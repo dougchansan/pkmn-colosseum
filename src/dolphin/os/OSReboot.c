@@ -21,7 +21,7 @@ extern void LCDisable(void);
 extern void* memcpy(void* dest, const void* src, u32 n);
 
 /* SDA/data symbol aliases used by stub functions */
-extern u32 Scb_803FB840;
+extern u8 Scb_803FB840[];
 
 /*
  * __OSReboot - Perform a full system reboot.
@@ -69,35 +69,35 @@ void __OSReboot(u32 resetCode, u32 bootDol) {
 /* ========================================================== */
 
 /* fn_800A064C - 0x800A064C | size: 0x60
- * Reads data into a buffer structure at Scb_803FB840.
- * Calls fn_800A06AC to fill remaining space at offset 0x40,
- * then updates the length field.
+ * SRAM WriteSram completion callback. Continues the staged SRAM write at
+ * offset 0x40 via WriteSram, stores the result at 0x4C, and on success
+ * advances the offset field to 0x40.
  */
-void fn_800A064C(void) {
-    extern u32 fn_800A06AC(u8* dst, u32 addr, u32 len);
-    u8* base = (u8*)(u32)Scb_803FB840;
+void fn_800A064C(s32 chan, void* context) {
+    extern u32 WriteSram(u8* dst, u32 addr, u32 len);
+    u8* base = Scb_803FB840;
+    u32* lenPtr = (u32*)(base + 0x40);
     u32 offset;
     u32 result;
 
     offset = *(u32*)(base + 0x40);
-    result = fn_800A06AC(base + offset, offset, 0x40 - offset);
+    result = WriteSram(base + offset, offset, 0x40 - offset);
     *(u32*)(base + 0x4C) = result;
 
-    if (*(s32*)(base + 0x4C) != 0) {
-        *(u32*)(base + 0x40) = 0x40;
+    if (*(volatile s32*)(base + 0x4C) != 0) {
+        *lenPtr = 0x40;
     }
 }
 
-/* fn_800A06AC - 0x800A06AC | size: 0x118
+/* WriteSram - 0x800A06AC | size: 0x118
  * EXI read helper - reads data from an EXI device (SRAM/RTC).
  * Locks EXI channel 0, selects device 1, sends an address command,
  * reads data, and returns success/failure.
  */
-u32 fn_800A06AC(u8* dst, u32 addr, u32 len) {
+u32 WriteSram(u8* dst, u32 addr, u32 len) {
     extern BOOL fn_80098368(s32 chan, u8* buf, u32 len, s32 mode);
-    u8 cmdBuf[0x20];
+    u32 cmd;
     u32 err;
-    u32 cmdAddr;
 
     if (!EXILock(0, 1, (void*)fn_800A064C)) {
         return 0;
@@ -109,24 +109,15 @@ u32 fn_800A06AC(u8* dst, u32 addr, u32 len) {
     }
 
     /* Build the read command address */
-    cmdAddr = ((addr << 6) + 0x100) | 0xA0000000;
-    *(u32*)(cmdBuf + 0x14) = cmdAddr;
+    addr <<= 6;
+    cmd = (addr + 0x100) | 0xA0000000;
 
-    err = 0;
-    if (!EXIImm(0, cmdBuf + 0x14, 4, 1, NULL)) {
-        err = 1;
-    }
-    if (!EXISync(0)) {
-        err = 1;
-    }
-    if (!fn_80098368(0, dst, len, 1)) {
-        err = 1;
-    }
-    if (!EXIDeselect(0)) {
-        err = 1;
-    }
+    err = !EXIImm(0, &cmd, 4, 1, NULL);
+    err |= !EXISync(0);
+    err |= !fn_80098368(0, dst, len, 1);
+    err |= !EXIDeselect(0);
     EXIUnlock(0);
 
-    return err ? 0 : 1;
+    return !err;
 }
 
