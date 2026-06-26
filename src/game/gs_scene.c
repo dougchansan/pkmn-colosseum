@@ -349,12 +349,14 @@ asm void fn_80176030(void) {
 }
 #else
 #pragma optimization_level 4
+#pragma optimization_level 4
 void fn_80176030(u32 param) {
     lbl_8047B1A2 = param;
     lbl_8047B1A0 = 1;
     lbl_8047B1A4 = 0;
     fn_800D305C(0);
 }
+#pragma optimization_level 0
 #pragma optimization_level 0
 #endif
 #pragma pop
