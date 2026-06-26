@@ -239,6 +239,18 @@ config.progress_categories = [
 ]
 config.progress_each_module = args.verbose
 
+# The ninja `progress`/`report` target runs `objdiff-cli report generate`, which
+# opens each unit's source-built object (objdiff.json base_path,
+# build/<ver>/base/...). With no matching libs declared (the all-asm byte-match
+# baseline above), the build compiles none of those objects, so the report fails
+# trying to open the first one — e.g. base/crt/__init_cpp_exceptions.o (issue #5).
+# A fresh `ninja` then dies at the report step even though main.dol builds and
+# byte-matches. Per-function progress is tracked out-of-band via
+# tools/gen_decomp_report.py, so gate the ninja report on having declared libs;
+# the default target falls back to the `ok` sha check, which passes.
+if not config.libs:
+    config.progress = False
+
 if args.mode == "configure":
     # Preserve the curated decomp-tracking objdiff.json. It maps the per-file
     # target objects used by the objdiff GUI, tools/gen_decomp_report.py and the
