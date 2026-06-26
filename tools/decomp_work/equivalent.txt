@@ -135,3 +135,4 @@ fn_8017B5A4   # fsys_file — real C 27.86%; W-debug-frame: target is leaf-with-
 
 # OSInterrupt.c — address-mode reloc-name wall (2026-06-25, pl_glm)
 fn_8009E414   # OSInterrupt ExternalInterruptHandler — real C 99.48%; @ha/@l reloc-name wall. Struct extern + #pragma address produces the EXACT target instruction pattern (lis+addi+lwz/lhz split for non-zero member offsets on hardware registers) but objdiff in band mode cannot resolve the @ha/@l relocations to numeric values (symbols are undefined externs, not in target object). All 10 residual lines are lis/addi reloc-name-only mismatches; every lwz/lhz load instruction matches. Lever: #pragma address + struct extern (>8 bytes to avoid SDA) forces CW 1.2.5n to emit @ha/@l relocations with member-offset addressing instead of folding. In a full link these resolve to byte-exact.
+fn_80022B3C  # gs_title.c pl_opus: W1 reg-perm (arg0 r30/r31 pivot w/ table struct-copy), shape 100%, 94.24%

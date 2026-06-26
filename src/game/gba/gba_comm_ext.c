@@ -8,6 +8,12 @@
 
 #include "dolphin/types.h"
 
+#define GBA_DATA_OFFSET 0x20
+#define GBA_STATE_PORT 0x4338
+#define GBA_STATE_TIMEOUT 0x433C
+#define GBA_STATE_PHASE 0x4340
+#define GBA_THREAD_PRIORITY 8
+
 /* ===== External function declarations ===== */
 extern void fn_800716C8();
 extern void fn_800716E8();
@@ -22,7 +28,7 @@ extern void fn_800A1E54();
 extern void fn_800A1F94();
 extern void fn_800A257C();
 extern void strcpy();
-extern void fn_800E202C();
+extern u32 fn_800E202C();
 extern void fn_800E209C();
 extern void fn_800E24B0();
 extern void fn_800E27B0();
@@ -45,10 +51,10 @@ void fn_80092E38(void);
 void fn_80092FC8(void);
 void fn_80093160(void);
 void fn_800932F0(void);
-void fn_800934E4(void);
-void fn_80093574(void);
-void fn_80093610(void);
-void fn_80093698(void);
+s32 fn_800934E4(s32 channel);
+u32 fn_80093574(s32 channel);
+u32 fn_80093610(s32 channel);
+s32 fn_80093698(s32 channel);
 
 /* ===== Function implementations ===== */
 
@@ -662,210 +668,136 @@ void fn_800932F0(void) {
 }
 
 /* 0x800934E4 | size: 0x90 */
-void fn_800934E4(void) {
-    u8 sp[0x10];
-    u32 tmp = 0;
-    u32 r3 = 0;
-    u32 r4 = 0;
-    u32 r30 = 0;
-    u32 r31 = 0;
+s32 fn_800934E4(s32 channel)
+{
+#pragma peephole off
+    s32 idle;
+    u8* work;
+    u32 slot;
 
-    if ((s32)r3 < 0) { r3 = 0x0; return; }
-    if ((s32)r3 > 3) {
-
-        r3 = 0x0;
-        return;
+    if (channel < 0 || channel > 3) {
+        return 0;
     }
-    r4 = (u32)&lbl_803FB328;
-    tmp = r3 << 2;
-    r3 = (u32)&lbl_803FB328;
-    r30 = *(u32*)(r3 + tmp);
-    if (r30 != 0) {
-        r3 = r30;
-        ((void(*)(void))fn_8009F7B4)();
-        tmp = *(u32*)((u8*)r30 + 0x4340);
-        r3 = r30;
-        tmp = __cntlzw(tmp);
-        r31 = (u32)tmp >> 5;
-        ((void(*)(void))fn_8009F890)();
-        r3 = r30 + 0x20;
-        r4 = 0x8;
-        ((void(*)(void))fn_800A257C)();
+
+    slot = (u32)channel << 2;
+    work = *(u8**)((u8*)lbl_803FB328 + slot);
+    if (work != NULL) {
+        fn_8009F7B4(work);
+        idle = (*(u32*)(work + GBA_STATE_PHASE) == 0);
+        fn_8009F890(work);
+        fn_800A257C(work + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
     } else {
-
-        r31 = 0x1;
+        idle = 1;
     }
-    r3 = r31;
 
-    return;
+    return idle;
 }
 
 /* 0x80093574 | size: 0x9C */
-void fn_80093574(void) {
-    u8 sp[0x10];
-    u32 tmp = 0;
-    u32 r3 = 0;
-    u32 r4 = 0;
-    u32 r30 = 0;
-    u32 r31 = 0;
+u32 fn_80093574(s32 channel)
+{
+#pragma peephole off
+    u32 status;
+    u8* work;
+    u32 slot;
 
-    if ((s32)r3 < 0) { r3 = 0x10000; return; }
-    if ((s32)r3 > 3) {
+    if (channel < 0 || channel > 3) {
+        return 0x10000;
+    }
 
-        r3 = 0x10000;
-        return;
+    slot = (u32)channel << 2;
+    work = *(u8**)((u8*)lbl_803FB328 + slot);
+    if (work == NULL) {
+        return 0;
     }
-    r4 = (u32)&lbl_803FB328;
-    tmp = r3 << 2;
-    r3 = (u32)&lbl_803FB328;
-    r30 = *(u32*)(r3 + tmp);
-    if (r30 == 0) {
-        r3 = 0x0;
-        return;
-    }
-    /* L_800935C0: poll loop */
+
     while (1) {
-        r3 = r30;
-        ((void(*)(void))fn_8009F7B4)();
-        r31 = *(u32*)((u8*)r30 + 0x433C);
-        r3 = r30;
-        ((void(*)(void))fn_8009F890)();
-        r3 = r30 + 0x20;
-        r4 = 0x8;
-        ((void(*)(void))fn_800A257C)();
-        tmp = (u32)r31 >> 16;
-        if ((s32)tmp != 3) { r3 = r31; return; }
-        ((void(*)(void))_threadSwitch)();
+        fn_8009F7B4(work);
+        status = *(u32*)(work + GBA_STATE_TIMEOUT);
+        fn_8009F890(work);
+        fn_800A257C(work + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
+        if ((s32)(status >> 16) == 3) {
+            _threadSwitch();
+        } else {
+            return status;
+        }
     }
-
-    r3 = r31;
-
-    return;
 }
 
 /* 0x80093610 | size: 0x88 */
-void fn_80093610(void) {
-    u8 sp[0x10];
-    u32 tmp = 0;
-    u32 r3 = 0;
-    u32 r4 = 0;
-    u32 r30 = 0;
-    u32 r31 = 0;
+u32 fn_80093610(s32 channel)
+{
+#pragma peephole off
+    u32 status;
+    u8* work;
+    u32 slot;
 
-    if ((s32)r3 < 0) { r3 = 0x10000; return; }
-    if ((s32)r3 > 3) {
-
-        r3 = 0x10000;
-        return;
+    if (channel < 0 || channel > 3) {
+        return 0x10000;
     }
-    r4 = (u32)&lbl_803FB328;
-    tmp = r3 << 2;
-    r3 = (u32)&lbl_803FB328;
-    r30 = *(u32*)(r3 + tmp);
-    if (r30 == 0) {
-        r3 = 0x0;
-        return;
-    }
-    r3 = r30;
-    ((void(*)(void))fn_8009F7B4)();
-    r31 = *(u32*)((u8*)r30 + 0x433C);
-    r3 = r30;
-    ((void(*)(void))fn_8009F890)();
-    r3 = r30 + 0x20;
-    r4 = 0x8;
-    ((void(*)(void))fn_800A257C)();
-    r3 = r31;
 
-    return;
+    slot = (u32)channel << 2;
+    work = *(u8**)((u8*)lbl_803FB328 + slot);
+    if (work == NULL) {
+        return 0;
+    }
+
+    fn_8009F7B4(work);
+    status = *(u32*)(work + GBA_STATE_TIMEOUT);
+    fn_8009F890(work);
+    fn_800A257C(work + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
+
+    return status;
 }
 
 /* 0x80093698 | size: 0x15C */
-void fn_80093698(void) {
-    u8 sp[0x20];
-    u32 tmp = 0;
-    u32 r3 = 0;
-    u32 r4 = 0;
-    u32 r5 = 0;
-    u32 r28 = 0;
-    u32 r29 = 0;
-    u32 r30 = 0;
-    u32 r31 = 0;
+s32 fn_80093698(s32 channel)
+{
+#pragma peephole off
+    u32 slot;
+    u32 status;
+    u8* work;
 
-    if ((s32)r3 < 0) { r3 = 0x0; return; }
-    if ((s32)r3 > 3) {
+    if (channel < 0 || channel > 3) {
+        return 0;
+    }
 
-        r3 = 0x0;
-        return;
+    slot = (u32)channel << 2;
+    work = *(u8**)((u8*)lbl_803FB328 + slot);
+    if (work == NULL) {
+        return 1;
     }
-    r4 = (u32)&lbl_803FB328;
-    r30 = r3 << 2;
-    r31 = (u32)&lbl_803FB328;
-    r28 = *(u32*)(r31 + r30);
-    if (r28 == 0) {
-        r3 = 0x1;
-        return;
-    }
-    r3 = *(u32*)((u8*)r28 + 0x4338);
-    r4 = 0x1;
-    ((void(*)(void))fn_800716E8)();
-    /* L_800936F8: poll loop */
+
+    fn_800716E8(*(s32*)(work + GBA_STATE_PORT), 1);
     while (1) {
-        r3 = r28;
-        ((void(*)(void))fn_8009F7B4)();
-        r29 = *(u32*)((u8*)r28 + 0x433C);
-        r3 = r28;
-        ((void(*)(void))fn_8009F890)();
-        r3 = r28 + 0x20;
-        r4 = 0x8;
-        ((void(*)(void))fn_800A257C)();
-        tmp = (u32)r29 >> 16;
-        if ((s32)tmp != 3) break;
-        ((void(*)(void))_threadSwitch)();
+        fn_8009F7B4(work);
+        status = *(u32*)(work + GBA_STATE_TIMEOUT);
+        fn_8009F890(work);
+        fn_800A257C(work + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
+        if ((s32)(status >> 16) == 3) {
+            _threadSwitch();
+        } else {
+            break;
+        }
     }
-    /* L_8009372C */
-    r3 = r28;
-    ((void(*)(void))fn_8009F7B4)();
-    tmp = 0xd;
-    r3 = 0x30000;
-    *(u32*)((u8*)r28 + 0x4340) = tmp;
-    tmp = r3 + 0xd;
-    r3 = r28;
-    *(u32*)((u8*)r28 + 0x433C) = tmp;
-    ((void(*)(void))fn_8009F890)();
-    r3 = r28 + 0x20;
-    r4 = 0x8;
-    ((void(*)(void))fn_800A257C)();
-    r3 = r28 + 0x18;
-    ((void(*)(void))fn_8009FABC)();
-    r3 = r28 + 0x20;
-    r4 = 0x0;
-    ((void(*)(void))fn_800A1E54)();
-    r3 = *(u32*)((u8*)r28 + 0x4338);
-    r4 = 0x0;
-    r5 = 0x0;
-    ((void(*)(void))fn_800716C8)();
-    r3 = *(u32*)((u8*)r28 + 0x4338);
-    r4 = 0x0;
-    ((void(*)(void))fn_800716E8)();
-    r3 = *(u32*)(r31 + r30);
-    ((void(*)(void))fn_800E202C)();
-    r29 = r3;
-    tmp = r29 & 0xFFFF;
-    if (tmp == 0) {
-        r3 = (u32)&lbl_8026F5A8;
-        r4 = 0x1e6;
-        r3 = (u32)&lbl_8026F5A8;
-        r5 = (u32)&lbl_8047C1E8;
-        ((void(*)(void))__assert)();
-    }
-    r3 = r29;
-    ((void(*)(void))fn_800E24B0)();
-    r3 = r29;
-    ((void(*)(void))fn_800E209C)();
-    tmp = 0x0;
-    r3 = 0x1;
-    *(u32*)(r31 + r30) = tmp;
 
-    return;
+    fn_8009F7B4(work);
+    *(u32*)(work + GBA_STATE_PHASE) = 0xD;
+    *(u32*)(work + GBA_STATE_TIMEOUT) = 0x3000D;
+    fn_8009F890(work);
+    fn_800A257C(work + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
+    fn_8009FABC(work + 0x18);
+    fn_800A1E54(work + GBA_DATA_OFFSET, 0);
+    fn_800716C8(*(s32*)(work + GBA_STATE_PORT), NULL, NULL);
+    fn_800716E8(*(s32*)(work + GBA_STATE_PORT), 0);
+
+    status = fn_800E202C(*(u8**)((u8*)lbl_803FB328 + slot));
+    if ((status & 0xFFFF) == 0) {
+        __assert(lbl_8026F5A8, 0x1E6, &lbl_8047C1E8);
+    }
+    fn_800E24B0(status);
+    fn_800E209C(status);
+    *(u8**)((u8*)lbl_803FB328 + slot) = NULL;
+
+    return 1;
 }
-
