@@ -606,86 +606,47 @@ s32 fn_800BEC18(u8* buf, u32 unused, u32 w0, u32 w1) {
 }
 
 /* fn_800BED14 - 0x800BED14 | size: 0x8C */
-void fn_800BED14(void) {
-    u8 sp[0x20];
-    u32 tmp = 0;
-    u32 r3 = 0;
-    u32 r4 = 0;
-    u32 r5 = 0;
-    u32 r29 = 0;
-    u32 r30 = 0;
-    u32 r31 = 0;
-
-    r31 = 0x0;
-    /* mr. r30, r5 */;
-    r29 = r3;
-    r3 = r4;
-    if ((s32)tmp == 0) {
-        r3 = 0x0;
-    } else {
-
-        r4 = *(u32*)((u8*)r29 + 0xC);
-        tmp = *(u32*)((u8*)r29 + 0x8);
-        tmp = tmp - r4;
-        if (r30 > tmp) {
-            r31 = 0x302;
-            r30 = tmp;
-        }
-        r4 = r4 + 0x10;
-        r5 = r30;
-        r4 = r29 + r4;
-        ((void(*)(void))fn_80003488)();
-        tmp = *(u32*)((u8*)r29 + 0xC);
-        r3 = r31;
-        tmp = tmp + r30;
-        *(u32*)((u8*)r29 + 0xC) = tmp;
+s32 fn_800BED14(u8* buf, u8* dst, u32 n) {
+    s32 err = 0;
+    if (n == 0) {
+        return 0;
     }
-    return;
+    {
+        u32 writepos = *(u32*)(buf + 0xC);
+        u32 endpos = *(u32*)(buf + 0x8);
+        u32 space = endpos - writepos;
+        if (n > space) {
+            err = 0x302;
+            n = space;
+        }
+        fn_80003488(dst, buf + writepos + 0x10, n);
+        *(u32*)(buf + 0xC) = *(u32*)(buf + 0xC) + n;
+    }
+    return err;
 }
 
 /* fn_800BEDA0 - 0x800BEDA0 | size: 0xA4 */
-void fn_800BEDA0(void) {
-    u8 sp[0x20];
-    u32 tmp = 0;
-    u32 r3 = 0;
-    u32 r4 = 0;
-    u32 r5 = 0;
-    u32 r29 = 0;
-    u32 r30 = 0;
-    u32 r31 = 0;
-
-    r31 = 0x0;
-    /* mr. r30, r5 */;
-    r29 = r3;
-    if ((s32)tmp == 0) {
-        r3 = 0x0;
-    } else {
-
-        r3 = *(u32*)((u8*)r29 + 0xC);
-        tmp = 0x880 - r3;
-        if (tmp < r30) {
-            r31 = 0x301;
-            r30 = tmp;
-        }
-        if (r30 == 1) {
-            tmp = *(u8*)((u8*)r4 + 0x0);
-            r3 = r29 + r3;
-            *(u8*)((u8*)r3 + 0x10) = tmp;
-        } else {
-
-            r3 = r3 + 0x10;
-            r5 = r30;
-            r3 = r29 + r3;
-            ((void(*)(void))fn_80003488)();
-        }
-        tmp = *(u32*)((u8*)r29 + 0xC);
-        r3 = r31;
-        tmp = tmp + r30;
-        *(u32*)((u8*)r29 + 0xC) = tmp;
-        tmp = *(u32*)((u8*)r29 + 0xC);
-        *(u32*)((u8*)r29 + 0x8) = tmp;
+s32 fn_800BEDA0(u8* buf, u8* src, u32 n) {
+    s32 err = 0;
+    if (n == 0) {
+        return 0;
     }
-    return;
+    {
+        u32 writepos = *(u32*)(buf + 0xC);
+        u32 space = 0x880 - writepos;
+        if (space < n) {
+            err = 0x301;
+            n = space;
+        }
+        if (n == 1) {
+            buf[writepos + 0x10] = src[0];
+        } else {
+            fn_80003488(buf + writepos + 0x10, src, n);
+        }
+        *(u32*)(buf + 0xC) = *(u32*)(buf + 0xC) + n;
+        *(u32*)(buf + 0x8) = *(u32*)(buf + 0xC);
+    }
+    return err;
 }
 
 /* fn_800BEE74 - 0x800BEE74 | size: 0x40
