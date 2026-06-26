@@ -70,13 +70,19 @@ require_pane() {
 launch_cmd() {
   local what="$1" inner
   case "$what" in
-    glm)   inner="opencode --model '$GLM_MODEL'" ;;
-    codex) inner="codex" ;;
-    *)     inner="$SHELL" ;;
+    glm)          inner="opencode --model '$GLM_MODEL'" ;;
+    codex|codex2) inner="codex" ;;
+    opus)         inner="claude --model opus" ;;
+    sonnet)       inner="claude --model sonnet" ;;
+    *)            inner="$SHELL" ;;
   esac
   printf 'cd %q; [ -f %q ] && { set -a; . %q; set +a; }; %s; exec %q' \
     "$REPO" "$COCKPIT_ENV" "$COCKPIT_ENV" "$inner" "${SHELL:-/bin/bash}"
 }
+
+# Roles that run an agent TUI (the rest are plain shells).
+AGENT_ROLES="opus glm codex codex2 sonnet"
+ALL_ROLES="opus glm codex codex2 sonnet shell"
 
 bootstrap() {
   if have_session; then
@@ -87,15 +93,15 @@ bootstrap() {
   command -v opencode >/dev/null || echo "cockpit: WARNING: opencode not on PATH (glm pane)"
   command -v codex    >/dev/null || echo "cockpit: WARNING: codex not on PATH (codex pane)"
 
-  # 4 panes in a 2x2 tiled grid (each ~half-width — enough for the TUIs to render)
-  "$TMUX" new-session -d -s "$SESSION" -n "$WINDOW" -c "$REPO" -x 220 -y 50
-  "$TMUX" split-window -t "$SESSION:$WINDOW" -c "$REPO"
-  "$TMUX" split-window -t "$SESSION:$WINDOW" -c "$REPO"
-  "$TMUX" split-window -t "$SESSION:$WINDOW" -c "$REPO"
-  "$TMUX" select-layout -t "$SESSION:$WINDOW" tiled >/dev/null 2>&1 || true
+  # 6 panes in a tiled grid (opus | glm | codex | codex2 | sonnet | shell)
+  "$TMUX" new-session -d -s "$SESSION" -n "$WINDOW" -c "$REPO" -x 250 -y 60
+  for _ in 1 2 3 4 5; do
+    "$TMUX" split-window -t "$SESSION:$WINDOW" -c "$REPO"
+    "$TMUX" select-layout -t "$SESSION:$WINDOW" tiled >/dev/null 2>&1 || true
+  done
 
-  # tag each pane with a stable @role (creation order: orchestrator, glm, codex, shell)
-  local roles=(orchestrator glm codex shell) i=0 id
+  # tag each pane with a stable @role (creation order)
+  local roles=($ALL_ROLES) i=0 id
   while read -r id; do
     "$TMUX" set -p -t "$id" @role "${roles[$i]}"
     i=$((i + 1))
@@ -105,12 +111,18 @@ bootstrap() {
   "$TMUX" set -t "$SESSION" pane-border-status top  >/dev/null 2>&1 || true
   "$TMUX" set -t "$SESSION" pane-border-format ' #{@role} #{?#{==:#{@role},},,| }#{pane_current_command} ' >/dev/null 2>&1 || true
 
-  # launch the TUIs
-  "$TMUX" send-keys -t "$(pane_for glm)"   -l -- "$(launch_cmd glm)";   "$TMUX" send-keys -t "$(pane_for glm)" Enter
-  "$TMUX" send-keys -t "$(pane_for codex)" -l -- "$(launch_cmd codex)"; "$TMUX" send-keys -t "$(pane_for codex)" Enter
-  "$TMUX" select-pane -t "$(pane_for orchestrator)"
+  # launch the agent TUIs (shell stays a plain shell). Skip with DECOMP_NO_AGENTS=1
+  # so a fleet driver can run a worker loop in each pane instead of an interactive TUI.
+  if [ -z "${DECOMP_NO_AGENTS:-}" ]; then
+    for r in $AGENT_ROLES; do
+      local p; p="$(pane_for "$r")"
+      "$TMUX" send-keys -t "$p" -l -- "$(launch_cmd "$r")"
+      "$TMUX" send-keys -t "$p" Enter
+    done
+  fi
+  "$TMUX" select-pane -t "$(pane_for opus)"
 
-  echo "cockpit: session '$SESSION' up (orchestrator | glm | codex | shell)"
+  echo "cockpit: session '$SESSION' up (opus | glm | codex | codex2 | sonnet | shell)"
   echo "         attach: tools/decomp_work/tmux_control/cockpit.sh attach"
 }
 
@@ -162,7 +174,7 @@ cmd_restart() {
 cmd_status() {
   have_session || die "no session '$SESSION'"
   printf '%-14s %-8s %s\n' PANE STATE ID
-  for n in orchestrator glm codex shell; do
+  for n in $ALL_ROLES; do
     local id state; id="$(pane_for "$n")"
     [ -z "$id" ] && { printf '%-14s %-8s %s\n' "$n" "-" "(missing)"; continue; }
     if cmd_idle "$n" >/dev/null 2>&1; then state=idle; else state=busy; fi

@@ -4,7 +4,7 @@
 # reject asm/#if-flip fraud, skip redundant no-ops, and commit the real wins
 # scoped (NEVER the 3 pre-existing WIP files). Prints a per-tag verdict + a total.
 cd "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../.." || exit 1
-PY=python
+PY=python3
 BI=tools/decomp_work/band_integrate.py
 # the 3 pre-existing WIP files that are NOT this session's work — never commit them
 WIP_RE='src/game/fsys/fsys_file.c|src/game/gs_pokemon_summary.c|src/hsd/hsd_dobj.c'
