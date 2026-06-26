@@ -1,0 +1,8 @@
+    nofralloc
+/* 800EEA50 000EBA50  80 0D A3 C0 */	lwz r0, -23616(r13)
+/* 800EEA54 000EBA54  54 63 00 06 */	clrrwi r3, r3, 28
+/* 800EEA58 000EBA58  54 00 00 06 */	clrrwi r0, r0, 28
+/* 800EEA5C 000EBA5C  7C 03 00 50 */	subf r0, r3, r0
+/* 800EEA60 000EBA60  7C 00 00 34 */	cntlzw r0, r0
+/* 800EEA64 000EBA64  54 03 DE 3E */	extrwi r3, r0, 8, 19
+/* 800EEA68 000EBA68  4E 80 00 20 */	blr

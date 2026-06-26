@@ -256,38 +256,37 @@ void __OSInitMemoryProtection(void) {
  * Returns TRUE on success, FALSE if non-blocking and queue is full.
  */
 BOOL fn_8009F230(u8* queue, u32 msg, u32 flags) {
+    typedef struct OSMessageQueue {
+        u8 sendQueue[0x8];
+        u8 recvQueue[0x8];
+        u32* buffer;
+        s32 capacity;
+        s32 head;
+        s32 count;
+    } OSMessageQueue;
     extern void fn_800A238C(u8* queue);
     extern void fn_800A2478(u8* queue);
+    OSMessageQueue* mq;
+    s32 blocking;
     BOOL enabled;
-    u32 capacity;
-    u32 count;
-    u32 head;
-    u32* buf;
-    u32 idx;
 
-    flags = flags & 1;
+    mq = (OSMessageQueue*)queue;
+    blocking = flags;
     enabled = OSDisableInterrupts();
+    blocking = blocking & 1;
 
-    while (1) {
-        capacity = *(u32*)(queue + 0x14);
-        count = *(u32*)(queue + 0x1C);
-        if ((s32)capacity > (s32)count) {
-            break;
-        }
-        if (flags == 0) {
+    while (mq->capacity <= mq->count) {
+        if (blocking == 0) {
             OSRestoreInterrupts(enabled);
             return FALSE;
         }
         fn_800A238C(queue);
     }
 
-    head = *(u32*)(queue + 0x18);
-    buf  = (u32*)(*(u32*)(queue + 0x10));
-    idx  = (head + count) % capacity;
-    buf[idx] = msg;
-    *(u32*)(queue + 0x1C) = count + 1;
+    mq->buffer[(mq->head + mq->count) % mq->capacity] = msg;
+    mq->count++;
 
-    fn_800A2478(queue);
+    fn_800A2478(mq->recvQueue);
     OSRestoreInterrupts(enabled);
     return TRUE;
 }
@@ -358,4 +357,3 @@ BOOL fn_8009F3E0(s32 final) {
     }
     return TRUE;
 }
-
