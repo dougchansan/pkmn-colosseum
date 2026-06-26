@@ -7,12 +7,12 @@
 # Run in a cockpit pane:  bash tools/decomp_work/fleet_monitor.sh
 set -uo pipefail
 cd "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../.." || exit 1
-LANES="${FLEET_LANES:-opus glm codex codex2 sonnet}"
+LANES="${FLEET_LANES:-opus glm codex codex2 sonnet seed}"
 QUEUE="${FLEET_QUEUE:-build/low_attack_queue.txt}"
 START_HEAD="$(git rev-parse HEAD 2>/dev/null)"
 INTERVAL="${MONITOR_INTERVAL:-8}"
 
-alive() { pgrep -f "lane_worker\.sh $1\$" >/dev/null 2>&1 && echo up || echo "--"; }
+alive() { local p; [ "$1" = seed ] && p="lane_seed.py" || p="lane_worker\.sh $1\$"; pgrep -f "$p" >/dev/null 2>&1 && echo up || echo "--"; }
 
 while :; do
   total=$(grep -vcE '^\s*#|^\s*$' "$QUEUE" 2>/dev/null || echo 0)

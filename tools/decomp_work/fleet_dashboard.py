@@ -25,7 +25,7 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 LEDGER = os.path.join(ROOT, "build", "wall_ledger.json")
 LOCKS = os.path.join(ROOT, "build", "fleet_locks")
 WINS = os.path.join(ROOT, "build", "band_wins")
-LANES = os.environ.get("FLEET_LANES", "opus glm codex codex2 sonnet").split()
+LANES = os.environ.get("FLEET_LANES", "opus glm codex codex2 sonnet seed").split()
 _FN = re.compile(r"fn_[0-9A-Fa-f]{8}")
 START_HEAD = None  # set at startup so "this run" win counts are stable
 
@@ -137,7 +137,8 @@ def lane_state(role):
             last = lines[-1][:120] if lines else ""
         except Exception:
             pass
-    alive = bool(sh(["pgrep", "-f", rf"lane_worker\.sh {role}$"]))
+    pat = "lane_seed.py" if role == "seed" else rf"lane_worker\.sh {role}$"
+    alive = bool(sh(["pgrep", "-f", pat]))
     return {"file": cur, "last": last, "alive": alive}
 
 

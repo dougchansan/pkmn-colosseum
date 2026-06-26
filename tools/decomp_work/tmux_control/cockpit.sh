@@ -80,9 +80,10 @@ launch_cmd() {
     "$REPO" "$COCKPIT_ENV" "$COCKPIT_ENV" "$inner" "${SHELL:-/bin/bash}"
 }
 
-# Roles that run an agent TUI (the rest are plain shells).
+# Roles that run an agent TUI (the rest are plain shells). 'seed' is the v3-model
+# proposer lane (runs lane_seed.py, not a TUI); 'shell' is the monitor/gate pane.
 AGENT_ROLES="opus glm codex codex2 sonnet"
-ALL_ROLES="opus glm codex codex2 sonnet shell"
+ALL_ROLES="opus glm codex codex2 sonnet seed shell"
 
 bootstrap() {
   if have_session; then

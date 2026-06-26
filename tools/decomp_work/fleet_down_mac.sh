@@ -4,6 +4,7 @@
 set -uo pipefail
 cd "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../.." || exit 1
 pkill -f 'lane_worker.sh' 2>/dev/null || true
+pkill -f 'lane_seed.py' 2>/dev/null || true
 pkill -f 'claude -p' 2>/dev/null || true
 pkill -f 'codex exec' 2>/dev/null || true
 pkill -f 'opencode run' 2>/dev/null || true

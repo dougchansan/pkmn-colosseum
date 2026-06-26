@@ -30,6 +30,17 @@ for r in $LANES; do
   "$CK" send "$r" "bash tools/decomp_work/lane_worker.sh $r 2>&1 | tee -a build/lane_$r.log"
 done
 
+# 6th lane: the v3-model flywheel proposer (free local GPU). Ensure the inference
+# server is up on the 3090, then run the propose-gate loop in the 'seed' pane.
+SEED_HOST="${DECOMP_GPU_HOST:-192.168.50.101}"
+if ! curl -s -m4 "http://$SEED_HOST:8780/" 2>/dev/null | grep -q seedcoder; then
+  echo "[fleet] starting v3 inference server on $SEED_HOST ..."
+  ssh -o ConnectTimeout=15 -i ~/.ssh/id_ed25519 "douglaswhittingham@$SEED_HOST" \
+    "setsid bash /storage/finetune/start_v3.sh > /storage/finetune/serve_v3.log 2>&1 < /dev/null & disown" 2>/dev/null || true
+fi
+"$CK" send seed "python3 -u tools/decomp_work/lane_seed.py 2>&1 | tee -a build/lane_seed.log"
+export FLEET_LANES="$LANES seed"
+
 echo "[fleet] starting auto-gate loop (every ${GATE_EVERY}s) in the background"
 ( while :; do sleep "$GATE_EVERY"; bash tools/decomp_work/auto_gate.sh >> build/gate.log 2>&1; done ) >/dev/null 2>&1 &
 echo $! > build/.fleet_gate.pid
