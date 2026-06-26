@@ -189,6 +189,7 @@ s32 fn_80077BA8(void) {
 /* 0x80077BD0 | size: 0x4C */
 #pragma scheduling off
 #pragma scheduling off
+#pragma scheduling off
 u8 fn_80077BD0(void) {
     extern s32* fn_80129280(s32, s32);
     s32 value;
@@ -202,6 +203,7 @@ u8 fn_80077BD0(void) {
     }
     return 0;
 }
+#pragma scheduling on
 #pragma scheduling on
 #pragma scheduling on
 
@@ -372,9 +374,11 @@ void* fn_80077E50(s32 index) {
 /* 0x80077E80 | size: 0x24 */
 #pragma scheduling off
 #pragma scheduling off
+#pragma scheduling off
 void fn_80077E80(void* dst, void* src) {
     memcpy(dst, src, 0x54);
 }
+#pragma scheduling on
 #pragma scheduling on
 #pragma scheduling on
 
