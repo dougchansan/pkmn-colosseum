@@ -1069,24 +1069,101 @@ void fn_800D0668(OSAlarm* alarm, OSContext* context) {
 
 /*
  * fn_800D0CBC - 0x800D0CBC | size: 0x13C
- * PADClampCircle - Apply circular dead zone to analog stick values.
- * Converts rectangular dead zone to circular for better control.
+ * Register a type/status callback while a type query is busy; otherwise call it immediately.
  */
-void fn_800D0CBC(void) {
-    /* Apply circular clamping:
-     * - Compute magnitude from X/Y
-     * - If within dead zone, zero both axes
-     * - Otherwise, scale to remove dead zone gap
-     */
+u32 fn_800D0CBC(s32 chan, SITypeAndStatusCallback callback) {
+    extern SITypeAndStatusCallback lbl_80400110[4][4];
+    BOOL enabled;
+    u32 type;
+    SITypeAndStatusCallback* callbacks;
+    int i;
+
+    enabled = OSDisableInterrupts();
+    type = SIGetType(chan);
+    if ((Type_80313FA0[chan] & 0x80) != 0) {
+        callbacks = lbl_80400110[chan];
+        for (i = 0; i < 4; i++) {
+            if (callbacks[i] == callback) {
+                break;
+            }
+            if (callbacks[i] == NULL) {
+                callbacks[i] = callback;
+                break;
+            }
+        }
+    } else {
+        callback(chan, type);
+    }
+    OSRestoreInterrupts(enabled);
+    return type;
 }
 
 /*
  * fn_800D0DF8 - 0x800D0DF8 | size: 0x14C
- * PADGetType - Get controller type for a specific channel.
- * Returns the device type identified during the last type query.
+ * Decode a raw SI type word into a known controller/device type or error code.
  */
-void fn_800D0DF8(void) {
-    /* Returns the decoded controller type for the specified channel.
-     * Handles wireless controller identification and fix-bit processing.
-     */
+u32 fn_800D0DF8(u32 type) {
+    u32 error;
+    u32 id;
+    u32 masked;
+
+    error = type & 0xFF;
+    id = type & ~0xFF;
+    if ((type & 8) != 0) {
+        return 8;
+    }
+    if ((error & 0x47) != 0) {
+        return 0x40;
+    }
+    if (error != 0) {
+        return 0x80;
+    }
+
+    masked = id & 0x18000000;
+    if (masked == 0) {
+        masked = id & 0xFFFF0000;
+        switch (masked) {
+        case 0x00010000:
+        case 0x00020000:
+        case 0x00040000:
+        case 0x02000000:
+        case 0x05000000:
+            return masked;
+        }
+        return 0x40;
+    }
+
+    if (masked != 0x08000000) {
+        return 0x40;
+    }
+
+    masked = id & 0xFFFF0000;
+    switch (masked) {
+    case 0x08000000:
+    case 0x09000000:
+        return masked;
+    }
+
+    masked = id & 0xFFE00000;
+    if (masked == 0x08200000) {
+        return 0x08200000;
+    }
+
+    if ((id & 0x80000000) != 0) {
+        if ((id & 0x04000000) == 0) {
+            masked = id & 0x8B100000;
+            if (masked == 0x8B100000) {
+                return 0x8B100000;
+            }
+            if ((id & 0x02000000) == 0) {
+                return 0x88000000;
+            }
+        }
+    }
+
+    masked = id & 0x09000000;
+    if (masked == 0x09000000) {
+        return 0x09000000;
+    }
+    return 0x40;
 }
