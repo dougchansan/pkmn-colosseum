@@ -5518,8 +5518,7 @@ void fn_80209380(void* ctx) {
 #pragma peephole on
 void fn_80209484(void* ctx, u32 param) {
     extern void fn_801DA4E8();
-    void* obj;
-    obj = fn_8012640C(ctx, 0, 0xee, 0);
+    void* obj = fn_8012640C(ctx, 0, 0xee, 0);
     if (obj != 0) {
         fn_801DA4E8(obj, param);
     }
@@ -9071,40 +9070,17 @@ void fn_8020F648(void)
   return;
 }
 /* 0x8020F6EC | size: 0x60 | small */
-void fn_8020F6EC(void) {
+s32 fn_8020F6EC(void) {
     extern u8 lbl_80379F58[];
-    u32 r0 = 0;
-    u32 r3 = 0;
-
-    r3 = (u32)lbl_80379F58;
-    r3 = (u32)lbl_80379F58;
-    r3 = r3 + (0x1 << 16);
-    r0 = *(u8*)((u8*)r3 + 0x6002);
-    if ((s32)r0 == (s32)0x2) { r3 = 0x1; return; }
-    if ((s32)r0 < (s32)0x2) {
-        if ((s32)r0 == (s32)0x0) { r3 = 0x3; return; }
-        if ((s32)r0 >= (s32)0x0) { r3 = 0x0; return; }
-        r3 = 0x0;
-        return;
+    u32 val;
+    val = *(u8*)((u8*)lbl_80379F58 + (0x1 << 16) + 0x6002);
+    switch ((s32)val) {
+    case 0: return 3;
+    case 1: return 0;
+    case 2: return 1;
+    case 3: return 2;
+    default: return 0;
     }
-    if ((s32)r0 >= (s32)0x4) { r3 = 0x0; return; }
-    r3 = 0x2;
-    return;
-
-    r3 = 0x3;
-    return;
-
-    r3 = 0x0;
-    return;
-
-    r3 = 0x1;
-    return;
-
-    r3 = 0x2;
-    return;
-
-    r3 = 0x0;
-    return;
 }
 
 /* 0x8020F74C | size: 0x64 */
