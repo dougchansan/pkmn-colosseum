@@ -5236,7 +5236,7 @@ u32 fn_80128E24(void) {
  * Generated: 1 pattern-matched + 515 stubs
  * Range: 0x80114CA8 - 0x80130CD8
  * =================================================================== */
-extern u32 lbl_804083D0;
+extern u8 lbl_804083D0[0x30];
 extern u32 lbl_8047AD68;
 extern u32 lbl_8047AD6C;
 extern void fn_801ED674(void);
@@ -7258,7 +7258,7 @@ void fn_80117500(void) {
 /* 0x801176C8 | 0x254 */
 extern void fn_800FE714(void);
 extern void fn_800FE834(void);
-extern u32 lbl_804083D0;
+extern u8 lbl_804083D0[0x30];
 #if 1
 asm void fn_801176C8(void) {
 #include "src/game/gs_field_world_fn_801176C8.inc"
@@ -7429,7 +7429,7 @@ void fn_801176C8(void) {
 /* 0x8011791C | 0x1B8 */
 extern void* GScameraGetActiveCamera();
 extern void fn_800E01D0();
-extern u32 lbl_804083D0;
+extern u8 lbl_804083D0[0x30];
 extern u8 lbl_802727B8[];
 extern void fn_80177A38(void);  /* referenced by asm .inc wrappers (fn_801171C8/80117330/8011791C/8012E388/8012EBD4); was undefined -> broke the TU parse */
 #if 1
@@ -7557,7 +7557,7 @@ void fn_8011791C(void) {
 #endif
 /* 0x80117AD4 | 16 bytes | global_getter */
 u32 fn_80117AD4(void) {
-    return *(u32*)((u8*)lbl_804083D0 + 0x10);
+    return *(u32*)(lbl_804083D0 + 0x10);
 }
 /* 0x80117AE4 | 0x1A0 */
 extern void fn_800E5550(void);

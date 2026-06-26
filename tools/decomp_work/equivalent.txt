@@ -126,3 +126,9 @@ fn_801F6B54   # pokemon — real C 99.60%; reg-permutation wall (inner/outer cou
 fn_801F3430   # pokemon — real C 98.89%; 2-param register-permutation wall (param_1 referenced before buf pins it to r30 first; target wants inverse). SKIP
 fn_801F4220   # pokemon — real C 98.57%; un-inverted loop-match branch-fold wall (people-findloop family; CW folds !=/== to beq + elides redundant found-test). SKIP
 fn_801F4718   # pokemon — real C 98.46%; li-vs-mr zero-copy peephole wall (1-instr: redundant zero-materialize li r4,0 vs mr r4,r5). SKIP
+
+# gs_party_access.c — W2 dual-scheduling wall (2026-06-25, pl_sonnet)
+fn_8000CF68   # gs_party_access — real C 89.43%; W2 dual: block-copy prologue ordering + do-while CTR (CW 1.3 refuses bdnz for search loop with early exits). Struct block-copy + scheduling off is ceiling. SKIP
+
+# fsys_file.c — W-debug-frame wall (2026-06-25, pl_sonnet)
+fn_8017B5A4   # fsys_file — real C 27.86%; W-debug-frame: target is leaf-with-r31-frame compiled under -g; no per-function -g pragma; adding -g to TU regresses 9 neighbors (49→41 byte-exact). SKIP

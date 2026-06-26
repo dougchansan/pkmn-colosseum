@@ -1287,20 +1287,12 @@ asm void fn_8000CF68(void) {
 }
 #else
 #pragma peephole off
+#pragma scheduling off
 u32 fn_8000CF68(u32 arg) {
+    struct StatCopyBlk { u32 data[28]; };
     u32 local[28];
     u32 val;
-    {
-        u32 *s = lbl_80266700 - 1;
-        u32 *d = local - 1;
-        s32 ctr = 14;
-        do {
-            d[1] = s[1];
-            d[2] = s[2];
-            s += 2;
-            d += 2;
-        } while (--ctr != 0);
-    }
+    *(struct StatCopyBlk*)local = *(struct StatCopyBlk*)lbl_80266700;
     {
         u32 *p = local;
         u32 idx = 0;
@@ -1331,6 +1323,7 @@ u32 fn_8000CF68(u32 arg) {
     fn_8002DC6C(val);
     return 0;
 }
+#pragma scheduling reset
 #pragma peephole reset
 #endif
 
