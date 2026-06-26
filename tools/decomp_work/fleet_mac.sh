@@ -34,9 +34,14 @@ echo "[fleet] starting auto-gate loop (every ${GATE_EVERY}s) in the background"
 ( while :; do sleep "$GATE_EVERY"; bash tools/decomp_work/auto_gate.sh >> build/gate.log 2>&1; done ) >/dev/null 2>&1 &
 echo $! > build/.fleet_gate.pid
 
-echo "[fleet] starting live monitor in the 6th pane"
+echo "[fleet] starting web dashboard as a background daemon (port ${DASH_PORT:-8770}, 0.0.0.0)"
+pkill -f fleet_dashboard.py 2>/dev/null || true
+( python3 tools/decomp_work/fleet_dashboard.py --port "${DASH_PORT:-8770}" >build/dashboard.log 2>&1 & )
+# 6th pane: terminal monitor (local quick-glance; the web dashboard is the main view)
 "$CK" send shell "bash tools/decomp_work/fleet_monitor.sh"
 
+TS_IP="$(/Applications/Tailscale.app/Contents/MacOS/Tailscale ip -4 2>/dev/null | head -1 || echo '<mac-tailscale-ip>')"
 echo "[fleet] UP — $(echo $LANES | wc -w | tr -d ' ') lanes grinding the low bucket; agent output streams live."
+echo "[fleet] DASHBOARD: http://${TS_IP}:${DASH_PORT:-8770}/   (open from Windows over Tailscale)"
 echo "[fleet] attach: $CK attach   ·   stop: bash tools/decomp_work/fleet_down_mac.sh"
-echo "[fleet] the 6th pane is a live dashboard (wins, queue, per-lane status)."
+echo "[fleet] terminal dashboard alternative: bash tools/decomp_work/fleet_monitor.sh"
