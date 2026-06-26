@@ -403,11 +403,38 @@ void* fn_80114808(u32 resId, u32 loadMode, u32 dataSize) {
 
 /* 0x8011487C | 0xCC */
 #pragma push
-#pragma optimization_level 0
-#pragma optimizewithasm off
-void fn_8011487C(void) {
-    /* TODO: match -- 204 bytes at 0x8011487C */
+#pragma peephole off
+void* fn_8011487C(u32 resId, u32 loadMode, u32 dataSize) {
+#pragma optimization_level 4
+    extern void HSD_ArchiveParse(void* archive, void* buf, u32 size);
+    extern void* HSD_ArchiveGetPublicAddress(void* archive, const char* sym);
+    extern void* fn_800D27FC(void* model);
+    extern void fn_800F9378(void* entry, u32 resId, u32 loadMode, void* callback);
+    extern u32 fn_801150DC(void);
+    const u8* strings;
+    void* archive;
+    void* pub;
+    void* entry;
+    u32 flags;
+
+    flags = loadMode & 0x7FFF0000;
+    strings = (const u8*)lbl_80272200;
+    archive = fn_800F9318(resId, flags | 0x400);
+    HSD_ArchiveParse(archive, (u8*)archive + 0x60, dataSize);
+    pub = HSD_ArchiveGetPublicAddress(archive, (const char*)(strings + 0xAC));
+    if (pub == (void*)0) {
+        fn_800DD970((const char*)(strings + 0x1CC));
+    } else {
+        entry = fn_800D27FC(*(void**)((u8*)pub + 4));
+        if (entry == (void*)0) {
+            fn_800DD970((const char*)(strings + 0x200));
+        } else {
+            fn_800F9378(entry, resId, loadMode, (void*)fn_801150DC);
+        }
+    }
+    return pub;
 }
+#pragma peephole on
 #pragma pop
 
 /* 0x80114948 | 0x74 */

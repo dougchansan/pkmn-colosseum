@@ -48,43 +48,53 @@ void __destroy_global_chain(void) {
 }
 
 /* ========================================================== */
-/* Stub functions for coverage - TODO: decompile              */
+/* Runtime support functions                                  */
 /* ========================================================== */
 
 /*
- * __cvt_fp2unsigned - Convert a floating-point value to unsigned integer.
+ * __cvt_fp2unsigned - Convert a double to unsigned 32-bit int with saturation.
  *
- * Used by the CRT for float-to-unsigned conversions. Handles the case
- * where the value exceeds the signed 32-bit range by subtracting 2^31
- * (stored as a double constant) and adding 0x80000000 to the result.
+ * Saturating double->u32 conversion used by the MSL CRT:
+ *   val <  0.0            -> 0
+ *   val >= 4294967296.0   -> 0xFFFFFFFF
+ *   0 <= val < 2147483648.0 -> (u32)(s32)val
+ *   2147483648.0 <= val < 4294967296.0 -> (u32)(s32)(val - 2147483648.0) + 0x80000000
  *
- * The double constants at lbl_8026FE58 are:
- *   +0x00: 0.0 (lower bound)
- *   +0x08: 2^31 as double (4503599627370496.0 / boundary)
- *   +0x10: 2^32 as double (upper bound)
+ * Constant table at lbl_8026FE58 (3 doubles):
+ *   +0x00: 0.0           (low clamp)
+ *   +0x08: 4294967296.0  (2^32 high clamp / saturation ceiling)
+ *   +0x10: 2147483648.0  (2^31 mid-range threshold; subtracted to fit signed fctiwz)
  *
  * 0x800C46B0 | size: 0x5C
+ *
+ * NOTE: This is a CW Runtime helper of ASM origin (see docs/library_import_triage.md).
+ * The target is hand-written PPC: it uses fcmpu (unordered, no NaN signalling),
+ * direct bge/blt branches without cror, subi to materialize -1, and lis/ori address
+ * materialization. CodeWarrior 1.3/1.3.2/2.0/1.2.5n all emit fcmpo + cror for C float
+ * comparisons, so the exact target bytes are not C-reachable from any available CW
+ * version. This is correct, real C left active (Equivalent), not byte-exact.
  */
 u32 fn_800C46B0(f64 val) {
     extern f64 lbl_8026FE58[];
-    f64 boundary = lbl_8026FE58[1];
-    f64 upperBound = lbl_8026FE58[2];
-    u32 result = 0;
+    u32 result;
+    f64 tmp;
 
-    if (val < boundary || val >= boundary) {
+    result = 0;
+    if (val < lbl_8026FE58[0]) {
         return result;
     }
-
-    if (val >= upperBound) {
-        val = val - upperBound;
+    result = result - 1;
+    if (val >= lbl_8026FE58[1]) {
+        return result;
     }
-
-    result = (u32)(s32)val;
-
-    if (val >= upperBound) {
-        result += 0x80000000u;
+    tmp = val;
+    if (val >= lbl_8026FE58[2]) {
+        tmp = val - lbl_8026FE58[2];
     }
-
-    return result;
+    result = (u32)(s32)tmp;
+    if (val < lbl_8026FE58[2]) {
+        return result;
+    }
+    return result + 0x80000000u;
 }
 
