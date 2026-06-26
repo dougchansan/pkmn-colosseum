@@ -51,7 +51,7 @@ extern void fn_801D0748();
 extern void* memcpy(void* dst, const void* src, u32 size);
 
 /* ===== SDA globals ===== */
-extern u8 lbl_80478928;
+extern u32 lbl_80478928;
 extern u8 lbl_8047A620;
 extern u8 lbl_8047C0E0;
 extern u8 lbl_8047C0E4;
@@ -77,13 +77,13 @@ u8 fn_80077B3C(void);
 u8 fn_80077B60(void);
 s16 fn_80077B84(void);
 s32 fn_80077BA8(void);
-void fn_80077BD0(void);
-void fn_80077C1C(void);
+u8 fn_80077BD0(void);
+u8 fn_80077C1C(u32 arg0);
 void fn_80077C68(void);
-s32 fn_80077D88(void);
+u16 fn_80077D88(s32 index);
 void fn_80077DB8(void);
-s32 fn_80077E50(void);
-void fn_80077E80(void);
+void* fn_80077E50(s32 index);
+void fn_80077E80(void* dst, void* src);
 u8 fn_80077EA4(u16* s1, u16* s2);
 void fn_80077ED4(void);
 void fn_80078390(void);
@@ -187,42 +187,38 @@ s32 fn_80077BA8(void) {
 }
 
 /* 0x80077BD0 | size: 0x4C */
-void fn_80077BD0(void) {
-    u8 sp[0x10];
-    u32 tmp = 0;
-    u32 r3 = 0;
-    u32 r4 = 0;
+#pragma scheduling off
+#pragma scheduling off
+u8 fn_80077BD0(void) {
+    extern s32* fn_80129280(s32, s32);
+    s32 value;
 
-    r3 = 0x0;
-    r4 = 0xe;
-    ((void(*)(void))fn_80129280)();
-    tmp = *(u32*)((u8*)r3 + 0x8);
-    if ((s32)tmp >= 3) { r3 = 0x0; return; }
-    if ((s32)tmp >= 0) { r3 = 0x1; return; }
-    r3 = 0x0;
-    return;
-
-    r3 = 0x1;
-    return;
-
-    r3 = 0x0;
-
-    return;
+    value = fn_80129280(0, 0xe)[2];
+    switch (value) {
+    case 0:
+    case 1:
+    case 2:
+        return 1;
+    }
+    return 0;
 }
+#pragma scheduling on
+#pragma scheduling on
 
 /* 0x80077C1C | size: 0x4C */
-void fn_80077C1C(void) {
-    u8 sp[0x10];
-    u32 tmp = 0;
-    u32 r3 = 0;
+u8 fn_80077C1C(u32 arg0) {
+    extern u8 fn_80142984(u32);
+    u32 value;
 
-    tmp = r3 & 0xFFFF;
-    if ((s32)tmp == 0xaf) { r3 = 0x0; return; }
-    if ((s32)tmp == 0) { r3 = 0x1; return; }
-    /* L_80077C54 */
-    ((void(*)(void))fn_80142984)();
-
-    return;
+    value = arg0 & 0xffff;
+    switch (value) {
+    case 0:
+        return 1;
+    case 0xaf:
+        return 0;
+    default:
+        return fn_80142984(arg0);
+    }
 }
 
 /* 0x80077C68 | size: 0x120 */
@@ -304,8 +300,17 @@ void fn_80077C68(void) {
 }
 
 /* 0x80077D88 | size: 0x30 */
-s32 fn_80077D88(void) {
+u16 fn_80077D88(s32 index) {
+    if (index < 0) {
+        goto ret0;
+    }
+    if (lbl_80478928 > (u32)index) {
+        goto retTable;
+    }
+ret0:
     return 0;
+retTable:
+    return ((u16*)lbl_802EE458)[index];
 }
 
 /* 0x80077DB8 | size: 0x98 */
@@ -354,13 +359,24 @@ void fn_80077DB8(void) {
 }
 
 /* 0x80077E50 | size: 0x30 */
-s32 fn_80077E50(void) {
-    return 0;
+void* fn_80077E50(s32 index) {
+    switch (index) {
+    case 0:
+    case 1:
+    case 2:
+        return lbl_80268940 + (index * 0x54);
+    }
+    return (void*)0;
 }
 
 /* 0x80077E80 | size: 0x24 */
-void fn_80077E80(void) {
+#pragma scheduling off
+#pragma scheduling off
+void fn_80077E80(void* dst, void* src) {
+    memcpy(dst, src, 0x54);
 }
+#pragma scheduling on
+#pragma scheduling on
 
 /* 0x80077EA4 | size: 0x30 */
 #pragma push
@@ -1227,4 +1243,3 @@ void fn_800788BC(void) {
 
     return;
 }
-
