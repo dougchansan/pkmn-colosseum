@@ -35,27 +35,35 @@ make_task() {
   local file="$1" fns="$2"
   cat <<EOF
 You are decompiling Pokémon Colosseum (GameCube, Metrowerks CodeWarrior 1.2.5n/1.3).
-First read AGENT_ONBOARDING.md and skim WALLS.md (known walls — don't refight them).
+DO NOT reinvent levers — reuse the project's knowledge. Read these ONCE first:
+  - AGENT_ONBOARDING.md  (the LEVER CHEAT-SHEET, section 4: symptom -> lever)
+  - docs/CRACK_LEVERS.md  (the reg-alloc / shape lever catalog + workflow)
+  - skim WALLS.md         (logged walls — never refight one unless a NEW lever appears)
 
-Work ONLY on $file. Your private band tag is $TAG (never use another tag).
-Make these LOW-bucket functions byte-match the target object:
+Work ONLY on $file. Your private band tag is $TAG. Target functions:
   $fns
 
-Use the band harness — it gives you a PRIVATE scratch copy so you never collide
-with other lanes. Do NOT edit any other file, do NOT touch *.inc files, and NEVER
-paste assembly or flip #if 0/#if 1 (that is fraud and will be rejected):
+The hardened KG-driven loop (run from repo root; private scratch = no collisions).
+Do NOT edit any other file, do NOT touch *.inc, NEVER paste asm or flip #if (= fraud):
 
   python3 tools/decomp_work/band.py init  $TAG $file
   # for each target fn:
-  python3 tools/decomp_work/band.py check $TAG <fn>      # per-fn match%
-  python3 tools/decomp_work/band.py diff  $TAG <fn>      # target-vs-ours asm
-  #   ...edit tools/decomp_work/scratch/band_$TAG.c to fix the codegen mismatch,
-  #   re-run check until the fn is 100% byte-exact...
+  python3 tools/decomp_work/band.py check $TAG <fn>             # current match%
+  python3 tools/decomp_work/classify_residual.py $TAG <fn>      # REG-COLORING/SCHED/RELOC/SHAPE
+  #   ^ a REG-COLORING verdict is NEVER a wall — keep grinding (named locals + decl order).
+  python3 tools/decomp_work/kg/kg.py q lever-targets <fn>       # which KNOWN lever fits this fn
+  python3 tools/decomp_work/band.py diff  $TAG <fn>             # exact instr miss
+  #   ...apply that lever (from the cheat-sheet / CRACK_LEVERS.md) by editing
+  #      tools/decomp_work/scratch/band_$TAG.c; re-check until 100% byte-exact...
   python3 tools/decomp_work/band.py save  $TAG <fns that reached 100%>
+  python3 tools/decomp_work/kg/kg.py record-crack <fn> <lever-slug>   # APPEND the win to the KG
+  #   ^ if a NEW lever cracked it (not in the catalog), use:
+  #      python3 tools/decomp_work/kg/kg.py record-lever <slug> "<title>" --description "<what/when>"
+  #      then record-crack with that slug, AND add a one-line row to docs/CRACK_LEVERS.md.
 
-Write only real, idiomatic C89 (CW conventions: declarations first, no float
-literals, correct signed/unsigned, block scope for repeated r13 loads). Save every
-function that reaches 100%. When the listed fns are done or genuinely walled, stop.
+Write only real, idiomatic C89 (declarations first, named locals NOT rNN, no float
+literals, correct signed/unsigned, block scope for repeated r13 loads). Save every fn
+that hits 100% and record its lever so the next lane reuses it. Stop when done or walled.
 EOF
 }
 

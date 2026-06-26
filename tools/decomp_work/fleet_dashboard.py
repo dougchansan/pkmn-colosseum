@@ -16,6 +16,7 @@ import html
 import json
 import os
 import re
+import sqlite3
 import subprocess
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -68,6 +69,56 @@ def saved_fns():
     return out
 
 
+HISTORY = os.path.join(ROOT, "build", "bucket_history.jsonl")
+KG_DB = os.path.join(ROOT, "tools", "decomp_work", "kg", "kg.db")
+_last_snap = [0.0]
+
+
+def snapshot_history(buckets, every=300):
+    """Append a bucket snapshot to bucket_history.jsonl (throttled), return the series."""
+    now = time.time()
+    if now - _last_snap[0] >= every:
+        _last_snap[0] = now
+        rec = {"t": int(now)}
+        for b in ("LOW", "STRUCT", "NEARWALL", "ASM"):
+            d = buckets.get(b, {})
+            rec[b] = d.get("attempted", 0)
+            rec[b + "_done"] = d.get("done", 0)
+        try:
+            with open(HISTORY, "a") as f:
+                f.write(json.dumps(rec) + "\n")
+        except Exception:
+            pass
+    series = []
+    try:
+        series = [json.loads(l) for l in open(HISTORY) if l.strip()][-300:]
+    except Exception:
+        pass
+    return series
+
+
+def kg_levers(limit=8):
+    """Top levers by #cracks + recent cracks, read straight from kg.db (fast)."""
+    out = {"top": [], "recent": []}
+    if not os.path.exists(KG_DB):
+        return out
+    try:
+        con = sqlite3.connect(f"file:{KG_DB}?mode=ro", uri=True, timeout=2)
+        out["top"] = con.execute(
+            "SELECT l.slug, l.title, COUNT(c.lever_slug) n FROM levers l "
+            "LEFT JOIN cracked_by c ON c.lever_slug=l.slug "
+            "GROUP BY l.slug ORDER BY n DESC LIMIT ?", (limit,)).fetchall()
+        try:
+            out["recent"] = con.execute(
+                "SELECT addr, lever_slug FROM cracked_by ORDER BY rowid DESC LIMIT 10").fetchall()
+        except Exception:
+            pass
+        con.close()
+    except Exception:
+        pass
+    return out
+
+
 def lane_state(role):
     cur = ""
     if os.path.isdir(LOCKS):
@@ -101,6 +152,8 @@ def commits_this_run():
 
 def render():
     buckets = bucket_stats()
+    series = snapshot_history(buckets)
+    kg = kg_levers()
     wins = saved_fns()
     nwin_fns = sum(len(v) for v in wins.values())
     ncommit, clog = commits_this_run()
@@ -124,11 +177,13 @@ def render():
         s = lane_state(r)
         dot = "#3fb950" if s["alive"] else "#6e7681"
         wf = wins.get(f"pl_{r}", [])
+        winlist = "".join(f'<span class="wchip">{html.escape(w)}</span>' for w in wf) or '<span class="none">no wins yet</span>'
         lane_cards += f"""
         <div class="lane">
           <div class="lane-h"><span class="dot" style="background:{dot}"></span>
-            <b>{r}</b> <span class="file">{html.escape(s['file'] or '(idle)')}</span></div>
-          <div class="saved">wins: {len(wf)} {' '.join(wf[:6])}</div>
+            <b>{r}</b> <span class="file">{html.escape(s['file'] or '(idle)')}</span>
+            <span class="wn">{len(wf)} wins</span></div>
+          <div class="wins">{winlist}</div>
           <div class="last">{html.escape(s['last'])}</div>
         </div>"""
 
@@ -143,6 +198,18 @@ def render():
                  f'<b>permuter</b> (Windows CPU) · workers <b>{perm.get("workers","?")}</b> · '
                  f'queue <b>{perm.get("targets","?")}</b> targets'
                  f'<div class="last">{html.escape(str(perm.get("last","(no poll yet — start tools/decomp_work/permuter_poll.sh)")))[:140]}</div>')
+
+    # KG levers panel
+    kg_rows = "".join(
+        f'<tr><td class="lv">{html.escape(t or s)}</td><td class="lvn">{n}</td></tr>'
+        for (s, t, n) in kg["top"]) or '<tr><td colspan=2 class="none">kg.db not built</td></tr>'
+    kg_recent = " ".join(f'<span class="wchip">{html.escape(a)}·{html.escape(lv)}</span>'
+                         for (a, lv) in kg["recent"]) or '<span class="none">none yet</span>'
+
+    # chart series (labels = HH:MM, one line per bucket attempted-count)
+    labels = [time.strftime('%H:%M', time.localtime(p["t"])) for p in series]
+    chart = {b: [p.get(b, 0) for p in series] for b in ("LOW", "STRUCT", "NEARWALL", "ASM")}
+    chart_json = json.dumps({"labels": labels, "data": chart})
 
     commit_html = "<br>".join(html.escape(c) for c in clog) or "<i>none yet</i>"
     return f"""<!doctype html><html><head><meta charset=utf-8>
@@ -160,15 +227,35 @@ def render():
  .lanes{{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:10px}}
  .lane{{background:#161b22;border:1px solid #21262d;border-radius:6px;padding:10px}}
  .lane-h{{font-size:13px}} .dot{{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px}}
- .file{{color:#d29922}} .saved{{color:#3fb950;font-size:12px;margin:4px 0}}
+ .file{{color:#d29922}} .wn{{float:right;color:#8b949e;font-size:11px}}
+ .wins{{margin:6px 0;max-height:84px;overflow:auto;line-height:1.9}}
+ .wchip{{display:inline-block;background:#1f6feb22;color:#58a6ff;border:1px solid #1f6feb55;border-radius:3px;padding:0 5px;margin:1px 2px;font-size:11px}}
+ .none{{color:#6e7681;font-size:11px}}
  .last{{color:#8b949e;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
  .big{{font-size:26px;color:#3fb950}}
-</style></head><body>
+ .grid2{{display:grid;grid-template-columns:2fr 1fr;gap:16px;align-items:start}}
+ .lv{{font-size:12px}} .lvn{{text-align:right;color:#3fb950;width:40px}}
+ canvas{{background:#0d1117;max-height:240px}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+</head><body>
 <h1>🏟️ Pokémon Colosseum — decomp fleet</h1>
 <div class=meta>branch <b>{branch}</b> · {time.strftime('%H:%M:%S')} · auto-refresh 5s</div>
 
 <div><span class=big>{ncommit}</span> commits this run &nbsp; · &nbsp;
      <span class=big>{nwin_fns}</span> functions banked (band_wins)</div>
+
+<div class=grid2>
+ <div>
+  <h2>Bucket progress over time</h2>
+  <canvas id=chart height=110></canvas>
+ </div>
+ <div>
+  <h2>Top levers (knowledge graph)</h2>
+  <table>{kg_rows}</table>
+  <div class=last style="white-space:normal;margin-top:6px">recent cracks: {kg_recent}</div>
+ </div>
+</div>
 
 <h2>Campaign bucket progress</h2>
 <table>{rows}</table>
@@ -181,6 +268,18 @@ def render():
 
 <h2>Recent committed wins</h2>
 <div class=last style="white-space:normal">{commit_html}</div>
+<script>
+const S={chart_json};
+const C={{LOW:'#3fb950',STRUCT:'#1f6feb',NEARWALL:'#d29922',ASM:'#bc8cff'}};
+if(window.Chart && S.labels.length){{
+ new Chart(document.getElementById('chart'),{{type:'line',
+  data:{{labels:S.labels,datasets:Object.keys(S.data).map(k=>({{label:k,data:S.data[k],
+    borderColor:C[k],backgroundColor:C[k],tension:.25,pointRadius:0,borderWidth:2}}))}},
+  options:{{responsive:true,plugins:{{legend:{{labels:{{color:'#c9d1d9',boxWidth:12}}}}}},
+    scales:{{x:{{ticks:{{color:'#8b949e',maxTicksLimit:8}},grid:{{color:'#21262d'}}}},
+            y:{{ticks:{{color:'#8b949e'}},grid:{{color:'#21262d'}}}}}}}}}});
+}}
+</script>
 </body></html>"""
 
 
