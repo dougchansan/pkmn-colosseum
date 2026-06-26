@@ -588,15 +588,14 @@ void PADInput_Recalibrate(u32 padIdx) {
 s32 fn_800F760C(u8* target) {
     extern u8 lbl_802712B8[];
     extern u8* lbl_80478B00;
-    extern void fn_800DD38C(const char* msg, u8* entry);
+    extern void fn_800DD38C(const char* msg, ...);
     u8* state = lbl_80478B00;
     u8* prev;
     u8* cur;
-    u8* base;
-    s32 i;
-    u16 count;
     u32 offset;
-    u8* slot;
+    u8* padData;
+    s32 i;
+    u8 status;
 
     /* Try to unlink target from the linked list at state+0x08 */
     cur = *(u8**)(state + 0x08);
@@ -606,40 +605,56 @@ s32 fn_800F760C(u8* target) {
     } else {
         /* Walk the list to find target */
         prev = cur;
-        while (1) {
-            cur = *(u8**)(prev + 0x14);
-            if (cur == NULL) {
-                /* Not found in list */
-                fn_800DD38C((const char*)lbl_802712B8, target);
-                return -1;
-            }
+        while ((cur = *(u8**)(prev + 0x14)) != NULL) {
             if (cur == target) {
                 /* Unlink: prev->next = cur->next */
                 *(u32*)(prev + 0x14) = *(u32*)(cur + 0x14);
-                break;
+                goto scan;
             }
             prev = cur;
         }
+        if (cur == NULL) {
+            /* Not found in list */
+            fn_800DD38C((const char*)lbl_802712B8, target);
+            return -1;
+        }
     }
 
+scan:
     /* Scan pad entries and mark matching ones */
-    base = lbl_80478B00;
-    count = *(u16*)(base + 0x00);
+    i = 0;
     offset = 0;
-    for (i = 0; i < (s32)count; i++) {
-        u8* padData = (u8*)(*(u32*)(base + 0x0C) + offset);
+    status = 3;
+    while (i < (s32)*(u16*)lbl_80478B00) {
+        padData = (u8*)(*(u32*)(lbl_80478B00 + 0x0C) + offset);
         if (*(u8*)(padData + 0x04) != 0) {
             u16 entryId = (u16)(*(u32*)(padData + 0x08) >> 16);
             if (*(u16*)(target + 0x00) == entryId) {
-                *(u8*)(padData + 0x04) = 3;
+                *(u8*)(padData + 0x04) = status;
             }
         }
         offset += 0x16C;
+        i++;
     }
     return 0;
 }
 
 /* fn_800F78A4 - 0x800F78A4 | size: 0x7C */
+extern u8 lbl_80401C10[];
+/* Shared 4-slot pad lookup. Defined before all readers so CW 1.3 inlines it:
+ * the inlined multi-`return pad` yields the target's un-inverted `bne;b` per
+ * slot, and per-function optimization_level 2 keeps the `nul` sentinel in its
+ * own register instead of folding to `li rPad,0`. */
+static inline u8* WI_FindPad(s32 padId) {
+    u8* pad = &lbl_80401C10[0];
+    u8* nul = NULL;
+    if (*(s32*)pad == padId) return pad;
+    if (*(s32*)(pad += 0x6c) == padId) return pad;
+    if (*(s32*)(pad += 0x6c) == padId) return pad;
+    if (*(s32*)(pad += 0x6c) == padId) return pad;
+    return nul;
+}
+
 /*
  * InputSetRumble - Find a pad entry by ID and configure rumble.
  *
@@ -649,17 +664,13 @@ s32 fn_800F760C(u8* target) {
  * 0x800F78A4 | size: 0x7C
  */
 void fn_800F78A4(s32 padId, u8 mode, u8 strength, u32 duration, u8 flags) {
-    extern u8 lbl_80401C10[];
-    u8* pad = lbl_80401C10;
+#pragma optimization_level 2
+    u8* pad;
 
-    /* Search for matching pad entry */
-    if (*(s32*)(pad + 0x00) == padId) { /* found at slot 0 */ }
-    else if (*(s32*)(pad + 0x6C) == padId) { /* found at slot 1 */ }
-    else if (*(s32*)(pad + 0x6C) == padId) { /* found at slot 2 */ }
-    else if (*(s32*)(pad + 0x6C) == padId) { /* found at slot 3 */ }
-    else { pad = NULL; }
+    pad = WI_FindPad(padId);
 
     if (pad == NULL) { return; }
+    if (mode != 0) { return; }
 
     /* Set rumble parameters */
     *(u32*)(pad + 0x5C) = 1;
@@ -677,14 +688,10 @@ void fn_800F78A4(s32 padId, u8 mode, u8 strength, u32 duration, u8 flags) {
  * 0x800F7920 | size: 0x74
  */
 u8 fn_800F7920(s32 padId, s32 mode) {
-    extern u8 lbl_80401C10[];
-    u8* pad = lbl_80401C10;
+#pragma optimization_level 2
+    u8* pad;
 
-    if (*(s32*)(pad + 0x00) == padId) { /* found at slot 0 */ }
-    else if (*(s32*)(pad + 0x6C) == padId) { /* found */ }
-    else if (*(s32*)(pad + 0x6C) == padId) { /* found */ }
-    else if (*(s32*)(pad + 0x6C) == padId) { /* found */ }
-    else { pad = NULL; }
+    pad = WI_FindPad(padId);
 
     if (pad == NULL) { return 0; }
 
@@ -702,14 +709,10 @@ u8 fn_800F7920(s32 padId, s32 mode) {
  * 0x800F7994 | size: 0x74
  */
 u8 fn_800F7994(s32 padId, s32 mode) {
-    extern u8 lbl_80401C10[];
-    u8* pad = lbl_80401C10;
+#pragma optimization_level 2
+    u8* pad;
 
-    if (*(s32*)(pad + 0x00) == padId) { /* found at slot 0 */ }
-    else if (*(s32*)(pad + 0x6C) == padId) { /* found */ }
-    else if (*(s32*)(pad + 0x6C) == padId) { /* found */ }
-    else if (*(s32*)(pad + 0x6C) == padId) { /* found */ }
-    else { pad = NULL; }
+    pad = WI_FindPad(padId);
 
     if (pad == NULL) { return 0; }
 
@@ -797,22 +800,6 @@ s32 fn_800F7758(u32 count) {
 #else
 void fn_800F7758(void) { /* TODO */ }
 #endif
-extern u8 lbl_80401C10[];
-/* Shared 4-slot pad lookup. Defined BEFORE the readers so CW 1.3 inlines it:
- * the inlined multi-`return pad` yields the target's un-inverted `bne;b` per
- * slot (a flat goto/loop folds to `beq`), and the per-function
- * `#pragma optimization_level 2` keeps the `nul` sentinel in its own register
- * (`li rN,0` early + `mr` at miss) instead of folding to `li rPad,0`. Together
- * these crack the whole input.c lwzu-search cluster (incl. the old W1 walls). */
-static inline u8* WI_FindPad(s32 padId) {
-    u8* pad = &lbl_80401C10[0];
-    u8* nul = NULL;
-    if (*(s32*)pad == padId) return pad;
-    if (*(s32*)(pad += 0x6c) == padId) return pad;
-    if (*(s32*)(pad += 0x6c) == padId) return pad;
-    if (*(s32*)(pad += 0x6c) == padId) return pad;
-    return nul;
-}
 #if 0
 asm void fn_800F7A08(void) {
 #include "src/game/input/input_fn_800F7A08.inc"
