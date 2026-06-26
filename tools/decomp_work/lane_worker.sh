@@ -77,7 +77,8 @@ while :; do
   if [ -z "$claimed" ]; then
     echo "[$ROLE] queue drained — idle 90s"; sleep 90; continue
   fi
-  echo "[$ROLE] ===== grind $claimed ($(printf '%s' "$cfns" | wc -w | tr -d ' ') fns) ====="
-  run_agent "$(make_task "$claimed" "$cfns")" 2>&1 | tail -50 || echo "[$ROLE] agent exited non-zero"
-  echo "[$ROLE] ===== done $claimed ====="
+  echo "[$ROLE] ===== grind $claimed ($(printf '%s' "$cfns" | wc -w | tr -d ' ') fns)  $(date +%H:%M:%S) ====="
+  # stream the agent's work live into the pane (no tail buffering)
+  run_agent "$(make_task "$claimed" "$cfns")" 2>&1 || echo "[$ROLE] agent exited non-zero"
+  echo "[$ROLE] ===== done $claimed  $(date +%H:%M:%S) ====="
 done

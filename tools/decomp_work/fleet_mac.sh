@@ -25,13 +25,18 @@ echo "[fleet] bringing up cockpit (panes as shells)..."
 DECOMP_NO_AGENTS=1 "$CK" bootstrap
 sleep 3
 
-echo "[fleet] launching lane workers: $LANES"
+echo "[fleet] launching lane workers (streaming live): $LANES"
 for r in $LANES; do
   "$CK" send "$r" "bash tools/decomp_work/lane_worker.sh $r 2>&1 | tee -a build/lane_$r.log"
 done
 
-echo "[fleet] starting auto-gate loop (every ${GATE_EVERY}s) in the shell pane"
-"$CK" send shell "while :; do sleep $GATE_EVERY; bash tools/decomp_work/auto_gate.sh 2>&1 | tee -a build/gate.log; done"
+echo "[fleet] starting auto-gate loop (every ${GATE_EVERY}s) in the background"
+( while :; do sleep "$GATE_EVERY"; bash tools/decomp_work/auto_gate.sh >> build/gate.log 2>&1; done ) >/dev/null 2>&1 &
+echo $! > build/.fleet_gate.pid
 
-echo "[fleet] UP — $(echo $LANES | wc -w | tr -d ' ') lanes grinding the low bucket, auto-gate every ${GATE_EVERY}s."
-echo "[fleet] attach:  $CK attach     logs: build/lane_<role>.log, build/gate.log"
+echo "[fleet] starting live monitor in the 6th pane"
+"$CK" send shell "bash tools/decomp_work/fleet_monitor.sh"
+
+echo "[fleet] UP — $(echo $LANES | wc -w | tr -d ' ') lanes grinding the low bucket; agent output streams live."
+echo "[fleet] attach: $CK attach   ·   stop: bash tools/decomp_work/fleet_down_mac.sh"
+echo "[fleet] the 6th pane is a live dashboard (wins, queue, per-lane status)."
