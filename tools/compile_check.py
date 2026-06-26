@@ -21,6 +21,7 @@ import argparse
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -40,11 +41,42 @@ INCLUDE_DIR = PROJECT_ROOT / "include"
 TOOLS_DIR = PROJECT_ROOT / "tools"
 
 # Toolchain
-MWCC_BASE = TOOLS_DIR / "mwcc_compiler"
+BUILD_ROOT = PROJECT_ROOT / "build"
+MWCC_BASE = TOOLS_DIR / "mwcc_compiler"          # Windows: compilers vendored here
 MWCC_DEFAULT = MWCC_BASE / "mwcceppc.exe"
 MWCC_GC_DIR = MWCC_BASE / "GC"
-OBJDIFF_CLI = TOOLS_DIR / ("objdiff-cli.exe" if os.name == "nt" else "objdiff-cli")
+BUILD_COMPILERS_GC = BUILD_ROOT / "compilers" / "GC"  # configure.py download location
+_EXE = ".exe" if os.name == "nt" else ""
+
+
+def _first_existing(cands):
+    for c in cands:
+        if c and Path(c).exists():
+            return Path(c)
+    return None
+
+
+# objdiff-cli: vendored tools/ (Windows) or downloaded build/tools/ (mac/linux).
+OBJDIFF_CLI = _first_existing([
+    TOOLS_DIR / f"objdiff-cli{_EXE}",
+    BUILD_ROOT / "tools" / f"objdiff-cli{_EXE}",
+]) or (TOOLS_DIR / f"objdiff-cli{_EXE}")
 OBJDIFF_JSON = PROJECT_ROOT / "objdiff.json"
+
+
+def _resolve_wibo():
+    """wibo runs the Windows mwcceppc.exe PE on macOS/Linux. None on Windows."""
+    if os.name == "nt":
+        return None
+    found = _first_existing([
+        BUILD_ROOT / "tools" / "wibo",            # configure.py download
+        Path.home() / ".local" / "bin" / "wibo-macos",
+        Path.home() / ".local" / "bin" / "wibo",
+    ])
+    return found or (Path(shutil.which("wibo")) if shutil.which("wibo") else None)
+
+
+WIBO = _resolve_wibo()
 
 
 def run_tool(cmd, **kwargs):
@@ -274,16 +306,18 @@ def get_compiler(version: str = None) -> Path:
     if version is None:
         version = DEFAULT_COMPILER_VERSION
 
-    versioned = MWCC_GC_DIR / version / "mwcceppc.exe"
-    if versioned.exists():
-        return versioned
-
-    # Fall back to the top-level compiler
-    if MWCC_DEFAULT.exists():
-        return MWCC_DEFAULT
+    # Vendored (Windows) first, then the configure.py download (mac/linux), then default.
+    found = _first_existing([
+        MWCC_GC_DIR / version / "mwcceppc.exe",
+        BUILD_COMPILERS_GC / version / "mwcceppc.exe",
+        MWCC_DEFAULT,
+    ])
+    if found:
+        return found
 
     print(f"ERROR: No mwcceppc.exe found for version {version}")
-    print(f"  Checked: {versioned}")
+    print(f"  Checked: {MWCC_GC_DIR / version / 'mwcceppc.exe'}")
+    print(f"  Checked: {BUILD_COMPILERS_GC / version / 'mwcceppc.exe'}")
     print(f"  Checked: {MWCC_DEFAULT}")
     sys.exit(1)
 
@@ -339,9 +373,14 @@ def compile_source(src_path: Path, compiler_version: str = None,
         cflags.extend(extra_flags)
 
     cmd = [str(compiler), "-c", "-o", str(out_obj)] + cflags + [str(src_path)]
+    # mwcceppc.exe is a Windows PE; run it through wibo on macOS/Linux.
+    if WIBO is not None:
+        cmd = [str(WIBO)] + cmd
 
     if verbose:
         print(f"  Compiler: {compiler}")
+        if WIBO is not None:
+            print(f"  Wrapper:  {WIBO}")
         print(f"  Command:  {' '.join(cmd)}")
         print(f"  Output:   {out_obj}")
 
