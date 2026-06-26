@@ -15573,10 +15573,15 @@ asm void fn_801EE0A8(void) {
 #include "src/game/battle/battle_logic_fn_801EE0A8.inc"
 }
 #else
-u16 fn_801EE0A8(u8 idx) {
+#pragma peephole off
+u16 fn_801EE0A8(u32 idx) {
     extern u16 *lbl_80478F74;
-    return lbl_80478F74[idx];
+    u8 i;
+
+    i = idx;
+    return lbl_80478F74[i];
 }
+#pragma peephole on
 #endif
 
 /* 0x801EE0BC | size: 0x50 | small */
@@ -16271,27 +16276,18 @@ asm void fn_801EEE6C(void) {
 #include "src/game/battle/battle_logic_fn_801EEE6C.inc"
 }
 #else
-void fn_801EEE6C(void) {
-    extern void fn_801EF1E4();
-    u8 sp[0x10];
-    u32 tmp = 0;
-    u32 r3 = 0;
-    u32 r4 = 0;
-    u32 r30 = 0;
-    u32 r31 = 0;
+#pragma push
+#pragma optimize_for_size on
+void fn_801EEE6C(u32 arg, u32 val) {
+    extern u8 *fn_801EF1E4(u32);
+    u8 *base;
 
-    r30 = r3;
-    r31 = r4;
-    r3 = 0x0;
-    fn_801EF1E4();
-    if (r3 != 0) {
-        tmp = r30 & 0xFFFF;
-        r4 = tmp * 0x18;
-        tmp = r4 + 0x4a6;
-        *(u16*)(r3 + tmp) = r31;
+    base = fn_801EF1E4(0);
+    if (base != 0) {
+        *(u16*)(base + ((arg & 0xFFFF) * 0x18) + 0x4A6) = val;
     }
-    return;
 }
+#pragma pop
 #endif
 
 /* 0x801EEEB8 | size: 0x50 | small */
@@ -16300,27 +16296,15 @@ asm void fn_801EEEB8(void) {
 #include "src/game/battle/battle_logic_fn_801EEEB8.inc"
 }
 #else
-void fn_801EEEB8(void) {
-    extern void fn_801EF1E4();
-    u8 sp[0x10];
-    u32 tmp = 0;
-    u32 r3 = 0;
-    u32 r4 = 0;
-    u32 r31 = 0;
+u16 fn_801EEEB8(u32 arg) {
+    extern u8 *fn_801EF1E4(u32);
+    u8 *base;
 
-    r31 = r3;
-    r3 = 0x0;
-    fn_801EF1E4();
-    if (r3 != 0) {
-        tmp = r31 & 0xFFFF;
-        r4 = tmp * 0x18;
-        tmp = r4 + 0x4a6;
-        r3 = *(u16*)(r3 + tmp);
-    } else {
-
-        r3 = 0x0;
+    base = fn_801EF1E4(0);
+    if (base != 0) {
+        return *(u16*)(base + ((arg & 0xFFFF) * 0x18) + 0x4A6);
     }
-    return;
+    return 0;
 }
 #endif
 
