@@ -107,21 +107,26 @@ void fn_800BF14C(s32 bufIdx) {
  *
  * 0x800BF33C | size: 0x88
  */
-void fn_800BF33C(u8* str) {
+s32 fn_800BF33C(u8* str) {
     extern u32 fn_800C04F4(void);
     extern void fn_800C04E8(u32 state);
+    extern void OSReport(const char* fmt);
     u8 buf[2];
-    u8* p = str;
+    u8 zero;
+    s32 state;
     s8 ch;
-    u32 savedState;
+    s32 result;
 
-    /* Note: The original assembly has a complex loop with save/restore
-     * of connected state. The second condition (r3 != 0) is always
-     * false for command 0 so the body never executes in practice. */
-    while (1) {
-        ch = (s8)*p;
-        p++;
-        break;  /* condition always exits immediately */
+    zero = 0;
+    result = 0;
+    while ((result == 0) && ((ch = (s8)*str++) != 0)) {
+        state = fn_800C04F4();
+        buf[0] = ch;
+        buf[1] = zero;
+        fn_800C04E8(0);
+        OSReport((const char*)buf);
+        fn_800C04E8(state);
+        result = 0;
     }
+    return result;
 }
-
