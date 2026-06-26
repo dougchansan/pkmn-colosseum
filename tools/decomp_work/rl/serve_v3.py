@@ -15,6 +15,13 @@ SYS = ("You are a GameCube PowerPC decompiler. Convert the target CodeWarrior 1.
        "PPC assembly to byte-matching C89. Use extern labels for SDA globals, never "
        "float literals for sdata2 returns. Output only the C function with any needed externs.")
 
+REPAIR = ("You are decompiling a GameCube PowerPC function (CodeWarrior 1.3). The C below is a "
+          "near-match DRAFT. The instruction diff shows where YOUR compiled output (right) "
+          "differs from the TARGET (left). Fix the C so it compiles byte-identical. Change ONLY "
+          "what the diff requires: register allocation via DECLARATION ORDER of locals or a named "
+          "temp; signed-vs-unsigned casts; block scope for repeated r13 loads; int (not s32) for "
+          "loop unrolling. Keep the SAME signature. Output only the corrected C function.")
+
 TOK = MODEL = None
 
 
@@ -33,10 +40,19 @@ def load(base, adapter):
     print("[serve_v3] model loaded, ready")
 
 
-def generate(asm, n=4, temp=0.6, max_new=1200):
+def generate(asm, n=4, temp=0.6, max_new=1200, draft=None, diff=None):
     import torch
-    msgs = [{"role": "system", "content": SYS},
-            {"role": "user", "content": f"Decompile this function to byte-matching C:\n\n```\n{asm.strip()}\n```"}]
+    if draft and diff:
+        sys_msg = REPAIR
+        user = (f"TARGET assembly:\n```\n{asm.strip()}\n```\n\n"
+                f"Current C draft:\n```c\n{draft.strip()}\n```\n\n"
+                f"Instruction diff (TARGET vs YOURS):\n```\n{diff.strip()[:4000]}\n```\n\n"
+                f"Output the corrected C function.")
+    else:
+        sys_msg = SYS
+        user = f"Decompile this function to byte-matching C:\n\n```\n{asm.strip()}\n```"
+    msgs = [{"role": "system", "content": sys_msg},
+            {"role": "user", "content": user}]
     prompt = TOK.apply_chat_template(msgs, tokenize=False, add_generation_prompt=True)
     ids = TOK(prompt, return_tensors="pt").to(MODEL.device)
     cands = []
@@ -63,7 +79,8 @@ class H(BaseHTTPRequestHandler):
             n = int(self.headers.get("Content-Length", 0))
             req = json.loads(self.rfile.read(n) or b"{}")
             cands = generate(req["asm"], int(req.get("n", 4)),
-                             float(req.get("temp", 0.6)), int(req.get("max_new", 1200)))
+                             float(req.get("temp", 0.6)), int(req.get("max_new", 1200)),
+                             req.get("draft"), req.get("diff"))
             self._send(200, {"candidates": cands})
         except Exception as e:
             self._send(500, {"error": str(e)})
