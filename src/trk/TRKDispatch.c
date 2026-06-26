@@ -288,64 +288,62 @@ void fn_800C08C0(void) {
 }
 
 /* fn_800C0DA8 - 0x800C0DA8 | size: 0xB8 */
-void fn_800C0DA8(void) {
-    u32 tmp = 0;
-    u32 r3 = 0;
-    u32 r4 = 0;
-    u32 r5 = 0;
-    u32 r6 = 0;
-    u32 r7 = 0;
+void fn_800C0DA8(void* dest, int val, u32 count) {
+    u8* dst;
+    u32 v;
+    u32* wp;
+    u32 numBlocks;
+    u32 numWords;
+    u32 align;
 
-    r4 = r4 & 0xFF;
-    r7 = r4;
-    if (r5 >= 0x20) {
-        tmp = ~(r6 | r6);
-        r3 = tmp & 0x3;
-        if (r5 != 0x20) {
-            r5 = r5 - r3;
+    dst = (u8*)dest - 1;
+    v = (u8)val;
+
+    if (count >= 0x20) {
+        align = ~(u32)dst & 3;
+        if (align != 0) {
+            count -= align;
             do {
-                /* subic. r3, r3, 0x1 */;
-                r6 += 1; *(u8*)r6 = r7;
-            } while (r5 != 0x20);
+                *++dst = (u8)v;
+            } while (--align != 0);
         }
-        if (r7 != 0) {
-            r3 = r7 << 24;
-            tmp = r7 << 16;
-            r4 = r7 << 8;
-            tmp = r3 | tmp;
-            tmp = r4 | tmp;
-            r7 = r7 | tmp;
+
+        if (v != 0) {
+            v = (v << 24) | (v << 16) | (v << 8) | v;
         }
-        /* srwi. r4, r5, 5 */;
-        if (r7 != 0) {
-            do {
-                *(u32*)((u8*)r3 + 0x4) = r7;
-                /* subic. r4, r4, 0x1 */;
-                *(u32*)((u8*)r3 + 0x8) = r7;
-                *(u32*)((u8*)r3 + 0xC) = r7;
-                *(u32*)((u8*)r3 + 0x10) = r7;
-                *(u32*)((u8*)r3 + 0x14) = r7;
-                *(u32*)((u8*)r3 + 0x18) = r7;
-                *(u32*)((u8*)r3 + 0x1C) = r7;
-                r3 += 32; *(u32*)r3 = r7;
-            } while (r7 != 0);
+
+        {
+            wp = (u32*)(dst - 3);
+            if ((numBlocks = count >> 5) != 0) {
+                do {
+                    wp[1] = v;
+                    wp[2] = v;
+                    wp[3] = v;
+                    wp[4] = v;
+                    wp[5] = v;
+                    wp[6] = v;
+                    wp[7] = v;
+                    *(wp += 8) = v;
+                } while (--numBlocks != 0);
+            }
+
+            if ((numWords = (count >> 2) & 7) != 0) {
+                do {
+                    *(wp += 1) = v;
+                } while (--numWords != 0);
+            }
+
+            dst = (u8*)wp + 3;
         }
-        /* extrwi. r4, r5, 3, 27 */;
-        if (r7 != 0) {
-            do {
-                /* subic. r4, r4, 0x1 */;
-                r3 += 4; *(u32*)r3 = r7;
-            } while (r7 != 0);
-        }
-        r6 = r3 + 0x3;
-        r5 = r5 & 0x3;
+
+        count = count & 3u;
     }
-    if ((u32)r5 == (u32)0x0) return;
-    do {
-        /* subic. r5, r5, 0x1 */;
-        r6 += 1; *(u8*)r6 = r7;
-    } while (r5 != 0);
-    return;
+
+    if (count != 0) {
+        do {
+            *++dst = (u8)v;
+        } while (--count != 0);
+    }
 }
 
 /* fn_800C0E68 - 0x800C0E68 | size: 0x8 */
