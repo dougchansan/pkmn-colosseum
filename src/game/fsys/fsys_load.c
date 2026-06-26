@@ -501,7 +501,7 @@ typedef struct DVDQueueEntry {
     /* 0x00 - 0x1F: fields not used in these functions */
     u8   _pad00[0x20];
     /* 0x20 */ u32  state;      /* 0=free, 1=occupied */
-    /* 0x24 */ u32  mode;       /* 1=ready/done */
+    /* 0x24 */ s32  mode;       /* 1=ready/done */
     /* 0x28 */ void* srcPtr;    /* source data pointer */
     /* 0x2C */ void* dstPtr;    /* destination / user data */
     /* 0x30 */ u32  size;       /* aligned data size */
@@ -541,15 +541,16 @@ asm void fn_8017F3F8(void) {
 }
 #else
 void* fn_8017F3F8(u32 a, u32 b, u32 size) {
+#pragma optimization_level 0
     u32 alignedSize;
     void* block;
     void* result;
 
     alignedSize = (size + 0x1f) & ~0x1f;
-    block = fn_800F9318(b, a);
+    block = fn_800F9318(a, b);
     result = fn_800F9418(alignedSize, 0x20, a, b, 0);
-    if (result == NULL) {
-        return NULL;
+    if (!result) {
+        return 0;
     }
     return result;
 }
@@ -619,19 +620,20 @@ void* fn_8017F6B4(u32 a, u32 b, u32 c) {
  * Searches gDVDCacheHead linked list for node with matching
  * (fileHandle=r3, groupID=r4, nameHash=r5). Returns node->field_0xc.
  */
-extern u8 lbl_80454038[];
+extern DVDCacheNode* lbl_80454038[];
 #if 0
 asm void fn_8017F728(void) {
 #include "src/game/fsys/fsys_load_fn_8017F728.inc"
 }
 #else
 u32 fn_8017F728(u32 fileHandle, u32 groupID, u32 nameHash) {
+#pragma optimization_level 0
     DVDCacheNode* node;
     u32 count;
 
-    node = *(DVDCacheNode**)lbl_80454038;
+    node = lbl_80454038[0];
     count = 0;
-    while (node != NULL) {
+    while (node != 0) {
         if (node->fileHandle == fileHandle &&
             node->groupID   == groupID &&
             node->nameHash  == nameHash) {
@@ -975,10 +977,14 @@ asm void fn_801808B4(void) {
 }
 #else
 u32 fn_801808B4(DVDQueueEntry* entry) {
-    if (entry->mode != 1) {
-        entry->state = 0;
+#pragma optimization_level 0
+    DVDQueueEntry* queueEntry;
+
+    queueEntry = entry;
+    if (queueEntry->mode != 1) {
+        queueEntry->state = 0;
     }
-    return entry->state;
+    return queueEntry->state;
 }
 #endif
 
