@@ -132,6 +132,18 @@ def render():
           <div class="last">{html.escape(s['last'])}</div>
         </div>"""
 
+    # permuter (Windows WSL) status, written by permuter_poll.sh
+    perm = {}
+    try:
+        perm = json.load(open(os.path.join(ROOT, "build", "permuter_status.json")))
+    except Exception:
+        pass
+    pdot = "#3fb950" if perm.get("alive") else "#6e7681"
+    perm_html = (f'<span class="dot" style="background:{pdot}"></span>'
+                 f'<b>permuter</b> (Windows CPU) · workers <b>{perm.get("workers","?")}</b> · '
+                 f'queue <b>{perm.get("targets","?")}</b> targets'
+                 f'<div class="last">{html.escape(str(perm.get("last","(no poll yet — start tools/decomp_work/permuter_poll.sh)")))[:140]}</div>')
+
     commit_html = "<br>".join(html.escape(c) for c in clog) or "<i>none yet</i>"
     return f"""<!doctype html><html><head><meta charset=utf-8>
 <meta http-equiv=refresh content=5>
@@ -163,6 +175,9 @@ def render():
 
 <h2>Lanes</h2>
 <div class=lanes>{lane_cards}</div>
+
+<h2>Permuter (remote)</h2>
+<div class=lane>{perm_html}</div>
 
 <h2>Recent committed wins</h2>
 <div class=last style="white-space:normal">{commit_html}</div>
