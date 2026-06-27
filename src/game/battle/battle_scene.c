@@ -1499,7 +1499,11 @@ void fn_801CFD08(void) {
  * Address: 0x801D0080 | Size: 0x10
  */
 s32 fn_801D0080(void) {
-    return 0;
+    u8* ptr;
+
+    ptr = (u8*)lbl_8047B3D4;
+    ptr[0x3c] = 1;
+    return (s32)ptr;
 }
 
 /**
