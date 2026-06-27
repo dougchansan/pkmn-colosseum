@@ -209,17 +209,19 @@ f32 fn_801BBE3C(u8* tobj) {
  * HSD_TObjSetBlending - 0x801BBE60 | Size: 0x74
  * Set the blending factor for a TObj.
  */
-void fn_801BBE60(HSD_TObj* tobj, f32 blending) {
-    if (tobj == NULL) {
-        return;
+void fn_801BBE60(HSD_TObj* tobj) {
+    HSD_TObj* next;
+    HSD_TObj* cur;
+
+    cur = tobj;
+    while (cur != NULL) {
+        next = cur->next;
+        if (cur != NULL) {
+            HSD_CLASS_METHOD(cur)->release((HSD_Class*) cur);
+            HSD_CLASS_METHOD(cur)->destroy((HSD_Class*) cur);
+        }
+        cur = next;
     }
-    if (blending < 0.0f) {
-        blending = 0.0f;
-    }
-    if (blending > 1.0f) {
-        blending = 1.0f;
-    }
-    tobj->blending = blending;
 }
 
 /*
@@ -656,12 +658,21 @@ void fn_801BE598(HSD_ImageDesc* desc, void* texobj) {
  * HSD_ImageCacheInvalidate - 0x801BE800 | Size: 0x5C
  * Invalidate texture cache for an image.
  */
-void fn_801BE800(HSD_ImageDesc* desc) {
-    if (desc == NULL || desc->image_ptr == NULL) {
+void fn_801BE800(HSD_TObj* tobj) {
+    extern void fn_801C27F4(HSD_AObj* aobj, HSD_TObj* tobj, void* method);
+    HSD_TObj* cur;
+
+    if (tobj == NULL) {
         return;
     }
 
-    GXInvalidateTexAll();
+    cur = tobj;
+    while (cur != NULL) {
+        if (cur != NULL) {
+            fn_801C27F4(cur->aobj, cur, ((void**) HSD_TOBJ_METHOD(cur))[0x48 / 4]);
+        }
+        cur = cur->next;
+    }
 }
 
 /* ========================================================================= */
