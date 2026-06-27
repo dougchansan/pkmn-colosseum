@@ -745,18 +745,28 @@ void fn_80113B84(void) {
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
-void fn_80113D10(void) {
-    /* TODO: match -- 36 bytes at 0x80113D10 */
+#pragma scheduling off
+s32 fn_80113D10(void) {
+    extern void fn_800E4BF4(void);
+
+    fn_800E4BF4();
+    return 1;
 }
+#pragma scheduling on
 #pragma pop
 
 /* 0x80113D34 | 0x24 */
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
-void fn_80113D34(void) {
-    /* TODO: match -- 36 bytes at 0x80113D34 */
+#pragma scheduling off
+void fn_80113D34(u32 unused, u32 modelIndex) {
+#pragma optimization_level 4
+    extern void fn_80113D58();
+
+    fn_80113D58(modelIndex);
 }
+#pragma scheduling on
 #pragma pop
 
 /* 0x80113D58 | 0x1F0 */
@@ -773,7 +783,11 @@ void fn_80113D58(void) {
 #pragma optimization_level 0
 #pragma optimizewithasm off
 void fn_80113F48(void) {
-    /* TODO: match -- 36 bytes at 0x80113F48 */
+    extern void fn_80115BD8(void);
+    extern void fn_80115A80(void);
+
+    fn_80115BD8();
+    fn_80115A80();
 }
 #pragma pop
 
