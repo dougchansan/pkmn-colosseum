@@ -1232,8 +1232,28 @@ void fn_801052F4(void) {
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
-void fn_80105410(void) {
-    /* TODO: match -- 168 bytes at 0x80105410 */
+void fn_80105410(u16 count) {
+#pragma optimization_level 4
+#pragma peephole off
+    extern u8 lbl_80271EC4[];
+    extern void fn_80109358(void);
+    u32 size;
+    u16 handle;
+    void* ptr;
+
+    memset(lbl_80404ACC, 0, 0x9c);
+    size = (u16)count * 0xb4;
+    handle = fn_800E3534(size);
+    *(u16*)(lbl_80404ACC + 0x2) = handle;
+    if ((u16)handle == 0) {
+        fn_800DD970((const char*)lbl_80271EC4);
+    } else {
+        ptr = fn_800E27B0((u16)handle);
+        *(void**)(lbl_80404ACC + 0x8) = ptr;
+        *(u16*)(lbl_80404ACC + 0x0) = count;
+        memset(ptr, 0, size);
+        fn_80109358();
+    }
 }
 #pragma pop
 
