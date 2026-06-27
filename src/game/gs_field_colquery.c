@@ -746,12 +746,14 @@ void fn_80113B84(void) {
 #pragma optimization_level 0
 #pragma optimizewithasm off
 #pragma scheduling off
+#pragma scheduling off
 s32 fn_80113D10(void) {
     extern void fn_800E4BF4(void);
 
     fn_800E4BF4();
     return 1;
 }
+#pragma scheduling on
 #pragma scheduling on
 #pragma pop
 
@@ -760,12 +762,14 @@ s32 fn_80113D10(void) {
 #pragma optimization_level 0
 #pragma optimizewithasm off
 #pragma scheduling off
+#pragma scheduling off
 void fn_80113D34(u32 unused, u32 modelIndex) {
 #pragma optimization_level 4
     extern void fn_80113D58();
 
     fn_80113D58(modelIndex);
 }
+#pragma scheduling on
 #pragma scheduling on
 #pragma pop
 
