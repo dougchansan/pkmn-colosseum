@@ -36,6 +36,9 @@ static u32 gobj_next_id;
 extern u8 lbl_80465728[];
 extern u8 lbl_80465754[];
 extern u8 lbl_80465780[];
+extern char lbl_8047DE70;
+extern char lbl_8047DE90;
+extern char lbl_802753DC[];
 
 /* Address: 0x801B4240 | Size: 0xC */
 /* Get pointer to BSS object lbl_80465728 */
@@ -279,17 +282,40 @@ void fn_801B5C94(HSD_TObj* tobj) {
  * HSD_TextureLODSetup - 0x801B5E40 | Size: 0xC8
  * Configure texture LOD (level of detail) and filter settings.
  */
-void fn_801B5E40(HSD_TObj* tobj) {
-    HSD_TObj* t;
+#pragma optimization_level 1
+void fn_801B5E40(u8* exp, u32 value, s32 index) {
+    s32 type;
 
-    for (t = tobj; t != NULL; t = t->next) {
-        if (t->imagedesc != NULL) {
-            /* Configure min/mag filter */
-            /* Set LOD bias */
-            /* Configure mipmap settings */
-        }
+    if (exp == NULL) {
+        __assert(&lbl_8047DE70, 0x366, &lbl_8047DE90);
+    }
+    if (exp != NULL) {
+        goto nonnull;
+    }
+    type = 0;
+    goto type_done;
+nonnull:
+    if ((u32)exp + 0x10000 == 0xFFFF) {
+        type = 2;
+        goto type_done;
+    }
+    if ((u32)exp - 0xFFFF0000u == 0xFFFE) {
+        type = 3;
+        goto type_done;
+    }
+    type = *(s32*)exp;
+type_done:
+    if (type != 1) {
+        __assert(&lbl_8047DE70, 0x367, lbl_802753DC);
+    }
+    *(u32*)(exp + 0x74) = value;
+    if (index == 0xFF) {
+        *(u8*)(exp + 0x78) = 0xFF;
+    } else {
+        *(u8*)(exp + 0x78) = index;
     }
 }
+#pragma optimization_level 4
 
 /*
  * HSD_ImageDescToGX - 0x801B5F08 | Size: 0x104
