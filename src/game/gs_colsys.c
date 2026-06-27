@@ -1838,9 +1838,13 @@ u32 fn_8010C4D4(u16 typeIndex) {
 #pragma optimization_level 0
 #pragma optimizewithasm off
 u16 fn_8010C508(u32 typeA, u32 typeB) {
-    /* TODO: match -- 68 bytes at 0x8010C508 */
-    (void)typeA; (void)typeB;
-    return 0;
+    if (typeA >= lbl_80478B38) {
+        return 0;
+    }
+    if (typeB >= 0x12) {
+        return 0;
+    }
+    return *(u16*)((u8*)lbl_8035B500 + (typeA * 0x2C) + (typeB * 2) + 8);
 }
 #pragma pop
 
@@ -1951,9 +1955,13 @@ u16 fn_8010C74C(u16 typeA, u16 typeB) {
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
-void fn_8010C77C(void) {
-    /* TODO: match -- 64 bytes at 0x8010C77C */
+#pragma fp_contract on
+f32 fn_8010C77C(Vec3f* normal, Vec3f* p1, Vec3f* p2) {
+    return (normal->x * (p2->x - p1->x))
+        + (normal->y * (p2->y - p1->y))
+        + (normal->z * (p2->z - p1->z));
 }
+#pragma fp_contract off
 #pragma pop
 
 /* 0x8010C7BC | 0x88 */
