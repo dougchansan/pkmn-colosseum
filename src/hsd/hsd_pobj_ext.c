@@ -162,4 +162,6 @@ void* fn_801B014C(void) {
 /* Address: 0x801B0158 | Size: 0x44 */
 /* TEV register allocation utility */
 void fn_801B0158(void) {
+    fn_801AA35C(lbl_804656B4, 0x1C, 4);
+    fn_801AA35C(lbl_80465688, 0xC, 4);
 }
