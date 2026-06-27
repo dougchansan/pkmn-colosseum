@@ -1973,11 +1973,13 @@ u16 fn_8010C74C(u16 typeA, u16 typeB) {
 #pragma fp_contract on
 #pragma fp_contract on
 #pragma fp_contract on
+#pragma fp_contract on
 f32 fn_8010C77C(Vec3f* normal, Vec3f* p1, Vec3f* p2) {
     return (normal->x * (p2->x - p1->x))
         + (normal->y * (p2->y - p1->y))
         + (normal->z * (p2->z - p1->z));
 }
+#pragma fp_contract off
 #pragma fp_contract off
 #pragma fp_contract off
 #pragma fp_contract off
