@@ -356,8 +356,39 @@ void fn_8010FDF8(void) {
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
-void fn_8010FFC4(void) {
-    /* TODO: match -- 192 bytes at 0x8010FFC4 */
+s32 fn_8010FFC4(s32 index, s32 flag) {
+#pragma optimization_level 4
+    extern u8* fn_8010CBD0(void);
+    u8* table;
+    u8* entry;
+    u8* p;
+    s32 result;
+
+    if (index < 0 || index >= 0x30) {
+        result = 4;
+    } else {
+        table = fn_8010CBD0();
+        if (table == NULL) {
+            result = 1;
+        } else {
+            p = table + index * 0x14 + 0xA00;
+            if ((*(u16*)(p + 0x10) & 1) == 0) {
+                result = 4;
+            } else {
+                entry = p;
+                result = 0;
+            }
+        }
+    }
+    if (result != 0) {
+        return result;
+    }
+    if (flag != 0) {
+        *(u16*)(entry + 0x10) &= ~0x2;
+    } else {
+        *(u16*)(entry + 0x10) |= 0x2;
+    }
+    return 0;
 }
 #pragma pop
 
@@ -365,8 +396,54 @@ void fn_8010FFC4(void) {
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
-void fn_80110084(void) {
-    /* TODO: match -- 304 bytes at 0x80110084 */
+s32 fn_80110084(s32* outIndex, void* data) {
+#pragma optimization_level 4
+    extern void* fn_8010CBD0(void);
+    u8* base;
+    s32 index;
+    u8* entry;
+    s32 i;
+
+    base = (u8*)fn_8010CBD0();
+    if (base == NULL) {
+        return 1;
+    }
+    entry = base;
+    index = 0;
+    for (i = 0; i < 6; i++) {
+        if ((*(u16*)(entry + 0xa10) & 1) == 0) goto found;
+        index++;
+        if ((*(u16*)(entry + 0xa24) & 1) == 0) goto found;
+        index++;
+        if ((*(u16*)(entry + 0xa38) & 1) == 0) goto found;
+        index++;
+        if ((*(u16*)(entry + 0xa4c) & 1) == 0) goto found;
+        index++;
+        if ((*(u16*)(entry + 0xa60) & 1) == 0) goto found;
+        index++;
+        if ((*(u16*)(entry + 0xa74) & 1) == 0) goto found;
+        index++;
+        if ((*(u16*)(entry + 0xa88) & 1) == 0) goto found;
+        index++;
+        if ((*(u16*)(entry + 0xa9c) & 1) == 0) goto found;
+        entry += 0xa0;
+        index++;
+    }
+found:
+    if (index >= 0x30) {
+        return 5;
+    }
+    {
+        u8* slot = base + index * 0x14;
+        *(s32*)(slot + 0xa00) = *(s32*)((u8*)data + 0x0);
+        *(s32*)(slot + 0xa04) = *(s32*)((u8*)data + 0x4);
+        *(f32*)(slot + 0xa08) = *(f32*)((u8*)data + 0x8);
+        *(f32*)(slot + 0xa0c) = *(f32*)((u8*)data + 0xc);
+        *(u16*)(slot + 0xa10) = 0;
+        *(u16*)(slot + 0xa10) |= 1;
+        *outIndex = index;
+    }
+    return 0;
 }
 #pragma pop
 
@@ -425,9 +502,93 @@ s32 fn_80111B9C(void* arg0, void* arg1, void* arg2) {
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
-void fn_80111C24(void) {
-    /* TODO: match -- 468 bytes at 0x80111C24 */
+#pragma peephole off
+s32 fn_80111C24(void* origin, void* dir) {
+#pragma optimization_level 4
+    extern f32 fn_800A3C00(void* a, void* b);
+    extern s32 GScolsys2UtilGetCpPlaneLine(void* a, void* b, void* c, void* d, void* e, void* f);
+    extern s32 GScolsy2UtilChkInTri(void* a, void* b, void* c);
+    extern f32 lbl_8047CF68;
+    extern f32 lbl_8047CF6C;
+    u8* wzx;
+    u32 regIdx;
+    u8* triList;
+    u8* region;
+    s32 k;
+    u32 vertIdx;
+    u8* vert;
+    u8* vdst;
+    u8* vsrc;
+    s32 visFlag;
+    f32 resultT;
+    f32 dirVec[3];
+    f32 pt[3];
+    f32 out[3];
+    f32 mtxFwd[12];
+    f32 mtxInv[12];
+    f32 verts[9];
+    s32 found;
+    s32 hit;
+
+    if (fn_8010CBC0() == NULL) {
+        return 0;
+    }
+    if (fn_800A3C00(dir, origin) <= lbl_8047CF68) {
+        return 0;
+    }
+    wzx = (u8*)fn_8010CBC0();
+    fn_800A3A9C(dir, origin, dirVec);
+    region = *(u8**)(wzx + 0x0);
+    regIdx = 0;
+    while (regIdx < *(u32*)(wzx + 0x4)) {
+        fn_8010C7BC(regIdx, &visFlag);
+        if (visFlag != 0) {
+            triList = *(u8**)(region + 0x38);
+            if (triList != NULL) {
+                fn_8010CA30(mtxInv, regIdx);
+                fn_8010C8D0(mtxFwd, regIdx);
+                vert = *(u8**)(triList + 0x0);
+                vertIdx = 0;
+                while (vertIdx < *(u32*)(triList + 0x4)) {
+                    fn_800A37CC(mtxFwd, vert + 0x24, pt);
+                    vsrc = vert;
+                    vdst = (u8*)verts;
+                    k = 0;
+                    do {
+                        fn_800A37CC(mtxInv, vsrc, vdst);
+                        k++;
+                        vsrc += 0xc;
+                        vdst += 0xc;
+                    } while (k < 3);
+                    if (GScolsys2UtilGetCpPlaneLine(out, &resultT, pt, verts, origin, dir) == 0) {
+                        hit = 0;
+                    } else if (resultT < lbl_8047CF68 || resultT > lbl_8047CF6C) {
+                        hit = 0;
+                    } else if (GScolsy2UtilChkInTri(out, verts, pt) == 0) {
+                        hit = 0;
+                    } else {
+                        hit = 1;
+                    }
+                    if (hit != 0) {
+                        found = 1;
+                        goto inner_done;
+                    }
+                    vertIdx++;
+                    vert += 0x30;
+                }
+                found = 0;
+            inner_done:
+                if (found != 0) {
+                    return 1;
+                }
+            }
+        }
+        regIdx++;
+        region += 0x40;
+    }
+    return 0;
 }
+#pragma peephole on
 #pragma pop
 
 /* 0x80111DF8 | 0x134 */
@@ -470,9 +631,24 @@ void fn_80112260(void) {
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
-void fn_80112380(void) {
-    /* TODO: match -- 84 bytes at 0x80112380 */
+#pragma peephole off
+s32 fn_80112380(u32 id) {
+#pragma optimization_level 4
+    extern void fn_80115C48(void);
+    extern s32 fn_80115AC8(void);
+    s32 ready = 0;
+
+    if (id != 0xFFFFFFFF) {
+        fn_80115C48();
+        switch (fn_80115AC8() & 0xFF) {
+        case 2:
+            ready = 1;
+            break;
+        }
+    }
+    return ready;
 }
+#pragma peephole on
 #pragma pop
 
 /* 0x80112700 | 0x4C */
@@ -480,7 +656,16 @@ void fn_80112380(void) {
 #pragma optimization_level 0
 #pragma optimizewithasm off
 void fn_80112700(void) {
-    /* TODO: match -- 76 bytes at 0x80112700 */
+#pragma optimization_level 4
+    extern void fn_80115BD8(void);
+    extern u32 fn_801159A8(void);
+    extern void fn_800F7318(s32, u32, s32, s32, s32, ...);
+    u32 id;
+
+    fn_80115BD8();
+    if ((id = fn_801159A8()) != 0) {
+        fn_800F7318(0xF, id, 0x1000, 1, 0, 0);
+    }
 }
 #pragma pop
 
@@ -505,9 +690,19 @@ void fn_8011274C(void) {
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
+#pragma peephole off
 void fn_80112780(void) {
-    /* TODO: match -- 60 bytes at 0x80112780 */
+#pragma optimization_level 4
+    extern u8 lbl_80408378[];
+    extern void fn_800F7434(void* callback, s32 arg, ...);
+    void* callback;
+
+    callback = *(void**)(lbl_80408378 + 0x2C);
+    if (callback != NULL) {
+        fn_800F7434(callback, 0);
+    }
 }
+#pragma peephole on
 #pragma pop
 
 /* 0x801127BC | 0x88 */
@@ -523,9 +718,21 @@ void fn_801127BC(void) {
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
+#pragma peephole off
 void fn_80112844(void) {
-    /* TODO: match -- 72 bytes at 0x80112844 */
+#pragma optimization_level 4
+    extern u8 lbl_80408378[];
+    extern void fn_800F7434(void* callback, s32 arg, ...);
+    extern void fn_800FF0A0(void (*callback)(void));
+    void* callback;
+
+    callback = *(void**)(lbl_80408378 + 0x28);
+    if (callback != NULL) {
+        fn_800F7434(callback, 0);
+        fn_800FF0A0(fn_80112844);
+    }
 }
+#pragma peephole on
 #pragma pop
 
 extern u8 lbl_80408378[];
@@ -544,9 +751,57 @@ void fn_8011288C(u32 a, u32 b) {
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
+#pragma peephole off
 void fn_801128A0(void) {
-    /* TODO: match -- 268 bytes at 0x801128A0 */
+#pragma optimization_level 4
+    extern u32 lbl_80272094[];
+    extern u8 lbl_80408378[];
+    extern void fn_800FF3C0(s32, s32, void*);
+    extern void fn_800FF178(s32, s32, void*);
+    extern void fn_800FF4D4(void*, u32);
+    extern s32 fn_800057A8(void);
+    extern void fn_800FF788(u32);
+    extern void fn_800FF784(u32);
+    extern void fn_80118020(void);
+    extern void fn_801129CC(void);
+    extern void fn_801129AC(void);
+    u32 sp8[3];
+    u32 r;
+
+    sp8[0] = lbl_80272094[0];
+    sp8[1] = lbl_80272094[1];
+    sp8[2] = lbl_80272094[2];
+    fn_800FF3C0(0, 0x5000, (void*)fn_801129CC);
+    fn_800FF178(0xFF, 0x5000, (void*)fn_801129AC);
+    fn_800FF4D4(sp8, 1);
+    fn_800FF4D4(sp8, 2);
+    switch (fn_800057A8()) {
+    case 5:
+        r = 0x3E4;
+        break;
+    case 4:
+        r = 0x320;
+        break;
+    case 1:
+        r = 0x3E6;
+        break;
+    case 2:
+        r = 0x3E7;
+        break;
+    case 3:
+    default:
+        r = 0x399;
+        break;
+    }
+    *(u32*)(lbl_80408378 + 0x0) = 0;
+    *(u32*)(lbl_80408378 + 0x4) = r;
+    *(u8*)(lbl_80408378 + 0x8) = 1;
+    *(u32*)(lbl_80408378 + 0xC) = 0;
+    fn_800FF788(r);
+    fn_800FF784(r);
+    fn_80118020();
 }
+#pragma peephole on
 #pragma pop
 
 /* 0x801129AC | 0x20 */
@@ -591,9 +846,114 @@ void fn_80112FEC(void) {
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
-void fn_80113248(void) {
-    /* TODO: match -- 668 bytes at 0x80113248 */
+#pragma peephole off
+void fn_80113248(void* a) {
+#pragma optimization_level 4
+    extern u32 fn_80115A80(void);
+    extern u32 fn_80115704(void* a);
+    extern u8* fn_8011711C(u32 i);
+    extern void fn_80117070(void);
+    extern s32 fn_8018F6B4(void);
+    extern u8 fn_800FF548(void);
+    extern u32 fn_8018E050(u32 model, u32 i, s32 x);
+    extern u32 fn_8018D998(u32 model, u32 i);
+    extern s32 fn_80183958(u32 model, u32 i);
+    extern void fn_801837D8(u32 model, u32 i, s32 a, u32 b, s32 c);
+    extern void fn_8018C7C8(u32 model, u32 i, s32 flag);
+    extern void fn_80116FE0(u8* obj, void* out);
+    extern void fn_8018C0A8(u32 model, u32 i, void* p);
+    extern void fn_80116F68(u8* obj, void* out);
+    extern void fn_8018BF24(u32 model, u32 i, void* p);
+    extern void fn_8018CB5C(u32 model, u32 i);
+    extern s32 fn_80117054(u8* obj);
+    extern void fn_8018C1E8(u32 model, u32 i, s32 x);
+    extern s32 fn_80117038(u8* obj);
+    extern void fn_8018CA20(u32 model, u32 i, s32 x);
+    extern u8 fn_80116F4C(u8* obj);
+    extern void fn_80183B44(u32 model, u32 i, f32 x);
+    extern void fn_801839A0(u32 model, u32 i, f32 x, f32 y);
+    extern u8 fn_80116F30(u8* obj);
+    extern u8 fn_80116F14(u8* obj);
+    extern void fn_8018C69C(u32 model, u32 i, s32 flag);
+    extern void fn_80188F78(u32 model, u32 i);
+    extern const char lbl_802720CC[];
+    extern const char lbl_8035B888[];
+    extern f32 lbl_8047CF88;
+    extern f32 lbl_8047CF8C;
+    extern f32 lbl_8047CF90;
+    u32 model;
+    u32 count;
+    u32 i;
+    u32 result;
+    u8* obj;
+    f32 v14[3];
+    f32 v8[3];
+
+    model = fn_80115A80();
+    count = fn_80115704(a);
+    for (i = 0; i < count; i++) {
+        obj = fn_8011711C(i);
+        fn_80117070();
+        result = fn_8018F6B4();
+        if (fn_800FF548() == 0) {
+            result = fn_8018E050(model, i, result);
+        } else {
+            result = fn_8018D998(model, i);
+        }
+        if (result == 0) {
+            fn_800DD970(lbl_802720CC, lbl_8035B888);
+        } else if (fn_800FF548() != 1) {
+            {
+                s32 emitId;
+
+                emitId = fn_80183958(model, i);
+                fn_801837D8(model, i, emitId, result, 0);
+            }
+            fn_8018C7C8(model, i, 4);
+            fn_8018C7C8(model, i, 8);
+            fn_80116FE0(obj, v14);
+            fn_8018C0A8(model, i, v14);
+            fn_80116F68(obj, v8);
+            fn_8018BF24(model, i, v8);
+            fn_8018CB5C(model, i);
+            fn_8018C1E8(model, i, fn_80117054(obj));
+            fn_8018CA20(model, i, fn_80117038(obj));
+            switch (fn_80116F4C(obj)) {
+            case 0:
+            case 1:
+                break;
+            case 2:
+                fn_80183B44(model, i, lbl_8047CF88);
+                break;
+            case 3:
+                fn_801839A0(model, i, lbl_8047CF8C, lbl_8047CF90);
+                break;
+            }
+            switch (fn_80116F30(obj)) {
+            case 0:
+                break;
+            case 1:
+                fn_8018C7C8(model, i, 0x10);
+                break;
+            case 2:
+                fn_8018C7C8(model, i, 0x20);
+                break;
+            }
+            switch (fn_80116F14(obj)) {
+            case 0:
+                fn_8018C69C(model, i, 0x40);
+                break;
+            case 1:
+                fn_8018C7C8(model, i, 0x40);
+                break;
+            }
+            if (((u32)((*obj >> 5) & 1)) != 0U) {
+                fn_80188F78(model, i);
+            }
+        }
+    }
 }
+#pragma peephole on
 #pragma pop
 
 /* 0x801134E4 | 0x294 */
@@ -636,9 +996,37 @@ void fn_80113828(u32 arg0, s32 arg1) {
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
-void fn_8011388C(void) {
-    /* TODO: match -- 160 bytes at 0x8011388C */
+#pragma peephole off
+void fn_8011388C(void* a, void* b, s32 c) {
+#pragma optimization_level 4
+    extern u8 lbl_80408378[];
+    extern u32 fn_800FF56C(void);
+    extern void fn_80166A28(u32);
+    extern void fn_800FF58C(void*);
+    u32 sndId;
+
+    if (a == NULL) {
+        return;
+    }
+    *(u32*)(lbl_80408378 + 0x0) = fn_800FF56C();
+    *(void**)(lbl_80408378 + 0x4) = a;
+    *(u8*)(lbl_80408378 + 0x8) = 1;
+    *(void**)(lbl_80408378 + 0xC) = b;
+    switch (c) {
+    case 0:
+        sndId = 0;
+        break;
+    case 1:
+    default:
+        sndId = 0x3F9;
+        break;
+    }
+    if (sndId != 0) {
+        fn_80166A28(sndId);
+    }
+    fn_800FF58C(a);
 }
+#pragma peephole on
 #pragma pop
 
 /* 0x8011392C | 0x10 */
@@ -686,9 +1074,24 @@ void fn_8011395C(u32 value) {
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
-void fn_8011396C(void) {
-    /* TODO: match -- 80 bytes at 0x8011396C */
+#pragma scheduling off
+s32 fn_8011396C(s32 param) {
+#pragma optimization_level 4
+    extern u32 fn_80115C48(void);
+    extern s32 fn_80115840(void);
+
+    switch (param) {
+    case 0xFD:
+    case 0xFE:
+    case 0xFF:
+        return 0;
+    }
+    if (fn_80115C48() == 0) {
+        return 0;
+    }
+    return fn_80115840();
 }
+#pragma scheduling on
 #pragma pop
 
 /* 0x801139BC | 0x50 */
@@ -747,12 +1150,15 @@ void fn_80113B84(void) {
 #pragma optimizewithasm off
 #pragma scheduling off
 #pragma scheduling off
-s32 fn_80113D10(void) {
-    extern void fn_800E4BF4(void);
+#pragma scheduling off
+u32 fn_80113D10(u32 group) {
+#pragma optimization_level 4
+    extern void fn_800E4BF4();
 
-    fn_800E4BF4();
+    fn_800E4BF4(group);
     return 1;
 }
+#pragma scheduling on
 #pragma scheduling on
 #pragma scheduling on
 #pragma pop
@@ -763,12 +1169,14 @@ s32 fn_80113D10(void) {
 #pragma optimizewithasm off
 #pragma scheduling off
 #pragma scheduling off
+#pragma scheduling off
 void fn_80113D34(u32 unused, u32 modelIndex) {
 #pragma optimization_level 4
     extern void fn_80113D58();
 
     fn_80113D58(modelIndex);
 }
+#pragma scheduling on
 #pragma scheduling on
 #pragma scheduling on
 #pragma pop
@@ -799,8 +1207,18 @@ void fn_80113F48(void) {
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
-void fn_80113F6C(void) {
-    /* TODO: match -- 72 bytes at 0x80113F6C */
+void* fn_80113F6C(u32 key, u32 arg) {
+#pragma optimization_level 4
+    extern void* fn_80115C48(u32);
+    extern u32 fn_80115A80(void*);
+    extern void* fn_800F9318(u32, u32);
+    void* resource;
+
+    resource = fn_80115C48(key);
+    if (resource == NULL) {
+        return NULL;
+    }
+    return fn_800F9318(fn_80115A80(resource), arg);
 }
 #pragma pop
 
@@ -808,8 +1226,17 @@ void fn_80113F6C(void) {
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
-void fn_80113FB4(void) {
-    /* TODO: match -- 52 bytes at 0x80113FB4 */
+u32 fn_80113FB4(u32 key) {
+#pragma optimization_level 4
+    extern void* fn_80115C48(u32);
+    extern u32 fn_80115A80(void*);
+    void* resource;
+
+    resource = fn_80115C48(key);
+    if (resource == NULL) {
+        return 0;
+    }
+    return fn_80115A80(resource);
 }
 #pragma pop
 
@@ -817,9 +1244,38 @@ void fn_80113FB4(void) {
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
+#pragma peephole off
 void fn_80113FE8(void) {
-    /* TODO: match -- 224 bytes at 0x80113FE8 */
+#pragma optimization_level 4
+    extern u8 lbl_80408378[];
+    extern u32 fn_80135168(s32, s32);
+    extern u32 fn_800FF56C(void);
+    extern void fn_800FF58C(u32);
+    u8* state = lbl_80408378;
+    u32 a;
+    u32 b;
+    u8 c;
+
+    if (*(u8*)(state + 0x51) != 0) {
+        a = *(u32*)(state + 0x48);
+        b = *(u32*)(state + 0x4C);
+        c = *(u8*)(state + 0x50);
+    } else {
+        a = fn_80135168(0, 5);
+        b = fn_80135168(0, 7);
+        c = (u8)fn_80135168(0, 8);
+    }
+    if (a != 0) {
+        *(u32*)(lbl_80408378 + 0x0) = fn_800FF56C();
+        *(u32*)(lbl_80408378 + 0x4) = a;
+        *(u8*)(lbl_80408378 + 0x8) = 1;
+        *(u32*)(lbl_80408378 + 0xC) = c;
+        fn_800FF58C(a);
+    }
+    *(u8*)(state + 0x51) = 0;
+    *(u32*)(lbl_80408378 + 0x0) = b;
 }
+#pragma peephole on
 #pragma pop
 
 /* 0x801140C8 | 0x14 */
@@ -835,17 +1291,38 @@ void fn_801140C8(void) {
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
-void fn_801140DC(void) {
-    /* TODO: match -- 144 bytes at 0x801140DC */
+#pragma peephole off
+void fn_801140DC(u32 material, u32 palette, u8 slot) {
+#pragma optimization_level 4
+    extern u32 fn_80128E24(void);
+    extern void* fn_80128E04(void);
+    extern void fn_80135030(void*, u32, u32);
+    void* obj;
+
+    if (fn_80128E24() != 0) {
+        obj = fn_80128E04();
+        if (obj != 0) {
+            fn_80135030(obj, 5, material);
+            fn_80135030(obj, 7, palette);
+            fn_80135030(obj, 8, slot);
+        }
+    }
 }
+#pragma peephole on
 #pragma pop
 
 /* 0x8011416C | 0x20 */
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
-void fn_8011416C(void) {
-    /* TODO: match -- 32 bytes at 0x8011416C */
+void fn_8011416C(u32 material, u32 palette, u8 materialSlot) {
+#pragma optimization_level 4
+    u8* state = lbl_80408378;
+
+    *(u32*)(state + 0x48) = material;
+    *(u32*)(state + 0x4C) = palette;
+    *(u8*)(state + 0x50) = materialSlot;
+    *(u8*)(state + 0x51) = 1;
 }
 #pragma pop
 
@@ -853,8 +1330,17 @@ void fn_8011416C(void) {
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
-void fn_8011418C(void) {
-    /* TODO: match -- 76 bytes at 0x8011418C */
+void fn_8011418C(u32* texture, u32* palette, u8* textureSlot) {
+#pragma optimization_level 4
+    if (texture != NULL) {
+        *texture = *(u32*)(lbl_80408378 + 0x3C);
+    }
+    if (palette != NULL) {
+        *palette = *(u32*)(lbl_80408378 + 0x40);
+    }
+    if (textureSlot != NULL) {
+        *textureSlot = *(u8*)(lbl_80408378 + 0x44);
+    }
 }
 #pragma pop
 
@@ -862,8 +1348,14 @@ void fn_8011418C(void) {
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
-void fn_801141D8(void) {
-    /* TODO: match -- 32 bytes at 0x801141D8 */
+void fn_801141D8(u32 texture, u32 palette, u8 textureSlot) {
+#pragma optimization_level 4
+    u8* state = lbl_80408378;
+
+    *(u32*)(state + 0x3C) = texture;
+    *(u32*)(state + 0x40) = palette;
+    *(u8*)(state + 0x44) = textureSlot;
+    *(u8*)(state + 0x51) = 0;
 }
 #pragma pop
 
@@ -880,25 +1372,52 @@ void fn_801141F8(void) {
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
-void fn_80114254(void) {
-    /* TODO: match -- 96 bytes at 0x80114254 */
+#pragma peephole off
+s32 fn_80114254(s32 param1, s32 param2, s32 param3) {
+#pragma optimization_level 4
+    extern s32 fn_800F9318(s32);
+    extern void fn_8017F484(s32, s32, s32);
+    s32 result = fn_800F9318(param1);
+
+    fn_8017F484(param1, param2, param3);
+    return result;
 }
+#pragma peephole on
 #pragma pop
 
 /* 0x801142B4 | 0x44 */
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
-void fn_801142B4(void) {
-    /* TODO: match -- 68 bytes at 0x801142B4 */
+#pragma peephole off
+void* fn_801142B4(void* group, void* model, u32 size) {
+#pragma optimization_level 4
+    extern void* fn_800F9418(u32 size, u32 alignment, void* group, void* model, u32 flags);
+    void* result;
+
+    result = fn_800F9418((size + 0x1F) & ~0x1F, 0x20, group, model, 0);
+    if (result == NULL) {
+        result = NULL;
+    }
+    return result;
 }
+#pragma peephole on
 #pragma pop
 
 /* 0x801142F8 | 0x34 */
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
-void fn_801142F8(void) {
-    /* TODO: match -- 52 bytes at 0x801142F8 */
+#pragma peephole off
+void* fn_801142F8(u32 group, u32 modelId) {
+#pragma optimization_level 4
+    extern void* fn_800F9318(u32, u32);
+    extern void fn_801ED680(void*);
+    void* model;
+
+    model = fn_800F9318(group, modelId);
+    fn_801ED680(model);
+    return model;
 }
+#pragma peephole on
 #pragma pop
