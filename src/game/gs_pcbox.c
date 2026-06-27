@@ -4869,25 +4869,29 @@ asm void fn_80019204(void) {
 #else
 #pragma optimization_level 4
 s32 fn_80019204(u8* a, u8* b) {
+#pragma peephole off
     extern void fn_80109220();
-    u32 sp8;
-    u32 sp12;
-    u32 sp16;
-    u32 sp20;
+    s32 table[4];
     u8* r5;
     s32 r8;
-    u32 r0;
-    u32 r6;
+    s32 r0;
+    s32 r6;
+    u32 r4;
     r5 = *(u8**)((u8*)a + 0x60);
-    sp8  = *(u32*)(lbl_80266C00 + 0x0);
-    sp12 = *(u32*)(lbl_80266C00 + 0x4);
-    sp16 = *(u32*)(lbl_80266C00 + 0x8);
-    sp20 = *(u32*)(lbl_80266C00 + 0xC);
+    table[0] = *(u32*)(lbl_80266C00 + 0x0);
+    table[1] = *(u32*)(lbl_80266C00 + 0x4);
+    table[2] = *(u32*)(lbl_80266C00 + 0x8);
+    table[3] = *(u32*)(lbl_80266C00 + 0xC);
     r8 = (s32)((s8)*(u8*)(a + 0x95)) + (s32)(4 - *(u32*)(r5 + 0xC));
     if (r8 < 0 || r8 >= 4) return 0;
-    r0 = *(u32*)((u8*)&sp8 + r8 * 4);
+    r0 = table[r8];
     r6 = (u32)(s32)(s16)*(s16*)(b + 0x6);
-    fn_80109220(b, (r6 == r0) ? 1 : 0);
+    if (r6 == r0) {
+        r4 = 1;
+    } else {
+        r4 = 0;
+    }
+    fn_80109220(b, r4);
     return 0;
 }
 #endif
