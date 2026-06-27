@@ -5687,6 +5687,12 @@ s32 fn_80088F74(void) {
 
 /* 0x80088F88 | size: 0x1C */
 s32 fn_80088F88(void) {
+    u32 count;
+
+    count = *(volatile u32*)&lbl_8047A664;
+    count++;
+    *(volatile u32*)&lbl_8047A664 = count;
+    *(volatile u32*)&lbl_8047A660 = 0;
     return 0;
 }
 
