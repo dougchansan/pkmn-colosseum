@@ -26,14 +26,14 @@ extern u8 lbl_8026F1C8[];
 extern u8 lbl_8026F1D8[];
 
 /* ===== Forward declarations ===== */
-void fn_80082650(void);
+void fn_80082650(void* carde);
 void fn_80082738(void);
 void fn_80082960(void);
-void fn_80082A88(void);
+s32 fn_80082A88(void* carde, s32 levelIndex);
 void fn_80082BA4(void);
 void fn_80082CF0(void);
 void fn_80082EA4(void);
-void fn_80082FE4(void);
+void* fn_80082FE4(void* carde, s32 index);
 void fn_800830A4(void);
 void fn_800832C8(void);
 void fn_800836AC(void);
@@ -41,69 +41,42 @@ void fn_800836AC(void);
 /* ===== Function implementations ===== */
 
 /* 0x80082650 | size: 0xE8 */
-void fn_80082650(void) {
-    u8 sp[0x10];
-    u32 r0 = 0;
-    u32 r1 = (u32)sp;
-    u32 r3 = 0;
-    u32 r4 = 0;
-    u32 r5 = 0;
-    u32 r30 = 0;
-    u32 r31 = 0;
-    f32 f1 = 0.0f;
-    void (*ctr_fn)(void) = 0;
-    u32 ctr = 0;
+void fn_80082650(void* carde) {
+#pragma peephole off
+    u8* base;
+    u8* block;
+    s32 width;
+    s32 height;
+    s32 count;
+    u32 found;
 
-    r31 = r3;
-    if (r31 == 0x0) {
-        r3 = (u32)&lbl_8026F1C8;
-        r4 = 0x17f;
-        r3 = (u32)&lbl_8026F1C8;
-        r5 = (u32)&lbl_8047C180;
-        ((void(*)(void))__assert)();
+    base = carde;
+    if (base == NULL) {
+        __assert(lbl_8026F1C8, 0x17f, &lbl_8047C180);
     }
-    r0 = *(u8*)((u8*)r31 + 0x1B);
-    r0 = (s8)r0;
-    if ((s32)r0 <= 0x0) {
-        r3 = (u32)&lbl_8026F1C8;
-        r5 = (u32)&lbl_8026F1D8;
-        r3 = (u32)&lbl_8026F1C8;
-        r4 = 0x180;
-        r5 = (u32)&lbl_8026F1D8;
-        ((void(*)(void))__assert)();
+    if ((s32)(s8)*(u8*)(base + 0x1B) <= 0) {
+        __assert(lbl_8026F1C8, 0x180, lbl_8026F1D8);
     }
-    r30 = r31 + 0x24;
-    if (r30 == 0x0) {
-        r3 = (u32)&lbl_8026F1C8;
-        r4 = 0x1f1;
-        r3 = (u32)&lbl_8026F1C8;
-        r5 = (u32)&lbl_8047C188;
-        ((void(*)(void))__assert)();
+    block = base + 0x24;
+    if (block == NULL) {
+        __assert(lbl_8026F1C8, 0x1f1, &lbl_8047C188);
     }
-    r3 = *(u8*)((u8*)r31 + 0x1C);
-    r0 = *(u8*)((u8*)r31 + 0x1D);
-    r3 = (s8)r3;
-    r0 = (s8)r0;
-    r0 = r3 * r0;
-    ctr_fn = (void(*)(void))r0;
-    if ((s32)r0 > 0x0) {
-        do {
-            r0 = *(u8*)((u8*)r30 + 0x82);
-            if (r0 != 0x0) {
-                r0 = 0x1;
-                break;
-            }
-            r30 = r30 + 0x10;
-        } while (--ctr != 0);
+    width = (s8)*(u8*)(base + 0x1C);
+    height = (s8)*(u8*)(base + 0x1D);
+    count = width;
+    count *= height;
+    for (; count > 0; count--) {
+        if (*(u8*)(block + 0x82) != 0) {
+            found = 1;
+            goto done;
+        }
+        block += 0x10;
     }
-    r0 = 0x0;
-
-    r0 = r0 & 0xFF;
-    if (r0 == 0x0) {
-        r0 = 0x0;
-        *(u16*)((u8*)r31 + 0x0) = r0;
+    found = 0;
+done:
+    if ((u8)found == 0) {
+        *(u16*)base = 0;
     }
-    return;
 }
 
 /* 0x80082738 | size: 0x228 */
@@ -333,81 +306,53 @@ void fn_80082960(void) {
 }
 
 /* 0x80082A88 | size: 0x11C */
-void fn_80082A88(void) {
-    u8 sp[0x10];
-    u32 tmp = 0;
-    u32 r3 = 0;
-    u32 r4 = 0;
-    u32 r5 = 0;
-    u32 r30 = 0;
-    u32 r31 = 0;
-    f32 f1 = 0.0f;
-    void (*ctr_fn)(void) = 0;
-    u32 ctr = 0;
+s32 fn_80082A88(void* carde, s32 levelIndex) {
+#pragma peephole off
+    u8* base;
+    u8* block;
+    s32 valid;
+    s32 width;
+    s32 height;
+    s32 stride;
+    s32 count;
+    s32 offset;
 
-    r31 = r3;
-    r30 = r4;
-    if (r31 == 0) {
-        r3 = (u32)&lbl_8026F1C8;
-        r4 = 0x17f;
-        r3 = (u32)&lbl_8026F1C8;
-        r5 = (u32)&lbl_8047C180;
-        ((void(*)(void))__assert)();
+    base = carde;
+    if (base == NULL) {
+        __assert(lbl_8026F1C8, 0x17f, &lbl_8047C180);
     }
-    r3 = (s8)r30;
-    r4 = 0x0;
-    if ((s32)r3 >= 0) {
-        tmp = *(u8*)((u8*)r31 + 0x1B);
-        tmp = (s8)tmp;
-        if ((s32)r3 < (s32)tmp) {
-            r4 = 0x1;
+    valid = 0;
+    if ((s32)(s8)levelIndex >= 0) {
+        if ((s32)(s8)levelIndex < (s32)(s8)*(u8*)(base + 0x1B)) {
+            valid = 1;
+        }
     }
+    if (valid == 0) {
+        __assert(lbl_8026F1C8, 0x180, lbl_8026F1D8);
     }
-    if ((s32)r4 == 0) {
-        r3 = (u32)&lbl_8026F1C8;
-        r5 = (u32)&lbl_8026F1D8;
-        r3 = (u32)&lbl_8026F1C8;
-        r4 = 0x180;
-        r5 = (u32)&lbl_8026F1D8;
-        ((void(*)(void))__assert)();
+    width = (s8)*(u8*)(base + 0x1C);
+    height = (s8)*(u8*)(base + 0x1D);
+    stride = width;
+    stride *= height;
+    stride <<= 4;
+    stride += 0x76;
+    offset = (s32)(s8)levelIndex;
+    offset *= stride;
+    block = base + offset;
+    if ((block += 0x24) == NULL) {
+        __assert(lbl_8026F1C8, 0x1f1, &lbl_8047C188);
     }
-    r3 = *(u8*)((u8*)r31 + 0x1C);
-    r4 = (s8)r30;
-    tmp = *(u8*)((u8*)r31 + 0x1D);
-    r3 = (s8)r3;
-    tmp = (s8)tmp;
-    tmp = r3 * tmp;
-    r3 = tmp << 4;
-    tmp = r3 + 0x76;
-    tmp = r4 * tmp;
-    r30 = r31 + tmp;
-    r30 = r30 + 0x24;
-    if (r30 == 0) {
-        r3 = (u32)&lbl_8026F1C8;
-        r4 = 0x1f1;
-        r3 = (u32)&lbl_8026F1C8;
-        r5 = (u32)&lbl_8047C188;
-        ((void(*)(void))__assert)();
+    width = (s8)*(u8*)(base + 0x1C);
+    height = (s8)*(u8*)(base + 0x1D);
+    count = width;
+    count *= height;
+    for (; count > 0; count--) {
+        if (*(u8*)(block + 0x82) != 0) {
+            return 1;
+        }
+        block += 0x10;
     }
-    r3 = *(u8*)((u8*)r31 + 0x1C);
-    tmp = *(u8*)((u8*)r31 + 0x1D);
-    r3 = (s8)r3;
-    tmp = (s8)tmp;
-    tmp = r3 * tmp;
-    ctr_fn = (void(*)(void))tmp;
-    if ((s32)tmp > 0) {
-        do {
-            tmp = *(u8*)((u8*)r30 + 0x82);
-            if (tmp != 0) {
-                r3 = 0x1;
-                return;
-            }
-            r30 = r30 + 0x10;
-        } while (--ctr != 0);
-    }
-    r3 = 0x0;
-
-    return;
+    return 0;
 }
 
 /* 0x80082BA4 | size: 0x14C */
@@ -700,53 +645,40 @@ void fn_80082EA4(void) {
 }
 
 /* 0x80082FE4 | size: 0xC0 */
-void fn_80082FE4(void) {
-    u8 sp[0x10];
-    u32 tmp = 0;
-    u32 r3 = 0;
-    u32 r4 = 0;
-    u32 r5 = 0;
-    u32 r30 = 0;
-    u32 r31 = 0;
+void* fn_80082FE4(void* carde, s32 index) {
+#pragma peephole off
+    u8* base;
+    s32 valid;
+    s32 width;
+    s32 height;
+    s32 stride;
+    s32 finalIndex;
+    s32 offset;
 
-    r31 = r3;
-    r30 = r4;
-    if (r31 == 0) {
-        r3 = (u32)&lbl_8026F1C8;
-        r4 = 0x17f;
-        r3 = (u32)&lbl_8026F1C8;
-        r5 = (u32)&lbl_8047C180;
-        ((void(*)(void))__assert)();
+    base = carde;
+    if (base == NULL) {
+        __assert(lbl_8026F1C8, 0x17f, &lbl_8047C180);
     }
-    r3 = (s8)r30;
-    r4 = 0x0;
-    if ((s32)r3 >= 0) {
-        tmp = *(u8*)((u8*)r31 + 0x1B);
-        tmp = (s8)tmp;
-        if ((s32)r3 < (s32)tmp) {
-            r4 = 0x1;
+    valid = 0;
+    if ((s32)(s8)index >= 0) {
+        if ((s32)(s8)index < (s32)(s8)*(u8*)(base + 0x1B)) {
+            valid = 1;
+        }
     }
+    if (valid == 0) {
+        __assert(lbl_8026F1C8, 0x180, lbl_8026F1D8);
     }
-    if ((s32)r4 == 0) {
-        r3 = (u32)&lbl_8026F1C8;
-        r5 = (u32)&lbl_8026F1D8;
-        r3 = (u32)&lbl_8026F1C8;
-        r4 = 0x180;
-        r5 = (u32)&lbl_8026F1D8;
-        ((void(*)(void))__assert)();
-    }
-    r3 = *(u8*)((u8*)r31 + 0x1C);
-    r4 = (s8)r30;
-    tmp = *(u8*)((u8*)r31 + 0x1D);
-    r3 = (s8)r3;
-    tmp = (s8)tmp;
-    tmp = r3 * tmp;
-    r3 = tmp << 4;
-    tmp = r3 + 0x76;
-    tmp = r4 * tmp;
-    r3 = r31 + tmp;
-    r3 = r3 + 0x24;
-    return;
+    finalIndex = (s8)index;
+    width = (s8)*(u8*)(base + 0x1C);
+    height = (s8)*(u8*)(base + 0x1D);
+    stride = width;
+    stride *= height;
+    stride <<= 4;
+    stride += 0x76;
+    offset = finalIndex;
+    offset *= stride;
+    base += offset;
+    return base + 0x24;
 }
 
 /* 0x800830A4 | size: 0x224 */
