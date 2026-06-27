@@ -27,7 +27,21 @@ void fn_801B019C(void) {
 
 /* Address: 0x801B03A0 | Size: 0x68 | Proposed: HSD_ShadowFunc2 */
 /* Shadow texture coordinate generation */
-void fn_801B03A0(void) {
+s32 fn_801B03A0(void* arg0) {
+    extern char lbl_802752C0[];
+    extern char lbl_8047DDB8;
+    s32 result;
+
+    if (arg0 == NULL) {
+        __assert(lbl_802752C0, 0x37D, &lbl_8047DDB8);
+    }
+    result = 0;
+    if (*(f32*)((u8*)arg0 + 0x40) > *(f32*)((u8*)arg0 + 0x44)) {
+        if (*(f32*)((u8*)arg0 + 0x4C) > *(f32*)((u8*)arg0 + 0x48)) {
+            result = 1;
+        }
+    }
+    return result;
 }
 
 /* Address: 0x801B0408 | Size: 0xD8 | Proposed: HSD_ShadowFunc3 */
@@ -46,7 +60,22 @@ void fn_801B04E0(void) {
 
 /* Address: 0x801B06DC | Size: 0x60 */
 /* Shadow state setter / initializer */
-void fn_801B06DC(void) {
+void fn_801B06DC(void* arg0) {
+    extern void* fn_800E202C(void*);
+    extern void fn_800E24B0(void);
+    extern void fn_800E209C(void*);
+    void* saved;
+    void** slot;
+    void* obj;
+
+    obj = *(void**)((u8*)arg0 + 8);
+    slot = *(void***)((u8*)obj + 0x58);
+    if (*(void* volatile*)slot != NULL) {
+        saved = fn_800E202C(*slot);
+        fn_800E24B0();
+        fn_800E209C(saved);
+        *slot = NULL;
+    }
 }
 
 /* Address: 0x801B073C | Size: 0x98 */
@@ -90,5 +119,19 @@ void fn_801B1524(void) {
 
 /* Address: 0x801B16C0 | Size: 0x70 | Proposed: HSD_ShadowFunc10 */
 /* Shadow finalize - restore render state after shadow pass */
-void fn_801B16C0(void) {
+void fn_801B16C0(void* arg0) {
+    extern char lbl_802752C0[];
+    extern char lbl_8047DDCC;
+    extern void fn_800B962C(u32, u32, u32, u32);
+    extern void fn_800B96F8(u32, u32, u32, u32);
+    void* obj;
+    u8* shadow;
+
+    if (arg0 == NULL) {
+        __assert(lbl_802752C0, 0x10C, &lbl_8047DDCC);
+    }
+    obj = *(void**)((u8*)arg0 + 8);
+    shadow = *(u8**)((u8*)obj + 0x58);
+    fn_800B962C(0, 0, *(u16*)(shadow + 4), *(u16*)(shadow + 6));
+    fn_800B96F8(*(u16*)(shadow + 4), *(u16*)(shadow + 6), 0x20, 0);
 }
