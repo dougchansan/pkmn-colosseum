@@ -523,7 +523,18 @@ void GSfloorRequestTransition(u32 nextFloorId)
  * Range: 0x800FF0A0 - 0x800FF788
  * =================================================================== */
 
+extern u32 lbl_80478B18;
+extern u32 lbl_8047ACA8;
+extern u32 lbl_8047ACB0;
+extern u32 lbl_8047ACB4;
+extern u32 lbl_8047ACB8;
 extern u32 lbl_8047ACC4;
+extern u32 lbl_8047ACD8;
+extern u32 lbl_8047ACDC;
+extern u32 lbl_8047ACE0;
+extern GSFloorResHandler lbl_80404918[];
+extern u32 fn_800F7274(u16 handle);
+extern void fn_8011288C(u32 a, u32 b);
 
 /* 0x800FF0A0 | 0xD8 */
 #pragma push
@@ -562,13 +573,16 @@ void fn_800FF3C0(void) {
 #pragma pop
 
 /* 0x800FF4D4 | 0x58 */
-#pragma push
-#pragma optimization_level 0
-#pragma optimizewithasm off
-void fn_800FF4D4(void) {
-    /* TODO: match -- 88 bytes at 0x800FF4D4 */
+void fn_800FF4D4(void* data, u8 typeId) {
+    GSFloorResHandler* handler;
+
+    if (lbl_8047ACE0 < 0x18) {
+        handler = &lbl_80404918[lbl_8047ACE0];
+        handler->typeId = typeId;
+        memcpy(&handler->reserved, data, 0xC);
+        lbl_8047ACE0++;
+    }
 }
-#pragma pop
 
 /* 0x800FF52C | 0x14 */
 #pragma push
@@ -598,40 +612,79 @@ u32 fn_800FF560(void) {
 }
 
 /* 0x800FF56C | 0x20 */
-#pragma push
-#pragma optimization_level 0
-#pragma optimizewithasm off
-void fn_800FF56C(void) {
-    /* TODO: match -- 32 bytes at 0x800FF56C */
+u32 fn_800FF56C(void) {
+    void* floorData;
+
+    floorData = ((GSFloorContext*)lbl_8047ACC8)->floorDataEntry;
+    if (floorData != NULL) {
+        return *(u32*)((u8*)floorData + 0xC);
+    }
+    return 0;
 }
-#pragma pop
 
 /* 0x800FF58C | 0xD4 */
-#pragma push
-#pragma optimization_level 0
-#pragma optimizewithasm off
-void fn_800FF58C(void) {
-    /* TODO: match -- 212 bytes at 0x800FF58C */
+void fn_800FF58C(u32 floorId) {
+    GSFloorContext* currentFloor;
+    GSFloorResource* resource;
+    u32 remaining;
+
+    fn_8011288C(0x05960009, 0x05960008);
+    currentFloor = (GSFloorContext*)lbl_8047ACC8;
+    if ((s32)lbl_8047ACD8 == 2) {
+        resource = (GSFloorResource*)((u8*)lbl_8047ACB0 +
+            (lbl_8047ACB4 * sizeof(GSFloorResource)));
+        remaining = lbl_8047ACB8;
+        while (remaining-- != 0) {
+            if ((s32)resource->active != 0 &&
+                (s32)resource->status == 1 &&
+                resource->floorId == currentFloor->floorId) {
+                fn_800F7274(resource->textureHandle);
+            }
+            resource++;
+        }
+        currentFloor->isActive = 5;
+        *(volatile u32*)&lbl_80478B18 = (u32)-1;
+    }
+    *(volatile u32*)&lbl_8047ACDC = 3;
+    *(volatile u32*)&lbl_80478B18 = floorId;
 }
-#pragma pop
 
 /* 0x800FF660 | 0xD0 */
-#pragma push
-#pragma optimization_level 0
-#pragma optimizewithasm off
 void fn_800FF660(void) {
-    /* TODO: match -- 208 bytes at 0x800FF660 */
+    GSFloorContext* currentFloor;
+    GSFloorResource* resource;
+    u32 remaining;
+
+    fn_8011288C(0x05960009, 0x05960008);
+    if (lbl_8047ACC4 != 0) {
+        currentFloor = (GSFloorContext*)lbl_8047ACC8;
+        if ((s32)lbl_8047ACD8 == 2) {
+            resource = (GSFloorResource*)((u8*)lbl_8047ACB0 +
+                (lbl_8047ACB4 * sizeof(GSFloorResource)));
+            remaining = lbl_8047ACB8;
+            while (remaining-- != 0) {
+                if ((s32)resource->active != 0 &&
+                    (s32)resource->status == 1 &&
+                    resource->floorId == currentFloor->floorId) {
+                    fn_800F7274(resource->textureHandle);
+                }
+                resource++;
+            }
+            currentFloor->isActive = 5;
+            lbl_80478B18 = (u32)-1;
+        }
+        lbl_8047ACDC = 5;
+    }
 }
-#pragma pop
 
 /* 0x800FF730 | 0x54 */
-#pragma push
-#pragma optimization_level 0
-#pragma optimizewithasm off
-void fn_800FF730(void) {
-    /* TODO: match -- 84 bytes at 0x800FF730 */
+void fn_800FF730(u32 floorId) {
+    fn_8011288C(0x05960009, 0x05960008);
+    if (lbl_8047ACC4 < lbl_8047ACA8) {
+        *(volatile u32*)&lbl_8047ACD8 = 4;
+        *(volatile u32*)&lbl_80478B18 = floorId;
+    }
 }
-#pragma pop
 
 /* 0x800FF784 | 0x4 | void_stub */
 void fn_800FF784(void) {
