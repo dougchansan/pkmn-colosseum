@@ -17,7 +17,10 @@ This repository is a matching decompilation project for Pokémon Colosseum. The 
 ## Hard rules
 
 - Do not edit `*_fn_*.inc` files.
+- Do not add, stage, or commit any `.inc` truth/asm snippet files. They are ROM-derived scaffolding, not decompiled C, and public PRs must not contain them. If a local tool needs generated `.inc` files, keep them ignored/local only.
 - Do not flip asm-wrapper scaffolding `#if 0` -> `#if 1` to force a fake match. An asm-wrapper re-embeds the original `main.dol` machine code: it byte-matches by definition but is **0% decompiled** and is useless for the PC port (x86 cannot run PPC asm). Flipping a function that has real C (even a near-miss) back to an asm wrapper is a REGRESSION of honest decompilation, even though the objdiff/decomp.dev number ticks up. The ONLY legitimate asm-wrapper is for a **confirmed, logged wall** (real C written and proven unable to byte-match due to a toolchain artifact) — and it must be recorded in `WALLS.md` / `tools/decomp_work/equivalent.txt` with the real C parked under `#else`. See "Current campaign" below for the validated policy.
+- Do not accept asm wrappers, inline `asm`/`__asm`, or `#include .inc/.s` bodies as decompilation wins. They are fraud for the PC-port goal.
+- Do not count register-dump or pointer-arithmetic C as done. A finished decompilation must be readable, typed C. Use typed structs, named fields, arrays, enums, and helper accessors when evidence supports them. If raw pointer arithmetic appears in a scratch candidate while a struct is unknown, keep it narrowly scoped, document the evidence gap, and track it as cleanup debt rather than calling it a decompilation win.
 - Do not commit or generate copyrighted game assets, extracted ROM contents, compiler binaries, or target objects into the repo.
 - Do not rewrite control flow just to make code look cleaner.
 - Do not rename jump tables, labels, linker-required symbols, or config symbols unless specifically requested and all references are updated.
@@ -411,7 +414,8 @@ Goal: a fuzzy-match attempt on EVERY remaining function, converting asm-wrappers
 
 ### Coordination (do not conflict)
 - `src/game/gs_field_world.c` is owned by a live **codex** session — do NOT touch it.
-- Never edit `*_fn_*.inc` (truth files) or `config/GC6E01/symbols.build.txt` blindly.
+- Never edit, add, stage, or commit `*_fn_*.inc` / `.inc` truth files. They are not C and they must remain ignored/local if generated.
+- Do not edit `config/GC6E01/symbols.build.txt` blindly.
 - After any sub-agent claims a match, RE-MEASURE in the parent before trusting it (sub-agents have hallucinated 100%).
 
 ### The metric (three honest axes — know which you're moving)
@@ -422,6 +426,9 @@ Renames are byte-neutral (don't move axes 2/3). The right way to grow the number
 
 ### asm-wrapper policy (validated 2026-06-13)
 Asm-wrappers ONLY for confirmed walls (logged in `WALLS.md`/`equivalent.txt`). Never wrap a winnable function to inflate the number. If real C can't reach 100%, leave the real C **active** and log it as an Equivalent — do not re-wrap as asm unless the byte-perfect DOL build specifically requires it AND it's a logged wall.
+
+### Readability policy (current)
+The destination is readable, typed C that still byte-matches. A function that is just register names, raw offsets, or broad pointer arithmetic is only an intermediate recovery artifact, not the finish line. Prefer evidence-backed struct recovery and conservative names over permanent `*(T*)((u8*)p + off)` code. If byte-matching currently requires raw access, isolate it and leave a follow-up target for struct/field recovery.
 
 ### Verification protocol
 - Per-fn match: `python tools/match_scan_file.py <src/file.c> <fn_...>` (compiles file + objdiff per symbol).

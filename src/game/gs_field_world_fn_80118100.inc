@@ -1,2 +1,0 @@
-    nofralloc
-    blr

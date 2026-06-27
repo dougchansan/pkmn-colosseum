@@ -1,6 +1,0 @@
-    nofralloc
-/* 800EC8C8 000E98C8  C0 02 95 BC */	lfs f0, -27204(r2)
-/* 800EC8CC 000E98CC  D0 03 00 D8 */	stfs f0, 0xd8(r3)
-/* 800EC8D0 000E98D0  D0 23 00 C4 */	stfs f1, 0xc4(r3)
-/* 800EC8D4 000E98D4  D0 43 00 C8 */	stfs f2, 0xc8(r3)
-/* 800EC8D8 000E98D8  4E 80 00 20 */	blr
