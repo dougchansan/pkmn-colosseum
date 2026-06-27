@@ -700,10 +700,13 @@ u32 fn_801B3638(HSD_TExp* exp) {
  * HSD_TExpSetInput - 0x801B3770 | Size: 0x30
  * Set an input source for a TExp node.
  */
-void fn_801B3770(HSD_TExp* exp, u32 idx, HSD_TExp* input) {
-    if (exp != NULL && idx < 4) {
-        exp->arg[idx] = input;
-    }
+void fn_801B3770(void) {
+    extern void fn_800BC8C8(u8 count);
+    u32 count;
+
+    count = lbl_8047B370;
+    fn_800BC8C8((u8)count);
+    lbl_8047B370 = 0;
 }
 
 /*
