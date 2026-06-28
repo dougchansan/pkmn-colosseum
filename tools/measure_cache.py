@@ -32,6 +32,7 @@ OBJDIFF = _first_existing([
     ROOT / "build" / "tools" / f"objdiff-cli{_EXE}",
 ]) or (ROOT / "tools" / f"objdiff-cli{_EXE}")
 CACHE = ROOT / "build" / ".measure_cache.json"
+CACHE_VERSION = "v2"
 sys.path.insert(0, str(ROOT / "tools"))
 from headless_subprocess import run as run_tool  # noqa: E402
 
@@ -61,9 +62,9 @@ def _index_by_base(mem):
     if _BASE_INDEX is None:
         idx = {}
         for old_key, value in mem.items():
-            parts = old_key.split("|", 1)
-            if len(parts) == 2 and parts[1] not in idx:
-                idx[parts[1]] = value
+            parts = old_key.split("|")
+            if len(parts) == 3 and parts[0] == CACHE_VERSION and parts[2] not in idx:
+                idx[parts[2]] = value
         _BASE_INDEX = idx
     return _BASE_INDEX
 
@@ -103,7 +104,7 @@ def diff_funcs(target_o: Path, base_o: Path):
     mem = _load()
     try:
         base_fp = _fp(Path(base_o))
-        key = f"{_fp(Path(target_o))}|{base_fp}"
+        key = f"{CACHE_VERSION}|{_fp(Path(target_o))}|{base_fp}"
     except OSError:
         key = None
         base_fp = None
@@ -119,7 +120,10 @@ def diff_funcs(target_o: Path, base_o: Path):
         return None
     funcs = []
     for s in j.get("right", {}).get("symbols", []):
-        if s.get("kind") != "SYMBOL_FUNCTION":
+        # Newer objdiff JSON omits kind for symbols. In that schema fn_ symbols
+        # with match_percent are still function entries; requiring kind caused a
+        # cold-cache report to silently drop most units.
+        if s.get("kind") not in (None, "SYMBOL_FUNCTION"):
             continue
         name = s.get("name", "")
         if not name.startswith("fn_"):

@@ -55,22 +55,43 @@ def main(argv: list[str]) -> int:
         )
 
     # 2) Top-level total_functions must equal the sum over units (no hidden inflation).
+    def mint(value) -> int:
+        try:
+            return int(float(value))
+        except (TypeError, ValueError):
+            return 0
+
     def usum(key: str) -> int:
         total = 0
         for u in units:
-            v = (u.get("measures", {}) or {}).get(key, 0)
-            try:
-                total += int(float(v))
-            except (TypeError, ValueError):
-                pass
+            total += mint((u.get("measures", {}) or {}).get(key, 0))
         return total
 
     summed = usum("total_functions")
-    declared = int(measures.get("total_functions", 0) or 0)
+    declared = mint(measures.get("total_functions", 0))
     if declared and summed and declared != summed:
         problems.append(
             f"measures.total_functions ({declared}) != sum over units ({summed}) "
             "— aggregate is out of sync with the unit list."
+        )
+
+    # 2b) The decomp.dev report must carry the non-code loadable data
+    #     denominator, otherwise the second Code/Data progress bar disappears.
+    total_data = mint(measures.get("total_data", 0))
+    matched_data = mint(measures.get("matched_data", 0))
+    complete_data = mint(measures.get("complete_data", 0))
+    if total_data <= 0:
+        problems.append(
+            "measures.total_data is missing or zero — report.json will not "
+            "render the decomp.dev Data progress bar."
+        )
+    if matched_data > total_data:
+        problems.append(
+            f"measures.matched_data ({matched_data}) exceeds total_data ({total_data})."
+        )
+    if complete_data > total_data:
+        problems.append(
+            f"measures.complete_data ({complete_data}) exceeds total_data ({total_data})."
         )
 
     # 3) Phantom double-count detection. A band/scratch phantom is a COPY of a real
@@ -123,7 +144,8 @@ def main(argv: list[str]) -> int:
     print(
         f"report-sanity: OK ({len(units)} units, "
         f"total_functions={declared or summed}, "
-        f"code%={measures.get('matched_code_percent', 0):.2f})"
+        f"code%={measures.get('matched_code_percent', 0):.2f}, "
+        f"data={matched_data}/{total_data})"
     )
     return 0
 

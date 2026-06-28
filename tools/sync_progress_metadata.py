@@ -98,6 +98,9 @@ def expected_progress(existing: dict, report: dict) -> dict:
             "report_sha256": report_hash,
             "report_matched_functions": int(fl(measures, "matched_functions")),
             "report_total_functions": int(fl(measures, "total_functions")),
+            "report_matched_data": int(fl(measures, "matched_data")),
+            "report_total_data": int(fl(measures, "total_data")),
+            "report_complete_data": int(fl(measures, "complete_data")),
             "completed_real_c_functions": len(completed),
         },
     }
@@ -109,11 +112,14 @@ def expected_readme_text(existing: str, report: dict) -> str:
     ft = int(fl(measures, "total_functions"))
     cm = int(fl(measures, "matched_code"))
     ct = int(fl(measures, "total_code"))
+    dm = int(fl(measures, "matched_data"))
+    dt = int(fl(measures, "total_data"))
     if not ft or not ct:
         return existing
 
     fpct = 100.0 * fm / ft
     cpct = 100.0 * cm / ct
+    dpct = (100.0 * dm / dt) if dt else 0.0
     out = re.sub(
         r"\| Function match \| [^|]*\|",
         f"| Function match | ~{fpct:.1f}% ({fm:,} / {ft:,} functions) |",
@@ -124,6 +130,16 @@ def expected_readme_text(existing: str, report: dict) -> str:
         f"| Code match | ~{cpct:.1f}% ({cm:,} / {ct:,} matched code bytes) |",
         out,
     )
+    data_row = f"| Data match | ~{dpct:.1f}% ({dm:,} / {dt:,} matched data bytes) |"
+    if re.search(r"\| Data match \| [^|]*\|", out):
+        out = re.sub(r"\| Data match \| [^|]*\|", data_row, out)
+    elif dt:
+        out = re.sub(
+            r"(\| Code match \| [^\n]*\n)",
+            r"\1" + data_row + "\n",
+            out,
+            count=1,
+        )
     return out
 
 
