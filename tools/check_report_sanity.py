@@ -24,7 +24,7 @@ from pathlib import Path
 
 # Keep this pattern in sync with tools/progress.py:SKIP_BASE_SCRATCH.
 SCRATCH = re.compile(
-    r"^(band_|manual_integrated|_int_|_evt_|cs_)|_integrated$",
+    r"^(band_|manual_integrated|_int_|_evt_|cs_)|_integrated$|__a_fn_",
     re.IGNORECASE,
 )
 
@@ -69,6 +69,27 @@ def main(argv: list[str]) -> int:
             f"measures.total_functions ({declared}) != sum over units ({summed}) "
             "— aggregate is out of sync with the unit list."
         )
+
+    # 2b) Version 2 fields drive decomp.dev's matched-vs-linked two-bar UI.
+    version = int(report.get("version", 0) or 0)
+    if version != 2:
+        problems.append(
+            f"report.version is {version}; expected objdiff report v2 for "
+            "complete/linked unit fields."
+        )
+
+    for key in (
+        "total_code", "matched_code", "complete_code",
+        "total_data", "matched_data", "complete_data",
+        "total_units", "complete_units",
+    ):
+        summed_key = usum(key)
+        declared_key = int(float(measures.get(key, 0) or 0))
+        if summed_key != declared_key:
+            problems.append(
+                f"measures.{key} ({declared_key}) != sum over units "
+                f"({summed_key}) — aggregate is out of sync."
+            )
 
     # 3) Phantom double-count detection. A band/scratch phantom is a COPY of a real
     #    TU, so it carries BOTH the same (total, matched) counts AND (nearly) the same

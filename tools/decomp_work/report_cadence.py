@@ -19,7 +19,6 @@ Run (Windows python, from repo root):
 """
 import json
 import os
-import re
 import subprocess
 import sys
 import time
@@ -81,14 +80,12 @@ def cycle() -> None:
         run(["git", "checkout", "--", "report.json"])
         return
     fnp = 100.0 * new / total
-    # sync README metric lines
-    rd = REPO / "README.md"
-    txt = rd.read_text(encoding="utf-8")
-    txt = re.sub(r"\| Function match \| ~[\d.]+% \(\d+ / \d+ functions\) \|",
-                 f"| Function match | ~{fnp:.1f}% ({new} / {total} functions) |", txt)
-    txt = re.sub(r"\| Code match \| ~[\d.]+% \(matched code bytes\) \|",
-                 f"| Code match | ~{codep:.1f}% (matched code bytes) |", txt)
-    rd.write_text(txt, encoding="utf-8")
+    sync = run([sys.executable, "tools/decomp_work/update_readme_progress.py",
+                datetime.now().date().isoformat()])
+    if sync.returncode != 0:
+        log("SKIP: README progress sync failed")
+        run(["git", "checkout", "--", "report.json", "README.md"])
+        return
     msg = (f"progress: {new}/{total} functions ({fnp:.2f}%), {codep:.2f}% code "
            f"[auto-cadence]\n\nCo-Authored-By: Claude Fable 5 <noreply@anthropic.com>")
     for attempt in range(3):

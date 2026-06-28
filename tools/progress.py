@@ -51,7 +51,7 @@ SKIP_BASE_NAMES = {
 # exactly what dropped decomp_code_pct 53%->44% with the DOL still byte-exact.
 # The basename (stem, sans ".o") is matched against this pattern.
 SKIP_BASE_SCRATCH = re.compile(
-    r"^(band_|manual_integrated|_int_|_evt_|cs_)|_integrated$",
+    r"^(band_|manual_integrated|_int_|_evt_|cs_)|_integrated$|__a_fn_",
     re.IGNORECASE,
 )
 
