@@ -1,525 +1,168 @@
 {
-  "$schema": "https://raw.githubusercontent.com/encounter/objdiff/main/config.schema.json",
-  "min_version": "3.0.0",
-  "custom_make": "python tools/compile_check.py",
+  "min_version": "2.0.0-beta.5",
+  "custom_make": "ninja",
   "build_target": false,
-  "build_base": true,
   "watch_patterns": [
-    "src/**/*.c",
-    "src/**/*.cpp",
-    "src/**/*.h",
-    "include/**/*.h",
-    "config/GC6E01/**"
+    "*.c",
+    "*.cc",
+    "*.cp",
+    "*.cpp",
+    "*.cxx",
+    "*.c++",
+    "*.h",
+    "*.hh",
+    "*.hp",
+    "*.hpp",
+    "*.hxx",
+    "*.h++",
+    "*.pch",
+    "*.pch++",
+    "*.inc",
+    "*.py",
+    "*.yml",
+    "*.txt",
+    "*.json"
   ],
   "units": [
     {
-      "name": "crt/__init_cpp_exceptions",
-      "target_path": "build/GC6E01/obj/__init_cpp_exceptions.o",
-      "base_path": "build/GC6E01/base/crt/__init_cpp_exceptions.o",
+      "name": "main/auto_10_8047E700_sbss2",
+      "target_path": "build/GC6E01/obj/auto_10_8047E700_sbss2.o",
       "metadata": {
-        "source_path": "src/crt/__init_cpp_exceptions.c"
-      },
+        "progress_categories": [],
+        "auto_generated": true
+      }
+    },
+    {
+      "name": "main/auto_09_8047B6A0_sdata2",
+      "target_path": "build/GC6E01/obj/auto_09_8047B6A0_sdata2.o",
+      "metadata": {
+        "progress_categories": [],
+        "auto_generated": true
+      }
+    },
+    {
+      "name": "main/crt/sdata2_math",
+      "target_path": "build/GC6E01/obj/crt/sdata2_math.o",
+      "base_path": "build/GC6E01/src/crt/sdata2_math.o",
       "scratch": {
         "platform": "gc_wii",
-        "compiler": "mwcc_247_108",
-        "c_flags": "-O4,p -nodefaults -proc gekko -fp hard -Cpp_exceptions off -enum int -warn off -i include"
+        "compiler": "mwcc_233_163n",
+        "c_flags": "-nodefaults -proc gekko -align powerpc -enum int -fp hard -Cpp_exceptions off -O4,p -inline auto -pragma \"cats off\" -nosyspath -RTTI off -fp_contract on -str reuse -multibyte -DBUILD_VERSION=0 -DVERSION_GC6E01 -DNDEBUG=1 -lang=c",
+        "ctx_path": "build/GC6E01/src/crt/sdata2_math.ctx",
+        "build_ctx": true
+      },
+      "metadata": {
+        "complete": true,
+        "reverse_fn_order": false,
+        "source_path": "src/crt_data/sdata2_math.c",
+        "progress_categories": [
+          "sdk"
+        ],
+        "auto_generated": false
       }
     },
     {
-      "name": "init/__start",
+      "name": "main/auto_09_8047C7A0_sdata2",
+      "target_path": "build/GC6E01/obj/auto_09_8047C7A0_sdata2.o",
+      "metadata": {
+        "progress_categories": [],
+        "auto_generated": true
+      }
+    },
+    {
+      "name": "main/auto_08_80478DC0_sbss",
+      "target_path": "build/GC6E01/obj/auto_08_80478DC0_sbss.o",
+      "metadata": {
+        "progress_categories": [],
+        "auto_generated": true
+      }
+    },
+    {
+      "name": "main/auto_08_8047A7C8_sbss",
+      "target_path": "build/GC6E01/obj/auto_08_8047A7C8_sbss.o",
+      "metadata": {
+        "progress_categories": [],
+        "auto_generated": true
+      }
+    },
+    {
+      "name": "main/auto_07_80478820_sdata",
+      "target_path": "build/GC6E01/obj/auto_07_80478820_sdata.o",
+      "metadata": {
+        "progress_categories": [],
+        "auto_generated": true
+      }
+    },
+    {
+      "name": "main/auto_06_8039A700_bss",
+      "target_path": "build/GC6E01/obj/auto_06_8039A700_bss.o",
+      "metadata": {
+        "progress_categories": [],
+        "auto_generated": true
+      }
+    },
+    {
+      "name": "main/auto_05_8027A500_data",
+      "target_path": "build/GC6E01/obj/auto_05_8027A500_data.o",
+      "metadata": {
+        "progress_categories": [],
+        "auto_generated": true
+      }
+    },
+    {
+      "name": "main/auto_04_802663A0_rodata",
+      "target_path": "build/GC6E01/obj/auto_04_802663A0_rodata.o",
+      "metadata": {
+        "progress_categories": [],
+        "auto_generated": true
+      }
+    },
+    {
+      "name": "main/__init_cpp_exceptions",
+      "target_path": "build/GC6E01/obj/__init_cpp_exceptions.o",
+      "base_path": "build/GC6E01/src/__init_cpp_exceptions.o",
+      "scratch": {
+        "platform": "gc_wii",
+        "compiler": "mwcc_233_163n",
+        "c_flags": "-nodefaults -proc gekko -align powerpc -enum int -fp hard -Cpp_exceptions off -O4,p -inline auto -pragma \"cats off\" -nosyspath -RTTI off -fp_contract on -str reuse -multibyte -DBUILD_VERSION=0 -DVERSION_GC6E01 -DNDEBUG=1 -lang=c",
+        "ctx_path": "build/GC6E01/src/__init_cpp_exceptions.ctx",
+        "build_ctx": true
+      },
+      "metadata": {
+        "complete": true,
+        "reverse_fn_order": false,
+        "source_path": "src/crt_data/__init_cpp_exceptions.c",
+        "progress_categories": [
+          "sdk"
+        ],
+        "auto_generated": false
+      }
+    },
+    {
+      "name": "main/auto_01_800055E0_text",
+      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
+      "metadata": {
+        "progress_categories": [],
+        "auto_generated": true
+      }
+    },
+    {
+      "name": "main/auto_00_80003100_init",
       "target_path": "build/GC6E01/obj/auto_00_80003100_init.o",
-      "base_path": "build/GC6E01/base/init/__start.o",
       "metadata": {
-        "source_path": "src/init/__start.c"
+        "progress_categories": [],
+        "auto_generated": true
       }
+    }
+  ],
+  "progress_categories": [
+    {
+      "id": "game",
+      "name": "Game Code"
     },
     {
-      "name": "game/main",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/game/main.o",
-      "metadata": {
-        "source_path": "src/game/main.c"
-      }
-    },
-    {
-      "name": "dolphin/db/DB",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/dolphin/db/DB.o",
-      "metadata": {
-        "source_path": "src/dolphin/db/DB.c"
-      }
-    },
-    {
-      "name": "dolphin/dvd/DVD",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/dolphin/dvd/DVD.o",
-      "metadata": {
-        "source_path": "src/dolphin/dvd/DVD.c"
-      }
-    },
-    {
-      "name": "dolphin/dvd/DVDError",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/dolphin/dvd/DVDError.o",
-      "metadata": {
-        "source_path": "src/dolphin/dvd/DVDError.c"
-      }
-    },
-    {
-      "name": "dolphin/dvd/DVDFs",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/dolphin/dvd/DVDFs.o",
-      "metadata": {
-        "source_path": "src/dolphin/dvd/DVDFs.c"
-      }
-    },
-    {
-      "name": "dolphin/dvd/DVDLow",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/dolphin/dvd/DVDLow.o",
-      "metadata": {
-        "source_path": "src/dolphin/dvd/DVDLow.c"
-      }
-    },
-    {
-      "name": "dolphin/dvd/DVDQueue",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/dolphin/dvd/DVDQueue.o",
-      "metadata": {
-        "source_path": "src/dolphin/dvd/DVDQueue.c"
-      }
-    },
-    {
-      "name": "dolphin/exi/EXI",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/dolphin/exi/EXI.o",
-      "metadata": {
-        "source_path": "src/dolphin/exi/EXI.c"
-      }
-    },
-    {
-      "name": "dolphin/os/OSAlarm",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/dolphin/os/OSAlarm.o",
-      "metadata": {
-        "source_path": "src/dolphin/os/OSAlarm.c"
-      }
-    },
-    {
-      "name": "dolphin/os/OSArena",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/dolphin/os/OSArena.o",
-      "metadata": {
-        "source_path": "src/dolphin/os/OSArena.c"
-      }
-    },
-    {
-      "name": "dolphin/os/OSCache",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/dolphin/os/OSCache.o",
-      "metadata": {
-        "source_path": "src/dolphin/os/OSCache.c"
-      }
-    },
-    {
-      "name": "dolphin/os/OSContext",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/dolphin/os/OSContext.o",
-      "metadata": {
-        "source_path": "src/dolphin/os/OSContext.c"
-      }
-    },
-    {
-      "name": "dolphin/os/OSError",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/dolphin/os/OSError.o",
-      "metadata": {
-        "source_path": "src/dolphin/os/OSError.c"
-      }
-    },
-    {
-      "name": "dolphin/os/OSException",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/dolphin/os/OSException.o",
-      "metadata": {
-        "source_path": "src/dolphin/os/OSException.c"
-      }
-    },
-    {
-      "name": "dolphin/os/OSInit",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/dolphin/os/OSInit.o",
-      "metadata": {
-        "source_path": "src/dolphin/os/OSInit.c"
-      }
-    },
-    {
-      "name": "dolphin/os/OSInterrupt",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/dolphin/os/OSInterrupt.o",
-      "metadata": {
-        "source_path": "src/dolphin/os/OSInterrupt.c"
-      }
-    },
-    {
-      "name": "dolphin/os/OSMemory",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/dolphin/os/OSMemory.o",
-      "metadata": {
-        "source_path": "src/dolphin/os/OSMemory.c"
-      }
-    },
-    {
-      "name": "dolphin/os/OSReset",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/dolphin/os/OSReset.o",
-      "metadata": {
-        "source_path": "src/dolphin/os/OSReset.c"
-      }
-    },
-    {
-      "name": "dolphin/os/OSThread",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/dolphin/os/OSThread.o",
-      "metadata": {
-        "source_path": "src/dolphin/os/OSThread.c"
-      }
-    },
-    {
-      "name": "dolphin/os/OSTime",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/dolphin/os/OSTime.o",
-      "metadata": {
-        "source_path": "src/dolphin/os/OSTime.c"
-      }
-    },
-    {
-      "name": "dolphin/os/PPCArch",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/dolphin/os/PPCArch.o",
-      "metadata": {
-        "source_path": "src/dolphin/os/PPCArch.c"
-      }
-    },
-    {
-      "name": "dolphin/exi/EXI2",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/dolphin/exi/EXI2.o",
-      "metadata": {
-        "source_path": "src/dolphin/exi/EXI2.c"
-      }
-    },
-    {
-      "name": "dolphin/si/SI",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/dolphin/si/SI.o",
-      "metadata": {
-        "source_path": "src/dolphin/si/SI.c"
-      }
-    },
-    {
-      "name": "dolphin/vi/VI",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/dolphin/vi/VI.o",
-      "metadata": {
-        "source_path": "src/dolphin/vi/VI.c"
-      }
-    },
-    {
-      "name": "crt/exit",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/crt/exit.o",
-      "metadata": {
-        "source_path": "src/crt/exit.c"
-      }
-    },
-    {
-      "name": "crt/global_destructor_chain",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/crt/global_destructor_chain.o",
-      "metadata": {
-        "source_path": "src/crt/global_destructor_chain.c"
-      }
-    },
-    {
-      "name": "crt/mem",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/crt/mem.o",
-      "metadata": {
-        "source_path": "src/crt/mem.c"
-      }
-    },
-    {
-      "name": "crt/printf",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/crt/printf.o",
-      "metadata": {
-        "source_path": "src/crt/printf.c"
-      }
-    },
-    {
-      "name": "crt/stdio",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/crt/stdio.o",
-      "metadata": {
-        "source_path": "src/crt/stdio.c"
-      }
-    },
-    {
-      "name": "crt/string",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/crt/string.o",
-      "metadata": {
-        "source_path": "src/crt/string.c"
-      }
-    },
-    {
-      "name": "crt/wchar",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/crt/wchar.o",
-      "metadata": {
-        "source_path": "src/crt/wchar.c"
-      }
-    },
-    {
-      "name": "crt/__va_arg",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/crt/__va_arg.o",
-      "metadata": {
-        "source_path": "src/crt/__va_arg.c"
-      }
-    },
-    {
-      "name": "trk/TRKInit",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/trk/TRKInit.o",
-      "metadata": {
-        "source_path": "src/trk/TRKInit.c"
-      }
-    },
-    {
-      "name": "trk/TRKNub",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/trk/TRKNub.o",
-      "metadata": {
-        "source_path": "src/trk/TRKNub.c"
-      }
-    },
-    {
-      "name": "trk/TRKDispatch",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/trk/TRKDispatch.o",
-      "metadata": {
-        "source_path": "src/trk/TRKDispatch.c"
-      }
-    },
-    {
-      "name": "trk/TRKBuffer",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/trk/TRKBuffer.o",
-      "metadata": {
-        "source_path": "src/trk/TRKBuffer.c"
-      }
-    },
-    {
-      "name": "trk/TRKComm",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/trk/TRKComm.o",
-      "metadata": {
-        "source_path": "src/trk/TRKComm.c"
-      }
-    },
-    {
-      "name": "trk/TRKBoard",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/trk/TRKBoard.o",
-      "metadata": {
-        "source_path": "src/trk/TRKBoard.c"
-      }
-    },
-    {
-      "name": "trk/TRKSerial",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/trk/TRKSerial.o",
-      "metadata": {
-        "source_path": "src/trk/TRKSerial.c"
-      }
-    },
-    {
-      "name": "trk/TRKInterrupt",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/trk/TRKInterrupt.o",
-      "metadata": {
-        "source_path": "src/trk/TRKInterrupt.c"
-      }
-    },
-    {
-      "name": "trk/TRKSaveState",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/trk/TRKSaveState.o",
-      "metadata": {
-        "source_path": "src/trk/TRKSaveState.c"
-      }
-    },
-    {
-      "name": "trk/TRKTarget",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/trk/TRKTarget.o",
-      "metadata": {
-        "source_path": "src/trk/TRKTarget.c"
-      }
-    },
-    {
-      "name": "trk/ddh_cc",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/trk/ddh_cc.o",
-      "metadata": {
-        "source_path": "src/trk/ddh_cc.c"
-      }
-    },
-    {
-      "name": "trk/gdev_cc",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/trk/gdev_cc.o",
-      "metadata": {
-        "source_path": "src/trk/gdev_cc.c"
-      }
-    },
-    {
-      "name": "trk/udp_cc",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/trk/udp_cc.o",
-      "metadata": {
-        "source_path": "src/trk/udp_cc.c"
-      }
-    },
-    {
-      "name": "hsd/hsd_class",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/hsd/hsd_class.o",
-      "metadata": {
-        "source_path": "src/hsd/hsd_class.c"
-      }
-    },
-    {
-      "name": "hsd/hsd_object",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/hsd/hsd_object.o",
-      "metadata": {
-        "source_path": "src/hsd/hsd_object.c"
-      }
-    },
-    {
-      "name": "hsd/hsd_fobj",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/hsd/hsd_fobj.o",
-      "metadata": {
-        "source_path": "src/hsd/hsd_fobj.c"
-      }
-    },
-    {
-      "name": "hsd/hsd_aobj",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/hsd/hsd_aobj.o",
-      "metadata": {
-        "source_path": "src/hsd/hsd_aobj.c"
-      }
-    },
-    {
-      "name": "hsd/hsd_robj",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/hsd/hsd_robj.o",
-      "metadata": {
-        "source_path": "src/hsd/hsd_robj.c"
-      }
-    },
-    {
-      "name": "hsd/hsd_wobj",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/hsd/hsd_wobj.o",
-      "metadata": {
-        "source_path": "src/hsd/hsd_wobj.c"
-      }
-    },
-    {
-      "name": "hsd/hsd_tobj",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/hsd/hsd_tobj.o",
-      "metadata": {
-        "source_path": "src/hsd/hsd_tobj.c"
-      }
-    },
-    {
-      "name": "hsd/hsd_mobj",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/hsd/hsd_mobj.o",
-      "metadata": {
-        "source_path": "src/hsd/hsd_mobj.c"
-      }
-    },
-    {
-      "name": "hsd/hsd_pobj",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/hsd/hsd_pobj.o",
-      "metadata": {
-        "source_path": "src/hsd/hsd_pobj.c"
-      }
-    },
-    {
-      "name": "hsd/hsd_dobj",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/hsd/hsd_dobj.o",
-      "metadata": {
-        "source_path": "src/hsd/hsd_dobj.c"
-      }
-    },
-    {
-      "name": "hsd/hsd_jobj",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/hsd/hsd_jobj.o",
-      "metadata": {
-        "source_path": "src/hsd/hsd_jobj.c"
-      }
-    },
-    {
-      "name": "hsd/hsd_cobj",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/hsd/hsd_cobj.o",
-      "metadata": {
-        "source_path": "src/hsd/hsd_cobj.c"
-      }
-    },
-    {
-      "name": "hsd/hsd_lobj",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/hsd/hsd_lobj.o",
-      "metadata": {
-        "source_path": "src/hsd/hsd_lobj.c"
-      }
-    },
-    {
-      "name": "hsd/hsd_fog",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/hsd/hsd_fog.o",
-      "metadata": {
-        "source_path": "src/hsd/hsd_fog.c"
-      }
-    },
-    {
-      "name": "hsd/hsd_displayfunc",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/hsd/hsd_displayfunc.o",
-      "metadata": {
-        "source_path": "src/hsd/hsd_displayfunc.c"
-      }
-    },
-    {
-      "name": "hsd/hsd_initialize",
-      "target_path": "build/GC6E01/obj/auto_01_800055E0_text.o",
-      "base_path": "build/GC6E01/base/hsd/hsd_initialize.o",
-      "metadata": {
-        "source_path": "src/hsd/hsd_initialize.c"
-      }
+      "id": "sdk",
+      "name": "SDK Code"
     }
   ]
 }

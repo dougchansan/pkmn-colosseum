@@ -13,3 +13,6 @@ Sections:
 
 crt/sdata2_math.c:
 	.sdata2     start:0x8047C4A0 end:0x8047C7A0
+
+__init_cpp_exceptions.cpp:
+	.dtors      start:0x80266380 end:0x80266384

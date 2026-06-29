@@ -1077,6 +1077,7 @@
     "fn_80114714",
     "fn_801147D4",
     "fn_80114808",
+    "fn_8011487C",
     "fn_801149BC",
     "fn_80114A70",
     "fn_80114D18",
@@ -3440,12 +3441,12 @@
   "metadata": {
     "source": "report.json",
     "policy": "completed = active REAL_C functions with fuzzy_match_percent >= 99.995; asm wrappers/stubs excluded",
-    "report_sha256": "808fce4d0ad80a46f223d205490dd81f0e8beb5ab6512562b7a998cb26fcfc5b",
-    "report_matched_functions": 4310,
+    "report_sha256": "1c84b6eb3ff21801a3db8e32d3f3d4e12a809faef319c99fb16be16a442ecbd8",
+    "report_matched_functions": 3454,
     "report_total_functions": 6795,
-    "report_matched_data": 19139,
+    "report_matched_data": 13371,
     "report_total_data": 1276195,
-    "report_complete_data": 19139,
-    "completed_real_c_functions": 3434
+    "report_complete_data": 13371,
+    "completed_real_c_functions": 3435
   }
 }

@@ -11,18 +11,25 @@ compiler that Genius Sonority used in 2003.
 
 | Metric | Value |
 |---|---|
-| Function match | ~63.4% (4,310 / 6,795 functions) |
-| Code match | ~39.6% (542,536 / 1,368,604 matched code bytes) |
-| Data match | ~1.5% (19,139 / 1,276,195 matched data bytes) |
+| Function match | ~50.8% (3,454 / 6,795 functions) |
+| Code match | ~12.6% (314,800 / 2,503,104 matched code bytes) |
+| Data match | ~1.0% (13,371 / 1,276,195 matched data bytes) |
 
-Last updated 2026-06-28 from trust-gated per-function scans on top of the
+Last updated 2026-06-29 from trust-gated per-function scans on top of the
 2026-06-25 `python tools/gen_decomp_report.py -o report.json` baseline,
 against the local ROM-extracted target/base objects, after a full `compile_check
 --all` rebuild and removing four duplicate measurement units that had double-counted
 real TUs (gs_field_world / gs_title were counted twice; gs_render_w2 / pokemon_boss2
 were 94-95% copies of gs_render / pokemon). De-duplication lowered the headline
-~2.4pts (functions) / ~5pts (code) but the number is now honest and locally
-reproducible. The numbers are regenerated locally — public CI
+~2.4pts (functions) / ~5pts (code). On 2026-06-29 the Function/Code match
+policy was tightened to count only active real C as matched: active asm
+wrappers, `.inc` bodies, stubs, and no-source split asm remain in the
+denominator but contribute 0 matched functions/bytes. The Code denominator was
+also corrected to include 1,134,500 bytes of unattributed/unsplit executable
+code as unmatched, so Code match now uses the full 2,503,104-byte executable
+denominator instead of only the 1,368,604 bytes covered by measured function
+items. Data match uses the full 1,276,195-byte loadable non-BSS data
+denominator. The numbers are regenerated locally — public CI
 cannot hold the ROM-derived target objects, so `.github/workflows/progress.yml`
 only gates compilation until the private build container is published. (Note:
 the denominators grew over time as more translation units were unblocked, so

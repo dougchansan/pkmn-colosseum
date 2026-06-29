@@ -7,12 +7,17 @@ so we generate it LOCALLY (this machine has the ROM + unified target obj +
 per-file base objects), commit the result, and have a workflow upload the
 committed file as an artifact named "GC6E01_report" so decomp.dev can ingest it.
 
-We do NOT re-implement diffing and we do NOT use objdiff-cli for the report
-(our objdiff.json mixes per-file target paths with a single UNIFIED target, so
-objdiff-cli would mis-count). Instead we REUSE tools/progress.py's measurement:
-its measure_cache.diff_funcs() returns the cached, correct per-function match
-list for each base .o, and progress.collect()/summarize() give the aggregate we
-cross-check against.
+We do NOT re-implement diffing and we do NOT use objdiff-cli for the published
+honest report: objdiff/decomp.dev do not know which 100% matches are active real
+C versus asm wrappers, and the project tracks additional report-only per-file
+base objects in config/GC6E01/objdiff_report.json. Instead we REUSE
+tools/progress.py's measurement: its measure_cache.diff_funcs() returns the
+cached, correct per-function match list for each base .o, and
+progress.collect()/summarize() give the aggregate we cross-check against. The
+function list is not the full executable section: any target code bytes not
+represented by measured functions are emitted as one unmatched
+"__unattributed_code" unit so the decomp.dev Code denominator reflects the
+actual DOL code size from dtk's build config.
 
 The emitted JSON follows the objdiff Report proto's proto3-JSON encoding as
 produced by objdiff-cli (pbjson):
@@ -45,16 +50,20 @@ sys.path.insert(0, str(TOOLS))
 import measure_cache  # noqa: E402  (per-function diff, cached)
 import progress  # noqa: E402  (collect()/summarize() for cross-validation)
 
+DECOMP_WORK = ROOT / "tools" / "decomp_work"
+
 TARGET_O = ROOT / "build" / "GC6E01" / "obj" / "auto_01_800055E0_text.o"
 BASE_DIR = ROOT / "build" / "GC6E01" / "base"
-OBJDIFF_CFG = ROOT / "objdiff.json"
+REPORT_OBJDIFF_CFG = ROOT / "config" / "GC6E01" / "objdiff_report.json"
 BUILD_CFG = ROOT / "build" / "GC6E01" / "config.json"
 DATA_PROGRESS = ROOT / "config" / "GC6E01" / "data_progress.json"
+UNATTRIBUTED_CODE_UNIT = "__unattributed_code"
 
 # objdiff report.proto version. Current schema is version 1.
 REPORT_VERSION = 1
 # A function counts as "complete"/matched at exactly this percent.
 COMPLETE_PCT = 100.0
+REAL_C_CLASS = "REAL_C"
 
 
 def _u64(v) -> str:
@@ -124,10 +133,15 @@ def _measures(total_funcs, matched_funcs, total_code, matched_code, fuzzy,
 
 
 def _load_cfg_map():
-    """rel-base-.o-path -> {name, source_path} from objdiff.json (curated subset)."""
+    """rel-base-.o-path -> {name, source_path} from the curated report map.
+
+    dtk-template owns the top-level objdiff.json and regenerates it from the
+    active link graph. This report map is separate because the public decomp.dev
+    snapshot tracks the per-file base objects used for decomp work.
+    """
     mapping = {}
     try:
-        cfg = json.loads(OBJDIFF_CFG.read_text(encoding="utf-8"))
+        cfg = json.loads(REPORT_OBJDIFF_CFG.read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return mapping
     for u in cfg.get("units", []):
@@ -172,6 +186,22 @@ def _loadable_data_size() -> int:
     return total
 
 
+def _target_code_size() -> int:
+    """Return total executable target bytes from dtk's build config."""
+    try:
+        cfg = json.loads(BUILD_CFG.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return 0
+
+    total = 0
+    for unit in cfg.get("units", []):
+        try:
+            total += int(unit.get("code_size", 0) or 0)
+        except (TypeError, ValueError):
+            continue
+    return total
+
+
 def _data_progress() -> tuple[int, int]:
     """Return (matched_data, complete_data) from the data progress manifest."""
     try:
@@ -203,11 +233,25 @@ def _data_progress() -> tuple[int, int]:
     return matched, complete
 
 
+def _source_classes() -> dict[str, str]:
+    """Return active-source classification by function name.
+
+    Only active REAL_C functions are honest decompilation matches. Active asm
+    wrappers and no-source split asm can reproduce ROM bytes, but they are not C
+    decompilation and must not contribute matched_functions/matched_code.
+    """
+    sys.path.insert(0, str(DECOMP_WORK))
+    import progress2  # noqa: WPS433  (lazy import avoids a hard tool startup cost)
+
+    _, fn2class = progress2.classify_all()
+    return fn2class
+
+
 def _unit_identity(rel: str, cfg_map: dict):
     """Return (unit_name, source_path) for a base .o rel path.
 
-    Prefer the curated objdiff.json entry; otherwise derive a stable name from
-    the rel path (drop the .o) and a best-guess source path src/<rel>.c.
+    Prefer the curated report-map entry; otherwise derive a stable name from the
+    rel path (drop the .o) and a best-guess source path src/<rel>.c.
     """
     info = cfg_map.get(rel)
     stem = rel[:-2] if rel.endswith(".o") else rel  # strip ".o"
@@ -223,11 +267,14 @@ def _unit_identity(rel: str, cfg_map: dict):
 
 def build_report():
     cfg_map = _load_cfg_map()
+    fn2class = _source_classes()
+    g_target_code = _target_code_size()
     g_total_data = _loadable_data_size()
     g_matched_data, g_complete_data = _data_progress()
 
     units = []
-    # running aggregate, computed from the SAME per-function data as the units
+    # Running aggregate. Matched/fuzzy code comes from measured functions; total
+    # code is corrected below to the full executable section size.
     g_total_funcs = g_matched_funcs = 0
     g_total_code = g_matched_code = 0
     g_fuzzy_weighted = 0.0  # sum(match% * size)
@@ -262,9 +309,12 @@ def build_report():
         for f in funcs:
             pct = float(f["match"])
             sz = int(f["size"])
+            cls = fn2class.get(f["name"], "NO_SOURCE")
+            is_real_c = cls == REAL_C_CLASS
+            honest_pct = pct if is_real_c else 0.0
             u_total_code += sz
-            u_fuzzy_weighted += pct * sz
-            is_complete = pct >= COMPLETE_PCT
+            u_fuzzy_weighted += honest_pct * sz
+            is_complete = is_real_c and pct >= COMPLETE_PCT
             if is_complete:
                 u_matched += 1
                 u_matched_code += sz
@@ -273,7 +323,7 @@ def build_report():
                 # ReportItem.size is uint64 -> string; omit if 0
                 "size": _u64(sz) if sz else None,
                 # fuzzy_match_percent is float -> bare; omit if 0.0
-                "fuzzy_match_percent": pct if pct else None,
+                "fuzzy_match_percent": honest_pct if honest_pct else None,
             }
             items.append(_prune(item))
 
@@ -317,6 +367,23 @@ def build_report():
             print("measured %d/%d base objects (%d report units)" %
                   (idx, len(base_objects), len(units)), flush=True)
 
+    measured_code = g_total_code
+    unattributed_code = max(0, g_target_code - measured_code)
+    if unattributed_code:
+        units.append({
+            "name": UNATTRIBUTED_CODE_UNIT,
+            "measures": _measures(
+                total_funcs=0, matched_funcs=0,
+                total_code=unattributed_code, matched_code=0,
+                fuzzy=0.0, total_units=1, complete_units=0,
+            ),
+            "functions": [],
+            "metadata": {
+                "source_path": "unattributed/unsplit executable code",
+            },
+        })
+        g_total_code += unattributed_code
+
     total_units = len(units)
     g_code_fuzzy = (g_fuzzy_weighted / g_total_code) if g_total_code else 0.0
     g_fuzzy = (
@@ -345,6 +412,8 @@ def build_report():
         "matched_functions": g_matched_funcs,
         "total_code": g_total_code,
         "matched_code": g_matched_code,
+        "measured_code": measured_code,
+        "unattributed_code": unattributed_code,
         "fuzzy_match_percent": g_fuzzy,
         "code_fuzzy_match_percent": g_code_fuzzy,
         "total_data": g_total_data,
@@ -401,9 +470,16 @@ def validate(report, agg):
                  % ("ok" if enc_ok else "WRONG"))
     ok = ok and enc_ok
 
-    # 4) units_count ~= base .o with functions
+    # 4) units_count ~= base .o with functions, plus optional unmatched code bucket.
     units_count = len(report["units"])
-    lines.append("units: %d" % units_count)
+    unattributed_units = sum(
+        1 for u in report["units"] if u.get("name") == UNATTRIBUTED_CODE_UNIT
+    )
+    measured_units_count = units_count - unattributed_units
+    lines.append(
+        "units: %d (%d measured + %d unattributed)"
+        % (units_count, measured_units_count, unattributed_units)
+    )
 
     # 5) overall totals AGREE with progress.py collect()/summarize()
     files = progress.collect()
@@ -411,17 +487,40 @@ def validate(report, agg):
     pf_total = psum["total_functions"]
     pf_matched = psum["matched_functions"]
     pf_units = sum(1 for f in files.values() if f["functions"] > 0)
-    same_fns = (agg["total_functions"] == pf_total
-                and agg["matched_functions"] == pf_matched)
-    same_units = (units_count == pf_units)
+    same_fns = agg["total_functions"] == pf_total
+    same_units = (measured_units_count == pf_units)
     lines.append("progress.py: %d/%d functions, %d units"
                  % (pf_matched, pf_total, pf_units))
     lines.append("report:      %d/%d functions, %d units"
                  % (agg["matched_functions"], agg["total_functions"],
                     units_count))
-    lines.append("functions agree: %s ; units agree: %s"
-                 % (same_fns, same_units))
-    ok = ok and same_fns and same_units
+    lines.append(
+        "function denominator agrees: %s ; units agree: %s ; "
+        "strict real-C matches <= objdiff matches: %s"
+        % (same_fns, same_units, agg["matched_functions"] <= pf_matched)
+    )
+
+    measured_code = psum["total_bytes"]
+    target_code = _target_code_size()
+    expected_code = max(target_code, measured_code)
+    same_code = (
+        agg["measured_code"] == measured_code
+        and agg["matched_code"] <= psum["matched_bytes"]
+        and agg["total_code"] == expected_code
+    )
+    lines.append(
+        "code denominator: measured=%d, target=%d, report=%d; "
+        "strict matched=%d <= objdiff matched=%d -> %s"
+        % (
+            measured_code,
+            target_code,
+            agg["total_code"],
+            agg["matched_code"],
+            psum["matched_bytes"],
+            "ok" if same_code else "WRONG",
+        )
+    )
+    ok = ok and same_fns and same_units and same_code
 
     # 6) sanity: matched <= total, percent in [0,100]
     sane = (agg["matched_functions"] <= agg["total_functions"]
@@ -454,16 +553,26 @@ def _check_denominator_shrink(out: Path, agg: dict, allow: bool) -> None:
     measures = existing.get("measures", {}) or {}
     old_functions = _measure_int(measures, "total_functions")
     old_units = _measure_int(measures, "total_units")
+    old_code = _measure_int(measures, "total_code")
     new_functions = int(agg.get("total_functions", 0) or 0)
     new_units = int(agg.get("total_units", 0) or 0)
-    if old_functions > new_functions or old_units > new_units:
+    new_code = int(agg.get("total_code", 0) or 0)
+    if old_functions > new_functions or old_units > new_units or old_code > new_code:
         sys.exit(
             "refusing to overwrite %s: generated report has a smaller "
-            "denominator (%d functions/%d units) than the existing report "
-            "(%d functions/%d units). Your local build/GC6E01/base may be "
-            "partial; rerun the full local setup or pass "
+            "denominator (%d functions/%d units/%d code bytes) than the "
+            "existing report (%d functions/%d units/%d code bytes). Your local "
+            "build/GC6E01/base may be partial; rerun the full local setup or pass "
             "--allow-denominator-shrink for an intentional denominator cleanup."
-            % (out, new_functions, new_units, old_functions, old_units)
+            % (
+                out,
+                new_functions,
+                new_units,
+                new_code,
+                old_functions,
+                old_units,
+                old_code,
+            )
         )
 
 

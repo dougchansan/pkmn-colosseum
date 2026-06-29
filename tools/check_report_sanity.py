@@ -12,7 +12,8 @@ the DOL still byte-matched the ROM.
 
 This check fails CI if report.json contains any scratch-pattern unit, so a
 polluted report can never be merged again. It also cross-checks that the
-top-level total_functions equals the sum over units (no hidden inflation).
+top-level total_functions/total_code values equal the sum over units (no hidden
+inflation or hidden denominator shrink).
 
 Usage:  python tools/check_report_sanity.py [path/to/report.json]
 Exit 0 = clean, 1 = violation.
@@ -26,7 +27,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 DATA_PROGRESS = ROOT / "config" / "GC6E01" / "data_progress.json"
 DATA_VERIFIER = ROOT / "tools" / "verify_data_progress.py"
+BUILD_CFG = ROOT / "build" / "GC6E01" / "config.json"
 OBJCOPY = ROOT / "build" / "binutils" / "powerpc-eabi-objcopy"
+MATCH = 99.995
 
 # Keep this pattern in sync with tools/progress.py:SKIP_BASE_SCRATCH.
 SCRATCH = re.compile(
@@ -64,6 +67,12 @@ def main(argv: list[str]) -> int:
         except (TypeError, ValueError):
             return 0
 
+    def mfloat(value) -> float:
+        try:
+            return float(value or 0)
+        except (TypeError, ValueError):
+            return 0.0
+
     def usum(key: str) -> int:
         total = 0
         for u in units:
@@ -77,6 +86,42 @@ def main(argv: list[str]) -> int:
             f"measures.total_functions ({declared}) != sum over units ({summed}) "
             "— aggregate is out of sync with the unit list."
         )
+
+    summed_code = usum("total_code")
+    declared_code = mint(measures.get("total_code", 0))
+    if declared_code and summed_code and declared_code != summed_code:
+        problems.append(
+            f"measures.total_code ({declared_code}) != sum over units ({summed_code}) "
+            "— code denominator is out of sync with the unit list."
+        )
+
+    if BUILD_CFG.exists() and declared_code:
+        try:
+            cfg = json.loads(BUILD_CFG.read_text(encoding="utf-8"))
+            target_code = 0
+            target_data = 0
+            for unit in cfg.get("units", []) or []:
+                target_code += mint(unit.get("code_size", 0))
+                data_size = mint(unit.get("data_size", 0))
+                name = str(unit.get("name", "")).lower()
+                obj = str(unit.get("object", "")).lower()
+                if data_size and "bss" not in name and "bss" not in obj:
+                    target_data += data_size
+            if target_code and declared_code != target_code:
+                problems.append(
+                    f"measures.total_code ({declared_code}) != dtk target code "
+                    f"size ({target_code}). Regenerate report.json with "
+                    "tools/gen_decomp_report.py."
+                )
+            declared_data = mint(measures.get("total_data", 0))
+            if target_data and declared_data and declared_data != target_data:
+                problems.append(
+                    f"measures.total_data ({declared_data}) != dtk loadable "
+                    f"non-BSS data size ({target_data}). Regenerate report.json "
+                    "with tools/gen_decomp_report.py."
+                )
+        except (OSError, ValueError) as exc:
+            problems.append(f"could not read build config for code size: {exc}")
 
     # 2b) The decomp.dev report must carry the non-code loadable data
     #     denominator, otherwise the second Code/Data progress bar disappears.
@@ -130,7 +175,7 @@ def main(argv: list[str]) -> int:
             # Public CI generally lacks ROM-derived split objects. When the
             # local verifier prerequisites are available, require byte/reloc
             # proof for every manifest entry.
-            if OBJCOPY.exists() and DATA_VERIFIER.exists():
+            if BUILD_CFG.exists() and OBJCOPY.exists() and DATA_VERIFIER.exists():
                 verify = subprocess.run(
                     [sys.executable, "tools/verify_data_progress.py"],
                     cwd=ROOT,
@@ -142,6 +187,35 @@ def main(argv: list[str]) -> int:
                         "data progress byte/reloc verification failed:\n"
                         + (verify.stdout + verify.stderr).strip()
                     )
+
+    # 2c) Matched code/functions must represent active REAL_C only. Active asm
+    #     wrappers and no-source split asm may be ROM-reproducible, but they are
+    #     not decompiled C and must not contribute to function/code match.
+    try:
+        sys.path.insert(0, str(ROOT / "tools" / "decomp_work"))
+        import progress2  # type: ignore
+
+        _, fn2class = progress2.classify_all()
+        non_real_matches = []
+        for unit in units:
+            for fn in unit.get("functions", []) or []:
+                if mfloat(fn.get("fuzzy_match_percent", 0)) >= MATCH:
+                    name = fn.get("name", "")
+                    cls = fn2class.get(name, "NO_SOURCE")
+                    if cls != "REAL_C":
+                        non_real_matches.append(f"{name}:{cls}")
+        if non_real_matches:
+            problems.append(
+                "report.json marks non-REAL_C functions as matched: "
+                + ", ".join(non_real_matches[:20])
+                + (" ..." if len(non_real_matches) > 20 else "")
+            )
+    except Exception as exc:  # noqa: BLE001
+        problems.append(f"could not classify source functions for real-C match check: {exc}")
+
+    fuzzy = mfloat(measures.get("fuzzy_match_percent", 0))
+    if not 0.0 <= fuzzy <= 100.0:
+        problems.append(f"measures.fuzzy_match_percent out of range: {fuzzy}")
 
     # 3) Phantom double-count detection. A band/scratch phantom is a COPY of a real
     #    TU, so it carries BOTH the same (total, matched) counts AND (nearly) the same
@@ -193,7 +267,8 @@ def main(argv: list[str]) -> int:
     print(
         f"report-sanity: OK ({len(units)} units, "
         f"total_functions={declared or summed}, "
-        f"code%={measures.get('matched_code_percent', 0):.2f}, "
+        f"code={measures.get('matched_code', 0)}/{declared_code or summed_code} "
+        f"({measures.get('matched_code_percent', 0):.2f}%), "
         f"data={matched_data}/{total_data})"
     )
     return 0

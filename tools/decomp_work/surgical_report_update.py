@@ -24,18 +24,41 @@ def ci(v):  # code value -> int (schema stores as string)
     return int(v or 0)
 
 
-def recompute_unit(u):
+def cf(v):
+    try:
+        return float(v or 0)
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def source_classes():
+    sys.path.insert(0, str(ROOT / "tools" / "decomp_work"))
+    import progress2  # type: ignore
+
+    _, fn2class = progress2.classify_all()
+    return fn2class
+
+
+def recompute_unit(u, fn2class):
     fns = u.get("functions", [])
     m = u["measures"]
     total_code = ci(m.get("total_code"))
-    matched_code = sum(ci(f.get("size")) for f in fns if f.get("fuzzy_match_percent", 0) >= MATCH)
-    matched_fns = sum(1 for f in fns if f.get("fuzzy_match_percent", 0) >= MATCH)
+    matched_code = 0
+    matched_fns = 0
+    fuzzy_weight = 0.0
+    for f in fns:
+        size = ci(f.get("size"))
+        is_real_c = fn2class.get(f.get("name")) == "REAL_C"
+        fuzzy = cf(f.get("fuzzy_match_percent")) if is_real_c else 0.0
+        if not is_real_c:
+            f.pop("fuzzy_match_percent", None)
+        fuzzy_weight += size * fuzzy
+        if is_real_c and fuzzy >= MATCH:
+            matched_code += size
+            matched_fns += 1
     total_fns = int(m.get("total_functions", len(fns)) or 0)
     # code-weighted fuzzy
-    if total_code:
-        fuzzy = sum(ci(f.get("size")) * f.get("fuzzy_match_percent", 0) for f in fns) / total_code
-    else:
-        fuzzy = 0.0
+    fuzzy = (fuzzy_weight / total_code) if total_code else 0.0
     m["matched_code"] = str(matched_code)
     m["matched_code_percent"] = (100.0 * matched_code / total_code) if total_code else 0.0
     m["matched_functions"] = matched_fns
@@ -53,18 +76,23 @@ def main():
     report = sys.argv[2] if len(sys.argv) > 2 else "report.json"
     crk = set(Path(fns_file).read_text().split())
     d = json.loads(Path(report).read_text(encoding="utf-8"))
+    fn2class = source_classes()
 
     touched = set()
     flipped = 0
     for u in d["units"]:
         unit_hit = False
         for f in u.get("functions", []):
-            if f["name"] in crk and f.get("fuzzy_match_percent", 0) < MATCH:
+            if (
+                f["name"] in crk
+                and fn2class.get(f["name"]) == "REAL_C"
+                and f.get("fuzzy_match_percent", 0) < MATCH
+            ):
                 f["fuzzy_match_percent"] = 100.0
                 flipped += 1
                 unit_hit = True
         if unit_hit:
-            recompute_unit(u)
+            recompute_unit(u, fn2class)
             touched.add(u["name"])
 
     # top-level aggregate = sum of units
@@ -76,8 +104,17 @@ def main():
     tot_fns = sum(int(u["measures"].get("total_functions", 0) or 0) for u in units)
     mat_fns = sum(int(u["measures"].get("matched_functions", 0) or 0) for u in units)
     cmp_units = sum(int(u["measures"].get("complete_units", 0) or 0) for u in units)
-    fuzzy = (sum(ci(u["measures"].get("total_code")) * u["measures"].get("fuzzy_match_percent", 0)
-                 for u in units) / tot_code) if tot_code else 0.0
+    code_fuzzy_weight = sum(
+        ci(u["measures"].get("total_code")) * u["measures"].get("fuzzy_match_percent", 0)
+        for u in units
+    )
+    total_data = ci(T.get("total_data"))
+    matched_data = ci(T.get("matched_data"))
+    fuzzy = (
+        (code_fuzzy_weight + (100.0 * matched_data)) / (tot_code + total_data)
+        if (tot_code + total_data)
+        else 0.0
+    )
     T["total_code"] = str(tot_code)
     T["matched_code"] = str(mat_code)
     T["matched_code_percent"] = (100.0 * mat_code / tot_code) if tot_code else 0.0
