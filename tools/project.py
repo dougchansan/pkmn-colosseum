@@ -1489,10 +1489,9 @@ def generate_build_ninja(
     ###
     build_config_path = build_path / "config.json"
     n.comment("Split DOL into relocatable objects")
-    # --no-update keeps ordinary builds from rewriting tracked symbols/splits.
     n.rule(
         name="split",
-        command=f"{dtk} dol split --no-update $in $out_dir",
+        command=f"{dtk} dol split $in $out_dir",
         description="SPLIT $in",
         depfile="$out_dir/dep",
         deps="gcc",

@@ -11,27 +11,6 @@ Sections:
 	.sdata2     type:rodata align:32
 	.sbss2      type:bss align:4
 
-crt/sdata2_math.c:
-	.sdata2     start:0x8047C4A0 end:0x8047C8A0
-
-__init_cpp_exceptions.cpp:
-	.dtors      start:0x80266380 end:0x80266384
-
-game/data/rodata_80266BD8.c:
-	.rodata     start:0x80266BD8 end:0x80266C7C
-
-game/data/rodata_80266C7C.c:
-	.rodata     start:0x80266C7C end:0x80266D78
-
-game/data/rodata_80267060.c:
-	.rodata     start:0x80267060 end:0x80267250
-
-game/data/rodata_80267350.c:
-	.rodata     start:0x80267350 end:0x80267398
-
-game/data/rodata_80268424.c:
-	.rodata     start:0x80268424 end:0x8026860C
-
 game/data/sdata2_8047B6A0.c:
 	.sdata2     start:0x8047B6A0 end:0x8047B7A0
 
@@ -73,6 +52,9 @@ game/data/sdata2_8047C2A0.c:
 
 game/data/sdata2_8047C3A0.c:
 	.sdata2     start:0x8047C3A0 end:0x8047C4A0
+
+crt/sdata2_math.c:
+	.sdata2     start:0x8047C4A0 end:0x8047C8A0
 
 crt/sdata2_math_8047C8A0.c:
 	.sdata2     start:0x8047C8A0 end:0x8047C990
@@ -160,3 +142,21 @@ game/data/sdata2_8047E390.c:
 
 game/colosseum_battle_sdata2.c:
 	.sdata2     start:0x8047E658 end:0x8047E700
+
+game/data/rodata_80266BD8.c:
+	.rodata     start:0x80266BD8 end:0x80266C7C
+
+game/data/rodata_80266C7C.c:
+	.rodata     start:0x80266C7C end:0x80266D78
+
+game/data/rodata_80267060.c:
+	.rodata     start:0x80267060 end:0x80267250
+
+game/data/rodata_80267350.c:
+	.rodata     start:0x80267350 end:0x80267398
+
+game/data/rodata_80268424.c:
+	.rodata     start:0x80268424 end:0x8026860C
+
+__init_cpp_exceptions.cpp:
+	.dtors      start:0x80266380 end:0x80266384
