@@ -207,7 +207,7 @@
       "size": 256,
       "target_offset": 0,
       "source_offset": 0,
-      "target_object": "build/GC6E01/obj/auto_09_8047BEA0_sdata2.o",
+      "target_object": "build/GC6E01/obj/game/data/sdata2_8047BEA0.o",
       "source_object": "build/GC6E01/src/game/data/sdata2_8047BEA0.o",
       "source_path": "src/game/data/sdata2_8047BEA0.c",
       "notes": "scene_init and ui_core mixed .sdata2 constants emitted as typed f32, f64, u8 strings, u32 values, and u32 arrays; text references tie strings and UI constants to ui_core"
@@ -423,7 +423,7 @@
       "size": 252,
       "target_offset": 0,
       "source_offset": 0,
-      "target_object": "build/GC6E01/obj/auto_09_8047D298_sdata2.o",
+      "target_object": "build/GC6E01/obj/game/effect/effect_visual_sdata2_8047D298.o",
       "source_object": "build/GC6E01/src/game/effect/effect_visual_sdata2_8047D298.o",
       "source_path": "src/game/effect/effect_visual_sdata2_8047D298.c",
       "notes": "effect_visual mixed .sdata2 constants emitted as typed f32, f64, f32 arrays, and u8 strings; effect_visual.c references all listed labels, strings match symbolmap text, and compiler alignment explains internal padding"

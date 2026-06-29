@@ -3441,11 +3441,11 @@
   "metadata": {
     "source": "report.json",
     "policy": "completed = active REAL_C functions with fuzzy_match_percent >= 99.995; asm wrappers/stubs excluded",
-    "report_sha256": "1c84b6eb3ff21801a3db8e32d3f3d4e12a809faef319c99fb16be16a442ecbd8",
+    "report_sha256": "5bf062a675c34f0d8706c00efcb369082feb841ea3d5790272cd1591c2bf5160",
     "report_matched_functions": 3454,
     "report_total_functions": 6795,
     "report_matched_data": 13371,
-    "report_total_data": 1276195,
+    "report_total_data": 1276164,
     "report_complete_data": 13371,
     "completed_real_c_functions": 3435
   }

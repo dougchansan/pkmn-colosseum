@@ -12,7 +12,151 @@ Sections:
 	.sbss2      type:bss align:4
 
 crt/sdata2_math.c:
-	.sdata2     start:0x8047C4A0 end:0x8047C7A0
+	.sdata2     start:0x8047C4A0 end:0x8047C8A0
 
 __init_cpp_exceptions.cpp:
 	.dtors      start:0x80266380 end:0x80266384
+
+game/data/rodata_80266BD8.c:
+	.rodata     start:0x80266BD8 end:0x80266C7C
+
+game/data/rodata_80266C7C.c:
+	.rodata     start:0x80266C7C end:0x80266D78
+
+game/data/rodata_80267060.c:
+	.rodata     start:0x80267060 end:0x80267250
+
+game/data/rodata_80267350.c:
+	.rodata     start:0x80267350 end:0x80267398
+
+game/data/rodata_80268424.c:
+	.rodata     start:0x80268424 end:0x8026860C
+
+game/data/sdata2_8047B6A0.c:
+	.sdata2     start:0x8047B6A0 end:0x8047B7A0
+
+game/data/sdata2_8047B7A0.c:
+	.sdata2     start:0x8047B7A0 end:0x8047B8A0
+
+game/data/sdata2_8047B8A0.c:
+	.sdata2     start:0x8047B8A0 end:0x8047B9A0
+
+game/data/sdata2_8047B9A0.c:
+	.sdata2     start:0x8047B9A0 end:0x8047BA9C
+
+game/data/sdata2_8047BAA0.c:
+	.sdata2     start:0x8047BAA0 end:0x8047BB9E
+
+game/data/sdata2_8047BBA0.c:
+	.sdata2     start:0x8047BBA0 end:0x8047BCA0
+
+game/data/sdata2_8047BCA0.c:
+	.sdata2     start:0x8047BCA0 end:0x8047BDA0
+
+game/data/sdata2_8047BDA0.c:
+	.sdata2     start:0x8047BDA0 end:0x8047BE9C
+
+game/data/sdata2_8047BEA0.c:
+	.sdata2     start:0x8047BEA0 end:0x8047BFA0
+
+game/data/sdata2_8047BFA0.c:
+	.sdata2     start:0x8047BFA0 end:0x8047C0A0
+
+game/data/sdata2_8047C0A0.c:
+	.sdata2     start:0x8047C0A0 end:0x8047C19F
+
+game/data/sdata2_8047C1A0.c:
+	.sdata2     start:0x8047C1A0 end:0x8047C2A0
+
+game/data/sdata2_8047C2A0.c:
+	.sdata2     start:0x8047C2A0 end:0x8047C3A0
+
+game/data/sdata2_8047C3A0.c:
+	.sdata2     start:0x8047C3A0 end:0x8047C4A0
+
+crt/sdata2_math_8047C8A0.c:
+	.sdata2     start:0x8047C8A0 end:0x8047C990
+
+game/gs_render_util_sdata2.c:
+	.sdata2     start:0x8047C990 end:0x8047C99C
+
+game/data/sdata2_8047C9A0.c:
+	.sdata2     start:0x8047C9A0 end:0x8047CA9D
+
+game/data/sdata2_8047CAA0.c:
+	.sdata2     start:0x8047CAA0 end:0x8047CBE0
+
+game/data/sdata2_8047CBE0.c:
+	.sdata2     start:0x8047CBE0 end:0x8047CC98
+
+game/data/sdata2_8047CC98.c:
+	.sdata2     start:0x8047CC98 end:0x8047CD98
+
+game/gs_model_sdata2_8047CD98.c:
+	.sdata2     start:0x8047CD98 end:0x8047CE98
+
+game/data/sdata2_8047CE98.c:
+	.sdata2     start:0x8047CE98 end:0x8047CF98
+
+game/data/sdata2_8047CF98.c:
+	.sdata2     start:0x8047CF98 end:0x8047D098
+
+game/data/sdata2_8047D098.c:
+	.sdata2     start:0x8047D098 end:0x8047D194
+
+game/effect/effect_visual_sdata2_8047D198.c:
+	.sdata2     start:0x8047D198 end:0x8047D298
+
+game/effect/effect_visual_sdata2_8047D298.c:
+	.sdata2     start:0x8047D298 end:0x8047D394
+
+game/data/sdata2_8047D398.c:
+	.sdata2     start:0x8047D398 end:0x8047D498
+
+game/data/sdata2_8047D498.c:
+	.sdata2     start:0x8047D498 end:0x8047D690
+
+game/data/sdata2_8047D690.c:
+	.sdata2     start:0x8047D690 end:0x8047D790
+
+game/people/people_sdata2_8047D790.c:
+	.sdata2     start:0x8047D790 end:0x8047D890
+
+game/data/sdata2_8047D890.c:
+	.sdata2     start:0x8047D890 end:0x8047D990
+
+hsd/hsd_sdata2_8047D990.c:
+	.sdata2     start:0x8047D990 end:0x8047DA90
+
+hsd/hsd_sdata2_8047DA90.c:
+	.sdata2     start:0x8047DA90 end:0x8047DB8B
+
+hsd/hsd_sdata2_8047DB90.c:
+	.sdata2     start:0x8047DB90 end:0x8047DC90
+
+hsd/hsd_sdata2_8047DC90.c:
+	.sdata2     start:0x8047DC90 end:0x8047DD90
+
+hsd/hsd_sdata2_8047DD90.c:
+	.sdata2     start:0x8047DD90 end:0x8047DE90
+
+hsd/hsd_sdata2_8047DE90.c:
+	.sdata2     start:0x8047DE90 end:0x8047DF90
+
+game/battle_sdata2_8047DF90.c:
+	.sdata2     start:0x8047DF90 end:0x8047E090
+
+game/battle_sdata2_8047E090.c:
+	.sdata2     start:0x8047E090 end:0x8047E190
+
+game/battle_sdata2_8047E190.c:
+	.sdata2     start:0x8047E190 end:0x8047E290
+
+game/battle_waza_sdata2_8047E290.c:
+	.sdata2     start:0x8047E290 end:0x8047E390
+
+game/data/sdata2_8047E390.c:
+	.sdata2     start:0x8047E390 end:0x8047E490
+
+game/colosseum_battle_sdata2.c:
+	.sdata2     start:0x8047E658 end:0x8047E700

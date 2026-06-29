@@ -15,7 +15,6 @@ import json
 import math
 import os
 import platform
-import shlex
 import sys
 from pathlib import Path
 from typing import (
@@ -65,7 +64,6 @@ class Object:
             "lib": None,
             "mw_version": None,
             "progress_category": None,
-            "postprocess": None,
             "scratch_preset_id": None,
             "shift_jis": None,
             "source": name,
@@ -702,8 +700,6 @@ def generate_build_ninja(
         f"{CHAIN}{gnu_as} $asflags -o $out $in" + f" && {dtk} elf fixup $out $out"
     )
     gnu_as_implicit = [binutils_implicit or gnu_as, dtk]
-    gnu_objcopy = binutils / f"powerpc-eabi-objcopy{EXE}"
-    split_obj_postprocess = config.tools_dir / "postprocess_split_object.py"
     # As a workaround for https://github.com/encounter/dtk-template/issues/51
     # include macros.inc directly as an implicit dependency
     gnu_as_implicit.append(build_path / "include" / "macros.inc")
@@ -788,17 +784,6 @@ def generate_build_ninja(
         # See https://github.com/encounter/dtk-template/issues/51
         # depfile="$out.d",
         # deps="gcc",
-    )
-    n.newline()
-
-    n.comment("Normalize source-built split object")
-    n.rule(
-        name="postprocess_split_object",
-        command=(
-            f"$python {split_obj_postprocess} --objcopy {gnu_objcopy} "
-            "$postprocess_args $in $out"
-        ),
-        description="POSTOBJ $out",
     )
     n.newline()
 
@@ -1039,12 +1024,6 @@ def generate_build_ninja(
             cflags_str = make_flags_str(all_cflags)
             used_compiler_versions.add(obj.options["mw_version"])
 
-            postprocess = obj.options.get("postprocess")
-            compile_obj_path = obj.src_obj_path
-            if postprocess:
-                rel_obj = obj.src_obj_path.relative_to(build_path / "src")
-                compile_obj_path = build_path / "src_raw" / rel_obj
-
             # Add MWCC build rule
             lib_name = obj.options["lib"]
             build_rule = "mwcc"
@@ -1052,8 +1031,8 @@ def generate_build_ninja(
             variables = {
                 "mw_version": Path(obj.options["mw_version"]),
                 "cflags": cflags_str,
-                "basedir": os.path.dirname(compile_obj_path),
-                "basefile": compile_obj_path.with_suffix(""),
+                "basedir": os.path.dirname(obj.src_obj_path),
+                "basefile": obj.src_obj_path.with_suffix(""),
             }
 
             if obj.options["shift_jis"] and obj.options["extab_padding"] is not None:
@@ -1073,40 +1052,13 @@ def generate_build_ninja(
                 )
             n.comment(f"{obj.name}: {lib_name} (linked {obj.completed})")
             n.build(
-                outputs=compile_obj_path,
+                outputs=obj.src_obj_path,
                 rule=build_rule,
                 inputs=src_path,
                 variables=variables,
                 implicit=build_implcit,
                 order_only="pre-compile",
             )
-
-            if postprocess:
-                args = []
-                for rename in postprocess.get("rename_sections", []):
-                    args.extend([
-                        "--rename-section",
-                        shlex.quote(ninja_syntax.escape(rename)),
-                    ])
-                metadata_from = postprocess.get("metadata_from")
-                if metadata_from:
-                    args.extend([
-                        "--metadata-from",
-                        shlex.quote(serialize_path(metadata_from)),
-                    ])
-                for section in postprocess.get("copy_sections", []):
-                    args.extend(["--copy-section", shlex.quote(section)])
-                n.build(
-                    outputs=obj.src_obj_path,
-                    rule="postprocess_split_object",
-                    inputs=compile_obj_path,
-                    implicit=[
-                        split_obj_postprocess,
-                        binutils_implicit or gnu_objcopy,
-                        metadata_from,
-                    ],
-                    variables={"postprocess_args": " ".join(args)},
-                )
 
             # Add ctx build rule
             if obj.ctx_path is not None:
