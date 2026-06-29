@@ -5,7 +5,7 @@ Every wave this session produced the same recurring fraud/error modes that
 had to be caught by hand before cherry-picking:
 
   - editing `*_fn_*.inc` (the ROM-truth bytes objdiff measures against)
-  - editing other truth files (symbols.txt / splits*.txt / target .o)
+  - editing other ROM-truth files (symbols.txt / target .o)
   - adding `#include "*.inc"` or inline asm inside source
   - flipping `#if 0` -> `#if 1` to re-activate an asm wrapper and forge 100%
   - adding raw cast-plus-offset pointer arithmetic as a "finished" decompilation
@@ -55,12 +55,13 @@ OBJDIFF = _first_existing([
 sys.path.insert(0, str(ROOT / "tools"))
 from headless_subprocess import run as run_tool  # noqa: E402
 
-# Files a match-improvement commit may NEVER modify.
+# Files a match-improvement commit may NEVER modify. `splits.txt` and
+# `symbols.build.txt` are dtk-owned build metadata and may change when running
+# the normal dtk split/update workflow.
 TRUTH_DENY = [
     re.compile(r"_fn_[0-9A-Fa-f]+\.inc$"),
     re.compile(r"\.inc$"),
     re.compile(r"config/GC6E01/symbols\.txt$"),
-    re.compile(r"config/GC6E01/splits.*\.txt$"),
     re.compile(r"config/GC6E01/link_order\.txt$"),
     re.compile(r"build/GC6E01/obj/.*\.o$"),
     re.compile(r"\.dol$"),
@@ -85,7 +86,7 @@ def diff_text(rng):
 
 def check_truth_files(rng):
     """Flag truth files that are MODIFIED or ADDED — the forge case (editing the
-    ROM-truth bytes / config to fake a match).
+    ROM-truth bytes to fake a match).
 
     DELETIONS and RENAMES are allowed: removing or moving a truth file cannot
     forge a match. In particular the dtk-template migration intentionally DELETES
