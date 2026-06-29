@@ -167,7 +167,7 @@ tools/dtk.exe vfs cp "xd.iso:sys/main.dol" xd_main.dol
 cd tools/decomp_work/refs/xd-decomp
 cp <repo>/tools/symbolmap/xd_config.mine.yml config/GXXE01/config.mine.yml
 cp <path-to>/xd_main.dol orig/GXXE01/sys/main.dol
-../../../dtk.exe dol split --no-update config/GXXE01/config.mine.yml _xdsplit
+../../../dtk.exe dol split config/GXXE01/config.mine.yml _xdsplit
 
 # 4. Run with XD asm enabled.
 cd <repo>
