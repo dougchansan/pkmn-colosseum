@@ -5,9 +5,7 @@
 # Pipeline: dtk dol split -> verify ldscript -> mwldeppc link -> dtk elf2dol -> sha1 verify.
 #
 # Notes captured from the pilot (do not lose these):
-#   * symbols.build.txt is the build-only sanitized symbols file (trailing "// Proposed:"
-#     comments stripped; 232 lines). The canonical config/GC6E01/symbols.txt is the truth
-#     file and is NEVER edited.
+#   * symbols.build.txt is the dtk build symbol file and is refreshed by `dtk dol split`.
 #   * config.build.yml points at symbols.build.txt and the tracked ldscript template.
 #   * dtk's default linker script uses a 0x2000 debug-stack gap, but the original game
 #     uses _db_stack_addr = _stack_addr + 0x8000. config/GC6E01/ldscript.tpl records
@@ -23,7 +21,7 @@ LD=tools/decomp_work/ra/mwldeppc.exe
 
 echo "[1/5] dtk dol split ($CFG -> $OUT)"
 rm -rf "$OUT"
-tools/dtk.exe dol split --no-update "$CFG" "$OUT" >/dev/null 2>&1
+tools/dtk.exe dol split "$CFG" "$OUT" >/dev/null 2>&1
 
 echo "[2/5] verify ldscript debug-stack gap is 0x8000"
 grep -q 'stack_addr + 0x8000' "$OUT/ldscript.lcf" || { echo "FATAL: ldscript template did not set 0x8000"; exit 1; }
