@@ -172,11 +172,6 @@ config.ldflags = []
 if args.map:
     config.ldflags.append("-mapunused")
 
-# The original DOL uses _db_stack_addr = _stack_addr + 0x8000 (dtk's generated
-# ldscript defaults to 0x2000). project.py applies config.ldscript_template if set;
-# otherwise the dtk-generated ldscript is patched post-split (see tools/project.py
-# integration / docs). Tracked so the byte-match link stays correct.
-
 # Use for any additional files that should cause a re-configure when modified
 config.reconfig_deps = []
 

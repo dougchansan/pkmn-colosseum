@@ -1537,15 +1537,10 @@ def generate_build_ninja(
     ###
     build_config_path = build_path / "config.json"
     n.comment("Split DOL into relocatable objects")
-    # PROJECT-SPECIFIC (GC6E01): the split is wrapped by tools/split_dol.py, which
-    # runs `dtk dol split` then patches dtk's generated ldscript (debug-stack gap
-    # 0x2000 -> 0x8000) so the link byte-matches the retail DOL. A wrapper (not a
-    # `dtk ... && python ...` chain) because ninja/cmd does not portably interpret
-    # `&&`. This is the only divergence from upstream dtk-template's project.py;
-    # keep it minimal so the module stays easy to re-merge with template updates.
+    # --no-update keeps ordinary builds from rewriting tracked symbols/splits.
     n.rule(
         name="split",
-        command=f"$python tools/split_dol.py {dtk} $in $out_dir",
+        command=f"{dtk} dol split --no-update $in $out_dir",
         description="SPLIT $in",
         depfile="$out_dir/dep",
         deps="gcc",

@@ -2,15 +2,16 @@
 # Byte-match DOL build for Pokémon Colosseum (GC6E01).
 # Reproduces orig/GC6E01/sys/main.dol byte-for-byte from the dtk split.
 #
-# Pipeline: dtk dol split -> patch ldscript -> mwldeppc link -> dtk elf2dol -> sha1 verify.
+# Pipeline: dtk dol split -> verify ldscript -> mwldeppc link -> dtk elf2dol -> sha1 verify.
 #
 # Notes captured from the pilot (do not lose these):
 #   * symbols.build.txt is the build-only sanitized symbols file (trailing "// Proposed:"
 #     comments stripped; 232 lines). The canonical config/GC6E01/symbols.txt is the truth
 #     file and is NEVER edited.
-#   * config.build.yml points at symbols.build.txt.
-#   * dtk regenerates ldscript.lcf on every split with a WRONG debug-stack gap (0x2000).
-#     The original game uses _db_stack_addr = _stack_addr + 0x8000. We patch it post-split.
+#   * config.build.yml points at symbols.build.txt and the tracked ldscript template.
+#   * dtk's default linker script uses a 0x2000 debug-stack gap, but the original game
+#     uses _db_stack_addr = _stack_addr + 0x8000. config/GC6E01/ldscript.tpl records
+#     that one game-specific linker setting without post-split patching.
 #   * Original layout (verified byte-exact): stack 0x10000, debug-stack gap 0x8000.
 set -euo pipefail
 cd "$(dirname "$0")/../.."   # repo root
@@ -24,9 +25,8 @@ echo "[1/5] dtk dol split ($CFG -> $OUT)"
 rm -rf "$OUT"
 tools/dtk.exe dol split --no-update "$CFG" "$OUT" >/dev/null 2>&1
 
-echo "[2/5] patch ldscript debug-stack gap 0x2000 -> 0x8000"
-sed -i 's/_db_stack_addr = (_stack_addr + 0x2000);/_db_stack_addr = (_stack_addr + 0x8000);/' "$OUT/ldscript.lcf"
-grep -q 'stack_addr + 0x8000' "$OUT/ldscript.lcf" || { echo "FATAL: ldscript patch failed"; exit 1; }
+echo "[2/5] verify ldscript debug-stack gap is 0x8000"
+grep -q 'stack_addr + 0x8000' "$OUT/ldscript.lcf" || { echo "FATAL: ldscript template did not set 0x8000"; exit 1; }
 
 echo "[3/5] link asm objects -> main.elf"
 OBJS=$(find "$OUT/obj" -name '*.o' | sort | tr '\n' ' ')

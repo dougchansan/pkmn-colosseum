@@ -21,6 +21,11 @@ fill_gaps: true
 # Export all symbols
 export_all: true
 
+# The retail DOL was linked with _db_stack_addr = _stack_addr + 0x8000.
+# dtk's default DOL linker script template uses 0x2000, so keep the one
+# game-specific linker-script difference in a tracked dtk template override.
+ldscript_template: config/GC6E01/ldscript.tpl
+
 # CodeWarrior compiler settings
 # Exact version TBD — common GCN versions: 8, 10, 11, 14
 mw_comment_version: 8
