@@ -59,10 +59,16 @@ parser.add_argument(
     help="base build directory (default: build)",
 )
 parser.add_argument(
+    "--binutils",
+    metavar="DIR",
+    type=Path,
+    help="path to binutils (optional)",
+)
+parser.add_argument(
     "--compilers",
     metavar="DIR",
     type=Path,
-    help="path to compilers (default: tools/mwcc_compiler)",
+    help="path to compilers (optional)",
 )
 parser.add_argument(
     "--map",
@@ -92,6 +98,12 @@ parser.add_argument(
     metavar="BINARY | DIR",
     type=Path,
     help="path to objdiff-cli binary or source (default: tools/objdiff-cli.exe)",
+)
+parser.add_argument(
+    "--sjiswrap",
+    metavar="EXE",
+    type=Path,
+    help="path to sjiswrap.exe (optional)",
 )
 parser.add_argument(
     "--ninja",
@@ -151,9 +163,11 @@ def _local(path: Path) -> Path:
 # compilers_tag) into build/ — the canonical dtk-template behavior, and what makes
 # the Linux CI work from the same config as Windows. --dtk/--objdiff/--compilers
 # override with a local copy.
+config.binutils_path = args.binutils
 config.dtk_path = args.dtk
 config.objdiff_path = args.objdiff
 config.compilers_path = args.compilers
+config.sjiswrap_path = args.sjiswrap
 
 # Project
 config.config_path = Path("config") / config.version / "config.yml"
