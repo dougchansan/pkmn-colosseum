@@ -90,6 +90,7 @@ NEARMISS = ROOT / "build" / "band_nearmiss"   # real-C near-misses (banked, fed 
 BANK_FLOOR = 90.0                              # min pct to bank a near-miss
 SCRATCH = ROOT / "tools" / "decomp_work" / "scratch"
 META_KEYS = {"_src", "_srcs", "_pct"}
+MATCH_FLOOR = 100.0 - 1e-6
 
 # Tool resolution is platform-aware so the SAME harness runs on the Windows
 # workstation AND a Linux cloud/CI env. On Linux, `configure.py`+`ninja` download
@@ -178,6 +179,35 @@ def compile_band(tag):
         print(r.stderr[-4000:])
         sys.exit(1)
     return st
+
+
+def source_is_dirty(src_rel):
+    """True if the canonical source has uncommitted working-tree changes.
+
+    We only use canonical byte-exact status as a stale-win filter when the file is
+    clean. If the source is dirty, preserving a saved candidate is safer than
+    deleting the only banked copy of a not-yet-reviewed local edit.
+    """
+    r = subprocess.run(["git", "status", "--porcelain", "--", src_rel],
+                       capture_output=True, text=True, cwd=str(ROOT))
+    return bool(r.stdout.strip())
+
+
+def canonical_rows(src_rel):
+    """Compile the canonical source and return {function: match_percent}."""
+    src_path = resolve_source(src_rel)
+    version, cflags, target_o = file_config(src_path)
+    if not target_o.exists():
+        return {}
+    try:
+        base_o = compile_check.compile_source(src_path, verbose=False)
+    except SystemExit:
+        return {}
+    funcs = measure_cache.diff_funcs(target_o, base_o)
+    measure_cache.flush()
+    if funcs is None:
+        return {}
+    return {x["name"]: float(x.get("match") or 0.0) for x in funcs}
 
 
 def objdiff_json(tag, st):
@@ -281,7 +311,7 @@ def _log_attempt(tag, fn, pct, src):
     renaming dashboard's load_attempt_log() parses. This populates the dashboard's
     active-fn derivation and per-function attempt counter ("tokens spent" view):
     every `band check <tag> <fn>` is one logged attempt."""
-    ts = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+    ts = datetime.datetime.now(datetime.UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
     src_rel = str(src or "").replace("\\", "/")
     line = f"- **{ts}** `{tag}` band-check {fn} {pct:.2f}% in {src_rel}\n"
     try:
@@ -376,6 +406,12 @@ def cmd_save(tag, fns):
         sys.exit("usage: band.py save <tag> <fn> [<fn> ...]")
     st = compile_band(tag)
     rows = _rows(tag, st)
+    canon_rows = None
+    if not source_is_dirty(st["src"]):
+        try:
+            canon_rows = canonical_rows(st["src"])
+        except Exception:
+            canon_rows = None
     WINS.mkdir(parents=True, exist_ok=True)
     out = WINS / f"{tag}.json"
     data = {}
@@ -384,14 +420,17 @@ def cmd_save(tag, fns):
             data = json.loads(out.read_text(encoding="utf-8"))
         except ValueError:
             data = {}
-    saved, rejected = [], []
+    saved, skipped, rejected = [], [], []
     for fn in fns:
         pct = rows.get(fn)
         if pct is None:
             rejected.append(f"{fn} (NOT FOUND)")
             continue
-        if pct < 100.0 - 1e-6:
+        if pct < MATCH_FLOOR:
             rejected.append(f"{fn} ({pct:.2f}%)")
+            continue
+        if canon_rows is not None and canon_rows.get(fn, 0.0) >= MATCH_FLOOR:
+            skipped.append(f"{fn} (already byte-exact in clean canon)")
             continue
         body = _extract(tag, fn)
         if not body:
@@ -407,6 +446,8 @@ def cmd_save(tag, fns):
     out.write_bytes(json.dumps(data, indent=1).encode("utf-8"))
     _lock_renew_file(tag, st["src"])  # heartbeat: keep the file lock alive during long grinds
     print(f"SAVED {len(saved)}: {' '.join(saved) if saved else '-'}")
+    if skipped:
+        print(f"SKIPPED (stale): {'; '.join(skipped)}")
     if rejected:
         print(f"REJECTED (not 100%): {'; '.join(rejected)}")
     nfn = len([k for k in data if k not in META_KEYS])

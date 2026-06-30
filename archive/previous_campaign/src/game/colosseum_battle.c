@@ -32635,38 +32635,22 @@ void fn_8025D584(void* ctx, u32 slot, u32 param) {
 }
 
 /* Address: 0x8025D5E0 | Size: 0x64 | Pattern: field_accessor */
-void fn_8025D5E0(void* ctx, u32 slot, u32 param) {
-    extern void fn_8006B09C();
-    u8 sp[0x10];
-    u32 r0 = 0;
-    u32 r3 = (u32)ctx;
-    u32 r6 = 0;
-    u32 r30 = 0;
-    u32 r31 = 0;
-    u32 r4 = slot;
-    u32 r5 = param;
+u32 fn_8025D5E0(void* ctx, s32 count, u32* src) {
+    typedef struct BattleFieldAccessor {
+        u8 unk_00[8];
+        u32 values[6];
+        u32 count;
+    } BattleFieldAccessor;
+    extern BattleFieldAccessor* fn_8006B09C(void*);
+    BattleFieldAccessor* dst;
+    s32 i;
 
-    void (*ctr_fn)(void) = 0;
-    u32 ctr = 0;
-
-    r30 = r4;
-    r31 = r5;
-    fn_8006B09C();
-    r6 = 0x0;
-    r4 = 0x0;
-    ctr_fn = (void(*)(void))r30;
-    if ((s32)r30 > (s32)0x0) {
-        do {
-            r5 = *(u32*)(r31 + r4);
-            r0 = r4 + 0x8;
-            r6 = r6 + 0x1;
-            r4 = r4 + 0x4;
-            *(u32*)(r3 + r0) = r5;
-        } while (--ctr != 0);
+    dst = fn_8006B09C(ctx);
+    for (i = 0; i < count; i++) {
+        dst->values[i] = src[i];
     }
-    *(u32*)((u8*)r3 + 0x20) = r6;
-    r3 = r6;
-    return;
+    dst->count = i;
+    return i;
 }
 
 /* Address: 0x8025D644 | Size: 0x100 (256 bytes) */

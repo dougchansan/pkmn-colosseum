@@ -19,6 +19,12 @@ PRE_DIRTY_SRC=$(git status --short -- src/ 2>/dev/null | awk '{print $2}')
 touch "$NEXT_MARK"
 if [ -f "$MARK" ]; then FILES=$(find build/band_wins -name 'pl_*.json' -newer "$MARK" 2>/dev/null)
 else FILES=$(find build/band_wins -name 'pl_*.json' -mmin -180 2>/dev/null); fi
+if [ -n "$FILES" ]; then
+  # The lane bundle files are long-lived ledgers. Prune already-committed exact
+  # wins and cross-lane duplicate fn/source entries before the expensive parent
+  # integration pass, otherwise a single new save re-gates stale historical rows.
+  $PY tools/decomp_work/prune_band_wins.py --write --quiet $FILES >/dev/null 2>&1 || true
+fi
 # LOCK-AWARE GATING (the driver's documented intent, now actually implemented).
 # Never commit a file a lane is still band-locked on: that gate-vs-lane race is what
 # produced the repeated byte-identical "+N byte-exact" churn commits — the gate kept
