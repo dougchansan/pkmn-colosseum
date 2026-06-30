@@ -1,23 +1,13 @@
 # Auto detect text files and perform LF normalization
-* text=auto eol=lf
+* text=auto
 
-# Source code
-*.c text
-*.cpp text
-*.h text
-*.py text
-*.yml text
-*.md text
+# Explicitly declare text files
+*.py   text
 
-# Assembly (generated)
-*.s text
+# Enforce platform-specific encodings
+*.bat  text eol=crlf
+*.sh   text eol=lf
+*.sha1 text eol=lf
 
-# Binary files
-*.dol binary
-*.rel binary
-*.iso binary
-*.gcm binary
-*.rvz binary
-*.o binary
-*.elf binary
-*.exe binary
+# decomp-toolkit writes files with LF
+config/**/*.txt  text eol=lf

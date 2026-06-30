@@ -2,17 +2,12 @@
 .idea/
 .vs/
 
-# Secrets — API keys for cloud model benchmarking
-openrouterkey.txt
-*_apikey.txt
-*.key
-
 # Caches
-__pycache__/
-.mypy_cache/
+__pycache__
+.mypy_cache
 .cache/
 
-# Original game files (user must supply their own)
+# Original files
 orig/*/*
 !orig/*/.gitkeep
 *.dol
@@ -26,207 +21,32 @@ orig/*/*
 *.ciso
 *.rvz
 
-# Raw extracted game binary / disassembly artifacts (copyright — regenerate from
-# your own orig/ ROM; do not commit verbatim game data).
-tools/ghidra/dol_split/*.bin
-tools/ghidra/project/
-*.bin
-
-# Per-function disassembly + nonmatching asm: kept LOCAL only, never on the public
-# repo (derived from the ROM, and not the canonical dtk-template format). The
-# canonical dtk build does not use these; if a ROM-regen tool is added later it
-# writes here. History is scrubbed of these paths separately.
-*.inc
-/asm/
-
-# Build artifacts
+# Build files
 build/
 .ninja_*
 build.ninja
-
-# PC port host build (CMake out-of-source dir + GLFW FetchContent clone) and the
-# generated GLAD loader — all regenerable via tools/pcport_build.ps1.
-build_pc/
-# functional-decomp replacement bodies (inputs to pcport_gen REPLACE_BODY) stay tracked
-!build_pc/
-build_pc/*
-!build_pc/bodies/
-!build_pc/render_anim.py
-third_party/
 
 # decompctx output
 ctx.*
 *.ctx
 
 # Generated configs
-# Note: objdiff.json is hand-maintained (per-unit mappings) and IS tracked —
-# the objdiff GUI and decomp.dev both need it. configure.py only writes a stub
-# when it is absent and never overwrites it.
+objdiff.json
 compile_commands.json
 
+# Generated local assembly / extracted snippets
+asm/
+*.inc
+
 # Toolchain binaries
-tools/mwcc_compiler/
 tools/dtk
 tools/dtk.exe
+tools/objdiff-cli
 tools/objdiff-cli.exe
-
-# Dolphin (extracted locally, not part of project)
-dolphin-2603a-x64/
-
-# Claude memory (per-user)
-.claude/
-
-# CLAUDE.md files in subdirectories
-**/CLAUDE.md
+tools/mwcc_compiler/
 
 # Miscellaneous
 /*.txt
-!requirements.txt
 *.exe
 *.orig
 *.pre
-build/.measure_cache.json
-build/.harvest_cursor.json
-tools/decomp_work/reports/
-tools/decomp_work/lane_manifest.json
-tools/decomp_work/lane_manifest.json.tmp
-# v10 dashboard runtime artifact (regenerable token-expense aggregation)
-tools/decomp_work/token_history.json
-tools/decomp_work/token_history.json.tmp
-
-# Root-level scratch diff/match JSON dumps (regenerable by pipeline tools)
-/_diff*.json
-/diff_*.json
-/diff_cache_*.json
-/tmp_diff*.json
-/tmp_*.json
-/match_*.json
-/_objdiff_*.json
-/scratch_*.json
-/gfw_*.json
-/fn_*_diff.json
-/fn_*_current_diff.json
-/fn_*_report.json
-/diff_iter*.json
-/diff_one.json
-/diff_a08.json
-
-# Root-level stray object/assembly files (build artifacts in wrong place)
-/*.s
-/*.obj
-/NUL.obj
-/nul
-
-# Root-level scratch output files
-/_diff*.out
-/_objdump_input.err
-/compiler_comparison_results.json
-
-# Tools scratch diff/match JSON in tools/
-tools/_diff_*.json
-tools/_fn_*_diff.json
-tools/diff_*.json
-
-# Tools scratch text result dumps
-tools/*_source.txt
-tools/fn_*_source.txt
-tools/col_*.txt
-tools/cc_*.txt
-tools/compile_*.txt
-tools/match_*.txt
-tools/_*.txt
-
-# Tools scratch .c/.o experiments (codegen experiments, not source)
-tools/_*.c
-tools/_*.o
-
-# Attic (moved dead code, never commit)
-tools/attic/
-
-# Secrets — additional key file patterns
-deepseek*.txt
-*_key.txt
-*key*.txt
-!requirements.txt
-
-# decomp-permuter harness: external clones + per-run artifacts (scripts ARE tracked)
-tools/decomp_work/refs/
-tools/decomp_work/permuter/dirs/
-tools/decomp_work/permuter/logs/
-tools/decomp_work/permuter/wins/
-tools/decomp_work/permuter/scratch/
-tools/decomp_work/permuter/*.prag.c
-tools/decomp_work/permuter/*_pp.c
-# m2c first-draft generator output (drafts + .s/.ctx intermediates are regenerable)
-tools/decomp_work/m2c_out/
-
-# ─── Fleet scratch / agent state (added 2026-06-06; keeps multi-GB junk out) ───
-# Orchestrator + agent state dirs (1.7GB+). Curated tracked files stay tracked.
-.omc/
-.omx/
-.playwright-mcp/
-# Extracted/ROM-derived art + large regenerable dumps
-sprites/
-*.dff
-test_diff.json
-*_diff.json
-waza_diff.json
-cand_files.json
-# Ephemeral work-packet + recovery scratch dirs
-work_packets*/
-work_final/
-work_recovery/
-work_packets_current/
-# Working copies / backups / stashes of source
-*_stash.c
-*_ref.c
-*.local-backup
-# Root-level one-off triage/debug scripts (no tracked siblings)
-/_inspect.py
-/analyze_diff.py
-/analyze_regressions.py
-/check_*.py
-/compile_and_diff.py
-/diff_dump.py
-/find_flip_wins.py
-/fix_battle_waza.py
-/fix_externs.py
-/harvest_flips.py
-/rebuild_stale.py
-/sitecustomize.py
-/test_*.py
-# decomp_work scratch subdirs (experiments, dumps, locks, captures)
-tools/decomp_work/ra/
-tools/decomp_work/applied/
-tools/decomp_work/candidates/
-tools/decomp_work/review/
-tools/decomp_work/ghidra_out/
-tools/decomp_work/prompts/
-tools/decomp_work/locks/
-tools/decomp_work/worktree_backups/
-tools/decomp_work/relay/
-tools/decomp_work/queue/
-tools/decomp_work/**/*.log
-tools/decomp_work/**/*.done
-tools/decomp_work/**/*_out.txt
-tools/decomp_work/coordination/*.log
-tools/decomp_work/coordination/status.md
-# runtime fleet-lock SQLite DB (locks.py) — local state, never committed
-tools/decomp_work/coordination/locks.db
-tools/decomp_work/coordination/locks.db-wal
-tools/decomp_work/coordination/locks.db-shm
-# accidental nested dirs
-tools/tools/
-tools/decomp_work/decomp_work/
-# misc loose dumps
-/fifo*.dff
-/nul
-/conflicts_out.txt
-tools/decomp_work/scratch/
-opencode.json
-opencode.config.json
-
-# decomp KG (local shared mind; rebuildable via tools/decomp_work/kg/kg.py backfill)
-tools/decomp_work/kg/kg.db
-tools/decomp_work/kg/kg.db-wal
-tools/decomp_work/kg/kg.db-shm

@@ -154,10 +154,6 @@ config.objdiff_tag = "v3.6.1"
 config.sjiswrap_tag = "v1.2.2"
 config.wibo_tag = "1.0.3"
 
-# Prefer the binaries already vendored in tools/ over downloading.
-def _local(path: Path) -> Path:
-    return path if path.exists() else None
-
 # dtk, objdiff-cli and the Metrowerks compilers are all left unset so project.py
 # downloads the pinned, PLATFORM-APPROPRIATE binaries (dtk_tag / objdiff_tag /
 # compilers_tag) into build/ — the canonical dtk-template behavior, and what makes
@@ -179,9 +175,8 @@ config.asflags = [
     f"-I build/{config.version}/include",
     f"--defsym BUILD_VERSION={version_num}",
 ]
-# Match the proven byte-match link (tools/decomp_work/build_dol.sh): a bare
-# `mwldeppc -o main.elf -lcf <ldscript> <objs>` with no extra flags. Adding
-# -fp/-nodefaults perturbs the output away from the original DOL.
+# The retail DOL matches when linked with the project linker-script override and
+# no extra mwldeppc flags.
 config.ldflags = []
 if args.map:
     config.ldflags.append("-mapunused")
@@ -222,8 +217,8 @@ else:
 Matching = True                   # Object matches and should be linked
 NonMatching = False               # Object does not match and should not be linked
 Equivalent = config.non_matching  # Linked only when configured with --non-matching
-VerifiedData = NonMatching        # Built and checked by data_progress; keep target linked.
-CodeCandidate = NonMatching       # Compared by objdiff, but not linked until CI proves it.
+DataCandidate = NonMatching       # Compared by objdiff, but not linked yet
+CodeCandidate = NonMatching       # Compared by objdiff, but not linked yet
 
 
 def GameLib(lib_name: str, mw_version: str, objects: List[Object]) -> Dict[str, Any]:
@@ -253,11 +248,6 @@ config.libs = [
             ),
             Object(
                 CodeCandidate,
-                "crt/exit.c",
-                progress_category="sdk",
-            ),
-            Object(
-                CodeCandidate,
                 "crt/mem.c",
                 progress_category="sdk",
             ),
@@ -269,11 +259,6 @@ config.libs = [
             Object(
                 CodeCandidate,
                 "crt/wchar.c",
-                progress_category="sdk",
-            ),
-            Object(
-                CodeCandidate,
-                "dolphin/db/DB.c",
                 progress_category="sdk",
             ),
             Object(
@@ -298,11 +283,6 @@ config.libs = [
             ),
             Object(
                 CodeCandidate,
-                "hsd/hsd_mobj_ext.c",
-                progress_category="game",
-            ),
-            Object(
-                CodeCandidate,
                 "hsd/hsd_pobj.c",
                 progress_category="game",
             ),
@@ -322,250 +302,250 @@ config.libs = [
                 progress_category="sdk",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "crt/sdata2_math.c",
                 source="crt_data/sdata2_math.c",
                 progress_category="sdk",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "game/data/rodata_80267060.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "game/data/rodata_80266BD8.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "game/data/rodata_80266C7C.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "game/data/rodata_80267350.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "game/data/rodata_80268424.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "game/data/sdata2_8047B6A0.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "game/data/sdata2_8047B7A0.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "game/data/sdata2_8047B8A0.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "game/data/sdata2_8047B9A0.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "game/data/sdata2_8047BAA0.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "game/data/sdata2_8047BBA0.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "game/data/sdata2_8047BCA0.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "game/data/sdata2_8047BDA0.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "game/data/sdata2_8047BEA0.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "game/data/sdata2_8047BFA0.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "game/data/sdata2_8047C0A0.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "game/data/sdata2_8047C1A0.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "game/data/sdata2_8047C2A0.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "game/data/sdata2_8047C3A0.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "crt/sdata2_math_8047C8A0.c",
                 source="crt_data/sdata2_math_8047C8A0.c",
                 progress_category="sdk",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "game/gs_render_util_sdata2.c",
                 source="game/gs_render_util_sdata2.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "game/data/sdata2_8047C9A0.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "game/data/sdata2_8047CAA0.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "game/data/sdata2_8047CBE0.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "game/data/sdata2_8047CC98.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "game/gs_model_sdata2_8047CD98.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "game/data/sdata2_8047CE98.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "game/data/sdata2_8047CF98.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "game/data/sdata2_8047D098.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "game/effect/effect_visual_sdata2_8047D198.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "game/effect/effect_visual_sdata2_8047D298.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "game/data/sdata2_8047D398.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "game/data/sdata2_8047D498.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "game/data/sdata2_8047D690.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "game/people/people_sdata2_8047D790.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "game/data/sdata2_8047D890.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "hsd/hsd_sdata2_8047D990.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "hsd/hsd_sdata2_8047DA90.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "hsd/hsd_sdata2_8047DB90.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "hsd/hsd_sdata2_8047DC90.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "hsd/hsd_sdata2_8047DD90.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "hsd/hsd_sdata2_8047DE90.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "game/battle_sdata2_8047DF90.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "game/battle_sdata2_8047E090.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "game/battle_sdata2_8047E190.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "game/battle_waza_sdata2_8047E290.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "game/data/sdata2_8047E390.c",
                 progress_category="game",
             ),
             Object(
-                VerifiedData,
+                DataCandidate,
                 "game/colosseum_battle_sdata2.c",
                 progress_category="game",
             ),

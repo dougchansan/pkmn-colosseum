@@ -167,9 +167,6 @@ game/menu/menu_bag.c:
 dolphin/os/OSTime.c:
 	.text       start:0x800A27FC end:0x800A2B9C
 
-dolphin/db/DB.c:
-	.text       start:0x800A2C58 end:0x800A2C74
-
 dolphin/dvd/DVDFsExtras.c:
 	.text       start:0x800A7F80 end:0x800A7FE0
 
@@ -182,9 +179,6 @@ trk/TRKBoard.c:
 trk/TRKComm.c:
 	.text       start:0x800C39A0 end:0x800C3BB8
 
-crt/exit.c:
-	.text       start:0x800C4F34 end:0x800C5458
-
 crt/wchar.c:
 	.text       start:0x800C80D0 end:0x800C811C
 
@@ -196,9 +190,6 @@ crt/string.c:
 
 game/sound/sound.c:
 	.text       start:0x801653BC end:0x801653CC
-
-hsd/hsd_mobj_ext.c:
-	.text       start:0x801A83BC end:0x801A8428
 
 hsd/hsd_pobj.c:
 	.text       start:0x801AE000 end:0x801AE008

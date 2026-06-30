@@ -5,7 +5,7 @@ object_base: orig/GC6E01
 object: sys/main.dol
 hash: 870e8b9693ca780782d80f22a6a4572d8ba9458f
 
-symbols: config/GC6E01/symbols.build.txt
+symbols: config/GC6E01/symbols.txt
 splits: config/GC6E01/splits.txt
 
 # Auto-detect objects and strings during initial split
