@@ -223,6 +223,7 @@ Matching = True                   # Object matches and should be linked
 NonMatching = False               # Object does not match and should not be linked
 Equivalent = config.non_matching  # Linked only when configured with --non-matching
 VerifiedData = NonMatching        # Built and checked by data_progress; keep target linked.
+CodeCandidate = NonMatching       # Compared by objdiff, but not linked until CI proves it.
 
 
 def GameLib(lib_name: str, mw_version: str, objects: List[Object]) -> Dict[str, Any]:
@@ -248,6 +249,76 @@ config.libs = [
                 NonMatching,
                 "__init_cpp_exceptions.cpp",
                 source="crt_data/__init_cpp_exceptions.c",
+                progress_category="sdk",
+            ),
+            Object(
+                CodeCandidate,
+                "crt/exit.c",
+                progress_category="sdk",
+            ),
+            Object(
+                CodeCandidate,
+                "crt/mem.c",
+                progress_category="sdk",
+            ),
+            Object(
+                CodeCandidate,
+                "crt/string.c",
+                progress_category="sdk",
+            ),
+            Object(
+                CodeCandidate,
+                "crt/wchar.c",
+                progress_category="sdk",
+            ),
+            Object(
+                CodeCandidate,
+                "dolphin/db/DB.c",
+                progress_category="sdk",
+            ),
+            Object(
+                CodeCandidate,
+                "dolphin/dvd/DVDFsExtras.c",
+                progress_category="sdk",
+            ),
+            Object(
+                CodeCandidate,
+                "dolphin/os/OSTime.c",
+                progress_category="sdk",
+            ),
+            Object(
+                CodeCandidate,
+                "game/menu/menu_bag.c",
+                progress_category="game",
+            ),
+            Object(
+                CodeCandidate,
+                "game/sound/sound.c",
+                progress_category="game",
+            ),
+            Object(
+                CodeCandidate,
+                "hsd/hsd_mobj_ext.c",
+                progress_category="game",
+            ),
+            Object(
+                CodeCandidate,
+                "hsd/hsd_pobj.c",
+                progress_category="game",
+            ),
+            Object(
+                CodeCandidate,
+                "trk/TRKBoard.c",
+                progress_category="sdk",
+            ),
+            Object(
+                CodeCandidate,
+                "trk/TRKComm.c",
+                progress_category="sdk",
+            ),
+            Object(
+                CodeCandidate,
+                "trk/TRKSerial.c",
                 progress_category="sdk",
             ),
             Object(

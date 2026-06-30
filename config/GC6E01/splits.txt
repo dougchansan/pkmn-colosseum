@@ -160,3 +160,45 @@ game/data/rodata_80268424.c:
 
 __init_cpp_exceptions.cpp:
 	.dtors      start:0x80266380 end:0x80266384
+
+game/menu/menu_bag.c:
+	.text       start:0x8004EADC end:0x80051710
+
+dolphin/os/OSTime.c:
+	.text       start:0x800A27FC end:0x800A2B9C
+
+dolphin/db/DB.c:
+	.text       start:0x800A2C58 end:0x800A2C74
+
+dolphin/dvd/DVDFsExtras.c:
+	.text       start:0x800A7F80 end:0x800A7FE0
+
+trk/TRKSerial.c:
+	.text       start:0x800BF14C end:0x800BF3C4
+
+trk/TRKBoard.c:
+	.text       start:0x800C3588 end:0x800C3630
+
+trk/TRKComm.c:
+	.text       start:0x800C39A0 end:0x800C3BB8
+
+crt/exit.c:
+	.text       start:0x800C4F34 end:0x800C5458
+
+crt/wchar.c:
+	.text       start:0x800C80D0 end:0x800C811C
+
+crt/mem.c:
+	.text       start:0x800C8174 end:0x800C8510
+
+crt/string.c:
+	.text       start:0x800CA7FC end:0x800CAA58
+
+game/sound/sound.c:
+	.text       start:0x801653BC end:0x801653CC
+
+hsd/hsd_mobj_ext.c:
+	.text       start:0x801A83BC end:0x801A8428
+
+hsd/hsd_pobj.c:
+	.text       start:0x801AE000 end:0x801AE008

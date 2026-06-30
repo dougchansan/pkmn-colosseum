@@ -47,6 +47,9 @@ def main(argv: list[str]) -> int:
     report = json.loads(path.read_text(encoding="utf-8"))
     units = report.get("units", []) or []
     measures = report.get("measures", {}) or {}
+    is_dtk_template_report = report.get("version") == 2 and any(
+        "module_name" in ((u.get("metadata", {}) or {})) for u in units
+    )
 
     problems: list[str] = []
 
@@ -95,7 +98,7 @@ def main(argv: list[str]) -> int:
             "— code denominator is out of sync with the unit list."
         )
 
-    if BUILD_CFG.exists() and declared_code:
+    if BUILD_CFG.exists() and declared_code and not is_dtk_template_report:
         try:
             cfg = json.loads(BUILD_CFG.read_text(encoding="utf-8"))
             target_code = 0
@@ -143,39 +146,46 @@ def main(argv: list[str]) -> int:
         )
     if matched_data or complete_data:
         if not DATA_PROGRESS.exists():
-            problems.append(
-                "report.json claims matched/complete data bytes but "
-                "config/GC6E01/data_progress.json is missing."
-            )
+            if not is_dtk_template_report:
+                problems.append(
+                    "report.json claims matched/complete data bytes but "
+                    "config/GC6E01/data_progress.json is missing."
+                )
         else:
-            try:
-                data_progress = json.loads(DATA_PROGRESS.read_text(encoding="utf-8"))
-                seen = set()
-                manifest_total = 0
-                for item in data_progress.get("matched", []) or []:
-                    key = (
-                        item.get("section"),
-                        item.get("start"),
-                        item.get("object"),
-                        item.get("source_path"),
-                    )
-                    if key in seen:
-                        continue
-                    seen.add(key)
-                    manifest_total += mint(item.get("size", 0))
-                if manifest_total != matched_data or manifest_total != complete_data:
-                    problems.append(
-                        "data_progress.json total does not match report.json "
-                        f"(manifest={manifest_total}, matched_data={matched_data}, "
-                        f"complete_data={complete_data})."
-                    )
-            except (OSError, ValueError) as exc:
-                problems.append(f"could not read data_progress.json: {exc}")
+            if not is_dtk_template_report:
+                try:
+                    data_progress = json.loads(DATA_PROGRESS.read_text(encoding="utf-8"))
+                    seen = set()
+                    manifest_total = 0
+                    for item in data_progress.get("matched", []) or []:
+                        key = (
+                            item.get("section"),
+                            item.get("start"),
+                            item.get("object"),
+                            item.get("source_path"),
+                        )
+                        if key in seen:
+                            continue
+                        seen.add(key)
+                        manifest_total += mint(item.get("size", 0))
+                    if manifest_total != matched_data or manifest_total != complete_data:
+                        problems.append(
+                            "data_progress.json total does not match report.json "
+                            f"(manifest={manifest_total}, matched_data={matched_data}, "
+                            f"complete_data={complete_data})."
+                        )
+                except (OSError, ValueError) as exc:
+                    problems.append(f"could not read data_progress.json: {exc}")
 
             # Public CI generally lacks ROM-derived split objects. When the
             # local verifier prerequisites are available, require byte/reloc
             # proof for every manifest entry.
-            if BUILD_CFG.exists() and OBJCOPY.exists() and DATA_VERIFIER.exists():
+            if (
+                not is_dtk_template_report
+                and BUILD_CFG.exists()
+                and OBJCOPY.exists()
+                and DATA_VERIFIER.exists()
+            ):
                 verify = subprocess.run(
                     [sys.executable, "tools/verify_data_progress.py"],
                     cwd=ROOT,

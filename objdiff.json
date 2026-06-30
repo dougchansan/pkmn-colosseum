@@ -1187,6 +1187,412 @@
       }
     },
     {
+      "name": "main/game/menu/menu_bag",
+      "target_path": "build/GC6E01/obj/game/menu/menu_bag.o",
+      "base_path": "build/GC6E01/src/game/menu/menu_bag.o",
+      "scratch": {
+        "platform": "gc_wii",
+        "compiler": "mwcc_233_163n",
+        "c_flags": "-nodefaults -proc gekko -align powerpc -enum int -fp hard -Cpp_exceptions off -O4,p -inline auto -pragma \"cats off\" -nosyspath -RTTI off -fp_contract on -str reuse -multibyte -DBUILD_VERSION=0 -DVERSION_GC6E01 -DNDEBUG=1 -lang=c",
+        "ctx_path": "build/GC6E01/src/game/menu/menu_bag.ctx",
+        "build_ctx": true
+      },
+      "metadata": {
+        "complete": false,
+        "reverse_fn_order": false,
+        "source_path": "src/game/menu/menu_bag.c",
+        "progress_categories": [
+          "game"
+        ],
+        "auto_generated": false
+      }
+    },
+    {
+      "name": "main/auto_01_80051710_text",
+      "target_path": "build/GC6E01/obj/auto_01_80051710_text.o",
+      "metadata": {
+        "progress_categories": [],
+        "auto_generated": true
+      }
+    },
+    {
+      "name": "main/dolphin/os/OSTime",
+      "target_path": "build/GC6E01/obj/dolphin/os/OSTime.o",
+      "base_path": "build/GC6E01/src/dolphin/os/OSTime.o",
+      "scratch": {
+        "platform": "gc_wii",
+        "compiler": "mwcc_233_163n",
+        "c_flags": "-nodefaults -proc gekko -align powerpc -enum int -fp hard -Cpp_exceptions off -O4,p -inline auto -pragma \"cats off\" -nosyspath -RTTI off -fp_contract on -str reuse -multibyte -DBUILD_VERSION=0 -DVERSION_GC6E01 -DNDEBUG=1 -lang=c",
+        "ctx_path": "build/GC6E01/src/dolphin/os/OSTime.ctx",
+        "build_ctx": true
+      },
+      "metadata": {
+        "complete": false,
+        "reverse_fn_order": false,
+        "source_path": "src/dolphin/os/OSTime.c",
+        "progress_categories": [
+          "sdk"
+        ],
+        "auto_generated": false
+      }
+    },
+    {
+      "name": "main/auto_01_800A2B9C_text",
+      "target_path": "build/GC6E01/obj/auto_01_800A2B9C_text.o",
+      "metadata": {
+        "progress_categories": [],
+        "auto_generated": true
+      }
+    },
+    {
+      "name": "main/dolphin/db/DB",
+      "target_path": "build/GC6E01/obj/dolphin/db/DB.o",
+      "base_path": "build/GC6E01/src/dolphin/db/DB.o",
+      "scratch": {
+        "platform": "gc_wii",
+        "compiler": "mwcc_233_163n",
+        "c_flags": "-nodefaults -proc gekko -align powerpc -enum int -fp hard -Cpp_exceptions off -O4,p -inline auto -pragma \"cats off\" -nosyspath -RTTI off -fp_contract on -str reuse -multibyte -DBUILD_VERSION=0 -DVERSION_GC6E01 -DNDEBUG=1 -lang=c",
+        "ctx_path": "build/GC6E01/src/dolphin/db/DB.ctx",
+        "build_ctx": true
+      },
+      "metadata": {
+        "complete": false,
+        "reverse_fn_order": false,
+        "source_path": "src/dolphin/db/DB.c",
+        "progress_categories": [
+          "sdk"
+        ],
+        "auto_generated": false
+      }
+    },
+    {
+      "name": "main/auto_01_800A2C74_text",
+      "target_path": "build/GC6E01/obj/auto_01_800A2C74_text.o",
+      "metadata": {
+        "progress_categories": [],
+        "auto_generated": true
+      }
+    },
+    {
+      "name": "main/dolphin/dvd/DVDFsExtras",
+      "target_path": "build/GC6E01/obj/dolphin/dvd/DVDFsExtras.o",
+      "base_path": "build/GC6E01/src/dolphin/dvd/DVDFsExtras.o",
+      "scratch": {
+        "platform": "gc_wii",
+        "compiler": "mwcc_233_163n",
+        "c_flags": "-nodefaults -proc gekko -align powerpc -enum int -fp hard -Cpp_exceptions off -O4,p -inline auto -pragma \"cats off\" -nosyspath -RTTI off -fp_contract on -str reuse -multibyte -DBUILD_VERSION=0 -DVERSION_GC6E01 -DNDEBUG=1 -lang=c",
+        "ctx_path": "build/GC6E01/src/dolphin/dvd/DVDFsExtras.ctx",
+        "build_ctx": true
+      },
+      "metadata": {
+        "complete": false,
+        "reverse_fn_order": false,
+        "source_path": "src/dolphin/dvd/DVDFsExtras.c",
+        "progress_categories": [
+          "sdk"
+        ],
+        "auto_generated": false
+      }
+    },
+    {
+      "name": "main/auto_01_800A7FE0_text",
+      "target_path": "build/GC6E01/obj/auto_01_800A7FE0_text.o",
+      "metadata": {
+        "progress_categories": [],
+        "auto_generated": true
+      }
+    },
+    {
+      "name": "main/trk/TRKSerial",
+      "target_path": "build/GC6E01/obj/trk/TRKSerial.o",
+      "base_path": "build/GC6E01/src/trk/TRKSerial.o",
+      "scratch": {
+        "platform": "gc_wii",
+        "compiler": "mwcc_233_163n",
+        "c_flags": "-nodefaults -proc gekko -align powerpc -enum int -fp hard -Cpp_exceptions off -O4,p -inline auto -pragma \"cats off\" -nosyspath -RTTI off -fp_contract on -str reuse -multibyte -DBUILD_VERSION=0 -DVERSION_GC6E01 -DNDEBUG=1 -lang=c",
+        "ctx_path": "build/GC6E01/src/trk/TRKSerial.ctx",
+        "build_ctx": true
+      },
+      "metadata": {
+        "complete": false,
+        "reverse_fn_order": false,
+        "source_path": "src/trk/TRKSerial.c",
+        "progress_categories": [
+          "sdk"
+        ],
+        "auto_generated": false
+      }
+    },
+    {
+      "name": "main/auto_01_800BF3C4_text",
+      "target_path": "build/GC6E01/obj/auto_01_800BF3C4_text.o",
+      "metadata": {
+        "progress_categories": [],
+        "auto_generated": true
+      }
+    },
+    {
+      "name": "main/trk/TRKBoard",
+      "target_path": "build/GC6E01/obj/trk/TRKBoard.o",
+      "base_path": "build/GC6E01/src/trk/TRKBoard.o",
+      "scratch": {
+        "platform": "gc_wii",
+        "compiler": "mwcc_233_163n",
+        "c_flags": "-nodefaults -proc gekko -align powerpc -enum int -fp hard -Cpp_exceptions off -O4,p -inline auto -pragma \"cats off\" -nosyspath -RTTI off -fp_contract on -str reuse -multibyte -DBUILD_VERSION=0 -DVERSION_GC6E01 -DNDEBUG=1 -lang=c",
+        "ctx_path": "build/GC6E01/src/trk/TRKBoard.ctx",
+        "build_ctx": true
+      },
+      "metadata": {
+        "complete": false,
+        "reverse_fn_order": false,
+        "source_path": "src/trk/TRKBoard.c",
+        "progress_categories": [
+          "sdk"
+        ],
+        "auto_generated": false
+      }
+    },
+    {
+      "name": "main/auto_01_800C3630_text",
+      "target_path": "build/GC6E01/obj/auto_01_800C3630_text.o",
+      "metadata": {
+        "progress_categories": [],
+        "auto_generated": true
+      }
+    },
+    {
+      "name": "main/trk/TRKComm",
+      "target_path": "build/GC6E01/obj/trk/TRKComm.o",
+      "base_path": "build/GC6E01/src/trk/TRKComm.o",
+      "scratch": {
+        "platform": "gc_wii",
+        "compiler": "mwcc_233_163n",
+        "c_flags": "-nodefaults -proc gekko -align powerpc -enum int -fp hard -Cpp_exceptions off -O4,p -inline auto -pragma \"cats off\" -nosyspath -RTTI off -fp_contract on -str reuse -multibyte -DBUILD_VERSION=0 -DVERSION_GC6E01 -DNDEBUG=1 -lang=c",
+        "ctx_path": "build/GC6E01/src/trk/TRKComm.ctx",
+        "build_ctx": true
+      },
+      "metadata": {
+        "complete": false,
+        "reverse_fn_order": false,
+        "source_path": "src/trk/TRKComm.c",
+        "progress_categories": [
+          "sdk"
+        ],
+        "auto_generated": false
+      }
+    },
+    {
+      "name": "main/auto_01_800C3BB8_text",
+      "target_path": "build/GC6E01/obj/auto_01_800C3BB8_text.o",
+      "metadata": {
+        "progress_categories": [],
+        "auto_generated": true
+      }
+    },
+    {
+      "name": "main/crt/exit",
+      "target_path": "build/GC6E01/obj/crt/exit.o",
+      "base_path": "build/GC6E01/src/crt/exit.o",
+      "scratch": {
+        "platform": "gc_wii",
+        "compiler": "mwcc_233_163n",
+        "c_flags": "-nodefaults -proc gekko -align powerpc -enum int -fp hard -Cpp_exceptions off -O4,p -inline auto -pragma \"cats off\" -nosyspath -RTTI off -fp_contract on -str reuse -multibyte -DBUILD_VERSION=0 -DVERSION_GC6E01 -DNDEBUG=1 -lang=c",
+        "ctx_path": "build/GC6E01/src/crt/exit.ctx",
+        "build_ctx": true
+      },
+      "metadata": {
+        "complete": false,
+        "reverse_fn_order": false,
+        "source_path": "src/crt/exit.c",
+        "progress_categories": [
+          "sdk"
+        ],
+        "auto_generated": false
+      }
+    },
+    {
+      "name": "main/auto_01_800C5458_text",
+      "target_path": "build/GC6E01/obj/auto_01_800C5458_text.o",
+      "metadata": {
+        "progress_categories": [],
+        "auto_generated": true
+      }
+    },
+    {
+      "name": "main/crt/wchar",
+      "target_path": "build/GC6E01/obj/crt/wchar.o",
+      "base_path": "build/GC6E01/src/crt/wchar.o",
+      "scratch": {
+        "platform": "gc_wii",
+        "compiler": "mwcc_233_163n",
+        "c_flags": "-nodefaults -proc gekko -align powerpc -enum int -fp hard -Cpp_exceptions off -O4,p -inline auto -pragma \"cats off\" -nosyspath -RTTI off -fp_contract on -str reuse -multibyte -DBUILD_VERSION=0 -DVERSION_GC6E01 -DNDEBUG=1 -lang=c",
+        "ctx_path": "build/GC6E01/src/crt/wchar.ctx",
+        "build_ctx": true
+      },
+      "metadata": {
+        "complete": false,
+        "reverse_fn_order": false,
+        "source_path": "src/crt/wchar.c",
+        "progress_categories": [
+          "sdk"
+        ],
+        "auto_generated": false
+      }
+    },
+    {
+      "name": "main/auto_01_800C811C_text",
+      "target_path": "build/GC6E01/obj/auto_01_800C811C_text.o",
+      "metadata": {
+        "progress_categories": [],
+        "auto_generated": true
+      }
+    },
+    {
+      "name": "main/crt/mem",
+      "target_path": "build/GC6E01/obj/crt/mem.o",
+      "base_path": "build/GC6E01/src/crt/mem.o",
+      "scratch": {
+        "platform": "gc_wii",
+        "compiler": "mwcc_233_163n",
+        "c_flags": "-nodefaults -proc gekko -align powerpc -enum int -fp hard -Cpp_exceptions off -O4,p -inline auto -pragma \"cats off\" -nosyspath -RTTI off -fp_contract on -str reuse -multibyte -DBUILD_VERSION=0 -DVERSION_GC6E01 -DNDEBUG=1 -lang=c",
+        "ctx_path": "build/GC6E01/src/crt/mem.ctx",
+        "build_ctx": true
+      },
+      "metadata": {
+        "complete": false,
+        "reverse_fn_order": false,
+        "source_path": "src/crt/mem.c",
+        "progress_categories": [
+          "sdk"
+        ],
+        "auto_generated": false
+      }
+    },
+    {
+      "name": "main/auto_01_800C8510_text",
+      "target_path": "build/GC6E01/obj/auto_01_800C8510_text.o",
+      "metadata": {
+        "progress_categories": [],
+        "auto_generated": true
+      }
+    },
+    {
+      "name": "main/crt/string",
+      "target_path": "build/GC6E01/obj/crt/string.o",
+      "base_path": "build/GC6E01/src/crt/string.o",
+      "scratch": {
+        "platform": "gc_wii",
+        "compiler": "mwcc_233_163n",
+        "c_flags": "-nodefaults -proc gekko -align powerpc -enum int -fp hard -Cpp_exceptions off -O4,p -inline auto -pragma \"cats off\" -nosyspath -RTTI off -fp_contract on -str reuse -multibyte -DBUILD_VERSION=0 -DVERSION_GC6E01 -DNDEBUG=1 -lang=c",
+        "ctx_path": "build/GC6E01/src/crt/string.ctx",
+        "build_ctx": true
+      },
+      "metadata": {
+        "complete": false,
+        "reverse_fn_order": false,
+        "source_path": "src/crt/string.c",
+        "progress_categories": [
+          "sdk"
+        ],
+        "auto_generated": false
+      }
+    },
+    {
+      "name": "main/auto_01_800CAA58_text",
+      "target_path": "build/GC6E01/obj/auto_01_800CAA58_text.o",
+      "metadata": {
+        "progress_categories": [],
+        "auto_generated": true
+      }
+    },
+    {
+      "name": "main/game/sound/sound",
+      "target_path": "build/GC6E01/obj/game/sound/sound.o",
+      "base_path": "build/GC6E01/src/game/sound/sound.o",
+      "scratch": {
+        "platform": "gc_wii",
+        "compiler": "mwcc_233_163n",
+        "c_flags": "-nodefaults -proc gekko -align powerpc -enum int -fp hard -Cpp_exceptions off -O4,p -inline auto -pragma \"cats off\" -nosyspath -RTTI off -fp_contract on -str reuse -multibyte -DBUILD_VERSION=0 -DVERSION_GC6E01 -DNDEBUG=1 -lang=c",
+        "ctx_path": "build/GC6E01/src/game/sound/sound.ctx",
+        "build_ctx": true
+      },
+      "metadata": {
+        "complete": false,
+        "reverse_fn_order": false,
+        "source_path": "src/game/sound/sound.c",
+        "progress_categories": [
+          "game"
+        ],
+        "auto_generated": false
+      }
+    },
+    {
+      "name": "main/auto_01_801653CC_text",
+      "target_path": "build/GC6E01/obj/auto_01_801653CC_text.o",
+      "metadata": {
+        "progress_categories": [],
+        "auto_generated": true
+      }
+    },
+    {
+      "name": "main/hsd/hsd_mobj_ext",
+      "target_path": "build/GC6E01/obj/hsd/hsd_mobj_ext.o",
+      "base_path": "build/GC6E01/src/hsd/hsd_mobj_ext.o",
+      "scratch": {
+        "platform": "gc_wii",
+        "compiler": "mwcc_233_163n",
+        "c_flags": "-nodefaults -proc gekko -align powerpc -enum int -fp hard -Cpp_exceptions off -O4,p -inline auto -pragma \"cats off\" -nosyspath -RTTI off -fp_contract on -str reuse -multibyte -DBUILD_VERSION=0 -DVERSION_GC6E01 -DNDEBUG=1 -lang=c",
+        "ctx_path": "build/GC6E01/src/hsd/hsd_mobj_ext.ctx",
+        "build_ctx": true
+      },
+      "metadata": {
+        "complete": false,
+        "reverse_fn_order": false,
+        "source_path": "src/hsd/hsd_mobj_ext.c",
+        "progress_categories": [
+          "game"
+        ],
+        "auto_generated": false
+      }
+    },
+    {
+      "name": "main/auto_01_801A8428_text",
+      "target_path": "build/GC6E01/obj/auto_01_801A8428_text.o",
+      "metadata": {
+        "progress_categories": [],
+        "auto_generated": true
+      }
+    },
+    {
+      "name": "main/hsd/hsd_pobj",
+      "target_path": "build/GC6E01/obj/hsd/hsd_pobj.o",
+      "base_path": "build/GC6E01/src/hsd/hsd_pobj.o",
+      "scratch": {
+        "platform": "gc_wii",
+        "compiler": "mwcc_233_163n",
+        "c_flags": "-nodefaults -proc gekko -align powerpc -enum int -fp hard -Cpp_exceptions off -O4,p -inline auto -pragma \"cats off\" -nosyspath -RTTI off -fp_contract on -str reuse -multibyte -DBUILD_VERSION=0 -DVERSION_GC6E01 -DNDEBUG=1 -lang=c",
+        "ctx_path": "build/GC6E01/src/hsd/hsd_pobj.ctx",
+        "build_ctx": true
+      },
+      "metadata": {
+        "complete": false,
+        "reverse_fn_order": false,
+        "source_path": "src/hsd/hsd_pobj.c",
+        "progress_categories": [
+          "game"
+        ],
+        "auto_generated": false
+      }
+    },
+    {
+      "name": "main/auto_01_801AE008_text",
+      "target_path": "build/GC6E01/obj/auto_01_801AE008_text.o",
+      "metadata": {
+        "progress_categories": [],
+        "auto_generated": true
+      }
+    },
+    {
       "name": "main/auto_00_80003100_init",
       "target_path": "build/GC6E01/obj/auto_00_80003100_init.o",
       "metadata": {
