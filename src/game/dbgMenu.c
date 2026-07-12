@@ -812,6 +812,45 @@ u32 _dbgMenuGetMsgID__FP14tagWINDOW_WORKl(void* obj, s32 offset) {
 #pragma peephole on
 #endif
 
+static inline s32 dbgMenuGetIndexInline(DbgMenuWindow* window) {
+    u32 key = window->key;
+    if ((s32)key < (s32)lbl_80478848) {
+        return -1;
+    }
+    return key - lbl_80478848;
+}
+
+static inline DbgMenuWindow* dbgMenuGetWinInline(s32 offset) {
+    s32 mask = offset >> 31;
+    s32 key = (s32)lbl_80478848 + offset;
+    return windowSearchID(key & ~mask);
+}
+
+static inline s32 dbgMenuGetRootInline(void) {
+    u32 fn_800057A8();
+    s32 result;
+    s32 value = fn_800057A8();
+
+    if (value != 1) {
+        if (value < 1) {
+            result = 2;
+        } else if (value < 3) {
+            return 0x115;
+        }
+    }
+    return result;
+}
+
+static inline s32 dbgMenuResolveLink(s32 link) {
+    if (link <= 0 || (s32)debugMenuGetNum__Fv() <= link) {
+        return 0;
+    }
+    link = dbgMenuGetLink__Fl(link);
+    if ((s16)link <= 0 || (s32)debugMenuGetNum__Fv() <= (s16)link) {
+        return 0;
+    }
+    return link;
+}
 
 /* 0x80133E6C | 0x2F8 */
 #if 0
@@ -819,85 +858,73 @@ asm void _dbgMenuGetItemNo__FP14tagWINDOW_WORKl(void) {
 #include "src/game/effect/effect_util__dbgMenuGetItemNo__FP14tagWINDOW_WORKl.inc"
 }
 #else
+static inline void dbgMenuReadIndexInline(DbgMenuWindow* window, s32* index) {
+    *index = dbgMenuGetIndexInline(window);
+}
+
+#pragma push
+#pragma scheduling on
 s32 _dbgMenuGetItemNo__FP14tagWINDOW_WORKl(void* obj, s32 offset) {
     s32 rel;
     s32 value;
     s32 baseValue;
     s32 linked;
-    u8* prev;
-    u8* prior;
-    EffectUtilCountFunc countFunc;
-    EffectUtilEntryFunc entryFunc;
-    EffectUtilEntry* entry;
+    DbgMenuWindow* window = obj;
+    DbgMenuWindow* prev;
+    DbgMenuWindow* prior;
 
-    rel = _dbgMenuGetIndex__FP14tagWINDOW_WORK(obj);
+    dbgMenuReadIndexInline(window, &rel);
     if (rel < 0) {
         return 0;
     }
-    if (rel == 0) {
-        return (s32)dbgMenuGetRootMenu() + offset;
-    }
+    do {
+        if (rel == 0) {
+            value = dbgMenuGetRootInline();
+            break;
+        }
 
-    prev = (u8*)_dbgMenuGetWin__Fl(rel - 1);
-    if (prev == NULL) {
-        value = dbgMenuGetRootMenu();
-    } else {
-        baseValue = (s8)prev[0x94] + (s8)prev[0x95];
-        rel = _dbgMenuGetIndex__FP14tagWINDOW_WORK(prev);
-        if (rel < 0) {
-            value = 0;
-        } else if (rel == 0) {
-            value = (s32)dbgMenuGetRootMenu() + baseValue;
+        prev = dbgMenuGetWinInline(rel - 1);
+        if (prev == NULL) {
+            value = dbgMenuGetRootInline();
         } else {
-            prior = (u8*)_dbgMenuGetWin__Fl(rel - 1);
-            if (prior == NULL) {
-                linked = dbgMenuGetRootMenu();
+            baseValue = prev->cursor.page + prev->cursor.row;
+            rel = dbgMenuGetIndexInline(prev);
+            if (rel < 0) {
+                value = 0;
+            } else if (rel == 0) {
+                value = dbgMenuGetRootInline() + baseValue;
             } else {
-                linked = (s8)prior[0x94] + (s8)prior[0x95];
-                rel = _dbgMenuGetIndex__FP14tagWINDOW_WORK(prior);
-                if (rel < 0) {
-                    linked = 0;
-                } else if (rel == 0) {
-                    linked += dbgMenuGetRootMenu();
+                prior = dbgMenuGetWinInline(rel - 1);
+                if (prior == NULL) {
+                    linked = dbgMenuGetRootInline();
                 } else {
-                    u8* earlier = (u8*)_dbgMenuGetWin__Fl(rel - 1);
-                    if (earlier == NULL) {
+                    linked = dbgMenuGetCursorPage(prior) + prior->cursor.row;
+                    rel = _dbgMenuGetIndex__FP14tagWINDOW_WORK(prior);
+                    if (rel < 0) {
+                        linked = 0;
+                    } else if (rel == 0) {
                         linked += dbgMenuGetRootMenu();
                     } else {
-                        linked += (s16)_dbgMenuGetLink__Fl(_dbgMenuGetItemNo__FP14tagWINDOW_WORKl(earlier, (s8)earlier[0x94] + (s8)earlier[0x95]));
+                        DbgMenuWindow* earlier = _dbgMenuGetWin__Fl(rel - 1);
+                        if (earlier == NULL) {
+                            linked += dbgMenuGetRootMenu();
+                        } else {
+                            linked += (s16)_dbgMenuGetLink__Fl(_dbgMenuGetItemNo__FP14tagWINDOW_WORKl(
+                                earlier, earlier->cursor.page + earlier->cursor.row));
+                        }
                     }
                 }
-            }
 
-            if (linked > 0 && (s32)debugMenuGetNum__Fv() > linked) {
-                linked = dbgMenuGetLink__Fl(linked);
-                if ((s16)linked <= 0 || (s32)debugMenuGetNum__Fv() <= (s16)linked) {
-                    linked = 0;
-                }
-            } else {
-                linked = 0;
-            }
-            value = (s16)linked + baseValue;
-        }
-    }
-
-    if (value > 0) {
-        countFunc = (EffectUtilCountFunc)lbl_80478F88;
-        if (countFunc != NULL && countFunc() > value) {
-            entryFunc = (EffectUtilEntryFunc)lbl_80478F8C;
-            entry = entryFunc != NULL ? entryFunc(value) : NULL;
-            value = entry != NULL ? entry->link : 0;
-            if ((s16)value > 0) {
-                countFunc = (EffectUtilCountFunc)lbl_80478F88;
-                if (countFunc != NULL && countFunc() > (s16)value) {
-                    return (s16)value + offset;
-                }
+                linked = dbgMenuResolveLink(linked);
+                value = (s16)linked + baseValue;
             }
         }
-    }
 
-    return offset;
+        value = dbgMenuGetValidatedLink(value);
+    } while (0);
+    return value + offset;
 }
+#pragma pop
 #endif
 
 

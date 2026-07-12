@@ -58,6 +58,11 @@ extern void* menuSeBiosGetPtr(s32);
 extern u16   fn_8005D798(void*, s32);
 extern void* menuSpriteBiosGetPtr(s32);
 extern int   fn_80166A28(u16);
+u8 fn_800F7EF8(s32 pad_id);
+u32 fn_800F7A08(s32 pad_id, s32 axis);
+u32 fn_800F7A7C(s32 pad_id, s32 axis);
+u32 fn_800F7BC4(s32 pad_id);
+f64 atan2(f64 y, f64 x);
 extern s32   GSthreadGetCurrentThread(void);    /* poll/yield -- 0 if pending */
 extern void  _threadSwitch(void);    /* yield */
 extern u32   fn_800BE31C(void);    /* rand or tick */
@@ -92,8 +97,17 @@ extern f32 lbl_8047AD3C;
 extern u32 lbl_8047AD28;
 extern u16 lbl_8047AD18;  /* GSmem handle */
 extern u8* lbl_8047AD1C;  /* object pool pointer */
-extern f32 lbl_8047CDC0;  /* sdata2: float constant */
+extern volatile f32 lbl_8047CDC0;  /* sdata2: float constant */
 extern f32 lbl_8047CDC4;  /* sdata2: float constant */
+typedef f32 MenuAngle;
+typedef f64 MenuSignedConversionBias;
+
+/* Shared menu constants owned by game/gs_model_sdata2_8047CD98. */
+extern const MenuAngle lbl_8047CDC8;
+extern const MenuAngle lbl_8047CDCC;
+extern const MenuAngle lbl_8047CDD0;
+extern const MenuAngle lbl_8047CDD4;
+extern const MenuSignedConversionBias lbl_8047CDD8;
 extern u16 lbl_8047CDE0;  /* sdata2: */
 extern u16 lbl_8047CDE4;  /* sdata2: */
 extern f32 lbl_8047CD80;  /* sdata2: float constant */
@@ -108,6 +122,10 @@ extern f32 lbl_8047CE50;  /* sdata2: float constant */
 extern f32 lbl_8047CE5C;  /* sdata2: float constant */
 extern f32 lbl_8047CE70;  /* sdata2: float constant */
 extern u8  lbl_80404A98[];  /* table for display */
+typedef struct GcPadIdTable {
+    s32 values[4];
+} GcPadIdTable;
+extern const GcPadIdTable lbl_80271E00;  /* GameCube pad ID table */
 extern u8  lbl_80271E10[];  /* format string */
 extern u8  lbl_80271E4C[];  /* format string */
 extern u8  lbl_80271EE8[];  /* format string */
@@ -191,7 +209,6 @@ extern void menuSetPosition(void* p, s16 a, s16 b);
 extern void menuButtonNormal(void* p);
 extern void menuPlaySe(void* p, void* q);
 extern void fn_801034DC(void);
-extern void _menuGetGcKeyInfo__FlPUs(void);
 extern void _menuUpdateKeyInfo__FP15WINDOW_SYS_WORK(void);
 extern void menuGetKeyInfo(void);
 extern u8 menuGetEnablePort(void);
@@ -736,10 +753,76 @@ void fn_801034DC(void) {
 
 /* 0x80103614 | 0x2E4 */
 #pragma push
-#pragma optimization_level 0
-#pragma optimizewithasm off
-void _menuGetGcKeyInfo__FlPUs(void) {
-    /* TODO: match -- 740 bytes at 0x80103614 */
+#pragma peephole off
+u8 _menuGetGcKeyInfo__FlPUs(s32 port, u16* keys) {
+    typedef union GcPadDoubleConversion {
+        f64 value;
+        struct {
+            u32 high;
+            u32 low;
+        } words;
+    } GcPadDoubleConversion;
+    struct {
+        GcPadIdTable pad_ids;
+        GcPadDoubleConversion converted_y;
+        GcPadDoubleConversion converted_x;
+    } work;
+    u16 result = 0;
+    s32 pad_id;
+    u32 stick_x;
+    u32 stick_y;
+    u32 buttons;
+    f32 angle;
+    f32 lower_bound;
+
+    work.pad_ids = lbl_80271E00;
+    pad_id = work.pad_ids.values[port];
+    if (fn_800F7EF8(pad_id) == 0) {
+        return 0;
+    }
+
+    stick_x = fn_800F7A08(pad_id, 0);
+    stick_y = fn_800F7A7C(pad_id, 0);
+    if (((s8)stick_y < 0 ? -(s8)stick_y : (s8)stick_y) > 0x20 ||
+        ((s8)stick_x < 0 ? -(s8)stick_x : (s8)stick_x) > 0x20) {
+        work.converted_y.words.low = (s32)(s8)stick_y ^ 0x80000000;
+        work.converted_y.words.high = 0x43300000;
+        work.converted_x.words.low = (s32)(s8)stick_x ^ 0x80000000;
+        work.converted_x.words.high = 0x43300000;
+        angle = atan2(work.converted_y.value - lbl_8047CDD8,
+                      work.converted_x.value - lbl_8047CDD8);
+        if ((angle > lbl_8047CDC0 ? angle : -angle) < lbl_8047CDC8) {
+            result |= 2;
+        } else if ((angle > lbl_8047CDC0 ? angle : -angle) > lbl_8047CDCC) {
+            result |= 1;
+        }
+        lower_bound = lbl_8047CDD0;
+        if (lower_bound < (angle > lbl_8047CDC0 ? angle : -angle) &&
+            (angle > lbl_8047CDC0 ? angle : -angle) < lbl_8047CDD4) {
+            if (angle < lbl_8047CDC0) {
+                result |= 4;
+            } else {
+                result |= 8;
+            }
+        }
+    }
+
+    buttons = fn_800F7BC4(pad_id);
+    if (buttons & 0x8) result |= 0x1;
+    if (buttons & 0x4) result |= 0x2;
+    if (buttons & 0x1) result |= 0x4;
+    if (buttons & 0x2) result |= 0x8;
+    if (buttons & 0x100) result |= 0x10;
+    if (buttons & 0x200) result |= 0x20;
+    if (buttons & 0x400) result |= 0x40;
+    if (buttons & 0x800) result |= 0x80;
+    if (buttons & 0x10) result |= 0x100;
+    if (buttons & 0x40) result |= 0x200;
+    if (buttons & 0x20) result |= 0x400;
+    if (buttons & 0x1000) result |= 0x800;
+
+    *keys = result;
+    return 1;
 }
 #pragma pop
 
