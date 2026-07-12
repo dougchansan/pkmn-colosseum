@@ -39,22 +39,18 @@
  */
 
 #include "dolphin/types.h"
+#include "dolphin/os/OSCache.h"
 #include "game/gs_texture.h"
 #include "game/gs_thread.h"
+#include "game/gs_scene_types.h"  /* memcpy, GSmem externs, GSlogWrite */
 
 /* ===== External SDK / engine functions ===== */
-extern u16   GSmemAllocRaw(u32 size);                  /* _toolentryAlloc__FUl */
-extern void* GSmemGetPtr(u16 handle);                  /* fn_800E27B0 */
-extern void  GSmemFree(u16 handle);                    /* fn_800E209C */
-extern u16   GSmemAlloc(u32 alignment, u32 size);      /* fn_800E2C04 */
-extern void  DCFlushRange(void* addr, u32 len);
-extern void  GXInvalidateTexAll(void);                        /* GXInvalidateTexAll */
-extern void  GSlogWrite(const char* fmt, ...);        /* OSReport */
+u16   fn_800E2C04(u32 alignment, u32 size);     /* GSmemAlloc */
+void  GXInvalidateTexAll(void);
 extern void  fn_800BB050(void* gxTlutObj, void* data, u32 format); /* GXInitTlutObj */
 extern void  fn_800BA9E4(void* gxTexObj, void* data,
                           u16 width, u16 height, u32 gxFmt,
                           u32 wrapS, u32 wrapT, u32 hasMips); /* GXInitTexObj */
-extern void* fn_800E24B0(u16 handle);                  /* GSmemLock */
 
 /* ===== String constants (rodata) ===== */
 extern const char lbl_80270F98[]; /* "GStexture: invalid texture format" */
@@ -71,12 +67,68 @@ static GStextureHandle* gsTexPool;       /* @sda21 lbl_8047ABF4 */
 
 /* =======================================================================
  *  fn_800EF098 | 0x150
- *  TODO: match -- no rodata/callers found for this address; the "CI to
- *  direct colour" identity from the old fiction block is unverified.
+ *  Rearranges CI4 texture pixel data from linear to 4x4 block-tiled
+ *  order. Only operates on format 0x44 (GS_CI4).
  * ======================================================================= */
-void fn_800EF098(void) {
-    /* TODO: match -- 0x150 bytes at 0x800EF098 */
+#pragma push
+#pragma optimize_for_size on
+#pragma peephole off
+void fn_800EF098(GStextureHandle* tex) {
+    u16 width;
+ u16 height;
+    u16* src;
+    u16 allocSize;
+    u16 pixelCount;
+    u16 handle;
+    u16* tempBuf;
+    u16 w4;
+    u16 i;
+
+    if (tex->format != 0x44) {
+        return;
+    }
+
+    tex->refCount++;
+
+    src = tex->data;
+    if (src == NULL) {
+        return;
+    }
+
+    width = tex->width;
+    height = tex->height;
+    allocSize = width * height * 2;
+    pixelCount = width * height;
+
+    handle = _toolentryAlloc__FUl(allocSize);
+    if (handle == 0) {
+        return;
+    }
+
+    tempBuf = fn_800E27B0(handle);
+
+    w4 = width / 4;
+    for (i = 0; i < pixelCount; i++) {
+        u16 pixel = src[i];
+        u16 blk = i / 16;
+        u16 br = blk / w4;
+        u16 tc = blk - br * w4;
+        u16 ty = (i % 16) / 4;
+        u16 tx = i % 4;
+        u16 dst = (tc + br * width) * 4 + ty * width + tx;
+        tempBuf[dst] = pixel;
+    }
+
+    memcpy(src, tempBuf, allocSize);
+    DCFlushRange(tex->data, tex->totalSize);
+    GXInvalidateTexAll();
+
+    tex->refCount--;
+
+    fn_800E24B0(handle);
+    fn_800E209C(handle);
 }
+#pragma pop
 
 /* =======================================================================
  *  GStextureConvertFromHW | 0x1F8
@@ -207,7 +259,7 @@ void GStextureFree(GStextureHandle* tex) {
 
     tex->inUse = 0;
     fn_800E24B0(tex->memHandle);
-    GSmemFree(tex->memHandle);
+    fn_800E209C(tex->memHandle);
 }
 
 /* =======================================================================
@@ -412,16 +464,16 @@ GStextureHandle* GStextureCreate(u16 width, u16 height, u32 format,
     }
 
     /* Step 7: Allocate pixel data from GSmem */
-    handle = GSmemAlloc(0x20, tex->totalSize);
+    handle = fn_800E2C04(0x20, tex->totalSize);
     tex->memHandle = handle;
 
     if ((handle & 0xFFFF) == 0) {
         return NULL;
     }
 
-    tex->data = GSmemGetPtr(handle);
+    tex->data = fn_800E27B0(handle);
     if (tex->data == NULL) {
-        GSmemFree(tex->memHandle);
+        fn_800E209C(tex->memHandle);
         return NULL;
     }
 
