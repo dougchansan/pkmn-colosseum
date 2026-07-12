@@ -13,6 +13,47 @@
 #include "game/effect/effect_util_types.h"
 
 
+typedef struct DbgMenuSlot {
+    u32 field_00;
+    u32 field_04;
+    u32 field_08;
+    u32 field_0C;
+    u32 field_10;
+    u8 field_14;
+    u8 field_15;
+    u8 pad_16[2];
+} DbgMenuSlot;
+
+typedef struct DbgMenuItem {
+    s32 field_00;
+    u16 field_04;
+    u16 field_06;
+    u32 field_08;
+    u32 field_0C;
+    s32 field_10;
+    u8 field_14;
+    u8 pad_15[3];
+    u32 field_18;
+    u32 field_1C;
+} DbgMenuItem;
+
+static inline void dbgMenuInitItems(u32* itemTable, u32 total)
+{
+    u32 i;
+    for (i = 0; i < total; i++) {
+        DbgMenuItem* item = &((DbgMenuItem*)(*itemTable))[i];
+        item->field_00 = -1;
+        item->field_04 = 0;
+        item->field_06 = 0;
+        item->field_08 = 0;
+        item->field_0C = 0;
+        item->field_10 = -1;
+        item->field_14 = 0;
+        item->field_18 = 0;
+        item->field_1C = 0;
+    }
+}
+
 /* 0x80132C6C | 0x310 */
 #if 0
 asm void fn_80132C6C(void) {
@@ -30,8 +71,7 @@ void fn_80132C6C(u32 count, u32 maxPerSlot, u32 arg2, u32 arg3) {
     extern u32 lbl_8047AECC;
     u32 total;
     u32 i;
-    u32 ofs;
-    u8* e;
+    DbgMenuSlot* slot;
 
     if (count == 0 || maxPerSlot == 0) return;
 
@@ -44,39 +84,23 @@ void fn_80132C6C(u32 count, u32 maxPerSlot, u32 arg2, u32 arg3) {
     if (lbl_8047AEB8 == 0) return;
     lbl_8047AEB0 = fn_800E27B0(lbl_8047AEB8);
 
-    i = 0; ofs = 0;
-    while (i < lbl_8047AEB4) {
-        e = (u8*)lbl_8047AEB0 + ofs;
-        i++; ofs += 0x18;
-        *(u32*)(e + 0x00) = 0;
-        *(u32*)(e + 0x04) = 0;
-        *(u32*)(e + 0x08) = 0;
-        *(u32*)(e + 0x0C) = 0;
-        *(u32*)(e + 0x10) = 0;
-        *(u8*)(e + 0x14) = 0;
-        *(u8*)(e + 0x15) = 0;
+    for (i = 0; i < lbl_8047AEB4; i++) {
+        slot = &((DbgMenuSlot*)lbl_8047AEB0)[i];
+        slot->field_00 = 0;
+        slot->field_04 = 0;
+        slot->field_08 = 0;
+        slot->field_0C = 0;
+        slot->field_10 = 0;
+        slot->field_14 = 0;
+        slot->field_15 = 0;
     }
 
     total = lbl_8047AEB4 * lbl_8047AEC0;
     lbl_8047AEC4 = (u16)_toolentryAlloc__FUl(total << 5);
     if (lbl_8047AEC4 == 0) return;
     lbl_8047AEBC = fn_800E27B0(lbl_8047AEC4);
-    if (total == 0) return;
 
-    i = 0; ofs = 0;
-    while (i < total) {
-        e = (u8*)lbl_8047AEBC + ofs;
-        i++; ofs += 0x20;
-        *(u32*)(e + 0x00) = -1;
-        *(u16*)(e + 0x04) = 0;
-        *(u16*)(e + 0x06) = 0;
-        *(u32*)(e + 0x08) = 0;
-        *(u32*)(e + 0x0C) = 0;
-        *(u32*)(e + 0x10) = -1;
-        *(u8*)(e + 0x14) = 0;
-        *(u32*)(e + 0x18) = 0;
-        *(u32*)(e + 0x1C) = 0;
-    }
+    dbgMenuInitItems(&lbl_8047AEBC, total);
 }
 #endif
 
