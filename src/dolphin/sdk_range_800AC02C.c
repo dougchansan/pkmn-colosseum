@@ -73,10 +73,15 @@ typedef struct CARDControl {
     /* 0x0A0 */ s32 cmdLen;
     /* 0x0A4 */ s32 field_A4;
     /* 0x0A8 */ s32 field_A8;
-    /* 0x0AC */ u8 _0AC[0x20];
+    /* 0x0AC */ s32 field_AC;
+    /* 0x0B0 */ u8* field_B0;
+    /* 0x0B4 */ u8* field_B4;
+    /* 0x0B8 */ u8* field_B8;
+    /* 0x0BC */ u8 _0BC[0x10];
     /* 0x0CC */ void* callback_CC;
     /* 0x0D0 */ void* apiCallback;
-    /* 0x0D4 */ u8 _0D4[0x38];
+    /* 0x0D4 */ void (*field_D4)(s32 chan, s32 result);
+    /* 0x0D8 */ u8 _0D8[0x34];
     /* 0x10C */ void* diskId;
 } CARDControl;
 
@@ -161,6 +166,8 @@ extern GXData* gx;
 extern s32 CARDCheckExAsync(s32 chan, s32* xferBytes, void* callback);
 extern s32 CARDUnmount(s32 chan);
 extern s32 __CARDFormatRegionAsync(s32 chan, u32 encode, void* callback);
+s32 __CARDReadSegment(s32 chan, void (*callback)(s32 chan, s32 result));
+s32 fn_80098368(s32 chan, void* buf, s32 len, s32 mode);
 extern s32 fn_800B57D0(s32 chan, s32 fileNo, CARDDirEntry* entry);
 extern s32 fn_800B588C(s32 chan, s32 fileNo, CARDDirEntry* entry, void* callback);
 extern void __ARQInterruptServiceRoutine(void);
@@ -496,6 +503,31 @@ s32 __CARDGetControlBlock(s32 chan, CARDControl** pcard) {
     }
     OSRestoreInterrupts(enabled);
     return result;
+}
+
+void BlockReadCallback(s32 chan, s32 result) {
+    CARDControl* card = &lbl_803FC620[chan];
+    void (*callback)(s32, s32);
+
+    if (result >= 0) {
+        card->field_B8 += 0x200;
+        card->field_B0 += 0x200;
+        card->field_B4 += 0x200;
+        if (--card->field_AC > 0) {
+            result = __CARDReadSegment(chan, BlockReadCallback);
+            if (result >= 0) {
+                return;
+            }
+        }
+    }
+    if (card->apiCallback == NULL) {
+        __CARDPutControlBlock(card, result);
+    }
+    callback = card->field_D4;
+    if (callback != NULL) {
+        card->field_D4 = NULL;
+        callback(chan, result);
+    }
 }
 
 s32 CARDClose(CARDFileInfo* fileInfo) {
