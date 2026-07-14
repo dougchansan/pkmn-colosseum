@@ -8732,14 +8732,14 @@ void fn_80221104(u32 a, u32 code) {
                         t26 = 0x3C;
                         break;
                     default:
-                        t26 = fn_80222110(val);
+                        t26 = fn_80222110(val, n);
                         break;
                     }
                 } else {
-                    t26 = fn_80222110(val);
+                    t26 = fn_80222110(val, n);
                 }
             } else {
-                t26 = fn_80222110(val);
+                t26 = fn_80222110(val, n);
             }
             t27 = (u16)fn_801F54A4(0, 0, 0x14, 0);
             status = fn_8012640C(ctx, 0, 0xEE, 0);
@@ -12565,10 +12565,10 @@ u32 fn_80211A78(void* ctx)
     }
     d920val = fn_8020D920(lbl_8047B62C);
     result = fn_801F11CC(localBuf, d920val, ctx, 0xC, 0, lbl_80375D30);
-    switch ((u32)result) {
-    case 1:
+    if ((u32)result == 1) {
         goto set_buff;
-    default:
+    } else {
+        __memcpy(localBuf, localBuf, 0);
         goto after_set_buff;
     }
 set_buff:
@@ -14170,6 +14170,7 @@ void WS_HIMITUNOTIKARA(void)
 #define fn_801F4C14 fightFloorSetStatus
 #define fn_80202B88 fightOutPokemonIsAlly
 #define fn_802062FC fightOutPokemonCheckFightOut
+#pragma opt_propagation off
 u32 fn_80214CFC(u32 r3, u32 r4, u32 r5)
 
 {
@@ -14184,25 +14185,30 @@ u32 fn_80214CFC(u32 r3, u32 r4, u32 r5)
     extern void fn_80211B94();
   extern u8 lbl_8037960A[];
   extern void* lbl_8047B62C;
-  u32 uVar1;
-  u8 cVar2;
+  u32 ctx;
+  u32 other;
 
-  uVar1 = fightOutPokemonGetTokuseiDataId(r5);
-  cVar2 = fn_802062FC(r3);
-  if (cVar2 == 0) {
-    return 1;
-  }
-  cVar2 = fn_80202B88(r3,r5);
-  if (cVar2 == 0) {
-    fn_801F4C14(0,0,0x42,0,r3);
-    fn_8011CB6C(uVar1);
-    fn_8011CB54();
-    uVar1 = fn_800FA280();
-    fn_80132A38(0xd,uVar1);
-    fn_80211B94(lbl_8047B62C,lbl_8037960A,0);
+  ctx = r3;
+  other = r5;
+  {
+    u32 value;
+
+    value = fightOutPokemonGetTokuseiDataId(other);
+    if (fn_802062FC(ctx) == 0) {
+      return 1;
+    }
+    if (fn_80202B88(ctx,other) == 0) {
+      fn_801F4C14(0,0,0x42,0,ctx);
+      fn_8011CB6C(value);
+      fn_8011CB54();
+      value = fn_800FA280();
+      fn_80132A38(0xd,value);
+      fn_80211B94(lbl_8047B62C,lbl_8037960A,0);
+    }
   }
   return 1;
 }
+#pragma opt_propagation reset
 #undef fn_802062FC
 #undef fn_80202B88
 #undef fn_801F4C14
@@ -19901,37 +19907,34 @@ void WS_CONDITION_CHECK(void)
     extern u8 fn_802026E4();
     extern u8 fn_80203C5C();
     extern u8 fn_80203CCC();
-    extern u8 fn_802062FC();
-  u32 uVar1;
-  u32 uVar2;
-  u8 cVar3;
-  u32 uVar4;
+    extern u32 fn_802062FC();
+  u32 ctx;
+  u8* target;
+  u16 kind;
 
-  uVar2 = fn_801F025C(*(u8 *)(lbl_8047B610 + 1),0);
-  uVar4 = *(u32 *)(lbl_8047B610 + 6);
-  uVar1 = *(u32 *)(lbl_8047B610 + 2) & 0xffff;
-  if (uVar1 == 1) {
-    cVar3 = fn_80203CCC();
-    if (cVar3 == 0) {
-      lbl_8047B610 = (u8*)uVar4;
+  ctx = fn_801F025C(*(u8 *)(lbl_8047B610 + 1),0);
+  kind = *(u32 *)(lbl_8047B610 + 2);
+  target = *(u8 **)(lbl_8047B610 + 6);
+  if (kind == 1) {
+    if ((u8)fn_80203CCC(ctx) == 0) {
+      lbl_8047B610 = target;
     }
     else {
       lbl_8047B610 += 10;
     }
   }
-  else if (uVar1 == 2) {
-    cVar3 = fn_80203C5C();
-    if (cVar3 == 1) {
-      lbl_8047B610 = (u8*)uVar4;
+  else if (kind == 2) {
+    if ((u8)fn_80203C5C(ctx) == 1) {
+      lbl_8047B610 = target;
     }
     else {
       lbl_8047B610 += 10;
     }
   }
   else {
-    cVar3 = fn_802026E4();
-    if ((cVar3 == 1) && (cVar3 = fn_802062FC(uVar2), cVar3 == 1)) {
-      lbl_8047B610 = (u8*)uVar4;
+    if ((u8)fn_802026E4(ctx, kind) == 1 &&
+        (u8)fn_802062FC(ctx) == 1) {
+      lbl_8047B610 = target;
     }
     else {
       lbl_8047B610 += 10;
@@ -24123,7 +24126,9 @@ u32 fn_8022EDEC(u32 r3, u8 r4)
               if ((randomResult % 0x100) != 0) {
                 return 0;
               }
-              fn_802026E4(r3,8);
+              if (fn_802026E4(r3,8) == 1) {
+                __memcpy((void*)r3,(void*)r3,0);
+              }
               fn_802080A8(r3,1,1,0,0);
               uVar1 = fn_801F54A4(0,0,0x36,0);
               fn_801F4C14(0,0,0x36,0,r3);
@@ -25127,7 +25132,9 @@ loop_type1_top:
 loop_type1_done:
       ;
       }
-      puVar18 = auStack_310;
+      {
+      u8 *typeTwoBase = (u8 *)auStack_310;
+      puVar18 = (u32 *)local_318;
       uVar15 = 0;
 loop_type2_top:
       if ((u16)uVar15 >= (u16)uVar11.value) goto loop_type2_done;
@@ -25135,15 +25142,17 @@ loop_type2_top:
       if ((u16)uVar14 == 0) goto loop_type2_done;
       {
         uVar22.value = fn_800E0C54();
-        local_318[uVar20 & 0xffff] = 3;
+        ((u8 *)puVar18)[uVar20 & 0xffff] = 3;
         uVar8.value = uVar20 & 0xffff;
         uVar20 = uVar20 + 1;
         uVar15 = uVar15 + 1;
         *(u32 *)(r5 + uVar8.value * 4) =
-            puVar18[(u16)((int)(uVar22.value & 0xffff) % (int)(u16)uVar14)];
+            ((u32 *)typeTwoBase)[(u16)((int)(uVar22.value & 0xffff) % (int)(u16)uVar14)];
         goto loop_type2_top;
       }
 loop_type2_done:
+      ;
+      }
       {
       u8 *typeThreeBase = local_318;
       int resultOffset;
@@ -26886,11 +26895,13 @@ u32 fn_802395C8(u32 trainer, u32 move, u32 target)
     u32 callbackD[5];
     u32 callback4D[5];
     u16 trainerData;
-    u8 weather;
+    struct {
+        u8 value;
+    } weather;
 
     trainerData = (u16)fightTrainerGetStatus(trainer, 0, 0x43, 0);
     trainerData = (u16)fightTrainerGetStatus(0, trainerData, 2, 0);
-    weather = fightFloorGetNowTenkouDataId(0, 0);
+    weather.value = fightFloorGetNowTenkouDataId(0, 0);
 
     callbackD[0] = 0xd;
     callbackD[1] = 0;
@@ -26899,7 +26910,7 @@ u32 fn_802395C8(u32 trainer, u32 move, u32 target)
     callbackD[4] = trainer;
     fightFloorLoopValidFightOutPokemon(0, fn_80236268, callbackD, 0);
     if (callbackD[1] != 0) {
-        weather = 0;
+        weather.value = 0;
     } else {
         callback4D[0] = 0x4d;
         callback4D[1] = 0;
@@ -26908,7 +26919,7 @@ u32 fn_802395C8(u32 trainer, u32 move, u32 target)
         callback4D[4] = trainer;
         fightFloorLoopValidFightOutPokemon(0, fn_80236268, callback4D, 0);
         if (callback4D[1] != 0) {
-            weather = 0;
+            weather.value = 0;
         }
     }
 
@@ -26923,13 +26934,13 @@ u32 fn_802395C8(u32 trainer, u32 move, u32 target)
             return hiddenPower;
         }
         if ((u16)move == 0x137) {
-            if (weather == 2) {
+            if (weather.value == 2) {
                 hiddenPower = 0xb;
-            } else if (weather == 3) {
+            } else if (weather.value == 3) {
                 hiddenPower = 5;
-            } else if (weather == 1) {
+            } else if (weather.value == 1) {
                 hiddenPower = 0xa;
-            } else if (weather == 4) {
+            } else if (weather.value == 4) {
                 hiddenPower = 0xf;
             } else {
                 hiddenPower = 0;
@@ -28090,21 +28101,23 @@ u32 fightTrainerAiWazaValueMarukunaru(u32 r3, u32 r4, u32 r5)
   u32 uVar2;
   int iVar3;
   u16 uVar6;
-  u32 uVar7;
+  struct {
+    u32 value;
+  } uVar7;
   u16 local_30 [12];
 
   uVar4 = fn_802367CC(r3,r4,local_30,0,1);
   uVar1 = fn_80235A3C(r3,r4);
-  uVar7 = 0;
+  uVar7.value = 0;
   cVar5 = fn_80235714(r3,r4);
   if (cVar5 == 0) {
-    uVar7 = fn_80239984(0,r3,0x20c);
+    uVar7.value = fn_80239984(0,r3,0x20c);
     uVar2 = fn_80205B8C(r4);
     fn_80239EE8(0xec64,r3,uVar2,0,0,r5,0,0x20c);
   }
   cVar5 = fn_80235714(r3,r4);
   if (cVar5 == 1) {
-    uVar7 = fn_80239984(uVar7,r3,0x20e);
+    uVar7.value = fn_80239984(uVar7.value,r3,0x20e);
     uVar2 = fn_80205B8C(r4);
     fn_80239EE8(0xec64,r3,uVar2,0,0,r5,0,0x20e);
   }
@@ -28114,21 +28127,21 @@ u32 fightTrainerAiWazaValueMarukunaru(u32 r3, u32 r4, u32 r5)
   }
   iVar3 = fightTrainerGetStatus(0,0x20f,0x3e,0);
   uVar1 = uVar1 * iVar3;
-  uVar7 = fightTrainerAiAddValue(uVar7,uVar1);
+  uVar7.value = fightTrainerAiAddValue(uVar7.value,uVar1);
   uVar2 = fn_80205B8C(r4);
   fn_80239CCC(0xec64,r3,uVar2,0,0,r5,0,0x20f,uVar1);
   for (uVar6 = 0; uVar6 < (u16)uVar4; uVar6++) {
     if ((local_30[uVar6] == 0xcd) || (local_30[uVar6] == 0x12d)) {
       {
-        u32 callResult = fn_80239984(uVar7,r3,0x20d);
-        uVar7 = callResult;
+        u32 callResult = fn_80239984(uVar7.value,r3,0x20d);
+        uVar7.value = callResult;
       }
       uVar2 = fn_80205B8C(r4);
       fn_80239EE8(0xec64,r3,uVar2,0,0,r5,0,0x20d);
       break;
     }
   }
-  return uVar7;
+  return uVar7.value;
 }
 u32 fightTrainerAiWazaValueSukirusuwappu(u32 arg0, u32 arg1, u32 arg2, u32 arg3)
 
@@ -28174,7 +28187,6 @@ u32 fightTrainerAiWazaValueMamoru(u32 ctx, u32 poke, u32 msgArg,
     u32 moveCount;
     u32 partyCount;
     u32 finalMoveCount;
-    u16 move;
     u32 score;
     u16 i;
     u16 j;
@@ -28218,15 +28230,15 @@ u32 fightTrainerAiWazaValueMamoru(u32 ctx, u32 poke, u32 msgArg,
         }
     }
 
-    for (move = 0; move < *lbl_80478DF8; move++) {
-        valueFunc = (WazaValueFunc)wazaGetStatus(0, move, 0x1C, 0);
+    for (moveCount = 0; (moveCount & 0xFFFF) < *lbl_80478DF8; moveCount++) {
+        valueFunc = (WazaValueFunc)wazaGetStatus(0, moveCount, 0x1C, 0);
         if (valueFunc == 0) {
             valueFunc = fightTrainerAiWazaValueNull;
         }
         if (valueFunc == fightTrainerAiWazaValueJisin ||
             valueFunc == fightTrainerAiWazaValueJibaku) {
             if ((u8)fightFloorGetFightTrainerFightOutPokemonIsFightActionAttackWazaOut(
-                    0, ctx, 1, 1, move, 0) == 1) {
+                    0, ctx, 1, 1, moveCount, 0) == 1) {
                 if (valueFunc == fightTrainerAiWazaValueJisin) {
                     queuedJisin = 1;
                 }
