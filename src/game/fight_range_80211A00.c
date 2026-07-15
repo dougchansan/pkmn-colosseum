@@ -23615,7 +23615,7 @@ u32 fn_8022E34C(u32 r3, u32 r4, char* r5)
 
 {
     extern void fn_801F4C14();
-    extern u32 fn_80207BF4();
+    extern u16 fn_80207BF4();
     extern u8 fn_802026E4();
     extern void fn_80202810();
     extern u8 fn_802062FC();
@@ -23623,25 +23623,22 @@ u32 fn_8022E34C(u32 r3, u32 r4, char* r5)
     extern u8 lbl_803795FE[];
     extern u8 lbl_803795F5[];
     extern void* lbl_8047B62C;
-  u32 sVar1;
+  u16 sVar1;
+  u32 uVar3;
+  void* context;
   u8 cVar2;
-  u8* uVar3;
 
-  uVar3 = (u8*)r5;
+  context = (void*)r3;
   sVar1 = fn_80207BF4();
-  cVar2 = fn_802062FC(r3);
+  cVar2 = fn_802062FC(context);
   if (cVar2 == 0) {
     return 1;
   }
-  cVar2 = *uVar3;
-  uVar3 = lbl_803795FE;
-  if (cVar2 == 1) {
-    uVar3 = lbl_803795F5;
-  }
-  if (((sVar1 & 0xffff) == 0x16) &&
-      (cVar2 = fn_802026E4(r3,0x3b), cVar2 == 1)) {
-      fn_80202810(r3,0x3b);
-      fn_801F4C14(0,0,0x4b,0,r3);
+  uVar3 = (u32)((*r5 == 1) ? lbl_803795F5 : lbl_803795FE);
+  if ((sVar1 == 0x16) &&
+      (cVar2 = fn_802026E4(context,0x3b), cVar2 == 1)) {
+      fn_80202810(context,0x3b);
+      fn_801F4C14(0,0,0x4b,0,context);
       fn_80211B94(lbl_8047B62C,uVar3,0);
   }
   return 1;
