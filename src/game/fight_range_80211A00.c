@@ -23523,7 +23523,7 @@ void fn_8022DF08(u32 ctx)
     case 0x36: {
         u32 value = pokemonGetStatus(ctx, 0, 0xF9, 0);
         value = __cntlzw(value & 0xFF);
-        pokemonSetStatus(ctx, 0, 0xF9, 0, (value >> 5) & 0xFF);
+        pokemonSetStatus(ctx, 0, 0xF9, 0, (value & 0x1FE0) >> 5);
         break;
     }
     }
