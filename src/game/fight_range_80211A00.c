@@ -28485,7 +28485,7 @@ u32 fightTrainerAiWazaValueMigawari(u32 r3, u32 r4, u32 r5)
     extern u32 fn_802373B0();
     extern int fn_80239984();
     extern u32 fn_80239EE8();
-    extern f32 lbl_8047E634;
+    extern const f32 lbl_8047E634;
 
   u8 cVar2;
   u32 uVar1;
