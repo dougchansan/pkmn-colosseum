@@ -18122,20 +18122,22 @@ void fn_8021EAE8(void)
 
 {
     extern u32 GSmsgGetGSchar();
-    extern u8 wazaGetStatus();
-    extern void pokemonWazaCreate();
+    extern u8 wazaGetStatus(u32, u16, u32, u32);
+    extern void pokemonWazaCreate(u32, u16, u16);
     extern void msgctrlSetValue();
     extern u32 fightPokemonGetPokemonPtr();
     extern s32 fightMenuWazaWasure();
     extern u8 fightMenuYesNo();
     extern void fightMenuCloseMsg();
     extern u8 fightMenuOpenMsg();
-    extern u32 pokemonGetStatus();
+    extern u32 pokemonGetStatus(u32, u32, u32, u16);
     extern u16 lbl_8047B61C;
     extern void* lbl_8047B64C;
   u32 pokemon;
   s32 choice;
-  u16 move;
+  struct {
+    u16 value;
+  } move;
   u32 text;
 
   pokemon = fightPokemonGetPokemonPtr(lbl_8047B64C);
@@ -18146,14 +18148,14 @@ void fn_8021EAE8(void)
       if (choice == -1 || choice >= 4) {
         break;
       }
-      move = pokemonGetStatus(pokemon,0,0x7f,choice);
-      if (wazaGetStatus(0,move,0x19,0) == 1) {
+      move.value = pokemonGetStatus(pokemon,0,0x7f,choice);
+      if (wazaGetStatus(0,move.value,0x19,0) == 1) {
         if (fightMenuOpenMsg(0x7635) == 1) {
           fightMenuCloseMsg();
         }
       } else {
         pokemonWazaCreate(pokemon,choice,lbl_8047B61C);
-        wazaGetStatus(0,move,1,0);
+        wazaGetStatus(0,move.value,1,0);
         text = GSmsgGetGSchar();
         msgctrlSetValue(0xe,text);
         msgctrlSetValue(0x5d,0x468);
