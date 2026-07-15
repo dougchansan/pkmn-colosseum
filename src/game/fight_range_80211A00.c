@@ -26974,9 +26974,12 @@ int fn_802398E4(int r3, int r4, u32 r5, u32 r6)
     extern int fn_801FB1C0();
   int iVar1;
   int result;
+  int factor;
 
   iVar1 = fn_801FB1C0(0,r6,0x3e,0);
-  iVar1 = (int)(short)((((short)(((r4 & 0xff) * 100) / 0xff) + -0x32) * iVar1) / 0x32);
+  factor = (short)(((r4 & 0xff) * 100) / 0xff) + -0x32;
+  iVar1 = (factor *= iVar1);
+  iVar1 = (short)(iVar1 / 0x32);
   result = r3;
   if (iVar1 > 0) {
     result = r3 + iVar1;
