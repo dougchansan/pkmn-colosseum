@@ -26663,14 +26663,13 @@ u32 fn_80238060(u32 r3, u32 r4, u8 r5)
 u32 fn_8023881C(u32 r3, u32 r4)
 
 {
+  u16 statusValues[2];
     extern u32 fightTrainerGetStatus();
     extern u32 fightPokemonGetPokemonPtr();
     extern u32 pokemonGetStatus();
-  u16 uVar3;
   u16 uVar5;
   u16 uVar6;
   u32 uVar1;
-  u16 uVar2;
   u8 uVar4;
   u8 bVar7;
 
@@ -26679,13 +26678,13 @@ u32 fn_8023881C(u32 r3, u32 r4)
   uVar6 = fightTrainerGetStatus(r3,0,0x43,0);
   fightTrainerGetStatus(0,uVar6,2,0);
   uVar1 = fightPokemonGetPokemonPtr(r4);
-  uVar2 = (int)pokemonGetStatus(uVar1,0,0x83,0);
+  statusValues[0] = (int)pokemonGetStatus(uVar1,0,0x83,0);
   uVar6 = fightTrainerGetStatus(r3,0,0x43,0);
   fightTrainerGetStatus(0,uVar6,2,0);
   uVar1 = fightPokemonGetPokemonPtr(r4);
-  uVar3 = (int)pokemonGetStatus(uVar1,0,0x87,0);
+  statusValues[1] = (int)pokemonGetStatus(uVar1,0,0x87,0);
   uVar4 = fightTrainerGetStatus(0,uVar5,0x2c,0);
-  bVar7 = (uVar2 * 100) / uVar3 <= uVar4;
+  bVar7 = (statusValues[0] * 100) / statusValues[1] <= uVar4;
   return bVar7;
 }
 #pragma optimize_for_size reset
