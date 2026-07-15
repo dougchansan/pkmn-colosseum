@@ -16095,7 +16095,7 @@ void fn_80219838(void)
 
 {
     extern u32 fn_800FA280();
-    extern void fn_8011BEB4();
+    extern void fn_8011BEB4(u32, u16, u32, u32);
     extern s8 fn_80123B5C();
     extern u32 fn_8012640C();
     extern void fn_80132A38();
@@ -16107,6 +16107,7 @@ void fn_80219838(void)
   u32 uVar1;
   u32 uVar2;
   u16 uVar3;
+  u16 finalMove;
   s8 cVar4;
   u8 cVar5;
   u8 cVar6;
@@ -16123,12 +16124,12 @@ void fn_80219838(void)
   }
   cVar6 = fn_802025B8(uVar1,0x29);
   if (((cVar6 == 2) && (cVar4 >= 0)) && (cVar5 != 0)) {
-    uVar3 = (int)fn_8012640C(uVar2,0,0x7f,(int)cVar4);
-    fn_8011BEB4(0,uVar3,1,0);
+    finalMove = (int)fn_8012640C(uVar2,0,0x7f,(int)cVar4);
+    fn_8011BEB4(0,finalMove,1,0);
     uVar2 = fn_800FA280();
     fn_80132A38(0xd,uVar2);
     fn_8020248C(uVar1,0x29,0);
-    fn_80201B2C(uVar1,0x29,uVar3);
+    fn_80201B2C(uVar1,0x29,finalMove);
     lbl_8047B610 += 5;
     return;
   }
