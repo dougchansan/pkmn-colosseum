@@ -19292,19 +19292,21 @@ void fn_80222370(void)
 #pragma optimize_for_size on
 void fn_80222654(void)
 {
-    u8* dst;
+    struct {
+        u8* value;
+    } dst;
     int i;
     u8* src;
     u8* offset;
     int count;
 
     count = lbl_8047B610[13];
-    dst = *(u8**)(lbl_8047B610 + 1);
+    dst.value = *(u8**)(lbl_8047B610 + 1);
     src = *(u8**)(lbl_8047B610 + 5);
     offset = *(u8**)(lbl_8047B610 + 9);
 
     for (i = 0; i < count; i++) {
-        *dst++ = src[i + offset[0]];
+        *dst.value++ = src[i + offset[0]];
     }
     lbl_8047B610 += 14;
 }
