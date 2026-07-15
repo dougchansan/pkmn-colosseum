@@ -13773,6 +13773,7 @@ void fn_80213A78(void)
   u32 caught;
   u32 uVar5;
   u16 uVar10;
+  u16 firstItem;
   u16 uVar9;
   u32 uVar8;
   u8 cVar12;
@@ -13780,8 +13781,8 @@ void fn_80213A78(void)
   bVar13 = 0;
   uVar1.value = fightTargetGetPtrAsNowFightType(0x11,0);
   uVar8 = (int)pokemonGetStatus(uVar1.value,0,0xe5,0);
-  uVar9 = itemGetStatus(uVar8,0,0x1e,0);
-  uVar9 = itemGetStatus(0,uVar9,10,0);
+  firstItem = itemGetStatus(uVar8,0,0x1e,0);
+  uVar9 = itemGetStatus(0,firstItem,10,0);
   uVar2 = fightFloorGetFightOutPokemonPtrToFightTrainerPtr(0,uVar1.value);
   uVar7 = fightFloorGetFightOutPokemonPtrToHeroPtr(0,uVar1.value);
   uVar3 = fightTargetGetPtrAsNowFightType(0x12,0);
