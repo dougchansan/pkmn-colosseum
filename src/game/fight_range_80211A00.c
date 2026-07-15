@@ -18491,13 +18491,13 @@ void fn_8021F664(void)
 
     {
         struct AbilityList abilities;
+        u32 first;
+        u32 second;
         const u32* abilitySource = (const u32*)&lbl_80279FE0 - 1;
         u32* abilityDestination = (u32*)&abilities - 1;
         u32 copyIndex;
 
         for (copyIndex = 0; copyIndex < 2; copyIndex++) {
-            u32 first;
-            u32 second;
             first = abilitySource[2];
             second = abilitySource[1];
             abilitySource += 2;
