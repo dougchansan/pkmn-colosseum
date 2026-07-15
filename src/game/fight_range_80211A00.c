@@ -16978,17 +16978,28 @@ void fn_8021B1A4(void)
     extern u8 fightOutPokemonIsZokuseiDataId();
     extern void fightOutPokemonSetZokuseiDataId();
     u32 attacker;
-    u32 pokemon;
-    u32 type;
+    struct {
+        u32 value;
+    } pokemon;
+    struct {
+        u32 value;
+    } type;
+    struct {
+        u32 value;
+    } slot;
     u16 move;
     u32 selected;
-    u32 count;
-    s32 i;
+    struct {
+        u32 count;
+        s32 i;
+    } state;
     u32 index;
     u32 candidates[4];
 
+    type.value = 0;
+    slot.value = 0;
     attacker = fightTargetGetPtrAsNowFightType(0x11, 0);
-    pokemon = fightOutPokemonGetPokemonPtr(attacker);
+    pokemon.value = fightOutPokemonGetPokemonPtr(attacker);
     {
         u32 init_i;
         for (init_i = 0; (u8)init_i < 4; init_i++) {
@@ -16996,44 +17007,45 @@ void fn_8021B1A4(void)
         }
     }
 
-    count = 0;
-    for (i = count; (u8)i < 4; i++) {
-        if (pokemonWazaCheckValid(pokemon, (u8)i) == 1) {
-            move = (u16)pokemonGetStatus(pokemon, 0, 0x7f, (u8)i);
+    state.count = 0;
+    for (state.i = state.count; (u8)state.i < 4; state.i++) {
+        slot.value = (u8)state.i;
+        if (pokemonWazaCheckValid(pokemon.value, slot.value) == 1) {
+            move = (u16)pokemonGetStatus(pokemon.value, 0, 0x7f, slot.value);
             if (move != 0xa5 && move != 0x164) {
-                type = wazaGetStatus(0, move, 3, 0) & 0xffff;
-                if (type == 9) {
+                type.value = wazaGetStatus(0, move, 3, 0) & 0xffff;
+                if (type.value == 9) {
                     if (fightOutPokemonIsZokuseiDataId(attacker, 7) == 1) {
-                        type = 7;
+                        type.value = 7;
                     } else {
-                        type = 0;
+                        type.value = 0;
                     }
                 }
-                if (fightOutPokemonIsZokuseiDataId(attacker, type) == 0) {
-                    candidates[(u8)count] = (u16)type;
-                    count++;
+                if (fightOutPokemonIsZokuseiDataId(attacker, type.value) == 0) {
+                    candidates[(u8)state.count] = (u16)type.value;
+                    state.count++;
                 }
             }
         }
     }
 
-    if ((u8)count == 0) {
+    if ((u8)state.count == 0) {
 failed:
         lbl_8047B610 = *(u8**)(lbl_8047B610 + 1);
         goto done;
     }
 
-    selected = (pokemon,
-        candidates[(u8)((s32)(u16)fn_800E0C54() % (s32)(u8)count)]);
+    selected = (pokemon.value,
+        candidates[(u8)((s32)(u16)fn_800E0C54() % (s32)(u8)state.count)]);
     if ((s32)selected < 0) {
         goto failed;
     }
 
-    count = selected & 0xffff;
+    state.count = selected & 0xffff;
     for (index = 0; (u8)index < 2; index++) {
-        fightOutPokemonSetZokuseiDataId(attacker, index, count);
+        fightOutPokemonSetZokuseiDataId(attacker, index, state.count);
     }
-    fn_8010C4D4(count);
+    fn_8010C4D4(state.count);
     msgctrlSetValue(0xd, GSmsgGetGSchar());
     lbl_8047B610 += 5;
 done:
