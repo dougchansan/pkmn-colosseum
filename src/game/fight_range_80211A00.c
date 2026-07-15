@@ -20530,6 +20530,9 @@ void fn_80226914(void)
     lbl_8047B610 += 2;
 }
 
+#pragma opt_propagation off
+#pragma opt_lifetimes off
+#pragma optimization_level 2
 void fn_80226F0C(void) {
     extern u32 lbl_8047B618;
     extern void _threadSwitch();
@@ -20538,31 +20541,35 @@ void fn_80226F0C(void) {
     extern u32 fightOutPokemonGetUseWazaDataId();
     extern u32 pokemonGetStatus();
     extern void fightMenuAllFightOutPokemonCloseStatusMenu();
-    u32 index;
-    u32 move;
-    u32 attacker;
+    struct {
+        u32 index;
+        u32 attacker;
+        u32 move;
+    } vars;
 
-    attacker = fightTargetGetPtrAsNowFightType(0x11, 0);
-    move = fightOutPokemonGetUseWazaDataId(attacker);
-    pokemonGetStatus(attacker, 0, 0xd9, 0);
+    vars.attacker = fightTargetGetPtrAsNowFightType(0x11, 0);
+    vars.move = fightOutPokemonGetUseWazaDataId(vars.attacker);
+    pokemonGetStatus(vars.attacker, 0, 0xd9, 0);
     fightTargetGetPtrAsNowFightType(0x12, 0);
-    if ((lbl_8047B618 & 0x80) != 0 && (u16)move != 0x90) {
-        if ((u16)move == 0xa4) {
-            index = lbl_8047B610[1];
-            do {
-                if (fn_801DA5C4(index) == 1) {
-                    break;
-                }
-                _threadSwitch();
-            } while (1);
-        }
+    if ((lbl_8047B618 & 0x80) == 0 || (u16)vars.move == 0x90 ||
+        (u16)vars.move == 0xa4) {
+        vars.index = lbl_8047B610[1];
+        do {
+            if (fn_801DA5C4(vars.index) == 1) {
+                break;
+            }
+            _threadSwitch();
+        } while (1);
     }
-    if ((u8)index == 2 || (u8)index == 6) {
+    if ((u8)vars.index == 2 || (u8)vars.index == 6) {
         fightMenuAllFightOutPokemonCloseStatusMenu(0);
     }
     lbl_8047B610 += 2;
     return;
 }
+#pragma optimization_level reset
+#pragma opt_lifetimes reset
+#pragma opt_propagation reset
 void fn_80226FD4(void)
 
 {
