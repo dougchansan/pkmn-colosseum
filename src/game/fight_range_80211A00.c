@@ -11631,9 +11631,13 @@ u32 fn_8023793C(u32 ctx, u32 poke, u16 waza, s32 val) {
     u16 types[2];
     u16 tmp;
     u16 tk;
-    u16 typeCount;
+    struct {
+        u16 value;
+    } typeCount;
     u16 z;
-    u8  i;
+    struct {
+        u8 value;
+    } i;
     u16 j;
     u16 floorVal;
     u32 result;
@@ -11660,31 +11664,31 @@ u32 fn_8023793C(u32 ctx, u32 poke, u16 waza, s32 val) {
         return 0x43;
     }
 
-    typeCount = 0;
-    i = typeCount;
-    for (; i < 2; i++) {
+    typeCount.value = 0;
+    i.value = typeCount.value;
+    for (; i.value < 2; i.value++) {
         floorVal = (u16)fightFloorGetStatus(0, 0, 0x14, 0);
         tmp = (u16)fightTrainerGetStatus(ctx, 0, 0x43, 0);
         tmp = (u16)fightTrainerGetStatus(0, tmp, 2, 0);
         if ((u8)fightTrainerGetStatus(0, tmp, 0x2a, 0) == 1) {
             if ((u8)fightTrainerIsAllyFightTargetPtr(ctx, poke, floorVal) == 0) {
-                z = fightOutPokemonGetZokuseiDataId(poke, i);
+                z = fightOutPokemonGetZokuseiDataId(poke, i.value);
             } else {
-                z = fightOutPokemonGetZokuseiDataId(poke, i);
+                z = fightOutPokemonGetZokuseiDataId(poke, i.value);
             }
         } else {
             z = 9;
         }
         if (z != 9) {
-            types[typeCount] = z;
-            typeCount++;
+            types[typeCount.value] = z;
+            typeCount.value++;
         }
     }
-    if (typeCount == 0) {
+    if (typeCount.value == 0) {
         return 0x3f;
     }
 
-    result = fn_8010C650(waza, types, typeCount);
+    result = fn_8010C650(waza, types, typeCount.value);
     if (waza == 0 || waza == 1) {
         tmp = (u16)fightTrainerGetStatus(ctx, 0, 0x43, 0);
         tmp = (u16)fightTrainerGetStatus(0, tmp, 2, 0);
@@ -11694,7 +11698,7 @@ u32 fn_8023793C(u32 ctx, u32 poke, u16 waza, s32 val) {
             valid = 0;
         }
         if ((u8)valid == 1) {
-            for (j = 0; j < typeCount; j++) {
+            for (j = 0; j < typeCount.value; j++) {
                 u16 v = types[j];
                 if (v != 9 && v == 7) {
                     result = 0x3f;
