@@ -19320,14 +19320,23 @@ void fn_80222654(void)
 void fn_802226A4(void)
 {
     u8* pc = lbl_8047B610;
-    u32 rawDst = *(u32*)(pc + 1);
-    u32 rawSrc = *(u32*)(pc + 5);
-    int count = pc[9];
-    u8* dst = (u8*)rawDst;
-    u8* src = (u8*)rawSrc;
+    int count;
+    u32 rawDst;
+    u32 rawSrc;
+    struct {
+        u8* value;
+    } dst;
+    struct {
+        u8* value;
+    } src;
+    rawDst = *(u32*)(pc + 1);
+    rawSrc = *(u32*)(pc + 5);
+    count = pc[9];
+    dst.value = (u8*)rawDst;
+    src.value = (u8*)rawSrc;
 
     while (count-- > 0) {
-        *dst++ = *src++;
+        *dst.value++ = *src.value++;
     }
     lbl_8047B610 += 10;
 }
