@@ -218,7 +218,7 @@ extern u32 mailGetSendRate(void* entry);
 extern u32 fn_801D1618(void);
 extern u32 fn_801D1620(u32 idx);
 extern u32 fn_801D1650(u32 idx);
-extern void fn_801D167C(u32 handle);
+extern void fn_801D167C(u8 handle);
 extern u8 fn_801D16C4(void);
 extern u32 mailGetAttachFileGroup(s32 idx);
 extern void fn_801D1734(s32 attackerSlot, s32 targetSlot, s32 moveID);

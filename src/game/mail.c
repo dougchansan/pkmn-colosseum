@@ -250,13 +250,16 @@ u32 fn_801D1650(u32 idx) {
  * fn_801D167C - Waza set current handle.
  * Address: 0x801D167C | Size: 0x48
  */
-void fn_801D167C(u32 handle) {
+#pragma push
+#pragma peephole off
+void fn_801D167C(u8 handle) {
     s32 slot = handle & 0xFF;
     WazaPartyScratch* party = (WazaPartyScratch*)savedataGetStatus(0, 0x0A);
     if (slot < lbl_80478CB8) {
-        party->currentHandle = (u8)handle;
+        party->currentHandle = handle;
     }
 }
+#pragma pop
 
 /**
  * fn_801D16C4 - Waza get current handle.
