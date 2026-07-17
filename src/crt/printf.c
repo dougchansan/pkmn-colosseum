@@ -57,6 +57,24 @@ s32 vprintf(const char* fmt, va_list args) {
     return result;
 }
 
+/* printf - 0x800C8710 | size: 0xE8 */
+s32 printf(const char* fmt, ...) {
+    __FILE* stdout_file = (__FILE*)(__files + 0x50);
+    va_list args;
+    s32 result;
+
+    if (fwide(stdout_file, -1) >= 0) {
+        return -1;
+    }
+
+    __begin_critical_region(2);
+    __builtin_va_info(&args);
+    result = __pformatter((WriteFunc)__FileWrite, stdout_file, fmt, args);
+    __end_critical_region(2);
+
+    return result;
+}
+
 /* __StringWrite - 0x800C87F8 | size: 0x6C */
 s32 __StringWrite(u8* ctx, const void* src, u32 count) {
     extern void* memcpy(void* dst, const void* src, u32 n);
