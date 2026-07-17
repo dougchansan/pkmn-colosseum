@@ -510,6 +510,8 @@ asm void HSD_Index2LightID(void) {
 #include "src/hsd/hsd_lobj_fn_801A4A54.inc"
 }
 #else
+#pragma push
+#pragma optimization_level 1
 u32 HSD_Index2LightID(u32 idx) {
     switch (idx) {
     case 0: return 0x1;
@@ -524,6 +526,7 @@ u32 HSD_Index2LightID(u32 idx) {
     }
     return 0;
 }
+#pragma pop
 #endif
 
 /* 0x801A4AC4 | 0x3C */
