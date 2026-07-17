@@ -2148,7 +2148,7 @@ config.libs = [
                 progress_category="hsd",
             ),
             Object(
-                CodeCandidate,
+                Matching,
                 "hsd/hsd_object.c",
                 mw_version="GC/1.3",
                 progress_category="hsd",
