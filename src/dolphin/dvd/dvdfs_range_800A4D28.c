@@ -8,6 +8,8 @@
 #define DVDGetCurrentDir DVDGetCurrentDir_stale_header_prototype
 #include "dolphin/dvd/dvd.h"
 #undef DVDGetCurrentDir
+#include "dolphin/dvd/dvdfs_internal.h"
+#include "dolphin/os/OSInterrupt.h"
 #include "dolphin/os/OSThread.h"
 
 /* SDA-relative global used by the callback wait path in this unit */
@@ -15,6 +17,7 @@ extern OSThreadQueue __DVDThreadQueue;
 
 /* Forward declarations for callbacks defined later in this file. */
 void cbForReadAsync(s32 result, DVDFileInfo* fileInfo);
+void cbForReadSync(s32 result, DVDCommandBlock* block);
 void cbForSeekAsync(s32 result, DVDFileInfo* fileInfo);
 BOOL DVDGetCurrentDir(char* path, u32 maxlen);
 
@@ -111,18 +114,15 @@ done:
 
 BOOL DVDReadAsync(DVDFileInfo* fileInfo, void* addr, s32 length, s32 offset,
                   DVDCBCallback callback, s32 prio) {
-    extern char lbl_803119F0[];
-    extern char lbl_804789C0;
-    extern void fn_800060F0(const char* file, u32 line, const char* expr, ...);
     s32 end;
 
     if (offset < 0 || (u32)offset >= fileInfo->length) {
-        fn_800060F0(&lbl_804789C0, 0x2E6, lbl_803119F0);
+        fn_800060F0(lbl_804789C0, 0x2E6, lbl_803119F0);
     }
 
     end = offset + length;
     if (end < 0 || (u32)end >= fileInfo->length + 0x20) {
-        fn_800060F0(&lbl_804789C0, 0x2EC, lbl_803119F0);
+        fn_800060F0(lbl_804789C0, 0x2EC, lbl_803119F0);
     }
 
     fileInfo->callback = callback;
@@ -137,20 +137,61 @@ void cbForReadAsync(s32 result, DVDFileInfo* fileInfo) {
     }
 }
 
-void cbForReadSync(s32 result, DVDFileInfo* fileInfo) {
+s32 DVDRead(DVDFileInfo* fileInfo, void* addr, s32 length, s32 offset, s32 prio) {
+    DVDCommandBlock* block;
+    BOOL enabled;
+    s32 state;
+    s32 result;
+    s32 end;
+
+    if (offset < 0 || (u32)offset >= fileInfo->length) {
+        fn_800060F0(lbl_804789C0, 0x32C, lbl_80311A24);
+    }
+
+    end = offset + length;
+    if (end < 0 || (u32)end >= fileInfo->length + 0x20) {
+        fn_800060F0(lbl_804789C0, 0x332, lbl_80311A24);
+    }
+
+    block = &fileInfo->cb;
+    if (!DVDReadAbsAsyncPrio(block, addr, length, fileInfo->startAddr + offset,
+                             cbForReadSync, prio)) {
+        return -1;
+    }
+
+    enabled = OSDisableInterrupts();
+    for (;;) {
+        state = ((volatile DVDCommandBlock*)block)->state;
+        if (state == 0) {
+            result = block->transferredSize;
+            break;
+        }
+        if (state == -1) {
+            result = -1;
+            break;
+        }
+        if (state == 10) {
+            result = -3;
+            break;
+        }
+        OSSleepThread(&__DVDThreadQueue);
+    }
+
+    OSRestoreInterrupts(enabled);
+    return result;
+}
+
+void cbForReadSync(s32 result, DVDCommandBlock* block) {
     OSWakeupThread(&__DVDThreadQueue);
 }
 
 BOOL DVDSeekAsyncPrio(DVDFileInfo* fileInfo, s32 offset, DVDCBCallback callback,
                       s32 prio) {
-    extern char lbl_80311A54[];
-    extern char lbl_804789C0;
-    extern void fn_800060F0(const char* file, u32 line, const char* expr, ...);
     extern BOOL DVDSeekAbsAsyncPrio(DVDCommandBlock* block, s32 offset,
                                     DVDCBCallback callback, s32 prio);
 
     if (offset < 0 || (u32)offset >= fileInfo->length) {
-        fn_800060F0(&lbl_804789C0, 0x383, lbl_80311A54);
+        fn_800060F0(lbl_804789C0, 0x383, lbl_80311A54);
     }
 
     fileInfo->callback = callback;
