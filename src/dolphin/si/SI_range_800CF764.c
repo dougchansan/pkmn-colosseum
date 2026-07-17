@@ -3,10 +3,10 @@
  * @brief Dolphin SI (one TU proven by static GetTypeCallback linkage), 0x800CF764 - 0x800D0DF8.
  *
  * Boundary evidence-verified from asm (sdata clusters, callee families,
- * static linkage, call chains) — mixed-block split pass, 2026-07-01.
+ * static linkage, call chains) - mixed-block split pass, 2026-07-01.
  * Only a subset of the unit's functions are matched here (see batch 059);
  * the remainder (CompleteTransfer, SIInterruptHandler_800CFA60, __SITransfer,
- * SITransfer, GetTypeCallback, SIGetType, SIGetTypeAsync) stay asm-only and
+ * SITransfer, SIGetType, SIGetTypeAsync) stay asm-only and
  * are referenced only through function-local extern declarations.
  */
 #include "dolphin/types.h"
@@ -45,26 +45,18 @@ typedef struct SIPacket {
     s64 fire;
 } SIPacket;
 
-/*
- * Packet_803FFFB0 anchors a larger static blob; several other channel-indexed
- * arrays (XferTime, TypeCallback, InputBufferValid, InputBuffer,
- * InputBufferVcount) are addressed by the compiler as constant-offset
- * extensions of this same symbol. The gap regions are owned by functions
- * outside this batch (SITransfer/__SITransfer/GetTypeCallback) and are kept
- * as opaque padding here.
- */
-typedef struct SIGlobalData {
-    SIPacket packet[4];                          /* 0x000 - 0x080 */
-    u8 _unk080[0x140 - 0x080];                   /* 0x080 - 0x140 (owned elsewhere) */
-    s64 xferTime[4];                             /* 0x140 - 0x160 (owned elsewhere) */
-    SITypeAndStatusCallback typeCallback[4][4];  /* 0x160 - 0x1A0 (owned elsewhere) */
-    u8 _unk1A0[0x1B0 - 0x1A0];                   /* 0x1A0 - 0x1B0 */
-    BOOL inputBufferValid[4];                    /* 0x1B0 - 0x1C0 */
-    u32 inputBuffer[4][2];                       /* 0x1C0 - 0x1E0 */
-    u32 inputBufferVcount[4];                    /* 0x1E0 - 0x1F0 */
-} SIGlobalData;
+typedef SIPacket SIGlobalData[4];
 
 static SIGlobalData Packet_803FFFB0;
+static OSAlarm lbl_80400030[4];
+static s64 TypeTime[4];
+static s64 XferTime[4];
+static SITypeAndStatusCallback TypeCallback[4][4];
+/* Keep the retail slot while partial polling functions retain external RDSTHandler. */
+static u8 _rdstHandlerStorage[sizeof(__OSInterruptHandler) * 4];
+static BOOL InputBufferValid[4];
+static u32 InputBuffer[4][2];
+static volatile u32 InputBufferVcount[4];
 
 typedef struct SIControl {
     s32 chan;
@@ -74,13 +66,12 @@ typedef struct SIControl {
     SICallback callback;
 } SIControl;
 
-static SIControl Si_80313F8C = { -1, 0, 0, NULL, NULL };
-
+extern SIControl Si_80313F8C;
 extern __OSInterruptHandler RDSTHandler[4];
-static OSAlarm lbl_80400030[4];
-static u32 Type_80313FA0[4];
+extern u32 Type_80313FA0[4];
 
 extern const char* __SIVersion;
+extern u32 lbl_8047AA58;
 
 void fn_800D0338(s32 chan, u32 command) {
     ((volatile SICommandQueueEntry*)0xCC006400)[chan].reg = command;
@@ -96,14 +87,12 @@ void fn_800D034C(void) {
 
 BOOL SIEnablePollingInterrupt(BOOL enable) {
     BOOL enabled;
-    SIGlobalData* packet;
     volatile u32* registerBlock;
     volatile u32* csr;
     u32 reg;
     BOOL wasEnabled;
     int i;
 
-    packet = &Packet_803FFFB0;
     enabled = OSDisableInterrupts();
     csr = (registerBlock = __SIRegs) + SI_COMCSR_IDX;
     reg = *csr;
@@ -112,7 +101,7 @@ BOOL SIEnablePollingInterrupt(BOOL enable) {
     if (enable) {
         reg |= SI_COMCSR_RDSTINTMSK_MASK;
         for (i = 0; i < 4; i++) {
-            packet->inputBufferVcount[i] = 0;
+            InputBufferVcount[i] = 0;
         }
     } else {
         reg &= ~SI_COMCSR_RDSTINTMSK_MASK;
@@ -192,10 +181,10 @@ void SIInit(void) {
 
     OSRegisterVersion(__SIVersion);
 
-    Packet_803FFFB0.packet[3].chan = -1;
-    Packet_803FFFB0.packet[2].chan = -1;
-    Packet_803FFFB0.packet[1].chan = -1;
-    Packet_803FFFB0.packet[0].chan = -1;
+    Packet_803FFFB0[3].chan = -1;
+    Packet_803FFFB0[2].chan = -1;
+    Packet_803FFFB0[1].chan = -1;
+    Packet_803FFFB0[0].chan = -1;
     Si_80313F8C.poll = 0;
     SISetSamplingRate(0);
 
@@ -306,9 +295,9 @@ BOOL SIGetResponseRaw(s32 chan) {
     OSRestoreInterrupts(enabled);
 
     if (sr & 0x20) {
-        Packet_803FFFB0.inputBuffer[chan][0] = ((volatile SICommandQueueEntry*)0xCC006400)[chan].unk4;
-        Packet_803FFFB0.inputBuffer[chan][1] = ((volatile SICommandQueueEntry*)0xCC006400)[chan].unk8;
-        Packet_803FFFB0.inputBufferValid[chan] = TRUE;
+        InputBuffer[chan][0] = ((volatile SICommandQueueEntry*)0xCC006400)[chan].unk4;
+        InputBuffer[chan][1] = ((volatile SICommandQueueEntry*)0xCC006400)[chan].unk8;
+        InputBufferValid[chan] = TRUE;
         return TRUE;
     }
     return FALSE;
@@ -321,16 +310,16 @@ BOOL SIGetResponse(s32 chan, void* data) {
     enabled = OSDisableInterrupts();
 
     if (SIGetStatus(chan) & 0x20) {
-        Packet_803FFFB0.inputBuffer[chan][0] = ((volatile SICommandQueueEntry*)0xCC006400)[chan].unk4;
-        Packet_803FFFB0.inputBuffer[chan][1] = ((volatile SICommandQueueEntry*)0xCC006400)[chan].unk8;
-        Packet_803FFFB0.inputBufferValid[chan] = TRUE;
+        InputBuffer[chan][0] = ((volatile SICommandQueueEntry*)0xCC006400)[chan].unk4;
+        InputBuffer[chan][1] = ((volatile SICommandQueueEntry*)0xCC006400)[chan].unk8;
+        InputBufferValid[chan] = TRUE;
     }
 
-    valid = Packet_803FFFB0.inputBufferValid[chan];
-    Packet_803FFFB0.inputBufferValid[chan] = FALSE;
+    valid = InputBufferValid[chan];
+    InputBufferValid[chan] = FALSE;
     if (valid) {
-        ((u32*)data)[0] = Packet_803FFFB0.inputBuffer[chan][0];
-        ((u32*)data)[1] = Packet_803FFFB0.inputBuffer[chan][1];
+        ((u32*)data)[0] = InputBuffer[chan][0];
+        ((u32*)data)[1] = InputBuffer[chan][1];
     }
 
     OSRestoreInterrupts(enabled);
@@ -344,11 +333,87 @@ void AlarmHandler_800D0668(OSAlarm* alarm, OSContext* context) {
     SIPacket* packet;
 
     chan = alarm - lbl_80400030;
-    packet = &Packet_803FFFB0.packet[chan];
+    packet = &Packet_803FFFB0[chan];
     if (packet->chan != -1) {
         if (__SITransfer(packet->chan, packet->output, packet->outputBytes,
                           packet->input, packet->inputBytes, packet->callback)) {
             packet->chan = -1;
         }
+    }
+}
+
+static void CallTypeAndStatusCallback(s32 chan, u32 type) {
+    SITypeAndStatusCallback callback;
+    int i;
+
+    for (i = 0; i < 4; i++) {
+        callback = TypeCallback[chan][i];
+        if (callback != 0) {
+            TypeCallback[chan][i] = 0;
+            (*callback)(chan, type);
+        }
+    }
+}
+
+static void GetTypeCallback(s32 chan, u32 error, OSContext* context) {
+    u32 type;
+    u32 chanBit;
+    int fix;
+    u32 id;
+
+    Type_80313FA0[chan] &= ~0x80;
+    Type_80313FA0[chan] |= error;
+    TypeTime[chan] = __OSGetSystemTime();
+
+    type = Type_80313FA0[chan];
+    chanBit = 0x80000000 >> chan;
+    fix = lbl_8047AA58 & chanBit;
+    lbl_8047AA58 &= ~chanBit;
+
+    if ((error & 0xF) != 0 || (type & 0x18000000) != 0x08000000 ||
+        (type & 0x80000000) == 0 || (type & 0x04000000) != 0) {
+        OSSetWirelessID(chan, 0);
+        CallTypeAndStatusCallback(chan, Type_80313FA0[chan]);
+    } else {
+        static u32 cmdFixDevice[4];
+
+        id = OSGetWirelessID(chan) << 8;
+
+        if (fix != 0 && (id & 0x100000) != 0) {
+            cmdFixDevice[chan] = 0x4E000000 | (id & 0xCFFF00) | 0x100000;
+            Type_80313FA0[chan] = 0x80;
+            SITransfer(chan, &cmdFixDevice[chan], 3, &Type_80313FA0[chan], 3,
+                       GetTypeCallback, 0);
+            return;
+        }
+
+        if ((type & 0x00100000) != 0) {
+            if ((id & 0xCFFF00) != (type & 0xCFFF00)) {
+                if ((id & 0x100000) == 0) {
+                    id = type & 0xCFFF00;
+                    id |= 0x100000;
+                    OSSetWirelessID(chan, id >> 8);
+                }
+                cmdFixDevice[chan] = 0x4E000000 | id;
+                Type_80313FA0[chan] = 0x80;
+                SITransfer(chan, &cmdFixDevice[chan], 3, &Type_80313FA0[chan],
+                           3, GetTypeCallback, 0);
+                return;
+            }
+        } else {
+            if ((type & 0x40000000) != 0) {
+                id = type & 0xCFFF00;
+                id |= 0x100000;
+                OSSetWirelessID(chan, id >> 8);
+                cmdFixDevice[chan] = 0x4E000000 | id;
+                Type_80313FA0[chan] = 0x80;
+                SITransfer(chan, &cmdFixDevice[chan], 3,
+                           &Type_80313FA0[chan], 3, GetTypeCallback, 0);
+                return;
+            }
+            OSSetWirelessID(chan, 0);
+        }
+
+        CallTypeAndStatusCallback(chan, Type_80313FA0[chan]);
     }
 }

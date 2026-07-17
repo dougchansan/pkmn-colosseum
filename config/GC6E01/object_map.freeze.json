@@ -6,24 +6,24 @@
     "total_code": 2495108,
     "total_data": 2196121,
     "total_functions": 8603,
-    "total_units": 645
+    "total_units": 646
   },
   "topology_status": {
-    "auto_units": 64,
+    "auto_units": 65,
     "named_units": 581,
     "source_backed_units": 566,
     "auto_code": 0,
-    "auto_data": 58299,
+    "auto_data": 57787,
     "auto_functions": 0
   },
   "baseline_progress": {
-    "matched_code": "848444",
-    "matched_code_percent": 34.0043,
+    "matched_code": "877788",
+    "matched_code_percent": 35.18036,
     "matched_data": "2136502",
     "matched_data_percent": 97.285255,
-    "matched_functions": 6140,
-    "matched_functions_percent": 71.37045,
-    "fuzzy_match_percent": 56.709023
+    "matched_functions": 6250,
+    "matched_functions_percent": 72.64907,
+    "fuzzy_match_percent": 57.174072
   },
   "unit_topology": [
     {
@@ -2609,116 +2609,12 @@
       "sections": [
         {
           "name": ".bss",
-          "size": 24680,
+          "size": 15256,
           "virtual_address": 2151662616
         }
       ],
       "total_code": 0,
-      "total_data": 24680,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/data/bss_80402480",
-      "sections": [
-        {
-          "name": ".bss",
-          "size": 24448,
-          "virtual_address": 2151687296
-        }
-      ],
-      "total_code": 0,
-      "total_data": 24448,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/data/bss_80408400",
-      "sections": [
-        {
-          "name": ".bss",
-          "size": 262208,
-          "virtual_address": 2151711744
-        }
-      ],
-      "total_code": 0,
-      "total_data": 262208,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/data/bss_80448440",
-      "sections": [
-        {
-          "name": ".bss",
-          "size": 41152,
-          "virtual_address": 2151973952
-        }
-      ],
-      "total_code": 0,
-      "total_data": 41152,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/data/bss_80452500",
-      "sections": [
-        {
-          "name": ".bss",
-          "size": 76672,
-          "virtual_address": 2152015104
-        }
-      ],
-      "total_code": 0,
-      "total_data": 76672,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/data/bss_80465080",
-      "sections": [
-        {
-          "name": ".bss",
-          "size": 21440,
-          "virtual_address": 2152091776
-        }
-      ],
-      "total_code": 0,
-      "total_data": 21440,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/data/bss_8046A440",
-      "sections": [
-        {
-          "name": ".bss",
-          "size": 12480,
-          "virtual_address": 2152113216
-        }
-      ],
-      "total_code": 0,
-      "total_data": 12480,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/data/bss_8046D500",
-      "sections": [
-        {
-          "name": ".bss",
-          "size": 45824,
-          "virtual_address": 2152125696
-        }
-      ],
-      "total_code": 0,
-      "total_data": 45824,
-      "total_functions": 0
-    },
-    {
-      "name": "main/auto_06_80478800_bss",
-      "sections": [
-        {
-          "name": ".bss",
-          "size": 32,
-          "virtual_address": 2152171520
-        }
-      ],
-      "total_code": 0,
-      "total_data": 32,
+      "total_data": 15256,
       "total_functions": 0
     },
     {
@@ -5504,14 +5400,136 @@
       "name": "main/dolphin/si/SI_range_800CF764",
       "sections": [
         {
+          "name": ".bss",
+          "size": 512,
+          "virtual_address": 2151677872
+        },
+        {
           "name": ".text",
           "size": 5780,
           "virtual_address": 2148333412
         }
       ],
       "total_code": 5780,
-      "total_data": 0,
+      "total_data": 512,
       "total_functions": 20
+    },
+    {
+      "name": "main/auto_06_804001B0_bss",
+      "sections": [
+        {
+          "name": ".bss",
+          "size": 8912,
+          "virtual_address": 2151678384
+        }
+      ],
+      "total_code": 0,
+      "total_data": 8912,
+      "total_functions": 0
+    },
+    {
+      "name": "main/game/data/bss_80402480",
+      "sections": [
+        {
+          "name": ".bss",
+          "size": 24448,
+          "virtual_address": 2151687296
+        }
+      ],
+      "total_code": 0,
+      "total_data": 24448,
+      "total_functions": 0
+    },
+    {
+      "name": "main/game/data/bss_80408400",
+      "sections": [
+        {
+          "name": ".bss",
+          "size": 262208,
+          "virtual_address": 2151711744
+        }
+      ],
+      "total_code": 0,
+      "total_data": 262208,
+      "total_functions": 0
+    },
+    {
+      "name": "main/game/data/bss_80448440",
+      "sections": [
+        {
+          "name": ".bss",
+          "size": 41152,
+          "virtual_address": 2151973952
+        }
+      ],
+      "total_code": 0,
+      "total_data": 41152,
+      "total_functions": 0
+    },
+    {
+      "name": "main/game/data/bss_80452500",
+      "sections": [
+        {
+          "name": ".bss",
+          "size": 76672,
+          "virtual_address": 2152015104
+        }
+      ],
+      "total_code": 0,
+      "total_data": 76672,
+      "total_functions": 0
+    },
+    {
+      "name": "main/game/data/bss_80465080",
+      "sections": [
+        {
+          "name": ".bss",
+          "size": 21440,
+          "virtual_address": 2152091776
+        }
+      ],
+      "total_code": 0,
+      "total_data": 21440,
+      "total_functions": 0
+    },
+    {
+      "name": "main/game/data/bss_8046A440",
+      "sections": [
+        {
+          "name": ".bss",
+          "size": 12480,
+          "virtual_address": 2152113216
+        }
+      ],
+      "total_code": 0,
+      "total_data": 12480,
+      "total_functions": 0
+    },
+    {
+      "name": "main/game/data/bss_8046D500",
+      "sections": [
+        {
+          "name": ".bss",
+          "size": 45824,
+          "virtual_address": 2152125696
+        }
+      ],
+      "total_code": 0,
+      "total_data": 45824,
+      "total_functions": 0
+    },
+    {
+      "name": "main/auto_06_80478800_bss",
+      "sections": [
+        {
+          "name": ".bss",
+          "size": 32,
+          "virtual_address": 2152171520
+        }
+      ],
+      "total_code": 0,
+      "total_data": 32,
+      "total_functions": 0
     },
     {
       "name": "main/dolphin/si/SITypeDecode",

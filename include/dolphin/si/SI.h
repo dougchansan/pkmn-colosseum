@@ -35,7 +35,7 @@ BOOL SIRegisterPollingHandler(__OSInterruptHandler handler);
 BOOL SIUnregisterPollingHandler(__OSInterruptHandler handler);
 
 /* Wireless controller functions (from OSRtc) */
-extern void OSSetWirelessID(s32 chan, u32 id);
-extern u32 OSGetWirelessID(s32 chan);
+extern void OSSetWirelessID(s32 chan, u16 id);
+extern u16 OSGetWirelessID(s32 chan);
 
 #endif /* DOLPHIN_SI_SI_H */
