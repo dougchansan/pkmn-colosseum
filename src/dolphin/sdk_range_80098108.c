@@ -137,6 +137,54 @@ void fn_80098110(volatile s32 chan, EXIControl* exi) {
 #pragma scheduling reset
 #pragma pop
 
+static inline u8* EXIGetBytes(void* buffer)
+{
+    return buffer;
+}
+
+#pragma push
+#pragma optimization_level 0
+#pragma optimize_for_size on
+#pragma scheduling off
+BOOL EXIImm(s32 chan, void* buf, s32 len, u32 type, EXICallback callback)
+{
+    EXIControl* exi;
+    BOOL enabled;
+    u32 data;
+    s32 i;
+
+    exi = &lbl_803FB3C8[chan];
+    enabled = OSDisableInterrupts();
+
+    if ((exi->state & 3) || !(exi->state & 4)) {
+        OSRestoreInterrupts(enabled);
+        return FALSE;
+    }
+
+    exi->tcCallback = callback;
+    if (exi->tcCallback) {
+        fn_800986A0(chan, 0, 1, 0);
+        __OSUnmaskInterrupts(0x200000u >> (chan * 3));
+    }
+
+    exi->state |= 2;
+    if (type != 0) {
+        data = 0;
+        for (i = 0; i < len; i++) {
+            data |= EXIGetBytes(buf)[i] << ((3 - i) * 8);
+        }
+        __EXIRegs[chan * 5 + 4] = data;
+    }
+
+    exi->immBuf = buf;
+    exi->immLen = type != 1 ? len : 0;
+    __EXIRegs[chan * 5 + 3] = (type << 2) | 1 | ((len - 1) << 4);
+    OSRestoreInterrupts(enabled);
+    return TRUE;
+}
+#pragma scheduling reset
+#pragma pop
+
 #pragma push
 #pragma optimize_for_size on
 #pragma scheduling off
