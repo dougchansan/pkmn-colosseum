@@ -11,6 +11,7 @@
  * until matched.
  */
 #include "dolphin/types.h"
+#include "game/cursor_bios.h"
 
 /* Small PDA-mail state byte pair, shared with pda_range_80037158.c
  * (the sibling PDA-body TU) and initialized by fn_8004B7EC. Only
@@ -584,6 +585,40 @@ typedef struct PdaMailSpriteField {
 } PdaMailSpriteField;
 
 extern const s32 lbl_802672D8[6];
+extern const s32 lbl_802671D0[12];
+
+#pragma peephole off
+s32 fn_8004C5B0(void* unused, PdaMailSpriteField* field)
+{
+    typedef union PdaMailCursorPosition {
+        u32 storage;
+        u16 packed;
+        struct {
+            s8 page;
+            s8 row;
+        } position;
+    } PdaMailCursorPosition;
+    PdaMailCursorPosition cursors[2];
+    s32 i;
+
+    cursors[1].packed = cursors[0].packed =
+        (u16) (cursorBiosGetPos(10) >> 16);
+    for (i = 0; i < 12; i++) {
+        if (field->msgId == lbl_802671D0[i]) {
+            break;
+        }
+    }
+    if (i >= 12) {
+        return 0;
+    }
+    if (i == cursors[1].position.row) {
+        winSpriteSetDisp(field, 1);
+    } else {
+        winSpriteSetDisp(field, 0);
+    }
+    return 0;
+}
+#pragma peephole reset
 
 #pragma peephole off
 #pragma scheduling off
@@ -819,9 +854,6 @@ s32 pdaMailGetMailID(s32 index)
 
 /* Mail-list cursor input callback. The high byte of cursorPosition is the
  * mailbox page and the low byte is the row (10 and 11 are auxiliary rows). */
-extern u32 cursorBiosGetPos(u16 index);
-extern u32 cursorBiosSetPos(u16 index, u16* position);
-
 #pragma scheduling on
 #pragma peephole off
 s32 fn_8004CF78(u8* window)
