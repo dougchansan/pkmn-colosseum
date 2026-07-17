@@ -92,6 +92,8 @@ typedef struct GSFieldHitResult {
  */
 typedef void* (*GSFieldResPreFunc)(u32 resId, u32 loadMode, u32 dataSize);
 
+void* floorOpenObject(u32 modelIndex);
+
 /* ===================================================================
  * Field camera state
  * =================================================================== */

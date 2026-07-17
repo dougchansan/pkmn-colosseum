@@ -26,6 +26,7 @@
 #include "dolphin/types.h"
 #include "game/world/gs_field.h"
 #include "game/gs_field_colquery_types.h"
+#include "game/gs_model_anim.h"
 
 /* 0x80112380 | 0x54 */
 #pragma push
@@ -610,8 +611,6 @@ u32 _floorUnloadModel__FPvUlUl(u32 group) {
 #pragma scheduling off
 void floorOpenModel(u32 unused, u32 modelIndex) {
 #pragma optimization_level 4
-    extern void floorOpenObject();
-
     floorOpenObject(modelIndex);
 }
 #pragma scheduling on
@@ -628,10 +627,9 @@ void floorOpenModel(u32 unused, u32 modelIndex) {
 
 /* 0x80113D58 | 0x1F0 */
 #pragma push
-#pragma optimization_level 0
-#pragma optimizewithasm off
-void floorOpenObject(u32 modelIndex) {
 #pragma optimization_level 4
+#pragma peephole off
+void* floorOpenObject(u32 modelIndex) {
     extern const char lbl_80272088[];
     extern const char lbl_8035B868[];
     extern f32 lbl_8047CF98;
@@ -639,52 +637,54 @@ void floorOpenObject(u32 modelIndex) {
     extern void* HSD_ArchiveGetPublicAddress(void*, const char*);
     extern void* GSmodelLoad(void*);
     extern void GSmodelSetVisibility(void*, u32);
-    extern u32 GSmodelCanAnimate(void*);
     extern void GSmodelSetAnimIndex(void*, u32);
     extern void GSmodelSetAnimRate(void*, f32);
     extern void GSmodelStartAnimation(void*);
-    extern u32 GSmodelCanTexAnimate(void*);
     extern void GSmodelSetTexAnimIndex(void*, u32);
     extern void GSmodelSetTexAnimRate(void*, f32);
     extern void GSmodelStartTexAnimation(void*);
-    const char* strings;
-    u32 archiveMode;
+    const char* strings = lbl_80272088;
+    u8 special = 0;
     void* archive;
     void* pub;
     void* model;
-    u32 special;
 
-    strings = lbl_80272088;
-    special = 0;
-    archiveMode = modelIndex;
-    if ((modelIndex == 3) || (modelIndex == 100)) {
-        archiveMode = 0x00F71000;
-    } else if ((modelIndex == 4) || (modelIndex == 101)) {
-        archiveMode = 0x00F31000;
-    } else if (((modelIndex >> 9) & 0x3F) == 2) {
-        special = 1;
+    switch (modelIndex) {
+    case 3:
+    case 100:
+        modelIndex = 0x00F71000;
+        break;
+    case 4:
+    case 101:
+        modelIndex = 0x00F31000;
+        break;
+    default:
+        if (((modelIndex >> 9) & 0x3F) == 2) {
+            special = 1;
+        }
+        break;
     }
 
-    if (archiveMode == 0) {
+    if (modelIndex == 0) {
         GSlogWrite(strings + 0xDC, lbl_8035B868);
-        return;
+        return NULL;
     }
 
-    archive = fn_800F92D4(archiveMode);
+    archive = fn_800F92D4(modelIndex);
     if (special != 0) {
         if (archive == NULL) {
             GSlogWrite(strings + 0xF8, lbl_8035B868);
-            return;
+            return NULL;
         }
         pub = HSD_ArchiveGetPublicAddress(archive, strings + 0x28);
         if (pub == NULL) {
             GSlogWrite(strings + 0x118, lbl_8035B868);
-            return;
+            return NULL;
         }
         archive = *(void**)pub;
         if (*(void**)archive == NULL) {
             GSlogWrite(strings + 0x140, lbl_8035B868);
-            return;
+            return NULL;
         }
         archive = *(void**)archive;
     }
@@ -693,20 +693,21 @@ void floorOpenObject(u32 modelIndex) {
     if (model == NULL) {
         GSlogWrite(strings + 0x64, lbl_8035B868);
         GSlogWrite(strings + 0x15C);
-        return;
+    } else {
+        GSmodelSetVisibility(model, 1);
+        if ((u8)GSmodelCanAnimate(model) != 0) {
+            GSmodelSetAnimIndex(model, 0);
+            GSmodelSetAnimRate(model, lbl_8047CF98);
+            GSmodelStartAnimation(model);
+        }
+        if ((u8)GSmodelCanTexAnimate(model) != 0) {
+            GSmodelSetTexAnimIndex(model, 0);
+            GSmodelSetTexAnimRate(model, lbl_8047CF98);
+            GSmodelStartTexAnimation(model);
+        }
     }
 
-    GSmodelSetVisibility(model, 1);
-    if (GSmodelCanAnimate(model) != 0) {
-        GSmodelSetAnimIndex(model, 0);
-        GSmodelSetAnimRate(model, lbl_8047CF98);
-        GSmodelStartAnimation(model);
-    }
-    if (GSmodelCanTexAnimate(model) != 0) {
-        GSmodelSetTexAnimIndex(model, 0);
-        GSmodelSetTexAnimRate(model, lbl_8047CF98);
-        GSmodelStartTexAnimation(model);
-    }
+    return model;
 }
 #pragma pop
 
