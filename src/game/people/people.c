@@ -34,6 +34,7 @@
 
 #include "dolphin/types.h"
 #include "game/people/people.h"
+#include "game/people/people_data.h"
 
 /* Forward declarations for functions defined later in this TU but used
  * earlier (order kept close to the archive's original topical grouping). */
@@ -1912,18 +1913,78 @@ void fn_80189490(void) {
 void fn_80189990(void) {
 }
 
-/* peopleMoveCheck -- PARKED (family #10 sweep): this is a member of the
- * (groupId, index) triple-search template family (same shape as
- * fn_801812E8/fn_80183E5C/etc. in this file -- see those for the recovered
- * template), but people.h:303 declares `void peopleMoveCheck(void)` while
- * the real disassembly (0x8018A280, asm/game/people/people.s) takes 3
- * args in r3-r5 (groupId, index, u8 waitFlag) after the search: spins on
- * entry->state/entry->field_0x22/fn_800F7108(entry->flagId) via
- * _threadSwitch() while waitFlag is set. Fixing this requires correcting
- * the people.h prototype, which is outside this pass's file-ownership
- * scope (people.c only) -- header now fixed to the real 3-arg ABI;
- * body still pending implementation. */
-void peopleMoveCheck(u32 groupId, u32 index, u8 waitFlag) {
+/* Find an entry by (groupId, index), then report whether its current movement
+ * has completed. If waitFlag is set, yield until it reaches a terminal state. */
+static inline PeopleEntry* peopleFindSelf(u32 groupId, u32 index)
+{
+    s32 i;
+    PeopleEntry* entry;
+
+    for (i = 0; i < peopleGetMaxCount(); i++) {
+        entry = peopleGetEntry(i);
+        if (!entry->active) continue;
+        if (entry->groupId != groupId) continue;
+        if (entry->index != index) continue;
+        return entry->selfPtr;
+    }
+
+    for (i = 0; i < peopleGetMaxCount(); i++) {
+        entry = peopleGetEntry(i);
+        if (!entry->active) continue;
+        if (entry->index != index) continue;
+        GSlogWrite(lbl_80273FD8, groupId, index);
+        return entry->selfPtr;
+    }
+    return NULL;
+}
+
+static inline PeopleEntry* peopleFindBySelf(PeopleEntry* found)
+{
+    s32 i;
+    PeopleEntry* entry;
+
+    for (i = 0; i < peopleGetMaxCount(); i++) {
+        entry = peopleGetEntry(i);
+        if (!entry->active) continue;
+        if (entry->selfPtr != found) continue;
+        return entry;
+    }
+    return NULL;
+}
+
+BOOL peopleMoveCheck(u32 groupId, u32 index, u8 waitFlag)
+{
+    PeopleEntry* entry;
+    PeopleEntry* found;
+    u8 isVisible;
+
+    found = peopleFindSelf(groupId, index);
+    entry = peopleFindBySelf(found);
+
+    if (entry == NULL) {
+        return FALSE;
+    }
+    for (;;) {
+        if (entry->state == 0 && entry->pad22 == 0) {
+            return FALSE;
+        }
+        if (entry->visible != 0) {
+            isVisible = TRUE;
+        } else if ((u32)fn_800F7108(entry->flagId) == 0) {
+            isVisible = TRUE;
+        } else {
+            isVisible = FALSE;
+        }
+        if (!isVisible && entry->pad22 == 0) {
+            GSlogWrite(lbl_80274078, lbl_8036C52C);
+            return FALSE;
+        }
+        if (waitFlag) {
+            _threadSwitch();
+            continue;
+        }
+        return TRUE;
+    }
 }
 
 /* fn_8018AACC -- not recovered, gap in archive campaign (size 0x3F4) */

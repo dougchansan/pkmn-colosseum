@@ -320,7 +320,7 @@ void peopleMoveWalkPosition(u32 groupId, u32 index, u32 targetX, u32 targetY, u3
 /** Check movement completion (self-tag string lbl_8036C52C; scrCmd table
  * index 62). 0x8018A280 -- the old fn_8018F4C8 attribution here was wrong.
  * Real ABI per disasm: r3-r5 = groupId, index, waitFlag (was void(void)). */
-void peopleMoveCheck(u32 groupId, u32 index, u8 waitFlag);
+BOOL peopleMoveCheck(u32 groupId, u32 index, u8 waitFlag);
 
 /** Proximity check -- is the player within talk range? fn_8018D680 */
 BOOL peopleIsWithinRange(u32 posA, u32 posB, u32 posC, f32 range);
