@@ -143,6 +143,13 @@ extern s8 getPokemonBoxNbUsedSlot__5PCBOXFSc(void* pcbox, s8 box);
 extern void winSpriteSetDisp(MenuCBPane* pane, u8 enable);
 extern MenuKeyInfo* windowGetKeyInfo(void);
 extern void fn_8010A420(MenuModelWork* work);
+s32 fn_80057694(void);
+void fn_800576A4(u32 value);
+u32 fn_800567AC(void);
+u32 fn_80056704(void);
+void menuCursorNormal(MenuCBPane* pane);
+MenuCursorItem* windowGetCursorToItem();
+void fn_80057830(s16 x, s16 y, s32 selected);
 extern void fn_80054760(s32 forward, s32 wait);
 extern void fn_800558B8(void);
 extern void fn_80056A80(void);
@@ -175,6 +182,17 @@ extern void fn_800D6728(void);
 extern void fn_800D888C(u32 flags);
 extern void* menuSpriteBiosGetPtr(s32 id);
 extern void windowDrawSprite2(s32, s32, s16, s16, s32, void*, s32, s32);
+s32 fn_800576B4(void);
+s32 fn_80057538(void);
+s32 fn_80056A78(void);
+void* getPokemon__5PCBOXFScSc(void*, s8, s8);
+void delPokemon__5PCBOXFScSc(void*, s8, s8);
+void setPokemon__5PCBOXFP7PokemonScSc(void*, void*, s8, s8);
+void fn_800574FC(void* pokemon);
+void* fn_800574E0(void);
+void fn_800574A8(void);
+void fn_80057400(void);
+void fn_800576C4(s32 state);
 
 #pragma push
 #pragma peephole off
@@ -776,6 +794,101 @@ s32 fn_80054B1C(s32 context, s32 mode) {
 }
 #pragma pop
 
+#pragma push
+#pragma peephole off
+s32 fn_80054C44(MenuCBPane* pane) {
+    MenuKeyInfo* keys;
+    MenuCursorItem* item;
+    s32 cursor;
+    s32 action;
+    s32 previousAction;
+
+    keys = windowGetKeyInfo();
+    if (fn_800573C0() != 0) {
+        return 0;
+    }
+    if (fn_800566E8() != 0) {
+        return 0;
+    }
+
+    if ((keys->buttonsRepeat & 0xC0) != 0) {
+        if (fn_80057694() != 0) {
+            cursor = 0;
+        } else {
+            cursor = 1;
+        }
+        fn_800576A4(cursor);
+    }
+
+    if ((keys->buttons & 0x400) != 0) {
+        fn_800567AC();
+        return 0;
+    }
+    if ((keys->buttons & 0x200) != 0) {
+        fn_80056704();
+        return 0;
+    }
+
+    cursor = pane->boxIndex;
+    if (cursor < 0 || cursor >= 32) {
+        action = 3;
+    } else {
+        action = lbl_80267398[cursor].kind;
+    }
+
+    if (action == 1) {
+        if (keys->buttons == 8) {
+            fn_800567AC();
+            return 0;
+        }
+        if (keys->buttons == 4) {
+            fn_80056704();
+            return 0;
+        }
+    }
+
+    if (action == 2) {
+        if ((keys->buttonsRepeat & 5) != 0) {
+            return 0;
+        }
+        if ((keys->buttonsRepeat & 10) != 0) {
+            pane->boxIndex = 30;
+        }
+    }
+
+    cursor = (u8)pane->boxIndex;
+    if ((s8)cursor == pane->previousBoxIndex) {
+        menuCursorNormal(pane);
+
+        cursor = pane->previousBoxIndex;
+        if (cursor < 0 || cursor >= 32) {
+            previousAction = 3;
+        } else {
+            previousAction = lbl_80267398[cursor].kind;
+        }
+
+        cursor = pane->boxIndex;
+        if (cursor < 0 || cursor >= 32) {
+            action = 3;
+        } else {
+            action = lbl_80267398[cursor].kind;
+        }
+
+        if (previousAction == 0 && action == 2) {
+            pane->boxIndex = 30;
+        }
+    }
+
+    cursor = (u8)pane->boxIndex;
+    if ((s8)cursor != pane->previousBoxIndex) {
+        item = windowGetCursorToItem(pane);
+        fn_80057830(item->x, item->y, 0);
+        return 0;
+    }
+    return 0;
+}
+#pragma pop
+
 void fn_80054E7C(MenuCBPane* pane) {
     windowGetKeyInfo();
     if (fn_800573C0() == 0) {
@@ -784,6 +897,76 @@ void fn_80054E7C(MenuCBPane* pane) {
         }
     }
 }
+
+#pragma push
+#pragma peephole off
+void fn_80054EC8(MenuCBPane* pane) {
+    s32 selectedSlot;
+    s32 state;
+    s32 box;
+
+    state = fn_800576B4();
+    switch (state) {
+    case 1:
+        if (fn_80057538() == 0) {
+            break;
+        }
+        box = pane->boxIndex;
+        if (box >= 0 && box < 0x20) {
+            selectedSlot = lbl_80267398[box].slot;
+        }
+        box = fn_80056A78();
+        fn_800574FC(getPokemon__5PCBOXFScSc(NULL, (s8)box, (s8)selectedSlot));
+        delPokemon__5PCBOXFScSc(NULL, (s8)box, (s8)selectedSlot);
+        fn_800576C4(2);
+        break;
+    case 2:
+        if (fn_80057538() == 0) {
+            break;
+        }
+        fn_800576C4(3);
+        if ((s32)lbl_8047A560 != 0) {
+            pane->flag98 = 1;
+        }
+        break;
+    case 4:
+        if (fn_80057538() == 0) {
+            break;
+        }
+        box = pane->boxIndex;
+        if (box >= 0 && box < 0x20) {
+            selectedSlot = lbl_80267398[box].slot;
+        }
+        box = fn_80056A78();
+        setPokemon__5PCBOXFP7PokemonScSc(NULL, fn_800574E0(), (s8)box,
+                                          (s8)selectedSlot);
+        fn_800574A8();
+        fn_800576C4(5);
+        break;
+    case 5:
+        if (fn_80057538() == 0) {
+            break;
+        }
+        fn_800576C4(0);
+        break;
+    case 6:
+        if (fn_80057538() == 0) {
+            break;
+        }
+        box = pane->boxIndex;
+        if (box >= 0 && box < 0x20) {
+            selectedSlot = lbl_80267398[box].slot;
+        }
+        box = fn_80056A78();
+        setPokemon__5PCBOXFP7PokemonScSc(NULL, fn_800574E0(), (s8)box,
+                                          (s8)selectedSlot);
+        fn_800574A8();
+        fn_80057400();
+        fn_800576C4(3);
+        break;
+    }
+}
+#pragma pop
 
 #pragma push
 #pragma peephole off
