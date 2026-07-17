@@ -10,9 +10,9 @@ A matching decompilation project for the GameCube game **Pokémon Colosseum**
 
 | Metric | Value |
 |---|---|
-| Fuzzy match | 57.05% |
-| Function match | 72.57% (6,243 / 8,603 functions) |
-| Code match | 35.06% (874,664 / 2,495,108 matched code bytes) |
+| Fuzzy match | 57.08% |
+| Function match | 72.58% (6,244 / 8,603 functions) |
+| Code match | 35.08% (875,220 / 2,495,108 matched code bytes) |
 | Data match | 97.29% (2,136,502 / 2,196,121 matched data bytes) |
 | Linked into DOL | 267 / 645 units (4.02% of code) |
 

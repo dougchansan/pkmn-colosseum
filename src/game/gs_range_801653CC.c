@@ -8,6 +8,7 @@
  * range name stays honest until internal TU structure is proven.
  */
 #include "dolphin/types.h"
+#include "game/data/rodata_80270008.h"
 
 typedef struct GSsndWork {
     u8 flags;
@@ -171,7 +172,7 @@ u32 fn_80165788(u32 id, f32 x, f32 y, f32 z);
 u32 fn_801658FC(u32 id, u32 fade, u32 volume, u32 priority);
 u32 fn_8016597C(u32 id, u32 fade, u32 volume, u32 priority);
 void fn_80165EE0(void* wave, void* buffer, u32 size);
-u32 fn_80165A44(u32 id, u32 volume, u32 priority, u32 kind);
+u32 fn_80165A44(u32 id, u32 volume, u32 priority, s32 kind);
 void fn_80165C70(u32 volume, u32 isSe, s32 wait);
 void fn_80165D0C(u32 frames);
 void fn_80165DEC(const char* path, void* buffer, u32 capacity);
@@ -405,6 +406,87 @@ u32 fn_801659FC(u32 id, u32 volume, u32 priority)
 u32 fn_80165A20(u32 id, u32 volume, u32 priority)
 {
     return fn_80165A44(id, volume, priority, 1);
+}
+
+u32 fn_80165A44(u32 id, u32 volume, u32 priority, s32 kind)
+{
+    u32 flags;
+    u32 waveIndex;
+    u32 currentId;
+    void* wave;
+
+    if (id == 0 || id >= *lbl_80478FA8) {
+        return 0;
+    }
+
+    flags = lbl_80478FAC[id].flags;
+    if (((flags >> 7) & 1U) == 1U) {
+        if (kind == 0) {
+            s32 status = fn_801666BC(id);
+
+            if (status != 0 && status >= 0 && status < 4) {
+                fn_80166670(id, 0x32, 0);
+                fn_80165D0C(0x32);
+                fn_80166B18(id);
+            }
+            lbl_8047B0A8 = id;
+        }
+        return fn_80166A50(id, volume, priority, 0);
+    }
+
+    {
+        u32 resourceId;
+        u32 resourceSize;
+
+        if (kind != 0) {
+            resourceId = 0x406;
+            resourceSize = 0x10000;
+        } else {
+            resourceId = 0x407;
+            resourceSize = 0x2000;
+        }
+
+        waveIndex = lbl_80478FAC[id].waveIndex;
+        if (waveIndex >= *lbl_80478E30) {
+            GSlogWrite(lbl_802735C4, id);
+            return 0;
+        }
+
+        currentId = fn_801662E8(0, resourceId);
+        if (currentId != id) {
+            if (currentId != (u32)-1) {
+                s32 status = fn_801666BC(currentId);
+
+                if (status != 0 && status >= 0 && status < 4) {
+                    fn_80166670(currentId, 0x32, 0);
+                    fn_80165D0C(0x32);
+                    fn_80166B18(currentId);
+                }
+            }
+
+            wave = lbl_80478E34[waveIndex].data;
+            if (wave != 0) {
+                fn_80165EE0(wave, GSresGetResource(0, resourceId), resourceSize);
+            } else {
+                wave = lbl_80478E34[waveIndex].archive;
+                if (wave != 0) {
+                    fn_80165DEC(wave, GSresGetResource(0, resourceId), resourceSize);
+                } else {
+                    GSlogWrite(lbl_802735F8, id);
+                    return 0;
+                }
+            }
+            fn_80166B3C(id, 0, resourceId);
+        }
+
+        if (kind != 0) {
+            lbl_8047B0AC = id;
+        }
+        if (kind == 0) {
+            lbl_8047B0A8 = id;
+        }
+        return fn_80166A50(id, volume, priority, 0);
+    }
 }
 
 void fn_80165C70(u32 volume, u32 isSe, s32 wait)
