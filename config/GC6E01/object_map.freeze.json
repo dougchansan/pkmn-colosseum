@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196121,
     "total_functions": 8603,
-    "total_units": 658
+    "total_units": 663
   },
   "topology_status": {
     "auto_units": 65,
-    "named_units": 593,
-    "source_backed_units": 578,
+    "named_units": 598,
+    "source_backed_units": 583,
     "auto_code": 0,
     "auto_data": 57787,
     "auto_functions": 0
@@ -1552,13 +1552,78 @@
       "sections": [
         {
           "name": ".text",
-          "size": 1652,
+          "size": 232,
           "virtual_address": 2147864964
         }
       ],
-      "total_code": 1652,
+      "total_code": 232,
       "total_data": 0,
-      "total_functions": 12
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/menu/menuColosseumBattle_tail_exact_8005D26C",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 124,
+          "virtual_address": 2147865196
+        }
+      ],
+      "total_code": 124,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/menu/menuColosseumBattle_tail_candidate_8005D2E8",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 232,
+          "virtual_address": 2147865320
+        }
+      ],
+      "total_code": 232,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/menu/menuColosseumBattle_tail_exact_8005D3D0",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 508,
+          "virtual_address": 2147865552
+        }
+      ],
+      "total_code": 508,
+      "total_data": 0,
+      "total_functions": 5
+    },
+    {
+      "name": "main/game/menu/menuColosseumBattle_tail_candidate_8005D5CC",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 220,
+          "virtual_address": 2147866060
+        }
+      ],
+      "total_code": 220,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/menu/menuColosseumBattle_tail_exact_8005D6A8",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 336,
+          "virtual_address": 2147866280
+        }
+      ],
+      "total_code": 336,
+      "total_data": 0,
+      "total_functions": 3
     },
     {
       "name": "main/game/menu/menu_bios_range_8005D7F8",

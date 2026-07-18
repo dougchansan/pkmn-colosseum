@@ -315,7 +315,22 @@ game/menu/menuColosseumBattle_exact_8005CEE8.c:
 	.text       start:0x8005CEE8 end:0x8005D184
 
 game/menu/menuColosseumBattle_tail.c:
-	.text       start:0x8005D184 end:0x8005D7F8
+	.text       start:0x8005D184 end:0x8005D26C
+
+game/menu/menuColosseumBattle_tail_exact_8005D26C.c:
+	.text       start:0x8005D26C end:0x8005D2E8
+
+game/menu/menuColosseumBattle_tail_candidate_8005D2E8.c:
+	.text       start:0x8005D2E8 end:0x8005D3D0
+
+game/menu/menuColosseumBattle_tail_exact_8005D3D0.c:
+	.text       start:0x8005D3D0 end:0x8005D5CC
+
+game/menu/menuColosseumBattle_tail_candidate_8005D5CC.c:
+	.text       start:0x8005D5CC end:0x8005D6A8
+
+game/menu/menuColosseumBattle_tail_exact_8005D6A8.c:
+	.text       start:0x8005D6A8 end:0x8005D7F8
 
 game/menu/menu_bios_range_8005D7F8.c:
 	.text       start:0x8005D7F8 end:0x8005DA48
