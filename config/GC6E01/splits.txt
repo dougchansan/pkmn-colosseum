@@ -1581,7 +1581,41 @@ musyx/runtime/stream.c:
 	.sdata2     start:0x8047D3B8 end:0x8047D3C0
 
 game/data/sdata2_8047D3C0.c:
-	.sdata2     start:0x8047D3C0 end:0x8047D690
+	.sdata2     start:0x8047D3C0 end:0x8047D548
+
+musyx/runtime/synthdata.c:
+	.text       start:0x80150C78 end:0x801525E4
+
+musyx/runtime/synthmacros.c:
+	.text       start:0x801525E4 end:0x80157280
+
+musyx/musyx_candidate_80157280.c:
+	.text       start:0x80157280 end:0x80162858
+
+musyx/musyx_hw_exact_80162858.c:
+	.text       start:0x80162858 end:0x80162FB0
+
+musyx/musyx_range_80157280.c:
+	.text       start:0x80162FB0 end:0x801652DC
+
+game/musyx_range_801652DC.c:
+	.text       start:0x801652DC end:0x801653BC
+
+game/sound/sound.c:
+	.text       start:0x801653BC end:0x801653CC
+
+game/gs_range_801653CC_prefix.c:
+	.text       start:0x801653CC end:0x801654E0
+
+game/gs_range_801653CC_exact_801654E0.c:
+	.text       start:0x801654E0 end:0x80165D0C
+
+game/gs_range_801653CC_candidate_80165D0C.c:
+	.text       start:0x80165D0C end:0x80165DEC
+	.sdata2     start:0x8047D548 end:0x8047D558
+
+game/data/sdata2_8047D558.c:
+	.sdata2     start:0x8047D558 end:0x8047D690
 
 game/data/sdata2_8047D690.c:
 	.sdata2     start:0x8047D690 end:0x8047D790
@@ -1633,36 +1667,6 @@ game/data/sdata2_8047E538.c:
 
 game/colosseum_battle_sdata2.c:
 	.sdata2     start:0x8047E658 end:0x8047E700
-
-musyx/runtime/synthdata.c:
-	.text       start:0x80150C78 end:0x801525E4
-
-musyx/runtime/synthmacros.c:
-	.text       start:0x801525E4 end:0x80157280
-
-musyx/musyx_candidate_80157280.c:
-	.text       start:0x80157280 end:0x80162858
-
-musyx/musyx_hw_exact_80162858.c:
-	.text       start:0x80162858 end:0x80162FB0
-
-musyx/musyx_range_80157280.c:
-	.text       start:0x80162FB0 end:0x801652DC
-
-game/musyx_range_801652DC.c:
-	.text       start:0x801652DC end:0x801653BC
-
-game/sound/sound.c:
-	.text       start:0x801653BC end:0x801653CC
-
-game/gs_range_801653CC_prefix.c:
-	.text       start:0x801653CC end:0x801654E0
-
-game/gs_range_801653CC_exact_801654E0.c:
-	.text       start:0x801654E0 end:0x80165D0C
-
-game/gs_range_801653CC_candidate_80165D0C.c:
-	.text       start:0x80165D0C end:0x80165DEC
 
 game/gs_range_801653CC_exact_80165DEC.c:
 	.text       start:0x80165DEC end:0x80165FDC
