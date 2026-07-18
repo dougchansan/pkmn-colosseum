@@ -12,7 +12,11 @@
 #if !defined(MENU_MIDDLE_RESIDUAL_80069C0C_ONLY) && \
     !defined(MENU_MIDDLE_EXACT_8006A65C_ONLY) && \
     !defined(MENU_MIDDLE_EXACT_8006A824_ONLY) && \
-    !defined(MENU_MIDDLE_RESIDUAL_8006A990_ONLY)
+    !defined(MENU_MIDDLE_RESIDUAL_8006A990_ONLY) && \
+    !defined(MENU_MIDDLE_EXACT_8006AC28_ONLY) && \
+    !defined(MENU_MIDDLE_RESIDUAL_8006ACCC_ONLY) && \
+    !defined(MENU_MIDDLE_EXACT_8006ADB4_ONLY) && \
+    !defined(MENU_MIDDLE_RESIDUAL_8006AE18_ONLY)
 #define MENU_MIDDLE_ALL
 #endif
 
@@ -1310,8 +1314,9 @@ void fn_8006AABC(void) {
     MENU_MIDDLE_U32_0004(r28)->unk_0004 = r0;
     return;
 }
+#endif
 
-
+#if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_EXACT_8006AC28_ONLY)
 /* 0x8006AC28 | size: 0x44 */
 #pragma push
 #pragma peephole off
@@ -1356,8 +1361,9 @@ ret2:
 ret0:
     return 0;
 }
+#endif
 
-
+#if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_RESIDUAL_8006ACCC_ONLY)
 /* 0x8006ACCC | size: 0xE8 */
 u8* fn_8006ACCC(s32 id) {
     extern u8* savedataGetStatus(s32 idx, s32 type);
@@ -1398,8 +1404,9 @@ search:
 
     return 0;
 }
+#endif
 
-
+#if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_EXACT_8006ADB4_ONLY)
 /* 0x8006ADB4 | size: 0x38 */
 #pragma push
 #pragma peephole off
@@ -1420,6 +1427,8 @@ s32 fn_8006ADEC(void) {
 }
 #pragma pop
 
+#endif
+#if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_RESIDUAL_8006AE18_ONLY)
 /* 0x8006AE18 | size: 0xD4 */
 #pragma push
 #pragma scheduling off

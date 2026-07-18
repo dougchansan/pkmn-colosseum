@@ -388,7 +388,19 @@ game/menu/menu_middle_exact_8006A824.c:
 	.text       start:0x8006A824 end:0x8006A990
 
 game/menu/menu_middle_range_8006A990.c:
-	.text       start:0x8006A990 end:0x8007109C
+	.text       start:0x8006A990 end:0x8006AC28
+
+game/menu/menu_middle_exact_8006AC28.c:
+	.text       start:0x8006AC28 end:0x8006ACCC
+
+game/menu/menu_middle_range_8006ACCC.c:
+	.text       start:0x8006ACCC end:0x8006ADB4
+
+game/menu/menu_middle_exact_8006ADB4.c:
+	.text       start:0x8006ADB4 end:0x8006AE18
+
+game/menu/menu_middle_range_8006AE18.c:
+	.text       start:0x8006AE18 end:0x8007109C
 
 game/menu/menu_range_8007109C.c:
 	.text       start:0x8007109C end:0x8007C260
