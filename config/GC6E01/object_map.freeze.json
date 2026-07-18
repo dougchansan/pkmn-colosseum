@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196121,
     "total_functions": 8603,
-    "total_units": 649
+    "total_units": 650
   },
   "topology_status": {
     "auto_units": 65,
-    "named_units": 584,
-    "source_backed_units": 569,
+    "named_units": 585,
+    "source_backed_units": 570,
     "auto_code": 0,
     "auto_data": 57787,
     "auto_functions": 0
@@ -7873,13 +7873,26 @@
       "sections": [
         {
           "name": ".text",
-          "size": 7020,
+          "size": 3700,
           "virtual_address": 2149424668
         }
       ],
-      "total_code": 7020,
+      "total_code": 3700,
       "total_data": 0,
-      "total_functions": 45
+      "total_functions": 30
+    },
+    {
+      "name": "main/game/wazaSequenceSys_tail",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 3320,
+          "virtual_address": 2149428368
+        }
+      ],
+      "total_code": 3320,
+      "total_data": 0,
+      "total_functions": 15
     },
     {
       "name": "main/game/wazaSequence",

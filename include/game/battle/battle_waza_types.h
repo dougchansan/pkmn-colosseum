@@ -7,14 +7,14 @@
  *        system, split across game/mail.c, game/mailMain.c,
  *        game/wazaSequenceCamera.c, game/wazaViewer.c,
  *        game/wazaSequenceEntry.c, game/wazaSequenceSys.c,
+ *        game/wazaSequenceSys_tail.c,
  *        game/wazaSequence.c and game/sequence.c (originally one
  *        CodeCandidate bucket: game/battle/battle_waza.c,
  *        0x801D1338 - 0x801DE698).
  *
- * All functions declared here are asm-only/partially-decompiled
- * CodeCandidate units (not linked); this header exists purely so each
- * split TU can see the others' signatures without redeclaration
- * mismatches.
+ * These declarations span matching and partially decompiled units; this
+ * header lets each split TU see the others' signatures without
+ * redeclaration mismatches.
  */
 
 #include "game/battle/battle.h"
