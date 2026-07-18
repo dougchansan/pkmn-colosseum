@@ -204,7 +204,13 @@ __init_cpp_exceptions.cpp:
 	.dtors      start:0x80266380 end:0x80266384
 
 game/main.c:
-	.text       start:0x800055E0 end:0x80006630
+	.text       start:0x800055E0 end:0x80005E00
+
+game/main_retrace.c:
+	.text       start:0x80005E00 end:0x80005FA8
+
+game/main_tail.c:
+	.text       start:0x80005FA8 end:0x80006630
 
 game/gs_task.c:
 	.text       start:0x80006630 end:0x80009178

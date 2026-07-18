@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196121,
     "total_functions": 8603,
-    "total_units": 650
+    "total_units": 652
   },
   "topology_status": {
     "auto_units": 65,
-    "named_units": 585,
-    "source_backed_units": 570,
+    "named_units": 587,
+    "source_backed_units": 572,
     "auto_code": 0,
     "auto_data": 57787,
     "auto_functions": 0
@@ -1071,13 +1071,39 @@
       "sections": [
         {
           "name": ".text",
-          "size": 4176,
+          "size": 2080,
           "virtual_address": 2147505632
         }
       ],
-      "total_code": 4176,
+      "total_code": 2080,
       "total_data": 0,
-      "total_functions": 23
+      "total_functions": 13
+    },
+    {
+      "name": "main/game/main_retrace",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 424,
+          "virtual_address": 2147507712
+        }
+      ],
+      "total_code": 424,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/main_tail",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1672,
+          "virtual_address": 2147508136
+        }
+      ],
+      "total_code": 1672,
+      "total_data": 0,
+      "total_functions": 9
     },
     {
       "name": "main/game/gs_task",
