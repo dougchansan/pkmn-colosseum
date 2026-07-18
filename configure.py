@@ -1999,6 +1999,30 @@ config.libs = [
             ),
             Object(
                 Matching,
+                "game/menu/menuCB_range_exact_80065A48.c",
+                mw_version="GC/1.3",
+                extra_cflags=[
+                    "-use_lmw_stmw on",
+                    "-sdata 8",
+                    "-sdata2 8",
+                    "-i src/game/menu",
+                ],
+                progress_category="game",
+            ),
+            Object(
+                CodeCandidate,
+                "game/menu/menuCB_range_800676EC.c",
+                mw_version="GC/1.3",
+                extra_cflags=[
+                    "-use_lmw_stmw on",
+                    "-sdata 8",
+                    "-sdata2 8",
+                    "-i src/game/menu",
+                ],
+                progress_category="game",
+            ),
+            Object(
+                Matching,
                 "game/menu/menuCB_Battle.c",
                 mw_version="GC/1.3",
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
@@ -3689,11 +3713,6 @@ config.libs = [
                 "game/data/rodata_80270008.c",
                 progress_category="game",
                 extra_cflags=["-sdata2 0"],
-            ),
-            Object(
-                DataCandidate,
-                "game/data/data_802EDB7C.c",
-                progress_category="game",
             ),
             Object(
                 Matching,

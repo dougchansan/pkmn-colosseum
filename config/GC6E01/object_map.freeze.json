@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196121,
     "total_functions": 8603,
-    "total_units": 778
+    "total_units": 779
   },
   "topology_status": {
     "auto_units": 65,
-    "named_units": 713,
-    "source_backed_units": 698,
+    "named_units": 714,
+    "source_backed_units": 699,
     "auto_code": 0,
     "auto_data": 57787,
     "auto_functions": 0
@@ -577,298 +577,12 @@
       "sections": [
         {
           "name": ".data",
-          "size": 396,
+          "size": 336,
           "virtual_address": 2150554096
         }
       ],
       "total_code": 0,
-      "total_data": 396,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/data/data_802EDB7C",
-      "sections": [
-        {
-          "name": ".data",
-          "size": 728,
-          "virtual_address": 2150554492
-        }
-      ],
-      "total_code": 0,
-      "total_data": 728,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/data/data_802EDE54",
-      "sections": [
-        {
-          "name": ".data",
-          "size": 1536,
-          "virtual_address": 2150555220
-        }
-      ],
-      "total_code": 0,
-      "total_data": 1536,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/data/data_802EE458",
-      "sections": [
-        {
-          "name": ".data",
-          "size": 428,
-          "virtual_address": 2150556760
-        }
-      ],
-      "total_code": 0,
-      "total_data": 428,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/data/data_802EE608",
-      "sections": [
-        {
-          "name": ".data",
-          "size": 2716,
-          "virtual_address": 2150557192
-        }
-      ],
-      "total_code": 0,
-      "total_data": 2716,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/data/data_802EF0A8",
-      "sections": [
-        {
-          "name": ".data",
-          "size": 134904,
-          "virtual_address": 2150559912
-        }
-      ],
-      "total_code": 0,
-      "total_data": 134904,
-      "total_functions": 0
-    },
-    {
-      "name": "main/auto_05_8030FFA0_data",
-      "sections": [
-        {
-          "name": ".data",
-          "size": 68,
-          "virtual_address": 2150694816
-        }
-      ],
-      "total_code": 0,
-      "total_data": 68,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/data/data_8030FFE4",
-      "sections": [
-        {
-          "name": ".data",
-          "size": 1484,
-          "virtual_address": 2150694884
-        }
-      ],
-      "total_code": 0,
-      "total_data": 1484,
-      "total_functions": 0
-    },
-    {
-      "name": "main/auto_05_803105B0_data",
-      "sections": [
-        {
-          "name": ".data",
-          "size": 560,
-          "virtual_address": 2150696368
-        }
-      ],
-      "total_code": 0,
-      "total_data": 560,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/data/data_803107E0",
-      "sections": [
-        {
-          "name": ".data",
-          "size": 436,
-          "virtual_address": 2150696928
-        }
-      ],
-      "total_code": 0,
-      "total_data": 436,
-      "total_functions": 0
-    },
-    {
-      "name": "main/auto_05_80310994_data",
-      "sections": [
-        {
-          "name": ".data",
-          "size": 836,
-          "virtual_address": 2150697364
-        }
-      ],
-      "total_code": 0,
-      "total_data": 836,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/data/data_80310CD8",
-      "sections": [
-        {
-          "name": ".data",
-          "size": 2880,
-          "virtual_address": 2150698200
-        }
-      ],
-      "total_code": 0,
-      "total_data": 2880,
-      "total_functions": 0
-    },
-    {
-      "name": "main/auto_05_80311818_data",
-      "sections": [
-        {
-          "name": ".data",
-          "size": 80,
-          "virtual_address": 2150701080
-        }
-      ],
-      "total_code": 0,
-      "total_data": 80,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/data/data_80311868",
-      "sections": [
-        {
-          "name": ".data",
-          "size": 336,
-          "virtual_address": 2150701160
-        }
-      ],
-      "total_code": 0,
       "total_data": 336,
-      "total_functions": 0
-    },
-    {
-      "name": "main/auto_05_803119B8_data",
-      "sections": [
-        {
-          "name": ".data",
-          "size": 56,
-          "virtual_address": 2150701496
-        }
-      ],
-      "total_code": 0,
-      "total_data": 56,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/data/data_803119F0",
-      "sections": [
-        {
-          "name": ".data",
-          "size": 52,
-          "virtual_address": 2150701552
-        }
-      ],
-      "total_code": 0,
-      "total_data": 52,
-      "total_functions": 0
-    },
-    {
-      "name": "main/auto_05_80311A24_data",
-      "sections": [
-        {
-          "name": ".data",
-          "size": 176,
-          "virtual_address": 2150701604
-        }
-      ],
-      "total_code": 0,
-      "total_data": 176,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/data/data_80311AD4",
-      "sections": [
-        {
-          "name": ".data",
-          "size": 484,
-          "virtual_address": 2150701780
-        }
-      ],
-      "total_code": 0,
-      "total_data": 484,
-      "total_functions": 0
-    },
-    {
-      "name": "main/auto_05_80311CB8_data",
-      "sections": [
-        {
-          "name": ".data",
-          "size": 128,
-          "virtual_address": 2150702264
-        }
-      ],
-      "total_code": 0,
-      "total_data": 128,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/data/data_80311D38",
-      "sections": [
-        {
-          "name": ".data",
-          "size": 128,
-          "virtual_address": 2150702392
-        }
-      ],
-      "total_code": 0,
-      "total_data": 128,
-      "total_functions": 0
-    },
-    {
-      "name": "main/auto_05_80311DB8_data",
-      "sections": [
-        {
-          "name": ".data",
-          "size": 156,
-          "virtual_address": 2150702520
-        }
-      ],
-      "total_code": 0,
-      "total_data": 156,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/data/data_80311E54",
-      "sections": [
-        {
-          "name": ".data",
-          "size": 408,
-          "virtual_address": 2150702676
-        }
-      ],
-      "total_code": 0,
-      "total_data": 408,
-      "total_functions": 0
-    },
-    {
-      "name": "main/auto_05_80311FEC_data",
-      "sections": [
-        {
-          "name": ".data",
-          "size": 252,
-          "virtual_address": 2150703084
-        }
-      ],
-      "total_code": 0,
-      "total_data": 252,
       "total_functions": 0
     },
     {
@@ -1773,13 +1487,317 @@
       "sections": [
         {
           "name": ".text",
-          "size": 28952,
+          "size": 12544,
           "virtual_address": 2147887432
         }
       ],
-      "total_code": 28952,
+      "total_code": 12544,
       "total_data": 0,
-      "total_functions": 36
+      "total_functions": 14
+    },
+    {
+      "name": "main/game/menu/menuCB_range_exact_80065A48",
+      "sections": [
+        {
+          "name": ".data",
+          "size": 788,
+          "virtual_address": 2150554432
+        },
+        {
+          "name": ".text",
+          "size": 7332,
+          "virtual_address": 2147899976
+        }
+      ],
+      "total_code": 7332,
+      "total_data": 788,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/data/data_802EDE54",
+      "sections": [
+        {
+          "name": ".data",
+          "size": 1536,
+          "virtual_address": 2150555220
+        }
+      ],
+      "total_code": 0,
+      "total_data": 1536,
+      "total_functions": 0
+    },
+    {
+      "name": "main/game/data/data_802EE458",
+      "sections": [
+        {
+          "name": ".data",
+          "size": 428,
+          "virtual_address": 2150556760
+        }
+      ],
+      "total_code": 0,
+      "total_data": 428,
+      "total_functions": 0
+    },
+    {
+      "name": "main/game/data/data_802EE608",
+      "sections": [
+        {
+          "name": ".data",
+          "size": 2716,
+          "virtual_address": 2150557192
+        }
+      ],
+      "total_code": 0,
+      "total_data": 2716,
+      "total_functions": 0
+    },
+    {
+      "name": "main/game/data/data_802EF0A8",
+      "sections": [
+        {
+          "name": ".data",
+          "size": 134904,
+          "virtual_address": 2150559912
+        }
+      ],
+      "total_code": 0,
+      "total_data": 134904,
+      "total_functions": 0
+    },
+    {
+      "name": "main/auto_05_8030FFA0_data",
+      "sections": [
+        {
+          "name": ".data",
+          "size": 68,
+          "virtual_address": 2150694816
+        }
+      ],
+      "total_code": 0,
+      "total_data": 68,
+      "total_functions": 0
+    },
+    {
+      "name": "main/game/data/data_8030FFE4",
+      "sections": [
+        {
+          "name": ".data",
+          "size": 1484,
+          "virtual_address": 2150694884
+        }
+      ],
+      "total_code": 0,
+      "total_data": 1484,
+      "total_functions": 0
+    },
+    {
+      "name": "main/auto_05_803105B0_data",
+      "sections": [
+        {
+          "name": ".data",
+          "size": 560,
+          "virtual_address": 2150696368
+        }
+      ],
+      "total_code": 0,
+      "total_data": 560,
+      "total_functions": 0
+    },
+    {
+      "name": "main/game/data/data_803107E0",
+      "sections": [
+        {
+          "name": ".data",
+          "size": 436,
+          "virtual_address": 2150696928
+        }
+      ],
+      "total_code": 0,
+      "total_data": 436,
+      "total_functions": 0
+    },
+    {
+      "name": "main/auto_05_80310994_data",
+      "sections": [
+        {
+          "name": ".data",
+          "size": 836,
+          "virtual_address": 2150697364
+        }
+      ],
+      "total_code": 0,
+      "total_data": 836,
+      "total_functions": 0
+    },
+    {
+      "name": "main/game/data/data_80310CD8",
+      "sections": [
+        {
+          "name": ".data",
+          "size": 2880,
+          "virtual_address": 2150698200
+        }
+      ],
+      "total_code": 0,
+      "total_data": 2880,
+      "total_functions": 0
+    },
+    {
+      "name": "main/auto_05_80311818_data",
+      "sections": [
+        {
+          "name": ".data",
+          "size": 80,
+          "virtual_address": 2150701080
+        }
+      ],
+      "total_code": 0,
+      "total_data": 80,
+      "total_functions": 0
+    },
+    {
+      "name": "main/game/data/data_80311868",
+      "sections": [
+        {
+          "name": ".data",
+          "size": 336,
+          "virtual_address": 2150701160
+        }
+      ],
+      "total_code": 0,
+      "total_data": 336,
+      "total_functions": 0
+    },
+    {
+      "name": "main/auto_05_803119B8_data",
+      "sections": [
+        {
+          "name": ".data",
+          "size": 56,
+          "virtual_address": 2150701496
+        }
+      ],
+      "total_code": 0,
+      "total_data": 56,
+      "total_functions": 0
+    },
+    {
+      "name": "main/game/data/data_803119F0",
+      "sections": [
+        {
+          "name": ".data",
+          "size": 52,
+          "virtual_address": 2150701552
+        }
+      ],
+      "total_code": 0,
+      "total_data": 52,
+      "total_functions": 0
+    },
+    {
+      "name": "main/auto_05_80311A24_data",
+      "sections": [
+        {
+          "name": ".data",
+          "size": 176,
+          "virtual_address": 2150701604
+        }
+      ],
+      "total_code": 0,
+      "total_data": 176,
+      "total_functions": 0
+    },
+    {
+      "name": "main/game/data/data_80311AD4",
+      "sections": [
+        {
+          "name": ".data",
+          "size": 484,
+          "virtual_address": 2150701780
+        }
+      ],
+      "total_code": 0,
+      "total_data": 484,
+      "total_functions": 0
+    },
+    {
+      "name": "main/auto_05_80311CB8_data",
+      "sections": [
+        {
+          "name": ".data",
+          "size": 128,
+          "virtual_address": 2150702264
+        }
+      ],
+      "total_code": 0,
+      "total_data": 128,
+      "total_functions": 0
+    },
+    {
+      "name": "main/game/data/data_80311D38",
+      "sections": [
+        {
+          "name": ".data",
+          "size": 128,
+          "virtual_address": 2150702392
+        }
+      ],
+      "total_code": 0,
+      "total_data": 128,
+      "total_functions": 0
+    },
+    {
+      "name": "main/auto_05_80311DB8_data",
+      "sections": [
+        {
+          "name": ".data",
+          "size": 156,
+          "virtual_address": 2150702520
+        }
+      ],
+      "total_code": 0,
+      "total_data": 156,
+      "total_functions": 0
+    },
+    {
+      "name": "main/game/data/data_80311E54",
+      "sections": [
+        {
+          "name": ".data",
+          "size": 408,
+          "virtual_address": 2150702676
+        }
+      ],
+      "total_code": 0,
+      "total_data": 408,
+      "total_functions": 0
+    },
+    {
+      "name": "main/auto_05_80311FEC_data",
+      "sections": [
+        {
+          "name": ".data",
+          "size": 252,
+          "virtual_address": 2150703084
+        }
+      ],
+      "total_code": 0,
+      "total_data": 252,
+      "total_functions": 0
+    },
+    {
+      "name": "main/game/menu/menuCB_range_800676EC",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 9076,
+          "virtual_address": 2147907308
+        }
+      ],
+      "total_code": 9076,
+      "total_data": 0,
+      "total_functions": 21
     },
     {
       "name": "main/game/menu/menuCB_Battle",

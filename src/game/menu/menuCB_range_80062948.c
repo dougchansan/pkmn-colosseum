@@ -14,7 +14,7 @@
  * 745775c5 and 9f9727ef) through the current dtk-template pipeline: ported
  * into this unit's split and re-verified against this unit's own compiler
  * flags (GC/1.3, -use_lmw_stmw on, -sdata 8, -sdata2 8), not copied
- * wholesale. Remainder of the range is asm-only.
+ * wholesale. Residual head and tail ranges remain target-linked candidates.
  */
 #include "dolphin/types.h"
 
@@ -49,6 +49,13 @@ typedef struct UICmdMsg {
 
 /* ===== Function implementations ===== */
 
+#if !defined(MENUCB_RANGE_HEAD_ONLY) && \
+    !defined(MENUCB_RANGE_EXACT_80065A48_ONLY) && \
+    !defined(MENUCB_RANGE_TAIL_ONLY)
+#define MENUCB_RANGE_HEAD_ONLY
+#endif
+
+#if defined(MENUCB_RANGE_TAIL_ONLY)
 /* Address: 0x80069048 | Size: 0x20 */
 s32 menuCBPokemonEntryGetReadFlag(void)
 {
@@ -158,7 +165,9 @@ s32 menuCBPokemonEntryDispPokemonFace(void* ctx, UICmdMsg* msg, s32 group, s32 s
     return 0;
 }
 #pragma pop
+#endif
 
+#if defined(MENUCB_RANGE_HEAD_ONLY)
 /* Address: 0x80063D10 | Size: 0x4 */
 void fn_80063D10(void)
 {
@@ -179,7 +188,9 @@ void fn_80064378(u8* ctx, UICmdMsg* msg)
         break;
     }
 }
+#endif
 
+#if defined(MENUCB_RANGE_TAIL_ONLY)
 /* Address: 0x80068738 | Size: 0x5C */
 #pragma push
 #pragma scheduling on
@@ -267,7 +278,9 @@ void fn_80068F84(void)
     }
 }
 #pragma pop
+#endif
 
+#if defined(MENUCB_RANGE_EXACT_80065A48_ONLY)
 /* Address: 0x80065A48 | Size: 0x1CA4 */
 #pragma push
 #pragma optimization_level 4
@@ -1626,3 +1639,8 @@ void fn_80065A48(void* ctx, void* arg1, s32 arg2)
     }
 }
 #pragma pop
+#endif
+
+#undef MENUCB_RANGE_HEAD_ONLY
+#undef MENUCB_RANGE_EXACT_80065A48_ONLY
+#undef MENUCB_RANGE_TAIL_ONLY
