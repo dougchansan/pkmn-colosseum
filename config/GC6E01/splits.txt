@@ -1044,7 +1044,13 @@ game/gs_mem.c:
 	.text       start:0x800E202C end:0x800E3604
 
 game/gs_model_main.c:
-	.text       start:0x800E3604 end:0x800E8684
+	.text       start:0x800E3604 end:0x800E3928
+
+game/gs_model_main_exact_800E3928.c:
+	.text       start:0x800E3928 end:0x800E4AC0
+
+game/gs_model_main_suffix_800E4AC0.c:
+	.text       start:0x800E4AC0 end:0x800E8684
 
 game/gs_model_shadow.c:
 	.text       start:0x800E8684 end:0x800E9B2C

@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196121,
     "total_functions": 8603,
-    "total_units": 710
+    "total_units": 712
   },
   "topology_status": {
     "auto_units": 65,
-    "named_units": 645,
-    "source_backed_units": 630,
+    "named_units": 647,
+    "source_backed_units": 632,
     "auto_code": 0,
     "auto_data": 57787,
     "auto_functions": 0
@@ -5042,13 +5042,39 @@
       "sections": [
         {
           "name": ".text",
-          "size": 20608,
+          "size": 804,
           "virtual_address": 2148414980
         }
       ],
-      "total_code": 20608,
+      "total_code": 804,
       "total_data": 0,
-      "total_functions": 73
+      "total_functions": 3
+    },
+    {
+      "name": "main/game/gs_model_main_exact_800E3928",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 4504,
+          "virtual_address": 2148415784
+        }
+      ],
+      "total_code": 4504,
+      "total_data": 0,
+      "total_functions": 31
+    },
+    {
+      "name": "main/game/gs_model_main_suffix_800E4AC0",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 15300,
+          "virtual_address": 2148420288
+        }
+      ],
+      "total_code": 15300,
+      "total_data": 0,
+      "total_functions": 39
     },
     {
       "name": "main/game/gs_model_shadow",
