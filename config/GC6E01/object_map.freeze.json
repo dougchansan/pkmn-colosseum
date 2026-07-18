@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196121,
     "total_functions": 8603,
-    "total_units": 725
+    "total_units": 727
   },
   "topology_status": {
     "auto_units": 65,
-    "named_units": 660,
-    "source_backed_units": 645,
+    "named_units": 662,
+    "source_backed_units": 647,
     "auto_code": 0,
     "auto_data": 57787,
     "auto_functions": 0
@@ -3355,13 +3355,39 @@
       "sections": [
         {
           "name": ".text",
-          "size": 7000,
+          "size": 4136,
           "virtual_address": 2148181204
         }
       ],
-      "total_code": 7000,
+      "total_code": 4136,
       "total_data": 0,
-      "total_functions": 20
+      "total_functions": 10
+    },
+    {
+      "name": "main/dolphin/pad/PAD_exact_800AB4FC",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 2156,
+          "virtual_address": 2148185340
+        }
+      ],
+      "total_code": 2156,
+      "total_data": 0,
+      "total_functions": 6
+    },
+    {
+      "name": "main/dolphin/pad/PAD_suffix_800ABD68",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 708,
+          "virtual_address": 2148187496
+        }
+      ],
+      "total_code": 708,
+      "total_data": 0,
+      "total_functions": 4
     },
     {
       "name": "main/dolphin/sdk_range_800AC02C",

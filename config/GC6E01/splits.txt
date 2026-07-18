@@ -664,7 +664,13 @@ dolphin/vi/VI_fn_800AA498.c:
 	.text       start:0x800AA498 end:0x800AA4D4
 
 dolphin/pad/PAD.c:
-	.text       start:0x800AA4D4 end:0x800AC02C
+	.text       start:0x800AA4D4 end:0x800AB4FC
+
+dolphin/pad/PAD_exact_800AB4FC.c:
+	.text       start:0x800AB4FC end:0x800ABD68
+
+dolphin/pad/PAD_suffix_800ABD68.c:
+	.text       start:0x800ABD68 end:0x800AC02C
 
 dolphin/sdk_range_800AC02C.c:
 	.text       start:0x800AC02C end:0x800ACBFC

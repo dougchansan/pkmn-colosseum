@@ -398,6 +398,16 @@ config.libs = [
             ),
             Object(
                 Matching,
+                "dolphin/pad/PAD_exact_800AB4FC.c",
+                progress_category="sdk",
+            ),
+            Object(
+                CodeCandidate,
+                "dolphin/pad/PAD_suffix_800ABD68.c",
+                progress_category="sdk",
+            ),
+            Object(
+                Matching,
                 "dolphin/exi/EXI2_range_800CEA3C.c",
                 progress_category="sdk",
             ),
