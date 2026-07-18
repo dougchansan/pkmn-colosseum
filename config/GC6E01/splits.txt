@@ -814,7 +814,7 @@ trk/TRKComm_range_800C3678.c:
 trk/TRKCommState.c:
 	.text       start:0x800C39A0 end:0x800C39BC
 
-trk/TRKComm.c:
+trk/TRKComm_exact_800C39BC.c:
 	.text       start:0x800C39BC end:0x800C3BB8
 
 trk/udp_cc.c:

@@ -733,7 +733,7 @@ config.libs = [
                 progress_category="musyx",
             ),
             Object(
-                CodeCandidate,
+                Matching,
                 "musyx/runtime/synth.c",
                 mw_version="GC/1.3.2",
                 extra_cflags=["-use_lmw_stmw off", "-sdata 8", "-sdata2 8"],
@@ -3618,8 +3618,8 @@ config.libs = [
                 progress_category="runtime",
             ),
             Object(
-                CodeCandidate,
-                "trk/TRKComm.c",
+                Matching,
+                "trk/TRKComm_exact_800C39BC.c",
                 mw_version="GC/1.3.2",
                 progress_category="runtime",
             ),
