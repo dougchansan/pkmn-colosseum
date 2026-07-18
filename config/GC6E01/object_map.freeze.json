@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196121,
     "total_functions": 8603,
-    "total_units": 750
+    "total_units": 754
   },
   "topology_status": {
     "auto_units": 65,
-    "named_units": 685,
-    "source_backed_units": 670,
+    "named_units": 689,
+    "source_backed_units": 674,
     "auto_code": 0,
     "auto_data": 57787,
     "auto_functions": 0
@@ -23,7 +23,7 @@
     "matched_data_percent": 97.285255,
     "matched_functions": 6259,
     "matched_functions_percent": 72.75369,
-    "fuzzy_match_percent": 57.38778
+    "fuzzy_match_percent": 57.38779
   },
   "unit_topology": [
     {
@@ -9204,13 +9204,65 @@
       "sections": [
         {
           "name": ".text",
-          "size": 62628,
+          "size": 41920,
           "virtual_address": 2149757596
         }
       ],
-      "total_code": 62628,
+      "total_code": 41920,
       "total_data": 0,
-      "total_functions": 121
+      "total_functions": 42
+    },
+    {
+      "name": "main/game/fight_range_8023565C_exact",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 7508,
+          "virtual_address": 2149799516
+        }
+      ],
+      "total_code": 7508,
+      "total_data": 0,
+      "total_functions": 30
+    },
+    {
+      "name": "main/game/fight_range_802373B0",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 396,
+          "virtual_address": 2149807024
+        }
+      ],
+      "total_code": 396,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/fight_range_8023753C_exact",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 2852,
+          "virtual_address": 2149807420
+        }
+      ],
+      "total_code": 2852,
+      "total_data": 0,
+      "total_functions": 10
+    },
+    {
+      "name": "main/game/fight_range_80238060",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 9952,
+          "virtual_address": 2149810272
+        }
+      ],
+      "total_code": 9952,
+      "total_data": 0,
+      "total_functions": 38
     },
     {
       "name": "main/game/fight_range_8023A740",

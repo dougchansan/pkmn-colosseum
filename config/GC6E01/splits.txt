@@ -1932,7 +1932,19 @@ game/fight_range_8022A504.c:
 	.text       start:0x8022A504 end:0x8022B29C
 
 game/fight_range_8022B29C.c:
-	.text       start:0x8022B29C end:0x8023A740
+	.text       start:0x8022B29C end:0x8023565C
+
+game/fight_range_8023565C_exact.c:
+	.text       start:0x8023565C end:0x802373B0
+
+game/fight_range_802373B0.c:
+	.text       start:0x802373B0 end:0x8023753C
+
+game/fight_range_8023753C_exact.c:
+	.text       start:0x8023753C end:0x80238060
+
+game/fight_range_80238060.c:
+	.text       start:0x80238060 end:0x8023A740
 
 game/fight_range_8023A740.c:
 	.text       start:0x8023A740 end:0x8023B498
