@@ -1779,7 +1779,13 @@ game/fight_range_80201764.c:
 	.text       start:0x80201764 end:0x80202810
 
 game/fight_out_pokemon.c:
-	.text       start:0x80202810 end:0x8020AE30
+	.text       start:0x80202810 end:0x80206A04
+
+game/fight_out_pokemon_exact_80206A04.c:
+	.text       start:0x80206A04 end:0x80207C6C
+
+game/fight_out_pokemon_suffix_80207C6C.c:
+	.text       start:0x80207C6C end:0x8020AE30
 
 game/fight_action.c:
 	.text       start:0x8020AE30 end:0x8020D968
