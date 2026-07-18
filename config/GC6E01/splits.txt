@@ -1217,61 +1217,7 @@ game/effect/effect_visual_sdata2_8047D298.c:
 	.sdata2     start:0x8047D298 end:0x8047D394
 
 game/data/sdata2_8047D398.c:
-	.sdata2     start:0x8047D398 end:0x8047D498
-
-game/data/sdata2_8047D498.c:
-	.sdata2     start:0x8047D498 end:0x8047D690
-
-game/data/sdata2_8047D690.c:
-	.sdata2     start:0x8047D690 end:0x8047D790
-
-game/people/people_sdata2_8047D790.c:
-	.sdata2     start:0x8047D790 end:0x8047D890
-
-game/data/sdata2_8047D890.c:
-	.sdata2     start:0x8047D890 end:0x8047D990
-
-hsd/hsd_sdata2_8047D990.c:
-	.sdata2     start:0x8047D990 end:0x8047DA90
-
-hsd/hsd_sdata2_8047DA90.c:
-	.sdata2     start:0x8047DA90 end:0x8047DB8B
-
-hsd/hsd_sdata2_8047DB90.c:
-	.sdata2     start:0x8047DB90 end:0x8047DC90
-
-hsd/hsd_sdata2_8047DC90.c:
-	.sdata2     start:0x8047DC90 end:0x8047DD90
-
-hsd/hsd_sdata2_8047DD90.c:
-	.sdata2     start:0x8047DD90 end:0x8047DE90
-
-hsd/hsd_sdata2_8047DE90.c:
-	.sdata2     start:0x8047DE90 end:0x8047DF90
-
-game/battle_sdata2_8047DF90.c:
-	.sdata2     start:0x8047DF90 end:0x8047E090
-
-game/battle_sdata2_8047E090.c:
-	.sdata2     start:0x8047E090 end:0x8047E190
-
-game/battle_sdata2_8047E190.c:
-	.sdata2     start:0x8047E190 end:0x8047E290
-
-game/battle_waza_sdata2_8047E290.c:
-	.sdata2     start:0x8047E290 end:0x8047E390
-
-game/data/sdata2_8047E390.c:
-	.sdata2     start:0x8047E390 end:0x8047E490
-
-game/data/sdata2_8047E490.c:
-	.sdata2     start:0x8047E490 end:0x8047E538
-
-game/data/sdata2_8047E538.c:
-	.sdata2     start:0x8047E538 end:0x8047E658
-
-game/colosseum_battle_sdata2.c:
-	.sdata2     start:0x8047E658 end:0x8047E700
+	.sdata2     start:0x8047D398 end:0x8047D3B8
 
 game/data/data_80363AC8.c:
 	.data       start:0x80363AC8 end:0x80363CA4
@@ -1464,6 +1410,61 @@ musyx/runtime/snd_synthapi.c:
 
 musyx/runtime/stream.c:
 	.text       start:0x8014DDD8 end:0x80150C78
+	.sdata2     start:0x8047D3B8 end:0x8047D3C0
+
+game/data/sdata2_8047D3C0.c:
+	.sdata2     start:0x8047D3C0 end:0x8047D690
+
+game/data/sdata2_8047D690.c:
+	.sdata2     start:0x8047D690 end:0x8047D790
+
+game/people/people_sdata2_8047D790.c:
+	.sdata2     start:0x8047D790 end:0x8047D890
+
+game/data/sdata2_8047D890.c:
+	.sdata2     start:0x8047D890 end:0x8047D990
+
+hsd/hsd_sdata2_8047D990.c:
+	.sdata2     start:0x8047D990 end:0x8047DA90
+
+hsd/hsd_sdata2_8047DA90.c:
+	.sdata2     start:0x8047DA90 end:0x8047DB8B
+
+hsd/hsd_sdata2_8047DB90.c:
+	.sdata2     start:0x8047DB90 end:0x8047DC90
+
+hsd/hsd_sdata2_8047DC90.c:
+	.sdata2     start:0x8047DC90 end:0x8047DD90
+
+hsd/hsd_sdata2_8047DD90.c:
+	.sdata2     start:0x8047DD90 end:0x8047DE90
+
+hsd/hsd_sdata2_8047DE90.c:
+	.sdata2     start:0x8047DE90 end:0x8047DF90
+
+game/battle_sdata2_8047DF90.c:
+	.sdata2     start:0x8047DF90 end:0x8047E090
+
+game/battle_sdata2_8047E090.c:
+	.sdata2     start:0x8047E090 end:0x8047E190
+
+game/battle_sdata2_8047E190.c:
+	.sdata2     start:0x8047E190 end:0x8047E290
+
+game/battle_waza_sdata2_8047E290.c:
+	.sdata2     start:0x8047E290 end:0x8047E390
+
+game/data/sdata2_8047E390.c:
+	.sdata2     start:0x8047E390 end:0x8047E490
+
+game/data/sdata2_8047E490.c:
+	.sdata2     start:0x8047E490 end:0x8047E538
+
+game/data/sdata2_8047E538.c:
+	.sdata2     start:0x8047E538 end:0x8047E658
+
+game/colosseum_battle_sdata2.c:
+	.sdata2     start:0x8047E658 end:0x8047E700
 
 musyx/runtime/synthdata.c:
 	.text       start:0x80150C78 end:0x801525E4

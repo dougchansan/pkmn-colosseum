@@ -5793,246 +5793,12 @@
       "sections": [
         {
           "name": ".sdata2",
-          "size": 256,
+          "size": 32,
           "virtual_address": 2152190872
         }
       ],
       "total_code": 0,
-      "total_data": 256,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/data/sdata2_8047D498",
-      "sections": [
-        {
-          "name": ".sdata2",
-          "size": 504,
-          "virtual_address": 2152191128
-        }
-      ],
-      "total_code": 0,
-      "total_data": 504,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/data/sdata2_8047D690",
-      "sections": [
-        {
-          "name": ".sdata2",
-          "size": 256,
-          "virtual_address": 2152191632
-        }
-      ],
-      "total_code": 0,
-      "total_data": 256,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/people/people_sdata2_8047D790",
-      "sections": [
-        {
-          "name": ".sdata2",
-          "size": 256,
-          "virtual_address": 2152191888
-        }
-      ],
-      "total_code": 0,
-      "total_data": 256,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/data/sdata2_8047D890",
-      "sections": [
-        {
-          "name": ".sdata2",
-          "size": 256,
-          "virtual_address": 2152192144
-        }
-      ],
-      "total_code": 0,
-      "total_data": 256,
-      "total_functions": 0
-    },
-    {
-      "name": "main/hsd/hsd_sdata2_8047D990",
-      "sections": [
-        {
-          "name": ".sdata2",
-          "size": 256,
-          "virtual_address": 2152192400
-        }
-      ],
-      "total_code": 0,
-      "total_data": 256,
-      "total_functions": 0
-    },
-    {
-      "name": "main/hsd/hsd_sdata2_8047DA90",
-      "sections": [
-        {
-          "name": ".sdata2",
-          "size": 251,
-          "virtual_address": 2152192656
-        }
-      ],
-      "total_code": 0,
-      "total_data": 251,
-      "total_functions": 0
-    },
-    {
-      "name": "main/hsd/hsd_sdata2_8047DB90",
-      "sections": [
-        {
-          "name": ".sdata2",
-          "size": 256,
-          "virtual_address": 2152192912
-        }
-      ],
-      "total_code": 0,
-      "total_data": 256,
-      "total_functions": 0
-    },
-    {
-      "name": "main/hsd/hsd_sdata2_8047DC90",
-      "sections": [
-        {
-          "name": ".sdata2",
-          "size": 256,
-          "virtual_address": 2152193168
-        }
-      ],
-      "total_code": 0,
-      "total_data": 256,
-      "total_functions": 0
-    },
-    {
-      "name": "main/hsd/hsd_sdata2_8047DD90",
-      "sections": [
-        {
-          "name": ".sdata2",
-          "size": 256,
-          "virtual_address": 2152193424
-        }
-      ],
-      "total_code": 0,
-      "total_data": 256,
-      "total_functions": 0
-    },
-    {
-      "name": "main/hsd/hsd_sdata2_8047DE90",
-      "sections": [
-        {
-          "name": ".sdata2",
-          "size": 256,
-          "virtual_address": 2152193680
-        }
-      ],
-      "total_code": 0,
-      "total_data": 256,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/battle_sdata2_8047DF90",
-      "sections": [
-        {
-          "name": ".sdata2",
-          "size": 256,
-          "virtual_address": 2152193936
-        }
-      ],
-      "total_code": 0,
-      "total_data": 256,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/battle_sdata2_8047E090",
-      "sections": [
-        {
-          "name": ".sdata2",
-          "size": 256,
-          "virtual_address": 2152194192
-        }
-      ],
-      "total_code": 0,
-      "total_data": 256,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/battle_sdata2_8047E190",
-      "sections": [
-        {
-          "name": ".sdata2",
-          "size": 256,
-          "virtual_address": 2152194448
-        }
-      ],
-      "total_code": 0,
-      "total_data": 256,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/battle_waza_sdata2_8047E290",
-      "sections": [
-        {
-          "name": ".sdata2",
-          "size": 256,
-          "virtual_address": 2152194704
-        }
-      ],
-      "total_code": 0,
-      "total_data": 256,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/data/sdata2_8047E390",
-      "sections": [
-        {
-          "name": ".sdata2",
-          "size": 256,
-          "virtual_address": 2152194960
-        }
-      ],
-      "total_code": 0,
-      "total_data": 256,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/data/sdata2_8047E490",
-      "sections": [
-        {
-          "name": ".sdata2",
-          "size": 168,
-          "virtual_address": 2152195216
-        }
-      ],
-      "total_code": 0,
-      "total_data": 168,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/data/sdata2_8047E538",
-      "sections": [
-        {
-          "name": ".sdata2",
-          "size": 288,
-          "virtual_address": 2152195384
-        }
-      ],
-      "total_code": 0,
-      "total_data": 288,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/colosseum_battle_sdata2",
-      "sections": [
-        {
-          "name": ".sdata2",
-          "size": 168,
-          "virtual_address": 2152195672
-        }
-      ],
-      "total_code": 0,
-      "total_data": 168,
+      "total_data": 32,
       "total_functions": 0
     },
     {
@@ -7170,14 +6936,253 @@
       "name": "main/musyx/runtime/stream",
       "sections": [
         {
+          "name": ".sdata2",
+          "size": 8,
+          "virtual_address": 2152190904
+        },
+        {
           "name": ".text",
           "size": 11936,
           "virtual_address": 2148851160
         }
       ],
       "total_code": 11936,
-      "total_data": 0,
+      "total_data": 8,
       "total_functions": 16
+    },
+    {
+      "name": "main/game/data/sdata2_8047D3C0",
+      "sections": [
+        {
+          "name": ".sdata2",
+          "size": 720,
+          "virtual_address": 2152190912
+        }
+      ],
+      "total_code": 0,
+      "total_data": 720,
+      "total_functions": 0
+    },
+    {
+      "name": "main/game/data/sdata2_8047D690",
+      "sections": [
+        {
+          "name": ".sdata2",
+          "size": 256,
+          "virtual_address": 2152191632
+        }
+      ],
+      "total_code": 0,
+      "total_data": 256,
+      "total_functions": 0
+    },
+    {
+      "name": "main/game/people/people_sdata2_8047D790",
+      "sections": [
+        {
+          "name": ".sdata2",
+          "size": 256,
+          "virtual_address": 2152191888
+        }
+      ],
+      "total_code": 0,
+      "total_data": 256,
+      "total_functions": 0
+    },
+    {
+      "name": "main/game/data/sdata2_8047D890",
+      "sections": [
+        {
+          "name": ".sdata2",
+          "size": 256,
+          "virtual_address": 2152192144
+        }
+      ],
+      "total_code": 0,
+      "total_data": 256,
+      "total_functions": 0
+    },
+    {
+      "name": "main/hsd/hsd_sdata2_8047D990",
+      "sections": [
+        {
+          "name": ".sdata2",
+          "size": 256,
+          "virtual_address": 2152192400
+        }
+      ],
+      "total_code": 0,
+      "total_data": 256,
+      "total_functions": 0
+    },
+    {
+      "name": "main/hsd/hsd_sdata2_8047DA90",
+      "sections": [
+        {
+          "name": ".sdata2",
+          "size": 251,
+          "virtual_address": 2152192656
+        }
+      ],
+      "total_code": 0,
+      "total_data": 251,
+      "total_functions": 0
+    },
+    {
+      "name": "main/hsd/hsd_sdata2_8047DB90",
+      "sections": [
+        {
+          "name": ".sdata2",
+          "size": 256,
+          "virtual_address": 2152192912
+        }
+      ],
+      "total_code": 0,
+      "total_data": 256,
+      "total_functions": 0
+    },
+    {
+      "name": "main/hsd/hsd_sdata2_8047DC90",
+      "sections": [
+        {
+          "name": ".sdata2",
+          "size": 256,
+          "virtual_address": 2152193168
+        }
+      ],
+      "total_code": 0,
+      "total_data": 256,
+      "total_functions": 0
+    },
+    {
+      "name": "main/hsd/hsd_sdata2_8047DD90",
+      "sections": [
+        {
+          "name": ".sdata2",
+          "size": 256,
+          "virtual_address": 2152193424
+        }
+      ],
+      "total_code": 0,
+      "total_data": 256,
+      "total_functions": 0
+    },
+    {
+      "name": "main/hsd/hsd_sdata2_8047DE90",
+      "sections": [
+        {
+          "name": ".sdata2",
+          "size": 256,
+          "virtual_address": 2152193680
+        }
+      ],
+      "total_code": 0,
+      "total_data": 256,
+      "total_functions": 0
+    },
+    {
+      "name": "main/game/battle_sdata2_8047DF90",
+      "sections": [
+        {
+          "name": ".sdata2",
+          "size": 256,
+          "virtual_address": 2152193936
+        }
+      ],
+      "total_code": 0,
+      "total_data": 256,
+      "total_functions": 0
+    },
+    {
+      "name": "main/game/battle_sdata2_8047E090",
+      "sections": [
+        {
+          "name": ".sdata2",
+          "size": 256,
+          "virtual_address": 2152194192
+        }
+      ],
+      "total_code": 0,
+      "total_data": 256,
+      "total_functions": 0
+    },
+    {
+      "name": "main/game/battle_sdata2_8047E190",
+      "sections": [
+        {
+          "name": ".sdata2",
+          "size": 256,
+          "virtual_address": 2152194448
+        }
+      ],
+      "total_code": 0,
+      "total_data": 256,
+      "total_functions": 0
+    },
+    {
+      "name": "main/game/battle_waza_sdata2_8047E290",
+      "sections": [
+        {
+          "name": ".sdata2",
+          "size": 256,
+          "virtual_address": 2152194704
+        }
+      ],
+      "total_code": 0,
+      "total_data": 256,
+      "total_functions": 0
+    },
+    {
+      "name": "main/game/data/sdata2_8047E390",
+      "sections": [
+        {
+          "name": ".sdata2",
+          "size": 256,
+          "virtual_address": 2152194960
+        }
+      ],
+      "total_code": 0,
+      "total_data": 256,
+      "total_functions": 0
+    },
+    {
+      "name": "main/game/data/sdata2_8047E490",
+      "sections": [
+        {
+          "name": ".sdata2",
+          "size": 168,
+          "virtual_address": 2152195216
+        }
+      ],
+      "total_code": 0,
+      "total_data": 168,
+      "total_functions": 0
+    },
+    {
+      "name": "main/game/data/sdata2_8047E538",
+      "sections": [
+        {
+          "name": ".sdata2",
+          "size": 288,
+          "virtual_address": 2152195384
+        }
+      ],
+      "total_code": 0,
+      "total_data": 288,
+      "total_functions": 0
+    },
+    {
+      "name": "main/game/colosseum_battle_sdata2",
+      "sections": [
+        {
+          "name": ".sdata2",
+          "size": 168,
+          "virtual_address": 2152195672
+        }
+      ],
+      "total_code": 0,
+      "total_data": 168,
+      "total_functions": 0
     },
     {
       "name": "main/musyx/runtime/synthdata",

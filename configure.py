@@ -3737,7 +3737,7 @@ config.libs = [
             ),
             Object(
                 Matching,
-                "game/data/sdata2_8047D498.c",
+                "game/data/sdata2_8047D3C0.c",
                 progress_category="game",
             ),
             Object(
