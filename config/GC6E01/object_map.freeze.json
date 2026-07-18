@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196121,
     "total_functions": 8603,
-    "total_units": 673
+    "total_units": 681
   },
   "topology_status": {
     "auto_units": 65,
-    "named_units": 608,
-    "source_backed_units": 593,
+    "named_units": 616,
+    "source_backed_units": 601,
     "auto_code": 0,
     "auto_data": 57787,
     "auto_functions": 0
@@ -7245,17 +7245,121 @@
       "total_functions": 2
     },
     {
+      "name": "main/game/gs_range_801653CC_prefix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 276,
+          "virtual_address": 2148946892
+        }
+      ],
+      "total_code": 276,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/gs_range_801653CC_exact_801654E0",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 2092,
+          "virtual_address": 2148947168
+        }
+      ],
+      "total_code": 2092,
+      "total_data": 0,
+      "total_functions": 18
+    },
+    {
+      "name": "main/game/gs_range_801653CC_candidate_80165D0C",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 224,
+          "virtual_address": 2148949260
+        }
+      ],
+      "total_code": 224,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/gs_range_801653CC_exact_80165DEC",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 496,
+          "virtual_address": 2148949484
+        }
+      ],
+      "total_code": 496,
+      "total_data": 0,
+      "total_functions": 4
+    },
+    {
+      "name": "main/game/gs_range_801653CC_candidate_80165FDC",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 112,
+          "virtual_address": 2148949980
+        }
+      ],
+      "total_code": 112,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/gs_range_801653CC_exact_8016604C",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 3324,
+          "virtual_address": 2148950092
+        }
+      ],
+      "total_code": 3324,
+      "total_data": 0,
+      "total_functions": 29
+    },
+    {
+      "name": "main/game/gs_range_801653CC_candidate_80166D48",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 252,
+          "virtual_address": 2148953416
+        }
+      ],
+      "total_code": 252,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/gs_range_801653CC_exact_80166E44",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 68,
+          "virtual_address": 2148953668
+        }
+      ],
+      "total_code": 68,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
       "name": "main/game/gs_range_801653CC",
       "sections": [
         {
           "name": ".text",
-          "size": 7284,
-          "virtual_address": 2148946892
+          "size": 440,
+          "virtual_address": 2148953736
         }
       ],
-      "total_code": 7284,
+      "total_code": 440,
       "total_data": 0,
-      "total_functions": 57
+      "total_functions": 1
     },
     {
       "name": "main/game/gs_dvd",

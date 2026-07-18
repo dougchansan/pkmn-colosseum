@@ -1480,8 +1480,32 @@ game/musyx_range_801652DC.c:
 game/sound/sound.c:
 	.text       start:0x801653BC end:0x801653CC
 
+game/gs_range_801653CC_prefix.c:
+	.text       start:0x801653CC end:0x801654E0
+
+game/gs_range_801653CC_exact_801654E0.c:
+	.text       start:0x801654E0 end:0x80165D0C
+
+game/gs_range_801653CC_candidate_80165D0C.c:
+	.text       start:0x80165D0C end:0x80165DEC
+
+game/gs_range_801653CC_exact_80165DEC.c:
+	.text       start:0x80165DEC end:0x80165FDC
+
+game/gs_range_801653CC_candidate_80165FDC.c:
+	.text       start:0x80165FDC end:0x8016604C
+
+game/gs_range_801653CC_exact_8016604C.c:
+	.text       start:0x8016604C end:0x80166D48
+
+game/gs_range_801653CC_candidate_80166D48.c:
+	.text       start:0x80166D48 end:0x80166E44
+
+game/gs_range_801653CC_exact_80166E44.c:
+	.text       start:0x80166E44 end:0x80166E88
+
 game/gs_range_801653CC.c:
-	.text       start:0x801653CC end:0x80167040
+	.text       start:0x80166E88 end:0x80167040
 
 game/gs_dvd.c:
 	.text       start:0x80167040 end:0x80168C64
