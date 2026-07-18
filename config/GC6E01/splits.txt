@@ -302,8 +302,20 @@ game/menu/menuColosseumBattle_prefix.c:
 game/menu/menuColosseumBattle_exact.c:
 	.text       start:0x80058754 end:0x80058DCC
 
+game/menu/menuColosseumBattle_pre_main.c:
+	.text       start:0x80058DCC end:0x800599AC
+
+game/menu/menuColosseumBattle_exact_800599AC.c:
+	.text       start:0x800599AC end:0x80059BDC
+
 game/menu/menuColosseumBattle.c:
-	.text       start:0x80058DCC end:0x8005D7F8
+	.text       start:0x80059BDC end:0x8005CEE8
+
+game/menu/menuColosseumBattle_exact_8005CEE8.c:
+	.text       start:0x8005CEE8 end:0x8005D184
+
+game/menu/menuColosseumBattle_tail.c:
+	.text       start:0x8005D184 end:0x8005D7F8
 
 game/menu/menu_bios_range_8005D7F8.c:
 	.text       start:0x8005D7F8 end:0x8005DA48

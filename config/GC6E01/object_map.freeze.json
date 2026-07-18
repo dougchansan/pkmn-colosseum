@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196121,
     "total_functions": 8603,
-    "total_units": 654
+    "total_units": 658
   },
   "topology_status": {
     "auto_units": 65,
-    "named_units": 589,
-    "source_backed_units": 574,
+    "named_units": 593,
+    "source_backed_units": 578,
     "auto_code": 0,
     "auto_data": 57787,
     "auto_functions": 0
@@ -1496,17 +1496,69 @@
       "total_functions": 7
     },
     {
+      "name": "main/game/menu/menuColosseumBattle_pre_main",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 3040,
+          "virtual_address": 2147847628
+        }
+      ],
+      "total_code": 3040,
+      "total_data": 0,
+      "total_functions": 4
+    },
+    {
+      "name": "main/game/menu/menuColosseumBattle_exact_800599AC",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 560,
+          "virtual_address": 2147850668
+        }
+      ],
+      "total_code": 560,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
       "name": "main/game/menu/menuColosseumBattle",
       "sections": [
         {
           "name": ".text",
-          "size": 18988,
-          "virtual_address": 2147847628
+          "size": 13068,
+          "virtual_address": 2147851228
         }
       ],
-      "total_code": 18988,
+      "total_code": 13068,
       "total_data": 0,
-      "total_functions": 26
+      "total_functions": 3
+    },
+    {
+      "name": "main/game/menu/menuColosseumBattle_exact_8005CEE8",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 668,
+          "virtual_address": 2147864296
+        }
+      ],
+      "total_code": 668,
+      "total_data": 0,
+      "total_functions": 6
+    },
+    {
+      "name": "main/game/menu/menuColosseumBattle_tail",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1652,
+          "virtual_address": 2147864964
+        }
+      ],
+      "total_code": 1652,
+      "total_data": 0,
+      "total_functions": 12
     },
     {
       "name": "main/game/menu/menu_bios_range_8005D7F8",
