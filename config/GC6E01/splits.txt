@@ -1920,7 +1920,13 @@ game/fight_seq.c:
 	.text       start:0x80211170 end:0x80211A00
 
 game/fight_range_80211A00.c:
-	.text       start:0x80211A00 end:0x8022A504
+	.text       start:0x80211A00 end:0x80214450
+
+game/fight_range_80211A00_exact_80214450.c:
+	.text       start:0x80214450 end:0x80216A58
+
+game/fight_range_80211A00_suffix_80216A58.c:
+	.text       start:0x80216A58 end:0x8022A504
 
 game/fight_range_8022A504.c:
 	.text       start:0x8022A504 end:0x8022B29C
