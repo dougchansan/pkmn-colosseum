@@ -731,6 +731,20 @@ config.libs = [
             ),
             Object(
                 Matching,
+                "musyx/runtime/synth_exact_8014A280.c",
+                mw_version="GC/1.3.2",
+                extra_cflags=["-use_lmw_stmw off", "-sdata 8", "-sdata2 8"],
+                progress_category="musyx",
+            ),
+            Object(
+                CodeCandidate,
+                "musyx/runtime/synth_suffix_8014B044.c",
+                mw_version="GC/1.3.2",
+                extra_cflags=["-use_lmw_stmw off", "-sdata 8", "-sdata2 8"],
+                progress_category="musyx",
+            ),
+            Object(
+                Matching,
                 "musyx/runtime/seq_api.c",
                 mw_version="GC/1.3.2",
                 extra_cflags=["-use_lmw_stmw off", "-sdata 8", "-sdata2 8"],

@@ -1418,7 +1418,13 @@ musyx/runtime/seq_candidate_801485FC.c:
 	.text       start:0x801485FC end:0x8014A23C
 
 musyx/runtime/synth.c:
-	.text       start:0x8014A23C end:0x8014D598
+	.text       start:0x8014A23C end:0x8014A280
+
+musyx/runtime/synth_exact_8014A280.c:
+	.text       start:0x8014A280 end:0x8014B044
+
+musyx/runtime/synth_suffix_8014B044.c:
+	.text       start:0x8014B044 end:0x8014D598
 
 musyx/runtime/seq_api.c:
 	.text       start:0x8014D598 end:0x8014D75C
