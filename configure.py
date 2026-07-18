@@ -1922,6 +1922,13 @@ config.libs = [
                 progress_category="game",
             ),
             Object(
+                Matching,
+                "game/fight_range_80211A00_exact_8023CA9C.c",
+                mw_version="GC/1.3",
+                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                progress_category="game",
+            ),
+            Object(
                 CodeCandidate,
                 "game/fight_trainer_ai_waza_value_prefix.c",
                 mw_version="GC/1.3",
