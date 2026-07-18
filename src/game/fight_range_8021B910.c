@@ -1,9 +1,8 @@
 /**
  * @file fight_range_8021B910.c
- * @brief Shared pure-C candidate suffix, 0x8021B910 - 0x8021D9C0.
+ * @brief Shared pure-C candidate range, 0x8021B910 - 0x8021C0F4.
  *
- * The recovered fight translation unit is intentionally compiled for both
- * candidate sides of the exact 0x8021A6CC - 0x8021B910 island. Only the
- * target object for this suffix is selected while it remains a candidate.
+ * This residual prefix retains fn_8021B910 and the compiler-table owner at
+ * 0x8021C090, both excluded from the exact 0x8021C0F4 - 0x8021CA00 island.
  */
 #include "src/game/fight_range_80211A00.c"
