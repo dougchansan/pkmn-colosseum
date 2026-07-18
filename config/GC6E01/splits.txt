@@ -1836,7 +1836,19 @@ dolphin/thp/THP_range_801E1B54.c:
 	.text       start:0x801E1B54 end:0x801E5548
 
 dolphin/thp/THPDec_range_801E5548.c:
-	.text       start:0x801E5548 end:0x801ECFE0
+	.text       start:0x801E5548 end:0x801E5A28
+
+dolphin/thp/THPDec_range_801E5A28.c:
+	.text       start:0x801E5A28 end:0x801E5DE4
+
+dolphin/thp/THPDec_range_801E5DE4.c:
+	.text       start:0x801E5DE4 end:0x801E6578
+
+dolphin/thp/THPDec_range_801E6578.c:
+	.text       start:0x801E6578 end:0x801ECAB0
+
+dolphin/thp/THPDec_range_801ECAB0.c:
+	.text       start:0x801ECAB0 end:0x801ECFE0
 
 game/field_range_801ECFE0.c:
 	.text       start:0x801ECFE0 end:0x801ED640

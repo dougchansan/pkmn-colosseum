@@ -94,6 +94,40 @@ typedef struct THPAudioDecodeInfo {
     s16 yn2;
 } THPAudioDecodeInfo;
 
+#if defined(THP_DECODER_EXTERNAL_DATA)
+/*
+ * The active data splits already own the decoder state and constants. Exact
+ * text-only decoder islands must reference those canonical symbols instead of
+ * emitting duplicate private sections from this shared SDK source.
+ */
+extern THPHuffmanTab *lbl_8047B4A0 ATTRIBUTE_ALIGN(32);
+extern THPHuffmanTab *lbl_8047B4C0 ATTRIBUTE_ALIGN(32);
+extern THPHuffmanTab *lbl_8047B4E0 ATTRIBUTE_ALIGN(32);
+extern THPHuffmanTab *lbl_8047B500 ATTRIBUTE_ALIGN(32);
+extern THPHuffmanTab *lbl_8047B520 ATTRIBUTE_ALIGN(32);
+extern THPHuffmanTab *lbl_8047B540 ATTRIBUTE_ALIGN(32);
+extern u8 *lbl_8047B544;
+extern u8 *lbl_8047B548;
+extern u16 *lbl_8047B54C;
+extern u8 *lbl_8047B5AC;
+extern THPCoeff *lbl_8046D618[6];
+extern THPFileInfo *lbl_8047B5B0;
+extern BOOL lbl_8047B5B4;
+
+#define Ydchuff lbl_8047B4A0
+#define Udchuff lbl_8047B4C0
+#define Vdchuff lbl_8047B4E0
+#define Yachuff lbl_8047B500
+#define Uachuff lbl_8047B520
+#define Vachuff lbl_8047B540
+#define __THPHuffmanBits lbl_8047B544
+#define __THPHuffmanSizeTab lbl_8047B548
+#define __THPHuffmanCodeTab lbl_8047B54C
+#define __THPWorkArea lbl_8047B5AC
+#define __THPMCUBuffer lbl_8046D618
+#define __THPInfo lbl_8047B5B0
+#define __THPInitFlag lbl_8047B5B4
+#else
 static THPHuffmanTab *Ydchuff ATTRIBUTE_ALIGN(32);
 static THPHuffmanTab *Udchuff ATTRIBUTE_ALIGN(32);
 static THPHuffmanTab *Vdchuff ATTRIBUTE_ALIGN(32);
@@ -115,9 +149,11 @@ static u8 *__THPWorkArea;
 static THPCoeff *__THPMCUBuffer[6];
 static THPFileInfo *__THPInfo;
 static BOOL __THPInitFlag = FALSE;
+#endif
 
 #define THPROUNDUP(a, b) ((((s32)(a)) + ((s32)(b)-1L)) / ((s32)(b)))
 
+#if !defined(THP_DECODER_EXTERNAL_DATA)
 static const u8 __THPJpegNaturalOrder[80] = {
     0,  1,  8,  16, 9,  2,  3,  10, 17, 24, 32, 25, 18, 11, 4,  5,  12, 19, 26, 33,
     40, 48, 41, 34, 27, 20, 13, 6,  7,  14, 21, 28, 35, 42, 49, 56, 57, 50, 43, 36,
@@ -127,25 +163,27 @@ static const u8 __THPJpegNaturalOrder[80] = {
 static const f64 __THPAANScaleFactor[8] = {
     1.0f, 1.387039845f, 1.306562965f, 1.175875602f, 1.0f, 0.785694958f, 0.541196100f, 0.275899379f,
 };
+#endif
 
-static void __THPSetupBuffers(void);
-static u8 __THPReadFrameHeader(void);
-static u8 __THPReadScaneHeader(void);
-static u8 __THPReadQuantizationTable(void);
-static u8 __THPReadHuffmanTableSpecification(void);
-static void __THPHuffGenerateSizeTable(void);
-static void __THPHuffGenerateCodeTable(void);
-static void __THPHuffGenerateDecoderTables(u8 tabIndex);
-static void __THPRestartDefinition(void);
-static void __THPDecompressYUV(void *tileY, void *tileU, void *tileV);
+void __THPSetupBuffers(void);
+u8 __THPReadFrameHeader(void);
+u8 __THPReadScaneHeader(void);
+u8 __THPReadQuantizationTable(void);
+u8 __THPReadHuffmanTableSpecification(void);
+void __THPHuffGenerateSizeTable(void);
+void __THPHuffGenerateCodeTable(void);
+void __THPHuffGenerateDecoderTables(u8 tabIndex);
+void __THPRestartDefinition(void);
+void __THPDecompressYUV(void *tileY, void *tileU, void *tileV);
 static void __THPDecompressiMCURow512x448(void);
 static void __THPDecompressiMCURow640x480(void);
 static void __THPDecompressiMCURowNxN(void);
 static void __THPHuffDecodeDCTCompY(register THPFileInfo *info, THPCoeff *block);
 static void __THPHuffDecodeDCTCompU(register THPFileInfo *info, THPCoeff *block);
 static void __THPHuffDecodeDCTCompV(register THPFileInfo *info, THPCoeff *block);
-static s32 __THPAudioGetNewSample(THPAudioDecodeInfo *info);
-static void __THPAudioInitialize(THPAudioDecodeInfo *info, u8 *ptr);
+void __THPPrepBitStream(void);
+s32 __THPAudioGetNewSample(THPAudioDecodeInfo *info);
+void __THPAudioInitialize(THPAudioDecodeInfo *info, u8 *ptr);
 
 #ifndef THP_DECODER_ONLY
 /* ===================================================================
@@ -1403,6 +1441,31 @@ BOOL fn_801E4778(const char *fileName, BOOL onMemory)
 #endif
 
 #ifndef THP_PLAYER_ONLY
+#if !defined(THP_DECODER_HEAD_ONLY) && \
+    !defined(THP_DECODER_QUANT_ONLY) && \
+    !defined(THP_DECODER_CORE_ONLY) && \
+    !defined(THP_DECODER_MIDDLE_ONLY) && \
+    !defined(THP_DECODER_TAIL_ONLY)
+#define THP_DECODER_BUILD_ALL
+#endif
+
+#if defined(THP_DECODER_BUILD_ALL) || defined(THP_DECODER_HEAD_ONLY)
+#define THP_DECODER_BUILD_HEAD
+#endif
+#if defined(THP_DECODER_BUILD_ALL) || defined(THP_DECODER_QUANT_ONLY)
+#define THP_DECODER_BUILD_QUANT
+#endif
+#if defined(THP_DECODER_BUILD_ALL) || defined(THP_DECODER_CORE_ONLY)
+#define THP_DECODER_BUILD_CORE
+#endif
+#if defined(THP_DECODER_BUILD_ALL) || defined(THP_DECODER_MIDDLE_ONLY)
+#define THP_DECODER_BUILD_MIDDLE
+#endif
+#if defined(THP_DECODER_BUILD_ALL) || defined(THP_DECODER_TAIL_ONLY)
+#define THP_DECODER_BUILD_TAIL
+#endif
+
+#if defined(THP_DECODER_BUILD_HEAD)
 s32 THPVideoDecode(void *file, void *tileY, void *tileU, void *tileV, void *work)
 {
     u8 all_done, status;
@@ -1558,7 +1621,7 @@ _err_exit:
     return errorCode;
 }
 
-static void __THPSetupBuffers(void)
+void __THPSetupBuffers(void)
 {
     u8 i;
     THPCoeff *buffer;
@@ -1570,7 +1633,7 @@ static void __THPSetupBuffers(void)
     }
 }
 
-static u8 __THPReadFrameHeader(void)
+u8 __THPReadFrameHeader(void)
 {
     u8 i, utmp8;
 
@@ -1605,7 +1668,7 @@ static u8 __THPReadFrameHeader(void)
     return 0;
 }
 
-static u8 __THPReadScaneHeader(void)
+u8 __THPReadScaneHeader(void)
 {
     u8 i, utmp8;
     __THPInfo->c += 2;
@@ -1639,8 +1702,10 @@ static u8 __THPReadScaneHeader(void)
     __THPInfo->components[2].predDC = 0;
     return 0;
 }
+#endif
 
-static u8 __THPReadQuantizationTable(void)
+#if defined(THP_DECODER_BUILD_QUANT)
+u8 __THPReadQuantizationTable(void)
 {
     u16 length, id, i, row, col;
     f32 q_temp[64];
@@ -1672,8 +1737,10 @@ static u8 __THPReadQuantizationTable(void)
 
     return 0;
 }
+#endif
 
-static u8 __THPReadHuffmanTableSpecification(void)
+#if defined(THP_DECODER_BUILD_CORE)
+u8 __THPReadHuffmanTableSpecification(void)
 {
     u8 t_class, id, i, tab_index;
     u16 length, num_Vij;
@@ -1712,7 +1779,7 @@ static u8 __THPReadHuffmanTableSpecification(void)
     return 0;
 }
 
-static void __THPHuffGenerateSizeTable(void)
+void __THPHuffGenerateSizeTable(void)
 {
     s32 p, l, i;
     p = 0;
@@ -1727,7 +1794,7 @@ static void __THPHuffGenerateSizeTable(void)
     __THPHuffmanSizeTab[p] = 0;
 }
 
-static void __THPHuffGenerateCodeTable(void)
+void __THPHuffGenerateCodeTable(void)
 {
     u8 si;
     u16 p, code;
@@ -1747,7 +1814,7 @@ static void __THPHuffGenerateCodeTable(void)
     }
 }
 
-static void __THPHuffGenerateDecoderTables(u8 tabIndex)
+void __THPHuffGenerateDecoderTables(u8 tabIndex)
 {
     s32 p, l;
     THPHuffmanTab *h;
@@ -1769,7 +1836,7 @@ static void __THPHuffGenerateDecoderTables(u8 tabIndex)
     h->maxCode[17] = 0xfffffL;
 }
 
-static void __THPRestartDefinition(void)
+void __THPRestartDefinition(void)
 {
     __THPInfo->RST = TRUE;
     __THPInfo->c += 2;
@@ -1777,7 +1844,9 @@ static void __THPRestartDefinition(void)
     __THPInfo->c += 2;
     __THPInfo->currMCU = __THPInfo->nMCU;
 }
+#endif
 
+#if defined(THP_DECODER_BUILD_MIDDLE)
 static inline void __THPGQRSetup(void)
 {
     register u32 tmp1, tmp2;
@@ -1817,7 +1886,9 @@ static inline void __THPGQRRestore(void)
     }
     // clang-format on
 }
+#endif
 
+#if defined(THP_DECODER_BUILD_CORE)
 void __THPPrepBitStream(void)
 {
     u32 *ptr;
@@ -1876,8 +1947,10 @@ void __THPPrepBitStream(void)
         Vachuff = &__THPInfo->huffmanTabs[VacTab];
     }
 }
+#endif
 
-static void __THPDecompressYUV(void *tileY, void *tileU, void *tileV)
+#if defined(THP_DECODER_BUILD_MIDDLE)
+void __THPDecompressYUV(void *tileY, void *tileU, void *tileV)
 {
     u16 currentY, targetY;
     __THPInfo->dLC[0] = tileY;
@@ -3680,7 +3753,9 @@ BOOL THPInit(void)
     __THPInitFlag = TRUE;
     return TRUE;
 }
+#endif
 
+#if defined(THP_DECODER_BUILD_TAIL)
 /* Reference SDK's THPAudioDecode. */
 u32 THPAudioDecode(s16 *audioBuffer, u8 *audioFrame, s32 flag)
 {
@@ -3827,7 +3902,7 @@ u32 THPAudioDecode(s16 *audioBuffer, u8 *audioFrame, s32 flag)
     return header->sampleSize;
 }
 
-static s32 __THPAudioGetNewSample(THPAudioDecodeInfo *info)
+s32 __THPAudioGetNewSample(THPAudioDecodeInfo *info)
 {
     s32 sample;
 
@@ -3850,7 +3925,7 @@ static s32 __THPAudioGetNewSample(THPAudioDecodeInfo *info)
     return sample;
 }
 
-static void __THPAudioInitialize(THPAudioDecodeInfo *info, u8 *ptr)
+void __THPAudioInitialize(THPAudioDecodeInfo *info, u8 *ptr)
 {
     info->encodeData = ptr;
     info->offsetNibbles = 2;
@@ -3858,4 +3933,12 @@ static void __THPAudioInitialize(THPAudioDecodeInfo *info, u8 *ptr)
     info->scale = (u8)((*(info->encodeData) & 0xF));
     info->encodeData++;
 }
+#endif
+
+#undef THP_DECODER_BUILD_ALL
+#undef THP_DECODER_BUILD_HEAD
+#undef THP_DECODER_BUILD_QUANT
+#undef THP_DECODER_BUILD_CORE
+#undef THP_DECODER_BUILD_MIDDLE
+#undef THP_DECODER_BUILD_TAIL
 #endif

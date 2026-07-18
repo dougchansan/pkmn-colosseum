@@ -252,7 +252,7 @@ u64 __mod2u(u32 dividendHi, u32 dividendLo, u32 divisorHi, u32 divisorLo) {
 /*
  * Left shift for a 64-bit value represented as (r3:r4) by r5.
  */
-u64 fn_800C4C50(u32 r3, u32 r4, u32 r5) {
+u64 __shl2i(u32 r3, u32 r4, u32 r5) {
     u32 r8 = 0x20 - r5;
     u32 r9 = r5 - 0x20;
     u32 r10 = 0;

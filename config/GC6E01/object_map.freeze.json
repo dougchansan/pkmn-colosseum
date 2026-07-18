@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196121,
     "total_functions": 8603,
-    "total_units": 770
+    "total_units": 774
   },
   "topology_status": {
     "auto_units": 65,
-    "named_units": 705,
-    "source_backed_units": 690,
+    "named_units": 709,
+    "source_backed_units": 694,
     "auto_code": 0,
     "auto_data": 57787,
     "auto_functions": 0
@@ -8788,13 +8788,65 @@
       "sections": [
         {
           "name": ".text",
-          "size": 31384,
+          "size": 1248,
           "virtual_address": 2149471560
         }
       ],
-      "total_code": 31384,
+      "total_code": 1248,
       "total_data": 0,
-      "total_functions": 22
+      "total_functions": 4
+    },
+    {
+      "name": "main/dolphin/thp/THPDec_range_801E5A28",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 956,
+          "virtual_address": 2149472808
+        }
+      ],
+      "total_code": 956,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/dolphin/thp/THPDec_range_801E5DE4",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1940,
+          "virtual_address": 2149473764
+        }
+      ],
+      "total_code": 1940,
+      "total_data": 0,
+      "total_functions": 6
+    },
+    {
+      "name": "main/dolphin/thp/THPDec_range_801E6578",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 25912,
+          "virtual_address": 2149475704
+        }
+      ],
+      "total_code": 25912,
+      "total_data": 0,
+      "total_functions": 8
+    },
+    {
+      "name": "main/dolphin/thp/THPDec_range_801ECAB0",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1328,
+          "virtual_address": 2149501616
+        }
+      ],
+      "total_code": 1328,
+      "total_data": 0,
+      "total_functions": 3
     },
     {
       "name": "main/game/field_range_801ECFE0",
