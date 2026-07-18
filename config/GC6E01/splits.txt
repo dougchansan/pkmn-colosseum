@@ -1667,7 +1667,10 @@ game/data/sdata2_8047E490.c:
 	.sdata2     start:0x8047E490 end:0x8047E538
 
 game/data/sdata2_8047E538.c:
-	.sdata2     start:0x8047E538 end:0x8047E658
+	.sdata2     start:0x8047E538 end:0x8047E618
+
+game/data/sdata2_8047E628.c:
+	.sdata2     start:0x8047E628 end:0x8047E658
 
 game/colosseum_battle_sdata2.c:
 	.sdata2     start:0x8047E658 end:0x8047E700
@@ -2094,6 +2097,7 @@ game/fight_range_8023565C_exact.c:
 
 game/fight_range_802373B0.c:
 	.text       start:0x802373B0 end:0x8023753C
+	.sdata2     start:0x8047E618 end:0x8047E628
 
 game/fight_range_8023753C_exact.c:
 	.text       start:0x8023753C end:0x80238060

@@ -4,13 +4,11 @@
 #define SDATA2 __declspec(section ".sdata2")
 
 /*
- * .sdata2 constants continuing directly after sdata2_8047E490, ending at
- * the existing game/colosseum_battle_sdata2 slice. Contains several small
+ * .sdata2 constants continuing directly after sdata2_8047E490 and ending
+ * before the private pool paired with fn_802373B0. Contains several small
  * u32 id/index tables (values in the 0x7500-0x76B5 range, likely message or
- * script ids), a couple of small byte/word constants, and a run of float
- * constants used by some rendering/animation path. Values are reproduced
- * verbatim from the shipped binary; the exact producing structs are not yet
- * identified.
+ * script ids) and a few byte/word constants. Values are reproduced verbatim
+ * from the shipped binary; the exact producing structs are not yet identified.
  */
 SDATA2 const u32 lbl_8047E538[6] = {
     0x00007650, 0x00007656, 0x00007596, 0x00007597, 0x00007651, 0x00007657,
@@ -35,21 +33,4 @@ SDATA2 const u16 lbl_8047E600 = 0x0102;
 SDATA2 const u8 lbl_8047E602 = 0x05;
 SDATA2 const u32 lbl_8047E604 = 0x01020304;
 SDATA2 const u8 lbl_8047E608 = 0x05;
-#pragma push
-#pragma force_active on
-SDATA2 const u8 sdata2_padding_8047E609[7] = { 0, 0, 0, 0, 0, 0, 0 };
-#pragma pop
 SDATA2 const f64 lbl_8047E610 = 4.503599627370496e+15;
-SDATA2 const f32 lbl_8047E618 = 1.0f;
-SDATA2 const f32 lbl_8047E61C = 0.0f;
-SDATA2 const f64 lbl_8047E620 = 4.503599627370496e+15;
-SDATA2 const u32 lbl_8047E628 = 0x005C0105;
-SDATA2 const u32 lbl_8047E62C = 0x004D008B;
-SDATA2 const f32 lbl_8047E630 = 0.5f;
-SDATA2 const f32 lbl_8047E634 = 0.8f;
-SDATA2 const f32 lbl_8047E638 = 0.1f;
-SDATA2 const f32 lbl_8047E63C = 0.3f;
-SDATA2 const f32 lbl_8047E640[2] = { 0.25f, 0.0f };
-SDATA2 const f32 lbl_8047E648 = 1.0f;
-SDATA2 const f32 lbl_8047E64C = 0.5f;
-SDATA2 const f32 lbl_8047E650[2] = { 0.25f, 0.0f };
