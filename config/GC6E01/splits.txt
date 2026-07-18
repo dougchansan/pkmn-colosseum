@@ -980,8 +980,11 @@ dolphin/si/SI_fn_800D104C.c:
 game/gs_range_800D1070.c:
 	.text       start:0x800D1070 end:0x800D13C4
 
+game/gs_render_util_exact_800D13C4.c:
+	.text       start:0x800D13C4 end:0x800D1B3C
+
 game/gs_render_util.c:
-	.text       start:0x800D13C4 end:0x800D3074
+	.text       start:0x800D1B3C end:0x800D3074
 
 game/gs_gfx.c:
 	.text       start:0x800D3074 end:0x800D3E4C

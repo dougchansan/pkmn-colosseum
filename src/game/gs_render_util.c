@@ -124,6 +124,7 @@ extern void fn_8016EB30(void);
 /* Forward declarations for functions defined later in this file */
 void fn_800D2B44(void* obj);
 
+#if defined(GS_RENDER_UTIL_LEGACY_PREFIX_800D104C)
 
 /* ==================================================================
  * fn_800D104C - GS render: set sampling rate
@@ -235,6 +236,9 @@ void fn_800D1070(u32 dtUnk) {
         idx++;
     }
 }
+#endif
+
+#if defined(GS_RENDER_UTIL_EXACT_800D13C4)
 
 /* ==================================================================
  * fn_800D13C4 - Empty function (likely stripped debug)
@@ -494,6 +498,9 @@ void* GScameraGetProjMatrixPtr(GSRenderCamera* camera) {
     return lbl_804001B0;
 }
 #pragma pop
+#endif
+
+#if defined(GS_RENDER_UTIL_SUFFIX_800D1B3C)
 
 /* ==================================================================
  * fn_800D1B3C - GS render: update transform and return matrix ptr
@@ -1265,3 +1272,4 @@ u32 fn_800D3068(void) {
     GSRenderState* rs = (GSRenderState*)lbl_8047AA80;
     return rs->renderWidth;
 }
+#endif
