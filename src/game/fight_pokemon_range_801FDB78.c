@@ -77,6 +77,8 @@ u8 fn_801FCCAC(u8* ptr);
 void fightTrainerSetStatus(void);
 void fightTrainerGetStatus(void);
 
+#if !defined(FIGHT_POKEMON_EXACT_80201248_ONLY)
+
 /* 0x801FDB78 | size: 0x5F0 | large */
 void fightOutPokemonGetRndStatus(void) {
     extern void fn_80119ED0();
@@ -3576,6 +3578,10 @@ void fightOutPokemonIsJoutaiKie(void) {
     return;
 }
 
+#endif
+
+#if !defined(FIGHT_POKEMON_CANDIDATE_801FDB78_ONLY)
+
 /* 0x80201248 | size: 0xF8 */
 u8 fightOutPokemonGetFightOutPokemonEnemyOumuWazaDataIdAry(void* context, u16* output) {
     extern u8 fightOutPokemonEnemyCheckValid(void* entry);
@@ -3776,3 +3782,5 @@ void* fightOutPokemonIsHpMantan(void* arg0) {
     }
     return result;
 }
+
+#endif

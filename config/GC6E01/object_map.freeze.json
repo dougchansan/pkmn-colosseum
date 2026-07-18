@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196121,
     "total_functions": 8603,
-    "total_units": 744
+    "total_units": 745
   },
   "topology_status": {
     "auto_units": 65,
-    "named_units": 679,
-    "source_backed_units": 664,
+    "named_units": 680,
+    "source_backed_units": 665,
     "auto_code": 0,
     "auto_data": 57787,
     "auto_functions": 0
@@ -8957,13 +8957,26 @@
       "sections": [
         {
           "name": ".text",
-          "size": 15340,
+          "size": 14032,
           "virtual_address": 2149571448
         }
       ],
-      "total_code": 15340,
+      "total_code": 14032,
       "total_data": 0,
-      "total_functions": 28
+      "total_functions": 20
+    },
+    {
+      "name": "main/game/fight_pokemon_exact_80201248",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1308,
+          "virtual_address": 2149585480
+        }
+      ],
+      "total_code": 1308,
+      "total_data": 0,
+      "total_functions": 8
     },
     {
       "name": "main/game/fight_range_80201764",

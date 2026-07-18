@@ -1875,7 +1875,10 @@ game/fight_trainer_db_range_801FBD10.c:
 	.text       start:0x801FBD10 end:0x801FDB78
 
 game/fight_pokemon_range_801FDB78.c:
-	.text       start:0x801FDB78 end:0x80201764
+	.text       start:0x801FDB78 end:0x80201248
+
+game/fight_pokemon_exact_80201248.c:
+	.text       start:0x80201248 end:0x80201764
 
 game/fight_range_80201764.c:
 	.text       start:0x80201764 end:0x80202810
