@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196121,
     "total_functions": 8603,
-    "total_units": 730
+    "total_units": 732
   },
   "topology_status": {
     "auto_units": 65,
-    "named_units": 665,
-    "source_backed_units": 650,
+    "named_units": 667,
+    "source_backed_units": 652,
     "auto_code": 0,
     "auto_data": 57787,
     "auto_functions": 0
@@ -5549,13 +5549,39 @@
       "sections": [
         {
           "name": ".text",
-          "size": 4324,
+          "size": 1684,
           "virtual_address": 2148566400
         }
       ],
-      "total_code": 4324,
+      "total_code": 1684,
       "total_data": 0,
-      "total_functions": 8
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/win_sprite_exact_80108C14",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1972,
+          "virtual_address": 2148568084
+        }
+      ],
+      "total_code": 1972,
+      "total_data": 0,
+      "total_functions": 6
+    },
+    {
+      "name": "main/game/win_sprite_suffix_801093C8",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 668,
+          "virtual_address": 2148570056
+        }
+      ],
+      "total_code": 668,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/game/menu_offscreen",

@@ -1161,7 +1161,13 @@ game/win_sequence.c:
 	.text       start:0x80106F98 end:0x80108580
 
 game/win_sprite.c:
-	.text       start:0x80108580 end:0x80109664
+	.text       start:0x80108580 end:0x80108C14
+
+game/win_sprite_exact_80108C14.c:
+	.text       start:0x80108C14 end:0x801093C8
+
+game/win_sprite_suffix_801093C8.c:
+	.text       start:0x801093C8 end:0x80109664
 
 game/menu_offscreen.c:
 	.text       start:0x80109664 end:0x80109894

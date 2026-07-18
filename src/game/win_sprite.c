@@ -323,6 +323,7 @@ typedef struct WinSpriteVec3 {
 
 void winSpriteDrawTexture(u8* context, WinSpriteDrawNode* sprite);
 
+#if defined(WIN_SPRITE_EXACT_80108C14)
 #pragma push
 #pragma peephole off
 void winSpriteDraw(u8* context, WinSpriteDrawNode* sprite)
@@ -474,8 +475,9 @@ void winSpriteDraw(u8* context, WinSpriteDrawNode* sprite)
     }
 }
 #pragma pop
+#endif
 
-
+#if defined(WIN_SPRITE_PREFIX_80108580)
 void winSpriteDrawTexture(u8* context, WinSpriteDrawNode* sprite)
 {
     f32* tex_v = (f32*)(lbl_80404B68 + 0x48);
@@ -589,8 +591,9 @@ void winSpriteDrawTexture(u8* context, WinSpriteDrawNode* sprite)
     }
     fn_800D6728();
 }
+#endif
 
-
+#if defined(WIN_SPRITE_EXACT_80108C14)
 /* 0x801091F4 | 0x2C | nc_getter_s8 -- returns 1 if bit 1 of ptr[0x4] is set */
 #pragma push
 #pragma peephole off
@@ -688,7 +691,9 @@ void winSpriteInit(void) {
     }
 }
 #pragma pop
+#endif
 
+#if defined(WIN_SPRITE_SUFFIX_801093C8)
 /* 0x801093C8 | 0x29C */
 #pragma push
 #pragma optimization_level 0
@@ -697,3 +702,4 @@ void fn_801093C8(void) {
     /* TODO: match -- 668 bytes at 0x801093C8 */
 }
 #pragma pop
+#endif
