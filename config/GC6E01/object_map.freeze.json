@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196121,
     "total_functions": 8603,
-    "total_units": 694
+    "total_units": 696
   },
   "topology_status": {
     "auto_units": 65,
-    "named_units": 629,
-    "source_backed_units": 614,
+    "named_units": 631,
+    "source_backed_units": 616,
     "auto_code": 0,
     "auto_data": 57787,
     "auto_functions": 0
@@ -8723,13 +8723,39 @@
       "sections": [
         {
           "name": ".text",
-          "size": 13168,
+          "size": 5352,
           "virtual_address": 2149858520
         }
       ],
-      "total_code": 13168,
+      "total_code": 5352,
       "total_data": 0,
-      "total_functions": 20
+      "total_functions": 10
+    },
+    {
+      "name": "main/game/fight_trainer_ai_waza_value_exact_802451C0",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 3588,
+          "virtual_address": 2149863872
+        }
+      ],
+      "total_code": 3588,
+      "total_data": 0,
+      "total_functions": 9
+    },
+    {
+      "name": "main/game/fight_trainer_ai_waza_value_candidate_80245FC4",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 4228,
+          "virtual_address": 2149867460
+        }
+      ],
+      "total_code": 4228,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/game/fight_trainer_ai_waza_value_exact_80247048",

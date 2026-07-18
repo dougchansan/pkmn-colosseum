@@ -1821,7 +1821,13 @@ game/fight_trainer_ai_waza_value_exact_80241B70.c:
 	.text       start:0x80241B70 end:0x80243CD8
 
 game/fight_trainer_ai_waza_value_middle.c:
-	.text       start:0x80243CD8 end:0x80247048
+	.text       start:0x80243CD8 end:0x802451C0
+
+game/fight_trainer_ai_waza_value_exact_802451C0.c:
+	.text       start:0x802451C0 end:0x80245FC4
+
+game/fight_trainer_ai_waza_value_candidate_80245FC4.c:
+	.text       start:0x80245FC4 end:0x80247048
 
 game/fight_trainer_ai_waza_value_exact_80247048.c:
 	.text       start:0x80247048 end:0x8024A170
