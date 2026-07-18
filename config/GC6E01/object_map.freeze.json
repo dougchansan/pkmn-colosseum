@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196121,
     "total_functions": 8603,
-    "total_units": 663
+    "total_units": 669
   },
   "topology_status": {
     "auto_units": 65,
-    "named_units": 598,
-    "source_backed_units": 583,
+    "named_units": 604,
+    "source_backed_units": 589,
     "auto_code": 0,
     "auto_data": 57787,
     "auto_functions": 0
@@ -1470,17 +1470,69 @@
       "total_functions": 38
     },
     {
+      "name": "main/game/menu/menuColosseumBattle_exact_80057B34",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 360,
+          "virtual_address": 2147842868
+        }
+      ],
+      "total_code": 360,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/menu/menuColosseumBattle_candidate_80057C9C",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 332,
+          "virtual_address": 2147843228
+        }
+      ],
+      "total_code": 332,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/menu/menuColosseumBattle_exact_80057DE8",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 136,
+          "virtual_address": 2147843560
+        }
+      ],
+      "total_code": 136,
+      "total_data": 0,
+      "total_functions": 2
+    },
+    {
+      "name": "main/game/menu/menuColosseumBattle_candidate_80057E70",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 736,
+          "virtual_address": 2147843696
+        }
+      ],
+      "total_code": 736,
+      "total_data": 0,
+      "total_functions": 2
+    },
+    {
       "name": "main/game/menu/menuColosseumBattle_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 3104,
-          "virtual_address": 2147842868
+          "size": 1540,
+          "virtual_address": 2147844432
         }
       ],
-      "total_code": 3104,
+      "total_code": 1540,
       "total_data": 0,
-      "total_functions": 7
+      "total_functions": 1
     },
     {
       "name": "main/game/menu/menuColosseumBattle_exact",
@@ -1496,17 +1548,43 @@
       "total_functions": 7
     },
     {
+      "name": "main/game/menu/menuColosseumBattle_candidate_80058DCC",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 316,
+          "virtual_address": 2147847628
+        }
+      ],
+      "total_code": 316,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/menu/menuColosseumBattle_exact_80058F08",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 300,
+          "virtual_address": 2147847944
+        }
+      ],
+      "total_code": 300,
+      "total_data": 0,
+      "total_functions": 2
+    },
+    {
       "name": "main/game/menu/menuColosseumBattle_pre_main",
       "sections": [
         {
           "name": ".text",
-          "size": 3040,
-          "virtual_address": 2147847628
+          "size": 2424,
+          "virtual_address": 2147848244
         }
       ],
-      "total_code": 3040,
+      "total_code": 2424,
       "total_data": 0,
-      "total_functions": 4
+      "total_functions": 1
     },
     {
       "name": "main/game/menu/menuColosseumBattle_exact_800599AC",

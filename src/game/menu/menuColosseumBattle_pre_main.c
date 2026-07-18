@@ -1,6 +1,6 @@
 /**
  * @file menuColosseumBattle_pre_main.c
- * @brief menuColosseumBattle.cpp pre-main range, 0x80058DCC - 0x800599AC.
+ * @brief menuColosseumBattle.cpp pre-main candidate, 0x80059034 - 0x800599AC.
  */
 #include "dolphin/types.h"
 #include "game/data/rodata_80267398.h"
@@ -223,6 +223,7 @@ extern void fadeSet(s32, f32);
 extern s32 fn_80056A78(void);
 extern void fn_80056A80(void);
 extern s32 fn_80057C9C(void*, void*, s32*);
+extern void* fn_80058F40(void*, s32, s32*);
 extern void fn_80056B74(s32, s32);
 extern void fn_80054760(s32, s32);
 extern void fn_80057A38(void);
@@ -273,62 +274,6 @@ extern u8 lbl_803A9A08[];
 extern u8 lbl_803A9A18[];
 
 /* ===== Function implementations ===== */
-
-/* Address: 0x80058F08 | Size: 0x38 */
-s32 fn_80058F08(s32* partyIndex, s32 cursor) {
-    const ColosseumRosterRow* row;
-
-    if (cursor < 0 || cursor >= 7) {
-        return 2;
-    }
-
-    row = &lbl_802677D0[cursor];
-    *partyIndex = row->partyIndex;
-    return row->menuId;
-}
-
-/* Address: 0x80058F40 | Size: 0xF4 */
-#pragma push
-#pragma peephole off
-void* fn_80058F40(void* dflt, s32 dir, s32* state) {
-    extern void* heroGetStatus(void*, s32, u16);
-    void* hero;
-    s32 i;
-
-    if (state[0] != 0) {
-        return dflt;
-    }
-    if (dir == 1) {
-        for (i = state[1] - 1; i >= 0; i--) {
-            u32 v;
-            hero = heroGetStatus(NULL, 3, (u16)i);
-            v = pokemonCheckValid(hero);
-            if (v != 0) {
-                break;
-            }
-        }
-        if (i >= 0) {
-            state[1] = i;
-            return hero;
-        }
-    }
-    if (dir == 2) {
-        for (i = state[1] + 1; i < 6; i++) {
-            u32 v;
-            hero = heroGetStatus(NULL, 3, (u16)i);
-            v = pokemonCheckValid(hero);
-            if (v != 0) {
-                break;
-            }
-        }
-        if (i < 6) {
-            state[1] = i;
-            return hero;
-        }
-    }
-    return dflt;
-}
-#pragma pop
 
 /* Handle an action selected for one party slot. */
 s32 fn_80059034(s32 slot)
