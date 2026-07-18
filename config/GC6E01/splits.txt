@@ -296,8 +296,14 @@ game/menu/menuCB_range_8005344C.c:
 game/menu/menuCB_range_80055E38.c:
 	.text       start:0x80055E38 end:0x80057B34
 
+game/menu/menuColosseumBattle_prefix.c:
+	.text       start:0x80057B34 end:0x80058754
+
+game/menu/menuColosseumBattle_exact.c:
+	.text       start:0x80058754 end:0x80058DCC
+
 game/menu/menuColosseumBattle.c:
-	.text       start:0x80057B34 end:0x8005D7F8
+	.text       start:0x80058DCC end:0x8005D7F8
 
 game/menu/menu_bios_range_8005D7F8.c:
 	.text       start:0x8005D7F8 end:0x8005DA48
