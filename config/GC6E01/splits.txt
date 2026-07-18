@@ -978,7 +978,10 @@ game/gs_gfx_dl.c:
 	.text       start:0x800DA578 end:0x800DB098
 
 game/gs_gfx_range_800DB098.c:
-	.text       start:0x800DB098 end:0x800DC298
+	.text       start:0x800DB098 end:0x800DB890
+
+game/gs_gfx_range_800DB890.c:
+	.text       start:0x800DB890 end:0x800DC298
 
 game/gs_gfx_backfb.c:
 	.text       start:0x800DC298 end:0x800DC560
