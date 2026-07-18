@@ -9,6 +9,12 @@
 #include "dolphin/types.h"
 #include "game/menu/menu_middle.h"
 
+#if !defined(MENU_MIDDLE_RESIDUAL_80069C0C_ONLY) && \
+    !defined(MENU_MIDDLE_EXACT_8006A65C_ONLY) && \
+    !defined(MENU_MIDDLE_RESIDUAL_8006A824_ONLY)
+#define MENU_MIDDLE_ALL
+#endif
+
 /* ===== External function declarations ===== */
 extern void menuSubGetPokemonSexForDisp();
 extern void menuSeqBiosGetPtr();
@@ -242,6 +248,7 @@ void fn_80070D84(void);
 /* ===== Function implementations ===== */
 
 
+#if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_RESIDUAL_80069C0C_ONLY)
 /* 0x80069C0C | size: 0xA50 */
 void fn_80069C0C(void* arg0) {
     extern void fn_8006A7E0();
@@ -957,8 +964,10 @@ void fn_80069C0C(void* arg0) {
     MENU_MIDDLE_U8_001C(r31)->unk_001C = r0;
     return;
 }
+#endif
 
 
+#if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_EXACT_8006A65C_ONLY)
 /* 0x8006A65C | size: 0xBC */
 #pragma push
 #pragma peephole off
@@ -1078,7 +1087,9 @@ u32 fn_8006A814(u32 r3) {
 void fn_8006A81C(u32 r3, u32 r4) {
     MENU_MIDDLE_U32_0024(r3)->unk_0024 = r4;
 }
+#endif
 
+#if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_RESIDUAL_8006A824_ONLY)
 /* 0x8006A824 | size: 0x16C */
 #pragma push
 #pragma peephole off
@@ -8215,3 +8226,4 @@ void fn_80070D84(void) {
 
     return;
 }
+#endif

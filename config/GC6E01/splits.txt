@@ -378,8 +378,14 @@ game/menu/menuCB_range_exact_80069A08.c:
 game/menu/menuCB_Battle.c:
 	.text       start:0x80069A60 end:0x80069C0C
 
-game/menu/menu_middle.c:
-	.text       start:0x80069C0C end:0x8007109C
+game/menu/menu_middle_range_80069C0C.c:
+	.text       start:0x80069C0C end:0x8006A65C
+
+game/menu/menu_middle_exact_8006A65C.c:
+	.text       start:0x8006A65C end:0x8006A824
+
+game/menu/menu_middle_range_8006A824.c:
+	.text       start:0x8006A824 end:0x8007109C
 
 game/menu/menu_range_8007109C.c:
 	.text       start:0x8007109C end:0x8007C260
