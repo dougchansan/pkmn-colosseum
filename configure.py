@@ -790,6 +790,20 @@ config.libs = [
             ),
             Object(
                 CodeCandidate,
+                "musyx/musyx_candidate_80157280.c",
+                mw_version="GC/1.3.2",
+                extra_cflags=["-use_lmw_stmw off", "-sdata 8", "-sdata2 8"],
+                progress_category="musyx",
+            ),
+            Object(
+                Matching,
+                "musyx/musyx_hw_exact_80162858.c",
+                mw_version="GC/1.3.2",
+                extra_cflags=["-use_lmw_stmw off", "-sdata 8", "-sdata2 8"],
+                progress_category="musyx",
+            ),
+            Object(
+                CodeCandidate,
                 "musyx/musyx_range_80157280.c",
                 mw_version="GC/1.3.2",
                 extra_cflags=["-use_lmw_stmw off", "-sdata 8", "-sdata2 8"],

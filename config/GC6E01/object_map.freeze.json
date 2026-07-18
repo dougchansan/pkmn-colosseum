@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196121,
     "total_functions": 8603,
-    "total_units": 745
+    "total_units": 747
   },
   "topology_status": {
     "auto_units": 65,
-    "named_units": 680,
-    "source_backed_units": 665,
+    "named_units": 682,
+    "source_backed_units": 667,
     "auto_code": 0,
     "auto_data": 57787,
     "auto_functions": 0
@@ -7562,17 +7562,43 @@
       "total_functions": 49
     },
     {
+      "name": "main/musyx/musyx_candidate_80157280",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 46552,
+          "virtual_address": 2148889216
+        }
+      ],
+      "total_code": 46552,
+      "total_data": 0,
+      "total_functions": 122
+    },
+    {
+      "name": "main/musyx/musyx_hw_exact_80162858",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1880,
+          "virtual_address": 2148935768
+        }
+      ],
+      "total_code": 1880,
+      "total_data": 0,
+      "total_functions": 24
+    },
+    {
       "name": "main/musyx/musyx_range_80157280",
       "sections": [
         {
           "name": ".text",
-          "size": 57436,
-          "virtual_address": 2148889216
+          "size": 9004,
+          "virtual_address": 2148937648
         }
       ],
-      "total_code": 57436,
+      "total_code": 9004,
       "total_data": 0,
-      "total_functions": 197
+      "total_functions": 51
     },
     {
       "name": "main/game/musyx_range_801652DC",
