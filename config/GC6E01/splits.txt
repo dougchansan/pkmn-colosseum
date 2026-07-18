@@ -1743,7 +1743,10 @@ game/field_range_801CA7EC.c:
 	.text       start:0x801CA7EC end:0x801CB180
 
 game/field_range_801CB180.c:
-	.text       start:0x801CB180 end:0x801D0AA0
+	.text       start:0x801CB180 end:0x801D0314
+
+game/field_exact_801D0314.c:
+	.text       start:0x801D0314 end:0x801D0AA0
 
 game/battle/battle_range_801D0AA0.c:
 	.text       start:0x801D0AA0 end:0x801D1338
