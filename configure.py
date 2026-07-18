@@ -1992,6 +1992,20 @@ config.libs = [
                 progress_category="game",
             ),
             Object(
+                Matching,
+                "game/fight_trainer_ai_waza_value_exact_8024A664.c",
+                mw_version="GC/1.3",
+                extra_cflags=["-O4,s", "-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                progress_category="game",
+            ),
+            Object(
+                CodeCandidate,
+                "game/fight_trainer_ai_waza_value_candidate_8024B474.c",
+                mw_version="GC/1.3",
+                extra_cflags=["-O4,s", "-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                progress_category="game",
+            ),
+            Object(
                 CodeCandidate,
                 "game/fight_trainer_ai_irekae.c",
                 mw_version="GC/1.3",
