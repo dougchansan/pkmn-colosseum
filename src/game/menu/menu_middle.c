@@ -16,7 +16,15 @@
     !defined(MENU_MIDDLE_EXACT_8006AC28_ONLY) && \
     !defined(MENU_MIDDLE_RESIDUAL_8006ACCC_ONLY) && \
     !defined(MENU_MIDDLE_EXACT_8006ADB4_ONLY) && \
-    !defined(MENU_MIDDLE_RESIDUAL_8006AE18_ONLY)
+    !defined(MENU_MIDDLE_RESIDUAL_8006AE18_ONLY) && \
+    !defined(MENU_MIDDLE_EXACT_8006AEEC_ONLY) && \
+    !defined(MENU_MIDDLE_RESIDUAL_8006AF44_ONLY) && \
+    !defined(MENU_MIDDLE_EXACT_8006AFC4_ONLY) && \
+    !defined(MENU_MIDDLE_RESIDUAL_8006AFE4_ONLY) && \
+    !defined(MENU_MIDDLE_EXACT_8006B09C_ONLY) && \
+    !defined(MENU_MIDDLE_RESIDUAL_8006B154_ONLY) && \
+    !defined(MENU_MIDDLE_EXACT_8006B1C0_ONLY) && \
+    !defined(MENU_MIDDLE_RESIDUAL_8006B2A4_ONLY)
 #define MENU_MIDDLE_ALL
 #endif
 
@@ -1475,8 +1483,9 @@ ret_zero:
     return 0;
 }
 #pragma pop
+#endif
 
-
+#if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_EXACT_8006AEEC_ONLY)
 /* 0x8006AEEC | size: 0x58 */
 #pragma push
 #pragma scheduling off
@@ -1496,8 +1505,9 @@ u8* fn_8006AEEC(void) {
     return p + 0xb44;
 }
 #pragma pop
+#endif
 
-
+#if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_RESIDUAL_8006AF44_ONLY)
 /* 0x8006AF44 | size: 0x80 */
 void fn_8006AF44(u8* base, void* src) {
     if (src != 0) {
@@ -1510,8 +1520,9 @@ void fn_8006AF44(u8* base, void* src) {
     }
     MENU_MIDDLE_NEG_U8_C98B(base + 0x10000)->unk_C98B = 0;
 }
+#endif
 
-
+#if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_EXACT_8006AFC4_ONLY)
 /* 0x8006AFC4 | size: 0x20 */
 u8* fn_8006AFC4(u8* p) {
     p += 0x10000;
@@ -1520,7 +1531,9 @@ u8* fn_8006AFC4(u8* p) {
     }
     return 0;
 }
+#endif
 
+#if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_RESIDUAL_8006AFE4_ONLY)
 /* 0x8006AFE4 | size: 0xB8 */
 #pragma peephole off
 u8* fn_8006AFE4(s32 id) {
@@ -1550,8 +1563,9 @@ u8* fn_8006AFE4(s32 id) {
     return (u8*)(status + offset + 0x24);
 }
 #pragma peephole reset
+#endif
 
-
+#if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_EXACT_8006B09C_ONLY)
 /* 0x8006B09C | size: 0x5C */
 #pragma push
 #pragma peephole off
@@ -1580,8 +1594,9 @@ u8* fn_8006B0F8(s32 index) {
     return savedataGetStatus(0, 0xE) + index * 0x1660 + 0x50;
 }
 #pragma pop
+#endif
 
-
+#if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_RESIDUAL_8006B154_ONLY)
 /* 0x8006B154 | size: 0x6C */
 #pragma push
 #pragma peephole off
@@ -1606,8 +1621,9 @@ s32 menuCBBios_ControlerIDtoPortID(s32 id) {
     return -1;
 }
 #pragma pop
+#endif
 
-
+#if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_EXACT_8006B1C0_ONLY)
 /* 0x8006B1C0 | size: 0x14 */
 u32 fn_8006B1C0(s32 i) {
     return ((u32*)lbl_80267DD8)[i];
@@ -1662,8 +1678,9 @@ valid_slot:
     return *(u8*)(r3 + (r31 + (1 << 16)) + r30 * 2 - 0x3425);
 }
 #pragma pop
+#endif
 
-
+#if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_RESIDUAL_8006B2A4_ONLY)
 /* 0x8006B2A4 | size: 0xB0 */
 #pragma push
 #pragma peephole off
