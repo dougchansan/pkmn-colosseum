@@ -1481,6 +1481,20 @@ config.libs = [
                 progress_category="game",
             ),
             Object(
+                Matching,
+                "game/gs_model_anim_exact_800EC4D0.c",
+                mw_version="GC/1.3",
+                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                progress_category="game",
+            ),
+            Object(
+                CodeCandidate,
+                "game/gs_model_anim_suffix_800ED4D4.c",
+                mw_version="GC/1.3",
+                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                progress_category="game",
+            ),
+            Object(
                 CodeCandidate,
                 "game/gs_part.c",
                 mw_version="GC/1.3",

@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196121,
     "total_functions": 8603,
-    "total_units": 708
+    "total_units": 710
   },
   "topology_status": {
     "auto_units": 65,
-    "named_units": 643,
-    "source_backed_units": 628,
+    "named_units": 645,
+    "source_backed_units": 630,
     "auto_code": 0,
     "auto_data": 57787,
     "auto_functions": 0
@@ -5107,13 +5107,39 @@
       "sections": [
         {
           "name": ".text",
-          "size": 8804,
+          "size": 1508,
           "virtual_address": 2148450028
         }
       ],
-      "total_code": 8804,
+      "total_code": 1508,
       "total_data": 0,
-      "total_functions": 46
+      "total_functions": 15
+    },
+    {
+      "name": "main/game/gs_model_anim_exact_800EC4D0",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 4100,
+          "virtual_address": 2148451536
+        }
+      ],
+      "total_code": 4100,
+      "total_data": 0,
+      "total_functions": 21
+    },
+    {
+      "name": "main/game/gs_model_anim_suffix_800ED4D4",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 3196,
+          "virtual_address": 2148455636
+        }
+      ],
+      "total_code": 3196,
+      "total_data": 0,
+      "total_functions": 10
     },
     {
       "name": "main/game/gs_part",

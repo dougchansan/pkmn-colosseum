@@ -1059,7 +1059,13 @@ game/gs_model_bound.c:
 	.text       start:0x800EB268 end:0x800EBEEC
 
 game/gs_model_anim.c:
-	.text       start:0x800EBEEC end:0x800EE150
+	.text       start:0x800EBEEC end:0x800EC4D0
+
+game/gs_model_anim_exact_800EC4D0.c:
+	.text       start:0x800EC4D0 end:0x800ED4D4
+
+game/gs_model_anim_suffix_800ED4D4.c:
+	.text       start:0x800ED4D4 end:0x800EE150
 
 game/gs_part.c:
 	.text       start:0x800EE150 end:0x800EE928
