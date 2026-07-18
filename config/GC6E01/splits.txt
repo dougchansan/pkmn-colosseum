@@ -661,7 +661,13 @@ dolphin/pad/PAD.c:
 	.text       start:0x800AA4D4 end:0x800AC02C
 
 dolphin/sdk_range_800AC02C.c:
-	.text       start:0x800AC02C end:0x800B71F0
+	.text       start:0x800AC02C end:0x800ACBFC
+
+dolphin/sdk_exact_800ACBFC.c:
+	.text       start:0x800ACBFC end:0x800AE3F0
+
+dolphin/sdk_range_800AE3F0.c:
+	.text       start:0x800AE3F0 end:0x800B71F0
 
 dolphin/gx/GX_fn_800B71F0.c:
 	.text       start:0x800B71F0 end:0x800B71FC

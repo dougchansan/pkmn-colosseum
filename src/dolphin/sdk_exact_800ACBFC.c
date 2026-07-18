@@ -1,6 +1,6 @@
 /**
- * @file sdk_range_800AC02C.c
- * @brief Dolphin SDK prefix, 0x800AC02C - 0x800ACBFC (28 functions).
+ * @file sdk_exact_800ACBFC.c
+ * @brief Exact Dolphin AR size probe, 0x800ACBFC - 0x800AE3F0 (1 function).
  *
  * Mechanical address partition of the recovered Dolphin SDK source.
  */
@@ -398,34 +398,6 @@ extern DSPTaskInfo* DSPAddTask(DSPTaskInfo* task);
 extern void InitCallback(void* task);
 extern void DoneCallback(void* task);
 
-AIDCallback AIRegisterDMACallback(AIDCallback callback) {
-    AIDCallback old = lbl_8047A8CC;
-    BOOL enabled;
-
-    enabled = OSDisableInterrupts();
-    lbl_8047A8CC = callback;
-    OSRestoreInterrupts(enabled);
-    return old;
-}
-
-void AIInitDMA(u32 addr, u32 length) {
-    BOOL enabled;
-
-    enabled = OSDisableInterrupts();
-    __DSPRegs[24] = (__DSPRegs[24] & ~0x3ff) | (addr >> 16);
-    __DSPRegs[25] = (__DSPRegs[25] & ~0xffe0) | (addr & 0xffff);
-    __DSPRegs[27] = (__DSPRegs[27] & ~0x7fff) | (u16)(length >> 5);
-    OSRestoreInterrupts(enabled);
-}
-
-void AIStartDMA(void) {
-    __DSPRegs[27] |= 0x8000;
-}
-
-void AIStopDMA(void) {
-    __DSPRegs[27] &= ~0x8000;
-}
-
 u32 AIGetStreamPlayState(void);
 u32 AIGetStreamSampleRate(void);
 u32 AIGetStreamVolLeft(void);
@@ -434,210 +406,22 @@ void AISetStreamVolLeft(u32 volume);
 void AISetStreamVolRight(u32 volume);
 void __AI_SRC_INIT(void);
 
-void AISetStreamPlayState(u32 state) {
-    BOOL enabled;
-    u32 volumeRight;
-    u32 volumeLeft;
-
-    if (state != AIGetStreamPlayState()) {
-        if (AIGetStreamSampleRate() == 0 && state == 1) {
-            volumeRight = AIGetStreamVolRight();
-            volumeLeft = AIGetStreamVolLeft();
-            AISetStreamVolRight(0);
-            AISetStreamVolLeft(0);
-            enabled = OSDisableInterrupts();
-            __AI_SRC_INIT();
-            __AIRegs[0] = (__AIRegs[0] & ~0x20) | 0x20;
-            __AIRegs[0] = (__AIRegs[0] & ~1) | 1;
-            OSRestoreInterrupts(enabled);
-            AISetStreamVolLeft(volumeRight);
-            AISetStreamVolRight(volumeLeft);
-        } else {
-            __AIRegs[0] = (__AIRegs[0] & ~1) | state;
-        }
-    }
-}
-
-u32 AIGetStreamPlayState(void) {
-    return AI_REGS->control & 1;
-}
-
 u32 AIGetDSPSampleRate(void);
-
-void AISetDSPSampleRate(u32 rate) {
-    BOOL enabled;
-    u32 oldVolL;
-    u32 oldVolR;
-    u32 oldStreamPlay;
-    u32 oldStreamRate;
-
-    if (rate == AIGetDSPSampleRate()) {
-        return;
-    }
-    AI_REGS->control &= ~0x40;
-    if (rate != 0) {
-        return;
-    }
-
-    oldVolL = AIGetStreamVolLeft();
-    oldVolR = AIGetStreamVolRight();
-    oldStreamPlay = AIGetStreamPlayState();
-    oldStreamRate = AIGetStreamSampleRate();
-
-    AISetStreamVolLeft(0);
-    AISetStreamVolRight(0);
-    enabled = OSDisableInterrupts();
-    __AI_SRC_INIT();
-    AI_REGS->control = (AI_REGS->control & ~0x20) | 0x20;
-    AI_REGS->control = (AI_REGS->control & ~0x2) | (oldStreamRate << 1);
-    AI_REGS->control = (AI_REGS->control & ~0x1) | oldStreamPlay;
-    AI_REGS->control |= 0x40;
-    OSRestoreInterrupts(enabled);
-    AISetStreamVolLeft(oldVolL);
-    AISetStreamVolRight(oldVolR);
-}
-
-u32 AIGetDSPSampleRate(void) {
-    return ((AI_REGS->control >> 6) & 1) ^ 1;
-}
-
-void __AI_set_stream_sample_rate(u32 rate) {
-    BOOL enabled;
-    u32 playState;
-    u32 volumeLeft;
-    u32 volumeRight;
-    u32 dspSampleRate;
-
-    if (rate != AIGetStreamSampleRate()) {
-        playState = AIGetStreamPlayState();
-        volumeLeft = AIGetStreamVolLeft();
-        volumeRight = AIGetStreamVolRight();
-        AISetStreamVolRight(0);
-        AISetStreamVolLeft(0);
-        dspSampleRate = __AIRegs[0] & 0x40;
-        __AIRegs[0] &= ~0x40;
-        enabled = OSDisableInterrupts();
-        __AI_SRC_INIT();
-        __AIRegs[0] |= dspSampleRate;
-        __AIRegs[0] = (__AIRegs[0] & ~0x20) | 0x20;
-        __AIRegs[0] = (__AIRegs[0] & ~2) | (rate << 1);
-        OSRestoreInterrupts(enabled);
-        AISetStreamPlayState(playState);
-        AISetStreamVolLeft(volumeLeft);
-        AISetStreamVolRight(volumeRight);
-    }
-}
-
-u32 AIGetStreamSampleRate(void) {
-    return (AI_REGS->control >> 1) & 1;
-}
-
-void AISetStreamVolLeft(u32 volume) {
-    __AIRegs[1] = (__AIRegs[1] & ~0xff) | (volume & 0xff);
-}
-
-u32 AIGetStreamVolLeft(void) {
-    return AI_REGS->volume & 0xff;
-}
-
-void AISetStreamVolRight(u32 volume) {
-    __AIRegs[1] = (__AIRegs[1] & ~0xff00) | ((volume & 0xff) << 8);
-}
-
-u32 AIGetStreamVolRight(void) {
-    return (AI_REGS->volume >> 8) & 0xff;
-}
-
-void __AISHandler(__OSInterrupt interrupt, OSContext* context) {
-    OSContext exceptionContext;
-
-    __AIRegs[0] |= 8;
-    OSClearContext(&exceptionContext);
-    OSSetCurrentContext(&exceptionContext);
-    if (lbl_8047A8C8 != NULL) {
-        lbl_8047A8C8(__AIRegs[2]);
-    }
-    OSClearContext(&exceptionContext);
-    OSSetCurrentContext(context);
-}
 
 void __AICallbackStackSwitch(AIDCallback callback);
 
-void __AIDHandler(__OSInterrupt interrupt, OSContext* context) {
-    OSContext exceptionContext;
-    u16 tmp;
-
-    tmp = __DSPRegs[5];
-    __DSPRegs[5] = (tmp & ~0xa0) | 8;
-    OSClearContext(&exceptionContext);
-    OSSetCurrentContext(&exceptionContext);
-    if (lbl_8047A8CC != NULL && lbl_8047A8DC == FALSE) {
-        lbl_8047A8DC = TRUE;
-        if (lbl_8047A8D0 != NULL) {
-            __AICallbackStackSwitch(lbl_8047A8CC);
-        } else {
-            lbl_8047A8CC();
-        }
-        lbl_8047A8DC = FALSE;
-    }
-    OSClearContext(&exceptionContext);
-    OSSetCurrentContext(context);
-}
-
-void __AICallbackStackSwitch(AIDCallback callback) {
-    *(void**)0x8047A8D4 = (void*)OSGetStackPointer();
-    OSSwitchFiber((u32)callback, *(u32*)0x8047A8D0);
-}
-
-ARCallback ARRegisterDMACallback(ARCallback callback) {
-    ARCallback old = lbl_8047A908;
-    BOOL enabled;
-
-    enabled = OSDisableInterrupts();
-    lbl_8047A908 = callback;
-    OSRestoreInterrupts(enabled);
-    return old;
-}
-
-u32 ARGetBaseAddress(void) {
-    return 0x4000;
-}
-
-u32 ARGetSize(void) {
-    return lbl_8047A90C;
-}
-
-void __ARHandler(__OSInterrupt interrupt, OSContext* context) {
-    OSContext exceptionContext;
-    u16 tmp;
-
-    tmp = __DSPRegs[5];
-    __DSPRegs[5] = (tmp & ~0x88) | 0x20;
-    OSClearContext(&exceptionContext);
-    OSSetCurrentContext(&exceptionContext);
-    if (lbl_8047A908 != NULL) {
-        lbl_8047A908();
-    }
-    OSClearContext(&exceptionContext);
-    OSSetCurrentContext(context);
-}
-
-void __ARClearInterrupt(void) {
+static inline void __ARClearInterrupt(void) {
     u16 tmp = __DSPRegs[5];
 
     __DSPRegs[5] = (tmp & ~0x88) | 0x20;
 }
 
-u32 __ARGetInterruptStatus(void) {
-    return DSP_REGS->dmaControl & 0x20;
-}
-
-static void __ARWaitForDMA(void) {
+static inline void __ARWaitForDMA(void) {
     while (__DSPRegs[5] & 0x200) {
     }
 }
 
-static void __ARWriteDMA(u32 mainMemoryAddress, u32 aramAddress, u32 length) {
+static inline void __ARWriteDMA(u32 mainMemoryAddress, u32 aramAddress, u32 length) {
     __DSPRegs[16] =
         (__DSPRegs[16] & ~0x3ff) | (u16)(mainMemoryAddress >> 16);
     __DSPRegs[17] =
@@ -651,7 +435,7 @@ static void __ARWriteDMA(u32 mainMemoryAddress, u32 aramAddress, u32 length) {
     __ARClearInterrupt();
 }
 
-static void __ARReadDMA(u32 mainMemoryAddress, u32 aramAddress, u32 length) {
+static inline void __ARReadDMA(u32 mainMemoryAddress, u32 aramAddress, u32 length) {
     __DSPRegs[16] =
         (__DSPRegs[16] & ~0x3ff) | (u16)(mainMemoryAddress >> 16);
     __DSPRegs[17] =
@@ -665,52 +449,170 @@ static void __ARReadDMA(u32 mainMemoryAddress, u32 aramAddress, u32 length) {
     __ARClearInterrupt();
 }
 
-u32 ARGetDMAStatus(void) {
-    BOOL enabled;
-    u32 status;
+#pragma force_active on
+void __ARChecksize(void) {
+    u8 testDataPad[63];
+    u8 dummyDataPad[63];
+    u8 bufferPad[63];
+    u8 savePad1[63];
+    u8 savePad2[63];
+    u8 savePad3[63];
+    u8 savePad4[63];
+    u8 savePad5[63];
+    u32* testData;
+    u32* dummyData;
+    u32* buffer;
+    u32* save1;
+    u32* save2;
+    u32* save3;
+    u32* save4;
+    u32* save5;
+    u16 aramMode = 0;
+    u32 aramSize = 0;
+    u32 i;
 
-    enabled = OSDisableInterrupts();
-    status = DSP_REGS->dmaControl & 0x200;
-    OSRestoreInterrupts(enabled);
-    return status;
+    do {
+    } while (!(__DSPRegs[11] & 1));
+
+    aramMode = 3;
+    aramSize = lbl_8047A910 = 0x1000000;
+    __DSPRegs[9] = ((__DSPRegs[9] & 0xffffffc0) | 3) | 0x20;
+
+    testData = (u32*)(((u32)testDataPad + 31) & ~31);
+    dummyData = (u32*)(((u32)dummyDataPad + 31) & ~31);
+    buffer = (u32*)(((u32)bufferPad + 31) & ~31);
+    save1 = (u32*)(((u32)savePad1 + 31) & ~31);
+    save2 = (u32*)(((u32)savePad2 + 31) & ~31);
+    save3 = (u32*)(((u32)savePad3 + 31) & ~31);
+    save4 = (u32*)(((u32)savePad4 + 31) & ~31);
+    save5 = (u32*)(((u32)savePad5 + 31) & ~31);
+
+    for (i = 0; i < 8; i++) {
+        testData[i] = 0xdeadbeef;
+        dummyData[i] = 0xbad0bad0;
+    }
+
+    DCFlushRange(testData, 0x20);
+    DCFlushRange(dummyData, 0x20);
+    lbl_8047A914 = 0;
+
+    DCInvalidateRange(save1, 0x20);
+    __ARReadDMA((u32)save1, aramSize, 0x20);
+    PPCSync();
+    __ARWriteDMA((u32)testData, aramSize, 0x20);
+    memset(buffer, 0, 0x20);
+    DCFlushRange(buffer, 0x20);
+    __ARReadDMA((u32)buffer, aramSize, 0x20);
+    PPCSync();
+
+    if (buffer[0] == testData[0]) {
+        DCInvalidateRange(save2, 0x20);
+        __ARReadDMA((u32)save2, aramSize + 0x0200000, 0x20);
+        PPCSync();
+        DCInvalidateRange(save3, 0x20);
+        __ARReadDMA((u32)save3, aramSize + 0x1000000, 0x20);
+        PPCSync();
+        DCInvalidateRange(save4, 0x20);
+        __ARReadDMA((u32)save4, aramSize + 0x0000200, 0x20);
+        PPCSync();
+        DCInvalidateRange(save5, 0x20);
+        __ARReadDMA((u32)save5, aramSize + 0x0400000, 0x20);
+        PPCSync();
+
+        __ARWriteDMA((u32)dummyData, aramSize + 0x0200000, 0x20);
+        __ARWriteDMA((u32)testData, aramSize, 0x20);
+        memset(buffer, 0, 0x20);
+        DCFlushRange(buffer, 0x20);
+        __ARReadDMA((u32)buffer, aramSize + 0x0200000, 0x20);
+        PPCSync();
+
+        if (buffer[0] == testData[0]) {
+            __ARWriteDMA((u32)save1, aramSize, 0x20);
+            aramMode |= 0 << 1;
+            aramSize += 0x0200000;
+            lbl_8047A914 = 0x0200000;
+        } else {
+            __ARWriteDMA((u32)dummyData, aramSize + 0x1000000, 0x20);
+            __ARWriteDMA((u32)testData, aramSize, 0x20);
+            memset(buffer, 0, 0x20);
+            DCFlushRange(buffer, 0x20);
+            __ARReadDMA((u32)buffer, aramSize + 0x1000000, 0x20);
+            PPCSync();
+
+            if (buffer[0] == testData[0]) {
+                __ARWriteDMA((u32)save1, aramSize, 0x20);
+                __ARWriteDMA((u32)save2, aramSize + 0x0200000, 0x20);
+                aramMode |= 4 << 1;
+                aramSize += 0x0400000;
+                lbl_8047A914 = 0x0400000;
+            } else {
+                __ARWriteDMA((u32)dummyData, aramSize + 0x0000200,
+                             0x20);
+                __ARWriteDMA((u32)testData, aramSize, 0x20);
+                memset(buffer, 0, 0x20);
+                DCFlushRange(buffer, 0x20);
+                __ARReadDMA((u32)buffer, aramSize + 0x0000200, 0x20);
+                PPCSync();
+
+                if (buffer[0] == testData[0]) {
+                    __ARWriteDMA((u32)save1, aramSize, 0x20);
+                    __ARWriteDMA((u32)save2, aramSize + 0x0200000,
+                                 0x20);
+                    __ARWriteDMA((u32)save3, aramSize + 0x1000000,
+                                 0x20);
+                    aramMode |= 8 << 1;
+                    aramSize += 0x0800000;
+                    lbl_8047A914 = 0x0800000;
+                } else {
+                    __ARWriteDMA((u32)dummyData,
+                                 aramSize + 0x0400000, 0x20);
+                    __ARWriteDMA((u32)testData, aramSize, 0x20);
+                    memset(buffer, 0, 0x20);
+                    DCFlushRange(buffer, 0x20);
+                    __ARReadDMA((u32)buffer, aramSize + 0x0400000,
+                                0x20);
+                    PPCSync();
+
+                    if (buffer[0] == testData[0]) {
+                        __ARWriteDMA((u32)save1, aramSize, 0x20);
+                        __ARWriteDMA((u32)save2,
+                                     aramSize + 0x0200000, 0x20);
+                        __ARWriteDMA((u32)save3,
+                                     aramSize + 0x1000000, 0x20);
+                        __ARWriteDMA((u32)save4,
+                                     aramSize + 0x0000200, 0x20);
+                        aramMode |= 12 << 1;
+                        aramSize += 0x1000000;
+                        lbl_8047A914 = 0x1000000;
+                    } else {
+                        __ARWriteDMA((u32)save1, aramSize, 0x20);
+                        __ARWriteDMA((u32)save2,
+                                     aramSize + 0x0200000, 0x20);
+                        __ARWriteDMA((u32)save3,
+                                     aramSize + 0x1000000, 0x20);
+                        __ARWriteDMA((u32)save4,
+                                     aramSize + 0x0000200, 0x20);
+                        __ARWriteDMA((u32)save5,
+                                     aramSize + 0x0400000, 0x20);
+                        aramMode |= 16 << 1;
+                        aramSize += 0x2000000;
+                        lbl_8047A914 = 0x2000000;
+                    }
+                }
+            }
+        }
+        __DSPRegs[9] =
+            (__DSPRegs[9] & ~(0x07 | 0x38)) | aramMode;
+    }
+
+    *(u32*)0xc00000d0 = aramSize;
+    lbl_8047A90C = aramSize;
 }
+#pragma force_active off
 
 #pragma dont_inline on
-void ARStartDMA(u32 type, u32 mainMemoryAddress, u32 aramAddress, u32 length) {
-    BOOL enabled;
 
-    enabled = OSDisableInterrupts();
-    __DSPRegs[16] = (__DSPRegs[16] & ~0x3ff) | (mainMemoryAddress >> 16);
-    __DSPRegs[17] = (__DSPRegs[17] & ~0xffe0) | (u16)mainMemoryAddress;
-    __DSPRegs[18] = (__DSPRegs[18] & ~0x3ff) | (aramAddress >> 16);
-    __DSPRegs[19] = (__DSPRegs[19] & ~0xffe0) | (u16)aramAddress;
-    __DSPRegs[20] = (__DSPRegs[20] & ~0x8000) | (type << 15);
-    __DSPRegs[20] = (__DSPRegs[20] & ~0x3ff) | (length >> 16);
-    __DSPRegs[21] = (__DSPRegs[21] & ~0xffe0) | (u16)length;
-    OSRestoreInterrupts(enabled);
-}
 #pragma dont_inline off
-
-u32 ARInit(u32* stack, u32 stackSize) {
-    BOOL enabled;
-
-    if (lbl_8047A924 == 1) {
-        return 0x4000;
-    }
-    OSRegisterVersion(lbl_80478A30);
-    enabled = OSDisableInterrupts();
-    lbl_8047A908 = NULL;
-    __OSSetInterruptHandler(6, __ARHandler);
-    __OSUnmaskInterrupts(0x02000000);
-    lbl_8047A91C = stackSize;
-    lbl_8047A918 = 0x4000;
-    lbl_8047A920 = stack;
-    __DSPRegs[13] = (__DSPRegs[13] & 0xff) | (__DSPRegs[13] & ~0xff);
-    __ARChecksize();
-    lbl_8047A924 = 1;
-    OSRestoreInterrupts(enabled);
-    return lbl_8047A918;
-}
 
 #pragma dont_inline on
 
