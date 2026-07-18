@@ -1932,7 +1932,13 @@ game/fight_range_exact_8021D9C0.c:
 	.text       start:0x8021D9C0 end:0x8021FAD4
 
 game/fight_range_8021FAD4.c:
-	.text       start:0x8021FAD4 end:0x8022A504
+	.text       start:0x8021FAD4 end:0x80226134
+
+game/fight_range_exact_80226134.c:
+	.text       start:0x80226134 end:0x802274F0
+
+game/fight_range_802274F0.c:
+	.text       start:0x802274F0 end:0x8022A504
 
 game/fight_range_8022A504.c:
 	.text       start:0x8022A504 end:0x8022B29C
