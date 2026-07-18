@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196121,
     "total_functions": 8603,
-    "total_units": 681
+    "total_units": 686
   },
   "topology_status": {
     "auto_units": 65,
-    "named_units": 616,
-    "source_backed_units": 601,
+    "named_units": 621,
+    "source_backed_units": 606,
     "auto_code": 0,
     "auto_data": 57787,
     "auto_functions": 0
@@ -8701,17 +8701,82 @@
       "total_functions": 212
     },
     {
+      "name": "main/game/fight_trainer_ai_waza_hit_exact_80253950",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 3480,
+          "virtual_address": 2149923152
+        }
+      ],
+      "total_code": 3480,
+      "total_data": 0,
+      "total_functions": 21
+    },
+    {
+      "name": "main/game/fight_trainer_ai_waza_hit_candidate_802546E8",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 296,
+          "virtual_address": 2149926632
+        }
+      ],
+      "total_code": 296,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/fight_trainer_ai_waza_hit_exact_80254810",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 9920,
+          "virtual_address": 2149926928
+        }
+      ],
+      "total_code": 9920,
+      "total_data": 0,
+      "total_functions": 68
+    },
+    {
+      "name": "main/game/fight_trainer_ai_waza_hit_candidate_80256ED0",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 512,
+          "virtual_address": 2149936848
+        }
+      ],
+      "total_code": 512,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/fight_trainer_ai_waza_hit_exact_802570D0",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 20884,
+          "virtual_address": 2149937360
+        }
+      ],
+      "total_code": 20884,
+      "total_data": 0,
+      "total_functions": 108
+    },
+    {
       "name": "main/game/fight_trainer_ai_waza_hit",
       "sections": [
         {
           "name": ".text",
-          "size": 35924,
-          "virtual_address": 2149923152
+          "size": 832,
+          "virtual_address": 2149958244
         }
       ],
-      "total_code": 35924,
+      "total_code": 832,
       "total_data": 0,
-      "total_functions": 200
+      "total_functions": 1
     },
     {
       "name": "main/game/fight_trainer_ai2",

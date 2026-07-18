@@ -1816,8 +1816,23 @@ game/fight_trainer_ai_irekae.c:
 game/fight_trainer_ai_waza_damage.c:
 	.text       start:0x80250980 end:0x80253950
 
+game/fight_trainer_ai_waza_hit_exact_80253950.c:
+	.text       start:0x80253950 end:0x802546E8
+
+game/fight_trainer_ai_waza_hit_candidate_802546E8.c:
+	.text       start:0x802546E8 end:0x80254810
+
+game/fight_trainer_ai_waza_hit_exact_80254810.c:
+	.text       start:0x80254810 end:0x80256ED0
+
+game/fight_trainer_ai_waza_hit_candidate_80256ED0.c:
+	.text       start:0x80256ED0 end:0x802570D0
+
+game/fight_trainer_ai_waza_hit_exact_802570D0.c:
+	.text       start:0x802570D0 end:0x8025C264
+
 game/fight_trainer_ai_waza_hit.c:
-	.text       start:0x80253950 end:0x8025C5A4
+	.text       start:0x8025C264 end:0x8025C5A4
 
 game/fight_trainer_ai2.c:
 	.text       start:0x8025C5A4 end:0x8025CD64
