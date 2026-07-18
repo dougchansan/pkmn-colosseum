@@ -49,19 +49,27 @@ typedef struct UICmdMsg {
 
 /* ===== Function implementations ===== */
 
-#if !defined(MENUCB_RANGE_HEAD_ONLY) && \
+#if !defined(MENUCB_RANGE_RESIDUAL_EMPTY_ONLY) && \
+    !defined(MENUCB_RANGE_EXACT_80063D10_ONLY) && \
+    !defined(MENUCB_RANGE_EXACT_80064378_ONLY) && \
     !defined(MENUCB_RANGE_EXACT_80065A48_ONLY) && \
-    !defined(MENUCB_RANGE_TAIL_ONLY)
-#define MENUCB_RANGE_HEAD_ONLY
+    !defined(MENUCB_RANGE_EXACT_80068738_ONLY) && \
+    !defined(MENUCB_RANGE_RESIDUAL_80068794_ONLY) && \
+    !defined(MENUCB_RANGE_EXACT_80069048_ONLY) && \
+    !defined(MENUCB_RANGE_RESIDUAL_8006905C_ONLY) && \
+    !defined(MENUCB_RANGE_EXACT_80069A08_ONLY)
+#define MENUCB_RANGE_RESIDUAL_EMPTY_ONLY
 #endif
 
-#if defined(MENUCB_RANGE_TAIL_ONLY)
+#if defined(MENUCB_RANGE_EXACT_80069048_ONLY)
 /* Address: 0x80069048 | Size: 0x20 */
 s32 menuCBPokemonEntryGetReadFlag(void)
 {
     return lbl_803A9F08[0xCD84];
 }
+#endif
 
+#if defined(MENUCB_RANGE_RESIDUAL_8006905C_ONLY)
 /* Address: 0x800697C4 | Size: 0x30 */
 #pragma push
 #pragma scheduling off
@@ -138,7 +146,9 @@ void menuCBPokemonEntryTexWorkInit(void)
     }
 }
 #pragma pop
+#endif
 
+#if defined(MENUCB_RANGE_EXACT_80069A08_ONLY)
 /* Address: 0x80069A08 | Size: 0x58 */
 #pragma push
 #pragma scheduling on
@@ -167,12 +177,14 @@ s32 menuCBPokemonEntryDispPokemonFace(void* ctx, UICmdMsg* msg, s32 group, s32 s
 #pragma pop
 #endif
 
-#if defined(MENUCB_RANGE_HEAD_ONLY)
+#if defined(MENUCB_RANGE_EXACT_80063D10_ONLY)
 /* Address: 0x80063D10 | Size: 0x4 */
 void fn_80063D10(void)
 {
 }
+#endif
 
+#if defined(MENUCB_RANGE_EXACT_80064378_ONLY)
 /* Address: 0x80064378 | Size: 0x5C */
 void fn_80064378(u8* ctx, UICmdMsg* msg)
 {
@@ -190,7 +202,7 @@ void fn_80064378(u8* ctx, UICmdMsg* msg)
 }
 #endif
 
-#if defined(MENUCB_RANGE_TAIL_ONLY)
+#if defined(MENUCB_RANGE_EXACT_80068738_ONLY)
 /* Address: 0x80068738 | Size: 0x5C */
 #pragma push
 #pragma scheduling on
@@ -211,7 +223,9 @@ s32 fn_80068738(void)
     return 0;
 }
 #pragma pop
+#endif
 
+#if defined(MENUCB_RANGE_RESIDUAL_80068794_ONLY)
 /* Address: 0x80068F84 | Size: 0xC4 */
 #pragma push
 #pragma scheduling off

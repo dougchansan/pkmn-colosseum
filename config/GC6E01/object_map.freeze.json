@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196121,
     "total_functions": 8603,
-    "total_units": 784
+    "total_units": 795
   },
   "topology_status": {
     "auto_units": 65,
-    "named_units": 719,
-    "source_backed_units": 704,
+    "named_units": 730,
+    "source_backed_units": 715,
     "auto_code": 0,
     "auto_data": 57787,
     "auto_functions": 0
@@ -1357,13 +1357,65 @@
       "sections": [
         {
           "name": ".text",
-          "size": 12544,
+          "size": 5064,
           "virtual_address": 2147887432
         }
       ],
-      "total_code": 12544,
+      "total_code": 5064,
       "total_data": 0,
-      "total_functions": 14
+      "total_functions": 6
+    },
+    {
+      "name": "main/game/menu/menuCB_range_exact_80063D10",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 4,
+          "virtual_address": 2147892496
+        }
+      ],
+      "total_code": 4,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/menu/menuCB_range_80063D14",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1636,
+          "virtual_address": 2147892500
+        }
+      ],
+      "total_code": 1636,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/menu/menuCB_range_exact_80064378",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 92,
+          "virtual_address": 2147894136
+        }
+      ],
+      "total_code": 92,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/menu/menuCB_range_800643D4",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 5748,
+          "virtual_address": 2147894228
+        }
+      ],
+      "total_code": 5748,
+      "total_data": 0,
+      "total_functions": 5
     },
     {
       "name": "main/game/menu/menuCB_range_exact_80065A48",
@@ -1661,13 +1713,78 @@
       "sections": [
         {
           "name": ".text",
-          "size": 9076,
+          "size": 4172,
           "virtual_address": 2147907308
         }
       ],
-      "total_code": 9076,
+      "total_code": 4172,
       "total_data": 0,
-      "total_functions": 21
+      "total_functions": 4
+    },
+    {
+      "name": "main/game/menu/menuCB_range_exact_80068738",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 92,
+          "virtual_address": 2147911480
+        }
+      ],
+      "total_code": 92,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/menu/menuCB_range_80068794",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 2228,
+          "virtual_address": 2147911572
+        }
+      ],
+      "total_code": 2228,
+      "total_data": 0,
+      "total_functions": 6
+    },
+    {
+      "name": "main/game/menu/menuCB_range_exact_80069048",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 20,
+          "virtual_address": 2147913800
+        }
+      ],
+      "total_code": 20,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/menu/menuCB_range_8006905C",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 2476,
+          "virtual_address": 2147913820
+        }
+      ],
+      "total_code": 2476,
+      "total_data": 0,
+      "total_functions": 8
+    },
+    {
+      "name": "main/game/menu/menuCB_range_exact_80069A08",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 88,
+          "virtual_address": 2147916296
+        }
+      ],
+      "total_code": 88,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/game/menu/menuCB_Battle",
@@ -4006,7 +4123,7 @@
       "total_functions": 2
     },
     {
-      "name": "main/trk/TRKComm",
+      "name": "main/trk/TRKComm_exact_800C39BC",
       "sections": [
         {
           "name": ".text",
@@ -4618,13 +4735,39 @@
       "sections": [
         {
           "name": ".text",
-          "size": 4596,
+          "size": 2724,
           "virtual_address": 2148324776
         }
       ],
-      "total_code": 4596,
+      "total_code": 2724,
       "total_data": 0,
-      "total_functions": 28
+      "total_functions": 9
+    },
+    {
+      "name": "main/crt/math_exact_800CE04C",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 812,
+          "virtual_address": 2148327500
+        }
+      ],
+      "total_code": 812,
+      "total_data": 0,
+      "total_functions": 10
+    },
+    {
+      "name": "main/crt/math_range_800CE378",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1060,
+          "virtual_address": 2148328312
+        }
+      ],
+      "total_code": 1060,
+      "total_data": 0,
+      "total_functions": 9
     },
     {
       "name": "main/dolphin/exi/EXI2Stubs",
