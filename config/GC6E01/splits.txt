@@ -126,10 +126,7 @@ game/data/rodata_8026860C.c:
 	.rodata     start:0x8026860C end:0x8026F610
 
 game/data/rodata_8026F640.c:
-	.rodata     start:0x8026F640 end:0x8026FB80
-
-game/data/rodata_8026FB94.c:
-	.rodata     start:0x8026FB94 end:0x8026FC98
+	.rodata     start:0x8026F640 end:0x8026F688
 
 __init_cpp_exceptions.cpp:
 	.dtors      start:0x80266380 end:0x80266384
@@ -746,10 +743,14 @@ trk/TRKTerminateSerialHandler.c:
 	.text       start:0x800BF080 end:0x800BF088
 
 trk/TRKSerial_range_800BF088.c:
-	.text       start:0x800BF088 end:0x800BF14C
+	.text       start:0x800BF088 end:0x800BF338
+	.rodata     start:0x8026F688 end:0x8026F811
 
-trk/TRKSerial.c:
-	.text       start:0x800BF14C end:0x800BF338
+game/data/rodata_8026F818.c:
+	.rodata     start:0x8026F818 end:0x8026FB80
+
+game/data/rodata_8026FB94.c:
+	.rodata     start:0x8026FB94 end:0x8026FC98
 
 trk/usr_put_initialize.c:
 	.text       start:0x800BF338 end:0x800BF33C

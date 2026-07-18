@@ -267,7 +267,7 @@ config.libs = [
             Object(CodeCandidate, "trk/TRKNub_range_800BE47C.c", mw_version="GC/1.3", progress_category="runtime"),  # BANK_TRK3
             Object(Matching, "trk/TRKNub_range_800BEE74.c", mw_version="GC/1.3", progress_category="runtime"),  # BANK_TRK3
             Object(
-                CodeCandidate,
+                Matching,
                 "trk/TRKSerial_range_800BF088.c",
                 mw_version="GC/1.3.2",
                 extra_cflags=[
@@ -3848,11 +3848,6 @@ config.libs = [
                 progress_category="runtime",
             ),
             Object(
-                CodeCandidate,
-                "trk/TRKSerial.c",
-                progress_category="runtime",
-            ),
-            Object(
                 Matching,
                 "trk/usr_put_initialize.c",
                 progress_category="runtime",
@@ -3995,6 +3990,12 @@ config.libs = [
             Object(
                 DataCandidate,
                 "game/data/rodata_8026F640.c",
+                progress_category="game",
+                extra_cflags=["-sdata2 0"],
+            ),
+            Object(
+                DataCandidate,
+                "game/data/rodata_8026F818.c",
                 progress_category="game",
                 extra_cflags=["-sdata2 0"],
             ),
