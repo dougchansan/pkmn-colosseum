@@ -514,7 +514,8 @@ s32 fn_8004E790(PdaMailAttachWindow* window)
     input = windowGetKeyInfo();
     selection = *state->selection;
     index = state->mailIndex;
-    if (fn_8017B2CC(mailGetAttachFileGroup(index)) == 1) {
+    count = mailGetAttachFileGroup(index);
+    if (fn_8017B2CC(count) == 1) {
         loaded = 0;
     } else {
         loaded = 1;

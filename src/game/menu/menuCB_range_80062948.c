@@ -172,7 +172,7 @@ void fn_80064378(u8* ctx, UICmdMsg* msg)
 
     switch (msg->cmd) {
     case 0xA9E:
-        fn_800FB680(0, 0, ctx[0x8B] | -0x100, 0x3C1A);
+        fn_800FB680(0, 0, ctx[0x8B] | -0x100LL, 0x3C1A);
         break;
     case 0xA88:
         fn_80063AD4(ctx, msg);
