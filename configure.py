@@ -1529,6 +1529,18 @@ config.libs = [
             ),
             Object(
                 Matching,
+                "crt/math_ieee754_atan2.c",
+                mw_version="GC/1.3",
+                progress_category="runtime",
+            ),
+            Object(
+                CodeCandidate,
+                "crt/math_range_800CB2B4.c",
+                mw_version="GC/1.3",
+                progress_category="runtime",
+            ),
+            Object(
+                Matching,
                 "crt/math_kernel_rem_pio2.c",
                 mw_version="GC/1.3",
                 progress_category="runtime",
@@ -3784,6 +3796,12 @@ config.libs = [
                 Matching,
                 "crt/sdata2_math.c",
                 source="crt_data/sdata2_math.c",
+                progress_category="runtime",
+            ),
+            Object(
+                Matching,
+                "crt/sdata2_math_8047C580.c",
+                source="crt_data/sdata2_math_8047C580.c",
                 progress_category="runtime",
             ),
             Object(

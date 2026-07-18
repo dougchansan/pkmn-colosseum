@@ -54,7 +54,7 @@ game/data/sdata2_8047C3A0.c:
 	.sdata2     start:0x8047C3A0 end:0x8047C4A0
 
 crt/sdata2_math.c:
-	.sdata2     start:0x8047C4A0 end:0x8047C828
+	.sdata2     start:0x8047C4A0 end:0x8047C528
 
 game/data/bss_8039A700.c:
 	.bss        start:0x8039A700 end:0x8039E700
@@ -927,7 +927,17 @@ crt/string.c:
 	.text       start:0x800CA7FC end:0x800CAA58
 
 crt/math_range_800CAA58.c:
-	.text       start:0x800CAA58 end:0x800CC754
+	.text       start:0x800CAA58 end:0x800CB024
+
+crt/math_ieee754_atan2.c:
+	.text       start:0x800CB024 end:0x800CB2B4
+	.sdata2     start:0x8047C528 end:0x8047C580
+
+crt/sdata2_math_8047C580.c:
+	.sdata2     start:0x8047C580 end:0x8047C828
+
+crt/math_range_800CB2B4.c:
+	.text       start:0x800CB2B4 end:0x800CC754
 
 crt/math_kernel_rem_pio2.c:
 	.text       start:0x800CC754 end:0x800CD5A8
