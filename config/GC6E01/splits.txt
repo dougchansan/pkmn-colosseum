@@ -940,16 +940,21 @@ crt/math_ieee754_atan2.c:
 	.sdata2     start:0x8047C528 end:0x8047C580
 
 crt/sdata2_math_8047C580.c:
-	.sdata2     start:0x8047C580 end:0x8047C828
+	.sdata2     start:0x8047C580 end:0x8047C7E0
 
 crt/math_range_800CB2B4.c:
-	.text       start:0x800CB2B4 end:0x800CC754
+	.text       start:0x800CB2B4 end:0x800CC660
+
+crt/math_kernel_cos.c:
+	.text       start:0x800CC660 end:0x800CC754
+	.sdata2     start:0x8047C7E0 end:0x8047C828
 
 crt/math_kernel_rem_pio2.c:
 	.text       start:0x800CC754 end:0x800CD5A8
 	.sdata2     start:0x8047C828 end:0x8047C868
 
-crt/sdata2_math_suffix_8047C868.c:
+crt/math_kernel_sin.c:
+	.text       start:0x800CD5A8 end:0x800CD648
 	.sdata2     start:0x8047C868 end:0x8047C8A0
 
 crt/sdata2_math_8047C8A0.c:
@@ -982,8 +987,14 @@ game/data/sdata2_8047CF98.c:
 game/data/sdata2_8047D098.c:
 	.sdata2     start:0x8047D098 end:0x8047D108
 
-crt/math_range_800CD5A8.c:
-	.text       start:0x800CD5A8 end:0x800CE04C
+crt/math_range_800CD648.c:
+	.text       start:0x800CD648 end:0x800CDBB8
+
+crt/math_copysign.c:
+	.text       start:0x800CDBB8 end:0x800CDBE0
+
+crt/math_range_800CDBE0.c:
+	.text       start:0x800CDBE0 end:0x800CE04C
 
 crt/math_exact_800CE04C.c:
 	.text       start:0x800CE04C end:0x800CE378

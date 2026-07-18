@@ -1541,13 +1541,37 @@ config.libs = [
             ),
             Object(
                 Matching,
+                "crt/math_kernel_cos.c",
+                mw_version="GC/1.3",
+                progress_category="runtime",
+            ),
+            Object(
+                Matching,
                 "crt/math_kernel_rem_pio2.c",
                 mw_version="GC/1.3",
                 progress_category="runtime",
             ),
             Object(
+                Matching,
+                "crt/math_kernel_sin.c",
+                mw_version="GC/1.3",
+                progress_category="runtime",
+            ),
+            Object(
                 CodeCandidate,
-                "crt/math_range_800CD5A8.c",
+                "crt/math_range_800CD648.c",
+                mw_version="GC/1.3",
+                progress_category="runtime",
+            ),
+            Object(
+                Matching,
+                "crt/math_copysign.c",
+                mw_version="GC/1.3",
+                progress_category="runtime",
+            ),
+            Object(
+                CodeCandidate,
+                "crt/math_range_800CDBE0.c",
                 mw_version="GC/1.3",
                 progress_category="runtime",
             ),
@@ -3826,12 +3850,6 @@ config.libs = [
                 Matching,
                 "crt/sdata2_math_8047C580.c",
                 source="crt_data/sdata2_math_8047C580.c",
-                progress_category="runtime",
-            ),
-            Object(
-                Matching,
-                "crt/sdata2_math_suffix_8047C868.c",
-                source="crt_data/sdata2_math_suffix_8047C868.c",
                 progress_category="runtime",
             ),
             Object(
