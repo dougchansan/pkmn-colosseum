@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196121,
     "total_functions": 8603,
-    "total_units": 728
+    "total_units": 730
   },
   "topology_status": {
     "auto_units": 65,
-    "named_units": 663,
-    "source_backed_units": 648,
+    "named_units": 665,
+    "source_backed_units": 650,
     "auto_code": 0,
     "auto_data": 57787,
     "auto_functions": 0
@@ -23,7 +23,7 @@
     "matched_data_percent": 97.285255,
     "matched_functions": 6257,
     "matched_functions_percent": 72.73044,
-    "fuzzy_match_percent": 57.245113
+    "fuzzy_match_percent": 57.248383
   },
   "unit_topology": [
     {
@@ -7904,13 +7904,39 @@
       "sections": [
         {
           "name": ".text",
-          "size": 25036,
+          "size": 10440,
           "virtual_address": 2149174864
         }
       ],
-      "total_code": 25036,
+      "total_code": 10440,
       "total_data": 0,
-      "total_functions": 49
+      "total_functions": 15
+    },
+    {
+      "name": "main/hsd/hsd_jobj_exact_8019F718",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 2140,
+          "virtual_address": 2149185304
+        }
+      ],
+      "total_code": 2140,
+      "total_data": 0,
+      "total_functions": 8
+    },
+    {
+      "name": "main/hsd/hsd_jobj_suffix_8019FF74",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 12456,
+          "virtual_address": 2149187444
+        }
+      ],
+      "total_code": 12456,
+      "total_data": 0,
+      "total_functions": 26
     },
     {
       "name": "main/hsd/hsd_jobj_exact_801A301C",

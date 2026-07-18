@@ -2961,6 +2961,19 @@ config.libs = [
                 CodeCandidate,
                 "hsd/hsd_jobj.c",
                 mw_version="GC/1.3",
+                extra_cflags=["-DHSD_JOBJ_OMIT_EXACT_8019F718"],
+                progress_category="hsd",
+            ),
+            Object(
+                Matching,
+                "hsd/hsd_jobj_exact_8019F718.c",
+                mw_version="GC/1.3",
+                progress_category="hsd",
+            ),
+            Object(
+                CodeCandidate,
+                "hsd/hsd_jobj_suffix_8019FF74.c",
+                mw_version="GC/1.3",
                 progress_category="hsd",
             ),
             Object(

@@ -1632,7 +1632,13 @@ hsd/hsd_initialize.c:
 	.text       start:0x8019C690 end:0x8019CE50
 
 hsd/hsd_jobj.c:
-	.text       start:0x8019CE50 end:0x801A301C
+	.text       start:0x8019CE50 end:0x8019F718
+
+hsd/hsd_jobj_exact_8019F718.c:
+	.text       start:0x8019F718 end:0x8019FF74
+
+hsd/hsd_jobj_suffix_8019FF74.c:
+	.text       start:0x8019FF74 end:0x801A301C
 
 hsd/hsd_jobj_exact_801A301C.c:
 	.text       start:0x801A301C end:0x801A4000

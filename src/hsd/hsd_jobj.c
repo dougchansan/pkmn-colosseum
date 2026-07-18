@@ -1080,10 +1080,20 @@ void fn_8019F1C4(HSD_JObj* jobj, s32* total_a, s32* total_b) {
 #endif
 #pragma pop
 
+HSD_JObj* fn_80193828(HSD_ClassInfo*);
+extern void fn_8019D620(HSD_JObj*);
+BOOL fn_8019D980(HSD_JObj* jobj);
+void fn_8019F778(HSD_JObj* jobj);
+void fn_8019F7F0(HSD_JObj* jobj, u32 flags);
+void fn_8019FAEC(HSD_JObj* jobj, u32 flags);
+void fn_8019FB90(HSD_JObj* jobj, u32 flags);
+void fn_8019FE8C(HSD_JObj* jobj, u32 flags);
+
+#if !defined(HSD_JOBJ_OMIT_EXACT_8019F718)
+
 /* 0x8019F718 | 0x60 */
 #pragma push
 #pragma optimization_level 1
-HSD_JObj* fn_80193828(HSD_ClassInfo*);
 HSD_JObj* fn_8019F718(void)
 {
     HSD_JObj* jobj;
@@ -1097,14 +1107,6 @@ HSD_JObj* fn_8019F718(void)
     return jobj;
 }
 #pragma pop
-
-extern void fn_8019D620(HSD_JObj*);
-BOOL fn_8019D980(HSD_JObj* jobj);
-void fn_8019F778(HSD_JObj* jobj);
-void fn_8019F7F0(HSD_JObj* jobj, u32 flags);
-void fn_8019FAEC(HSD_JObj* jobj, u32 flags);
-void fn_8019FB90(HSD_JObj* jobj, u32 flags);
-void fn_8019FE8C(HSD_JObj* jobj, u32 flags);
 
 /* 0x8019F7F0 | 0x2FC */
 #pragma push
@@ -1533,6 +1535,8 @@ ok:
 }
 #endif
 #pragma pop
+
+#endif
 
 /* 0x8019FF74 | 0x1E8 */
 #pragma push
