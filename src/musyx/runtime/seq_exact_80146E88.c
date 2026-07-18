@@ -1,6 +1,6 @@
 /**
- * @file seq.c
- * @brief MusyX runtime sequencer prefix, 0x8014635C - 0x80146E88.
+ * @file seq_exact_80146E88.c
+ * @brief Exact MusyX runtime sequencer island, 0x80146E88 - 0x801485FC.
  *
  * Split out of the misnamed people_field.c unit (2026-07-02). Reference:
  * AxioDL/musyx `musyx/runtime/seq.c`, cross-verified byte-exact against the
@@ -330,7 +330,14 @@ extern void synthVolume(u8 volume, u16 time, u8 volGroup, u8 mode, u32 pubId);
 #define SND_SEQVOL_MUTE 3
 #define SND_SEQVOL_MODEMASK 0xF
 
-u32 seqGetPrivateId(u32 seqId) {
+
+/* This translation unit is a topology-only split of the original seq.c. */
+
+/*
+ * Compile-only copies preserve MWCC's original same-TU inlining decisions.
+ * This variant uses no custom section.
+ */
+static inline u32 seqGetPrivateId(u32 seqId) {
     SEQ_INSTANCE* si;
     for (si = lbl_8047AF14; si != NULL; si = si->next) {
         if (si->publicId == (seqId & ~SND_SEQ_CROSSFADE_ID)) {
@@ -345,9 +352,7 @@ u32 seqGetPrivateId(u32 seqId) {
     return SND_SEQ_ERROR_ID;
 }
 
-static void StartPause(SEQ_INSTANCE* si);
-
-static void KillNotes(SEQ_INSTANCE* seq) {
+static inline void KillNotes(SEQ_INSTANCE* seq) {
     NOTE* n;
     u32 i;
 
@@ -362,7 +367,7 @@ static void KillNotes(SEQ_INSTANCE* seq) {
     }
 }
 
-static void ResetNotes(SEQ_INSTANCE* seq) {
+static inline void ResetNotes(SEQ_INSTANCE* seq) {
     NOTE* n;
     u32 i;
 
@@ -395,4 +400,429 @@ static void ResetNotes(SEQ_INSTANCE* seq) {
         lbl_8047AF04 = seq->noteKeyOff;
         seq->noteKeyOff = NULL;
     }
+}
+
+
+void StartPause(SEQ_INSTANCE* si) {
+    if (si->prev != NULL) {
+        si->prev->next = si->next;
+    } else {
+        lbl_8047AF14 = si->next;
+    }
+
+    if (si->next != NULL) {
+        si->next->prev = si->prev;
+    }
+
+    if ((si->next = lbl_8047AF10) != NULL) {
+        lbl_8047AF10->prev = si;
+    }
+
+    si->prev = NULL;
+    lbl_8047AF10 = si;
+    si->state = 2;
+}
+
+void seqPause(u32 seqId) {
+    SEQ_INSTANCE* si;
+    seqId = seqGetPrivateId(seqId);
+
+    if (seqId == SND_SEQ_ERROR_ID) {
+        return;
+    }
+
+    if ((seqId & SND_SEQ_CROSSFADE_ID) == 0) {
+        si = &lbl_804285D0[seqId];
+        if (si->state == 1) {
+            StartPause(si);
+            KillNotes(si);
+            ResetNotes(si);
+        }
+    } else {
+        si = &lbl_804285D0[seqId & ~SND_SEQ_CROSSFADE_ID];
+        if (si->state != 0) {
+            si->syncCrossInfo.flags |= SND_CROSSFADE_PAUSENEW;
+        }
+    }
+}
+
+void seqStop(u32 seqId) {
+    SEQ_INSTANCE* si;
+
+    if ((seqId = seqGetPrivateId(seqId)) == SND_SEQ_ERROR_ID) {
+        return;
+    }
+
+    if ((seqId & SND_SEQ_CROSSFADE_ID) == 0) {
+        si = &lbl_804285D0[seqId];
+        switch (si->state) {
+        case 1:
+            if (si->prev != NULL) {
+                si->prev->next = si->next;
+            } else {
+                lbl_8047AF14 = si->next;
+            }
+
+            KillNotes(&lbl_804285D0[seqId]);
+            ResetNotes(&lbl_804285D0[seqId]);
+            break;
+        case 2:
+            if (si->prev != NULL) {
+                si->prev->next = si->next;
+            } else {
+                lbl_8047AF10 = si->next;
+            }
+            break;
+        }
+
+        if (si->next != NULL) {
+            si->next->prev = si->prev;
+        }
+        si->state = 0;
+        if (lbl_8047AF0C != NULL) {
+            lbl_8047AF0C->prev = si;
+        }
+        si->next = lbl_8047AF0C;
+        si->prev = NULL;
+        lbl_8047AF0C = si;
+    } else {
+        si = &lbl_804285D0[seqId & ~SND_SEQ_CROSSFADE_ID];
+        if (si->state != 0) {
+            si->syncSeqIdPtr = NULL;
+        }
+    }
+}
+
+void seqSpeed(u32 seqId, u16 speed) {
+    u32 i;
+
+    seqId = seqGetPrivateId(seqId);
+
+    if ((seqId & SND_SEQ_CROSSFADE_ID) == 0) {
+        for (i = 0; i < 16; i++) {
+            lbl_804285D0[seqId].section[i].speed = speed;
+        }
+    } else {
+        seqId &= ~SND_SEQ_CROSSFADE_ID;
+        lbl_804285D0[seqId].syncCrossInfo.flags |= SND_CROSSFADE_SPEED;
+        lbl_804285D0[seqId].syncCrossInfo.speed2 = speed;
+    }
+}
+
+void seqContinue(u32 seqId) {
+    SEQ_INSTANCE* si;
+
+    seqId = seqGetPrivateId(seqId);
+
+    if ((seqId & SND_SEQ_CROSSFADE_ID) == 0) {
+        si = &lbl_804285D0[seqId];
+
+        if (si->state == 2) {
+            if (si->prev != NULL) {
+                si->prev->next = si->next;
+            } else {
+                lbl_8047AF10 = si->next;
+            }
+
+            if (si->next != NULL) {
+                si->next->prev = si->prev;
+            }
+
+            if ((si->next = lbl_8047AF14) != NULL) {
+                lbl_8047AF14->prev = si;
+            }
+
+            si->prev = NULL;
+            lbl_8047AF14 = si;
+            si->state = 1;
+        }
+    } else {
+        lbl_804285D0[seqId & ~SND_SEQ_CROSSFADE_ID].syncCrossInfo.flags &= ~SND_CROSSFADE_PAUSENEW;
+    }
+}
+
+void seqMute(u32 seqId, u32 mask1, u32 mask2) {
+    seqId = seqGetPrivateId(seqId);
+    if (seqId == SND_SEQ_ERROR_ID) {
+        return;
+    }
+
+    if ((seqId & SND_SEQ_CROSSFADE_ID) == 0) {
+        lbl_804285D0[seqId].trackMute[0] = mask1;
+        lbl_804285D0[seqId].trackMute[1] = mask2;
+    } else {
+        seqId &= ~SND_SEQ_CROSSFADE_ID;
+        lbl_804285D0[seqId].syncCrossInfo.flags |= SND_CROSSFADE_TRACKMUTE;
+        lbl_804285D0[seqId].syncCrossInfo.trackMute2[0] = mask1;
+        lbl_804285D0[seqId].syncCrossInfo.trackMute2[1] = mask2;
+    }
+}
+
+void seqVolume(u8 volume, u16 time, u32 seqId, u8 mode) {
+    u32 i;
+    u32 pub_id;
+
+    pub_id = seqId;
+    seqId = seqGetPrivateId(seqId);
+    if (seqId == SND_SEQ_ERROR_ID) {
+        return;
+    }
+
+    if ((seqId & SND_SEQ_CROSSFADE_ID) == 0) {
+        synthVolume(volume, time, lbl_804285D0[seqId].defVGroup, mode, pub_id);
+        for (i = 0; i < 64; i++) {
+            if (lbl_804285D0[seqId].trackVolGroup[i] != lbl_804285D0[seqId].defVGroup) {
+                synthVolume(volume, time, lbl_804285D0[seqId].trackVolGroup[i], SND_SEQVOL_CONTINUE,
+                            SND_SEQ_ERROR_ID);
+            }
+        }
+    } else {
+        seqId &= ~SND_SEQ_CROSSFADE_ID;
+        switch (mode & SND_SEQVOL_MODEMASK) {
+        case SND_SEQVOL_CONTINUE:
+            lbl_804285D0[seqId].syncCrossInfo.vol2 = volume;
+            break;
+        case SND_SEQVOL_STOP:
+            lbl_804285D0[seqId].syncSeqIdPtr = NULL;
+            break;
+        case SND_SEQVOL_PAUSE:
+            lbl_804285D0[seqId].syncCrossInfo.flags |= SND_CROSSFADE_PAUSENEW;
+            lbl_804285D0[seqId].syncCrossInfo.vol2 = volume;
+            break;
+        case SND_SEQVOL_MUTE:
+            lbl_804285D0[seqId].syncCrossInfo.flags |= SND_CROSSFADE_MUTENEW;
+            lbl_804285D0[seqId].syncCrossInfo.vol2 = volume;
+            break;
+        default:
+            break;
+        }
+    }
+}
+
+#define SND_CROSSFADE_STOP 0
+#define SND_CROSSFADE_PAUSE 1
+#define SND_CROSSFADE_CONTINUE 2
+#define SND_PLAYPARA_TRACKMUTE 0x1
+#define SND_PLAYPARA_SPEED 0x2
+#define SND_PLAYPARA_VOLUME 0x4
+#define SND_PLAYPARA_SEQVOLDEF 0x8
+#define SND_PLAYPARA_PAUSE 0x10
+
+typedef struct {
+    u32 flags;         // 0x0
+    u32 trackMute[2];   // 0x4
+    u16 speed;            // 0xC
+    u16 volTime;           // 0xE
+    u8 volTarget;            // 0x10
+    u8 numSeqVolDef;          // 0x11
+    u8 pad_12[2];
+    void* seqVolDef;            // 0x14
+    u8 numFaded;                  // 0x18
+    u8 pad_19[3];
+    u8* faded;                       // 0x1C
+} SND_PLAYPARA; // size 0x20
+
+extern void sndSeqVolume(u8 volume, u16 time, u32 seqId, u8 mode);
+extern void sndSeqMute(u32 seqId, u32 mask1, u32 mask2);
+extern void sndSeqSpeed(u32 seqId, u16 speed);
+extern void fn_8014D648(u32 seqId); /* sndSeqContinue */
+extern u32 fn_8015A21C(u16 sgid, u16 sid, void* arrfile, SND_PLAYPARA* para, u32 irqCall,
+                        u8 studio); /* seqPlaySong */
+extern u32 fn_8015A368(u16 sgid, u16 sid, void* arrfile, SND_PLAYPARA* para,
+                        u8 studio); /* sndSeqPlayEx */
+
+void seqCrossFade(SND_CROSSFADE* ci, u32* new_seqId, u8 irq_call) {
+    SND_PLAYPARA pp;
+    u32 seqId;
+    u16 time;
+
+    seqId = seqGetPrivateId(ci->seqId1);
+
+    if ((ci->flags & SND_CROSSFADE_SYNC) != 0) {
+        lbl_804285D0[seqId].syncCrossInfo = *ci;
+        lbl_804285D0[seqId].syncActive = TRUE;
+        lbl_804285D0[seqId].syncSeqIdPtr = new_seqId;
+        lbl_804285D0[seqId].syncCrossInfo.flags &= ~SND_CROSSFADE_SYNC;
+        *new_seqId = ci->seqId1 | SND_SEQ_CROSSFADE_ID;
+        return;
+    }
+
+    if (irq_call) {
+        time = ci->time1 < 5 ? 5 : ci->time1;
+        if ((ci->flags & SND_CROSSFADE_PAUSE) != 0) {
+            seqVolume(0, time, ci->seqId1, SND_SEQVOL_PAUSE);
+        } else if ((ci->flags & SND_CROSSFADE_MUTE) != 0) {
+            seqVolume(0, time, ci->seqId1, SND_SEQVOL_MUTE);
+        } else {
+            seqVolume(0, time, ci->seqId1, SND_SEQVOL_STOP);
+        }
+    } else {
+        if ((ci->flags & SND_CROSSFADE_PAUSE) != 0) {
+            sndSeqVolume(0, ci->time1, ci->seqId1, SND_SEQVOL_PAUSE);
+        } else if ((ci->flags & SND_CROSSFADE_MUTE) != 0) {
+            sndSeqVolume(0, ci->time1, ci->seqId1, SND_SEQVOL_MUTE);
+        } else {
+            sndSeqVolume(0, ci->time1, ci->seqId1, SND_SEQVOL_STOP);
+        }
+    }
+
+    if (new_seqId == NULL) {
+        return;
+    }
+
+    if ((ci->flags & SND_CROSSFADE_CONTINUE) != 0) {
+        if (seqGetPrivateId(ci->seqId2) != SND_SEQ_ERROR_ID) {
+            if (irq_call) {
+                seqContinue(ci->seqId2);
+                seqVolume(ci->vol2, ci->time2, ci->seqId2, SND_SEQVOL_CONTINUE);
+                if ((ci->flags & SND_CROSSFADE_TRACKMUTE) != 0) {
+                    seqMute(ci->seqId2, ci->trackMute2[0], ci->trackMute2[1]);
+                }
+                if ((ci->flags & SND_CROSSFADE_SPEED) != 0) {
+                    seqSpeed(ci->seqId2, ci->speed2);
+                }
+            } else {
+                fn_8014D648(ci->seqId2);
+                sndSeqVolume(ci->vol2, ci->time2, ci->seqId2, SND_SEQVOL_CONTINUE);
+                if ((ci->flags & SND_CROSSFADE_TRACKMUTE) != 0) {
+                    sndSeqMute(ci->seqId2, ci->trackMute2[0], ci->trackMute2[1]);
+                }
+                if ((ci->flags & SND_CROSSFADE_SPEED) != 0) {
+                    sndSeqSpeed(ci->seqId2, ci->speed2);
+                }
+            }
+            *new_seqId = ci->seqId2;
+        } else {
+            *new_seqId = SND_SEQ_ERROR_ID;
+        }
+    } else {
+        pp.flags = SND_PLAYPARA_VOLUME;
+        if ((ci->flags & SND_CROSSFADE_PAUSENEW) != 0) {
+            pp.flags |= SND_PLAYPARA_PAUSE;
+        }
+        if ((ci->flags & SND_CROSSFADE_SPEED) != 0) {
+            pp.flags |= SND_PLAYPARA_SPEED;
+            pp.speed = ci->speed2;
+        }
+        if ((ci->flags & SND_CROSSFADE_TRACKMUTE) != 0) {
+            pp.flags |= SND_PLAYPARA_TRACKMUTE;
+            pp.trackMute[0] = ci->trackMute2[0];
+            pp.trackMute[1] = ci->trackMute2[1];
+        }
+        pp.volTime = ci->time2;
+        pp.volTarget = ci->vol2;
+        pp.numFaded = 0;
+        if (irq_call != 0) {
+            if ((*new_seqId = fn_8015A21C(ci->gid2, ci->sid2, ci->arr2, &pp, TRUE, ci->studio2)) !=
+                    SND_SEQ_ERROR_ID &&
+                (ci->flags & SND_CROSSFADE_MUTENEW) != 0) {
+                seqMute(*new_seqId, 0, 0);
+            }
+        } else {
+            if ((*new_seqId = fn_8015A368(ci->gid2, ci->sid2, ci->arr2, &pp, ci->studio2)) !=
+                    SND_SEQ_ERROR_ID &&
+                (ci->flags & SND_CROSSFADE_MUTENEW) != 0) {
+                sndSeqMute(*new_seqId, 0, 0);
+            }
+        }
+    }
+}
+
+SEQ_EVENT* GenerateNextTrackEvent(u8 trackId) {
+    TRACK* track;
+    CPAT* pattern;
+    SEQ_EVENT* ev;
+    u32 patternTime;
+    u32 pitchTime;
+    u32 modTime;
+
+    track = &lbl_8047AF08->track[trackId];
+    pattern = &lbl_8047AF08->pattern[trackId];
+
+    if (track->addr != NULL) {
+        ev = &lbl_8047AF08->event[trackId];
+        ev->trackId = trackId;
+        ev->info.pattern.base = pattern;
+
+        if (pattern->addr == NULL) {
+        null_pattern_addr:
+            if (track->addr->pattern == 0xffff) {
+                track->addr = NULL;
+                return NULL;
+            }
+
+            if (track->addr->pattern == 0xfffe) {
+                if (lbl_8047AF08->trackSectionTab == NULL) {
+                    if (lbl_8047AF08->section[0].loopDisable) {
+                        track->addr = NULL;
+                        return NULL;
+                    }
+                } else if (lbl_8047AF08->section[lbl_8047AF08->trackSectionTab[trackId]].loopDisable) {
+                    track->addr = NULL;
+                    return NULL;
+                }
+
+                ev->type = 3;
+                ev->time = track->addr->time;
+                track->addr = &track->base[*((u16*)&track->addr->transpose)];
+                return ev;
+            }
+
+            ev->type = 4;
+            ev->time = track->addr->time;
+            ev->info.trackAddr = track->addr;
+            ++track->addr;
+            return ev;
+        }
+
+        pitchTime = pattern->pitchBend.nextTime;
+        modTime = pattern->modulation.nextTime;
+
+    loop:
+        patternTime = pattern->addr->time + pattern->lTime;
+        if (patternTime >= pitchTime) {
+            goto use_pitch_time;
+        }
+        if (patternTime >= modTime) {
+            goto use_mod_time;
+        }
+        if (pattern->addr->key == 0xff && pattern->addr->velocity == 0xff) {
+            pattern->addr = NULL;
+            goto null_pattern_addr;
+        }
+
+        ev->info.trackAddr = (TENTRY*)pattern->addr;
+        pattern->lTime = patternTime;
+
+        if ((pattern->addr->key & 0x80) != 0) {
+            pattern->addr = (NOTE_DATA*)((u8*)pattern->addr + 4);
+            goto use_pattern_time;
+        }
+        if ((pattern->addr->key | pattern->addr->velocity) == 0) {
+            pattern->addr = (NOTE_DATA*)((u8*)pattern->addr + 4);
+            goto loop;
+        }
+        ++pattern->addr;
+
+    use_pattern_time:
+        ev->type = 0;
+        ev->time = patternTime + pattern->baseTime;
+        goto end;
+
+    use_pitch_time:
+        if (pitchTime < modTime) {
+            ev->time = pitchTime + pattern->baseTime;
+            ev->type = 2;
+            goto end;
+        }
+
+    use_mod_time:
+        ev->time = modTime + pattern->baseTime;
+        ev->type = 1;
+
+    end:
+        return ev;
+    }
+
+    return NULL;
 }

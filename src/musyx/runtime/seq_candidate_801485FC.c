@@ -1,6 +1,6 @@
 /**
- * @file seq.c
- * @brief MusyX runtime sequencer prefix, 0x8014635C - 0x80146E88.
+ * @file seq_candidate_801485FC.c
+ * @brief MusyX runtime sequencer suffix candidate, 0x801485FC - 0x8014A23C.
  *
  * Split out of the misnamed people_field.c unit (2026-07-02). Reference:
  * AxioDL/musyx `musyx/runtime/seq.c`, cross-verified byte-exact against the
@@ -330,24 +330,15 @@ extern void synthVolume(u8 volume, u16 time, u8 volGroup, u8 mode, u32 pubId);
 #define SND_SEQVOL_MUTE 3
 #define SND_SEQVOL_MODEMASK 0xF
 
-u32 seqGetPrivateId(u32 seqId) {
-    SEQ_INSTANCE* si;
-    for (si = lbl_8047AF14; si != NULL; si = si->next) {
-        if (si->publicId == (seqId & ~SND_SEQ_CROSSFADE_ID)) {
-            return si->index | (seqId & SND_SEQ_CROSSFADE_ID);
-        }
-    }
-    for (si = lbl_8047AF10; si != NULL; si = si->next) {
-        if (si->publicId == (seqId & ~SND_SEQ_CROSSFADE_ID)) {
-            return si->index | (seqId & SND_SEQ_CROSSFADE_ID);
-        }
-    }
-    return SND_SEQ_ERROR_ID;
-}
 
-static void StartPause(SEQ_INSTANCE* si);
+/* This translation unit is a topology-only split of the original seq.c. */
+extern SEQ_EVENT* GenerateNextTrackEvent(u8 trackId);
 
-static void KillNotes(SEQ_INSTANCE* seq) {
+/*
+ * Compile-only copies preserve MWCC's original same-TU inlining decisions.
+ * Declaring them inline prevents unused out-of-line copies from being emitted.
+ */
+static inline void KillNotes(SEQ_INSTANCE* seq) {
     NOTE* n;
     u32 i;
 
@@ -362,7 +353,7 @@ static void KillNotes(SEQ_INSTANCE* seq) {
     }
 }
 
-static void ResetNotes(SEQ_INSTANCE* seq) {
+static inline void ResetNotes(SEQ_INSTANCE* seq) {
     NOTE* n;
     u32 i;
 
@@ -395,4 +386,350 @@ static void ResetNotes(SEQ_INSTANCE* seq) {
         lbl_8047AF04 = seq->noteKeyOff;
         seq->noteKeyOff = NULL;
     }
+}
+
+static void InsertGlobalEvent(SEQ_SECTION* section, SEQ_EVENT* event) {
+    SEQ_EVENT* el;
+    SEQ_EVENT* last_el;
+
+    last_el = NULL;
+    el = section->globalEventRoot;
+    for (; el != NULL; last_el = el, el = el->next) {
+        if (el->time > event->time) {
+            event->next = el;
+            event->prev = last_el;
+            if (last_el != NULL) {
+                last_el->next = event;
+            } else {
+                section->globalEventRoot = event;
+            }
+            el->prev = event;
+            return;
+        }
+    }
+
+    event->prev = last_el;
+    if (last_el != NULL) {
+        last_el->next = event;
+    } else {
+        section->globalEventRoot = event;
+    }
+    event->next = NULL;
+}
+
+static void InitTrackEvents(void) {
+    u32 i;
+    SEQ_EVENT* ev;
+
+    if (lbl_8047AF08->trackSectionTab == NULL) {
+        for (i = 0; i < 0x40; i += 1) {
+            if ((ev = GenerateNextTrackEvent(i)) != NULL) {
+                InsertGlobalEvent(lbl_8047AF08->section, ev);
+            }
+        }
+    } else {
+        for (i = 0; i < 0x40; i += 1) {
+            if ((ev = GenerateNextTrackEvent(i)) != NULL) {
+                InsertGlobalEvent(lbl_8047AF08->section + lbl_8047AF08->trackSectionTab[i], ev);
+            }
+        }
+    }
+}
+
+static void InitTrackEventsSection(u8 secIndex) {
+    u32 i;
+    SEQ_EVENT* ev;
+
+    if (lbl_8047AF08->trackSectionTab == NULL) {
+        for (i = 0; i < 64; i += 1) {
+            if ((ev = GenerateNextTrackEvent(i)) != NULL) {
+                InsertGlobalEvent(lbl_8047AF08->section, ev);
+            }
+        }
+    } else {
+        for (i = 0; i < 64; i += 1) {
+            if (secIndex == lbl_8047AF08->trackSectionTab[i] &&
+                (ev = GenerateNextTrackEvent(i)) != NULL) {
+                InsertGlobalEvent(lbl_8047AF08->section + secIndex, ev);
+            }
+        }
+    }
+}
+
+static u32 GetNextEventTime(SEQ_SECTION* section) {
+    if (section->globalEventRoot == NULL) {
+        return 0;
+    }
+    return section->globalEventRoot->time;
+}
+
+static SEQ_EVENT* GetGlobalEvent(SEQ_SECTION* section) {
+    SEQ_EVENT* ev;
+    ev = section->globalEventRoot;
+    if (ev != NULL && (section->globalEventRoot = ev->next) != NULL) {
+        section->globalEventRoot->prev = NULL;
+    }
+    return ev;
+}
+
+static void HandleMasterTrack(u8 secIndex) {
+    SEQ_SECTION* section;
+
+    section = &lbl_8047AF08->section[secIndex];
+    if (section->mTrack.base != NULL) {
+        while (section->mTrack.addr->time != -1) {
+            if (section->mTrack.addr->time > section->time[section->timeIndex].high) {
+                break;
+            }
+
+            if ((lbl_8047AF08->arrbase->info & 0x40000000) != 0) {
+                synthSetBpm((section->bpm = section->mTrack.addr->bpm) >> 10, lbl_8047AF00,
+                            secIndex);
+            } else {
+                synthSetBpm(section->mTrack.addr->bpm, lbl_8047AF00, secIndex);
+                section->bpm = section->mTrack.addr->bpm << 10;
+            }
+
+            ++section->mTrack.addr;
+        }
+    }
+}
+
+static void SetTickDelta(SEQ_SECTION* section, u32 deltaTime) {
+    f32 tickDelta = (f32)section->bpm * (f32)deltaTime * (1.f / 40960000.f);
+    tickDelta *= (f32)section->speed * (1.f / 256.f);
+
+    section->tickDelta[section->timeIndex].low =
+        (u32)(f32)fmod(tickDelta * 65536.f, 65536.f);
+    section->tickDelta[section->timeIndex].high = (s32)(f32)floor(tickDelta);
+}
+
+static void RewindMTrack(u8 secIndex, u32 deltaTime) {
+    if (lbl_8047AF08->section[secIndex].mTrack.base == NULL) {
+        return;
+    }
+    lbl_8047AF08->section[secIndex].mTrack.addr = lbl_8047AF08->section[secIndex].mTrack.base;
+    HandleMasterTrack(secIndex);
+    SetTickDelta(lbl_8047AF08->section + secIndex, deltaTime);
+}
+
+static u32 HandleTrackEvents(u8 secIndex, u32 deltaTime) {
+    SEQ_EVENT* ev;
+    u32 loopFlag;
+    SEQ_SECTION* section;
+
+    section = &lbl_8047AF08->section[secIndex];
+    loopFlag = FALSE;
+
+    while (GetNextEventTime(section) <= section->time[section->timeIndex].high) {
+        if ((ev = GetGlobalEvent(section)) == NULL) {
+            if (!loopFlag) {
+                return FALSE;
+            }
+
+            loopFlag = FALSE;
+            section->timeIndex ^= 1;
+            section->time[section->timeIndex].high = lbl_8047AF08->arrbase->loopPoint[secIndex];
+            section->time[section->timeIndex].low = section->time[section->timeIndex ^ 1].low;
+            RewindMTrack(secIndex, deltaTime);
+            section->loopCnt += 1;
+            InitTrackEventsSection(secIndex);
+            continue;
+        }
+
+        if ((ev = fn_801485FC(ev, secIndex, &loopFlag)) != NULL) {
+            InsertGlobalEvent(section, ev);
+        }
+    }
+
+    return TRUE;
+}
+
+static u32 HandleNotes(void) {
+    NOTE* note;
+    u32 i;
+
+    for (i = 0; i < 2; i++) {
+        note = lbl_8047AF08->noteUsed[i];
+        if (note != NULL) {
+            while (note->endTime <= lbl_8047AF08->section[note->section].time[i].high) {
+                synthSendKeyOff(note->id);
+
+                if ((lbl_8047AF08->noteUsed[i] = note->next) != NULL) {
+                    lbl_8047AF08->noteUsed[i]->prev = NULL;
+                }
+
+                if ((note->next = lbl_8047AF08->noteKeyOff) != NULL) {
+                    lbl_8047AF08->noteKeyOff->prev = note;
+                }
+                lbl_8047AF08->noteKeyOff = note;
+                note = lbl_8047AF08->noteUsed[i];
+
+                if (note == NULL) {
+                    break;
+                }
+            }
+        }
+    }
+
+    return lbl_8047AF08->noteUsed[0] != NULL || lbl_8047AF08->noteUsed[1] != NULL;
+}
+
+static void seqFreeKeyOffNote(NOTE* n) {
+    if (n->next != NULL) {
+        n->next->prev = n->prev;
+    }
+
+    if (n->prev != NULL) {
+        n->prev->next = n->next;
+    } else {
+        lbl_8047AF08->noteKeyOff = n->next;
+    }
+
+    if ((n->next = lbl_8047AF04) != NULL) {
+        lbl_8047AF04->prev = n;
+    }
+
+    n->prev = NULL;
+    lbl_8047AF04 = n;
+}
+
+static void HandleKeyOffNotes(void) {
+    NOTE* n;
+    NOTE* nn;
+
+    if (!lbl_8047AF08->keyOffCheck) {
+        n = lbl_8047AF08->noteKeyOff;
+        while (n != NULL) {
+            nn = n->next;
+            if (n->id != SND_SEQ_ERROR_ID && sndFXCheck(n->id) == SND_SEQ_ERROR_ID) {
+                seqFreeKeyOffNote(n);
+            }
+            n = nn;
+        }
+    }
+
+    lbl_8047AF08->keyOffCheck = (lbl_8047AF08->keyOffCheck + 1) % 5;
+}
+
+void fn_801496A0(u32 deltaTime) {
+    u32 i;
+    u32 j;
+    u32 x;
+    u32 eventsActive;
+    u32 notesActive;
+    SEQ_INSTANCE* si;
+    SEQ_INSTANCE* nextSi;
+
+    if (deltaTime == 0) {
+        return;
+    }
+
+    si = lbl_8047AF14;
+    while (si != NULL) {
+        nextSi = si->next;
+        lbl_8047AF08 = si;
+        lbl_8047AF00 = si->index;
+        lbl_8047AEFC = synthIsFadeOutActive(si->defVGroup);
+
+        if (lbl_8047AF08->trackSectionTab == NULL) {
+            HandleMasterTrack(0);
+            SetTickDelta(lbl_8047AF08->section, deltaTime);
+            eventsActive = HandleTrackEvents(0, deltaTime);
+            notesActive = HandleNotes();
+            HandleKeyOffNotes();
+
+            for (i = 0; i < 2; i++) {
+                x = lbl_8047AF08->section[0].time[i].low + lbl_8047AF08->section[0].tickDelta[i].low;
+                lbl_8047AF08->section[0].time[i].low = x & 0xffff;
+                x >>= 16;
+                lbl_8047AF08->section[0].time[i].high += x + lbl_8047AF08->section[0].tickDelta[i].high;
+            }
+        } else {
+            eventsActive = 0;
+            for (i = 0; i < 16; i++) {
+                HandleMasterTrack(i);
+                SetTickDelta(&lbl_8047AF08->section[i], deltaTime);
+                eventsActive |= HandleTrackEvents(i, deltaTime);
+            }
+            notesActive = HandleNotes();
+            HandleKeyOffNotes();
+
+            for (i = 0; i < 16; i++) {
+                for (j = 0; j < 2; j++) {
+                    x = lbl_8047AF08->section[i].time[j].low + lbl_8047AF08->section[i].tickDelta[j].low;
+                    lbl_8047AF08->section[i].time[j].low = x & 0xffff;
+                    x >>= 16;
+                    lbl_8047AF08->section[i].time[j].high +=
+                        x + lbl_8047AF08->section[i].tickDelta[j].high;
+                }
+            }
+        }
+
+        if (eventsActive == 0 && notesActive == 0) {
+            if (si->prev != NULL) {
+                si->prev->next = nextSi;
+            } else {
+                lbl_8047AF14 = nextSi;
+            }
+            if (nextSi != NULL) {
+                nextSi->prev = si->prev;
+            }
+            ResetNotes(si);
+            si->state = 0;
+            si->prev = NULL;
+            if ((si->next = lbl_8047AF0C) != NULL) {
+                lbl_8047AF0C->prev = si;
+            }
+            lbl_8047AF0C = si;
+        }
+        si = nextSi;
+    }
+}
+
+static void ClearNotes(void) {
+    NOTE* ln;
+    s32 i;
+
+    ln = NULL;
+    lbl_8047AF04 = &lbl_804271D0[0];
+    for (i = 0; i < 256; i++) {
+        lbl_804271D0[i].prev = ln;
+        if (ln != NULL) {
+            ln->next = &lbl_804271D0[i];
+        }
+        ln = &lbl_804271D0[i];
+    }
+
+    ln->next = NULL;
+}
+
+static void InitPublicIds(void) { lbl_8047AEF8 = 0; }
+
+void seqInit(void) {
+    u32 i;
+    u32 j;
+
+    lbl_8047AF14 = NULL;
+    lbl_8047AF10 = NULL;
+
+    for (i = 0; i < 8; i++) {
+        if (i == 0) {
+            lbl_8047AF0C = &lbl_804285D0[i];
+            lbl_804285D0[i].prev = NULL;
+        } else {
+            lbl_804285D0[i - 1].next = &lbl_804285D0[i];
+            lbl_804285D0[i].prev = &lbl_804285D0[i - 1];
+        }
+        lbl_804285D0[i].index = i;
+        lbl_804285D0[i].state = 0;
+
+        for (j = 0; j < 0x10; j++) {
+            lbl_80434910[i][j] = 0xffff;
+        }
+    }
+    lbl_804285D0[i - 1].next = NULL;
+
+    ClearNotes();
+    InitPublicIds();
 }

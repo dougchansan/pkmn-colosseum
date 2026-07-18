@@ -1409,7 +1409,13 @@ game/item_range_80144574.c:
 	.text       start:0x80144574 end:0x8014635C
 
 musyx/runtime/seq.c:
-	.text       start:0x8014635C end:0x8014A23C
+	.text       start:0x8014635C end:0x80146E88
+
+musyx/runtime/seq_exact_80146E88.c:
+	.text       start:0x80146E88 end:0x801485FC
+
+musyx/runtime/seq_candidate_801485FC.c:
+	.text       start:0x801485FC end:0x8014A23C
 
 musyx/runtime/synth.c:
 	.text       start:0x8014A23C end:0x8014D598

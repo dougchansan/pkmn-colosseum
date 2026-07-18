@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196121,
     "total_functions": 8603,
-    "total_units": 701
+    "total_units": 703
   },
   "topology_status": {
     "auto_units": 65,
-    "named_units": 636,
-    "source_backed_units": 621,
+    "named_units": 638,
+    "source_backed_units": 623,
     "auto_code": 0,
     "auto_data": 57787,
     "auto_functions": 0
@@ -6937,13 +6937,39 @@
       "sections": [
         {
           "name": ".text",
-          "size": 16096,
+          "size": 2860,
           "virtual_address": 2148819804
         }
       ],
-      "total_code": 16096,
+      "total_code": 2860,
       "total_data": 0,
-      "total_functions": 16
+      "total_functions": 2
+    },
+    {
+      "name": "main/musyx/runtime/seq_exact_80146E88",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 6004,
+          "virtual_address": 2148822664
+        }
+      ],
+      "total_code": 6004,
+      "total_data": 0,
+      "total_functions": 9
+    },
+    {
+      "name": "main/musyx/runtime/seq_candidate_801485FC",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 7232,
+          "virtual_address": 2148828668
+        }
+      ],
+      "total_code": 7232,
+      "total_data": 0,
+      "total_functions": 5
     },
     {
       "name": "main/musyx/runtime/synth",
