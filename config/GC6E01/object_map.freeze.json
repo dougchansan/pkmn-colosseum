@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196121,
     "total_functions": 8603,
-    "total_units": 698
+    "total_units": 700
   },
   "topology_status": {
     "auto_units": 65,
-    "named_units": 633,
-    "source_backed_units": 618,
+    "named_units": 635,
+    "source_backed_units": 620,
     "auto_code": 0,
     "auto_data": 57787,
     "auto_functions": 0
@@ -8593,13 +8593,39 @@
       "sections": [
         {
           "name": ".text",
-          "size": 12740,
+          "size": 6780,
           "virtual_address": 2149612652
         }
       ],
-      "total_code": 12740,
+      "total_code": 6780,
       "total_data": 0,
-      "total_functions": 84
+      "total_functions": 19
+    },
+    {
+      "name": "main/game/fight_out_pokemon_exact_802096E8",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 4600,
+          "virtual_address": 2149619432
+        }
+      ],
+      "total_code": 4600,
+      "total_data": 0,
+      "total_functions": 64
+    },
+    {
+      "name": "main/game/fight_out_pokemon_suffix_8020A8E0",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1360,
+          "virtual_address": 2149624032
+        }
+      ],
+      "total_code": 1360,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/game/fight_action",

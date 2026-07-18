@@ -1791,7 +1791,13 @@ game/fight_out_pokemon_exact_80206A04.c:
 	.text       start:0x80206A04 end:0x80207C6C
 
 game/fight_out_pokemon_suffix_80207C6C.c:
-	.text       start:0x80207C6C end:0x8020AE30
+	.text       start:0x80207C6C end:0x802096E8
+
+game/fight_out_pokemon_exact_802096E8.c:
+	.text       start:0x802096E8 end:0x8020A8E0
+
+game/fight_out_pokemon_suffix_8020A8E0.c:
+	.text       start:0x8020A8E0 end:0x8020AE30
 
 game/fight_action.c:
 	.text       start:0x8020AE30 end:0x8020D968
