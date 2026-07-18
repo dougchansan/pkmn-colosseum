@@ -978,7 +978,10 @@ game/gs_gfx_layer_state.c:
 	.text       start:0x800D6B00 end:0x800D9AF0
 
 game/gs_gfx_range_800D9AF0.c:
-	.text       start:0x800D9AF0 end:0x800DA578
+	.text       start:0x800D9AF0 end:0x800D9D68
+
+game/gs_gfx_exact_800D9D68.c:
+	.text       start:0x800D9D68 end:0x800DA578
 
 game/gs_gfx_dl.c:
 	.text       start:0x800DA578 end:0x800DB098

@@ -2550,6 +2550,13 @@ config.libs = [
                 progress_category="game",
             ),
             Object(
+                Matching,
+                "game/gs_gfx_exact_800D9D68.c",
+                mw_version="GC/1.3",
+                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                progress_category="game",
+            ),
+            Object(
                 CodeCandidate,
                 "game/gs_gfx_dl.c",
                 mw_version="GC/1.3",
