@@ -1249,7 +1249,13 @@ game/pokemon_data.c:
 	.text       start:0x8011CA60 end:0x8011F5FC
 
 game/pokemon_range_8011F5FC.c:
-	.text       start:0x8011F5FC end:0x80128E38
+	.text       start:0x8011F5FC end:0x801248C4
+
+game/pokemon_range_exact_801248C4.c:
+	.text       start:0x801248C4 end:0x801254B4
+
+game/pokemon_range_801254B4.c:
+	.text       start:0x801254B4 end:0x80128E38
 
 game/hero.c:
 	.text       start:0x80128E38 end:0x8012AC9C

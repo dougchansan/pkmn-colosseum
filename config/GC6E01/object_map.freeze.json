@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196121,
     "total_functions": 8603,
-    "total_units": 779
+    "total_units": 781
   },
   "topology_status": {
     "auto_units": 65,
-    "named_units": 714,
-    "source_backed_units": 699,
+    "named_units": 716,
+    "source_backed_units": 701,
     "auto_code": 0,
     "auto_data": 57787,
     "auto_functions": 0
@@ -5931,13 +5931,39 @@
       "sections": [
         {
           "name": ".text",
-          "size": 38972,
+          "size": 21192,
           "virtual_address": 2148660732
         }
       ],
-      "total_code": 38972,
+      "total_code": 21192,
       "total_data": 0,
-      "total_functions": 106
+      "total_functions": 72
+    },
+    {
+      "name": "main/game/pokemon_range_exact_801248C4",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 3056,
+          "virtual_address": 2148681924
+        }
+      ],
+      "total_code": 3056,
+      "total_data": 0,
+      "total_functions": 10
+    },
+    {
+      "name": "main/game/pokemon_range_801254B4",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 14724,
+          "virtual_address": 2148684980
+        }
+      ],
+      "total_code": 14724,
+      "total_data": 0,
+      "total_functions": 24
     },
     {
       "name": "main/game/hero",
