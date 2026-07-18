@@ -364,7 +364,13 @@ game/menu/menuCB_range_exact_80069048.c:
 	.text       start:0x80069048 end:0x8006905C
 
 game/menu/menuCB_range_8006905C.c:
-	.text       start:0x8006905C end:0x80069A08
+	.text       start:0x8006905C end:0x800697C4
+
+game/menu/menuCB_range_exact_800697C4.c:
+	.text       start:0x800697C4 end:0x800697F4
+
+game/menu/menuCB_range_800697F4.c:
+	.text       start:0x800697F4 end:0x80069A08
 
 game/menu/menuCB_range_exact_80069A08.c:
 	.text       start:0x80069A08 end:0x80069A60

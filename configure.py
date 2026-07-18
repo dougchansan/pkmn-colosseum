@@ -2176,6 +2176,30 @@ config.libs = [
             ),
             Object(
                 Matching,
+                "game/menu/menuCB_range_exact_800697C4.c",
+                mw_version="GC/1.3",
+                extra_cflags=[
+                    "-use_lmw_stmw on",
+                    "-sdata 8",
+                    "-sdata2 8",
+                    "-i src/game/menu",
+                ],
+                progress_category="game",
+            ),
+            Object(
+                CodeCandidate,
+                "game/menu/menuCB_range_800697F4.c",
+                mw_version="GC/1.3",
+                extra_cflags=[
+                    "-use_lmw_stmw on",
+                    "-sdata 8",
+                    "-sdata2 8",
+                    "-i src/game/menu",
+                ],
+                progress_category="game",
+            ),
+            Object(
+                Matching,
                 "game/menu/menuCB_range_exact_80069A08.c",
                 mw_version="GC/1.3",
                 extra_cflags=[

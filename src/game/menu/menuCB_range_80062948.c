@@ -56,7 +56,8 @@ typedef struct UICmdMsg {
     !defined(MENUCB_RANGE_EXACT_80068738_ONLY) && \
     !defined(MENUCB_RANGE_RESIDUAL_80068794_ONLY) && \
     !defined(MENUCB_RANGE_EXACT_80069048_ONLY) && \
-    !defined(MENUCB_RANGE_RESIDUAL_8006905C_ONLY) && \
+    !defined(MENUCB_RANGE_EXACT_800697C4_ONLY) && \
+    !defined(MENUCB_RANGE_RESIDUAL_800697F4_ONLY) && \
     !defined(MENUCB_RANGE_EXACT_80069A08_ONLY)
 #define MENUCB_RANGE_RESIDUAL_EMPTY_ONLY
 #endif
@@ -69,17 +70,20 @@ s32 menuCBPokemonEntryGetReadFlag(void)
 }
 #endif
 
-#if defined(MENUCB_RANGE_RESIDUAL_8006905C_ONLY)
+#if defined(MENUCB_RANGE_EXACT_800697C4_ONLY)
 /* Address: 0x800697C4 | Size: 0x30 */
 #pragma push
-#pragma scheduling off
+#pragma scheduling on
 #pragma optimize_for_size on
+#pragma peephole off
 void menuCBPokemonEntryLoadTex(void)
 {
     fn_8010B01C(0, _menuCBPokemonEntryLoadCallBack__FPv, 0);
 }
 #pragma pop
+#endif
 
+#if defined(MENUCB_RANGE_RESIDUAL_800697F4_ONLY)
 /* Address: 0x80069944 | Size: 0xC4 */
 #pragma push
 #pragma scheduling off
