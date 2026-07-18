@@ -11,7 +11,8 @@
 
 #if !defined(MENU_MIDDLE_RESIDUAL_80069C0C_ONLY) && \
     !defined(MENU_MIDDLE_EXACT_8006A65C_ONLY) && \
-    !defined(MENU_MIDDLE_RESIDUAL_8006A824_ONLY)
+    !defined(MENU_MIDDLE_EXACT_8006A824_ONLY) && \
+    !defined(MENU_MIDDLE_RESIDUAL_8006A990_ONLY)
 #define MENU_MIDDLE_ALL
 #endif
 
@@ -1089,7 +1090,7 @@ void fn_8006A81C(u32 r3, u32 r4) {
 }
 #endif
 
-#if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_RESIDUAL_8006A824_ONLY)
+#if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_EXACT_8006A824_ONLY)
 /* 0x8006A824 | size: 0x16C */
 #pragma push
 #pragma peephole off
@@ -1143,8 +1144,9 @@ void fn_8006A824(u32 r28, u32 r29) {
     return;
 }
 #pragma pop
+#endif
 
-
+#if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_RESIDUAL_8006A990_ONLY)
 /* 0x8006A990 | size: 0x12C */
 void fn_8006A990(void) {
     extern void pokemonAllKaihuku();

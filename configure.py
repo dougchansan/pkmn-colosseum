@@ -3126,8 +3126,20 @@ config.libs = [
                 progress_category="game",
             ),
             Object(
+                Matching,
+                "game/menu/menu_middle_exact_8006A824.c",
+                mw_version="GC/1.3",
+                extra_cflags=[
+                    "-use_lmw_stmw on",
+                    "-sdata 8",
+                    "-sdata2 8",
+                    "-i src/game/menu",
+                ],
+                progress_category="game",
+            ),
+            Object(
                 CodeCandidate,
-                "game/menu/menu_middle_range_8006A824.c",
+                "game/menu/menu_middle_range_8006A990.c",
                 mw_version="GC/1.3",
                 extra_cflags=[
                     "-use_lmw_stmw on",

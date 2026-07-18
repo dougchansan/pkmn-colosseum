@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196116,
     "total_functions": 8603,
-    "total_units": 810
+    "total_units": 811
   },
   "topology_status": {
     "auto_units": 65,
-    "named_units": 745,
-    "source_backed_units": 730,
+    "named_units": 746,
+    "source_backed_units": 731,
     "auto_code": 0,
     "auto_data": 57787,
     "auto_functions": 0
@@ -1852,17 +1852,30 @@
       "total_functions": 14
     },
     {
-      "name": "main/game/menu/menu_middle_range_8006A824",
+      "name": "main/game/menu/menu_middle_exact_8006A824",
       "sections": [
         {
           "name": ".text",
-          "size": 26744,
+          "size": 364,
           "virtual_address": 2147919908
         }
       ],
-      "total_code": 26744,
+      "total_code": 364,
       "total_data": 0,
-      "total_functions": 85
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/menu/menu_middle_range_8006A990",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 26380,
+          "virtual_address": 2147920272
+        }
+      ],
+      "total_code": 26380,
+      "total_data": 0,
+      "total_functions": 84
     },
     {
       "name": "main/game/menu/menu_range_8007109C",
