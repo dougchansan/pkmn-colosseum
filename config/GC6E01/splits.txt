@@ -1771,8 +1771,20 @@ game/fight_seq.c:
 game/fight_range_80211A00.c:
 	.text       start:0x80211A00 end:0x802405C0
 
+game/fight_trainer_ai_waza_value_prefix.c:
+	.text       start:0x802405C0 end:0x80241B70
+
+game/fight_trainer_ai_waza_value_exact_80241B70.c:
+	.text       start:0x80241B70 end:0x80243CD8
+
+game/fight_trainer_ai_waza_value_middle.c:
+	.text       start:0x80243CD8 end:0x80247048
+
+game/fight_trainer_ai_waza_value_exact_80247048.c:
+	.text       start:0x80247048 end:0x8024A170
+
 game/fight_trainer_ai_waza_value.c:
-	.text       start:0x802405C0 end:0x8024E578
+	.text       start:0x8024A170 end:0x8024E578
 
 game/fight_trainer_ai_irekae.c:
 	.text       start:0x8024E578 end:0x80250980

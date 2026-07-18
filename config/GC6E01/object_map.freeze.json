@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196121,
     "total_functions": 8603,
-    "total_units": 669
+    "total_units": 673
   },
   "topology_status": {
     "auto_units": 65,
-    "named_units": 604,
-    "source_backed_units": 589,
+    "named_units": 608,
+    "source_backed_units": 593,
     "auto_code": 0,
     "auto_data": 57787,
     "auto_functions": 0
@@ -8506,17 +8506,69 @@
       "total_functions": 470
     },
     {
+      "name": "main/game/fight_trainer_ai_waza_value_prefix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 5552,
+          "virtual_address": 2149844416
+        }
+      ],
+      "total_code": 5552,
+      "total_data": 0,
+      "total_functions": 5
+    },
+    {
+      "name": "main/game/fight_trainer_ai_waza_value_exact_80241B70",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 8552,
+          "virtual_address": 2149849968
+        }
+      ],
+      "total_code": 8552,
+      "total_data": 0,
+      "total_functions": 24
+    },
+    {
+      "name": "main/game/fight_trainer_ai_waza_value_middle",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 13168,
+          "virtual_address": 2149858520
+        }
+      ],
+      "total_code": 13168,
+      "total_data": 0,
+      "total_functions": 20
+    },
+    {
+      "name": "main/game/fight_trainer_ai_waza_value_exact_80247048",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 12584,
+          "virtual_address": 2149871688
+        }
+      ],
+      "total_code": 12584,
+      "total_data": 0,
+      "total_functions": 27
+    },
+    {
       "name": "main/game/fight_trainer_ai_waza_value",
       "sections": [
         {
           "name": ".text",
-          "size": 57272,
-          "virtual_address": 2149844416
+          "size": 17416,
+          "virtual_address": 2149884272
         }
       ],
-      "total_code": 57272,
+      "total_code": 17416,
       "total_data": 0,
-      "total_functions": 104
+      "total_functions": 28
     },
     {
       "name": "main/game/fight_trainer_ai_irekae",
