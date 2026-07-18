@@ -1007,6 +1007,9 @@ L_8024C3C8:
     r3 = r31;
     return;
 }
+
+#if !defined(FIGHT_AI_VALUE_PREFIX_8024BFC0_ONLY)
+
 /* Address: 0x8024C5BC | Size: 0x91C (2332 bytes) */
 void fightTrainerAiWazaValueTobihaneru(void* ctx, u32 param1, u32 param2, u32 param3) {
     extern void fightFloorGetFightTrainerFightOutPokemonPtrAry();
@@ -2198,6 +2201,8 @@ L_8024D6BC:
     r3 = r30;
     return;
 }
+
+#endif
 
 #endif
 

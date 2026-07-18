@@ -6,24 +6,24 @@
     "total_code": 2495108,
     "total_data": 2196121,
     "total_functions": 8603,
-    "total_units": 747
+    "total_units": 748
   },
   "topology_status": {
     "auto_units": 65,
-    "named_units": 682,
-    "source_backed_units": 667,
+    "named_units": 683,
+    "source_backed_units": 668,
     "auto_code": 0,
     "auto_data": 57787,
     "auto_functions": 0
   },
   "baseline_progress": {
-    "matched_code": "880476",
-    "matched_code_percent": 35.288094,
+    "matched_code": "885176",
+    "matched_code_percent": 35.47646,
     "matched_data": "2136502",
     "matched_data_percent": 97.285255,
-    "matched_functions": 6257,
-    "matched_functions_percent": 72.73044,
-    "fuzzy_match_percent": 57.248383
+    "matched_functions": 6259,
+    "matched_functions_percent": 72.75369,
+    "fuzzy_match_percent": 57.38778
   },
   "unit_topology": [
     {
@@ -9412,13 +9412,26 @@
       "sections": [
         {
           "name": ".text",
-          "size": 6232,
+          "size": 1532,
           "virtual_address": 2149892032
         }
       ],
-      "total_code": 6232,
+      "total_code": 1532,
       "total_data": 0,
-      "total_functions": 3
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/fight_trainer_ai_waza_value_exact_8024C5BC",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 4700,
+          "virtual_address": 2149893564
+        }
+      ],
+      "total_code": 4700,
+      "total_data": 0,
+      "total_functions": 2
     },
     {
       "name": "main/game/fight_trainer_ai_waza_value_exact_8024D818",
