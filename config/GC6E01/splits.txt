@@ -1794,7 +1794,13 @@ game/fight_seq.c:
 	.text       start:0x80211170 end:0x80211A00
 
 game/fight_range_80211A00.c:
-	.text       start:0x80211A00 end:0x8023CA9C
+	.text       start:0x80211A00 end:0x8023A740
+
+game/fight_range_8023A740.c:
+	.text       start:0x8023A740 end:0x8023B498
+
+game/fight_range_8023B498.c:
+	.text       start:0x8023B498 end:0x8023CA9C
 
 game/fight_range_80211A00_exact_8023CA9C.c:
 	.text       start:0x8023CA9C end:0x802405C0
