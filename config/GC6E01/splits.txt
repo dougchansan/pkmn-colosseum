@@ -673,7 +673,13 @@ dolphin/sdk_exact_800ACBFC.c:
 	.text       start:0x800ACBFC end:0x800AE3F0
 
 dolphin/sdk_range_800AE3F0.c:
-	.text       start:0x800AE3F0 end:0x800B71F0
+	.text       start:0x800AE3F0 end:0x800B3B68
+
+dolphin/card_exact_800B3B68.c:
+	.text       start:0x800B3B68 end:0x800B4488
+
+dolphin/sdk_range_800B4488.c:
+	.text       start:0x800B4488 end:0x800B71F0
 
 dolphin/gx/GX_fn_800B71F0.c:
 	.text       start:0x800B71F0 end:0x800B71FC

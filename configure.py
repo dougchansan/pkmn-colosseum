@@ -1329,6 +1329,18 @@ config.libs = [
             ),
             Object(
                 Matching,
+                "dolphin/card_exact_800B3B68.c",
+                mw_version="GC/1.2.5n",
+                progress_category="sdk",
+            ),
+            Object(
+                CodeCandidate,
+                "dolphin/sdk_range_800B4488.c",
+                mw_version="GC/1.2.5n",
+                progress_category="sdk",
+            ),
+            Object(
+                Matching,
                 "dolphin/sdk_range_800B71FC.c",
                 mw_version="GC/1.2.5n",
                 progress_category="sdk",

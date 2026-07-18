@@ -388,10 +388,17 @@ extern s32 VerifyDir(CARDControl* card, s32* current);
 extern s32 VerifyFAT(CARDControl* card, s32* current);
 extern s32 __CARDUpdateDir(s32 chan, CARDCallback callback);
 extern s32 __CARDUpdateFatBlock(s32 chan, u16* fat, CARDCallback callback);
+extern void __CARDDefaultApiCallback(s32 chan, s32 result);
+extern BOOL __CARDCompareFileName(CARDDirEntry* entry, const char* fileName);
+extern s32 fn_800B4270(CARDControl* card, CARDDirEntry* entry);
+extern s32 fn_800B4308(CARDDirEntry* entry);
+extern s32 __CARDGetFileNo(CARDControl* card, const char* fileName, s32* pfileNo);
+extern void* __CARDGetDirBlock(CARDControl* card);
 extern u32 DummyLen(void);
 extern s32 ReadArrayUnlock(s32 chan, u32 data, void* rbuf, s32 rlen,
                            s32 mode);
 
+#if !defined(CARD_EXACT_800B3B68_ONLY)
 s32 CARDGetSerialNo(s32 chan, u64* serialNo) {
     CARDControl* card;
     CARDID* id;
@@ -1175,7 +1182,9 @@ error:
 }
 void __CARDDefaultApiCallback(s32 chan, s32 result) {
 }
+#endif
 
+#if defined(CARD_EXACT_800B3B68_ONLY)
 s32 __CARDFormatRegionAsync(s32 chan, u16 encode, CARDCallback callback)
 {
     CARDControl* card;
@@ -1253,7 +1262,9 @@ s32 __CARDFormatRegionAsync(s32 chan, u16 encode, CARDCallback callback)
     }
     return result;
 }
+#endif
 
+#if !defined(CARD_EXACT_800B3B68_ONLY)
 s32 CARDCheckExAsync(s32 chan, s32* xferBytes, CARDCallback callback)
 {
     CARDControl* card;
@@ -1554,11 +1565,85 @@ s32 CARDCheckAsync(s32 chan, void* callback) {
 
     return CARDCheckExAsync(chan, &xferBytes, callback);
 }
+#endif
 
+#if defined(CARD_EXACT_800B3B68_ONLY)
 s32 CARDFormatAsync(s32 chan, void* callback) {
     return __CARDFormatRegionAsync(chan, __CARDGetFontEncode(), callback);
 }
 
+BOOL __CARDCompareFileName(CARDDirEntry* entry, const char* fileName) {
+    char* entryName = entry->fileName;
+    char entryChar;
+    char c;
+    s32 count = 32;
+
+    while (--count >= 0) {
+        entryChar = *entryName++;
+        c = *fileName++;
+        if (entryChar != c) {
+            return FALSE;
+        }
+        if (c == 0) {
+            return TRUE;
+        }
+    }
+    if (*fileName == 0) {
+        return TRUE;
+    }
+    return FALSE;
+}
+
+s32 fn_800B4270(CARDControl* card, CARDDirEntry* entry) {
+    if (entry->gameName[0] == 0xff) {
+        return -4;
+    }
+    if (card->diskId == lbl_803FC840 ||
+        (memcmp(entry->gameName, ((DVDDiskID*)card->diskId)->gameName, 4) == 0 &&
+         memcmp(entry->company, ((DVDDiskID*)card->diskId)->company, 2) == 0)) {
+        return 0;
+    }
+    return -10;
+}
+
+s32 fn_800B4308(CARDDirEntry* entry) {
+    if (entry->gameName[0] == 0xff) {
+        return -4;
+    }
+    if (entry->permission & 4) {
+        return 0;
+    }
+    return -10;
+}
+
+s32 __CARDGetFileNo(CARDControl* card, const char* fileName, s32* pfileNo) {
+    CARDDirEntry* dir;
+    CARDDirEntry* entry;
+    s32 fileNo;
+    s32 result;
+
+    if (card->attached == 0) {
+        return -3;
+    }
+
+    dir = __CARDGetDirBlock(card);
+    for (fileNo = 0; fileNo < 127; fileNo++) {
+        entry = &dir[fileNo];
+        result = fn_800B4270(card, entry);
+        if (result < 0) {
+            continue;
+        }
+        if (__CARDCompareFileName(entry, fileName)) {
+            *pfileNo = fileNo;
+            return 0;
+        }
+    }
+
+    return -4;
+}
+#endif
+
+#if !defined(CARD_EXACT_800B3B68_ONLY)
 u16 __CARDGetFontEncode(void) {
     return lbl_8047A970;
 }
@@ -1868,71 +1953,7 @@ s32 __CARDUpdateFatBlock(s32 chan, u16* fat, CARDCallback callback) {
                        EraseCallback_800C1D6C);
 }
 
-/*
- * This range combines multiple CARD objects. Keep the file-lookup helpers
- * before the directory accessor body so lookup retains the retail out-of-line
- * call while later directory-update functions can inline the accessor.
- */
-s32 fn_800B4270(CARDControl* card, CARDDirEntry* entry) {
-    if (entry->gameName[0] == 0xff) {
-        return -4;
-    }
-    if (card->diskId == lbl_803FC840 ||
-        (memcmp(entry->gameName, ((DVDDiskID*)card->diskId)->gameName, 4) == 0 &&
-         memcmp(entry->company, ((DVDDiskID*)card->diskId)->company, 2) == 0)) {
-        return 0;
-    }
-    return -10;
-}
-
-BOOL __CARDCompareFileName(CARDDirEntry* entry, const char* fileName) {
-    char* entryName = entry->fileName;
-    char entryChar;
-    char c;
-    s32 count = 32;
-
-    while (--count >= 0) {
-        entryChar = *entryName++;
-        c = *fileName++;
-        if (entryChar != c) {
-            return FALSE;
-        }
-        if (c == 0) {
-            return TRUE;
-        }
-    }
-    if (*fileName == 0) {
-        return TRUE;
-    }
-    return FALSE;
-}
-
-void* __CARDGetDirBlock(CARDControl* card);
-s32 __CARDGetFileNo(CARDControl* card, const char* fileName, s32* pfileNo) {
-    CARDDirEntry* dir;
-    CARDDirEntry* entry;
-    s32 fileNo;
-    s32 result;
-
-    if (card->attached == 0) {
-        return -3;
-    }
-
-    dir = __CARDGetDirBlock(card);
-    for (fileNo = 0; fileNo < 127; fileNo++) {
-        entry = &dir[fileNo];
-        result = fn_800B4270(card, entry);
-        if (result < 0) {
-            continue;
-        }
-        if (__CARDCompareFileName(entry, fileName)) {
-            *pfileNo = fileNo;
-            return 0;
-        }
-    }
-
-    return -4;
-}
+/* Exact lookup bodies moved to card_exact_800B3B68.c. */
 
 void* __CARDGetDirBlock(CARDControl* card) {
     return card->dirBlock;
@@ -2348,15 +2369,7 @@ s32 CARDFreeBlocks(s32 chan, s32* byteNotUsed, s32* filesNotUsed) {
     return __CARDPutControlBlock(card, 0);
 }
 
-s32 fn_800B4308(CARDDirEntry* entry) {
-    if (entry->gameName[0] == 0xff) {
-        return -4;
-    }
-    if (entry->permission & 4) {
-        return 0;
-    }
-    return -10;
-}
+/* Exact permission helper moved to card_exact_800B3B68.c. */
 
 BOOL __CARDIsOpened(void) {
     return FALSE;
@@ -3034,3 +3047,4 @@ void GXInitFifoPtrs(GXFifoObj* fifo, void* readPtr, void* writePtr) {
     }
     OSRestoreInterrupts(enabled);
 }
+#endif
