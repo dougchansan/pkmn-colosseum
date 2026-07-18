@@ -291,7 +291,13 @@ game/fight_range_80051710.c:
 	.text       start:0x80051710 end:0x8005344C
 
 game/menu/menuCB_range_8005344C.c:
-	.text       start:0x8005344C end:0x80055E38
+	.text       start:0x8005344C end:0x80054914
+
+game/menu/menuCB_exact_80054914.c:
+	.text       start:0x80054914 end:0x800552D4
+
+game/menu/menuCB_suffix_800552D4.c:
+	.text       start:0x800552D4 end:0x80055E38
 
 game/menu/menuCB_range_80055E38.c:
 	.text       start:0x80055E38 end:0x80057B34
