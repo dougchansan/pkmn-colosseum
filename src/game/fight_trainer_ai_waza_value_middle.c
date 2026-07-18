@@ -91,6 +91,9 @@ u32 fightTrainerAiAddValue(u32, s32);
 void fn_80239CCC(u32, void*, u32, u32, u32, u32, u32, u32, s32);
 void fn_80239EE8(u32, void*, u32, u32, u32, u32, u32, u32);
 
+#if !defined(FIGHT_AI_VALUE_MIDDLE_EXACT_80244318) && \
+    !defined(FIGHT_AI_VALUE_MIDDLE_SUFFIX_8024498C)
+
 /* Address: 0x80243CD8 | Size: 0x640 (1600 bytes) */
 void fightTrainerAiWazaValueKoraeru(void* ctx, u32 param1, u32 param2, u32 param3) {
     extern u32 lbl_80478DF8;
@@ -532,6 +535,11 @@ void fightTrainerAiWazaValueKoraeru(void* ctx, u32 param1, u32 param2, u32 param
     r3 = r29;
     return;
 }
+
+#endif
+
+#if defined(FIGHT_AI_VALUE_MIDDLE_EXACT_80244318)
+
 /* Address: 0x80244318 | Size: 0x160 (352 bytes) */
 u32 fightTrainerAiWazaValueMiyaburu(void* ctx, u32 param1, u32 param2, u32 param3) {
     extern u32 fightOutPokemonGetPokemonPtr(u32);
@@ -706,6 +714,11 @@ u32 fightTrainerAiWazaValueRihuressyu(void* ctx, u32 param1, u32 param2) {
     }
     return handle;
 }
+
+#endif
+
+#if defined(FIGHT_AI_VALUE_MIDDLE_SUFFIX_8024498C)
+
 /* Address: 0x8024498C | Size: 0x318 (792 bytes) */
 void fightTrainerAiWazaValueSunaarasi(void* ctx, u32 param1, u32 param2, u32 param3) {
     extern void fightFloorGetFightTrainerFightPokemonPtrAry();
@@ -1155,3 +1168,5 @@ void fightTrainerAiWazaValueNihonbare(void* ctx, u32 param1, u32 param2, u32 par
     r3 = r29;
     return;
 }
+
+#endif
