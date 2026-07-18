@@ -578,7 +578,7 @@ config.libs = [
                 progress_category="sdk",
             ),
             Object(
-                CodeCandidate,
+                Matching,
                 "dolphin/si/SI_range_800D0F68.c",
                 progress_category="sdk",
             ),
@@ -4181,6 +4181,11 @@ config.libs = [
             Object(
                 DataCandidate,
                 "game/data/data_80313F48.c",
+                progress_category="game",
+            ),
+            Object(
+                DataCandidate,
+                "game/data/data_803140F8.c",
                 progress_category="game",
             ),
             Object(

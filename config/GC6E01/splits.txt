@@ -614,52 +614,7 @@ game/data/data_80313D9C.c:
 	.data       start:0x80313D9C end:0x80313F44
 
 game/data/data_80313F48.c:
-	.data       start:0x80313F48 end:0x8031434C
-
-game/data/data_80314350.c:
-	.data       start:0x80314350 end:0x803152B8
-
-game/data/data_803152B8.c:
-	.data       start:0x803152B8 end:0x80315320
-
-game/data/data_80315320.c:
-	.data       start:0x80315320 end:0x80315384
-
-game/data/data_80315388.c:
-	.data       start:0x80315388 end:0x80315678
-
-game/data/data_80315690.c:
-	.data       start:0x80315690 end:0x8035B060
-
-game/data/data_8035B088.c:
-	.data       start:0x8035B088 end:0x8035B3F0
-
-game/data/data_8035B400.c:
-	.data       start:0x8035B400 end:0x8035B448
-
-game/data/data_8035B468.c:
-	.data       start:0x8035B468 end:0x8035B4FC
-
-game/data/data_8035B500.c:
-	.data       start:0x8035B500 end:0x8035B878
-
-game/data/data_8035B8A0.c:
-	.data       start:0x8035B8A0 end:0x8035B8B4
-
-game/data/data_8035B904.c:
-	.data       start:0x8035B904 end:0x8035B950
-
-game/data/data_8035B96C.c:
-	.data       start:0x8035B96C end:0x8035B988
-
-game/data/data_8035B9F8.c:
-	.data       start:0x8035B9F8 end:0x8035BA10
-
-game/data/data_8035BA48.c:
-	.data       start:0x8035BA48 end:0x8035BA60
-
-game/data/data_8035BB50.c:
-	.data       start:0x8035BB50 end:0x8035E028
+	.data       start:0x80313F48 end:0x80314060
 
 dolphin/vi/VI_fn_800AA498.c:
 	.text       start:0x800AA498 end:0x800AA4D4
@@ -1053,6 +1008,55 @@ dolphin/si/SI_fn_800D0F44.c:
 
 dolphin/si/SI_range_800D0F68.c:
 	.text       start:0x800D0F68 end:0x800D104C
+	.data       start:0x80314060 end:0x803140F3
+
+game/data/data_803140F8.c:
+	.data       start:0x803140F8 end:0x8031434C
+
+game/data/data_80314350.c:
+	.data       start:0x80314350 end:0x803152B8
+
+game/data/data_803152B8.c:
+	.data       start:0x803152B8 end:0x80315320
+
+game/data/data_80315320.c:
+	.data       start:0x80315320 end:0x80315384
+
+game/data/data_80315388.c:
+	.data       start:0x80315388 end:0x80315678
+
+game/data/data_80315690.c:
+	.data       start:0x80315690 end:0x8035B060
+
+game/data/data_8035B088.c:
+	.data       start:0x8035B088 end:0x8035B3F0
+
+game/data/data_8035B400.c:
+	.data       start:0x8035B400 end:0x8035B448
+
+game/data/data_8035B468.c:
+	.data       start:0x8035B468 end:0x8035B4FC
+
+game/data/data_8035B500.c:
+	.data       start:0x8035B500 end:0x8035B878
+
+game/data/data_8035B8A0.c:
+	.data       start:0x8035B8A0 end:0x8035B8B4
+
+game/data/data_8035B904.c:
+	.data       start:0x8035B904 end:0x8035B950
+
+game/data/data_8035B96C.c:
+	.data       start:0x8035B96C end:0x8035B988
+
+game/data/data_8035B9F8.c:
+	.data       start:0x8035B9F8 end:0x8035BA10
+
+game/data/data_8035BA48.c:
+	.data       start:0x8035BA48 end:0x8035BA60
+
+game/data/data_8035BB50.c:
+	.data       start:0x8035BB50 end:0x8035E028
 
 dolphin/si/SI_fn_800D104C.c:
 	.text       start:0x800D104C end:0x800D1070
