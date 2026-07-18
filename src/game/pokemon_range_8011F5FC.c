@@ -1429,6 +1429,7 @@ extern void heroMoveGetHeroRot(u32 param);
 extern void heroMoveGetHeroPos(u32 param);
 extern u32 heroMoveGetResID(u32* out_zero, u32* out_val, s32 index);
 
+#ifndef POKEMON_SET_STATUS_EXACT
 /* Address: 0x80128E24 | Size: 0x8 | Pattern: sda_getter */
 u32 fn_80128E24(void) {
     return lbl_8047ADB8;
@@ -4006,6 +4007,9 @@ extern void fn_80135708(void);
 void pokemonInit(u8* ptr);
 /* body moved to pokemon_range_exact_801248C4.c: pokemonInit */
 
+#endif
+#pragma optimization_level 4
+#ifdef POKEMON_SET_STATUS_EXACT
 void pokemonSetStatus(u8* obj, u32 id, u32 selector, u32 subindex, u32 value)
 {
     typedef struct PokemonStatusCopy16 {
@@ -4317,7 +4321,12 @@ void pokemonSetStatus(u8* obj, u32 id, u32 selector, u32 subindex, u32 value)
     case 0x121: fightOutPokemonBiosSetIrekaeTargetEntryId(obj, (s16)status_value); break;
     }
 }
+#else
+void pokemonSetStatus(u8* obj, u32 id, u32 selector, u32 subindex, u32 value);
+/* body selected by pokemon_set_status_exact_801254B4.c */
+#endif
 
+#ifndef POKEMON_SET_STATUS_EXACT
 u32 pokemonGetStatus(u8* obj, u32 id, u32 selector, u32 d) {
     extern void* fn_8011E778(u32 idx);
     extern u32  fn_8011E760(u8* ptr);
@@ -4940,3 +4949,4 @@ u32 pokemonGetStatus(u8* obj, u32 id, u32 selector, u32 d) {
         return 0;
     }
 }
+#endif

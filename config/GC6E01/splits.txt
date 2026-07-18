@@ -653,19 +653,7 @@ game/data/data_8035BA48.c:
 	.data       start:0x8035BA48 end:0x8035BA60
 
 game/data/data_8035BB50.c:
-	.data       start:0x8035BB50 end:0x803634A8
-
-game/data/data_803634A8.c:
-	.data       start:0x803634A8 end:0x803634EC
-
-game/data/data_803634EC.c:
-	.data       start:0x803634EC end:0x80363630
-
-game/data/data_80363630.c:
-	.data       start:0x80363630 end:0x80363774
-
-game/data/data_80363774.c:
-	.data       start:0x80363774 end:0x80363A70
+	.data       start:0x8035BB50 end:0x8035E028
 
 dolphin/vi/VI_fn_800AA498.c:
 	.text       start:0x800AA498 end:0x800AA4D4
@@ -1297,8 +1285,27 @@ game/pokemon_range_8011F5FC.c:
 game/pokemon_range_exact_801248C4.c:
 	.text       start:0x801248C4 end:0x801254B4
 
-game/pokemon_range_801254B4.c:
-	.text       start:0x801254B4 end:0x80128E38
+game/pokemon_set_status_exact_801254B4.c:
+	.text       start:0x801254B4 end:0x8012640C
+	.data       start:0x8035E028 end:0x8035E4B0
+
+game/data/data_8035E4B0.c:
+	.data       start:0x8035E4B0 end:0x803634A8
+
+game/data/data_803634A8.c:
+	.data       start:0x803634A8 end:0x803634EC
+
+game/data/data_803634EC.c:
+	.data       start:0x803634EC end:0x80363630
+
+game/data/data_80363630.c:
+	.data       start:0x80363630 end:0x80363774
+
+game/data/data_80363774.c:
+	.data       start:0x80363774 end:0x80363A70
+
+game/pokemon_range_8012640C.c:
+	.text       start:0x8012640C end:0x80128E38
 
 game/hero.c:
 	.text       start:0x80128E38 end:0x8012AC9C

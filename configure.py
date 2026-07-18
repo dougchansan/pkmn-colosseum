@@ -1185,8 +1185,15 @@ config.libs = [
                 progress_category="game",
             ),
             Object(
+                Matching,
+                "game/pokemon_set_status_exact_801254B4.c",
+                mw_version="GC/1.3",
+                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                progress_category="game",
+            ),
+            Object(
                 CodeCandidate,
-                "game/pokemon_range_801254B4.c",
+                "game/pokemon_range_8012640C.c",
                 mw_version="GC/1.3",
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
@@ -4184,6 +4191,11 @@ config.libs = [
             Object(
                 Matching,
                 "game/data/data_8035BB50.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/data_8035E4B0.c",
                 progress_category="game",
             ),
             Object(
