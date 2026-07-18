@@ -1974,7 +1974,10 @@ game/fight_gsfloor.c:
 	.text       start:0x802614B4 end:0x80261B68
 
 game/fight_menu.c:
-	.text       start:0x80261B68 end:0x802658C8
+	.text       start:0x80261B68 end:0x8026503C
+
+game/fight_menu_exact_8026503C.c:
+	.text       start:0x8026503C end:0x802658C8
 
 game/fight_timer.c:
 	.text       start:0x802658C8 end:0x80265E34

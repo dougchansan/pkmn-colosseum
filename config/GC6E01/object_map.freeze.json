@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196121,
     "total_functions": 8603,
-    "total_units": 720
+    "total_units": 721
   },
   "topology_status": {
     "auto_units": 65,
-    "named_units": 655,
-    "source_backed_units": 640,
+    "named_units": 656,
+    "source_backed_units": 641,
     "auto_code": 0,
     "auto_data": 57787,
     "auto_functions": 0
@@ -9386,13 +9386,26 @@
       "sections": [
         {
           "name": ".text",
-          "size": 15712,
+          "size": 13524,
           "virtual_address": 2149981032
         }
       ],
-      "total_code": 15712,
+      "total_code": 13524,
       "total_data": 0,
-      "total_functions": 33
+      "total_functions": 27
+    },
+    {
+      "name": "main/game/fight_menu_exact_8026503C",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 2188,
+          "virtual_address": 2149994556
+        }
+      ],
+      "total_code": 2188,
+      "total_data": 0,
+      "total_functions": 6
     },
     {
       "name": "main/game/fight_timer",

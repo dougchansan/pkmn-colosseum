@@ -81,6 +81,8 @@ s32 fightTrainerAiSelectIrekaeDasuFightPokemon(void* ctx, u32 param1, u32 param2
 u32 fightTrainerAiWazaHit045(void* trainerCtx, u32 trainerSlot, u32 resultSlot, u32 resultType);
 u32 fightMenuFightTrainerGcHeroOpenMenu(void* ctx, u32 param1, u32 param2);
 
+#if defined(FIGHT_MENU_CANDIDATE_80261B68)
+
 /* =========================================================================
  * fightMenuFightTrainerGcHeroOpenMenu - FinalCleanup
  *
@@ -2257,6 +2259,10 @@ LAB_00261ccc:
   goto LAB_00261af4;
 }
 
+#endif
+
+#if defined(FIGHT_MENU_EXACT_8026503C)
+
 /* Address: 0x8026503C | Size: 0x2F0 | Ghidra import */
 u32 _fightMenuFightTrainerGcHeroOpenMenuSubWazaSelectDefensePokemon__FP15FightOutPokemonUsUs(u32 r3,u32 r4,u32 r5)
 
@@ -2675,6 +2681,11 @@ void fightMenuFightTrainerRenewStatusMenu(u32 r3,u32 r4)
   }
   return;
 }
+
+#endif
+
+#if defined(FIGHT_MENU_CANDIDATE_80261B68)
+
 /* Address: 0x80264D58 | Size: 0x2E4 | Ghidra import */
 u32 _fightMenuFightTrainerGcHeroOpenMenuSubWaza__FP13FIGHT_TRAINERP15FightOutPokemonUs(u32 r3,u32 r4,u32 r5)
 
@@ -2987,3 +2998,5 @@ LAB_00261a8c:
   uVar2 = 1;
   goto LAB_00261ab8;
 }
+
+#endif
