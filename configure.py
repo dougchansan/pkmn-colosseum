@@ -625,6 +625,13 @@ config.libs = [
                 progress_category="game",
             ),
             Object(
+                Matching,
+                "game/gamedatasave_status.c",
+                mw_version="GC/1.3",
+                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                progress_category="game",
+            ),
+            Object(
                 CodeCandidate,
                 "game/gamedata.c",
                 mw_version="GC/1.3",
@@ -3109,6 +3116,11 @@ config.libs = [
             ),
             Object(
                 Matching,
+                "game/data/data_80363AC8.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
                 "game/data/data_80363CA8.c",
                 progress_category="game",
             ),
@@ -3442,6 +3454,11 @@ config.libs = [
             Object(
                 Matching,
                 "game/data/sdata2_8047D098.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sdata2_8047D110.c",
                 progress_category="game",
             ),
             Object(

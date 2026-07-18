@@ -2,7 +2,7 @@
  * @file gamedata.c
  * @brief Decompiled functions.
  *
- * Address range: 0x80135030 - 0x80135A30
+ * Address range: 0x8013528C - 0x80135A30
  *
  * Split out of the former game/effect/effect_util.c CodeCandidate
  * bucket (0x8013151C - 0x80137114); see effect_util_types.h for
@@ -55,130 +55,6 @@ static inline u32 gamedataGetStatusInline(GameData* ptr, u32 effect_type)
     }
 }
 
-
-/* 0x80135030 | 0x138 */
-#if 0
-asm void gamedatasaveSetStatus(void) {
-#include "src/game/effect/effect_util_gamedatasaveSetStatus.inc"
-}
-#else
-void gamedatasaveSetStatus(void* ptr, u16 kind, u32 value) {
-    void* sub;
-
-    if (kind == 0 || kind >= 0xB) {
-        return;
-    }
-
-    if (ptr == NULL) {
-        ptr = (void*)savedataGetStatus(0, 0);
-        if (ptr == NULL) {
-            return;
-        }
-        ptr = (void*)savedataGetStatus((u32)ptr, 1);
-        if (ptr == NULL) {
-            return;
-        }
-    }
-
-    sub = gamedatasaveBiosGetPtr(ptr);
-    if (sub == NULL) {
-        return;
-    }
-
-    switch (kind) {
-    case 1:
-        gamedatasaveBiosSetPtr(ptr, (void*)value);
-        break;
-    case 2:
-        gamedatasaveBiosSetSavernd(sub, value);
-        break;
-    case 3:
-        gamedatasaveBiosSetSavecount(sub, value);
-        break;
-    case 4:
-        gamedatasaveBiosSetFloorid(sub, value);
-        break;
-    case 5:
-        gamedatasaveBiosSetPlaytime(sub, (f32)(s32)value);
-        break;
-    case 6:
-        gamedatasaveBiosSetPrevfloorid(sub, value);
-        break;
-    case 7:
-        gamedatasaveBiosSetFloorposindex(sub, (u8)value);
-        break;
-    case 8:
-        gamedatasaveBiosSetOptionNoVibration(sub, (u8)value);
-        break;
-    case 9:
-        gamedatasaveBiosSetOptionAudio(sub, (u8)value);
-        break;
-    case 10:
-        break;
-    default:
-        break;
-    }
-}
-#endif
-
-
-/* 0x80135168 | 0x124 */
-#if 0
-asm void gamedatasaveGetStatus(void) {
-#include "src/game/effect/effect_util_gamedatasaveGetStatus.inc"
-}
-#else
-u32 gamedatasaveGetStatus(void* ptr, u16 kind) {
-    void* base = NULL;
-    void* sub;
-
-    if (kind == 0 || kind >= 0xB) {
-        return 0;
-    }
-    if (ptr == NULL) {
-        base = (void*)savedataGetStatus(0, 0);
-        if (base == NULL) {
-            return 0;
-        }
-        ptr = (void*)savedataGetStatus((u32)base, 1);
-        if (ptr == NULL) {
-            return 0;
-        }
-    }
-    sub = gamedatasaveBiosGetPtr(ptr);
-    if (sub == NULL) {
-        return 0;
-    }
-    switch (kind) {
-    case 0:
-        return (u32)base;
-    case 1:
-        return gamedatasaveBiosGetSavernd(sub);
-    case 2:
-        return gamedatasaveBiosGetSavecount(sub);
-    case 3:
-        return gamedatasaveBiosGetFloorid(sub);
-    case 4:
-        return (s32)gamedatasaveBiosGetPlaytime(sub);
-    case 5:
-        return gamedatasaveBiosGetPrevfloorid(sub);
-    case 6:
-        return gamedatasaveBiosGetFloorposindex(sub);
-    case 7:
-        return gamedatasaveBiosGetOptionNoVibration(sub);
-    case 8:
-        return gamedatasaveBiosGetOptionAudio(sub);
-    case 9:
-    case 10:
-        break;
-    default:
-        break;
-    }
-    return 0;
-}
-#endif
-
-
 /* 0x8013528C | 0xAC */
 #if 0
 asm void fn_8013528C(void) {
@@ -221,7 +97,6 @@ done:
     gamedataAttestCreate(base, r4, r5, r6, r7);
 }
 #endif
-
 
 /* 0x80135338 | 0x88 */
 #if 0
