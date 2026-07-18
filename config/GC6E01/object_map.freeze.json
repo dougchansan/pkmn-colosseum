@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196121,
     "total_functions": 8603,
-    "total_units": 696
+    "total_units": 698
   },
   "topology_status": {
     "auto_units": 65,
-    "named_units": 631,
-    "source_backed_units": 616,
+    "named_units": 633,
+    "source_backed_units": 618,
     "auto_code": 0,
     "auto_data": 57787,
     "auto_functions": 0
@@ -1873,17 +1873,43 @@
       "total_functions": 37
     },
     {
+      "name": "main/game/gbaCommunication_prefix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 16240,
+          "virtual_address": 2148059056
+        }
+      ],
+      "total_code": 16240,
+      "total_data": 0,
+      "total_functions": 16
+    },
+    {
+      "name": "main/game/gbaCommunication_exact_80090720",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 5764,
+          "virtual_address": 2148075296
+        }
+      ],
+      "total_code": 5764,
+      "total_data": 0,
+      "total_functions": 8
+    },
+    {
       "name": "main/game/gbaCommunication",
       "sections": [
         {
           "name": ".text",
-          "size": 47408,
-          "virtual_address": 2148059056
+          "size": 25404,
+          "virtual_address": 2148081060
         }
       ],
-      "total_code": 47408,
+      "total_code": 25404,
       "total_data": 0,
-      "total_functions": 84
+      "total_functions": 60
     },
     {
       "name": "main/dolphin/os/PPCArch",

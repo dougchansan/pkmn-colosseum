@@ -389,8 +389,14 @@ game/pokeconv.c:
 game/gba/gba_misc.c:
 	.text       start:0x800896B8 end:0x8008C7B0
 
+game/gbaCommunication_prefix.c:
+	.text       start:0x8008C7B0 end:0x80090720
+
+game/gbaCommunication_exact_80090720.c:
+	.text       start:0x80090720 end:0x80091DA4
+
 game/gbaCommunication.c:
-	.text       start:0x8008C7B0 end:0x800980E0
+	.text       start:0x80091DA4 end:0x800980E0
 
 dolphin/os/PPCArch.c:
 	.text       start:0x800980E0 end:0x80098108
