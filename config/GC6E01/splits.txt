@@ -54,37 +54,7 @@ game/data/sdata2_8047C3A0.c:
 	.sdata2     start:0x8047C3A0 end:0x8047C4A0
 
 crt/sdata2_math.c:
-	.sdata2     start:0x8047C4A0 end:0x8047C8A0
-
-crt/sdata2_math_8047C8A0.c:
-	.sdata2     start:0x8047C8A0 end:0x8047C990
-
-game/gs_render_util_sdata2.c:
-	.sdata2     start:0x8047C990 end:0x8047C99C
-
-game/data/sdata2_8047C9A0.c:
-	.sdata2     start:0x8047C9A0 end:0x8047CA9D
-
-game/data/sdata2_8047CAA0.c:
-	.sdata2     start:0x8047CAA0 end:0x8047CBE0
-
-game/data/sdata2_8047CBE0.c:
-	.sdata2     start:0x8047CBE0 end:0x8047CC98
-
-game/data/sdata2_8047CC98.c:
-	.sdata2     start:0x8047CC98 end:0x8047CD98
-
-game/gs_model_sdata2_8047CD98.c:
-	.sdata2     start:0x8047CD98 end:0x8047CE98
-
-game/data/sdata2_8047CE98.c:
-	.sdata2     start:0x8047CE98 end:0x8047CF98
-
-game/data/sdata2_8047CF98.c:
-	.sdata2     start:0x8047CF98 end:0x8047D098
-
-game/data/sdata2_8047D098.c:
-	.sdata2     start:0x8047D098 end:0x8047D108
+	.sdata2     start:0x8047C4A0 end:0x8047C828
 
 game/data/bss_8039A700.c:
 	.bss        start:0x8039A700 end:0x8039E700
@@ -942,7 +912,47 @@ crt/string.c:
 	.text       start:0x800CA7FC end:0x800CAA58
 
 crt/math_range_800CAA58.c:
-	.text       start:0x800CAA58 end:0x800CE79C
+	.text       start:0x800CAA58 end:0x800CC754
+
+crt/math_kernel_rem_pio2.c:
+	.text       start:0x800CC754 end:0x800CD5A8
+	.sdata2     start:0x8047C828 end:0x8047C868
+
+crt/sdata2_math_suffix_8047C868.c:
+	.sdata2     start:0x8047C868 end:0x8047C8A0
+
+crt/sdata2_math_8047C8A0.c:
+	.sdata2     start:0x8047C8A0 end:0x8047C990
+
+game/gs_render_util_sdata2.c:
+	.sdata2     start:0x8047C990 end:0x8047C99C
+
+game/data/sdata2_8047C9A0.c:
+	.sdata2     start:0x8047C9A0 end:0x8047CA9D
+
+game/data/sdata2_8047CAA0.c:
+	.sdata2     start:0x8047CAA0 end:0x8047CBE0
+
+game/data/sdata2_8047CBE0.c:
+	.sdata2     start:0x8047CBE0 end:0x8047CC98
+
+game/data/sdata2_8047CC98.c:
+	.sdata2     start:0x8047CC98 end:0x8047CD98
+
+game/gs_model_sdata2_8047CD98.c:
+	.sdata2     start:0x8047CD98 end:0x8047CE98
+
+game/data/sdata2_8047CE98.c:
+	.sdata2     start:0x8047CE98 end:0x8047CF98
+
+game/data/sdata2_8047CF98.c:
+	.sdata2     start:0x8047CF98 end:0x8047D098
+
+game/data/sdata2_8047D098.c:
+	.sdata2     start:0x8047D098 end:0x8047D108
+
+crt/math_range_800CD5A8.c:
+	.text       start:0x800CD5A8 end:0x800CE79C
 
 dolphin/exi/EXI2Stubs.c:
 	.text       start:0x800CE79C end:0x800CE7DC

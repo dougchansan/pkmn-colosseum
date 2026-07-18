@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196121,
     "total_functions": 8603,
-    "total_units": 781
+    "total_units": 784
   },
   "topology_status": {
     "auto_units": 65,
-    "named_units": 716,
-    "source_backed_units": 701,
+    "named_units": 719,
+    "source_backed_units": 704,
     "auto_code": 0,
     "auto_data": 57787,
     "auto_functions": 0
@@ -226,142 +226,12 @@
       "sections": [
         {
           "name": ".sdata2",
-          "size": 1024,
+          "size": 904,
           "virtual_address": 2152187040
         }
       ],
       "total_code": 0,
-      "total_data": 1024,
-      "total_functions": 0
-    },
-    {
-      "name": "main/crt/sdata2_math_8047C8A0",
-      "sections": [
-        {
-          "name": ".sdata2",
-          "size": 240,
-          "virtual_address": 2152188064
-        }
-      ],
-      "total_code": 0,
-      "total_data": 240,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/gs_render_util_sdata2",
-      "sections": [
-        {
-          "name": ".sdata2",
-          "size": 12,
-          "virtual_address": 2152188304
-        }
-      ],
-      "total_code": 0,
-      "total_data": 12,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/data/sdata2_8047C9A0",
-      "sections": [
-        {
-          "name": ".sdata2",
-          "size": 253,
-          "virtual_address": 2152188320
-        }
-      ],
-      "total_code": 0,
-      "total_data": 253,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/data/sdata2_8047CAA0",
-      "sections": [
-        {
-          "name": ".sdata2",
-          "size": 320,
-          "virtual_address": 2152188576
-        }
-      ],
-      "total_code": 0,
-      "total_data": 320,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/data/sdata2_8047CBE0",
-      "sections": [
-        {
-          "name": ".sdata2",
-          "size": 184,
-          "virtual_address": 2152188896
-        }
-      ],
-      "total_code": 0,
-      "total_data": 184,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/data/sdata2_8047CC98",
-      "sections": [
-        {
-          "name": ".sdata2",
-          "size": 256,
-          "virtual_address": 2152189080
-        }
-      ],
-      "total_code": 0,
-      "total_data": 256,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/gs_model_sdata2_8047CD98",
-      "sections": [
-        {
-          "name": ".sdata2",
-          "size": 256,
-          "virtual_address": 2152189336
-        }
-      ],
-      "total_code": 0,
-      "total_data": 256,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/data/sdata2_8047CE98",
-      "sections": [
-        {
-          "name": ".sdata2",
-          "size": 256,
-          "virtual_address": 2152189592
-        }
-      ],
-      "total_code": 0,
-      "total_data": 256,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/data/sdata2_8047CF98",
-      "sections": [
-        {
-          "name": ".sdata2",
-          "size": 256,
-          "virtual_address": 2152189848
-        }
-      ],
-      "total_code": 0,
-      "total_data": 256,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/data/sdata2_8047D098",
-      "sections": [
-        {
-          "name": ".sdata2",
-          "size": 112,
-          "virtual_address": 2152190104
-        }
-      ],
-      "total_code": 0,
-      "total_data": 112,
+      "total_data": 904,
       "total_functions": 0
     },
     {
@@ -4574,13 +4444,187 @@
       "sections": [
         {
           "name": ".text",
-          "size": 15684,
+          "size": 7420,
           "virtual_address": 2148313688
         }
       ],
-      "total_code": 15684,
+      "total_code": 7420,
       "total_data": 0,
-      "total_functions": 40
+      "total_functions": 11
+    },
+    {
+      "name": "main/crt/math_kernel_rem_pio2",
+      "sections": [
+        {
+          "name": ".sdata2",
+          "size": 64,
+          "virtual_address": 2152187944
+        },
+        {
+          "name": ".text",
+          "size": 3668,
+          "virtual_address": 2148321108
+        }
+      ],
+      "total_code": 3668,
+      "total_data": 64,
+      "total_functions": 1
+    },
+    {
+      "name": "main/crt/sdata2_math_suffix_8047C868",
+      "sections": [
+        {
+          "name": ".sdata2",
+          "size": 56,
+          "virtual_address": 2152188008
+        }
+      ],
+      "total_code": 0,
+      "total_data": 56,
+      "total_functions": 0
+    },
+    {
+      "name": "main/crt/sdata2_math_8047C8A0",
+      "sections": [
+        {
+          "name": ".sdata2",
+          "size": 240,
+          "virtual_address": 2152188064
+        }
+      ],
+      "total_code": 0,
+      "total_data": 240,
+      "total_functions": 0
+    },
+    {
+      "name": "main/game/gs_render_util_sdata2",
+      "sections": [
+        {
+          "name": ".sdata2",
+          "size": 12,
+          "virtual_address": 2152188304
+        }
+      ],
+      "total_code": 0,
+      "total_data": 12,
+      "total_functions": 0
+    },
+    {
+      "name": "main/game/data/sdata2_8047C9A0",
+      "sections": [
+        {
+          "name": ".sdata2",
+          "size": 253,
+          "virtual_address": 2152188320
+        }
+      ],
+      "total_code": 0,
+      "total_data": 253,
+      "total_functions": 0
+    },
+    {
+      "name": "main/game/data/sdata2_8047CAA0",
+      "sections": [
+        {
+          "name": ".sdata2",
+          "size": 320,
+          "virtual_address": 2152188576
+        }
+      ],
+      "total_code": 0,
+      "total_data": 320,
+      "total_functions": 0
+    },
+    {
+      "name": "main/game/data/sdata2_8047CBE0",
+      "sections": [
+        {
+          "name": ".sdata2",
+          "size": 184,
+          "virtual_address": 2152188896
+        }
+      ],
+      "total_code": 0,
+      "total_data": 184,
+      "total_functions": 0
+    },
+    {
+      "name": "main/game/data/sdata2_8047CC98",
+      "sections": [
+        {
+          "name": ".sdata2",
+          "size": 256,
+          "virtual_address": 2152189080
+        }
+      ],
+      "total_code": 0,
+      "total_data": 256,
+      "total_functions": 0
+    },
+    {
+      "name": "main/game/gs_model_sdata2_8047CD98",
+      "sections": [
+        {
+          "name": ".sdata2",
+          "size": 256,
+          "virtual_address": 2152189336
+        }
+      ],
+      "total_code": 0,
+      "total_data": 256,
+      "total_functions": 0
+    },
+    {
+      "name": "main/game/data/sdata2_8047CE98",
+      "sections": [
+        {
+          "name": ".sdata2",
+          "size": 256,
+          "virtual_address": 2152189592
+        }
+      ],
+      "total_code": 0,
+      "total_data": 256,
+      "total_functions": 0
+    },
+    {
+      "name": "main/game/data/sdata2_8047CF98",
+      "sections": [
+        {
+          "name": ".sdata2",
+          "size": 256,
+          "virtual_address": 2152189848
+        }
+      ],
+      "total_code": 0,
+      "total_data": 256,
+      "total_functions": 0
+    },
+    {
+      "name": "main/game/data/sdata2_8047D098",
+      "sections": [
+        {
+          "name": ".sdata2",
+          "size": 112,
+          "virtual_address": 2152190104
+        }
+      ],
+      "total_code": 0,
+      "total_data": 112,
+      "total_functions": 0
+    },
+    {
+      "name": "main/crt/math_range_800CD5A8",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 4596,
+          "virtual_address": 2148324776
+        }
+      ],
+      "total_code": 4596,
+      "total_data": 0,
+      "total_functions": 28
     },
     {
       "name": "main/dolphin/exi/EXI2Stubs",

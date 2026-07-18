@@ -1522,6 +1522,18 @@ config.libs = [
             ),
             Object(
                 Matching,
+                "crt/math_kernel_rem_pio2.c",
+                mw_version="GC/1.3",
+                progress_category="runtime",
+            ),
+            Object(
+                CodeCandidate,
+                "crt/math_range_800CD5A8.c",
+                mw_version="GC/1.3",
+                progress_category="runtime",
+            ),
+            Object(
+                Matching,
                 "dolphin/sdk_range_800CE7DC.c",
                 mw_version="GC/1.2.5n",
                 progress_category="sdk",
@@ -3645,6 +3657,12 @@ config.libs = [
                 Matching,
                 "crt/sdata2_math.c",
                 source="crt_data/sdata2_math.c",
+                progress_category="runtime",
+            ),
+            Object(
+                Matching,
+                "crt/sdata2_math_suffix_8047C868.c",
+                source="crt_data/sdata2_math_suffix_8047C868.c",
                 progress_category="runtime",
             ),
             Object(
