@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196121,
     "total_functions": 8603,
-    "total_units": 707
+    "total_units": 708
   },
   "topology_status": {
     "auto_units": 65,
-    "named_units": 642,
-    "source_backed_units": 627,
+    "named_units": 643,
+    "source_backed_units": 628,
     "auto_code": 0,
     "auto_data": 57787,
     "auto_functions": 0
@@ -7761,13 +7761,26 @@
       "sections": [
         {
           "name": ".text",
-          "size": 29104,
+          "size": 25036,
           "virtual_address": 2149174864
         }
       ],
-      "total_code": 29104,
+      "total_code": 25036,
       "total_data": 0,
-      "total_functions": 63
+      "total_functions": 49
+    },
+    {
+      "name": "main/hsd/hsd_jobj_exact_801A301C",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 4068,
+          "virtual_address": 2149199900
+        }
+      ],
+      "total_code": 4068,
+      "total_data": 0,
+      "total_functions": 14
     },
     {
       "name": "main/hsd/hsd_lobj",

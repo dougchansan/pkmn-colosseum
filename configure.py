@@ -2819,6 +2819,12 @@ config.libs = [
                 progress_category="hsd",
             ),
             Object(
+                Matching,
+                "hsd/hsd_jobj_exact_801A301C.c",
+                mw_version="GC/1.3",
+                progress_category="hsd",
+            ),
+            Object(
                 CodeCandidate,
                 "hsd/hsd_lobj.c",
                 mw_version="GC/1.3",
