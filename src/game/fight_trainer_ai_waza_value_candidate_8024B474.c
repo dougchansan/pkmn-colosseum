@@ -595,6 +595,9 @@ u32 fightTrainerAiWazaValueKorogaru(void* ctx, u32 param1, u32 param2, u32 param
 
 #if defined(FIGHT_AI_VALUE_CANDIDATE_8024BFC0_ONLY)
 
+#if !defined(FIGHT_AI_VALUE_EXACT_8024D818_ONLY) && \
+    !defined(FIGHT_AI_VALUE_SUFFIX_8024DC7C_ONLY)
+
 /* Address: 0x8024BFC0 | Size: 0x5FC (1532 bytes) */
 void fightTrainerAiWazaValueJibaku(void* ctx, u32 param1, u32 param2, u32 param3) {
     extern void fightFloorGetFightTrainerFightOutPokemonIsFightActionAttackWazaOut();
@@ -2195,6 +2198,12 @@ L_8024D6BC:
     r3 = r30;
     return;
 }
+
+#endif
+
+#if !defined(FIGHT_AI_VALUE_PREFIX_8024BFC0_ONLY) && \
+    !defined(FIGHT_AI_VALUE_SUFFIX_8024DC7C_ONLY)
+
 /* -------------------------------------------------------------------
  * Experience & Level Processing (0x8024D000-0x80254000)
  * 136 functions
@@ -2290,6 +2299,12 @@ u32 fightTrainerAiWazaValueKamaitati(void* ctx, u32 slot, u32 param) {
     fn_80239EE8(0xEC64, ctx, fightOutPokemonGetPokemonPtr(slot), 0, 0, param, 0, 0x60);
     return handle;
 }
+
+#endif
+
+#if !defined(FIGHT_AI_VALUE_PREFIX_8024BFC0_ONLY) && \
+    !defined(FIGHT_AI_VALUE_EXACT_8024D818_ONLY)
+
 /* Address: 0x8024DC7C | Size: 0x210 (528 bytes) */
 u32 fightTrainerAiWazaValueKiaipanti(void* ctx, u32 param1, u32 param2, u32 param3) {
     extern u32 fightFloorGetFightTrainerFightOutPokemonPtrAry(u32, void*, u32*, u32, u32);
@@ -2346,6 +2361,8 @@ u32 fightTrainerAiWazaValueKiaipanti(void* ctx, u32 param1, u32 param2, u32 para
     fn_80239EE8(0xEC64, battleCtx, fightOutPokemonGetPokemonPtr(trainer), 0, 0, sequenceArg, 0, 0x5E);
     return handle;
 }
+
+#endif
 
 #endif
 
