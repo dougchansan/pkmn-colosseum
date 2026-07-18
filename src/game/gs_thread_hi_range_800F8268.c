@@ -60,7 +60,7 @@ extern void fn_800AB150(void* buf);
 extern u32 fn_800D0F44(u32 buttonIdx);
 extern void fn_800AB4FC(void*);
 extern void fn_800E209C(u16 handle);
-extern void* fn_800E24B0(u16 handle);
+void* fn_800E24B0(u32 handle);
 extern void* fn_800E27B0(u16 handle);
 extern u16 fn_800E2C04(u32 alignment, u32 size);
 extern u16 _toolentryAlloc__FUl(u32 size);
@@ -735,6 +735,7 @@ asm void fn_800F915C(void) {
 #else
 #pragma optimization_level 2
 void fn_800F915C(u32 key) {
+    u32 handle;
     u32 i;
     u8* entry;
 
@@ -748,9 +749,10 @@ void fn_800F915C(u32 key) {
                     *(u32*)(entry + 0xC)) == 0) {
                 goto next;
             }
-            if (*(u16*)(entry + 0x0) != 0) {
-                GSmemLock(*(u16*)(entry + 0x0));
-                GSmemFree(*(u16*)(entry + 0x0));
+            handle = *(u16*)(entry + 0x0);
+            if (handle != 0) {
+                fn_800E24B0(handle);
+                fn_800E209C(*(u16*)(entry + 0x0));
                 *(u16*)(entry + 0x0) = 0;
             }
             *(u32*)(entry + 0x4) = 0;
