@@ -952,7 +952,13 @@ game/data/sdata2_8047D098.c:
 	.sdata2     start:0x8047D098 end:0x8047D108
 
 crt/math_range_800CD5A8.c:
-	.text       start:0x800CD5A8 end:0x800CE79C
+	.text       start:0x800CD5A8 end:0x800CE04C
+
+crt/math_exact_800CE04C.c:
+	.text       start:0x800CE04C end:0x800CE378
+
+crt/math_range_800CE378.c:
+	.text       start:0x800CE378 end:0x800CE79C
 
 dolphin/exi/EXI2Stubs.c:
 	.text       start:0x800CE79C end:0x800CE7DC
