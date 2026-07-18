@@ -101,6 +101,8 @@ extern void fn_800D6728(void);
 extern u32 fn_8001D624(void* pokemon, u32 arg);
 extern u8 menuSubGetPokemonSexForDisp(void* pokemon);
 
+#if !defined(GBA_COMMUNICATION_EXACT_80092FC8_ONLY)
+
 void fn_80094650(u32 r3, u32 r4) {
     extern void fn_8010C46C();
     extern void fn_8011BEB4();
@@ -1618,6 +1620,11 @@ void fn_80092664(u32 ctx) {
     fn_800FF58C(0x87);
     floorSetFadeScript(0, 0);
 }
+
+#endif
+
+#if !defined(GBA_COMMUNICATION_REMAINDER_80092FC8)
+
 /* 0x80092FC8 | size: 0x198 */
 #pragma push
 #pragma peephole off
@@ -2004,6 +2011,10 @@ s32 fn_80093698(s32 channel)
 
     return 1;
 }
+
+#endif
+
+#if !defined(GBA_COMMUNICATION_EXACT_80092FC8_ONLY)
 
 /* 0x800937F4 | size: 0x310 */
 #pragma push
@@ -3281,3 +3292,5 @@ asm void PPCMtwpar(register u32 val) {
     mtspr WPAR, r3
     blr
 }
+
+#endif
