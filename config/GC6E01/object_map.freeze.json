@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196121,
     "total_functions": 8603,
-    "total_units": 727
+    "total_units": 728
   },
   "topology_status": {
     "auto_units": 65,
-    "named_units": 662,
-    "source_backed_units": 647,
+    "named_units": 663,
+    "source_backed_units": 648,
     "auto_code": 0,
     "auto_data": 57787,
     "auto_functions": 0
@@ -9191,13 +9191,26 @@
       "sections": [
         {
           "name": ".text",
-          "size": 12548,
+          "size": 10776,
           "virtual_address": 2149889140
         }
       ],
-      "total_code": 12548,
+      "total_code": 10776,
       "total_data": 0,
-      "total_functions": 20
+      "total_functions": 11
+    },
+    {
+      "name": "main/game/fight_trainer_ai_waza_value_exact_8024DE8C",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1772,
+          "virtual_address": 2149899916
+        }
+      ],
+      "total_code": 1772,
+      "total_data": 0,
+      "total_functions": 9
     },
     {
       "name": "main/game/fight_trainer_ai_irekae",

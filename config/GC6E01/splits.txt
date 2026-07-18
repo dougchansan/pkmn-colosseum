@@ -1929,7 +1929,10 @@ game/fight_trainer_ai_waza_value_exact_8024A664.c:
 	.text       start:0x8024A664 end:0x8024B474
 
 game/fight_trainer_ai_waza_value_candidate_8024B474.c:
-	.text       start:0x8024B474 end:0x8024E578
+	.text       start:0x8024B474 end:0x8024DE8C
+
+game/fight_trainer_ai_waza_value_exact_8024DE8C.c:
+	.text       start:0x8024DE8C end:0x8024E578
 
 game/fight_trainer_ai_irekae.c:
 	.text       start:0x8024E578 end:0x80250980
