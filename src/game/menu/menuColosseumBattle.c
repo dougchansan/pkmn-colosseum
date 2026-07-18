@@ -693,8 +693,8 @@ static inline void fn_80058AF0_impl(MenuWindow* window,
                                     ColosseumBattleConnectState* state,
                                     u32* result) {
     s32 partyIndex;
-    s32 i;
     ColosseumPokemonBlob* pokemon;
+    s32 i;
     ColosseumPokemonBlob* previousPokemon;
     ColosseumPokemonBlob* alternatePokemon;
     s32 foundEmpty;
