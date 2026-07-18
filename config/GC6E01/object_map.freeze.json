@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196121,
     "total_functions": 8603,
-    "total_units": 718
+    "total_units": 720
   },
   "topology_status": {
     "auto_units": 65,
-    "named_units": 653,
-    "source_backed_units": 638,
+    "named_units": 655,
+    "source_backed_units": 640,
     "auto_code": 0,
     "auto_data": 57787,
     "auto_functions": 0
@@ -8576,17 +8576,43 @@
       "total_functions": 9
     },
     {
-      "name": "main/game/battle/battle_range_801ED640",
+      "name": "main/game/battle/battle_range_801ED640_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 6636,
+          "size": 2548,
           "virtual_address": 2149504576
         }
       ],
-      "total_code": 6636,
+      "total_code": 2548,
       "total_data": 0,
-      "total_functions": 46
+      "total_functions": 6
+    },
+    {
+      "name": "main/game/battle/battle_range_exact_801EE034",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 2340,
+          "virtual_address": 2149507124
+        }
+      ],
+      "total_code": 2340,
+      "total_data": 0,
+      "total_functions": 25
+    },
+    {
+      "name": "main/game/battle/battle_range_candidate_801EE958",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1748,
+          "virtual_address": 2149509464
+        }
+      ],
+      "total_code": 1748,
+      "total_data": 0,
+      "total_functions": 15
     },
     {
       "name": "main/game/battle/battle_main",

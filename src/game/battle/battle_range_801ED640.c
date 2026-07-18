@@ -94,6 +94,8 @@ extern void _flagSet(u16 flag, s32 value);
 
 void fn_801ED780(void);
 
+#if defined(BATTLE_RANGE_PREFIX)
+
 void fn_801ED640(u8 value)
 {
     lbl_8047B5C1 = value;
@@ -141,6 +143,10 @@ void fn_801ED740(void)
     lbl_8047B5C1 = 0;
     GSgappCreate(1, 0xF0, 0xA, fn_801ED780);
 }
+
+#endif
+
+#if defined(BATTLE_RANGE_EXACT_801EE034)
 
 u32 fn_801EE034(BattleRangeIndexedEntry* entry)
 {
@@ -597,6 +603,10 @@ u8 fn_801EE8F4(u16 id)
     return 0;
 }
 
+#endif
+
+#if defined(BATTLE_RANGE_CANDIDATE_801EE958)
+
 u8 fn_801EEAD0(u16 id)
 {
     BattleRangeDef* def = &lbl_80478F6C[id];
@@ -780,3 +790,5 @@ u16 fn_801EEFF4(u16 id)
     }
     return 0;
 }
+
+#endif
