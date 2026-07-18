@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196121,
     "total_functions": 8603,
-    "total_units": 742
+    "total_units": 744
   },
   "topology_status": {
     "auto_units": 65,
-    "named_units": 677,
-    "source_backed_units": 662,
+    "named_units": 679,
+    "source_backed_units": 664,
     "auto_code": 0,
     "auto_data": 57787,
     "auto_functions": 0
@@ -3563,13 +3563,39 @@
       "sections": [
         {
           "name": ".text",
-          "size": 7196,
+          "size": 2332,
           "virtual_address": 2148238716
         }
       ],
-      "total_code": 7196,
+      "total_code": 2332,
       "total_data": 0,
-      "total_functions": 47
+      "total_functions": 11
+    },
+    {
+      "name": "main/dolphin/sdk_exact_800B8E98",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1760,
+          "virtual_address": 2148241048
+        }
+      ],
+      "total_code": 1760,
+      "total_data": 0,
+      "total_functions": 21
+    },
+    {
+      "name": "main/dolphin/sdk_range_800B9578",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 3104,
+          "virtual_address": 2148242808
+        }
+      ],
+      "total_code": 3104,
+      "total_data": 0,
+      "total_functions": 15
     },
     {
       "name": "main/dolphin/gx/GX_fn_800BA198",

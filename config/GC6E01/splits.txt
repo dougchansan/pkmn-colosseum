@@ -712,7 +712,13 @@ dolphin/gx/GX_fn_800B856C.c:
 	.text       start:0x800B856C end:0x800B857C
 
 dolphin/sdk_range_800B857C.c:
-	.text       start:0x800B857C end:0x800BA198
+	.text       start:0x800B857C end:0x800B8E98
+
+dolphin/sdk_exact_800B8E98.c:
+	.text       start:0x800B8E98 end:0x800B9578
+
+dolphin/sdk_range_800B9578.c:
+	.text       start:0x800B9578 end:0x800BA198
 
 dolphin/gx/GX_fn_800BA198.c:
 	.text       start:0x800BA198 end:0x800BA1B4
