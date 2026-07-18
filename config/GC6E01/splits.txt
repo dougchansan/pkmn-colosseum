@@ -1728,7 +1728,13 @@ hsd/hsd_shadow.c:
 	.text       start:0x801B019C end:0x801B1730
 
 hsd/hsd_texp.c:
-	.text       start:0x801B1730 end:0x801BBAC8
+	.text       start:0x801B1730 end:0x801B387C
+
+hsd/hsd_texp_exact_801B387C.c:
+	.text       start:0x801B387C end:0x801B3D1C
+
+hsd/hsd_texp_suffix_801B3D1C.c:
+	.text       start:0x801B3D1C end:0x801BBAC8
 
 hsd/hsd_tobj.c:
 	.text       start:0x801BBAC8 end:0x801BF098

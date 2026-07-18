@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196121,
     "total_functions": 8603,
-    "total_units": 736
+    "total_units": 738
   },
   "topology_status": {
     "auto_units": 65,
-    "named_units": 671,
-    "source_backed_units": 656,
+    "named_units": 673,
+    "source_backed_units": 658,
     "auto_code": 0,
     "auto_data": 57787,
     "auto_functions": 0
@@ -8320,13 +8320,39 @@
       "sections": [
         {
           "name": ".text",
-          "size": 41880,
+          "size": 8524,
           "virtual_address": 2149259056
         }
       ],
-      "total_code": 41880,
+      "total_code": 8524,
       "total_data": 0,
-      "total_functions": 77
+      "total_functions": 31
+    },
+    {
+      "name": "main/hsd/hsd_texp_exact_801B387C",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1184,
+          "virtual_address": 2149267580
+        }
+      ],
+      "total_code": 1184,
+      "total_data": 0,
+      "total_functions": 7
+    },
+    {
+      "name": "main/hsd/hsd_texp_suffix_801B3D1C",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 32172,
+          "virtual_address": 2149268764
+        }
+      ],
+      "total_code": 32172,
+      "total_data": 0,
+      "total_functions": 39
     },
     {
       "name": "main/hsd/hsd_tobj",

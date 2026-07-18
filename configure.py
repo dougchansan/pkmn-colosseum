@@ -3107,6 +3107,18 @@ config.libs = [
                 progress_category="hsd",
             ),
             Object(
+                Matching,
+                "hsd/hsd_texp_exact_801B387C.c",
+                mw_version="GC/1.3",
+                progress_category="hsd",
+            ),
+            Object(
+                CodeCandidate,
+                "hsd/hsd_texp_suffix_801B3D1C.c",
+                mw_version="GC/1.3",
+                progress_category="hsd",
+            ),
+            Object(
                 CodeCandidate,
                 "hsd/hsd_aobj_range_801C01C8.c",
                 mw_version="GC/1.3",
