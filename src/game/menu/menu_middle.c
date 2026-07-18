@@ -24,7 +24,13 @@
     !defined(MENU_MIDDLE_EXACT_8006B09C_ONLY) && \
     !defined(MENU_MIDDLE_RESIDUAL_8006B154_ONLY) && \
     !defined(MENU_MIDDLE_EXACT_8006B1C0_ONLY) && \
-    !defined(MENU_MIDDLE_RESIDUAL_8006B2A4_ONLY)
+    !defined(MENU_MIDDLE_RESIDUAL_8006B2A4_ONLY) && \
+    !defined(MENU_MIDDLE_EXACT_8006B354_ONLY) && \
+    !defined(MENU_MIDDLE_RESIDUAL_8006B420_ONLY) && \
+    !defined(MENU_MIDDLE_EXACT_8006B4AC_ONLY) && \
+    !defined(MENU_MIDDLE_RESIDUAL_8006B5D0_ONLY) && \
+    !defined(MENU_MIDDLE_EXACT_8006B8E8_ONLY) && \
+    !defined(MENU_MIDDLE_RESIDUAL_8006B9B8_ONLY)
 #define MENU_MIDDLE_ALL
 #endif
 
@@ -1704,8 +1710,9 @@ void fn_8006B2A4(s32 idx, s32 sub) {
     MENU_MIDDLE_NEG_U8_CBDB(savedataGetStatus(0, 0xE) + sub + 0x10000 + idx * 2)->unk_CBDB = 1;
 }
 #pragma pop
+#endif
 
-
+#if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_EXACT_8006B354_ONLY)
 /* 0x8006B354 | size: 0x74 */
 #pragma push
 #pragma peephole off
@@ -1750,8 +1757,9 @@ valid_index:
     return *(u8*)(savedataGetStatus(0, 0xe) + (r31 + (1 << 16)) - 0x342c);
 }
 #pragma pop
+#endif
 
-
+#if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_RESIDUAL_8006B420_ONLY)
 /* 0x8006B420 | size: 0x8C */
 #pragma push
 #pragma scheduling off
@@ -1781,8 +1789,9 @@ void* fn_8006B420(void) {
     }
 }
 #pragma pop
+#endif
 
-
+#if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_EXACT_8006B4AC_ONLY)
 /* 0x8006B4AC | size: 0x70 */
 #pragma push
 #pragma peephole off
@@ -1836,6 +1845,8 @@ s32 fn_8006B5A8(void) {
 }
 #pragma pop
 
+#endif
+#if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_RESIDUAL_8006B5D0_ONLY)
 /* 0x8006B5D0 | size: 0xE4 */
 void fn_8006B5D0(MenuMiddleWork* work) {
     extern void fn_8006AABC();
@@ -2036,8 +2047,9 @@ void fn_8006B6B4(void) {
     MENU_MIDDLE_NEG_U8_CBDC(r3)->unk_CBDC = r0;
     return;
 }
+#endif
 
-
+#if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_EXACT_8006B8E8_ONLY)
 /* 0x8006B8E8 | size: 0x8 */
 u8 fn_8006B8E8(void) {
     return lbl_8047A5E0;
@@ -2089,8 +2101,9 @@ void fn_8006B930(void* menu) {
     MENU_MIDDLE_U8_0099(menu)->unk_0099 = 1;
 }
 #pragma peephole reset
+#endif
 
-
+#if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_RESIDUAL_8006B9B8_ONLY)
 /* 0x8006B9B8 | size: 0x17C */
 void fn_8006B9B8(void) {
     extern void fn_8006A814();
