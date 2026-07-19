@@ -10,7 +10,8 @@
  *
  * fn_80056A78 (0x80056A78): trivial sda_getter, ported from the previous
  * campaign's archive/previous_campaign/src/game/menu/menu_status.c.
- * Remainder of the range is asm-only.
+ * fn_80056A80 (0x80056A80): exact pure-C recovery. Other source-backed
+ * functions remain candidates until their own exact islands are proven.
  */
 #include "dolphin/types.h"
 
@@ -29,7 +30,16 @@ extern u8 lbl_803A9768[];
 extern void fn_80056C54(u8*, u8*, u32);
 extern s32 menuCloseCustom(s32 menuId, s32 mode, s32 wait);
 
+#if !defined(MENUCB_PREFIX_80055E38_ONLY) && \
+    !defined(MENUCB_EXACT_80056A80_ONLY) && \
+    !defined(MENUCB_SUFFIX_80056B74_ONLY)
+#define MENUCB_RANGE_80055E38_ALL
+#endif
+
 /* ===== Function implementations ===== */
+
+#if defined(MENUCB_RANGE_80055E38_ALL) || \
+    defined(MENUCB_PREFIX_80055E38_ONLY)
 
 u32 fn_80055E38(s32 idx) {
     extern s32 winSeqCheckMove(s32 param);
@@ -168,18 +178,25 @@ u32 fn_800567AC(void) {
 }
 #pragma peephole on
 
+#endif
+
+#if defined(MENUCB_RANGE_80055E38_ALL) || \
+    defined(MENUCB_EXACT_80056A80_ONLY)
+
 #pragma peephole off
 void fn_80056A80(void) {
     extern u8 lbl_8026768C[];
     extern void menuCloseSync(s32, s32);
+    u32* table;
     s32 i;
     s32 val;
     u32 tbl[3];
 
     for (i = 0; i < 3; i++) {
         tbl[0] = ((u32*)lbl_8026768C)[0];
-        tbl[1] = ((u32*)lbl_8026768C)[1];
-        tbl[2] = ((u32*)lbl_8026768C)[2];
+        table = (u32*)lbl_8026768C;
+        tbl[1] = table[1];
+        tbl[2] = table[2];
         if (i < 0 || i >= 3) {
             val = -1;
         } else {
@@ -201,12 +218,17 @@ void fn_80056A80(void) {
         } else {
             val = (s32)tbl2[idx];
         }
-        if (val >= 0) {
+        if (0 <= val) {
             menuCloseSync(val, 1);
         }
     }
 }
 #pragma peephole on
+
+#endif
+
+#if defined(MENUCB_RANGE_80055E38_ALL) || \
+    defined(MENUCB_SUFFIX_80056B74_ONLY)
 
 #pragma peephole off
 u32 fn_80056B74(u32 idx, s32 mode) {
@@ -248,6 +270,11 @@ u32 fn_80056B74(u32 idx, s32 mode) {
     return 1;
 }
 #pragma peephole on
+
+#endif
+
+#if defined(MENUCB_RANGE_80055E38_ALL) || \
+    defined(MENUCB_PREFIX_80055E38_ONLY)
 
 #pragma optimization_level 4
 #pragma peephole off
@@ -327,6 +354,11 @@ void fn_800566D8(u32 a) {
 u32 fn_800566E8(void) {
     return lbl_8047BEC0 != lbl_8047A578;
 }
+
+#endif
+
+#if defined(MENUCB_RANGE_80055E38_ALL) || \
+    defined(MENUCB_SUFFIX_80056B74_ONLY)
 
 #pragma optimization_level 4
 #pragma scheduling off
@@ -521,3 +553,5 @@ void fn_80057A64(u8* state, u32 b) {
     menuOpenCustom(0xa0, 0x1f, 0, 0, 0, 0);
 }
 #pragma peephole on
+
+#endif

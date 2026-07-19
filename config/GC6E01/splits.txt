@@ -227,8 +227,14 @@ game/menu/menuCB_exact_80054914.c:
 game/menu/menuCB_suffix_800552D4.c:
 	.text       start:0x800552D4 end:0x80055E38
 
-game/menu/menuCB_range_80055E38.c:
-	.text       start:0x80055E38 end:0x80057B34
+game/menu/menuCB_prefix_80055E38.c:
+	.text       start:0x80055E38 end:0x80056A80
+
+game/menu/menuCB_exact_80056A80.c:
+	.text       start:0x80056A80 end:0x80056B74
+
+game/menu/menuCB_suffix_80056B74.c:
+	.text       start:0x80056B74 end:0x80057B34
 
 game/menu/menuColosseumBattle_exact_80057B34.c:
 	.text       start:0x80057B34 end:0x80057C9C
@@ -1519,8 +1525,11 @@ game/gs_gapp.c:
 game/gs_thread_hi_range_800FEC34.c:
 	.text       start:0x800FEC34 end:0x800FF0A0
 
-game/gs_floor_data.c:
-	.text       start:0x800FF0A0 end:0x800FF788
+game/gs_floor_data_exact_800FF0A0.c:
+	.text       start:0x800FF0A0 end:0x800FF178
+
+game/gs_floor_data_residual_800FF178.c:
+	.text       start:0x800FF178 end:0x800FF788
 
 game/gs_floor.c:
 	.text       start:0x800FF788 end:0x80101910

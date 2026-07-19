@@ -6,10 +6,10 @@
  * and sits between the GStexture/resource layer (fn_800F7274 etc.) and
  * gs_floor.c's GSfloorOpen (0x800FF788+). It contains only:
  *   - 4 floor-resource table walkers (fn_800FF0A0, fn_800FF178,
- *     fn_800FF2A0, fn_800FF3C0) -- currently honest TODO stubs. No rodata
- *     string references exist for any of the four, and no evidence
- *     supports semantic names. fn_800FF0A0 calls fn_800F7274 only; the
- *     other three call nothing (pure data/table walkers).
+ *     fn_800FF2A0, fn_800FF3C0). fn_800FF0A0 is exact pure C; the other
+ *     three remain honest TODO stubs. No rodata string references exist
+ *     for any of the four, and no evidence supports semantic names.
+ *     fn_800FF0A0 calls fn_800F7274 only; the other three call nothing.
  *   - 11 small floor-state accessors/helpers (fn_800FF4D4 through
  *     fn_800FF784), all matched at 100% -- must stay byte-identical.
  *
@@ -54,6 +54,14 @@ extern u32 lbl_8047ACDC;
 extern u32 lbl_8047ACE0;
 extern GSFloorResHandler lbl_80404918[];
 
+#if !defined(GS_FLOOR_DATA_EXACT_800FF0A0_ONLY) && \
+    !defined(GS_FLOOR_DATA_RESIDUAL_800FF178_ONLY)
+#define GS_FLOOR_DATA_ALL
+#endif
+
+#if defined(GS_FLOOR_DATA_ALL) || \
+    defined(GS_FLOOR_DATA_EXACT_800FF0A0_ONLY)
+
 /* 0x800FF0A0 | 0xD8 */
 void fn_800FF0A0(u32 callback) {
     GSFloorResource* resource;
@@ -64,6 +72,9 @@ void fn_800FF0A0(u32 callback) {
     while (remaining-- != 0) {
         if ((s32)resource->active == 3 &&
             resource->callback == (void*)callback) {
+            if (resource != NULL) {
+                goto found;
+            }
             goto found;
         }
         resource++;
@@ -89,6 +100,11 @@ found:
         resource->next = NULL;
     }
 }
+
+#endif
+
+#if defined(GS_FLOOR_DATA_ALL) || \
+    defined(GS_FLOOR_DATA_RESIDUAL_800FF178_ONLY)
 
 /* 0x800FF178 | 0x128 */
 #pragma push
@@ -234,3 +250,5 @@ void fn_800FF730(u32 floorId) {
 /* 0x800FF784 | 0x4 | void_stub */
 void fn_800FF784(void) {
 }
+
+#endif
