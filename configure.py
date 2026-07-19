@@ -2844,6 +2844,20 @@ config.libs = [
             ),
             Object(
                 Matching,
+                "game/fight_range_exact_80223A24.c",
+                mw_version="GC/1.3",
+                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                progress_category="game",
+            ),
+            Object(
+                CodeCandidate,
+                "game/fight_range_80224158.c",
+                mw_version="GC/1.3",
+                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                progress_category="game",
+            ),
+            Object(
+                Matching,
                 "game/fight_range_exact_802247D0.c",
                 mw_version="GC/1.3",
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
@@ -5342,7 +5356,7 @@ config.libs = [
             ),
             Object(
                 Matching,
-                "game/data/data_8039A200.c",
+                "game/data/data_8039A220.c",
                 progress_category="game",
             ),
             Object(

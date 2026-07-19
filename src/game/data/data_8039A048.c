@@ -146,6 +146,7 @@ void* jumptable_8039A110[8] = {
 #endif
 
 #if defined(DATA_8039A200_ONLY)
+#if !defined(DATA_8039A220_ONLY)
 void* jumptable_8039A200[8] = {
     (void*)((u8*)fn_80223AF4 + 0x88),
     (void*)((u8*)fn_80223AF4 + 0x50),
@@ -156,6 +157,7 @@ void* jumptable_8039A200[8] = {
     (void*)((u8*)fn_80223AF4 + 0x78),
     (void*)((u8*)fn_80223AF4 + 0x80),
 };
+#endif
 
 void* jumptable_8039A220[53] = {
     (void*)((u8*)fn_802249B8 + 0xBC8),
