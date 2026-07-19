@@ -28,7 +28,7 @@ extern void  PSVECSubtract(void* out, void* in, f32 s);     /* VEC normalize */
 extern void  fn_800D7868(void* handle, u32 a, u32 b, u32 c,
                           u32 d, u32 e, u32 f, u32 g);     /* GSgfx draw setup */
 extern void* fn_800D7894(void);                             /* GSgfx create render obj */
-/* Real named labels referenced by remaining inline-asm wrappers in this TU. */
+/* Real named labels referenced by this TU. */
 extern void _modelSetRotateEulerToQuatAll__FP9_HSD_JObj();
 extern void cos();
 extern void gamedataAttestCheckValid();
@@ -283,7 +283,7 @@ void fn_801176C8(void);
 extern void* GScameraGetActiveCamera();
 extern void GSvecCopy();
 extern u8 lbl_802727B8[];
-extern void fn_80177A38(void); /* referenced by asm .inc wrappers (fn_801171C8/80117330/8011791C/8012E388/8012EBD4); was undefined -> broke the TU parse */
+extern void fn_80177A38(void);
 extern void GSmodelResetTextureChange(void);
 extern void GSmodelFree(void);
 extern void GStextureCreate(void);
@@ -1430,308 +1430,9 @@ extern void heroMoveGetHeroRot(u32 param);
 extern void heroMoveGetHeroPos(u32 param);
 extern u32 heroMoveGetResID(u32* out_zero, u32* out_val, s32 index);
 
-/* Address: 0x8011C420 | Size: 0x10 | Pattern: nullcheck_setter */
-void wazaDataBiosSetRiskFlag(u8* ptr, u8 val) {
-    if (ptr == NULL) { return; }
-    *(u8*)(&ptr[0x13]) = val;
-}
-/* Address: 0x8011C570 | Size: 0x18 | Pattern: nullcheck_getter */
-u8 wazaDataBiosGetRiskFlag(u8* ptr) {
-    if (ptr == NULL) { return 0; }
-    return *(u8*)(&ptr[0x13]);
-}
-/* Address: 0x8011C5B8 | Size: 0x10 | Pattern: nullcheck_setter */
-void wazaDataBiosSetHidenFlag(u8* ptr, u8 val) {
-    if (ptr == NULL) { return; }
-    *(u8*)(&ptr[0x12]) = val;
-}
-/* Address: 0x8011C5C8 | Size: 0x18 | Pattern: nullcheck_getter */
-u8 wazaDataBiosGetHidenFlag(u8* ptr) {
-    if (ptr == NULL) { return 0; }
-    return *(u8*)(&ptr[0x12]);
-}
-/* Address: 0x8011C5E0 | Size: 0x10 | Pattern: nullcheck_setter */
-void fn_8011C5E0(u8* ptr, u8 val) {
-    if (ptr == NULL) { return; }
-    *(u8*)(&ptr[0x15]) = val;
-}
-/* Address: 0x8011C5F0 | Size: 0x10 | Pattern: nullcheck_setter */
-void fn_8011C5F0(u8* ptr, u8 val) {
-    if (ptr == NULL) { return; }
-    *(u8*)(&ptr[0x14]) = val;
-}
-/* Address: 0x8011C600 | Size: 0x10 | Pattern: nullcheck_setter */
-void wazaDataBiosSetDoc(u8* ptr, u32 val) {
-    if (ptr == NULL) { return; }
-    *(u32*)(&ptr[0x2C]) = val;
-}
-/* Address: 0x8011C610 | Size: 0x10 | Pattern: nullcheck_setter */
-void wazaDataBiosSetWazawzxdataId(u8* ptr, u32 val) {
-    if (ptr == NULL) { return; }
-    *(u32*)(&ptr[0x30]) = val;
-}
-/* Address: 0x8011C620 | Size: 0x10 | Pattern: nullcheck_setter */
-void wazaDataBiosSetPressure(u8* ptr, u8 val) {
-    if (ptr == NULL) { return; }
-    *(u8*)(&ptr[0x11]) = val;
-}
-/* Address: 0x8011C630 | Size: 0x10 | Pattern: nullcheck_setter */
-void wazaDataBiosSetBouon(u8* ptr, u8 val) {
-    if (ptr == NULL) { return; }
-    *(u8*)(&ptr[0x10]) = val;
-}
-/* Address: 0x8011C640 | Size: 0x10 | Pattern: nullcheck_setter */
-void wazaDataBiosSetNegoto(u8* ptr, u8 val) {
-    if (ptr == NULL) { return; }
-    *(u8*)(&ptr[0xF]) = val;
-}
-/* Address: 0x8011C650 | Size: 0x10 | Pattern: nullcheck_setter */
-void wazaDataBiosSetNekonote(u8* ptr, u8 val) {
-    if (ptr == NULL) { return; }
-    *(u8*)(&ptr[0xE]) = val;
-}
-/* Address: 0x8011C660 | Size: 0x10 | Pattern: nullcheck_setter */
-void wazaDataBiosSetMonomane(u8* ptr, u8 val) {
-    if (ptr == NULL) { return; }
-    *(u8*)(&ptr[0xD]) = val;
-}
-/* Address: 0x8011C670 | Size: 0x10 | Pattern: nullcheck_setter */
-void wazaDataBiosSetYubiwohuru(u8* ptr, u8 val) {
-    if (ptr == NULL) { return; }
-    *(u8*)(&ptr[0xC]) = val;
-}
-/* Address: 0x8011C680 | Size: 0x10 | Pattern: nullcheck_setter */
-void wazaDataBiosSetOujanosirusi(u8* ptr, u8 val) {
-    if (ptr == NULL) { return; }
-    *(u8*)(&ptr[0xB]) = val;
-}
-/* Address: 0x8011C690 | Size: 0x10 | Pattern: nullcheck_setter */
-void wazaDataBiosSetOumugaesi(u8* ptr, u8 val) {
-    if (ptr == NULL) { return; }
-    *(u8*)(&ptr[0xA]) = val;
-}
-/* Address: 0x8011C6A0 | Size: 0x10 | Pattern: nullcheck_setter */
-void wazaDataBiosSetYokodori(u8* ptr, u8 val) {
-    if (ptr == NULL) { return; }
-    *(u8*)(&ptr[0x9]) = val;
-}
-/* Address: 0x8011C6B0 | Size: 0x10 | Pattern: nullcheck_setter */
-void wazaDataBiosSetMajikku(u8* ptr, u8 val) {
-    if (ptr == NULL) { return; }
-    *(u8*)(&ptr[0x8]) = val;
-}
-/* Address: 0x8011C6C0 | Size: 0x10 | Pattern: nullcheck_setter */
-void wazaDataBiosSetMamoru(u8* ptr, u8 val) {
-    if (ptr == NULL) { return; }
-    *(u8*)(&ptr[0x7]) = val;
-}
-/* Address: 0x8011C6D0 | Size: 0x10 | Pattern: nullcheck_setter */
-void wazaDataBiosSetDageki(u8* ptr, u8 val) {
-    if (ptr == NULL) { return; }
-    *(u8*)(&ptr[0x6]) = val;
-}
-/* Address: 0x8011C6E0 | Size: 0x10 | Pattern: nullcheck_setter */
-void wazaDataBiosSetAddFightKoukaAvg(u8* ptr, u8 val) {
-    if (ptr == NULL) { return; }
-    *(u8*)(&ptr[0x5]) = val;
-}
-/* Address: 0x8011C6F0 | Size: 0x10 | Pattern: nullcheck_setter */
-void wazaDataBiosSetFightAttackMsgId(u8* ptr, u32 val) {
-    if (ptr == NULL) { return; }
-    *(u32*)(&ptr[0x28]) = val;
-}
-/* Address: 0x8011C700 | Size: 0x10 | Pattern: nullcheck_setter */
-void wazaDataBiosSetSeqId(u8* ptr, u16 val) {
-    if (ptr == NULL) { return; }
-    *(u16*)(&ptr[0x1A]) = val;
-}
-/* Address: 0x8011C710 | Size: 0x10 | Pattern: nullcheck_setter */
-void wazaDataBiosSetFightKoukaDataId(u8* ptr, u16 val) {
-    if (ptr == NULL) { return; }
-    *(u16*)(&ptr[0x18]) = val;
-}
-/* Address: 0x8011C720 | Size: 0x10 | Pattern: nullcheck_setter */
-void wazaDataBiosSetIryoku(u8* ptr, s16 val) {
-    if (ptr == NULL) { return; }
-    *(u16*)(&ptr[0x16]) = val;
-}
-/* Address: 0x8011C730 | Size: 0x10 | Pattern: nullcheck_setter */
-void wazaDataBiosSetAvg(u8* ptr, u8 val) {
-    if (ptr == NULL) { return; }
-    *(u8*)(&ptr[0x4]) = val;
-}
-/* Address: 0x8011C740 | Size: 0x10 | Pattern: nullcheck_setter */
-void wazaDataBiosSetRangeId(u8* ptr, u8 val) {
-    if (ptr == NULL) { return; }
-    *(u8*)(&ptr[0x3]) = val;
-}
-/* Address: 0x8011C750 | Size: 0x10 | Pattern: nullcheck_setter */
-void wazaDataBiosSetPri(u8* ptr, s8 val) {
-    if (ptr == NULL) { return; }
-    *(u8*)(&ptr[0x0]) = val;
-}
-/* Address: 0x8011C760 | Size: 0x10 | Pattern: nullcheck_setter */
-void wazaDataBiosSetZokuseiDataId(u8* ptr, u8 val) {
-    if (ptr == NULL) { return; }
-    *(u8*)(&ptr[0x2]) = val;
-}
-/* Address: 0x8011C770 | Size: 0x10 | Pattern: nullcheck_setter */
-void wazaDataBiosSetPp(u8* ptr, u8 val) {
-    if (ptr == NULL) { return; }
-    *(u8*)(&ptr[0x1]) = val;
-}
-/* Address: 0x8011C780 | Size: 0x10 | Pattern: nullcheck_setter */
-void wazaDataBiosSetName(u8* ptr, u32 val) {
-    if (ptr == NULL) { return; }
-    *(u32*)(&ptr[0x20]) = val;
-}
-/* Address: 0x8011C790 | Size: 0x18 | Pattern: nullcheck_getter */
-u8 fn_8011C790(u8* ptr) {
-    if (ptr == NULL) { return 0; }
-    return *(u8*)(&ptr[0x15]);
-}
-/* Address: 0x8011C7A8 | Size: 0x18 | Pattern: nullcheck_getter */
-u8 fn_8011C7A8(u8* ptr) {
-    if (ptr == NULL) { return 0; }
-    return *(u8*)(&ptr[0x14]);
-}
-/* Address: 0x8011C7C0 | Size: 0x18 | Pattern: nullcheck_getter */
-u32 wazaDataBiosGetDoc(u8* ptr) {
-    if (ptr == NULL) { return 0; }
-    return *(u32*)(&ptr[0x2C]);
-}
-/* Address: 0x8011C7D8 | Size: 0x18 | Pattern: nullcheck_getter */
-u32 wazaDataBiosGetWazawzxdataId(u8* ptr) {
-    if (ptr == NULL) { return 0; }
-    return *(u32*)(&ptr[0x30]);
-}
-/* Address: 0x8011C7F0 | Size: 0x18 | Pattern: nullcheck_getter */
-u8 wazaDataBiosGetPressure(u8* ptr) {
-    if (ptr == NULL) { return 0; }
-    return *(u8*)(&ptr[0x11]);
-}
-/* Address: 0x8011C808 | Size: 0x18 | Pattern: nullcheck_getter */
-u8 wazaDataBiosGetBouon(u8* ptr) {
-    if (ptr == NULL) { return 0; }
-    return *(u8*)(&ptr[0x10]);
-}
-/* Address: 0x8011C820 | Size: 0x18 | Pattern: nullcheck_getter */
-u8 wazaDataBiosGetNegoto(u8* ptr) {
-    if (ptr == NULL) { return 0; }
-    return *(u8*)(&ptr[0xF]);
-}
-/* Address: 0x8011C838 | Size: 0x18 | Pattern: nullcheck_getter */
-u8 wazaDataBiosGetNekonote(u8* ptr) {
-    if (ptr == NULL) { return 0; }
-    return *(u8*)(&ptr[0xE]);
-}
-/* Address: 0x8011C850 | Size: 0x18 | Pattern: nullcheck_getter */
-u8 wazaDataBiosGetMonomane(u8* ptr) {
-    if (ptr == NULL) { return 0; }
-    return *(u8*)(&ptr[0xD]);
-}
-/* Address: 0x8011C868 | Size: 0x18 | Pattern: nullcheck_getter */
-u8 wazaDataBiosGetYubiwohuru(u8* ptr) {
-    if (ptr == NULL) { return 0; }
-    return *(u8*)(&ptr[0xC]);
-}
-/* Address: 0x8011C880 | Size: 0x18 | Pattern: nullcheck_getter */
-u8 wazaDataBiosGetOujanosirusi(u8* ptr) {
-    if (ptr == NULL) { return 0; }
-    return *(u8*)(&ptr[0xB]);
-}
-/* Address: 0x8011C898 | Size: 0x18 | Pattern: nullcheck_getter */
-u8 wazaDataBiosGetOumugaesi(u8* ptr) {
-    if (ptr == NULL) { return 0; }
-    return *(u8*)(&ptr[0xA]);
-}
-/* Address: 0x8011C8B0 | Size: 0x18 | Pattern: nullcheck_getter */
-u8 wazaDataBiosGetYokodori(u8* ptr) {
-    if (ptr == NULL) { return 0; }
-    return *(u8*)(&ptr[0x9]);
-}
-/* Address: 0x8011C8C8 | Size: 0x18 | Pattern: nullcheck_getter */
-u8 wazaDataBiosGetMajikku(u8* ptr) {
-    if (ptr == NULL) { return 0; }
-    return *(u8*)(&ptr[0x8]);
-}
-/* Address: 0x8011C8E0 | Size: 0x18 | Pattern: nullcheck_getter */
-u8 wazaDataBiosGetMamoru(u8* ptr) {
-    if (ptr == NULL) { return 0; }
-    return *(u8*)(&ptr[0x7]);
-}
-/* Address: 0x8011C8F8 | Size: 0x18 | Pattern: nullcheck_getter */
-u8 wazaDataBiosGetDageki(u8* ptr) {
-    if (ptr == NULL) { return 0; }
-    return *(u8*)(&ptr[0x6]);
-}
-/* Address: 0x8011C910 | Size: 0x18 | Pattern: nullcheck_getter */
-u8 wazaDataBiosGetAddFightKoukaAvg(u8* ptr) {
-    if (ptr == NULL) { return 0; }
-    return *(u8*)(&ptr[0x5]);
-}
-/* Address: 0x8011C928 | Size: 0x18 | Pattern: nullcheck_getter */
-u32 wazaDataBiosGetFightAttackMsgId(u8* ptr) {
-    if (ptr == NULL) { return 0; }
-    return *(u32*)(&ptr[0x28]);
-}
-/* Address: 0x8011C940 | Size: 0x18 | Pattern: nullcheck_getter */
-u32 wazaDataBiosGetFightAttackTunagiMsgId(u8* ptr) {
-    if (ptr == NULL) { return 0; }
-    return *(u32*)(&ptr[0x24]);
-}
-/* Address: 0x8011C958 | Size: 0x18 | Pattern: nullcheck_getter */
-u16 wazaDataBiosGetSeqId(u8* ptr) {
-    if (ptr == NULL) { return 0; }
-    return *(u16*)(&ptr[0x1A]);
-}
-/* Address: 0x8011C970 | Size: 0x18 | Pattern: nullcheck_getter */
-u16 wazaDataBiosGetFightKoukaDataId(u8* ptr) {
-    if (ptr == NULL) { return 0; }
-    return *(u16*)(&ptr[0x18]);
-}
-/* Address: 0x8011C988 | Size: 0x18 | Pattern: nullcheck_getter */
-s16 wazaDataBiosGetIryoku(u8* ptr) {
-    if (ptr == NULL) { return 0; }
-    return *(s16*)(&ptr[0x16]);
-}
-/* Address: 0x8011C9A0 | Size: 0x18 | Pattern: nullcheck_getter */
-u8 wazaDataBiosGetAvg(u8* ptr) {
-    if (ptr == NULL) { return 0; }
-    return *(u8*)(&ptr[0x4]);
-}
-/* Address: 0x8011C9B8 | Size: 0x18 | Pattern: nullcheck_getter */
-u8 wazaDataBiosGetRangeId(u8* ptr) {
-    if (ptr == NULL) { return 0; }
-    return *(u8*)(&ptr[0x3]);
-}
-/* Address: 0x8011C9D0 | Size: 0x1C | Pattern: nullcheck_getter_s8 */
-s32 wazaDataBiosGetPri(u8* ptr) {
-    if (ptr == NULL) { return 0; }
-    return (s8)ptr[0x0];
-}
-/* Address: 0x8011C9EC | Size: 0x18 | Pattern: nullcheck_getter */
-u8 wazaDataBiosGetZokuseiDataId(u8* ptr) {
-    if (ptr == NULL) { return 0; }
-    return *(u8*)(&ptr[0x2]);
-}
-/* Address: 0x8011CA04 | Size: 0x18 | Pattern: nullcheck_getter */
-u8 wazaDataBiosGetPp(u8* ptr) {
-    if (ptr == NULL) { return 0; }
-    return *(u8*)(&ptr[0x1]);
-}
-/* Address: 0x8011CA1C | Size: 0x18 | Pattern: nullcheck_getter */
-u32 wazaDataBiosGetName(u8* ptr) {
-    if (ptr == NULL) { return 0; }
-    return *(u32*)(&ptr[0x20]);
-}
+/* Definitions follow the retail text order. */
+
 /* 0x8011BA0C | 0xB4 */
-extern void jumptable_8035C260();
-#if 0
-asm void fn_8011BA0C(void) {
-#include "src/game/gs_field_world_fn_8011BA0C.inc"
-}
-#else
 u32 wazaGetWazaTypeIdName(u8 type) {
     u32 result = 0;
     switch (type) {
@@ -1774,15 +1475,8 @@ u32 wazaGetWazaTypeIdName(u8 type) {
     }
     return result;
 }
-#endif
+
 /* 0x8011BAC0 | 0xAC */
-#if 0
-asm void wazaIsWazaTypeId(void) {
-#include "src/game/gs_field_world_fn_8011BAC0.inc"
-}
-#else
-/* key typed u32 so raw stays unmasked (mr r29,r3); dead k==0&&k==0x163&&k==0x165 chain
- * reproduces the folded cmplwi sequence; 3-iter wazaGetStatus scan. byte-match verified. */
 u32 wazaIsWazaTypeId(u32 key, u8 target) {
     extern u8 wazaGetStatus(u32 a, u32 b, u32 c, u32 d);
     u32 raw = key;
@@ -1803,28 +1497,16 @@ u32 wazaIsWazaTypeId(u32 key, u8 target) {
     }
     return 0;
 }
-#endif
-/* 0x6C | wazaGetMaxPP | single_call_straight */
+
+/* 0x8011BB6C | 0x6C */
 u8 wazaGetMaxPP(u32 arg1, u8 arg2) {
     extern u8 wazaGetStatus(u32 a, u32 b, u32 c, u32 d);
     u8 r = wazaGetStatus(0, arg1, 2, 0);
     u8 a2 = arg2;
     return (u8)(r + a2 * (r * 20) / 100);
 }
+
 /* 0x8011BBD8 | 0x2DC */
-extern void fightWazaBiosSetWazaBanme(void* ptr, s8 val);
-extern void fightWazaBiosSetMotoWazaDataId(void* ptr, u16 val);
-extern void fightWazaBiosSetUseWazaDataId(void* ptr, u16 val);
-extern void fightWazaBiosSetTargetDataId(void* ptr, u16 val);
-extern void fightWazaBiosSetCritical(void* ptr, u8 val);
-extern void fightWazaBiosSetDamageValue(void* ptr, u8 val);
-extern void fightWazaBiosSetDamage(void* ptr, u32 val);
-extern void fightWazaBiosSetHitDamage(void* ptr, u32 val);
-extern void fightWazaBiosSetIryoku(void* ptr, u16 val);
-extern void fightWazaBiosSetZokusei(void* ptr, u16 val);
-extern void fightWazaBiosSetKaisuu(void* ptr, u8 val);
-extern void fightWazaBiosSetAutoMakeFlag(void* ptr, u8 val);
-extern void jumptable_8035C290();
 #pragma dont_inline on
 void wazaSetStatus(void* ptr, u16 dataId, u16 status, u32 index, u32 value) {
     if (status == 0 || status >= 0x35) {
@@ -1932,13 +1614,13 @@ void wazaSetStatus(void* ptr, u16 dataId, u16 status, u32 index, u32 value) {
     case 30:
         wazaDataBiosSetFightTrainerAiWazaDamageFuncPtr(ptr, value);
         break;
-    case 31:
+    case 32:
         wazaDataBiosSetFightWazaWzxTypeFuncPtr(ptr, value);
         break;
-    case 32:
+    case 33:
         wazaDataBiosSetFightWazaWzxVariationFuncPtr(ptr, value);
         break;
-    case 33:
+    case 31:
         wazaDataBiosSetWazawzxdataId(ptr, value);
         break;
     case 34:
@@ -1989,21 +1671,8 @@ void wazaSetStatus(void* ptr, u16 dataId, u16 status, u32 index, u32 value) {
     }
 }
 #pragma dont_inline reset
+
 /* 0x8011BEB4 | 0x31C */
-extern s8 fightWazaBiosGetWazaBanme(void* ptr);
-extern u16 fightWazaBiosGetMotoWazaDataId(void* ptr);
-extern u16 fightWazaBiosGetUseWazaDataId(void* ptr);
-extern u16 fightWazaBiosGetTargetDataId(void* ptr);
-extern void* fightWazaBiosGetJoutaiPtr(void* ptr, u32 index);
-extern u8 fightWazaBiosGetCritical(void* ptr);
-extern u8 fightWazaBiosGetDamageValue(void* ptr);
-extern u32 fightWazaBiosGetDamage(void* ptr);
-extern u32 fightWazaBiosGetHitDamage(void* ptr);
-extern u16 fightWazaBiosGetIryoku(void* ptr);
-extern u16 fightWazaBiosGetZokusei(void* ptr);
-extern u8 fightWazaBiosGetKaisuu(void* ptr);
-extern u8 fightWazaBiosGetAutoMakeFlag(void* ptr);
-extern void jumptable_8035C35C();
 #pragma dont_inline on
 u32 wazaGetStatus(void* ptr, u16 dataId, u16 status, u32 index) {
     u32 value;
@@ -2084,11 +1753,11 @@ u32 wazaGetStatus(void* ptr, u16 dataId, u16 status, u32 index) {
         return wazaDataBiosGetFightTrainerAiWazaHitFuncPtr(ptr);
     case 30:
         return wazaDataBiosGetFightTrainerAiWazaDamageFuncPtr(ptr);
-    case 31:
-        return wazaDataBiosGetFightWazaWzxTypeFuncPtr(ptr);
     case 32:
-        return wazaDataBiosGetFightWazaWzxVariationFuncPtr(ptr);
+        return wazaDataBiosGetFightWazaWzxTypeFuncPtr(ptr);
     case 33:
+        return wazaDataBiosGetFightWazaWzxVariationFuncPtr(ptr);
+    case 31:
         return wazaDataBiosGetWazawzxdataId(ptr);
     case 34:
         return wazaDataBiosGetDoc(ptr);
@@ -2132,34 +1801,8 @@ u32 wazaGetStatus(void* ptr, u16 dataId, u16 status, u32 index) {
     return 0;
 }
 #pragma dont_inline reset
-/* 0x8011C430 | 0x20 */
-void wazaDataBiosSetTypeId(u8* ptr, u16 idx, u8 val) {
-    if (ptr == NULL) { return; }
-    if (idx >= 3) { return; }
-    ptr[idx + 0x34] = val;
-}
-/* 0x8011C588 | 0x30 */
-u8 wazaDataBiosGetTypeId(u8* ptr, u16 idx) {
-    if (ptr == NULL) { return 0; }
-    if (idx >= 3) { return 0; }
-    return ptr[idx + 0x34];
-}
-/* 0x8011CA34 | 0x2C */
-extern u32 lbl_80478DF8;
-extern u32 lbl_80478DFC;
-void* wazaDataBiosGetPtr(u16 idx) {
-    u32* hdr = (u32*)lbl_80478DF8;
-    if (idx >= hdr[0]) {
-        return (void*)lbl_80478DFC;
-    }
-    return (u8*)lbl_80478DFC + (u32)idx * 0x38;
-}
-extern u32 lbl_80478B50;  /* field obj count (SDA) */
-#if 0
-asm void wazaDataBiosSetFightWazaWzxVariationFuncPtr(void) {
-#include "src/game/gs_field_world_fn_8011C1D0.inc"
-}
-#else
+
+/* 0x8011C1D0 | 0x50 */
 #pragma optimization_level 4
 void wazaDataBiosSetFightWazaWzxVariationFuncPtr(u8* ptr, u32 val) {
     u16 idx; u8* entry;
@@ -2169,13 +1812,8 @@ void wazaDataBiosSetFightWazaWzxVariationFuncPtr(u8* ptr, u32 val) {
     if (entry == NULL) { return; }
     *(u32*)(entry + 0x10) = val;
 }
-#endif
-extern u32 lbl_80478B50;  /* field obj count (SDA) */
-#if 0
-asm void wazaDataBiosSetFightWazaWzxTypeFuncPtr(void) {
-#include "src/game/gs_field_world_fn_8011C220.inc"
-}
-#else
+
+/* 0x8011C220 | 0x50 */
 #pragma optimization_level 4
 void wazaDataBiosSetFightWazaWzxTypeFuncPtr(u8* ptr, u32 val) {
     u16 idx; u8* entry;
@@ -2185,13 +1823,8 @@ void wazaDataBiosSetFightWazaWzxTypeFuncPtr(u8* ptr, u32 val) {
     if (entry == NULL) { return; }
     *(u32*)(entry + 0xc) = val;
 }
-#endif
-extern u32 lbl_80478B50;  /* field obj count (SDA) */
-#if 0
-asm void wazaDataBiosGetFightWazaWzxVariationFuncPtr(void) {
-#include "src/game/gs_field_world_fn_8011C270.inc"
-}
-#else
+
+/* 0x8011C270 | 0x60 */
 #pragma optimization_level 4
 u32 wazaDataBiosGetFightWazaWzxVariationFuncPtr(u8* ptr) {
     u16 idx; u8* entry;
@@ -2201,13 +1834,8 @@ u32 wazaDataBiosGetFightWazaWzxVariationFuncPtr(u8* ptr) {
     if (entry == NULL) { return 0; }
     return *(u32*)(entry + 0x10);
 }
-#endif
-extern u32 lbl_80478B50;  /* field obj count (SDA) */
-#if 0
-asm void wazaDataBiosGetFightWazaWzxTypeFuncPtr(void) {
-#include "src/game/gs_field_world_fn_8011C2D0.inc"
-}
-#else
+
+/* 0x8011C2D0 | 0x60 */
 #pragma optimization_level 4
 u32 wazaDataBiosGetFightWazaWzxTypeFuncPtr(u8* ptr) {
     u16 idx; u8* entry;
@@ -2217,13 +1845,8 @@ u32 wazaDataBiosGetFightWazaWzxTypeFuncPtr(u8* ptr) {
     if (entry == NULL) { return 0; }
     return *(u32*)(entry + 0xc);
 }
-#endif
-extern u32 lbl_80478B50;  /* field obj count (SDA) */
-#if 0
-asm void wazaDataBiosSetFightTrainerAiWazaDamageFuncPtr(void) {
-#include "src/game/gs_field_world_fn_8011C330.inc"
-}
-#else
+
+/* 0x8011C330 | 0x50 */
 #pragma optimization_level 4
 void wazaDataBiosSetFightTrainerAiWazaDamageFuncPtr(u8* ptr, u32 val) {
     u16 idx; u8* entry;
@@ -2233,13 +1856,8 @@ void wazaDataBiosSetFightTrainerAiWazaDamageFuncPtr(u8* ptr, u32 val) {
     if (entry == NULL) { return; }
     *(u32*)(entry + 0x8) = val;
 }
-#endif
-extern u32 lbl_80478B50;  /* field obj count (SDA) */
-#if 0
-asm void wazaDataBiosSetFightTrainerAiWazaHitFuncPtr(void) {
-#include "src/game/gs_field_world_fn_8011C380.inc"
-}
-#else
+
+/* 0x8011C380 | 0x50 */
 #pragma optimization_level 4
 void wazaDataBiosSetFightTrainerAiWazaHitFuncPtr(u8* ptr, u32 val) {
     u16 idx; u8* entry;
@@ -2249,13 +1867,8 @@ void wazaDataBiosSetFightTrainerAiWazaHitFuncPtr(u8* ptr, u32 val) {
     if (entry == NULL) { return; }
     *(u32*)(entry + 0x4) = val;
 }
-#endif
-extern u32 lbl_80478B50;  /* field obj count (SDA) */
-#if 0
-asm void wazaDataBiosSetFightTrainerAiWazaValueFuncPtr(void) {
-#include "src/game/gs_field_world_fn_8011C3D0.inc"
-}
-#else
+
+/* 0x8011C3D0 | 0x50 */
 #pragma optimization_level 4
 void wazaDataBiosSetFightTrainerAiWazaValueFuncPtr(u8* ptr, u32 val) {
     u16 idx; u8* entry;
@@ -2265,13 +1878,21 @@ void wazaDataBiosSetFightTrainerAiWazaValueFuncPtr(u8* ptr, u32 val) {
     if (entry == NULL) { return; }
     *(u32*)(entry + 0x0) = val;
 }
-#endif
-extern u32 lbl_80478B50;  /* field obj count (SDA) */
-#if 0
-asm void wazaDataBiosGetFightTrainerAiWazaDamageFuncPtr(void) {
-#include "src/game/gs_field_world_fn_8011C450.inc"
+
+/* 0x8011C420 | 0x10 */
+void wazaDataBiosSetRiskFlag(u8* ptr, u8 val) {
+    if (ptr == NULL) { return; }
+    *(u8*)(&ptr[0x13]) = val;
 }
-#else
+
+/* 0x8011C430 | 0x20 */
+void wazaDataBiosSetTypeId(u8* ptr, u16 idx, u8 val) {
+    if (ptr == NULL) { return; }
+    if (idx >= 3) { return; }
+    ptr[idx + 0x34] = val;
+}
+
+/* 0x8011C450 | 0x60 */
 #pragma optimization_level 4
 u32 wazaDataBiosGetFightTrainerAiWazaDamageFuncPtr(u8* ptr) {
     u16 idx; u8* entry;
@@ -2281,13 +1902,8 @@ u32 wazaDataBiosGetFightTrainerAiWazaDamageFuncPtr(u8* ptr) {
     if (entry == NULL) { return 0; }
     return *(u32*)(entry + 0x8);
 }
-#endif
-extern u32 lbl_80478B50;  /* field obj count (SDA) */
-#if 0
-asm void wazaDataBiosGetFightTrainerAiWazaHitFuncPtr(void) {
-#include "src/game/gs_field_world_fn_8011C4B0.inc"
-}
-#else
+
+/* 0x8011C4B0 | 0x60 */
 #pragma optimization_level 4
 u32 wazaDataBiosGetFightTrainerAiWazaHitFuncPtr(u8* ptr) {
     u16 idx; u8* entry;
@@ -2297,13 +1913,8 @@ u32 wazaDataBiosGetFightTrainerAiWazaHitFuncPtr(u8* ptr) {
     if (entry == NULL) { return 0; }
     return *(u32*)(entry + 0x4);
 }
-#endif
-extern u32 lbl_80478B50;  /* field obj count (SDA) */
-#if 0
-asm void wazaDataBiosGetFightTrainerAiWazaValueFuncPtr(void) {
-#include "src/game/gs_field_world_fn_8011C510.inc"
-}
-#else
+
+/* 0x8011C510 | 0x60 */
 #pragma optimization_level 4
 u32 wazaDataBiosGetFightTrainerAiWazaValueFuncPtr(u8* ptr) {
     u16 idx; u8* entry;
@@ -2313,4 +1924,367 @@ u32 wazaDataBiosGetFightTrainerAiWazaValueFuncPtr(u8* ptr) {
     if (entry == NULL) { return 0; }
     return *(u32*)(entry + 0x0);
 }
-#endif
+
+/* 0x8011C570 | 0x18 */
+u8 wazaDataBiosGetRiskFlag(u8* ptr) {
+    if (ptr == NULL) { return 0; }
+    return *(u8*)(&ptr[0x13]);
+}
+
+/* 0x8011C588 | 0x30 */
+u8 wazaDataBiosGetTypeId(u8* ptr, u16 idx) {
+    if (ptr == NULL) { return 0; }
+    if (idx >= 3) { return 0; }
+    return ptr[idx + 0x34];
+}
+
+/* 0x8011C5B8 | 0x10 */
+void wazaDataBiosSetHidenFlag(u8* ptr, u8 val) {
+    if (ptr == NULL) { return; }
+    *(u8*)(&ptr[0x12]) = val;
+}
+
+/* 0x8011C5C8 | 0x18 */
+u8 wazaDataBiosGetHidenFlag(u8* ptr) {
+    if (ptr == NULL) { return 0; }
+    return *(u8*)(&ptr[0x12]);
+}
+
+/* 0x8011C5E0 | 0x10 */
+void fn_8011C5E0(u8* ptr, u8 val) {
+    if (ptr == NULL) { return; }
+    *(u8*)(&ptr[0x15]) = val;
+}
+
+/* 0x8011C5F0 | 0x10 */
+void fn_8011C5F0(u8* ptr, u8 val) {
+    if (ptr == NULL) { return; }
+    *(u8*)(&ptr[0x14]) = val;
+}
+
+/* 0x8011C600 | 0x10 */
+void wazaDataBiosSetDoc(u8* ptr, u32 val) {
+    if (ptr == NULL) { return; }
+    *(u32*)(&ptr[0x2C]) = val;
+}
+
+/* 0x8011C610 | 0x10 */
+void wazaDataBiosSetWazawzxdataId(u8* ptr, u32 val) {
+    if (ptr == NULL) { return; }
+    *(u32*)(&ptr[0x30]) = val;
+}
+
+/* 0x8011C620 | 0x10 */
+void wazaDataBiosSetPressure(u8* ptr, u8 val) {
+    if (ptr == NULL) { return; }
+    *(u8*)(&ptr[0x11]) = val;
+}
+
+/* 0x8011C630 | 0x10 */
+void wazaDataBiosSetBouon(u8* ptr, u8 val) {
+    if (ptr == NULL) { return; }
+    *(u8*)(&ptr[0x10]) = val;
+}
+
+/* 0x8011C640 | 0x10 */
+void wazaDataBiosSetNegoto(u8* ptr, u8 val) {
+    if (ptr == NULL) { return; }
+    *(u8*)(&ptr[0xF]) = val;
+}
+
+/* 0x8011C650 | 0x10 */
+void wazaDataBiosSetNekonote(u8* ptr, u8 val) {
+    if (ptr == NULL) { return; }
+    *(u8*)(&ptr[0xE]) = val;
+}
+
+/* 0x8011C660 | 0x10 */
+void wazaDataBiosSetMonomane(u8* ptr, u8 val) {
+    if (ptr == NULL) { return; }
+    *(u8*)(&ptr[0xD]) = val;
+}
+
+/* 0x8011C670 | 0x10 */
+void wazaDataBiosSetYubiwohuru(u8* ptr, u8 val) {
+    if (ptr == NULL) { return; }
+    *(u8*)(&ptr[0xC]) = val;
+}
+
+/* 0x8011C680 | 0x10 */
+void wazaDataBiosSetOujanosirusi(u8* ptr, u8 val) {
+    if (ptr == NULL) { return; }
+    *(u8*)(&ptr[0xB]) = val;
+}
+
+/* 0x8011C690 | 0x10 */
+void wazaDataBiosSetOumugaesi(u8* ptr, u8 val) {
+    if (ptr == NULL) { return; }
+    *(u8*)(&ptr[0xA]) = val;
+}
+
+/* 0x8011C6A0 | 0x10 */
+void wazaDataBiosSetYokodori(u8* ptr, u8 val) {
+    if (ptr == NULL) { return; }
+    *(u8*)(&ptr[0x9]) = val;
+}
+
+/* 0x8011C6B0 | 0x10 */
+void wazaDataBiosSetMajikku(u8* ptr, u8 val) {
+    if (ptr == NULL) { return; }
+    *(u8*)(&ptr[0x8]) = val;
+}
+
+/* 0x8011C6C0 | 0x10 */
+void wazaDataBiosSetMamoru(u8* ptr, u8 val) {
+    if (ptr == NULL) { return; }
+    *(u8*)(&ptr[0x7]) = val;
+}
+
+/* 0x8011C6D0 | 0x10 */
+void wazaDataBiosSetDageki(u8* ptr, u8 val) {
+    if (ptr == NULL) { return; }
+    *(u8*)(&ptr[0x6]) = val;
+}
+
+/* 0x8011C6E0 | 0x10 */
+void wazaDataBiosSetAddFightKoukaAvg(u8* ptr, u8 val) {
+    if (ptr == NULL) { return; }
+    *(u8*)(&ptr[0x5]) = val;
+}
+
+/* 0x8011C6F0 | 0x10 */
+void wazaDataBiosSetFightAttackMsgId(u8* ptr, u32 val) {
+    if (ptr == NULL) { return; }
+    *(u32*)(&ptr[0x28]) = val;
+}
+
+/* 0x8011C700 | 0x10 */
+void wazaDataBiosSetSeqId(u8* ptr, u16 val) {
+    if (ptr == NULL) { return; }
+    *(u16*)(&ptr[0x1A]) = val;
+}
+
+/* 0x8011C710 | 0x10 */
+void wazaDataBiosSetFightKoukaDataId(u8* ptr, u16 val) {
+    if (ptr == NULL) { return; }
+    *(u16*)(&ptr[0x18]) = val;
+}
+
+/* 0x8011C720 | 0x10 */
+void wazaDataBiosSetIryoku(u8* ptr, s16 val) {
+    if (ptr == NULL) { return; }
+    *(u16*)(&ptr[0x16]) = val;
+}
+
+/* 0x8011C730 | 0x10 */
+void wazaDataBiosSetAvg(u8* ptr, u8 val) {
+    if (ptr == NULL) { return; }
+    *(u8*)(&ptr[0x4]) = val;
+}
+
+/* 0x8011C740 | 0x10 */
+void wazaDataBiosSetRangeId(u8* ptr, u8 val) {
+    if (ptr == NULL) { return; }
+    *(u8*)(&ptr[0x3]) = val;
+}
+
+/* 0x8011C750 | 0x10 */
+void wazaDataBiosSetPri(u8* ptr, s8 val) {
+    if (ptr == NULL) { return; }
+    *(u8*)(&ptr[0x0]) = val;
+}
+
+/* 0x8011C760 | 0x10 */
+void wazaDataBiosSetZokuseiDataId(u8* ptr, u8 val) {
+    if (ptr == NULL) { return; }
+    *(u8*)(&ptr[0x2]) = val;
+}
+
+/* 0x8011C770 | 0x10 */
+void wazaDataBiosSetPp(u8* ptr, u8 val) {
+    if (ptr == NULL) { return; }
+    *(u8*)(&ptr[0x1]) = val;
+}
+
+/* 0x8011C780 | 0x10 */
+void wazaDataBiosSetName(u8* ptr, u32 val) {
+    if (ptr == NULL) { return; }
+    *(u32*)(&ptr[0x20]) = val;
+}
+
+/* 0x8011C790 | 0x18 */
+u8 fn_8011C790(u8* ptr) {
+    if (ptr == NULL) { return 0; }
+    return *(u8*)(&ptr[0x15]);
+}
+
+/* 0x8011C7A8 | 0x18 */
+u8 fn_8011C7A8(u8* ptr) {
+    if (ptr == NULL) { return 0; }
+    return *(u8*)(&ptr[0x14]);
+}
+
+/* 0x8011C7C0 | 0x18 */
+u32 wazaDataBiosGetDoc(u8* ptr) {
+    if (ptr == NULL) { return 0; }
+    return *(u32*)(&ptr[0x2C]);
+}
+
+/* 0x8011C7D8 | 0x18 */
+u32 wazaDataBiosGetWazawzxdataId(u8* ptr) {
+    if (ptr == NULL) { return 0; }
+    return *(u32*)(&ptr[0x30]);
+}
+
+/* 0x8011C7F0 | 0x18 */
+u8 wazaDataBiosGetPressure(u8* ptr) {
+    if (ptr == NULL) { return 0; }
+    return *(u8*)(&ptr[0x11]);
+}
+
+/* 0x8011C808 | 0x18 */
+u8 wazaDataBiosGetBouon(u8* ptr) {
+    if (ptr == NULL) { return 0; }
+    return *(u8*)(&ptr[0x10]);
+}
+
+/* 0x8011C820 | 0x18 */
+u8 wazaDataBiosGetNegoto(u8* ptr) {
+    if (ptr == NULL) { return 0; }
+    return *(u8*)(&ptr[0xF]);
+}
+
+/* 0x8011C838 | 0x18 */
+u8 wazaDataBiosGetNekonote(u8* ptr) {
+    if (ptr == NULL) { return 0; }
+    return *(u8*)(&ptr[0xE]);
+}
+
+/* 0x8011C850 | 0x18 */
+u8 wazaDataBiosGetMonomane(u8* ptr) {
+    if (ptr == NULL) { return 0; }
+    return *(u8*)(&ptr[0xD]);
+}
+
+/* 0x8011C868 | 0x18 */
+u8 wazaDataBiosGetYubiwohuru(u8* ptr) {
+    if (ptr == NULL) { return 0; }
+    return *(u8*)(&ptr[0xC]);
+}
+
+/* 0x8011C880 | 0x18 */
+u8 wazaDataBiosGetOujanosirusi(u8* ptr) {
+    if (ptr == NULL) { return 0; }
+    return *(u8*)(&ptr[0xB]);
+}
+
+/* 0x8011C898 | 0x18 */
+u8 wazaDataBiosGetOumugaesi(u8* ptr) {
+    if (ptr == NULL) { return 0; }
+    return *(u8*)(&ptr[0xA]);
+}
+
+/* 0x8011C8B0 | 0x18 */
+u8 wazaDataBiosGetYokodori(u8* ptr) {
+    if (ptr == NULL) { return 0; }
+    return *(u8*)(&ptr[0x9]);
+}
+
+/* 0x8011C8C8 | 0x18 */
+u8 wazaDataBiosGetMajikku(u8* ptr) {
+    if (ptr == NULL) { return 0; }
+    return *(u8*)(&ptr[0x8]);
+}
+
+/* 0x8011C8E0 | 0x18 */
+u8 wazaDataBiosGetMamoru(u8* ptr) {
+    if (ptr == NULL) { return 0; }
+    return *(u8*)(&ptr[0x7]);
+}
+
+/* 0x8011C8F8 | 0x18 */
+u8 wazaDataBiosGetDageki(u8* ptr) {
+    if (ptr == NULL) { return 0; }
+    return *(u8*)(&ptr[0x6]);
+}
+
+/* 0x8011C910 | 0x18 */
+u8 wazaDataBiosGetAddFightKoukaAvg(u8* ptr) {
+    if (ptr == NULL) { return 0; }
+    return *(u8*)(&ptr[0x5]);
+}
+
+/* 0x8011C928 | 0x18 */
+u32 wazaDataBiosGetFightAttackMsgId(u8* ptr) {
+    if (ptr == NULL) { return 0; }
+    return *(u32*)(&ptr[0x28]);
+}
+
+/* 0x8011C940 | 0x18 */
+u32 wazaDataBiosGetFightAttackTunagiMsgId(u8* ptr) {
+    if (ptr == NULL) { return 0; }
+    return *(u32*)(&ptr[0x24]);
+}
+
+/* 0x8011C958 | 0x18 */
+u16 wazaDataBiosGetSeqId(u8* ptr) {
+    if (ptr == NULL) { return 0; }
+    return *(u16*)(&ptr[0x1A]);
+}
+
+/* 0x8011C970 | 0x18 */
+u16 wazaDataBiosGetFightKoukaDataId(u8* ptr) {
+    if (ptr == NULL) { return 0; }
+    return *(u16*)(&ptr[0x18]);
+}
+
+/* 0x8011C988 | 0x18 */
+s16 wazaDataBiosGetIryoku(u8* ptr) {
+    if (ptr == NULL) { return 0; }
+    return *(s16*)(&ptr[0x16]);
+}
+
+/* 0x8011C9A0 | 0x18 */
+u8 wazaDataBiosGetAvg(u8* ptr) {
+    if (ptr == NULL) { return 0; }
+    return *(u8*)(&ptr[0x4]);
+}
+
+/* 0x8011C9B8 | 0x18 */
+u8 wazaDataBiosGetRangeId(u8* ptr) {
+    if (ptr == NULL) { return 0; }
+    return *(u8*)(&ptr[0x3]);
+}
+
+/* 0x8011C9D0 | 0x1C */
+s32 wazaDataBiosGetPri(u8* ptr) {
+    if (ptr == NULL) { return 0; }
+    return (s8)ptr[0x0];
+}
+
+/* 0x8011C9EC | 0x18 */
+u8 wazaDataBiosGetZokuseiDataId(u8* ptr) {
+    if (ptr == NULL) { return 0; }
+    return *(u8*)(&ptr[0x2]);
+}
+
+/* 0x8011CA04 | 0x18 */
+u8 wazaDataBiosGetPp(u8* ptr) {
+    if (ptr == NULL) { return 0; }
+    return *(u8*)(&ptr[0x1]);
+}
+
+/* 0x8011CA1C | 0x18 */
+u32 wazaDataBiosGetName(u8* ptr) {
+    if (ptr == NULL) { return 0; }
+    return *(u32*)(&ptr[0x20]);
+}
+
+/* 0x8011CA34 | 0x2C */
+void* wazaDataBiosGetPtr(u16 idx) {
+    u32* hdr = (u32*)lbl_80478DF8;
+    if (idx >= hdr[0]) {
+        return (void*)lbl_80478DFC;
+    }
+    return (u8*)lbl_80478DFC + (u32)idx * 0x38;
+}

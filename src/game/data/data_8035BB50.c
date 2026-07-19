@@ -2,6 +2,10 @@
 
 #pragma section ".data"
 
+#if !defined(DATA_8035E4B0_SUFFIX) && !defined(DATA_8035C430_SUFFIX)
+#define DATA_8035BB50_PREFIX
+#endif
+
 extern u8 lbl_8035BB50[];
 extern u8 lbl_8035BB70[];
 extern void* jumptable_8035BB88[];
@@ -1016,7 +1020,7 @@ extern u8 wazaGetWazaTypeIdName[];
 
 /* Auto-carved .data unit 0x8035BB50..0x803634A8 (401 objects). Non-relocated data as byte-exact u8[]; pointer/jump tables as void*[] for R_PPC_ADDR32 relocations. */
 
-#ifndef DATA_8035E4B0_SUFFIX
+#if defined(DATA_8035BB50_PREFIX)
 u8 lbl_8035BB50[32] = {
     0x66, 0x6C, 0x6F, 0x6F, 0x72, 0x44, 0x61, 0x74, 0x61, 0x42, 0x69, 0x6F,
     0x73, 0x47, 0x65, 0x74, 0x53, 0x68, 0x61, 0x64, 0x6F, 0x77, 0x52, 0x65,
@@ -1186,131 +1190,9 @@ u8 lbl_8035BBA8[1720] = {
     0x00, 0x00, 0x00, 0x00,
 };
 
-void* jumptable_8035C260[12] = {
-    (void*)((u8*)wazaGetWazaTypeIdName + 0x28),
-    (void*)((u8*)wazaGetWazaTypeIdName + 0x30),
-    (void*)((u8*)wazaGetWazaTypeIdName + 0x3C),
-    (void*)((u8*)wazaGetWazaTypeIdName + 0x48),
-    (void*)((u8*)wazaGetWazaTypeIdName + 0x54),
-    (void*)((u8*)wazaGetWazaTypeIdName + 0x60),
-    (void*)((u8*)wazaGetWazaTypeIdName + 0x6C),
-    (void*)((u8*)wazaGetWazaTypeIdName + 0x78),
-    (void*)((u8*)wazaGetWazaTypeIdName + 0x84),
-    (void*)((u8*)wazaGetWazaTypeIdName + 0x90),
-    (void*)((u8*)wazaGetWazaTypeIdName + 0x9C),
-    (void*)((u8*)wazaGetWazaTypeIdName + 0xA8),
-};
+#endif
 
-void* jumptable_8035C290[51] = {
-    (void*)((u8*)wazaSetStatus + 0x2C0),
-    (void*)((u8*)wazaSetStatus + 0x80),
-    (void*)((u8*)wazaSetStatus + 0x8C),
-    (void*)((u8*)wazaSetStatus + 0x98),
-    (void*)((u8*)wazaSetStatus + 0xA4),
-    (void*)((u8*)wazaSetStatus + 0xB0),
-    (void*)((u8*)wazaSetStatus + 0xBC),
-    (void*)((u8*)wazaSetStatus + 0xC8),
-    (void*)((u8*)wazaSetStatus + 0xD4),
-    (void*)((u8*)wazaSetStatus + 0xE0),
-    (void*)((u8*)wazaSetStatus + 0xEC),
-    (void*)((u8*)wazaSetStatus + 0xF8),
-    (void*)((u8*)wazaSetStatus + 0x104),
-    (void*)((u8*)wazaSetStatus + 0x110),
-    (void*)((u8*)wazaSetStatus + 0x11C),
-    (void*)((u8*)wazaSetStatus + 0x128),
-    (void*)((u8*)wazaSetStatus + 0x134),
-    (void*)((u8*)wazaSetStatus + 0x140),
-    (void*)((u8*)wazaSetStatus + 0x14C),
-    (void*)((u8*)wazaSetStatus + 0x158),
-    (void*)((u8*)wazaSetStatus + 0x164),
-    (void*)((u8*)wazaSetStatus + 0x170),
-    (void*)((u8*)wazaSetStatus + 0x17C),
-    (void*)((u8*)wazaSetStatus + 0x188),
-    (void*)((u8*)wazaSetStatus + 0x194),
-    (void*)((u8*)wazaSetStatus + 0x1A0),
-    (void*)((u8*)wazaSetStatus + 0x1AC),
-    (void*)((u8*)wazaSetStatus + 0x1BC),
-    (void*)((u8*)wazaSetStatus + 0x1C8),
-    (void*)((u8*)wazaSetStatus + 0x1D4),
-    (void*)((u8*)wazaSetStatus + 0x1E0),
-    (void*)((u8*)wazaSetStatus + 0x204),
-    (void*)((u8*)wazaSetStatus + 0x1EC),
-    (void*)((u8*)wazaSetStatus + 0x1F8),
-    (void*)((u8*)wazaSetStatus + 0x210),
-    (void*)((u8*)wazaSetStatus + 0x21C),
-    (void*)((u8*)wazaSetStatus + 0x228),
-    (void*)((u8*)wazaSetStatus + 0x2C0),
-    (void*)((u8*)wazaSetStatus + 0x234),
-    (void*)((u8*)wazaSetStatus + 0x240),
-    (void*)((u8*)wazaSetStatus + 0x24C),
-    (void*)((u8*)wazaSetStatus + 0x258),
-    (void*)((u8*)wazaSetStatus + 0x2C0),
-    (void*)((u8*)wazaSetStatus + 0x264),
-    (void*)((u8*)wazaSetStatus + 0x270),
-    (void*)((u8*)wazaSetStatus + 0x27C),
-    (void*)((u8*)wazaSetStatus + 0x288),
-    (void*)((u8*)wazaSetStatus + 0x294),
-    (void*)((u8*)wazaSetStatus + 0x2A0),
-    (void*)((u8*)wazaSetStatus + 0x2AC),
-    (void*)((u8*)wazaSetStatus + 0x2B8),
-};
-
-void* jumptable_8035C35C[53] = {
-    (void*)((u8*)wazaGetStatus + 0x300),
-    (void*)((u8*)wazaGetStatus + 0x88),
-    (void*)((u8*)wazaGetStatus + 0x90),
-    (void*)((u8*)wazaGetStatus + 0x9C),
-    (void*)((u8*)wazaGetStatus + 0xA8),
-    (void*)((u8*)wazaGetStatus + 0xB4),
-    (void*)((u8*)wazaGetStatus + 0xC0),
-    (void*)((u8*)wazaGetStatus + 0xCC),
-    (void*)((u8*)wazaGetStatus + 0xD8),
-    (void*)((u8*)wazaGetStatus + 0xE4),
-    (void*)((u8*)wazaGetStatus + 0xF0),
-    (void*)((u8*)wazaGetStatus + 0xF8),
-    (void*)((u8*)wazaGetStatus + 0x100),
-    (void*)((u8*)wazaGetStatus + 0x10C),
-    (void*)((u8*)wazaGetStatus + 0x118),
-    (void*)((u8*)wazaGetStatus + 0x124),
-    (void*)((u8*)wazaGetStatus + 0x130),
-    (void*)((u8*)wazaGetStatus + 0x13C),
-    (void*)((u8*)wazaGetStatus + 0x148),
-    (void*)((u8*)wazaGetStatus + 0x154),
-    (void*)((u8*)wazaGetStatus + 0x160),
-    (void*)((u8*)wazaGetStatus + 0x16C),
-    (void*)((u8*)wazaGetStatus + 0x178),
-    (void*)((u8*)wazaGetStatus + 0x184),
-    (void*)((u8*)wazaGetStatus + 0x190),
-    (void*)((u8*)wazaGetStatus + 0x19C),
-    (void*)((u8*)wazaGetStatus + 0x1A8),
-    (void*)((u8*)wazaGetStatus + 0x1B8),
-    (void*)((u8*)wazaGetStatus + 0x1C4),
-    (void*)((u8*)wazaGetStatus + 0x1CC),
-    (void*)((u8*)wazaGetStatus + 0x1D4),
-    (void*)((u8*)wazaGetStatus + 0x1EC),
-    (void*)((u8*)wazaGetStatus + 0x1DC),
-    (void*)((u8*)wazaGetStatus + 0x1E4),
-    (void*)((u8*)wazaGetStatus + 0x1F4),
-    (void*)((u8*)wazaGetStatus + 0x1FC),
-    (void*)((u8*)wazaGetStatus + 0x208),
-    (void*)((u8*)wazaGetStatus + 0x300),
-    (void*)((u8*)wazaGetStatus + 0x214),
-    (void*)((u8*)wazaGetStatus + 0x220),
-    (void*)((u8*)wazaGetStatus + 0x22C),
-    (void*)((u8*)wazaGetStatus + 0x238),
-    (void*)((u8*)wazaGetStatus + 0x244),
-    (void*)((u8*)wazaGetStatus + 0x250),
-    (void*)((u8*)wazaGetStatus + 0x25C),
-    (void*)((u8*)wazaGetStatus + 0x268),
-    (void*)((u8*)wazaGetStatus + 0x270),
-    (void*)((u8*)wazaGetStatus + 0x278),
-    (void*)((u8*)wazaGetStatus + 0x284),
-    (void*)((u8*)wazaGetStatus + 0x290),
-    (void*)((u8*)wazaGetStatus + 0x29C),
-    (void*)((u8*)wazaGetStatus + 0x2A8),
-    (void*)((u8*)wazaGetStatus + 0x2D4),
-};
-
+#ifdef DATA_8035C430_SUFFIX
 void* lbl_8035C430[1790] = {
     (void*)((u8*)fightTrainerAiWazaValueNull),
     (void*)((u8*)fightTrainerAiWazaHitNull),
