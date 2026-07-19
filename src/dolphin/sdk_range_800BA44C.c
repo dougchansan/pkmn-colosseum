@@ -110,6 +110,7 @@ typedef struct GXLightObj_800BA44C {
     f32 nz;
 } GXLightObj_800BA44C;
 
+#if !defined(GX_EXACT_800BA4C8_800BA7C0)
 void GXLoadLightObjImm(GXLightObj_800BA44C* light, u32 lightID) {
     u32 idx = 31 - __cntlzw(lightID);
     u32 addr = ((idx & 7) << 4) + 0x600;
@@ -135,6 +136,7 @@ void GXLoadLightObjImm(GXLightObj_800BA44C* light, u32 lightID) {
 
     gx->bpSent = 1;
 }
+#endif
 
 #define SET_REG_FIELD_800BA4C8(reg, size, shift, value)                       \
     do {                                                                       \
@@ -277,6 +279,7 @@ void fn_800BA6F4(GXChannelID_800BA4C8 chan, u8 enable,
     gx->bpSent = 1;
 }
 
+#if !defined(GX_EXACT_800BA4C8_800BA7C0)
 void __GetImageTileCount(GXTexFmt_800BA91C format, u16 width, u16 height,
                          u32* xTiles, u32* yTiles, u32* planes) {
     u32 xShift;
@@ -360,3 +363,4 @@ void fn_800BAE34(u32 *arg0, u32 arg1, u32 arg2) {
     *arg0 = (*arg0 & 0xFFFFFFFCu) | arg1;
     *arg0 = (*arg0 & 0xFFFFFFF3u) | (arg2 << 2);
 }
+#endif

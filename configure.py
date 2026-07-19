@@ -1462,6 +1462,18 @@ config.libs = [
             ),
             Object(
                 Matching,
+                "dolphin/gx/GX_exact_800B8DA8.c",
+                mw_version="GC/1.2.5n",
+                progress_category="sdk",
+            ),
+            Object(
+                CodeCandidate,
+                "dolphin/sdk_range_800B8E74.c",
+                mw_version="GC/1.2.5n",
+                progress_category="sdk",
+            ),
+            Object(
+                Matching,
                 "dolphin/sdk_exact_800B8E98.c",
                 mw_version="GC/1.2.5n",
                 progress_category="sdk",
@@ -1481,6 +1493,18 @@ config.libs = [
             Object(
                 CodeCandidate,
                 "dolphin/sdk_range_800BA44C.c",
+                mw_version="GC/1.2.5n",
+                progress_category="sdk",
+            ),
+            Object(
+                Matching,
+                "dolphin/gx/GX_exact_800BA4C8.c",
+                mw_version="GC/1.2.5n",
+                progress_category="sdk",
+            ),
+            Object(
+                CodeCandidate,
+                "dolphin/sdk_range_800BA7C0.c",
                 mw_version="GC/1.2.5n",
                 progress_category="sdk",
             ),
