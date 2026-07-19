@@ -630,7 +630,67 @@ dolphin/dvd/dvdfs_range_800A4D28.c:
 	.text       start:0x800A4D28 end:0x800A5624
 
 dolphin/dvd/DVD.c:
-	.text       start:0x800A5624 end:0x800A7820
+	.text       start:0x800A5624 end:0x800A5784
+
+dolphin/dvd/DVD_exact_800A5784.c:
+	.text       start:0x800A5784 end:0x800A5810
+
+dolphin/dvd/DVD_range_800A5810.c:
+	.text       start:0x800A5810 end:0x800A58BC
+
+dolphin/dvd/DVD_exact_800A58BC.c:
+	.text       start:0x800A58BC end:0x800A58F0
+
+dolphin/dvd/DVD_exact_800A58F0.c:
+	.text       start:0x800A58F0 end:0x800A5918
+
+dolphin/dvd/DVD_exact_800A5918.c:
+	.text       start:0x800A5918 end:0x800A59CC
+
+dolphin/dvd/DVD_exact_800A59CC.c:
+	.text       start:0x800A59CC end:0x800A5C60
+
+dolphin/dvd/DVD_exact_800A5C60.c:
+	.text       start:0x800A5C60 end:0x800A5CC8
+
+dolphin/dvd/DVD_exact_800A5CC8.c:
+	.text       start:0x800A5CC8 end:0x800A5D60
+
+dolphin/dvd/DVD_exact_800A5D60.c:
+	.text       start:0x800A5D60 end:0x800A5D88
+
+dolphin/dvd/DVD_range_800A5D88.c:
+	.text       start:0x800A5D88 end:0x800A5EE0
+
+dolphin/dvd/DVD_exact_800A5EE0.c:
+	.text       start:0x800A5EE0 end:0x800A60D4
+
+dolphin/dvd/DVD_range_800A60D4.c:
+	.text       start:0x800A60D4 end:0x800A62CC
+
+dolphin/dvd/DVD_exact_800A62CC.c:
+	.text       start:0x800A62CC end:0x800A63C8
+
+dolphin/dvd/DVD_range_800A63C8.c:
+	.text       start:0x800A63C8 end:0x800A640C
+
+dolphin/dvd/DVD_exact_800A640C.c:
+	.text       start:0x800A640C end:0x800A6508
+
+dolphin/dvd/DVD_exact_800A6508.c:
+	.text       start:0x800A6508 end:0x800A6578
+
+dolphin/dvd/DVD_exact_800A6578.c:
+	.text       start:0x800A6578 end:0x800A6684
+
+dolphin/dvd/DVD_range_800A6684.c:
+	.text       start:0x800A6684 end:0x800A7484
+
+dolphin/dvd/DVD_exact_800A7484.c:
+	.text       start:0x800A7484 end:0x800A76E4
+
+dolphin/dvd/DVD_range_800A76E4.c:
+	.text       start:0x800A76E4 end:0x800A7820
 
 dolphin/sdk_range_800A7820.c:
 	.text       start:0x800A7820 end:0x800A7F28
