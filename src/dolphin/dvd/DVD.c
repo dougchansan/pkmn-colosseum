@@ -78,6 +78,14 @@ static OSThreadQueue __DVDThreadQueue;  /* 0x8047A7E0 (sda-relative) */
 /* Dummy command block for internal use */
 extern DVDCommandBlock DummyCommandBlock_803FC3A0;
 
+#if defined(DVD_BANK_EXACT_ACTIVE) || defined(DVD_SPLIT_LINKAGE_ACTIVE)
+#define DVD_SPLIT_CALLBACK_SCOPE
+#define cbForStateError cbForStateError_800A5810
+#define AlarmHandler AlarmHandler_800A63C8
+#else
+#define DVD_SPLIT_CALLBACK_SCOPE static
+#endif
+
 #if defined(DVD_EXACT_800A6578_800A6684)
 #define DVD_MOTOR_CB_SCOPE
 #else
@@ -85,11 +93,11 @@ extern DVDCommandBlock DummyCommandBlock_803FC3A0;
 #endif
 
 /* Forward declarations of state functions */
-static void stateReady_800A6684(void);
+DVD_SPLIT_CALLBACK_SCOPE void stateReady_800A6684(void);
 void stateBusy_800A68B4(DVDCommandBlock* block);
-static void cbForStateError(u32 intType);
+DVD_SPLIT_CALLBACK_SCOPE void cbForStateError(u32 intType);
 DVD_MOTOR_CB_SCOPE void cbForStateMotorStopped_800A65A0(u32 intType);
-static void AlarmHandler(OSAlarm* alarm, OSContext* context);
+DVD_SPLIT_CALLBACK_SCOPE void AlarmHandler(OSAlarm* alarm, OSContext* context);
 void stateCheckID_800B5D94(void);
 
 /* Forward declarations for internal DVD operations */
@@ -439,7 +447,7 @@ s32 DVDGetDriveStatus(void) {
  * Pops the next command from the waiting queue and begins execution.
  */
 #pragma dont_inline on
-static void stateReady_800A6684(void) {
+DVD_SPLIT_CALLBACK_SCOPE void stateReady_800A6684(void) {
     DVDCommandBlock* block;
 
     block = __DVDPopWaitingQueue();
@@ -806,7 +814,7 @@ void fn_800A6BD4(u32 intType)
  * 0x800A5810 | size: 0xAC
  */
 #if !defined(DVD_BANK_EXACT_ACTIVE)
-static void cbForStateError(u32 intType) {
+DVD_SPLIT_CALLBACK_SCOPE void cbForStateError(u32 intType) {
     DVDCommandBlock* block;
 
     if (intType == 0x10) {
@@ -1055,7 +1063,7 @@ void stateCoverClosed_CMD(DVDCommandBlock* command)
  * 0x800A63C8 | size: 0x44
  */
 #if !defined(DVD_BANK_EXACT_ACTIVE)
-static void AlarmHandler(OSAlarm* alarm, OSContext* context) {
+DVD_SPLIT_CALLBACK_SCOPE void AlarmHandler(OSAlarm* alarm, OSContext* context) {
     OSContext exceptionContext;
 
     OSClearContext(&exceptionContext);
@@ -1298,7 +1306,7 @@ static void cbForStateGoToRetry(u32 intType) {
 }
 #endif
 
-static void fn_800A5D88(void);
+DVD_SPLIT_CALLBACK_SCOPE void fn_800A5D88(void);
 
 /*
  * fn_800A5D60 - 0x800A5D60 | size: 0x28
@@ -1318,7 +1326,7 @@ void fn_800A5D60(void) {
  * the DVD state machine accordingly.
  */
 #if !defined(DVD_BANK_EXACT_ACTIVE)
-static void fn_800A5D88(void) {
+DVD_SPLIT_CALLBACK_SCOPE void fn_800A5D88(void) {
     BOOL enabled;
     u32 cover;
 
@@ -1666,4 +1674,6 @@ void __DVDStoreErrorCode(u32 error) {
 #endif
 
 #undef DVD_MOTOR_CB_SCOPE
+#undef DVD_SPLIT_CALLBACK_SCOPE
+#undef DVD_SPLIT_LINKAGE_ACTIVE
 #undef DVD_BANK_EXACT_ACTIVE
