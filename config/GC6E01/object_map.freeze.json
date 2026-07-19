@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196109,
     "total_functions": 8603,
-    "total_units": 838
+    "total_units": 848
   },
   "topology_status": {
     "auto_units": 65,
-    "named_units": 773,
-    "source_backed_units": 758,
+    "named_units": 783,
+    "source_backed_units": 768,
     "auto_code": 0,
     "auto_data": 57787,
     "auto_functions": 0
@@ -2077,13 +2077,91 @@
       "sections": [
         {
           "name": ".text",
-          "size": 22244,
+          "size": 17216,
           "virtual_address": 2147924408
         }
       ],
-      "total_code": 22244,
+      "total_code": 17216,
       "total_data": 0,
-      "total_functions": 51
+      "total_functions": 28
+    },
+    {
+      "name": "main/game/menu/menu_middle_exact_8006FCF8",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 492,
+          "virtual_address": 2147941624
+        }
+      ],
+      "total_code": 492,
+      "total_data": 0,
+      "total_functions": 10
+    },
+    {
+      "name": "main/game/menu/menu_middle_range_8006FEE4",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 912,
+          "virtual_address": 2147942116
+        }
+      ],
+      "total_code": 912,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/menu/menu_middle_exact_80070274",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 164,
+          "virtual_address": 2147943028
+        }
+      ],
+      "total_code": 164,
+      "total_data": 0,
+      "total_functions": 4
+    },
+    {
+      "name": "main/game/menu/menu_middle_range_80070318",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 396,
+          "virtual_address": 2147943192
+        }
+      ],
+      "total_code": 396,
+      "total_data": 0,
+      "total_functions": 2
+    },
+    {
+      "name": "main/game/menu/menu_middle_exact_800704A4",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 8,
+          "virtual_address": 2147943588
+        }
+      ],
+      "total_code": 8,
+      "total_data": 0,
+      "total_functions": 2
+    },
+    {
+      "name": "main/game/menu/menu_middle_range_800704AC",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 3056,
+          "virtual_address": 2147943596
+        }
+      ],
+      "total_code": 3056,
+      "total_data": 0,
+      "total_functions": 4
     },
     {
       "name": "main/game/menu/menu_range_8007109C",
@@ -3490,13 +3568,39 @@
       "sections": [
         {
           "name": ".text",
-          "size": 944,
+          "size": 704,
           "virtual_address": 2148240104
         }
       ],
-      "total_code": 944,
+      "total_code": 704,
       "total_data": 0,
-      "total_functions": 6
+      "total_functions": 3
+    },
+    {
+      "name": "main/dolphin/gx/GX_exact_800B8DA8",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 204,
+          "virtual_address": 2148240808
+        }
+      ],
+      "total_code": 204,
+      "total_data": 0,
+      "total_functions": 2
+    },
+    {
+      "name": "main/dolphin/sdk_range_800B8E74",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 36,
+          "virtual_address": 2148241012
+        }
+      ],
+      "total_code": 36,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/dolphin/sdk_exact_800B8E98",
@@ -3594,13 +3698,39 @@
       "sections": [
         {
           "name": ".text",
-          "size": 2576,
+          "size": 124,
           "virtual_address": 2148246604
         }
       ],
-      "total_code": 2576,
+      "total_code": 124,
       "total_data": 0,
-      "total_functions": 11
+      "total_functions": 1
+    },
+    {
+      "name": "main/dolphin/gx/GX_exact_800BA4C8",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 760,
+          "virtual_address": 2148246728
+        }
+      ],
+      "total_code": 760,
+      "total_data": 0,
+      "total_functions": 4
+    },
+    {
+      "name": "main/dolphin/sdk_range_800BA7C0",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1692,
+          "virtual_address": 2148247488
+        }
+      ],
+      "total_code": 1692,
+      "total_data": 0,
+      "total_functions": 6
     },
     {
       "name": "main/dolphin/gx/GX_fn_800BAE5C",
