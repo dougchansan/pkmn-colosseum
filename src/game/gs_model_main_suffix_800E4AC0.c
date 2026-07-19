@@ -10,6 +10,10 @@
 #include "game/gs_model_anim.h"
 #include "game/gs_render.h"
 
+#if !defined(GSMODEL_SUFFIX_ISOLATED)
+#define GSMODEL_SUFFIX_ALL
+#endif
+
 #define GSMODEL_FLAG_ACTIVE 0x00000001U
 #define GSMODEL_FLAG_VISIBLE 0x00000002U
 #define GSMODEL_FLAG_HAS_ANIM 0x00000004U
@@ -290,6 +294,7 @@ void fn_800E85E8(GSmodel* model);
 
 
 
+#if defined(GSMODEL_SUFFIX_ALL) || defined(GSMODEL_SUFFIX_SELECT_800E5188)
 void* modelGetRenderJObj(GSmodel* model)
 {
     if (model->flags.raw & GSMODEL_FLAG_RENDER_ALT_JOBJ) {
@@ -298,6 +303,7 @@ void* modelGetRenderJObj(GSmodel* model)
 
     return model->renderJObj;
 }
+#endif
 
 static inline GSmodel* modelGetFreeSlot(void)
 {
@@ -314,6 +320,7 @@ static inline GSmodel* modelGetFreeSlot(void)
     return NULL;
 }
 
+#if defined(GSMODEL_SUFFIX_ALL) || defined(GSMODEL_SUFFIX_SELECT_800E51A4)
 GSmodel* _modelLoad(GSmodelResource* resource, GSjobjDesc* joint,
                     void* boundAnim)
 {
@@ -433,13 +440,17 @@ GSmodel* _modelLoad(GSmodelResource* resource, GSjobjDesc* joint,
     fn_8019F1C4(model->renderJObj, &model->vertexCount, &model->polygonCount);
     return model;
 }
+#endif
 
+#if defined(GSMODEL_SUFFIX_ALL) || defined(GSMODEL_SUFFIX_SELECT_800E4D18)
 GSmodel* GSmodelLoad(GSmodelResource* resource, void* unused, void* boundAnim)
 {
     (void)unused;
     return _modelLoad(resource, resource->joint, boundAnim);
 }
+#endif
 
+#if defined(GSMODEL_SUFFIX_ALL) || defined(GSMODEL_SUFFIX_SELECT_800E4D3C)
 void GSmodelInit(u32 count)
 {
     u16 handle;
@@ -462,7 +473,9 @@ void GSmodelInit(u32 count)
         modelShadowInit__Fv();
     }
 }
+#endif
 
+#if defined(GSMODEL_SUFFIX_ALL) || defined(GSMODEL_SUFFIX_SELECT_800E4BF4)
 void GSmodelFree(GSmodel* model)
 {
     modelShadowFreeModelList__FP8_GSmodel(model);
@@ -488,13 +501,21 @@ void GSmodelFree(GSmodel* model)
 
     memset(model, 0, sizeof(GSmodel));
 }
+#endif
 
+#if defined(GSMODEL_SUFFIX_ALL) || defined(GSMODEL_SUFFIX_SELECT_800E4C98)
 GSmodel* GSmodelClone(GSmodel* model)
 {
     GSjobjDesc desc;
     GSmodelResource* resource;
     GSjobjDesc* root;
+#if !defined(GSMODEL_SUFFIX_ALL)
+    f32 one;
+    f32 zero;
 
+    zero = lbl_8047CB7C;
+    one = lbl_8047CB80;
+#endif
     desc.className = NULL;
     resource = model->resource;
     root = resource->joint;
@@ -502,6 +523,7 @@ GSmodel* GSmodelClone(GSmodel* model)
     desc.child = root;
     desc.next = NULL;
     desc.dobj = NULL;
+#if defined(GSMODEL_SUFFIX_ALL)
     desc.rotation.x = 0.0f;
     desc.rotation.y = 0.0f;
     desc.rotation.z = 0.0f;
@@ -511,16 +533,29 @@ GSmodel* GSmodelClone(GSmodel* model)
     desc.position.x = 0.0f;
     desc.position.y = 0.0f;
     desc.position.z = 0.0f;
+#else
+    desc.rotation.x = zero;
+    desc.rotation.y = zero;
+    desc.rotation.z = zero;
+    desc.scale.x = one;
+    desc.scale.y = one;
+    desc.scale.z = one;
+    desc.position.x = zero;
+    desc.position.y = zero;
+    desc.position.z = zero;
+#endif
     desc.robj = NULL;
     desc.aobj = NULL;
 
     return _modelLoad(resource, &desc, root);
 }
+#endif
 
 
 
 
 
+#if defined(GSMODEL_SUFFIX_ALL) || defined(GSMODEL_SUFFIX_SELECT_800E4DB0)
 void modelSetScl(GSmodel* model, GSvec* scale)
 {
     HSDJObj* jobj;
@@ -561,11 +596,13 @@ void modelSetScl(GSmodel* model, GSvec* scale)
         }
     }
 }
+#endif
 
 
 
 
 
+#if defined(GSMODEL_SUFFIX_ALL) || defined(GSMODEL_SUFFIX_SELECT_800E4E8C)
 void modelSetRot(GSmodel* model, GSvec* rotation)
 {
     HSDJObj* jobj;
@@ -679,7 +716,9 @@ void modelSetRot(GSmodel* model, GSvec* rotation)
         }
     }
 }
+#endif
 
+#if defined(GSMODEL_SUFFIX_ALL) || defined(GSMODEL_SUFFIX_SELECT_800E50A8)
 void modelSetPos(GSmodel* model, GSvec* position)
 {
     HSDJObj* jobj;
@@ -720,11 +759,13 @@ void modelSetPos(GSmodel* model, GSvec* position)
         }
     }
 }
+#endif
 
 
 
 
 
+#if defined(GSMODEL_SUFFIX_ALL) || defined(GSMODEL_SUFFIX_SELECT_800E7290)
 void GSmodelGetRootPosition(GSmodel* model, GSvec* out)
 {
     HSDJObj* jobj;
@@ -747,7 +788,9 @@ void GSmodelGetRootPosition(GSmodel* model, GSvec* out)
         clear__5GSvecFv(out);
     }
 }
+#endif
 
+#if defined(GSMODEL_SUFFIX_ALL) || defined(GSMODEL_SUFFIX_SELECT_800E5978)
 u32 GSmodelIsModulationEnabled(GSmodel* model)
 {
     void* material;
@@ -763,7 +806,9 @@ u32 GSmodelIsModulationEnabled(GSmodel* model)
 
     return GSmaterialGetEnabledExtensions(material) & 1;
 }
+#endif
 
+#if defined(GSMODEL_SUFFIX_ALL) || defined(GSMODEL_SUFFIX_SELECT_800E59C8)
 void GSmodelGetModulationColor(GSmodel* model, GScolor* color)
 {
     u8 enabled;
@@ -792,7 +837,9 @@ void GSmodelGetModulationColor(GSmodel* model, GScolor* color)
         color->a = 0xff;
     }
 }
+#endif
 
+#if defined(GSMODEL_SUFFIX_ALL) || defined(GSMODEL_SUFFIX_SELECT_800E5B68)
 void GSmodelSetModulationColor(GSmodel* model, const GScolor* color)
 {
     u32 i;
@@ -815,7 +862,9 @@ void GSmodelSetModulationColor(GSmodel* model, const GScolor* color)
         materialEntry++;
     }
 }
+#endif
 
+#if defined(GSMODEL_SUFFIX_ALL) || defined(GSMODEL_SUFFIX_SELECT_800E5FAC)
 u32 GSmodelIsEnvMapEnabled(GSmodel* model)
 {
     void* material;
@@ -831,7 +880,9 @@ u32 GSmodelIsEnvMapEnabled(GSmodel* model)
 
     return (GSmaterialGetEnabledExtensions(material) >> 2) & 1;
 }
+#endif
 
+#if defined(GSMODEL_SUFFIX_ALL) || defined(GSMODEL_SUFFIX_SELECT_800E60F0)
 void GSmodelSetEnvMapBlendValue(GSmodel* model, f32 value)
 {
     u8 enabled;
@@ -875,7 +926,9 @@ void GSmodelSetEnvMapBlendValue(GSmodel* model, f32 value)
         }
     }
 }
+#endif
 
+#if defined(GSMODEL_SUFFIX_ALL) || defined(GSMODEL_SUFFIX_SELECT_800E5550)
 void GSmodelResetTextureChange(GSmodel* model)
 {
     u16 refs;
@@ -933,7 +986,9 @@ void GSmodelResetTextureChange(GSmodel* model)
         }
     }
 }
+#endif
 
+#if defined(GSMODEL_SUFFIX_ALL) || defined(GSMODEL_SUFFIX_SELECT_800E5790)
 void fn_800E5790(GSmodel* model)
 {
     u16 refs;
@@ -976,7 +1031,9 @@ void fn_800E5790(GSmodel* model)
         }
     }
 }
+#endif
 
+#if defined(GSMODEL_SUFFIX_ALL) || defined(GSMODEL_SUFFIX_SELECT_800E5A74)
 void GSmodelDisableModulation(GSmodel* model)
 {
     u16 refs;
@@ -1039,7 +1096,9 @@ void GSmodelDisableModulation(GSmodel* model)
         }
     }
 }
+#endif
 
+#if defined(GSMODEL_SUFFIX_ALL) || defined(GSMODEL_SUFFIX_SELECT_800E5D40)
 void GSmodelDisableColorSwap(GSmodel* model)
 {
     u16 refs;
@@ -1102,7 +1161,9 @@ void GSmodelDisableColorSwap(GSmodel* model)
         }
     }
 }
+#endif
 
+#if defined(GSMODEL_SUFFIX_ALL) || defined(GSMODEL_SUFFIX_SELECT_800E5FFC)
 void GSmodelDisableEnvMap(GSmodel* model)
 {
     u16 refs;
@@ -1165,7 +1226,9 @@ void GSmodelDisableEnvMap(GSmodel* model)
         }
     }
 }
+#endif
 
+#if defined(GSMODEL_SUFFIX_ALL) || defined(GSMODEL_SUFFIX_SELECT_800E638C)
 void GSmodelResetPEdescr(GSmodel* model)
 {
     u16 refs;
@@ -1223,7 +1286,9 @@ void GSmodelResetPEdescr(GSmodel* model)
         }
     }
 }
+#endif
 
+#if defined(GSMODEL_SUFFIX_ALL) || defined(GSMODEL_SUFFIX_SELECT_800E65CC)
 void GSmodelResetMaterialAlpha(GSmodel* model)
 {
     u16 refs;
@@ -1281,7 +1346,9 @@ void GSmodelResetMaterialAlpha(GSmodel* model)
         }
     }
 }
+#endif
 
+#if defined(GSMODEL_SUFFIX_ALL) || defined(GSMODEL_SUFFIX_SELECT_800E6804)
 void GSmodelSetMaterialAlpha(GSmodel* model, f32 alpha)
 {
     if (model->modulationRefCount != 0) {
@@ -1306,7 +1373,9 @@ void GSmodelSetMaterialAlpha(GSmodel* model, f32 alpha)
         }
     }
 }
+#endif
 
+#if defined(GSMODEL_SUFFIX_ALL) || defined(GSMODEL_SUFFIX_SELECT_800E68D8)
 void GSmodelResetRenderFlags(GSmodel* model)
 {
     u16 refs;
@@ -1364,6 +1433,7 @@ void GSmodelResetRenderFlags(GSmodel* model)
         }
     }
 }
+#endif
 
 #define GSMODEL_JOBJ_FLUSH(jobj)                                                     \
     do {                                                                            \
@@ -1431,6 +1501,7 @@ void GSmodelResetRenderFlags(GSmodel* model)
         GSMODEL_JOBJ_FLUSH(jobj);                                 \
     } while (0)
 
+#if defined(GSMODEL_SUFFIX_ALL) || defined(GSMODEL_SUFFIX_SELECT_800E732C)
 void GSmodelAddNull(GSmodel* model, const GSvec* position,
                     const GSvec* rotation, const GSvec* scale)
 {
@@ -1526,6 +1597,7 @@ void GSmodelAddNull(GSmodel* model, const GSvec* position,
     GSmodelSetAnimType(model, model->animType);
     GSmodelStartAnimation(model);
 }
+#endif
 
 #undef GSMODEL_JOBJ_SET_SCALE
 #undef GSMODEL_JOBJ_SET_ROTATION
@@ -1533,6 +1605,7 @@ void GSmodelAddNull(GSmodel* model, const GSvec* position,
 #undef GSMODEL_JOBJ_SET_POSITION
 #undef GSMODEL_JOBJ_FLUSH
 
+#if defined(GSMODEL_SUFFIX_ALL) || defined(GSMODEL_SUFFIX_SELECT_800E85E8)
 void fn_800E85E8(GSmodel* model)
 {
     u32 handle;
@@ -1566,7 +1639,9 @@ void fn_800E85E8(GSmodel* model)
     model->materialCount = 0;
     model->materialList = NULL;
 }
+#endif
 
+#if defined(GSMODEL_SUFFIX_ALL) || defined(GSMODEL_SUFFIX_SELECT_800E6B20)
 void modelRemoveCenterNull(GSmodel* model)
 {
     HSDJObj* jobj;
@@ -1595,7 +1670,9 @@ void modelRemoveCenterNull(GSmodel* model)
     }
     fn_801A02B0(cur);
 }
+#endif
 
+#if defined(GSMODEL_SUFFIX_ALL) || defined(GSMODEL_SUFFIX_SELECT_800E6BC8)
 u8 GSmodelCenterNull(GSmodel* model)
 {
     HSDJObj* jobj;
@@ -1680,12 +1757,16 @@ u8 GSmodelCenterNull(GSmodel* model)
     model->centerNullState++;
     return 1;
 }
+#endif
 
+#if defined(GSMODEL_SUFFIX_ALL) || defined(GSMODEL_SUFFIX_SELECT_800E6DC0)
 u32 GSmodelIsRootNullAdded(GSmodel* model)
 {
     return (model->flags.raw & GSMODEL_FLAG_ROOT_NULL_ADDED) != 0;
 }
+#endif
 
+#if defined(GSMODEL_SUFFIX_ALL) || defined(GSMODEL_SUFFIX_SELECT_800E6DCC)
 void GSmodelRemoveNull(GSmodel* model)
 {
     HSDJObj* child;
@@ -1912,3 +1993,4 @@ void GSmodelRemoveNull(GSmodel* model)
     model->flags.raw &= ~GSMODEL_FLAG_ROOT_NULL_ADDED;
     model->renderJObj = newRoot;
 }
+#endif

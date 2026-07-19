@@ -5,6 +5,7 @@
 
 /* Shared constants defined by src/game/data/sdata2_8047CAA0.c. */
 extern const f32 lbl_8047CB7C;
+extern const f32 lbl_8047CB80;
 extern const f32 lbl_8047CB84;
 extern const f32 lbl_8047CB98;
 

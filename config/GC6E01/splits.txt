@@ -1115,7 +1115,10 @@ game/data/sdata2_8047C9A0.c:
 	.sdata2     start:0x8047C9A0 end:0x8047CA9D
 
 game/data/sdata2_8047CAA0.c:
-	.sdata2     start:0x8047CAA0 end:0x8047CBE0
+	.sdata2     start:0x8047CAA0 end:0x8047CB88
+
+game/data/sdata2_8047CB98.c:
+	.sdata2     start:0x8047CB98 end:0x8047CBDF
 
 game/data/sdata2_8047CBE0.c:
 	.sdata2     start:0x8047CBE0 end:0x8047CC98
@@ -1341,8 +1344,123 @@ game/gs_model_main.c:
 game/gs_model_main_exact_800E3928.c:
 	.text       start:0x800E3928 end:0x800E4AC0
 
-game/gs_model_main_suffix_800E4AC0.c:
-	.text       start:0x800E4AC0 end:0x800E8684
+game/gs_model_main_suffix_candidate_800E4AC0.c:
+	.text       start:0x800E4AC0 end:0x800E4BF4
+
+game/gs_model_main_suffix_exact_800E4BF4.c:
+	.text       start:0x800E4BF4 end:0x800E4C98
+
+game/gs_model_main_suffix_exact_800E4C98.c:
+	.text       start:0x800E4C98 end:0x800E4D18
+
+game/gs_model_main_suffix_exact_800E4D18.c:
+	.text       start:0x800E4D18 end:0x800E4D3C
+
+game/gs_model_main_suffix_exact_800E4D3C.c:
+	.text       start:0x800E4D3C end:0x800E4DB0
+
+game/gs_model_main_suffix_exact_800E4DB0.c:
+	.text       start:0x800E4DB0 end:0x800E4E8C
+
+game/gs_model_main_suffix_exact_800E4E8C.c:
+	.text       start:0x800E4E8C end:0x800E50A8
+
+game/gs_model_main_suffix_exact_800E50A8.c:
+	.text       start:0x800E50A8 end:0x800E5188
+
+game/gs_model_main_suffix_exact_800E5188.c:
+	.text       start:0x800E5188 end:0x800E51A4
+
+game/gs_model_main_suffix_exact_800E51A4.c:
+	.text       start:0x800E51A4 end:0x800E5550
+
+game/gs_model_main_suffix_exact_800E5550.c:
+	.text       start:0x800E5550 end:0x800E563C
+
+game/gs_model_main_suffix_candidate_800E563C.c:
+	.text       start:0x800E563C end:0x800E5790
+
+game/gs_model_main_suffix_exact_800E5790.c:
+	.text       start:0x800E5790 end:0x800E584C
+
+game/gs_model_main_suffix_candidate_800E584C.c:
+	.text       start:0x800E584C end:0x800E5978
+
+game/gs_model_main_suffix_exact_800E5978.c:
+	.text       start:0x800E5978 end:0x800E59C8
+
+game/gs_model_main_suffix_exact_800E59C8.c:
+	.text       start:0x800E59C8 end:0x800E5A74
+
+game/gs_model_main_suffix_exact_800E5A74.c:
+	.text       start:0x800E5A74 end:0x800E5B68
+
+game/gs_model_main_suffix_exact_800E5B68.c:
+	.text       start:0x800E5B68 end:0x800E5BE0
+
+game/gs_model_main_suffix_candidate_800E5BE0.c:
+	.text       start:0x800E5BE0 end:0x800E5D40
+
+game/gs_model_main_suffix_exact_800E5D40.c:
+	.text       start:0x800E5D40 end:0x800E5E34
+
+game/gs_model_main_suffix_candidate_800E5E34.c:
+	.text       start:0x800E5E34 end:0x800E5FAC
+
+game/gs_model_main_suffix_exact_800E5FAC.c:
+	.text       start:0x800E5FAC end:0x800E5FFC
+
+game/gs_model_main_suffix_exact_800E5FFC.c:
+	.text       start:0x800E5FFC end:0x800E60F0
+
+game/gs_model_main_suffix_exact_800E60F0.c:
+	.text       start:0x800E60F0 end:0x800E61BC
+
+game/gs_model_main_suffix_candidate_800E61BC.c:
+	.text       start:0x800E61BC end:0x800E638C
+
+game/gs_model_main_suffix_exact_800E638C.c:
+	.text       start:0x800E638C end:0x800E6478
+
+game/gs_model_main_suffix_candidate_800E6478.c:
+	.text       start:0x800E6478 end:0x800E65CC
+
+game/gs_model_main_suffix_exact_800E65CC.c:
+	.text       start:0x800E65CC end:0x800E66B8
+
+game/gs_model_main_suffix_candidate_800E66B8.c:
+	.text       start:0x800E66B8 end:0x800E6804
+
+game/gs_model_main_suffix_exact_800E6804.c:
+	.text       start:0x800E6804 end:0x800E68D8
+	.sdata2     start:0x8047CB88 end:0x8047CB98
+
+game/gs_model_main_suffix_exact_800E68D8.c:
+	.text       start:0x800E68D8 end:0x800E69C4
+
+game/gs_model_main_suffix_candidate_800E69C4.c:
+	.text       start:0x800E69C4 end:0x800E6B20
+
+game/gs_model_main_suffix_exact_800E6B20.c:
+	.text       start:0x800E6B20 end:0x800E6BC8
+
+game/gs_model_main_suffix_exact_800E6BC8.c:
+	.text       start:0x800E6BC8 end:0x800E6DC0
+
+game/gs_model_main_suffix_exact_800E6DC0.c:
+	.text       start:0x800E6DC0 end:0x800E6DCC
+
+game/gs_model_main_suffix_exact_800E6DCC.c:
+	.text       start:0x800E6DCC end:0x800E7290
+
+game/gs_model_main_suffix_exact_800E7290.c:
+	.text       start:0x800E7290 end:0x800E732C
+
+game/gs_model_main_suffix_candidate_800E732C.c:
+	.text       start:0x800E732C end:0x800E85E8
+
+game/gs_model_main_suffix_exact_800E85E8.c:
+	.text       start:0x800E85E8 end:0x800E8684
 
 game/gs_model_shadow.c:
 	.text       start:0x800E8684 end:0x800E9B2C

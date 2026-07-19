@@ -6,9 +6,8 @@
 /*
  * Mixed gs_render / gs_material .sdata2 constants. String labels are used by
  * render/material assert paths; numeric labels are referenced from gs_render.c
- * and gs_material.c. The tail continues through 0x8047CBE0 so the source
- * object starts on an 8-byte-aligned address while covering the 0x8047CB9C
- * layout gap.
+ * and gs_material.c. This prefix stops before GSmodelSetMaterialAlpha's
+ * compiler-owned conversion pool at 0x8047CB88.
  */
 SDATA2 const u8 lbl_8047CAA0[8] = "(float)";
 SDATA2 const u8 lbl_8047CAA8[7] = "(null)";
@@ -51,18 +50,3 @@ SDATA2 const u8 lbl_8047CB78[4] = "mtx";
 SDATA2 const f32 lbl_8047CB7C = 0.0f;
 SDATA2 const f32 lbl_8047CB80 = 1.0f;
 SDATA2 const f32 lbl_8047CB84 = 0.5f;
-SDATA2 const f32 lbl_8047CB88 = 255.0f;
-SDATA2 const f64 lbl_8047CB90 = 4.503599627370496e+15;
-SDATA2 const f32 lbl_8047CB98 = 0.5f;
-SDATA2 const u8 lbl_8047CB9C[7] = "jobj.h";
-SDATA2 const u8 lbl_8047CBA4[5] = "jobj";
-SDATA2 const u8 lbl_8047CBAC[6] = "scale";
-SDATA2 const f32 lbl_8047CBB4 = 0.0f;
-SDATA2 const f32 lbl_8047CBB8[2] = { 1.0f, 0.0f };
-SDATA2 const f32 lbl_8047CBC0 = 3.0f;
-SDATA2 const f32 lbl_8047CBC4 = 0.01f;
-SDATA2 const f32 lbl_8047CBC8 = 0.0f;
-SDATA2 const f32 lbl_8047CBCC = 30.0f;
-SDATA2 const f32 lbl_8047CBD0 = 0.1f;
-SDATA2 const f32 lbl_8047CBD4 = 3000.0f;
-SDATA2 const u8 lbl_8047CBD8[7] = "shadow";

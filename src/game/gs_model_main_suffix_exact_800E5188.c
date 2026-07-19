@@ -1,0 +1,4 @@
+/** Exact modelGetRenderJObj island at 0x800E5188. */
+#define GSMODEL_SUFFIX_ISOLATED
+#define GSMODEL_SUFFIX_SELECT_800E5188
+#include "src/game/gs_model_main_suffix_800E4AC0.c"
