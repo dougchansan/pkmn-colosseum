@@ -10,6 +10,11 @@
  */
 #include "dolphin/types.h"
 
+#if !defined(FIGHT_RANGE_EXACT_80220B8C_ONLY) && \
+    !defined(FIGHT_RANGE_EXACT_80221104_ONLY)
+#define FIGHT_RANGE_ALL
+#endif
+
 typedef struct FightSeqOpU8Operand {
     u8 opcode;
     u8 operand;
@@ -34,6 +39,14 @@ extern u16 fn_800E0C54(void);
 void fn_802221EC(u32, u32, u32, u32);
 int fn_802373B0(u32, u32, int, f32);
 
+/* Declarations consumed by isolated exact-function compiles below. */
+extern u8* lbl_8047B610;
+extern u8 lbl_80478D78[1];
+extern u32 lbl_8047B618;
+extern void* lbl_8047B62C;
+extern void fn_80211B94(void*, void*, u8);
+
+#if defined(FIGHT_RANGE_ALL)
 /*
  * fightTrainerAiGetValueAryMaxBanme (0x802397B8)
  *
@@ -8081,7 +8094,9 @@ u8 fn_80230568(void* ctx, u32 side) {
 #undef fn_80202ADC
 #pragma optimize_for_size reset
 /* ===== fable deep-dive #4 (harvested at credit-out; documented partial) ===== */
+#endif
 
+#if defined(FIGHT_RANGE_ALL) || defined(FIGHT_RANGE_EXACT_80221104_ONLY)
 /* 0x80221104 | size: 0x100C */
 #pragma opt_propagation off
 #define fn_801254B4 pokemonSetStatus
@@ -8529,7 +8544,9 @@ void fn_80221104(u32 a, u32 code) {
 #undef fn_80208750
 #undef fn_8020F108
 #pragma opt_propagation reset
+#endif
 
+#if defined(FIGHT_RANGE_ALL)
 /* ===== deep-dive #5 (sonnet, 89.7% WIP -- has residual instruction-shape
  * diffs beyond the coloring wall; correct high-level logic, several sibling
  * bug-fixes captured in header) ===== */
@@ -14699,6 +14716,7 @@ check_proceed:
 done:
     return;
 }
+
 #define fn_801F025C fightTargetGetPtrAsNowFightType
 void WS_ABARERU(void)
 
@@ -16649,6 +16667,9 @@ advance:
 done:
     return;
 }
+#endif
+
+#if defined(FIGHT_RANGE_ALL) || defined(FIGHT_RANGE_EXACT_80220B8C_ONLY)
 #define fn_801F025C fightTargetGetPtrAsNowFightType
 #define fn_801F54A4 fightFloorGetStatus
 #define fn_8012640C pokemonGetStatus
@@ -16693,44 +16714,46 @@ void fn_80220B8C(u32 r3)
         switch (command) {
         case 0x0f:
         case 0x12:
-        case 0x29:
-        case 0x2c:
+        case 0x27:
+        case 0x2a:
             APPLY_BATTLE_STATUS(0x26);
             break;
         case 0x10:
         case 0x13:
         case 0x15:
-        case 0x2a:
+        case 0x28:
+        case 0x2b:
         case 0x2d:
-        case 0x2f:
             APPLY_BATTLE_STATUS(0x28);
             break;
         case 0x11:
-        case 0x2b:
+        case 0x29:
             APPLY_BATTLE_STATUS(0x2a);
             break;
         case 0x14:
-        case 0x2e:
+        case 0x2c:
             APPLY_BATTLE_STATUS(0x2c);
             break;
         case 0x16:
         case 0x19:
-        case 0x30:
-        case 0x33:
+        case 0x2e:
+        case 0x31:
             APPLY_BATTLE_STATUS(0x27);
             break;
         case 0x17:
         case 0x1a:
         case 0x1c:
-        case 0x31:
+        case 0x2f:
+        case 0x32:
         case 0x34:
             APPLY_BATTLE_STATUS(0x29);
             break;
         case 0x18:
-        case 0x32:
+        case 0x30:
             APPLY_BATTLE_STATUS(0x2b);
             break;
         case 0x1b:
+        case 0x33:
             APPLY_BATTLE_STATUS(0x3c);
             break;
         }
@@ -16741,6 +16764,9 @@ void fn_80220B8C(u32 r3)
 #undef fn_801F025C
 #undef fn_801F54A4
 #undef fn_8012640C
+#endif
+
+#if defined(FIGHT_RANGE_ALL)
 #pragma optimization_level 3
 void fn_8022106C(void* ctx, u32 param1, u32 param2) {
     extern u8 lbl_80379F58[];
@@ -23597,3 +23623,4 @@ u32 fightTrainerAiWazaValueMakibisi(void* ctx, u32 param1, u32 param2, u32 param
 #undef fn_80205B8C
 #pragma optimize_for_size reset
 #pragma dont_inline reset
+#endif

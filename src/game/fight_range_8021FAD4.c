@@ -1,6 +1,6 @@
 /**
  * @file fight_range_8021FAD4.c
- * @brief Shared pure-C candidate suffix, 0x8021FAD4 - 0x8022A504.
+ * @brief Shared pure-C candidate range, 0x8021FAD4 - 0x80220778.
  *
  * The recovered fight translation unit is intentionally compiled for both
  * candidate sides of the exact 0x8021D9C0 - 0x8021FAD4 island. Only the

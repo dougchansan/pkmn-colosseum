@@ -62,8 +62,12 @@ extern u8 lbl_80379509[];
 extern u8 lbl_8037951B[];
 extern u8 lbl_8037952F[];
 
-/* Auto-carved .data unit 0x8039A048..0x8039A690 (23 objects). */
+/*
+ * Residual data around the compiler-owned jump tables emitted with
+ * fn_80220B8C and fn_80221104.
+ */
 
+#if !defined(DATA_8039A200_ONLY)
 void* jumptable_8039A048[8] = {
     (void*)((u8*)fn_8021B910 + 0x104),
     (void*)((u8*)fn_8021B910 + 0xCC),
@@ -139,65 +143,9 @@ void* jumptable_8039A110[8] = {
     (void*)((u8*)fn_80220868 + 0xDC),
     (void*)((u8*)fn_80220868 + 0xE4),
 };
+#endif
 
-void* jumptable_8039A130[38] = {
-    (void*)((u8*)fn_80220B8C + 0x150),
-    (void*)((u8*)fn_80220B8C + 0x1C0),
-    (void*)((u8*)fn_80220B8C + 0x230),
-    (void*)((u8*)fn_80220B8C + 0x150),
-    (void*)((u8*)fn_80220B8C + 0x1C0),
-    (void*)((u8*)fn_80220B8C + 0x2A0),
-    (void*)((u8*)fn_80220B8C + 0x1C0),
-    (void*)((u8*)fn_80220B8C + 0x310),
-    (void*)((u8*)fn_80220B8C + 0x380),
-    (void*)((u8*)fn_80220B8C + 0x3F0),
-    (void*)((u8*)fn_80220B8C + 0x310),
-    (void*)((u8*)fn_80220B8C + 0x380),
-    (void*)((u8*)fn_80220B8C + 0x460),
-    (void*)((u8*)fn_80220B8C + 0x380),
-    (void*)((u8*)fn_80220B8C + 0x4CC),
-    (void*)((u8*)fn_80220B8C + 0x4CC),
-    (void*)((u8*)fn_80220B8C + 0x4CC),
-    (void*)((u8*)fn_80220B8C + 0x4CC),
-    (void*)((u8*)fn_80220B8C + 0x4CC),
-    (void*)((u8*)fn_80220B8C + 0x4CC),
-    (void*)((u8*)fn_80220B8C + 0x4CC),
-    (void*)((u8*)fn_80220B8C + 0x4CC),
-    (void*)((u8*)fn_80220B8C + 0x4CC),
-    (void*)((u8*)fn_80220B8C + 0x4CC),
-    (void*)((u8*)fn_80220B8C + 0x150),
-    (void*)((u8*)fn_80220B8C + 0x1C0),
-    (void*)((u8*)fn_80220B8C + 0x230),
-    (void*)((u8*)fn_80220B8C + 0x150),
-    (void*)((u8*)fn_80220B8C + 0x1C0),
-    (void*)((u8*)fn_80220B8C + 0x2A0),
-    (void*)((u8*)fn_80220B8C + 0x1C0),
-    (void*)((u8*)fn_80220B8C + 0x310),
-    (void*)((u8*)fn_80220B8C + 0x380),
-    (void*)((u8*)fn_80220B8C + 0x3F0),
-    (void*)((u8*)fn_80220B8C + 0x310),
-    (void*)((u8*)fn_80220B8C + 0x380),
-    (void*)((u8*)fn_80220B8C + 0x460),
-    (void*)((u8*)fn_80220B8C + 0x380),
-};
-
-void* jumptable_8039A1C8[14] = {
-    (void*)((u8*)fn_80221104 + 0xEC),
-    (void*)((u8*)fn_80221104 + 0xF4),
-    (void*)((u8*)fn_80221104 + 0xFC),
-    (void*)((u8*)fn_80221104 + 0xEC),
-    (void*)((u8*)fn_80221104 + 0xF4),
-    (void*)((u8*)fn_80221104 + 0x104),
-    (void*)((u8*)fn_80221104 + 0xF4),
-    (void*)((u8*)fn_80221104 + 0x10C),
-    (void*)((u8*)fn_80221104 + 0x114),
-    (void*)((u8*)fn_80221104 + 0x11C),
-    (void*)((u8*)fn_80221104 + 0x10C),
-    (void*)((u8*)fn_80221104 + 0x114),
-    (void*)((u8*)fn_80221104 + 0x124),
-    (void*)((u8*)fn_80221104 + 0x114),
-};
-
+#if defined(DATA_8039A200_ONLY)
 void* jumptable_8039A200[8] = {
     (void*)((u8*)fn_80223AF4 + 0x88),
     (void*)((u8*)fn_80223AF4 + 0x50),
@@ -523,3 +471,4 @@ u8 lbl_8039A664[44] = {
     0x44, 0xC8, 0x00, 0x00, 0x44, 0xE1, 0x00, 0x00, 0x44, 0xFA, 0x00, 0x00,
     0x45, 0x3B, 0x80, 0x00, 0x45, 0x9C, 0x40, 0x00,
 };
+#endif
