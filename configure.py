@@ -1450,6 +1450,18 @@ config.libs = [
             ),
             Object(
                 Matching,
+                "dolphin/gx/GX_exact_800B884C.c",
+                mw_version="GC/1.2.5n",
+                progress_category="sdk",
+            ),
+            Object(
+                CodeCandidate,
+                "dolphin/sdk_range_800B8AE8.c",
+                mw_version="GC/1.2.5n",
+                progress_category="sdk",
+            ),
+            Object(
+                Matching,
                 "dolphin/sdk_exact_800B8E98.c",
                 mw_version="GC/1.2.5n",
                 progress_category="sdk",

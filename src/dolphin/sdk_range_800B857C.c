@@ -143,6 +143,7 @@ typedef enum GXTexGenSrc_800B857C {
 
 extern void __GXSetMatrixIndex(u32 attr);
 
+#if !defined(GX_EXACT_800B884C_800B8AE8)
 void fn_800B857C(GXTexCoordID_800B857C dst_coord,
                  GXTexGenType_800B857C func,
                  GXTexGenSrc_800B857C src_param, u32 mtx, u8 normalize,
@@ -311,6 +312,7 @@ void fn_800B857C(GXTexCoordID_800B857C dst_coord,
     mtx_id_attr = dst_coord + 1;
     __GXSetMatrixIndex(mtx_id_attr);
 }
+#endif
 
 void fn_800B884C(u8 count) {
     u32 n = count;
@@ -379,7 +381,13 @@ static inline u32 __GXReadMEMCounterU32(u32 regAddrL, u32 regAddrH) {
     return (ctrH0 << 16) | ctrL;
 }
 
-static void __GXAbortWait(u32 clocks) {
+#if defined(GX_EXACT_800B884C_800B8AE8)
+#define GX_ABORT_STATIC static inline
+#else
+#define GX_ABORT_STATIC static
+#endif
+
+GX_ABORT_STATIC void __GXAbortWait(u32 clocks) {
     OSTime time0;
     OSTime time1;
 
@@ -389,7 +397,7 @@ static void __GXAbortWait(u32 clocks) {
     } while (time1 - time0 <= (clocks / 4));
 }
 
-static void __GXAbortWaitPECopyDone(void) {
+GX_ABORT_STATIC void __GXAbortWaitPECopyDone(void) {
     u32 peCnt0;
     u32 peCnt1;
 
@@ -412,6 +420,9 @@ void __GXAbort(void) {
     __GXAbortWait(20);
 }
 
+#undef GX_ABORT_STATIC
+
+#if !defined(GX_EXACT_800B884C_800B8AE8)
 void fn_800B8C58(u16 token) {
     BOOL enabled;
     u32 reg;
@@ -1173,3 +1184,4 @@ void GXClearBoundingBox(void) {
     GX_FIFO_U32 = 0x560003FF;
     p->field_002 = 0;
 }
+#endif
