@@ -1252,7 +1252,7 @@ game/data/data_8035BA48.c:
 	.data       start:0x8035BA48 end:0x8035BA60
 
 game/data/data_8035BB50.c:
-	.data       start:0x8035BB50 end:0x8035C260
+	.data       start:0x8035BB50 end:0x8035BB88
 
 dolphin/si/SI_fn_800D104C.c:
 	.text       start:0x800D104C end:0x800D1070
@@ -1648,8 +1648,42 @@ game/floor_character.c:
 game/field_camera.c:
 	.text       start:0x8011711C end:0x80117E58
 
-game/field_range_80117E58.c:
-	.text       start:0x80117E58 end:0x8011BA0C
+game/field_exact_80117E58.c:
+	.text       start:0x80117E58 end:0x801183EC
+
+game/field_candidate_801183EC.c:
+	.text       start:0x801183EC end:0x80118874
+	.data       start:0x8035BB88 end:0x8035BBA8
+
+game/data/data_8035BBA8.c:
+	.data       start:0x8035BBA8 end:0x8035C260
+
+game/field_exact_80118874.c:
+	.text       start:0x80118874 end:0x801195AC
+
+game/field_candidate_801195AC.c:
+	.text       start:0x801195AC end:0x80119824
+
+game/field_exact_80119824.c:
+	.text       start:0x80119824 end:0x80119BD0
+
+game/field_candidate_80119BD0.c:
+	.text       start:0x80119BD0 end:0x80119D90
+
+game/field_exact_80119D90.c:
+	.text       start:0x80119D90 end:0x8011A0A8
+
+game/field_candidate_8011A0A8.c:
+	.text       start:0x8011A0A8 end:0x8011A280
+
+game/field_exact_8011A280.c:
+	.text       start:0x8011A280 end:0x8011B2C0
+
+game/field_candidate_8011B2C0.c:
+	.text       start:0x8011B2C0 end:0x8011B444
+
+game/field_exact_8011B444.c:
+	.text       start:0x8011B444 end:0x8011BA0C
 
 game/waza.c:
 	.text       start:0x8011BA0C end:0x8011CA60

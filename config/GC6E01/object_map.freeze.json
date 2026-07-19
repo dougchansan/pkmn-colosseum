@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196108,
     "total_functions": 8603,
-    "total_units": 973
+    "total_units": 984
   },
   "topology_status": {
     "auto_units": 65,
-    "named_units": 908,
-    "source_backed_units": 893,
+    "named_units": 919,
+    "source_backed_units": 904,
     "auto_code": 0,
     "auto_data": 57787,
     "auto_functions": 0
@@ -19,8 +19,8 @@
   "baseline_progress": {
     "matched_code": "886496",
     "matched_code_percent": 35.52936,
-    "matched_data": "2136489",
-    "matched_data_percent": 97.28524,
+    "matched_data": "2136457",
+    "matched_data_percent": 97.28378,
     "matched_functions": 6268,
     "matched_functions_percent": 72.85831,
     "fuzzy_match_percent": 57.4065
@@ -5948,12 +5948,12 @@
       "sections": [
         {
           "name": ".data",
-          "size": 1808,
+          "size": 56,
           "virtual_address": 2151005008
         }
       ],
       "total_code": 0,
-      "total_data": 1808,
+      "total_data": 56,
       "total_functions": 0
     },
     {
@@ -7665,17 +7665,165 @@
       "total_functions": 16
     },
     {
-      "name": "main/game/field_range_80117E58",
+      "name": "main/game/field_exact_80117E58",
       "sections": [
         {
           "name": ".text",
-          "size": 15284,
+          "size": 1428,
           "virtual_address": 2148630104
         }
       ],
-      "total_code": 15284,
+      "total_code": 1428,
       "total_data": 0,
-      "total_functions": 70
+      "total_functions": 7
+    },
+    {
+      "name": "main/game/field_candidate_801183EC",
+      "sections": [
+        {
+          "name": ".data",
+          "size": 32,
+          "virtual_address": 2151005064
+        },
+        {
+          "name": ".text",
+          "size": 1160,
+          "virtual_address": 2148631532
+        }
+      ],
+      "total_code": 1160,
+      "total_data": 32,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/data/data_8035BBA8",
+      "sections": [
+        {
+          "name": ".data",
+          "size": 1720,
+          "virtual_address": 2151005096
+        }
+      ],
+      "total_code": 0,
+      "total_data": 1720,
+      "total_functions": 0
+    },
+    {
+      "name": "main/game/field_exact_80118874",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 3384,
+          "virtual_address": 2148632692
+        }
+      ],
+      "total_code": 3384,
+      "total_data": 0,
+      "total_functions": 19
+    },
+    {
+      "name": "main/game/field_candidate_801195AC",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 632,
+          "virtual_address": 2148636076
+        }
+      ],
+      "total_code": 632,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/field_exact_80119824",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 940,
+          "virtual_address": 2148636708
+        }
+      ],
+      "total_code": 940,
+      "total_data": 0,
+      "total_functions": 2
+    },
+    {
+      "name": "main/game/field_candidate_80119BD0",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 448,
+          "virtual_address": 2148637648
+        }
+      ],
+      "total_code": 448,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/field_exact_80119D90",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 792,
+          "virtual_address": 2148638096
+        }
+      ],
+      "total_code": 792,
+      "total_data": 0,
+      "total_functions": 22
+    },
+    {
+      "name": "main/game/field_candidate_8011A0A8",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 472,
+          "virtual_address": 2148638888
+        }
+      ],
+      "total_code": 472,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/field_exact_8011A280",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 4160,
+          "virtual_address": 2148639360
+        }
+      ],
+      "total_code": 4160,
+      "total_data": 0,
+      "total_functions": 11
+    },
+    {
+      "name": "main/game/field_candidate_8011B2C0",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 388,
+          "virtual_address": 2148643520
+        }
+      ],
+      "total_code": 388,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/field_exact_8011B444",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1480,
+          "virtual_address": 2148643908
+        }
+      ],
+      "total_code": 1480,
+      "total_data": 0,
+      "total_functions": 4
     },
     {
       "name": "main/game/waza",
