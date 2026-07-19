@@ -2187,8 +2187,47 @@ game/fight_side_bios.c:
 game/fight_trainer_range_801F7954.c:
 	.text       start:0x801F7954 end:0x801F7F80
 
+game/fight_trainer_exact_801F7F80.c:
+	.text       start:0x801F7F80 end:0x801F81F8
+
 game/fight_trainer_range_801F7F80.c:
-	.text       start:0x801F7F80 end:0x801FBD10
+	.text       start:0x801F81F8 end:0x801F8424
+
+game/fight_trainer_exact_801F8424.c:
+	.text       start:0x801F8424 end:0x801F87CC
+
+game/fight_trainer_range_801F87CC.c:
+	.text       start:0x801F87CC end:0x801F8D80
+
+game/fight_trainer_exact_801F8D80.c:
+	.text       start:0x801F8D80 end:0x801F9130
+
+game/fight_trainer_range_801F9130.c:
+	.text       start:0x801F9130 end:0x801F9790
+
+game/fight_trainer_exact_801F9790.c:
+	.text       start:0x801F9790 end:0x801F99C8
+
+game/fight_trainer_range_801F99C8.c:
+	.text       start:0x801F99C8 end:0x801FA4B4
+
+game/fight_trainer_exact_801FA4B4.c:
+	.text       start:0x801FA4B4 end:0x801FA524
+
+game/fight_trainer_range_801FA524.c:
+	.text       start:0x801FA524 end:0x801FA634
+
+game/fight_trainer_exact_801FA634.c:
+	.text       start:0x801FA634 end:0x801FAA58
+
+game/fight_trainer_range_801FAA58.c:
+	.text       start:0x801FAA58 end:0x801FB8F8
+
+game/fight_trainer_exact_801FB8F8.c:
+	.text       start:0x801FB8F8 end:0x801FBAD4
+
+game/fight_trainer_range_801FBAD4.c:
+	.text       start:0x801FBAD4 end:0x801FBD10
 
 game/fight_trainer_db_range_801FBD10.c:
 	.text       start:0x801FBD10 end:0x801FDB78

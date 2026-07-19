@@ -74,6 +74,8 @@ u8 fn_801FCCAC(u8* ptr);
 void fightTrainerSetStatus(void);
 void fightTrainerGetStatus(void);
 
+#if !defined(FTR_BANK_EXACT_ACTIVE) || \
+    defined(FTR_EXACT_801F7F80_801F81F8)
 /* 0x801F7F80 | size: 0x80 */
 void* fightTrainerSearchInvalidFightPokemonPtr(void* context, u16 count) {
     extern void* fightTrainerGetStatus(void* ctx, u32 slot, u32 field, u32 index);
@@ -175,6 +177,9 @@ void* fightTrainerGetNamePtr(void* context) {
     return heroGetStatus(result, 1, 0);
 }
 
+#endif
+
+#if !defined(FTR_BANK_EXACT_ACTIVE)
 /* 0x801F81F8 | size: 0x22C | large */
 void fightTrainerGetHikaeFightPokemonNum(void) {
     extern void fightTrainerGetStatus();
@@ -345,6 +350,10 @@ void fightTrainerGetHikaeFightPokemonNum(void) {
     return;
 }
 
+#endif
+
+#if !defined(FTR_BANK_EXACT_ACTIVE) || \
+    defined(FTR_EXACT_801F8424_801F87CC)
 /* 0x801F8424 | size: 0x78 */
 BOOL fightTrainerIsAllyFightTargetPtr(void* arg0, void* arg1, u32 arg2) {
     u32 val0;
@@ -484,6 +493,9 @@ void fightTrainerBackFightPokemonToTemotiPokemon(void* context, u8 flag) {
     }
 }
 
+#endif
+
+#if !defined(FTR_BANK_EXACT_ACTIVE)
 /* 0x801F87CC | size: 0x24C | large */
 void fn_801F87CC(void) {
     extern void fightTrainerGetStatus();
@@ -869,6 +881,10 @@ u32 fightTrainerCheckCanIrekaeFightPokemon(void* context, void* filter) {
     return found != 0 ? 3 : 0;
 }
 
+#endif
+
+#if !defined(FTR_BANK_EXACT_ACTIVE) || \
+    defined(FTR_EXACT_801F8D80_801F9130)
 /* 0x801F8D80 | size: 0xB4 */
 void* fightTrainerGetFightPokemonPtrToFightOutPokemonPtr(void* context, void* filter) {
     extern void* fightTrainerGetStatus(void* ctx, u32 slot, u32 field, u16 idx);
@@ -1028,6 +1044,9 @@ void* fightTrainerIsMineFightPokemon(void* arg0, void* arg1) {
     return heroIsMinePokemon(trainerData, pokemon);
 }
 
+#endif
+
+#if !defined(FTR_BANK_EXACT_ACTIVE)
 /* 0x801F9130 | size: 0x10C */
 #pragma push
 #pragma optimization_level 2
@@ -1320,6 +1339,10 @@ s32 fightTrainerSelectIrekaeFightPokemon(void* context, void* p1, void* p2, void
     return fightMenuFightTrainerAgbHeroSelectIrekaeFightPokemon(context, p1, p2, p3);
 }
 
+#endif
+
+#if !defined(FTR_BANK_EXACT_ACTIVE) || \
+    defined(FTR_EXACT_801F9790_801F99C8)
 /* 0x801F9790 | size: 0x8C */
 void fightTrainerAllInitFightActionBuff(void* context) {
     extern void fightActionInit(void* ptr);
@@ -1399,6 +1422,9 @@ void* fightTrainerCheckTemotiPokemonFightEntry(void* context, void* moveData) {
     return NULL;
 }
 
+#endif
+
+#if !defined(FTR_BANK_EXACT_ACTIVE)
 /* 0x801F99C8 | size: 0x2F4 | large */
 void fightTrainerSortFightTrainerDataIdToHeroTemotiPokemon(void) {
     extern void pokemonCheckValid();
@@ -2203,6 +2229,10 @@ void fightTrainerCreateFightTrainerPokemonDataIdToPokemon(void) {
     return;
 }
 
+#endif
+
+#if !defined(FTR_BANK_EXACT_ACTIVE) || \
+    defined(FTR_EXACT_801FA4B4_801FA524)
 /* 0x801FA4B4 | size: 0x70 */
 BOOL fightTrainerCheckTrainerDataIdValid(u32 arg0, s32 arg1) {
     extern u32 fightTrainerGetStatus(void*, u32, u32, u32);
@@ -2218,6 +2248,9 @@ BOOL fightTrainerCheckTrainerDataIdValid(u32 arg0, s32 arg1) {
     return TRUE;
 }
 
+#endif
+
+#if !defined(FTR_BANK_EXACT_ACTIVE)
 /* 0x801FA524 | size: 0x110 */
 u32 fightTrainerCheckDoFight(void* context) {
     extern u16 fn_801EF634(void* ctx);
@@ -2252,6 +2285,10 @@ u32 fightTrainerCheckDoFight(void* context) {
     return count != 0;
 }
 
+#endif
+
+#if !defined(FTR_BANK_EXACT_ACTIVE) || \
+    defined(FTR_EXACT_801FA634_801FAA58)
 /* 0x801FA634 | size: 0xA4 */
 u32 fightTrainerCheckValid(void* context) {
     extern u16 fn_801EF634(void* ctx);
@@ -2359,6 +2396,9 @@ void fightTrainerInit(void* base, u16 count) {
     }
 }
 
+#endif
+
+#if !defined(FTR_BANK_EXACT_ACTIVE)
 /* 0x801FAA58 | size: 0x768 | large */
 void fightTrainerSetStatus(void) {
     extern void fightTrainerGetStatus();
@@ -3448,6 +3488,10 @@ void fightTrainerGetStatus(void) {
     return;
 }
 
+#endif
+
+#if !defined(FTR_BANK_EXACT_ACTIVE) || \
+    defined(FTR_EXACT_801FB8F8_801FBAD4)
 /* 0x801FB8F8 | size: 0x7C */
 u8 fightTrainerIsGcHero(void* arg0) {
     extern u32 fightTrainerGetStatus(void*, u32, u32, u32);
@@ -3524,6 +3568,9 @@ void fn_801FBA24(void* context, u8 mode) {
     }
 }
 
+#endif
+
+#if !defined(FTR_BANK_EXACT_ACTIVE)
 /* 0x801FBAD4 | size: 0x14C */
 void fightTrainerHokakuThrowEffect(void* context, u32 param, u8 mode) {
     extern void _threadSwitch(void* ptr);
@@ -3600,3 +3647,6 @@ void fightTrainerBallThrowEffect(void* context, void* trainerCtx, u8 mode) {
         fn_801DA8C4(data, animId, 4);
     }
 }
+#endif
+
+#undef FTR_BANK_EXACT_ACTIVE
