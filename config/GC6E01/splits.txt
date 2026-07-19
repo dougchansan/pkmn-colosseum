@@ -1178,23 +1178,8 @@ dolphin/si/SI_range_800CF764.c:
 game/data/bss_80402480.c:
 	.bss        start:0x80402480 end:0x80408400
 
-game/data/bss_80408400.c:
-	.bss        start:0x80408400 end:0x80448440
-
-game/data/bss_80448440.c:
-	.bss        start:0x80448440 end:0x80452500
-
-game/data/bss_80452500.c:
-	.bss        start:0x80452500 end:0x80465080
-
-game/data/bss_80465080.c:
-	.bss        start:0x80465080 end:0x8046A440
-
-game/data/bss_8046A440.c:
-	.bss        start:0x8046A440 end:0x8046D500
-
-game/data/bss_8046D500.c:
-	.bss        start:0x8046D500 end:0x80478800
+game/data/bss_80408400_prefix.c:
+	.bss        start:0x80408400 end:0x80445F30
 
 dolphin/si/SITypeDecode.c:
 	.text       start:0x800D0DF8 end:0x800D0F44
@@ -1806,71 +1791,8 @@ game/data/sdata2_8047D398.c:
 game/data/data_80363AC8.c:
 	.data       start:0x80363AC8 end:0x80363CA4
 
-game/data/data_80363CA8.c:
-	.data       start:0x80363CA8 end:0x80369CB0
-
-game/data/data_80369CB0.c:
-	.data       start:0x80369CB0 end:0x80369CD4
-
-game/data/data_80369CD4.c:
-	.data       start:0x80369CD4 end:0x80369D1C
-
-game/data/data_80369D20.c:
-	.data       start:0x80369D20 end:0x8036BFA4
-
-game/data/data_8036BFC0.c:
-	.data       start:0x8036BFC0 end:0x8036C29C
-
-game/data/data_8036C2A0.c:
-	.data       start:0x8036C2A0 end:0x8036C4E8
-
-game/data/data_8036C52C.c:
-	.data       start:0x8036C52C end:0x8036C53C
-
-game/data/data_8036C540.c:
-	.data       start:0x8036C540 end:0x8036C564
-
-game/data/data_8036C568.c:
-	.data       start:0x8036C568 end:0x8036C714
-
-game/data/data_8036C720.c:
-	.data       start:0x8036C720 end:0x8036C864
-
-game/data/data_8036C864.c:
-	.data       start:0x8036C864 end:0x8036C8BC
-
-game/data/data_8036C8BC.c:
-	.data       start:0x8036C8BC end:0x8036CA1C
-
-game/data/data_8036CA20.c:
-	.data       start:0x8036CA20 end:0x8036CB2C
-
-game/data/data_8036CB30.c:
-	.data       start:0x8036CB30 end:0x8036CBBC
-
-game/data/data_8036CBC0.c:
-	.data       start:0x8036CBC0 end:0x8036CD84
-
-game/data/data_8036CD88.c:
-	.data       start:0x8036CD88 end:0x8036D37C
-
-game/data/data_8036D380.c:
-	.data       start:0x8036D380 end:0x8036DCA4
-
-game/data/data_8036DCB8.c:
-	.data       start:0x8036DCB8 end:0x8036DE6C
-
-game/data/data_8036DE70.c:
-	.data       start:0x8036DE70 end:0x8036E14C
-
-game/data/data_8036E150.c:
-	.data       start:0x8036E150 end:0x803751EC
-
-game/data/data_803751F0.c:
-	.data       start:0x803751F0 end:0x8037522C
-
-game/data/data_80375230.c:
-	.data       start:0x80375230 end:0x803752F8
+game/data/data_80363CA8_prefix.c:
+	.data       start:0x80363CA8 end:0x80368A80
 
 game/gamedata.c:
 	.text       start:0x8013528C end:0x80135A30
@@ -1936,14 +1858,255 @@ musyx/runtime/stream.c:
 	.text       start:0x8014DDD8 end:0x80150C78
 	.sdata2     start:0x8047D3B8 end:0x8047D3C0
 
-game/data/sdata2_8047D3C0.c:
-	.sdata2     start:0x8047D3C0 end:0x8047D548
+game/data/sdata2_8047D3C0_prefix.c:
+	.sdata2     start:0x8047D3C0 end:0x8047D3C8
 
 musyx/runtime/synthdata.c:
 	.text       start:0x80150C78 end:0x801525E4
 
-musyx/runtime/synthmacros.c:
-	.text       start:0x801525E4 end:0x80157280
+musyx/runtime/synthmacros_exact_801525E4.c:
+	.text       start:0x801525E4 end:0x801528D4
+
+musyx/runtime/synthmacros_exact_801528D4.c:
+	.text       start:0x801528D4 end:0x801529A4
+
+musyx/runtime/synthmacros_exact_801529A4.c:
+	.text       start:0x801529A4 end:0x80152AF8
+
+musyx/runtime/synthmacros_exact_80152AF8.c:
+	.text       start:0x80152AF8 end:0x80152C84
+
+musyx/runtime/synthmacros_exact_80152C84.c:
+	.text       start:0x80152C84 end:0x80152D5C
+
+musyx/runtime/synthmacros_exact_80152D5C.c:
+	.text       start:0x80152D5C end:0x80152F58
+	.bss        start:0x80445F30 end:0x80445F50
+
+game/data/bss_80445F50_suffix.c:
+	.bss        start:0x80445F50 end:0x80448440
+
+game/data/bss_80448440.c:
+	.bss        start:0x80448440 end:0x80452500
+
+game/data/bss_80452500.c:
+	.bss        start:0x80452500 end:0x80465080
+
+game/data/bss_80465080.c:
+	.bss        start:0x80465080 end:0x8046A440
+
+game/data/bss_8046A440.c:
+	.bss        start:0x8046A440 end:0x8046D500
+
+game/data/bss_8046D500.c:
+	.bss        start:0x8046D500 end:0x80478800
+
+musyx/runtime/synthmacros_exact_80152F58.c:
+	.text       start:0x80152F58 end:0x801530D4
+
+musyx/runtime/synthmacros_exact_801530D4.c:
+	.text       start:0x801530D4 end:0x80153274
+	.data       start:0x80368A80 end:0x80368A9C
+
+musyx/runtime/synthmacros_exact_80153274.c:
+	.text       start:0x80153274 end:0x801534CC
+	.sdata2     start:0x8047D3C8 end:0x8047D3E8
+
+musyx/runtime/synthmacros_candidate_801534CC.c:
+	.text       start:0x801534CC end:0x801535F8
+	.data       start:0x80368A9C end:0x80368CA0
+	.sdata2     start:0x8047D3E8 end:0x8047D3EC
+
+musyx/runtime/synthmacros_exact_801535F8.c:
+	.text       start:0x801535F8 end:0x80153874
+
+musyx/runtime/synthmacros_exact_80153874.c:
+	.text       start:0x80153874 end:0x80153910
+
+musyx/runtime/synthmacros_exact_80153910.c:
+	.text       start:0x80153910 end:0x801539AC
+
+musyx/runtime/synthmacros_exact_801539AC.c:
+	.text       start:0x801539AC end:0x80153AE0
+
+musyx/runtime/synthmacros_exact_80153AE0.c:
+	.text       start:0x80153AE0 end:0x80153C10
+
+musyx/runtime/synthmacros_exact_80153C10.c:
+	.text       start:0x80153C10 end:0x80153D4C
+
+musyx/runtime/synthmacros_exact_80153D4C.c:
+	.text       start:0x80153D4C end:0x80153EE8
+
+musyx/runtime/synthmacros_exact_80153EE8.c:
+	.text       start:0x80153EE8 end:0x80153FEC
+
+musyx/runtime/synthmacros_exact_80153FEC.c:
+	.text       start:0x80153FEC end:0x801540F0
+
+musyx/runtime/synthmacros_exact_801540F0.c:
+	.text       start:0x801540F0 end:0x801541F4
+
+musyx/runtime/synthmacros_exact_801541F4.c:
+	.text       start:0x801541F4 end:0x801542F8
+
+musyx/runtime/synthmacros_exact_801542F8.c:
+	.text       start:0x801542F8 end:0x801543FC
+
+musyx/runtime/synthmacros_exact_801543FC.c:
+	.text       start:0x801543FC end:0x80154500
+
+musyx/runtime/synthmacros_exact_80154500.c:
+	.text       start:0x80154500 end:0x80154604
+
+musyx/runtime/synthmacros_exact_80154604.c:
+	.text       start:0x80154604 end:0x80154708
+
+musyx/runtime/synthmacros_exact_80154708.c:
+	.text       start:0x80154708 end:0x8015480C
+
+musyx/runtime/synthmacros_exact_8015480C.c:
+	.text       start:0x8015480C end:0x80154910
+
+musyx/runtime/synthmacros_exact_80154910.c:
+	.text       start:0x80154910 end:0x80154A14
+
+musyx/runtime/synthmacros_exact_80154A14.c:
+	.text       start:0x80154A14 end:0x80154B18
+
+musyx/runtime/synthmacros_exact_80154B18.c:
+	.text       start:0x80154B18 end:0x80154C1C
+
+musyx/runtime/synthmacros_exact_80154C1C.c:
+	.text       start:0x80154C1C end:0x80154D98
+	.data       start:0x80368CA0 end:0x80368CD0
+
+musyx/runtime/synthmacros_exact_80154D98.c:
+	.text       start:0x80154D98 end:0x80154F14
+	.data       start:0x80368CD0 end:0x80368D00
+
+musyx/runtime/synthmacros_exact_80154F14.c:
+	.text       start:0x80154F14 end:0x80155078
+
+musyx/runtime/synthmacros_exact_80155078.c:
+	.text       start:0x80155078 end:0x801550E0
+
+musyx/runtime/synthmacros_exact_801550E0.c:
+	.text       start:0x801550E0 end:0x80155300
+
+musyx/runtime/synthmacros_exact_80155300.c:
+	.text       start:0x80155300 end:0x8015544C
+
+musyx/runtime/synthmacros_exact_8015544C.c:
+	.text       start:0x8015544C end:0x80155690
+
+musyx/runtime/synthmacros_exact_80155690.c:
+	.text       start:0x80155690 end:0x80155710
+
+musyx/runtime/synthmacros_exact_80155710.c:
+	.text       start:0x80155710 end:0x801557EC
+
+musyx/runtime/synthmacros_candidate_801557EC.c:
+	.text       start:0x801557EC end:0x80156744
+	.data       start:0x80368D00 end:0x80368EC8
+	.sbss       start:0x8047AFB0 end:0x8047AFD0
+	.sdata2     start:0x8047D3EC end:0x8047D3F0
+
+game/data/sdata2_8047D3F0_suffix.c:
+	.sdata2     start:0x8047D3F0 end:0x8047D548
+
+game/data/data_80368EC8_suffix.c:
+	.data       start:0x80368EC8 end:0x80369CB0
+
+game/data/data_80369CB0.c:
+	.data       start:0x80369CB0 end:0x80369CD4
+
+game/data/data_80369CD4.c:
+	.data       start:0x80369CD4 end:0x80369D1C
+
+game/data/data_80369D20.c:
+	.data       start:0x80369D20 end:0x8036BFA4
+
+game/data/data_8036BFC0.c:
+	.data       start:0x8036BFC0 end:0x8036C29C
+
+game/data/data_8036C2A0.c:
+	.data       start:0x8036C2A0 end:0x8036C4E8
+
+game/data/data_8036C52C.c:
+	.data       start:0x8036C52C end:0x8036C53C
+
+game/data/data_8036C540.c:
+	.data       start:0x8036C540 end:0x8036C564
+
+game/data/data_8036C568.c:
+	.data       start:0x8036C568 end:0x8036C714
+
+game/data/data_8036C720.c:
+	.data       start:0x8036C720 end:0x8036C864
+
+game/data/data_8036C864.c:
+	.data       start:0x8036C864 end:0x8036C8BC
+
+game/data/data_8036C8BC.c:
+	.data       start:0x8036C8BC end:0x8036CA1C
+
+game/data/data_8036CA20.c:
+	.data       start:0x8036CA20 end:0x8036CB2C
+
+game/data/data_8036CB30.c:
+	.data       start:0x8036CB30 end:0x8036CBBC
+
+game/data/data_8036CBC0.c:
+	.data       start:0x8036CBC0 end:0x8036CD84
+
+game/data/data_8036CD88.c:
+	.data       start:0x8036CD88 end:0x8036D37C
+
+game/data/data_8036D380.c:
+	.data       start:0x8036D380 end:0x8036DCA4
+
+game/data/data_8036DCB8.c:
+	.data       start:0x8036DCB8 end:0x8036DE6C
+
+game/data/data_8036DE70.c:
+	.data       start:0x8036DE70 end:0x8036E14C
+
+game/data/data_8036E150.c:
+	.data       start:0x8036E150 end:0x803751EC
+
+game/data/data_803751F0.c:
+	.data       start:0x803751F0 end:0x8037522C
+
+game/data/data_80375230.c:
+	.data       start:0x80375230 end:0x803752F8
+
+musyx/runtime/synthmacros_exact_80156744.c:
+	.text       start:0x80156744 end:0x80156894
+
+musyx/runtime/synthmacros_exact_80156894.c:
+	.text       start:0x80156894 end:0x80156940
+
+musyx/runtime/synthmacros_exact_80156940.c:
+	.text       start:0x80156940 end:0x80156A30
+
+musyx/runtime/synthmacros_exact_80156A30.c:
+	.text       start:0x80156A30 end:0x80156B38
+
+musyx/runtime/synthmacros_exact_80156B38.c:
+	.text       start:0x80156B38 end:0x80156BDC
+
+musyx/runtime/synthmacros_exact_80156BDC.c:
+	.text       start:0x80156BDC end:0x80156CE4
+
+musyx/runtime/synthmacros_exact_80156CE4.c:
+	.text       start:0x80156CE4 end:0x80156DE0
+
+musyx/runtime/synthmacros_exact_80156DE0.c:
+	.text       start:0x80156DE0 end:0x80157218
+
+musyx/runtime/synthmacros_exact_80157218.c:
+	.text       start:0x80157218 end:0x80157280
 
 musyx/musyx_candidate_80157280.c:
 	.text       start:0x80157280 end:0x80162858

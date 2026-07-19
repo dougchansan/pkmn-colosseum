@@ -5,6 +5,12 @@
 
 typedef void (*Sdata2FuncPtr)(void);
 
+#if !defined(SDATA2_8047D3C0_ISOLATED)
+#define SDATA2_8047D3C0_PREFIX
+#define SDATA2_8047D3C0_SYNTHMACROS_LEGACY
+#define SDATA2_8047D3C0_SUFFIX
+#endif
+
 extern void fn_80167B70(void);
 extern void fn_80167BB0(void);
 
@@ -14,7 +20,11 @@ extern void fn_80167BB0(void);
  * reverb/sound listener setup, GSDVD version/assert strings, and the adjacent
  * particle script/display constants.
  */
+#if defined(SDATA2_8047D3C0_PREFIX)
 SDATA2 const f32 lbl_8047D3C0[2] = { 4096.0f, 0.0f };
+#endif
+
+#if defined(SDATA2_8047D3C0_SYNTHMACROS_LEGACY)
 SDATA2 const f32 lbl_8047D3C8 = 4096.0f;
 SDATA2 const f32 lbl_8047D3CC = 1.1920928955078125e-07f;
 SDATA2 const f32 lbl_8047D3D0 = 0.0078125f;
@@ -22,6 +32,9 @@ SDATA2 const f64 lbl_8047D3D8 = 4.503599627370496e+15;
 SDATA2 const f64 lbl_8047D3E0 = 4.503601774854144e+15;
 SDATA2 const f32 lbl_8047D3E8 = 1023.0f;
 SDATA2 const f32 lbl_8047D3EC = 1.0f;
+#endif
+
+#if defined(SDATA2_8047D3C0_SUFFIX)
 SDATA2 const f32 lbl_8047D3F0 = 1.0594631433486938f;
 SDATA2 const f64 lbl_8047D3F8 = 4.503599627370496e+15;
 SDATA2 const f32 lbl_8047D400 = 4096.0f;
@@ -80,3 +93,4 @@ SDATA2 const f32 lbl_8047D534 = 0.3f;
 SDATA2 const f32 lbl_8047D538[2] = { 0.5f, 0.0f };
 SDATA2 const f32 lbl_8047D540 = 0.0f;
 SDATA2 const f32 lbl_8047D544 = 1000.0f;
+#endif

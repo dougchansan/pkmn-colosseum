@@ -1,5 +1,12 @@
 #include "dolphin/types.h"
 
+#if !defined(BSS_80408400_ISOLATED)
+#define BSS_80408400_PREFIX
+#define BSS_80408400_SYNTHMACROS_LEGACY
+#define BSS_80408400_SUFFIX
+#endif
+
+#if defined(BSS_80408400_PREFIX)
 u8 lbl_80408400[0x1E7D0];
 u8 lbl_80426BD0[0x420];
 u8 lbl_80426FF0[0x20];
@@ -44,10 +51,17 @@ u8 lbl_8043DEF8[0x8000];
 u8 lbl_80445EF8[0x20];
 u8 lbl_80445F18[0xC];
 u8 lbl_80445F24[0xC];
+#endif
+
+#if defined(BSS_80408400_SYNTHMACROS_LEGACY)
 u8 lbl_80445F30[0x20];
+#endif
+
+#if defined(BSS_80408400_SUFFIX)
 u8 lbl_80445F50[0xF00];
 u8 lbl_80446E50[0x40];
 u8 lbl_80446E90[0x80];
 u8 lbl_80446F10[0x950];
 u8 lbl_80447860[0x600];
 u8 lbl_80447E60[0x5E0];
+#endif

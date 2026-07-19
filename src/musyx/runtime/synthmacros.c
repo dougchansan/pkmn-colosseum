@@ -14,6 +14,10 @@
  */
 #include "dolphin/types.h"
 
+#if !defined(SYNTHMACROS_ISOLATED)
+#define SYNTHMACROS_ALL
+#endif
+
 #define FLT_EPSILON 1.19209290e-7F
 
 /* ===================================================================
@@ -246,13 +250,26 @@ typedef struct SynthInfo {
 } SynthInfo; // size 0x214
 #pragma pack()
 
+#if defined(SYNTHMACROS_SELECT_macHandleActive) && !defined(SYNTHMACROS_ALL)
+u8 lbl_8047AFC8;
+SYNTH_VOICE* lbl_8047AFC4;
+SYNTH_VOICE* lbl_8047AFC0;
+u64 lbl_8047AFB8;
+MSTEP lbl_8047AFB0;
+#else
+extern MSTEP lbl_8047AFB0;
+extern u64 lbl_8047AFB8;
+extern SYNTH_VOICE* lbl_8047AFC0;
+extern SYNTH_VOICE* lbl_8047AFC4;
+extern u8 lbl_8047AFC8;
+extern const f32 lbl_8047D3EC;
+#endif
+
 extern SYNTH_VOICE* lbl_8047AF48;   /* synthVoice */
 extern u8 lbl_80434C50[];           /* synthInfo */
 extern u32 lbl_804356B4[16];        /* synthGlobalVariable */
-extern u64 lbl_8047AFB8;            /* macRealTime -- NOT lbl_8047AF58 (that is a distinct
-                                      * counter incremented separately in synth.c; confirmed by
-                                      * disassembly: macMakeActive/macMakeInactive load the pair
-                                      * lbl_8047AFB8/+0x4 for svoice->waitTime = macRealTime). */
+/* macRealTime is NOT lbl_8047AF58 (that is a distinct counter incremented
+ * separately in synth.c). */
 extern void* lbl_8047AF4C;          /* synthMessageCallback */
 #define synthInfo (*(SynthInfo*)lbl_80434C50)
 #define synthVoice lbl_8047AF48
@@ -304,10 +321,30 @@ extern void inpAddCtrl(CTRL_DEST* dst, u8 lowByte, s32 value, u8 repeat, u32 has
 extern void fn_8016039C(u8 midi, u8 midiSet, u32 dirtyFlag); /* inpSetGlobalMIDIDirtyFlag */
 extern CTRL_DEST lbl_80435B74[8][4]; /* inpAuxA, per-studio stride 0x90 */
 extern CTRL_DEST lbl_804356F4[8][4]; /* inpAuxB, per-studio stride 0x90 */
+#if defined(SYNTHMACROS_SELECT_mcmdAuxAFXSelect) && !defined(SYNTHMACROS_ALL)
+u64 lbl_80368CA0[4] = {
+    0x0000000100000000ULL,
+    0x0000000200000000ULL,
+    0x0000000400000000ULL,
+    0x0000000800000000ULL,
+};
+u32 lbl_80368CC0[4] = {0x80000001, 0x80000002, 0x80000004, 0x80000008};
+#else
 extern u64 lbl_80368CA0[4];
 extern u32 lbl_80368CC0[4];
+#endif
+#if defined(SYNTHMACROS_SELECT_mcmdAuxBFXSelect) && !defined(SYNTHMACROS_ALL)
+u64 lbl_80368CD0[4] = {
+    0x0000001000000000ULL,
+    0x0000002000000000ULL,
+    0x0000004000000000ULL,
+    0x0000008000000000ULL,
+};
+u32 lbl_80368CF0[4] = {0x80000010, 0x80000020, 0x80000040, 0x80000080};
+#else
 extern u64 lbl_80368CD0[4];
 extern u32 lbl_80368CF0[4];
+#endif
 
 /* SAMPLE_INFO: byte-exact-proven layout, copied from src/musyx/runtime/stream.c
  * (do not re-derive). */
@@ -329,11 +366,74 @@ extern void synthKeyStateUpdate(SYNTH_VOICE* svoice); /* synth.c: synthAddJob(sv
 extern void hwSetADSR(u32 voice, ADSR_INFO* adsr, u32 mode);
 extern u32 adsrConvertTimeCents(s32 tc);
 extern u32 adsrSetup(ADSR_VARS* adsr);
-extern f32 dspDLSVolTab[129]; /* lbl_8036984C, .data 0x204 */
-extern u8 dspScale2IndexTab[1024]; /* lbl_8036944C, .data 0x400 */
+extern f32 lbl_8036984C[129]; /* dspDLSVolTab, .data 0x204 */
+extern u8 lbl_8036944C[1024]; /* dspScale2IndexTab, .data 0x400 */
+#define dspDLSVolTab lbl_8036984C
+#define dspScale2IndexTab lbl_8036944C
+extern const f32 lbl_8047D3CC;
+extern const f32 lbl_8047D3D0;
+extern const f64 lbl_8047D3D8;
+extern const f64 lbl_8047D3E0;
+
+/* Public target functions are declared independently of the selection guards
+ * below so every isolated function remains a well-typed translation unit. */
+void DoSetPitch(SYNTH_VOICE* svoice);
+u32 mcmdWait(SYNTH_VOICE* svoice, MSTEP* cstep);
+u32 mcmdGosub(SYNTH_VOICE* svoice, MSTEP* cstep);
+void mcmdLoop(SYNTH_VOICE* svoice, MSTEP* cstep);
+void mcmdPlayMacro(SYNTH_VOICE* svoice, MSTEP* cstep);
+u32 mcmdAddKey(SYNTH_VOICE* svoice, MSTEP* cstep);
+void mcmdStartSample(SYNTH_VOICE* svoice, MSTEP* cstep);
+void mcmdVibrato(SYNTH_VOICE* svoice, MSTEP* cstep);
+void mcmdSetADSR(SYNTH_VOICE* svoice, MSTEP* cstep);
+void mcmdSetADSRFromCtrl(SYNTH_VOICE* svoice, MSTEP* cstep);
+void mcmdSetPitchADSR(SYNTH_VOICE* svoice, MSTEP* cstep);
+void mcmdSetPanning(SYNTH_VOICE* svoice, MSTEP* cstep);
+void mcmdSetSurroundPanning(SYNTH_VOICE* svoice, MSTEP* cstep);
+void mcmdScaleVolume(SYNTH_VOICE* svoice, MSTEP* cstep);
+void mcmdEnvelope(SYNTH_VOICE* svoice, MSTEP* cstep);
+void mcmdFadeIn(SYNTH_VOICE* svoice, MSTEP* cstep);
+void mcmdRandomKey(SYNTH_VOICE* svoice, MSTEP* cstep);
+void mcmdVolumeSelect(SYNTH_VOICE* svoice, MSTEP* cstep);
+void mcmdPanningSelect(SYNTH_VOICE* svoice, MSTEP* cstep);
+void mcmdPitchWheelSelect(SYNTH_VOICE* svoice, MSTEP* cstep);
+void mcmdModWheelSelect(SYNTH_VOICE* svoice, MSTEP* cstep);
+void mcmdPedalSelect(SYNTH_VOICE* svoice, MSTEP* cstep);
+void mcmdPortamentoSelect(SYNTH_VOICE* svoice, MSTEP* cstep);
+void mcmdReverbSelect(SYNTH_VOICE* svoice, MSTEP* cstep);
+void mcmdPreAuxASelect(SYNTH_VOICE* svoice, MSTEP* cstep);
+void mcmdPreAuxBSelect(SYNTH_VOICE* svoice, MSTEP* cstep);
+void mcmdPostAuxBSelect(SYNTH_VOICE* svoice, MSTEP* cstep);
+void mcmdSurroundPanningSelect(SYNTH_VOICE* svoice, MSTEP* cstep);
+void mcmdDopplerSelect(SYNTH_VOICE* svoice, MSTEP* cstep);
+void mcmdTremoloSelect(SYNTH_VOICE* svoice, MSTEP* cstep);
+void mcmdAuxAFXSelect(SYNTH_VOICE* svoice, MSTEP* cstep);
+void mcmdAuxBFXSelect(SYNTH_VOICE* svoice, MSTEP* cstep);
+void mcmdPortamento(SYNTH_VOICE* svoice, MSTEP* cstep);
+s16 varGet(SYNTH_VOICE* svoice, u32 ctrl, u8 index);
+void mcmdVarCalculation(SYNTH_VOICE* svoice, MSTEP* cstep, u8 op);
+void mcmdIfVarCompare(SYNTH_VOICE* svoice, MSTEP* cstep, u8 cmp);
+void mcmdSendMessage(SYNTH_VOICE* svoice, MSTEP* cstep);
+void mcmdGetVID(SYNTH_VOICE* svoice, MSTEP* cstep);
+void mcmdSetKeyGroup(SYNTH_VOICE* svoice, MSTEP* cstep);
+void macHandleActive(SYNTH_VOICE* svoice);
+void macHandle(u32 deltaTime);
+void macSampleEndNotify(SYNTH_VOICE* svoice);
+void macSetExternalKeyoff(SYNTH_VOICE* svoice);
+void macSetPedalState(SYNTH_VOICE* svoice, u32 state);
+void TimeQueueAdd(SYNTH_VOICE* svoice);
+#if defined(SYNTHMACROS_SELECT_macStart) && !defined(SYNTHMACROS_ALL)
+static inline void macMakeActive(SYNTH_VOICE* svoice);
+static inline void macMakeInactive(SYNTH_VOICE* svoice, s32 newState);
+#else
+void macMakeActive(SYNTH_VOICE* svoice);
+void macMakeInactive(SYNTH_VOICE* svoice, s32 newState);
+#endif
+void macInit(void);
+
 #define MIN(a, b) ((a) > (b) ? (b) : (a))
-static void SelectSourceCommon(SYNTH_VOICE* svoice, CTRL_DEST* dest, MSTEP* cstep, u64 tstflag,
-                               u32 dirtyFlag) {
+static inline void SelectSourceCommon(SYNTH_VOICE* svoice, CTRL_DEST* dest, MSTEP* cstep,
+                                      u64 tstflag, u32 dirtyFlag) {
     u8 comb;
     s32 scale;
 
@@ -364,117 +464,70 @@ void name(SYNTH_VOICE* ctx, MSTEP* cmd) { \
 /* mcmdVolumeSelect = mcmdVolumeSelect (inpVolume@0x218, tstflag 0x80000, dirty 1);
  * identified from the SelectSource offset table below, not simindex (which
  * cannot distinguish these 260B siblings from each other). */
-#if 0
-asm void mcmdVolumeSelect(void) {
-#include "src/game/people/people_field_fn_80153EE8.inc"
-}
-#else
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_mcmdVolumeSelect)
 PF_DEFINE_MOTION_SETTER(mcmdVolumeSelect, 0x00080000ULL, 0x218, 0x0001u)
 #endif
-#if 0
-asm void mcmdPanningSelect(void) {
-#include "src/game/people/people_field_fn_80153FEC.inc"
-}
-#else
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_mcmdPanningSelect)
 PF_DEFINE_MOTION_SETTER(mcmdPanningSelect, 0x00100000ULL, 0x23C, 0x0002u)
 #endif
-#if 0
-asm void mcmdPitchWheelSelect(void) {
-#include "src/game/people/people_field_fn_801540F0.inc"
-}
-#else
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_mcmdPitchWheelSelect)
 PF_DEFINE_MOTION_SETTER(mcmdPitchWheelSelect, 0x00200000ULL, 0x284, 0x0008u)
 #endif
-#if 0
-asm void mcmdModWheelSelect(void) {
-#include "src/game/people/people_field_fn_801541F4.inc"
-}
-#else
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_mcmdModWheelSelect)
 PF_DEFINE_MOTION_SETTER(mcmdModWheelSelect, 0x00400000ULL, 0x2CC, 0x0020u)
 #endif
-#if 0
-asm void mcmdPedalSelect(void) {
-#include "src/game/people/people_field_fn_801542F8.inc"
-}
-#else
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_mcmdPedalSelect)
 PF_DEFINE_MOTION_SETTER(mcmdPedalSelect, 0x02000000ULL, 0x2F0, 0x0040u)
 #endif
-#if 0
-asm void mcmdPortamentoSelect(void) {
-#include "src/game/people/people_field_fn_801543FC.inc"
-}
-#else
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_mcmdPortamentoSelect)
 PF_DEFINE_MOTION_SETTER(mcmdPortamentoSelect, 0x01000000ULL, 0x314, 0x0080u)
 #endif
-#if 0
-asm void mcmdReverbSelect(void) {
-#include "src/game/people/people_field_fn_80154500.inc"
-}
-#else
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_mcmdReverbSelect)
 PF_DEFINE_MOTION_SETTER(mcmdReverbSelect, 0x00800000ULL, 0x35C, 0x0200u)
 #endif
-#if 0
-asm void mcmdPreAuxASelect(void) {
-#include "src/game/people/people_field_fn_80154604.inc"
-}
-#else
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_mcmdPreAuxASelect)
 PF_DEFINE_MOTION_SETTER(mcmdPreAuxASelect, 0x20000000ULL, 0x338, 0x0100u)
 #endif
-#if 0
-asm void mcmdPreAuxBSelect(void) {
-#include "src/game/people/people_field_fn_80154708.inc"
-}
-#else
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_mcmdPreAuxBSelect)
 PF_DEFINE_MOTION_SETTER(mcmdPreAuxBSelect, 0x40000000ULL, 0x380, 0x0400u)
 #endif
-#if 0
-asm void mcmdPostAuxBSelect(void) {
-#include "src/game/people/people_field_fn_8015480C.inc"
-}
-#else
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_mcmdPostAuxBSelect)
 PF_DEFINE_MOTION_SETTER(mcmdPostAuxBSelect, 0x80000000ULL, 0x3A4, 0x0800u)
 #endif
-#if 0
-asm void mcmdSurroundPanningSelect(void) {
-#include "src/game/people/people_field_fn_80154910.inc"
-}
-#else
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_mcmdSurroundPanningSelect)
 PF_DEFINE_MOTION_SETTER(mcmdSurroundPanningSelect, 0x04000000ULL, 0x260, 0x0004u)
 #endif
-#if 0
-asm void mcmdDopplerSelect(void) {
-#include "src/game/people/people_field_fn_80154A14.inc"
-}
-#else
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_mcmdDopplerSelect)
 PF_DEFINE_MOTION_SETTER(mcmdDopplerSelect, 0x08000000ULL, 0x2A8, 0x0010u)
 #endif
 /* mcmdTremoloSelect = mcmdTremoloSelect (inpTremolo@0x3C8, tstflag 0x10000000,
  * dirty 0x1000) -- last of the 13-member SelectSource family. */
-#if 0
-asm void mcmdTremoloSelect(void) {
-#include "src/game/people/people_field_fn_80154B18.inc"
-}
-#else
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_mcmdTremoloSelect)
 PF_DEFINE_MOTION_SETTER(mcmdTremoloSelect, 0x10000000ULL, 0x3C8, 0x1000u)
 #endif
 #undef PF_DEFINE_MOTION_SETTER
 
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_mcmdAuxAFXSelect)
 void mcmdAuxAFXSelect(SYNTH_VOICE* svoice, MSTEP* cstep) {
     u32 i = (u8)(cstep->para[1] >> 0x18);
     SelectSourceCommon(svoice, &lbl_80435B74[svoice->studio][i], cstep, lbl_80368CA0[i],
                        lbl_80368CC0[i]);
 }
+#endif
 
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_mcmdAuxBFXSelect)
 void mcmdAuxBFXSelect(SYNTH_VOICE* svoice, MSTEP* cstep) {
     u32 i = (u8)(cstep->para[1] >> 0x18);
     SelectSourceCommon(svoice, &lbl_804356F4[svoice->studio][i], cstep, lbl_80368CD0[i],
                        lbl_80368CF0[i]);
 }
+#endif
 
 /* ===================================================================
  * DoSetPitch: self-contained, no external callees.
  * =================================================================== */
-static void DoSetPitch(SYNTH_VOICE* svoice) {
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_DoSetPitch)
+void DoSetPitch(SYNTH_VOICE* svoice) {
     u32 f;
     u32 of;
     u32 i;
@@ -541,6 +594,7 @@ static void DoSetPitch(SYNTH_VOICE* svoice) {
         }
     }
 }
+#endif
 
 /* ===================================================================
  * varGet: reference declares varGet32 (non-static helper) called from
@@ -549,7 +603,7 @@ static void DoSetPitch(SYNTH_VOICE* svoice) {
  * varGet32 must be a same-TU static that auto-inlines at every call
  * site (same trick validated by MotionSetterCommon/SelectSourceCommon).
  * =================================================================== */
-static s32 varGet32(SYNTH_VOICE* svoice, u32 ctrl, u8 index) {
+static inline s32 varGet32(SYNTH_VOICE* svoice, u32 ctrl, u8 index) {
     if (ctrl != 0) {
         return inpGetExCtrl(svoice, index);
     }
@@ -557,9 +611,13 @@ static s32 varGet32(SYNTH_VOICE* svoice, u32 ctrl, u8 index) {
     return index < 16 ? svoice->local_vars[index] : synthGlobalVariable[index - 16];
 }
 
-s16 varGet(SYNTH_VOICE* svoice, u32 ctrl, u8 index) { return (s16)varGet32(svoice, ctrl, index); }
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_varGet)
+s16 varGet(SYNTH_VOICE* svoice, u32 ctrl, u8 index) {
+    return (s16)varGet32(svoice, ctrl, index);
+}
+#endif
 
-static void varSet32(SYNTH_VOICE* svoice, u32 ctrl, u8 index, s32 v) {
+static inline void varSet32(SYNTH_VOICE* svoice, u32 ctrl, u8 index, s32 v) {
     if (ctrl != 0) {
         inpSetExCtrl(svoice, index, v);
         return;
@@ -572,8 +630,11 @@ static void varSet32(SYNTH_VOICE* svoice, u32 ctrl, u8 index, s32 v) {
     synthGlobalVariable[index - 16] = v;
 }
 
-static void varSet(SYNTH_VOICE* svoice, u32 ctrl, u8 index, s16 v) { varSet32(svoice, ctrl, index, v); }
+static inline void varSet(SYNTH_VOICE* svoice, u32 ctrl, u8 index, s16 v) {
+    varSet32(svoice, ctrl, index, v);
+}
 
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_mcmdGetVID)
 void mcmdGetVID(SYNTH_VOICE* svoice, MSTEP* cstep) {
     if ((u8)(cstep->para[0] >> 0x10) == 0) {
         varSet32(svoice, 0, (u8)(cstep->para[0] >> 8), *(s32*)((u8*)svoice->vidList + 8));
@@ -581,7 +642,9 @@ void mcmdGetVID(SYNTH_VOICE* svoice, MSTEP* cstep) {
         varSet32(svoice, 0, (u8)(cstep->para[0] >> 8), svoice->lastVID);
     }
 }
+#endif
 
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_mcmdVarCalculation)
 void mcmdVarCalculation(SYNTH_VOICE* svoice, MSTEP* cstep, u8 op) {
     s16 s1;
     s16 s2;
@@ -612,7 +675,9 @@ void mcmdVarCalculation(SYNTH_VOICE* svoice, MSTEP* cstep, u8 op) {
     varSet(svoice, (u8)(cstep->para[0] >> 8), (u8)(cstep->para[0] >> 0x10),
            (t < -0x8000 ? -0x8000 : t > 0x7FFF ? 0x7FFF : t));
 }
+#endif
 
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_mcmdIfVarCompare)
 void mcmdIfVarCompare(SYNTH_VOICE* svoice, MSTEP* cstep, u8 cmp) {
     s32 a;
     s32 b;
@@ -637,6 +702,7 @@ void mcmdIfVarCompare(SYNTH_VOICE* svoice, MSTEP* cstep, u8 cmp) {
         svoice->curAddr = svoice->addr + (u16)(cstep->para[1] >> 0x10);
     }
 }
+#endif
 
 /* ===================================================================
  * Active-macro / time-queue list management. ExecuteTrap, HasHWEventTrap,
@@ -644,13 +710,7 @@ void mcmdIfVarCompare(SYNTH_VOICE* svoice, MSTEP* cstep, u8 cmp) {
  * reference with no standalone symbols in this build -- expected to
  * auto-inline at their call sites.
  * =================================================================== */
-void macMakeActive(SYNTH_VOICE* sv);
-void macMakeInactive(SYNTH_VOICE* svoice, s32 newState);
-void macSetExternalKeyoff(SYNTH_VOICE* sv);
-u32 mcmdWait(SYNTH_VOICE* svoice, MSTEP* cstep);
-static void TimeQueueAdd(SYNTH_VOICE* svoice);
-
-static u32 ExecuteTrap(SYNTH_VOICE* svoice, u8 trapType) {
+static inline u32 ExecuteTrap(SYNTH_VOICE* svoice, u8 trapType) {
     if (svoice->trapEventAny != 0 && svoice->trapEventAddr[trapType] != 0) {
         svoice->curAddr = svoice->trapEventCurAddr[trapType];
         svoice->addr = svoice->trapEventAddr[trapType];
@@ -661,20 +721,21 @@ static u32 ExecuteTrap(SYNTH_VOICE* svoice, u8 trapType) {
     return 0;
 }
 
-static u32 HasHWEventTrap(SYNTH_VOICE* svoice) {
+static inline u32 HasHWEventTrap(SYNTH_VOICE* svoice) {
     if (svoice->trapEventAny != 0) {
         return svoice->trapEventAddr[1] != 0;
     }
     return 0;
 }
 
-static void CheckHWEventTrap(SYNTH_VOICE* svoice) {
+static inline void CheckHWEventTrap(SYNTH_VOICE* svoice) {
     if ((svoice->cFlags & 0x20) == 0 && !fn_8016246C(svoice->id & 0xFF)) {
         ExecuteTrap(svoice, 1);
     }
 }
 
 /* macPostMessage inlined (no standalone symbol in this build's call sites). */
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_mcmdSendMessage)
 void mcmdSendMessage(SYNTH_VOICE* svoice, MSTEP* cstep) {
     u8 i;
     s32 mesg;
@@ -712,7 +773,9 @@ void mcmdSendMessage(SYNTH_VOICE* svoice, MSTEP* cstep) {
         }
     }
 }
+#endif
 
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_mcmdSetKeyGroup)
 void mcmdSetKeyGroup(SYNTH_VOICE* svoice, MSTEP* cstep) {
     u32 i;
     u8 kg;
@@ -736,7 +799,9 @@ void mcmdSetKeyGroup(SYNTH_VOICE* svoice, MSTEP* cstep) {
         svoice->keyGroup = kg;
     }
 }
+#endif
 
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_macSampleEndNotify)
 void macSampleEndNotify(SYNTH_VOICE* sv) {
     if (sv->macState != 1) {
         return;
@@ -745,7 +810,9 @@ void macSampleEndNotify(SYNTH_VOICE* sv) {
         macMakeActive(sv);
     }
 }
+#endif
 
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_macSetExternalKeyoff)
 void macSetExternalKeyoff(SYNTH_VOICE* sv) {
     sv->cFlags |= 8;
     if (!sv->addr) {
@@ -759,7 +826,9 @@ void macSetExternalKeyoff(SYNTH_VOICE* sv) {
         sv->cFlags |= 0x40000000000ULL;
     }
 }
+#endif
 
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_macSetPedalState)
 void macSetPedalState(SYNTH_VOICE* svoice, u32 state) {
     if (state != 0) {
         svoice->cFlags |= 0x10000000000ULL;
@@ -772,9 +841,8 @@ void macSetPedalState(SYNTH_VOICE* svoice, u32 state) {
         svoice->cFlags &= ~(0x10000000000ULL | 0x40000000000ULL);
     }
 }
+#endif
 
-extern SYNTH_VOICE* lbl_8047AFC4;
-extern SYNTH_VOICE* lbl_8047AFC0;
 #define macActiveMacroRoot lbl_8047AFC4
 #define macTimeQueueRoot lbl_8047AFC0
 
@@ -782,6 +850,7 @@ extern SYNTH_VOICE* lbl_8047AFC0;
  * Macro-command interpreter leaves. Ported in the order confirmed by
  * bl-target forensics against the target object (see report).
  * =================================================================== */
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_mcmdWait)
 u32 mcmdWait(SYNTH_VOICE* svoice, MSTEP* cstep) {
     u32 w;
     u32 ms;
@@ -852,13 +921,15 @@ u32 mcmdWait(SYNTH_VOICE* svoice, MSTEP* cstep) {
 
     return 0;
 }
+#endif
 
-static u32 mcmdEndOfMacro(SYNTH_VOICE* svoice) {
+static inline u32 mcmdEndOfMacro(SYNTH_VOICE* svoice) {
     fn_80157360(svoice);
     voiceFree(svoice);
     return 1;
 }
 
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_mcmdGosub)
 u32 mcmdGosub(SYNTH_VOICE* svoice, MSTEP* cstep) {
     MSTEP* addr;
     if ((addr = (MSTEP*)dataGetMacro((u16)(cstep->para[0] >> 0x10))) != 0) {
@@ -874,7 +945,9 @@ u32 mcmdGosub(SYNTH_VOICE* svoice, MSTEP* cstep) {
     }
     return mcmdEndOfMacro(svoice);
 }
+#endif
 
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_mcmdLoop)
 void mcmdLoop(SYNTH_VOICE* svoice, MSTEP* cstep) {
     if (svoice->loop == 0) {
         if ((u8)(cstep->para[0] >> 16) & 1) {
@@ -904,7 +977,9 @@ skip:
         svoice->curAddr = svoice->addr + ((u16)cstep->para[1]);
     }
 }
+#endif
 
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_mcmdAddKey)
 u32 mcmdAddKey(SYNTH_VOICE* svoice, MSTEP* cstep) {
     if ((u8)(cstep->para[0] >> 0x18) == 0) {
         svoice->curNote += (s8)(u8)(cstep->para[0] >> 8);
@@ -921,8 +996,10 @@ u32 mcmdAddKey(SYNTH_VOICE* svoice, MSTEP* cstep) {
     cstep->para[0] = 4;
     return mcmdWait(svoice, cstep);
 }
+#endif
 
 /* mcmdStartSample */
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_mcmdStartSample)
 void mcmdStartSample(SYNTH_VOICE* svoice, MSTEP* cstep) {
     static SAMPLE_INFO newsmp;
     u16 smp;
@@ -963,7 +1040,9 @@ void mcmdStartSample(SYNTH_VOICE* svoice, MSTEP* cstep) {
     svoice->cFlags |= 0x20;
     synthKeyStateUpdate(svoice);
 }
+#endif
 
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_mcmdVibrato)
 void mcmdVibrato(SYNTH_VOICE* svoice, MSTEP* cstep) {
     u32 time;
     s8 kr;
@@ -1018,7 +1097,9 @@ void mcmdVibrato(SYNTH_VOICE* svoice, MSTEP* cstep) {
         svoice->cFlags &= ~0x2000ULL;
     }
 }
+#endif
 
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_mcmdSetADSR)
 void mcmdSetADSR(SYNTH_VOICE* svoice, MSTEP* cstep) {
     ADSR_INFO adsr;
     ADSR_INFO* adsr_ptr;
@@ -1073,7 +1154,9 @@ void mcmdSetADSR(SYNTH_VOICE* svoice, MSTEP* cstep) {
         svoice->cFlags |= 0x100;
     }
 }
+#endif
 
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_mcmdSetADSRFromCtrl)
 static s32 midi2TimeTab[128] = {
     0,      10,     20,     30,     40,     50,     60,     70,     80,     90,     100,    110,
     110,    120,    130,    140,    150,    160,    170,    190,    200,    220,    230,    250,
@@ -1105,7 +1188,9 @@ void mcmdSetADSRFromCtrl(SYNTH_VOICE* svoice, MSTEP* cstep) {
     hwSetADSR((u8)svoice->id, &adsr, 2);
     svoice->cFlags |= 0x100;
 }
+#endif
 
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_mcmdSetPitchADSR)
 void mcmdSetPitchADSR(SYNTH_VOICE* svoice, MSTEP* cstep) {
     ADSR_INFO adsr;
     ADSR_INFO* adsr_ptr;
@@ -1162,8 +1247,9 @@ void mcmdSetPitchADSR(SYNTH_VOICE* svoice, MSTEP* cstep) {
     adsrSetup(&svoice->pitchADSR);
     svoice->cFlags |= 0x20000000000ULL;
 }
+#endif
 
-static u32 mcmdSetKey(SYNTH_VOICE* svoice, MSTEP* cstep) {
+static inline u32 mcmdSetKey(SYNTH_VOICE* svoice, MSTEP* cstep) {
     svoice->curNote = (u8)(cstep->para[0] >> 8) & 0x7f;
     svoice->curDetune = (s8)(cstep->para[0] >> 0x10);
     if (voiceIsLastStarted(svoice) != 0) {
@@ -1173,6 +1259,7 @@ static u32 mcmdSetKey(SYNTH_VOICE* svoice, MSTEP* cstep) {
     return mcmdWait(svoice, cstep);
 }
 
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_mcmdRandomKey)
 void mcmdRandomKey(SYNTH_VOICE* svoice, MSTEP* cstep) {
     u8 k1;
     u8 k2;
@@ -1207,7 +1294,9 @@ void mcmdRandomKey(SYNTH_VOICE* svoice, MSTEP* cstep) {
     cstep->para[1] = 0;
     mcmdSetKey(svoice, cstep);
 }
+#endif
 
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_mcmdPortamento)
 void mcmdPortamento(SYNTH_VOICE* svoice, MSTEP* cstep) {
     u32 time;
     svoice->portType = (u8)(cstep->para[0] >> 16);
@@ -1244,8 +1333,9 @@ void mcmdPortamento(SYNTH_VOICE* svoice, MSTEP* cstep) {
         break;
     }
 }
+#endif
 
-static u32 TranslateVolume(u32 volume, u16 curve) {
+static inline u32 TranslateVolume(u32 volume, u16 curve) {
     u8* ptr;
     u32 vlow;
     u32 vhigh;
@@ -1268,6 +1358,7 @@ static u32 TranslateVolume(u32 volume, u16 curve) {
     return volume;
 }
 
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_mcmdScaleVolume)
 void mcmdScaleVolume(SYNTH_VOICE* svoice, MSTEP* cstep) {
     u16 curve;
     u16 scale;
@@ -1289,8 +1380,9 @@ void mcmdScaleVolume(SYNTH_VOICE* svoice, MSTEP* cstep) {
     svoice->volume = TranslateVolume(svoice->volume, curve);
     svoice->cFlags |= 0x100000000000ULL;
 }
+#endif
 
-static void DoEnvelopeCalculation(SYNTH_VOICE* svoice, MSTEP* cstep, s32 start_vol) {
+static inline void DoEnvelopeCalculation(SYNTH_VOICE* svoice, MSTEP* cstep, s32 start_vol) {
     u32 tvol;
     u32 time;
     s32 mstime;
@@ -1326,11 +1418,15 @@ static void DoEnvelopeCalculation(SYNTH_VOICE* svoice, MSTEP* cstep, s32 start_v
     svoice->cFlags |= 0x8000;
 }
 
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_mcmdEnvelope)
 void mcmdEnvelope(SYNTH_VOICE* svoice, MSTEP* cstep) { DoEnvelopeCalculation(svoice, cstep, svoice->volume); }
+#endif
 
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_mcmdFadeIn)
 void mcmdFadeIn(SYNTH_VOICE* svoice, MSTEP* cstep) { DoEnvelopeCalculation(svoice, cstep, 0); }
+#endif
 
-static void DoPanningSetup(SYNTH_VOICE* svoice, MSTEP* cstep, u8 pi) {
+static inline void DoPanningSetup(SYNTH_VOICE* svoice, MSTEP* cstep, u8 pi) {
     s32 width;
     u32 mstime;
     svoice->panTime[pi] = width = (u16)(cstep->para[0] >> 16);
@@ -1348,12 +1444,17 @@ static void DoPanningSetup(SYNTH_VOICE* svoice, MSTEP* cstep, u8 pi) {
 }
 
 /* mcmdSetPanning */
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_mcmdSetPanning)
 void mcmdSetPanning(SYNTH_VOICE* svoice, MSTEP* cstep) { DoPanningSetup(svoice, cstep, 0); }
+#endif
 
 /* mcmdSetSurroundPanning */
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_mcmdSetSurroundPanning)
 void mcmdSetSurroundPanning(SYNTH_VOICE* svoice, MSTEP* cstep) { DoPanningSetup(svoice, cstep, 1); }
+#endif
 
 /* mcmdPlayMacro */
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_mcmdPlayMacro)
 void mcmdPlayMacro(SYNTH_VOICE* svoice, MSTEP* cstep) {
     s32 key;
     u32 new_child;
@@ -1388,6 +1489,7 @@ void mcmdPlayMacro(SYNTH_VOICE* svoice, MSTEP* cstep) {
         svoice->lastVID = (u32)-1;
     }
 }
+#endif
 
 extern void* memset(void* dst, int val, u32 size);
 extern void fn_80161A9C(void* svoice); /* inpInit */
@@ -1398,15 +1500,12 @@ extern u32 inpGetModulation(SYNTH_VOICE* sv);
 extern void fn_801629A4(u32 index, u8 value);
 extern void fn_801629D0(u32 index, u8 value);
 extern u32 hwFrq2Pitch(u32 value);
-extern MSTEP lbl_8047AFB0;
-extern u8 lbl_8047AFC8; /* DebugMacroSteps: static local counter inside macHandleActive */
-extern const f32 lbl_8047D3EC;
 #define DebugMacroSteps lbl_8047AFC8
 
 
 /* Reference-shaped static helpers for macHandleActive's inlined cases.
  * Source position (before macHandleActive) makes MWCC auto-inline them. */
-static u32 mcmdGoto(SYNTH_VOICE* svoice, MSTEP* cstep) {
+static inline u32 mcmdGoto(SYNTH_VOICE* svoice, MSTEP* cstep) {
     MSTEP* macAddr;
 
     if ((macAddr = (MSTEP*)dataGetMacro((u16)(cstep->para[0] >> 16))) != NULL) {
@@ -1417,7 +1516,7 @@ static u32 mcmdGoto(SYNTH_VOICE* svoice, MSTEP* cstep) {
     return mcmdEndOfMacro(svoice);
 }
 
-static void mcmdTrapEvent(SYNTH_VOICE* svoice, MSTEP* cstep) {
+static inline void mcmdTrapEvent(SYNTH_VOICE* svoice, MSTEP* cstep) {
     MSTEP* addr;
     u8 t;
 
@@ -1432,7 +1531,7 @@ static void mcmdTrapEvent(SYNTH_VOICE* svoice, MSTEP* cstep) {
     }
 }
 
-static void mcmdUntrapEvent(SYNTH_VOICE* svoice, MSTEP* cstep) {
+static inline void mcmdUntrapEvent(SYNTH_VOICE* svoice, MSTEP* cstep) {
     u8 i;
 
     svoice->trapEventAddr[(u8)(cstep->para[0] >> 8)] = NULL;
@@ -1444,7 +1543,7 @@ static void mcmdUntrapEvent(SYNTH_VOICE* svoice, MSTEP* cstep) {
     svoice->trapEventAny = 0;
 }
 
-static void mcmdSetPianoPanning(SYNTH_VOICE* svoice, MSTEP* cstep) {
+static inline void mcmdSetPianoPanning(SYNTH_VOICE* svoice, MSTEP* cstep) {
     s32 delta;
     s32 scale;
 
@@ -1457,7 +1556,7 @@ static void mcmdSetPianoPanning(SYNTH_VOICE* svoice, MSTEP* cstep) {
     svoice->panning[0] = delta;
 }
 
-static u32 mcmdLastKey(SYNTH_VOICE* svoice, MSTEP* cstep) {
+static inline u32 mcmdLastKey(SYNTH_VOICE* svoice, MSTEP* cstep) {
     svoice->curNote = svoice->lastNote + (s8)(u8)(cstep->para[0] >> 8);
     svoice->curNote = (s16)svoice->curNote < 0 ? 0 : svoice->curNote > 0x7f ? 0x7f : svoice->curNote;
     svoice->curDetune = (s8)(cstep->para[0] >> 16);
@@ -1470,7 +1569,7 @@ static u32 mcmdLastKey(SYNTH_VOICE* svoice, MSTEP* cstep) {
     return mcmdWait(svoice, cstep);
 }
 
-static u32 mcmdPitchSweep(SYNTH_VOICE* svoice, MSTEP* cstep, u8 i) {
+static inline u32 mcmdPitchSweep(SYNTH_VOICE* svoice, MSTEP* cstep, u8 i) {
     s32 pitch;
     s16 freq;
 
@@ -1488,7 +1587,7 @@ static u32 mcmdPitchSweep(SYNTH_VOICE* svoice, MSTEP* cstep, u8 i) {
     return mcmdWait(svoice, cstep);
 }
 
-static void mcmdSetPitch(SYNTH_VOICE* svoice, MSTEP* cstep) {
+static inline void mcmdSetPitch(SYNTH_VOICE* svoice, MSTEP* cstep) {
     svoice->playFrq = cstep->para[0] >> 8;
     svoice->playFrq |= (u8)cstep->para[1];
 
@@ -1497,7 +1596,7 @@ static void mcmdSetPitch(SYNTH_VOICE* svoice, MSTEP* cstep) {
     }
 }
 
-static void mcmdScaleVolumeDLS(SYNTH_VOICE* svoice, MSTEP* cstep) {
+static inline void mcmdScaleVolumeDLS(SYNTH_VOICE* svoice, MSTEP* cstep) {
     u16 scale;
 
     scale = (u16)(cstep->para[0] >> 8);
@@ -1514,7 +1613,7 @@ static void mcmdScaleVolumeDLS(SYNTH_VOICE* svoice, MSTEP* cstep) {
     svoice->cFlags |= 0x100000000000ULL;
 }
 
-static void mcmdReturn(SYNTH_VOICE* svoice) {
+static inline void mcmdReturn(SYNTH_VOICE* svoice) {
     if (svoice->callStackEntryNum != 0) {
         svoice->addr = svoice->callStack[svoice->callStackIndex].addr;
         svoice->curAddr = svoice->callStack[svoice->callStackIndex].curAddr;
@@ -1523,7 +1622,7 @@ static void mcmdReturn(SYNTH_VOICE* svoice) {
     }
 }
 
-static void mcmdAddAgeCounter(SYNTH_VOICE* svoice, MSTEP* cstep) {
+static inline void mcmdAddAgeCounter(SYNTH_VOICE* svoice, MSTEP* cstep) {
     s32 age;
 
     age = (svoice->age >> 15) + (s16)(cstep->para[0] >> 16);
@@ -1538,19 +1637,19 @@ static void mcmdAddAgeCounter(SYNTH_VOICE* svoice, MSTEP* cstep) {
     fn_80162494(svoice->id & 0xFF, ((u32)svoice->prio << 24) | (svoice->age >> 15));
 }
 
-static void mcmdSetAgeCounter(SYNTH_VOICE* svoice, MSTEP* cstep) {
+static inline void mcmdSetAgeCounter(SYNTH_VOICE* svoice, MSTEP* cstep) {
     svoice->age = (u32)((u16)(cstep->para[0] >> 16)) << 15;
     fn_80162494(svoice->id & 0xFF, ((u32)svoice->prio << 24) | (svoice->age >> 15));
 }
 
-static void mcmdAddPriority(SYNTH_VOICE* svoice, MSTEP* cstep) {
+static inline void mcmdAddPriority(SYNTH_VOICE* svoice, MSTEP* cstep) {
     s16 prio;
 
     prio = svoice->prio + (s16)(cstep->para[0] >> 16);
     voiceSetPriority(svoice, prio < 0 ? 0 : prio > 0xFF ? 0xFF : prio);
 }
 
-static void mcmdSetAgeCounterByVolume(SYNTH_VOICE* svoice, MSTEP* cstep) {
+static inline void mcmdSetAgeCounterByVolume(SYNTH_VOICE* svoice, MSTEP* cstep) {
     u32 age;
 
     age = (((u8)(svoice->volume >> 16) * (u16)cstep->para[1]) >> 7) + (u16)(cstep->para[0] >> 16);
@@ -1558,7 +1657,7 @@ static void mcmdSetAgeCounterByVolume(SYNTH_VOICE* svoice, MSTEP* cstep) {
     fn_80162494(svoice->id & 0xFF, ((u32)svoice->prio << 24) | (svoice->age >> 15));
 }
 
-static void mcmdSetupLFO(SYNTH_VOICE* svoice, MSTEP* cstep) {
+static inline void mcmdSetupLFO(SYNTH_VOICE* svoice, MSTEP* cstep) {
     u32 time;
     u32 ms;
     u8 index;
@@ -1575,6 +1674,7 @@ static void mcmdSetupLFO(SYNTH_VOICE* svoice, MSTEP* cstep) {
 }
 
 #define cstep lbl_8047AFB0
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_macHandleActive)
 void macHandleActive(SYNTH_VOICE* svoice) { /* macHandleActive */
     u8 i;
     u32 vi;
@@ -1837,7 +1937,11 @@ void macHandleActive(SYNTH_VOICE* svoice) { /* macHandleActive */
         case 0x23:
             svoice->treScale = (u16)(cstep.para[0] >> 8);
             svoice->treModAddScale = (u16)cstep.para[1];
+#if defined(SYNTHMACROS_SELECT_macHandleActive) && !defined(SYNTHMACROS_ALL)
+            svoice->treCurScale = 1.0f;
+#else
             svoice->treCurScale = lbl_8047D3EC;
+#endif
             break;
         case 0x24:
             mcmdReturn(svoice);
@@ -1994,12 +2098,14 @@ void macHandleActive(SYNTH_VOICE* svoice) { /* macHandleActive */
         }
     } while (!ex);
 }
+#endif
 
 #undef cstep
 #undef DebugMacroSteps
 
 
 /* macHandle */
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_macHandle)
 void macHandle(u32 deltaTime) {
     SYNTH_VOICE* sv;
     SYNTH_VOICE* nextSv;
@@ -2021,9 +2127,11 @@ void macHandle(u32 deltaTime) {
     }
     macRealTime += deltaTime;
 }
+#endif
 
 #pragma dont_inline on
-static void TimeQueueAdd(SYNTH_VOICE* svoice) {
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_TimeQueueAdd)
+void TimeQueueAdd(SYNTH_VOICE* svoice) {
     SYNTH_VOICE* sv;
     SYNTH_VOICE* lastSv;
 
@@ -2053,9 +2161,10 @@ static void TimeQueueAdd(SYNTH_VOICE* svoice) {
         sv->prevTimeQueueMacro = svoice;
     }
 }
+#endif
 #pragma dont_inline reset
 
-static void UnYieldMacro(SYNTH_VOICE* svoice, u32 disableUpdate) {
+static inline void UnYieldMacro(SYNTH_VOICE* svoice, u32 disableUpdate) {
     if (svoice->wait != 0) {
         if (svoice->wait != (u64)-1) {
             if (svoice->prevTimeQueueMacro == 0) {
@@ -2081,6 +2190,15 @@ static void UnYieldMacro(SYNTH_VOICE* svoice, u32 disableUpdate) {
 
 /* MAC_STATE enum, confirmed from disassembly (not the reference's symbolic
  * names): RUNNABLE=0, YIELDED=1, STOPPED=2. */
+#if defined(SYNTHMACROS_SELECT_macStart) && !defined(SYNTHMACROS_ALL)
+#define SYNTHMACROS_MACSTART_INLINE static inline
+#else
+#define SYNTHMACROS_MACSTART_INLINE
+#endif
+
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_macMakeActive) || \
+    defined(SYNTHMACROS_SELECT_macStart)
+SYNTHMACROS_MACSTART_INLINE
 void macMakeActive(SYNTH_VOICE* sv) {
     if (sv->macState == 0) {
         return;
@@ -2093,7 +2211,11 @@ void macMakeActive(SYNTH_VOICE* sv) {
     macActiveMacroRoot = sv;
     sv->macState = 0;
 }
+#endif
 
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_macMakeInactive) || \
+    defined(SYNTHMACROS_SELECT_macStart)
+SYNTHMACROS_MACSTART_INLINE
 void macMakeInactive(SYNTH_VOICE* svoice, s32 newState) {
     if (svoice->macState == newState) {
         return;
@@ -2116,12 +2238,16 @@ void macMakeInactive(SYNTH_VOICE* svoice, s32 newState) {
     }
     svoice->macState = newState;
 }
+#endif
+
+#undef SYNTHMACROS_MACSTART_INLINE
 
 /* macStart. Positioned after macMakeActive/macMakeInactive (matching
  * reference source order) so both auto-inline here -- confirmed by target
  * disassembly, which shows the full UnYieldMacro/active-list bodies
  * inlined twice (once via the initial macMakeInactive(svoice, 2), once via
  * the closing macMakeActive(svoice)) with no bl to either symbol. */
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_macStart)
 u32 macStart(u16 macid, u8 priority, u8 maxVoices, u16 allocId, u8 key, u8 vol, u8 panning,
                 u8 midi, u8 midiSet, u8 section, u16 step, u16 trackid, u8 new_vid, u8 vGroup,
                 u8 studio, u32 itd) {
@@ -2202,7 +2328,9 @@ u32 macStart(u16 macid, u8 priority, u8 maxVoices, u16 allocId, u8 key, u8 vol, 
 
     return (u32)-1;
 }
+#endif
 
+#if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_macInit)
 void macInit(void) {
     u32 i;
 
@@ -2215,3 +2343,4 @@ void macInit(void) {
         synthVoice[i].loop = 0;
     }
 }
+#endif
