@@ -1695,8 +1695,47 @@ game/data/data_8035C430.c:
 game/pokemon_data.c:
 	.text       start:0x8011CA60 end:0x8011F5FC
 
-game/pokemon_range_8011F5FC.c:
-	.text       start:0x8011F5FC end:0x801248C4
+game/pokemon_range_exact_8011F5FC.c:
+	.text       start:0x8011F5FC end:0x8011F77C
+
+game/pokemon_range_8011F77C.c:
+	.text       start:0x8011F77C end:0x8011F910
+
+game/pokemon_range_8011F910.c:
+	.text       start:0x8011F910 end:0x8011FCA4
+
+game/pokemon_range_8011FCA4.c:
+	.text       start:0x8011FCA4 end:0x80120B00
+
+game/pokemon_range_exact_80120B00.c:
+	.text       start:0x80120B00 end:0x80121C18
+
+game/pokemon_range_80121C18.c:
+	.text       start:0x80121C18 end:0x80122040
+
+game/pokemon_range_exact_80122040.c:
+	.text       start:0x80122040 end:0x801226D0
+
+game/pokemon_range_801226D0.c:
+	.text       start:0x801226D0 end:0x801229F4
+
+game/pokemon_range_exact_801229F4.c:
+	.text       start:0x801229F4 end:0x801237B8
+
+game/pokemon_range_801237B8.c:
+	.text       start:0x801237B8 end:0x80123C54
+
+game/pokemon_range_exact_80123C54.c:
+	.text       start:0x80123C54 end:0x80123D58
+
+game/pokemon_range_80123D58.c:
+	.text       start:0x80123D58 end:0x80123E70
+
+game/pokemon_range_exact_80123E70.c:
+	.text       start:0x80123E70 end:0x801240C4
+
+game/pokemon_range_801240C4.c:
+	.text       start:0x801240C4 end:0x801248C4
 
 game/pokemon_range_exact_801248C4.c:
 	.text       start:0x801248C4 end:0x801254B4

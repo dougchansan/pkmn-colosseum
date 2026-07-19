@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196108,
     "total_functions": 8603,
-    "total_units": 984
+    "total_units": 997
   },
   "topology_status": {
     "auto_units": 65,
-    "named_units": 919,
-    "source_backed_units": 904,
+    "named_units": 932,
+    "source_backed_units": 917,
     "auto_code": 0,
     "auto_data": 57787,
     "auto_functions": 0
@@ -7870,17 +7870,186 @@
       "total_functions": 284
     },
     {
-      "name": "main/game/pokemon_range_8011F5FC",
+      "name": "main/game/pokemon_range_exact_8011F5FC",
       "sections": [
         {
           "name": ".text",
-          "size": 21192,
+          "size": 384,
           "virtual_address": 2148660732
         }
       ],
-      "total_code": 21192,
+      "total_code": 384,
       "total_data": 0,
-      "total_functions": 72
+      "total_functions": 3
+    },
+    {
+      "name": "main/game/pokemon_range_8011F77C",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 404,
+          "virtual_address": 2148661116
+        }
+      ],
+      "total_code": 404,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/pokemon_range_8011F910",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 916,
+          "virtual_address": 2148661520
+        }
+      ],
+      "total_code": 916,
+      "total_data": 0,
+      "total_functions": 4
+    },
+    {
+      "name": "main/game/pokemon_range_8011FCA4",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 3676,
+          "virtual_address": 2148662436
+        }
+      ],
+      "total_code": 3676,
+      "total_data": 0,
+      "total_functions": 6
+    },
+    {
+      "name": "main/game/pokemon_range_exact_80120B00",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 4376,
+          "virtual_address": 2148666112
+        }
+      ],
+      "total_code": 4376,
+      "total_data": 0,
+      "total_functions": 25
+    },
+    {
+      "name": "main/game/pokemon_range_80121C18",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1064,
+          "virtual_address": 2148670488
+        }
+      ],
+      "total_code": 1064,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/pokemon_range_exact_80122040",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1680,
+          "virtual_address": 2148671552
+        }
+      ],
+      "total_code": 1680,
+      "total_data": 0,
+      "total_functions": 3
+    },
+    {
+      "name": "main/game/pokemon_range_801226D0",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 804,
+          "virtual_address": 2148673232
+        }
+      ],
+      "total_code": 804,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/pokemon_range_exact_801229F4",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 3524,
+          "virtual_address": 2148674036
+        }
+      ],
+      "total_code": 3524,
+      "total_data": 0,
+      "total_functions": 18
+    },
+    {
+      "name": "main/game/pokemon_range_801237B8",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1180,
+          "virtual_address": 2148677560
+        }
+      ],
+      "total_code": 1180,
+      "total_data": 0,
+      "total_functions": 2
+    },
+    {
+      "name": "main/game/pokemon_range_exact_80123C54",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 260,
+          "virtual_address": 2148678740
+        }
+      ],
+      "total_code": 260,
+      "total_data": 0,
+      "total_functions": 2
+    },
+    {
+      "name": "main/game/pokemon_range_80123D58",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 280,
+          "virtual_address": 2148679000
+        }
+      ],
+      "total_code": 280,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/pokemon_range_exact_80123E70",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 596,
+          "virtual_address": 2148679280
+        }
+      ],
+      "total_code": 596,
+      "total_data": 0,
+      "total_functions": 3
+    },
+    {
+      "name": "main/game/pokemon_range_801240C4",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 2048,
+          "virtual_address": 2148679876
+        }
+      ],
+      "total_code": 2048,
+      "total_data": 0,
+      "total_functions": 2
     },
     {
       "name": "main/game/pokemon_range_exact_801248C4",
