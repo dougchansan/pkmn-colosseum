@@ -439,7 +439,25 @@ game/menu/menu_middle_exact_8006B8E8.c:
 	.text       start:0x8006B8E8 end:0x8006B9B8
 
 game/menu/menu_middle_range_8006B9B8.c:
-	.text       start:0x8006B9B8 end:0x8007109C
+	.text       start:0x8006B9B8 end:0x8006FCF8
+
+game/menu/menu_middle_exact_8006FCF8.c:
+	.text       start:0x8006FCF8 end:0x8006FEE4
+
+game/menu/menu_middle_range_8006FEE4.c:
+	.text       start:0x8006FEE4 end:0x80070274
+
+game/menu/menu_middle_exact_80070274.c:
+	.text       start:0x80070274 end:0x80070318
+
+game/menu/menu_middle_range_80070318.c:
+	.text       start:0x80070318 end:0x800704A4
+
+game/menu/menu_middle_exact_800704A4.c:
+	.text       start:0x800704A4 end:0x800704AC
+
+game/menu/menu_middle_range_800704AC.c:
+	.text       start:0x800704AC end:0x8007109C
 
 game/menu/menu_range_8007109C.c:
 	.text       start:0x8007109C end:0x8007C260

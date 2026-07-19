@@ -30,7 +30,13 @@
     !defined(MENU_MIDDLE_EXACT_8006B4AC_ONLY) && \
     !defined(MENU_MIDDLE_RESIDUAL_8006B5D0_ONLY) && \
     !defined(MENU_MIDDLE_EXACT_8006B8E8_ONLY) && \
-    !defined(MENU_MIDDLE_RESIDUAL_8006B9B8_ONLY)
+    !defined(MENU_MIDDLE_RESIDUAL_8006B9B8_ONLY) && \
+    !defined(MENU_MIDDLE_EXACT_8006FCF8_ONLY) && \
+    !defined(MENU_MIDDLE_RESIDUAL_8006FEE4_ONLY) && \
+    !defined(MENU_MIDDLE_EXACT_80070274_ONLY) && \
+    !defined(MENU_MIDDLE_RESIDUAL_80070318_ONLY) && \
+    !defined(MENU_MIDDLE_EXACT_800704A4_ONLY) && \
+    !defined(MENU_MIDDLE_RESIDUAL_800704AC_ONLY)
 #define MENU_MIDDLE_ALL
 #endif
 
@@ -232,6 +238,13 @@ void fn_8006E188(void);
 void fn_8006E18C(void* menu);
 void fn_8006E258(void* menu);
 void fn_8006E338(void);
+
+typedef struct KeyInfo_8006BB34 {
+    u8 pad0[4];
+    u16 flags4;
+    u16 flags6;
+    u8 padA[2];
+} KeyInfo_8006BB34;
 void fn_8006E798(void);
 void fn_8006E9A4(void);
 void fn_8006EE7C(void* menu);
@@ -2221,13 +2234,6 @@ typedef struct MenuState_8006BB34 {
     u8 pad_val;   /* 0x94 */
     s8 pad_cur;   /* 0x95 */
 } MenuState_8006BB34;
-
-typedef struct KeyInfo_8006BB34 {
-    u8 pad0[4];
-    u16 flags4;
-    u16 flags6;
-    u8 padA[2];
-} KeyInfo_8006BB34;
 
 typedef struct Param_8006BB34 {
     u8 pad0[0x11];
@@ -6951,8 +6957,9 @@ void fn_8006FBFC(void) {
     fn_80070D84();
     return;
 }
+#endif
 
-
+#if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_EXACT_8006FCF8_ONLY)
 /* 0x8006FCF8 | size: 0x2C */
 #pragma push
 #pragma peephole off
@@ -7062,8 +7069,9 @@ void fn_8006FE64(void* menu) {
     menuButtonNormal(menu);
 }
 #pragma peephole reset
+#endif
 
-
+#if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_RESIDUAL_8006FEE4_ONLY)
 /* 0x8006FEE4 | size: 0x390 */
 void fn_8006FEE4(void) {
     extern void fn_8006B1F4();
@@ -7318,8 +7326,9 @@ void fn_8006FEE4(void) {
     } while (r27 < (u32)0x4);
     return;
 }
+#endif
 
-
+#if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_EXACT_80070274_ONLY)
 /* 0x80070274 | size: 0x28 */
 #pragma push
 #pragma scheduling off
@@ -7355,7 +7364,9 @@ void fn_800702F0(u32 r3) {
     fn_80070D84(r3, 0x0, 0x0);
 }
 #pragma pop
+#endif
 
+#if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_RESIDUAL_80070318_ONLY)
 /* 0x80070318 | size: 0x110 */
 void fn_80070318(void) {
     u8 sp[0x20];
@@ -7447,8 +7458,9 @@ void fn_80070428(void* arg0, void* menu) {
     }
 }
 #pragma peephole reset
+#endif
 
-
+#if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_EXACT_800704A4_ONLY)
 /* 0x800704A4 | size: 0x4 */
 void fn_800704A4(void) {
 }
@@ -7456,7 +7468,9 @@ void fn_800704A4(void) {
 /* 0x800704A8 | size: 0x4 */
 void fn_800704A8(void) {
 }
+#endif
 
+#if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_RESIDUAL_800704AC_ONLY)
 /* 0x800704AC | size: 0x218 */
 void fn_800704AC(void) {
     extern void fn_8006B3C8();
