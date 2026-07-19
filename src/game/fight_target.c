@@ -11,6 +11,12 @@
 
 #include "game/pokemon_fight_types.h"
 
+#if !defined(FIGHT_TARGET_EXACT_801F0058_ONLY) && \
+    !defined(FIGHT_TARGET_EXACT_801F0204_ONLY)
+#define FIGHT_TARGET_ALL
+#endif
+
+#if defined(FIGHT_TARGET_ALL) || defined(FIGHT_TARGET_EXACT_801F0058_ONLY)
 /* 0x801F0058 | size: 0x78 | small */
 u32 fightTargetIsHostSide(u32 param1, u32 param2) {
     extern u32 fightTargetGetPtr();
@@ -38,7 +44,9 @@ u32 fightTargetGetRelativeHostSideFightTargetIdToTragetPtr(u32 param1, u32 param
         result = 0;
     return result;
 }
+#endif
 
+#if defined(FIGHT_TARGET_ALL)
 /* 0x801F0134 | size: 0xD0 | medium */
 u32 fightTargetGetTragetPtrToRelativeHostSideFightTargetId(u32 param1, u32 param2) {
     extern u8 lbl_80375AC8[];
@@ -74,7 +82,9 @@ u32 fightTargetGetTragetPtrToRelativeHostSideFightTargetId(u32 param1, u32 param
 done:
     return i;
 }
+#endif
 
+#if defined(FIGHT_TARGET_ALL) || defined(FIGHT_TARGET_EXACT_801F0204_ONLY)
 /* Address: 0x801F0204 | Size: 0x18 | Pattern: nullcheck_getter */
 u32 fightTargetDataBiosGetBuff(u8* ptr) {
     if (ptr == NULL) { return 0; }
@@ -284,3 +294,4 @@ u32 _fightTargetGetTargetPtrToFightSidePtr__FPvUs(u32 target, u32 param2) {
     }
     return 0;
 }
+#endif
