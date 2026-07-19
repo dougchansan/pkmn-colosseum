@@ -2075,8 +2075,20 @@ game/battle/battle_range_exact_801EE034.c:
 game/battle/battle_range_candidate_801EE958.c:
 	.text       start:0x801EE958 end:0x801EF02C
 
-game/battle/battle_main.c:
-	.text       start:0x801EF02C end:0x801F0058
+game/battle/battle_main_exact_801EF02C.c:
+	.text       start:0x801EF02C end:0x801EF4B0
+
+game/battle/battle_main_candidate_801EF4B0.c:
+	.text       start:0x801EF4B0 end:0x801EF5C0
+
+game/battle/battle_main_exact_801EF5C0.c:
+	.text       start:0x801EF5C0 end:0x801EFA08
+
+game/battle/battle_main_candidate_801EFA08.c:
+	.text       start:0x801EFA08 end:0x801EFFC4
+
+game/battle/battle_main_exact_801EFFC4.c:
+	.text       start:0x801EFFC4 end:0x801F0058
 
 game/fight_target_exact_801F0058.c:
 	.text       start:0x801F0058 end:0x801F0134
