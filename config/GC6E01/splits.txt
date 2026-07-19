@@ -1117,27 +1117,6 @@ game/data/sdata2_8047C9A0.c:
 game/data/sdata2_8047CAA0.c:
 	.sdata2     start:0x8047CAA0 end:0x8047CB88
 
-game/data/sdata2_8047CB98.c:
-	.sdata2     start:0x8047CB98 end:0x8047CBDF
-
-game/data/sdata2_8047CBE0.c:
-	.sdata2     start:0x8047CBE0 end:0x8047CC98
-
-game/data/sdata2_8047CC98.c:
-	.sdata2     start:0x8047CC98 end:0x8047CD98
-
-game/gs_model_sdata2_8047CD98.c:
-	.sdata2     start:0x8047CD98 end:0x8047CE98
-
-game/data/sdata2_8047CE98.c:
-	.sdata2     start:0x8047CE98 end:0x8047CF98
-
-game/data/sdata2_8047CF98.c:
-	.sdata2     start:0x8047CF98 end:0x8047D098
-
-game/data/sdata2_8047D098.c:
-	.sdata2     start:0x8047D098 end:0x8047D108
-
 crt/math_range_800CD648.c:
 	.text       start:0x800CD648 end:0x800CDBB8
 
@@ -1434,6 +1413,27 @@ game/gs_model_main_suffix_candidate_800E66B8.c:
 game/gs_model_main_suffix_exact_800E6804.c:
 	.text       start:0x800E6804 end:0x800E68D8
 	.sdata2     start:0x8047CB88 end:0x8047CB98
+
+game/data/sdata2_8047CB98.c:
+	.sdata2     start:0x8047CB98 end:0x8047CBDF
+
+game/data/sdata2_8047CBE0.c:
+	.sdata2     start:0x8047CBE0 end:0x8047CC98
+
+game/data/sdata2_8047CC98.c:
+	.sdata2     start:0x8047CC98 end:0x8047CD98
+
+game/gs_model_sdata2_8047CD98.c:
+	.sdata2     start:0x8047CD98 end:0x8047CE98
+
+game/data/sdata2_8047CE98.c:
+	.sdata2     start:0x8047CE98 end:0x8047CF98
+
+game/data/sdata2_8047CF98.c:
+	.sdata2     start:0x8047CF98 end:0x8047D098
+
+game/data/sdata2_8047D098.c:
+	.sdata2     start:0x8047D098 end:0x8047D108
 
 game/gs_model_main_suffix_exact_800E68D8.c:
 	.text       start:0x800E68D8 end:0x800E69C4
