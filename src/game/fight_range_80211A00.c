@@ -1572,19 +1572,8 @@ s32 fn_80231FC8(void* param1, s32 param2, void** param3) {
 #pragma optimize_for_size reset
 
 /* Clear the trainer event if set. */
-#pragma optimize_for_size on
-#define fn_801FECD4 fightOutPokemonIsUseHensinBuff
-#define fn_801FE7EC fightOutPokemonSetHensinPokemonStatusId
-void fn_802331A4(void* param1, void* param2) {
-    extern u8   fn_801FECD4();
-    extern void fn_801FE7EC();
-    if ((u8)fn_801FECD4(param1, param2) == 1) {
-        fn_801FE7EC(param1, param2, 0, 0);
-    }
-}
-#undef fn_801FECD4
-#undef fn_801FE7EC
-#pragma optimize_for_size reset
+void fn_802331A4(void* param1, void* param2);
+/* body moved to fight_range_exact_80232FE4.c */
 
 /*
  * fn_802358AC family: species-id -> slot resolve (fn_801FB1C0 pair), then
@@ -14083,34 +14072,8 @@ advance_alt:
     lbl_8047B610 += 5;
 }
 #pragma optimize_for_size reset
-#pragma optimize_for_size on
-u32 fightSeqMonomaneNGCheck(u16 r3)
-
-{
-    extern u16 lbl_80279FA0[];
-
-  u16 uVar1;
-  int iVar2;
-
-  if (r3 == 0) {
-    return 1;
-  }
-  if (r3 == 0x165) {
-    return 1;
-  }
-  if (r3 == 0x163) {
-    return 1;
-  }
-  iVar2 = 0;
-  while ((uVar1 = lbl_80279FA0[iVar2]) != 0xfffe) {
-    if (r3 == uVar1) {
-      break;
-    }
-    iVar2 = iVar2 + 1;
-  }
-  return (u8)(uVar1 != 0xfffe);
-}
-#pragma optimize_for_size reset
+u32 fightSeqMonomaneNGCheck(u16 r3);
+/* body moved to fight_range_exact_8021A2C0.c */
 #pragma optimize_for_size on
 #pragma opt_propagation off
 void fn_8021A338(void)
@@ -21190,83 +21153,8 @@ u32 fn_80232D28(u32 pokemon, u32 hostSide, u32* data)
     return 1;
 }
 #pragma optimize_for_size reset
-#pragma optimize_for_size on
-u32 fn_80232FE4(u32 r3, u32 r4, u32 r5)
-
-{
-    extern u32 fightTargetGetRelativeHostSideFightTargetIdToTragetPtr();
-    extern void fightOutPokemonSetOumuWazaDataId();
-    extern u32 fn_80201D84();
-    extern u8 fn_802026E4();
-    extern void fightOutPokemonWriteJoutaiDataId();
-    extern u8 fightOutPokemonIsAlly();
-    extern void fn_80203198();
-    extern u8 fightOutPokemonCheckFightOut();
-  u8 matched;
-  u32 targetId;
-  u32 relative;
-  struct {
-    u32 h;
-    void* p;
-    void* o;
-  } values;
-#define hostSide values.h
-#define other ((u32)values.o)
-#define pokemon ((u32)values.p)
-
-  values.h = r4;
-  values.p = (void*)r3;
-  values.o = (void*)r5;
-
-  if (fightOutPokemonCheckFightOut() == 0) {
-    return 1;
-  }
-  if (pokemon == other) {
-    return 1;
-  }
-  if (fn_802026E4(pokemon,0x16) == 1 &&
-      (targetId = fn_80201D84(pokemon,0x16), (targetId & 0xffff) != 0) &&
-      (relative = fightTargetGetRelativeHostSideFightTargetIdToTragetPtr(
-          targetId,hostSide)) != 0 && relative == other) {
-    matched = 1;
-  } else {
-    matched = 0;
-  }
-  if (matched == 1) {
-    fightOutPokemonWriteJoutaiDataId(pokemon,0x16);
-  }
-  if (fn_802026E4(pokemon,10) == 1 &&
-      (targetId = fn_80201D84(pokemon,10), (targetId & 0xffff) != 0) &&
-      (relative = fightTargetGetRelativeHostSideFightTargetIdToTragetPtr(
-          targetId,hostSide)) != 0 && relative == other) {
-    matched = 1;
-  } else {
-    matched = 0;
-  }
-  if (matched == 1) {
-    fightOutPokemonWriteJoutaiDataId(pokemon,10);
-  }
-  if (fn_802026E4(pokemon,0xe) == 1 &&
-      (targetId = fn_80201D84(pokemon,0xe), (targetId & 0xffff) != 0) &&
-      (relative = fightTargetGetRelativeHostSideFightTargetIdToTragetPtr(
-          targetId,hostSide)) != 0 && relative == other) {
-    matched = 1;
-  } else {
-    matched = 0;
-  }
-  if (matched == 1) {
-    fightOutPokemonWriteJoutaiDataId(pokemon,0xe);
-  }
-  if (fightOutPokemonIsAlly(pokemon,other) == 0) {
-    fightOutPokemonSetOumuWazaDataId(pokemon,other,0);
-    fn_80203198(pokemon,other);
-  }
-  return 1;
-}
-#undef pokemon
-#undef other
-#undef hostSide
-#pragma optimize_for_size reset
+u32 fn_80232FE4(u32 r3, u32 r4, u32 r5);
+/* body moved to fight_range_exact_80232FE4.c */
 #pragma optimize_for_size on
 void fn_802331F4(u32 r3, u32 r4, int r5, u32 r6, u16 r7)
 {
