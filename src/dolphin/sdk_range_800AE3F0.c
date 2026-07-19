@@ -398,7 +398,14 @@ extern u32 DummyLen(void);
 extern s32 ReadArrayUnlock(s32 chan, u32 data, void* rbuf, s32 rlen,
                            s32 mode);
 
+#if defined(SDK_EXACT_800AE3F0_800AE9FC) || \
+    defined(SDK_EXACT_800AF474_800AF8A0) || \
+    defined(SDK_EXACT_800B1788_800B2070)
+#define SDK_RANGE_EXACT_ACTIVE
+#endif
+
 #if !defined(CARD_EXACT_800B3B68_ONLY)
+#if !defined(SDK_RANGE_EXACT_ACTIVE)
 s32 CARDGetSerialNo(s32 chan, u64* serialNo) {
     CARDControl* card;
     CARDID* id;
@@ -632,6 +639,10 @@ void __AICallbackStackSwitch(AIDCallback callback);
 
 #pragma dont_inline off
 
+#endif
+
+#if !defined(SDK_RANGE_EXACT_ACTIVE) || \
+    defined(SDK_EXACT_800AE3F0_800AE9FC)
 void __ARQServiceQueueLo(void) {
     ARQRequest* request;
 
@@ -854,7 +865,9 @@ DSPTaskInfo* DSPAddTask(DSPTaskInfo* task) {
 
 void __DSP_debug_printf(char* fmt, ...) {
 }
+#endif
 
+#if !defined(SDK_RANGE_EXACT_ACTIVE)
 void __DSPHandler(__OSInterrupt interrupt, OSContext* context)
 {
     u8 unused[4];
@@ -1183,6 +1196,7 @@ error:
 void __CARDDefaultApiCallback(s32 chan, s32 result) {
 }
 #endif
+#endif
 
 #if defined(CARD_EXACT_800B3B68_ONLY)
 s32 __CARDFormatRegionAsync(s32 chan, u16 encode, CARDCallback callback)
@@ -1265,6 +1279,7 @@ s32 __CARDFormatRegionAsync(s32 chan, u16 encode, CARDCallback callback)
 #endif
 
 #if !defined(CARD_EXACT_800B3B68_ONLY)
+#if !defined(SDK_RANGE_EXACT_ACTIVE)
 s32 CARDCheckExAsync(s32 chan, s32* xferBytes, CARDCallback callback)
 {
     CARDControl* card;
@@ -1426,7 +1441,10 @@ void __CARDExtHandler(s32 chan) {
         }
     }
 }
+#endif
 
+#if !defined(SDK_RANGE_EXACT_ACTIVE) || \
+    defined(SDK_EXACT_800AF474_800AF8A0)
 #pragma optimize_for_size on
 void __CARDTxHandler(s32 chan) {
     BOOL error;
@@ -1445,6 +1463,7 @@ void __CARDTxHandler(s32 chan) {
 }
 #pragma optimize_for_size reset
 
+#if !defined(SDK_EXACT_800AF474_800AF8A0)
 void UnlockedCallback(s32 chan, s32 result) {
     CARDCallback callback;
     CARDControl* card;
@@ -1481,6 +1500,7 @@ void UnlockedCallback(s32 chan, s32 result) {
         }
     }
 }
+#endif
 
 void __CARDUnlockedHandler(s32 chan, OSContext* context) {
     CARDControl* card = &lbl_803FC620[chan];
@@ -1559,12 +1579,15 @@ void TimeoutHandler(OSAlarm* alarm) {
         }
     }
 }
+#endif
 
+#if !defined(SDK_RANGE_EXACT_ACTIVE)
 s32 CARDCheckAsync(s32 chan, void* callback) {
     s32 xferBytes;
 
     return CARDCheckExAsync(chan, &xferBytes, callback);
 }
+#endif
 #endif
 
 #if defined(CARD_EXACT_800B3B68_ONLY)
@@ -1644,6 +1667,7 @@ s32 __CARDGetFileNo(CARDControl* card, const char* fileName, s32* pfileNo) {
 #endif
 
 #if !defined(CARD_EXACT_800B3B68_ONLY)
+#if !defined(SDK_RANGE_EXACT_ACTIVE)
 u16 __CARDGetFontEncode(void) {
     return lbl_8047A970;
 }
@@ -1720,6 +1744,10 @@ void InitCallback(void* task) {
 }
 #pragma dont_inline off
 
+#endif
+
+#if !defined(SDK_RANGE_EXACT_ACTIVE) || \
+    defined(SDK_EXACT_800B1788_800B2070)
 void BlockReadCallback(s32 chan, s32 result) {
     CARDControl* card = &lbl_803FC620[chan];
     CARDCallback callback;
@@ -2034,7 +2062,9 @@ s32 __CARDUpdateDir(s32 chan, CARDCallback callback) {
     addr = (((u32)dir - (u32)card->workArea) >> 13) * card->sectorSize;
     return fn_800AFFE0(chan, addr, EraseCallback_800C216C);
 }
+#endif
 
+#if !defined(SDK_RANGE_EXACT_ACTIVE)
 s32 __CARDVerify(CARDControl* card) {
     s32 result;
     s32 dirResult;
@@ -3048,3 +3078,6 @@ void GXInitFifoPtrs(GXFifoObj* fifo, void* readPtr, void* writePtr) {
     OSRestoreInterrupts(enabled);
 }
 #endif
+#endif
+
+#undef SDK_RANGE_EXACT_ACTIVE

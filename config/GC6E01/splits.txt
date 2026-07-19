@@ -712,8 +712,23 @@ dolphin/sdk_range_800AC02C.c:
 dolphin/sdk_exact_800ACBFC.c:
 	.text       start:0x800ACBFC end:0x800AE3F0
 
-dolphin/sdk_range_800AE3F0.c:
-	.text       start:0x800AE3F0 end:0x800B3B68
+dolphin/ar_dsp_exact_800AE3F0.c:
+	.text       start:0x800AE3F0 end:0x800AE9FC
+
+dolphin/sdk_range_800AE9FC.c:
+	.text       start:0x800AE9FC end:0x800AF474
+
+dolphin/card_exact_800AF474.c:
+	.text       start:0x800AF474 end:0x800AF8A0
+
+dolphin/sdk_range_800AF8A0.c:
+	.text       start:0x800AF8A0 end:0x800B1788
+
+dolphin/card_exact_800B1788.c:
+	.text       start:0x800B1788 end:0x800B2070
+
+dolphin/sdk_range_800B2070.c:
+	.text       start:0x800B2070 end:0x800B3B68
 
 dolphin/card_exact_800B3B68.c:
 	.text       start:0x800B3B68 end:0x800B4488
