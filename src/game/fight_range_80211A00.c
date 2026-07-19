@@ -370,10 +370,8 @@ extern u32 fn_8022E1F8();
 extern s32 _fightSeqWsKuroikiriSub__FPvUsPv(void*, u16, void*);
 
 #define fn_801F37B0 fightFloorLoopValidFightOutPokemon
-void fn_8022E1C4(void) {
-    extern void fn_801F37B0();
-    fn_801F37B0(0, fn_8022E1F8, 0, 0);
-}
+void fn_8022E1C4(void);
+/* body moved to fight_range_exact_8022DCB8.c: fn_8022E1C4 */
 #undef fn_801F37B0
 
 void fn_8021B830(void) {
@@ -3507,11 +3505,8 @@ void fn_80227C40(void) {
  * byte argument.
  */
 #define fn_801F37B0 fightFloorLoopValidFightOutPokemon
-void fn_8022E314(u8 param) {
-    extern void fn_801F37B0();
-    u8 local = param;
-    fn_801F37B0(0, fn_8022E34C, &local, 0);
-}
+void fn_8022E314(u8 param);
+/* body moved to fight_range_exact_8022DCB8.c: fn_8022E314 */
 #undef fn_801F37B0
 
 /*
@@ -4397,79 +4392,8 @@ skipIncrement:
 #define fn_80201704 fightOutPokemonIsHpMantan
 #define fn_80203B5C fightOutPokemonMaxHpWaruValue
 #define fn_8011BBD8 wazaSetStatus
-u8 fn_8022DCB8(u32 p1, u32 p2, u32 extra) {
-    extern u16 fn_80207BF4();
-    extern s32 fn_8011BEB4();
-    extern u16 fn_80205134();
-    extern u32 fn_8012640C();
-    extern u32 fn_802062FC();
-    extern u8  fn_802026E4();
-    extern u8  fn_802025B8();
-    extern void fn_8020248C();
-    extern u8  lbl_80379714[];
-    extern u8  lbl_80379715[];
-    extern u8  lbl_80379752[];
-    extern u8  lbl_80379753[];
-    extern u8  lbl_80379783[];
-    extern u8  lbl_80379784[];
-    extern u8  fn_80201704();
-    extern void fn_8011BBD8();
-    extern u16 fn_80203B5C();
-
-    u16 val26 = fn_80207BF4(p2);
-    u16 val25 = (u16)fn_8011BEB4(0, extra, 7, 0);
-    u16 val27 = fn_80205134(p1);
-    u8 val31 = (u8)fn_8012640C(p1, 0, 0x111, 0);
-    u8 result = 0;
-    u32 fieldD9 = fn_8012640C(p1, 0, 0xD9, 0);
-    u16 val4;
-
-    if ((u8)fn_802062FC(p2) == 0) {
-        return 0;
-    }
-    if ((u16)extra != 0 && (u16)extra != 0x165) {
-        switch (val26) {
-        case 0xa:
-            if (val27 == 0xd && val25 != 0) {
-                lbl_8047B610 = (val31 != 0) ? (u8*)&lbl_80379715 : (u8*)&lbl_80379714;
-                result = 1;
-            }
-            break;
-        case 0xb:
-            if (val27 == 0xb && val25 != 0) {
-                lbl_8047B610 = (val31 != 0) ? (u8*)&lbl_80379715 : (u8*)&lbl_80379714;
-                result = 1;
-            }
-            break;
-        case 0x12:
-            if (val27 == 0xa && (u8)fn_802026E4(p2, 7) == 0) {
-                if ((u8)fn_802025B8(p2, 0x3a) == 2) {
-                    fn_8020248C(p2, 0x3a, 0);
-                    lbl_80478D78[5] = 0;
-                } else {
-                    lbl_80478D78[5] = 1;
-                }
-                lbl_8047B610 = (val31 != 0) ? (u8*)&lbl_80379784 : (u8*)&lbl_80379783;
-                result = 2;
-            }
-            break;
-        }
-
-        if (result == 1) {
-            if ((u8)fn_80201704(p2) == 1) {
-                if (val31 != 0) {
-                    lbl_8047B610 = (u8*)&lbl_80379753;
-                } else {
-                    lbl_8047B610 = (u8*)&lbl_80379752;
-                }
-                goto done;
-            }
-            fn_8011BBD8(fieldD9, 0, 0x2d, 0, -fn_80203B5C(p2, 4));
-        }
-    }
-done:
-    return result;
-}
+u8 fn_8022DCB8(u32 p1, u32 p2, u32 extra);
+/* body moved to fight_range_exact_8022DCB8.c: fn_8022DCB8 */
 #undef fn_80207BF4
 #undef fn_8011BEB4
 #undef fn_80205134
@@ -4498,65 +4422,8 @@ done:
 #define fn_801F453C fightFloorGetNowTenkouDataId
 #define fn_80207AE0 fightOutPokemonIsZokuseiDataId
 #define fn_80207B5C fightOutPokemonSetZokuseiDataId
-u8 fn_8022EC40(void* ctx) {
-    extern u32 fn_802062FC();
-    extern u16 fn_80203D3C();
-    extern u16 fn_80207BF4();
-    extern u8  fn_801F453C();
-    extern u32 fn_80207AE0();
-    extern u32 fn_80207B5C(void*, u8, u32);
-
-    u16 x;
-    u16 y;
-    u8 kind;
-    u8 count;
-
-    if ((u8)fn_802062FC(ctx) == 0) {
-        return 0;
-    }
-    x = fn_80203D3C(ctx);
-    y = fn_80207BF4(ctx);
-    if (x != 0x181 || y != 0x3b) {
-        return 0;
-    }
-
-    kind = (u8)fn_801F453C(0, 1);
-    count = 0;
-
-    if (kind == 0 || kind == 3) {
-        if ((u8)fn_80207AE0(ctx, 0) == 0) {
-            for (count = 0; count < 2; count++) {
-                fn_80207B5C(ctx, count, 0);
-            }
-            count = 1;
-        }
-    }
-    if (kind == 1) {
-        if ((u8)fn_80207AE0(ctx, 0xa) == 0) {
-            for (count = 0; count < 2; count++) {
-                fn_80207B5C(ctx, count, 0xa);
-            }
-            count = 2;
-        }
-    }
-    if (kind == 2) {
-        if ((u8)fn_80207AE0(ctx, 0xb) == 0) {
-            for (count = 0; count < 2; count++) {
-                fn_80207B5C(ctx, count, 0xb);
-            }
-            count = 3;
-        }
-    }
-    if (kind == 4) {
-        if ((u8)fn_80207AE0(ctx, 0xf) == 0) {
-            for (count = 0; count < 2; count++) {
-                fn_80207B5C(ctx, count, 0xf);
-            }
-            count = 4;
-        }
-    }
-    return count;
-}
+u8 fn_8022EC40(void* ctx);
+/* body moved to fight_range_exact_8022DCB8.c: fn_8022EC40 */
 #undef fn_802062FC
 #undef fn_80203D3C
 #undef fn_80207BF4
@@ -19659,101 +19526,8 @@ u32 fn_8022D6BC(u32 attacker, u32 defender)
 }
 #pragma opt_propagation reset
 #pragma optimize_for_size on
-void fn_8022DF08(u32 ctx)
-{
-    extern u32 fightOutPokemonGetPokemonPtr();
-    extern u8 fightFloorGetNowTenkouDataId();
-    extern u8 fightOutPokemonCheckFightOut();
-    extern u32 fightOutPokemonGetTokuseiDataId();
-    extern void fightFloorSetStatus();
-    extern u32 pokemonGetStatus();
-    extern u8 fightOutPokemonIsHpMantan();
-    extern u16 fightOutPokemonMaxHpWaruValue();
-    extern void wazaSetStatus();
-    extern u8 fightOutPokemonIsJoutaiNormal();
-    extern u32 pokemonGetJoutaiMsgId();
-    extern u32 GSmsgGetGSchar();
-    extern void msgctrlSetValue();
-    extern void pokemonInitJoutai();
-    extern void fightOutPokemonWriteJoutaiDataId();
-    extern void fightOutPokemonResetSeqStatus();
-    extern u8 fightOutPokemonIsUseHensinBuff();
-    extern void fightOutPokemonSetHensinPokemonStatusId();
-    extern void pokemonSetStatus();
-    extern void fn_80211B94();
-    extern u8 lbl_8037967E[];
-    extern u8 lbl_8037969F[];
-    extern u8 lbl_803796B5[];
-    extern u8 lbl_80379F58[];
-    extern void* lbl_8047B62C;
-    u32 pokemon;
-    u32 weather;
-    u32 ability;
-    u32 move;
-
-    pokemon = fightOutPokemonGetPokemonPtr();
-    {
-        u32 callResult = fightFloorGetNowTenkouDataId(0, 1);
-        weather = (u8)callResult;
-    }
-    if (ctx == 0) {
-        return;
-    }
-    if (fightOutPokemonCheckFightOut(ctx) == 0) {
-        return;
-    }
-
-    ability = fightOutPokemonGetTokuseiDataId(ctx);
-    fightFloorSetStatus(0, 0, 0x36, 0, ctx);
-    move = pokemonGetStatus(ctx, 0, 0xD9, 0);
-
-    switch ((u16)ability) {
-    case 0x2C:
-        if (weather == 2 && fightOutPokemonIsHpMantan(ctx) == 0) {
-            u32 amount = (u16)fightOutPokemonMaxHpWaruValue(ctx, 0x10);
-            wazaSetStatus(move, 0, 0x2D, 0, -(s32)amount);
-            fn_80211B94(lbl_8047B62C, lbl_8037967E, 0);
-        }
-        break;
-
-    case 0x3D:
-        if (fightOutPokemonIsJoutaiNormal(ctx) == 0) {
-            u16 random = fn_800E0C54();
-            s32 divisor = 3;
-            if (random % divisor == 0) {
-                fightFloorSetStatus(0, 0, 0x4B, 0, ctx);
-                msgctrlSetValue(0xD, GSmsgGetGSchar(pokemonGetJoutaiMsgId(pokemon)));
-                pokemonInitJoutai(pokemon);
-                fightOutPokemonWriteJoutaiDataId(ctx, 0x17);
-                fightOutPokemonResetSeqStatus(ctx, 0);
-                if (fightOutPokemonIsUseHensinBuff(ctx) == 1) {
-                    fightOutPokemonSetHensinPokemonStatusId(ctx, 0x7C, 0, 0);
-                }
-                fn_80211B94(lbl_8047B62C, lbl_8037969F, 0);
-            }
-        }
-        break;
-
-    case 3: {
-        s8 count = pokemonGetStatus(ctx, 0, 0xEA, 0);
-        if (count < 12 && (u16)pokemonGetStatus(ctx, 0, 0xED, 0) != 2) {
-            fightFloorSetStatus(0, 0, 0x4B, 0, ctx);
-            pokemonSetStatus(ctx, 0, 0xEA, 0, (s8)(count + 1));
-            lbl_80379F58[0x160A4] = 0x11;
-            lbl_80379F58[0x160A5] = 0;
-            fn_80211B94(lbl_8047B62C, lbl_803796B5, 0);
-        }
-        break;
-    }
-
-    case 0x36: {
-        u32 value = pokemonGetStatus(ctx, 0, 0xF9, 0);
-        value = __cntlzw(value & 0xFF);
-        pokemonSetStatus(ctx, 0, 0xF9, 0, (value & 0x1FE0) >> 5);
-        break;
-    }
-    }
-}
+void fn_8022DF08(u32 ctx);
+/* body moved to fight_range_exact_8022DCB8.c: fn_8022DF08 */
 #pragma optimize_for_size reset
 #pragma optimize_for_size on
 #define fn_800FA280 GSmsgGetGSchar
@@ -19767,55 +19541,8 @@ void fn_8022DF08(u32 ctx)
 #define fn_802062FC fightOutPokemonCheckFightOut
 #define fn_80207BC0 fightOutPokemonSetTokuseiDataId
 #define fn_80207BF4 fightOutPokemonGetTokuseiDataId
-u32 fn_8022E1F8(int r3)
-
-{
-    extern u32 fn_800FA280();
-    extern void fn_8011CB54();
-    extern void fn_8011CB6C();
-    extern void fn_80132A38();
-    extern u32 fn_801F2598();
-    extern void fn_801F4C14();
-    extern s8 fn_802026E4();
-    extern void fn_80202810();
-    extern u32 fn_802037DC();
-    extern s8 fn_802062FC();
-    extern void fn_80207BC0();
-    extern u32 fn_80207BF4();
-    extern void fn_80211B94();
-    extern void* lbl_8047B62C;
-    extern u8 lbl_80379667[];
-  u32 local;
-  u32 sVar3;
-  u8 cVar4;
-  u32 uVar1;
-  u32 uVar2;
-
-  local = r3;
-  sVar3 = fn_80207BF4();
-  cVar4 = fn_802062FC(local);
-  if (cVar4 == 0) {
-    return 1;
-  }
-  if (((sVar3 & 0xffff) == 0x24) && (cVar4 = fn_802026E4(local,0x3c), cVar4 == 1)) {
-    uVar1 = fn_801F2598(0,1,2,local);
-    cVar4 = fn_802062FC();
-    if (cVar4 == 1) {
-      fn_80202810(local,0x3c);
-      uVar2 = fn_80207BF4(uVar1);
-      fn_80207BC0(local,uVar2);
-      fn_801F4C14(0,0,0x4b,0,local);
-      uVar1 = fn_802037DC(uVar1);
-      fn_80132A38(0xd,uVar1);
-      fn_8011CB6C(uVar2);
-      fn_8011CB54();
-      uVar1 = fn_800FA280();
-      fn_80132A38(0xe,uVar1);
-      fn_80211B94(lbl_8047B62C,(u32)lbl_80379667,0);
-    }
-  }
-  return 1;
-}
+u32 fn_8022E1F8(int r3);
+/* body moved to fight_range_exact_8022DCB8.c: fn_8022E1F8 */
 #pragma optimize_for_size reset
 #pragma optimize_for_size on
 #undef fn_800FA280
@@ -19833,38 +19560,8 @@ u32 fn_8022E1F8(int r3)
 #define fn_802062FC fightOutPokemonCheckFightOut
 #define fn_80202810 fightOutPokemonWriteJoutaiDataId
 #define fn_801F4C14 fightFloorSetStatus
-u32 fn_8022E34C(u32 r3, u32 r4, char* r5)
-
-{
-    extern void fn_801F4C14();
-    extern u16 fn_80207BF4();
-    extern u8 fn_802026E4();
-    extern void fn_80202810();
-    extern u8 fn_802062FC();
-    extern void fn_80211B94();
-    extern u8 lbl_803795FE[];
-    extern u8 lbl_803795F5[];
-    extern void* lbl_8047B62C;
-  u16 sVar1;
-  u32 uVar3;
-  void* context;
-  u8 cVar2;
-
-  context = (void*)r3;
-  sVar1 = fn_80207BF4();
-  cVar2 = fn_802062FC(context);
-  if (cVar2 == 0) {
-    return 1;
-  }
-  uVar3 = (u32)((*r5 == 1) ? lbl_803795F5 : lbl_803795FE);
-  if ((sVar1 == 0x16) &&
-      (cVar2 = fn_802026E4(context,0x3b), cVar2 == 1)) {
-      fn_80202810(context,0x3b);
-      fn_801F4C14(0,0,0x4b,0,context);
-      fn_80211B94(lbl_8047B62C,uVar3,0);
-  }
-  return 1;
-}
+u32 fn_8022E34C(u32 r3, u32 r4, char* r5);
+/* body moved to fight_range_exact_8022DCB8.c: fn_8022E34C */
 #pragma optimize_for_size reset
 #undef fn_80207BF4
 #undef fn_802062FC
@@ -19878,99 +19575,8 @@ u32 fn_8022E34C(u32 r3, u32 r4, char* r5)
 #define fn_801F4C14 fightFloorSetStatus
 #define fn_802062FC fightOutPokemonCheckFightOut
 #define fn_80207BF4 fightOutPokemonGetTokuseiDataId
-void fn_8022E410(int r3)
-
-{
-    extern void fn_801F2934();
-    extern u8 fn_801F2988();
-    extern void fn_801F37B0();
-    extern void fn_801F4C14();
-    extern void fn_8020248C();
-    extern u8 fn_802025B8();
-    extern u8 fn_802062FC();
-    extern void fn_80211B94();
-    extern u8 fn_8022EC40();
-    extern void* lbl_8047B62C;
-    extern u8 lbl_80379F58[];
-    extern u8 lbl_803795BB[];
-    extern u8 lbl_8037959E[];
-    extern u8 lbl_803795D8[];
-    extern u8 lbl_803796D7[];
-    extern void fn_8022EB9C();
-  u8 cVar3;
-  int uVar2;
-
-  u8 local_18 [12];
-
-  if ((r3 != 0) && (cVar3 = fn_802062FC(r3), cVar3 != 0)) {
-    uVar2 = (int)(u16)fn_80207BF4(r3);
-    switch (uVar2) {
-    case 0x2:
-      cVar3 = fn_801F2988(0,0x50);
-      if (cVar3 != 2) {
-        return;
-      }
-      fn_801F2934(0,0x50,0);
-      fn_801F4C14(0,0,0x4b,0,r3);
-      fn_80211B94(lbl_8047B62C,(u32)lbl_8037959E,0);
-      return;
-    case 0x2d:
-      cVar3 = fn_801F2988(0,0x51);
-      if (cVar3 == 2) {
-        fn_801F2934(0,0x51,0);
-        fn_801F4C14(0,0,0x4b,0,r3);
-        fn_80211B94(lbl_8047B62C,(u32)lbl_803795BB,0);
-      }
-      break;
-    case 0x46:
-      cVar3 = fn_801F2988(0,0x4f);
-      if (cVar3 != 2) {
-        return;
-      }
-      fn_801F2934(0,0x4f,0);
-      fn_801F4C14(0,0,0x4b,0,r3);
-      fn_80211B94(lbl_8047B62C,(u32)lbl_803795D8,0);
-      return;
-    case 0x16:
-      if ((int)fn_8012640C(r3,0,0x116,0) != 0) {
-        return;
-      }
-      cVar3 = fn_802025B8(r3,0x3b);
-      if (cVar3 == 2) {
-        fn_8020248C(r3,0x3b,0);
-      }
-      fn_801254B4((void*)r3,0,0x116,0,1);
-      return;
-    case 0x24:
-      if ((int)fn_8012640C(r3,0,0x117,0) != 0) {
-        return;
-      }
-      cVar3 = fn_802025B8(r3,0x3c);
-      if (cVar3 == 2) {
-        fn_8020248C(r3,0x3c,0);
-      }
-      fn_801254B4((void*)r3,0,0x117,0,1);
-      return;
-    case 0x3b:
-      cVar3 = fn_8022EC40(r3);
-      if (cVar3 == 0) {
-        return;
-      }
-      lbl_80379F58[0x1609b] = cVar3 - 1;
-      fn_801F4C14(0,0,0x4b,0,r3);
-      fn_80211B94(lbl_8047B62C,(u32)lbl_803796D7,0);
-      return;
-    case 0xd:
-    case 0x4d:
-      local_18[0] = 0;
-      fn_801F37B0(0,(u32)fn_8022EB9C,local_18,0);
-      break;
-    default:
-      return;
-    }
-  }
-  return;
-}
+void fn_8022E410(int r3);
+/* body moved to fight_range_exact_8022DCB8.c: fn_8022E410 */
 #undef fn_801254B4
 #undef fn_8012640C
 #undef fn_801F2934
@@ -20002,168 +19608,8 @@ void fn_8022E410(int r3)
 #define fn_8026246C fightMenuCloseMsg
 #define fn_802624CC fightMenuOpenMsg
 #define fn_802653FC fightMenuFightOutPokemonRenewStatusMenu
-void fn_8022E6F0(u32 r3, u8 r4)
-
-{
-    extern void _threadSwitch();
-    extern void fn_8011F910();
-    extern u8 fn_8011FC74();
-    extern int fn_801906A0();
-    extern void fn_801C3430();
-    extern void battleGridReplaceTrainer();
-    extern void fn_801DA4E8();
-    extern void fn_801DA8C4();
-    extern u8 fn_801DA94C();
-    extern void fn_801DA9E8();
-    extern void fn_801DB100();
-    extern void fn_801DDD28();
-    extern u32 fn_801DE418();
-    extern void fn_801EF7C4();
-    extern void fn_801F000C();
-    extern u32 fn_801F2A7C();
-    extern void fn_801F4C14();
-    extern u32 fn_801F54A4();
-    extern u8 fn_801F7B70();
-    extern int fn_801FB1C0();
-    extern void fn_801FBA24();
-    extern void fn_801FE710();
-    extern void fn_801FE7EC();
-    extern u8 fn_801FECD4();
-    extern u8 fn_80204A10();
-    extern u32 fn_80205B8C();
-    extern u8 fn_802062FC();
-    extern void fn_80208404();
-    extern void fn_80208554();
-    extern void fn_802085C4();
-    extern void fn_802086E8();
-    extern void fn_80208750();
-    extern void fn_8026246C();
-    extern void fn_802624CC();
-    extern void fn_802653FC();
-  u8 cVar8;
-  u32 uVar1;
-  u16 uVar6;
-  u8 cVar9;
-
-  fn_801F54A4(0,0,0x14,0);
-  if (r3 != 0) {
-    cVar8 = fn_802062FC(r3);
-    if (cVar8 != 0) {
-      fn_80205B8C(r3);
-      cVar8 = fn_8011FC74();
-      if (cVar8 != 0) {
-        u32 uVar4;
-        u32 uVar5;
-        uVar1 = (int)fn_8012640C(r3,0,0xd6,0);
-        cVar8 = fn_80204A10(r3);
-        if (cVar8 == 1) {
-          cVar8 = (int)fn_8012640C(uVar1,0,0xd1,0);
-          if (cVar8 == 0) {
-            u32 uVar2;
-            uVar2 = fn_80205B8C(r3);
-            fn_8011F910(uVar2,0,0);
-            cVar8 = fn_801FECD4(r3);
-            if (cVar8 == 1) {
-              fn_801FE7EC(r3,0xc5,0,0);
-            }
-            uVar6 = fn_801F54A4(0,0,0x14,0);
-            fn_802653FC(r3,uVar6,1);
-            fn_801254B4((void*)uVar1,0,0xd1,0,1);
-            cVar8 = fn_801FECD4(r3);
-            if (cVar8 == 1) {
-              fn_801FE710(r3,0xd1,0);
-            }
-          }
-        }
-        else if (r4 == 0) {
-          u32 uVar3;
-          u32 uVar2;
-          uVar2 = fn_801F2A7C(0);
-          uVar3 = fn_801FB1C0(uVar2,0,0x4c,0);
-          cVar8 = fn_801F7B70(uVar2);
-          cVar9 = (int)fn_8012640C(uVar1,0,0xd1,0);
-          if (((cVar9 == 0) && (cVar9 = fn_801F54A4(0,0,0x2b,0), cVar9 == 1)) &&
-             (uVar3 != 0)) {
-            u16 sVar7;
-            u32 uVar10;
-            sVar7 = fn_801F54A4(0,0,0xd,0);
-            if (sVar7 != 0x11) {
-              uVar10 = 0;
-            }
-            else {
-              uVar10 = 3;
-              fn_80208750(r3,1,1,0);
-              fn_801FBA24(uVar2,0);
-            }
-            uVar4 = fn_801F54A4(0,0,0x36,0);
-            fn_801F4C14(0,0,0x36,0,r3);
-            uVar5 = fn_801DE418(0x32);
-            fn_801DDD28(uVar5,0xa0,4,0);
-            fn_80208404(r3,0,uVar10,0);
-            battleGridReplaceTrainer(uVar3,uVar5);
-            fn_801C3430();
-            fn_801DA9E8(uVar5,0xa0,4);
-            fn_801EF7C4(0);
-            fn_801DA4E8(uVar5,1);
-            while (1) {
-              cVar9 = fn_801DA94C(uVar5,0xa0,4);
-              if (cVar9 == 0) break;
-              _threadSwitch();
-            }
-            battleGridReplaceTrainer(uVar5,uVar3);
-            fn_801C3430();
-            fn_801EF7C4(1);
-            fn_801DA4E8(uVar5,0);
-            fn_80208404(r3,0,uVar10,1);
-            if (sVar7 == 0x11) {
-              fn_802624CC(0x7729);
-              fn_8026246C();
-              fn_80208404(r3,0,uVar10,4);
-              fn_802085C4(r3,1,1,0, (void*)0xffffffff);
-              fn_80208554(r3,1,1,6);
-              fn_801FBA24(uVar2,1);
-              fn_801FBA24(uVar2,2);
-              fn_80208404(r3,0,uVar10,1);
-              fn_802624CC(0x772a);
-              if (cVar8 == 0) {
-                fn_8026246C();
-                fn_801F000C(0x40);
-                fn_802624CC(0x772b);
-              }
-              fn_8026246C();
-              fn_80208404(r3,0,uVar10,4);
-            }
-            else {
-              uVar3 = fn_801906A0(0x9a0);
-              if (uVar3 == 0) {
-                fn_802624CC(0x7717);
-              }
-              else {
-                fn_802624CC(0x770a);
-              }
-              fn_80208404(r3,0,uVar10,2);
-              fn_8026246C();
-            }
-            fn_801254B4((void*)uVar1,0,0xd1,0,1);
-            cVar8 = fn_801FECD4(r3);
-            if (cVar8 == 1) {
-              fn_801FE710(r3,0xd1,0);
-            }
-            fn_801F4C14(0,0,0x36,0,uVar4);
-            fn_80208404(r3,0,uVar10,3);
-            if (sVar7 == 0x11) {
-              fn_802086E8(r3,1,1);
-              fn_801FBA24(uVar2,3);
-            }
-            fn_801DA8C4(uVar5,0xa0,4);
-            fn_801DB100(uVar5);
-          }
-        }
-      }
-    }
-  }
-  return;
-}
+void fn_8022E6F0(u32 r3, u8 r4);
+/* body moved to fight_range_exact_8022DCB8.c: fn_8022E6F0 */
 #undef fn_8011F910
 #undef fn_8011FC74
 #undef fn_801254B4
@@ -20191,35 +19637,8 @@ void fn_8022E6F0(u32 r3, u8 r4)
 #pragma opt_propagation off
 #define fn_802062FC fightOutPokemonCheckFightOut
 #define fn_801F4C14 fightFloorSetStatus
-u32 fn_8022EB9C(u32 r3, u32 r4, u8* r5)
-
-{
-    extern u8 lbl_80379F58[];
-    extern u8 lbl_803796D7[];
-    extern void fn_801F4C14();
-    extern u8 fn_802062FC();
-    extern void fn_80211B94();
-    extern u8 fn_8022EC40();
-    extern void* lbl_8047B62C;
-  u8 cVar1;
-  register u32 id = r3;
-  u8* out = r5;
-
-  cVar1 = fn_802062FC(id);
-  if (cVar1 == 0) {
-    return 1;
-  }
-  cVar1 = fn_8022EC40(id);
-  if (cVar1 != 0) {
-    lbl_80379F58[0x1609b] = cVar1 + -1;
-    fn_801F4C14(0,0,0x4b,0,id);
-    fn_80211B94(lbl_8047B62C,lbl_803796D7,0);
-    if (out != (void *)0) {
-      *out = 1;
-    }
-  }
-  return 1;
-}
+u32 fn_8022EB9C(u32 r3, u32 r4, u8* r5);
+/* body moved to fight_range_exact_8022DCB8.c: fn_8022EB9C */
 #undef fn_801F4C14
 #undef fn_802062FC
 #pragma opt_propagation reset
@@ -20240,162 +19659,8 @@ u32 fn_8022EB9C(u32 r3, u32 r4, u8* r5)
 #define fn_8026246C fightMenuCloseMsg
 #define fn_802624CC fightMenuOpenMsg
 #define fn_802653FC fightMenuFightOutPokemonRenewStatusMenu
-u32 fn_8022EDEC(u32 r3, u8 r4)
-
-{
-    extern u32 fn_800E0C54();
-    extern u32 fn_8011F6D8();
-    extern u8 fn_8011FC74();
-    extern void fn_801F4C14();
-    extern u32 fn_801F54A4();
-    extern void fn_801FE7EC();
-    extern u8 fn_801FECD4();
-    extern void fn_8020248C();
-    extern u8 fn_802025B8();
-    extern u8 fn_802026E4();
-    extern void fn_80202810();
-    extern u8 fn_80204A10();
-    extern void fn_80205B8C();
-    extern u8 fn_802062FC();
-    extern void fn_802080A8();
-    extern void fn_80208404();
-    extern void fn_8026246C();
-    extern void fn_802624CC();
-    extern void fn_8026532C();
-    extern void fn_802653FC();
-    extern void fn_80265598();
-  u16 uVar4;
-  u32 uVar1;
-  u8 cVar6;
-  u32 uVar2;
-  u32 sVar5;
-  int uVar3;
-  int randomResult;
-
-  uVar4 = fn_801F54A4(0,0,0x14,0);
-  if (r3 == 0) {
-    uVar1 = 0;
-  }
-  else {
-    cVar6 = fn_802062FC(r3);
-    if (cVar6 == 0) {
-      uVar1 = 0;
-    }
-    else {
-      cVar6 = fn_80204A10(r3);
-      if (cVar6 == 0) {
-        uVar1 = 0;
-      }
-      else {
-        cVar6 = fn_801F54A4(0,0,0x31,0);
-        if (cVar6 == 0) {
-          uVar1 = 0;
-        }
-        else {
-          fn_80205B8C(r3);
-          cVar6 = fn_8011FC74();
-          if (cVar6 == 0) {
-            uVar1 = 0;
-          }
-          else {
-            fn_8012640C(r3,0,0xee,0);
-            if (r4 == 0) {
-              cVar6 = fn_802026E4(r3,0x3e);
-              if (cVar6 == 1) {
-                return 0;
-              }
-              cVar6 = fn_802026E4(r3,8);
-              if (cVar6 == 1) {
-                return 0;
-              }
-              fn_80205B8C(r3);
-              uVar2 = fn_8011F6D8();
-              sVar5 = fn_80205184((void*)r3);
-              uVar3 = fn_800E0C54();
-              if (((int)((uVar3 & 0xffff) % 100) < (int)(uVar2 & 0xff)) &&
-                  ((sVar5 & 0xffff) == 0x164)) {
-                fn_80208404(r3,1,1,0);
-                uVar1 = fn_801F54A4(0,0,0x36,0);
-                fn_801F4C14(0,0,0x36,0,r3);
-                cVar6 = fn_802025B8(r3,0x3e);
-                if (cVar6 == 2) {
-                  fn_8020248C(r3,0x3e,0);
-                }
-                cVar6 = fn_801FECD4(r3);
-                if (cVar6 == 1) {
-                  fn_801FE7EC(r3,200,0,0);
-                }
-                fn_80208404(r3,1,1,1);
-                fn_802653FC(r3,uVar4,1);
-                fn_802624CC(0x771b);
-                fn_80208404(r3,1,1,2);
-                fn_8026246C();
-                fn_8026532C(r3,uVar4,0);
-                fn_801F4C14(0,0,0x36,0,uVar1);
-                fn_80208404(r3,1,1,3);
-              }
-              else {
-                return 0;
-              }
-            }
-            else if (r4 == 1) {
-              cVar6 = fn_802026E4(r3,0x3e);
-              if (cVar6 == 0) {
-                return 0;
-              }
-              fn_80208404(r3,0,2,0);
-              uVar1 = fn_801F54A4(0,0,0x36,0);
-              fn_801F4C14(0,0,0x36,0,r3);
-              fn_80208404(r3,0,2,1);
-              fn_80265598(r3,uVar4,1);
-              fn_802624CC(0x771c);
-              fn_80208404(r3,0,2,2);
-              fn_8026246C();
-              fn_8026532C(r3,uVar4,0);
-              fn_801F4C14(0,0,0x36,0,uVar1);
-              fn_80208404(r3,0,2,3);
-            }
-            else if (r4 == 2) {
-              cVar6 = fn_802026E4(r3,0x3e);
-              if (cVar6 == 0) {
-                return 0;
-              }
-              randomResult = (u16)fn_800E0C54();
-              if ((randomResult % 0x100) != 0) {
-                return 0;
-              }
-              if (fn_802026E4(r3,8) == 1) {
-                __memcpy((void*)r3,(void*)r3,0);
-              }
-              fn_802080A8(r3,1,1,0,0);
-              uVar1 = fn_801F54A4(0,0,0x36,0);
-              fn_801F4C14(0,0,0x36,0,r3);
-              fn_80202810(r3,0x3e);
-              fn_80202810(r3,8);
-              fn_80202810(r3,0x17);
-              cVar6 = fn_801FECD4(r3);
-              if (cVar6 == 1) {
-                fn_801FE7EC(r3,200,0,0);
-              }
-              cVar6 = fn_801FECD4(r3);
-              if (cVar6 == 1) {
-                fn_801FE7EC(r3,0x7c,0,0);
-              }
-              fn_802080A8(r3,1,1,0x771e,1);
-              fn_802080A8(r3,1,1,0,2);
-              fn_8026246C();
-              fn_8026532C(r3,uVar4,0);
-              fn_801F4C14(0,0,0x36,0,uVar1);
-              fn_802080A8(r3,1,1,0,3);
-            }
-            uVar1 = 1;
-          }
-        }
-      }
-    }
-  }
-  return uVar1;
-}
+u32 fn_8022EDEC(u32 r3, u8 r4);
+/* body moved to fight_range_exact_8022DCB8.c: fn_8022EDEC */
 #undef fn_8011FC74
 #undef fn_8012640C
 #undef fn_801F4C14
