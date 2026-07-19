@@ -31,6 +31,7 @@ typedef struct OSAlarmQueue {
     OSAlarm* tail;
 } OSAlarmQueue;
 
+#if !defined(SDK_8009A9D8_SUFFIX_ACTIVE)
 static OSAlarmQueue AlarmQueue;
 
 static void InsertAlarm(OSAlarm* alarm, s64 fire, OSAlarmHandler handler);
@@ -185,47 +186,12 @@ static void DecrementerExceptionCallback(u8 exception, OSContext* context) {
     __OSReschedule();
     OSLoadContext(context);
 }
+#endif
 
-static AlarmCallback* fn_8009A92C(AlarmCallback* head, AlarmCallback* blk, void* unused) {
-    AlarmCallback* prev = 0;
-    AlarmCallback* node = head;
+extern AlarmCallback* fn_8009A92C(AlarmCallback* head, AlarmCallback* blk,
+                                   void* unused);
 
-    while (node != 0) {
-        if (blk <= node) {
-            break;
-        }
-        prev = node;
-        node = (AlarmCallback*)node->unk4;
-    }
-
-    blk->unk4 = (u32)node;
-    blk->unk0 = (s32)prev;
-    if (node != 0) {
-        node->unk0 = (s32)blk;
-        if ((u8*)blk + blk->unk8 == (u8*)node) {
-            blk->unk8 += node->unk8;
-            node = (AlarmCallback*)node->unk4;
-            blk->unk4 = (u32)node;
-            if (node != 0) {
-                node->unk0 = (s32)blk;
-            }
-        }
-    }
-
-    if (prev != 0) {
-        prev->unk4 = (u32)blk;
-        if ((u8*)prev + prev->unk8 == (u8*)blk) {
-            prev->unk8 += blk->unk8;
-            prev->unk4 = blk->unk4;
-            if (blk->unk4 != 0) {
-                ((AlarmCallback*)blk->unk4)->unk0 = (s32)prev;
-            }
-        }
-        return head;
-    }
-    return blk;
-}
-
+#if defined(SDK_8009A9D8_SUFFIX_ACTIVE)
 void* fn_8009A9D8(u32 idx, u32 size) {
     AlarmCallback* rec = &lbl_8047A6E8[idx];
     AlarmCallback* node = (AlarmCallback*)rec->unk4;
@@ -357,3 +323,4 @@ s32 fn_8009ABD0(u32 start, u32 end) {
 void fn_8009AC3C(u32 xfb) {
     lbl_8047A6E8[xfb].unk0 = -1;
 }
+#endif

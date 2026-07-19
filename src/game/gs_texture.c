@@ -66,6 +66,7 @@ static u32 gsTexMaxCount;               /* @sda21 lbl_8047ABF8 */
 /* lbl_8047ABF4 : GStextureHandle* -- base pointer to texture pool */
 static GStextureHandle* gsTexPool;       /* @sda21 lbl_8047ABF4 */
 
+#if !defined(GS_TEXTURE_800EF548_SUFFIX_ACTIVE)
 /* =======================================================================
  *  fn_800EF098 | 0x150
  *  Rearranges CI4 texture pixel data from linear to 4x4 block-tiled
@@ -209,6 +210,25 @@ u16 GStextureGetXsize(GStextureHandle* tex) {
     return tex->width;
 }
 
+#endif
+
+#if defined(GS_TEXTURE_800EF548_SUFFIX_ACTIVE)
+/* =======================================================================
+ *  GStextureLockImage
+ *  Address: 0x800EF548, Size: 0x30
+ *
+ *  Real matched name (symbols.txt) referenced from gs_render.c as
+ *  `GStextureLockImage(image, 0)`.
+ * ======================================================================= */
+void* GStextureLockImage(GStextureHandle* tex, u8 level) {
+    if (level >= 8) {
+        return NULL;
+    }
+
+    tex->refCount++;
+    return tex->mipData[level];
+}
+
 /* =======================================================================
  *  GStextureSetFilter | 0x18
  *  TODO: match -- gs_render.c calls GStextureSetFilter() with zero args,
@@ -261,40 +281,6 @@ void GStextureFree(GStextureHandle* tex) {
     tex->inUse = 0;
     fn_800E24B0(tex->memHandle);
     fn_800E209C(tex->memHandle);
-}
-
-/* =======================================================================
- *  GStextureUnlockImage
- *  Address: 0x800EF504, Size: 0x44
- *
- *  Real matched name (symbols.txt) referenced from gs_render.c as
- *  `GXDrawDone(GStextureUnlockImage(image))`, so the return value is
- *  used by the caller: returns the texture's refCount before decrement.
- * ======================================================================= */
-#pragma push
-#pragma scheduling off
-u32 GStextureUnlockImage(GStextureHandle* tex) {
-    DCFlushRange(tex->mipData[0], tex->totalSize);
-    GXInvalidateTexAll();
-
-    return tex->refCount--;
-}
-#pragma pop
-
-/* =======================================================================
- *  GStextureLockImage
- *  Address: 0x800EF548, Size: 0x30
- *
- *  Real matched name (symbols.txt) referenced from gs_render.c as
- *  `GStextureLockImage(image, 0)`.
- * ======================================================================= */
-void* GStextureLockImage(GStextureHandle* tex, u8 level) {
-    if (level >= 8) {
-        return NULL;
-    }
-
-    tex->refCount++;
-    return tex->mipData[level];
 }
 
 /* =======================================================================
@@ -616,3 +602,4 @@ void GStextureLoad(void) {
 void GStextureInit(void) {
     /* TODO: match -- 0x70 bytes at 0x800EFFC0 */
 }
+#endif

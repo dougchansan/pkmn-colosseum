@@ -36,6 +36,7 @@ extern const f32 lbl_8047C2BC;
 
 extern f32 tanf(f32 x);
 
+#if !defined(SDK_800A37CC_SUFFIX_ACTIVE)
 void PSMTXIdentity(Mtx m)
 {
     f32 zero = lbl_8047C28C;
@@ -293,36 +294,9 @@ void C_MTXLightPerspective(Mtx m, f32 fovY, f32 aspect, f32 scaleS, f32 scaleT,
     m[2][3] = lbl_8047C28C;
 }
 #pragma peephole reset
+#endif
 
-#pragma fp_contract off
-void C_MTXLightOrtho(Mtx m, f32 top, f32 bottom, f32 left, f32 right,
-                     f32 scaleS, f32 scaleT, f32 transS, f32 transT)
-{
-    extern const f32 lbl_8047C298;
-    f32 tmp;
-    f32 factor;
-
-    tmp = lbl_8047C288 / (right - left);
-    factor = lbl_8047C298 * tmp;
-    m[0][0] = factor * scaleS;
-    m[0][1] = lbl_8047C28C;
-    m[0][2] = lbl_8047C28C;
-    m[0][3] = -(right + left) * tmp * scaleS + transS;
-
-    tmp = lbl_8047C288 / (top - bottom);
-    m[1][0] = lbl_8047C28C;
-    factor = lbl_8047C298 * tmp;
-    m[1][1] = factor * scaleT;
-    m[1][2] = lbl_8047C28C;
-    m[1][3] = -(top + bottom) * tmp * scaleT + transT;
-
-    m[2][0] = lbl_8047C28C;
-    m[2][1] = lbl_8047C28C;
-    m[2][2] = lbl_8047C28C;
-    m[2][3] = lbl_8047C288;
-}
-#pragma fp_contract reset
-
+#if defined(SDK_800A37CC_SUFFIX_ACTIVE)
 void PSMTXMultVec(const Mtx m, const Vec* src, Vec* dst)
 {
     const f64* mPairs = (const f64*)m;
@@ -639,3 +613,4 @@ void C_QUATRotAxisRad(Quaternion* quat, const Vec* axis, f32 rad)
     quat->w = cosHalf;
 }
 #pragma dont_inline reset
+#endif

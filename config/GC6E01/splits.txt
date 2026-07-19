@@ -517,7 +517,13 @@ dolphin/os/OSAlarmCreate.c:
 	.text       start:0x8009A2C8 end:0x8009A2D8
 
 dolphin/sdk_range_8009A2D8.c:
-	.text       start:0x8009A2D8 end:0x8009AFB0
+	.text       start:0x8009A2D8 end:0x8009A92C
+
+dolphin/sdk_exact_8009A92C.c:
+	.text       start:0x8009A92C end:0x8009A9D8
+
+dolphin/sdk_range_8009A9D8.c:
+	.text       start:0x8009A9D8 end:0x8009AFB0
 
 dolphin/os/OSArena.c:
 	.text       start:0x8009AFB0 end:0x8009AFD0
@@ -615,7 +621,13 @@ dolphin/db/DBPrintf.c:
 	.text       start:0x800A2CE8 end:0x800A2D38
 
 dolphin/sdk_range_800A2D38.c:
-	.text       start:0x800A2D38 end:0x800A3EB0
+	.text       start:0x800A2D38 end:0x800A3744
+
+dolphin/sdk_exact_800A3744.c:
+	.text       start:0x800A3744 end:0x800A37CC
+
+dolphin/sdk_range_800A37CC.c:
+	.text       start:0x800A37CC end:0x800A3EB0
 
 dolphin/dvd/DVDLowInitWA.c:
 	.text       start:0x800A3EB0 end:0x800A3EF0
@@ -695,8 +707,11 @@ dolphin/dvd/DVD_range_800A6684.c:
 dolphin/dvd/DVD_exact_800A7484.c:
 	.text       start:0x800A7484 end:0x800A76E4
 
-dolphin/dvd/DVD_range_800A76E4.c:
-	.text       start:0x800A76E4 end:0x800A7820
+dolphin/dvd/DVD_exact_800A76E4.c:
+	.text       start:0x800A76E4 end:0x800A7728
+
+dolphin/dvd/DVD_range_800A7728.c:
+	.text       start:0x800A7728 end:0x800A7820
 
 dolphin/sdk_range_800A7820.c:
 	.text       start:0x800A7820 end:0x800A7F28
@@ -1478,7 +1493,13 @@ game/gs_model_parse.c:
 	.text       start:0x800E9E34 end:0x800EB268
 
 game/gs_model_bound.c:
-	.text       start:0x800EB268 end:0x800EBEEC
+	.text       start:0x800EB268 end:0x800EB414
+
+game/gs_model_bound_exact_800EB414.c:
+	.text       start:0x800EB414 end:0x800EB464
+
+game/gs_model_bound_range_800EB464.c:
+	.text       start:0x800EB464 end:0x800EBEEC
 
 game/gs_model_anim.c:
 	.text       start:0x800EBEEC end:0x800EC4D0
@@ -1499,7 +1520,13 @@ game/gs_texture_range_800EEF48.c:
 	.text       start:0x800EEF48 end:0x800EF098
 
 game/gs_texture.c:
-	.text       start:0x800EF098 end:0x800F0030
+	.text       start:0x800EF098 end:0x800EF504
+
+game/gs_texture_exact_800EF504.c:
+	.text       start:0x800EF504 end:0x800EF548
+
+game/gs_texture_range_800EF548.c:
+	.text       start:0x800EF548 end:0x800F0030
 
 game/gs_thread.c:
 	.text       start:0x800F0030 end:0x800F75FC

@@ -53,6 +53,7 @@ extern void GSmodelParse(GSmodel* model, BOOL is_visible, GSModelPObjDisp disp,
 extern void _modelBoundPObj__FP9_HSD_PObjP5GSmtxP5GSmtxP5GSmtxPv(
     HSD_PObj* pobj, f32 vmtx[3][4], f32 pmtx[3][4], f32 smtx[3][4], void* arg);
 
+#if !defined(GS_MODEL_BOUND_800EB464_SUFFIX_ACTIVE)
 static inline BOOL HSD_JObjMtxIsDirty(HSDJObj* jobj)
 {
     BOOL result;
@@ -111,23 +112,9 @@ void GSmodelRecalculateBound(GSmodel* model)
         _modelBoundPObj__FP9_HSD_PObjP5GSmtxP5GSmtxP5GSmtxPv, model);
     model->linkedGSparticleBank = particle_bank;
 }
+#endif
 
-void _modelBoundPObj__FP9_HSD_PObjP5GSmtxP5GSmtxP5GSmtxPv(
-    HSD_PObj* pobj, f32 vmtx[3][4], f32 pmtx[3][4], f32 smtx[3][4], void* arg)
-{
-    extern void GSgfxParseDisplayList(void* verts, u8* display, u32 size,
-                                      void* callbacks, void* args, void* pobj);
-    extern void* lbl_80315598[];
-    HSD_PObj* obj = pobj;
-    void* args[3];
-
-    args[0] = arg;
-    args[1] = pmtx;
-    args[2] = smtx;
-    GSgfxParseDisplayList(pobj->verts, obj->display, pobj->n_display << 5,
-                          lbl_80315598, args, obj);
-}
-
+#if defined(GS_MODEL_BOUND_800EB464_SUFFIX_ACTIVE)
 void _modelBoundVertex__FUlPvPv(u32 flags, void* vertex, void* arg)
 {
     typedef f32 GSmtx[3][4];
@@ -186,3 +173,4 @@ void GSmodelEnableAnimBlend(GSmodel* model)
         _modelSetRotateEulerToQuatAll__FP9_HSD_JObj(model->blendJObj);
     }
 }
+#endif
