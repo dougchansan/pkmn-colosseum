@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196109,
     "total_functions": 8603,
-    "total_units": 824
+    "total_units": 832
   },
   "topology_status": {
     "auto_units": 65,
-    "named_units": 759,
-    "source_backed_units": 744,
+    "named_units": 767,
+    "source_backed_units": 752,
     "auto_code": 0,
     "auto_data": 57787,
     "auto_functions": 0
@@ -1999,13 +1999,91 @@
       "sections": [
         {
           "name": ".text",
-          "size": 24056,
+          "size": 176,
           "virtual_address": 2147922596
         }
       ],
-      "total_code": 24056,
+      "total_code": 176,
       "total_data": 0,
-      "total_functions": 66
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/menu/menu_middle_exact_8006B354",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 204,
+          "virtual_address": 2147922772
+        }
+      ],
+      "total_code": 204,
+      "total_data": 0,
+      "total_functions": 2
+    },
+    {
+      "name": "main/game/menu/menu_middle_range_8006B420",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 140,
+          "virtual_address": 2147922976
+        }
+      ],
+      "total_code": 140,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/menu/menu_middle_exact_8006B4AC",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 292,
+          "virtual_address": 2147923116
+        }
+      ],
+      "total_code": 292,
+      "total_data": 0,
+      "total_functions": 4
+    },
+    {
+      "name": "main/game/menu/menu_middle_range_8006B5D0",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 792,
+          "virtual_address": 2147923408
+        }
+      ],
+      "total_code": 792,
+      "total_data": 0,
+      "total_functions": 2
+    },
+    {
+      "name": "main/game/menu/menu_middle_exact_8006B8E8",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 208,
+          "virtual_address": 2147924200
+        }
+      ],
+      "total_code": 208,
+      "total_data": 0,
+      "total_functions": 5
+    },
+    {
+      "name": "main/game/menu/menu_middle_range_8006B9B8",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 22244,
+          "virtual_address": 2147924408
+        }
+      ],
+      "total_code": 22244,
+      "total_data": 0,
+      "total_functions": 51
     },
     {
       "name": "main/game/menu/menu_range_8007109C",
@@ -9904,13 +9982,39 @@
       "sections": [
         {
           "name": ".text",
-          "size": 6904,
+          "size": 336,
           "virtual_address": 2149682132
         }
       ],
-      "total_code": 6904,
+      "total_code": 336,
       "total_data": 0,
-      "total_functions": 23
+      "total_functions": 2
+    },
+    {
+      "name": "main/game/fight_range_exact_80218D24",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 696,
+          "virtual_address": 2149682468
+        }
+      ],
+      "total_code": 696,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/fight_range_80218FDC",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 5872,
+          "virtual_address": 2149683164
+        }
+      ],
+      "total_code": 5872,
+      "total_data": 0,
+      "total_functions": 20
     },
     {
       "name": "main/game/fight_range_exact_8021A6CC",
