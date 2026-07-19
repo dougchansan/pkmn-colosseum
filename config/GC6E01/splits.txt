@@ -706,8 +706,26 @@ dolphin/pad/PAD_exact_800AB4FC.c:
 dolphin/pad/PAD_suffix_800ABD68.c:
 	.text       start:0x800ABD68 end:0x800AC02C
 
-dolphin/sdk_range_800AC02C.c:
-	.text       start:0x800AC02C end:0x800ACBFC
+dolphin/ai_exact_800AC02C.c:
+	.text       start:0x800AC02C end:0x800AC440
+
+dolphin/sdk_range_800AC440.c:
+	.text       start:0x800AC440 end:0x800AC5AC
+
+dolphin/ai_exact_800AC5AC.c:
+	.text       start:0x800AC5AC end:0x800AC6D4
+
+dolphin/sdk_range_800AC6D4.c:
+	.text       start:0x800AC6D4 end:0x800AC910
+
+dolphin/ar_exact_800AC910.c:
+	.text       start:0x800AC910 end:0x800AC954
+
+dolphin/ar_exact_800AC954.c:
+	.text       start:0x800AC954 end:0x800ACB44
+
+dolphin/ar_exact_800ACB44.c:
+	.text       start:0x800ACB44 end:0x800ACBFC
 
 dolphin/sdk_exact_800ACBFC.c:
 	.text       start:0x800ACBFC end:0x800AE3F0

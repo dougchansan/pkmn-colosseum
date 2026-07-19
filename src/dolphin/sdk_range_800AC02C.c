@@ -398,6 +398,16 @@ extern DSPTaskInfo* DSPAddTask(DSPTaskInfo* task);
 extern void InitCallback(void* task);
 extern void DoneCallback(void* task);
 
+#if defined(SDK_AC02C_EXACT_AI_800AC02C_800AC440) || \
+    defined(SDK_AC02C_EXACT_AI_800AC5AC_800AC6D4) || \
+    defined(SDK_AC02C_EXACT_AR_800AC910_800AC954) || \
+    defined(SDK_AC02C_EXACT_AR_800AC954_800ACB44) || \
+    defined(SDK_AC02C_EXACT_AR_800ACB44_800ACBFC)
+#define SDK_AC02C_EXACT_ACTIVE
+#endif
+
+#if !defined(SDK_AC02C_EXACT_ACTIVE) || \
+    defined(SDK_AC02C_EXACT_AI_800AC02C_800AC440)
 AIDCallback AIRegisterDMACallback(AIDCallback callback) {
     AIDCallback old = lbl_8047A8CC;
     BOOL enabled;
@@ -547,7 +557,10 @@ void AISetStreamVolRight(u32 volume) {
 u32 AIGetStreamVolRight(void) {
     return (AI_REGS->volume >> 8) & 0xff;
 }
+#endif
 
+#if !defined(SDK_AC02C_EXACT_ACTIVE) || \
+    defined(SDK_AC02C_EXACT_AI_800AC5AC_800AC6D4)
 void __AISHandler(__OSInterrupt interrupt, OSContext* context) {
     OSContext exceptionContext;
 
@@ -583,12 +596,17 @@ void __AIDHandler(__OSInterrupt interrupt, OSContext* context) {
     OSClearContext(&exceptionContext);
     OSSetCurrentContext(context);
 }
+#endif
 
+#if !defined(SDK_AC02C_EXACT_ACTIVE)
 void __AICallbackStackSwitch(AIDCallback callback) {
     *(void**)0x8047A8D4 = (void*)OSGetStackPointer();
     OSSwitchFiber((u32)callback, *(u32*)0x8047A8D0);
 }
+#endif
 
+#if !defined(SDK_AC02C_EXACT_ACTIVE) || \
+    defined(SDK_AC02C_EXACT_AR_800AC910_800AC954)
 ARCallback ARRegisterDMACallback(ARCallback callback) {
     ARCallback old = lbl_8047A908;
     BOOL enabled;
@@ -598,7 +616,10 @@ ARCallback ARRegisterDMACallback(ARCallback callback) {
     OSRestoreInterrupts(enabled);
     return old;
 }
+#endif
 
+#if !defined(SDK_AC02C_EXACT_ACTIVE) || \
+    defined(SDK_AC02C_EXACT_AR_800ACB44_800ACBFC)
 u32 ARGetBaseAddress(void) {
     return 0x4000;
 }
@@ -631,7 +652,9 @@ void __ARClearInterrupt(void) {
 u32 __ARGetInterruptStatus(void) {
     return DSP_REGS->dmaControl & 0x20;
 }
+#endif
 
+#if !defined(SDK_AC02C_EXACT_ACTIVE)
 static void __ARWaitForDMA(void) {
     while (__DSPRegs[5] & 0x200) {
     }
@@ -664,7 +687,10 @@ static void __ARReadDMA(u32 mainMemoryAddress, u32 aramAddress, u32 length) {
     __ARWaitForDMA();
     __ARClearInterrupt();
 }
+#endif
 
+#if !defined(SDK_AC02C_EXACT_ACTIVE) || \
+    defined(SDK_AC02C_EXACT_AR_800AC954_800ACB44)
 u32 ARGetDMAStatus(void) {
     BOOL enabled;
     u32 status;
@@ -711,6 +737,7 @@ u32 ARInit(u32* stack, u32 stackSize) {
     OSRestoreInterrupts(enabled);
     return lbl_8047A918;
 }
+#endif
 
 #pragma dont_inline on
 
@@ -764,3 +791,5 @@ void fn_800B7594(u8 overflow, u8 underflow);
 void fn_800B75D0(u8 clearOverflow, u8 clearUnderflow);
 
 void GXInitFifoPtrs(GXFifoObj* fifo, void* readPtr, void* writePtr);
+
+#undef SDK_AC02C_EXACT_ACTIVE
