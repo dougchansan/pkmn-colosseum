@@ -534,7 +534,7 @@ void DoSetPitch(SYNTH_VOICE* svoice) {
     u32 no;
     s32 key;
     u8 oKey;
-    static u16 kf[13] = {
+    static u16 kf[14] = {
         4096, 4339, 4597, 4871, 5160, 5467, 5792, 6137, 6502, 6888, 7298, 7732, 8192,
     };
     u32 frq;
@@ -1157,7 +1157,7 @@ void mcmdSetADSR(SYNTH_VOICE* svoice, MSTEP* cstep) {
 #endif
 
 #if defined(SYNTHMACROS_ALL) || defined(SYNTHMACROS_SELECT_mcmdSetADSRFromCtrl)
-static s32 midi2TimeTab[128] = {
+static s32 midi2TimeTab[129] = {
     0,      10,     20,     30,     40,     50,     60,     70,     80,     90,     100,    110,
     110,    120,    130,    140,    150,    160,    170,    190,    200,    220,    230,    250,
     270,    290,    310,    330,    350,    380,    410,    440,    470,    500,    540,    580,
