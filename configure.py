@@ -3539,7 +3539,7 @@ config.libs = [
                 CodeCandidate,
                 "hsd/hsd_robj_range_801AEBE4.c",
                 mw_version="GC/1.3",
-                extra_cflags=["-O2"],
+                extra_cflags=["-O2", "-use_lmw_stmw on"],
                 progress_category="hsd",
             ),
             Object(
