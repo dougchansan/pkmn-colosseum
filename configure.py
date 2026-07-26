@@ -410,7 +410,14 @@ config.libs = [
                 progress_category="runtime",
             ),
             *[
-                Object(status, path, mw_version="GC/2.5", extra_cflags=["-char signed"], progress_category="runtime")
+                Object(
+                    status,
+                    path,
+                    mw_version="GC/2.5",
+                    extra_cflags=["-char signed"]
+                    + (["-use_lmw_stmw on"] if path == "crt/printf.c" else []),
+                    progress_category="runtime",
+                )
                 for status, path in [
                     (CodeCandidate, "crt/printf.c"),
                     (Matching, "crt/printf_exact_800C87F8.c"),
