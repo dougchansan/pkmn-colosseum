@@ -557,10 +557,10 @@ void preReliveMain(void)
     extern int winMsgCloseField();
     extern int floorSetFadeScript();
     extern int pokemonBiosGetDarkpokemonDataId();
-    extern s8 heroItemCheckHaveItemDataId();
+    extern u32 heroItemCheckHaveItemDataId();
     extern u32 heroGetStatus();
     extern int fadeCheck();
-    extern s8 fn_801EEC74();
+    extern u8 fn_801EEC74();
     extern u32 lbl_8047B660;
     extern u32 lbl_8047B664;
     extern u32 lbl_8047B668;
@@ -572,7 +572,7 @@ void preReliveMain(void)
   u32 uVar2;
   u32 uVar3;
   short sVar5;
-  s8 cVar7;
+  u8 cVar7;
   short sVar6;
   u32 uVar4;
 
