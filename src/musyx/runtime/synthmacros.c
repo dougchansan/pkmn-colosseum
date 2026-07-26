@@ -289,7 +289,7 @@ extern u16 inpGetExCtrl(SYNTH_VOICE* sv, u8 index); /* returns u16: confirmed by
 extern void inpSetExCtrl(SYNTH_VOICE* sv, u8 index, s16 v); /* takes s16 -- confirmed by target's
                                                               * explicit extsh before the call in
                                                               * mcmdVarCalculation. */
-extern u16 inpGetMidiCtrl(u32 ctrl, u32 midi, u32 midiSet); /* returns u16 -- confirmed by
+extern u16 inpGetMidiCtrl(u8 ctrl, u8 midi, u8 midiSet); /* returns u16 -- confirmed by
                                                               * target's zero-extend of the
                                                               * result in mcmdPortamento. */
 extern u32 vidGetInternalId(u32 vid);
