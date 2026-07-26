@@ -888,6 +888,11 @@ void fn_800D2738(void* obj) {
  * fn_800D27FC - GS render: find free slot and init with model data
  * Address: 0x800D27FC, Size: 0x1A4
  * ================================================================== */
+static inline void GScameraIncrementAnimCount(GSRenderCamera* camera)
+{
+    camera->animCount++;
+}
+
 void* fn_800D27FC(void* model) {
     u32 i;
     void* slot;
@@ -917,7 +922,7 @@ found:
         c->animEnded = 0;
         c->animCount = 0;
         while (c->desc->animations[(s32)c->animCount] != 0) {
-            c->animCount = c->animCount + 1;
+            GScameraIncrementAnimCount(c);
         }
         if (c->hasAnimation != 0) {
             HSD_CObjRemoveAnim(c->cobj);
