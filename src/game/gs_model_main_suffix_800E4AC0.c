@@ -1515,12 +1515,6 @@ void GSmodelAddNull(GSmodel* model, const GSvec* position,
     }
 
     root = model->renderJObj;
-    zero.x = 0.0f;
-    zero.y = 0.0f;
-    zero.z = 0.0f;
-    one.x = 1.0f;
-    one.y = 1.0f;
-    one.z = 1.0f;
 
     if (!(model->flags.raw & GSMODEL_FLAG_ROOT_NULL_ADDED)) {
         GSvec oldPosition;
@@ -1534,6 +1528,9 @@ void GSmodelAddNull(GSmodel* model, const GSvec* position,
 
         if (root == NULL) {
             __assert(lbl_8047CB9C, 0x3E4, lbl_8047CBA4);
+        }
+        if (&oldPosition == NULL) {
+            __assert(lbl_8047CB9C, 0x3E5, lbl_80270E60);
         }
         oldPosition = root->translate;
 
@@ -1553,15 +1550,41 @@ void GSmodelAddNull(GSmodel* model, const GSvec* position,
         if (root == NULL) {
             __assert(lbl_8047CB9C, 0x351, lbl_8047CBA4);
         }
+        if (&oldScale == NULL) {
+            __assert(lbl_8047CB9C, 0x352, lbl_8047CBAC);
+        }
         oldScale = root->scale;
 
-        GSMODEL_JOBJ_SET_POSITION(root, position != NULL ? position : &zero);
-        GSMODEL_JOBJ_SET_ROTATION(root, rotation != NULL ? rotation : &zero);
-        GSMODEL_JOBJ_SET_SCALE(root, scale != NULL ? scale : &one);
+        if (position == NULL || rotation == NULL) {
+            clear__5GSvecFv(&zero);
+        }
+        if (position != NULL) {
+            GSMODEL_JOBJ_SET_POSITION(root, position);
+        } else {
+            GSMODEL_JOBJ_SET_POSITION(root, &zero);
+        }
+        if (rotation != NULL) {
+            GSMODEL_JOBJ_SET_ROTATION(root, rotation);
+        } else {
+            GSMODEL_JOBJ_SET_ROTATION(root, &zero);
+        }
+        if (scale == NULL) {
+            set__5GSvecFfff(&one, 1.0f, 1.0f, 1.0f);
+        }
+        if (scale != NULL) {
+            GSMODEL_JOBJ_SET_SCALE(root, scale);
+        } else {
+            GSMODEL_JOBJ_SET_SCALE(root, &one);
+        }
 
-        if (root != NULL && !(root->flags & JOBJ_USER_DEF_MTX) &&
-            (root->flags & JOBJ_MTX_DIRTY)) {
-            fn_8019D9DC(root);
+        if (root != NULL) {
+            if (root == NULL) {
+                __assert(lbl_8047CB9C, 0x25D, lbl_8047CBA4);
+            }
+            if (!(root->flags & JOBJ_USER_DEF_MTX) &&
+                (root->flags & JOBJ_MTX_DIRTY)) {
+                fn_8019D9DC(root);
+            }
         }
 
         HSD_JObjAddChild(null, root);
@@ -1573,29 +1596,65 @@ void GSmodelAddNull(GSmodel* model, const GSvec* position,
         GSMODEL_JOBJ_SET_ROTATION(null, &oldRotation);
         GSMODEL_JOBJ_SET_SCALE(null, &oldScale);
 
-        if (root != NULL && !(root->flags & JOBJ_USER_DEF_MTX) &&
-            (root->flags & JOBJ_MTX_DIRTY)) {
-            fn_8019D9DC(root);
+        GSMODEL_JOBJ_FLUSH(root);
+        if (root != NULL) {
+            if (root == NULL) {
+                __assert(lbl_8047CB9C, 0x25D, lbl_8047CBA4);
+            }
+            if (!(root->flags & JOBJ_USER_DEF_MTX) &&
+                (root->flags & JOBJ_MTX_DIRTY)) {
+                fn_8019D9DC(root);
+            }
         }
-        if (null != NULL && !(null->flags & JOBJ_USER_DEF_MTX) &&
-            (null->flags & JOBJ_MTX_DIRTY)) {
-            fn_8019D9DC(null);
+        if (null != NULL) {
+            if (null == NULL) {
+                __assert(lbl_8047CB9C, 0x25D, lbl_8047CBA4);
+            }
+            if (!(null->flags & JOBJ_USER_DEF_MTX) &&
+                (null->flags & JOBJ_MTX_DIRTY)) {
+                fn_8019D9DC(null);
+            }
         }
+        GSmodelSetAnimIndex(model, model->animIndex);
+        GSmodelSetAnimType(model, model->animType);
+        GSmodelStartAnimation(model);
     } else {
         null = root != NULL ? root->child : NULL;
-        GSMODEL_JOBJ_SET_POSITION(null, position != NULL ? position : &zero);
-        GSMODEL_JOBJ_SET_ROTATION(null, rotation != NULL ? rotation : &zero);
-        GSMODEL_JOBJ_SET_SCALE(null, scale != NULL ? scale : &one);
-
-        if (null != NULL && !(null->flags & JOBJ_USER_DEF_MTX) &&
-            (null->flags & JOBJ_MTX_DIRTY)) {
-            fn_8019D9DC(null);
+        if (position == NULL || rotation == NULL) {
+            clear__5GSvecFv(&zero);
         }
-    }
+        if (position != NULL) {
+            GSMODEL_JOBJ_SET_POSITION(null, position);
+        } else {
+            GSMODEL_JOBJ_SET_POSITION(null, &zero);
+        }
+        if (rotation != NULL) {
+            GSMODEL_JOBJ_SET_ROTATION(null, rotation);
+        } else {
+            GSMODEL_JOBJ_SET_ROTATION(null, &zero);
+        }
+        if (scale == NULL) {
+            set__5GSvecFfff(&one, 1.0f, 1.0f, 1.0f);
+        }
+        if (scale != NULL) {
+            GSMODEL_JOBJ_SET_SCALE(null, scale);
+        } else {
+            GSMODEL_JOBJ_SET_SCALE(null, &one);
+        }
 
-    GSmodelSetAnimIndex(model, model->animIndex);
-    GSmodelSetAnimType(model, model->animType);
-    GSmodelStartAnimation(model);
+        if (null != NULL) {
+            if (null == NULL) {
+                __assert(lbl_8047CB9C, 0x25D, lbl_8047CBA4);
+            }
+            if (!(null->flags & JOBJ_USER_DEF_MTX) &&
+                (null->flags & JOBJ_MTX_DIRTY)) {
+                fn_8019D9DC(null);
+            }
+        }
+        GSmodelSetAnimIndex(model, model->animIndex);
+        GSmodelSetAnimType(model, model->animType);
+        GSmodelStartAnimation(model);
+    }
 }
 #endif
 
