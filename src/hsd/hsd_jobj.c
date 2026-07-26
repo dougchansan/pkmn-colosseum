@@ -631,13 +631,15 @@ static HSD_JObj* JObj_FindEffectType(HSD_JObj* jobj, u32 type)
     return NULL;
 }
 
+extern char lbl_8047DB68;
+
 static HSD_JObj* JObj_GetEffectorChecked(HSD_JObj* jobj)
 {
     HSD_JObj* effector;
 
     effector = JObj_FindEffectType(jobj, JOBJ_EFFECTOR);
     if (effector == NULL) {
-        __assert(&lbl_8047DB20, 0x82D, &lbl_8047DB28);
+        __assert(&lbl_8047DB20, 0x82D, &lbl_8047DB68);
         return NULL;
     }
     if (HSD_RObjGetByType(effector->robj, REFTYPE_JOBJ, 1) == NULL) {
@@ -809,7 +811,7 @@ s32 JObjInit(HSD_Class* o)
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
-extern u8 lbl_80274AC4[];
+extern const Vec lbl_80274AC4;
 extern const f32 lbl_8047DB30;
 extern char lbl_8047DB68;
 extern u32 lbl_8047DB44;
@@ -821,61 +823,108 @@ extern u8 lbl_80478AC0[];
 extern char lbl_8047DB6C;
 extern u32 lbl_8047DB74;
 extern u32 lbl_8047DB78;
+
+typedef union JObjIKFloatShape {
+    f32 value;
+    u32 bits;
+} JObjIKFloatShape;
+
+extern f64 __frsqrte(f64 value);
+
+static inline f32 JObjIKSqrtf(f32 value)
+{
+    JObjIKFloatShape shape;
+    f64 guess;
+    s32 fpclass;
+    s32 exponent;
+
+    if (value > 0.0F) {
+        guess = __frsqrte(value);
+        guess = 0.5 * guess * (3.0 - value * (guess * guess));
+        guess = 0.5 * guess * (3.0 - value * (guess * guess));
+        guess = 0.5 * guess * (3.0 - value * (guess * guess));
+        return (f32) (value * guess);
+    }
+    if ((f64) value < 0.0) {
+        return lbl_80478AC0[0];
+    }
+    shape.value = value;
+    exponent = shape.bits & 0x7F800000;
+    switch (exponent) {
+    case 0x7F800000:
+        fpclass = (shape.bits & 0x007FFFFF) != 0 ? 1 : 2;
+        break;
+    case 0:
+        fpclass = (shape.bits & 0x007FFFFF) != 0 ? 5 : 3;
+        break;
+    default:
+        fpclass = 4;
+        break;
+    }
+    if (fpclass == 1) {
+        return lbl_80478AC0[0];
+    }
+    return value;
+}
+
 #if 0
 asm void resolveIKJoint2(void) {
 #include "src/hsd/hsd_jobj_fn_8019DD00.inc"
 }
 #else
 void resolveIKJoint2(HSD_JObj* jobj) {
-    /* decompiled cdx7: functional */
-    HSD_JObj* effector;
-    HSD_JObj* parent;
-    HSD_RObj* hint;
-    HSD_RObj* min_limit;
-    HSD_RObj* max_limit;
     Vec scale;
-    Vec parent_pos;
-    Vec parent_x;
-    Vec parent_z;
     Vec joint_pos;
+    Vec parent_pos;
     Vec target_dir;
     Vec bend_axis;
     Vec side_axis;
-    f32 rot_mtx[3][4];
-    f32 x_scale;
+    Mtx rot_mtx;
+    Vec parent_x;
+    Vec parent_z;
+    HSD_JObj* effector;
     f32 dot;
     f32 angle;
+    f32 x_scale;
     s32 clamped;
     s32 flip;
+    HSD_RObj* min_limit;
+    HSD_RObj* max_limit;
+    HSD_RObj* hint;
 
+    x_scale = 1.0F;
+    scale = lbl_80274AC4;
     effector = JObj_GetEffectorChecked(jobj->child);
     if (effector == NULL || jobj->parent == NULL) {
         return;
     }
-
-    Vec_SetOne(&scale);
-    Vec_LoadScl(jobj, &scale);
-    parent = jobj->parent;
-    HSD_MtxGetTranslate(parent->mtx, &parent_pos);
-    JObjMtx_LoadColumn(parent, 0, &parent_x);
-    Vec_Normalize(&parent_x, &parent_x);
-
-    x_scale = 1.0f;
-    if (parent->scl != NULL) {
-        x_scale = parent->scl[0];
+    if (jobj->scl != NULL) {
+        scale = *(Vec*) jobj->scl;
     }
-
-    hint = HSD_RObjGetByType(parent->robj, REFTYPE_IKHINT, 0);
+    parent_pos.x = jobj->parent->mtx[0][3];
+    parent_pos.y = jobj->parent->mtx[1][3];
+    parent_pos.z = jobj->parent->mtx[2][3];
+    parent_x.x = jobj->parent->mtx[0][0];
+    parent_x.y = jobj->parent->mtx[1][0];
+    parent_x.z = jobj->parent->mtx[2][0];
+    PSVECScale(&parent_x, &parent_x,
+               JObjIKSqrtf(1.0F /
+                           (1.0e-10F +
+                            PSVECDotProduct(&parent_x, &parent_x))));
+    if (jobj->parent->scl != NULL) {
+        x_scale = jobj->parent->scl[0];
+    }
+    hint = HSD_RObjGetByType(jobj->parent->robj, REFTYPE_IKHINT, 0);
     if (hint == NULL) {
         __assert(&lbl_8047DB20, 0x905, &lbl_8047DB6C);
-        return;
     }
-
     PSVECScale(&parent_x, &parent_x, hint->u.ik_hint.bone_length * x_scale);
     PSVECAdd(&parent_pos, &parent_x, &joint_pos);
-    Vec_LoadTranslate(effector, &target_dir);
-    PSVECSubtract(&target_dir, &joint_pos, &target_dir);
-    Vec_Normalize(&target_dir, &target_dir);
+    PSVECSubtract((Vec*) &effector->translate_x, &joint_pos, &target_dir);
+    PSVECScale(&target_dir, &target_dir,
+               JObjIKSqrtf(1.0F /
+                           (1.0e-10F +
+                            PSVECDotProduct(&target_dir, &target_dir))));
 
     min_limit = HSD_RObjGetByType(jobj->robj, REFTYPE_LIMIT, 5);
     max_limit = HSD_RObjGetByType(jobj->robj, REFTYPE_LIMIT, 6);
@@ -884,16 +933,20 @@ void resolveIKJoint2(HSD_JObj* jobj) {
         hint = HSD_RObjGetByType(jobj->robj, REFTYPE_IKHINT, 0);
         if (hint == NULL) {
             __assert(&lbl_8047DB20, 0x927, &lbl_8047DB6C);
-            return;
         }
         flip = (hint->flags & 4) != 0;
-        JObjMtx_LoadColumn(parent, 0, &parent_x);
-        Vec_Normalize(&parent_x, &parent_x);
+        parent_x.x = jobj->parent->mtx[0][0];
+        parent_x.y = jobj->parent->mtx[1][0];
+        parent_x.z = jobj->parent->mtx[2][0];
+        PSVECScale(&parent_x, &parent_x,
+                   JObjIKSqrtf(1.0F /
+                               (1.0e-10F +
+                                PSVECDotProduct(&parent_x, &parent_x))));
         dot = PSVECDotProduct(&parent_x, &target_dir);
-        if (dot >= 1.0f) {
-            angle = 0.0f;
-        } else if (dot <= -1.0f) {
-            angle = 3.1415927f;
+        if (dot >= 1.0F) {
+            angle = 0.0F;
+        } else if (dot <= -1.0F) {
+            angle = 3.1415927F;
         } else {
             angle = (f32) acos(dot);
         }
@@ -908,21 +961,34 @@ void resolveIKJoint2(HSD_JObj* jobj) {
             clamped = 1;
         }
         if (clamped != 0) {
-            JObjMtx_LoadColumn(parent, 2, &parent_z);
+            parent_z.x = jobj->parent->mtx[0][2];
+            parent_z.y = jobj->parent->mtx[1][2];
+            parent_z.z = jobj->parent->mtx[2][2];
             PSMTXRotAxisRad(rot_mtx, &parent_z, angle);
             PSMTXMultVec(rot_mtx, &parent_x, &target_dir);
         }
     }
-
-    JObjMtx_LoadColumn(parent, 2, &parent_z);
+    parent_z.x = jobj->parent->mtx[0][2];
+    parent_z.y = jobj->parent->mtx[1][2];
+    parent_z.z = jobj->parent->mtx[2][2];
     PSVECCrossProduct(&parent_z, &target_dir, &bend_axis);
-    Vec_Normalize(&bend_axis, &bend_axis);
+    PSVECScale(&bend_axis, &bend_axis,
+               JObjIKSqrtf(1.0F /
+                           (1.0e-10F +
+                            PSVECDotProduct(&bend_axis, &bend_axis))));
     PSVECCrossProduct(&target_dir, &bend_axis, &side_axis);
-
-    JObjMtx_StoreScaledColumn(jobj, 0, &target_dir, scale.x);
-    JObjMtx_StoreScaledColumn(jobj, 1, &bend_axis, scale.y);
-    JObjMtx_StoreScaledColumn(jobj, 2, &side_axis, scale.z);
-    JObjMtx_StoreTranslation(jobj, &joint_pos);
+    jobj->mtx[0][0] = target_dir.x * scale.x;
+    jobj->mtx[1][0] = target_dir.y * scale.x;
+    jobj->mtx[2][0] = target_dir.z * scale.x;
+    jobj->mtx[0][1] = bend_axis.x * scale.y;
+    jobj->mtx[1][1] = bend_axis.y * scale.y;
+    jobj->mtx[2][1] = bend_axis.z * scale.y;
+    jobj->mtx[0][2] = side_axis.x * scale.z;
+    jobj->mtx[1][2] = side_axis.y * scale.z;
+    jobj->mtx[2][2] = side_axis.z * scale.z;
+    jobj->mtx[0][3] = joint_pos.x;
+    jobj->mtx[1][3] = joint_pos.y;
+    jobj->mtx[2][3] = joint_pos.z;
 }
 #endif
 #pragma pop
