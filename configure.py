@@ -306,7 +306,13 @@ config.libs = [
                 extra_cflags=["-rostr"],
                 progress_category="runtime",
             ),  # BANK_TRK3
-            Object(CodeCandidate, "trk/TRKNub_candidate_800BE6B4.c", mw_version="GC/1.3", progress_category="runtime"),  # BANK_TRK3
+            Object(
+                CodeCandidate,
+                "trk/TRKNub_candidate_800BE6B4.c",
+                mw_version="GC/1.3",
+                extra_cflags=["-inline noauto"],
+                progress_category="runtime",
+            ),  # BANK_TRK3
             Object(Matching, "trk/TRKNub_exact_800BE800.c", mw_version="GC/1.3", progress_category="runtime"),  # BANK_TRK3
             Object(
                 CodeCandidate,
@@ -365,9 +371,16 @@ config.libs = [
             ),
             Object(
                 CodeCandidate,
-                "trk/TRKDispatch_range_800C0504.c",
+                "trk/TRKDispatch_r52_800C0504_prefix.c",
                 mw_version="GC/1.3",
                 extra_cflags=["-use_lmw_stmw on"],
+                progress_category="runtime",
+            ),
+            Object(
+                CodeCandidate,
+                "trk/TRKDispatch_r52_800C08C0_inline_noauto.c",
+                mw_version="GC/1.3",
+                extra_cflags=["-use_lmw_stmw on", "-inline noauto"],
                 progress_category="runtime",
             ),
             Object(
@@ -1421,7 +1434,12 @@ config.libs = [
                     path,
                     mw_version="GC/1.3.2",
                     extra_cflags=["-use_lmw_stmw off", "-sdata 8", "-sdata2 8"]
-                    + (["-inline noauto"] if "_inline_noauto" in path else []),
+                    + (["-inline noauto"] if "_inline_noauto" in path else [])
+                    + (
+                        ["-fp_contract off"]
+                        if path == "musyx/musyx_r51_80164A2C_inline_noauto.c"
+                        else []
+                    ),
                     progress_category="musyx",
                 )
                 for status, path in [
@@ -1458,9 +1476,16 @@ config.libs = [
                     (CodeCandidate, "musyx/musyx_r50_801644E0_prefix.c"),
                     (CodeCandidate, "musyx/musyx_r50_80164520_inline_noauto.c"),
                     (CodeCandidate, "musyx/musyx_r51_80164A2C_inline_noauto.c"),
-                    (CodeCandidate, "musyx/musyx_r51_80164C40_suffix.c"),
                 ]
             ],
+            Object(
+                CodeCandidate,
+                "musyx/musyx_r51_80164C40_suffix.c",
+                mw_version="GC/1.3.2",
+                cflags=["-O3" if flag == "-O4,p" else flag for flag in cflags_base],
+                extra_cflags=["-use_lmw_stmw off", "-sdata 8", "-sdata2 8"],
+                progress_category="musyx",
+            ),
             *[
                 Object(
                     status,
@@ -3830,7 +3855,19 @@ config.libs = [
                 progress_category="sdk",
             ),
             Object(Matching, "dolphin/gx/GX_exact_800BD744.c", mw_version="GC/1.2.5n", progress_category="sdk"),
-            Object(CodeCandidate, "dolphin/sdk_candidate_800BD7A0.c", mw_version="GC/1.2.5n", progress_category="sdk"),
+            Object(
+                CodeCandidate,
+                "dolphin/sdk_r52_800BD7A0_prefix.c",
+                mw_version="GC/1.2.5n",
+                progress_category="sdk",
+            ),
+            Object(
+                CodeCandidate,
+                "dolphin/sdk_r52_800BE164_o3.c",
+                mw_version="GC/1.2.5n",
+                cflags=["-O3" if flag == "-O4,p" else flag for flag in cflags_base],
+                progress_category="sdk",
+            ),
             Object(Matching, "dolphin/gx/GX_exact_800BE30C.c", mw_version="GC/1.2.5n", progress_category="sdk"),
             Object(CodeCandidate, "dolphin/sdk_candidate_800BE348.c", mw_version="GC/1.3", progress_category="sdk"),
             Object(
@@ -3880,13 +3917,52 @@ config.libs = [
             ),
             Object(
                 CodeCandidate,
-                "dolphin/sdk_candidate_800C47F0.c",
+                "dolphin/sdk_r52_800C47F0_prefix.c",
                 mw_version="GC/1.2.5n",
                 progress_category="sdk",
             ),
             Object(
                 CodeCandidate,
-                "dolphin/sdk_candidate_800C4C98_gc13.c",
+                "dolphin/sdk_r52_800C483C_o3.c",
+                mw_version="GC/1.2.5n",
+                cflags=["-O3" if flag == "-O4,p" else flag for flag in cflags_base],
+                progress_category="sdk",
+            ),
+            Object(
+                CodeCandidate,
+                "dolphin/sdk_r52_800C4928_middle.c",
+                mw_version="GC/1.2.5n",
+                progress_category="sdk",
+            ),
+            Object(
+                CodeCandidate,
+                "dolphin/sdk_r52_800C4A60_o3.c",
+                mw_version="GC/1.2.5n",
+                cflags=["-O3" if flag == "-O4,p" else flag for flag in cflags_base],
+                progress_category="sdk",
+            ),
+            Object(
+                CodeCandidate,
+                "dolphin/sdk_r52_800C4B44_suffix.c",
+                mw_version="GC/1.2.5n",
+                progress_category="sdk",
+            ),
+            Object(
+                CodeCandidate,
+                "dolphin/sdk_r52_800C4C98_prefix.c",
+                mw_version="GC/1.3",
+                progress_category="sdk",
+            ),
+            Object(
+                CodeCandidate,
+                "dolphin/sdk_r52_800C4CC0_o3.c",
+                mw_version="GC/1.3",
+                cflags=["-O3" if flag == "-O4,p" else flag for flag in cflags_base],
+                progress_category="sdk",
+            ),
+            Object(
+                CodeCandidate,
+                "dolphin/sdk_r52_800C4D8C_suffix.c",
                 mw_version="GC/1.3",
                 progress_category="sdk",
             ),
@@ -8014,6 +8090,7 @@ config.libs = [
             Object(
                 CodeCandidate,
                 "dolphin/os/OSMemory_privileged.c",
+                cflags=["-O3" if flag == "-O4,p" else flag for flag in cflags_base],
                 progress_category="sdk",
             ),
             Object(
