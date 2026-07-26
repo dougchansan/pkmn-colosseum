@@ -7,7 +7,8 @@
  * 0x800477F4; includes menuCBBattleStart* + menuCB_BattleResult* locals
  * (XD 0x80046594-0x800477F8). SMOKING GUN: fn_8005DFC8 takes the address of
  * local symbol _menuCBBattleStartDispTrainerTexCallBack__FlPvl (0x800626CC),
- * proving same-TU membership. All functions asm-only.
+ * proving same-TU membership. The battle-entry callback core is reconstructed
+ * below while the remaining residual functions stay source candidates.
  */
 #include "dolphin/types.h"
 
@@ -41,6 +42,10 @@ typedef struct UICmdMsg {
     s16 field52;
     s16 field54;
     s16 field56;
+    u8 pad58[0xF];
+    u8 alpha67;
+    f32 scale68;
+    f32 scale6C;
 } UICmdMsg;
 
 extern MenuCBBattleStartState lbl_803A9A60;
@@ -242,6 +247,17 @@ s32 fn_80062284(s32 trainer) {
     return 1;
 }
 #pragma pop
+
+void fn_80060D70(void*, UICmdMsg*, s32, s32);
+void fn_80060EF4(void*, UICmdMsg*, s32);
+void fn_8006106C(void*, UICmdMsg*, s32, s32, s32);
+void fn_80061240(void*, UICmdMsg*, s32, s32);
+void fn_80061454(void*, UICmdMsg*, s32, s32);
+void fn_800615F4(void*, UICmdMsg*, s32, s32);
+void fn_800617E0(void*, UICmdMsg*, s32, s32);
+void fn_80061A2C(void*, UICmdMsg*, s32, s32, s32);
+void fn_80061BBC(void*, UICmdMsg*, s32, s32, s32);
+u8 fn_80061D34(void*, UICmdMsg*, s32, s32, s32);
 
 /* Battle-start command dispatcher. */
 void fn_8005E7F0(void* ctx, void* arg1)
@@ -941,4 +957,386 @@ void fn_8005E7F0(void* ctx, void* arg1)
         fn_80060434(ctx, msg);
         break;
     }
+}
+
+extern u8 fn_80061D34(void*, UICmdMsg*, s32, s32, s32);
+extern u8 fn_80069A08(void*, UICmdMsg*, s32, s32);
+extern u16 fn_8025D808(s32);
+extern u16 fn_8025D89C(s32);
+extern s32 fn_8025D9A8(void);
+extern s32 fn_8025D9CC(void);
+extern s32 fn_8025DA88(void);
+extern u16 fn_8025D28C(s32);
+extern u16 fn_8025D914(s32);
+extern u16 fn_8025DA18(s32);
+extern u16 fn_801EF634(void);
+extern void* fn_8012AC54(u16);
+extern void* fn_800FA280(s32);
+extern void fn_80132A38();
+extern void fn_800FB680();
+extern void fn_800FBB34();
+extern void fn_800FE6D0(s32, s32);
+extern void fn_800FE4D4(void);
+extern void fn_801040F0();
+extern void fn_800D88DC(s32);
+extern void fn_800D888C(s32);
+extern void fn_800D6A00(s32);
+extern void fn_800D7820(void*);
+extern void fn_800D85D4(s32, void*);
+extern void fn_800D67BC(s32);
+extern void fn_800D61E4(s32, s32);
+extern void fn_800D5CB8(s32, s32, s32, s32, s32);
+extern void fn_800D5BA0(s32, u32);
+extern void fn_800D59B8(s32, f32, f32);
+extern void fn_800D6728(void);
+extern void fn_801FCCC4(u16);
+extern void fn_801FCC64(void);
+extern void fn_801FBD58(void);
+extern void fn_801FBD28(void);
+extern u16 lbl_80478910[];
+extern s16 lbl_80478918;
+extern s16 lbl_8047891A;
+extern f32 lbl_8047891C;
+extern u8 lbl_802EF0A8[];
+extern u8 lbl_80314E08[];
+extern u8 lbl_80314F98[];
+extern f32 lbl_8047BF60;
+extern f32 lbl_8047BF68;
+extern f32 lbl_8047BF90;
+extern f32 lbl_8047BFA8;
+
+static void menuCBBattleStartPlace(
+    void* context, UICmdMsg* msg, f32 offset)
+{
+    u8* menu = context;
+
+    msg->field50 =
+        *(s16*)&lbl_802EF0A8[msg->cmd * 0x1C + 2] + (s32)offset;
+    fn_800FE6D0(*(s16*)(menu + 0x84) + msg->field50,
+                *(s16*)(menu + 0x86) + msg->field52);
+    fn_800FE4D4();
+}
+
+void fn_80060D70(void* context, UICmdMsg* msg, s32 player, s32 kind)
+{
+    s32 expected[2];
+    u16 battle_kind;
+    f32 scale;
+
+    if (lbl_803A9A60.status != 1) {
+        msg->flags4 &= ~2;
+        return;
+    }
+    battle_kind = fn_801EF634();
+    if (battle_kind == 2 || battle_kind == 5) {
+        expected[0] = 0;
+        expected[1] = 1;
+    } else if (battle_kind == 3 || battle_kind == 4) {
+        expected[0] = 1;
+        expected[1] = 0;
+    } else {
+        expected[0] = 2;
+        expected[1] = 2;
+    }
+    if (lbl_803A9A60.timer >= 6 && kind == expected[player]) {
+        scale = *(f32*)((u8*)&lbl_803A9A60 + 0x358 + player * 8);
+        msg->alpha67 = (u8)(255.0f * (2.0f - scale));
+        msg->scale68 = scale;
+        msg->scale6C = scale;
+        msg->flags4 |= 2;
+    } else {
+        msg->flags4 &= ~2;
+    }
+}
+
+void fn_80060EF4(void* context, UICmdMsg* msg, s32 index)
+{
+    s32 count = *(s32*)((u8*)lbl_803A9A60.menu + 0xC);
+    s32 mode = fn_8025D9A8();
+
+    if (index < 0) {
+        if (mode == 1 || index == count) {
+            msg->flags4 |= 2;
+        } else {
+            msg->flags4 &= ~2;
+        }
+    } else if (mode == 1) {
+        msg->flags4 &= ~2;
+    } else if ((count == 5 && index == 3) || index == count) {
+        msg->flags4 |= 2;
+    } else {
+        msg->flags4 &= ~2;
+    }
+}
+
+void fn_8006106C(
+    void* context, UICmdMsg* msg, s32 player, s32 slot, s32 kind)
+{
+    u8* group = (u8*)&lbl_803A9A60 + 0x58 + player * 0xB4;
+    s16 count;
+
+    if (fn_80061D34(context, msg, player, slot, kind)) {
+        menuCBBattleStartPlace(context, msg, *(f32*)(group + 0x3C + slot * 4));
+        if (fn_80069A08(context, msg, player, slot)) {
+            count = *(s16*)(group + slot * 2);
+            if (count != 0) {
+                fn_801040F0(0, 0, context, lbl_80478910[count], 0);
+                if (lbl_803A9A60.timer == 3) {
+                    f32* phase = (f32*)(group + 0x0C + slot * 4);
+                    *phase += *(f32*)((u8*)&lbl_803A9A60 + 0x3C);
+                    if (*phase >= 1.0f) {
+                        *phase = 0.0f;
+                        *(s16*)(group + slot * 2) = count - 1;
+                    }
+                }
+            }
+        } else {
+            count = *(s16*)(group + slot * 2);
+            if (count != 0) {
+                fn_801040F0(0, 0, context, lbl_80478910[count], 0);
+            }
+        }
+    }
+    if (fn_80061D34(context, msg, player, slot, kind)) {
+        fn_801040F0(-8, -8, context, 0x40, 0);
+    }
+}
+
+void fn_80061240(void* context, UICmdMsg* msg, s32 player, s32 slot)
+{
+    u8* group = (u8*)&lbl_803A9A60 + 0x58 + player * 0xB4;
+    f32 ratio = *(f32*)(group + 0x6C + slot * 4) /
+                *(f32*)(group + 0x9C + slot * 4);
+    u8 red;
+    u8 green;
+    u8 blue;
+    u8 alpha = *((u8*)context + 0x8B);
+    u32 color;
+    s32 end;
+
+    lbl_8047891C = ratio;
+    if (ratio <= lbl_8047BFA8) {
+        red = 0xA7;
+        green = 0x23;
+        blue = 0x13;
+    } else if (ratio <= lbl_8047BF68) {
+        red = 0xC1;
+        green = 0xBD;
+        blue = 0x16;
+    } else {
+        red = 5;
+        green = 0xB3;
+        blue = 0x11;
+    }
+    if (ratio != 0.0f) {
+        color = ((red - 2) << 24) | ((green - 2) << 16) |
+                ((blue - 2) << 8) | alpha;
+        fn_800D88DC(1);
+        fn_800D888C(6);
+        fn_800D7820(lbl_80314E08);
+        fn_800D6A00(4);
+        fn_800D67BC(4);
+        fn_800D61E4(lbl_80478918, lbl_8047891A);
+        fn_800D5BA0(0, color);
+        end = (s32)(ratio *
+            (msg->field54 - lbl_80478918) + lbl_80478918);
+        fn_800D61E4(end, lbl_8047891A);
+        fn_800D5BA0(0, color);
+        fn_800D61E4(msg->field54, msg->field56);
+        color = (red << 24) | (green << 16) | (blue << 8) | alpha;
+        fn_800D5BA0(0, color);
+        fn_800D61E4(end, msg->field56);
+        fn_800D5BA0(0, color);
+        fn_800D6728();
+    }
+}
+
+void fn_80061454(void* context, UICmdMsg* msg, s32 player, s32 kind)
+{
+    void* image;
+    s32 valid = 1;
+    s32 mode = fn_8025DA88();
+
+    if ((kind == 2 && mode != 2) || (kind != 2 && mode == 2)) {
+        valid = 0;
+    }
+    if (valid) {
+        menuCBBattleStartPlace(context, msg,
+            *(f32*)((u8*)&lbl_803A9A60 + 0x32C + player * 0xC));
+        image = *(void**)((u8*)&lbl_803A9A60 + 0x0C + player * 8);
+        if (image != NULL) {
+            fn_800D88DC(3);
+            fn_800D888C(4);
+            fn_800D6A00(7);
+            fn_800D7820(lbl_80314F98);
+            fn_800D85D4(0, image);
+            fn_800D67BC(2);
+            fn_800D61E4(0, 0);
+            fn_800D5CB8(
+                0, 0xFF, 0xFF, 0xFF, *((u8*)context + 0x8B));
+            fn_800D59B8(0, 0.0f, 0.0f);
+            fn_800D61E4(msg->field54, msg->field56);
+            fn_800D5CB8(
+                0, 0xFF, 0xFF, 0xFF, *((u8*)context + 0x8B));
+            fn_800D59B8(0, 1.0f, 1.0f);
+            fn_800D6728();
+        }
+    }
+}
+
+void fn_800615F4(void* context, UICmdMsg* msg, s32 player, s32 kind)
+{
+    void* text;
+    u16 pokemon;
+    s32 battle_mode = fn_8025D9CC();
+    s32 entry_mode = fn_8025DA88();
+
+    if ((kind == 2) != (entry_mode == 2)) {
+        return;
+    }
+    menuCBBattleStartPlace(context, msg,
+        *(f32*)((u8*)&lbl_803A9A60 + 0x32C + player * 0xC));
+    if (battle_mode == 4) {
+        if (kind == 0) {
+            fn_80132A38(0x34, fn_8025DA18(player) + 1);
+            if (player == 0) {
+                fn_800FBB34(0, 0, msg->field54, msg->field56,
+                    0xFFFFFF00 | *((u8*)context + 0x8B), 0x30E9);
+            } else {
+                fn_800FB680(0, 0,
+                    0xFFFFFF00 | *((u8*)context + 0x8B), 0x30E5);
+            }
+        }
+        return;
+    }
+    pokemon = fn_8025D28C(player);
+    text = fn_800FA280(pokemon == 0);
+    fn_801FCCC4(pokemon);
+    fn_801FCC64();
+    fn_801FBD58();
+    fn_801FBD28();
+    fn_80132A38(0x37, text);
+    fn_80132A38(0x4D, text);
+    if (kind == 0 && player != 0) {
+        fn_800FB680(0, 0,
+            0xFFFFFF00 | *((u8*)context + 0x8B), 0xCF);
+    }
+}
+
+void fn_800617E0(void* context, UICmdMsg* msg, s32 player, s32 kind)
+{
+    void* text;
+
+    if ((kind == 2) != (fn_8025DA88() == 2)) {
+        return;
+    }
+    menuCBBattleStartPlace(context, msg,
+        *(f32*)((u8*)&lbl_803A9A60 + 0x32C + player * 0xC));
+    text = fn_8012AC54(fn_8025D914(player));
+    if (text == NULL) {
+        text = fn_800FA280(1);
+    }
+    if (fn_8025D9CC() == 4 || player == 0) {
+        fn_80132A38(0x37, text);
+        fn_80132A38(0x4D, text);
+    } else {
+        text = (u8*)&lbl_803A9A60 + 0x3C4;
+        fn_80132A38(0x37, text);
+        fn_80132A38(0x4D, text);
+    }
+    if (kind == 0) {
+        if (player == 0) {
+            fn_800FBB34(0, 0, msg->field54, msg->field56,
+                0xFFFFFF00 | *((u8*)context + 0x8B), 0x30E2);
+        } else {
+            fn_800FB680(0, 0,
+                0xFFFFFF00 | *((u8*)context + 0x8B), 0xCE);
+        }
+    } else {
+        fn_80132A38(0x34, fn_8025DA18(player) + 1);
+        if (player < 2) {
+            fn_800FBB34(0, 0, msg->field54, msg->field56,
+                0xFFFFFF00 | *((u8*)context + 0x8B), 0x30E9);
+            fn_800FBB34(0, 0x16, msg->field54, msg->field56,
+                0xFFFFFF00 | *((u8*)context + 0x8B), 0x30E8);
+        } else {
+            fn_800FB680(0, 0,
+                0xFFFFFF00 | *((u8*)context + 0x8B), 0x30E7);
+        }
+    }
+}
+
+void fn_80061A2C(
+    void* context, UICmdMsg* msg, s32 player, s32 slot, s32 kind)
+{
+    u8* group = (u8*)&lbl_803A9A60 + player * 0xB4;
+
+    if (lbl_803A9A60.status != 1) {
+        if (lbl_803A9A60.status == 0) {
+            msg->flags4 &= ~2;
+        }
+        return;
+    }
+    if (fn_80061D34(context, msg, player, slot, kind)) {
+        menuCBBattleStartPlace(context, msg, *(f32*)(group + 0x94 + slot * 4));
+        msg->flags4 &= ~2;
+        fn_801040F0(0, 0, context, 0x314, 0);
+        fn_80061240(context, msg, player, slot);
+    } else {
+        msg->flags4 &= ~2;
+    }
+}
+
+void fn_80061BBC(
+    void* context, UICmdMsg* msg, s32 player, s32 slot, s32 kind)
+{
+    u8* group = (u8*)&lbl_803A9A60 + 0x58 + player * 0xB4;
+
+    if (lbl_803A9A60.status != 1) {
+        if (lbl_803A9A60.status == 0) {
+            msg->flags4 &= ~2;
+        }
+        return;
+    }
+    menuCBBattleStartPlace(context, msg, *(f32*)(group + 0x3C + slot * 4));
+    if (lbl_803A9A60.timer >= 5 &&
+        fn_80061D34(context, msg, player, slot, kind) &&
+        *(f32*)(group + 0x84 + slot * 4) == 0.0f) {
+        msg->flags4 |= 2;
+    } else {
+        msg->flags4 &= ~2;
+    }
+}
+
+u8 fn_80061D34(
+    void* context, UICmdMsg* msg, s32 player, s32 slot, s32 kind)
+{
+    s32 selection;
+    s32 mode = fn_8025DA88();
+    s32 valid = 1;
+
+    if (lbl_803A9A60.status == 1) {
+        selection = fn_8025D808(player);
+    } else {
+        selection = fn_8025D89C(player);
+    }
+    if (lbl_803A9A60.status == 0) {
+        if (kind == 2) {
+            valid = mode == 2;
+        } else if (kind == 0) {
+            valid = selection < 4 && mode != 2;
+        } else {
+            valid = selection >= 4 && mode != 2;
+        }
+    } else if (kind == 2) {
+        valid = mode == 2 && selection <= slot;
+    } else if (kind == 0) {
+        valid = selection < 4 && mode != 2 && selection <= slot;
+    } else {
+        valid = selection >= 4 && mode != 2 && selection <= slot;
+    }
+    if (!valid) {
+        msg->flags4 &= ~2;
+    }
+    return valid;
 }
