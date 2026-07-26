@@ -876,20 +876,32 @@ game/menu/menu_middle_range_8006B9B8.c:
 game/menu/menu_middle_range_8006B9B8_r41_8006BB34.c:
 	.text       start:0x8006BB34 end:0x8006C164
 
-game/menu/menu_middle_candidate_8006C164_gc20.c:
-	.text       start:0x8006C164 end:0x8006C7D4
+game/menu/menu_middle_r59_8006C164_o1.c:
+	.text       start:0x8006C164 end:0x8006C5D8
+
+game/menu/menu_middle_r59_8006C5D8_suffix.c:
+	.text       start:0x8006C5D8 end:0x8006C7D4
 
 game/menu/menu_middle_candidate_8006C7D4.c:
 	.text       start:0x8006C7D4 end:0x8006CCC0
 
-game/menu/menu_middle_candidate_8006CCC0_gc20.c:
-	.text       start:0x8006CCC0 end:0x8006DC28
+game/menu/menu_middle_r59_8006CCC0_o1.c:
+	.text       start:0x8006CCC0 end:0x8006D940
+
+game/menu/menu_middle_r59_8006D940_suffix.c:
+	.text       start:0x8006D940 end:0x8006DC28
 
 game/menu/menu_middle_candidate_8006DC28.c:
 	.text       start:0x8006DC28 end:0x8006E338
 
-game/menu/menu_middle_candidate_8006E338_gc20.c:
-	.text       start:0x8006E338 end:0x8006EE7C
+game/menu/menu_middle_r59_8006E338_o1.c:
+	.text       start:0x8006E338 end:0x8006E798
+
+game/menu/menu_middle_r59_8006E798_middle.c:
+	.text       start:0x8006E798 end:0x8006E9A4
+
+game/menu/menu_middle_r59_8006E9A4_o1.c:
+	.text       start:0x8006E9A4 end:0x8006EE7C
 
 game/menu/menu_middle_r50_8006EE7C_prefix.c:
 	.text       start:0x8006EE7C end:0x8006EFF8
@@ -897,8 +909,14 @@ game/menu/menu_middle_r50_8006EE7C_prefix.c:
 game/menu/menu_middle_r50_8006EFF8_gc20_o4s.c:
 	.text       start:0x8006EFF8 end:0x8006F284
 
-game/menu/menu_middle_candidate_8006F284_gc20.c:
-	.text       start:0x8006F284 end:0x8006FCF8
+game/menu/menu_middle_r59_8006F284_prefix.c:
+	.text       start:0x8006F284 end:0x8006F720
+
+game/menu/menu_middle_r59_8006F720_o1.c:
+	.text       start:0x8006F720 end:0x8006FBFC
+
+game/menu/menu_middle_r59_8006FBFC_suffix.c:
+	.text       start:0x8006FBFC end:0x8006FCF8
 
 game/menu/menu_middle_exact_8006FCF8.c:
 	.text       start:0x8006FCF8 end:0x8006FEE4
@@ -1020,8 +1038,17 @@ game/gba/gba_conv_r49_80088428_prefix.c:
 game/gba/gba_conv_r49_800884BC_gc125_o2.c:
 	.text       start:0x800884BC end:0x800886D0
 
-game/gba/gba_conv_r49_800886D0_suffix.c:
-	.text       start:0x800886D0 end:0x80088EA8
+game/gba/gba_conv_r59_800886D0_o1.c:
+	.text       start:0x800886D0 end:0x80088964
+
+game/gba/gba_conv_r59_80088964_middle.c:
+	.text       start:0x80088964 end:0x800889E4
+
+game/gba/gba_conv_r59_800889E4_o1.c:
+	.text       start:0x800889E4 end:0x80088C60
+
+game/gba/gba_conv_r59_80088C60_suffix.c:
+	.text       start:0x80088C60 end:0x80088EA8
 
 game/gba/gba_conv_exact_80088EA8.c:
 	.text       start:0x80088EA8 end:0x80088F58

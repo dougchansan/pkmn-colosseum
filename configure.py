@@ -7430,13 +7430,26 @@ config.libs = [
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
-            Object(
-                CodeCandidate,
-                "game/gba/gba_conv_r49_800886D0_suffix.c",
-                mw_version="GC/1.3",
-                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
-                progress_category="game",
-            ),
+            *[
+                Object(
+                    CodeCandidate,
+                    path,
+                    mw_version=version,
+                    cflags=(
+                        [opt if flag == "-O4,p" else flag for flag in cflags_base]
+                        if opt
+                        else None
+                    ),
+                    extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                    progress_category="game",
+                )
+                for path, version, opt in [
+                    ("game/gba/gba_conv_r59_800886D0_o1.c", "GC/2.0", "-O1"),
+                    ("game/gba/gba_conv_r59_80088964_middle.c", "GC/1.3", None),
+                    ("game/gba/gba_conv_r59_800889E4_o1.c", "GC/2.0", "-O1"),
+                    ("game/gba/gba_conv_r59_80088C60_suffix.c", "GC/1.3", None),
+                ]
+            ],
             Object(
                 CodeCandidate,
                 "game/GScolsys2Util.c",
@@ -7941,11 +7954,38 @@ config.libs = [
                     progress_category="game",
                 )
                 for path, version in [
-                    ("game/menu/menu_middle_candidate_8006C164_gc20.c", "GC/2.0"),
-                    ("game/menu/menu_middle_candidate_8006CCC0_gc20.c", "GC/2.0"),
                     ("game/menu/menu_middle_candidate_8006DC28.c", "GC/1.3"),
-                    ("game/menu/menu_middle_candidate_8006E338_gc20.c", "GC/2.0"),
-                    ("game/menu/menu_middle_candidate_8006F284_gc20.c", "GC/2.0"),
+                ]
+            ],
+            *[
+                Object(
+                    CodeCandidate,
+                    path,
+                    mw_version=version,
+                    cflags=(
+                        [opt if flag == "-O4,p" else flag for flag in cflags_base]
+                        if opt
+                        else None
+                    ),
+                    extra_cflags=[
+                        "-use_lmw_stmw on",
+                        "-sdata 8",
+                        "-sdata2 8",
+                        "-i src/game/menu",
+                    ],
+                    progress_category="game",
+                )
+                for path, version, opt in [
+                    ("game/menu/menu_middle_r59_8006C164_o1.c", "GC/2.0", "-O1"),
+                    ("game/menu/menu_middle_r59_8006C5D8_suffix.c", "GC/2.0", None),
+                    ("game/menu/menu_middle_r59_8006CCC0_o1.c", "GC/2.0", "-O1"),
+                    ("game/menu/menu_middle_r59_8006D940_suffix.c", "GC/2.0", None),
+                    ("game/menu/menu_middle_r59_8006E338_o1.c", "GC/2.0", "-O1"),
+                    ("game/menu/menu_middle_r59_8006E798_middle.c", "GC/2.0", None),
+                    ("game/menu/menu_middle_r59_8006E9A4_o1.c", "GC/1.3", "-O1"),
+                    ("game/menu/menu_middle_r59_8006F284_prefix.c", "GC/2.0", None),
+                    ("game/menu/menu_middle_r59_8006F720_o1.c", "GC/2.0", "-O1"),
+                    ("game/menu/menu_middle_r59_8006FBFC_suffix.c", "GC/2.0", None),
                 ]
             ],
             Object(
