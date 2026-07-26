@@ -6268,6 +6268,7 @@ config.libs = [
                 CodeCandidate,
                 "hsd/hsd_displayfunc.c",
                 mw_version="GC/1.3",
+                extra_cflags=["-sdata 0"],
                 progress_category="hsd",
             ),
             Object(
@@ -7171,6 +7172,7 @@ config.libs = [
                 CodeCandidate,
                 "hsd/hsd_texp_suffix_801B3D1C.c",
                 mw_version="GC/1.3",
+                extra_cflags=["-O1"],
                 progress_category="hsd",
             ),
             Object(
