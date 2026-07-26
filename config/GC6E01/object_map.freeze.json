@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196100,
     "total_functions": 8603,
-    "total_units": 2099
+    "total_units": 2115
   },
   "topology_status": {
     "auto_units": 68,
-    "named_units": 2031,
-    "source_backed_units": 2025,
+    "named_units": 2047,
+    "source_backed_units": 2041,
     "auto_code": 0,
     "auto_data": 57687,
     "auto_functions": 0
@@ -23,7 +23,7 @@
     "matched_data_percent": 97.28669,
     "matched_functions": 6573,
     "matched_functions_percent": 76.40358,
-    "fuzzy_match_percent": 71.37957
+    "fuzzy_match_percent": 71.39441
   },
   "unit_topology": [
     {
@@ -1483,17 +1483,30 @@
       "total_functions": 1
     },
     {
-      "name": "main/game/gs_title_candidate_800216E8",
+      "name": "main/game/gs_title_r51_800216E8_o4s",
       "sections": [
         {
           "name": ".text",
-          "size": 948,
+          "size": 468,
           "virtual_address": 2147620584
         }
       ],
-      "total_code": 948,
+      "total_code": 468,
       "total_data": 0,
-      "total_functions": 2
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/gs_title_r51_800218BC_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 480,
+          "virtual_address": 2147621052
+        }
+      ],
+      "total_code": 480,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/game/gs_title_exact_80021A9C",
@@ -1873,17 +1886,30 @@
       "total_functions": 11
     },
     {
-      "name": "main/game/menuPokemonChange",
+      "name": "main/game/menuPokemonChange_r51_8002DD24_o4s",
       "sections": [
         {
           "name": ".text",
-          "size": 1852,
+          "size": 492,
           "virtual_address": 2147671332
         }
       ],
-      "total_code": 1852,
+      "total_code": 492,
       "total_data": 0,
-      "total_functions": 3
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/menuPokemonChange_r51_8002DF10_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1360,
+          "virtual_address": 2147671824
+        }
+      ],
+      "total_code": 1360,
+      "total_data": 0,
+      "total_functions": 2
     },
     {
       "name": "main/game/menuPokemonChange_r41_8002E460_gc125n",
@@ -4101,17 +4127,69 @@
       "total_functions": 1
     },
     {
-      "name": "main/game/menu/cardesavedata_candidate_80082A88",
+      "name": "main/game/menu/cardesavedata_r51_80082A88_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 5552,
+          "size": 1052,
           "virtual_address": 2148018824
         }
       ],
-      "total_code": 5552,
+      "total_code": 1052,
       "total_data": 0,
-      "total_functions": 15
+      "total_functions": 3
+    },
+    {
+      "name": "main/game/menu/cardesavedata_r51_80082EA4_o3",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 320,
+          "virtual_address": 2148019876
+        }
+      ],
+      "total_code": 320,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/menu/cardesavedata_r51_80082FE4_middle",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1736,
+          "virtual_address": 2148020196
+        }
+      ],
+      "total_code": 1736,
+      "total_data": 0,
+      "total_functions": 3
+    },
+    {
+      "name": "main/game/menu/cardesavedata_r51_800836AC_o4s",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1096,
+          "virtual_address": 2148021932
+        }
+      ],
+      "total_code": 1096,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/menu/cardesavedata_r51_80083AF4_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1348,
+          "virtual_address": 2148023028
+        }
+      ],
+      "total_code": 1348,
+      "total_data": 0,
+      "total_functions": 7
     },
     {
       "name": "main/game/menu/cardesavedata_80084038",
@@ -4283,17 +4361,30 @@
       "total_functions": 1
     },
     {
-      "name": "main/game/gba/gba_misc_r51_80089978_suffix",
+      "name": "main/game/gba/gba_misc_r51_80089978_o2",
       "sections": [
         {
           "name": ".text",
-          "size": 816,
+          "size": 532,
           "virtual_address": 2148047224
         }
       ],
-      "total_code": 816,
+      "total_code": 532,
       "total_data": 0,
-      "total_functions": 5
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/gba/gba_misc_r51_80089B8C_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 284,
+          "virtual_address": 2148047756
+        }
+      ],
+      "total_code": 284,
+      "total_data": 0,
+      "total_functions": 4
     },
     {
       "name": "main/game/gba/gba_misc_exact_80089CA8",
@@ -14947,13 +15038,39 @@
       "sections": [
         {
           "name": ".text",
-          "size": 2616,
+          "size": 168,
           "virtual_address": 2148779632
         }
       ],
-      "total_code": 2616,
+      "total_code": 168,
       "total_data": 0,
-      "total_functions": 5
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/effect/effect_visual_r51_8013C718_o4s",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 816,
+          "virtual_address": 2148779800
+        }
+      ],
+      "total_code": 816,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/effect/effect_visual_r51_8013CA48_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1632,
+          "virtual_address": 2148780616
+        }
+      ],
+      "total_code": 1632,
+      "total_data": 0,
+      "total_functions": 3
     },
     {
       "name": "main/game/effect/effect_visual_r51_8013D0A8_o2",
@@ -15255,17 +15372,43 @@
       "total_functions": 2
     },
     {
-      "name": "main/game/people/people_data_candidate_80142A88",
+      "name": "main/game/people/people_data_r51_80142A88_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 3092,
+          "size": 1136,
           "virtual_address": 2148805256
         }
       ],
-      "total_code": 3092,
+      "total_code": 1136,
       "total_data": 0,
-      "total_functions": 5
+      "total_functions": 3
+    },
+    {
+      "name": "main/game/people/people_data_r51_80142EF8_o4s",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 692,
+          "virtual_address": 2148806392
+        }
+      ],
+      "total_code": 692,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/people/people_data_r51_801431AC_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1264,
+          "virtual_address": 2148807084
+        }
+      ],
+      "total_code": 1264,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/game/people/people_item_friend_exact_8014369C",
@@ -18934,17 +19077,30 @@
       "total_functions": 8
     },
     {
-      "name": "main/game/fsys/fsys_file_candidate_8017C5B8",
+      "name": "main/game/fsys/fsys_file_r51_8017C5B8_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 724,
+          "size": 296,
           "virtual_address": 2149041592
         }
       ],
-      "total_code": 724,
+      "total_code": 296,
       "total_data": 0,
-      "total_functions": 2
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/fsys/fsys_file_r51_8017C6E0_o4s",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 428,
+          "virtual_address": 2149041888
+        }
+      ],
+      "total_code": 428,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/game/fsys/fsys_file_exact_8017C88C",
@@ -19337,17 +19493,43 @@
       "total_functions": 1
     },
     {
-      "name": "main/game/people/people_candidate_8018D928",
+      "name": "main/game/people/people_r51_8018D928_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 6984,
+          "size": 2204,
           "virtual_address": 2149112104
         }
       ],
-      "total_code": 6984,
+      "total_code": 2204,
       "total_data": 0,
-      "total_functions": 13
+      "total_functions": 7
+    },
+    {
+      "name": "main/game/people/people_r51_8018E1C4_o2",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1884,
+          "virtual_address": 2149114308
+        }
+      ],
+      "total_code": 1884,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/people/people_r51_8018E920_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 2896,
+          "virtual_address": 2149116192
+        }
+      ],
+      "total_code": 2896,
+      "total_data": 0,
+      "total_functions": 5
     },
     {
       "name": "main/game/people/people_exact_8018F470",
@@ -23120,17 +23302,43 @@
       "total_functions": 1
     },
     {
-      "name": "main/game/sequence_candidate_801DE190",
+      "name": "main/game/sequence_r51_801DE190_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 1220,
+          "size": 648,
           "virtual_address": 2149441936
         }
       ],
-      "total_code": 1220,
+      "total_code": 648,
       "total_data": 0,
-      "total_functions": 3
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/sequence_r51_801DE418_o4s",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 384,
+          "virtual_address": 2149442584
+        }
+      ],
+      "total_code": 384,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/sequence_r51_801DE598_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 188,
+          "virtual_address": 2149442968
+        }
+      ],
+      "total_code": 188,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/game/sequence_exact_801DE654",

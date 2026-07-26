@@ -332,8 +332,11 @@ game/gs_title_exact_80021644.c:
 game/gs_title_exact_800216E0.c:
 	.text       start:0x800216E0 end:0x800216E8
 
-game/gs_title_candidate_800216E8.c:
-	.text       start:0x800216E8 end:0x80021A9C
+game/gs_title_r51_800216E8_o4s.c:
+	.text       start:0x800216E8 end:0x800218BC
+
+game/gs_title_r51_800218BC_suffix.c:
+	.text       start:0x800218BC end:0x80021A9C
 
 game/gs_title_exact_80021A9C.c:
 	.text       start:0x80021A9C end:0x80021B14
@@ -422,8 +425,11 @@ game/menuShop_r40_8002B880_gc125n.c:
 game/menuShop_r40_8002BCE8.c:
 	.text       start:0x8002BCE8 end:0x8002DD24
 
-game/menuPokemonChange.c:
-	.text       start:0x8002DD24 end:0x8002E460
+game/menuPokemonChange_r51_8002DD24_o4s.c:
+	.text       start:0x8002DD24 end:0x8002DF10
+
+game/menuPokemonChange_r51_8002DF10_suffix.c:
+	.text       start:0x8002DF10 end:0x8002E460
 
 game/menuPokemonChange_r41_8002E460_gc125n.c:
 	.text       start:0x8002E460 end:0x8002EA5C
@@ -918,8 +924,20 @@ game/menu/cardesavedata_candidate_80082650.c:
 game/menu/cardesavedata_candidate_80082960_gc125.c:
 	.text       start:0x80082960 end:0x80082A88
 
-game/menu/cardesavedata_candidate_80082A88.c:
-	.text       start:0x80082A88 end:0x80084038
+game/menu/cardesavedata_r51_80082A88_prefix.c:
+	.text       start:0x80082A88 end:0x80082EA4
+
+game/menu/cardesavedata_r51_80082EA4_o3.c:
+	.text       start:0x80082EA4 end:0x80082FE4
+
+game/menu/cardesavedata_r51_80082FE4_middle.c:
+	.text       start:0x80082FE4 end:0x800836AC
+
+game/menu/cardesavedata_r51_800836AC_o4s.c:
+	.text       start:0x800836AC end:0x80083AF4
+
+game/menu/cardesavedata_r51_80083AF4_suffix.c:
+	.text       start:0x80083AF4 end:0x80084038
 
 game/menu/cardesavedata_80084038.c:
 	.text       start:0x80084038 end:0x80084A8C
@@ -960,8 +978,11 @@ game/gba/gba_misc_exact_800896B8.c:
 game/gba/gba_misc_r51_800896E8_o2.c:
 	.text       start:0x800896E8 end:0x80089978
 
-game/gba/gba_misc_r51_80089978_suffix.c:
-	.text       start:0x80089978 end:0x80089CA8
+game/gba/gba_misc_r51_80089978_o2.c:
+	.text       start:0x80089978 end:0x80089B8C
+
+game/gba/gba_misc_r51_80089B8C_suffix.c:
+	.text       start:0x80089B8C end:0x80089CA8
 
 game/gba/gba_misc_exact_80089CA8.c:
 	.text       start:0x80089CA8 end:0x80089D30
@@ -3322,7 +3343,13 @@ game/effect/effect_visual_exact_8013C5A0.c:
 	.text       start:0x8013C5A0 end:0x8013C670
 
 game/effect/effect_visual_r51_8013C670_prefix.c:
-	.text       start:0x8013C670 end:0x8013D0A8
+	.text       start:0x8013C670 end:0x8013C718
+
+game/effect/effect_visual_r51_8013C718_o4s.c:
+	.text       start:0x8013C718 end:0x8013CA48
+
+game/effect/effect_visual_r51_8013CA48_suffix.c:
+	.text       start:0x8013CA48 end:0x8013D0A8
 
 game/effect/effect_visual_r51_8013D0A8_o2.c:
 	.text       start:0x8013D0A8 end:0x8013D604
@@ -3393,8 +3420,14 @@ game/people/people_data_candidate_80142368.c:
 game/people/people_field_lookup_exact_80142984.c:
 	.text       start:0x80142984 end:0x80142A88
 
-game/people/people_data_candidate_80142A88.c:
-	.text       start:0x80142A88 end:0x8014369C
+game/people/people_data_r51_80142A88_prefix.c:
+	.text       start:0x80142A88 end:0x80142EF8
+
+game/people/people_data_r51_80142EF8_o4s.c:
+	.text       start:0x80142EF8 end:0x801431AC
+
+game/people/people_data_r51_801431AC_suffix.c:
+	.text       start:0x801431AC end:0x8014369C
 
 game/people/people_item_friend_exact_8014369C.c:
 	.text       start:0x8014369C end:0x801436F0
@@ -4222,8 +4255,11 @@ game/fsys/fsys_file_candidate_8017C39C.c:
 game/fsys/fsys_file_exact_8017C568.c:
 	.text       start:0x8017C568 end:0x8017C5B8
 
-game/fsys/fsys_file_candidate_8017C5B8.c:
-	.text       start:0x8017C5B8 end:0x8017C88C
+game/fsys/fsys_file_r51_8017C5B8_prefix.c:
+	.text       start:0x8017C5B8 end:0x8017C6E0
+
+game/fsys/fsys_file_r51_8017C6E0_o4s.c:
+	.text       start:0x8017C6E0 end:0x8017C88C
 
 game/fsys/fsys_file_exact_8017C88C.c:
 	.text       start:0x8017C88C end:0x8017C894
@@ -4315,8 +4351,14 @@ game/people/people_r47_8018D680.c:
 game/people/people_candidate_8018D7D0_gc20.c:
 	.text       start:0x8018D7D0 end:0x8018D928
 
-game/people/people_candidate_8018D928.c:
-	.text       start:0x8018D928 end:0x8018F470
+game/people/people_r51_8018D928_prefix.c:
+	.text       start:0x8018D928 end:0x8018E1C4
+
+game/people/people_r51_8018E1C4_o2.c:
+	.text       start:0x8018E1C4 end:0x8018E920
+
+game/people/people_r51_8018E920_suffix.c:
+	.text       start:0x8018E920 end:0x8018F470
 
 game/people/people_exact_8018F470.c:
 	.text       start:0x8018F470 end:0x8018F4C8
@@ -5188,8 +5230,14 @@ game/sequence_candidate_801DD45C.c:
 game/sequence_exact_801DE164.c:
 	.text       start:0x801DE164 end:0x801DE190
 
-game/sequence_candidate_801DE190.c:
-	.text       start:0x801DE190 end:0x801DE654
+game/sequence_r51_801DE190_prefix.c:
+	.text       start:0x801DE190 end:0x801DE418
+
+game/sequence_r51_801DE418_o4s.c:
+	.text       start:0x801DE418 end:0x801DE598
+
+game/sequence_r51_801DE598_suffix.c:
+	.text       start:0x801DE598 end:0x801DE654
 
 game/sequence_exact_801DE654.c:
 	.text       start:0x801DE654 end:0x801DE698

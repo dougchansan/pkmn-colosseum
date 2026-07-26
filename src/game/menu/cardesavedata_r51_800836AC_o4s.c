@@ -1,2 +1,2 @@
 /* Score instrumentation only; not evidence of a retail TU boundary. */
-#include "src/game/effect/effect_visual_candidate_8013C670.c"
+#include "src/game/menu/cardesavedata_candidate_80082A88.c"
