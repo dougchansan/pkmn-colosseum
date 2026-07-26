@@ -52,7 +52,31 @@ typedef struct PSGeneratorPoolNode {
     u8 data[0xB0];
 } PSGeneratorPoolNode;
 
+typedef struct PSGeneratorKillAppSRT {
+    struct PSGeneratorKillAppSRT* next;
+    void* owner;
+    u8 pad08[0x2A];
+    u16 refCount;
+} PSGeneratorKillAppSRT;
+
+typedef struct PSGeneratorKillNode {
+    struct PSGeneratorKillNode* next;
+    u32 flags;
+    f32 age;
+    u8 pad0C[4];
+    u16 life;
+    u16 generatorFlags;
+    u8 pad14[4];
+    u16 familyId;
+    u8 pad1A[0x32];
+    u32 childCount;
+    PSGeneratorKillAppSRT* appSRT;
+} PSGeneratorKillNode;
+
 extern void* fn_801A6928(s32 size);
+extern void psKillGeneratorChild(PSGeneratorKillNode* generator);
+extern s32 psRemoveGeneratorAppSRT(PSGeneratorKillNode* generator);
+extern const f32 lbl_8047D6B0;
 extern u16 lbl_8047B112;
 extern u32 lbl_8047B180;
 extern u32 lbl_8047B190;
@@ -91,6 +115,73 @@ void psKillAllGenerator(void) {
     /* TODO: match -- 428 bytes at 0x8017572C */
 }
 #pragma pop
+
+/*
+ * Removes one generator from the active list, or marks it to expire when
+ * children/application-SRT ownership still keep it alive.  Verified against
+ * the retail function at 0x80175A1C and the matching Pokemon XD implementation.
+ */
+void psKillGenerator(PSGeneratorKillNode* generator) {
+    PSGeneratorKillNode* current = (PSGeneratorKillNode*)lbl_8047B188;
+    PSGeneratorKillNode* previous = NULL;
+
+    lbl_8047B184 = NULL;
+    while (current != NULL) {
+        if (current == generator) {
+            previous = (PSGeneratorKillNode*)lbl_8047B184;
+
+            if (generator->generatorFlags & 0x80) {
+                psKillGeneratorChild(generator);
+            }
+
+            if (generator->childCount != 0) {
+                generator->age = lbl_8047D6B0;
+                generator->life = 1;
+                previous = generator;
+            } else if ((generator->generatorFlags & 0x3800) != 0 &&
+                       generator->appSRT != NULL &&
+                       generator->appSRT->owner == generator &&
+                       generator->appSRT->refCount != 1) {
+                generator->age = lbl_8047D6B0;
+                generator->life = 1;
+                previous = generator;
+            } else {
+                if (previous == NULL) {
+                    lbl_8047B188 = generator->next;
+                } else {
+                    previous->next = generator->next;
+                }
+
+                if (generator->appSRT != NULL) {
+                    psRemoveGeneratorAppSRT(generator);
+                }
+
+                generator->next = (PSGeneratorKillNode*)lbl_8047B18C;
+                lbl_8047B18C = generator;
+                lbl_8047B118--;
+            }
+
+            lbl_8047B184 = previous;
+            if (previous != NULL) {
+                while (((PSGeneratorKillNode*)lbl_8047B184)->next != NULL) {
+                    lbl_8047B184 =
+                        ((PSGeneratorKillNode*)lbl_8047B184)->next;
+                }
+            } else if (lbl_8047B188 != NULL) {
+                lbl_8047B184 = lbl_8047B188;
+                while (((PSGeneratorKillNode*)lbl_8047B184)->next != NULL) {
+                    lbl_8047B184 =
+                        ((PSGeneratorKillNode*)lbl_8047B184)->next;
+                }
+            }
+            return;
+        }
+
+        lbl_8047B184 = current;
+        current = current->next;
+    }
+}
+
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
