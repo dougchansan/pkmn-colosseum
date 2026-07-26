@@ -534,6 +534,7 @@ config.libs = [
             Object(
                 CodeCandidate,
                 "dolphin/pad/PAD.c",
+                extra_cflags=["-inline off"],
                 progress_category="sdk",
             ),
             Object(
@@ -3568,7 +3569,7 @@ config.libs = [
             Object(
                 CodeCandidate,
                 "hsd/hsd_robj_range_801AE008.c",
-                mw_version="GC/1.3",
+                mw_version="GC/1.3.2",
                 extra_cflags=["-O2"],
                 progress_category="hsd",
             ),
@@ -6230,7 +6231,7 @@ config.libs = [
             Object(
                 CodeCandidate,
                 "hsd/hsd_class_candidate_801938FC.c",
-                mw_version="GC/1.3",
+                mw_version="GC/1.3.2",
                 progress_category="hsd",
             ),
             Object(
@@ -6916,7 +6917,7 @@ config.libs = [
             Object(
                 CodeCandidate,
                 "hsd/hsd_jobj_residual_801A1B7C.c",
-                mw_version="GC/1.3",
+                mw_version="GC/1.3.2",
                 extra_cflags=["-use_lmw_stmw on"],
                 progress_category="hsd",
             ),
@@ -6929,7 +6930,7 @@ config.libs = [
             Object(
                 CodeCandidate,
                 "hsd/hsd_lobj.c",
-                mw_version="GC/1.3",
+                mw_version="GC/1.3.2",
                 extra_cflags=["-use_lmw_stmw on"],
                 progress_category="hsd",
             ),
