@@ -17,8 +17,9 @@
  * wazaSequenceUpdate - Waza rendering setup.
  * Address: 0x801DB988 | Size: 0x188
  */
-void wazaSequenceUpdate(void* sequence) {
+s8 wazaSequenceUpdate(void* sequence) {
     /* TODO: Waza rendering setup (0x188 bytes) */
+    return 0;
 }
 
 #endif
@@ -192,8 +193,9 @@ WazaSequence* fn_801DBFB0(void) {
  * wazaSequenceLoadData - Waza screen distortion effect.
  * Address: 0x801DC014 | Size: 0x2FC
  */
-void wazaSequenceLoadData(s32 distortType, f32 intensity) {
+BOOL wazaSequenceLoadData(void* sequence, void* resource) {
     /* TODO: Screen distortion effect (0x2FC bytes) */
+    return FALSE;
 }
 
 /**

@@ -231,7 +231,36 @@ void fn_801DD100(WazaSequenceOwner* owner, WazaSequence* sequence) {
  * Address: 0x801DD158 | Size: 0xE4
  */
 void fn_801DD158(void* obj) {
-    /* TODO: Color filter update (0xE4 bytes) */
+    WazaEffect* effect = obj;
+    WazaSequence* sequence;
+
+    if (effect->model != NULL) {
+        GSmodelSetVisibility(effect->model, (effect->flags & 1) == 1);
+    }
+
+    sequence = effect->currentSequence;
+    while (sequence != NULL) {
+        WazaSequence* next = *(WazaSequence**)((u8*)sequence + 0x34);
+
+        if (sequence->active != 0) {
+            s8 result;
+
+            if ((s8)sequence->stopping == -1) {
+                wazaSequenceApplyStop(sequence);
+            } else {
+                result = wazaSequenceUpdate(sequence);
+                if (result == 0) {
+                    if ((s8)sequence->stopping != -1) {
+                        wazaSequenceApplyStop(sequence);
+                    }
+                } else if (result < 0) {
+                    wazaSequenceApplyStop(sequence);
+                    wazaSequenceFree(sequence);
+                }
+            }
+        }
+        sequence = next;
+    }
 }
 
 #endif
@@ -357,8 +386,66 @@ void fn_801DD3E4(void* obj) {
  * sequenceLoad - Waza scene snapshot.
  * Address: 0x801DD45C | Size: 0x18C
  */
-void sequenceLoad(void) {
-    /* TODO: Scene snapshot for transition effects (0x18C bytes) */
+BOOL sequenceLoad(void* effectPtr, void* resource) {
+    WazaEffect* effect = effectPtr;
+    struct GSmodel* model;
+
+    if (effect == NULL) {
+        return FALSE;
+    }
+    if (!fn_801DD5E8(effect, resource)) {
+        extern const char lbl_80279998[];
+        GSlogWrite(lbl_80279998);
+        return FALSE;
+    }
+
+    {
+        extern void* GSresGetResource(u32 group, u32 resource);
+        extern void fn_800EB268(struct GSmodel* model, u32 index);
+        extern void GSmodelLinkTexAnimToAnim(struct GSmodel* model, u32 enable);
+        extern void GSmodelSetAnimEndedCallback(struct GSmodel*, void*, void*);
+        extern void GSmodelSetPosition(struct GSmodel*, const void*);
+        extern void GSmodelSetRotation(struct GSmodel*, const void*);
+        extern void GSmodelSetScale(struct GSmodel*, const void*);
+        extern void GSmodelSetShadowFlags(struct GSmodel*, u32);
+        extern void GSmodelSetShadowLight(struct GSmodel*, s32);
+        extern void GSmodelSetShadowSurface(struct GSmodel*, s32, void*);
+        extern void GSmodelSetBoundCheck(struct GSmodel*, u32);
+        extern void fn_800E3B44(struct GSmodel*, u32);
+        extern void* fn_801195AC(void*);
+        extern const u8 lbl_803727B0[];
+        extern const u8 lbl_803727BC[];
+
+        model = GSresGetResource(*(u32*)effect, *(u32*)((u8*)effect + 4));
+        effect->model = model;
+        fn_800EB268(model, fn_801DF160((u8*)effect));
+        if (*(u32*)((u8*)effect + 0x0C) != 0) {
+            effect->particleBank =
+                fn_801195AC(GSresGetResource(*(u32*)effect,
+                                             *(u32*)((u8*)effect + 0x0C)));
+            GSmodelLinkToGSparticleBank(model, effect->particleBank);
+        }
+        GSmodelLinkTexAnimToAnim(model, 1);
+        GSmodelSetAnimEndedCallback(model, sequenceAnimEndCallback, effect);
+        fn_801DEF0C(effect, 1, 1);
+        fn_801DA4E8(effect, 0);
+        GSmodelSetPosition(model, lbl_803727B0);
+        GSmodelSetRotation(model, lbl_803727B0);
+        GSmodelSetScale(model, lbl_803727BC);
+        if (wazaSequenceSysGetModelShadowLight__Fv() != 0 &&
+            wazaSequenceSysGetModelShadowCount__Fv() != 0) {
+            void* list;
+            GSmodelSetShadowFlags(model, 1);
+            GSmodelSetShadowLight(model,
+                                  wazaSequenceSysGetModelShadowLight__Fv());
+            list = wazaSequenceSysGetModelShadowList__Fv();
+            GSmodelSetShadowSurface(
+                model, wazaSequenceSysGetModelShadowCount__Fv(), list);
+            GSmodelSetBoundCheck(model, 1);
+            fn_800E3B44(model, 1);
+        }
+    }
+    return TRUE;
 }
 
 /**
@@ -367,40 +454,265 @@ void sequenceLoad(void) {
  * Large function handling elaborate transition effects between
  * phases of a move animation.
  */
-void fn_801DD5E8(void) {
+BOOL fn_801DD5E8(void* effect, void* resource) {
     /* TODO: Complex transition effect (0x564 bytes) */
+    return FALSE;
 }
 
 /**
  * fn_801DDB4C - Waza transition effect helper A.
  * Address: 0x801DDB4C | Size: 0xC4
  */
-void fn_801DDB4C(void) {
-    /* TODO: Transition effect helper A (0xC4 bytes) */
+BOOL fn_801DDB4C(void* owner, void* resource) {
+    u8* sequence;
+    u8* previous;
+
+    if (resource == NULL) {
+        return FALSE;
+    }
+    sequence = (u8*)fn_801DBFB0();
+    if (sequence == NULL) {
+        return FALSE;
+    }
+    *(u16*)(sequence + 0x2C) = 0;
+    *(u16*)(sequence + 0x2E) = 0;
+    *(u16*)(sequence + 0x30) = 0;
+    *(void**)(sequence + 0x3C) = owner;
+    if (!wazaSequenceLoadData(sequence, resource)) {
+        wazaSequenceFree(sequence);
+        return FALSE;
+    }
+    sequence[0x14] = 0;
+    sequence[0x15] = 0;
+    previous = *(u8**)((u8*)owner + 0x68);
+    *(u8**)(sequence + 0x34) = previous;
+    if (previous != NULL) {
+        *(u8**)(previous + 0x38) = sequence;
+    }
+    *(void**)(sequence + 0x38) = NULL;
+    *(u8**)((u8*)owner + 0x68) = sequence;
+    return TRUE;
 }
 
 /**
  * fn_801DDC10 - Waza transition effect helper B.
  * Address: 0x801DDC10 | Size: 0x118
  */
-void fn_801DDC10(void) {
-    /* TODO: Transition effect helper B (0x118 bytes) */
+s32 fn_801DDC10(u16 index, u16 type) {
+    extern u32 lbl_80478CE0;
+    extern u32 lbl_80478CC0;
+    extern u32 lbl_80478CE8;
+    extern u8 lbl_803727C8[];
+    extern u8 lbl_8036E150[];
+    extern u8 lbl_80373210[];
+    u32 count = 0;
+    u32 i;
+
+    if (type == 0) {
+        return 0;
+    }
+    if (type == 4) {
+        u8* entry;
+        if (index == 0 || index >= lbl_80478CE0) {
+            return 0;
+        }
+        entry = lbl_803727C8 + index * 12;
+        if (*(void**)entry != NULL && *(void**)(entry + 4) != NULL) {
+            count = 1;
+        }
+    } else {
+        u32 kind = type - 1;
+        u8* entry;
+        if (index == 0 || index >= lbl_80478CC0) {
+            return 0;
+        }
+        entry = lbl_8036E150 + index * 0x1C + kind * 8;
+        if (*(void**)(entry + 4) != NULL && *(void**)(entry + 8) != NULL) {
+            count = 1;
+        }
+        entry = lbl_80373210;
+        for (i = 0; i < lbl_80478CE8; i++, entry += 0x20) {
+            if (*(u32*)entry == index &&
+                *(void**)(entry + kind * 8 + 8) != NULL &&
+                *(void**)(entry + kind * 8 + 0x0C) != NULL) {
+                count++;
+            }
+        }
+    }
+    return count;
 }
 
 /**
  * fn_801DDD28 - Waza transition effect helper C.
  * Address: 0x801DDD28 | Size: 0x1BC
  */
-void fn_801DDD28(void) {
-    /* TODO: Transition effect helper C (0x1BC bytes) */
+BOOL fn_801DDD28(void* owner, u16 group, u16 index, u32 variant) {
+    extern void* GSresGetResource(u32 group, u32 resource);
+    extern void fn_8017B3E4(u32 group);
+    extern const char lbl_802799C8[];
+    u32 resourceGroup;
+    u32 resourceId;
+    u8* sequence;
+    u8* previous;
+    void* resource;
+    s32 state;
+
+    if (owner == NULL || index == 0) {
+        return FALSE;
+    }
+    fn_801DDEE4(owner, group, index, (u8)variant, &resourceGroup, &resourceId);
+    if (resourceGroup == 0 || resourceId == 0) {
+        return FALSE;
+    }
+    if (GetWaza__12NullSequenceCFUsUs(owner, group, index) != NULL) {
+        return TRUE;
+    }
+
+    state = fn_8017B2CC(resourceGroup);
+    if (state < 0) {
+        fn_8017B3E4(resourceGroup);
+    } else if (state == 0 && resourceId != 0 &&
+               GSresGetResource(resourceGroup, resourceId) == NULL) {
+        fn_8017B3E4(resourceGroup);
+    }
+    do {
+        state = fn_8017B2CC(resourceGroup);
+        if (state < 0) {
+            GSlogWrite(lbl_802799C8);
+        }
+        if (state != 0) {
+            _threadSwitch();
+        }
+    } while (state != 0);
+
+    resource = GSresGetResource(resourceGroup, resourceId);
+    if (resource == NULL) {
+        return FALSE;
+    }
+    sequence = (u8*)fn_801DBFB0();
+    if (sequence == NULL) {
+        return FALSE;
+    }
+    *(u16*)(sequence + 0x2C) = group;
+    *(u16*)(sequence + 0x2E) = index;
+    *(u16*)(sequence + 0x30) = (u16)resourceGroup;
+    *(void**)(sequence + 0x3C) = owner;
+    if (!wazaSequenceLoadData(sequence, resource)) {
+        wazaSequenceFree(sequence);
+        return FALSE;
+    }
+    sequence[0x14] = 0;
+    sequence[0x15] = 0;
+    previous = *(u8**)((u8*)owner + 0x68);
+    *(u8**)(sequence + 0x34) = previous;
+    if (previous != NULL) {
+        *(u8**)(previous + 0x38) = sequence;
+    }
+    *(void**)(sequence + 0x38) = NULL;
+    *(u8**)((u8*)owner + 0x68) = sequence;
+    return TRUE;
 }
 
 /**
  * fn_801DDEE4 - Waza hit flash effect.
  * Address: 0x801DDEE4 | Size: 0x280
  */
-void fn_801DDEE4(s32 slot, s32 flashType) {
-    /* TODO: Hit flash effect (0x280 bytes) */
+void fn_801DDEE4(void* owner, u16 group, u16 type, u8 variant,
+                 u32* resourceGroup, u32* resourceId) {
+    extern u32 lbl_80478CE0;
+    extern u32 lbl_80478CC0;
+    extern u32 lbl_80478CE8;
+    extern u8 lbl_803727C8[];
+    extern u8 lbl_8036E150[];
+    extern u8 lbl_80373210[];
+    extern u8 lbl_80373750[];
+    u32 i;
+
+    *resourceGroup = 0;
+    *resourceId = 0;
+    if (type == 0 || type > 4) {
+        return;
+    }
+
+    if (owner != NULL && ((u8*)owner)[0x75] != 0) {
+        u16 modelId = *(u16*)((u8*)owner + 0x70);
+        u32 first;
+        u32 last;
+
+        if (variant != 0 && type != 4 && type != 2 &&
+            variant < fn_801DDC10(group, type)) {
+            first = 0x162;
+            last = 0x16E;
+        } else {
+            switch (type) {
+            case 1:
+                first = 1;
+                last = 0x11C;
+                break;
+            case 2:
+                first = 0x11E;
+                last = 0x12A;
+                break;
+            case 3:
+                first = 0x12C;
+                last = 0x15E;
+                break;
+            case 4:
+                first = 0x160;
+                last = 0x160;
+                break;
+            default:
+                first = 0;
+                last = 0;
+                break;
+            }
+        }
+
+        for (i = first; i < last; i++) {
+            u8* entry = lbl_80373750 + i * 0x10;
+            if (*(u16*)(entry + 2) == modelId &&
+                *(u16*)(entry + 4) == group && entry[0] == variant &&
+                *(u32*)(entry + 8) != 0 && *(u32*)(entry + 0x0C) != 0) {
+                *resourceGroup = *(u32*)(entry + 8);
+                *resourceId = *(u32*)(entry + 0x0C);
+                return;
+            }
+        }
+    }
+
+    if (type > 3) {
+        u8* entry;
+        if (group == 0 || group >= lbl_80478CE0) {
+            return;
+        }
+        entry = lbl_803727C8 + group * 12;
+        *resourceGroup = *(u32*)entry;
+        *resourceId = *(u32*)(entry + 4);
+    } else {
+        u32 kind = type - 1;
+        u8* entry;
+        if (group == 0 || group >= lbl_80478CC0) {
+            return;
+        }
+        entry = lbl_8036E150 + group * 0x1C + kind * 8;
+        *resourceGroup = *(u32*)(entry + 4);
+        *resourceId = *(u32*)(entry + 8);
+        if (variant == 0) {
+            return;
+        }
+        entry = lbl_80373210;
+        for (i = 0; i < lbl_80478CE8; i++, entry += 0x20) {
+            if (*(u32*)entry == group && *(u32*)(entry + 4) == variant) {
+                u8* resource = entry + kind * 8;
+                if (*(u32*)(resource + 8) != 0 &&
+                    *(u32*)(resource + 0x0C) != 0) {
+                    *resourceGroup = *(u32*)(resource + 8);
+                    *resourceId = *(u32*)(resource + 0x0C);
+                    return;
+                }
+            }
+        }
+    }
 }
 
 #endif
@@ -448,8 +760,29 @@ void fn_801DE418(s32 attackerSlot, s32 targetSlot) {
  * fn_801DE598 - Waza HP drain update.
  * Address: 0x801DE598 | Size: 0xBC
  */
-void fn_801DE598(void) {
-    /* TODO: HP drain update (0xBC bytes) */
+void fn_801DE598(u32 group, u32 resource) {
+    extern void fn_8017B3E4(u32 group);
+    extern void* GSresGetResource(u32 group, u32 resource);
+    extern const char lbl_802799C8[];
+    s32 state;
+
+    state = fn_8017B2CC(group);
+    if (state < 0) {
+        fn_8017B3E4(group);
+    } else if (state == 0 && resource != 0 &&
+               GSresGetResource(group, resource) == NULL) {
+        fn_8017B3E4(group);
+    }
+
+    do {
+        state = fn_8017B2CC(group);
+        if (state < 0) {
+            GSlogWrite(lbl_802799C8);
+        }
+        if (state != 0) {
+            _threadSwitch();
+        }
+    } while (state != 0);
 }
 
 #endif
