@@ -892,7 +892,9 @@ typedef struct SndServiceVoice {
     u32 group;
     u16 effectId;
     u8 fallbackStudio;
-    u8 _47[5];
+    u8 maxVoices;
+    u16 volumeLevelCount;
+    u8 _4A[2];
     f32 fade;
 } SndServiceVoice;
 
@@ -939,11 +941,21 @@ typedef struct SndServiceGroupNode {
     SndServiceVoice* voice;
 } SndServiceGroupNode;
 
+typedef struct SndServiceStartNode {
+    struct SndServiceStartNode* next;
+    f32 value;
+    f32 pan;
+    f32 volume;
+    f32 surround;
+    f32 pitch;
+    SndServiceVoice* voice;
+} SndServiceStartNode;
+
 typedef struct SndServiceGroup {
     u32 key;
-    u32 _04;
-    SndServiceGroupNode* voices;
-    u16 count;
+    SndServiceStartNode* starting;
+    SndServiceGroupNode* running;
+    u16 numRunning;
     u16 _0E;
 } SndServiceGroup;
 
@@ -966,21 +978,142 @@ extern u8 lbl_8047B04C;
 extern u8 lbl_8047B032;
 extern u8 lbl_8047B031;
 extern u8 lbl_8047B030;
+extern u8 lbl_8047B033;
 extern SndServiceEmitterPair* lbl_8047B03C;
 extern SndServiceGroup lbl_80448590[];
 extern SndServiceGroupNode lbl_80448990[];
 extern f32 lbl_8047D488;
 extern f32 lbl_8047D49C;
 extern f32 lbl_8047D4A0;
+extern f32 lbl_8047D4A8;
+extern f32 lbl_8047D4AC;
 extern f32 lbl_8047D4B0[];
 extern u32 synthFXStart(u16 effect, u8 volume, u8 pan, u8 studio, u32 itd);
 extern u32 synthFXSetCtrl(u32 handle, u8 ctrl, u8 value);
 extern u32 synthFXSetCtrl14(u32 handle, u8 ctrl, u16 value);
 extern u32 sndFXCheck(u32 handle);
 extern u32 fn_8015F124(SndServiceVoice*, f32, f32, f32, f32, f32);
-extern void fn_8015F270(void);
 extern void fn_8014DD98(u8 studio, void* update);
 extern void fn_8014DDB8(u8 studio, void* update);
+
+static inline void s3dSetFXParameters(SndServiceVoice* voice, f32 value,
+                                      f32 pan, f32 volume, f32 surround,
+                                      f32 pitch) {
+    u32 converted;
+    u32 handle;
+    u8 controlValue;
+    u16 control14;
+
+    handle = voice->handle;
+    if (voice->flags & 0x100000) {
+        converted = (u32)(s32)(lbl_8047D488 * (voice->fade * value));
+    } else {
+        converted = (u32)(s32)(lbl_8047D488 * value);
+    }
+    controlValue = 0x7F;
+    if ((u8)converted <= 0x7F) {
+        controlValue = converted;
+    }
+    synthFXSetCtrl(handle, 7, controlValue);
+
+    converted = (u32)(s32)(lbl_8047D49C * (lbl_8047D48C + pan));
+    controlValue = 0x7F;
+    if ((u8)converted <= 0x7F) {
+        controlValue = converted;
+    }
+    synthFXSetCtrl(handle, 0xA, controlValue);
+
+    converted = (u32)(s32)(lbl_8047D49C * (lbl_8047D48C - surround));
+    controlValue = 0x7F;
+    if ((u8)converted <= 0x7F) {
+        controlValue = converted;
+    }
+    synthFXSetCtrl(handle, 0x83, controlValue);
+
+    converted = __cvt_fp2unsigned(lbl_8047D4A0 * pitch);
+    control14 = 0x3FFF;
+    if (converted <= 0x3FFF) {
+        control14 = converted;
+    }
+    synthFXSetCtrl14(handle, 0x84, control14);
+
+    if (voice->ctrlList != 0) {
+        u32 i;
+        SndServiceCtrl* ctrl = voice->ctrlList->controls;
+
+        for (i = 0; i < voice->ctrlList->count; i++, ctrl++) {
+            if (ctrl->ctrl < 0x40 || ctrl->ctrl == 0x80 ||
+                ctrl->ctrl == 0x84) {
+                synthFXSetCtrl14(handle, ctrl->ctrl, ctrl->value);
+            } else {
+                synthFXSetCtrl(handle, ctrl->ctrl, (u8)ctrl->value);
+            }
+        }
+    }
+}
+
+void fn_8015F270(void) { /* StartContinousEmitters */
+    s32 i;
+    SndServiceStartNode* start;
+    SndServiceVoice* voice;
+    f32 difference;
+
+    for (i = 0; i < lbl_8047B032; i++) {
+        for (start = lbl_80448590[i].starting; start != 0;
+             start = start->next) {
+            if (lbl_80448590[i].running != 0 &&
+                !((lbl_8047B033 != 0 &&
+                   (lbl_80448590[i].key & 0x80000000) != 0) &&
+                  lbl_80448590[i].numRunning <
+                      lbl_80448590[i].starting->voice->maxVoices)) {
+                difference =
+                    start->value - lbl_80448590[i].running->value;
+                if (difference <= lbl_8047D4A8) {
+                    continue;
+                } else if (difference <= lbl_8047D4AC) {
+                    if (++start->voice->volumeLevelCount < 20) {
+                        continue;
+                    }
+                } else {
+                    start->voice->volumeLevelCount = 0;
+                }
+            }
+
+            voice = start->voice;
+            if (voice->source != 0 && voice->source->studio == 0xFF) {
+                goto set_flags;
+            }
+            voice->handle =
+                synthFXStart(voice->effectId, 127, 64,
+                             voice->source != 0 ? voice->source->studio
+                                                : voice->fallbackStudio,
+                             (voice->flags & 0x10) != 0);
+            if (voice->handle == 0xFFFFFFFF) {
+set_flags:
+                if (!(voice->flags & 2)) {
+                    voice->flags |= 0x40000;
+                    voice->flags &= ~0x20000;
+                }
+            } else {
+                if (!(voice->flags & 0x20)) {
+                    voice->flags |= 0x100000;
+                    voice->fade = lbl_8047D468;
+                } else {
+                    voice->fade = lbl_8047D48C;
+                }
+                s3dSetFXParameters(voice, start->value, start->pan,
+                                   start->volume, start->surround,
+                                   start->pitch);
+                voice->flags &= ~0x20000;
+                lbl_80448590[i].numRunning++;
+                if (lbl_80448590[i].running != 0) {
+                    lbl_80448590[i].running =
+                        lbl_80448590[i].running->next;
+                }
+            }
+        }
+    }
+}
 
 #pragma push
 #pragma optimization_level 4
@@ -1113,21 +1246,21 @@ void fn_8015F620(void)
                 }
                 group = &lbl_80448590[groupIndex];
                 if (groupIndex == lbl_8047B032) {
-                    group->_04 = 0;
-                    group->voices = 0;
-                    group->count = 0;
+                    group->starting = 0;
+                    group->running = 0;
+                    group->numRunning = 0;
                     group->key = voice->group;
                     lbl_8047B032++;
                 }
-                group->count++;
+                group->numRunning++;
                 before = 0;
-                node = group->voices;
+                node = group->running;
                 while (node != 0 && node->value <= value) {
                     before = node;
                     node = node->next;
                 }
                 if (before == 0) {
-                    group->voices = &lbl_80448990[lbl_8047B030];
+                    group->running = &lbl_80448990[lbl_8047B030];
                 } else {
                     before->next = &lbl_80448990[lbl_8047B030];
                 }
