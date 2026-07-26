@@ -110,39 +110,49 @@ typedef struct GSpartRotationSlot {
     void* userData;
 } GSpartRotationSlot;
 
-void GSpartRegisterRotation(GSpart* part, void* userData, void* callback)
+static inline GSpartRotationSlot* GSpartFindRotationSlot(GSpart* part)
 {
     u8* model = part->model;
     GSpartRotationSlot* slot;
     u32 i;
 
-    if (callback == NULL) {
-        return;
-    }
-
     slot = (GSpartRotationSlot*)(model + 0xE4);
     for (i = 0; i < 4; i++, slot++) {
         if (slot->partIndex == part->index) {
             GSlogWrite(lbl_80270F10);
-            return;
+            return NULL;
         }
     }
 
     slot = (GSpartRotationSlot*)(model + 0xE4);
-    if (slot->callback != NULL) {
-        slot++;
-        if (slot->callback != NULL) {
-            slot++;
-            if (slot->callback != NULL) {
-                slot++;
-                if (slot->callback != NULL) {
-                    GSlogWrite(lbl_80270F44);
-                    slot = NULL;
-                }
-            }
-        }
+    if (slot->callback == NULL) {
+        return slot;
+    }
+    slot++;
+    if (slot->callback == NULL) {
+        return slot;
+    }
+    slot++;
+    if (slot->callback == NULL) {
+        return slot;
+    }
+    slot++;
+    if (slot->callback == NULL) {
+        return slot;
+    }
+    GSlogWrite(lbl_80270F44);
+    return NULL;
+}
+
+void GSpartRegisterRotation(GSpart* part, void* userData, void* callback)
+{
+    GSpartRotationSlot* slot;
+
+    if (callback == NULL) {
+        return;
     }
 
+    slot = GSpartFindRotationSlot(part);
     if (slot != NULL) {
         slot->callback = callback;
         slot->partIndex = part->index;
