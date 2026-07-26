@@ -685,6 +685,41 @@ void *fn_801E4F64(void *arg)
     }
 }
 
+void *fn_801E5154(void *arg)
+{
+    THPReadBuffer *readBuffer;
+
+    (void)arg;
+    for (;;) {
+        if (lbl_8046AC60[0xA7]) {
+            while (*(s32 *)(lbl_8046AC60 + 0xD8) < 0) {
+                u32 interruptLevel;
+
+                readBuffer = (THPReadBuffer *)fn_801E1B84();
+                if ((readBuffer->frameNumber +
+                         *(u32 *)(lbl_8046AC60 + 0xC0)) %
+                            *(u32 *)(lbl_8046AC60 + 0x50) ==
+                        *(u32 *)(lbl_8046AC60 + 0x50) - 1 &&
+                    !(lbl_8046AC60[0xA6] & 1)) {
+                    THPDecodeVideoFrame(readBuffer);
+                }
+                fn_801E1BB8(readBuffer);
+                interruptLevel = OSDisableInterrupts();
+                (*(s32 *)(lbl_8046AC60 + 0xD8))++;
+                OSRestoreInterrupts(interruptLevel);
+            }
+        }
+
+        if (lbl_8046AC60[0xA7]) {
+            readBuffer = (THPReadBuffer *)fn_801E1B84();
+        } else {
+            readBuffer = (THPReadBuffer *)fn_801E1BE8();
+        }
+        THPDecodeVideoFrame(readBuffer);
+        fn_801E1BB8(readBuffer);
+    }
+}
+
 /* ---- Thread B: cancel/resume ---- */
 extern OSThread lbl_8046BE78;
 void fn_801E4DAC(void)
