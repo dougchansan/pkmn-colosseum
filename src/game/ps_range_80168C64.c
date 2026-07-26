@@ -1970,6 +1970,60 @@ void psDispSubPointTrail(PSParticle* pp) {
 }
 
 /*
+ * Applies an attached application's SRT to point-particle position and
+ * velocity.  Point raster emission remains to be decompiled; this is the
+ * verified transform prefix at 0x8016DD68-0x8016DF14.
+ */
+void psDispSubAPPSRTPoint(PSParticle* pp) {
+    PSAppSRT* appSRT = (PSAppSRT*)pp->parentObj;
+    Mtx appMatrix;
+    Vec velocity;
+    Vec position;
+
+    if (lbl_8047B12C != 0) {
+        lbl_8047B12C = 0;
+        fn_800BD554(0);
+    }
+
+    if (appSRT->flags != lbl_80478C30) {
+        if (appSRT->type != 2) {
+            HSD_MtxSRT(appSRT->matrix, &appSRT->scaleX,
+                       &appSRT->translationX, &appSRT->rotationX, NULL);
+        }
+        if (appSRT->type == 1) {
+            appSRT->type = 2;
+        }
+    }
+
+    appSRT->flags = lbl_80478C30;
+    PSMTXCopy(appSRT->matrix, appMatrix);
+    appMatrix[0][3] -= appSRT->rotationX;
+    appMatrix[1][3] -= appSRT->rotationY;
+    appMatrix[2][3] -= appSRT->rotationZ;
+
+    velocity.x = pp->velocityX;
+    velocity.y = pp->velocityY;
+    velocity.z = pp->velocityZ;
+    PSMTXMultVec(appMatrix, &velocity, &velocity);
+    if (appSRT->active != 0) {
+        PSMTXMultVec((const f32(*)[4])lbl_80452DE8, &velocity, &velocity);
+    }
+
+    position.x = pp->positionX;
+    position.y = pp->positionY;
+    position.z = pp->positionZ;
+    if (appSRT->active != 0) {
+        PSMTXMultVec(appMatrix, &position, &position);
+        PSMTXMultVec((const f32(*)[4])lbl_80452DE8, &position, &position);
+        position.x += appSRT->rotationX;
+        position.y += appSRT->rotationY;
+        position.z += appSRT->rotationZ;
+    } else {
+        PSMTXMultVec(appSRT->matrix, &position, &position);
+    }
+}
+
+/*
  * Allocates and links a generator after validating its bank/script tuple.
  * Script-record initialization remains asm-only; this is the verified
  * validation and pool/list prefix at 0x80173718-0x80173888.
