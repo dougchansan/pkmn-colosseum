@@ -12,19 +12,52 @@ typedef struct PSGeneratorState {
     /* 0x12 */ u16 angleFlags;
     /* 0x14 */ u8 bankIndex;
     /* 0x15 */ u8 linkNo;
-    /* 0x16 */ u8 pad16[0x02];
+    /* 0x16 */ u8 texGroup;
+    /* 0x17 */ u8 pad17;
     /* 0x18 */ u16 familyId;
-    /* 0x1A */ u8 pad1A[0x06];
+    /* 0x1A */ u16 particleLife;
+    /* 0x1C */ void* scriptData;
     /* 0x20 */ f32 positionX;
     /* 0x24 */ f32 positionY;
     /* 0x28 */ f32 positionZ;
     /* 0x2C */ f32 velocityX;
     /* 0x30 */ f32 velocityY;
     /* 0x34 */ f32 velocityZ;
-    /* 0x38 */ u8 pad38[0x14];
+    /* 0x38 */ f32 gravity;
+    /* 0x3C */ f32 friction;
+    /* 0x40 */ f32 particleSize;
+    /* 0x44 */ f32 radius;
+    /* 0x48 */ f32 angle;
     /* 0x4C */ u32 childCount;
     /* 0x50 */ void* appSRT;
-    /* 0x54 */ u8 pad54[0x34];
+    /* 0x54 */ union {
+        struct {
+            f32 minAngle;
+            f32 maxAngle;
+            f32 height;
+        } cone;
+        struct {
+            f32 x;
+            f32 y;
+            f32 z;
+            f32 xx;
+            f32 xy;
+            f32 xz;
+            f32 yx;
+            f32 yy;
+            f32 yz;
+            f32 zx;
+            f32 zy;
+            f32 zz;
+        } rect;
+        struct {
+            f32 x;
+            f32 y;
+            f32 z;
+        } line;
+    } shape;
+    /* 0x84 */ u16 shapeFlags;
+    /* 0x86 */ u8 pad86[0x02];
     /* 0x88 */ u16 generatorFlags;
     /* 0x8A */ u8 pad8A[0x02];
     /* 0x8C */ f32 generatorData[6];

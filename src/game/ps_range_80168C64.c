@@ -241,6 +241,7 @@ extern void PSMTXIdentity(Mtx m);
 extern void PSMTXCopy(const Mtx source, Mtx destination);
 extern void PSMTXRotRad(Mtx m, char axis, f32 angle);
 extern void PSMTXConcat(const Mtx a, const Mtx b, Mtx out);
+extern void PSMTXMultVec(const Mtx m, const Vec* src, Vec* dst);
 extern void PSVECNormalize(const Vec* src, Vec* dst);
 extern void PSVECCrossProduct(const Vec* a, const Vec* b, Vec* out);
 extern void HSD_CObjGetUpVector(void* camera, Vec* up);
@@ -289,6 +290,7 @@ extern void HSD_MulColor(GXColor* a, GXColor* b, GXColor* dest);
 extern void fn_800060F0(const char* file, s32 line, const char* message, ...);
 extern void PSMTXInverse(const Mtx source, Mtx destination);
 extern void fn_800BD454(f32* projection);
+extern void (*lbl_8047B198)(PSGeneratorState*, Mtx);
 
 void psSetGeneratorAngleRadiusScale(PSGeneratorState* gen, f32* scale,
                                     u8 applyToMotion) {
@@ -3451,8 +3453,9 @@ void psExecGenerator(u32 linkMask) {
 }
 
 /*
- * Builds the generator's emission basis. The remainder of the emitter modes
- * is still asm-only; this verified prefix corresponds to 0x801742C8-8017455C.
+ * Generator emitter. The shape cases follow the matching HSD generator
+ * implementation in Melee's baselib/generator.c; field offsets and the newer
+ * Euler-basis extension were checked against this target's retail body.
  */
 void generateParticle_8017424C(PSGeneratorState* gen) {
     Mtx basis;
@@ -3462,10 +3465,17 @@ void generateParticle_8017424C(PSGeneratorState* gen) {
     Mtx direction;
     Vec column;
     Vec emissionVelocity;
+    Vec emissionPosition;
+    Vec particleVelocity;
+    Vec transformed;
     Vec forward;
     Vec up;
     Vec side;
     f32 magnitude;
+    f32 angle1 = 0.0f;
+    f32 angle3 = 0.0f;
+    f32 angleStep = 0.0f;
+    f32 currentAngle = 0.0f;
 
     if (gen->lifetime < lbl_8047D6B4) {
         return;
@@ -3593,6 +3603,377 @@ void generateParticle_8017424C(PSGeneratorState* gen) {
         direction[2][2] = yawCos * pitchCos;
         direction[2][3] = 0.0f;
         PSMTXConcat(basis, direction, basis);
+    }
+
+    if ((gen->angleFlags & 0xF) == 2) {
+        f32 combined;
+
+        if (fabsf(basis[2][2]) < lbl_80478AC8) {
+            angle1 = basis[1][2] >= 0.0f ? lbl_8047D694 : lbl_8047D698;
+        } else {
+            angle1 = atan2(basis[1][2], basis[2][2]);
+        }
+        combined = basis[2][2] * cos(angle1) + basis[1][2] * sin(angle1);
+        if (fabsf(combined) < lbl_80478AC8) {
+            angle3 = basis[0][2] >= 0.0f ? lbl_8047D694 : lbl_8047D698;
+        } else {
+            angle3 = atan2(basis[0][2], combined);
+        }
+    }
+
+    if (gen->angle < 0.0f) {
+        switch (gen->angleFlags & 0xF) {
+        case 0:
+        case 3:
+        case 4:
+        case 6:
+        case 7:
+            angleStep = (gen->shape.cone.maxAngle -
+                         gen->shape.cone.minAngle) / (s32)gen->lifetime;
+            currentAngle = angleStep * fn_801ADC7C() +
+                           gen->shape.cone.minAngle;
+            break;
+        default:
+            currentAngle = (f32)(lbl_8047D6A0 * lbl_8047D6A8 *
+                                 fn_801ADC7C());
+            angleStep = (f32)(lbl_8047D6A0 * lbl_8047D6A8 /
+                              (s32)gen->lifetime);
+            break;
+        }
+    }
+
+    while (gen->lifetime >= 1.0f) {
+        u16 mode = gen->angleFlags & 0xF;
+
+        switch (mode) {
+        case 0:
+        case 3:
+        case 4:
+        case 6:
+        case 7: {
+            f32 radiusFactor;
+            f32 radius;
+            f32 coneAngle;
+
+            if (gen->radius < 0.0f) {
+                radius = -gen->radius;
+                radiusFactor = 0.0f;
+            } else {
+                radiusFactor = fn_801ADC7C();
+                if (mode == 3 || mode == 4) {
+                    radiusFactor = sqrtf(radiusFactor);
+                }
+                radius = radiusFactor * gen->radius;
+            }
+
+            if (mode == 6) {
+                if (gen->angle < 0.0f) {
+                    currentAngle += angleStep;
+                    if (fabsf(radius) < lbl_80478AC8) {
+                        coneAngle = gen->shape.cone.height >= 0.0f
+                            ? -gen->angle
+                            : (f32)(lbl_8047D6A8 - gen->angle);
+                    } else {
+                        coneAngle = (f32)(lbl_8047D6A8 -
+                            atan2(gen->shape.cone.height, radius)) -
+                            gen->angle;
+                    }
+                } else {
+                    currentAngle = gen->shape.cone.minAngle +
+                        (gen->shape.cone.maxAngle -
+                         gen->shape.cone.minAngle) * fn_801ADC7C();
+                    coneAngle = radiusFactor * gen->angle;
+                    if (fabsf(radius) < lbl_80478AC8) {
+                        coneAngle = gen->shape.cone.height >= 0.0f
+                            ? gen->angle
+                            : (f32)(lbl_8047D6A8 + gen->angle);
+                    } else {
+                        coneAngle = gen->angle +
+                            (f32)(lbl_8047D6A8 -
+                                  atan2(gen->shape.cone.height, radius));
+                    }
+                }
+            } else if (mode == 7) {
+                if (gen->angle < 0.0f) {
+                    coneAngle = (f32)(lbl_8047D6A8 - gen->angle);
+                    currentAngle += angleStep;
+                } else {
+                    currentAngle = gen->shape.cone.minAngle +
+                        (gen->shape.cone.maxAngle -
+                         gen->shape.cone.minAngle) * fn_801ADC7C();
+                    coneAngle = (f32)(lbl_8047D6A8 + gen->angle);
+                }
+            } else if (gen->angle < 0.0f) {
+                currentAngle += angleStep;
+                coneAngle = radiusFactor * -gen->angle;
+            } else {
+                currentAngle = gen->shape.cone.minAngle +
+                    (gen->shape.cone.maxAngle -
+                     gen->shape.cone.minAngle) * fn_801ADC7C();
+                coneAngle = radiusFactor * gen->angle;
+            }
+
+            emissionPosition.x = radius * cos(currentAngle);
+            emissionPosition.y = radius * sin(currentAngle);
+            if (mode == 6 || mode == 7) {
+                emissionPosition.z = fn_801ADC7C();
+                if (mode == 6) {
+                    emissionPosition.x *= 1.0f - emissionPosition.z;
+                    emissionPosition.y *= 1.0f - emissionPosition.z;
+                }
+                emissionPosition.z *= gen->shape.cone.height;
+            } else {
+                emissionPosition.z = 0.0f;
+            }
+
+            particleVelocity.x =
+                magnitude * sin(coneAngle) * cos(currentAngle);
+            particleVelocity.y =
+                magnitude * sin(coneAngle) * sin(currentAngle);
+            particleVelocity.z = magnitude * cos(coneAngle);
+            if (mode == 3) {
+                particleVelocity.x *= radiusFactor;
+                particleVelocity.y *= radiusFactor;
+                particleVelocity.z *= radiusFactor;
+            }
+
+            PSMTXMultVec(basis, &emissionPosition, &emissionPosition);
+            emissionPosition.x += gen->positionX;
+            emissionPosition.y += gen->positionY;
+            emissionPosition.z += gen->positionZ;
+            PSMTXMultVec(basis, &particleVelocity, &particleVelocity);
+
+            psGenerateParticle(
+                gen->linkNo, gen->bankIndex, 0,
+                emissionPosition.x, emissionPosition.y, emissionPosition.z,
+                gen->flags, particleVelocity.x * gen->generatorData[3],
+                particleVelocity.y * gen->generatorData[4],
+                particleVelocity.z * gen->generatorData[5], gen->texGroup,
+                gen->scriptData, gen->particleLife, gen->particleSize, NULL,
+                gen->gravity, gen->friction, gen);
+            break;
+        }
+
+        case 1: {
+            f32 random = fn_801ADC7C();
+
+            emissionPosition.x = random * gen->shape.line.x;
+            emissionPosition.y = random * gen->shape.line.y;
+            emissionPosition.z = random * gen->shape.line.z;
+            PSMTXMultVec(basis, &emissionPosition, &emissionPosition);
+            emissionPosition.x += gen->positionX;
+            emissionPosition.y += gen->positionY;
+            emissionPosition.z += gen->positionZ;
+            PSMTXMultVec(basis, &emissionVelocity, &particleVelocity);
+            psGenerateParticle(
+                gen->linkNo, gen->bankIndex, 0,
+                emissionPosition.x, emissionPosition.y, emissionPosition.z,
+                gen->flags, particleVelocity.x * gen->generatorData[3],
+                particleVelocity.y * gen->generatorData[4],
+                particleVelocity.z * gen->generatorData[5], gen->texGroup,
+                gen->scriptData, gen->particleLife, gen->particleSize, NULL,
+                gen->gravity, gen->friction, gen);
+            break;
+        }
+
+        case 2:
+            if (gen->radius < 0.0f) {
+                forward.x = 0.0f;
+            } else {
+                forward.x = fn_801ADC7C();
+            }
+            if (gen->angle < 0.0f) {
+                currentAngle += angleStep;
+            } else {
+                currentAngle =
+                    (f32)(lbl_8047D6A0 * lbl_8047D6A8 * fn_801ADC7C());
+            }
+            gen->shape.line.x = magnitude;
+            psGenerateParticle(
+                gen->linkNo, gen->bankIndex, 0, 0.0f, 0.0f, 0.0f,
+                gen->flags | 4, currentAngle, forward.x, 0.0f,
+                gen->texGroup, gen->scriptData, gen->particleLife,
+                gen->particleSize, NULL, angle1, angle3, gen);
+            break;
+
+        case 5: {
+            f32 random;
+            f32 axisMagnitude;
+
+            emissionPosition.x = fn_801ADC7C();
+            emissionPosition.y = fn_801ADC7C();
+            emissionPosition.z = fn_801ADC7C();
+            switch (gen->shapeFlags) {
+            case 1:
+                emissionPosition.x =
+                    emissionPosition.x > 0.5f ? 1.0f : 0.0f;
+                break;
+            case 2:
+                emissionPosition.y =
+                    emissionPosition.y > 0.5f ? 1.0f : 0.0f;
+                break;
+            case 3:
+                random = fn_801ADC7C();
+                if (random > gen->shape.rect.x /
+                    (gen->shape.rect.x + gen->shape.rect.y)) {
+                    emissionPosition.y =
+                        emissionPosition.y > 0.5f ? 1.0f : 0.0f;
+                } else {
+                    emissionPosition.x =
+                        emissionPosition.x > 0.5f ? 1.0f : 0.0f;
+                }
+                break;
+            case 4:
+                emissionPosition.z =
+                    emissionPosition.z > 0.5f ? 1.0f : 0.0f;
+                break;
+            case 5:
+                random = fn_801ADC7C();
+                if (random > gen->shape.rect.x /
+                    (gen->shape.rect.x + gen->shape.rect.z)) {
+                    emissionPosition.z =
+                        emissionPosition.z > 0.5f ? 1.0f : 0.0f;
+                } else {
+                    emissionPosition.x =
+                        emissionPosition.x > 0.5f ? 1.0f : 0.0f;
+                }
+                break;
+            case 6:
+                random = fn_801ADC7C();
+                if (random > gen->shape.rect.y /
+                    (gen->shape.rect.y + gen->shape.rect.z)) {
+                    emissionPosition.z =
+                        emissionPosition.z > 0.5f ? 1.0f : 0.0f;
+                } else {
+                    emissionPosition.y =
+                        emissionPosition.y > 0.5f ? 1.0f : 0.0f;
+                }
+                break;
+            case 7: {
+                f32 yz = gen->shape.rect.y * gen->shape.rect.z;
+                f32 xy = gen->shape.rect.x * gen->shape.rect.y;
+                f32 total = gen->shape.rect.x *
+                    (gen->shape.rect.y + gen->shape.rect.z) + yz;
+                f32 inverse = 1.0f / total;
+
+                random = fn_801ADC7C();
+                if (random < inverse * xy) {
+                    emissionPosition.z =
+                        emissionPosition.z > 0.5f ? 1.0f : 0.0f;
+                } else if (random >
+                    1.0f - inverse * gen->shape.rect.x *
+                    gen->shape.rect.z) {
+                    emissionPosition.y =
+                        emissionPosition.y > 0.5f ? 1.0f : 0.0f;
+                } else {
+                    emissionPosition.x =
+                        emissionPosition.x > 0.5f ? 1.0f : 0.0f;
+                }
+                break;
+            }
+            }
+
+            emissionPosition.x -= 0.5f;
+            emissionPosition.y -= 0.5f;
+            emissionPosition.z -= 0.5f;
+            transformed.x = gen->shape.rect.yx * emissionPosition.y +
+                gen->shape.rect.xx * emissionPosition.x +
+                gen->shape.rect.zx * emissionPosition.z;
+            transformed.y = gen->shape.rect.yy * emissionPosition.y +
+                gen->shape.rect.xy * emissionPosition.x +
+                gen->shape.rect.zy * emissionPosition.z;
+            transformed.z = gen->shape.rect.yz * emissionPosition.y +
+                gen->shape.rect.xz * emissionPosition.x +
+                gen->shape.rect.zz * emissionPosition.z;
+            PSMTXMultVec(basis, &transformed, &emissionPosition);
+            emissionPosition.x += gen->positionX;
+            emissionPosition.y += gen->positionY;
+            emissionPosition.z += gen->positionZ;
+
+            axisMagnitude =
+                sqrtf(gen->shape.rect.zx * gen->shape.rect.zx +
+                      gen->shape.rect.zy * gen->shape.rect.zy +
+                      gen->shape.rect.zz * gen->shape.rect.zz);
+            particleVelocity.x = gen->shape.rect.zx *
+                                 magnitude / axisMagnitude;
+            particleVelocity.y = gen->shape.rect.zy *
+                                 magnitude / axisMagnitude;
+            particleVelocity.z = gen->shape.rect.zz *
+                                 magnitude / axisMagnitude;
+            PSMTXMultVec(basis, &particleVelocity, &particleVelocity);
+            psGenerateParticle(
+                gen->linkNo, gen->bankIndex, 0,
+                emissionPosition.x, emissionPosition.y, emissionPosition.z,
+                gen->flags, particleVelocity.x * gen->generatorData[3],
+                particleVelocity.y * gen->generatorData[4],
+                particleVelocity.z * gen->generatorData[5], gen->texGroup,
+                gen->scriptData, gen->particleLife, gen->particleSize, NULL,
+                gen->gravity, gen->friction, gen);
+            break;
+        }
+
+        case 8: {
+            f32 latitude;
+            f32 longitude;
+            f32 radial;
+
+            if (gen->shape.cone.height == 0.0f ||
+                fabsf(gen->shape.cone.height - (f32)lbl_8047D6A8) < 0.001f) {
+                latitude = (f32)lbl_8047D6A8 *
+                           sqrtf(fn_801ADC7C());
+                if (fn_801ADC7C() < 0.5f) {
+                    latitude = (f32)lbl_8047D6A8 - latitude;
+                }
+            } else {
+                latitude = gen->shape.cone.height *
+                           sqrtf(fn_801ADC7C());
+            }
+            longitude = (f32)(lbl_8047D6A0 * lbl_8047D6A8 *
+                              fn_801ADC7C());
+            if (gen->radius < 0.0f) {
+                radial = -gen->radius;
+            } else {
+                radial = gen->radius * sqrtf(fn_801ADC7C());
+            }
+
+            particleVelocity.x = sin(latitude) * cos(longitude);
+            particleVelocity.y = sin(longitude) * sin(latitude);
+            particleVelocity.z = cos(latitude);
+            PSMTXMultVec(basis, &particleVelocity, &emissionPosition);
+            particleVelocity.x = emissionPosition.x * gen->shape.rect.x;
+            particleVelocity.y = emissionPosition.y * gen->shape.rect.x;
+            particleVelocity.z = emissionPosition.z * gen->shape.rect.x;
+            if (gen->radius >= 0.0f && gen->shape.rect.x < 0.0f) {
+                f32 scale = radial / gen->radius;
+                particleVelocity.x *= scale;
+                particleVelocity.y *= scale;
+                particleVelocity.z *= scale;
+            }
+            emissionPosition.x =
+                radial * emissionPosition.x + gen->positionX;
+            emissionPosition.y =
+                radial * emissionPosition.y + gen->positionY;
+            emissionPosition.z =
+                radial * emissionPosition.z + gen->positionZ;
+            psGenerateParticle(
+                gen->linkNo, gen->bankIndex, 0,
+                emissionPosition.x, emissionPosition.y, emissionPosition.z,
+                gen->flags, particleVelocity.x * gen->generatorData[3],
+                particleVelocity.y * gen->generatorData[4],
+                particleVelocity.z * gen->generatorData[5], gen->texGroup,
+                gen->scriptData, gen->particleLife, gen->particleSize, NULL,
+                gen->gravity, gen->friction, gen);
+            break;
+        }
+
+        default:
+            if (lbl_8047B198 != NULL) {
+                lbl_8047B198(gen, basis);
+            }
+            break;
+        }
+
+        gen->lifetime -= 1.0f;
     }
 }
 
