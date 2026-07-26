@@ -3626,10 +3626,17 @@ typedef struct DistortionState {
     void* model;     /* 0x08 */
     u32   partIdx;   /* 0x0C */
     f32   unk_10;    /* 0x10 */
-    u8    pad_14[0x18];
+    f32   unk_14;    /* 0x14 */
+    u8    pad_18[4];
+    f32   unk_1C;    /* 0x1C */
+    f32   unk_20;    /* 0x20 */
+    f32   unk_24;    /* 0x24 */
+    u8    pad_28[2];
+    u16   unk_2A;
     f32   pos[3];    /* 0x2C */
     u8    pad_38[0x78];
     u16   frame;     /* 0xB0 */
+    u16   duration;  /* 0xB2 */
 } DistortionState;
 
 u16 distortionEffectStart(void* ptr) {
@@ -3797,27 +3804,42 @@ asm u32 fn_8013F80C(void* ptr, u32 delta) {
 }
 #else
 u32 fn_8013F80C(void* ptr, u32 delta) {
-    u8* p;
+    DistortionState* s = ptr;
     void* part;
+    f32 progress;
+    f32 threshold;
+    f32 zero;
+    f32 one;
 
-    if (ptr == NULL) {
+    if (s == NULL) {
         return 0;
     }
 
-    p = ptr;
-    if (*(u16*)(p + 0xB0) >= *(u16*)(p + 0xB2)) {
+    if (s->texture == NULL || lbl_8047AEE8 == 0) {
         return 0;
     }
 
-    *(u16*)(p + 0xB0) = *(u16*)(p + 0xB0) + delta;
-    if (*(void**)(p + 0x4) != NULL) {
-        part = GSmodelGetPart(*(void**)(p + 0x4), *(u32*)(p + 0xC));
+    if (s->unk_2A != 0) {
+        part = GSmodelGetPart(s->model, s->partIdx);
         if (part != NULL) {
-            GSpartGetTransform(part, p + 0x2C, NULL, NULL);
+            GSpartGetTransform(part, s->pos, NULL, NULL);
             GSpartFree(part);
         }
     }
-    return 1;
+
+    zero = *(f32*)&lbl_8047D300;
+    one = *(f32*)&lbl_8047D308;
+    s->unk_10 = s->unk_14 * s->duration;
+    progress = (f32)s->frame / (f32)s->duration;
+    threshold = s->unk_1C;
+    if (threshold != zero && progress <= threshold) {
+        s->unk_10 *= progress / threshold;
+    } else {
+        s->unk_10 *= (one - progress) / (one - threshold);
+    }
+    s->unk_20 = s->unk_24 * (one - progress);
+    s->frame += delta;
+    return ((u32)(s->frame - s->duration)) >> 31;
 }
 #endif
 extern void fn_800D7BF8(void);
