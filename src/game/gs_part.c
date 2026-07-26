@@ -6,6 +6,7 @@
  * segment (Fable re-split, 2026-07-07). Functions asm-only until matched.
  */
 #include "dolphin/types.h"
+#include "hsd/hsd_jobj.h"
 
 typedef struct GSpart {
     u8 inUse;
@@ -168,7 +169,7 @@ void* GSpartGetMaterial(GSpart* part, u32 index)
     void* result;
     u32 count;
 
-    if (*(u32*)(jobj + 0x14) & 0x4020) {
+    if (union_type_dobj((HSD_JObj*)jobj)) {
         material = *(u8**)(jobj + 0x18);
     } else {
         material = NULL;
@@ -224,7 +225,7 @@ u32 GSpartGetMaterialCount(GSpart* part)
     u8* material;
     u32 result;
 
-    if (*(u32*)(jobj + 0x14) & 0x4020) {
+    if (union_type_dobj((HSD_JObj*)jobj)) {
         material = *(u8**)(jobj + 0x18);
     } else {
         material = NULL;
@@ -242,7 +243,7 @@ BOOL fn_800EE7E0(GSpart* part)
     u8* material;
     u32 value;
 
-    if ((*(u32*)(jobj + 0x14) & 0x4020) == 0) {
+    if (union_type_dobj((HSD_JObj*)jobj)) {
         material = *(u8**)(jobj + 0x18);
         value = material != NULL ? *(u32*)(material + 0xC) : 0;
     } else {
