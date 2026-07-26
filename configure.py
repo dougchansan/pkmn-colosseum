@@ -437,13 +437,25 @@ config.libs = [
                 extra_cflags=["-use_lmw_stmw on"],
                 progress_category="runtime",
             ),  # BANK_TRK3
-            *[
-                Object(status, path, mw_version="GC/1.3", progress_category="runtime")
-                for status, path in [
-                    (CodeCandidate, "trk/TRKInit.c"),
-                    (Matching, "trk/TRKInit_exact_800C3344.c"),
-                ]
-            ],  # PR414_TRK_INIT
+            Object(
+                CodeCandidate,
+                "trk/TRKInit_r53_800C2D80_prefix.c",
+                mw_version="GC/1.3",
+                progress_category="runtime",
+            ),
+            Object(
+                CodeCandidate,
+                "trk/TRKInit_r53_800C3218_lmw_on.c",
+                mw_version="GC/1.3",
+                extra_cflags=["-use_lmw_stmw on"],
+                progress_category="runtime",
+            ),
+            Object(
+                Matching,
+                "trk/TRKInit_exact_800C3344.c",
+                mw_version="GC/1.3",
+                progress_category="runtime",
+            ),  # PR414_TRK_INIT
             Object(
                 Matching,
                 "trk/TRKBoard_exact_800C33BC.c",
@@ -1374,7 +1386,12 @@ config.libs = [
                     status,
                     path,
                     mw_version=version,
-                    extra_cflags=["-use_lmw_stmw off", "-sdata 8", "-sdata2 8"]
+                    extra_cflags=(
+                        ["-use_lmw_stmw on"]
+                        if path == "musyx/musyx_r51_8015A484_inline_noauto.c"
+                        else ["-use_lmw_stmw off"]
+                    )
+                    + ["-sdata 8", "-sdata2 8"]
                     + (
                         ["-fp_contract off"]
                         if "_fp_contract_off" in path
@@ -1402,7 +1419,7 @@ config.libs = [
                     (CodeCandidate, "musyx/musyx_r50_8015E890_prefix.c", "GC/1.3.2"),
                     (CodeCandidate, "musyx/musyx_r50_8015E8B0_inline_noauto.c", "GC/1.3.2"),
                     (CodeCandidate, "musyx/musyx_r50_8015ECA8_suffix.c", "GC/1.3.2"),
-                    (CodeCandidate, "musyx/musyx_candidate_8015D678_r40_801603C0_gc125n.c", "GC/1.2.5n"),
+                    (CodeCandidate, "musyx/musyx_candidate_8015D678_r40_801603C0_gc125n.c", "GC/1.3"),
                 ]
             ],
             *[
@@ -3204,7 +3221,7 @@ config.libs = [
                 CodeCandidate,
                 "dolphin/sdk_r48_80099400_o2.c",
                 mw_version="GC/1.2.5",
-                cflags=["-O2" if flag == "-O4,p" else flag for flag in cflags_base],
+                cflags=["-O1" if flag == "-O4,p" else flag for flag in cflags_base],
                 progress_category="sdk",
             ),
             Object(
@@ -3263,7 +3280,14 @@ config.libs = [
             ),
             Object(
                 CodeCandidate,
-                "dolphin/sdk_candidate_8009AFFC.c",
+                "dolphin/sdk_r53_8009AFFC_o1.c",
+                mw_version="GC/1.2.5n",
+                cflags=["-O1" if flag == "-O4,p" else flag for flag in cflags_base],
+                progress_category="sdk",
+            ),
+            Object(
+                CodeCandidate,
+                "dolphin/sdk_r53_8009B1B8_suffix.c",
                 mw_version="GC/1.2.5n",
                 progress_category="sdk",
             ),
@@ -3965,6 +3989,20 @@ config.libs = [
             ),
             Object(
                 CodeCandidate,
+                "dolphin/sdk_r53_800C4C50_o1.c",
+                mw_version="GC/1.2.5n",
+                cflags=["-O1" if flag == "-O4,p" else flag for flag in cflags_base],
+                progress_category="sdk",
+            ),
+            Object(
+                CodeCandidate,
+                "dolphin/sdk_r53_800C4C74_o1.c",
+                mw_version="GC/1.2.5n",
+                cflags=["-O1" if flag == "-O4,p" else flag for flag in cflags_base],
+                progress_category="sdk",
+            ),
+            Object(
+                CodeCandidate,
                 "dolphin/sdk_r52_800C4C98_prefix.c",
                 mw_version="GC/1.3",
                 progress_category="sdk",
@@ -4035,7 +4073,7 @@ config.libs = [
             Object(
                 CodeCandidate,
                 "crt/math_range_800CD648.c",
-                mw_version="GC/1.3",
+                mw_version="GC/1.3.2",
                 progress_category="runtime",
             ),
             Object(

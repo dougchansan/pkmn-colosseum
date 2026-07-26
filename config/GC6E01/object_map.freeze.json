@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196100,
     "total_functions": 8603,
-    "total_units": 2140
+    "total_units": 2144
   },
   "topology_status": {
     "auto_units": 68,
-    "named_units": 2072,
-    "source_backed_units": 2066,
+    "named_units": 2076,
+    "source_backed_units": 2070,
     "auto_code": 0,
     "auto_data": 57687,
     "auto_functions": 0
@@ -23,7 +23,7 @@
     "matched_data_percent": 97.28669,
     "matched_functions": 6573,
     "matched_functions_percent": 76.40358,
-    "fuzzy_match_percent": 71.89786
+    "fuzzy_match_percent": 71.91026
   },
   "unit_topology": [
     {
@@ -4868,17 +4868,30 @@
       "total_functions": 1
     },
     {
-      "name": "main/dolphin/sdk_candidate_8009AFFC",
+      "name": "main/dolphin/sdk_r53_8009AFFC_o1",
       "sections": [
         {
           "name": ".text",
-          "size": 660,
+          "size": 444,
           "virtual_address": 2148118524
         }
       ],
-      "total_code": 660,
+      "total_code": 444,
       "total_data": 0,
-      "total_functions": 2
+      "total_functions": 1
+    },
+    {
+      "name": "main/dolphin/sdk_r53_8009B1B8_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 216,
+          "virtual_address": 2148118968
+        }
+      ],
+      "total_code": 216,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/dolphin/os/OSCache_privileged_prefix",
@@ -8453,17 +8466,30 @@
       "total_functions": 2
     },
     {
-      "name": "main/trk/TRKInit",
+      "name": "main/trk/TRKInit_r53_800C2D80_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 1476,
+          "size": 1176,
           "virtual_address": 2148281728
         }
       ],
-      "total_code": 1472,
+      "total_code": 1172,
       "total_data": 0,
-      "total_functions": 6
+      "total_functions": 5
+    },
+    {
+      "name": "main/trk/TRKInit_r53_800C3218_lmw_on",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 300,
+          "virtual_address": 2148282904
+        }
+      ],
+      "total_code": 300,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/trk/TRKInit_exact_800C3344",
@@ -9046,13 +9072,39 @@
       "sections": [
         {
           "name": ".text",
-          "size": 340,
+          "size": 268,
           "virtual_address": 2148289348
         }
       ],
-      "total_code": 340,
+      "total_code": 268,
       "total_data": 0,
-      "total_functions": 3
+      "total_functions": 1
+    },
+    {
+      "name": "main/dolphin/sdk_r53_800C4C50_o1",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 36,
+          "virtual_address": 2148289616
+        }
+      ],
+      "total_code": 36,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/dolphin/sdk_r53_800C4C74_o1",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 36,
+          "virtual_address": 2148289652
+        }
+      ],
+      "total_code": 36,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/dolphin/sdk_r52_800C4C98_prefix",

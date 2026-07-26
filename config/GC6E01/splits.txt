@@ -1095,8 +1095,11 @@ dolphin/os/OSArena.c:
 dolphin/sdk_exact_8009AFD0.c:
 	.text       start:0x8009AFD0 end:0x8009AFFC
 
-dolphin/sdk_candidate_8009AFFC.c:
-	.text       start:0x8009AFFC end:0x8009B290
+dolphin/sdk_r53_8009AFFC_o1.c:
+	.text       start:0x8009AFFC end:0x8009B1B8
+
+dolphin/sdk_r53_8009B1B8_suffix.c:
+	.text       start:0x8009B1B8 end:0x8009B290
 
 dolphin/os/OSCache_privileged_prefix.c:
 	.text       start:0x8009B290 end:0x8009B4D8
@@ -1872,8 +1875,11 @@ trk/TRKTarget_residual_800C25FC.c:
 trk/TRKSaveState.c:
 	.text       start:0x800C2A10 end:0x800C2D80
 
-trk/TRKInit.c:
-	.text       start:0x800C2D80 end:0x800C3344
+trk/TRKInit_r53_800C2D80_prefix.c:
+	.text       start:0x800C2D80 end:0x800C3218
+
+trk/TRKInit_r53_800C3218_lmw_on.c:
+	.text       start:0x800C3218 end:0x800C3344
 
 trk/TRKInit_exact_800C3344.c:
 	.text       start:0x800C3344 end:0x800C33BC
@@ -1996,7 +2002,13 @@ dolphin/sdk_r52_800C4A60_o3.c:
 	.text       start:0x800C4A60 end:0x800C4B44
 
 dolphin/sdk_r52_800C4B44_suffix.c:
-	.text       start:0x800C4B44 end:0x800C4C98
+	.text       start:0x800C4B44 end:0x800C4C50
+
+dolphin/sdk_r53_800C4C50_o1.c:
+	.text       start:0x800C4C50 end:0x800C4C74
+
+dolphin/sdk_r53_800C4C74_o1.c:
+	.text       start:0x800C4C74 end:0x800C4C98
 
 dolphin/sdk_r52_800C4C98_prefix.c:
 	.text       start:0x800C4C98 end:0x800C4CC0
