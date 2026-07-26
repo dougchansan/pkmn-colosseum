@@ -103,6 +103,16 @@ typedef struct PSJObjTransform {
     f32 translateZ;
 } PSJObjTransform;
 
+typedef struct PSCameraView {
+    u8 pad00[0x0C];
+    Vec position;
+} PSCameraView;
+
+typedef struct PSCameraObject {
+    u8 pad00[0x24];
+    PSCameraView* view;
+} PSCameraObject;
+
 extern s32 lbl_8047B170;
 extern PSFloatBytes lbl_8047B178;
 
@@ -118,6 +128,8 @@ extern const char lbl_802737B8[];
 extern const char lbl_802737C4[];
 extern const char lbl_80273820[];
 extern const char lbl_8027382C[];
+extern const char lbl_802739E4[];
+extern const char lbl_802739F0[];
 extern u16 lbl_8047B110;
 extern u16 lbl_8047B114;
 extern u16 lbl_8047B116;
@@ -176,6 +188,8 @@ extern void PSMTXIdentity(Mtx m);
 extern void PSMTXRotRad(Mtx m, char axis, f32 angle);
 extern void PSMTXConcat(const Mtx a, const Mtx b, Mtx out);
 extern void PSVECNormalize(const Vec* src, Vec* dst);
+extern void PSVECCrossProduct(const Vec* a, const Vec* b, Vec* out);
+extern void HSD_CObjGetUpVector(void* camera, Vec* up);
 extern f32 lbl_8047D6B4;
 
 #if !defined(PR410_PS_SPLIT) || defined(PR410_PS_PREFIX)
@@ -1742,6 +1756,9 @@ void generateParticle_8017424C(PSGeneratorState* gen) {
     Mtx rotationY;
     Mtx rotationZ;
     Vec column;
+    Vec forward;
+    Vec up;
+    Vec side;
 
     if (gen->lifetime < lbl_8047D6B4) {
         return;
@@ -1782,6 +1799,35 @@ void generateParticle_8017424C(PSGeneratorState* gen) {
         basis[0][3] = 0.0f;
         basis[1][3] = 0.0f;
         basis[2][3] = 0.0f;
+    }
+
+    if (gen->flags & 0x20000) {
+        PSCameraObject* camera = (PSCameraObject*)lbl_8047B190;
+
+        if (camera == NULL) {
+            __assert(lbl_802739E4, 0x272, lbl_802739F0);
+        }
+
+        camera = (PSCameraObject*)lbl_8047B190;
+        forward.x = camera->view->position.x - gen->positionX;
+        forward.y = camera->view->position.y - gen->positionY;
+        forward.z = camera->view->position.z - gen->positionZ;
+        PSVECNormalize(&forward, &forward);
+
+        HSD_CObjGetUpVector(camera, &up);
+        PSVECNormalize(&up, &up);
+        PSVECCrossProduct(&up, &forward, &side);
+        PSVECCrossProduct(&forward, &side, &up);
+
+        basis[0][0] = side.x;
+        basis[1][0] = side.y;
+        basis[2][0] = side.z;
+        basis[0][1] = up.x;
+        basis[1][1] = up.y;
+        basis[2][1] = up.z;
+        basis[0][2] = forward.x;
+        basis[1][2] = forward.y;
+        basis[2][2] = forward.z;
     }
 }
 
