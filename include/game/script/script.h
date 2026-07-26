@@ -317,7 +317,7 @@ PSParticle* psSpawnScript(PSParticle* parent, u8 linkNo, u8 bankIdx, u16 scriptI
 PSParticle* psSpawnGenerator(u8 linkNo, u8 bankIdx, u16 scriptId);  /* psCreateGeneratorID */
 
 /** Initialize a particle with default values after spawn. */
-void psInitParticle(PSParticle* pp);              /* fn_80172AE0 */
+void psInitParticle(s32 count);
 
 /** Clean up a particle on termination. */
 PSParticle* psCleanup(PSParticle* pp);            /* _psListGetNext */

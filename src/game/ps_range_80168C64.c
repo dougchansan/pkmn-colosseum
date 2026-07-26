@@ -714,6 +714,28 @@ s32 psRemoveGeneratorAppSRT(PSGeneratorState* gen) {
     return refCount;
 }
 
+void psInitParticle(s32 count) {
+    u32* banks = (u32*)lbl_804527C8;
+    s32 i;
+
+    _psLinkInit(count);
+    lbl_8047B11A = 0;
+    lbl_8047B114 = 0;
+
+    for (i = 0; i < 64; i++) {
+        banks[i] = 0;
+        banks[64 + i] = 0;
+        banks[128 + i] = 0;
+        banks[192 + i] = 0;
+        banks[256 + i] = 0;
+        banks[320 + i] = 0;
+    }
+
+    for (i = 384; i < 392; i++) {
+        banks[i] = 0;
+    }
+}
+
 s32 psChangeGeneratorAppSRT(PSGeneratorState* gen, PSAppSRT* newAppSRT) {
     PSAppSRT* oldAppSRT;
     u16 refCount;
