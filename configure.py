@@ -2653,6 +2653,26 @@ config.libs = [
             ),
             Object(
                 CodeCandidate,
+                "game/menu/cardesavedata_candidate_80084A8C_o3.c",
+                mw_version="GC/2.5",
+                cflags=["-O3" if flag == "-O4,p" else flag for flag in cflags_base],
+                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                progress_category="game",
+            ),
+            Object(
+                CodeCandidate,
+                "game/menu/cardesavedata_candidate_80087AE8.c",
+                mw_version="GC/2.5",
+                extra_cflags=[
+                    "-use_lmw_stmw on",
+                    "-sdata 8",
+                    "-sdata2 8",
+                    "-O3",
+                ],
+                progress_category="game",
+            ),
+            Object(
+                CodeCandidate,
                 "game/pokeconv.c",
                 mw_version="GC/1.3",
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],

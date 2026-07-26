@@ -811,7 +811,13 @@ game/menu/cardesavedata_candidate_80082A88.c:
 	.text       start:0x80082A88 end:0x80084038
 
 game/menu/cardesavedata_80084038.c:
-	.text       start:0x80084038 end:0x80088428
+	.text       start:0x80084038 end:0x80084A8C
+
+game/menu/cardesavedata_candidate_80084A8C_o3.c:
+	.text       start:0x80084A8C end:0x80087AE8
+
+game/menu/cardesavedata_candidate_80087AE8.c:
+	.text       start:0x80087AE8 end:0x80088428
 
 game/gba/gba_conv.c:
 	.text       start:0x80088428 end:0x80088EA8
