@@ -275,7 +275,7 @@ void fn_800B7D74(s32 vtxfmt, s32 attr, s32 cnt, s32 type, u8 frac)
 
     SetVat(va, vb, vc, attr, cnt, type, frac);
     gx->dirtyState |= 0x10;
-    *(volatile u8*)((u8*)gx + 0x4F3) |= 1 << vtxfmt;
+    *((u8*)gx + 0x4F3) |= (u8)(1 << (u8)vtxfmt);
 }
 
 void fn_800B80CC(s32 vtxfmt, const GXVtxAttrFmtList_800B771C* list)
