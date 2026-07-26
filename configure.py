@@ -2697,7 +2697,12 @@ config.libs = [
                 CodeCandidate,
                 "game/gbaCommunication_candidate_80094650_gc125n.c",
                 mw_version="GC/1.2.5n",
-                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                extra_cflags=[
+                    "-use_lmw_stmw on",
+                    "-sdata 8",
+                    "-sdata2 8",
+                    "-O0",
+                ],
                 progress_category="game",
             ),
             Object(
