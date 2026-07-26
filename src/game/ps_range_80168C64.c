@@ -1653,6 +1653,11 @@ void psSetupTev(PSParticle* pp) {
         fn_800BC6F0(0, 0, 0, 4);
         fn_800BC1A0(0, 4, 2, 8, 0xF);
         fn_800BC1E4(0, 2, 1, 4, 7);
+    } else if (state == 0x100400) {
+        fn_800BC8C8(1);
+        fn_800B884C(1);
+        fn_800BC6F0(0, 0, 0, 4);
+        GXSetTevOp(0, 0);
     } else if (state == (s32)0x80000400) {
         fn_800BC8C8(2);
         fn_800B884C(1);
