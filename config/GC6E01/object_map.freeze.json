@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196100,
     "total_functions": 8603,
-    "total_units": 2022
+    "total_units": 2035
   },
   "topology_status": {
     "auto_units": 68,
-    "named_units": 1954,
-    "source_backed_units": 1948,
+    "named_units": 1967,
+    "source_backed_units": 1961,
     "auto_code": 0,
     "auto_data": 57687,
     "auto_functions": 0
@@ -23,7 +23,7 @@
     "matched_data_percent": 97.28669,
     "matched_functions": 6569,
     "matched_functions_percent": 76.357086,
-    "fuzzy_match_percent": 71.000374
+    "fuzzy_match_percent": 71.0935
   },
   "unit_topology": [
     {
@@ -950,17 +950,43 @@
       "total_functions": 1
     },
     {
-      "name": "main/game/gs_event_exec_candidate_800141BC",
+      "name": "main/game/gs_event_exec_r47_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 3680,
+          "size": 952,
           "virtual_address": 2147566012
         }
       ],
-      "total_code": 3680,
+      "total_code": 952,
       "total_data": 0,
-      "total_functions": 13
+      "total_functions": 5
+    },
+    {
+      "name": "main/game/gs_event_exec_r47_80014574_o3",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1236,
+          "virtual_address": 2147566964
+        }
+      ],
+      "total_code": 1236,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/gs_event_exec_r47_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1492,
+          "virtual_address": 2147568200
+        }
+      ],
+      "total_code": 1492,
+      "total_data": 0,
+      "total_functions": 7
     },
     {
       "name": "main/game/gs_pokemon_summary",
@@ -2081,17 +2107,43 @@
       "total_functions": 20
     },
     {
-      "name": "main/game/movie",
+      "name": "main/game/movie_r47_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 2664,
+          "size": 352,
           "virtual_address": 2147704324
         }
       ],
-      "total_code": 2664,
+      "total_code": 352,
       "total_data": 0,
-      "total_functions": 21
+      "total_functions": 3
+    },
+    {
+      "name": "main/game/movie_r47_80035F64_o4s",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 604,
+          "virtual_address": 2147704676
+        }
+      ],
+      "total_code": 604,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/movie_r47_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1708,
+          "virtual_address": 2147705280
+        }
+      ],
+      "total_code": 1708,
+      "total_data": 0,
+      "total_functions": 17
     },
     {
       "name": "main/game/gs_range_8003686C",
@@ -3607,17 +3659,30 @@
       "total_functions": 2
     },
     {
-      "name": "main/game/menu/menu_middle_range_800704AC",
+      "name": "main/game/menu/menu_middle_r47_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 3056,
+          "size": 2264,
           "virtual_address": 2147943596
         }
       ],
-      "total_code": 3056,
+      "total_code": 2264,
       "total_data": 0,
-      "total_functions": 4
+      "total_functions": 3
+    },
+    {
+      "name": "main/game/menu/menu_middle_r47_80070D84_o2",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 792,
+          "virtual_address": 2147945860
+        }
+      ],
+      "total_code": 792,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/game/menu/menu_range_8007109C",
@@ -17517,17 +17582,43 @@
       "total_functions": 1
     },
     {
-      "name": "main/game/gs_dvd_candidate_80167FA8",
+      "name": "main/game/gs_dvd_r47_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 3260,
+          "size": 1680,
           "virtual_address": 2148958120
         }
       ],
-      "total_code": 3260,
+      "total_code": 1680,
       "total_data": 0,
-      "total_functions": 13
+      "total_functions": 11
+    },
+    {
+      "name": "main/game/gs_dvd_r47_80168638_o4s",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 764,
+          "virtual_address": 2148959800
+        }
+      ],
+      "total_code": 764,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/gs_dvd_r47_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 816,
+          "virtual_address": 2148960564
+        }
+      ],
+      "total_code": 816,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/game/ps_candidate_80168C64",
@@ -19116,17 +19207,43 @@
       "total_functions": 2
     },
     {
-      "name": "main/hsd/hsd_cobj_candidate_80195A6C",
+      "name": "main/hsd/hsd_cobj_r47_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 4560,
+          "size": 1624,
           "virtual_address": 2149145196
         }
       ],
-      "total_code": 4560,
+      "total_code": 1624,
       "total_data": 0,
-      "total_functions": 9
+      "total_functions": 2
+    },
+    {
+      "name": "main/hsd/hsd_cobj_r47_setup_halves_o4s",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1492,
+          "virtual_address": 2149146820
+        }
+      ],
+      "total_code": 1492,
+      "total_data": 0,
+      "total_functions": 2
+    },
+    {
+      "name": "main/hsd/hsd_cobj_r47_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1444,
+          "virtual_address": 2149148312
+        }
+      ],
+      "total_code": 1444,
+      "total_data": 0,
+      "total_functions": 5
     },
     {
       "name": "main/hsd/hsd_cobj_exact_80196C3C",
@@ -19961,17 +20078,30 @@
       "total_functions": 1
     },
     {
-      "name": "main/hsd/hsd_mobj_candidate_801A958C",
+      "name": "main/hsd/hsd_mobj_r47_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 3524,
+          "size": 2148,
           "virtual_address": 2149225868
         }
       ],
-      "total_code": 3524,
+      "total_code": 2148,
       "total_data": 0,
-      "total_functions": 3
+      "total_functions": 2
+    },
+    {
+      "name": "main/hsd/hsd_mobj_r47_801A9DF0_o4s",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1376,
+          "virtual_address": 2149228016
+        }
+      ],
+      "total_code": 1376,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/hsd/hsd_obj_forget_exact_801AA350",
@@ -20663,17 +20793,43 @@
       "total_functions": 1
     },
     {
-      "name": "main/hsd/hsd_texp_candidate_801B7BD4",
+      "name": "main/hsd/hsd_texp_r47_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 3560,
+          "size": 1104,
           "virtual_address": 2149284820
         }
       ],
-      "total_code": 3560,
+      "total_code": 1104,
       "total_data": 0,
-      "total_functions": 5
+      "total_functions": 3
+    },
+    {
+      "name": "main/hsd/hsd_texp_r47_make_dag_o4s",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1152,
+          "virtual_address": 2149285924
+        }
+      ],
+      "total_code": 1152,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/hsd/hsd_texp_r47_calc_distance_o2",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1304,
+          "virtual_address": 2149287076
+        }
+      ],
+      "total_code": 1304,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/hsd/hsd_texp_candidate_801B7BD4_r40_801B89BC_gc125n",
@@ -25929,17 +26085,30 @@
       "total_functions": 1
     },
     {
-      "name": "main/game/fight_trainer_ai_irekae_candidate_8024F8B4",
+      "name": "main/game/fight_trainer_ai_irekae_r47_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 4300,
+          "size": 2616,
           "virtual_address": 2149906612
         }
       ],
-      "total_code": 4300,
+      "total_code": 2616,
       "total_data": 0,
-      "total_functions": 4
+      "total_functions": 3
+    },
+    {
+      "name": "main/game/fight_trainer_ai_irekae_r47_select_item_o2",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1684,
+          "virtual_address": 2149909228
+        }
+      ],
+      "total_code": 1684,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/game/fight_trainer_ai_waza_damage",

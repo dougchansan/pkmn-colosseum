@@ -209,8 +209,14 @@ game/gs_event_exec_candidate_80014118.c:
 game/gs_event_exec_exact_80014198.c:
 	.text       start:0x80014198 end:0x800141BC
 
-game/gs_event_exec_candidate_800141BC.c:
-	.text       start:0x800141BC end:0x8001501C
+game/gs_event_exec_r47_prefix.c:
+	.text       start:0x800141BC end:0x80014574
+
+game/gs_event_exec_r47_80014574_o3.c:
+	.text       start:0x80014574 end:0x80014A48
+
+game/gs_event_exec_r47_suffix.c:
+	.text       start:0x80014A48 end:0x8001501C
 
 game/gs_pokemon_summary.c:
 	.text       start:0x8001501C end:0x800167D0
@@ -470,8 +476,14 @@ game/gs_npc_event_candidate_80032ED8.c:
 game/gs_range_80033278.c:
 	.text       start:0x80033278 end:0x80035E04
 
-game/movie.c:
-	.text       start:0x80035E04 end:0x8003686C
+game/movie_r47_prefix.c:
+	.text       start:0x80035E04 end:0x80035F64
+
+game/movie_r47_80035F64_o4s.c:
+	.text       start:0x80035F64 end:0x800361C0
+
+game/movie_r47_suffix.c:
+	.text       start:0x800361C0 end:0x8003686C
 
 game/gs_range_8003686C.c:
 	.text       start:0x8003686C end:0x80037158
@@ -804,8 +816,11 @@ game/menu/menu_middle_range_80070318.c:
 game/menu/menu_middle_exact_800704A4.c:
 	.text       start:0x800704A4 end:0x800704AC
 
-game/menu/menu_middle_range_800704AC.c:
-	.text       start:0x800704AC end:0x8007109C
+game/menu/menu_middle_r47_prefix.c:
+	.text       start:0x800704AC end:0x80070D84
+
+game/menu/menu_middle_r47_80070D84_o2.c:
+	.text       start:0x80070D84 end:0x8007109C
 
 game/menu/menu_range_8007109C.c:
 	.text       start:0x8007109C end:0x80073E8C
@@ -3895,8 +3910,14 @@ game/gs_dvd_candidate_80167E64.c:
 game/gs_dvd_exact_80167FA4.c:
 	.text       start:0x80167FA4 end:0x80167FA8
 
-game/gs_dvd_candidate_80167FA8.c:
-	.text       start:0x80167FA8 end:0x80168C64
+game/gs_dvd_r47_prefix.c:
+	.text       start:0x80167FA8 end:0x80168638
+
+game/gs_dvd_r47_80168638_o4s.c:
+	.text       start:0x80168638 end:0x80168934
+
+game/gs_dvd_r47_suffix.c:
+	.text       start:0x80168934 end:0x80168C64
 
 game/ps_candidate_80168C64.c:
 	.text       start:0x80168C64 end:0x80169340
@@ -4264,8 +4285,14 @@ hsd/hsd_cobj_exact_80195970.c:
 hsd/hsd_cobj_exact_801959DC.c:
 	.text       start:0x801959DC end:0x80195A6C
 
-hsd/hsd_cobj_candidate_80195A6C.c:
-	.text       start:0x80195A6C end:0x80196C3C
+hsd/hsd_cobj_r47_prefix.c:
+	.text       start:0x80195A6C end:0x801960C4
+
+hsd/hsd_cobj_r47_setup_halves_o4s.c:
+	.text       start:0x801960C4 end:0x80196698
+
+hsd/hsd_cobj_r47_suffix.c:
+	.text       start:0x80196698 end:0x80196C3C
 
 hsd/hsd_cobj_exact_80196C3C.c:
 	.text       start:0x80196C3C end:0x80196C54
@@ -4459,8 +4486,11 @@ hsd/hsd_mobj_range_801A86B4_r40_801A8D1C_gc13.c:
 hsd/hsd_mtx_get_translate_exact_801A9570.c:
 	.text       start:0x801A9570 end:0x801A958C
 
-hsd/hsd_mobj_candidate_801A958C.c:
-	.text       start:0x801A958C end:0x801AA350
+hsd/hsd_mobj_r47_prefix.c:
+	.text       start:0x801A958C end:0x801A9DF0
+
+hsd/hsd_mobj_r47_801A9DF0_o4s.c:
+	.text       start:0x801A9DF0 end:0x801AA350
 
 hsd/hsd_obj_forget_exact_801AA350.c:
 	.text       start:0x801AA350 end:0x801AA35C
@@ -4621,8 +4651,14 @@ hsd/hsd_texp_candidate_801B4B5C_candidate_801B50C0.c:
 hsd/hsd_texp_candidate_801B750C_gc20.c:
 	.text       start:0x801B750C end:0x801B7BD4
 
-hsd/hsd_texp_candidate_801B7BD4.c:
-	.text       start:0x801B7BD4 end:0x801B89BC
+hsd/hsd_texp_r47_prefix.c:
+	.text       start:0x801B7BD4 end:0x801B8024
+
+hsd/hsd_texp_r47_make_dag_o4s.c:
+	.text       start:0x801B8024 end:0x801B84A4
+
+hsd/hsd_texp_r47_calc_distance_o2.c:
+	.text       start:0x801B84A4 end:0x801B89BC
 
 hsd/hsd_texp_candidate_801B7BD4_r40_801B89BC_gc125n.c:
 	.text       start:0x801B89BC end:0x801B8B84
@@ -5775,8 +5811,11 @@ game/fight_trainer_ai_irekae.c:
 game/fight_trainer_ai_irekae_candidate_8024E690_gc20.c:
 	.text       start:0x8024E690 end:0x8024F8B4
 
-game/fight_trainer_ai_irekae_candidate_8024F8B4.c:
-	.text       start:0x8024F8B4 end:0x80250980
+game/fight_trainer_ai_irekae_r47_prefix.c:
+	.text       start:0x8024F8B4 end:0x802502EC
+
+game/fight_trainer_ai_irekae_r47_select_item_o2.c:
+	.text       start:0x802502EC end:0x80250980
 
 game/fight_trainer_ai_waza_damage.c:
 	.text       start:0x80250980 end:0x80253950
