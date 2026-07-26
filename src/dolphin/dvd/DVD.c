@@ -118,6 +118,7 @@ extern void fn_800A5D60(void);
 extern void fn_800A6028(u32 intType);
 extern void fn_800A62CC(u32 intType);
 extern void fn_800A640C(void);
+extern void fn_800A836C(void);
 extern void fn_800A6508(u32 intType);
 extern void fn_800A6578(void);
 extern void fn_800A48DC(void (*callback)(u32));
@@ -462,6 +463,21 @@ void DVDReset(void) {
  * DVDGetDriveStatus - Get the current DVD drive status
  * 0x800A7774 | size: 0xAC
  */
+static inline s32 dvdGetCommandBlockStatus(DVDCommandBlock* block)
+{
+    BOOL enabled;
+    s32 result;
+
+    enabled = OSDisableInterrupts();
+    if (block->state == 3) {
+        result = 1;
+    } else {
+        result = block->state;
+    }
+    OSRestoreInterrupts(enabled);
+    return result;
+}
+
 s32 DVDGetDriveStatus(void) {
     BOOL enabled;
     s32 result;
@@ -477,7 +493,7 @@ s32 DVDGetDriveStatus(void) {
     } else if (executing_8047A7E8 == &DummyCommandBlock_803FC3A0) {
         result = 0;
     } else {
-        result = DVDGetCommandBlockStatus(executing_8047A7E8);
+        result = dvdGetCommandBlockStatus(executing_8047A7E8);
     }
 
     OSRestoreInterrupts(enabled);
@@ -492,6 +508,7 @@ s32 DVDGetDriveStatus(void) {
  */
 #pragma dont_inline on
 DVD_SPLIT_CALLBACK_SCOPE void stateReady_800A6684(void) {
+    DVDStaticData* staticData = &BB2_803FC360;
     DVDCommandBlock* finished;
 
     if (__DVDCheckWaitingQueue() == 0) {
@@ -499,17 +516,17 @@ DVD_SPLIT_CALLBACK_SCOPE void stateReady_800A6684(void) {
         return;
     }
 
-    if (PauseFlag_8047A7F4 != 0) {
+    if ((s32)PauseFlag_8047A7F4 != 0) {
         PausingFlag_8047A7F8 = 1;
         executing_8047A7E8 = NULL;
         return;
     }
 
     executing_8047A7E8 = __DVDPopWaitingQueue();
-    if (FatalErrorFlag_8047A800) {
+    if ((s32)FatalErrorFlag_8047A800 != 0) {
         executing_8047A7E8->state = -1;
         finished = executing_8047A7E8;
-        executing_8047A7E8 = &BB2_803FC360.dummyCommandBlock;
+        executing_8047A7E8 = &staticData->dummyCommandBlock;
         if (finished->callback != NULL) {
             finished->callback(-1, finished);
         }
@@ -540,15 +557,15 @@ DVD_SPLIT_CALLBACK_SCOPE void stateReady_800A6684(void) {
                 CurrCommand_8047A804 == 13 || CurrCommand_8047A804 == 15) {
                 __DVDClearWaitingQueue();
                 finished = executing_8047A7E8;
-                executing_8047A7E8 = &BB2_803FC360.dummyCommandBlock;
+                executing_8047A7E8 = &staticData->dummyCommandBlock;
                 if (finished->callback != NULL) {
                     finished->callback(-4, finished);
                 }
                 stateReady_800A6684();
             } else {
                 DVDReset();
-                OSCreateAlarm(&BB2_803FC360.resetAlarm);
-                OSSetAlarm(&BB2_803FC360.resetAlarm,
+                OSCreateAlarm(&staticData->resetAlarm);
+                OSSetAlarm(&staticData->resetAlarm,
                            1150 * ((*(u32*)0x800000F8 / 4) / 1000),
                            AlarmHandler);
             }
@@ -734,8 +751,8 @@ static inline BOOL dvdCheckCancel(u32 resume)
 
 void fn_800A6BD4(u32 intType)
 {
+    DVDStaticData* staticData = &BB2_803FC360;
     DVDCommandBlock* finished;
-    DVDCommandBlock* dummy = &BB2_803FC360.dummyCommandBlock;
     u32 command;
     s32 result;
 
@@ -777,7 +794,7 @@ void fn_800A6BD4(u32 intType)
     if (intType & 8) {
         lbl_8047A808 = 0;
         finished = executing_8047A7E8;
-        executing_8047A7E8 = dummy;
+        executing_8047A7E8 = &staticData->dummyCommandBlock;
         finished->state = 10;
         if (finished->callback != NULL) {
             finished->callback(-3, finished);
@@ -804,7 +821,7 @@ void fn_800A6BD4(u32 intType)
                 return;
             }
             finished = executing_8047A7E8;
-            executing_8047A7E8 = dummy;
+            executing_8047A7E8 = &staticData->dummyCommandBlock;
             finished->state = 0;
             if (finished->callback != NULL) {
                 finished->callback((s32)finished->transferredSize, finished);
@@ -822,7 +839,7 @@ void fn_800A6BD4(u32 intType)
                 result = *(volatile u32*)0xCC006020;
             }
             finished = executing_8047A7E8;
-            executing_8047A7E8 = dummy;
+            executing_8047A7E8 = &staticData->dummyCommandBlock;
             finished->state = 0;
             if (finished->callback != NULL) {
                 finished->callback(result, finished);
@@ -835,7 +852,7 @@ void fn_800A6BD4(u32 intType)
             if (executing_8047A7E8->currTransferSize == 0) {
                 if (*(volatile u32*)0xCC006020 & 1) {
                     finished = executing_8047A7E8;
-                    executing_8047A7E8 = dummy;
+                    executing_8047A7E8 = &staticData->dummyCommandBlock;
                     finished->state = 9;
                     if (finished->callback != NULL) {
                         finished->callback(-2, finished);
@@ -851,7 +868,7 @@ void fn_800A6BD4(u32 intType)
                 return;
             }
             finished = executing_8047A7E8;
-            executing_8047A7E8 = dummy;
+            executing_8047A7E8 = &staticData->dummyCommandBlock;
             finished->state = 0;
             if (finished->callback != NULL) {
                 finished->callback(0, finished);
@@ -861,7 +878,7 @@ void fn_800A6BD4(u32 intType)
         }
 
         finished = executing_8047A7E8;
-        executing_8047A7E8 = dummy;
+        executing_8047A7E8 = &staticData->dummyCommandBlock;
         finished->state = 0;
         if (finished->callback != NULL) {
             finished->callback(0, finished);
@@ -885,7 +902,7 @@ void fn_800A6BD4(u32 intType)
         if (dvdCheckCancel(0)) {
             return;
         }
-        executing_8047A7E8 = dummy;
+        executing_8047A7E8 = &staticData->dummyCommandBlock;
         finished->state = 0;
         if (finished->callback != NULL) {
             finished->callback((s32)finished->transferredSize, finished);
@@ -904,34 +921,30 @@ void fn_800A6BD4(u32 intType)
  */
 #if !defined(DVD_BANK_EXACT_ACTIVE)
 DVD_SPLIT_CALLBACK_SCOPE void cbForStateError(u32 intType) {
-    DVDCommandBlock* block;
+    DVDCommandBlock* finished;
 
+    executing_8047A7E8->state = -1;
     if (intType == 0x10) {
-        /* Timeout - mark as fatal error */
-        block = executing_8047A7E8;
-        block->state = -1;
-        /* Process error callback */
+        stateTimeout();
         return;
     }
 
-    /* Handle other error recovery:
-     * - Re-read FST on successful reset
-     * - Retry command
-     * - Call user callback with error status
-     */
-    block = executing_8047A7E8;
+    fn_800A836C();
+    FatalErrorFlag_8047A800 = TRUE;
+    finished = executing_8047A7E8;
     executing_8047A7E8 = &DummyCommandBlock_803FC3A0;
-    block->state = 0; /* completed successfully after recovery */
 
-    if (block->callback != NULL) {
-        block->callback(0, block);
+    if (finished->callback != NULL) {
+        finished->callback(-1, finished);
     }
 
-    block = __DVDPopWaitingQueue();
-    if (block != NULL) {
-        executing_8047A7E8 = block;
-        stateBusy_800A68B4(block);
+    if (lbl_8047A808 != 0) {
+        lbl_8047A808 = 0;
+        if (lbl_8047A80C != NULL) {
+            lbl_8047A80C(0, finished);
+        }
     }
+    stateReady_800A6684();
 }
 #endif
 
@@ -1153,6 +1166,8 @@ void stateCoverClosed_CMD(DVDCommandBlock* command)
  */
 #if !defined(DVD_BANK_EXACT_ACTIVE)
 DVD_SPLIT_CALLBACK_SCOPE void AlarmHandler(OSAlarm* alarm, OSContext* context) {
+    extern void DVDReset(void);
+
     DVDReset();
     DCInvalidateRange(&lbl_803FC380, sizeof(DVDDiskID));
     lbl_8047A82C = stateCoverClosed_CMD;
@@ -1534,12 +1549,17 @@ void stateCheckID2(DVDCommandBlock* block)
 void fn_800A60D4(u32 intType)
 {
     if (intType == 0x10) {
-        stateTimeout();
+        executing_8047A7E8->state = -1;
+        __DVDStoreErrorCode(0x1234568);
+        DVDReset();
+        cbForStateError(0);
         return;
     }
 
     if (intType & 2) {
+        executing_8047A7E8->state = -1;
         __DVDStoreErrorCode(0x1234567);
+        DVDLowStopMotor(cbForStateError);
         return;
     }
 
@@ -1556,7 +1576,10 @@ void fn_800A60D4(u32 intType)
  */
 void DVDChangeDisk(u32 intType) {
     if (intType == 0x10) {
-        stateTimeout();
+        executing_8047A7E8->state = -1;
+        __DVDStoreErrorCode(0x1234568);
+        DVDReset();
+        cbForStateError(0);
         return;
     }
 
@@ -1566,7 +1589,7 @@ void DVDChangeDisk(u32 intType) {
         return;
     }
 
-    fn_800A59CC(intType);
+    fn_800A48DC(fn_800A59CC);
 }
 
 /*

@@ -124,6 +124,7 @@ static void Read(void* address, u32 length, u32 offset,
 static void SeekTwiceBeforeRead(void* address, u32 length, u32 offset,
                                 DVDLowCallback callback)
 {
+    DVDLowCommand* commands = CommandList;
     u32 newOffset;
 
     if ((offset & ~0x7FFF) == 0) {
@@ -132,15 +133,15 @@ static void SeekTwiceBeforeRead(void* address, u32 length, u32 offset,
         newOffset = (offset & ~0x7FFF) + WorkAroundSeekLocation;
     }
 
-    CommandList[0].command = 2;
-    CommandList[0].offset = newOffset;
-    CommandList[0].callback = callback;
-    CommandList[1].command = 1;
-    CommandList[1].address = address;
-    CommandList[1].length = length;
-    CommandList[1].offset = offset;
-    CommandList[1].callback = callback;
-    CommandList[2].command = -1;
+    commands[0].command = 2;
+    commands[0].offset = newOffset;
+    commands[0].callback = callback;
+    commands[1].command = 1;
+    commands[1].address = address;
+    commands[1].length = length;
+    commands[1].offset = offset;
+    commands[1].callback = callback;
+    commands[2].command = -1;
     NextCommandNumber = 0;
     DVDLowSeek(newOffset, callback);
 }
@@ -337,14 +338,16 @@ BOOL DVDLowAudioBufferConfig(BOOL enable, u32 size,
 void DVDLowReset(void)
 {
     u32 reg;
+    OSTime duration;
     OSTime resetStart;
 
     __DIRegs[1] = 2;
     reg = __PIRegs[9];
     __PIRegs[9] = (reg & ~4) | 1;
 
+    duration = OSMicrosecondsToTicks(12);
     resetStart = __OSGetSystemTime();
-    while ((__OSGetSystemTime() - resetStart) < OSMicrosecondsToTicks(12)) {
+    while ((__OSGetSystemTime() - resetStart) < duration) {
     }
 
     __PIRegs[9] = reg | 5;
