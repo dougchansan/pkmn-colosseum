@@ -48,8 +48,8 @@ extern void* lbl_8047B2EC;           /* active normal desc          */
 extern void* lbl_8047B2F0;           /* active color desc           */
 extern u32   lbl_8047B2F4;           /* shape vertex capacity       */
 extern u32   lbl_8047B2F8;           /* shape normal capacity       */
-extern u32   lbl_8047B2FC;           /* display list marker         */
-extern void* lbl_8047B300;           /* display list end marker     */
+extern HSD_VtxDescList* lbl_8047B2FC; /* cached array descriptor     */
+extern HSD_VtxDescList* lbl_8047B300; /* cached vertex descriptor    */
 extern void* lbl_8047B308;           /* active texture desc         */
 extern u32   lbl_8047B30C;           /* texture count               */
 extern void* lbl_80478C90;           /* RNG default state instance  */
@@ -87,9 +87,18 @@ extern const f32 lbl_8047DCC0;
 extern char lbl_8047DCC4;
 extern char lbl_8047DCCC;
 extern char lbl_8047DCD8;
+extern char lbl_80274F04;
+extern void fn_801B2878(u32 mode);
+extern void fn_800B84E0(u32 attr, void* data, u8 stride);
+extern void fn_800B7D3C(void);
+extern void fn_800B7874(u32 attr, u32 type);
+extern void fn_800B7D74(u32 format, u32 attr, u32 comp_count, u32 comp_type,
+                        u8 frac);
+extern void GXCallDisplayList(void* list, u32 size);
 void HSD_PObjGetMtxMark(s32 index, u32* first, u32* second);
 void fn_801AB5F8(s32 index, void* ptr, s32 value);
 void fn_801AB63C(u32 first, u32 second);
+void drawShapeAnim(HSD_PObj* pobj);
 
 /* Address: 0x801AA608 | Size: 0xC8  -- PObj class info init */
 #pragma push
@@ -156,6 +165,134 @@ void PObjRelease(HSD_Class* object)
         break;
     }
     ((HSD_ClassInfo*)lbl_8036CCD0)->head.parent->release(object);
+}
+
+static inline void setupArrayDesc(HSD_VtxDescList* desc_list)
+{
+    HSD_VtxDescList* desc;
+
+    if (lbl_8047B2FC != desc_list) {
+        for (desc = desc_list; desc->attr != 0xFF; desc++) {
+            if (desc->attr_type != 1) {
+                fn_800B84E0(desc->attr, desc->vertex, desc->stride);
+            }
+        }
+        lbl_8047B2FC = desc_list;
+    }
+}
+
+static inline void setupVtxDesc(HSD_PObj* pobj)
+{
+    HSD_VtxDescList* desc;
+
+    if (lbl_8047B300 != pobj->verts) {
+        fn_800B7D3C();
+        for (desc = pobj->verts; desc->attr != 0xFF; desc++) {
+            fn_800B7874(desc->attr, desc->attr_type);
+            switch (desc->attr) {
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+                break;
+            default:
+                fn_800B7D74(0, desc->attr, desc->comp_cnt,
+                            desc->comp_type, desc->frac);
+                break;
+            }
+        }
+        lbl_8047B300 = pobj->verts;
+    }
+}
+
+static inline void setupShapeAnimArrayDesc(HSD_VtxDescList* desc_list)
+{
+    HSD_VtxDescList* desc;
+
+    for (desc = desc_list; desc->attr != 0xFF; desc++) {
+        if (desc->attr_type != 1) {
+            switch (desc->attr) {
+            case 9:
+            case 10:
+            case 25:
+                break;
+            default:
+                fn_800B84E0(desc->attr, desc->vertex, desc->stride);
+                break;
+            }
+        }
+    }
+    lbl_8047B2FC = NULL;
+}
+
+static inline void setupShapeAnimVtxDesc(HSD_PObj* pobj)
+{
+    HSD_VtxDescList* desc;
+
+    fn_800B7D3C();
+    for (desc = pobj->verts; desc->attr != 0xFF; desc++) {
+        switch (desc->attr) {
+        case 9:
+        case 10:
+        case 25:
+            fn_800B7874(desc->attr, 1);
+            fn_800B7D74(0, desc->attr, desc->comp_cnt, 4, 0);
+            break;
+        case 0:
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+        case 7:
+        case 8:
+            fn_800B7874(desc->attr, desc->attr_type);
+            break;
+        default:
+            fn_800B7874(desc->attr, desc->attr_type);
+            fn_800B7D74(0, desc->attr, desc->comp_cnt,
+                        desc->comp_type, desc->frac);
+            break;
+        }
+    }
+    lbl_8047B300 = NULL;
+}
+
+void HSD_PObjDisp(HSD_PObj* pobj, Mtx vmtx, Mtx pmtx, u32 rendermode)
+{
+    switch (pobj->flags & 0xC000) {
+    case 0:
+        fn_801B2878(0);
+        break;
+    case 0x4000:
+        fn_801B2878(1);
+        break;
+    case 0x8000:
+        fn_801B2878(2);
+        break;
+    case 0xC000:
+        return;
+    }
+
+    HSD_POBJ_METHOD(pobj)->setup_mtx(pobj, vmtx, pmtx, rendermode);
+    if ((pobj->flags & 0x3000) == 0x1000) {
+        setupShapeAnimArrayDesc(pobj->verts);
+        setupShapeAnimVtxDesc(pobj);
+        if (pobj->u.shape_set == NULL) {
+            __assert(&lbl_8047DCB8, 0x781, &lbl_80274F04);
+        }
+        drawShapeAnim(pobj);
+    } else {
+        setupArrayDesc(pobj->verts);
+        setupVtxDesc(pobj);
+        GXCallDisplayList(pobj->display, pobj->n_display << 5);
+    }
 }
 
 typedef enum PObjSetupFlag {
