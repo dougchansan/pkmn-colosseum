@@ -1103,6 +1103,7 @@ void msgctrlPalette(EffectUtilCommandObj* obj) {
     u8* stream;
     u8 idx;
     u8* colorPtr;
+    u32 color;
     u32 maxIdx;
 
     if (obj->activeFlag != 0) {
@@ -1113,10 +1114,11 @@ void msgctrlPalette(EffectUtilCommandObj* obj) {
             idx = 0;
         }
         colorPtr = (u8*)(lbl_80478E8C + (u32)idx * 4);
-        obj->colorRgba = ((u32)colorPtr[0] << 24) |
-                         ((u32)colorPtr[1] << 16) |
-                         ((u32)colorPtr[2] << 8) |
-                         (u32)colorPtr[3];
+        color = (u32)colorPtr[0] << 24;
+        color |= (u32)colorPtr[1] << 16;
+        color |= (u32)colorPtr[2] << 8;
+        color |= colorPtr[3];
+        obj->colorRgba = color;
         GSmsgSetColor(obj);
     }
     /* Advance stream pointer */
