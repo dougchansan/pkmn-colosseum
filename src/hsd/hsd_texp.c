@@ -876,6 +876,7 @@ extern char lbl_8047DE90;
 extern char lbl_802753DC[];
 extern char lbl_802753A8[];
 extern char lbl_802755D0[];
+extern char lbl_8047DEA0;
 extern void* fn_80193B10(s32 size);
 
 /* Address: 0x801B4240 | Size: 0xC */
@@ -1291,6 +1292,8 @@ typedef struct ColTECnst {
     u8 ref;
     u8 range;
 } ColTECnst;
+
+void fn_801B750C(ColTExpNode* texp, u8 sel);
 
 extern void fn_800B8E74(void);
 extern void fn_800BC3E0(u32 id, GXColor color);
@@ -1744,44 +1747,171 @@ void fn_801B64EC(ColTExpNode* texp, u32 sel_a, ColTExpNode* exp_a,
  * generation sources: UV, reflection, highlight, shadow, toon,
  * and gradation mapping.
  */
-void fn_801B65F0(HSD_TObj* tobj, u32 num_texcoords) {
-    HSD_TObj* t;
-    u32 coord_id = 0;
+void fn_801B65F0(ColTExpNode* tev, u32 sel, ColTExpNode* exp, s32 idx)
+{
+    ColTEArg prev = tev->c_in[idx];
+    u8 ksel = 0xFF;
 
-    for (t = tobj; t != NULL; t = t->next) {
-        u32 src = tobj_coord(t);
+    tev->c_in[idx].type = ColTExpGetType(exp);
+    tev->c_in[idx].sel = sel;
+    tev->c_in[idx].exp = exp;
+    tev->c_in[idx].arg = 0xFF;
 
-        if (coord_id >= 8) break;
-
-        switch (src) {
-        case TEX_COORD_UV:
-            /* GXSetTexCoordGen(coord_id, GX_TG_MTX2x4, GX_TG_TEX0 + coord_id, mtx) */
+    switch (sel) {
+    case 7:
+        tev->c_in[idx].arg = 15;
+        tev->c_in[idx].type = COL_TE_ZERO;
+        tev->c_in[idx].exp = NULL;
+        break;
+    case 8:
+        tev->c_in[idx].arg = 14;
+        tev->c_in[idx].type = 5;
+        tev->c_in[idx].exp = NULL;
+        break;
+    case 12:
+        tev->c_in[idx].arg = 13;
+        tev->c_in[idx].type = 5;
+        tev->c_in[idx].exp = NULL;
+        break;
+    case 9:
+        ksel = 7;
+        goto konst;
+    case 10:
+        ksel = 6;
+        goto konst;
+    case 11:
+        ksel = 5;
+        goto konst;
+    case 13:
+        ksel = 3;
+        goto konst;
+    case 14:
+        ksel = 2;
+        goto konst;
+    case 15:
+        ksel = 1;
+    konst:
+        tev->c_in[idx].arg = 14;
+        if (tev->kcsel == 0xFF) {
+            tev->kcsel = ksel;
+        } else if (tev->kcsel == ksel) {
+            HSD_Panic(&lbl_8047DE70, 0x218, lbl_802753A8 + 0x114);
+        }
+        tev->c_in[idx].type = 6;
+        break;
+    default:
+        switch (tev->c_in[idx].type) {
+        case COL_TE_ZERO:
+            tev->c_in[idx].sel = 7;
+            tev->c_in[idx].arg = 15;
             break;
-
-        case TEX_COORD_REFLECTION:
-            /* GXSetTexCoordGen(coord_id, GX_TG_MTX2x4, GX_TG_NRM, mtx) */
-            break;
-
-        case TEX_COORD_HILIGHT:
-            /* GXSetTexCoordGen(coord_id, GX_TG_MTX2x4, GX_TG_NRM, mtx) */
-            break;
-
-        case TEX_COORD_SHADOW:
-            /* GXSetTexCoordGen(coord_id, GX_TG_MTX3x4, GX_TG_POS, mtx) */
-            break;
-
-        case TEX_COORD_TOON:
-            /* GXSetTexCoordGen(coord_id, GX_TG_MTX2x4, GX_TG_NRM, mtx) */
-            break;
-
-        case TEX_COORD_GRADATION:
-            /* GXSetTexCoordGen(coord_id, GX_TG_MTX2x4, GX_TG_POS, mtx) */
+        case COL_TE_TEV: {
+            u8 input_sel;
+            if (!(sel == 1 || sel == 5)) {
+                __assert(&lbl_8047DE70, 0x228, &lbl_8047DEA0);
+            }
+            if (!(idx == 3 || sel != 1 || exp->c_clamp)) {
+                __assert(&lbl_8047DE70, 0x22A, &lbl_8047DEA0);
+            }
+            if (!(idx == 3 || sel != 5 || exp->a_clamp)) {
+                __assert(&lbl_8047DE70, 0x22B, &lbl_8047DEA0);
+            }
+            input_sel = tev->c_in[idx].sel;
+            if (ColTExpGetType(tev->c_in[idx].exp) == COL_TE_TEV) {
+                if (input_sel == 1) {
+                    tev->c_in[idx].exp->c_ref += 1;
+                } else {
+                    tev->c_in[idx].exp->a_ref += 1;
+                }
+            } else if (ColTExpGetType(tev->c_in[idx].exp) == COL_TE_CNST) {
+                ((ColTECnst*) tev->c_in[idx].exp)->ref += 1;
+            }
             break;
         }
-
-        t->coord = coord_id;
-        coord_id++;
+        case COL_TE_CNST: {
+            u8 input_sel;
+            tev->c_in[idx].sel = ((ColTECnst*) exp)->comp;
+            input_sel = tev->c_in[idx].sel;
+            if (ColTExpGetType(tev->c_in[idx].exp) == COL_TE_TEV) {
+                if (input_sel == 1) {
+                    tev->c_in[idx].exp->c_ref += 1;
+                } else {
+                    tev->c_in[idx].exp->a_ref += 1;
+                }
+            } else if (ColTExpGetType(tev->c_in[idx].exp) == COL_TE_CNST) {
+                ((ColTECnst*) tev->c_in[idx].exp)->ref += 1;
+            }
+            break;
+        }
+        case COL_TE_TEX:
+            switch (sel) {
+            case 1:
+                tev->c_in[idx].arg = 8;
+                ksel = 0;
+                break;
+            case 2:
+                tev->c_in[idx].arg = 8;
+                ksel = 1;
+                break;
+            case 3:
+                tev->c_in[idx].arg = 8;
+                ksel = 2;
+                break;
+            case 4:
+                tev->c_in[idx].arg = 8;
+                ksel = 3;
+                break;
+            case 5:
+                tev->c_in[idx].arg = 9;
+                break;
+            default:
+                __assert(&lbl_8047DE70, 0x24E, &lbl_8047DEA0);
+                break;
+            }
+            if (tev->tex_swap == 0xFF) {
+                tev->tex_swap = ksel;
+            } else if (!(ksel == 0xFF || tev->tex_swap == ksel)) {
+                __assert(&lbl_8047DE70, 0x253, &lbl_8047DEA0);
+            }
+            break;
+        case COL_TE_RAS:
+            switch (sel) {
+            case 1:
+                tev->c_in[idx].arg = 10;
+                ksel = 0;
+                break;
+            case 2:
+                tev->c_in[idx].arg = 10;
+                ksel = 1;
+                break;
+            case 3:
+                tev->c_in[idx].arg = 10;
+                ksel = 2;
+                break;
+            case 4:
+                tev->c_in[idx].arg = 10;
+                ksel = 3;
+                break;
+            case 5:
+                tev->c_in[idx].arg = 11;
+                break;
+            default:
+                __assert(&lbl_8047DE70, 0x27E, &lbl_8047DEA0);
+                break;
+            }
+            if (tev->ras_swap == 0xFF) {
+                tev->ras_swap = ksel;
+            } else if (!(ksel == 0xFF || tev->ras_swap == ksel)) {
+                __assert(&lbl_8047DE70, 0x283, &lbl_8047DEA0);
+            }
+            break;
+        default:
+            __assert(&lbl_8047DE70, 0x295, &lbl_8047DEA0);
+            break;
+        }
+        break;
     }
+    fn_801B750C(prev.exp, prev.sel);
 }
 
 /* ========================================================================= */
