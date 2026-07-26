@@ -226,6 +226,9 @@ extern void fn_800B884C(s32 count);
 extern void fn_800BC6F0(s32 stage, s32 map, s32 coord, s32 color);
 extern void fn_800BC1A0(s32 stage, s32 a, s32 b, s32 c, s32 d);
 extern void fn_800BC1E4(s32 stage, s32 a, s32 b, s32 c, s32 d);
+extern void fn_800BC228(s32 stage, s32 a, s32 b, s32 c, s32 d, s32 e);
+extern void fn_800BC290(s32 stage, s32 a, s32 b, s32 c, s32 d, s32 e);
+extern void fn_800BC52C(s32 stage, s32 a, s32 b);
 void psDispSub(PSParticle* pp, void* polygonData);
 void psDispSubAppSRT(PSParticle* pp, Mtx parentMatrix);
 void psDispSubAPPSRTPoint(PSParticle* pp);
@@ -1204,6 +1207,24 @@ void psSetupTev(PSParticle* pp) {
         fn_800BC1A0(2, 0xF, 0xA, 0, 0xF);
         fn_800BC1E4(2, 0, 7, 7, 7);
     }
+}
+
+void psSetupTevCommon(void) {
+    fn_800BC6F0(0, 0, 0, 4);
+    fn_800BC228(0, 0, 0, 0, 1, 0);
+    fn_800BC290(0, 0, 0, 0, 1, 0);
+
+    fn_800BC6F0(1, 0, 0, 4);
+    fn_800BC228(1, 0, 0, 0, 1, 0);
+    fn_800BC290(1, 0, 0, 0, 1, 0);
+
+    fn_800BC6F0(2, 0, 0, 4);
+    fn_800BC228(2, 0, 0, 0, 1, 0);
+    fn_800BC290(2, 0, 0, 0, 1, 0);
+
+    fn_800BC52C(0, 0, 0);
+    fn_800BC52C(1, 0, 0);
+    fn_800BC52C(2, 0, 0);
 }
 
 u8 U8ClampAdd(u8 cur, f32 delta) {
