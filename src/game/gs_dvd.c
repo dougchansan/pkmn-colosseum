@@ -768,11 +768,11 @@ u32 fn_80167FA8(u32 workCount)
     if (fn_800057A8() != 4) {
         switch (fn_800057A0()) {
         case 0:
-            lbl_80478C24 = lbl_8047D578;
+            lbl_80478C24 = (const u8*)"GC6J";
             break;
         case 1:
         case 2:
-            lbl_80478C24 = lbl_8047D594;
+            lbl_80478C24 = (const u8*)"GC6E";
             break;
         }
         destination = fn_800A7BCC();
