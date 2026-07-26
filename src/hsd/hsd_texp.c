@@ -2905,42 +2905,63 @@ s32 fn_801B8B84(s32 num, u32* unused, HSD_TExpDag* list, s32* order)
 }
 
 /*
- * GObj_Destroy - 0x801B8D5C | Size: 0x25C
+ * HSD_TExpSimplify2 - 0x801B8D5C | Size: 0x25C
+ * Splice pass-through TEV inputs into their parent stage.
  */
-void fn_801B8D5C(HSD_GObj* gobj) {
-    HSD_GObjProc* proc;
+s32 fn_801B8D5C(ColTExpNode* texp)
+{
+    ColTExpNode* src;
+    u8 sel;
+    s32 i;
 
-    if (gobj == NULL) {
-        return;
+    for (i = 0; i < 4; i++) {
+        src = texp->c_in[i].exp;
+        sel = texp->c_in[i].sel;
+        if (texp->c_in[i].type == COL_TE_TEV && sel == COL_TE_RGB &&
+            src->c_op == 0 && src->c_in[0].sel == COL_TE_0 &&
+            src->c_in[1].sel == COL_TE_0 && src->c_bias == 0 &&
+            src->c_scale == 0)
+        {
+            switch (src->c_in[3].type) {
+            case 6:
+                if (texp->kcsel == 0xFF) {
+                    texp->kcsel = src->kcsel;
+                } else if (texp->kcsel != src->kcsel) {
+                    break;
+                }
+            case 5:
+                texp->c_in[i] = src->c_in[3];
+                fn_801B7BD4(texp->c_in[i].exp, texp->c_in[i].sel);
+                fn_801B750C(src, sel);
+                break;
+            }
+        }
     }
 
-    if (gobj->user_data != NULL && gobj->user_data_remove_func != NULL) {
-        gobj->user_data_remove_func(gobj->user_data);
+    for (i = 0; i < 4; i++) {
+        src = texp->a_in[i].exp;
+        sel = texp->a_in[i].sel;
+        if (texp->a_in[i].type == COL_TE_TEV && src->a_op == 0 &&
+            src->a_in[0].sel == COL_TE_0 &&
+            src->a_in[1].sel == COL_TE_0 && src->a_bias == 0 &&
+            src->a_scale == 0)
+        {
+            switch (src->a_in[3].type) {
+            case 6:
+                if (texp->kasel == 0xFF) {
+                    texp->kasel = src->kasel;
+                } else if (texp->kasel != src->kasel) {
+                    break;
+                }
+            case 5:
+                texp->a_in[i] = src->a_in[3];
+                fn_801B7BD4(texp->a_in[i].exp, texp->a_in[i].sel);
+                fn_801B750C(src, sel);
+                break;
+            }
+        }
     }
-    proc = gobj->proc;
-    while (proc != NULL) {
-        HSD_GObjProc* next = proc->next;
-        hsdFreeMemPiece(proc, sizeof(HSD_GObjProc));
-        proc = next;
-    }
-    if (gobj->prev != NULL) {
-        gobj->prev->next = gobj->next;
-    } else if (gobj->p_link < 64) {
-        gobj_list[gobj->p_link] = gobj->next;
-    }
-    if (gobj->next != NULL) {
-        gobj->next->prev = gobj->prev;
-    }
-    if (gobj->prev_gx != NULL) {
-        gobj->prev_gx->next_gx = gobj->next_gx;
-    } else if (gobj->gx_link < 64) {
-        gobj_render_list[gobj->gx_link] = gobj->next_gx;
-    }
-    if (gobj->next_gx != NULL) {
-        gobj->next_gx->prev_gx = gobj->prev_gx;
-    }
-    gobj_num_active--;
-    hsdFreeMemPiece(gobj, sizeof(HSD_GObj));
+    return 0;
 }
 
 /*

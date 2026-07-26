@@ -4472,7 +4472,10 @@ hsd/hsd_texp_candidate_801B7BD4_r40_801B89BC_gc125n.c:
 	.text       start:0x801B89BC end:0x801B8B84
 
 hsd/hsd_texp_candidate_801B7BD4_r40_801B8B84.c:
-	.text       start:0x801B8B84 end:0x801B8FB8
+	.text       start:0x801B8B84 end:0x801B8D5C
+
+hsd/hsd_texp_candidate_801B8D5C.c:
+	.text       start:0x801B8D5C end:0x801B8FB8
 
 hsd/hsd_texp_candidate_801B8FB8_gc20.c:
 	.text       start:0x801B8FB8 end:0x801B9048
