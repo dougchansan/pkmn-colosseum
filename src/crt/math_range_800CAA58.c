@@ -1299,7 +1299,7 @@ f64 __ieee754_pow(f64 x, f64 y) {
         }
     }
 
-    ax = x < 0 ? -x : x;
+    ax = __fabs(x);
     if (lx == 0) {
         if (ix == 0x7FF00000 || ix == 0 || ix == 0x3FF00000) {
             z = ax;
