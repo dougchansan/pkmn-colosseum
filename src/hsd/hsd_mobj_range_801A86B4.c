@@ -41,6 +41,7 @@ extern const char lbl_8047DCB0;      /* sdata2 string                    */
 /* ------------------------------------------------------------------------ */
 
 extern const f32 lbl_80478ACC; /* reciprocal guard epsilon (rodata) */
+extern const f32 lbl_80478AC0[];
 
 extern f64 sin(f64 x);
 extern f64 cos(f64 x);
@@ -133,6 +134,11 @@ extern f32 VECDotProduct(const Vec* a, const Vec* b);
 extern void VECScale(const Vec* src, Vec* dst, f32 scale);
 extern void VECSubtract(const Vec* a, const Vec* b, Vec* dst);
 extern void VECCrossProduct(const Vec* a, const Vec* b, Vec* dst);
+extern void PSVECNormalize(const Vec* src, Vec* dst);
+extern void PSVECCrossProduct(const Vec* a, const Vec* b, Vec* dst);
+extern void PSMTXCopy(const f32 src[3][4], f32 dst[3][4]);
+extern f64 asin(f64 x);
+extern f64 atan2(f64 y, f64 x);
 
 void HSD_MtxSRTQuat(f32 m[3][4], Vec* scale, HSD_Quaternion* rotate,
                     Vec* translate, Vec* parent_scale)
@@ -224,6 +230,315 @@ void HSD_MtxGetTranslate(f32 mtx[3][4], f32* vec) {
     vec[0] = mtx[0][3];
     vec[1] = mtx[1][3];
     vec[2] = mtx[2][3];
+}
+
+/* Address: 0x801A958C | Size: 0x340 -- HSD_MtxGetRotationMtx */
+void fn_801A958C(f32 src[3][4], f32 dst[3][4], char axis0, char axis1)
+{
+    Vec x;
+    Vec y;
+    Vec z;
+    f32 zero;
+
+    switch (axis0) {
+    case 'x':
+    case 'X':
+        x.x = src[0][0];
+        x.y = src[1][0];
+        x.z = src[2][0];
+        PSVECNormalize(&x, &x);
+        switch (axis1) {
+        case 'z':
+        case 'Z':
+            z.x = src[0][2];
+            z.y = src[1][2];
+            z.z = src[2][2];
+            PSVECNormalize(&z, &z);
+            PSVECCrossProduct(&z, &x, &y);
+            PSVECCrossProduct(&x, &y, &z);
+            break;
+        default:
+            y.x = src[0][1];
+            y.y = src[1][1];
+            y.z = src[2][1];
+            PSVECNormalize(&y, &y);
+            PSVECCrossProduct(&x, &y, &z);
+            PSVECCrossProduct(&z, &x, &y);
+            break;
+        }
+        break;
+    case 'y':
+    case 'Y':
+        y.x = src[0][1];
+        y.y = src[1][1];
+        y.z = src[2][1];
+        PSVECNormalize(&y, &y);
+        switch (axis1) {
+        case 'x':
+        case 'X':
+            x.x = src[0][0];
+            x.y = src[1][0];
+            x.z = src[2][0];
+            PSVECNormalize(&x, &x);
+            PSVECCrossProduct(&x, &y, &z);
+            PSVECCrossProduct(&y, &z, &x);
+            break;
+        default:
+            z.x = src[0][2];
+            z.y = src[1][2];
+            z.z = src[2][2];
+            PSVECNormalize(&z, &z);
+            PSVECCrossProduct(&y, &z, &x);
+            PSVECCrossProduct(&x, &y, &z);
+            break;
+        }
+        break;
+    default:
+        z.x = src[0][2];
+        z.y = src[1][2];
+        z.z = src[2][2];
+        PSVECNormalize(&z, &z);
+        switch (axis1) {
+        case 'y':
+        case 'Y':
+            y.x = src[0][1];
+            y.y = src[1][1];
+            y.z = src[2][1];
+            PSVECNormalize(&y, &y);
+            PSVECCrossProduct(&y, &z, &x);
+            PSVECCrossProduct(&z, &x, &y);
+            break;
+        default:
+            x.x = src[0][0];
+            x.y = src[1][0];
+            x.z = src[2][0];
+            PSVECNormalize(&x, &x);
+            PSVECCrossProduct(&z, &x, &y);
+            PSVECCrossProduct(&y, &z, &x);
+            break;
+        }
+        break;
+    }
+
+    zero = 0.0f;
+    dst[0][0] = x.x;
+    dst[1][0] = x.y;
+    dst[2][0] = x.z;
+    dst[0][1] = y.x;
+    dst[1][1] = y.y;
+    dst[2][1] = y.z;
+    dst[0][2] = z.x;
+    dst[1][2] = z.y;
+    dst[2][2] = z.z;
+    dst[0][3] = zero;
+    dst[1][3] = zero;
+    dst[2][3] = zero;
+}
+
+static inline f32 mtxCalcVal(f32 x, f32 y)
+{
+    if (x == 0.0f) {
+        return y >= 0.0f ? 1.5707963267948966f : -1.5707963267948966f;
+    }
+    return (f32) atan2(y, x);
+}
+
+typedef union MtxFloatShape {
+    f32 value;
+    u32 bits;
+} MtxFloatShape;
+
+/* MSL math.h's inline sqrtf, retained here because this TU inlined it. */
+static inline f32 mtxSqrtf(f32 value)
+{
+    MtxFloatShape shape;
+    f64 guess;
+    s32 exponent;
+    s32 fpclass;
+
+    if (value > 0.0f) {
+        guess = __frsqrte(value);
+        guess = 0.5 * guess * (3.0 - value * (guess * guess));
+        guess = 0.5 * guess * (3.0 - value * (guess * guess));
+        guess = 0.5 * guess * (3.0 - value * (guess * guess));
+        return (f32) (value * guess);
+    }
+    if ((f64) value < 0.0) {
+        return lbl_80478AC0[0];
+    }
+
+    shape.value = value;
+    exponent = shape.bits & 0x7F800000;
+    switch (exponent) {
+    case 0x7F800000:
+        fpclass = (shape.bits & 0x007FFFFF) != 0 ? 1 : 2;
+        break;
+    case 0:
+        fpclass = (shape.bits & 0x007FFFFF) != 0 ? 5 : 3;
+        break;
+    default:
+        fpclass = 4;
+        break;
+    }
+    if (fpclass == 1) {
+        return lbl_80478AC0[0];
+    }
+    return value;
+}
+
+/* Address: 0x801A98CC | Size: 0x524 -- HSD_MtxGetRotation */
+void fn_801A98CC(f32 m[3][4], Vec* vec)
+{
+    f32 length0;
+    f32 length1;
+    f32 length2;
+    f32 test;
+    f32 angle;
+
+    length0 = mtxSqrtf(m[0][0] * m[0][0] + m[1][0] * m[1][0] +
+                       m[2][0] * m[2][0]);
+    if (!(length0 < 1.1754943E-38f)) {
+        length1 = mtxSqrtf(m[0][1] * m[0][1] + m[1][1] * m[1][1] +
+                           m[2][1] * m[2][1]);
+        if (!(length1 < 1.1754943E-38f)) {
+            length2 = mtxSqrtf(m[0][2] * m[0][2] + m[1][2] * m[1][2] +
+                               m[2][2] * m[2][2]);
+            if (!(length2 < 1.1754943E-38f)) {
+                test = -m[2][0] / length0;
+                if (test >= 1.0f) {
+                    angle = 1.5707963267948966f;
+                } else if (test <= -1.0f) {
+                    angle = -1.5707963267948966f;
+                } else {
+                    angle = (f32) asin(test);
+                }
+                vec->y = angle;
+
+                if ((f32) cos(vec->y) >= 1.1754943E-38f) {
+                    f32 y = m[2][1] / length1;
+                    f32 x = m[2][2] / length2;
+
+                    vec->x = mtxCalcVal(x, y);
+                    vec->z = mtxCalcVal(m[0][0], m[1][0]);
+                    return;
+                }
+
+                vec->x = mtxCalcVal(m[1][1], m[0][1]);
+                vec->z = 0.0f;
+                return;
+            }
+        }
+    }
+
+    vec->x = 0.0f;
+    vec->y = 0.0f;
+    vec->z = 0.0f;
+}
+
+static inline f32 mtxDeterminant(f32 m[3][4])
+{
+    f32 det;
+
+    det = m[2][0] * (m[0][1] * m[1][2]);
+    det += m[2][2] * (m[0][0] * m[1][1]);
+    det += m[2][1] * (m[0][2] * m[1][0]);
+    det -= m[0][2] * (m[2][0] * m[1][1]);
+    det -= m[2][2] * (m[1][0] * m[0][1]);
+    det -= m[1][2] * (m[0][0] * m[2][1]);
+    return det;
+}
+
+/* Address: 0x801A9DF0 | Size: 0x560 -- HSD_MtxInverseConcat */
+BOOL fn_801A9DF0(f32 inv[3][4], f32 src[3][4], f32 dst[3][4])
+{
+    f32 result[3][4];
+    f32 det;
+    f32 i00;
+    f32 i01;
+    f32 i02;
+    f32 i10;
+    f32 i11;
+    f32 i12;
+    f32 i20;
+    f32 i21;
+    f32 i22;
+    f32 tx;
+    f32 ty;
+    f32 tz;
+
+    det = mtxDeterminant(inv);
+    if (det == 0.0f) {
+        return FALSE;
+    }
+
+    det = 1.0f / det;
+    i00 = (inv[1][1] * inv[2][2] - inv[2][1] * inv[1][2]) * det;
+    i01 = -(inv[0][1] * inv[2][2] - inv[2][1] * inv[0][2]) * det;
+    i10 = -(inv[1][0] * inv[2][2] - inv[2][0] * inv[1][2]) * det;
+    i02 = (inv[0][1] * inv[1][2] - inv[1][1] * inv[0][2]) * det;
+    i11 = (inv[0][0] * inv[2][2] - inv[2][0] * inv[0][2]) * det;
+    i12 = -(inv[0][0] * inv[1][2] - inv[1][0] * inv[0][2]) * det;
+    i20 = (inv[1][0] * inv[2][1] - inv[2][0] * inv[1][1]) * det;
+    i21 = -(inv[0][0] * inv[2][1] - inv[2][0] * inv[0][1]) * det;
+    i22 = (inv[0][0] * inv[1][1] - inv[1][0] * inv[0][1]) * det;
+
+    tx = -(i02 * inv[2][3] - (-i00 * inv[0][3] - i01 * inv[1][3]));
+    ty = -(i12 * inv[2][3] - (-i10 * inv[0][3] - i11 * inv[1][3]));
+    tz = -(i22 * inv[2][3] - (-i20 * inv[0][3] - i21 * inv[1][3]));
+
+    if (inv == dst || src == dst) {
+        result[0][0] =
+            i02 * src[2][0] + (i00 * src[0][0] + i01 * src[1][0]);
+        result[0][1] =
+            i02 * src[2][1] + (i00 * src[0][1] + i01 * src[1][1]);
+        result[0][2] =
+            i02 * src[2][2] + (i00 * src[0][2] + i01 * src[1][2]);
+        result[0][3] = i02 * src[2][3] +
+                       (i00 * src[0][3] + i01 * src[1][3]) + tx;
+        result[1][0] =
+            i12 * src[2][0] + (i10 * src[0][0] + i11 * src[1][0]);
+        result[1][1] =
+            i12 * src[2][1] + (i10 * src[0][1] + i11 * src[1][1]);
+        result[1][2] =
+            i12 * src[2][2] + (i10 * src[0][2] + i11 * src[1][2]);
+        result[1][3] = i12 * src[2][3] +
+                       (i10 * src[0][3] + i11 * src[1][3]) + ty;
+        result[2][0] =
+            i22 * src[2][0] + (i20 * src[0][0] + i21 * src[1][0]);
+        result[2][1] =
+            i22 * src[2][1] + (i20 * src[0][1] + i21 * src[1][1]);
+        result[2][2] =
+            i22 * src[2][2] + (i20 * src[0][2] + i21 * src[1][2]);
+        result[2][3] = i22 * src[2][3] +
+                       (i20 * src[0][3] + i21 * src[1][3]) + tz;
+        PSMTXCopy(result, dst);
+    } else {
+        dst[0][0] =
+            i02 * src[2][0] + (i00 * src[0][0] + i01 * src[1][0]);
+        dst[0][1] =
+            i02 * src[2][1] + (i00 * src[0][1] + i01 * src[1][1]);
+        dst[0][2] =
+            i02 * src[2][2] + (i00 * src[0][2] + i01 * src[1][2]);
+        dst[0][3] = i02 * src[2][3] +
+                    (i00 * src[0][3] + i01 * src[1][3]) + tx;
+        dst[1][0] =
+            i12 * src[2][0] + (i10 * src[0][0] + i11 * src[1][0]);
+        dst[1][1] =
+            i12 * src[2][1] + (i10 * src[0][1] + i11 * src[1][1]);
+        dst[1][2] =
+            i12 * src[2][2] + (i10 * src[0][2] + i11 * src[1][2]);
+        dst[1][3] = i12 * src[2][3] +
+                    (i10 * src[0][3] + i11 * src[1][3]) + ty;
+        dst[2][0] =
+            i22 * src[2][0] + (i20 * src[0][0] + i21 * src[1][0]);
+        dst[2][1] =
+            i22 * src[2][1] + (i20 * src[0][1] + i21 * src[1][1]);
+        dst[2][2] =
+            i22 * src[2][2] + (i20 * src[0][2] + i21 * src[1][2]);
+        dst[2][3] = i22 * src[2][3] +
+                    (i20 * src[0][3] + i21 * src[1][3]) + tz;
+    }
+    return TRUE;
 }
 
 /* Address: 0x801AA350 | Size: 0xC  -- already-banked (GC/1.3, calibration) */
