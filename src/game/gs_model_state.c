@@ -49,8 +49,8 @@ extern void fn_800E01D0(GSvec*, const GSvec*);
 
 void GSmodelPopState(GSmodel* model, const GSmodelState* state)
 {
-    model->flags.raw =
-        (model->flags.raw & 0xFFCDD49D) | state->flags;
+    model->flags.raw &= 0xFFCDD49D;
+    model->flags.raw |= state->flags;
     GSmodelSetPosition(model, &state->position);
     GSmodelSetRotation(model, &state->rotation);
     GSmodelSetScale(model, &state->scale);
