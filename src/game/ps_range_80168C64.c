@@ -87,6 +87,10 @@ extern f32 lbl_8047D640; /* 2.0f */
 extern f64 lbl_8047D660; /* int->float bias (0x4330000000000000) */
 extern f64 lbl_8047D668; /* signed int->float bias */
 extern f32 lbl_8047D690; /* 255.0f */
+extern f32 lbl_8047D694; /* pi / 2 */
+extern f32 lbl_8047D698; /* -pi / 2 */
+extern f64 lbl_8047D6A0; /* 2.0 */
+extern f64 lbl_8047D6A8; /* pi */
 extern const char lbl_8047D670[7];
 extern const char lbl_8047D678[5];
 
@@ -233,6 +237,10 @@ extern f32 lbl_8047D618;
 extern f64 lbl_8047D5E0;
 extern f32 lbl_8047D5D8;
 extern f32 lbl_80478ACC;
+extern f32 lbl_80478AC8;
+extern double sin(double x);
+extern double cos(double x);
+extern double atan2(double y, double x);
 extern void particleSort(s32 linkNo, PSParticle** first, PSParticle** second);
 extern void fn_800BC8C8(s32 count);
 extern void fn_800B884C(s32 count);
@@ -1532,6 +1540,54 @@ s32 applyForceJObj(PSParticle* pp, PSForceJObj* jobj,
     pp->velocityY += force * dy;
     pp->velocityZ += force * dz;
     return FALSE;
+}
+
+void modifyDir(PSParticle* pp, f32 angle) {
+    f32 yaw;
+    f32 pitch;
+    f32 yawSin;
+    f32 yawCos;
+    f32 pitchSin;
+    f32 pitchCos;
+    f32 magnitude;
+    f32 azimuth;
+    f32 radial;
+    f32 radialX;
+    f32 radialY;
+    f32 forward;
+    f32 flattened;
+
+    if (fabsf(pp->velocityZ) < lbl_80478AC8) {
+        yaw = pp->velocityY >= 0.0f ? lbl_8047D694 : lbl_8047D698;
+    } else {
+        yaw = atan2(pp->velocityY, pp->velocityZ);
+    }
+    yawSin = sin(yaw);
+    yawCos = cos(yaw);
+
+    flattened = pp->velocityZ * yawCos + pp->velocityY * yawSin;
+    if (fabsf(flattened) < lbl_80478AC8) {
+        pitch = pp->velocityX >= 0.0f ? lbl_8047D694 : lbl_8047D698;
+    } else {
+        pitch = atan2(pp->velocityX, flattened);
+    }
+    pitchSin = sin(pitch);
+    pitchCos = cos(pitch);
+
+    magnitude = sqrtf(pp->velocityX * pp->velocityX +
+                      pp->velocityY * pp->velocityY +
+                      pp->velocityZ * pp->velocityZ);
+    azimuth = lbl_8047D6A0 * lbl_8047D6A8 * fn_801ADC7C();
+    radial = magnitude * sin(angle);
+    radialX = radial * cos(azimuth);
+    radialY = radial * sin(azimuth);
+    forward = magnitude * cos(angle);
+
+    pp->velocityX = forward * pitchSin + radialX * pitchCos;
+    pp->velocityY = pitchSin * (-radialX * yawSin) +
+                    radialY * yawCos + pitchCos * (forward * yawSin);
+    pp->velocityZ = pitchSin * (-radialX * yawCos) -
+                    radialY * yawSin + pitchCos * (forward * yawCos);
 }
 
 void psCopyGeneratorData(PSParticle* gen, void* peopleObj) {
