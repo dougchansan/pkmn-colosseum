@@ -1441,40 +1441,54 @@ u32 fn_8013AB60(void* ptr, u8* src, u8* dst, u32 alpha) {
     u8* node;
     u8* tail;
     u16 handle;
-    u32 i;
-
-    if (ptr == NULL || src == NULL || dst == NULL) {
-        return 0;
-    }
+    f32 start;
+    f32 end;
 
     p = ptr;
     handle = _toolentryAlloc__FUl(0x14);
-    if (handle == 0) {
-        return 0;
-    }
-
-    node = fn_800E27B0(handle);
-    for (i = 0; i < 4; i++) {
-        node[i] = src[i];
-        node[i + 4] = dst[i];
-    }
-    *(u32*)(node + 0x8) = alpha;
-    *(u16*)(node + 0xC) = handle;
-    *(u16*)(node + 0xE) = 0;
-    *(void**)(node + 0x10) = NULL;
-
-    tail = *(u8**)(p + 0x50);
-    if (tail == NULL) {
-        *(void**)(p + 0x50) = node;
-        *(void**)(p + 0x54) = node;
-        *(u32*)(p + 0x58) = 0;
-    } else {
-        while (*(void**)(tail + 0x10) != NULL) {
-            tail = *(u8**)(tail + 0x10);
+    if (handle != 0) {
+        node = fn_800E27B0(handle);
+        *(u16*)(node + 0xC) = handle;
+        if (alpha == 0xFFFFFFFF) {
+            start = src[0];
+            end = dst[0];
+            node[0] = start + 0.5f * (end - start);
+            start = src[1];
+            end = dst[1];
+            node[1] = start + 0.5f * (end - start);
+            start = src[2];
+            end = dst[2];
+            node[2] = start + 0.5f * (end - start);
+            start = src[3];
+            end = dst[3];
+            node[3] = start + 0.5f * (end - start);
+            node[4] = node[0];
+            node[5] = node[1];
+            node[6] = node[2];
+            node[7] = node[3];
+        } else {
+            node[0] = src[0];
+            node[1] = src[1];
+            node[2] = src[2];
+            node[3] = src[3];
+            node[4] = dst[0];
+            node[5] = dst[1];
+            node[6] = dst[2];
+            node[7] = dst[3];
         }
-        *(void**)(tail + 0x10) = node;
+        *(u32*)(node + 0x8) = alpha;
+        tail = *(u8**)(p + 0x50);
+        if (tail != NULL) {
+            while (*(void**)(tail + 0x10) != NULL) {
+                tail = *(u8**)(tail + 0x10);
+            }
+            *(void**)(tail + 0x10) = node;
+        } else {
+            *(void**)(p + 0x50) = node;
+        }
+        *(void**)(node + 0x10) = NULL;
     }
-    return 1;
+    return 0;
 }
 #endif
 #endif
