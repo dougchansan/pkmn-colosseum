@@ -2786,7 +2786,7 @@ u32 _fightMenuFightTrainerGcHeroOpenMenuSubWaza__FP13FIGHT_TRAINERP15FightOutPok
 /* Address: 0x80264488 | Size: 0x654 | Ghidra import (PSQ removed) */
 
 
-u32 _fightMenuFightTrainerGcHeroOpenMenuSubItem__FP13FIGHT_TRAINERP15FightOutPokemonUs(u32 r3,int r4,u32 r5)
+u32 _fightMenuFightTrainerGcHeroOpenMenuSubItem__FP13FIGHT_TRAINERP15FightOutPokemonUs(u32 r3,int r4,u16 r5)
 
 {
     extern s8 menuFightCloseCheckTotalTimer();
