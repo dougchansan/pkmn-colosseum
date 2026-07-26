@@ -637,8 +637,8 @@ extern void fn_800E0BE4(void);
 extern void fn_800CDBE0(void);
 extern void fn_800CE148(void);
 extern void set__5GSvecFfff(void* dst, f32 x, f32 y, f32 z);
-extern void GSvecCopy(void);
-extern void fn_800DFFCC(void);
+extern void GSvecCopy(void* dst, const void* src);
+extern void fn_800DFFCC(void* dst, void* src, const void* value);
 extern void fn_800E0718(void);
 extern void GSvecTransformQuat(void);
 extern void GSmtxMakeYRotation(void);
@@ -1989,28 +1989,51 @@ extern u32 lbl_8047D200;
 void fn_8013BA98(void* ptr) {
     u8* p;
     u8* points;
-    u16 x;
-    u16 z;
-    u16 width;
-    u16 depth;
-
-    if (ptr == NULL) {
-        return;
-    }
-    if (*(void**)((u8*)ptr + 0x4) == NULL) {
-        return;
-    }
+    u8* point;
+    u8* vectors;
+    f32 previousDelta[3];
+    f32 nextDelta[3];
+    s32 row;
+    s32 column;
+    s32 index;
+    s32 width;
+    s32 depth;
 
     p = ptr;
     points = *(u8**)(p + 0x4);
-    width = *(u16*)(p + 0x1C);
-    depth = *(u16*)(p + 0x1E);
-    for (z = 0; z < depth; z++) {
-        for (x = 0; x < width; x++, points += 0xC) {
-            *(f32*)(points + 0x0) = (f32)x;
-            *(f32*)(points + 0x4) = *(f32*)(p + 0xC4);
-            *(f32*)(points + 0x8) = (f32)z;
+    vectors = *(u8**)(p + 0x8);
+    width = *(u16*)(p + 0x1E);
+    depth = *(u16*)(p + 0x1C);
+    point = points + 0xC;
+
+    GSvecCopy(vectors, lbl_8031554C);
+    index = 0;
+    for (row = 0; row < depth; row++, index += width) {
+        GSvecCopy(vectors + index * 0xC, vectors);
+    }
+
+    for (column = 1; column < width - 1; column++) {
+        fn_800E0168(previousDelta, point, points);
+        points = point;
+        point += 0xC;
+        vectors += 0xC;
+        fn_800E0168(nextDelta, point, points);
+        fn_800DFFCC(previousDelta, previousDelta, lbl_80315540);
+        fn_800DFFCC(nextDelta, nextDelta, lbl_80315540);
+        GSvecAdd(vectors, nextDelta, previousDelta);
+        fn_800E013C(vectors, vectors, *(f32*)&lbl_8047D200);
+        fn_800E0060(vectors, vectors);
+
+        index = 0;
+        for (row = 0; row < depth; row++, index += width) {
+            GSvecCopy(vectors + index * 0xC, vectors);
         }
+    }
+
+    GSvecCopy(vectors + 0xC, lbl_8031554C);
+    index = 0;
+    for (row = 0; row < depth; row++, index += width) {
+        GSvecCopy(vectors + (index + 1) * 0xC, vectors + 0xC);
     }
 }
 extern void clear__5GSvecFv(void);
