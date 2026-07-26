@@ -15,8 +15,7 @@ extern void* fn_801A6928(u32 size);
 extern s32 HSD_GetNbBits(u32 value);
 extern void OSReport(const char* format, ...);
 extern void HSD_Panic(const char* file, u32 line, const char* message);
-extern void fn_801ADD48(HSD_Exp* exp, HSD_ByteCodeExpDesc* desc);
-extern void fn_801ADE50(HSD_Exp* exp, HSD_ExpDesc* desc);
+extern f32 fn_801AE000(void*);
 extern f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 count);
 extern void HSD_JObjSetupMatrix(HSD_JObj* jobj);
 extern void HSD_MtxGetRotation(f32 mtx[3][4], Vec* rotation);
@@ -181,6 +180,65 @@ void fn_801AE50C(HSD_RObj* robj)
     }
 }
 
+/*
+ * These helpers precede HSD_RObjLoadDesc in the original robj.c.  Keeping
+ * their definitions visible here restores the original auto-inlining lost at
+ * the candidate object's address split.
+ */
+static HSD_Rvalue* RObjLoadRvalueDesc(HSD_RvalueList* list)
+{
+    HSD_Rvalue* result = NULL;
+    HSD_Rvalue** cursor = &result;
+
+    if (list == NULL) {
+        return NULL;
+    }
+
+    while (list->joint != NULL) {
+        HSD_Rvalue* rvalue = HSD_ObjAlloc(lbl_80465688);
+
+        if (rvalue == NULL) {
+            __assert("robj.c", 0x485, "rvalue");
+        }
+        memset(rvalue, 0, sizeof(HSD_Rvalue));
+        *cursor = rvalue;
+        rvalue->flags = list->flags;
+        list++;
+        cursor = &rvalue->next;
+    }
+    return result;
+}
+
+static void RObjExpLoadDesc(HSD_Exp* exp, HSD_ExpDesc* desc)
+{
+    memset(exp, 0, sizeof(HSD_Exp));
+    if (desc != NULL) {
+        if (desc->func != NULL) {
+            exp->expr.func = desc->func;
+        } else {
+            exp->expr.func = fn_801AE000;
+        }
+        exp->rvalue = RObjLoadRvalueDesc(desc->rvalue);
+        exp->nb_args = -1;
+    }
+}
+
+static void RObjByteCodeExpLoadDesc(HSD_Exp* exp,
+                                    HSD_ByteCodeExpDesc* desc)
+{
+    memset(exp, 0, sizeof(HSD_Exp));
+    if (desc != NULL) {
+        if (desc->bytecode != NULL) {
+            exp->expr.bytecode = desc->bytecode;
+        } else {
+            exp->expr.bytecode = NULL;
+        }
+        exp->rvalue = RObjLoadRvalueDesc(desc->rvalue);
+        exp->nb_args = -1;
+        exp->is_bytecode = 1;
+    }
+}
+
 HSD_RObj* HSD_RObjLoadDesc(HSD_RObjDesc* desc)
 {
     HSD_RObj* robj;
@@ -212,10 +270,10 @@ HSD_RObj* HSD_RObjLoadDesc(HSD_RObjDesc* desc)
         }
         break;
     case REFTYPE_EXP:
-        fn_801ADE50(&robj->u.exp, desc->u.exp);
+        RObjExpLoadDesc(&robj->u.exp, desc->u.exp);
         break;
     case REFTYPE_BYTECODE:
-        fn_801ADD48(&robj->u.exp, desc->u.bcexp);
+        RObjByteCodeExpLoadDesc(&robj->u.exp, desc->u.bcexp);
         robj->flags &= ~ROBJ_TYPE_MASK;
         break;
     case REFTYPE_IKHINT:
@@ -223,7 +281,7 @@ HSD_RObj* HSD_RObjLoadDesc(HSD_RObjDesc* desc)
         robj->u.ik_hint.rotate_x = desc->u.ik_hint->rotate_x;
         break;
     default:
-        HSD_Panic("robj.c", 0x3C0, "unexpected type of robj.\n");
+        HSD_Panic("robj.c", 0x37D, "unexpected type of robj.\n");
         break;
     }
     return robj;
