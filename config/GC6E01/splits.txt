@@ -4450,8 +4450,11 @@ hsd/hsd_texp_candidate_801B4264.c:
 hsd/hsd_texp_exact_801B42C0.c:
 	.text       start:0x801B42C0 end:0x801B4300
 
+hsd/hsd_texp_compile_candidate_801B4300.c:
+	.text       start:0x801B4300 end:0x801B45A4
+
 hsd/hsd_texp_candidate_801B4300.c:
-	.text       start:0x801B4300 end:0x801B4614
+	.text       start:0x801B45A4 end:0x801B4614
 
 hsd/hsd_texp_candidate_801B4614_gc20.c:
 	.text       start:0x801B4614 end:0x801B4B5C

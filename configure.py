@@ -8082,6 +8082,12 @@ config.libs = [
             ),
             Object(
                 CodeCandidate,
+                "hsd/hsd_texp_compile_candidate_801B4300.c",
+                mw_version="GC/1.3",
+                progress_category="hsd",
+            ),
+            Object(
+                CodeCandidate,
                 "hsd/hsd_texp_candidate_801B4300.c",
                 mw_version="GC/1.3",
                 progress_category="hsd",
