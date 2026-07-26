@@ -107,7 +107,6 @@ struct HSD_ShapeSet {
         f32* bp;
         f32 bl;
     } blend;
-    HSD_AObj* aobj;
 };
 
 struct HSD_ShapeSetDesc {
