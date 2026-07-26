@@ -997,7 +997,7 @@ config.libs = [
                     f"game/effect/{name}.c",
                     mw_version="GC/1.3",
                     cflags=[
-                        "-O3"
+                        "-O1"
                         if name == "effect_visual_candidate_80138838"
                         and flag == "-O4,p"
                         else flag
@@ -1012,7 +1012,7 @@ config.libs = [
                         ]
                         if name == "effect_visual_candidate_8013E54C"
                         else [
-                            "-O3",
+                            "-O1",
                             "-use_lmw_stmw on",
                             "-sdata 8",
                             "-sdata2 8",
@@ -1124,7 +1124,7 @@ config.libs = [
                 CodeCandidate,
                 "game/effect/effect_visual_candidate_8013DE6C.c",
                 mw_version="GC/1.3",
-                cflags=["-O2" if flag == "-O4,p" else flag for flag in cflags_base],
+                cflags=["-O1" if flag == "-O4,p" else flag for flag in cflags_base],
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
@@ -1736,7 +1736,7 @@ config.libs = [
                 "game/fight_pokemon_candidate_80200E00_gc20.c",
                 mw_version="GC/2.0",
                 extra_cflags=[
-                    "-O4,s",
+                    "-O1",
                     "-use_lmw_stmw on",
                     "-sdata 8",
                     "-sdata2 8",
@@ -5322,7 +5322,7 @@ config.libs = [
                 CodeCandidate,
                 "game/field_candidate_801ED3B8.c",
                 mw_version="GC/1.3",
-                cflags=["-O2" if flag == "-O4,p" else flag for flag in cflags_base],
+                cflags=["-O1" if flag == "-O4,p" else flag for flag in cflags_base],
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
@@ -6428,7 +6428,7 @@ config.libs = [
                 CodeCandidate,
                 "game/battle/battle_main_candidate_801EFA08.c",
                 mw_version="GC/2.0",
-                extra_cflags=["-O4,s", "-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                extra_cflags=["-O1", "-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
             Object(
@@ -7700,7 +7700,7 @@ config.libs = [
                 CodeCandidate,
                 "game/gs_npc_event_candidate_80031B4C_o3.c",
                 mw_version="GC/1.3",
-                cflags=["-O3" if flag == "-O4,p" else flag for flag in cflags_base],
+                cflags=["-O1" if flag == "-O4,p" else flag for flag in cflags_base],
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
@@ -8653,7 +8653,7 @@ config.libs = [
                 CodeCandidate,
                 "game/menuPokemon_candidate_8001C064.c",
                 mw_version="GC/2.0",
-                cflags=["-O2" if flag == "-O4,p" else flag for flag in cflags_base],
+                cflags=["-O1" if flag == "-O4,p" else flag for flag in cflags_base],
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
@@ -9035,6 +9035,7 @@ config.libs = [
                 CodeCandidate,
                 "game/menu/menu_carde_matrix_candidate_8007CBB4.c",
                 mw_version="GC/1.3",
+                cflags=["-O1" if flag == "-O4,p" else flag for flag in cflags_base],
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
