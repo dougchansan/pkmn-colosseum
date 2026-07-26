@@ -1228,7 +1228,8 @@ void fn_8009567C(u8* context, u8* sprite)
 {
     extern u32 pokemonGetStatus();
     extern void* pokemonDataBiosGetPtr();
-    extern u8 pokemonDataBiosGetGetWazaLevel();
+    extern u8 pokemonDataBiosGetZokuseiDataId();
+    extern u32 fn_8010C46C();
     extern u8 pokemonGetSex();
     extern u8 pokemonGetNowLevel();
     extern u8 pokemonIsDarkPokemon();
@@ -1308,13 +1309,16 @@ void fn_8009567C(u8* context, u8* sprite)
 
     switch (window_id) {
     case 0x13B:
-        value = pokemonDataBiosGetGetWazaLevel(pokemon_data, 0);
+        value = (u16)fn_8010C46C(
+            (u8)pokemonDataBiosGetZokuseiDataId(pokemon_data, 0));
         fn_801040F0(0, 0, context, value, 0);
         break;
     case 0x13C:
-        value = pokemonDataBiosGetGetWazaLevel(pokemon_data, 0);
-        if (value != pokemonDataBiosGetGetWazaLevel(pokemon_data, 1)) {
-            fn_801040F0(0, 0, context, value, 0);
+        value = (u8)pokemonDataBiosGetZokuseiDataId(pokemon_data, 0);
+        message = (u8)pokemonDataBiosGetZokuseiDataId(pokemon_data, 1);
+        if (value != message) {
+            message = (u16)fn_8010C46C(message);
+            fn_801040F0(0, 0, context, message, 0);
         }
         break;
     case 0x142:
