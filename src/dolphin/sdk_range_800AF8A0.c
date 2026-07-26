@@ -5,6 +5,11 @@
 
 #include "src/dolphin/sdk_range_800AE3F0.c"
 
+#define OS_BUS_CLOCK (*(u32*) 0x800000F8)
+#define OS_TIMER_CLOCK (OS_BUS_CLOCK / 4)
+#define OSMillisecondsToTicks(msec) ((msec) * (OS_TIMER_CLOCK / 1000))
+#define OSSecondsToTicks(sec) ((OSTime) (sec) * OS_TIMER_CLOCK)
+
 static inline void SetupTimeoutAlarm(CARDControl* card)
 {
     OSCancelAlarm(&card->alarm);
@@ -16,12 +21,6 @@ static inline void SetupTimeoutAlarm(CARDControl* card)
     case 0xF3:
         break;
     case 0xF4:
-        if (card->pageSize > 0x80) {
-            OSSetAlarm(&card->alarm,
-                       OSSecondsToTicks((OSTime) 2) * (card->cBlock / 0x40),
-                       (OSAlarmHandler) TimeoutHandler);
-            break;
-        }
     case 0xF1:
         OSSetAlarm(&card->alarm,
                    OSSecondsToTicks((OSTime) 2) *
@@ -127,7 +126,7 @@ s32 __CARDReadSegment(s32 chan, CARDCallback callback)
     card->field_A4 = 0;
     card->field_A8 = 0;
 
-    result = fn_800AFBDC(chan, NULL, callback);
+    result = fn_800AFBDC(chan, callback, NULL);
     if (result == -1) {
         result = 0;
     } else if (result >= 0) {
@@ -137,7 +136,7 @@ s32 __CARDReadSegment(s32 chan, CARDCallback callback)
             !EXIDma(chan, card->buffer, 0x200, card->field_A4,
                     (EXICallback)__CARDTxHandler))
         {
-            card->callback_CC = NULL;
+            card->txCallback = NULL;
             EXIDeselect(chan);
             EXIUnlock(chan);
             result = -3;

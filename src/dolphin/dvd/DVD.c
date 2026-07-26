@@ -925,8 +925,8 @@ void fn_800A6BD4(u32 intType)
 DVD_SPLIT_CALLBACK_SCOPE void cbForStateError(u32 intType) {
     DVDCommandBlock* finished;
 
-    executing_8047A7E8->state = -1;
     if (intType == 0x10) {
+        executing_8047A7E8->state = -1;
         stateTimeout();
         return;
     }
@@ -1420,6 +1420,9 @@ void fn_800A5D60(void) {
  */
 #if !defined(DVD_BANK_EXACT_ACTIVE)
 DVD_SPLIT_CALLBACK_SCOPE void fn_800A5D88(u32 intType) {
+    extern void DVDReset(void);
+    extern void fn_800A6578(void);
+
     if (intType == 0x10) {
         executing_8047A7E8->state = -1;
         __DVDStoreErrorCode(0x1234568);
@@ -1550,6 +1553,9 @@ void stateCheckID2(DVDCommandBlock* block)
 #if !defined(DVD_BANK_EXACT_ACTIVE)
 void fn_800A60D4(u32 intType)
 {
+    extern void DVDReset(void);
+    extern void fn_800A6578(void);
+
     if (intType == 0x10) {
         executing_8047A7E8->state = -1;
         __DVDStoreErrorCode(0x1234568);
