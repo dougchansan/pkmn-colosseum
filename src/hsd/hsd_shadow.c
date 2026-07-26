@@ -13,6 +13,7 @@
 #include "dolphin/types.h"
 #include "hsd/hsd_class.h"
 #include "hsd/hsd_debug.h"
+#include "hsd/hsd_object.h"
 
 extern u8 lbl_8047B310;
 void fn_801B06D4(u8 value)
@@ -129,7 +130,22 @@ void fn_801B073C(HSD_SList** list, void* object) {
 
 /* Address: 0x801B07D4 | Size: 0xAC */
 /* Shadow light direction setup */
-void fn_801B07D4(void) {
+void fn_801B07D4(HSD_SList** list, void* object) {
+    extern HSD_SList* HSD_SListPrepend(HSD_SList* next, void* data);
+    HSD_SList* current;
+
+    if (list == NULL || object == NULL) {
+        return;
+    }
+
+    for (current = *list; current != NULL; current = current->next) {
+        if (current->data == object) {
+            return;
+        }
+    }
+
+    *list = HSD_SListPrepend(*list, object);
+    ref_INC(object);
 }
 
 /* ========================================================================= */
