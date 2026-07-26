@@ -1013,13 +1013,13 @@ asm void GSmsgIsCheck(void) {
 #pragma optimization_level 2
 static inline u8* GSmsgFindCheck(u8* head, u32 key)
 {
-    u32 count;
+    s32 count;
     u8* entry;
     u8 i;
 
     count = *(u16*)head;
-    for (i = 0; i < count; i++) {
-        entry = *(u8**)(head + 0x20) + i * 0x68;
+    for (i = 0; i < count;) {
+        entry = *(u8**)(head + 0x20) + i++ * 0x68;
         if (entry[0] != 0 && *(u32*)(entry + 0x1C) == key) {
             return entry;
         }
