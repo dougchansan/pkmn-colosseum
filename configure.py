@@ -5825,6 +5825,10 @@ config.libs = [
                 CodeCandidate,
                 "game/gs_range_800E0DDC_r40_800E1544_gc125n.c",
                 mw_version="GC/1.2.5n",
+                cflags=[
+                    "-O3" if flag == "-O4,p" else flag
+                    for flag in cflags_base
+                ],
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
