@@ -275,6 +275,8 @@ config.libs = [
             Object(CodeCandidate, "hsd/hsd_mobj_candidate_801AA35C.c", mw_version="GC/1.3", progress_category="hsd"),  # PR419 residual
             Object(Matching, "hsd/hsd_obj_info_exact_801AA568.c", mw_version="GC/1.3", progress_category="hsd"),  # PR419 exact
             Object(CodeCandidate, "hsd/hsd_pobj_range_801AA608.c", mw_version="GC/1.3", extra_cflags=["-use_lmw_stmw on"], progress_category="hsd"),  # BANK_HSD_POBJ
+            Object(CodeCandidate, "hsd/hsd_pobj_r43_801AC1F8.c", mw_version="GC/2.0p1", extra_cflags=["-O4,s", "-use_lmw_stmw on"], progress_category="hsd"),
+            Object(CodeCandidate, "hsd/hsd_pobj_r43_suffix_801AC4BC.c", mw_version="GC/1.3", extra_cflags=["-use_lmw_stmw on"], progress_category="hsd"),
             Object(Matching, "trk/TRKTarget_range_800C1310.c", mw_version="GC/1.3", progress_category="runtime"),  # BANK_TRK2
             Object(
                 Matching,

@@ -1245,6 +1245,68 @@ void drawShapeAnim(HSD_PObj* pobj)
     fn_801ABDD4(pobj, vertex_buffer, normal_buffer);
 }
 
+void fn_801AC1F8(HSD_ShapeSet* shape_set, s32 shape_id, s32 arrayidx,
+                 f32 dst[9])
+{
+    char* strings = (char*) lbl_80274EE0;
+    u8* index_array;
+    s32 i;
+    s32 idx;
+    void* src_base;
+
+    if (shape_set->normal_desc->attr != 25) {
+        __assert(&lbl_8047DCB8, 1201, strings + 0x130);
+    }
+
+    index_array = shape_set->normal_idx_list[shape_id];
+    if (shape_set->normal_desc->attr_type == 3) {
+        idx = index_array[arrayidx * 2];
+        idx = (idx << 8) + index_array[arrayidx * 2 + 1];
+    } else {
+        idx = index_array[arrayidx];
+    }
+
+    if (shape_set->normal_desc->comp_cnt != 0) {
+        __assert(&lbl_8047DCB8, 1210, strings + 0x15C);
+    }
+
+    src_base = (u8*) shape_set->normal_desc->vertex +
+               idx * shape_set->normal_desc->stride;
+    if (shape_set->normal_desc->comp_type == 4) {
+        extern void* memcpy(void*, const void*, u32);
+        memcpy(dst, src_base, sizeof(f32[9]));
+    } else {
+        s32 decimal_point = 1 << shape_set->normal_desc->frac;
+
+        switch (shape_set->normal_desc->comp_type) {
+        case 0:
+            for (i = 0; i < 9; i++) {
+                dst[i] = (f32) ((u8*) src_base)[i] / decimal_point;
+            }
+            break;
+        case 1:
+            for (i = 0; i < 9; i++) {
+                dst[i] = (f32) ((s8*) src_base)[i] / decimal_point;
+            }
+            break;
+        case 2:
+            for (i = 0; i < 9; i++) {
+                dst[i] = (f32) ((u16*) src_base)[i] / decimal_point;
+            }
+            break;
+        case 3:
+            for (i = 0; i < 9; i++) {
+                dst[i] = (f32) ((s16*) src_base)[i] / decimal_point;
+            }
+            break;
+        default:
+            HSD_Panic(&lbl_8047DCB8, 1241,
+                      strings + 0x18C);
+            break;
+        }
+    }
+}
+
 /* Shape-anim source decoders. The retail range keeps the sysdolphin
  * pobj.c bodies (assert/panic lines 1145/1188 and 1082/1125), so the
  * component fetch below mirrors that source one-for-one. */
