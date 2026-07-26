@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196100,
     "total_functions": 8603,
-    "total_units": 2115
+    "total_units": 2130
   },
   "topology_status": {
     "auto_units": 68,
-    "named_units": 2047,
-    "source_backed_units": 2041,
+    "named_units": 2062,
+    "source_backed_units": 2056,
     "auto_code": 0,
     "auto_data": 57687,
     "auto_functions": 0
@@ -23,7 +23,7 @@
     "matched_data_percent": 97.28669,
     "matched_functions": 6573,
     "matched_functions_percent": 76.40358,
-    "fuzzy_match_percent": 71.39441
+    "fuzzy_match_percent": 71.50307
   },
   "unit_topology": [
     {
@@ -19259,17 +19259,43 @@
       "total_functions": 2
     },
     {
-      "name": "main/game/fsys/fsys_file_candidate_8017D410",
+      "name": "main/game/fsys/fsys_file_r52_8017D410_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 1892,
+          "size": 1360,
           "virtual_address": 2149045264
         }
       ],
-      "total_code": 1892,
+      "total_code": 1360,
       "total_data": 0,
-      "total_functions": 9
+      "total_functions": 7
+    },
+    {
+      "name": "main/game/fsys/fsys_file_r52_8017D960_o4s_inline_noauto",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 344,
+          "virtual_address": 2149046624
+        }
+      ],
+      "total_code": 344,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/fsys/fsys_file_r52_8017DAB8_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 188,
+          "virtual_address": 2149046968
+        }
+      ],
+      "total_code": 188,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/game/fsys/fsys_file_candidate_8017DB74_gc20",
@@ -20156,17 +20182,30 @@
       "total_functions": 7
     },
     {
-      "name": "main/hsd/hsd_dobj",
+      "name": "main/hsd/hsd_dobj_r52_80198F7C_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 4816,
+          "size": 2940,
           "virtual_address": 2149158780
         }
       ],
-      "total_code": 4816,
+      "total_code": 2940,
       "total_data": 0,
-      "total_functions": 19
+      "total_functions": 18
+    },
+    {
+      "name": "main/hsd/hsd_dobj_r52_80199AF8_gc20p1_o4p",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1876,
+          "virtual_address": 2149161720
+        }
+      ],
+      "total_code": 1876,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/hsd/hsd_dobj_r43_8019A24C",
@@ -21352,17 +21391,82 @@
       "total_functions": 1
     },
     {
-      "name": "main/hsd/hsd_shadow_candidate_801B06DC",
+      "name": "main/hsd/hsd_shadow_r52_801B06DC_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 4068,
+          "size": 420,
           "virtual_address": 2149254876
         }
       ],
-      "total_code": 4068,
+      "total_code": 420,
       "total_data": 0,
-      "total_functions": 8
+      "total_functions": 3
+    },
+    {
+      "name": "main/hsd/hsd_shadow_r52_801B0880_gc20p1_o4s",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 536,
+          "virtual_address": 2149255296
+        }
+      ],
+      "total_code": 536,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/hsd/hsd_shadow_r52_801B0A98_middle",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 320,
+          "virtual_address": 2149255832
+        }
+      ],
+      "total_code": 320,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/hsd/hsd_shadow_r52_801B0BD8_gc20p1_o4s",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 736,
+          "virtual_address": 2149256152
+        }
+      ],
+      "total_code": 736,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/hsd/hsd_shadow_r52_801B0EB8_middle",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1644,
+          "virtual_address": 2149256888
+        }
+      ],
+      "total_code": 1644,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/hsd/hsd_shadow_r52_801B1524_gc20p1_o4s",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 412,
+          "virtual_address": 2149258532
+        }
+      ],
+      "total_code": 412,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/hsd/hsd_shadow_exact_801B16C0",
@@ -21404,17 +21508,30 @@
       "total_functions": 3
     },
     {
-      "name": "main/hsd/hsd_texp_candidate_801B18D8",
+      "name": "main/hsd/hsd_texp_r52_801B18D8_gc20p1_o4p_inline_noauto",
       "sections": [
         {
           "name": ".text",
-          "size": 1888,
+          "size": 504,
           "virtual_address": 2149259480
         }
       ],
-      "total_code": 1888,
+      "total_code": 504,
       "total_data": 0,
-      "total_functions": 2
+      "total_functions": 1
+    },
+    {
+      "name": "main/hsd/hsd_texp_r52_801B1AD0_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1384,
+          "virtual_address": 2149259984
+        }
+      ],
+      "total_code": 1384,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/hsd/hsd_texp_candidate_801B18D8_r40_801B2038_gc125n",
@@ -21924,17 +22041,30 @@
       "total_functions": 1
     },
     {
-      "name": "main/hsd/hsd_tobj_candidate_801BD8D0",
+      "name": "main/hsd/hsd_tobj_r52_801BD8D0_gc10_o4p",
       "sections": [
         {
           "name": ".text",
-          "size": 1188,
+          "size": 392,
           "virtual_address": 2149308624
         }
       ],
-      "total_code": 1188,
+      "total_code": 392,
       "total_data": 0,
-      "total_functions": 2
+      "total_functions": 1
+    },
+    {
+      "name": "main/hsd/hsd_tobj_r52_801BDA58_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 796,
+          "virtual_address": 2149309016
+        }
+      ],
+      "total_code": 796,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/hsd/hsd_tobj_candidate_801BBDDC_r41_801BDD74_gc125n",
@@ -21963,17 +22093,30 @@
       "total_functions": 8
     },
     {
-      "name": "main/hsd/hsd_util",
+      "name": "main/hsd/hsd_util_r52_801BF098_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 1556,
+          "size": 1244,
           "virtual_address": 2149314712
         }
       ],
-      "total_code": 1556,
+      "total_code": 1244,
       "total_data": 0,
-      "total_functions": 7
+      "total_functions": 6
+    },
+    {
+      "name": "main/hsd/hsd_util_r52_801BF574_o2",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 312,
+          "virtual_address": 2149315956
+        }
+      ],
+      "total_code": 312,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/hsd/hsd_video",
@@ -23068,17 +23211,43 @@
       "total_functions": 30
     },
     {
-      "name": "main/game/wazaSequenceSys_tail_candidate_801DAC90",
+      "name": "main/game/wazaSequenceSys_r52_801DAC90_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 976,
+          "size": 304,
           "virtual_address": 2149428368
         }
       ],
-      "total_code": 976,
+      "total_code": 304,
       "total_data": 0,
-      "total_functions": 3
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/wazaSequenceSys_r52_801DADC0_gc11p1_o4s",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 312,
+          "virtual_address": 2149428672
+        }
+      ],
+      "total_code": 312,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/wazaSequenceSys_r52_801DAEF8_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 360,
+          "virtual_address": 2149428984
+        }
+      ],
+      "total_code": 360,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/game/wazaSequenceSys_tail_exact_801DB060",
@@ -23172,17 +23341,43 @@
       "total_functions": 1
     },
     {
-      "name": "main/game/wazaSequence_candidate_801DC014",
+      "name": "main/game/wazaSequence_r52_801DC014_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 2700,
+          "size": 1500,
           "virtual_address": 2149433364
         }
       ],
-      "total_code": 2700,
+      "total_code": 1500,
       "total_data": 0,
-      "total_functions": 5
+      "total_functions": 3
+    },
+    {
+      "name": "main/game/wazaSequence_r52_801DC5F0_gc125_o2",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 556,
+          "virtual_address": 2149434864
+        }
+      ],
+      "total_code": 556,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/wazaSequence_r52_801DC81C_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 644,
+          "virtual_address": 2149435420
+        }
+      ],
+      "total_code": 644,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/game/wazaSequence_candidate_801DC014_r40_801DCAA0_gc125n",

@@ -4297,8 +4297,14 @@ game/fsys/fsys_file_candidate_8017D3D4.c:
 game/fsys/fsys_file_exact_8017D400.c:
 	.text       start:0x8017D400 end:0x8017D410
 
-game/fsys/fsys_file_candidate_8017D410.c:
-	.text       start:0x8017D410 end:0x8017DB74
+game/fsys/fsys_file_r52_8017D410_prefix.c:
+	.text       start:0x8017D410 end:0x8017D960
+
+game/fsys/fsys_file_r52_8017D960_o4s_inline_noauto.c:
+	.text       start:0x8017D960 end:0x8017DAB8
+
+game/fsys/fsys_file_r52_8017DAB8_suffix.c:
+	.text       start:0x8017DAB8 end:0x8017DB74
 
 game/fsys/fsys_file_candidate_8017DB74_gc20.c:
 	.text       start:0x8017DB74 end:0x8017DEA4
@@ -4504,8 +4510,11 @@ hsd/hsd_cobj_candidate_80197344.c:
 hsd/hsd_displayfunc.c:
 	.text       start:0x80197A64 end:0x80198F7C
 
-hsd/hsd_dobj.c:
-	.text       start:0x80198F7C end:0x8019A24C
+hsd/hsd_dobj_r52_80198F7C_prefix.c:
+	.text       start:0x80198F7C end:0x80199AF8
+
+hsd/hsd_dobj_r52_80199AF8_gc20p1_o4p.c:
+	.text       start:0x80199AF8 end:0x8019A24C
 
 hsd/hsd_dobj_r43_8019A24C.c:
 	.text       start:0x8019A24C end:0x8019B490
@@ -4780,8 +4789,23 @@ hsd/hsd_shadow_candidate_801B0408.c:
 hsd/hsd_shadow_exact_801B06D4.c:
 	.text       start:0x801B06D4 end:0x801B06DC
 
-hsd/hsd_shadow_candidate_801B06DC.c:
-	.text       start:0x801B06DC end:0x801B16C0
+hsd/hsd_shadow_r52_801B06DC_prefix.c:
+	.text       start:0x801B06DC end:0x801B0880
+
+hsd/hsd_shadow_r52_801B0880_gc20p1_o4s.c:
+	.text       start:0x801B0880 end:0x801B0A98
+
+hsd/hsd_shadow_r52_801B0A98_middle.c:
+	.text       start:0x801B0A98 end:0x801B0BD8
+
+hsd/hsd_shadow_r52_801B0BD8_gc20p1_o4s.c:
+	.text       start:0x801B0BD8 end:0x801B0EB8
+
+hsd/hsd_shadow_r52_801B0EB8_middle.c:
+	.text       start:0x801B0EB8 end:0x801B1524
+
+hsd/hsd_shadow_r52_801B1524_gc20p1_o4s.c:
+	.text       start:0x801B1524 end:0x801B16C0
 
 hsd/hsd_shadow_exact_801B16C0.c:
 	.text       start:0x801B16C0 end:0x801B1730
@@ -4792,8 +4816,11 @@ hsd/hsd_texp_candidate_801B1730.c:
 hsd/hsd_texp_exact_801B1854.c:
 	.text       start:0x801B1854 end:0x801B18D8
 
-hsd/hsd_texp_candidate_801B18D8.c:
-	.text       start:0x801B18D8 end:0x801B2038
+hsd/hsd_texp_r52_801B18D8_gc20p1_o4p_inline_noauto.c:
+	.text       start:0x801B18D8 end:0x801B1AD0
+
+hsd/hsd_texp_r52_801B1AD0_suffix.c:
+	.text       start:0x801B1AD0 end:0x801B2038
 
 hsd/hsd_texp_candidate_801B18D8_r40_801B2038_gc125n.c:
 	.text       start:0x801B2038 end:0x801B2560
@@ -4912,8 +4939,11 @@ hsd/hsd_tobj_candidate_801BBDDC_r42_801BC8BC.c:
 hsd/hsd_tobj_candidate_801BCF30_o4s.c:
 	.text       start:0x801BCF30 end:0x801BD8D0
 
-hsd/hsd_tobj_candidate_801BD8D0.c:
-	.text       start:0x801BD8D0 end:0x801BDD74
+hsd/hsd_tobj_r52_801BD8D0_gc10_o4p.c:
+	.text       start:0x801BD8D0 end:0x801BDA58
+
+hsd/hsd_tobj_r52_801BDA58_suffix.c:
+	.text       start:0x801BDA58 end:0x801BDD74
 
 hsd/hsd_tobj_candidate_801BBDDC_r41_801BDD74_gc125n.c:
 	.text       start:0x801BDD74 end:0x801BE2B4
@@ -4921,8 +4951,11 @@ hsd/hsd_tobj_candidate_801BBDDC_r41_801BDD74_gc125n.c:
 hsd/hsd_tobj_candidate_801BBDDC_r41_801BE2B4.c:
 	.text       start:0x801BE2B4 end:0x801BF098
 
-hsd/hsd_util.c:
-	.text       start:0x801BF098 end:0x801BF6AC
+hsd/hsd_util_r52_801BF098_prefix.c:
+	.text       start:0x801BF098 end:0x801BF574
+
+hsd/hsd_util_r52_801BF574_o2.c:
+	.text       start:0x801BF574 end:0x801BF6AC
 
 hsd/hsd_video.c:
 	.text       start:0x801BF6AC end:0x801C01C8
@@ -5176,8 +5209,14 @@ game/wazaSequenceEntry_candidate_801D9C1C_gc125.c:
 game/wazaSequenceSys.c:
 	.text       start:0x801D9E1C end:0x801DAC90
 
-game/wazaSequenceSys_tail_candidate_801DAC90.c:
-	.text       start:0x801DAC90 end:0x801DB060
+game/wazaSequenceSys_r52_801DAC90_prefix.c:
+	.text       start:0x801DAC90 end:0x801DADC0
+
+game/wazaSequenceSys_r52_801DADC0_gc11p1_o4s.c:
+	.text       start:0x801DADC0 end:0x801DAEF8
+
+game/wazaSequenceSys_r52_801DAEF8_suffix.c:
+	.text       start:0x801DAEF8 end:0x801DB060
 
 game/wazaSequenceSys_tail_exact_801DB060.c:
 	.text       start:0x801DB060 end:0x801DB288
@@ -5200,8 +5239,14 @@ game/wazaSequence_candidate_801DBDDC.c:
 game/wazaSequence_exact_801DBFB0.c:
 	.text       start:0x801DBFB0 end:0x801DC014
 
-game/wazaSequence_candidate_801DC014.c:
-	.text       start:0x801DC014 end:0x801DCAA0
+game/wazaSequence_r52_801DC014_prefix.c:
+	.text       start:0x801DC014 end:0x801DC5F0
+
+game/wazaSequence_r52_801DC5F0_gc125_o2.c:
+	.text       start:0x801DC5F0 end:0x801DC81C
+
+game/wazaSequence_r52_801DC81C_suffix.c:
+	.text       start:0x801DC81C end:0x801DCAA0
 
 game/wazaSequence_candidate_801DC014_r40_801DCAA0_gc125n.c:
 	.text       start:0x801DCAA0 end:0x801DCBC8
