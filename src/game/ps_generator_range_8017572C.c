@@ -75,6 +75,8 @@ typedef struct PSGeneratorKillNode {
 
 extern void* fn_801A6928(s32 size);
 extern void* fn_801A3E64(void*);
+extern void fn_801A6960(void*);
+extern void psKillAllParticle(void);
 extern void psKillGeneratorChild(PSGeneratorKillNode* generator);
 extern s32 psRemoveGeneratorAppSRT(PSGeneratorKillNode* generator);
 void psKillGenerator(PSGeneratorKillNode* generator);
@@ -248,13 +250,22 @@ void psKillGenerator(PSGeneratorKillNode* generator) {
     }
 }
 
-#pragma push
-#pragma optimization_level 0
-#pragma optimizewithasm off
 void* psRemoveGenerator(u32 type, u32 param) {
-    /* TODO: match -- 604 bytes at 0x80175B94 */
+    PSGeneratorPoolNode* node;
+
+    psKillAllParticle();
+    psKillAllGenerator();
+
+    node = (PSGeneratorPoolNode*)lbl_8047B18C;
+    while (node != NULL) {
+        PSGeneratorPoolNode* next = node->next;
+
+        fn_801A6960(node);
+        node = next;
+    }
+    lbl_8047B18C = 0;
+    return NULL;
 }
-#pragma pop
 
 void psInitGenerator(s32 count) {
     s32 i;
