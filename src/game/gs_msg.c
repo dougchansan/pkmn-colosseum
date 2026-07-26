@@ -2019,11 +2019,23 @@ void fn_800FBD88(u32 key) {
     if (entry == NULL) return;
     type = *(u8*)(entry + 0x3);
     r3 = 0;
-    if (type == 1) r3 = 0x57;
-    else if (type == 2) r3 = 0x58;
-    else if (type == 3) r3 = 0x59;
-    else if (type == 4) r3 = 0x497;
-    else if (type == 5) r3 = 0x498;
+    switch (type) {
+    case 1:
+        r3 = 0x57;
+        break;
+    case 2:
+        r3 = 0x58;
+        break;
+    case 3:
+        r3 = 0x59;
+        break;
+    case 4:
+        r3 = 0x497;
+        break;
+    case 5:
+        r3 = 0x498;
+        break;
+    }
     if (r3 != 0) fn_801669BC(r3);
     *(u8*)(entry + 0x0) = 0;
 }
