@@ -1054,9 +1054,8 @@ u8 _sndSetVolumeWork(u32 id, u32 volume)
     work = entry->work;
     if (work != NULL) {
         work->priority = volume & 0x7F;
-        return 1;
     }
-    return 0;
+    return 1;
 }
 
 u32 _sndStopSE(GSsndEntry* entry, u32 arg1, u32 arg2)
