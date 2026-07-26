@@ -3801,7 +3801,7 @@ static inline s32 menuReadGbaZeroResponse(s32 channel)
     interruptState = OSDisableInterrupts();
     OSSetAlarm(lbl_803B6DE0, OSMillisecondsToTicks(1),
                (void*)fn_80072684);
-    OSSuspendThread((void*)thread);
+    OSSuspendThread((void*)lbl_8047A600);
     OSRestoreInterrupts(interruptState);
 
     if (fn_800D0F44(channel) != 0x40000) {
@@ -3893,10 +3893,14 @@ void fn_800753D0(void)
 
 void fn_80075518(u8* context, u8* message)
 {
-    void* model;
     s32 alpha;
+    void* model;
 
-    if (*(s16*)(message + 6) != 0xD3C) {
+    switch (*(s16*)(message + 6)) {
+    case 0xD3C:
+        break;
+    case 0xD3D:
+    default:
         return;
     }
     alpha = (s32)*(f32*)(lbl_8047A610 + 0x18C);

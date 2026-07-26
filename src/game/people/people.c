@@ -859,6 +859,7 @@ asm void fn_8018DCA8(void) {
 }
 #else
 void fn_8018DCA8(PeopleEntry* original, u8 releaseWalkList) {
+    extern void peopleFree(PeopleEntry*);
     PeopleEntry* entry;
     u8 animation;
 
