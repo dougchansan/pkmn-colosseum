@@ -15,6 +15,7 @@
 #include "hsd/hsd_cobj.h"
 #include "hsd/hsd_debug.h"
 #include "hsd/hsd_lobj.h"
+#include "hsd/hsd_mobj.h"
 #include "hsd/hsd_object.h"
 #include "hsd/hsd_tobj.h"
 #include "crt/math.h"
@@ -72,6 +73,8 @@ typedef struct HSDViewingRect {
     f32 min_y;               /* 0x4C */
     void* object;            /* 0x50 */
 } HSDViewingRect;
+
+void fn_801B1524(HSDShadow* shadow, u16 width, u16 height);
 
 /* ========================================================================= */
 /*  Shadow setup functions                                                   */
@@ -315,8 +318,30 @@ void fn_801B07D4(HSD_SList** list, void* object) {
 /* ========================================================================= */
 
 /* Address: 0x801B0880 | Size: 0x218 | Proposed: HSD_ShadowFunc5 */
-/* Shadow pass setup - configures GX for shadow map rendering */
-void fn_801B0880(void) {
+/* Enable or disable shadow texture application. */
+void fn_801B0880(HSDShadow* shadow, s32 active) {
+    extern char lbl_802752C0[];
+    extern char lbl_8047DDCC;
+    extern void HSD_MObjDeleteShadowTexture(HSD_TObj* texture);
+    HSD_ImageDesc* image;
+
+    if (shadow == NULL) {
+        __assert(lbl_802752C0, 0x278, &lbl_8047DDCC);
+    }
+    if ((shadow->active && active) || (!shadow->active && !active)) {
+        return;
+    }
+
+    shadow->active = active;
+    if (active) {
+        image = shadow->texture->imagedesc;
+        if (image->image_ptr == NULL) {
+            fn_801B1524(shadow, image->width, image->height);
+        }
+        HSD_MObjAddShadowTexture(shadow->texture);
+    } else {
+        HSD_MObjDeleteShadowTexture(shadow->texture);
+    }
 }
 
 /* Address: 0x801B0A98 | Size: 0x140 | Proposed: HSD_ShadowFunc6 */
