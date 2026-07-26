@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196100,
     "total_functions": 8603,
-    "total_units": 2138
+    "total_units": 2140
   },
   "topology_status": {
     "auto_units": 68,
-    "named_units": 2070,
-    "source_backed_units": 2064,
+    "named_units": 2072,
+    "source_backed_units": 2066,
     "auto_code": 0,
     "auto_data": 57687,
     "auto_functions": 0
@@ -23,7 +23,7 @@
     "matched_data_percent": 97.28669,
     "matched_functions": 6573,
     "matched_functions_percent": 76.40358,
-    "fuzzy_match_percent": 71.74881
+    "fuzzy_match_percent": 71.89786
   },
   "unit_topology": [
     {
@@ -25275,17 +25275,43 @@
       "total_functions": 6
     },
     {
-      "name": "main/game/fight_trainer_range_801F9130",
+      "name": "main/game/fight_trainer_r53_801F9130_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 1632,
+          "size": 712,
           "virtual_address": 2149552432
         }
       ],
-      "total_code": 1632,
+      "total_code": 712,
       "total_data": 0,
-      "total_functions": 4
+      "total_functions": 2
+    },
+    {
+      "name": "main/game/fight_trainer_r53_801F93F8_gc20p1_o1",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 520,
+          "virtual_address": 2149553144
+        }
+      ],
+      "total_code": 520,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/fight_trainer_r53_801F9600_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 400,
+          "virtual_address": 2149553664
+        }
+      ],
+      "total_code": 400,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/game/fight_trainer_exact_801F9790",

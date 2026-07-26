@@ -5631,8 +5631,14 @@ game/fight_trainer_range_801F87CC_r41_801F8A18.c:
 game/fight_trainer_exact_801F8D80.c:
 	.text       start:0x801F8D80 end:0x801F9130
 
-game/fight_trainer_range_801F9130.c:
-	.text       start:0x801F9130 end:0x801F9790
+game/fight_trainer_r53_801F9130_prefix.c:
+	.text       start:0x801F9130 end:0x801F93F8
+
+game/fight_trainer_r53_801F93F8_gc20p1_o1.c:
+	.text       start:0x801F93F8 end:0x801F9600
+
+game/fight_trainer_r53_801F9600_suffix.c:
+	.text       start:0x801F9600 end:0x801F9790
 
 game/fight_trainer_exact_801F9790.c:
 	.text       start:0x801F9790 end:0x801F99C8
