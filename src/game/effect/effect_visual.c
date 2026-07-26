@@ -633,7 +633,7 @@ fail:
 #endif
 
 #if !defined(EFFECT_VISUAL_BANK_ACTIVE)
-extern void fn_800E0BE4(void);
+extern f32 fn_800E0BE4(void);
 extern void fn_800CDBE0(void);
 extern void fn_800CE148(void);
 extern void set__5GSvecFfff(void* dst, f32 x, f32 y, f32 z);
@@ -2298,7 +2298,7 @@ u32 fn_8013C670(void* arg) {
 #endif
 
 #if !defined(EFFECT_VISUAL_BANK_ACTIVE)
-extern void GSmodelLinkTexAnimToAnim(void);
+extern void GSmodelLinkTexAnimToAnim(void* model, u32 enable);
 extern u32 lbl_8047D230;
 extern u32 lbl_8047D234;
 extern u32 lbl_8047D238;
@@ -2314,40 +2314,121 @@ u16 seaEffectStart(void* ptr) {
     void* model;
     u16 handle;
     u32 pointCount;
+    u32 surfaceSize;
+    u32 vectorSize;
+    u32 colorSize;
+    u32 texcoordSize;
+    u32 totalSize;
+    u32 rowCount;
+    u32 i;
+    u8* data;
+    f32* randomX;
+    f32* randomZ;
+    f32* randomAngle;
+    f32 randomValue;
 
     if (ptr == NULL) {
-        GSlogWrite((const char*)lbl_80272ED0);
-        return 0;
+        goto fail;
     }
 
     p = ptr;
     *(u16*)(p + 0xA4) = 0;
     memset(p, 0, 0x48);
     if (*(u32*)(p + 0x78) == 0) {
-        GSlogWrite((const char*)lbl_80272ED0);
-        return 0;
+        goto fail;
     }
 
     model = GSresGetResource(*(u32*)(p + 0x74), *(u32*)(p + 0x78));
     if (model == NULL) {
-        GSlogWrite((const char*)lbl_80272ED0);
-        return 0;
+        goto fail;
     }
 
+    GXDrawDone();
+    fn_800B856C();
     *(void**)p = model;
     *(u16*)(p + 0x18) = *(u16*)(p + 0x70) + 1;
     *(u16*)(p + 0x1A) = *(u16*)(p + 0x72) + 1;
     pointCount = *(u16*)(p + 0x18) * *(u16*)(p + 0x1A);
-    handle = _toolentryAlloc__FUl(pointCount * 0xC);
-    *(u16*)(p + 0x1C) = handle;
+    surfaceSize =
+        (*(u16*)(p + 0x72) * (*(u16*)(p + 0x18) * 0x10 + 3) + 0x1F) & ~0x1F;
+    colorSize = (pointCount * 4 + 0x1F) & ~0x1F;
+    texcoordSize = (pointCount * 8 + 0x1F) & ~0x1F;
+    vectorSize = (pointCount * 0xC + 0x1F) & ~0x1F;
+    *(u32*)(p + 0x14) = surfaceSize;
+    totalSize = surfaceSize + vectorSize + colorSize + texcoordSize;
+
+    handle = fn_800E2C04(totalSize, 0x20);
     if (handle == 0) {
-        GSlogWrite((const char*)lbl_80272ED0);
-        return 0;
+        goto fail;
     }
 
-    *(void**)(p + 0x4) = fn_800E27B0(handle);
-    memset(*(void**)(p + 0x4), 0, pointCount * 0xC);
+    *(u16*)(p + 0x1C) = handle;
+    data = fn_800E27B0(handle);
+    memset(data, 0, totalSize);
+    *(u8**)(p + 0x10) = data;
+    *(u8**)(p + 0x4) = data + surfaceSize;
+    *(u8**)(p + 0xC) = *(u8**)(p + 0x4) + vectorSize;
+    *(u8**)(p + 0x8) = *(u8**)(p + 0xC) + colorSize;
+
+    fn_8013CBF0(p, p + 0x48, p + 0x60, *(f32*)(p + 0x64), *(f32*)(p + 0x68),
+                *(f32*)(p + 0x6C));
+    if (!fn_8013D0A8(model, p)) {
+        goto cleanup;
+    }
+
+    rowCount = *(u16*)(p + 0x70) + 1;
+    handle = _toolentryAlloc__FUl(rowCount * 3 * sizeof(f32));
+    if (handle == 0) {
+        goto cleanup;
+    }
+
+    *(u16*)(p + 0x8C) = handle;
+    randomX = fn_800E27B0(handle);
+    randomZ = randomX + rowCount;
+    randomAngle = randomZ + rowCount;
+    *(f32**)(p + 0x80) = randomX;
+    *(f32**)(p + 0x84) = randomZ;
+    *(f32**)(p + 0x88) = randomAngle;
+    for (i = 0; i < rowCount; i++) {
+        randomValue = fn_800E0BE4();
+        randomX[i] =
+            *(f32*)(p + 0x90) + (*(f32*)(p + 0x94) - *(f32*)(p + 0x90)) * randomValue;
+        randomValue = fn_800E0BE4();
+        randomZ[i] =
+            *(f32*)(p + 0x98) + (*(f32*)(p + 0x9C) - *(f32*)(p + 0x98)) * randomValue;
+        randomAngle[i] = *(f32*)&lbl_8047D230 * fn_800E0BE4();
+    }
+
+    GSmodelSetVisibility(model, 1);
+    *(f32*)(p + 0x58) += *(f32*)&lbl_8047D234;
+    GSmodelSetRotation(model, p + 0x54);
+    GSmodelLinkTexAnimToAnim(model, 0);
+    if (GSmodelCanTexAnimate(model)) {
+        GSmodelSetTexAnimIndex(model, 0);
+        GSmodelSetTexAnimRate(model, *(f32*)&lbl_8047D238);
+        GSmodelSetTexAnimFrame(model, *(f32*)&lbl_8047D23C);
+        GSmodelSetTexAnimType(model, 1);
+        GSmodelStartTexAnimation(model);
+    }
     return 1;
+
+cleanup:
+    GSmodelSetVisibility(model, 0);
+    handle = *(u16*)(p + 0x1C);
+    *(u16*)(p + 0x1C) = 0;
+    if (handle != 0) {
+        fn_800E24B0(handle);
+        fn_800E209C(handle);
+    }
+    handle = *(u16*)(p + 0x8C);
+    *(u16*)(p + 0x8C) = 0;
+    if (handle != 0) {
+        fn_800E24B0(handle);
+        fn_800E209C(handle);
+    }
+fail:
+    GSlogWrite((const char*)lbl_80272ED0);
+    return 0;
 }
 #endif
 extern void fn_800E0CA0(void);
