@@ -96,6 +96,9 @@ typedef struct decform {
     /* 0x02 */ short digits;
 } decform;
 
+static const char* const unused =
+    "179769313486231580793729011405303420";
+
 #define FP_NAN 1
 #define FP_INFINITE 2
 #define FP_ZERO 3
