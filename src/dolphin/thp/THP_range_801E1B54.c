@@ -506,6 +506,30 @@ void *fn_801E4B38(void *arg)
     }
 }
 
+void *fn_801E4C80(void *arg)
+{
+    s32 frame = 0;
+
+    (void)arg;
+    for (;;) {
+        THPReadBuffer *readBuffer =
+            (THPReadBuffer *)fn_801E1BE8();
+
+        THPDecodeAudioFrame(readBuffer);
+        if (frame < 2 && !(lbl_8046AC60[0xA6] & 1) &&
+            readBuffer->frameNumber +
+                    *(u32 *)(lbl_8046AC60 + 0xC0) ==
+                *(u32 *)(lbl_8046AC60 + 0x50) - 1) {
+            fn_801E446C(1);
+        }
+        if (frame == 2) {
+            fn_801E446C(1);
+        }
+        fn_801E1B54(readBuffer);
+        frame++;
+    }
+}
+
 /* ---- Thread A: additional send-only queue wrapper (lbl_8046A4B4) ---- */
 BOOL fn_801E446C(u32 msg)
 {
