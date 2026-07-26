@@ -31,6 +31,7 @@
 
 #include "dolphin/types.h"
 #include "dolphin/mtx.h"
+#include "crt/math.h"
 #include "hsd/hsd_dobj.h"
 #include "hsd/hsd_jobj.h"
 
@@ -39,10 +40,12 @@ extern void __assert(const char* file, u32 line, const char* msg); /* HSD_Halt /
 extern void HSD_Panic(const char* file, u32 line, const char* msg);
 extern void PSMTXInverse(const Mtx srcMtx, Mtx dstMtx);
 extern void PSMTXConcat(const Mtx srcMtx, const Mtx jointMtx, Mtx dstMtx);
+extern void PSMTXScale(Mtx mtx, f32 x, f32 y, f32 z);
+extern void PSMTXRotRad(Mtx mtx, char axis, f32 radians);
 extern void fn_801A9DF0(void* a, void* b, void* c);                  /* HSD_MtxInverseConcat */
 
 /* Billboard subroutines - fn_80198038/fn_801985E0/fn_80198B20 are defined below. */
-extern void fn_80197C70(void*, void*, void*); /* rotated billboard */
+void fn_80197C70(HSD_JObj* jobj, Mtx src, Mtx dst); /* rotated billboard */
 
 /* ===== String constants (rodata) ===== */
 extern const char lbl_802746DC[]; /* "displayfunc.c" */
@@ -418,3 +421,64 @@ void HSD_JObjMakePositionMtx(HSD_JObj* jobj, Mtx viewMtx, Mtx positionMtx) {
     }
 }
 #pragma pop
+
+inline s32 displayfunc_fpclassifyf(f32 value)
+{
+    switch (*(s32*) &value & 0x7F800000) {
+    case 0x7F800000:
+        if (*(s32*) &value & 0x007FFFFF) {
+            return 1;
+        }
+        return 2;
+    case 0:
+        if (*(s32*) &value & 0x007FFFFF) {
+            return 5;
+        }
+        return 3;
+    }
+    return 4;
+}
+
+inline f32 displayfunc_sqrtf(f32 value)
+{
+    if (value > 0.0F) {
+        f64 guess = __frsqrte(value);
+        guess = 0.5 * guess * (3.0 - value * (guess * guess));
+        guess = 0.5 * guess * (3.0 - value * (guess * guess));
+        guess = 0.5 * guess * (3.0 - value * (guess * guess));
+        return (f32) (value * guess);
+    }
+    if ((f64) value < 0.0) {
+        return lbl_80478AC0[0];
+    }
+    if (displayfunc_fpclassifyf(value) == 1) {
+        return lbl_80478AC0[0];
+    }
+    return value;
+}
+
+static inline f32 displayfuncMtxColMag(Mtx mtx, int col)
+{
+    return displayfunc_sqrtf(mtx[0][col] * mtx[0][col] +
+                             mtx[1][col] * mtx[1][col] +
+                             mtx[2][col] * mtx[2][col]);
+}
+
+void fn_80197C70(HSD_JObj* jobj, Mtx src, Mtx dst)
+{
+    Mtx rot;
+    Mtx scale;
+    f32 sx;
+    f32 sy;
+    f32 sz;
+
+    sx = displayfuncMtxColMag(src, 0);
+    sy = displayfuncMtxColMag(src, 1);
+    sz = displayfuncMtxColMag(src, 2);
+    PSMTXScale(scale, sx, sy, sz);
+    PSMTXRotRad(rot, 'z', jobj->rotate_z);
+    rot[0][3] = src[0][3];
+    rot[1][3] = src[1][3];
+    rot[2][3] = src[2][3];
+    PSMTXConcat(rot, scale, dst);
+}
