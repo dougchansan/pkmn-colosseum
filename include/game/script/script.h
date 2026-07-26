@@ -297,7 +297,7 @@ void psinterpret_RunAll(u32 linkMask);            /* psInterpretParticles */
  *  a wait/yield is encountered or the script terminates.
  *  parentCtx is passed when recursively spawning child scripts.
  *  Returns the next particle in the list (for iteration). */
-PSParticle* psinterpret_Main(PSParticle* pp, PSParticle* parentCtx);  /* psInterpretParticle0 */
+PSParticle* psInterpretParticle0(PSParticle* pp, PSParticle* parentCtx);
 
 /* ======================================================================
  * Helper function prototypes (called by the interpreter)

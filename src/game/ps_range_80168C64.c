@@ -1175,7 +1175,7 @@ void psInterpretParticles(u32 linkMask) {
  * Executes one frame of a single particle script. See file header for
  * identification evidence and coverage notes.
  * ====================================================================== */
-PSParticle* psinterpret_Main(PSParticle* pp, PSParticle* parentCtx) {
+PSParticle* psInterpretParticle0(PSParticle* pp, PSParticle* parentCtx) {
     u8* stream;
     u8 opcode;
     u16 delay;
@@ -1453,7 +1453,7 @@ PSParticle* psinterpret_Main(PSParticle* pp, PSParticle* parentCtx) {
                         spawned->positionX = pp->positionX;
                         spawned->positionY = pp->positionY;
                         spawned->positionZ = pp->positionZ;
-                        psinterpret_Main(spawned, pp);
+                        psInterpretParticle0(spawned, pp);
                         break;
                     }
 
@@ -1482,7 +1482,7 @@ PSParticle* psinterpret_Main(PSParticle* pp, PSParticle* parentCtx) {
                         spawned->positionX = pp->positionX;
                         spawned->positionY = pp->positionY;
                         spawned->positionZ = pp->positionZ;
-                        psinterpret_Main(spawned, pp);
+                        psInterpretParticle0(spawned, pp);
                         break;
                     }
 
@@ -1525,6 +1525,77 @@ PSParticle* psinterpret_Main(PSParticle* pp, PSParticle* parentCtx) {
                         stream = getFloat(stream, &d);
                         if (pp->peopleObj == NULL) break;
                         modifyDirGenBase(pp, d, a, b, c);
+                        break;
+                    }
+
+                    /* ---- 0xAB: scale velocity (verified @ 0x80170988) ---- */
+                    case 0xAB: {
+                        f32 factor;
+
+                        stream = getFloat(stream, &factor);
+                        pp->velocityX *= factor;
+                        pp->velocityY *= factor;
+                        pp->velocityZ *= factor;
+                        break;
+                    }
+
+                    /* ---- 0xAC: randomized lerp target (verified @ 0x801709CC) ---- */
+                    case 0xAC: {
+                        f32 range;
+
+                        stream = getTime(stream, &pp->lerpTimer);
+                        stream = getFloat(stream, &pp->lerpTarget);
+                        stream = getFloat(stream, &range);
+                        pp->lerpTarget += range * fn_801ADC7C();
+                        if (pp->lerpTimer == 0) {
+                            pp->lerpValue = pp->lerpTarget;
+                        }
+                        break;
+                    }
+
+                    /* ---- 0xAD..0xB1: motion flags (verified @ 0x80170A18) ---- */
+                    case 0xAD:
+                        pp->flags |= 0x80;
+                        break;
+                    case 0xAE:
+                        pp->flags &= ~0x60;
+                        break;
+                    case 0xAF:
+                        pp->flags = (pp->flags & ~0x40) | 0x20;
+                        break;
+                    case 0xB0:
+                        pp->flags = (pp->flags & ~0x20) | 0x40;
+                        break;
+                    case 0xB1:
+                        pp->flags |= 0x60;
+                        break;
+
+                    /* ---- 0xB4/0xB5: toggle bit 0x200 (verified @ 0x80170BF8) ---- */
+                    case 0xB4:
+                        pp->flags |= 0x200;
+                        break;
+                    case 0xB5:
+                        pp->flags &= ~0x200;
+                        break;
+
+                    /* ---- 0xB6: add heading target (verified @ 0x80170C18) ---- */
+                    case 0xB6: {
+                        f32 delta;
+
+                        stream = getTime(stream, &pp->headingTimer);
+                        stream = getFloat(stream, &delta);
+                        pp->headingSpeed += delta;
+                        if (pp->headingTimer == 0) {
+                            pp->heading = pp->headingSpeed;
+                        }
+                        break;
+                    }
+
+                    /* ---- 0xB7: bind velocity to camera slot (verified @ 0x80170C58) ---- */
+                    case 0xB7: {
+                        u8 slot = *stream++;
+
+                        setVelToJObj(pp, lbl_80452DC8[pp->cameraSlot + slot]);
                         break;
                     }
 
