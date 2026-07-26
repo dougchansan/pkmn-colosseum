@@ -725,7 +725,7 @@ GSDVDWork* fn_80167F28(const char* path)
         return NULL;
     }
     if (!DVDOpen(path, work->fileInfo)) {
-        __assert(lbl_8047D584, 0x26A, lbl_8047D58C);
+        __assert("GSdvd.c", 0x26A, "FALSE");
         fn_80168164((u8*)work);
         return NULL;
     }
