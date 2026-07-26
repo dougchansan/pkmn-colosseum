@@ -52,11 +52,11 @@ void fn_800BC8F8(u32 type, GXColor_800BC2F8 color, f32 startz, f32 endz,
 
         B_mant = B;
         B_expn = 0;
-        while (B_mant > 1.0f) {
+        while (B_mant > 1.0) {
             B_mant /= 2.0f;
             B_expn++;
         }
-        while (B_mant > 0.0f && B_mant < 0.5f) {
+        while (B_mant > 0.0f && B_mant < 0.5) {
             B_mant *= 2.0f;
             B_expn--;
         }
