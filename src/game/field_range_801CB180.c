@@ -806,14 +806,19 @@ void fn_801CBF64(u8 digest[20], FieldSha1Context* context)
 
 
 /* SHA-1's 16-word circular message schedule. */
+typedef union SHA1Block {
+    u8 bytes[64];
+    u32 words[16];
+} SHA1Block;
+
 #define SHA1_ROTL(value, bits) \
     (((value) << (bits)) | ((value) >> (32 - (bits))))
-#define SHA1_BLK0(i) (block[(i)])
+#define SHA1_BLK0(i) (block->words[(i)])
 #define SHA1_BLK(i) \
-    (block[(i) & 15] = SHA1_ROTL(block[((i) + 13) & 15] ^ \
-                                      block[((i) + 8) & 15] ^ \
-                                      block[((i) + 2) & 15] ^ \
-                                      block[(i) & 15], 1))
+    (block->words[(i) & 15] = SHA1_ROTL(block->words[((i) + 13) & 15] ^ \
+                                             block->words[((i) + 8) & 15] ^ \
+                                             block->words[((i) + 2) & 15] ^ \
+                                             block->words[(i) & 15], 1))
 #define SHA1_R0(v, w, x, y, z, i) \
     z += ((w & (x ^ y)) ^ y) + SHA1_BLK0(i) + 0x5A827999 + SHA1_ROTL(v, 5); \
     w = SHA1_ROTL(w, 30)
@@ -838,7 +843,7 @@ void fn_801CC380(u32 state[5], const u8 input[64])
     u32 c;
     u32 d;
     u32 e;
-    u32* block = lbl_804670E8;
+    SHA1Block* block = (SHA1Block*) lbl_804670E8;
 
     memcpy(block, input, 64);
 
