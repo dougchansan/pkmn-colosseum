@@ -4145,7 +4145,6 @@ static inline u8 fn_8003D1FC_setup(u8* sub)
     GSscene_SetMode(4);
     return 1;
 }
-
 s32 fn_8003D1FC(void)
 {
     switch (*(s32*)((u8*)&lbl_803A6818 + 0x1c)) {
@@ -4513,7 +4512,7 @@ extern f32 lbl_8047BD34;
 extern u8 lbl_802E5424[];
 extern u8 lbl_802E5430[];
 extern void* fn_801DAC3C(void* h);
-extern void fn_801DAC24(void* h);
+extern s32 fn_801DAC24(void* h);
 extern void GSmodelGetPosition(void* model, void* out);
 extern void GSmodelSetPosition(void* model, void* pos);
 extern void GSmodelSetMatrix(void* model, void* mtx);
@@ -4634,6 +4633,219 @@ u8 fn_800478B4(void* work, void* sub)
     GSlightSetPosition(*(void**)((u8*)work + 0x44), &lightPos);
     GSlightSetTarget(*(void**)((u8*)work + 0x44), &pos0);
     GSlightSetActive(*(void**)((u8*)work + 0x44), 1);
+    cam = *(void**)((u8*)&lbl_803A6818 + 0x114);
+    if (cam != NULL) {
+        GScameraSetPosition(cam, (u8*)&lbl_803A6818 + 0x118);
+        GScameraSetRotation(cam, (u8*)&lbl_803A6818 + 0x124);
+        GScameraSetPerspective(cam, *(f32*)((u8*)&lbl_803A6818 + 0x13c),
+                               *(f32*)((u8*)&lbl_803A6818 + 0x140),
+                               *(f32*)((u8*)&lbl_803A6818 + 0x144),
+                               *(f32*)((u8*)&lbl_803A6818 + 0x148));
+    }
+    GSscene_SetMode(3);
+    GSscene_SetMode(4);
+    return 1;
+}
+extern f64 __frsqrte(f64 value);
+extern f32 lbl_80478AC0[];
+extern f32 lbl_8047BCBC;
+extern f32 lbl_8047BCC0;
+extern f32 lbl_8047BD38;
+extern f32 lbl_8047BD3C;
+extern f32 lbl_8047BD40;
+extern f32 lbl_8047BD44;
+extern f32 lbl_8047BD48;
+extern f32 lbl_8047BD4C;
+extern f32 lbl_8047BD68;
+extern u8 lbl_802E540C[];
+extern u8 lbl_802E5418[];
+extern u32 pokemonBiosGetPokemonDataId(u32 work);
+extern void memoGetScaleAngle(u32 id, f32* scale, f32* angle);
+extern u8 menuModelCheck(void* work, s32 index);
+extern void GSmodelCenterNull(void* model);
+extern void modelRemoveCenterNull(void* model);
+extern s32 fn_800EE0E8(void* model);
+extern void* GSmodelGetPart(void* model, s32 index);
+extern void GSpartGetTransform(void* part, void* out, s32 a, s32 b);
+extern void GSpartFree(void* part);
+extern void fn_800E032C(f32* mtx, f32 angle);
+
+/* MSL math.h inlines: float classification and the frsqrte-based sqrtf. */
+static inline s32 pdaFpClassifyF(f32 value)
+{
+    switch (*(s32*)&value & 0x7F800000) {
+    case 0x7F800000: {
+        if (*(s32*)&value & 0x007FFFFF) {
+            return 1;
+        } else {
+            return 2;
+        }
+        break;
+    }
+    case 0: {
+        if (*(s32*)&value & 0x007FFFFF) {
+            return 5;
+        } else {
+            return 3;
+        }
+        break;
+    }
+    }
+    return 4;
+}
+
+extern f64 lbl_8047BD50;
+extern f64 lbl_8047BD58;
+extern f64 lbl_8047BD60;
+
+static inline f32 pdaSqrtf(f32 value)
+{
+    if (value > lbl_8047BC94) {
+        f64 guess = __frsqrte(value);
+        guess = lbl_8047BD50 * guess *
+                (lbl_8047BD58 - value * (guess * guess));
+        guess = lbl_8047BD50 * guess *
+                (lbl_8047BD58 - value * (guess * guess));
+        guess = lbl_8047BD50 * guess *
+                (lbl_8047BD58 - value * (guess * guess));
+        return (f32)(value * guess);
+    }
+    if ((f64)value < lbl_8047BD60) {
+        return lbl_80478AC0[0];
+    }
+    if (pdaFpClassifyF(value) == 1) {
+        return lbl_80478AC0[0];
+    }
+    return value;
+}
+
+/* Frame the highlighted Pokemon's model for the single-model PDA page. */
+u8 fn_80047CC0(u8* work)
+{
+    extern f64 tan(f64 x);
+    extern f64 atan(f64 x);
+    extern f64 sin(f64 x);
+    f32 mtx[12];
+    PdaVec3 bound;
+    PdaVec3 target;
+    PdaVec3 camPos;
+    PdaVec3 xform;
+    PdaVec3 modelPos;
+    PdaVec3 lightPos;
+    PdaVec3 color;
+    f32 persp0;
+    f32 persp1;
+    f32 persp2;
+    f32 persp3;
+    f32 angle;
+    f32 scale;
+    void* model;
+    void* part;
+    void* cam;
+    f32 spread;
+    f32 zoom;
+    f32 pitch;
+
+    zoom = lbl_8047BCC0;
+    angle = lbl_8047BD38;
+    scale = lbl_8047BCBC;
+    memoGetScaleAngle(
+        pokemonBiosGetPokemonDataId(pdaLoadPokemon(lbl_803A6818.currentIndex)),
+        &scale, &angle);
+    zoom = zoom * scale;
+    if (work == NULL) {
+        return 0;
+    }
+    if (*(void**)(work + 0x34) == NULL) {
+        return 0;
+    }
+    if (menuModelCheck(work, 0) == 1) {
+        return 0;
+    }
+    if (work[0x14] != 0) {
+        model = fn_801DAC3C(*(void**)(work + 0x24));
+        if (model == NULL) {
+            return 0;
+        }
+        switch (fn_801DAC24(*(void**)(work + 0x24))) {
+        case -2:
+            spread = lbl_8047BD3C;
+            break;
+        case -1:
+            spread = lbl_8047BD40;
+            break;
+        case 0:
+            spread = lbl_8047BD44;
+            break;
+        case 1:
+            spread = lbl_8047BD44;
+            break;
+        case 2:
+            spread = lbl_8047BD48;
+            break;
+        case 3:
+            spread = lbl_8047BD4C;
+            break;
+        }
+    } else {
+        model = *(void**)(work + 0x24);
+    }
+    GSscene_SetMode(3);
+    GScameraGetPerspective(*(void**)(work + 0x38), &persp0, &persp1, &persp2,
+                           &persp3);
+    ObjInfoInit(GSmodelGetBound(model), &bound);
+    persp0 = lbl_8047BD30;
+    persp1 = (f32)*(s32*)(work + 0x2c) / (f32)*(s32*)(work + 0x30);
+    GSmodelGetPosition(model, &modelPos);
+    zoom = zoom * (pdaSqrtf(bound.y * bound.y + bound.x * bound.x) / spread) /
+           (f32)tan(lbl_8047BD68 * persp0 * lbl_8047BD18);
+    zoom = zoom * *(f32*)((u8*)&lbl_803A6818 + 0x68);
+    GScameraSetPerspective(*(void**)(work + 0x38), persp0, persp1, persp2,
+                           persp3);
+    pitch = (f32)atan(
+        pdaSqrtf((*(f32*)((u8*)&lbl_803A6818 + 0x228) -
+                  *(f32*)((u8*)&lbl_803A6818 + 0x21c)) *
+                 (*(f32*)((u8*)&lbl_803A6818 + 0x228) -
+                  *(f32*)((u8*)&lbl_803A6818 + 0x21c))) /
+        pdaSqrtf((*(f32*)((u8*)&lbl_803A6818 + 0x224) -
+                  *(f32*)((u8*)&lbl_803A6818 + 0x218)) *
+                     (*(f32*)((u8*)&lbl_803A6818 + 0x224) -
+                      *(f32*)((u8*)&lbl_803A6818 + 0x218)) +
+                 (*(f32*)((u8*)&lbl_803A6818 + 0x22c) -
+                  *(f32*)((u8*)&lbl_803A6818 + 0x220)) *
+                     (*(f32*)((u8*)&lbl_803A6818 + 0x22c) -
+                      *(f32*)((u8*)&lbl_803A6818 + 0x220))));
+    GSmodelGetPosition(model, &modelPos);
+    target.x = lbl_8047BC94;
+    target.z = lbl_8047BC94;
+    target.y = lbl_8047BC94;
+    fn_800E064C(mtx);
+    fn_800E03B4(mtx, &target);
+    fn_800E032C(mtx, angle);
+    GSmodelSetMatrix(model, mtx);
+    GSmodelCenterNull(model);
+    part = GSmodelGetPart(model, fn_800EE0E8(model) - 1);
+    if (part != NULL) {
+        GSpartGetTransform(part, &xform, 0, 0);
+        GSpartFree(part);
+    }
+    modelRemoveCenterNull(model);
+    set__5GSvecFfff(&camPos, lbl_8047BC94,
+                    zoom * (f32)sin(pitch) + (lbl_8047BC94 + xform.y), zoom);
+    GScameraSetPosition(*(void**)(work + 0x38), &camPos);
+    *(f32*)(lbl_802E5418 + 0) = lbl_8047BC94;
+    *(f32*)(lbl_802E5418 + 4) = xform.y;
+    *(f32*)(lbl_802E5418 + 8) = xform.z;
+    GScameraLookAt(*(void**)(work + 0x38), lbl_802E540C, lbl_802E5418);
+    color = *(PdaVec3*)lbl_80267180;
+    memcpy(&lightPos, &camPos, 12);
+    lightPos.x = lightPos.x - lbl_8047BC98;
+    lightPos.y = lightPos.y + lbl_8047BC9C;
+    GSlightSetType(*(void**)(work + 0x44), 2);
+    GSlightSetColor(*(void**)(work + 0x44), &color);
+    GSlightSetPosition(*(void**)(work + 0x44), &lightPos);
+    GSlightSetTarget(*(void**)(work + 0x44), &target);
+    GSlightSetActive(*(void**)(work + 0x44), 1);
     cam = *(void**)((u8*)&lbl_803A6818 + 0x114);
     if (cam != NULL) {
         GScameraSetPosition(cam, (u8*)&lbl_803A6818 + 0x118);
