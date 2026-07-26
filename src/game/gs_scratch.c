@@ -81,6 +81,20 @@ static inline GSscratchAllocation *GSscratchFindAllocation(u8 firstBlock)
     return NULL;
 }
 
+static inline GSscratchAllocation *GSscratchFindFreeAllocation(void)
+{
+    GSscratchAllocation *allocation;
+    u32 i;
+
+    allocation = lbl_804018F0;
+    for (i = 0; i < 32; allocation++, i++) {
+        if (allocation->firstBlock == 0xFF) {
+            return allocation;
+        }
+    }
+    return NULL;
+}
+
 u8 GSscratchIsPtr(void *ptr)
 {
     return ((u32)ptr & 0xF0000000) == ((u32)lbl_8047ABE0 & 0xF0000000);
@@ -125,7 +139,6 @@ void *GSscratchAlloc(u8 blockCount,
     u32 occupied;
     u8 firstBlock;
     u8 remaining;
-    u32 i;
 
     if (lbl_8047ABE8 == 1 || blockCount == 0 || blockCount > 32) {
         return NULL;
@@ -146,13 +159,8 @@ void *GSscratchAlloc(u8 blockCount,
             continue;
         }
 
-        allocation = lbl_804018F0;
-        for (i = 0; i < 32; allocation++, i++) {
-            if (allocation->firstBlock == 0xFF) {
-                break;
-            }
-        }
-        if (i == 32) {
+        allocation = GSscratchFindFreeAllocation();
+        if (allocation == NULL) {
             return NULL;
         }
 
