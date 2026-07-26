@@ -21,7 +21,11 @@ void modelShadowPrepare__FP8_GSmodelb(GSmodel* model, BOOL enable)
     if (!found) {
         return;
     }
-    fn_801A3918(fn_800E5188(model), fn_800E9358, enable ? 1 : 0);
+    if (enable) {
+        fn_801A3918(fn_800E5188(model), fn_800E9358, 1);
+    } else {
+        fn_801A3918(fn_800E5188(model), fn_800E9358, 0);
+    }
     for (i = 0; i < 6; i++) {
         if (lbl_80401490[i].flag && lbl_80401490[i].model == model) {
             fn_801B0880(lbl_80401490[i].obj, (u8)enable);
