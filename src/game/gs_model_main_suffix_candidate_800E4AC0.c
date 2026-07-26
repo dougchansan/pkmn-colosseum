@@ -16,7 +16,10 @@ void GSmodelAttachToGSpart(GSmodel* model, GSmodelAttachPart* part,
 {
     u32 flags;
 
-    if (model->transformOverride != 0 || attachmentType == 0) {
+    if (model->transformOverride != 0) {
+        return;
+    }
+    if (attachmentType == 0) {
         return;
     }
 

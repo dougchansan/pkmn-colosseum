@@ -2818,7 +2818,9 @@ u8 fn_8018B76C(u32 groupId, u32 index, s32 animIndex, s32 frame, u8 loop) {
         return 0;
     }
     restart = 0;
-    if (GSmodelHasAnimationEnded(model) || !GSmodelIsAnimating(model)) {
+    if (GSmodelHasAnimationEnded(model)) {
+        restart = 1;
+    } else if (!GSmodelIsAnimating(model)) {
         restart = 1;
     } else {
         GSmodelGetAnimIndex(model, &current, &secondary);
@@ -3282,7 +3284,9 @@ void fn_8018F08C(PeopleEntry* original, u32 motionIndex) {
         return;
     }
     restart = 0;
-    if (GSmodelHasAnimationEnded(model) || !GSmodelIsAnimating(model)) {
+    if (GSmodelHasAnimationEnded(model)) {
+        restart = 1;
+    } else if (!GSmodelIsAnimating(model)) {
         restart = 1;
     } else {
         GSmodelGetAnimIndex(model, &current, &secondary);

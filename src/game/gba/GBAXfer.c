@@ -208,23 +208,15 @@ u32 __GBATransfer(int r3,u32 r4,u32 r5,u32 r6)
   extern u32 OSDisableInterrupts(void);
   extern void OSRestoreInterrupts(u32);
   extern int SIGetTypeAsync();
-  u32 chan;
-  u32 sendBytes;
-  u32 recvBytes;
-  u32 callback;
   u8 *entry;
   u32 interrupts;
 
-  chan = r3;
-  sendBytes = r4;
-  recvBytes = r5;
-  callback = r6;
-  entry = lbl_804783E0 + chan * 0x100;
+  entry = lbl_804783E0 + r3 * 0x100;
   interrupts = OSDisableInterrupts();
-  *(u32 *)(entry + 0x38) = callback;
-  *(u32 *)(entry + 0xc) = sendBytes;
-  *(u32 *)(entry + 0x10) = recvBytes;
-  SIGetTypeAsync(chan,(u32)TypeAndStatusCallback);
+  *(u32 *)(entry + 0x38) = r6;
+  *(u32 *)(entry + 0xc) = r4;
+  *(u32 *)(entry + 0x10) = r5;
+  SIGetTypeAsync(r3,(u32)TypeAndStatusCallback);
   OSRestoreInterrupts(interrupts);
   return 0;
 }

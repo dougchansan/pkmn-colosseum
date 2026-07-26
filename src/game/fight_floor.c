@@ -624,6 +624,7 @@ s32 fightFloorGetEnemyFightSideManyDamageHpRate(u32 unused, u32 r4arg) {
     u32 r31;
     s32 r30;
     u32 r29;
+    u16 initHp;
     u16 r28;
     u32 acc;
     s32 score;
@@ -639,9 +640,9 @@ s32 fightFloorGetEnemyFightSideManyDamageHpRate(u32 unused, u32 r4arg) {
             if (poke != 0) {
                 if ((u8)fightOutPokemonCheckValid(poke) != 0) {
                     acc = fightOutPokemonEnemyBiosGetDamage(r29);
-                    r29 = fightOutPokemonEnemyBiosGetInitHp(r29);
-                    if ((u16)r29 == 0) r29 = 1;
-                    score = ((u16)acc * 0x64) / (u16)r29;
+                    initHp = fightOutPokemonEnemyBiosGetInitHp(r29);
+                    if (initHp == 0) initHp = 1;
+                    score = ((u16)acc * 0x64) / initHp;
                     if (score > r30) r30 = score;
                 }
             }
@@ -653,7 +654,7 @@ s32 fightFloorGetEnemyFightSideManyDamageHpRate(u32 unused, u32 r4arg) {
 
 /* 0x801F2434 | size: 0x164 | medium */
 s32 fightFloorGetEnemyFightSideLittleNokoriHpRate(u32 r3_arg, u32 r4_arg) {
-    extern u32 _fightFloorCreateFightOutPokemonPtrAry__FP11FIGHT_FLOORPP15FightOutPokemonbUcP15FightOutPokemon(u32, u32*, u32, u32, u32);
+    extern u16 _fightFloorCreateFightOutPokemonPtrAry__FP11FIGHT_FLOORPP15FightOutPokemonbUcP15FightOutPokemon(u32, u32*, u32, u32, u32);
     extern u32 fightOutPokemonNowHpWaruValue(u32, u32);
     extern u32 fightOutPokemonMaxHpWaruValue(u32, u32);
     u32 buf[8];
@@ -665,16 +666,17 @@ s32 fightFloorGetEnemyFightSideLittleNokoriHpRate(u32 r3_arg, u32 r4_arg) {
     u32 r26;
     u32 div_a;
     u32 div_b;
+    u16 count;
     if (r4_arg == 0) return -1;
     {
         u16 i = 0;
         while ((u16)i < 8) { buf[i] = 0; i++; }
     }
-    r29 = _fightFloorCreateFightOutPokemonPtrAry__FP11FIGHT_FLOORPP15FightOutPokemonbUcP15FightOutPokemon(r3_arg, buf, 1, 2, r4_arg);
-    if ((u16)r29 == 0) return -1;
+    count = _fightFloorCreateFightOutPokemonPtrAry__FP11FIGHT_FLOORPP15FightOutPokemonbUcP15FightOutPokemon(r3_arg, buf, 1, 2, r4_arg);
+    if (count == 0) return -1;
     {
         u16 j = 0;
-        while ((u16)j < (u16)r29) {
+        while ((u16)j < count) {
             r26 = buf[(u16)j];
             if (r26 != 0) {
                 r28 = fightOutPokemonNowHpWaruValue(r26, 1);
@@ -687,7 +689,7 @@ s32 fightFloorGetEnemyFightSideLittleNokoriHpRate(u32 r3_arg, u32 r4_arg) {
         }
     }
     r28 = (u32)buf;
-    r30 = (u16)r29;
+    r30 = count;
     r27 = 0;
     while ((u16)r27 < r30) {
         r26 = buf[(u16)r27];
