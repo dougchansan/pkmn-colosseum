@@ -1010,21 +1010,30 @@ asm void GSmsgIsCheck(void) {
 }
 #else
 #pragma optimization_level 2
-s32 GSmsgIsCheck(u32 key) {
-    u8* head;
+static inline u8* GSmsgFindCheck(u8* head, u32 key)
+{
     u32 count;
     u8* entry;
     u8 i;
 
-    head = (u8*)lbl_80478B08;
     count = *(u16*)head;
-
-    for (i = 0; (u32)(i & 0xFF) < count; i++) {
-        entry = (u8*)*(u32*)(head + 0x20) + (u32)(i & 0xFF) * 0x68;
-        if (*(u8*)(entry + 0x0) != 0 && *(u32*)(entry + 0x1C) == key) {
-            if (*(u8*)(entry + 0x0) == 1) return 1;
-            return 0;
+    for (i = 0; i < count; i++) {
+        entry = *(u8**)(head + 0x20) + i * 0x68;
+        if (entry[0] != 0 && *(u32*)(entry + 0x1C) == key) {
+            return entry;
         }
+    }
+    return NULL;
+}
+
+s32 GSmsgIsCheck(u32 key) {
+    u8* head;
+    u8* entry;
+
+    head = (u8*)lbl_80478B08;
+    entry = GSmsgFindCheck(head, key);
+    if (entry != NULL && entry[0] == 1) {
+        return 1;
     }
     return 0;
 }
