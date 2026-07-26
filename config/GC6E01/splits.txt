@@ -2885,8 +2885,14 @@ game/gs_msg_candidate_r47_800FA3D0.c:
 game/gs_msg_candidate_800FA314_r46_800FB43C_o4s.c:
 	.text       start:0x800FB43C end:0x800FB680
 
-game/gs_msg_candidate_800FA314_r46_800FB680.c:
-	.text       start:0x800FB680 end:0x800FE35C
+game/gs_msg_r58b_800FB680_prefix.c:
+	.text       start:0x800FB680 end:0x800FC528
+
+game/gs_msg_r58b_800FC528_o1.c:
+	.text       start:0x800FC528 end:0x800FC7E0
+
+game/gs_msg_r58b_800FC7E0_suffix.c:
+	.text       start:0x800FC7E0 end:0x800FE35C
 
 game/gs_thread_hi_range_800FE35C.c:
 	.text       start:0x800FE35C end:0x800FE6DC
@@ -6369,8 +6375,11 @@ game/fight_trainer_ai_irekae.c:
 game/fight_trainer_ai_irekae_candidate_8024E690_gc20.c:
 	.text       start:0x8024E690 end:0x8024F8B4
 
-game/fight_trainer_ai_irekae_r47_prefix.c:
-	.text       start:0x8024F8B4 end:0x802502EC
+game/fight_trainer_ai_irekae_r58b_8024F8B4_o1.c:
+	.text       start:0x8024F8B4 end:0x80250070
+
+game/fight_trainer_ai_irekae_r58b_80250070_suffix.c:
+	.text       start:0x80250070 end:0x802502EC
 
 game/fight_trainer_ai_irekae_r47_select_item_o2.c:
 	.text       start:0x802502EC end:0x80250980

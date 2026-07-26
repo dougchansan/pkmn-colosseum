@@ -1590,7 +1590,7 @@ config.libs = [
                 CodeCandidate,
                 "game/people/people_data_candidate_80140ACC_o3.c",
                 mw_version="GC/1.3",
-                cflags=["-O3" if flag == "-O4,p" else flag for flag in cflags_base],
+                cflags=["-O1" if flag == "-O4,p" else flag for flag in cflags_base],
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
@@ -6622,13 +6622,27 @@ config.libs = [
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
-            Object(
-                CodeCandidate,
-                "game/fight_trainer_ai_irekae_r47_prefix.c",
-                mw_version="GC/1.3",
-                extra_cflags=["-O4,s", "-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
-                progress_category="game",
-            ),
+            *[
+                Object(
+                    CodeCandidate,
+                    path,
+                    mw_version="GC/1.3",
+                    extra_cflags=[
+                        "-O1"
+                        if path
+                        == "game/fight_trainer_ai_irekae_r58b_8024F8B4_o1.c"
+                        else "-O4,s",
+                        "-use_lmw_stmw on",
+                        "-sdata 8",
+                        "-sdata2 8",
+                    ],
+                    progress_category="game",
+                )
+                for path in [
+                    "game/fight_trainer_ai_irekae_r58b_8024F8B4_o1.c",
+                    "game/fight_trainer_ai_irekae_r58b_80250070_suffix.c",
+                ]
+            ],
             Object(
                 CodeCandidate,
                 "game/fight_trainer_ai_irekae_r47_select_item_o2.c",
@@ -8138,13 +8152,25 @@ config.libs = [
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
-            Object(
-                CodeCandidate,
-                "game/gs_msg_candidate_800FA314_r46_800FB680.c",
-                mw_version="GC/1.3",
-                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
-                progress_category="game",
-            ),
+            *[
+                Object(
+                    CodeCandidate,
+                    path,
+                    mw_version="GC/1.3",
+                    cflags=(
+                        ["-O1" if flag == "-O4,p" else flag for flag in cflags_base]
+                        if path == "game/gs_msg_r58b_800FC528_o1.c"
+                        else None
+                    ),
+                    extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                    progress_category="game",
+                )
+                for path in [
+                    "game/gs_msg_r58b_800FB680_prefix.c",
+                    "game/gs_msg_r58b_800FC528_o1.c",
+                    "game/gs_msg_r58b_800FC7E0_suffix.c",
+                ]
+            ],
             Object(
                 CodeCandidate,
                 "game/gs_thread_hi_range_800FE35C.c",

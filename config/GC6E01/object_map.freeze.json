@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196100,
     "total_functions": 8603,
-    "total_units": 2226
+    "total_units": 2229
   },
   "topology_status": {
     "auto_units": 68,
-    "named_units": 2158,
-    "source_backed_units": 2152,
+    "named_units": 2161,
+    "source_backed_units": 2155,
     "auto_code": 0,
     "auto_data": 57687,
     "auto_functions": 0
@@ -23,7 +23,7 @@
     "matched_data_percent": 97.28669,
     "matched_functions": 6573,
     "matched_functions_percent": 76.40358,
-    "fuzzy_match_percent": 72.11727
+    "fuzzy_match_percent": 72.12884
   },
   "unit_topology": [
     {
@@ -13049,17 +13049,43 @@
       "total_functions": 1
     },
     {
-      "name": "main/game/gs_msg_candidate_800FA314_r46_800FB680",
+      "name": "main/game/gs_msg_r58b_800FB680_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 11484,
+          "size": 3752,
           "virtual_address": 2148513408
         }
       ],
-      "total_code": 11484,
+      "total_code": 3752,
       "total_data": 0,
-      "total_functions": 20
+      "total_functions": 13
+    },
+    {
+      "name": "main/game/gs_msg_r58b_800FC528_o1",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 696,
+          "virtual_address": 2148517160
+        }
+      ],
+      "total_code": 696,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/gs_msg_r58b_800FC7E0_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 7036,
+          "virtual_address": 2148517856
+        }
+      ],
+      "total_code": 7036,
+      "total_data": 0,
+      "total_functions": 6
     },
     {
       "name": "main/game/gs_thread_hi_range_800FE35C",
@@ -28503,17 +28529,30 @@
       "total_functions": 1
     },
     {
-      "name": "main/game/fight_trainer_ai_irekae_r47_prefix",
+      "name": "main/game/fight_trainer_ai_irekae_r58b_8024F8B4_o1",
       "sections": [
         {
           "name": ".text",
-          "size": 2616,
+          "size": 1980,
           "virtual_address": 2149906612
         }
       ],
-      "total_code": 2616,
+      "total_code": 1980,
       "total_data": 0,
-      "total_functions": 3
+      "total_functions": 2
+    },
+    {
+      "name": "main/game/fight_trainer_ai_irekae_r58b_80250070_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 636,
+          "virtual_address": 2149908592
+        }
+      ],
+      "total_code": 636,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/game/fight_trainer_ai_irekae_r47_select_item_o2",
