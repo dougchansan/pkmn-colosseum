@@ -235,7 +235,11 @@ void fn_801DD158(void* obj) {
     WazaSequence* sequence;
 
     if (effect->model != NULL) {
-        GSmodelSetVisibility(effect->model, (effect->flags & 1) == 1);
+        if ((effect->flags & 1) == 1) {
+            GSmodelSetVisibility(effect->model, 1);
+        } else {
+            GSmodelSetVisibility(effect->model, 0);
+        }
     }
 
     sequence = effect->currentSequence;
