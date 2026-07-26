@@ -601,7 +601,7 @@ asm void GSmaterialDisableExtension(void) {
 #include "src/game/gs_render_GSmaterialDisableExtension.inc"
 }
 #else
-void GSmaterialDisableExtension(u8* obj, u32 flags) {
+static inline void GSmaterialDisableExtensionImpl(u8* obj, u32 flags) {
     u32 bits;
     u8* mobj;
     u8* image;
@@ -653,6 +653,10 @@ void GSmaterialDisableExtension(u8* obj, u32 flags) {
         *(u32*)(mobj + 0x20) = 0;
     }
     HSD_MObjCompileTev(mobj);
+}
+
+void GSmaterialDisableExtension(u8* obj, u32 flags) {
+    GSmaterialDisableExtensionImpl(obj, flags);
 }
 #endif
 
@@ -792,7 +796,7 @@ void fn_800DF608(u8* obj) {
         *(u32*)(obj + 0x38) = 0xfefefefe;
     }
 
-    GSmaterialDisableExtension(obj, *(u16*)(obj + 0x2));
+    GSmaterialDisableExtensionImpl(obj, *(u16*)(obj + 0x2));
     obj[0] = 0;
 }
 #endif
