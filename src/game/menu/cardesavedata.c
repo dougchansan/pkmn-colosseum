@@ -84,7 +84,7 @@ extern void fn_800EC990(void*);
 extern void fn_800ECB74(void*, u32);
 extern u8 fn_800EC960(void*);
 extern void fn_80166A28();
-extern s32 fn_801666BC();
+extern u32 fn_801666BC();
 
 extern void GScharLenCpy(void*, const void*, u32);
 extern u16 fn_800E2C04(u32, u32);
