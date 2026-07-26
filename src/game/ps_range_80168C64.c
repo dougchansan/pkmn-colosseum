@@ -138,6 +138,7 @@ extern u16 lbl_8047B120;
 extern u16 lbl_8047B11A;
 extern u8 lbl_80478C30;
 extern s32 lbl_8047B12C;
+extern s32 lbl_8047B164;
 
 /* ======================================================================
  * External functions - real symbol names per config/GC6E01/symbols.txt.
@@ -197,6 +198,9 @@ extern void HSD_CObjGetUpVector(void* camera, Vec* up);
 extern f32 lbl_8047D6B4;
 extern f32 lbl_8047D5CC;
 extern f32 lbl_8047D618;
+extern f64 lbl_8047D5E0;
+extern f32 lbl_8047D5D8;
+extern f32 lbl_8047D5DC;
 extern f32 lbl_8047B14C;
 extern f32 lbl_8047B150;
 extern f32 lbl_8047B154;
@@ -208,6 +212,7 @@ extern void fn_800BD554(s32 mode);
 extern void fn_800B7D3C(void);
 extern void fn_800B7874(s32 attribute, s32 type);
 extern void fn_800B928C(s32 primitive, s32 format, s32 count);
+extern void fn_800B9404(s32 width, s32 offset);
 
 #if !defined(PR410_PS_SPLIT) || defined(PR410_PS_PREFIX)
 
@@ -1838,6 +1843,34 @@ void psDispSub(PSParticle* pp, void* polygonData) {
                          pp->positionX, pp->positionY, pp->positionZ,
                          pp->velocityX, pp->velocityY, pp->velocityZ,
                          axisXX, axisXZ, axisYY, axisXY, axisYX, axisYZ);
+}
+
+/*
+ * Configures point-trail raster width. Geometry/color emission remains
+ * asm-only; this entry block is verified at 0x8016D8EC-0x8016D954.
+ */
+void psDispSubPointTrail(PSParticle* pp) {
+    f32 widthValue;
+    s32 width;
+    u8 cachedWidth;
+
+    if (lbl_8047B12C != 0) {
+        lbl_8047B12C = 0;
+        fn_800BD554(0);
+    }
+
+    if (pp->lerpValue > lbl_8047D5E0) {
+        widthValue = lbl_8047D5D8;
+    } else {
+        widthValue = lbl_8047D5DC * pp->lerpValue;
+    }
+
+    width = (s32)widthValue;
+    cachedWidth = (u8)width;
+    if (lbl_8047B164 != cachedWidth) {
+        lbl_8047B164 = cachedWidth;
+        fn_800B9404(width, 5);
+    }
 }
 
 /*
