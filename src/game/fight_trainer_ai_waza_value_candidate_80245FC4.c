@@ -1,3 +1,4 @@
+/* Score instrumentation only; not evidence of a retail TU boundary. */
 /**
  * @file fight_trainer_ai_waza_value_candidate_80245FC4.c
  * @brief Candidate fightTrainerAiWazaValue.cpp range, 0x80245FC4 - 0x80247048.

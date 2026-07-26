@@ -1,3 +1,4 @@
+/* Score instrumentation only; not evidence of a retail TU boundary. */
 /**
  * Residual source island 0x801EFA08-0x801EFFC4 from the shared battle main TU.
  */
