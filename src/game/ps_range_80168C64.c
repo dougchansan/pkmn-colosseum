@@ -736,6 +736,38 @@ void psInitParticle(s32 count) {
     }
 }
 
+void psInitDataBankLocate(void* data, void* objects, void* locations);
+
+void psInitDataBank(s32 bankIndex, void* data, void* objects,
+                    void* bankData, void* locations) {
+    u32* banks = (u32*)lbl_804527C8;
+    u16 format;
+
+    if (bankIndex >= 64) {
+        return;
+    }
+
+    psInitDataBankLocate(data, objects, locations);
+    banks[bankIndex] = (u32)bankData;
+    banks[256 + bankIndex] = *(u32*)objects;
+    banks[128 + bankIndex] = (u32)objects + 4;
+    banks[64 + bankIndex] =
+        locations != NULL ? (u32)locations + 4 : 0;
+
+    format = *(u16*)data;
+    if (format == 0) {
+        banks[320 + bankIndex] = *(u32*)((u8*)data + 4);
+        banks[192 + bankIndex] = (u32)data + 8;
+    } else if (format >= 0x40 && format < 0x44) {
+        u32 firstCount = *(u32*)((u8*)data + 4);
+
+        banks[320 + bankIndex] =
+            firstCount + *(u32*)((u8*)data + 8);
+        banks[192 + bankIndex] =
+            (u32)data + 0xC - firstCount * sizeof(u32);
+    }
+}
+
 s32 psChangeGeneratorAppSRT(PSGeneratorState* gen, PSAppSRT* newAppSRT) {
     PSAppSRT* oldAppSRT;
     u16 refCount;
