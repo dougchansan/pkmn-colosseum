@@ -2052,20 +2052,10 @@ asm void fn_800FBE7C(void) {
 #pragma optimization_level 2
 s32 fn_800FBE7C(u32 key, u32 r4arg) {
     u8* head;
-    u32 count;
     u8* entry;
-    u8 i;
 
     head = (u8*)lbl_80478B08;
-    count = *(u16*)head;
-    entry = NULL;
-    for (i = 0; (u32)(i & 0xFF) < count; i++) {
-        u8* e = (u8*)*(u32*)(head + 0x20) + (u32)(i & 0xFF) * 0x68;
-        if (*(u8*)(e + 0x0) != 0 && *(u32*)(e + 0x1C) == key) {
-            entry = e;
-            break;
-        }
-    }
+    entry = GSmsgFindCheck(head, key);
     if (entry == NULL) return -1;
     return fn_800FC7E0(entry, *(u8*)(entry + 0x44), r4arg);
 }
