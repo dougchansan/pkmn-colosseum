@@ -657,16 +657,8 @@ asm void dataGetSample(void) {
 #include "src/game/people/people_field_fn_801521B8.inc"
 }
 #else
-/* likely dataGetSample. 79.0% -> 79.8% (2026-07-02): moving the
- * `lbl_8047AF84 = (u32)header;` scratch-cache store to AFTER the
- * header-relative reads (instead of immediately after computing `header`)
- * stopped the compiler from reloading `header`'s value back from that
- * global before each subsequent access -- it now keeps `header` live in a
- * register for out[1]/out[5]/out[4]/the byte-extract. Residual 20.2% gap is
- * the first access (`out[0] = *(u32*)header`) still routing through the
- * global once (target instead re-derives it as `result + 0xc` in a
- * different register than the later header-relative reads) plus the same
- * lhzx/stwx addressing-mode CSE wall documented on dataGetMacro. */
+/* Resolve a sample directory entry and copy its header fields into the
+ * caller's SAMPLE_INFO-compatible output record. */
 u32 dataGetSample(u16 key, u32* out) {
     void* result;
     u8* header;
@@ -680,13 +672,14 @@ u32 dataGetSample(u16 key, u32* out) {
         lbl_8047AF88 = (u32)result;
         if (result != NULL && *(u16*)((u8*)result + 2) != 0xFFFF) {
             header = (u8*)result + 0xC;
+            lbl_8047AF84 = (u32)header;
             out[0] = *(u32*)header;
-            out[1] = *(u32*)(header - 4);
+            out[1] = *(u32*)((u8*)result + 8);
             out[3] = 0;
             out[5] = *(u32*)(header + 8);
             out[4] = *(u32*)(header + 4) & 0x00FFFFFF;
+            out[6] = *(u32*)(header + 0xC);
             *(u8*)((u8*)out + 0x1C) = (u8)(*(u32*)(header + 4) >> 24);
-            lbl_8047AF84 = (u32)header;
             if (*(u32*)(header + 0x10) != 0) {
                 out[2] = *(u32*)table + *(u32*)(header + 0x10);
             }
