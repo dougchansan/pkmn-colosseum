@@ -214,8 +214,8 @@ __declspec(section ".init") void __fill_mem(void* dest, int val, u32 count) {
 
 /* memcpy - 0x800054F4 | size: 0x50 */
 __declspec(section ".init") void* memcpy(void* dst, const void* src, u32 count) {
-    u8* d;
     const u8* s;
+    u8* d;
     u32 n;
 
     if ((const u8*)src >= (u8*)dst) {
