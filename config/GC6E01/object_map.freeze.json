@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196100,
     "total_functions": 8603,
-    "total_units": 1965
+    "total_units": 1967
   },
   "topology_status": {
     "auto_units": 68,
-    "named_units": 1897,
-    "source_backed_units": 1891,
+    "named_units": 1899,
+    "source_backed_units": 1893,
     "auto_code": 0,
     "auto_data": 57687,
     "auto_functions": 0
@@ -23,7 +23,7 @@
     "matched_data_percent": 97.28669,
     "matched_functions": 6566,
     "matched_functions_percent": 76.32221,
-    "fuzzy_match_percent": 69.51166
+    "fuzzy_match_percent": 70.228836
   },
   "unit_topology": [
     {
@@ -19922,17 +19922,30 @@
       "total_functions": 1
     },
     {
+      "name": "main/hsd/hsd_texp_compile_candidate_801B4300",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 676,
+          "virtual_address": 2149270272
+        }
+      ],
+      "total_code": 676,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
       "name": "main/hsd/hsd_texp_candidate_801B4300",
       "sections": [
         {
           "name": ".text",
-          "size": 788,
-          "virtual_address": 2149270272
+          "size": 112,
+          "virtual_address": 2149270948
         }
       ],
-      "total_code": 788,
+      "total_code": 112,
       "total_data": 0,
-      "total_functions": 2
+      "total_functions": 1
     },
     {
       "name": "main/hsd/hsd_texp_candidate_801B4614_gc20",
@@ -20017,13 +20030,26 @@
       "sections": [
         {
           "name": ".text",
-          "size": 1076,
+          "size": 472,
           "virtual_address": 2149288836
         }
       ],
-      "total_code": 1076,
+      "total_code": 472,
       "total_data": 0,
-      "total_functions": 2
+      "total_functions": 1
+    },
+    {
+      "name": "main/hsd/hsd_texp_candidate_801B8D5C",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 604,
+          "virtual_address": 2149289308
+        }
+      ],
+      "total_code": 604,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/hsd/hsd_texp_candidate_801B8FB8_gc20",
