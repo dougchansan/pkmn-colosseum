@@ -80,6 +80,7 @@ extern void* lbl_804529C8[]; /* sLinkDataBanks: per-bank object data */
 extern void* lbl_80452DC8[]; /* sCameraSlots */
 
 extern f32 lbl_8047D630; /* 0.0f */
+extern f32 lbl_8047D5B0; /* 3.0f */
 extern f32 lbl_8047D634; /* 3.0f */
 extern f32 lbl_8047D638; /* 1.0f */
 extern f32 lbl_8047D63C; /* 0.5f */
@@ -266,6 +267,58 @@ extern void fn_800B7D3C(void);
 extern void fn_800B7874(s32 attribute, s32 type);
 extern void fn_800B928C(s32 primitive, s32 format, s32 count);
 extern void fn_800B9404(s32 width, s32 offset);
+
+void psSetGeneratorAngleRadiusScale(PSGeneratorState* gen, f32* scale,
+                                    u8 applyToMotion) {
+    u8* raw = (u8*)gen;
+    u16 mode = gen->angleFlags & 0xF;
+    u16 objectIndex = *(u16*)(raw + 0x8A);
+    f32* object = ((f32**)lbl_80452AC8[gen->bankIndex])[objectIndex];
+    f32 average = (scale[0] + scale[1] + scale[2]) / lbl_8047D5B0;
+
+    switch (mode) {
+    case 0:
+    case 3:
+    case 4:
+        *(f32*)(raw + 0x54) = average * object[0x30 / 4];
+        *(f32*)(raw + 0x58) = average * object[0x34 / 4];
+        break;
+    case 1:
+        *(f32*)(raw + 0x54) = scale[0] * object[0x30 / 4];
+        *(f32*)(raw + 0x58) = scale[1] * object[0x34 / 4];
+        *(f32*)(raw + 0x5C) = scale[2] * object[0x38 / 4];
+        break;
+    case 5:
+        *(f32*)(raw + 0x54) = scale[0] * object[0x30 / 4];
+        *(f32*)(raw + 0x60) = *(f32*)(raw + 0x54);
+        *(f32*)(raw + 0x58) = scale[1] * object[0x34 / 4];
+        *(f32*)(raw + 0x70) = *(f32*)(raw + 0x58);
+        *(f32*)(raw + 0x5C) = scale[2] * object[0x38 / 4];
+        *(f32*)(raw + 0x80) = *(f32*)(raw + 0x5C);
+        break;
+    case 6:
+    case 7:
+        *(f32*)(raw + 0x54) = average * object[0x30 / 4];
+        *(f32*)(raw + 0x58) = average * object[0x34 / 4];
+        *(f32*)(raw + 0x5C) = average * object[0x38 / 4];
+        break;
+    case 8:
+        *(f32*)(raw + 0x5C) = average * object[0x30 / 4];
+        *(f32*)(raw + 0x64) = average * object[0x34 / 4];
+        break;
+    }
+
+    *(f32*)(raw + 0x44) = average * object[0x20 / 4];
+    if (applyToMotion == TRUE) {
+        *(f32*)(raw + 0x38) *= average;
+        *(f32*)(raw + 0x3C) *= average;
+        *(u16*)(raw + 0x88) |= 0x1000;
+    }
+
+    gen->angleRadiusScale[0] = scale[0];
+    gen->angleRadiusScale[1] = scale[1];
+    gen->angleRadiusScale[2] = scale[2];
+}
 extern void fn_800BA4C8(s32 channel, const PSColor* color);
 extern void fn_800BA5BC(s32 channel, const PSColor* color);
 extern void fn_800BC2F8(s32 reg, const PSColor* color);
