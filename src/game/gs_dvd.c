@@ -853,8 +853,8 @@ void fn_80168284(void)
             fn_800DA028(0);
             fn_800D7820(lbl_804526E0.renderState);
             fn_800D6A00(6);
-            fn_800D67BC(lbl_804526E0.drawingCount * 4);
-            for (index = 0; index < capacity; index++, filter++) {
+            fn_800D67BC((u16)(lbl_804526E0.drawingCount * 4));
+            for (index = 0; (u8)index < capacity; index++, filter++) {
                 if (filter->drawing != 0) {
                     fn_800D5FA4(0);
                     fn_800D5A38(0, index);
