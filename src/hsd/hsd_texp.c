@@ -875,6 +875,7 @@ extern char lbl_8047DE70;
 extern char lbl_8047DE90;
 extern char lbl_802753DC[];
 extern char lbl_802753A8[];
+extern char lbl_802753B4[];
 extern char lbl_802755D0[];
 extern char lbl_8047DEA0;
 extern void* fn_80193B10(s32 size);
@@ -1293,7 +1294,25 @@ typedef struct ColTECnst {
     u8 range;
 } ColTECnst;
 
+typedef struct ColTExpRes {
+    s32 failed;
+    s32 texmap;
+    s32 cnst_remain;
+    struct {
+        u8 color;
+        u8 alpha;
+    } reg[8];
+    u8 c_ref[4];
+    u8 a_ref[4];
+    u8 c_use[4];
+    u8 a_use[4];
+} ColTExpRes;
+
 void fn_801B750C(ColTExpNode* texp, u8 sel);
+extern s32 lbl_8036D278[4];
+extern s32 lbl_8036D288[4][4];
+extern s32 lbl_8036D2C8[4];
+extern s32 lbl_8036D2D8[4][4];
 
 extern void fn_800B8E74(void);
 extern void fn_800BC3E0(u32 id, GXColor color);
@@ -1564,15 +1583,149 @@ void TExp2TevDesc(ColTExpNode* texp, HSD_TExpTevDesc* desc,
 /*
  * HSD_MaterialSetupTEV - 0x801B50C0 | Size: 0x790
  */
-void fn_801B50C0(void* mobj, u32 rendermode) {
-    /* Full material TEV setup:
-     * 1. Walk TObj chain and collect texture layers
-     * 2. Build color and alpha expression trees
-     * 3. Compile expressions to TEV stages
-     * 4. Set up texture coordinate generation
-     * 5. Configure constant colors and registers
-     * 6. Apply special effects (bump, reflection)
-     */
+static inline s32 AssignAlphaRegInline(ColTExpNode* tev, s32 idx,
+                                       ColTExpRes* res)
+{
+    ColTECnst* cnst = (ColTECnst*) tev->a_in[idx].exp;
+    s32 i;
+
+    if (cnst->reg != 0xFF) {
+        if (cnst->reg < 4) {
+            return -1;
+        }
+        tev->a_in[idx].type = 5;
+        tev->a_in[idx].arg = lbl_8036D278[cnst->reg - 4];
+        return 0;
+    }
+
+    for (i = 4; i < 8; i++) {
+        if (res->reg[i].alpha == 0) {
+            res->reg[i].alpha = 1;
+            cnst->reg = i;
+            cnst->idx = 3;
+            tev->a_in[idx].type = 5;
+            tev->a_in[idx].arg = lbl_8036D278[i - 4];
+            return 0;
+        }
+    }
+    return -1;
+}
+
+static inline s32 IsThroughColorInline(ColTExpNode* tev)
+{
+    return tev->c_op == 0 && tev->c_in[0].sel == 7 &&
+           tev->c_in[1].sel == 7 && tev->c_bias == 0 && tev->c_scale == 0;
+}
+
+static inline s32 IsThroughAlphaInline(ColTExpNode* tev)
+{
+    return tev->a_op == 0 && tev->a_in[0].sel == 7 &&
+           tev->a_in[1].sel == 7 && tev->a_bias == 0 && tev->a_scale == 0;
+}
+
+extern s32 fn_801B5850(ColTExpNode*, s32, ColTExpRes*);
+extern s32 fn_801B5A00(ColTExpNode*, s32, ColTExpRes*);
+extern s32 fn_801B5C94(ColTExpNode*, s32, ColTExpRes*);
+
+s32 fn_801B50C0(ColTExpNode* tev, ColTExpRes* res)
+{
+    s32 i;
+    s32 result;
+
+    if (tev->c_ref > 0) {
+        if (tev->kcsel != 0xFF) {
+            for (i = 0; i < 4; i++) {
+                if (tev->c_in[i].type == COL_TE_CNST) {
+                    result = fn_801B5C94(tev, i, res);
+                    if (result < 0) {
+                        __assert(&lbl_8047DE70, 0x49C, lbl_802753B4);
+                        return result;
+                    }
+                }
+            }
+        } else if (IsThroughColorInline(tev) &&
+                   tev->c_in[3].type == COL_TE_CNST) {
+            result = fn_801B5C94(tev, 3, res);
+            if (result < 0) {
+                result = fn_801B5A00(tev, 3, res);
+                if (result < 0) {
+                    __assert(&lbl_8047DE70, 0x4A8, lbl_802753B4);
+                    return result;
+                }
+            }
+        } else {
+            for (i = 0; i < 4; i++) {
+                if (tev->c_in[i].type == COL_TE_CNST) {
+                    result = fn_801B5A00(tev, i, res);
+                    if (result < 0) {
+                        result = fn_801B5C94(tev, i, res);
+                        if (result < 0) {
+                            __assert(&lbl_8047DE70, 0x4B5,
+                                     lbl_802753B4);
+                            return result;
+                        }
+                    }
+                }
+            }
+            for (; i < 4; i++) {
+                if (tev->c_in[i].type == COL_TE_CNST) {
+                    result = fn_801B5C94(tev, i, res);
+                    if (result < 0) {
+                        __assert(&lbl_8047DE70, 0x4BE, lbl_802753B4);
+                        return result;
+                    }
+                }
+            }
+        }
+    }
+
+    if (tev->a_ref > 0) {
+        if (tev->kasel != 0xFF) {
+            for (i = 0; i < 4; i++) {
+                if (tev->a_in[i].type == COL_TE_CNST) {
+                    result = AssignAlphaRegInline(tev, i, res);
+                    if (result < 0) {
+                        __assert(&lbl_8047DE70, 0x4CE, lbl_802753B4);
+                        return result;
+                    }
+                }
+            }
+        } else if (IsThroughAlphaInline(tev) &&
+                   tev->a_in[3].type == COL_TE_CNST) {
+            result = AssignAlphaRegInline(tev, 3, res);
+            if (result < 0) {
+                result = fn_801B5850(tev, 3, res);
+                if (result < 0) {
+                    __assert(&lbl_8047DE70, 0x4DA, lbl_802753B4);
+                    return result;
+                }
+            }
+        } else {
+            for (i = 0; i < 4; i++) {
+                if (tev->a_in[i].type == COL_TE_CNST) {
+                    result = fn_801B5850(tev, i, res);
+                    if (result < 0) {
+                        result = AssignAlphaRegInline(tev, i, res);
+                        if (result < 0) {
+                            __assert(&lbl_8047DE70, 0x4E7,
+                                     lbl_802753B4);
+                            return result;
+                        }
+                    }
+                }
+            }
+            for (; i < 4; i++) {
+                if (tev->a_in[i].type == COL_TE_CNST) {
+                    result = AssignAlphaRegInline(tev, i, res);
+                    if (result < 0) {
+                        __assert(&lbl_8047DE70, 0x4F0, lbl_802753B4);
+                        return result;
+                    }
+                }
+            }
+        }
+    }
+    return 0;
 }
 
 /*
@@ -1581,13 +1734,8 @@ void fn_801B50C0(void* mobj, u32 rendermode) {
  * Resets TEV stages, disables texture coordinate generation,
  * and frees temporary resources.
  */
-void fn_801B5850(void* mobj) {
-    /* Cleanup:
-     * 1. Reset TEV stage count
-     * 2. Disable extra texture coordinate gens
-     * 3. Reset swap mode tables
-     * 4. Free temporary expression nodes
-     */
+s32 fn_801B5850(ColTExpNode* tev, s32 idx, ColTExpRes* res)
+{
 }
 
 /*
@@ -1596,26 +1744,61 @@ void fn_801B5850(void* mobj) {
  * Loads texture images to GX, configures texture objects,
  * and sets up the texture-to-TEV stage mapping.
  */
-void fn_801B5A00(HSD_TObj* tobj, u32 pass) {
-    HSD_TObj* t;
-    u32 stage = 0;
+s32 fn_801B5A00(ColTExpNode* tev, s32 idx, ColTExpRes* res)
+{
+    ColTECnst* cnst = (ColTECnst*) tev->c_in[idx].exp;
+    s32 i;
 
-    for (t = tobj; t != NULL; t = t->next) {
-        if (stage >= 8) break;
-
-        /* Load texture image if dirty */
-        if (t->imagedesc != NULL) {
-            /* GXInitTexObj and GXLoadTexObj */
+    if (cnst->reg != 0xFF) {
+        if (cnst->reg >= 4) {
+            return -1;
         }
-
-        /* Configure wrap mode */
-        /* GXInitTexObjWrapMode */
-
-        /* Set texture coordinate source */
-        /* GXSetTexCoordGen */
-
-        stage++;
+        if (cnst->comp == 6) {
+            tev->kcsel = lbl_8036D288[cnst->reg][cnst->idx];
+        } else {
+            tev->kcsel = lbl_8036D2C8[cnst->reg];
+        }
+        tev->c_in[idx].type = 6;
+        tev->c_in[idx].arg = 14;
+        return 0;
     }
+
+    if (cnst->comp == 6) {
+        for (i = 1; i < 4; i++) {
+            if (res->reg[i].alpha == 0) {
+                res->reg[i].alpha = 1;
+                cnst->reg = i;
+                cnst->idx = 3;
+                tev->kcsel = lbl_8036D288[cnst->reg][cnst->idx];
+                tev->c_in[idx].type = 6;
+                tev->c_in[idx].arg = 14;
+                return 0;
+            }
+        }
+        for (i = 0; i < 4; i++) {
+            if (res->reg[i].color < 3) {
+                cnst->reg = i;
+                cnst->idx = res->reg[i].color++;
+                tev->kcsel = lbl_8036D288[cnst->reg][cnst->idx];
+                tev->c_in[idx].type = 6;
+                tev->c_in[idx].arg = 14;
+                return 0;
+            }
+        }
+    } else {
+        for (i = 0; i < 4; i++) {
+            if (res->reg[i].color == 0) {
+                res->reg[i].color = 3;
+                cnst->reg = i;
+                cnst->idx = 0;
+                tev->kcsel = lbl_8036D2C8[cnst->reg];
+                tev->c_in[idx].type = 6;
+                tev->c_in[idx].arg = 14;
+                return 0;
+            }
+        }
+    }
+    return -1;
 }
 
 /*
@@ -1623,21 +1806,48 @@ void fn_801B5A00(HSD_TObj* tobj, u32 pass) {
  * Set up texture coordinate transformation matrices.
  * Computes and loads the texture matrix for each active TObj.
  */
-void fn_801B5C94(HSD_TObj* tobj) {
-    HSD_TObj* t;
-    u32 mtx_idx = 0;
+s32 fn_801B5C94(ColTExpNode* tev, s32 idx, ColTExpRes* res)
+{
+    ColTECnst* cnst = (ColTECnst*) tev->c_in[idx].exp;
+    s32 i;
 
-    for (t = tobj; t != NULL; t = t->next) {
-        if (t->flags & TEX_MTX_DIRTY) {
-            /* Recompute texture matrix from translate/rotate/scale */
-            /* Store in t->mtx */
-            t->flags &= ~TEX_MTX_DIRTY;
+    if (cnst->reg != 0xFF) {
+        if (cnst->reg < 4) {
+            return -1;
         }
-
-        /* Load texture matrix to GX */
-        /* GXLoadTexMtxImm(t->mtx, mtx_idx, GX_MTX2x4) */
-        mtx_idx += 3;
+        tev->c_in[idx].type = 5;
+        if (cnst->comp == 6) {
+            tev->c_in[idx].arg = lbl_8036D2C8[cnst->reg - 4];
+        } else {
+            tev->c_in[idx].arg = lbl_8036D278[cnst->reg - 4];
+        }
+        return 0;
     }
+
+    if (cnst->comp == 6) {
+        for (i = 4; i < 8; i++) {
+            if (res->reg[i].alpha == 0) {
+                res->reg[i].alpha = 1;
+                cnst->reg = i;
+                cnst->idx = 3;
+                tev->c_in[idx].type = 5;
+                tev->c_in[idx].arg = lbl_8036D2C8[i - 4];
+                return 0;
+            }
+        }
+    } else {
+        for (i = 4; i < 8; i++) {
+            if (res->reg[i].color == 0) {
+                res->reg[i].color = 3;
+                cnst->reg = i;
+                cnst->idx = 0;
+                tev->c_in[idx].type = 5;
+                tev->c_in[idx].arg = lbl_8036D278[i - 4];
+                return 0;
+            }
+        }
+    }
+    return -1;
 }
 
 /*
