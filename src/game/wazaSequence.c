@@ -18,8 +18,55 @@
  * Address: 0x801DB988 | Size: 0x188
  */
 s8 wazaSequenceUpdate(void* sequence) {
-    /* TODO: Waza rendering setup (0x188 bytes) */
-    return 0;
+    WazaSequence* obj = sequence;
+    WazaSequenceNode* node = obj->firstNode;
+    WazaSequenceOwner* owner;
+    s32 elapsed;
+    s32 pending = 0;
+    s32 running = 0;
+
+    elapsed = fn_800D3088();
+    obj->state += elapsed;
+    owner = obj->owner;
+
+    if (fn_801DA74C(owner, obj->handle, obj->animationMode, 2) >
+        (s32)obj->state) {
+        pending = 1;
+    }
+
+    if (owner->motionBusy == 0 && owner->sequenceEnabled != 0 &&
+        fn_801DA74C(owner, obj->handle, obj->animationMode, 1) <
+            (s32)obj->state) {
+        return -1;
+    }
+
+    while (node != NULL) {
+        switch (node->runtimeState) {
+        case 0:
+            if (node->startTime <= (s32)obj->state) {
+                if (wazaSequenceEntryStart(node) != 0) {
+                    pending++;
+                }
+            } else {
+                node->currentTime = node->startTime;
+                running++;
+            }
+            break;
+        case 1:
+            if (wazaSequenceEntryUpdate(node, elapsed) == 0) {
+                wazaSequenceEntryStop(node, FALSE);
+            } else {
+                pending++;
+            }
+            break;
+        }
+        node = node->next;
+    }
+
+    if (pending + running == 0) {
+        return 0;
+    }
+    return obj->stopping == 0;
 }
 
 #endif

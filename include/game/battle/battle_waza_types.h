@@ -48,16 +48,35 @@ typedef struct GSpart GSpart;
 typedef struct GSvec GSvec;
 
 struct WazaSequenceNode {
-    /* 0x00 */ u8 pad_00[4];
+    /* 0x00 */ s32 linkKey;
     /* 0x04 */ s32 kind;
-    /* 0x08 */ u8 pad_08[0x10];
+    /* 0x08 */ s32 linkedEntryKey;
+    /* 0x0C */ s32 sourceIndex;
+    /* 0x10 */ s32 targetIndex;
+    /* 0x14 */ s32 timingIndex;
     /* 0x18 */ s32 state;
-    /* 0x1C */ u8 pad_1C[0x50];
+    /* 0x1C */ u32 flags;
+    /* 0x20 */ s32 attachment;
+    /* 0x24 */ s32 partIndex;
+    /* 0x28 */ s32 positionType;
+    /* 0x2C */ s32 timing[0x10];
     /* 0x6C */ u32 runtimeState;
-    /* 0x70 */ u8 pad_70[0x18];
+    /* 0x70 */ s32 startTime;
+    /* 0x74 */ s32 currentTime;
+    /* 0x78 */ s32 resourceId;
+    /* 0x7C */ u32 runtimeFlags;
+    /* 0x80 */ s32 field_80;
+    /* 0x84 */ s32 animationMode;
     /* 0x88 */ void* resource;
-    /* 0x8C */ u8 pad_8C[0x1C];
+    /* 0x8C */ s32 textureAnimationMode;
+    /* 0x90 */ s32 textureAnimation;
+    /* 0x94 */ s32 restoreTransform;
+    /* 0x98 */ u8 pad_98[8];
+    /* 0xA0 */ s32 attached;
+    /* 0xA4 */ void* model;
     /* 0xA8 */ WazaSequenceNode* next;
+    /* 0xAC */ WazaSequenceNode* previous;
+    /* 0xB0 */ WazaSequence* sequence;
 };
 
 struct WazaSequence {
@@ -98,7 +117,9 @@ typedef struct WazaEffectTblEntry {
 struct WazaEffect {
     /* 0x00 */ u8 pad_00[0x10];
     /* 0x10 */ s32 scale_selector;          /* selects scale value */
-    /* 0x14 */ u8 pad_14[0x04];
+    /* 0x14 */ u8 pad_14[0x02];
+    /* 0x16 */ u8 motionBusy;
+    /* 0x17 */ u8 sequenceEnabled;
     /* 0x18 */ u8 flags;                     /* trajectory/flags byte */
     /* 0x19 */ u8 pad_19[0x0B];
     /* 0x24 */ struct GSmodel* model;
@@ -142,7 +163,7 @@ extern void* memcpy(void* dst, const void* src, u32 size);
 /* Engine core */
 extern void  GSlogWrite(const char* fmt, ...);           /* GSlog_Print */
 extern s32   fn_800D37CC(void);                            /* GSrandom_Get */
-extern void  fn_800D3088(void);                            /* GSgfx tick */
+extern s32   fn_800D3088(void);                            /* GSgfx tick */
 extern void* fn_800DB940(u32 size);                        /* GSmem_Alloc */
 extern void  fn_800DB9A4(void* ptr);                       /* GSmem_Free */
 
@@ -320,15 +341,15 @@ extern void fn_801D7230(void);
 extern void fn_801D744C(u32 bits);
 extern void fn_801D7464(void);
 extern void fn_801D7B94(void);
-extern void wazaSequenceEntryStop(void* entry, BOOL immediate);
-extern void wazaSequenceEntryUpdate(void* entry);
-extern void wazaSequenceEntryStart(void);
-extern void _wazaSequenceEffectEntryStart(void* entry, s32 type);
-extern void _wazaSequenceParticleEntryStart(void* entry);
-extern void _wazaSequenceModelEntryStart(void* entry);
-extern void fn_801D97F0(void* entry);
-extern void fn_801D9950(s32 slot, s32 motionType);
-extern void wazaSequencePokemonMotionStart(void* owner, BOOL enabled);
+extern u8 wazaSequenceEntryStop(void* entry, BOOL immediate);
+extern u8 wazaSequenceEntryUpdate(void* entry, s32 elapsed);
+extern u8 wazaSequenceEntryStart(void* entry);
+extern u8 _wazaSequenceEffectEntryStart(void* entry);
+extern u8 _wazaSequenceParticleEntryStart(void* entry);
+extern u8 _wazaSequenceModelEntryStart(void* entry);
+extern void* fn_801D97F0(void* entry);
+extern void fn_801D9950(void* owner, f32* scale, s32 selector);
+extern u8 wazaSequencePokemonMotionStart(void* owner, BOOL enabled);
 extern u8 fn_801D9E1C(void* obj);
 extern void fn_801D9E34(void* obj);
 extern void fn_801D9E8C(void* effect);

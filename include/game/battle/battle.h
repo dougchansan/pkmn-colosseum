@@ -474,10 +474,10 @@ typedef struct GStexture GStexture;
 /* fn_801D7E58 */ void fn_801D7E58(void* entry);                 /* wazaSequenceEntryStop */
 /* fn_801D81CC */ void fn_801D81CC(void* entry);                 /* wazaSequenceEntryUpdate */
 /* fn_801D84F4 */ void fn_801D84F4(void);                        /* wazaSequenceEntryStart */
-/* _wazaSequenceEffectEntryStart */ void _wazaSequenceEffectEntryStart(void* entry, s32 type);       /* wazaSequenceStartEntry */
+/* _wazaSequenceEffectEntryStart */ u8 _wazaSequenceEffectEntryStart(void* entry);       /* wazaSequenceStartEntry */
 /* fn_801D8B38 */ void fn_801D8B38(void* entry);                 /* _wazaSequenceParticleEntryStart */
-/* _wazaSequenceModelEntryStart */ void _wazaSequenceModelEntryStart(void* entry);                 /* _wazaSequenceModelEntryStart */
-/* fn_801D9950 */ void fn_801D9950(s32 slot, s32 motionType);    /* wazaSequencePokemonMotionStart */
+/* _wazaSequenceModelEntryStart */ u8 _wazaSequenceModelEntryStart(void* entry);                 /* _wazaSequenceModelEntryStart */
+/* fn_801D9950 */ void fn_801D9950(void* owner, f32* scale, s32 selector);    /* wazaSequencePokemonMotionStart */
 
 /* Waza system lifecycle */
 /* wazaSequenceSysRelease */ void wazaSequenceSysRelease(void);                        /* waza system cleanup */
