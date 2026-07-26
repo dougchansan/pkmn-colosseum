@@ -545,6 +545,7 @@ BOOL fn_801E4E1C(s32 priority, u32 mode)
 BOOL fn_801E5470(s32 priority, u32 mode)
 {
     u8 *base = lbl_8046C190;
+    void *messageBuffer = base;
 
     if (mode != 0) {
         if (!OSCreateThread((OSThread *)(base + 0x1058), (void *(*)(void *))fn_801E4F64,
@@ -558,7 +559,7 @@ BOOL fn_801E5470(s32 priority, u32 mode)
         }
     }
     fn_8009F1D0(base + 0x38, (u32)(base + 0xC), 3);
-    fn_8009F1D0(base + 0x18, (u32)(base + 0x0), 3);
+    fn_8009F1D0(base + 0x18, (u32)messageBuffer, 3);
     lbl_8047B488 = TRUE;
     lbl_8047B48C = TRUE;
     return TRUE;
