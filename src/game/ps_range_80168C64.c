@@ -173,6 +173,10 @@ extern u8 lbl_80478C30;
 extern u16 lbl_80478C38;
 extern s32 lbl_8047B12C;
 extern s32 lbl_8047B164;
+extern s32 lbl_8047B168;
+extern s32 lbl_8047B144;
+extern s32 lbl_8047B148;
+extern PSColor lbl_8047B130;
 extern PSColor lbl_8047B13C;
 extern PSColor lbl_8047B140;
 extern PSColor lbl_8047B134;
@@ -260,6 +264,8 @@ extern void fn_800BC52C(s32 stage, s32 a, s32 b);
 void psDispSub(PSParticle* pp, void* polygonData);
 void psDispSubAppSRT(PSParticle* pp, Mtx parentMatrix);
 void psDispSubAPPSRTPoint(PSParticle* pp);
+void psSetupTevInvalidState(void);
+void psSetupTevCommon(void);
 extern f32 lbl_8047D5DC;
 extern f32 lbl_8047B14C;
 extern f32 lbl_8047B150;
@@ -269,6 +275,8 @@ extern f32 lbl_8047B15C;
 extern f32 lbl_8047B160;
 extern u8 lbl_80452DE8[];
 extern void fn_800BD554(s32 mode);
+extern void fn_800BCEBC(s32 mode);
+extern void HSD_FogSet(void* fog);
 extern void fn_800B7D3C(void);
 extern void fn_800B7874(s32 attribute, s32 type);
 extern void fn_800B928C(s32 primitive, s32 format, s32 count);
@@ -1134,6 +1142,7 @@ s32 psInitAppSRT(s32 count, s32 size) {
  */
 void fn_8016AB94(u32 linkMask, s32 mode) {
     s32 linkNo;
+    s32 initialized = FALSE;
 
     if (mode == 0) {
         u8 frame = lbl_80478C30;
@@ -1171,6 +1180,46 @@ void fn_8016AB94(u32 linkMask, s32 mode) {
                 (pp->flags & 0x20000000) == 0) {
                 void* polygonData = NULL;
                 void** bank = lbl_804528C8[pp->bankIndex];
+
+                if (!initialized) {
+                    initialized = TRUE;
+                    lbl_8047B168 = -1;
+                    lbl_8047B164 = -1;
+                    lbl_8047B144 = -1;
+                    psSetupTevInvalidState();
+                    HSD_FogSet(NULL);
+
+                    lbl_8047B140.r = 0xFF;
+                    lbl_8047B140.g = 0xFF;
+                    lbl_8047B140.b = 0xFF;
+                    lbl_8047B140.a = 0xFF;
+                    lbl_8047B13C.r = 0xFF;
+                    lbl_8047B13C.g = 0xFF;
+                    lbl_8047B13C.b = 0xFF;
+                    lbl_8047B13C.a = 0xFF;
+                    fn_800BA5BC(4, &lbl_8047B140);
+                    fn_800BA4C8(4, &lbl_8047B13C);
+                    psSetupTevInvalidState();
+                    psSetupTevCommon();
+
+                    lbl_8047B138.r = 0xFF;
+                    lbl_8047B138.g = 0xFF;
+                    lbl_8047B138.b = 0xFF;
+                    lbl_8047B138.a = 0xFF;
+                    lbl_8047B134.r = 0;
+                    lbl_8047B134.g = 0;
+                    lbl_8047B134.b = 0;
+                    lbl_8047B134.a = 0;
+                    lbl_8047B130.r = 0xFF;
+                    lbl_8047B130.g = 0xFF;
+                    lbl_8047B130.b = 0xFF;
+                    lbl_8047B130.a = 0xFF;
+                    fn_800BC2F8(1, &lbl_8047B138);
+                    fn_800BC2F8(2, &lbl_8047B134);
+                    fn_800BC2F8(3, &lbl_8047B130);
+                    lbl_8047B148 = -1;
+                    fn_800BCEBC(0);
+                }
 
                 if (bank != NULL) {
                     void** object = (void**)bank[pp->animIndex];
