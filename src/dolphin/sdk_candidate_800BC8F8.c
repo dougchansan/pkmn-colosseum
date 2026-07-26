@@ -107,7 +107,7 @@ void fn_800BCB14(GXFogAdjTable_800BCCDC* table, u16 width,
     f32 sideX;
     u32 i;
 
-    if (projmtx[3][3] == 0.0f) {
+    if (projmtx[3][3] == 0.0) {
         nearZ = projmtx[2][3] / (projmtx[2][2] - 1.0f);
         sideX = nearZ / projmtx[0][0];
     } else {
