@@ -74,8 +74,10 @@ typedef struct PSGeneratorKillNode {
 } PSGeneratorKillNode;
 
 extern void* fn_801A6928(s32 size);
+extern void* fn_801A3E64(void*);
 extern void psKillGeneratorChild(PSGeneratorKillNode* generator);
 extern s32 psRemoveGeneratorAppSRT(PSGeneratorKillNode* generator);
+void psKillGenerator(PSGeneratorKillNode* generator);
 extern const f32 lbl_8047D6B0;
 extern u16 lbl_8047B112;
 extern u32 lbl_8047B180;
@@ -108,13 +110,21 @@ static inline void genPosJObjSetupMatrix(GenPosJObj* jobj) {
     fn_8019D9DC(jobj);
 }
 
-#pragma push
-#pragma optimization_level 0
-#pragma optimizewithasm off
 void psKillAllGenerator(void) {
-    /* TODO: match -- 428 bytes at 0x8017572C */
+    PSGeneratorKillNode* generator =
+        (PSGeneratorKillNode*)lbl_8047B188;
+
+    while (generator != NULL) {
+        PSGeneratorKillNode* next = generator->next;
+
+        psKillGenerator(generator);
+        generator = next;
+    }
+
+    while (lbl_8047B180 != 0) {
+        lbl_8047B180 = (u32)fn_801A3E64((void*)lbl_8047B180);
+    }
 }
-#pragma pop
 
 /*
  * Kills every active generator in one family.  Like psKillGenerator, entries
