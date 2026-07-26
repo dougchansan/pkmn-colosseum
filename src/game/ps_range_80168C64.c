@@ -3329,8 +3329,13 @@ void psExecGenerator(u32 linkMask) {
         u8* raw = (u8*)gen;
         u16 generatorFlags = *(u16*)(raw + 0x88);
 
-        if ((linkMask & (1 << (gen->linkNo + 16))) != 0 ||
-            (gen->flags & 0x800) != 0) {
+        if ((linkMask & (1 << (gen->linkNo + 16))) != 0) {
+            lbl_8047B184 = (PSGeneratorState**)gen;
+            gen = gen->next;
+            continue;
+        }
+
+        if ((gen->flags & 0x800) != 0) {
             lbl_8047B184 = (PSGeneratorState**)gen;
             gen = gen->next;
             continue;
