@@ -2854,11 +2854,11 @@ extern void fn_800D4604(u32 mode);
 extern void fn_800D377C(u32 a);
 extern void fn_800D3410(void* texture, u32 a);
 extern void* fn_800E3B08(u32 index);
-extern void fn_800E3C64(void);
+extern u32 fn_800E3C64(void* model);
 extern void GSmodelDrawModel(void* obj, u32 flags);
 extern void fn_800D3190(void);
-extern void GSmodelIsEnvMapEnabled(void);
-extern void GSmodelSetEnvMapBlendValue(void);
+extern u32 GSmodelIsEnvMapEnabled(void* model);
+extern void GSmodelSetEnvMapBlendValue(void* model, f32 value);
 extern u32 lbl_8047AEE0;
 extern u32 lbl_8047D260;
 #if 0
@@ -2869,6 +2869,12 @@ asm u32 fn_8013D984(void* ptr, u32 delta) {
 u32 fn_8013D984(void* ptr, u32 delta) {
     u8* p;
     u8* node;
+    void* model;
+    void* otherModel;
+    u32 duration;
+    u32 modelCount;
+    u32 i;
+    f32 blend;
 
     if (ptr == NULL) {
         return 0;
@@ -2880,20 +2886,54 @@ u32 fn_8013D984(void* ptr, u32 delta) {
         return 0;
     }
 
-    while (node != NULL && *(u32*)(p + 0x14) >= *(u32*)(node + 0x8)) {
-        *(u32*)(p + 0x14) -= *(u32*)(node + 0x8);
+    duration = *(u32*)(node + 0x8);
+    if (duration == 0xFFFFFFFF) {
+        *(u32*)(p + 0x14) = 0;
+    }
+    while (duration != 0xFFFFFFFF && *(u32*)(p + 0x14) >= duration) {
+        *(u32*)(p + 0x14) -= duration;
         node = *(u8**)(node + 0x10);
         *(void**)(p + 0x10) = node;
-    }
-    if (node == NULL) {
-        return 0;
+        if (node == NULL) {
+            return 0;
+        }
+        duration = *(u32*)(node + 0x8);
+        if (duration == 0xFFFFFFFF) {
+            *(u32*)(p + 0x14) = 0;
+            break;
+        }
     }
 
-    *(u32*)(p + 0x14) += delta;
-    if (lbl_8047AEE0 != 0 && *(void**)p != NULL) {
-        GSmodelEnableEnvMap(*(void**)p, *(void**)(p + 0x4), *(void**)(p + 0x8),
-                    (void*)lbl_8047AEE0, *(f32*)node);
+    blend = *(f32*)node +
+            ((f32)*(u32*)(p + 0x14) / (f32)duration) *
+                (*(f32*)(node + 0x4) - *(f32*)node);
+    model = *(void**)p;
+    if (lbl_8047AEE0 != 0 && model != NULL) {
+        modelCount = fn_800E3B3C();
+        if (modelCount != 0) {
+            fn_800D4604(2);
+            _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
+            fn_800D377C(1);
+            fn_800D3410((void*)lbl_8047AEE0, 0);
+            for (i = 0; i < modelCount; i++) {
+                otherModel = fn_800E3B08(i);
+                if (otherModel != NULL && otherModel != model &&
+                    fn_800E3C64(otherModel)) {
+                    GSmodelDrawModel(otherModel, 0x3010);
+                }
+            }
+            fn_800D3190();
+            fn_800D4604(1);
+        }
     }
+
+    if (!GSmodelIsEnvMapEnabled(model)) {
+        GSmodelEnableEnvMap(model, *(void**)(p + 0x4), *(void**)(p + 0x8),
+                            (void*)lbl_8047AEE0, blend);
+    } else {
+        GSmodelSetEnvMapBlendValue(model, blend);
+    }
+    *(u32*)(p + 0x14) += delta;
     return 1;
 }
 #endif
