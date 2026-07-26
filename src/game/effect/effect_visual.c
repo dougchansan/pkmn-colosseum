@@ -149,7 +149,7 @@ extern void GSbezierCalculateVector();
 extern void* GSfilterCreate(void);
 extern void GSmaterialSetFlags();
 extern void sin();   /* MSL trig (renamed) ? referenced by asm incs */
-extern void cos();   /* MSL trig (renamed) ? referenced by asm incs */
+extern double cos(double);
 
 /* GSmem allocator */
 extern u16   _toolentryAlloc__FUl(u32 size);
@@ -3368,7 +3368,7 @@ void fn_8013E6C4(void) { /* TODO */ }
 #endif
 
 #if !defined(EFFECT_VISUAL_BANK_ACTIVE)
-extern void fmod(void);
+extern double fmod(double value, double modulus);
 extern u32 lbl_8047D2B8;
 extern u32 lbl_8047D2A8;
 extern u32 lbl_8047D2BC;
@@ -3386,6 +3386,12 @@ u32 fn_8013E8A4(void* ptr, u32 delta) {
     u8* p;
     u16 frame;
     u16 end;
+    u8 flags;
+    f32 period;
+    f32 base;
+    f32 range;
+    f32 phase;
+    f32 wave;
 
     if (ptr == NULL) {
         return 0;
@@ -3393,15 +3399,39 @@ u32 fn_8013E8A4(void* ptr, u32 delta) {
 
     p = ptr;
     frame = *(u16*)(p + 0x30);
-    end = *(u16*)(p + 0x32);
-    if (frame >= end) {
-        return 0;
+    flags = p[0x19];
+    period = *(f32*)&lbl_8047D2B8 / *(f32*)(p + 0x24);
+    base = *(f32*)(p + 0x1C);
+    range = *(f32*)(p + 0x20);
+
+    if (flags & 1) {
+        *(f32*)(p + 0x2C) = *(f32*)&lbl_8047D2A8;
+        *(f32*)(p + 0x28) = *(f32*)&lbl_8047D2A8 + base + range;
+    } else {
+        if (flags & 2) {
+            phase = (f32)fmod((double)frame, (double)(*(f32*)&lbl_8047D2BC * period));
+            phase = (f32)fmod((double)(*(f32*)&lbl_8047D2C0 * phase / period),
+                              *(f64*)&lbl_8047D2C8);
+        } else {
+            phase = (f32)fmod((double)frame, (double)period);
+            phase = *(f32*)&lbl_8047D2D0 * phase / period;
+        }
+        wave = (f32)cos((double)phase);
+        if (flags & 8) {
+            *(f32*)(p + 0x2C) = *(f32*)&lbl_8047D2A8;
+        } else {
+            *(f32*)(p + 0x2C) =
+                *(f32*)&lbl_8047D2D4 * (*(f32*)&lbl_8047D2A8 + wave);
+        }
+        *(f32*)(p + 0x28) =
+            *(f32*)&lbl_8047D2A8 + (base - range * wave);
     }
 
-    *(u16*)(p + 0x30) = frame + delta;
-    fmod();
-    if (*(void**)(p + 0x4) != NULL) {
-        fn_8013EA44(p);
+    frame += delta;
+    *(u16*)(p + 0x30) = frame;
+    end = *(u16*)(p + 0x32);
+    if (end != -1 && frame >= end) {
+        return 0;
     }
     return 1;
 }
