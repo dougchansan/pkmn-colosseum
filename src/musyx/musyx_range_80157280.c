@@ -982,6 +982,7 @@ extern u8 lbl_8047B033;
 extern SndServiceEmitterPair* lbl_8047B03C;
 extern SndServiceGroup lbl_80448590[];
 extern SndServiceGroupNode lbl_80448990[];
+extern SndServiceStartNode lbl_80448C90[];
 extern f32 lbl_8047D488;
 extern f32 lbl_8047D49C;
 extern f32 lbl_8047D4A0;
@@ -992,9 +993,58 @@ extern u32 synthFXStart(u16 effect, u8 volume, u8 pan, u8 studio, u32 itd);
 extern u32 synthFXSetCtrl(u32 handle, u8 ctrl, u8 value);
 extern u32 synthFXSetCtrl14(u32 handle, u8 ctrl, u16 value);
 extern u32 sndFXCheck(u32 handle);
-extern u32 fn_8015F124(SndServiceVoice*, f32, f32, f32, f32, f32);
 extern void fn_8014DD98(u8 studio, void* update);
 extern void fn_8014DDB8(u8 studio, void* update);
+
+u32 fn_8015F124(SndServiceVoice* voice, f32 value, f32 pan, f32 volume,
+                f32 surround, f32 pitch) { /* AddStartingEmitter */
+    s32 i;
+    SndServiceStartNode* node;
+
+    for (i = 0; i < lbl_8047B032; i++) {
+        if (voice->group == lbl_80448590[i].key) {
+            break;
+        }
+    }
+
+    if (i == lbl_8047B032) {
+        if (lbl_8047B032 == 64) {
+            return 0;
+        }
+        lbl_80448590[i].starting = 0;
+        lbl_80448590[i].running = 0;
+        lbl_80448590[i].numRunning = 0;
+        lbl_80448590[i].key = voice->group;
+        lbl_8047B032++;
+    }
+
+    if (lbl_8047B031 == 64) {
+        return 0;
+    }
+
+    node = lbl_80448590[i].starting;
+    if (node != 0) {
+        for (; node->next != 0; node = node->next) {
+            if (node->value < value) {
+                break;
+            }
+        }
+        lbl_80448C90[lbl_8047B031].next = node->next;
+        node->next = &lbl_80448C90[lbl_8047B031];
+    } else {
+        lbl_80448C90[lbl_8047B031].next = lbl_80448590[i].starting;
+        lbl_80448590[i].starting = &lbl_80448C90[lbl_8047B031];
+    }
+
+    lbl_80448C90[lbl_8047B031].voice = voice;
+    lbl_80448C90[lbl_8047B031].pitch = pitch;
+    lbl_80448C90[lbl_8047B031].pan = pan;
+    lbl_80448C90[lbl_8047B031].volume = volume;
+    lbl_80448C90[lbl_8047B031].surround = surround;
+    lbl_80448C90[lbl_8047B031].value = value;
+    lbl_8047B031++;
+    return 1;
+}
 
 static inline void s3dSetFXParameters(SndServiceVoice* voice, f32 value,
                                       f32 pan, f32 volume, f32 surround,
