@@ -210,7 +210,13 @@ game/gs_event_exec_candidate_800141BC.c:
 	.text       start:0x800141BC end:0x8001501C
 
 game/gs_pokemon_summary.c:
-	.text       start:0x8001501C end:0x800178EC
+	.text       start:0x8001501C end:0x800167D0
+
+game/gs_pokemon_summary_r41_800167D0_gc20.c:
+	.text       start:0x800167D0 end:0x80016ABC
+
+game/gs_pokemon_summary_r41_80016ABC.c:
+	.text       start:0x80016ABC end:0x800178EC
 
 game/gs_pokemon_summary_exact_800178EC.c:
 	.text       start:0x800178EC end:0x8001793C
@@ -387,7 +393,13 @@ game/menuShop_r40_8002BCE8.c:
 	.text       start:0x8002BCE8 end:0x8002DD24
 
 game/menuPokemonChange.c:
-	.text       start:0x8002DD24 end:0x80030170
+	.text       start:0x8002DD24 end:0x8002E460
+
+game/menuPokemonChange_r41_8002E460_gc125n.c:
+	.text       start:0x8002E460 end:0x8002EA5C
+
+game/menuPokemonChange_r41_8002EA5C.c:
+	.text       start:0x8002EA5C end:0x80030170
 
 game/gs_npc_event_exact_80030170.c:
 	.text       start:0x80030170 end:0x800301B0
@@ -489,7 +501,13 @@ game/menu/menuCB_exact_80056A80.c:
 	.text       start:0x80056A80 end:0x80056B74
 
 game/menu/menuCB_suffix_80056B74.c:
-	.text       start:0x80056B74 end:0x80057B34
+	.text       start:0x80056B74 end:0x80057538
+
+game/menu/menuCB_suffix_80056B74_r41_80057538_gc125n.c:
+	.text       start:0x80057538 end:0x80057694
+
+game/menu/menuCB_suffix_80056B74_r41_80057694.c:
+	.text       start:0x80057694 end:0x80057B34
 
 game/menu/menuColosseumBattle_exact_80057B34.c:
 	.text       start:0x80057B34 end:0x80057C9C
@@ -747,7 +765,7 @@ game/menu/menu_candidate_80073E8C_gc20.c:
 game/menu/menu_candidate_80074324.c:
 	.text       start:0x80074324 end:0x8007480C
 
-game/menu/menu_candidate_8007480C_gc20.c:
+game/menu/menu_candidate_8007480C_gc125n.c:
 	.text       start:0x8007480C end:0x80075390
 
 game/menu/menu_candidate_80075390.c:
@@ -861,7 +879,7 @@ game/gbaCommunication_exact_80092FC8.c:
 game/gbaCommunication_candidate_800937F4.c:
 	.text       start:0x800937F4 end:0x80094650
 
-game/gbaCommunication_candidate_80094650_gc20.c:
+game/gbaCommunication_candidate_80094650_gc125n.c:
 	.text       start:0x80094650 end:0x8009567C
 
 game/gbaCommunication_candidate_8009567C.c:
@@ -4996,7 +5014,10 @@ game/fight_trainer_exact_801F8424.c:
 	.text       start:0x801F8424 end:0x801F87CC
 
 game/fight_trainer_range_801F87CC.c:
-	.text       start:0x801F87CC end:0x801F8D80
+	.text       start:0x801F87CC end:0x801F8A18
+
+game/fight_trainer_range_801F87CC_r41_801F8A18.c:
+	.text       start:0x801F8A18 end:0x801F8D80
 
 game/fight_trainer_exact_801F8D80.c:
 	.text       start:0x801F8D80 end:0x801F9130

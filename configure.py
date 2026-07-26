@@ -1377,6 +1377,13 @@ config.libs = [
             Object(
                 CodeCandidate,
                 "game/fight_trainer_range_801F87CC.c",
+                mw_version="GC/1.2.5n",
+                extra_cflags=["-O4,s", "-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                progress_category="game",
+            ),
+            Object(
+                CodeCandidate,
+                "game/fight_trainer_range_801F87CC_r41_801F8A18.c",
                 mw_version="GC/1.3",
                 extra_cflags=["-O4,s", "-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
@@ -2626,8 +2633,8 @@ config.libs = [
             ),
             Object(
                 CodeCandidate,
-                "game/gbaCommunication_candidate_80094650_gc20.c",
-                mw_version="GC/2.0",
+                "game/gbaCommunication_candidate_80094650_gc125n.c",
+                mw_version="GC/1.2.5n",
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
@@ -3967,6 +3974,20 @@ config.libs = [
                 progress_category="game",
             ),
             Object(
+                CodeCandidate,
+                "game/menu/menuCB_suffix_80056B74_r41_80057538_gc125n.c",
+                mw_version="GC/1.2.5n",
+                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                progress_category="game",
+            ),
+            Object(
+                CodeCandidate,
+                "game/menu/menuCB_suffix_80056B74_r41_80057694.c",
+                mw_version="GC/1.3",
+                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                progress_category="game",
+            ),
+            Object(
                 Matching,
                 "game/menu/menuColosseumBattle_exact_80057B34.c",
                 mw_version="GC/1.3",
@@ -4320,8 +4341,8 @@ config.libs = [
             ),
             Object(
                 CodeCandidate,
-                "game/menu/menu_candidate_8007480C_gc20.c",
-                mw_version="GC/2.0",
+                "game/menu/menu_candidate_8007480C_gc125n.c",
+                mw_version="GC/1.2.5n",
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
@@ -6560,14 +6581,16 @@ config.libs = [
                 Object(
                     status,
                     path,
-                    mw_version="GC/1.3",
+                    mw_version=version,
                     extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                     progress_category="game",
                 )
-                for status, path in [
-                    (CodeCandidate, "game/gs_pokemon_summary.c"),
-                    (Matching, "game/gs_pokemon_summary_exact_800178EC.c"),
-                    (CodeCandidate, "game/gs_pokemon_summary_candidate_8001793C.c"),
+                for status, path, version in [
+                    (CodeCandidate, "game/gs_pokemon_summary.c", "GC/1.3"),
+                    (CodeCandidate, "game/gs_pokemon_summary_r41_800167D0_gc20.c", "GC/2.0"),
+                    (CodeCandidate, "game/gs_pokemon_summary_r41_80016ABC.c", "GC/1.3"),
+                    (Matching, "game/gs_pokemon_summary_exact_800178EC.c", "GC/1.3"),
+                    (CodeCandidate, "game/gs_pokemon_summary_candidate_8001793C.c", "GC/1.3"),
                 ]
             ],
             Object(
@@ -7111,6 +7134,20 @@ config.libs = [
             Object(
                 CodeCandidate,
                 "game/menuPokemonChange.c",
+                mw_version="GC/1.3",
+                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                progress_category="game",
+            ),
+            Object(
+                CodeCandidate,
+                "game/menuPokemonChange_r41_8002E460_gc125n.c",
+                mw_version="GC/1.2.5n",
+                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                progress_category="game",
+            ),
+            Object(
+                CodeCandidate,
+                "game/menuPokemonChange_r41_8002EA5C.c",
                 mw_version="GC/1.3",
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
