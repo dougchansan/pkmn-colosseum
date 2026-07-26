@@ -176,18 +176,19 @@ void fn_801013A0(void* archive, u32 resourceArg, u32 modelIndex,
     extern void* GSmodelLoad(void*);
     extern void GSresRegisterResource(void*, u32, u32, void*);
     extern void fn_80101A4C(void);
+    const char* messages = lbl_802717F0;
     void*** publicData;
     void** models;
     void* model;
     u32 index;
 
     if (archive == NULL) {
-        GSlogWrite(lbl_802717F0 + 0x3F4);
+        GSlogWrite(messages + 0x3F4);
         return;
     }
-    publicData = HSD_ArchiveGetPublicAddress(archive, lbl_802717F0 + 0x2C8);
+    publicData = HSD_ArchiveGetPublicAddress(archive, messages + 0x2C8);
     if (publicData == NULL) {
-        GSlogWrite(lbl_802717F0 + 0x418);
+        GSlogWrite(messages + 0x418);
         return;
     }
     models = *publicData;
@@ -195,7 +196,7 @@ void fn_801013A0(void* archive, u32 resourceArg, u32 modelIndex,
         if (index == modelIndex) {
             model = GSmodelLoad(models[index]);
             if (model == NULL) {
-                GSlogWrite(lbl_802717F0 + 0x448, index);
+                GSlogWrite(messages + 0x448, index);
             }
             GSresRegisterResource(model, resourceArg, callbackArg,
                                   (void*)fn_80101A4C);
