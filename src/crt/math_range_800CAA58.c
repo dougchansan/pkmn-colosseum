@@ -1321,11 +1321,6 @@ f64 __ieee754_pow(f64 x, f64 y) {
     if ((n | yisint) == 0) {
         return (x - x) / (x - x);
     }
-    s = one;
-    if ((n | (yisint - 1)) == 0) {
-        s = -one;
-    }
-
     if (iy > 0x41E00000) {
         if (iy > 0x43F00000) {
             if (ix <= 0x3FEFFFFF) {
@@ -1336,10 +1331,10 @@ f64 __ieee754_pow(f64 x, f64 y) {
             }
         }
         if (ix < 0x3FEFFFFF) {
-            return hy < 0 ? s * huge * huge : s * tiny * tiny;
+            return hy < 0 ? huge * huge : tiny * tiny;
         }
         if (ix > 0x3FF00000) {
-            return hy > 0 ? s * huge * huge : s * tiny * tiny;
+            return hy > 0 ? huge * huge : tiny * tiny;
         }
         t = ax - one;
         w = (t * t) * (0.5 - t * (0.3333333333333333333333 -
@@ -1411,6 +1406,11 @@ f64 __ieee754_pow(f64 x, f64 y) {
         sw.parts.lo = 0;
         t1 = sw.value;
         t2 = z_l - (((t1 - t) - dp_h[k]) - z_h);
+    }
+
+    s = one;
+    if (((((s32)hx >> 31) + 1) | (yisint - 1)) == 0) {
+        s = -one;
     }
 
     y1 = y;
