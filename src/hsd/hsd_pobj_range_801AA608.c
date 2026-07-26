@@ -22,7 +22,6 @@ extern void  PObjSetupMtx(HSD_PObj* pobj, Mtx vmtx, Mtx pmtx,
 extern s32   PObjLoad(HSD_PObj* pobj, HSD_PObjDesc* desc);
 extern void  PObjUpdateFunc(HSD_PObj* pobj, s32 idx, f32* weight_ptr);
 extern void  HSD_JObjUnrefThis(HSD_JObj* jobj);
-extern void  HSD_JObjRefThis(HSD_JObj* jobj);
 extern void* HSD_IDGetDataFromTable(void* table, u32 id, s32* success);
 extern void  HSD_AObjRemove(HSD_AObj* aobj);
 extern void  fn_801A6960(void* mem);
@@ -714,6 +713,13 @@ void HSD_ClearVtxDesc(void)
 }
 #pragma pop
 
+static inline void HSD_JObjRefThis(HSD_JObj* jobj)
+{
+    if (jobj != NULL) {
+        iref_INC(jobj);
+    }
+}
+
 static inline void resolveEnvelopeRefs(HSD_SList* list,
                                        HSD_EnvelopeDesc** desc_list)
 {
@@ -728,7 +734,8 @@ static inline void resolveEnvelopeRefs(HSD_SList* list,
             envelope->jobj = HSD_IDGetDataFromTable(
                 NULL, (u32) desc->joint, NULL);
             if (envelope->jobj == NULL) {
-                __assert(&lbl_8047DCB8, 0x2E0, &lbl_8047DD10);
+                __assert(&lbl_8047DCB8, 0x2CA,
+                         (char*) lbl_80274EE0 + 0x1F0);
             }
             HSD_JObjRefThis(envelope->jobj);
             envelope = envelope->next;
@@ -753,7 +760,8 @@ static inline void resolvePObjRefs(HSD_PObj* pobj, HSD_PObjDesc* desc)
             pobj->u.jobj = HSD_IDGetDataFromTable(
                 NULL, (u32) desc->u.joint, NULL);
             if (pobj->u.jobj == NULL) {
-                __assert(&lbl_8047DCB8, 0x2FB, &lbl_8047DD10);
+                __assert(&lbl_8047DCB8, 0x2E5,
+                         (char*) lbl_80274EE0 + 0x230);
             }
             HSD_JObjRefThis(pobj->u.jobj);
         }
