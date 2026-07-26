@@ -83,9 +83,9 @@ void GSflagInitBitPos(FlagDefinition* definitions, u32 count, u32 capacity1,
                       u32 capacity2, u32 capacity3)
 {
     const char* messages = lbl_802741F8;
-    u32 next1 = 0;
-    u32 next2 = 0;
-    u32 next3 = 0;
+    u16 next1 = 0;
+    u16 next2 = 0;
+    u16 next3 = 0;
     u32 i;
 
     for (i = 0; i < count; i++, definitions++) {
