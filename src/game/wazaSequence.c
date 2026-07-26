@@ -266,7 +266,7 @@ WazaSequence* fn_801DBFB0(void) {
  * wazaSequenceLoadData - Waza screen distortion effect.
  * Address: 0x801DC014 | Size: 0x2FC
  */
-BOOL wazaSequenceLoadData(void* sequence, void* resource) {
+u8 wazaSequenceLoadData(void* sequence, void* resource) {
     /* TODO: Screen distortion effect (0x2FC bytes) */
     return FALSE;
 }
