@@ -431,6 +431,81 @@ void fn_801E4B08(u32 msg)
 }
 #define lbl_8046AE58 (lbl_8046AE20 + 0x38)
 
+typedef struct THPReadBuffer {
+    u8 *ptr;
+    u32 frameNumber;
+} THPReadBuffer;
+
+typedef struct THPDecodedAudioBuffer {
+    s16 *buffer;
+    s16 *curPtr;
+    u32 validSample;
+} THPDecodedAudioBuffer;
+
+extern u32 THPAudioDecode(s16 *audioBuffer, u8 *audioFrame, s32 flag);
+
+static inline void THPDecodeAudioFrame(THPReadBuffer *readBuffer)
+{
+    u32 *componentSizes = (u32 *)(readBuffer->ptr + 8);
+    u8 *componentData =
+        readBuffer->ptr + *(u32 *)(lbl_8046AC60 + 0x6C) * sizeof(u32) + 8;
+    THPDecodedAudioBuffer *audioBuffer;
+    u32 component;
+
+    fn_8009F2F8(lbl_8046AE58, (u32 *)&audioBuffer, 1);
+    for (component = 0;
+         component < *(u32 *)(lbl_8046AC60 + 0x6C);
+         component++) {
+        if (lbl_8046AC60[0x70 + component] == 1) {
+            audioBuffer->validSample =
+                THPAudioDecode(audioBuffer->buffer,
+                               componentData +
+                                   componentSizes[component] *
+                                       *(u32 *)(lbl_8046AC60 + 0xDC),
+                               0);
+            audioBuffer->curPtr = audioBuffer->buffer;
+            fn_8009F230(lbl_8046AE38, (u32)audioBuffer, 1);
+        }
+        componentData += componentSizes[component];
+    }
+}
+
+void *fn_801E4B38(void *arg)
+{
+    THPReadBuffer readBuffer;
+    u8 *data = arg;
+    u32 stride = *(u32 *)(lbl_8046AC60 + 0xBC);
+    s32 frame = 0;
+
+    for (;;) {
+        readBuffer.ptr = data;
+        readBuffer.frameNumber = frame;
+        THPDecodeAudioFrame(&readBuffer);
+
+        if ((frame + *(u32 *)(lbl_8046AC60 + 0xC0)) %
+                *(u32 *)(lbl_8046AC60 + 0x50) ==
+            *(u32 *)(lbl_8046AC60 + 0x50) - 1) {
+            if (lbl_8046AC60[0xA6] & 1) {
+                stride = *(u32 *)data;
+                data = *(u8 **)(lbl_8046AC60 + 0xB4);
+            } else {
+                if (frame < 2) {
+                    fn_801E446C(1);
+                }
+                OSSuspendThread((OSThread *)(lbl_8046AE20 + 0x1058));
+            }
+        } else {
+            u32 nextStride = *(u32 *)data;
+            data += stride;
+            stride = nextStride;
+        }
+        if (frame == 2) {
+            fn_801E446C(1);
+        }
+        frame++;
+    }
+}
+
 /* ---- Thread A: additional send-only queue wrapper (lbl_8046A4B4) ---- */
 BOOL fn_801E446C(u32 msg)
 {
