@@ -239,8 +239,14 @@ game/menuPokemon.c:
 game/menuPokemon_candidate_8001C064.c:
 	.text       start:0x8001C064 end:0x8001C7B8
 
-game/menuPokemon_candidate_8001C7B8.c:
-	.text       start:0x8001C7B8 end:0x8001D7E4
+game/menuPokemon_r50_8001C7B8_prefix.c:
+	.text       start:0x8001C7B8 end:0x8001D378
+
+game/menuPokemon_r50_8001D378_o3.c:
+	.text       start:0x8001D378 end:0x8001D624
+
+game/menuPokemon_r50_8001D624_suffix.c:
+	.text       start:0x8001D624 end:0x8001D7E4
 
 game/menuSub.c:
 	.text       start:0x8001D7E4 end:0x8001E3E0
@@ -699,8 +705,14 @@ game/menu/menuCB_range_80068794.c:
 game/menu/menuCB_range_exact_80069048.c:
 	.text       start:0x80069048 end:0x8006905C
 
-game/menu/menuCB_range_8006905C.c:
-	.text       start:0x8006905C end:0x800697C4
+game/menu/menuCB_r50_8006905C_prefix.c:
+	.text       start:0x8006905C end:0x80069220
+
+game/menu/menuCB_r50_80069220_o4s.c:
+	.text       start:0x80069220 end:0x800693A4
+
+game/menu/menuCB_r50_800693A4_suffix.c:
+	.text       start:0x800693A4 end:0x800697C4
 
 game/menu/menuCB_range_exact_800697C4.c:
 	.text       start:0x800697C4 end:0x800697F4
@@ -801,8 +813,11 @@ game/menu/menu_middle_candidate_8006DC28.c:
 game/menu/menu_middle_candidate_8006E338_gc20.c:
 	.text       start:0x8006E338 end:0x8006EE7C
 
-game/menu/menu_middle_candidate_8006EE7C.c:
-	.text       start:0x8006EE7C end:0x8006F284
+game/menu/menu_middle_r50_8006EE7C_prefix.c:
+	.text       start:0x8006EE7C end:0x8006EFF8
+
+game/menu/menu_middle_r50_8006EFF8_gc20_o4s.c:
+	.text       start:0x8006EFF8 end:0x8006F284
 
 game/menu/menu_middle_candidate_8006F284_gc20.c:
 	.text       start:0x8006F284 end:0x8006FCF8
@@ -2747,8 +2762,14 @@ game/gapp_exact_80101FB8.c:
 game/menu_get_last_error_exact_80102004.c:
 	.text       start:0x80102004 end:0x80102014
 
-game/menu_candidate_80102014.c:
-	.text       start:0x80102014 end:0x80103E68
+game/menu_r50_80102014_prefix.c:
+	.text       start:0x80102014 end:0x80102F38
+
+game/menu_r50_80102F38_o3.c:
+	.text       start:0x80102F38 end:0x80103484
+
+game/menu_r50_80103484_suffix.c:
+	.text       start:0x80103484 end:0x80103E68
 
 game/cursor_bios.c:
 	.text       start:0x80103E68 end:0x80103FE4
@@ -2774,8 +2795,14 @@ game/window_candidate_801046C8.c:
 game/window_exact_80104704.c:
 	.text       start:0x80104704 end:0x8010474C
 
-game/window_candidate_8010474C.c:
-	.text       start:0x8010474C end:0x80105624
+game/window_r50_8010474C_prefix.c:
+	.text       start:0x8010474C end:0x80104A94
+
+game/window_r50_80104A94_o2.c:
+	.text       start:0x80104A94 end:0x80104CA0
+
+game/window_r50_80104CA0_suffix.c:
+	.text       start:0x80104CA0 end:0x80105624
 
 game/window_exact_80105624.c:
 	.text       start:0x80105624 end:0x80105634
@@ -2897,8 +2924,14 @@ game/field_camera.c:
 game/field_camera_exact_801174C4.c:
 	.text       start:0x801174C4 end:0x80117514
 
-game/field_camera_candidate_80117514.c:
-	.text       start:0x80117514 end:0x80117AD4
+game/field_camera_r50_80117514_prefix.c:
+	.text       start:0x80117514 end:0x801176C8
+
+game/field_camera_r50_801176C8_o3.c:
+	.text       start:0x801176C8 end:0x8011791C
+
+game/field_camera_r50_8011791C_suffix.c:
+	.text       start:0x8011791C end:0x80117AD4
 
 game/field_camera_exact_80117AD4.c:
 	.text       start:0x80117AD4 end:0x80117AE4
@@ -3216,8 +3249,14 @@ game/effect/effect_visual_r49_80139074_suffix.c:
 game/effect/effect_visual_exact_80139820.c:
 	.text       start:0x80139820 end:0x80139AC4
 
-game/effect/effect_visual_candidate_80139AC4.c:
-	.text       start:0x80139AC4 end:0x8013A42C
+game/effect/effect_visual_r50_80139AC4_prefix.c:
+	.text       start:0x80139AC4 end:0x80139E80
+
+game/effect/effect_visual_r50_80139E80_o4s.c:
+	.text       start:0x80139E80 end:0x8013A1D4
+
+game/effect/effect_visual_r50_8013A1D4_suffix.c:
+	.text       start:0x8013A1D4 end:0x8013A42C
 
 game/effect/effect_visual_exact_8013A42C.c:
 	.text       start:0x8013A42C end:0x8013A520
@@ -4711,8 +4750,14 @@ hsd/hsd_texp_candidate_801B4614_gc20.c:
 hsd/hsd_texp_candidate_801B4B5C.c:
 	.text       start:0x801B4B5C end:0x801B50C0
 
-hsd/hsd_texp_candidate_801B4B5C_candidate_801B50C0.c:
-	.text       start:0x801B50C0 end:0x801B750C
+hsd/hsd_texp_r50_801B50C0_prefix.c:
+	.text       start:0x801B50C0 end:0x801B5A00
+
+hsd/hsd_texp_r50_801B5A00_gc125_o4p.c:
+	.text       start:0x801B5A00 end:0x801B5C94
+
+hsd/hsd_texp_r50_801B5C94_suffix.c:
+	.text       start:0x801B5C94 end:0x801B750C
 
 hsd/hsd_texp_candidate_801B750C_gc20.c:
 	.text       start:0x801B750C end:0x801B7BD4
@@ -4816,8 +4861,11 @@ game/battle/battle_camera.c:
 game/battle/battle_camera_exact_801C2D5C.c:
 	.text       start:0x801C2D5C end:0x801C2D80
 
-game/battle/battle_camera_candidate_801C2D80.c:
-	.text       start:0x801C2D80 end:0x801C3108
+game/battle/battle_camera_r50_801C2D80_o2.c:
+	.text       start:0x801C2D80 end:0x801C2F00
+
+game/battle/battle_camera_r50_801C2F00_suffix.c:
+	.text       start:0x801C2F00 end:0x801C3108
 
 game/battle/battle_grid_exact_801C3108.c:
 	.text       start:0x801C3108 end:0x801C3114
