@@ -2934,6 +2934,7 @@ config.libs = [
                 CodeCandidate,
                 "dolphin/sdk_range_800BA1B4.c",
                 mw_version="GC/1.2.5n",
+                extra_cflags=["-fp_contract off"],
                 progress_category="sdk",
             ),
             Object(
@@ -2985,9 +2986,21 @@ config.libs = [
             Object(Matching, "dolphin/gx/GX_exact_800BCEBC.c", mw_version="GC/1.2.5n", progress_category="sdk"),
             Object(CodeCandidate, "dolphin/sdk_candidate_800BCFDC.c", mw_version="GC/1.2.5n", progress_category="sdk"),
             Object(Matching, "dolphin/gx/GX_exact_800BD07C.c", mw_version="GC/1.2.5n", progress_category="sdk"),
-            Object(CodeCandidate, "dolphin/sdk_candidate_800BD16C.c", mw_version="GC/1.2.5n", progress_category="sdk"),
+            Object(
+                CodeCandidate,
+                "dolphin/sdk_candidate_800BD16C.c",
+                mw_version="GC/1.2.5n",
+                extra_cflags=["-fp_contract off"],
+                progress_category="sdk",
+            ),
             Object(Matching, "dolphin/gx/GX_exact_800BD394.c", mw_version="GC/1.2.5n", progress_category="sdk"),
-            Object(CodeCandidate, "dolphin/sdk_candidate_800BD454.c", mw_version="GC/1.2.5n", progress_category="sdk"),
+            Object(
+                CodeCandidate,
+                "dolphin/sdk_candidate_800BD454.c",
+                mw_version="GC/1.2.5n",
+                extra_cflags=["-O2"],
+                progress_category="sdk",
+            ),
             Object(Matching, "dolphin/gx/GX_exact_800BD554.c", mw_version="GC/1.2.5n", progress_category="sdk"),
             Object(CodeCandidate, "dolphin/sdk_candidate_800BD58C.c", mw_version="GC/1.2.5n", progress_category="sdk"),
             Object(Matching, "dolphin/gx/GX_exact_800BD744.c", mw_version="GC/1.2.5n", progress_category="sdk"),
@@ -3520,7 +3533,7 @@ config.libs = [
                 CodeCandidate,
                 "hsd/hsd_range_801920E4.c",
                 mw_version="GC/1.3.2",
-                extra_cflags=["-use_lmw_stmw on"],
+                extra_cflags=["-use_lmw_stmw on", "-O2"],
                 progress_category="hsd",
             ),
             Object(
@@ -3565,7 +3578,7 @@ config.libs = [
                 CodeCandidate,
                 "hsd/hsd_tobj_candidate_801BBDDC.c",
                 mw_version="GC/1.3",
-                extra_cflags=["-use_lmw_stmw on"],
+                extra_cflags=["-use_lmw_stmw on", "-fp_contract off"],
                 progress_category="hsd",
             ),
             Object(
@@ -6760,7 +6773,9 @@ config.libs = [
                             "hsd/hsd_cobj_candidate_80193C24.c",
                             "hsd/hsd_cobj_candidate_80194510.c",
                         )
-                        else ["-use_lmw_stmw on"]
+                        else ["-O4,s"]
+                        if path == "hsd/hsd_cobj_candidate_80195A6C.c"
+                        else ["-use_lmw_stmw on", "-O2"]
                         if path == "hsd/hsd_cobj_candidate_80197344.c"
                         else []
                     ),
@@ -7037,7 +7052,7 @@ config.libs = [
                 CodeCandidate,
                 "hsd/hsd_mobj_candidate_801A6FF0.c",
                 mw_version="GC/1.3.2",
-                extra_cflags=["-use_lmw_stmw on"],
+                extra_cflags=["-use_lmw_stmw on", "-O2"],
                 progress_category="hsd",
             ),
             Object(
