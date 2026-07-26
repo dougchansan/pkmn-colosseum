@@ -157,7 +157,33 @@ void wazaSequenceStart(void* sequence) {
  * Address: 0x801DBDDC | Size: 0x1D4
  */
 void wazaSequenceFree(void* obj) {
-    /* TODO: Blend effect update (0x1D4 bytes) */
+    u8* sequence = obj;
+    u8* previous;
+    u8* next;
+    u16 handle;
+
+    if (sequence == NULL) {
+        return;
+    }
+
+    previous = *(u8**)(sequence + 0x34);
+    next = *(u8**)(sequence + 0x38);
+    if (previous != NULL) {
+        *(u8**)(previous + 0x38) = next;
+    }
+    if (next != NULL) {
+        *(u8**)(next + 0x34) = previous;
+    } else {
+        *(u8**)(*(u8**)(sequence + 0x3C) + 0x68) = previous;
+    }
+
+    handle = *(u16*)(sequence + 0x2A);
+    if (handle != 0) {
+        extern void fn_800E24B0(u16 handle);
+        extern void fn_800E209C(u16 handle);
+        fn_800E24B0(handle);
+        fn_800E209C(handle);
+    }
 }
 
 #endif
@@ -202,50 +228,154 @@ BOOL wazaSequenceLoadData(void* sequence, void* resource) {
  * wazaSequenceEntryLink - Waza screen distortion update.
  * Address: 0x801DC310 | Size: 0x15C
  */
-void wazaSequenceEntryLink(void) {
-    /* TODO: Screen distortion update (0x15C bytes) */
+void wazaSequenceEntryLink(void* sequencePtr, void* entryPtr) {
+    u8* sequence = sequencePtr;
+    u8* entry = entryPtr;
+    u8* current = *(u8**)(sequence + 0x24);
+    u8* previous = current;
+    s32 key = *(s32*)(entry + 8);
+
+    if (key != 0) {
+        while (current != NULL) {
+            if (*(s32*)current == key) {
+                break;
+            }
+            current = *(u8**)(current + 0xA8);
+        }
+    }
+
+    if (current != NULL) {
+        *(s32*)(entry + 0x70) = *(s32*)(current + 0x70);
+        *(s32*)(entry + 0x70) +=
+            *(s32*)(current + 0x2C + *(s32*)(entry + 0x10) * 4);
+    } else {
+        u8* owner = *(u8**)(sequence + 0x3C);
+        u8* table = *(u8**)(owner + 0x2C);
+        s32 offset = *(s32*)(sequence + 0x0C) * 0xD4 + 0x0C;
+        offset += *(s32*)(entry + 0x10) * 4;
+        *(s32*)(entry + 0x70) = *(s32*)(table + offset);
+    }
+
+    *(s32*)(entry + 0x70) -=
+        *(s32*)(entry + 0x2C + *(s32*)(entry + 0x0C) * 4);
+    *(s32*)(entry + 0x74) = *(s32*)(entry + 0x70);
+
+    if (previous == NULL) {
+        *(u8**)(sequence + 0x24) = entry;
+        *(void**)(entry + 0xA8) = NULL;
+        *(void**)(entry + 0xAC) = NULL;
+    } else if (*(s32*)(previous + 0x70) > *(s32*)(entry + 0x70) ||
+               (*(s32*)(entry + 4) == 6 &&
+                *(s32*)(previous + 0x70) == *(s32*)(entry + 0x70))) {
+        *(u8**)(entry + 0xA8) = previous;
+        *(void**)(entry + 0xAC) = NULL;
+        *(u8**)(previous + 0xAC) = entry;
+        *(u8**)(sequence + 0x24) = entry;
+    } else {
+        u8* following = *(u8**)(previous + 0xA8);
+        while (following != NULL &&
+               *(s32*)(following + 0x70) <= *(s32*)(entry + 0x70)) {
+            if (*(s32*)(entry + 4) == 6 &&
+                *(s32*)(previous + 0x70) == *(s32*)(entry + 0x70)) {
+                break;
+            }
+            previous = following;
+            following = *(u8**)(following + 0xA8);
+        }
+        *(u8**)(entry + 0xA8) = following;
+        if (following != NULL) {
+            *(u8**)(following + 0xAC) = entry;
+        }
+        *(u8**)(previous + 0xA8) = entry;
+        *(u8**)(entry + 0xAC) = previous;
+    }
+    *(u8**)(entry + 0xB0) = sequence;
 }
 
 /**
  * fn_801DC46C - Waza screen overlay effect.
  * Address: 0x801DC46C | Size: 0x184
  */
-void fn_801DC46C(s32 overlayType, u32 color) {
-    /* TODO: Screen overlay effect (0x184 bytes) */
+void* fn_801DC46C(void* entryPtr, void* dataPtr) {
+    u8* entry = entryPtr;
+    u8* data = dataPtr;
+    s32 adjustment = 0;
+
+    switch (*(s32*)(data + 0x68)) {
+    case 1:
+        *(s32*)(entry + 0x18) = 0;
+        adjustment = -4;
+        break;
+    case 2:
+        *(s32*)(entry + 0x18) = 1;
+        adjustment = -8;
+        break;
+    }
+    *(void**)(entry + 0xA8) = NULL;
+    *(void**)(entry + 0xAC) = NULL;
+    *(s32*)(entry + 0x6C) = 0;
+    *(s32*)(entry + 0x70) = 0;
+    *(s32*)(entry + 0x74) = 0;
+    return data + adjustment + 0x70;
 }
 
 /**
  * fn_801DC5F0 - Waza screen overlay update.
  * Address: 0x801DC5F0 | Size: 0x22C
  */
-void fn_801DC5F0(void) {
-    /* TODO: Screen overlay update (0x22C bytes) */
+void* fn_801DC5F0(void* sequencePtr, void* dataPtr) {
+    u8* sequence = sequencePtr;
+    u8* data = dataPtr;
+
+    *(s32*)(sequence + 0x0C) = *(s32*)data;
+    *(s32*)(sequence + 0x18) = 0;
+    *(s32*)(sequence + 0x1C) = 0;
+    *(s32*)(sequence + 0x20) = 0;
+    return data;
 }
 
 /**
  * _wazaSequenceEffectEntryLoad - Waza screen effect composite.
  * Address: 0x801DC81C | Size: 0x284
  */
-void _wazaSequenceEffectEntryLoad(void) {
-    /* TODO: Screen effect composite (0x284 bytes) */
+void* _wazaSequenceEffectEntryLoad(void* entryPtr, void* dataPtr) {
+    u8* entry = entryPtr;
+    *(void**)(entry + 0x78) = NULL;
+    return dataPtr;
 }
 
 /**
  * _wazaSequenceParticleEntryLoad - Waza screen effect finalize.
  * Address: 0x801DCAA0 | Size: 0x128
  */
-void _wazaSequenceParticleEntryLoad(void) {
-    /* TODO: Screen effect finalize (0x128 bytes) */
+void* _wazaSequenceParticleEntryLoad(void* sequence, void* entryPtr,
+                                     void* dataPtr) {
+    u8* entry = entryPtr;
+    u8* data = dataPtr;
+    s32 adjustment = (*(s32*)(data + 0x0C) == 3) ? 4 : 0;
+
+    *(s32*)(entry + 0x80) = *(s32*)data;
+    *(s32*)(entry + 0x84) = *(s32*)(data + 4);
+    *(void**)(entry + 0x88) = NULL;
+    *(void**)(entry + 0x8C) = NULL;
+    return data + adjustment + 0x10;
 }
 
 /**
  * _wazaSequenceModelEntryLoad - Waza field effect handler.
  * Address: 0x801DCBC8 | Size: 0x1E0
  */
-void _wazaSequenceModelEntryLoad(s32 fieldEffect) {
-    /* TODO: Field effect handler (0x1E0 bytes)
-     * Handles field-wide effects like weather, terrain changes.
-     */
+void* _wazaSequenceModelEntryLoad(void* sequence, void* entryPtr,
+                                  void* dataPtr) {
+    u8* entry = entryPtr;
+    u8* data = dataPtr;
+    u32 size = (*(u32*)data + 0x1F) & ~0x1F;
+
+    *(u32*)(entry + 0x78) = 0x4E20;
+    *(void**)(entry + 0x7C) = NULL;
+    *(void**)(entry + 0x80) = NULL;
+    *(void**)(entry + 0xA4) = NULL;
+    return data + size;
 }
 
 #endif

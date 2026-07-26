@@ -23,21 +23,34 @@
  * Stops all active waza effects, frees all allocated memory.
  */
 void wazaSequenceSysRelease(void) {
-    /* TODO: Waza system cleanup (0x130 bytes)
-     * 1. Stops all active particle effects
-     * 2. Removes all model JObjs
-     * 3. Stops all sound effects
-     * 4. Frees sequence data
-     * 5. Clears the waza context
-     */
+    extern void fn_800E24B0(u16 handle);
+    extern void fn_800E209C(u16 handle);
+    u8* entry = *(u8**)lbl_80467CC0;
+    u16 count = *(u16*)(lbl_80467CC0 + 4);
+    u16 handle = *(u16*)(lbl_80467CC0 + 0x10);
+    s32 i;
+
+    for (i = 0; i < count; i++, entry += 0x8C) {
+        if (entry != NULL) {
+            if (entry[0x74] != 0) {
+                fn_801DD3E4(entry);
+                fn_801DD23C(entry);
+            }
+            memset(entry, 0, 0x8C);
+        }
+    }
+    fn_800E24B0(handle);
+    fn_800E209C(handle);
+    memset(lbl_80467CC0, 0, 0x14);
 }
 
 /**
  * fn_801DADC0 - Waza system partial reset.
  * Address: 0x801DADC0 | Size: 0x138
  */
-void fn_801DADC0(void) {
-    /* TODO: Waza system partial reset (0x138 bytes) */
+void fn_801DADC0(void* context) {
+    memset(lbl_80467C80 + 0x40, 0, 0x14);
+    memset(lbl_80467C80 + 0x54, 0, 0x20);
 }
 
 /**

@@ -481,7 +481,7 @@ typedef struct GStexture GStexture;
 
 /* Waza system lifecycle */
 /* wazaSequenceSysRelease */ void wazaSequenceSysRelease(void);                        /* waza system cleanup */
-/* fn_801DADC0 */ void fn_801DADC0(void);                        /* waza partial reset */
+/* fn_801DADC0 */ void fn_801DADC0(void* context);                /* waza partial reset */
 /* fn_801DAEF8 */ void fn_801DAEF8(s32 count);                   /* waza system init */
 /* wazaSequenceSysGetResID */ BOOL wazaSequenceSysGetResID(void);                        /* waza get initialized */
 /* fn_801DB088 */ void fn_801DB088(void);                        /* waza system reset */

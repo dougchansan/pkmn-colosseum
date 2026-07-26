@@ -686,8 +686,30 @@ BOOL fn_801DE164(s32 slot) {
  * fn_801DE190 - Waza hit flash update.
  * Address: 0x801DE190 | Size: 0x288
  */
-void fn_801DE190(void) {
-    /* TODO: Hit flash update (0x288 bytes) */
+void* fn_801DE190(u16 index, void* model, u8 variant) {
+    extern u32 lbl_80478CD0;
+    extern u8 lbl_80370BD0[];
+    u8* entry;
+    u32 group;
+    u32 resource;
+
+    if (index == 0 || index >= lbl_80478CD0) {
+        return NULL;
+    }
+
+    entry = lbl_80370BD0 + index * 12;
+    group = *(u32*)entry;
+    resource = *(u32*)(entry + 4);
+    if (group == 0 || resource == 0) {
+        group = *(u32*)(lbl_80370BD0 + 0xD38);
+        resource = *(u32*)(lbl_80370BD0 + 0xD3C);
+        if (group == 0 || resource == 0) {
+            return NULL;
+        }
+    }
+
+    /* TODO: Resolve the variant resource and create its effect object. */
+    return NULL;
 }
 
 /**

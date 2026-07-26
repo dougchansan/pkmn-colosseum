@@ -360,7 +360,7 @@ extern u32 fn_801DAC3C(void* obj);
 extern u32 fn_801DAC54(void* obj);
 extern u16 fn_801DAC78(void* obj);
 extern void wazaSequenceSysRelease(void);
-extern void fn_801DADC0(void);
+extern void fn_801DADC0(void* context);
 extern void fn_801DAEF8(s32 count);
 extern int wazaSequenceSysGetResID(void);
 extern void fn_801DB088(void);
@@ -381,12 +381,14 @@ extern void wazaSequenceStart(void* sequence);
 extern void wazaSequenceFree(void* obj);
 extern WazaSequence* fn_801DBFB0(void);
 extern BOOL wazaSequenceLoadData(void* sequence, void* resource);
-extern void wazaSequenceEntryLink(void);
-extern void fn_801DC46C(s32 overlayType, u32 color);
-extern void fn_801DC5F0(void);
-extern void _wazaSequenceEffectEntryLoad(void);
-extern void _wazaSequenceParticleEntryLoad(void);
-extern void _wazaSequenceModelEntryLoad(s32 fieldEffect);
+extern void wazaSequenceEntryLink(void* sequence, void* entry);
+extern void* fn_801DC46C(void* entry, void* data);
+extern void* fn_801DC5F0(void* sequence, void* data);
+extern void* _wazaSequenceEffectEntryLoad(void* entry, void* data);
+extern void* _wazaSequenceParticleEntryLoad(void* sequence, void* entry,
+                                            void* data);
+extern void* _wazaSequenceModelEntryLoad(void* sequence, void* entry,
+                                         void* data);
 extern void* fn_801DCDA8(void* obj, s32 fieldEffect);
 extern s32 fn_801DCDCC(void* obj);
 extern void fn_801DCE0C(void* obj);
@@ -409,7 +411,7 @@ extern BOOL fn_801DDD28(void* owner, u16 group, u16 index, u32 variant);
 extern void fn_801DDEE4(void* owner, u16 group, u16 type, u8 variant,
                         u32* resourceGroup, u32* resourceId);
 extern BOOL fn_801DE164(s32 slot);
-extern void fn_801DE190(void);
+extern void* fn_801DE190(u16 index, void* model, u8 variant);
 extern void* fn_801DE418(u16 index);
 extern void fn_801DE598(u32 group, u32 resource);
 extern void sequenceAnimEndCallback(s32 arg0, s32 arg1);
