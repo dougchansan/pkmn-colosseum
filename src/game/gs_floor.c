@@ -148,21 +148,22 @@ void fn_801012E8(void* archive, u32 resourceArg, u32 callbackArg) {
     extern void* fn_800D27FC(void*);
     extern void GSresRegisterResource(void*, u32, u32, void*);
     extern void fn_80101A28(void);
+    const char* messages = lbl_802717F0;
     void** publicData;
     void* resource;
 
     if (archive == NULL) {
-        GSlogWrite(lbl_802717F0 + 0x300);
+        GSlogWrite(messages + 0x300);
         return;
     }
-    publicData = HSD_ArchiveGetPublicAddress(archive, lbl_802717F0 + 0x2C8);
+    publicData = HSD_ArchiveGetPublicAddress(archive, messages + 0x2C8);
     if (publicData == NULL) {
-        GSlogWrite(lbl_802717F0 + 0x328);
+        GSlogWrite(messages + 0x328);
         return;
     }
     resource = fn_800D27FC(publicData[1]);
     if (resource == NULL) {
-        GSlogWrite(lbl_802717F0 + 0x358);
+        GSlogWrite(messages + 0x358);
     }
     GSresRegisterResource(resource, resourceArg, callbackArg,
                           (void*)fn_80101A28);
