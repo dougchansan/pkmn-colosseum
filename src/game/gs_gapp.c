@@ -193,12 +193,12 @@ extern u32 lbl_8047AC6C;
 extern u32 lbl_8047AC70;
 extern u32 lbl_8047AC72;
 extern u32 lbl_8047AC74;
-extern u32 lbl_8047AC78;
+extern u16 lbl_8047AC78;
 extern u32 lbl_8047AC7C;
 extern u32 lbl_8047AC80;
 extern u32 lbl_8047AC84;
 extern u32 lbl_8047AC88;
-extern u32 lbl_8047AC8C;
+extern u16 lbl_8047AC8C;
 extern u32 lbl_8047AC90;
 extern u32 lbl_8047AC94;
 extern u32 lbl_8047AC98;
@@ -458,10 +458,9 @@ void GSgappInit(numTasks, numQueues)
     lbl_8047AC78 = handle;
     if ((u16)handle == 0) return;
     lbl_8047AC7C = (u32)GSmemGetPtr(handle);
-    offset = 8;
-    i = 0;
-    while (i < total) {
-        *(u32*)(lbl_8047AC7C + offset) = 0;
+    offset = i = 0;
+    while (i < lbl_8047AC88) {
+        *(u32*)(lbl_8047AC7C + offset + 8) = 0;
         offset += 0x18;
         i++;
     }
