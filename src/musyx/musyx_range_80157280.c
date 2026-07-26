@@ -3552,50 +3552,51 @@ void aramQueueCallback(void *arg) {
 }
 #endif
 #pragma pop
-#pragma push
-#pragma optimization_level 0
-#pragma optimizewithasm off
 #if 0
 asm void fn_801632B4(void) {
 #include "src/game/people/people_field_fn_801632B4.inc"
 }
 #else
-void fn_801632B4(u8* dst, u8* src, u32 size, u32 priority, u32 callbackArg0, u32 callbackArg1) {
+void aramUploadData(void* mram, u32 aram, u32 size, u32 highPriority,
+                    void (*callback)(u32), u32 user) {
     PFAramQueue* queue;
-    PFAramQueueEntry* entry;
-    u32 level;
+    s32 old;
 
-    if (priority != 0) {
-        queue = (PFAramQueue*)lbl_8044FE14;
-    } else {
-        queue = (PFAramQueue*)lbl_8044FB90;
-    }
+    queue = highPriority != 0 ? (PFAramQueue*)lbl_8044FE14
+                              : (PFAramQueue*)lbl_8044FB90;
 
     for (;;) {
-        level = OSDisableInterrupts();
+        old = OSDisableInterrupts();
         if (queue->count < 16) {
-            break;
+            queue->entries[queue->writeIndex].command = 42;
+            queue->entries[queue->writeIndex].zero = 0;
+            queue->entries[queue->writeIndex].priority =
+                highPriority != 0 ? 1 : 0;
+            queue->entries[queue->writeIndex].dst = mram;
+            queue->entries[queue->writeIndex].src = (u8*)aram;
+            queue->entries[queue->writeIndex].size = size;
+            queue->entries[queue->writeIndex].callback =
+                (void (*)(void*))aramQueueCallback;
+            queue->entries[queue->writeIndex].callbackArg0 = (u32)callback;
+            queue->entries[queue->writeIndex].callbackArg1 = user;
+            ARQPostRequest(
+                &queue->entries[queue->writeIndex],
+                queue->entries[queue->writeIndex].command,
+                queue->entries[queue->writeIndex].zero,
+                queue->entries[queue->writeIndex].priority,
+                queue->entries[queue->writeIndex].dst,
+                queue->entries[queue->writeIndex].src,
+                queue->entries[queue->writeIndex].size,
+                queue->entries[queue->writeIndex].callback);
+            ++queue->count;
+            queue->writeIndex = (queue->writeIndex + 1) % 16;
+            OSRestoreInterrupts(old);
+            return;
         }
-        OSRestoreInterrupts(level);
+        OSRestoreInterrupts(old);
     }
-
-    entry = &queue->entries[queue->writeIndex];
-    entry->command = 0x2A;
-    entry->zero = 0;
-    entry->priority = priority != 0;
-    entry->dst = dst;
-    entry->src = src;
-    entry->size = size;
-    entry->callback = (void (*)(void*))aramQueueCallback;
-    entry->callbackArg0 = callbackArg0;
-    entry->callbackArg1 = callbackArg1;
-    ARQPostRequest(entry, entry->command, entry->zero, entry->priority, entry->dst, entry->src, entry->size, entry->callback);
-    queue->count++;
-    queue->writeIndex = (queue->writeIndex + 1) & 0xF;
-    OSRestoreInterrupts(level);
 }
 #endif
-#pragma pop
 #pragma push
 #pragma optimization_level 4
 #pragma optimizewithasm off
@@ -3614,26 +3615,26 @@ void fn_80163490(void) {
 }
 #endif
 #pragma pop
-#pragma push
-#pragma optimization_level 0
-#pragma optimizewithasm off
 #if 0
 asm void fn_801634A8(void) {
 #include "src/game/people/people_field_fn_801634A8.inc"
 }
 #else
 void fn_801634A8(u32 size) {
+    s16* temporary;
+    u32 i;
     u32 base;
     u32 end;
-    u8* clearBuf;
     PFAramQueue* lowQueue;
     PFAramQueue* highQueue;
 
     base = ARGetBaseAddress();
-    clearBuf = (u8*)fn_801643D8(0x500);
-    if (clearBuf != NULL) {
-        memset(clearBuf, 0, 0x500);
-        DCFlushRange(clearBuf, 0x500);
+    temporary = (s16*)fn_801643D8(0x500);
+    if (temporary != NULL) {
+        for (i = 0; i < 640; ++i) {
+            temporary[i] = 0;
+        }
+        DCFlushRange(temporary, 0x500);
     }
 
     lowQueue = (PFAramQueue*)lbl_8044FB90;
@@ -3643,10 +3644,10 @@ void fn_801634A8(u32 size) {
     highQueue->writeIndex = 0;
     highQueue->count = 0;
 
-    if (clearBuf != NULL) {
-        fn_801632B4(clearBuf, (u8*)base, 0x500, 0, 0, 0);
+    if (temporary != NULL) {
+        aramUploadData(temporary, base, 0x500, 0, 0, 0);
         fn_80163490();
-        fn_80164400((u32)clearBuf);
+        fn_80164400((u32)temporary);
     }
 
     lbl_8047B07C = base + size;
@@ -3659,7 +3660,6 @@ void fn_801634A8(u32 size) {
     InitStreamBuffers();
 }
 #endif
-#pragma pop
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
@@ -3705,50 +3705,39 @@ void aramSetUploadCallback(u8* ptr, u32 size) {
 }
 #endif
 #pragma pop
-#pragma push
-#pragma optimization_level 0
-#pragma optimizewithasm off
 #if 0
 asm void fn_80163810(void) {
 #include "src/game/people/people_field_fn_80163810.inc"
 }
 #else
 u32 fn_80163810(u32 ptr, u32 size) {
-    u8* src;
-    u8* uploadPtr;
-    u8* (*copyProc)(u8*, u32);
-    u32 aligned;
-    u32 chunk;
-    u32 start;
+    u32 address;
+    void* buffer;
+    u32 blockSize;
 
-    src = (u8*)ptr;
-    aligned = (size + 0x1F) & ~0x1Fu;
-    start = lbl_8047B078;
+    size = (size + 31) & ~31;
+    address = lbl_8047B078;
     if (lbl_8047B070 == 0) {
-        DCFlushRange(src, aligned);
-        fn_801632B4((u8*)lbl_8047B078, src, aligned, 0, 0, 0);
-        lbl_8047B078 += aligned;
-        return start;
+        DCFlushRange((void*)ptr, size);
+        aramUploadData((void*)ptr, lbl_8047B078, size, 0, 0, 0);
+        lbl_8047B078 += size;
+        return address;
     }
 
-    copyProc = (u8* (*)(u8*, u32))lbl_8047B070;
-    while (aligned != 0) {
-        if (aligned > lbl_8047B06C) {
-            chunk = lbl_8047B06C;
-        } else {
-            chunk = aligned;
-        }
-        uploadPtr = copyProc(src, chunk);
-        DCFlushRange(uploadPtr, chunk);
-        fn_801632B4((u8*)lbl_8047B078, uploadPtr, chunk, 0, 0, 0);
-        lbl_8047B078 += chunk;
-        src += chunk;
-        aligned -= chunk;
+    while (size != 0) {
+        blockSize =
+            size >= lbl_8047B06C ? lbl_8047B06C : size;
+        buffer = ((void* (*)(u32, u32))lbl_8047B070)(ptr, blockSize);
+        DCFlushRange(buffer, blockSize);
+        aramUploadData(buffer, lbl_8047B078, blockSize, 0, 0, 0);
+        size -= blockSize;
+        lbl_8047B078 += blockSize;
+        ptr += blockSize;
     }
-    return start;
+
+    return address;
 }
 #endif
-#pragma pop
 extern u32 lbl_8047B078;
 void fn_80163BCC(u8* unused, u32 size) {
     lbl_8047B078 -= (size + 0x1F) & ~0x1F;
