@@ -874,6 +874,9 @@ extern void HSD_ObjAllocInit(void* list, u32 size, u32 alignment);
 extern char lbl_8047DE70;
 extern char lbl_8047DE90;
 extern char lbl_802753DC[];
+extern char lbl_802753A8[];
+extern char lbl_802755D0[];
+extern void* fn_80193B10(s32 size);
 
 /* Address: 0x801B4240 | Size: 0xC */
 /* Get pointer to BSS object lbl_80465728 */
@@ -1241,7 +1244,8 @@ struct ColTExpNode {
     u8 ras_swap;
     u8 kcsel;
     u8 kasel;
-    u8 pad_22[0x12];
+    u8 pad_22[2];
+    s32 input_index[4];
     ColTEArg c_in[4];
     ColTEArg a_in[4];
     HSD_TObj* tex;
@@ -1842,40 +1846,76 @@ void fn_801B6E74(ColTExpNode* texp, u32 op, u32 bias, u32 scale, u8 clamp) {
     }
 }
 
-/*
- * HSD_TObjTexMtxCompute - 0x801B6F5C | Size: 0x120
- * Compute and load texture transformation matrix.
- */
-void HSD_TExpCnst(HSD_TObj* tobj) {
-    if (tobj == NULL) {
-        return;
+ColTExpNode* HSD_TExpCnst(void* value, s32 component, s32 type,
+                          ColTExpNode** list) {
+    ColTECnst* current;
+    ColTECnst* constant;
+
+    if (list == NULL) {
+        __assert(&lbl_8047DE70, 0x173, lbl_802753A8);
     }
 
-    /* Build 2x4 texture matrix from:
-     * - translate_x/y/z
-     * - rotate_x/y/z
-     * - scale_x/y/z
-     * Store in tobj->mtx
-     */
+    for (current = (ColTECnst*)*list; current != NULL;
+         current = (ColTECnst*)current->next) {
+        if (current->type == COL_TE_CNST && current->val == value &&
+            current->comp == component) {
+            if (current->ctype != type) {
+                __assert(&lbl_8047DE70, 0x17A, lbl_802755D0);
+            }
+            return (ColTExpNode*)current;
+        }
+    }
 
-    /* Mark clean */
-    tobj->flags &= ~TEX_MTX_DIRTY;
+    if (component == COL_TE_0) {
+        return NULL;
+    }
+
+    constant = fn_80193B10(0x14);
+    if (constant == NULL) {
+        __assert(&lbl_8047DE70, 0x47, &lbl_8047DE90);
+    }
+    constant->type = COL_TE_CNST;
+    constant->next = *list;
+    *list = (ColTExpNode*)constant;
+    constant->ref = 0;
+    constant->val = value;
+    constant->comp = component;
+    constant->ctype = type;
+    constant->reg = 0xFF;
+    constant->idx = 0xFF;
+    constant->range = 0;
+    return (ColTExpNode*)constant;
 }
 
-/*
- * HSD_TObjReflectionTexCoord - 0x801B707C | Size: 0xFC
- * Set up reflection/highlight texture coordinate generation.
- */
-void fn_801B707C(HSD_TObj* tobj, u32 coord_id) {
-    if (tobj == NULL) {
-        return;
+/* HSD_TExpTev */
+ColTExpNode* fn_801B707C(ColTExpNode** list) {
+    ColTExpNode* texp;
+    s32 i;
+
+    if (list == NULL) {
+        __assert(&lbl_8047DE70, 0x127, lbl_802753A8);
     }
 
-    /* Configure environment-mapped texture coordinates:
-     * - Use normal vector as texcoord source
-     * - Apply view-space transformation
-     * - Set up the appropriate texture matrix
-     */
+    texp = fn_80193B10(0x7C);
+    if (texp == NULL) {
+        __assert(&lbl_8047DE70, 0x3F, &lbl_8047DE90);
+    }
+    memset(texp, 0xFF, 0x7C);
+    texp->type = COL_TE_TEV;
+    texp->next = *list;
+    *list = texp;
+    texp->c_ref = 0;
+    texp->a_ref = 0;
+    texp->input_index[0] = 0;
+    texp->input_index[1] = 1;
+    texp->input_index[2] = 2;
+    texp->input_index[3] = 3;
+    texp->tex = NULL;
+    for (i = 0; i < 4; i++) {
+        texp->c_in[i].exp = NULL;
+        texp->a_in[i].exp = NULL;
+    }
+    return texp;
 }
 
 extern char lbl_8047DEA0;
