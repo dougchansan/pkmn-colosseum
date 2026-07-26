@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196100,
     "total_functions": 8603,
-    "total_units": 2007
+    "total_units": 2022
   },
   "topology_status": {
     "auto_units": 68,
-    "named_units": 1939,
-    "source_backed_units": 1933,
+    "named_units": 1954,
+    "source_backed_units": 1948,
     "auto_code": 0,
     "auto_data": 57687,
     "auto_functions": 0
@@ -23,7 +23,7 @@
     "matched_data_percent": 97.28669,
     "matched_functions": 6569,
     "matched_functions_percent": 76.357086,
-    "fuzzy_match_percent": 70.851654
+    "fuzzy_match_percent": 71.000374
   },
   "unit_topology": [
     {
@@ -2111,13 +2111,39 @@
       "sections": [
         {
           "name": ".text",
-          "size": 16004,
+          "size": 13256,
           "virtual_address": 2147709272
         }
       ],
-      "total_code": 16004,
+      "total_code": 13256,
       "total_data": 0,
-      "total_functions": 59
+      "total_functions": 51
+    },
+    {
+      "name": "main/game/menu/pda_range_r47_8003A520_o2",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 416,
+          "virtual_address": 2147722528
+        }
+      ],
+      "total_code": 416,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/menu/pda_range_r47_8003A6C0",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 2332,
+          "virtual_address": 2147722944
+        }
+      ],
+      "total_code": 2332,
+      "total_data": 0,
+      "total_functions": 7
     },
     {
       "name": "main/game/menu/pda_range_r46_8003AFDC_o4s",
@@ -3650,13 +3676,39 @@
       "sections": [
         {
           "name": ".text",
-          "size": 25416,
+          "size": 12288,
           "virtual_address": 2147963792
         }
       ],
-      "total_code": 25416,
+      "total_code": 12288,
       "total_data": 0,
-      "total_functions": 79
+      "total_functions": 56
+    },
+    {
+      "name": "main/game/menu/menu_candidate_r47_80078390_o2",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1324,
+          "virtual_address": 2147976080
+        }
+      ],
+      "total_code": 1324,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/menu/menu_candidate_r47_800788BC",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 11804,
+          "virtual_address": 2147977404
+        }
+      ],
+      "total_code": 11804,
+      "total_data": 0,
+      "total_functions": 22
     },
     {
       "name": "main/game/menu/menu_candidate_80075390_r46_8007B6D8_o3",
@@ -11714,13 +11766,65 @@
       "sections": [
         {
           "name": ".text",
-          "size": 27876,
+          "size": 5608,
           "virtual_address": 2148467748
         }
       ],
-      "total_code": 27876,
+      "total_code": 5608,
       "total_data": 0,
-      "total_functions": 51
+      "total_functions": 17
+    },
+    {
+      "name": "main/game/gs_thread_candidate_r47_800F1A0C_o4s",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 2136,
+          "virtual_address": 2148473356
+        }
+      ],
+      "total_code": 2136,
+      "total_data": 0,
+      "total_functions": 2
+    },
+    {
+      "name": "main/game/gs_thread_candidate_r47_800F2264",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 656,
+          "virtual_address": 2148475492
+        }
+      ],
+      "total_code": 656,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/gs_thread_candidate_r47_800F24F4_o3",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 736,
+          "virtual_address": 2148476148
+        }
+      ],
+      "total_code": 736,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/gs_thread_candidate_r47_800F27D4",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 18740,
+          "virtual_address": 2148476884
+        }
+      ],
+      "total_code": 18740,
+      "total_data": 0,
+      "total_functions": 30
     },
     {
       "name": "main/game/gs_thread_candidate_800F0424_r40_800F7108_gc125n",
@@ -11857,13 +11961,26 @@
       "sections": [
         {
           "name": ".text",
-          "size": 4392,
+          "size": 188,
           "virtual_address": 2148508436
         }
       ],
-      "total_code": 4392,
+      "total_code": 188,
       "total_data": 0,
-      "total_functions": 5
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/gs_msg_candidate_r47_800FA3D0",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 4204,
+          "virtual_address": 2148508624
+        }
+      ],
+      "total_code": 4204,
+      "total_data": 0,
+      "total_functions": 4
     },
     {
       "name": "main/game/gs_msg_candidate_800FA314_r46_800FB43C_o4s",
@@ -18340,13 +18457,26 @@
       "sections": [
         {
           "name": ".text",
-          "size": 5076,
+          "size": 1656,
           "virtual_address": 2149077580
         }
       ],
-      "total_code": 5076,
+      "total_code": 1656,
       "total_data": 0,
-      "total_functions": 9
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/people/people_r47_801858C4",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 3420,
+          "virtual_address": 2149079236
+        }
+      ],
+      "total_code": 3420,
+      "total_data": 0,
+      "total_functions": 8
     },
     {
       "name": "main/game/people/people_r46_80186620_o4s",
@@ -18366,13 +18496,78 @@
       "sections": [
         {
           "name": ".text",
-          "size": 27764,
+          "size": 1420,
           "virtual_address": 2149083996
         }
       ],
-      "total_code": 27764,
+      "total_code": 1420,
       "total_data": 0,
-      "total_functions": 43
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/people/people_r47_801870E8",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 3956,
+          "virtual_address": 2149085416
+        }
+      ],
+      "total_code": 3956,
+      "total_data": 0,
+      "total_functions": 5
+    },
+    {
+      "name": "main/game/people/people_r47_8018805C_gc20p1",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 440,
+          "virtual_address": 2149089372
+        }
+      ],
+      "total_code": 440,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/people/people_r47_80188214",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 19188,
+          "virtual_address": 2149089812
+        }
+      ],
+      "total_code": 19188,
+      "total_data": 0,
+      "total_functions": 34
+    },
+    {
+      "name": "main/game/people/people_r47_8018CD08_o4s",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 2424,
+          "virtual_address": 2149109000
+        }
+      ],
+      "total_code": 2424,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/people/people_r47_8018D680",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 336,
+          "virtual_address": 2149111424
+        }
+      ],
+      "total_code": 336,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/game/people/people_candidate_8018D7D0_gc20",

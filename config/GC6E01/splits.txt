@@ -477,7 +477,13 @@ game/gs_range_8003686C.c:
 	.text       start:0x8003686C end:0x80037158
 
 game/menu/pda_range_80037158.c:
-	.text       start:0x80037158 end:0x8003AFDC
+	.text       start:0x80037158 end:0x8003A520
+
+game/menu/pda_range_r47_8003A520_o2.c:
+	.text       start:0x8003A520 end:0x8003A6C0
+
+game/menu/pda_range_r47_8003A6C0.c:
+	.text       start:0x8003A6C0 end:0x8003AFDC
 
 game/menu/pda_range_r46_8003AFDC_o4s.c:
 	.text       start:0x8003AFDC end:0x8003B2D8
@@ -814,7 +820,13 @@ game/menu/menu_candidate_8007480C_gc125n.c:
 	.text       start:0x8007480C end:0x80075390
 
 game/menu/menu_candidate_80075390.c:
-	.text       start:0x80075390 end:0x8007B6D8
+	.text       start:0x80075390 end:0x80078390
+
+game/menu/menu_candidate_r47_80078390_o2.c:
+	.text       start:0x80078390 end:0x800788BC
+
+game/menu/menu_candidate_r47_800788BC.c:
+	.text       start:0x800788BC end:0x8007B6D8
 
 game/menu/menu_candidate_80075390_r46_8007B6D8_o3.c:
 	.text       start:0x8007B6D8 end:0x8007C23C
@@ -2577,7 +2589,19 @@ game/gs_thread_exact_800F036C.c:
 	.text       start:0x800F036C end:0x800F0424
 
 game/gs_thread_candidate_800F0424.c:
-	.text       start:0x800F0424 end:0x800F7108
+	.text       start:0x800F0424 end:0x800F1A0C
+
+game/gs_thread_candidate_r47_800F1A0C_o4s.c:
+	.text       start:0x800F1A0C end:0x800F2264
+
+game/gs_thread_candidate_r47_800F2264.c:
+	.text       start:0x800F2264 end:0x800F24F4
+
+game/gs_thread_candidate_r47_800F24F4_o3.c:
+	.text       start:0x800F24F4 end:0x800F27D4
+
+game/gs_thread_candidate_r47_800F27D4.c:
+	.text       start:0x800F27D4 end:0x800F7108
 
 game/gs_thread_candidate_800F0424_r40_800F7108_gc125n.c:
 	.text       start:0x800F7108 end:0x800F716C
@@ -2610,7 +2634,10 @@ game/gs_msg_candidate_800FA280_gc125.c:
 	.text       start:0x800FA280 end:0x800FA314
 
 game/gs_msg_candidate_800FA314.c:
-	.text       start:0x800FA314 end:0x800FB43C
+	.text       start:0x800FA314 end:0x800FA3D0
+
+game/gs_msg_candidate_r47_800FA3D0.c:
+	.text       start:0x800FA3D0 end:0x800FB43C
 
 game/gs_msg_candidate_800FA314_r46_800FB43C_o4s.c:
 	.text       start:0x800FB43C end:0x800FB680
@@ -4085,13 +4112,31 @@ game/people/people_r46_80184D80_o4s.c:
 	.text       start:0x80184D80 end:0x8018524C
 
 game/people/people_r46_8018524C.c:
-	.text       start:0x8018524C end:0x80186620
+	.text       start:0x8018524C end:0x801858C4
+
+game/people/people_r47_801858C4.c:
+	.text       start:0x801858C4 end:0x80186620
 
 game/people/people_r46_80186620_o4s.c:
 	.text       start:0x80186620 end:0x80186B5C
 
 game/people/people_r46_80186B5C.c:
-	.text       start:0x80186B5C end:0x8018D7D0
+	.text       start:0x80186B5C end:0x801870E8
+
+game/people/people_r47_801870E8.c:
+	.text       start:0x801870E8 end:0x8018805C
+
+game/people/people_r47_8018805C_gc20p1.c:
+	.text       start:0x8018805C end:0x80188214
+
+game/people/people_r47_80188214.c:
+	.text       start:0x80188214 end:0x8018CD08
+
+game/people/people_r47_8018CD08_o4s.c:
+	.text       start:0x8018CD08 end:0x8018D680
+
+game/people/people_r47_8018D680.c:
+	.text       start:0x8018D680 end:0x8018D7D0
 
 game/people/people_candidate_8018D7D0_gc20.c:
 	.text       start:0x8018D7D0 end:0x8018D928
