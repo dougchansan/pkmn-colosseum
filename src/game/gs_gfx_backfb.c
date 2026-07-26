@@ -486,22 +486,13 @@ typedef struct GSbackFBCapture {
 static inline GSbackFBCapture* GSbackFBFindCapture(void* texture)
 {
     GSbackFBCapture* capture;
+    u32 i;
 
     capture = (GSbackFBCapture*)lbl_80400EE0;
-    if (capture->active == 1 && capture->texture == texture) {
-        return capture;
-    }
-    capture++;
-    if (capture->active == 1 && capture->texture == texture) {
-        return capture;
-    }
-    capture++;
-    if (capture->active == 1 && capture->texture == texture) {
-        return capture;
-    }
-    capture++;
-    if (capture->active == 1 && capture->texture == texture) {
-        return capture;
+    for (i = 0; i < 4; i++, capture++) {
+        if (capture->active == 1 && capture->texture == texture) {
+            return capture;
+        }
     }
     return NULL;
 }
