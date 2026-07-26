@@ -2568,28 +2568,83 @@ asm u32 fn_8013CE58(void* inner, void* ptr) {
 }
 #else
 u32 fn_8013CE58(void* inner, void* ptr) {
-    void* material;
-    void* texture;
+    u8* p = ptr;
+    u8* displayObject;
+    u8* material;
+    u8* stages;
+    u8* stage;
+    u32 stageIndex;
+    u32 found9 = 0;
+    u32 found10 = 0;
+    u32 found11 = 0;
+    u32 found13 = 0;
 
-    if (ptr == NULL) {
-        return 0;
-    }
-    if (*(u8*)((u8*)ptr + 0x46) == 0) {
+    displayObject = fn_8019FF48(*(void**)((u8*)inner + 0x8));
+    if (p[0x46] == 0) {
         return 1;
     }
-    if (inner == NULL) {
+    if (displayObject == NULL) {
         return 0;
     }
 
-    material = fn_8019FF48(*(void**)((u8*)inner + 0x8));
+    material = *(u8**)(displayObject + 0xC);
     if (material == NULL) {
         return 0;
     }
-    texture = *(void**)((u8*)material + 0xC);
-    if (texture == NULL) {
+    stages = *(u8**)(material + 0x8);
+    if (stages == NULL) {
         return 0;
     }
-    *(void**)((u8*)ptr + 0x40) = texture;
+
+    for (stage = stages; *(s32*)stage != 0xFF; stage += 0x18) {
+        switch (*(s32*)stage) {
+        case 9:
+            found9 = 1;
+            if (*(s32*)(stage + 0x8) != 1 || *(s32*)(stage + 0xC) != 4 ||
+                *(u16*)(stage + 0x12) != 12) {
+                return 0;
+            }
+            break;
+        case 10:
+            found10 = 1;
+            if (*(s32*)(stage + 0x8) != 0 || *(s32*)(stage + 0xC) != 4 ||
+                *(u16*)(stage + 0x12) != 12) {
+                return 0;
+            }
+            break;
+        case 11:
+            found11 = 1;
+            if (*(s32*)(stage + 0x8) != 1 || *(s32*)(stage + 0xC) != 5 ||
+                *(u16*)(stage + 0x12) != 4) {
+                return 0;
+            }
+            break;
+        case 13:
+            found13 = 1;
+            if (*(s32*)(stage + 0x8) != 1 || *(s32*)(stage + 0xC) != 4 ||
+                *(u16*)(stage + 0x12) != 8) {
+                return 0;
+            }
+            break;
+        default:
+            return 0;
+        }
+    }
+
+    if (!found9 || !found10 || !found11 || !found13) {
+        return 0;
+    }
+
+    stage = stages;
+    stageIndex = 0;
+    while (*(s32*)stage != 0xFF) {
+        *(u32*)(stage + 0x4) = *(u32*)(p + 0x20 + stageIndex * 4);
+        *(u32*)(stage + 0x14) = *(u32*)(p + 0x30 + stageIndex * 4);
+        stageIndex++;
+        stage += 0x18;
+    }
+    *(u32*)(material + 0x10) = *(u32*)(p + 0x40);
+    *(u16*)(material + 0xE) = *(u16*)(p + 0x44);
     return 1;
 }
 #endif
