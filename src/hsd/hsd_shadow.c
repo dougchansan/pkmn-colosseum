@@ -14,6 +14,7 @@
 #include "hsd/hsd_class.h"
 #include "hsd/hsd_cobj.h"
 #include "hsd/hsd_debug.h"
+#include "hsd/hsd_lobj.h"
 #include "hsd/hsd_object.h"
 #include "crt/math.h"
 
@@ -312,7 +313,47 @@ void fn_801B0880(void) {
 
 /* Address: 0x801B0A98 | Size: 0x140 | Proposed: HSD_ShadowFunc6 */
 /* Shadow receiver configuration */
-void fn_801B0A98(void) {
+void fn_801B0A98(HSDShadow* shadow, HSD_LObj* light, f32 distance) {
+    extern char lbl_802752C0[];
+    extern char lbl_802752F4[];
+    extern char lbl_8047DDCC;
+    extern char lbl_8047DDD4;
+    extern char lbl_8047DDE0;
+    extern f32 lbl_8047DDC0;
+    extern f32 PSVECMag(void* vec);
+    extern void PSVECScale(void* src, void* dst, f32 scale);
+    extern void PSVECAdd(void* a, void* b, void* out);
+    Vec interest;
+    Vec position;
+    Vec eye;
+
+    if (shadow == NULL) {
+        __assert(lbl_802752C0, 0x24D, &lbl_8047DDCC);
+    }
+    if (light == NULL) {
+        __assert(lbl_802752C0, 0x24E, &lbl_8047DDE0);
+    }
+
+    switch (light->flags & 3) {
+    case 1:
+        if (distance <= lbl_8047DDC0) {
+            __assert(lbl_802752C0, 0x252, lbl_802752F4);
+        }
+        HSD_CObjGetInterest(shadow->camera, &interest);
+        HSD_LObjGetPosition(light, &position);
+        PSVECScale(&position, &position, distance / PSVECMag(&position));
+        PSVECAdd(&interest, &position, &eye);
+        HSD_CObjSetEyePosition(shadow->camera, &eye);
+        break;
+    case 2:
+    case 3:
+        HSD_LObjGetPosition(light, &eye);
+        HSD_CObjSetEyePosition(shadow->camera, &eye);
+        break;
+    default:
+        __assert(lbl_802752C0, 0x262, &lbl_8047DDD4);
+        break;
+    }
 }
 
 /* Address: 0x801B0BD8 | Size: 0x2E0 | Proposed: HSD_ShadowFunc7 */
