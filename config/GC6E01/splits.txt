@@ -453,7 +453,19 @@ game/gs_npc_event_candidate_8003037C_r40_80031648_gc20.c:
 	.text       start:0x80031648 end:0x800318D8
 
 game/gs_npc_event_candidate_8003037C_r40_800318D8.c:
-	.text       start:0x800318D8 end:0x80033278
+	.text       start:0x800318D8 end:0x80031B4C
+
+game/gs_npc_event_candidate_80031B4C_o3.c:
+	.text       start:0x80031B4C end:0x800324A0
+
+game/gs_npc_event_candidate_800324A0.c:
+	.text       start:0x800324A0 end:0x800327FC
+
+game/gs_npc_event_candidate_800327FC_o4s.c:
+	.text       start:0x800327FC end:0x80032ED8
+
+game/gs_npc_event_candidate_80032ED8.c:
+	.text       start:0x80032ED8 end:0x80033278
 
 game/gs_range_80033278.c:
 	.text       start:0x80033278 end:0x80035E04
@@ -3145,7 +3157,10 @@ game/effect/effect_visual_exact_8013B490.c:
 	.text       start:0x8013B490 end:0x8013B5E4
 
 game/effect/effect_visual_candidate_8013B5E4.c:
-	.text       start:0x8013B5E4 end:0x8013C5A0
+	.text       start:0x8013B5E4 end:0x8013C074
+
+game/effect/effect_visual_candidate_8013C074_o2.c:
+	.text       start:0x8013C074 end:0x8013C5A0
 
 game/effect/effect_visual_exact_8013C5A0.c:
 	.text       start:0x8013C5A0 end:0x8013C670
@@ -4598,7 +4613,13 @@ hsd/hsd_tobj_candidate_801BBDDC_r42_801BC33C.c:
 	.text       start:0x801BC33C end:0x801BC8BC
 
 hsd/hsd_tobj_candidate_801BBDDC_r42_801BC8BC.c:
-	.text       start:0x801BC8BC end:0x801BDD74
+	.text       start:0x801BC8BC end:0x801BCF30
+
+hsd/hsd_tobj_candidate_801BCF30_o4s.c:
+	.text       start:0x801BCF30 end:0x801BD8D0
+
+hsd/hsd_tobj_candidate_801BD8D0.c:
+	.text       start:0x801BD8D0 end:0x801BDD74
 
 hsd/hsd_tobj_candidate_801BBDDC_r41_801BDD74_gc125n.c:
 	.text       start:0x801BDD74 end:0x801BE2B4
@@ -5827,7 +5848,13 @@ game/fight_gsfloor.c:
 	.text       start:0x802614B4 end:0x80261B68
 
 game/fight_menu.c:
-	.text       start:0x80261B68 end:0x8026503C
+	.text       start:0x80261B68 end:0x8026316C
+
+game/fight_menu_candidate_8026316C_o2.c:
+	.text       start:0x8026316C end:0x80263BC8
+
+game/fight_menu_candidate_80263BC8.c:
+	.text       start:0x80263BC8 end:0x8026503C
 
 game/fight_menu_exact_8026503C.c:
 	.text       start:0x8026503C end:0x802658C8
