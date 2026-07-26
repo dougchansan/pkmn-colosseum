@@ -520,7 +520,7 @@ u16 fn_800E2C04(u32 size, u32 alignment)
 {
     GSmemBlock* block;
     GSmemBlock* selected;
-    u8* address = NULL;
+    u8* address;
     u32 allocationSize;
     u32 mask;
     u16 handle;
