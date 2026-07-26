@@ -1654,7 +1654,19 @@ crt/global_destructor_chain_candidate_800C46B0.c:
 	.text       start:0x800C46B0 end:0x800C470C
 
 dolphin/sdk_range_800C470C.c:
-	.text       start:0x800C470C end:0x800C4E44
+	.text       start:0x800C470C end:0x800C4758
+
+dolphin/sdk_candidate_800C4758.c:
+	.text       start:0x800C4758 end:0x800C47A4
+
+dolphin/sdk_candidate_800C47A4_gc13.c:
+	.text       start:0x800C47A4 end:0x800C47F0
+
+dolphin/sdk_candidate_800C47F0.c:
+	.text       start:0x800C47F0 end:0x800C4C98
+
+dolphin/sdk_candidate_800C4C98_gc13.c:
+	.text       start:0x800C4C98 end:0x800C4E44
 
 crt/exit.c:
 	.text       start:0x800C4E44 end:0x800C5458

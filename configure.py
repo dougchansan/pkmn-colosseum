@@ -2772,7 +2772,7 @@ config.libs = [
             Object(
                 CodeCandidate,
                 "dolphin/sdk_range_800AC440.c",
-                mw_version="GC/1.2.5n",
+                mw_version="GC/1.3",
                 extra_cflags=["-O4,s"],
                 progress_category="sdk",
             ),
@@ -3169,7 +3169,31 @@ config.libs = [
             Object(
                 CodeCandidate,
                 "dolphin/sdk_range_800C470C.c",
+                mw_version="GC/1.3",
+                progress_category="sdk",
+            ),
+            Object(
+                CodeCandidate,
+                "dolphin/sdk_candidate_800C4758.c",
                 mw_version="GC/1.2.5n",
+                progress_category="sdk",
+            ),
+            Object(
+                CodeCandidate,
+                "dolphin/sdk_candidate_800C47A4_gc13.c",
+                mw_version="GC/1.3",
+                progress_category="sdk",
+            ),
+            Object(
+                CodeCandidate,
+                "dolphin/sdk_candidate_800C47F0.c",
+                mw_version="GC/1.2.5n",
+                progress_category="sdk",
+            ),
+            Object(
+                CodeCandidate,
+                "dolphin/sdk_candidate_800C4C98_gc13.c",
+                mw_version="GC/1.3",
                 progress_category="sdk",
             ),
             Object(
