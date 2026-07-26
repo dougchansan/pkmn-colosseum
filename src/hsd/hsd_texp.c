@@ -1789,20 +1789,24 @@ void fn_801B65F0(HSD_TObj* tobj, u32 num_texcoords) {
 /*  TObj rendering helpers                                                   */
 /* ========================================================================= */
 
-/*
- * HSD_TObjRenderState - 0x801B6CD8 | Size: 0xE8
- * Set up rendering state for a TObj.
- */
-void fn_801B6CD8(HSD_TObj* tobj, u32 rendermode) {
-    if (tobj == NULL) {
-        return;
+/* HSD_TExpAlphaOp */
+void fn_801B6CD8(ColTExpNode* texp, u32 op, u32 bias, u32 scale, u8 clamp) {
+    if (texp == NULL) {
+        __assert(&lbl_8047DE70, 0x1D3, &lbl_8047DE90);
+    }
+    if (ColTExpGetType(texp) != COL_TE_TEV) {
+        __assert(&lbl_8047DE70, 0x1D4, lbl_802753DC);
     }
 
-    /* Configure GX state for this texture layer:
-     * - TEV stage order
-     * - Texture coordinate gen
-     * - Blend factor
-     */
+    texp->a_op = op;
+    texp->a_clamp = clamp != 0;
+    if (op == 0 || op == 1) {
+        texp->a_bias = bias;
+        texp->a_scale = scale;
+    } else {
+        texp->a_bias = 0;
+        texp->a_scale = 0;
+    }
 }
 
 /*
@@ -1818,20 +1822,24 @@ void fn_801B6DC0(HSD_TObj* tobj) {
     /* HSD_TOBJ_METHOD(tobj)->make_mtx(tobj) if dirty */
 }
 
-/*
- * HSD_TObjTexCoordSource - 0x801B6E74 | Size: 0xE8
- * Configure texture coordinate source for a TObj.
- */
-void fn_801B6E74(HSD_TObj* tobj, u32 coord_id) {
-    if (tobj == NULL) {
-        return;
+/* HSD_TExpColorOp */
+void fn_801B6E74(ColTExpNode* texp, u32 op, u32 bias, u32 scale, u8 clamp) {
+    if (texp == NULL) {
+        __assert(&lbl_8047DE70, 0x1A3, &lbl_8047DE90);
+    }
+    if (ColTExpGetType(texp) != COL_TE_TEV) {
+        __assert(&lbl_8047DE70, 0x1A4, lbl_802753DC);
     }
 
-    tobj->coord = coord_id;
-
-    /* Set up the GX texture coordinate generation source
-     * based on the TObj's flags (UV, reflection, etc.)
-     */
+    texp->c_op = op;
+    texp->c_clamp = clamp != 0;
+    if (op == 0 || op == 1) {
+        texp->c_bias = bias;
+        texp->c_scale = scale;
+    } else {
+        texp->c_bias = 0;
+        texp->c_scale = 0;
+    }
 }
 
 /*
@@ -1870,19 +1878,84 @@ void fn_801B707C(HSD_TObj* tobj, u32 coord_id) {
      */
 }
 
-/*
- * HSD_TObjFullBind - 0x801B7178 | Size: 0x394
- * Full texture binding with all parameters.
- */
-void fn_801B7178(HSD_TObj* tobj, u32 map_id, u32 coord_id) {
-    if (tobj == NULL) {
-        return;
+extern char lbl_8047DEA0;
+void fn_801B750C(ColTExpNode* texp, u8 sel);
+
+static inline void ColTExpFree(ColTExpNode* texp)
+{
+    switch (ColTExpGetType(texp)) {
+    case COL_TE_TEV:
+        fn_80193AF0(texp, 0x7C);
+        break;
+    case COL_TE_CNST:
+        fn_80193AF0(texp, 0x14);
+        break;
     }
-    fn_801B600C(tobj, map_id);
-    fn_801B6E74(tobj, coord_id);
-    if (tobj->flags & TEX_MTX_DIRTY) {
-        HSD_TExpCnst(tobj);
+}
+
+/* HSD_TExpFreeList */
+ColTExpNode* fn_801B7178(ColTExpNode* list, s32 type, s32 all) {
+    ColTExpNode** handle;
+    ColTExpNode* current;
+    ColTExpNode* next;
+
+    handle = &list;
+    if (all != 0) {
+        while (*handle != NULL) {
+            if (type == COL_TE_0 || type == (*handle)->type) {
+                switch ((*handle)->type) {
+                case COL_TE_TEV:
+                case COL_TE_CNST:
+                    next = (*handle)->next;
+                    ColTExpFree(*handle);
+                    *handle = next;
+                    continue;
+                default:
+                    __assert(&lbl_8047DE70, 0xDC, &lbl_8047DEA0);
+                    break;
+                }
+            }
+            handle = &(*handle)->next;
+        }
+    } else {
+        if (type == COL_TE_0 || type == COL_TE_TEV) {
+            for (current = list; current != NULL; current = current->next) {
+                if (current->type == COL_TE_TEV &&
+                    current->c_ref == 0 && current->c_ref == 0) {
+                    fn_801B750C(current, COL_TE_RGB);
+                    fn_801B750C(current, COL_TE_A);
+                }
+            }
+        }
+
+        while (*handle != NULL) {
+            if (type == COL_TE_0 || type == (*handle)->type) {
+                switch ((*handle)->type) {
+                case COL_TE_TEV:
+                    if ((*handle)->c_ref != 0 || (*handle)->a_ref != 0) {
+                        break;
+                    }
+                    next = (*handle)->next;
+                    ColTExpFree(*handle);
+                    *handle = next;
+                    continue;
+                case COL_TE_CNST:
+                    if (((ColTECnst*)*handle)->ref != 0) {
+                        break;
+                    }
+                    next = (*handle)->next;
+                    ColTExpFree(*handle);
+                    *handle = next;
+                    continue;
+                default:
+                    __assert(&lbl_8047DE70, 0x10C, &lbl_8047DEA0);
+                    break;
+                }
+            }
+            handle = &(*handle)->next;
+        }
     }
+    return list;
 }
 
 /*
