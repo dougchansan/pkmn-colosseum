@@ -49,6 +49,7 @@ void GSmodelAttachToGSpart(GSmodel* model, GSmodelAttachPart* part,
     flags = model->flags.raw | 0x80000;
     model->flags.raw = flags;
     if ((u8)updateOnce != 0) {
-        model->flags.raw = flags | 0x40000;
+        flags = model->flags.raw | 0x40000;
+        model->flags.raw = flags;
     }
 }

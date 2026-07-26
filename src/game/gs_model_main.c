@@ -266,8 +266,8 @@ void fn_800E3604(u32 flags, u8 slot)
                 HSDJObj* jobj;
 
                 modelShadowPrepare__FP8_GSmodelb(model, 1);
-                jobj = (modelFlags & 0x80) ? model->renderJObjAlt
-                                           : model->renderJObj;
+                jobj = (model->flags.raw & 0x80) ? model->renderJObjAlt
+                                                 : model->renderJObj;
                 if ((flags & 0x10) != 0) {
                     fn_801A13CC(jobj, 0, 1, 0);
                     fn_800D6A5C(model->vertexCount, model->polygonCount);

@@ -70,10 +70,10 @@ void GSmodelPopState(GSmodel* model, const GSmodelState* state)
     GSmodelSetTexAnimFrame(model, state->texAnimFrame);
     GSmodelSetTexAnimRate(model, state->texAnimRate);
     GSmodelSetTexAnimType(model, state->texAnimType);
-    if (state->flags & 0x04000000) {
+    if (state->flags & 0x20) {
         GSmodelStartAnim(model);
     }
-    if (state->flags & 0x02000000) {
+    if (state->flags & 0x40) {
         GSmodelStartTexAnim(model);
     }
     GSmodelUpdateAnim(model);
