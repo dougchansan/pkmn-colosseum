@@ -246,7 +246,7 @@ extern void fn_800D6A5C(s32 vertexCount, s32 polygonCount);
 extern void fn_80195A48(void);
 extern void fn_800D87AC(s32 mode);
 
-void fn_800E3604(u32 flags, u8 slot)
+void fn_800E3604(s32 flags, u8 slot)
 {
     void* camera;
 
@@ -258,7 +258,7 @@ void fn_800E3604(u32 flags, u8 slot)
         GSlightSetupLights(*(void**)((u8*)camera + 0xC));
         for (i = 0; i < lbl_8047AB78; i++) {
             GSmodel* model = &lbl_8047AB74[i];
-            u32 modelFlags = model->flags.raw;
+            s32 modelFlags = model->flags.raw;
 
             if ((modelFlags & 1) != 0 && (modelFlags & 2) != 0 &&
                 (modelFlags & 0x400400) != 0 &&
