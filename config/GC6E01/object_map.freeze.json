@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196100,
     "total_functions": 8603,
-    "total_units": 2035
+    "total_units": 2045
   },
   "topology_status": {
     "auto_units": 68,
-    "named_units": 1967,
-    "source_backed_units": 1961,
+    "named_units": 1977,
+    "source_backed_units": 1971,
     "auto_code": 0,
     "auto_data": 57687,
     "auto_functions": 0
@@ -23,7 +23,7 @@
     "matched_data_percent": 97.28669,
     "matched_functions": 6569,
     "matched_functions_percent": 76.357086,
-    "fuzzy_match_percent": 71.0935
+    "fuzzy_match_percent": 71.11655
   },
   "unit_topology": [
     {
@@ -3451,17 +3451,30 @@
       "total_functions": 4
     },
     {
-      "name": "main/game/menu/menu_middle_range_8006B5D0",
+      "name": "main/game/menu/menu_middle_r48_8006B5D0_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 792,
+          "size": 228,
           "virtual_address": 2147923408
         }
       ],
-      "total_code": 792,
+      "total_code": 228,
       "total_data": 0,
-      "total_functions": 2
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/menu/menu_middle_r48_8006B6B4_o2",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 564,
+          "virtual_address": 2147923636
+        }
+      ],
+      "total_code": 564,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/game/menu/menu_middle_exact_8006B8E8",
@@ -3815,17 +3828,43 @@
       "total_functions": 3
     },
     {
-      "name": "main/game/menu/menu_carde_matrix",
+      "name": "main/game/menu/menu_carde_r48_8007C300_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 2228,
+          "size": 1260,
           "virtual_address": 2147992320
         }
       ],
-      "total_code": 2228,
+      "total_code": 1260,
       "total_data": 0,
-      "total_functions": 9
+      "total_functions": 6
+    },
+    {
+      "name": "main/game/menu/menu_carde_r48_8007C7EC_o2",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 708,
+          "virtual_address": 2147993580
+        }
+      ],
+      "total_code": 708,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/menu/menu_carde_r48_8007CAB0_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 260,
+          "virtual_address": 2147994288
+        }
+      ],
+      "total_code": 260,
+      "total_data": 0,
+      "total_functions": 2
     },
     {
       "name": "main/game/menu/menu_carde_matrix_candidate_8007CBB4",
@@ -4387,17 +4426,43 @@
       "total_functions": 1
     },
     {
-      "name": "main/dolphin/sdk_range_80098108",
+      "name": "main/dolphin/sdk_r48_80098108_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 8152,
+          "size": 4856,
           "virtual_address": 2148106504
         }
       ],
-      "total_code": 8152,
+      "total_code": 4856,
       "total_data": 0,
-      "total_functions": 32
+      "total_functions": 22
+    },
+    {
+      "name": "main/dolphin/sdk_r48_80099400_o2",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 912,
+          "virtual_address": 2148111360
+        }
+      ],
+      "total_code": 912,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/dolphin/sdk_r48_80099790_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 2384,
+          "virtual_address": 2148112272
+        }
+      ],
+      "total_code": 2384,
+      "total_data": 0,
+      "total_functions": 9
     },
     {
       "name": "main/dolphin/os/OSGetExceptionHandler",
@@ -18206,17 +18271,30 @@
       "total_functions": 1
     },
     {
-      "name": "main/game/fsys/fsys_file_candidate_8017B1CC",
+      "name": "main/game/fsys/fsys_file_r48_8017B1CC_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 3612,
+          "size": 2920,
           "virtual_address": 2149036492
         }
       ],
-      "total_code": 3612,
+      "total_code": 2920,
       "total_data": 0,
-      "total_functions": 12
+      "total_functions": 11
+    },
+    {
+      "name": "main/game/fsys/fsys_file_r48_8017BD34_o2",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 692,
+          "virtual_address": 2149039412
+        }
+      ],
+      "total_code": 692,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/game/fsys/fsys_file_exact_8017BFE8",
@@ -20325,17 +20403,43 @@
       "total_functions": 1
     },
     {
-      "name": "main/hsd/hsd_robj_range_801AEBE4",
+      "name": "main/hsd/hsd_robj_r48_801AEBE4_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 5304,
+          "size": 2428,
           "virtual_address": 2149247972
         }
       ],
-      "total_code": 5304,
+      "total_code": 2428,
       "total_data": 0,
-      "total_functions": 11
+      "total_functions": 4
+    },
+    {
+      "name": "main/hsd/hsd_robj_r48_801AF560",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1868,
+          "virtual_address": 2149250400
+        }
+      ],
+      "total_code": 1868,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/hsd/hsd_robj_r48_801AFCAC_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1008,
+          "virtual_address": 2149252268
+        }
+      ],
+      "total_code": 1008,
+      "total_data": 0,
+      "total_functions": 6
     },
     {
       "name": "main/hsd/hsd_robj_update_func",
@@ -22509,17 +22613,43 @@
       "total_functions": 3
     },
     {
-      "name": "main/dolphin/thp/THP_range_801E1B54",
+      "name": "main/dolphin/thp/THP_r48_801E1B54_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 14836,
+          "size": 7932,
           "virtual_address": 2149456724
         }
       ],
-      "total_code": 14836,
+      "total_code": 7932,
       "total_data": 0,
-      "total_functions": 46
+      "total_functions": 22
+    },
+    {
+      "name": "main/dolphin/thp/THP_r48_801E3A50_o4s",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1284,
+          "virtual_address": 2149464656
+        }
+      ],
+      "total_code": 1284,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/dolphin/thp/THP_r48_801E3F54_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 5620,
+          "virtual_address": 2149465940
+        }
+      ],
+      "total_code": 5620,
+      "total_data": 0,
+      "total_functions": 23
     },
     {
       "name": "main/dolphin/thp/THPDec_range_801E5548",

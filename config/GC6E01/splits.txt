@@ -768,8 +768,11 @@ game/menu/menu_middle_range_8006B420.c:
 game/menu/menu_middle_exact_8006B4AC.c:
 	.text       start:0x8006B4AC end:0x8006B5D0
 
-game/menu/menu_middle_range_8006B5D0.c:
-	.text       start:0x8006B5D0 end:0x8006B8E8
+game/menu/menu_middle_r48_8006B5D0_prefix.c:
+	.text       start:0x8006B5D0 end:0x8006B6B4
+
+game/menu/menu_middle_r48_8006B6B4_o2.c:
+	.text       start:0x8006B6B4 end:0x8006B8E8
 
 game/menu/menu_middle_exact_8006B8E8.c:
 	.text       start:0x8006B8E8 end:0x8006B9B8
@@ -852,8 +855,14 @@ game/menu/menu_candidate_80075390_r46_8007C23C.c:
 game/menu/menu_poke_coupon.c:
 	.text       start:0x8007C260 end:0x8007C300
 
-game/menu/menu_carde_matrix.c:
-	.text       start:0x8007C300 end:0x8007CBB4
+game/menu/menu_carde_r48_8007C300_prefix.c:
+	.text       start:0x8007C300 end:0x8007C7EC
+
+game/menu/menu_carde_r48_8007C7EC_o2.c:
+	.text       start:0x8007C7EC end:0x8007CAB0
+
+game/menu/menu_carde_r48_8007CAB0_suffix.c:
+	.text       start:0x8007CAB0 end:0x8007CBB4
 
 game/menu/menu_carde_matrix_candidate_8007CBB4.c:
 	.text       start:0x8007CBB4 end:0x8007D4FC
@@ -984,8 +993,14 @@ game/gbaCommunication_candidate_80096C48.c:
 dolphin/os/PPCArch.c:
 	.text       start:0x800980E0 end:0x80098108
 
-dolphin/sdk_range_80098108.c:
-	.text       start:0x80098108 end:0x8009A0E0
+dolphin/sdk_r48_80098108_prefix.c:
+	.text       start:0x80098108 end:0x80099400
+
+dolphin/sdk_r48_80099400_o2.c:
+	.text       start:0x80099400 end:0x80099790
+
+dolphin/sdk_r48_80099790_suffix.c:
+	.text       start:0x80099790 end:0x8009A0E0
 
 dolphin/os/OSGetExceptionHandler.c:
 	.text       start:0x8009A0E0 end:0x8009A0F4
@@ -4054,8 +4069,11 @@ game/fsys/fsys_file.c:
 game/fsys/fsys_file_exact_8017B1AC.c:
 	.text       start:0x8017B1AC end:0x8017B1CC
 
-game/fsys/fsys_file_candidate_8017B1CC.c:
-	.text       start:0x8017B1CC end:0x8017BFE8
+game/fsys/fsys_file_r48_8017B1CC_prefix.c:
+	.text       start:0x8017B1CC end:0x8017BD34
+
+game/fsys/fsys_file_r48_8017BD34_o2.c:
+	.text       start:0x8017BD34 end:0x8017BFE8
 
 game/fsys/fsys_file_exact_8017BFE8.c:
 	.text       start:0x8017BFE8 end:0x8017C008
@@ -4543,8 +4561,14 @@ hsd/hsd_robj_range_801AE008.c:
 hsd/hsd_pobj_empty.c:
 	.text       start:0x801AEBE0 end:0x801AEBE4
 
-hsd/hsd_robj_range_801AEBE4.c:
-	.text       start:0x801AEBE4 end:0x801B009C
+hsd/hsd_robj_r48_801AEBE4_prefix.c:
+	.text       start:0x801AEBE4 end:0x801AF560
+
+hsd/hsd_robj_r48_801AF560.c:
+	.text       start:0x801AF560 end:0x801AFCAC
+
+hsd/hsd_robj_r48_801AFCAC_suffix.c:
+	.text       start:0x801AFCAC end:0x801B009C
 
 hsd/hsd_robj_update_func.c:
 	.text       start:0x801B009C end:0x801B00E0
@@ -5047,8 +5071,14 @@ game/gs_exact_801E16D0.c:
 game/gs_candidate_801E189C.c:
 	.text       start:0x801E189C end:0x801E1B54
 
-dolphin/thp/THP_range_801E1B54.c:
-	.text       start:0x801E1B54 end:0x801E5548
+dolphin/thp/THP_r48_801E1B54_prefix.c:
+	.text       start:0x801E1B54 end:0x801E3A50
+
+dolphin/thp/THP_r48_801E3A50_o4s.c:
+	.text       start:0x801E3A50 end:0x801E3F54
+
+dolphin/thp/THP_r48_801E3F54_suffix.c:
+	.text       start:0x801E3F54 end:0x801E5548
 
 dolphin/thp/THPDec_range_801E5548.c:
 	.text       start:0x801E5548 end:0x801E5A28
