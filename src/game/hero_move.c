@@ -529,7 +529,7 @@ u32 fn_8012B19C(s32 member, f32* start, f32* target, f32 extraRadius);
 u32 heroMoveChkHinderClear(s32 member);
 extern void fn_800D3088(void);
 extern f64 lbl_8047D068;
-void getStep__FP8FOOTSTEPP8_GSmodelPiP8FOOTWORK(void);
+void getStep__FP8FOOTSTEPP8_GSmodelPiP8FOOTWORK(f32*, void*, s32*, f32*);
 extern u32 fn_8018CD08();
 extern u32 fn_8018FCBC();
 extern void fn_8018FC50(void);
@@ -597,8 +597,8 @@ extern f32 lbl_8047D064;
 void heroMoveMain(void);
 extern void fn_80188AF4(u32, u32);
 extern void fn_80188F78(u32, u32);
-void fn_8012F1FC(void);
-void fn_8012F40C(void);
+s32 fn_8012F1FC(s32);
+s32 fn_8012F40C(s32);
 extern void GSmodelGetRotation(void);
 extern void fn_8010E138(void);
 extern void GSmodelSetRotation(void);
@@ -608,7 +608,7 @@ extern u32 floorGetNextFloorID(void);
 extern s32 fn_8006AE18(void);
 extern u8 lbl_802729C0[];
 extern u8 lbl_80272A10[];
-void heroMoveGetKenObjID(void);
+u32 heroMoveGetKenObjID(void);
 extern void fn_8018E050(u32, u32, u32);
 extern void GSmodelEnableAnimBlend(void*);
 extern void fn_8018CB5C(u32, u32);
@@ -2196,8 +2196,31 @@ extern void fn_800D3088(void);
 extern f64 lbl_8047D068;
 extern f32 lbl_8047D038;
 extern f32 lbl_8047D040;
-/* undecompiled: fn removed (ROM-derived asm), forward-declared for callers */
-void getStep__FP8FOOTSTEPP8_GSmodelPiP8FOOTWORK(void);
+void getStep__FP8FOOTSTEPP8_GSmodelPiP8FOOTWORK(
+    f32* step, void* model, s32* partIndices, f32* footwork)
+{
+    f32 modelPosition[3];
+    f32 zero = lbl_8047D038;
+    s32 i;
+
+    fn_800D3088();
+    GSmodelGetPosition(model, modelPosition);
+
+    for (i = 0; i < 4; i++) {
+        f32* position = step + 4 + i * 3;
+
+        position[0] = zero;
+        position[1] = zero;
+        position[2] = zero;
+        step[i] = zero;
+    }
+
+    for (i = 0; i < 3; i++) {
+        if (partIndices[i] >= 0 && footwork[i] >= lbl_8047D040) {
+            step[i] = footwork[i];
+        }
+    }
+}
 /* 0x8012C0B4 | 0x48C */
 extern u32 fn_8018CD08();
 extern u32 fn_8018FCBC();
@@ -3623,6 +3646,97 @@ u32 heroMoveGetResID(u32* out_zero, u32* out_val, s32 index) {
     *out_zero = 0;
     *out_val = local[index];
     return 1;
+}
+
+typedef struct HeroMoveMemberState {
+    s32 field_00;
+    u16 flags;
+    u16 field_06;
+    f32 spacing;
+    s32 neckMode;
+    u8 field_10[0x10];
+} HeroMoveMemberState;
+
+s32 fn_8012F1FC(s32 member)
+{
+    HeroMoveMemberState* state;
+
+    if (member < 0 || member >= 2) {
+        return 0;
+    }
+
+    state = (HeroMoveMemberState*)lbl_80426BD0 + member;
+    if (state->flags & 1) {
+        return 1;
+    }
+
+    state->flags |= 1;
+    state->spacing = lbl_8047D038;
+    return 1;
+}
+
+s32 fn_8012F40C(s32 member)
+{
+    HeroMoveMemberState* state;
+
+    if (member < 0 || member >= 2) {
+        return 0;
+    }
+
+    state = (HeroMoveMemberState*)lbl_80426BD0 + member;
+    if (!(state->flags & 1)) {
+        return 0;
+    }
+
+    *(s32*)lbl_80426BD0 = member;
+    state->spacing = lbl_8047D038;
+    return 1;
+}
+
+u32 heroMoveGetKenObjID(void)
+{
+    const u32* floorIds = (const u32*)lbl_802729C0;
+    const u32* objectIds = (const u32*)lbl_80272A10;
+    u32 floorId;
+    s32 variant;
+    s32 i;
+
+    if (fn_801906A0(0x8AE) == 0) {
+        return 0x00F70400;
+    }
+
+    floorId = floorGetNextFloorID();
+    for (i = 0; i < 20; i++) {
+        if (floorIds[i] == floorId) {
+            break;
+        }
+    }
+    if (i == 20) {
+        return 0x00F70400;
+    }
+
+    variant = fn_8006AE18();
+    for (i = 0; i < 5; i++) {
+        if ((s32)objectIds[i * 2] == variant) {
+            return objectIds[i * 2 + 1];
+        }
+    }
+    return floorIds[1];
+}
+
+void heroMoveSyncWithHero(void)
+{
+    HeroMoveMemberState* follower;
+
+    if (fn_801906A0(0x8AE) != 0) {
+        return;
+    }
+
+    follower = (HeroMoveMemberState*)lbl_80426BD0 + 1;
+    if (!(follower->flags & 1)) {
+        follower->flags |= 1;
+        follower->spacing = lbl_8047D038;
+    }
 }
 
 /* 0x8012F610 | 0x4C8 */

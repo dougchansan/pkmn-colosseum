@@ -1764,3 +1764,12 @@ void menuColosseumBattleExit(void) {
     lbl_8047A5A0 = NULL;
 }
 #pragma pop
+
+void menuColosseumBattleInit(void)
+{
+    extern void fn_80165A20(s32, s32, s32);
+
+    fn_80165A20(0x1E, 0, 0xFF);
+    _flagSet(0x8AE, 0);
+    menuOpen(0xD3, 0);
+}
