@@ -183,7 +183,10 @@ game/menuFightStatus.c:
 	.text       start:0x80011B4C end:0x80011EA4
 
 game/gs_range_80011EA4.c:
-	.text       start:0x80011EA4 end:0x80012D20
+	.text       start:0x80011EA4 end:0x80012858
+
+game/gs_range_candidate_80012858.c:
+	.text       start:0x80012858 end:0x80012D20
 
 game/gs_event_exec.c:
 	.text       start:0x80012D20 end:0x80013744
@@ -570,7 +573,13 @@ game/menu/menu_debug_range_8005DA48.c:
 	.text       start:0x8005DA48 end:0x8005DFC8
 
 game/menu/menuCB_BattleStart.c:
-	.text       start:0x8005DFC8 end:0x800615F4
+	.text       start:0x8005DFC8 end:0x8005E7F0
+
+game/menu/menuCB_BattleStart_candidate_8005E7F0_inline_off.c:
+	.text       start:0x8005E7F0 end:0x8005FFE4
+
+game/menu/menuCB_BattleStart_candidate_8005FFE4.c:
+	.text       start:0x8005FFE4 end:0x800615F4
 
 game/menu/menuCB_BattleStart_candidate_800615F4_gc20.c:
 	.text       start:0x800615F4 end:0x80061A2C
@@ -1381,7 +1390,13 @@ dolphin/sdk_exact_800B5BA4.c:
 	.text       start:0x800B5BA4 end:0x800B5C5C
 
 dolphin/sdk_candidate_800B5C5C.c:
-	.text       start:0x800B5C5C end:0x800B71F0
+	.text       start:0x800B5C5C end:0x800B5E8C
+
+dolphin/sdk_candidate_800B5E8C_o4s.c:
+	.text       start:0x800B5E8C end:0x800B671C
+
+dolphin/sdk_candidate_800B671C.c:
+	.text       start:0x800B671C end:0x800B71F0
 
 dolphin/gx/GX_fn_800B71F0.c:
 	.text       start:0x800B71F0 end:0x800B71FC
@@ -3142,7 +3157,13 @@ game/effect/effect_visual_candidate_801402AC.c:
 	.text       start:0x801402AC end:0x80140588
 
 game/people/people_data.c:
-	.text       start:0x80140588 end:0x80142984
+	.text       start:0x80140588 end:0x80140ACC
+
+game/people/people_data_candidate_80140ACC_o3.c:
+	.text       start:0x80140ACC end:0x80142368
+
+game/people/people_data_candidate_80142368.c:
+	.text       start:0x80142368 end:0x80142984
 
 game/people/people_field_lookup_exact_80142984.c:
 	.text       start:0x80142984 end:0x80142A88
@@ -3983,7 +4004,13 @@ game/fsys/fsys_file_candidate_8017DB74_gc20.c:
 	.text       start:0x8017DB74 end:0x8017DEA4
 
 game/fsys/fsys_file_candidate_8017DEA4.c:
-	.text       start:0x8017DEA4 end:0x8017F2C4
+	.text       start:0x8017DEA4 end:0x8017E30C
+
+game/fsys/fsys_file_candidate_8017E30C_o2.c:
+	.text       start:0x8017E30C end:0x8017EB6C
+
+game/fsys/fsys_file_candidate_8017EB6C.c:
+	.text       start:0x8017EB6C end:0x8017F2C4
 
 game/gs_range_8017F2C4.c:
 	.text       start:0x8017F2C4 end:0x80180C78
