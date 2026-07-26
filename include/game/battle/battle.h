@@ -449,7 +449,7 @@ typedef struct GStexture GStexture;
  * ========================================================================= */
 
 /* Waza data access */
-/* fn_801D1338 */ s32  fn_801D1338(void* wazaCtx);
+/* fn_801D1338 */ u16  fn_801D1338(void);
 /* fn_801D1364 */ void* fn_801D1364(u16 handle, s32 idx);
 /* fn_801D139C */ u32  fn_801D139C(s32 idx);
 /* fn_801D13E4 */ u32  fn_801D13E4(s32 idx);

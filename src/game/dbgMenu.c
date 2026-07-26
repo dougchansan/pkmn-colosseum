@@ -1013,8 +1013,12 @@ void* _dbgMenuGetWin__Fl(s32 offset) {
 /* 0x80134258 | 0x1C -- get relative key from obj->0x04, return (key - lbl_80478848), or -1 */
 s32 _dbgMenuGetIndex__FP14tagWINDOW_WORK(void* obj) {
     u32 val = *(u32*)((u8*)obj + 0x04);
-    if ((s32)val < (s32)lbl_80478848) return -1;
-    return (s32)(val - lbl_80478848);
+    s32 result = -1;
+
+    if ((s32)val >= (s32)lbl_80478848) {
+        result = (s32)(val - lbl_80478848);
+    }
+    return result;
 }
 
 #if 0

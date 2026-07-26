@@ -61,6 +61,8 @@ extern const char lbl_80270FBC[]; /* "GStexture: warning -- texture size adjuste
 extern u8 lbl_80466BC0[];  /* current display descriptor */
 
 /* ===== Global state (sbss/sdata) ===== */
+/* lbl_8047ABF0 : u16 -- texture pool allocation handle */
+static u16 gsTexPoolHandle;
 /* lbl_8047ABF8 : u32 -- max texture count */
 static u32 gsTexMaxCount;               /* @sda21 lbl_8047ABF8 */
 /* lbl_8047ABF4 : GStextureHandle* -- base pointer to texture pool */
@@ -220,8 +222,13 @@ void GStextureFree(GStextureHandle* tex) {
  *  TODO: match -- effect_util.c calls fn_800EFD14() with zero args,
  *  incompatible with the old 2-argument Bind signature.
  * ======================================================================= */
-void fn_800EFD14(void) {
-    /* TODO: match -- 0x28 bytes at 0x800EFD14 */
+void fn_800EFD14(GStextureHandle* tex, u16 handle) {
+    if (tex == NULL || tex->inUse != 0) {
+        return;
+    }
+
+    tex->inUse = 1;
+    tex->memHandle = handle;
 }
 
 /* =======================================================================
@@ -531,7 +538,20 @@ void GStextureLoad(void) {
  *  "GX FIFO init", not a texture-pool initialiser, so no semantic name
  *  is asserted here.
  * ======================================================================= */
-void GStextureInit(void) {
-    /* TODO: match -- 0x70 bytes at 0x800EFFC0 */
+void GStextureInit(u32 count) {
+    u8* texture;
+    u32 i;
+
+    gsTexMaxCount = count;
+    gsTexPoolHandle = _toolentryAlloc__FUl(count << 7);
+    if (gsTexPoolHandle == 0) {
+        return;
+    }
+
+    gsTexPool = fn_800E27B0(gsTexPoolHandle);
+    texture = (u8*)gsTexPool;
+    for (i = 0; i < gsTexMaxCount; i++, texture += 0x80) {
+        texture[6] = 0;
+    }
 }
 #endif

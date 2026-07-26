@@ -268,7 +268,7 @@ extern u8    lbl_80467C80[];
  * can cause.
  * ========================================================================= */
 
-extern s32 fn_801D1338(void* wazaCtx);
+extern u16 fn_801D1338(void);
 extern void* fn_801D1364(u16 handle, s32 idx);
 extern u32 fn_801D139C(s32 idx);
 extern u32 fn_801D13E4(s32 idx);
@@ -288,7 +288,7 @@ extern u8 fn_801D16C4(void);
 extern u32 mailGetAttachFileGroup(s32 idx);
 extern void fn_801D1734(s32 attackerSlot, s32 targetSlot, s32 moveID);
 extern void fn_801D1864(s32 attackerSlot, s32 targetSlot, s32 moveID, s32 cameraMode);
-extern void fn_801D19A4(s32 seqHandle, f32 speed);
+extern u32 fn_801D19A4(s32 idx);
 extern u32 mailGetContents(s32 idx);
 extern u32 mailGetSenderName(s32 idx);
 extern u32 mailGetSubject(s32 idx);

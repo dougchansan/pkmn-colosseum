@@ -27,6 +27,132 @@ s32 dbgMenuLogChangeDisp(void)
 }
 #pragma peephole reset
 
+typedef struct DebugMenuKeyInfo {
+    u8 _0[4];
+    u16 trigger;
+    u16 repeat;
+} DebugMenuKeyInfo;
+
+s32 dbgMenuLogDraw(void* window)
+{
+    extern DebugMenuKeyInfo* windowGetKeyInfo(void);
+    extern s32 windowGetParam(void*, s32);
+    extern void windowSetParam(void*, s32, s32);
+    extern void fn_800DA1E8(s32, s32, s32);
+    extern void fn_8001E58C(s32, s32, s32, s32, u32*);
+    extern s32 GSlogGetLineCount(void);
+    extern char* GSlogGetLine(s32);
+    extern void fn_800FAEF8(s32, s32, u32, char*, ...);
+    extern u32 lbl_8047BF48;
+    u32 color;
+    s32 lines;
+    s32 width;
+    s32 y;
+    s32 i;
+    s32 line;
+
+    color = lbl_8047BF48;
+    if (windowGetKeyInfo()->trigger & 0x100) {
+        windowSetParam(window, 0, (windowGetParam(window, 0) + 1) % 4);
+    }
+
+    switch (windowGetParam(window, 0)) {
+    case 1:
+        lines = 10;
+        width = 0x82;
+        y = 0x27;
+        break;
+    case 2:
+        lines = 0x20;
+        width = 0x1A0;
+        y = 0x27;
+        break;
+    case 3:
+        lines = 1;
+        width = 0xD;
+        y = 0x1BA;
+        break;
+    default:
+        lines = 10;
+        width = 0x82;
+        y = 0x145;
+        break;
+    }
+
+    fn_800DA1E8(0, 7, 2);
+    fn_8001E58C(0xF, y - 5, 0x25D, width + 0x12, &color);
+    for (i = 0; i < lines; i++) {
+        line = i + GSlogGetLineCount() - lines;
+        if (line >= 0) {
+            fn_800FAEF8(0x14, y, 0xC0C0C0FF, GSlogGetLine(line));
+        }
+        y += 13;
+    }
+    return 0;
+}
+
+s32 menuDbgItemCreateCursor(u8* window)
+{
+    extern DebugMenuKeyInfo* windowGetKeyInfo(void);
+    extern s32 lbl_8047A5C4;
+    extern s32 lbl_8047A5C8;
+    extern s32 lbl_80478BD8;
+    DebugMenuKeyInfo* keys;
+    s32 maximum;
+
+    keys = windowGetKeyInfo();
+    if (keys->repeat & 1) {
+        window[0x95]--;
+        if ((s8)window[0x95] < 0) {
+            window[0x95] = 0;
+        }
+    }
+    if (keys->repeat & 2) {
+        window[0x95]++;
+        if ((s8)window[0x95] > 1) {
+            window[0x95] = 1;
+        }
+    }
+
+    if ((s8)window[0x95] == 0) {
+        maximum = lbl_80478BD8 - 1;
+        if (keys->repeat & 8) {
+            lbl_8047A5C8++;
+            if (lbl_8047A5C8 > maximum) lbl_8047A5C8 = maximum;
+        }
+        if (keys->repeat & 0x400) {
+            lbl_8047A5C8 += 10;
+            if (lbl_8047A5C8 > maximum) lbl_8047A5C8 = maximum;
+        }
+        if (keys->repeat & 4) {
+            lbl_8047A5C8--;
+            if (lbl_8047A5C8 < 0) lbl_8047A5C8 = 0;
+        }
+        if (keys->repeat & 0x200) {
+            lbl_8047A5C8 -= 10;
+            if (lbl_8047A5C8 < 0) lbl_8047A5C8 = 0;
+        }
+    } else if ((s8)window[0x95] == 1) {
+        if (keys->repeat & 8) {
+            lbl_8047A5C4++;
+            if (lbl_8047A5C4 > 999) lbl_8047A5C4 = 999;
+        }
+        if (keys->repeat & 0x400) {
+            lbl_8047A5C4 += 10;
+            if (lbl_8047A5C4 > 999) lbl_8047A5C4 = 999;
+        }
+        if (keys->repeat & 4) {
+            lbl_8047A5C4--;
+            if (lbl_8047A5C4 < 0) lbl_8047A5C4 = 0;
+        }
+        if (keys->repeat & 0x200) {
+            lbl_8047A5C4 -= 10;
+            if (lbl_8047A5C4 < 0) lbl_8047A5C4 = 0;
+        }
+    }
+    return 0;
+}
+
 #pragma peephole off
 s32 dbgMenuFieldCameraChangeDisp(void)
 {

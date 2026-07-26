@@ -224,7 +224,7 @@ s32 menuOpenCustom(void* menu_id, u32 parent_id, s32* cursor_out, s32 close_flag
 extern void menuSetPosition(void* p, s16 a, s16 b);
 extern void menuButtonNormal(void* p);
 extern void menuPlaySe(void* p, void* q);
-extern void fn_801034DC(void);
+extern u8 _menuGetAgbKeyInfo__FlPUs(s32, u16*);
 extern void _menuUpdateKeyInfo__FP15WINDOW_SYS_WORK();
 extern void menuGetKeyInfo(void* output, s32 port);
 extern u8 menuGetEnablePort(void);
@@ -1340,13 +1340,35 @@ void menuPlaySe(void* p, void* q) {
 #pragma pop
 
 /* 0x801034DC | 0x138 */
-#pragma push
-#pragma optimization_level 0
-#pragma optimizewithasm off
-void fn_801034DC(void) {
-    /* TODO: match -- 312 bytes at 0x801034DC */
+extern u8 fn_8008ABA0(s32);
+extern s32 fn_8008AB8C(s32);
+
+u8 _menuGetAgbKeyInfo__FlPUs(s32 port, u16* keys) {
+    s32 device;
+    u16 buttons;
+    u16 result;
+
+    device = port + 1;
+    result = 0;
+    if (fn_8008ABA0(device) == 0) {
+        return 0;
+    }
+
+    buttons = (u16)fn_8008AB8C(device);
+    if (buttons & 0x40) result |= 0x1;
+    if (buttons & 0x80) result |= 0x2;
+    if (buttons & 0x20) result |= 0x4;
+    if (buttons & 0x10) result |= 0x8;
+    if (buttons & 0x1) result |= 0x10;
+    if (buttons & 0x2) result |= 0x20;
+    if (buttons & 0x4) result |= 0x100;
+    if (buttons & 0x200) result |= 0x200;
+    if (buttons & 0x100) result |= 0x400;
+    if (buttons & 0x8) result |= 0x800;
+
+    *keys = result;
+    return 1;
 }
-#pragma pop
 
 /* 0x80103614 | 0x2E4 */
 #pragma push

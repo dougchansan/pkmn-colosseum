@@ -27,9 +27,8 @@
  */
 #if !defined(PR424_MAIL_SPLIT_1338_1470) || \
     defined(PR424_MAIL_1338_13E4)
-s32 fn_801D1338(void* wazaCtx) {
-    if (wazaCtx == NULL) return 0;
-    return *(s32*)((u8*)wazaCtx + 0x00);
+u16 fn_801D1338(void) {
+    return *(u16*)((u8*)savedataGetStatus(0, 10) + 0x444);
 }
 #endif
 
@@ -341,8 +340,33 @@ void fn_801D1864(s32 attackerSlot, s32 targetSlot, s32 moveID, s32 cameraMode) {
  * fn_801D19A4 - Waza animation speed control.
  * Address: 0x801D19A4 | Size: 0xA0
  */
-void fn_801D19A4(s32 seqHandle, f32 speed) {
-    /* TODO: Waza animation speed control (0xA0 bytes) */
+u32 fn_801D19A4(s32 idx) {
+    extern u32* lbl_80478EA0;
+    extern u16* lbl_80478EA4;
+    WazaEntry* entry;
+    u16 current;
+    u32 count;
+
+    if (idx < 0 || (u32)idx >= *lbl_80478E98) {
+        entry = NULL;
+    } else {
+        entry = &lbl_80478E9C[idx];
+    }
+
+    current = entry == NULL ? 0xFFFF : *(u16*)((u8*)entry + 2);
+    if (current == 0xFFFF) {
+        return 0xFFFF;
+    }
+
+    count = 0;
+    while (current < *lbl_80478EA0) {
+        if (lbl_80478EA4[current * 2 + 1] == 0) {
+            return count;
+        }
+        count++;
+        current++;
+    }
+    return count;
 }
 #endif
 
