@@ -6978,6 +6978,13 @@ config.libs = [
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
+            Object(
+                CodeCandidate,
+                "game/people/people_candidate_8018D7D0_gc20.c",
+                mw_version="GC/2.0",
+                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                progress_category="game",
+            ),
             *[
                 Object(
                     status,
@@ -6988,6 +6995,7 @@ config.libs = [
                 )
                 for status, path in [
                     (CodeCandidate, "game/people/people.c"),
+                    (CodeCandidate, "game/people/people_candidate_8018D928.c"),
                     (Matching, "game/people/people_exact_8018F470.c"),
                     (CodeCandidate, "game/people/people_candidate_8018F4C8.c"),
                     (Matching, "game/people/people_exact_8018F5B4.c"),

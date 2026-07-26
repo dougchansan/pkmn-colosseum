@@ -3794,7 +3794,13 @@ game/gs_range_8017F2C4.c:
 	.text       start:0x8017F2C4 end:0x80180C78
 
 game/people/people.c:
-	.text       start:0x80180C78 end:0x8018F470
+	.text       start:0x80180C78 end:0x8018D7D0
+
+game/people/people_candidate_8018D7D0_gc20.c:
+	.text       start:0x8018D7D0 end:0x8018D928
+
+game/people/people_candidate_8018D928.c:
+	.text       start:0x8018D928 end:0x8018F470
 
 game/people/people_exact_8018F470.c:
 	.text       start:0x8018F470 end:0x8018F4C8
