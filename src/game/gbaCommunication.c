@@ -2727,7 +2727,7 @@ void fn_800965C8(void* window, u8* sprite) {
     void* bios;
     s16 id;
     s32 state;
-    u32 value;
+    s32 value;
     u32 msg;
 
     pokemon = *(void**)(lbl_803FB380 + 0x0C);
