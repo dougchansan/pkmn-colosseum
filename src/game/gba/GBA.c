@@ -149,24 +149,24 @@ asm void GBAGetStatus(void) {
 }
 #endif
 #pragma pop
+static inline s32 GBAGetStatusAsync(s32 chan, u32 status, u32 callback) {
+  u8 *entry = lbl_804783E0 + chan * 0x100;
+  if (*(u32 *)(entry + 0x1C) != 0) {
+    return 2;
+  }
+  *(u8 *)(entry + 0x0) = 0;
+  *(u32 *)(entry + 0x14) = status;
+  *(u32 *)(entry + 0x1C) = callback;
+  return __GBATransfer(chan, 1, 3, (u32)ShortCommandProc);
+}
+
 #pragma push
 #pragma peephole off
 u32 GBAGetStatus(int r3, u32 r4) {
-  int idx;
-  u8 *entry;
   s32 result;
-	  idx = r3;
-	  entry = lbl_804783E0 + idx * 0x100;
-  if (*(u32 *)(entry + 0x1C) != 0) {
-    result = 2;
-  } else {
-    *(u8 *)(entry + 0x0) = 0;
-    *(u32 *)(entry + 0x14) = r4;
-    *(u32 *)(entry + 0x1C) = (u32)__GBASyncCallback;
-    result = __GBATransfer(idx, 1, 3, (u32)ShortCommandProc);
-  }
+  result = GBAGetStatusAsync(r3, r4, (u32)__GBASyncCallback);
   if (result == 0) {
-    result = __GBASync(idx);
+    result = __GBASync(r3);
   }
   return result;
 }
@@ -181,24 +181,24 @@ asm void GBAReset(void) {
 }
 #endif
 #pragma pop
+static inline s32 GBAResetAsync(s32 chan, u32 status, u32 callback) {
+  u8 *entry = lbl_804783E0 + chan * 0x100;
+  if (*(u32 *)(entry + 0x1C) != 0) {
+    return 2;
+  }
+  *(u8 *)(entry + 0x0) = 0xFF;
+  *(u32 *)(entry + 0x14) = status;
+  *(u32 *)(entry + 0x1C) = callback;
+  return __GBATransfer(chan, 1, 3, (u32)ShortCommandProc);
+}
+
 #pragma push
 #pragma peephole off
 u32 GBAReset(int r3, u32 r4) {
-  int idx;
-  u8 *entry;
   s32 result;
-  idx = r3;
-  entry = lbl_804783E0 + idx * 0x100;
-  if (*(u32 *)(entry + 0x1C) != 0) {
-    result = 2;
-  } else {
-    *(u8 *)(entry + 0x0) = 0xFF;
-    *(u32 *)(entry + 0x14) = r4;
-    *(u32 *)(entry + 0x1C) = (u32)__GBASyncCallback;
-    result = __GBATransfer(idx, 1, 3, (u32)ShortCommandProc);
-  }
+  result = GBAResetAsync(r3, r4, (u32)__GBASyncCallback);
   if (result == 0) {
-    result = __GBASync(idx);
+    result = __GBASync(r3);
   }
   return result;
 }
