@@ -242,10 +242,7 @@ HSD_TObj* HSD_MObjGetTObj(HSD_MObj* mobj)
 /* 0x801A6DDC | 0x24 */
 void HSD_MObjSetAlpha(HSD_MObj* mobj, f32 alpha)
 {
-    if (mobj == NULL) {
-        return;
-    }
-    if (mobj->mat == NULL) {
+    if (mobj == NULL || mobj->mat == NULL) {
         return;
     }
     mobj->mat->alpha = alpha;
