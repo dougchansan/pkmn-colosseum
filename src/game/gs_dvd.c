@@ -662,8 +662,13 @@ u32 fn_8016761C(GSsndEntry* entry, u16 value)
     void* resource;
     GSsndWork* work = entry->work;
 
-    if (work == NULL || ((GSsndFlagBits*)&entry->flags)->active != 1 ||
-        work->handle != -1U) {
+    if (work == NULL) {
+        return 0;
+    }
+    if (((GSsndFlagBits*)&entry->flags)->active != 1) {
+        return 0;
+    }
+    if (work->handle != -1U) {
         return 0;
     }
     resource = (void*)GSresGetResource((void*)work->unkC, work->unk10);
