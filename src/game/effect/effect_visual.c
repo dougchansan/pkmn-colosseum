@@ -1099,11 +1099,6 @@ u32 fn_80139934(void* ptr) { /* TODO */ }
 #if !defined(EFFECT_VISUAL_BANK_ACTIVE)
 extern u32 lbl_8047D198;
 extern u32 lbl_8047D1A0;
-#if 0
-asm BOOL fn_80139AC4(void* ptr, u32 tick) {
-#include "src/game/effect/effect_visual_fn_80139AC4.inc"
-}
-#else
 BOOL fn_80139AC4(void* ptr, u32 tick) {
     u8* p;
     u8* entry;
@@ -1130,9 +1125,13 @@ BOOL fn_80139AC4(void* ptr, u32 tick) {
     count = *(u16*)(p + 0x44);
     entry = *(u8**)p;
     for (i = 0; i < count; i++, entry += 0x12E4) {
-        if (frame >= *(u16*)(entry + 0x12DC) && frame < *(u16*)(entry + 0x12DE)) {
-            *(u16*)(entry + 0x12E0) = 1;
-            GSvecAdd(entry + 0x12CC, entry + 0xC4, p + 0x20);
+        if (frame >= *(u16*)(entry + 0x12DC)) {
+            if (frame < *(u16*)(entry + 0x12DE)) {
+                *(u16*)(entry + 0x12E0) = 1;
+                GSvecAdd(entry + 0x12CC, entry + 0xC4, p + 0x20);
+            } else {
+                *(u16*)(entry + 0x12E0) = 0;
+            }
         } else {
             *(u16*)(entry + 0x12E0) = 0;
         }
@@ -1141,7 +1140,6 @@ BOOL fn_80139AC4(void* ptr, u32 tick) {
     *(u16*)(p + 0x48) = frame + tick;
     return 1;
 }
-#endif
 extern u8 lbl_80272D08[];
 extern u32 lbl_8047D190;
 extern u8 lbl_80272D54[];
@@ -1247,17 +1245,18 @@ extern u32 lbl_8047D190;
 extern u32 lbl_8047D1A0;
 extern u32 lbl_8047D1A8;
 extern u32 lbl_8047D1AC;
-#if 0
-asm void fn_8013A1D4(void* arg0, void* arg1, void* arg2, u32 arg3, f32 arg4) {
-#include "src/game/effect/effect_visual_fn_8013A1D4.inc"
-}
-#else
 void fn_8013A1D4(void* arg0, void* arg1, void* arg2, u32 arg3, f32 arg4) {
     u8* entry;
     u8* parent;
     u8* pos;
 
-    if (arg0 == NULL || arg1 == NULL || arg2 == NULL) {
+    if (arg0 == NULL) {
+        return;
+    }
+    if (arg1 == NULL) {
+        return;
+    }
+    if (arg2 == NULL) {
         return;
     }
 
@@ -1272,7 +1271,6 @@ void fn_8013A1D4(void* arg0, void* arg1, void* arg2, u32 arg3, f32 arg4) {
     *(f32*)(entry + 0xC8) = *(f32*)(parent + 0x24);
     *(f32*)(entry + 0xCC) = *(f32*)(parent + 0x28);
 }
-#endif
 #endif
 
 #if !defined(EFFECT_VISUAL_BANK_ACTIVE) || \
@@ -1508,11 +1506,6 @@ extern void fn_80168408(void);
 extern u32 lbl_8047D1E8;
 extern u32 lbl_8047D1F0;
 extern u32 lbl_8047D1F4;
-#if 0
-asm void fn_8013AD9C(void) {
-#include "src/game/effect/effect_visual_fn_8013AD9C.inc"
-}
-#else
 u32 fn_8013AD9C(void* ptr, u32 delta) {
     u8* p;
     u8* node;
@@ -1532,7 +1525,10 @@ u32 fn_8013AD9C(void* ptr, u32 delta) {
     if (duration == 0xFFFFFFFF) {
         *(u32*)(p + 0x58) = 0;
     } else {
-        while (node != NULL && *(u32*)(p + 0x58) >= *(u32*)(node + 0x8)) {
+        while (node != NULL) {
+            if (*(u32*)(p + 0x58) < *(u32*)(node + 0x8)) {
+                break;
+            }
             *(u32*)(p + 0x58) -= *(u32*)(node + 0x8);
             node = *(u8**)(node + 0x10);
             *(void**)(p + 0x54) = node;
@@ -1548,7 +1544,6 @@ u32 fn_8013AD9C(void* ptr, u32 delta) {
     *(u32*)(p + 0x58) += delta;
     return 1;
 }
-#endif
 #endif
 
 #if !defined(EFFECT_VISUAL_BANK_ACTIVE) || \
@@ -1883,11 +1878,6 @@ u32 fn_8013B85C(void* ptr, u32 delta) {
 extern u8 lbl_8031554C[];
 extern u8 lbl_80315540[];
 extern u32 lbl_8047D200;
-#if 0
-asm void fn_8013BA98(void* ptr) {
-#include "src/game/effect/effect_visual_fn_8013BA98.inc"
-}
-#else
 void fn_8013BA98(void* ptr) {
     u8* p;
     u8* points;
@@ -1896,7 +1886,10 @@ void fn_8013BA98(void* ptr) {
     u16 width;
     u16 depth;
 
-    if (ptr == NULL || *(void**)((u8*)ptr + 0x4) == NULL) {
+    if (ptr == NULL) {
+        return;
+    }
+    if (*(void**)((u8*)ptr + 0x4) == NULL) {
         return;
     }
 
@@ -1912,25 +1905,22 @@ void fn_8013BA98(void* ptr) {
         }
     }
 }
-#endif
 extern void clear__5GSvecFv(void);
 extern u32 lbl_8047D200;
 extern u32 lbl_8047D210;
 extern u32 lbl_8047D214;
 extern u32 lbl_8047D218;
 extern u32 lbl_8047D21C;
-#if 0
-asm void fn_8013BC10(void* ptr, f32 t) {
-#include "src/game/effect/effect_visual_fn_8013BC10.inc"
-}
-#else
 void fn_8013BC10(void* ptr, f32 t) {
     u8* p;
     u8* points;
     u32 count;
     u32 i;
 
-    if (ptr == NULL || *(void**)((u8*)ptr + 0x4) == NULL) {
+    if (ptr == NULL) {
+        return;
+    }
+    if (*(void**)((u8*)ptr + 0x4) == NULL) {
         return;
     }
 
@@ -1941,7 +1931,6 @@ void fn_8013BC10(void* ptr, f32 t) {
         *(f32*)(points + 0x4) = *(f32*)(p + 0xC4) + t * *(f32*)(p + 0x44);
     }
 }
-#endif
 extern u32 lbl_8047D220;
 extern u32 lbl_8047D204;
 extern u32 lbl_8047D228;
@@ -3546,11 +3535,6 @@ extern u32 lbl_8047D328;
 extern u32 lbl_8047D330;
 extern u32 lbl_8047D338;
 extern u32 lbl_8047D32C;
-#if 0
-asm u32 fn_8013FF0C(void* ptr) {
-#include "src/game/effect/effect_visual_fn_8013FF0C.inc"
-}
-#else
 u32 fn_8013FF0C(void* ptr) {
     u8* p;
     void* camera;
@@ -3573,7 +3557,13 @@ u32 fn_8013FF0C(void* ptr) {
     }
 
     if (model != NULL) {
-        if (GSmodelCanAnimate(model) || GSmodelCanTexAnimate(model)) {
+        if (GSmodelCanAnimate(model)) {
+            material = GSmodelGetBound(model);
+            if (material != NULL) {
+                GSmodelSetPosition(material, p + 0x38);
+                GSmodelSetScale(material, p + 0x44);
+            }
+        } else if (GSmodelCanTexAnimate(model)) {
             material = GSmodelGetBound(model);
             if (material != NULL) {
                 GSmodelSetPosition(material, p + 0x38);
@@ -3583,7 +3573,6 @@ u32 fn_8013FF0C(void* ptr) {
     }
     return 1;
 }
-#endif
 #endif
 
 #if !defined(EFFECT_VISUAL_BANK_ACTIVE) || \
