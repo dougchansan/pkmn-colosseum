@@ -2248,7 +2248,7 @@ asm void GSmsgOpen(void) {
 }
 #else
 #pragma optimization_level 2
-void GSmsgOpen(u32* item) {
+u32* GSmsgOpen(u32* item) {
     u32* head;
     u32* p;
 
@@ -2257,16 +2257,16 @@ void GSmsgOpen(u32* item) {
         head[2] = (u32)item;
         item[2] = 0;
         item[3] = 0;
-        return;
+        return item;
     }
     p = (u32*)head[2];
     while (1) {
-        if (p == item) return;
+        if (p == item) return NULL;
         if (p[2] == 0) {
             p[2] = (u32)item;
             item[2] = 0;
             item[3] = (u32)p;
-            return;
+            return item;
         }
         p = (u32*)p[2];
     }
