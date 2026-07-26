@@ -771,6 +771,8 @@ u32 fn_80167FA8(u32 workCount)
             lbl_80478C24 = (const u8*)"GC6J";
             break;
         case 1:
+            lbl_80478C24 = (const u8*)"GC6E";
+            break;
         case 2:
             lbl_80478C24 = (const u8*)"GC6E";
             break;
