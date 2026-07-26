@@ -1172,8 +1172,14 @@ dolphin/db/DBIsExceptionMarked.c:
 dolphin/db/DBPrintf.c:
 	.text       start:0x800A2CE8 end:0x800A2D38
 
-dolphin/sdk_range_800A2D38.c:
-	.text       start:0x800A2D38 end:0x800A3744
+dolphin/sdk_candidate_800A2D38_prefix.c:
+	.text       start:0x800A2D38 end:0x800A3458
+
+dolphin/sdk_candidate_800A3458.c:
+	.text       start:0x800A3458 end:0x800A35E4
+
+dolphin/sdk_candidate_800A35E4_suffix.c:
+	.text       start:0x800A35E4 end:0x800A3744
 
 dolphin/sdk_exact_800A3744.c:
 	.text       start:0x800A3744 end:0x800A37CC

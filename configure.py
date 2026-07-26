@@ -3097,7 +3097,20 @@ config.libs = [
             ),
             Object(
                 CodeCandidate,
-                "dolphin/sdk_range_800A2D38.c",
+                "dolphin/sdk_candidate_800A2D38_prefix.c",
+                mw_version="GC/1.2.5n",
+                progress_category="sdk",
+            ),
+            Object(
+                CodeCandidate,
+                "dolphin/sdk_candidate_800A3458.c",
+                mw_version="GC/1.2.5n",
+                extra_cflags=["-fp_contract off"],
+                progress_category="sdk",
+            ),
+            Object(
+                CodeCandidate,
+                "dolphin/sdk_candidate_800A35E4_suffix.c",
                 mw_version="GC/1.2.5n",
                 progress_category="sdk",
             ),
