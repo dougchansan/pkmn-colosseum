@@ -571,8 +571,10 @@ void AISetStreamVolRight(u32 volume) {
 u32 AIGetStreamVolRight(void) {
     return (AI_REGS->volume >> 8) & 0xff;
 }
+#endif
 
-#if !defined(SDK_AC02C_EXACT_ACTIVE)
+#if !defined(SDK_AC02C_EXACT_ACTIVE) || \
+    defined(SDK_AC02C_CANDIDATE_AIINIT_ONLY)
 void AIInit(u8* stack) {
     if (lbl_8047A8D8 != TRUE) {
         OSRegisterVersion(lbl_80478A28);
@@ -600,7 +602,6 @@ void AIInit(u8* stack) {
         lbl_8047A8D8 = TRUE;
     }
 }
-#endif
 #endif
 
 #if !defined(SDK_AC02C_EXACT_ACTIVE) || \

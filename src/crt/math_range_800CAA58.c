@@ -353,40 +353,39 @@ f64 cos(f64 x) {
 
 f64 ceil(f64 x) {
     DoubleShape shape;
-    s32 hi;
-    u32 lo;
+    s32 i0;
+    s32 i1;
     s32 j0;
-    s32 i;
-    u32 ui;
-    u32 old;
+    u32 i;
+    u32 j;
 
     shape.value = x;
-    hi = shape.parts.hi;
-    lo = shape.parts.lo;
-    j0 = ((hi >> 20) & 0x7ff) - 0x3ff;
+    i0 = shape.parts.hi;
+    i1 = shape.parts.lo;
+    j0 = ((i0 >> 20) & 0x7ff) - 0x3ff;
 
     if (j0 < 20) {
         if (j0 < 0) {
             if (lbl_8047C900 + x > lbl_8047C908) {
-                if (hi < 0) {
-                    hi = 0x80000000;
-                    lo = 0;
-                } else if ((hi | lo) != 0) {
-                    hi = 0x3ff00000;
-                    lo = 0;
+                if (i0 < 0) {
+                    i0 = 0x80000000;
+                    i1 = 0;
+                } else if ((i0 | i1) != 0) {
+                    i0 = 0x3ff00000;
+                    i1 = 0;
                 }
             }
         } else {
-            i = 0x000fffff >> j0;
-            if (((hi & i) | lo) == 0) {
+            i = 0x000fffffU >> j0;
+            if (((i0 & i) | i1) == 0) {
                 return x;
             }
             if (lbl_8047C900 + x > lbl_8047C908) {
-                if (hi > 0) {
-                    hi += 0x00100000 >> j0;
+                if (i0 > 0) {
+                    i0 += 0x00100000 >> j0;
                 }
-                hi &= ~i;
-                lo = 0;
+                i0 &= ~i;
+                i1 = 0;
             }
         }
     } else if (j0 > 51) {
@@ -395,29 +394,28 @@ f64 ceil(f64 x) {
         }
         return x;
     } else {
-        ui = 0xffffffffU >> (j0 - 20);
-        if ((lo & ui) == 0) {
+        i = 0xffffffffU >> (j0 - 20);
+        if ((i1 & i) == 0) {
             return x;
         }
         if (lbl_8047C900 + x > lbl_8047C908) {
-            if (hi > 0) {
+            if (i0 > 0) {
                 if (j0 == 20) {
-                    hi += 1;
+                    i0 += 1;
                 } else {
-                    i = 1 << (52 - j0);
-                    old = lo;
-                    lo += i;
-                    if (lo < old) {
-                        hi += 1;
+                    j = i1 + (1 << (52 - j0));
+                    if (j < (u32)i1) {
+                        i0 += 1;
                     }
+                    i1 = j;
                 }
             }
-            lo &= ~ui;
+            i1 &= ~i;
         }
     }
 
-    shape.parts.hi = hi;
-    shape.parts.lo = lo;
+    shape.parts.hi = i0;
+    shape.parts.lo = i1;
     return shape.value;
 }
 

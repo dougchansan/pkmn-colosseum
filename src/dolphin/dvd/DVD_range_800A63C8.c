@@ -4,4 +4,5 @@
  */
 
 #define DVD_SPLIT_LINKAGE_ACTIVE
+#define AlarmHandler AlarmHandler_800A63C8
 #include "src/dolphin/dvd/DVD.c"
