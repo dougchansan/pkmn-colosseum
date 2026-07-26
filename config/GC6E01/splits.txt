@@ -4490,7 +4490,16 @@ hsd/hsd_aobj_exact_801C0270.c:
 	.text       start:0x801C0270 end:0x801C028C
 
 hsd/hsd_aobj_candidate_801C028C.c:
-	.text       start:0x801C028C end:0x801C29C4
+	.text       start:0x801C028C end:0x801C25E4
+
+hsd/hsd_aobj_candidate_801C028C_r42_801C25E4.c:
+	.text       start:0x801C25E4 end:0x801C2670
+
+hsd/hsd_aobj_candidate_801C028C_r42_801C2670.c:
+	.text       start:0x801C2670 end:0x801C27F4
+
+hsd/hsd_aobj_candidate_801C028C_r42_801C27F4.c:
+	.text       start:0x801C27F4 end:0x801C29C4
 
 hsd/hsd_aobj_exact_801C29C4.c:
 	.text       start:0x801C29C4 end:0x801C2A60
