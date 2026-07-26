@@ -12,8 +12,10 @@
 
 #include "dolphin/types.h"
 #include "hsd/hsd_class.h"
+#include "hsd/hsd_cobj.h"
 #include "hsd/hsd_debug.h"
 #include "hsd/hsd_object.h"
+#include "crt/math.h"
 
 extern u8 lbl_8047B310;
 void fn_801B06D4(u8 value)
@@ -25,6 +27,11 @@ typedef struct HSDShadowOwner {
     u8 unk_00[0x8];
     struct HSDShadowObject* object; /* 0x08 */
 } HSDShadowOwner;
+
+typedef struct HSDShadow {
+    void* unk_00;
+    HSD_CObj* camera; /* 0x04 */
+} HSDShadow;
 
 typedef struct HSDShadowObject {
     u8 unk_00[0x58];
@@ -119,7 +126,49 @@ void fn_801B0408(HSDViewingRect* rect, HSDShadowVec* origin,
 
 /* Address: 0x801B04E0 | Size: 0x1F4 | Proposed: HSD_ShadowFunc4 */
 /* Shadow map projection computation */
-void fn_801B04E0(void) {
+void fn_801B04E0(HSDShadow* shadow, f32 top, f32 bottom, f32 left, f32 right) {
+    extern char lbl_802752C0[];
+    extern char lbl_8047DDCC;
+    extern char lbl_8047DDD4;
+    extern f32 lbl_8047DDC0;
+    HSD_CObj* camera;
+    f32 distance;
+    f32 width;
+    f32 height;
+    f32 scale;
+
+    if (shadow == NULL) {
+        __assert(lbl_802752C0, 0x31C, &lbl_8047DDCC);
+    }
+
+    camera = shadow->camera;
+    distance = HSD_CObjGetEyeDistance(camera);
+    if (distance <= lbl_8047DDC0) {
+        __assert(lbl_802752C0, 0x320, lbl_802752C0 + 0x34);
+    }
+
+    switch (HSD_CObjGetProjectionType(camera)) {
+    case 1:
+        width = __fabs(top) > __fabs(bottom) ? __fabs(top) : __fabs(bottom);
+        height = __fabs(left) > __fabs(right) ? __fabs(left) : __fabs(right);
+        HSD_CObjSetAspect(camera, height / width);
+        HSD_CObjSetFov(camera, (f32)atan2(height, distance));
+        break;
+    case 2:
+        scale = HSD_CObjGetNear(camera) / distance;
+        if (scale <= lbl_8047DDC0) {
+            __assert(lbl_802752C0, 0x33D, lbl_802752C0 + 0x44);
+        }
+        HSD_CObjSetFrustum(camera, scale * top, scale * bottom, scale * left,
+                           scale * right);
+        break;
+    case 3:
+        HSD_CObjSetOrtho(camera, top, bottom, left, right);
+        break;
+    default:
+        __assert(lbl_802752C0, 0x345, &lbl_8047DDD4);
+        break;
+    }
 }
 
 /* ========================================================================= */
