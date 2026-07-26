@@ -324,6 +324,7 @@ extern u32 synthStartSound(u16 id, u8 priority, u8 maxVoices, u8 key,
                           s16 priorityOffset, u8 studio, u32 itd);
 extern u8 lbl_804356A4[16]; /* synthITDDefault: { music, sfx } */
 extern SEQ_EVENT* GenerateNextTrackEvent(u8 trackId);
+extern SEQ_EVENT* fn_801485FC(SEQ_EVENT* event, u8 secIndex, u32* loopFlag);
 
 #define SND_SEQ_ERROR_ID 0xFFFFFFFFU
 #define SND_SEQ_CROSSFADE_ID 0x80000000U
@@ -339,6 +340,7 @@ extern SEQ_EVENT* GenerateNextTrackEvent(u8 trackId);
 #define SND_SEQVOL_MUTE 3
 #define SND_SEQVOL_MODEMASK 0xF
 
+#if !defined(SEQ_SUFFIX_BANK_ACTIVE)
 typedef struct {
     u32 headerLen;
     u32 pitchBend;
@@ -651,6 +653,7 @@ SEQ_EVENT* fn_801485FC(SEQ_EVENT* event, u8 secIndex, u32* loopFlag)
     }
     return GenerateNextTrackEvent(event->trackId);
 }
+#endif
 
 
 /* This translation unit is a topology-only split of the original seq.c. */
