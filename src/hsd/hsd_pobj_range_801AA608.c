@@ -713,6 +713,132 @@ void HSD_ClearVtxDesc(void)
 }
 #pragma pop
 
+void fn_801ACDAC(HSD_PObj* pobj, u32* vertex_count, u32* triangle_count)
+{
+    u32 vertices = 0;
+    u32 triangles = 0;
+
+    for (; pobj != NULL; pobj = pobj->next) {
+        HSD_VtxDescList* desc = pobj->verts;
+        u32 stride = 0;
+
+        for (; desc->attr != 0xFF; desc++) {
+            u32 size;
+
+            switch (desc->attr_type) {
+            case 2:
+                stride += 1;
+                continue;
+            case 3:
+                stride += 2;
+                continue;
+            case 1:
+                break;
+            default:
+                continue;
+            }
+
+            if (desc->attr == 11 || desc->attr == 12) {
+                switch (desc->comp_type) {
+                case 0:
+                case 3:
+                    size = 2;
+                    break;
+                case 1:
+                case 4:
+                    size = 3;
+                    break;
+                case 2:
+                case 5:
+                    size = 4;
+                    break;
+                }
+            } else {
+                switch (desc->comp_type) {
+                case 0:
+                case 1:
+                    size = 1;
+                    break;
+                case 2:
+                case 3:
+                    size = 2;
+                    break;
+                case 4:
+                    size = 4;
+                    break;
+                default:
+                    goto next_pobj;
+                }
+            }
+
+            switch (desc->attr) {
+            case 0:
+                stride += 1;
+                break;
+            case 9:
+                stride += size * (desc->comp_cnt == 0 ? 2 : 3);
+                break;
+            case 10:
+                if (desc->comp_cnt == 0) {
+                    stride += size * 3;
+                }
+                break;
+            case 11:
+            case 12:
+                stride += size;
+                break;
+            default:
+                if (desc->attr >= 13 && desc->attr < 21) {
+                    stride += size * (desc->comp_cnt == 0 ? 1 : 2);
+                } else {
+                    goto next_pobj;
+                }
+                break;
+            }
+        }
+
+        if (pobj->display != NULL) {
+            u8* display = pobj->display;
+            u32 offset = 0;
+            u32 length = pobj->n_display << 5;
+
+            while (offset < length) {
+                u32 primitive = display[offset++] & 0xF8;
+
+                if (primitive != 0) {
+                    u32 count =
+                        ((u32) display[offset] << 8) | display[offset + 1];
+                    offset += count * stride + 2;
+                    vertices += count;
+
+                    switch (primitive) {
+                    case 0x80:
+                        triangles += count >> 1;
+                        break;
+                    case 0x90:
+                        triangles += count / 3;
+                        break;
+                    case 0x98:
+                    case 0xA0:
+                        triangles += count - 2;
+                        break;
+                    }
+                }
+            }
+        }
+
+    next_pobj:
+        continue;
+    }
+
+    if (vertex_count != NULL) {
+        *vertex_count = vertices;
+    }
+    if (triangle_count != NULL) {
+        *triangle_count = triangles;
+    }
+}
+
 static inline void HSD_JObjRefThis(HSD_JObj* jobj)
 {
     if (jobj != NULL) {
