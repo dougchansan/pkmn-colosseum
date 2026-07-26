@@ -276,6 +276,7 @@ config.libs = [
                 "hsd/hsd_mobj_r47_801A9DF0_o4s.c",
                 mw_version="GC/1.2.5",
                 cflags=["-O4,s" if flag == "-O4,p" else flag for flag in cflags_base],
+                extra_cflags=["-inline off"],
                 progress_category="hsd",
             ),
             Object(Matching, "hsd/hsd_obj_forget_exact_801AA350.c", mw_version="GC/1.3", progress_category="hsd"),  # PR419 exact
@@ -976,6 +977,13 @@ config.libs = [
                     status,
                     f"game/effect/{name}.c",
                     mw_version="GC/1.3",
+                    cflags=[
+                        "-O3"
+                        if name == "effect_visual_candidate_80138838"
+                        and flag == "-O4,p"
+                        else flag
+                        for flag in cflags_base
+                    ],
                     extra_cflags=(
                         [
                             "-O1",
@@ -985,7 +993,7 @@ config.libs = [
                         ]
                         if name == "effect_visual_candidate_8013E54C"
                         else [
-                            "-O4,s",
+                            "-O3",
                             "-use_lmw_stmw on",
                             "-sdata 8",
                             "-sdata2 8",
@@ -1460,7 +1468,7 @@ config.libs = [
                 CodeCandidate,
                 "game/fight_trainer_range_801F87CC.c",
                 mw_version="GC/1.2.5n",
-                extra_cflags=["-O4,s", "-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                extra_cflags=["-O4,s", "-use_lmw_stmw off", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
             Object(
@@ -2055,6 +2063,13 @@ config.libs = [
                     status,
                     path,
                     mw_version="GC/1.3",
+                    cflags=[
+                        "-O3"
+                        if path == "game/wazaSequence_candidate_801DBDDC.c"
+                        and flag == "-O4,p"
+                        else flag
+                        for flag in cflags_base
+                    ],
                     extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                     progress_category="game",
                 )
@@ -2290,6 +2305,7 @@ config.libs = [
                 CodeCandidate,
                 "game/field_candidate_801195AC.c",
                 mw_version="GC/1.3",
+                cflags=["-O2" if flag == "-O4,p" else flag for flag in cflags_base],
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
@@ -4701,7 +4717,7 @@ config.libs = [
                 "game/menu/menu_candidate_r47_80078390_o2.c",
                 mw_version="GC/1.3",
                 cflags=["-O2" if flag == "-O4,p" else flag for flag in cflags_base],
-                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                extra_cflags=["-use_lmw_stmw off", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
             Object(
@@ -5845,7 +5861,8 @@ config.libs = [
                 CodeCandidate,
                 "game/fight_trainer_ai_waza_hit.c",
                 mw_version="GC/1.3",
-                extra_cflags=["-O4,s", "-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                cflags=["-O2" if flag == "-O4,p" else flag for flag in cflags_base],
+                extra_cflags=["-O2", "-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
             Object(
@@ -8710,6 +8727,7 @@ config.libs = [
                 CodeCandidate,
                 "hsd/hsd_texp_compile_candidate_801B4300.c",
                 mw_version="GC/1.3",
+                cflags=["-O2" if flag == "-O4,p" else flag for flag in cflags_base],
                 progress_category="hsd",
             ),
             Object(
