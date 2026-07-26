@@ -2036,7 +2036,7 @@ void fn_8013BA98(void* ptr) {
         GSvecCopy(vectors + (index + 1) * 0xC, vectors + 0xC);
     }
 }
-extern void clear__5GSvecFv(void);
+extern void clear__5GSvecFv(void* vec);
 extern u32 lbl_8047D200;
 extern u32 lbl_8047D210;
 extern u32 lbl_8047D214;
@@ -2044,23 +2044,60 @@ extern u32 lbl_8047D218;
 extern u32 lbl_8047D21C;
 void fn_8013BC10(void* ptr, f32 t) {
     u8* p;
-    u8* points;
-    u32 count;
-    u32 i;
-
-    if (ptr == NULL) {
-        return;
-    }
-    if (*(void**)((u8*)ptr + 0x4) == NULL) {
-        return;
-    }
+    f32 upperLeft[3];
+    f32 upperRight[3];
+    f32 lowerRight[3];
+    f32 offset[3];
+    f32 lowerLeft[3];
+    f32 lowerFar[3];
+    f32 halfWidth;
+    f32 factor;
 
     p = ptr;
-    points = *(u8**)(p + 0x4);
-    count = *(u16*)(p + 0x1C) * *(u16*)(p + 0x1E);
-    for (i = 0; i < count; i++, points += 0xC) {
-        *(f32*)(points + 0x4) = *(f32*)(p + 0xC4) + t * *(f32*)(p + 0x44);
+    halfWidth = *(f32*)&lbl_8047D200 * *(f32*)(p + 0x44);
+    clear__5GSvecFv(upperLeft);
+    clear__5GSvecFv(upperRight);
+    clear__5GSvecFv(lowerRight);
+    clear__5GSvecFv(offset);
+    clear__5GSvecFv(lowerLeft);
+    clear__5GSvecFv(lowerFar);
+
+    upperLeft[2] = -halfWidth;
+    lowerRight[2] = halfWidth;
+    upperRight[1] = *(f32*)(p + 0xC8);
+    lowerLeft[2] = *(f32*)(p + 0xC4);
+    lowerFar[2] = *(f32*)(p + 0xC4);
+
+    if (t < *(f32*)&lbl_8047D210) {
+        factor = t * *(f32*)&lbl_8047D214;
+        lowerRight[2] = halfWidth * factor;
+        upperRight[1] = *(f32*)(p + 0xC8) * factor;
+        upperRight[2] = *(f32*)&lbl_8047D200 * (-halfWidth + lowerRight[2]);
+    } else if (t < *(f32*)&lbl_8047D218) {
+        factor = (t - *(f32*)&lbl_8047D210) * *(f32*)&lbl_8047D214;
+        upperRight[2] = halfWidth * factor;
+        lowerFar[2] = *(f32*)(p + 0xC4) * (*(f32*)&lbl_8047D21C - factor);
+        offset[2] = upperRight[2];
+    } else {
+        factor = (t - *(f32*)&lbl_8047D218) * *(f32*)&lbl_8047D214;
+        upperRight[2] = halfWidth;
+        upperRight[1] = *(f32*)(p + 0xC8) * (*(f32*)&lbl_8047D21C - factor);
+        lowerFar[2] = *(f32*)(p + 0xC4) * -factor;
+        offset[2] = halfWidth * (*(f32*)&lbl_8047D21C + factor);
     }
+
+    GSvecAdd(offset, offset, p + 0x24);
+    GSvecAdd(upperLeft, upperLeft, offset);
+    GSvecAdd(upperRight, upperRight, offset);
+    GSvecAdd(lowerRight, lowerRight, offset);
+    GSvecCopy(p + 0x5C, upperLeft);
+    GSvecCopy(p + 0x68, upperRight);
+    GSvecCopy(p + 0x8C, upperRight);
+    GSvecCopy(p + 0x98, lowerRight);
+    GSvecCopy(p + 0x74, lowerLeft);
+    GSvecCopy(p + 0x80, lowerLeft);
+    GSvecCopy(p + 0xA4, lowerFar);
+    GSvecCopy(p + 0xB0, lowerLeft);
 }
 extern u32 lbl_8047D220;
 extern u32 lbl_8047D204;
