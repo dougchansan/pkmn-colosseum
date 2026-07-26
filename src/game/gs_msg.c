@@ -828,9 +828,10 @@ asm void GSmsgSetColor(void) {
 #pragma peephole off
 void GSmsgSetColor(void* obj) {
     u8 clr[8];
-    u32 init = lbl_8047CD04;
-    u32 color = *(u32*)((u8*)obj + 0x24);
-    *(u32*)(&clr[4]) = init;
+    u32 color;
+
+    *(u32*)(&clr[4]) = lbl_8047CD04;
+    color = *(u32*)((u8*)obj + 0x24);
     clr[4] = (u8)(color >> 24);
     clr[5] = (u8)((color >> 16) & 0xFF);
     clr[6] = (u8)((color >> 8) & 0xFF);
