@@ -28,7 +28,10 @@ s32 fn_800B4488(s32 chan, s32 fileNo, CARDFileInfo* fileInfo)
 
     dir = __CARDGetDirBlock(card);
     entry = &dir[fileNo];
-    result = fn_800B4308(entry);
+    result = fn_800B4270(card, entry);
+    if (result == -10) {
+        result = fn_800B4308(entry);
+    }
     if (result >= 0) {
         if (!CARDIsValidBlockNoLocal(card, entry->startBlock)) {
             result = -6;
