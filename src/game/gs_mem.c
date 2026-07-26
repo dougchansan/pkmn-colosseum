@@ -487,7 +487,8 @@ u16 fn_800E2B00(u32 size, u32 alignment)
         return 0;
     }
 
-    allocationSize = (((size + 0x1F) & ~0x1F) + 3) & ~3;
+    size = (size + 0x1F) & ~0x1F;
+    allocationSize = (size + 3) & ~3;
     if (lbl_8047AB28 != 0) {
         allocationSize += 8;
     }
