@@ -3176,14 +3176,30 @@ void generateParticle_8017424C(PSGeneratorState* gen) {
     Mtx rotationX;
     Mtx rotationY;
     Mtx rotationZ;
+    Mtx direction;
     Vec column;
+    Vec emissionVelocity;
     Vec forward;
     Vec up;
     Vec side;
+    f32 magnitude;
 
     if (gen->lifetime < lbl_8047D6B4) {
         return;
     }
+
+    emissionVelocity.x = gen->velocityX;
+    emissionVelocity.y = gen->velocityY;
+    emissionVelocity.z = gen->velocityZ;
+    if ((gen->angleFlags & 0xF) == 2 &&
+        (gen->generatorFlags & 0x80) != 0) {
+        emissionVelocity.x *= gen->generatorData[3];
+        emissionVelocity.y *= gen->generatorData[4];
+        emissionVelocity.z *= gen->generatorData[5];
+    }
+    magnitude = sqrtf(emissionVelocity.x * emissionVelocity.x +
+                      emissionVelocity.y * emissionVelocity.y +
+                      emissionVelocity.z * emissionVelocity.z);
 
     PSMTXIdentity(basis);
 
@@ -3249,6 +3265,51 @@ void generateParticle_8017424C(PSGeneratorState* gen) {
         basis[0][2] = forward.x;
         basis[1][2] = forward.y;
         basis[2][2] = forward.z;
+    }
+
+    if ((gen->angleFlags & 0xF) != 1 && magnitude > lbl_80478ACC) {
+        f32 yaw;
+        f32 pitch;
+        f32 yawSin;
+        f32 yawCos;
+        f32 pitchSin;
+        f32 pitchCos;
+        f32 flattened;
+
+        PSVECNormalize(&emissionVelocity, &emissionVelocity);
+        if (fabsf(emissionVelocity.z) < lbl_80478AC8) {
+            yaw = emissionVelocity.y >= 0.0f
+                ? lbl_8047D694 : lbl_8047D698;
+        } else {
+            yaw = atan2(emissionVelocity.y, emissionVelocity.z);
+        }
+        yawSin = sin(yaw);
+        yawCos = cos(yaw);
+        flattened = emissionVelocity.z * yawCos +
+                    emissionVelocity.y * yawSin;
+
+        if (fabsf(flattened) < lbl_80478AC8) {
+            pitch = emissionVelocity.x >= 0.0f
+                ? lbl_8047D694 : lbl_8047D698;
+        } else {
+            pitch = atan2(emissionVelocity.x, flattened);
+        }
+        pitchSin = sin(pitch);
+        pitchCos = cos(pitch);
+
+        direction[0][0] = pitchCos;
+        direction[0][1] = pitchSin;
+        direction[0][2] = 0.0f;
+        direction[0][3] = 0.0f;
+        direction[1][0] = -yawSin * pitchSin;
+        direction[1][1] = yawCos;
+        direction[1][2] = yawSin * pitchCos;
+        direction[1][3] = 0.0f;
+        direction[2][0] = -yawCos * pitchSin;
+        direction[2][1] = -yawSin;
+        direction[2][2] = yawCos * pitchCos;
+        direction[2][3] = 0.0f;
+        PSMTXConcat(basis, direction, basis);
     }
 }
 
