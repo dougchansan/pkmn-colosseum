@@ -274,8 +274,7 @@ config.libs = [
             Object(
                 CodeCandidate,
                 "hsd/hsd_mobj_r47_801A9DF0_o4s.c",
-                mw_version="GC/1.2.5",
-                cflags=["-O4,s" if flag == "-O4,p" else flag for flag in cflags_base],
+                mw_version="GC/1.2.5n",
                 extra_cflags=["-inline off"],
                 progress_category="hsd",
             ),
@@ -3834,7 +3833,8 @@ config.libs = [
             Object(
                 CodeCandidate,
                 "dolphin/sdk_range_800B771C_r40_800B7C18_gc11p1.c",
-                mw_version="GC/1.1p1",
+                mw_version="GC/1.3",
+                cflags=["-O2" if flag == "-O4,p" else flag for flag in cflags_base],
                 progress_category="sdk",
             ),
             Object(
@@ -9419,7 +9419,8 @@ config.libs = [
             Object(
                 CodeCandidate,
                 "hsd/hsd_jobj_residual_801A1B7C_r40_801A20C8_gc125n.c",
-                mw_version="GC/1.2.5n",
+                mw_version="GC/2.0p1",
+                cflags=["-O4,s" if flag == "-O4,p" else flag for flag in cflags_base],
                 extra_cflags=["-use_lmw_stmw on", "-inline noauto"],
                 progress_category="hsd",
             ),
@@ -9840,8 +9841,8 @@ config.libs = [
             Object(
                 CodeCandidate,
                 "hsd/hsd_texp_compile_candidate_801B4300.c",
-                mw_version="GC/1.3",
-                cflags=["-O2" if flag == "-O4,p" else flag for flag in cflags_base],
+                mw_version="GC/1.3.2",
+                cflags=["-O1" if flag == "-O4,p" else flag for flag in cflags_base],
                 progress_category="hsd",
             ),
             Object(
@@ -9923,7 +9924,7 @@ config.libs = [
             Object(
                 CodeCandidate,
                 "hsd/hsd_texp_r47_make_dag_o4s.c",
-                mw_version="GC/1.2.5",
+                mw_version="GC/1.3",
                 cflags=["-O4,s" if flag == "-O4,p" else flag for flag in cflags_base],
                 extra_cflags=["-inline noauto"],
                 progress_category="hsd",
@@ -9944,7 +9945,8 @@ config.libs = [
             Object(
                 CodeCandidate,
                 "hsd/hsd_texp_candidate_801B7BD4_r40_801B8B84.c",
-                mw_version="GC/1.3",
+                mw_version="GC/1.1p1",
+                cflags=["-O4,s" if flag == "-O4,p" else flag for flag in cflags_base],
                 extra_cflags=["-inline noauto"],
                 progress_category="hsd",
             ),
