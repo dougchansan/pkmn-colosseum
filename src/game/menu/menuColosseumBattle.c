@@ -1768,8 +1768,47 @@ void menuColosseumBattleExit(void) {
 void menuColosseumBattleInit(void)
 {
     extern void fn_80165A20(s32, s32, s32);
+    extern u32 fn_800E2C04(u32 size, u32 alignment);
+    extern void* fn_80113F48(void);
+    extern void* fn_801CBA0C(u32 size);
+    extern void GSresGetResource(void* archive, void* destination);
+    extern void cameraPlayAnime(s32 id, u32 data, s32 start, s32 loop);
+    extern void GSscene_SetMode(s32 mode);
+    extern u8 fn_800FF548(void);
+    extern void toolentryDebugPokemonCreate(void);
+    extern void fn_8006B5D0(void* status);
+    u32 heap;
+    void* archive;
 
     fn_80165A20(0x1E, 0, 0xFF);
     _flagSet(0x8AE, 0);
+
+    if (lbl_8047A5A0 != NULL) {
+        __assert(lbl_80267840 + 0x98, 0x20F, lbl_80267840 + 0x21C);
+    }
+
+    heap = fn_800E2C04(0x10F60, 0x20);
+    if ((u16)heap == 0) {
+        __assert(lbl_80267840 + 0x98, 0x212, &lbl_8047BF28);
+    }
+    lbl_8047A5A0 = fn_800E27B0(heap);
+    if (lbl_8047A5A0 == NULL) {
+        __assert(lbl_80267840 + 0x98, 0x213, lbl_80267840 + 0x22C);
+    }
+
+    archive = fn_80113F48();
+    ((ColosseumMenuHeap*)lbl_8047A5A0)->resourceHandle =
+        fn_801CBA0C(0x0FFE1000);
+    GSresGetResource(
+        archive, ((ColosseumMenuHeap*)lbl_8047A5A0)->resourceHandle);
+    cameraPlayAnime(0x531, 0x0FFF1800, 0, 1);
+    GSscene_SetMode(4);
+    if (fn_800FF548() == 0) {
+        toolentryDebugPokemonCreate();
+        fn_8006B5D0(savedataGetStatus(0, 0xE));
+    }
+    if (fn_8006B8E8() == 0) {
+        ((ColosseumSaveWork*)savedataGetStatus(0, 0xE))->exitPending = 0;
+    }
     menuOpen(0xD3, 0);
 }

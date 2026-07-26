@@ -217,7 +217,7 @@ extern s32 menuCloseSync(void* p, u8 flag);
 extern void menuCloseFloor(void);
 extern void fn_801024E8(void);
 extern void menuClose(s32 p);
-extern s32 menuCloseCustom(void* p, u32 mode, u8 wait);
+extern s32 menuCloseCustom(s32 id, u32 mode, u8 wait);
 extern s32 menuIsCheck(s32 param);
 extern void menuOpen(void* p, void* q);
 s32 menuOpenCustom(void* menu_id, u32 parent_id, s32* cursor_out, s32 close_flags, void* check_cursor, s32 open_param, ...);
@@ -588,26 +588,26 @@ void menuClose(s32 p) {
 #pragma pop
 
 /* 0x80102568 | 0xB8 */
-s32 menuCloseCustom(void* p, u32 mode, u8 wait) {
-    void* r29 = p;
-    void* r30 = (void*)mode;
-    u8 r31 = (u8)wait;
-    void* r3 = windowSearchID((s32)p);
-    if (r3 == (void*)0) { return 1; }
-    windowClose(r29, (u32)r30);
-    if ((u8)r31 != 0) {
-        while (1) {
-            r3 = windowSearchID((s32)r29);
-            if (r3 == (void*)0) { return 0; }
-            if (GSthreadGetCurrentThread() != 0) {
-                _threadSwitch();
-                continue;
-            }
-            GSlogWrite((const char*)lbl_80271E10, (const char*)lbl_8035B060, r29);
-            return 0;
-        }
+s32 menuCloseCustom(s32 id, u32 mode, u8 wait) {
+    void* window = windowSearchID(id);
+
+    if (window == NULL) {
+        return 1;
     }
-    r3 = windowSearchID((s32)r29);
+
+    windowClose(window, mode);
+    if (wait != 0) {
+        while (windowSearchID(id) != NULL) {
+            if (GSthreadGetCurrentThread() == 0) {
+                GSlogWrite((const char*)lbl_80271E10,
+                           (const char*)lbl_8035B060, id);
+                return 0;
+            }
+            _threadSwitch();
+        }
+    } else {
+        windowSearchID(id);
+    }
     return 0;
 }
 

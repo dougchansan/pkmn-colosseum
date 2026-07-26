@@ -4688,11 +4688,19 @@ u8* fn_80082BA4(u8* card, const u8* window, s8 pageIndex)
 u8* fn_80082CF0(u8* card, const u8* window, s8 pageIndex)
 {
     extern void fn_800CAA3C(void*, const void*);
+    s32 pageSize;
+    u8* page;
+    s32 index;
     s8 row = (s8)window[0x24];
     s8 column = (s8)window[0x26];
-    u8* cell = cardEGetCell(card, pageIndex, row, column);
+    u8* cell;
     const u8* descriptor =
         window + 0x3AC + (s8)window[0x5B + pageIndex] * 0x28;
+
+    pageSize = (s8)card[0x1C] * (s8)card[0x1D] * 0x10 + 0x76;
+    page = card + 0x24 + pageIndex * pageSize;
+    index = row * (s8)card[0x1D] + column;
+    cell = page + 0x76 + index * 0x10;
 
     fn_800CAA3C(cell, descriptor);
     cell[0x0C] = 1;
@@ -4703,5 +4711,10 @@ u8* fn_80082CF0(u8* card, const u8* window, s8 pageIndex)
 
 u8* fn_80082EA4(u8* card, s8 pageIndex, s8 row, s8 column)
 {
-    return cardEGetCell(card, pageIndex, row, column);
+    s32 pageSize =
+        (s8)card[0x1C] * (s8)card[0x1D] * 0x10 + 0x76;
+    u8* page = card + 0x24 + pageIndex * pageSize;
+    s32 index = row * (s8)card[0x1D] + column;
+
+    return page + 0x76 + index * 0x10;
 }
