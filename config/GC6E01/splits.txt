@@ -1086,8 +1086,14 @@ game/gba/gba_misc_candidate_8008ABE4.c:
 game/gba/gba_misc_candidate_8008ABE4_r42_8008AC34_gc20.c:
 	.text       start:0x8008AC34 end:0x8008AE18
 
-game/gba/gba_misc_candidate_8008ABE4_r42_8008AE18.c:
-	.text       start:0x8008AE18 end:0x8008C7B0
+game/gba/gba_misc_r58_8008AE18_prefix.c:
+	.text       start:0x8008AE18 end:0x8008C5D4
+
+game/gba/gba_misc_r58_8008C5D4_o1.c:
+	.text       start:0x8008C5D4 end:0x8008C6FC
+
+game/gba/gba_misc_r58_8008C6FC_suffix.c:
+	.text       start:0x8008C6FC end:0x8008C7B0
 
 game/gbaCommunication_prefix.c:
 	.text       start:0x8008C7B0 end:0x80090720
@@ -2499,8 +2505,11 @@ game/gs_math_util_exact_800E0D24.c:
 game/data/sdata2_8047CB48.c:
 	.sdata2     start:0x8047CB48 end:0x8047CB88
 
-game/gs_range_800E0DDC.c:
-	.text       start:0x800E0DDC end:0x800E1544
+game/gs_range_800E0DDC_r58_prefix.c:
+	.text       start:0x800E0DDC end:0x800E0E14
+
+game/gs_range_800E0E14_r58_o1.c:
+	.text       start:0x800E0E14 end:0x800E1544
 
 game/gs_range_800E0DDC_r40_800E1544_gc125n.c:
 	.text       start:0x800E1544 end:0x800E202C

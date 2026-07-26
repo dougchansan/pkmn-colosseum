@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196100,
     "total_functions": 8603,
-    "total_units": 2209
+    "total_units": 2212
   },
   "topology_status": {
     "auto_units": 68,
-    "named_units": 2141,
-    "source_backed_units": 2135,
+    "named_units": 2144,
+    "source_backed_units": 2138,
     "auto_code": 0,
     "auto_data": 57687,
     "auto_functions": 0
@@ -23,7 +23,7 @@
     "matched_data_percent": 97.28669,
     "matched_functions": 6573,
     "matched_functions_percent": 76.40358,
-    "fuzzy_match_percent": 72.09791
+    "fuzzy_match_percent": 72.103676
   },
   "unit_topology": [
     {
@@ -4829,17 +4829,43 @@
       "total_functions": 1
     },
     {
-      "name": "main/game/gba/gba_misc_candidate_8008ABE4_r42_8008AE18",
+      "name": "main/game/gba/gba_misc_r58_8008AE18_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 6552,
+          "size": 6076,
           "virtual_address": 2148052504
         }
       ],
-      "total_code": 6552,
+      "total_code": 6076,
       "total_data": 0,
-      "total_functions": 6
+      "total_functions": 2
+    },
+    {
+      "name": "main/game/gba/gba_misc_r58_8008C5D4_o1",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 296,
+          "virtual_address": 2148058580
+        }
+      ],
+      "total_code": 296,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/gba/gba_misc_r58_8008C6FC_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 180,
+          "virtual_address": 2148058876
+        }
+      ],
+      "total_code": 180,
+      "total_data": 0,
+      "total_functions": 3
     },
     {
       "name": "main/game/gbaCommunication_prefix",
@@ -11245,17 +11271,30 @@
       "total_functions": 0
     },
     {
-      "name": "main/game/gs_range_800E0DDC",
+      "name": "main/game/gs_range_800E0DDC_r58_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 1896,
+          "size": 56,
           "virtual_address": 2148404700
         }
       ],
-      "total_code": 1896,
+      "total_code": 56,
       "total_data": 0,
-      "total_functions": 2
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/gs_range_800E0E14_r58_o1",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1840,
+          "virtual_address": 2148404756
+        }
+      ],
+      "total_code": 1840,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/game/gs_range_800E0DDC_r40_800E1544_gc125n",

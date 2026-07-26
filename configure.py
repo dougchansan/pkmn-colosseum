@@ -7123,7 +7123,7 @@ config.libs = [
             Object(
                 CodeCandidate,
                 "game/gs_pcbox_range_8001E3E0_r41_8001E644_gc125n.c",
-                mw_version="GC/1.2.5n",
+                mw_version="GC/1.3",
                 cflags=["-O1" if flag == "-O4,p" else flag for flag in cflags_base],
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
@@ -7258,13 +7258,25 @@ config.libs = [
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
-            Object(
-                CodeCandidate,
-                "game/gba/gba_misc_candidate_8008ABE4_r42_8008AE18.c",
-                mw_version="GC/1.3",
-                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
-                progress_category="game",
-            ),
+            *[
+                Object(
+                    CodeCandidate,
+                    path,
+                    mw_version="GC/1.3",
+                    cflags=(
+                        ["-O1" if flag == "-O4,p" else flag for flag in cflags_base]
+                        if path == "game/gba/gba_misc_r58_8008C5D4_o1.c"
+                        else None
+                    ),
+                    extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                    progress_category="game",
+                )
+                for path in [
+                    "game/gba/gba_misc_r58_8008AE18_prefix.c",
+                    "game/gba/gba_misc_r58_8008C5D4_o1.c",
+                    "game/gba/gba_misc_r58_8008C6FC_suffix.c",
+                ]
+            ],
             Object(
                 CodeCandidate,
                 "game/gba/gba_misc_candidate_80089F78.c",
@@ -8921,13 +8933,24 @@ config.libs = [
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
-            Object(
-                CodeCandidate,
-                "game/gs_range_800E0DDC.c",
-                mw_version="GC/1.3",
-                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
-                progress_category="game",
-            ),
+            *[
+                Object(
+                    CodeCandidate,
+                    path,
+                    mw_version="GC/1.3",
+                    cflags=(
+                        ["-O1" if flag == "-O4,p" else flag for flag in cflags_base]
+                        if path == "game/gs_range_800E0E14_r58_o1.c"
+                        else None
+                    ),
+                    extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                    progress_category="game",
+                )
+                for path in [
+                    "game/gs_range_800E0DDC_r58_prefix.c",
+                    "game/gs_range_800E0E14_r58_o1.c",
+                ]
+            ],
             Object(
                 CodeCandidate,
                 "game/menuNameEntry_r56_80026370_prefix.c",
