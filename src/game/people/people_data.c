@@ -1079,7 +1079,7 @@ asm void fn_80142EF8(void) {
 }
 #else
 #pragma optimization_level 4
-void fn_80142EF8(u8* dst, u8* src) {
+void itemParamConvertOrigFormat(u8* dst, u8* src) {
     ItemParamConvertEntry* table;
     ItemParamConvertEntry* row;
     u8* stream;

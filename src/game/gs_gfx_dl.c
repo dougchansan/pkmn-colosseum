@@ -497,7 +497,7 @@ asm void fn_800DA578(void) {
 #include "src/game/gs_render_fn_800DA578.inc"
 }
 #else
-void fn_800DA578(GSgfxVtxDescList* desc, u8* dl, u16 size, GSgfxParseCallbackList* callbacks, void* user) {
+void GSgfxParseDisplayList(GSgfxVtxDescList* desc, u8* dl, u16 size, GSgfxParseCallbackList* callbacks, void* user) {
     u8* ptr;
     u8* end;
     s32 prim;
@@ -1041,4 +1041,3 @@ u32 GSgfxDLBegin(u32 a, u32 b) {
     return 1;
 }
 #endif
-

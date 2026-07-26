@@ -23,6 +23,24 @@
 
 #include "game/gs_scene_types.h"
 
+typedef struct GSspline {
+    s32 kind;
+    s32 state;
+    u8 capacity;
+    u8 valueCount;
+    u8 pad0A;
+    u8 keyCount;
+    void* vectors;
+    u32 pad10;
+    f32* values;
+    f32 firstValue;
+    f32 lastValue;
+} GSspline;
+
+extern const char lbl_80273ADC[];
+extern const char lbl_80273B20[];
+extern const char lbl_80273B5C[];
+
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
@@ -45,3 +63,45 @@ void GSsplineFree(u8* ptr) {
 }
 #endif
 #pragma pop
+
+void GSsplineAddControlVectorValue(GSspline* spline, void* vector, f32 value)
+{
+    u8 index;
+    u8 storesKey;
+
+    if (spline == NULL) {
+        return;
+    }
+    if (spline->state != 1) {
+        GSlogWrite(lbl_80273B5C);
+        return;
+    }
+
+    index = spline->valueCount;
+    if (index >= spline->capacity) {
+        GSlogWrite(lbl_80273B20);
+        return;
+    }
+
+    storesKey = TRUE;
+    if ((spline->kind == 1 || spline->kind == 2) && index % 3 != 0) {
+        storesKey = FALSE;
+    }
+
+    GSvecCopy((u8*)spline->vectors + index * 12, vector);
+    spline->values[index] = value;
+    spline->valueCount++;
+
+    if (storesKey) {
+        spline->values[spline->keyCount] = value;
+        if (spline->keyCount == 0) {
+            spline->firstValue = value;
+        } else if (value < spline->values[spline->keyCount - 1]) {
+            GSlogWrite(lbl_80273ADC);
+        }
+        if (spline->valueCount == spline->capacity) {
+            spline->lastValue = value;
+        }
+        spline->keyCount++;
+    }
+}

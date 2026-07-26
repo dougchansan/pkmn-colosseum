@@ -284,7 +284,7 @@ s32 GbaMisc_SetEntryState(s32 idx, s32 value);
 void fn_8008AC34(void);
 void fn_8008AE18(void* src, GbaPokemon* dst);
 void fn_8008BBDC(void* gc, GbaPokemon* src);
-void fn_8008C5D4(void);
+void gbaPokemonConditonFromGC(void);
 void fn_8008C6FC(void);
 void GbaMisc_RunFlagDispatch(void);
 s32 fn_8008C78C(void);
@@ -1004,7 +1004,7 @@ u32 fn_80089F70(u32 v) {
 
 /* 0x80089F78 | size: 0xA24 */
 void fn_80089F78(void) {
-    extern void fn_8008C5D4();
+    extern void gbaPokemonConditonFromGC();
     extern void pokemonBiosGetFightTrainerPokemonDataId();
     extern void pokemonBiosGetMailId();
     extern void pokemonBiosGetPokerus();
@@ -1230,7 +1230,7 @@ void fn_80089F78(void) {
         tmp = r4 | tmp;
         tmp = tmp & 0xFFFF;
         *(u16*)((u8*)r27 + 0x24) = tmp;
-        fn_8008C5D4();
+        gbaPokemonConditonFromGC();
         r20 = r3 & 0xFFFF;
         r3 = r29;
         tmp = r20 & 0xFF;
@@ -2499,7 +2499,7 @@ void fn_8008BBDC(void* gc, GbaPokemon* src) {
 }
 
 /* 0x8008C5D4 | size: 0x128 */
-void fn_8008C5D4(void) {
+void gbaPokemonConditonFromGC(void) {
     extern void fn_8012189C();
     extern void fn_80121984();
     extern void fn_80121ADC();

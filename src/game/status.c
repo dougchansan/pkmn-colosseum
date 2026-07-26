@@ -19,17 +19,12 @@ asm void fn_80135D10(void) {
 #include "src/game/effect/effect_util_fn_80135D10.inc"
 }
 #else
-#pragma scheduling on
-#pragma push
-#pragma optimization_level 2
-#pragma peephole off
-#pragma scheduling on
-u32 fn_80135D10(u32 kind, u32 arg1, u32 arg2, u32 arg3, u32 arg4, u32 arg5) {
+u32 statusSetStatus(u32 kind, u32 arg1, u32 arg2, u32 arg3, u32 arg4, u32 arg5) {
     extern u32 wazaSetStatus();
     extern u32 pokemonSetStatus();
     extern u32 heroSetStatus();
     extern u32 pcboxSetStatus();
-    extern u32 fn_8013583C();
+    extern u32 gamedataSetStatus();
     extern u32 fn_80142B24();
     extern u32 fightFloorSetStatus();
     extern u32 fightSideSetStatus();
@@ -40,7 +35,7 @@ u32 fn_80135D10(u32 kind, u32 arg1, u32 arg2, u32 arg3, u32 arg4, u32 arg5) {
     case 0:
         break;
     case 1:
-        fn_8013583C(arg1, arg3, arg5);
+        gamedataSetStatus(arg1, arg3, arg5);
         break;
     case 2:
         pcboxSetStatus(arg1, arg3, arg5);
@@ -71,8 +66,6 @@ u32 fn_80135D10(u32 kind, u32 arg1, u32 arg2, u32 arg3, u32 arg4, u32 arg5) {
     }
     return result;
 }
-#pragma pop
-#pragma scheduling off
 #endif
 
 
@@ -82,12 +75,12 @@ asm void fn_80135E44(void) {
 #include "src/game/effect/effect_util_fn_80135E44.inc"
 }
 #else
-u32 fn_80135E44(u32 kind, u32 arg1, u32 arg2, u32 arg3, u32 arg4) {
+u32 statusGetStatus(u32 kind, u32 arg1, u32 arg2, u32 arg3, u32 arg4) {
     switch ((u8)kind) {
     case 0:
         return 0;
     case 1:
-        return fn_80135938((void*)arg1, (u16)arg3);
+        return gamedataGetStatus((void*)arg1, (u16)arg3);
     case 2:
         return pcboxGetStatus(arg1, arg3, arg4);
     case 3:

@@ -703,8 +703,7 @@ asm void fn_800F9EE4(void) {
 #include "src/game/gs_thread_fn_800F9EE4.inc"
 }
 #else
-#pragma optimization_level 2
-s32 fn_800F9EE4(void* str1, void* str2) {
+s32 GScharCmp(void* str1, void* str2) {
     s32 len1;
     s32 len2;
     u16* p1;

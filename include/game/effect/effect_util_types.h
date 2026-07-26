@@ -201,13 +201,13 @@ extern void gamedataAttestCreate(void*, u8, u8, u8, u8);
 
 extern void gamedataAttestInit();
 
-extern void gamedataGetStatus();
+extern u32 gamedataGetStatus();
 
 extern void gamedataSetStatus();
 
-extern void statusGetStatus();
+extern u32 statusGetStatus(u32, u32, u32, u32, u32);
 
-extern void statusSetStatus();
+extern u32 statusSetStatus(u32, u32, u32, u32, u32, u32);
 
 extern void* windowSearchID(s32 key);
 
