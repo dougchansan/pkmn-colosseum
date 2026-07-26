@@ -1171,8 +1171,7 @@ DVD_SPLIT_CALLBACK_SCOPE void AlarmHandler(OSAlarm* alarm, OSContext* context) {
 #if !defined(DVD_BANK_EXACT_ACTIVE)
 BOOL DVDReadAbsAsyncPrio(DVDCommandBlock* block, void* addr, s32 length,
                          s32 offset, DVDCBCallback callback, s32 prio) {
-    BOOL enabled;
-    BOOL result;
+    BOOL idle;
 
     block->command = 1;
     block->addr = addr;
@@ -1181,21 +1180,8 @@ BOOL DVDReadAbsAsyncPrio(DVDCommandBlock* block, void* addr, s32 length,
     block->transferredSize = 0;
     block->callback = callback;
 
-    if (autoInvalidation_804789CC) {
-        DCInvalidateRange(addr, (u32)length);
-    }
-
-    enabled = OSDisableInterrupts();
-    block->state = 2;
-
-    result = __DVDPushWaitingQueue(prio, block);
-
-    if (executing_8047A7E8 == NULL && PauseFlag_8047A7F4 == 0) {
-        stateReady_800A6684();
-    }
-
-    OSRestoreInterrupts(enabled);
-    return result;
+    idle = issueCommand(prio, block);
+    return idle;
 }
 
 /*
@@ -1677,8 +1663,7 @@ static void __DVDInterruptHandlerMain(u32 intType) {
 static BOOL DVDReadAbsAsyncForBS(DVDCommandBlock* block, void* addr,
                                  s32 length, s32 offset,
                                  DVDCBCallback callback) {
-    BOOL enabled;
-    BOOL result;
+    BOOL idle;
 
     block->command = 4;
     block->addr = addr;
@@ -1687,21 +1672,8 @@ static BOOL DVDReadAbsAsyncForBS(DVDCommandBlock* block, void* addr,
     block->transferredSize = 0;
     block->callback = callback;
 
-    if (autoInvalidation_804789CC) {
-        DCInvalidateRange(addr, (u32)length);
-    }
-
-    enabled = OSDisableInterrupts();
-    block->state = 2;
-
-    result = __DVDPushWaitingQueue(2, block);
-
-    if (executing_8047A7E8 == NULL && PauseFlag_8047A7F4 == 0) {
-        stateReady_800A6684();
-    }
-
-    OSRestoreInterrupts(enabled);
-    return result;
+    idle = issueCommand(2, block);
+    return idle;
 }
 
 /*
@@ -1710,27 +1682,14 @@ static BOOL DVDReadAbsAsyncForBS(DVDCommandBlock* block, void* addr,
  */
 static BOOL DVDSeekAbsAsyncPrio(DVDCommandBlock* block, s32 offset,
                                 DVDCBCallback callback, s32 prio) {
-    BOOL enabled;
-    BOOL result;
+    BOOL idle;
 
     block->command = 2;
-    block->addr = NULL;
-    block->length = 0;
     block->offset = offset;
-    block->transferredSize = 0;
     block->callback = callback;
 
-    enabled = OSDisableInterrupts();
-    block->state = 2;
-
-    result = __DVDPushWaitingQueue(prio, block);
-
-    if (executing_8047A7E8 == NULL && PauseFlag_8047A7F4 == 0) {
-        stateReady_800A6684();
-    }
-
-    OSRestoreInterrupts(enabled);
-    return result;
+    idle = issueCommand(prio, block);
+    return idle;
 }
 
 /*
