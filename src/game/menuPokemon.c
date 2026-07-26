@@ -3921,7 +3921,7 @@ asm void menuPokemonOpenSub(void) {
 #pragma peephole off
 u32 menuPokemonOpenSub(u32 a0, u8 a1, u8 a2, u16 a3, u32 a4, u8 a5) {
     extern u8 lbl_803A1D40[];
-    extern u32 fn_800D37CC(void);
+    extern s32 fn_800D37CC(void);
     extern void _flagSet();
     extern void fn_800FF730();
     extern void floorSetFadeScript();
@@ -3975,7 +3975,7 @@ u32 menuPokemonOpenSub(u32 a0, u8 a1, u8 a2, u16 a3, u32 a4, u8 a5) {
         break;
     }
 BBDC:
-    menuCreateOffScreen(*(f32*)&lbl_8047B7C4 / (f32)(u32)fn_800D37CC());
+    menuCreateOffScreen(*(f32*)&lbl_8047B7C4 / (f32)fn_800D37CC());
     *(u8*)(lbl_803A1D40 + 0x2) = 1;
     *(u8*)(lbl_803A1D40 + 0x3) = 2;
 BC20:
@@ -3987,7 +3987,7 @@ BC20:
         }
         _threadSwitch();
         if (*(u8*)(lbl_803A1D40 + 0x3) == 2) {
-            menuReleaseOffScreen(*(f32*)&lbl_8047B7C4 / (f32)(u32)fn_800D37CC());
+            menuReleaseOffScreen(*(f32*)&lbl_8047B7C4 / (f32)fn_800D37CC());
         }
     } else {
         menuPokemonSub(a0, (u16)a3, a4);
