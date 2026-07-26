@@ -1964,13 +1964,32 @@ extern u32 GSmsgGetRect(s32 messageId);
 extern const f32 lbl_8047BE38;
 extern const f32 lbl_8047BE3C;
 
+static inline s32 pdaMailCountAttachmentEntries(u32 fileHandle)
+{
+    s32 count;
+    s32 total;
+    s32 index;
+
+    if (fn_8017B2CC(fileHandle) == 1) {
+        return -1;
+    }
+    total = fn_8017B448(fileHandle);
+    count = 0;
+    for (index = 0; index < total; index++) {
+        fn_8017B4BC(fileHandle, index);
+        if (fn_8017B5A4() == 9) {
+            count++;
+        }
+    }
+    return count;
+}
+
 s32 fn_8004E180(u8* context, u8* object)
 {
     u8* attachmentState;
     u32 fileHandle;
     s32 count;
     s32 current;
-    s32 total;
     s32 index;
     s16 selectedWidth;
     s16 normalWidth;
@@ -1980,18 +1999,7 @@ s32 fn_8004E180(u8* context, u8* object)
     count = *(u32*)(attachmentState + 4);
     current = **(s32**)(attachmentState + 8);
     fileHandle = mailGetAttachFileGroup(count);
-    if (fn_8017B2CC(fileHandle) == 1) {
-        count = -1;
-    } else {
-        total = fn_8017B448(fileHandle);
-        count = 0;
-        for (index = 0; index < total; index++) {
-            fn_8017B4BC(fileHandle, index);
-            if (fn_8017B5A4() == 9) {
-                count++;
-            }
-        }
-    }
+    count = pdaMailCountAttachmentEntries(fileHandle);
     if (count <= 0) {
         return 0;
     }
@@ -2017,24 +2025,11 @@ s32 fn_8004E2E0(u8* context, u8* object)
     u8* attachmentState;
     u32 fileHandle;
     s32 count;
-    s32 total;
-    s32 index;
 
     attachmentState = *(u8**)(context + 0x60);
     count = *(u32*)(attachmentState + 4);
     fileHandle = mailGetAttachFileGroup(count);
-    if (fn_8017B2CC(fileHandle) == 1) {
-        count = -1;
-    } else {
-        total = fn_8017B448(fileHandle);
-        count = 0;
-        for (index = 0; index < total; index++) {
-            fn_8017B4BC(fileHandle, index);
-            if (fn_8017B5A4() == 9) {
-                count++;
-            }
-        }
-    }
+    count = pdaMailCountAttachmentEntries(fileHandle);
 
     fn_80109220((u32)object, count >= 2);
     if (*(s16*)(object + 6) == 0x507) {
