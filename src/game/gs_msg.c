@@ -2010,22 +2010,12 @@ asm void fn_800FBD88(void) {
 #pragma optimization_level 2
 void fn_800FBD88(u32 key) {
     u8* head;
-    u32 count;
     u8* entry;
-    u8 i;
     u8 type;
     u32 r3;
 
     head = (u8*)lbl_80478B08;
-    count = *(u16*)head;
-    entry = NULL;
-    for (i = 0; (u32)(i & 0xFF) < count; i++) {
-        u8* e = (u8*)*(u32*)(head + 0x20) + (u32)(i & 0xFF) * 0x68;
-        if (*(u8*)(e + 0x0) != 0 && *(u32*)(e + 0x1C) == key) {
-            entry = e;
-            break;
-        }
-    }
+    entry = GSmsgFindCheck(head, key);
     if (entry == NULL) return;
     type = *(u8*)(entry + 0x3);
     r3 = 0;
