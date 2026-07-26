@@ -736,6 +736,67 @@ void psInitParticle(s32 count) {
     }
 }
 
+void psRemoveParticle(void) {
+    u32* banks = (u32*)lbl_804527C8;
+    s32 linkNo;
+    s32 i;
+
+    for (linkNo = 0; linkNo < PS_NUM_LINK; linkNo++) {
+        PSParticle* current = _psListGetFirst(linkNo);
+
+        while (current != NULL) {
+            PSParticle* next = current->next;
+            PSParticle* previous = NULL;
+            PSParticle* scan = _psListGetFirst(current->linkNo);
+
+            while (scan != NULL) {
+                if (scan == current) {
+                    if (current->peopleObj != NULL) {
+                        ((PSGeneratorState*)current->peopleObj)->childCount--;
+                    }
+                    if (current->parentObj != NULL) {
+                        psRemoveParticleAppSRT(current);
+                    }
+                    if (current->flags & PS_FLAG_ATTACH_CAMERA) {
+                        u32 slot = (current->flags >> 12) & 7;
+
+                        if (lbl_80452DC8[slot] != NULL) {
+                            fn_801A05EC(lbl_80452DC8[slot]);
+                            lbl_80452DC8[slot] = NULL;
+                        }
+                    }
+
+                    _psListDelete(scan, previous);
+                    break;
+                }
+
+                previous = scan;
+                scan = scan->next;
+            }
+            current = next;
+        }
+    }
+
+    psKillAllGenerator();
+    _psListClear();
+
+    for (i = 0; i < 64; i++) {
+        banks[i] = 0;
+        banks[64 + i] = 0;
+        banks[128 + i] = 0;
+        banks[192 + i] = 0;
+        banks[256 + i] = 0;
+        banks[320 + i] = 0;
+    }
+
+    for (i = 0; i < 8; i++) {
+        if (lbl_80452DC8[i] != NULL) {
+            fn_801A05EC(lbl_80452DC8[i]);
+            lbl_80452DC8[i] = NULL;
+        }
+    }
+}
+
 void psInitDataBankLocate(void* data, void* objects, void* locations);
 
 void psInitDataBank(s32 bankIndex, void* data, void* objects,
