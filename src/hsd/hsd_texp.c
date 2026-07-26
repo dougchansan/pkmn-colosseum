@@ -2474,133 +2474,120 @@ void fn_801B7CA0(u32 pass)
  * Build a DAG from a texture expression tree.
  * Returns the number of nodes in the DAG.
  */
-s32 HSD_TExpMakeDag(u8* root, HSD_TExpDag* list) {
-    u8* nodes[32];
+s32 HSD_TExpMakeDag(u8* root_, HSD_TExpDag* list) {
+    ColTExpNode* root = (ColTExpNode*) root_;
+    ColTExpNode* nodes[32];
     s32 dist[32];
-    s32 num, saved_num, i, j, k, l, m, last;
-    u8* cur;
-    u8* exp;
-    u8 type;
-    HSD_TExpDag* dag;
+    s32 num;
+    s32 j;
+    s32 i;
+    s32 k;
+    s32 l;
+    s32 last;
+    s32 idx;
 
-    HSD_ASSERT(0xEE, HSD_TExpGetType(root) == 1);
+    HSD_ASSERT(0xEE, HSD_TExpGetType((u8*) root) == COL_TE_TEV);
 
     num = 0;
-    nodes[num] = root;
-    num++;
-    j = 0;
-
-    while (j < num) {
+    nodes[num++] = root;
+    for (j = 0; j < num; j++) {
+        ColTExpNode* cur;
+        HSD_ASSERT(0xF6, j < 32);
         cur = nodes[j];
-
         for (i = 0; i < 4; i++) {
-            type = *(u8*)(cur + 0x34 + i * 8);
-            if (type == 1) {
-                exp = *(u8**)(cur + 0x38 + i * 8);
+            if (cur->c_in[i].type == COL_TE_TEV) {
                 for (k = 0; k < num; k++) {
-                    if (nodes[k] == exp) break;
+                    if (nodes[k] == cur->c_in[i].exp) {
+                        break;
+                    }
                 }
                 if (k >= num) {
-                    nodes[num] = exp;
-                    num++;
+                    nodes[num++] = cur->c_in[i].exp;
                 }
             }
         }
-
         for (i = 0; i < 4; i++) {
-            type = *(u8*)(cur + 0x54 + i * 8);
-            if (type == 1) {
-                exp = *(u8**)(cur + 0x58 + i * 8);
+            if (cur->a_in[i].type == COL_TE_TEV) {
                 for (k = 0; k < num; k++) {
-                    if (nodes[k] == exp) break;
+                    if (nodes[k] == cur->a_in[i].exp) {
+                        break;
+                    }
                 }
                 if (k >= num) {
-                    nodes[num] = exp;
-                    num++;
+                    nodes[num++] = cur->a_in[i].exp;
                 }
             }
         }
-
-        j++;
     }
 
-    saved_num = num;
-
-    for (i = 0; i < saved_num; i++) {
-        dist[i] = -1;
+    for (j = 0; j < num; j++) {
+        dist[j] = -1;
     }
-
-    CalcDistance(nodes, dist, nodes[0], saved_num, 0);
-
-    for (i = 0; i < saved_num; i++) {
-        for (j = i + 1; j < saved_num; j++) {
+    CalcDistance((u8**) nodes, dist, (u8*) nodes[0], num, 0);
+    for (idx = 0; idx < num; idx++) {
+        for (j = idx + 1; j < num; j++) {
             if (dist[j - 1] > dist[j]) {
-                u8* tmp_node;
-                s32 tmp_dist;
-
-                tmp_node = nodes[j - 1];
+                ColTExpNode* temp = nodes[j - 1];
                 nodes[j - 1] = nodes[j];
-                nodes[j] = tmp_node;
-
-                tmp_dist = dist[j - 1];
-                dist[j - 1] = dist[j];
-                dist[j] = tmp_dist;
-            }
-        }
-    }
-
-    last = saved_num - 1;
-    for (i = last; i >= 0; i--) {
-        dag = &list[i];
-        cur = nodes[i];
-
-        dag->tev = (ColTExpNode*) cur;
-        dag->idx = (u8)i;
-        dag->nb_dep = 0;
-        dag->nb_ref = 0;
-
-        for (j = 0; j < 4; j++) {
-            type = *(u8*)(cur + 0x34 + j * 8);
-            if (type == 1) {
-                exp = *(u8**)(cur + 0x38 + j * 8);
-                for (l = i; l < saved_num; l++) {
-                    if (exp == nodes[l]) {
-                        for (m = 0; m < dag->nb_dep; m++) {
-                            if (dag->depend[m] == &list[l]) break;
-                        }
-                        if (m >= dag->nb_dep) {
-                            dag->depend[dag->nb_dep] = &list[l];
-                            dag->nb_dep++;
-                            list[l].nb_ref++;
-                        }
-                        break;
-                    }
-                }
-            }
-        }
-
-        for (j = 0; j < 4; j++) {
-            type = *(u8*)(cur + 0x54 + j * 8);
-            if (type == 1) {
-                exp = *(u8**)(cur + 0x58 + j * 8);
-                for (l = i; l < saved_num; l++) {
-                    if (exp == nodes[l]) {
-                        for (m = 0; m < dag->nb_dep; m++) {
-                            if (dag->depend[m] == &list[l]) break;
-                        }
-                        if (m >= dag->nb_dep) {
-                            dag->depend[dag->nb_dep] = &list[l];
-                            dag->nb_dep++;
-                            list[l].nb_ref++;
-                        }
-                        break;
-                    }
+                nodes[j] = temp;
+                {
+                    s32 temp = dist[j - 1];
+                    dist[j - 1] = dist[j];
+                    dist[j] = temp;
                 }
             }
         }
     }
 
-    return saved_num;
+    for (last = num - 1; last >= 0; last--) {
+        ColTExpNode* cur = nodes[last];
+        list[last].idx = (u8) last;
+        list[last].nb_ref = 0;
+        list[last].nb_dep = 0;
+        list[last].tev = cur;
+        for (idx = 0; idx < 4; idx++) {
+            if (cur->c_in[idx].type == COL_TE_TEV) {
+                for (l = last; l < num; l++) {
+                    if (cur->c_in[idx].exp == nodes[l]) {
+                        HSD_TExpDag* dep = &list[l];
+                        for (l = 0; l < list[last].nb_dep; l++) {
+                            if (list[last].depend[l] == dep) {
+                                break;
+                            }
+                        }
+                        if (l >= list[last].nb_dep) {
+                            list[last].depend[list[last].nb_dep++] = dep;
+                            dep->nb_ref++;
+                        }
+                        break;
+                    }
+                }
+                HSD_ASSERT(0x145, l < num);
+            }
+        }
+        for (idx = 0; idx < 4; idx++) {
+            if (cur->a_in[idx].type == COL_TE_TEV) {
+                for (l = last; l < num; l++) {
+                    if (cur->a_in[idx].exp == nodes[l]) {
+                        u8 dep_count = list[last].nb_dep;
+                        HSD_TExpDag* dep = &list[l];
+                        for (l = 0; l < dep_count; l++) {
+                            if (list[last].depend[l] == dep) {
+                                break;
+                            }
+                        }
+                        if (l >= list[last].nb_dep) {
+                            list[last].depend[list[last].nb_dep++] = dep;
+                            dep->nb_ref++;
+                        }
+                        break;
+                    }
+                }
+                HSD_ASSERT(0x15B, l < num);
+            }
+        }
+    }
+    return num;
 }
 
 /*
