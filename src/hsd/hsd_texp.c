@@ -1939,6 +1939,8 @@ void fn_801B600C(HSD_TObj* tobj, u32 map_id) {
 }
 
 /* HSD_TExpColorIn */
+void fn_801B65F0(ColTExpNode* tev, u32 sel, ColTExpNode* exp, s32 idx);
+
 void fn_801B64EC(ColTExpNode* texp, u32 sel_a, ColTExpNode* exp_a,
                  u32 sel_b, ColTExpNode* exp_b, u32 sel_c,
                  ColTExpNode* exp_c, u32 sel_d, ColTExpNode* exp_d) {
@@ -1948,6 +1950,10 @@ void fn_801B64EC(ColTExpNode* texp, u32 sel_a, ColTExpNode* exp_a,
     if (ColTExpGetType(texp) != COL_TE_TEV) {
         __assert(&lbl_8047DE70, 0x2D5, lbl_802753DC);
     }
+    fn_801B65F0(texp, sel_a, exp_a, 0);
+    fn_801B65F0(texp, sel_b, exp_b, 1);
+    fn_801B65F0(texp, sel_c, exp_c, 2);
+    fn_801B65F0(texp, sel_d, exp_d, 3);
 }
 
 /*
