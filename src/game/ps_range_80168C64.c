@@ -118,9 +118,13 @@ extern s32 lbl_8047B170;
 extern PSFloatBytes lbl_8047B178;
 
 extern PSGeneratorState* lbl_8047B188;
+extern PSGeneratorState** lbl_8047B184;
+extern PSGeneratorState* lbl_8047B18C;
 extern PSAppSRT* lbl_8047B124;
 extern u32 lbl_80452708[];
 extern u32 lbl_80452748[];
+extern void* lbl_80452AC8[];
+extern s32 lbl_80452CC8[];
 extern PSParticle* lbl_80452788[];
 extern PSParticle* lbl_8047B108;
 extern HSD_Obj* lbl_8047B128;
@@ -136,7 +140,10 @@ extern u16 lbl_8047B114;
 extern u16 lbl_8047B116;
 extern u16 lbl_8047B120;
 extern u16 lbl_8047B11A;
+extern u16 lbl_8047B112;
+extern u16 lbl_8047B118;
 extern u8 lbl_80478C30;
+extern u16 lbl_80478C38;
 extern s32 lbl_8047B12C;
 extern s32 lbl_8047B164;
 
@@ -154,7 +161,7 @@ extern f32 fn_801ADC7C(void);                                           /* psRan
 extern PSParticle* psGenerateParticleID0(PSParticle* pp, s32 linkNo,
                                          s32 bankIdx, s32 scriptId,
                                          void* arg);                    /* 0x80169A48 */
-extern PSParticle* psCreateGeneratorID(PSParticle* pp, u8 linkNo, u8 bankIdx, u16 scriptId);
+extern PSGeneratorState* psCreateGeneratorID(s32 linkNo, s32 bankIdx, s32 scriptId);
 extern void psCopyGeneratorData(PSParticle* gen, void* peopleObj);       /* 0x80172930 */
 extern s32 psChangeParticleAppSRT(PSParticle* pp, PSAppSRT* parentObj); /* 0x8016A878 */
 extern s32 psAttachParticleAppSRT(PSParticle* pp, PSAppSRT* parentObj);
@@ -1649,7 +1656,7 @@ PSParticle* psInterpretParticle0(PSParticle* pp, PSParticle* parentCtx) {
                         u32* bank = (u32*)lbl_804527C8[pp->bankIndex];
                         u16 scriptId = bank ? (u16)bank[tblIdx] : 0;
                         stream += 3;
-                        gen = psCreateGeneratorID(pp, pp->linkNo, pp->bankIndex, scriptId);
+                        gen = (PSParticle*)psCreateGeneratorID(pp->linkNo, pp->bankIndex, scriptId);
                         if (gen == NULL) break;
                         gen->scriptId = pp->scriptId;
                         psCopyGeneratorData(gen, pp->peopleObj);
@@ -1871,6 +1878,68 @@ void psDispSubPointTrail(PSParticle* pp) {
         lbl_8047B164 = cachedWidth;
         fn_800B9404(width, 5);
     }
+}
+
+/*
+ * Allocates and links a generator after validating its bank/script tuple.
+ * Script-record initialization remains asm-only; this is the verified
+ * validation and pool/list prefix at 0x80173718-0x80173888.
+ */
+PSGeneratorState* psCreateGeneratorID(s32 linkNo, s32 bankIdx, s32 scriptId) {
+    PSGeneratorState* gen;
+    void** bank;
+    u16 activeCount;
+    u16 familyId;
+
+    if (bankIdx >= 64 || linkNo >= 8 ||
+        scriptId >= lbl_80452CC8[bankIdx]) {
+        return NULL;
+    }
+
+    bank = (void**)lbl_80452AC8[bankIdx];
+    if (bank[scriptId] == NULL) {
+        return NULL;
+    }
+
+    if (lbl_8047B18C == NULL) {
+        lbl_8047B18C = fn_801A6928(sizeof(PSGeneratorState));
+        memset(lbl_8047B18C, 0, sizeof(PSGeneratorState));
+    }
+
+    gen = lbl_8047B18C;
+    if (gen == NULL) {
+        return NULL;
+    }
+
+    activeCount = lbl_8047B118 + 1;
+    lbl_8047B118 = activeCount;
+    if (activeCount > lbl_8047B112) {
+        lbl_8047B112 = activeCount;
+    }
+
+    lbl_8047B18C = gen->next;
+    if (lbl_8047B184 == NULL || *lbl_8047B184 == NULL) {
+        if (lbl_8047B188 == NULL) {
+            gen->next = NULL;
+            lbl_8047B188 = gen;
+        } else {
+            gen->next = lbl_8047B188->next;
+            lbl_8047B188->next = gen;
+        }
+    } else {
+        gen->next = (*lbl_8047B184)->next;
+        (*lbl_8047B184)->next = gen;
+    }
+
+    familyId = lbl_80478C38 + 1;
+    lbl_80478C38 = familyId;
+    if (familyId < 0x100) {
+        familyId = 0x100;
+        lbl_80478C38 = familyId;
+    }
+    gen->familyId = familyId;
+    gen->appSRT = NULL;
+    return gen;
 }
 
 /*
