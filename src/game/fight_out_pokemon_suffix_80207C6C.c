@@ -61,25 +61,22 @@ extern ColosseumEventRow6 lbl_80478D30[]; /* Event table base (6 bytes per entry
 extern u32 lbl_80478D28; /* Pair-row table count */
 extern ColosseumEventPairRow lbl_80375A08[]; /* 0x18-byte pair rows */
 /* Address: 0x80207C6C | Size: 0x2f0 | Ghidra import */
-u32 fightOutPokemonCreateSequence(void)
+u32 fightOutPokemonCreateSequence(void* r3, u16 r4)
 
 {
-    int r3;
-    u16 r4;
-
-    extern short fn_80119ED0();
-    extern s8 fn_8011B67C();
+    extern u16 fn_80119ED0();
+    extern u8 fn_8011B67C();
     extern void pokemonBiosCopy();
-    extern s8 fn_80121ADC();
+    extern u8 fn_80121ADC();
     extern void pokemonSetSequenceStatus();
     extern u32 pokemonCheckRare();
     extern u32 fn_801DE190();
     extern void fightOutPokemonGetRndStatus();
   u32 uVar1;
-  short sVar5;
+  u16 sVar5;
   u32 uVar2;
   int iVar3;
-  s8 cVar6;
+  u8 cVar6;
   u32 uVar4;
   u8 uVar7;
   u32 local_158;
@@ -246,19 +243,13 @@ void fightOutPokemonRegWzxLoad(void* param_1) {
 #pragma pop
 
 /* Address: 0x802080A8 | Size: 0x35c | Ghidra import */
-void fn_802080A8(void)
+void fn_802080A8(void* r3, u8 r4, u8 r5, u32 r6, u8 r7)
 
 {
-    int r3;
-    char r4;
-    char r5;
-    u32 r6;
-    char r7;
-
     extern void _threadSwitch();
     extern void fn_80166A50();
     extern void fn_801DA8C4();
-    extern s8 fn_801DA94C();
+    extern u8 fn_801DA94C();
     extern void fn_801DA9E8();
     extern void fn_801DDD28();
     extern u32 fightFloorGetStatus();
@@ -269,7 +260,7 @@ void fn_802080A8(void)
   int iVar1;
   u32 uVar2;
   u16 uVar5;
-  s8 cVar6;
+  u8 cVar6;
   int iVar3;
 
   uVar4 = fightFloorGetStatus(0,0,0x14,0);
@@ -527,15 +518,9 @@ void fightOutPokemonLoadWazaEffect(void* param_1, u32 param_2, u32 param_3, u32 
 }
 
 /* Address: 0x802087C0 | Size: 0x458 | Ghidra import */
-void fightOutPokemonHokakuEffect(void)
+void fightOutPokemonHokakuEffect(void* r3, u8 r4, u32 r5, u8 r6, u8* r7)
 
 {
-    int r3;
-    u8 r4;
-    u32 r5;
-    char r6;
-    u8 *r7;
-
     extern void _threadSwitch();
     extern void battleGridRemovePokemon();
     extern void fn_801DA224();
@@ -543,7 +528,7 @@ void fightOutPokemonHokakuEffect(void)
     extern u32 fn_801DA354();
     extern void fn_801DA4E8();
     extern void fn_801DA8C4();
-    extern s8 fn_801DA94C();
+    extern u8 fn_801DA94C();
     extern void fn_801DA9E8();
     extern void fn_801DB100();
     extern void fn_801DDD28();
@@ -557,11 +542,11 @@ void fightOutPokemonHokakuEffect(void)
   u16 uVar7;
   u16 uVar8;
   u8 uVar9;
-  s8 cVar10;
+  u8 cVar10;
   u32 uVar2;
   int iVar3;
   u8 bVar11;
-  int local_38;
+  void* local_38;
   int local_34;
   u32 local_30;
 
@@ -684,25 +669,22 @@ void fightOutPokemonHokakuEffect(void)
 }
 
 /* Address: 0x80208C18 | Size: 0x2b8 | Ghidra import */
-void fightOutPokemonDasuEffect(void)
+void fightOutPokemonDasuEffect(void* r3, u8 r4)
 
 {
-    int r3;
-    char r4;
-
     extern void _threadSwitch();
-    extern s8 pokemonCheckRare();
+    extern u8 pokemonCheckRare();
     extern void fn_80166A50();
-    extern s8 fn_801DA5C4();
+    extern u8 fn_801DA5C4();
     extern void fn_801DA8C4();
-    extern s8 fn_801DA94C();
+    extern u8 fn_801DA94C();
     extern void fn_801DA9E8();
     extern void fn_801DDD28();
   int iVar1;
   u8 uVar6;
   u16 uVar4;
   u16 uVar5;
-  s8 cVar7;
+  u8 cVar7;
   u32 uVar2;
   int iVar3;
   u32 uVar8;

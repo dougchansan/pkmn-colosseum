@@ -222,29 +222,23 @@ u32 fightPokemonGetSoubiItemDataId(void* param_1) {
 #pragma pop
 
 /* Address: 0x802043D4 | Size: 0x480 | Ghidra import */
-u32 fightOutPokemonGetNowNimbleness(void)
+u32 fightOutPokemonGetNowNimbleness(void* r3, u8 r4, u8 r5, u32 r6, void* r7)
 
 {
-    int r3;
-    char r4;
-    char r5;
-    u32 r6;
-    int r7;
-
-    extern short fn_80119ED0();
-    extern s8 fn_8011B67C();
-    extern s8 fn_80121ADC();
+    extern u16 fn_80119ED0();
+    extern u8 fn_8011B67C();
+    extern u8 fn_80121ADC();
     extern u32 pokemonGetSoubiItemBuff();
-    extern short pokemonGetSoubiItemSoubiDataId();
-    extern s8 heroGetStatus();
+    extern u16 pokemonGetSoubiItemSoubiDataId();
+    extern u8 heroGetStatus();
     extern int fightAbicntDoKakeWaru();
   u32 uVar1;
-  short sVar4;
+  u16 sVar4;
   int iVar2;
-  short sVar5;
-  short sVar6;
+  u16 sVar5;
+  u16 sVar6;
   u8 uVar7;
-  s8 cVar8;
+  u8 cVar8;
   u32 uVar3;
   int iVar9;
   u32 uVar10;
@@ -1100,18 +1094,15 @@ LAB_00202858:
 }
 
 /* Address: 0x80205904 | Size: 0x178 | Ghidra import */
-u32 fightOutPokemonCheckMeetEnemyFightPokemon(void)
+u32 fightOutPokemonCheckMeetEnemyFightPokemon(void* r3, void* r4)
 
 {
-    int r3;
-    int r4;
-
-    extern s8 pokemonCheckValid();
-    extern short fn_801EF634();
+    extern u8 pokemonCheckValid();
+    extern u16 fn_801EF634();
   u32 bVar1;
   int iVar2;
-  s8 cVar5;
-  short sVar3;
+  u8 cVar5;
+  u16 sVar3;
   short sVar4;
   u8 bVar6;
 
@@ -1246,17 +1237,17 @@ void* fightPokemonGetPokemonPtr(void* ctx) {
 
 /* Address: 0x80205C24 | Size: 0x684 | Ghidra import */
 
-u32 fightOutPokemonCheckFightActionSelect(void* r3,char r4)
+u32 fightOutPokemonCheckFightActionSelect(void* r3,u8 r4)
 
 {
     extern FightActionData lbl_80375CA8[];
-    extern short fn_80119ED0();
-    extern s8 fn_8011B67C();
+    extern u16 fn_80119ED0();
+    extern u8 fn_8011B67C();
     extern u32 wazaGetStatus();
-    extern s8 fn_80121ADC();
-    extern s8 pokemonCheckFightOut();
-    extern s8 pokemonCheckValid();
-    extern short fn_801EF634();
+    extern u8 fn_80121ADC();
+    extern u8 pokemonCheckFightOut();
+    extern u8 pokemonCheckValid();
+    extern u16 fn_801EF634();
     extern u32 fightTargetGetTragetPtrToRelativeHostSideFightTargetId();
     extern u32 fightFloorGetStatus();
     extern void fightWazaCreate();
@@ -1266,10 +1257,10 @@ u32 fightOutPokemonCheckFightActionSelect(void* r3,char r4)
   u32 bVar1;
   u16 uVar5;
   int iVar2;
-  short sVar6;
+  u16 sVar6;
   int iVar3;
   u32 uVar4;
-  s8 cVar8;
+  u8 cVar8;
   u16 uVar7;
 
   uVar5 = fightFloorGetStatus(0,0,0x14,0);

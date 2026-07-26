@@ -575,16 +575,16 @@ u32 fightActionFlowAllFightOutPokemonDoFightAction(void* ctx) {
 /* Address: 0x8020BC94 | Size: 0x1a4 | Ghidra import */
 u32 _fightActionFlowAllFightOutPokemonDoFightActionOneLoop__FP11FIGHT_FLOORUc(void* fightFloor, u8 phase)
 {
-    extern short fn_801EF634();
+    extern u16 fn_801EF634();
     extern void fightFloorInitFightTarget();
     extern int fightFloorGetStatus();
     extern u8 fightOutPokemonCheckFightOut();
   u32 *puVar1;
   u32 uVar2;
   int iVar3;
-  s8 cVar7;
+  u8 cVar7;
   int iVar4;
-  short sVar6;
+  u16 sVar6;
   int iVar5;
   u32 *puVar8;
   u32 *puVar9;
@@ -1113,14 +1113,14 @@ u32 fightActionFlowKaisiNyuujouPokemon(void* action)
     extern u32 fightFloorGetStatus();
     extern int fightSideGetValidFightTrainerPtr();
     extern u32 fightSideGetDoFightTrainerCount();
-    extern s8 fightSideCheckValid();
+    extern u8 fightSideCheckValid();
     extern u32 fn_801F8000();
     extern u32 fightTrainerGetNamePtr();
     extern int fightTrainerGetValidFightOutPokemonPtr();
     extern u32 fightTrainerGetDoFightOutFightOutPokemonCount();
     extern int fightTrainerGetStatus();
     extern void fightTrainerBallThrowEffect();
-    extern s8 fightOutPokemonIsGcHeroFightOutPokemon();
+    extern u8 fightOutPokemonIsGcHeroFightOutPokemon();
     extern void fightOutPokemonSetOnDarkPokemonFlag();
     extern void fightOutPokemonSetOnZukanFlag();
     extern void* fightPokemonGetPokemonPtr();
@@ -1138,7 +1138,7 @@ u32 fightActionFlowKaisiNyuujouPokemon(void* action)
   u32 uVar1;
   u32 uVar2;
   u32 uVar3;
-  s8 cVar10;
+  u8 cVar10;
   u8 uVar11;
   int iVar4;
   u32 uVar5;
@@ -1386,9 +1386,9 @@ u32 fightActionFlowKaisiNyuujouTrainer(void* action)
 
 {
     extern u32 fn_8006B0F8();
-    extern s8 fn_8006B57C();
-    extern s8 pokemonCheckFightOut();
-    extern s8 pokemonCheckValid();
+    extern u8 fn_8006B57C();
+    extern u8 pokemonCheckFightOut();
+    extern u8 pokemonCheckValid();
     extern u32 heroGetStatus();
     extern void heroBiosCopy();
     extern void battleGridUpdate();
@@ -1400,17 +1400,17 @@ u32 fightActionFlowKaisiNyuujouTrainer(void* action)
     extern int fightSideGetValidFightTrainerPtr();
     extern void fightSideGetFightTrainerGridParam();
     extern u32 fightSideGetDoFightTrainerCount();
-    extern s8 fightSideCheckValid();
+    extern u8 fightSideCheckValid();
     extern u32 fightSideGetStatus();
     extern u32 fightTrainerCreateSequence();
     extern int fightTrainerCheckTemotiPokemonFightEntry();
     extern void fightTrainerSortFightTrainerDataIdToHeroTemotiPokemon();
     extern void fightTrainerCreateFightTrainerDataIdToHero();
-    extern s8 fightTrainerCheckTrainerDataIdValid();
-    extern s8 fightTrainerCheckValid();
+    extern u8 fightTrainerCheckTrainerDataIdValid();
+    extern u8 fightTrainerCheckValid();
     extern void fightTrainerCreate();
     extern u32 fightTrainerGetStatus();
-    extern s8 fightTrainerIsGcHero();
+    extern u8 fightTrainerIsGcHero();
     extern void fightPokemonGetFriendFormPokemonFriendFilterId();
     extern void fightPokemonCreate();
     extern u32 fightEncountDataBiosGetGSInputDevice();
@@ -1423,12 +1423,12 @@ u32 fightActionFlowKaisiNyuujouTrainer(void* action)
   u32 uVar4;
   u32 uVar5;
   u32 uVar6;
-  s8 cVar15;
+  u8 cVar15;
   u32 uVar7;
   u32 uVar8;
   u32 uVar9;
   u32 uVar10;
-  s8 cVar16;
+  u8 cVar16;
   int iVar11;
   u32 uVar12;
   u8 uVar17;
