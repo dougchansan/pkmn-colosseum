@@ -3372,6 +3372,7 @@ config.libs = [
                 "dolphin/sdk_r53_8009AFFC_o1.c",
                 mw_version="GC/1.2.5n",
                 cflags=["-O1" if flag == "-O4,p" else flag for flag in cflags_base],
+                extra_cflags=["-schedule on"],
                 progress_category="sdk",
             ),
             Object(
@@ -4826,7 +4827,7 @@ config.libs = [
                 "hsd/hsd_tobj_candidate_801BBDDC_r41_801BDD74_gc125n.c",
                 mw_version="GC/1.3",
                 cflags=["-O4,s" if flag == "-O4,p" else flag for flag in cflags_base],
-                extra_cflags=["-use_lmw_stmw on", "-fp_contract off"],
+                extra_cflags=["-use_lmw_stmw off", "-fp_contract off"],
                 progress_category="hsd",
             ),
             Object(
@@ -9767,6 +9768,7 @@ config.libs = [
                     path,
                     mw_version="GC/2.0p1",
                     cflags=["-O4,s" if flag == "-O4,p" else flag for flag in cflags_base],
+                    extra_cflags=["-use_lmw_stmw on"],
                     progress_category="hsd",
                 )
                 for path in [
@@ -9817,6 +9819,7 @@ config.libs = [
                 "hsd/hsd_mobj_r54_801A7E84_gc11p1_o1.c",
                 mw_version="GC/1.1p1",
                 cflags=["-O1" if flag == "-O4,p" else flag for flag in cflags_base],
+                extra_cflags=["-schedule on"],
                 progress_category="hsd",
             ),
             Object(
@@ -9974,6 +9977,7 @@ config.libs = [
                 "hsd/hsd_texp_compile_candidate_801B4300.c",
                 mw_version="GC/1.3.2",
                 cflags=["-O1" if flag == "-O4,p" else flag for flag in cflags_base],
+                extra_cflags=["-schedule on"],
                 progress_category="hsd",
             ),
             Object(
@@ -10044,6 +10048,7 @@ config.libs = [
                 "hsd/hsd_texp_candidate_801B750C_gc20.c",
                 mw_version="GC/2.0",
                 cflags=["-O4,s" if flag == "-O4,p" else flag for flag in cflags_base],
+                extra_cflags=["-use_lmw_stmw on"],
                 progress_category="hsd",
             ),
             Object(
@@ -10086,6 +10091,7 @@ config.libs = [
                 "hsd/hsd_texp_candidate_801B8D5C.c",
                 mw_version="GC/1.3",
                 cflags=["-O4,s" if flag == "-O4,p" else flag for flag in cflags_base],
+                extra_cflags=["-use_lmw_stmw on"],
                 progress_category="hsd",
             ),
             Object(
@@ -10105,6 +10111,7 @@ config.libs = [
                 "hsd/hsd_texp_candidate_801B9048_r40_801B9320.c",
                 mw_version="GC/2.0",
                 cflags=["-O4,s" if flag == "-O4,p" else flag for flag in cflags_base],
+                extra_cflags=["-schedule off"],
                 progress_category="hsd",
             ),
             Object(
