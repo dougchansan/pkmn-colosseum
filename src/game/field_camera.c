@@ -277,9 +277,9 @@ extern f64 atan2(f32, f32);
 extern void cameraMoveTargetPos(u32, void*, f32);
 extern void cameraMovePosition(u32, void*, f32);
 extern void cameraMoveRotation(u32, void*, f32);
-extern void GSgappTerminate(void);
+extern void GSgappTerminate(void* application);
 extern void GSgappCreate(void);
-void fn_801176C8(void);
+void fn_801176C8(u32 floorId);
 extern void* GScameraGetActiveCamera();
 extern void GSvecCopy();
 extern u8 lbl_802727B8[];
@@ -1745,27 +1745,91 @@ void fn_80117500(void) {
 }
 #endif
 /* 0x801176C8 | 0x254 */
-extern void GSgappTerminate(void);
+extern void GSgappTerminate(void* application);
 extern void GSgappCreate(void);
 extern u8 lbl_804083D0[0x30];
-/* undecompiled: fn removed (ROM-derived asm), forward-declared for callers */
-void fn_801176C8(void);
+typedef struct GSFieldWorldResourceState {
+    void* callbackData;
+    void* cameraList;
+    void* cameraWork;
+    u16 cameraWorkHandle;
+    u16 auxiliaryHandle;
+    u32 floorId;
+    u32 floorCamera;
+    void* application;
+    u8 reloadPending;
+} GSFieldWorldResourceState;
+
+void fn_801176C8(u32 floorId)
+{
+    GSFieldWorldResourceState* state =
+        (GSFieldWorldResourceState*)lbl_804083D0;
+    u8* floor = floorDataBiosGetPtr(floorId);
+    u8* previous;
+
+    state->reloadPending = 0;
+    if (state->floorId != 0) {
+        previous = floorDataBiosGetPtr(state->floorId);
+        if (previous != NULL) {
+            *(u32*)(previous + 0x1C) = state->floorCamera;
+            fn_80117164();
+        }
+    }
+    if (state->application != NULL) {
+        GSgappTerminate(state->application);
+    }
+    if (state->auxiliaryHandle != 0) {
+        fn_800E24B0(state->auxiliaryHandle);
+        fn_800E209C(state->auxiliaryHandle);
+    }
+    if (state->cameraWorkHandle != 0) {
+        fn_800E24B0(state->cameraWorkHandle);
+        fn_800E209C(state->cameraWorkHandle);
+    }
+    memset(state, 0, 0x20);
+    if (floor == NULL) {
+        return;
+    }
+
+    /* Resource allocation and camera-list setup continue in the target. */
+}
 /* 0x8011791C | 0x1B8 */
 extern void* GScameraGetActiveCamera();
 extern void GSvecCopy();
 extern u8 lbl_804083D0[0x30];
 extern u8 lbl_802727B8[];
 extern void fn_80177A38(void);  /* referenced by asm .inc wrappers (fn_801171C8/80117330/8011791C/8012E388/8012EBD4); was undefined -> broke the TU parse */
-/* undecompiled: fn removed (ROM-derived asm), forward-declared for callers */
-void fn_8011791C(void);
-typedef struct GSFieldWorldResourceState {
-    u8 unk_00[0x10];
-    u32 field_10; /* 0x10 */
-} GSFieldWorldResourceState;
+void fn_8011791C(void)
+{
+    GSFieldWorldResourceState* state =
+        (GSFieldWorldResourceState*)lbl_804083D0;
+    void* activeFloor = floorDataBiosGetPtr((u32)fn_800FF56C());
+    u8* loadedFloor = floorDataBiosGetPtr(state->floorId);
+
+    if (activeFloor == NULL || activeFloor != loadedFloor) {
+        state->reloadPending = 0;
+        if (state->floorId != 0 && loadedFloor != NULL) {
+            *(u32*)(loadedFloor + 0x1C) = state->floorCamera;
+            fn_80117164();
+        }
+        if (state->application != NULL) {
+            GSgappTerminate(state->application);
+        }
+        if (state->auxiliaryHandle != 0) {
+            fn_800E24B0(state->auxiliaryHandle);
+            fn_800E209C(state->auxiliaryHandle);
+        }
+        if (state->cameraWorkHandle != 0) {
+            fn_800E24B0(state->cameraWorkHandle);
+            fn_800E209C(state->cameraWorkHandle);
+        }
+        memset(state, 0, 0x20);
+    }
+}
 
 /* 0x80117AD4 | 16 bytes | global_getter */
 u32 fn_80117AD4(void) {
-    return ((GSFieldWorldResourceState*)lbl_804083D0)->field_10;
+    return ((GSFieldWorldResourceState*)lbl_804083D0)->floorId;
 }
 /* 0x80117AE4 | 0x1A0 */
 extern void GSmodelResetTextureChange(void);

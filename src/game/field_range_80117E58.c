@@ -436,7 +436,7 @@ u8* fn_801190DC(u8* texture, u32 selector, u32 subid);
 extern void psInitDataBank(void);
 extern void DCFlushRange();
 extern u8 lbl_802727D8[];
-void fn_801195AC(void);
+void* fn_801195AC(void* resource);
 extern void fn_8016A01C(void);
 extern void psInitGenerator(void);
 extern void fn_8016AAF4(void);
@@ -2356,8 +2356,37 @@ extern void DCFlushRange();
 extern u8 lbl_802727D8[];
 extern FieldParticleBank* lbl_8047AD9C;
 extern u32 lbl_8047ADA0;
-/* Unrecovered function, forward-declared for callers. */
-void fn_801195AC(void);
+typedef struct FieldParticleFile {
+    u32 magic;
+    u8* description;
+    u8* data;
+    u32 dataSize;
+    u8* texture;
+} FieldParticleFile;
+
+void* fn_801195AC(void* resource)
+{
+    FieldParticleFile* file = resource;
+    FieldParticleBank* bank;
+    u32 i;
+
+    if (file->magic != 0x47505431) {
+        return NULL;
+    }
+
+    file->description += (u32)file;
+    file->data += (u32)file;
+    file->texture += (u32)file;
+    DCFlushRange(file->data, (file->dataSize + 0x1F) & ~0x1F);
+
+    bank = lbl_8047AD9C;
+    for (i = 0; i < lbl_8047ADA0; i++, bank++) {
+        if (bank->active == 0) {
+            return bank;
+        }
+    }
+    return NULL;
+}
 #endif
 
 #if !defined(FIELD_BANK_ACTIVE) || defined(FIELD_EXACT_80119824_80119BD0)

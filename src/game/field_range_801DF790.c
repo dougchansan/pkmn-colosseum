@@ -43,3 +43,25 @@ void fn_801DFC30(void) {
      * - Sound synchronization
      */
 }
+
+/**
+ * fn_801E075C - Create the field model used for the selected party Pokémon.
+ * Address: 0x801E075C | Size: 0x284
+ */
+void fn_801E075C(u16 partyIndex)
+{
+    extern void* savedataGetStatus(s32 side, s32 kind);
+    extern void* heroBiosGetPokemonPtr(void* hero, u16 index);
+    extern u8 pokemonBiosGetCatchBallId(void* pokemon);
+    void* hero;
+    void* pokemon;
+
+    hero = savedataGetStatus(0, 2);
+    pokemon = heroBiosGetPokemonPtr(hero, partyIndex);
+    pokemonBiosGetCatchBallId(pokemon);
+
+    /*
+     * The target next selects the ball's model resource from its immutable
+     * table, opens it, and runs the short appearance state machine.
+     */
+}

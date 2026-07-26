@@ -553,7 +553,7 @@ extern f32 lbl_8047D078;
 extern f32 lbl_8047D07C;
 extern f32 lbl_8047D080;
 u32 updateChat__F15HEROMOVE_MEMBER(s32 player);
-void heroMoveCheckEvent(void);
+s32 heroMoveCheckEvent(void* event);
 extern void fn_8018F4C8(void);
 extern void GSmodelGetAnimIndex(void);
 extern void GSmodelGetAnimFrame(void);
@@ -2113,8 +2113,30 @@ void heroMoveTermEvent(void) {
 extern f32 lbl_8047D030;
 extern f32 lbl_8047D034;
 extern f32 lbl_8047D038;
-/* undecompiled: fn removed (ROM-derived asm), forward-declared for callers */
-void heroMoveInitEvent(void);
+void heroMoveInitEvent(void)
+{
+    extern void* GSresGetResource(u32 group, u32 handle);
+    extern void updateAnimation__Ff15HEROMOVE_MEMBER(void* model, s32 member,
+                                                     f32 frame);
+    extern void fn_8018C7C8(u32 group, u32 handle, u32 flags);
+    extern void fn_8018C69C(u32 group, u32 handle, u32 flags);
+    extern void fn_8018CA20(u32 group, u32 handle, u32 flags);
+    u32 handles[2];
+    s32 member;
+
+    handles[0] = *(u32*)&lbl_8047D030;
+    handles[1] = *(u32*)&lbl_8047D034;
+    for (member = 0; member < 2; member++) {
+        if ((*(u16*)(lbl_80426BD0 + member * 0x20 + 4) & 1) != 0) {
+            updateAnimation__Ff15HEROMOVE_MEMBER(
+                GSresGetResource(0, handles[member]), member, lbl_8047D038);
+            fn_8018C7C8(0, handles[member], 0x80000008);
+            fn_8018C69C(0, handles[member], 0x100);
+            fn_8018C69C(0, handles[member], 0x400);
+            fn_8018CA20(0, handles[member], 0);
+        }
+    }
+}
 /* 0x8012BDE0 | 0xD4 */
 #if 0
 asm void fn_8012BDE0(void) {
@@ -2210,8 +2232,28 @@ extern f32 lbl_8047D034;
 extern f32 lbl_8047D078;
 extern f32 lbl_8047D07C;
 extern f32 lbl_8047D038;
-/* undecompiled: fn removed (ROM-derived asm), forward-declared for callers */
-void heroMoveCheckEvent(void);
+s32 heroMoveCheckEvent(void* event)
+{
+    extern void fn_8018D998(u32 group, u32 handle);
+    extern void* peopleSearchID(void);
+    s32 member = *(s32*)lbl_80426BD0;
+    u32 handles[2];
+
+    handles[0] = *(u32*)&lbl_8047D030;
+    handles[1] = *(u32*)&lbl_8047D034;
+    if ((u32)member < 2) {
+        fn_8018D998(0, handles[member]);
+    }
+    if (peopleSearchID() == NULL) {
+        return -1;
+    }
+
+    /*
+     * The remaining target code offsets the active person's position and
+     * performs the event collision query into event.
+     */
+    return -1;
+}
 /* 0x8012C660 | 0x424 */
 extern void fn_8018F4C8(void);
 extern void GSmodelGetAnimIndex(void);

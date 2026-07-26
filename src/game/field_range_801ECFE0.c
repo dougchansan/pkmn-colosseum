@@ -194,9 +194,45 @@ void sodateyaInit(u8* data) {
 }
 
 void fn_801ED388(void) {
-    extern void* fn_801ED3B8(void);
+    extern void fn_801ED3B8(void);
     extern u32 heroMoveAddStepCallback(void* callback, s32 arg);
     extern u32 lbl_8047B5B8;
 
     lbl_8047B5B8 = heroMoveAddStepCallback(fn_801ED3B8, 0);
+}
+
+void fn_801ED3B8(void)
+{
+    extern u8* savedataGetStatus(u8* data, u16 index);
+    extern u8* heroBiosGetPokemonPtr(u8* hero, u16 index);
+    extern u8 pokemonCheckValid(u8* pokemon);
+    extern u16 pokemonBiosGetDarkpokemonDataId(u8* pokemon);
+    extern u8 fn_801EEC74(u16 darkPokemonId);
+    extern u32 pokemonBiosGetDp(u8* pokemon);
+    extern u16 fn_801EE470(u16 darkPokemonId);
+    extern void fn_801EE4DC(u16 darkPokemonId, u16 value);
+    u8* hero = savedataGetStatus(NULL, 2);
+    u16 partyIndex;
+
+    if (hero == NULL) {
+        return;
+    }
+
+    for (partyIndex = 0; partyIndex < 6; partyIndex++) {
+        u8* pokemon = heroBiosGetPokemonPtr(hero, partyIndex);
+        u16 darkPokemonId;
+
+        if (!pokemonCheckValid(pokemon) || pokemon == NULL) {
+            continue;
+        }
+        darkPokemonId = pokemonBiosGetDarkpokemonDataId(pokemon);
+        if (darkPokemonId != 0 && fn_801EEC74(darkPokemonId)) {
+            darkPokemonId = 0;
+        }
+        if (darkPokemonId != 0 && pokemonBiosGetDp(pokemon) != 0 &&
+            fn_801EE470(darkPokemonId) < 0x100) {
+            fn_801EE4DC(darkPokemonId,
+                        (u16)(fn_801EE470(darkPokemonId) + 1));
+        }
+    }
 }
