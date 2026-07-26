@@ -744,14 +744,6 @@ static void JObj_DetachFromParent(HSD_JObj* jobj)
     jobj->next = NULL;
 }
 
-static BOOL JObj_IsDObjVisible(HSD_JObj* jobj)
-{
-    if (jobj->flags & JOBJ_HIDDEN) {
-        return FALSE;
-    }
-    return union_type_dobj(jobj);
-}
-
 void fn_8019F1C4(HSD_JObj* jobj, s32* total_a, s32* total_b);
 
 #if 0
@@ -1278,8 +1270,10 @@ void fn_8019F1C4(HSD_JObj* jobj, s32* total_a, s32* total_b) {
         if (jobj->flags & JOBJ_INSTANCE) {
             fn_8019F1C4(jobj->child, &sum_a, &sum_b);
         } else {
-            if (JObj_IsDObjVisible(jobj)) {
-                HSD_DObjCountVertices(jobj->u.dobj, &sum_a, &sum_b);
+            if (!(jobj->flags & JOBJ_HIDDEN)) {
+                if (union_type_dobj(jobj)) {
+                    HSD_DObjCountVertices(jobj->u.dobj, &sum_a, &sum_b);
+                }
             }
             child = jobj->child;
             while (child != NULL) {
@@ -1293,10 +1287,10 @@ void fn_8019F1C4(HSD_JObj* jobj, s32* total_a, s32* total_b) {
         }
     }
 
-    if (total_a != NULL) {
+    if (total_a) {
         *total_a = sum_a;
     }
-    if (total_b != NULL) {
+    if (total_b) {
         *total_b = sum_b;
     }
 }
