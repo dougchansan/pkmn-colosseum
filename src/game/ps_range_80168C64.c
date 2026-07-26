@@ -69,6 +69,7 @@
 #include "dolphin/gx/GXInternal.h"
 #include "game/ps_types.h"
 #include "game/script/script.h"
+#include "hsd/hsd_lobj.h"
 #include "hsd/hsd_object.h"
 
 /* ======================================================================
@@ -282,6 +283,7 @@ extern void fn_800B7874(s32 attribute, s32 type);
 extern void fn_800B928C(s32 primitive, s32 format, s32 count);
 extern void fn_800B9404(s32 width, s32 offset);
 extern void generateParticle_8017424C(PSGeneratorState* gen);
+extern void HSD_MulColor(GXColor* a, GXColor* b, GXColor* dest);
 
 void psSetGeneratorAngleRadiusScale(PSGeneratorState* gen, f32* scale,
                                     u8 applyToMotion) {
@@ -2894,9 +2896,8 @@ PSGeneratorState* psCreateGeneratorID(s32 linkNo, s32 bankIdx, s32 scriptId) {
 }
 
 /*
- * Updates the particle material and ambient channel colors. Dynamic light
- * multiplication remains asm-only; interpolation and GX cache updates are
- * verified against 0x8016E814-0x8016EA78.
+ * Updates the particle material and ambient channel colors, including the
+ * active alpha-light contribution. Verified against 0x8016E814-0x8016EA78.
  */
 void setupChanReg(PSParticle* pp) {
     PSColor material;
@@ -2962,6 +2963,19 @@ void setupChanReg(PSParticle* pp) {
         ambient.b != lbl_8047B140.b) {
         lbl_8047B140 = ambient;
         fn_800BA5BC(0, &ambient);
+    }
+
+    {
+        HSD_LObj* alphaLight = HSD_LObjGetActiveByID(0x100);
+
+        if (alphaLight != NULL) {
+            HSD_MulColor((GXColor*)&material, &alphaLight->color,
+                         (GXColor*)&material);
+        } else {
+            material.r = 0;
+            material.g = 0;
+            material.b = 0;
+        }
     }
 
     if (material.r != lbl_8047B13C.r ||
