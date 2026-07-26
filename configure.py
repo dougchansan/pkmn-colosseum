@@ -266,7 +266,9 @@ config.libs = [
                 extra_cflags=["-rostr"],
             ),  # BANK_TRK
             Object(Matching, "trk/gdev_cc_range_800C4444.c", mw_version="GC/1.3", progress_category="runtime"),  # BANK_TRK
-            Object(CodeCandidate, "hsd/hsd_mobj_range_801A86B4.c", mw_version="GC/3.0a3", progress_category="hsd"),  # PR419 residual
+            Object(CodeCandidate, "hsd/hsd_mobj_range_801A86B4.c", mw_version="GC/1.3", progress_category="hsd"),  # PR419 residual
+            Object(CodeCandidate, "hsd/hsd_mobj_range_801A86B4_r40_801A8884.c", mw_version="GC/3.0a3", progress_category="hsd"),
+            Object(CodeCandidate, "hsd/hsd_mobj_range_801A86B4_r40_801A8D1C_gc13.c", mw_version="GC/1.3", progress_category="hsd"),
             Object(Matching, "hsd/hsd_mtx_get_translate_exact_801A9570.c", mw_version="GC/1.3", progress_category="hsd"),  # PR419 exact
             Object(CodeCandidate, "hsd/hsd_mobj_candidate_801A958C.c", mw_version="GC/1.3", progress_category="hsd"),  # PR419 residual
             Object(Matching, "hsd/hsd_obj_forget_exact_801AA350.c", mw_version="GC/1.3", progress_category="hsd"),  # PR419 exact
@@ -2883,7 +2885,7 @@ config.libs = [
             Object(
                 CodeCandidate,
                 "dolphin/sdk_range_800AC440.c",
-                mw_version="GC/1.3",
+                mw_version="GC/1.1p1",
                 extra_cflags=["-O4,s"],
                 progress_category="sdk",
             ),
@@ -3122,6 +3124,18 @@ config.libs = [
             Object(
                 CodeCandidate,
                 "dolphin/sdk_range_800B771C.c",
+                mw_version="GC/1.2.5n",
+                progress_category="sdk",
+            ),
+            Object(
+                CodeCandidate,
+                "dolphin/sdk_range_800B771C_r40_800B7C18_gc11p1.c",
+                mw_version="GC/1.1p1",
+                progress_category="sdk",
+            ),
+            Object(
+                CodeCandidate,
+                "dolphin/sdk_range_800B771C_r40_800B7D3C.c",
                 mw_version="GC/1.2.5n",
                 progress_category="sdk",
             ),
@@ -7285,7 +7299,7 @@ config.libs = [
             Object(
                 CodeCandidate,
                 "hsd/hsd_jobj_candidate_8019E460_gc125.c",
-                mw_version="GC/1.2.5n",
+                mw_version="GC/1.1p1",
                 extra_cflags=["-DHSD_JOBJ_OMIT_EXACT_8019F718", "-inline deferred"],
                 progress_category="hsd",
             ),
@@ -7368,6 +7382,20 @@ config.libs = [
             Object(
                 CodeCandidate,
                 "hsd/hsd_jobj_residual_801A1B7C.c",
+                mw_version="GC/1.3.2",
+                extra_cflags=["-use_lmw_stmw on"],
+                progress_category="hsd",
+            ),
+            Object(
+                CodeCandidate,
+                "hsd/hsd_jobj_residual_801A1B7C_r40_801A20C8_gc125n.c",
+                mw_version="GC/1.2.5n",
+                extra_cflags=["-use_lmw_stmw on"],
+                progress_category="hsd",
+            ),
+            Object(
+                CodeCandidate,
+                "hsd/hsd_jobj_residual_801A1B7C_r40_801A2B5C.c",
                 mw_version="GC/1.3.2",
                 extra_cflags=["-use_lmw_stmw on"],
                 progress_category="hsd",
@@ -7585,6 +7613,18 @@ config.libs = [
                 progress_category="hsd",
             ),
             Object(
+                CodeCandidate,
+                "hsd/hsd_texp_candidate_801B18D8_r40_801B2038_gc125n.c",
+                mw_version="GC/1.2.5n",
+                progress_category="hsd",
+            ),
+            Object(
+                CodeCandidate,
+                "hsd/hsd_texp_candidate_801B18D8_r40_801B2560.c",
+                mw_version="GC/1.3",
+                progress_category="hsd",
+            ),
+            Object(
                 Matching,
                 "hsd/hsd_texp_exact_801B26F8.c",
                 mw_version="GC/1.3",
@@ -7721,6 +7761,12 @@ config.libs = [
             Object(
                 CodeCandidate,
                 "hsd/hsd_texp_candidate_801B9048.c",
+                mw_version="GC/1.0",
+                progress_category="hsd",
+            ),
+            Object(
+                CodeCandidate,
+                "hsd/hsd_texp_candidate_801B9048_r40_801B9320.c",
                 mw_version="GC/1.3",
                 progress_category="hsd",
             ),

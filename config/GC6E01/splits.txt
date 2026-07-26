@@ -1330,7 +1330,13 @@ dolphin/gx/GX_fn_800B7714.c:
 	.text       start:0x800B7714 end:0x800B771C
 
 dolphin/sdk_range_800B771C.c:
-	.text       start:0x800B771C end:0x800B856C
+	.text       start:0x800B771C end:0x800B7C18
+
+dolphin/sdk_range_800B771C_r40_800B7C18_gc11p1.c:
+	.text       start:0x800B7C18 end:0x800B7D3C
+
+dolphin/sdk_range_800B771C_r40_800B7D3C.c:
+	.text       start:0x800B7D3C end:0x800B856C
 
 dolphin/gx/GX_fn_800B856C.c:
 	.text       start:0x800B856C end:0x800B857C
@@ -4100,7 +4106,13 @@ hsd/hsd_jobj_exact_801A1B40.c:
 	.text       start:0x801A1B40 end:0x801A1B7C
 
 hsd/hsd_jobj_residual_801A1B7C.c:
-	.text       start:0x801A1B7C end:0x801A301C
+	.text       start:0x801A1B7C end:0x801A20C8
+
+hsd/hsd_jobj_residual_801A1B7C_r40_801A20C8_gc125n.c:
+	.text       start:0x801A20C8 end:0x801A2B5C
+
+hsd/hsd_jobj_residual_801A1B7C_r40_801A2B5C.c:
+	.text       start:0x801A2B5C end:0x801A301C
 
 hsd/hsd_jobj_exact_801A301C.c:
 	.text       start:0x801A301C end:0x801A4000
@@ -4172,7 +4184,13 @@ hsd/hsd_mtx_scaled_add.c:
 	.text       start:0x801A85F0 end:0x801A86B4
 
 hsd/hsd_mobj_range_801A86B4.c:
-	.text       start:0x801A86B4 end:0x801A9570
+	.text       start:0x801A86B4 end:0x801A8884
+
+hsd/hsd_mobj_range_801A86B4_r40_801A8884.c:
+	.text       start:0x801A8884 end:0x801A8D1C
+
+hsd/hsd_mobj_range_801A86B4_r40_801A8D1C_gc13.c:
+	.text       start:0x801A8D1C end:0x801A9570
 
 hsd/hsd_mtx_get_translate_exact_801A9570.c:
 	.text       start:0x801A9570 end:0x801A958C
@@ -4250,7 +4268,13 @@ hsd/hsd_texp_exact_801B1854.c:
 	.text       start:0x801B1854 end:0x801B18D8
 
 hsd/hsd_texp_candidate_801B18D8.c:
-	.text       start:0x801B18D8 end:0x801B26F8
+	.text       start:0x801B18D8 end:0x801B2038
+
+hsd/hsd_texp_candidate_801B18D8_r40_801B2038_gc125n.c:
+	.text       start:0x801B2038 end:0x801B2560
+
+hsd/hsd_texp_candidate_801B18D8_r40_801B2560.c:
+	.text       start:0x801B2560 end:0x801B26F8
 
 hsd/hsd_texp_exact_801B26F8.c:
 	.text       start:0x801B26F8 end:0x801B2718
@@ -4319,7 +4343,10 @@ hsd/hsd_texp_candidate_801B8FB8_gc20.c:
 	.text       start:0x801B8FB8 end:0x801B9048
 
 hsd/hsd_texp_candidate_801B9048.c:
-	.text       start:0x801B9048 end:0x801BAC8C
+	.text       start:0x801B9048 end:0x801B9320
+
+hsd/hsd_texp_candidate_801B9048_r40_801B9320.c:
+	.text       start:0x801B9320 end:0x801BAC8C
 
 hsd/hsd_texp_candidate_801BAC8C_gc20.c:
 	.text       start:0x801BAC8C end:0x801BBAC8
