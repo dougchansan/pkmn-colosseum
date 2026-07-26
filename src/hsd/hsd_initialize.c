@@ -390,3 +390,141 @@ void fn_8019C978(void) {
 #undef fn_801A69C0
 #undef fn_801AA538
 #pragma pop
+
+typedef struct HSD_MemReport {
+    u32 total;
+    u32 system;
+    u32 xfb;
+    u32 gxfifo;
+    u32 heap;
+} HSD_MemReport;
+
+typedef struct HSD_VIStatus {
+    GXRenderModeObj rmode;
+    s32 black;
+    u8 vf;
+    s32 gamma;
+    GXColor clear_clr;
+    u32 clear_z;
+    u8 update_clr;
+    u8 update_alpha;
+    u8 update_z;
+} HSD_VIStatus;
+
+extern void DVDInit(void);
+extern void* OSAllocFromArenaLo(u32 size, u32 align);
+extern void HSD_Panic(const char* file, u32 line, const char* message);
+extern void fn_801BF1F0(HSD_VIStatus* vi, void* xfb0, void* xfb1, void* xfb2);
+extern void fn_800BA414(GXLightObj* light, f32 x, f32 y, f32 z);
+extern void fn_800BA424(GXLightObj* light, f32 x, f32 y, f32 z);
+extern void fn_800BA198(GXLightObj* light, f32 a0, f32 a1, f32 a2, f32 k0,
+                        f32 k1, f32 k2);
+extern void GXLoadLightObjImm(GXLightObj* light, u32 light_id);
+extern u32 HSD_Index2LightID(u32 index);
+extern void fn_801B25C4(s32 flags);
+extern void HSD_IDSetup(void);
+extern void VIWaitForRetrace(void);
+extern void fn_801A3FBC(void);
+extern void HSD_AObjInitAllocData(void);
+extern void HSD_FObjInitAllocData(void);
+extern void HSD_IDInitAllocData(void);
+extern void HSD_VecInitAllocData(void);
+extern void HSD_MtxInitAllocData(void);
+extern void fn_801B0158(void);
+extern void HSD_RenderInitAllocData(void);
+extern void fn_801B1854(void);
+extern void HSD_ZListInitAllocData(void);
+
+extern void* lbl_8046557C[3];
+extern GXRenderModeObj* lbl_80478C74;
+extern u32 lbl_80478C7C;
+extern s32 lbl_80478C80;
+extern GXColor lbl_80478C84;
+extern void* lbl_8047B278;
+extern s32 lbl_8047B280;
+extern u32 lbl_8047E728;
+extern const f32 lbl_8047DB14;
+extern const f32 lbl_8047DB18;
+extern u8 lbl_80274818[];
+
+void fn_8019CB70(void)
+{
+    HSD_VIStatus vi;
+    GXLightObj light;
+    const u8* strings;
+    void* fifo;
+    u32 framebuffer_size;
+    s32 framebuffer_count;
+    s32 i;
+
+    strings = lbl_80274818;
+    DVDInit();
+
+    {
+        GXRenderModeObj* rmode = lbl_80478C74;
+
+        framebuffer_count = lbl_80478C80;
+        if (rmode) {
+            framebuffer_size =
+                ((rmode->fbWidth + 0xF) & 0xFFF0) * rmode->xfbHeight * 2;
+            ((HSD_MemReport*)lbl_80465568)->xfb =
+                framebuffer_size * framebuffer_count;
+
+            for (i = 0; i < framebuffer_count; i++) {
+                if (!(lbl_8046557C[i] =
+                          OSAllocFromArenaLo(framebuffer_size, 0x20))) {
+                    HSD_Panic((const char*)&strings[0x1CC], 0xF1,
+                              (const char*)&strings[0x260]);
+                }
+            }
+            for (i = framebuffer_count; i < 3; i++) {
+                lbl_8046557C[i] = NULL;
+            }
+        }
+    }
+
+    if (!(fifo = OSAllocFromArenaLo(lbl_80478C7C, 0x20))) {
+        HSD_Panic((const char*)&strings[0x1CC], 0x104,
+                  (const char*)&strings[0x240]);
+    }
+    lbl_8047B278 = GXInit(fifo, lbl_80478C7C);
+    ((HSD_MemReport*)lbl_80465568)->gxfifo = lbl_80478C7C;
+
+    fn_8019C978();
+
+    vi.rmode = *lbl_80478C74;
+    vi.black = 1;
+    vi.vf = 1;
+    vi.gamma = 0;
+    *(u32*)&vi.clear_clr = lbl_8047E728;
+    vi.clear_z = 0xFFFFFF;
+    vi.update_clr = 1;
+    vi.update_alpha = 1;
+    vi.update_z = 1;
+    fn_801BF1F0(&vi, lbl_8046557C[0], lbl_8046557C[1], lbl_8046557C[2]);
+
+    fn_800BA414(&light, lbl_8047DB14, lbl_8047DB18, lbl_8047DB18);
+    fn_800BA424(&light, lbl_8047DB14, lbl_8047DB18, lbl_8047DB18);
+    fn_800BA198(&light, lbl_8047DB14, lbl_8047DB18, lbl_8047DB18,
+                lbl_8047DB14, lbl_8047DB18, lbl_8047DB18);
+    fn_800BA440(&light, lbl_80478C84);
+
+    for (i = 0; i < 8; i++) {
+        GXLoadLightObjImm(&light, HSD_Index2LightID(i));
+    }
+
+    fn_801B25C4(-1);
+    HSD_IDSetup();
+    VIWaitForRetrace();
+    fn_801A3FBC();
+    HSD_AObjInitAllocData();
+    HSD_FObjInitAllocData();
+    HSD_IDInitAllocData();
+    HSD_VecInitAllocData();
+    HSD_MtxInitAllocData();
+    fn_801B0158();
+    HSD_RenderInitAllocData();
+    fn_801B1854();
+    HSD_ZListInitAllocData();
+    lbl_8047B280 = 1;
+}
