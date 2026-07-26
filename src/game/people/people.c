@@ -3100,7 +3100,7 @@ void* fn_8018CD08(u32 groupId, u32 index, f32 radius, f32 angle) {
 }
 
 /* fn_8018D7D0 -- not recovered, gap in archive campaign (size 0x158) */
-BOOL fn_8018D7D0(u32 groupId, u32 index) {
+u8 fn_8018D7D0(u32 groupId, u32 index) {
     PeopleEntry* entry;
 
     entry = peopleFindBySelf(peopleFindSelf(groupId, index));
