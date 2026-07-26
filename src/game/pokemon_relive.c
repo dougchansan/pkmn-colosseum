@@ -454,7 +454,7 @@ void preReliveDisplayHokoraParticle(void)
 }
 
 /* Address: 0x8025E640 | Size: 0x37C | Ghidra import */
-u32 _expRecover__FP7PokemonUl(u32 r3,int r4)
+u32 _expRecover__FP7PokemonUl(u32 r3,u32 r4)
 
 {
     extern int winMsgCloseLevelUpStatus();
