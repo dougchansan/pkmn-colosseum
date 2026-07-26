@@ -6137,6 +6137,7 @@ config.libs = [
                 CodeCandidate,
                 "hsd/hsd_dobj.c",
                 mw_version="GC/1.3",
+                extra_cflags=["-use_lmw_stmw on"],
                 progress_category="hsd",
             ),
             Object(
