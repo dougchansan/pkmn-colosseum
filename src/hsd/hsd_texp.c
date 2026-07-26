@@ -2430,12 +2430,28 @@ s32 HSD_TExpGetType(u8* texp) {
 }
 #pragma optimization_level 4
 
+typedef struct HSD_TExpDag {
+    ColTExpNode* tev;
+    u8 idx;
+    u8 nb_dep;
+    u8 nb_ref;
+    u8 dist;
+    struct HSD_TExpDag* depend[8];
+} HSD_TExpDag;
+
+extern s32 lbl_8036D380[];
+extern s32 HSD_TExpGetType(u8* texp);
+extern void CalcDistance(u8** nodes, s32* dist, u8* root, s32 num, s32 val);
+void fn_801B89BC(s32 num, u32* dep, u32* full_dep, HSD_TExpDag* list,
+                 s32 depth, s32 idx, u32 done_set, u32 ready_set, s32* order,
+                 s32* min, s32* min_order);
+s32 fn_801B8B84(s32 num, u32* unused, HSD_TExpDag* list, s32* order);
+
 /*
  * HSD_GObjRenderSorted - 0x801B7CA0 | Size: 0x384
- * Full scene render with sorting.
- * Walks the render list, sorts by priority, and dispatches render callbacks.
  */
-void fn_801B7CA0(u32 pass) {
+void fn_801B7CA0(u32 pass)
+{
     u32 i;
 
     for (i = 0; i < 64; i++) {
@@ -2452,18 +2468,6 @@ void fn_801B7CA0(u32 pass) {
 /* ========================================================================= */
 /*  TExp DAG construction                                                    */
 /* ========================================================================= */
-
-typedef struct HSD_TExpDag {
-    void* tev;
-    u8 idx;
-    u8 nb_dep;
-    u8 nb_ref;
-    u8 dist;
-    struct HSD_TExpDag* depend[8];
-} HSD_TExpDag;
-
-extern s32 HSD_TExpGetType(u8* texp);
-extern void CalcDistance(u8** nodes, s32* dist, u8* root, s32 num, s32 val);
 
 /*
  * HSD_TExpMakeDag - 0x801B8024 | Size: 0x480
@@ -2550,7 +2554,7 @@ s32 HSD_TExpMakeDag(u8* root, HSD_TExpDag* list) {
         dag = &list[i];
         cur = nodes[i];
 
-        dag->tev = cur;
+        dag->tev = (ColTExpNode*) cur;
         dag->idx = (u8)i;
         dag->nb_dep = 0;
         dag->nb_ref = 0;
@@ -2776,68 +2780,128 @@ level1_next:
 }
 
 /*
- * GObj_RenderLinkManagement - 0x801B89BC | Size: 0x1C8
- * Manage render links for game objects.
+ * Recursively enumerate dependency-respecting stage orders.
  */
-void fn_801B89BC(HSD_GObj* gobj, u8 gx_link) {
-    if (gobj == NULL) {
-        return;
-    }
+void fn_801B89BC(s32 num, u32* dep, u32* full_dep, HSD_TExpDag* list,
+                 s32 depth, s32 idx, u32 done_set, u32 ready_set, s32* order,
+                 s32* min, s32* min_order)
+{
+    s32* saved_order;
+    s32* saved_min;
+    s32* saved_min_order;
+    HSD_TExpDag* dag;
+    u32 dep_bits;
+    u32 blocked;
+    u32 full_bits;
+    s32 score;
+    s32 i;
 
-    /* Unlink from current render list */
-    if (gobj->prev_gx != NULL) {
-        gobj->prev_gx->next_gx = gobj->next_gx;
-    } else if (gobj->gx_link < 64) {
-        gobj_render_list[gobj->gx_link] = gobj->next_gx;
-    }
-    if (gobj->next_gx != NULL) {
-        gobj->next_gx->prev_gx = gobj->prev_gx;
-    }
+    done_set |= 1 << idx;
+    ready_set &= ~(1 << idx);
+    order[depth++] = (u8) idx;
 
-    /* Link into new render list */
-    gobj->gx_link = gx_link;
-    if (gx_link < 64) {
-        gobj->next_gx = gobj_render_list[gx_link];
-        gobj->prev_gx = NULL;
-        if (gobj_render_list[gx_link] != NULL) {
-            gobj_render_list[gx_link]->prev_gx = gobj;
+    if (depth == num) {
+        score = fn_801B8B84(num, dep, list, order);
+        if (score < *min) {
+            *min = score;
+            for (i = 0; i < num; i++) {
+                min_order[i] = order[i];
+            }
         }
-        gobj_render_list[gx_link] = gobj;
+    } else {
+        dep_bits = dep[idx];
+        blocked = ready_set | dep_bits;
+        full_bits = 0;
+        for (i = 0; i < num; i++) {
+            if (blocked & (1 << i)) {
+                full_bits |= full_dep[i];
+            }
+        }
+
+        dag = &list[idx];
+        ready_set = blocked & ~full_bits;
+        if (dag->nb_dep == 1 && (ready_set & dep_bits)) {
+            saved_order = order;
+            saved_min = min;
+            saved_min_order = min_order;
+            fn_801B89BC(num, dep, full_dep, list, depth,
+                        dag->depend[0]->idx, done_set, ready_set, saved_order,
+                        saved_min, saved_min_order);
+        } else {
+            for (i = 0; i < num; i++) {
+                if (ready_set & (1 << i)) {
+                    saved_order = order;
+                    saved_min = min;
+                    saved_min_order = min_order;
+                    fn_801B89BC(num, dep, full_dep, list, depth, i, done_set,
+                                ready_set, saved_order, saved_min,
+                                saved_min_order);
+                }
+            }
+        }
     }
 }
 
 /*
- * GObj_ProcessLinkManagement - 0x801B8B84 | Size: 0x1D8
- * Manage process links for game objects.
+ * Assign temporary TEV registers for one candidate stage order.
  */
-void fn_801B8B84(HSD_GObj* gobj, u8 p_link, u8 priority) {
-    if (gobj == NULL) {
-        return;
-    }
+s32 fn_801B8B84(s32 num, u32* unused, HSD_TExpDag* list, s32* order)
+{
+    u8 color_refs[4] = { 0 };
+    u8 alpha_refs[4] = { 0 };
+    ColTExpNode* tev;
+    HSD_TExpDag* dag;
+    s32 idx;
+    s32 i;
+    s32 min_color = 4;
+    s32 min_alpha = 4;
+    s32 alpha_ref_count;
 
-    /* Unlink from current process list */
-    if (gobj->prev != NULL) {
-        gobj->prev->next = gobj->next;
-    } else if (gobj->p_link < 64) {
-        gobj_list[gobj->p_link] = gobj->next;
-    }
-    if (gobj->next != NULL) {
-        gobj->next->prev = gobj->prev;
-    }
+    for (idx = num - 1; idx >= 0; idx--) {
+        dag = &list[order[idx]];
+        tev = dag->tev;
 
-    /* Update link info */
-    gobj->p_link = p_link;
-    gobj->p_priority = priority;
-
-    /* Link into new process list */
-    if (p_link < 64) {
-        gobj->next = gobj_list[p_link];
-        gobj->prev = NULL;
-        if (gobj_list[p_link] != NULL) {
-            gobj_list[p_link]->prev = gobj;
+        for (i = 0; i < 4; i++) {
+            if (HSD_TExpGetType((u8*) tev->c_in[i].exp) == COL_TE_TEV) {
+                if (tev->c_in[i].sel == COL_TE_RGB) {
+                    color_refs[tev->c_in[i].exp->c_dst]--;
+                } else {
+                    alpha_refs[tev->c_in[i].exp->a_dst]--;
+                }
+            }
+            if (HSD_TExpGetType((u8*) tev->a_in[i].exp) == COL_TE_TEV) {
+                alpha_refs[tev->a_in[i].exp->a_dst]--;
+            }
         }
-        gobj_list[p_link] = gobj;
+
+        if (tev->c_ref > 0) {
+            for (i = 3; i >= 0; i--) {
+                if (color_refs[i] == 0) {
+                    color_refs[i] = tev->c_ref;
+                    tev->c_dst = i;
+                    if (min_color > i) {
+                        min_color = i;
+                    }
+                    break;
+                }
+            }
+        }
+
+        alpha_ref_count = tev->a_ref;
+        if (alpha_ref_count > 0) {
+            for (i = 3; i >= 0; i--) {
+                if (alpha_refs[i] == 0) {
+                    alpha_refs[i] = alpha_ref_count;
+                    tev->a_dst = i;
+                    if (min_alpha > i) {
+                        min_alpha = i;
+                    }
+                    break;
+                }
+            }
+        }
     }
+    return (4 - min_color) + (4 - min_alpha);
 }
 
 /*
