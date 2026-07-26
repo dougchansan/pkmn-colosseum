@@ -197,6 +197,13 @@ extern void HSD_CObjGetUpVector(void* camera, Vec* up);
 extern f32 lbl_8047D6B4;
 extern f32 lbl_8047D5CC;
 extern f32 lbl_8047D618;
+extern f32 lbl_8047B14C;
+extern f32 lbl_8047B150;
+extern f32 lbl_8047B154;
+extern f32 lbl_8047B158;
+extern f32 lbl_8047B15C;
+extern f32 lbl_8047B160;
+extern u8 lbl_80452DE8[];
 extern void fn_800BD554(s32 mode);
 extern void fn_800B7D3C(void);
 extern void fn_800B7874(s32 attribute, s32 type);
@@ -1777,6 +1784,60 @@ void psDispSubAppSRT(PSParticle* pp, Mtx parentMatrix) {
 
     appSRT->flags = lbl_80478C30;
     PSMTXCopy(appSRT->matrix, appMatrix);
+}
+
+void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
+                          f32 centerX, f32 centerY, f32 centerZ,
+                          f32 velocityX, f32 velocityY, f32 velocityZ,
+                          f32 axisXX, f32 axisXY, f32 axisXZ,
+                          f32 axisYX, f32 axisYY, f32 axisYZ);
+
+/*
+ * Prepares the two screen-space polygon axes and delegates emission. The
+ * camera/people-relative orientation modes remain asm-only; this covers the
+ * direct basis path and target-verified generator scaling.
+ */
+void psDispSub(PSParticle* pp, void* polygonData) {
+    f32 axisXX;
+    f32 axisXY;
+    f32 axisXZ;
+    f32 axisYX;
+    f32 axisYY;
+    f32 axisYZ;
+    f32 size = pp->lerpValue;
+    PSGeneratorState* generator = (PSGeneratorState*)pp->peopleObj;
+
+    if (polygonData != NULL) {
+        f32* view = (f32*)(lbl_80452DE8 + 0x7C);
+
+        axisXX = view[0] * size;
+        axisXY = -view[1] * size;
+        axisXZ = view[4] * size;
+        axisYX = -view[5] * size;
+        axisYY = view[8] * size;
+        axisYZ = -view[9] * size;
+    } else {
+        axisXX = lbl_8047B160 * size;
+        axisXY = lbl_8047B15C * size;
+        axisXZ = lbl_8047B158 * size;
+        axisYX = lbl_8047B154 * size;
+        axisYY = lbl_8047B150 * size;
+        axisYZ = lbl_8047B14C * size;
+    }
+
+    if (generator != NULL && (generator->generatorFlags & 0x20)) {
+        axisXX *= generator->generatorData[3];
+        axisXY *= generator->generatorData[3];
+        axisXZ *= generator->generatorData[4];
+        axisYX *= generator->generatorData[4];
+        axisYY *= generator->generatorData[5];
+        axisYZ *= generator->generatorData[5];
+    }
+
+    psDispSubMakePolygon(pp, polygonData,
+                         pp->positionX, pp->positionY, pp->positionZ,
+                         pp->velocityX, pp->velocityY, pp->velocityZ,
+                         axisXX, axisXZ, axisYY, axisXY, axisYX, axisYZ);
 }
 
 /*
