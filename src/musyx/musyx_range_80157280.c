@@ -5173,7 +5173,8 @@ asm void voiceFree(void) {
 }
 #else
 void voiceFree(SynthVoiceMini* svoice) {
-    VoiceListEntry* voiceListArr = (VoiceListEntry*)(lbl_80445F50 + 0xE00);
+    u8* base = lbl_80445F50;
+    VoiceListEntry* voiceListArr;
     u32 i;
     VoiceListEntry* sfv;
 
@@ -5181,6 +5182,7 @@ void voiceFree(SynthVoiceMini* svoice) {
     voiceRemovePriority(svoice);
     svoice->addr = NULL;
     svoice->prio = 0;
+    voiceListArr = (VoiceListEntry*)(base + 0xE00);
     sfv = &voiceListArr[(i = (u8)svoice->id)];
     if (sfv->user == 0) {
         sfv->user = 1;
