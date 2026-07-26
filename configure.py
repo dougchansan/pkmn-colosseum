@@ -4165,6 +4165,7 @@ config.libs = [
                     "-sdata 8",
                     "-sdata2 8",
                     "-DTHP_PLAYER_ONLY",
+                    "-inline noauto",
                 ],
                 progress_category="sdk",
             ),
