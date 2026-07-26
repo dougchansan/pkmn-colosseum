@@ -70,6 +70,24 @@ extern void HSD_MkRotationMtx(Mtx m, Vec* rot);
 extern void GXSetTexCoordGen(u32 coord, u32 func, u32 src, u32 mtx);
 extern void GXSetTexCoordGen2(u32 coord, u32 func, u32 src, u32 mtx,
                               u32 normalize, u32 postmtx);
+typedef struct HSD_TevDesc {
+    struct HSD_TevDesc* next;
+    u32 flag, stage, coord, map, color;
+    u32 color_op, color_a, color_b, color_c, color_d;
+    u32 color_scale, color_bias;
+    u8 color_clamp, pad35[3];
+    u32 color_tevreg, alpha_op;
+    u32 alpha_a, alpha_b, alpha_c, alpha_d;
+    u32 alpha_scale, alpha_bias;
+    u8 alpha_clamp, pad59[3];
+    u32 alpha_tevreg, pad60;
+    s32 kcolor0, kcolor1;
+    u32 swap0, swap1, kr, kg, kb, ka;
+} HSD_TevDesc;
+extern HSD_TevDesc lbl_8036D48C;
+extern HSD_TevDesc lbl_8036D510;
+extern s32 HSD_StateAssignTev(void);
+extern void fn_801B3638(HSD_TevDesc* desc);
 
 extern HSD_TExp* fn_801B707C(HSD_TExp** list);
 extern void fn_801B5E40(HSD_TExp* exp, HSD_TObj* tobj, u32 chan);
@@ -442,6 +460,46 @@ void fn_801BDA58(HSD_TObj* tobj)
                              GX_IDENTITY);
         } else {
             setupTextureCoordGen(tobj);
+        }
+    }
+}
+
+void fn_801BD8D0(HSD_TObj* tobj, u32 rendermode)
+{
+    HSD_TevDesc* desc;
+
+    (void) rendermode;
+    for (; tobj != NULL; tobj = tobj->next) {
+        if (tobj->id == GX_TEXMAP_NULL) {
+            continue;
+        }
+        if (tobj_bump(tobj)) {
+            desc = &lbl_8036D510;
+            desc->stage = HSD_StateAssignTev();
+            desc->coord = tobj->coord;
+            desc->map = tobj->id;
+            desc->color_op = GX_TEV_ADD;
+            desc->alpha_op = GX_TEV_ADD;
+            desc->color_clamp = GX_DISABLE;
+            fn_801B3638(desc);
+
+            desc->stage = HSD_StateAssignTev();
+            desc->coord = tobj->coord + 1;
+            desc->color_op = GX_TEV_SUB;
+            desc->alpha_op = GX_TEV_SUB;
+            desc->color_clamp = GX_ENABLE;
+            fn_801B3638(desc);
+        }
+        if (tobj_lightmap(tobj) & TEX_LIGHTMAP_SHADOW) {
+            desc = &lbl_8036D48C;
+            while (tobj != NULL && tobj_coord(tobj) == TEX_COORD_SHADOW) {
+                desc->stage = HSD_StateAssignTev();
+                desc->coord = tobj->coord;
+                desc->map = tobj->id;
+                fn_801B3638(desc);
+                tobj = tobj->next;
+            }
+            break;
         }
     }
 }
