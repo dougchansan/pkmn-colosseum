@@ -857,6 +857,98 @@ skip_spread:
 }
 #pragma pop
 
+/* s_data.c: project group insertion. */
+typedef struct SDataGroup {
+    u32 nextOffset;
+    u16 id;
+    u16 type;
+    u32 macroOffset;
+    u32 sampleOffset;
+    u32 curveOffset;
+    u32 keymapOffset;
+    u32 layerOffset;
+    u32 normalPageOffset;
+} SDataGroup;
+
+typedef struct SDataStackEntry {
+    SDataGroup* group;
+    void* sampleDirectory;
+    void* project;
+} SDataStackEntry;
+
+extern u8 lbl_8047AF18;
+extern s16 lbl_8047AFE8;
+extern SDataStackEntry lbl_80447860[128];
+extern void* fn_80162FAC(void* address); /* hwTransAddr */
+extern u32 fn_80151770(void* sampleDirectory, void* samples); /* dataInsertSDir */
+extern void fn_80151A68(u16 group, void* effects, u16 count); /* dataInsertFX */
+extern void fn_80159C54(u16 id, MusyxPoolData* data, u8 type,
+                        u32 remove); /* InsertData */
+extern void fn_80163188(void); /* hwSyncSampleMem */
+
+static inline void sdataScanIDList(u16* reference, MusyxPoolData* data,
+                                   u8 type) {
+    u16 id;
+
+    while (*reference != 0xFFFF) {
+        if ((*reference & 0x8000) != 0) {
+            id = *reference & 0x3FFF;
+            while (id <= reference[1]) {
+                fn_80159C54(id, data, type, 0);
+                id++;
+            }
+            reference += 2;
+        } else {
+            fn_80159C54(*reference++, data, type, 0);
+        }
+    }
+}
+
+u32 fn_80159EF0(void* project, u16 group, void* samples,
+                void* sampleDirectory,
+                MusyxPoolData* pool) { /* sndPushGroup */
+    SDataGroup* entry;
+
+    if (lbl_8047AF18 != 0 && lbl_8047AFE8 < 128) {
+        entry = project;
+        while (entry->nextOffset != 0xFFFFFFFF) {
+            if (entry->id == group) {
+                lbl_80447860[lbl_8047AFE8].group = entry;
+                lbl_80447860[lbl_8047AFE8].sampleDirectory =
+                    sampleDirectory;
+                lbl_80447860[lbl_8047AFE8].project = project;
+
+                samples = fn_80162FAC(samples);
+                if (fn_80151770(sampleDirectory, samples) != 0) {
+                    sdataScanIDList((u16*)((u8*)project +
+                                          entry->sampleOffset),
+                                    (MusyxPoolData*)sampleDirectory, 1);
+                }
+                sdataScanIDList((u16*)((u8*)project + entry->macroOffset),
+                                pool, 0);
+                sdataScanIDList((u16*)((u8*)project + entry->curveOffset),
+                                pool, 4);
+                sdataScanIDList((u16*)((u8*)project + entry->keymapOffset),
+                                pool, 2);
+                sdataScanIDList((u16*)((u8*)project + entry->layerOffset),
+                                pool, 3);
+
+                if (entry->type == 1) {
+                    u8* effectData =
+                        (u8*)project + entry->normalPageOffset;
+                    fn_80151A68(group, effectData + 4,
+                                *(u16*)effectData);
+                }
+                fn_80163188();
+                lbl_8047AFE8++;
+                return 1;
+            }
+            entry = (SDataGroup*)((u8*)project + entry->nextOffset);
+        }
+    }
+    return 0;
+}
+
 /* snd_service: periodically advances active sound emitters and publishes
  * positional updates to the synthesizer. */
 typedef struct SndServiceSource {
@@ -3096,7 +3188,7 @@ asm void fn_80162FAC(void) {
 #include "src/game/people/people_field_fn_80162FAC.inc"
 }
 #else
-void fn_80162FAC(void) {}
+void* fn_80162FAC(void* address) { return address; }
 #endif
 #pragma pop
 #pragma push
@@ -7350,7 +7442,7 @@ void fn_8015B250(u32 dest, u32 nsDelay) {
 #undef dspStudio
 
 void fn_80159C48(void) {
-    extern u16 lbl_8047AFE8;
+    extern s16 lbl_8047AFE8;
     lbl_8047AFE8 = 0;
 }
 
