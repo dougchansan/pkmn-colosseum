@@ -1936,24 +1936,50 @@ asm u32 fn_8013B85C(void* ptr, u32 delta) {
 #else
 u32 fn_8013B85C(void* ptr, u32 delta) {
     u8* p;
+    u8* source;
+    u8* points;
     f32 t;
+    s32 row;
+    s32 column;
+    s32 firstCount;
+    s32 half;
+    s32 rows;
+    s32 columns;
 
     if (ptr == NULL) {
         return 0;
     }
 
     p = ptr;
-    if (*(u16*)(p + 0xCE) == 0) {
-        return 0;
+    t = (f32)*(u16*)(p + 0xCC) / (f32)*(u16*)(p + 0xCE);
+    GSmodelSetVisibility(*(void**)p, 1);
+    fn_8013BC10(p, t);
+
+    columns = *(u16*)(p + 0x1E);
+    if (columns % 2 != 0) {
+        half = columns / 2;
+        firstCount = half + 1;
+        fn_800E09E8(*(void**)(p + 0xBC), p + 0x5C, firstCount);
+        fn_800E09E8(*(u8**)(p + 0xBC) + firstCount * 0xC, p + 0x8C, half);
+    } else {
+        firstCount = columns / 2;
+        fn_800E09E8(*(void**)(p + 0xBC), p + 0x5C, firstCount);
+        fn_800E09E8(*(u8**)(p + 0xBC) + firstCount * 0xC, p + 0x8C, firstCount);
     }
 
-    t = (f32)*(u16*)(p + 0xCC) / (f32)*(u16*)(p + 0xCE);
-    if (*(void**)p != NULL) {
-        GSmodelSetVisibility(*(void**)p, 1);
+    rows = *(u16*)(p + 0x1C);
+    columns = *(u16*)(p + 0x1E);
+    points = *(u8**)(p + 0x4);
+    for (row = 0; row < rows; row++) {
+        source = *(u8**)(p + 0xBC);
+        for (column = 0; column < columns; column++, source += 0xC, points += 0xC) {
+            *(f32*)(points + 0x4) = *(f32*)(source + 0x4);
+            *(f32*)(points + 0x8) = *(f32*)(source + 0x8);
+        }
     }
-    fn_8013BC10(p, t);
-    *(u16*)(p + 0xCC) = *(u16*)(p + 0xCC) + delta;
+
     fn_8013BA98(p);
+    *(u16*)(p + 0xCC) = *(u16*)(p + 0xCC) + delta;
     return (*(u16*)(p + 0xCC) < *(u16*)(p + 0xCE));
 }
 #endif
