@@ -100,7 +100,31 @@ void fn_801B06DC(void* arg0) {
 
 /* Address: 0x801B073C | Size: 0x98 */
 /* Shadow map texture bind */
-void fn_801B073C(void) {
+void fn_801B073C(HSD_SList** list, void* object) {
+    extern void fn_801A05EC(void* object);
+    extern HSD_SList* fn_801A3E64(HSD_SList* node);
+    HSD_SList** current;
+
+    if (list == NULL) {
+        return;
+    }
+
+    current = list;
+    if (object != NULL) {
+        while (*current != NULL) {
+            if ((*current)->data == object) {
+                fn_801A05EC(object);
+                *current = fn_801A3E64(*current);
+                break;
+            }
+            current = &(*current)->next;
+        }
+    } else {
+        while (*current != NULL) {
+            fn_801A05EC((*current)->data);
+            *current = fn_801A3E64(*current);
+        }
+    }
 }
 
 /* Address: 0x801B07D4 | Size: 0xAC */
