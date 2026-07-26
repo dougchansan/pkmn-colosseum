@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196100,
     "total_functions": 8603,
-    "total_units": 1955
+    "total_units": 1965
   },
   "topology_status": {
     "auto_units": 68,
-    "named_units": 1887,
-    "source_backed_units": 1881,
+    "named_units": 1897,
+    "source_backed_units": 1891,
     "auto_code": 0,
     "auto_data": 57687,
     "auto_functions": 0
@@ -23,7 +23,7 @@
     "matched_data_percent": 97.28669,
     "matched_functions": 6566,
     "matched_functions_percent": 76.32221,
-    "fuzzy_match_percent": 68.9966
+    "fuzzy_match_percent": 69.51166
   },
   "unit_topology": [
     {
@@ -18535,13 +18535,39 @@
       "sections": [
         {
           "name": ".text",
-          "size": 10196,
+          "size": 4816,
           "virtual_address": 2149158780
         }
       ],
-      "total_code": 10196,
+      "total_code": 4816,
       "total_data": 0,
-      "total_functions": 23
+      "total_functions": 19
+    },
+    {
+      "name": "main/hsd/hsd_dobj_r43_8019A24C",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 4676,
+          "virtual_address": 2149163596
+        }
+      ],
+      "total_code": 4676,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/hsd/hsd_dobj_r43_8019B490",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 704,
+          "virtual_address": 2149168272
+        }
+      ],
+      "total_code": 704,
+      "total_data": 0,
+      "total_functions": 3
     },
     {
       "name": "main/hsd/hsd_fobj_tail_exact_8019B750",
@@ -19328,13 +19354,117 @@
       "sections": [
         {
           "name": ".text",
-          "size": 14144,
+          "size": 2208,
           "virtual_address": 2149230088
         }
       ],
-      "total_code": 14144,
+      "total_code": 2208,
       "total_data": 0,
-      "total_functions": 32
+      "total_functions": 5
+    },
+    {
+      "name": "main/hsd/hsd_pobj_r43_801AAEA8",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1680,
+          "virtual_address": 2149232296
+        }
+      ],
+      "total_code": 1680,
+      "total_data": 0,
+      "total_functions": 2
+    },
+    {
+      "name": "main/hsd/hsd_pobj_r43_801AB538",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 324,
+          "virtual_address": 2149233976
+        }
+      ],
+      "total_code": 324,
+      "total_data": 0,
+      "total_functions": 3
+    },
+    {
+      "name": "main/hsd/hsd_pobj_r43_801AB67C",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1880,
+          "virtual_address": 2149234300
+        }
+      ],
+      "total_code": 1880,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/hsd/hsd_pobj_r43_801ABDD4",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1060,
+          "virtual_address": 2149236180
+        }
+      ],
+      "total_code": 1060,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/hsd/hsd_pobj_r43_801AC1F8",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 708,
+          "virtual_address": 2149237240
+        }
+      ],
+      "total_code": 708,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/hsd/hsd_pobj_r43_suffix_801AC4BC",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 3736,
+          "virtual_address": 2149237948
+        }
+      ],
+      "total_code": 3736,
+      "total_data": 0,
+      "total_functions": 7
+    },
+    {
+      "name": "main/hsd/hsd_pobj_r43_801AD354",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 712,
+          "virtual_address": 2149241684
+        }
+      ],
+      "total_code": 712,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/hsd/hsd_pobj_r43_801AD61C",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1836,
+          "virtual_address": 2149242396
+        }
+      ],
+      "total_code": 1836,
+      "total_data": 0,
+      "total_functions": 11
     },
     {
       "name": "main/hsd/hsd_robj_range_801ADD48",
