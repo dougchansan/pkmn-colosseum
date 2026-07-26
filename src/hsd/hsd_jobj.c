@@ -3105,50 +3105,49 @@ void fn_801A20C8(void* obj, u32 type, HSD_ObjData* val)
     HSD_RObj* robj;
     JVec3 p;
     f32 mtx[3][4];
-    f32* vector = (f32*)val;
+    JVec3* vector = (JVec3*) val;
     s32 packed;
 
     if (jobj == NULL || type > 0x39) {
         return;
     }
 
-#define DIRTY() fn_8019D620(jobj)
     switch (type) {
     case HSD_A_J_PATH: {
         HSD_JObj* path;
         if (val->fv < 0.0) val->fv = 0.0F;
         if (val->fv > 1.0) val->fv = 1.0F;
         HSD_ASSERT(0x24E, jobj->aobj != NULL);
-        path = *(HSD_JObj**)((u8*)jobj->aobj + 0x18);
+        path = (HSD_JObj*) jobj->aobj->hsd_obj;
         HSD_ASSERT(0x250, path != NULL);
         HSD_ASSERT(0x251, path->u.spline != NULL);
         splArcLengthPoint(&p, path->u.spline, val->fv);
-        jobj->translate_x = p.x; DIRTY();
-        jobj->translate_y = p.y; DIRTY();
-        jobj->translate_z = p.z; DIRTY();
+        HSD_JObjSetTranslateX(jobj, p.x);
+        HSD_JObjSetTranslateY(jobj, p.y);
+        HSD_JObjSetTranslateZ(jobj, p.z);
         break;
     }
     case HSD_A_J_ROTX:
         if ((jobj->flags & JOBJ_JOINT1) != 0) {
-            robj = HSD_RObjGetByType(jobj->robj, 0x20000000, 0);
-            if (robj != NULL) *(f32*)((u8*)robj + 0xC) = val->fv;
+            robj = HSD_RObjGetByType(jobj->robj, REFTYPE_IKHINT, 0);
+            if (robj != NULL) robj->u.ik_hint.rotate_x = val->fv;
         }
-        jobj->rotate_x = val->fv; DIRTY();
+        HSD_JObjSetRotationX(jobj, val->fv);
         break;
-    case HSD_A_J_ROTY: jobj->rotate_y = val->fv; DIRTY(); break;
-    case HSD_A_J_ROTZ: jobj->rotate_z = val->fv; DIRTY(); break;
-    case HSD_A_J_TRAX: jobj->translate_x = val->fv; DIRTY(); break;
-    case HSD_A_J_TRAY: jobj->translate_y = val->fv; DIRTY(); break;
-    case HSD_A_J_TRAZ: jobj->translate_z = val->fv; DIRTY(); break;
+    case HSD_A_J_ROTY: HSD_JObjSetRotationY(jobj, val->fv); break;
+    case HSD_A_J_ROTZ: HSD_JObjSetRotationZ(jobj, val->fv); break;
+    case HSD_A_J_TRAX: HSD_JObjSetTranslateX(jobj, val->fv); break;
+    case HSD_A_J_TRAY: HSD_JObjSetTranslateY(jobj, val->fv); break;
+    case HSD_A_J_TRAZ: HSD_JObjSetTranslateZ(jobj, val->fv); break;
     case HSD_A_J_SCAX:
         if ((val->iv & 0x7FFFFFFF) < 0x3A83126F) val->fv = 0.001F;
-        jobj->scale_x = val->fv; DIRTY(); break;
+        HSD_JObjSetScaleX(jobj, val->fv); break;
     case HSD_A_J_SCAY:
         if ((val->iv & 0x7FFFFFFF) < 0x3A83126F) val->fv = 0.001F;
-        jobj->scale_y = val->fv; DIRTY(); break;
+        HSD_JObjSetScaleY(jobj, val->fv); break;
     case HSD_A_J_SCAZ:
         if ((val->iv & 0x7FFFFFFF) < 0x3A83126F) val->fv = 0.001F;
-        jobj->scale_z = val->fv; DIRTY(); break;
+        HSD_JObjSetScaleZ(jobj, val->fv); break;
     case HSD_A_J_BRANCH:
         if (val->fv > 0.5F) HSD_JObjClearFlagsAll(jobj, JOBJ_HIDDEN);
         else HSD_JObjSetFlagsAll(jobj, JOBJ_HIDDEN);
@@ -3190,17 +3189,17 @@ void fn_801A20C8(void* obj, u32 type, HSD_ObjData* val)
         if (lbl_8047B2A8 != 0) ((TargetCallback)lbl_8047B2A8)(jobj, val->iv);
         break;
     case 0x32:
-        jobj->mtx[0][0] = vector[0]; jobj->mtx[1][0] = vector[1];
-        jobj->mtx[2][0] = vector[2]; break;
+        jobj->mtx[0][0] = vector->x; jobj->mtx[1][0] = vector->y;
+        jobj->mtx[2][0] = vector->z; break;
     case 0x33:
-        jobj->mtx[0][1] = vector[0]; jobj->mtx[1][1] = vector[1];
-        jobj->mtx[2][1] = vector[2]; break;
+        jobj->mtx[0][1] = vector->x; jobj->mtx[1][1] = vector->y;
+        jobj->mtx[2][1] = vector->z; break;
     case 0x34:
-        jobj->mtx[0][2] = vector[0]; jobj->mtx[1][2] = vector[1];
-        jobj->mtx[2][2] = vector[2]; break;
+        jobj->mtx[0][2] = vector->x; jobj->mtx[1][2] = vector->y;
+        jobj->mtx[2][2] = vector->z; break;
     case 0x35:
-        jobj->mtx[0][3] = vector[0]; jobj->mtx[1][3] = vector[1];
-        jobj->mtx[2][3] = vector[2]; break;
+        jobj->mtx[0][3] = vector->x; jobj->mtx[1][3] = vector->y;
+        jobj->mtx[2][3] = vector->z; break;
     case 0x36: case 0x37: case 0x38: case 0x39:
         if (jobj->parent != NULL)
             fn_801A9DF0(jobj->parent->mtx, jobj->mtx, mtx);
@@ -3213,7 +3212,6 @@ void fn_801A20C8(void* obj, u32 type, HSD_ObjData* val)
             HSD_MtxGetScale(mtx, &jobj->scale_x);
         break;
     }
-#undef DIRTY
 }
 
 void fn_801A2B5C(HSD_JObj* jobj, HSD_AnimJoint* animjoint,

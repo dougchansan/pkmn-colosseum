@@ -280,6 +280,90 @@ static inline void HSD_JObjSetupMatrix(HSD_JObj* jobj)
         } \
     }
 
+static inline void HSD_JObjSetRotationX(HSD_JObj* jobj, f32 x)
+{
+    HSD_ASSERT(0x2A4, jobj);
+    HSD_ASSERT(0x2A5, !(jobj->flags & JOBJ_USE_QUATERNION));
+    jobj->rotate_x = x;
+    if (!(jobj->flags & JOBJ_MTX_INDEP_SRT)) {
+        HSD_JObjSetMtxDirty(jobj);
+    }
+}
+
+static inline void HSD_JObjSetRotationY(HSD_JObj* jobj, f32 y)
+{
+    HSD_ASSERT(0x2B8, jobj);
+    HSD_ASSERT(0x2B9, !(jobj->flags & JOBJ_USE_QUATERNION));
+    jobj->rotate_y = y;
+    if (!(jobj->flags & JOBJ_MTX_INDEP_SRT)) {
+        HSD_JObjSetMtxDirty(jobj);
+    }
+}
+
+static inline void HSD_JObjSetRotationZ(HSD_JObj* jobj, f32 z)
+{
+    HSD_ASSERT(0x2CC, jobj);
+    HSD_ASSERT(0x2CD, !(jobj->flags & JOBJ_USE_QUATERNION));
+    jobj->rotate_z = z;
+    if (!(jobj->flags & JOBJ_MTX_INDEP_SRT)) {
+        HSD_JObjSetMtxDirty(jobj);
+    }
+}
+
+static inline void HSD_JObjSetScaleX(HSD_JObj* jobj, f32 x)
+{
+    HSD_ASSERT(0x325, jobj);
+    jobj->scale_x = x;
+    if (!(jobj->flags & JOBJ_MTX_INDEP_SRT)) {
+        HSD_JObjSetMtxDirty(jobj);
+    }
+}
+
+static inline void HSD_JObjSetScaleY(HSD_JObj* jobj, f32 y)
+{
+    HSD_ASSERT(0x333, jobj);
+    jobj->scale_y = y;
+    if (!(jobj->flags & JOBJ_MTX_INDEP_SRT)) {
+        HSD_JObjSetMtxDirty(jobj);
+    }
+}
+
+static inline void HSD_JObjSetScaleZ(HSD_JObj* jobj, f32 z)
+{
+    HSD_ASSERT(0x341, jobj);
+    jobj->scale_z = z;
+    if (!(jobj->flags & JOBJ_MTX_INDEP_SRT)) {
+        HSD_JObjSetMtxDirty(jobj);
+    }
+}
+
+static inline void HSD_JObjSetTranslateX(HSD_JObj* jobj, f32 x)
+{
+    HSD_ASSERT(0x3B8, jobj);
+    jobj->translate_x = x;
+    if (!(jobj->flags & JOBJ_MTX_INDEP_SRT)) {
+        HSD_JObjSetMtxDirty(jobj);
+    }
+}
+
+static inline void HSD_JObjSetTranslateY(HSD_JObj* jobj, f32 y)
+{
+    HSD_ASSERT(0x3C6, jobj);
+    jobj->translate_y = y;
+    if (!(jobj->flags & JOBJ_MTX_INDEP_SRT)) {
+        HSD_JObjSetMtxDirty(jobj);
+    }
+}
+
+static inline void HSD_JObjSetTranslateZ(HSD_JObj* jobj, f32 z)
+{
+    HSD_ASSERT(0x3D4, jobj);
+    jobj->translate_z = z;
+    if (!(jobj->flags & JOBJ_MTX_INDEP_SRT)) {
+        HSD_JObjSetMtxDirty(jobj);
+    }
+}
+
 static inline f32* HSD_JObjGetMtxPtr(HSD_JObj* jobj)
 {
     HSD_ASSERT(1144, jobj);
