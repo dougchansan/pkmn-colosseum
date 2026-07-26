@@ -474,7 +474,7 @@ static u16 fn_800E2DB0(void* address, u32 size)
 u16 fn_800E2B00(u32 size, u32 alignment)
 {
     GSmemBlock* block;
-    void* address = NULL;
+    void* address;
     u32 allocationSize;
     u32 mask;
     u16 handle;
@@ -495,6 +495,7 @@ u16 fn_800E2B00(u32 size, u32 alignment)
         allocationSize = sizeof(GSmemBlock);
     }
     mask = ~(alignment - 1);
+    address = NULL;
 
     for (block = lbl_8047AB30; block != NULL; block = block->next) {
         if (block->size >= allocationSize) {
