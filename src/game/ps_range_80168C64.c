@@ -282,6 +282,7 @@ extern void fn_800B7D3C(void);
 extern void fn_800B7874(s32 attribute, s32 type);
 extern void fn_800B928C(s32 primitive, s32 format, s32 count);
 extern void fn_800B9404(s32 width, s32 offset);
+extern void fn_800B944C(s32 width, s32 offset);
 extern void generateParticle_8017424C(PSGeneratorState* gen);
 extern void HSD_MulColor(GXColor* a, GXColor* b, GXColor* dest);
 
@@ -2689,6 +2690,7 @@ void psDispSubAppSRT(PSParticle* pp, Mtx parentMatrix) {
     } else {
         PSMTXMultVec(appSRT->matrix, &position, &position);
     }
+
 }
 
 void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
@@ -2824,6 +2826,24 @@ void psDispSubAPPSRTPoint(PSParticle* pp) {
         position.z += appSRT->rotationZ;
     } else {
         PSMTXMultVec(appSRT->matrix, &position, &position);
+    }
+
+    {
+        f32 widthValue = pp->lerpValue > lbl_8047D5E0
+            ? lbl_8047D5D8
+            : lbl_8047D5DC * pp->lerpValue;
+        s32 width = (s32)widthValue;
+        u8 rasterWidth = (u8)width;
+
+        if (pp->flags & 0x100000) {
+            if (lbl_8047B164 != rasterWidth) {
+                lbl_8047B164 = rasterWidth;
+                fn_800B9404(width, 5);
+            }
+        } else if (lbl_8047B168 != rasterWidth) {
+            lbl_8047B168 = rasterWidth;
+            fn_800B944C(width, 5);
+        }
     }
 }
 
