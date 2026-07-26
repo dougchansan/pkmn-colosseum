@@ -786,7 +786,7 @@ void fn_8002E460(void* mapCtx)
     extern void fadeCheck(s32 flag);                          /* camera anim start */
     extern u8*  windowGetKeyInfo(void);                              /* current input/state base */
     extern s32  fn_80073A44(s32 mode, u16* outFlags);          /* poll input -> status, writes flags */
-    extern u32  fn_8017B1AC(void);                              /* input-mode status query */
+    extern s32  fn_8017B1AC(void);                              /* input-mode status query */
     extern void fn_80166AB8(s32 soundId, s32 p2, s32 p3);       /* play SE */
     extern void winMsgOpen(s32 a, s32 b, s32 c, s32 d);        /* dialog/sound event */
     extern void _threadSwitch(void);                             /* vsync / scheduler yield */
