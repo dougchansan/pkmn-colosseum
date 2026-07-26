@@ -374,7 +374,7 @@ s32 TRKTargetAccessExtended1(u32 firstRegister, u32 lastRegister, s32 buffer,
     TRKTargetExceptionStatus savedState;
     s32 result;
     u32* registers;
-    s32 registerCount;
+    u32 registerCount;
 
     if (lastRegister > 0x60) {
         return 0x701;
