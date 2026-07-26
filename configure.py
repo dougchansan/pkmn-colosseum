@@ -6760,6 +6760,8 @@ config.libs = [
                             "hsd/hsd_cobj_candidate_80193C24.c",
                             "hsd/hsd_cobj_candidate_80194510.c",
                         )
+                        else ["-use_lmw_stmw on"]
+                        if path == "hsd/hsd_cobj_candidate_80197344.c"
                         else []
                     ),
                     progress_category="hsd",
