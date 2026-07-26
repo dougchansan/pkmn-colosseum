@@ -193,7 +193,7 @@ extern void floorLink(s32, s32);
 
 u8 fn_80076398(void* pokemon, s32 check)
 {
-    extern s32 pokemonGetStatus(void*, s32, s32, s32);
+    extern u32 pokemonGetStatus(void*, s32, s32, s32);
     extern u16 pokemonBiosGetPokemonDataId(void*);
     extern u8 pokemonBiosGetEventGetFlag(void*);
     extern void pokemonBiosCopy(void*, void*);
