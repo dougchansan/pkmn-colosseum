@@ -81,6 +81,8 @@ extern void* lbl_80452DC8[]; /* sCameraSlots */
 
 extern f32 lbl_8047D630; /* 0.0f */
 extern f32 lbl_8047D5B0; /* 3.0f */
+extern f32 lbl_8047D5B4; /* 0.0f */
+extern f32 lbl_8047D5B8; /* 1.0f */
 extern f32 lbl_8047D634; /* 3.0f */
 extern f32 lbl_8047D638; /* 1.0f */
 extern f32 lbl_8047D63C; /* 0.5f */
@@ -207,8 +209,10 @@ extern PSParticle* _psListGetNext(PSParticle* pp);                         /* ps
 extern s32 psRemoveParticleAppSRT(PSParticle* pp);                      /* 0x?? */
 extern void psDeletePntJObjwithParticle(PSParticle* pp);
 extern void psKillGeneratorID(s32 familyId);
+extern u32 psGetNewIDNum(void);
 extern void _psListDelete(PSParticle* pp, PSParticle* parent);
 extern PSParticle* _psListGetFirst(s32 linkNo);
+extern PSParticle* _psListNew(PSParticle* parent, u32 linkNo);
 extern f32 sinf(f32 x); /* sinf-family */
 extern f32 cosf(f32 x); /* cosf-family */
 extern f32 tanf(f32 x);
@@ -1334,6 +1338,100 @@ void psKillAllParticle(void) {
     }
 }
 #pragma dont_inline reset
+
+PSParticle* psGenerateParticle0(
+    PSParticle* parent, s32 linkNo, s32 bankIndex, void* object,
+    f32 posX, f32 posY, f32 posZ, u32 unused, u32 flags,
+    f32 velocityX, f32 velocityY, f32 velocityZ, u8 animIndex,
+    void* scriptData, u16 repeatCount, f32 lerpValue, f32 scaleFactor,
+    f32 frictionFactor, s32 objectValue, PSGeneratorState* generator,
+    s32 interpretNow) {
+    PSParticle* pp = _psListNew(parent, linkNo);
+
+    if (pp == NULL) {
+        return NULL;
+    }
+
+    if (generator != NULL) {
+        pp->scriptId = generator->familyId;
+    } else {
+        pp->scriptId = psGetNewIDNum();
+    }
+
+    pp->parentObj = NULL;
+    if (generator != NULL && generator->appSRT != NULL) {
+        psAttachParticleAppSRT(pp, generator->appSRT);
+    }
+
+    pp->bankIndex = bankIndex;
+    pp->linkNo = linkNo;
+    pp->flags = flags;
+    pp->animIndex = animIndex;
+    pp->positionX = posX;
+    pp->positionY = posY;
+    pp->positionZ = posZ;
+    pp->velocityX = velocityX;
+    pp->velocityY = velocityY;
+    pp->velocityZ = velocityZ;
+    pp->lerpValue = lerpValue;
+    pp->scaleFactor = scaleFactor;
+    pp->frictionFactor = frictionFactor;
+    pp->repeatCount = repeatCount + 1;
+    pp->scriptData = scriptData;
+    pp->savedPC = 0;
+    pp->pc = 0;
+
+    if (objectValue != 0) {
+        pp->flags |= 0x10;
+    }
+
+    pp->waitTimer = scriptData != NULL;
+    pp->objRefIndex = 0;
+    pp->pad0B = 0xFF;
+    pp->color1R = 0xFF;
+    pp->color1G = 0xFF;
+    pp->color1B = 0xFF;
+    pp->color1A = 0xFF;
+    pp->color2R = 0;
+    pp->color2G = 0;
+    pp->color2B = 0;
+    pp->color2A = 0;
+    pp->color1Timer = 0;
+    pp->color2Timer = 0;
+    pp->lerpTimer = 0;
+    pp->color1Countdown = 0;
+    pp->color2Countdown = 0;
+    pp->alphaMode = 0x33;
+    pp->alphaStart = ((flags >> 22) & 3) >= 2 ? 0 : 1;
+    pp->alphaEnd = 0xFF;
+    pp->alphaCountdown = 0;
+    pp->alphaTimer = 0;
+    pp->headingTimer = 0;
+    pp->headingAccel = lbl_8047D5B4;
+    pp->headingSpeed = lbl_8047D5B4;
+    pp->heading = lbl_8047D5B4;
+    pp->peopleObj = generator;
+
+    if (generator != NULL) {
+        generator->childCount++;
+    }
+
+    pp->cameraSlot = 0;
+    pp->sizeXCountdown = 0;
+    pp->sizeXTimer = 0;
+    pp->sizeXCurrent = 0xFF;
+    pp->sizeYCurrent = 0xFF;
+    pp->sizeYCountdown = 0;
+    pp->sizeYTimer = 0;
+    pp->sizeXTarget = 0xFF;
+    pp->sizeYTarget = 0xFF;
+    *(f32*)&pp->pad88 = lbl_8047D5B8;
+
+    if (interpretNow != 0) {
+        psInterpretParticle0(pp, NULL);
+    }
+    return pp;
+}
 
 PSParticle* psGenerateParticle(u8 linkNo, u8 bankIndex, u32 arg2,
                                f32 posX, f32 posY, f32 posZ, u32 flags,
