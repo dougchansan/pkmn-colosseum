@@ -2641,6 +2641,8 @@ PSParticle* psInterpretParticle0(PSParticle* pp, PSParticle* parentCtx) {
 void psDispSubAppSRT(PSParticle* pp, Mtx parentMatrix) {
     PSAppSRT* appSRT = (PSAppSRT*)pp->parentObj;
     Mtx appMatrix;
+    Vec velocity;
+    Vec position;
 
     if (appSRT->flags != lbl_80478C30) {
         if (appSRT->type != 2) {
@@ -2654,6 +2656,32 @@ void psDispSubAppSRT(PSParticle* pp, Mtx parentMatrix) {
 
     appSRT->flags = lbl_80478C30;
     PSMTXCopy(appSRT->matrix, appMatrix);
+    appMatrix[0][3] -= appSRT->rotationX;
+    appMatrix[1][3] -= appSRT->rotationY;
+    appMatrix[2][3] -= appSRT->rotationZ;
+
+    velocity.x = pp->velocityX;
+    velocity.y = pp->velocityY;
+    velocity.z = pp->velocityZ;
+    PSMTXMultVec(appMatrix, &velocity, &velocity);
+    if (appSRT->active != 0 && (pp->flags & 4) == 0) {
+        PSMTXMultVec((const f32(*)[4])lbl_80452DE8,
+                     &velocity, &velocity);
+    }
+
+    position.x = pp->positionX;
+    position.y = pp->positionY;
+    position.z = pp->positionZ;
+    if (appSRT->active != 0) {
+        PSMTXMultVec(appMatrix, &position, &position);
+        PSMTXMultVec((const f32(*)[4])lbl_80452DE8,
+                     &position, &position);
+        position.x += appSRT->rotationX;
+        position.y += appSRT->rotationY;
+        position.z += appSRT->rotationZ;
+    } else {
+        PSMTXMultVec(appSRT->matrix, &position, &position);
+    }
 }
 
 void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
