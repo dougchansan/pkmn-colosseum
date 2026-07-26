@@ -73,7 +73,7 @@ u32 fn_800F7A08(s32 pad_id, s32 axis);
 u32 fn_800F7A7C(s32 pad_id, s32 axis);
 u32 fn_800F7BC4(s32 pad_id);
 f64 atan2(f64 y, f64 x);
-extern s32   GSthreadGetCurrentThread(void);    /* poll/yield -- 0 if pending */
+extern u32   GSthreadGetCurrentThread(void);    /* poll/yield -- 0 if pending */
 extern void  _threadSwitch(void);    /* yield */
 extern u32   fn_800BE31C(void);    /* rand or tick */
 extern u32   fn_800B8FD8(void*);   /* register fn, returns handle */
