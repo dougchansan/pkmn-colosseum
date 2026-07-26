@@ -75,6 +75,7 @@ extern void GXLoadNrmMtxImm(Mtx mtx, u32 index);
 extern void GXLoadTexMtxImm(Mtx mtx, u32 index, u32 type);
 extern u32 PSMTXInvXpose(Mtx src, Mtx dst);
 extern void PSMTXCopy(Mtx src, Mtx dst);
+extern void PSMTXConcat(Mtx left, Mtx right, Mtx dst);
 extern u32 lbl_8036CC40[];
 extern HSD_TObj* _HSD_TObjGetCurrentByType(HSD_TObj* from, u32 mapping);
 void HSD_PObjGetMtxMark(s32 index, u32* first, u32* second);
@@ -236,6 +237,67 @@ void PObjSetupMtx(HSD_PObj* pobj, Mtx vmtx, Mtx pmtx, u32 rendermode)
     case 0x2000:
         SetupEnvelopeModelMtx(pobj, vmtx, pmtx, rendermode);
         break;
+    }
+}
+
+void SetupSharedVtxModelMtx(HSD_PObj* pobj, Mtx vmtx, Mtx pmtx,
+                            u32 rendermode)
+{
+    HSD_JObj* jobj = HSD_JObjGetCurrent();
+    Mtx normal0;
+    Mtx normal1;
+    Mtx model;
+    u32 flags = 0;
+    void* marked_obj;
+    u32 mark;
+
+    HSD_PObjGetMtxMark(0, (u32*) &marked_obj, &mark);
+    if (marked_obj != jobj && mark != HSD_MTX_RIGID) {
+        flags |= 1;
+    }
+    HSD_PObjGetMtxMark(1, (u32*) &marked_obj, &mark);
+    if (marked_obj != pobj->u.jobj && mark != HSD_MTX_RIGID) {
+        flags |= 2;
+    }
+    if (flags == 0) {
+        return;
+    }
+
+    flags |= GetSetupFlags(jobj, rendermode);
+    if (flags | 1) {
+        fn_800BD554(0);
+        GXLoadPosMtxImm(pmtx, 0);
+        HSD_PerfCountMtxLoad();
+
+        if (flags & SETUP_NORMAL) {
+            HSD_MtxInverseTranspose(pmtx, normal0);
+            if (jobj->flags & JOBJ_LIGHTING) {
+                GXLoadNrmMtxImm(normal0, 0);
+                HSD_PerfCountMtxLoad();
+            }
+            if (flags & SETUP_NORMAL_PROJECTION) {
+                GXLoadTexMtxImm(normal0, 30, 0);
+                HSD_PerfCountMtxLoad();
+            }
+        }
+    }
+    if (flags | 2) {
+        HSD_JObjSetupMatrix(pobj->u.jobj);
+        PSMTXConcat(vmtx, pobj->u.jobj->mtx, model);
+        GXLoadPosMtxImm(model, 3);
+        HSD_PerfCountMtxLoad();
+
+        if (flags & SETUP_NORMAL) {
+            HSD_MtxInverseTranspose(model, normal1);
+            if (jobj->flags & JOBJ_LIGHTING) {
+                GXLoadNrmMtxImm(normal1, 3);
+                HSD_PerfCountMtxLoad();
+            }
+            if (flags & SETUP_NORMAL_PROJECTION) {
+                GXLoadTexMtxImm(normal1, 33, 0);
+                HSD_PerfCountMtxLoad();
+            }
+        }
     }
 }
 
