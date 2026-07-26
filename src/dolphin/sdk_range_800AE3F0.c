@@ -2006,7 +2006,6 @@ s32 CARDCheckExAsync(s32 chan, s32* xferBytes, CARDCallback callback)
     BOOL updateFat = FALSE;
     BOOL updateDir = FALSE;
     BOOL updateOrphan = FALSE;
-    volatile u32 stack_pad;
 
     if (xferBytes != NULL) {
         *xferBytes = 0;
@@ -2095,9 +2094,9 @@ s32 CARDCheckExAsync(s32 chan, s32* xferBytes, CARDCallback callback)
         updateOrphan = TRUE;
     }
     if (updateOrphan) {
-        u16* current = card->fatBlock;
-
-        cardCheckSumInline(&current[2], 0x1FFC, &current[0], &current[1]);
+        cardCheckSumInline(&((u16*)card->fatBlock)[2], 0x1FFC,
+                           &((u16*)card->fatBlock)[0],
+                           &((u16*)card->fatBlock)[1]);
     }
 
     memcpy(fat[currentFat ^ 1], fat[currentFat], 0x2000);
