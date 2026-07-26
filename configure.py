@@ -3265,7 +3265,7 @@ config.libs = [
                 CodeCandidate,
                 "game/gbaCommunication_candidate_800965C8_gc20.c",
                 mw_version="GC/2.0",
-                extra_cflags=["-use_lmw_stmw off", "-sdata 8", "-sdata2 8"],
+                extra_cflags=["-O3", "-use_lmw_stmw off", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
             Object(
@@ -8067,7 +8067,7 @@ config.libs = [
             Object(
                 CodeCandidate,
                 "game/gs_npc_event_candidate_800327FC_o4s.c",
-                mw_version="GC/1.3",
+                mw_version="GC/2.0",
                 cflags=["-O4,s" if flag == "-O4,p" else flag for flag in cflags_base],
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
