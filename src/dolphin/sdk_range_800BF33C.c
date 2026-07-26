@@ -81,24 +81,22 @@ s32 TRKDispatchMessage(u8* message)
     return result;
 }
 
-s32 usr_puts_serial(char* str) {
+s32 usr_puts_serial(const char* str) {
     extern u32 fn_800C04F4(void);
     extern void fn_800C04E8(u32 state);
-    extern void OSReport(const char* fmt);
-    u16 buf;
-    u8 zero;
+    extern void OSReport(char* fmt);
+    char buf[2];
     s32 state;
     char ch;
     s32 result;
 
-    zero = 0;
     result = 0;
     while ((result == 0) && ((ch = *str++) != 0)) {
         state = fn_800C04F4();
-        ((u8*)&buf)[0] = ch;
-        ((u8*)&buf)[1] = zero;
+        buf[0] = ch;
+        buf[1] = 0;
         fn_800C04E8(0);
-        OSReport((const char*)&buf);
+        OSReport(buf);
         fn_800C04E8(state);
         result = 0;
     }
