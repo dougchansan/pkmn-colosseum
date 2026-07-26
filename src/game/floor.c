@@ -125,7 +125,7 @@ void fn_801127BC(void) {
     extern void fn_800FF2A0(u32, u32, void*);
     extern void fn_80112844(void);
     GSFieldColqueryState* state = (GSFieldColqueryState*)lbl_80408378;
-    u8 kind;
+    s32 kind;
 
     lbl_80478DD0 = 1;
     floorDataBiosGetCurrentPtr();
