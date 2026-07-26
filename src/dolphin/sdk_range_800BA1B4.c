@@ -88,6 +88,7 @@ void GXInitLightSpot(GXLightObj_800BA344* light, f32 cutoff,
         a1 = 4.0F * cosine * distance;
         a2 = -2.0F * distance;
         break;
+    case GX_SP_OFF_800BA1B4:
     default:
         a0 = 1.0F;
         a1 = 0.0F;
