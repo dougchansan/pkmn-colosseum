@@ -191,7 +191,13 @@ typedef struct OSSram {
 
 typedef struct OSSramEx {
     u8 flashID[2][12];
-    u8 rest[20];
+    u32 wirelessKeyboardID;
+    u16 wirelessPadID[4];
+    u8 dvdErrorCode;
+    u8 _padding0;
+    u8 flashIDCheckSum[2];
+    u16 gbs;
+    u8 _padding1[2];
 } OSSramEx;
 
 typedef struct CARDFileInfo {
@@ -209,6 +215,13 @@ typedef struct GXTlutRegion {
 typedef struct GXTexRegion {
     u32 unk[4];
 } GXTexRegion;
+
+typedef struct GXColor {
+    u8 r;
+    u8 g;
+    u8 b;
+    u8 a;
+} GXColor;
 
 typedef struct GXRenderModeObj {
     u32 viTVmode;
@@ -1801,7 +1814,7 @@ s32 fn_800B31F4(s32 chan)
     u32 id;
     u8 status;
     s32 result;
-    u8* sram;
+    OSSramEx* sram;
     s32 i;
     u8 checksum;
     s32 step;
@@ -1845,10 +1858,10 @@ s32 fn_800B31F4(s32 chan)
             checksum = 0;
             sram = __OSLockSramEx();
             for (i = 0; i < 12; i++) {
-                sram[chan * 12 + i] = card->id[i];
+                sram->flashID[chan][i] = card->id[i];
                 checksum += card->id[i];
             }
-            sram[0x26 + chan] = ~checksum;
+            sram->flashIDCheckSum[chan] = (u8)~checksum;
             __OSUnlockSramEx(TRUE);
             return result;
         }
@@ -1857,10 +1870,10 @@ s32 fn_800B31F4(s32 chan)
         checksum = 0;
         sram = __OSLockSramEx();
         for (i = 0; i < 12; i++) {
-            checksum += sram[chan * 12 + i];
+            checksum += sram->flashID[chan][i];
         }
         __OSUnlockSramEx(FALSE);
-        if (sram[0x26 + chan] != (u8)~checksum) {
+        if (sram->flashIDCheckSum[chan] != (u8)~checksum) {
             result = -5;
             goto error;
         }
@@ -1871,7 +1884,7 @@ s32 fn_800B31F4(s32 chan)
             u16 vendor;
 
             sram = __OSLockSramEx();
-            vendor = *(u16*)&sram[chan * 12];
+            vendor = *(u16*)sram->flashID[chan];
             __OSUnlockSramEx(FALSE);
             if (lbl_80478A58 != 0xFFFF && vendor != lbl_80478A58) {
                 result = -2;
@@ -3314,9 +3327,10 @@ void __GXInitGX(void) {
     extern GXRenderModeObj lbl_80312F4C;
     extern GXRenderModeObj lbl_803130F0;
     extern GXRenderModeObj lbl_80313294;
+    extern u8 lbl_80312AB4[];
     extern u8 lbl_803129E4[];
     extern void fn_800B5C5C();
-    extern void fn_800B9BDC();
+    extern void fn_800B9BDC(GXColor, u32);
     extern void fn_800B857C();
     extern void fn_800B884C();
     extern void fn_800B7D3C();
@@ -3339,8 +3353,8 @@ void __GXInitGX(void) {
     extern void fn_800BD830();
     extern void fn_800BA6B0();
     extern void fn_800BA6F4();
-    extern void fn_800BA4C8();
-    extern void fn_800BA5BC();
+    extern void fn_800BA4C8(u32, GXColor);
+    extern void fn_800BA5BC(u32, GXColor);
     extern void GXInvalidateTexAll();
     extern void fn_800BB2E4();
     extern void fn_800BB2F8();
@@ -3356,7 +3370,7 @@ void __GXInitGX(void) {
     extern void fn_800BBC34();
     extern void fn_800BBC0C();
     extern void fn_800BB97C();
-    extern void fn_800BC8F8(u32, f32, f32, f32, f32, u32);
+    extern void fn_800BC8F8(u32, f32, f32, f32, f32, GXColor);
     extern void fn_800BCCDC();
     extern void GXSetBlendMode();
     extern void fn_800BCE30();
@@ -3388,9 +3402,9 @@ void __GXInitGX(void) {
     extern void fn_800BE30C();
 
     f32 identity[3][4];
-    u32 clear = 0x404040FF;
-    u32 black = 0;
-    u32 white = 0xFFFFFFFF;
+    GXColor clear = { 64, 64, 64, 255 };
+    GXColor black = { 0, 0, 0, 0 };
+    GXColor white = { 255, 255, 255, 255 };
     GXRenderModeObj* rmode;
     u32 i;
 
@@ -3401,18 +3415,18 @@ void __GXInitGX(void) {
     case 1:
         rmode = &lbl_803130F0;
         break;
-    case 2:
-        rmode = &lbl_80312F4C;
-        break;
     case 5:
         rmode = &lbl_80313294;
+        break;
+    case 2:
+        rmode = &lbl_80312F4C;
         break;
     default:
         rmode = &lbl_80312D30;
         break;
     }
 
-    fn_800B9BDC(&clear, 0xFFFFFF);
+    fn_800B9BDC(clear, 0xFFFFFF);
     fn_800B857C(0, 1, 4, 0x3C, 0, 0x7D);
     fn_800B857C(1, 1, 5, 0x3C, 0, 0x7D);
     fn_800B857C(2, 1, 6, 0x3C, 0, 0x7D);
@@ -3432,9 +3446,14 @@ void __GXInitGX(void) {
     }
     fn_800B9404(6, 0);
     fn_800B944C(6, 0);
-    for (i = 0; i < 8; i++) {
-        fn_800B9494(i, 0, 0);
-    }
+    fn_800B9494(0, 0, 0);
+    fn_800B9494(1, 0, 0);
+    fn_800B9494(2, 0, 0);
+    fn_800B9494(3, 0, 0);
+    fn_800B9494(4, 0, 0);
+    fn_800B9494(5, 0, 0);
+    fn_800B9494(6, 0, 0);
+    fn_800B9494(7, 0, 0);
 
     identity[0][0] = 1.0f;
     identity[0][1] = 0.0f;
@@ -3456,17 +3475,17 @@ void __GXInitGX(void) {
 
     fn_800BD744(0.0f, 0.0f, (f32)rmode->fbWidth,
                 (f32)rmode->xfbHeight, 0.0f, 1.0f);
-    fn_800BD394(0);
-    fn_800B953C(2);
-    fn_800B94F0(1);
+    fn_800BD394(lbl_80312AB4);
+    fn_800B953C(0);
+    fn_800B94F0(2);
     GXSetClipMode(0);
     fn_800BD7A0(0, 0, rmode->fbWidth, rmode->efbHeight);
     fn_800BD830(0, 0);
     fn_800BA6B0(0);
-    fn_800BA6F4(4, 0, 0, 1, 0, 2, 2);
+    fn_800BA6F4(4, 0, 0, 1, 0, 0, 2);
     fn_800BA4C8(4, black);
     fn_800BA5BC(4, white);
-    fn_800BA6F4(5, 0, 0, 1, 0, 2, 2);
+    fn_800BA6F4(5, 0, 0, 1, 0, 0, 2);
     fn_800BA4C8(5, black);
     fn_800BA5BC(5, white);
     GXInvalidateTexAll();
