@@ -78,8 +78,18 @@ extern void PSMTXCopy(Mtx src, Mtx dst);
 extern void PSMTXConcat(Mtx left, Mtx right, Mtx dst);
 extern u32 lbl_8036CC40[];
 extern HSD_TObj* _HSD_TObjGetCurrentByType(HSD_TObj* from, u32 mapping);
+extern MtxPtr _HSD_mkEnvelopeModelNodeMtx(HSD_JObj* model, MtxPtr mtx);
+extern s32 HSD_Index2PosNrmMtx(u32 index);
+extern s32 HSD_Index2TexMtx(u32 index);
+extern void HSD_MtxScaledAdd(f32* src, f32 scale, f32* add, f32* dst);
+extern void fn_801AA5AC(s32 index);
+extern const f32 lbl_8047DCC0;
+extern char lbl_8047DCC4;
+extern char lbl_8047DCCC;
+extern char lbl_8047DCD8;
 void HSD_PObjGetMtxMark(s32 index, u32* first, u32* second);
 void fn_801AB5F8(s32 index, void* ptr, s32 value);
+void fn_801AB63C(u32 first, u32 second);
 
 /* Address: 0x801AA608 | Size: 0xC8  -- PObj class info init */
 #pragma push
@@ -295,6 +305,95 @@ void SetupSharedVtxModelMtx(HSD_PObj* pobj, Mtx vmtx, Mtx pmtx,
             }
             if (flags & SETUP_NORMAL_PROJECTION) {
                 GXLoadTexMtxImm(normal1, 33, 0);
+                HSD_PerfCountMtxLoad();
+            }
+        }
+    }
+}
+
+void SetupEnvelopeModelMtx(HSD_PObj* pobj, Mtx vmtx, Mtx pmtx,
+                           u32 rendermode)
+{
+    HSD_JObj* jobj = HSD_JObjGetCurrent();
+    HSD_SList* list;
+    s32 matrix_index;
+    MtxPtr right;
+    Mtx envelope_mtx;
+    PObjSetupFlag flags;
+
+    fn_801AB63C(0, HSD_MTX_ENVELOPE);
+    flags = GetSetupFlags(jobj, rendermode);
+    right = _HSD_mkEnvelopeModelNodeMtx(jobj, envelope_mtx);
+
+    for (matrix_index = 0, list = pobj->u.envelope_list;
+         matrix_index < 10 && list != NULL;
+         matrix_index++, list = list->next)
+    {
+        Mtx matrix;
+        Mtx temp;
+        MtxPtr matrix_ptr;
+        HSD_Envelope* envelope = list->data;
+        s32 matrix_number = HSD_Index2PosNrmMtx(matrix_index);
+        s32 blend_count = 0;
+
+        if (envelope == NULL) {
+            __assert(&lbl_8047DCB8, 0x71E,
+                     (char*) lbl_80274EE0 + 0x124);
+        }
+        if (envelope->weight >= lbl_8047DCC0) {
+            HSD_JObjSetupMatrix(envelope->jobj);
+            if (right != NULL) {
+                PSMTXConcat(envelope->jobj->mtx,
+                            (MtxPtr) envelope->jobj->envelopemtx, matrix);
+                matrix_ptr = matrix;
+            } else {
+                matrix_ptr = envelope->jobj->mtx;
+            }
+        } else {
+            matrix[0][0] = matrix[0][1] = matrix[0][2] = matrix[0][3] =
+            matrix[1][0] = matrix[1][1] = matrix[1][2] = matrix[1][3] =
+            matrix[2][0] = matrix[2][1] = matrix[2][2] = matrix[2][3] = 0.0f;
+
+            while (envelope != NULL) {
+                HSD_JObj* envelope_jobj;
+
+                if (envelope->jobj == NULL) {
+                    __assert(&lbl_8047DCB8, 0x732, &lbl_8047DCCC);
+                }
+                envelope_jobj = envelope->jobj;
+                HSD_JObjSetupMatrix(envelope_jobj);
+                if (envelope_jobj->mtx == NULL) {
+                    __assert(&lbl_8047DCB8, 0x735, &lbl_8047DCD8);
+                }
+                if (envelope_jobj->envelopemtx == NULL) {
+                    __assert(&lbl_8047DCB8, 0x736,
+                             (char*) lbl_80274EE0 + 0x158);
+                }
+                PSMTXConcat(envelope_jobj->mtx,
+                            (MtxPtr) envelope_jobj->envelopemtx, temp);
+                HSD_MtxScaledAdd((f32*) temp, envelope->weight,
+                                 (f32*) matrix, (f32*) matrix);
+                blend_count++;
+                envelope = envelope->next;
+            }
+            matrix_ptr = matrix;
+        }
+        fn_801AA5AC(blend_count);
+        if (right != NULL) {
+            PSMTXConcat(matrix_ptr, right, matrix);
+        }
+        PSMTXConcat(vmtx, matrix_ptr, temp);
+        GXLoadPosMtxImm(temp, matrix_number);
+        HSD_PerfCountMtxLoad();
+
+        if (flags & SETUP_NORMAL) {
+            HSD_MtxInverseTranspose(temp, matrix);
+            if (jobj->flags & JOBJ_LIGHTING) {
+                GXLoadNrmMtxImm(matrix, matrix_number);
+                HSD_PerfCountMtxLoad();
+            }
+            if (flags & SETUP_NORMAL_PROJECTION) {
+                GXLoadTexMtxImm(matrix, HSD_Index2TexMtx(matrix_index), 0);
                 HSD_PerfCountMtxLoad();
             }
         }
