@@ -732,7 +732,18 @@ config.libs = [
             ),
             Object(
                 CodeCandidate,
-                "dolphin/os/OSThread.c",
+                "dolphin/os/OSThread_r51_800A1404_prefix.c",
+                progress_category="sdk",
+            ),
+            Object(
+                CodeCandidate,
+                "dolphin/os/OSThread_r51_800A1528_inline_noauto.c",
+                extra_cflags=["-inline noauto"],
+                progress_category="sdk",
+            ),
+            Object(
+                CodeCandidate,
+                "dolphin/os/OSThread_r51_800A16E8_suffix.c",
                 progress_category="sdk",
             ),
             Object(
@@ -1362,7 +1373,8 @@ config.libs = [
                     (CodeCandidate, "musyx/musyx_candidate_80157280_r41_80158088_gc13.c", "GC/1.3"),
                     (CodeCandidate, "musyx/musyx_candidate_80157280_r41_80158328.c", "GC/1.3.2"),
                     (Matching, "musyx/musyx_voice_last_exact_80158934.c", "GC/1.3.2"),
-                    (CodeCandidate, "musyx/musyx_candidate_80158BB4.c", "GC/1.3.2"),
+                    (CodeCandidate, "musyx/musyx_r51_80158BB4_prefix.c", "GC/1.3.2"),
+                    (CodeCandidate, "musyx/musyx_r51_8015A484_inline_noauto.c", "GC/1.3.2"),
                     (Matching, "musyx/runtime/hw_dspctrl_exact_8015A838.c", "GC/1.3.2"),
                     (CodeCandidate, "musyx/musyx_candidate_8015A950.c", "GC/1.3.2"),
                     (Matching, "musyx/runtime/hw_dspctrl_exact_8015AAA0.c", "GC/1.3.2"),
@@ -1442,7 +1454,8 @@ config.libs = [
                     (Matching, "musyx/musyx_exact_80164488.c"),
                     (CodeCandidate, "musyx/musyx_r50_801644E0_prefix.c"),
                     (CodeCandidate, "musyx/musyx_r50_80164520_inline_noauto.c"),
-                    (CodeCandidate, "musyx/musyx_r50_80164A2C_suffix.c"),
+                    (CodeCandidate, "musyx/musyx_r51_80164A2C_inline_noauto.c"),
+                    (CodeCandidate, "musyx/musyx_r51_80164C40_suffix.c"),
                 ]
             ],
             *[
@@ -3447,8 +3460,15 @@ config.libs = [
             ),
             Object(
                 CodeCandidate,
-                "dolphin/sdk_candidate_800B0694.c",
+                "dolphin/sdk_r51_800B0694_prefix.c",
                 mw_version="GC/1.2.5n",
+                progress_category="sdk",
+            ),
+            Object(
+                CodeCandidate,
+                "dolphin/sdk_r51_800B1464_inline_noauto.c",
+                mw_version="GC/1.2.5n",
+                extra_cflags=["-inline noauto"],
                 progress_category="sdk",
             ),
             Object(

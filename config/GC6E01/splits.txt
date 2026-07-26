@@ -1175,8 +1175,14 @@ dolphin/sdk_range_800A0D00.c:
 dolphin/os/OSThreadQueue.c:
 	.text       start:0x800A13E8 end:0x800A1404
 
-dolphin/os/OSThread.c:
-	.text       start:0x800A1404 end:0x800A2778
+dolphin/os/OSThread_r51_800A1404_prefix.c:
+	.text       start:0x800A1404 end:0x800A1528
+
+dolphin/os/OSThread_r51_800A1528_inline_noauto.c:
+	.text       start:0x800A1528 end:0x800A16E8
+
+dolphin/os/OSThread_r51_800A16E8_suffix.c:
+	.text       start:0x800A16E8 end:0x800A2778
 
 dolphin/os/OSTime_range_800A2778.c:
 	.text       start:0x800A2778 end:0x800A27FC
@@ -1452,8 +1458,11 @@ dolphin/sdk_exact_800B0174.c:
 dolphin/sdk_exact_800B01AC.c:
 	.text       start:0x800B01AC end:0x800B0694
 
-dolphin/sdk_candidate_800B0694.c:
-	.text       start:0x800B0694 end:0x800B1788
+dolphin/sdk_r51_800B0694_prefix.c:
+	.text       start:0x800B0694 end:0x800B1464
+
+dolphin/sdk_r51_800B1464_inline_noauto.c:
+	.text       start:0x800B1464 end:0x800B1788
 
 dolphin/card_exact_800B1788.c:
 	.text       start:0x800B1788 end:0x800B2070
@@ -3789,8 +3798,11 @@ musyx/musyx_candidate_80157280_r41_80158328.c:
 musyx/musyx_voice_last_exact_80158934.c:
 	.text       start:0x80158934 end:0x80158BB4
 
-musyx/musyx_candidate_80158BB4.c:
-	.text       start:0x80158BB4 end:0x8015A838
+musyx/musyx_r51_80158BB4_prefix.c:
+	.text       start:0x80158BB4 end:0x8015A484
+
+musyx/musyx_r51_8015A484_inline_noauto.c:
+	.text       start:0x8015A484 end:0x8015A838
 
 musyx/runtime/hw_dspctrl_exact_8015A838.c:
 	.text       start:0x8015A838 end:0x8015A950
@@ -3942,8 +3954,11 @@ musyx/musyx_r50_801644E0_prefix.c:
 musyx/musyx_r50_80164520_inline_noauto.c:
 	.text       start:0x80164520 end:0x80164A2C
 
-musyx/musyx_r50_80164A2C_suffix.c:
-	.text       start:0x80164A2C end:0x801652DC
+musyx/musyx_r51_80164A2C_inline_noauto.c:
+	.text       start:0x80164A2C end:0x80164C40
+
+musyx/musyx_r51_80164C40_suffix.c:
+	.text       start:0x80164C40 end:0x801652DC
 
 game/musyx_range_801652DC.c:
 	.text       start:0x801652DC end:0x801653BC

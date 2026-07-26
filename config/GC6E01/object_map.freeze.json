@@ -6,24 +6,24 @@
     "total_code": 2495108,
     "total_data": 2196100,
     "total_functions": 8603,
-    "total_units": 2094
+    "total_units": 2099
   },
   "topology_status": {
     "auto_units": 68,
-    "named_units": 2026,
-    "source_backed_units": 2020,
+    "named_units": 2031,
+    "source_backed_units": 2025,
     "auto_code": 0,
     "auto_data": 57687,
     "auto_functions": 0
   },
   "baseline_progress": {
-    "matched_code": "992112",
-    "matched_code_percent": 39.762287,
+    "matched_code": "992560",
+    "matched_code_percent": 39.780243,
     "matched_data": "2136513",
     "matched_data_percent": 97.28669,
-    "matched_functions": 6572,
-    "matched_functions_percent": 76.39196,
-    "fuzzy_match_percent": 71.35878
+    "matched_functions": 6573,
+    "matched_functions_percent": 76.40358,
+    "fuzzy_match_percent": 71.37957
   },
   "unit_topology": [
     {
@@ -5242,17 +5242,43 @@
       "total_functions": 2
     },
     {
-      "name": "main/dolphin/os/OSThread",
+      "name": "main/dolphin/os/OSThread_r51_800A1404_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 4980,
+          "size": 292,
           "virtual_address": 2148144132
         }
       ],
-      "total_code": 4980,
+      "total_code": 292,
       "total_data": 0,
-      "total_functions": 20
+      "total_functions": 4
+    },
+    {
+      "name": "main/dolphin/os/OSThread_r51_800A1528_inline_noauto",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 448,
+          "virtual_address": 2148144424
+        }
+      ],
+      "total_code": 448,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/dolphin/os/OSThread_r51_800A16E8_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 4240,
+          "virtual_address": 2148144872
+        }
+      ],
+      "total_code": 4240,
+      "total_data": 0,
+      "total_functions": 15
     },
     {
       "name": "main/dolphin/os/OSTime_range_800A2778",
@@ -6577,17 +6603,30 @@
       "total_functions": 8
     },
     {
-      "name": "main/dolphin/sdk_candidate_800B0694",
+      "name": "main/dolphin/sdk_r51_800B0694_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 4340,
+          "size": 3536,
           "virtual_address": 2148206228
         }
       ],
-      "total_code": 4340,
+      "total_code": 3536,
       "total_data": 0,
-      "total_functions": 5
+      "total_functions": 4
+    },
+    {
+      "name": "main/dolphin/sdk_r51_800B1464_inline_noauto",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 804,
+          "virtual_address": 2148209764
+        }
+      ],
+      "total_code": 804,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/dolphin/card_exact_800B1788",
@@ -17057,17 +17096,30 @@
       "total_functions": 4
     },
     {
-      "name": "main/musyx/musyx_candidate_80158BB4",
+      "name": "main/musyx/musyx_r51_80158BB4_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 7300,
+          "size": 6352,
           "virtual_address": 2148895668
         }
       ],
-      "total_code": 7300,
+      "total_code": 6352,
       "total_data": 0,
-      "total_functions": 21
+      "total_functions": 20
+    },
+    {
+      "name": "main/musyx/musyx_r51_8015A484_inline_noauto",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 948,
+          "virtual_address": 2148902020
+        }
+      ],
+      "total_code": 948,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/musyx/runtime/hw_dspctrl_exact_8015A838",
@@ -17720,17 +17772,30 @@
       "total_functions": 1
     },
     {
-      "name": "main/musyx/musyx_r50_80164A2C_suffix",
+      "name": "main/musyx/musyx_r51_80164A2C_inline_noauto",
       "sections": [
         {
           "name": ".text",
-          "size": 2224,
+          "size": 532,
           "virtual_address": 2148944428
         }
       ],
-      "total_code": 2224,
+      "total_code": 532,
       "total_data": 0,
-      "total_functions": 3
+      "total_functions": 1
+    },
+    {
+      "name": "main/musyx/musyx_r51_80164C40_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1692,
+          "virtual_address": 2148944960
+        }
+      ],
+      "total_code": 1692,
+      "total_data": 0,
+      "total_functions": 2
     },
     {
       "name": "main/game/musyx_range_801652DC",
