@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196100,
     "total_functions": 8603,
-    "total_units": 1944
+    "total_units": 1955
   },
   "topology_status": {
     "auto_units": 68,
-    "named_units": 1876,
-    "source_backed_units": 1870,
+    "named_units": 1887,
+    "source_backed_units": 1881,
     "auto_code": 0,
     "auto_data": 57687,
     "auto_functions": 0
@@ -23,7 +23,7 @@
     "matched_data_percent": 97.28669,
     "matched_functions": 6566,
     "matched_functions_percent": 76.32221,
-    "fuzzy_match_percent": 68.496704
+    "fuzzy_match_percent": 68.9966
   },
   "unit_topology": [
     {
@@ -3884,13 +3884,39 @@
       "sections": [
         {
           "name": ".text",
-          "size": 7116,
+          "size": 80,
           "virtual_address": 2148051940
         }
       ],
-      "total_code": 7116,
+      "total_code": 80,
       "total_data": 0,
-      "total_functions": 8
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/gba/gba_misc_candidate_8008ABE4_r42_8008AC34_gc20",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 484,
+          "virtual_address": 2148052020
+        }
+      ],
+      "total_code": 484,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/gba/gba_misc_candidate_8008ABE4_r42_8008AE18",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 6552,
+          "virtual_address": 2148052504
+        }
+      ],
+      "total_code": 6552,
+      "total_data": 0,
+      "total_functions": 6
     },
     {
       "name": "main/game/gbaCommunication_prefix",
@@ -18860,13 +18886,65 @@
       "sections": [
         {
           "name": ".text",
-          "size": 10448,
+          "size": 2816,
           "virtual_address": 2149203968
         }
       ],
-      "total_code": 10448,
+      "total_code": 2816,
       "total_data": 0,
-      "total_functions": 25
+      "total_functions": 13
+    },
+    {
+      "name": "main/hsd/hsd_lobj_r42_801A4B00",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1108,
+          "virtual_address": 2149206784
+        }
+      ],
+      "total_code": 1108,
+      "total_data": 0,
+      "total_functions": 2
+    },
+    {
+      "name": "main/hsd/hsd_lobj_r42_801A4F54",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 6028,
+          "virtual_address": 2149207892
+        }
+      ],
+      "total_code": 6028,
+      "total_data": 0,
+      "total_functions": 7
+    },
+    {
+      "name": "main/hsd/hsd_lobj_r42_801A66E0",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 172,
+          "virtual_address": 2149213920
+        }
+      ],
+      "total_code": 172,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/hsd/hsd_lobj_r42_801A678C",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 324,
+          "virtual_address": 2149214092
+        }
+      ],
+      "total_code": 324,
+      "total_data": 0,
+      "total_functions": 2
     },
     {
       "name": "main/hsd/hsd_lobj_tail_exact_801A68D0",
@@ -19900,13 +19978,39 @@
       "sections": [
         {
           "name": ".text",
-          "size": 8088,
+          "size": 1376,
           "virtual_address": 2149301724
         }
       ],
-      "total_code": 8088,
+      "total_code": 1376,
       "total_data": 0,
-      "total_functions": 11
+      "total_functions": 6
+    },
+    {
+      "name": "main/hsd/hsd_tobj_candidate_801BBDDC_r42_801BC33C",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1408,
+          "virtual_address": 2149303100
+        }
+      ],
+      "total_code": 1408,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/hsd/hsd_tobj_candidate_801BBDDC_r42_801BC8BC",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 5304,
+          "virtual_address": 2149304508
+        }
+      ],
+      "total_code": 5304,
+      "total_data": 0,
+      "total_functions": 4
     },
     {
       "name": "main/hsd/hsd_tobj_candidate_801BBDDC_r41_801BDD74_gc125n",
@@ -19991,13 +20095,52 @@
       "sections": [
         {
           "name": ".text",
-          "size": 10040,
+          "size": 9048,
           "virtual_address": 2149319308
         }
       ],
-      "total_code": 10040,
+      "total_code": 9048,
       "total_data": 0,
-      "total_functions": 8
+      "total_functions": 5
+    },
+    {
+      "name": "main/hsd/hsd_aobj_candidate_801C028C_r42_801C25E4",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 140,
+          "virtual_address": 2149328356
+        }
+      ],
+      "total_code": 140,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/hsd/hsd_aobj_candidate_801C028C_r42_801C2670",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 388,
+          "virtual_address": 2149328496
+        }
+      ],
+      "total_code": 388,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/hsd/hsd_aobj_candidate_801C028C_r42_801C27F4",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 464,
+          "virtual_address": 2149328884
+        }
+      ],
+      "total_code": 464,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/hsd/hsd_aobj_exact_801C29C4",
