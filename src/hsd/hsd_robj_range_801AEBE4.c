@@ -19,17 +19,26 @@ extern void PSVECScale(const Vec* src, Vec* dst, f32 scale);
 void fn_801AEFF0(HSD_RObj* robj, HSD_JObj* jobj);
 extern s32 fn_801AFCAC(HSD_RObj* robj, u32 type, Vec* out);
 
-typedef union RObjFloatShape {
-    f32 value;
-    u32 bits;
-} RObjFloatShape;
+static inline s32 robj_fpclassifyf(f32 value)
+{
+    switch (*(s32*) &value & 0x7F800000) {
+    case 0x7F800000:
+        if (*(s32*) &value & 0x007FFFFF) {
+            return 1;
+        }
+        return 2;
+    case 0:
+        if (*(s32*) &value & 0x007FFFFF) {
+            return 5;
+        }
+        return 3;
+    }
+    return 4;
+}
 
 static inline f32 robj_sqrtf(f32 value)
 {
-    RObjFloatShape shape;
     f64 guess;
-    s32 fpclass;
-    s32 exponent;
 
     if (value > 0.0F) {
         guess = __frsqrte(value);
@@ -42,28 +51,92 @@ static inline f32 robj_sqrtf(f32 value)
         return lbl_80478AC0[0];
     }
 
-    shape.value = value;
-    exponent = shape.bits & 0x7F800000;
-    switch (exponent) {
-    case 0x7F800000:
-        fpclass = (shape.bits & 0x007FFFFF) != 0 ? 1 : 2;
-        break;
-    case 0:
-        fpclass = (shape.bits & 0x007FFFFF) != 0 ? 5 : 3;
-        break;
-    default:
-        fpclass = 4;
-        break;
-    }
-    if (fpclass == 1) {
+    if (robj_fpclassifyf(value) == 1) {
         return lbl_80478AC0[0];
     }
     return value;
 }
 
+#define ROBJ_SQRTF_INLINE(result, expression)                               \
+    do {                                                                    \
+        f32 robj_sqrt_value = (expression);                                 \
+        if (robj_sqrt_value > 0.0F) {                                       \
+            f64 robj_sqrt_guess = __frsqrte(robj_sqrt_value);               \
+            robj_sqrt_guess =                                               \
+                0.5 * robj_sqrt_guess *                                    \
+                (3.0 - robj_sqrt_value *                                   \
+                           (robj_sqrt_guess * robj_sqrt_guess));             \
+            robj_sqrt_guess =                                               \
+                0.5 * robj_sqrt_guess *                                    \
+                (3.0 - robj_sqrt_value *                                   \
+                           (robj_sqrt_guess * robj_sqrt_guess));             \
+            robj_sqrt_guess =                                               \
+                0.5 * robj_sqrt_guess *                                    \
+                (3.0 - robj_sqrt_value *                                   \
+                           (robj_sqrt_guess * robj_sqrt_guess));             \
+            (result) = (f32) (robj_sqrt_value * robj_sqrt_guess);           \
+        } else if ((f64) robj_sqrt_value < 0.0) {                           \
+            (result) = lbl_80478AC0[0];                                     \
+        } else {                                                            \
+            s32 robj_sqrt_class;                                            \
+            switch (*(s32*) &robj_sqrt_value & 0x7F800000) {                \
+            case 0x7F800000:                                                \
+                robj_sqrt_class =                                           \
+                    (*(s32*) &robj_sqrt_value & 0x007FFFFF) ? 1 : 2;         \
+                break;                                                      \
+            case 0:                                                         \
+                robj_sqrt_class =                                           \
+                    (*(s32*) &robj_sqrt_value & 0x007FFFFF) ? 5 : 3;         \
+                break;                                                      \
+            default:                                                        \
+                robj_sqrt_class = 4;                                        \
+                break;                                                      \
+            }                                                               \
+            (result) = robj_sqrt_class == 1                                 \
+                           ? lbl_80478AC0[0]                                 \
+                           : robj_sqrt_value;                                \
+        }                                                                   \
+    } while (0)
+
 static inline f32 robj_absf(f32 value)
 {
     return value < 0.0F ? -value : value;
+}
+
+static inline s32 RObjGetGlobalPosition(HSD_RObj* robj, u32 type, Vec* out)
+{
+    HSD_RObj* current;
+    Vec position = { 0.0F, 0.0F, 0.0F };
+    s32 count = 0;
+
+    if (robj == NULL) {
+        return 0;
+    }
+
+    for (current = robj; current != NULL; current = current->next) {
+        if ((current->flags & ROBJ_TYPE_MASK) == REFTYPE_JOBJ &&
+            (current->flags & 0x80000000) != 0 &&
+            type == (current->flags & 0x0FFFFFFF))
+        {
+            if (current->u.jobj == NULL) {
+                __assert("robj.c", 0x1F2, "rp->u.jobj");
+            }
+            HSD_JObjSetupMatrix(current->u.jobj);
+            count++;
+            position.x += current->u.jobj->mtx[0][3];
+            position.y += current->u.jobj->mtx[1][3];
+            position.z += current->u.jobj->mtx[2][3];
+        }
+    }
+
+    if (count != 0) {
+        f32 reciprocal = 1.0F / count;
+
+        out->x = reciprocal * position.x;
+        out->y = reciprocal * position.y;
+        out->z = reciprocal * position.z;
+    }
+    return count;
 }
 
 static inline void set_dirup_matrix(Vec* dir, Vec* up, Vec* scale,
@@ -76,13 +149,15 @@ static inline void set_dirup_matrix(Vec* dir, Vec* up, Vec* scale,
     f32 dir_scale;
 
     PSVECCrossProduct(dir, up, &z);
-    dir_scale =
-        robj_sqrtf(1.0F / (1.00000001335e-10F +
-                           PSVECDotProduct(dir, dir)));
+    ROBJ_SQRTF_INLINE(
+        dir_scale,
+        1.0F /
+            (1.00000001335e-10F + PSVECDotProduct(dir, dir)));
     PSVECScale(dir, dir, dir_scale);
-    z_scale =
-        robj_sqrtf(1.0F / (1.00000001335e-10F +
-                           PSVECDotProduct(&z, &z)));
+    ROBJ_SQRTF_INLINE(
+        z_scale,
+        1.0F /
+            (1.00000001335e-10F + PSVECDotProduct(&z, &z)));
     PSVECScale(&z, &z, z_scale);
     PSVECCrossProduct(&z, dir, up);
 
@@ -110,13 +185,13 @@ void fn_801AF560(HSD_RObj* robj, HSD_JObj* jobj,
     Vec direction;
     f32 k;
 
-    if (fn_801AFCAC(robj, 2, &position) != 0) {
+    if (RObjGetGlobalPosition(robj, 2, &position) != 0) {
         direction.x = jobj->mtx[0][3];
         direction.y = jobj->mtx[1][3];
         direction.z = jobj->mtx[2][3];
         PSVECSubtract(&position, &direction, &position);
 
-        if (fn_801AFCAC(robj, 3, &up) != 0) {
+        if (RObjGetGlobalPosition(robj, 3, &up) != 0) {
             PSVECSubtract(&up, &direction, &up);
         } else {
             k = 1.0F - PSVECDotProduct(&position, &up);
