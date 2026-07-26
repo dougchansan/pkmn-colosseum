@@ -335,9 +335,30 @@ config.libs = [
             ),
             Object(
                 CodeCandidate,
+                "trk/TRKDispatch_range_800BF53C_r41_800BFECC.c",
+                mw_version="GC/1.3",
+                extra_cflags=["-use_lmw_stmw on", "-O4,s"],
+                progress_category="runtime",
+            ),
+            Object(
+                CodeCandidate,
+                "trk/TRKDispatch_range_800BF53C_r41_suffix.c",
+                mw_version="GC/1.3",
+                extra_cflags=["-use_lmw_stmw on"],
+                progress_category="runtime",
+            ),
+            Object(
+                CodeCandidate,
                 "trk/TRKDispatch_range_800C0504.c",
                 mw_version="GC/1.3",
                 extra_cflags=["-use_lmw_stmw on"],
+                progress_category="runtime",
+            ),
+            Object(
+                CodeCandidate,
+                "trk/TRKDispatch_range_800C0504_r41_800C0AA0.c",
+                mw_version="GC/1.3",
+                extra_cflags=["-use_lmw_stmw on", "-O4,s"],
                 progress_category="runtime",
             ),
             *[

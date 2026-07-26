@@ -1606,13 +1606,22 @@ trk/TRKDispatchInit.c:
 	.text       start:0x800BF534 end:0x800BF53C
 
 trk/TRKDispatch_range_800BF53C.c:
-	.text       start:0x800BF53C end:0x800C04E8
+	.text       start:0x800BF53C end:0x800BFECC
+
+trk/TRKDispatch_range_800BF53C_r41_800BFECC.c:
+	.text       start:0x800BFECC end:0x800C0108
+
+trk/TRKDispatch_range_800BF53C_r41_suffix.c:
+	.text       start:0x800C0108 end:0x800C04E8
 
 trk/TRKDispatchConnected.c:
 	.text       start:0x800C04E8 end:0x800C0504
 
 trk/TRKDispatch_range_800C0504.c:
-	.text       start:0x800C0504 end:0x800C0CC0
+	.text       start:0x800C0504 end:0x800C0AA0
+
+trk/TRKDispatch_range_800C0504_r41_800C0AA0.c:
+	.text       start:0x800C0AA0 end:0x800C0CC0
 
 trk/TRKDispatchMutex.c:
 	.text       start:0x800C0CC0 end:0x800C0CD8
