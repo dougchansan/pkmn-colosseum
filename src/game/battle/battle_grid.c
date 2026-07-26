@@ -287,26 +287,24 @@ void battleGridAddPokemon(u8* slot, u8* pokemon) {
     u16 i;
     u16 j;
 
-    if (slot != NULL) {
-        if (pokemon == NULL) {
-            return;
-        }
-        if (table->pokemonCount >= 8) {
-            return;
-        }
-        for (i = 0; i < 4; i++, group++) {
-            if (group->slot == slot) {
-                if (group->memberCount >= 2) {
+    if (slot == NULL || pokemon == NULL) {
+        return;
+    }
+    if (table->pokemonCount >= 8) {
+        return;
+    }
+    for (i = 0; i < 4; i++, group++) {
+        if (group->slot == slot) {
+            if (group->memberCount >= 2) {
+                return;
+            }
+            for (j = 0; j < 2; j++) {
+                if (group->pokemon[j] == NULL) {
+                    group->pokemon[j] = pokemon;
+                    group->memberCount++;
+                    table->pokemonCount++;
+                    pokemon[0x76] = group->arg1 != 0 ? -1 : 1;
                     return;
-                }
-                for (j = 0; j < 2; j++) {
-                    if (group->pokemon[j] == NULL) {
-                        group->pokemon[j] = pokemon;
-                        group->memberCount++;
-                        table->pokemonCount++;
-                        pokemon[0x76] = group->arg1 != 0 ? -1 : 1;
-                        return;
-                    }
                 }
             }
         }
