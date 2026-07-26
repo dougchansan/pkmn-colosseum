@@ -752,8 +752,9 @@ u32 fn_80138BBC(void* ptr) {
     void* obj;
     u32 modelCount;
     u32 partCount;
-    u16 i;
-    u16 entryCount;
+    u32 i;
+    u32 j;
+    u32 entryCount;
     u16 handle;
 
     if (ptr != NULL) {
@@ -762,10 +763,9 @@ u32 fn_80138BBC(void* ptr) {
         entry = *(u8**)p;
         handle = *(u16*)(p + 0x4);
         for (i = 0; i < entryCount; i++, entry += 0x5C) {
-            obj = *(void**)(entry + 0x58);
-            if (obj != NULL) {
-                GSmodelSetVisibility(obj, 0);
-                GSmodelFree(obj);
+            if (*(void**)(entry + 0x58) != NULL) {
+                GSmodelSetVisibility(*(void**)(entry + 0x58), 0);
+                GSmodelFree(*(void**)(entry + 0x58));
                 *(void**)(entry + 0x58) = NULL;
             }
         }
@@ -776,9 +776,8 @@ u32 fn_80138BBC(void* ptr) {
             part = GSmodelGetPart(model, i);
             if (part != NULL) {
                 partCount = GSpartGetMaterialCount(part);
-                while (partCount != 0) {
-                    partCount--;
-                    obj = GSpartGetMaterial(part, partCount);
+                for (j = 0; j < partCount; j++) {
+                    obj = GSpartGetMaterial(part, j);
                     if (obj != NULL) {
                         GSmaterialSetAlpha(obj, *(f32*)&lbl_8047D160);
                         fn_800DF608(obj);
