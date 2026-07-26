@@ -34,9 +34,6 @@ ctx.*
 objdiff.json
 compile_commands.json
 
-# Generated local progress history
-docs/progress_history.json
-
 # Local documentation screenshots
 docs/images/
 

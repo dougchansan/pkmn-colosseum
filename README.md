@@ -8,6 +8,20 @@ A matching decompilation project for the GameCube game **Pokémon Colosseum**
 
 ## Status
 
+![Progress over time](docs/progress.png)
+
+Every point on the chart is a real `objdiff` measurement. Points from
+2026-07-01 onward come from the report built in CI (or, for that first stretch,
+from this table's own git history); earlier points were recovered by checking
+out each historical commit and running the build against it. The campaign
+starts on 2026-06-27, when `config/GC6E01/splits.txt` grew past its stub and
+units first became matchable — before that date this metric did not exist, and
+the work of that period was measured a different way. Regenerate with:
+
+```bash
+uv run --with matplotlib tools/plot_progress.py
+```
+
 | Metric | Value |
 |---|---|
 | Fuzzy match | 72.08% |

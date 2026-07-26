@@ -4,6 +4,10 @@ on:
   push:
   pull_request:
 
+# The chart commit on master needs write access; everything else is read-only.
+permissions:
+  contents: write
+
 jobs:
   build:
     # This is a *private* build container.
@@ -70,3 +74,41 @@ jobs:
       with:
         name: ${{ matrix.version }}_report
         path: build/${{ matrix.version }}/report.json
+
+    # Render the progress chart from the report this run just built. Every point
+    # on the chart is a real objdiff measurement, never a hand-entered number.
+    - name: Render progress chart
+      if: matrix.version == 'GC6E01'
+      run: |
+        uv run --with matplotlib tools/plot_progress.py \
+            --append build/${{ matrix.version }}/report.json \
+            --write-history -o docs/progress.png
+
+    # On a PR the chart is a preview artifact only: it is not committed, and a
+    # fork PR has no write token anyway.
+    - name: Upload chart preview
+      if: github.event_name == 'pull_request' && matrix.version == 'GC6E01'
+      uses: actions/upload-artifact@v4
+      with:
+        name: progress_chart_preview
+        path: docs/progress.png
+        if-no-files-found: ignore
+
+    # On master the new point is recorded so the README image stays current.
+    # plot_progress.py writes nothing when the metrics are unchanged, so an
+    # ordinary no-op push produces no commit and the loop terminates.
+    - name: Commit updated chart
+      if: >-
+        github.event_name == 'push'
+        && github.ref == 'refs/heads/master'
+        && matrix.version == 'GC6E01'
+      run: |
+        if git diff --quiet -- docs/progress.png docs/progress_history.json; then
+          echo "progress unchanged; nothing to commit"
+          exit 0
+        fi
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git add docs/progress.png docs/progress_history.json
+        git commit -m "chore: update progress chart [skip ci]"
+        git push origin HEAD:master
