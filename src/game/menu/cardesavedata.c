@@ -4561,3 +4561,147 @@ u32 fn_80087C64(const u16* expected)
 
 #undef CARDE_SHOW_MODEL
 #undef CARDE_GRID_TABLE
+
+typedef struct CardEPageLayout {
+    u8 field_00[0x10];
+    u8 summary[0x66];
+    u8 cells[1][0x10];
+} CardEPageLayout;
+
+static inline s32 cardEPageSize(const u8* card)
+{
+    return (s8)card[0x1C] * (s8)card[0x1D] * 0x10 + 0x76;
+}
+
+static inline u8* cardEGetPage(u8* card, s8 pageIndex)
+{
+    return card + 0x24 + pageIndex * cardEPageSize(card);
+}
+
+static inline u8* cardEGetCell(u8* card, s8 pageIndex, s8 row, s8 column)
+{
+    u8* page = cardEGetPage(card, pageIndex);
+    s32 index = row * (s8)card[0x1D] + column;
+
+    return page + 0x76 + index * 0x10;
+}
+
+u32 fn_80080ED8(u16* destination, const u8* source)
+{
+    const u8* cursor;
+    u32 length = 0;
+
+    if (source == NULL) {
+        return 0;
+    }
+
+    if (destination == NULL) {
+        for (cursor = source; *cursor != 0; length++) {
+            if ((*cursor >= 0x81 && *cursor <= 0x9F) ||
+                (*cursor >= 0xE0 && *cursor <= 0xFC)) {
+                cursor += 2;
+                length++;
+            } else {
+                cursor++;
+            }
+        }
+        return length;
+    }
+
+    cursor = source;
+    while (*cursor != 0) {
+        u16 character = *cursor++;
+
+        if (character >= 0xA1 && character <= 0xDF) {
+            character = (u16)(character + 0xFEC0);
+        }
+        *destination++ = character;
+        length++;
+    }
+    *destination = 0;
+    return length;
+}
+
+u32 fn_80082738(u8* card, const u8* window, s8 pageIndex)
+{
+    u8* page;
+    u8* cell;
+    s32 count;
+    s32 i;
+
+    page = cardEGetPage(card, pageIndex);
+    cell = page + 0x76 +
+        ((s8)window[0x24] * (s8)card[0x1D] + (s8)window[0x26]) * 0x10;
+    *(u16*)cell = 0;
+    cell[0x0C] = 0;
+
+    if (pageIndex != 0) {
+        return 0;
+    }
+
+    page = cardEGetPage(card, 0);
+    count = (s8)card[0x1C] * (s8)card[0x1D];
+    for (i = 0; i < count; i++) {
+        if (page[0x82 + i * 0x10] != 0) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+void fn_80082960(u8* card, const u8* window, s8 pageIndex)
+{
+    u8* page = cardEGetPage(card, pageIndex);
+    u8* entry = page + 0x10 + (s8)window[0x24] * 0x0E;
+
+    *(u16*)entry = 0;
+    entry[0x0C] = 0;
+}
+
+u32 fn_80082A88(u8* card, s8 pageIndex)
+{
+    u8* page = cardEGetPage(card, pageIndex);
+    s32 count = (s8)card[0x1C] * (s8)card[0x1D];
+    s32 i;
+
+    for (i = 0; i < count; i++) {
+        if (page[0x82 + i * 0x10] != 0) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+u8* fn_80082BA4(u8* card, const u8* window, s8 pageIndex)
+{
+    extern void fn_800CAA3C(void*, const void*);
+    u8* page = cardEGetPage(card, pageIndex);
+    u8* entry = page + 0x10 + (s8)window[0x24] * 0x0E;
+    const u8* descriptor =
+        window + 0x3AC + (s8)window[0x5E + pageIndex] * 0x28;
+
+    fn_800CAA3C(entry, descriptor);
+    entry[0x0C] = 1;
+    return page;
+}
+
+u8* fn_80082CF0(u8* card, const u8* window, s8 pageIndex)
+{
+    extern void fn_800CAA3C(void*, const void*);
+    s8 row = (s8)window[0x24];
+    s8 column = (s8)window[0x26];
+    u8* cell = cardEGetCell(card, pageIndex, row, column);
+    const u8* descriptor =
+        window + 0x3AC + (s8)window[0x5B + pageIndex] * 0x28;
+
+    fn_800CAA3C(cell, descriptor);
+    cell[0x0C] = 1;
+    *(u16*)(cell + 0x0E) = *(const u16*)(descriptor + 0x22);
+    card[0x1E + row] = window[0x25];
+    return cell;
+}
+
+u8* fn_80082EA4(u8* card, s8 pageIndex, s8 row, s8 column)
+{
+    return cardEGetCell(card, pageIndex, row, column);
+}
