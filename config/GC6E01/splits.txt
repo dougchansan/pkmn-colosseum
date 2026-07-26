@@ -1737,7 +1737,10 @@ crt/sdata2_math_8047C580.c:
 	.sdata2     start:0x8047C580 end:0x8047C7E0
 
 crt/math_range_800CB2B4.c:
-	.text       start:0x800CB2B4 end:0x800CC660
+	.text       start:0x800CB2B4 end:0x800CB4D8
+
+crt/math_range_800CB4D8.c:
+	.text       start:0x800CB4D8 end:0x800CC660
 
 crt/math_kernel_cos.c:
 	.text       start:0x800CC660 end:0x800CC754

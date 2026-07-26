@@ -3289,6 +3289,12 @@ config.libs = [
             Object(
                 CodeCandidate,
                 "crt/math_range_800CB2B4.c",
+                mw_version="GC/2.0",
+                progress_category="runtime",
+            ),
+            Object(
+                CodeCandidate,
+                "crt/math_range_800CB4D8.c",
                 mw_version="GC/1.3",
                 progress_category="runtime",
             ),
