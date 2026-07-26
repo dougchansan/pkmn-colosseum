@@ -37,6 +37,26 @@ typedef struct HSDShadowData {
     u16 height; /* 0x06 */
 } HSDShadowData;
 
+typedef struct HSDShadowVec {
+    f32 x;
+    f32 y;
+    f32 z;
+} HSDShadowVec;
+
+typedef struct HSDViewingRect {
+    HSDShadowVec origin;     /* 0x00 */
+    HSDShadowVec axis_x;     /* 0x0C */
+    HSDShadowVec axis_y;     /* 0x18 */
+    HSDShadowVec direction;  /* 0x24 */
+    HSDShadowVec normal;     /* 0x30 */
+    f32 distance;            /* 0x3C */
+    f32 min_x;               /* 0x40 */
+    f32 max_x;               /* 0x44 */
+    f32 max_y;               /* 0x48 */
+    f32 min_y;               /* 0x4C */
+    void* object;            /* 0x50 */
+} HSDViewingRect;
+
 /* ========================================================================= */
 /*  Shadow setup functions                                                   */
 /* ========================================================================= */
@@ -67,7 +87,34 @@ s32 HSD_ViewingRectCheck(void* arg0) {
 
 /* Address: 0x801B0408 | Size: 0xD8 | Proposed: HSD_ShadowFunc3 */
 /* Shadow TEV stage configuration */
-void fn_801B0408(void) {
+void fn_801B0408(HSDViewingRect* rect, HSDShadowVec* origin,
+                 HSDShadowVec* target, HSDShadowVec* up, void* object) {
+    extern char lbl_802752C0[];
+    extern char lbl_8047DDB8;
+    extern f32 lbl_8047DDC4;
+    extern f32 lbl_8047DDC8;
+    extern void PSVECSubtract(void* a, void* b, void* out);
+    extern void PSVECNormalize(void* src, void* dst);
+    extern void PSVECCrossProduct(void* a, void* b, void* out);
+    extern f32 PSVECMag(void* vec);
+    HSDShadowVec normalized_up;
+
+    if (rect == NULL) {
+        __assert(lbl_802752C0, 0x366, &lbl_8047DDB8);
+    }
+
+    rect->origin = *origin;
+    PSVECSubtract(target, origin, &rect->direction);
+    PSVECNormalize(&rect->direction, &rect->normal);
+    PSVECNormalize(up, &normalized_up);
+    PSVECCrossProduct(&rect->normal, &normalized_up, &rect->axis_y);
+    PSVECCrossProduct(&rect->axis_y, &rect->normal, &rect->axis_x);
+    rect->distance = PSVECMag(&rect->direction);
+    rect->min_y = lbl_8047DDC4;
+    rect->min_x = lbl_8047DDC4;
+    rect->max_y = lbl_8047DDC8;
+    rect->max_x = lbl_8047DDC8;
+    rect->object = object;
 }
 
 /* Address: 0x801B04E0 | Size: 0x1F4 | Proposed: HSD_ShadowFunc4 */
