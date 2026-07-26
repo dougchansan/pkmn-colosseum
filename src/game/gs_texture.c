@@ -539,7 +539,6 @@ void GStextureLoad(void) {
  *  is asserted here.
  * ======================================================================= */
 void GStextureInit(u32 count) {
-    u8* texture;
     u32 i;
 
     gsTexMaxCount = count;
@@ -549,9 +548,8 @@ void GStextureInit(u32 count) {
     }
 
     gsTexPool = fn_800E27B0(gsTexPoolHandle);
-    texture = (u8*)gsTexPool;
-    for (i = 0; i < gsTexMaxCount; i++, texture += 0x80) {
-        texture[6] = 0;
+    for (i = 0; i < gsTexMaxCount; i++) {
+        ((u8*)gsTexPool)[i * 0x80 + 6] = 0;
     }
 }
 #endif
