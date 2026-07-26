@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196100,
     "total_functions": 8603,
-    "total_units": 2234
+    "total_units": 2238
   },
   "topology_status": {
     "auto_units": 68,
-    "named_units": 2166,
-    "source_backed_units": 2160,
+    "named_units": 2170,
+    "source_backed_units": 2164,
     "auto_code": 0,
     "auto_data": 57687,
     "auto_functions": 0
@@ -23,7 +23,7 @@
     "matched_data_percent": 97.28669,
     "matched_functions": 6573,
     "matched_functions_percent": 76.40358,
-    "fuzzy_match_percent": 72.30367
+    "fuzzy_match_percent": 72.30806
   },
   "unit_topology": [
     {
@@ -5827,17 +5827,43 @@
       "total_functions": 1
     },
     {
-      "name": "main/dolphin/sdk_r58_800A3194_suffix",
+      "name": "main/dolphin/sdk_r59_800A3194_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 708,
+          "size": 456,
           "virtual_address": 2148151700
         }
       ],
-      "total_code": 708,
+      "total_code": 456,
       "total_data": 0,
-      "total_functions": 7
+      "total_functions": 5
+    },
+    {
+      "name": "main/dolphin/sdk_r59_800A335C_o2",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 88,
+          "virtual_address": 2148152156
+        }
+      ],
+      "total_code": 88,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/dolphin/sdk_r59_800A33B4_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 164,
+          "virtual_address": 2148152244
+        }
+      ],
+      "total_code": 164,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/dolphin/sdk_candidate_800A3458",
@@ -18630,17 +18656,30 @@
       "total_functions": 1
     },
     {
-      "name": "main/musyx/musyx_r51_80164C40_suffix",
+      "name": "main/musyx/musyx_r59_80164C40_o1",
       "sections": [
         {
           "name": ".text",
-          "size": 1692,
+          "size": 400,
           "virtual_address": 2148944960
         }
       ],
-      "total_code": 1692,
+      "total_code": 400,
       "total_data": 0,
-      "total_functions": 2
+      "total_functions": 1
+    },
+    {
+      "name": "main/musyx/musyx_r59_80164DD0_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1292,
+          "virtual_address": 2148945360
+        }
+      ],
+      "total_code": 1292,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/game/musyx_range_801652DC",
@@ -22938,17 +22977,30 @@
       "total_functions": 1
     },
     {
-      "name": "main/hsd/hsd_texp_candidate_801BAC8C_gc20",
+      "name": "main/hsd/hsd_texp_r59_801BAC8C_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 3644,
+          "size": 2104,
           "virtual_address": 2149297292
         }
       ],
-      "total_code": 3644,
+      "total_code": 2104,
       "total_data": 0,
-      "total_functions": 2
+      "total_functions": 1
+    },
+    {
+      "name": "main/hsd/hsd_texp_r59_801BB4C4_o1",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1540,
+          "virtual_address": 2149299396
+        }
+      ],
+      "total_code": 1540,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/hsd/hsd_tobj",

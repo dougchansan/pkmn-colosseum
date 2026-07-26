@@ -1529,14 +1529,20 @@ config.libs = [
                     (CodeCandidate, "musyx/musyx_r51_80164A2C_inline_noauto.c"),
                 ]
             ],
-            Object(
-                CodeCandidate,
-                "musyx/musyx_r51_80164C40_suffix.c",
-                mw_version="GC/1.3",
-                cflags=["-O2" if flag == "-O4,p" else flag for flag in cflags_base],
-                extra_cflags=["-use_lmw_stmw off", "-sdata 8", "-sdata2 8"],
-                progress_category="musyx",
-            ),
+            *[
+                Object(
+                    CodeCandidate,
+                    path,
+                    mw_version=version,
+                    cflags=[opt if flag == "-O4,p" else flag for flag in cflags_base],
+                    extra_cflags=["-use_lmw_stmw off", "-sdata 8", "-sdata2 8"],
+                    progress_category="musyx",
+                )
+                for path, version, opt in [
+                    ("musyx/musyx_r59_80164C40_o1.c", "GC/1.1p1", "-O1"),
+                    ("musyx/musyx_r59_80164DD0_suffix.c", "GC/1.3", "-O2"),
+                ]
+            ],
             *[
                 Object(
                     status,
@@ -3511,7 +3517,9 @@ config.libs = [
                 for path, version, use_o2 in [
                     ("dolphin/sdk_r58_800A2D38_prefix.c", "GC/1.2.5n", False),
                     ("dolphin/sdk_r58_800A30E4_o2.c", "GC/1.1p1", True),
-                    ("dolphin/sdk_r58_800A3194_suffix.c", "GC/1.2.5n", False),
+                    ("dolphin/sdk_r59_800A3194_prefix.c", "GC/1.2.5n", False),
+                    ("dolphin/sdk_r59_800A335C_o2.c", "GC/1.1p1", True),
+                    ("dolphin/sdk_r59_800A33B4_suffix.c", "GC/1.2.5n", False),
                 ]
             ],
             Object(
@@ -10358,13 +10366,19 @@ config.libs = [
                 extra_cflags=["-schedule off"],
                 progress_category="hsd",
             ),
-            Object(
-                CodeCandidate,
-                "hsd/hsd_texp_candidate_801BAC8C_gc20.c",
-                mw_version="GC/2.0",
-                cflags=["-O4,s" if flag == "-O4,p" else flag for flag in cflags_base],
-                progress_category="hsd",
-            ),
+            *[
+                Object(
+                    CodeCandidate,
+                    path,
+                    mw_version="GC/2.0",
+                    cflags=[opt if flag == "-O4,p" else flag for flag in cflags_base],
+                    progress_category="hsd",
+                )
+                for path, opt in [
+                    ("hsd/hsd_texp_r59_801BAC8C_prefix.c", "-O4,s"),
+                    ("hsd/hsd_texp_r59_801BB4C4_o1.c", "-O1"),
+                ]
+            ],
             Object(
                 Matching,
                 "hsd/hsd_aobj_exact_801C01C8.c",

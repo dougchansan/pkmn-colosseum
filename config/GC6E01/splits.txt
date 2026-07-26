@@ -1310,8 +1310,14 @@ dolphin/sdk_r58_800A2D38_prefix.c:
 dolphin/sdk_r58_800A30E4_o2.c:
 	.text       start:0x800A30E4 end:0x800A3194
 
-dolphin/sdk_r58_800A3194_suffix.c:
-	.text       start:0x800A3194 end:0x800A3458
+dolphin/sdk_r59_800A3194_prefix.c:
+	.text       start:0x800A3194 end:0x800A335C
+
+dolphin/sdk_r59_800A335C_o2.c:
+	.text       start:0x800A335C end:0x800A33B4
+
+dolphin/sdk_r59_800A33B4_suffix.c:
+	.text       start:0x800A33B4 end:0x800A3458
 
 dolphin/sdk_candidate_800A3458.c:
 	.text       start:0x800A3458 end:0x800A35E4
@@ -4152,8 +4158,11 @@ musyx/musyx_r50_80164520_inline_noauto.c:
 musyx/musyx_r51_80164A2C_inline_noauto.c:
 	.text       start:0x80164A2C end:0x80164C40
 
-musyx/musyx_r51_80164C40_suffix.c:
-	.text       start:0x80164C40 end:0x801652DC
+musyx/musyx_r59_80164C40_o1.c:
+	.text       start:0x80164C40 end:0x80164DD0
+
+musyx/musyx_r59_80164DD0_suffix.c:
+	.text       start:0x80164DD0 end:0x801652DC
 
 game/musyx_range_801652DC.c:
 	.text       start:0x801652DC end:0x801653BC
@@ -5146,8 +5155,11 @@ hsd/hsd_texp_candidate_801B9048.c:
 hsd/hsd_texp_candidate_801B9048_r40_801B9320.c:
 	.text       start:0x801B9320 end:0x801BAC8C
 
-hsd/hsd_texp_candidate_801BAC8C_gc20.c:
-	.text       start:0x801BAC8C end:0x801BBAC8
+hsd/hsd_texp_r59_801BAC8C_prefix.c:
+	.text       start:0x801BAC8C end:0x801BB4C4
+
+hsd/hsd_texp_r59_801BB4C4_o1.c:
+	.text       start:0x801BB4C4 end:0x801BBAC8
 
 hsd/hsd_tobj.c:
 	.text       start:0x801BBAC8 end:0x801BBD3C
