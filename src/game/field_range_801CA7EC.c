@@ -181,7 +181,7 @@ s32 scriptSetCol(s32 index, u8 enable)
 
 #pragma push
 #pragma scheduling off
-u32 scriptHaveItem(u16 itemId)
+u32 scriptHaveItem(u32 itemId)
 {
     return heroItemCheckHaveItemDataId((u8*)0, itemId) & 0xFF;
 }
