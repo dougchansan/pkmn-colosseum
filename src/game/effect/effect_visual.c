@@ -806,14 +806,13 @@ asm u32 fn_80138CCC(void* ptr) {
 u32 fn_80138CCC(void* ptr) {
     u8* p;
     u8* entry;
-    u16 count;
+    u32 count;
     u16 handle;
     u32 size;
-    u16 i;
+    u32 i;
 
     if (ptr == NULL) {
-        GSlogWrite((const char*)lbl_80272C90);
-        return 0;
+        goto allocation_error;
     }
 
     p = ptr;
@@ -825,26 +824,32 @@ u32 fn_80138CCC(void* ptr) {
 
     *(void**)(p + 0x8) = GSresGetResource(*(u16*)(p + 0x40), *(u16*)(p + 0x44));
     if (*(void**)(p + 0x8) == NULL) {
-        GSlogWrite((const char*)lbl_80272C30, *(u16*)(p + 0x40), *(u16*)(p + 0x44));
-        return 0;
+        goto resource_error;
     }
 
     size = count * 0x5C;
     handle = _toolentryAlloc__FUl(size);
     *(u16*)(p + 0x4) = handle;
     if (handle == 0) {
-        GSlogWrite((const char*)lbl_80272C90);
-        return 0;
+        goto allocation_error;
     }
 
-    entry = fn_800E27B0(handle);
-    *(void**)p = entry;
-    memset(entry, 0, size);
+    *(void**)p = fn_800E27B0(handle);
+    entry = *(u8**)p;
+    memset(*(void**)p, 0, size);
     *(u16*)(p + 0x3C) = 0;
     for (i = 0; i < count; i++, entry += 0x5C) {
         _leaffxGenerateLeafData(p, entry);
     }
     return 1;
+
+resource_error:
+    GSlogWrite((const char*)lbl_80272C30, *(u16*)(p + 0x40), *(u16*)(p + 0x44));
+    return 0;
+
+allocation_error:
+    GSlogWrite((const char*)lbl_80272C90);
+    return 0;
 }
 #endif
 extern void GSbezierCalculateVector(void);
