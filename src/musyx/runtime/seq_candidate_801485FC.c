@@ -304,7 +304,6 @@ extern u32 lbl_8047AF00;             /* curSeqId */
 extern void synthSetBpm(u32 bpm, u8 seqId, u8 secIndex);
 extern f64 fmod(f64 a, f64 b); /* fmod (wraps __ieee754_fmod) */
 extern f64 floor(f64 x);
-extern SEQ_EVENT* fn_801485FC(SEQ_EVENT* event, u8 secIndex, u32* loopFlag); /* HandleEvent */
 extern u32 synthSendKeyOff(u32 id);
 extern u32 synthIsFadeOutActive(u8 volGroup);
 extern u32 sndFXCheck(u32 id); /* sndFXCheck */
@@ -315,6 +314,16 @@ extern u16 lbl_80434910[8][16]; /* seqMIDIPriority */
 
 extern void voiceKillSound(u32 id);
 extern void synthVolume(u8 volume, u16 time, u8 volGroup, u8 mode, u32 pubId);
+extern void fn_801603C0(u8 ctrl, u8 midi, u8 midiSet, u8 value);
+extern void inpSetMidiCtrl14(u8 ctrl, u8 midi, u8 midiSet, u16 value);
+extern void inpResetMidiCtrl(u8 midi, u8 midiSet, u32 coldReset);
+extern void seqCrossFade(SND_CROSSFADE* ci, u32* newSeqId, u8 irqCall);
+extern u32 synthStartSound(u16 id, u8 priority, u8 maxVoices, u8 key,
+                          u8 volume, u8 panning, u8 midi, u8 midiSet,
+                          u8 section, u16 step, u16 trackId, u8 volumeGroup,
+                          s16 priorityOffset, u8 studio, u32 itd);
+extern u8 lbl_804356A4[16]; /* synthITDDefault: { music, sfx } */
+extern SEQ_EVENT* GenerateNextTrackEvent(u8 trackId);
 
 #define SND_SEQ_ERROR_ID 0xFFFFFFFFU
 #define SND_SEQ_CROSSFADE_ID 0x80000000U
@@ -330,10 +339,321 @@ extern void synthVolume(u8 volume, u16 time, u8 volGroup, u8 mode, u32 pubId);
 #define SND_SEQVOL_MUTE 3
 #define SND_SEQVOL_MODEMASK 0xF
 
+typedef struct {
+    u32 headerLen;
+    u32 pitchBend;
+    u32 modulation;
+    u32 noteData;
+} SEQ_PATTERN;
+
+static inline NOTE* AllocateNote(u32 endTime, u8 section)
+{
+    NOTE* n;
+    NOTE* nl;
+    NOTE* last;
+
+    n = lbl_8047AF04;
+    if (n != NULL) {
+        if ((lbl_8047AF04 = n->next) != NULL) {
+            lbl_8047AF04->prev = NULL;
+        }
+        n->endTime = endTime;
+        n->section = section;
+        n->timeIndex = lbl_8047AF08->section[section].timeIndex;
+        last = NULL;
+        for (nl = lbl_8047AF08->noteUsed[n->timeIndex]; nl != NULL;
+             last = nl, nl = nl->next)
+        {
+            if (nl->endTime > n->endTime) {
+                n->next = nl;
+                n->prev = last;
+                if (last != NULL) {
+                    last->next = n;
+                } else {
+                    lbl_8047AF08->noteUsed[n->timeIndex] = n;
+                }
+                nl->prev = n;
+                return n;
+            }
+        }
+        n->prev = last;
+        if (last != NULL) {
+            last->next = n;
+        } else {
+            lbl_8047AF08->noteUsed[n->timeIndex] = n;
+        }
+        n->next = NULL;
+    }
+    return n;
+}
+
+static inline void FreeNote(NOTE* n)
+{
+    if (n->next != NULL) {
+        n->next->prev = n->prev;
+    }
+    if (n->prev != NULL) {
+        n->prev->next = n->next;
+    } else {
+        lbl_8047AF08->noteUsed[n->timeIndex] = n->next;
+    }
+    if ((n->next = lbl_8047AF04) != NULL) {
+        lbl_8047AF04->prev = n;
+    }
+    n->prev = NULL;
+    lbl_8047AF04 = n;
+}
+
+static inline void KeyOffNotes(void)
+{
+    NOTE* note;
+    NOTE* next;
+    u32 i;
+
+    for (i = 0; i < 2; i++) {
+        note = lbl_8047AF08->noteUsed[i];
+        while (note != NULL) {
+            next = note->next;
+            synthSendKeyOff(note->id);
+            if ((lbl_8047AF08->noteUsed[i] = note->next) != NULL) {
+                lbl_8047AF08->noteUsed[i]->prev = NULL;
+            }
+            if ((note->next = lbl_8047AF08->noteKeyOff) != NULL) {
+                lbl_8047AF08->noteKeyOff->prev = note;
+            }
+            lbl_8047AF08->noteKeyOff = note;
+            note = next;
+        }
+    }
+}
+
+static inline void DoPrgChange(SEQ_INSTANCE* seq, u8 program, u8 midi)
+{
+    lbl_80434910[lbl_8047AF00][midi] = 0xFFFF;
+    if (midi != 9) {
+        program = seq->normTrans[program];
+        if (program == 0xFF) {
+            return;
+        }
+        seq->prgState[midi].macId = seq->normtab[program].macro;
+        seq->prgState[midi].priority = seq->normtab[program].prio;
+        seq->prgState[midi].maxVoices = seq->normtab[program].maxVoices;
+        return;
+    }
+    program = seq->drumTrans[program];
+    if (program == 0xFF) {
+        return;
+    }
+    seq->prgState[midi].macId = seq->drumtab[program].macro;
+    seq->prgState[midi].priority = seq->drumtab[program].prio;
+    seq->prgState[midi].maxVoices = seq->drumtab[program].maxVoices;
+}
+
+static inline u8* GetStreamValue(u8* stream, u16* deltaTime, s16* deltaData)
+{
+    u8 b1;
+    u8 b2;
+    s16 value;
+
+    b1 = stream[0];
+    b2 = stream[1];
+    if (b1 == 0x80 && b2 == 0) {
+        return NULL;
+    }
+    if ((b1 & 0x80) != 0) {
+        *deltaTime = (((u16)b1 & 0x7F) << 8) | b2;
+        stream += 2;
+    } else {
+        *deltaTime = b1;
+        stream++;
+    }
+    b1 = stream[0];
+    b2 = stream[1];
+    if ((b1 & 0x80) != 0) {
+        value = (((u16)b1 & 0x7F) << 8) | b2;
+        value |= (value & 0x4000) << 1;
+        *deltaData = value;
+        stream += 2;
+    } else {
+        b1 |= (b1 & 0x40) << 1;
+        *deltaData = (s8)b1;
+        stream++;
+    }
+    return stream;
+}
+
+static inline void InitStream(SEQ_STREAM* stream, u32 offset)
+{
+    u16 delta;
+
+    if (offset != 0) {
+        stream->nextAddr =
+            GetStreamValue(ARR_GET(lbl_8047AF08->arrbase, offset), &delta,
+                           &stream->nextDelta);
+        if (stream->nextAddr != NULL) {
+            stream->nextTime = delta;
+        } else {
+            stream->nextTime = 0x7FFFFFFF;
+        }
+    } else {
+        stream->nextTime = 0x7FFFFFFF;
+    }
+}
+
+static inline u16 HandleStream(SEQ_STREAM* stream)
+{
+    u16 delta;
+
+    stream->value += stream->nextDelta;
+    if (stream->nextAddr != NULL) {
+        stream->nextAddr =
+            GetStreamValue(stream->nextAddr, &delta, &stream->nextDelta);
+        if (stream->nextAddr != NULL) {
+            stream->nextTime += delta;
+        } else {
+            stream->nextTime = 0x7FFFFFFF;
+        }
+    } else {
+        stream->nextTime = 0x7FFFFFFF;
+    }
+    return stream->value;
+}
+
+SEQ_EVENT* fn_801485FC(SEQ_EVENT* event, u8 secIndex, u32* loopFlag)
+{
+    CPAT* pa;
+    NOTE_DATA* pe;
+    s32 velocity;
+    s32 key;
+    u8 midi;
+    u16 macId;
+    NOTE* note;
+    TENTRY* trackEntry;
+    CPAT* pattern;
+    u32* patternTable;
+    SEQ_PATTERN* patternData;
+
+    switch (event->type) {
+    case 4:
+        trackEntry = event->info.trackAddr;
+        pattern = &lbl_8047AF08->pattern[event->trackId];
+        patternTable =
+            ARR_GET(lbl_8047AF08->arrbase, lbl_8047AF08->arrbase->pTab);
+        patternData =
+            ARR_GET(lbl_8047AF08->arrbase, patternTable[trackEntry->pattern]);
+        pattern->addr = (NOTE_DATA*)&patternData->noteData;
+        pattern->lTime = 0;
+        pattern->baseTime = trackEntry->time;
+        pattern->patternInfo = trackEntry;
+        InitStream(&pattern->pitchBend, patternData->pitchBend);
+        pattern->pitchBend.value = 0x2000;
+        InitStream(&pattern->modulation, patternData->modulation);
+        pattern->modulation.value = 0;
+        pattern->midi =
+            ARR_GET_TYPE(lbl_8047AF08->arrbase, lbl_8047AF08->arrbase->tmTab,
+                         u8*)[event->trackId];
+        if (trackEntry->prgChange != 0xFF) {
+            DoPrgChange(lbl_8047AF08, trackEntry->prgChange, pattern->midi);
+        }
+        if (trackEntry->velocity != 0xFF) {
+            fn_801603C0(7, pattern->midi, lbl_8047AF00,
+                        trackEntry->velocity);
+        }
+        break;
+
+    case 0:
+        pe = event->info.pattern.addr;
+        pa = event->info.pattern.base;
+        key = pe->key;
+        velocity = pe->velocity;
+        midi = pa->midi;
+        if ((key & 0x80) != 0) {
+            switch (velocity) {
+            case 0:
+                DoPrgChange(lbl_8047AF08, key & 0x7F, midi);
+                break;
+            case 1:
+                fn_801603C0(0x82, midi, lbl_8047AF00, key & 0x7F);
+                break;
+            default:
+                if ((velocity & 0x80) != 0x80) {
+                    break;
+                }
+                switch (velocity & 0x7F) {
+                case 0x68:
+                    if (lbl_8047AF08->syncActive) {
+                        seqCrossFade(&lbl_8047AF08->syncCrossInfo,
+                                     lbl_8047AF08->syncSeqIdPtr, 1);
+                        lbl_8047AF08->syncActive = 0;
+                    }
+                    break;
+                case 0x69:
+                    lbl_80434910[lbl_8047AF00][midi] = key & 0x7F;
+                    break;
+                case 0x6A:
+                    lbl_80434910[lbl_8047AF00][midi] =
+                        (key & 0x7F) + 0x80;
+                    break;
+                case 0x79:
+                    inpResetMidiCtrl(midi, lbl_8047AF00, 0);
+                    break;
+                case 0x7B:
+                    KeyOffNotes();
+                    break;
+                default:
+                    fn_801603C0(velocity & 0x7F, midi, lbl_8047AF00,
+                                key & 0x7F);
+                    break;
+                }
+            }
+            break;
+        }
+        if ((lbl_8047AF08->trackMute[event->trackId / 32] &
+             (1 << (event->trackId & 0x1F))) != 0)
+        {
+            macId = lbl_8047AF08->prgState[midi].macId;
+            if (macId != 0xFFFF) {
+                key += pa->patternInfo->transpose;
+                key = key < 0 ? 0 : (key > 0x7F ? 0x7F : key);
+                velocity += pa->patternInfo->velocityAdd;
+                velocity =
+                    velocity < 0 ? 0 : (velocity > 0x7F ? 0x7F : velocity);
+                note = AllocateNote(event->time + pe->length, secIndex);
+                if (note != NULL) {
+                    note->id = synthStartSound(
+                        macId, lbl_8047AF08->prgState[midi].priority,
+                        lbl_8047AF08->prgState[midi].maxVoices, key, velocity,
+                        64, midi, lbl_8047AF00, secIndex, 0, event->trackId,
+                        lbl_8047AF08->trackVolGroup[event->trackId],
+                        lbl_8047AEFC ? -1 : 0, lbl_8047AF08->defStudio,
+                        lbl_804356A4[lbl_8047AF08->defStudio * 2]);
+                    if (note->id == SND_SEQ_ERROR_ID) {
+                        FreeNote(note);
+                    }
+                }
+            }
+        }
+        break;
+
+    case 2:
+        pa = event->info.pattern.base;
+        inpSetMidiCtrl14(0x80, pa->midi, lbl_8047AF00,
+                         HandleStream(&pa->pitchBend));
+        break;
+    case 1:
+        pa = event->info.pattern.base;
+        inpSetMidiCtrl14(1, pa->midi, lbl_8047AF00,
+                         HandleStream(&pa->modulation));
+        break;
+    case 3:
+        *loopFlag |= 1;
+        return NULL;
+    }
+    return GenerateNextTrackEvent(event->trackId);
+}
+
 
 /* This translation unit is a topology-only split of the original seq.c. */
-extern SEQ_EVENT* GenerateNextTrackEvent(u8 trackId);
-
 #if !defined(SEQ_SUFFIX_BANK_ACTIVE) || \
     defined(SEQ_EXACT_80149090_8014A23C)
 /*
