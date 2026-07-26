@@ -2643,7 +2643,12 @@ config.libs = [
                 CodeCandidate,
                 "game/menu/cardesavedata_80084038.c",
                 mw_version="GC/2.5",
-                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                extra_cflags=[
+                    "-use_lmw_stmw on",
+                    "-sdata 8",
+                    "-sdata2 8",
+                    "-O3",
+                ],
                 progress_category="game",
             ),
             Object(
