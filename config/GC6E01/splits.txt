@@ -410,8 +410,11 @@ game/gs_title_exact_80025F74.c:
 game/gs_title_candidate_80025F84.c:
 	.text       start:0x80025F84 end:0x80026370
 
-game/menuNameEntry.c:
-	.text       start:0x80026370 end:0x80026B44
+game/menuNameEntry_r56_80026370_prefix.c:
+	.text       start:0x80026370 end:0x800268F0
+
+game/menuNameEntry_r56_800268F0_gc20p1_o4s.c:
+	.text       start:0x800268F0 end:0x80026B44
 
 game/menuNameEntry_candidate_80026B44_gc20.c:
 	.text       start:0x80026B44 end:0x80026FEC
@@ -608,8 +611,11 @@ game/menu/menuColosseumBattle_candidate_80057C9C.c:
 game/menu/menuColosseumBattle_exact_80057DE8.c:
 	.text       start:0x80057DE8 end:0x80057E70
 
-game/menu/menuColosseumBattle_candidate_80057E70.c:
-	.text       start:0x80057E70 end:0x80058150
+game/menu/menuColosseumBattle_r56_80057E70_prefix.c:
+	.text       start:0x80057E70 end:0x80057F94
+
+game/menu/menuColosseumBattle_r56_80057F94_o1.c:
+	.text       start:0x80057F94 end:0x80058150
 
 game/menu/menuColosseumBattle_prefix.c:
 	.text       start:0x80058150 end:0x80058754
@@ -2981,8 +2987,11 @@ game/GScolsys2Util.c:
 game/GScolsys2Human_range_8010FAF4.c:
 	.text       start:0x8010FAF4 end:0x80110084
 
-game/GScolsys2Thru_range_80110084.c:
-	.text       start:0x80110084 end:0x80111B9C
+game/GScolsys2Thru_r56_80110084_prefix.c:
+	.text       start:0x80110084 end:0x80111864
+
+game/GScolsys2Thru_r56_80111864_o4s.c:
+	.text       start:0x80111864 end:0x80111B9C
 
 game/GScolsys2Check.c:
 	.text       start:0x80111B9C end:0x80111C24
@@ -4180,8 +4189,11 @@ game/ps_candidate_80168C64.c:
 game/ps_exact_80169340.c:
 	.text       start:0x80169340 end:0x801698F8
 
-game/ps_candidate_801698F8.c:
-	.text       start:0x801698F8 end:0x8016A644
+game/ps_r56_801698F8_prefix.c:
+	.text       start:0x801698F8 end:0x8016A2D0
+
+game/ps_r56_8016A2D0_gc20p1_o4p.c:
+	.text       start:0x8016A2D0 end:0x8016A644
 
 game/ps_app_srt_exact_8016A644.c:
 	.text       start:0x8016A644 end:0x8016A79C
@@ -4216,14 +4228,23 @@ game/ps_candidate_8016F300.c:
 game/ps_exact_80172928.c:
 	.text       start:0x80172928 end:0x80172930
 
-game/ps_candidate_80172930.c:
-	.text       start:0x80172930 end:0x801735BC
+game/ps_r56_80172930_prefix.c:
+	.text       start:0x80172930 end:0x80172D00
+
+game/ps_r56_80172D00_gc125_o4p.c:
+	.text       start:0x80172D00 end:0x80172FA8
+
+game/ps_r56_80172FA8_suffix.c:
+	.text       start:0x80172FA8 end:0x801735BC
 
 game/ps_get_time_exact_801735BC.c:
 	.text       start:0x801735BC end:0x801735EC
 
-game/ps_r54_801735EC_prefix.c:
-	.text       start:0x801735EC end:0x80173F98
+game/ps_r56_801735EC_prefix.c:
+	.text       start:0x801735EC end:0x80173718
+
+game/ps_r56_80173718_gc20p1_o4s.c:
+	.text       start:0x80173718 end:0x80173F98
 
 game/ps_r54_80173F98_gc13_o2.c:
 	.text       start:0x80173F98 end:0x8017424C
@@ -4402,8 +4423,11 @@ game/fsys/fsys_file_candidate_8017DEA4.c:
 game/fsys/fsys_file_candidate_8017E30C_o2.c:
 	.text       start:0x8017E30C end:0x8017EB6C
 
-game/fsys/fsys_file_candidate_8017EB6C.c:
-	.text       start:0x8017EB6C end:0x8017F2C4
+game/fsys/fsys_file_r56_8017EB6C_o1.c:
+	.text       start:0x8017EB6C end:0x8017F108
+
+game/fsys/fsys_file_r56_8017F108_suffix.c:
+	.text       start:0x8017F108 end:0x8017F2C4
 
 game/gs_range_8017F2C4.c:
 	.text       start:0x8017F2C4 end:0x80180C78
@@ -5107,8 +5131,11 @@ game/battle/battle_camera_r50_801C2F00_suffix.c:
 game/battle/battle_grid_exact_801C3108.c:
 	.text       start:0x801C3108 end:0x801C3114
 
-game/battle/battle_grid_residual_801C3114.c:
-	.text       start:0x801C3114 end:0x801C3B80
+game/battle/battle_grid_r56_801C3114_prefix.c:
+	.text       start:0x801C3114 end:0x801C3A64
+
+game/battle/battle_grid_r56_801C3A64_o1.c:
+	.text       start:0x801C3A64 end:0x801C3B80
 
 game/battle/battle_grid_residual_801C3114_r40_801C3B80_gc125n.c:
 	.text       start:0x801C3B80 end:0x801C3C98
@@ -5302,8 +5329,11 @@ game/wazaViewer_exact_801D744C.c:
 game/wazaViewer_candidate_801D7464.c:
 	.text       start:0x801D7464 end:0x801D7E58
 
-game/wazaSequenceEntry.c:
-	.text       start:0x801D7E58 end:0x801D87B0
+game/wazaSequenceEntry_r56_801D7E58_o1.c:
+	.text       start:0x801D7E58 end:0x801D81CC
+
+game/wazaSequenceEntry_r56_801D81CC_suffix.c:
+	.text       start:0x801D81CC end:0x801D87B0
 
 game/wazaSequenceEntry_candidate_801D87B0_gc125.c:
 	.text       start:0x801D87B0 end:0x801D8B38
