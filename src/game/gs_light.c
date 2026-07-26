@@ -849,12 +849,15 @@ u8* GSlightLoad(void* data) {
     u32 frames;
 
     obj = (u8*)lbl_8047AAEC;
-    for (i = 0; i < lbl_8047AAF0; i++, obj += 0x74) {
+    for (i = lbl_8047AAF0; i != 0; i--, obj += 0x74) {
         if (obj[0] == 0) {
             break;
         }
     }
-    if (i >= lbl_8047AAF0) {
+    if (i == 0) {
+        obj = NULL;
+    }
+    if (obj == NULL) {
         return 0;
     }
 
