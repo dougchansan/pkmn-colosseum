@@ -43,8 +43,8 @@ extern u8    lbl_80274EF8[];         /* class name                  */
 extern void* lbl_8047B2E8;           /* cached default instance     */
 extern void* lbl_8047B2EC;           /* active normal desc          */
 extern void* lbl_8047B2F0;           /* active color desc           */
-extern void* lbl_8047B2F4;           /* normal count                */
-extern void* lbl_8047B2F8;           /* color count                 */
+extern u32   lbl_8047B2F4;           /* shape vertex capacity       */
+extern u32   lbl_8047B2F8;           /* shape normal capacity       */
 extern u32   lbl_8047B2FC;           /* display list marker         */
 extern void* lbl_8047B300;           /* display list end marker     */
 extern void* lbl_8047B308;           /* active texture desc         */
@@ -53,6 +53,15 @@ extern void* lbl_80478C90;           /* RNG default state instance  */
 extern void* lbl_80478C94;           /* RNG current state pointer   */
 extern char  lbl_8047DCB8;           /* "pobj.c"                    */
 extern char  lbl_8047DD10;           /* "pobj"                      */
+
+extern void fn_801ABDD4(HSD_PObj* pobj, f32 vertex_buffer[][3],
+                        f32 normal_buffer[][3]);
+extern void fn_801AC1F8(HSD_ShapeSet* shape_set, s32 shape_id, s32 arrayidx,
+                        f32 dst[9]);
+void get_shape_normal_xyz(HSD_ShapeSet* shape_set, s32 shape_id, s32 arrayidx,
+                          f32 dst[3]);
+void get_shape_vertex_xyz(HSD_ShapeSet* shape_set, s32 shape_id, s32 arrayidx,
+                          f32 dst[3]);
 
 /* Address: 0x801AA608 | Size: 0xC8  -- PObj class info init */
 #pragma push
@@ -138,13 +147,13 @@ void PObjAmnesia(void* pobj)
         r = fn_801A6990(lbl_8047B2EC);
         if (r != 0) {
             lbl_8047B2EC = NULL;
-            lbl_8047B2F4 = NULL;
+            lbl_8047B2F4 = 0;
         }
 
         r = fn_801A6990(lbl_8047B2F0);
         if (r != 0) {
             lbl_8047B2F0 = NULL;
-            lbl_8047B2F8 = NULL;
+            lbl_8047B2F8 = 0;
         }
 
         lbl_8047B2FC = 0;
@@ -539,6 +548,159 @@ void fn_801AB63C(u32 first, u32 second)
     }
 }
 #pragma pop
+
+#define POBJ_MIN(x, y) ((x) < (y) ? (x) : (y))
+#define POBJ_MAX(x, y) ((x) > (y) ? (x) : (y))
+
+void drawShapeAnim(HSD_PObj* pobj)
+{
+    HSD_ShapeSet* shape_set = pobj->u.shape_set;
+    f32 (*vertex_buffer)[3];
+    f32 (*normal_buffer)[3];
+    f32 blend;
+    s32 shape_id;
+    s32 i;
+    s32 blend_nbt;
+
+    if (lbl_8047B2F4 == 0) {
+        lbl_8047B2F4 = 2000;
+        lbl_8047B2EC = fn_801A6928(lbl_8047B2F4 * sizeof(f32[3]));
+    }
+    if (lbl_8047B2F4 < (u32) shape_set->nb_vertex_index) {
+        __assert(&lbl_8047DCB8, 0x56B, (char*) lbl_80274EE0 + 0x64);
+    }
+    if (shape_set->normal_desc != NULL && lbl_8047B2F8 == 0) {
+        lbl_8047B2F8 = 2000;
+        lbl_8047B2F0 = fn_801A6928(lbl_8047B2F8 * sizeof(f32[3]));
+    }
+
+    if (shape_set->normal_desc != NULL) {
+        if (shape_set->normal_desc->attr == 10) {
+            if (lbl_8047B2F8 < (u32) shape_set->nb_normal_index) {
+                __assert(&lbl_8047DCB8, 0x574,
+                         (char*) lbl_80274EE0 + 0x98);
+            }
+            blend_nbt = 0;
+        } else {
+            if (lbl_8047B2F8 < (u32) shape_set->nb_normal_index * 3) {
+                __assert(&lbl_8047DCB8, 0x577,
+                         (char*) lbl_80274EE0 + 0xCC);
+            }
+            blend_nbt = 1;
+        }
+    }
+
+    vertex_buffer = lbl_8047B2EC;
+    normal_buffer = lbl_8047B2F0;
+    if (shape_set->flags & 1) {
+        blend = shape_set->blend.bl;
+        shape_id = POBJ_MIN(POBJ_MAX(0, (s32) blend),
+                            shape_set->nb_shape - 1);
+        blend = POBJ_MIN(POBJ_MAX(0.0f, blend - (f32) shape_id), 1.0f);
+        for (i = 0; i < shape_set->nb_vertex_index; i++) {
+            f32 shape0[3];
+            f32 shape1[3];
+
+            get_shape_vertex_xyz(shape_set, shape_id, i, shape0);
+            get_shape_vertex_xyz(
+                shape_set,
+                POBJ_MIN(shape_id + 1, shape_set->nb_shape - 1),
+                i, shape1);
+            vertex_buffer[i][0] =
+                (shape1[0] - shape0[0]) * blend + shape0[0];
+            vertex_buffer[i][1] =
+                (shape1[1] - shape0[1]) * blend + shape0[1];
+            vertex_buffer[i][2] =
+                (shape1[2] - shape0[2]) * blend + shape0[2];
+        }
+        if (shape_set->nb_normal_index != 0) {
+            if (blend_nbt != 0) {
+                for (i = 0; i < shape_set->nb_normal_index; i++) {
+                    f32 shape0[9];
+                    f32 shape1[9];
+                    s32 j;
+                    s32 idx = i * 3;
+
+                    fn_801AC1F8(shape_set, shape_id, i, shape0);
+                    fn_801AC1F8(
+                        shape_set,
+                        POBJ_MIN(shape_id + 1, shape_set->nb_shape - 1),
+                        i, shape1);
+                    for (j = 0; j < 9; j++) {
+                        normal_buffer[idx][j] =
+                            (shape1[j] - shape0[j]) * blend + shape0[j];
+                    }
+                }
+            } else {
+                for (i = 0; i < shape_set->nb_normal_index; i++) {
+                    f32 shape0[3];
+                    f32 shape1[3];
+
+                    get_shape_normal_xyz(shape_set, shape_id, i, shape0);
+                    get_shape_normal_xyz(
+                        shape_set,
+                        POBJ_MIN(shape_id + 1, shape_set->nb_shape - 1),
+                        i, shape1);
+                    normal_buffer[i][0] =
+                        (shape1[0] - shape0[0]) * blend + shape0[0];
+                    normal_buffer[i][1] =
+                        (shape1[1] - shape0[1]) * blend + shape0[1];
+                    normal_buffer[i][2] =
+                        (shape1[2] - shape0[2]) * blend + shape0[2];
+                }
+            }
+        }
+    } else {
+        s32 j;
+        f32* weights = shape_set->blend.bp;
+
+        for (i = 0; i < shape_set->nb_vertex_index; i++) {
+            get_shape_vertex_xyz(shape_set, 0, i, vertex_buffer[i]);
+            for (j = 0; j < shape_set->nb_shape; j++) {
+                f32 weight = POBJ_MAX(0.0f, weights[j]);
+                f32 shape[3];
+
+                get_shape_vertex_xyz(shape_set, j + 1, i, shape);
+                vertex_buffer[i][0] += shape[0] * weight;
+                vertex_buffer[i][1] += shape[1] * weight;
+                vertex_buffer[i][2] += shape[2] * weight;
+            }
+        }
+        if (shape_set->nb_normal_index != 0) {
+            if (blend_nbt != 0) {
+                for (i = 0; i < shape_set->nb_normal_index; i++) {
+                    s32 idx = i * 3;
+
+                    fn_801AC1F8(shape_set, 0, i, normal_buffer[idx]);
+                    for (j = 0; j < shape_set->nb_shape; j++) {
+                        f32 weight = POBJ_MAX(0.0f, weights[j]);
+                        f32 shape[9];
+                        s32 k;
+
+                        fn_801AC1F8(shape_set, j + 1, i, shape);
+                        for (k = 0; k < 9; k++) {
+                            normal_buffer[idx][k] += shape[k] * weight;
+                        }
+                    }
+                }
+            } else {
+                for (i = 0; i < shape_set->nb_normal_index; i++) {
+                    get_shape_normal_xyz(shape_set, 0, i, normal_buffer[i]);
+                    for (j = 0; j < shape_set->nb_shape; j++) {
+                        f32 weight = POBJ_MAX(0.0f, weights[j]);
+                        f32 shape[3];
+
+                        get_shape_normal_xyz(shape_set, j + 1, i, shape);
+                        normal_buffer[i][0] += shape[0] * weight;
+                        normal_buffer[i][1] += shape[1] * weight;
+                        normal_buffer[i][2] += shape[2] * weight;
+                    }
+                }
+            }
+        }
+    }
+    fn_801ABDD4(pobj, vertex_buffer, normal_buffer);
+}
 
 /* Shape-anim source decoders. The retail range keeps the sysdolphin
  * pobj.c bodies (assert/panic lines 1145/1188 and 1082/1125), so the
