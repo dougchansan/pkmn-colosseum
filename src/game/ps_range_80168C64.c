@@ -2101,6 +2101,7 @@ void psInterpretParticles(u32 linkMask) {
  * identification evidence and coverage notes.
  * ====================================================================== */
 PSParticle* psInterpretParticle0(PSParticle* pp, PSParticle* parentCtx) {
+    extern PSParticle* _psListGetNext(PSParticle*);
     u8* stream;
     u8 opcode;
     u16 delay;
