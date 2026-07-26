@@ -773,6 +773,7 @@ void windowCreateCursorSprite(u8* window) {
         *(s16*)((u8*)menuDataBiosGetPtr(*(void**)(window + 0x04)) + 0x04));
     u8* selected = NULL;
     s32 index = 0;
+    s32 spriteId;
 
     while (item != NULL) {
         if ((item[0] & 0x80) != 0) {
@@ -788,8 +789,9 @@ void windowCreateCursorSprite(u8* window) {
     if (selected == NULL) return;
 
     winSpriteRelease(window + 0x20);
-    if (*(s16*)(selected + 0x0C) == 0) return;
-    for (item = menuSpriteBiosGetPtr(*(s16*)(selected + 0x0C));
+    spriteId = *(s16*)(selected + 0x0C);
+    if (spriteId == 0) return;
+    for (item = menuSpriteBiosGetPtr(spriteId);
          item != NULL;) {
         u8* sprite = winSpriteAdd(window + 0x20);
         u32 type;
