@@ -148,19 +148,19 @@ void fn_8020D968(FightCopyBlock* dst, FightCopyBlock* src) {
 }
 
 /* Address: 0x8020D9A0 | Size: 0x18 | Pattern: nullcheck_getter */
-u16 fightKoukaDataBiosGetKoukaDataId(FightKoukaData* ptr) {
+u32 fightKoukaDataBiosGetKoukaDataId(FightKoukaData* ptr) {
     if (ptr == NULL) { return 0; }
     return ptr->koukaDataId;
 }
 
 /* Address: 0x8020D9B8 | Size: 0x18 | Pattern: nullcheck_getter */
-u16 fightKoukaDataBiosGetFightTargetDataId(FightKoukaData* ptr) {
+u32 fightKoukaDataBiosGetFightTargetDataId(FightKoukaData* ptr) {
     if (ptr == NULL) { return 0; }
     return ptr->fightTargetDataId;
 }
 
 /* Address: 0x8020D9D0 | Size: 0x18 | Pattern: nullcheck_getter */
-u16 fightKoukaDataBiosGetFightJoukenDataId(FightKoukaData* ptr) {
+u32 fightKoukaDataBiosGetFightJoukenDataId(FightKoukaData* ptr) {
     if (ptr == NULL) { return 0; }
     return ptr->fightJoukenDataId;
 }
