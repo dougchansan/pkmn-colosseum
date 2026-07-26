@@ -104,6 +104,17 @@ typedef struct PSJObjTransform {
     f32 translateZ;
 } PSJObjTransform;
 
+typedef struct PSForceJObj {
+    u8 pad00[0x14];
+    u32 flags;
+    u8 pad18[0x38];
+    f32 worldX;
+    u8 pad54[0x0C];
+    f32 worldY;
+    u8 pad64[0x0C];
+    f32 worldZ;
+} PSForceJObj;
+
 typedef struct PSCameraView {
     u8 pad00[0x0C];
     Vec position;
@@ -183,7 +194,8 @@ extern void genPosUpdate(void* obj);                                    /* 0x801
 extern void modifyDir(PSParticle* pp, f32 param);                       /* 0x80172FA8 */
 extern void modifyDirGenBase(PSParticle* pp, f32 a, f32 b, f32 c, f32 d); /* 0x801732A0 */
 extern f32 sqrtf(f32 x);
-extern void applyForceJObj(void* jobj, f32 a, f32 b);                   /* 0x80172BBC */
+extern s32 applyForceJObj(PSParticle* pp, PSForceJObj* jobj,
+                         f32 force, f32 radius);                       /* 0x80172BBC */
 extern void setVelToJObj(void* jobj, void* camData);                    /* 0x80172D00 */
 extern u8 U8ClampAdd(u8 cur, f32 delta);                                /* 0x801728B0 */
 extern PSParticle* _psListGetNext(PSParticle* pp);                         /* psCleanup, 0x80172928 */
@@ -202,6 +214,7 @@ extern void HSD_JObjSetupMatrix(void* camSlot);
 extern void HSD_JObjAddTx(PSJObjTransform* jobj, f32 dx);
 extern void HSD_JObjAddTy(PSJObjTransform* jobj, f32 dy);
 extern void HSD_JObjAddTz(PSJObjTransform* jobj, f32 dz);
+extern void fn_8019D9DC(PSForceJObj* jobj);
 extern void HSD_MtxSRT(void* dst, void* scale, void* rot, void* trans, void* order);
 extern void fn_801A6960(void* ptr);
 extern void* fn_801A6928(s32 size);
@@ -1246,6 +1259,40 @@ void HSD_MTXSRT(void* dst, void* scale, void* rot, void* trans, void* order) {
 
 PSParticle* _psListGetNext(PSParticle* pp) {
     return pp->next;
+}
+
+s32 applyForceJObj(PSParticle* pp, PSForceJObj* jobj,
+                   f32 force, f32 radius) {
+    f32 dx;
+    f32 dy;
+    f32 dz;
+    f32 distanceSquared;
+
+    if (jobj == NULL || radius < 0.0f) {
+        return FALSE;
+    }
+
+    if (!(jobj->flags & 0x800000) && (jobj->flags & 0x40)) {
+        fn_8019D9DC(jobj);
+    }
+
+    dx = jobj->worldX - pp->positionX;
+    dy = jobj->worldY - pp->positionY;
+    dz = jobj->worldZ - pp->positionZ;
+    distanceSquared = dx * dx + dy * dy + dz * dz;
+
+    if (distanceSquared <= radius * radius) {
+        return TRUE;
+    }
+    if (distanceSquared == 0.0f) {
+        return FALSE;
+    }
+
+    force /= distanceSquared;
+    pp->velocityX += force * dx;
+    pp->velocityY += force * dy;
+    pp->velocityZ += force * dz;
+    return FALSE;
 }
 
 void psCopyGeneratorData(PSParticle* gen, void* peopleObj) {
