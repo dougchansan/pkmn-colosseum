@@ -1271,6 +1271,8 @@ config.libs = [
                 )
                 for status, path, version in [
                     (CodeCandidate, "musyx/musyx_candidate_80157280.c", "GC/1.3.2"),
+                    (CodeCandidate, "musyx/musyx_candidate_80157280_r41_80158088_gc13.c", "GC/1.3"),
+                    (CodeCandidate, "musyx/musyx_candidate_80157280_r41_80158328.c", "GC/1.3.2"),
                     (Matching, "musyx/musyx_voice_last_exact_80158934.c", "GC/1.3.2"),
                     (CodeCandidate, "musyx/musyx_candidate_80158BB4.c", "GC/1.3.2"),
                     (Matching, "musyx/runtime/hw_dspctrl_exact_8015A838.c", "GC/1.3.2"),
@@ -3937,6 +3939,20 @@ config.libs = [
                 progress_category="hsd",
             ),
             Object(
+                CodeCandidate,
+                "hsd/hsd_tobj_candidate_801BBDDC_r41_801BDD74_gc125n.c",
+                mw_version="GC/1.2.5n",
+                extra_cflags=["-use_lmw_stmw on", "-fp_contract off"],
+                progress_category="hsd",
+            ),
+            Object(
+                CodeCandidate,
+                "hsd/hsd_tobj_candidate_801BBDDC_r41_801BE2B4.c",
+                mw_version="GC/1.3",
+                extra_cflags=["-use_lmw_stmw on", "-fp_contract off"],
+                progress_category="hsd",
+            ),
+            Object(
                 Matching,
                 "game/fight_range_80201764.c",
                 mw_version="GC/1.3",
@@ -4192,6 +4208,13 @@ config.libs = [
                 CodeCandidate,
                 "game/menu/menuCB_BattleStart_candidate_80061A2C.c",
                 mw_version="GC/1.3",
+                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                progress_category="game",
+            ),
+            Object(
+                CodeCandidate,
+                "game/menu/menuCB_BattleStart_candidate_80061A2C_r41_80062834_gc125n.c",
+                mw_version="GC/1.2.5n",
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
@@ -6366,6 +6389,18 @@ config.libs = [
             Object(
                 CodeCandidate,
                 "game/menu/menu_middle_range_8006B9B8.c",
+                mw_version="GC/1.2.5n",
+                extra_cflags=[
+                    "-use_lmw_stmw on",
+                    "-sdata 8",
+                    "-sdata2 8",
+                    "-i src/game/menu",
+                ],
+                progress_category="game",
+            ),
+            Object(
+                CodeCandidate,
+                "game/menu/menu_middle_range_8006B9B8_r41_8006BB34.c",
                 mw_version="GC/1.3",
                 extra_cflags=[
                     "-use_lmw_stmw on",
