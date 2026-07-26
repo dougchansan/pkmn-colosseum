@@ -554,8 +554,11 @@ game/menu/pda_candidate_800492CC_gc20.c:
 game/menu/pda_candidate_800495C8.c:
 	.text       start:0x800495C8 end:0x8004B7EC
 
-game/menu/menu_pda_mail.c:
-	.text       start:0x8004B7EC end:0x8004EADC
+game/menu/menu_pda_mail_r54b_8004B7EC_gc13_o4s.c:
+	.text       start:0x8004B7EC end:0x8004BDB8
+
+game/menu/menu_pda_mail_r54b_8004BDB8_suffix.c:
+	.text       start:0x8004BDB8 end:0x8004EADC
 
 game/menu/menu_bag.c:
 	.text       start:0x8004EADC end:0x80051710
@@ -5236,8 +5239,14 @@ game/mail_exact_801D1E50.c:
 game/mail_candidate_801D1F0C.c:
 	.text       start:0x801D1F0C end:0x801D2080
 
-game/mailMain.c:
-	.text       start:0x801D2080 end:0x801D2B4C
+game/mailMain_r54b_801D2080_prefix.c:
+	.text       start:0x801D2080 end:0x801D228C
+
+game/mailMain_r54b_801D228C_gc20p1_o4s.c:
+	.text       start:0x801D228C end:0x801D23C0
+
+game/mailMain_r54b_801D23C0_suffix.c:
+	.text       start:0x801D23C0 end:0x801D2B4C
 
 game/wazaSequenceCamera.c:
 	.text       start:0x801D2B4C end:0x801D5328

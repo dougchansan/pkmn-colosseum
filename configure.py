@@ -2198,7 +2198,21 @@ config.libs = [
             ],
             Object(
                 CodeCandidate,
-                "game/mailMain.c",
+                "game/mailMain_r54b_801D2080_prefix.c",
+                mw_version="GC/1.3",
+                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                progress_category="game",
+            ),
+            Object(
+                CodeCandidate,
+                "game/mailMain_r54b_801D228C_gc20p1_o4s.c",
+                mw_version="GC/2.0p1",
+                extra_cflags=["-O4,s", "-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                progress_category="game",
+            ),
+            Object(
+                CodeCandidate,
+                "game/mailMain_r54b_801D23C0_suffix.c",
                 mw_version="GC/1.3",
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
@@ -3069,7 +3083,14 @@ config.libs = [
             ),
             Object(
                 CodeCandidate,
-                "game/menu/menu_pda_mail.c",
+                "game/menu/menu_pda_mail_r54b_8004B7EC_gc13_o4s.c",
+                mw_version="GC/1.3",
+                extra_cflags=["-O4,s", "-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                progress_category="game",
+            ),
+            Object(
+                CodeCandidate,
+                "game/menu/menu_pda_mail_r54b_8004BDB8_suffix.c",
                 mw_version="GC/1.3",
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
