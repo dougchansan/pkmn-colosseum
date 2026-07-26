@@ -4130,7 +4130,13 @@ hsd/hsd_displayfunc.c:
 	.text       start:0x80197A64 end:0x80198F7C
 
 hsd/hsd_dobj.c:
-	.text       start:0x80198F7C end:0x8019B750
+	.text       start:0x80198F7C end:0x8019A24C
+
+hsd/hsd_dobj_r43_8019A24C.c:
+	.text       start:0x8019A24C end:0x8019B490
+
+hsd/hsd_dobj_r43_8019B490.c:
+	.text       start:0x8019B490 end:0x8019B750
 
 hsd/hsd_fobj_tail_exact_8019B750.c:
 	.text       start:0x8019B750 end:0x8019B7C0

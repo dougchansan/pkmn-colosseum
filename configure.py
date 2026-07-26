@@ -6857,6 +6857,20 @@ config.libs = [
                 progress_category="hsd",
             ),
             Object(
+                CodeCandidate,
+                "hsd/hsd_dobj_r43_8019A24C.c",
+                mw_version="GC/2.0p1",
+                extra_cflags=["-use_lmw_stmw on"],
+                progress_category="hsd",
+            ),
+            Object(
+                CodeCandidate,
+                "hsd/hsd_dobj_r43_8019B490.c",
+                mw_version="GC/1.3",
+                extra_cflags=["-use_lmw_stmw on"],
+                progress_category="hsd",
+            ),
+            Object(
                 Matching,
                 "hsd/hsd_fobj_tail_exact_8019B750.c",
                 mw_version="GC/1.3",
