@@ -259,13 +259,15 @@ BOOL iref_DEC(void* o)
 
 void HSD_JObjUnref(HSD_JObj* jobj)
 {
-    if (jobj == NULL) {
-        return;
-    }
-    if (ref_DEC_801A0D48(jobj) != 0) {
-        if (jobj != NULL) {
-            ((HSD_ClassInfo*)jobj->object.parent.class_info)->release((HSD_Class*) jobj);
-            ((HSD_ClassInfo*)jobj->object.parent.class_info)->destroy((HSD_Class*) jobj);
+    if (jobj != NULL && ref_DEC(jobj)) {
+        if (ref_CNT(jobj) < 0) {
+            hsdDelete(jobj);
+        } else {
+            iref_INC(jobj);
+            HSD_JOBJ_METHOD(jobj)->release_child(jobj);
+            if (hsd_inline_iref_DEC(jobj)) {
+                hsdDelete(jobj);
+            }
         }
     }
 }
@@ -273,6 +275,8 @@ void HSD_JObjUnref(HSD_JObj* jobj)
 /* ========================================================================= */
 /*  Remove                                                                   */
 /* ========================================================================= */
+
+static HSD_JObj* JObj_GetPrev(HSD_JObj* jobj);
 
 HSD_JObj* HSD_JObjRemove(HSD_JObj* jobj)
 {
@@ -309,15 +313,27 @@ HSD_JObj* HSD_JObjRemove(HSD_JObj* jobj)
 
 void HSD_JObjRemoveAll(HSD_JObj* jobj)
 {
+    HSD_JObj* prev;
+    HSD_JObj* next;
+
     if (jobj == NULL) {
         return;
     }
-    HSD_JObjRemoveAll(jobj->child);
-    HSD_JObjRemoveAll(jobj->next);
-    jobj->child = NULL;
-    jobj->next = NULL;
-    jobj->parent = NULL;
-    HSD_JObjUnref(jobj);
+    if (jobj->parent != NULL) {
+        prev = JObj_GetPrev(jobj);
+        if (prev != NULL) {
+            prev->next = NULL;
+        } else {
+            jobj->parent->child = NULL;
+        }
+    }
+    while (jobj != NULL) {
+        next = jobj->next;
+        jobj->parent = NULL;
+        jobj->next = NULL;
+        HSD_JObjUnref(jobj);
+        jobj = next;
+    }
 }
 
 /* ========================================================================= */
