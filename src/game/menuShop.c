@@ -19,6 +19,7 @@
  * here since fn_8002BE08 and fn_8002C014 in this file use it without a local
  * block-scope extern of their own. */
 extern u16* windowGetKeyInfo(void);
+extern u32 GSmsgGetRect(u32 id);
 
 /* fn_80029850 - 0x80029850 | size: 0x8c */
 extern u16 itemBiosGetItemDataId(void*);
