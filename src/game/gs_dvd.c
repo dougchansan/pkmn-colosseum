@@ -925,11 +925,12 @@ void fn_80168408(GSFilter* filter, const u8* color)
 GSFilter* GSfilterCreate(const u8* color)
 {
     GSFilter* filter;
+    u8 capacity = lbl_804526E0.capacity;
     u8 index;
 
-    if (lbl_804526E0.count < lbl_804526E0.capacity) {
+    if (lbl_804526E0.count < capacity) {
         filter = lbl_804526E0.filters;
-        for (index = 0; index < lbl_804526E0.capacity; index++, filter++) {
+        for (index = 0; index < capacity; index++, filter++) {
             if (filter->active == 0) {
                 u8* destination = &lbl_804526E0.colors[index * 4];
                 destination[0] = color[0];
