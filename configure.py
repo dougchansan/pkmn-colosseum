@@ -1333,7 +1333,14 @@ config.libs = [
                     status,
                     path,
                     mw_version=version,
-                    extra_cflags=["-use_lmw_stmw off", "-sdata 8", "-sdata2 8"],
+                    extra_cflags=["-use_lmw_stmw off", "-sdata 8", "-sdata2 8"]
+                    + (
+                        ["-fp_contract off"]
+                        if "_fp_contract_off" in path
+                        else ["-inline noauto"]
+                        if "_inline_noauto" in path
+                        else []
+                    ),
                     progress_category="musyx",
                 )
                 for status, path, version in [
@@ -1347,7 +1354,12 @@ config.libs = [
                     (Matching, "musyx/runtime/hw_dspctrl_exact_8015AAA0.c", "GC/1.3.2"),
                     (CodeCandidate, "musyx/musyx_candidate_8015AD1C.c", "GC/1.3.2"),
                     (Matching, "musyx/runtime/hw_dspctrl_exact_8015D408.c", "GC/1.3.2"),
-                    (CodeCandidate, "musyx/musyx_candidate_8015D678.c", "GC/1.3.2"),
+                    (CodeCandidate, "musyx/musyx_r50_8015D678_prefix.c", "GC/1.3.2"),
+                    (CodeCandidate, "musyx/musyx_r50_8015DEC0_fp_contract_off.c", "GC/1.3.2"),
+                    (CodeCandidate, "musyx/musyx_r50_8015E374_fp_contract_off.c", "GC/1.3.2"),
+                    (CodeCandidate, "musyx/musyx_r50_8015E890_prefix.c", "GC/1.3.2"),
+                    (CodeCandidate, "musyx/musyx_r50_8015E8B0_inline_noauto.c", "GC/1.3.2"),
+                    (CodeCandidate, "musyx/musyx_r50_8015ECA8_suffix.c", "GC/1.3.2"),
                     (CodeCandidate, "musyx/musyx_candidate_8015D678_r40_801603C0_gc125n.c", "GC/1.2.5n"),
                 ]
             ],
@@ -1379,7 +1391,8 @@ config.libs = [
                     status,
                     path,
                     mw_version="GC/1.3.2",
-                    extra_cflags=["-use_lmw_stmw off", "-sdata 8", "-sdata2 8"],
+                    extra_cflags=["-use_lmw_stmw off", "-sdata 8", "-sdata2 8"]
+                    + (["-inline noauto"] if "_inline_noauto" in path else []),
                     progress_category="musyx",
                 )
                 for status, path in [
@@ -1413,7 +1426,9 @@ config.libs = [
                     (Matching, "musyx/musyx_irq_disable_exact_80164398.c"),
                     (CodeCandidate, "musyx/musyx_candidate_801643B8.c"),
                     (Matching, "musyx/musyx_exact_80164488.c"),
-                    (CodeCandidate, "musyx/musyx_candidate_801644E0.c"),
+                    (CodeCandidate, "musyx/musyx_r50_801644E0_prefix.c"),
+                    (CodeCandidate, "musyx/musyx_r50_80164520_inline_noauto.c"),
+                    (CodeCandidate, "musyx/musyx_r50_80164A2C_suffix.c"),
                 ]
             ],
             *[

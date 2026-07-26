@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196100,
     "total_functions": 8603,
-    "total_units": 2076
+    "total_units": 2083
   },
   "topology_status": {
     "auto_units": 68,
-    "named_units": 2008,
-    "source_backed_units": 2002,
+    "named_units": 2015,
+    "source_backed_units": 2009,
     "auto_code": 0,
     "auto_data": 57687,
     "auto_functions": 0
@@ -23,7 +23,7 @@
     "matched_data_percent": 97.28669,
     "matched_functions": 6571,
     "matched_functions_percent": 76.38033,
-    "fuzzy_match_percent": 71.248825
+    "fuzzy_match_percent": 71.27593
   },
   "unit_topology": [
     {
@@ -17057,17 +17057,82 @@
       "total_functions": 5
     },
     {
-      "name": "main/musyx/musyx_candidate_8015D678",
+      "name": "main/musyx/musyx_r50_8015D678_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 11592,
+          "size": 2120,
           "virtual_address": 2148914808
         }
       ],
-      "total_code": 11592,
+      "total_code": 2120,
       "total_data": 0,
-      "total_functions": 22
+      "total_functions": 2
+    },
+    {
+      "name": "main/musyx/musyx_r50_8015DEC0_fp_contract_off",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1204,
+          "virtual_address": 2148916928
+        }
+      ],
+      "total_code": 1204,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/musyx/musyx_r50_8015E374_fp_contract_off",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1308,
+          "virtual_address": 2148918132
+        }
+      ],
+      "total_code": 1308,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/musyx/musyx_r50_8015E890_prefix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 32,
+          "virtual_address": 2148919440
+        }
+      ],
+      "total_code": 32,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/musyx/musyx_r50_8015E8B0_inline_noauto",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1016,
+          "virtual_address": 2148919472
+        }
+      ],
+      "total_code": 1016,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/musyx/musyx_r50_8015ECA8_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 5912,
+          "virtual_address": 2148920488
+        }
+      ],
+      "total_code": 5912,
+      "total_data": 0,
+      "total_functions": 16
     },
     {
       "name": "main/musyx/musyx_candidate_8015D678_r40_801603C0_gc125n",
@@ -17551,17 +17616,43 @@
       "total_functions": 1
     },
     {
-      "name": "main/musyx/musyx_candidate_801644E0",
+      "name": "main/musyx/musyx_r50_801644E0_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 3580,
+          "size": 64,
           "virtual_address": 2148943072
         }
       ],
-      "total_code": 3580,
+      "total_code": 64,
       "total_data": 0,
-      "total_functions": 5
+      "total_functions": 1
+    },
+    {
+      "name": "main/musyx/musyx_r50_80164520_inline_noauto",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1292,
+          "virtual_address": 2148943136
+        }
+      ],
+      "total_code": 1292,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/musyx/musyx_r50_80164A2C_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 2224,
+          "virtual_address": 2148944428
+        }
+      ],
+      "total_code": 2224,
+      "total_data": 0,
+      "total_functions": 3
     },
     {
       "name": "main/game/musyx_range_801652DC",

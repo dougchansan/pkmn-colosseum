@@ -3789,8 +3789,23 @@ musyx/musyx_candidate_8015AD1C.c:
 musyx/runtime/hw_dspctrl_exact_8015D408.c:
 	.text       start:0x8015D408 end:0x8015D678
 
-musyx/musyx_candidate_8015D678.c:
-	.text       start:0x8015D678 end:0x801603C0
+musyx/musyx_r50_8015D678_prefix.c:
+	.text       start:0x8015D678 end:0x8015DEC0
+
+musyx/musyx_r50_8015DEC0_fp_contract_off.c:
+	.text       start:0x8015DEC0 end:0x8015E374
+
+musyx/musyx_r50_8015E374_fp_contract_off.c:
+	.text       start:0x8015E374 end:0x8015E890
+
+musyx/musyx_r50_8015E890_prefix.c:
+	.text       start:0x8015E890 end:0x8015E8B0
+
+musyx/musyx_r50_8015E8B0_inline_noauto.c:
+	.text       start:0x8015E8B0 end:0x8015ECA8
+
+musyx/musyx_r50_8015ECA8_suffix.c:
+	.text       start:0x8015ECA8 end:0x801603C0
 
 musyx/musyx_candidate_8015D678_r40_801603C0_gc125n.c:
 	.text       start:0x801603C0 end:0x801609C8
@@ -3903,8 +3918,14 @@ musyx/musyx_candidate_801643B8.c:
 musyx/musyx_exact_80164488.c:
 	.text       start:0x80164488 end:0x801644E0
 
-musyx/musyx_candidate_801644E0.c:
-	.text       start:0x801644E0 end:0x801652DC
+musyx/musyx_r50_801644E0_prefix.c:
+	.text       start:0x801644E0 end:0x80164520
+
+musyx/musyx_r50_80164520_inline_noauto.c:
+	.text       start:0x80164520 end:0x80164A2C
+
+musyx/musyx_r50_80164A2C_suffix.c:
+	.text       start:0x80164A2C end:0x801652DC
 
 game/musyx_range_801652DC.c:
 	.text       start:0x801652DC end:0x801653BC
