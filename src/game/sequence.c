@@ -242,7 +242,7 @@ void fn_801DD158(void* obj) {
         }
     }
 
-    sequence = effect->currentSequence;
+    sequence = effect->sequenceList;
     while (sequence != NULL) {
         WazaSequence* next = *(WazaSequence**)((u8*)sequence + 0x34);
 

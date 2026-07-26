@@ -128,7 +128,8 @@ struct WazaEffect {
     /* 0x30 */ u8 pad_30[0x02];
     /* 0x32 */ u16 index;                    /* table index */
     /* 0x34 */ u16 field_34;                 /* set by fn_801DD100 */
-    /* 0x36 */ u8 pad_36[0x36];
+    /* 0x36 */ u8 pad_36[0x32];
+    /* 0x68 */ WazaSequence* sequenceList;
     /* 0x6C */ WazaSequence* currentSequence;
     /* 0x70 */ u8 pad_70[0x04];
     /* 0x74 */ u8 active;
