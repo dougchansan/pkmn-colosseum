@@ -1516,14 +1516,21 @@ u32 fn_8013AD68(void* ptr) {
 #endif
 
 #if !defined(EFFECT_VISUAL_BANK_ACTIVE)
-extern void fn_80168408(void);
+extern void fn_80168408(void* filter, u8* color);
 extern u32 lbl_8047D1E8;
 extern u32 lbl_8047D1F0;
 extern u32 lbl_8047D1F4;
 u32 fn_8013AD9C(void* ptr, u32 delta) {
     u8* p;
     u8* node;
+    u8* previous;
+    u8 color[4];
+    void* filter;
+    u32 elapsed;
     u32 duration;
+    f32 ratio;
+    f32 start;
+    f32 end;
 
     if (ptr == NULL) {
         return 0;
@@ -1538,22 +1545,60 @@ u32 fn_8013AD9C(void* ptr, u32 delta) {
     duration = *(u32*)(node + 0x8);
     if (duration == 0xFFFFFFFF) {
         *(u32*)(p + 0x58) = 0;
-    } else {
-        while (node != NULL) {
-            if (*(u32*)(p + 0x58) < *(u32*)(node + 0x8)) {
-                break;
-            }
-            *(u32*)(p + 0x58) -= *(u32*)(node + 0x8);
-            node = *(u8**)(node + 0x10);
-            *(void**)(p + 0x54) = node;
-        }
+    }
+    while (*(u32*)(p + 0x58) >= duration) {
+        *(u32*)(p + 0x58) -= duration;
+        previous = node;
+        node = *(u8**)(node + 0x10);
+        *(void**)(p + 0x54) = node;
         if (node == NULL) {
+            if (*(u8*)(p + 0x4C) != 0) {
+                fn_8013B268(p, previous + 4);
+            } else {
+                filter = *(void**)p;
+                if (filter != NULL) {
+                    fn_80168408(filter, previous + 4);
+                }
+            }
             return 0;
+        }
+        duration = *(u32*)(node + 0x8);
+        if (duration == 0xFFFFFFFF) {
+            *(u32*)(p + 0x58) = 0;
+            break;
         }
     }
 
+    elapsed = *(u32*)(p + 0x58);
+    ratio = (f32)elapsed / (f32)duration;
+    if (ratio < *(f32*)&lbl_8047D1F0) {
+        ratio = *(f32*)&lbl_8047D1F0;
+    }
+    if (ratio > *(f32*)&lbl_8047D1F4) {
+        ratio = *(f32*)&lbl_8047D1F4;
+    }
+
+    start = node[0];
+    end = node[4];
+    color[0] = start + ratio * (end - start);
+    start = node[1];
+    end = node[5];
+    color[1] = start + ratio * (end - start);
+    start = node[2];
+    end = node[6];
+    color[2] = start + ratio * (end - start);
+    start = node[3];
+    end = node[7];
+    color[3] = start + ratio * (end - start);
+
     if (*(u8*)(p + 0x4C) != 0) {
-        fn_8013B268(p, node);
+        fn_8013B268(p, color);
+    } else {
+        filter = *(void**)p;
+        if (filter == NULL) {
+            return 0;
+        }
+        fn_80168408(filter, color);
     }
     *(u32*)(p + 0x58) += delta;
     return 1;
