@@ -1190,6 +1190,68 @@ HSD_JObj* HSD_JObjGetCurrent(void) {
     return (HSD_JObj*) lbl_8047B2AC;
 }
 #endif
+
+static inline void current_jobj_delete(HSD_JObj* jobj)
+{
+    if (jobj != NULL) {
+        HSD_CLASS_METHOD(jobj)->release((HSD_Class*) jobj);
+        HSD_CLASS_METHOD(jobj)->destroy((HSD_Class*) jobj);
+    }
+}
+
+static inline BOOL current_jobj_ref_dec(HSD_JObj* jobj)
+{
+    BOOL result;
+
+    if ((result = (jobj->object.ref_count == HSD_OBJ_NOREF))) {
+        return result;
+    }
+    result = (jobj->object.ref_count == 0);
+    jobj->object.ref_count--;
+    return result;
+}
+
+static inline BOOL current_jobj_iref_dec(HSD_JObj* jobj)
+{
+    BOOL result;
+
+    if ((result = (jobj->object.ref_count_individual == 0))) {
+        return result;
+    }
+    jobj->object.ref_count_individual--;
+    return jobj->object.ref_count_individual == 0;
+}
+
+static inline void current_jobj_ref(HSD_JObj* jobj)
+{
+    if (jobj != NULL) {
+        jobj->object.ref_count++;
+        HSD_ASSERT(0x5D, jobj->object.ref_count != HSD_OBJ_NOREF);
+    }
+}
+
+static inline void current_jobj_unref(HSD_JObj* jobj)
+{
+    if (jobj != NULL && current_jobj_ref_dec(jobj)) {
+        if ((s32) jobj->object.ref_count_individual - 1 < 0) {
+            current_jobj_delete(jobj);
+        } else {
+            jobj->object.ref_count_individual++;
+            HSD_ASSERT(0x9E, jobj->object.ref_count_individual != 0);
+            HSD_JOBJ_METHOD(jobj)->release_child(jobj);
+            if (current_jobj_iref_dec(jobj)) {
+                current_jobj_delete(jobj);
+            }
+        }
+    }
+}
+
+void fn_8019F024(HSD_JObj* jobj)
+{
+    current_jobj_ref(jobj);
+    current_jobj_unref((HSD_JObj*) lbl_8047B2AC);
+    lbl_8047B2AC = (u32) jobj;
+}
 #pragma pop
 
 /* 0x8019F1C4 | 0x554 */
