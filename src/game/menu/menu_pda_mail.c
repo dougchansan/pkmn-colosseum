@@ -1638,7 +1638,9 @@ u32 fn_8004C6C0(u8* context, u8* object)
 {
     s32 table[10];
     s32 index;
+    s32 mailId;
     s32 value;
+    u32 message;
     u16 page;
     u32 i;
 
@@ -1653,14 +1655,17 @@ u32 fn_8004C6C0(u8* context, u8* object)
         return 0;
     }
     index += (s8)(page >> 8) * 10;
-    if (fn_801D1A88(fn_8004BE40(index)) != 0) {
-        fn_80132A38(0x37, fn_800FA280());
+    mailId = pdaMailGetMailID(index);
+    message = mailGetSenderName(mailId);
+    if (message != 0) {
+        msgctrlSetValue(0x37, GSmsgGetGSchar(message));
         *(u32*)(object + 0x4C) = 0xE7;
     } else {
         *(u32*)(object + 0x4C) = 0;
     }
-    if (fn_8004BE40(index) >= 0) {
-        if (fn_801D1B78(fn_8004BE40(index)) != 0) {
+    mailId = pdaMailGetMailID(index);
+    if (mailId >= 0) {
+        if (fn_801D1B78(mailId) != 0) {
             object[0x64] = 0xFF;
             object[0x65] = 0xFF;
             object[0x66] = 0xFF;
@@ -1677,7 +1682,9 @@ u32 fn_8004C8AC(u8* context, u8* object)
 {
     s32 table[10];
     s32 index;
+    s32 mailId;
     s32 value;
+    u32 message;
     u16 page;
     u32 i;
 
@@ -1692,14 +1699,17 @@ u32 fn_8004C8AC(u8* context, u8* object)
         return 0;
     }
     index += (s8)(page >> 8) * 10;
-    if (fn_801D1ACC(fn_8004BE40(index)) != 0) {
-        fn_80132A38(0x37, fn_800FA280());
+    mailId = pdaMailGetMailID(index);
+    message = mailGetSubject(mailId);
+    if (message != 0) {
+        msgctrlSetValue(0x37, GSmsgGetGSchar(message));
         *(u32*)(object + 0x4C) = 0xE7;
     } else {
         *(u32*)(object + 0x4C) = 0;
     }
-    if (fn_8004BE40(index) >= 0) {
-        if (fn_801D1B78(fn_8004BE40(index)) != 0) {
+    mailId = pdaMailGetMailID(index);
+    if (mailId >= 0) {
+        if (fn_801D1B78(mailId) != 0) {
             object[0x64] = 0xFF;
             object[0x65] = 0xFF;
             object[0x66] = 0xFF;
@@ -1716,6 +1726,7 @@ u32 fn_8004CA98(u8* context, u8* object)
 {
     s32 table[10];
     s32 index;
+    s32 mailId;
     s32 value;
     u16 page;
     u32 i;
@@ -1732,12 +1743,13 @@ u32 fn_8004CA98(u8* context, u8* object)
         return 0;
     }
     index += (s8)(page >> 8) * 10;
-    if (fn_8004BE40(index) < 0) {
+    mailId = pdaMailGetMailID(index);
+    if (mailId < 0) {
         visible = 0;
     } else {
-        visible = fn_801D16F0(fn_8004BE40(index)) != 0;
+        visible = mailGetAttachFileGroup(mailId) != 0;
     }
-    fn_80109220((u32)object, visible);
+    winSpriteSetDisp(object, visible);
     return 0;
 }
 
@@ -1745,6 +1757,7 @@ u32 fn_8004CC38(u8* context, u8* object)
 {
     s32 table[10];
     s32 index;
+    s32 mailId;
     s32 value;
     u16 page;
     u32 i;
@@ -1761,12 +1774,13 @@ u32 fn_8004CC38(u8* context, u8* object)
         return 0;
     }
     index += (s8)(page >> 8) * 10;
-    if (fn_8004BE40(index) < 0) {
+    mailId = pdaMailGetMailID(index);
+    if (mailId < 0) {
         visible = 0;
     } else {
-        visible = fn_801D1B78(fn_8004BE40(index)) != 0;
+        visible = fn_801D1B78(mailId) != 0;
     }
-    fn_80109220((u32)object, visible);
+    winSpriteSetDisp(object, visible);
     return 0;
 }
 
@@ -1774,6 +1788,7 @@ u32 fn_8004CDD8(u8* context, u8* object)
 {
     s32 table[10];
     s32 index;
+    s32 mailId;
     s32 value;
     u16 page;
     u32 i;
@@ -1790,12 +1805,13 @@ u32 fn_8004CDD8(u8* context, u8* object)
         return 0;
     }
     index += (s8)(page >> 8) * 10;
-    if (fn_8004BE40(index) < 0) {
+    mailId = pdaMailGetMailID(index);
+    if (mailId < 0) {
         visible = 0;
     } else {
-        visible = fn_801D1B78(fn_8004BE40(index)) == 0;
+        visible = fn_801D1B78(mailId) == 0;
     }
-    fn_80109220((u32)object, visible);
+    winSpriteSetDisp(object, visible);
     return 0;
 }
 
@@ -2132,19 +2148,27 @@ void fn_8004C120(void)
             }
             break;
         case 2:
-            for (i = 0; i < count; i++) {
-                *output++ = mailGetMailIDInMailbox(i);
+        {
+            s32 sortCount = mailGetNbMailInMailbox();
+            u16* sortedOutput = output;
+            for (i = 0; i < sortCount; i++) {
+                *sortedOutput++ = mailGetMailIDInMailbox(i);
             }
-            qsort(lbl_8047A500, count, sizeof(u16),
+            qsort(output, sortCount, sizeof(u16),
                   (s32 (*)(const void*, const void*))fn_8004BF20);
             break;
+        }
         case 3:
-            for (i = 0; i < count; i++) {
-                *output++ = mailGetMailIDInMailbox(i);
+        {
+            s32 sortCount = mailGetNbMailInMailbox();
+            u16* sortedOutput = output;
+            for (i = 0; i < sortCount; i++) {
+                *sortedOutput++ = mailGetMailIDInMailbox(i);
             }
-            qsort(lbl_8047A500, count, sizeof(u16),
+            qsort(output, sortCount, sizeof(u16),
                   (s32 (*)(const void*, const void*))fn_8004BE90);
             break;
+        }
         default:
             for (i = mailGetNbMailInMailbox() - 1; i >= 0; i--) {
                 *output++ = mailGetMailIDInMailbox(i);
