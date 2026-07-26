@@ -48,7 +48,8 @@ typedef struct PSAppSRT {
     /* 0x30 */ u8 type;
     /* 0x31 */ u8 flags;
     /* 0x32 */ u16 refCount;
-    /* 0x34 */ u8 pad34[0x38];
+    /* 0x34 */ f32 matrix[3][4];
+    /* 0x64 */ u8 pad64[0x08];
     /* 0x6C */ void (*destroy)(struct PSAppSRT* appSRT);
     /* 0x70 */ u16 familyId;
     /* 0x72 */ u8 active;

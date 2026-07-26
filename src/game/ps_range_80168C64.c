@@ -135,6 +135,7 @@ extern u16 lbl_8047B114;
 extern u16 lbl_8047B116;
 extern u16 lbl_8047B120;
 extern u16 lbl_8047B11A;
+extern u8 lbl_80478C30;
 
 /* ======================================================================
  * External functions - real symbol names per config/GC6E01/symbols.txt.
@@ -185,6 +186,7 @@ extern void* fn_801A6928(s32 size);
 extern void __assert(const char* file, u32 line, const char* msg);
 extern void* memset(void* dst, s32 value, u32 size);
 extern void PSMTXIdentity(Mtx m);
+extern void PSMTXCopy(const Mtx source, Mtx destination);
 extern void PSMTXRotRad(Mtx m, char axis, f32 angle);
 extern void PSMTXConcat(const Mtx a, const Mtx b, Mtx out);
 extern void PSVECNormalize(const Vec* src, Vec* dst);
@@ -1744,6 +1746,29 @@ PSParticle* psInterpretParticle0(PSParticle* pp, PSParticle* parentCtx) {
 
     _psListGetNext(pp);
     return pp;
+}
+
+/*
+ * Refreshes the application SRT matrix before particle display. The remaining
+ * display-space composition is still asm-only; this verified prefix is the
+ * entry block at 0x8016CE2C.
+ */
+void psDispSubAppSRT(PSParticle* pp, Mtx parentMatrix) {
+    PSAppSRT* appSRT = (PSAppSRT*)pp->parentObj;
+    Mtx appMatrix;
+
+    if (appSRT->flags != lbl_80478C30) {
+        if (appSRT->type != 2) {
+            HSD_MtxSRT(appSRT->matrix, &appSRT->scaleX,
+                       &appSRT->translationX, &appSRT->rotationX, NULL);
+        }
+        if (appSRT->type == 1) {
+            appSRT->type = 2;
+        }
+    }
+
+    appSRT->flags = lbl_80478C30;
+    PSMTXCopy(appSRT->matrix, appMatrix);
 }
 
 /*
