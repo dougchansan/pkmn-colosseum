@@ -700,7 +700,22 @@ game/menu/menu_carde_matrix_candidate_8007D978.c:
 	.text       start:0x8007D978 end:0x8007FD64
 
 game/menu/cardesavedata.c:
-	.text       start:0x8007FD64 end:0x80084038
+	.text       start:0x8007FD64 end:0x80080ED8
+
+game/menu/cardesavedata_candidate_80080ED8_gc125.c:
+	.text       start:0x80080ED8 end:0x8008102C
+
+game/menu/cardesavedata_candidate_8008102C_gc125.c:
+	.text       start:0x8008102C end:0x80082650
+
+game/menu/cardesavedata_candidate_80082650.c:
+	.text       start:0x80082650 end:0x80082960
+
+game/menu/cardesavedata_candidate_80082960_gc125.c:
+	.text       start:0x80082960 end:0x80082A88
+
+game/menu/cardesavedata_candidate_80082A88.c:
+	.text       start:0x80082A88 end:0x80084038
 
 game/menu/cardesavedata_80084038.c:
 	.text       start:0x80084038 end:0x80088428
@@ -2394,7 +2409,13 @@ game/gs_res.c:
 	.text       start:0x800F9318 end:0x800F96E4
 
 game/gs_msg.c:
-	.text       start:0x800F96E4 end:0x800FE35C
+	.text       start:0x800F96E4 end:0x800FA280
+
+game/gs_msg_candidate_800FA280_gc125.c:
+	.text       start:0x800FA280 end:0x800FA314
+
+game/gs_msg_candidate_800FA314.c:
+	.text       start:0x800FA314 end:0x800FE35C
 
 game/gs_thread_hi_range_800FE35C.c:
 	.text       start:0x800FE35C end:0x800FE6DC
@@ -3977,7 +3998,16 @@ hsd/hsd_initialize_candidate_8019C7B8.c:
 	.text       start:0x8019C7B8 end:0x8019CE50
 
 hsd/hsd_jobj.c:
-	.text       start:0x8019CE50 end:0x8019F718
+	.text       start:0x8019CE50 end:0x8019DD00
+
+hsd/hsd_jobj_candidate_8019DD00_gc125.c:
+	.text       start:0x8019DD00 end:0x8019E460
+
+hsd/hsd_jobj_candidate_8019E460_gc125.c:
+	.text       start:0x8019E460 end:0x8019F01C
+
+hsd/hsd_jobj_candidate_8019F01C.c:
+	.text       start:0x8019F01C end:0x8019F718
 
 hsd/hsd_jobj_exact_8019F718.c:
 	.text       start:0x8019F718 end:0x8019FF74
@@ -4211,7 +4241,10 @@ hsd/hsd_texp_candidate_801B4614_gc20.c:
 	.text       start:0x801B4614 end:0x801B4B5C
 
 hsd/hsd_texp_candidate_801B4B5C.c:
-	.text       start:0x801B4B5C end:0x801B750C
+	.text       start:0x801B4B5C end:0x801B50C0
+
+hsd/hsd_texp_candidate_801B4B5C_candidate_801B50C0.c:
+	.text       start:0x801B50C0 end:0x801B750C
 
 hsd/hsd_texp_candidate_801B750C_gc20.c:
 	.text       start:0x801B750C end:0x801B7BD4
@@ -4439,7 +4472,22 @@ game/wazaViewer_candidate_801D7464.c:
 	.text       start:0x801D7464 end:0x801D7E58
 
 game/wazaSequenceEntry.c:
-	.text       start:0x801D7E58 end:0x801D9E1C
+	.text       start:0x801D7E58 end:0x801D87B0
+
+game/wazaSequenceEntry_candidate_801D87B0_gc125.c:
+	.text       start:0x801D87B0 end:0x801D8B38
+
+game/wazaSequenceEntry_candidate_801D8B38_gc125.c:
+	.text       start:0x801D8B38 end:0x801D91EC
+
+game/wazaSequenceEntry_candidate_801D91EC_gc125.c:
+	.text       start:0x801D91EC end:0x801D97F0
+
+game/wazaSequenceEntry_candidate_801D97F0.c:
+	.text       start:0x801D97F0 end:0x801D9C1C
+
+game/wazaSequenceEntry_candidate_801D9C1C_gc125.c:
+	.text       start:0x801D9C1C end:0x801D9E1C
 
 game/wazaSequenceSys.c:
 	.text       start:0x801D9E1C end:0x801DAC90
