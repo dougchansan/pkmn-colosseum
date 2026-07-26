@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196100,
     "total_functions": 8603,
-    "total_units": 2045
+    "total_units": 2046
   },
   "topology_status": {
     "auto_units": 68,
-    "named_units": 1977,
-    "source_backed_units": 1971,
+    "named_units": 1978,
+    "source_backed_units": 1972,
     "auto_code": 0,
     "auto_data": 57687,
     "auto_functions": 0
@@ -23,7 +23,7 @@
     "matched_data_percent": 97.28669,
     "matched_functions": 6569,
     "matched_functions_percent": 76.357086,
-    "fuzzy_match_percent": 71.11655
+    "fuzzy_match_percent": 71.17365
   },
   "unit_topology": [
     {
@@ -5246,13 +5246,26 @@
       "sections": [
         {
           "name": ".text",
-          "size": 1080,
+          "size": 708,
           "virtual_address": 2148153976
         }
       ],
-      "total_code": 1080,
+      "total_code": 708,
       "total_data": 0,
-      "total_functions": 13
+      "total_functions": 12
+    },
+    {
+      "name": "main/dolphin/sdk_candidate_800A3D3C",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 372,
+          "virtual_address": 2148154684
+        }
+      ],
+      "total_code": 372,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/dolphin/dvd/DVDLowInitWA",

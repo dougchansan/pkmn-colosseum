@@ -1176,7 +1176,10 @@ dolphin/sdk_exact_800A3874.c:
 	.text       start:0x800A3874 end:0x800A3A78
 
 dolphin/sdk_candidate_800A3A78.c:
-	.text       start:0x800A3A78 end:0x800A3EB0
+	.text       start:0x800A3A78 end:0x800A3D3C
+
+dolphin/sdk_candidate_800A3D3C.c:
+	.text       start:0x800A3D3C end:0x800A3EB0
 
 dolphin/dvd/DVDLowInitWA.c:
 	.text       start:0x800A3EB0 end:0x800A3EF0

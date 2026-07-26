@@ -333,6 +333,7 @@ void C_MTXLightPerspective(Mtx m, f32 fovY, f32 aspect, f32 scaleS, f32 scaleT,
 #endif
 
 #if defined(SDK_800A37CC_SUFFIX_ACTIVE)
+#if !defined(SDK_CQUATSLERP_ONLY)
 void PSMTXMultVec(const Mtx m, const Vec* src, Vec* dst)
 {
     const f64* mPairs = (const f64*)m;
@@ -649,7 +650,9 @@ void C_QUATRotAxisRad(Quaternion* quat, const Vec* axis, f32 rad)
     quat->w = cosHalf;
 }
 #pragma dont_inline reset
+#endif
 
+#if !defined(SDK_CQUATSLERP_EXCLUDE)
 void C_QUATSlerp(const Quaternion* p, const Quaternion* q, Quaternion* r, f32 t)
 {
     extern f32 acosf(f32 x);
@@ -686,4 +689,5 @@ void C_QUATSlerp(const Quaternion* p, const Quaternion* q, Quaternion* r, f32 t)
     r->z = pScale * p->z + qScale * q->z;
     r->w = pScale * p->w + qScale * q->w;
 }
+#endif
 #endif

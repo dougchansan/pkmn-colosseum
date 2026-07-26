@@ -3072,6 +3072,13 @@ config.libs = [
                 progress_category="sdk",
             ),
             Object(
+                CodeCandidate,
+                "dolphin/sdk_candidate_800A3D3C.c",
+                mw_version="GC/1.2.5n",
+                extra_cflags=["-fp_contract off"],
+                progress_category="sdk",
+            ),
+            Object(
                 Matching,
                 "dolphin/dvd/dvdfs_range_800A4D28.c",
                 mw_version="GC/1.2.5n",
