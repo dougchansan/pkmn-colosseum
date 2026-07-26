@@ -593,8 +593,14 @@ game/menu/menuCB_prefix_80055E38.c:
 game/menu/menuCB_exact_80056A80.c:
 	.text       start:0x80056A80 end:0x80056B74
 
-game/menu/menuCB_suffix_80056B74.c:
-	.text       start:0x80056B74 end:0x80057538
+game/menu/menuCB_r56b_80056B74_prefix.c:
+	.text       start:0x80056B74 end:0x80057144
+
+game/menu/menuCB_r56b_80057144_o1.c:
+	.text       start:0x80057144 end:0x80057270
+
+game/menu/menuCB_r56b_80057270_suffix.c:
+	.text       start:0x80057270 end:0x80057538
 
 game/menu/menuCB_suffix_80056B74_r41_80057538_gc125n.c:
 	.text       start:0x80057538 end:0x80057694
@@ -888,8 +894,14 @@ game/menu/menu_middle_r47_prefix.c:
 game/menu/menu_middle_r47_80070D84_o2.c:
 	.text       start:0x80070D84 end:0x8007109C
 
-game/menu/menu_range_8007109C.c:
-	.text       start:0x8007109C end:0x80073E8C
+game/menu/menu_r56b_8007109C_prefix.c:
+	.text       start:0x8007109C end:0x80071398
+
+game/menu/menu_r56b_80071398_o1.c:
+	.text       start:0x80071398 end:0x800714C8
+
+game/menu/menu_r56b_800714C8_suffix.c:
+	.text       start:0x800714C8 end:0x80073E8C
 
 game/menu/menu_candidate_80073E8C_gc20.c:
 	.text       start:0x80073E8C end:0x80074324
@@ -2801,8 +2813,14 @@ game/gs_thread_hi_range_800F8268.c:
 game/gs_res.c:
 	.text       start:0x800F9318 end:0x800F96E4
 
-game/gs_msg.c:
-	.text       start:0x800F96E4 end:0x800FA280
+game/gs_msg_r56b_800F96E4_prefix.c:
+	.text       start:0x800F96E4 end:0x800F9EE4
+
+game/gs_msg_r56b_800F9EE4_o2.c:
+	.text       start:0x800F9EE4 end:0x800FA064
+
+game/gs_msg_r56b_800FA064_suffix.c:
+	.text       start:0x800FA064 end:0x800FA280
 
 game/gs_msg_candidate_800FA280_gc125.c:
 	.text       start:0x800FA280 end:0x800FA314
@@ -5344,8 +5362,11 @@ game/wazaSequenceEntry_candidate_801D8B38_gc125.c:
 game/wazaSequenceEntry_candidate_801D91EC_gc125.c:
 	.text       start:0x801D91EC end:0x801D97F0
 
-game/wazaSequenceEntry_candidate_801D97F0.c:
-	.text       start:0x801D97F0 end:0x801D9C1C
+game/wazaSequenceEntry_r56b_801D97F0_o1.c:
+	.text       start:0x801D97F0 end:0x801D9950
+
+game/wazaSequenceEntry_r56b_801D9950_suffix.c:
+	.text       start:0x801D9950 end:0x801D9C1C
 
 game/wazaSequenceEntry_candidate_801D9C1C_gc125.c:
 	.text       start:0x801D9C1C end:0x801D9E1C
