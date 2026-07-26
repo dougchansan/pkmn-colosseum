@@ -1,3 +1,4 @@
+/* Score instrumentation only; not evidence of a retail TU boundary. */
 /**
  * @file fight_trainer_ai_waza_hit_candidate_80256ED0.c
  * @brief Candidate fightTrainerAiWazaHit.cpp range, 0x80256ED0 - 0x802570D0.
