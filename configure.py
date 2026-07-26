@@ -1777,6 +1777,7 @@ config.libs = [
                 CodeCandidate,
                 "game/fight_pokemon_candidate_801FE168_gc20.c",
                 mw_version="GC/2.0",
+                cflags=["-O1" if flag == "-O4,p" else flag for flag in cflags_base],
                 extra_cflags=[
                     "-O1",
                     "-use_lmw_stmw on",
@@ -1859,9 +1860,9 @@ config.libs = [
                 CodeCandidate,
                 "game/fight_pokemon_candidate_802010C8.c",
                 mw_version="GC/1.3",
-                cflags=["-O2" if flag == "-O4,p" else flag for flag in cflags_base],
+                cflags=["-O1" if flag == "-O4,p" else flag for flag in cflags_base],
                 extra_cflags=[
-                    "-O2",
+                    "-O1",
                     "-use_lmw_stmw on",
                     "-sdata 8",
                     "-sdata2 8",
@@ -3183,7 +3184,7 @@ config.libs = [
                 CodeCandidate,
                 "game/menu/cardesavedata_candidate_80082960_gc125.c",
                 mw_version="GC/1.2.5n",
-                cflags=["-O1" if flag == "-O4,p" else flag for flag in cflags_base],
+                cflags=["-O3" if flag == "-O4,p" else flag for flag in cflags_base],
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
