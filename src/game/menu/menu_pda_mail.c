@@ -1634,6 +1634,32 @@ extern const s32 lbl_80267250[10];
 extern const s32 lbl_80267228[10];
 extern const s32 lbl_80267200[10];
 
+static inline s32 pdaMailFindTableEntry(const s32* table, s32 value)
+{
+    if (value == table[0]) {
+        return 0;
+    } else if (value == table[1]) {
+        return 1;
+    } else if (value == table[2]) {
+        return 2;
+    } else if (value == table[3]) {
+        return 3;
+    } else if (value == table[4]) {
+        return 4;
+    } else if (value == table[5]) {
+        return 5;
+    } else if (value == table[6]) {
+        return 6;
+    } else if (value == table[7]) {
+        return 7;
+    } else if (value == table[8]) {
+        return 8;
+    } else if (value == table[9]) {
+        return 9;
+    }
+    return 10;
+}
+
 u32 fn_8004C6C0(u8* context, u8* object)
 {
     s32 table[10];
@@ -1649,8 +1675,7 @@ u32 fn_8004C6C0(u8* context, u8* object)
     }
     page = fn_80103E68(10) >> 16;
     value = *(s16*)(object + 6);
-    for (index = 0; index < 10 && value != table[index]; index++) {
-    }
+    index = pdaMailFindTableEntry(table, value);
     if (index >= 10) {
         return 0;
     }
@@ -1693,8 +1718,7 @@ u32 fn_8004C8AC(u8* context, u8* object)
     }
     page = fn_80103E68(10) >> 16;
     value = *(s16*)(object + 6);
-    for (index = 0; index < 10 && value != table[index]; index++) {
-    }
+    index = pdaMailFindTableEntry(table, value);
     if (index >= 10) {
         return 0;
     }
@@ -1737,8 +1761,7 @@ u32 fn_8004CA98(u8* context, u8* object)
     }
     page = fn_80103E68(10) >> 16;
     value = *(s16*)(object + 6);
-    for (index = 0; index < 10 && value != table[index]; index++) {
-    }
+    index = pdaMailFindTableEntry(table, value);
     if (index >= 10) {
         return 0;
     }
@@ -1768,8 +1791,7 @@ u32 fn_8004CC38(u8* context, u8* object)
     }
     page = fn_80103E68(10) >> 16;
     value = *(s16*)(object + 6);
-    for (index = 0; index < 10 && value != table[index]; index++) {
-    }
+    index = pdaMailFindTableEntry(table, value);
     if (index >= 10) {
         return 0;
     }
@@ -1799,8 +1821,7 @@ u32 fn_8004CDD8(u8* context, u8* object)
     }
     page = fn_80103E68(10) >> 16;
     value = *(s16*)(object + 6);
-    for (index = 0; index < 10 && value != table[index]; index++) {
-    }
+    index = pdaMailFindTableEntry(table, value);
     if (index >= 10) {
         return 0;
     }
