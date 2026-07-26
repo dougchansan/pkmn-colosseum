@@ -41,6 +41,8 @@ found:
             *p = (*p & ~0x03FFFFFC) | (x & 0x03FFFFFC);
             break;
         case 3:
+            *(u16*)p = x & 0xFFFF;
+            break;
         case 4:
             *(u16*)p = x & 0xFFFF;
             break;
