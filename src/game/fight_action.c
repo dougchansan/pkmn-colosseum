@@ -124,33 +124,33 @@ u32 fightActionFlowSyuuryouPost(void* action)
 
 {
     extern int fn_8006B0F8();
-    extern s8 fn_8006B57C();
-    extern s8 pokemonIsDarkPokemon();
-    extern s8 pokemonCheckFightOut();
+    extern u8 fn_8006B57C();
+    extern u8 pokemonIsDarkPokemon();
+    extern u8 pokemonCheckFightOut();
     extern void pokemonEvolutionAll();
     extern u32 pokemonEvolutionCheck();
     extern int savedataGetStatus();
     extern void heroCheckSetMonohiroiAllTemotiPokemon();
     extern u32 heroGetStatus();
     extern void heroBiosCopy();
-    extern short fn_801EF634();
+    extern u16 fn_801EF634();
     extern void fn_801EFFC4();
-    extern s8 fightFloorIsGcHeroWin();
+    extern u8 fightFloorIsGcHeroWin();
     extern int fightFloorGetGcHeroFightTrainerPtr();
     extern int fightFloorGetValidFightSidePtr();
     extern u32 fightFloorGetStatus();
     extern int fightSideGetValidFightTrainerPtr();
     extern void fightTrainerBackFightPokemonToTemotiPokemon();
-    extern s8 fightTrainerCheckCanGetExp();
+    extern u8 fightTrainerCheckCanGetExp();
     extern int fightTrainerCheckTemotiPokemonFightEntry();
     extern int fightTrainerGetStatus();
     extern u32 fightPokemonCheckFightOut();
   u32 uVar1;
-  short sVar6;
+  u16 sVar6;
   int iVar2;
   int iVar3;
   u32 uVar4;
-  s8 cVar7;
+  u8 cVar7;
   int iVar5;
   u16 uVar9;
   u32 uVar8;
@@ -1314,19 +1314,19 @@ void _fightActionFlowKaisiNyuujouPokemonSubAppearMsg__FP13FIGHT_TRAINERP15FightO
 {
     extern void msgctrlSetValue();
     extern u32 fn_801F18DC();
-    extern int fn_801F8000();
+    extern u32 fn_801F8000();
     extern u32 fightOutPokemonIsGcHeroFightOutPokemon();
     extern u32 fightOutPokemonGetPokemonPtr();
     extern void fightMenuOpenMsg();
     u32 pokemonName;
     u32 isHero;
     u32 playerFlag;
-    int trainerKind;
+    u32 trainerKind;
 
     isHero = fightOutPokemonIsGcHeroFightOutPokemon(fightOutPokemon);
-    isHero = __cntlzw(1 - (isHero & 0xff)) >> 5;
+    isHero = (u32)__cntlzw(1 - (isHero & 0xff)) >> 5;
     playerFlag = fn_801F18DC(0);
-    playerFlag = __cntlzw(1 - (playerFlag & 0xff)) >> 5;
+    playerFlag = (u32)__cntlzw(1 - (playerFlag & 0xff)) >> 5;
     trainerKind = fn_801F8000(trainer);
     if ((trainerKind == 0) && ((isHero & 0xff) == 0)) {
         playerFlag = 1;

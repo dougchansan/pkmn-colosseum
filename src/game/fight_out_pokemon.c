@@ -1542,17 +1542,17 @@ void _fightOutPokemonCheckFightActionSelectSub__FP15FightOutPokemonUsUs(void* pa
 
 /* Address: 0x802062FC | Size: 0x30c | Ghidra import */
 
-u8 fightOutPokemonCheckFightOut(int r3)
+u8 fightOutPokemonCheckFightOut(void* r3)
 
 {
-    extern s8 pokemonCheckFightOut();
-    extern s8 pokemonCheckValid();
-    extern short fn_801EF634();
+    extern u8 pokemonCheckFightOut();
+    extern u8 pokemonCheckValid();
+    extern u16 fn_801EF634();
   u32 bVar1;
   int iVar2;
-  short sVar4;
+  u16 sVar4;
   int iVar3;
-  s8 cVar5;
+  u8 cVar5;
   u8 uVar6;
 
   if (r3 == 0) {
@@ -1862,7 +1862,7 @@ u8 fightOutPokemonCheckValid(void* p1) {
 
 /* Address: 0x802068C8 | Size: 0x13c | Ghidra import */
 
-void fightOutPokemonCreate(int r3,int r4,int r5)
+void fightOutPokemonCreate(void* r3, void* r4, void* r5)
 
 {
     extern u32 pokemonGetTokuseiDataId();

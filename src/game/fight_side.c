@@ -154,7 +154,7 @@ void fightSideInitJoutaiDataId(u32 param_1, u32 param_2) {
 #if defined(FIGHT_SIDE_801F6F38_801F7258)
 
 /* 0x801F6F38 | size: 0x9C | medium */
-s16 fightSideGetHikaeFightPokemonNum(u32 param_1, u32 param_2, u32 param_3, u32 param_4) {
+u16 fightSideGetHikaeFightPokemonNum(u32 param_1, u32 param_2, u32 param_3, u32 param_4) {
     extern u32 fightSideBiosGetFightTrainerPtr(u32, u32);
     extern s16 fightTrainerGetHikaeFightPokemonNum(u32, u32, u32);
     extern u8 fightTrainerCheckValid(u32);
@@ -344,7 +344,7 @@ u32 fightSideGetValidFightTrainerPtr(u32 param_1) {
 #if defined(FIGHT_SIDE_801F72B0_801F7388)
 
 /* 0x801F72B0 | size: 0xD8 | medium */
-void fightSideGetFightTrainerGridParam(u32 param_1, u16 param_2, u16 param_3, s8* param_4, u8* param_5) {
+void fightSideGetFightTrainerGridParam(u32 param_1, u16 param_2, u16 param_3, s8* param_4, s8* param_5) {
     extern u32 fightSideDataBiosGetPtr(u32);
     extern u16 fightSideDataBiosGetYrot(u32);
     u32 uVar1;

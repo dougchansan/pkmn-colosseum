@@ -625,15 +625,18 @@ u8 peopleWaitSyncMotionBlend(u32 groupId, u32 index, u8 wait) {
         return 0;
     }
     model = peopleGetModel(entry);
-    if (model == NULL || entry->syncMotion == lbl_8047D79C) {
+    if (model == NULL) {
         return 0;
     }
-    if (wait == 0) {
-        return 1;
+    if (entry->syncMotion == lbl_8047D79C) {
+        return 0;
     }
     for (;;) {
         if (entry->syncMotion == lbl_8047D79C) {
             return 0;
+        }
+        if (wait == 0) {
+            break;
         }
         if (*(s32*)((u8*)model + 0x8C) == 1) {
             GSlogWrite((const char*)lbl_80274008,
@@ -642,6 +645,7 @@ u8 peopleWaitSyncMotionBlend(u32 groupId, u32 index, u8 wait) {
         }
         _threadSwitch();
     }
+    return 1;
 }
 #endif
 
@@ -1213,7 +1217,10 @@ s32 peopleAddWalkList(u32 groupId, u32 index, f32 x, f32 y, f32 z) {
     PeopleEntry* entry;
 
     entry = peopleFindBySelf(peopleFindSelf(groupId, index));
-    if (entry == NULL || entry->walkList == NULL) {
+    if (entry == NULL) {
+        return 0;
+    }
+    if (entry->walkList == NULL) {
         return 0;
     }
     if (entry->walkListCount >= entry->walkListCapacity) {
@@ -3029,11 +3036,17 @@ void fn_8018CB5C(u32 groupId, u32 index) {
     s32 result;
 
     entry = peopleFindBySelf(peopleFindSelf(groupId, index));
-    if (entry == NULL || entry->shadowId >= 0) {
+    if (entry == NULL) {
+        return;
+    }
+    if (entry->shadowId >= 0) {
         return;
     }
     info = peopleInfoBiosGetPtr(entry->scriptRef);
-    if (info == NULL || fn_8018F5FC(info) != 1) {
+    if (info == NULL) {
+        return;
+    }
+    if (fn_8018F5FC(info) != 1) {
         return;
     }
     query.groupId = groupId;
@@ -3255,13 +3268,17 @@ void fn_8018F08C(PeopleEntry* original, u32 motionIndex) {
         return;
     }
     fn_8018F4C8(info, (u8)original->motionIndex, &animIndex, &loop);
-    if (animIndex == -1 || animIndex < 0) {
+    if (animIndex < 0) {
         return;
     }
     groupId = original->groupId;
     index = original->index;
     entry = peopleFindBySelf(peopleFindSelf(groupId, index));
-    if (entry == NULL || (model = peopleGetModel(entry)) == NULL) {
+    if (entry == NULL) {
+        return;
+    }
+    model = peopleGetModel(entry);
+    if (model == NULL) {
         return;
     }
     restart = 0;
