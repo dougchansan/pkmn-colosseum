@@ -609,8 +609,8 @@ void GSlightPopState(u8* obj, u8* snapshot) {
     HSD_LObjSetPosition(*(void**)(obj + 0xc), snapshot + 4);
     HSD_LObjSetInterest(*(void**)(obj + 0xc), snapshot + 0x10);
 
+    GSlightSetAnimIndexInline(obj, *(u32*)(snapshot + 0x1c));
     if (obj[2]) {
-        GSlightSetAnimIndexInline(obj, *(u32*)(snapshot + 0x1c));
         *(f32*)(obj + 0x68) = *(f32*)(snapshot + 0x20);
         speed = *(f32*)(snapshot + 0x24);
         if (fn_800D37CC() == 0x32) {
