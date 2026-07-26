@@ -830,38 +830,39 @@ void fn_80168284(void)
     u8 capacity;
     GSFilter* filter;
 
-    if (lbl_804526E0.count == 0 || lbl_804526E0.drawingCount == 0) {
-        return;
-    }
-    capacity = lbl_804526E0.capacity;
-    filter = lbl_804526E0.filters;
-    fn_800D88DC(1);
-    fn_800D888C(6);
-    fn_800D9B58(lbl_8047D5A0, lbl_8047D5A0, lbl_8047D5A4,
-                lbl_8047D5A8);
-    fn_800DA4C4(1, 6, 7);
-    fn_800DA2BC(1, 1, 0);
-    fn_800DA100(0, 7, 0, 0, 7, 0);
-    fn_800DA1E8(1, 1, 1);
-    fn_800D9ED8(1);
-    fn_800DA028(0);
-    fn_800D7820(lbl_804526E0.renderState);
-    fn_800D6A00(6);
-    fn_800D67BC(lbl_804526E0.drawingCount * 4);
-    for (index = 0; index < capacity; index++, filter++) {
-        if (filter->drawing != 0) {
-            fn_800D5FA4(0);
-            fn_800D5A38(0, index);
-            fn_800D5FA4(1);
-            fn_800D5A38(0, index);
-            fn_800D5FA4(2);
-            fn_800D5A38(0, index);
-            fn_800D5FA4(3);
-            fn_800D5A38(0, index);
+    if (lbl_804526E0.count != 0) {
+        if (lbl_804526E0.drawingCount != 0) {
+            capacity = lbl_804526E0.capacity;
+            filter = lbl_804526E0.filters;
+            fn_800D88DC(1);
+            fn_800D888C(6);
+            fn_800D9B58(lbl_8047D5A0, lbl_8047D5A0, lbl_8047D5A4,
+                        lbl_8047D5A8);
+            fn_800DA4C4(1, 6, 7);
+            fn_800DA2BC(1, 1, 0);
+            fn_800DA100(0, 7, 0, 0, 7, 0);
+            fn_800DA1E8(1, 1, 1);
+            fn_800D9ED8(1);
+            fn_800DA028(0);
+            fn_800D7820(lbl_804526E0.renderState);
+            fn_800D6A00(6);
+            fn_800D67BC(lbl_804526E0.drawingCount * 4);
+            for (index = 0; index < capacity; index++, filter++) {
+                if (filter->drawing != 0) {
+                    fn_800D5FA4(0);
+                    fn_800D5A38(0, index);
+                    fn_800D5FA4(1);
+                    fn_800D5A38(0, index);
+                    fn_800D5FA4(2);
+                    fn_800D5A38(0, index);
+                    fn_800D5FA4(3);
+                    fn_800D5A38(0, index);
+                }
+            }
+            fn_800D6728();
+            fn_800D9ED8(0);
         }
     }
-    fn_800D6728();
-    fn_800D9ED8(0);
 }
 
 void* fn_8016824C(u32 size)
