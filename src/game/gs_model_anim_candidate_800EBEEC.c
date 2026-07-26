@@ -10,7 +10,7 @@ void _modelSetRotateEulerToQuatAll__FP9_HSD_JObj(HSD_JObj* jobj)
         return;
     }
     fn_8019FE8C(jobj, JOBJ_USE_QUATERNION);
-    if (jobj->flags & 0x00080000) {
+    if (jobj->flags & JOBJ_INSTANCE) {
         return;
     }
     for (child = jobj->child; child != NULL; child = child->next) {

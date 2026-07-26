@@ -25,8 +25,8 @@ extern void LCEnable(void);
 
 void GSscratchSetValid(void)
 {
-    GSscratchAllocation *allocation;
     s32 count;
+    GSscratchAllocation *allocation;
 
     if (lbl_8047ABE8 != 0) {
         allocation = lbl_804018F0;
@@ -47,8 +47,8 @@ void GSscratchSetValid(void)
 
 void GSscratchSetInvalid(void)
 {
-    GSscratchAllocation *allocation;
     s32 count;
+    GSscratchAllocation *allocation;
 
     if (lbl_8047ABE8 != 1) {
         allocation = lbl_804018F0;

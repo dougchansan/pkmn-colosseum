@@ -808,12 +808,16 @@ asm void GSmaterialCreate(void) {
 #else
 u8* GSmaterialCreate(void) {
     u32 count;
+    u32 i;
     u8* p;
     count = lbl_8047AB20;
     p = (u8*)lbl_8047AB1C;
-    for (; count != 0; count--) {
-        if (p[0] == 0) goto found;
-        p += 0x40;
+    for (i = 0; i < count; i++) {
+        if (p[0] != 0) {
+            p += 0x40;
+        } else {
+            goto found;
+        }
     }
     p = 0;
     found:
@@ -974,4 +978,3 @@ s32 _matGSmatObjLoad(u8* obj) {
     return r;
 }
 #endif
-

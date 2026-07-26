@@ -17,7 +17,7 @@ void _modelParseSetupInstanceMtx__FP5GSmtxP9_HSD_JObjP5GSmtx(
     if (child != NULL && HSD_JObjMtxIsDirty(child)) {
         fn_8019D9DC(child);
     }
-    fn_800A2EB4(child->matrix, dst);
+    fn_800A2EB4(jobj->child->matrix, dst);
     PSMTXConcat(jobj->matrix, dst, dst);
     if (parent != NULL) {
         PSMTXConcat(parent, dst, dst);

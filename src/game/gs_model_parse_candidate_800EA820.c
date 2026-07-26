@@ -23,7 +23,7 @@ void _modelParseJObjDispDObj__FP9_HSD_JObjP5GSmtx12HSD_TrspMaskbPFP9_HSD_PObjP5G
     if (passes == 0) {
         return;
     }
-    if (HSD_JObjMtxIsDirty(jobj)) {
+    if (jobj != NULL && HSD_JObjMtxIsDirty(jobj)) {
         fn_8019D9DC(jobj);
     }
     if (obj_mtx == NULL) {
