@@ -248,8 +248,17 @@ game/gs_pokemon_summary_r55_80017CB8_gc13_o4s.c:
 game/gs_pokemon_summary_r55_80017E8C_suffix.c:
 	.text       start:0x80017E8C end:0x800181C4
 
-game/menuPokemon.c:
-	.text       start:0x800181C4 end:0x8001C064
+game/menuPokemon_r57_800181C4_prefix.c:
+	.text       start:0x800181C4 end:0x80019B48
+
+game/menuPokemon_r57_80019B48_gc20p1_o4s.c:
+	.text       start:0x80019B48 end:0x80019D5C
+
+game/menuPokemon_r57_80019D5C_o1.c:
+	.text       start:0x80019D5C end:0x80019F6C
+
+game/menuPokemon_r57_80019F6C_suffix.c:
+	.text       start:0x80019F6C end:0x8001C064
 
 game/menuPokemon_candidate_8001C064.c:
 	.text       start:0x8001C064 end:0x8001C7B8
@@ -707,8 +716,14 @@ game/menu/menuCB_range_80063D14.c:
 game/menu/menuCB_range_exact_80064378.c:
 	.text       start:0x80064378 end:0x800643D4
 
-game/menu/menuCB_range_800643D4.c:
-	.text       start:0x800643D4 end:0x80065A48
+game/menu/menuCB_r57_800643D4_prefix.c:
+	.text       start:0x800643D4 end:0x80065628
+
+game/menu/menuCB_r57_80065628_o1.c:
+	.text       start:0x80065628 end:0x80065730
+
+game/menu/menuCB_r57_80065730_suffix.c:
+	.text       start:0x80065730 end:0x80065A48
 
 game/menu/menuCB_range_exact_80065A48.c:
 	.text       start:0x80065A48 end:0x800676EC
@@ -2393,8 +2408,14 @@ game/gs_light_exact_800DCC3C.c:
 game/gs_light_candidate_800DCC84.c:
 	.text       start:0x800DCC84 end:0x800DD270
 
-game/gs_log.c:
-	.text       start:0x800DD270 end:0x800DF028
+game/gs_log_r57_800DD270_prefix.c:
+	.text       start:0x800DD270 end:0x800DE09C
+
+game/gs_log_r57_800DE09C_o1.c:
+	.text       start:0x800DE09C end:0x800DE128
+
+game/gs_log_r57_800DE128_suffix.c:
+	.text       start:0x800DE128 end:0x800DF028
 
 game/gs_material.c:
 	.text       start:0x800DF028 end:0x800DF11C
@@ -2741,8 +2762,11 @@ game/gs_model_anim_suffix_exact_800EE044.c:
 game/gs_part.c:
 	.text       start:0x800EE150 end:0x800EE928
 
-game/gs_scratch.c:
-	.text       start:0x800EE928 end:0x800EEF48
+game/gs_scratch_r57_800EE928_prefix.c:
+	.text       start:0x800EE928 end:0x800EEDF8
+
+game/gs_scratch_r57_800EEDF8_o2.c:
+	.text       start:0x800EEDF8 end:0x800EEF48
 
 game/gs_texture_range_800EEF48.c:
 	.text       start:0x800EEF48 end:0x800EF098
@@ -4270,8 +4294,11 @@ game/ps_r54_80173F98_gc13_o2.c:
 game/ps_r54_8017424C_suffix.c:
 	.text       start:0x8017424C end:0x8017572C
 
-game/ps_generator_range_8017572C.c:
-	.text       start:0x8017572C end:0x80175F6C
+game/ps_generator_r57_8017572C_o1.c:
+	.text       start:0x8017572C end:0x801758D8
+
+game/ps_generator_r57_801758D8_suffix.c:
+	.text       start:0x801758D8 end:0x80175F6C
 
 game/gs_xfb_capture.c:
 	.text       start:0x80175F6C end:0x80176068
@@ -5350,8 +5377,11 @@ game/wazaViewer_candidate_801D7464.c:
 game/wazaSequenceEntry_r56_801D7E58_o1.c:
 	.text       start:0x801D7E58 end:0x801D81CC
 
-game/wazaSequenceEntry_r56_801D81CC_suffix.c:
-	.text       start:0x801D81CC end:0x801D87B0
+game/wazaSequenceEntry_r57_801D81CC_o1.c:
+	.text       start:0x801D81CC end:0x801D84F4
+
+game/wazaSequenceEntry_r57_801D84F4_suffix.c:
+	.text       start:0x801D84F4 end:0x801D87B0
 
 game/wazaSequenceEntry_candidate_801D87B0_gc125.c:
 	.text       start:0x801D87B0 end:0x801D8B38
