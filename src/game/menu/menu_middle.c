@@ -6981,16 +6981,15 @@ void fn_80070428(void* arg0, void* menu) {
     s16 state = MENU_MIDDLE_S16_0006(context)->unk_0006;
     u32 message;
 
-    if (state < 0xA28) {
-        if (state >= 0xA1D) {
-            message = MENU_MIDDLE_U32_004C(context)->unk_004C;
-            if (message != 0) {
-                value = GSmsgGetGSchar(message);
-                msgctrlSetValue(0x37, value);
-                fn_800FB680(0, 0, MENU_MIDDLE_U32_0064(context)->unk_0064, 0xE7);
-                MENU_MIDDLE_U32_004C(context)->unk_004C = 0;
-            }
-        }
+    if (state >= 0xA28 || state < 0xA1D) {
+        return;
+    }
+    message = MENU_MIDDLE_U32_004C(context)->unk_004C;
+    if (message != 0) {
+        value = GSmsgGetGSchar(message);
+        msgctrlSetValue(0x37, value);
+        fn_800FB680(0, 0, MENU_MIDDLE_U32_0064(context)->unk_0064, 0xE7);
+        MENU_MIDDLE_U32_004C(context)->unk_004C = 0;
     }
 }
 #pragma peephole reset
