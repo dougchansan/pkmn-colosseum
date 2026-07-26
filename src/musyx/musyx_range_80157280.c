@@ -4205,7 +4205,12 @@ typedef struct {
     u8 pad_11E[0x121 - 0x11E]; /* vGroup, studio, track */
     u8 midi;                   /* 0x121 */
     u8 midiSet;                /* 0x122 */
-    u8 pad_123[0x404 - 0x123];
+    u8 pad_123[0x1D6 - 0x123];
+    u8 pbLowerKeyRange;        /* 0x1D6 */
+    u8 pbUpperKeyRange;        /* 0x1D7 */
+    u8 pad_1D8[0x214 - 0x1D8];
+    u32 midiDirtyFlags;        /* 0x214 */
+    u8 pad_218[0x404 - 0x218];
 } SynthVoiceMini; /* offset-mirror of SYNTH_VOICE, stride 0x404 */
 #pragma pack()
 
@@ -7633,27 +7638,84 @@ void fn_8016039C(u8 chan, u8 midiSet, s32 flag) { /* inpSetGlobalMIDIDirtyFlag *
 
 extern void synthKeyStateUpdate(SynthVoiceMini* svoice);
 
-static void inpMirrorChannelDefault(u8 midi, u8 midiSet, u8 value) {
+static inline void inpSetRPNHi(u8 set, u8 channel, u8 value) {
     u32 i;
-    SynthVoiceMini* voice;
+    u16 rpn;
+    u8 range;
 
-    for (i = 0, voice = lbl_8047AF48; i < synthInfo.voiceNum; i++, voice++) {
-        if (voice->midiSet == midiSet && voice->midi == midi) {
-            ((u8*)voice)[0x1D7] = value;
-            ((u8*)voice)[0x1D6] = value;
+    rpn = lbl_80449590[set][channel][100] |
+          (lbl_80449590[set][channel][101] << 8);
+    switch (rpn) {
+    case 0:
+        range = value > 24 ? 24 : value;
+        lbl_8044D890[set][channel] = range;
+        for (i = 0; i < synthInfo.voiceNum; i++) {
+            if (set == lbl_8047AF48[i].midiSet &&
+                channel == lbl_8047AF48[i].midi) {
+                lbl_8047AF48[i].pbUpperKeyRange = range;
+                lbl_8047AF48[i].pbLowerKeyRange = range;
+            }
         }
+        break;
+    default:
+        break;
     }
 }
 
-static void inpDirtyLiveVoices(u8 midi, u8 midiSet) {
-    u32 i;
-    SynthVoiceMini* voice;
+static inline void inpSetRPNLo(u8 set, u8 channel, u8 value) {
+}
 
-    for (i = 0, voice = lbl_8047AF48; i < synthInfo.voiceNum; i++, voice++) {
-        if (voice->midiSet == midiSet && voice->midi == midi) {
-            *(u32*)((u8*)voice + 0x214) = 0x1FFF;
-            synthKeyStateUpdate(voice);
+static inline void inpSetRPNDec(u8 set, u8 channel) {
+    u32 i;
+    u16 rpn;
+    u8 range;
+
+    rpn = lbl_80449590[set][channel][100] |
+          (lbl_80449590[set][channel][101] << 8);
+    switch (rpn) {
+    case 0:
+        range = lbl_8044D890[set][channel];
+        if (range != 0) {
+            range--;
         }
+        lbl_8044D890[set][channel] = range;
+        for (i = 0; i < synthInfo.voiceNum; i++) {
+            if (set == lbl_8047AF48[i].midiSet &&
+                channel == lbl_8047AF48[i].midi) {
+                lbl_8047AF48[i].pbUpperKeyRange = range;
+                lbl_8047AF48[i].pbLowerKeyRange = range;
+            }
+        }
+        break;
+    default:
+        break;
+    }
+}
+
+static inline void inpSetRPNInc(u8 set, u8 channel) {
+    u32 i;
+    u16 rpn;
+    u8 range;
+
+    rpn = lbl_80449590[set][channel][100] |
+          (lbl_80449590[set][channel][101] << 8);
+    switch (rpn) {
+    case 0:
+        range = lbl_8044D890[set][channel];
+        if (range < 24) {
+            range++;
+        }
+        lbl_8044D890[set][channel] = range;
+        for (i = 0; i < synthInfo.voiceNum; i++) {
+            if (set == lbl_8047AF48[i].midiSet &&
+                channel == lbl_8047AF48[i].midi) {
+                lbl_8047AF48[i].pbUpperKeyRange = range;
+                lbl_8047AF48[i].pbLowerKeyRange = range;
+            }
+        }
+        break;
+    default:
+        break;
     }
 }
 
@@ -7661,74 +7723,61 @@ static void inpDirtyLiveVoices(u8 midi, u8 midiSet) {
 #pragma optimization_level 4
 #pragma optimizewithasm off
 void fn_801603C0(u8 ctrl, u8 channel, u8 set, u8 value) { /* inpSetMidiCtrl */
-    u8* ctrlBase;
-    u8 range;
+    u32 i;
 
     if (channel == 0xFF) {
         return;
     }
 
-    ctrlBase = (set != 0xFF) ? lbl_80449590[set][channel] : lbl_8044D910[channel];
-
-    switch (ctrl) {
-    case 6:
-        if (((ctrlBase[0x64] << 8) | ctrlBase[0x65]) == 0) {
-            range = value;
-            if (range > 0x18) {
-                range = 0x18;
-            }
-            if (set != 0xFF) {
-                lbl_8044D890[set][channel] = range;
-            } else {
-                lbl_8044FA90[channel] = range;
-            }
-            inpMirrorChannelDefault(channel, set, range);
-        }
-        break;
-    case 0x60:
-        if (((ctrlBase[0x64] << 8) | ctrlBase[0x65]) == 0) {
-            if (set != 0xFF) {
-                range = lbl_8044D890[set][channel];
-                if (range != 0) {
-                    range--;
-                }
-                lbl_8044D890[set][channel] = range;
-            } else {
-                range = lbl_8044FA90[channel];
-                if (range != 0) {
-                    range--;
-                }
-                lbl_8044FA90[channel] = range;
-            }
-            inpMirrorChannelDefault(channel, set, range);
-        }
-        break;
-    case 0x61:
-        if (((ctrlBase[0x64] << 8) | ctrlBase[0x65]) == 0) {
-            if (set != 0xFF) {
-                range = lbl_8044D890[set][channel];
-                if (range < 0x18) {
-                    range++;
-                }
-                lbl_8044D890[set][channel] = range;
-            } else {
-                range = lbl_8044FA90[channel];
-                if (range < 0x18) {
-                    range++;
-                }
-                lbl_8044FA90[channel] = range;
-            }
-            inpMirrorChannelDefault(channel, set, range);
-        }
-        break;
-    }
-
-    value &= 0x7F;
-    ctrlBase[ctrl] = value;
-    inpDirtyLiveVoices(channel, set);
-
     if (set != 0xFF) {
+        switch (ctrl) {
+        case 6:
+            inpSetRPNHi(set, channel, value);
+            break;
+        case 38:
+            inpSetRPNLo(set, channel, value);
+            break;
+        case 96:
+            inpSetRPNDec(set, channel);
+            break;
+        case 97:
+            inpSetRPNInc(set, channel);
+            break;
+        }
+
+        lbl_80449590[set][channel][ctrl] = value & 0x7F;
+        for (i = 0; i < synthInfo.voiceNum; i++) {
+            if (set == lbl_8047AF48[i].midiSet &&
+                channel == lbl_8047AF48[i].midi) {
+                lbl_8047AF48[i].midiDirtyFlags = 0x1FFF;
+                synthKeyStateUpdate(&lbl_8047AF48[i]);
+            }
+        }
         ((u32(*)[16])lbl_80449390)[set][channel] = 0xFF;
+    } else {
+        switch (ctrl) {
+        case 6:
+            inpSetRPNHi(set, channel, value);
+            break;
+        case 38:
+            inpSetRPNLo(set, channel, value);
+            break;
+        case 96:
+            inpSetRPNDec(set, channel);
+            break;
+        case 97:
+            inpSetRPNInc(set, channel);
+            break;
+        }
+
+        lbl_8044D910[channel][ctrl] = value & 0x7F;
+        for (i = 0; i < synthInfo.voiceNum; i++) {
+            if (set == lbl_8047AF48[i].midiSet &&
+                channel == lbl_8047AF48[i].midi) {
+                lbl_8047AF48[i].midiDirtyFlags = 0x1FFF;
+                synthKeyStateUpdate(&lbl_8047AF48[i]);
+            }
+        }
     }
 }
 #pragma pop
