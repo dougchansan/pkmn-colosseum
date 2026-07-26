@@ -64,10 +64,6 @@ extern const char lbl_8047D9F0[] __attribute__((section(".sdata2"))); /* "x" */
  * offset 0x78: MtxPtr envelope matrix
  * ======================================================================== */
 
-/* 0x80198038 | 0x5A8 */
-#pragma push
-#pragma optimization_level 0
-#pragma optimizewithasm off
 typedef struct DisplayFuncVec {
     f32 x;
     f32 y;
@@ -108,206 +104,236 @@ extern f32 lbl_80478ACC;
         (dst).z = (vz);                      \
     } while (0)
 
-#if 0
-asm void fn_80198038(void* dobj, void* mtx, void* renderState) {
-#include "src/hsd/hsd_displayfunc_fn_80198038.inc"
-}
-#else
-#pragma optimization_level 4
-void fn_80198038(void* dobj, void* mtx, void* renderState)
+inline s32 displayfunc_fpclassifyf(f32 value)
 {
-    DisplayFuncVec col0;
-    DisplayFuncVec col1;
-    DisplayFuncVec col1Work;
-    DisplayFuncVec col2;
-    DisplayFuncVec trans;
-    DisplayFuncVec basis;
-    DisplayFuncVec cross;
-    f32 col0Len;
-    f32 col1Len;
-    f32 col2Len;
-    f32 crossLen;
-    f32 denom;
-    f32 scale;
-    f32 horizLen;
-
-    DISPLAYFUNC_LOAD_COLUMN(col0, mtx, 0);
-    DISPLAYFUNC_LOAD_COLUMN(col1, mtx, 1);
-    DISPLAYFUNC_LOAD_COLUMN(col2, mtx, 2);
-    DISPLAYFUNC_LOAD_TRANSLATION(trans, mtx);
-
-    col0Len = PSVECMag(&col0);
-    col2Len = PSVECMag(&col2);
-    col1Len = PSVECMag(&col1);
-    col1Work = col1;
-
-    if (((HSD_DObj*) dobj)->flags & DISPLAYFUNC_FLAG_2000) {
-        scale = -1.0f / (lbl_80478ACC + PSVECMag(&trans));
-        PSVECScale(&trans, &basis, scale);
-    } else {
-        basis = lbl_802746D0;
+    switch (*(s32*) &value & 0x7F800000) {
+    case 0x7F800000:
+        if (*(s32*) &value & 0x007FFFFF) {
+            return 1;
+        }
+        return 2;
+    case 0:
+        if (*(s32*) &value & 0x007FFFFF) {
+            return 5;
+        }
+        return 3;
     }
-
-    scale = 1.0f / (lbl_80478ACC + col1Len);
-    PSVECScale(&col1Work, &col1Work, scale);
-    PSVECCrossProduct(&col1Work, &basis, &cross);
-    crossLen = PSVECMag(&cross);
-
-    if (crossLen >= lbl_80478ACC) {
-        col0Len /= crossLen;
-        PSVECCrossProduct(&basis, &cross, &col1Work);
-        col1Len /= lbl_80478ACC + PSVECMag(&col1Work);
-    } else {
-        DisplayFuncVec flat;
-
-        DISPLAYFUNC_SET_VEC(flat, basis.x, 0.0f, basis.z);
-        horizLen = PSVECMag(&flat);
-        denom = lbl_80478ACC + horizLen;
-        scale = -basis.y / denom;
-        DISPLAYFUNC_SET_VEC(col1Work, basis.x * scale, denom, basis.z * scale);
-        PSVECCrossProduct(&col1Work, &basis, &cross);
-        col0Len /= lbl_80478ACC + PSVECMag(&cross);
-    }
-
-    DISPLAYFUNC_STORE_COLUMN(renderState, 0, cross, col0Len);
-    DISPLAYFUNC_STORE_COLUMN(renderState, 1, col1Work, col1Len);
-    DISPLAYFUNC_STORE_COLUMN(renderState, 2, basis, col2Len);
-    DISPLAYFUNC_STORE_TRANSLATION(renderState, trans);
+    return 4;
 }
-#endif
-#pragma pop
 
-/* 0x801985E0 | 0x540 */
-#pragma push
-#pragma optimization_level 0
-#pragma optimizewithasm off
+inline f32 displayfunc_sqrtf(f32 value)
+{
+    if (value > 0.0F) {
+        f64 guess = __frsqrte(value);
+        guess = 0.5 * guess * (3.0 - value * (guess * guess));
+        guess = 0.5 * guess * (3.0 - value * (guess * guess));
+        guess = 0.5 * guess * (3.0 - value * (guess * guess));
+        return (f32) (value * guess);
+    }
+    if ((f64) value < 0.0) {
+        return lbl_80478AC0[0];
+    }
+    if (displayfunc_fpclassifyf(value) == 1) {
+        return lbl_80478AC0[0];
+    }
+    return value;
+}
+
+static inline f32 displayfuncMtxColMag(Mtx mtx, int col)
+{
+    return displayfunc_sqrtf(mtx[0][col] * mtx[0][col] +
+                             mtx[1][col] * mtx[1][col] +
+                             mtx[2][col] * mtx[2][col]);
+}
+
+/* 0x80198038 | 0x5A8 -- mkBillBoardMtx */
+void fn_80198038(HSD_JObj* jobj, Mtx src, Mtx dst)
+{
+    DisplayFuncVec x;
+    DisplayFuncVec y;
+    DisplayFuncVec z;
+    DisplayFuncVec position;
+    f32 sx;
+    f32 sy;
+    f32 sz;
+    f32 magnitude;
+
+    sx = displayfuncMtxColMag(src, 0);
+    sz = displayfuncMtxColMag(src, 2);
+    y.x = src[0][1];
+    y.y = src[1][1];
+    y.z = src[2][1];
+    sy = PSVECMag(&y);
+    position.x = src[0][3];
+    position.y = src[1][3];
+    position.z = src[2][3];
+
+    if (jobj->flags & DISPLAYFUNC_FLAG_2000) {
+        magnitude = PSVECMag(&position);
+        PSVECScale(&position, &z, -1.0F / (lbl_80478ACC + magnitude));
+    } else {
+        z = lbl_802746D0;
+    }
+
+    PSVECScale(&y, &y, 1.0F / (sy + lbl_80478ACC));
+    PSVECCrossProduct(&y, &z, &x);
+    magnitude = PSVECMag(&x);
+    if (magnitude >= lbl_80478ACC) {
+        sx /= magnitude;
+        PSVECCrossProduct(&z, &x, &y);
+        sy /= lbl_80478ACC + PSVECMag(&y);
+        dst[0][0] = sx * x.x;
+        dst[1][0] = sx * x.y;
+        dst[2][0] = sx * x.z;
+        dst[0][1] = sy * y.x;
+        dst[1][1] = sy * y.y;
+        dst[2][1] = sy * y.z;
+    } else {
+        DisplayFuncVec y2;
+        f32 scale;
+
+        magnitude = displayfunc_sqrtf(z.x * z.x + z.z * z.z);
+        scale = -z.y / (lbl_80478ACC + magnitude);
+        y2.x = z.x * scale;
+        y2.y = lbl_80478ACC + magnitude;
+        y2.z = z.z * scale;
+        PSVECCrossProduct(&y2, &z, &x);
+        sx /= lbl_80478ACC + PSVECMag(&x);
+        dst[0][0] = sx * x.x;
+        dst[1][0] = sx * x.y;
+        dst[2][0] = sx * x.z;
+        dst[0][1] = y2.x;
+        dst[1][1] = y2.y;
+        dst[2][1] = y2.z;
+    }
+
+    dst[0][2] = sz * z.x;
+    dst[1][2] = sz * z.y;
+    dst[2][2] = sz * z.z;
+    dst[0][3] = position.x;
+    dst[1][3] = position.y;
+    dst[2][3] = position.z;
+}
+
 extern void PSMTXCopy(void*, void*);
 extern void PSVECNormalize(void*, void*);
-#if 0
-asm void fn_801985E0(void* dobj, void* mtx, void* renderState) {
-#include "src/hsd/hsd_displayfunc_fn_801985E0.inc"
-}
-#else
-#pragma optimization_level 4
-void fn_801985E0(void* dobj, void* mtx, void* renderState)
+
+/* 0x801985E0 | 0x540 -- mkHBillBoardMtx */
+void fn_801985E0(HSD_JObj* jobj, Mtx src, Mtx dst)
 {
-    DisplayFuncVec col0;
-    DisplayFuncVec col0Unit;
-    DisplayFuncVec col1;
-    DisplayFuncVec col2;
-    DisplayFuncVec trans;
-    DisplayFuncVec basis;
-    DisplayFuncVec cross;
-    f32 col1Len;
-    f32 col2Len;
-    f32 crossLen;
-    f32 basisLen;
-    f32 denom;
-    f32 scale;
+    DisplayFuncVec position;
+    DisplayFuncVec x;
+    DisplayFuncVec x_unit;
+    DisplayFuncVec y;
+    DisplayFuncVec z;
+    f32 sy;
+    f32 sz;
+    f32 magnitude;
 
-    DISPLAYFUNC_LOAD_COLUMN(col0, mtx, 0);
-    DISPLAYFUNC_LOAD_COLUMN(col1, mtx, 1);
-    DISPLAYFUNC_LOAD_COLUMN(col2, mtx, 2);
-    DISPLAYFUNC_LOAD_TRANSLATION(trans, mtx);
+    position.x = src[0][3];
+    position.y = src[1][3];
+    position.z = src[2][3];
+    x.x = src[0][0];
+    x.y = src[1][0];
+    x.z = src[2][0];
+    magnitude = PSVECMag(&x);
+    PSVECScale(&x, &x_unit, 1.0F / (lbl_80478ACC + magnitude));
+    sy = displayfuncMtxColMag(src, 1);
+    sz = displayfuncMtxColMag(src, 2);
 
-    scale = 1.0f / (lbl_80478ACC + PSVECMag(&col0));
-    PSVECScale(&col0, &col0Unit, scale);
-    col1Len = PSVECMag(&col1);
-    col2Len = PSVECMag(&col2);
+    if (jobj->flags & DISPLAYFUNC_FLAG_2000) {
+        f32 horizontal;
+        f32 scale;
 
-    if (((HSD_DObj*) dobj)->flags & DISPLAYFUNC_FLAG_2000) {
-        DisplayFuncVec flat;
-
-        DISPLAYFUNC_SET_VEC(flat, trans.x, 0.0f, trans.z);
-        basisLen = PSVECMag(&flat);
-        denom = lbl_80478ACC + basisLen;
-        scale = -trans.y / denom;
-        DISPLAYFUNC_SET_VEC(basis, trans.x * scale, denom, trans.z * scale);
-        PSVECNormalize(&basis, &basis);
+        horizontal =
+            displayfunc_sqrtf(position.x * position.x + position.z * position.z);
+        scale = -position.y / (lbl_80478ACC + horizontal);
+        y.x = position.x * scale;
+        y.y = lbl_80478ACC + horizontal;
+        y.z = position.z * scale;
+        PSVECNormalize(&y, &y);
     } else {
-        DISPLAYFUNC_SET_VEC(basis, 0.0f, 1.0f, 0.0f);
+        y.x = 0.0F;
+        y.y = 1.0F;
+        y.z = 0.0F;
     }
 
-    PSVECCrossProduct(&col0Unit, &basis, &cross);
-    crossLen = PSVECMag(&cross);
-
-    if (crossLen >= lbl_80478ACC) {
-        col2Len /= crossLen;
-        PSVECCrossProduct(&cross, &col0Unit, &basis);
-        col1Len /= lbl_80478ACC + PSVECMag(&basis);
-
-        DISPLAYFUNC_STORE_COLUMN(renderState, 0, col0, 1.0f);
-        DISPLAYFUNC_STORE_COLUMN(renderState, 1, basis, col1Len);
-        DISPLAYFUNC_STORE_COLUMN(renderState, 2, cross, col2Len);
-        DISPLAYFUNC_STORE_TRANSLATION(renderState, trans);
+    PSVECCrossProduct(&x_unit, &y, &z);
+    magnitude = PSVECMag(&z);
+    if (magnitude < lbl_80478ACC) {
+        PSMTXCopy(src, dst);
     } else {
-        PSMTXCopy(mtx, renderState);
+        sz /= magnitude;
+        PSVECCrossProduct(&z, &x_unit, &y);
+        sy /= lbl_80478ACC + PSVECMag(&y);
+        dst[0][0] = x.x;
+        dst[1][0] = x.y;
+        dst[2][0] = x.z;
+        dst[0][1] = sy * y.x;
+        dst[1][1] = sy * y.y;
+        dst[2][1] = sy * y.z;
+        dst[0][2] = sz * z.x;
+        dst[1][2] = sz * z.y;
+        dst[2][2] = sz * z.z;
+        dst[0][3] = position.x;
+        dst[1][3] = position.y;
+        dst[2][3] = position.z;
     }
 }
-#endif
-#pragma pop
 
-/* 0x80198B20 | 0x42C */
-#pragma push
-#pragma optimization_level 0
-#pragma optimizewithasm off
-#if 0
-asm void fn_80198B20(void* dobj, void* mtx, void* renderState) {
-#include "src/hsd/hsd_displayfunc_fn_80198B20.inc"
-}
-#else
-#pragma optimization_level 4
-void fn_80198B20(void* dobj, void* mtx, void* renderState)
+/* 0x80198B20 | 0x42C -- mkVBillBoardMtx */
+void fn_80198B20(HSD_JObj* jobj, Mtx src, Mtx dst)
 {
-    DisplayFuncVec col0;
-    DisplayFuncVec col1;
-    DisplayFuncVec col1Unit;
-    DisplayFuncVec col2;
-    DisplayFuncVec trans;
-    DisplayFuncVec basis;
-    DisplayFuncVec cross;
-    f32 col0Len;
-    f32 col2Len;
-    f32 crossLen;
-    f32 basisLen;
-    f32 scale;
+    DisplayFuncVec position;
+    DisplayFuncVec y;
+    DisplayFuncVec y_unit;
+    DisplayFuncVec x;
+    DisplayFuncVec z;
+    f32 sx;
+    f32 sz;
+    f32 magnitude;
 
-    DISPLAYFUNC_LOAD_COLUMN(col1, mtx, 1);
-    DISPLAYFUNC_LOAD_COLUMN(col0, mtx, 0);
-    DISPLAYFUNC_LOAD_COLUMN(col2, mtx, 2);
-    DISPLAYFUNC_LOAD_TRANSLATION(trans, mtx);
+    position.x = src[0][3];
+    position.y = src[1][3];
+    position.z = src[2][3];
+    y.x = src[0][1];
+    y.y = src[1][1];
+    y.z = src[2][1];
+    magnitude = PSVECMag(&y);
+    PSVECScale(&y, &y_unit, 1.0F / (lbl_80478ACC + magnitude));
+    sx = displayfuncMtxColMag(src, 0);
+    sz = displayfuncMtxColMag(src, 2);
 
-    scale = 1.0f / (lbl_80478ACC + PSVECMag(&col1));
-    PSVECScale(&col1, &col1Unit, scale);
-    col0Len = PSVECMag(&col0);
-    col2Len = PSVECMag(&col2);
-
-    if (((HSD_DObj*) dobj)->flags & DISPLAYFUNC_FLAG_2000) {
-        scale = -1.0f / (lbl_80478ACC + PSVECMag(&trans));
-        PSVECScale(&trans, &basis, scale);
+    if (jobj->flags & DISPLAYFUNC_FLAG_2000) {
+        magnitude = PSVECMag(&position);
+        PSVECScale(&position, &z, -1.0F / (lbl_80478ACC + magnitude));
+        PSVECCrossProduct(&y_unit, &z, &x);
     } else {
-        basis = lbl_802746D0;
+        z = lbl_802746D0;
+        PSVECCrossProduct(&y_unit, &z, &x);
     }
 
-    PSVECCrossProduct(&col1Unit, &basis, &cross);
-    crossLen = PSVECMag(&cross);
-
-    if (crossLen >= lbl_80478ACC) {
-        col0Len /= crossLen;
-        PSVECCrossProduct(&cross, &col1Unit, &basis);
-        basisLen = PSVECMag(&basis);
-        col2Len /= lbl_80478ACC + basisLen;
-
-        DISPLAYFUNC_STORE_COLUMN(renderState, 0, cross, col0Len);
-        DISPLAYFUNC_STORE_COLUMN(renderState, 1, col1, 1.0f);
-        DISPLAYFUNC_STORE_COLUMN(renderState, 2, basis, col2Len);
-        DISPLAYFUNC_STORE_TRANSLATION(renderState, trans);
+    magnitude = PSVECMag(&x);
+    if (magnitude < lbl_80478ACC) {
+        PSMTXCopy(src, dst);
     } else {
-        PSMTXCopy(mtx, renderState);
+        sx /= magnitude;
+        PSVECCrossProduct(&x, &y_unit, &z);
+        sz /= lbl_80478ACC + PSVECMag(&z);
+        dst[0][0] = sx * x.x;
+        dst[1][0] = sx * x.y;
+        dst[2][0] = sx * x.z;
+        dst[0][1] = y.x;
+        dst[1][1] = y.y;
+        dst[2][1] = y.z;
+        dst[0][2] = sz * z.x;
+        dst[1][2] = sz * z.y;
+        dst[2][2] = sz * z.z;
+        dst[0][3] = position.x;
+        dst[1][3] = position.y;
+        dst[2][3] = position.z;
     }
 }
-#endif
-#pragma pop
 
 /* 0x80198F4C | 0x30 */
 #pragma push
@@ -421,48 +447,6 @@ void HSD_JObjMakePositionMtx(HSD_JObj* jobj, Mtx viewMtx, Mtx positionMtx) {
     }
 }
 #pragma pop
-
-inline s32 displayfunc_fpclassifyf(f32 value)
-{
-    switch (*(s32*) &value & 0x7F800000) {
-    case 0x7F800000:
-        if (*(s32*) &value & 0x007FFFFF) {
-            return 1;
-        }
-        return 2;
-    case 0:
-        if (*(s32*) &value & 0x007FFFFF) {
-            return 5;
-        }
-        return 3;
-    }
-    return 4;
-}
-
-inline f32 displayfunc_sqrtf(f32 value)
-{
-    if (value > 0.0F) {
-        f64 guess = __frsqrte(value);
-        guess = 0.5 * guess * (3.0 - value * (guess * guess));
-        guess = 0.5 * guess * (3.0 - value * (guess * guess));
-        guess = 0.5 * guess * (3.0 - value * (guess * guess));
-        return (f32) (value * guess);
-    }
-    if ((f64) value < 0.0) {
-        return lbl_80478AC0[0];
-    }
-    if (displayfunc_fpclassifyf(value) == 1) {
-        return lbl_80478AC0[0];
-    }
-    return value;
-}
-
-static inline f32 displayfuncMtxColMag(Mtx mtx, int col)
-{
-    return displayfunc_sqrtf(mtx[0][col] * mtx[0][col] +
-                             mtx[1][col] * mtx[1][col] +
-                             mtx[2][col] * mtx[2][col]);
-}
 
 void fn_80197C70(HSD_JObj* jobj, Mtx src, Mtx dst)
 {
