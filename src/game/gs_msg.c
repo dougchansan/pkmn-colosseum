@@ -860,13 +860,13 @@ void GSmsgSetFontInfo(void* obj) {
     u32 offset;
     u8* arr;
     u8* entry;
-    u16 val;
+    u32 val;
 
     o = (u8*)obj;
     head = (u8*)lbl_80478B08;
+    offset = 0;
     count = *(u16*)(head + 0x4);
     if ((s32)count <= 0) return;
-    offset = 0;
     do {
         arr = (u8*)*(u32*)(head + 0x24);
         entry = arr + offset;
