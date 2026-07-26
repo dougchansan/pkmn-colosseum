@@ -1798,11 +1798,6 @@ extern void GSmodelStartTexAnimation(void* model);
 extern u32 lbl_8047D200;
 extern u32 lbl_8047D204;
 extern u8 lbl_80272EA0[];
-#if 0
-asm u16 surfEffectStart(void) {
-#include "src/game/effect/effect_visual_surfEffectStart.inc"
-}
-#else
 u16 surfEffectStart(void* ptr) {
     u8* p;
     void* model;
@@ -1833,18 +1828,17 @@ u16 surfEffectStart(void* ptr) {
     *(u16*)(p + 0x1E) = *(u16*)(p + 0x4E) + 1;
     pointCount = *(u16*)(p + 0x1C) * *(u16*)(p + 0x1E);
     handle = _toolentryAlloc__FUl(pointCount * 0xC);
-    *(u16*)(p + 0x20) = handle;
     if (handle == 0) {
         GSlogWrite((const char*)lbl_80272EA0);
         return 0;
     }
 
+    *(u16*)(p + 0x20) = handle;
     *(void**)(p + 0x4) = fn_800E27B0(handle);
     memset(*(void**)(p + 0x4), 0, pointCount * 0xC);
     fn_8013BA98(p);
     return 1;
 }
-#endif
 extern void fn_800E09E8(void* dst, void* src, u32 count);
 extern u32 lbl_8047D208;
 #if 0
