@@ -1191,11 +1191,11 @@ void _errorTask_State_None_80187B24(s32 state)
     case -1:
         lbl_8047B0F0 = 9;
         break;
-    case 4:
-        lbl_8047B0F0 = 3;
-        break;
     case 5:
         lbl_8047B0F0 = 1;
+        break;
+    case 4:
+        lbl_8047B0F0 = 3;
         break;
     case 6:
         lbl_8047B0F0 = 5;
