@@ -4331,7 +4331,13 @@ hsd/hsd_pobj_r43_801AC1F8.c:
 	.text       start:0x801AC1F8 end:0x801AC4BC
 
 hsd/hsd_pobj_r43_suffix_801AC4BC.c:
-	.text       start:0x801AC4BC end:0x801ADD48
+	.text       start:0x801AC4BC end:0x801AD354
+
+hsd/hsd_pobj_r43_801AD354.c:
+	.text       start:0x801AD354 end:0x801AD61C
+
+hsd/hsd_pobj_r43_801AD61C.c:
+	.text       start:0x801AD61C end:0x801ADD48
 
 hsd/hsd_robj_range_801ADD48.c:
 	.text       start:0x801ADD48 end:0x801ADF54
