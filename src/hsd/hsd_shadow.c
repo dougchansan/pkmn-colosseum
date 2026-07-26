@@ -74,6 +74,62 @@ typedef struct HSDViewingRect {
     void* object;            /* 0x50 */
 } HSDViewingRect;
 
+typedef struct HSDShadowChan HSDShadowChan;
+
+struct HSDShadowChan {
+    HSDShadowChan* next;
+    s32 chan;
+    u32 flags;
+    GXColor amb_color;
+    GXColor mat_color;
+    u8 enable;
+    u8 pad_15[3];
+    s32 amb_src;
+    s32 mat_src;
+    s32 light_mask;
+    s32 diff_fn;
+    s32 attn_fn;
+    void* aobj;
+};
+
+typedef struct HSDShadowTevDesc {
+    struct HSDShadowTevDesc* next;
+    u32 flag;
+    u32 stage;
+    u32 coord;
+    u32 map;
+    u32 color;
+    u32 color_op;
+    u32 color_a;
+    u32 color_b;
+    u32 color_c;
+    u32 color_d;
+    u32 color_scale;
+    u32 color_bias;
+    u8 color_clamp;
+    u8 pad_35[3];
+    u32 color_tevreg;
+    u32 alpha_op;
+    u32 alpha_a;
+    u32 alpha_b;
+    u32 alpha_c;
+    u32 alpha_d;
+    u32 alpha_scale;
+    u32 alpha_bias;
+    u8 alpha_clamp;
+    u8 pad_59[3];
+    u32 alpha_tevreg;
+    u32 pad_60;
+    s32 kcolor0;
+    s32 kcolor1;
+    u32 swap0;
+    u32 swap1;
+    u32 kr;
+    u32 kg;
+    u32 kb;
+    u32 ka;
+} HSDShadowTevDesc;
+
 void fn_801B1524(HSDShadow* shadow, u16 width, u16 height);
 
 /* ========================================================================= */
@@ -460,9 +516,102 @@ void fn_801B0BD8(HSDShadow* shadow) {
 
 /* Address: 0x801B0EB8 | Size: 0x66C | Proposed: HSD_ShadowMain */
 /* Main shadow system entry point - orchestrates shadow map gen and apply */
+extern Mtx lbl_8036CBC0;
+extern u32 lbl_8036CC40[];
+extern f32 lbl_8047DDE8;
+extern f32 lbl_8047DDEC;
+extern void GXLoadPosMtxImm(Mtx mtx, u32 index);
+extern void fn_800BD554(u32 index);
+extern void HSD_ClearVtxDesc(void);
+extern void fn_800B7874(u32 attr, u32 type);
+extern void fn_800B7D74(u32 vtxfmt, u32 attr, u32 comptype, u32 compsize,
+                        u32 frac);
+extern void fn_800B928C(u32 primitive, u32 vtxfmt, u32 count);
+extern void fn_800BD7A0(u32 left, u32 top, u32 width, u32 height);
+extern f32 HSD_CObjGetTop(HSD_CObj* cobj);
+extern f32 HSD_CObjGetBottom(HSD_CObj* cobj);
+extern f32 HSD_CObjGetLeft(HSD_CObj* cobj);
+extern f32 HSD_CObjGetRight(HSD_CObj* cobj);
+extern void fn_801B2878(u32 mode);
+extern void fn_801B3884(void);
+extern void fn_801B3408(HSDShadowTevDesc* desc);
+extern void fn_801B3890(void);
+extern void fn_801B29E4(u32 flags, HSD_PEDesc* pe);
+extern void fn_801B3998(HSDShadowChan* chan);
+extern void fn_801A13CC(void* jobj, Mtx vmtx, HSD_TrspMask flags,
+                        u32 rendermode);
+extern void fn_80195A48(void);
+
+typedef union HSDShadowWGPipe {
+    f32 f32;
+} HSDShadowWGPipe;
+
+volatile HSDShadowWGPipe HSDShadowGXWGFifo : 0xCC008000;
+
+static inline void ShadowPosition2f32(f32 x, f32 y)
+{
+    HSDShadowGXWGFifo.f32 = x;
+    HSDShadowGXWGFifo.f32 = y;
+}
+
+static inline void ShadowDrawBackground(HSDShadow* shadow)
+{
+    HSD_CObj* cobj;
+    f32 top;
+    f32 bottom;
+    f32 left;
+    f32 right;
+    f32 near;
+
+    cobj = shadow->camera;
+    GXLoadPosMtxImm(lbl_8036CBC0, 0);
+    lbl_8036CC40[3]++;
+    fn_800BD554(0);
+    HSD_ClearVtxDesc();
+    fn_800B7874(9, 1);
+    fn_800B7D74(0, 9, 1, 4, 0);
+    fn_801B2878(2);
+
+    top = HSD_CObjGetTop(cobj);
+    bottom = HSD_CObjGetBottom(cobj);
+    left = HSD_CObjGetLeft(cobj);
+    right = HSD_CObjGetRight(cobj);
+    near = HSD_CObjGetNear(cobj);
+
+    top *= lbl_8047DDE8;
+    bottom *= lbl_8047DDE8;
+    left *= lbl_8047DDE8;
+    right *= lbl_8047DDE8;
+    near *= lbl_8047DDEC;
+
+    fn_800B928C(0x80, 0, 4);
+    ShadowPosition2f32(left, top);
+    ShadowPosition2f32(near, right);
+    ShadowPosition2f32(top, near);
+    ShadowPosition2f32(right, bottom);
+    ShadowPosition2f32(near, left);
+    ShadowPosition2f32(bottom, near);
+}
+
 void fn_801B0EB8(HSDShadow* shadow) {
     extern char lbl_802752C0[];
     extern char lbl_8047DDCC;
+    static HSDShadowChan chan = {
+        NULL, 4, 0, { 0, 0, 0, 0 }, { 0, 0, 0, 255 }, 0, { 0, 0, 0 },
+        0, 0, 0, 2, 2, NULL,
+    };
+    static HSDShadowTevDesc tev = {
+        NULL, 1, 0, 0xFF, 0xFF, 4,
+        0, 0xF, 0xF, 0xF, 0xA, 0, 0, 1, { 0, 0, 0 }, 0,
+        0, 7, 7, 7, 5, 0, 0, 1, { 0, 0, 0 }, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0,
+    };
+    static HSD_PEDesc pedesc = {
+        9, 0, 0, 0, 0, 4, 5, 0xF, 7, 7, 0, 7,
+    };
+    HSD_SList* list;
+    HSD_CObj* cobj;
+    HSD_ImageDesc* image;
 
     if (shadow == NULL) {
         __assert(lbl_802752C0, 0x18D, &lbl_8047DDCC);
@@ -475,6 +624,53 @@ void fn_801B0EB8(HSDShadow* shadow) {
     }
     if (shadow->texture->imagedesc == NULL) {
         __assert(lbl_802752C0, 0x190, lbl_802752C0 + 0xCC);
+    }
+
+    list = shadow->objects;
+    cobj = shadow->camera;
+    image = shadow->texture->imagedesc;
+
+    if (list != NULL) {
+        HSD_CObjSetCurrent(cobj);
+        fn_801B3884();
+        fn_801B3408(&tev);
+        fn_801B3890();
+        fn_801B29E4(0, &pedesc);
+
+        chan.mat_color.r = 0xFF;
+        chan.mat_color.g = 0xFF;
+        chan.mat_color.b = 0xFF;
+        fn_801B3998(&chan);
+        fn_800BD7A0(0, 0, image->width, image->height);
+        ShadowDrawBackground(shadow);
+
+        if (lbl_8047B310 != 0) {
+            chan.mat_color.r = 0;
+            chan.mat_color.g = 0;
+            chan.mat_color.b = 0;
+            fn_801B3998(&chan);
+            fn_800BD7A0(2, 2, image->width - 4, image->height - 4);
+            ShadowDrawBackground(shadow);
+
+            chan.mat_color.r = 0xFF;
+            chan.mat_color.g = 0xFF;
+            chan.mat_color.b = 0xFF;
+            fn_801B3998(&chan);
+            fn_800BD7A0(4, 4, image->width - 8, image->height - 8);
+            ShadowDrawBackground(shadow);
+        }
+
+        chan.mat_color.r = shadow->intensity;
+        chan.mat_color.g = shadow->intensity;
+        chan.mat_color.b = shadow->intensity;
+        fn_801B3998(&chan);
+        fn_800BD7A0(2, 2, image->width - 4, image->height - 4);
+
+        for (list = shadow->objects; list != NULL; list = list->next) {
+            fn_801A13CC(list->data, NULL,
+                        HSD_TRSP_OPA | HSD_TRSP_TEXEDGE, RENDER_SHADOW);
+        }
+        fn_80195A48();
     }
 }
 
