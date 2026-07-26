@@ -4211,7 +4211,19 @@ hsd/hsd_jobj_exact_801A301C.c:
 	.text       start:0x801A301C end:0x801A4000
 
 hsd/hsd_lobj.c:
-	.text       start:0x801A4000 end:0x801A68D0
+	.text       start:0x801A4000 end:0x801A4B00
+
+hsd/hsd_lobj_r42_801A4B00.c:
+	.text       start:0x801A4B00 end:0x801A4F54
+
+hsd/hsd_lobj_r42_801A4F54.c:
+	.text       start:0x801A4F54 end:0x801A66E0
+
+hsd/hsd_lobj_r42_801A66E0.c:
+	.text       start:0x801A66E0 end:0x801A678C
+
+hsd/hsd_lobj_r42_801A678C.c:
+	.text       start:0x801A678C end:0x801A68D0
 
 hsd/hsd_lobj_tail_exact_801A68D0.c:
 	.text       start:0x801A68D0 end:0x801A69C0
@@ -4451,7 +4463,13 @@ hsd/hsd_tobj_image_exact_801BBD3C.c:
 	.text       start:0x801BBD3C end:0x801BBDDC
 
 hsd/hsd_tobj_candidate_801BBDDC.c:
-	.text       start:0x801BBDDC end:0x801BDD74
+	.text       start:0x801BBDDC end:0x801BC33C
+
+hsd/hsd_tobj_candidate_801BBDDC_r42_801BC33C.c:
+	.text       start:0x801BC33C end:0x801BC8BC
+
+hsd/hsd_tobj_candidate_801BBDDC_r42_801BC8BC.c:
+	.text       start:0x801BC8BC end:0x801BDD74
 
 hsd/hsd_tobj_candidate_801BBDDC_r41_801BDD74_gc125n.c:
 	.text       start:0x801BDD74 end:0x801BE2B4
