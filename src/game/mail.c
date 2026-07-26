@@ -632,8 +632,15 @@ u16 mailGetNbMailInMailbox(void) {
  * mailInitMailbox - Waza effect color modulation.
  * Address: 0x801D1FA8 | Size: 0xD8
  */
-void mailInitMailbox(s32 seqHandle, u32 color) {
-    /* TODO: Effect color modulation (0xD8 bytes) */
+void mailInitMailbox(WazaPartyScratch* mailbox) {
+    s32 i;
+
+    memset(mailbox, 0, 0x446);
+    mailbox->selectedHandle = 0;
+    for (i = 0; i < 0x200; i++) {
+        mailbox->seqIds[i] = 0xFF;
+    }
+    mailMainInit();
 }
 
 #endif

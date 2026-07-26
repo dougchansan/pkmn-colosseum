@@ -69,6 +69,7 @@
 #include "dolphin/gx/GXInternal.h"
 #include "game/ps_types.h"
 #include "game/script/script.h"
+#include "hsd/hsd_cobj.h"
 #include "hsd/hsd_lobj.h"
 #include "hsd/hsd_object.h"
 
@@ -285,48 +286,64 @@ extern void fn_800B9404(s32 width, s32 offset);
 extern void fn_800B944C(s32 width, s32 offset);
 extern void generateParticle_8017424C(PSGeneratorState* gen);
 extern void HSD_MulColor(GXColor* a, GXColor* b, GXColor* dest);
+extern void fn_800060F0(const char* file, s32 line, const char* message, ...);
+extern void PSMTXInverse(const Mtx source, Mtx destination);
+extern void fn_800BD454(f32* projection);
 
 void psSetGeneratorAngleRadiusScale(PSGeneratorState* gen, f32* scale,
                                     u8 applyToMotion) {
     u8* raw = (u8*)gen;
     u16 mode = gen->angleFlags & 0xF;
     u16 objectIndex = *(u16*)(raw + 0x8A);
-    f32* object = ((f32**)lbl_80452AC8[gen->bankIndex])[objectIndex];
     f32 average = (scale[0] + scale[1] + scale[2]) / lbl_8047D5B0;
 
     switch (mode) {
     case 0:
     case 3:
     case 4:
-        *(f32*)(raw + 0x54) = average * object[0x30 / 4];
-        *(f32*)(raw + 0x58) = average * object[0x34 / 4];
+        *(f32*)(raw + 0x54) = average *
+            ((f32**)lbl_80452AC8[gen->bankIndex])[objectIndex][0x30 / 4];
+        *(f32*)(raw + 0x58) = average *
+            ((f32**)lbl_80452AC8[gen->bankIndex])[objectIndex][0x34 / 4];
         break;
     case 1:
-        *(f32*)(raw + 0x54) = scale[0] * object[0x30 / 4];
-        *(f32*)(raw + 0x58) = scale[1] * object[0x34 / 4];
-        *(f32*)(raw + 0x5C) = scale[2] * object[0x38 / 4];
+        *(f32*)(raw + 0x54) = scale[0] *
+            ((f32**)lbl_80452AC8[gen->bankIndex])[objectIndex][0x30 / 4];
+        *(f32*)(raw + 0x58) = scale[1] *
+            ((f32**)lbl_80452AC8[gen->bankIndex])[objectIndex][0x34 / 4];
+        *(f32*)(raw + 0x5C) = scale[2] *
+            ((f32**)lbl_80452AC8[gen->bankIndex])[objectIndex][0x38 / 4];
         break;
     case 5:
-        *(f32*)(raw + 0x54) = scale[0] * object[0x30 / 4];
+        *(f32*)(raw + 0x54) = scale[0] *
+            ((f32**)lbl_80452AC8[gen->bankIndex])[objectIndex][0x30 / 4];
         *(f32*)(raw + 0x60) = *(f32*)(raw + 0x54);
-        *(f32*)(raw + 0x58) = scale[1] * object[0x34 / 4];
+        *(f32*)(raw + 0x58) = scale[1] *
+            ((f32**)lbl_80452AC8[gen->bankIndex])[objectIndex][0x34 / 4];
         *(f32*)(raw + 0x70) = *(f32*)(raw + 0x58);
-        *(f32*)(raw + 0x5C) = scale[2] * object[0x38 / 4];
+        *(f32*)(raw + 0x5C) = scale[2] *
+            ((f32**)lbl_80452AC8[gen->bankIndex])[objectIndex][0x38 / 4];
         *(f32*)(raw + 0x80) = *(f32*)(raw + 0x5C);
         break;
     case 6:
     case 7:
-        *(f32*)(raw + 0x54) = average * object[0x30 / 4];
-        *(f32*)(raw + 0x58) = average * object[0x34 / 4];
-        *(f32*)(raw + 0x5C) = average * object[0x38 / 4];
+        *(f32*)(raw + 0x54) = average *
+            ((f32**)lbl_80452AC8[gen->bankIndex])[objectIndex][0x30 / 4];
+        *(f32*)(raw + 0x58) = average *
+            ((f32**)lbl_80452AC8[gen->bankIndex])[objectIndex][0x34 / 4];
+        *(f32*)(raw + 0x5C) = average *
+            ((f32**)lbl_80452AC8[gen->bankIndex])[objectIndex][0x38 / 4];
         break;
     case 8:
-        *(f32*)(raw + 0x5C) = average * object[0x30 / 4];
-        *(f32*)(raw + 0x64) = average * object[0x34 / 4];
+        *(f32*)(raw + 0x5C) = average *
+            ((f32**)lbl_80452AC8[gen->bankIndex])[objectIndex][0x30 / 4];
+        *(f32*)(raw + 0x64) = average *
+            ((f32**)lbl_80452AC8[gen->bankIndex])[objectIndex][0x34 / 4];
         break;
     }
 
-    *(f32*)(raw + 0x44) = average * object[0x20 / 4];
+    *(f32*)(raw + 0x44) = average *
+        ((f32**)lbl_80452AC8[gen->bankIndex])[objectIndex][0x20 / 4];
     if (applyToMotion == TRUE) {
         *(f32*)(raw + 0x38) *= average;
         *(f32*)(raw + 0x3C) *= average;
@@ -1012,6 +1029,10 @@ void psInitDataBank(s32 bankIndex, void* data, void* objects,
     }
 
     psInitDataBankLocate(data, objects, locations);
+    if (locations != NULL && *(s32*)locations != *(s32*)objects) {
+        fn_800060F0(lbl_80273820 + 0x34, 0x5F,
+                    lbl_80273820 + 0x40);
+    }
     banks[bankIndex] = (u32)bankData;
     banks[256 + bankIndex] = *(u32*)objects;
     banks[128 + bankIndex] = (u32)objects + 4;
@@ -1029,6 +1050,9 @@ void psInitDataBank(s32 bankIndex, void* data, void* objects,
             firstCount + *(u32*)((u8*)data + 8);
         banks[192 + bankIndex] =
             (u32)data + 0xC - firstCount * sizeof(u32);
+    } else {
+        fn_800060F0(lbl_80273820 + 0x34, 0x7D,
+                    lbl_80273820 + 0x70);
     }
 }
 
@@ -1222,6 +1246,14 @@ void fn_8016AB94(u32 linkMask, s32 mode) {
                     fn_800BC2F8(3, &lbl_8047B130);
                     lbl_8047B148 = -1;
                     fn_800BCEBC(0);
+
+                    HSD_CObjGetViewingMtx(
+                        HSD_CObjGetCurrent(),
+                        (f32(*)[4])(lbl_80452DE8 + 0xAC));
+                    PSMTXInverse(
+                        (const f32(*)[4])(lbl_80452DE8 + 0xAC),
+                        (f32(*)[4])(lbl_80452DE8 + 0x7C));
+                    fn_800BD454((f32*)(lbl_80452DE8 + 0x60));
                 }
 
                 if (bank != NULL) {

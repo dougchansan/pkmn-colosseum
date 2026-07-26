@@ -37,8 +37,58 @@
  * wazaSequenceCameraGetPattern__Fbi - Waza multi-hit advance.
  * Address: 0x801D2B4C | Size: 0x120
  */
-void wazaSequenceCameraGetPattern__Fbi(void) {
-    /* TODO: Multi-hit advance (0x120 bytes) */
+void* wazaSequenceCameraGetPattern__Fbi(u8 shortTable, s32 flags) {
+    typedef struct WazaCameraPattern {
+        f32 duration;
+        u8 data[0x48];
+    } WazaCameraPattern;
+    extern f32 fn_800E0BE4(u8, s32);
+    extern u32 _fadeEffectGetRandom__FUl(u32);
+    extern WazaCameraPattern lbl_80371F60[];
+    extern WazaCameraPattern lbl_803721C0[];
+    WazaCameraPattern* table;
+    s32 count;
+    s32 i;
+    f32 frame = fn_800E0BE4(shortTable, flags);
+    f32 end = 0.0f;
+
+    if (shortTable != 0) {
+        table = lbl_80371F60;
+        count = 8;
+        if (flags & 0x20) {
+            return &table[4];
+        }
+        if (flags & 0x40) {
+            return &table[5];
+        }
+        if (flags & 0x80) {
+            return &table[6];
+        }
+    } else {
+        table = lbl_803721C0;
+        count = 13;
+        if (flags & 0x20) {
+            return &table[9];
+        }
+        if (flags & 0x40) {
+            return &table[10];
+        }
+        if (flags & 0x80) {
+            return &table[11];
+        }
+    }
+
+    for (i = 0; i < count; i++) {
+        end += table[i].duration;
+        if (frame < end) {
+            return &table[i];
+        }
+    }
+
+    if (shortTable != 0) {
+        return &lbl_80371F60[_fadeEffectGetRandom__FUl(8)];
+    }
+    return &lbl_803721C0[_fadeEffectGetRandom__FUl(13)];
 }
 
 /**

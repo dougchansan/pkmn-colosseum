@@ -17,7 +17,27 @@
  * Address: 0x801D5328 | Size: 0xAC
  */
 void _wazaViewerFinalize(u8 r, u8 g, u8 b, f32 duration) {
-    /* TODO: Screen flash helper (0xAC bytes) */
+    extern u8 lbl_804673F8[];
+    extern u32 lbl_8047B3F8;
+    extern void fn_801024E8(s32);
+    extern void fn_801684F0(u32);
+    extern void fn_801E11F0(void);
+
+    GSthreadTerminateGroup(0x58);
+    *(u32*)(lbl_804673F8 + 0x66C) = 0;
+    fn_801024E8(0);
+    *(u32*)(lbl_804673F8 + 0x0C) = 0;
+    fn_801684F0(*(u32*)(lbl_804673F8 + 0x10));
+    if (*(void**)(lbl_804673F8 + 0x878) != NULL) {
+        GStextureFree(*(void**)(lbl_804673F8 + 0x878));
+    }
+    memset(lbl_804673F8, 0, 0x884);
+    if (lbl_804673F8[0x87D] == 0) {
+        fn_801E11F0();
+    }
+    GSgappTerminate((void*)lbl_8047B3F8);
+    lbl_8047B3F8 = 0;
+    wazaSequenceSysRelease();
 }
 
 #endif

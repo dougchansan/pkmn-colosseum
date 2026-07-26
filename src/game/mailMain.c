@@ -61,8 +61,50 @@ void mailMainSendAllMail(s32 seqHandle, f32 targetScale, f32 speed) {
  * fn_801D228C - Waza effect rotation animation.
  * Address: 0x801D228C | Size: 0x134
  */
-void fn_801D228C(s32 seqHandle, f32 targetRot, f32 speed) {
-    /* TODO: Effect rotation animation (0x134 bytes) */
+void fn_801D228C(s32 seqHandle) {
+    extern void fn_80190528(s32);
+    extern void fn_801EED30(s32, s32);
+    extern u16 fn_801EE614(s32);
+    extern void fn_801EE67C(s32);
+    extern void fn_800F7434(s32, s32, ...);
+    extern void heroMoveAddAutoEvent(s32, u16, s32, s32, s32);
+    u16 handle = (u16)seqHandle;
+    u16 count;
+    u16 i;
+    s32 object;
+    u8 limit;
+
+    object = fn_801D1504(handle);
+    if (object != -1 && object != 0) {
+        fn_80190528(object);
+    }
+
+    i = (u16)fn_801D139C(handle);
+    if (i != 0xFFFF) {
+        ((void (*)(s32))fn_801D1364)(i);
+    }
+
+    count = (u16)fn_801D19A4(handle);
+    if (count != 0xFFFF) {
+        for (i = 0; i < count; i++) {
+            object = ((s32 (*)(s32, s32))fn_801D1864)(handle, i);
+            fn_801EED30(object, 1);
+            limit = (u8)((s32 (*)(s32, s32))fn_801D1734)(handle, i);
+            if (fn_801EE614(object) < limit) {
+                fn_801EE67C(object);
+            }
+        }
+    }
+
+    object = fn_801D14C0(handle);
+    if (object != -1 && object != 0) {
+        fn_800F7434(object, 0);
+    }
+
+    object = fn_801D147C(handle);
+    if (object != -1 && object != 0) {
+        heroMoveAddAutoEvent(object, handle, 0, 0, 0);
+    }
 }
 
 /**
