@@ -160,8 +160,6 @@ static inline s32 GBAGetStatusAsync(s32 chan, u32 status, u32 callback) {
   return __GBATransfer(chan, 1, 3, (u32)ShortCommandProc);
 }
 
-#pragma push
-#pragma peephole off
 u32 GBAGetStatus(int r3, u32 r4) {
   s32 result;
   result = GBAGetStatusAsync(r3, r4, (u32)__GBASyncCallback);
@@ -170,7 +168,6 @@ u32 GBAGetStatus(int r3, u32 r4) {
   }
   return __GBASync(r3);
 }
-#pragma pop
 
 #pragma push
 #pragma optimization_level 0
