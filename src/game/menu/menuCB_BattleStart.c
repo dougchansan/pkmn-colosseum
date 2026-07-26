@@ -1340,3 +1340,126 @@ u8 fn_80061D34(
     }
     return valid;
 }
+
+typedef struct MenuCBBattleStartTrainerTexture {
+    void* texture;
+    u32 resource;
+} MenuCBBattleStartTrainerTexture;
+
+typedef struct MenuCBBattleStartTrainerTextureState {
+    u8 pad0[0xC];
+    MenuCBBattleStartTrainerTexture entries[4];
+    s32 current;
+    s32 count;
+    u8 active;
+} MenuCBBattleStartTrainerTextureState;
+
+extern s32 toolentryTaisenGetBattleType(void);
+extern u32 toolentryGetTrainerBicFaceResID(s32, s32);
+extern u32 toolentryGetTrainerSamllFaceResID(s32, s32);
+extern void* fn_800F92D4(u32);
+extern void fn_8017B000(
+    u32, u32, void (*)(s32, MenuCBBattleStartTrainerTexture*),
+    MenuCBBattleStartTrainerTexture*, u32);
+extern void fn_8017B1CC(u32);
+extern void fn_800F915C(u32);
+extern void fn_800F9210(u32, u32);
+
+void _menuCBBattleStartDispTrainerTexCallBack__FlPvl(
+    s32 unused, MenuCBBattleStartTrainerTexture* completed)
+{
+    MenuCBBattleStartTrainerTextureState* state;
+    MenuCBBattleStartTrainerTexture* entry;
+    u32 imageId;
+    u32 resource;
+    s32 keepLoading;
+
+    keepLoading = 1;
+    if (completed != 0) {
+        completed->texture = fn_800F92D4(completed->resource);
+    }
+
+    state = (MenuCBBattleStartTrainerTextureState*)&lbl_803A9A60;
+    do {
+        if (state->current == state->count) {
+            keepLoading = 0;
+        } else {
+            if (toolentryTaisenGetBattleType() != 2) {
+                if (state->current % 2 != 0) {
+                    resource = toolentryGetTrainerBicFaceResID(1, 0);
+                } else {
+                    resource = toolentryGetTrainerBicFaceResID(0, 1);
+                }
+            } else if (state->current < 2) {
+                resource =
+                    toolentryGetTrainerSamllFaceResID(state->current, 1);
+            } else {
+                resource =
+                    toolentryGetTrainerSamllFaceResID(state->current, 0);
+            }
+
+            if (toolentryTaisenGetBattleType() != 2) {
+                imageId = 0x5C3;
+            } else {
+                imageId = 0x5C4;
+            }
+            entry = &state->entries[state->current];
+            entry->resource = resource;
+            entry->texture = fn_800F92D4(entry->resource);
+            if (entry->texture != 0) {
+                state->current++;
+            } else {
+                fn_8017B000(
+                    imageId, resource,
+                    _menuCBBattleStartDispTrainerTexCallBack__FlPvl,
+                    entry, resource);
+                keepLoading = 0;
+                state->current++;
+            }
+        }
+    } while (keepLoading != 0);
+}
+
+void menuCBBattleStartTrainerFaceFree(void)
+{
+    MenuCBBattleStartTrainerTextureState* state;
+    MenuCBBattleStartTrainerTexture* entry;
+    u32 imageId;
+    s32 i;
+
+    if (toolentryTaisenGetBattleType() != 2) {
+        imageId = 0x5C3;
+    } else {
+        imageId = 0x5C4;
+    }
+    fn_8017B1CC(imageId);
+    fn_800F915C(imageId);
+
+    state = (MenuCBBattleStartTrainerTextureState*)&lbl_803A9A60;
+    entry = state->entries;
+    if (toolentryTaisenGetBattleType() == 2) {
+        state->count = 4;
+    } else {
+        state->count = 2;
+    }
+    for (i = 0; i < state->count; i++) {
+        fn_800F9210(imageId, entry->resource);
+        entry++;
+    }
+
+    state->active = 0;
+    state->current = 0;
+    if (toolentryTaisenGetBattleType() == 2) {
+        state->count = 4;
+    } else {
+        state->count = 2;
+    }
+    state->entries[0].resource = 0;
+    state->entries[0].texture = 0;
+    state->entries[1].resource = 0;
+    state->entries[1].texture = 0;
+    state->entries[2].resource = 0;
+    state->entries[2].texture = 0;
+    state->entries[3].resource = 0;
+    state->entries[3].texture = 0;
+}

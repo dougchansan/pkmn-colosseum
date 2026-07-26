@@ -47,7 +47,22 @@ typedef struct UICmdMsg {
     s16 s52;
     s16 s54;
     s16 s56;
+    u8 _58[0xF];
+    u8 alpha67;
 } UICmdMsg;
+
+#if !defined(MENUCB_RANGE_RESIDUAL_EMPTY_ONLY) && \
+    !defined(MENUCB_RANGE_EXACT_80063D10_ONLY) && \
+    !defined(MENUCB_RANGE_EXACT_80064378_ONLY) && \
+    !defined(MENUCB_RANGE_EXACT_80065A48_ONLY) && \
+    !defined(MENUCB_RANGE_EXACT_80068738_ONLY) && \
+    !defined(MENUCB_RANGE_RESIDUAL_80068794_ONLY) && \
+    !defined(MENUCB_RANGE_EXACT_80069048_ONLY) && \
+    !defined(MENUCB_RANGE_EXACT_800697C4_ONLY) && \
+    !defined(MENUCB_RANGE_RESIDUAL_800697F4_ONLY) && \
+    !defined(MENUCB_RANGE_EXACT_80069A08_ONLY)
+#define MENUCB_RANGE_HEAD_ONLY
+#endif
 
 #if defined(MENUCB_RANGE_RESIDUAL_EMPTY_ONLY)
 void fn_80065A48(void*, UICmdMsg*, s32);
@@ -61,7 +76,176 @@ extern f32 lbl_8047BFE8;
 extern f32 lbl_8047C010;
 extern f32 lbl_8047C014;
 extern f32 lbl_8047C018;
+#endif
 
+#if defined(MENUCB_RANGE_HEAD_ONLY)
+extern u8 fn_8006B1F4(s32, s32);
+extern void fn_8006B2A4(s32, s32);
+extern u8 fn_8006B3C8(s32);
+extern void fn_8006B354(s32);
+extern s32 fn_8025DAAC(void);
+extern void fn_800FB680(s32, s32, s32, u32);
+extern void fn_80063AD4(u8*, UICmdMsg*);
+extern void fn_800D88DC(s32);
+extern void fn_800D888C(s32);
+extern void fn_800D5648(f32);
+extern void fn_800D6A00(s32);
+extern void fn_800D7820(void*);
+extern void fn_800D67BC(s32);
+extern void fn_800D61E4(s32, s32);
+extern void fn_800D5BA0(s32, u32);
+extern void fn_800D6728(void);
+extern void fn_800FE38C(s32, s32, s32, s32);
+extern void fn_800FE35C(void);
+extern u8 lbl_80314E08[];
+extern u32 lbl_8047BFC8;
+extern u32 lbl_8047BFCC;
+extern f32 lbl_8047BFD0;
+extern f32 lbl_8047BFD4;
+
+void fn_800637B0(void)
+{
+    s32 player;
+    s32 battleType;
+    s32 setting;
+    u8 ready;
+
+    battleType = toolentryTaisenGetBattleType();
+    setting = fn_8025DAAC();
+    if (fn_8006B1F4(setting, battleType) == 0) {
+        fn_8006B2A4(setting, battleType);
+    }
+
+    if (fn_8006B3C8(3) == 0) {
+        ready = 1;
+        for (player = 0; player <= 2; player++) {
+            if (fn_8006B1F4(player, 0) == 0) {
+                ready = 0;
+                break;
+            }
+            if (fn_8006B1F4(player, 1) == 0) {
+                ready = 0;
+                break;
+            }
+        }
+        if (ready == 1) {
+            fn_8006B354(3);
+        }
+    }
+
+    if (fn_8006B3C8(5) == 0) {
+        ready = 1;
+        if (fn_8006B1F4(4, 0) == 0) {
+            ready = 0;
+        } else if (fn_8006B1F4(4, 1) == 0) {
+            ready = 0;
+        }
+        if (ready == 1) {
+            fn_8006B354(5);
+        }
+    }
+}
+
+void fn_800638F4(u8* context, UICmdMsg* msg)
+{
+    u32 message;
+
+    switch (msg->cmd) {
+    case 0xE08:
+    case 0xE17:
+    case 0x1264:
+    case 0x1123:
+        fn_80063AD4(context, msg);
+        break;
+    case 0xE14:
+    case 0xE24:
+    case 0x126F:
+        message = 0x3C21;
+        fn_800FB680(0, 0, context[0x8B] | -0x100, message);
+        break;
+    case 0xE15:
+    case 0xE26:
+        message = 0x3DB2;
+        fn_800FB680(0, 0, context[0x8B] | -0x100, message);
+        break;
+    case 0xE16:
+    case 0xE27:
+    case 0x1270:
+        message = 0x3DB3;
+        fn_800FB680(0, 0, context[0x8B] | -0x100, message);
+        break;
+    case 0xE25:
+        message = 0x3DAE;
+        fn_800FB680(0, 0, context[0x8B] | -0x100, message);
+        break;
+    }
+}
+
+typedef union MenuCBColor {
+    u32 value;
+    struct {
+        u8 red;
+        u8 green;
+        u8 blue;
+        u8 alpha;
+    } channel;
+} MenuCBColor;
+
+void fn_80063AD4(u8* context, UICmdMsg* msg)
+{
+    MenuCBColor top;
+    MenuCBColor bottom;
+    MenuCBColor white;
+    f32 opacity;
+    s32 combinedAlpha;
+    s32 y;
+
+    top.value = lbl_8047BFC8;
+    bottom.value = lbl_8047BFCC;
+    combinedAlpha = context[0x8B] * msg->alpha67 / 65025;
+    opacity = (f32)combinedAlpha;
+    top.channel.alpha =
+        (u8)(s32)((f32)top.channel.alpha * opacity);
+    bottom.channel.alpha =
+        (u8)(s32)((f32)bottom.channel.alpha * opacity);
+
+    fn_800D88DC(1);
+    fn_800D888C(6);
+    fn_800D6A00(6);
+    fn_800D7820(lbl_80314E08);
+    fn_800D67BC(4);
+    fn_800D61E4(0, 0);
+    fn_800D5BA0(0, top.value);
+    fn_800D61E4(msg->s54, 0);
+    fn_800D5BA0(0, top.value);
+    fn_800D61E4(msg->s54, msg->s56);
+    fn_800D5BA0(0, bottom.value);
+    fn_800D61E4(0, msg->s56);
+    fn_800D5BA0(0, bottom.value);
+    fn_800D6728();
+    fn_800FE38C(0, 0, msg->s54, msg->s56);
+
+    fn_800D88DC(1);
+    fn_800D888C(6);
+    fn_800D5648(lbl_8047BFD0);
+    fn_800D6A00(1);
+    fn_800D7820(lbl_80314E08);
+    white.value = 0xFFFFFF00;
+    white.channel.alpha =
+        (u8)(s32)(lbl_8047BFD4 * opacity);
+    for (y = 0; y < msg->s56; y += 4) {
+        fn_800D67BC(2);
+        fn_800D61E4(0, y);
+        fn_800D5BA0(0, white.value);
+        fn_800D61E4(msg->s54, y);
+        fn_800D5BA0(0, white.value);
+        fn_800D6728();
+    }
+    fn_800FE35C();
+}
+#endif
+
+#if defined(MENUCB_RANGE_RESIDUAL_EMPTY_ONLY)
 static inline void menuCBPokemonEntryAdvancePositions(void)
 {
     f32* current;
