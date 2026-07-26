@@ -926,6 +926,13 @@ config.libs = [
                             "-sdata2 8",
                         ]
                         if name == "effect_visual_candidate_8013E54C"
+                        else [
+                            "-O4,s",
+                            "-use_lmw_stmw on",
+                            "-sdata 8",
+                            "-sdata2 8",
+                        ]
+                        if name == "effect_visual_candidate_80138838"
                         else ["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"]
                     ),
                     progress_category="game",
