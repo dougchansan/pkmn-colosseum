@@ -130,7 +130,58 @@ typedef struct HSDShadowTevDesc {
     u32 ka;
 } HSDShadowTevDesc;
 
-void fn_801B1524(HSDShadow* shadow, u16 width, u16 height);
+static inline void ShadowSetSize(HSDShadow* shadow, u16 width, u16 height)
+{
+    extern char lbl_802752C0[];
+    extern char lbl_8047DDCC;
+    extern f32 lbl_8047DDC0;
+    extern u32 GXGetTexBufferSize(u16 width, u16 height, u32 format,
+                                  u32 mipmap, u32 max_lod);
+    extern void* fn_800E202C(void* handle);
+    extern void fn_800E24B0(void);
+    extern void fn_800E209C(void* saved);
+    extern u16 fn_800E2B00(u32 size, u32 alignment);
+    extern void* fn_800E27B0(u16 handle);
+    HSD_ImageDesc* image;
+    void* saved;
+    u16 handle;
+    u32 size;
+
+    if (shadow == NULL) {
+        __assert(lbl_802752C0, 0x12C, &lbl_8047DDCC);
+    }
+    if (width == 0) {
+        __assert(lbl_802752C0, 0x12D, lbl_802752C0 + 0x88);
+    }
+    if (height == 0) {
+        __assert(lbl_802752C0, 0x12E, lbl_802752C0 + 0x94);
+    }
+
+    image = shadow->texture->imagedesc;
+    if (image->image_ptr != NULL && image->width == width &&
+        image->height == height) {
+        return;
+    }
+
+    if (image->image_ptr != NULL) {
+        saved = fn_800E202C(image->image_ptr);
+        fn_800E24B0();
+        fn_800E209C(saved);
+        image->image_ptr = NULL;
+    }
+
+    size = GXGetTexBufferSize(width, height, 0, 0, 0);
+    if (size == 0) {
+        __assert(lbl_802752C0, 0x13F, lbl_802752C0 + 0xA0);
+    }
+    handle = fn_800E2B00(size, 0x20);
+    image->image_ptr = fn_800E27B0(handle);
+    image->width = width;
+    image->height = height;
+    HSD_CObjSetViewportfx4(shadow->camera, lbl_8047DDC0, (f32) width,
+                           lbl_8047DDC0, (f32) height);
+    HSD_CObjSetScissorx4(shadow->camera, 0, width, 0, height);
+}
 
 /* ========================================================================= */
 /*  Shadow setup functions                                                   */
@@ -392,7 +443,7 @@ void fn_801B0880(HSDShadow* shadow, s32 active) {
     if (active) {
         image = shadow->texture->imagedesc;
         if (image->image_ptr == NULL) {
-            fn_801B1524(shadow, image->width, image->height);
+            ShadowSetSize(shadow, image->width, image->height);
         }
         HSD_MObjAddShadowTexture(shadow->texture);
     } else {
@@ -473,7 +524,7 @@ void fn_801B0BD8(HSDShadow* shadow) {
 
     image = shadow->texture->imagedesc;
     if (image->image_ptr == NULL) {
-        fn_801B1524(shadow, image->width, image->height);
+        ShadowSetSize(shadow, image->width, image->height);
     }
 
     fn_800B9FE4(image->image_ptr, 1);
@@ -677,55 +728,7 @@ void fn_801B0EB8(HSDShadow* shadow) {
 /* Address: 0x801B1524 | Size: 0x19C | Proposed: HSD_ShadowFunc9 */
 /* Shadow cleanup / restore GX state */
 void fn_801B1524(HSDShadow* shadow, u16 width, u16 height) {
-    extern char lbl_802752C0[];
-    extern char lbl_8047DDCC;
-    extern f32 lbl_8047DDC0;
-    extern u32 GXGetTexBufferSize(u16 width, u16 height, u32 format,
-                                  u32 mipmap, u32 max_lod);
-    extern void* fn_800E202C(void* handle);
-    extern void fn_800E24B0(void);
-    extern void fn_800E209C(void* saved);
-    extern u16 fn_800E2B00(u32 size, u32 alignment);
-    extern void* fn_800E27B0(u16 handle);
-    HSD_ImageDesc* image;
-    void* saved;
-    u16 handle;
-    u32 size;
-
-    if (shadow == NULL) {
-        __assert(lbl_802752C0, 0x12C, &lbl_8047DDCC);
-    }
-    if (width == 0) {
-        __assert(lbl_802752C0, 0x12D, lbl_802752C0 + 0x88);
-    }
-    if (height == 0) {
-        __assert(lbl_802752C0, 0x12E, lbl_802752C0 + 0x94);
-    }
-
-    image = shadow->texture->imagedesc;
-    if (image->image_ptr != NULL && image->width == width &&
-        image->height == height) {
-        return;
-    }
-
-    if (image->image_ptr != NULL) {
-        saved = fn_800E202C(image->image_ptr);
-        fn_800E24B0();
-        fn_800E209C(saved);
-        image->image_ptr = NULL;
-    }
-
-    size = GXGetTexBufferSize(width, height, 0, 0, 0);
-    if (size == 0) {
-        __assert(lbl_802752C0, 0x13F, lbl_802752C0 + 0xA0);
-    }
-    handle = fn_800E2B00(size, 0x20);
-    image->image_ptr = fn_800E27B0(handle);
-    image->width = width;
-    image->height = height;
-    HSD_CObjSetViewportfx4(shadow->camera, lbl_8047DDC0, (f32)width,
-                           lbl_8047DDC0, (f32)height);
-    HSD_CObjSetScissorx4(shadow->camera, 0, width, 0, height);
+    ShadowSetSize(shadow, width, height);
 }
 
 /* Address: 0x801B16C0 | Size: 0x70 | Proposed: HSD_ShadowFunc10 */
