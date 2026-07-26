@@ -16,7 +16,7 @@ extern void  fn_801C27F4(void* aobj, void* pobj, void* method);
 extern void  PObjRelease(HSD_Class* object);
 extern void  PObjAmnesia(void* pobj);
 extern void  PObjSetupMtx(void);
-extern void  PObjLoad(void);
+extern s32   PObjLoad(HSD_PObj* pobj, HSD_PObjDesc* desc);
 extern void  PObjUpdateFunc(HSD_PObj* pobj, s32 idx, f32* weight_ptr);
 extern void  HSD_JObjUnrefThis(HSD_JObj* jobj);
 extern void  HSD_JObjRefThis(HSD_JObj* jobj);
@@ -25,6 +25,15 @@ extern void  HSD_AObjRemove(HSD_AObj* aobj);
 extern void  fn_801A6960(void* mem);
 extern void  fn_80193AF0(void* mem, s32 size);
 extern HSD_SList* fn_801A3E64(HSD_SList* list);
+extern HSD_SList* fn_801A3F48(void);
+extern void* fn_80193B10(s32 size);
+extern void* fn_801A6928(s32 size);
+extern void fn_8019C6EC(u32 flags);
+extern void* memset(void* dst, s32 value, u32 size);
+extern void HSD_Panic(const char* file, s32 line, const char* message);
+extern HSD_ClassInfo* fn_80193748(const char* class_name);
+extern void* fn_80193828(HSD_ClassInfo* info);
+extern void __assert(const char* file, u32 line, const char* message);
 
 /* Data / global symbols (DTK names). */
 extern u8    lbl_8036CCD0[];         /* PObj class info (data)      */
@@ -240,11 +249,6 @@ void HSD_PObjRemoveAll(HSD_PObj* pobj)
 /* Address: 0x801AD288 | Size: 0xCC  -- Load PObj descriptor */
 HSD_PObj* HSD_PObjLoadDesc(HSD_PObjDesc* desc)
 {
-    extern HSD_ClassInfo* fn_80193748(const char* class_name);
-    extern void* fn_80193828(HSD_ClassInfo* info);
-    extern char lbl_8047DCB8;
-    extern char lbl_8047DD10;
-    extern void __assert(const char*, s32, const char*);
     HSD_ClassInfo* info;
     HSD_PObj* pobj;
 
@@ -282,6 +286,101 @@ load:
 
 return_null:
     return NULL;
+}
+
+static inline HSD_Envelope* HSD_EnvelopeAlloc(void)
+{
+    HSD_Envelope* envelope = fn_80193B10(sizeof(HSD_Envelope));
+
+    if (envelope == NULL) {
+        __assert(&lbl_8047DCB8, 0x1A9, (char*) lbl_80274EE0 + 0x38);
+    }
+    memset(envelope, 0, sizeof(HSD_Envelope));
+    return envelope;
+}
+
+static inline HSD_SList* loadEnvelopeDesc(HSD_EnvelopeDesc** desc_list)
+{
+    HSD_SList* list = NULL;
+    HSD_SList** list_ptr = &list;
+
+    if (desc_list == NULL) {
+        return NULL;
+    }
+
+    while (*desc_list != NULL) {
+        HSD_Envelope* envelope = NULL;
+        HSD_Envelope** envelope_ptr = &envelope;
+        HSD_EnvelopeDesc* desc = *desc_list;
+
+        while (desc->joint != NULL) {
+            *envelope_ptr = HSD_EnvelopeAlloc();
+            (*envelope_ptr)->weight = desc->weight;
+            envelope_ptr = &(*envelope_ptr)->next;
+            desc++;
+        }
+
+        *list_ptr = fn_801A3F48();
+        (*list_ptr)->data = envelope;
+        list_ptr = &(*list_ptr)->next;
+        desc_list++;
+    }
+    return list;
+}
+
+static inline HSD_ShapeSet* loadShapeSetDesc(HSD_ShapeSetDesc* desc)
+{
+    s32 i;
+    HSD_ShapeSet* shape_set = fn_80193B10(sizeof(HSD_ShapeSet));
+
+    if (shape_set == NULL) {
+        __assert(&lbl_8047DCB8, 0x1E2, (char*) lbl_80274EE0 + 0x264);
+    }
+    memset(shape_set, 0, sizeof(HSD_ShapeSet));
+    shape_set->flags = desc->flags;
+    shape_set->nb_shape = desc->nb_shape;
+    shape_set->nb_vertex_index = desc->nb_vertex_index;
+    shape_set->vertex_desc = desc->vertex_desc;
+    shape_set->vertex_idx_list = desc->vertex_idx_list;
+    shape_set->nb_normal_index = desc->nb_normal_index;
+    shape_set->normal_desc = desc->normal_desc;
+    shape_set->normal_idx_list = desc->normal_idx_list;
+    if (shape_set->flags & 2) {
+        shape_set->blend.bp =
+            fn_801A6928(shape_set->nb_shape * sizeof(f32));
+        for (i = 0; i < shape_set->nb_shape; i++) {
+            shape_set->blend.bp[i] = 0.0f;
+        }
+    } else {
+        shape_set->blend.bl = 0.0f;
+    }
+    shape_set->aobj = NULL;
+    return shape_set;
+}
+
+s32 PObjLoad(HSD_PObj* pobj, HSD_PObjDesc* desc)
+{
+    pobj->next = HSD_PObjLoadDesc(desc->next);
+    pobj->verts = desc->verts;
+    pobj->flags = desc->flags;
+    pobj->n_display = desc->n_display;
+    pobj->display = desc->display;
+
+    switch (pobj->flags & 0x3000) {
+    case 0x1000:
+        pobj->u.shape_set = loadShapeSetDesc(desc->u.shape_set);
+        break;
+    case 0x2000:
+        pobj->u.envelope_list = loadEnvelopeDesc(desc->u.envelope_p);
+        break;
+    case 0:
+        break;
+    default:
+        HSD_Panic(&lbl_8047DCB8, 0x22A, (char*) lbl_80274EE0 + 0x270);
+    }
+
+    fn_8019C6EC(1);
+    return 0;
 }
 
 /* Address: 0x801AD61C | Size: 0x5C  -- Walk pobj list, call reqAnim */
