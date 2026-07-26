@@ -950,21 +950,18 @@ void fn_801CC380(u32 state[5], const u8 input[64])
  * a polling state; completed operations are routed either to the next phase,
  * the user-decision state (0x30), or the common error state (0x2B).
  */
+/* Preserve direct active-task reads across callback-capable card calls. */
+#define task lbl_8047B3D4
+#define raw ((u8*)lbl_8047B3D4)
+#define file_info ((void*)((u8*)lbl_8047B3D4 + 0x8C))
 void fn_801CDB04(void)
 {
-    MemcardTaskState* task;
-    u8* raw;
-    void* file_info;
     s32 result;
     s32 status;
     u32 serial[2];
     u8 attributes;
 
     do {
-        task = lbl_8047B3D4;
-        raw = (u8*) task;
-        file_info = &raw[0x8C];
-
         switch (task->state) {
         case 0:
             task->card_result = 0;
@@ -1614,6 +1611,9 @@ void fn_801CDB04(void)
         }
     } while (lbl_8047B3D4->card_result != -1);
 }
+#undef file_info
+#undef raw
+#undef task
 
 typedef union MemcardSaveHeader {
     struct {
