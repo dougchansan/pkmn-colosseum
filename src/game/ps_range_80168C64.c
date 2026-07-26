@@ -2999,6 +2999,7 @@ void setupChanReg(PSParticle* pp) {
 void setupTevReg(PSParticle* pp) {
     PSColor color1;
     PSColor color2;
+    PSColor sizeColor;
 
     if (pp->color1Timer != 0) {
         s32 step = ((s32)pp->color1Countdown << 16) / pp->color1Timer;
@@ -3072,6 +3073,40 @@ void setupTevReg(PSParticle* pp) {
         color2.a = 0;
         lbl_8047B134 = color2;
         fn_800BC2F8(2, &color2);
+    }
+
+    if (pp->flags & 0x80000000) {
+        s32 value;
+
+        if (pp->sizeXTimer != 0) {
+            s32 step = ((s32)pp->sizeXCountdown << 16) / pp->sizeXTimer;
+
+            value = (((s32)pp->sizeXTargetFinal << 16) +
+                     step * ((s32)pp->sizeXTarget -
+                             (s32)pp->sizeXTargetFinal)) >> 16;
+            sizeColor.a =
+                (((s32)pp->sizeYTargetFinal << 16) +
+                 step * ((s32)pp->sizeYTarget -
+                         (s32)pp->sizeYTargetFinal)) >> 16;
+        } else {
+            value = pp->sizeXTarget;
+            sizeColor.a = pp->sizeYTarget;
+        }
+
+        sizeColor.r = value;
+        sizeColor.g = value;
+        sizeColor.b = value;
+        if ((pp->flags & 0x80) == 0) {
+            sizeColor.a = (sizeColor.a * color1.a) >> 8;
+        }
+
+        if (sizeColor.r != lbl_8047B130.r ||
+            sizeColor.g != lbl_8047B130.g ||
+            sizeColor.b != lbl_8047B130.b ||
+            sizeColor.a != lbl_8047B130.a) {
+            lbl_8047B130 = sizeColor;
+            fn_800BC2F8(3, &sizeColor);
+        }
     }
 }
 
