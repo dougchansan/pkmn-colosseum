@@ -3520,6 +3520,7 @@ config.libs = [
                 CodeCandidate,
                 "hsd/hsd_range_801920E4.c",
                 mw_version="GC/1.3.2",
+                extra_cflags=["-use_lmw_stmw on"],
                 progress_category="hsd",
             ),
             Object(
