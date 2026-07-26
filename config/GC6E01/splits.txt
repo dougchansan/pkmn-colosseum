@@ -616,7 +616,28 @@ game/menu/menu_middle_exact_8006B8E8.c:
 	.text       start:0x8006B8E8 end:0x8006B9B8
 
 game/menu/menu_middle_range_8006B9B8.c:
-	.text       start:0x8006B9B8 end:0x8006FCF8
+	.text       start:0x8006B9B8 end:0x8006C164
+
+game/menu/menu_middle_candidate_8006C164_gc20.c:
+	.text       start:0x8006C164 end:0x8006C7D4
+
+game/menu/menu_middle_candidate_8006C7D4.c:
+	.text       start:0x8006C7D4 end:0x8006CCC0
+
+game/menu/menu_middle_candidate_8006CCC0_gc20.c:
+	.text       start:0x8006CCC0 end:0x8006DC28
+
+game/menu/menu_middle_candidate_8006DC28.c:
+	.text       start:0x8006DC28 end:0x8006E338
+
+game/menu/menu_middle_candidate_8006E338_gc20.c:
+	.text       start:0x8006E338 end:0x8006EE7C
+
+game/menu/menu_middle_candidate_8006EE7C.c:
+	.text       start:0x8006EE7C end:0x8006F284
+
+game/menu/menu_middle_candidate_8006F284_gc20.c:
+	.text       start:0x8006F284 end:0x8006FCF8
 
 game/menu/menu_middle_exact_8006FCF8.c:
 	.text       start:0x8006FCF8 end:0x8006FEE4
@@ -637,7 +658,19 @@ game/menu/menu_middle_range_800704AC.c:
 	.text       start:0x800704AC end:0x8007109C
 
 game/menu/menu_range_8007109C.c:
-	.text       start:0x8007109C end:0x8007C260
+	.text       start:0x8007109C end:0x80073E8C
+
+game/menu/menu_candidate_80073E8C_gc20.c:
+	.text       start:0x80073E8C end:0x80074324
+
+game/menu/menu_candidate_80074324.c:
+	.text       start:0x80074324 end:0x8007480C
+
+game/menu/menu_candidate_8007480C_gc20.c:
+	.text       start:0x8007480C end:0x80075390
+
+game/menu/menu_candidate_80075390.c:
+	.text       start:0x80075390 end:0x8007C260
 
 game/menu/menu_poke_coupon.c:
 	.text       start:0x8007C260 end:0x8007C300

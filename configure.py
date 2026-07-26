@@ -4136,6 +4136,34 @@ config.libs = [
                 progress_category="game",
             ),
             Object(
+                CodeCandidate,
+                "game/menu/menu_candidate_80073E8C_gc20.c",
+                mw_version="GC/2.0",
+                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                progress_category="game",
+            ),
+            Object(
+                CodeCandidate,
+                "game/menu/menu_candidate_80074324.c",
+                mw_version="GC/1.3",
+                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                progress_category="game",
+            ),
+            Object(
+                CodeCandidate,
+                "game/menu/menu_candidate_8007480C_gc20.c",
+                mw_version="GC/2.0",
+                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                progress_category="game",
+            ),
+            Object(
+                CodeCandidate,
+                "game/menu/menu_candidate_80075390.c",
+                mw_version="GC/1.3",
+                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                progress_category="game",
+            ),
+            Object(
                 Matching,
                 "game/menu/menu_poke_coupon.c",
                 mw_version="GC/1.3",
@@ -5975,6 +6003,29 @@ config.libs = [
                 ],
                 progress_category="game",
             ),
+            *[
+                Object(
+                    CodeCandidate,
+                    path,
+                    mw_version=version,
+                    extra_cflags=[
+                        "-use_lmw_stmw on",
+                        "-sdata 8",
+                        "-sdata2 8",
+                        "-i src/game/menu",
+                    ],
+                    progress_category="game",
+                )
+                for path, version in [
+                    ("game/menu/menu_middle_candidate_8006C164_gc20.c", "GC/2.0"),
+                    ("game/menu/menu_middle_candidate_8006C7D4.c", "GC/1.3"),
+                    ("game/menu/menu_middle_candidate_8006CCC0_gc20.c", "GC/2.0"),
+                    ("game/menu/menu_middle_candidate_8006DC28.c", "GC/1.3"),
+                    ("game/menu/menu_middle_candidate_8006E338_gc20.c", "GC/2.0"),
+                    ("game/menu/menu_middle_candidate_8006EE7C.c", "GC/1.3"),
+                    ("game/menu/menu_middle_candidate_8006F284_gc20.c", "GC/2.0"),
+                ]
+            ],
             Object(
                 Matching,
                 "game/menu/menu_middle_exact_8006FCF8.c",
