@@ -206,13 +206,7 @@ void HSD_MObjRemove(HSD_MObj* mobj)
 /* 0x801A6D5C | 0x44 */
 void HSD_MObjAddTObjNext(HSD_MObj* mobj, HSD_TObj* tobj, HSD_TObj* next)
 {
-    if (mobj == NULL) {
-        return;
-    }
-    if (tobj == NULL) {
-        return;
-    }
-    if (next == NULL) {
+    if (mobj == NULL || tobj == NULL || next == NULL) {
         return;
     }
     HSD_TObjAddNext(tobj, next);
