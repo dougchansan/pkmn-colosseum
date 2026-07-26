@@ -323,7 +323,7 @@ void menuColosseumBattleMain(void) {
     extern s32 fn_80076054(void*, void*);
     extern s32 GScharCmp(void*, void*);
     extern s32 fn_80089028(void);
-    extern s32 fn_80093574(s32);
+    extern u32 fn_80093574(s32);
     extern s32 fn_800849B4(s32, s32, void*, void*);
     extern u32 heroBiosGetRnd(void*);
     extern u8* heroBiosGetNamePtr(void*);
