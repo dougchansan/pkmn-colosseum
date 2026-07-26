@@ -605,7 +605,7 @@ extern s32 _menuSoundReadWaveThread__FPv(u32* arg);
 extern void OSCreateThread(void* thread, void* callback, void* arg, void* stack, u32 stackSize, u32 priority, u32 attr);
 extern void OSResumeThread(void* thread);
 extern u8 lbl_803A3E58[];
-extern u32 lbl_8047A460;
+extern s32 lbl_8047A460;
 #if 0
 asm void fn_800363BC(void) {
 #include "src/game/movie_fn_800363BC.inc"
@@ -761,8 +761,8 @@ extern u16 __cvt_fp2unsigned(f32 value);
 extern void fn_800A0FC8(u32 arg);
 extern void fn_800D37D4(u32 a, u32 b, u32 c, u32 d, u32 e, u16 size);
 extern f32 lbl_8047BA4C;
-extern u32 lbl_8047A464;
-extern u32 lbl_804788B8;
+extern s32 lbl_8047A464;
+extern s32 lbl_804788B8;
 extern f32 lbl_8047BA50[];
 #if 0
 asm void fn_800366A8(void) {
