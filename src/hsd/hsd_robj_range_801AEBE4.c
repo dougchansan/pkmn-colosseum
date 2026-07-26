@@ -321,7 +321,7 @@ void fn_801AED88(HSD_RObj* robj, HSD_JObj* jobj,
         return;
     }
 
-    if (fn_801AFCAC(robj, 1, &position) != 0) {
+    if (RObjGetGlobalPosition(robj, 1, &position) != 0) {
         update(jobj, 0x35, (HSD_ObjData*) &position);
         update(jobj, 0x38, NULL);
     }
