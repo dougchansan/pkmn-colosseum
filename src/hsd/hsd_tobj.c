@@ -36,6 +36,20 @@ extern void fn_80193AF0(void* mem, s32 size);  /* hsdFreeMemPiece     */
 extern void* fn_801A6928(s32 size);            /* HSD_MemAlloc        */
 extern void fn_801A6960(void* mem);            /* HSD_Free            */
 extern void fn_8019C6EC(u32 mask);             /* HSD_StateInvalidate */
+extern void HSD_StateRegisterTexGen(s32 coord);
+
+extern void fn_800BA9E4(GXTexObj* obj, void* image, u16 width, u16 height,
+                        u32 format, u32 wrap_s, u32 wrap_t, u32 mipmap);
+extern void GXInitTexObjCI(GXTexObj* obj, void* image, u16 width, u16 height,
+                           u32 format, u32 wrap_s, u32 wrap_t, u32 mipmap,
+                           u32 tlut_name);
+extern void fn_800BACA0(GXTexObj* obj, u32 min_filter, u32 mag_filter,
+                        f32 min_lod, f32 max_lod, f32 lod_bias, u8 bias_clamp,
+                        u8 edge_lod, u32 max_anisotropy);
+extern void GXLoadTexObj(GXTexObj* obj, u32 map_id);
+extern void fn_800BB050(GXTlutObj* obj, void* lut, u32 format,
+                        u16 num_entries);
+extern void fn_800BB098(GXTlutObj* obj, u32 tlut_name);
 
 extern void* memset(void* dst, int c, u32 n);
 extern void* memcpy(void* dst, const void* src, u32 n);
@@ -57,6 +71,8 @@ extern u8 lbl_8036D3F0[]; /* hsdTObj class info */
 extern char lbl_80275638[]; /* "sysdolphin_base_library" */
 extern char lbl_80275650[]; /* "hsd_tobj" */
 extern char lbl_8027565C[]; /* "texmtx index exceed hardware limit (%d).\n" */
+extern char lbl_80275688[]; /* "imagedesc" */
+extern char lbl_80275694[]; /* "imagedesc->image_ptr" */
 extern char lbl_802756C4[]; /* "tobj->repeat_s && tobj->repeat_t" */
 extern char lbl_802756E8[]; /* "tobj->imagetbl" */
 
@@ -136,6 +152,7 @@ extern const char lbl_8047DED4[4]; /* "" */
 extern const char lbl_8047DF10[8]; /* "tobj" */
 extern const char lbl_8047DEE8[8]; /* "cobj" */
 extern Mtx lbl_8036D43C;
+extern HSD_TexLODDesc lbl_8036D594;
 
 #define HSD_TOBJ_FILE lbl_8047DEB0
 
@@ -152,6 +169,8 @@ static HSD_TObj* lbl_8047B37C = NULL;      /* tobj_head */
 
 #define default_class lbl_8047B378
 #define tobj_head lbl_8047B37C
+
+static void TObjSetupMtx(HSD_TObj* tobj);
 
 /* ------------------------------------------------------------------ */
 /*  sysdolphin's small deallocators.  They are always inlined; keeping  */
@@ -788,6 +807,129 @@ static inline u32 HSD_TexMapID2PTTexMtx(u32 id)
         __assert(HSD_TOBJ_FILE, 0x258, lbl_8047DED0);
     }
     return 64;
+}
+
+static int DifferentTluts(HSD_Tlut* t0, HSD_Tlut* t1)
+{
+    return (t0->lut != t0->lut) || (t0->n_entries != t1->n_entries);
+}
+
+void HSD_TObjSetup(HSD_TObj* tobj)
+{
+    GXTlutObj tlutobj;
+    GXTexObj texobj;
+    int num;
+    HSD_Tlut* tluts[8];
+    int nb_tluts = 0;
+    u32 tlut_name = GX_TLUT0;
+    u32 big_tlut_name = GX_BIGTLUT0;
+    int i;
+
+    tobj_head = tobj;
+
+    if (tobj == NULL) {
+        return;
+    }
+
+    num = HSD_TObjAssignResources(tobj);
+    if (num > 0) {
+        HSD_StateRegisterTexGen(HSD_Index2TexCoord(num - 1));
+    }
+
+    for (; tobj != NULL; tobj = tobj->next) {
+        HSD_TexLODDesc* lod;
+        HSD_ImageDesc* imagedesc = tobj->imagedesc;
+        s32 min_filter;
+
+        if (tobj->id == GX_TEXMAP_NULL) {
+            continue;
+        }
+
+        TObjSetupMtx(tobj);
+        if (imagedesc == NULL) {
+            __assert(HSD_TOBJ_FILE, 0x6B6, lbl_80275688);
+        }
+        if (imagedesc->image_ptr == NULL) {
+            __assert(HSD_TOBJ_FILE, 0x6B7, lbl_80275694);
+        }
+
+        lod = tobj->lod != NULL ? tobj->lod : &lbl_8036D594;
+        min_filter = lod->minFilt;
+
+        switch (imagedesc->format) {
+        case GX_TF_C4:
+        case GX_TF_C8:
+        case GX_TF_C14X2: {
+            HSD_Tlut* tlut;
+
+            if (tobj->tlut_no != (u8)-1) {
+                tlut = tobj->tluttbl[tobj->tlut_no];
+            } else {
+                tlut = tobj->tlut;
+            }
+
+            if (tlut == NULL) {
+                __assert(HSD_TOBJ_FILE, 0x6C7, lbl_8047DEC4);
+            }
+
+            for (i = 0; i < nb_tluts; i++) {
+                if (!DifferentTluts(tluts[i], tlut)) {
+                    break;
+                }
+            }
+            if (i < nb_tluts) {
+                tlut->tlut_name = tluts[i]->tlut_name;
+            } else if (nb_tluts < 8) {
+                if (tlut->n_entries > 256) {
+                    tlut->tlut_name = big_tlut_name++;
+                } else {
+                    tlut->tlut_name = tlut_name++;
+                }
+                fn_800BB050(&tlutobj, tlut->lut, tlut->fmt,
+                            tlut->n_entries);
+                fn_800BB098(&tlutobj, tlut->tlut_name);
+                tluts[nb_tluts++] = tlut;
+            } else {
+                tlut->tlut_name = GX_TLUT0;
+            }
+
+            GXInitTexObjCI(&texobj, imagedesc->image_ptr, imagedesc->width,
+                           imagedesc->height, imagedesc->format, tobj->wrap_s,
+                           tobj->wrap_t,
+                           imagedesc->mipmap ? GX_TRUE : GX_FALSE,
+                           tlut->tlut_name);
+            if (min_filter == GX_LIN_MIP_LIN) {
+                min_filter = GX_LIN_MIP_NEAR;
+            }
+            break;
+        }
+
+        case GX_TF_I4:
+        case GX_TF_I8:
+        case GX_TF_IA4:
+        case GX_TF_IA8:
+        case GX_TF_RGB565:
+        case GX_TF_RGB5A3:
+        case GX_TF_RGBA8:
+        case GX_TF_CMPR:
+            fn_800BA9E4(&texobj, imagedesc->image_ptr, imagedesc->width,
+                        imagedesc->height, imagedesc->format, tobj->wrap_s,
+                        tobj->wrap_t,
+                        imagedesc->mipmap ? GX_TRUE : GX_FALSE);
+            break;
+
+        default:
+            __assert(HSD_TOBJ_FILE, 0x703, lbl_8047DED0);
+        }
+
+        if (!imagedesc->mipmap) {
+            min_filter &= 1;
+        }
+        fn_800BACA0(&texobj, min_filter, tobj->magFilt, imagedesc->minLOD,
+                    imagedesc->maxLOD, lod->LODBias, lod->bias_clamp,
+                    lod->edgeLODEnable, lod->max_anisotropy);
+        GXLoadTexObj(&texobj, tobj->id);
+    }
 }
 
 s32 HSD_TObjAssignResources(HSD_TObj* tobj_top)
