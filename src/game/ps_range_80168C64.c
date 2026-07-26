@@ -65,6 +65,7 @@
  *     guessed.
  */
 #include "dolphin/types.h"
+#include "dolphin/mtx.h"
 #include "game/ps_types.h"
 #include "game/script/script.h"
 #include "hsd/hsd_object.h"
@@ -171,6 +172,11 @@ extern void fn_801A6960(void* ptr);
 extern void* fn_801A6928(s32 size);
 extern void __assert(const char* file, u32 line, const char* msg);
 extern void* memset(void* dst, s32 value, u32 size);
+extern void PSMTXIdentity(Mtx m);
+extern void PSMTXRotRad(Mtx m, char axis, f32 angle);
+extern void PSMTXConcat(const Mtx a, const Mtx b, Mtx out);
+extern void PSVECNormalize(const Vec* src, Vec* dst);
+extern f32 lbl_8047D6B4;
 
 #if !defined(PR410_PS_SPLIT) || defined(PR410_PS_PREFIX)
 
@@ -1724,6 +1730,59 @@ PSParticle* psInterpretParticle0(PSParticle* pp, PSParticle* parentCtx) {
 
     _psListGetNext(pp);
     return pp;
+}
+
+/*
+ * Builds the generator's emission basis. The remainder of the emitter modes
+ * is still asm-only; this verified prefix corresponds to 0x801742C8-8017455C.
+ */
+void generateParticle_8017424C(PSGeneratorState* gen) {
+    Mtx basis;
+    Mtx rotationX;
+    Mtx rotationY;
+    Mtx rotationZ;
+    Vec column;
+
+    if (gen->lifetime < lbl_8047D6B4) {
+        return;
+    }
+
+    PSMTXIdentity(basis);
+
+    if ((gen->flags & 0x30000) == 0) {
+        PSMTXRotRad(rotationX, 'X', gen->generatorData[0]);
+        PSMTXRotRad(rotationY, 'Y', gen->generatorData[1]);
+        PSMTXRotRad(rotationZ, 'Z', gen->generatorData[2]);
+        PSMTXConcat(rotationY, rotationX, rotationX);
+        PSMTXConcat(rotationZ, rotationX, rotationX);
+
+        column.x = rotationX[0][0];
+        column.y = rotationX[1][0];
+        column.z = rotationX[2][0];
+        PSVECNormalize(&column, &column);
+        basis[0][0] = column.x;
+        basis[1][0] = column.y;
+        basis[2][0] = column.z;
+
+        column.x = rotationX[0][1];
+        column.y = rotationX[1][1];
+        column.z = rotationX[2][1];
+        PSVECNormalize(&column, &column);
+        basis[0][1] = column.x;
+        basis[1][1] = column.y;
+        basis[2][1] = column.z;
+
+        column.x = rotationX[0][2];
+        column.y = rotationX[1][2];
+        column.z = rotationX[2][2];
+        PSVECNormalize(&column, &column);
+        basis[0][2] = column.x;
+        basis[1][2] = column.y;
+        basis[2][2] = column.z;
+        basis[0][3] = 0.0f;
+        basis[1][3] = 0.0f;
+        basis[2][3] = 0.0f;
+    }
 }
 
 static inline s32 PSJObjMtxIsDirty(PSJObjTransform* jobj) {
