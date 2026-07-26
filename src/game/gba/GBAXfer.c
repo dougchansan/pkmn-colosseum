@@ -38,7 +38,7 @@ extern f32 lbl_8047E67C;
 /* SDA1 globals used by asm wrappers */
 extern u32 lbl_8047B668;
 extern u32 lbl_8047B66C;
-extern u32 lbl_8047B670;
+extern s32 lbl_8047B670;
 
 /* Data labels used by asm wrappers */
 extern u8  lbl_8039A6B8[];
