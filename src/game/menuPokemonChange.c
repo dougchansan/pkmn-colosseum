@@ -17,10 +17,10 @@
 /* stateFunctionSaveReport - 0x8002DD24 | size: 0x1ec */
 extern void fn_80089E20(void);
 extern void fn_801D055C(void);
-extern void fn_801D04D0(void);
+extern u8 fn_801D04D0(void);
 extern void fn_80089D98(void);
 extern void fn_801D046C(void);
-extern void memcardGetTaskResult(void);
+extern s32 memcardGetTaskResult(void);
 extern void gbaCommandSetKeyState(void);
 extern void fn_801D039C(void);
 extern void menuSubKeyWait(void);
@@ -70,9 +70,9 @@ void stateFunctionSaveReport(void *arg)
 
     /* Scene model-pool helpers */
     extern void fn_801D055C(s32 a, s32 b, s32 c); /* batch update / open */
-    extern void fn_801D04D0(void);                  /* pool poll – returns u8 */
+    extern u8 fn_801D04D0(void);                    /* pool poll */
     extern void fn_801D046C(s32 flag);              /* pool set-count flag  */
-    extern void memcardGetTaskResult(void);                  /* pool event poll – returns s32 result code */
+    extern s32 memcardGetTaskResult(void);           /* pool event result */
     extern void fn_801D039C(void);                  /* pool step update */
 
     /* Threading / render helpers */
@@ -125,7 +125,7 @@ void stateFunctionSaveReport(void *arg)
 L_loop:
     if (!did_action) {
         /* Poll scene pool for a pending entry */
-        s32 pool_entry = (u8)((u32(*)(void))fn_801D04D0)();
+        s32 pool_entry = fn_801D04D0();
         if (pool_entry != 0) {
             /* Check GBA slot-2 state */
             s32 gba_state = fn_80089D98(2);
@@ -142,7 +142,7 @@ L_loop:
 
     /* Yield one frame, then poll the scene for an event result */
     _threadSwitch();
-    event_result = ((s32(*)(void))memcardGetTaskResult)();
+    event_result = memcardGetTaskResult();
     if (event_result == 0) {
         goto L_loop;
     }
