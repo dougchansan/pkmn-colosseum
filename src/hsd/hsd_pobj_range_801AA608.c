@@ -57,8 +57,137 @@ extern void* lbl_80478C94;           /* RNG current state pointer   */
 extern char  lbl_8047DCB8;           /* "pobj.c"                    */
 extern char  lbl_8047DD10;           /* "pobj"                      */
 
-extern void fn_801ABDD4(HSD_PObj* pobj, f32 vertex_buffer[][3],
-                        f32 normal_buffer[][3]);
+extern void fn_800B928C(u32 primitive, u32 vtxfmt, u16 count);
+extern void OSReport(const char* format, ...);
+
+void fn_801ABDD4(HSD_PObj* pobj, f32 vertex_buffer[][3],
+                 f32 normal_buffer[][3])
+{
+    u8* dl = pobj->display;
+    s32 length = pobj->n_display << 5;
+    s32 l;
+
+    for (l = 0; l + 3 < length;) {
+        s32 n = (dl[1] << 8) | dl[2];
+        s32 m = 3;
+        s32 i;
+        s32 j;
+
+        if ((dl[0] & 0xF8) == 0) {
+            break;
+        }
+        fn_800B928C(dl[0] & 0xF8, dl[0] & 7, n);
+        for (i = 0; i < n; i++) {
+            for (j = 0;; j++) {
+                HSD_VtxDescList* desc = &pobj->verts[j];
+                u16 idx;
+
+                if (desc->attr == 0xFF) {
+                    break;
+                }
+                idx = dl[m++];
+                switch (desc->attr) {
+                case 0:
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                case 5:
+                case 6:
+                case 7:
+                case 8:
+                    *(volatile u8*) 0xCC008000 = idx;
+                    break;
+                case 9:
+                    if (desc->attr_type == 3) {
+                        idx = (idx << 8) | dl[m++];
+                    }
+                    *(volatile f32*) 0xCC008000 = vertex_buffer[idx][0];
+                    *(volatile f32*) 0xCC008000 = vertex_buffer[idx][1];
+                    *(volatile f32*) 0xCC008000 = vertex_buffer[idx][2];
+                    break;
+                case 10:
+                    if (desc->attr_type == 3) {
+                        idx = (idx << 8) | dl[m++];
+                    }
+                    *(volatile f32*) 0xCC008000 = normal_buffer[idx][0];
+                    *(volatile f32*) 0xCC008000 = normal_buffer[idx][1];
+                    *(volatile f32*) 0xCC008000 = normal_buffer[idx][2];
+                    break;
+                case 25:
+                    if (desc->attr_type == 3) {
+                        idx = (idx << 8) | dl[m++];
+                    }
+                    idx *= 3;
+                    *(volatile f32*) 0xCC008000 = normal_buffer[idx + 0][0];
+                    *(volatile f32*) 0xCC008000 = normal_buffer[idx + 0][1];
+                    *(volatile f32*) 0xCC008000 = normal_buffer[idx + 0][2];
+                    *(volatile f32*) 0xCC008000 = normal_buffer[idx + 1][0];
+                    *(volatile f32*) 0xCC008000 = normal_buffer[idx + 1][1];
+                    *(volatile f32*) 0xCC008000 = normal_buffer[idx + 1][2];
+                    *(volatile f32*) 0xCC008000 = normal_buffer[idx + 2][0];
+                    *(volatile f32*) 0xCC008000 = normal_buffer[idx + 2][1];
+                    *(volatile f32*) 0xCC008000 = normal_buffer[idx + 2][2];
+                    break;
+                case 13:
+                case 14:
+                case 15:
+                case 16:
+                case 17:
+                case 18:
+                case 19:
+                case 20:
+                    if (desc->attr_type == 3) {
+                        idx = (idx << 8) | dl[m++];
+                        *(volatile u16*) 0xCC008000 = idx;
+                    } else {
+                        *(volatile u8*) 0xCC008000 = idx;
+                    }
+                    break;
+                case 11:
+                case 12:
+                    if (desc->attr_type == 3) {
+                        idx = (idx << 8) | dl[m++];
+                        *(volatile u16*) 0xCC008000 = idx;
+                    } else if (desc->attr_type == 2) {
+                        *(volatile u8*) 0xCC008000 = idx;
+                    } else {
+                        switch (desc->comp_type) {
+                        case 0:
+                        case 3:
+                            *(volatile u16*) 0xCC008000 =
+                                (idx << 8) | dl[m++];
+                            break;
+                        case 1:
+                        case 4:
+                            *(volatile u8*) 0xCC008000 = idx;
+                            *(volatile u8*) 0xCC008000 = dl[m++];
+                            *(volatile u8*) 0xCC008000 = dl[m++];
+                            break;
+                        case 2:
+                        case 5:
+                            *(volatile u8*) 0xCC008000 = idx;
+                            *(volatile u8*) 0xCC008000 = dl[m++];
+                            *(volatile u8*) 0xCC008000 = dl[m++];
+                            *(volatile u8*) 0xCC008000 = dl[m++];
+                            break;
+                        }
+                    }
+                    break;
+                default:
+                    if (desc->attr_type == 3) {
+                        m++;
+                    }
+                    OSReport((char*) lbl_80274EE0 + 0x104, desc->attr);
+                    break;
+                }
+            }
+        }
+        l += m;
+        dl += m;
+    }
+}
+
 extern void fn_801AC1F8(HSD_ShapeSet* shape_set, s32 shape_id, s32 arrayidx,
                         f32 dst[9]);
 void get_shape_normal_xyz(HSD_ShapeSet* shape_set, s32 shape_id, s32 arrayidx,
