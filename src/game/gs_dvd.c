@@ -588,6 +588,7 @@ u8 fn_80167118(u32 slot, u32 stream, const char* path, u32 offset,
         return 0;
     }
     if (stream == 1) {
+        sampleData = NULL;
         fn_80159ED0((u8*)_sndSetSampleDataUploadCallbackFunction,
                     ARQGetChunkSize());
         lbl_8047B0BC = fn_80167F28(path);
@@ -600,7 +601,6 @@ u8 fn_80167118(u32 slot, u32 stream, const char* path, u32 offset,
             fn_80167E64((u8*)lbl_8047B0BC);
             return 0;
         }
-        sampleData = NULL;
     } else {
         sampleData = (void*)path;
         fn_80159ED0(NULL, 0);
