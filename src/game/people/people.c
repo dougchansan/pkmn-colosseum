@@ -823,8 +823,8 @@ u8 fn_8018D680(GSvec* a, GSvec* b, GSvec* point, f32 threshold) {
     fn_800E0168(point, point, &midpoint);
     GSvecTransformQuat(&rotated, quaternion, point);
     distance = GSvecDistance(&midpoint, b);
-    return threshold >= (f32)fabs(rotated.x) &&
-           distance >= (f32)fabs(rotated.z);
+    return threshold >= (f32)__fabs(rotated.x) &&
+           distance >= (f32)__fabs(rotated.z);
 }
 #endif
 
@@ -2319,6 +2319,7 @@ void fn_801860F8(u32 groupId, u32 index) {
 
 /* fn_8018790C -- not recovered, gap in archive campaign (size 0x154) */
 void fn_8018790C(u32 groupId, u32 index) {
+    extern GSvec* peopleGetPosition(PeopleEntry*);
     PeopleEntry* entry;
     GSvec* position;
 
@@ -2749,22 +2750,27 @@ BOOL peopleWaitSyncMotion(u32 groupId, u32 index, u8 wait) {
     void* model;
 
     entry = peopleFindBySelf(peopleFindSelf(groupId, index));
-    if (entry == NULL || (model = peopleGetModel(entry)) == NULL) {
+    if (entry == NULL) {
         return FALSE;
     }
-    while (!GSmodelHasAnimationEnded(model)) {
-        if (wait) {
-            if (*(s32*)((u8*)model + 0x8C) == 1) {
-                GSlogWrite((const char*)lbl_80274008, lbl_8036C4F8,
-                           groupId, index);
-                return FALSE;
-            }
-            _threadSwitch();
-        } else {
+    model = peopleGetModel(entry);
+    if (model == NULL) {
+        return FALSE;
+    }
+    for (;;) {
+        if (GSmodelHasAnimationEnded(model)) {
+            return FALSE;
+        }
+        if (!wait) {
             return TRUE;
         }
+        if (*(s32*)((u8*)model + 0x8C) == 1) {
+            GSlogWrite((const char*)lbl_80274008, lbl_8036C4F8,
+                       groupId, index);
+            return FALSE;
+        }
+        _threadSwitch();
     }
-    return FALSE;
 }
 
 u8 fn_8018B76C(u32 groupId, u32 index, s32 animIndex, s32 frame, u8 loop) {
@@ -3054,7 +3060,7 @@ BOOL fn_8018D7D0(u32 groupId, u32 index) {
     if (entry == NULL) {
         return FALSE;
     }
-    return (entry->index & 0x7FFFFFFF) == 0x7FFFFFFF;
+    return (entry->index & 0x7FFFFFFF) == 0x7FFF0000;
 }
 
 /* peopleSearchID -- not recovered, gap in archive campaign (size 0x70) */
@@ -3122,18 +3128,19 @@ void fn_8018DB04(void* param) {
 /* fn_8018E050 -- not recovered, gap in archive campaign (size 0x174) */
 void* fn_8018E050(u32 groupId, u32 index, s32 objectId) {
     PeopleEntry* entry;
+    const char* messages = (const char*)lbl_80273F90;
 
     if (peopleFindSelf(groupId, index) != NULL) {
-        GSlogWrite((const char*)lbl_80273F90 + 340, groupId, index);
+        GSlogWrite(messages + 340, groupId, index);
         return NULL;
     }
     entry = fn_8018FCE0();
     if (entry == NULL) {
-        GSlogWrite((const char*)lbl_80273F90 + 388, groupId, index);
+        GSlogWrite(messages + 388, groupId, index);
         return NULL;
     }
     if (!fn_8018E1C4(entry, groupId, index, objectId)) {
-        GSlogWrite((const char*)lbl_80273F90 + 440, groupId, index);
+        GSlogWrite(messages + 440, groupId, index);
         memset(entry, 0, PEOPLE_ENTRY_SIZE);
         return NULL;
     }
