@@ -2069,6 +2069,24 @@ extern void fn_801603C0(u8 ctrl, u8 channel, u8 set, u8 value); /* inpSetMidiCtr
                                                                   * re-mask already-clean u8
                                                                   * args when this is declared
                                                                   * u8, matching retail) */
+inline void inpSetMidiCtrl14(u8 ctrl, u8 channel, u8 set, u16 value) {
+    if (channel == 0xFF) {
+        return;
+    }
+
+    if (ctrl < 64) {
+        fn_801603C0(ctrl & 31, channel, set, value >> 7);
+        fn_801603C0((ctrl & 31) + 32, channel, set, value & 0x7f);
+    } else if (ctrl == 128 || ctrl == 129) {
+        fn_801603C0(ctrl & 254, channel, set, value >> 7);
+        fn_801603C0((ctrl & 254) + 1, channel, set, value & 0x7f);
+    } else if (ctrl == 132 || ctrl == 133) {
+        fn_801603C0(ctrl & 254, channel, set, value >> 7);
+        fn_801603C0((ctrl & 254) + 1, channel, set, value & 0x7f);
+    } else {
+        fn_801603C0(ctrl, channel, set, value >> 7);
+    }
+}
 extern u32  salInitDspCtrl(u8 a, u8 b, u8 c);
 u32 salExitDspCtrl(void);
 #pragma push
@@ -2113,9 +2131,7 @@ u16 inpGetExCtrl(u8* obj, u8 ctrl) {
 void inpSetExCtrl(u8* obj, u8 ctrl, s16 value) {
     u8 code;
     u8 raw;
-    u32 base;
     u8 channel;
-    u8 set;
 
     value = value < 0 ? 0 : value > 0x3FFF ? 0x3FFF : value;
     code = ctrl;
@@ -2138,22 +2154,7 @@ void inpSetExCtrl(u8* obj, u8 ctrl, s16 value) {
     default:
         channel = obj[0x121];
         if (channel != 0xFF) {
-            set = obj[0x122];
-            if (raw < 0x40) {
-                base = raw & 0x1F;
-                fn_801603C0(base, channel, set, (u16)value >> 7);
-                fn_801603C0(base + 0x20, channel, set, value & 0x7F);
-            } else if (raw == 0x80 || raw == 0x81) {
-                base = raw & 0xFE;
-                fn_801603C0(base, channel, set, (u16)value >> 7);
-                fn_801603C0(base + 1, channel, set, value & 0x7F);
-            } else if (raw == 0x84 || raw == 0x85) {
-                base = raw & 0xFE;
-                fn_801603C0(base, channel, set, (u16)value >> 7);
-                fn_801603C0(base + 1, channel, set, value & 0x7F);
-            } else {
-                fn_801603C0(raw, channel, set, (u16)value >> 7);
-            }
+            inpSetMidiCtrl14(raw, channel, obj[0x122], value);
         }
         break;
     }
@@ -8251,29 +8252,6 @@ void fn_801603C0(u8 ctrl, u8 channel, u8 set, u8 value) { /* inpSetMidiCtrl */
                 synthKeyStateUpdate(&lbl_8047AF48[i]);
             }
         }
-    }
-}
-#pragma pop
-
-#pragma push
-#pragma optimization_level 4
-#pragma optimizewithasm off
-void inpSetMidiCtrl14(u8 ctrl, u8 channel, u8 set, u16 value) {
-    if (channel == 0xFF) {
-        return;
-    }
-
-    if (ctrl < 64) {
-        fn_801603C0(ctrl & 31, channel, set, value >> 7);
-        fn_801603C0((ctrl & 31) + 32, channel, set, value & 0x7f);
-    } else if (ctrl == 128 || ctrl == 129) {
-        fn_801603C0(ctrl & 254, channel, set, value >> 7);
-        fn_801603C0((ctrl & 254) + 1, channel, set, value & 0x7f);
-    } else if (ctrl == 132 || ctrl == 133) {
-        fn_801603C0(ctrl & 254, channel, set, value >> 7);
-        fn_801603C0((ctrl & 254) + 1, channel, set, value & 0x7f);
-    } else {
-        fn_801603C0(ctrl, channel, set, value >> 7);
     }
 }
 #pragma pop
