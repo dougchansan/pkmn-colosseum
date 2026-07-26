@@ -205,13 +205,12 @@ static inline void GSpartCountMaterials(u8* material, u32* result)
     u32 count = 0;
 
     while (material != NULL) {
-        if ((u16)count == 0xFFFF) {
+        if (count++ == (u32)-1) {
             if (result != NULL) {
                 *result = -1;
             }
             return;
         }
-        count++;
         material = *(u8**)(material + 4);
     }
     if (result != NULL) {
