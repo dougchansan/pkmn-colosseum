@@ -377,6 +377,31 @@ void psSetParticleVisibility(PSGeneratorState* gen, u8 visible) {
     }
 }
 
+s32 _psLinkInit(s32 count) {
+    s32 i;
+
+    for (i = 0; i < PS_NUM_LINK; i++) {
+        lbl_80452708[i] = 0;
+        lbl_80452748[i] = 0;
+        lbl_80452788[i] = NULL;
+    }
+
+    lbl_8047B108 = NULL;
+    for (i = count - 1; i >= 0; i--) {
+        PSParticle* pp = fn_801A6928(sizeof(PSParticle));
+
+        memset(pp, 0, sizeof(PSParticle));
+        if (pp == NULL) {
+            return -1;
+        }
+
+        pp->next = lbl_8047B108;
+        lbl_8047B108 = pp;
+    }
+
+    return i;
+}
+
 #endif
 
 #if !defined(PR410_PS_SPLIT) || defined(PR410_PS_EXACT)
