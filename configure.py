@@ -1812,19 +1812,36 @@ config.libs = [
                 ],
                 progress_category="game",
             ),
-            Object(
-                CodeCandidate,
-                "game/fight_pokemon_candidate_801FE3F8_r40_801FEC10.c",
-                mw_version="GC/1.3",
-                extra_cflags=[
-                    "-O4,s",
-                    "-use_lmw_stmw on",
-                    "-sdata 8",
-                    "-sdata2 8",
-                    "-DFIGHT_POKEMON_CANDIDATE_801FDB78_ONLY",
-                ],
-                progress_category="game",
-            ),
+            *[
+                Object(
+                    CodeCandidate,
+                    path,
+                    mw_version="GC/1.3",
+                    extra_cflags=[
+                        "-O1"
+                        if path
+                        in {
+                            "game/fight_pokemon_r58_801FED3C_o1.c",
+                            "game/fight_pokemon_r58_801FF1BC_o1.c",
+                            "game/fight_pokemon_r58_80200B10_o1.c",
+                        }
+                        else "-O4,s",
+                        "-use_lmw_stmw on",
+                        "-sdata 8",
+                        "-sdata2 8",
+                        "-DFIGHT_POKEMON_CANDIDATE_801FDB78_ONLY",
+                    ],
+                    progress_category="game",
+                )
+                for path in [
+                    "game/fight_pokemon_r58_801FEC10_prefix.c",
+                    "game/fight_pokemon_r58_801FED3C_o1.c",
+                    "game/fight_pokemon_r58_801FEF74_middle.c",
+                    "game/fight_pokemon_r58_801FF1BC_o1.c",
+                    "game/fight_pokemon_r58_80200A5C_middle.c",
+                    "game/fight_pokemon_r58_80200B10_o1.c",
+                ]
+            ],
             Object(
                 CodeCandidate,
                 "game/fight_pokemon_candidate_80200E00_gc20.c",

@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196100,
     "total_functions": 8603,
-    "total_units": 2229
+    "total_units": 2234
   },
   "topology_status": {
     "auto_units": 68,
-    "named_units": 2161,
-    "source_backed_units": 2155,
+    "named_units": 2166,
+    "source_backed_units": 2160,
     "auto_code": 0,
     "auto_data": 57687,
     "auto_functions": 0
@@ -23,7 +23,7 @@
     "matched_data_percent": 97.28669,
     "matched_functions": 6573,
     "matched_functions_percent": 76.40358,
-    "fuzzy_match_percent": 72.12884
+    "fuzzy_match_percent": 72.30367
   },
   "unit_topology": [
     {
@@ -26549,17 +26549,82 @@
       "total_functions": 1
     },
     {
-      "name": "main/game/fight_pokemon_candidate_801FE3F8_r40_801FEC10",
+      "name": "main/game/fight_pokemon_r58_801FEC10_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 8688,
+          "size": 300,
           "virtual_address": 2149575696
         }
       ],
-      "total_code": 8688,
+      "total_code": 300,
       "total_data": 0,
-      "total_functions": 9
+      "total_functions": 2
+    },
+    {
+      "name": "main/game/fight_pokemon_r58_801FED3C_o1",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 568,
+          "virtual_address": 2149575996
+        }
+      ],
+      "total_code": 568,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/fight_pokemon_r58_801FEF74_middle",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 584,
+          "virtual_address": 2149576564
+        }
+      ],
+      "total_code": 584,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/fight_pokemon_r58_801FF1BC_o1",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 6304,
+          "virtual_address": 2149577148
+        }
+      ],
+      "total_code": 6304,
+      "total_data": 0,
+      "total_functions": 3
+    },
+    {
+      "name": "main/game/fight_pokemon_r58_80200A5C_middle",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 180,
+          "virtual_address": 2149583452
+        }
+      ],
+      "total_code": 180,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/fight_pokemon_r58_80200B10_o1",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 752,
+          "virtual_address": 2149583632
+        }
+      ],
+      "total_code": 752,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/game/fight_pokemon_candidate_80200E00_gc20",

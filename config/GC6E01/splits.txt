@@ -5925,8 +5925,23 @@ game/fight_pokemon_candidate_801FE3F8.c:
 game/fight_pokemon_candidate_801FE3F8_r40_801FE91C_gc125n.c:
 	.text       start:0x801FE91C end:0x801FEC10
 
-game/fight_pokemon_candidate_801FE3F8_r40_801FEC10.c:
-	.text       start:0x801FEC10 end:0x80200E00
+game/fight_pokemon_r58_801FEC10_prefix.c:
+	.text       start:0x801FEC10 end:0x801FED3C
+
+game/fight_pokemon_r58_801FED3C_o1.c:
+	.text       start:0x801FED3C end:0x801FEF74
+
+game/fight_pokemon_r58_801FEF74_middle.c:
+	.text       start:0x801FEF74 end:0x801FF1BC
+
+game/fight_pokemon_r58_801FF1BC_o1.c:
+	.text       start:0x801FF1BC end:0x80200A5C
+
+game/fight_pokemon_r58_80200A5C_middle.c:
+	.text       start:0x80200A5C end:0x80200B10
+
+game/fight_pokemon_r58_80200B10_o1.c:
+	.text       start:0x80200B10 end:0x80200E00
 
 game/fight_pokemon_candidate_80200E00_gc20.c:
 	.text       start:0x80200E00 end:0x802010C8
