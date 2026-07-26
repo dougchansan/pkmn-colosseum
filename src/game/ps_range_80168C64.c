@@ -1590,6 +1590,59 @@ void modifyDir(PSParticle* pp, f32 angle) {
                     radialY * yawSin + pitchCos * (forward * yawCos);
 }
 
+void modifyDirGenBase(PSParticle* pp, f32 angle, f32 offsetX,
+                      f32 offsetY, f32 offsetZ) {
+    PSGeneratorState* generator = pp->peopleObj;
+    f32 baseX = generator->velocityX + offsetX;
+    f32 baseY = generator->velocityY + offsetY;
+    f32 baseZ = generator->velocityZ + offsetZ;
+    f32 yaw;
+    f32 pitch;
+    f32 yawSin;
+    f32 yawCos;
+    f32 pitchSin;
+    f32 pitchCos;
+    f32 magnitude;
+    f32 azimuth;
+    f32 radial;
+    f32 radialX;
+    f32 radialY;
+    f32 forward;
+    f32 flattened;
+
+    if (fabsf(baseZ) < lbl_80478AC8) {
+        yaw = baseY >= 0.0f ? lbl_8047D694 : lbl_8047D698;
+    } else {
+        yaw = atan2(baseY, baseZ);
+    }
+    yawSin = sin(yaw);
+    yawCos = cos(yaw);
+
+    flattened = baseZ * yawCos + baseY * yawSin;
+    if (fabsf(flattened) < lbl_80478AC8) {
+        pitch = baseX >= 0.0f ? lbl_8047D694 : lbl_8047D698;
+    } else {
+        pitch = atan2(baseX, flattened);
+    }
+    pitchSin = sin(pitch);
+    pitchCos = cos(pitch);
+
+    magnitude = sqrtf(pp->velocityX * pp->velocityX +
+                      pp->velocityY * pp->velocityY +
+                      pp->velocityZ * pp->velocityZ);
+    azimuth = lbl_8047D6A0 * lbl_8047D6A8 * fn_801ADC7C();
+    radial = magnitude * sin(angle);
+    radialX = radial * cos(azimuth);
+    radialY = radial * sin(azimuth);
+    forward = magnitude * cos(angle);
+
+    pp->velocityX = forward * pitchSin + radialX * pitchCos;
+    pp->velocityY = pitchSin * (-radialX * yawSin) +
+                    radialY * yawCos + pitchCos * (forward * yawSin);
+    pp->velocityZ = pitchSin * (-radialX * yawCos) -
+                    radialY * yawSin + pitchCos * (forward * yawCos);
+}
+
 void psCopyGeneratorData(PSParticle* gen, void* peopleObj) {
     extern void psSetGeneratorAngleRadiusScale(PSGeneratorState*, f32*, u8);
     PSGeneratorState* dst = (PSGeneratorState*)gen;
