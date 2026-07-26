@@ -3165,6 +3165,8 @@ config.libs = [
             ),
             Object(Matching, "dolphin/gx/GX_exact_800BB780.c", mw_version="GC/1.2.5n", progress_category="sdk"),
             Object(CodeCandidate, "dolphin/sdk_candidate_800BB81C.c", mw_version="GC/1.2.5n", progress_category="sdk"),
+            Object(CodeCandidate, "dolphin/sdk_candidate_800BB97C_gc13.c", mw_version="GC/1.3", progress_category="sdk"),
+            Object(CodeCandidate, "dolphin/sdk_candidate_800BBC0C.c", mw_version="GC/1.2.5n", progress_category="sdk"),
             Object(
                 Matching,
                 "dolphin/gx/GX_exact_800BC580.c",
