@@ -221,6 +221,11 @@ extern f64 lbl_8047D5E0;
 extern f32 lbl_8047D5D8;
 extern f32 lbl_80478ACC;
 extern void particleSort(s32 linkNo, PSParticle** first, PSParticle** second);
+extern void fn_800BC8C8(s32 count);
+extern void fn_800B884C(s32 count);
+extern void fn_800BC6F0(s32 stage, s32 map, s32 coord, s32 color);
+extern void fn_800BC1A0(s32 stage, s32 a, s32 b, s32 c, s32 d);
+extern void fn_800BC1E4(s32 stage, s32 a, s32 b, s32 c, s32 d);
 void psDispSub(PSParticle* pp, void* polygonData);
 void psDispSubAppSRT(PSParticle* pp, Mtx parentMatrix);
 void psDispSubAPPSRTPoint(PSParticle* pp);
@@ -1109,6 +1114,28 @@ void fn_8016EB30(HSD_Obj* obj) {
 
 void psSetupTevInvalidState(void) {
     lbl_8047B170 = -1;
+}
+
+/*
+ * Updates cached TEV topology from the particle render flags.  Other topology
+ * combinations remain to be ported; the no-texture case is verified against
+ * 0x8016EC1C-0x8016EC4C and 0x8016EDEC-0x8016EE40.
+ */
+void psSetupTev(PSParticle* pp) {
+    s32 state = pp->flags & 0x80100480;
+
+    if (state == lbl_8047B170) {
+        return;
+    }
+    lbl_8047B170 = state;
+
+    if (state == 0) {
+        fn_800BC8C8(1);
+        fn_800B884C(0);
+        fn_800BC6F0(0, 0xFF, 0xFF, 4);
+        fn_800BC1A0(0, 2, 0xF, 0xF, 0xF);
+        fn_800BC1E4(0, 1, 7, 7, 7);
+    }
 }
 
 u8 U8ClampAdd(u8 cur, f32 delta) {
