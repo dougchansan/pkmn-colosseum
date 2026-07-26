@@ -10076,6 +10076,7 @@ config.libs = [
                 CodeCandidate,
                 "hsd/hsd_texp_candidate_801B7BD4_r40_801B89BC_gc125n.c",
                 mw_version="GC/1.3",
+                cflags=["-O4,s" if flag == "-O4,p" else flag for flag in cflags_base],
                 progress_category="hsd",
             ),
             Object(
