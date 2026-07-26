@@ -351,7 +351,6 @@ void fn_800B8444(void) {
 void fn_800B84E0(s32 attr, u32 value, u8 value2) {
     s32 idx;
     s32 j;
-    volatile u32* gx32 = (u32*)gx;
 
     if (attr == 0x19) {
         attr = 0xA;
@@ -364,6 +363,7 @@ void fn_800B84E0(s32 attr, u32 value, u8 value2) {
     GX_FIFO_U32 = value;
     j = idx - 0xC;
     if (j >= 0 && j < 4) {
+        volatile u32* gx32 = (u32*)gx;
         gx32[0x22 + j] = value;
     }
 
@@ -372,6 +372,7 @@ void fn_800B84E0(s32 attr, u32 value, u8 value2) {
     GX_FIFO_U32 = value2;
     j = idx - 0xC;
     if (j >= 0 && j < 4) {
+        volatile u32* gx32 = (u32*)gx;
         gx32[0x26 + j] = value2;
     }
 }
