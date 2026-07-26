@@ -65,8 +65,8 @@ typedef struct {
     OSModuleInfo* tail;
 } OSModuleQueue;
 
-extern OSModuleQueue __OSModuleInfoList;
-extern const void* __OSStringTable;
+extern OSModuleQueue __OSModuleInfoList : (0x800030C8);
+extern const void* __OSStringTable : (0x800030D0);
 extern void DCFlushRange(void* address, u32 length);
 extern void ICInvalidateRange(void* address, u32 length);
 extern void OSReport(const char* format, ...);
