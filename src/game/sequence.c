@@ -386,66 +386,8 @@ void fn_801DD3E4(void* obj) {
  * sequenceLoad - Waza scene snapshot.
  * Address: 0x801DD45C | Size: 0x18C
  */
-BOOL sequenceLoad(void* effectPtr, void* resource) {
-    WazaEffect* effect = effectPtr;
-    struct GSmodel* model;
-
-    if (effect == NULL) {
-        return FALSE;
-    }
-    if (!fn_801DD5E8(effect, resource)) {
-        extern const char lbl_80279998[];
-        GSlogWrite(lbl_80279998);
-        return FALSE;
-    }
-
-    {
-        extern void* GSresGetResource(u32 group, u32 resource);
-        extern void fn_800EB268(struct GSmodel* model, u32 index);
-        extern void GSmodelLinkTexAnimToAnim(struct GSmodel* model, u32 enable);
-        extern void GSmodelSetAnimEndedCallback(struct GSmodel*, void*, void*);
-        extern void GSmodelSetPosition(struct GSmodel*, const void*);
-        extern void GSmodelSetRotation(struct GSmodel*, const void*);
-        extern void GSmodelSetScale(struct GSmodel*, const void*);
-        extern void GSmodelSetShadowFlags(struct GSmodel*, u32);
-        extern void GSmodelSetShadowLight(struct GSmodel*, s32);
-        extern void GSmodelSetShadowSurface(struct GSmodel*, s32, void*);
-        extern void GSmodelSetBoundCheck(struct GSmodel*, u32);
-        extern void fn_800E3B44(struct GSmodel*, u32);
-        extern void* fn_801195AC(void*);
-        extern const u8 lbl_803727B0[];
-        extern const u8 lbl_803727BC[];
-
-        model = GSresGetResource(*(u32*)effect, *(u32*)((u8*)effect + 4));
-        effect->model = model;
-        fn_800EB268(model, fn_801DF160((u8*)effect));
-        if (*(u32*)((u8*)effect + 0x0C) != 0) {
-            effect->particleBank =
-                fn_801195AC(GSresGetResource(*(u32*)effect,
-                                             *(u32*)((u8*)effect + 0x0C)));
-            GSmodelLinkToGSparticleBank(model, effect->particleBank);
-        }
-        GSmodelLinkTexAnimToAnim(model, 1);
-        GSmodelSetAnimEndedCallback(model, sequenceAnimEndCallback, effect);
-        fn_801DEF0C(effect, 1, 1);
-        fn_801DA4E8(effect, 0);
-        GSmodelSetPosition(model, lbl_803727B0);
-        GSmodelSetRotation(model, lbl_803727B0);
-        GSmodelSetScale(model, lbl_803727BC);
-        if (wazaSequenceSysGetModelShadowLight__Fv() != 0 &&
-            wazaSequenceSysGetModelShadowCount__Fv() != 0) {
-            void* list;
-            GSmodelSetShadowFlags(model, 1);
-            GSmodelSetShadowLight(model,
-                                  wazaSequenceSysGetModelShadowLight__Fv());
-            list = wazaSequenceSysGetModelShadowList__Fv();
-            GSmodelSetShadowSurface(
-                model, wazaSequenceSysGetModelShadowCount__Fv(), list);
-            GSmodelSetBoundCheck(model, 1);
-            fn_800E3B44(model, 1);
-        }
-    }
-    return TRUE;
+void sequenceLoad(void) {
+    /* TODO: Scene snapshot for transition effects (0x18C bytes) */
 }
 
 /**
@@ -752,8 +694,38 @@ void fn_801DE190(void) {
  * fn_801DE418 - Waza HP drain effect.
  * Address: 0x801DE418 | Size: 0x180
  */
-void fn_801DE418(s32 attackerSlot, s32 targetSlot) {
-    /* TODO: HP drain effect (0x180 bytes) */
+void* fn_801DE418(u16 index) {
+    extern u32 lbl_80478CC8;
+    extern u8 lbl_80370840[];
+    extern void* GSresGetResource(u32 group, u32 resource);
+    u8* entry;
+    u32 group;
+    u32 resourceId;
+    void* resource;
+
+    if (index == 0 || index >= lbl_80478CC8) {
+        return NULL;
+    }
+
+    entry = lbl_80370840 + index * 12;
+    group = *(u32*)entry;
+    resourceId = *(u32*)(entry + 4);
+    if (group == 0 || resourceId == 0) {
+        group = *(u32*)(lbl_80370840 + 12);
+        resourceId = *(u32*)(lbl_80370840 + 16);
+        if (group == 0 || resourceId == 0) {
+            return NULL;
+        }
+    }
+
+    fn_801DE598(group, resourceId);
+    resource = GSresGetResource(group, resourceId);
+    if (resource == NULL) {
+        return NULL;
+    }
+
+    /* TODO: Allocate and initialize the effect from the loaded resource. */
+    return NULL;
 }
 
 /**
