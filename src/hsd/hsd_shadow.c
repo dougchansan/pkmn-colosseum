@@ -390,8 +390,72 @@ void fn_801B0A98(HSDShadow* shadow, HSD_LObj* light, f32 distance) {
 }
 
 /* Address: 0x801B0BD8 | Size: 0x2E0 | Proposed: HSD_ShadowFunc7 */
-/* Shadow caster traversal and rendering */
-void fn_801B0BD8(void) {
+/* Copy the shadow map and update its texture projection matrix. */
+void fn_801B0BD8(HSDShadow* shadow) {
+    extern char lbl_802752C0[];
+    extern char lbl_8047DDCC;
+    extern char lbl_8047DDD4;
+    extern void fn_800B9FE4(void* destination, u8 clear);
+    extern void fn_800B8E74(void);
+    extern void GXInvalidateTexAll(void);
+    extern void C_MTXLightPerspective(Mtx m, f32 fov, f32 aspect,
+                                      f32 scale_s, f32 scale_t, f32 trans_s,
+                                      f32 trans_t);
+    extern void C_MTXLightFrustum(Mtx m, f32 top, f32 bottom, f32 left,
+                                  f32 right, f32 near, f32 scale_s,
+                                  f32 scale_t, f32 trans_s, f32 trans_t);
+    extern void C_MTXLightOrtho(Mtx m, f32 top, f32 bottom, f32 left,
+                                f32 right, f32 scale_s, f32 scale_t,
+                                f32 trans_s, f32 trans_t);
+    extern void PSMTXConcat(Mtx a, Mtx b, Mtx out);
+    HSD_ImageDesc* image;
+    Mtx projection;
+
+    if (shadow == NULL) {
+        __assert(lbl_802752C0, 0x229, &lbl_8047DDCC);
+    }
+
+    image = shadow->texture->imagedesc;
+    if (image->image_ptr == NULL) {
+        fn_801B1524(shadow, image->width, image->height);
+    }
+
+    fn_800B9FE4(image->image_ptr, 1);
+    fn_800B8E74();
+    GXInvalidateTexAll();
+
+    switch (HSD_CObjGetProjectionType(shadow->camera)) {
+    case 1:
+        C_MTXLightPerspective(
+            projection, shadow->camera->projection_param.perspective.fov,
+            shadow->camera->projection_param.perspective.aspect,
+            shadow->scale_s, shadow->scale_t, shadow->trans_s,
+            shadow->trans_t);
+        break;
+    case 2:
+        C_MTXLightFrustum(
+            projection, shadow->camera->projection_param.frustum.top,
+            shadow->camera->projection_param.frustum.bottom,
+            shadow->camera->projection_param.frustum.left,
+            shadow->camera->projection_param.frustum.right,
+            shadow->camera->near, shadow->scale_s, shadow->scale_t,
+            shadow->trans_s, shadow->trans_t);
+        break;
+    case 3:
+        C_MTXLightOrtho(projection,
+                        shadow->camera->projection_param.ortho.top,
+                        shadow->camera->projection_param.ortho.bottom,
+                        shadow->camera->projection_param.ortho.left,
+                        shadow->camera->projection_param.ortho.right,
+                        shadow->scale_s, shadow->scale_t, shadow->trans_s,
+                        shadow->trans_t);
+        break;
+    default:
+        __assert(lbl_802752C0, 0x305, &lbl_8047DDD4);
+        break;
+    }
+
+    PSMTXConcat(projection, shadow->camera->view_mtx, shadow->texture->mtx);
 }
 
 /* Address: 0x801B0EB8 | Size: 0x66C | Proposed: HSD_ShadowMain */
