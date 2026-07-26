@@ -231,7 +231,13 @@ game/menuSub.c:
 	.text       start:0x8001D7E4 end:0x8001E3E0
 
 game/gs_pcbox_range_8001E3E0.c:
-	.text       start:0x8001E3E0 end:0x8001EC08
+	.text       start:0x8001E3E0 end:0x8001E644
+
+game/gs_pcbox_range_8001E3E0_r41_8001E644_gc125n.c:
+	.text       start:0x8001E644 end:0x8001EA98
+
+game/gs_pcbox_range_8001E3E0_r41_8001EA98.c:
+	.text       start:0x8001EA98 end:0x8001EC08
 
 game/gs_pcbox_range_8001E3E0_r40_8001EC08_gc125n.c:
 	.text       start:0x8001EC08 end:0x8001EF78
@@ -4688,7 +4694,10 @@ game/gs_range_801DE698.c:
 	.text       start:0x801DE698 end:0x801DF790
 
 game/field_range_801DF790.c:
-	.text       start:0x801DF790 end:0x801E09E0
+	.text       start:0x801DF790 end:0x801E075C
+
+game/field_range_801DF790_r41_801E075C_gc125n.c:
+	.text       start:0x801E075C end:0x801E09E0
 
 game/gs_candidate_801E09E0.c:
 	.text       start:0x801E09E0 end:0x801E1170
