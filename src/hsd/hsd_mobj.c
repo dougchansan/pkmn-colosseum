@@ -215,10 +215,7 @@ void HSD_MObjAddTObjNext(HSD_MObj* mobj, HSD_TObj* tobj, HSD_TObj* next)
 /* 0x801A6DA0 | 0x24 */
 void fn_801A6DA0(HSD_MObj* mobj, HSD_TObj* tobj)
 {
-    if (mobj == NULL) {
-        return;
-    }
-    if (tobj == NULL) {
+    if (mobj == NULL || tobj == NULL) {
         return;
     }
     tobj->next = mobj->tobj;
