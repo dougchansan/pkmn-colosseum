@@ -2879,6 +2879,17 @@ PSGeneratorState* psCreateGeneratorID(s32 linkNo, s32 bankIdx, s32 scriptId) {
     }
     gen->familyId = familyId;
     gen->appSRT = NULL;
+    gen->generatorFlags = 2;
+    gen->linkedJObj = NULL;
+    gen->generatorData[0] = 0.0f;
+    gen->generatorData[1] = 0.0f;
+    gen->generatorData[2] = 0.0f;
+    gen->generatorData[3] = 1.0f;
+    gen->generatorData[4] = 1.0f;
+    gen->generatorData[5] = 1.0f;
+    gen->angleRadiusScale[0] = 1.0f;
+    gen->angleRadiusScale[1] = 1.0f;
+    gen->angleRadiusScale[2] = 1.0f;
     return gen;
 }
 
