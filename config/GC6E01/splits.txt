@@ -339,7 +339,19 @@ game/gs_title_candidate_80025F84.c:
 	.text       start:0x80025F84 end:0x80026370
 
 game/menuNameEntry.c:
-	.text       start:0x80026370 end:0x80029850
+	.text       start:0x80026370 end:0x80026B44
+
+game/menuNameEntry_candidate_80026B44_gc20.c:
+	.text       start:0x80026B44 end:0x80026FEC
+
+game/menuNameEntry_candidate_80026FEC.c:
+	.text       start:0x80026FEC end:0x800275F4
+
+game/menuNameEntry_candidate_800275F4_gc20.c:
+	.text       start:0x800275F4 end:0x80027740
+
+game/menuNameEntry_candidate_80027740.c:
+	.text       start:0x80027740 end:0x80029850
 
 game/menuShop.c:
 	.text       start:0x80029850 end:0x8002DD24
@@ -5245,7 +5257,13 @@ game/fight_trainer_ai_waza_value_exact_8024DE8C.c:
 	.text       start:0x8024DE8C end:0x8024E578
 
 game/fight_trainer_ai_irekae.c:
-	.text       start:0x8024E578 end:0x80250980
+	.text       start:0x8024E578 end:0x8024E690
+
+game/fight_trainer_ai_irekae_candidate_8024E690_gc20.c:
+	.text       start:0x8024E690 end:0x8024F8B4
+
+game/fight_trainer_ai_irekae_candidate_8024F8B4.c:
+	.text       start:0x8024F8B4 end:0x80250980
 
 game/fight_trainer_ai_waza_damage.c:
 	.text       start:0x80250980 end:0x80253950
