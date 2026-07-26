@@ -254,8 +254,14 @@ game/menuPokemon_r50_8001D378_o3.c:
 game/menuPokemon_r50_8001D624_suffix.c:
 	.text       start:0x8001D624 end:0x8001D7E4
 
-game/menuSub.c:
-	.text       start:0x8001D7E4 end:0x8001E3E0
+game/menuSub_r54_8001D7E4_prefix.c:
+	.text       start:0x8001D7E4 end:0x8001DACC
+
+game/menuSub_r54_8001DACC_gc13_o1.c:
+	.text       start:0x8001DACC end:0x8001DFA8
+
+game/menuSub_r54_8001DFA8_suffix.c:
+	.text       start:0x8001DFA8 end:0x8001E3E0
 
 game/gs_pcbox_range_8001E3E0.c:
 	.text       start:0x8001E3E0 end:0x8001E644
@@ -2792,8 +2798,14 @@ game/gs_msg_candidate_800FA314_r46_800FB680.c:
 game/gs_thread_hi_range_800FE35C.c:
 	.text       start:0x800FE35C end:0x800FE6DC
 
-game/gs_gapp.c:
-	.text       start:0x800FE6DC end:0x800FEC34
+game/gs_gapp_r54_800FE6DC_prefix.c:
+	.text       start:0x800FE6DC end:0x800FEA74
+
+game/gs_gapp_r54_800FEA74_gc13_o4s.c:
+	.text       start:0x800FEA74 end:0x800FEBA0
+
+game/gs_gapp_r54_800FEBA0_suffix.c:
+	.text       start:0x800FEBA0 end:0x800FEC34
 
 game/gs_thread_hi_range_800FEC34.c:
 	.text       start:0x800FEC34 end:0x800FF0A0
@@ -3244,8 +3256,14 @@ game/pcbox_candidate_8013433C.c:
 game/pcbox_exact_801347D0.c:
 	.text       start:0x801347D0 end:0x801347E8
 
-game/pcbox_candidate_801347E8.c:
-	.text       start:0x801347E8 end:0x80135028
+game/pcbox_r54_801347E8_prefix.c:
+	.text       start:0x801347E8 end:0x80134E10
+
+game/pcbox_r54_80134E10_gc125_o1.c:
+	.text       start:0x80134E10 end:0x80134EF0
+
+game/pcbox_r54_80134EF0_suffix.c:
+	.text       start:0x80134EF0 end:0x80135028
 
 game/pcbox_exact_80135028.c:
 	.text       start:0x80135028 end:0x80135030
@@ -4177,8 +4195,14 @@ game/ps_candidate_80172930.c:
 game/ps_get_time_exact_801735BC.c:
 	.text       start:0x801735BC end:0x801735EC
 
-game/ps_candidate_801735EC.c:
-	.text       start:0x801735EC end:0x8017572C
+game/ps_r54_801735EC_prefix.c:
+	.text       start:0x801735EC end:0x80173F98
+
+game/ps_r54_80173F98_gc13_o2.c:
+	.text       start:0x80173F98 end:0x8017424C
+
+game/ps_r54_8017424C_suffix.c:
+	.text       start:0x8017424C end:0x8017572C
 
 game/ps_generator_range_8017572C.c:
 	.text       start:0x8017572C end:0x80175F6C
@@ -4687,8 +4711,11 @@ hsd/hsd_mobj_candidate_801A6FF0.c:
 hsd/hsd_mobj_exact_801A7E3C.c:
 	.text       start:0x801A7E3C end:0x801A7E84
 
-hsd/hsd_mobj_candidate_801A7E84.c:
-	.text       start:0x801A7E84 end:0x801A8428
+hsd/hsd_mobj_r54_801A7E84_gc11p1_o1.c:
+	.text       start:0x801A7E84 end:0x801A8354
+
+hsd/hsd_mobj_r54_801A8354_suffix.c:
+	.text       start:0x801A8354 end:0x801A8428
 
 hsd/hsd_mobj_clear_flags.c:
 	.text       start:0x801A8428 end:0x801A8440
@@ -5802,8 +5829,14 @@ game/fight_seq_candidate_80211170.c:
 game/fight_seq_exact_802117FC.c:
 	.text       start:0x802117FC end:0x80211810
 
-game/fight_seq_candidate_80211810.c:
-	.text       start:0x80211810 end:0x802119D4
+game/fight_seq_r54_80211810_prefix.c:
+	.text       start:0x80211810 end:0x80211830
+
+game/fight_seq_r54_80211830_gc13_o4p.c:
+	.text       start:0x80211830 end:0x802118FC
+
+game/fight_seq_r54_802118FC_suffix.c:
+	.text       start:0x802118FC end:0x802119D4
 
 game/fight_seq_exact_802119D4.c:
 	.text       start:0x802119D4 end:0x80211A00
