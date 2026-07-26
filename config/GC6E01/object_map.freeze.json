@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196100,
     "total_functions": 8603,
-    "total_units": 2200
+    "total_units": 2209
   },
   "topology_status": {
     "auto_units": 68,
-    "named_units": 2132,
-    "source_backed_units": 2126,
+    "named_units": 2141,
+    "source_backed_units": 2135,
     "auto_code": 0,
     "auto_data": 57687,
     "auto_functions": 0
@@ -23,7 +23,7 @@
     "matched_data_percent": 97.28669,
     "matched_functions": 6573,
     "matched_functions_percent": 76.40358,
-    "fuzzy_match_percent": 72.080734
+    "fuzzy_match_percent": 72.09791
   },
   "unit_topology": [
     {
@@ -1015,17 +1015,69 @@
       "total_functions": 7
     },
     {
-      "name": "main/game/gs_pokemon_summary_r55_8001501C_prefix",
+      "name": "main/game/gs_pokemon_summary_r57b_8001501C_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 5792,
+          "size": 200,
           "virtual_address": 2147569692
         }
       ],
-      "total_code": 5792,
+      "total_code": 200,
       "total_data": 0,
-      "total_functions": 11
+      "total_functions": 2
+    },
+    {
+      "name": "main/game/gs_pokemon_summary_r57b_800150E4_o4s",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 2264,
+          "virtual_address": 2147569892
+        }
+      ],
+      "total_code": 2264,
+      "total_data": 0,
+      "total_functions": 3
+    },
+    {
+      "name": "main/game/gs_pokemon_summary_r57b_800159BC_middle",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1152,
+          "virtual_address": 2147572156
+        }
+      ],
+      "total_code": 1152,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/gs_pokemon_summary_r57b_80015E3C_o4s",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 884,
+          "virtual_address": 2147573308
+        }
+      ],
+      "total_code": 884,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/gs_pokemon_summary_r57b_800161B0_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1292,
+          "virtual_address": 2147574192
+        }
+      ],
+      "total_code": 1292,
+      "total_data": 0,
+      "total_functions": 4
     },
     {
       "name": "main/game/gs_pokemon_summary_r55_800166BC_gc13_o3",
@@ -15736,17 +15788,30 @@
       "total_functions": 3
     },
     {
-      "name": "main/game/effect/effect_visual_candidate_8013E8A4",
+      "name": "main/game/effect/effect_visual_r57b_8013E8A4_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 1884,
+          "size": 416,
           "virtual_address": 2148788388
         }
       ],
-      "total_code": 1884,
+      "total_code": 416,
       "total_data": 0,
-      "total_functions": 2
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/effect/effect_visual_r57b_8013EA44_o1",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1468,
+          "virtual_address": 2148788804
+        }
+      ],
+      "total_code": 1468,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/game/effect/effect_visual_exact_8013F000",
@@ -28672,17 +28737,43 @@
       "total_functions": 5
     },
     {
-      "name": "main/game/memo_candidate_8025FA20",
+      "name": "main/game/memo_r57b_8025FA20_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 1220,
+          "size": 428,
           "virtual_address": 2149972512
         }
       ],
-      "total_code": 1220,
+      "total_code": 428,
       "total_data": 0,
-      "total_functions": 5
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/memo_r57b_8025FBCC_o2",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 360,
+          "virtual_address": 2149972940
+        }
+      ],
+      "total_code": 360,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/memo_r57b_8025FD34_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 432,
+          "virtual_address": 2149973300
+        }
+      ],
+      "total_code": 432,
+      "total_data": 0,
+      "total_functions": 3
     },
     {
       "name": "main/game/memo_exact_8025FEE4",
@@ -28711,17 +28802,43 @@
       "total_functions": 3
     },
     {
-      "name": "main/game/evolution",
+      "name": "main/game/evolution_r57b_802600E4_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 4772,
+          "size": 3544,
           "virtual_address": 2149974244
         }
       ],
-      "total_code": 4772,
+      "total_code": 3544,
       "total_data": 0,
-      "total_functions": 7
+      "total_functions": 4
+    },
+    {
+      "name": "main/game/evolution_r57b_80260EBC_o4p",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1044,
+          "virtual_address": 2149977788
+        }
+      ],
+      "total_code": 1044,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/evolution_r57b_802612D0_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 184,
+          "virtual_address": 2149978832
+        }
+      ],
+      "total_code": 184,
+      "total_data": 0,
+      "total_functions": 2
     },
     {
       "name": "main/game/char_name_bios",

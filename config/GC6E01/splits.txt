@@ -224,8 +224,20 @@ game/gs_event_exec_r47_80014574_o3.c:
 game/gs_event_exec_r47_suffix.c:
 	.text       start:0x80014A48 end:0x8001501C
 
-game/gs_pokemon_summary_r55_8001501C_prefix.c:
-	.text       start:0x8001501C end:0x800166BC
+game/gs_pokemon_summary_r57b_8001501C_prefix.c:
+	.text       start:0x8001501C end:0x800150E4
+
+game/gs_pokemon_summary_r57b_800150E4_o4s.c:
+	.text       start:0x800150E4 end:0x800159BC
+
+game/gs_pokemon_summary_r57b_800159BC_middle.c:
+	.text       start:0x800159BC end:0x80015E3C
+
+game/gs_pokemon_summary_r57b_80015E3C_o4s.c:
+	.text       start:0x80015E3C end:0x800161B0
+
+game/gs_pokemon_summary_r57b_800161B0_suffix.c:
+	.text       start:0x800161B0 end:0x800166BC
 
 game/gs_pokemon_summary_r55_800166BC_gc13_o3.c:
 	.text       start:0x800166BC end:0x800167D0
@@ -3504,8 +3516,11 @@ game/effect/effect_visual_candidate_8013E54C.c:
 game/effect/effect_visual_exact_8013E5AC.c:
 	.text       start:0x8013E5AC end:0x8013E8A4
 
-game/effect/effect_visual_candidate_8013E8A4.c:
-	.text       start:0x8013E8A4 end:0x8013F000
+game/effect/effect_visual_r57b_8013E8A4_prefix.c:
+	.text       start:0x8013E8A4 end:0x8013EA44
+
+game/effect/effect_visual_r57b_8013EA44_o1.c:
+	.text       start:0x8013EA44 end:0x8013F000
 
 game/effect/effect_visual_exact_8013F000.c:
 	.text       start:0x8013F000 end:0x8013F344
@@ -6408,8 +6423,14 @@ game/gba/GBAWrite.c:
 game/gba/GBAXfer.c:
 	.text       start:0x8025F70C end:0x8025FA20
 
-game/memo_candidate_8025FA20.c:
-	.text       start:0x8025FA20 end:0x8025FEE4
+game/memo_r57b_8025FA20_prefix.c:
+	.text       start:0x8025FA20 end:0x8025FBCC
+
+game/memo_r57b_8025FBCC_o2.c:
+	.text       start:0x8025FBCC end:0x8025FD34
+
+game/memo_r57b_8025FD34_suffix.c:
+	.text       start:0x8025FD34 end:0x8025FEE4
 
 game/memo_exact_8025FEE4.c:
 	.text       start:0x8025FEE4 end:0x8025FF18
@@ -6417,8 +6438,14 @@ game/memo_exact_8025FEE4.c:
 game/memo_candidate_8025FF18.c:
 	.text       start:0x8025FF18 end:0x802600E4
 
-game/evolution.c:
-	.text       start:0x802600E4 end:0x80261388
+game/evolution_r57b_802600E4_prefix.c:
+	.text       start:0x802600E4 end:0x80260EBC
+
+game/evolution_r57b_80260EBC_o4p.c:
+	.text       start:0x80260EBC end:0x802612D0
+
+game/evolution_r57b_802612D0_suffix.c:
+	.text       start:0x802612D0 end:0x80261388
 
 game/char_name_bios.c:
 	.text       start:0x80261388 end:0x802614B4
