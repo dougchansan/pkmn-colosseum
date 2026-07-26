@@ -2657,6 +2657,7 @@ config.libs = [
                 CodeCandidate,
                 "dolphin/sdk_range_800AC440.c",
                 mw_version="GC/1.2.5n",
+                extra_cflags=["-O4,s"],
                 progress_category="sdk",
             ),
             Object(
