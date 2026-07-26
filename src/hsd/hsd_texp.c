@@ -1676,18 +1676,16 @@ type_done:
 }
 #pragma optimization_level 4
 
-/*
- * HSD_ImageDescToGX - 0x801B5F08 | Size: 0x104
- * Initialize a GX texture object from an HSD image descriptor.
- */
-void fn_801B5F08(HSD_ImageDesc* desc, void* texobj) {
-    if (desc == NULL || texobj == NULL) {
-        return;
+/* HSD_TExpAlphaIn */
+void fn_801B5F08(ColTExpNode* texp, u32 sel_a, ColTExpNode* exp_a,
+                 u32 sel_b, ColTExpNode* exp_b, u32 sel_c,
+                 ColTExpNode* exp_c, u32 sel_d, ColTExpNode* exp_d) {
+    if (texp == NULL) {
+        __assert(&lbl_8047DE70, 0x356, &lbl_8047DE90);
     }
-
-    /* GXInitTexObj(texobj, desc->image_ptr, desc->width, desc->height,
-     *              desc->format, GX_CLAMP, GX_CLAMP, desc->mipmap ? GX_TRUE : GX_FALSE)
-     */
+    if (ColTExpGetType(texp) != COL_TE_TEV) {
+        __assert(&lbl_8047DE70, 0x357, lbl_802753DC);
+    }
 }
 
 /*
@@ -1727,18 +1725,15 @@ void fn_801B600C(HSD_TObj* tobj, u32 map_id) {
     /* GXLoadTexObj */
 }
 
-/*
- * HSD_MipmapSetup - 0x801B64EC | Size: 0x104
- * Configure mipmap chain for a texture.
- */
-void fn_801B64EC(HSD_TObj* tobj) {
-    if (tobj == NULL || tobj->imagedesc == NULL) {
-        return;
+/* HSD_TExpColorIn */
+void fn_801B64EC(ColTExpNode* texp, u32 sel_a, ColTExpNode* exp_a,
+                 u32 sel_b, ColTExpNode* exp_b, u32 sel_c,
+                 ColTExpNode* exp_c, u32 sel_d, ColTExpNode* exp_d) {
+    if (texp == NULL) {
+        __assert(&lbl_8047DE70, 0x2D4, &lbl_8047DE90);
     }
-
-    if (tobj->imagedesc->mipmap != 0) {
-        /* Set up mipmap LOD parameters */
-        /* GXInitTexObjLOD with min/max LOD from imagedesc */
+    if (ColTExpGetType(texp) != COL_TE_TEV) {
+        __assert(&lbl_8047DE70, 0x2D5, lbl_802753DC);
     }
 }
 
