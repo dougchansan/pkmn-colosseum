@@ -375,7 +375,8 @@ void GSmodelSetTexAnimIndex(GSmodel* model, u32 index)
         model->tex_anim_frame = lbl_8047CC5C;
         model->tex_anim_req_frame = lbl_8047CC5C;
         fn_801A32A0(jobj, 0x634, model->tex_anim_req_frame);
-        model->flags &= ~MODEL_FLAG_TEX_ANIM_ENDED;
+        flags = model->flags & ~MODEL_FLAG_TEX_ANIM_ENDED;
+        model->flags = flags;
     }
 
     flags = model->flags;
