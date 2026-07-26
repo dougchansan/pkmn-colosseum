@@ -1458,9 +1458,64 @@ typedef struct Quaternion {
     f32 w;
 } Quaternion;
 
+extern double acos(double x);
+extern double sin(double x);
+
+s32 fn_801AD7CC(Quaternion* p, Quaternion* q, Quaternion* out, f32 t)
+{
+    f32 cosom;
+    f32 t2;
+    f32 theta;
+    f32 sinom;
+    f32 sp;
+    f32 sq;
+
+    cosom = p->x * q->x + p->y * q->y + p->z * q->z + p->w * q->w;
+
+    if ((1.0F + cosom) > 1e-10F) {
+        if ((1.0F - cosom) > 1e-10F) {
+            theta = acos(cosom);
+            sinom = sin(theta);
+            sp = (f32) sin((1.0F - t) * theta) / sinom;
+            sq = (f32) sin(t * theta) / sinom;
+        } else {
+            sq = t;
+            sp = (f32) (1.0 - (f64) t);
+        }
+        out->x = sp * p->x + sq * q->x;
+        out->y = sp * p->y + sq * q->y;
+        out->z = sp * p->z + sq * q->z;
+        out->w = sp * p->w + sq * q->w;
+    } else {
+        out->x = -p->y;
+        out->y = p->x;
+        out->z = -p->w;
+        out->w = p->z;
+
+        if (t < 0.5F) {
+            sp = sin((f32) (1.5707963267948966 * (1.0F - (2.0F * t))));
+            sq = sin((f32) (1.5707963267948966 * (2.0F * t)));
+            out->x = sp * p->x + sq * q->x;
+            out->y = sp * p->y + sq * q->y;
+            out->z = sp * p->z + sq * q->z;
+            out->w = sp * p->w + sq * q->w;
+        } else {
+            t -= 0.5F;
+            t2 = 2.0F * t;
+            sp = sin((f32) (1.5707963267948966 * (1.0F - t2)));
+            sq = sin((f32) (1.5707963267948966 * t2));
+            out->x = sp * p->x + sq * q->x;
+            out->y = sp * p->y + sq * q->y;
+            out->z = sp * p->z + sq * q->z;
+            out->w = sp * p->w + sq * q->w;
+        }
+    }
+
+    return 1;
+}
+
 extern const f32 lbl_8047DD1C;
 extern double cos(double x);
-extern double sin(double x);
 
 s32 fn_801ADAAC(EulerVec* euler, Quaternion* q)
 {
