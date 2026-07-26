@@ -3112,6 +3112,7 @@ config.libs = [
                 CodeCandidate,
                 "dolphin/sdk_candidate_800A35E4_suffix.c",
                 mw_version="GC/1.2.5n",
+                extra_cflags=["-fp_contract off"],
                 progress_category="sdk",
             ),
             Object(
