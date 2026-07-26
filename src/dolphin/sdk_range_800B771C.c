@@ -209,8 +209,8 @@ static inline void SetVat(u32* va, u32* vb, u32* vc, s32 attr, s32 cnt,
     case 25:
         *va = (*va & ~0x1C00U) | (type << 10);
         if (cnt == 2) {
-            *va |= 0x200U;
-            *va |= 0x80000000U;
+            *va = (*va & ~0x200U) | 0x200U;
+            *va = (*va & ~0x80000000U) | 0x80000000U;
         } else {
             *va = (*va & ~0x200U) | (cnt << 9);
             *va &= ~0x80000000U;
