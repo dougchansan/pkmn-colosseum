@@ -114,6 +114,13 @@ typedef struct PSCameraObject {
     PSCameraView* view;
 } PSCameraObject;
 
+typedef struct PSColor {
+    u8 r;
+    u8 g;
+    u8 b;
+    u8 a;
+} PSColor;
+
 extern s32 lbl_8047B170;
 extern PSFloatBytes lbl_8047B178;
 
@@ -146,6 +153,8 @@ extern u8 lbl_80478C30;
 extern u16 lbl_80478C38;
 extern s32 lbl_8047B12C;
 extern s32 lbl_8047B164;
+extern PSColor lbl_8047B13C;
+extern PSColor lbl_8047B140;
 
 /* ======================================================================
  * External functions - real symbol names per config/GC6E01/symbols.txt.
@@ -220,6 +229,8 @@ extern void fn_800B7D3C(void);
 extern void fn_800B7874(s32 attribute, s32 type);
 extern void fn_800B928C(s32 primitive, s32 format, s32 count);
 extern void fn_800B9404(s32 width, s32 offset);
+extern void fn_800BA4C8(s32 channel, const PSColor* color);
+extern void fn_800BA5BC(s32 channel, const PSColor* color);
 
 #if !defined(PR410_PS_SPLIT) || defined(PR410_PS_PREFIX)
 
@@ -1940,6 +1951,85 @@ PSGeneratorState* psCreateGeneratorID(s32 linkNo, s32 bankIdx, s32 scriptId) {
     gen->familyId = familyId;
     gen->appSRT = NULL;
     return gen;
+}
+
+/*
+ * Updates the particle material and ambient channel colors. Dynamic light
+ * multiplication remains asm-only; interpolation and GX cache updates are
+ * verified against 0x8016E814-0x8016EA78.
+ */
+void setupChanReg(PSParticle* pp) {
+    PSColor material;
+    PSColor ambient;
+    s32 value;
+
+    if ((pp->flags & 0x80000000) == 0) {
+        return;
+    }
+
+    if (pp->sizeYTimer != 0) {
+        s32 step = ((s32)pp->sizeYCountdown << 16) / pp->sizeYTimer;
+
+        value = ((s32)pp->sizeXTargetFinal << 16) +
+                step * ((s32)pp->sizeXTarget -
+                        (s32)pp->sizeXTargetFinal);
+        value >>= 16;
+    } else {
+        value = pp->sizeXTarget;
+    }
+    material.r = value;
+    material.g = value;
+    material.b = value;
+    material.a = pp->sizeYTimer != 0
+        ? (((s32)pp->sizeYTargetFinal << 16) +
+           (((s32)pp->sizeYCountdown << 16) / pp->sizeYTimer) *
+           ((s32)pp->sizeYTarget - (s32)pp->sizeYTargetFinal)) >> 16
+        : pp->sizeYTarget;
+
+    if (pp->flags & 0x80) {
+        ambient.r = 0xFF;
+        ambient.g = 0xFF;
+        ambient.b = 0xFF;
+        ambient.a = pp->color1A;
+    } else if (pp->color1Timer != 0) {
+        s32 step = ((s32)pp->color1Countdown << 16) / pp->color1Timer;
+
+        ambient.r = (((s32)pp->color1TargetR << 16) +
+                     step * ((s32)pp->color1R -
+                             (s32)pp->color1TargetR)) >> 16;
+        ambient.g = (((s32)pp->color1TargetG << 16) +
+                     step * ((s32)pp->color1G -
+                             (s32)pp->color1TargetG)) >> 16;
+        ambient.b = (((s32)pp->color1TargetB << 16) +
+                     step * ((s32)pp->color1B -
+                             (s32)pp->color1TargetB)) >> 16;
+        ambient.a = (((s32)pp->color1TargetA << 16) +
+                     step * ((s32)pp->color1A -
+                             (s32)pp->color1TargetA)) >> 16;
+    } else {
+        ambient.r = pp->color1R;
+        ambient.g = pp->color1G;
+        ambient.b = pp->color1B;
+        ambient.a = pp->color1A;
+    }
+
+    material.r = (material.r * ambient.r) >> 8;
+    material.g = (material.g * ambient.g) >> 8;
+    material.b = (material.b * ambient.b) >> 8;
+
+    if (ambient.r != lbl_8047B140.r ||
+        ambient.g != lbl_8047B140.g ||
+        ambient.b != lbl_8047B140.b) {
+        lbl_8047B140 = ambient;
+        fn_800BA5BC(0, &ambient);
+    }
+
+    if (material.r != lbl_8047B13C.r ||
+        material.g != lbl_8047B13C.g ||
+        material.b != lbl_8047B13C.b) {
+        lbl_8047B13C = material;
+        fn_800BA4C8(0, &material);
+    }
 }
 
 /*
