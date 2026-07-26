@@ -996,21 +996,41 @@ typedef struct SndVec3 {
     f32 z;
 } SndVec3;
 
-typedef struct SndListener {
-    struct SndListener* next;
-    u32 _04;
-    void* studioRef;
+typedef struct SndFMatrix {
+    f32 m[3][3];
+    f32 t[3];
+} SndFMatrix;
+
+typedef struct SndRoom {
+    struct SndRoom* next;
+    struct SndRoom* prev;
     u32 flags;
     SndVec3 position;
-    f32 offsetDistance;
-    SndVec3 velocity;
-    SndVec3 offsetDirection;
-    u8 _38[0x18];
-    f32 matrix[12];
-    f32 rearRange;
-    f32 frontRange;
+    f32 averageDistance;
+    u8 studio;
+    u8 _1D[3];
+    void (*activateReverb)(u8 studio, void* user);
+    void (*deactivateReverb)(u8 studio);
+    void* user;
+    u32 currentMasterVolume;
+} SndRoom;
+
+typedef struct SndListener {
+    struct SndListener* next;
+    struct SndListener* prev;
+    SndRoom* room;
+    u32 flags;
+    SndVec3 position;
+    f32 volumePositionOffset;
+    SndVec3 direction;
+    SndVec3 heading;
+    SndVec3 right;
+    SndVec3 up;
+    SndFMatrix matrix;
+    f32 surroundDistanceFront;
+    f32 surroundDistanceBack;
     f32 soundSpeed;
-    f32 gain;
+    f32 volume;
 } SndListener;
 
 typedef struct SndServiceStudio {
@@ -1087,6 +1107,116 @@ extern u32 synthFXSetCtrl14(u32 handle, u8 ctrl, u16 value);
 extern u32 sndFXCheck(u32 handle);
 extern void fn_8014DD98(u8 studio, void* update);
 extern void fn_8014DDB8(u8 studio, void* update);
+extern void hwDisableIrq(void);
+extern void hwEnableIrq(void);
+extern void salCrossProduct(f32* result, const f32* first,
+                            const f32* second);
+extern void salInvertMatrix(SndFMatrix* result, const SndFMatrix* matrix);
+
+static inline void s3dMakeListenerMatrix(SndListener* listener) {
+    SndFMatrix matrix;
+
+    salCrossProduct((f32*)&listener->right, (f32*)&listener->heading,
+                    (f32*)&listener->up);
+    matrix.m[0][0] = listener->right.x;
+    matrix.m[1][0] = listener->right.y;
+    matrix.m[2][0] = listener->right.z;
+    matrix.m[0][1] = listener->up.x;
+    matrix.m[1][1] = listener->up.y;
+    matrix.m[2][1] = listener->up.z;
+    matrix.m[0][2] = -listener->heading.x;
+    matrix.m[1][2] = -listener->heading.y;
+    matrix.m[2][2] = -listener->heading.z;
+    matrix.t[0] = listener->position.x;
+    matrix.t[1] = listener->position.y;
+    matrix.t[2] = listener->position.z;
+    salInvertMatrix(&listener->matrix, &matrix);
+}
+
+static inline void s3dRemoveListenerFromRoom(SndRoom* room) {
+    SndListener* listener;
+    u32 count;
+
+    count = 0;
+    for (listener = (SndListener*)lbl_8047B044; listener != 0;
+         listener = listener->next) {
+        if (listener->room == room) {
+            count++;
+        }
+    }
+    if (count == 1) {
+        room->flags &= 0x7FFFFFFF;
+        room->flags |= 0x40000000;
+    }
+}
+
+static inline void s3dAddListenerToRoom(SndRoom* room) {
+    if ((room->flags & 0x80000000) == 0 &&
+        room->currentMasterVolume == 0) {
+        room->flags |= 0x80000000;
+    }
+}
+
+u32 fn_8015ED00(SndListener* listener, SndVec3* position,
+                SndVec3* direction, SndVec3* heading, SndVec3* up,
+                u8 volume, SndRoom* room) { /* sndUpdateListener */
+    if (lbl_8047AF18 != 0) {
+        hwDisableIrq();
+        listener->position = *position;
+        listener->direction = *direction;
+        listener->heading = *heading;
+        listener->up = *up;
+        s3dMakeListenerMatrix(listener);
+        listener->volume = volume / lbl_8047D488;
+
+        if (room != listener->room) {
+            if (listener->room != 0) {
+                s3dRemoveListenerFromRoom(listener->room);
+            }
+            listener->room = room;
+            if (room != 0) {
+                s3dAddListenerToRoom(room);
+            }
+        }
+        hwEnableIrq();
+        return 1;
+    }
+    return 0;
+}
+
+u32 fn_8015EF04(SndListener* listener, SndVec3* position,
+                SndVec3* direction, SndVec3* heading, SndVec3* up,
+                f32 surroundFront, f32 surroundBack, f32 soundSpeed,
+                u32 flags, u8 volume, SndRoom* room) { /* sndAddListener */
+    if (lbl_8047AF18 != 0) {
+        hwDisableIrq();
+        listener->next = (SndListener*)lbl_8047B044;
+        if (listener->next != 0) {
+            listener->next->prev = listener;
+        }
+        listener->prev = 0;
+        lbl_8047B044 = (MusyxEmitterListener*)listener;
+
+        listener->position = *position;
+        listener->direction = *direction;
+        listener->heading = *heading;
+        listener->up = *up;
+        listener->surroundDistanceFront = surroundFront;
+        listener->surroundDistanceBack = surroundBack;
+        listener->soundSpeed = soundSpeed;
+        listener->volumePositionOffset = lbl_8047D468;
+        s3dMakeListenerMatrix(listener);
+        listener->flags = flags;
+        listener->volume = volume / lbl_8047D488;
+        listener->room = room;
+        if (room != 0) {
+            s3dAddListenerToRoom(room);
+        }
+        hwEnableIrq();
+        return 1;
+    }
+    return 0;
+}
 
 u32 fn_8015F124(SndServiceVoice* voice, f32 value, f32 pan, f32 volume,
                 f32 surround, f32 pitch) { /* AddStartingEmitter */
@@ -7838,11 +7968,6 @@ void salCrossProduct(f32* dst, const f32* a, const f32* b) {
     dst[1] = a[2] * b[0] - a[0] * b[2];
     dst[2] = a[0] * b[1] - a[1] * b[0];
 }
-
-typedef struct SndFMatrix {
-    f32 m[3][3];
-    f32 t[3];
-} SndFMatrix;
 
 void salInvertMatrix(SndFMatrix* out, const SndFMatrix* in) {
     f32 a;
