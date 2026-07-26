@@ -415,7 +415,12 @@ config.libs = [
                     path,
                     mw_version="GC/2.5",
                     extra_cflags=["-char signed"]
-                    + (["-use_lmw_stmw on"] if path == "crt/printf.c" else []),
+                    + (
+                        ["-use_lmw_stmw on"]
+                        if path
+                        in ["crt/printf.c", "crt/printf_candidate_800C8864.c"]
+                        else []
+                    ),
                     progress_category="runtime",
                 )
                 for status, path in [
