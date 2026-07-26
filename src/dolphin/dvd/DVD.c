@@ -484,9 +484,9 @@ s32 DVDGetDriveStatus(void) {
 
     enabled = OSDisableInterrupts();
 
-    if (FatalErrorFlag_8047A800) {
+    if ((s32)FatalErrorFlag_8047A800 != 0) {
         result = -1;
-    } else if (PausingFlag_8047A7F8) {
+    } else if ((s32)PausingFlag_8047A7F8 != 0) {
         result = 8;
     } else if (executing_8047A7E8 == NULL) {
         result = 0;
@@ -751,6 +751,8 @@ static inline BOOL dvdCheckCancel(u32 resume)
 
 void fn_800A6BD4(u32 intType)
 {
+    extern void DVDReset(void);
+
     DVDStaticData* staticData = &BB2_803FC360;
     DVDCommandBlock* finished;
     u32 command;
@@ -1575,6 +1577,8 @@ void fn_800A60D4(u32 intType)
  * Continue after the replacement disk ID has been read.
  */
 void DVDChangeDisk(u32 intType) {
+    extern void DVDReset(void);
+
     if (intType == 0x10) {
         executing_8047A7E8->state = -1;
         __DVDStoreErrorCode(0x1234568);
