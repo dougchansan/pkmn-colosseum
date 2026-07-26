@@ -50,13 +50,13 @@ GSpart* GSmodelGetPart(void* model, s32 index)
     lbl_8047ABB0 = 0;
     lbl_8047ABA8 = NULL;
     jobj = modelGetRenderJObj(model);
-    if (traversalIndex == 0) {
-        lbl_8047ABA8 = jobj;
-    } else {
+    if (traversalIndex != 0) {
         fn_801A3918(jobj, fn_800EE20C, 0);
         if (lbl_8047ABA8 == NULL) {
             return NULL;
         }
+    } else {
+        lbl_8047ABA8 = jobj;
     }
 
     part = GSpartCreate();
