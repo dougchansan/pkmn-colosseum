@@ -2243,13 +2243,13 @@ void GSmsgOpen(u32* item) {
     u32* p;
 
     head = (u32*)lbl_80478B08;
-    p = (u32*)head[2];
-    if (p == NULL) {
+    if (head[2] == 0) {
         head[2] = (u32)item;
         item[2] = 0;
         item[3] = 0;
         return;
     }
+    p = (u32*)head[2];
     while (1) {
         if (p == item) return;
         if (p[2] == 0) {
@@ -2924,4 +2924,3 @@ s32 _msgGetSize__FPCUs(arg0)
 
 #endif
 #pragma pop
-
