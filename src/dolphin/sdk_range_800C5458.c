@@ -105,8 +105,8 @@ static const char* const unused =
 #define FP_NORMAL 4
 #define FP_SUBNORMAL 5
 
-#define __HI(x) (*(u32*)&x)
-#define __LO(x) (*(1 + (u32*)&x))
+#define __HI(x) (*(s32*)&x)
+#define __LO(x) (*(1 + (s32*)&x))
 
 inline int __fpclassifyd(f64 x) {
     switch (__HI(x) & 0x7FF00000) {
