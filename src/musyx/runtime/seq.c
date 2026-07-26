@@ -330,6 +330,114 @@ extern void synthVolume(u8 volume, u16 time, u8 volGroup, u8 mode, u32 pubId);
 #define SND_SEQVOL_MUTE 3
 #define SND_SEQVOL_MODEMASK 0xF
 
+typedef struct {
+    u8 program;
+    u8 volume;
+    u8 panning;
+    u8 reverb;
+    u8 chorus;
+} MIDI_CHANNEL_SETUP;
+
+typedef struct {
+    u16 songId;
+    u16 reserved;
+    MIDI_CHANNEL_SETUP channel[16];
+} MIDISETUP;
+
+typedef struct {
+    u8 track;
+    u8 volGroup;
+} SND_SEQVOLDEF;
+
+typedef struct {
+    u32 flags;
+    u32 trackMute[2];
+    u16 speed;
+    struct {
+        u16 time;
+        u8 target;
+    } volume;
+    u8 numSeqVolDef;
+    SND_SEQVOLDEF* seqVolDef;
+    u8 numFaded;
+    u8* faded;
+} SND_PLAYPARA;
+
+#define SND_PLAYPARA_TRACKMUTE 1
+#define SND_PLAYPARA_SPEED 2
+#define SND_PLAYPARA_VOLUME 4
+#define SND_PLAYPARA_SEQVOLDEF 8
+#define SND_PLAYPARA_PAUSE 0x10
+
+extern u8 lbl_80435464[64]; /* synthTrackVolume */
+extern void synthSetMusicVolumeType(u8 volumeGroup, u8 type);
+extern void fn_801603C0(u8 ctrl, u8 midi, u8 midiSet, u8 value);
+extern void inpResetMidiCtrl(u8 midi, u8 midiSet, u32 coldReset);
+extern void fn_80160ED4(u8 midi, u8 midiSet);
+extern void InitTrackEvents(void);
+
+static void StartPause(SEQ_INSTANCE* si);
+
+static inline void DoPrgChange(SEQ_INSTANCE* seq, u8 program, u8 midi)
+{
+    lbl_80434910[lbl_8047AF00][midi] = 0xFFFF;
+    if (midi != 9) {
+        program = seq->normTrans[program];
+        if (program == 0xFF) {
+            return;
+        }
+        seq->prgState[midi].macId = seq->normtab[program].macro;
+        seq->prgState[midi].priority = seq->normtab[program].prio;
+        seq->prgState[midi].maxVoices = seq->normtab[program].maxVoices;
+        return;
+    }
+    program = seq->drumTrans[program];
+    if (program == 0xFF) {
+        return;
+    }
+    seq->prgState[midi].macId = seq->drumtab[program].macro;
+    seq->prgState[midi].priority = seq->drumtab[program].prio;
+    seq->prgState[midi].maxVoices = seq->drumtab[program].maxVoices;
+}
+
+static inline void BuildTransTab(u8* table, PAGE* page)
+{
+    u8 i;
+
+    for (i = 0; i < 128; i++) {
+        table[i] = 0xFF;
+    }
+    for (i = 0; page->index != 0xFF; i++, page++) {
+        table[page->index] = i;
+    }
+}
+
+static inline u32 GetPublicId(u32 seqId)
+{
+    u32 publicId;
+    SEQ_INSTANCE* seq;
+
+    do {
+        publicId = lbl_8047AEF8++;
+        lbl_8047AEF8 &= ~SND_SEQ_CROSSFADE_ID;
+        for (seq = lbl_8047AF14; seq != NULL; seq = seq->next) {
+            if (seq->publicId == publicId) {
+                publicId = SND_SEQ_ERROR_ID;
+                break;
+            }
+        }
+        for (seq = lbl_8047AF10; seq != NULL; seq = seq->next) {
+            if (seq->publicId == publicId) {
+                publicId = SND_SEQ_ERROR_ID;
+                break;
+            }
+        }
+    } while (publicId == SND_SEQ_ERROR_ID);
+
+    lbl_804285D0[seqId].publicId = publicId;
+    return publicId;
+}
+
 u32 seqGetPrivateId(u32 seqId) {
     SEQ_INSTANCE* si;
     for (si = lbl_8047AF14; si != NULL; si = si->next) {
@@ -345,7 +453,165 @@ u32 seqGetPrivateId(u32 seqId) {
     return SND_SEQ_ERROR_ID;
 }
 
-static void StartPause(SEQ_INSTANCE* si);
+u32 fn_801463C4(PAGE* normal, PAGE* drum, MIDISETUP* midiSetup, u32* song,
+                SND_PLAYPARA* para, u8 studio, u16 groupId)
+{
+    ARR* arr;
+    u32* trackTable;
+    s32 i;
+    SEQ_INSTANCE* seq;
+    SEQ_INSTANCE* oldSeq;
+    u32 seqId;
+    u32 bpm;
+
+    seq = lbl_8047AF0C;
+    if (seq == NULL) {
+        return SND_SEQ_ERROR_ID;
+    }
+    if ((lbl_8047AF0C = seq->next) != NULL) {
+        lbl_8047AF0C->prev = NULL;
+    }
+    if ((seq->next = lbl_8047AF14) != NULL) {
+        lbl_8047AF14->prev = seq;
+    }
+    seq->prev = NULL;
+    lbl_8047AF14 = seq;
+    seq->state = 1;
+    for (i = 0; i < 16; i++) {
+        seq->section[i].globalEventRoot = NULL;
+    }
+
+    seqId = seq->index;
+    seq->syncActive = 0;
+    seq->normtab = normal;
+    seq->drumtab = drum;
+    seq->arrbase = (ARR*)song;
+    seq->groupID = groupId;
+    BuildTransTab(seq->normTrans, seq->normtab);
+    BuildTransTab(seq->drumTrans, seq->drumtab);
+    seq->defVGroup = seqId + 23;
+    for (i = 0; i < 64; i++) {
+        seq->trackVolGroup[i] = seq->defVGroup;
+    }
+    seq->defStudio = studio;
+
+    if (para == NULL) {
+        seq->trackMute[0] = -1;
+        seq->trackMute[1] = -1;
+        for (i = 0; i < 16; i++) {
+            seq->section[i].speed = 256;
+        }
+        synthVolume(127, 0, seq->defVGroup, 0, SND_SEQ_ERROR_ID);
+    } else {
+        if ((para->flags & SND_PLAYPARA_TRACKMUTE) != 0) {
+            seq->trackMute[0] = para->trackMute[0];
+            seq->trackMute[1] = para->trackMute[1];
+        } else {
+            seq->trackMute[0] = -1;
+            seq->trackMute[1] = -1;
+        }
+        if ((para->flags & SND_PLAYPARA_SPEED) != 0) {
+            for (i = 0; i < 16; i++) {
+                seq->section[i].speed = para->speed;
+            }
+        } else {
+            for (i = 0; i < 16; i++) {
+                seq->section[i].speed = 256;
+            }
+        }
+        if ((para->flags & SND_PLAYPARA_SEQVOLDEF) != 0) {
+            for (i = 0; i < para->numSeqVolDef; i++) {
+                seq->trackVolGroup[para->seqVolDef[i].track] =
+                    para->seqVolDef[i].volGroup;
+                synthSetMusicVolumeType(para->seqVolDef[i].volGroup, 0);
+            }
+        }
+        if ((para->flags & SND_PLAYPARA_VOLUME) != 0) {
+            synthVolume(para->volume.target, para->volume.time,
+                        seq->defVGroup, 0, SND_SEQ_ERROR_ID);
+            for (i = 0; i < para->numFaded; i++) {
+                synthVolume(para->volume.target, para->volume.time,
+                            para->faded[i], 0, SND_SEQ_ERROR_ID);
+            }
+        }
+    }
+
+    arr = (ARR*)song;
+    if ((arr->info & 0x80000000) != 0) {
+        seq->trackSectionTab = ARR_GET(arr, arr->tsTab);
+    } else {
+        seq->trackSectionTab = NULL;
+    }
+    bpm = arr->info & 0x0FFFFFFF;
+    if ((arr->info & 0x40000000) == 0) {
+        bpm <<= 10;
+    }
+    for (i = 0; i < 16; i++) {
+        seq->section[i].bpm = bpm;
+        synthSetBpm(bpm >> 10, seqId, i);
+        if (arr->mTrack != 0) {
+            seq->section[i].mTrack.base = ARR_GET(arr, arr->mTrack);
+            seq->section[i].mTrack.addr = seq->section[i].mTrack.base;
+        } else {
+            seq->section[i].mTrack.base = NULL;
+        }
+        seq->section[i].loopDisable = 0;
+        seq->section[i].loopCnt = 0;
+    }
+
+    trackTable = ARR_GET(arr, arr->tTab);
+    for (i = 0; i < 64; i++) {
+        lbl_80435464[i] = 127;
+        seq->pattern[i].addr = NULL;
+        if (trackTable[i] != 0) {
+            seq->track[i].addr = seq->track[i].base =
+                ARR_GET(arr, trackTable[i]);
+        } else {
+            seq->track[i].addr = seq->track[i].base = NULL;
+        }
+    }
+    seq->noteUsed[0] = NULL;
+    seq->noteUsed[1] = NULL;
+    seq->noteKeyOff = NULL;
+    for (i = 0; i < 16; i++) {
+        inpResetMidiCtrl(i, seqId, 1);
+    }
+    for (i = 0; i < 16; i++) {
+        seq->prgState[i].macId = 0xFFFF;
+    }
+    for (i = 0; i < 16; i++) {
+        fn_80160ED4(i, seqId);
+    }
+    if (midiSetup != NULL) {
+        for (i = 0; i < 16; i++) {
+            DoPrgChange(seq, midiSetup->channel[i].program, i);
+            fn_801603C0(7, i, seqId, midiSetup->channel[i].volume);
+            fn_801603C0(10, i, seqId, midiSetup->channel[i].panning);
+            fn_801603C0(91, i, seqId, midiSetup->channel[i].reverb);
+            fn_801603C0(93, i, seqId, midiSetup->channel[i].chorus);
+        }
+    }
+    for (i = 0; i < 16; i++) {
+        lbl_80434910[seqId][i] = 0xFFFF;
+    }
+    for (i = 0; i < 16; i++) {
+        seq->section[i].time[0].high = 0;
+        seq->section[i].time[0].low = 0;
+        seq->section[i].time[1].high = 0;
+        seq->section[i].time[1].low = 0;
+        seq->section[i].timeIndex = 0;
+    }
+    seq->keyOffCheck = 0;
+    if (para != NULL && (para->flags & SND_PLAYPARA_PAUSE) != 0) {
+        StartPause(seq);
+    }
+    oldSeq = lbl_8047AF08;
+    lbl_8047AF08 = seq;
+    InitTrackEvents();
+    lbl_8047AF08 = oldSeq;
+    seqId = GetPublicId(seqId);
+    return seqId;
+}
 
 static void KillNotes(SEQ_INSTANCE* seq) {
     NOTE* n;
