@@ -2343,6 +2343,28 @@ PSParticle* psInterpretParticle0(PSParticle* pp, PSParticle* parentCtx) {
                         goto after_dispatch;
                     }
 
+                    /* ---- 0xA8: randomized local position offset
+                     * (verified @ 0x8017068C) ---- */
+                    case 0xA8: {
+                        f32 amplitude;
+                        f32 offset[3];
+
+                        stream = getFloat(stream, &amplitude);
+                        offset[0] = amplitude -
+                            2.0f * amplitude * fn_801ADC7C();
+                        stream = getFloat(stream, &amplitude);
+                        offset[1] = amplitude -
+                            2.0f * amplitude * fn_801ADC7C();
+                        stream = getFloat(stream, &amplitude);
+                        offset[2] = amplitude -
+                            2.0f * amplitude * fn_801ADC7C();
+                        psApplyOffsetLocalRotation(pp, offset);
+                        pp->positionX += offset[0];
+                        pp->positionY += offset[1];
+                        pp->positionZ += offset[2];
+                        break;
+                    }
+
                     /* ---- 0xA9: MODIFY_DIR (verified @ 0x80170744) ---- */
                     case 0xA9: {
                         f32 f;
