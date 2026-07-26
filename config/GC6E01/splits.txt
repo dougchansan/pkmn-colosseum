@@ -213,7 +213,13 @@ game/gs_pokemon_summary_candidate_8001793C.c:
 	.text       start:0x8001793C end:0x800181C4
 
 game/menuPokemon.c:
-	.text       start:0x800181C4 end:0x8001D7E4
+	.text       start:0x800181C4 end:0x8001C064
+
+game/menuPokemon_candidate_8001C064.c:
+	.text       start:0x8001C064 end:0x8001C7B8
+
+game/menuPokemon_candidate_8001C7B8.c:
+	.text       start:0x8001C7B8 end:0x8001D7E4
 
 game/menuSub.c:
 	.text       start:0x8001D7E4 end:0x8001E3E0
@@ -363,7 +369,19 @@ game/gs_range_8003686C.c:
 	.text       start:0x8003686C end:0x80037158
 
 game/menu/pda_range_80037158.c:
-	.text       start:0x80037158 end:0x8004B7EC
+	.text       start:0x80037158 end:0x8003B6D0
+
+game/menu/pda_candidate_8003B6D0_gc20.c:
+	.text       start:0x8003B6D0 end:0x8003B814
+
+game/menu/pda_candidate_8003B814.c:
+	.text       start:0x8003B814 end:0x800492CC
+
+game/menu/pda_candidate_800492CC_gc20.c:
+	.text       start:0x800492CC end:0x800495C8
+
+game/menu/pda_candidate_800495C8.c:
+	.text       start:0x800495C8 end:0x8004B7EC
 
 game/menu/menu_pda_mail.c:
 	.text       start:0x8004B7EC end:0x8004EADC
@@ -453,7 +471,13 @@ game/menu/menu_debug_range_8005DA48.c:
 	.text       start:0x8005DA48 end:0x8005DFC8
 
 game/menu/menuCB_BattleStart.c:
-	.text       start:0x8005DFC8 end:0x80062948
+	.text       start:0x8005DFC8 end:0x800615F4
+
+game/menu/menuCB_BattleStart_candidate_800615F4_gc20.c:
+	.text       start:0x800615F4 end:0x80061A2C
+
+game/menu/menuCB_BattleStart_candidate_80061A2C.c:
+	.text       start:0x80061A2C end:0x80062948
 
 game/menu/menuCB_range_80062948.c:
 	.text       start:0x80062948 end:0x80063D10
@@ -619,7 +643,16 @@ game/menu/menu_poke_coupon.c:
 	.text       start:0x8007C260 end:0x8007C300
 
 game/menu/menu_carde_matrix.c:
-	.text       start:0x8007C300 end:0x8007FD64
+	.text       start:0x8007C300 end:0x8007CBB4
+
+game/menu/menu_carde_matrix_candidate_8007CBB4.c:
+	.text       start:0x8007CBB4 end:0x8007D4FC
+
+game/menu/menu_carde_matrix_candidate_8007D4FC_gc20.c:
+	.text       start:0x8007D4FC end:0x8007D978
+
+game/menu/menu_carde_matrix_candidate_8007D978.c:
+	.text       start:0x8007D978 end:0x8007FD64
 
 game/menu/cardesavedata.c:
 	.text       start:0x8007FD64 end:0x80084038
@@ -697,7 +730,19 @@ game/gbaCommunication_exact_80092FC8.c:
 	.text       start:0x80092FC8 end:0x800937F4
 
 game/gbaCommunication_candidate_800937F4.c:
-	.text       start:0x800937F4 end:0x800980E0
+	.text       start:0x800937F4 end:0x80094650
+
+game/gbaCommunication_candidate_80094650_gc20.c:
+	.text       start:0x80094650 end:0x8009567C
+
+game/gbaCommunication_candidate_8009567C.c:
+	.text       start:0x8009567C end:0x800965C8
+
+game/gbaCommunication_candidate_800965C8_gc20.c:
+	.text       start:0x800965C8 end:0x80096C48
+
+game/gbaCommunication_candidate_80096C48.c:
+	.text       start:0x80096C48 end:0x800980E0
 
 dolphin/os/PPCArch.c:
 	.text       start:0x800980E0 end:0x80098108
@@ -3692,7 +3737,13 @@ game/fsys/fsys_file_exact_8017D400.c:
 	.text       start:0x8017D400 end:0x8017D410
 
 game/fsys/fsys_file_candidate_8017D410.c:
-	.text       start:0x8017D410 end:0x8017F2C4
+	.text       start:0x8017D410 end:0x8017DB74
+
+game/fsys/fsys_file_candidate_8017DB74_gc20.c:
+	.text       start:0x8017DB74 end:0x8017DEA4
+
+game/fsys/fsys_file_candidate_8017DEA4.c:
+	.text       start:0x8017DEA4 end:0x8017F2C4
 
 game/gs_range_8017F2C4.c:
 	.text       start:0x8017F2C4 end:0x80180C78
@@ -4091,7 +4142,28 @@ hsd/hsd_texp_exact_801B42C0.c:
 	.text       start:0x801B42C0 end:0x801B4300
 
 hsd/hsd_texp_candidate_801B4300.c:
-	.text       start:0x801B4300 end:0x801BBAC8
+	.text       start:0x801B4300 end:0x801B4614
+
+hsd/hsd_texp_candidate_801B4614_gc20.c:
+	.text       start:0x801B4614 end:0x801B4B5C
+
+hsd/hsd_texp_candidate_801B4B5C.c:
+	.text       start:0x801B4B5C end:0x801B750C
+
+hsd/hsd_texp_candidate_801B750C_gc20.c:
+	.text       start:0x801B750C end:0x801B7BD4
+
+hsd/hsd_texp_candidate_801B7BD4.c:
+	.text       start:0x801B7BD4 end:0x801B8FB8
+
+hsd/hsd_texp_candidate_801B8FB8_gc20.c:
+	.text       start:0x801B8FB8 end:0x801B9048
+
+hsd/hsd_texp_candidate_801B9048.c:
+	.text       start:0x801B9048 end:0x801BAC8C
+
+hsd/hsd_texp_candidate_801BAC8C_gc20.c:
+	.text       start:0x801BAC8C end:0x801BBAC8
 
 hsd/hsd_tobj.c:
 	.text       start:0x801BBAC8 end:0x801BBD3C
@@ -4702,7 +4774,19 @@ game/fight_trainer_db_range_801FBD10.c:
 	.text       start:0x801FBD10 end:0x801FDB78
 
 game/fight_pokemon_range_801FDB78.c:
-	.text       start:0x801FDB78 end:0x80201248
+	.text       start:0x801FDB78 end:0x801FE168
+
+game/fight_pokemon_candidate_801FE168_gc20.c:
+	.text       start:0x801FE168 end:0x801FE3F8
+
+game/fight_pokemon_candidate_801FE3F8.c:
+	.text       start:0x801FE3F8 end:0x80200E00
+
+game/fight_pokemon_candidate_80200E00_gc20.c:
+	.text       start:0x80200E00 end:0x802010C8
+
+game/fight_pokemon_candidate_802010C8.c:
+	.text       start:0x802010C8 end:0x80201248
 
 game/fight_pokemon_exact_80201248.c:
 	.text       start:0x80201248 end:0x80201764
