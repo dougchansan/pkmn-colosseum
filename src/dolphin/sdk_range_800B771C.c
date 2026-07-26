@@ -289,7 +289,7 @@ void fn_800B80CC(s32 vtxfmt, const GXVtxAttrFmtList_800B771C* list)
         list++;
     }
     gx->dirtyState |= 0x10;
-    *(volatile u8*)((u8*)gx + 0x4F3) |= 1 << vtxfmt;
+    *((u8*)gx + 0x4F3) |= (u8)(1 << (u8)vtxfmt);
 }
 
 void fn_800B7BC4(void) {
