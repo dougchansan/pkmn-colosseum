@@ -6,24 +6,24 @@
     "total_code": 2495108,
     "total_data": 2196100,
     "total_functions": 8603,
-    "total_units": 1832
+    "total_units": 1871
   },
   "topology_status": {
     "auto_units": 68,
-    "named_units": 1764,
-    "source_backed_units": 1758,
+    "named_units": 1803,
+    "source_backed_units": 1797,
     "auto_code": 0,
     "auto_data": 57687,
     "auto_functions": 0
   },
   "baseline_progress": {
-    "matched_code": "982944",
-    "matched_code_percent": 39.394848,
+    "matched_code": "983288",
+    "matched_code_percent": 39.408638,
     "matched_data": "2136513",
     "matched_data_percent": 97.28669,
-    "matched_functions": 6562,
-    "matched_functions_percent": 76.27572,
-    "fuzzy_match_percent": 68.333
+    "matched_functions": 6563,
+    "matched_functions_percent": 76.28734,
+    "fuzzy_match_percent": 68.39191
   },
   "unit_topology": [
     {
@@ -1513,13 +1513,65 @@
       "sections": [
         {
           "name": ".text",
-          "size": 13536,
+          "size": 2004,
           "virtual_address": 2147640176
         }
       ],
-      "total_code": 13536,
+      "total_code": 2004,
       "total_data": 0,
-      "total_functions": 48
+      "total_functions": 16
+    },
+    {
+      "name": "main/game/menuNameEntry_candidate_80026B44_gc20",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1192,
+          "virtual_address": 2147642180
+        }
+      ],
+      "total_code": 1192,
+      "total_data": 0,
+      "total_functions": 2
+    },
+    {
+      "name": "main/game/menuNameEntry_candidate_80026FEC",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1544,
+          "virtual_address": 2147643372
+        }
+      ],
+      "total_code": 1544,
+      "total_data": 0,
+      "total_functions": 4
+    },
+    {
+      "name": "main/game/menuNameEntry_candidate_800275F4_gc20",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 332,
+          "virtual_address": 2147644916
+        }
+      ],
+      "total_code": 332,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/menuNameEntry_candidate_80027740",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 8464,
+          "virtual_address": 2147645248
+        }
+      ],
+      "total_code": 8464,
+      "total_data": 0,
+      "total_functions": 25
     },
     {
       "name": "main/game/menuShop",
@@ -2792,13 +2844,104 @@
       "sections": [
         {
           "name": ".text",
-          "size": 17216,
+          "size": 1964,
           "virtual_address": 2147924408
         }
       ],
-      "total_code": 17216,
+      "total_code": 1964,
       "total_data": 0,
-      "total_functions": 28
+      "total_functions": 4
+    },
+    {
+      "name": "main/game/menu/menu_middle_candidate_8006C164_gc20",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1648,
+          "virtual_address": 2147926372
+        }
+      ],
+      "total_code": 1648,
+      "total_data": 0,
+      "total_functions": 2
+    },
+    {
+      "name": "main/game/menu/menu_middle_candidate_8006C7D4",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1260,
+          "virtual_address": 2147928020
+        }
+      ],
+      "total_code": 1260,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/menu/menu_middle_candidate_8006CCC0_gc20",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 3944,
+          "virtual_address": 2147929280
+        }
+      ],
+      "total_code": 3944,
+      "total_data": 0,
+      "total_functions": 5
+    },
+    {
+      "name": "main/game/menu/menu_middle_candidate_8006DC28",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1808,
+          "virtual_address": 2147933224
+        }
+      ],
+      "total_code": 1808,
+      "total_data": 0,
+      "total_functions": 7
+    },
+    {
+      "name": "main/game/menu/menu_middle_candidate_8006E338_gc20",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 2884,
+          "virtual_address": 2147935032
+        }
+      ],
+      "total_code": 2884,
+      "total_data": 0,
+      "total_functions": 3
+    },
+    {
+      "name": "main/game/menu/menu_middle_candidate_8006EE7C",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1032,
+          "virtual_address": 2147937916
+        }
+      ],
+      "total_code": 1032,
+      "total_data": 0,
+      "total_functions": 3
+    },
+    {
+      "name": "main/game/menu/menu_middle_candidate_8006F284_gc20",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 2676,
+          "virtual_address": 2147938948
+        }
+      ],
+      "total_code": 2676,
+      "total_data": 0,
+      "total_functions": 3
     },
     {
       "name": "main/game/menu/menu_middle_exact_8006FCF8",
@@ -2883,13 +3026,65 @@
       "sections": [
         {
           "name": ".text",
-          "size": 45508,
+          "size": 11760,
           "virtual_address": 2147946652
         }
       ],
-      "total_code": 45508,
+      "total_code": 11760,
       "total_data": 0,
-      "total_functions": 121
+      "total_functions": 35
+    },
+    {
+      "name": "main/game/menu/menu_candidate_80073E8C_gc20",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1176,
+          "virtual_address": 2147958412
+        }
+      ],
+      "total_code": 1176,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/menu/menu_candidate_80074324",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1256,
+          "virtual_address": 2147959588
+        }
+      ],
+      "total_code": 1256,
+      "total_data": 0,
+      "total_functions": 3
+    },
+    {
+      "name": "main/game/menu/menu_candidate_8007480C_gc20",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 2948,
+          "virtual_address": 2147960844
+        }
+      ],
+      "total_code": 2948,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/menu/menu_candidate_80075390",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 28368,
+          "virtual_address": 2147963792
+        }
+      ],
+      "total_code": 28368,
+      "total_data": 0,
+      "total_functions": 81
     },
     {
       "name": "main/game/menu/menu_poke_coupon",
@@ -2961,13 +3156,78 @@
       "sections": [
         {
           "name": ".text",
-          "size": 17108,
+          "size": 4468,
           "virtual_address": 2148007268
         }
       ],
-      "total_code": 17108,
+      "total_code": 4468,
       "total_data": 0,
-      "total_functions": 23
+      "total_functions": 3
+    },
+    {
+      "name": "main/game/menu/cardesavedata_candidate_80080ED8_gc125",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 340,
+          "virtual_address": 2148011736
+        }
+      ],
+      "total_code": 340,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/menu/cardesavedata_candidate_8008102C_gc125",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 5668,
+          "virtual_address": 2148012076
+        }
+      ],
+      "total_code": 5668,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/menu/cardesavedata_candidate_80082650",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 784,
+          "virtual_address": 2148017744
+        }
+      ],
+      "total_code": 784,
+      "total_data": 0,
+      "total_functions": 2
+    },
+    {
+      "name": "main/game/menu/cardesavedata_candidate_80082960_gc125",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 296,
+          "virtual_address": 2148018528
+        }
+      ],
+      "total_code": 296,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/menu/cardesavedata_candidate_80082A88",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 5552,
+          "virtual_address": 2148018824
+        }
+      ],
+      "total_code": 5552,
+      "total_data": 0,
+      "total_functions": 15
     },
     {
       "name": "main/game/menu/cardesavedata_80084038",
@@ -7369,13 +7629,65 @@
       "sections": [
         {
           "name": ".text",
-          "size": 1848,
+          "size": 76,
           "virtual_address": 2148288268
         }
       ],
-      "total_code": 1848,
+      "total_code": 76,
       "total_data": 0,
-      "total_functions": 13
+      "total_functions": 1
+    },
+    {
+      "name": "main/dolphin/sdk_candidate_800C4758",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 76,
+          "virtual_address": 2148288344
+        }
+      ],
+      "total_code": 76,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/dolphin/sdk_candidate_800C47A4_gc13",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 76,
+          "virtual_address": 2148288420
+        }
+      ],
+      "total_code": 76,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/dolphin/sdk_candidate_800C47F0",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1192,
+          "virtual_address": 2148288496
+        }
+      ],
+      "total_code": 1192,
+      "total_data": 0,
+      "total_functions": 7
+    },
+    {
+      "name": "main/dolphin/sdk_candidate_800C4C98_gc13",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 428,
+          "virtual_address": 2148289688
+        }
+      ],
+      "total_code": 428,
+      "total_data": 0,
+      "total_functions": 3
     },
     {
       "name": "main/crt/exit",
@@ -10674,13 +10986,39 @@
       "sections": [
         {
           "name": ".text",
-          "size": 19576,
+          "size": 2972,
           "virtual_address": 2148505316
         }
       ],
-      "total_code": 19576,
+      "total_code": 2972,
       "total_data": 0,
-      "total_functions": 37
+      "total_functions": 10
+    },
+    {
+      "name": "main/game/gs_msg_candidate_800FA280_gc125",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 148,
+          "virtual_address": 2148508288
+        }
+      ],
+      "total_code": 148,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/gs_msg_candidate_800FA314",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 16456,
+          "virtual_address": 2148508436
+        }
+      ],
+      "total_code": 16456,
+      "total_data": 0,
+      "total_functions": 26
     },
     {
       "name": "main/game/gs_thread_hi_range_800FE35C",
@@ -16884,13 +17222,39 @@
       "sections": [
         {
           "name": ".text",
-          "size": 59384,
+          "size": 52056,
           "virtual_address": 2149059704
         }
       ],
-      "total_code": 59384,
+      "total_code": 52056,
       "total_data": 0,
-      "total_functions": 97
+      "total_functions": 83
+    },
+    {
+      "name": "main/game/people/people_candidate_8018D7D0_gc20",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 344,
+          "virtual_address": 2149111760
+        }
+      ],
+      "total_code": 344,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/people/people_candidate_8018D928",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 6984,
+          "virtual_address": 2149112104
+        }
+      ],
+      "total_code": 6984,
+      "total_data": 0,
+      "total_functions": 13
     },
     {
       "name": "main/game/people/people_exact_8018F470",
@@ -17599,13 +17963,52 @@
       "sections": [
         {
           "name": ".text",
-          "size": 10440,
+          "size": 3760,
           "virtual_address": 2149174864
         }
       ],
-      "total_code": 10440,
+      "total_code": 3760,
       "total_data": 0,
-      "total_functions": 15
+      "total_functions": 10
+    },
+    {
+      "name": "main/hsd/hsd_jobj_candidate_8019DD00_gc125",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1888,
+          "virtual_address": 2149178624
+        }
+      ],
+      "total_code": 1888,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/hsd/hsd_jobj_candidate_8019E460_gc125",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 3004,
+          "virtual_address": 2149180512
+        }
+      ],
+      "total_code": 3004,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/hsd/hsd_jobj_candidate_8019F01C",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1788,
+          "virtual_address": 2149183516
+        }
+      ],
+      "total_code": 1788,
+      "total_data": 0,
+      "total_functions": 3
     },
     {
       "name": "main/hsd/hsd_jobj_exact_8019F718",
@@ -18613,13 +19016,26 @@
       "sections": [
         {
           "name": ".text",
-          "size": 10672,
+          "size": 1380,
           "virtual_address": 2149272412
         }
       ],
-      "total_code": 10672,
+      "total_code": 1380,
       "total_data": 0,
-      "total_functions": 16
+      "total_functions": 1
+    },
+    {
+      "name": "main/hsd/hsd_texp_candidate_801B4B5C_candidate_801B50C0",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 9292,
+          "virtual_address": 2149273792
+        }
+      ],
+      "total_code": 9292,
+      "total_data": 0,
+      "total_functions": 15
     },
     {
       "name": "main/hsd/hsd_texp_candidate_801B750C_gc20",
@@ -19601,13 +20017,78 @@
       "sections": [
         {
           "name": ".text",
-          "size": 8132,
+          "size": 2392,
           "virtual_address": 2149416536
         }
       ],
-      "total_code": 8132,
+      "total_code": 2392,
       "total_data": 0,
-      "total_functions": 9
+      "total_functions": 3
+    },
+    {
+      "name": "main/game/wazaSequenceEntry_candidate_801D87B0_gc125",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 904,
+          "virtual_address": 2149418928
+        }
+      ],
+      "total_code": 904,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/wazaSequenceEntry_candidate_801D8B38_gc125",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1716,
+          "virtual_address": 2149419832
+        }
+      ],
+      "total_code": 1716,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/wazaSequenceEntry_candidate_801D91EC_gc125",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1540,
+          "virtual_address": 2149421548
+        }
+      ],
+      "total_code": 1540,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/wazaSequenceEntry_candidate_801D97F0",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1068,
+          "virtual_address": 2149423088
+        }
+      ],
+      "total_code": 1068,
+      "total_data": 0,
+      "total_functions": 2
+    },
+    {
+      "name": "main/game/wazaSequenceEntry_candidate_801D9C1C_gc125",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 512,
+          "virtual_address": 2149424156
+        }
+      ],
+      "total_code": 512,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/game/wazaSequenceSys",
@@ -23489,13 +23970,39 @@
       "sections": [
         {
           "name": ".text",
-          "size": 9224,
+          "size": 280,
           "virtual_address": 2149901688
         }
       ],
-      "total_code": 9224,
+      "total_code": 280,
       "total_data": 0,
-      "total_functions": 6
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/fight_trainer_ai_irekae_candidate_8024E690_gc20",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 4644,
+          "virtual_address": 2149901968
+        }
+      ],
+      "total_code": 4644,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/fight_trainer_ai_irekae_candidate_8024F8B4",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 4300,
+          "virtual_address": 2149906612
+        }
+      ],
+      "total_code": 4300,
+      "total_data": 0,
+      "total_functions": 4
     },
     {
       "name": "main/game/fight_trainer_ai_waza_damage",
