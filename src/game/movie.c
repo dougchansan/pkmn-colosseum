@@ -160,7 +160,7 @@ void fn_80035F34(void) {
  *    li r4, 0
  *    bl floorLink
  *
- *    ; Reset floor allocation (0x59608)
+ *    ; Reset floor allocation (0x05960008)
  *    li r3, 0
  *    lis r4, 0x596
  *    addi r4, r4, 8
@@ -207,7 +207,7 @@ void fn_80035E04(void) {
     floorLink(1, 0);
 
     /* Reset floor allocation parameters */
-    floorSetFadeScript(0, 0x59608);
+    floorSetFadeScript(0, 0x05960008);
 }
 
 /* =======================================================================
