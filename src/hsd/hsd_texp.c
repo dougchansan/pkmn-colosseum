@@ -1813,17 +1813,19 @@ void fn_801B6CD8(ColTExpNode* texp, u32 op, u32 bias, u32 scale, u8 clamp) {
     }
 }
 
-/*
- * HSD_TObjRenderDispatch - 0x801B6DC0 | Size: 0xB4
- * Dispatch rendering for a TObj.
- */
-void fn_801B6DC0(HSD_TObj* tobj) {
-    if (tobj == NULL) {
-        return;
+/* Set the four direct color-input selectors on a TEV expression. */
+void fn_801B6DC0(ColTExpNode* texp, u32 input_a, u32 input_b,
+                 u32 input_c, u32 input_d) {
+    if (texp == NULL) {
+        __assert(&lbl_8047DE70, 0x1BB, &lbl_8047DE90);
     }
-
-    /* Call the TObj's class method for rendering */
-    /* HSD_TOBJ_METHOD(tobj)->make_mtx(tobj) if dirty */
+    if (ColTExpGetType(texp) != COL_TE_TEV) {
+        __assert(&lbl_8047DE70, 0x1BC, lbl_802753DC);
+    }
+    texp->input_index[0] = input_a;
+    texp->input_index[1] = input_b;
+    texp->input_index[2] = input_c;
+    texp->input_index[3] = input_d;
 }
 
 /* HSD_TExpColorOp */
