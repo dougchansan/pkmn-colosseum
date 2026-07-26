@@ -165,10 +165,10 @@ static inline s32 GBAGetStatusAsync(s32 chan, u32 status, u32 callback) {
 u32 GBAGetStatus(int r3, u32 r4) {
   s32 result;
   result = GBAGetStatusAsync(r3, r4, (u32)__GBASyncCallback);
-  if (result == 0) {
-    result = __GBASync(r3);
+  if (result != 0) {
+    return result;
   }
-  return result;
+  return __GBASync(r3);
 }
 #pragma pop
 
@@ -197,10 +197,10 @@ static inline s32 GBAResetAsync(s32 chan, u32 status, u32 callback) {
 u32 GBAReset(int r3, u32 r4) {
   s32 result;
   result = GBAResetAsync(r3, r4, (u32)__GBASyncCallback);
-  if (result == 0) {
-    result = __GBASync(r3);
+  if (result != 0) {
+    return result;
   }
-  return result;
+  return __GBASync(r3);
 }
 #pragma pop
 
