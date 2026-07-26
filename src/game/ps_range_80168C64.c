@@ -200,7 +200,7 @@ extern void modifyDirGenBase(PSParticle* pp, f32 a, f32 b, f32 c, f32 d); /* 0x8
 extern f32 sqrtf(f32 x);
 extern s32 applyForceJObj(PSParticle* pp, PSForceJObj* jobj,
                          f32 force, f32 radius);                       /* 0x80172BBC */
-extern void setVelToJObj(void* jobj, void* camData);                    /* 0x80172D00 */
+extern void setVelToJObj(PSParticle* pp, PSForceJObj* jobj);            /* 0x80172D00 */
 extern u8 U8ClampAdd(u8 cur, f32 delta);                                /* 0x801728B0 */
 extern PSParticle* _psListGetNext(PSParticle* pp);                         /* psCleanup, 0x80172928 */
 extern s32 psRemoveParticleAppSRT(PSParticle* pp);                      /* 0x?? */
@@ -1540,6 +1540,39 @@ s32 applyForceJObj(PSParticle* pp, PSForceJObj* jobj,
     pp->velocityY += force * dy;
     pp->velocityZ += force * dz;
     return FALSE;
+}
+
+void setVelToJObj(PSParticle* pp, PSForceJObj* jobj) {
+    f32 dx;
+    f32 dy;
+    f32 dz;
+    f32 speed;
+    f32 distanceSquared;
+    f32 scale;
+
+    if (jobj == NULL) {
+        return;
+    }
+
+    if (!(jobj->flags & 0x800000) && (jobj->flags & 0x40)) {
+        fn_8019D9DC(jobj);
+    }
+
+    speed = sqrtf(pp->velocityX * pp->velocityX +
+                  pp->velocityY * pp->velocityY +
+                  pp->velocityZ * pp->velocityZ);
+    dx = jobj->worldX - pp->positionX;
+    dy = jobj->worldY - pp->positionY;
+    dz = jobj->worldZ - pp->positionZ;
+    distanceSquared = dx * dx + dy * dy + dz * dz;
+    if (distanceSquared == 0.0f) {
+        return;
+    }
+
+    scale = speed / sqrtf(distanceSquared);
+    pp->velocityX = dx * scale;
+    pp->velocityY = dy * scale;
+    pp->velocityZ = dz * scale;
 }
 
 void modifyDir(PSParticle* pp, f32 angle) {
