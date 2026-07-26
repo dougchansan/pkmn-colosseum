@@ -2886,7 +2886,7 @@ void fn_801B8D5C(HSD_GObj* gobj) {
 extern ColTEArg lbl_80478CA0;
 
 s32 fn_801B9320(ColTExpNode* tev);
-void fn_801B9048(u32 pass);
+void fn_801B9048(ColTExpNode* texp);
 s32 fn_801BAC8C(ColTExpNode* tev);
 s32 fn_801BB4C4(ColTExpNode* tev);
 
@@ -2917,18 +2917,108 @@ s32 HSD_TExpSimplify(ColTExpNode* texp) {
  * 0x801B9048 | Size: 0x2D8
  * Propagate the clamp/range flags of the source expressions onto this node.
  */
-void fn_801B9048(u32 pass) {
-    u32 i;
+void fn_801B9048(ColTExpNode* texp)
+{
+    s32 range;
+    s32 i;
 
-    for (i = 0; i < 64; i++) {
-        HSD_GObj* gobj = gobj_render_list[i];
-        while (gobj != NULL) {
-            if (gobj->render_cb != NULL) {
-                gobj->render_cb(gobj, pass);
+    range = 0;
+    if (texp->c_in[3].sel != COL_TE_0) {
+        ColTExpNode* child = texp->c_in[3].exp;
+
+        if (HSD_TExpGetType((u8*) child) == COL_TE_TEV) {
+            if (texp->c_in[3].sel == COL_TE_RGB) {
+                if (child->c_clamp != 1 && child->c_range == 1) {
+                    texp->c_range = 1;
+                    goto alpha;
+                }
+            } else if (child->a_clamp != 1 && child->a_range == 1) {
+                texp->c_range = 1;
+                goto alpha;
             }
-            gobj = gobj->next_gx;
+        }
+        range += 0x100;
+    }
+
+    for (i = 0; i < 3; i++) {
+        if (texp->c_in[i].sel != COL_TE_0) {
+            if (texp->c_op == 1) {
+                texp->c_range = 1;
+                goto alpha;
+            }
+            range += 0x100;
+            break;
         }
     }
+
+    switch (texp->c_bias) {
+    case 1:
+        range += 0x80;
+        break;
+    case 2:
+        texp->c_range = 1;
+        goto alpha;
+    }
+
+    switch (texp->c_scale) {
+    case 1:
+        range *= 2;
+        break;
+    case 2:
+        range *= 4;
+        break;
+    case 3:
+        range /= 2;
+        break;
+    }
+    texp->c_range = range > 0x100;
+
+alpha:
+    range = 0;
+    if (texp->a_in[3].sel != COL_TE_0) {
+        ColTExpNode* child = texp->a_in[3].exp;
+
+        if (HSD_TExpGetType((u8*) child) == COL_TE_TEV) {
+            if (child->a_clamp != 1 && child->a_range == 1) {
+                texp->a_range = 1;
+                return;
+            }
+        }
+        range += 0x100;
+    }
+
+    for (i = 0; i < 3; i++) {
+        if (texp->a_in[i].sel != COL_TE_0) {
+            if (texp->a_op == 1) {
+                texp->a_range = 1;
+                return;
+            }
+            range += 0x100;
+            break;
+        }
+    }
+
+    switch (texp->a_bias) {
+    case 1:
+        range += 0x80;
+        break;
+    case 2:
+        texp->a_range = 1;
+        return;
+    }
+
+    switch (texp->a_scale) {
+    case 1:
+        range *= 2;
+        break;
+    case 2:
+        range *= 4;
+        break;
+    case 3:
+        range /= 2;
+        break;
+    }
+    texp->a_range = range > 0x100;
 }
 
 /* Keep this as a real call: exposing the same-TU body perturbs the retail
