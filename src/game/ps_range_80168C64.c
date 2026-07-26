@@ -767,6 +767,20 @@ s32 psInitAppSRT(s32 count, s32 size) {
     return i;
 }
 
+/*
+ * Pokemon XD identifies the corresponding local function as
+ * _psDispParticlesSub.  The display path is still incomplete here, but this
+ * frame-generation update is independently verified against 0x8016ABF4-
+ * 0x8016AC14 in the Colosseum retail disassembly.
+ */
+void fn_8016AB94(u32 linkMask, s32 mode) {
+    if (mode == 0) {
+        u8 frame = lbl_80478C30;
+
+        lbl_80478C30 = frame < 0xFF ? frame + 1 : 1;
+    }
+}
+
 #endif
 
 #if !defined(PR410_PS_SPLIT) || defined(PR410_PS_EXACT)
