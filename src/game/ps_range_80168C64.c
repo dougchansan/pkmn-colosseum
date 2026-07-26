@@ -1129,7 +1129,12 @@ void psSetupTev(PSParticle* pp) {
     }
     lbl_8047B170 = state;
 
-    if (state == 0) {
+    if (state == 0x80) {
+        pp->flags &= ~0x180;
+        lbl_8047B170 &= ~0x180;
+    }
+
+    if (state == 0 || state == 0x80) {
         fn_800BC8C8(1);
         fn_800B884C(0);
         fn_800BC6F0(0, 0xFF, 0xFF, 4);
@@ -1149,6 +1154,12 @@ void psSetupTev(PSParticle* pp) {
         fn_800BC1E4(0, 3, 7, 7, 7);
         fn_800BC1A0(1, 0xF, 2, 0, 0xF);
         fn_800BC1E4(1, 7, 1, 0, 7);
+    } else if (state == 0x400 || state == 0x480) {
+        fn_800BC8C8(1);
+        fn_800B884C(1);
+        fn_800BC6F0(0, 0, 0, 4);
+        fn_800BC1A0(0, 4, 2, 8, 0xF);
+        fn_800BC1E4(0, 2, 1, 4, 7);
     }
 }
 
