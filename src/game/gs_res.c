@@ -412,8 +412,7 @@ void GSresInit(u32 count) {
     lbl_8047AC58 = handle;
     if ((handle & 0xFFFF) == 0) return;
     lbl_8047AC5C = (u32)GSmemGetPtr(handle);
-    off = 0;
-    i = 0;
+    off = i = 0;
     while (i < lbl_8047AC60) {
         u32 storeoff = off + 0x4;
         off += 0x14;
@@ -423,4 +422,3 @@ void GSresInit(u32 count) {
 }
 #endif
 #pragma pop
-
