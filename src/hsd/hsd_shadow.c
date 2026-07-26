@@ -460,7 +460,22 @@ void fn_801B0BD8(HSDShadow* shadow) {
 
 /* Address: 0x801B0EB8 | Size: 0x66C | Proposed: HSD_ShadowMain */
 /* Main shadow system entry point - orchestrates shadow map gen and apply */
-void fn_801B0EB8(void) {
+void fn_801B0EB8(HSDShadow* shadow) {
+    extern char lbl_802752C0[];
+    extern char lbl_8047DDCC;
+
+    if (shadow == NULL) {
+        __assert(lbl_802752C0, 0x18D, &lbl_8047DDCC);
+    }
+    if (shadow->camera == NULL) {
+        __assert(lbl_802752C0, 0x18E, lbl_802752C0 + 0xAC);
+    }
+    if (shadow->texture == NULL) {
+        __assert(lbl_802752C0, 0x18F, lbl_802752C0 + 0xBC);
+    }
+    if (shadow->texture->imagedesc == NULL) {
+        __assert(lbl_802752C0, 0x190, lbl_802752C0 + 0xCC);
+    }
 }
 
 /* Address: 0x801B1524 | Size: 0x19C | Proposed: HSD_ShadowFunc9 */
