@@ -572,6 +572,31 @@ extern f32 lbl_8047CA78;
 extern f32 lbl_8047AAF4;
 extern f32 lbl_8047CA88;
 extern void GSlightSetAnimIndex(u8*, u32);
+
+static inline void GSlightSetAnimIndexInline(u8* obj, u32 frame)
+{
+    u32 data;
+    u32 frames;
+
+    if (!obj[2]) {
+        return;
+    }
+    HSD_LObjRemoveAnimAll(*(void**)(obj + 0xc));
+    if (frame > *(u32*)(obj + 0x58)) {
+        return;
+    }
+    *(u32*)(obj + 0x60) = frame;
+    data = *(u32*)(obj + 0x8);
+    frames = *(u32*)(data + 0x4);
+    HSD_LObjAddAnimAll(*(void**)(obj + 0xc),
+                       *(void**)(frames + *(u32*)(obj + 0x60) * 4));
+    HSD_LObjReqAnimAll(*(void**)(obj + 0xc), lbl_8047CA78);
+    lbl_8047AAF4 = lbl_8047CA78;
+    HSD_ForeachAnim(*(void**)(obj + 0xc), 7, 0xffff,
+                    (void*)lightGetFrameCount__FP9_HSD_AObj, 0);
+    *(f32*)(obj + 0x6c) = lbl_8047AAF4;
+}
+
 #if 0
 asm void GSlightPopState(void) {
 #include "src/game/gs_render_GSlightPopState.inc"
@@ -585,7 +610,7 @@ void GSlightPopState(u8* obj, u8* snapshot) {
     HSD_LObjSetInterest(*(void**)(obj + 0xc), snapshot + 0x10);
 
     if (obj[2]) {
-        GSlightSetAnimIndex(obj, *(u32*)(snapshot + 0x1c));
+        GSlightSetAnimIndexInline(obj, *(u32*)(snapshot + 0x1c));
         *(f32*)(obj + 0x68) = *(f32*)(snapshot + 0x20);
         speed = *(f32*)(snapshot + 0x24);
         if (fn_800D37CC() == 0x32) {
