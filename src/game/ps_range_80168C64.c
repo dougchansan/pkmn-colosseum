@@ -145,6 +145,7 @@ extern PSFloatBytes lbl_8047B178;
 extern PSGeneratorState* lbl_8047B188;
 extern PSGeneratorState** lbl_8047B184;
 extern PSGeneratorState* lbl_8047B18C;
+extern void* lbl_8047B180;
 extern PSAppSRT* lbl_8047B124;
 extern u32 lbl_80452708[];
 extern u32 lbl_80452748[];
@@ -227,6 +228,7 @@ extern void fn_8019D9DC(PSForceJObj* jobj);
 extern void HSD_MtxSRT(void* dst, void* scale, void* rot, void* trans, void* order);
 extern void fn_801A6960(void* ptr);
 extern void* fn_801A6928(s32 size);
+extern void* fn_801A3E64(void);
 extern void __assert(const char* file, u32 line, const char* msg);
 extern void* memset(void* dst, s32 value, u32 size);
 extern void PSMTXIdentity(Mtx m);
@@ -271,6 +273,7 @@ extern void fn_800B7D3C(void);
 extern void fn_800B7874(s32 attribute, s32 type);
 extern void fn_800B928C(s32 primitive, s32 format, s32 count);
 extern void fn_800B9404(s32 width, s32 offset);
+extern void generateParticle_8017424C(PSGeneratorState* gen);
 
 void psSetGeneratorAngleRadiusScale(PSGeneratorState* gen, f32* scale,
                                     u8 applyToMotion) {
@@ -3043,6 +3046,102 @@ void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
             }
         }
         return;
+    }
+}
+
+void psExecGenerator(u32 linkMask) {
+    PSGeneratorState* gen;
+
+    while (lbl_8047B180 != NULL) {
+        lbl_8047B180 = fn_801A3E64();
+    }
+
+    lbl_8047B184 = NULL;
+    gen = lbl_8047B188;
+    while (gen != NULL) {
+        u8* raw = (u8*)gen;
+        u16 generatorFlags = *(u16*)(raw + 0x88);
+
+        if ((linkMask & (1 << (gen->linkNo + 16))) != 0 ||
+            (gen->flags & 0x800) != 0) {
+            lbl_8047B184 = (PSGeneratorState**)gen;
+            gen = gen->next;
+            continue;
+        }
+
+        if ((generatorFlags & 2) == 0 && (generatorFlags & 1) != 0 &&
+            gen->linkedJObj != NULL) {
+            PSForceJObj* jobj = gen->linkedJObj;
+
+            if (!(jobj->flags & 0x800000) && (jobj->flags & 0x40)) {
+                fn_8019D9DC(jobj);
+            }
+            gen->positionX = jobj->worldX;
+            gen->positionY = jobj->worldY;
+            gen->positionZ = jobj->worldZ;
+        }
+
+        if (*(f32*)(raw + 0x08) < 0.0f) {
+            gen->lifetime -= *(f32*)(raw + 0x08);
+        } else {
+            gen->lifetime += *(f32*)(raw + 0x08) * fn_801ADC7C();
+        }
+
+        if (gen->lifetime >= 1.0f) {
+            generateParticle_8017424C(gen);
+        }
+
+        if (gen->maxLife != 0) {
+            gen->maxLife--;
+            if (gen->maxLife == 0) {
+                PSGeneratorState* previous = (PSGeneratorState*)lbl_8047B184;
+
+                if (raw[0x17] != 0) {
+                    gen->flags |= 0x800;
+                } else {
+                    if (gen->angleFlags & 0x80) {
+                        psKillGeneratorChild(gen);
+                    }
+
+                    if (gen->childCount != 0) {
+                        *(f32*)(raw + 0x08) = 0.0f;
+                        gen->maxLife = 1;
+                        previous = gen;
+                    } else if ((gen->angleFlags & 0x3800) != 0 &&
+                               gen->appSRT != NULL &&
+                               ((PSAppSRT*)gen->appSRT)->owner == gen &&
+                               ((PSAppSRT*)gen->appSRT)->refCount != 1) {
+                        *(f32*)(raw + 0x08) = 0.0f;
+                        gen->maxLife = 1;
+                        previous = gen;
+                    } else {
+                        if (previous == NULL) {
+                            lbl_8047B188 = gen->next;
+                        } else {
+                            previous->next = gen->next;
+                        }
+
+                        if (gen->appSRT != NULL) {
+                            psRemoveGeneratorAppSRT(gen);
+                        }
+                        gen->next = lbl_8047B18C;
+                        lbl_8047B18C = gen;
+                        lbl_8047B118--;
+                    }
+                    lbl_8047B184 = (PSGeneratorState**)previous;
+                }
+
+                if (lbl_8047B184 != NULL) {
+                    gen = ((PSGeneratorState*)lbl_8047B184)->next;
+                } else {
+                    gen = lbl_8047B188;
+                }
+                continue;
+            }
+        }
+
+        lbl_8047B184 = (PSGeneratorState**)gen;
+        gen = gen->next;
     }
 }
 
