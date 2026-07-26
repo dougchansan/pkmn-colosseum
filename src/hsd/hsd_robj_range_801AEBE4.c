@@ -103,6 +103,13 @@ static inline f32 robj_absf(f32 value)
     return value < 0.0F ? -value : value;
 }
 
+static inline void RObjJObjRefThis(HSD_JObj* jobj)
+{
+    if (jobj != NULL) {
+        iref_INC(jobj);
+    }
+}
+
 static inline s32 RObjGetGlobalPosition(HSD_RObj* robj, u32 type, Vec* out)
 {
     HSD_RObj* current;
@@ -284,7 +291,7 @@ void fn_801AEBE4(HSD_RObj* robj, HSD_RObjDesc* desc)
             if (robj->u.jobj == NULL) {
                 __assert("robj.c", 0x330, "robj->u.jobj");
             }
-            HSD_JObjRefThis(robj->u.jobj);
+            RObjJObjRefThis(robj->u.jobj);
         } else if ((robj->flags & ROBJ_TYPE_MASK) == REFTYPE_EXP) {
             HSD_Rvalue* rvalue = robj->u.exp.rvalue;
             HSD_RvalueList* list = desc->u.exp->rvalue;
@@ -296,7 +303,7 @@ void fn_801AEBE4(HSD_RObj* robj, HSD_RObjDesc* desc)
                 if (rvalue->jobj == NULL) {
                     __assert("robj.c", 0x4F2, "rvalue->jobj");
                 }
-                HSD_JObjRefThis(rvalue->jobj);
+                RObjJObjRefThis(rvalue->jobj);
                 rvalue = rvalue->next;
                 list++;
             }
