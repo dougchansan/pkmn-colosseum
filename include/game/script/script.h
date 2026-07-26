@@ -232,7 +232,7 @@ typedef struct PSParticle {
     /* 0x85 */ u8 sizeYStart;           /* Size Y start value for interp */
     /* 0x86 */ u8 sizeXTargetFinal;     /* Final size X target */
     /* 0x87 */ u8 sizeYTargetFinal;     /* Final size Y target */
-    /* 0x88 */ u32 pad88;
+    /* 0x88 */ f32 alphaScale;          /* Display alpha multiplier */
     /* 0x8C */ void* peopleObj;         /* Pointer to associated people/NPC object */
     /* 0x90 */ void* parentObj;         /* Pointer to parent/owner object */
 } PSParticle;

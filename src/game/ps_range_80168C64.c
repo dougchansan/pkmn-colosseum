@@ -1480,7 +1480,7 @@ PSParticle* psGenerateParticle0(
     pp->sizeYTimer = 0;
     pp->sizeXTarget = 0xFF;
     pp->sizeYTarget = 0xFF;
-    *(f32*)&pp->pad88 = lbl_8047D5B8;
+    pp->alphaScale = lbl_8047D5B8;
 
     if (interpretNow != 0) {
         psInterpretParticle0(pp, NULL);
@@ -2755,6 +2755,8 @@ void psDispSubPointTrail(PSParticle* pp) {
     f32 widthValue;
     s32 width;
     u8 cachedWidth;
+    Vec previous;
+    PSColor color;
 
     if (lbl_8047B12C != 0) {
         lbl_8047B12C = 0;
@@ -2772,6 +2774,87 @@ void psDispSubPointTrail(PSParticle* pp) {
     if (lbl_8047B164 != cachedWidth) {
         lbl_8047B164 = cachedWidth;
         fn_800B9404(width, 5);
+    }
+
+    if (pp->flags & 4) {
+        if (pp->peopleObj != NULL) {
+            return;
+        }
+        previous.x = pp->positionX;
+        previous.y = pp->positionY;
+        previous.z = pp->positionZ;
+    } else {
+        previous.x = pp->positionX - pp->velocityX;
+        previous.y = pp->positionY - pp->velocityY;
+        previous.z = pp->positionZ - pp->velocityZ;
+    }
+
+    switch (pp->flags & 0x80000080) {
+    case 0:
+        if (pp->color1Timer != 0) {
+            s32 step =
+                ((s32)pp->color1Countdown << 16) / pp->color1Timer;
+
+            color.r = (((s32)pp->color1TargetR << 16) +
+                       step * ((s32)pp->color1R -
+                               (s32)pp->color1TargetR)) >> 16;
+            color.g = (((s32)pp->color1TargetG << 16) +
+                       step * ((s32)pp->color1G -
+                               (s32)pp->color1TargetG)) >> 16;
+            color.b = (((s32)pp->color1TargetB << 16) +
+                       step * ((s32)pp->color1B -
+                               (s32)pp->color1TargetB)) >> 16;
+            color.a = (((s32)pp->color1TargetA << 16) +
+                       step * ((s32)pp->color1A -
+                               (s32)pp->color1TargetA)) >> 16;
+        } else {
+            color.r = pp->color1R;
+            color.g = pp->color1G;
+            color.b = pp->color1B;
+            color.a = pp->color1A;
+        }
+        break;
+    case 0x80:
+    case 0x80000080:
+        color.r = 0xFF;
+        color.g = 0xFF;
+        color.b = 0xFF;
+        color.a = 0xFF;
+        break;
+    default:
+        return;
+    }
+
+    fn_800B7D3C();
+    fn_800B7874(9, 1);
+    fn_800B7874(11, 1);
+    if (pp->flags & 0x400) {
+        fn_800B7874(13, 2);
+        fn_800B928C(0xA8, 2, 2);
+    } else {
+        fn_800B928C(0xA8, 3, 2);
+    }
+
+    GX_FIFO_F32 = previous.x;
+    GX_FIFO_F32 = previous.y;
+    GX_FIFO_F32 = previous.z;
+    GX_FIFO_U8 = color.r;
+    GX_FIFO_U8 = color.g;
+    GX_FIFO_U8 = color.b;
+    GX_FIFO_U8 = (u8)(color.a * pp->alphaScale);
+    if (pp->flags & 0x400) {
+        GX_FIFO_U8 = 0;
+    }
+
+    GX_FIFO_F32 = pp->positionX;
+    GX_FIFO_F32 = pp->positionY;
+    GX_FIFO_F32 = pp->positionZ;
+    GX_FIFO_U8 = color.r;
+    GX_FIFO_U8 = color.g;
+    GX_FIFO_U8 = color.b;
+    GX_FIFO_U8 = color.a;
+    if (pp->flags & 0x400) {
+        GX_FIFO_U8 = 1;
     }
 }
 
