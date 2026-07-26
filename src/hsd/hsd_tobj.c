@@ -67,6 +67,9 @@ extern void PSMTXMultVecSR(const Mtx m, const Vec* src, Vec* dst);
 extern void PSVECNormalize(const Vec* src, Vec* dst);
 extern void GXLoadTexMtxImm(Mtx m, u32 id, s32 type);
 extern void HSD_MkRotationMtx(Mtx m, Vec* rot);
+extern void GXSetTexCoordGen(u32 coord, u32 func, u32 src, u32 mtx);
+extern void GXSetTexCoordGen2(u32 coord, u32 func, u32 src, u32 mtx,
+                              u32 normalize, u32 postmtx);
 
 extern HSD_TExp* fn_801B707C(HSD_TExp** list);
 extern void fn_801B5E40(HSD_TExp* exp, HSD_TObj* tobj, u32 chan);
@@ -380,6 +383,66 @@ void HSD_TObjRemoveAll(HSD_TObj* tobj)
         HSD_TObj* next = tobj->next;
         hsdDelete(tobj);
         tobj = next;
+    }
+}
+
+static inline void setupTextureCoordGen(HSD_TObj* tobj)
+{
+    switch (tobj_coord(tobj)) {
+    case TEX_COORD_SHADOW:
+        GXSetTexCoordGen2(tobj->coord, GX_TG_MTX3x4, GX_TG_POS, 0,
+                          GX_DISABLE, tobj->mtxid);
+        break;
+    case TEX_COORD_REFLECTION:
+    case TEX_COORD_HILIGHT:
+        GXSetTexCoordGen2(tobj->coord, GX_TG_MTX3x4, GX_TG_NRM, GX_TEXMTX0,
+                          GX_ENABLE, tobj->mtxid);
+        break;
+    default:
+        if (tobj_bump(tobj)) {
+            GXSetTexCoordGen(tobj->coord, GX_TG_MTX2x4, tobj->src,
+                             tobj->mtxid);
+        } else {
+            GXSetTexCoordGen2(tobj->coord, GX_TG_MTX2x4, tobj->src,
+                              GX_IDENTITY, GX_DISABLE, tobj->mtxid);
+        }
+        break;
+    }
+}
+
+static inline void setupTextureCoordGenBump(HSD_TObj* bump)
+{
+    static const u32 func[8] = { 2, 3, 4, 5, 6, 7, 8, 9 };
+    u32 mask = HSD_LObjGetLightMaskDiffuse();
+    int i;
+
+    for (i = 0; i < 8; i++) {
+        if (mask & (1 << i)) {
+            break;
+        }
+    }
+    if (i >= 8) {
+        i = 0;
+    }
+    GXSetTexCoordGen(bump->coord + 1, func[i], bump->coord + 12,
+                     GX_IDENTITY);
+}
+
+void fn_801BDA58(HSD_TObj* tobj)
+{
+    for (; tobj != NULL; tobj = tobj->next) {
+        if (tobj->id == GX_TEXMAP_NULL) {
+            continue;
+        }
+        if (tobj_bump(tobj)) {
+            setupTextureCoordGen(tobj);
+            setupTextureCoordGenBump(tobj);
+        } else if (tobj_coord(tobj) == TEX_COORD_TOON) {
+            GXSetTexCoordGen(tobj->coord, GX_TG_SRTG, tobj->src,
+                             GX_IDENTITY);
+        } else {
+            setupTextureCoordGen(tobj);
+        }
     }
 }
 #pragma pop
