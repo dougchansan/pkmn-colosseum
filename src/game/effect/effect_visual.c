@@ -1752,6 +1752,22 @@ extern u32 lbl_8047D1E8;
 extern u32 lbl_8047D1F8;
 extern u32 lbl_8047D1F0;
 extern u32 lbl_8047D1FC;
+
+static inline u8 effectColorAdd(u8 base, u8 color) {
+    f32 result = (f32)base + (f32)color - *(f32*)&lbl_8047D1F8;
+
+    if (result < *(f32*)&lbl_8047D1F0) {
+        result = *(f32*)&lbl_8047D1F0;
+    } else if (result > *(f32*)&lbl_8047D1FC) {
+        result = *(f32*)&lbl_8047D1FC;
+    }
+    return result;
+}
+
+static inline u8 effectColorMultiply(u8 base, u8 color) {
+    return ((f32)base * (f32)color) / *(f32*)&lbl_8047D1FC;
+}
+
 #if 0
 asm void fn_8013B268(void* ptr, u8* color) {
 #include "src/game/effect/effect_visual_fn_8013B268.inc"
@@ -1759,22 +1775,31 @@ asm void fn_8013B268(void* ptr, u8* color) {
 #else
 void fn_8013B268(void* ptr, u8* color) {
     u8* p;
-    u8* materialColor;
+    u8* baseColor;
+    u8 adjusted[4];
     u16 count;
     u16 i;
     void** textures;
-
-    if (ptr == NULL || color == NULL) {
-        return;
-    }
+    u8 useBaseColor;
 
     p = ptr;
     count = (u16)*(u32*)(p + 0x48);
     textures = (void**)(p + 0x4);
-    materialColor = (*(u8*)(p + 0x4F) != 0) ? p + 0x44 : color;
-    for (i = 0; i < count; i++) {
-        if (textures[i] != NULL) {
-            GSmodelSetModulationColor(textures[i], materialColor);
+    useBaseColor = *(u8*)(p + 0x4F);
+    if (useBaseColor != 0) {
+        baseColor = p + 0x44;
+    }
+    for (i = 0; i < count; i++, textures++) {
+        if (*textures != NULL) {
+            if (useBaseColor != 0) {
+                adjusted[0] = effectColorAdd(baseColor[0], color[0]);
+                adjusted[1] = effectColorAdd(baseColor[1], color[1]);
+                adjusted[2] = effectColorAdd(baseColor[2], color[2]);
+                adjusted[3] = effectColorMultiply(baseColor[3], color[3]);
+                GSmodelSetModulationColor(*textures, adjusted);
+            } else {
+                GSmodelSetModulationColor(*textures, color);
+            }
         }
     }
 }
