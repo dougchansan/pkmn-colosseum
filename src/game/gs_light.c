@@ -1020,6 +1020,22 @@ extern void HSD_LObjDeleteCurrentAll(void*);
 extern void HSD_LObjSetup(void*);
 extern u32 lbl_8047AAEC;
 extern u32 lbl_8047AAF0;
+
+static inline s32 GSlightFindFirstActive(GSlightEntry* light, u32 count)
+{
+    s32 index = 0;
+
+    while (count != 0) {
+        if (light->allocated == 1 && light->active != 0) {
+            return index;
+        }
+        index++;
+        light++;
+        count--;
+    }
+    return -1;
+}
+
 #if 0
 asm void fn_800DD174(void) {
 #include "src/game/gs_render_fn_800DD174.inc"
@@ -1038,15 +1054,7 @@ void GSlightSetupLights(void* arg) {
     HSD_LObjDeleteCurrentAll(0);
 
     lightList = (GSlightEntry*)lbl_8047AAEC;
-    for (firstIndex = 0, light = lightList;
-         firstIndex < (s32)lbl_8047AAF0; firstIndex++, light++) {
-        if (light->allocated == 1 && light->active != 0) {
-            break;
-        }
-    }
-    if (firstIndex >= (s32)lbl_8047AAF0) {
-        firstIndex = -1;
-    }
+    firstIndex = GSlightFindFirstActive(lightList, lbl_8047AAF0);
 
     if (firstIndex != -1) {
         last = &lightList[firstIndex];
