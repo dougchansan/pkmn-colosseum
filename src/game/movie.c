@@ -178,7 +178,7 @@ void fn_80035E04(void) {
     u32 nextIndex;
     u32 cueIndex = 0;
 
-    while ((fn_801E1874() & 0xFF) == THP_STATE_PLAYING) {
+    while ((u32)(fn_801E1874() & 0xFF) == THP_STATE_PLAYING) {
         nextIndex = cueIndex;
 
         if (cueIndex < 5) {
