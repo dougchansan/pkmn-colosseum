@@ -4768,8 +4768,11 @@ hsd/hsd_initialize.c:
 hsd/hsd_render_pass_exact_8019C7B0.c:
 	.text       start:0x8019C7B0 end:0x8019C7B8
 
-hsd/hsd_initialize_candidate_8019C7B8.c:
-	.text       start:0x8019C7B8 end:0x8019CE50
+hsd/hsd_initialize_r60_8019C7B8_prefix.c:
+	.text       start:0x8019C7B8 end:0x8019CB70
+
+hsd/hsd_initialize_r60_8019CB70_lmw_on.c:
+	.text       start:0x8019CB70 end:0x8019CE50
 
 hsd/hsd_jobj_r51_8019CE50_prefix.c:
 	.text       start:0x8019CE50 end:0x8019D620
@@ -4975,8 +4978,14 @@ hsd/hsd_pobj_r43_suffix_801AC4BC.c:
 hsd/hsd_pobj_r43_801AD354.c:
 	.text       start:0x801AD354 end:0x801AD61C
 
-hsd/hsd_pobj_r43_801AD61C.c:
-	.text       start:0x801AD61C end:0x801ADD48
+hsd/hsd_pobj_r60_801AD61C_prefix.c:
+	.text       start:0x801AD61C end:0x801ADAAC
+
+hsd/hsd_pobj_r60_801ADAAC_schedule_off.c:
+	.text       start:0x801ADAAC end:0x801ADC08
+
+hsd/hsd_pobj_r60_801ADC08_suffix.c:
+	.text       start:0x801ADC08 end:0x801ADD48
 
 hsd/hsd_robj_range_801ADD48.c:
 	.text       start:0x801ADD48 end:0x801ADF54
@@ -4987,8 +4996,14 @@ hsd/hsd_robj_exact_801ADF54.c:
 hsd/hsd_pobj.c:
 	.text       start:0x801AE000 end:0x801AE008
 
-hsd/hsd_robj_range_801AE008.c:
-	.text       start:0x801AE008 end:0x801AEBE0
+hsd/hsd_robj_r60_801AE008_lmw_on.c:
+	.text       start:0x801AE008 end:0x801AE4B0
+
+hsd/hsd_robj_r60_801AE4B0_middle.c:
+	.text       start:0x801AE4B0 end:0x801AE5E8
+
+hsd/hsd_robj_r60_801AE5E8_lmw_on.c:
+	.text       start:0x801AE5E8 end:0x801AEBE0
 
 hsd/hsd_pobj_empty.c:
 	.text       start:0x801AEBE0 end:0x801AEBE4
@@ -5029,8 +5044,11 @@ hsd/hsd_shadow.c:
 hsd/hsd_shadow_exact_801B03A0.c:
 	.text       start:0x801B03A0 end:0x801B0408
 
-hsd/hsd_shadow_candidate_801B0408.c:
-	.text       start:0x801B0408 end:0x801B06D4
+hsd/hsd_shadow_r60_801B0408_lmw_on.c:
+	.text       start:0x801B0408 end:0x801B04E0
+
+hsd/hsd_shadow_r60_801B04E0_suffix.c:
+	.text       start:0x801B04E0 end:0x801B06D4
 
 hsd/hsd_shadow_exact_801B06D4.c:
 	.text       start:0x801B06D4 end:0x801B06DC

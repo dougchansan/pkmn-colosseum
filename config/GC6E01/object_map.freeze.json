@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196100,
     "total_functions": 8603,
-    "total_units": 2247
+    "total_units": 2253
   },
   "topology_status": {
     "auto_units": 68,
-    "named_units": 2179,
-    "source_backed_units": 2173,
+    "named_units": 2185,
+    "source_backed_units": 2179,
     "auto_code": 0,
     "auto_data": 57687,
     "auto_functions": 0
@@ -23,7 +23,7 @@
     "matched_data_percent": 97.28669,
     "matched_functions": 6573,
     "matched_functions_percent": 76.40358,
-    "fuzzy_match_percent": 72.78742
+    "fuzzy_match_percent": 72.78998
   },
   "unit_topology": [
     {
@@ -21300,17 +21300,30 @@
       "total_functions": 1
     },
     {
-      "name": "main/hsd/hsd_initialize_candidate_8019C7B8",
+      "name": "main/hsd/hsd_initialize_r60_8019C7B8_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 1688,
+          "size": 952,
           "virtual_address": 2149173176
         }
       ],
-      "total_code": 1688,
+      "total_code": 952,
       "total_data": 0,
-      "total_functions": 7
+      "total_functions": 6
+    },
+    {
+      "name": "main/hsd/hsd_initialize_r60_8019CB70_lmw_on",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 736,
+          "virtual_address": 2149174128
+        }
+      ],
+      "total_code": 736,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/hsd/hsd_jobj_r51_8019CE50_prefix",
@@ -22197,17 +22210,43 @@
       "total_functions": 1
     },
     {
-      "name": "main/hsd/hsd_pobj_r43_801AD61C",
+      "name": "main/hsd/hsd_pobj_r60_801AD61C_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 1836,
+          "size": 1168,
           "virtual_address": 2149242396
         }
       ],
-      "total_code": 1836,
+      "total_code": 1168,
       "total_data": 0,
-      "total_functions": 11
+      "total_functions": 5
+    },
+    {
+      "name": "main/hsd/hsd_pobj_r60_801ADAAC_schedule_off",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 348,
+          "virtual_address": 2149243564
+        }
+      ],
+      "total_code": 348,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/hsd/hsd_pobj_r60_801ADC08_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 320,
+          "virtual_address": 2149243912
+        }
+      ],
+      "total_code": 320,
+      "total_data": 0,
+      "total_functions": 5
     },
     {
       "name": "main/hsd/hsd_robj_range_801ADD48",
@@ -22249,17 +22288,43 @@
       "total_functions": 1
     },
     {
-      "name": "main/hsd/hsd_robj_range_801AE008",
+      "name": "main/hsd/hsd_robj_r60_801AE008_lmw_on",
       "sections": [
         {
           "name": ".text",
-          "size": 3032,
+          "size": 1192,
           "virtual_address": 2149244936
         }
       ],
-      "total_code": 3032,
+      "total_code": 1192,
       "total_data": 0,
-      "total_functions": 4
+      "total_functions": 1
+    },
+    {
+      "name": "main/hsd/hsd_robj_r60_801AE4B0_middle",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 312,
+          "virtual_address": 2149246128
+        }
+      ],
+      "total_code": 312,
+      "total_data": 0,
+      "total_functions": 2
+    },
+    {
+      "name": "main/hsd/hsd_robj_r60_801AE5E8_lmw_on",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1528,
+          "virtual_address": 2149246440
+        }
+      ],
+      "total_code": 1528,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/hsd/hsd_pobj_empty",
@@ -22431,17 +22496,30 @@
       "total_functions": 1
     },
     {
-      "name": "main/hsd/hsd_shadow_candidate_801B0408",
+      "name": "main/hsd/hsd_shadow_r60_801B0408_lmw_on",
       "sections": [
         {
           "name": ".text",
-          "size": 716,
+          "size": 216,
           "virtual_address": 2149254152
         }
       ],
-      "total_code": 716,
+      "total_code": 216,
       "total_data": 0,
-      "total_functions": 2
+      "total_functions": 1
+    },
+    {
+      "name": "main/hsd/hsd_shadow_r60_801B04E0_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 500,
+          "virtual_address": 2149254368
+        }
+      ],
+      "total_code": 500,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/hsd/hsd_shadow_exact_801B06D4",
