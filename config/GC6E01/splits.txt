@@ -170,8 +170,14 @@ game/gs_party_access.c:
 game/gs_range_8000D290.c:
 	.text       start:0x8000D290 end:0x8000DAA8
 
-game/menuFight.c:
-	.text       start:0x8000DAA8 end:0x800117BC
+game/menuFight_r51_8000DAA8_prefix.c:
+	.text       start:0x8000DAA8 end:0x80011288
+
+game/menuFight_r51_80011288_o2.c:
+	.text       start:0x80011288 end:0x800114A4
+
+game/menuFight_r51_800114A4_suffix.c:
+	.text       start:0x800114A4 end:0x800117BC
 
 game/menuFight_r40_800117BC_gc125n.c:
 	.text       start:0x800117BC end:0x800119A8
@@ -398,8 +404,14 @@ game/menuNameEntry_candidate_80026FEC.c:
 game/menuNameEntry_candidate_800275F4_gc20.c:
 	.text       start:0x800275F4 end:0x80027740
 
-game/menuNameEntry_candidate_80027740.c:
-	.text       start:0x80027740 end:0x80029850
+game/menuNameEntry_r51_80027740_prefix.c:
+	.text       start:0x80027740 end:0x80027AA4
+
+game/menuNameEntry_r51_80027AA4_o2.c:
+	.text       start:0x80027AA4 end:0x80027D58
+
+game/menuNameEntry_r51_80027D58_suffix.c:
+	.text       start:0x80027D58 end:0x80029850
 
 game/menuShop.c:
 	.text       start:0x80029850 end:0x8002B880
@@ -945,8 +957,11 @@ game/pokeconv.c:
 game/gba/gba_misc_exact_800896B8.c:
 	.text       start:0x800896B8 end:0x800896E8
 
-game/gba/gba_misc_candidate_800896E8.c:
-	.text       start:0x800896E8 end:0x80089CA8
+game/gba/gba_misc_r51_800896E8_o2.c:
+	.text       start:0x800896E8 end:0x80089978
+
+game/gba/gba_misc_r51_80089978_suffix.c:
+	.text       start:0x80089978 end:0x80089CA8
 
 game/gba/gba_misc_exact_80089CA8.c:
 	.text       start:0x80089CA8 end:0x80089D30
@@ -3297,8 +3312,11 @@ game/effect/effect_visual_candidate_8013C074_o2.c:
 game/effect/effect_visual_exact_8013C5A0.c:
 	.text       start:0x8013C5A0 end:0x8013C670
 
-game/effect/effect_visual_candidate_8013C670.c:
-	.text       start:0x8013C670 end:0x8013D604
+game/effect/effect_visual_r51_8013C670_prefix.c:
+	.text       start:0x8013C670 end:0x8013D0A8
+
+game/effect/effect_visual_r51_8013D0A8_o2.c:
+	.text       start:0x8013D0A8 end:0x8013D604
 
 game/effect/effect_visual_exact_8013D604.c:
 	.text       start:0x8013D604 end:0x8013D984
@@ -4459,8 +4477,14 @@ hsd/hsd_render_pass_exact_8019C7B0.c:
 hsd/hsd_initialize_candidate_8019C7B8.c:
 	.text       start:0x8019C7B8 end:0x8019CE50
 
-hsd/hsd_jobj.c:
-	.text       start:0x8019CE50 end:0x8019DD00
+hsd/hsd_jobj_r51_8019CE50_prefix.c:
+	.text       start:0x8019CE50 end:0x8019D620
+
+hsd/hsd_jobj_r51_8019D620_o2.c:
+	.text       start:0x8019D620 end:0x8019D980
+
+hsd/hsd_jobj_r51_8019D980_suffix.c:
+	.text       start:0x8019D980 end:0x8019DD00
 
 hsd/hsd_jobj_candidate_8019DD00_gc125.c:
 	.text       start:0x8019DD00 end:0x8019E460
@@ -5481,8 +5505,11 @@ game/fight_trainer_range_801F9130.c:
 game/fight_trainer_exact_801F9790.c:
 	.text       start:0x801F9790 end:0x801F99C8
 
-game/fight_trainer_range_801F99C8.c:
-	.text       start:0x801F99C8 end:0x801FA4B4
+game/fight_trainer_r51_801F99C8_prefix.c:
+	.text       start:0x801F99C8 end:0x801F9F78
+
+game/fight_trainer_r51_801F9F78_gc20_o2.c:
+	.text       start:0x801F9F78 end:0x801FA4B4
 
 game/fight_trainer_exact_801FA4B4.c:
 	.text       start:0x801FA4B4 end:0x801FA524
@@ -5568,8 +5595,14 @@ game/fight_action_exact_8020AED0.c:
 game/fight_action_exact_8020AF30.c:
 	.text       start:0x8020AF30 end:0x8020B058
 
-game/fight_action_candidate_8020B058.c:
-	.text       start:0x8020B058 end:0x8020D784
+game/fight_action_r51_8020B058_prefix.c:
+	.text       start:0x8020B058 end:0x8020CA98
+
+game/fight_action_r51_8020CA98_o3.c:
+	.text       start:0x8020CA98 end:0x8020CFE0
+
+game/fight_action_r51_8020CFE0_suffix.c:
+	.text       start:0x8020CFE0 end:0x8020D784
 
 game/fight_action_exact_8020D784.c:
 	.text       start:0x8020D784 end:0x8020D844
