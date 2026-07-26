@@ -465,13 +465,25 @@ game/gs_range_8003686C.c:
 	.text       start:0x8003686C end:0x80037158
 
 game/menu/pda_range_80037158.c:
-	.text       start:0x80037158 end:0x8003B6D0
+	.text       start:0x80037158 end:0x8003AFDC
+
+game/menu/pda_range_r46_8003AFDC_o4s.c:
+	.text       start:0x8003AFDC end:0x8003B2D8
+
+game/menu/pda_range_r46_8003B2D8.c:
+	.text       start:0x8003B2D8 end:0x8003B6D0
 
 game/menu/pda_candidate_8003B6D0_gc20.c:
 	.text       start:0x8003B6D0 end:0x8003B814
 
 game/menu/pda_candidate_8003B814.c:
-	.text       start:0x8003B814 end:0x800492CC
+	.text       start:0x8003B814 end:0x8003CF38
+
+game/menu/pda_candidate_8003B814_r46_8003CF38_o4s.c:
+	.text       start:0x8003CF38 end:0x8003D1FC
+
+game/menu/pda_candidate_8003B814_r46_8003D1FC.c:
+	.text       start:0x8003D1FC end:0x800492CC
 
 game/menu/pda_candidate_800492CC_gc20.c:
 	.text       start:0x800492CC end:0x800495C8
@@ -579,7 +591,13 @@ game/menu/menuCB_BattleStart_candidate_8005E7F0_inline_off.c:
 	.text       start:0x8005E7F0 end:0x8005FFE4
 
 game/menu/menuCB_BattleStart_candidate_8005FFE4.c:
-	.text       start:0x8005FFE4 end:0x800615F4
+	.text       start:0x8005FFE4 end:0x80060EF4
+
+game/menu/menuCB_BattleStart_r46_80060EF4_o3.c:
+	.text       start:0x80060EF4 end:0x80061018
+
+game/menu/menuCB_BattleStart_r46_80061018.c:
+	.text       start:0x80061018 end:0x800615F4
 
 game/menu/menuCB_BattleStart_candidate_800615F4_gc20.c:
 	.text       start:0x800615F4 end:0x80061A2C
@@ -784,7 +802,13 @@ game/menu/menu_candidate_8007480C_gc125n.c:
 	.text       start:0x8007480C end:0x80075390
 
 game/menu/menu_candidate_80075390.c:
-	.text       start:0x80075390 end:0x8007C260
+	.text       start:0x80075390 end:0x8007B6D8
+
+game/menu/menu_candidate_80075390_r46_8007B6D8_o3.c:
+	.text       start:0x8007B6D8 end:0x8007C23C
+
+game/menu/menu_candidate_80075390_r46_8007C23C.c:
+	.text       start:0x8007C23C end:0x8007C260
 
 game/menu/menu_poke_coupon.c:
 	.text       start:0x8007C260 end:0x8007C300
@@ -2574,7 +2598,13 @@ game/gs_msg_candidate_800FA280_gc125.c:
 	.text       start:0x800FA280 end:0x800FA314
 
 game/gs_msg_candidate_800FA314.c:
-	.text       start:0x800FA314 end:0x800FE35C
+	.text       start:0x800FA314 end:0x800FB43C
+
+game/gs_msg_candidate_800FA314_r46_800FB43C_o4s.c:
+	.text       start:0x800FB43C end:0x800FB680
+
+game/gs_msg_candidate_800FA314_r46_800FB680.c:
+	.text       start:0x800FB680 end:0x800FE35C
 
 game/gs_thread_hi_range_800FE35C.c:
 	.text       start:0x800FE35C end:0x800FE6DC
@@ -2933,7 +2963,25 @@ game/hero_move_r40_8012BDE0_gc125n.c:
 	.text       start:0x8012BDE0 end:0x8012BEB4
 
 game/hero_move_r40_8012BEB4.c:
-	.text       start:0x8012BEB4 end:0x80130660
+	.text       start:0x8012BEB4 end:0x8012C0B4
+
+game/hero_move_r46_8012C0B4_o4s.c:
+	.text       start:0x8012C0B4 end:0x8012C540
+
+game/hero_move_r46_8012C540.c:
+	.text       start:0x8012C540 end:0x8012D39C
+
+game/hero_move_r46_8012D39C_o2.c:
+	.text       start:0x8012D39C end:0x8012D7F0
+
+game/hero_move_r46_8012D7F0.c:
+	.text       start:0x8012D7F0 end:0x8012E7B8
+
+game/hero_move_r46_8012E7B8_o4s.c:
+	.text       start:0x8012E7B8 end:0x8012EBD4
+
+game/hero_move_r46_8012EBD4.c:
+	.text       start:0x8012EBD4 end:0x80130660
 
 game/hero_pokemon.c:
 	.text       start:0x80130660 end:0x80130CE0
@@ -4016,7 +4064,19 @@ game/gs_range_8017F2C4.c:
 	.text       start:0x8017F2C4 end:0x80180C78
 
 game/people/people.c:
-	.text       start:0x80180C78 end:0x8018D7D0
+	.text       start:0x80180C78 end:0x80184D80
+
+game/people/people_r46_80184D80_o4s.c:
+	.text       start:0x80184D80 end:0x8018524C
+
+game/people/people_r46_8018524C.c:
+	.text       start:0x8018524C end:0x80186620
+
+game/people/people_r46_80186620_o4s.c:
+	.text       start:0x80186620 end:0x80186B5C
+
+game/people/people_r46_80186B5C.c:
+	.text       start:0x80186B5C end:0x8018D7D0
 
 game/people/people_candidate_8018D7D0_gc20.c:
 	.text       start:0x8018D7D0 end:0x8018D928
