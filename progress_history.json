@@ -4478,5 +4478,17 @@
   "fuzzy": 72.08,
   "fn": 76.4,
   "code": 39.78
+ },
+ {
+  "commit": "78c2f86fc675460f2e4fbf6069fb91092db91d0e",
+  "ts": 1785103824,
+  "fuzzy": 72.09791,
+  "code": 39.780243,
+  "fn": 76.40358,
+  "data": 97.28669,
+  "total_functions": 8603,
+  "matched_functions": 6573,
+  "source": "ci",
+  "build_clean": true
  }
 ]
