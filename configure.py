@@ -992,7 +992,6 @@ config.libs = [
                     (Matching, "effect_visual_exact_80139820"),
                     (CodeCandidate, "effect_visual_candidate_80139AC4"),
                     (Matching, "effect_visual_exact_8013A42C"),
-                    (CodeCandidate, "effect_visual_candidate_8013A520"),
                     (Matching, "effect_visual_exact_8013AA8C"),
                     (CodeCandidate, "effect_visual_candidate_8013AB60"),
                     (Matching, "effect_visual_exact_8013AD68"),
@@ -1006,7 +1005,6 @@ config.libs = [
                     (Matching, "effect_visual_exact_8013D604"),
                     (CodeCandidate, "effect_visual_candidate_8013D984"),
                     (Matching, "effect_visual_exact_8013DB64"),
-                    (CodeCandidate, "effect_visual_candidate_8013DE6C"),
                     (Matching, "effect_visual_exact_8013E470"),
                     (Matching, "effect_visual_candidate_8013E54C"),
                     (Matching, "effect_visual_exact_8013E5AC"),
@@ -1021,6 +1019,27 @@ config.libs = [
                     (CodeCandidate, "effect_visual_candidate_801402AC"),
                 ]
             ],
+            Object(
+                CodeCandidate,
+                "game/effect/effect_visual_candidate_8013A520_gc125n.c",
+                mw_version="GC/1.2.5n",
+                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                progress_category="game",
+            ),
+            Object(
+                CodeCandidate,
+                "game/effect/effect_visual_candidate_8013DE6C.c",
+                mw_version="GC/1.2.5n",
+                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                progress_category="game",
+            ),
+            Object(
+                CodeCandidate,
+                "game/effect/effect_visual_candidate_8013DE6C_r41_8013E258.c",
+                mw_version="GC/1.3",
+                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                progress_category="game",
+            ),
             Object(
                 CodeCandidate,
                 "game/item_range_80144574.c",
@@ -6959,6 +6978,13 @@ config.libs = [
             Object(
                 CodeCandidate,
                 "game/gs_gfx_range_800DB098.c",
+                mw_version="GC/1.2.5n",
+                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                progress_category="game",
+            ),
+            Object(
+                CodeCandidate,
+                "game/gs_gfx_range_800DB098_r41_800DB758.c",
                 mw_version="GC/1.3",
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",

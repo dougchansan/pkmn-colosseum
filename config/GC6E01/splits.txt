@@ -2106,7 +2106,10 @@ game/gs_gfx_dl.c:
 	.text       start:0x800DA578 end:0x800DB098
 
 game/gs_gfx_range_800DB098.c:
-	.text       start:0x800DB098 end:0x800DB890
+	.text       start:0x800DB098 end:0x800DB758
+
+game/gs_gfx_range_800DB098_r41_800DB758.c:
+	.text       start:0x800DB758 end:0x800DB890
 
 game/gs_gfx_range_800DB890.c:
 	.text       start:0x800DB890 end:0x800DC298
@@ -3036,7 +3039,7 @@ game/effect/effect_visual_candidate_80139AC4.c:
 game/effect/effect_visual_exact_8013A42C.c:
 	.text       start:0x8013A42C end:0x8013A520
 
-game/effect/effect_visual_candidate_8013A520.c:
+game/effect/effect_visual_candidate_8013A520_gc125n.c:
 	.text       start:0x8013A520 end:0x8013AA8C
 
 game/effect/effect_visual_exact_8013AA8C.c:
@@ -3079,7 +3082,10 @@ game/effect/effect_visual_exact_8013DB64.c:
 	.text       start:0x8013DB64 end:0x8013DE6C
 
 game/effect/effect_visual_candidate_8013DE6C.c:
-	.text       start:0x8013DE6C end:0x8013E470
+	.text       start:0x8013DE6C end:0x8013E258
+
+game/effect/effect_visual_candidate_8013DE6C_r41_8013E258.c:
+	.text       start:0x8013E258 end:0x8013E470
 
 game/effect/effect_visual_exact_8013E470.c:
 	.text       start:0x8013E470 end:0x8013E54C
