@@ -797,7 +797,131 @@ void psRemoveParticle(void) {
     }
 }
 
-void psInitDataBankLocate(void* data, void* objects, void* locations);
+typedef struct PSTextureGroup {
+    u32 count;
+    u32 format;
+    u8 pad08[0x0C];
+    u16 paletteCount;
+    u16 paletteFlags;
+    u32 entries[];
+} PSTextureGroup;
+
+typedef struct PSFormGroup {
+    u32 count;
+    u32 entries[];
+} PSFormGroup;
+
+void psInitDataBankLocate(void* data, void* objects, void* locations) {
+    s32 commandCount;
+    s32 firstCommand;
+    s32 i;
+    s32* commandTable;
+    s32* command;
+    s32* dataWords = data;
+    s32 version = *(u16*)data;
+
+    if (version == 0) {
+        commandCount = dataWords[1];
+        commandTable = dataWords + 2;
+        firstCommand = 0;
+        for (i = 0; i < commandCount; i++) {
+            dataWords[i + 2] += (s32)data;
+        }
+    } else if (version >= 0x40 && version < 0x44) {
+        firstCommand = dataWords[1];
+        commandCount = dataWords[2] + firstCommand;
+        commandTable = dataWords + 3 - firstCommand;
+        command = dataWords;
+        for (i = 0; i < dataWords[2]; i++) {
+            if (command[3] != 0) {
+                command[3] += (s32)data;
+            }
+            command++;
+        }
+    } else {
+        return;
+    }
+
+    for (i = firstCommand; i < commandCount; i++) {
+        s32* entry = (s32*)commandTable[i];
+
+        if (entry != NULL) {
+            entry[2] &= 0xF1FFFFFF;
+            entry[2] |= 0x08000000;
+        }
+    }
+
+    {
+        s32 groupCount = *(s32*)objects;
+        s32* groups = (s32*)objects + 1;
+
+        for (i = 0; i < groupCount; i++) {
+            if (groups[i] != 0) {
+                groups[i] += (s32)objects;
+            }
+        }
+
+        for (i = 0; i < groupCount; i++) {
+            PSTextureGroup* group = (PSTextureGroup*)groups[i];
+            u32 j;
+
+            if (group == NULL) {
+                continue;
+            }
+
+            for (j = 0; j < group->count; j++) {
+                if (group->entries[j] != 0) {
+                    group->entries[j] += (u32)objects;
+                }
+            }
+
+            if (group->format != 8 && group->format != 9 &&
+                group->format != 10) {
+                continue;
+            }
+
+            if (group->paletteFlags & 1) {
+                if (group->entries[group->count] != 0) {
+                    group->entries[group->count] += (u32)objects;
+                }
+            } else if (group->paletteCount != 0) {
+                for (j = group->count;
+                     j < group->count + group->paletteCount; j++) {
+                    if (group->entries[j] != 0) {
+                        group->entries[j] += (u32)objects;
+                    }
+                }
+            } else {
+                for (j = group->count; j < group->count * 2; j++) {
+                    if (group->entries[j] != 0) {
+                        group->entries[j] += (u32)objects;
+                    }
+                }
+            }
+        }
+
+        if (locations != NULL) {
+            s32* groups = (s32*)locations + 1;
+
+            for (i = 0; i < groupCount; i++) {
+                PSFormGroup* group;
+                u32 j;
+
+                if (groups[i] == 0) {
+                    continue;
+                }
+
+                groups[i] += (s32)locations;
+                group = (PSFormGroup*)groups[i];
+                for (j = 0; j < group->count; j++) {
+                    if (group->entries[j] != 0) {
+                        group->entries[j] += (u32)locations;
+                    }
+                }
+            }
+        }
+    }
+}
 
 void psInitDataBank(s32 bankIndex, void* data, void* objects,
                     void* bankData, void* locations) {
