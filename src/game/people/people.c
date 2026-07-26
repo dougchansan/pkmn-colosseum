@@ -733,7 +733,13 @@ u8 fn_8018B558(u32 groupId, u32 index, s32 blendAnimation,
     void* model;
     f32 frameCount;
 
-    if (blendAnimation < 0 || animation < 0 || frames < 1) {
+    if (blendAnimation < 0) {
+        return 0;
+    }
+    if (animation < 0) {
+        return 0;
+    }
+    if (frames < 1) {
         return 0;
     }
     entry = peopleFindBySelf(peopleFindSelf(groupId, index));
@@ -827,8 +833,8 @@ u8 fn_8018D680(GSvec* a, GSvec* b, GSvec* point, f32 threshold) {
     fn_800E0168(point, point, &midpoint);
     GSvecTransformQuat(&rotated, quaternion, point);
     distance = GSvecDistance(&midpoint, b);
-    return threshold >= (f32)__fabs(rotated.x) &&
-           distance >= (f32)__fabs(rotated.z);
+    return threshold >= __fabs(rotated.x) &&
+           distance >= __fabs(rotated.z);
 }
 #endif
 
@@ -971,7 +977,7 @@ extern void fn_800E3CC8(void);
 extern void GSmodelClearShadowFlags(void);
 extern void fn_801CB834(void);
 extern void fn_80166A28(u32);
-extern u16 fn_800F7318(u32, u32, u32, u32, u32, u32, u32, u32, u32, u32);
+extern u16 fn_800F7318(u32, ...);
 #if 0
 asm void fn_80181EB0(void) {
 #include "src/game/people/people_fn_80181EB0.inc"
@@ -1027,7 +1033,10 @@ s32 fn_801837D8(u32 groupId, u32 index, u32 flagId, u32 param1, u32 param2) {
     PeopleEntry* entry;
 
     entry = peopleFindBySelf(peopleFindSelf(groupId, index));
-    if (entry == NULL || flagId == 0) {
+    if (entry == NULL) {
+        return 0;
+    }
+    if (flagId == 0) {
         return 0;
     }
 
@@ -2441,7 +2450,7 @@ loop3:
 
 found_entry:
     if (entry == NULL) {
-        goto end;
+        return lbl_8047D7A0;
     }
     t = fn_800E008C(param3);
     endTime = entry->field_38;
@@ -2457,7 +2466,6 @@ found_entry:
             result = t / startTime;
         }
     }
-end:
     return result;
 }
 
@@ -2470,7 +2478,11 @@ void fn_80188AF4(u32 groupId, u32 index) {
     s8 partIndex;
 
     entry = peopleFindBySelf(peopleFindSelf(groupId, index));
-    if (entry == NULL || (model = peopleGetModel(entry)) == NULL) {
+    if (entry == NULL) {
+        return;
+    }
+    model = peopleGetModel(entry);
+    if (model == NULL) {
         return;
     }
     info = peopleInfoBiosGetPtr(entry->scriptRef);
@@ -2484,7 +2496,7 @@ void fn_80188AF4(u32 groupId, u32 index) {
     part = GSmodelGetPart(model, partIndex);
     fn_800EE288(part);
     GSpartFree(part);
-    entry->nextLink = NULL;
+    entry->threadHandle = NULL;
     set__5GSvecFfff(&entry->field_B4, lbl_8047D7A0, lbl_8047D7A0,
                    lbl_8047D7A0);
     entry->moveType = PEOPLE_MOVE_NONE;
@@ -2767,8 +2779,8 @@ BOOL peopleWaitSyncMotion(u32 groupId, u32 index, u8 wait) {
         if (GSmodelHasAnimationEnded(model)) {
             return FALSE;
         }
-        if (!wait) {
-            return TRUE;
+        if (wait == 0) {
+            break;
         }
         if (*(s32*)((u8*)model + 0x8C) == 1) {
             GSlogWrite((const char*)lbl_80274008, lbl_8036C4F8,
@@ -2777,6 +2789,7 @@ BOOL peopleWaitSyncMotion(u32 groupId, u32 index, u8 wait) {
         }
         _threadSwitch();
     }
+    return TRUE;
 }
 
 u8 fn_8018B76C(u32 groupId, u32 index, s32 animIndex, s32 frame, u8 loop) {
@@ -2790,7 +2803,11 @@ u8 fn_8018B76C(u32 groupId, u32 index, s32 animIndex, s32 frame, u8 loop) {
         return 0;
     }
     entry = peopleFindBySelf(peopleFindSelf(groupId, index));
-    if (entry == NULL || (model = peopleGetModel(entry)) == NULL) {
+    if (entry == NULL) {
+        return 0;
+    }
+    model = peopleGetModel(entry);
+    if (model == NULL) {
         return 0;
     }
     restart = 0;
@@ -2831,7 +2848,7 @@ void fn_8018BA04(u32 groupId, u32 index, GSvec* out) {
     PeopleEntry* entry;
     PeopleInfoBiosEntry* info;
     void* part;
-    s8 partId;
+    s32 partId;
 
     original = peopleFindBySelf(peopleFindSelf(groupId, index));
     if (original == NULL) {
@@ -2841,11 +2858,11 @@ void fn_8018BA04(u32 groupId, u32 index, GSvec* out) {
     if (info == NULL) {
         return;
     }
-    partId = (s8)fn_8018F698(info);
+    partId = fn_8018F698(info);
     entry = peopleFindBySelf(peopleFindSelf(groupId, index));
     if (entry != NULL) {
-        if (partId >= 0) {
-            part = GSmodelGetPart(entry->modelHandle, partId);
+        if ((s8)partId >= 0) {
+            part = GSmodelGetPart(entry->modelHandle, (s8)partId);
             GSpartGetTransform(part, out, 0, 0);
             GSpartFree(part);
         } else {
@@ -3075,7 +3092,7 @@ BOOL fn_8018D7D0(u32 groupId, u32 index) {
     if (entry == NULL) {
         return FALSE;
     }
-    return (entry->index & 0x7FFFFFFF) == 0x7FFF0000;
+    return (entry->index & 0x7FFF0000) == 0x7FFF0000;
 }
 
 /* peopleSearchID -- not recovered, gap in archive campaign (size 0x70) */

@@ -95,7 +95,7 @@ void fn_801D0C30(void)
     running = 1;
     state = 0;
     timer = 0;
-    while (running != 0) {
+    do {
         switch (state) {
         case 0:
             timer = 0;
@@ -148,5 +148,5 @@ void fn_801D0C30(void)
             running = 0;
             break;
         }
-    }
+    } while (running != 0);
 }
