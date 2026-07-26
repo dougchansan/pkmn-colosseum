@@ -868,7 +868,13 @@ game/gba/gba_misc_exact_8008AB4C.c:
 	.text       start:0x8008AB4C end:0x8008ABE4
 
 game/gba/gba_misc_candidate_8008ABE4.c:
-	.text       start:0x8008ABE4 end:0x8008C7B0
+	.text       start:0x8008ABE4 end:0x8008AC34
+
+game/gba/gba_misc_candidate_8008ABE4_r42_8008AC34_gc20.c:
+	.text       start:0x8008AC34 end:0x8008AE18
+
+game/gba/gba_misc_candidate_8008ABE4_r42_8008AE18.c:
+	.text       start:0x8008AE18 end:0x8008C7B0
 
 game/gbaCommunication_prefix.c:
 	.text       start:0x8008C7B0 end:0x80090720
