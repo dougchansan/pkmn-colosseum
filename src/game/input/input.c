@@ -543,7 +543,7 @@ asm void fn_800F80B0(void) {
 #include "src/game/input/input_fn_800F80B0.inc"
 }
 #else
-s32 fn_800F80B0(u32 padIdx) {
+s32 fn_800F80B0(s32 padIdx) {
     extern u8 lbl_80401C10[];
     u8* pad = &lbl_80401C10[0];
     u8* nul = NULL;
