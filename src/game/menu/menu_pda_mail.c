@@ -1604,12 +1604,12 @@ void fn_8004E9C0(s32 mailId)
     }
 
     fn_8017B3E4(group);
-    config.scroll = &lbl_8047A53C;
     config.mailId = mailId;
     config.status = &lbl_8047A538;
     config.y = lbl_8047A534;
     config.x = lbl_8047A530;
     lbl_8047A53C = lbl_8047BE48;
+    config.scroll = &lbl_8047A53C;
     menuOpenCustom(0x77, windowGetActiveID(), 0, 0, 1, 1, &config);
     while (fn_8017B2CC(group) == 1) {
         _threadSwitch();
