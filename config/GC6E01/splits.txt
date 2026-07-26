@@ -171,7 +171,13 @@ game/gs_range_8000D290.c:
 	.text       start:0x8000D290 end:0x8000DAA8
 
 game/menuFight.c:
-	.text       start:0x8000DAA8 end:0x80011B4C
+	.text       start:0x8000DAA8 end:0x800117BC
+
+game/menuFight_r40_800117BC_gc125n.c:
+	.text       start:0x800117BC end:0x800119A8
+
+game/menuFight_r40_800119A8.c:
+	.text       start:0x800119A8 end:0x80011B4C
 
 game/menuFightStatus.c:
 	.text       start:0x80011B4C end:0x80011EA4
@@ -225,7 +231,19 @@ game/menuSub.c:
 	.text       start:0x8001D7E4 end:0x8001E3E0
 
 game/gs_pcbox_range_8001E3E0.c:
-	.text       start:0x8001E3E0 end:0x80020328
+	.text       start:0x8001E3E0 end:0x8001EC08
+
+game/gs_pcbox_range_8001E3E0_r40_8001EC08_gc125n.c:
+	.text       start:0x8001EC08 end:0x8001EF78
+
+game/gs_pcbox_range_8001E3E0_r40_8001EF78.c:
+	.text       start:0x8001EF78 end:0x8001F304
+
+game/gs_pcbox_range_8001E3E0_r40_8001F304_gc125n.c:
+	.text       start:0x8001F304 end:0x8001FD48
+
+game/gs_pcbox_range_8001E3E0_r40_8001FD48.c:
+	.text       start:0x8001FD48 end:0x80020328
 
 game/gs_title_exact_80020328.c:
 	.text       start:0x80020328 end:0x800203B4
@@ -354,7 +372,13 @@ game/menuNameEntry_candidate_80027740.c:
 	.text       start:0x80027740 end:0x80029850
 
 game/menuShop.c:
-	.text       start:0x80029850 end:0x8002DD24
+	.text       start:0x80029850 end:0x8002B880
+
+game/menuShop_r40_8002B880_gc125n.c:
+	.text       start:0x8002B880 end:0x8002BCE8
+
+game/menuShop_r40_8002BCE8.c:
+	.text       start:0x8002BCE8 end:0x8002DD24
 
 game/menuPokemonChange.c:
 	.text       start:0x8002DD24 end:0x80030170
@@ -2140,7 +2164,10 @@ game/data/sdata2_8047CB48.c:
 	.sdata2     start:0x8047CB48 end:0x8047CB88
 
 game/gs_range_800E0DDC.c:
-	.text       start:0x800E0DDC end:0x800E202C
+	.text       start:0x800E0DDC end:0x800E1544
+
+game/gs_range_800E0DDC_r40_800E1544_gc125n.c:
+	.text       start:0x800E1544 end:0x800E202C
 
 game/gs_mem.c:
 	.text       start:0x800E202C end:0x800E3604
@@ -2442,7 +2469,13 @@ game/gs_thread_exact_800F036C.c:
 	.text       start:0x800F036C end:0x800F0424
 
 game/gs_thread_candidate_800F0424.c:
-	.text       start:0x800F0424 end:0x800F75FC
+	.text       start:0x800F0424 end:0x800F7108
+
+game/gs_thread_candidate_800F0424_r40_800F7108_gc125n.c:
+	.text       start:0x800F7108 end:0x800F716C
+
+game/gs_thread_candidate_800F0424_r40_800F716C.c:
+	.text       start:0x800F716C end:0x800F75FC
 
 game/input/input_exact_800F75FC.c:
 	.text       start:0x800F75FC end:0x800F760C
@@ -4400,7 +4433,10 @@ game/battle/battle_grid_exact_801C3108.c:
 	.text       start:0x801C3108 end:0x801C3114
 
 game/battle/battle_grid_residual_801C3114.c:
-	.text       start:0x801C3114 end:0x801C3C98
+	.text       start:0x801C3114 end:0x801C3B80
+
+game/battle/battle_grid_residual_801C3114_r40_801C3B80_gc125n.c:
+	.text       start:0x801C3B80 end:0x801C3C98
 
 game/battle/battle_grid_exact_801C3C98.c:
 	.text       start:0x801C3C98 end:0x801C3E3C
@@ -4613,7 +4649,13 @@ game/wazaSequence_exact_801DBFB0.c:
 	.text       start:0x801DBFB0 end:0x801DC014
 
 game/wazaSequence_candidate_801DC014.c:
-	.text       start:0x801DC014 end:0x801DCDA8
+	.text       start:0x801DC014 end:0x801DCAA0
+
+game/wazaSequence_candidate_801DC014_r40_801DCAA0_gc125n.c:
+	.text       start:0x801DCAA0 end:0x801DCBC8
+
+game/wazaSequence_candidate_801DC014_r40_801DCBC8.c:
+	.text       start:0x801DCBC8 end:0x801DCDA8
 
 game/sequence_exact_801DCDA8.c:
 	.text       start:0x801DCDA8 end:0x801DCF00
