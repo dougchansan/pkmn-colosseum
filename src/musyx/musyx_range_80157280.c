@@ -4613,7 +4613,9 @@ typedef struct {
     u8 pad_123[0x1D6 - 0x123];
     u8 pbLowerKeyRange;        /* 0x1D6 */
     u8 pbUpperKeyRange;        /* 0x1D7 */
-    u8 pad_1D8[0x214 - 0x1D8];
+    u8 pad_1D8[0x206 - 0x1D8];
+    u16 curPitch;               /* 0x206 */
+    u8 pad_208[0x214 - 0x208];
     u32 midiDirtyFlags;        /* 0x214 */
     u8 pad_218[0x404 - 0x218];
 } SynthVoiceMini; /* offset-mirror of SYNTH_VOICE, stride 0x404 */
@@ -5976,6 +5978,88 @@ void fn_80159840(MusyxVirtualSampleBuffer* sb, u32 cpos) {
         sb->info.data.update.len2 = cpos;
         if ((len = vs->callback(1, &sb->info)) != 0) {
             sb->last = (sb->last + len) % vs->bufferLength;
+        }
+    }
+}
+
+extern u8 fn_80162878(u32 voice); /* hwGetVirtualSampleState */
+extern u32 fn_80162E14(u32 voice); /* hwGetPos */
+extern u32 hwGetVirtualSampleID(u32 voice);
+extern u32 fn_801631F4(u32 voice); /* hwVoiceInStartup */
+extern void macSampleEndNotify(SynthVoiceMini* voice);
+
+void vsSampleUpdates(void) {
+    extern void fn_80159840(MusyxVirtualSampleBuffer* buffer, u32 position);
+    extern u8 fn_80162878(u32 voice);
+    extern u32 fn_80162E14(u32 voice);
+    extern u32 hwGetVirtualSampleID(u32 voice);
+    extern u32 fn_801631F4(u32 voice);
+    extern void hwBreak(u32 voice);
+    extern void macSampleEndNotify(SynthVoiceMini* voice);
+    extern void voiceKill(u32 voice);
+    MusyxVirtualSamples* vs = (MusyxVirtualSamples*)lbl_80446F10;
+    u32 i;
+    u32 cpos;
+    u32 realCPos;
+    MusyxVirtualSampleBuffer* buffer;
+    u32 nextSamples;
+
+    if (vs->callback == NULL) {
+        return;
+    }
+
+    for (i = 0; i < 64; i++) {
+        if (vs->voices[i] != 0xFF && fn_80162878(i) != 0) {
+            buffer = &vs->streamBuffer[vs->voices[i]];
+            realCPos = fn_80162E14(i);
+            if (buffer->smpType == 5) {
+                cpos = (realCPos / 14) * 14;
+            } else {
+                cpos = realCPos;
+            }
+
+            switch (buffer->state) {
+            case 1:
+                fn_80159840(buffer, cpos);
+                break;
+            case 2:
+            case 3:
+                if (((buffer->info.instID << 8) | buffer->voice) ==
+                    hwGetVirtualSampleID(buffer->voice)) {
+                    fn_80159840(buffer, cpos);
+                    if (realCPos >= buffer->finalLast) {
+                        buffer->finalGoodSamples -=
+                            realCPos - buffer->finalLast;
+                    } else {
+                        buffer->finalGoodSamples -=
+                            vs->bufferLength -
+                            (buffer->finalLast - realCPos);
+                    }
+                    buffer->finalLast = realCPos;
+                    nextSamples =
+                        (lbl_8047AF48[buffer->voice].curPitch * 160 +
+                         0xFFF) /
+                        4096;
+                    if ((s32)nextSamples >
+                        (s32)buffer->finalGoodSamples) {
+                        if (!fn_801631F4(buffer->voice)) {
+                            if (buffer->state == 2) {
+                                hwBreak(buffer->voice);
+                                macSampleEndNotify(
+                                    &lbl_8047AF48[buffer->voice]);
+                            } else {
+                                voiceKill(buffer->voice);
+                            }
+                        }
+                        buffer->state = 0;
+                        vs->voices[buffer->voice] = 0xFF;
+                    }
+                } else {
+                    buffer->state = 0;
+                    vs->voices[buffer->voice] = 0xFF;
+                }
+                break;
+            }
         }
     }
 }
