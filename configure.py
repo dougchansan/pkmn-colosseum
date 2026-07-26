@@ -2624,6 +2624,11 @@ config.libs = [
                     status,
                     path,
                     mw_version="GC/1.2.5n",
+                    extra_cflags=(
+                        ["-inline deferred"]
+                        if path == "dolphin/vi/VI_candidate_800A839C.c"
+                        else []
+                    ),
                     progress_category="sdk",
                 )
                 for status, path in [
@@ -2784,6 +2789,7 @@ config.libs = [
                 CodeCandidate,
                 "dolphin/sdk_candidate_800B3078.c",
                 mw_version="GC/1.2.5n",
+                extra_cflags=["-inline noauto"],
                 progress_category="sdk",
             ),
             Object(
@@ -2796,6 +2802,7 @@ config.libs = [
                 CodeCandidate,
                 "dolphin/sdk_candidate_800B3978.c",
                 mw_version="GC/1.2.5n",
+                extra_cflags=["-inline noauto"],
                 progress_category="sdk",
             ),
             Object(
@@ -3002,7 +3009,13 @@ config.libs = [
                 progress_category="sdk",
             ),
             Object(Matching, "dolphin/gx/GX_exact_800BD554.c", mw_version="GC/1.2.5n", progress_category="sdk"),
-            Object(CodeCandidate, "dolphin/sdk_candidate_800BD58C.c", mw_version="GC/1.2.5n", progress_category="sdk"),
+            Object(
+                CodeCandidate,
+                "dolphin/sdk_candidate_800BD58C.c",
+                mw_version="GC/1.2.5n",
+                extra_cflags=["-inline noauto"],
+                progress_category="sdk",
+            ),
             Object(Matching, "dolphin/gx/GX_exact_800BD744.c", mw_version="GC/1.2.5n", progress_category="sdk"),
             Object(CodeCandidate, "dolphin/sdk_candidate_800BD7A0.c", mw_version="GC/1.2.5n", progress_category="sdk"),
             Object(Matching, "dolphin/gx/GX_exact_800BE30C.c", mw_version="GC/1.2.5n", progress_category="sdk"),
@@ -6775,7 +6788,7 @@ config.libs = [
                         )
                         else ["-O4,s"]
                         if path == "hsd/hsd_cobj_candidate_80195A6C.c"
-                        else ["-use_lmw_stmw on", "-O2"]
+                        else ["-use_lmw_stmw on", "-O2", "-inline noauto"]
                         if path == "hsd/hsd_cobj_candidate_80197344.c"
                         else []
                     ),
@@ -6817,7 +6830,7 @@ config.libs = [
                 CodeCandidate,
                 "hsd/hsd_jobj.c",
                 mw_version="GC/1.3.2",
-                extra_cflags=["-DHSD_JOBJ_OMIT_EXACT_8019F718"],
+                extra_cflags=["-DHSD_JOBJ_OMIT_EXACT_8019F718", "-inline deferred"],
                 progress_category="hsd",
             ),
             Object(
@@ -6830,6 +6843,7 @@ config.libs = [
                 CodeCandidate,
                 "hsd/hsd_jobj_suffix_8019FF74.c",
                 mw_version="GC/1.3",
+                extra_cflags=["-inline deferred"],
                 progress_category="hsd",
             ),
             Object(
@@ -6842,7 +6856,7 @@ config.libs = [
                 CodeCandidate,
                 "hsd/hsd_jobj_residual_801A05EC.c",
                 mw_version="GC/1.3",
-                extra_cflags=["-use_lmw_stmw on"],
+                extra_cflags=["-use_lmw_stmw on", "-inline deferred"],
                 progress_category="hsd",
             ),
             Object(
@@ -7189,7 +7203,12 @@ config.libs = [
                 CodeCandidate,
                 "hsd/hsd_aobj_candidate_801C028C.c",
                 mw_version="GC/1.3",
-                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                extra_cflags=[
+                    "-use_lmw_stmw on",
+                    "-sdata 8",
+                    "-sdata2 8",
+                    "-inline deferred",
+                ],
                 progress_category="hsd",
             ),
             Object(
