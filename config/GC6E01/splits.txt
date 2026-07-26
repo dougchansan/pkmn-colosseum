@@ -1663,7 +1663,10 @@ trk/TRKTarget_exact_800C195C.c:
 	.text       start:0x800C195C end:0x800C1A08
 
 trk/TRKTarget_residual_800C1A08.c:
-	.text       start:0x800C1A08 end:0x800C24BC
+	.text       start:0x800C1A08 end:0x800C1FB0
+
+trk/TRKTarget_residual_800C1A08_r41_800C1FB0.c:
+	.text       start:0x800C1FB0 end:0x800C24BC
 
 trk/TRKTarget_exact_800C24BC.c:
 	.text       start:0x800C24BC end:0x800C25FC
