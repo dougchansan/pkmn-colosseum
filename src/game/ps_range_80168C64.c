@@ -195,6 +195,8 @@ extern void PSVECNormalize(const Vec* src, Vec* dst);
 extern void PSVECCrossProduct(const Vec* a, const Vec* b, Vec* out);
 extern void HSD_CObjGetUpVector(void* camera, Vec* up);
 extern f32 lbl_8047D6B4;
+extern f32 lbl_8047D5CC;
+extern f32 lbl_8047D618;
 extern void fn_800BD554(s32 mode);
 extern void fn_800B7D3C(void);
 extern void fn_800B7874(s32 attribute, s32 type);
@@ -1791,44 +1793,90 @@ void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
         fn_800BD554(0);
     }
 
-    if ((pp->flags & 0x100000) == 0 && polygonData == NULL) {
-        u32 textureIndex = (pp->flags >> 14) & 3;
+    if ((pp->flags & 0x100000) == 0) {
+        if (polygonData == NULL) {
+            u32 textureIndex = (pp->flags >> 14) & 3;
 
-        fn_800B7D3C();
-        fn_800B7874(9, 1);
-        if (pp->flags & 0x400) {
-            fn_800B7874(13, 2);
-            fn_800B928C(0x80, 0, 4);
+            fn_800B7D3C();
+            fn_800B7874(9, 1);
+            if (pp->flags & 0x400) {
+                fn_800B7874(13, 2);
+                fn_800B928C(0x80, 0, 4);
+            } else {
+                fn_800B928C(0x80, 1, 4);
+            }
+
+            GX_FIFO_F32 = centerX - axisXX;
+            GX_FIFO_F32 = centerY - axisXY;
+            GX_FIFO_F32 = centerZ - axisXZ;
+            if (pp->flags & 0x400) {
+                GX_FIFO_U8 = textureIndex;
+            }
+
+            GX_FIFO_F32 = centerX - axisYX;
+            GX_FIFO_F32 = centerY - axisYY;
+            GX_FIFO_F32 = centerZ - axisYZ;
+            if (pp->flags & 0x400) {
+                GX_FIFO_U8 = textureIndex + 1;
+            }
+
+            GX_FIFO_F32 = centerX + axisXX;
+            GX_FIFO_F32 = centerY + axisXY;
+            GX_FIFO_F32 = centerZ + axisXZ;
+            if (pp->flags & 0x400) {
+                GX_FIFO_U8 = textureIndex + 2;
+            }
+
+            GX_FIFO_F32 = centerX + axisYX;
+            GX_FIFO_F32 = centerY + axisYY;
+            GX_FIFO_F32 = centerZ + axisYZ;
+            if (pp->flags & 0x400) {
+                GX_FIFO_U8 = textureIndex + 3;
+            }
         } else {
-            fn_800B928C(0x80, 1, 4);
-        }
+            u8* stream = polygonData;
+            u32 packetCount = *(u32*)stream;
 
-        GX_FIFO_F32 = centerX - axisXX;
-        GX_FIFO_F32 = centerY - axisXY;
-        GX_FIFO_F32 = centerZ - axisXZ;
-        if (pp->flags & 0x400) {
-            GX_FIFO_U8 = textureIndex;
-        }
+            stream += 4;
+            while (packetCount != 0) {
+                u8 primitive = stream[0];
+                u8 vertexCount = stream[1];
+                s32 i;
 
-        GX_FIFO_F32 = centerX - axisYX;
-        GX_FIFO_F32 = centerY - axisYY;
-        GX_FIFO_F32 = centerZ - axisYZ;
-        if (pp->flags & 0x400) {
-            GX_FIFO_U8 = textureIndex + 1;
-        }
+                stream += 4;
+                fn_800B7D3C();
+                fn_800B7874(9, 1);
+                if (pp->flags & 0x400) {
+                    fn_800B7874(13, 1);
+                    fn_800B928C(primitive, 4, vertexCount);
+                } else {
+                    fn_800B928C(primitive, 1, vertexCount);
+                }
 
-        GX_FIFO_F32 = centerX + axisXX;
-        GX_FIFO_F32 = centerY + axisXY;
-        GX_FIFO_F32 = centerZ + axisXZ;
-        if (pp->flags & 0x400) {
-            GX_FIFO_U8 = textureIndex + 2;
-        }
+                for (i = 0; i < vertexCount; i++) {
+                    f32 u = *(f32*)&stream[0];
+                    f32 v = *(f32*)&stream[4];
+                    f32 xWeight = lbl_8047D5CC * (u - lbl_8047D618);
+                    f32 yWeight = lbl_8047D5CC * (v - lbl_8047D618);
 
-        GX_FIFO_F32 = centerX + axisYX;
-        GX_FIFO_F32 = centerY + axisYY;
-        GX_FIFO_F32 = centerZ + axisYZ;
-        if (pp->flags & 0x400) {
-            GX_FIFO_U8 = textureIndex + 3;
+                    stream += 8;
+                    if (pp->flags & 0x40000) {
+                        u = 1.0f - u;
+                    }
+                    if (pp->flags & 0x80000) {
+                        v = 1.0f - v;
+                    }
+
+                    GX_FIFO_F32 = centerX + axisXX * xWeight + axisYX * yWeight;
+                    GX_FIFO_F32 = centerY + axisXY * xWeight + axisYY * yWeight;
+                    GX_FIFO_F32 = centerZ + axisXZ * xWeight + axisYZ * yWeight;
+                    if (pp->flags & 0x400) {
+                        GX_FIFO_F32 = u;
+                        GX_FIFO_F32 = v;
+                    }
+                }
+                packetCount--;
+            }
         }
         return;
     }
