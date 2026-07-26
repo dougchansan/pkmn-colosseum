@@ -131,6 +131,7 @@ extern PSAppSRT* lbl_8047B124;
 extern u32 lbl_80452708[];
 extern u32 lbl_80452748[];
 extern void* lbl_80452AC8[];
+extern void** lbl_804528C8[];
 extern s32 lbl_80452CC8[];
 extern PSParticle* lbl_80452788[];
 extern PSParticle* lbl_8047B108;
@@ -218,6 +219,11 @@ extern f32 lbl_8047D5CC;
 extern f32 lbl_8047D618;
 extern f64 lbl_8047D5E0;
 extern f32 lbl_8047D5D8;
+extern f32 lbl_80478ACC;
+extern void particleSort(s32 linkNo, PSParticle** first, PSParticle** second);
+void psDispSub(PSParticle* pp, void* polygonData);
+void psDispSubAppSRT(PSParticle* pp, Mtx parentMatrix);
+void psDispSubAPPSRTPoint(PSParticle* pp);
 extern f32 lbl_8047D5DC;
 extern f32 lbl_8047B14C;
 extern f32 lbl_8047B150;
@@ -774,10 +780,65 @@ s32 psInitAppSRT(s32 count, s32 size) {
  * 0x8016AC14 in the Colosseum retail disassembly.
  */
 void fn_8016AB94(u32 linkMask, s32 mode) {
+    s32 linkNo;
+
     if (mode == 0) {
         u8 frame = lbl_80478C30;
 
         lbl_80478C30 = frame < 0xFF ? frame + 1 : 1;
+        return;
+    }
+
+    for (linkNo = 0; linkNo < 16; linkNo++) {
+        PSParticle* first;
+        PSParticle* second;
+        PSParticle* pp;
+
+        if ((linkMask & (1U << linkNo)) == 0) {
+            continue;
+        }
+
+        particleSort(linkNo, &first, &second);
+        if (mode == 1) {
+            pp = first;
+        } else if (mode == 2) {
+            pp = second;
+        } else {
+            continue;
+        }
+
+        while (pp != NULL) {
+            PSParticle* next = pp->next;
+
+            if (mode == 1 && (pp->flags & 8) == 0) {
+                break;
+            }
+
+            if (pp->lerpValue >= lbl_80478ACC &&
+                (pp->flags & 0x20000000) == 0) {
+                void* polygonData = NULL;
+                void** bank = lbl_804528C8[pp->bankIndex];
+
+                if (bank != NULL) {
+                    void** object = (void**)bank[pp->animIndex];
+
+                    if (object != NULL && object != (void**)-4) {
+                        polygonData = object[pp->objRefIndex + 1];
+                    }
+                }
+
+                if (pp->flags & 0x40000000) {
+                    if (pp->parentObj != NULL) {
+                        psDispSubAPPSRTPoint(pp);
+                    }
+                } else if (pp->parentObj != NULL) {
+                    psDispSubAppSRT(pp, (f32(*)[4])polygonData);
+                } else {
+                    psDispSub(pp, polygonData);
+                }
+            }
+            pp = next;
+        }
     }
 }
 
