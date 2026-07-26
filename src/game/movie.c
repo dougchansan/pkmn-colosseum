@@ -167,14 +167,34 @@ void fn_80035F34(void) {
  *    bl floorSetFadeScript
  * ======================================================================= */
 void fn_80035E04(void) {
-    u8 state;
+    typedef struct MovieCue {
+        u16 frame;
+        u16 sound0;
+        u16 sound1;
+    } MovieCue;
+    extern const MovieCue lbl_802E51A8[5];
+    extern s32 fn_801E16D0(void);
+    extern void fn_80166A28(u32);
+    u32 cueIndex = 0;
 
-    /* Wait for any playing THP movie to finish (inlined -- no standalone
-     * wait helper exists at this address range in the retail binary) */
-    do {
+    while ((fn_801E1874() & 0xFF) == THP_STATE_PLAYING) {
+        u32 nextIndex = cueIndex;
+
+        if (cueIndex < 5) {
+            s32 frame = fn_801E16D0();
+            if (frame >= 0 && frame >= lbl_802E51A8[cueIndex].frame) {
+                if (lbl_802E51A8[cueIndex].sound0 != 0) {
+                    fn_80166A28(lbl_802E51A8[cueIndex].sound0);
+                }
+                if (lbl_802E51A8[cueIndex].sound1 != 0) {
+                    fn_80166A28(lbl_802E51A8[cueIndex].sound1);
+                }
+                nextIndex++;
+            }
+        }
+        cueIndex = nextIndex;
         _threadSwitch();
-        state = fn_801E1874();
-    } while ((state & 0xFF) == THP_STATE_PLAYING);
+    }
 
     /* Stop BGM: group 1, fade 0, volume 127 */
     fn_80165A20(1, 0, 0x7F);

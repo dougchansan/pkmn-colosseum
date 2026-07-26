@@ -143,22 +143,65 @@ void loadParticle(void* dst, u32 size, void* callback, void* callbackArg) {
 }
 
 /* 0x801012E8 | 0xB8 */
-#pragma push
-#pragma optimization_level 0
-#pragma optimizewithasm off
-void fn_801012E8(void) {
-    /* TODO: match -- 184 bytes at 0x801012E8 */
+void fn_801012E8(void* archive, u32 resourceArg, u32 callbackArg) {
+    extern void* HSD_ArchiveGetPublicAddress(void*, const char*);
+    extern void* fn_800D27FC(void*);
+    extern void GSresRegisterResource(void*, u32, u32, void*);
+    extern void fn_80101A28(void);
+    void** publicData;
+    void* resource;
+
+    if (archive == NULL) {
+        GSlogWrite(lbl_802717F0 + 0x300);
+        return;
+    }
+    publicData = HSD_ArchiveGetPublicAddress(archive, lbl_802717F0 + 0x2C8);
+    if (publicData == NULL) {
+        GSlogWrite(lbl_802717F0 + 0x328);
+        return;
+    }
+    resource = fn_800D27FC(publicData[1]);
+    if (resource == NULL) {
+        GSlogWrite(lbl_802717F0 + 0x358);
+    }
+    GSresRegisterResource(resource, resourceArg, callbackArg,
+                          (void*)fn_80101A28);
 }
-#pragma pop
 
 /* 0x801013A0 | 0xDC */
-#pragma push
-#pragma optimization_level 0
-#pragma optimizewithasm off
-void fn_801013A0(void) {
-    /* TODO: match -- 220 bytes at 0x801013A0 */
+void fn_801013A0(void* archive, u32 resourceArg, u32 modelIndex,
+                 u32 callbackArg) {
+    extern void* HSD_ArchiveGetPublicAddress(void*, const char*);
+    extern void* GSmodelLoad(void*);
+    extern void GSresRegisterResource(void*, u32, u32, void*);
+    extern void fn_80101A4C(void);
+    void*** publicData;
+    void** models;
+    void* model;
+    u32 index;
+
+    if (archive == NULL) {
+        GSlogWrite(lbl_802717F0 + 0x3F4);
+        return;
+    }
+    publicData = HSD_ArchiveGetPublicAddress(archive, lbl_802717F0 + 0x2C8);
+    if (publicData == NULL) {
+        GSlogWrite(lbl_802717F0 + 0x418);
+        return;
+    }
+    models = *publicData;
+    for (index = 0; models[index] != NULL; index++) {
+        if (index == modelIndex) {
+            model = GSmodelLoad(models[index]);
+            if (model == NULL) {
+                GSlogWrite(lbl_802717F0 + 0x448, index);
+            }
+            GSresRegisterResource(model, resourceArg, callbackArg,
+                                  (void*)fn_80101A4C);
+            return;
+        }
+    }
 }
-#pragma pop
 
 /* 0x8010147C | 0x494 */
 #pragma push

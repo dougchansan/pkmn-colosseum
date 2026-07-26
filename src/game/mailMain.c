@@ -16,7 +16,37 @@
  * Address: 0x801D2080 | Size: 0xEC
  */
 void mailMainSendByScrpt(s32 seqHandle, f32 alpha, f32 speed) {
-    /* TODO: Effect alpha fade (0xEC bytes) */
+    extern u32 fn_8016557C(void);
+    extern void* GSresAllocResourceAlign(u32, u32, u32, u32, u32);
+    extern u32 fn_801654E0(u32, void*, u32);
+    extern u32 fn_80166B3C(u32, u32, u32);
+    extern u32 fn_80166A50(u32, u32, u32, u32);
+    u32 soundId;
+    u32 workId;
+    void* buffer;
+
+    seqHandle = (u16)seqHandle;
+    if (mailGetReceiveNumber(seqHandle) >= 0) {
+        return;
+    }
+    mailAddMailbox(seqHandle);
+    if (lbl_80467390[0] != 0) {
+        return;
+    }
+    soundId = fn_801D1650(fn_801D16C4());
+    if (soundId != 0) {
+        workId = fn_8016557C();
+        buffer = GSresAllocResourceAlign(0x10000, 0x20, 0, 0x408, 0);
+        fn_801654E0(soundId, buffer, 0x10000);
+        fn_80166B3C(soundId, 0, 0x408);
+        fn_80166A50(soundId, 0, 0xFF, 0);
+    } else {
+        workId = 0;
+    }
+    lbl_80467390[0] = 1;
+    lbl_80467390[1] = 0;
+    lbl_80467390[2] = soundId;
+    lbl_80467390[3] = workId;
 }
 
 /**
@@ -102,7 +132,32 @@ void fn_801D2404(s32 seqHandle, f32 x, f32 y, f32 z, f32 scale, f32 rot) {
  * Address: 0x801D268C | Size: 0xD8
  */
 void mailMainReceiveStart(s32 seqHandle, s32 slot, s32 boneIdx) {
-    /* TODO: Effect attach to bone (0xD8 bytes) */
+    extern u32 fn_8016557C(void);
+    extern void* GSresAllocResourceAlign(u32, u32, u32, u32, u32);
+    extern u32 fn_801654E0(u32, void*, u32);
+    extern u32 fn_80166B3C(u32, u32, u32);
+    extern u32 fn_80166A50(u32, u32, u32, u32);
+    u32 soundId;
+    u32 workId;
+    void* buffer;
+
+    if (lbl_80467390[0] != 0) {
+        return;
+    }
+    soundId = fn_801D1650(fn_801D16C4());
+    if (soundId != 0) {
+        workId = fn_8016557C();
+        buffer = GSresAllocResourceAlign(0x10000, 0x20, 0, 0x408, 0);
+        fn_801654E0(soundId, buffer, 0x10000);
+        fn_80166B3C(soundId, 0, 0x408);
+        fn_80166A50(soundId, 0, 0xFF, 0);
+    } else {
+        workId = 0;
+    }
+    lbl_80467390[0] = 1;
+    lbl_80467390[1] = 0;
+    lbl_80467390[2] = soundId;
+    lbl_80467390[3] = workId;
 }
 
 /**

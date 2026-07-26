@@ -232,7 +232,7 @@ BOOL fn_800EE7E0(GSpart* part)
     u8* material;
     u32 value;
 
-    if (*(u32*)(jobj + 0x14) & 0x4020) {
+    if ((*(u32*)(jobj + 0x14) & 0x4020) == 0) {
         material = *(u8**)(jobj + 0x18);
         value = material != NULL ? *(u32*)(material + 0xC) : 0;
     } else {

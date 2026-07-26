@@ -215,12 +215,32 @@ void fadeSetFunctionOnly(s32 arg0) {
  * confirmed name -- naming pass 2026-07-07).
  * Address: 0x801C432C | Size: 0xB8
  */
-void _fadeSnapshot__Fv(f32 angle, f32 blend) {
-    BattleGridCameraWork* cam = (BattleGridCameraWork*)lbl_80467030;
+void _fadeSnapshot__Fv(void) {
+    extern BattleGridTransitionState lbl_80466E30;
+    extern u8 lbl_8047B3A8;
+    extern u32 menuOffScreenIsDoing(void);
+    extern void* menuOffScreenGetPtr(void);
+    extern void* GStextureCreate(u32, u32, u32, u32, u32);
+    extern void GSgfxBeginBackFBCapture(void*, void*, void*);
+    extern void* myBackFB__FP9GStextureUlPv(void*, u32, void*);
+    void* texture;
 
-    /* Calculate camera position from angle and blend factor */
-    cam->angle = angle;
-    cam->blend = blend;
+    texture = lbl_80466E30.texture;
+    lbl_80466E30.texture = NULL;
+    if (!menuOffScreenIsDoing()) {
+        texture = menuOffScreenGetPtr();
+    }
+    if (texture == NULL) {
+        texture = GStextureCreate(0, 0, 0x44, 0, 0);
+    }
+    if (texture != NULL) {
+        lbl_8047B3A8 = 0;
+        GSgfxBeginBackFBCapture(texture, myBackFB__FP9GStextureUlPv, NULL);
+        while (lbl_8047B3A8 == 0) {
+            _threadSwitch();
+        }
+        lbl_80466E30.texture = texture;
+    }
 }
 
 /**

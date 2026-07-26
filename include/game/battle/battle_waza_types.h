@@ -298,6 +298,7 @@ extern BOOL fn_801D1B78(s32 mailId);
 extern BOOL fn_801D1C20(s32 mailId);
 extern BOOL mailChkReceiveMail(s32 idx);
 extern BOOL mailAddMailbox(s32 mailId);
+extern s32 mailGetReceiveNumber(s32 mailId);
 extern BOOL fn_801D1E50(s32 seqHandle);
 extern s32 mailGetMailIDInMailbox(s32 idx);
 extern u16 mailGetNbMailInMailbox(void);

@@ -353,7 +353,7 @@ typedef struct TypeMatchup {
 /* fadeSet */ void fadeSet(s32 mode);                    /* battle camera init */
 /* fadeSetFunction__FPFv_vbUsf (was fn_801C423C) */ void* fadeSetFunction__FPFv_vbUsf(void (*callback)(void), u8 mode, u32 arg, f32 value);
 /* fadeSetFunctionOnly (was fn_801C431C) */ void fadeSetFunctionOnly(s32 arg0);
-/* _fadeSnapshot__Fv (was fn_801C432C) */ void _fadeSnapshot__Fv(f32 angle, f32 blend);
+/* _fadeSnapshot__Fv (was fn_801C432C) */ void _fadeSnapshot__Fv(void);
 typedef struct GStexture GStexture;
 /* myBackFB__FP9GStextureUlPv (was fn_801C43E4) */ void* myBackFB__FP9GStextureUlPv(GStexture* texture, u32 size, void* userData);
 /* fadeDaemon (was fn_801C43F4) */ void fadeDaemon(s32 seqType, f32 param1, f32 param2); /* 0x3DC */
