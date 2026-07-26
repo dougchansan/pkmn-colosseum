@@ -330,16 +330,16 @@ void fn_801B04E0(HSDShadow* shadow, f32 top, f32 bottom, f32 left, f32 right) {
         HSD_CObjSetAspect(camera, height / width);
         HSD_CObjSetFov(camera, (f32)atan2(height, distance));
         break;
+    case 3:
+        HSD_CObjSetOrtho(camera, top, bottom, left, right);
+        break;
     case 2:
         scale = HSD_CObjGetNear(camera) / distance;
         if (scale <= lbl_8047DDC0) {
             __assert(lbl_802752C0, 0x33D, lbl_802752C0 + 0x44);
         }
         HSD_CObjSetFrustum(camera, scale * top, scale * bottom, scale * left,
-                           scale * right);
-        break;
-    case 3:
-        HSD_CObjSetOrtho(camera, top, bottom, left, right);
+                          scale * right);
         break;
     default:
         __assert(lbl_802752C0, 0x345, &lbl_8047DDD4);
