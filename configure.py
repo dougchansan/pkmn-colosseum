@@ -290,7 +290,13 @@ config.libs = [
             ),  # BANK_TRK3
             Object(CodeCandidate, "trk/TRKNub_candidate_800BE6B4.c", mw_version="GC/1.3", progress_category="runtime"),  # BANK_TRK3
             Object(Matching, "trk/TRKNub_exact_800BE800.c", mw_version="GC/1.3", progress_category="runtime"),  # BANK_TRK3
-            Object(CodeCandidate, "trk/TRKNub_candidate_800BE844.c", mw_version="GC/1.3", progress_category="runtime"),  # BANK_TRK3
+            Object(
+                CodeCandidate,
+                "trk/TRKNub_candidate_800BE844.c",
+                mw_version="GC/1.3",
+                extra_cflags=["-use_lmw_stmw on"],
+                progress_category="runtime",
+            ),  # BANK_TRK3
             Object(Matching, "trk/TRKNub_exact_800BEBB0.c", mw_version="GC/1.3", progress_category="runtime"),  # BANK_TRK3
             Object(Matching, "trk/TRKNub_exact_800BEC18.c", mw_version="GC/1.3", progress_category="runtime"),  # BANK_TRK3
             Object(Matching, "trk/TRKNub_exact_800BED14.c", mw_version="GC/1.3", progress_category="runtime"),  # BANK_TRK3
@@ -322,6 +328,7 @@ config.libs = [
                 CodeCandidate,
                 "trk/TRKDispatch_range_800BF53C.c",
                 mw_version="GC/1.3",
+                extra_cflags=["-use_lmw_stmw on"],
                 progress_category="runtime",
             ),
             Object(

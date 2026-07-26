@@ -30,12 +30,10 @@ s32 TRKDispatchMessage(u8* message)
     extern s32 TRKDoStop(void*);
     extern s32 TRKDoSetOption(void*);
     s32 result = 0x500;
-    u8 command;
 
     TRKSetBufferPosition(message, 0);
-    command = message[0x14];
-    MWTRACE(1, lbl_8026F818, command);
-    switch (command) {
+    MWTRACE(1, lbl_8026F818, message[0x14]);
+    switch (message[0x14]) {
     case 1:
         result = TRKDoConnect(message);
         break;

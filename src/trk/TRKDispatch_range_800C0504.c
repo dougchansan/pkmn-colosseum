@@ -123,7 +123,7 @@ s32 TRKRequestSend(TRKBuffer* message, s32* bufferId, u32 retries,
     return error;
 }
 
-s32 HandlePositionFileSupportRequest(u8 replyError, u32* position,
+s32 HandlePositionFileSupportRequest(u32 replyError, u32* position,
                                      u8 mode, u32* ioResult)
 {
     s32 error;

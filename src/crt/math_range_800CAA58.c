@@ -376,7 +376,7 @@ f64 ceil(f64 x) {
                 }
             }
         } else {
-            i = 0x000fffffU >> j0;
+            i = 0x000fffff >> j0;
             if (((i0 & i) | i1) == 0) {
                 return x;
             }

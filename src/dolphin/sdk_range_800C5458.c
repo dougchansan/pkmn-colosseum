@@ -51,7 +51,7 @@ void __close_all(void) {
     MSL_FILE* fp = &__files;
 
     __begin_critical_region(2);
-    do {
+    while (fp != 0) {
         MSL_FILE* cur;
 
         if (fp->file_kind != 0) {
@@ -68,7 +68,7 @@ void __close_all(void) {
                 cur->next_file = 0;
             }
         }
-    } while (fp != 0);
+    }
     __end_critical_region(2);
 }
 
