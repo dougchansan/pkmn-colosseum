@@ -128,17 +128,31 @@ extern void PSMTXConcat(const f32 a[3][4], const f32 b[3][4],
                         f32 result[3][4]);
 extern void PSMTXQuat(f32 m[3][4], const HSD_Quaternion* quat);
 extern void PSMTXTrans(f32 m[3][4], f32 x, f32 y, f32 z);
-extern f32 VECMag(const Vec* vec);
-extern void VECNormalize(const Vec* src, Vec* dst);
-extern f32 VECDotProduct(const Vec* a, const Vec* b);
-extern void VECScale(const Vec* src, Vec* dst, f32 scale);
-extern void VECSubtract(const Vec* a, const Vec* b, Vec* dst);
-extern void VECCrossProduct(const Vec* a, const Vec* b, Vec* dst);
-extern void PSVECNormalize(const Vec* src, Vec* dst);
+extern f32 PSVECSquareMag(const Vec* vec);
+extern f32 PSVECMag(const Vec* vec);
+extern f32 PSVECDotProduct(const Vec* a, const Vec* b);
+extern void PSVECScale(f32 scale, const Vec* src, Vec* dst);
+extern void PSVECSubtract(const Vec* a, const Vec* b, Vec* dst);
 extern void PSVECCrossProduct(const Vec* a, const Vec* b, Vec* dst);
+extern void PSVECNormalize(const Vec* src, Vec* dst);
 extern void PSMTXCopy(const f32 src[3][4], f32 dst[3][4]);
 extern f64 asin(f64 x);
 extern f64 atan2(f64 y, f64 x);
+extern const f32 lbl_8047DC58;
+extern const f32 lbl_8047DC5C;
+extern const f64 lbl_8047DC60;
+extern const f64 lbl_8047DC68;
+extern const f32 lbl_8047DC70;
+extern const f64 lbl_8047DC78;
+extern const f64 lbl_8047DC80;
+
+#define HSD_MTX_FLOAT_ONE  lbl_8047DC58
+#define HSD_MTX_FLOAT_ZERO lbl_8047DC5C
+#define HSD_MTX_DOUBLE_ZERO lbl_8047DC60
+#define HSD_MTX_DOUBLE_NEG_ONE lbl_8047DC68
+#define HSD_MTX_FLOAT_EPS  lbl_8047DC70
+#define HSD_MTX_DOUBLE_HALF lbl_8047DC78
+#define HSD_MTX_DOUBLE_THREE lbl_8047DC80
 
 void HSD_MtxSRTQuat(f32 m[3][4], Vec* scale, HSD_Quaternion* rotate,
                     Vec* translate, Vec* parent_scale)
@@ -186,42 +200,143 @@ void HSD_MkRotationMtx(f32 arg0[3][4], Vec* arg1)
     arg0[2][3] = 0.0f;
 }
 
+static inline s32 mtxScaleFpClassifyf(f32 value)
+{
+    switch (*(s32*) &value & 0x7F800000) {
+    case 0x7F800000:
+        if (*(s32*) &value & 0x007FFFFF) {
+            return 1;
+        }
+        return 2;
+    case 0:
+        if (*(s32*) &value & 0x007FFFFF) {
+            return 5;
+        }
+        return 3;
+    }
+    return 4;
+}
+
+static inline f32 mtxScaleSqrtf(f32 value)
+{
+    f64 guess;
+
+    if (value > HSD_MTX_FLOAT_ZERO) {
+        guess = __frsqrte(value);
+        guess = HSD_MTX_DOUBLE_HALF * guess *
+                (HSD_MTX_DOUBLE_THREE - value * (guess * guess));
+        guess = HSD_MTX_DOUBLE_HALF * guess *
+                (HSD_MTX_DOUBLE_THREE - value * (guess * guess));
+        guess = HSD_MTX_DOUBLE_HALF * guess *
+                (HSD_MTX_DOUBLE_THREE - value * (guess * guess));
+        return (f32) (value * guess);
+    }
+    if ((f64) value < HSD_MTX_DOUBLE_ZERO) {
+        return lbl_80478AC0[0];
+    }
+    if (mtxScaleFpClassifyf(value) == 1) {
+        return lbl_80478AC0[0];
+    }
+    return value;
+}
+
 void HSD_MtxGetScale(f32 m[3][4], Vec* scale)
 {
     Vec x;
     Vec y;
     Vec z;
     Vec projection;
+    f32 x_sq;
+    f32 y_sq;
+    f32 z_sq;
 
     x.x = m[0][0];
     x.y = m[1][0];
     x.z = m[2][0];
-    scale->x = VECMag(&x);
-    VECNormalize(&x, &x);
 
-    y.x = m[0][1];
-    y.y = m[1][1];
-    y.z = m[2][1];
-    VECScale(&x, &projection, VECDotProduct(&x, &y));
-    VECSubtract(&y, &projection, &y);
-    scale->y = VECMag(&y);
-    VECNormalize(&y, &y);
+    x_sq = PSVECSquareMag(&x);
+    if (x_sq > HSD_MTX_FLOAT_EPS) {
+        f32 x_inv_mag = mtxScaleSqrtf(HSD_MTX_FLOAT_ONE / x_sq);
+        scale->x = HSD_MTX_FLOAT_ONE / x_inv_mag;
+        PSVECScale(x_inv_mag, &x, &x);
 
-    z.x = m[0][2];
-    z.y = m[1][2];
-    z.z = m[2][2];
-    VECScale(&y, &projection, VECDotProduct(&y, &z));
-    VECSubtract(&z, &projection, &z);
-    VECScale(&x, &projection, VECDotProduct(&x, &z));
-    VECSubtract(&z, &projection, &z);
-    scale->z = VECMag(&z);
-    VECNormalize(&z, &z);
-    VECCrossProduct(&y, &z, &projection);
+        y.x = m[0][1];
+        y.y = m[1][1];
+        y.z = m[2][1];
+        PSVECScale(PSVECDotProduct(&x, &y), &x, &projection);
+        PSVECSubtract(&y, &projection, &y);
 
-    if (VECDotProduct(&x, &projection) < 0.0f) {
-        scale->x = -scale->x;
-        scale->y = -scale->y;
-        scale->z = -scale->z;
+        y_sq = PSVECSquareMag(&y);
+        if (y_sq > HSD_MTX_FLOAT_EPS) {
+            f32 y_inv_mag = mtxScaleSqrtf(HSD_MTX_FLOAT_ONE / y_sq);
+            scale->y = HSD_MTX_FLOAT_ONE / y_inv_mag;
+            PSVECScale(y_inv_mag, &y, &y);
+
+            z.x = m[0][2];
+            z.y = m[1][2];
+            z.z = m[2][2];
+            PSVECScale(PSVECDotProduct(&y, &z), &y, &projection);
+            PSVECSubtract(&z, &projection, &z);
+            PSVECScale(PSVECDotProduct(&x, &z), &x, &projection);
+            PSVECSubtract(&z, &projection, &z);
+
+            z_sq = PSVECSquareMag(&z);
+            if (z_sq > HSD_MTX_FLOAT_EPS) {
+                f64 negative;
+
+                scale->z = mtxScaleSqrtf(z_sq);
+                PSVECCrossProduct(&y, &z, &projection);
+                if (PSVECDotProduct(&x, &projection) <
+                    HSD_MTX_DOUBLE_ZERO) {
+                    scale->x =
+                        (f32) (scale->x *
+                               (negative = HSD_MTX_DOUBLE_NEG_ONE));
+                    scale->y = (f32) (scale->y * negative);
+                    scale->z = (f32) (scale->z * negative);
+                }
+            } else {
+                scale->z = HSD_MTX_FLOAT_ZERO;
+            }
+        } else {
+            scale->y = HSD_MTX_FLOAT_ZERO;
+            z.x = m[0][2];
+            z.y = m[1][2];
+            z.z = m[2][2];
+            PSVECScale(PSVECDotProduct(&x, &z), &x, &projection);
+            PSVECSubtract(&z, &projection, &z);
+
+            z_sq = PSVECSquareMag(&z);
+            if (z_sq > HSD_MTX_FLOAT_EPS) {
+                scale->z = mtxScaleSqrtf(z_sq);
+            } else {
+                scale->z = HSD_MTX_FLOAT_ZERO;
+            }
+        }
+    } else {
+        scale->x = HSD_MTX_FLOAT_ZERO;
+        y.x = m[0][1];
+        y.y = m[1][1];
+        y.z = m[2][1];
+
+        y_sq = PSVECSquareMag(&y);
+        if (y_sq > HSD_MTX_FLOAT_EPS) {
+            f32 y_inv_mag = mtxScaleSqrtf(HSD_MTX_FLOAT_ONE / y_sq);
+            scale->y = HSD_MTX_FLOAT_ONE / y_inv_mag;
+            PSVECScale(y_inv_mag, &y, &y);
+
+            z.x = m[0][2];
+            z.y = m[1][2];
+            z.z = m[2][2];
+            PSVECScale(PSVECDotProduct(&y, &z), &y, &projection);
+            PSVECSubtract(&z, &projection, &z);
+            scale->z = PSVECMag(&z);
+        } else {
+            scale->y = HSD_MTX_FLOAT_ZERO;
+            z.x = m[0][2];
+            z.y = m[1][2];
+            z.z = m[2][2];
+            scale->z = PSVECMag(&z);
+        }
     }
 }
 
