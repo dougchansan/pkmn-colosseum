@@ -285,7 +285,7 @@ void fn_80035F64(void) {
     do {
         _threadSwitch();
         state = fn_801E1874();
-    } while ((state & 0xFF) == THP_STATE_PLAYING);
+    } while ((u32)(state & 0xFF) == THP_STATE_PLAYING);
 
     /* Step 2: Stop BGM */
     fn_80165A20(1, 0, 0x7F);
@@ -406,7 +406,7 @@ openMovie:
     do {
         _threadSwitch();
         state = fn_801E1874();
-    } while ((state & 0xFF) == THP_STATE_PLAYING);
+    } while ((u32)(state & 0xFF) == THP_STATE_PLAYING);
 
     /* Stop sound and restore state */
     fn_80165A20(1, 0, 0x7F);
