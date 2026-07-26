@@ -149,7 +149,7 @@ void fn_800B7874(s32 attr, s32 type)
     if (gx->hasNrms || gx->hasBiNrms) {
         gx->vcdLo = (gx->vcdLo & ~0x1800U) | (gx->nrmType << 11);
     } else {
-        gx->vcdLo &= ~0x1800U;
+        gx->vcdLo = gx->vcdLo & ~0x1800U;
     }
     gx->dirtyState |= 8;
 }
