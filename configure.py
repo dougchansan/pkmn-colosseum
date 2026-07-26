@@ -4663,11 +4663,18 @@ config.libs = [
                     (Matching, "game/ps_exact_8016A9B4.c"),
                     (Matching, "game/ps_app_srt_exact_8016AAAC.c"),
                     (Matching, "game/ps_exact_8016F2F4.c"),
-                    (CodeCandidate, "game/ps_candidate_8016F300.c"),
                     (Matching, "game/ps_exact_80172928.c"),
                     (Matching, "game/ps_get_time_exact_801735BC.c"),
                 ]
             ],
+            Object(
+                CodeCandidate,
+                "game/ps_candidate_8016F300.c",
+                mw_version="GC/1.3",
+                cflags=["-O4,s" if flag == "-O4,p" else flag for flag in cflags_base],
+                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                progress_category="game",
+            ),
             Object(
                 CodeCandidate,
                 "game/ps_r56_801698F8_prefix.c",
