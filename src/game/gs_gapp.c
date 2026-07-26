@@ -334,7 +334,7 @@ void GSgappUpdate(void) {
     task = (u32*)lbl_8047AC98;
     while (task != NULL) {
         next = (u32*)task[1];
-        if (task[2] == 1 && ((u8*)task)[0xD] == 0) {
+        if ((s32)task[2] == 1 && ((u8*)task)[0xD] == 0) {
             lbl_8047AC94 = (u32)task;
             taskId = ((u32)task - lbl_8047AC7C) / 0x18 + 1;
             ((void (*)(u32, void*))task[5])(taskId, (void*)task[4]);
