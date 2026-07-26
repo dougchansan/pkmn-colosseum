@@ -155,6 +155,8 @@ extern s32 lbl_8047B12C;
 extern s32 lbl_8047B164;
 extern PSColor lbl_8047B13C;
 extern PSColor lbl_8047B140;
+extern PSColor lbl_8047B134;
+extern PSColor lbl_8047B138;
 
 /* ======================================================================
  * External functions - real symbol names per config/GC6E01/symbols.txt.
@@ -231,6 +233,7 @@ extern void fn_800B928C(s32 primitive, s32 format, s32 count);
 extern void fn_800B9404(s32 width, s32 offset);
 extern void fn_800BA4C8(s32 channel, const PSColor* color);
 extern void fn_800BA5BC(s32 channel, const PSColor* color);
+extern void fn_800BC2F8(s32 reg, const PSColor* color);
 
 #if !defined(PR410_PS_SPLIT) || defined(PR410_PS_PREFIX)
 
@@ -2029,6 +2032,90 @@ void setupChanReg(PSParticle* pp) {
         material.b != lbl_8047B13C.b) {
         lbl_8047B13C = material;
         fn_800BA4C8(0, &material);
+    }
+}
+
+/*
+ * Updates the two interpolated particle TEV colors. Texture-size TEV state
+ * remains asm-only; these register-cache paths are verified against
+ * 0x8016E40C-0x8016E698.
+ */
+void setupTevReg(PSParticle* pp) {
+    PSColor color1;
+    PSColor color2;
+
+    if (pp->color1Timer != 0) {
+        s32 step = ((s32)pp->color1Countdown << 16) / pp->color1Timer;
+
+        color1.r = (((s32)pp->color1TargetR << 16) +
+                    step * ((s32)pp->color1R -
+                            (s32)pp->color1TargetR)) >> 16;
+        color1.g = (((s32)pp->color1TargetG << 16) +
+                    step * ((s32)pp->color1G -
+                            (s32)pp->color1TargetG)) >> 16;
+        color1.b = (((s32)pp->color1TargetB << 16) +
+                    step * ((s32)pp->color1B -
+                            (s32)pp->color1TargetB)) >> 16;
+        color1.a = (((s32)pp->color1TargetA << 16) +
+                    step * ((s32)pp->color1A -
+                            (s32)pp->color1TargetA)) >> 16;
+    } else {
+        color1.r = pp->color1R;
+        color1.g = pp->color1G;
+        color1.b = pp->color1B;
+        color1.a = pp->color1A;
+    }
+
+    if (pp->color2Timer != 0) {
+        s32 step = ((s32)pp->color2Countdown << 16) / pp->color2Timer;
+
+        color2.r = (((s32)pp->color2TargetR << 16) +
+                    step * ((s32)pp->color2R -
+                            (s32)pp->color2TargetR)) >> 16;
+        color2.g = (((s32)pp->color2TargetG << 16) +
+                    step * ((s32)pp->color2G -
+                            (s32)pp->color2TargetG)) >> 16;
+        color2.b = (((s32)pp->color2TargetB << 16) +
+                    step * ((s32)pp->color2B -
+                            (s32)pp->color2TargetB)) >> 16;
+        color2.a = (((s32)pp->color2TargetA << 16) +
+                    step * ((s32)pp->color2A -
+                            (s32)pp->color2TargetA)) >> 16;
+    } else {
+        color2.r = pp->color2R;
+        color2.g = pp->color2G;
+        color2.b = pp->color2B;
+        color2.a = pp->color2A;
+    }
+
+    if ((pp->flags & 0x80) ||
+        (pp->flags & 0x80000000) ||
+        (pp->flags & 0x100000)) {
+        if (color1.r != lbl_8047B138.r ||
+            color1.g != lbl_8047B138.g ||
+            color1.b != lbl_8047B138.b ||
+            color1.a != lbl_8047B138.a) {
+            lbl_8047B138 = color1;
+            fn_800BC2F8(1, &color1);
+        }
+    }
+
+    if (pp->flags & 0x80) {
+        if (color2.r != lbl_8047B134.r ||
+            color2.g != lbl_8047B134.g ||
+            color2.b != lbl_8047B134.b ||
+            color2.a != lbl_8047B134.a) {
+            lbl_8047B134 = color2;
+            fn_800BC2F8(2, &color2);
+        }
+    } else if (lbl_8047B134.r != 0 || lbl_8047B134.g != 0 ||
+               lbl_8047B134.b != 0 || lbl_8047B134.a != 0) {
+        color2.r = 0;
+        color2.g = 0;
+        color2.b = 0;
+        color2.a = 0;
+        lbl_8047B134 = color2;
+        fn_800BC2F8(2, &color2);
     }
 }
 
