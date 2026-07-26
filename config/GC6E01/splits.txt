@@ -362,8 +362,11 @@ game/gs_title_candidate_800246FC.c:
 game/gs_title_candidate_80024CDC.c:
 	.text       start:0x80024CDC end:0x80024DBC
 
-game/gs_title_candidate_80024DBC.c:
-	.text       start:0x80024DBC end:0x800259B0
+game/gs_title_r49_80024DBC_prefix.c:
+	.text       start:0x80024DBC end:0x80025730
+
+game/gs_title_r49_80025730_o2.c:
+	.text       start:0x80025730 end:0x800259B0
 
 game/gs_title_exact_800259B0.c:
 	.text       start:0x800259B0 end:0x80025A80
@@ -900,8 +903,14 @@ game/menu/cardesavedata_candidate_80084A8C_o3.c:
 game/menu/cardesavedata_candidate_80087AE8.c:
 	.text       start:0x80087AE8 end:0x80088428
 
-game/gba/gba_conv.c:
-	.text       start:0x80088428 end:0x80088EA8
+game/gba/gba_conv_r49_80088428_prefix.c:
+	.text       start:0x80088428 end:0x800884BC
+
+game/gba/gba_conv_r49_800884BC_gc125_o2.c:
+	.text       start:0x800884BC end:0x800886D0
+
+game/gba/gba_conv_r49_800886D0_suffix.c:
+	.text       start:0x800886D0 end:0x80088EA8
 
 game/gba/gba_conv_exact_80088EA8.c:
 	.text       start:0x80088EA8 end:0x80088F58
@@ -3028,8 +3037,14 @@ game/data/data_80363630.c:
 game/data/data_80363774.c:
 	.data       start:0x80363774 end:0x80363A70
 
-game/hero_move.c:
-	.text       start:0x8012AC9C end:0x8012BDE0
+game/hero_move_r49_8012AC9C_prefix.c:
+	.text       start:0x8012AC9C end:0x8012B5E4
+
+game/hero_move_r49_8012B5E4_o4s.c:
+	.text       start:0x8012B5E4 end:0x8012BAD0
+
+game/hero_move_r49_8012BAD0_suffix.c:
+	.text       start:0x8012BAD0 end:0x8012BDE0
 
 game/hero_move_r40_8012BDE0_gc125n.c:
 	.text       start:0x8012BDE0 end:0x8012BEB4
@@ -3076,8 +3091,11 @@ game/msgctrl_candidate_80131714.c:
 game/msgctrl_exact_801317FC.c:
 	.text       start:0x801317FC end:0x8013182C
 
-game/msgctrl_candidate_8013182C.c:
-	.text       start:0x8013182C end:0x80131BA0
+game/msgctrl_r49_8013182C_o2.c:
+	.text       start:0x8013182C end:0x80131A34
+
+game/msgctrl_r49_80131A34_suffix.c:
+	.text       start:0x80131A34 end:0x80131BA0
 
 game/msgctrl_exact_80131BA0.c:
 	.text       start:0x80131BA0 end:0x80131BF8
@@ -3180,8 +3198,14 @@ game/effect/effect_visual_candidate_80138838.c:
 game/effect/effect_visual_exact_80138B00.c:
 	.text       start:0x80138B00 end:0x80138BBC
 
-game/effect/effect_visual_candidate_80138BBC.c:
-	.text       start:0x80138BBC end:0x80139820
+game/effect/effect_visual_r49_80138BBC_prefix.c:
+	.text       start:0x80138BBC end:0x80138DE4
+
+game/effect/effect_visual_r49_80138DE4_o2.c:
+	.text       start:0x80138DE4 end:0x80139074
+
+game/effect/effect_visual_r49_80139074_suffix.c:
+	.text       start:0x80139074 end:0x80139820
 
 game/effect/effect_visual_exact_80139820.c:
 	.text       start:0x80139820 end:0x80139AC4
@@ -3216,8 +3240,11 @@ game/effect/effect_visual_candidate_8013B268.c:
 game/effect/effect_visual_exact_8013B490.c:
 	.text       start:0x8013B490 end:0x8013B5E4
 
-game/effect/effect_visual_candidate_8013B5E4.c:
-	.text       start:0x8013B5E4 end:0x8013C074
+game/effect/effect_visual_r49_8013B5E4_prefix.c:
+	.text       start:0x8013B5E4 end:0x8013BE04
+
+game/effect/effect_visual_r49_8013BE04_o2.c:
+	.text       start:0x8013BE04 end:0x8013C074
 
 game/effect/effect_visual_candidate_8013C074_o2.c:
 	.text       start:0x8013C074 end:0x8013C5A0
@@ -3279,8 +3306,11 @@ game/effect/effect_visual_exact_80140138.c:
 game/effect/effect_visual_candidate_801402AC.c:
 	.text       start:0x801402AC end:0x80140588
 
-game/people/people_data.c:
-	.text       start:0x80140588 end:0x80140ACC
+game/people/people_data_r49_80140588_o4s.c:
+	.text       start:0x80140588 end:0x80140A9C
+
+game/people/people_data_r49_80140A9C_suffix.c:
+	.text       start:0x80140A9C end:0x80140ACC
 
 game/people/people_data_candidate_80140ACC_o3.c:
 	.text       start:0x80140ACC end:0x80142368
@@ -4111,8 +4141,11 @@ game/fsys/fsys_file_candidate_8017C8C8.c:
 game/fsys/fsys_file_exact_8017C8F4.c:
 	.text       start:0x8017C8F4 end:0x8017C8FC
 
-game/fsys/fsys_file_candidate_8017C8FC.c:
-	.text       start:0x8017C8FC end:0x8017CEC8
+game/fsys/fsys_file_r49_8017C8FC_o4s.c:
+	.text       start:0x8017C8FC end:0x8017CE7C
+
+game/fsys/fsys_file_r49_8017CE7C_suffix.c:
+	.text       start:0x8017CE7C end:0x8017CEC8
 
 game/fsys/fsys_file_exact_8017CEC8.c:
 	.text       start:0x8017CEC8 end:0x8017CED8
@@ -4822,8 +4855,11 @@ game/effect/fade_candidate_801C43F4_r42_801C43F4_gc125n.c:
 game/effect/fade_candidate_801C43F4_r42_801C47D0.c:
 	.text       start:0x801C47D0 end:0x801C4814
 
-game/effect/fade_effect_candidate_801C4814.c:
-	.text       start:0x801C4814 end:0x801C4C98
+game/effect/fade_effect_r49_801C4814_prefix.c:
+	.text       start:0x801C4814 end:0x801C4A44
+
+game/effect/fade_effect_r49_801C4A44_gc125n_o4p.c:
+	.text       start:0x801C4A44 end:0x801C4C98
 
 game/effect/fade_effect_exact_801C4C98.c:
 	.text       start:0x801C4C98 end:0x801C4CB8
