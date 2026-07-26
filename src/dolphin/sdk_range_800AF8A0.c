@@ -56,14 +56,14 @@ s32 fn_800AF8A0(s32 chan)
         return -3;
     }
 
-    if (card->field_A4 == -1) {
+    if ((u32) card->field_A4 == (u32) -1) {
         EXIDeselect(chan);
         EXIUnlock(chan);
         return 0;
     }
 
     if (!EXIDma(chan, card->buffer,
-                card->cmd[0] == 0x52 ? 0x200 : card->pageSize,
+                card->cmd[0] == 0x52 ? 0x200 : 0x80,
                 card->field_A4, (EXICallback) __CARDTxHandler))
     {
         EXIDeselect(chan);
