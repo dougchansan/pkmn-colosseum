@@ -871,7 +871,6 @@ asm void GSlightLoad(void) {
 u8* GSlightLoad(void* data) {
     u32 i;
     u8* obj;
-    u32 frames;
 
     obj = (u8*)lbl_8047AAEC;
     for (i = lbl_8047AAF0; i != 0; i--, obj += 0x74) {
@@ -898,11 +897,10 @@ u8* GSlightLoad(void* data) {
         *(u32*)(obj + 0x5c) = 1;
         obj[0x70] = 0;
 
-        frames = 0;
-        while (((u32**)((u8*)data + 4))[0][frames] != 0) {
-            frames++;
+        *(u32*)(obj + 0x58) = 0;
+        while (((u32**)((u8*)data + 4))[0][*(u32*)(obj + 0x58)] != 0) {
+            (*(u32*)(obj + 0x58))++;
         }
-        *(u32*)(obj + 0x58) = frames;
         GSlightSetAnimIndex(obj, 0);
     } else {
         obj[2] = 0;
