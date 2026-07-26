@@ -3860,7 +3860,55 @@ void* HSD_ShadowGetAllocData(void) {
     return &lbl_804656E0;
 }
 
-extern f32 fn_801B18D8(HSD_Spline* spline, f32 distance);
+f32 fn_801B18D8(HSD_Spline* spline, f32 distance)
+{
+    s32 idx = 0;
+    f32 start = 0.0F;
+    f32 end = 1.0F;
+    f32 result;
+
+    if (distance <= 0.0F) {
+        return start;
+    }
+    if (distance >= 1.0F) {
+        return end;
+    }
+
+    while (spline->segLength[idx + 1] < distance) {
+        idx++;
+    }
+
+    switch (spline->type) {
+    case 0:
+        result = (distance - spline->segLength[idx]) /
+                 (spline->segLength[idx + 1] - spline->segLength[idx]);
+        break;
+    case 1:
+    case 2:
+    case 3: {
+        f32 remaining =
+            spline->totalLength * (distance - spline->segLength[idx]);
+
+        while ((start < end ? end - start : start - end) >= 0.00001F) {
+            result = (start + end) / 2.0F;
+            {
+                f32 length =
+                    fn_801B1AD0(spline->segPoly[idx], start, result);
+
+                if (remaining < 0.00001F + length) {
+                    end = result;
+                } else {
+                    start = result;
+                    remaining -= length;
+                }
+            }
+        }
+        break;
+    }
+    }
+
+    return (result + idx) / (spline->numcv - 1.0F);
+}
 
 void splArcLengthPoint(SplineVec3* p, HSD_Spline* spline, f32 distance) {
     fn_801B2038(p, spline, fn_801B18D8(spline, distance));
