@@ -7297,6 +7297,131 @@ u8 fn_8015E890(void* emitter) {
     return 0;
 }
 
+extern MusyxEmitter lbl_80448540;
+extern u8 synthFXGetMaxVoices(u16 effect);
+extern f32 lbl_8047D4A4;
+
+u32 fn_8015E8B0(MusyxEmitter* emitterBuffer, const MusyxVec3* position,
+                 const MusyxVec3* velocity, f32 maxDistance, f32 curve,
+                 u32 flags, u16 effectId, u32 group, u8 maxVolume,
+                 u8 minVolume, MusyxStudioEmitter* studioEmitter,
+                 SndServiceCtrlList* controls, u8 studio)
+{
+    MusyxEmitter* emitter;
+    f32 volume;
+    f32 pitch;
+    f32 pan;
+    f32 unusedPan;
+    f32 surround;
+
+    hwDisableIrq();
+    emitter = emitterBuffer == NULL ? &lbl_80448540 : emitterBuffer;
+    emitter->flags = flags;
+    emitter->pos = *position;
+    emitter->velocity = *velocity;
+    emitter->maxDistance = maxDistance;
+    emitter->fxId = effectId;
+    emitter->maxVolume = (f32)maxVolume * lbl_8047D4A4;
+    emitter->minVolume = (f32)minVolume * lbl_8047D4A4;
+    emitter->curve = curve;
+    emitter->user = (void*)group;
+    emitter->listener = (MusyxEmitterListener*)studioEmitter;
+    emitter->studio = studio;
+
+    if (emitterBuffer == NULL) {
+        u32 converted;
+        u8 controlValue;
+        u16 control14;
+
+        if (studioEmitter != NULL && studioEmitter->studio == 0xFF) {
+            hwEnableIrq();
+            return -1;
+        }
+        fn_8015E374(emitter, &volume, &pitch, &pan, &unusedPan, &surround);
+        if (volume == lbl_8047D468) {
+            hwEnableIrq();
+            return -1;
+        }
+        emitter->voice =
+            synthFXStart(emitter->fxId, 127, 64,
+                         studioEmitter != NULL ? studioEmitter->studio
+                                               : emitter->studio,
+                         (emitter->flags & 0x10) != 0);
+        if (emitter->voice == 0xFFFFFFFF) {
+            hwEnableIrq();
+            return -1;
+        }
+
+        if ((emitter->flags & 0x100000) != 0) {
+            converted =
+                (u32)(s32)(lbl_8047D488 * (emitter->field_4C * volume));
+        } else {
+            converted = (u32)(s32)(lbl_8047D488 * volume);
+        }
+        controlValue = 0x7F;
+        if ((u8)converted <= 0x7F) {
+            controlValue = converted;
+        }
+        synthFXSetCtrl(emitter->voice, 7, controlValue);
+
+        converted = (u32)(s32)(lbl_8047D49C * (lbl_8047D48C + pan));
+        controlValue = 0x7F;
+        if ((u8)converted <= 0x7F) {
+            controlValue = converted;
+        }
+        synthFXSetCtrl(emitter->voice, 0xA, controlValue);
+
+        converted =
+            (u32)(s32)(lbl_8047D49C * (lbl_8047D48C - surround));
+        controlValue = 0x7F;
+        if ((u8)converted <= 0x7F) {
+            controlValue = converted;
+        }
+        synthFXSetCtrl(emitter->voice, 0x83, controlValue);
+
+        converted = __cvt_fp2unsigned(lbl_8047D4A0 * pitch);
+        control14 = 0x3FFF;
+        if (converted <= 0x3FFF) {
+            control14 = converted;
+        }
+        synthFXSetCtrl14(emitter->voice, 0x84, control14);
+
+        if (controls != NULL) {
+            u32 i;
+            SndServiceCtrl* control;
+
+            control = controls->controls;
+            for (i = 0; i < controls->count; i++, control++) {
+                if (control->ctrl < 0x40 || control->ctrl == 0x80 ||
+                    control->ctrl == 0x84)
+                {
+                    synthFXSetCtrl14(emitter->voice, control->ctrl,
+                                     control->value);
+                } else {
+                    synthFXSetCtrl(emitter->voice, control->ctrl,
+                                   (u8)control->value);
+                }
+            }
+        }
+        hwEnableIrq();
+        return emitter->voice;
+    }
+
+    emitter->next = (MusyxEmitter*)lbl_8047B048;
+    if (lbl_8047B048 != NULL) {
+        lbl_8047B048->prev = (MusyxVoiceLink*)emitter;
+    }
+    emitter->prev = NULL;
+    lbl_8047B048 = (MusyxVoiceLink*)emitter;
+    emitter->ctrlList = controls;
+    emitter->voice = -1;
+    emitter->field_48 = 0;
+    emitter->flags |= 0x30000;
+    emitter->maxVoices = synthFXGetMaxVoices(emitter->fxId);
+    hwEnableIrq();
+    return -1;
+}
+
 u32 sndAddEmitter(void* emitter, const f32* position, const f32* velocity,
                   u32 maxVoices, u32 soundId, u32 volume, u32 panning,
                   u32 studio, f32 minDistance, f32 maxDistance) {
