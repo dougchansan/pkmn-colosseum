@@ -611,10 +611,10 @@ void GSmaterialDisableExtension(u8* obj, u32 flags) {
     bits = flags & *(u16*)(obj + 0x2);
     mobj = *(u8**)(obj + 0x8);
     if (bits & 1) {
-        obj[0xc] = 0x7f;
-        obj[0xd] = 0x7f;
-        obj[0xe] = 0x7f;
         obj[0xf] = 0x7f;
+        obj[0xe] = 0x7f;
+        obj[0xd] = 0x7f;
+        obj[0xc] = 0x7f;
     }
     if (bits & 2) {
         *(u32*)(obj + 0x10) = 0;
@@ -625,8 +625,8 @@ void GSmaterialDisableExtension(u8* obj, u32 flags) {
     if (bits & 4) {
         image = *(u8**)(obj + 0x20);
         desc = *(u32*)(obj + 0x24);
-        if (mobj != 0 && image != 0) {
-            it = *(u8**)(mobj + 0x8);
+        it = *(u8**)(mobj + 0x8);
+        if (it != 0 && image != 0) {
             if (it == image) {
                 *(u32*)(mobj + 0x8) = *(u32*)(image + 0x8);
             } else {
@@ -649,12 +649,10 @@ void GSmaterialDisableExtension(u8* obj, u32 flags) {
     }
 
     *(u16*)(obj + 0x2) &= ~bits;
-    if (*(u16*)(obj + 0x2) == 0 && mobj != 0) {
+    if (*(u16*)(obj + 0x2) == 0) {
         *(u32*)(mobj + 0x20) = 0;
     }
-    if (mobj != 0) {
-        HSD_MObjCompileTev(mobj);
-    }
+    HSD_MObjCompileTev(mobj);
 }
 #endif
 
