@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196100,
     "total_functions": 8603,
-    "total_units": 2155
+    "total_units": 2157
   },
   "topology_status": {
     "auto_units": 68,
-    "named_units": 2087,
-    "source_backed_units": 2081,
+    "named_units": 2089,
+    "source_backed_units": 2083,
     "auto_code": 0,
     "auto_data": 57687,
     "auto_functions": 0
@@ -23,7 +23,7 @@
     "matched_data_percent": 97.28669,
     "matched_functions": 6573,
     "matched_functions_percent": 76.40358,
-    "fuzzy_match_percent": 71.97173
+    "fuzzy_match_percent": 71.990166
   },
   "unit_topology": [
     {
@@ -22080,17 +22080,43 @@
       "total_functions": 1
     },
     {
-      "name": "main/hsd/hsd_texp_r50_801B5C94_suffix",
+      "name": "main/hsd/hsd_texp_r54_801B5C94_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 6264,
+          "size": 2136,
           "virtual_address": 2149276820
         }
       ],
-      "total_code": 6264,
+      "total_code": 2136,
       "total_data": 0,
-      "total_functions": 12
+      "total_functions": 4
+    },
+    {
+      "name": "main/hsd/hsd_texp_r54_801B64EC_lmw_on",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 2960,
+          "virtual_address": 2149278956
+        }
+      ],
+      "total_code": 2960,
+      "total_data": 0,
+      "total_functions": 6
+    },
+    {
+      "name": "main/hsd/hsd_texp_r54_801B707C_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1168,
+          "virtual_address": 2149281916
+        }
+      ],
+      "total_code": 1168,
+      "total_data": 0,
+      "total_functions": 2
     },
     {
       "name": "main/hsd/hsd_texp_candidate_801B750C_gc20",

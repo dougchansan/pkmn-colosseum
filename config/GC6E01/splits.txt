@@ -4948,8 +4948,14 @@ hsd/hsd_texp_r50_801B50C0_prefix.c:
 hsd/hsd_texp_r50_801B5A00_gc125_o4p.c:
 	.text       start:0x801B5A00 end:0x801B5C94
 
-hsd/hsd_texp_r50_801B5C94_suffix.c:
-	.text       start:0x801B5C94 end:0x801B750C
+hsd/hsd_texp_r54_801B5C94_prefix.c:
+	.text       start:0x801B5C94 end:0x801B64EC
+
+hsd/hsd_texp_r54_801B64EC_lmw_on.c:
+	.text       start:0x801B64EC end:0x801B707C
+
+hsd/hsd_texp_r54_801B707C_suffix.c:
+	.text       start:0x801B707C end:0x801B750C
 
 hsd/hsd_texp_candidate_801B750C_gc20.c:
 	.text       start:0x801B750C end:0x801B7BD4

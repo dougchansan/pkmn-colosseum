@@ -9173,7 +9173,7 @@ config.libs = [
                 CodeCandidate,
                 "hsd/hsd_jobj_residual_801A1B7C_r40_801A20C8_gc125n.c",
                 mw_version="GC/1.2.5n",
-                extra_cflags=["-use_lmw_stmw on"],
+                extra_cflags=["-use_lmw_stmw on", "-inline noauto"],
                 progress_category="hsd",
             ),
             Object(
@@ -9621,7 +9621,20 @@ config.libs = [
             ),
             Object(
                 CodeCandidate,
-                "hsd/hsd_texp_r50_801B5C94_suffix.c",
+                "hsd/hsd_texp_r54_801B5C94_prefix.c",
+                mw_version="GC/1.3",
+                progress_category="hsd",
+            ),
+            Object(
+                CodeCandidate,
+                "hsd/hsd_texp_r54_801B64EC_lmw_on.c",
+                mw_version="GC/1.3",
+                extra_cflags=["-use_lmw_stmw on"],
+                progress_category="hsd",
+            ),
+            Object(
+                CodeCandidate,
+                "hsd/hsd_texp_r54_801B707C_suffix.c",
                 mw_version="GC/1.3",
                 progress_category="hsd",
             ),
@@ -9643,6 +9656,7 @@ config.libs = [
                 "hsd/hsd_texp_r47_make_dag_o4s.c",
                 mw_version="GC/1.2.5",
                 cflags=["-O4,s" if flag == "-O4,p" else flag for flag in cflags_base],
+                extra_cflags=["-inline noauto"],
                 progress_category="hsd",
             ),
             Object(
@@ -9695,6 +9709,7 @@ config.libs = [
                 CodeCandidate,
                 "hsd/hsd_texp_candidate_801BAC8C_gc20.c",
                 mw_version="GC/2.0",
+                cflags=["-O4,s" if flag == "-O4,p" else flag for flag in cflags_base],
                 progress_category="hsd",
             ),
             Object(
