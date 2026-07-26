@@ -483,24 +483,35 @@ typedef struct GSbackFBCapture {
     u32 param;
 } GSbackFBCapture;
 
+static inline GSbackFBCapture* GSbackFBFindCapture(void* texture)
+{
+    GSbackFBCapture* capture;
+
+    capture = (GSbackFBCapture*)lbl_80400EE0;
+    if (capture->active == 1 && capture->texture == texture) {
+        return capture;
+    }
+    capture++;
+    if (capture->active == 1 && capture->texture == texture) {
+        return capture;
+    }
+    capture++;
+    if (capture->active == 1 && capture->texture == texture) {
+        return capture;
+    }
+    capture++;
+    if (capture->active == 1 && capture->texture == texture) {
+        return capture;
+    }
+    return NULL;
+}
+
 u32 GSgfxEndBackFBCapture(void* texture) {
     GSbackFBCapture* capture;
     u32 i;
 
-    capture = (GSbackFBCapture*)lbl_80400EE0;
-    if (capture->active != 1 || capture->texture != texture) {
-        capture++;
-        if (capture->active != 1 || capture->texture != texture) {
-            capture++;
-            if (capture->active != 1 || capture->texture != texture) {
-                capture++;
-                if (capture->active != 1 || capture->texture != texture) {
-                    capture = 0;
-                }
-            }
-        }
-    }
-    if (capture == 0) {
+    capture = GSbackFBFindCapture(texture);
+    if (capture == NULL) {
         return 0;
     }
 
