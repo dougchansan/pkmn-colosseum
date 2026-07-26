@@ -1,4 +1,6 @@
 #include "dolphin/types.h"
+#include "dolphin/mtx.h"
+#include "hsd/hsd_jobj.h"
 #include "hsd/hsd_pobj.h"
 
 /* =========================================================================
@@ -15,7 +17,8 @@ extern void  fn_800B7D3C(void);
 extern void  fn_801C27F4(void* aobj, void* pobj, void* method);
 extern void  PObjRelease(HSD_Class* object);
 extern void  PObjAmnesia(void* pobj);
-extern void  PObjSetupMtx(void);
+extern void  PObjSetupMtx(HSD_PObj* pobj, Mtx vmtx, Mtx pmtx,
+                          u32 rendermode);
 extern s32   PObjLoad(HSD_PObj* pobj, HSD_PObjDesc* desc);
 extern void  PObjUpdateFunc(HSD_PObj* pobj, s32 idx, f32* weight_ptr);
 extern void  HSD_JObjUnrefThis(HSD_JObj* jobj);
@@ -62,6 +65,20 @@ void get_shape_normal_xyz(HSD_ShapeSet* shape_set, s32 shape_id, s32 arrayidx,
                           f32 dst[3]);
 void get_shape_vertex_xyz(HSD_ShapeSet* shape_set, s32 shape_id, s32 arrayidx,
                           f32 dst[3]);
+extern void SetupEnvelopeModelMtx(HSD_PObj* pobj, Mtx vmtx, Mtx pmtx,
+                                  u32 rendermode);
+extern void SetupSharedVtxModelMtx(HSD_PObj* pobj, Mtx vmtx, Mtx pmtx,
+                                   u32 rendermode);
+extern void fn_800BD554(u32 index);
+extern void GXLoadPosMtxImm(Mtx mtx, u32 index);
+extern void GXLoadNrmMtxImm(Mtx mtx, u32 index);
+extern void GXLoadTexMtxImm(Mtx mtx, u32 index, u32 type);
+extern u32 PSMTXInvXpose(Mtx src, Mtx dst);
+extern void PSMTXCopy(Mtx src, Mtx dst);
+extern u32 lbl_8036CC40[];
+extern HSD_TObj* _HSD_TObjGetCurrentByType(HSD_TObj* from, u32 mapping);
+void HSD_PObjGetMtxMark(s32 index, u32* first, u32* second);
+void fn_801AB5F8(s32 index, void* ptr, s32 value);
 
 /* Address: 0x801AA608 | Size: 0xC8  -- PObj class info init */
 #pragma push
@@ -128,6 +145,98 @@ void PObjRelease(HSD_Class* object)
         break;
     }
     ((HSD_ClassInfo*)lbl_8036CCD0)->head.parent->release(object);
+}
+
+typedef enum PObjSetupFlag {
+    SETUP_NORMAL = 1,
+    SETUP_REFLECTION = 2,
+    SETUP_HIGHLIGHT = 4,
+    SETUP_NORMAL_PROJECTION = 6,
+} PObjSetupFlag;
+
+static inline void HSD_PerfCountMtxLoad(void)
+{
+    lbl_8036CC40[3]++;
+}
+
+static inline void HSD_MtxInverseTranspose(Mtx src, Mtx dst)
+{
+    if (PSMTXInvXpose(src, dst) == 0) {
+        PSMTXCopy(src, dst);
+    }
+}
+
+static inline PObjSetupFlag GetSetupFlags(HSD_JObj* jobj, u32 rendermode)
+{
+    PObjSetupFlag flags = 0;
+
+    if (!(rendermode & 0x04000000)) {
+        if (jobj->flags & JOBJ_LIGHTING) {
+            flags |= SETUP_NORMAL;
+        }
+        if (_HSD_TObjGetCurrentByType(NULL, 1) != NULL) {
+            flags |= SETUP_NORMAL | SETUP_REFLECTION;
+        }
+        if (_HSD_TObjGetCurrentByType(NULL, 5) != NULL) {
+            flags |= SETUP_NORMAL | SETUP_HIGHLIGHT;
+        }
+        if (_HSD_TObjGetCurrentByType(NULL, 2) != NULL) {
+            flags |= SETUP_NORMAL | SETUP_HIGHLIGHT;
+        }
+    }
+    return flags;
+}
+
+static inline void SetupRigidModelMtx(HSD_PObj* pobj, Mtx vmtx, Mtx pmtx,
+                                      u32 rendermode)
+{
+    HSD_JObj* jobj = HSD_JObjGetCurrent();
+    Mtx normal_mtx;
+    PObjSetupFlag flags;
+    void* marked_obj;
+    u32 mark;
+
+    HSD_PObjGetMtxMark(0, (u32*) &marked_obj, &mark);
+    if (marked_obj == jobj && mark == HSD_MTX_RIGID) {
+        return;
+    }
+    fn_801AB5F8(0, jobj, HSD_MTX_RIGID);
+
+    fn_800BD554(0);
+    GXLoadPosMtxImm(pmtx, 0);
+    HSD_PerfCountMtxLoad();
+
+    flags = GetSetupFlags(jobj, rendermode);
+    if (flags & SETUP_NORMAL) {
+        HSD_MtxInverseTranspose(pmtx, normal_mtx);
+        if (jobj->flags & JOBJ_LIGHTING) {
+            GXLoadNrmMtxImm(normal_mtx, 0);
+            HSD_PerfCountMtxLoad();
+        }
+        if (flags & SETUP_NORMAL_PROJECTION) {
+            GXLoadTexMtxImm(normal_mtx, 30, 0);
+            HSD_PerfCountMtxLoad();
+        }
+    }
+}
+
+void PObjSetupMtx(HSD_PObj* pobj, Mtx vmtx, Mtx pmtx, u32 rendermode)
+{
+    switch (pobj->flags & 0x3000) {
+    case 0:
+        if (pobj->u.jobj == NULL) {
+            SetupRigidModelMtx(pobj, vmtx, pmtx, rendermode);
+        } else {
+            SetupSharedVtxModelMtx(pobj, vmtx, pmtx, rendermode);
+        }
+        break;
+    case 0x1000:
+        SetupRigidModelMtx(pobj, vmtx, pmtx, rendermode);
+        break;
+    case 0x2000:
+        SetupEnvelopeModelMtx(pobj, vmtx, pmtx, rendermode);
+        break;
+    }
 }
 
 /* Address: 0x801AA6D0 | Size: 0xB8  -- PObj remove */
