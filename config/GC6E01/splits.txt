@@ -369,7 +369,46 @@ game/gs_npc_event_exact_80030370.c:
 	.text       start:0x80030370 end:0x8003037C
 
 game/gs_npc_event_candidate_8003037C.c:
-	.text       start:0x8003037C end:0x80033278
+	.text       start:0x8003037C end:0x8003042C
+
+game/gs_npc_event_candidate_8003037C_r40_8003042C_gc20.c:
+	.text       start:0x8003042C end:0x80030574
+
+game/gs_npc_event_candidate_8003037C_r40_80030574_gc20.c:
+	.text       start:0x80030574 end:0x800307A8
+
+game/gs_npc_event_candidate_8003037C_r40_800307A8_gc20.c:
+	.text       start:0x800307A8 end:0x800308D4
+
+game/gs_npc_event_candidate_8003037C_r40_800308D4.c:
+	.text       start:0x800308D4 end:0x80030A44
+
+game/gs_npc_event_candidate_8003037C_r40_80030A44_gc20.c:
+	.text       start:0x80030A44 end:0x80030C14
+
+game/gs_npc_event_candidate_8003037C_r40_80030C14.c:
+	.text       start:0x80030C14 end:0x80030D34
+
+game/gs_npc_event_candidate_8003037C_r40_80030D34_gc20.c:
+	.text       start:0x80030D34 end:0x80030F0C
+
+game/gs_npc_event_candidate_8003037C_r40_80030F0C_gc20.c:
+	.text       start:0x80030F0C end:0x80031188
+
+game/gs_npc_event_candidate_8003037C_r40_80031188.c:
+	.text       start:0x80031188 end:0x80031228
+
+game/gs_npc_event_candidate_8003037C_r40_80031228_gc20.c:
+	.text       start:0x80031228 end:0x80031404
+
+game/gs_npc_event_candidate_8003037C_r40_80031404_gc20.c:
+	.text       start:0x80031404 end:0x80031648
+
+game/gs_npc_event_candidate_8003037C_r40_80031648_gc20.c:
+	.text       start:0x80031648 end:0x800318D8
+
+game/gs_npc_event_candidate_8003037C_r40_800318D8.c:
+	.text       start:0x800318D8 end:0x80033278
 
 game/gs_range_80033278.c:
 	.text       start:0x80033278 end:0x80035E04
@@ -2777,7 +2816,13 @@ game/data/data_80363774.c:
 	.data       start:0x80363774 end:0x80363A70
 
 game/hero_move.c:
-	.text       start:0x8012AC9C end:0x80130660
+	.text       start:0x8012AC9C end:0x8012BDE0
+
+game/hero_move_r40_8012BDE0_gc125n.c:
+	.text       start:0x8012BDE0 end:0x8012BEB4
+
+game/hero_move_r40_8012BEB4.c:
+	.text       start:0x8012BEB4 end:0x80130660
 
 game/hero_pokemon.c:
 	.text       start:0x80130660 end:0x80130CE0
@@ -3421,7 +3466,10 @@ musyx/runtime/hw_dspctrl_exact_8015D408.c:
 	.text       start:0x8015D408 end:0x8015D678
 
 musyx/musyx_candidate_8015D678.c:
-	.text       start:0x8015D678 end:0x801609C8
+	.text       start:0x8015D678 end:0x801603C0
+
+musyx/musyx_candidate_8015D678_r40_801603C0_gc125n.c:
+	.text       start:0x801603C0 end:0x801609C8
 
 musyx/musyx_midi_exact_801609C8.c:
 	.text       start:0x801609C8 end:0x80161134
@@ -4259,7 +4307,13 @@ hsd/hsd_texp_candidate_801B750C_gc20.c:
 	.text       start:0x801B750C end:0x801B7BD4
 
 hsd/hsd_texp_candidate_801B7BD4.c:
-	.text       start:0x801B7BD4 end:0x801B8FB8
+	.text       start:0x801B7BD4 end:0x801B89BC
+
+hsd/hsd_texp_candidate_801B7BD4_r40_801B89BC_gc125n.c:
+	.text       start:0x801B89BC end:0x801B8B84
+
+hsd/hsd_texp_candidate_801B7BD4_r40_801B8B84.c:
+	.text       start:0x801B8B84 end:0x801B8FB8
 
 hsd/hsd_texp_candidate_801B8FB8_gc20.c:
 	.text       start:0x801B8FB8 end:0x801B9048
@@ -4409,7 +4463,13 @@ game/field_exact_801CBA84.c:
 	.text       start:0x801CBA84 end:0x801CBA90
 
 game/field_candidate_801CBA90.c:
-	.text       start:0x801CBA90 end:0x801D0080
+	.text       start:0x801CBA90 end:0x801CBF64
+
+game/field_candidate_801CBA90_r40_801CBF64_gc25.c:
+	.text       start:0x801CBF64 end:0x801CC380
+
+game/field_candidate_801CBA90_r40_801CC380.c:
+	.text       start:0x801CC380 end:0x801D0080
 
 game/field_exact_801D0080.c:
 	.text       start:0x801D0080 end:0x801D0090
@@ -4900,7 +4960,13 @@ game/fight_pokemon_candidate_801FE168_gc20.c:
 	.text       start:0x801FE168 end:0x801FE3F8
 
 game/fight_pokemon_candidate_801FE3F8.c:
-	.text       start:0x801FE3F8 end:0x80200E00
+	.text       start:0x801FE3F8 end:0x801FE91C
+
+game/fight_pokemon_candidate_801FE3F8_r40_801FE91C_gc125n.c:
+	.text       start:0x801FE91C end:0x801FEC10
+
+game/fight_pokemon_candidate_801FE3F8_r40_801FEC10.c:
+	.text       start:0x801FEC10 end:0x80200E00
 
 game/fight_pokemon_candidate_80200E00_gc20.c:
 	.text       start:0x80200E00 end:0x802010C8
