@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196100,
     "total_functions": 8603,
-    "total_units": 2160
+    "total_units": 2171
   },
   "topology_status": {
     "auto_units": 68,
-    "named_units": 2092,
-    "source_backed_units": 2086,
+    "named_units": 2103,
+    "source_backed_units": 2097,
     "auto_code": 0,
     "auto_data": 57687,
     "auto_functions": 0
@@ -23,7 +23,7 @@
     "matched_data_percent": 97.28669,
     "matched_functions": 6573,
     "matched_functions_percent": 76.40358,
-    "fuzzy_match_percent": 72.0049
+    "fuzzy_match_percent": 72.01912
   },
   "unit_topology": [
     {
@@ -1015,17 +1015,30 @@
       "total_functions": 7
     },
     {
-      "name": "main/game/gs_pokemon_summary",
+      "name": "main/game/gs_pokemon_summary_r55_8001501C_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 6068,
+          "size": 5792,
           "virtual_address": 2147569692
         }
       ],
-      "total_code": 6068,
+      "total_code": 5792,
       "total_data": 0,
-      "total_functions": 12
+      "total_functions": 11
+    },
+    {
+      "name": "main/game/gs_pokemon_summary_r55_800166BC_gc13_o3",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 276,
+          "virtual_address": 2147575484
+        }
+      ],
+      "total_code": 276,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/game/gs_pokemon_summary_r41_800167D0_gc20",
@@ -1067,17 +1080,43 @@
       "total_functions": 2
     },
     {
-      "name": "main/game/gs_pokemon_summary_candidate_8001793C",
+      "name": "main/game/gs_pokemon_summary_r55_8001793C_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 2184,
+          "size": 892,
           "virtual_address": 2147580220
         }
       ],
-      "total_code": 2184,
+      "total_code": 892,
       "total_data": 0,
-      "total_functions": 5
+      "total_functions": 3
+    },
+    {
+      "name": "main/game/gs_pokemon_summary_r55_80017CB8_gc13_o4s",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 468,
+          "virtual_address": 2147581112
+        }
+      ],
+      "total_code": 468,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/gs_pokemon_summary_r55_80017E8C_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 824,
+          "virtual_address": 2147581580
+        }
+      ],
+      "total_code": 824,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/game/menuPokemon",
@@ -3269,17 +3308,30 @@
       "total_functions": 1
     },
     {
-      "name": "main/game/menu/menuCB_range_80068794",
+      "name": "main/game/menu/menuCB_r55_80068794_gc13_o4s",
       "sections": [
         {
           "name": ".text",
-          "size": 2228,
+          "size": 304,
           "virtual_address": 2147911572
         }
       ],
-      "total_code": 2228,
+      "total_code": 304,
       "total_data": 0,
-      "total_functions": 6
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/menu/menuCB_r55_800688C4_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1924,
+          "virtual_address": 2147911876
+        }
+      ],
+      "total_code": 1924,
+      "total_data": 0,
+      "total_functions": 5
     },
     {
       "name": "main/game/menu/menuCB_range_exact_80069048",
@@ -11874,17 +11926,30 @@
       "total_functions": 3
     },
     {
-      "name": "main/game/gs_model_bound_candidate_800EB5A0",
+      "name": "main/game/gs_model_bound_r55_800EB5A0_gc13_o2",
       "sections": [
         {
           "name": ".text",
-          "size": 2380,
+          "size": 320,
           "virtual_address": 2148447648
         }
       ],
-      "total_code": 2380,
+      "total_code": 320,
       "total_data": 0,
-      "total_functions": 3
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/gs_model_bound_r55_800EB6E0_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 2060,
+          "virtual_address": 2148447968
+        }
+      ],
+      "total_code": 2060,
+      "total_data": 0,
+      "total_functions": 2
     },
     {
       "name": "main/game/gs_model_anim_candidate_800EBEEC",
@@ -14917,17 +14982,30 @@
       "total_functions": 3
     },
     {
-      "name": "main/game/effect/tracefx",
+      "name": "main/game/effect/tracefx_r55_801364A8_gc13_o1",
       "sections": [
         {
           "name": ".text",
-          "size": 7212,
+          "size": 3180,
           "virtual_address": 2148754600
         }
       ],
-      "total_code": 7212,
+      "total_code": 3180,
       "total_data": 0,
-      "total_functions": 11
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/effect/tracefx_r55_80137114_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 4032,
+          "virtual_address": 2148757780
+        }
+      ],
+      "total_code": 4032,
+      "total_data": 0,
+      "total_functions": 10
     },
     {
       "name": "main/game/effect/effect_visual_exact_801380D4",
@@ -18752,17 +18830,43 @@
       "total_functions": 2
     },
     {
-      "name": "main/game/ps_candidate_8016AB94",
+      "name": "main/game/ps_r55_8016AB94_gc13_o1",
       "sections": [
         {
           "name": ".text",
-          "size": 18272,
+          "size": 3716,
           "virtual_address": 2148969364
         }
       ],
-      "total_code": 18272,
+      "total_code": 3716,
       "total_data": 0,
-      "total_functions": 11
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/ps_r55_8016BA18_middle",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 12804,
+          "virtual_address": 2148973080
+        }
+      ],
+      "total_code": 12804,
+      "total_data": 0,
+      "total_functions": 9
+    },
+    {
+      "name": "main/game/ps_r55_8016EC1C_gc20p1_o4s",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1752,
+          "virtual_address": 2148985884
+        }
+      ],
+      "total_code": 1752,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/game/ps_exact_8016F2F4",
@@ -23094,17 +23198,43 @@
       "total_functions": 1
     },
     {
-      "name": "main/game/field_candidate_801CBA90",
+      "name": "main/game/field_r55_801CBA90_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 1236,
+          "size": 588,
           "virtual_address": 2149366416
         }
       ],
-      "total_code": 1236,
+      "total_code": 588,
       "total_data": 0,
-      "total_functions": 5
+      "total_functions": 3
+    },
+    {
+      "name": "main/game/field_r55_801CBCDC_gc13_o4s",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 360,
+          "virtual_address": 2149367004
+        }
+      ],
+      "total_code": 360,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/field_r55_801CBE44_suffix",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 288,
+          "virtual_address": 2149367364
+        }
+      ],
+      "total_code": 288,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/game/field_candidate_801CBA90_r40_801CBF64_gc25",
@@ -27957,17 +28087,30 @@
       "total_functions": 3
     },
     {
-      "name": "main/game/toolentry_candidate_8025D364",
+      "name": "main/game/toolentry_r55_8025D364_prefix",
       "sections": [
         {
           "name": ".text",
-          "size": 508,
+          "size": 144,
           "virtual_address": 2149962596
         }
       ],
-      "total_code": 508,
+      "total_code": 144,
       "total_data": 0,
-      "total_functions": 2
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/toolentry_r55_8025D3F4_gc13_o1",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 364,
+          "virtual_address": 2149962740
+        }
+      ],
+      "total_code": 364,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/game/toolentry_exact_8025D560",

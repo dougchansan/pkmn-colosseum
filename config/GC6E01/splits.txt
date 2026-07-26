@@ -224,8 +224,11 @@ game/gs_event_exec_r47_80014574_o3.c:
 game/gs_event_exec_r47_suffix.c:
 	.text       start:0x80014A48 end:0x8001501C
 
-game/gs_pokemon_summary.c:
-	.text       start:0x8001501C end:0x800167D0
+game/gs_pokemon_summary_r55_8001501C_prefix.c:
+	.text       start:0x8001501C end:0x800166BC
+
+game/gs_pokemon_summary_r55_800166BC_gc13_o3.c:
+	.text       start:0x800166BC end:0x800167D0
 
 game/gs_pokemon_summary_r41_800167D0_gc20.c:
 	.text       start:0x800167D0 end:0x80016ABC
@@ -236,8 +239,14 @@ game/gs_pokemon_summary_r41_80016ABC.c:
 game/gs_pokemon_summary_exact_800178EC.c:
 	.text       start:0x800178EC end:0x8001793C
 
-game/gs_pokemon_summary_candidate_8001793C.c:
-	.text       start:0x8001793C end:0x800181C4
+game/gs_pokemon_summary_r55_8001793C_prefix.c:
+	.text       start:0x8001793C end:0x80017CB8
+
+game/gs_pokemon_summary_r55_80017CB8_gc13_o4s.c:
+	.text       start:0x80017CB8 end:0x80017E8C
+
+game/gs_pokemon_summary_r55_80017E8C_suffix.c:
+	.text       start:0x80017E8C end:0x800181C4
 
 game/menuPokemon.c:
 	.text       start:0x800181C4 end:0x8001C064
@@ -726,8 +735,11 @@ game/menu/menuCB_range_800676EC.c:
 game/menu/menuCB_range_exact_80068738.c:
 	.text       start:0x80068738 end:0x80068794
 
-game/menu/menuCB_range_80068794.c:
-	.text       start:0x80068794 end:0x80069048
+game/menu/menuCB_r55_80068794_gc13_o4s.c:
+	.text       start:0x80068794 end:0x800688C4
+
+game/menu/menuCB_r55_800688C4_suffix.c:
+	.text       start:0x800688C4 end:0x80069048
 
 game/menu/menuCB_range_exact_80069048.c:
 	.text       start:0x80069048 end:0x8006905C
@@ -2644,8 +2656,11 @@ game/gs_model_bound_exact_800EB414.c:
 game/gs_model_bound_exact_800EB464.c:
 	.text       start:0x800EB464 end:0x800EB5A0
 
-game/gs_model_bound_candidate_800EB5A0.c:
-	.text       start:0x800EB5A0 end:0x800EBEEC
+game/gs_model_bound_r55_800EB5A0_gc13_o2.c:
+	.text       start:0x800EB5A0 end:0x800EB6E0
+
+game/gs_model_bound_r55_800EB6E0_suffix.c:
+	.text       start:0x800EB6E0 end:0x800EBEEC
 
 game/gs_model_anim_candidate_800EBEEC.c:
 	.text       start:0x800EBEEC end:0x800EC0E8
@@ -3315,8 +3330,11 @@ game/tenkouBios.c:
 game/tikeiBios.c:
 	.text       start:0x801363E8 end:0x801364A8
 
-game/effect/tracefx.c:
-	.text       start:0x801364A8 end:0x801380D4
+game/effect/tracefx_r55_801364A8_gc13_o1.c:
+	.text       start:0x801364A8 end:0x80137114
+
+game/effect/tracefx_r55_80137114_suffix.c:
+	.text       start:0x80137114 end:0x801380D4
 
 game/effect/effect_visual_exact_801380D4.c:
 	.text       start:0x801380D4 end:0x8013814C
@@ -4180,8 +4198,14 @@ game/ps_exact_8016A9B4.c:
 game/ps_app_srt_exact_8016AAAC.c:
 	.text       start:0x8016AAAC end:0x8016AB94
 
-game/ps_candidate_8016AB94.c:
-	.text       start:0x8016AB94 end:0x8016F2F4
+game/ps_r55_8016AB94_gc13_o1.c:
+	.text       start:0x8016AB94 end:0x8016BA18
+
+game/ps_r55_8016BA18_middle.c:
+	.text       start:0x8016BA18 end:0x8016EC1C
+
+game/ps_r55_8016EC1C_gc20p1_o4s.c:
+	.text       start:0x8016EC1C end:0x8016F2F4
 
 game/ps_exact_8016F2F4.c:
 	.text       start:0x8016F2F4 end:0x8016F300
@@ -5182,8 +5206,14 @@ game/field_candidate_801CBA0C.c:
 game/field_exact_801CBA84.c:
 	.text       start:0x801CBA84 end:0x801CBA90
 
-game/field_candidate_801CBA90.c:
-	.text       start:0x801CBA90 end:0x801CBF64
+game/field_r55_801CBA90_prefix.c:
+	.text       start:0x801CBA90 end:0x801CBCDC
+
+game/field_r55_801CBCDC_gc13_o4s.c:
+	.text       start:0x801CBCDC end:0x801CBE44
+
+game/field_r55_801CBE44_suffix.c:
+	.text       start:0x801CBE44 end:0x801CBF64
 
 game/field_candidate_801CBA90_r40_801CBF64_gc25.c:
 	.text       start:0x801CBF64 end:0x801CC380
@@ -6243,8 +6273,11 @@ game/toolentry_candidate_8025D164.c:
 game/toolentry_exact_8025D28C.c:
 	.text       start:0x8025D28C end:0x8025D364
 
-game/toolentry_candidate_8025D364.c:
-	.text       start:0x8025D364 end:0x8025D560
+game/toolentry_r55_8025D364_prefix.c:
+	.text       start:0x8025D364 end:0x8025D3F4
+
+game/toolentry_r55_8025D3F4_gc13_o1.c:
+	.text       start:0x8025D3F4 end:0x8025D560
 
 game/toolentry_exact_8025D560.c:
 	.text       start:0x8025D560 end:0x8025D644
