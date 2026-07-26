@@ -704,7 +704,11 @@ void fn_8018B368(u32 groupId, u32 index, s32 animIndex, s32 frame,
     GSmodelSetTexAnimIndex(model, animIndex);
     GSmodelSetTexAnimFrame(model, (f32)frame);
     GSmodelSetTexAnimRate(model, lbl_8047D7A4);
-    GSmodelSetAnimType(model, looping != 0);
+    if (looping != 0) {
+        GSmodelSetAnimType(model, 1);
+    } else {
+        GSmodelSetAnimType(model, 0);
+    }
     GSmodelStartAnimation(model);
 }
 #endif
@@ -1447,9 +1451,9 @@ void fn_801858C4(PeopleEntry* entry) {
         return;
     }
     fn_800E0168(&delta, fn_8018FCBC(entry), peopleGetTransform(entry));
-    if (fabs(delta.x) < lbl_8047D828 &&
-        fabs(delta.y) < lbl_8047D828 &&
-        fabs(delta.z) < lbl_8047D828) {
+    if (__fabs(delta.x) < lbl_8047D828 &&
+        __fabs(delta.y) < lbl_8047D828 &&
+        __fabs(delta.z) < lbl_8047D828) {
         entry->pad97++;
         if (entry->pad97 > 60) {
             linked = peopleFindBySelf(peopleFindSelf(entry->groupId,
@@ -2358,6 +2362,7 @@ u8 fn_80188214() {
 
 extern f32 lbl_80273FA8[];
 void fn_801885C4(u32 groupId, u32 index, GSvec* offset, u8 faceOffset) {
+    extern void fn_8018E9B4(PeopleEntry*, void*, void*);
     PeopleEntry* entry;
     GSvec position;
     GSvec direction;
@@ -2805,9 +2810,17 @@ u8 fn_8018B76C(u32 groupId, u32 index, s32 animIndex, s32 frame, u8 loop) {
         GSmodelSetTexAnimIndex(model, animIndex);
         GSmodelSetTexAnimFrame(model, (f32)frame);
         GSmodelSetTexAnimRate(model, lbl_8047D7A4);
-        GSmodelSetAnimType(model, loop ? 1 : 0);
+        if (loop != 0) {
+            GSmodelSetAnimType(model, 1);
+        } else {
+            GSmodelSetAnimType(model, 0);
+        }
         GSmodelStartAnimation(model);
-        GSmodelSetAnimType(model, loop ? 1 : 0);
+        if (loop != 0) {
+            GSmodelSetAnimType(model, 1);
+        } else {
+            GSmodelSetAnimType(model, 0);
+        }
     }
     return restart;
 }
@@ -2986,6 +2999,7 @@ void fn_8018CA20(u32 groupId, u32 index, u8 animId) {
 
 /* fn_8018CB5C -- not recovered, gap in archive campaign (size 0x1AC) */
 void fn_8018CB5C(u32 groupId, u32 index) {
+    extern u8 fn_8018F5FC(const PeopleInfoBiosEntry*);
     PeopleEntry* entry;
     PeopleInfoBiosEntry* info;
     struct {
@@ -3250,10 +3264,18 @@ void fn_8018F08C(PeopleEntry* original, u32 motionIndex) {
         GSmodelSetTexAnimIndex(model, animIndex);
         GSmodelSetTexAnimFrame(model, lbl_8047D79C);
         GSmodelSetTexAnimRate(model, lbl_8047D7A4);
-        GSmodelSetAnimType(model, loop ? 1 : 0);
+        if (loop != 0) {
+            GSmodelSetAnimType(model, 1);
+        } else {
+            GSmodelSetAnimType(model, 0);
+        }
         GSmodelStartAnimation(model);
     }
-    GSmodelSetAnimType(model, loop ? 1 : 0);
+    if (loop != 0) {
+        GSmodelSetAnimType(model, 1);
+    } else {
+        GSmodelSetAnimType(model, 0);
+    }
 }
 
 /* fn_8018F4C8 = fn_8018F4C8 (see people.h) -- not recovered, gap in archive campaign */
