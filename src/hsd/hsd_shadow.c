@@ -70,7 +70,64 @@ typedef struct HSDViewingRect {
 
 /* Address: 0x801B019C | Size: 0x204 | Proposed: HSD_ShadowFunc1 */
 /* Shadow map initialization and projection matrix setup */
-void fn_801B019C(void) {
+void fn_801B019C(HSDViewingRect* rect, HSDShadowVec* point,
+                 f32 x_max, f32 x_min, f32 y_min, f32 y_max) {
+    extern char lbl_802752C0[];
+    extern char lbl_802752CC[];
+    extern char lbl_8047DDB8;
+    extern f32 lbl_8047DDC0;
+    extern void PSVECSubtract(void* a, void* b, void* out);
+    extern f32 PSVECDotProduct(void* a, void* b);
+    extern void PSVECScale(void* src, void* dst, f32 scale);
+    HSDShadowVec delta;
+    HSDShadowVec projected;
+    HSDShadowVec normal_distance;
+    f32 distance;
+    f32 scale;
+    f32 x;
+    f32 y;
+
+    if (rect == NULL) {
+        __assert(lbl_802752C0, 0x3A2, &lbl_8047DDB8);
+    }
+    if (point == NULL) {
+        __assert(lbl_802752C0, 0x3A3, lbl_802752CC);
+    }
+
+    PSVECSubtract(point, &rect->origin, &delta);
+    distance = PSVECDotProduct(&delta, &rect->normal);
+    if (rect->object != NULL) {
+        if (distance <= lbl_8047DDC0) {
+            return;
+        }
+        scale = rect->distance / distance;
+        PSVECScale(&delta, &delta, scale);
+        PSVECSubtract(&delta, &rect->direction, &projected);
+        y = PSVECDotProduct(&rect->axis_y, &projected);
+        x = PSVECDotProduct(&rect->axis_x, &projected);
+        x_max *= scale;
+        x_min *= scale;
+        y_min *= scale;
+        y_max *= scale;
+    } else {
+        PSVECScale(&rect->normal, &normal_distance, distance);
+        PSVECSubtract(&delta, &normal_distance, &projected);
+        y = PSVECDotProduct(&rect->axis_y, &projected);
+        x = PSVECDotProduct(&rect->axis_x, &projected);
+    }
+
+    if (y + y_max > rect->min_y) {
+        rect->min_y = y + y_max;
+    }
+    if (y + y_min < rect->max_y) {
+        rect->max_y = y + y_min;
+    }
+    if (x + x_max > rect->min_x) {
+        rect->min_x = x + x_max;
+    }
+    if (x + x_min < rect->max_x) {
+        rect->max_x = x + x_min;
+    }
 }
 
 /* Address: 0x801B03A0 | Size: 0x68 | Proposed: HSD_ShadowFunc2 */
