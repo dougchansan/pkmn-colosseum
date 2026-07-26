@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196100,
     "total_functions": 8603,
-    "total_units": 1941
+    "total_units": 1944
   },
   "topology_status": {
     "auto_units": 68,
-    "named_units": 1873,
-    "source_backed_units": 1867,
+    "named_units": 1876,
+    "source_backed_units": 1870,
     "auto_code": 0,
     "auto_data": 57687,
     "auto_functions": 0
@@ -23,7 +23,7 @@
     "matched_data_percent": 97.28669,
     "matched_functions": 6566,
     "matched_functions_percent": 76.32221,
-    "fuzzy_match_percent": 68.4961
+    "fuzzy_match_percent": 68.496704
   },
   "unit_topology": [
     {
@@ -20173,13 +20173,39 @@
       "sections": [
         {
           "name": ".text",
-          "size": 676,
+          "size": 336,
           "virtual_address": 2149335160
         }
       ],
-      "total_code": 676,
+      "total_code": 336,
       "total_data": 0,
-      "total_functions": 6
+      "total_functions": 4
+    },
+    {
+      "name": "main/game/effect/fade_r42_801C41C8_gc125n",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 116,
+          "virtual_address": 2149335496
+        }
+      ],
+      "total_code": 116,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/effect/fade_r42_801C423C",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 224,
+          "virtual_address": 2149335612
+        }
+      ],
+      "total_code": 224,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/game/effect/fade_exact_801C431C",
@@ -20221,17 +20247,30 @@
       "total_functions": 1
     },
     {
-      "name": "main/game/effect/fade_candidate_801C43F4",
+      "name": "main/game/effect/fade_candidate_801C43F4_r42_801C43F4_gc125n",
       "sections": [
         {
           "name": ".text",
-          "size": 1056,
+          "size": 988,
           "virtual_address": 2149336052
         }
       ],
-      "total_code": 1056,
+      "total_code": 988,
       "total_data": 0,
-      "total_functions": 2
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/effect/fade_candidate_801C43F4_r42_801C47D0",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 68,
+          "virtual_address": 2149337040
+        }
+      ],
+      "total_code": 68,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/game/effect/fade_effect_candidate_801C4814",

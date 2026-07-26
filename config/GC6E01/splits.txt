@@ -4514,7 +4514,13 @@ game/battle/battle_grid_exact_801C3F10.c:
 	.text       start:0x801C3F10 end:0x801C4078
 
 game/effect/fade.c:
-	.text       start:0x801C4078 end:0x801C431C
+	.text       start:0x801C4078 end:0x801C41C8
+
+game/effect/fade_r42_801C41C8_gc125n.c:
+	.text       start:0x801C41C8 end:0x801C423C
+
+game/effect/fade_r42_801C423C.c:
+	.text       start:0x801C423C end:0x801C431C
 
 game/effect/fade_exact_801C431C.c:
 	.text       start:0x801C431C end:0x801C432C
@@ -4525,8 +4531,11 @@ game/effect/fade_candidate_801C432C.c:
 game/effect/fade_exact_801C43E4.c:
 	.text       start:0x801C43E4 end:0x801C43F4
 
-game/effect/fade_candidate_801C43F4.c:
-	.text       start:0x801C43F4 end:0x801C4814
+game/effect/fade_candidate_801C43F4_r42_801C43F4_gc125n.c:
+	.text       start:0x801C43F4 end:0x801C47D0
+
+game/effect/fade_candidate_801C43F4_r42_801C47D0.c:
+	.text       start:0x801C47D0 end:0x801C4814
 
 game/effect/fade_effect_candidate_801C4814.c:
 	.text       start:0x801C4814 end:0x801C4C98

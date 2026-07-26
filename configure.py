@@ -4465,6 +4465,34 @@ config.libs = [
             ),
             Object(
                 CodeCandidate,
+                "game/effect/fade_r42_801C41C8_gc125n.c",
+                mw_version="GC/1.2.5n",
+                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                progress_category="game",
+            ),
+            Object(
+                CodeCandidate,
+                "game/effect/fade_r42_801C423C.c",
+                mw_version="GC/1.3",
+                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                progress_category="game",
+            ),
+            Object(
+                CodeCandidate,
+                "game/effect/fade_candidate_801C43F4_r42_801C43F4_gc125n.c",
+                mw_version="GC/1.2.5n",
+                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                progress_category="game",
+            ),
+            Object(
+                CodeCandidate,
+                "game/effect/fade_candidate_801C43F4_r42_801C47D0.c",
+                mw_version="GC/1.3",
+                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                progress_category="game",
+            ),
+            Object(
+                CodeCandidate,
                 "game/gs_range_801C766C.c",
                 mw_version="GC/1.3",
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
@@ -5896,7 +5924,6 @@ config.libs = [
                     (Matching, "game/effect/fade_exact_801C431C.c"),
                     (CodeCandidate, "game/effect/fade_candidate_801C432C.c"),
                     (Matching, "game/effect/fade_exact_801C43E4.c"),
-                    (CodeCandidate, "game/effect/fade_candidate_801C43F4.c"),
                 ]
             ],
             *[
