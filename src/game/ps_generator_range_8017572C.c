@@ -117,6 +117,62 @@ void psKillAllGenerator(void) {
 #pragma pop
 
 /*
+ * Kills every active generator in one family.  Like psKillGenerator, entries
+ * with live dependants are converted to one-frame generators instead of
+ * being unlinked immediately.
+ */
+void psKillGeneratorID(s32 familyId) {
+    PSGeneratorKillNode* current = (PSGeneratorKillNode*)lbl_8047B188;
+    u16 id = (u16)familyId;
+
+    lbl_8047B184 = NULL;
+    while (current != NULL) {
+        PSGeneratorKillNode* next = current->next;
+
+        if (current->familyId == id) {
+            PSGeneratorKillNode* previous =
+                (PSGeneratorKillNode*)lbl_8047B184;
+
+            if (current->generatorFlags & 0x80) {
+                psKillGeneratorChild(current);
+            }
+
+            if (current->childCount != 0) {
+                current->age = lbl_8047D6B0;
+                current->life = 1;
+                previous = current;
+            } else if ((current->generatorFlags & 0x3800) != 0 &&
+                       current->appSRT != NULL &&
+                       current->appSRT->owner == current &&
+                       current->appSRT->refCount != 1) {
+                current->age = lbl_8047D6B0;
+                current->life = 1;
+                previous = current;
+            } else {
+                if (previous == NULL) {
+                    lbl_8047B188 = current->next;
+                } else {
+                    previous->next = current->next;
+                }
+
+                if (current->appSRT != NULL) {
+                    psRemoveGeneratorAppSRT(current);
+                }
+
+                current->next = (PSGeneratorKillNode*)lbl_8047B18C;
+                lbl_8047B18C = current;
+                lbl_8047B118--;
+            }
+            lbl_8047B184 = previous;
+        } else {
+            lbl_8047B184 = current;
+        }
+
+        current = next;
+    }
+}
+
+/*
  * Removes one generator from the active list, or marks it to expire when
  * children/application-SRT ownership still keep it alive.  Verified against
  * the retail function at 0x80175A1C and the matching Pokemon XD implementation.
