@@ -237,7 +237,7 @@ u32 GSpartGetMaterialCount(GSpart* part)
     return result;
 }
 
-BOOL fn_800EE7E0(GSpart* part)
+u8 fn_800EE7E0(GSpart* part)
 {
     u8* jobj = part->jobj;
     u8* material;
@@ -245,7 +245,11 @@ BOOL fn_800EE7E0(GSpart* part)
 
     if (union_type_dobj((HSD_JObj*)jobj)) {
         material = *(u8**)(jobj + 0x18);
-        value = material != NULL ? *(u32*)(material + 0xC) : 0;
+        if (material != NULL) {
+            value = *(u32*)(material + 0xC);
+        } else {
+            value = 0;
+        }
     } else {
         value = 0;
     }
