@@ -4,9 +4,12 @@ on:
   push:
   pull_request:
 
-# The chart commit on master needs write access; everything else is read-only.
+# The chart commit on master needs write access. An explicit block replaces the
+# default scopes wholesale, so packages: read must be restated here or the
+# private build container can no longer be pulled.
 permissions:
   contents: write
+  packages: read
 
 jobs:
   build:
