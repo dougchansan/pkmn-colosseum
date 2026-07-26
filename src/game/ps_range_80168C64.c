@@ -66,6 +66,7 @@
  */
 #include "dolphin/types.h"
 #include "dolphin/mtx.h"
+#include "dolphin/gx/GXInternal.h"
 #include "game/ps_types.h"
 #include "game/script/script.h"
 #include "hsd/hsd_object.h"
@@ -136,6 +137,7 @@ extern u16 lbl_8047B116;
 extern u16 lbl_8047B120;
 extern u16 lbl_8047B11A;
 extern u8 lbl_80478C30;
+extern s32 lbl_8047B12C;
 
 /* ======================================================================
  * External functions - real symbol names per config/GC6E01/symbols.txt.
@@ -193,6 +195,10 @@ extern void PSVECNormalize(const Vec* src, Vec* dst);
 extern void PSVECCrossProduct(const Vec* a, const Vec* b, Vec* out);
 extern void HSD_CObjGetUpVector(void* camera, Vec* up);
 extern f32 lbl_8047D6B4;
+extern void fn_800BD554(s32 mode);
+extern void fn_800B7D3C(void);
+extern void fn_800B7874(s32 attribute, s32 type);
+extern void fn_800B928C(s32 primitive, s32 format, s32 count);
 
 #if !defined(PR410_PS_SPLIT) || defined(PR410_PS_PREFIX)
 
@@ -1769,6 +1775,63 @@ void psDispSubAppSRT(PSParticle* pp, Mtx parentMatrix) {
 
     appSRT->flags = lbl_80478C30;
     PSMTXCopy(appSRT->matrix, appMatrix);
+}
+
+/*
+ * Emits one particle polygon. The geometry modes remain asm-only; this
+ * verified entry gate is shared by every mode at 0x8016C1E0-0x8016C240.
+ */
+void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
+                          f32 centerX, f32 centerY, f32 centerZ,
+                          f32 velocityX, f32 velocityY, f32 velocityZ,
+                          f32 axisXX, f32 axisXY, f32 axisXZ,
+                          f32 axisYX, f32 axisYY, f32 axisYZ) {
+    if (lbl_8047B12C != 0) {
+        lbl_8047B12C = 0;
+        fn_800BD554(0);
+    }
+
+    if ((pp->flags & 0x100000) == 0 && polygonData == NULL) {
+        u32 textureIndex = (pp->flags >> 14) & 3;
+
+        fn_800B7D3C();
+        fn_800B7874(9, 1);
+        if (pp->flags & 0x400) {
+            fn_800B7874(13, 2);
+            fn_800B928C(0x80, 0, 4);
+        } else {
+            fn_800B928C(0x80, 1, 4);
+        }
+
+        GX_FIFO_F32 = centerX - axisXX;
+        GX_FIFO_F32 = centerY - axisXY;
+        GX_FIFO_F32 = centerZ - axisXZ;
+        if (pp->flags & 0x400) {
+            GX_FIFO_U8 = textureIndex;
+        }
+
+        GX_FIFO_F32 = centerX - axisYX;
+        GX_FIFO_F32 = centerY - axisYY;
+        GX_FIFO_F32 = centerZ - axisYZ;
+        if (pp->flags & 0x400) {
+            GX_FIFO_U8 = textureIndex + 1;
+        }
+
+        GX_FIFO_F32 = centerX + axisXX;
+        GX_FIFO_F32 = centerY + axisXY;
+        GX_FIFO_F32 = centerZ + axisXZ;
+        if (pp->flags & 0x400) {
+            GX_FIFO_U8 = textureIndex + 2;
+        }
+
+        GX_FIFO_F32 = centerX + axisYX;
+        GX_FIFO_F32 = centerY + axisYY;
+        GX_FIFO_F32 = centerZ + axisYZ;
+        if (pp->flags & 0x400) {
+            GX_FIFO_U8 = textureIndex + 3;
+        }
+        return;
+    }
 }
 
 /*
