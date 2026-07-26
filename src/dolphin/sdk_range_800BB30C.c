@@ -394,10 +394,10 @@ void fn_800BBFDC(u32 dstCoord) {
 }
 
 void fn_800BC024(void) {
-    u32 mask = 0;
+    u32 nIndStages;
     u32 i;
     u32 texMap;
-    u32 nIndStages;
+    u32 mask = 0;
 
     nIndStages = (gx->genMode >> 16) & 7;
     for (i = 0; i < nIndStages; i++) {

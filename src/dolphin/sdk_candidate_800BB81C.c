@@ -144,11 +144,9 @@ void fn_800BBCE0(u32 tev_stage, u32 ind_stage, u16 tilesize_s,
     }
 
     mtx[0][0] = tilespacing_s / 1024.0f;
-    mtx[0][1] = 0.0f;
-    mtx[0][2] = 0.0f;
-    mtx[1][0] = 0.0f;
+    mtx[0][1] = mtx[0][2] = 0.0f;
     mtx[1][1] = tilespacing_t / 1024.0f;
-    mtx[1][2] = 0.0f;
+    mtx[1][0] = mtx[1][2] = 0.0f;
     fn_800BB81C(matrix_sel, mtx, 10);
     fn_800BB780(tev_stage, ind_stage, format, bias_sel, matrix_sel, wrap_s,
                 wrap_t, 0, 1, alpha_sel);
