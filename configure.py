@@ -1519,8 +1519,8 @@ config.libs = [
             Object(
                 CodeCandidate,
                 "musyx/musyx_r51_80164C40_suffix.c",
-                mw_version="GC/1.3.2",
-                cflags=["-O3" if flag == "-O4,p" else flag for flag in cflags_base],
+                mw_version="GC/1.3",
+                cflags=["-O2" if flag == "-O4,p" else flag for flag in cflags_base],
                 extra_cflags=["-use_lmw_stmw off", "-sdata 8", "-sdata2 8"],
                 progress_category="musyx",
             ),
@@ -4028,8 +4028,8 @@ config.libs = [
             Object(
                 CodeCandidate,
                 "dolphin/sdk_r52_800C483C_o3.c",
-                mw_version="GC/1.2.5n",
-                cflags=["-O3" if flag == "-O4,p" else flag for flag in cflags_base],
+                mw_version="GC/1.3.2",
+                cflags=["-O2" if flag == "-O4,p" else flag for flag in cflags_base],
                 progress_category="sdk",
             ),
             Object(
@@ -4041,8 +4041,8 @@ config.libs = [
             Object(
                 CodeCandidate,
                 "dolphin/sdk_r52_800C4A60_o3.c",
-                mw_version="GC/1.2.5n",
-                cflags=["-O3" if flag == "-O4,p" else flag for flag in cflags_base],
+                mw_version="GC/1.3.2",
+                cflags=["-O2" if flag == "-O4,p" else flag for flag in cflags_base],
                 progress_category="sdk",
             ),
             Object(
@@ -4075,7 +4075,7 @@ config.libs = [
                 CodeCandidate,
                 "dolphin/sdk_r52_800C4CC0_o3.c",
                 mw_version="GC/1.3",
-                cflags=["-O3" if flag == "-O4,p" else flag for flag in cflags_base],
+                cflags=["-O2" if flag == "-O4,p" else flag for flag in cflags_base],
                 progress_category="sdk",
             ),
             Object(
@@ -4750,7 +4750,8 @@ config.libs = [
             Object(
                 CodeCandidate,
                 "hsd/hsd_tobj_candidate_801BBDDC_r41_801BDD74_gc125n.c",
-                mw_version="GC/1.2.5n",
+                mw_version="GC/1.3",
+                cflags=["-O4,s" if flag == "-O4,p" else flag for flag in cflags_base],
                 extra_cflags=["-use_lmw_stmw on", "-fp_contract off"],
                 progress_category="hsd",
             ),
@@ -9230,7 +9231,8 @@ config.libs = [
             Object(
                 CodeCandidate,
                 "hsd/hsd_jobj_candidate_8019DD00_gc125.c",
-                mw_version="GC/1.2.5n",
+                mw_version="GC/1.1p1",
+                cflags=["-O4,s" if flag == "-O4,p" else flag for flag in cflags_base],
                 extra_cflags=["-DHSD_JOBJ_OMIT_EXACT_8019F718", "-inline deferred"],
                 progress_category="hsd",
             ),
@@ -9765,7 +9767,8 @@ config.libs = [
             Object(
                 CodeCandidate,
                 "hsd/hsd_texp_candidate_801B4614_gc20.c",
-                mw_version="GC/2.0",
+                mw_version="GC/1.3",
+                cflags=["-O4,s" if flag == "-O4,p" else flag for flag in cflags_base],
                 progress_category="hsd",
             ),
             Object(
@@ -9828,7 +9831,7 @@ config.libs = [
             Object(
                 CodeCandidate,
                 "hsd/hsd_texp_r47_prefix.c",
-                mw_version="GC/1.3",
+                mw_version="GC/1.1p1",
                 progress_category="hsd",
             ),
             Object(
