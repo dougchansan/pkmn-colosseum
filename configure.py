@@ -3003,7 +3003,7 @@ config.libs = [
                 CodeCandidate,
                 "dolphin/sdk_range_800B4488.c",
                 mw_version="GC/1.2.5n",
-                extra_cflags=["-inline noauto"],
+
                 progress_category="sdk",
             ),
             Object(
