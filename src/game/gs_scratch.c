@@ -221,10 +221,10 @@ u32 GSscratchStore(void *dest, void *src, u32 len)
     if (LCQueueLength() >= 15) {
         return 1;
     }
-    if (((u32)src & 0x1F) != 0) {
+    if (((u32)dest & 0x1F) != 0) {
         return 2;
     }
-    if (((u32)dest & 0x1F) != 0) {
+    if (((u32)src & 0x1F) != 0) {
         return 2;
     }
     if ((len & 0x1F) != 0) {
