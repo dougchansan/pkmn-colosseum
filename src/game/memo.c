@@ -197,7 +197,7 @@ void memoGetScaleAngle(u16 r3, f32 *r4, f32 *r5)
 }
 
 /* Address: 0x8025FBCC | Size: 0x168 | Ghidra import */
-void memoInitDebug(int r3)
+void memoInitDebug(u32 r3)
 
 {
   u16 *puVar1;
