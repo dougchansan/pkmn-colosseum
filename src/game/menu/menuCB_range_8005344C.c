@@ -226,6 +226,37 @@ s32 fn_8005344C(MenuCBPane* pane, MenuCBPane* sprite) {
 }
 #pragma pop
 
+typedef struct MenuCBTweenFrame {
+    s16 x;
+    s16 y;
+    s16 width;
+    s16 height;
+    s32 alpha;
+} MenuCBTweenFrame;
+
+extern const MenuCBTweenFrame lbl_80267338[2];
+
+s32 fn_8005351C(MenuCBPane* pane, MenuCBPane* sprite)
+{
+    const MenuCBTweenFrame* start = &lbl_80267338[0];
+    const MenuCBTweenFrame* end = &lbl_80267338[1];
+    f32 amount = lbl_8047A540;
+    u8 visible = fn_80057E40(pane) != 2;
+
+    winSpriteSetDisp(sprite, visible);
+    if (visible) {
+        sprite->x = (s16)(start->x + amount * (end->x - start->x));
+        sprite->y = (s16)(start->y + amount * (end->y - start->y));
+        sprite->width =
+            (s16)(start->width + amount * (end->width - start->width));
+        sprite->height =
+            (s16)(start->height + amount * (end->height - start->height));
+        sprite->alpha =
+            (u8)(start->alpha + amount * (end->alpha - start->alpha));
+    }
+    return 0;
+}
+
 #pragma push
 #pragma peephole off
 s32 fn_80053728(MenuCBPane* pane, MenuCBPane* sprite) {

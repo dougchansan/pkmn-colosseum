@@ -378,6 +378,7 @@ s32 fn_8004E144(void* window, PdaMailSpinWork* sprite)
     }
     return 0;
 }
+
 #endif
 
 /* pdaMailGetMailID: byte-size-matches XD's pdaMailGetMailID (0x50)
@@ -2104,4 +2105,62 @@ s32 fn_8004E510(u8* context, u8* object)
     fn_800D59B8(0, lbl_8047BE4C, lbl_8047BE4C);
     fn_800D6728();
     return 0;
+}
+
+void fn_8004C120(void)
+{
+    extern u16 _toolentryAlloc__FUl(u32);
+    extern void* fn_800E27B0(u16);
+    extern void fn_800E24B0(u16);
+    extern void fn_800E209C(u16);
+    extern s32 fn_8004D34C(s32);
+    s32 selection = 0;
+    s32 count = mailGetNbMailInMailbox();
+    u16 allocation = 0;
+    u16* output;
+    s32 i;
+
+    if (count > 0) {
+        allocation = _toolentryAlloc__FUl(count * sizeof(u16));
+        lbl_8047A500 = fn_800E27B0(allocation);
+        output = lbl_8047A500;
+
+        switch (mailGetSortMode()) {
+        case 1:
+            for (i = 0; i < mailGetNbMailInMailbox(); i++) {
+                *output++ = mailGetMailIDInMailbox(i);
+            }
+            break;
+        case 2:
+            for (i = 0; i < count; i++) {
+                *output++ = mailGetMailIDInMailbox(i);
+            }
+            qsort(lbl_8047A500, count, sizeof(u16),
+                  (s32 (*)(const void*, const void*))fn_8004BF20);
+            break;
+        case 3:
+            for (i = 0; i < count; i++) {
+                *output++ = mailGetMailIDInMailbox(i);
+            }
+            qsort(lbl_8047A500, count, sizeof(u16),
+                  (s32 (*)(const void*, const void*))fn_8004BE90);
+            break;
+        default:
+            for (i = mailGetNbMailInMailbox() - 1; i >= 0; i--) {
+                *output++ = mailGetMailIDInMailbox(i);
+            }
+            break;
+        }
+    } else {
+        lbl_8047A500 = NULL;
+    }
+
+    while (fn_8004D34C(selection) >= 0) {
+        selection = fn_8004D9C0(selection);
+    }
+
+    if (count > 0) {
+        fn_800E24B0(allocation);
+        fn_800E209C(allocation);
+    }
 }

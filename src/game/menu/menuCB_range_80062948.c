@@ -103,6 +103,73 @@ extern u32 lbl_8047BFCC;
 extern f32 lbl_8047BFD0;
 extern f32 lbl_8047BFD4;
 
+typedef struct MenuCBBattleEntryContext {
+    s32 field_00;
+    s32 mode;
+} MenuCBBattleEntryContext;
+
+s32 fn_80062948(MenuCBBattleEntryContext* context)
+{
+    extern void menuCBBattleStartInit(void*, s32);
+    extern s32 fn_8025D9A8(void);
+    extern s32 fn_80063060(void*);
+    extern s32 fn_80062AB4(void*);
+    extern s32 menuOpen(s32, s32);
+    extern void menuCloseCustom(s32, s32, s32);
+    extern void winSeqSetMenu(s32, s32);
+    extern u8 winSeqCheckMove(s32);
+    extern void toolentryCopyHero(void);
+    extern void menuCBPokemonEntryTexWorkInit(void);
+    extern void menuCBBattleStartTrainerFaceFree(void);
+    extern void fn_80061028(s32);
+    s32 result;
+    s32 battleMode;
+
+    menuCBBattleStartInit(context, 1);
+    battleMode = fn_8025D9A8();
+    toolentryTaisenGetBattleType();
+
+    switch (battleMode) {
+    case 0:
+    case 1:
+        result = fn_80063060(context);
+        break;
+    case 3:
+        menuOpen(0xDF, 0);
+        menuOpen(0xBA, 1);
+        result = menuOpen(0x106, 1);
+        if (context->mode != 2 && result > 0) {
+            result++;
+        }
+        if (result == 0) {
+            toolentryCopyHero();
+            result = 0xD1;
+        } else {
+            result = -1;
+        }
+        menuCloseCustom(0x106, 0, 1);
+        break;
+    default:
+        result = fn_80062AB4(context);
+        break;
+    }
+
+    winSeqSetMenu(0xDF, 0x1C6);
+    winSeqSetMenu(0xBA, 0x1C6);
+    while (winSeqCheckMove(0xDF)) {
+        _threadSwitch();
+    }
+    while (winSeqCheckMove(0xBA)) {
+        _threadSwitch();
+    }
+
+    menuCBPokemonEntryTexWorkInit();
+    menuCBBattleStartTrainerFaceFree();
+    fn_80061028(1);
+    menuCloseCustom(0xDF, 0, 1);
+    return result;
+}
+
 void fn_800637B0(void)
 {
     s32 player;
