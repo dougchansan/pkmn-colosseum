@@ -32,20 +32,29 @@ void fn_800BB81C(u32 mtx_id, const f32 offset[2][3], s8 scale_exp)
     mtx[0] = (s32) (1024.0f * offset[0][0]) & 0x7FF;
     mtx[1] = (s32) (1024.0f * offset[1][0]) & 0x7FF;
     scale_exp += 17;
-    reg = mtx[0] | (mtx[1] << 11) | ((scale_exp & 3) << 22) |
-          ((id * 3 + 6) << 24);
+    reg = 0;
+    reg = (reg & ~0x7FFU) | (mtx[0] & 0x7FF);
+    reg = (reg & ~0x3FF800U) | ((mtx[1] << 11) & 0x3FF800);
+    reg = (reg & ~0xC00000U) | ((scale_exp & 3) << 22);
+    reg = (reg & 0xFFFFFFU) | ((id * 3 + 6) << 24);
     GX_BP_REG(reg);
 
     mtx[2] = (s32) (1024.0f * offset[0][1]) & 0x7FF;
     mtx[3] = (s32) (1024.0f * offset[1][1]) & 0x7FF;
-    reg = mtx[2] | (mtx[3] << 11) | (((scale_exp >> 2) & 3) << 22) |
-          ((id * 3 + 7) << 24);
+    reg = 0;
+    reg = (reg & ~0x7FFU) | (mtx[2] & 0x7FF);
+    reg = (reg & ~0x3FF800U) | ((mtx[3] << 11) & 0x3FF800);
+    reg = (reg & ~0xC00000U) | (((scale_exp >> 2) & 3) << 22);
+    reg = (reg & 0xFFFFFFU) | ((id * 3 + 7) << 24);
     GX_BP_REG(reg);
 
     mtx[4] = (s32) (1024.0f * offset[0][2]) & 0x7FF;
     mtx[5] = (s32) (1024.0f * offset[1][2]) & 0x7FF;
-    reg = mtx[4] | (mtx[5] << 11) | (((scale_exp >> 4) & 3) << 22) |
-          ((id * 3 + 8) << 24);
+    reg = 0;
+    reg = (reg & ~0x7FFU) | (mtx[4] & 0x7FF);
+    reg = (reg & ~0x3FF800U) | ((mtx[5] << 11) & 0x3FF800);
+    reg = (reg & ~0xC00000U) | (((scale_exp >> 4) & 3) << 22);
+    reg = (reg & 0xFFFFFFU) | ((id * 3 + 8) << 24);
     GX_BP_REG(reg);
     gx->field_002 = 0;
 }
