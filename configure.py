@@ -10345,12 +10345,14 @@ config.libs = [
                 "hsd/hsd_texp_candidate_801B4614_gc20.c",
                 mw_version="GC/1.3",
                 cflags=["-O4,s" if flag == "-O4,p" else flag for flag in cflags_base],
+                extra_cflags=["-use_lmw_stmw on"],
                 progress_category="hsd",
             ),
             Object(
                 CodeCandidate,
                 "hsd/hsd_texp_candidate_801B4B5C.c",
-                mw_version="GC/1.2.5n",
+                mw_version="GC/1.1p1",
+                cflags=["-O0" if flag == "-O4,p" else flag for flag in cflags_base],
                 progress_category="hsd",
             ),
             Object(
