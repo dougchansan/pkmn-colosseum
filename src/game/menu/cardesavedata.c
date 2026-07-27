@@ -4588,6 +4588,8 @@ static inline u8* cardEGetCell(u8* card, s8 pageIndex, s8 row, s8 column)
 
 u32 fn_80080ED8(u16* destination, const u8* source)
 {
+    extern const u16 lbl_80269B68[];
+    extern const u16 lbl_8026C7F8[];
     const u8* cursor;
     u32 length = 0;
 
@@ -4610,13 +4612,29 @@ u32 fn_80080ED8(u16* destination, const u8* source)
 
     cursor = source;
     while (*cursor != 0) {
-        u16 character = *cursor++;
+        u16 character = *cursor;
 
-        if (character >= 0xA1 && character <= 0xDF) {
-            character = (u16)(character + 0xFEC0);
+        if ((character >= 0x81 && character <= 0x9F) ||
+            (character >= 0xE0 && character <= 0xFC)) {
+            u8 trail = cursor[1];
+
+            if (character <= 0x9F) {
+                character = lbl_80269B68[
+                    (character - 0x81) * 0xB8 + trail - 0x40];
+            } else {
+                character = lbl_8026C7F8[
+                    (character - 0xE0) * 0xB8 + trail - 0x40];
+            }
+            cursor += 2;
+            length += 2;
+        } else {
+            cursor++;
+            length++;
+            if (character >= 0xA1 && character <= 0xDF) {
+                character = (u16)(character + 0xFEC0);
+            }
         }
         *destination++ = character;
-        length++;
     }
     *destination = 0;
     return length;
@@ -4624,14 +4642,38 @@ u32 fn_80080ED8(u16* destination, const u8* source)
 
 u32 fn_80082738(u8* card, const u8* window, s8 pageIndex)
 {
+    extern char lbl_8026F1C8[];
+    extern char lbl_8026F1D8[];
+    extern char lbl_8047C180[] __attribute__((section(".sdata2")));
+    extern char lbl_8047C188[] __attribute__((section(".sdata2")));
     u8* page;
     u8* cell;
     s32 count;
     s32 i;
+    s8 row = (s8)window[0x24];
+    s8 column = (s8)window[0x26];
 
+    if (card[0x1A] != window[8]) {
+        __assert(lbl_8026F1C8, 0x225, lbl_8026F1C8 + 0x38);
+    }
+    if (card == NULL) {
+        __assert(lbl_8026F1C8, 0x17F, lbl_8047C180);
+    }
+    if (pageIndex < 0 || pageIndex >= (s8)card[0x1B]) {
+        __assert(lbl_8026F1C8, 0x180, lbl_8026F1D8);
+    }
     page = cardEGetPage(card, pageIndex);
+    if (page == NULL) {
+        __assert(lbl_8026F1C8, 0x198, lbl_8047C188);
+    }
+    if (row >= (s8)card[0x1C]) {
+        __assert(lbl_8026F1C8, 0x199, lbl_8026F1C8 + 0x68);
+    }
+    if (column >= (s8)card[0x1D]) {
+        __assert(lbl_8026F1C8, 0x19A, lbl_8026F1C8 + 0x80);
+    }
     cell = page + 0x76 +
-        ((s8)window[0x24] * (s8)card[0x1D] + (s8)window[0x26]) * 0x10;
+        (row * (s8)card[0x1D] + column) * 0x10;
     *(u16*)cell = 0;
     cell[0x0C] = 0;
 
@@ -4651,8 +4693,27 @@ u32 fn_80082738(u8* card, const u8* window, s8 pageIndex)
 
 void fn_80082960(u8* card, const u8* window, s8 pageIndex)
 {
-    u8* page = cardEGetPage(card, pageIndex);
-    u8* entry = page + 0x10 + (s8)window[0x24] * 0x0E;
+    extern char lbl_8026F1C8[];
+    extern char lbl_8026F1D8[];
+    extern char lbl_8047C180[] __attribute__((section(".sdata2")));
+    extern char lbl_8047C188[] __attribute__((section(".sdata2")));
+    u8* page;
+    u8* entry;
+
+    if (card[0x1A] != window[8]) {
+        __assert(lbl_8026F1C8, 0x209, lbl_8026F1C8 + 0x38);
+    }
+    if (card == NULL) {
+        __assert(lbl_8026F1C8, 0x17F, lbl_8047C180);
+    }
+    if (pageIndex < 0 || pageIndex >= (s8)card[0x1B]) {
+        __assert(lbl_8026F1C8, 0x180, lbl_8026F1D8);
+    }
+    page = cardEGetPage(card, pageIndex);
+    if (page == NULL) {
+        __assert(lbl_8026F1C8, 0x20C, lbl_8047C188);
+    }
+    entry = page + 0x10 + (s8)window[0x24] * 0x0E;
 
     *(u16*)entry = 0;
     entry[0x0C] = 0;
@@ -4660,10 +4721,25 @@ void fn_80082960(u8* card, const u8* window, s8 pageIndex)
 
 u32 fn_80082A88(u8* card, s8 pageIndex)
 {
-    u8* page = cardEGetPage(card, pageIndex);
-    s32 count = (s8)card[0x1C] * (s8)card[0x1D];
+    extern char lbl_8026F1C8[];
+    extern char lbl_8026F1D8[];
+    extern char lbl_8047C180[] __attribute__((section(".sdata2")));
+    extern char lbl_8047C188[] __attribute__((section(".sdata2")));
+    u8* page;
+    s32 count;
     s32 i;
 
+    if (card == NULL) {
+        __assert(lbl_8026F1C8, 0x17F, lbl_8047C180);
+    }
+    if (pageIndex < 0 || pageIndex >= (s8)card[0x1B]) {
+        __assert(lbl_8026F1C8, 0x180, lbl_8026F1D8);
+    }
+    page = cardEGetPage(card, pageIndex);
+    if (page == NULL) {
+        __assert(lbl_8026F1C8, 0x1F1, lbl_8047C188);
+    }
+    count = (s8)card[0x1C] * (s8)card[0x1D];
     for (i = 0; i < count; i++) {
         if (page[0x82 + i * 0x10] != 0) {
             return 1;
@@ -4675,11 +4751,29 @@ u32 fn_80082A88(u8* card, s8 pageIndex)
 u8* fn_80082BA4(u8* card, const u8* window, s8 pageIndex)
 {
     extern void fn_800CAA3C(void*, const void*);
-    u8* page = cardEGetPage(card, pageIndex);
-    u8* entry = page + 0x10 + (s8)window[0x24] * 0x0E;
-    const u8* descriptor =
-        window + 0x3AC + (s8)window[0x5E + pageIndex] * 0x28;
+    extern char lbl_8026F1C8[];
+    extern char lbl_8026F1D8[];
+    extern char lbl_8047C180[] __attribute__((section(".sdata2")));
+    extern char lbl_8047C188[] __attribute__((section(".sdata2")));
+    u8* page;
+    u8* entry;
+    const u8* descriptor;
 
+    if (card[0x1A] != window[8]) {
+        __assert(lbl_8026F1C8, 0x1D1, lbl_8026F1C8 + 0x38);
+    }
+    if (card == NULL) {
+        __assert(lbl_8026F1C8, 0x17F, lbl_8047C180);
+    }
+    if (pageIndex < 0 || pageIndex >= (s8)card[0x1B]) {
+        __assert(lbl_8026F1C8, 0x180, lbl_8026F1D8);
+    }
+    page = cardEGetPage(card, pageIndex);
+    if (page == NULL) {
+        __assert(lbl_8026F1C8, 0x1D4, lbl_8047C188);
+    }
+    entry = page + 0x10 + (s8)window[0x24] * 0x0E;
+    descriptor = window + 0x3AC + (s8)window[0x5E + pageIndex] * 0x28;
     fn_800CAA3C(entry, descriptor);
     entry[0x0C] = 1;
     return page;
@@ -4688,19 +4782,41 @@ u8* fn_80082BA4(u8* card, const u8* window, s8 pageIndex)
 u8* fn_80082CF0(u8* card, const u8* window, s8 pageIndex)
 {
     extern void fn_800CAA3C(void*, const void*);
+    extern char lbl_8026F1C8[];
+    extern char lbl_8026F1D8[];
+    extern char lbl_8047C180[] __attribute__((section(".sdata2")));
+    extern char lbl_8047C188[] __attribute__((section(".sdata2")));
     s32 pageSize;
     u8* page;
     s32 index;
     s8 row = (s8)window[0x24];
     s8 column = (s8)window[0x26];
     u8* cell;
-    const u8* descriptor =
-        window + 0x3AC + (s8)window[0x5B + pageIndex] * 0x28;
+    const u8* descriptor;
 
+    if (card[0x1A] != window[8]) {
+        __assert(lbl_8026F1C8, 0x1B0, lbl_8026F1C8 + 0x38);
+    }
+    if (card == NULL) {
+        __assert(lbl_8026F1C8, 0x17F, lbl_8047C180);
+    }
+    if (pageIndex < 0 || pageIndex >= (s8)card[0x1B]) {
+        __assert(lbl_8026F1C8, 0x180, lbl_8026F1D8);
+    }
     pageSize = (s8)card[0x1C] * (s8)card[0x1D] * 0x10 + 0x76;
     page = card + 0x24 + pageIndex * pageSize;
+    if (page == NULL) {
+        __assert(lbl_8026F1C8, 0x198, lbl_8047C188);
+    }
+    if (row >= (s8)card[0x1C]) {
+        __assert(lbl_8026F1C8, 0x199, lbl_8026F1C8 + 0x68);
+    }
+    if (column >= (s8)card[0x1D]) {
+        __assert(lbl_8026F1C8, 0x19A, lbl_8026F1C8 + 0x80);
+    }
     index = row * (s8)card[0x1D] + column;
     cell = page + 0x76 + index * 0x10;
+    descriptor = window + 0x3AC + (s8)window[0x5B + pageIndex] * 0x28;
 
     fn_800CAA3C(cell, descriptor);
     cell[0x0C] = 1;
@@ -4711,10 +4827,31 @@ u8* fn_80082CF0(u8* card, const u8* window, s8 pageIndex)
 
 u8* fn_80082EA4(u8* card, s8 pageIndex, s8 row, s8 column)
 {
-    s32 pageSize =
-        (s8)card[0x1C] * (s8)card[0x1D] * 0x10 + 0x76;
-    u8* page = card + 0x24 + pageIndex * pageSize;
-    s32 index = row * (s8)card[0x1D] + column;
+    extern char lbl_8026F1C8[];
+    extern char lbl_8026F1D8[];
+    extern char lbl_8047C180[] __attribute__((section(".sdata2")));
+    extern char lbl_8047C188[] __attribute__((section(".sdata2")));
+    s32 pageSize;
+    u8* page;
+    s32 index;
 
+    if (card == NULL) {
+        __assert(lbl_8026F1C8, 0x17F, lbl_8047C180);
+    }
+    if (pageIndex < 0 || pageIndex >= (s8)card[0x1B]) {
+        __assert(lbl_8026F1C8, 0x180, lbl_8026F1D8);
+    }
+    pageSize = (s8)card[0x1C] * (s8)card[0x1D] * 0x10 + 0x76;
+    page = card + 0x24 + pageIndex * pageSize;
+    if (page == NULL) {
+        __assert(lbl_8026F1C8, 0x198, lbl_8047C188);
+    }
+    if (row >= (s8)card[0x1C]) {
+        __assert(lbl_8026F1C8, 0x199, lbl_8026F1C8 + 0x68);
+    }
+    if (column >= (s8)card[0x1D]) {
+        __assert(lbl_8026F1C8, 0x19A, lbl_8026F1C8 + 0x80);
+    }
+    index = row * (s8)card[0x1D] + column;
     return page + 0x76 + index * 0x10;
 }
