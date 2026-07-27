@@ -1232,7 +1232,12 @@ config.libs = [
                 CodeCandidate,
                 "game/effect/effect_visual_candidate_8013DE6C_r41_8013E258.c",
                 mw_version="GC/1.3",
-                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                extra_cflags=[
+                    "-use_lmw_stmw on",
+                    "-sdata 8",
+                    "-sdata2 8",
+                    "-schedule off",
+                ],
                 progress_category="game",
             ),
             Object(
@@ -5993,7 +5998,12 @@ config.libs = [
                 "game/battle/battle_range_candidate_801EEB34.c",
                 mw_version="GC/1.3",
                 cflags=["-O1" if flag == "-O4,p" else flag for flag in cflags_base],
-                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                extra_cflags=[
+                    "-use_lmw_stmw on",
+                    "-sdata 8",
+                    "-sdata2 8",
+                    "-schedule on",
+                ],
                 progress_category="game",
             ),
             Object(
@@ -7462,7 +7472,7 @@ config.libs = [
                 "game/gba/gba_misc_r51_80089978_o2.c",
                 mw_version="GC/1.3",
                 cflags=["-O1" if flag == "-O4,p" else flag for flag in cflags_base],
-                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                extra_cflags=["-use_lmw_stmw off", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
             Object(
