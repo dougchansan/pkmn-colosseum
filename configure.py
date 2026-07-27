@@ -930,11 +930,44 @@ config.libs = [
                     status,
                     path,
                     mw_version="GC/1.3",
-                    extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                    extra_cflags=[
+                        "-use_lmw_stmw on",
+                        "-sdata 8",
+                        "-sdata2 8",
+                    ]
+                    + (
+                        ["-schedule on"]
+                        if path
+                        in {
+                            "game/dbgMenu_candidate_80133218.c",
+                            "game/dbgMenu_candidate_80133250.c",
+                            "game/dbgMenu_candidate_80133050.c",
+                            "game/dbgMenu_candidate_8013308C.c",
+                            "game/dbgMenu_candidate_801333AC.c",
+                            "game/dbgMenu_candidate_80133450.c",
+                            "game/dbgMenu_candidate_801334A8.c",
+                            "game/dbgMenu_candidate_801334DC.c",
+                            "game/dbgMenu_candidate_80133630.c",
+                        }
+                        else []
+                    ),
                     progress_category="game",
                 )
                 for status, path in [
-                    (CodeCandidate, "game/dbgMenu.c"),
+                    (CodeCandidate, "game/dbgMenu_r61_prefix_80132C6C.c"),
+                    (CodeCandidate, "game/dbgMenu_candidate_80133050.c"),
+                    (CodeCandidate, "game/dbgMenu_candidate_8013308C.c"),
+                    (CodeCandidate, "game/dbgMenu_r61_middle_801330C8.c"),
+                    (CodeCandidate, "game/dbgMenu_candidate_80133218.c"),
+                    (CodeCandidate, "game/dbgMenu_candidate_80133250.c"),
+                    (CodeCandidate, "game/dbgMenu_r61_middle_8013327C.c"),
+                    (CodeCandidate, "game/dbgMenu_candidate_801333AC.c"),
+                    (CodeCandidate, "game/dbgMenu_candidate_80133450.c"),
+                    (CodeCandidate, "game/dbgMenu_candidate_801334A8.c"),
+                    (CodeCandidate, "game/dbgMenu_candidate_801334DC.c"),
+                    (CodeCandidate, "game/dbgMenu_r61_middle_80133510.c"),
+                    (CodeCandidate, "game/dbgMenu_candidate_80133630.c"),
+                    (CodeCandidate, "game/dbgMenu_r61_suffix_80133664.c"),
                     (Matching, "game/dbgMenu_exact_801337A0.c"),
                     (CodeCandidate, "game/dbgMenu_candidate_801337E4.c"),
                 ]

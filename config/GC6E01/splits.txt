@@ -3376,8 +3376,47 @@ game/msgctrl_exact_80131F9C.c:
 game/msgctrl_candidate_80131FF4.c:
 	.text       start:0x80131FF4 end:0x80132C6C
 
-game/dbgMenu.c:
-	.text       start:0x80132C6C end:0x801337A0
+game/dbgMenu_r61_prefix_80132C6C.c:
+	.text       start:0x80132C6C end:0x80133050
+
+game/dbgMenu_candidate_80133050.c:
+	.text       start:0x80133050 end:0x8013308C
+
+game/dbgMenu_candidate_8013308C.c:
+	.text       start:0x8013308C end:0x801330C8
+
+game/dbgMenu_r61_middle_801330C8.c:
+	.text       start:0x801330C8 end:0x80133218
+
+game/dbgMenu_candidate_80133218.c:
+	.text       start:0x80133218 end:0x80133250
+
+game/dbgMenu_candidate_80133250.c:
+	.text       start:0x80133250 end:0x8013327C
+
+game/dbgMenu_r61_middle_8013327C.c:
+	.text       start:0x8013327C end:0x801333AC
+
+game/dbgMenu_candidate_801333AC.c:
+	.text       start:0x801333AC end:0x80133450
+
+game/dbgMenu_candidate_80133450.c:
+	.text       start:0x80133450 end:0x801334A8
+
+game/dbgMenu_candidate_801334A8.c:
+	.text       start:0x801334A8 end:0x801334DC
+
+game/dbgMenu_candidate_801334DC.c:
+	.text       start:0x801334DC end:0x80133510
+
+game/dbgMenu_r61_middle_80133510.c:
+	.text       start:0x80133510 end:0x80133630
+
+game/dbgMenu_candidate_80133630.c:
+	.text       start:0x80133630 end:0x80133664
+
+game/dbgMenu_r61_suffix_80133664.c:
+	.text       start:0x80133664 end:0x801337A0
 
 game/dbgMenu_exact_801337A0.c:
 	.text       start:0x801337A0 end:0x801337E4
