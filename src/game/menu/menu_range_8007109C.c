@@ -152,6 +152,26 @@ extern f32 lbl_8047C108;
 extern u8 lbl_8047C10C;
 extern u32 OSGetTick(void);
 extern void _threadSwitch(void);
+
+/* Retail inlines this wait loop into its callers rather than calling out to
+ * it: framescan shows fn_80078390 and fn_800788BC each hold lbl_8047C0E0 /
+ * lbl_8047C0E4 and the two int->float conversion biases in callee-saved FPRs
+ * (f27-f31), which only happens when the loop is in the function body. Ours
+ * emitted `bl MenuWaitMotionInterval` and saved no FPRs at all.
+ * The timer externs are declared in-body because the file-scope ones come
+ * later than the first call sites. */
+static inline void MenuWaitMotionInterval(void)
+{
+    extern u32 fn_800D3088(void);
+    extern s32 fn_800D37CC(void);
+    f32 elapsed;
+
+    elapsed = lbl_8047C0E0;
+    while (elapsed < lbl_8047C0E4) {
+        _threadSwitch();
+        elapsed += (f32)fn_800D3088() / (f32)fn_800D37CC();
+    }
+}
 extern void winMsgOpenField(s32, s32, s32);
 extern void winMsgOpen(s32, s32, s32, s32);
 extern void winMsgClose(s32);
