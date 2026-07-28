@@ -1422,6 +1422,10 @@ void fn_8004BFB0(void)
 
     switch (mode) {
     case 1: {
+        /* Retail emits mailGetMailIDInMailbox before mailGetNbMailInMailbox in
+         * this arm only: the count is re-read in the loop condition, and the
+         * top-test rotation puts the body first in memory. The other arms
+         * cache it and emit Nb first. */
         s32 i = 0;
         for (; i < mailGetNbMailInMailbox(); i++) {
             *buf++ = mailGetMailIDInMailbox(i);
@@ -2322,6 +2326,7 @@ void fn_8004C120(void)
         lbl_8047A500 = NULL;
     }
 
+    /* Retail emits fn_8004D34C before fn_8004D9C0: bottom-test rotation. */
     while (1) {
         if (fn_8004D34C(selection) < 0) {
             break;
