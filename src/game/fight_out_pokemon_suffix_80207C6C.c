@@ -660,6 +660,11 @@ void fightOutPokemonHokakuEffect(void* r3, u8 r4, u32 r5, u8 r6, u8* r7)
       else if (r7 != (void *)0) {
         fn_801DA224(iVar1,*r7);
       }
+      else {
+        if (r7 != (void *)0) {
+          fn_801DA224(iVar1,*r7);
+        }
+      }
     }
   }
   return;
