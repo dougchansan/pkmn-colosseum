@@ -30,6 +30,15 @@ os.chdir(ROOT)
 MIN_FUZZY = float(sys.argv[1]) if len(sys.argv) > 1 else 50.0
 MIN_SIZE = int(sys.argv[2]) if len(sys.argv) > 2 else 200
 
+# build/tools/ ships both a Linux ELF (`objdiff-cli`) and a Windows PE
+# (`objdiff-cli.exe`). Picking the extensionless one on Windows raises
+# "Exec format error" inside scan(), where a bare `except` turns the failure
+# into a clean-looking "0 functions" result. Resolve per platform.
+OBJDIFF = os.path.join('build', 'tools',
+                       'objdiff-cli.exe' if os.name == 'nt' else 'objdiff-cli')
+if not os.path.exists(OBJDIFF):
+    sys.exit('objdiff-cli not found at %s — run `ninja` first' % OBJDIFF)
+
 sym = {}
 for line in open('config/GC6E01/symbols.txt'):
     m = re.match(r'(\S+) = \.text:0x([0-9A-Fa-f]{8});', line)
@@ -57,17 +66,21 @@ for u in report['units']:
         units.append((u['name'], sel))
 
 
+FAILURES = []
+
+
 def scan(item):
     unit, sel = item
     try:
         out = subprocess.run(
-            ['build/tools/objdiff-cli', 'diff', '-p', '.', '-u', unit,
+            [OBJDIFF, 'diff', '-p', '.', '-u', unit,
              '-o', '-', '--format', 'json'],
             capture_output=True, text=True, timeout=120).stdout
         d = json.loads(out)
         idx = {s: {x['name']: x for x in d[s]['symbols']}
                for s in ('left', 'right')}
-    except Exception:
+    except Exception as e:
+        FAILURES.append((unit, '%s: %s' % (type(e).__name__, e)))
         return []
     rows = []
     for fn, pct, size in sel:
@@ -103,6 +116,12 @@ with ThreadPoolExecutor(max_workers=8) as ex:
 # Rank by expected value, not raw gap: a 4000-byte gap with 2 of 330 calls
 # displaced is almost entirely some other problem, and reordering wins little.
 rows.sort(reverse=True)
+if FAILURES:
+    # A silent extraction failure looks identical to a clean run. Say so loudly.
+    print('WARNING: %d of %d units failed to extract; results are INCOMPLETE'
+          % (len(FAILURES), len(units)))
+    for unit, err in FAILURES[:3]:
+        print('  %s -> %s' % (unit, err))
 print('%d functions with retail-matching call multiset but different order'
       % len(rows))
 print('%8s %8s %8s %6s  %-40s %s'
