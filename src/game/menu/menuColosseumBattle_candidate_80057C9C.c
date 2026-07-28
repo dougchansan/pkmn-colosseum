@@ -54,6 +54,8 @@ void fn_80057C9C(void* pokemon, void* callback, s32* navigation)
     fn_8017B1CC(0x66F);
     fn_800F915C(0x66F);
     fn_8017B3E4(0x70B);
+    /* Retail emits _threadSwitch before fn_8017B2CC here: top-test rotation,
+     * body first in memory. The comma form keeps status live for the return. */
     while (status = fn_8017B2CC(0x70B), status == 1) {
         _threadSwitch();
     }

@@ -3390,6 +3390,8 @@ void fn_8003F040(void) {
         for (j = gap; j < count; j++) {
             k = j - gap;
             p = base + k * 0x1a;
+            /* Retail emits the three memcpys before GScharCmp, i.e. the
+             * top-test rotation with the compare in the loop condition. */
             q = base + (k + gap) * 0x1a;
             while (k >= 0 &&
                    GScharCmp((u32)(p + 2), (u32)(q + 2)) >= 0) {
