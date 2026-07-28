@@ -2974,9 +2974,13 @@ void fn_80189490(u32 groupId, u32 index) {
         if (entry->field_94) {
             entry->field_94 = 0;
             if ((flags & 0x60) == 0x60) {
+                /* framescan: retail holds entry->field_98 in f31 across the
+                 * fn_8018FC2C call, so it is read before the call rather than
+                 * inline in the sum afterwards. */
+                f32 baseAngle = entry->field_98;
                 fn_8018FC2C(entry, &rotation);
                 entry->pad22 = 1;
-                entry->field_40 = rotation.y + entry->field_98;
+                entry->field_40 = rotation.y + baseAngle;
                 entry->field_44 = 0.0f;
             } else if (flags & 0x10) {
                 entry->threadHandle = entry->nextLink;
