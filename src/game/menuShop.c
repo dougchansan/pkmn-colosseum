@@ -1307,6 +1307,8 @@ asm void menuShopDrawListText(void) {
  * drawing a header icon and either a normal or alternate text string per slot,
  * then draws a trailing "add" or "locked" button if visual space remains.
  */
+#pragma push
+#pragma peephole off
 void menuShopDrawListText(void* arg0, u8* arg1)
 {
     extern void fn_800FE38C(s32, s32, s32, s32);
@@ -1487,6 +1489,7 @@ next_slot:
 
     fn_800FE35C();
 }
+#pragma pop
 #endif
 
 /* fn_8002B40C - 0x8002B40C | size: 0x188 */
