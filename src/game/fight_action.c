@@ -938,7 +938,9 @@ LAB_00209430:
         bVar2 = 0;
       }
       fightMenuOpenTrainerMsg(iVar9);
-      while (cVar14 = fn_801DA94C(uVar5,0x5f,4), cVar14 != 0) {
+      while (1) {
+        cVar14 = fn_801DA94C(uVar5,0x5f,4);
+        if (cVar14 == 0) break;
         _threadSwitch();
       }
       fightMenuCloseMsg();
@@ -959,7 +961,9 @@ LAB_00209430:
         bVar2 = 0;
       }
       fightMenuOpenTrainerMsg(0x766d);
-      while (cVar14 = fn_801DA94C(uVar5,uVar8 & 0xffff,4), cVar14 != 0) {
+      while (1) {
+        cVar14 = fn_801DA94C(uVar5,uVar8 & 0xffff,4);
+        if (cVar14 == 0) break;
         _threadSwitch();
       }
       fightMenuCloseMsg();
@@ -989,7 +993,9 @@ LAB_00209430:
     fn_801EF7C4(0);
     fn_801DA4E8(uVar4,1);
     fn_801DA9E8(uVar4,0x54,4);
-    while (cVar14 = fn_801DA94C(uVar4,0x54,4), cVar14 != 0) {
+    while (1) {
+      cVar14 = fn_801DA94C(uVar4,0x54,4);
+      if (cVar14 == 0) break;
       _threadSwitch();
     }
     fn_801EF7C4(0);
@@ -1003,7 +1009,9 @@ LAB_00209430:
       msgctrlSetValue(0x23,uVar3);
       fightMenuOpenTrainerMsg(0x766d);
     }
-    while (cVar14 = fn_801DA94C(uVar5,0x55,4), cVar14 != 0) {
+    while (1) {
+      cVar14 = fn_801DA94C(uVar5,0x55,4);
+      if (cVar14 == 0) break;
       _threadSwitch();
     }
     cVar14 = fightFloorGetStatus(0,0,0x33,0);
@@ -1012,7 +1020,9 @@ LAB_00209430:
     }
     fn_801EF7C4(1);
     fn_801DA9E8(uVar4,0x56,4);
-    while (cVar14 = fn_801DA94C(uVar4,0x56,4), cVar14 != 0) {
+    while (1) {
+      cVar14 = fn_801DA94C(uVar4,0x56,4);
+      if (cVar14 == 0) break;
       _threadSwitch();
     }
     fn_801DA8C4(uVar4,0x54,4);
