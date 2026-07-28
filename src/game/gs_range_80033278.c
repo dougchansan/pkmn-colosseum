@@ -167,6 +167,8 @@ void fn_800345A4(void* unused, u8* sprite) {
 }
 
 /* fn_80034708 - 0x80034708 | size: 0xB0 */
+#pragma push
+#pragma peephole off
 void fn_80034708(void* unused, u8* sprite) {
     extern u32 lbl_8047A458;
     extern u32 lbl_80266FA0[];
@@ -196,6 +198,7 @@ void fn_80034708(void* unused, u8* sprite) {
         winSpriteSetDisp(sprite, 0);
     }
 }
+#pragma pop
 
 /* fn_800347B8 - 0x800347B8 | size: 0xC */
 void fn_800347B8(void) {
