@@ -3283,9 +3283,11 @@ void fn_8002D154(s32 mapIndex, u8 colorIndex)
             selectedItem = lbl_8047A3F8;
         }
 
-        /* (3) empty selection -> back out and close the menu */
+        /* (3) empty selection -> back out and close the menu.
+         * Retail emits menuCloseCustom last in the function, so the body is
+         * out of line and the test branches to it. */
         if ((selectedItem & 0xffff) == 0) {
-            break;
+            goto close_and_return;
         }
 
         /* validate the item exists */
@@ -3384,6 +3386,8 @@ void fn_8002D154(s32 mapIndex, u8 colorIndex)
             }
         }
     }
+
+close_and_return:
     menuCloseCustom(0x60, 0, 1);
 }
 #endif
@@ -3780,7 +3784,8 @@ void fn_8002D91C(u32 arg0)
 
         } while (loop_state != 3);
 
-        /* Post-loop: close sub-dialogs based on type_byte */
+        /* Post-loop: close sub-dialogs based on type_byte.
+         * Retail emits the fn_8002A1C4 arm first, so the test is negated. */
         if (type_byte != 2 && type_byte != 3) {
             fn_8002A1C4((u8 *)(u32)arg0, 2, (s32)-1);
         } else {
