@@ -1518,8 +1518,15 @@ void GSmodelAddNull(GSmodel* model, const GSvec* position,
 
     if (!(model->flags.raw & GSMODEL_FLAG_ROOT_NULL_ADDED)) {
         GSvec oldPosition;
-        GSvec oldRotation;
         GSvec oldScale;
+        /* framescan: retail keeps root->rotation.{x,y,z} (0x1c/0x20/0x24) in
+         * f30/f29/f28 across every call between the read and the re-apply.
+         * A GSvec whose address is taken by GSMODEL_JOBJ_SET_ROTATION is
+         * pinned to the stack, so it can never land in an FPR: hold the
+         * components as scalars and set them component-wise instead. */
+        f32 oldRotX;
+        f32 oldRotY;
+        f32 oldRotZ;
 
         null = fn_8019F718();
         if (null == NULL) {
@@ -1537,15 +1544,15 @@ void GSmodelAddNull(GSmodel* model, const GSvec* position,
         if (root == NULL) {
             __assert(lbl_8047CB9C, 0x2EC, lbl_8047CBA4);
         }
-        oldRotation.x = root->rotation.x;
+        oldRotX = root->rotation.x;
         if (root == NULL) {
             __assert(lbl_8047CB9C, 0x2FA, lbl_8047CBA4);
         }
-        oldRotation.y = root->rotation.y;
+        oldRotY = root->rotation.y;
         if (root == NULL) {
             __assert(lbl_8047CB9C, 0x308, lbl_8047CBA4);
         }
-        oldRotation.z = root->rotation.z;
+        oldRotZ = root->rotation.z;
 
         if (root == NULL) {
             __assert(lbl_8047CB9C, 0x351, lbl_8047CBA4);
@@ -1593,7 +1600,9 @@ void GSmodelAddNull(GSmodel* model, const GSvec* position,
         fn_8019FE8C(null, HSD_JObjGetFlags(root));
 
         GSMODEL_JOBJ_SET_POSITION(null, &oldPosition);
-        GSMODEL_JOBJ_SET_ROTATION(null, &oldRotation);
+        GSMODEL_JOBJ_SET_ROTATION_COMPONENT(null, x, oldRotX, 0x2A4, 0x2A5);
+        GSMODEL_JOBJ_SET_ROTATION_COMPONENT(null, y, oldRotY, 0x2B8, 0x2B9);
+        GSMODEL_JOBJ_SET_ROTATION_COMPONENT(null, z, oldRotZ, 0x2CC, 0x2CD);
         GSMODEL_JOBJ_SET_SCALE(null, &oldScale);
 
         GSMODEL_JOBJ_FLUSH(root);
