@@ -1632,6 +1632,8 @@ asm void fn_8002B594(void) {
  * ENDIAN-QA: the asm uses the classic CW big-endian 0x4330/xoris double-word trick
  * to convert the two s16 fields to f32.  On x86 this is a plain (f32)(s16) cast.
  */
+#pragma push
+#pragma peephole off
 void fn_8002B594(void* ctx, u8* data, u32 sprite_id, u32 color_byte, f32 pos)
 {
     f32 thresholds[5];
@@ -1717,6 +1719,7 @@ void fn_8002B594(void* ctx, u8* data, u32 sprite_id, u32 color_byte, f32 pos)
     color |= (u8)color_byte;
     windowDrawSprite2(x, y, 2, 2, color, ctx, (u16)sprite_id, 0);
 }
+#pragma pop
 #endif
 
 /* fn_8002B880 - 0x8002B880 | size: 0x468 */
