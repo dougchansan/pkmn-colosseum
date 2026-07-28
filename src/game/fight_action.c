@@ -665,6 +665,7 @@ u32 fightActionFlowAllFightTrainerSelectFightAction(void* action) {
     void* slotData;
     void* entry;
 
+    /* Retail emits the menu-walk arm first and the loop call last. */
     checkResult = fn_80008174();
     if (checkResult == 1) {
         partyCount = fightFloorGetStatus(0, 0, 0x14, 0);
