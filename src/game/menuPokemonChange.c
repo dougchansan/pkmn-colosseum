@@ -1259,6 +1259,14 @@ void fn_8002EE74(void)
     void* node;
     void* child;
     f32   acc;
+    /* Retail keeps all four wait-loop constants in callee-saved FPRs across
+     * both loops (f27=B9D4, f28=B9DC, f29=B9E8, f31=B9E0); reading the globals
+     * inside each loop reloads them instead. Hoisting into locals makes them
+     * live across the calls, which is what forces the FPR saves. */
+    f32   waitStart = lbl_8047B9D4;
+    f32   waitLimit = lbl_8047B9DC;
+    f64   baseA = lbl_8047B9E0;
+    f64   baseB = lbl_8047B9E8;
 
     obj = (void*)heroGetStatus(lbl_803A2688, 3, (u16)lbl_8047A428);
     fn_801021F8((void*)0xd9, 0);
@@ -1275,12 +1283,12 @@ void fn_8002EE74(void)
         }
         fn_80166AB8(0x26, 0, 0);
 
-        acc = lbl_8047B9D4;
-        while (acc < lbl_8047B9DC) {
+        acc = waitStart;
+        while (acc < waitLimit) {
             f64 dtA, dtB;
             _threadSwitch();
-            dtA = (f64)(s32)fn_800D37CC() - lbl_8047B9E0;   /* ENDIAN-QA */
-            dtB = (f64)(s32)fn_800D3088() - lbl_8047B9E8;   /* ENDIAN-QA */
+            dtA = (f64)(s32)fn_800D37CC() - baseA;   /* ENDIAN-QA */
+            dtB = (f64)(s32)fn_800D3088() - baseB;   /* ENDIAN-QA */
             acc = acc + (f32)(dtB / dtA);
         }
 
@@ -1304,12 +1312,12 @@ void fn_8002EE74(void)
         }
         fn_80166AB8(0x26, 0, 0);
 
-        acc = lbl_8047B9D4;
-        while (acc < lbl_8047B9DC) {
+        acc = waitStart;
+        while (acc < waitLimit) {
             f64 dtA, dtB;
             _threadSwitch();
-            dtA = (f64)(s32)fn_800D37CC() - lbl_8047B9E0;   /* ENDIAN-QA */
-            dtB = (f64)(s32)fn_800D3088() - lbl_8047B9E8;   /* ENDIAN-QA */
+            dtA = (f64)(s32)fn_800D37CC() - baseA;   /* ENDIAN-QA */
+            dtB = (f64)(s32)fn_800D3088() - baseB;   /* ENDIAN-QA */
             acc = acc + (f32)(dtB / dtA);
         }
 
@@ -1939,6 +1947,10 @@ void fn_8002F79C(void) {
     void* effRoot;
     void* effElem;
     f32 acc;
+    /* Retail hoists both loop constants into callee-saved FPRs
+     * (f27=B9D4, f28=B9DC); reading the globals in the loop reloads. */
+    f32 waitStart = lbl_8047B9D4;
+    f32 waitLimit = lbl_8047B9DC;
     u32 slot;
     u8  foundWild;
 
@@ -1967,8 +1979,8 @@ void fn_8002F79C(void) {
 
         fn_80166AB8(0x26, 0, 0);
 
-        acc = lbl_8047B9D4;
-        while (acc < lbl_8047B9DC) {
+        acc = waitStart;
+        while (acc < waitLimit) {
             f64 r;
             _threadSwitch();
             r = (f64)(u32)fn_800D37CC();          /* ENDIAN-QA: unsigned int->double */
@@ -2003,8 +2015,8 @@ void fn_8002F79C(void) {
 
         fn_80166AB8(0x26, 0, 0);
 
-        acc = lbl_8047B9D4;
-        while (acc < lbl_8047B9DC) {
+        acc = waitStart;
+        while (acc < waitLimit) {
             f64 r;
             _threadSwitch();
             r = (f64)(u32)fn_800D37CC();
@@ -2065,8 +2077,8 @@ void fn_8002F79C(void) {
 
         fn_80166AB8(0x26, 0, 0);
 
-        acc = lbl_8047B9D4;
-        while (acc < lbl_8047B9DC) {
+        acc = waitStart;
+        while (acc < waitLimit) {
             f64 r;
             _threadSwitch();
             r = (f64)(u32)fn_800D37CC();
