@@ -771,6 +771,7 @@ _ret80CC:;
 #pragma pop
 
 /* 0x801081F8 | 0x320 */
+#pragma peephole off
 void fn_801081F8(void* r3_arg, u16 r4, u16 r5) {
     u16 r25 = r5;
     if (r3_arg == (void*)0) {
@@ -882,6 +883,7 @@ void fn_801081F8(void* r3_arg, u16 r4, u16 r5) {
         }
     }
 }
+#pragma peephole reset
 
 /* 0x80108518 | 0x68 */
 #pragma push

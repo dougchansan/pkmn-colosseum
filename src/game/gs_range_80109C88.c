@@ -102,6 +102,7 @@ found:
     return lbl_8047AD4C[i].state == 2;
 }
 
+#pragma peephole off
 s32 fn_8010BD6C(u16 key, void* (*callback)(u32), u32 arg)
 {
     typedef struct Entry {
@@ -168,6 +169,7 @@ s32 fn_8010BD6C(u16 key, void* (*callback)(u32), u32 arg)
     lbl_8047AD4C[index] = saved;
     return index;
 }
+#pragma peephole reset
 
 void fn_8010C220(void) {
 }
@@ -369,6 +371,7 @@ void fn_8010B5C4(void* unused1, u32 unused2, u16 key)
     fn_8010B16C(0, entry->callback, entry->arg);
 }
 
+#pragma peephole off
 s32 fn_8010A420(void* obj)
 {
     typedef struct Obj {
@@ -461,6 +464,7 @@ s32 fn_8010A420(void* obj)
 
     return 1;
 }
+#pragma peephole reset
 
 s32 fn_8010B718(u8* context, void* srcNode, void* pokemon)
 {
@@ -574,6 +578,7 @@ s32 fn_8010B718(u8* context, void* srcNode, void* pokemon)
     return 1;
 }
 
+#pragma peephole off
 s32 fn_8010B9E8(u8* context, void* srcNode, u16 key)
 {
     typedef struct Entry {
@@ -676,6 +681,7 @@ s32 fn_8010B9E8(u8* context, void* srcNode, u16 key)
     winSpriteDrawTexture(context, &lbl_80404BF0);
     return 1;
 }
+#pragma peephole reset
 
 s32 fn_8010A010(void* objPtr, u32 key)
 {
@@ -891,6 +897,7 @@ s32 fn_80109C88(void* objPtr, void* pokemon)
     return 1;
 }
 
+#pragma peephole off
 s32 menuModelInit(u8* objPtr, s32 w, s32 h)
 {
     typedef struct Vec3 {
@@ -1009,7 +1016,9 @@ s32 menuModelInit(u8* objPtr, s32 w, s32 h)
     lbl_8047AD40++;
     return 1;
 }
+#pragma peephole reset
 
+#pragma peephole off
 s32 fn_8010A88C(void* objPtr)
 {
     extern s32 lbl_8047AD40;
@@ -1132,6 +1141,7 @@ s32 fn_8010A88C(void* objPtr)
     *(u32*)(obj + 0x28) = 0;
     return 1;
 }
+#pragma peephole reset
 
 s32 fn_8010AB00(void* objPtr)
 {

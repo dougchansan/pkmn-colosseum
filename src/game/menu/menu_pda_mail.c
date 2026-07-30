@@ -1681,6 +1681,7 @@ s32 fn_8004C36C(u8* ctx, u8* p)
 #pragma peephole reset
 #endif
 
+#pragma peephole off
 void fn_8004E9C0(s32 mailId)
 {
     extern u8 lbl_802EF0A8[];
@@ -1726,6 +1727,7 @@ void fn_8004E9C0(s32 mailId)
     fn_8017B1CC(group);
     fn_800F915C(group);
 }
+#pragma peephole reset
 
 extern u32 fn_80103E68(u32 id);
 extern s32 fn_801D1A88(s32 id);

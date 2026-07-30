@@ -3379,6 +3379,7 @@ void fn_80096FA0(u8* menu)
 #pragma pop
 
 /* Select and synchronize the Pokemon-status submenu for the current page. */
+#pragma peephole off
 s32 fn_800973EC(u8* menu)
 {
     typedef struct MenuStatusPage {
@@ -3501,6 +3502,7 @@ s32 fn_800973EC(u8* menu)
 
     return 0;
 }
+#pragma peephole reset
 /* 0x80097BBC | size: 0x114 */
 #pragma peephole off
 s32 fn_80097BBC(u8 chan) {

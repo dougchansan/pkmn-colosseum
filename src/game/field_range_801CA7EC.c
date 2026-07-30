@@ -187,6 +187,7 @@ u32 scriptHaveItem(u32 itemId)
 }
 #pragma pop
 
+#pragma peephole off
 u32 scriptAddItem(u16 itemId, s32 count)
 {
     s32 ret = 0;
@@ -198,6 +199,7 @@ u32 scriptAddItem(u16 itemId, s32 count)
     }
     return ret;
 }
+#pragma peephole reset
 
 #pragma push
 #pragma scheduling off
@@ -207,6 +209,7 @@ u32 scriptGetItem(s32 a, s32 b)
 }
 #pragma pop
 
+#pragma peephole off
 u32 scriptCheckTemochiPokemon(u8* arg)
 {
     u8 used[6];
@@ -266,7 +269,9 @@ next_temochi:
     }
     return 0;
 }
+#pragma peephole reset
 
+#pragma peephole off
 void scriptStoreTemochiPokemon(u8* arg)
 {
     TemochiEntry* entry = lbl_804670B4;
@@ -286,9 +291,11 @@ void scriptStoreTemochiPokemon(u8* arg)
         }
     }
 }
+#pragma peephole reset
 
 #pragma push
 #pragma scheduling off
+#pragma peephole off
 u32 scriptGetEarthRibbon(void)
 {
     void* status = savedataGetStatus(0, 2);

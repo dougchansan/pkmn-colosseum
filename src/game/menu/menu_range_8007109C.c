@@ -1292,6 +1292,7 @@ extern s32 fn_801906A0(s32);
 extern void _flagSet();
 
 /* fn_80074324 (0x80074324): prep key-state then perform per-channel reset path. */
+#pragma peephole off
 s32 fn_80074360(s32 chan)
 {
     extern u32 fn_800D0F44(s32 chan);
@@ -1366,6 +1367,7 @@ s32 fn_80074360(s32 chan)
     result = 0;
     return result;
 }
+#pragma peephole reset
 
 extern s32 fn_8007480C();
 
@@ -1533,6 +1535,7 @@ void fn_80075A34(void) {
 }
 
 /* Check party-rule constraints for the selected Pokemon. */
+#pragma peephole off
 u8 fn_80076A8C(u32 hero, u32 pokemon, const u8* rule, s32 mode)
 {
     extern u8 fn_80076F2C();
@@ -1762,8 +1765,10 @@ selected_valid_for_mode3:
 
     return 0;
 }
+#pragma peephole reset
 
 /* Check the whole party against the selected party rule. */
+#pragma peephole off
 u8 fn_80076F2C(void* hero, const u8* rule, s32 mode)
 {
     extern s32 pokemonGetStatus();
@@ -1918,6 +1923,7 @@ count_present:
 
     return 0;
 }
+#pragma peephole reset
 
 #pragma push
 #pragma scheduling off
@@ -2488,6 +2494,7 @@ transfer_done:
 
 /* fn_80072D58 (0x80072D58): send a variable-size data block to one GBA
  * channel. */
+#pragma peephole off
 s32 fn_80072D58(s32 chan, const u32* data, s32 size) {
     extern s32 GBAWrite(s32 chan, void* source, u8* status);
     extern s32 GBARead(s32 chan, void* destination, u8* status);
@@ -2617,6 +2624,7 @@ transfer_done:
     gbaCommandSetKeyState(key_channel, result != 0 ? 1 : 3);
     return result;
 }
+#pragma peephole reset
 
 /* fn_80073E84 (0x80073E84): constant-1 accessor. */
 s32 fn_80073E84(void) {
@@ -2807,6 +2815,7 @@ typedef struct MenuRuleMessages {
     u16 pokemonErrors[6];
 } MenuRuleMessages;
 
+#pragma peephole off
 s32 fn_80076054(void* hero, const u8* battleRules)
 {
     extern s32 pokemonGetStatus(void*, s32, s32, s32);
@@ -2935,6 +2944,7 @@ item_rule_checked:
     }
     return 0;
 }
+#pragma peephole reset
 
 /* menuCBRule_CheckPokemonErrorAll (0x80076334): require every party member to
  * pass the per-slot error check. */
@@ -3058,6 +3068,7 @@ u8 fn_800767B8(void* hero, const u8* rule)
     return partyCount != 0;
 }
 
+#pragma peephole off
 u8 fn_800776E4(void* hero) {
     extern u8* fn_8006B420(void);
     extern u8 fn_80076F2C(void* hero, const u8* rule, s32 mode);
@@ -3247,6 +3258,7 @@ regulation_done:
 done:
     return (u8)final_result;
 }
+#pragma peephole reset
 
 /* fn_80077A5C (0x80077A5C): accept an empty slot or a zero species value. */
 #pragma push
@@ -4707,6 +4719,7 @@ void fn_800792D8(void) {
 }
 #pragma pop
 
+#pragma peephole off
 void fn_800798E8(void* backup)
 {
     typedef struct MenuSaveSnapshot {
@@ -4828,6 +4841,7 @@ cancelled:
     menuClose(0xEF);
     lbl_8047A638 = 1;
 }
+#pragma peephole reset
 
 #pragma push
 #pragma peephole off
@@ -5442,6 +5456,7 @@ void fn_8007C23C(u8* r3) {
 }
 #pragma pop
 
+#pragma peephole off
 int fn_80079C1C(s32 arg0, int arg1, int arg2, s32 arg3) {
     if ((u8)arg1 == 0 && (u8)arg2 == 0) {
         fn_801067E8(0x43D2, 1, 0);
@@ -5521,6 +5536,7 @@ int fn_80079C1C(s32 arg0, int arg1, int arg2, s32 arg3) {
     }
     return 1;
 }
+#pragma peephole reset
 
 extern u32 fn_800F7AF0(s32);
 extern u32 fn_800F7BC4(s32);
@@ -5645,15 +5661,19 @@ static inline s32 menuReadGbaZeroResponse(s32 channel)
     return result;
 }
 
+#pragma peephole off
 s32 fn_800719A8(s32 channel)
 {
     return menuReadGbaZeroResponse(channel);
 }
+#pragma peephole reset
 
+#pragma peephole off
 s32 fn_80072548(s32 channel)
 {
     return menuReadGbaZeroResponse(channel);
 }
+#pragma peephole reset
 
 extern u32 lbl_8047A610;
 extern f32 lbl_8047C098;
@@ -5713,6 +5733,7 @@ void fn_800753D0(void)
     }
 }
 
+#pragma peephole off
 void fn_80075518(u8* context, u8* message)
 {
     s32 alpha;
@@ -5745,6 +5766,7 @@ void fn_80075518(u8* context, u8* message)
     fn_800D59B8(0, lbl_8047C0AC, lbl_8047C0AC);
     fn_800D6728();
 }
+#pragma peephole reset
 
 extern u32 fn_800FF56C(void);
 extern u16 fn_800E2C04(s32, s32);

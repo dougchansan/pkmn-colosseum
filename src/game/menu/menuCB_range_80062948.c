@@ -117,6 +117,7 @@ typedef struct MenuCBBattleEntryContext {
     s32 mode;
 } MenuCBBattleEntryContext;
 
+#pragma peephole off
 s32 fn_80062948(MenuCBBattleEntryContext* context)
 {
     extern void menuCBBattleStartInit(void*, s32);
@@ -178,6 +179,7 @@ s32 fn_80062948(MenuCBBattleEntryContext* context)
     menuCloseCustom(0xDF, 0, 1);
     return result;
 }
+#pragma peephole reset
 
 s32 fn_80062AB4(void* arg)
 {
@@ -227,6 +229,7 @@ s32 fn_80062AB4(void* arg)
     return context->mode == 2 ? 0xD5 : 0xD4;
 }
 
+#pragma peephole off
 void fn_800637B0(void)
 {
     s32 player;
@@ -269,6 +272,7 @@ void fn_800637B0(void)
         }
     }
 }
+#pragma peephole reset
 
 void fn_800638F4(u8* context, UICmdMsg* msg)
 {
@@ -474,6 +478,7 @@ void fn_800676EC(u8* context)
     }
 }
 
+#pragma peephole off
 void _menuCBPokemonEntryEntCheckGBA__F13GSinputDevicel(
     s32 inputDevice, s32 player)
 {
@@ -536,6 +541,7 @@ void _menuCBPokemonEntryEntCheckGBA__F13GSinputDevicel(
         break;
     }
 }
+#pragma peephole reset
 
 static inline void menuCBPokemonEntryAdvancePositions(void)
 {

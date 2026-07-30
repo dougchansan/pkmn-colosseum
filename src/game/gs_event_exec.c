@@ -370,6 +370,7 @@ asm void menuPanelCursorDecimalInput(void) {
 #include "src/game/gs_event_exec_fn_80012FB0.inc"
 }
 #else
+#pragma peephole off
 s32 menuPanelCursorDecimalInput(u8* ctx) {
     u8* state;
     u8* cursor;
@@ -447,6 +448,7 @@ s32 menuPanelCursorDecimalInput(u8* ctx) {
     windowSetParam(ctx, 0, (s32)signed_sum);
     return 0;
 }
+#pragma peephole reset
 #endif
 
 /* fn_8001329C - 0x8001329C | size: 0x3cc */

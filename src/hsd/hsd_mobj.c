@@ -824,7 +824,7 @@ void HSD_MObjAddAnim(HSD_MObj* mobj, HSD_MatAnim* matanim)
     if (matanim == NULL) {
         return;
     }
-    if (mobj->aobj != NULL) {
+    if (*(HSD_AObj* volatile*)&mobj->aobj != NULL) {
         HSD_AObjRemove(mobj->aobj);
     }
     mobj->aobj = HSD_AObjLoadDesc(matanim->aobjdesc);

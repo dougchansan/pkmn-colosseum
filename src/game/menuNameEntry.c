@@ -2200,6 +2200,7 @@ asm void menuNameEntryCursor(void) {
  *     bit 0x2/0x1 - inc/dec the row cursor (ctx->f2c), clamp 0..3,
  *                   with a +2/-2 step when the column cursor is at 15
  * Returns 0 in all paths. */
+#pragma peephole off
 s32 menuNameEntryCursor(void* actor) {
     extern u16* windowGetKeyInfo(void);
     extern void fn_80166A28(s32 se);
@@ -2402,6 +2403,7 @@ s32 menuNameEntryCursor(void* actor) {
 
     return 0;
 }
+#pragma peephole reset
 #endif
 
 /* menuNameEntryCtrl - 0x800280FC | size: 0xf4 */

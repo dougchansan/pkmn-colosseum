@@ -479,6 +479,7 @@ u32 fn_801C5530(u32 arg0, void* texture, f32 frame, f32 duration, f32 angle, f32
 }
 #pragma peephole on
 
+#pragma peephole off
 u32 fn_801C55D8(u32 finish, void* texture, f32 frame, f32 duration,
                 f32 angle, f32 angleDuration)
 {
@@ -521,6 +522,7 @@ u32 fn_801C55D8(u32 finish, void* texture, f32 frame, f32 duration,
     fn_801C6934(texture, progress, alpha);
     return finish;
 }
+#pragma peephole reset
 
 void fn_801C5748(void)
 {

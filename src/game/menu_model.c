@@ -329,6 +329,7 @@ s32 menuModelSetMotion(void* p, u32 val) {
 #pragma pop
 
 /* 0x80109934 | 0x25C */
+#pragma peephole off
 u32 menuModelRender(u8* work) {
     u32 model;
     u32 renderModel;
@@ -401,6 +402,7 @@ u32 menuModelRender(u8* work) {
     GSmodelResetPEdescr(renderModel);
     return *(u32*)(work + 0x34);
 }
+#pragma peephole reset
 
 /* 0x80109B90 | 0x6C */
 #pragma push

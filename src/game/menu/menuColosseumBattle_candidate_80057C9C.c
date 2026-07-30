@@ -30,6 +30,7 @@ static inline s32 getConnectJobState(void)
     return 2;
 }
 
+#pragma peephole off
 s32 fn_80057C9C(void* pokemon, void* callback, s32* navigation)
 {
     u8 ownsRequest = 0;
@@ -63,3 +64,4 @@ s32 fn_80057C9C(void* pokemon, void* callback, s32* navigation)
     }
     return status;
 }
+#pragma peephole reset

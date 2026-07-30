@@ -400,6 +400,7 @@ s32 winMsgDraw(u8* window, u8* item) {
 }
 
 /* 0x80105A3C | 0x1F4 */
+#pragma peephole off
 s32 winMsgCtrl(u8* window) {
     u8* work = windowGetFreeWork(window);
     u8 ready = 0;
@@ -458,6 +459,7 @@ s32 winMsgCtrl(u8* window) {
     }
     return 0;
 }
+#pragma peephole reset
 
 /* 0x80105C30 | 0x38 */
 void winMsgButton(void* p) {
@@ -480,14 +482,18 @@ void winMsgCloseLevelUpStatus(u32 wait) {
 #pragma peephole reset
 
 /* 0x80105D48 | 0x134 */
+#pragma peephole off
 s32 winMsgOpenLevelUpFiledStatus(u32 message, u32 wait) {
     return winMsgOpenLevelUp(message, wait, 0x107, 9);
 }
+#pragma peephole reset
 
 /* 0x80105E7C | 0x134 */
+#pragma peephole off
 s32 winMsgOpenLevelUpStatus(u32 message, u32 wait) {
     return winMsgOpenLevelUp(message, wait, 0x51, 5);
 }
+#pragma peephole reset
 
 /* 0x80105FB0 | 0x48 */
 #pragma push

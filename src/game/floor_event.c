@@ -1487,6 +1487,7 @@ void floorEventSetTresureDisp(u32 rawIndex, u32 display)
 }
 
 /* 0x80115E6C | 0x2F8 */
+#pragma peephole off
 s32 floorEventGetTresure(u8 type, u32 item, s32 count)
 {
     s32 result = 0;
@@ -1587,6 +1588,7 @@ s32 floorEventGetTresure(u8 type, u32 item, s32 count)
 
     return result;
 }
+#pragma peephole reset
 
 typedef struct FloorTreasureEntry {
     u8 flags;
@@ -1717,6 +1719,7 @@ typedef struct FloorDoorEntry {
 } FloorDoorEntry;
 
 /* 0x80116958 | 0x3D8 */
+#pragma peephole off
 s32 floorEventCtrlDoor(void* floor, u32 index, u8 mode)
 {
     FloorDoorEntry* door;
@@ -1846,6 +1849,7 @@ s32 floorEventCtrlDoor(void* floor, u32 index, u8 mode)
 
     return 0;
 }
+#pragma peephole reset
 
 typedef struct FloorEventVec {
     f32 x;
@@ -1854,6 +1858,7 @@ typedef struct FloorEventVec {
 } FloorEventVec;
 
 /* 0x80116470 | 0x4E8 */
+#pragma peephole off
 s32 floorEventCtrlElevator(void* floor, u32 index, u16 command,
                            u32 group, u32 person)
 {
@@ -1972,3 +1977,4 @@ s32 floorEventCtrlElevator(void* floor, u32 index, u16 command,
     GSmodelGetFrameCount(model, &frame, 0);
     return (s32)(100.0f * ((2.0f * frame) / (f32)fn_800D37CC()));
 }
+#pragma peephole reset

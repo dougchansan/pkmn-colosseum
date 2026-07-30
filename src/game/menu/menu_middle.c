@@ -2117,6 +2117,7 @@ typedef struct CursorArg_8006BB34 {
     s8 cursor;
 } CursorArg_8006BB34;
 
+#pragma peephole off
 void fn_8006BB34(void* menu) {
     MenuState_8006BB34* m = (MenuState_8006BB34*)menu;
     KeyInfo_8006BB34* ki;
@@ -2301,6 +2302,7 @@ void fn_8006BB34(void* menu) {
 
     menuCursorNormal(menu);
 }
+#pragma peephole reset
 
 #if 0
 static void fn_8006BB34_deadcode(void) {
@@ -4529,6 +4531,7 @@ void fn_8006DAE4(void* arg0) {
 
 
 /* 0x8006DC28 | size: 0x4A4 */
+#pragma peephole off
 void fn_8006DC28(void* menu) {
     extern void fn_80070D84(void* menu, s32 a, s32 b);
     extern void winSpriteSetDisp(void* widget, s32 flag);
@@ -4688,6 +4691,7 @@ void fn_8006DC28(void* menu) {
 
     fn_80070D84(menu, 0, 0);
 }
+#pragma peephole reset
 
 
 /* 0x8006E0CC | size: 0x5C */

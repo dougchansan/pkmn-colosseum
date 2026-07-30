@@ -398,6 +398,7 @@ void fn_8002FC58(void)
  *   8. Restore people state (GSscene_SetMode)
  *   9. Mark availability flag and advance state (lbl_8047A42C = 0x12)
  */
+#pragma peephole off
 void stateFunctionEvolution(void)
 {
     extern u32   lbl_8047A424;
@@ -589,6 +590,7 @@ void stateFunctionEvolution(void)
     /* Fall through to state advance */
     lbl_8047A42C = 0x12;
 }
+#pragma peephole reset
 #endif
 
 /* stateFunctionExChangeMain - 0x8002E26C | size: 0x1f4 */
@@ -1015,6 +1017,7 @@ asm void fn_8002EA5C(void) {
  * plain casts here). fn_800D3088 = elapsed frame ticks (unsigned numerator),
  * fn_800D37CC = ticks-per-unit (signed denominator).
  */
+#pragma peephole off
 void fn_8002EA5C(void)
 {
     /* small-data globals */
@@ -1184,6 +1187,7 @@ void fn_8002EA5C(void)
     menuClose(0xD9);
     lbl_8047A42C = 0xC;
 }
+#pragma peephole reset
 #endif
 
 /* fn_8002EE74 - 0x8002EE74 | size: 0x410 */

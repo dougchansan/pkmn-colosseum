@@ -949,6 +949,7 @@ s32 fn_80083BF8(void* arena)
 
 
 /* 0x8007FDBC | size: 0x554 */
+#pragma peephole off
 void* fn_8007FDBC(void* window, const void* title) {
     char* table;
     u8* ctx;
@@ -1077,6 +1078,7 @@ void* fn_8007FDBC(void* window, const void* title) {
 
     return ctx;
 }
+#pragma peephole reset
 
 
 /* 0x80084034 | size: 0x4 */

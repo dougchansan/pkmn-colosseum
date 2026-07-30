@@ -1619,6 +1619,7 @@ extern u8 lbl_80272200[];
  * Parse a map archive and register its models, lights, camera, and auxiliary
  * resource with the floor resource manager.
  */
+#pragma peephole off
 void* floorReadMapPostFunc(u32 owner, u32 param, u32 size)
 {
     FloorMapPublic* public;
@@ -1686,6 +1687,7 @@ void* floorReadMapPostFunc(u32 owner, u32 param, u32 size)
     floorInitMap(owner, param);
     return public;
 }
+#pragma peephole reset
 
 /* 0x70 | floorReadMapPreFunc | alloc_wrapper */
 extern void* GSresAllocResourceAlign();  /* K&R: called with 5 args, returns void* */

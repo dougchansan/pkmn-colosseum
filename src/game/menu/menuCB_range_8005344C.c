@@ -297,6 +297,7 @@ s32 fn_80053728(MenuCBPane* pane, MenuCBPane* sprite) {
 }
 #pragma pop
 
+#pragma peephole off
 u32 fn_80053778(u32 unused, u8* pane) {
     u32 texture;
     s32 alpha;
@@ -372,6 +373,7 @@ u32 fn_80053778(u32 unused, u8* pane) {
 
     return 0;
 }
+#pragma peephole reset
 
 #pragma push
 #pragma peephole off
@@ -827,6 +829,7 @@ void fn_80054760(s32 forward, s32 wait) {
     menuOpenCustom(0x8F, 0x1F, 0, 0, 0, 0);
 }
 
+#pragma peephole off
 s32 fn_800544A8(u8* ctx) {
     switch ((s8)ctx[1]) {
     case 0:
@@ -877,3 +880,4 @@ s32 fn_800544A8(u8* ctx) {
     }
     return 0;
 }
+#pragma peephole reset

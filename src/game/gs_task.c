@@ -1101,6 +1101,7 @@ extern void fightOutPokemonSetTokuseiDataId(void* ptr, void* a);
 extern void fightOutPokemonSetZokuseiDataId(void* ptr, u8 a, u16 b);
 extern void fightMenuFightTrainerRenewStatusMenu(void* ptr, u16 a);
 #if !defined(GS_TASK_RANGE_SPLIT) || defined(GS_TASK_RANGE_RESIDUAL_80007364)
+#pragma peephole off
 s32 menuFightPokemonSelectSub(u32 ctx) {
     s32 result;
     u8 prevLevel;
@@ -1200,6 +1201,7 @@ s32 menuFightPokemonSelectSub(u32 ctx) {
     fightMenuFightTrainerRenewStatusMenu(archive, savedId);
     return result;
 }
+#pragma peephole reset
 #endif /* GS_TASK_RANGE_RESIDUAL_80007364 */
 
 #if !defined(GS_TASK_RANGE_SPLIT) || defined(GS_TASK_RANGE_EXACT_8000765C)

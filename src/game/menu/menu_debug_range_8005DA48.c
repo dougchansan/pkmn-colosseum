@@ -33,6 +33,7 @@ typedef struct DebugMenuKeyInfo {
     u16 repeat;
 } DebugMenuKeyInfo;
 
+#pragma peephole off
 s32 dbgMenuLogDraw(void* window)
 {
     extern DebugMenuKeyInfo* windowGetKeyInfo(void);
@@ -90,6 +91,7 @@ s32 dbgMenuLogDraw(void* window)
     }
     return 0;
 }
+#pragma peephole reset
 
 s32 menuDbgItemCreateCursor(u8* window)
 {
