@@ -4958,5 +4958,17 @@
   "matched_functions": 6705,
   "source": "ci",
   "build_clean": true
+ },
+ {
+  "commit": "6396f2d719da38b1c9e0a3b0cc3fb1007274054e",
+  "ts": 1785462136,
+  "fuzzy": 79.91817,
+  "code": 41.493195,
+  "fn": 77.93793,
+  "data": 97.28669,
+  "total_functions": 8603,
+  "matched_functions": 6705,
+  "source": "ci",
+  "build_clean": true
  }
 ]
