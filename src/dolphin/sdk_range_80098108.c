@@ -103,6 +103,17 @@ void fn_80098110(s32 chan, EXIControl* exi);
 void* memmove(void* dst, const void* src, size_t n);
 void* memset(void* dst, int value, size_t n);
 
+/* 0x80098108 | size: 0x8 */
+#pragma push
+#pragma optimization_level 0
+#pragma optimizewithasm off
+asm void PPCSetFpNonIEEEMode(void) {
+    nofralloc
+    mtfsb1 29
+    blr
+}
+#pragma pop
+
 #pragma push
 #pragma optimization_level 0
 #pragma optimize_for_size on
@@ -300,67 +311,6 @@ BOOL EXISync(s32 chan) {
 #pragma scheduling reset
 #pragma pop
 
-static BOOL fn_800989C0_probe(s32 chan, EXIControl* base) {
-    EXIControl* exi;
-    BOOL probe;
-    u32 id;
-
-    exi = &base[chan];
-    probe = fn_80098790(chan);
-    if (probe && exi->idTime == 0) {
-        probe = fn_80099400(chan, 0, &id) ? TRUE : FALSE;
-    }
-    return probe;
-}
-
-static BOOL fn_800989C0_attach(s32 chan, EXICallback extCallback, EXIControl* base) {
-    EXIControl* exi;
-    BOOL enabled;
-
-    exi = &base[chan];
-    enabled = OSDisableInterrupts();
-
-    if ((exi->state & 8) || !fn_80098790(chan)) {
-        OSRestoreInterrupts(enabled);
-        return FALSE;
-    }
-
-    fn_800986A0(chan, TRUE, FALSE, FALSE);
-    exi->extCallback = extCallback;
-    __OSUnmaskInterrupts(0x100000u >> (chan * 3));
-    exi->state |= 8;
-
-    OSRestoreInterrupts(enabled);
-    return TRUE;
-}
-
-#pragma push
-#pragma optimization_level 0
-#pragma optimize_for_size on
-#pragma scheduling off
-BOOL fn_800989C0(s32 chan, EXICallback extCallback) {
-    EXIControl* base;
-    EXIControl* exi;
-    BOOL enabled;
-    BOOL result;
-
-    base = lbl_803FB3C8;
-    exi = &base[chan];
-
-    fn_800989C0_probe(chan, base);
-    enabled = OSDisableInterrupts();
-    if (exi->idTime == 0) {
-        OSRestoreInterrupts(enabled);
-        return FALSE;
-    }
-
-    result = fn_800989C0_attach(chan, extCallback, base);
-    OSRestoreInterrupts(enabled);
-    return result;
-}
-#pragma scheduling reset
-#pragma pop
-
 #pragma push
 #pragma optimization_level 0
 #pragma optimize_for_size on
@@ -471,6 +421,67 @@ BOOL fn_80098944(s32 chan) {
         probe = fn_80099400(chan, 0, &id) ? TRUE : FALSE;
     }
     return probe;
+}
+#pragma scheduling reset
+#pragma pop
+
+static inline BOOL fn_800989C0_probe(s32 chan, EXIControl* base) {
+    EXIControl* exi;
+    BOOL probe;
+    u32 id;
+
+    exi = &base[chan];
+    probe = fn_80098790(chan);
+    if (probe && exi->idTime == 0) {
+        probe = fn_80099400(chan, 0, &id) ? TRUE : FALSE;
+    }
+    return probe;
+}
+
+static inline BOOL fn_800989C0_attach(s32 chan, EXICallback extCallback, EXIControl* base) {
+    EXIControl* exi;
+    BOOL enabled;
+
+    exi = &base[chan];
+    enabled = OSDisableInterrupts();
+
+    if ((exi->state & 8) || !fn_80098790(chan)) {
+        OSRestoreInterrupts(enabled);
+        return FALSE;
+    }
+
+    fn_800986A0(chan, TRUE, FALSE, FALSE);
+    exi->extCallback = extCallback;
+    __OSUnmaskInterrupts(0x100000u >> (chan * 3));
+    exi->state |= 8;
+
+    OSRestoreInterrupts(enabled);
+    return TRUE;
+}
+
+#pragma push
+#pragma optimization_level 0
+#pragma optimize_for_size on
+#pragma scheduling off
+BOOL fn_800989C0(s32 chan, EXICallback extCallback) {
+    EXIControl* base;
+    EXIControl* exi;
+    BOOL enabled;
+    BOOL result;
+
+    base = lbl_803FB3C8;
+    exi = &base[chan];
+
+    fn_800989C0_probe(chan, base);
+    enabled = OSDisableInterrupts();
+    if (exi->idTime == 0) {
+        OSRestoreInterrupts(enabled);
+        return FALSE;
+    }
+
+    result = fn_800989C0_attach(chan, extCallback, base);
+    OSRestoreInterrupts(enabled);
+    return result;
 }
 #pragma scheduling reset
 #pragma pop
@@ -791,6 +802,7 @@ BOOL fn_800993D0(s32 chan) {
  * __EXIAttach, EXIDetach and EXIUnlock are all inlined here in the target,
  * so their bodies are repeated rather than called.
  */
+#ifndef SDK_EXI_PREFIX_ONLY
 s32 fn_80099400(s32 chan, u32 dev, u32* id) {
     extern u32 fn_800986A0(s32 chan, s32 exi, s32 tc, s32 ext);
     EXIControl* exi = &lbl_803FB3C8[chan];
@@ -1196,18 +1208,9 @@ OSExceptionHandler __OSSetExceptionHandler(u8 exception, OSExceptionHandler hand
     return old;
 }
 #pragma peephole reset
+#endif
 
-/* 0x80098108 | size: 0x8 */
-#pragma push
-#pragma optimization_level 0
-#pragma optimizewithasm off
-asm void PPCSetFpNonIEEEMode(void) {
-    nofralloc
-    mtfsb1 29
-    blr
-}
-#pragma pop
-
+#ifndef SDK_EXI_PREFIX_ONLY
 /* 0x8009A09C | size: 0x24 */
 #pragma push
 #pragma optimization_level 0
@@ -1220,3 +1223,4 @@ void fn_8009A0C0(void) {
     __OSDBINTEND();
 }
 #pragma pop
+#endif

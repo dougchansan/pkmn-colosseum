@@ -3384,7 +3384,7 @@ config.libs = [
                 progress_category="game",
             ),
             Object(
-                CodeCandidate,
+                Matching,
                 "dolphin/sdk_r48_80098108_prefix.c",
                 mw_version="GC/1.2.5n",
                 progress_category="sdk",
