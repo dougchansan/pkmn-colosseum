@@ -72,22 +72,7 @@ game/data/bss_803F6E40.c:
 	.bss        start:0x803F6E40 end:0x803FB380
 
 game/data/data_8027A500.c:
-	.data       start:0x8027A500 end:0x802E28EC
-
-game/data/data_802E28F0.c:
-	.data       start:0x802E28F0 end:0x802E4B78
-
-game/data/data_802E4B98.c:
-	.data       start:0x802E4B98 end:0x802E4D8C
-
-game/data/data_802E4D90.c:
-	.data       start:0x802E4D90 end:0x802E4DAC
-
-game/data/data_802E4DB0.c:
-	.data       start:0x802E4DB0 end:0x802ED9EC
-
-game/data/data_802ED9F0.c:
-	.data       start:0x802ED9F0 end:0x802EDB40
+	.data       start:0x8027A500 end:0x802E28D0
 
 game/data/rodata_802663A0.c:
 	.rodata     start:0x802663A0 end:0x80266BD8
@@ -142,6 +127,22 @@ game/gs_task_exact_80006884.c:
 
 game/gs_task_residual_80006908.c:
 	.text       start:0x80006908 end:0x80006FAC
+	.data       start:0x802E28D0 end:0x802E28EC
+
+game/data/data_802E28F0.c:
+	.data       start:0x802E28F0 end:0x802E4B78
+
+game/data/data_802E4B98.c:
+	.data       start:0x802E4B98 end:0x802E4D8C
+
+game/data/data_802E4D90.c:
+	.data       start:0x802E4D90 end:0x802E4DAC
+
+game/data/data_802E4DB0.c:
+	.data       start:0x802E4DB0 end:0x802ED9EC
+
+game/data/data_802ED9F0.c:
+	.data       start:0x802ED9F0 end:0x802EDB40
 
 game/gs_task_exact_80006FAC.c:
 	.text       start:0x80006FAC end:0x80007364

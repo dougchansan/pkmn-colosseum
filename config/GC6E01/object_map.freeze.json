@@ -343,12 +343,12 @@
       "sections": [
         {
           "name": ".data",
-          "size": 426988,
+          "size": 426960,
           "virtual_address": 2150081792
         }
       ],
       "total_code": 0,
-      "total_data": 426988,
+      "total_data": 426960,
       "total_functions": 0
     },
     {
@@ -657,10 +657,15 @@
           "name": ".text",
           "size": 1700,
           "virtual_address": 2147510536
+        },
+        {
+          "name": ".data",
+          "size": 28,
+          "virtual_address": 2150508752
         }
       ],
       "total_code": 1700,
-      "total_data": 0,
+      "total_data": 28,
       "total_functions": 1
     },
     {

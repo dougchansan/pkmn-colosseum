@@ -654,7 +654,6 @@ void fn_80008C40(u8* window) {
 /* ===== Phase 2 recovery stubs ===== */
 
 /* fn_80006908 - 0x80006908 | size: 0x6a4 */
-extern void jumptable_802E28D0();
 extern u32 lbl_80478F50;
 extern u32 lbl_80478F40;
 extern u32 lbl_80478F00;
