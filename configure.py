@@ -11048,7 +11048,7 @@ config.libs = [
                 progress_category="game",
             ),
             Object(
-                DataCandidate,
+                Matching,
                 "game/data/bss_8039A700.c",
                 progress_category="game",
             ),
@@ -11068,7 +11068,7 @@ config.libs = [
                 progress_category="game",
             ),
             Object(
-                DataCandidate,
+                Matching,
                 "game/data/bss_803B6E40.c",
                 progress_category="game",
             ),
