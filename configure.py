@@ -4389,7 +4389,7 @@ config.libs = [
                     progress_category="game",
                 )
                 for status, path in [
-                    (CodeCandidate, "game/gs_model_main_suffix_candidate_800E4AC0.c"),
+                    (Matching, "game/gs_model_main_suffix_candidate_800E4AC0.c"),
                     (Matching, "game/gs_model_main_suffix_exact_800E4BF4.c"),
                     (Matching, "game/gs_model_main_suffix_exact_800E4C98.c"),
                     (Matching, "game/gs_model_main_suffix_exact_800E4D18.c"),
@@ -4523,9 +4523,9 @@ config.libs = [
                     progress_category="game",
                 )
                 for status, path in [
-                    (CodeCandidate, "game/gs_model_anim_candidate_800EBEEC.c"),
+                    (Matching, "game/gs_model_anim_candidate_800EBEEC.c"),
                     (Matching, "game/gs_model_anim_exact_800EC0E8.c"),
-                    (CodeCandidate, "game/gs_model_anim_candidate_800EC35C.c"),
+                    (Matching, "game/gs_model_anim_candidate_800EC35C.c"),
                 ]
             ],
             Object(

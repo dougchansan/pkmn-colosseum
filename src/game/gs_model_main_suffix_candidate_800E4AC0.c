@@ -8,8 +8,8 @@ typedef struct GSmodelAttachPart {
     GSmodel* model;
 } GSmodelAttachPart;
 
-void fn_800E01D0(GSvec* dst, const GSvec* src);
-void fn_800E01F4(GSvec* dst, f32 x, f32 y, f32 z);
+void GSvecCopy(GSvec* dst, const GSvec* src);
+void set__5GSvecFfff(GSvec* dst, f32 x, f32 y, f32 z);
 
 void GSmodelAttachToGSpart(GSmodel* model, GSmodelAttachPart* part,
                            s32 attachmentType, s32 updateOnce, u8 resetTransform)
@@ -26,23 +26,23 @@ void GSmodelAttachToGSpart(GSmodel* model, GSmodelAttachPart* part,
     model->unk118 = part->model;
     model->unk11C = (void*)(u32)part->partIndex;
     if (resetTransform == 1) {
-        fn_800E01F4(&model->overridePosition, lbl_8047CB7C,
+        set__5GSvecFfff(&model->overridePosition, lbl_8047CB7C,
                     lbl_8047CB7C, lbl_8047CB7C);
-        fn_800E01F4(&model->overrideRotation, lbl_8047CB7C,
+        set__5GSvecFfff(&model->overrideRotation, lbl_8047CB7C,
                     lbl_8047CB7C, lbl_8047CB7C);
-        fn_800E01F4(&model->overrideScale, lbl_8047CB80,
+        set__5GSvecFfff(&model->overrideScale, lbl_8047CB80,
                     lbl_8047CB80, lbl_8047CB80);
     } else {
-        fn_800E01D0(&model->overridePosition, &model->position);
-        fn_800E01D0(&model->overrideRotation, &model->rotation);
-        fn_800E01D0(&model->overrideScale, &model->scale);
+        GSvecCopy(&model->overridePosition, &model->position);
+        GSvecCopy(&model->overrideRotation, &model->rotation);
+        GSvecCopy(&model->overrideScale, &model->scale);
     }
 
-    fn_800E01F4(&model->position, lbl_8047CB7C, lbl_8047CB7C,
+    set__5GSvecFfff(&model->position, lbl_8047CB7C, lbl_8047CB7C,
                 lbl_8047CB7C);
-    fn_800E01F4(&model->rotation, lbl_8047CB7C, lbl_8047CB7C,
+    set__5GSvecFfff(&model->rotation, lbl_8047CB7C, lbl_8047CB7C,
                 lbl_8047CB7C);
-    fn_800E01F4(&model->scale, lbl_8047CB80, lbl_8047CB80,
+    set__5GSvecFfff(&model->scale, lbl_8047CB80, lbl_8047CB80,
                 lbl_8047CB80);
     model->transformOverride = attachmentType;
 
