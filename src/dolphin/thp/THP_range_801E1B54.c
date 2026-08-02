@@ -1163,15 +1163,14 @@ void fn_801E1FF8(const THPVideoInfo* info)
     extern void fn_800BC36C(u32, void*);
     extern void fn_800BC3E0(u32, void*);
 
+    s32 width = info->width;
+    s32 height = info->height;
     f32 projection[4][4];
     f32 model[3][4];
     u32 tevColor1[2];
     u32 tevColor0;
     u32 tevColor2;
     u32 tevColor3;
-    u32 width = info->width;
-    u32 height = info->height;
-
     fn_800BCEF4(0, 0);
     C_MTXOrtho(projection, lbl_8047E494, (f32)height,
                lbl_8047E494, (f32)width, lbl_8047E494, lbl_8047E498);
