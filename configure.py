@@ -3944,9 +3944,8 @@ config.libs = [
             ),
             Object(
                 CodeCandidate,
-                "dolphin/sdk_candidate_800B5E8C_o4s.c",
+                "dolphin/sdk_candidate_800B5E8C_o4p.c",
                 mw_version="GC/1.2.5n",
-                cflags=["-O4,s" if flag == "-O4,p" else flag for flag in cflags_base],
                 progress_category="sdk",
             ),
             Object(
