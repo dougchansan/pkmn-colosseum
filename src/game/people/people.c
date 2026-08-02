@@ -572,6 +572,7 @@ void fn_8018A44C(u32 groupId, u32 index, f32 amount) {
     GSvec rotation;
     f32 angle;
     f32 oldSpeed;
+    f32 fullTurn;
     s32 revolutions;
 
     entry = peopleFindBySelf(peopleFindSelf(groupId, index));
@@ -584,9 +585,10 @@ void fn_8018A44C(u32 groupId, u32 index, f32 amount) {
     entry = peopleFindBySelf(peopleFindSelf(groupId, index));
     if (entry != NULL) {
         fn_8018FC2C(entry, &rotation);
-        revolutions = (s32)(rotation.y / lbl_8047D7C0);
+        fullTurn = lbl_8047D7C0;
+        revolutions = (s32)(rotation.y / fullTurn);
         entry->pad22 = 1;
-        angle += lbl_8047D7C0 * revolutions;
+        angle += fullTurn * revolutions;
         entry->field_40 = angle;
         entry->field_44 = oldSpeed;
     }
@@ -1032,7 +1034,7 @@ void fn_80181EB0(u32 groupId, u32 index) {
     void* model;
     u32 modelGroup;
     u32 modelIndex;
-    s8 attachmentIndex;
+    s32 attachmentIndex;
 
     attachmentIndex = 0;
     modelGroup = fn_80113F48();
@@ -1046,7 +1048,7 @@ void fn_80181EB0(u32 groupId, u32 index) {
         }
     }
 
-    if (attachmentIndex >= 0) {
+    if ((s8)attachmentIndex >= 0) {
         fn_801845E4(modelGroup, modelIndex, groupId, index,
                     attachmentIndex);
     } else {
