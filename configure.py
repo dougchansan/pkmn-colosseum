@@ -10014,7 +10014,7 @@ config.libs = [
                 for status, path in [
                     (CodeCandidate, "game/gs_dvd_candidate_80167040.c"),
                     (Matching, "game/gs_dvd_exact_80167E54.c"),
-                    (CodeCandidate, "game/gs_dvd_candidate_80167E64.c"),
+                    (Matching, "game/gs_dvd_candidate_80167E64.c"),
                     (Matching, "game/gs_dvd_exact_80167FA4.c"),
                     (CodeCandidate, "game/gs_dvd_r47_prefix.c"),
                     (CodeCandidate, "game/gs_dvd_r47_suffix.c"),
