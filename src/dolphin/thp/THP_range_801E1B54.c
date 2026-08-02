@@ -760,19 +760,31 @@ void fn_801E543C(void)
 }
 
 /* ---- Thread B: create (mode-selects thread body) ---- */
+typedef struct THPDecodeThreadStatics {
+    u8 prefix[0x58];
+    u8 stack[0x1000];
+    u8 thread[1];
+} THPDecodeThreadStatics;
+
 BOOL fn_801E4E1C(s32 priority, u32 mode)
 {
-    u8 *base = lbl_8046AE20;
+    THPDecodeThreadStatics *thread = (THPDecodeThreadStatics *)lbl_8046AE20;
+    u8 *base = (u8 *)thread;
+    u8 *stack = thread->stack;
     void *messageBuffer = base;
 
     if (mode != 0) {
-        if (!OSCreateThread((OSThread *)(base + 0x1058), (void *(*)(void *))fn_801E4B38,
-                             (void *)mode, base + 0x58, 0x1000, priority, 1)) {
+        if (!OSCreateThread((OSThread *)thread->thread,
+                             (void *(*)(void *))fn_801E4B38,
+                             (void *)mode, stack + sizeof(thread->stack),
+                             sizeof(thread->stack), priority, 1)) {
             return FALSE;
         }
     } else {
-        if (!OSCreateThread((OSThread *)(base + 0x1058), (void *(*)(void *))fn_801E4C80,
-                             NULL, base + 0x58, 0x1000, priority, 1)) {
+        if (!OSCreateThread((OSThread *)thread->thread,
+                             (void *(*)(void *))fn_801E4C80,
+                             NULL, stack + sizeof(thread->stack),
+                             sizeof(thread->stack), priority, 1)) {
             return FALSE;
         }
     }
@@ -785,17 +797,23 @@ BOOL fn_801E4E1C(s32 priority, u32 mode)
 /* ---- Thread C: create (mode-selects thread body) ---- */
 BOOL fn_801E5470(s32 priority, u32 mode)
 {
-    u8 *base = lbl_8046C190;
+    THPDecodeThreadStatics *thread = (THPDecodeThreadStatics *)lbl_8046C190;
+    u8 *base = (u8 *)thread;
+    u8 *stack = thread->stack;
     void *messageBuffer = base;
 
     if (mode != 0) {
-        if (!OSCreateThread((OSThread *)(base + 0x1058), (void *(*)(void *))fn_801E4F64,
-                             (void *)mode, base + 0x58, 0x1000, priority, 1)) {
+        if (!OSCreateThread((OSThread *)thread->thread,
+                             (void *(*)(void *))fn_801E4F64,
+                             (void *)mode, stack + sizeof(thread->stack),
+                             sizeof(thread->stack), priority, 1)) {
             return FALSE;
         }
     } else {
-        if (!OSCreateThread((OSThread *)(base + 0x1058), (void *(*)(void *))fn_801E5154,
-                             NULL, base + 0x58, 0x1000, priority, 1)) {
+        if (!OSCreateThread((OSThread *)thread->thread,
+                             (void *(*)(void *))fn_801E5154,
+                             NULL, stack + sizeof(thread->stack),
+                             sizeof(thread->stack), priority, 1)) {
             return FALSE;
         }
     }
