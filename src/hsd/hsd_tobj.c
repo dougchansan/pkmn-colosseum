@@ -1225,16 +1225,29 @@ static void MakeColorGenTExp(u32 lightmap, HSD_TObj* tobj, HSD_TExp** c,
                              HSD_TExp** a, HSD_TExp** list, int repeat)
 {
     HSD_TObjTev* tev = tobj->tev;
-    HSD_TExp *e0, *tmp;
-    HSD_TExp *konst_rgb, *konst_r, *konst_g, *konst_b, *konst_a;
-    HSD_TExp *reg0_rgb, *reg0_a, *reg1_rgb, *reg1_a;
     u8* in;
-    u32 sel[4];
-    HSD_TExp* exp[4];
-    int use_k_rgb = 0, use_k_r = 0, use_k_g = 0, use_k_b = 0;
-    int use_k_a = 0, use_reg0_rgb = 0, use_reg0_a = 0;
-    int use_reg1_rgb = 0, use_reg1_a = 0;
+    HSD_TExp *e0, *tmp;
     int i;
+
+    HSD_TExp* konst_rgb;
+    HSD_TExp* konst_r;
+    HSD_TExp* konst_g;
+    HSD_TExp* konst_b;
+    HSD_TExp* konst_a;
+    HSD_TExp* reg0_rgb;
+    HSD_TExp* reg0_a;
+    HSD_TExp* reg1_rgb;
+    HSD_TExp* reg1_a;
+
+    int use_k_rgb = 0;
+    int use_k_r = 0;
+    int use_k_g = 0;
+    int use_k_b = 0;
+    int use_k_a = 0;
+    int use_reg0_rgb = 0;
+    int use_reg0_a = 0;
+    int use_reg1_rgb = 0;
+    int use_reg1_a = 0;
 
     (void) lightmap;
     (void) repeat;
@@ -1250,6 +1263,7 @@ static void MakeColorGenTExp(u32 lightmap, HSD_TObj* tobj, HSD_TExp** c,
         case TOBJ_TEV_CC_TEX0_AAA: use_reg0_a = 1; break;
         case TOBJ_TEV_CC_TEX1_RGB: use_reg1_rgb = 1; break;
         case TOBJ_TEV_CC_TEX1_AAA: use_reg1_a = 1; break;
+        default: break;
         }
     }
     in = &tev->alpha_a;
@@ -1261,30 +1275,35 @@ static void MakeColorGenTExp(u32 lightmap, HSD_TObj* tobj, HSD_TExp** c,
         case TOBJ_TEV_CA_KONST_A: use_k_a = 1; break;
         case TOBJ_TEV_CA_TEX0_A: use_reg0_a = 1; break;
         case TOBJ_TEV_CA_TEX1_A: use_reg1_a = 1; break;
+        default: break;
         }
     }
     if (use_k_rgb)
-        konst_rgb = HSD_TExpCnst(&tev->konst, HSD_TE_RGB, HSD_TE_U8, list);
+        konst_rgb = HSD_TExpCnst(&tobj->tev->konst, HSD_TE_RGB, HSD_TE_U8, list);
     if (use_k_r)
-        konst_r = HSD_TExpCnst(&tev->konst.r, HSD_TE_X, HSD_TE_U8, list);
+        konst_r = HSD_TExpCnst(&tobj->tev->konst.r, HSD_TE_X, HSD_TE_U8, list);
     if (use_k_g)
-        konst_g = HSD_TExpCnst(&tev->konst.g, HSD_TE_X, HSD_TE_U8, list);
+        konst_g = HSD_TExpCnst(&tobj->tev->konst.g, HSD_TE_X, HSD_TE_U8, list);
     if (use_k_b)
-        konst_b = HSD_TExpCnst(&tev->konst.b, HSD_TE_X, HSD_TE_U8, list);
+        konst_b = HSD_TExpCnst(&tobj->tev->konst.b, HSD_TE_X, HSD_TE_U8, list);
     if (use_k_a)
-        konst_a = HSD_TExpCnst(&tev->konst.a, HSD_TE_X, HSD_TE_U8, list);
+        konst_a = HSD_TExpCnst(&tobj->tev->konst.a, HSD_TE_X, HSD_TE_U8, list);
     if (use_reg0_rgb)
-        reg0_rgb = HSD_TExpCnst(&tev->tev0, HSD_TE_RGB, HSD_TE_U8, list);
+        reg0_rgb = HSD_TExpCnst(&tobj->tev->tev0, HSD_TE_RGB, HSD_TE_U8, list);
     if (use_reg0_a)
-        reg0_a = HSD_TExpCnst(&tev->tev0.a, HSD_TE_X, HSD_TE_U8, list);
+        reg0_a = HSD_TExpCnst(&tobj->tev->tev0.a, HSD_TE_X, HSD_TE_U8, list);
     if (use_reg1_rgb)
-        reg1_rgb = HSD_TExpCnst(&tev->tev1, HSD_TE_RGB, HSD_TE_U8, list);
+        reg1_rgb = HSD_TExpCnst(&tobj->tev->tev1, HSD_TE_RGB, HSD_TE_U8, list);
     if (use_reg1_a)
-        reg1_a = HSD_TExpCnst(&tev->tev1.a, HSD_TE_X, HSD_TE_U8, list);
+        reg1_a = HSD_TExpCnst(&tobj->tev->tev1.a, HSD_TE_X, HSD_TE_U8, list);
 
     e0 = HSD_TExpTev(list);
     HSD_TExpOrder(e0, tobj, GX_COLOR_NULL);
     if (tev->active & TOBJ_TEVREG_ACTIVE_COLOR_TEV) {
+        s32 sel[4];
+        HSD_TExp* exp[4];
+        int i;
+
         in = &tev->color_a;
         for (i = 0; i < 4; i++) {
             switch (in[i]) {
@@ -1299,27 +1318,46 @@ static void MakeColorGenTExp(u32 lightmap, HSD_TObj* tobj, HSD_TExp** c,
             case TOBJ_TEV_CC_KONST_BBB: sel[i] = HSD_TE_X; exp[i] = konst_b; break;
             case TOBJ_TEV_CC_KONST_AAA: sel[i] = HSD_TE_X; exp[i] = konst_a; break;
             case TOBJ_TEV_CC_TEX0_RGB:
+                tmp = HSD_TExpTev(list);
+                HSD_TExpOrder(tmp, NULL, GX_COLOR_NULL);
+                HSD_TExpColorOp(tmp, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1,
+                                GX_ENABLE);
+                HSD_TExpColorIn(tmp, HSD_TE_0, HSD_TEXP_ZERO, HSD_TE_0,
+                                HSD_TEXP_ZERO, HSD_TE_0, HSD_TEXP_ZERO,
+                                HSD_TE_RGB, reg0_rgb);
+                sel[i] = HSD_TE_RGB;
+                exp[i] = tmp;
+                break;
             case TOBJ_TEV_CC_TEX0_AAA:
+                tmp = HSD_TExpTev(list);
+                HSD_TExpOrder(tmp, NULL, GX_COLOR_NULL);
+                HSD_TExpColorOp(tmp, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1,
+                                GX_ENABLE);
+                HSD_TExpColorIn(tmp, HSD_TE_0, HSD_TEXP_ZERO, HSD_TE_0,
+                                HSD_TEXP_ZERO, HSD_TE_0, HSD_TEXP_ZERO,
+                                HSD_TE_X, reg0_a);
+                sel[i] = HSD_TE_RGB;
+                exp[i] = tmp;
+                break;
             case TOBJ_TEV_CC_TEX1_RGB:
+                tmp = HSD_TExpTev(list);
+                HSD_TExpOrder(tmp, NULL, GX_COLOR_NULL);
+                HSD_TExpColorOp(tmp, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1,
+                                GX_ENABLE);
+                HSD_TExpColorIn(tmp, HSD_TE_0, HSD_TEXP_ZERO, HSD_TE_0,
+                                HSD_TEXP_ZERO, HSD_TE_0, HSD_TEXP_ZERO,
+                                HSD_TE_RGB, reg1_rgb);
+                sel[i] = HSD_TE_RGB;
+                exp[i] = tmp;
+                break;
             case TOBJ_TEV_CC_TEX1_AAA:
                 tmp = HSD_TExpTev(list);
                 HSD_TExpOrder(tmp, NULL, GX_COLOR_NULL);
                 HSD_TExpColorOp(tmp, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1,
                                 GX_ENABLE);
-                if (in[i] == TOBJ_TEV_CC_TEX0_RGB ||
-                    in[i] == TOBJ_TEV_CC_TEX1_RGB) {
-                    HSD_TExp* reg = in[i] == TOBJ_TEV_CC_TEX0_RGB ?
-                                    reg0_rgb : reg1_rgb;
-                    HSD_TExpColorIn(tmp, HSD_TE_0, HSD_TEXP_ZERO, HSD_TE_0,
-                                    HSD_TEXP_ZERO, HSD_TE_0, HSD_TEXP_ZERO,
-                                    HSD_TE_RGB, reg);
-                } else {
-                    HSD_TExp* reg = in[i] == TOBJ_TEV_CC_TEX0_AAA ?
-                                    reg0_a : reg1_a;
-                    HSD_TExpColorIn(tmp, HSD_TE_0, HSD_TEXP_ZERO, HSD_TE_0,
-                                    HSD_TEXP_ZERO, HSD_TE_0, HSD_TEXP_ZERO,
-                                    HSD_TE_X, reg);
-                }
+                HSD_TExpColorIn(tmp, HSD_TE_0, HSD_TEXP_ZERO, HSD_TE_0,
+                                HSD_TEXP_ZERO, HSD_TE_0, HSD_TEXP_ZERO,
+                                HSD_TE_X, reg1_a);
                 sel[i] = HSD_TE_RGB;
                 exp[i] = tmp;
                 break;
@@ -1333,6 +1371,10 @@ static void MakeColorGenTExp(u32 lightmap, HSD_TObj* tobj, HSD_TExp** c,
         *c = e0;
     }
     if (tev->active & TOBJ_TEVREG_ACTIVE_ALPHA_TEV) {
+        s32 sel[4];
+        HSD_TExp* exp[4];
+        int i;
+
         in = &tev->alpha_a;
         for (i = 0; i < 4; i++) {
             switch (in[i]) {
@@ -1343,6 +1385,16 @@ static void MakeColorGenTExp(u32 lightmap, HSD_TObj* tobj, HSD_TExp** c,
             case TOBJ_TEV_CA_KONST_B: sel[i] = HSD_TE_X; exp[i] = konst_b; break;
             case TOBJ_TEV_CA_KONST_A: sel[i] = HSD_TE_X; exp[i] = konst_a; break;
             case TOBJ_TEV_CA_TEX0_A:
+                tmp = HSD_TExpTev(list);
+                HSD_TExpOrder(tmp, NULL, GX_COLOR_NULL);
+                HSD_TExpAlphaOp(tmp, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1,
+                                GX_ENABLE);
+                HSD_TExpAlphaIn(tmp, HSD_TE_0, HSD_TEXP_ZERO, HSD_TE_0,
+                                HSD_TEXP_ZERO, HSD_TE_0, HSD_TEXP_ZERO,
+                                HSD_TE_X, reg0_a);
+                sel[i] = HSD_TE_A;
+                exp[i] = tmp;
+                break;
             case TOBJ_TEV_CA_TEX1_A:
                 tmp = HSD_TExpTev(list);
                 HSD_TExpOrder(tmp, NULL, GX_COLOR_NULL);
@@ -1350,8 +1402,7 @@ static void MakeColorGenTExp(u32 lightmap, HSD_TObj* tobj, HSD_TExp** c,
                                 GX_ENABLE);
                 HSD_TExpAlphaIn(tmp, HSD_TE_0, HSD_TEXP_ZERO, HSD_TE_0,
                                 HSD_TEXP_ZERO, HSD_TE_0, HSD_TEXP_ZERO,
-                                HSD_TE_X, in[i] == TOBJ_TEV_CA_TEX0_A ?
-                                          reg0_a : reg1_a);
+                                HSD_TE_X, reg1_a);
                 sel[i] = HSD_TE_A;
                 exp[i] = tmp;
                 break;
