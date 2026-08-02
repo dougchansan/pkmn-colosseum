@@ -1133,10 +1133,10 @@ static inline void HandleJobQueue(SYNTH_QUEUE** queueRoot, void (*handler)(u32))
     *queueRoot = NULL;
 }
 
-static inline void HandleVoices(SYNTH_JOBTAB* jobTables) {
+static inline void HandleVoices(void) {
     SYNTH_JOBTAB* jTab;
 
-    jTab = &jobTables[lbl_8047AF19];
+    jTab = &lbl_804354A4[lbl_8047AF19];
     HandleJobQueue(&jTab->lowPrecision, LowPrecisionHandler);
     HandleJobQueue(&jTab->event, EventHandler);
     HandleJobQueue(&jTab->zeroOffset, ZeroOffsetHandler);
@@ -1169,7 +1169,7 @@ void synthHandle(u32 deltaTime) {
     }
 
     macHandle(deltaTime);
-    HandleVoices((SYNTH_JOBTAB*)(synthBase + 0xa94));
+    HandleVoices();
 
     if (fn_80162464() == 0) {
         if ((lbl_8047AF40 | lbl_8047AF3C) != 0) {
