@@ -15,7 +15,8 @@ typedef struct GbaMiscContext {
     u8 tableKey_4136;    /* 0x4136 */
 } GbaMiscContext;
 
-#if !defined(GBA_MISC_80089E20_ONLY)
+#if !defined(GBA_MISC_80089E20_ONLY) && \
+    !defined(GBA_MISC_80089B8C_ONLY)
 
 /* GameCube records are big-endian; the GBA expects little-endian. */
 static u16 GbaSwap16(u16 value) {
@@ -327,6 +328,8 @@ void fn_80092B2C(void);
 /* ===== Function implementations ===== */
 
 #if !defined(GBA_MISC_80089E20_ONLY)
+
+#if !defined(GBA_MISC_80089B8C_ONLY)
 
 /* 0x800895A4 | size: 0x114 */
 void fn_800895A4(void) {
@@ -798,6 +801,8 @@ void fn_80089978(void) {
     return;
 }
 
+#endif
+
 /* 0x80089B8C | size: 0x84 */
 #pragma push
 #pragma peephole off
@@ -859,6 +864,8 @@ void fn_80089C84(s32 param) {
     fn_80071700(param - 1);
 }
 #pragma pop
+
+#if !defined(GBA_MISC_80089B8C_ONLY)
 
 /* 0x80089CA8 | size: 0x88 */
 s32 GbaMisc_PollEntryStatusA(s32 r31) {
@@ -929,6 +936,10 @@ s32 fn_80089D98(s32 r31) {
 
 #endif
 
+#endif
+
+#if !defined(GBA_MISC_80089B8C_ONLY)
+
 /* 0x80089E20 | size: 0x138 */
 #pragma push
 #pragma peephole off
@@ -990,7 +1001,10 @@ s32 fn_80089E20(s32 r30, void* r31, u32 r5, u32 r29) {
 }
 #pragma pop
 
-#if !defined(GBA_MISC_80089E20_ONLY)
+#endif
+
+#if !defined(GBA_MISC_80089E20_ONLY) && \
+    !defined(GBA_MISC_80089B8C_ONLY)
 
 /* 0x80089F58 | size: 0x8 */
 u32 fn_80089F58(u32 v) {

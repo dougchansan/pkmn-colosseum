@@ -3459,7 +3459,7 @@ config.libs = [
                 progress_category="sdk",
             ),
             Object(
-                CodeCandidate,
+                Matching,
                 "dolphin/sdk_r53_8009B1B8_suffix.c",
                 mw_version="GC/1.2.5n",
                 progress_category="sdk",
@@ -7427,7 +7427,7 @@ config.libs = [
                 )
                 for status, path in [
                     (Matching, "game/gba/gba_misc_exact_800896B8.c"),
-                    (CodeCandidate, "game/gba/gba_misc_r51_80089B8C_suffix.c"),
+                    (Matching, "game/gba/gba_misc_r51_80089B8C_suffix.c"),
                     (Matching, "game/gba/gba_misc_exact_80089CA8.c"),
                     (CodeCandidate, "game/gba/gba_misc_candidate_80089D30.c"),
                     (Matching, "game/gba/gba_misc_exact_80089D98.c"),

@@ -7,6 +7,8 @@ extern void* memcpy(void* dst, const void* src, u32 size);
 extern void DCFlushRange(void* address, u32 size);
 extern u32 OSGetTick(void);
 
+#if !defined(SDK_STOP_AUDIO_ONLY)
+
 void __OSInitAudioSystem(void)
 {
     volatile u16* regs = (volatile u16*)0xCC005000;
@@ -71,5 +73,7 @@ void __OSInitAudioSystem(void)
     memcpy((void*)0x81000000, (u8*)OSGetArenaHi() - sizeof(DSPInitCode),
            sizeof(DSPInitCode));
 }
+
+#endif
 
 #include "src/dolphin/sdk_range_8009AFD0.c"

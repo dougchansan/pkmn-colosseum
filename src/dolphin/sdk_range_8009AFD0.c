@@ -14,6 +14,8 @@ typedef void OSArenaAddress;
 extern OSArenaAddress* __OSArenaLo;
 volatile u16 AudioDSPRegs[32] : 0xCC005000;
 
+#if !defined(SDK_STOP_AUDIO_ONLY)
+
 void* OSAllocFromArenaLo(u32 size, u32 align) {
     u32 am1 = align - 1;
     u32 mask = ~am1;
@@ -25,6 +27,8 @@ void* OSAllocFromArenaLo(u32 size, u32 align) {
     __OSArenaLo = (OSArenaAddress*)(mask & size);
     return ptr;
 }
+
+#endif
 
 void __OSStopAudioSystem(void) {
     u16 reg16;
