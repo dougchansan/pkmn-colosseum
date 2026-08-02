@@ -11,7 +11,9 @@
 #include "dolphin/types.h"
 
 #if !defined(FIGHT_RANGE_EXACT_80220B8C_ONLY) && \
-    !defined(FIGHT_RANGE_EXACT_80221104_ONLY)
+    !defined(FIGHT_RANGE_EXACT_80221104_ONLY) && \
+    !defined(FIGHT_RANGE_EXACT_802128D0_ONLY) && \
+    !defined(FIGHT_RANGE_EXACT_80213158_ONLY)
 #define FIGHT_RANGE_ALL
 #endif
 
@@ -46,7 +48,8 @@ extern u32 lbl_8047B618;
 extern void* lbl_8047B62C;
 extern void fn_80211B94(void*, void*, u8);
 
-#if defined(FIGHT_RANGE_ALL)
+#if defined(FIGHT_RANGE_ALL) || defined(FIGHT_RANGE_EXACT_80213158_ONLY)
+#if !defined(FIGHT_RANGE_EXACT_80213158_ONLY)
 /*
  * fightTrainerAiGetValueAryMaxBanme (0x802397B8)
  *
@@ -2748,6 +2751,7 @@ void fn_80217434(void) {
 #undef fn_8011BBD8
 #pragma optimize_for_size reset
 
+#endif
 /* fn_80213158: dispatcher -- fetches val=fn_801F54A4(...,0x45,...), queues
  * fn_801F4C14(...,0x36,...,val), resolves fn_802037DC(val) into
  * fn_80132A38(0xd,...), clears lbl_8047B614, fires fn_801EF8F4(1),
@@ -2761,6 +2765,9 @@ void fn_80217434(void) {
 #define fn_80202810 fightOutPokemonWriteJoutaiDataId
 #define fn_8026246C fightMenuCloseMsg
 void fn_80213158(u32 param1) {
+    extern u8 lbl_8047B614;
+    extern u8 lbl_8037889D[35];
+    extern void fn_801EF8F4();
     extern u8 fn_801F4C14(u32, u16, u32, u16, u32);
     extern void* fn_802037DC(void*);
     extern void fn_80132A38();
@@ -2800,6 +2807,7 @@ void fn_80213158(u32 param1) {
 #undef fn_8026246C
 #pragma optimize_for_size reset
 
+#if !defined(FIGHT_RANGE_EXACT_80213158_ONLY)
 /* ===== 0x8021D688-0x80223A24 sound/anim/thread ops (wave2-w2 worker) ===== */
 extern void fn_80165668(s32, s32, s32);
 extern void fn_80166A50(s32, s32, s32, s32);
@@ -7607,6 +7615,7 @@ u8 fn_80230568(void* ctx, u32 side) {
 #pragma optimize_for_size reset
 /* ===== fable deep-dive #4 (harvested at credit-out; documented partial) ===== */
 #endif
+#endif
 
 #if defined(FIGHT_RANGE_ALL) || defined(FIGHT_RANGE_EXACT_80221104_ONLY)
 /* 0x80221104 | size: 0x100C */
@@ -8058,7 +8067,8 @@ void fn_80221104(u32 a, u32 code) {
 #pragma opt_propagation reset
 #endif
 
-#if defined(FIGHT_RANGE_ALL)
+#if defined(FIGHT_RANGE_ALL) || defined(FIGHT_RANGE_EXACT_802128D0_ONLY)
+#if !defined(FIGHT_RANGE_EXACT_802128D0_ONLY)
 /* ===== deep-dive #5 (sonnet, 89.7% WIP -- has residual instruction-shape
  * diffs beyond the coloring wall; correct high-level logic, several sibling
  * bug-fixes captured in header) ===== */
@@ -10440,6 +10450,7 @@ item_status_done:
   return;
 }
 #pragma opt_propagation reset
+#endif
 void fn_802128D0(u32 r3, u32 r4)
 
 {
@@ -10739,6 +10750,7 @@ void fn_80212D6C(void)
   return;
 }
 #pragma optimize_for_size reset
+#if !defined(FIGHT_RANGE_EXACT_802128D0_ONLY)
 #pragma opt_propagation off
 void fn_80213270(void)
 
@@ -15765,6 +15777,7 @@ advance:
 done:
     return;
 }
+#endif
 #endif
 
 #if defined(FIGHT_RANGE_ALL) || defined(FIGHT_RANGE_EXACT_80220B8C_ONLY)
