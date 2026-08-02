@@ -543,13 +543,7 @@ f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 nb_args)
             d1 = ((ByteCodeVal*) &stack->data)->i;
             stack = fn_801A3E64(stack);
             d0 = ((ByteCodeVal*) &stack->data)->i;
-            {
-                int val = 0;
-                if (d0 != 0 && d1 != 0) {
-                    val = 1;
-                }
-                ((ByteCodeVal*) &stack->data)->i = val;
-            }
+            ((ByteCodeVal*) &stack->data)->i = d0 != 0 && d1 != 0;
             break;
         case 0x30:
             BC_ASSERT(661, stack);
@@ -557,13 +551,7 @@ f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 nb_args)
             d1 = ((ByteCodeVal*) &stack->data)->i;
             stack = fn_801A3E64(stack);
             d0 = ((ByteCodeVal*) &stack->data)->i;
-            {
-                int val = 1;
-                if (d0 == 0 && d1 == 0) {
-                    val = 0;
-                }
-                ((ByteCodeVal*) &stack->data)->i = val;
-            }
+            ((ByteCodeVal*) &stack->data)->i = d0 != 0 || d1 != 0;
             break;
         case 0x32:
             BC_ASSERT(666, stack);
@@ -571,13 +559,8 @@ f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 nb_args)
             d1 = ((ByteCodeVal*) &stack->data)->i;
             stack = fn_801A3E64(stack);
             d0 = ((ByteCodeVal*) &stack->data)->i;
-            {
-                int val = 0;
-                if ((d0 == 0 && d1 != 0) || (d0 != 0 && d1 == 0)) {
-                    val = 1;
-                }
-                ((ByteCodeVal*) &stack->data)->i = val;
-            }
+            ((ByteCodeVal*) &stack->data)->i =
+                (d0 == 0 && d1 != 0) || (d0 != 0 && d1 == 0);
             break;
         case 0x39:
             BC_ASSERT(671, stack);
@@ -662,28 +645,28 @@ BOOL fn_80193788(void* info, void* p)
 void* fn_80193828(HSD_ClassInfo* i)
 {
     extern void* memset(void* dst, int val, u32 size);
-    HSD_ClassInfo* info;
+    HSD_ClassInfo* info = i;
+    HSD_ClassInfo* alloc_info = info;
     HSD_Class* obj;
 
-    if (!(i->head.flags & 1)) {
-        i->head.info_init();
+    if (!(alloc_info->head.flags & 1)) {
+        alloc_info->head.info_init();
     }
 
-    obj = i->alloc(i);
+    obj = info->alloc(alloc_info);
     if (obj == NULL) {
         return NULL;
     }
 
-    info = i;
     if (!(info->head.flags & 1)) {
         info->head.info_init();
     }
 
     memset(obj, 0, info->head.obj_size);
-    obj->class_info = i;
+    obj->class_info = info;
 
     if (info->init(obj) < 0) {
-        i->destroy(obj);
+        info->destroy(obj);
         return NULL;
     }
 
