@@ -6194,7 +6194,7 @@ void vsSampleUpdates(void) {
  *     promoted to a fixed blob per this campaign's established convention
  *   lbl_802732E0 = dspMixerCycles[32] (u16, indexed directly by
  *     pb->mixerCtrl, confirmed via `lhz r0,0xc(pb); slwi; lhzx`)
- *   lbl_80369A50 = dspSRCCycles[3][6] (u16, row stride 0xC, confirmed via
+ *   lbl_80369A50 = dspSRCCycles[3][3] (u16, row stride 6, confirmed via
  *     `mulli r4,ratioHi,0x6; lhz srcSelect@0x8(pb); slwi; add; lhzx`)
  *   __OSBusClock read directly at absolute 0x800000F8 (same idiom already
  *     used by salGetStartDelay elsewhere in this file), re-read fresh both
@@ -6461,7 +6461,8 @@ extern u8   lbl_8047B05E;     /* salAuxFrame */
 extern u8   lbl_8047B05F;     /* salFrame */
 extern DSPvoice* lbl_80448440[64]; /* static local `voices[64]` promoted to a fixed blob */
 extern u16 lbl_802732E0[32];       /* dspMixerCycles */
-extern u16 lbl_80369A50[3][6];     /* dspSRCCycles */
+extern u16 lbl_80369A50[3][3];     /* dspSRCCycles */
+extern const u16 lbl_80273320[9];  /* salBuildCommandList::pbOffsets */
 
 #define dspARAMZeroBuffer lbl_8047AFF0
 #define dspCmdLastLoad    lbl_8047AFF4
@@ -6974,7 +6975,7 @@ extern void DCStoreRangeNoSync(void* addr, u32 nBytes);
 #pragma optimization_level 4
 #pragma optimizewithasm off
 void fn_8015B250(u32 dest, u32 nsDelay) {
-    static const u16 pbOffsets[9] = {10, 12, 24, 14, 16, 26, 18, 20, 22};
+#define pbOffsets lbl_80273320
 
     u8 s;
     u8 mix_start;
@@ -7735,6 +7736,7 @@ void fn_8015B250(u32 dest, u32 nsDelay) {
     }
     DCStoreRangeNoSync(dspCmdCurBase, (u32)dspCmdPtr - (u32)dspCmdCurBase);
 }
+#undef pbOffsets
 #pragma pop
 
 #undef DSP_CMD_ENSURE
