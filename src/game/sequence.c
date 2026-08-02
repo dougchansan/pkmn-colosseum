@@ -748,6 +748,7 @@ BOOL fn_801DE164(s32 slot) {
 
 #if defined(SEQUENCE_801DE190_801DE654)
 
+#if !defined(SEQUENCE_CANDIDATE_801DE598_ONLY)
 /**
  * fn_801DE190 - Waza hit flash update.
  * Address: 0x801DE190 | Size: 0x288
@@ -815,6 +816,7 @@ void* fn_801DE418(u16 index) {
     /* TODO: Allocate and initialize the effect from the loaded resource. */
     return NULL;
 }
+#endif
 
 /**
  * fn_801DE598 - Waza HP drain update.
