@@ -1648,64 +1648,64 @@ BOOL fn_801E34F0(void)
 u32 fn_801E260C(s16 *dmaBuffer, u32 firstLength, u32 unused,
                 u32 secondLength, void *active)
 {
-    THPAudioDmaState *state = (THPAudioDmaState *)lbl_8046A440;
+    THPAudioDmaState *state;
     u32 bytes = *(u32 *)(lbl_8046AC60 + 0x90) * 40 / 1000;
     u32 samples = bytes / sizeof(s16);
     u64 requested;
 
     (void)unused;
-    if (active == NULL) {
-        return 0;
-    }
-
-    requested = state->dmaPosition + firstLength + secondLength;
-    state->requestedPosition = requested;
-    while (state->readMarker != state->writeMarker) {
-        if (requested < state->markers[state->readMarker]) {
-            break;
+    if (active != NULL) {
+        state = (THPAudioDmaState *)lbl_8046A440;
+        requested = state->dmaPosition + firstLength + secondLength;
+        state->requestedPosition = requested;
+        while (state->readMarker != state->writeMarker) {
+            if (requested < state->markers[state->readMarker]) {
+                break;
+            }
+            state->readMarker++;
+            if (state->readMarker >= 5) {
+                state->readMarker = 0;
+            }
+            (*(u32 *)(lbl_8046AC60 + 0xE4))++;
         }
-        state->readMarker++;
-        if (state->readMarker >= 5) {
-            state->readMarker = 0;
+
+        if (firstLength + secondLength < samples) {
+            return 0;
         }
-        (*(u32 *)(lbl_8046AC60 + 0xE4))++;
-    }
 
-    if (firstLength + secondLength < samples) {
-        return 0;
-    }
-
-    if (dmaBuffer == lbl_8047B470) {
-        if (*(u32 *)(lbl_8046AC60 + 0x8C) == 2) {
-            THPDecodeAudioBlock(state, lbl_8047B470, lbl_8047B474,
-                                samples);
+        if (dmaBuffer == lbl_8047B470) {
+            if (*(u32 *)(lbl_8046AC60 + 0x8C) == 2) {
+                THPDecodeAudioBlock(state, lbl_8047B470, lbl_8047B474,
+                                    samples);
+            } else {
+                THPDecodeAudioBlock(state, lbl_8047B470, NULL, samples);
+            }
+            DCFlushRange(lbl_8047B470, bytes);
+            fn_8014E9B4(lbl_80478D00, 0, samples, 0, 0);
+            if (*(u32 *)(lbl_8046AC60 + 0x8C) == 2) {
+                DCFlushRange(lbl_8047B474, bytes);
+                fn_8014E9B4(lbl_80478D04, 0, samples, 0, 0);
+            }
         } else {
-            THPDecodeAudioBlock(state, lbl_8047B470, NULL, samples);
+            if (*(u32 *)(lbl_8046AC60 + 0x8C) == 2) {
+                THPDecodeAudioBlock(state, lbl_8047B470 + samples,
+                                    lbl_8047B474 + samples, samples);
+            } else {
+                THPDecodeAudioBlock(state, lbl_8047B470 + samples, NULL,
+                                    samples);
+            }
+            DCFlushRange(lbl_8047B470 + samples, bytes);
+            fn_8014E9B4(lbl_80478D00, samples, samples, 0, 0);
+            if (*(u32 *)(lbl_8046AC60 + 0x8C) == 2) {
+                DCFlushRange(lbl_8047B474 + samples, bytes);
+                fn_8014E9B4(lbl_80478D04, samples, samples, 0, 0);
+            }
         }
-        DCFlushRange(lbl_8047B470, bytes);
-        fn_8014E9B4(lbl_80478D00, 0, samples, 0, 0);
-        if (*(u32 *)(lbl_8046AC60 + 0x8C) == 2) {
-            DCFlushRange(lbl_8047B474, bytes);
-            fn_8014E9B4(lbl_80478D04, 0, samples, 0, 0);
-        }
-    } else {
-        if (*(u32 *)(lbl_8046AC60 + 0x8C) == 2) {
-            THPDecodeAudioBlock(state, lbl_8047B470 + samples,
-                                lbl_8047B474 + samples, samples);
-        } else {
-            THPDecodeAudioBlock(state, lbl_8047B470 + samples, NULL,
-                                samples);
-        }
-        DCFlushRange(lbl_8047B470 + samples, bytes);
-        fn_8014E9B4(lbl_80478D00, samples, samples, 0, 0);
-        if (*(u32 *)(lbl_8046AC60 + 0x8C) == 2) {
-            DCFlushRange(lbl_8047B474 + samples, bytes);
-            fn_8014E9B4(lbl_80478D04, samples, samples, 0, 0);
-        }
-    }
 
-    state->dmaPosition += samples;
-    return samples;
+        state->dmaPosition += samples;
+        return samples;
+    }
+    return 0;
 }
 
 /*
