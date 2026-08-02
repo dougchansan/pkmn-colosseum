@@ -1382,11 +1382,11 @@ config.libs = [
                     (Matching, "musyx/runtime/synthdata_exact_80150E68.c"),
                     (Matching, "musyx/runtime/synthdata_candidate_80150FE4.c"),
                     (Matching, "musyx/runtime/synthdata_exact_8015122C.c"),
-                    (CodeCandidate, "musyx/runtime/synthdata_candidate_80151B84.c"),
+                    (Matching, "musyx/runtime/synthdata_candidate_80151B84.c"),
                     (Matching, "musyx/runtime/synthdata_exact_8015210C.c"),
                     (CodeCandidate, "musyx/runtime/synthdata_candidate_8015211C.c"),
                     (Matching, "musyx/runtime/synthdata_exact_801521A8.c"),
-                    (CodeCandidate, "musyx/runtime/synthdata_candidate_801521B8.c"),
+                    (Matching, "musyx/runtime/synthdata_candidate_801521B8.c"),
                     (Matching, "musyx/runtime/synthdata_exact_801522E0.c"),
                 ]
             ],
@@ -2038,7 +2038,7 @@ config.libs = [
                 progress_category="game",
             ),
             Object(
-                CodeCandidate,
+                Matching,
                 "game/fight_out_pokemon_candidate_802038A4.c",
                 mw_version="GC/1.3",
                 extra_cflags=["-O4,s", "-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
@@ -2313,7 +2313,7 @@ config.libs = [
                     progress_category="game",
                 )
                 for status, path in [
-                    (CodeCandidate, "game/wazaViewer_candidate_801D5328.c"),
+                    (Matching, "game/wazaViewer_candidate_801D5328.c"),
                     (Matching, "game/wazaViewer_exact_801D53D4.c"),
                     (CodeCandidate, "game/wazaViewer_candidate_801D53D8.c"),
                     (Matching, "game/wazaViewer_exact_801D744C.c"),
@@ -5725,7 +5725,7 @@ config.libs = [
                     (Matching, "game/field_exact_801CA9F8.c"),
                     (CodeCandidate, "game/field_candidate_801CAA08.c"),
                     (Matching, "game/field_exact_801CADA0.c"),
-                    (CodeCandidate, "game/field_candidate_801CADA8.c"),
+                    (Matching, "game/field_candidate_801CADA8.c"),
                     (Matching, "game/field_exact_801CAE80.c"),
                 ]
             ],
@@ -6817,7 +6817,7 @@ config.libs = [
                 progress_category="game",
             ),
             Object(
-                CodeCandidate,
+                Matching,
                 "game/fight_trainer_ai2.c",
                 mw_version="GC/1.3",
                 extra_cflags=["-O4,s", "-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
@@ -8967,7 +8967,7 @@ config.libs = [
                     (Matching, "game/gs_gfx_layer_exact_800D7230.c"),
                     (CodeCandidate, "game/gs_gfx_layer_candidate_800D76A8.c"),
                     (Matching, "game/gs_gfx_layer_exact_800D7820.c"),
-                    (CodeCandidate, "game/gs_gfx_layer_candidate_800D7894.c"),
+                    (Matching, "game/gs_gfx_layer_candidate_800D7894.c"),
                     (Matching, "game/gs_gfx_layer_exact_800D7940.c"),
                     (Matching, "game/gs_gfx_layer_exact_800D7A70.c"),
                     (CodeCandidate, "game/gs_gfx_layer_candidate_800D7D90.c"),
@@ -9352,7 +9352,7 @@ config.libs = [
                     (CodeCandidate, "game/gs_title_candidate_80020618.c"),
                     (Matching, "game/gs_title_exact_8002091C.c"),
                     (Matching, "game/gs_title_exact_80020E9C.c"),
-                    (CodeCandidate, "game/gs_title_candidate_80020EA4.c"),
+                    (Matching, "game/gs_title_candidate_80020EA4.c"),
                     (Matching, "game/gs_title_exact_80020F54.c"),
                     (CodeCandidate, "game/gs_title_candidate_800210F0.c"),
                     (Matching, "game/gs_title_exact_800215C4.c"),
