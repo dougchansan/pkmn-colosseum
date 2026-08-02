@@ -79,13 +79,12 @@ void fn_801ABDD4(HSD_PObj* pobj, f32 vertex_buffer[][3],
         for (i = 0; i < n; i++) {
             for (j = 0;; j++) {
                 HSD_VtxDescList* desc = &pobj->verts[j];
-                u16 idx;
 
                 if (desc->attr == 0xFF) {
                     break;
-                }
-                idx = dl[m++];
-                switch (desc->attr) {
+                } else {
+                    u16 idx = dl[m++];
+                    switch (desc->attr) {
                 case 0:
                 case 1:
                 case 2:
@@ -179,6 +178,7 @@ void fn_801ABDD4(HSD_PObj* pobj, f32 vertex_buffer[][3],
                     }
                     OSReport((char*) lbl_80274EE0 + 0x104, desc->attr);
                     break;
+                    }
                 }
             }
         }
@@ -1262,7 +1262,7 @@ void drawShapeAnim(HSD_PObj* pobj)
     }
 
     if (shape_set->normal_desc != NULL) {
-        if ((s32) shape_set->normal_desc->attr == 10) {
+        if (shape_set->normal_desc->attr == 10) {
             if (lbl_8047B2F8 < (u32) shape_set->nb_normal_index) {
                 __assert(&lbl_8047DCB8, 0x574, strings + 0x98);
             }
