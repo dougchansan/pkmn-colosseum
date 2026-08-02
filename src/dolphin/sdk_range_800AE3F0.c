@@ -1226,21 +1226,44 @@ static u32 cardExnor(u32 data, u32 lshift) {
     return work;
 }
 
+static s32 cardRand(void) {
+    lbl_80478A50 = lbl_80478A50 * 0x41C64E6D + 0x3039;
+    return (lbl_80478A50 >> 16) & 0x7FFF;
+}
+
+static void cardSrand(u32 seed) {
+    lbl_80478A50 = seed;
+}
+
+static u32 cardGetInitValue(void) {
+    u32 value;
+    u32 tick;
+
+    tick = OSGetTick();
+    cardSrand(tick);
+    value = 0x7FEC8000;
+    value |= cardRand();
+    value &= 0xFFFFF000;
+    return value;
+}
+
 s32 __CARDUnlock(s32 chan, u8 flashID[12]) {
     u32 initValue;
     u32 data;
     s32 dummy;
     s32 readLength;
     u32 shift;
+    u8 fsts;
     u32 work;
     u32 feedback;
-    u32 answer1;
+    u32 answer1 = 0;
+    u32 answer2 = 0;
     u32* words;
     u8 readBuffer[64];
-    u32 parameter1A;
-    u32 parameter1B;
-    u32 parameter2A;
-    u32 parameter2B;
+    u32 parameter1A = 0;
+    u32 parameter1B = 0;
+    u32 parameter2A = 0;
+    u32 parameter2B = 0;
     CARDControl* card;
     DSPTaskInfo* task;
     CARDDecParam* parameter;
@@ -1254,11 +1277,8 @@ s32 __CARDUnlock(s32 chan, u8 flashID[12]) {
     input = (u8*)(((u32)input + 31) & ~31);
     output = input + 32;
 
-    lbl_80478A50 = OSGetTick();
-    lbl_80478A50 = lbl_80478A50 * 0x41C64E6D + 0x3039;
-    initValue = 0x7FEC8000;
-    initValue |= (lbl_80478A50 >> 16) & 0x7FFF;
-    initValue &= 0xFFFFF000;
+    fsts = 0;
+    initValue = cardGetInitValue();
 
     dummy = DummyLen();
     readLength = dummy;
@@ -1287,22 +1307,26 @@ s32 __CARDUnlock(s32 chan, u8 flashID[12]) {
     parameter2B = *words++;
 
     parameter1A ^= card->scramble;
-    work = cardExnor(card->scramble, 32);
+    shift = 32;
+    work = cardExnor(card->scramble, shift);
     feedback = ~(work ^ (work << 7) ^ (work << 15) ^ (work << 23));
     card->scramble = work | ((feedback >> 31) & 1);
 
     parameter1B ^= card->scramble;
-    work = cardExnor(card->scramble, 32);
+    shift = 32;
+    work = cardExnor(card->scramble, shift);
     feedback = ~(work ^ (work << 7) ^ (work << 15) ^ (work << 23));
     card->scramble = work | ((feedback >> 31) & 1);
 
     answer1 ^= card->scramble;
-    work = cardExnor(card->scramble, 32);
+    shift = 32;
+    work = cardExnor(card->scramble, shift);
     feedback = ~(work ^ (work << 7) ^ (work << 15) ^ (work << 23));
     card->scramble = work | ((feedback >> 31) & 1);
 
     parameter2A ^= card->scramble;
-    work = cardExnor(card->scramble, 32);
+    shift = 32;
+    work = cardExnor(card->scramble, shift);
     feedback = ~(work ^ (work << 7) ^ (work << 15) ^ (work << 23));
     card->scramble = work | ((feedback >> 31) & 1);
 
@@ -1312,7 +1336,8 @@ s32 __CARDUnlock(s32 chan, u8 flashID[12]) {
     feedback = ~(work ^ (work << 7) ^ (work << 15) ^ (work << 23));
     card->scramble = work | ((feedback >> 31) & 1);
 
-    work = cardExnor(card->scramble, 33);
+    shift = 32 + 1;
+    work = cardExnor(card->scramble, shift);
     feedback = ~(work ^ (work << 7) ^ (work << 15) ^ (work << 23));
     card->scramble = work | ((feedback >> 31) & 1);
 
