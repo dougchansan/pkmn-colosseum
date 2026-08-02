@@ -343,7 +343,7 @@ config.libs = [
                 progress_category="runtime",
             ),
             Object(
-                CodeCandidate,
+                Matching,
                 "trk/TRKBuffer.c",
                 mw_version="GC/1.3",
                 extra_cflags=["-use_lmw_stmw on"],
@@ -2260,7 +2260,7 @@ config.libs = [
                 for status, path in [
                     (CodeCandidate, "game/mail_candidate_801D1338.c"),
                     (Matching, "game/mail_exact_801D13E4.c"),
-                    (CodeCandidate, "game/mail_candidate_801D142C.c"),
+                    (Matching, "game/mail_candidate_801D142C.c"),
                     (Matching, "game/mail_exact_801D1470.c"),
                     (CodeCandidate, "game/mail_candidate_801D167C.c"),
                     (Matching, "game/mail_exact_801D16F0.c"),
@@ -2551,7 +2551,8 @@ config.libs = [
                     status,
                     path,
                     mw_version="GC/1.3",
-                    extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                    extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"]
+                    + (["-schedule off"] if path == "game/window_candidate_801046C8.c" else []),
                     progress_category="game",
                 )
                 for status, path in [
@@ -2560,7 +2561,7 @@ config.libs = [
                     (Matching, "game/window_exact_801040A0.c"),
                     (CodeCandidate, "game/window_candidate_801040F0.c"),
                     (Matching, "game/window_exact_801046B8.c"),
-                    (CodeCandidate, "game/window_candidate_801046C8.c"),
+                    (Matching, "game/window_candidate_801046C8.c"),
                     (Matching, "game/window_exact_80104704.c"),
                     (Matching, "game/window_exact_80105624.c"),
                     (CodeCandidate, "game/window_candidate_80105634.c"),
@@ -7689,7 +7690,8 @@ config.libs = [
                     status,
                     path,
                     mw_version="GC/1.3",
-                    extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                    extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"]
+                    + (["-opt nopeephole"] if path == "game/gs_event_exec_candidate_80014118.c" else []),
                     progress_category="game",
                 )
                 for status, path in [
@@ -7698,7 +7700,7 @@ config.libs = [
                     (CodeCandidate, "game/gs_event_exec_candidate_8001374C.c"),
                     (Matching, "game/gs_event_exec_exact_800140FC.c"),
                     (Matching, "game/gs_event_exec_exact_80014110.c"),
-                    (CodeCandidate, "game/gs_event_exec_candidate_80014118.c"),
+                    (Matching, "game/gs_event_exec_candidate_80014118.c"),
                     (Matching, "game/gs_event_exec_exact_80014198.c"),
                     (CodeCandidate, "game/gs_event_exec_r47_prefix.c"),
                     (CodeCandidate, "game/gs_event_exec_r47_suffix.c"),
