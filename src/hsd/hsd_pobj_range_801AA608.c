@@ -43,8 +43,8 @@ extern u8    lbl_8036C638[];         /* parent class info           */
 extern u8    lbl_80274EE0[];         /* class library name          */
 extern u8    lbl_80274EF8[];         /* class name                  */
 extern void* lbl_8047B2E8;           /* cached default instance     */
-extern void* lbl_8047B2EC;           /* active normal desc          */
-extern void* lbl_8047B2F0;           /* active color desc           */
+extern f32 (*lbl_8047B2EC)[3];        /* shape vertex buffer         */
+extern f32 (*lbl_8047B2F0)[3];        /* shape normal buffer         */
 extern u32   lbl_8047B2F4;           /* shape vertex capacity       */
 extern u32   lbl_8047B2F8;           /* shape normal capacity       */
 extern HSD_VtxDescList* lbl_8047B2FC; /* cached array descriptor     */
@@ -1240,20 +1240,21 @@ void fn_801AB63C(u32 first, u32 second)
 
 void drawShapeAnim(HSD_PObj* pobj)
 {
+    char* strings;
     HSD_ShapeSet* shape_set = pobj->u.shape_set;
-    f32 (*vertex_buffer)[3];
-    f32 (*normal_buffer)[3];
     f32 blend;
     s32 shape_id;
     s32 i;
     s32 blend_nbt;
+
+    strings = (char*) lbl_80274EE0;
 
     if (lbl_8047B2F4 == 0) {
         lbl_8047B2F4 = 2000;
         lbl_8047B2EC = fn_801A6928(lbl_8047B2F4 * sizeof(f32[3]));
     }
     if (lbl_8047B2F4 < (u32) shape_set->nb_vertex_index) {
-        __assert(&lbl_8047DCB8, 0x56B, (char*) lbl_80274EE0 + 0x64);
+        __assert(&lbl_8047DCB8, 0x56B, strings + 0x64);
     }
     if (shape_set->normal_desc != NULL && lbl_8047B2F8 == 0) {
         lbl_8047B2F8 = 2000;
@@ -1261,23 +1262,19 @@ void drawShapeAnim(HSD_PObj* pobj)
     }
 
     if (shape_set->normal_desc != NULL) {
-        if (shape_set->normal_desc->attr == 10) {
+        if ((s32) shape_set->normal_desc->attr == 10) {
             if (lbl_8047B2F8 < (u32) shape_set->nb_normal_index) {
-                __assert(&lbl_8047DCB8, 0x574,
-                         (char*) lbl_80274EE0 + 0x98);
+                __assert(&lbl_8047DCB8, 0x574, strings + 0x98);
             }
             blend_nbt = 0;
         } else {
             if (lbl_8047B2F8 < (u32) shape_set->nb_normal_index * 3) {
-                __assert(&lbl_8047DCB8, 0x577,
-                         (char*) lbl_80274EE0 + 0xCC);
+                __assert(&lbl_8047DCB8, 0x577, strings + 0xCC);
             }
             blend_nbt = 1;
         }
     }
 
-    vertex_buffer = lbl_8047B2EC;
-    normal_buffer = lbl_8047B2F0;
     if (shape_set->flags & 1) {
         blend = shape_set->blend.bl;
         shape_id = POBJ_MIN(POBJ_MAX(0, (s32) blend),
@@ -1292,11 +1289,11 @@ void drawShapeAnim(HSD_PObj* pobj)
                 shape_set,
                 POBJ_MIN(shape_id + 1, shape_set->nb_shape - 1),
                 i, shape1);
-            vertex_buffer[i][0] =
+            lbl_8047B2EC[i][0] =
                 (shape1[0] - shape0[0]) * blend + shape0[0];
-            vertex_buffer[i][1] =
+            lbl_8047B2EC[i][1] =
                 (shape1[1] - shape0[1]) * blend + shape0[1];
-            vertex_buffer[i][2] =
+            lbl_8047B2EC[i][2] =
                 (shape1[2] - shape0[2]) * blend + shape0[2];
         }
         if (shape_set->nb_normal_index != 0) {
@@ -1313,7 +1310,7 @@ void drawShapeAnim(HSD_PObj* pobj)
                         POBJ_MIN(shape_id + 1, shape_set->nb_shape - 1),
                         i, shape1);
                     for (j = 0; j < 9; j++) {
-                        normal_buffer[idx][j] =
+                        lbl_8047B2F0[idx][j] =
                             (shape1[j] - shape0[j]) * blend + shape0[j];
                     }
                 }
@@ -1327,11 +1324,11 @@ void drawShapeAnim(HSD_PObj* pobj)
                         shape_set,
                         POBJ_MIN(shape_id + 1, shape_set->nb_shape - 1),
                         i, shape1);
-                    normal_buffer[i][0] =
+                    lbl_8047B2F0[i][0] =
                         (shape1[0] - shape0[0]) * blend + shape0[0];
-                    normal_buffer[i][1] =
+                    lbl_8047B2F0[i][1] =
                         (shape1[1] - shape0[1]) * blend + shape0[1];
-                    normal_buffer[i][2] =
+                    lbl_8047B2F0[i][2] =
                         (shape1[2] - shape0[2]) * blend + shape0[2];
                 }
             }
@@ -1341,15 +1338,15 @@ void drawShapeAnim(HSD_PObj* pobj)
         f32* weights = shape_set->blend.bp;
 
         for (i = 0; i < shape_set->nb_vertex_index; i++) {
-            get_shape_vertex_xyz(shape_set, 0, i, vertex_buffer[i]);
+            get_shape_vertex_xyz(shape_set, 0, i, lbl_8047B2EC[i]);
             for (j = 0; j < shape_set->nb_shape; j++) {
                 f32 weight = POBJ_MAX(0.0f, weights[j]);
                 f32 shape[3];
 
                 get_shape_vertex_xyz(shape_set, j + 1, i, shape);
-                vertex_buffer[i][0] += shape[0] * weight;
-                vertex_buffer[i][1] += shape[1] * weight;
-                vertex_buffer[i][2] += shape[2] * weight;
+                lbl_8047B2EC[i][0] += shape[0] * weight;
+                lbl_8047B2EC[i][1] += shape[1] * weight;
+                lbl_8047B2EC[i][2] += shape[2] * weight;
             }
         }
         if (shape_set->nb_normal_index != 0) {
@@ -1357,7 +1354,7 @@ void drawShapeAnim(HSD_PObj* pobj)
                 for (i = 0; i < shape_set->nb_normal_index; i++) {
                     s32 idx = i * 3;
 
-                    fn_801AC1F8(shape_set, 0, i, normal_buffer[idx]);
+                    fn_801AC1F8(shape_set, 0, i, lbl_8047B2F0[idx]);
                     for (j = 0; j < shape_set->nb_shape; j++) {
                         f32 weight = POBJ_MAX(0.0f, weights[j]);
                         f32 shape[9];
@@ -1365,27 +1362,27 @@ void drawShapeAnim(HSD_PObj* pobj)
 
                         fn_801AC1F8(shape_set, j + 1, i, shape);
                         for (k = 0; k < 9; k++) {
-                            normal_buffer[idx][k] += shape[k] * weight;
+                            lbl_8047B2F0[idx][k] += shape[k] * weight;
                         }
                     }
                 }
             } else {
                 for (i = 0; i < shape_set->nb_normal_index; i++) {
-                    get_shape_normal_xyz(shape_set, 0, i, normal_buffer[i]);
+                    get_shape_normal_xyz(shape_set, 0, i, lbl_8047B2F0[i]);
                     for (j = 0; j < shape_set->nb_shape; j++) {
                         f32 weight = POBJ_MAX(0.0f, weights[j]);
                         f32 shape[3];
 
                         get_shape_normal_xyz(shape_set, j + 1, i, shape);
-                        normal_buffer[i][0] += shape[0] * weight;
-                        normal_buffer[i][1] += shape[1] * weight;
-                        normal_buffer[i][2] += shape[2] * weight;
+                        lbl_8047B2F0[i][0] += shape[0] * weight;
+                        lbl_8047B2F0[i][1] += shape[1] * weight;
+                        lbl_8047B2F0[i][2] += shape[2] * weight;
                     }
                 }
             }
         }
     }
-    fn_801ABDD4(pobj, vertex_buffer, normal_buffer);
+    fn_801ABDD4(pobj, lbl_8047B2EC, lbl_8047B2F0);
 }
 
 void fn_801AC1F8(HSD_ShapeSet* shape_set, s32 shape_id, s32 arrayidx,
