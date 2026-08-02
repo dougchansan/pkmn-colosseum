@@ -15,6 +15,8 @@ typedef struct GbaMiscContext {
     u8 tableKey_4136;    /* 0x4136 */
 } GbaMiscContext;
 
+#if !defined(GBA_MISC_80089E20_ONLY)
+
 /* GameCube records are big-endian; the GBA expects little-endian. */
 static u16 GbaSwap16(u16 value) {
     return (value << 8) | (value >> 8);
@@ -24,6 +26,8 @@ static u32 GbaSwap32(u32 value) {
     return (value << 24) | ((value & 0x0000FF00) << 8) | ((value & 0x00FF0000) >> 8) |
            (value >> 24);
 }
+
+#endif
 
 /*
  * Layout of a single Pokemon record as the GBA cartridge stores it.
@@ -321,6 +325,8 @@ void fn_800929BC(void);
 void fn_80092B2C(void);
 
 /* ===== Function implementations ===== */
+
+#if !defined(GBA_MISC_80089E20_ONLY)
 
 /* 0x800895A4 | size: 0x114 */
 void fn_800895A4(void) {
@@ -921,6 +927,8 @@ s32 fn_80089D98(s32 r31) {
     return n;
 }
 
+#endif
+
 /* 0x80089E20 | size: 0x138 */
 #pragma push
 #pragma peephole off
@@ -981,6 +989,8 @@ s32 fn_80089E20(s32 r30, void* r31, u32 r5, u32 r29) {
     return ret;
 }
 #pragma pop
+
+#if !defined(GBA_MISC_80089E20_ONLY)
 
 /* 0x80089F58 | size: 0x8 */
 u32 fn_80089F58(u32 v) {
@@ -9608,3 +9618,5 @@ void fn_80092B2C(void) {
     ((void(*)(void))floorSetFadeScript)();
     return;
 }
+
+#endif

@@ -291,6 +291,8 @@ extern void PSMTXInverse(const Mtx source, Mtx destination);
 extern void fn_800BD454(f32* projection);
 extern void (*lbl_8047B198)(PSGeneratorState*, Mtx);
 
+#if !defined(PR410_PS_TARGET_ONLY)
+
 void psSetGeneratorAngleRadiusScale(PSGeneratorState* gen, f32* scale,
                                     u8 applyToMotion) {
     u8* raw = (u8*)gen;
@@ -355,6 +357,9 @@ void psSetGeneratorAngleRadiusScale(PSGeneratorState* gen, f32* scale,
     gen->angleRadiusScale[1] = scale[1];
     gen->angleRadiusScale[2] = scale[2];
 }
+
+#endif
+
 extern void fn_800BA4C8(s32 channel, PSColor color);
 extern void fn_800BA5BC(s32 channel, PSColor color);
 extern void fn_800BC2F8(s32 reg, PSColor color);
@@ -689,7 +694,10 @@ void psKillFamily(s32 familyId, s32 linkNo) {
 
 #endif
 
-#if !defined(PR410_PS_SPLIT) || defined(PR410_PS_SUFFIX)
+#if !defined(PR410_PS_SPLIT) || defined(PR410_PS_SUFFIX) || \
+    defined(PR410_PS_TARGET_ONLY)
+
+#if !defined(PR410_PS_TARGET_ONLY)
 
 s32 psAttachGeneratorAppSRT(PSGeneratorState* gen, PSAppSRT* appSRT) {
     u16 refCount;
@@ -1057,6 +1065,8 @@ void psInitDataBank(s32 bankIndex, void* data, void* objects,
     }
 }
 
+#endif
+
 s32 psChangeGeneratorAppSRT(PSGeneratorState* gen, PSAppSRT* newAppSRT) {
     PSAppSRT* oldAppSRT;
     u16 refCount;
@@ -1125,6 +1135,8 @@ s32 psChangeParticleAppSRT(PSParticle* pp, PSAppSRT* newAppSRT) {
     newAppSRT->refCount = refCount;
     return refCount;
 }
+
+#if !defined(PR410_PS_TARGET_ONLY)
 
 void psRemoveAppSRT(void) {
     PSAppSRT* appSRT = lbl_8047B124;
@@ -1279,6 +1291,8 @@ void fn_8016AB94(u32 linkMask, s32 mode) {
         }
     }
 }
+
+#endif
 
 #endif
 
