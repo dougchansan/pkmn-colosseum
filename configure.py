@@ -10206,7 +10206,7 @@ config.libs = [
                 CodeCandidate,
                 "hsd/hsd_util_r52_801BF098_prefix.c",
                 mw_version="GC/1.3",
-                extra_cflags=["-O2"],
+                extra_cflags=["-O1"],
                 progress_category="hsd",
             ),
             Object(
@@ -10220,7 +10220,7 @@ config.libs = [
                 CodeCandidate,
                 "hsd/hsd_video.c",
                 mw_version="GC/1.3",
-                extra_cflags=["-O2"],
+                extra_cflags=["-O1"],
                 progress_category="hsd",
             ),
             Object(
