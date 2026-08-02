@@ -151,7 +151,7 @@ typedef struct GXData_800BB30C {
 
 #define field_002 status.half.field_002
 
-extern GXData_800BB30C* gx;
+extern GXData_800BB30C* const gx;
 extern volatile u16* __cpReg;
 extern u32 lbl_80313590[];
 extern u32 lbl_80313608[];
@@ -188,25 +188,19 @@ volatile PPCWGPipe_800BB30C GXWGFifo_800BB30C : 0xCC008000;
 #define GX_FIFO_U32 GXWGFifo_800BB30C.u32
 #define GX_FIFO_F32 GXWGFifo_800BB30C.f32
 
-#define GX_BP_REG(reg)       \
-    do {                     \
-        GX_FIFO_U8 = 0x61;   \
-        GX_FIFO_U32 = (reg); \
-    } while (0)
+#define GX_BP_REG(reg)     \
+    GX_FIFO_U8 = 0x61;     \
+    GX_FIFO_U32 = (reg)
 
-#define GX_XF_REG(addr, reg)       \
-    do {                           \
-        GX_FIFO_U8 = 0x10;         \
-        GX_FIFO_U32 = 0x1000 + (addr); \
-        GX_FIFO_U32 = (reg);       \
-    } while (0)
+#define GX_XF_REG(addr, reg)          \
+    GX_FIFO_U8 = 0x10;                \
+    GX_FIFO_U32 = 0x1000 + (addr);    \
+    GX_FIFO_U32 = (reg)
 
 #define GX_CP_REG(addr, reg) \
-    do {                     \
-        GX_FIFO_U8 = 8;      \
-        GX_FIFO_U8 = (addr); \
-        GX_FIFO_U32 = (reg); \
-    } while (0)
+    GX_FIFO_U8 = 8;          \
+    GX_FIFO_U8 = (addr);     \
+    GX_FIFO_U32 = (reg)
 
 #if defined(SDK_800BB30C_PREFIX_ACTIVE)
 void fn_800BB30C(u32 texMap, u32 texCoord) {
@@ -1027,8 +1021,6 @@ void __GXSetMatrixIndex(s32 value) {
 }
 
 void fn_800BD91C(GXPerf0_800BB30C perf0, GXPerf1_800BB30C perf1) {
-    u32 reg;
-
     switch (gx->perf0) {
     case GX_PERF0_VERTICES:
     case GX_PERF0_CLIP_VTX:
@@ -1042,8 +1034,7 @@ void fn_800BD91C(GXPerf0_800BB30C perf0, GXPerf1_800BB30C perf1) {
     case GX_PERF0_XF_REGRD_CLKS:
     case GX_PERF0_CLIP_RATIO:
     case GX_PERF0_CLOCKS:
-        reg = 0;
-        GX_XF_REG(6, reg);
+        GX_XF_REG(6, 0);
         break;
     case GX_PERF0_TRIANGLES:
     case GX_PERF0_TRIANGLES_CULLED:
@@ -1061,8 +1052,7 @@ void fn_800BD91C(GXPerf0_800BB30C perf0, GXPerf1_800BB30C perf1) {
     case GX_PERF0_TRIANGLES_0CLR:
     case GX_PERF0_TRIANGLES_1CLR:
     case GX_PERF0_TRIANGLES_2CLR:
-        reg = 0x23000000;
-        GX_BP_REG(reg);
+        GX_BP_REG(0x23000000);
         break;
     case GX_PERF0_QUAD_0CVG:
     case GX_PERF0_QUAD_NON0CVG:
@@ -1071,8 +1061,7 @@ void fn_800BD91C(GXPerf0_800BB30C perf0, GXPerf1_800BB30C perf1) {
     case GX_PERF0_QUAD_3CVG:
     case GX_PERF0_QUAD_4CVG:
     case GX_PERF0_AVG_QUAD_CNT:
-        reg = 0x24000000;
-        GX_BP_REG(reg);
+        GX_BP_REG(0x24000000);
         break;
     case GX_PERF0_NONE:
         break;
@@ -1089,8 +1078,7 @@ void fn_800BD91C(GXPerf0_800BB30C perf0, GXPerf1_800BB30C perf1) {
     case GX_PERF1_TC_CHECK7_8:
     case GX_PERF1_TC_MISS:
     case GX_PERF1_CLOCKS:
-        reg = 0x67000000;
-        GX_BP_REG(reg);
+        GX_BP_REG(0x67000000);
         break;
     case GX_PERF1_VC_ELEMQ_FULL:
     case GX_PERF1_VC_MISSQ_FULL:
@@ -1107,8 +1095,7 @@ void fn_800BD91C(GXPerf0_800BB30C perf0, GXPerf1_800BB30C perf1) {
     case GX_PERF1_CALL_REQ:
     case GX_PERF1_VC_MISS_REQ:
     case GX_PERF1_CP_ALL_REQ:
-        reg = 0;
-        __cpReg[3] = reg;
+        __cpReg[3] = 0;
         break;
     case GX_PERF1_NONE:
         break;
@@ -1117,144 +1104,109 @@ void fn_800BD91C(GXPerf0_800BB30C perf0, GXPerf1_800BB30C perf1) {
     gx->perf0 = perf0;
     switch (gx->perf0) {
     case GX_PERF0_VERTICES:
-        reg = 0x273;
-        GX_XF_REG(6, reg);
+        GX_XF_REG(6, 0x273);
         break;
     case GX_PERF0_CLIP_VTX:
-        reg = 0x14A;
-        GX_XF_REG(6, reg);
+        GX_XF_REG(6, 0x14A);
         break;
     case GX_PERF0_CLIP_CLKS:
-        reg = 0x16B;
-        GX_XF_REG(6, reg);
+        GX_XF_REG(6, 0x16B);
         break;
     case GX_PERF0_XF_WAIT_IN:
-        reg = 0x84;
-        GX_XF_REG(6, reg);
+        GX_XF_REG(6, 0x84);
         break;
     case GX_PERF0_XF_WAIT_OUT:
-        reg = 0xC6;
-        GX_XF_REG(6, reg);
+        GX_XF_REG(6, 0xC6);
         break;
     case GX_PERF0_XF_XFRM_CLKS:
-        reg = 0x210;
-        GX_XF_REG(6, reg);
+        GX_XF_REG(6, 0x210);
         break;
     case GX_PERF0_XF_LIT_CLKS:
-        reg = 0x252;
-        GX_XF_REG(6, reg);
+        GX_XF_REG(6, 0x252);
         break;
     case GX_PERF0_XF_BOT_CLKS:
-        reg = 0x231;
-        GX_XF_REG(6, reg);
+        GX_XF_REG(6, 0x231);
         break;
     case GX_PERF0_XF_REGLD_CLKS:
-        reg = 0x1AD;
-        GX_XF_REG(6, reg);
+        GX_XF_REG(6, 0x1AD);
         break;
     case GX_PERF0_XF_REGRD_CLKS:
-        reg = 0x1CE;
-        GX_XF_REG(6, reg);
+        GX_XF_REG(6, 0x1CE);
         break;
     case GX_PERF0_CLOCKS:
-        reg = 0x21;
-        GX_XF_REG(6, reg);
+        GX_XF_REG(6, 0x21);
         break;
     case GX_PERF0_CLIP_RATIO:
-        reg = 0x153;
-        GX_XF_REG(6, reg);
+        GX_XF_REG(6, 0x153);
         break;
     case GX_PERF0_TRIANGLES:
-        reg = 0x2300AE7F;
-        GX_BP_REG(reg);
+        GX_BP_REG(0x2300AE7F);
         break;
     case GX_PERF0_TRIANGLES_CULLED:
-        reg = 0x23008E7F;
-        GX_BP_REG(reg);
+        GX_BP_REG(0x23008E7F);
         break;
     case GX_PERF0_TRIANGLES_PASSED:
-        reg = 0x23009E7F;
-        GX_BP_REG(reg);
+        GX_BP_REG(0x23009E7F);
         break;
     case GX_PERF0_TRIANGLES_SCISSORED:
-        reg = 0x23001E7F;
-        GX_BP_REG(reg);
+        GX_BP_REG(0x23001E7F);
         break;
     case GX_PERF0_TRIANGLES_0TEX:
-        reg = 0x2300AC3F;
-        GX_BP_REG(reg);
+        GX_BP_REG(0x2300AC3F);
         break;
     case GX_PERF0_TRIANGLES_1TEX:
-        reg = 0x2300AC7F;
-        GX_BP_REG(reg);
+        GX_BP_REG(0x2300AC7F);
         break;
     case GX_PERF0_TRIANGLES_2TEX:
-        reg = 0x2300ACBF;
-        GX_BP_REG(reg);
+        GX_BP_REG(0x2300ACBF);
         break;
     case GX_PERF0_TRIANGLES_3TEX:
-        reg = 0x2300ACFF;
-        GX_BP_REG(reg);
+        GX_BP_REG(0x2300ACFF);
         break;
     case GX_PERF0_TRIANGLES_4TEX:
-        reg = 0x2300AD3F;
-        GX_BP_REG(reg);
+        GX_BP_REG(0x2300AD3F);
         break;
     case GX_PERF0_TRIANGLES_5TEX:
-        reg = 0x2300AD7F;
-        GX_BP_REG(reg);
+        GX_BP_REG(0x2300AD7F);
         break;
     case GX_PERF0_TRIANGLES_6TEX:
-        reg = 0x2300ADBF;
-        GX_BP_REG(reg);
+        GX_BP_REG(0x2300ADBF);
         break;
     case GX_PERF0_TRIANGLES_7TEX:
-        reg = 0x2300ADFF;
-        GX_BP_REG(reg);
+        GX_BP_REG(0x2300ADFF);
         break;
     case GX_PERF0_TRIANGLES_8TEX:
-        reg = 0x2300AE3F;
-        GX_BP_REG(reg);
+        GX_BP_REG(0x2300AE3F);
         break;
     case GX_PERF0_TRIANGLES_0CLR:
-        reg = 0x2300A27F;
-        GX_BP_REG(reg);
+        GX_BP_REG(0x2300A27F);
         break;
     case GX_PERF0_TRIANGLES_1CLR:
-        reg = 0x2300A67F;
-        GX_BP_REG(reg);
+        GX_BP_REG(0x2300A67F);
         break;
     case GX_PERF0_TRIANGLES_2CLR:
-        reg = 0x2300AA7F;
-        GX_BP_REG(reg);
+        GX_BP_REG(0x2300AA7F);
         break;
     case GX_PERF0_QUAD_0CVG:
-        reg = 0x2402C0C6;
-        GX_BP_REG(reg);
+        GX_BP_REG(0x2402C0C6);
         break;
     case GX_PERF0_QUAD_NON0CVG:
-        reg = 0x2402C16B;
-        GX_BP_REG(reg);
+        GX_BP_REG(0x2402C16B);
         break;
     case GX_PERF0_QUAD_1CVG:
-        reg = 0x2402C0E7;
-        GX_BP_REG(reg);
+        GX_BP_REG(0x2402C0E7);
         break;
     case GX_PERF0_QUAD_2CVG:
-        reg = 0x2402C108;
-        GX_BP_REG(reg);
+        GX_BP_REG(0x2402C108);
         break;
     case GX_PERF0_QUAD_3CVG:
-        reg = 0x2402C129;
-        GX_BP_REG(reg);
+        GX_BP_REG(0x2402C129);
         break;
     case GX_PERF0_QUAD_4CVG:
-        reg = 0x2402C14A;
-        GX_BP_REG(reg);
+        GX_BP_REG(0x2402C14A);
         break;
     case GX_PERF0_AVG_QUAD_CNT:
-        reg = 0x2402C1AD;
-        GX_BP_REG(reg);
+        GX_BP_REG(0x2402C1AD);
         break;
     case GX_PERF0_NONE:
         break;
@@ -1263,44 +1215,34 @@ void fn_800BD91C(GXPerf0_800BB30C perf0, GXPerf1_800BB30C perf1) {
     gx->perf1 = perf1;
     switch (gx->perf1) {
     case GX_PERF1_TEXELS:
-        reg = 0x67000042;
-        GX_BP_REG(reg);
+        GX_BP_REG(0x67000042);
         break;
     case GX_PERF1_TX_IDLE:
-        reg = 0x67000084;
-        GX_BP_REG(reg);
+        GX_BP_REG(0x67000084);
         break;
     case GX_PERF1_TX_REGS:
-        reg = 0x67000063;
-        GX_BP_REG(reg);
+        GX_BP_REG(0x67000063);
         break;
     case GX_PERF1_TX_MEMSTALL:
-        reg = 0x67000129;
-        GX_BP_REG(reg);
+        GX_BP_REG(0x67000129);
         break;
     case GX_PERF1_TC_MISS:
-        reg = 0x67000252;
-        GX_BP_REG(reg);
+        GX_BP_REG(0x67000252);
         break;
     case GX_PERF1_CLOCKS:
-        reg = 0x67000021;
-        GX_BP_REG(reg);
+        GX_BP_REG(0x67000021);
         break;
     case GX_PERF1_TC_CHECK1_2:
-        reg = 0x6700014B;
-        GX_BP_REG(reg);
+        GX_BP_REG(0x6700014B);
         break;
     case GX_PERF1_TC_CHECK3_4:
-        reg = 0x6700018D;
-        GX_BP_REG(reg);
+        GX_BP_REG(0x6700018D);
         break;
     case GX_PERF1_TC_CHECK5_6:
-        reg = 0x670001CF;
-        GX_BP_REG(reg);
+        GX_BP_REG(0x670001CF);
         break;
     case GX_PERF1_TC_CHECK7_8:
-        reg = 0x67000211;
-        GX_BP_REG(reg);
+        GX_BP_REG(0x67000211);
         break;
     case GX_PERF1_VC_ELEMQ_FULL:
         gx->perfSel = (gx->perfSel & 0xFFFFFF0F) | 0x20;
@@ -1335,20 +1277,16 @@ void fn_800BD91C(GXPerf0_800BB30C perf0, GXPerf1_800BB30C perf1) {
         GX_CP_REG(0x20, gx->perfSel);
         break;
     case GX_PERF1_FIFO_REQ:
-        reg = 2;
-        __cpReg[3] = reg;
+        __cpReg[3] = 2;
         break;
     case GX_PERF1_CALL_REQ:
-        reg = 3;
-        __cpReg[3] = reg;
+        __cpReg[3] = 3;
         break;
     case GX_PERF1_VC_MISS_REQ:
-        reg = 4;
-        __cpReg[3] = reg;
+        __cpReg[3] = 4;
         break;
     case GX_PERF1_CP_ALL_REQ:
-        reg = 5;
-        __cpReg[3] = reg;
+        __cpReg[3] = 5;
         break;
     case GX_PERF1_NONE:
         break;
