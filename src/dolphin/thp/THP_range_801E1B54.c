@@ -387,7 +387,7 @@ BOOL fn_801E1D7C(s32 priority)
 {
     u8 *base = lbl_80469040;
 
-    if (!OSCreateThread((OSThread *)(base + 0x1000), (void *(*)(void *))fn_801E1C1C, NULL,
+    if (!OSCreateThread(&lbl_8046A040, (void *(*)(void *))fn_801E1C1C, NULL,
                          base + 0x1000, 0x1000, priority, 1)) {
         return FALSE;
     }
