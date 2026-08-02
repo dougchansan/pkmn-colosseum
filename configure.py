@@ -5886,19 +5886,27 @@ config.libs = [
                 ],
                 progress_category="sdk",
             ),
-            Object(
-                CodeCandidate,
-                "dolphin/thp/THP_r48_801E3F54_suffix.c",
-                mw_version="GC/2.5",
-                extra_cflags=[
-                    "-use_lmw_stmw on",
-                    "-sdata 8",
-                    "-sdata2 8",
-                    "-DTHP_PLAYER_ONLY",
-                    "-inline noauto",
-                ],
-                progress_category="sdk",
-            ),
+            *[
+                Object(
+                    CodeCandidate,
+                    path,
+                    mw_version="GC/2.5",
+                    extra_cflags=[
+                        "-use_lmw_stmw on",
+                        "-sdata 8",
+                        "-sdata2 8",
+                        "-DTHP_PLAYER_ONLY",
+                        "-inline noauto",
+                        *(["-opt nostrength"] if no_strength else []),
+                    ],
+                    progress_category="sdk",
+                )
+                for path, no_strength in [
+                    ("dolphin/thp/THP_r48_801E3F54_prefix.c", False),
+                    ("dolphin/thp/THP_r48_801E40F8_nostrength.c", True),
+                    ("dolphin/thp/THP_r48_801E446C_suffix.c", False),
+                ]
+            ],
             Object(
                 Matching,
                 "dolphin/thp/THPDec_range_801E5548.c",
