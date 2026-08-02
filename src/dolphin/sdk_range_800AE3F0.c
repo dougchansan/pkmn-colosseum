@@ -255,10 +255,47 @@ typedef struct GXData {
     /* 0x000 */ u8 _000[0x08];
     /* 0x008 */ u32 cpEnable;
     /* 0x00C */ u32 cpStatus;
-    /* 0x010 */ u8 _010[0x2B8];
+    /* 0x010 */ u8 _010[0x0C];
+    /* 0x01C */ u32 vatA[8];
+    /* 0x03C */ u32 vatB[8];
+    /* 0x05C */ u8 _05C[0x20];
+    /* 0x07C */ u32 lpSize;
+    /* 0x080 */ u8 _080[0x38];
+    /* 0x0B8 */ u32 suTs0[8];
+    /* 0x0D8 */ u32 suTs1[8];
+    /* 0x0F8 */ u32 suScis0;
+    /* 0x0FC */ u32 suScis1;
+    /* 0x100 */ u32 tref[8];
+    /* 0x120 */ u32 iref;
+    /* 0x124 */ u32 bpMask;
+    /* 0x128 */ u8 _128[0x08];
+    /* 0x130 */ u32 tevc[16];
+    /* 0x170 */ u32 teva[16];
+    /* 0x1B0 */ u32 tevKsel[8];
+    /* 0x1D0 */ u32 cmode0;
+    /* 0x1D4 */ u32 cmode1;
+    /* 0x1D8 */ u32 zmode;
+    /* 0x1DC */ u32 peCtrl;
+    /* 0x1E0 */ u8 _1E0[0x1C];
+    /* 0x1FC */ u32 cpTex;
+    /* 0x200 */ u8 _200[0x04];
+    /* 0x204 */ u32 genMode;
+    /* 0x208 */ GXTexRegion defaultTexRegions[8];
+    /* 0x288 */ GXTexRegion defaultTexRegionsCI[4];
     /* 0x2C8 */ u32 nextTexRgn;
     /* 0x2CC */ u32 nextTexRgnCI;
     /* 0x2D0 */ GXTlutRegion defaultTlutRegions[20];
+    /* 0x410 */ u8 _410[0x8C];
+    /* 0x49C */ u32 texmapId[16];
+    /* 0x4DC */ u32 field_4DC;
+    /* 0x4E0 */ u32 field_4E0;
+    /* 0x4E4 */ u8 _4E4[0x08];
+    /* 0x4EC */ u32 perfSel;
+    /* 0x4F0 */ u8 inDispList;
+    /* 0x4F1 */ u8 dlSaveContext;
+    /* 0x4F2 */ u8 tcsManEnab;
+    /* 0x4F3 */ u8 dirtyVAT;
+    /* 0x4F4 */ u32 dirtyState;
 } GXData;
 
 #define DSP_REGS    ((volatile DSPRegisters*)0xCC005000)
@@ -3597,7 +3634,7 @@ void __GXInitGX(void) {
 }
 
 void* GXInit(void* base, u32 size) {
-    extern GXData* gx;
+    extern GXData* const gx;
     extern const char* __GXVersion;
     extern u8 gxData_803FC860[];
     extern u8 GXResetFuncInfo_80312AD0[];
@@ -3623,19 +3660,18 @@ void* GXInit(void* base, u32 size) {
 
     volatile u8* fifo8 = (volatile u8*)0xCC008000;
     volatile u32* fifo32 = (volatile u32*)0xCC008000;
-    u8* state = (u8*)gx;
+    u8* gxBase = gxData_803FC860;
     u32 i;
     u32 reg;
     u32 freqBase;
     u32 hid2;
-    u32 half;
 
     OSRegisterVersion(__GXVersion);
-    state[0x4F0] = 0;
-    state[0x4F1] = 1;
-    state[0x4F2] = 1;
-    *(u32*)(state + 0x4DC) = 0;
-    *(u32*)(state + 0x4E0) = 0;
+    gx->inDispList = 0;
+    gx->dlSaveContext = 1;
+    gx->tcsManEnab = 1;
+    gx->field_4DC = 0;
+    gx->field_4E0 = 0;
     GXSetMisc(1, 0);
 
     __cpReg = (u16*)0xCC000000;
@@ -3643,9 +3679,9 @@ void* GXInit(void* base, u32 size) {
     __peReg = (u16*)0xCC001000;
     __memReg = (u16*)0xCC004000;
     __GXFifoInit();
-    GXInitFifoBase((GXFifoObj*)(gxData_803FC860 + 0x4F8), base, size);
-    GXSetCPUFifo((GXFifoObj*)(gxData_803FC860 + 0x4F8));
-    GXSetGPFifo((GXFifoObj*)(gxData_803FC860 + 0x4F8));
+    GXInitFifoBase((GXFifoObj*)(gxBase + 0x4F8), base, size);
+    GXSetCPUFifo((GXFifoObj*)(gxBase + 0x4F8));
+    GXSetGPFifo((GXFifoObj*)(gxBase + 0x4F8));
     if (*(u32*)0x8047A99C == 0) {
         OSRegisterResetFunction(GXResetFuncInfo_80312AD0);
         *(u32*)0x8047A99C = 1;
@@ -3655,43 +3691,43 @@ void* GXInit(void* base, u32 size) {
     PPCMtwpar(0x0C008000);
     PPCMthid2(hid2 | 0x40000000);
 
-    *(u32*)(state + 0x204) = 0;
-    *(u32*)(state + 0x204) &= 0x00FFFFFF;
-    *(u32*)(state + 0x124) = 0x0F000000;
-    *(u32*)(state + 0x7C) = 0x22000000;
+    gx->genMode = 0;
+    gx->genMode &= 0x00FFFFFF;
+    gx->bpMask = 0xFF;
+    gx->bpMask = (gx->bpMask & 0x00FFFFFF) | 0x0F000000;
+    gx->lpSize = 0;
+    gx->lpSize = (gx->lpSize & 0x00FFFFFF) | 0x22000000;
     for (i = 0; i < 16; i++) {
-        half = i >> 1;
-        *(u32*)(state + 0x130 + i * 4) = 0;
-        *(u32*)(state + 0x170 + i * 4) = 0;
-        *(u32*)(state + 0x100 + half * 4) = 0;
-        *(u32*)(state + 0x49C + i * 4) = 0xFF;
-        *(u32*)(state + 0x130 + i * 4) =
-            (*(u32*)(state + 0x130 + i * 4) & 0x00FFFFFF) |
-            ((0xC0 + i * 2) << 24);
-        *(u32*)(state + 0x170 + i * 4) =
-            (*(u32*)(state + 0x170 + i * 4) & 0x00FFFFFF) |
-            ((0xC1 + i * 2) << 24);
-        *(u32*)(state + 0x1B0 + half * 4) =
-            (*(u32*)(state + 0x1B0 + half * 4) & 0x00FFFFFF) |
-            ((0xF6 + half) << 24);
-        *(u32*)(state + 0x100 + half * 4) =
-            (*(u32*)(state + 0x100 + half * 4) & 0x00FFFFFF) |
-            ((0x28 + half) << 24);
+        gx->tevc[i] = 0;
+        gx->teva[i] = 0;
+        gx->tref[i / 2] = 0;
+        gx->texmapId[i] = 0xFF;
+        gx->tevc[i] = (gx->tevc[i] & 0x00FFFFFF) | ((0xC0 + i * 2) << 24);
+        gx->teva[i] = (gx->teva[i] & 0x00FFFFFF) | ((0xC1 + i * 2) << 24);
+        gx->tevKsel[i / 2] =
+            (gx->tevKsel[i / 2] & 0x00FFFFFF) | ((0xF6 + i / 2) << 24);
+        gx->tref[i / 2] =
+            (gx->tref[i / 2] & 0x00FFFFFF) | ((0x28 + i / 2) << 24);
     }
-    *(u32*)(state + 0x120) = 0x27000000;
+    gx->iref = 0;
+    gx->iref = (gx->iref & 0x00FFFFFF) | 0x27000000;
     for (i = 0; i < 8; i++) {
-        *(u32*)(state + 0xB8 + i * 4) = 0x30000000 + i * 0x02000000;
-        *(u32*)(state + 0xD8 + i * 4) = 0x31000000 + i * 0x02000000;
+        gx->suTs0[i] = 0;
+        gx->suTs1[i] = 0;
+        gx->suTs0[i] =
+            (gx->suTs0[i] & 0x00FFFFFF) | ((0x30 + i * 2) << 24);
+        gx->suTs1[i] =
+            (gx->suTs1[i] & 0x00FFFFFF) | ((0x31 + i * 2) << 24);
     }
-    *(u32*)(state + 0xF8) = 0x20000000;
-    *(u32*)(state + 0xFC) = 0x21000000;
-    *(u32*)(state + 0x1D0) = 0x41000000;
-    *(u32*)(state + 0x1D4) = 0x42000000;
-    *(u32*)(state + 0x1D8) = 0x40000000;
-    *(u32*)(state + 0x1DC) = 0x43000000;
-    *(u32*)(state + 0x1FC) &= ~0x01800000;
-    *(u32*)(state + 0x4F4) = 0;
-    state[0x4F3] = 0;
+    gx->suScis0 = (gx->suScis0 & 0x00FFFFFF) | 0x20000000;
+    gx->suScis1 = (gx->suScis1 & 0x00FFFFFF) | 0x21000000;
+    gx->cmode0 = (gx->cmode0 & 0x00FFFFFF) | 0x41000000;
+    gx->cmode1 = (gx->cmode1 & 0x00FFFFFF) | 0x42000000;
+    gx->zmode = (gx->zmode & 0x00FFFFFF) | 0x40000000;
+    gx->peCtrl = (gx->peCtrl & 0x00FFFFFF) | 0x43000000;
+    gx->cpTex &= ~0x01800000;
+    gx->dirtyState = 0;
+    gx->dirtyVAT = 0;
 
     freqBase = __OSBusClock / 500;
     __GXFlushTextureState();
@@ -3704,11 +3740,11 @@ void* GXInit(void* base, u32 size) {
     *fifo32 = reg;
 
     for (i = 0; i < 8; i++) {
-        *(u32*)(state + 0x1C + i * 4) |= 2;
-        *(u32*)(state + 0x3C + i * 4) |= 1;
+        gx->vatA[i] |= 2;
+        gx->vatB[i] |= 1;
         *fifo8 = 8;
         *fifo8 = i | 0x80;
-        *fifo32 = *(u32*)(state + 0x3C + i * 4);
+        *fifo32 = gx->vatB[i];
     }
     *fifo8 = 0x10;
     *fifo32 = 0x1000;
@@ -3720,28 +3756,28 @@ void* GXInit(void* base, u32 size) {
     *fifo32 = 0x5800000F;
 
     for (i = 0; i < 8; i++) {
-        GXInitTexCacheRegion((GXTexRegion*)(state + 0x208 + i * 0x10), 0,
+        GXInitTexCacheRegion(&gx->defaultTexRegions[i], 0,
                              i * 0x8000, 0, 0x80000 + i * 0x8000, 0);
     }
     for (i = 0; i < 4; i++) {
-        GXInitTexCacheRegion((GXTexRegion*)(state + 0x288 + i * 0x10), 0,
+        GXInitTexCacheRegion(&gx->defaultTexRegionsCI[i], 0,
                              (i * 2 + 8) * 0x8000, 0,
                              (i * 2 + 9) * 0x8000, 0);
     }
     for (i = 0; i < 16; i++) {
-        GXInitTlutRegion((GXTlutRegion*)(state + 0x2D0 + i * 0x10),
+        GXInitTlutRegion(&gx->defaultTlutRegions[i],
                          0xC0000 + i * 0x2000, 16);
     }
     for (i = 0; i < 4; i++) {
-        GXInitTlutRegion((GXTlutRegion*)(state + 0x3D0 + i * 0x10),
+        GXInitTlutRegion(&gx->defaultTlutRegions[i + 16],
                          0xE0000 + i * 0x8000, 64);
     }
 
     __cpReg[3] = 0;
-    *(u32*)(state + 0x4EC) &= ~0x0F000000;
+    gx->perfSel &= ~0x0F000000;
     *fifo8 = 8;
     *fifo8 = 0x20;
-    *fifo32 = *(u32*)(state + 0x4EC);
+    *fifo32 = gx->perfSel;
     *fifo8 = 0x10;
     *fifo32 = 0x1006;
     *fifo32 = 0;
@@ -3753,7 +3789,7 @@ void* GXInit(void* base, u32 size) {
     *fifo32 = 0x67000000;
     __GXSetTmemConfig(0);
     __GXInitGX();
-    return gxData_803FC860 + 0x4F8;
+    return gxBase + 0x4F8;
 }
 #pragma peephole reset
 
