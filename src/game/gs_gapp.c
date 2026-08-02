@@ -250,6 +250,7 @@ extern u32 GSgappCreate(s32 state, u8 priority, void* param, void* func);
 extern void GSgappInit();
 extern void gappBackgroundCallback(void);
 
+#if !defined(GS_GAPP_VSYNC_ONLY)
 /* 0x800FE6DC | 0x1C */
 #pragma push
 #pragma optimization_level 2
@@ -534,6 +535,7 @@ static void gappBackgroundCallback(void) {
 }
 #endif
 #pragma pop
+#endif
 
 typedef void (*GSgappCallback)(u32 taskId, void* param);
 
