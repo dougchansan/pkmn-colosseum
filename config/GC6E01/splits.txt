@@ -5702,8 +5702,14 @@ dolphin/thp/THP_r48_801E3F54_prefix.c:
 dolphin/thp/THP_r48_801E40F8_nostrength.c:
 	.text       start:0x801E40F8 end:0x801E446C
 
-dolphin/thp/THP_r48_801E446C_suffix.c:
-	.text       start:0x801E446C end:0x801E5548
+dolphin/thp/THP_r48_801E446C_middle.c:
+	.text       start:0x801E446C end:0x801E4F64
+
+dolphin/thp/THP_r48_801E4F64_nostrength.c:
+	.text       start:0x801E4F64 end:0x801E5154
+
+dolphin/thp/THP_r48_801E5154_suffix.c:
+	.text       start:0x801E5154 end:0x801E5548
 
 dolphin/thp/THPDec_range_801E5548.c:
 	.text       start:0x801E5548 end:0x801E5A28

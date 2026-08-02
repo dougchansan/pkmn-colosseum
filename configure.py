@@ -5904,7 +5904,9 @@ config.libs = [
                 for path, no_strength in [
                     ("dolphin/thp/THP_r48_801E3F54_prefix.c", False),
                     ("dolphin/thp/THP_r48_801E40F8_nostrength.c", True),
-                    ("dolphin/thp/THP_r48_801E446C_suffix.c", False),
+                    ("dolphin/thp/THP_r48_801E446C_middle.c", False),
+                    ("dolphin/thp/THP_r48_801E4F64_nostrength.c", True),
+                    ("dolphin/thp/THP_r48_801E5154_suffix.c", False),
                 ]
             ],
             Object(
