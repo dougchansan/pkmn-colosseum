@@ -98,6 +98,7 @@ scan:
     return 0;
 }
 
+#if !defined(INPUT_800F760C_ONLY)
 /* fn_800F78A4 - 0x800F78A4 | size: 0x7C */
 extern u8 lbl_80401C10[];
 /* Shared 4-slot pad lookup. Defined before all readers so CW 1.3 inlines it:
@@ -650,4 +651,5 @@ void fn_800F8138(void) {
     fn_800ABF5C((void*)fn_800F8268);
 }
 #pragma pop
+#endif
 #endif
