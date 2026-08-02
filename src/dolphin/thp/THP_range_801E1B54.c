@@ -318,16 +318,16 @@ void fn_801E1C1C(void)
 {
     extern s32 OSSuspendThread(OSThread *thread);
     extern BOOL fn_801E446C(u32 msg);
-    u8 *base;
-    u32 message;
-    s32 frame;
-    u32 size;
-    u32 offset;
     u32 *buffer;
-    s32 result;
+    u32 position;
     u32 frameOffset;
     u32 frameCount;
-    u32 position;
+    s32 result;
+    u32 offset;
+    u32 size;
+    s32 frame;
+    u8 *base;
+    u32 message;
 
     base = lbl_80469040;
     frame = 0;
