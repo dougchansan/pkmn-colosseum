@@ -3633,7 +3633,11 @@ void __GXInitGX(void) {
     fn_800BE30C();
 }
 
+#define GX_WRITE_U8(value)  (*(volatile u8*)0xCC008000 = (value))
+#define GX_WRITE_U32(value) (*(volatile u32*)0xCC008000 = (value))
+
 void* GXInit(void* base, u32 size) {
+    static BOOL resetFuncRegistered;
     extern GXData* const gx;
     extern const char* __GXVersion;
     extern u8 gxData_803FC860[];
@@ -3658,8 +3662,6 @@ void* GXInit(void* base, u32 size) {
     extern void GXInitTlutRegion();
     extern void __GXSetTmemConfig();
 
-    volatile u8* fifo8 = (volatile u8*)0xCC008000;
-    volatile u32* fifo32 = (volatile u32*)0xCC008000;
     u8* gxBase = gxData_803FC860;
     u32 i;
     u32 reg;
@@ -3682,9 +3684,9 @@ void* GXInit(void* base, u32 size) {
     GXInitFifoBase((GXFifoObj*)(gxBase + 0x4F8), base, size);
     GXSetCPUFifo((GXFifoObj*)(gxBase + 0x4F8));
     GXSetGPFifo((GXFifoObj*)(gxBase + 0x4F8));
-    if (*(u32*)0x8047A99C == 0) {
+    if (resetFuncRegistered == FALSE) {
         OSRegisterResetFunction(GXResetFuncInfo_80312AD0);
-        *(u32*)0x8047A99C = 1;
+        resetFuncRegistered = TRUE;
     }
     __GXPEInit();
     hid2 = (u32)PPCMfhid2();
@@ -3732,28 +3734,28 @@ void* GXInit(void* base, u32 size) {
     freqBase = __OSBusClock / 500;
     __GXFlushTextureState();
     reg = (freqBase >> 11) | 0x69000400;
-    *fifo8 = 0x61;
-    *fifo32 = reg;
+    GX_WRITE_U8(0x61);
+    GX_WRITE_U32(reg);
     __GXFlushTextureState();
     reg = (freqBase / 0x1080) | 0x46000200;
-    *fifo8 = 0x61;
-    *fifo32 = reg;
+    GX_WRITE_U8(0x61);
+    GX_WRITE_U32(reg);
 
     for (i = 0; i < 8; i++) {
         gx->vatA[i] |= 2;
         gx->vatB[i] |= 1;
-        *fifo8 = 8;
-        *fifo8 = i | 0x80;
-        *fifo32 = gx->vatB[i];
+        GX_WRITE_U8(8);
+        GX_WRITE_U8(i | 0x80);
+        GX_WRITE_U32(gx->vatB[i]);
     }
-    *fifo8 = 0x10;
-    *fifo32 = 0x1000;
-    *fifo32 = 0x3F;
-    *fifo8 = 0x10;
-    *fifo32 = 0x1012;
-    *fifo32 = 1;
-    *fifo8 = 0x61;
-    *fifo32 = 0x5800000F;
+    GX_WRITE_U8(0x10);
+    GX_WRITE_U32(0x1000);
+    GX_WRITE_U32(0x3F);
+    GX_WRITE_U8(0x10);
+    GX_WRITE_U32(0x1012);
+    GX_WRITE_U32(1);
+    GX_WRITE_U8(0x61);
+    GX_WRITE_U32(0x5800000F);
 
     for (i = 0; i < 8; i++) {
         GXInitTexCacheRegion(&gx->defaultTexRegions[i], 0,
@@ -3775,22 +3777,24 @@ void* GXInit(void* base, u32 size) {
 
     __cpReg[3] = 0;
     gx->perfSel &= ~0x0F000000;
-    *fifo8 = 8;
-    *fifo8 = 0x20;
-    *fifo32 = gx->perfSel;
-    *fifo8 = 0x10;
-    *fifo32 = 0x1006;
-    *fifo32 = 0;
-    *fifo8 = 0x61;
-    *fifo32 = 0x23000000;
-    *fifo8 = 0x61;
-    *fifo32 = 0x24000000;
-    *fifo8 = 0x61;
-    *fifo32 = 0x67000000;
+    GX_WRITE_U8(8);
+    GX_WRITE_U8(0x20);
+    GX_WRITE_U32(gx->perfSel);
+    GX_WRITE_U8(0x10);
+    GX_WRITE_U32(0x1006);
+    GX_WRITE_U32(0);
+    GX_WRITE_U8(0x61);
+    GX_WRITE_U32(0x23000000);
+    GX_WRITE_U8(0x61);
+    GX_WRITE_U32(0x24000000);
+    GX_WRITE_U8(0x61);
+    GX_WRITE_U32(0x67000000);
     __GXSetTmemConfig(0);
     __GXInitGX();
     return gxBase + 0x4F8;
 }
+#undef GX_WRITE_U8
+#undef GX_WRITE_U32
 #pragma peephole reset
 
 extern GXData* const gx;
