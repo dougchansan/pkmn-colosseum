@@ -13,7 +13,8 @@
 #if !defined(FIGHT_RANGE_EXACT_80220B8C_ONLY) && \
     !defined(FIGHT_RANGE_EXACT_80221104_ONLY) && \
     !defined(FIGHT_RANGE_EXACT_802128D0_ONLY) && \
-    !defined(FIGHT_RANGE_EXACT_80213158_ONLY)
+    !defined(FIGHT_RANGE_EXACT_80213158_ONLY) && \
+    !defined(FIGHT_RANGE_EXACT_80213A78_ONLY)
 #define FIGHT_RANGE_ALL
 #endif
 
@@ -8067,8 +8068,9 @@ void fn_80221104(u32 a, u32 code) {
 #pragma opt_propagation reset
 #endif
 
-#if defined(FIGHT_RANGE_ALL) || defined(FIGHT_RANGE_EXACT_802128D0_ONLY)
-#if !defined(FIGHT_RANGE_EXACT_802128D0_ONLY)
+#if defined(FIGHT_RANGE_ALL) || defined(FIGHT_RANGE_EXACT_802128D0_ONLY) || \
+    defined(FIGHT_RANGE_EXACT_80213A78_ONLY)
+#if defined(FIGHT_RANGE_ALL)
 /* ===== deep-dive #5 (sonnet, 89.7% WIP -- has residual instruction-shape
  * diffs beyond the coloring wall; correct high-level logic, several sibling
  * bug-fixes captured in header) ===== */
@@ -10451,6 +10453,7 @@ item_status_done:
 }
 #pragma opt_propagation reset
 #endif
+#if defined(FIGHT_RANGE_ALL) || defined(FIGHT_RANGE_EXACT_802128D0_ONLY)
 void fn_802128D0(u32 r3, u32 r4)
 
 {
@@ -10750,7 +10753,8 @@ void fn_80212D6C(void)
   return;
 }
 #pragma optimize_for_size reset
-#if !defined(FIGHT_RANGE_EXACT_802128D0_ONLY)
+#endif
+#if defined(FIGHT_RANGE_ALL)
 #pragma opt_propagation off
 void fn_80213270(void)
 
@@ -11165,6 +11169,8 @@ void WS_STATUS_GET8(void)
   lbl_8047B610 = lbl_8047B610 + 0x14;
   return;
 }
+#endif
+#if defined(FIGHT_RANGE_ALL) || defined(FIGHT_RANGE_EXACT_80213A78_ONLY)
 void fn_80213A78(void)
 
 {
@@ -11290,6 +11296,8 @@ void fn_80213A78(void)
   }
   return;
 }
+#endif
+#if defined(FIGHT_RANGE_ALL)
 #pragma optimize_for_size on
 void fn_80213E94(void)
 

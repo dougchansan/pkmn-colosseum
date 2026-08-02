@@ -6208,8 +6208,11 @@ game/fight_range_80213558.c:
 game/fight_range_exact_802136A4.c:
 	.text       start:0x802136A4 end:0x80213A78
 
+game/fight_range_exact_80213A78.c:
+	.text       start:0x80213A78 end:0x80213E94
+
 game/fight_range_80213A78.c:
-	.text       start:0x80213A78 end:0x80214450
+	.text       start:0x80213E94 end:0x80214450
 
 game/fight_range_80211A00_exact_80214450.c:
 	.text       start:0x80214450 end:0x80216A58
