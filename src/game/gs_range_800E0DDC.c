@@ -440,6 +440,7 @@ u32 fn_800E0DDC(void)
 }
 
 
+#if !defined(GS_RANGE_800E0DDC_ONLY)
 /* Compact the movable allocations in the GS scratch heap. */
 u32 fn_800E1544(void)
 {
@@ -820,4 +821,5 @@ u8 fn_800E0E14(u32 verbose, u32 dumpMap) {
     }
     return ok;
 }
+#endif
 #endif

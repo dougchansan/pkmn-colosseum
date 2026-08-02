@@ -9196,7 +9196,7 @@ config.libs = [
             ),
             *[
                 Object(
-                    CodeCandidate,
+                    Matching if path == "game/gs_range_800E0DDC_r58_prefix.c" else CodeCandidate,
                     path,
                     mw_version="GC/1.3",
                     cflags=(
