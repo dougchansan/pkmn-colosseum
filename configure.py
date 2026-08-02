@@ -1980,7 +1980,7 @@ config.libs = [
                     (Matching, "game/fight_floor_exact_801F27D4.c"),
                     (CodeCandidate, "game/fight_floor_candidate_801F2B5C.c"),
                     (Matching, "game/fight_floor_exact_801F32B0.c"),
-                    (CodeCandidate, "game/fight_floor_candidate_801F32EC.c"),
+                    (Matching, "game/fight_floor_candidate_801F32EC.c"),
                     (Matching, "game/fight_floor_exact_801F33E8.c"),
                     (CodeCandidate, "game/fight_floor_candidate_801F37B0.c"),
                     (Matching, "game/fight_floor_exact_801F3B24.c"),
@@ -9208,7 +9208,7 @@ config.libs = [
                 progress_category="game",
             ),
             Object(
-                CodeCandidate,
+                Matching,
                 "game/gs_math_random_candidate_800E0C04.c",
                 mw_version="GC/1.3",
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
