@@ -33,6 +33,7 @@ static inline void SetupTimeoutAlarm(CARDControl* card)
 s32 fn_800AF8A0(s32 chan)
 {
     CARDControl* card;
+    CARDControl* command;
 
     card = &lbl_803FC620[chan];
     if (!EXISelect(chan, 0, 4)) {
@@ -41,7 +42,8 @@ s32 fn_800AF8A0(s32 chan)
     }
 
     SetupTimeoutAlarm(card);
-    if (!fn_80098368(chan, card->cmd, card->cmdLen, 1)) {
+    command = card;
+    if (!fn_80098368(chan, command->cmd, command->cmdLen, 1)) {
         EXIDeselect(chan);
         EXIUnlock(chan);
         return -3;
@@ -49,22 +51,22 @@ s32 fn_800AF8A0(s32 chan)
 
     if (card->cmd[0] == 0x52 &&
         !fn_80098368(chan, (u8*) card->workArea + sizeof(CARDID),
-                     *(u32*) ((u8*) card + 0x14), 1))
+                     *(u32*) ((u8*) command + 0x14), 1))
     {
         EXIDeselect(chan);
         EXIUnlock(chan);
         return -3;
     }
 
-    if ((u32) card->field_A4 == (u32) -1) {
+    if ((u32) command->field_A4 == (u32) -1) {
         EXIDeselect(chan);
         EXIUnlock(chan);
         return 0;
     }
 
     if (!EXIDma(chan, card->buffer,
-                card->cmd[0] == 0x52 ? 0x200 : 0x80,
-                card->field_A4, (EXICallback) __CARDTxHandler))
+                command->cmd[0] == 0x52 ? 0x200 : 0x80,
+                command->field_A4, (EXICallback) __CARDTxHandler))
     {
         EXIDeselect(chan);
         EXIUnlock(chan);

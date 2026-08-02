@@ -1226,20 +1226,21 @@ u8 fightFloorIsIrekaeFightOutPokemon(u32 param_1) {
 
 /* 0x801F32EC | size: 0xFC | medium */
 u32 _fightFloorIsIrekaeFightOutPokemonSub__FPvUsPv(void *param_1, u32 r4_unused, u8 *out_buf) {
+    void *trainer;
     extern u32 fightTrainerCheckValid(void*);
     extern void *fn_801F8A18(void*, u16*);
     extern u32 fightFloorGetStatus(void*, u32, u32, u32);
     extern void *fightTrainerGetStatus(void*, u32, u32, u32);
     extern u32 fightOutPokemonCheckFightOut(void*);
     extern u32 fightTrainerIsGcHero(void*);
+    u32 i;
     void *pkmn;
     u32 count;
-    u32 i;
     u8 *outptr;
     u16 tmp;
 
-    pkmn = param_1;
-    if (!(fightTrainerCheckValid(pkmn) & 0xFF))
+    trainer = pkmn = param_1;
+    if (!(fightTrainerCheckValid(trainer) & 0xFF))
         return 1;
     tmp = 0;
     if (!fn_801F8A18(pkmn, &tmp))
@@ -1254,7 +1255,7 @@ u32 _fightFloorIsIrekaeFightOutPokemonSub__FPvUsPv(void *param_1, u32 r4_unused,
                 /* nonzero: skip */
             } else if (outptr != NULL) {
                 if (*outptr != 2) {
-                    if ((fightTrainerIsGcHero(pkmn) & 0xFF) == 1) {
+                    if ((fightTrainerIsGcHero(trainer) & 0xFF) == 1) {
                         *outptr = 2;
                     } else {
                         *outptr = 1;
