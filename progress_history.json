@@ -5534,5 +5534,17 @@
   "matched_functions": 6730,
   "source": "ci",
   "build_clean": true
+ },
+ {
+  "commit": "67ec72a5dd52ee42ffb92e77ba7a7eb3c7198ced",
+  "ts": 1785729546,
+  "fuzzy": 80.79907,
+  "code": 42.205948,
+  "fn": 78.25177,
+  "data": 97.29471,
+  "total_functions": 8603,
+  "matched_functions": 6732,
+  "source": "ci",
+  "build_clean": true
  }
 ]
