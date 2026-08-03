@@ -421,14 +421,15 @@ void _modelResetPartAnimMixes__FP8_GSmodel(GSmodel* model)
     HSD_JObj* jobj;
 
     mix = model->part_anim_mixes;
-    for (i = 3; i >= 0; i--, mix++) {
+    i = 3;
+    do {
         if (mix->type == 0) {
-            continue;
+            goto next_mix;
         }
 
         part = GSmodelGetPart(model, mix->part_index);
         if (part == NULL) {
-            continue;
+            goto next_mix;
         }
 
         switch (mix->type) {
@@ -468,7 +469,9 @@ void _modelResetPartAnimMixes__FP8_GSmodel(GSmodel* model)
         }
 
         GSpartFree(part);
-    }
+next_mix:
+        mix = mix + 1;
+    } while (i-- != 0);
 }
 #endif
 

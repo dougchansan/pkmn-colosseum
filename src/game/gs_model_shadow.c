@@ -369,9 +369,9 @@ _modelShadowFindValidReceiveModel__FP8_GSmodelP8_GSmodelP7GSlightP7GSbound(
     extern f32 GSvecSquareDistance(GSshadowVec*, GSshadowVec*);
     extern f32 lbl_8047CBC0;
     extern f32 lbl_8047CBC8;
-    GSshadowVec dimensions;
     GSshadowVec position;
     GSshadowVec otherPosition;
+    GSshadowVec dimensions;
     GSshadowSlot* slot;
     f32 largest;
     u32 size;
@@ -419,7 +419,7 @@ _modelShadowFindValidReceiveModel__FP8_GSmodelP8_GSmodelP7GSlightP7GSbound(
                     if (GSvecSquareDistance(&position, &otherPosition) >
                         lbl_8047AB88) {
                         valid = 0;
-                        break;
+                        j = 16;
                     }
                 }
             }

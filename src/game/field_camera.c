@@ -1445,47 +1445,48 @@ u8 fn_801174EC(void) {
 u8 floorUpdateFieldCamera(u8* pos, f32* out_x, f32* out_y, f32* out_z)
 {
     f32 point[3];
+    f32 weightScale;
+    f32 distanceLimit;
     f32 total;
     f32 x;
     f32 y;
     f32 z;
     f32 distance;
     f32 weight;
-    f32* entry;
+    u32 offset;
     u32 i;
 
     if (lbl_8047AD68 == 1) {
-        entry = (f32*)lbl_8047AD6C;
-        *out_x = entry[4];
-        *out_y = entry[3];
-        *out_z = entry[5];
+        *out_x = ((f32*)lbl_8047AD6C)[4];
+        *out_y = ((f32*)lbl_8047AD6C)[3];
+        *out_z = ((f32*)lbl_8047AD6C)[5];
         return 1;
     }
 
-    total = lbl_8047CFD0;
-    x = lbl_8047CFD0;
-    y = lbl_8047CFD0;
-    z = lbl_8047CFD0;
-    entry = (f32*)lbl_8047AD6C;
-    for (i = 0; i < lbl_8047AD68; i++, entry += 6) {
+    z = y = x = total = lbl_8047CFD0;
+    distanceLimit = lbl_8047CFDC;
+    weightScale = lbl_8047CFE0;
+    offset = 0;
+    for (i = 0; i < lbl_8047AD68; offset += 0x18, i++) {
+        f32* entry = (f32*)((u8*)lbl_8047AD6C + offset);
         set__5GSvecFfff(point, entry[0], entry[1], entry[2]);
         distance = GSvecSquareDistance(point, (f32*)pos);
-        if (distance > lbl_8047CFDC) {
-            weight = lbl_8047CFE0 / distance;
+        if (distance > distanceLimit) {
+            weight = weightScale / distance;
             total += weight;
             x += entry[3] * weight;
             y += entry[4] * weight;
             z += entry[5] * weight;
         } else {
-            total = lbl_8047CFDC;
-            x = entry[3];
+            total = distanceLimit;
             y = entry[4];
+            x = entry[3];
             z = entry[5];
             break;
         }
     }
 
-    if (total == lbl_8047CFD0) {
+    if (lbl_8047CFD0 == total) {
         GSlogWrite(lbl_80272770);
         return 0;
     }
@@ -1648,7 +1649,8 @@ void fn_80117330(f32 arg) {
     u8 pos[0xC];
     u8 view[0xC];
     u8 rot[0xC];
-    u8 mat[0x18];
+    u8 rotation[0xC];
+    u8 offset[0xC];
     f32 y;
     f32 x;
     f32 z;
@@ -1678,17 +1680,17 @@ void fn_80117330(f32 arg) {
         if (floorUpdateFieldCamera(pos, &x, &y, &z) == 0) { return; }
     }
 
-    set__5GSvecFfff(mat, lbl_8047CFD0, x, y);
+    set__5GSvecFfff(offset, lbl_8047CFD0, x, y);
     GSmtxMakeYRotation(tmp, z);
-    GSvecTransform(mat, tmp, mat);
+    GSvecTransform(offset, tmp, offset);
     GSvecAdd(rot, pos, view);
-    GSvecAdd(rot, rot, mat);
-    *(f32*)(&mat[0x10]) = z;
-    *(f32*)(&mat[0xC]) = -(f32)atan2(x, y);
-    *(f32*)(&mat[0x14]) = lbl_8047CFD0;
+    GSvecAdd(rot, rot, offset);
+    *(f32*)(&rotation[4]) = z;
+    *(f32*)(&rotation[0]) = -(f32)atan2(x, y);
+    *(f32*)(&rotation[8]) = lbl_8047CFD0;
     cameraMoveTargetPos(0, pos, arg);
     cameraMovePosition(0, rot, arg);
-    cameraMoveRotation(0, &mat[0xC], arg);
+    cameraMoveRotation(0, rotation, arg);
 }
 #pragma pop
 #endif

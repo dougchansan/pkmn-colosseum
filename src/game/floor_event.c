@@ -198,7 +198,7 @@ extern void msgctrlSetValue(u32, u32);
 extern void winMsgOpen(u32, u32, u32, u32);
 extern void winMsgClose(u32);
 extern u16 pcboxDelItem(u8*, u16, u16);
-extern s32 fn_8001E184(void);
+extern s8 fn_8001E184(void);
 s32 floorEventGetTresure(u8, u32, s32);
 extern void fn_8018B76C(void*, u32, u32, u32, u32);
 extern void fn_8018C7C8(void*, u32, u32);
@@ -1490,7 +1490,7 @@ void floorEventSetTresureDisp(u32 rawIndex, u32 display)
 /* 0x80115E6C | 0x2F8 */
 s32 floorEventGetTresure(u8 type, u32 item, s32 count)
 {
-    s32 result = 0;
+    s32 result;
     u32 message = 0;
 
     fn_801653CC(0x3CA, 0, 0xFF);
@@ -1554,14 +1554,14 @@ s32 floorEventGetTresure(u8 type, u32 item, s32 count)
         case 0x21A:
             message = 0x3B33;
             break;
+        case 0x21D:
+            message = 0x3B35;
+            break;
         case 0x21B:
             message = 0x3B39;
             break;
         case 0x21C:
             message = 0x3B37;
-            break;
-        case 0x21D:
-            message = 0x3B35;
             break;
         case 0x223:
             message = 0x44C4;
@@ -1569,7 +1569,7 @@ s32 floorEventGetTresure(u8 type, u32 item, s32 count)
         }
 
         winMsgOpen(3, message, 1, 0);
-        result = (s8)fn_8001E184();
+        result = fn_8001E184();
         winMsgClose(1);
         if (result != 0) {
             return 0;
@@ -1579,14 +1579,14 @@ s32 floorEventGetTresure(u8 type, u32 item, s32 count)
         case 0x21A:
             message = 0x3B34;
             break;
+        case 0x21D:
+            message = 0x3B36;
+            break;
         case 0x21B:
             message = 0x3B30;
             break;
         case 0x21C:
             message = 0x3B38;
-            break;
-        case 0x21D:
-            message = 0x3B36;
             break;
         case 0x223:
             message = 0x44C5;
