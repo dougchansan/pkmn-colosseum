@@ -140,10 +140,13 @@ u32 fn_80111DF8(void) {
     u32 baseId;
     u32 modelCount;
     u32 lightCount;
-    u32 i;
+    u32 modelIndex;
+    u32 lightIndex;
 
     modelCount = 0;
     lightCount = 0;
+    modelIndex = 0;
+    lightIndex = 0;
     floor = floorDataBiosGetCurrentPtr();
     mapId = floorDataBiosGetMapResID(floor);
     if (mapId != 0) {
@@ -154,16 +157,18 @@ u32 fn_80111DF8(void) {
         if (lists != NULL) {
             if (lists->models != NULL) {
                 baseId = floorReadMakeModelResID(mapId);
-                for (i = 0; lists->models[i] != 0; i++) {
-                    if (GSresGetResource(groupId, baseId | i) != NULL) {
+                for (; lists->models[modelIndex] != 0; modelIndex++) {
+                    if (GSresGetResource(groupId,
+                                          baseId | modelIndex) != NULL) {
                         modelCount++;
                     }
                 }
             }
             if (lists->lights != NULL) {
                 baseId = floorReadMakeLightResID(mapId);
-                for (i = 0; lists->lights[i] != 0; i++) {
-                    if (GSresGetResource(groupId, baseId | i) != NULL) {
+                for (; lists->lights[lightIndex] != 0; lightIndex++) {
+                    if (GSresGetResource(groupId,
+                                          baseId | lightIndex) != NULL) {
                         lightCount++;
                     }
                 }
@@ -182,8 +187,11 @@ void fn_80111F2C(u8* state) {
     u32 groupId;
     u32 resourceId;
     u32 baseId;
-    u32 i;
+    u32 modelIndex;
+    u32 lightIndex;
 
+    modelIndex = 0;
+    lightIndex = 0;
     floor = floorDataBiosGetCurrentPtr();
     mapId = floorDataBiosGetMapResID(floor);
     if (mapId != 0) {
@@ -194,8 +202,8 @@ void fn_80111F2C(u8* state) {
         if (lists != NULL) {
             if (lists->models != NULL) {
                 baseId = floorReadMakeModelResID(mapId);
-                for (i = 0; lists->models[i] != 0; i++) {
-                    resourceId = baseId | i;
+                for (; lists->models[modelIndex] != 0; modelIndex++) {
+                    resourceId = baseId | modelIndex;
                     resource = GSresGetResource(groupId, resourceId);
                     if (resource != NULL) {
                         *(u32*)(state + 0) = resourceId;
@@ -207,8 +215,8 @@ void fn_80111F2C(u8* state) {
             }
             if (lists->lights != NULL) {
                 baseId = floorReadMakeLightResID(mapId);
-                for (i = 0; lists->lights[i] != 0; i++) {
-                    resourceId = baseId | i;
+                for (; lists->lights[lightIndex] != 0; lightIndex++) {
+                    resourceId = baseId | lightIndex;
                     resource = GSresGetResource(groupId, resourceId);
                     if (resource != NULL) {
                         *(u32*)(state + 0) = resourceId;
@@ -234,9 +242,12 @@ void fn_8011207C(u8* state, u32 stateSize) {
     u32 resourceId;
     u32 baseId;
     u32 stateCount = stateSize / 0x74;
-    u32 i;
+    u32 modelIndex;
+    u32 lightIndex;
     u32 j;
 
+    modelIndex = 0;
+    lightIndex = 0;
     floor = floorDataBiosGetCurrentPtr();
     mapId = floorDataBiosGetMapResID(floor);
     if (mapId == 0) {
@@ -251,8 +262,8 @@ void fn_8011207C(u8* state, u32 stateSize) {
     }
     if (lists->models != NULL) {
         baseId = floorReadMakeModelResID(mapId);
-        for (i = 0; lists->models[i] != 0; i++) {
-            resourceId = baseId | i;
+        for (; lists->models[modelIndex] != 0; modelIndex++) {
+            resourceId = baseId | modelIndex;
             resource = GSresGetResource(groupId, resourceId);
             if (resource != NULL) {
                 u8* record = state;
@@ -274,8 +285,8 @@ void fn_8011207C(u8* state, u32 stateSize) {
     }
     if (lists->lights != NULL) {
         baseId = floorReadMakeLightResID(mapId);
-        for (i = 0; lists->lights[i] != 0; i++) {
-            resourceId = baseId | i;
+        for (; lists->lights[lightIndex] != 0; lightIndex++) {
+            resourceId = baseId | lightIndex;
             resource = GSresGetResource(groupId, resourceId);
             if (resource != NULL) {
                 u8* record = state;
@@ -305,8 +316,11 @@ void fn_80112260(s32 visible) {
     u32 mapId;
     u32 groupId;
     u32 baseId;
-    u32 i;
+    u32 modelIndex;
+    u32 lightIndex;
 
+    modelIndex = 0;
+    lightIndex = 0;
     floor = floorDataBiosGetCurrentPtr();
     mapId = floorDataBiosGetMapResID(floor);
     if (mapId != 0) {
@@ -317,8 +331,8 @@ void fn_80112260(s32 visible) {
         if (lists != NULL) {
             if (lists->models != NULL) {
                 baseId = floorReadMakeModelResID(mapId);
-                for (i = 0; lists->models[i] != 0; i++) {
-                    resource = GSresGetResource(groupId, baseId | i);
+                for (; lists->models[modelIndex] != 0; modelIndex++) {
+                    resource = GSresGetResource(groupId, baseId | modelIndex);
                     if (resource != NULL) {
                         GSmodelSetVisibility(resource, (u8)visible);
                     }
@@ -326,8 +340,8 @@ void fn_80112260(s32 visible) {
             }
             if (lists->lights != NULL) {
                 baseId = floorReadMakeLightResID(mapId);
-                for (i = 0; lists->lights[i] != 0; i++) {
-                    resource = GSresGetResource(groupId, baseId | i);
+                for (; lists->lights[lightIndex] != 0; lightIndex++) {
+                    resource = GSresGetResource(groupId, baseId | lightIndex);
                     if (resource != NULL) {
                         GSlightSetActive(resource, (u8)visible);
                     }

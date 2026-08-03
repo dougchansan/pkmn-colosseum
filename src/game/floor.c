@@ -71,7 +71,7 @@ void fn_801123D4(u32 floorDataEntry, u32 loadMode) {
     u32 setupData[4];
     u32 objectId;
     s32 status;
-    u8 kind;
+    s32 kind;
 
     sceneData[0] = lbl_802720A0[0];
     sceneData[1] = lbl_802720A0[1];

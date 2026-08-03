@@ -239,11 +239,13 @@ void modelShadowInit__Fv(void)
 void _modelShadowSetShadowFlag__FP9_HSD_JObjPPvi(GSjobjNode* jobj, void* arg, int unused)
 {
     GSdobjNode* child;
+    s32 valid;
     u8 flag = (u8)(u32)arg;
 
     (void)unused;
 
-    if ((jobj->flags & 0x4020U) != 0U) {
+    valid = (jobj->flags & 0x4020U) == 0U;
+    if (valid == 0) {
         return;
     }
 
@@ -396,14 +398,16 @@ _modelShadowFindValidReceiveModel__FP8_GSmodelP8_GSmodelP7GSlightP7GSbound(
                         bound->scale->z) /
                        lbl_8047CBC0;
             size = (u32)ceil(largest);
-            if (size < slot->minSize ||
-                size < slot->maxSize / 3 ||
-                size > slot->minSize * 3) {
+            if (size < slot->minSize || size < slot->maxSize / 3) {
                 continue;
             }
             if (size <= slot->maxSize) {
                 return slot;
             }
+            if (size > slot->minSize * 3) {
+                continue;
+            }
+            return slot;
         }
 
         if (lbl_8047AB88 > lbl_8047CBC8) {
