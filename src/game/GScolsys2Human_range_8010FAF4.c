@@ -128,24 +128,36 @@ s32 GScolsys2HumanCollision(
     GScolsys2Vec3 segmentStart;
     GScolsys2Vec3 segmentEnd;
     f32 distance;
+    f32 one;
     f32 step;
+    f32 zero;
     f32 t;
+    s32 status;
 
     if (index < 0 || index >= 0x30) {
-        return 4;
+        status = 4;
+    } else {
+        floor = GScolsys2GetCurFloor();
+        if (floor == NULL) {
+            status = 1;
+        } else {
+            u8* candidate = floor + 0xA00 + index * 0x14;
+            if ((*(u16*)(candidate + 0x10) & 1) == 0) {
+                status = 4;
+            } else {
+                entry = candidate;
+                status = 0;
+            }
+        }
     }
-    floor = GScolsys2GetCurFloor();
-    if (floor == NULL) {
-        return 1;
-    }
-    entry = floor + 0xA00 + index * 0x14;
-    if ((*(u16*)(entry + 0x10) & 1) == 0) {
-        return 4;
+    if (status != 0) {
+        return status;
     }
 
     distance = PSVECDistance(start, end);
     if (distance > lbl_8047CF20) {
-        step = *(f32*)(entry + 8) / distance;
+        step = *(f32*)(entry + 8);
+        step /= distance;
         if (step > lbl_8047CF40) {
             step = lbl_8047CF40;
         }
@@ -153,11 +165,13 @@ s32 GScolsys2HumanCollision(
         step = lbl_8047CF20;
     }
     PSVECSubtract(end, start, &delta);
-    t = lbl_8047CF20;
-    while (t < lbl_8047CF40) {
+    zero = lbl_8047CF20;
+    one = lbl_8047CF40;
+    t = zero;
+    while (t < one) {
         f32 next = t + step;
-        if (next > lbl_8047CF40) {
-            next = lbl_8047CF40;
+        if (next > one) {
+            next = one;
         }
         PSVECScale(&delta, &segmentStart, t);
         PSVECAdd(&segmentStart, start, &segmentStart);
@@ -167,7 +181,7 @@ s32 GScolsys2HumanCollision(
                         &segmentEnd, result)) {
             return 6;
         }
-        if (step <= lbl_8047CF20) {
+        if (step <= zero) {
             break;
         }
         t += step;

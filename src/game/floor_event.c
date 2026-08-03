@@ -1450,7 +1450,8 @@ void* floorEventGetTresureList(u32 param)
     for (index = 0; index < *(u32*)lbl_80478EB8; index++) {
         entry = (u8*)lbl_80478EBC + index * 0x1C;
         if (*(u16*)(entry + 4) == (u32)fn_800FF56C()) {
-            if (target == found++) {
+            found++;
+            if (target == found - 1) {
                 break;
             }
         }
@@ -1616,7 +1617,8 @@ static inline void* floorEventFindTresureEntry(u32 param)
     for (index = 0; index < *(u32*)lbl_80478EB8; index++) {
         entry = (u8*)lbl_80478EBC + index * 0x1C;
         if (*(u16*)(entry + 4) == (u32)fn_800FF56C()) {
-            if (target == found++) {
+            found++;
+            if (target == found - 1) {
                 break;
             }
         }
