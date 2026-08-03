@@ -1621,8 +1621,10 @@ void fn_801171C8(void) {
     }
 
     {
-        f32 out_y = lbl_8047AD78;
-        f32 out_z = lbl_8047AD7C;
+        f32 out_y;
+        f32 out_z;
+        out_z = lbl_8047AD7C;
+        out_y = lbl_8047AD78;
         cameraSetHeight(lbl_8047AD74);
         cameraSetDistance(out_y);
         cameraSetRotY(out_z);
