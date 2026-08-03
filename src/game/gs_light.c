@@ -975,28 +975,30 @@ asm void fn_800DD174(void) {
 #pragma peephole off
 #pragma scheduling on
 void GSlightSetupLights(void* arg) {
-    GSlightEntry* lightList;
     GSlightEntry* light;
-    GSlightEntry* last;
+    GSlightEntry* tail;
     s32 firstIndex;
+    u32 firstOffset;
     u32 i;
 
     HSD_LObjDeleteCurrentAll(0);
 
-    lightList = (GSlightEntry*)lbl_8047AAEC;
-    firstIndex = GSlightFindFirstActive(lightList, lbl_8047AAF0);
+    tail = (GSlightEntry*)lbl_8047AAEC;
+    firstIndex = GSlightFindFirstActive(tail, lbl_8047AAF0);
 
     if (firstIndex != -1) {
-        last = &lightList[firstIndex];
+        firstOffset = firstIndex * sizeof(GSlightEntry);
+        tail = (GSlightEntry*)((u8*)tail + firstOffset);
         for (i = firstIndex + 1; i < lbl_8047AAF0; i++) {
             light = &((GSlightEntry*)lbl_8047AAEC)[i];
             if (light->allocated == 1 && light->active != 0) {
-                last->lobj->next = light->lobj;
-                last = light;
+                tail->lobj->next = light->lobj;
+                tail = light;
             }
         }
-        last->lobj->next = 0;
-        HSD_LObjAddCurrentAll(lightList[firstIndex].lobj);
+        tail->lobj->next = 0;
+        light = (GSlightEntry*)((u8*)lbl_8047AAEC + firstOffset);
+        HSD_LObjAddCurrentAll(light->lobj);
     }
     HSD_LObjSetup(arg);
 }
