@@ -387,9 +387,10 @@ _modelShadowFindValidReceiveModel__FP8_GSmodelP8_GSmodelP7GSlightP7GSbound(
 
         if (bound != NULL) {
             ObjInfoInit(bound, &dimensions);
-            largest = dimensions.x;
-            if (dimensions.y > largest) {
+            if (dimensions.y > dimensions.x) {
                 largest = dimensions.y;
+            } else {
+                largest = dimensions.x;
             }
             if (dimensions.z > largest) {
                 largest = dimensions.z;
@@ -397,22 +398,18 @@ _modelShadowFindValidReceiveModel__FP8_GSmodelP8_GSmodelP7GSlightP7GSbound(
             largest *= (bound->scale->x + bound->scale->y +
                         bound->scale->z) /
                        lbl_8047CBC0;
-            size = (u32)ceil(largest);
-            if (size < slot->minSize || size < slot->maxSize / 3) {
+            size = (u32)(f32)ceil(largest);
+            if (size < slot->minSize && size < slot->maxSize / 3) {
                 continue;
             }
-            if (size <= slot->maxSize) {
-                return slot;
-            }
-            if (size > slot->minSize * 3) {
+            if (size > slot->maxSize && size > slot->minSize * 3) {
                 continue;
             }
-            return slot;
         }
 
         if (lbl_8047AB88 > lbl_8047CBC8) {
-            fn_800E3D14(receiveModel, &position);
             valid = 1;
+            fn_800E3D14(receiveModel, &position);
             for (j = 0; j < 16; j++) {
                 if (slot->receivers[j] != NULL) {
                     fn_800E3D14(slot->receivers[j], &otherPosition);
