@@ -120,13 +120,12 @@ void fn_800FF178(u8 priority, u32 floorId, void* callback) {
     remaining = lbl_8047ACBC;
     while (remaining-- != 0) {
         if (resource->active == 0) {
-            break;
+            goto found_178;
         }
         resource++;
     }
-    if (remaining == (u32)-1) {
-        resource = NULL;
-    }
+    resource = NULL;
+found_178:
     if (resource == NULL) {
         return;
     }
@@ -183,13 +182,12 @@ void fn_800FF2A0(u8 priority, u32 floorId, void* callback) {
     remaining = lbl_8047ACB8;
     while (remaining-- != 0) {
         if (resource->active == 0) {
-            break;
+            goto found_2A0;
         }
         resource++;
     }
-    if (remaining == (u32)-1) {
-        resource = NULL;
-    }
+    resource = NULL;
+found_2A0:
     if (resource == NULL) {
         return;
     }
@@ -246,13 +244,12 @@ void fn_800FF3C0(u8 priority, u32 floorId, void* callback) {
     remaining = lbl_8047ACB4;
     while (remaining-- != 0) {
         if (resource->active == 0) {
-            break;
+            goto found_3C0;
         }
         resource++;
     }
-    if (remaining == (u32)-1) {
-        resource = NULL;
-    }
+    resource = NULL;
+found_3C0:
     if (resource == NULL) {
         return;
     }

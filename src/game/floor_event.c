@@ -1513,17 +1513,29 @@ s32 floorEventGetTresure(u8 type, u32 item, s32 count)
         msgctrlSetValue(0x2D, item);
         msgctrlSetValue(0x2F, count);
         if (type == 1) {
-            message = count == 1 ? 0x3CB4 : 0x3CB9;
+            if (count == 1) {
+                message = 0x3CB4;
+            } else {
+                message = 0x3CB9;
+            }
             winMsgOpen(3, message, 1, 0);
             winMsgClose(1);
         }
 
         result = heroItemAddItemDataId(0, (u16)item, (u16)count, -1);
         if (result == 0) {
-            message = count == 1 ? 0x3CB8 : 0x3CBD;
+            if (count == 1) {
+                message = 0x3CB8;
+            } else {
+                message = 0x3CBD;
+            }
         } else if (result > 0) {
             result = pcboxDelItem(0, (u16)item, (u16)result);
-            message = count == 1 ? 0x3CBA : 0x3CBB;
+            if (count == 1) {
+                message = 0x3CBA;
+            } else {
+                message = 0x3CBB;
+            }
         }
         winMsgOpen(3, message, 1, 0);
         winMsgClose(1);
