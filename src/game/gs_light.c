@@ -799,16 +799,19 @@ asm void GSlightLoad(void) {
 }
 #else
 u8* GSlightLoad(void* data) {
-    u32 i;
+    u32 remaining;
     u8* obj;
 
     obj = (u8*)lbl_8047AAEC;
-    for (i = 0; i < lbl_8047AAF0; i++, obj += 0x74) {
+    remaining = lbl_8047AAF0;
+    while (remaining != 0) {
         if (obj[0] == 0) {
             break;
         }
+        obj += 0x74;
+        remaining--;
     }
-    if (i == lbl_8047AAF0) {
+    if (remaining == 0) {
         obj = NULL;
     }
     if (obj == NULL) {
@@ -853,16 +856,19 @@ asm void GSlightCreate(void) {
 u8* GSlightCreate(void) {
     f32 one;
     f32 zero;
-    u32 i;
+    u32 remaining;
     u8* obj;
 
     obj = (u8*)lbl_8047AAEC;
-    for (i = 0; i < lbl_8047AAF0; i++, obj += 0x74) {
+    remaining = lbl_8047AAF0;
+    while (remaining != 0) {
         if (obj[0] == 0) {
             break;
         }
+        obj += 0x74;
+        remaining--;
     }
-    if (i == lbl_8047AAF0) {
+    if (remaining == 0) {
         obj = NULL;
     }
     if (obj == NULL) {

@@ -3,7 +3,7 @@
 #include "src/game/gs_model_main_suffix_800E4AC0.c"
 #include "game/gs_model_material_internal.h"
 
-void fn_800DF188(void* material);
+void GSmaterialStoreAlpha(void* material);
 
 void GSmodelInitMaterialAlpha(GSmodel* model)
 {
@@ -13,7 +13,7 @@ void GSmodelInitMaterialAlpha(GSmodel* model)
 
     for (i = 0; i < count; i++) {
         if (materials[i] != NULL) {
-            fn_800DF188(materials[i]);
+            GSmaterialStoreAlpha(materials[i]);
         }
     }
 }

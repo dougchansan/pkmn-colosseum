@@ -3,10 +3,9 @@
 #include "src/game/gs_model_main_suffix_800E4AC0.c"
 #include "game/gs_model_material_internal.h"
 
-void fn_800DF1E4(void* material, void* modulation);
-void fn_800DF384(void* material, s32 mode);
+void GSmaterialEnableExtension(void* material, s32 mode);
 
-void GSmodelEnableModulation(GSmodel* model, void* modulation)
+void GSmodelEnableModulation(GSmodel* model, const GScolor* modulation)
 {
     u16 count = GSmodelAcquireMaterials(model);
     void** materials = (void**)model->materialList;
@@ -14,8 +13,8 @@ void GSmodelEnableModulation(GSmodel* model, void* modulation)
 
     for (i = 0; i < count; i++, materials++) {
         if (*materials != NULL) {
-            fn_800DF1E4(*materials, modulation);
-            fn_800DF384(*materials, 1);
+            GSmaterialSetModulate(*materials, modulation);
+            GSmaterialEnableExtension(*materials, 1);
         }
     }
 }

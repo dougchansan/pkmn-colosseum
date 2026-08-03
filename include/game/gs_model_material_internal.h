@@ -1,13 +1,9 @@
 #ifndef GAME_GS_MODEL_MATERIAL_INTERNAL_H
 #define GAME_GS_MODEL_MATERIAL_INTERNAL_H
 
-u16 fn_800E3534(u32 size);
-void* fn_800E27B0(u32 handle);
 s32 fn_800EE0E8(void* model);
-void* fn_800EE150(void* model, s32 index);
-s32 fn_800EE758(void* part);
-void* fn_800EE6B4(void* part, s32 index);
-void fn_800EE828(void* part);
+s32 GSpartGetMaterialCount(GSpart* part);
+void* GSpartGetMaterial(GSpart* part, s32 index);
 
 static inline u16 GSmodelAcquireMaterials(GSmodel* model)
 {
@@ -19,13 +15,13 @@ static inline u16 GSmodelAcquireMaterials(GSmodel* model)
         count = 0;
         partCount = fn_800EE0E8(model);
         for (partIndex = 0; partIndex < partCount; partIndex++) {
-            void* part = fn_800EE150(model, partIndex);
-            count += fn_800EE758(part);
-            fn_800EE828(part);
+            GSpart* part = GSmodelGetPart(model, partIndex);
+            count += GSpartGetMaterialCount(part);
+            GSpartFree(part);
         }
 
         if (count != 0) {
-            u16 handle = fn_800E3534(count * sizeof(void*));
+            u32 handle = _toolentryAlloc__FUl(count * sizeof(void*));
 
             if (handle != 0) {
                 void** dst = fn_800E27B0(handle);
@@ -34,16 +30,16 @@ static inline u16 GSmodelAcquireMaterials(GSmodel* model)
                 model->materialListHandle = handle;
                 model->materialCount = count;
                 for (partIndex = 0; partIndex < partCount; partIndex++) {
-                    void* part = fn_800EE150(model, partIndex);
-                    s32 partMaterialCount = fn_800EE758(part);
+                    GSpart* part = GSmodelGetPart(model, partIndex);
+                    s32 partMaterialCount = GSpartGetMaterialCount(part);
                     s32 materialIndex;
 
                     for (materialIndex = 0; materialIndex < partMaterialCount;) {
-                        *dst = fn_800EE6B4(part, materialIndex);
+                        *dst = GSpartGetMaterial(part, materialIndex);
                         materialIndex++;
                         dst++;
                     }
-                    fn_800EE828(part);
+                    GSpartFree(part);
                 }
             } else {
                 count = 0;
