@@ -235,7 +235,7 @@ void modelShadowInit__Fv(void)
     }
 }
 
-#pragma peephole off
+#pragma peephole on
 void _modelShadowSetShadowFlag__FP9_HSD_JObjPPvi(GSjobjNode* jobj, void* arg, int unused)
 {
     GSdobjNode* child;
