@@ -3628,8 +3628,8 @@ typedef struct PFAramQueueEntry {
 
 typedef struct PFAramQueue {
     PFAramQueueEntry entries[16]; /* 0x000 */
-    u8 writeIndex;                /* 0x280 */
-    u8 count;                     /* 0x281 */
+    volatile u8 writeIndex;       /* 0x280 */
+    volatile u8 count;            /* 0x281 */
 } PFAramQueue;
 
 void aramQueueCallback(u32 ptr) {
@@ -3708,10 +3708,7 @@ asm void fn_80163490(void) {
 }
 #else
 void fn_80163490(void) {
-    u8* ptr;
-
-    ptr = lbl_8044FB90;
-    while (*(volatile u8*)(ptr + 0x281) != 0) {
+    while (((PFAramQueue*)lbl_8044FB90)->count != 0) {
     }
 }
 #endif
@@ -3725,9 +3722,6 @@ void fn_801634A8(u32 size) {
     s16* temporary;
     u32 i;
     u32 base;
-    u32 end;
-    PFAramQueue* lowQueue;
-    PFAramQueue* highQueue;
 
     base = ARGetBaseAddress();
     temporary = (s16*)fn_801643D8(0x500);
@@ -3736,21 +3730,18 @@ void fn_801634A8(u32 size) {
     }
     DCFlushRange(temporary, 0x500);
 
-    lowQueue = (PFAramQueue*)lbl_8044FB90;
-    highQueue = (PFAramQueue*)lbl_8044FE14;
-    lowQueue->writeIndex = 0;
-    lowQueue->count = 0;
-    highQueue->writeIndex = 0;
-    highQueue->count = 0;
+    ((PFAramQueue*)lbl_8044FB90)->writeIndex =
+        ((PFAramQueue*)lbl_8044FB90)->count = 0;
+    ((PFAramQueue*)lbl_8044FE14)->writeIndex =
+        ((PFAramQueue*)lbl_8044FE14)->count = 0;
 
     aramUploadData(temporary, base, 0x500, 0, 0, 0);
     fn_80163490();
     fn_80164400((u32)temporary);
 
     lbl_8047B07C = base + size;
-    end = ARGetSize();
-    if (lbl_8047B07C > end) {
-        lbl_8047B07C = end;
+    if (lbl_8047B07C > ARGetSize()) {
+        lbl_8047B07C = ARGetSize();
     }
     lbl_8047B078 = base + 0x500;
     lbl_8047B070 = 0;

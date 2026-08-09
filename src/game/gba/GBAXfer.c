@@ -14,6 +14,12 @@
 #include "game/colosseum.h"
 #include "game/trainer.h"
 #include "game/pokemon.h"
+#include "dolphin/os/OSContext.h"
+
+typedef union GBAContext {
+  OSContext context;
+  u8 bytes[0x2D0];
+} GBAContext;
 
 /* =========================================================================
  * Duplicated declarations (verbatim from the original colosseum_battle.c
@@ -81,16 +87,14 @@ u32 fightTrainerAiWazaHit045(void* trainerCtx, u32 trainerSlot, u32 resultSlot, 
 u32 fightMenuFightTrainerGcHeroOpenMenu(void* ctx, u32 param1, u32 param2);
 
 #pragma push
-#pragma peephole off
 /* Address: 0x8025F70C | Size: 0xDC | Ghidra import */
-void __GBAHandler(int chan, u32 status, void* currentContext)
+void __GBAHandler(int chan, u32 status, OSContext* currentContext)
 
 {
-    extern void OSClearContext(void*);
-    extern void OSSetCurrentContext(void*);
   u8* entry;
+  void (*callback0)(int);
   void (*callback1)(int, u32);
-  u8 context[0x2d0];
+  GBAContext context;
 
   entry = lbl_804783E0 + chan * 0x100;
   if (lbl_8047B670 != 0) {
@@ -102,32 +106,29 @@ void __GBAHandler(int chan, u32 status, void* currentContext)
   else {
     *(u32 *)(entry + 0x20) = 0;
   }
-  if (*(u32 *)(entry + 0x38) != 0) {
-    void (*callback0)(int) = *(void (**)(int))(entry + 0x38);
+  if ((callback0 = *(void (**)(int))(entry + 0x38)) != NULL) {
     *(u32 *)(entry + 0x38) = 0;
     callback0(chan);
   }
   if (*(u32 *)(entry + 0x1c) != 0) {
-    OSClearContext(context);
-    OSSetCurrentContext(context);
+    OSClearContext(&context.context);
+    OSSetCurrentContext(&context.context);
     callback1 = *(void (**)(int, u32))(entry + 0x1c);
     *(u32 *)(entry + 0x1c) = 0;
     callback1(chan, *(u32 *)(entry + 0x20));
-    OSClearContext(context);
+    OSClearContext(&context.context);
     OSSetCurrentContext(currentContext);
   }
 }
 #pragma pop
 
 /* Address: 0x8025F7E8 | Size: 0x34 | Ghidra import */
-#pragma peephole off
 void __GBASyncCallback(int r3)
 
 {
     extern void OSWakeupThread(void *);
   OSWakeupThread(lbl_804783E0 + r3 * 0x100 + 0x24);
 }
-#pragma peephole on
 
 /* Address: 0x8025F81C | Size: 0x6C | Ghidra import */
 #pragma push
@@ -157,15 +158,13 @@ u32 __GBASync(int r3)
 void TypeAndStatusCallback(int r3,u32 r4)
 
 {
-  extern void *OSGetCurrentContext(void);
-  extern void OSClearContext(void *);
-  extern void OSSetCurrentContext(void *);
   extern void __OSReschedule(void);
   extern int SITransfer(int, void *, u32, void *, u32, u32, u32, u32);
   u8 *entry;
+  void (*callback0)(int);
   void (*callback1)(int, u32);
-  void *currentContext;
-  u8 context[0x2d0];
+  OSContext *currentContext;
+  GBAContext context;
 
   entry = lbl_804783E0 + r3 * 0x100;
   if (lbl_8047B670 == 0) {
@@ -181,19 +180,18 @@ void TypeAndStatusCallback(int r3,u32 r4)
       }
       *(u32 *)(entry + 0x20) = 2;
     }
-    if (*(u32 *)(entry + 0x38) != 0) {
-      void (*callback0)(int) = *(void (**)(int))(entry + 0x38);
+    if ((callback0 = *(void (**)(int))(entry + 0x38)) != NULL) {
       *(u32 *)(entry + 0x38) = 0;
       callback0(r3);
     }
     if (*(u32 *)(entry + 0x1c) != 0) {
       currentContext = OSGetCurrentContext();
-      OSClearContext(context);
-      OSSetCurrentContext(context);
+      OSClearContext(&context.context);
+      OSSetCurrentContext(&context.context);
       callback1 = *(void (**)(int, u32))(entry + 0x1c);
       *(u32 *)(entry + 0x1c) = 0;
       callback1(r3, *(u32 *)(entry + 0x20));
-      OSClearContext(context);
+      OSClearContext(&context.context);
       OSSetCurrentContext(currentContext);
       __OSReschedule();
     }
