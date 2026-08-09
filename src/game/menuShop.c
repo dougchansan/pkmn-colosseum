@@ -897,15 +897,21 @@ s32 fn_8002AB00(void* r3, u8* r4) {
     void* ctx;
     u8* base;
     u8 v;
+    u8 first;
+    u8 second;
+    u8 third;
     s32 off;
     ctx = *(void**)((u8*)r3 + 0x60);
     base = lbl_80266E70;
     v = ((u8*)ctx)[0x1c];
     off = (s32)v * 3;
-    r4[0x64] = base[off];
+    first = base[off];
     base = base + off;
-    r4[0x65] = base[1];
-    r4[0x66] = base[2];
+    second = base[1];
+    r4[0x64] = first;
+    third = base[2];
+    r4[0x65] = second;
+    r4[0x66] = third;
     r4[0x67] = 0xff;
     return 0;
 }
@@ -1103,6 +1109,9 @@ asm void fn_8002AE9C(void) {
 s32 fn_8002AE9C(void* r3, u8* r4) {
     void* ctx;
     u8 v;
+    u8 first;
+    u8 second;
+    u8 third;
     u8* base;
     s32 off;
     ctx = *(void**)((u8*)r3 + 0x60);
@@ -1110,10 +1119,13 @@ s32 fn_8002AE9C(void* r3, u8* r4) {
     if (v == 0 || v == 1) {
         off = (s32)v * 3;
         base = lbl_80266E70;
-        r4[0x64] = base[off];
+        first = base[off];
         base = base + off;
-        r4[0x65] = base[1];
-        r4[0x66] = base[2];
+        second = base[1];
+        r4[0x64] = first;
+        third = base[2];
+        r4[0x65] = second;
+        r4[0x66] = third;
         r4[0x67] = 0xff;
     } else {
         r4[0x67] = 0;

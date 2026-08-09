@@ -23,7 +23,6 @@ void mailMainSendByScrpt(s32 seqHandle, f32 alpha, f32 speed) {
     extern u32 fn_80166A50(u32, u32, u32, u32);
     u32 soundId;
     u32 workId;
-    void* buffer;
 
     seqHandle = (u16)seqHandle;
     if (mailGetReceiveNumber(seqHandle) >= 0) {
@@ -36,8 +35,9 @@ void mailMainSendByScrpt(s32 seqHandle, f32 alpha, f32 speed) {
     soundId = fn_801D1650(fn_801D16C4());
     if (soundId != 0) {
         workId = fn_8016557C();
-        buffer = GSresAllocResourceAlign(0x10000, 0x20, 0, 0x408, 0);
-        fn_801654E0(soundId, buffer, 0x10000);
+        fn_801654E0(soundId,
+                    GSresAllocResourceAlign(0x10000, 0x20, 0, 0x408, 0),
+                    0x10000);
         fn_80166B3C(soundId, 0, 0x408);
         fn_80166A50(soundId, 0, 0xFF, 0);
     } else {
@@ -62,10 +62,9 @@ void mailMainSendAllMail(s32 seqHandle, f32 targetScale, f32 speed) {
     extern u32 fn_80166A50(u32, u32, u32, u32);
     u32 soundId;
     u32 workId;
-    void* buffer;
     s32 count;
-    s32 sent;
     s32 i;
+    s32 sent;
 
     count = mailGetNbMailData();
     sent = 0;
@@ -79,8 +78,9 @@ void mailMainSendAllMail(s32 seqHandle, f32 targetScale, f32 speed) {
         soundId = fn_801D1650(fn_801D16C4());
         if (soundId != 0) {
             workId = fn_8016557C();
-            buffer = GSresAllocResourceAlign(0x10000, 0x20, 0, 0x408, 0);
-            fn_801654E0(soundId, buffer, 0x10000);
+            fn_801654E0(soundId,
+                        GSresAllocResourceAlign(0x10000, 0x20, 0, 0x408, 0),
+                        0x10000);
             fn_80166B3C(soundId, 0, 0x408);
             fn_80166A50(soundId, 0, 0xFF, 0);
         } else {
@@ -104,11 +104,13 @@ void fn_801D228C(s32 seqHandle) {
     extern void fn_801EE67C(s32);
     extern void fn_800F7434(s32, s32, ...);
     extern void heroMoveAddAutoEvent(s32, u16, s32, s32, s32);
-    s32 handle = seqHandle;
+    u16 handle;
     u16 count;
     u16 i;
     u32 object;
     u32 limit;
+
+    handle = (u16)seqHandle;
 
     object = fn_801D1504(handle);
     if (object != -1 && object != 0) {
@@ -125,7 +127,7 @@ void fn_801D228C(s32 seqHandle) {
         for (i = 0; i < count; i++) {
             object = ((s32 (*)(s32, s32))fn_801D1864)(handle, i);
             fn_801EED30(object, 1);
-            limit = (u8)((s32 (*)(s32, s32))fn_801D1734)(handle, i);
+            limit = ((s32 (*)(s32, s32))fn_801D1734)(handle, i);
             if (fn_801EE614(object) < (u8)limit) {
                 fn_801EE67C(object);
             }
@@ -139,7 +141,7 @@ void fn_801D228C(s32 seqHandle) {
 
     object = fn_801D147C(handle);
     if (object != -1 && object != 0) {
-        heroMoveAddAutoEvent(object, handle, 0, 0, 0);
+        heroMoveAddAutoEvent(object, seqHandle, 0, 0, 0);
     }
 }
 
