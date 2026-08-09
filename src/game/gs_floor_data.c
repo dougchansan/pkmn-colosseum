@@ -145,8 +145,7 @@ found_178:
         resource->modelHandle = NULL;
     }
 
-    current = lbl_8047ACCC;
-    if (current == NULL) {
+    if ((current = lbl_8047ACCC) == NULL) {
         lbl_8047ACCC = resource;
         return;
     }
@@ -207,8 +206,7 @@ found_2A0:
         resource->modelHandle = NULL;
     }
 
-    current = lbl_8047ACCC;
-    if (current == NULL) {
+    if ((current = lbl_8047ACCC) == NULL) {
         lbl_8047ACCC = resource;
         return;
     }
@@ -269,8 +267,7 @@ found_3C0:
         resource->modelHandle = NULL;
     }
 
-    current = lbl_8047ACCC;
-    if (current == NULL) {
+    if ((current = lbl_8047ACCC) == NULL) {
         lbl_8047ACCC = resource;
         return;
     }
