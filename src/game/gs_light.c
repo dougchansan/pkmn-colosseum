@@ -478,7 +478,7 @@ void fn_800DC6D8(u32 delta) {
             case 0:
                 end = limit - *(f32*)&lbl_8047CA74;
                 frame = *(f32*)(obj + 0x68);
-                if (frame >= end) {
+                if (end <= frame) {
                     obj[0x70] = 1;
                     obj[0x71] = 0;
                     *(f32*)(obj + 0x68) = end;
