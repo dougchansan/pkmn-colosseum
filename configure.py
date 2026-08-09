@@ -4871,7 +4871,7 @@ config.libs = [
                 CodeCandidate,
                 "hsd/hsd_robj_r60_801AE008_lmw_on.c",
                 mw_version="GC/1.3.2",
-                extra_cflags=["-O2", "-use_lmw_stmw on"],
+                extra_cflags=["-O1", "-use_lmw_stmw on"],
                 progress_category="hsd",
             ),
             Object(
@@ -4885,7 +4885,7 @@ config.libs = [
                 CodeCandidate,
                 "hsd/hsd_robj_r60_801AE5E8_lmw_on.c",
                 mw_version="GC/1.3.2",
-                extra_cflags=["-O2", "-use_lmw_stmw on"],
+                extra_cflags=["-O1", "-use_lmw_stmw on"],
                 progress_category="hsd",
             ),
             *[
@@ -4922,7 +4922,7 @@ config.libs = [
                 CodeCandidate,
                 "hsd/hsd_robj_r48_801AFCAC_suffix.c",
                 mw_version="GC/1.3",
-                extra_cflags=["-O2", "-use_lmw_stmw on"],
+                extra_cflags=["-O1", "-use_lmw_stmw on"],
                 progress_category="hsd",
             ),
             Object(
@@ -4957,7 +4957,7 @@ config.libs = [
                 extra_cflags=[
                     "-use_lmw_stmw on",
                     "-fp_contract off",
-                    "-O2",
+                    "-O1",
                 ],
                 progress_category="hsd",
             ),
@@ -10002,7 +10002,7 @@ config.libs = [
                 CodeCandidate,
                 "hsd/hsd_lobj_r42_801A4B00.c",
                 mw_version="GC/1.3.2",
-                extra_cflags=["-use_lmw_stmw on", "-O2"],
+                extra_cflags=["-use_lmw_stmw on", "-O1"],
                 progress_category="hsd",
             ),
             *[
@@ -10182,6 +10182,7 @@ config.libs = [
                     status,
                     path,
                     mw_version="GC/1.3",
+                    extra_cflags=["-O1"] if status == CodeCandidate else None,
                     progress_category="hsd",
                 )
                 for status, path in [
@@ -10200,7 +10201,7 @@ config.libs = [
                 extra_cflags=["-use_lmw_stmw on"],
                 progress_category="hsd",
             ),
-            Object(CodeCandidate, "hsd/hsd_shadow_r60_801B04E0_suffix.c", mw_version="GC/1.3", progress_category="hsd"),
+            Object(CodeCandidate, "hsd/hsd_shadow_r60_801B04E0_suffix.c", mw_version="GC/1.3", extra_cflags=["-O1"], progress_category="hsd"),
             *[
                 Object(
                     CodeCandidate,
@@ -10289,20 +10290,21 @@ config.libs = [
                 CodeCandidate,
                 "hsd/hsd_mobj_r54_801A8354_suffix.c",
                 mw_version="GC/1.3",
+                extra_cflags=["-O1"],
                 progress_category="hsd",
             ),
             Object(
                 CodeCandidate,
                 "hsd/hsd_mobj_candidate_801A6E24.c",
                 mw_version="GC/1.3",
-                extra_cflags=["-O2"],
+                extra_cflags=["-O1"],
                 progress_category="hsd",
             ),
             Object(
                 CodeCandidate,
                 "hsd/hsd_mobj_candidate_801A6FF0.c",
                 mw_version="GC/1.3.2",
-                extra_cflags=["-use_lmw_stmw on", "-O2"],
+                extra_cflags=["-use_lmw_stmw on", "-O1"],
                 progress_category="hsd",
             ),
             Object(
