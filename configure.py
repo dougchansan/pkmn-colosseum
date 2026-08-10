@@ -4365,7 +4365,7 @@ config.libs = [
             Object(
                 CodeCandidate,
                 "game/gs_mem.c",
-                mw_version="GC/1.3",
+                mw_version="GC/2.0",
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
@@ -4604,7 +4604,7 @@ config.libs = [
             Object(
                 CodeCandidate,
                 "game/gs_range_80109C88.c",
-                mw_version="GC/1.3",
+                mw_version="GC/2.0",
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
@@ -4828,13 +4828,25 @@ config.libs = [
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
-            Object(
-                CodeCandidate,
-                "game/gs_range_8017A5FC.c",
-                mw_version="GC/1.3",
-                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
-                progress_category="game",
-            ),
+            *[
+                Object(
+                    status,
+                    path,
+                    mw_version="GC/2.0",
+                    extra_cflags=[
+                        "-use_lmw_stmw on",
+                        "-sdata 8",
+                        "-sdata2 8",
+                        *(["-schedule off"] if path == "game/gs_range_8017A624_middle.c" else []),
+                    ],
+                    progress_category="game",
+                )
+                for status, path in [
+                    (Matching, "game/gs_range_8017A5FC_prefix.c"),
+                    (CodeCandidate, "game/gs_range_8017A624_middle.c"),
+                    (CodeCandidate, "game/gs_range_8017A814_suffix.c"),
+                ]
+            ],
             Object(
                 CodeCandidate,
                 "game/gs_range_8017F2C4.c",

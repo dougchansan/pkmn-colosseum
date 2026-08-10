@@ -13,6 +13,8 @@
 
 /* Address: 0x8017A5FC | size: 0x28 */
 extern FSYSManager lbl_80453FEC;
+void fn_8017A5FC(void);
+#if !defined(GS_RANGE_8017A5FC_SPLIT) || defined(GS_RANGE_8017A5FC_PREFIX)
 #pragma optimization_level 0
 void fn_8017A5FC(void)
 {
@@ -22,8 +24,10 @@ void fn_8017A5FC(void)
     slot->status = 0x12f;
 }
 #pragma optimization_level reset
+#endif
 
 /* Address: 0x8017A624 | size: 0x1F0 */
+#if !defined(GS_RANGE_8017A5FC_SPLIT) || defined(GS_RANGE_8017A624_MIDDLE)
 extern s32 fn_801808B4(void* req);
 extern void* fn_801807A8(void* src, void* dst, u32 size);
 extern u8 fn_80167E98(void* work, void* addr, s32 length, s32 offset,
@@ -88,8 +92,10 @@ s32 fn_8017A624(void* arg)
     }
     return 1;
 }
+#endif
 
 /* Address: 0x8017A814 | size: 0x148 */
+#if !defined(GS_RANGE_8017A5FC_SPLIT) || defined(GS_RANGE_8017A814_SUFFIX)
 extern u32 OSDisableInterrupts(void);
 extern void OSRestoreInterrupts(u32 level);
 extern void fn_80167E64(u32 fileInfo);
@@ -384,3 +390,4 @@ s32 fn_8017B000(u32 fileHandle, u32 requestID, u32 callbackA, u32 callbackB,
     return 0;
 }
 #pragma optimization_level reset
+#endif
