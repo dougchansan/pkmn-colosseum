@@ -5945,16 +5945,13 @@ config.libs = [
                         "-DTHP_PLAYER_ONLY",
                         "-inline noauto",
                         *(["-opt nostrength"] if no_strength else []),
-                        *(["-O4,s"] if "801E446C_middle" in path else []),
                     ],
                     progress_category="sdk",
                 )
                 for path, no_strength in [
                     ("dolphin/thp/THP_r48_801E3F54_prefix.c", False),
                     ("dolphin/thp/THP_r48_801E40F8_nostrength.c", True),
-                    ("dolphin/thp/THP_r48_801E446C_prefix.c", False),
-                    ("dolphin/thp/THP_r48_801E446C_middle.c", True),
-                    ("dolphin/thp/THP_r48_801E4650_middle.c", False),
+                    ("dolphin/thp/THP_r48_801E446C_middle.c", False),
                     ("dolphin/thp/THP_r48_801E4F64_nostrength.c", True),
                     ("dolphin/thp/THP_r48_801E5154_suffix.c", False),
                 ]
@@ -7712,7 +7709,6 @@ config.libs = [
                         "-use_lmw_stmw on",
                         "-sdata 8",
                         "-sdata2 8",
-                        *(["-inline noauto"] if path == "game/gs_colsys.c" else []),
                     ],
                     progress_category="game",
                 )
