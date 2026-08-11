@@ -76,7 +76,10 @@ u32 fightTrainerAiWazaHit045(void* trainerCtx, u32 trainerSlot, u32 resultSlot, 
 u32 fightMenuFightTrainerGcHeroOpenMenu(void* ctx, u32 param1, u32 param2);
 u8 fightFloorGetFightTrainerFightOutPokemonIsFightActionAttackWazaOut(u32, void*, u32, u32, u32, u32);
 s32 fightTrainerGetStatus(u32, u32, u32, u32);
-u16 fightFloorGetFightTrainerFightPokemonPtrAry(u32, void*, void*, u32, u32);
+/* Declared with a full-word return: retail keeps the count unmasked in a
+ * register (mr) and only narrows it with a clrlwi right before the loop.
+ * A u16 return type would sink that mask into the assignment instead. */
+u32 fightFloorGetFightTrainerFightPokemonPtrAry(u32, void*, void*, u32, u32);
 u32 fightOutPokemonGetPokemonPtr(u32);
 u8 fn_80237310(void*, u32);
 u8 fn_80237F74(void*, u32, u32);
@@ -108,9 +111,10 @@ void fn_80239EE8(u32, void*, u32, u32, u32, u32, u32, u32);
  * The two emitters differ only in that fn_80239CCC takes the divided delta as
  * a ninth (stack) argument.
  */
-/* Per-function codegen settings: retail built this range with the scheduler
- * and peephole pass on at -O4.  Measured: baseline 82.22, +sched 96.60,
- * +peephole 97.30.  Wrapped in push/pop so nothing leaks to later functions. */
+/* Per-function codegen settings: this range was built with the scheduler and
+ * the peephole pass on at -O4.  Measured on the finished body: no pragmas
+ * 81.48, +scheduling 96.98, +peephole 97.67, +optimize_for_size off 97.83.
+ * Wrapped in push/pop so nothing leaks into the functions that follow. */
 #pragma push
 #pragma optimization_level 4
 #pragma scheduling on
@@ -126,16 +130,17 @@ u32 fightTrainerAiWazaValueHimitunotikara(void* ctx, u32 param1, u32 param2, u32
     extern u8 fn_80236BFC(void*, u32, u32);
     extern u32 fn_8024AFC4(void*, u32, u32, u32);
     u32 pokemonAry[24];
-    /* Retail keeps a single scratch register (r24) for the result, the divided
-     * per-effect delta and the case 1 loop counter; splitting those into
-     * separate locals costs an extra callee-saved register and 0x10 of frame.
-     * Case 1 is the pressure peak: value, p, count, score fill r24-r27 with the
-     * four parameters in r28-r31. */
-    s32 value;
-    u32 score;
-    u32* p;
-    u16 count;
+    /* Local set and declaration order are both load-bearing.  Six locals with
+     * non-overlapping lifetimes still colour into the eight callee-saved
+     * registers retail uses (r24-r31, frame 0x90); folding the scratch `t` and
+     * the loop counter `i` back into `value` costs 0.8pp, and declaring `value`
+     * last is what drops the result into r24 instead of r30 (+0.15pp). */
     s32 t;
+    s32 score;
+    u32* p;
+    s32 i;
+    u32 count;
+    s32 value;
 
     value = 0;
     switch ((u8)tikeiDataBiosGetFightKoukaId(
@@ -170,12 +175,16 @@ u32 fightTrainerAiWazaValueHimitunotikara(void* ctx, u32 param1, u32 param2, u32
         fn_80239CCC(0xEC64, ctx, fightOutPokemonGetPokemonPtr(param1), 0, 0, param2, 0, 0x10D, t);
 
         p = pokemonAry;
-        for (value = 0; (value & 0xFFFF) < count; value++) {
-            if (((u32 (*)(u32, u32, u32, u32))pokemonGetStatus)(param3, 0, 0xD5, 0) ==
-                p[value & 0xFFFF]) {
+        count &= 0xFFFF;
+        for (i = 0; (u16)i < count; i++) {
+            /* Call through the file-scope `extern void* pokemonGetStatus();`
+             * directly: casting it to a function-pointer type first makes MWCC
+             * hoist the address into a register and call it via mtctr/bctrl,
+             * which costs a callee-saved register on top of the wrong opcode. */
+            if ((u32)pokemonGetStatus(param3, 0, 0xD5, 0) == p[(u16)i]) {
                 continue;
             }
-            if (fn_802384B4(ctx, p[value & 0xFFFF], 8) != 1) {
+            if (fn_802384B4(ctx, p[(u16)i], 8) != 1) {
                 continue;
             }
             t = fn_80239564(ctx, param2);
