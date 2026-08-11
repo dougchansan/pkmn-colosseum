@@ -4160,11 +4160,9 @@ u32 pokemonCreateRndFit(u8* ptr, s32 group_arg, s32 mod_arg, s32 seed_mode_arg, 
 
             group = pokemonCreateRndFitCurrentGroup(ptr);
             if (group < 0) {
-                if ((s8)group_arg != 2) {
-                    if ((u8)(s8)group_arg != pokemonCreateRndFitGroupOrRandom(ptr, value)) {
-                        continue;
-                    }
-                } else {
+                /* Retail emits this arm's pokemonGetStatus pair early (bl 9-10,
+                 * not 29-30), i.e. the == 2 arm is written first. */
+                if ((s8)group_arg == 2) {
                     u32 current;
                     u8 lhs;
                     u8 rhs;
@@ -4173,6 +4171,10 @@ u32 pokemonCreateRndFit(u8* ptr, s32 group_arg, s32 mod_arg, s32 seed_mode_arg, 
                     lhs = pokemonCreateRndFitGroupOrRandom(ptr, current);
                     rhs = pokemonCreateRndFitGroupOrRandom(ptr, value);
                     if (lhs != rhs) {
+                        continue;
+                    }
+                } else {
+                    if ((u8)(s8)group_arg != pokemonCreateRndFitGroupOrRandom(ptr, value)) {
                         continue;
                     }
                 }

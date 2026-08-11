@@ -32,6 +32,14 @@ os.chdir(ROOT)
 MIN_FUZZY = float(sys.argv[1]) if len(sys.argv) > 1 else 40.0
 MIN_SIZE = int(sys.argv[2]) if len(sys.argv) > 2 else 200
 
+# See find_reordered_blocks.py: the extensionless binary is a Linux ELF and
+# fails with "Exec format error" on Windows, which a bare except turns into a
+# clean-looking empty result.
+OBJDIFF = os.path.join('build', 'tools',
+                       'objdiff-cli.exe' if os.name == 'nt' else 'objdiff-cli')
+if not os.path.exists(OBJDIFF):
+    sys.exit('objdiff-cli not found at %s — run `ninja` first' % OBJDIFF)
+
 report = json.load(open('build/GC6E01/report.json'))
 units = []
 for u in report['units']:
@@ -67,17 +75,21 @@ def prologue(symbol):
     return frame, gpr, fpr
 
 
+FAILURES = []
+
+
 def scan(item):
     unit, sel = item
     try:
         out = subprocess.run(
-            ['build/tools/objdiff-cli', 'diff', '-p', '.', '-u', unit,
+            [OBJDIFF, 'diff', '-p', '.', '-u', unit,
              '-o', '-', '--format', 'json'],
             capture_output=True, text=True, timeout=120).stdout
         d = json.loads(out)
         idx = {s: {x['name']: x for x in d[s]['symbols']}
                for s in ('left', 'right')}
-    except Exception:
+    except Exception as e:
+        FAILURES.append((unit, '%s: %s' % (type(e).__name__, e)))
         return []
     rows = []
     for fn, pct, size in sel:
@@ -118,6 +130,11 @@ with ThreadPoolExecutor(max_workers=8) as ex:
 rows.sort(key=lambda r: -(r[4] * r[9] / 100.0))
 
 MIN_ALIGN = 50.0
+if FAILURES:
+    print(f'WARNING: {len(FAILURES)} of {len(units)} units failed to extract; '
+          f'results are INCOMPLETE')
+    for unit, err in FAILURES[:3]:
+        print(f'  {unit} -> {err}')
 print(f'{len(rows)} functions whose frame or saved-register span differs')
 print(f'{"dframe":>7} {"dgpr":>5} {"fpr":>4} {"gap":>7} {"fuzzy":>7} '
       f'{"algn":>6} {"size":>6}  fn')

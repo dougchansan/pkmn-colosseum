@@ -152,6 +152,26 @@ extern f32 lbl_8047C108;
 extern u8 lbl_8047C10C;
 extern u32 OSGetTick(void);
 extern void _threadSwitch(void);
+
+/* Retail inlines this wait loop into its callers rather than calling out to
+ * it: framescan shows fn_80078390 and fn_800788BC each hold lbl_8047C0E0 /
+ * lbl_8047C0E4 and the two int->float conversion biases in callee-saved FPRs
+ * (f27-f31), which only happens when the loop is in the function body. Ours
+ * emitted `bl MenuWaitMotionInterval` and saved no FPRs at all.
+ * The timer externs are declared in-body because the file-scope ones come
+ * later than the first call sites. */
+static inline void MenuWaitMotionInterval(void)
+{
+    extern u32 fn_800D3088(void);
+    extern s32 fn_800D37CC(void);
+    f32 elapsed;
+
+    elapsed = lbl_8047C0E0;
+    while (elapsed < lbl_8047C0E4) {
+        _threadSwitch();
+        elapsed += (f32)fn_800D3088() / (f32)fn_800D37CC();
+    }
+}
 extern void winMsgOpenField(s32, s32, s32);
 extern void winMsgOpen(s32, s32, s32, s32);
 extern void winMsgClose(s32);
@@ -4903,9 +4923,40 @@ cancelled:
 
 #pragma push
 #pragma peephole off
+/* fn_80079EF4 only. framescan shows retail holds lbl_8047C114 (the accumulator
+ * start) and lbl_8047C128 (the long limit) in callee-saved FPRs f27/f28 across
+ * the whole function, where our expansions re-read both globals every time and
+ * so saved two FPRs fewer. Point the macros at function-scope locals instead.
+ * Contained: no expansion of either macro follows this function. */
+#undef WAIT_MENU_TIME
+#define WAIT_MENU_TIME(limit_)           \
+    do {                                 \
+        f32 elapsed_ = waitStart_;       \
+        while (elapsed_ < (limit_)) {    \
+            s32 frames_;                 \
+            u32 ticks_;                  \
+            _threadSwitch();             \
+            frames_ = fn_800D37CC();     \
+            ticks_ = fn_800D3088();      \
+            elapsed_ += (f32)ticks_ / (f32)frames_; \
+        }                                \
+    } while (0)
+
+#undef CLOSE_AND_ABORT
+#define CLOSE_AND_ABORT()            \
+    do {                             \
+        menuClose(0xef);             \
+        WAIT_MENU_TIME(waitShort_);  \
+        lbl_8047A638 = 1;            \
+        return 0;                    \
+    } while (0)
+
 u8 fn_80079EF4(s32 arg0, u32 value) {
     s32 rank;
     s8 choice;
+    f32 waitStart_ = lbl_8047C114;
+    f32 waitLong_ = lbl_8047C128;
+    f32 waitShort_ = lbl_8047C108;
 
     lbl_8047A630 = 0;
     lbl_8047A631 = 0;
@@ -4920,9 +4971,9 @@ u8 fn_80079EF4(s32 arg0, u32 value) {
     }
 
     menuClose(0xe1);
-    WAIT_MENU_TIME(lbl_8047C128);
+    WAIT_MENU_TIME(waitLong_);
     menuOpen(0xef, 0);
-    WAIT_MENU_TIME(lbl_8047C108);
+    WAIT_MENU_TIME(waitShort_);
 
     if (rank < 1) {
         SHOW_BLOCKING_MESSAGE(0x43a7);
@@ -4970,7 +5021,7 @@ u8 fn_80079EF4(s32 arg0, u32 value) {
     default:
         menuClose(0xef);
         winMsgClose(1);
-        WAIT_MENU_TIME(lbl_8047C108);
+        WAIT_MENU_TIME(waitShort_);
         lbl_8047A638 = 1;
         return 0;
     }

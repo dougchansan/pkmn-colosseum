@@ -1307,6 +1307,8 @@ asm void menuShopDrawListText(void) {
  * drawing a header icon and either a normal or alternate text string per slot,
  * then draws a trailing "add" or "locked" button if visual space remains.
  */
+#pragma push
+#pragma peephole off
 void menuShopDrawListText(void* arg0, u8* arg1)
 {
     extern void fn_800FE38C(s32, s32, s32, s32);
@@ -1487,6 +1489,7 @@ next_slot:
 
     fn_800FE35C();
 }
+#pragma pop
 #endif
 
 /* fn_8002B40C - 0x8002B40C | size: 0x188 */
@@ -1632,6 +1635,8 @@ asm void fn_8002B594(void) {
  * ENDIAN-QA: the asm uses the classic CW big-endian 0x4330/xoris double-word trick
  * to convert the two s16 fields to f32.  On x86 this is a plain (f32)(s16) cast.
  */
+#pragma push
+#pragma peephole off
 void fn_8002B594(void* ctx, u8* data, u32 sprite_id, u32 color_byte, f32 pos)
 {
     f32 thresholds[5];
@@ -1717,6 +1722,7 @@ void fn_8002B594(void* ctx, u8* data, u32 sprite_id, u32 color_byte, f32 pos)
     color |= (u8)color_byte;
     windowDrawSprite2(x, y, 2, 2, color, ctx, (u16)sprite_id, 0);
 }
+#pragma pop
 #endif
 
 /* fn_8002B880 - 0x8002B880 | size: 0x468 */
@@ -3277,9 +3283,11 @@ void fn_8002D154(s32 mapIndex, u8 colorIndex)
             selectedItem = lbl_8047A3F8;
         }
 
-        /* (3) empty selection -> back out and close the menu */
+        /* (3) empty selection -> back out and close the menu.
+         * Retail emits menuCloseCustom last in the function, so the body is
+         * out of line and the test branches to it. */
         if ((selectedItem & 0xffff) == 0) {
-            break;
+            goto close_and_return;
         }
 
         /* validate the item exists */
@@ -3378,6 +3386,8 @@ void fn_8002D154(s32 mapIndex, u8 colorIndex)
             }
         }
     }
+
+close_and_return:
     menuCloseCustom(0x60, 0, 1);
 }
 #endif
@@ -3774,7 +3784,8 @@ void fn_8002D91C(u32 arg0)
 
         } while (loop_state != 3);
 
-        /* Post-loop: close sub-dialogs based on type_byte */
+        /* Post-loop: close sub-dialogs based on type_byte.
+         * Retail emits the fn_8002A1C4 arm first, so the test is negated. */
         if (type_byte != 2 && type_byte != 3) {
             fn_8002A1C4((u8 *)(u32)arg0, 2, (s32)-1);
         } else {

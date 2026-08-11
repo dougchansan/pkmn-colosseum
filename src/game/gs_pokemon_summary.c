@@ -2087,6 +2087,8 @@ s32 fn_80017E8C(s32 pageIndex, u16 species, s16 slotIndex) {
         return 0;
     }
 
+    /* Retail emits pcboxDelItem immediately after the capacity test and the
+     * failure body after it, i.e. the success arm is written first. */
     if ((u16)pcboxGetItemCapacity(0, species) >= result) {
         pcboxDelItem(0, species, (u16)result);
     } else {

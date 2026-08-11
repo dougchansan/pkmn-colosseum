@@ -473,6 +473,8 @@ u8 fightPokemonCheckMotoFightPokemon(u32 expected, void* ctx) {
 #pragma pop
 
 /* 0x80204970 | size: 0xA0 */
+#pragma push
+#pragma peephole on
 void fn_80204970(void* first, void* second)
 {
     typedef struct FightPokemonCopy {
@@ -490,6 +492,7 @@ void fn_80204970(void* first, void* second)
         }
     }
 }
+#pragma pop
 
 /* fightOutPokemonIsGcHeroFightOutPokemon | Size: 0x4C | Check if trainer slot is active */
 #pragma push

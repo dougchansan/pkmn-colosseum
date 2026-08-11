@@ -1868,6 +1868,8 @@ grp2:
 grp_done:
     ;
 
+    /* Retail groups all three winSpriteSetDisp calls at the end: the obj == 0
+     * body is out of line, after the if/else, not inline at the test. */
     if (obj == 0) {
         goto no_object;
     }
@@ -2051,6 +2053,7 @@ grp2:
 grp_done:
     ;
 
+    /* As in fn_80030574: retail puts the obj == 0 body last, out of line. */
     if (obj == 0) {
         goto no_object_30A44;
     }
