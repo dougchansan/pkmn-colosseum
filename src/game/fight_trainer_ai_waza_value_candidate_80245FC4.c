@@ -70,7 +70,7 @@ extern void* memcpy();
 /* Forward declarations for converted functions */
 u32 evolutionWazaLearn();
 int fightTrainerAiWazaValueKuroikiri(void* ctx, u32 param1, u32 param2, u32 param3);
-u32 fightTrainerAiWazaValueHimitunotikara(void* ctx, u32 param1, u32 param2, u32 param3);
+u32 fightTrainerAiWazaValueHimitunotikara(void* ctx, u32 param1, unsigned int param2, u32 param3);
 s32 fightTrainerAiSelectIrekaeDasuFightPokemon(void* ctx, u32 param1, u32 param2, u32 param3);
 u32 fightTrainerAiWazaHit045(void* trainerCtx, u32 trainerSlot, u32 resultSlot, u32 resultType);
 u32 fightMenuFightTrainerGcHeroOpenMenu(void* ctx, u32 param1, u32 param2);
@@ -120,7 +120,11 @@ void fn_80239EE8(u32, void*, u32, u32, u32, u32, u32, u32);
 #pragma scheduling on
 #pragma peephole on
 #pragma optimize_for_size off
-u32 fightTrainerAiWazaValueHimitunotikara(void* ctx, u32 param1, u32 param2, u32 param3) {
+/* param2 is spelled `unsigned int`, not `u32`.  Both are 32-bit unsigned on
+ * this target, but u32 is `unsigned long`, and MWCC treats the two as distinct
+ * types when it orders parameters for colouring: as `u32` param2 colours to
+ * r29, as `unsigned int` it colours to r30, which is where retail keeps it. */
+u32 fightTrainerAiWazaValueHimitunotikara(void* ctx, u32 param1, unsigned int param2, u32 param3) {
     extern u32 fightFloorGetStatus(u32, u32, u32, u32);
     extern u32 tikeiDataBiosGetFightKoukaId(u32);
     extern u8 fn_802358AC(void*, u32);
