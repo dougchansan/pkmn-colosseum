@@ -374,8 +374,8 @@ s32 GScolsys2ThruGetEventID(
     GScolsys2Vec3 direction;
     GScolsys2Vec3 point;
     f32 length;
-    f32 step;
     f32 position;
+    f32 step;
     f32 sample;
     s32 outCount;
 

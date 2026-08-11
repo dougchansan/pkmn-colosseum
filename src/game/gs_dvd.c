@@ -364,18 +364,19 @@ u8 *fn_801678E4(void)
 {
     BOOL enabled;
     u8 *entry;
+    u8 *base;
     u32 i;
     u32 offset;
     u8 *result;
 
     enabled = OSDisableInterrupts();
-    entry = lbl_8047B0CC;
+    entry = base = lbl_8047B0CC;
     result = 0;
     i = 0;
     while (i < lbl_8047B0D0) {
         if (*entry != 1) {
             offset = i * 0xD0;
-            lbl_8047B0CC[offset] = 1;
+            base[offset] = 1;
             result = &lbl_8047B0CC[offset];
             break;
         }
@@ -390,18 +391,19 @@ u8 *fn_80167964(void)
 {
     BOOL enabled;
     u8 *entry;
+    u8 *base;
     u32 i;
     u32 offset;
     u8 *result;
 
     enabled = OSDisableInterrupts();
-    entry = lbl_8047B0DC;
+    entry = base = lbl_8047B0DC;
     result = 0;
     i = 0;
     while (i < lbl_8047B0E0) {
         if (*entry != 1) {
             offset = i * 0x14;
-            lbl_8047B0DC[offset] = 1;
+            base[offset] = 1;
             result = &lbl_8047B0DC[offset];
             break;
         }
@@ -629,14 +631,13 @@ void _AsyncCallback(s32 result, void* fileInfo)
 
 GSDVDWork* _info2work(void* fileInfo)
 {
+    GSDVDWork* cursor;
     GSDVDWork* base;
-    GSDVDWork* work;
     u32 i;
 
-    base = lbl_8047B0F4;
-    work = base;
-    for (i = 0; i < lbl_8047B0F8; work++, i++) {
-        if (work->active != 0 && work->fileInfo == fileInfo) {
+    cursor = base = lbl_8047B0F4;
+    for (i = 0; i < lbl_8047B0F8; cursor++, i++) {
+        if (cursor->active != 0 && cursor->fileInfo == fileInfo) {
             return &base[i];
         }
     }
@@ -922,9 +923,8 @@ GSDVDWork* fn_8016819C(void)
 
     enabled = OSDisableInterrupts();
     result = NULL;
-    base = lbl_8047B0F4;
-    work = base;
-    for (i = 0; i < lbl_8047B0F8; i++, work++) {
+    work = base = lbl_8047B0F4;
+    for (i = 0; i < lbl_8047B0F8; work++, i++) {
         if (work->active != 1) {
             base[i].active = 1;
             result = &lbl_8047B0F4[i];

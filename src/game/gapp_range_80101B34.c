@@ -358,7 +358,7 @@ void fn_80101D8C(void)
     s8 line;
     u32 tick;
 
-    if (lbl_8047ACF0 == 0) {
+    if ((s32)lbl_8047ACF0 == 0) {
         return;
     }
 

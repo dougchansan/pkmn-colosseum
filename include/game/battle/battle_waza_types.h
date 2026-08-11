@@ -430,7 +430,7 @@ extern void fn_801DD158(void* obj);
 extern void fn_801DD23C(void* obj);
 extern void fn_801DD3E4(void* obj);
 extern BOOL sequenceLoad(void* effect, void* data);
-extern BOOL fn_801DD5E8(void* effect, void* resource);
+extern u8 fn_801DD5E8(void* effect, void* resource);
 extern BOOL fn_801DDB4C(void* owner, void* resource);
 extern s32 fn_801DDC10(u16 index, u16 type);
 extern BOOL fn_801DDD28(void* owner, u16 group, u16 index, u32 variant);

@@ -252,8 +252,10 @@ s32 dbgMenuCameraSetType(void* unused, s32 mode) {
 #pragma scheduling off
 s32 fn_80006724(void) {
     void* result;
+    u16 sceneId;
 
-    result = fightTrainerGetStatus(0, gCurrentSceneId, 8, 3);
+    sceneId = *(volatile u16*)&gCurrentSceneId;
+    result = fightTrainerGetStatus(0, sceneId, 8, 3);
     if (result == NULL) {
         return -1;
     }
@@ -273,8 +275,10 @@ s32 fn_80006724(void) {
  * ========================================================================= */
 s32 fn_8000677C(void) {
     void* result;
+    u16 sceneId;
 
-    result = fightTrainerGetStatus(0, gCurrentSceneId, 8, 2);
+    sceneId = *(volatile u16*)&gCurrentSceneId;
+    result = fightTrainerGetStatus(0, sceneId, 8, 2);
     if (result == NULL) {
         return -1;
     }
@@ -293,8 +297,10 @@ s32 fn_8000677C(void) {
  * ========================================================================= */
 s32 fn_800067D4(void) {
     void* result;
+    u16 sceneId;
 
-    result = fightTrainerGetStatus(0, gCurrentSceneId, 8, 1);
+    sceneId = *(volatile u16*)&gCurrentSceneId;
+    result = fightTrainerGetStatus(0, sceneId, 8, 1);
     if (result == NULL) {
         return -1;
     }
@@ -313,8 +319,10 @@ s32 fn_800067D4(void) {
  * ========================================================================= */
 s32 fn_8000682C(void) {
     void* result;
+    u16 sceneId;
 
-    result = fightTrainerGetStatus(0, gCurrentSceneId, 8, 0);
+    sceneId = *(volatile u16*)&gCurrentSceneId;
+    result = fightTrainerGetStatus(0, sceneId, 8, 0);
     if (result == NULL) {
         return -1;
     }

@@ -71,7 +71,7 @@ void fn_801123D4(u32 floorDataEntry, u32 loadMode) {
     u32 setupData[4];
     u32 objectId;
     s32 status;
-    u8 kind;
+    s32 kind;
 
     sceneData[0] = lbl_802720A0[0];
     sceneData[1] = lbl_802720A0[1];
@@ -439,25 +439,21 @@ void fn_80112FEC(void* floor)
     u32 group;
     u32 objectIndex;
     u32 i;
-    u32 floorId;
 
     group = floorDataBiosGetGroupID();
     objectIndex = 0;
-    floorId = *(u32*)((u8*)floor + 0xC);
     for (i = 0; i < *lbl_80478EB8; i++) {
         FloorObjectEntry* entry = &lbl_80478EBC[i];
-        u32 type;
         u32 peopleInfo;
         u32 resourceId;
         void* object;
         f32 position[3];
         f32 rotation[3];
 
-        if (entry->floorId != floorId) {
+        if (entry->floorId != *(u32*)((u8*)floor + 0xC)) {
             continue;
         }
-        type = (entry->flags >> 5) & 7;
-        switch (type) {
+        switch ((entry->flags >> 5) & 7) {
         case 1:
             peopleInfo = 0x03770400;
             break;
@@ -491,7 +487,7 @@ void fn_80112FEC(void* floor)
         fn_8018C7C8(group, resourceId, 4);
         fn_8018C1E8(group, resourceId, 1);
 
-        if (type == 2) {
+        if (((entry->flags >> 5) & 7) == 2) {
             object = GSresGetResource(group, resourceId);
             if (object != NULL) {
                 GSmodelClearShadowFlags(object, 1);

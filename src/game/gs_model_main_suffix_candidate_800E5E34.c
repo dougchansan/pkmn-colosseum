@@ -3,9 +3,9 @@
 #include "src/game/gs_model_main_suffix_800E4AC0.c"
 #include "game/gs_model_material_internal.h"
 
-void fn_800DF208(void* material, void* color0, void* color1, void* color2,
-                 void* color3);
-void fn_800DF384(void* material, s32 mode);
+void GSmaterialSetColorChannels(void* material, void* color0, void* color1,
+                                void* color2, void* color3);
+void GSmaterialEnableExtension(void* material, s32 mode);
 
 void GSmodelEnableColorSwap(GSmodel* model, void* color0,
                             void* color1, void* color2, void* color3)
@@ -16,8 +16,9 @@ void GSmodelEnableColorSwap(GSmodel* model, void* color0,
 
     for (i = 0; i < count; i++, materials++) {
         if (*materials != NULL) {
-            fn_800DF208(*materials, color0, color1, color2, color3);
-            fn_800DF384(*materials, 2);
+            GSmaterialSetColorChannels(*materials, color0, color1, color2,
+                                       color3);
+            GSmaterialEnableExtension(*materials, 2);
         }
     }
 }

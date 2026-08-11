@@ -715,8 +715,8 @@ void fn_801093C8(void) {
     progress = lbl_8047AD2C +
         (lbl_8047AD3C / lbl_8047AD38) * (lbl_8047AD34 - lbl_8047AD2C);
     lbl_8047AD30 = progress;
-    alpha = (s32)(lbl_8047CE48 -
-        (progress * lbl_8047CE48) / lbl_8047CE4C);
+    alpha = (s32)((progress = lbl_8047CE48) -
+        (progress * progress) / lbl_8047CE4C);
 
     if (lbl_8047AD23 != 0) {
         fn_800D9ED8(1);

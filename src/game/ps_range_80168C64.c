@@ -3693,8 +3693,7 @@ PSGeneratorState* psCreateGeneratorID(s32 linkNo, s32 bankIdx, s32 scriptId) {
         memset(lbl_8047B18C, 0, sizeof(PSGeneratorState));
     }
 
-    gen = lbl_8047B18C;
-    if (gen == NULL) {
+    if ((gen = lbl_8047B18C) == NULL) {
         return NULL;
     }
 

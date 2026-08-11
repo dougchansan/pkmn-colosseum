@@ -235,15 +235,17 @@ void modelShadowInit__Fv(void)
     }
 }
 
-#pragma peephole off
+#pragma peephole on
 void _modelShadowSetShadowFlag__FP9_HSD_JObjPPvi(GSjobjNode* jobj, void* arg, int unused)
 {
     GSdobjNode* child;
+    s32 valid;
     u8 flag = (u8)(u32)arg;
 
     (void)unused;
 
-    if ((jobj->flags & 0x4020U) != 0U) {
+    valid = (jobj->flags & 0x4020U) == 0U;
+    if (valid == 0) {
         return;
     }
 
@@ -367,9 +369,9 @@ _modelShadowFindValidReceiveModel__FP8_GSmodelP8_GSmodelP7GSlightP7GSbound(
     extern f32 GSvecSquareDistance(GSshadowVec*, GSshadowVec*);
     extern f32 lbl_8047CBC0;
     extern f32 lbl_8047CBC8;
-    GSshadowVec dimensions;
     GSshadowVec position;
     GSshadowVec otherPosition;
+    GSshadowVec dimensions;
     GSshadowSlot* slot;
     f32 largest;
     u32 size;
@@ -385,9 +387,10 @@ _modelShadowFindValidReceiveModel__FP8_GSmodelP8_GSmodelP7GSlightP7GSbound(
 
         if (bound != NULL) {
             ObjInfoInit(bound, &dimensions);
-            largest = dimensions.x;
-            if (dimensions.y > largest) {
+            if (dimensions.y > dimensions.x) {
                 largest = dimensions.y;
+            } else {
+                largest = dimensions.x;
             }
             if (dimensions.z > largest) {
                 largest = dimensions.z;
@@ -395,27 +398,25 @@ _modelShadowFindValidReceiveModel__FP8_GSmodelP8_GSmodelP7GSlightP7GSbound(
             largest *= (bound->scale->x + bound->scale->y +
                         bound->scale->z) /
                        lbl_8047CBC0;
-            size = (u32)ceil(largest);
-            if (size < slot->minSize ||
-                size < slot->maxSize / 3 ||
-                size > slot->minSize * 3) {
+            size = (u32)(f32)ceil(largest);
+            if (size < slot->minSize && size < slot->maxSize / 3) {
                 continue;
             }
-            if (size <= slot->maxSize) {
-                return slot;
+            if (size > slot->maxSize && size > slot->minSize * 3) {
+                continue;
             }
         }
 
         if (lbl_8047AB88 > lbl_8047CBC8) {
-            fn_800E3D14(receiveModel, &position);
             valid = 1;
+            fn_800E3D14(receiveModel, &position);
             for (j = 0; j < 16; j++) {
                 if (slot->receivers[j] != NULL) {
                     fn_800E3D14(slot->receivers[j], &otherPosition);
                     if (GSvecSquareDistance(&position, &otherPosition) >
                         lbl_8047AB88) {
                         valid = 0;
-                        break;
+                        j = 16;
                     }
                 }
             }

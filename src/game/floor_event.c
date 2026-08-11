@@ -198,7 +198,7 @@ extern void msgctrlSetValue(u32, u32);
 extern void winMsgOpen(u32, u32, u32, u32);
 extern void winMsgClose(u32);
 extern u16 pcboxDelItem(u8*, u16, u16);
-extern s32 fn_8001E184(void);
+extern s8 fn_8001E184(void);
 s32 floorEventGetTresure(u8, u32, s32);
 extern void fn_8018B76C(void*, u32, u32, u32, u32);
 extern void fn_8018C7C8(void*, u32, u32);
@@ -1450,7 +1450,8 @@ void* floorEventGetTresureList(u32 param)
     for (index = 0; index < *(u32*)lbl_80478EB8; index++) {
         entry = (u8*)lbl_80478EBC + index * 0x1C;
         if (*(u16*)(entry + 4) == (u32)fn_800FF56C()) {
-            if (target == found++) {
+            found++;
+            if (target == found - 1) {
                 break;
             }
         }
@@ -1487,9 +1488,10 @@ void floorEventSetTresureDisp(u32 rawIndex, u32 display)
 }
 
 /* 0x80115E6C | 0x2F8 */
+#pragma peephole off
 s32 floorEventGetTresure(u8 type, u32 item, s32 count)
 {
-    s32 result = 0;
+    s32 result;
     u32 message = 0;
 
     fn_801653CC(0x3CA, 0, 0xFF);
@@ -1513,17 +1515,32 @@ s32 floorEventGetTresure(u8 type, u32 item, s32 count)
         msgctrlSetValue(0x2D, item);
         msgctrlSetValue(0x2F, count);
         if (type == 1) {
-            message = count == 1 ? 0x3CB4 : 0x3CB9;
+            if (count != 1) {
+                goto plural_found_message;
+            }
+            message = 0x3CB4;
+            goto open_found_message;
+plural_found_message:
+            message = 0x3CB9;
+open_found_message:
             winMsgOpen(3, message, 1, 0);
             winMsgClose(1);
         }
 
         result = heroItemAddItemDataId(0, (u16)item, (u16)count, -1);
         if (result == 0) {
-            message = count == 1 ? 0x3CB8 : 0x3CBD;
+            if (count == 1) {
+                message = 0x3CB8;
+            } else {
+                message = 0x3CBD;
+            }
         } else if (result > 0) {
             result = pcboxDelItem(0, (u16)item, (u16)result);
-            message = count == 1 ? 0x3CBA : 0x3CBB;
+            if (count == 1) {
+                message = 0x3CBA;
+            } else {
+                message = 0x3CBB;
+            }
         }
         winMsgOpen(3, message, 1, 0);
         winMsgClose(1);
@@ -1541,14 +1558,14 @@ s32 floorEventGetTresure(u8 type, u32 item, s32 count)
         case 0x21A:
             message = 0x3B33;
             break;
+        case 0x21D:
+            message = 0x3B35;
+            break;
         case 0x21B:
             message = 0x3B39;
             break;
         case 0x21C:
             message = 0x3B37;
-            break;
-        case 0x21D:
-            message = 0x3B35;
             break;
         case 0x223:
             message = 0x44C4;
@@ -1556,7 +1573,7 @@ s32 floorEventGetTresure(u8 type, u32 item, s32 count)
         }
 
         winMsgOpen(3, message, 1, 0);
-        result = (s8)fn_8001E184();
+        result = fn_8001E184();
         winMsgClose(1);
         if (result != 0) {
             return 0;
@@ -1566,14 +1583,14 @@ s32 floorEventGetTresure(u8 type, u32 item, s32 count)
         case 0x21A:
             message = 0x3B34;
             break;
+        case 0x21D:
+            message = 0x3B36;
+            break;
         case 0x21B:
             message = 0x3B30;
             break;
         case 0x21C:
             message = 0x3B38;
-            break;
-        case 0x21D:
-            message = 0x3B36;
             break;
         case 0x223:
             message = 0x44C5;
@@ -1587,6 +1604,7 @@ s32 floorEventGetTresure(u8 type, u32 item, s32 count)
 
     return result;
 }
+#pragma peephole on
 
 static inline void* floorEventFindTresureEntry(u32 param)
 {
@@ -1604,7 +1622,8 @@ static inline void* floorEventFindTresureEntry(u32 param)
     for (index = 0; index < *(u32*)lbl_80478EB8; index++) {
         entry = (u8*)lbl_80478EBC + index * 0x1C;
         if (*(u16*)(entry + 4) == (u32)fn_800FF56C()) {
-            if (target == found++) {
+            found++;
+            if (target == found - 1) {
                 break;
             }
         }

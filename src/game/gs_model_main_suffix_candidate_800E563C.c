@@ -3,7 +3,7 @@
 #include "src/game/gs_model_main_suffix_800E4AC0.c"
 #include "game/gs_model_material_internal.h"
 
-void fn_800DF028(void* material, void* textureChange);
+void GSmaterialSetTexture(void* material, void* textureChange);
 
 void GSmodelSetTextureChange(GSmodel* model, void* textureChange)
 {
@@ -13,7 +13,7 @@ void GSmodelSetTextureChange(GSmodel* model, void* textureChange)
 
     for (i = 0; i < count; i++, materials++) {
         if (*materials != NULL) {
-            fn_800DF028(*materials, textureChange);
+            GSmaterialSetTexture(*materials, textureChange);
         }
     }
 }

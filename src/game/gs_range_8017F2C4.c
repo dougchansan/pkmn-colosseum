@@ -385,6 +385,9 @@ extern u32 lbl_8047B1D4;
 extern u32 lbl_8047B1D8;
 extern u32 OSDisableInterrupts(void);
 extern void OSRestoreInterrupts(u32 level);
+extern void ARQPostRequest(void* request, u32 owner, u32 direction,
+                           u32 priority, u32 source, u32 destination,
+                           u32 size, void (*callback)(void*));
 extern void fn_800AE630(void* request, void* owner, u32 direction, u32 offset,
                         void* callback, void* callbackArg, void* src,
                         void* dst, u32 size);
@@ -721,8 +724,8 @@ void fn_80180320(void* dst, void* src, u32 size)
     entry->dstPtr = src;
     entry->size = alignedSize;
     DCFlushRange(dst, size);
-    fn_800AE630(entry, entry, 1, 0, fn_801808E4, entry, src, dst,
-                alignedSize);
+    ARQPostRequest(entry, (u32)entry, 1, 0, (u32)src, (u32)dst,
+                   alignedSize, (void (*)(void*))fn_801808E4);
     OSRestoreInterrupts(savedIntr);
 
     while (entry->state != 0) {
@@ -768,8 +771,8 @@ void* fn_80180450(void* src, void* dst, u32 size)
     entry->dstPtr = dst;
     entry->size = alignedSize;
     DCFlushRange(src, alignedSize);
-    fn_800AE630(entry, entry, 0, 0, fn_801808E4, entry, src, dst,
-                alignedSize);
+    ARQPostRequest(entry, (u32)entry, 0, 0, (u32)src, (u32)dst,
+                   alignedSize, (void (*)(void*))fn_801808E4);
     OSRestoreInterrupts(savedIntr);
 
     result = entry;
@@ -817,8 +820,8 @@ void* fn_80180584(void* src, void* dst, u32 size, u32 cbA, u32 cbB)
     entry->dstPtr = dst;
     entry->size = alignedSize;
     DCFlushRange(src, alignedSize);
-    fn_800AE630(entry, entry, 1, 0, fn_801808E4, entry, dst, src,
-                alignedSize);
+    ARQPostRequest(entry, (u32)entry, 1, 0, (u32)dst, (u32)src,
+                   alignedSize, (void (*)(void*))fn_801808E4);
     OSRestoreInterrupts(savedIntr);
     return entry;
 }

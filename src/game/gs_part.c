@@ -334,7 +334,7 @@ u8 fn_800EE7E0(GSpart* part)
             value = *(u32*)(material + 0xC);
         }
     }
-    return value == 0;
+    return -value == 0;
 }
 
 void GSpartFree(GSpart *part)

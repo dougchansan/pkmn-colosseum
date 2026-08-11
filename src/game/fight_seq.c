@@ -327,21 +327,21 @@ void fightSeqFightActionCreateAndFlowFifo(
     void* motoAction, void* actorTarget, u32 kind, u32 buff,
     FightActionData* actionData, void* buffData)
 {
-  u8 result;
+  s32 result;
   FightAction action;
   
   result = fightActionCreate(&action, motoAction, actorTarget, kind, buff,
                              actionData);
-  switch (result) {
-  case 1:
+  switch ((u32)result & 0xff) {
+  case 1u:
     fightActionBiosSetBuffDataPtr(&action, buffData);
     result = 1;
     break;
   default:
     break;
   }
-  switch (result) {
-  case 1:
+  switch ((u32)result & 0xff) {
+  case 1u:
     fightActionFlowFifo(&action);
     break;
   default:

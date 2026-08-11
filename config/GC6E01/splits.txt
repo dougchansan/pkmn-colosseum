@@ -4499,8 +4499,14 @@ game/camera_exact_80179DFC.c:
 game/camera_candidate_80179E04.c:
 	.text       start:0x80179E04 end:0x8017A5FC
 
-game/gs_range_8017A5FC.c:
-	.text       start:0x8017A5FC end:0x8017B07C
+game/gs_range_8017A5FC_prefix.c:
+	.text       start:0x8017A5FC end:0x8017A624
+
+game/gs_range_8017A624_middle.c:
+	.text       start:0x8017A624 end:0x8017A814
+
+game/gs_range_8017A814_suffix.c:
+	.text       start:0x8017A814 end:0x8017B07C
 
 game/fsys/fsys_file.c:
 	.text       start:0x8017B07C end:0x8017B1AC

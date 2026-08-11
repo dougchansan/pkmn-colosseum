@@ -462,7 +462,7 @@ BOOL sequenceLoad(void* effect, void* data) {
  * Large function handling elaborate transition effects between
  * phases of a move animation.
  */
-BOOL fn_801DD5E8(void* effect, void* resource) {
+u8 fn_801DD5E8(void* effect, void* resource) {
     /* TODO: Complex transition effect (0x564 bytes) */
     return FALSE;
 }

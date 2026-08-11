@@ -617,31 +617,24 @@ asm void dataGetMacro(void) {
 #include "src/game/people/people_field_fn_8015211C.inc"
 }
 #else
-/* The target loads `count` with a separate base and index. CW CSEs the table
- * entry address and emits `add` plus a plain `lhz`; pointer, typed-array, and
- * named-offset forms select the same addressing mode. */
-#pragma peephole off
-u32 dataGetMacro(u32 key) {
+u32 dataGetMacro(u16 key) {
     extern void* sndBSearch(u8* a, u8* b, u16 c, u32 d, void* e);
-    void* result;
-    u16 count;
-    u32 sub;
-    u32 main;
 
-    main = (key >> 6) & 0x3FF;
-    count = ((MacMainEntryT*)lbl_8043D6F8)[main].num;
-    lbl_8047AF98 = main;
-    if (count != 0) {
-        sub = ((MacMainEntryT*)lbl_8043D6F8)[main].subTabIndex;
+    lbl_8047AF98 = (key >> 6) & 0x3FFF;
+    if (((MacMainEntryT*)lbl_8043D6F8)[lbl_8047AF98].num != 0) {
+        lbl_8047AF9C =
+            ((MacMainEntryT*)lbl_8043D6F8)[lbl_8047AF98].subTabIndex;
         *(u16*)(lbl_8047AF90 + 4) = (u16)key;
-        lbl_8047AF9C = sub;
-        result = sndBSearch(lbl_8047AF90, lbl_8043DEF8 + sub * 8, count, 8, maccmp);
-        lbl_8047AF8C = (u32)result;
-        if (result != NULL) { return *(u32*)result; }
+        if ((lbl_8047AF8C =
+                 (u32)sndBSearch(
+                     lbl_8047AF90, lbl_8043DEF8 + lbl_8047AF9C * 8,
+                     ((MacMainEntryT*)lbl_8043D6F8)[lbl_8047AF98].num, 8,
+                     maccmp)) != 0) {
+            return *(u32*)lbl_8047AF8C;
+        }
     }
     return 0;
 }
-#pragma peephole reset
 #endif
 #endif
 

@@ -3,7 +3,7 @@
 #include "src/game/gs_model_main_suffix_800E4AC0.c"
 #include "game/gs_model_material_internal.h"
 
-s32 fn_800DF3F0(void* material);
+s32 GSmaterialGetFlags(void* material);
 void GSmaterialSetFlags(void* material, s32 flags);
 
 void GSmodelSetRenderFlags(GSmodel* model, s32 flags)
@@ -14,7 +14,8 @@ void GSmodelSetRenderFlags(GSmodel* model, s32 flags)
 
     for (i = 0; i < count; i++, materials++) {
         if (*materials != NULL) {
-            GSmaterialSetFlags(*materials, flags | fn_800DF3F0(*materials));
+            GSmaterialSetFlags(*materials,
+                               flags | GSmaterialGetFlags(*materials));
         }
     }
 }
