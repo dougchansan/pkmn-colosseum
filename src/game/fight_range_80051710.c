@@ -8,6 +8,240 @@
  */
 #include "dolphin/types.h"
 
+typedef struct DebugTrainerPartData {
+    u32 words[5];
+} DebugTrainerPartData;
+
+s32 fn_80051710(u32 trainerId)
+{
+    extern DebugTrainerPartData* fightTrainerPokemonPartDataBiosGetPtr(u16);
+    extern s32 menuOpenCustom(s32, ...);
+    extern void menuCloseCustom(s32, s32, s32);
+    extern s32 menuOpen(s32, s32);
+    extern s32 menuGetCursorItemID(s32);
+    extern u32 fightTrainerGetStatus(u32, u32, u32, u32);
+    extern u8 fn_8001E224(u32, s32*, u32, u32, u32, u32);
+    extern void fightTrainerSetStatus(u32, u32, u32, u32, s32);
+    extern void menuSubCloseNumberInput(void);
+    extern s8 menuSubOpenYesNo(s32, s32, s32, s32);
+    DebugTrainerPartData saved;
+    DebugTrainerPartData* data;
+    u16 id;
+    s32 result;
+    s32 item;
+
+    id = trainerId;
+    if (id == 0) {
+        return 1;
+    }
+
+    data = fightTrainerPokemonPartDataBiosGetPtr(id);
+    saved = *data;
+    for (;;) {
+        result = menuOpenCustom(0x8D, 0, 0, 0, 1, 1, id);
+        if (result == -1) {
+            menuCloseCustom(0x8D, 0, 1);
+            *data = saved;
+            return -1;
+        }
+        if (result == -2) {
+            if (menuOpen(0x44, 1) == 0) {
+                menuCloseCustom(0x44, 0, 1);
+                break;
+            }
+            menuCloseCustom(0x44, 0, 1);
+            continue;
+        }
+
+        item = menuGetCursorItemID(0x8D);
+        switch (item) {
+        case 0x5FE: {
+            s32 value;
+
+            if (fn_8001E224(fightTrainerGetStatus(0, trainerId, 0xC, 1), &value,
+                            0, 0x32, 0x32, 0) == 1)
+            {
+                if (value > 0xFF) {
+                    value = 0xFF;
+                }
+                if (value < 0) {
+                    value = 0;
+                }
+                fightTrainerSetStatus(0, trainerId, 0xC, 1, value);
+            }
+            menuSubCloseNumberInput();
+            continue;
+        }
+        case 0x5FF: {
+            s32 value;
+
+            if (fn_8001E224(fightTrainerGetStatus(0, trainerId, 0xC, 2), &value,
+                            0, 0x32, 0x32, 0) == 1)
+            {
+                if (value > 0xFF) {
+                    value = 0xFF;
+                }
+                if (value < 0) {
+                    value = 0;
+                }
+                fightTrainerSetStatus(0, trainerId, 0xC, 2, value);
+            }
+            menuSubCloseNumberInput();
+            continue;
+        }
+        case 0x600: {
+            s32 value;
+
+            if (fn_8001E224(fightTrainerGetStatus(0, trainerId, 0xC, 3), &value,
+                            0, 0x32, 0x32, 0) == 1)
+            {
+                if (value > 0xFF) {
+                    value = 0xFF;
+                }
+                if (value < 0) {
+                    value = 0;
+                }
+                fightTrainerSetStatus(0, trainerId, 0xC, 3, value);
+            }
+            menuSubCloseNumberInput();
+            continue;
+        }
+        case 0x601: {
+            s32 value;
+
+            if (fn_8001E224(fightTrainerGetStatus(0, trainerId, 0xC, 5), &value,
+                            0, 0x32, 0x32, 0) == 1)
+            {
+                if (value > 0xFF) {
+                    value = 0xFF;
+                }
+                if (value < 0) {
+                    value = 0;
+                }
+                fightTrainerSetStatus(0, trainerId, 0xC, 5, value);
+            }
+            menuSubCloseNumberInput();
+            continue;
+        }
+        case 0x602: {
+            s32 value;
+
+            if (fn_8001E224(fightTrainerGetStatus(0, trainerId, 0xC, 6), &value,
+                            0, 0x32, 0x32, 0) == 1)
+            {
+                if (value > 0xFF) {
+                    value = 0xFF;
+                }
+                if (value < 0) {
+                    value = 0;
+                }
+                fightTrainerSetStatus(0, trainerId, 0xC, 6, value);
+            }
+            menuSubCloseNumberInput();
+            continue;
+        }
+        case 0x603: {
+            s32 value;
+
+            if (fn_8001E224(fightTrainerGetStatus(0, trainerId, 0xC, 7), &value,
+                            0, 0x32, 0x32, 0) == 1)
+            {
+                if (value > 0xFF) {
+                    value = 0xFF;
+                }
+                if (value < 0) {
+                    value = 0;
+                }
+                fightTrainerSetStatus(0, trainerId, 0xC, 7, value);
+            }
+            menuSubCloseNumberInput();
+            continue;
+        }
+        case 0x604: {
+            s32 value;
+
+            if (fn_8001E224(fightTrainerGetStatus(0, trainerId, 0xC, 8), &value,
+                            0, 0x32, 0x32, 0) == 1)
+            {
+                if (value > 0xFF) {
+                    value = 0xFF;
+                }
+                if (value < 0) {
+                    value = 0;
+                }
+                fightTrainerSetStatus(0, trainerId, 0xC, 8, value);
+            }
+            menuSubCloseNumberInput();
+            continue;
+        }
+        case 0x605: {
+            s32 value;
+
+            if (fn_8001E224(fightTrainerGetStatus(0, trainerId, 0xC, 9), &value,
+                            0, 0x32, 0x32, 0) == 1)
+            {
+                if (value > 0xFF) {
+                    value = 0xFF;
+                }
+                if (value < 0) {
+                    value = 0;
+                }
+                fightTrainerSetStatus(0, trainerId, 0xC, 9, value);
+            }
+            menuSubCloseNumberInput();
+            continue;
+        }
+        case 0x606: {
+            s32 value;
+
+            if (fn_8001E224(fightTrainerGetStatus(0, trainerId, 0xC, 0xA),
+                            &value, 0, 0x32, 0x32, 0) == 1)
+            {
+                if (value > 0xFF) {
+                    value = 0xFF;
+                }
+                if (value < 0) {
+                    value = 0;
+                }
+                fightTrainerSetStatus(0, trainerId, 0xC, 0xA, value);
+            }
+            menuSubCloseNumberInput();
+            continue;
+        }
+        case 0x607: {
+            s32 value;
+
+            if (fn_8001E224(fightTrainerGetStatus(0, trainerId, 0xC, 0xB),
+                            &value, 0, 0x32, 0x32, 0) == 1)
+            {
+                if (value > 0xFF) {
+                    value = 0xFF;
+                }
+                if (value < 0) {
+                    value = 0;
+                }
+                fightTrainerSetStatus(0, trainerId, 0xC, 0xB, value);
+            }
+            menuSubCloseNumberInput();
+            continue;
+        }
+        case 0xFED:
+            result = menuSubOpenYesNo(
+                0x7F, -1, -1,
+                fightTrainerGetStatus(0, trainerId, 0xC, 4) == 0);
+            if (result == 0) {
+                fightTrainerSetStatus(0, trainerId, 0xC, 4, 1);
+            } else if (result == 1) {
+                fightTrainerSetStatus(0, trainerId, 0xC, 4, 0);
+            }
+            continue;
+        }
+    }
+
+    menuCloseCustom(0x8D, 0, 1);
+    return 1;
+}
+
 void dbgMenuFightTrainerDataStatusInputDigit(u32 trainerId, u32 field, u32 index,
                                              s32 maximum, s32 minimum) {
     extern u32 fightTrainerGetStatus(u32, u32, u32, u32);
