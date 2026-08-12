@@ -322,7 +322,8 @@ extern void fn_801D301C(void);
 extern void fn_801D3034(void* state);
 extern void battleCameraStartWaza(void* owner, void* sequence);
 extern void _wazaSequenceCameraDoPosition__FP13ModelSequenceP24wazaSequenceCameraParamsfb(void);
-extern void _wazaSequenceCameraDoDollyPosition__FP21TemplateExpFileHeaderP24wazaSequenceCameraParamsfb(void);
+extern void _wazaSequenceCameraDoDollyPosition__FP21TemplateExpFileHeaderP24wazaSequenceCameraParamsfb(
+    void* header, void* params, s32 shift, u8 reverse);
 extern void _wazaSequenceCameraDoFOV__FP13ModelSequenceP24wazaSequenceCameraParamsif(void);
 extern s32 _wazaSequenceCameraSelectDuration__FUcPff(
     u8 mode, f32* thresholds, s32 duration);

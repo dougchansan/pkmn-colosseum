@@ -344,8 +344,139 @@ void _wazaSequenceCameraDoPosition__FP13ModelSequenceP24wazaSequenceCameraParams
  * Address: 0x801D3F7C | Size: 0x548
  * State machine for beam/projectile move animations.
  */
-void _wazaSequenceCameraDoDollyPosition__FP21TemplateExpFileHeaderP24wazaSequenceCameraParamsfb(void) {
-    /* TODO: Move animation state machine B (0x548 bytes) */
+void _wazaSequenceCameraDoDollyPosition__FP21TemplateExpFileHeaderP24wazaSequenceCameraParamsfb(
+    void* header, void* params, s32 shift, u8 reverse)
+{
+    typedef struct WazaCameraParams {
+        u8 pad_00[0x0C];
+        f32 rotationBase;
+        f32 rotationRange;
+        f32 rotationOffset;
+        f32 heightMin;
+        f32 heightMax;
+        f32 distanceMin;
+        f32 distanceMax;
+        f32 nearDistance;
+        f32 middleDistance;
+        f32 farDistance;
+        f32 nearLength;
+        f32 middleLength;
+        f32 farLength;
+    } WazaCameraParams;
+    extern f32 fn_800E0BE4();
+    extern u32 _fadeEffectGetRandom__FUl(u32);
+    extern void cameraSetDistance(f32);
+    extern void cameraSetHeight(f32);
+    extern void cameraSetRotY(f32);
+    extern void cameraUpdate(void);
+    extern void GSscene_GetCameraDirectionVector(Vec*);
+    extern void GSscene_GetCameraPositionVector(Vec*);
+    extern void fn_800E0168(Vec*, Vec*, Vec*);
+    extern void fn_800E013C(Vec*, Vec*, f32);
+    extern void GSvecAdd(Vec*, Vec*, Vec*);
+    extern s32 fn_800D37CC(void);
+    extern void cameraMovePosition(s32, Vec*, f32);
+    extern f32 sqrtf(f32);
+    extern f32 lbl_8047E1F8;
+    extern f32 lbl_8047E1FC;
+    extern f32 lbl_8047E260;
+    extern f32 lbl_8047E264;
+    extern f32 lbl_8047E268;
+    extern f32 lbl_8047E26C;
+    u8* file = header;
+    WazaCameraParams* camera = params;
+    Vec direction;
+    Vec position;
+    s32 duration;
+    s32 delay;
+    s32 randomDelay;
+    f32 threshold0 = lbl_8047E1F8;
+    f32 threshold1 = lbl_8047E260;
+    f32 distance0;
+    f32 distance1;
+    f32 nearDistance;
+    f32 farDistance;
+    f32 height;
+    f32 rotation;
+    BOOL alternate;
+
+    duration = *(s32*)(file + (*(s32*)file << 2) + 4);
+    if (duration == 0) {
+        duration = *(s32*)(file + (*(s32*)file << 2) + 8);
+    }
+    duration <<= shift;
+
+    if (fn_800E0BE4() <= lbl_8047E264) {
+        threshold0 = lbl_8047E268;
+        threshold1 = lbl_8047E26C;
+        alternate = TRUE;
+    } else {
+        alternate = FALSE;
+    }
+
+    if (fn_800E0BE4() < threshold0) {
+        randomDelay = 0;
+    } else if (fn_800E0BE4() < threshold1) {
+        s32 minimumDuration = duration >> 1;
+
+        randomDelay = 0;
+        duration = _fadeEffectGetRandom__FUl(duration);
+        if (duration < minimumDuration) {
+            duration = minimumDuration;
+        }
+    } else {
+        randomDelay = _fadeEffectGetRandom__FUl(duration);
+        if (randomDelay > (duration >> 1)) {
+            randomDelay = duration >> 1;
+        }
+    }
+
+    distance0 = camera->nearDistance +
+        (camera->middleDistance - camera->nearDistance) * fn_800E0BE4();
+    distance1 = camera->nearDistance +
+        (camera->middleDistance - camera->nearDistance) * fn_800E0BE4();
+    nearDistance = distance0;
+    farDistance = distance1;
+    if (alternate) {
+        if (distance0 < distance1) {
+            nearDistance = distance1;
+            farDistance = distance0;
+        }
+    } else if (distance0 > distance1) {
+        nearDistance = distance1;
+        farDistance = distance0;
+    }
+
+    height = camera->heightMin +
+        (camera->heightMax - camera->heightMin) * fn_800E0BE4();
+    if (reverse) {
+        rotation = -((camera->rotationRange - camera->rotationBase) *
+                     fn_800E0BE4() -
+                     (camera->rotationOffset - camera->rotationBase));
+    } else {
+        rotation = (camera->rotationRange - camera->rotationBase) *
+                       fn_800E0BE4() +
+                   (camera->rotationOffset + camera->rotationBase);
+    }
+
+    cameraSetDistance(nearDistance);
+    cameraSetHeight(height);
+    cameraSetRotY(rotation);
+    cameraUpdate();
+    GSscene_GetCameraDirectionVector(&direction);
+    GSscene_GetCameraPositionVector(&position);
+    fn_800E0168(&direction, &direction, &position);
+    direction.z = lbl_8047E1FC;
+    fn_800E013C(&direction, &direction, farDistance / nearDistance);
+    direction.z = height;
+    GSvecAdd(&direction, &direction, &position);
+    delay = duration - randomDelay;
+    cameraMovePosition(7, &direction, (f32)delay / (f32)fn_800D37CC());
+
+    camera->nearLength = sqrtf(nearDistance * nearDistance + height * height);
+    distance0 = lbl_8047E1F8 * (nearDistance + farDistance);
+    camera->middleLength = sqrtf(distance0 * distance0 + height * height);
+    camera->farLength = sqrtf(farDistance * farDistance + height * height);
 }
 
 /**

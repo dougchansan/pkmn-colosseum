@@ -23,6 +23,13 @@ extern u8 pokemonCheckValid(void* pokemon);
 extern u16 pokemonBiosGetDarkpokemonDataId(void* pokemon);
 extern u8 fn_801EEC74(u16 id);
 extern void* pokemonBiosGetNicknamePtr(void* pokemon);
+extern u8 pokemonWazaCheckValid(void* pokemon, u16 slot);
+extern s32 fn_80097BBC(u8 chan);
+extern u16 pokemonBiosGetPokemonWazaDataId(void* pokemon, u16 slot);
+extern void fn_80166AB8(u32 sndId, u32 fadeTime, u32 volume);
+extern void pokemonWazaInit(void* pokemon, u32 slot);
+extern u32* pokemonBiosGetPokemonWazaPtr(void* pokemon, u16 slot, u8 mode);
+extern void pokemonWazaBiosCopy(u32* dst, u32* src);
 extern void msgctrlSetValue(s32 id, void* value);
 extern s32 menuNameEntryOpen(s32 mode, s32 slot);
 extern void winMsgClose(s32 windowID);
@@ -32,10 +39,188 @@ extern void winMsgClose(s32 windowID);
  * Address: 0x801DF790 | Size: 0x4A0
  */
 void fn_801DF790(s32 slot, s32 itemID) {
-    /* TODO: Item effect handler (0x4A0 bytes)
-     * Handles visual effects for held item activations
-     * (berries, leftovers, etc.).
-     */
+    s32 running = 1;
+    s32 selection = 0;
+    s32 moveSlot = 0;
+    s32 state = 0;
+
+    (void)slot;
+    (void)itemID;
+
+    do {
+        switch (state) {
+        case 0:
+            winMsgOpenFieldWithSE(0x3B28, 1, 0, 1);
+            state = 1;
+            break;
+        case 1:
+            if ((s8)fn_8001E184() == 0) {
+                state = 2;
+            } else {
+                state = 12;
+            }
+            break;
+        case 2:
+            winMsgOpenFieldWithSE(0x3B29, 1, 0, 1);
+            state = 3;
+            break;
+        case 3:
+            selection = menuPokemonOpen(6, 0, 0);
+            if (selection >= 0) {
+                state = 4;
+            } else {
+                state = 12;
+            }
+            break;
+        case 4: {
+            void* pokemon = heroBiosGetPokemonPtr(savedataGetStatus(0, 2), (u16)selection);
+            u8 canEdit;
+
+            if (pokemonCheckValid(pokemon) == 0) {
+                canEdit = 0;
+            } else {
+                u16 darkId = pokemonBiosGetDarkpokemonDataId(pokemon);
+
+                if (darkId != 0) {
+                    canEdit = fn_801EEC74(darkId);
+                } else {
+                    canEdit = 1;
+                }
+            }
+
+            if (canEdit != 0) {
+                state = 5;
+            } else {
+                state = 13;
+            }
+            break;
+        }
+        case 5: {
+            void* pokemon = heroBiosGetPokemonPtr(savedataGetStatus(0, 2), (u16)selection);
+            s32 validCount = 0;
+            s32 i;
+
+            if (pokemonCheckValid(pokemon) != 0) {
+                for (i = 0; i < 4; i++) {
+                    if (pokemonWazaCheckValid(pokemon, (u16)i) != 0) {
+                        validCount++;
+                    }
+                }
+            }
+
+            if (validCount == 1) {
+                state = 14;
+            } else {
+                state = 6;
+            }
+            break;
+        }
+        case 6:
+            winMsgOpenFieldWithSE(0x3B2A, 1, 0, 1);
+            state = 7;
+            break;
+        case 7: {
+            void* pokemon = heroBiosGetPokemonPtr(savedataGetStatus(0, 2), (u16)selection);
+            s32 validCount = 0;
+            s32 i;
+
+            if (pokemonCheckValid(pokemon) != 0) {
+                for (i = 0; i < 4; i++) {
+                    if (pokemonWazaCheckValid(pokemon, (u16)i) != 0) {
+                        validCount++;
+                    }
+                }
+            }
+
+            if (validCount == 1) {
+                state = 14;
+            } else {
+                moveSlot = fn_80097BBC((u8)selection);
+                if (moveSlot >= 0) {
+                    state = 8;
+                } else {
+                    state = 2;
+                }
+            }
+            break;
+        }
+        case 8: {
+            void* pokemon = heroBiosGetPokemonPtr(savedataGetStatus(0, 2), (u16)selection);
+
+            msgctrlSetValue(0x32, pokemonBiosGetNicknamePtr(pokemon));
+            msgctrlSetValue(0x39, (void*)(u32)pokemonBiosGetPokemonWazaDataId(pokemon, (u16)moveSlot));
+            winMsgOpenFieldWithSE(0x3B2B, 1, 0, 1);
+            state = 9;
+            break;
+        }
+        case 9:
+            if ((s8)fn_8001E184() == 0) {
+                state = 10;
+            } else {
+                state = 6;
+            }
+            break;
+        case 10:
+            fn_80166AB8(0x48, 0, 0);
+            state = 11;
+            break;
+        case 11: {
+            void* pokemon = heroBiosGetPokemonPtr(savedataGetStatus(0, 2), (u16)selection);
+            u16 currentSlot = (u16)moveSlot;
+
+            pokemonWazaInit(pokemon, currentSlot);
+            while (currentSlot < 3) {
+                u16 nextSlot = (u16)(currentSlot + 1);
+
+                if (pokemonWazaCheckValid(pokemon, nextSlot) == 0) {
+                    break;
+                }
+
+                pokemonWazaBiosCopy(
+                    pokemonBiosGetPokemonWazaPtr(pokemon, currentSlot, 0),
+                    pokemonBiosGetPokemonWazaPtr(pokemon, nextSlot, 0));
+                currentSlot = nextSlot;
+            }
+            pokemonWazaInit(pokemon, currentSlot);
+            msgctrlSetValue(0x32, pokemonBiosGetNicknamePtr(pokemon));
+            msgctrlSetValue(0x39, (void*)(u32)pokemonBiosGetPokemonWazaDataId(pokemon, (u16)moveSlot));
+            winMsgOpenFieldWithSE(0x3B2C, 1, 0, 1);
+            if ((s8)fn_8001E184() == 0) {
+                state = 7;
+            } else {
+                state = 12;
+            }
+            break;
+        }
+        case 12:
+            winMsgOpenFieldWithSE(0x3B2D, 1, 0, 1);
+            state = 15;
+            break;
+        case 13:
+            msgctrlSetValue(
+                0x32,
+                pokemonBiosGetNicknamePtr(
+                    heroBiosGetPokemonPtr(savedataGetStatus(0, 2), (u16)selection)));
+            winMsgOpenFieldWithSE(0x44AA, 1, 0, 1);
+            if ((s8)fn_8001E184() == 0) {
+                state = 2;
+            } else {
+                state = 12;
+            }
+            break;
+        case 14:
+            winMsgOpenFieldWithSE(0x3B2E, 1, 0, 1);
+            if ((s8)fn_8001E184() == 0) {
+                state = 2;
+            } else {
+                state = 12;
+            }
+            break;
+        case 15:
+            running = 0;
+            break;
+        }
+    } while (running != 0);
 }
 
 /**
@@ -194,7 +379,7 @@ void fn_801E03D4(void) {
 }
 
 /**
- * fn_801E075C - Create the field model used for the selected party Pokémon.
+ * fn_801E075C - Create the field model used for the selected party Pokemon.
  * Address: 0x801E075C | Size: 0x284
  */
 void fn_801E075C(u16 partyIndex)
