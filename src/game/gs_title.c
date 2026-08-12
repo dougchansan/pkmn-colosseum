@@ -2985,7 +2985,202 @@ asm void fn_800210F0(void) {
 #include "src/game/gs_title_fn_800210F0.inc"
 }
 #else
-void fn_800210F0(void) { /* TODO */ }
+s32 fn_800210F0(arg0, arg1)
+u32 arg0;
+u32* arg1;
+{
+    extern u8 lbl_802EF0A8[];
+    extern u8 lbl_803A1FF8[];
+    extern s32 windowGetActiveID(void);
+    extern s32 menuOpen(s32, s32);
+    extern s32 menuOpenCustom(s32, ...);
+    extern s8 menuSubOpenYesNo(s32, s32, s32, s32);
+    extern void menuCloseCustom(s32, s32, s32);
+    extern s32 menuColosseumBattle(s32);
+    extern void fn_800205B8(u32);
+    extern s32 gamedatasaveGetStatus(s32, s32);
+    extern u16 fn_8006A718(s32);
+    extern u8 fn_801D04E8(void);
+    extern s32 fn_800FF58C(s32);
+    extern void menuModelInit(void*, s16, s16);
+    extern s32 menuModelSetMotion(void*, u32);
+    extern void fn_8010A010(void*, u32);
+    extern void* peopleInfoBiosGetPtr(u32);
+    extern void fn_8018F4C8(void*, s32, s32*, void*);
+    extern s32 menuNameEntryOpen(s32, s32);
+    extern void menuNameEntryGetLastName(void*);
+    extern void savedataCreate(u32, const void*);
+    extern void fn_80166A50(s32, s32, s32, s32);
+    extern void fn_800056E4(u8);
+    extern void fn_800056EC(f32);
+    extern void floorLink(s32, s32);
+    extern s32 fn_80005748(void);
+    extern s32 fn_801EF214(void);
+    extern s32 fn_801EF274(void);
+    s32 state;
+    s32 loop;
+    s32 slot;
+    s32 pokemon;
+    s32 data;
+    s32 yesno;
+    s32 workA;
+    s32 workB;
+    s16 motionA;
+    s16 motionB;
+    u8 nameBuf[0x10];
+
+    state = 0;
+    loop = 1;
+    (&lbl_8047A360)[1] = 1;
+
+    while (loop != 0) {
+        switch (state) {
+        case 0:
+            state = 1;
+            break;
+
+        case 1:
+            (&lbl_8047A360)[1] = 1;
+            menuOpen(0x7F, 0);
+            slot = menuOpenCustom(0xAA, windowGetActiveID(),
+                                  &lbl_8047A360, 0, 1, 0);
+            if (slot == 0) {
+                state = 5;
+                break;
+            }
+
+            switch ((s32)lbl_8047A360) {
+            case 0:
+                break;
+            case 1:
+                menuColosseumBattle(0);
+                loop = 0;
+                break;
+            case 2:
+                menuColosseumBattle(3);
+                loop = 0;
+                break;
+            case 3:
+                state = 2;
+                break;
+            case 4:
+                (&lbl_8047A360)[1] = 4;
+                state = 4;
+                break;
+            default:
+                fn_800205B8(1);
+                fn_800FF58C(0x384);
+                state = 0x64;
+                break;
+            }
+            break;
+
+        case 2:
+            fn_800056E4(0);
+            if (gamedatasaveGetStatus(0, 4) != 0) {
+                state = 3;
+                break;
+            }
+            if ((u8)fn_801D04E8() == 0) {
+                winMsgOpen(2, 0x44EA, 1, 0);
+            } else {
+                winMsgOpen(2, 0x444B, 1, 0);
+            }
+            winMsgClose(1);
+            state = 1;
+            break;
+
+        case 3:
+            menuCloseCustom(0xAA, 0, 1);
+            menuCloseCustom(0x7F, 0, 1);
+            menuModelInit(lbl_803A1FF8,
+                          *(s16*)(lbl_802EF0A8 + 0x4EFE),
+                          *(s16*)(lbl_802EF0A8 + 0x4F00));
+            fn_8010A010(lbl_803A1FF8, 0xF70400);
+            fn_8018F4C8(peopleInfoBiosGetPtr(0xF70400), 1, &workA, &workB);
+            menuModelSetMotion(lbl_803A1FF8, workA);
+            workA = fn_80005748();
+            workB = fn_801EF214();
+            slot = fn_801EF274();
+            msgctrlSetValue(0x4C, (void*)slot);
+            msgctrlSetValue(0x2F, (void*)slot);
+            msgctrlSetValue(0x30, (void*)workB);
+            menuOpen(0x16, 0);
+            winMsgOpen(1, 0x3C22, 0, 1);
+            yesno = (s8)menuSubOpenYesNo(0, 0x3C, 0xD6, 1);
+            if (yesno == 0) {
+                heroMoveSyncWithHero();
+                fn_80113FE8();
+                state = 0x64;
+                fn_800056E4(1);
+            } else {
+                state = 1;
+                fn_800056E4(1);
+            }
+            menuCloseCustom(0x16, 0, 1);
+            winMsgClose(1);
+            fn_8010A420(lbl_803A1FF8);
+            break;
+
+        case 4:
+            menuCloseCustom(0x7F, 0, 1);
+            fn_80020C9C();
+            (&lbl_8047A360)[1] = 1;
+            state = 1;
+            break;
+
+        case 5:
+            if (gamedatasaveGetStatus(0, 4) == 0) {
+                slot = 0x3C3A;
+            } else if ((u16)fn_8006A718(0) == 1) {
+                slot = 0x44C9;
+            } else {
+                slot = 0x3C35;
+            }
+            winMsgOpen(2, slot, 1, 1);
+            (&lbl_8047A360)[1] = 5;
+            state = (s8)menuSubOpenYesNo(0, 0x3C, 0xA6, 1);
+            winMsgClose(1);
+            if (state == 0) {
+                menuCloseCustom(0xAA, 0, 1);
+                menuCloseCustom(0x7A, 0, 1);
+                menuCloseCustom(0x7F, 0, 1);
+                fn_801CB9D8(lbl_8047A35C);
+                fn_8010A420(lbl_803A1FF8);
+                fn_80166A50(1, 0x3E8, 0xFF, 0);
+                menuNameEntryOpen(0, 0);
+                menuNameEntryGetLastName(nameBuf);
+                savedataCreate(0, nameBuf);
+                fn_800056E4(1);
+                fn_800056EC(*(f32*)&lbl_8047B898);
+                heroMoveSyncWithHero();
+                floorLink(0x3A0, 0);
+                state = 0x64;
+            } else {
+                state = 1;
+            }
+            break;
+
+        case 0x64:
+            slot = (s32)lbl_8047A360;
+            if (slot < 0 || slot >= 5) {
+                slot = 0;
+            }
+            lbl_8047A358 = slot;
+            loop = 0;
+            break;
+
+        default:
+            break;
+        }
+    }
+
+    menuCloseCustom(0xAA, 0, 1);
+    menuCloseCustom(0x7A, 0, 1);
+    menuCloseCustom(0x7F, 0, 1);
+    fn_801CB9D8(lbl_8047A35C);
+    return lbl_8047A360;
+}
 #endif
 #endif
 
