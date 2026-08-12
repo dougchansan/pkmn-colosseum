@@ -656,6 +656,10 @@ extern void* fn_80167F28(const char* path);
 extern u32 fn_80167E5C(void* fileInfo);
 extern u8 fn_80167E98(void* work, void* addr, s32 length, s32 offset,
                       void* callback);
+extern FSYSManager lbl_80453FEC;
+extern FSYSFileHandle* lbl_8047B1B8;
+extern u32 lbl_8047B1BC;
+extern void* lbl_8047B1C0[2];
 void fn_80179FA4(slot, offset, size, callbackA, callbackB, callbackC, path, entry)
     FSYSSlot* slot;
     u32 offset;
@@ -686,38 +690,46 @@ void fn_80179FA4(slot, offset, size, callbackA, callbackB, callbackC, path, entr
     freeSize = fn_8017FA5C();
     if (slot->totalDecompSize > freeSize) {
         found = -1;
-        table = gFSYSHandleTable;
-        for (i = 0; i < gFSYSHandleCount; i++, table++) {
+        table = lbl_8047B1B8;
+        i = 0;
+        while (i < lbl_8047B1BC) {
             if (table->handleID == (s32)slot->field_08) {
                 found = table->handleID;
                 break;
             }
+            table++;
+            i++;
         }
         if (found < 0) {
-            while (slot->totalDecompSize > (u32)fn_8017FA5C()) {
-                handleID = gFSYSHandleTable[0].handleID;
+            while (slot->totalDecompSize > freeSize) {
+                handleID = lbl_8047B1B8[0].handleID;
                 if (handleID < 0) {
                     break;
                 }
 
                 fn_8017F800((u32)handleID);
                 found = -1;
-                for (i = 0; i < gFSYSHandleCount; i++) {
-                    if (gFSYSHandleTable[i].handleID == handleID) {
-                        gFSYSHandleTable[i].handleID = -1;
+                i = 0;
+                while (i < lbl_8047B1BC) {
+                    if (lbl_8047B1B8[i].handleID == handleID) {
+                        lbl_8047B1B8[i].handleID = -1;
                         found = (s32)i;
                         break;
                     }
+                    i++;
                 }
                 if (found < 0) {
                     break;
                 }
 
-                for (i = (u32)found; i < gFSYSHandleCount - 1; i++) {
-                    gFSYSHandleTable[i] = gFSYSHandleTable[i + 1];
+                i = (u32)found;
+                while (i < lbl_8047B1BC - 1) {
+                    lbl_8047B1B8[i] = lbl_8047B1B8[i + 1];
+                    i++;
                 }
-                gFSYSHandleCount--;
-                gFSYSHandleTable[gFSYSHandleCount].handleID = -1;
+                lbl_8047B1BC--;
+                lbl_8047B1B8[lbl_8047B1BC].handleID = -1;
+                freeSize = fn_8017FA5C();
             }
         }
     }
@@ -727,38 +739,46 @@ void fn_80179FA4(slot, offset, size, callbackA, callbackB, callbackC, path, entr
     freeSize = fn_8017FA5C();
     if (slot->totalDecompSize > freeSize) {
         found = -1;
-        table = gFSYSHandleTable;
-        for (i = 0; i < gFSYSHandleCount; i++, table++) {
+        table = lbl_8047B1B8;
+        i = 0;
+        while (i < lbl_8047B1BC) {
             if (table->handleID == (s32)slot->field_08) {
                 found = table->handleID;
                 break;
             }
+            table++;
+            i++;
         }
         if (found < 0) {
-            while (slot->totalDecompSize > (u32)fn_8017FA5C()) {
-                handleID = gFSYSHandleTable[0].handleID;
+            while (slot->totalDecompSize > freeSize) {
+                handleID = lbl_8047B1B8[0].handleID;
                 if (handleID < 0) {
                     break;
                 }
 
                 fn_8017F800((u32)handleID);
                 found = -1;
-                for (i = 0; i < gFSYSHandleCount; i++) {
-                    if (gFSYSHandleTable[i].handleID == handleID) {
-                        gFSYSHandleTable[i].handleID = -1;
+                i = 0;
+                while (i < lbl_8047B1BC) {
+                    if (lbl_8047B1B8[i].handleID == handleID) {
+                        lbl_8047B1B8[i].handleID = -1;
                         found = (s32)i;
                         break;
                     }
+                    i++;
                 }
                 if (found < 0) {
                     break;
                 }
 
-                for (i = (u32)found; i < gFSYSHandleCount - 1; i++) {
-                    gFSYSHandleTable[i] = gFSYSHandleTable[i + 1];
+                i = (u32)found;
+                while (i < lbl_8047B1BC - 1) {
+                    lbl_8047B1B8[i] = lbl_8047B1B8[i + 1];
+                    i++;
                 }
-                gFSYSHandleCount--;
-                gFSYSHandleTable[gFSYSHandleCount].handleID = -1;
+                lbl_8047B1BC--;
+                lbl_8047B1B8[lbl_8047B1BC].handleID = -1;
+                freeSize = fn_8017FA5C();
             }
         }
     }
@@ -766,23 +786,23 @@ void fn_80179FA4(slot, offset, size, callbackA, callbackB, callbackC, path, entr
     if (size < 0x20000) {
         slot->dmaChunkSize = (size + 0x1F) & ~0x1F;
     } else {
-        slot->dmaChunkSize = 0x20000;
+    slot->dmaChunkSize = 0x20000;
     }
 
     slot->dmaBytesRemaining = size;
-    slot->dmaSrcOffset = 0;
-    slot->dmaDstOffset = 0;
+    *(u32*)((u8*)slot + 0x118) = 0;
+    *(u32*)((u8*)slot + 0x11C) = offset;
     slot->callbackA = callbackA;
     slot->callbackB = callbackB;
     slot->callbackC = callbackC;
     slot->dmaCopyDst = readHandle;
     slot->dmaAsyncRequest = 0;
-    gFSYSManager.activeSlot = slot;
-    gFSYSManager.currentSlot = slot;
+    lbl_80453FEC.activeSlot = slot;
+    lbl_80453FEC.currentSlot = slot;
 
-    dvdBuffer = gFSYSDVDBuffers[gFSYSManager.field_24];
+    dvdBuffer = lbl_8047B1C0[lbl_80453FEC.field_24];
     archive = (u8*)slot->archiveData;
-    if (archive != NULL && (*(u32*)(archive + 0x10) & 1) != 0) {
+    if ((*(u32*)(archive + 0x10) & 1) != 0) {
         slot->tocBuffer = 0;
         if (path != NULL && fn_80167EF8(path) != 0) {
             slot->tocBuffer = fn_80167F28(path);
@@ -796,7 +816,7 @@ void fn_80179FA4(slot, offset, size, callbackA, callbackB, callbackC, path, entr
 
                 entry->decompressedSize = fileSize;
                 slot->dmaBytesRemaining = fileSize;
-                slot->dmaCopyDst = 0;
+                *(u32*)((u8*)slot + 0x11C) = 0;
 
                 total = 0;
                 for (i = 0; i < slot->numEntries; i++) {
