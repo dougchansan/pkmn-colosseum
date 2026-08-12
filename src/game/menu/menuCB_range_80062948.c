@@ -778,6 +778,332 @@ s32 fn_80062948(MenuCBBattleEntryContext* context)
     return result;
 }
 
+s32 fn_80063060(MenuCBBattleEntryContext* context)
+{
+    extern void fn_8006A7D0(void);
+    extern s32 fn_8006AC6C(void);
+    extern void fn_8006ADB4(void);
+    extern s32 fn_8006ADEC(void);
+    extern void fn_8006B09C(s32);
+    extern s32 fn_800886D0(void);
+    extern s32 fn_800889E4(void);
+    extern s32 fn_80088D84(void);
+    extern s32 fn_8001E074(s32, s32, s32, s32);
+    extern void fn_80069944(void);
+    extern s32 fn_80062284(s32);
+    extern void fn_80062834(void);
+    extern void fn_800637B0(void);
+    extern s32 fn_801046B8(void);
+    extern s32 fn_801043A4(s32);
+    extern s32 fn_801026A4(s32, s32, s32, s32, s32, s32);
+    extern void fn_80102568(s32, s32, s32);
+    extern void fn_8010264C(s32, s32);
+    extern void fn_80102868(s32, s32, s32);
+    extern void fn_801045A8(s32, s32);
+    extern void fn_801069FC(s32);
+    extern void fn_80106D3C(s32, s32, s32, s32);
+    extern u8 fn_801070F4(s32);
+    extern void fn_801080CC(s32, s32);
+    extern s32 fn_80129280(s32, s32);
+    extern s32 fn_8012A7C4(s32);
+    extern void fn_8012A7DC(s32, s32);
+    extern s32 fn_8012A80C(void);
+    extern void fn_8012A824(s32, s32);
+    extern void fn_80132A38(s32, s32);
+    extern void fn_80166AB8(s32, s32, s32);
+    extern s32 fn_801906A0(s32);
+    extern s32 fn_801EE398(void);
+    extern u16 fn_801EF634(void);
+    extern void fn_8025D06C(void);
+    extern s32 fn_8025D164(void);
+    extern s32 fn_8025D9A8(void);
+    extern void fn_8025DAF4(void);
+    extern void fn_8025DB2C(void);
+    extern s32 fn_8025DB5C(void);
+    extern void fn_8025DB80(void);
+    extern s32 fn_8025DBB0(void);
+    extern s16 lbl_80478920;
+    extern s16 lbl_80478922;
+    s32 state;
+    s32 result;
+    s32 battleMode;
+    s32 battleCount;
+    s32 battleType;
+    s32 onesDigit;
+    s32 savedPortState;
+    s32 savedPortValue;
+    s32 tmp;
+    s32 waitDone;
+    BOOL keepRunning;
+    BOOL pendingSetup;
+    BOOL openedCustomMenu;
+    BOOL usedCancelRoute;
+    BOOL allowDbCleanup;
+    BOOL pendingPostCopy;
+
+    state = 0;
+    result = -1;
+    keepRunning = TRUE;
+    pendingSetup = FALSE;
+    openedCustomMenu = FALSE;
+    usedCancelRoute = FALSE;
+    allowDbCleanup = TRUE;
+    pendingPostCopy = FALSE;
+
+    battleType = (u16)fn_801EF634();
+    battleMode = fn_8025D9A8();
+    battleCount = fn_8025DBB0();
+    savedPortState = fn_80129280(0, 2);
+    savedPortValue = fn_8012A80C();
+    tmp = fn_8012A7C4(savedPortState);
+    onesDigit = (battleCount + 1) % 10;
+
+    while (keepRunning) {
+        switch (state) {
+        case 0:
+            fn_8010264C(0xDF, 0);
+            fn_8010264C(0xBA, 1);
+
+            if (battleType == 2 || (battleType >= 5 && battleType < 8)) {
+                if (fn_8025DB5C() == 0) {
+                    result = (battleMode == 1) ? 0x105 : 0xAC;
+                    state = 9;
+                } else {
+                    state = 2;
+                }
+                break;
+            }
+
+            if (battleMode == 0) {
+                if (battleCount == 7) {
+                    fn_8025D164();
+                    fn_8006ADB4();
+                    pendingSetup = TRUE;
+                    fn_800637B0();
+                }
+            } else if (battleMode == 1) {
+                if (onesDigit == 0) {
+                    fn_8025D164();
+                    fn_8006ADEC();
+                    fn_8006ADB4();
+                }
+                if (battleCount + 1 == 0x64) {
+                    pendingSetup = TRUE;
+                }
+            }
+
+            if (pendingSetup) {
+                if (battleMode == 1 && fn_801906A0(0xAFD) == 0) {
+                    pendingPostCopy = fn_801EE398() != 0;
+                }
+                state = 5;
+                break;
+            }
+
+            if ((u8)fn_80062284(0) != 0) {
+                fn_80106D3C(2, 0x3C10, 1, 1);
+                fn_801069FC(1);
+                fn_8025DB2C();
+            } else {
+                fn_80106D3C(2, 0x30DD, 0, 1);
+            }
+            state = 1;
+            break;
+
+        case 1: {
+            s32 window = fn_801046B8();
+            s32 choice;
+
+            fn_801026A4(0xEC, window, 0, 8, 0, 0);
+            fn_80102868(0xEC, lbl_80478920, lbl_80478922);
+            fn_801045A8(0xEC, 1);
+            choice = (s8)fn_801043A4(0xEC);
+            fn_80102568(0xEC, 0, 1);
+            fn_801069FC(1);
+
+            if (choice == 0) {
+                if (allowDbCleanup) {
+                    fn_8025DB80();
+                }
+                openedCustomMenu = TRUE;
+                usedCancelRoute = FALSE;
+                result = 0xD1;
+                state = 9;
+            } else {
+                if (allowDbCleanup) {
+                    fn_8025DB80();
+                }
+                openedCustomMenu = TRUE;
+                usedCancelRoute = TRUE;
+                result = 0xAC;
+                state = 9;
+            }
+            break;
+        }
+
+        case 2:
+            fn_80106D3C(2, 0x44E3, 0, 1);
+            if (fn_8001E074(0, lbl_80478920, lbl_80478922, 1) == 0) {
+                state = 12;
+            } else {
+                state = 1;
+            }
+            fn_801069FC(1);
+            break;
+
+        case 3:
+            fn_80132A38(0x30, fn_8025DB5C());
+            fn_80106D3C(2, 0x3C13, 0, 1);
+            if (fn_8001E074(0, lbl_80478920, lbl_80478922, 0) == 0) {
+                fn_8025DAF4();
+                result = 0xD1;
+                state = 9;
+            } else {
+                state = 3;
+            }
+            fn_801069FC(1);
+            break;
+
+        case 4:
+            fn_80132A38(0x30, fn_8025DB5C());
+            fn_80106D3C(2, 0x44DF, 0, 1);
+            if (fn_8001E074(0, lbl_80478920, lbl_80478922, 1) == 0) {
+                result = 0xAC;
+                state = 12;
+            } else {
+                state = 2;
+            }
+            fn_801069FC(1);
+            break;
+
+        case 5: {
+            s32 entryResult;
+
+            fn_80132A38(0x30, fn_8006ADEC());
+            fn_80166AB8(0x3CC, 0, 0);
+            fn_80106D3C(2, 0x3C11, 1, 1);
+            fn_8006B09C(0);
+            fn_8006A7D0();
+            entryResult = fn_8006AC6C();
+
+            if (pendingPostCopy) {
+                state = 8;
+            } else if (entryResult > 0 && entryResult < 3) {
+                result = 0x105;
+                state = 12;
+            } else {
+                state = 6;
+            }
+            break;
+        }
+
+        case 6:
+            fn_80106D3C(2, 0x3C23, 0, 1);
+            if (fn_8001E074(0, lbl_80478920, lbl_80478922, 0) == 0) {
+                result = 0x105;
+                state = 12;
+            } else {
+                state = 11;
+            }
+            break;
+
+        case 7:
+            fn_80106D3C(2, 0x3C0F, 0, 1);
+            if (fn_8001E074(0, lbl_80478920, lbl_80478922, 1) == 0) {
+                result = 0xAC;
+                state = 12;
+            } else {
+                state = 10;
+            }
+            fn_801069FC(1);
+            break;
+
+        case 8:
+            fn_80106D3C(2, 0x3C03, 0, 1);
+            if (fn_8001E074(0, lbl_80478920, lbl_80478922, 0) == 0) {
+                if (allowDbCleanup) {
+                    fn_8025D06C();
+                }
+                usedCancelRoute = TRUE;
+                result = 0xAC;
+                state = 9;
+            } else {
+                state = 7;
+            }
+            fn_801069FC(1);
+            break;
+
+        case 9:
+            if (usedCancelRoute) {
+                if (openedCustomMenu) {
+                    if (fn_800889E4() < 0) {
+                        state = 4;
+                        allowDbCleanup = FALSE;
+                        break;
+                    }
+                    fn_80069C0C(context);
+                } else {
+                    if (fn_80088D84() < 0) {
+                        state = 6;
+                        pendingPostCopy = FALSE;
+                        break;
+                    }
+                    fn_80069C0C(context);
+                }
+            } else {
+                if (openedCustomMenu) {
+                    fn_80069C0C(context);
+                }
+                keepRunning = FALSE;
+            }
+            break;
+
+        case 10:
+            fn_80106D3C(2, 0x3C41, 0, 1);
+            if (fn_8001E074(0, lbl_80478920, lbl_80478922, 1) == 0) {
+                s32 restore = fn_80129280(0, 2);
+                fn_8012A824(restore, savedPortValue);
+                fn_8012A7DC(restore, tmp);
+                state = 12;
+            } else {
+                state = 6;
+            }
+            break;
+
+        case 11:
+            fn_80106D3C(2, 0x3C12, 0, 1);
+            fn_801069FC(1);
+            fn_801080CC(0xDF, 0x1C6);
+            fn_801080CC(0xBA, 0x1C6);
+            while (fn_801070F4(0xDF) != 0) {
+                _threadSwitch();
+            }
+            while (fn_801070F4(0xBA) != 0) {
+                _threadSwitch();
+            }
+            fn_80069944();
+            fn_80062834();
+            fn_80061028(1);
+            fn_80102568(0xDF, 0, 1);
+            fn_800886D0();
+            result = 0x105;
+            state = 9;
+            break;
+
+        case 12:
+            keepRunning = FALSE;
+            break;
+
+        default:
+            keepRunning = FALSE;
+            break;
+        }
+    }
+
+    fn_801069FC(1);
+    return result;
+}
+
 s32 fn_80062AB4(void* arg)
 {
     extern u16 fn_801EF634(void);
