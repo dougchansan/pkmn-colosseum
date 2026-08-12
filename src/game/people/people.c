@@ -1091,8 +1091,15 @@ asm void fn_801821B8(void) {
 void fn_801821B8(u32 groupId, u32 index)
 {
     PeopleEntry* entry;
+    PeopleInfoBiosEntry* info;
+    void* model;
     GSvec position;
     f32 step;
+    s32 animIndex;
+    s32 current;
+    s32 secondary;
+    u8 loop;
+    u8 restart;
     u8 shadowAnim;
 
     entry = peopleFindBySelf(peopleFindSelf(groupId, index));
@@ -1106,7 +1113,48 @@ void fn_801821B8(u32 groupId, u32 index)
     fn_8018FB2C(entry, shadowAnim);
     peopleClearFlags(entry, 8);
     fn_80166A28(0x49E);
-    fn_8018F08C(entry, 7);
+    entry->motionIndex = 7;
+    info = peopleInfoBiosGetPtr(entry->scriptRef);
+    if (info != NULL) {
+        fn_8018F4C8(info, (u8)entry->motionIndex, &animIndex, &loop);
+        if (animIndex >= 0) {
+            model = peopleGetModel(entry);
+            if (model != NULL) {
+                restart = 0;
+                if (GSmodelHasAnimationEnded(model)) {
+                    restart = 1;
+                } else if (!GSmodelIsAnimating(model)) {
+                    restart = 1;
+                } else {
+                    GSmodelGetAnimIndex(model, &current, &secondary);
+                    if (current != animIndex || secondary != -1) {
+                        restart = 1;
+                    }
+                }
+                if (restart) {
+                    entry->walkTargetNode = animIndex;
+                    entry->walkAnimRate = lbl_8047D7A0;
+                    GSmodelSetAnimIndex(model, animIndex);
+                    GSmodelSetAnimFrame(model, lbl_8047D7A0);
+                    GSmodelSetAnimRate(model, lbl_8047D7A4);
+                    GSmodelSetTexAnimIndex(model, animIndex);
+                    GSmodelSetTexAnimFrame(model, lbl_8047D7A0);
+                    GSmodelSetTexAnimRate(model, lbl_8047D7A4);
+                    if (loop != 0) {
+                        GSmodelSetAnimType(model, 1);
+                    } else {
+                        GSmodelSetAnimType(model, 0);
+                    }
+                    GSmodelStartAnimation(model);
+                }
+                if (loop != 0) {
+                    GSmodelSetAnimType(model, 1);
+                } else {
+                    GSmodelSetAnimType(model, 0);
+                }
+            }
+        }
+    }
 
     step = entry->animBlendFactor + lbl_8047D7D8;
     while (step > lbl_8047D7A0) {
@@ -1122,9 +1170,103 @@ void fn_801821B8(u32 groupId, u32 index)
         }
     }
 
-    fn_8018F08C(entry, 8);
-    peopleWaitSyncMotion(groupId, index, 1);
-    fn_8018F08C(entry, 1);
+    entry->motionIndex = 8;
+    info = peopleInfoBiosGetPtr(entry->scriptRef);
+    if (info != NULL) {
+        fn_8018F4C8(info, (u8)entry->motionIndex, &animIndex, &loop);
+        if (animIndex >= 0) {
+            model = peopleGetModel(entry);
+            if (model != NULL) {
+                restart = 0;
+                if (GSmodelHasAnimationEnded(model)) {
+                    restart = 1;
+                } else if (!GSmodelIsAnimating(model)) {
+                    restart = 1;
+                } else {
+                    GSmodelGetAnimIndex(model, &current, &secondary);
+                    if (current != animIndex || secondary != -1) {
+                        restart = 1;
+                    }
+                }
+                if (restart) {
+                    entry->walkTargetNode = animIndex;
+                    entry->walkAnimRate = lbl_8047D7A0;
+                    GSmodelSetAnimIndex(model, animIndex);
+                    GSmodelSetAnimFrame(model, lbl_8047D7A0);
+                    GSmodelSetAnimRate(model, lbl_8047D7A4);
+                    GSmodelSetTexAnimIndex(model, animIndex);
+                    GSmodelSetTexAnimFrame(model, lbl_8047D7A0);
+                    GSmodelSetTexAnimRate(model, lbl_8047D7A4);
+                    if (loop != 0) {
+                        GSmodelSetAnimType(model, 1);
+                    } else {
+                        GSmodelSetAnimType(model, 0);
+                    }
+                    GSmodelStartAnimation(model);
+                }
+                if (loop != 0) {
+                    GSmodelSetAnimType(model, 1);
+                } else {
+                    GSmodelSetAnimType(model, 0);
+                }
+            }
+        }
+    }
+
+    model = peopleGetModel(entry);
+    if (model != NULL) {
+        while (!GSmodelHasAnimationEnded(model)) {
+            if (*(s32*)((u8*)model + 0x8C) == 1) {
+                GSlogWrite((const char*)lbl_80274008, lbl_8036C4F8,
+                           groupId, index);
+                break;
+            }
+            _threadSwitch();
+        }
+    }
+
+    entry->motionIndex = 1;
+    info = peopleInfoBiosGetPtr(entry->scriptRef);
+    if (info != NULL) {
+        fn_8018F4C8(info, (u8)entry->motionIndex, &animIndex, &loop);
+        if (animIndex >= 0) {
+            model = peopleGetModel(entry);
+            if (model != NULL) {
+                restart = 0;
+                if (GSmodelHasAnimationEnded(model)) {
+                    restart = 1;
+                } else if (!GSmodelIsAnimating(model)) {
+                    restart = 1;
+                } else {
+                    GSmodelGetAnimIndex(model, &current, &secondary);
+                    if (current != animIndex || secondary != -1) {
+                        restart = 1;
+                    }
+                }
+                if (restart) {
+                    entry->walkTargetNode = animIndex;
+                    entry->walkAnimRate = lbl_8047D7A0;
+                    GSmodelSetAnimIndex(model, animIndex);
+                    GSmodelSetAnimFrame(model, lbl_8047D7A0);
+                    GSmodelSetAnimRate(model, lbl_8047D7A4);
+                    GSmodelSetTexAnimIndex(model, animIndex);
+                    GSmodelSetTexAnimFrame(model, lbl_8047D7A0);
+                    GSmodelSetTexAnimRate(model, lbl_8047D7A4);
+                    if (loop != 0) {
+                        GSmodelSetAnimType(model, 1);
+                    } else {
+                        GSmodelSetAnimType(model, 0);
+                    }
+                    GSmodelStartAnimation(model);
+                }
+                if (loop != 0) {
+                    GSmodelSetAnimType(model, 1);
+                } else {
+                    GSmodelSetAnimType(model, 0);
+                }
+            }
+        }
+    }
 }
 #endif
 
