@@ -766,8 +766,14 @@ u8 fn_800E0E14(u32 verbose, u32 dumpMap) {
     }
 
     block = (u32*)lbl_8047AB30;
+    if (block != NULL && block[0] != 0) {
+        GSlogWrite((char*)lbl_80270658 + 0x34);
+        ok = 0;
+    }
     count = 0;
     while (block != 0) {
+        u32* next;
+
         count++;
         if ((u32)block < lbl_8047AB68 || (u32)block > lbl_8047AB64) {
             ok = 0;
@@ -781,7 +787,22 @@ u8 fn_800E0E14(u32 verbose, u32 dumpMap) {
             ok = 0;
             GSlogWrite((char*)lbl_80270658 + 0xc0);
         }
-        block = (u32*)block[1];
+        next = (u32*)block[1];
+        if (next != NULL) {
+            if (next[0] != (u32)block) {
+                GSlogWrite((char*)lbl_80270658 + 0xf8);
+                ok = 0;
+            }
+            if (next == (u32*)((u8*)block + block[2])) {
+                GSlogWrite((char*)lbl_80270658 + 0x124);
+                ok = 0;
+            }
+            if (block > next) {
+                GSlogWrite((char*)lbl_80270658 + 0x154);
+                ok = 0;
+            }
+        }
+        block = next;
     }
 
     cursor = (u8*)lbl_8047AB68;
