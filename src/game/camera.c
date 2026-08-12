@@ -36,6 +36,7 @@
 
 #include "crt/math.h"
 #include "game/data/sdata2_8047D690.h"
+#include "game/fsys/fsys.h"
 #include "game/gs_render_util.h"
 #include "game/camera_types.h"
 
@@ -646,8 +647,183 @@ void cameraSetGScamera(void* camera) {
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
-void fn_80179FA4(void) {
-    /* TODO: match -- 1624 bytes at 0x80179FA4 */
+extern s32 fn_8017F928(s32 size, u32 fileHandle, u32 key1, u32 key2);
+extern s32 fn_8017FA5C(void);
+extern void fn_8017F800(u32 fileHandle);
+extern void fn_8017A5FC(void);
+extern u8 fn_80167EF8(const char* path);
+extern void* fn_80167F28(const char* path);
+extern u32 fn_80167E5C(void* fileInfo);
+extern u8 fn_80167E98(void* work, void* addr, s32 length, s32 offset,
+                      void* callback);
+void fn_80179FA4(slot, offset, size, callbackA, callbackB, callbackC, path, entry)
+    FSYSSlot* slot;
+    u32 offset;
+    u32 size;
+    u32 callbackA;
+    u32 callbackB;
+    u32 callbackC;
+    const char* path;
+    FSYSFileEntry* entry;
+{
+    u32 allocSize;
+    u32 freeSize;
+    u32 i;
+    u32 total;
+    s32 found;
+    s32 handleID;
+    FSYSFileHandle* table;
+    FSYSFileEntry* currentEntry;
+    u32* firstTable;
+    u32* entryTable;
+    u8* archive;
+    void* dvdBuffer;
+    void* readHandle;
+    u32 fileSize;
+
+    allocSize = (((entry->decompressedSize & 0x1FFFF) + 0x1F) & ~0x1F) +
+                (entry->decompressedSize & ~0x1FFFF);
+    freeSize = fn_8017FA5C();
+    if (slot->totalDecompSize > freeSize) {
+        found = -1;
+        table = gFSYSHandleTable;
+        for (i = 0; i < gFSYSHandleCount; i++, table++) {
+            if (table->handleID == (s32)slot->field_08) {
+                found = table->handleID;
+                break;
+            }
+        }
+        if (found < 0) {
+            while (slot->totalDecompSize > (u32)fn_8017FA5C()) {
+                handleID = gFSYSHandleTable[0].handleID;
+                if (handleID < 0) {
+                    break;
+                }
+
+                fn_8017F800((u32)handleID);
+                found = -1;
+                for (i = 0; i < gFSYSHandleCount; i++) {
+                    if (gFSYSHandleTable[i].handleID == handleID) {
+                        gFSYSHandleTable[i].handleID = -1;
+                        found = (s32)i;
+                        break;
+                    }
+                }
+                if (found < 0) {
+                    break;
+                }
+
+                for (i = (u32)found; i < gFSYSHandleCount - 1; i++) {
+                    gFSYSHandleTable[i] = gFSYSHandleTable[i + 1];
+                }
+                gFSYSHandleCount--;
+                gFSYSHandleTable[gFSYSHandleCount].handleID = -1;
+            }
+        }
+    }
+
+    readHandle = (void*)fn_8017F928(allocSize, slot->fileHandle, entry->groupID,
+                                    entry->nameHash);
+    freeSize = fn_8017FA5C();
+    if (slot->totalDecompSize > freeSize) {
+        found = -1;
+        table = gFSYSHandleTable;
+        for (i = 0; i < gFSYSHandleCount; i++, table++) {
+            if (table->handleID == (s32)slot->field_08) {
+                found = table->handleID;
+                break;
+            }
+        }
+        if (found < 0) {
+            while (slot->totalDecompSize > (u32)fn_8017FA5C()) {
+                handleID = gFSYSHandleTable[0].handleID;
+                if (handleID < 0) {
+                    break;
+                }
+
+                fn_8017F800((u32)handleID);
+                found = -1;
+                for (i = 0; i < gFSYSHandleCount; i++) {
+                    if (gFSYSHandleTable[i].handleID == handleID) {
+                        gFSYSHandleTable[i].handleID = -1;
+                        found = (s32)i;
+                        break;
+                    }
+                }
+                if (found < 0) {
+                    break;
+                }
+
+                for (i = (u32)found; i < gFSYSHandleCount - 1; i++) {
+                    gFSYSHandleTable[i] = gFSYSHandleTable[i + 1];
+                }
+                gFSYSHandleCount--;
+                gFSYSHandleTable[gFSYSHandleCount].handleID = -1;
+            }
+        }
+    }
+
+    if (size < 0x20000) {
+        slot->dmaChunkSize = (size + 0x1F) & ~0x1F;
+    } else {
+        slot->dmaChunkSize = 0x20000;
+    }
+
+    slot->dmaBytesRemaining = size;
+    slot->dmaSrcOffset = 0;
+    slot->dmaDstOffset = 0;
+    slot->callbackA = callbackA;
+    slot->callbackB = callbackB;
+    slot->callbackC = callbackC;
+    slot->dmaCopyDst = readHandle;
+    slot->dmaAsyncRequest = 0;
+    gFSYSManager.activeSlot = slot;
+    gFSYSManager.currentSlot = slot;
+
+    dvdBuffer = gFSYSDVDBuffers[gFSYSManager.field_24];
+    archive = (u8*)slot->archiveData;
+    if (archive != NULL && (*(u32*)(archive + 0x10) & 1) != 0) {
+        slot->tocBuffer = 0;
+        if (path != NULL && fn_80167EF8(path) != 0) {
+            slot->tocBuffer = fn_80167F28(path);
+            if (slot->tocBuffer != 0) {
+                fileSize = fn_80167E5C(slot->tocBuffer);
+                if (fileSize < 0x20000) {
+                    slot->dmaChunkSize = (fileSize + 0x1F) & ~0x1F;
+                } else {
+                    slot->dmaChunkSize = 0x20000;
+                }
+
+                entry->decompressedSize = fileSize;
+                slot->dmaBytesRemaining = fileSize;
+                slot->dmaCopyDst = 0;
+
+                total = 0;
+                for (i = 0; i < slot->numEntries; i++) {
+                    currentEntry = NULL;
+                    if (archive != NULL) {
+                        firstTable = (u32*)(archive + *(u32*)(archive + 0x18));
+                        entryTable = (u32*)(archive + *firstTable);
+                        currentEntry = (FSYSFileEntry*)(archive + entryTable[i]);
+                    }
+                    if (currentEntry != NULL) {
+                        total += currentEntry->decompressedSize;
+                    }
+                }
+                if (archive != NULL) {
+                    total += *(u32*)(archive + slot->field_18 + 8);
+                }
+                slot->totalDecompSize = total;
+
+                fn_80167E98(slot->tocBuffer, dvdBuffer, slot->dmaChunkSize, 0,
+                            fn_8017A5FC);
+                return;
+            }
+        }
+    }
+
+    fn_80167E98((void*)slot->fileInfo0, dvdBuffer, slot->dmaChunkSize, offset,
+                fn_8017A5FC);
 }
 #pragma pop
 void fn_801765F4(u8 value) {
