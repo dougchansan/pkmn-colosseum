@@ -1221,25 +1221,103 @@ asm void fn_80139E80(void* entry, void* parent, void* cameraPos, void* modelPos)
 }
 #else
 void fn_80139E80(void* entry, void* parent, void* cameraPos, void* modelPos) {
-    u8* e;
-    u8* p;
+    extern void fn_800D7E5C(void);
+    extern void fn_800D7F14(void*);
+    extern void fn_800DFFCC(void*, void*, void*);
+    extern void fn_800E0060(void*, void*);
+    extern f32 fn_800E008C(void*);
+    u8* e = entry;
+    u8* p = parent;
+    u8* pointEntry;
+    f32 interpolated[3];
+    f32 tangent[3];
+    f32 cameraVector[3];
+    f32 normal[3];
+    f32 offset[3];
+    f32 vertex[3];
+    f32 matrix[12];
+    f32 threshold;
+    u16 current;
+    u16 start;
+    u16 halfSpan;
+    u16 count;
+    u16 visible;
+    u16 i;
 
     if (entry == NULL || parent == NULL) {
         return;
     }
 
-    e = entry;
-    p = parent;
-    (void)cameraPos;
-    (void)modelPos;
-    fn_800D67BC(4);
-    fn_800D6680(*(f32*)(e + 0x12CC), *(f32*)(e + 0x12D0), *(f32*)(e + 0x12D4));
-    fn_800D5CB8(0, p[0x5C], p[0x5D], p[0x5E], p[0x5F]);
-    fn_800D59B8(0, *(f32*)&lbl_8047D190, *(f32*)&lbl_8047D190);
-    fn_800D6680(*(f32*)(e + 0xC4), *(f32*)(e + 0xC8), *(f32*)(e + 0xCC));
-    fn_800D5CB8(0, p[0x5C], p[0x5D], p[0x5E], p[0x5F]);
-    fn_800D59B8(0, *(f32*)&lbl_8047D1A0, *(f32*)&lbl_8047D1A0);
+    start = *(u16*)(e + 0x12DC);
+    current = *(u16*)(p + 0x48) - start;
+    halfSpan = (*(u16*)(e + 0x12DE) - start) >> 1;
+    ((void (*)(f32*, void*, void*, u16, u16))fn_800E0108)(
+        interpolated, e + 0x12CC, p + 0x20, current, start);
+    fn_800E0168(interpolated, modelPos, interpolated);
+    if (current < halfSpan) {
+        threshold = *(f32*)(p + 0x38) *
+                    (*(f32*)&lbl_8047D1A0 -
+                     (f32)current / (f32)halfSpan);
+    } else {
+        threshold = *(f32*)&lbl_8047D190;
+    }
+
+    count = *(u16*)(e + 0x12E2);
+    visible = 0;
+    pointEntry = e;
+    for (i = 0; i < count; i++, pointEntry += 0x18) {
+        if (*(f32*)(*(u8**)(pointEntry + 0xC) + 4) > threshold) {
+            visible++;
+        }
+    }
+
+    ((void (*)(void*, void*))fn_800E0560)(matrix, interpolated);
+    fn_800D7F14(matrix);
+    ((void (*)(void*, void*))fn_800E042C)(matrix, p + 0x20);
+    fn_800D7F14(matrix);
+    fn_800D67BC((visible * 4) & 0xFFFC);
+
+    pointEntry = e;
+    for (i = 0; i < count; i++, pointEntry += 0x18) {
+        if (*(f32*)(*(u8**)(pointEntry + 0xC) + 4) <= threshold) {
+            continue;
+        }
+        ((void (*)(void*, void*))fn_800E0168)(tangent, pointEntry);
+        fn_800E0060(tangent, tangent);
+        fn_800E019C(cameraVector, pointEntry, *(u8**)(pointEntry + 0xC));
+        fn_800E013C(cameraVector, cameraVector, *(f32*)&lbl_8047D1A8);
+        fn_800E0168(cameraVector, cameraPos, cameraVector);
+        fn_800E0060(cameraVector, cameraVector);
+        fn_800DFFCC(normal, cameraVector, tangent);
+        if (fn_800E008C(normal) > *(f32*)&lbl_8047D1AC) {
+            ((void (*)(void*, void*))fn_800E00AC)(normal, normal);
+        }
+
+        fn_800E013C(offset, normal,
+                    *(f32*)&lbl_8047D1A8 * *(f32*)(pointEntry + 0x10));
+        fn_800E019C(vertex, *(u8**)(pointEntry + 0xC), offset);
+        fn_800D6680(vertex[0], vertex[1], vertex[2]);
+        fn_800D5CB8(0, e[0x12D8], e[0x12D9], e[0x12DA], e[0x12DB]);
+        fn_800D59B8(0, *(f32*)&lbl_8047D190, *(f32*)&lbl_8047D190);
+        fn_800E0168(vertex, *(u8**)(pointEntry + 0xC), offset);
+        fn_800D6680(vertex[0], vertex[1], vertex[2]);
+        fn_800D5CB8(0, e[0x12D8], e[0x12D9], e[0x12DA], e[0x12DB]);
+        fn_800D59B8(0, *(f32*)&lbl_8047D1A0, *(f32*)&lbl_8047D190);
+
+        fn_800E013C(offset, normal,
+                    *(f32*)&lbl_8047D1A8 * *(f32*)(pointEntry + 0x14));
+        fn_800E0168(vertex, pointEntry, offset);
+        fn_800D6680(vertex[0], vertex[1], vertex[2]);
+        fn_800D5CB8(0, e[0x12D8], e[0x12D9], e[0x12DA], e[0x12DB]);
+        fn_800D59B8(0, *(f32*)&lbl_8047D1A0, *(f32*)&lbl_8047D1A0);
+        fn_800E019C(vertex, pointEntry, offset);
+        fn_800D6680(vertex[0], vertex[1], vertex[2]);
+        fn_800D5CB8(0, e[0x12D8], e[0x12D9], e[0x12DA], e[0x12DB]);
+        fn_800D59B8(0, *(f32*)&lbl_8047D190, *(f32*)&lbl_8047D1A0);
+    }
     fn_800D6728();
+    fn_800D7E5C();
+    fn_800D7E5C();
 }
 #endif
 extern u32 lbl_8047D1B4;
