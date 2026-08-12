@@ -678,58 +678,165 @@ void fn_800D6B00(void) {
     u32 obj;
     u32 i;
     void (*fn)(u32);
+    u8* shadow;
+    u8 captureActive;
 
     state = lbl_8047AA80;
     if (*(u8*)(state + 0x49f) == 0) {
         return;
     }
 
-    if (*(u8*)(state + 0x47e) == 1) {
-        fn_800DB098();
-        *(u8*)(state + 0x49f) = 0;
-        return;
-    }
+    shadow = lbl_804007E8;
+    captureActive = *(u8*)(state + 0x47e);
+    if ((captureActive == 0 && *(s32*)(state + 0x14) == 7) ||
+        (captureActive == 1 && *(s32*)(state + 0x488) == 7)) {
+        if (*(u8*)(state + 0x18) == 1) {
+            memcpy(shadow + 0x98, (void*)(state + 0x4ac), 0x18);
+            memcpy(shadow + 0x80, (void*)(state + 0x4e8), 0x18);
+            memcpy(shadow + 0x00, (void*)(state + 0x520), 0x80);
+            memcpy((void*)(state + 0x4ac), shadow + 0x148, 0x18);
+            memcpy((void*)(state + 0x4e8), shadow + 0x130, 0x18);
+            memcpy((void*)(state + 0x520), shadow + 0x0b0, 0x80);
 
-    if (*(u8*)(state + 0x1b) != *(u8*)(state + 0x1a) ||
-        (*(u32*)(state + 0x4) & *(u32*)(state + 0x8)) == 0) {
-        *(u8*)(state + 0x49f) = 0;
-        return;
-    }
-
-    obj = *(u32*)(state + 0x24);
-    if (obj != 0) {
-        if (*(u8*)(obj + 0x8) != 0) {
-            fn = *(void (**)(u32))(state + 0x4a0);
-            if (fn != 0) {
-                fn(0);
+            captureActive = *(u8*)(state + 0x47e);
+            if (captureActive == 1) {
+                fn_800DB098();
+            } else if (*(u8*)(state + 0x1b) == *(u8*)(state + 0x1a) &&
+                       (*(u32*)(state + 0x4) & *(u32*)(state + 0x8)) != 0) {
+                obj = *(u32*)(state + 0x24);
+                if (obj != 0) {
+                    if (*(u8*)(obj + 0x8) != 0) {
+                        fn = *(void (**)(u32))(state + 0x4a0);
+                        fn(0);
+                    }
+                    fn = *(void (**)(u32))(state + 0x4a8);
+                    fn(0);
+                    if (*(u8*)(obj + 0x40) != 0) {
+                        fn = *(void (**)(u32))(state + 0x4c4);
+                        fn(0);
+                    }
+                    for (i = 4; i <= 5; i++) {
+                        if (*(u8*)(obj + i * 0x1c + 0x8) != 0) {
+                            fn = *(void (**)(u32))(state + 0x4e0 + (i - 4) * 4);
+                            fn(i - 4);
+                        }
+                    }
+                    for (i = 6; i <= 13; i++) {
+                        if (*(u8*)(obj + i * 0x1c + 0x8) != 0) {
+                            fn = *(void (**)(u32))(state + 0x500 + (i - 6) * 4);
+                            fn(i - 6);
+                        }
+                    }
+                }
             }
-        }
 
-        fn = *(void (**)(u32))(state + 0x4a8);
-        if (fn != 0) {
-            fn(0);
-        }
+            memcpy((void*)(state + 0x4ac), shadow + 0x98, 0x18);
+            memcpy((void*)(state + 0x4e8), shadow + 0x80, 0x18);
+            memcpy((void*)(state + 0x520), shadow + 0x00, 0x80);
 
-        if (*(u8*)(obj + 0x40) != 0) {
-            fn = *(void (**)(u32))(state + 0x4c4);
-            if (fn != 0) {
-                fn(0);
+            captureActive = *(u8*)(state + 0x47e);
+            if (captureActive == 1) {
+                fn_800DB098();
+            } else if (*(u8*)(state + 0x1b) == *(u8*)(state + 0x1a) &&
+                       (*(u32*)(state + 0x4) & *(u32*)(state + 0x8)) != 0) {
+                obj = *(u32*)(state + 0x24);
+                if (obj != 0) {
+                    if (*(u8*)(obj + 0x8) != 0) {
+                        fn = *(void (**)(u32))(state + 0x4a0);
+                        fn(0);
+                    }
+                    fn = *(void (**)(u32))(state + 0x4a8);
+                    fn(0);
+                    if (*(u8*)(obj + 0x40) != 0) {
+                        fn = *(void (**)(u32))(state + 0x4c4);
+                        fn(0);
+                    }
+                    for (i = 4; i <= 5; i++) {
+                        if (*(u8*)(obj + i * 0x1c + 0x8) != 0) {
+                            fn = *(void (**)(u32))(state + 0x4e0 + (i - 4) * 4);
+                            fn(i - 4);
+                        }
+                    }
+                    for (i = 6; i <= 13; i++) {
+                        if (*(u8*)(obj + i * 0x1c + 0x8) != 0) {
+                            fn = *(void (**)(u32))(state + 0x500 + (i - 6) * 4);
+                            fn(i - 6);
+                        }
+                    }
+                }
             }
-        }
 
-        for (i = 4; i < 6; i++) {
-            if (*(u8*)(obj + i * 0x1c + 0x8) != 0) {
-                fn = *(void (**)(u32))(state + 0x4e0 + (i - 4) * 4);
-                if (fn != 0) {
-                    fn(i - 4);
+            memcpy((void*)(state + 0x4ac), shadow + 0x148, 0x18);
+            memcpy((void*)(state + 0x4e8), shadow + 0x130, 0x18);
+            memcpy((void*)(state + 0x520), shadow + 0x0b0, 0x80);
+            *(u8*)(state + 0x18) = 0;
+        } else {
+            memcpy(shadow + 0x148, (void*)(state + 0x4ac), 0x18);
+            memcpy(shadow + 0x130, (void*)(state + 0x4e8), 0x18);
+            memcpy(shadow + 0x0b0, (void*)(state + 0x520), 0x80);
+            *(u8*)(state + 0x18) = 1;
+
+            captureActive = *(u8*)(state + 0x47e);
+            if (captureActive == 1) {
+                fn_800DB098();
+            } else if (*(u8*)(state + 0x1b) == *(u8*)(state + 0x1a) &&
+                       (*(u32*)(state + 0x4) & *(u32*)(state + 0x8)) != 0) {
+                obj = *(u32*)(state + 0x24);
+                if (obj != 0) {
+                    if (*(u8*)(obj + 0x8) != 0) {
+                        fn = *(void (**)(u32))(state + 0x4a0);
+                        fn(0);
+                    }
+                    fn = *(void (**)(u32))(state + 0x4a8);
+                    fn(0);
+                    if (*(u8*)(obj + 0x40) != 0) {
+                        fn = *(void (**)(u32))(state + 0x4c4);
+                        fn(0);
+                    }
+                    for (i = 4; i <= 5; i++) {
+                        if (*(u8*)(obj + i * 0x1c + 0x8) != 0) {
+                            fn = *(void (**)(u32))(state + 0x4e0 + (i - 4) * 4);
+                            fn(i - 4);
+                        }
+                    }
+                    for (i = 6; i <= 13; i++) {
+                        if (*(u8*)(obj + i * 0x1c + 0x8) != 0) {
+                            fn = *(void (**)(u32))(state + 0x500 + (i - 6) * 4);
+                            fn(i - 6);
+                        }
+                    }
                 }
             }
         }
+    } else if (captureActive == 1) {
+        fn_800DB098();
+    } else if (*(u8*)(state + 0x1b) == *(u8*)(state + 0x1a) &&
+               (*(u32*)(state + 0x4) & *(u32*)(state + 0x8)) != 0) {
+        obj = *(u32*)(state + 0x24);
+        if (obj != 0) {
+            if (*(u8*)(obj + 0x8) != 0) {
+                fn = *(void (**)(u32))(state + 0x4a0);
+                fn(0);
+            }
 
-        for (i = 6; i < 14; i++) {
-            if (*(u8*)(obj + i * 0x1c + 0x8) != 0) {
-                fn = *(void (**)(u32))(state + 0x500 + (i - 6) * 4);
-                if (fn != 0) {
+            fn = *(void (**)(u32))(state + 0x4a8);
+            fn(0);
+
+            if (*(u8*)(obj + 0x40) != 0) {
+                fn = *(void (**)(u32))(state + 0x4c4);
+                fn(0);
+            }
+
+            for (i = 4; i <= 5; i++) {
+                if (*(u8*)(obj + i * 0x1c + 0x8) != 0) {
+                    fn = *(void (**)(u32))(state + 0x4e0 + (i - 4) * 4);
+                    fn(i - 4);
+                }
+            }
+
+            for (i = 6; i <= 13; i++) {
+                if (*(u8*)(obj + i * 0x1c + 0x8) != 0) {
+                    fn = *(void (**)(u32))(state + 0x500 + (i - 6) * 4);
                     fn(i - 6);
                 }
             }
