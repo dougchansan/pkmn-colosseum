@@ -97,14 +97,21 @@ extern void  psRemoveGenerator(void);
 extern void  psRemoveAppSRT(void);
 extern void  GSmodelFreeAllShadowTextures(void);
 extern void  fn_80112780(void);
+extern void  fn_801127BC(void);
 extern void* fn_800E27B0(u16 handle);
 extern void  fn_800E24B0(u16 handle);
 extern void  fn_800E209C(u16 handle);
+extern u32   fn_800F7318(u32 task, void* callback, u32 stackSize, u32 arg3,
+                         u32 arg4, u32 arg5, ...);
+extern void* fn_800F7108(u16 handle);
+extern u8    GSthreadIsRunning(u32 task);
+extern void  GSthreadClose(u32 task);
 void fn_800FF970(void);
 
 /** Resource-handler callback shapes, reached through the table at lbl_80404918. */
 typedef u32  (*GSFloorResSizeFunc)(void);
 typedef void (*GSFloorResIoFunc)(void* buf, u32 size);
+typedef void (*GSFloorResInitFunc)(void* entry, u32 floorId);
 
 /**
  * Locate the floor table entry for a floor index, or NULL. Inlined at both
@@ -537,8 +544,156 @@ void fn_800FF970(void) {
 #pragma optimization_level 0
 #pragma optimizewithasm off
 u32 fn_80100B24(GSFloorContext* ctx) {
-    /* TODO: match -- 1824 bytes at 0x80100B24 */
-    return 0;
+    GSFloorResource* res;
+    GSFloorResource* next;
+    void* entry;
+
+    switch (ctx->isActive) {
+    case 1:
+        entry = ctx->floorDataEntry;
+        for (res = lbl_8047ACCC; res != NULL; res = next) {
+            next = res->next;
+            if (res->active != 1 || res->pending != 0) {
+                continue;
+            }
+            if (res->status == 0) {
+                ((GSFloorResInitFunc)res->callback)(entry, res->floorId);
+            }
+            if (res->status == 1) {
+                u32 groupId = floorDataBiosGetGroupID(entry);
+
+                res->textureHandle =
+                    fn_800F7318(res->priority, res->callback, 0x4000, 0, 0, 4,
+                                groupId, 0, 0, 0);
+                res->modelHandle = fn_800F7108(res->textureHandle);
+            }
+        }
+        ctx->isActive = 2;
+        break;
+
+    case 2:
+        for (res = lbl_8047ACB0; res < lbl_8047ACB0 + lbl_8047ACB4; res++) {
+            if (res->active == 0 || res->status != GSFLOOR_RES_LOADED ||
+                res->pending != 0 || res->modelHandle == NULL) {
+                continue;
+            }
+            if (GSthreadIsRunning((u32)res->modelHandle) != 0) {
+                return 1;
+            }
+        }
+        for (res = lbl_8047ACB0 + lbl_8047ACB4;
+             res < lbl_8047ACB0 + lbl_8047ACB4 + lbl_8047ACB8; res++) {
+            if (res->active == 0 || res->status != GSFLOOR_RES_LOADED ||
+                res->pending != 0 || res->modelHandle == NULL) {
+                continue;
+            }
+            GSthreadClose((u32)res->modelHandle);
+            res->modelHandle = NULL;
+        }
+        ctx->isActive = 3;
+        break;
+
+    case 3:
+        if (ctx->doFadeOut != 0) {
+            floorSetResourcesBlocked(lbl_8047ACB4, ctx->floorId, lbl_8047ACB0,
+                                     GSFLOOR_RES_FREE, 0);
+            floorSetResourcesBlocked(lbl_8047ACB8, ctx->floorId,
+                                     lbl_8047ACB0 + lbl_8047ACB4,
+                                     GSFLOOR_RES_FREE, 0);
+            floorSetResourcesBlocked(lbl_8047ACB4, ctx->floorId, lbl_8047ACB0,
+                                     GSFLOOR_RES_LOADED, 0);
+            floorSetResourcesBlocked(lbl_8047ACB8, ctx->floorId,
+                                     lbl_8047ACB0 + lbl_8047ACB4,
+                                     GSFLOOR_RES_LOADED, 0);
+        }
+        ctx->isActive = 4;
+        fn_801127BC();
+        break;
+
+    case 4:
+        entry = ctx->floorDataEntry;
+        for (res = lbl_8047ACCC; res != NULL; res = next) {
+            next = res->next;
+            if (res->active != 3 || res->pending != 0) {
+                continue;
+            }
+            if (res->status == 0) {
+                ((GSFloorResInitFunc)res->callback)(entry, res->floorId);
+            }
+            if (res->status == 1) {
+                u32 groupId = floorDataBiosGetGroupID(entry);
+
+                res->textureHandle =
+                    fn_800F7318(res->priority, res->callback, 0x4000, 0, 0, 4,
+                                groupId, 0, 0, 0);
+                res->modelHandle = fn_800F7108(res->textureHandle);
+            }
+        }
+        if (ctx->isActive == 3) {
+            ctx->isActive = 4;
+        }
+        break;
+
+    case 5:
+        entry = ctx->floorDataEntry;
+        for (res = lbl_8047ACCC; res != NULL; res = next) {
+            next = res->next;
+            if (res->active != 3 || res->pending != 0 || res->status != 0) {
+                continue;
+            }
+            ((GSFloorResInitFunc)res->callback)(entry, res->floorId);
+        }
+        break;
+
+    case 6:
+        fn_80112780();
+        entry = ctx->floorDataEntry;
+        for (res = lbl_8047ACCC; res != NULL; res = next) {
+            next = res->next;
+            if (res->active != 5 || res->pending != 0) {
+                continue;
+            }
+            if (res->status == 0) {
+                ((GSFloorResInitFunc)res->callback)(entry, res->floorId);
+            }
+            if (res->status == 1) {
+                u32 groupId = floorDataBiosGetGroupID(entry);
+
+                res->textureHandle =
+                    fn_800F7318(res->priority, res->callback, 0x4000, 0, 0, 4,
+                                groupId, 0, 0, 0);
+                res->modelHandle = fn_800F7108(res->textureHandle);
+            }
+        }
+        ctx->isActive = 6;
+        break;
+
+    default:
+        for (res = lbl_8047ACB0 + lbl_8047ACB4 + lbl_8047ACB8;
+             res < lbl_8047ACB0 + lbl_8047ACB4 + lbl_8047ACB8 + lbl_8047ACBC;
+             res++) {
+            if (res->active == 0 || res->status != GSFLOOR_RES_LOADED ||
+                res->pending != 0 || res->modelHandle == NULL) {
+                continue;
+            }
+            if (GSthreadIsRunning((u32)res->modelHandle) != 0) {
+                return 1;
+            }
+        }
+        for (res = lbl_8047ACB0 + lbl_8047ACB4 + lbl_8047ACB8;
+             res < lbl_8047ACB0 + lbl_8047ACB4 + lbl_8047ACB8 + lbl_8047ACBC;
+             res++) {
+            if (res->active == 0 || res->status != GSFLOOR_RES_LOADED ||
+                res->pending != 0 || res->modelHandle == NULL) {
+                continue;
+            }
+            GSthreadClose((u32)res->modelHandle);
+            res->modelHandle = NULL;
+        }
+        return 0;
+    }
+
+    return 1;
 }
 #pragma pop
 
