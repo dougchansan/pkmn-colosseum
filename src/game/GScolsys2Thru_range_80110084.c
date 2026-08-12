@@ -79,8 +79,196 @@ found:
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
-void fn_801101B4(void* meshData) {
-    /* TODO: match -- 1256 bytes at 0x801101B4 */
+typedef struct GSFieldWzxRegionLocal {
+    u8 pad_00[0x2C];
+    GScolsys2TriangleList* triangles;
+    u8 pad_30[0x0C];
+    u16 flags;
+    u8 pad_3E[2];
+} GSFieldWzxRegionLocal;
+
+s32 fn_801101B4(GScolsys2Vec3* start, GScolsys2Vec3* end,
+                GSfieldQueryTriangle* out)
+{
+#pragma optimization_level 4
+    extern f32 lbl_8047CF58;
+    extern f32 lbl_8047CF5C;
+    GSFieldWzxData* wzx;
+    GSFieldWzxRegionLocal* region;
+    GScolsys2TriangleList* triList;
+    GScolsys2Triangle* tri;
+    GSfieldQueryTriangle temp[4];
+    GSfieldQueryTriangle* tempWrite;
+    GSfieldQueryTriangle* tempRead;
+    GSfieldQueryTriangle* scan;
+    GSfieldQueryTriangle* outSlot;
+    GScolsys2Vec3 dirVec;
+    GScolsys2Vec3 planePoint;
+    GScolsys2Vec3 hitPoint;
+    GScolsys2Vec3 transformedVerts[3];
+    f32 resultT;
+    f32 mtxInv[12];
+    f32 mtxFwd[12];
+    s32 regionIdx;
+    s32 triIdx;
+    s32 vertIdx;
+    s32 scanIdx;
+    s32 visible;
+    s32 tempCount;
+    s32 outCount;
+    s32 hit;
+
+    tempCount = 0;
+    outCount = 0;
+    wzx = (GSFieldWzxData*)fn_8010CBC0();
+    if (wzx == NULL) {
+        return 0;
+    }
+
+    region = (GSFieldWzxRegionLocal*)wzx->regions;
+    regionIdx = 0;
+    while ((u32)regionIdx < wzx->regionCount && outCount < 4) {
+        GScolsys2GetObjEnable(regionIdx, &visible);
+        if (visible != 0) {
+            triList = region->triangles;
+            if (triList != NULL) {
+                tempCount = 0;
+                tempWrite = temp;
+                if ((region->flags & 1) != 0) {
+                    fn_8010CA30(mtxInv, regionIdx);
+                    fn_8010C8D0(mtxFwd, regionIdx);
+                    PSVECSubtract(end, start, &dirVec);
+                    tri = triList->triangles;
+                    triIdx = 0;
+                    while ((u32)triIdx < triList->count && tempCount < 4) {
+                        scan = temp;
+                        scanIdx = 0;
+                        while (scanIdx < tempCount) {
+                            if (tri->id == scan->id) {
+                                break;
+                            }
+                            scan++;
+                            scanIdx++;
+                        }
+                        if (scanIdx >= tempCount) {
+                            PSMTXMultVec(mtxFwd, &tri->normal, &planePoint);
+                            if (!(PSVECDotProduct(&planePoint, &dirVec) >=
+                                  lbl_8047CF58))
+                            {
+                                for (vertIdx = 0; vertIdx < 3; vertIdx++) {
+                                    PSMTXMultVec(mtxInv, &tri->verts[vertIdx],
+                                                &transformedVerts[vertIdx]);
+                                }
+                                if (GScolsys2UtilGetCpPlaneLine(
+                                        (Vec3f*)&hitPoint, &resultT,
+                                        (Vec3f*)&planePoint,
+                                        (Vec3f*)transformedVerts,
+                                        (Vec3f*)start, (Vec3f*)end) == 0)
+                                {
+                                    hit = 0;
+                                } else if (resultT < lbl_8047CF58 ||
+                                           resultT > lbl_8047CF5C)
+                                {
+                                    hit = 0;
+                                } else if (GScolsy2UtilChkInTri(
+                                               &hitPoint, transformedVerts,
+                                               &planePoint) == 0)
+                                {
+                                    hit = 0;
+                                } else {
+                                    hit = 1;
+                                }
+                                if (hit != 0) {
+                                    tempWrite->verts[0] = transformedVerts[0];
+                                    tempWrite->verts[1] = transformedVerts[1];
+                                    tempWrite->verts[2] = transformedVerts[2];
+                                    tempWrite->normal = planePoint;
+                                    tempWrite->id = tri->id;
+                                    tempWrite++;
+                                    tempCount++;
+                                }
+                            }
+                        }
+                        triIdx++;
+                        tri++;
+                    }
+                } else {
+                    PSVECSubtract(end, start, &dirVec);
+                    tri = triList->triangles;
+                    triIdx = 0;
+                    while ((u32)triIdx < triList->count && tempCount < 4) {
+                        scan = temp;
+                        scanIdx = 0;
+                        while (scanIdx < tempCount) {
+                            if (tri->id == scan->id) {
+                                break;
+                            }
+                            scan++;
+                            scanIdx++;
+                        }
+                        if (scanIdx >= tempCount &&
+                            !(PSVECDotProduct(&tri->normal, &dirVec) >=
+                              lbl_8047CF58))
+                        {
+                            if (GScolsys2UtilGetCpPlaneLine(
+                                    (Vec3f*)&hitPoint, &resultT,
+                                    (Vec3f*)&tri->normal, (Vec3f*)tri,
+                                    (Vec3f*)start, (Vec3f*)end) == 0)
+                            {
+                                hit = 0;
+                            } else if (resultT < lbl_8047CF58 ||
+                                       resultT > lbl_8047CF5C)
+                            {
+                                hit = 0;
+                            } else if (GScolsy2UtilChkInTri(&hitPoint, tri,
+                                                             &tri->normal) == 0)
+                            {
+                                hit = 0;
+                            } else {
+                                hit = 1;
+                            }
+                            if (hit != 0) {
+                                tempWrite->verts[0] = tri->verts[0];
+                                tempWrite->verts[1] = tri->verts[1];
+                                tempWrite->verts[2] = tri->verts[2];
+                                tempWrite->normal = tri->normal;
+                                tempWrite->id = tri->id;
+                                tempWrite++;
+                                tempCount++;
+                            }
+                        }
+                        triIdx++;
+                        tri++;
+                    }
+                }
+
+                tempRead = temp;
+                triIdx = 0;
+                while (triIdx < tempCount && outCount < 4) {
+                    scan = out;
+                    scanIdx = 0;
+                    while (scanIdx < outCount) {
+                        if (scan->id == tempRead->id) {
+                            break;
+                        }
+                        scan++;
+                        scanIdx++;
+                    }
+                    if (scanIdx >= outCount) {
+                        outSlot = (GSfieldQueryTriangle*)((u8*)out +
+                                                          outCount * 0x34);
+                        *outSlot = *tempRead;
+                        outCount++;
+                    }
+                    tempRead++;
+                    triIdx++;
+                }
+            }
+        }
+        regionIdx++;
+        region = (GSFieldWzxRegionLocal*)((u8*)region + 0x40);
+    }
+    return outCount;
 }
 #pragma pop
 
