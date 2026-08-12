@@ -22,6 +22,23 @@ typedef struct FlagDefinition {
     s16 next;
 } FlagDefinition;
 
+typedef struct FlagConfig {
+    u32 count;
+    s16 head;
+} FlagConfig;
+
+typedef struct FlagSceneEntry {
+    u8 memberFlags;
+    u8 pad_01;
+    u16 floorId;
+    u16 pokedoru;
+    u16 pad_06;
+    f32 posX;
+    f32 posY;
+    f32 posZ;
+    void* data;
+} FlagSceneEntry;
+
 extern const char lbl_802741F8[];
 extern void GSlogWrite(const char* fmt, ...);
 void GSflagInitBitPos(FlagDefinition* definitions, u32 count, u32 capacity1,
@@ -39,35 +56,88 @@ typedef struct FlagInitState {
 
 void fn_801903B0(s32 flagId);
 void _flagSet(s32 flagId, u32 value);
+extern void* fn_800FF56C(void);
+extern void* savedataGetStatus(u8* data, u16 index);
+extern s32 heroItemDecItemDataId(u8* ptr, u32 itemId, u32 count, s32 arg4);
+extern s32 heroItemAddItemDataId(u8* ptr, u32 itemId, u32 count, s32 arg4);
+extern void fn_8012F1FC(s32 slot);
+extern void fn_8012F40C(s32 slot);
+extern s32 heroMoveDismissMember(s32 idx);
+extern void heroBiosSetPokedoru(u16 value);
+extern void floorChangePos(u32 arg0, void* data, f32 posX, f32 posY, f32 posZ);
 
 void fn_8018FE30(s32 flagId)
 {
     extern FlagDefinition* lbl_80478F9C;
-    extern u8* lbl_80478F98;
+    extern FlagConfig* lbl_80478F98;
     extern u32** lbl_80478ED4;
+    extern u8* lbl_80478EE4;
+    extern u16* lbl_80478EF4;
+    extern FlagSceneEntry* lbl_80478EFC;
     FlagDefinition* definitions = lbl_80478F9C;
+    FlagDefinition* definition;
     s32 current;
+    u16* itemSwapTable;
+    FlagSceneEntry* scene;
+    u8* memberFlags;
+    u32 value;
+    s32 i;
 
     if (flagId < 0) {
         return;
     }
 
-    for (current = flagId; current != -1;
-         current = definitions[current].next) {
+    for (current = flagId; current != -1; current = definitions[current].next) {
         if (definitions[current].initialValue != 0) {
             fn_801903B0(current);
         }
     }
 
-    current = *(s16*)(lbl_80478F98 + 4);
+    current = lbl_80478F98->head;
     while (current != flagId && current != -1) {
-        FlagDefinition* definition = &definitions[current];
+        definition = &definitions[current];
 
         if (definition->initialValue != 0) {
-            _flagSet(current,
-                     lbl_80478ED4[definition->initialValue][0]);
+            value = lbl_80478ED4[definition->initialValue][0];
+            _flagSet(current, value);
+        }
+
+        if (definition->itemSwap != 0) {
+            itemSwapTable = &lbl_80478EF4[definition->itemSwap * 2];
+            heroItemDecItemDataId(0, itemSwapTable[1], 1, -1);
+            heroItemAddItemDataId(0, itemSwapTable[0], 1, -1);
         }
         current = definition->next;
+    }
+
+    definition = &definitions[flagId];
+    if (definition->itemSwap != 0) {
+        itemSwapTable = &lbl_80478EF4[definition->itemSwap * 2];
+        heroItemDecItemDataId(0, itemSwapTable[1], 1, -1);
+        heroItemAddItemDataId(0, itemSwapTable[0], 1, -1);
+    }
+
+    if (definition->event != 0) {
+        scene = &lbl_80478EFC[definition->event];
+        if (scene->memberFlags != 0) {
+            fn_8012F1FC(0);
+            fn_8012F40C(0);
+            heroMoveDismissMember(1);
+
+            memberFlags = lbl_80478EE4 + scene->memberFlags * 2;
+            for (i = 0; i < 2; i++) {
+                if (memberFlags[i] != 0) {
+                    fn_8012F1FC(i);
+                }
+            }
+        }
+
+        savedataGetStatus(0, 2);
+        heroBiosSetPokedoru(scene->pokedoru);
+        if (scene->floorId == 0) {
+            fn_800FF56C();
+        }
+        floorChangePos(0, scene, scene->posX, scene->posY, scene->posZ);
     }
 }
 
