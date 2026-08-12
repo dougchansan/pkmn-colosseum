@@ -3455,20 +3455,130 @@ asm void fn_8013EA44(void) {
 #else
 void fn_8013EA44(void* ptr) {
     u8* p;
+    void* model;
+    void* texture;
+    u8* part;
+    u8* bound;
+    f32 minVec[3];
+    f32 maxVec[3];
+    f32 mid[3];
+    f32 scaled[3];
+    f32 projected[3];
+    f32 alpha;
+    f32 alphaStep;
+    f32 layerAlpha;
+    s32 count;
+    s32 i;
+    void (*modelMarkDirty)(void*) = (void (*)(void*))fn_800EC134;
+    void (*modelSetFlags)(void*, u32) = (void (*)(void*, u32))GSmodelSetRenderFlags;
+    void (*modelInitAlpha)(void*) = (void (*)(void*))GSmodelInitMaterialAlpha;
+    void (*jobjSetup)(void*) = (void (*)(void*))fn_8019D620;
+    void (*modelSetAlpha)(void*, f32) = (void (*)(void*, f32))GSmodelSetMaterialAlpha;
+    void (*modelResetAlpha)(void*) = (void (*)(void*))GSmodelResetMaterialAlpha;
+    void (*modelResetFlags)(void*) = (void (*)(void*))GSmodelResetRenderFlags;
 
     if (ptr == NULL) {
         return;
     }
 
     p = ptr;
-    if (*(void**)(p + 0x4) == NULL) {
+    model = *(void**)p;
+    texture = *(void**)(p + 4);
+    if (model == NULL || texture == NULL) {
         return;
     }
 
+    part = *(u8**)((u8*)model + 8);
+    if (part == NULL) {
+        return;
+    }
+
+    modelMarkDirty(model);
+    GSmodelSetPEdescr(model, lbl_80363CD8);
+
+    maxVec[0] = *(f32*)(part + 0x38);
+    maxVec[1] = *(f32*)(part + 0x3C);
+    maxVec[2] = *(f32*)(part + 0x40);
+    minVec[0] = *(f32*)(part + 0x2C);
+    minVec[1] = *(f32*)(part + 0x30);
+    minVec[2] = *(f32*)(part + 0x34);
+
+    bound = GSmodelGetBound(model);
+    if (bound != NULL) {
+        GSvecAdd(mid, bound + 0x1C, bound + 0x10);
+        fn_800E013C(mid, mid, *(f32*)&lbl_8047D2D4);
+        fn_800E0168(mid, mid, maxVec);
+    } else {
+        mid[0] = *(f32*)&lbl_8047D2A8;
+        mid[1] = *(f32*)&lbl_8047D2A8;
+        mid[2] = *(f32*)&lbl_8047D2A8;
+    }
+
+    fn_800D377C(2);
+    fn_800D4604(2);
     _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
-    *(f32*)(p + 0x1C) = *(f32*)(p + 0x20);
-    *(f32*)(p + 0x20) = *(f32*)(p + 0x24);
-    *(f32*)(p + 0x24) = *(f32*)(p + 0x28);
+    fn_800D3410(texture, 0);
+
+    count = p[0x18];
+    alpha = *(f32*)(p + 0x28);
+    if (count <= 0) {
+        count = 1;
+    }
+    alphaStep = alpha / (f32)count;
+    layerAlpha = *(f32*)&lbl_8047D2A8;
+
+    modelSetFlags(model, 0x20);
+    modelInitAlpha(model);
+    lbl_80363CD8[4] = 1;
+    lbl_80363CD8[5] = 4;
+    lbl_80363CD8[6] = 5;
+
+    for (i = 0; i < p[0x18]; i++) {
+        alpha -= alphaStep;
+        layerAlpha += alphaStep;
+
+        fn_800E013C(scaled, minVec, alpha);
+        projected[0] = mid[0] * (scaled[0] - maxVec[0]);
+        projected[1] = mid[1] * (scaled[1] - maxVec[1]);
+        projected[2] = mid[2] * (scaled[2] - maxVec[2]);
+        fn_800E0168(projected, maxVec, projected);
+
+        *(f32*)(part + 0x2C) = projected[0];
+        *(f32*)(part + 0x30) = projected[1];
+        *(f32*)(part + 0x34) = projected[2];
+        jobjSetup(part);
+
+        *(f32*)(part + 0x38) = scaled[0];
+        *(f32*)(part + 0x3C) = scaled[1];
+        *(f32*)(part + 0x40) = scaled[2];
+        jobjSetup(part);
+
+        modelSetAlpha(model, layerAlpha);
+        GSmodelDrawModel(model, 0x3010);
+    }
+
+    *(f32*)(part + 0x38) = maxVec[0];
+    *(f32*)(part + 0x3C) = maxVec[1];
+    *(f32*)(part + 0x40) = maxVec[2];
+    jobjSetup(part);
+
+    *(f32*)(part + 0x2C) = minVec[0];
+    *(f32*)(part + 0x30) = minVec[1];
+    *(f32*)(part + 0x34) = minVec[2];
+    jobjSetup(part);
+
+    lbl_80363CD8[4] = 2;
+    lbl_80363CD8[5] = 5;
+    lbl_80363CD8[6] = 0;
+    modelSetAlpha(model, *(f32*)&lbl_8047D2A8);
+    GSmodelDrawModel(model, 0x3010);
+    modelResetAlpha(model);
+    modelResetFlags(model);
+    modelResetAlpha(model);
+    fn_800D3190();
+    fn_800D4604(1);
+    fn_800D377C(1);
+    GSmodelResetPEdescr(model);
 }
 #endif
 #endif
