@@ -853,7 +853,6 @@ WindowVaList* args;
     extern f32 lbl_8047CDEC;
     extern u8 lbl_80271E94[];
     u8* menuData;
-    u8* parentWindow;
     u8* rootWindow;
     u8* window;
     u8* item;
@@ -862,33 +861,30 @@ WindowVaList* args;
     s32 maxArgs;
 
     if ((s32)parent_id > 0) {
-        parentWindow = *(u8**)(lbl_80404ACC + 0x0C);
-        while (parentWindow != NULL) {
-            if (*(s32*)(parentWindow + 0x04) == (s32)parent_id) {
+        window = *(u8**)(lbl_80404ACC + 0x0C);
+        while (window != NULL) {
+            if (*(s32*)(window + 0x04) == (s32)parent_id) {
                 break;
             }
-            parentWindow = *(u8**)(parentWindow + 0x10);
+            window = *(u8**)(window + 0x10);
         }
-    } else {
-        parentWindow = NULL;
     }
 
     menuData = menuDataBiosGetPtr(menu_id);
 
     if ((s32)menu_id > 0) {
-        rootWindow = *(u8**)(lbl_80404ACC + 0x0C);
-        while (rootWindow != NULL) {
-            if (*(s32*)(rootWindow + 0x04) == (s32)menu_id) {
+        window = *(u8**)(lbl_80404ACC + 0x0C);
+        while (window != NULL) {
+            if (*(s32*)(window + 0x04) == (s32)menu_id) {
                 break;
             }
-            rootWindow = *(u8**)(rootWindow + 0x10);
+            window = *(u8**)(window + 0x10);
         }
     } else {
-        rootWindow = NULL;
+        window = NULL;
     }
 
-    window = rootWindow;
-    if (rootWindow == NULL) {
+    if (window == NULL) {
         if ((((u8)menuData[0] >> 4) & 1) != 0 || (close_flags & 2) != 0) {
             priority = 0x64;
         } else {
@@ -1022,14 +1018,13 @@ WindowVaList* args;
     window[0x1B] = (u8)close_flags;
 
     maxArgs = open_param;
-    if (maxArgs > 8) {
-        maxArgs = 8;
+    if (open_param > 8) {
+        open_param = 8;
     }
     item = window;
-    while (maxArgs > 0) {
+    for (maxArgs = 0; maxArgs < open_param; maxArgs++) {
         *(u32*)(item + 0x60) = *(u32*)__va_arg(args, 1);
         item += 4;
-        maxArgs--;
     }
 
     if ((((u8)menuData[1] >> 2) & 7) == 0) {
