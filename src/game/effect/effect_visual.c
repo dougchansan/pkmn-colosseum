@@ -3389,29 +3389,128 @@ asm void fn_8013DE6C(void) {
 }
 #else
 u32 fn_8013DE6C(void* ptr) {
-    u8* p;
+    extern u8 fn_800EC960(void*);
+    extern f32 fn_800EC570(void*);
+    extern void fn_800E6478(void*, void*);
+    extern s32 fn_800D45F8(void);
+    extern u32 fn_800DF3F0(void);
+    extern void fn_800DF188(void*);
+    extern void fn_800EC990(void*);
+    extern void fn_800ECA78(void*, f32);
+    extern void fn_800EC134(void*);
+    extern void fn_800DF21C(f32);
+    extern void fn_800E3760(void*, u32);
+    extern void fn_800DF140(void);
+    extern void fn_800DF504(void*);
+    extern void fn_800E638C(void*);
+    u8* p = ptr;
     void* model;
+    u8* timing;
+    void** materials;
+    s32 materialCount;
+    s32 oldMode;
+    s32 copies = 0;
+    s32 i;
+    u32 frame;
+    f32 blend;
+    f32 animFrame;
+    f32 animRate;
+    f32 startFrame;
+    f32 alphaStep;
+    f32 alpha;
 
     if (ptr == NULL) {
         return 0;
     }
 
-    p = ptr;
     model = *(void**)p;
-    if (model == NULL && *(s32*)(p + 0x10) == 0) {
-        return 0;
+    timing = *(u8**)(p + 0x18);
+    materialCount = *(s32*)(p + 8);
+    if (*(s32*)(p + 0x10) != 0 || model == NULL) {
+        return 1;
+    }
+    if (fn_800EC960(model) == 0) {
+        return 1;
     }
 
-    fn_800D4604(1);
-    _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
-    if (model != NULL) {
-        GSmodelSetVisibility(model, 1);
-        GSmodelDrawModel(model, 0);
+    frame = *(u32*)(p + 0x1C);
+    blend = (f32)frame / (f32)*(u32*)(timing + 8);
+    blend = blend * (*(f32*)(timing + 4) - *(f32*)timing) + *(f32*)timing;
+    switch (((s32 (*)(u32))fn_800D3068)(frame)) {
+    case 1:
+        copies = (s32)(*(f32*)&lbl_8047D26C * blend +
+                       *(f32*)&lbl_8047D268);
+        break;
+    case 2:
+        copies = (s32)(*(f32*)&lbl_8047D270 * blend +
+                       *(f32*)&lbl_8047D268);
+        break;
+    case 3:
+        copies = (s32)(*(f32*)&lbl_8047D274 * blend +
+                       *(f32*)&lbl_8047D268);
+        break;
+    case 4:
+        copies = (s32)(*(f32*)&lbl_8047D278 * blend +
+                       *(f32*)&lbl_8047D268);
+        break;
     }
-    if (*(void**)(p + 0xC) != NULL) {
-        fn_800D85D4(0, *(void**)(p + 0xC));
+    if (copies == 0) {
+        return 1;
     }
-    fn_800D4604(0);
+
+    animFrame = ((f32 (*)(void*))GSmodelGetAnimFrame)(model);
+    animRate = fn_800EC570(model);
+    startFrame = -((animRate * copies) - animFrame);
+    if (startFrame < *(f32*)&lbl_8047D27C) {
+        startFrame = *(f32*)&lbl_8047D27C;
+        copies = (s32)(animFrame / animRate);
+    }
+    if (copies == 0 || startFrame >= animFrame) {
+        return 1;
+    }
+
+    fn_800E6478(model, lbl_80363CC8);
+    oldMode = fn_800D45F8();
+    fn_800D4604(2);
+    fn_800D2248();
+    materials = *(void***)(p + 4);
+    for (i = 0; i < materialCount; i++) {
+        if (materials[i] != NULL) {
+            ((void (*)(void*, u32))GSmaterialSetFlags)(
+                materials[i], fn_800DF3F0() | 0x20);
+            fn_800DF188(materials[i]);
+        }
+    }
+
+    fn_800EC990(model);
+    alphaStep = *(f32*)&lbl_8047D280 / (f32)copies;
+    alpha = alphaStep;
+    while (startFrame + animRate < animFrame) {
+        fn_800ECA78(model, startFrame);
+        fn_800EC134(model);
+        materials = *(void***)(p + 4);
+        for (i = 0; i < materialCount; i++) {
+            if (materials[i] != NULL) {
+                fn_800DF21C(*(f32*)&lbl_8047D268 * (alpha * alpha));
+            }
+        }
+        fn_800E3760(model, 0x3010);
+        startFrame += animRate;
+        alpha += alphaStep;
+    }
+
+    materials = *(void***)(p + 4);
+    for (i = 0; i < materialCount; i++) {
+        if (materials[i] != NULL) {
+            fn_800DF140();
+            fn_800DF504(materials[i]);
+        }
+    }
+    fn_800E638C(model);
+    fn_800ECA78(model, animFrame);
+    fn_800EC134(model);
+    fn_800E3760(model, 0x3010);
+    fn_800D4604(oldMode);
     return 1;
 }
 #endif
