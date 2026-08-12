@@ -929,17 +929,16 @@ char* fn_8009DC38(const char* string, void* image, s32 pos, s32 stride,
     extern int fn_8009D510(u16 code);
     u16 encode;
     u16 code;
-    u8* src;
     u8* dst;
     s32 fontCode;
     s32 sheet;
+    u8* src;
     s32 numChars;
     s32 row;
     s32 column;
     s32 x;
     s32 y;
     s32 offsetSrc;
-    s32 offsetDst;
     u8* colorIndex;
     u8* imageSrc;
 
@@ -985,10 +984,8 @@ char* fn_8009DC38(const char* string, void* image, s32 pos, s32 stride,
             dst += ((y % 8) * 4);
             dst += ((pos + x) % 8) / 2;
 
-            offsetDst = (pos + x) % 2;
-
             *dst |= colorIndex[*src >> (6 - (offsetSrc * 2)) & 3] &
-                    ((offsetDst != 0) ? 0x0F : 0xF0);
+                    (((pos + x) % 2 != 0) ? 0x0F : 0xF0);
         }
     }
 
