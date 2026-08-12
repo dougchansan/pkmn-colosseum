@@ -463,8 +463,209 @@ BOOL sequenceLoad(void* effect, void* data) {
  * phases of a move animation.
  */
 u8 fn_801DD5E8(void* effect, void* resource) {
-    /* TODO: Complex transition effect (0x564 bytes) */
-    return FALSE;
+    typedef struct SequenceLoadResourceHeader {
+        u32 mainSize;      /* 0x00 */
+        u32 auxSize;       /* 0x04 */
+        u32 entryCount;    /* 0x08 */
+        u32 sequenceKind;  /* 0x0C */
+        u32 loadMode;      /* 0x10 */
+        u32 flag14;        /* 0x14 */
+        u32 value18;       /* 0x18 */
+        u32 value1C;       /* 0x1C */
+        u32 value20;       /* 0x20 */
+    } SequenceLoadResourceHeader;
+    typedef struct SequenceEntrySrc {
+        u32 countA;      /* 0x00 */
+        u32 countB;      /* 0x04 */
+        u32 field08;     /* 0x08 */
+        u8  payload[0x88 - 0x0C];
+        u32 field88;     /* 0x88 */
+    } SequenceEntrySrc;
+
+    extern u16 fn_800E2C04(u32 size, u32 alignment);
+    extern u16 fn_800E3534(u32 size);
+    extern void* fn_800E27B0(u16 handle);
+    extern void DCFlushRange(void* addr, s32 len);
+    extern int wazaSequenceSysGetResID(void);
+    extern void fn_80101244(void* resource, u32 size, u32 group, u32 handle);
+    extern void fn_801013A0(u32 model, u32 group, u32 data, u32 handle);
+    extern void fn_8010147C(void* resource, u32 size, u32 group, u32 handle);
+    extern void* GSresGetResource(u32 group, u32 resource);
+    extern f32 lbl_8047E3B8;
+
+    u8* sequence;
+    SequenceLoadResourceHeader* header;
+    u8* data;
+    u32 modelResId;
+    u32 animResId;
+    u32 auxResId;
+    s32 startOffset;
+    u32 alignedMainSize;
+    u16 workHandle;
+    u8* workBase;
+    u32 i;
+
+    sequence = effect;
+    header = (SequenceLoadResourceHeader*)resource;
+    if (header == NULL || header->mainSize == 0) {
+        return FALSE;
+    }
+
+    modelResId = wazaSequenceSysGetResID();
+    animResId = wazaSequenceSysGetResID();
+
+    *(s16*)(sequence + 0x1A) = -1;
+    *(s16*)(sequence + 0x1C) = -1;
+    *(s16*)(sequence + 0x1E) = -1;
+    *(u8*)(sequence + 0x4E) = 0;
+
+    switch (header->loadMode) {
+    case 1:
+    case 2:
+        startOffset = 0x20;
+        break;
+    case 3:
+        startOffset = 0x20;
+        *(u8*)(sequence + 0x4E) = header->flag14 != 0;
+        break;
+    case 4:
+        startOffset = 0x20;
+        *(u8*)(sequence + 0x4E) = (u8)(header->flag14 >> 31);
+        break;
+    default:
+        startOffset = 0x40;
+        *(u8*)(sequence + 0x4E) = (u8)(header->flag14 >> 31);
+        *(s16*)(sequence + 0x1A) = (s16)header->value18;
+        *(s16*)(sequence + 0x1C) = (s16)header->value20;
+        *(s16*)(sequence + 0x1E) = (s16)header->value1C;
+        break;
+    }
+
+    *(u32*)(sequence + 0x0) = 0x4E20;
+    *(u32*)(sequence + 0x10) = header->sequenceKind;
+    *(u16*)(sequence + 0x14) = (u16)header->entryCount;
+    *(u32*)(sequence + 0x32) = 0;
+    *(u32*)(sequence + 0x34) = 0;
+    *(u16*)(sequence + 0x7C) = 0;
+
+    data = (u8*)header + startOffset;
+    alignedMainSize = (header->mainSize + 0x1F) & ~0x1F;
+
+    if ((*(u16*)(sequence + 0x70) == 0x18) ||
+        (*(u16*)(sequence + 0x70) == 0x4A) ||
+        (*(u16*)(sequence + 0x70) == 0x134)) {
+        *(u16*)(sequence + 0x7C) = fn_800E2C04(alignedMainSize, 0x20);
+        if (*(u16*)(sequence + 0x7C) == 0) {
+            return FALSE;
+        }
+        workBase = fn_800E27B0(*(u16*)(sequence + 0x7C));
+        memcpy(workBase, data, alignedMainSize);
+        DCFlushRange(workBase, alignedMainSize);
+        fn_8010147C(workBase, header->mainSize, 0x4E20, modelResId);
+    } else {
+        fn_8010147C(data, header->mainSize, 0x4E20, modelResId);
+    }
+
+    if (GSresGetResource(0x4E20, modelResId) == NULL) {
+        return FALSE;
+    }
+    *(u32*)(sequence + 0x8) = modelResId;
+
+    fn_801013A0((u32)GSresGetResource(0x4E20, modelResId), 0x4E20, 0,
+                animResId);
+    if (GSresGetResource(0x4E20, animResId) == NULL) {
+        return FALSE;
+    }
+    *(u32*)(sequence + 0x4) = animResId;
+
+    if (header->auxSize != 0) {
+        auxResId = wazaSequenceSysGetResID();
+        fn_80101244(data + alignedMainSize, header->auxSize, 0x4E20, auxResId);
+        if (GSresGetResource(0x4E20, auxResId) != NULL) {
+            *(u32*)(sequence + 0xC) = auxResId;
+        } else {
+            *(u32*)(sequence + 0xC) = 0;
+        }
+        data = data + alignedMainSize + ((header->auxSize + 0x1F) & ~0x1F);
+    } else {
+        *(u32*)(sequence + 0xC) = 0;
+        data = data + alignedMainSize;
+    }
+
+    workHandle = fn_800E3534((u16)header->entryCount * 0xD4);
+    *(u16*)(sequence + 0x30) = workHandle;
+    if (workHandle == 0) {
+        *(u32*)(sequence + 0x2C) = 0;
+        return FALSE;
+    }
+
+    workBase = fn_800E27B0(workHandle);
+    *(u8**)(sequence + 0x2C) = workBase;
+
+    for (i = 0; i < header->entryCount; i++) {
+        SequenceEntrySrc* src = (SequenceEntrySrc*)data;
+        u8* dst = workBase + i * 0xD4;
+        u32 j;
+
+        *(u32*)(dst + 0x0) = src->countA;
+        for (j = 0; j < src->countA; j++) {
+            s32 scale = fn_800D37CC();
+            s32 value = *(s32*)((u8*)src + 0x0C + j * 4);
+            *(s32*)(dst + 0x0C + j * 4) = (s32)(((f32)value * (f32)scale) /
+                                                *(f32*)&lbl_8047E3B8);
+        }
+        *(u32*)(dst + 0x08) = src->field08;
+        *(u32*)(dst + 0x8C) = 1;
+        *(u32*)(dst + 0x90) = 0;
+        *(u32*)(dst + 0x04) = src->countB + 1;
+
+        for (j = 0; j < src->countB; j++) {
+            *(u32*)(dst + 0x94 + j * 8) =
+                *(u32*)((u8*)src + 0x8C + j * 8);
+            *(u32*)(dst + 0x98 + j * 8) =
+                *(u32*)((u8*)src + 0x90 + j * 8);
+            if (*(u32*)(dst + 0x94 + j * 8) == 1) {
+                *(u32*)(dst + 0x98 + j * 8) = 1;
+            }
+        }
+
+        memcpy(dst + 0x4C, (u8*)src + 0x4C, 0x40);
+        *(u32*)(dst + 0x88) = src->field88;
+        data += 0xD0;
+    }
+
+    if (header->loadMode >= 4) {
+        data = (u8*)header + startOffset +
+               ((((u16)header->entryCount * 0xD0) + 0x1F) & ~0x1F) +
+               alignedMainSize + ((header->auxSize + 0x1F) & ~0x1F);
+    } else {
+        data = (u8*)header + startOffset +
+               ((u16)header->entryCount * 0xD0) + alignedMainSize +
+               ((header->auxSize + 0x1F) & ~0x1F);
+    }
+
+    if (*(u8*)(sequence + 0x4E) != 0) {
+        *(u32*)(sequence + 0x38) = *(u32*)(data + 0x0);
+        *(u32*)(sequence + 0x3C) = *(u32*)(data + 0x4);
+        *(u32*)(sequence + 0x40) = *(u32*)(data + 0x8);
+        *(u32*)(sequence + 0x44) = *(u32*)(data + 0xC);
+        if ((*(u32*)(sequence + 0x38) != 0) || (*(u32*)(sequence + 0x3C) != 1) ||
+            (*(u32*)(sequence + 0x40) != 2) || (*(u32*)(sequence + 0x44) != 3)) {
+            *(u8*)(sequence + 0x4C) = 1;
+        }
+        *(u8*)(sequence + 0x4B) = *(u8*)(data + 0x10);
+        *(u8*)(sequence + 0x4A) = *(u8*)(data + 0x11);
+        *(u8*)(sequence + 0x49) = *(u8*)(data + 0x12);
+        *(u8*)(sequence + 0x48) = *(u8*)(data + 0x13);
+        if ((*(u8*)(sequence + 0x48) != 0x7F) ||
+            (*(u8*)(sequence + 0x49) != 0x7F) ||
+            (*(u8*)(sequence + 0x4A) != 0x7F) ||
+            (*(u8*)(sequence + 0x4B) != 0x7F)) {
+            *(u8*)(sequence + 0x4D) = 1;
+        }
+    }
+
+    return TRUE;
 }
 
 /**
