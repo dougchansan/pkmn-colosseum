@@ -3783,7 +3783,7 @@ s32 fn_8002217C(u16 wazaDataId, u32* result) {
 extern void jumptable_802E4F00();
 extern u8 lbl_80478888[8];
 extern s32 fn_80023068(u32, u32*);
-extern s32 fn_800232F0(u16, u32*);
+extern s32 fn_800232F0(u32, u32*);
 extern s32 fn_80023760(u32, u32*);
 #if 0
 asm void fn_80022478(void) {
@@ -4462,10 +4462,28 @@ asm void fn_800232F0(void) {
 #include "src/game/gs_title_fn_800232F0.inc"
 }
 #else
-s32 fn_800232F0(u16 wazaDataId, u32* result) {
+s32 fn_800232F0(u32 wazaDataId, u32* result) {
+    extern u8 pokemonBiosGetLevel(s32);
+    extern s32 winMsgOpenLevelUpFiledStatus(void*, s32);
+    extern void winMsgCloseLevelUpStatus(s32);
+    extern s8 pokemonSearchWazaDataId(s32, u16);
+    extern u16 pokemonGetOboeWazaDataId(s32, u8, u8*);
+    extern s32 evolutionWazaLearn(s32, u16, u8*, s32, void*, s32);
+    extern void pokemonWazaCreate(s32, u8, u16);
+
+    struct {
+        u8 unk0;
+        s16 unk2;
+        s16 unk4;
+        s16 unk6;
+        s16 unk8;
+        s16 unkA;
+        s16 unkC;
+    } delta;
+    struct {
+        u8 unk0;
+    } reset;
     u8 effects[0x10C];
-    u8 delta[0x10];
-    u8 reset[0x10];
     s32 pokemon;
     s32 data;
     s32 slot;
@@ -4485,21 +4503,22 @@ s32 fn_800232F0(u16 wazaDataId, u32* result) {
     u16 moveId;
     u16 value;
     u32 valueData;
+    u8 learnSlot;
     u8 index;
-    u8 pokemonIndex;
+    u8 pokemonLevel;
 
     index = 0;
     slot = fn_800141BC((void*)wazaDataId, 1);
     if (slot >= 0) {
         fn_80014118(slot, &pokemon, &data);
-        if (((u8 (*)(s32))fn_8011FC74)(pokemon) == 0) {
+        if (pokemonIsDarkPokemon(pokemon) == 0) {
             old87 = (s16)pokemonGetStatus(pokemon, 0, 0x87, 0);
             old88 = (s16)pokemonGetStatus(pokemon, 0, 0x88, 0);
             old89 = (s16)pokemonGetStatus(pokemon, 0, 0x89, 0);
             old8A = (s16)pokemonGetStatus(pokemon, 0, 0x8A, 0);
             old8B = (s16)pokemonGetStatus(pokemon, 0, 0x8B, 0);
             old8C = (s16)pokemonGetStatus(pokemon, 0, 0x8C, 0);
-            effectCount = fn_80144574(effects, pokemon, data, wazaDataId, 0);
+            effectCount = fn_80144574(effects, pokemon, data, (u16)wazaDataId, 0);
             if (effectCount > 0) {
                 fn_8001D378();
             } else {
@@ -4520,10 +4539,8 @@ s32 fn_800232F0(u16 wazaDataId, u32* result) {
             break;
         default:
             ((void (*)(s32, s32, s32))fn_80165668)(0x4CA, 0, 0xFF);
-            ((void (*)(s32, u8))fn_80132A38)(
-                0x32, ((u8 (*)(s32))fn_8011F4F0)(pokemon));
-            ((void (*)(s32, u8))fn_80132A38)(
-                0x2F, ((u8 (*)(s32))fn_8011F4A8)(pokemon));
+            msgctrlSetValue(0x32, pokemonBiosGetNicknamePtr(pokemon));
+            msgctrlSetValue(0x2F, (void*)(u32)pokemonBiosGetLevel(pokemon));
             ((void (*)(s32, s32, s32, s32))fn_80106D3C)(2, 0x423E, 1, 0);
             ((void (*)(s32))fn_801069FC)(1);
 
@@ -4533,34 +4550,30 @@ s32 fn_800232F0(u16 wazaDataId, u32* result) {
             new8A = (s16)pokemonGetStatus(pokemon, 0, 0x8A, 0);
             new8B = (s16)pokemonGetStatus(pokemon, 0, 0x8B, 0);
             new8C = (s16)pokemonGetStatus(pokemon, 0, 0x8C, 0);
-            memset(delta, 0, sizeof(delta));
-            delta[0] = 1;
-            *(s16*)(delta + 2) = new87 - old87;
-            *(s16*)(delta + 4) = new88 - old88;
-            *(s16*)(delta + 6) = new89 - old89;
-            *(s16*)(delta + 8) = new8C - old8C;
-            *(s16*)(delta + 10) = new8A - old8A;
-            *(s16*)(delta + 12) = new8B - old8B;
-            ((void (*)(void*, s32))fn_80105D48)(delta, 1);
-            memset(reset, 0, sizeof(reset));
-            ((void (*)(void*, s32))fn_80105D48)(reset, 1);
-            ((void (*)(s32))fn_80105C68)(1);
+            delta.unk0 = 1;
+            delta.unk2 = new87 - old87;
+            delta.unk4 = new88 - old88;
+            delta.unk6 = new89 - old89;
+            delta.unk8 = new8C - old8C;
+            delta.unkA = new8A - old8A;
+            delta.unkC = new8B - old8B;
+            winMsgOpenLevelUpFiledStatus(&delta, 1);
+            reset.unk0 = 0;
+            winMsgOpenLevelUpFiledStatus(&reset, 1);
+            winMsgCloseLevelUpStatus(1);
 
-            pokemonIndex = ((u8 (*)(s32))fn_8011F4A8)(pokemon);
+            pokemonLevel = pokemonBiosGetLevel(pokemon);
             index = 0;
-            while ((moveId = ((u16 (*)(s32, u8, u8*))fn_801236F8)(
-                        pokemon, pokemonIndex, &index)) != 0) {
-                if (((s8 (*)(s32, u16))fn_80123B5C)(pokemon, moveId) == -1 &&
-                    ((s32 (*)(s32, u16, u8*, s32, void*, s32))fn_802600E4)(
-                        pokemon, moveId, &pokemonIndex, 1,
-                        (void*)cbForgetWazaSelect__FP7PokemonUsl, 0) != 0) {
-                    ((void (*)(s32, u8, u16))fn_80123D58)(
-                        pokemon, pokemonIndex, moveId);
+            while ((moveId = pokemonGetOboeWazaDataId(
+                        pokemon, pokemonLevel, &index)) != 0) {
+                if (pokemonSearchWazaDataId(pokemon, moveId) == -1 &&
+                    evolutionWazaLearn(pokemon, moveId, &learnSlot, 1,
+                        cbForgetWazaSelect__FP7PokemonUsl, 0) != 0) {
+                    pokemonWazaCreate(pokemon, learnSlot, moveId);
                 }
                 index++;
             }
-            value = ((u16 (*)(s32, s32, s32, u16*, u32*))fn_80128A64)(
-                pokemon, 0, 0, &moveId, &valueData);
+            value = pokemonEvolutionCheck(pokemon, 0, 0, &moveId, &valueData);
             break;
         }
     }
@@ -4568,14 +4581,14 @@ s32 fn_800232F0(u16 wazaDataId, u32* result) {
     fn_80014198(slot);
     if (slot >= 0 && effectCount > 0) {
         if (value != 0) {
-            ((void (*)(s32, f32))fn_801C41C8)(3, lbl_8047B8A4);
-            ((void (*)(s32))fn_801C40F0)(1);
-            ((void (*)(s32))fn_801096F8)(0);
-            ((void (*)(s32, u16, u16, u32*, s32, s32, s32, s32))fn_8012805C)(
+            fadeSet(lbl_8047B8A4, 3);
+            fadeCheck(1);
+            menuOffScreenSetDisp(0);
+            pokemonEvolutionAll(
                 pokemon, value, moveId, &valueData, 0, 1, 1, 0);
-            ((void (*)(s32))fn_801096F8)(1);
-            ((void (*)(s32, f32))fn_801C41C8)(2, lbl_8047B8A4);
-            ((void (*)(s32))fn_801C40F0)(1);
+            menuOffScreenSetDisp(1);
+            fadeSet(lbl_8047B8A4, 2);
+            fadeCheck(1);
         }
         *result = 1;
         return 0;
