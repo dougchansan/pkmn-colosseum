@@ -51,11 +51,22 @@ s32 fn_800D3088(void);
 u8 GScameraHasAnimationEnded(GSRenderCamera* camera);
 u8 GScameraIsAnimating(GSRenderCamera* camera);
 s32 fn_800D37CC(void);
+void _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID(void);
+void _cameraPadMoveUpdate__FP9_GScamera(void* camera);
+void _cameraPadRotateUpdate__FP9_GScamera(void* sceneObj);
+void _cameraOffsetAnimeUpdate__FP9_GScamera(GSRenderCamera* camera);
 void cameraUpdate(u32 captureIndex) {
     GSRenderCamera* camera;
     CameraPadState* state;
     GSRenderCamera* animation;
     GSSceneVec3 delta;
+    GSRenderVec3 eye;
+    GSRenderVec3 interest;
+    GSRenderVec3 up;
+    f32 aspect;
+    f32 fov;
+    f32 nearPlane;
+    f32 farPlane;
 
     (void)captureIndex;
 
@@ -131,22 +142,68 @@ void cameraUpdate(u32 captureIndex) {
             delta.x = delta.x * delta.x + delta.z * delta.z;
             cameraSqrt(&delta.x);
             state->distance = delta.x;
-            if (state->rotationMoveActive == 0 && state->positionMoveActive != 0) {
+            if (state->rotationMoveActive == 0 &&
+                state->positionMoveActive != 0) {
                 state->rotation.y = (f32)atan2(delta.x, delta.z);
             }
         }
+        set__5GSvecFfff(&eye, lbl_8047D740, state->height, state->distance);
+        GSmtxMakeYRotation(&delta, state->rotation.y);
+        GSvecTransform(&eye, &delta, &eye);
+        GSvecAdd(&state->direction, &state->position, &eye);
+        GScameraSetPosition(camera, &state->direction);
+        GSvecAdd(&interest, &state->position, &state->view);
+        set__5GSvecFfff(&up, lbl_8047D740, lbl_8047D724, lbl_8047D740);
+        GScameraLookAt(camera, &up, &interest);
+        state->rotation.x = -(f32)atan2(state->height, state->distance);
+        GScameraGetPerspective(camera, &aspect, &fov, &nearPlane, &farPlane);
+        GScameraSetPerspective(camera, state->fov, fov, nearPlane, farPlane);
         break;
-    case 6:
-        animation =
-            (GSRenderCamera*)GSresGetResource(state->animationGroup, state->animationId);
+    case 2:
+        _cameraPadMoveUpdate__FP9_GScamera(camera);
+        break;
+    case 3:
+        _cameraPadRotateUpdate__FP9_GScamera(camera);
+        break;
+    case 4:
+    case 8:
+        animation = (GSRenderCamera*)GSresGetResource(state->animationGroup,
+                                                      state->animationId);
         if (animation == 0) {
             animation = (GSRenderCamera*)fn_800F92D4(state->animationId);
         }
         if (animation != 0 && GScameraIsAnimating(animation) != 0 &&
             GScameraHasAnimationEnded(animation) == 0) {
+            if (state->mode == 8) {
+                _cameraOffsetAnimeUpdate__FP9_GScamera(camera);
+                _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
+            }
             return;
         }
+        state->animationGroup = 0;
+        state->animationId = 0;
+        if (state->mode != state->flags[1]) {
+            state->mode = state->flags[1];
+        }
+        state->targetGroup = 0;
+        state->targetId = 100;
+        state->targetSubId = -1;
         break;
+    case 7:
+        set__5GSvecFfff(&eye, lbl_8047D740, state->height, state->distance);
+        GSmtxMakeYRotation(&delta, state->rotation.y);
+        GSvecTransform(&eye, &delta, &eye);
+        GSvecAdd(&state->direction, &state->position, &eye);
+        GSvecAdd(&interest, &state->position, &state->view);
+        GScameraSetPosition(camera, &state->direction);
+        set__5GSvecFfff(&up, lbl_8047D740, lbl_8047D724, lbl_8047D740);
+        GScameraLookAt(camera, &up, &interest);
+        state->rotation.x = -(f32)atan2(state->height, state->distance);
+        GScameraGetPerspective(camera, &aspect, &fov, &nearPlane, &farPlane);
+        GScameraSetPerspective(camera, state->fov, fov, nearPlane, farPlane);
+        fn_800D258C(camera);
+        _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
+        return;
     default:
         break;
     }
@@ -155,8 +212,6 @@ void cameraUpdate(u32 captureIndex) {
         state->positionMoveActive == 0 && state->rotationMoveActive == 0) {
         state->flags[0] = 0;
     }
-
-    (void)camera;
 }
 #pragma pop
 #pragma push
