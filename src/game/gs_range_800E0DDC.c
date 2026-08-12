@@ -754,11 +754,20 @@ asm void fn_800E0E14(void) {
 }
 #else
 u8 fn_800E0E14(u32 verbose, u32 dumpMap) {
+    typedef struct GSAllocDescCheck {
+        u16 used;
+        u16 locked;
+        u8* data;
+        u32 size;
+        u16 pinned;
+        u16 checksum;
+    } GSAllocDescCheck;
     u8 ok;
     u32* block;
     u8* cursor;
     u8* end;
-    u32 count;
+    u32 allocatedCount;
+    u32 freeCount;
 
     ok = 1;
     if (verbose != 0) {
@@ -770,11 +779,11 @@ u8 fn_800E0E14(u32 verbose, u32 dumpMap) {
         GSlogWrite((char*)lbl_80270658 + 0x34);
         ok = 0;
     }
-    count = 0;
+    freeCount = 0;
     while (block != 0) {
         u32* next;
 
-        count++;
+        freeCount++;
         if ((u32)block < lbl_8047AB68 || (u32)block > lbl_8047AB64) {
             ok = 0;
             GSlogWrite((char*)lbl_80270658 + 0x64);
@@ -807,16 +816,50 @@ u8 fn_800E0E14(u32 verbose, u32 dumpMap) {
 
     cursor = (u8*)lbl_8047AB68;
     end = (u8*)lbl_8047AB38;
+    allocatedCount = 0;
     while (cursor < end) {
-        u32 size = *(u32*)(cursor + 0x8);
-        if (size == 0 || cursor + size > end) {
-            ok = 0;
-            GSlogWrite((char*)lbl_80270658 + 0x2e8, cursor);
-            break;
+        GSAllocDescCheck* desc;
+        GSAllocDescCheck* found;
+        u32 size;
+
+        found = NULL;
+        for (desc = (GSAllocDescCheck*)lbl_8047AB34;
+             desc >= (GSAllocDescCheck*)lbl_8047AB38; desc--) {
+            if (desc->used != 0 && desc->data == cursor) {
+                found = desc;
+                break;
+            }
         }
-        if (dumpMap != 0) {
-            GSlogWrite((char*)lbl_80270658 + 0x268, cursor, cursor + size - 1,
-                        *(u32*)cursor, *(u32*)(cursor + 4));
+        if (found != NULL && found->used != 0) {
+            allocatedCount++;
+            size = found->size;
+            if (dumpMap != 0) {
+                GSlogWrite((char*)lbl_80270658 + 0x21c, cursor,
+                            cursor + size - 1, size, found->used,
+                            found->locked, found->pinned);
+            }
+        } else {
+            size = *(u32*)(cursor + 8);
+            if (dumpMap != 0) {
+                GSlogWrite((char*)lbl_80270658 + 0x268, cursor,
+                            cursor + size - 1, *(u32*)cursor,
+                            *(u32*)(cursor + 4));
+            }
+            if ((*(u32*)cursor != 0 &&
+                 (*(u32*)cursor < lbl_8047AB68 ||
+                  *(u32*)cursor > lbl_8047AB64)) ||
+                (*(u32*)(cursor + 4) != 0 &&
+                 (*(u32*)(cursor + 4) < lbl_8047AB68 ||
+                  *(u32*)(cursor + 4) > lbl_8047AB64))) {
+                GSlogWrite((char*)lbl_80270658 + 0x2a8, cursor);
+                ok = 0;
+                break;
+            }
+            if (size == 0 || cursor + size > end) {
+                GSlogWrite((char*)lbl_80270658 + 0x2e8, cursor);
+                ok = 0;
+                break;
+            }
         }
         cursor += size;
     }
@@ -825,7 +868,7 @@ u8 fn_800E0E14(u32 verbose, u32 dumpMap) {
         ok = 0;
         GSlogWrite((char*)lbl_80270658 + 0x318, cursor);
     }
-    if (count != lbl_8047AB4C) {
+    if (allocatedCount != lbl_8047AB4C) {
         ok = 0;
         GSlogWrite((char*)lbl_80270658 + 0x36c);
     }
@@ -835,6 +878,7 @@ u8 fn_800E0E14(u32 verbose, u32 dumpMap) {
         GSlogWrite((char*)lbl_80270658 + 0x3cc, lbl_8047AB4C);
         GSlogWrite((char*)lbl_80270658 + 0x3e8, lbl_8047AB48);
         GSlogWrite((char*)lbl_80270658 + 0x404, lbl_8047AB34 - lbl_8047AB38 + 0x10);
+        GSlogWrite((char*)lbl_80270658 + 0x464, freeCount);
     }
 
     if (!ok) {
