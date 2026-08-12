@@ -379,8 +379,185 @@ void fn_801129AC(void) {
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
-void fn_801129CC(void) {
-    /* TODO: match -- 1472 bytes at 0x801129CC */
+void fn_801129CC(void* floor) {
+    typedef struct FloorVec { f32 x, y, z; } FloorVec;
+    extern u8 lbl_80408378[];
+    extern f32 lbl_8047CF70, lbl_8047CF74, lbl_8047CF78, lbl_8047CF7C;
+    extern u8 fn_800FF548(void);
+    extern u8 fn_800FF554(void);
+    extern u8 fn_800FF52C(void);
+    extern void GSflagClear(u32);
+    extern void* floorDataBiosGetPtr(u32);
+    extern u8 floorDataBiosGetArea(void*);
+    extern u8 floorDataBiosGetFloorKind(void*);
+    extern void msgctrlInitValue(void);
+    extern void fn_801CBA84(void);
+    extern void* floorDataBiosGetCurrentPtr(void);
+    extern void* floorDataBiosGetPosListPtr(void*);
+    extern void set__5GSvecFfff(FloorVec*, f32, f32, f32);
+    extern u32 floorDataBiosGetSunResID(void*);
+    extern u32 floorDataBiosGetGroupID(void*);
+    extern void* GSresGetResource(u32, u32);
+    extern void* GSmodelGetPart(void*, u32);
+    extern void GSpartGetTransform(void*, FloorVec*, void*, void*);
+    extern void GSpartFree(void*);
+    extern void fn_801ED640(u32);
+    extern void fn_801ED648(FloorVec*);
+    extern void fn_80117E58(void*);
+    extern void GSmodelSetShadowBoundExpansion(u32, u32);
+    extern void GSmaterialSetDistanceThreshold(f32);
+    extern void GSmodelSetShadowTextureSize(u32, u32);
+    extern u32 fn_80115960(void*);
+    extern void fn_800F7434(u32);
+    extern u32 fn_800FF560(void);
+    extern u32 fn_801158D0(void*);
+    extern u32 fn_80115918(void*);
+    extern u32 fn_80115888(void*);
+    extern void fn_8011553C(void*, u32);
+    extern void fn_800FF3C0(u32, u32, void*);
+    extern void fn_800FF2A0(u32, u32, void*);
+    extern void fn_800FF178(u32, u32, void*);
+    extern void fn_800FEF8C(u32, u32, u32);
+    extern void fn_800FEE68(u32, u32, u32);
+    extern void fn_800FED3C(u32, u32, u32);
+    extern void* floorDataBiosGetPreFunc(void*);
+    extern void* floorDataBiosGetPostFunc(void*);
+    extern void* floorDataBiosGetMainFunc(void*);
+    extern void _floorInitialize__FUi14FloorEnterMode(void);
+    extern void _floorUpdate__FUi14FloorEnterMode(void);
+    extern void _fightInitialize__FUi14FloorEnterMode(void);
+    extern void _fightFinalize__FUi14FloorEnterMode(void);
+    extern void fn_801EF488(void);
+    extern void _wazaViewerInitialize(void);
+    extern void _wazaViewerUpdate(void);
+    extern void _wazaViewerFinalize(void);
+    extern void fn_801139BC(void);
+    extern void fn_80112F8C(void);
+    u8 area = 0;
+    u8 priorArea = 0;
+    void* data;
+    void* list;
+    void* entry = NULL;
+    void* part;
+    void* callback;
+    FloorVec transform;
+    u32 group;
+    u32 resource;
+    u32 task;
+    u8 kind;
+
+    if (fn_800FF548() != 1 && fn_800FF554() != 1 && fn_800FF52C() == 0) {
+        GSflagClear(1);
+        data = floorDataBiosGetPtr(*(u32*)(lbl_80408378 + 0));
+        if (data != NULL) {
+            area = floorDataBiosGetArea(data);
+        }
+        if (((*(u8*)data >> 5) & 7) != 2) {
+            data = floorDataBiosGetPtr(*(u32*)(lbl_80408378 + 4));
+            if (data != NULL) {
+                priorArea = floorDataBiosGetArea(data);
+            }
+            if (area != priorArea) {
+                GSflagClear(2);
+            }
+        }
+    }
+
+    msgctrlInitValue();
+    fn_801CBA84();
+    if (lbl_80408378[8] != 0) {
+        data = floorDataBiosGetCurrentPtr();
+        list = floorDataBiosGetPosListPtr(data);
+        if (list != NULL && *(u32*)(lbl_80408378 + 0x0C) < *(u32*)list) {
+            entry = *(u8**)((u8*)list + 4) + *(u32*)(lbl_80408378 + 0x0C) * 0x10;
+        }
+        if (entry != NULL) {
+            set__5GSvecFfff((FloorVec*)(lbl_80408378 + 0x10),
+                            *(f32*)((u8*)entry + 4), *(f32*)((u8*)entry + 8),
+                            *(f32*)((u8*)entry + 0x0C));
+            set__5GSvecFfff((FloorVec*)(lbl_80408378 + 0x1C), lbl_8047CF70,
+                            lbl_8047CF74 * (f32)*(s32*)entry, lbl_8047CF70);
+        } else {
+            set__5GSvecFfff((FloorVec*)(lbl_80408378 + 0x10), lbl_8047CF70,
+                            lbl_8047CF70, lbl_8047CF70);
+            set__5GSvecFfff((FloorVec*)(lbl_80408378 + 0x1C), lbl_8047CF70,
+                            lbl_8047CF70, lbl_8047CF70);
+        }
+        lbl_80408378[8] = 0;
+    }
+
+    group = floorDataBiosGetGroupID(floor);
+    fn_801ED640(0);
+    resource = floorDataBiosGetSunResID(floor);
+    if (resource != 0) {
+        data = GSresGetResource(group, resource);
+        part = GSmodelGetPart(data, 0);
+        if (part != NULL) {
+            GSpartGetTransform(part, &transform, NULL, NULL);
+            fn_801ED648(&transform);
+            fn_801ED640(1);
+            GSpartFree(part);
+        }
+    }
+    fn_80117E58(floor);
+
+    kind = floorDataBiosGetFloorKind(floor);
+    if (kind == 1) {
+        GSmodelSetShadowBoundExpansion(0, 0);
+        if (*(u32*)((u8*)floor + 0x0C) >= 0x72 &&
+            *(u32*)((u8*)floor + 0x0C) < 0x75) {
+            GSmaterialSetDistanceThreshold(lbl_8047CF70);
+            GSmodelSetShadowTextureSize(0x280, 0x1E0);
+        } else {
+            GSmaterialSetDistanceThreshold(lbl_8047CF78);
+            GSmodelSetShadowTextureSize(0x180, 0x180);
+        }
+    } else if (kind == 4) {
+        GSmodelSetShadowTextureSize(0x280, 0x1E0);
+        GSmaterialSetDistanceThreshold(lbl_8047CF7C);
+        GSmodelSetShadowBoundExpansion(0x0B, 7);
+    }
+
+    if (fn_80115960(floor) != 0) {
+        fn_800F7434(0);
+    }
+    task = fn_800FF560();
+    if (fn_800FF548() == 0) {
+        switch (kind) {
+        case 1:
+            if (fn_801158D0(floor) == 0) fn_8011553C(floor, 0x05960003);
+            fn_800FF3C0(0x0A, task, _floorInitialize__FUi14FloorEnterMode);
+            fn_800FF2A0(0x14, task, _floorUpdate__FUi14FloorEnterMode);
+            fn_800FF178(0x0A, task, fn_801139BC);
+            break;
+        case 2:
+            fn_800FF3C0(0x0F, task, _fightInitialize__FUi14FloorEnterMode);
+            fn_800FF2A0(0x14, task, fn_801EF488);
+            fn_800FF178(0x1E, task, _fightFinalize__FUi14FloorEnterMode);
+            break;
+        case 4:
+            fn_800FF3C0(0x0F, task, _wazaViewerInitialize);
+            fn_800FF2A0(0x14, task, _wazaViewerUpdate);
+            fn_800FF178(0x19, task, _wazaViewerFinalize);
+            break;
+        default:
+            fn_800FF2A0(0x14, task, _floorUpdate__FUi14FloorEnterMode);
+            break;
+        }
+        resource = fn_80115918(floor);
+        if (resource != 0) fn_800FEF8C(0x0F, task, resource);
+        resource = fn_801158D0(floor);
+        if (resource != 0) fn_800FEE68(0x0F, task, resource);
+        resource = fn_80115888(floor);
+        if (resource != 0) fn_800FED3C(0x0F, task, resource);
+        callback = floorDataBiosGetPreFunc(floor);
+        if (callback != NULL) fn_800FF3C0(0x0F, task, callback);
+        callback = floorDataBiosGetPostFunc(floor);
+        if (callback != NULL) fn_800FF178(0x0F, task, callback);
+        if (floorDataBiosGetMainFunc(floor) != NULL) {
+            fn_800FF2A0(0x0F, task, fn_80112F8C);
+        }
+    }
 }
 #pragma pop
 
