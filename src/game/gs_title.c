@@ -2985,9 +2985,7 @@ asm void fn_800210F0(void) {
 #include "src/game/gs_title_fn_800210F0.inc"
 }
 #else
-s32 fn_800210F0(arg0, arg1)
-u32 arg0;
-u32* arg1;
+s32 fn_800210F0(void)
 {
     extern u8 lbl_802EF0A8[];
     extern u8 lbl_803A1FF8[];
@@ -3010,7 +3008,7 @@ u32* arg1;
     extern s32 menuNameEntryOpen(s32, s32);
     extern void menuNameEntryGetLastName(void*);
     extern void savedataCreate(u32, const void*);
-    extern void fn_80166A50(s32, s32, s32, s32);
+    extern void fn_80165A20(s32, s32, s32);
     extern void fn_800056E4(u8);
     extern void fn_800056EC(f32);
     extern void floorLink(s32, s32);
@@ -3019,14 +3017,9 @@ u32* arg1;
     extern s32 fn_801EF274(void);
     s32 state;
     s32 loop;
-    s32 slot;
-    s32 pokemon;
-    s32 data;
-    s32 yesno;
+    s32 result;
     s32 workA;
     s32 workB;
-    s16 motionA;
-    s16 motionB;
     u8 nameBuf[0x10];
 
     state = 0;
@@ -3042,9 +3035,12 @@ u32* arg1;
         case 1:
             (&lbl_8047A360)[1] = 1;
             menuOpen(0x7F, 0);
-            slot = menuOpenCustom(0xAA, windowGetActiveID(),
-                                  &lbl_8047A360, 0, 1, 0);
-            if (slot == 0) {
+            result = menuOpenCustom(0xAA, windowGetActiveID(),
+                                    &lbl_8047A360, 0, 1, 0);
+            if (result < 0) {
+                lbl_8047A360 = -1;
+            }
+            if (result == 0) {
                 state = 5;
                 break;
             }
@@ -3053,15 +3049,15 @@ u32* arg1;
             case 0:
                 break;
             case 1:
+                state = 2;
+                break;
+            case 2:
                 menuColosseumBattle(0);
                 loop = 0;
                 break;
-            case 2:
+            case 3:
                 menuColosseumBattle(3);
                 loop = 0;
-                break;
-            case 3:
-                state = 2;
                 break;
             case 4:
                 (&lbl_8047A360)[1] = 4;
@@ -3101,14 +3097,13 @@ u32* arg1;
             menuModelSetMotion(lbl_803A1FF8, workA);
             workA = fn_80005748();
             workB = fn_801EF214();
-            slot = fn_801EF274();
-            msgctrlSetValue(0x4C, (void*)slot);
-            msgctrlSetValue(0x2F, (void*)slot);
+            result = fn_801EF274();
+            msgctrlSetValue(0x4C, (void*)workA);
+            msgctrlSetValue(0x2F, (void*)result);
             msgctrlSetValue(0x30, (void*)workB);
             menuOpen(0x16, 0);
             winMsgOpen(1, 0x3C22, 0, 1);
-            yesno = (s8)menuSubOpenYesNo(0, 0x3C, 0xD6, 1);
-            if (yesno == 0) {
+            if ((s8)menuSubOpenYesNo(0, 0x3C, 0xD6, 1) == 0) {
                 heroMoveSyncWithHero();
                 fn_80113FE8();
                 state = 0x64;
@@ -3131,13 +3126,13 @@ u32* arg1;
 
         case 5:
             if (gamedatasaveGetStatus(0, 4) == 0) {
-                slot = 0x3C3A;
+                result = 0x3C3A;
             } else if ((u16)fn_8006A718(0) == 1) {
-                slot = 0x44C9;
+                result = 0x44C9;
             } else {
-                slot = 0x3C35;
+                result = 0x3C35;
             }
-            winMsgOpen(2, slot, 1, 1);
+            winMsgOpen(2, result, 1, 1);
             (&lbl_8047A360)[1] = 5;
             state = (s8)menuSubOpenYesNo(0, 0x3C, 0xA6, 1);
             winMsgClose(1);
@@ -3147,7 +3142,7 @@ u32* arg1;
                 menuCloseCustom(0x7F, 0, 1);
                 fn_801CB9D8(lbl_8047A35C);
                 fn_8010A420(lbl_803A1FF8);
-                fn_80166A50(1, 0x3E8, 0xFF, 0);
+                fn_80165A20(1, 0x3E8, 0xFF);
                 menuNameEntryOpen(0, 0);
                 menuNameEntryGetLastName(nameBuf);
                 savedataCreate(0, nameBuf);
@@ -3162,11 +3157,11 @@ u32* arg1;
             break;
 
         case 0x64:
-            slot = (s32)lbl_8047A360;
-            if (slot < 0 || slot >= 5) {
-                slot = 0;
+            result = (s32)lbl_8047A360;
+            if (result < 0 || result >= 5) {
+                result = 0;
             }
-            lbl_8047A358 = slot;
+            lbl_8047A358 = result;
             loop = 0;
             break;
 
