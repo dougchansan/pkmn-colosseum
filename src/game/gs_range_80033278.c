@@ -28,6 +28,361 @@ extern u8 lbl_803F7A30[];
 extern f32 lbl_8047B9F8;
 extern f32 lbl_8047BA28;
 
+s32 _sysvarsProcessData__FP16sysvarsFuncEntryPc(void* entry, char* data)
+{
+    extern u8 lbl_803A3278[];
+    extern u32 lbl_8047A430;
+    extern u32 lbl_8047A434;
+    extern u8 lbl_8047A438;
+    extern u8 lbl_8047A439;
+    extern u32 lbl_8047A43C;
+    extern u32 lbl_8047A444;
+    extern u8 lbl_8047A449;
+    extern u8 lbl_8047A44A;
+    extern u32 lbl_8047A44C;
+    extern u32 lbl_8047A450;
+    extern u8 lbl_8047A454;
+    extern u32 lbl_8047A458;
+    extern f32 lbl_8047B9F8;
+    extern f32 lbl_8047B9FC;
+    extern f32 lbl_8047BA00;
+    extern f64 lbl_8047BA08;
+    extern f64 lbl_8047BA10;
+    extern u8 lbl_8047BA1C[];
+    extern void fn_8003258C(void);
+    extern void fn_800327FC(void);
+    extern s32 fn_80033278(void);
+    extern s32 fn_80032ED8(s32, s32, s32);
+    extern s32 fn_80034280(void);
+    extern void fn_80034830(u8, u8, const void*);
+    extern void fn_80034B5C(u8*, u8*, u8*);
+    extern void* fn_80082EA4(void*, s32, s32, s32);
+    extern void* fn_800836AC(s32, void*, s32);
+    extern s32 fn_800D3088(void);
+    extern s32 fn_800D37CC(void);
+    extern void _threadSwitch(void);
+    extern void fn_800F9E70(void);
+    extern u32 fn_800FA280(u32);
+    extern u8 fn_800FF52C(void);
+    extern void fn_800FF660(void);
+    extern void fn_80102510(void);
+    extern void fn_80102620(void);
+    extern s32 fn_8010264C(void);
+    extern s32 fn_801026A4(void);
+    extern s32 fn_801046B8(void);
+    extern void fn_801069FC(void);
+    extern void fn_80106D3C(void);
+    extern void fn_80113828(s32, s32);
+    extern void fn_8011DCB4(void*, u16);
+    extern s32 fn_8011F1A0(void*);
+    extern void* fn_80129280(s32, s32);
+    extern void fn_8012AC08(void*, s32);
+    extern void fn_80132A38(s32, void*);
+    extern void fn_80165668(s32, s32, s32);
+    extern void fn_80166A28(s32);
+    extern void fn_80166AB8(s32, s32, s32);
+    extern void fn_801C40F0(s32);
+    extern void fn_801C41C8(s32);
+    extern void fn_801D0AFC(s32);
+    extern void* savedataGetStatus(s32, s32);
+    extern void* heroBiosGetPokemonPtr(void*, u8);
+    extern void heroAddPokecoupon(s32, s32);
+    extern void pokemonBiosSetItemDataId(void*, u16);
+    extern void msgctrlSetValue(s32, void*);
+    extern void GScharCpy(void*, const void*);
+    extern u32 fightFloorDataBiosGetPtr(u16);
+    extern u32 fightFloorDataBiosGetName(u32);
+    extern void* GSmsgGetGSchar(u32);
+    extern void fn_8007C764(u8);
+    extern void fn_8007C7A8(s32);
+    extern s32 menuOpen(s32, s32);
+    extern void fn_8007C7EC(void);
+    extern void fn_8007CAB0(void);
+    extern void fn_8007CB54(void*);
+    extern void fn_8007C450(u8, u8, u8, u8, s32);
+    extern void fn_8007C300(u8, u8);
+    extern void fn_8007C414(void);
+    extern void fn_8007C634(void);
+    extern void fn_80082CF0(void*, void*, u8);
+    extern u8 fn_80082738(void*, void*, u8);
+    extern void fn_80082650(void*);
+    extern void fn_80082BA4(void*, void*, u8);
+    extern void fn_80082960(void*, void*, u8);
+    extern void fn_800832C8(s32, void*, u8);
+    extern u16 pcboxDelItem(s32, u16, s32);
+    extern s32 heroItemAddItemDataId(s32, u16, s32, s32);
+    extern void menuClose(s32);
+    extern s32 menuOpenCustom(s32, ...);
+    u8* base;
+    u8* menuState;
+    u8* itemState;
+    void* save;
+    void* party;
+    void* item;
+    s32 stateResult;
+    s32 menuResult;
+    s32 effectType;
+    s32 itemResult;
+    s32 i;
+    s32 current;
+    s32 randomPick;
+    u8 selection;
+    u8 region;
+    f32 progress;
+
+    (void)entry;
+    (void)data;
+
+    base = lbl_803A3278;
+    lbl_8047A438 = 1;
+    menuState = base + 0xBC;
+    itemState = base + 0x10;
+
+    fn_8007C764((u8)(lbl_8047A439 == 0));
+    fn_8007C7A8(1);
+    menuResult = menuOpen(0xA6, 1);
+    fn_8007C7A8(0);
+    if (menuResult != 0) {
+        return 1;
+    }
+    if (lbl_8047A439 != 0) {
+        return 2;
+    }
+
+    while (1) {
+        stateResult = fn_80034280();
+        if (stateResult == 0) {
+            lbl_8047A438 = 0;
+            return 0;
+        }
+        if (stateResult == 1) {
+            lbl_8047A438 = 0;
+            return 2;
+        }
+
+        if (*(s32*)(menuState + 0x0) == 1) {
+            lbl_8047A444 = *(u32*)(menuState + 0xAFC);
+            if (*(u16*)(menuState + 0xB00) != 0) {
+                GScharCpy(base + 0x10, menuState + 0xB00);
+            } else {
+                current = (u16)lbl_8047A444;
+                item = (void*)fightFloorDataBiosGetPtr((u16)current);
+                if (item != NULL) {
+                    GScharCpy(base + 0x10, GSmsgGetGSchar(fightFloorDataBiosGetName((u32)item)));
+                } else {
+                    GScharCpy(base + 0x10, lbl_8047BA1C);
+                }
+            }
+            fn_8007CB54(base + 0x10);
+            msgctrlSetValue(0x4D, base + 0x10);
+            winMsgOpen(8, 0x3B55, 1, 0);
+            winMsgClose(1);
+            lbl_8047A438 = 0;
+            return 2;
+        }
+
+        fn_8007CAB0();
+        lbl_8047A434 = (u32)fn_800836AC(0, menuState, 1);
+        fn_8007C7EC();
+        if (lbl_8047A434 == 0) {
+            winMsgOpen(8, 0x3B91, 1, 0);
+            lbl_8047A438 = 0;
+            return 0;
+        }
+
+        current = (s8)menuState[0x58] - 1;
+        item = fn_80082EA4((void*)lbl_8047A434, current, menuState[0x24], menuState[0x26]);
+        effectType = 4;
+        if (*(u8*)((u8*)item + 0x0C) != 0) {
+            effectType = 2;
+        }
+
+        if (effectType == 3) {
+            selection = 0;
+        } else if (effectType == 4) {
+            selection = 0;
+            fn_80034B5C(&selection, base + 0x48, base + 0x49);
+        } else {
+            selection = 0;
+        }
+
+        if (effectType < 3) {
+            winMsgOpen(8, 0x3B58, 1, 0);
+            winMsgClose(1);
+            lbl_8047A438 = 0;
+            return 2;
+        }
+
+        region = menuState[0x24];
+        current = (s8)menuState[0x5E + (s8)base[0x48]];
+        if (current >= 0) {
+            msgctrlSetValue(0x31, (void*)0x3C7C);
+            msgctrlSetValue(0x4D, menuState + 0x28 + (s8)base[0x48] * 0x10);
+            msgctrlSetValue(0x57, menuState + 0x38 + (s8)base[0x48] * 0x10);
+            fn_8007C450(menuState[0x08], base[0x48], region, menuState[0x26], 6);
+            winMsgOpen(8, 0x3B5B, 1, 0);
+            winMsgClose(1);
+            fn_8007C414();
+            lbl_8047A438 = 0;
+            return 2;
+        }
+
+        fn_8007C450(menuState[0x08], base[0x48], menuState[0x24], menuState[0x26], 1);
+        fn_80166A28(0x4C5);
+        progress = lbl_8047B9F8;
+        while (progress < lbl_8047B9FC) {
+            _threadSwitch();
+            progress += (f32)fn_800D3088() / (f32)fn_800D37CC();
+        }
+        winMsgOpen(8, 0x3B6D, 1, 0);
+        fn_801D0AFC(0);
+        save = savedataGetStatus(0, 2);
+        for (i = 0; i < 6; i++) {
+            party = heroBiosGetPokemonPtr(save, (u8)i);
+            pokemonBiosSetItemDataId(party, *(u16*)(base + 0xB0 + i * 2));
+        }
+
+        while (1) {
+            current = (s8)base[0x48];
+            itemResult = fn_80032ED8((s32)(menuState + 0x3AC + (s8)menuState[0x5B + current] * 0x28),
+                                     8, (s32)itemState);
+            menuOpenCustom(0xA6, windowGetActiveID(), 0, 0, 0, 1, itemState);
+            fn_8007C300(menuState[0x08], base[0x48]);
+            if (itemResult == 2) {
+                break;
+            }
+            fn_8007C450(menuState[0x08], base[0x48], menuState[0x24], -1, 7);
+            fn_80166A28(0x4C6);
+            progress = lbl_8047B9F8;
+            while (progress < lbl_8047B9FC) {
+                _threadSwitch();
+                progress += (f32)fn_800D3088() / (f32)fn_800D37CC();
+            }
+            fn_8007CAB0();
+            if (fn_80082738((void*)lbl_8047A434, menuState, base[0x48]) != 0) {
+                fn_8007C414();
+                fn_8007C634();
+                fn_8007CAB0();
+                fn_80082650((void*)lbl_8047A434);
+            }
+            fn_8007C414();
+            fn_8007C7EC();
+            lbl_8047A438 = 0;
+            return 2;
+        }
+
+        fn_8007C450(menuState[0x08], base[0x48], menuState[0x24], menuState[0x26], 2);
+        progress = lbl_8047B9F8;
+        while (progress < lbl_8047B9FC) {
+            _threadSwitch();
+            progress += (f32)fn_800D3088() / (f32)fn_800D37CC();
+        }
+        fn_8007C450(menuState[0x08], base[0x48], menuState[0x24], menuState[0x26], 4);
+        fn_80166A28(0x3C6);
+        progress = lbl_8047B9F8;
+        while (progress < lbl_8047B9FC) {
+            _threadSwitch();
+            progress += (f32)fn_800D3088() / (f32)fn_800D37CC();
+        }
+        fn_80166AB8(0x3CC, 0, 0);
+        heroAddPokecoupon(0, 0x32);
+        winMsgOpen(8, 0x3B72, 1, 0);
+
+        current = (s8)base[0x48];
+        selection = 1;
+        if ((s8)menuState[0x5E + current] >= 0) {
+            for (i = 0; i < (s8)menuState[0x5A]; i++) {
+                item = fn_80082EA4((void*)lbl_8047A434, current, menuState[0x24], (u8)i);
+                if (*(u8*)((u8*)item + 0x0C) == 0) {
+                    selection = 0;
+                    break;
+                }
+            }
+        } else {
+            selection = 0;
+        }
+
+        if (selection == 0) {
+            fn_80082BA4((void*)lbl_8047A434, menuState, base[0x48]);
+            fn_8007C450(menuState[0x08], base[0x48], menuState[0x24], -1, 1);
+            fn_80166A28(0x4C5);
+            progress = lbl_8047B9F8;
+            while (progress < lbl_8047B9FC) {
+                _threadSwitch();
+                progress += (f32)fn_800D3088() / (f32)fn_800D37CC();
+            }
+            winMsgOpen(8, 0x3B74, 1, 0);
+            current = (s8)base[0x48];
+            itemResult = fn_80032ED8((s32)(menuState + 0x3AC + (s8)menuState[0x5E + current] * 0x28),
+                                     9, (s32)itemState);
+            menuOpenCustom(0xA6, windowGetActiveID(), 0, 0, 0, 1, itemState);
+            fn_8007C300(menuState[0x08], base[0x48]);
+            if (itemResult != 2) {
+                fn_8007C450(menuState[0x08], base[0x48], menuState[0x24], -1, 7);
+                fn_80166A28(0x4C6);
+                progress = lbl_8047B9F8;
+                while (progress < lbl_8047B9FC) {
+                    _threadSwitch();
+                    progress += (f32)fn_800D3088() / (f32)fn_800D37CC();
+                }
+                fn_8007CAB0();
+                fn_80082960((void*)lbl_8047A434, menuState, base[0x48]);
+                fn_8007C414();
+                fn_8007C634();
+                fn_8007CAB0();
+                fn_80082650((void*)lbl_8047A434);
+                fn_8007C414();
+                fn_8007C7EC();
+                lbl_8047A438 = 0;
+                return 2;
+            }
+            fn_8007C450(menuState[0x08], base[0x48], menuState[0x24], menuState[0x26], 4);
+            progress = lbl_8047B9F8;
+            while (progress < lbl_8047B9FC) {
+                _threadSwitch();
+                progress += (f32)fn_800D3088() / (f32)fn_800D37CC();
+            }
+        }
+
+        item = fn_80082EA4((void*)lbl_8047A434, (s8)base[0x48], menuState[0x24], menuState[0x26]);
+        fn_80034830(*(u8*)((u8*)item + 0x0C), base[0x48], item);
+        lbl_8047A43C++;
+        if (*(u8*)((u8*)item + 0x0D) != 0) {
+            randomPick = fn_800FA280(2);
+            effectType = (*(u8*)((u8*)item + 0x0E) >> (randomPick * 4)) & 0xF;
+            if (effectType == 0) {
+                effectType = 1;
+            }
+            switch (effectType) {
+            case 1:
+                winMsgOpen(8, 0x3B76, 1, 0);
+                break;
+            case 2:
+                winMsgOpen(8, 0x3B77, 1, 0);
+                break;
+            case 3:
+                winMsgOpen(8, 0x3B78, 1, 0);
+                break;
+            case 4:
+                winMsgOpen(8, 0x3B79, 1, 0);
+                break;
+            default:
+                winMsgOpen(8, 0x3B76, 1, 0);
+                break;
+            }
+            winMsgClose(1);
+        }
+
+        if (fn_800FF52C() != 0) {
+            fn_800FF660();
+        } else {
+            fn_80113828(0x80, 0);
+        }
+        lbl_8047A438 = 0;
+        return 0;
+    }
+}
+
 static void sysvarsWaitForTransfer(void)
 {
     f32 progress;
