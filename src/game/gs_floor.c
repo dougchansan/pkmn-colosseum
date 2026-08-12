@@ -777,10 +777,106 @@ void fn_801013A0(void* archive, u32 resourceArg, u32 modelIndex,
 }
 
 /* 0x8010147C | 0x494 */
-#pragma push
-#pragma optimization_level 0
-#pragma optimizewithasm off
-void fn_8010147C(void) {
-    /* TODO: match -- 1172 bytes at 0x8010147C */
+void fn_8010147C(u32 resource, u32 archive, s32 loadParam, s32 callbackArg) {
+    typedef struct ModelResourceEntry {
+        u8 data[0x40];
+        u32 handle;
+        s32 refs;
+    } ModelResourceEntry;
+    typedef struct ModelPublicData {
+        u32* models;
+        u32 unused;
+        u32* animations;
+    } ModelPublicData;
+    extern u8 lbl_80402518[];
+    extern void* fn_800F9418(u32, u32, s32, s32, void*);
+    extern void fn_80101910(void*);
+    extern void fn_80191F64(void*, u32, u32);
+    extern ModelPublicData* fn_80191ECC(void*, const char*);
+    ModelResourceEntry* table;
+    ModelResourceEntry* object;
+    ModelResourceEntry* copy;
+    ModelPublicData* publicData;
+    s32 modelCount;
+    s32 animationCount;
+    s32 i;
+
+    if (resource == 0 || archive == 0) {
+        return;
+    }
+
+    GSlogWrite(lbl_802717F0 + 0x520);
+    table = (ModelResourceEntry*)lbl_80402518;
+    object = NULL;
+    for (i = 0; i < 128; i++) {
+        if (table[i].refs != 0 && table[i].handle == resource) {
+            object = &table[i];
+            break;
+        }
+    }
+
+    if (object == NULL) {
+        object = fn_800F9418(0x60, 0x20, loadParam, callbackArg,
+                             (void*)fn_80101910);
+        if (object == NULL) {
+            GSlogWrite(lbl_802717F0 + 0x540, 0x44);
+            return;
+        }
+        fn_80191F64(object, resource, archive);
+
+        for (i = 0; i < 128; i++) {
+            if (table[i].refs != 0 && table[i].handle == object->handle) {
+                table[i].refs++;
+                break;
+            }
+        }
+        if (i == 128) {
+            for (i = 0; i < 128; i++) {
+                if (table[i].refs == 0) {
+                    memcpy(&table[i], object, 0x44);
+                    table[i].refs = 1;
+                    break;
+                }
+            }
+        }
+    } else {
+        copy = fn_800F9418(0x60, 0x20, loadParam, callbackArg,
+                           (void*)fn_80101910);
+        if (copy == NULL) {
+            GSlogWrite(lbl_802717F0 + 0x540, 0x44);
+            return;
+        }
+        memcpy(copy, object, 0x44);
+
+        for (i = 0; i < 128; i++) {
+            if (table[i].refs != 0 && table[i].handle == copy->handle) {
+                table[i].refs++;
+                break;
+            }
+        }
+        if (i == 128) {
+            for (i = 0; i < 128; i++) {
+                if (table[i].refs == 0) {
+                    memcpy(&table[i], copy, 0x44);
+                    table[i].refs = 1;
+                    break;
+                }
+            }
+        }
+    }
+
+    publicData = fn_80191ECC(object, lbl_802717F0 + 0x2C8);
+    modelCount = 0;
+    if (publicData->models != NULL) {
+        while (publicData->models[modelCount] != 0) {
+            modelCount++;
+        }
+    }
+    animationCount = 0;
+    if (publicData->animations != NULL) {
+        while (publicData->animations[animationCount] != 0) {
+            animationCount++;
+        }
+    }
+    GSlogWrite(lbl_802717F0 + 0x574, modelCount, animationCount);
 }
-#pragma pop
