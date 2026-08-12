@@ -3421,13 +3421,51 @@ void fn_8018CB5C(u32 groupId, u32 index) {
 
 /* fn_8018CD08 -- not recovered, gap in archive campaign (size 0x978) */
 void* fn_8018CD08(u32 groupId, u32 index, f32 radius, f32 angle) {
+    extern u8 heroMoveIsMember(s32 member);
+    extern u32 heroMoveGetResID(u32* out_group, u32* out_index, s32 member);
+    extern u8* fn_801170A4(u32 groupId, u32 index);
+    extern u32 floorCharacterBiosGetTalkStartType(u8* ptr);
+    extern u32 floorCharacterBiosGetTalkWallThrough(u8* ptr);
+    extern void* floorEventGetTresureList(u32 indexId);
+    extern f64 atan2(f64, f64);
+    extern f64 fabs(f64);
+    extern f64 fmod(f64);
+    extern s32 fn_8010F320(void* from, void* to, u32 flags);
+    extern void GSlogWritef(const char* fmt, ...);
+    extern f32 lbl_8047D83C;
+    extern f32 lbl_8047D814;
+    extern f32 lbl_8047D880;
+    extern f64 lbl_8047D7F0;
+    extern f64 lbl_8047D7A8;
+    extern f64 lbl_8047D820;
+    extern f64 lbl_8047D888;
+
     PeopleEntry* source;
     PeopleEntry* candidate;
-    PeopleInfoBiosEntry* info;
+    PeopleEntry* memberEntry;
+    PeopleInfoBiosEntry* sourceInfo;
+    PeopleInfoBiosEntry* candidateInfo;
+    u8* floorCharacter;
+    void* treasureList;
+    void* part;
     GSvec sourcePosition;
     GSvec candidatePosition;
+    GSvec memberPosition;
+    GSvec delta;
+    GSvec rotation;
     f32 interactionRadius;
+    f32 maxAngle;
+    f32 bestScore;
+    f32 bestAngle;
+    f32 candidateAngle;
+    f32 candidateRange;
+    f32 distance;
+    s32 partIndex;
+    u32 memberGroup;
+    u32 memberIndex;
+    u8 hasMember;
     s32 i;
+    PeopleEntry* best;
 
     source = peopleFindBySelf(peopleFindSelf(groupId, index));
     if (source == NULL) {
@@ -3435,25 +3473,125 @@ void* fn_8018CD08(u32 groupId, u32 index, f32 radius, f32 angle) {
     }
 
     GSvecCopy(&sourcePosition, fn_8018FCBC(source));
-    info = peopleInfoBiosGetPtr(source->scriptRef);
-    interactionRadius =
-        info != NULL ? fn_8018F5E4(info) : lbl_8047D83C;
-    interactionRadius += radius;
+    sourceInfo = peopleInfoBiosGetPtr(source->scriptRef);
+    interactionRadius = sourceInfo != NULL ? fn_8018F5E4(sourceInfo)
+                                           : lbl_8047D83C;
+    interactionRadius += lbl_8047D800 * radius;
+    maxAngle = lbl_8047D814 * angle;
+    best = NULL;
+    bestScore = lbl_8047D880;
+    bestAngle = lbl_8047D7A0;
+
+    hasMember = heroMoveIsMember(1) != 0;
+    memberEntry = NULL;
+    if (hasMember && heroMoveGetResID(&memberGroup, &memberIndex, 1) != 0) {
+        memberEntry = peopleFindBySelf(peopleFindSelf(memberGroup, memberIndex));
+        if (memberEntry != NULL) {
+            fn_8018FC98(memberEntry, &memberPosition);
+        }
+    }
 
     for (i = 0; i < peopleGetMaxCount(); i++) {
         candidate = peopleGetEntry(i);
-        if (!candidate->active || candidate == source ||
-            candidate->animId == 0 || peopleTestFlags(candidate, 1)) {
+        if (candidate->active == 0 || candidate == source) {
+            continue;
+        }
+        if (candidate->animId == 0 || peopleTestFlags(candidate, 1)) {
             continue;
         }
 
-        GSvecCopy(&candidatePosition, fn_8018FCBC(candidate));
-        if (GSvecDistance(&sourcePosition, &candidatePosition) <=
-            interactionRadius) {
-            return candidate;
+        floorCharacter = fn_801170A4(candidate->groupId, candidate->index);
+        if (floorCharacter != NULL &&
+            floorCharacterBiosGetTalkStartType(floorCharacter) == 3)
+        {
+            continue;
+        }
+
+        candidateInfo = peopleInfoBiosGetPtr(candidate->scriptRef);
+        if (candidateInfo == NULL) {
+            continue;
+        }
+
+        partIndex = fn_8018F698(candidateInfo);
+        if (partIndex >= 0) {
+            part = GSmodelGetPart(candidate->modelHandle, partIndex);
+            GSpartGetTransform(part, &candidatePosition, 0, 0);
+            GSpartFree(part);
+        } else {
+            GSvecCopy(&candidatePosition, fn_8018FCBC(candidate));
+        }
+        candidatePosition.y = ((GSvec*)fn_8018FCBC(candidate))->y;
+
+        distance = GSvecDistance(&sourcePosition, &candidatePosition);
+        candidateRange = fn_8018F5E4(candidateInfo);
+        if (distance > interactionRadius + candidateRange) {
+            continue;
+        }
+
+        fn_800E0168(&delta, &candidatePosition, &sourcePosition);
+        candidateAngle = (f32)atan2(delta.x, delta.z);
+        candidateAngle =
+            (f32)fmod(lbl_8047D7F0 + (candidateAngle - source->field_40));
+        if (candidateAngle > lbl_8047D7A8) {
+            candidateAngle = (f32)(candidateAngle - lbl_8047D7F0);
+        } else if (candidateAngle < lbl_8047D820) {
+            candidateAngle = (f32)(candidateAngle + lbl_8047D7F0);
+        }
+        if (fabs(candidateAngle) > maxAngle) {
+            continue;
+        }
+
+        if (floorCharacter != NULL) {
+            if (floorCharacterBiosGetTalkWallThrough(floorCharacter) == 0 &&
+                fn_8010F320(&sourcePosition, &candidatePosition, 0) != 0)
+            {
+                continue;
+            }
+        } else {
+            treasureList = floorEventGetTresureList(candidate->index);
+            if (treasureList != NULL &&
+                (((*(u8*)treasureList) >> 5) & 7) == 1)
+            {
+                fn_8018FC2C(candidate, &rotation);
+                fn_800E0168(&delta, &sourcePosition, &candidatePosition);
+                distance = (f32)atan2(delta.x, delta.z);
+                distance =
+                    (f32)fmod(lbl_8047D7F0 + (distance - rotation.y));
+                if (distance > lbl_8047D7A8) {
+                    distance = (f32)(distance - lbl_8047D7F0);
+                } else if (distance < lbl_8047D820) {
+                    distance = (f32)(distance + lbl_8047D7F0);
+                }
+                if (fabs(distance) > lbl_8047D888) {
+                    continue;
+                }
+            }
+        }
+
+        if (hasMember && memberEntry != NULL &&
+            fn_8018D680(&sourcePosition, &candidatePosition, &memberPosition, candidateRange))
+        {
+            continue;
+        }
+
+        distance = GSvecDistance(&sourcePosition, &candidatePosition);
+        candidateRange = (f32)(0.5 * ((distance * distance) * fabs(candidateAngle)));
+        GSlogWritef((const char*)lbl_80273F90 + 0x118, candidate->groupId,
+                    candidate->index, distance, candidateAngle, candidateRange);
+
+        if (candidateRange < bestScore ||
+            (candidateRange == bestScore &&
+             ((fabs(bestAngle) < fabs(candidateAngle)) ||
+              (fabs(bestAngle) == fabs(candidateAngle) &&
+               candidateAngle > lbl_8047D7A0))))
+        {
+            bestScore = candidateRange;
+            best = candidate;
+            bestAngle = candidateAngle;
         }
     }
-    return NULL;
+
+    return best;
 }
 
 /* fn_8018D7D0 -- not recovered, gap in archive campaign (size 0x158) */
