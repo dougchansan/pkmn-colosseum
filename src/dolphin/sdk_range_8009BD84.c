@@ -552,7 +552,6 @@ void fn_8009CD38(GXColor fg, GXColor bg, const char* msg) {
     extern void VISetBlack(BOOL black);
     extern void VIFlush(void);
     extern u8 lbl_803FB538[];            /* FatalParam + FatalContext */
-#define FatalContext (*(OSContext*)(lbl_803FB538 + 0x10))
     extern void fn_8009CE8C(void);       /* Halt */
     extern BOOL OSDisableInterrupts(void);
     extern BOOL OSEnableInterrupts(void);
@@ -565,8 +564,8 @@ void fn_8009CD38(GXColor fg, GXColor bg, const char* msg) {
 
     OSDisableInterrupts();
     OSDisableScheduler();
-    OSClearContext(&FatalContext);
-    OSSetCurrentContext(&FatalContext);
+    OSClearContext((OSContext*)&lbl_803FB538[0x10]);
+    OSSetCurrentContext((OSContext*)((u8*)(fp + 1) + 4));
     __OSStopAudioSystem();
     AISetStreamVolLeft(0);
     AISetStreamVolRight(0);
@@ -626,7 +625,7 @@ void fn_8009CE8C(void) {
     extern BOOL OSEnableInterrupts(void);
     extern void OSReport(const char* format, ...);
     extern u8 lbl_803FB538[]; /* FatalParam + FatalContext */
-    extern char lbl_80478998[]; /* "%s\n" */
+    extern char lbl_80478998[] __attribute__((section(".sdata"))); /* "%s\n" */
 
     OSFatalParam* fp;
     u32 count;
