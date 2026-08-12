@@ -41,7 +41,7 @@ def _invoke(
             "help_returncode": help_result.returncode,
             "stderr": help_result.stderr[-1200:],
         }
-    argv = [sys.executable, script, *[str(arg) for arg in args]]
+    argv = [sys.executable, str(script), *[str(arg) for arg in args]]
     result = run(argv, cwd=cwd, timeout=timeout)
     record = {
         "tool": script.name,

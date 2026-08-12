@@ -8,7 +8,7 @@ from pathlib import Path
 from unittest import mock
 
 from tools.decomp_work.mwcc_intel import candidates
-from tools.decomp_work.mwcc_intel.analysis import analyze_capture
+from tools.decomp_work.mwcc_intel.analysis import _invoke, analyze_capture
 from tools.decomp_work.mwcc_intel.common import IntelError, SUPPORTED_COMPILERS, require_within
 from tools.decomp_work.mwcc_intel.compare import compare_captures
 from tools.decomp_work.mwcc_intel.discovery import compiler_record, discover_mwcc_root
@@ -245,6 +245,17 @@ class SandboxTests(unittest.TestCase):
 
 
 class AnalysisTests(unittest.TestCase):
+    def test_invoke_records_json_serializable_paths(self):
+        completed = mock.Mock(returncode=0, stdout="", stderr="")
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            script = root / "tool.py"
+            with mock.patch("tools.decomp_work.mwcc_intel.analysis.run", return_value=completed):
+                record = _invoke(script, [root / "input.json"], cwd=root)
+
+        json.dumps(record)
+        self.assertTrue(all(isinstance(arg, str) for arg in record["argv"]))
+
     def test_missing_capture_artifacts_are_reported_without_blind_invocation(self):
         with tempfile.TemporaryDirectory() as temporary:
             repo = Path(temporary)
