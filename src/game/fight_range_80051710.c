@@ -12,6 +12,11 @@ typedef struct DebugTrainerPartData {
     u32 words[5];
 } DebugTrainerPartData;
 
+typedef struct DebugTrainerPartBackup {
+    s32 pad;
+    DebugTrainerPartData data;
+} DebugTrainerPartBackup;
+
 s32 fn_80051710(u32 trainerId)
 {
     extern DebugTrainerPartData* fightTrainerPokemonPartDataBiosGetPtr(u16);
@@ -24,33 +29,31 @@ s32 fn_80051710(u32 trainerId)
     extern void fightTrainerSetStatus(u32, u32, u32, u32, s32);
     extern void menuSubCloseNumberInput(void);
     extern s8 menuSubOpenYesNo(s32, s32, s32, s32);
-    DebugTrainerPartData saved;
+    DebugTrainerPartBackup saved;
     DebugTrainerPartData* data;
-    u16 id;
     s32 result;
     s32 item;
 
-    id = trainerId;
-    if (id == 0) {
+    if ((u16)trainerId == 0) {
         return 1;
     }
 
-    data = fightTrainerPokemonPartDataBiosGetPtr(id);
-    saved = *data;
+    data = fightTrainerPokemonPartDataBiosGetPtr((u16)trainerId);
+    saved.data = *data;
     for (;;) {
-        result = menuOpenCustom(0x8D, 0, 0, 0, 1, 1, id);
+        result = menuOpenCustom(0x8D, 0, 0, 0, 1, 1, (u16)trainerId);
         if (result == -1) {
             menuCloseCustom(0x8D, 0, 1);
-            *data = saved;
+            *data = saved.data;
             return -1;
         }
         if (result == -2) {
-            if (menuOpen(0x44, 1) == 0) {
+            if (menuOpen(0x44, 1) != 0) {
                 menuCloseCustom(0x44, 0, 1);
-                break;
+                continue;
             }
             menuCloseCustom(0x44, 0, 1);
-            continue;
+            break;
         }
 
         item = menuGetCursorItemID(0x8D);
