@@ -42,8 +42,121 @@
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
+void fn_800E0168(void* dst, void* lhs, void* rhs);
+static inline void cameraSqrt(f32* result);
+void GSlerpGetLinearInterpolationVector(void* dst, void* src, void* target, f32 t);
+u8 fn_801174C4(void);
+u8 fn_801174EC(void);
+s32 fn_800D3088(void);
+u8 GScameraHasAnimationEnded(GSRenderCamera* camera);
+u8 GScameraIsAnimating(GSRenderCamera* camera);
+s32 fn_800D37CC(void);
 void cameraUpdate(u32 captureIndex) {
-    /* TODO: match -- 3064 bytes at 0x80177A64 */
+    GSRenderCamera* camera;
+    CameraPadState* state;
+    GSRenderCamera* animation;
+    GSSceneVec3 delta;
+
+    (void)captureIndex;
+
+    camera = (GSRenderCamera*)GSresGetResource(0, 0);
+    state = (CameraPadState*)lbl_80478C40;
+    if (state->flags[0] != 1) {
+        return;
+    }
+
+    if (state->targetMoveActive != 0) {
+        state->targetMoveTime += (f32)fn_800D3088() / (f32)fn_800D37CC();
+        if (state->targetMoveTime >= state->targetMoveDuration) {
+            GSvecCopy(&state->position, &state->targetMoveEnd);
+            state->targetMoveTime = lbl_8047D740;
+            state->targetMoveActive = 0;
+        } else {
+            GSlerpGetLinearInterpolationVector(
+                &state->position, &state->targetMoveStart, &state->targetMoveEnd,
+                state->targetMoveTime / state->targetMoveDuration);
+        }
+    }
+
+    if (state->targetOffsetMoveActive != 0) {
+        state->targetOffsetMoveTime += (f32)fn_800D3088() / (f32)fn_800D37CC();
+        if (state->targetOffsetMoveTime >= state->targetOffsetMoveDuration) {
+            GSvecCopy(&state->view, &state->targetOffsetMoveEnd);
+            state->targetOffsetMoveTime = lbl_8047D740;
+            state->targetOffsetMoveActive = 0;
+        } else {
+            GSlerpGetLinearInterpolationVector(
+                &state->view, &state->targetOffsetMoveStart,
+                &state->targetOffsetMoveEnd,
+                state->targetOffsetMoveTime / state->targetOffsetMoveDuration);
+        }
+    }
+
+    if (state->positionMoveActive != 0) {
+        state->positionMoveTime += (f32)fn_800D3088() / (f32)fn_800D37CC();
+        if (state->positionMoveTime >= state->positionMoveDuration) {
+            GSvecCopy(&state->direction, &state->positionMoveEnd);
+            state->positionMoveTime = lbl_8047D740;
+            state->positionMoveActive = 0;
+        } else {
+            GSlerpGetLinearInterpolationVector(
+                &state->direction, &state->positionMoveStart,
+                &state->positionMoveEnd,
+                state->positionMoveTime / state->positionMoveDuration);
+        }
+    }
+
+    if (state->rotationMoveActive != 0) {
+        state->rotationMoveTime += (f32)fn_800D3088() / (f32)fn_800D37CC();
+        if (state->rotationMoveTime >= state->rotationMoveDuration) {
+            GSvecCopy(&state->rotation, &state->rotationMoveEnd);
+            state->rotationMoveTime = lbl_8047D740;
+            state->rotationMoveActive = 0;
+        } else {
+            GSlerpGetLinearInterpolationVector(
+                &state->rotation, &state->rotationMoveStart,
+                &state->rotationMoveEnd,
+                state->rotationMoveTime / state->rotationMoveDuration);
+        }
+    }
+
+    switch (state->mode) {
+    case 0:
+    case 1:
+    case 5:
+        if ((u8)fn_801174C4() != 0 && (u8)fn_801174EC() != 0) {
+            GSvecAdd(&delta, &state->position, &state->view);
+            fn_800E0168(&delta, &delta, &state->direction);
+            state->height = delta.y;
+            delta.x = delta.x * delta.x + delta.z * delta.z;
+            cameraSqrt(&delta.x);
+            state->distance = delta.x;
+            if (state->rotationMoveActive == 0 && state->positionMoveActive != 0) {
+                state->rotation.y = (f32)atan2(delta.x, delta.z);
+            }
+        }
+        break;
+    case 6:
+        animation =
+            (GSRenderCamera*)GSresGetResource(state->animationGroup, state->animationId);
+        if (animation == 0) {
+            animation = (GSRenderCamera*)fn_800F92D4(state->animationId);
+        }
+        if (animation != 0 && GScameraIsAnimating(animation) != 0 &&
+            GScameraHasAnimationEnded(animation) == 0) {
+            return;
+        }
+        break;
+    default:
+        break;
+    }
+
+    if (state->targetMoveActive == 0 && state->targetOffsetMoveActive == 0 &&
+        state->positionMoveActive == 0 && state->rotationMoveActive == 0) {
+        state->flags[0] = 0;
+    }
+
+    (void)camera;
 }
 #pragma pop
 #pragma push
