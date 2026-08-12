@@ -172,6 +172,10 @@ static HSD_TObj* lbl_8047B37C = NULL;      /* tobj_head */
 
 static void TObjSetupMtx(HSD_TObj* tobj);
 
+#ifndef HSD_TOBJ_SETUP_TEXGEN
+#define HSD_TOBJ_SETUP_TEXGEN HSD_Index2TexCoord
+#endif
+
 /* ------------------------------------------------------------------ */
 /*  sysdolphin's small deallocators.  They are always inlined; keeping  */
 /*  them as functions is what makes the caller load the pointer once.   */
@@ -832,7 +836,7 @@ void HSD_TObjSetup(HSD_TObj* tobj)
 
     num = HSD_TObjAssignResources(tobj);
     if (num > 0) {
-        HSD_StateRegisterTexGen(HSD_Index2TexCoord(num - 1));
+        HSD_StateRegisterTexGen(HSD_TOBJ_SETUP_TEXGEN(num - 1));
     }
 
     for (; tobj != NULL; tobj = tobj->next) {
