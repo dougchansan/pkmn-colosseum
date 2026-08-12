@@ -100,7 +100,226 @@ typedef struct UICmdMsg {
 extern MenuCBBattleStartState lbl_803A9A60;
 extern u8 lbl_803A9E40[];
 
-extern void fn_8005DFC8(void* arg);
+void fn_8005DFC8(void* arg)
+{
+    extern u8 fn_80069048(void);
+    extern u32 fn_800D3088(void);
+    extern s32 fn_800D37CC(void);
+    extern s32 fn_801666BC(u32);
+    extern s32 toolentryTaisenGetBattleType(void);
+    extern s32 menuCBPokemonEntryGetReadFlag(void);
+    extern void fn_80060A28(void);
+    extern void fn_8017B000();
+    extern void _menuCBBattleStartDispTrainerTexCallBack__FlPvl(void);
+    extern void winSeqSetMenu(s32 sequence, s32 menu);
+    extern const f32 lbl_8047BF60;
+    extern const f32 lbl_8047BF64;
+    extern const f32 lbl_8047BF68;
+    extern const f32 lbl_8047BF6C;
+    extern const f32 lbl_8047BF70;
+    extern const f32 lbl_8047BF74;
+    extern const f32 lbl_8047BF78;
+    extern const f32 lbl_8047BF7C;
+
+    MenuCBBattleStartState* state = &lbl_803A9A60;
+    MenuCBBattleStartPlayerLayout* player;
+    MenuCBBattleStartPosition* position;
+    f32* pair;
+    f32 delta_time;
+    f32 diff;
+    f32 step;
+    int i;
+    int j;
+    int ready;
+    u8* state_bytes = (u8*) state;
+    u8* arg_bytes = (u8*) arg;
+
+#define STATE_U8(off) (*(u8*) (state_bytes + (off)))
+#define STATE_U32(off) (*(u32*) (state_bytes + (off)))
+#define STATE_F32(off) (*(f32*) (state_bytes + (off)))
+
+    delta_time = (f32) ((f64) fn_800D3088() / (f64) fn_800D37CC());
+    state->deltaTime = delta_time;
+
+    switch (STATE_U32(0x38)) {
+    case 0:
+        if (!menuCBPokemonEntryGetReadFlag()) {
+            break;
+        }
+        if (STATE_U8(0x34) == 0) {
+            STATE_U8(0x34) = 0;
+            STATE_U32(0x2C) = 0;
+            if (toolentryTaisenGetBattleType() == 2) {
+                STATE_U32(0x30) = 4;
+            } else {
+                STATE_U32(0x30) = 2;
+            }
+            STATE_U32(0x0C) = 0;
+            STATE_U32(0x10) = 0;
+            STATE_U32(0x14) = 0;
+            STATE_U32(0x18) = 0;
+            STATE_U32(0x1C) = 0;
+            STATE_U32(0x20) = 0;
+            STATE_U32(0x24) = 0;
+            STATE_U32(0x28) = 0;
+            STATE_U8(0x34) = 1;
+            if (toolentryTaisenGetBattleType() == 2) {
+                fn_8017B000(0x5C4, 0,
+                            _menuCBBattleStartDispTrainerTexCallBack__FlPvl, 0,
+                            0);
+            } else {
+                fn_8017B000(0x5C3, 0,
+                            _menuCBBattleStartDispTrainerTexCallBack__FlPvl, 0,
+                            0);
+            }
+            STATE_U32(0x38) = 1;
+        } else {
+            STATE_U32(0x38) = 2;
+        }
+        break;
+
+    case 1:
+        if (menuCBPokemonEntryGetReadFlag() && STATE_U8(0x34) != 0) {
+            STATE_U32(0x38) = 2;
+        }
+        break;
+
+    case 2:
+        fn_80060A28();
+        ready = 1;
+        for (i = 0; i < 4; i++) {
+            player = &state->players[i];
+            for (j = 0; j < 6; j++) {
+                if (player->view.side[j] != player->view.alpha[j]) {
+                    ready = 0;
+                    goto finish_check;
+                }
+            }
+        }
+        for (i = 0; i < 4; i++) {
+            position = &state->trainerPositions[i];
+            if (position->y != position->z) {
+                ready = 0;
+                goto finish_check;
+            }
+        }
+        if (state->transitions.current[0] != state->transitions.target[0] ||
+            state->transitions.current[1] != state->transitions.target[1])
+        {
+            ready = 0;
+            goto finish_check;
+        }
+        STATE_U8(0x368) = 1;
+    finish_check:
+        if (!ready) {
+            break;
+        }
+        if (state->status == 0) {
+            STATE_U32(0x38) = 3;
+            STATE_F32(0x3B8) = lbl_8047BF60;
+        } else {
+            STATE_U32(0x38) = 4;
+        }
+        break;
+
+    case 3:
+        STATE_F32(0x3B8) += delta_time;
+        if (STATE_F32(0x3B8) >= lbl_8047BF64) {
+            STATE_U32(0x38) = 0xA;
+        }
+        break;
+
+    case 4:
+        ready = 1;
+        for (i = 0; i < 4; i++) {
+            player = &state->players[i];
+            for (j = 0; j < 6; j++) {
+                if (player->maxHp[j] != player->hp[j]) {
+                    step = player->maxHpDisplay[j] * state->deltaTime;
+                    step *= lbl_8047BF68;
+                    player->maxHp[j] -= step;
+                    if (player->maxHp[j] < player->hp[j]) {
+                        player->maxHp[j] = player->hp[j];
+                    }
+                    ready = 0;
+                }
+            }
+        }
+        if (ready) {
+            STATE_U32(0x38) = 5;
+        }
+        break;
+
+    case 5:
+        state->model.scale += delta_time;
+        if (state->model.scale >= lbl_8047BF6C) {
+            STATE_U32(0x38) = 6;
+        }
+        break;
+
+    case 6:
+        pair = &state->field358;
+        for (i = 0; i < 2; i++, pair += 2) {
+            if (pair[0] != pair[1]) {
+                diff = pair[1] - pair[0];
+                step = lbl_8047BF70 * diff * state->deltaTime;
+                if (step > lbl_8047BF70) {
+                    step = lbl_8047BF70;
+                }
+                if (step <= lbl_8047BF74) {
+                    step = lbl_8047BF74;
+                }
+                pair[0] += step;
+                diff = pair[1] - pair[0];
+                if (step <= lbl_8047BF60) {
+                    step = -step;
+                }
+                if (diff <= lbl_8047BF60) {
+                    diff = -diff;
+                }
+                if (diff <= step) {
+                    pair[0] = pair[1];
+                }
+            }
+        }
+        diff = state->field358 - state->field35C;
+        if (diff <= lbl_8047BF60) {
+            diff = -diff;
+        }
+        if (diff <= lbl_8047BF78) {
+            STATE_U32(0x38) = 7;
+            STATE_F32(0x3B8) = lbl_8047BF60;
+        }
+        break;
+
+    case 7:
+        STATE_F32(0x3B8) += delta_time;
+        if (STATE_F32(0x3B8) >= lbl_8047BF7C) {
+            STATE_U32(0x38) = 8;
+        }
+        break;
+
+    case 8:
+        STATE_U32(0x38) = 9;
+        break;
+
+    case 0xA:
+        if (fn_801666BC(STATE_U32(0x3BC)) == 0) {
+            STATE_U32(0x38) = 0xB;
+        }
+        break;
+
+    case 0xB:
+        STATE_U32(0x38) = 0x64;
+        winSeqSetMenu(*(u32*) (arg_bytes + 4), 0x1C6);
+        arg_bytes[2] = 1;
+        break;
+    }
+
+#undef STATE_F32
+#undef STATE_U32
+#undef STATE_U8
+}
 
 #pragma push
 #pragma peephole off
