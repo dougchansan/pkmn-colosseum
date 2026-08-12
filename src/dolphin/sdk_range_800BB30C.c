@@ -976,21 +976,23 @@ void fn_800BD768(f32* projection) {
 
 void fn_800BD7A0(u32 xOrigin, u32 yOrigin, u32 width, u32 height) {
     GXData_800BB30C* p = gx;
+    u32* scissorTL;
     u32* scissorBR;
-    u32 x0;
-    u32 y0;
-    u32 x1;
-    u32 y1;
+    u32 top;
+    u32 left;
+    u32 bottom;
+    u32 right;
 
-    x0 = xOrigin + 0x156;
-    y0 = yOrigin + 0x156;
-    x1 = x0 + width - 1;
-    y1 = y0 + height - 1;
+    top = 0x156 + yOrigin;
+    left = xOrigin + 0x156;
+    bottom = top + height - 1;
+    right = left + width - 1;
+    scissorTL = &p->scissorTL;
     scissorBR = &p->scissorBR;
-    p->scissorTL = (p->scissorTL & ~0x7FFU) | y0;
-    p->scissorTL = (p->scissorTL & ~0x7FF000U) | (x0 << 12);
-    p->scissorBR = (*scissorBR & ~0x7FFU) | y1;
-    p->scissorBR = (*scissorBR & ~0x7FF000U) | (x1 << 12);
+    *scissorTL = (*scissorTL & ~0x7FFU) | top;
+    *scissorTL = (*scissorTL & ~0x7FF000U) | (left << 12);
+    *scissorBR = (*scissorBR & ~0x7FFU) | bottom;
+    *scissorBR = (*scissorBR & ~0x7FF000U) | (right << 12);
     GX_BP_REG(p->scissorTL);
     GX_BP_REG(p->scissorBR);
     p->field_002 = 0;
