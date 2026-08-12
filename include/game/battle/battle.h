@@ -464,7 +464,7 @@ typedef struct GStexture GStexture;
 /* battleCameraStartWaza */ void battleCameraStartWaza(void* owner, void* sequence); /* dispatcher 0x3E0 */
 /* fn_801D349C */ void fn_801D349C(void);                        /* state machine A 0xAE0 */
 /* fn_801D3F7C */ void fn_801D3F7C(void);                        /* state machine B 0x548 */
-/* _wazaSequenceCameraDoFOV__FP13ModelSequenceP24wazaSequenceCameraParamsif */ void _wazaSequenceCameraDoFOV__FP13ModelSequenceP24wazaSequenceCameraParamsif(void);                        /* state machine C 0x514 */
+/* _wazaSequenceCameraDoFOV__FP13ModelSequenceP24wazaSequenceCameraParamsif */ void _wazaSequenceCameraDoFOV__FP13ModelSequenceP24wazaSequenceCameraParamsif(void* modelSequence, void* cameraParams, s32 flags, s32 shift);                        /* state machine C 0x514 */
 /* fn_801D49D8 */ void fn_801D49D8(void);                        /* state machine D 0x3C8 */
 /* fn_801D624C */ void fn_801D624C(void);                        /* mega-function 0x818 */
 
