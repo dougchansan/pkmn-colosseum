@@ -814,9 +814,51 @@ u8 fn_800E0E14(u32 verbose, u32 dumpMap) {
         block = next;
     }
 
+    allocatedCount = 0;
+    {
+        GSAllocDescCheck* desc;
+        for (desc = (GSAllocDescCheck*)lbl_8047AB34;
+             desc >= (GSAllocDescCheck*)lbl_8047AB38; desc--) {
+            u32 sum;
+            u32 i;
+
+            if (desc->used == 0) {
+                continue;
+            }
+            allocatedCount++;
+            if ((u32)desc->data < lbl_8047AB68 ||
+                (u32)(desc->data + desc->size) > lbl_8047AB38) {
+                GSlogWrite((char*)lbl_80270658 + 0x180);
+                ok = 0;
+            }
+            if (*(u8*)&lbl_8047AB28 != 0) {
+                if (*(u32*)desc->data != 0 ||
+                    *(u32*)(desc->data + desc->size - 4) != 0) {
+                    GSlogWrite((char*)lbl_80270658 + 0x1ac, desc->used);
+                    ok = 0;
+                    *(u32*)desc->data = 0;
+                    *(u32*)(desc->data + desc->size - 4) = 0;
+                }
+                if (desc->locked == 0) {
+                    sum = 0x3D94;
+                    for (i = 0; i + 1 < desc->size; i += 2) {
+                        sum += *(u16*)(desc->data + i);
+                    }
+                    if ((desc->size & 1) != 0) {
+                        sum += desc->data[desc->size - 1];
+                    }
+                    if (desc->checksum != (u16)sum) {
+                        GSlogWrite((char*)lbl_80270658 + 0x1d8,
+                                   desc->used);
+                        ok = 0;
+                    }
+                }
+            }
+        }
+    }
+
     cursor = (u8*)lbl_8047AB68;
     end = (u8*)lbl_8047AB38;
-    allocatedCount = 0;
     while (cursor < end) {
         GSAllocDescCheck* desc;
         GSAllocDescCheck* found;
@@ -831,7 +873,6 @@ u8 fn_800E0E14(u32 verbose, u32 dumpMap) {
             }
         }
         if (found != NULL && found->used != 0) {
-            allocatedCount++;
             size = found->size;
             if (dumpMap != 0) {
                 GSlogWrite((char*)lbl_80270658 + 0x21c, cursor,
