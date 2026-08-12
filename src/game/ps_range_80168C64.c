@@ -246,6 +246,8 @@ extern void PSVECCrossProduct(const Vec* a, const Vec* b, Vec* out);
 extern void HSD_CObjGetUpVector(void* camera, Vec* up);
 extern f32 lbl_8047D6B4;
 extern f32 lbl_8047D5CC;
+extern f32 lbl_8047D5C8;
+extern f32 lbl_8047D5D0;
 extern f32 lbl_8047D618;
 extern f64 lbl_8047D5E0;
 extern f32 lbl_8047D5D8;
@@ -280,16 +282,23 @@ extern void fn_800BD554(s32 mode);
 extern void fn_800BCEBC(s32 mode);
 extern void HSD_FogSet(void* fog);
 extern void fn_800B7D3C(void);
+extern void fn_800B7D74(u32 vtxfmt, u32 attr, u32 cnt, u32 type, u8 frac);
 extern void fn_800B7874(s32 attribute, s32 type);
 extern void fn_800B928C(s32 primitive, s32 format, s32 count);
 extern void fn_800B9404(s32 width, s32 offset);
 extern void fn_800B944C(s32 width, s32 offset);
+extern void fn_800B9494(u32 chan, u32 enable0, u32 enable1);
+extern void fn_800B94F0(u32 value);
+extern void fn_800B84E0(u32 attr, u32 value, u8 value2);
 extern void generateParticle_8017424C(PSGeneratorState* gen);
 extern void HSD_MulColor(GXColor* a, GXColor* b, GXColor* dest);
 extern void fn_800060F0(const char* file, s32 line, const char* message, ...);
 extern void PSMTXInverse(const Mtx source, Mtx destination);
 extern void fn_800BD454(f32* projection);
+extern void fn_801A958C(f32 src[3][4], f32 dst[3][4], char axis0, char axis1);
 extern void (*lbl_8047B198)(PSGeneratorState*, Mtx);
+extern const u8 lbl_802738B8[176];
+extern u8 lbl_8036BFC0[];
 
 #if !defined(PR410_PS_TARGET_ONLY)
 
@@ -1182,7 +1191,7 @@ s32 psInitAppSRT(s32 count, s32 size) {
  */
 void fn_8016AB94(u32 linkMask, s32 mode) {
     s32 linkNo;
-    s32 initialized = FALSE;
+    s32 needsInit = TRUE;
 
     if (mode == 0) {
         u8 frame = lbl_80478C30;
@@ -1221,8 +1230,12 @@ void fn_8016AB94(u32 linkMask, s32 mode) {
                 void* polygonData = NULL;
                 void** bank = lbl_804528C8[pp->bankIndex];
 
-                if (!initialized) {
-                    initialized = TRUE;
+                if (needsInit) {
+                    f32* view = (f32*)(lbl_80452DE8 + 0xAC);
+                    f32* invView = (f32*)(lbl_80452DE8 + 0x7C);
+                    f32* projection = (f32*)(lbl_80452DE8 + 0x60);
+                    f32* tmp = (f32*)(lbl_80452DE8 + 0x30);
+
                     lbl_8047B168 = -1;
                     lbl_8047B164 = -1;
                     lbl_8047B144 = -1;
@@ -1267,6 +1280,62 @@ void fn_8016AB94(u32 linkMask, s32 mode) {
                         (const f32(*)[4])(lbl_80452DE8 + 0xAC),
                         (f32(*)[4])(lbl_80452DE8 + 0x7C));
                     fn_800BD454((f32*)(lbl_80452DE8 + 0x60));
+
+                    if (projection[0] == lbl_8047D5C8) {
+                        tmp[0] = projection[1] * view[0] + projection[2] * view[8];
+                        tmp[1] = projection[1] * view[1] + projection[2] * view[9];
+                        tmp[2] = projection[1] * view[2] + projection[2] * view[10];
+                        tmp[3] = projection[1] * view[3] + projection[2] * view[11];
+                        tmp[4] = projection[3] * view[4] + projection[4] * view[8];
+                        tmp[5] = projection[3] * view[5] + projection[4] * view[9];
+                        tmp[6] = projection[3] * view[6] + projection[4] * view[10];
+                        tmp[7] = projection[3] * view[7] + projection[4] * view[11];
+                    } else {
+                        tmp[0] = projection[1] * view[0] + projection[2];
+                        tmp[1] = projection[1] * view[1] + projection[2];
+                        tmp[2] = projection[1] * view[2] + projection[2];
+                        tmp[3] = projection[1] * view[3] + projection[2];
+                        tmp[4] = projection[3] * view[4] + projection[4];
+                        tmp[5] = projection[3] * view[5] + projection[4];
+                        tmp[6] = projection[3] * view[6] + projection[4];
+                        tmp[7] = projection[3] * view[7] + projection[4];
+                    }
+
+                    lbl_8047B160 = invView[0] + invView[1];
+                    lbl_8047B15C = invView[0] - invView[1];
+                    lbl_8047B158 = invView[4] + invView[5];
+                    lbl_8047B154 = invView[4] - invView[5];
+                    lbl_8047B150 = invView[8] + invView[9];
+                    lbl_8047B14C = invView[8] - invView[9];
+
+                    GXLoadPosMtxImm((f32(*)[4])(lbl_80452DE8 + 0xAC), 0);
+                    GXLoadPosMtxImm((f32(*)[4])(lbl_802738B8 + 0x50), 3);
+                    lbl_8047B12C = 3;
+                    if (lbl_8047B12C != 0) {
+                        lbl_8047B12C = 0;
+                        fn_800BD554(0);
+                    }
+                    fn_800B9494(0, 1, 1);
+                    fn_801A958C(
+                        (f32(*)[4])(lbl_80452DE8 + 0x7C),
+                        (f32(*)[4])lbl_80452DE8,
+                        0x7A, 0x78);
+                    fn_800B94F0(2);
+                    fn_800B84E0(0xD, (u32)lbl_8036BFC0, 2);
+                    fn_800B7D74(0, 9, 1, 4, 0);
+                    fn_800B7D74(0, 0xD, 1, 0, 0);
+                    fn_800B7D74(1, 9, 1, 4, 0);
+                    fn_800B7D74(2, 9, 1, 4, 0);
+                    fn_800B7D74(2, 0xB, 1, 5, 0);
+                    fn_800B7D74(2, 0xD, 1, 0, 0);
+                    fn_800B7D74(3, 9, 1, 4, 0);
+                    fn_800B7D74(3, 0xB, 1, 5, 0);
+                    fn_800B7D74(4, 9, 1, 4, 0);
+                    fn_800B7D74(4, 0xD, 1, 4, 0);
+                    fn_800B7D74(5, 9, 1, 4, 0);
+                    fn_800B7D74(5, 0xB, 1, 5, 0);
+                    fn_800B7D74(5, 0xD, 1, 4, 0);
+                    needsInit = FALSE;
                 }
 
                 if (bank != NULL) {
