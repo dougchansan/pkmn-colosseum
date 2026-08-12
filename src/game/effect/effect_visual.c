@@ -2190,19 +2190,153 @@ asm void fn_8013C074(void) {
 }
 #else
 u32 fn_8013C074(void* ptr, void* arg) {
-    void* material;
+    typedef struct EnvMapRenderStage {
+        s32 kind;
+        u32 field_04;
+        s32 field_08;
+        s32 field_0C;
+        u16 field_10;
+        u16 field_12;
+        u32 field_14;
+    } EnvMapRenderStage;
+    typedef struct EnvMapRenderPObj {
+        u8 pad_00[8];
+        EnvMapRenderStage* stages;
+        u16 flags;
+        u16 display_count;
+        u8* display;
+    } EnvMapRenderPObj;
+    typedef struct EnvMapRenderDObj {
+        u8 pad_00[8];
+        void* mobj;
+        EnvMapRenderPObj* pobj;
+    } EnvMapRenderDObj;
+    typedef struct EnvMapRenderState {
+        void* model;
+        u8* field_04;
+        u8* field_08;
+        u8* field_0C;
+        u8* display;
+        u32 display_size;
+        u16 rows;
+        u16 cols;
+    } EnvMapRenderState;
 
-    if (ptr == NULL) {
+    EnvMapRenderState* state = arg;
+    EnvMapRenderDObj* dobj = fn_8019FF48(*(void**)((u8*)ptr + 0x8));
+    EnvMapRenderPObj* pobj;
+    EnvMapRenderStage* stage;
+    u32 found9 = 0;
+    u32 found10 = 0;
+    u32 found11 = 0;
+    u32 found13 = 0;
+    u32 strip;
+    u32 row;
+    u8* out;
+    u16 vertex_count;
+    u16 span;
+    u16 strip_count;
+
+    if (dobj == NULL) {
         return 0;
     }
 
-    material = fn_8019FF48(*(void**)((u8*)ptr + 0x8));
-    if (material == NULL) {
+    if (dobj->mobj != NULL) {
+        HSD_MObjSetFlags(dobj->mobj, 0x40000000);
+        HSD_MObjCompileTev(dobj->mobj);
+    }
+
+    pobj = dobj->pobj;
+    if (pobj == NULL || pobj->stages == NULL) {
         return 0;
     }
 
-    (void)arg;
-    fn_800E0E14();
+    for (stage = pobj->stages; stage->kind != 0xFF; stage++) {
+        switch (stage->kind) {
+        case 9:
+            found9 = 1;
+            if (stage->field_08 != 1 || stage->field_0C != 4 ||
+                stage->field_12 != 12) {
+                return 0;
+            }
+            break;
+        case 10:
+            found10 = 1;
+            if (stage->field_08 != 0 || stage->field_0C != 4 ||
+                stage->field_12 != 12) {
+                return 0;
+            }
+            break;
+        case 11:
+            found11 = 1;
+            if (stage->field_08 != 1 || stage->field_0C != 5 ||
+                stage->field_12 != 4) {
+                return 0;
+            }
+            break;
+        case 13:
+            found13 = 1;
+            if (stage->field_08 != 1 || stage->field_0C != 4 ||
+                stage->field_12 != 8) {
+                return 0;
+            }
+            break;
+        default:
+            return 0;
+        }
+    }
+
+    if (!found9 || !found10 || !found11 || !found13) {
+        return 0;
+    }
+
+    for (stage = pobj->stages; stage->kind != 0xFF; stage++) {
+        stage->field_04 = 3;
+        switch (stage->kind) {
+        case 9:
+            stage->field_14 = (u32) state->field_04;
+            break;
+        case 10:
+            stage->field_14 = (u32) state->field_08;
+            break;
+        case 11:
+            stage->field_14 = (u32) state->display;
+            break;
+        case 13:
+            stage->field_14 = (u32) state->field_0C;
+            break;
+        }
+    }
+
+    vertex_count = state->rows * 2;
+    span = state->cols;
+    strip_count = state->cols - 1;
+    out = state->display;
+
+    for (strip = 0; strip < strip_count; strip++) {
+        *(u8*) out = 0x98;
+        *(u16*) (out + 1) = vertex_count;
+        out += 3;
+
+        for (row = 0; row < state->rows; row++) {
+            u16 top = strip + row * span + 1;
+            u16 bottom = top - 1;
+
+            *(u16*) (out + 0x0) = top;
+            *(u16*) (out + 0x2) = top;
+            *(u16*) (out + 0x4) = top;
+            *(u16*) (out + 0x6) = top;
+            *(u16*) (out + 0x8) = bottom;
+            *(u16*) (out + 0xA) = bottom;
+            *(u16*) (out + 0xC) = bottom;
+            *(u16*) (out + 0xE) = bottom;
+            out += 0x10;
+        }
+    }
+
+    fn_800E0E14(0, 0);
+    pobj->display = state->display;
+    pobj->display_count = state->display_size >> 5;
     return 1;
 }
 #endif
