@@ -243,19 +243,273 @@ void fn_801C31EC(void) {
  *   5. Initializes the model animation system
  */
 void battleGridUpdate(void) {
-    extern void HSD_AObjInterpretAnim(void* ctx, f32 posX, f32 posZ);
+    typedef struct FloorData {
+        u8 pad_00[8];
+        u32 resourceId;
+    } FloorData;
+    typedef struct ModelList {
+        void** models;
+    } ModelList;
+    typedef struct BattleGridRenderable {
+        u8 pad_00[0x76];
+        s8 facing;
+    } BattleGridRenderable;
+    extern BattleGridGroupTable lbl_80466DE8;
+    extern const f32 lbl_8047DF5C;
+    extern const f32 lbl_8047DF60;
+    extern const f32 lbl_8047DF64;
+    extern const f32 lbl_8047DF68;
+    extern const f32 lbl_8047DF6C;
+    extern const f32 lbl_8047DF70;
+    extern const f32 lbl_8047DF74;
+    extern const f32 lbl_8047DF78;
+    extern const f32 lbl_8047DF7C;
+    extern const f32 lbl_8047DF80;
+    extern const f32 lbl_8047DF84;
+    extern const f32 lbl_8047DF88;
+    extern const f32 lbl_8047DF8C;
+    extern const f32 lbl_8047DF90;
+    extern char lbl_802757FC[];
+    extern s32 fn_801DAC24(void*);
+    extern FloorData* floorDataBiosGetCurrentPtr(void);
+    extern void* fn_80113F48(void);
+    extern void set__5GSvecFfff(f32*, f32, f32, f32);
+    extern void* GSresGetResource(void*, u32);
+    extern ModelList* HSD_ArchiveGetPublicAddress(void*, const char*);
+    extern u32 floorReadMakeModelResID(u32);
+    extern void GSmodelSetScale(void*, f32*);
+    extern void cameraSetOffsetScale(f32*);
+    extern void clear__5GSvecFv(f32*);
+    extern void GSvecCopy(f32*, f32*);
+    extern void* fn_801DAC3C(void*);
+    extern void GSmodelSetPosition(void*, f32*);
+    extern void GSmodelSetRotation(void*, f32*);
+    extern void fn_801DA4E8(void*, u32);
+    BattleGridGroupEntry* group;
+    FloorData* floor;
+    ModelList* modelList;
+    void* resourceBase;
+    void* model;
+    s32 distanceField;
+    s32 scaleField;
+    u32 modelId;
+    f32 distance;
+    f32 stageScaleValue;
     f32 scale[3];
-    /* Main battle grid setup:
-     * 1. Load stage model from FDAT
-     * 2. Set up position transforms for all 4 battle slots
-     * 3. Configure lighting (ambient + 2 directional)
-     * 4. Configure shadow rendering
-     * 5. Set up battle camera default overhead view
-     * 6. Initialize model animation system
-     */
-    HSD_AObjInterpretAnim((void*)lbl_80466E50, 0.0f, 0.0f);
-    battleGridGetDistance(0);
-    battleGridGetNormalisedScale(scale);
+    f32 slotPosition[3];
+    f32 pokemonPosition[3];
+    f32 rotation[3];
+    f32 xOffset;
+    f32 slotOffset;
+    f32 sideScale;
+    f32 pokemonSpread;
+    f32 leftX;
+    f32 rightX;
+    f32 leftZ;
+    f32 rightZ;
+    u16 i;
+    u16 j;
+
+    if (lbl_80466DE8.count == 0) {
+        return;
+    }
+
+    distanceField = -2;
+    group = lbl_80466DE8.entries;
+    for (i = 0; i < 4; i++, group++) {
+        if (group->slot == NULL) {
+            continue;
+        }
+        for (j = 0; j < 2; j++) {
+            if (group->pokemon[j] != NULL) {
+                s32 field = fn_801DAC24(group->pokemon[j]);
+                if (field > distanceField) {
+                    distanceField = field;
+                }
+            }
+        }
+    }
+
+    switch (distanceField) {
+    case -2:
+        distance = lbl_8047DF6C;
+        break;
+    case 1:
+        distance = lbl_8047DF64;
+        break;
+    case 2:
+        distance = lbl_8047DF70;
+        break;
+    case 3:
+        distance = lbl_8047DF74;
+        break;
+    default:
+        distance = lbl_8047DF68;
+        break;
+    }
+
+    scaleField = -2;
+    group = lbl_80466DE8.entries;
+    for (i = 0; i < 4; i++, group++) {
+        if (group->slot == NULL) {
+            continue;
+        }
+        for (j = 0; j < 2; j++) {
+            if (group->pokemon[j] != NULL) {
+                s32 field = fn_801DAC24(group->pokemon[j]);
+                if (field > scaleField) {
+                    scaleField = field;
+                }
+            }
+        }
+    }
+
+    floor = floorDataBiosGetCurrentPtr();
+    resourceBase = fn_80113F48();
+    switch (scaleField) {
+    case 1:
+        stageScaleValue = lbl_8047DF5C;
+        break;
+    case 2:
+        stageScaleValue = lbl_8047DF60;
+        break;
+    case 3:
+        stageScaleValue = lbl_8047DF64;
+        break;
+    default:
+        stageScaleValue = lbl_8047DF68;
+        break;
+    }
+    set__5GSvecFfff(scale, stageScaleValue, stageScaleValue, stageScaleValue);
+
+    model = GSresGetResource(fn_80113F48(), floor->resourceId);
+    if (model != NULL) {
+        modelList = HSD_ArchiveGetPublicAddress(model, lbl_802757FC);
+        if (modelList != NULL && modelList->models != NULL) {
+            modelId = floorReadMakeModelResID(floor->resourceId);
+            for (i = 0; modelList->models[i] != NULL; i++) {
+                model = GSresGetResource(resourceBase, modelId | i);
+                if (model != NULL) {
+                    GSmodelSetScale(model, scale);
+                }
+            }
+        }
+    }
+    cameraSetOffsetScale(scale);
+
+    clear__5GSvecFv(slotPosition);
+    clear__5GSvecFv(pokemonPosition);
+    clear__5GSvecFv(rotation);
+
+    leftX = lbl_8047DF78 * distance;
+    rightX = lbl_8047DF78 * -distance;
+    leftZ = lbl_8047DF7C * distance;
+    rightZ = lbl_8047DF7C * -distance;
+    sideScale = lbl_8047DF80 * distance;
+    slotOffset = lbl_8047DF84 * distance;
+    pokemonSpread = lbl_8047DF88 * distance;
+
+    group = lbl_80466DE8.entries;
+    for (i = 0; i < 4; i++, group++) {
+        BattleGridRenderable* renderable;
+        s8 facing;
+
+        if (group->slot == NULL) {
+            continue;
+        }
+
+        if (group->arg1 != 0) {
+            slotPosition[0] = rightX;
+            pokemonPosition[0] = rightZ;
+            rotation[1] = lbl_8047DF8C;
+        } else {
+            slotPosition[0] = leftX;
+            pokemonPosition[0] = leftZ;
+            rotation[1] = lbl_8047DF90;
+        }
+
+        xOffset = sideScale * (s8) group->arg2;
+        slotPosition[2] = xOffset;
+        pokemonPosition[2] = xOffset;
+        facing = (group->arg1 != 0) ? -1 : 1;
+
+        switch (group->memberCount) {
+        case 1:
+            slotPosition[2] = xOffset + slotOffset;
+            renderable = (BattleGridRenderable*) group->pokemon[0];
+            if (renderable == NULL) {
+                renderable = (BattleGridRenderable*) group->pokemon[1];
+            }
+            if (renderable != NULL) {
+                model = fn_801DAC3C(renderable);
+                if (model != NULL) {
+                    GSmodelSetPosition(model, pokemonPosition);
+                    GSmodelSetRotation(model, rotation);
+                    renderable->facing = facing;
+                }
+            }
+            break;
+        case 2:
+            GSvecCopy(scale, pokemonPosition);
+            if (group->arg1 != 0) {
+                scale[2] = xOffset - pokemonSpread;
+                renderable = (BattleGridRenderable*) group->pokemon[0];
+                if (renderable != NULL) {
+                    model = fn_801DAC3C(renderable);
+                    if (model != NULL) {
+                        GSmodelSetPosition(model, scale);
+                        GSmodelSetRotation(model, rotation);
+                        renderable->facing = facing;
+                    }
+                }
+
+                scale[2] = xOffset + pokemonSpread;
+                renderable = (BattleGridRenderable*) group->pokemon[1];
+                if (renderable != NULL) {
+                    model = fn_801DAC3C(renderable);
+                    if (model != NULL) {
+                        GSmodelSetPosition(model, scale);
+                        GSmodelSetRotation(model, rotation);
+                        renderable->facing = facing;
+                    }
+                }
+            } else {
+                scale[2] = xOffset - pokemonSpread;
+                renderable = (BattleGridRenderable*) group->pokemon[1];
+                if (renderable != NULL) {
+                    model = fn_801DAC3C(renderable);
+                    if (model != NULL) {
+                        GSmodelSetPosition(model, scale);
+                        GSmodelSetRotation(model, rotation);
+                        renderable->facing = facing;
+                    }
+                }
+
+                scale[2] = xOffset + pokemonSpread;
+                renderable = (BattleGridRenderable*) group->pokemon[0];
+                if (renderable != NULL) {
+                    model = fn_801DAC3C(renderable);
+                    if (model != NULL) {
+                        GSmodelSetPosition(model, scale);
+                        GSmodelSetRotation(model, rotation);
+                        renderable->facing = facing;
+                    }
+                }
+            }
+            break;
+        }
+
+        renderable = (BattleGridRenderable*) group->slot;
+        if (renderable != NULL) {
+            model = fn_801DAC3C(renderable);
+            if (model != NULL) {
+                GSmodelSetPosition(model, slotPosition);
+                GSmodelSetRotation(model, rotation);
+                renderable->facing = facing;
+            }
+        }
+        fn_801DA4E8(group->slot, 1);
+    }
 }
 
 /**
