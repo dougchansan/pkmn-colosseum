@@ -232,15 +232,249 @@ void fn_801DF790(s32 slot, s32 itemID) {
  * to drive a complete move execution's visual presentation.
  */
 void fn_801DFC30(void) {
-    /* TODO: Waza/scene master controller (0x7A4 bytes)
-     * Coordinates:
-     * - Waza sequence playback
-     * - Screen effects (flash, distortion, overlay)
-     * - Field effects (weather, terrain)
-     * - Pokemon motion
-     * - Camera control
-     * - Sound synchronization
-     */
+    extern u8 fn_801ED218(s32);
+    extern u16 pokemonGetStatus(void*, u16, s32, s32);
+    extern u8 fn_801ED0CC(s32, void*);
+    extern s32 fn_801E075C(s32);
+    extern s32 fn_801ED294(s32);
+    extern void* sodateyaGetPokemonPtr(s32);
+    extern u8 pokemonBiosGetLevel(void*);
+    extern u32 pokemonBiosGetDp(void*);
+    extern u32 heroGetStatus(s32, s32, s32);
+    extern void heroDecPokedoru(void*, u32);
+    extern void winMsgOpenField(u32, s32, s32, s32);
+    extern void fn_80183350(u32, u32);
+    extern void fn_8018C69C(u32, u32, u32);
+    extern void fn_8018B76C(u32, u32, u32, u32, u32);
+    extern void fn_80183018(u32, u32);
+    extern void fn_801ECFE0(s32, void*);
+    extern void fn_801E09E0(s32);
+    extern s32 fn_800D37CC(void);
+    extern u32 fn_800D3088(void);
+    extern void _threadSwitch(void);
+    extern f32 lbl_8047E3F4;
+    extern f32 lbl_8047E3F8;
+    extern f64 lbl_8047E400;
+    extern f64 lbl_8047E408;
+
+    s32 running = 1;
+    s32 state = 0;
+    s32 selection = 0;
+    s32 validCount = 0;
+    s32 i;
+    s32 price;
+    f32 timer;
+
+    do {
+        switch (state) {
+        case 0:
+            if ((u8)fn_801ED218(0) != 0) {
+                state = 9;
+            } else {
+                state = 1;
+            }
+            break;
+        case 1:
+            winMsgOpenFieldWithSE(0x3B11, 1, 0, 2);
+            if ((s8)fn_8001E184() == 0) {
+                state = 2;
+            } else {
+                state = 8;
+            }
+            break;
+        case 2:
+            validCount = 0;
+            for (i = 0; i < 6; i++) {
+                void* pokemon = heroBiosGetPokemonPtr(savedataGetStatus(0, 2), (u16)i);
+                if ((u8)pokemonCheckValid(pokemon) != 0 &&
+                    pokemonGetStatus(pokemon, 0, 0x7B, 0) == 0) {
+                    validCount++;
+                }
+            }
+            if (validCount == 1) {
+                state = 3;
+            } else {
+                state = 5;
+            }
+            break;
+        case 3:
+            winMsgOpenFieldWithSE(0x3B13, 1, 0, 2);
+            state = 21;
+            break;
+        case 4:
+            winMsgOpenFieldWithSE(0x3B15, 1, 0, 2);
+            state = 21;
+            break;
+        case 5:
+            winMsgOpenFieldWithSE(0x3B17, 1, 0, 2);
+            state = 6;
+            break;
+        case 6:
+            selection = menuPokemonOpen(6, 0, 0);
+            if (selection >= 0) {
+                state = 7;
+            } else {
+                state = 8;
+            }
+            break;
+        case 7: {
+            void* party = savedataGetStatus(0, 2);
+            void* pokemon = heroBiosGetPokemonPtr(party, (u16)selection);
+            void* current;
+            s32 lastValid = 0;
+
+            fn_801E075C(selection);
+            msgctrlSetValue(0x32, pokemonBiosGetNicknamePtr(pokemon));
+            winMsgOpenFieldWithSE(0x3B19, 1, 0, 2);
+            state = 21;
+
+            for (i = 0; i < 6; i++) {
+                current = heroBiosGetPokemonPtr(party, (u16)i);
+                if ((u8)pokemonCheckValid(current) != 0) {
+                    lastValid++;
+                }
+            }
+            if ((u8)fn_801ED0CC(0, pokemon) != 0 && selection < 6) {
+                for (i = selection; i < lastValid - 1; i++) {
+                    void* dst = heroBiosGetPokemonPtr(party, (u16)i);
+                    void* src = heroBiosGetPokemonPtr(party, (u16)(i + 1));
+                    if ((u8)pokemonCheckValid(src) == 0) {
+                        break;
+                    }
+                    memcpy((u8*)dst, (u8*)src, 0x138);
+                }
+                pokemonInit(heroBiosGetPokemonPtr(party, (u16)i));
+            }
+            break;
+        }
+        case 8:
+            winMsgOpenFieldWithSE(0x3B1B, 1, 0, 2);
+            state = 21;
+            break;
+        case 9:
+            winMsgOpenFieldWithSE(0x3B1C, 1, 0, 2);
+            state = 10;
+            break;
+        case 10: {
+            s32 grown = fn_801ED294(0);
+            s32 level = pokemonBiosGetLevel(sodateyaGetPokemonPtr(0));
+            msgctrlSetValue(0x2F, (void*)(u32)(level - (grown & 0xFF)));
+            msgctrlSetValue(0x32, pokemonBiosGetNicknamePtr(sodateyaGetPokemonPtr(0)));
+            winMsgOpenFieldWithSE(0x3B1D, 1, 0, 2);
+            state = 12;
+            break;
+        }
+        case 11:
+            winMsgOpenFieldWithSE(0x3B1E, 1, 0, 2);
+            if ((s8)fn_8001E184() == 0) {
+                state = 13;
+            } else {
+                state = 4;
+            }
+            break;
+        case 12:
+            validCount = 0;
+            for (i = 0; i < 6; i++) {
+                if ((u8)pokemonCheckValid(heroBiosGetPokemonPtr(savedataGetStatus(0, 2), (u16)i)) != 0) {
+                    validCount++;
+                }
+            }
+            if (validCount == 6) {
+                state = 14;
+            } else {
+                state = 15;
+            }
+            break;
+        case 13:
+            winMsgOpenFieldWithSE(0x3B12, 1, 0, 2);
+            state = 4;
+            break;
+        case 14:
+            msgctrlSetValue(0x32, pokemonBiosGetNicknamePtr(sodateyaGetPokemonPtr(0)));
+            if (fn_801ED24C(0) != 0) {
+                s32 grownDp = fn_801ED24C(0) - pokemonBiosGetDp(sodateyaGetPokemonPtr(0));
+                s32 hundreds = (grownDp / 100);
+                price = (hundreds != 0) ? (hundreds * 0x64) + 0x64 : 0;
+            } else {
+                price = 0;
+            }
+            msgctrlSetValue(0x4B, (void*)(u32)(((s32)selection * 0x64) + price + 0x64));
+            winMsgOpenFieldWithSE(0x3B14, 1, 0, 2);
+            if ((s8)fn_8001E184() == 0) {
+                state = 16;
+            } else {
+                state = 4;
+            }
+            break;
+        case 15:
+            if (fn_801ED24C(0) != 0) {
+                s32 grownDp = fn_801ED24C(0) - pokemonBiosGetDp(sodateyaGetPokemonPtr(0));
+                s32 hundreds = (grownDp / 100);
+                price = (hundreds != 0) ? (hundreds * 0x64) + 0x64 : 0;
+            } else {
+                price = 0;
+            }
+            price += ((s32)selection * 0x64) + 0x64;
+            if ((s32)heroGetStatus(0, 0xC, 0) >= price) {
+                heroDecPokedoru(savedataGetStatus(0, 2), price);
+                fn_80166AB8(0x3CB, 0, 0);
+                timer = lbl_8047E3F4;
+                while (timer < lbl_8047E3F8) {
+                    f32 frame = (f32)fn_800D3088() / (f32)fn_800D37CC();
+                    timer += frame;
+                    _threadSwitch();
+                }
+                state = 17;
+            } else {
+                state = 18;
+            }
+            break;
+        case 16:
+            winMsgClose(1);
+            fn_801E09E0(selection);
+            state = 19;
+            break;
+        case 17:
+            winMsgOpenFieldWithSE(0x3B16, 1, 0, 2);
+            state = 4;
+            break;
+        case 18:
+            winMsgOpenFieldWithSE(0x3B18, 1, 0, 2);
+            state = 20;
+            break;
+        case 19: {
+            void* party = savedataGetStatus(0, 2);
+            void* firstOpen = NULL;
+
+            msgctrlSetValue(0x32, pokemonBiosGetNicknamePtr(sodateyaGetPokemonPtr(0)));
+            winMsgOpenField(0x3B1A, 1, 0, 2);
+            state = 8;
+
+            for (i = 0; i < 6; i++) {
+                void* pokemon = heroBiosGetPokemonPtr(party, (u16)i);
+                if ((u8)pokemonCheckValid(pokemon) == 0) {
+                    firstOpen = pokemon;
+                    selection = i;
+                    break;
+                }
+            }
+            fn_801ECFE0(0, firstOpen);
+            fn_80183350(0x4D, 1);
+            fn_8018C69C(0x4D, 1, 8);
+            fn_8018B76C(0x4D, 1, 5, 0, 1);
+            fn_80183018(0x4D, 1);
+            break;
+        }
+        case 20:
+            winMsgClose(1);
+            running = 0;
+            break;
+        case 21:
+            winMsgClose(1);
+            running = 0;
+            break;
+        }
+    } while (running != 0);
 }
 
 /**
