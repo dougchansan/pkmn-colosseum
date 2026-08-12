@@ -93,6 +93,8 @@ u8 fn_80188214(u32 groupId, u32 index, f32 distance);
 void fn_8018E9B4(PeopleEntry* entry, void* position, void* transform);
 void fn_8018DCA8(PeopleEntry*, u8);
 void fn_8018AACC(u32, u32, u8, GSvec*);
+BOOL peopleWaitSyncMotion(u32 groupId, u32 index, u8 wait);
+void fn_8018F08C(PeopleEntry* original, u32 motionIndex);
 
 /* ===== External SDK / engine functions ===== */
 extern void  GSlogWrite(const char* fmt, ...);     /* OSReport / debug printf */
@@ -1078,7 +1080,7 @@ extern u32 lbl_8047D7D8;
 extern f32 lbl_8047D7A0;
 extern f32 lbl_8047D7A4;
 extern u32 lbl_8047D7D0;
-extern u32 lbl_8047D7E0;
+extern const f64 lbl_8047D7E0;
 extern u8 lbl_8036C4F8[];
 #if 0
 asm void fn_801821B8(void) {
@@ -1089,6 +1091,7 @@ void fn_801821B8(u32 groupId, u32 index)
 {
     PeopleEntry* entry;
     GSvec position;
+    f32 step;
     u8 shadowAnim;
 
     entry = peopleFindBySelf(peopleFindSelf(groupId, index));
@@ -1102,11 +1105,25 @@ void fn_801821B8(u32 groupId, u32 index)
     fn_8018FB2C(entry, shadowAnim);
     peopleClearFlags(entry, 8);
     fn_80166A28(0x49E);
-    entry->motionIndex = 7;
+    fn_8018F08C(entry, 7);
 
-    entry->animBlendFactor += lbl_8047D7D8;
-    fn_8018FC74(entry, &position);
-    peopleSetTransform(entry, &position);
+    step = entry->animBlendFactor + lbl_8047D7D8;
+    while (step > lbl_8047D7A0) {
+        step -= (f32)((f64)fn_800D3088() * lbl_8047D7E0);
+        if (step < lbl_8047D7A0) {
+            step = lbl_8047D7A0;
+        }
+        entry->animBlendFactor = step;
+        fn_8018FC74(entry, &position);
+        peopleSetTransform(entry, &position);
+        if (step != lbl_8047D7A0) {
+            _threadSwitch();
+        }
+    }
+
+    fn_8018F08C(entry, 8);
+    peopleWaitSyncMotion(groupId, index, 1);
+    fn_8018F08C(entry, 1);
 }
 #endif
 
