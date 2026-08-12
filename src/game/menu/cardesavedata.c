@@ -183,8 +183,8 @@ u32 fn_80080310(void* output, const u8* packed, void* auxiliary)
     s32 endBit;
     s32 cursor;
     u16 value;
-    u8 valid;
-    u8 descriptorValid;
+    u32 valid;
+    u32 descriptorValid;
     u16* text;
 
 #define READ_PACKED_BITS(bit_count, destination)                           \
@@ -203,88 +203,210 @@ u32 fn_80080310(void* output, const u8* packed, void* auxiliary)
         (destination) = value;                                             \
     } while (0)
 
-#define DECODE_ONE(desc_ptr, record, scratch, check_result)                 \
-    do {                                                                   \
-        descriptor = (desc_ptr);                                           \
-        width = (s32)descriptor[1];                                        \
-        descriptorValid = 1;                                               \
-        if (width < 16) {                                                   \
-            for (elementIndex = 0;                                         \
-                 elementIndex < (s32)descriptor[2]; elementIndex++) {       \
-                READ_PACKED_BITS(width, value);                             \
-                if (!fn_8008102C(&object, descriptor, (record), value, 0,  \
-                                 elementIndex)) {                           \
-                    descriptorValid = 0;                                   \
-                }                                                          \
-            }                                                              \
-        } else {                                                           \
-            text = (scratch);                                              \
-            remaining = width;                                             \
-            while (remaining > 16) {                                       \
-                READ_PACKED_BITS(16, value);                                \
-                *text++ = value;                                           \
-                remaining -= 16;                                           \
-            }                                                              \
-            if (remaining != 0) {                                          \
-                READ_PACKED_BITS(remaining, value);                         \
-                *text++ = value;                                           \
-            }                                                              \
-            *text = 0;                                                     \
-            if (!fn_8008102C(&object, descriptor, (record), 0,             \
-                             (const char*)(scratch), -1)) {                 \
-                descriptorValid = 0;                                       \
-            }                                                              \
-        }                                                                  \
-        if ((check_result) && !descriptorValid) {                           \
-            valid = 0;                                                     \
-        }                                                                  \
-    } while (0)
-
     object = output;
     input = packed;
     aux = auxiliary;
     bitPosition = 0;
-    (void)input;
-    (void)aux;
     memset(output, 0, 0xB20);
 
     descriptor = (const u32*)lbl_80268DC0;
     valid = 1;
-    DECODE_ONE(descriptor, -1, text4, 0);
+    width = (s32)descriptor[1];
+    if (width < 16) {
+        for (elementIndex = 0; elementIndex < (s32)descriptor[2];
+             elementIndex++)
+        {
+            READ_PACKED_BITS(width, value);
+            fn_8008102C(&object, descriptor, -1, value, 0, elementIndex);
+        }
+    } else {
+        text = text4;
+        remaining = width;
+        while (remaining > 16) {
+            READ_PACKED_BITS(16, value);
+            *text++ = value;
+            remaining -= 16;
+        }
+        if (remaining != 0) {
+            READ_PACKED_BITS(remaining, value);
+            *text++ = value;
+        }
+        *text = 0;
+        fn_8008102C(&object, descriptor, -1, 0, (const char*)text4, -1);
+    }
 
     bitPosition = 0;
     switch (*(s32*)output) {
     case 0:
     case 72:
+        descriptor = (const u32*)lbl_80268DC0;
         for (descriptorIndex = 0; descriptorIndex < 40;
-             descriptorIndex++) {
-            DECODE_ONE((const u32*)lbl_80268DC0 + descriptorIndex * 3,
-                       -1, text3, 1);
+             descriptorIndex++, descriptor += 3)
+        {
+            width = (s32)descriptor[1];
+            descriptorValid = 1;
+            if (width < 16) {
+                for (elementIndex = 0; elementIndex < (s32)descriptor[2];
+                     elementIndex++)
+                {
+                    READ_PACKED_BITS(width, value);
+                    if (!fn_8008102C(&object, descriptor, -1, value, 0,
+                                     elementIndex))
+                    {
+                        descriptorValid = 0;
+                    }
+                }
+            } else {
+                text = text3;
+                remaining = width;
+                while (remaining > 16) {
+                    READ_PACKED_BITS(16, value);
+                    *text++ = value;
+                    remaining -= 16;
+                }
+                if (remaining != 0) {
+                    READ_PACKED_BITS(remaining, value);
+                    *text++ = value;
+                }
+                *text = 0;
+                if (!fn_8008102C(&object, descriptor, -1, 0,
+                                 (const char*)text3, -1))
+                {
+                    descriptorValid = 0;
+                }
+            }
+            if (!descriptorValid) {
+                valid = 0;
+            }
         }
 
         for (recordIndex = 0; recordIndex < 9; recordIndex++) {
-            for (groupIndex = 0; groupIndex < 8; groupIndex++) {
-                DECODE_ONE((const u32*)(lbl_80268DC0 + 0x1E0) +
-                               groupIndex * 3,
-                           recordIndex, text2, 1);
+            descriptor = (const u32*)(lbl_80268DC0 + 0x1E0);
+            for (groupIndex = 0; groupIndex < 8;
+                 groupIndex++, descriptor += 3)
+            {
+                width = (s32)descriptor[1];
+                descriptorValid = 1;
+                if (width < 16) {
+                    for (elementIndex = 0;
+                         elementIndex < (s32)descriptor[2]; elementIndex++)
+                    {
+                        READ_PACKED_BITS(width, value);
+                        if (!fn_8008102C(&object, descriptor, recordIndex,
+                                         value, 0, elementIndex))
+                        {
+                            descriptorValid = 0;
+                        }
+                    }
+                } else {
+                    text = text2;
+                    remaining = width;
+                    while (remaining > 16) {
+                        READ_PACKED_BITS(16, value);
+                        *text++ = value;
+                        remaining -= 16;
+                    }
+                    if (remaining != 0) {
+                        READ_PACKED_BITS(remaining, value);
+                        *text++ = value;
+                    }
+                    *text = 0;
+                    if (!fn_8008102C(&object, descriptor, recordIndex, 0,
+                                     (const char*)text2, -1))
+                    {
+                        descriptorValid = 0;
+                    }
+                }
+                if (!descriptorValid) {
+                    valid = 0;
+                }
             }
         }
 
         for (recordIndex = 0; recordIndex < 36; recordIndex++) {
-            for (groupIndex = 0; groupIndex < 24; groupIndex++) {
-                DECODE_ONE((const u32*)(lbl_80268DC0 + 0x240) +
-                               groupIndex * 3,
-                           recordIndex, text1, 1);
+            descriptor = (const u32*)(lbl_80268DC0 + 0x240);
+            for (groupIndex = 0; groupIndex < 24;
+                 groupIndex++, descriptor += 3)
+            {
+                width = (s32)descriptor[1];
+                descriptorValid = 1;
+                if (width < 16) {
+                    for (elementIndex = 0;
+                         elementIndex < (s32)descriptor[2]; elementIndex++)
+                    {
+                        READ_PACKED_BITS(width, value);
+                        if (!fn_8008102C(&object, descriptor, recordIndex,
+                                         value, 0, elementIndex))
+                        {
+                            descriptorValid = 0;
+                        }
+                    }
+                } else {
+                    text = text1;
+                    remaining = width;
+                    while (remaining > 16) {
+                        READ_PACKED_BITS(16, value);
+                        *text++ = value;
+                        remaining -= 16;
+                    }
+                    if (remaining != 0) {
+                        READ_PACKED_BITS(remaining, value);
+                        *text++ = value;
+                    }
+                    *text = 0;
+                    if (!fn_8008102C(&object, descriptor, recordIndex, 0,
+                                     (const char*)text1, -1))
+                    {
+                        descriptorValid = 0;
+                    }
+                }
+                if (!descriptorValid) {
+                    valid = 0;
+                }
             }
         }
         break;
 
     case 1:
+        descriptor = (const u32*)(lbl_80268DC0 + 0x360);
         for (descriptorIndex = 0; descriptorIndex < 3;
-             descriptorIndex++) {
-            DECODE_ONE((const u32*)(lbl_80268DC0 + 0x360) +
-                           descriptorIndex * 3,
-                       -1, text0, 1);
+             descriptorIndex++, descriptor += 3)
+        {
+            width = (s32)descriptor[1];
+            descriptorValid = 1;
+            if (width < 16) {
+                for (elementIndex = 0; elementIndex < (s32)descriptor[2];
+                     elementIndex++)
+                {
+                    READ_PACKED_BITS(width, value);
+                    if (!fn_8008102C(&object, descriptor, -1, value, 0,
+                                     elementIndex))
+                    {
+                        descriptorValid = 0;
+                    }
+                }
+            } else {
+                text = text0;
+                remaining = width;
+                while (remaining > 16) {
+                    READ_PACKED_BITS(16, value);
+                    *text++ = value;
+                    remaining -= 16;
+                }
+                if (remaining != 0) {
+                    READ_PACKED_BITS(remaining, value);
+                    *text++ = value;
+                }
+                *text = 0;
+                if (!fn_8008102C(&object, descriptor, -1, 0,
+                                 (const char*)text0, -1))
+                {
+                    descriptorValid = 0;
+                }
+            }
+            if (!descriptorValid) {
+                valid = 0;
+            }
         }
         break;
 
@@ -293,9 +415,11 @@ u32 fn_80080310(void* output, const u8* packed, void* auxiliary)
         break;
     }
 
-#undef DECODE_ONE
 #undef READ_PACKED_BITS
-    return valid != 0;
+    if (!valid) {
+        return 0;
+    }
+    return bitPosition <= ((u32)auxiliary << 3);
 }
 
 
