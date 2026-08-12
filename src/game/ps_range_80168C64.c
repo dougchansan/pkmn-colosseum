@@ -3673,10 +3673,26 @@ void psDispSubAPPSRTPoint(PSParticle* pp) {
  * validation and pool/list prefix at 0x80173718-0x80173888.
  */
 PSGeneratorState* psCreateGeneratorID(s32 linkNo, s32 bankIdx, s32 scriptId) {
+    extern f32 lbl_8047D6B0;
+    extern f32 lbl_8047D6B4;
+    extern f32 lbl_8047D6B8;
+    extern f32 lbl_8047D6D8;
+    extern f32 lbl_8047D6DC;
+    extern void (*lbl_8047B194)(PSGeneratorState*);
     PSGeneratorState* gen;
     void** bank;
+    u8* entry;
+    u8* textureEntry;
+    u8* raw;
     u16 activeCount;
     u16 familyId;
+    u16 shapeType;
+    u16 shapeFlags;
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 magnitude;
+    f32 eps = lbl_8047D6B0;
 
     if (bankIdx >= 64 || linkNo >= 8 ||
         scriptId >= lbl_80452CC8[bankIdx]) {
@@ -3725,17 +3741,159 @@ PSGeneratorState* psCreateGeneratorID(s32 linkNo, s32 bankIdx, s32 scriptId) {
     }
     gen->familyId = familyId;
     gen->appSRT = NULL;
-    gen->generatorFlags = 2;
     gen->linkedJObj = NULL;
-    gen->generatorData[0] = 0.0f;
-    gen->generatorData[1] = 0.0f;
-    gen->generatorData[2] = 0.0f;
-    gen->generatorData[3] = 1.0f;
-    gen->generatorData[4] = 1.0f;
-    gen->generatorData[5] = 1.0f;
-    gen->angleRadiusScale[0] = 1.0f;
-    gen->angleRadiusScale[1] = 1.0f;
-    gen->angleRadiusScale[2] = 1.0f;
+
+    raw = (u8*) gen;
+    entry = bank[scriptId];
+
+    gen->angleFlags = *(u16*) (entry + 0x00);
+    gen->bankIndex = bankIdx;
+    gen->linkNo = linkNo;
+    raw[0x16] = entry[0x02];
+    gen->particleLife = *(u16*) (entry + 0x06);
+    gen->maxLife = *(u16*) (entry + 0x04);
+    gen->flags = *(u32*) (entry + 0x08);
+    *(f32*) (raw + 0x20) = eps;
+    *(f32*) (raw + 0x24) = eps;
+    *(f32*) (raw + 0x28) = eps;
+    gen->velocityX = *(f32*) (entry + 0x14);
+    gen->velocityY = *(f32*) (entry + 0x18);
+    gen->velocityZ = *(f32*) (entry + 0x1C);
+    gen->gravity = *(f32*) (entry + 0x0C);
+    gen->friction = *(f32*) (entry + 0x10);
+    gen->particleSize = *(f32*) (entry + 0x2C);
+    gen->scriptData = *(void**) (entry + 0x3C);
+    gen->radius = *(f32*) (entry + 0x20);
+    gen->angle = *(f32*) (entry + 0x24);
+    *(f32*) (raw + 0x08) = *(f32*) (entry + 0x28);
+
+    textureEntry = ((u8**) lbl_804529C8[bankIdx])[scriptId];
+    if (textureEntry != NULL && *(u16*) (textureEntry + 0x16) != 0) {
+        gen->flags |= 0x10;
+    }
+
+    gen->childCount = 0;
+    shapeType = gen->angleFlags & 0xF;
+    if (shapeType <= 8) {
+        switch (shapeType) {
+        case 0:
+        case 3:
+        case 4:
+            x = *(f32*) (entry + 0x30);
+            y = *(f32*) (entry + 0x34);
+            if (x == eps && y == eps) {
+                *(f32*) (raw + 0x54) = eps;
+                *(f32*) (raw + 0x58) = lbl_8047D6B8;
+            } else {
+                *(f32*) (raw + 0x54) = x;
+                *(f32*) (raw + 0x58) = y;
+            }
+            break;
+        case 1:
+            *(f32*) (raw + 0x54) = *(f32*) (entry + 0x30);
+            *(f32*) (raw + 0x58) = *(f32*) (entry + 0x34);
+            *(f32*) (raw + 0x5C) = *(f32*) (entry + 0x38);
+            break;
+        case 5:
+            x = *(f32*) (entry + 0x30);
+            y = *(f32*) (entry + 0x34);
+            z = *(f32*) (entry + 0x38);
+            *(f32*) (raw + 0x54) = x;
+            *(f32*) (raw + 0x60) = x;
+            *(f32*) (raw + 0x58) = y;
+            *(f32*) (raw + 0x70) = y;
+            *(f32*) (raw + 0x5C) = z;
+            *(f32*) (raw + 0x80) = z;
+            *(f32*) (raw + 0x64) = eps;
+            *(f32*) (raw + 0x68) = eps;
+            *(f32*) (raw + 0x6C) = eps;
+            *(f32*) (raw + 0x74) = eps;
+            *(f32*) (raw + 0x78) = eps;
+            *(f32*) (raw + 0x7C) = eps;
+            shapeFlags = 0;
+            if (x < eps) {
+                shapeFlags |= 1;
+            }
+            if (y < eps) {
+                shapeFlags |= 2;
+            }
+            if (z < eps) {
+                shapeFlags |= 4;
+            }
+            *(u16*) (raw + 0x84) = shapeFlags;
+            break;
+        case 6:
+        case 7:
+            x = *(f32*) (entry + 0x30);
+            y = *(f32*) (entry + 0x34);
+            if (x == eps && y == eps) {
+                *(f32*) (raw + 0x54) = eps;
+                *(f32*) (raw + 0x58) = lbl_8047D6B8;
+            } else {
+                *(f32*) (raw + 0x54) = x;
+                *(f32*) (raw + 0x58) = y;
+            }
+            *(f32*) (raw + 0x5C) = *(f32*) (entry + 0x38);
+            break;
+        case 8:
+            x = *(f32*) (entry + 0x30);
+            y = *(f32*) (entry + 0x34);
+            z = *(f32*) (entry + 0x38);
+            magnitude = sqrtf(x * x + y * y + z * z);
+            *(f32*) (raw + 0x54) = magnitude;
+
+            if (__fabs(y) < lbl_80478AC8) {
+                if (x <= eps) {
+                    *(f32*) (raw + 0x58) = lbl_8047D6D8;
+                } else {
+                    *(f32*) (raw + 0x58) = lbl_8047D6DC;
+                }
+            } else {
+                *(f32*) (raw + 0x58) = atan2(x, y);
+            }
+
+            if (__fabs(x) < lbl_80478AC8) {
+                if (z <= eps) {
+                    *(f32*) (raw + 0x60) = lbl_8047D6D8;
+                } else {
+                    *(f32*) (raw + 0x60) = lbl_8047D6DC;
+                }
+            } else {
+                *(f32*) (raw + 0x60) = atan2(x, z);
+            }
+
+            *(f32*) (raw + 0x5C) = x;
+            if (*(f32*) (raw + 0x5C) < eps) {
+                *(f32*) (raw + 0x5C) = -*(f32*) (raw + 0x5C);
+                *(f32*) (raw + 0x54) = -*(f32*) (raw + 0x54);
+            }
+            *(f32*) (raw + 0x64) = z;
+            break;
+        }
+    } else if (lbl_8047B194 != NULL) {
+        lbl_8047B194(gen);
+    }
+
+    if (gen->flags & 0x20000) {
+        gen->angleFlags |= 0x800;
+        psAddGeneratorAppSRT(gen, 0);
+        if (gen->appSRT != NULL) {
+            ((PSAppSRT*)gen->appSRT)->active = 1;
+            ((PSAppSRT*)gen->appSRT)->owner = gen;
+        }
+    }
+
+    gen->generatorFlags = 2;
+    *(u32*) (raw + 0xA4) = 0;
+    gen->generatorData[0] = eps;
+    gen->generatorData[1] = eps;
+    gen->generatorData[2] = eps;
+    gen->generatorData[3] = lbl_8047D6B4;
+    gen->generatorData[4] = lbl_8047D6B4;
+    gen->generatorData[5] = lbl_8047D6B4;
+    gen->angleRadiusScale[0] = lbl_8047D6B4;
+    gen->angleRadiusScale[1] = lbl_8047D6B4;
+    gen->angleRadiusScale[2] = lbl_8047D6B4;
     return gen;
 }
 
