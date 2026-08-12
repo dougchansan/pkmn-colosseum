@@ -59,7 +59,8 @@ void peopleSetTransform(PeopleEntry* entry, void* mtx);
 void* peopleGetTransform(PeopleEntry* entry);
 void fn_80181224(void);
 void fn_80181850(void);
-s32 fn_80180C78(PeopleOpenWork* work);
+s32 fn_80180C78(void* slot, void* subEntry, s32 mode);
+void fn_80181094(void);
 void fn_8018114C(void);
 void fn_801812C4(PeopleEntry* entry);
 s32 fn_80183688(void* self);
@@ -2455,8 +2456,109 @@ struct GSvec* peopleGetPosition(PeopleEntry* entry) {
  * already named/documented there; otherwise a safe void(void) stub is used.
  * ========================================================================= */
 /* fn_80180C78 = peopleOpenCallback (see people.h) -- not recovered, gap in archive campaign */
-s32 fn_80180C78(PeopleOpenWork* work) {
-    return 0;
+s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
+    typedef struct PeopleOpenSlot {
+        u8 pad_00[0xF4];
+        u32 floorParam;
+        void* taskParam;
+    } PeopleOpenSlot;
+    typedef struct PeopleJob {
+        s32 active;
+        s32 field_04;
+        void* callback;
+        s32 state;
+        s32 field_10;
+        s32 type;
+        void* app;
+        struct PeopleJob* nextJob;
+        PeopleOpenSlot* slot;
+        u32 index;
+        void* subEntry;
+        u8 pad_2C[8];
+        void* taskParam;
+        u8 pad_38[4];
+    } PeopleJob;
+    typedef struct PeopleJobPool {
+        s32 count;
+        PeopleJob* base;
+    } PeopleJobPool;
+    PeopleJobPool* pool;
+    PeopleJob* job;
+    PeopleJob* current;
+    PeopleJob* tail;
+    s32 i;
+
+    pool = (PeopleJobPool*)&lbl_8047B1E8;
+    job = NULL;
+    for (i = 0; i < pool->count; i++) {
+        PeopleJob* candidate = &pool->base[i];
+        if (candidate->active == 0) {
+            job = candidate;
+            break;
+        }
+    }
+    if (job == NULL) {
+        fn_80179F4C(1);
+    }
+
+    if (job == NULL) {
+        return 0;
+    }
+
+    job->taskParam = ((PeopleOpenSlot*)slot)->taskParam;
+    job->type = mode;
+    job->slot = (PeopleOpenSlot*)slot;
+    job->index = ((PeopleOpenSlot*)slot)->floorParam;
+    job->subEntry = subEntry;
+    job->nextJob = NULL;
+
+    if (mode == 0) {
+        job->callback = fn_8018114C;
+        if (gPeopleOpenWork != NULL) {
+            tail = (PeopleJob*)gPeopleOpenWork;
+            for (i = 0; i < pool->count && tail->nextJob != NULL; i++) {
+                tail = tail->nextJob;
+            }
+            tail->nextJob = job;
+            job->active = 2;
+            job->state = 0;
+            return 1;
+        }
+
+        gPeopleOpenWork = (PeopleOpenWork*)job;
+        fn_8017C074(job->slot, job->subEntry, job->index, job);
+        current = (PeopleJob*)gPeopleOpenWork;
+        current->app =
+            GSgappCreate(fn_8017AC30(), 0xC8, current->slot->taskParam,
+                         fn_8018114C);
+        if (current->app != NULL) {
+            current->active = 1;
+            current->state = 1;
+            gPeopleOpenWork = (PeopleOpenWork*)current;
+        }
+        return 1;
+    }
+
+    job->callback = fn_80181094;
+    if (gPeopleOpenWork != NULL) {
+        tail = (PeopleJob*)gPeopleOpenWork;
+        for (i = 0; i < pool->count && tail->nextJob != NULL; i++) {
+            tail = tail->nextJob;
+        }
+        tail->nextJob = job;
+        job->active = 2;
+        job->state = 0;
+        return 1;
+    }
+
+    current = job;
+    current->app = GSgappCreate(1, 2, current->slot->taskParam, fn_80181094);
+    if (current->app != NULL) {
+        current->active = 1;
+        current->state = 1;
+        gPeopleOpenWork = (PeopleOpenWork*)current;
+    }
+    return 1;
 }
 
 /* fn_80181094 = peopleOpenThread (size 0xB8) */
