@@ -868,8 +868,178 @@ asm void fn_800DE128(void) {
 #include "src/game/gs_render_fn_800DE128.inc"
 }
 #else
-void fn_800DE128(void) {
-    lbl_80478AE8 = 0;
+void fn_800DE128(char* output, u32 capacity, const char* format, void* arguments)
+{
+    char* converted = (char*)lbl_80401168;
+    char* specifier = (char*)lbl_80401178;
+    const char* digits = (const char*)lbl_80478AE8;
+    char* dst = output;
+    const char* src = format;
+    char* token = specifier;
+    char* text;
+    char* a;
+    char* b;
+    s32 value;
+    s32 magnitude;
+    s32 width;
+    s32 padding;
+    s32 i;
+    u32 hex;
+    u8 parsing = 0;
+    u8 done = 0;
+    u8 leftJustify = 0;
+    u8 zeroPad = 0;
+    u8 ready;
+
+    while (!done) {
+        ready = 0;
+        if (!parsing) {
+            if (*src == '%') {
+                if (src[1] == '%') {
+                    *dst++ = '%';
+                    src++;
+                } else {
+                    token = specifier;
+                    parsing = 1;
+                }
+            } else {
+                *dst++ = *src;
+            }
+        } else {
+            switch (*src) {
+            case 'c':
+                converted[0] =
+                    (char)*(u32*)((void* (*)(void*, s32))__va_arg)(arguments, 1);
+                converted[1] = 0;
+                text = converted;
+                ready = 1;
+                break;
+
+            case 'd':
+                value =
+                    *(s32*)((void* (*)(void*, s32))__va_arg)(arguments, 1);
+                magnitude = value;
+                i = 0;
+                if (magnitude < 0) {
+                    i = 1;
+                    magnitude = -magnitude;
+                }
+                a = converted;
+                do {
+                    *a++ = digits[magnitude % 10];
+                    magnitude /= 10;
+                } while (magnitude != 0);
+                if (i) {
+                    *a++ = '-';
+                }
+                *a = 0;
+                a = converted;
+                b = converted + strlen(converted) - 1;
+                while (a < b) {
+                    char ch = *a;
+                    *a++ = *b;
+                    *b-- = ch;
+                }
+                text = converted;
+                ready = 1;
+                break;
+
+            case 'f':
+                ((void* (*)(void*, s32))__va_arg)(arguments, 3);
+                text = (char*)lbl_8047CAA0;
+                ready = 1;
+                break;
+
+            case 's':
+                text =
+                    *(char**)((void* (*)(void*, s32))__va_arg)(arguments, 1);
+                if (text == 0) {
+                    text = (char*)lbl_8047CAA8;
+                }
+                ready = 1;
+                break;
+
+            case 'X':
+            case 'x':
+                hex = *(u32*)((void* (*)(void*, s32))__va_arg)(arguments, 1);
+                a = converted;
+                if (*src == 'X') {
+                    do {
+                        *a++ = digits[hex & 0xF];
+                        hex >>= 4;
+                    } while (hex != 0);
+                } else {
+                    do {
+                        char ch = digits[hex & 0xF];
+                        if (ch >= 'A') {
+                            ch += 0x20;
+                        }
+                        *a++ = ch;
+                        hex >>= 4;
+                    } while (hex != 0);
+                }
+                *a = 0;
+                b = a - 1;
+                a = converted;
+                while (a < b) {
+                    char ch = *a;
+                    *a++ = *b;
+                    *b-- = ch;
+                }
+                text = converted;
+                ready = 1;
+                break;
+
+            default:
+                *token++ = *src;
+                break;
+            }
+
+            if (ready) {
+                *token = 0;
+                token = specifier;
+                if (*token == '-') {
+                    leftJustify = 1;
+                    token++;
+                }
+                if (*token == '0') {
+                    zeroPad = 1;
+                    token++;
+                }
+
+                width = 0;
+                while (*token >= '0' && *token <= '9') {
+                    width = width * 10 + *token++ - '0';
+                }
+                padding = width - (s32)strlen(text);
+
+                if (padding > 0 && !leftJustify) {
+                    while (padding-- > 0 && (u32)(dst - output) < capacity) {
+                        *dst++ = zeroPad ? '0' : ' ';
+                    }
+                }
+
+                while (*text != 0 && (u32)(dst - output) < capacity) {
+                    *dst++ = *text++;
+                }
+
+                if (leftJustify) {
+                    while (padding-- > 0 && (u32)(dst - output) < capacity) {
+                        *dst++ = ' ';
+                    }
+                }
+                leftJustify = 0;
+                zeroPad = 0;
+                parsing = 0;
+            }
+        }
+
+        if (*src == 0 || (u32)(dst - output) >= capacity) {
+            done = 1;
+        }
+        src++;
+    }
+    *dst = 0;
 }
 #endif
 
