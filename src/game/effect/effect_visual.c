@@ -2182,8 +2182,8 @@ void fn_8013BE04(void* ptr, void* mtx, u8* color, f32 x, f32 z, f32 scale) {
 }
 #endif
 extern void* fn_8019FF48(void* model);
-extern void HSD_MObjSetFlags(void);
-extern void HSD_MObjCompileTev(void);
+extern void HSD_MObjSetFlags(void* mobj, u32 flags);
+extern void HSD_MObjCompileTev(void* mobj);
 #if 0
 asm void fn_8013C074(void) {
 #include "src/game/effect/effect_visual_fn_8013C074.inc"
@@ -2651,20 +2651,164 @@ asm void fn_8013D0A8(void) {
 #include "src/game/effect/effect_visual_fn_8013D0A8.inc"
 }
 #else
+typedef struct BlurRenderStage {
+    s32 kind;
+    u32 field_04;
+    s32 field_08;
+    s32 field_0C;
+    u16 field_10;
+    u16 field_12;
+    u32 field_14;
+} BlurRenderStage;
+
+typedef struct BlurRenderPObj {
+    u8 pad_00[8];
+    BlurRenderStage* stages;
+    u16 flags;
+    u16 display_count;
+    u8* display;
+} BlurRenderPObj;
+
+typedef struct BlurRenderDObj {
+    u8 pad_00[8];
+    void* mobj;
+    BlurRenderPObj* pobj;
+} BlurRenderDObj;
+
+typedef struct BlurRenderState {
+    void* model;
+    u8* positions;
+    u8* texcoords;
+    u8* colors;
+    u8* display;
+    u32 display_size;
+    u16 rows;
+    u16 cols;
+    u32 pad_1C;
+    u32 saved_field_04[4];
+    u32 saved_field_14[4];
+    u8* old_display;
+    u16 old_display_count;
+    u8 applied;
+} BlurRenderState;
+
 u32 fn_8013D0A8(void* ptr, void* arg) {
-    void* material;
+    BlurRenderState* state = arg;
+    BlurRenderDObj* dobj = fn_8019FF48(*(void**)((u8*)ptr + 0x8));
+    BlurRenderPObj* pobj;
+    BlurRenderStage* stage;
+    u32 found9 = 0;
+    u32 found10 = 0;
+    u32 found11 = 0;
+    u32 found13 = 0;
+    u32 stage_index;
+    u32 strip;
+    u32 row;
+    u8* out;
+    u16 vertex_count;
+    u16 span;
 
-    if (ptr == NULL) {
+    if (dobj == NULL) {
         return 0;
     }
 
-    material = fn_8019FF48(*(void**)((u8*)ptr + 0x8));
-    if (material == NULL) {
+    if (dobj->mobj != NULL) {
+        HSD_MObjSetFlags(dobj->mobj, 0x40000000);
+        HSD_MObjCompileTev(dobj->mobj);
+    }
+
+    pobj = dobj->pobj;
+    if (pobj == NULL || pobj->stages == NULL) {
         return 0;
     }
 
-    (void)arg;
-    fn_800D4604(1);
+    for (stage = pobj->stages; stage->kind != 0xFF; stage++) {
+        switch (stage->kind) {
+        case 9:
+            found9 = 1;
+            if (stage->field_08 != 1 || stage->field_0C != 4 ||
+                stage->field_12 != 12) {
+                return 0;
+            }
+            break;
+        case 10:
+            found10 = 1;
+            if (stage->field_08 != 0 || stage->field_0C != 4 ||
+                stage->field_12 != 12) {
+                return 0;
+            }
+            break;
+        case 11:
+            found11 = 1;
+            if (stage->field_08 != 1 || stage->field_0C != 5 ||
+                stage->field_12 != 4) {
+                return 0;
+            }
+            break;
+        case 13:
+            found13 = 1;
+            if (stage->field_08 != 1 || stage->field_0C != 4 ||
+                stage->field_12 != 8) {
+                return 0;
+            }
+            break;
+        default:
+            return 0;
+        }
+    }
+
+    if (!found9 || !found10 || !found11 || !found13) {
+        return 0;
+    }
+
+    for (stage = pobj->stages, stage_index = 0; stage->kind != 0xFF;
+         stage++, stage_index++) {
+        state->saved_field_04[stage_index] = stage->field_04;
+        state->saved_field_14[stage_index] = stage->field_14;
+        stage->field_04 = 3;
+
+        switch (stage->kind) {
+        case 9:
+            stage->field_14 = (u32) state->positions;
+            break;
+        case 10:
+            stage->field_14 = (u32) lbl_80363CB8;
+            break;
+        case 11:
+            stage->field_14 = (u32) state->colors;
+            break;
+        case 13:
+            stage->field_14 = (u32) state->texcoords;
+            break;
+        }
+    }
+
+    out = state->display;
+    vertex_count = state->rows * 2;
+    span = state->cols;
+
+    for (strip = 0; strip < state->cols - 1; strip++) {
+        *(u8*) out = 0x98;
+        *(u16*) (out + 1) = vertex_count;
+        out += 3;
+
+        for (row = 0; row < state->rows; row++) {
+            u16 top = strip + row * span + 1;
+            u16 bottom = top - 1;
+
+            *(u16*) (out + 0) = top;
+            *(u16*) (out + 2) = 0;
+            *(u16*) (out + 4) = bottom;
+            *(u16*) (out + 6) = 0;
+            out += 8;
+        }
+    }
+
+    state->old_display = pobj->display;
+    state->old_display_count = pobj->display_count;
+    pobj->display = state->display;
+    pobj->display_count = state->display_size >> 5;
+    state->applied = 1;
     return 1;
 }
 #endif
