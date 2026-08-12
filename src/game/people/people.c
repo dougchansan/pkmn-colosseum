@@ -161,6 +161,7 @@ extern void  fn_800FF4D4(void* data, u8 type);
 /* Collision/model helpers */
 extern void  GSvecCopy(void* dst, void* src);     /* matrix/vector copy */
 extern void  fn_800E0168(void* dst, void* srcA, void* srcB);  /* cross/setup */
+extern void  fn_800E019C(void* dst, void* srcA, void* srcB);
 
 /* ===== Rodata string references ===== */
 extern const char lbl_80273F80[];  /* floor name for blank-frame init */
@@ -1587,47 +1588,97 @@ void fn_8018524C(PeopleEntry* entry, u8 loopPath)
 {
     GSvec delta;
     GSvec target;
-    f32 oldDistance;
+    GSvec rotation;
+    f32 moveDistance;
     f32 distance;
+    f32 angle;
+    f32 fullTurn;
+    PeopleEntry* linked;
+    s32 revolutions;
 
-    if (entry->subState == 1) {
+    (void)loopPath;
+
+    switch (entry->subState) {
+    case 1:
         GSvecCopy(entry->field_5C,
                   &entry->walkList[entry->walkListCount]);
         fn_800E0168(&delta, entry->field_5C, fn_8018FCBC(entry));
-        entry->subState = 2;
-    }
-
-    if (entry->subState != 2) {
-        return;
-    }
-
-    fn_80188214(entry->groupId, entry->index, entry->moveSpeed);
-    fn_800E0168(&delta, entry->transform, fn_8018FCBC(entry));
-    oldDistance = fn_800E008C(&delta);
-
-    fn_800E0168(&delta, entry->transform, entry->field_5C);
-    distance = fn_800E008C(&delta);
-    if (distance < oldDistance) {
-        GSvecCopy(entry->transform, entry->field_5C);
-        entry->walkListCount++;
-        if (entry->walkListCount >= entry->walkListCapacity) {
-            if (loopPath) {
-                entry->walkListCount = 0;
-            } else {
-                fn_8018FC74(entry, entry->field_5C);
-                peopleSetTransform(entry, entry->field_5C);
-                entry->state = PEOPLE_STATE_IDLE;
-                return;
-            }
+        angle = (f32)atan2(delta.x, delta.z);
+        angle = (f32)fmod(lbl_8047D7F0 + (angle - lbl_8047D7A0));
+        if (angle > lbl_8047D7A8) {
+            angle = (f32)(angle - lbl_8047D7F0);
+        } else if (angle < lbl_8047D820) {
+            angle = (f32)(lbl_8047D7F0 + angle);
         }
-        GSvecCopy(entry->field_5C,
-                  &entry->walkList[entry->walkListCount]);
+
+        linked = peopleFindBySelf(peopleFindSelf(entry->groupId, entry->index));
+        if (linked != NULL) {
+            fn_8018FC2C(linked, &rotation);
+            fullTurn = lbl_8047D7C0;
+            revolutions = (s32)(rotation.y / fullTurn);
+            linked->pad22 = 1;
+            linked->field_40 = angle + fullTurn * revolutions;
+            linked->field_44 = lbl_8047D79C;
+        }
+        entry->subState = 2;
+        /* fallthrough */
+    case 2:
+        fn_80188214(entry->groupId, entry->index, entry->moveSpeed);
+        fn_800E0168(&delta, entry->transform, fn_8018FCBC(entry));
+        moveDistance = fn_800E008C(&delta);
+
+        for (;;) {
+            fn_800E0168(&delta, entry->transform, entry->field_5C);
+            distance = fn_800E008C(&delta);
+            if (distance >= moveDistance) {
+                break;
+            }
+
+            GSvecCopy(entry->transform, entry->field_5C);
+            entry->walkListCount++;
+            if (entry->walkListCount >= entry->walkListCapacity) {
+                if (entry->state == 3) {
+                    entry->walkListCount = 0;
+                } else {
+                    linked = peopleFindBySelf(peopleFindSelf(entry->groupId, entry->index));
+                    if (linked != NULL) {
+                        fn_8018FC74(linked, entry->field_5C);
+                        peopleSetTransform(linked, entry->field_5C);
+                    }
+                    entry->state = PEOPLE_STATE_IDLE;
+                    return;
+                }
+            }
+
+            GSvecCopy(entry->field_5C,
+                      &entry->walkList[entry->walkListCount]);
+            fn_800E0168(&delta, entry->field_5C, entry->transform);
+            angle = (f32)atan2(delta.x, delta.z);
+            angle = (f32)fmod(lbl_8047D7F0 + (angle - lbl_8047D7A0));
+            if (angle > lbl_8047D7A8) {
+                angle = (f32)(angle - lbl_8047D7F0);
+            } else if (angle < lbl_8047D820) {
+                angle = (f32)(lbl_8047D7F0 + angle);
+            }
+
+            linked = peopleFindBySelf(peopleFindSelf(entry->groupId, entry->index));
+            if (linked != NULL) {
+                fn_8018FC2C(linked, &rotation);
+                fullTurn = lbl_8047D7C0;
+                revolutions = (s32)(rotation.y / fullTurn);
+                linked->pad22 = 1;
+                linked->field_40 = angle + fullTurn * revolutions;
+                linked->field_44 = lbl_8047D7C4;
+            }
+            moveDistance -= distance;
+        }
+
+        fn_800E0168(&target, entry->field_5C, entry->transform);
+        fn_800E013C(&target, &target, moveDistance / distance);
+        fn_800E019C(&target, entry->transform, &target);
+        fn_8018E9B4(entry, &target, entry->transform);
         return;
     }
-
-    fn_800E013C(&target, &delta, oldDistance / distance);
-    GSvecAdd(&target, entry->transform, &target);
-    fn_8018E9B4(entry, &target, entry->transform);
 }
 #endif
 
