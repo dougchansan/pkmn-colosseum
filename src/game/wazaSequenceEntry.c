@@ -131,14 +131,122 @@ u8 _wazaSequenceEffectEntryStart(void* entry) {
  */
 u8 _wazaSequenceParticleEntryStart(void* entry) {
     WazaSequenceNode* node = entry;
+    WazaSequence* sequence;
+    WazaEffect* owner;
+    WazaSequenceNode* linked;
+    void* model;
+    void* part;
+    f32 position[3];
+    f32 rotation[3];
+    f32 scale[3];
+    u32 flags;
+    s32 selector;
+
+    extern void GSmodelGetPosition(void* model, void* out);
+    extern void GSmodelGetRotation(void* model, void* out);
+    extern void GSpartGetTransform(void* part, void* pos, void* rot,
+                                   void* scale);
 
     /*
      * Particle entries cannot start until their resource was loaded.  The
      * remaining target code selects an attachment mode and places the emitter.
      */
     if (node->resource == NULL) {
+        if (fn_800057A8() == 2) {
+            fn_801D744C(0x20);
+        }
         return FALSE;
     }
+
+    sequence = node->sequence;
+    owner = sequence->owner;
+    model = owner->model;
+
+    switch ((u32) node->positionType) {
+    case 0: selector = 1; break;
+    case 1: selector = 2; break;
+    case 2: selector = 3; break;
+    case 3: selector = 4; break;
+    case 4: selector = 5; break;
+    case 5: selector = 6; break;
+    case 6: selector = 7; break;
+    default: selector = 0; break;
+    }
+
+    if ((node->flags & 1) != 0 && node->linkedEntryKey > 0) {
+        linked = fn_801DCDA8(sequence, node->linkedEntryKey);
+        if (linked != NULL && linked->startTime <= node->startTime &&
+            linked->kind == 2 && linked->model != NULL)
+        {
+            model = linked->model;
+            GSmodelForceAnimTransformUpdate(model);
+        }
+    }
+
+    GSmodelGetPosition(model, position);
+    GSmodelGetRotation(model, rotation);
+    fn_801D9950(sequence, scale, owner->scale_selector);
+
+    *(void**)((u8*) node + 0x8C) =
+        fn_801190DC((u8*) node->resource, node->field_80,
+                    (u32) node->animationMode & 1);
+    *(u32*)((u8*) node + 0x90) = 0;
+
+    if (*(void**)((u8*) node + 0x8C) == NULL) {
+        if (fn_800057A8() == 2) {
+            fn_801D744C(0x20);
+        }
+        return FALSE;
+    }
+
+    flags = (u32) node->animationMode;
+    if ((flags & 0x4) != 0) {
+        fn_80118D3C(*(void**)((u8*) node + 0x8C), 1, (flags >> 4) & 1);
+    }
+    if ((flags & 0x8) != 0) {
+        fn_80118D60(*(void**)((u8*) node + 0x8C), 1);
+    }
+    if ((flags & 0x80) != 0) {
+        fn_80118D18(*(void**)((u8*) node + 0x8C), 1);
+    }
+    if ((flags & 0x800) != 0) {
+        fn_80118CD0(*(void**)((u8*) node + 0x8C), 1);
+    }
+    fn_80118CF4(*(void**)((u8*) node + 0x8C),
+                (flags >> 8) & 1,
+                (flags >> 10) & 1);
+    fn_80118F7C(*(void**)((u8*) node + 0x8C), position);
+    *(u32*)((u8*) node + 0x90) = 0;
+
+    if ((node->flags & 4) != 0) {
+        return TRUE;
+    }
+
+    part = fn_801D97F0(node);
+    if (part == NULL) {
+        return FALSE;
+    }
+
+    if (selector != 0) {
+        fn_80118FB0(*(void**)((u8*) node + 0x8C), part,
+                    (node->flags >> 1) & 1, selector, 1,
+                    ((u32) node->animationMode >> 1) & 1);
+        *(u32*)((u8*) node + 0x90) = 1;
+    }
+
+    if ((node->flags & 0x10) != 0) {
+        set__5GSvecFfff(position, 0.0f, 0.0f, 0.0f);
+        fn_80118F04(*(void**)((u8*) node + 0x8C), position, 0, 0, 0);
+        fn_80118E8C(*(void**)((u8*) node + 0x8C), position, 0, 0, 0);
+    } else {
+        GSpartGetTransform(part, NULL, NULL, position);
+        set__5GSvecFfff(scale, 1.0f, 1.0f, 1.0f);
+        fn_80118DE0(*(void**)((u8*) node + 0x8C), scale,
+                    (flags >> 5) & 1, (flags >> 9) & 1);
+        fn_80118F04(*(void**)((u8*) node + 0x8C), position, 0, 0, 0);
+    }
+
+    GSpartFree(part);
     return TRUE;
 }
 
