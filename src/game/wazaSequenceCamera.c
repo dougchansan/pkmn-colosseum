@@ -335,8 +335,322 @@ void battleCameraStartWaza(void* owner, void* sequence) {
  * Massive state machine (~2.8KB) for a class of move animations.
  * Likely handles physical/contact move animations.
  */
-void _wazaSequenceCameraDoPosition__FP13ModelSequenceP24wazaSequenceCameraParamsfb(void) {
-    /* TODO: Move animation state machine A (0xAE0 bytes) */
+void _wazaSequenceCameraDoPosition__FP13ModelSequenceP24wazaSequenceCameraParamsfb(
+    void* modelSequence, void* cameraParams, s32 shift, u8 reverse)
+{
+    typedef struct WazaSequenceCameraPattern {
+        u32 duration_index;
+        u8 pad_04[0xD4 - 4];
+    } WazaSequenceCameraPattern;
+    typedef struct WazaSequenceCameraParamsLocal {
+        s32 mode;
+        u8 pad_04[8];
+        f32 rotation_min;
+        f32 rotation_max;
+        f32 rotation_base;
+        f32 height_min;
+        f32 height_max;
+        f32 distance_min;
+        f32 distance_max;
+        f32 out_near;
+        f32 out_mid;
+        f32 out_far;
+    } WazaSequenceCameraParamsLocal;
+    extern f32 fn_800E0BE4(void);
+    extern s32 fn_800D37CC(void);
+    extern void cameraSetDistance(f32);
+    extern void cameraSetHeight(f32);
+    extern void cameraSetRotY(f32);
+    extern void cameraUpdate(void);
+    extern void cameraMovePosition(s32, Vec*, f32);
+    extern void cameraMoveRotationXYZ(f32, f32, f32, f32);
+    extern void GSscene_GetCameraDirectionVector(Vec*);
+    extern void GSscene_SetCameraDirectionVector(Vec*);
+    extern f32 sqrtf(f32);
+    extern f32 lbl_8047E1F4;
+    extern f32 lbl_8047E1F8;
+    extern f32 lbl_8047E1FC;
+    extern f32 lbl_8047E200;
+    extern f32 lbl_8047E204;
+    extern f32 lbl_8047E208;
+    extern f32 lbl_8047E20C;
+    extern f32 lbl_8047E210;
+    extern f64 lbl_8047E218;
+    extern f64 lbl_8047E220;
+    extern f64 lbl_8047E228;
+    extern f32 lbl_8047E230;
+    extern f32 lbl_8047E234;
+    extern f64 lbl_8047E238;
+    extern f32 lbl_8047E240;
+    extern f32 lbl_8047E244;
+    extern f32 lbl_8047E248;
+    extern f32 lbl_8047E24C;
+    extern f32 lbl_8047E250;
+    extern f32 lbl_8047E254;
+    u8* sequence = modelSequence;
+    WazaSequenceCameraParamsLocal* params = cameraParams;
+    WazaSequenceCameraPattern* pattern;
+    s32 duration;
+
+    pattern = (WazaSequenceCameraPattern*)
+        (*(u8**)(sequence + 0x2C) + *(u16*)(sequence + 0x32) * 0xD4);
+
+    switch (params->mode) {
+    case 0:
+        _wazaSequenceCameraDoDollyPosition__FP21TemplateExpFileHeaderP24wazaSequenceCameraParamsfb(
+            pattern, params, shift, reverse);
+        break;
+
+    case 1: {
+        Vec direction;
+        f32 offset_distance;
+        f32 height;
+        f32 distance;
+        f32 duration_scale;
+        f32 len0;
+        f32 len2;
+        u8* duration_ptr =
+            (u8*)pattern + (*(u32*)pattern << 2);
+
+        duration = *(s32*)(duration_ptr + 4);
+        if (duration == 0) {
+            duration = *(s32*)(duration_ptr + 8);
+        }
+        duration <<= shift;
+
+        offset_distance = lbl_8047E200 + lbl_8047E204 * fn_800E0BE4();
+        height = lbl_8047E1F4 + lbl_8047E208 * fn_800E0BE4();
+        distance = lbl_8047E20C + lbl_8047E210 * fn_800E0BE4();
+
+        cameraSetDistance(distance);
+        cameraSetHeight(height);
+        cameraSetRotY(lbl_8047E1FC);
+        cameraUpdate();
+
+        GSscene_GetCameraDirectionVector(&direction);
+        if (reverse) {
+            direction.x += lbl_8047E204;
+        } else {
+            direction.x -= lbl_8047E204;
+        }
+        GSscene_SetCameraDirectionVector(&direction);
+        if (reverse) {
+            direction.x += offset_distance;
+        } else {
+            direction.x -= offset_distance;
+        }
+
+        duration_scale = (f32)duration / (f32)fn_800D37CC();
+        cameraMovePosition(7, &direction, duration_scale);
+
+        len0 = sqrtf(offset_distance * offset_distance + height * height);
+        len2 = sqrtf(distance * distance + len0 * len0);
+        params->out_near = len0;
+        params->out_far = len2;
+        params->out_mid = lbl_8047E1F8 * (len0 + len2);
+        break;
+    }
+
+    case 2: {
+        f32 distance;
+        f32 height;
+        f32 rot_a;
+        f32 rot_b;
+        f32 duration_scale;
+        f32 len0;
+        f32 len2;
+        u8* duration_ptr =
+            (u8*)pattern + (*(u32*)pattern << 2);
+
+        duration = *(s32*)(duration_ptr + 4);
+        if (duration == 0) {
+            duration = *(s32*)(duration_ptr + 8);
+        }
+        duration <<= shift;
+
+        distance = params->distance_min +
+            (params->distance_max - params->distance_min) * fn_800E0BE4();
+        height = params->height_min +
+            (params->height_max - params->height_min) * fn_800E0BE4();
+
+        if (reverse) {
+            rot_a = (params->rotation_base - params->rotation_min) * fn_800E0BE4() -
+                    (params->rotation_base - params->rotation_max);
+            rot_b = (params->rotation_base - params->rotation_min) * fn_800E0BE4() -
+                    (params->rotation_base - params->rotation_max);
+        } else {
+            rot_a = (params->rotation_max - params->rotation_min) * fn_800E0BE4() +
+                    (params->rotation_base + params->rotation_min);
+            rot_b = (params->rotation_max - params->rotation_min) * fn_800E0BE4() +
+                    (params->rotation_base + params->rotation_min);
+        }
+        if (rot_a > rot_b) {
+            f32 tmp = rot_a;
+            rot_a = rot_b;
+            rot_b = tmp;
+        }
+
+        cameraSetDistance(distance);
+        cameraSetHeight(height);
+        cameraSetRotY(rot_a);
+        cameraUpdate();
+
+        duration_scale = (f32)duration / (f32)fn_800D37CC();
+        cameraMoveRotationXYZ(lbl_8047E1FC, rot_b, lbl_8047E1FC, duration_scale);
+
+        len0 = sqrtf(distance * distance + height * height);
+        len2 = sqrtf(rot_b * rot_b + len0 * len0);
+        params->out_near = len0;
+        params->out_far = len2;
+        params->out_mid = lbl_8047E1F8 * (len0 + len2);
+        break;
+    }
+
+    case 3: {
+        Vec direction;
+        f32 distance;
+        f32 height;
+        f32 rotation;
+        f32 duration_scale;
+        f32 length;
+        u8* duration_ptr =
+            (u8*)pattern + (*(u32*)pattern << 2);
+
+        duration = *(s32*)(duration_ptr + 4);
+        if (duration == 0) {
+            duration = *(s32*)(duration_ptr + 8);
+        }
+        duration <<= shift;
+
+        distance = params->distance_min +
+            (params->distance_max - params->distance_min) * fn_800E0BE4();
+        height = params->height_min +
+            (params->height_max - params->height_min) * fn_800E0BE4();
+        if (reverse) {
+            rotation = (params->rotation_base - params->rotation_min) * fn_800E0BE4() -
+                       (params->rotation_base - params->rotation_min);
+        } else {
+            rotation = (params->rotation_max - params->rotation_min) * fn_800E0BE4() +
+                       (params->rotation_base + params->rotation_min);
+        }
+
+        cameraSetDistance(distance);
+        cameraSetHeight(height);
+        cameraSetRotY(rotation);
+        cameraUpdate();
+        GSscene_GetCameraDirectionVector(&direction);
+
+        duration_scale = (f32)duration / (f32)fn_800D37CC();
+        cameraMovePosition(7, &direction, duration_scale);
+
+        length = sqrtf(distance * distance + height * height + rotation * rotation);
+        params->out_far = length;
+        params->out_mid = length;
+        params->out_near = length;
+        break;
+    }
+
+    case 4: {
+        Vec direction;
+        f32 rotation;
+        f32 duration_scale;
+        f32 length;
+        u8* duration_ptr =
+            (u8*)pattern + (*(u32*)pattern << 2);
+
+        duration = *(s32*)(duration_ptr + 4);
+        if (duration == 0) {
+            duration = *(s32*)(duration_ptr + 8);
+        }
+        duration <<= shift;
+
+        if (reverse) {
+            rotation = params->rotation_base - lbl_8047E230;
+        } else {
+            rotation = lbl_8047E230 + params->rotation_base;
+        }
+
+        cameraSetDistance(lbl_8047E234);
+        cameraSetHeight(lbl_8047E200);
+        cameraSetRotY(rotation);
+        cameraUpdate();
+        GSscene_GetCameraDirectionVector(&direction);
+
+        duration_scale = (f32)duration / (f32)fn_800D37CC();
+        cameraMovePosition(7, &direction, duration_scale);
+
+        length = sqrtf((f32)lbl_8047E238);
+        params->out_far = length;
+        params->out_mid = length;
+        params->out_near = length;
+        break;
+    }
+
+    case 5: {
+        f32 scale_factor;
+        f32 distance;
+        f32 height;
+        f32 rotation;
+        f32 duration_scale;
+        f32 length;
+        s32 mode = *(s32*)(sequence + 0x10);
+        u8* duration_ptr =
+            (u8*)pattern + (*(u32*)pattern << 2);
+
+        duration = *(s32*)(duration_ptr + 4);
+        if (duration == 0) {
+            duration = *(s32*)(duration_ptr + 8);
+        }
+        duration <<= shift;
+
+        switch (mode) {
+        case -2:
+        case -1:
+            scale_factor = lbl_8047E240;
+            break;
+        case 1:
+            scale_factor = lbl_8047E244;
+            break;
+        case 2:
+            scale_factor = lbl_8047E248;
+            break;
+        case 3:
+            scale_factor = lbl_8047E24C;
+            break;
+        default:
+            scale_factor = lbl_8047E1F4;
+            break;
+        }
+
+        distance = lbl_8047E250 * scale_factor;
+        height = params->height_min +
+            (params->height_max - params->height_min) * fn_800E0BE4();
+        if (reverse) {
+            rotation = params->rotation_base - lbl_8047E254;
+        } else {
+            rotation = lbl_8047E254 + params->rotation_base;
+        }
+
+        cameraSetDistance(distance);
+        cameraSetHeight(height);
+        cameraSetRotY(rotation);
+        cameraUpdate();
+
+        {
+            Vec direction;
+            GSscene_GetCameraDirectionVector(&direction);
+            duration_scale = (f32)duration / (f32)fn_800D37CC();
+            cameraMovePosition(7, &direction, duration_scale);
+        }
+
+        length = sqrtf(distance * distance + height * height +
+                       lbl_8047E254 * lbl_8047E254);
+        params->out_far = length;
+        params->out_mid = length;
+        params->out_near = length;
+        break;
+    }
+    }
 }
 
 /**
