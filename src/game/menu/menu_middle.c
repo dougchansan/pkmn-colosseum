@@ -272,7 +272,7 @@ void fn_80070318(void);
 void fn_80070428(void* arg0, void* menu);
 void fn_800704A4(void);
 void fn_800704A8(void);
-void fn_800704AC(void);
+void fn_800704AC(void* menu, void* sprite);
 void fn_800706C4(void* menu, void* sprite);
 void fn_80070A9C(void* menu, void* sprite);
 void fn_80070D84(void);
@@ -7063,7 +7063,7 @@ void fn_800704A8(void) {
 
 #if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_RESIDUAL_800704AC_ONLY)
 /* 0x800704AC | size: 0x218 */
-void fn_800704AC(void) {
+void fn_800704AC(void* menu, void* sprite) {
     extern void fn_8006B3C8();
     extern void winSpriteSetDisp();
     extern u8 jumptable_802EE0F0[];
@@ -7079,6 +7079,8 @@ void fn_800704AC(void) {
     u32 ctr = 0;
 
     
+    r3 = (u32)menu;
+    r4 = (u32)sprite;
     r31 = r4;
     r0 = MENU_MIDDLE_U8_0001(r3)->unk_0001;
     r3 = (u32)&lbl_80267EA8;
