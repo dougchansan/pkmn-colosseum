@@ -176,7 +176,7 @@ extern void  _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID(void);
 extern void* GScameraGetActiveCamera(void);
 extern void  GScameraGetPosition(void* mtx, void* vec);
 extern void  GScameraGetPerspective(void* mtx, void* rx, void* ry, void* rz, void* scale);
-extern void  GSvecDistance(void* vecA, void* vecB);
+extern f32   GSvecDistance(void* vecA, void* vecB);
 extern void  fn_800E0168(void* dst, void* srcA, void* srcB);
 extern void  fn_800E0060(void* dst, void* src);
 extern void  fn_800E013C(void* dst, void* src, f32 scale);
@@ -358,7 +358,7 @@ extern void  DCFlushRange(void* ptr, u32 size);
 /* Unload__13ModelSequenceFPUc: _billboardTransformHelper */
 /* fn_80140190: _billboardTransformHelper2 (0x11C bytes) */
 /* _pachiruEffectCreateTexture__FP9GStextureP9GStextureUl: _billboardTransformMain (0x2DC bytes) */
-extern void fn_800E008C(void);
+extern f32 fn_800E008C(void*);
 extern void fn_800D6728(void);
 extern void fn_800D85D4(u32 a, void* b);
 extern f32 fn_800E0BA0(void);
@@ -473,7 +473,12 @@ u32 _lightningRenderMain(void* ptr) {
     u8* p;
     u8* entry;
     void* model;
+    void* camera;
     f32 modelPos[3];
+    f32 cameraPos[3];
+    f32 perspective;
+    f32 unused;
+    f32 scale;
     u16 count;
     u16 i;
     u32 segments;
@@ -491,6 +496,15 @@ u32 _lightningRenderMain(void* ptr) {
 
     GSmodelGetPosition(model, modelPos);
     _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
+    camera = GScameraGetActiveCamera();
+    GScameraGetPosition(camera, cameraPos);
+    GScameraGetPerspective(camera, &perspective, &unused, &unused, &unused);
+    scale = *(f32*)&lbl_8047D148 * fn_800E008C(p + 0x28);
+    scale /= GSvecDistance(cameraPos, modelPos) * perspective;
+    if (scale > *(f32*)&lbl_8047D14C) {
+        scale = *(f32*)&lbl_8047D14C;
+    }
+    fn_800B9404((u32)(*(f32*)&lbl_8047D150 * scale), 5);
     fn_800DA4C4(1, 6, 1);
     fn_800DA2BC(1, 1, 1);
     fn_800DA1E8(1, 1, 1);
