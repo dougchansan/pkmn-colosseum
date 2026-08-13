@@ -885,9 +885,9 @@ void* fn_80180694(void* src, void* dst, u32 size, u32 cbA, u32 cbB)
     entry->srcPtr = src;
     entry->dstPtr = dst;
     entry->size = alignedSize;
-    DCFlushRange(src, alignedSize);
-    fn_800AE630(entry, entry, 0, 0, fn_801808E4, entry, src, dst,
-                alignedSize);
+    DCFlushRange(src, size);
+    ARQPostRequest(entry, (u32)entry, 0, 0, (u32)src, (u32)dst,
+                   alignedSize, (void (*)(void*))fn_801808E4);
     OSRestoreInterrupts(savedIntr);
     return entry;
 }
