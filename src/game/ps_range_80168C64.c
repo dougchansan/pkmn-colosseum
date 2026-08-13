@@ -2667,16 +2667,46 @@ PSParticle* psInterpretParticle0(PSParticle* pp, PSParticle* parentCtx) {
                         break;
                     }
 
-                    /* ---- 0xAA: MODIFY_DIR_GEN_BASE (verified @ 0x80170844... entry
-                     * partially transcribed at 0x80170764) ---- */
+                    /* ---- 0xAA: randomized child script ---- */
                     case 0xAA: {
-                        stream = getFloat(stream, &scratch[0]);
-                        stream = getFloat(stream, &scratch[1]);
-                        stream = getFloat(stream, &scratch[2]);
-                        stream = getFloat(stream, &scratch[3]);
-                        if (pp->peopleObj == NULL) break;
-                        modifyDirGenBase(pp, scratch[3], scratch[0], scratch[1],
-                                         scratch[2]);
+                        s32 scriptId = ((u16)stream[0] << 8) | stream[1];
+                        u16 range = ((u16)stream[2] << 8) | stream[3];
+                        u32* bank;
+
+                        stream += 4;
+                        scriptId += (s32)((f32)range * fn_801ADC7C());
+                        bank = (u32*)lbl_804527C8[pp->bankIndex];
+                        if (bank != NULL) {
+                            scriptId = bank[scriptId];
+                        }
+                        spawned = psGenerateParticleID0(pp, pp->linkNo,
+                            pp->bankIndex, scriptId, NULL);
+                        if (spawned == NULL) {
+                            break;
+                        }
+                        spawned->positionX = pp->positionX;
+                        spawned->positionY = pp->positionY;
+                        spawned->positionZ = pp->positionZ;
+                        spawned->scriptId = pp->scriptId;
+                        spawned->peopleObj = pp->peopleObj;
+                        if (pp->peopleObj != NULL) {
+                            (*(u32*)((u8*)pp->peopleObj + 0x4C))++;
+                        }
+                        if (*(u32*)((u8*)pp->peopleObj + 4) & 0x20000000) {
+                            spawned->flags |= 0x20000000;
+                        }
+                        psApplyVelocityLocalRotation(spawned);
+                        if (pp->parentObj != NULL) {
+                            if (pp->peopleObj != NULL &&
+                                (*(u16*)((u8*)pp->peopleObj + 0x12) & 0x40)) {
+                                psChangeParticleAppSRT(spawned,
+                                    (PSAppSRT*)pp->parentObj);
+                            } else {
+                                psAttachParticleAppSRT(spawned,
+                                    (PSAppSRT*)pp->parentObj);
+                            }
+                        }
+                        psInterpretParticle0(spawned, pp);
                         break;
                     }
 
