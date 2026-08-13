@@ -46,12 +46,15 @@ s32 fn_80087AE8(u8* work, u32 flags)
         }
         if ((flags & 4) != 0) {
             result = fn_800D0F44((s8)work[0x21]);
-            if (result == 0x40000) {
-                *(u32*)(work + 0x28) = 4;
-                return 1;
-            }
             if (result != 0x80) {
-                initialized = 1;
+                if (initialized != 0) {
+                    if (result == 0x40000) {
+                        *(u32*)(work + 0x28) = 4;
+                        return 1;
+                    }
+                } else if (result != 0x40000) {
+                    initialized = 1;
+                }
             }
         }
         _threadSwitch();
