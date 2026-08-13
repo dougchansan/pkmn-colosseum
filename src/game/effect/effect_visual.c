@@ -5072,7 +5072,7 @@ void _distortionEffectUpdateMatrices(void* ptr) {
     f32 viewMatrix[12];
     f32 cornerB[3];
     f32 cornerA[3];
-    f32 projected[4];
+    f32 projected[6];
     f32 eye[3];
     f32 lookAt[3];
     f32 xScale;
