@@ -3911,11 +3911,36 @@ void psDispSubAPPSRTPoint(PSParticle* pp) {
 
         if (pp->flags & 4) {
             if (pp->peopleObj != NULL) {
-                return;
+                f32* people = (f32*)pp->peopleObj;
+                f32 sinScale = sin(pp->scaleFactor);
+                f32 sinFriction = sin(pp->frictionFactor);
+                f32 cosScale = cos(pp->scaleFactor);
+                f32 cosFriction = cos(pp->frictionFactor);
+                f32 deltaZ = pp->velocityZ - people[21];
+                f32 deltaX = pp->velocityX - people[14];
+                f32 magnitude = (deltaZ * tan(fabsf(people[18])) + fabsf(people[17])) * pp->velocityY;
+                f32 sinDelta = sin(deltaX);
+                f32 cosDelta = cos(deltaX);
+                Vec offset;
+
+                offset.x = people[8] + deltaX * cosFriction + deltaZ * sinFriction;
+                offset.y = people[9] + cosFriction * (deltaZ * sinScale) +
+                    sinFriction * (-magnitude * sinScale) +
+                    magnitude * sinDelta * cosScale;
+                offset.z = people[10] + cosFriction * (deltaZ * cosScale) +
+                    sinFriction * (-magnitude * cosScale) -
+                    magnitude * sinDelta * sinScale;
+                HSD_MtxSRT(appSRT->matrix, &appSRT->scaleX,
+                           &appSRT->translationX, &appSRT->rotationX, NULL);
+                PSMTXMultVec(appSRT->matrix, &offset, &offset);
+                previous.x = position.x - offset.x;
+                previous.y = position.y - offset.y;
+                previous.z = position.z - offset.z;
+            } else {
+                previous.x = pp->positionX;
+                previous.y = pp->positionY;
+                previous.z = pp->positionZ;
             }
-            previous.x = pp->positionX;
-            previous.y = pp->positionY;
-            previous.z = pp->positionZ;
         } else {
             previous.x = position.x - velocity.x;
             previous.y = position.y - velocity.y;
