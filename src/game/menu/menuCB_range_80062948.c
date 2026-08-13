@@ -1630,7 +1630,7 @@ static inline void menuCBPokemonEntryAdvancePositions(void)
                 if (step > lbl_8047C010) {
                     step = lbl_8047C010;
                 }
-                if (step < lbl_8047C014) {
+                if (step <= lbl_8047C014) {
                     step = lbl_8047C014;
                 }
                 current[component] += step;
@@ -1641,7 +1641,7 @@ static inline void menuCBPokemonEntryAdvancePositions(void)
                 if (step < lbl_8047BFE8) {
                     step = -step;
                 }
-                if (remaining == step || remaining < lbl_8047C018) {
+                if (remaining <= step || remaining < lbl_8047C018) {
                     current[component] = target;
                 }
             }
