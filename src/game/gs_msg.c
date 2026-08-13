@@ -2557,10 +2557,23 @@ s32 GSmsgInit(arg0, arg1)
         *(f32 *)(work + 0x64) = lbl_8047CD08;
     }
     *(u16 *)(mgr + 0x00) = arg0;
-    for (i = 0; i < arg1; i++) {
+    i = 0;
+    while (i + 8 <= arg1) {
+        slot = (u8 *)*(u32 *)(mgr + 0x24) + i * 8;
+        *(u16 *)(slot + 0x00) = 0xFFFF; *(u32 *)(slot + 0x04) = 0;
+        *(u16 *)(slot + 0x08) = 0xFFFF; *(u32 *)(slot + 0x0C) = 0;
+        *(u16 *)(slot + 0x10) = 0xFFFF; *(u32 *)(slot + 0x14) = 0;
+        *(u16 *)(slot + 0x18) = 0xFFFF; *(u32 *)(slot + 0x1C) = 0;
+        *(u16 *)(slot + 0x20) = 0xFFFF; *(u32 *)(slot + 0x24) = 0;
+        *(u16 *)(slot + 0x28) = 0xFFFF; *(u32 *)(slot + 0x2C) = 0;
+        *(u16 *)(slot + 0x30) = 0xFFFF; *(u32 *)(slot + 0x34) = 0;
+        *(u16 *)(slot + 0x38) = 0xFFFF; *(u32 *)(slot + 0x3C) = 0;
+        i += 8;
+    }
+    for (; i < arg1; i++) {
         slot = (u8 *)*(u32 *)(mgr + 0x24) + i * 8;
         *(u16 *)slot = 0xFFFF;
-        *(u32 *)(slot + 0x04) = 0;
+        *(u32 *)(slot + 4) = 0;
     }
     *(u16 *)(mgr + 0x04) = arg1;
     *(u32 *)(mgr + 0x0C) = (u32)GStextureCreate(0x200, 0x200, 0x40, 0, 0);
