@@ -1600,11 +1600,11 @@ void menuFightDrawSecretPokemon(u8* ctx, u8* npc) {
 extern void menuSetDisp(void);
 extern void fn_800F7920(void);
 extern void fn_800F7994(void);
-extern void atan2(void);
-extern u32 lbl_8047B710;
-extern u32 lbl_8047B700;
-extern u32 lbl_8047B704;
-extern u32 lbl_8047B708;
+extern f64 atan2(f64, f64);
+extern f32 lbl_8047B700;
+extern f32 lbl_8047B704;
+extern f32 lbl_8047B708;
+extern f64 lbl_8047B710;
 extern u8 lbl_8047885C[4];
 #if 0
 asm void menuFightButtonSecretPokemonTop(void) {
@@ -1633,6 +1633,8 @@ void menuFightButtonSecretPokemonTop(u8* ctx) {
     s32 y;
     s32 absX;
     s32 absY;
+    f32 angle;
+    f32 lowerBound;
     u16 bits;
     u8 pressed;
     u32 handle;
@@ -1652,23 +1654,44 @@ void menuFightButtonSecretPokemonTop(u8* ctx) {
         activeMenu = 0xFD;
     }
 
+    bits = 0;
     x = (s8)fn_800F7920(1, 0);
     y = (s8)fn_800F7994(1, 0);
-    absX = (x < 0) ? -x : x;
     absY = (y < 0) ? -y : y;
-    if (absX > 0x20 || absY > 0x20) {
-        if (absX < absY) {
-            selected = (y < 0) ? 2 : 3;
-        } else {
-            selected = (x < 0) ? 0 : 1;
+    absX = (x < 0) ? -x : x;
+    if (absY > 0x20 || absX > 0x20) {
+        angle = (f32)atan2((f64)y, (f64)x);
+        if ((angle > lbl_8047B700 ? angle : -angle) < lbl_8047B704) {
+            bits |= 2;
+        } else if ((angle > lbl_8047B700 ? angle : -angle) > lbl_8047B708) {
+            bits |= 1;
+        }
+        lowerBound = lbl_8047B704;
+        if (lowerBound < (angle > lbl_8047B700 ? angle : -angle) &&
+            (angle > lbl_8047B700 ? angle : -angle) < lbl_8047B708) {
+            if (angle < lbl_8047B700) {
+                bits |= 4;
+            } else {
+                bits |= 8;
+            }
         }
     }
-    if (selected < 0) {
+    if (bits & 1) {
+        selected = 0;
+    } else if (bits & 8) {
+        selected = 1;
+    } else if (bits & 2) {
+        selected = 2;
+    } else if (bits & 4) {
+        selected = 3;
+    } else {
         bits = *(u16*)(flags + 4);
         if (bits & 0x80) {
             selected = 4;
         } else if (bits & 0x40) {
             selected = 5;
+        } else {
+            selected = -1;
         }
     }
 
@@ -2046,10 +2069,10 @@ void menuFightDrawSecretWazaSelect(u8* ctx, u8* npc) {
 #endif
 
 /* menuFightButtonSecretWazaTop - 0x8000F964 | size: 0x474 */
-extern u32 lbl_8047B710;
-extern u32 lbl_8047B700;
-extern u32 lbl_8047B704;
-extern u32 lbl_8047B708;
+extern f64 lbl_8047B710;
+extern f32 lbl_8047B700;
+extern f32 lbl_8047B704;
+extern f32 lbl_8047B708;
 extern u8 lbl_80478858[4];
 #if 0
 asm void menuFightButtonSecretWazaTop(void) {
