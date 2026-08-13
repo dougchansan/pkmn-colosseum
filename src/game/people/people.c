@@ -2252,7 +2252,77 @@ asm void fn_801874BC(void) {
 #include "src/game/people/people_fn_801874BC.inc"
 }
 #else
-void fn_801874BC(void) { /* TODO: match -- 1104 bytes at 0x801874BC */ }
+u8 fn_801874BC(u32 groupId, u32 index, f32 x0, f32 z0, f32 x1, f32 z1)
+{
+    PeopleEntry* entry;
+    GSvec position;
+    void* resource;
+    f32 minX;
+    f32 maxX;
+    f32 minZ;
+    f32 maxZ;
+
+    entry = peopleFindBySelf(peopleFindSelf(groupId, index));
+    if (entry == NULL) {
+        return 0;
+    }
+
+    GSvecCopy(&position, fn_8018FCBC(entry));
+
+    resource = GSresGetResource(0, 2);
+    if (resource != NULL && *(u8*)resource != 0) {
+        cameraGetActive();
+        fn_800D258C();
+        _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
+        fn_800DA028(0);
+        fn_800D7820(lbl_80314638);
+        fn_800D88DC(1);
+        fn_800D888C(6);
+        fn_800DA4C4(1, 6, 7);
+        fn_800D9ED8(0);
+        fn_800D6A00(4);
+        fn_800D67BC(0xA);
+        fn_800D6680(x0, position.y, z0);
+        fn_800D5CB8(0, 0, 0x80, 0xFF, 0xC0);
+        fn_800D6680(x0, position.y + *(f32*)&lbl_8047D844, z0);
+        fn_800D5CB8(0, 0, 0x80, 0xFF, 0xC0);
+        fn_800D6680(x0, position.y, z1);
+        fn_800D5CB8(0, 0, 0x80, 0xFF, 0xC0);
+        fn_800D6680(x0, position.y + *(f32*)&lbl_8047D844, z1);
+        fn_800D5CB8(0, 0, 0x80, 0xFF, 0xC0);
+        fn_800D6680(x1, position.y + *(f32*)&lbl_8047D844, z1);
+        fn_800D5CB8(0, 0, 0x80, 0xFF, 0xC0);
+        fn_800D6680(x1, position.y, z1);
+        fn_800D5CB8(0, 0, 0x80, 0xFF, 0xC0);
+        fn_800D6680(x1, position.y + *(f32*)&lbl_8047D844, z0);
+        fn_800D5CB8(0, 0, 0x80, 0xFF, 0xC0);
+        fn_800D6680(x1, position.y, z0);
+        fn_800D5CB8(0, 0, 0x80, 0xFF, 0xC0);
+        fn_800D6728();
+    }
+
+    if (x0 < x1) {
+        minX = x0;
+        maxX = x1;
+    } else {
+        minX = x1;
+        maxX = x0;
+    }
+
+    if (z0 < z1) {
+        minZ = z0;
+        maxZ = z1;
+    } else {
+        minZ = z1;
+        maxZ = z0;
+    }
+
+    if (minX <= position.x && position.x <= maxX &&
+        minZ <= position.z && position.z <= maxZ) {
+        return 1;
+    }
+    return 0;
+}
 #endif
 
 /* 0x80187A60 | 0x2E8 */
