@@ -1231,13 +1231,16 @@ s32 fn_80014574(u8* ctx) {
     table = (EvTbl*)lbl_80266B58;
     key = *(s32*)(p + 4);
     table_idx = 0;
-    if (key != table[0].key) {
+    if (key != table->key) {
         table_idx = 1;
-        if (key != table[1].key) {
+        table++;
+        if (key != table->key) {
             table_idx = 2;
-            if (key != table[2].key) {
+            table++;
+            if (key != table->key) {
                 table_idx = 3;
-                if (key != table[3].key) {
+                table++;
+                if (key != table->key) {
                     table_idx = 4;
                 }
             }
