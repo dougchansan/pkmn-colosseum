@@ -2328,11 +2328,11 @@ extern u32 fn_800E24B0();
 extern u32 fn_800E27B0();
 extern u32 fn_800E2C04();
 extern u32 fn_800FA280();
-extern void fn_8005DA18(u32);
+extern void* menuDataBiosGetPtr(s32);
 extern u32 fn_80102510();
 extern u32 fn_8010264C();
 extern u32 fn_801040F0();
-extern u8* fn_80105624();
+extern void* windowGetKeyInfo(void*);
 extern u32 menuModelRender();
 extern u32 fn_80109B90();
 extern u32 fn_8011D8D8();
@@ -2609,8 +2609,8 @@ void fn_80040018(u8* menu)
         u8* keyInfo;
         u16 buttons;
 
-        fn_8005DA18(*(u32*)(menu + 4));
-        keyInfo = fn_80105624();
+        keyInfo = (u8*)windowGetKeyInfo(
+            menuDataBiosGetPtr(*(s32*)(menu + 4)));
         buttons = *(u16*)(keyInfo + 4);
         if (lbl_804788C0 != 0) {
             if (buttons & 0x10) {
