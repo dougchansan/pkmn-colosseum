@@ -646,7 +646,7 @@ extern void fn_800DFFCC(void* dst, void* src, const void* value);
 extern void fn_800E0718(void*, void*, f32);
 extern void GSvecTransformQuat(void);
 extern void GSmtxMakeYRotation(void);
-extern void GSvecTransform(void);
+extern void GSvecTransform(void* dst, void* matrix, void* vec);
 extern void fn_800E013C(void* dst, void* src, f32 scale);
 extern void GSvecAdd(void* dst, void* srcA, void* srcB);
 extern u32 lbl_8047D154;
@@ -907,7 +907,7 @@ allocation_error:
 #endif
 extern void fn_800E06B8();
 extern void fn_800E040C();
-extern void fn_800E02C4();
+extern void fn_800E02C4(void* matrix, f32 x, f32 y, f32 z);
 extern void fn_800E03B4();
 extern void GSmodelSetMatrix();
 extern u32 lbl_8047D170;
@@ -4387,7 +4387,7 @@ void fn_8013EA44(void* ptr) {
     f32 layerAlpha;
     f32 layerAlphaStep;
     u32 flags;
-    u8 count;
+    s32 count;
     s32 i;
 
     p = ptr;
@@ -4872,11 +4872,11 @@ extern void GScameraGetLookAt(void* mtx, void* lookAt, void* eye);
 extern void fn_800E0628(void* dst, void* src);
 extern void fn_800E0238(void* dst, void* src);
 extern void set__5GSvecFfff(void* vec, f32 x, f32 y, f32 z);
-extern void fn_800D2DE8(void);
+extern s32 fn_800D2DE8(void* input, void* output, s32 count);
 extern void GSlogWrite(const char* fmt, ...);
 extern u16 GStextureGetXsize(void* texture);
 extern u16 GStextureGetYsize(void* texture);
-extern void fn_800E03E8(void);
+extern void fn_800E03E8(void* matrix, f32 x, f32 y, f32 z);
 extern u32 lbl_8047D300;
 extern u32 lbl_8047D304;
 extern u32 lbl_8047D308;
@@ -4895,6 +4895,7 @@ asm void _distortionEffectUpdateMatrices(void) {
 void _distortionEffectUpdateMatrices(void* ptr) {
     void* camera;
     void* cameraMatrix;
+    void* matrix;
     f32 lookAt[3];
     f32 eye[3];
     f32 projected[4];
@@ -4905,32 +4906,30 @@ void _distortionEffectUpdateMatrices(void* ptr) {
     f32 yScale;
 
     camera = GScameraGetActiveCamera();
+    matrix = (u8*)ptr + 0x38;
     _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
     cameraMatrix = fn_800D7BF8(0);
-    fn_800E064C((u8*)ptr + 0x38);
+    fn_800E064C(matrix);
     if (camera != NULL) {
         GScameraGetLookAt(camera, lookAt, eye);
         fn_800E0628(viewMatrix, cameraMatrix);
         viewMatrix[3] = 0.0f;
         viewMatrix[7] = 0.0f;
         viewMatrix[11] = 0.0f;
-        fn_800E0238((u8*)ptr + 0x38, viewMatrix);
+        fn_800E0238(matrix, viewMatrix);
     }
-    ((void (*)(void*, f32, f32, f32))fn_800E02C4)(
-        (u8*)ptr + 0x38, *(f32*)((u8*)ptr + 0x10),
-        *(f32*)((u8*)ptr + 0x10), *(f32*)((u8*)ptr + 0x10));
+    fn_800E02C4(matrix, *(f32*)((u8*)ptr + 0x10),
+                *(f32*)((u8*)ptr + 0x10), *(f32*)((u8*)ptr + 0x10));
     *(f32*)((u8*)ptr + 0x44) = *(f32*)((u8*)ptr + 0x2C);
     *(f32*)((u8*)ptr + 0x54) = *(f32*)((u8*)ptr + 0x30);
     *(f32*)((u8*)ptr + 0x64) = *(f32*)((u8*)ptr + 0x34);
     set__5GSvecFfff(cornerA, *(f32*)&lbl_8047D304, *(f32*)&lbl_8047D304,
                     *(f32*)&lbl_8047D300);
-    ((void (*)(void*, void*, void*))GSvecTransform)(
-        cornerA, (u8*)ptr + 0x38, cornerA);
+    GSvecTransform(cornerA, matrix, cornerA);
     set__5GSvecFfff(cornerB, *(f32*)&lbl_8047D308, *(f32*)&lbl_8047D308,
                     *(f32*)&lbl_8047D300);
-    ((void (*)(void*, void*, void*))GSvecTransform)(
-        cornerB, (u8*)ptr + 0x38, cornerB);
-    if (((s32 (*)(void*, void*, s32))fn_800D2DE8)(cornerA, projected, 2) != 2) {
+    GSvecTransform(cornerB, matrix, cornerB);
+    if (fn_800D2DE8(cornerA, projected, 2) != 2) {
         GSlogWrite((const char*)lbl_8027301C);
         return;
     }
@@ -4945,18 +4944,16 @@ void _distortionEffectUpdateMatrices(void* ptr) {
     *(f32*)((u8*)ptr + 0xA4) = *(f32*)&lbl_8047D300;
     *(f32*)((u8*)ptr + 0xA8) = *(f32*)&lbl_8047D320;
     *(f32*)((u8*)ptr + 0xAC) = *(f32*)((u8*)ptr + 0xA0);
-    ((void (*)(void*, f32, f32, f32))fn_800E048C)(
-        (u8*)ptr + 0x68, projected[2] - projected[0],
-        projected[3] - projected[1], *(f32*)&lbl_8047D300);
+    fn_800E048C((u8*)ptr + 0x68, projected[2] - projected[0],
+                 projected[3] - projected[1], *(f32*)&lbl_8047D300);
     xScale = *(f32*)&lbl_8047D324 /
              (f32)GStextureGetXsize((void*)lbl_8047AEE8);
     xScale *= *(f32*)((u8*)ptr + 0x20);
     yScale = *(f32*)&lbl_8047D324 /
              (f32)GStextureGetYsize((void*)lbl_8047AEE8);
-    ((void (*)(void*, f32, f32, f32))fn_800E03E8)(
-        (u8*)ptr + 0x68, xScale + projected[0],
-        yScale * *(f32*)((u8*)ptr + 0x20) + projected[1],
-        *(f32*)&lbl_8047D300);
+    fn_800E03E8((u8*)ptr + 0x68, xScale + projected[0],
+                yScale * *(f32*)((u8*)ptr + 0x20) + projected[1],
+                *(f32*)&lbl_8047D300);
 }
 #endif
 #endif
