@@ -3183,134 +3183,44 @@ void fn_8006C7D4(void* arg0, void* item) {
 
     
     r28 = (u32)item;
-    r3 = MENU_MIDDLE_S16_0006(r28)->unk_0006;
-    /* subi r0, r3, 0xec2 */;
-    if (r0 > (u32)0x23) return;
-    r3 = (u32)jumptable_802EDF20;
-    r0 = r0 << 2;
-    r3 = (u32)jumptable_802EDF20;
-    r0 = *(u32*)(r3 + r0);
-    ctr_fn = (void(*)(void))r0;
-    /* indirect jump via ctr */;
-    r0 = 0x2;
-    r30 = 0x0;
-    do {
-    break;
-
-
-    break;
-
-
-    break;
-
-
-    break;
-
-
-    break;
-
-
-    break;
-
-
-    break;
-
-
-    break;
-
-
-    break;
-
-
-    break;
-
-
-    break;
-
-
-    break;
-
-
-    break;
-
-
-    break;
-
-
-    break;
-
-
-    break;
-
-
-    break;
-
-
-    break;
-
-
-    break;
-
-
-    break;
-
-
-    break;
-
-
-    break;
-
-
-    break;
-
-
-    break;
-
-
-    break;
-
-
-    break;
-
-
-    break;
-
-
-    break;
-
-
-    break;
-
-
-    break;
-
-
-    break;
-
-
-    break;
-
-
-    break;
-
-
-    break;
-
-
-    break;
-
-
-    break;
-
-    } while (0);
-    r0 = r3 - 0xEC2;
-    r30 = r0 & 3;
-    if (r0 < 0xC) {
-        r0 = 2;
-    } else if (r0 < 0x18) {
-        r0 = 1;
-    } else {
-        r0 = 3;
+    switch ((s16)MENU_MIDDLE_S16_0006(r28)->unk_0006) {
+    case 0xEC2: r0 = 2; r30 = 0; break;
+    case 0xEC3: r0 = 2; r30 = 1; break;
+    case 0xEC4: r0 = 2; r30 = 2; break;
+    case 0xEC5: r0 = 2; r30 = 3; break;
+    case 0xEC6: r0 = 2; r30 = 0; break;
+    case 0xEC7: r0 = 2; r30 = 1; break;
+    case 0xEC8: r0 = 2; r30 = 2; break;
+    case 0xEC9: r0 = 2; r30 = 3; break;
+    case 0xECA: r0 = 2; r30 = 0; break;
+    case 0xECB: r0 = 2; r30 = 1; break;
+    case 0xECC: r0 = 2; r30 = 2; break;
+    case 0xECD: r0 = 2; r30 = 3; break;
+    case 0xECE: r0 = 1; r30 = 0; break;
+    case 0xECF: r0 = 1; r30 = 1; break;
+    case 0xED0: r0 = 1; r30 = 2; break;
+    case 0xED1: r0 = 1; r30 = 3; break;
+    case 0xED2: r0 = 1; r30 = 0; break;
+    case 0xED3: r0 = 1; r30 = 1; break;
+    case 0xED4: r0 = 1; r30 = 2; break;
+    case 0xED5: r0 = 1; r30 = 3; break;
+    case 0xED6: r0 = 1; r30 = 0; break;
+    case 0xED7: r0 = 1; r30 = 1; break;
+    case 0xED8: r0 = 1; r30 = 2; break;
+    case 0xED9: r0 = 1; r30 = 3; break;
+    case 0xEDA: r0 = 3; r30 = 0; break;
+    case 0xEDB: r0 = 3; r30 = 1; break;
+    case 0xEDC: r0 = 3; r30 = 2; break;
+    case 0xEDD: r0 = 3; r30 = 3; break;
+    case 0xEDE: r0 = 3; r30 = 0; break;
+    case 0xEDF: r0 = 3; r30 = 1; break;
+    case 0xEE0: r0 = 3; r30 = 2; break;
+    case 0xEE1: r0 = 3; r30 = 3; break;
+    case 0xEE2: r0 = 3; r30 = 0; break;
+    case 0xEE3: r0 = 3; r30 = 1; break;
+    case 0xEE4: r0 = 3; r30 = 2; break;
+    case 0xEE5: r0 = 3; r30 = 3; break;
+    default: return;
     }
     if (r0 == 1) {
         r29 = (u32)((u8*(*)(s32, s32))savedataGetStatus)(0, 0xE) + r30 * 0x1660 + 0x59A8;
