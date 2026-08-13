@@ -2180,33 +2180,36 @@ extern f32 lbl_8047D040;
 void getStep__FP8FOOTSTEPP8_GSmodelPiP8FOOTWORK(
     f32* step, void* model, s32* partIndices, f32* footwork)
 {
-    f32 modelPosition[3];
-    f32 transform[3];
+    typedef struct HeroMoveVec3 {
+        f32 x;
+        f32 y;
+        f32 z;
+    } HeroMoveVec3;
+    HeroMoveVec3 modelPosition;
+    HeroMoveVec3 transform;
     f32 heights[4];
     f32 zero = lbl_8047D038;
     f32 delta = (f32)((u32 (*)(void))fn_800D3088)();
     void* part;
     s32 i;
 
-    GSmodelGetPosition(model, modelPosition);
+    GSmodelGetPosition(model, &modelPosition);
 
     for (i = 0; i < 4; i++) {
-        f32* position = step + 4 + i * 3;
+        HeroMoveVec3* position = (HeroMoveVec3*)(step + 4 + i * 3);
 
-        position[0] = zero;
-        position[1] = zero;
-        position[2] = zero;
+        position->x = zero;
+        position->y = zero;
+        position->z = zero;
         step[i] = zero;
         heights[i] = zero;
         if (partIndices[i] >= 0) {
             part = ((void* (*)(void*, s32))GSmodelGetPart)(model, partIndices[i]);
             if (part != NULL) {
-                ((void (*)(void*, void*, void*, void*))GSpartGetTransform)(part, transform, NULL, NULL);
+                ((void (*)(void*, void*, void*, void*))GSpartGetTransform)(part, &transform, NULL, NULL);
                 GSpartFree(part);
-                position[0] = transform[0];
-                position[1] = transform[1];
-                position[2] = transform[2];
-                heights[i] = transform[1] - modelPosition[1];
+                *position = transform;
+                heights[i] = transform.y - modelPosition.y;
             }
         }
     }
