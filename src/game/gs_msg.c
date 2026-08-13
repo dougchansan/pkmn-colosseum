@@ -1476,6 +1476,11 @@ s32 fn_800FAEF8(s32 arg0, s32 arg1, s32 arg2, const char* fmt, ...)
     u32 texture;
     s32 i;
     f64 rubyBias;
+    u16 *cursor;
+    u16 code;
+    u8 *fontNode;
+    u8 *fontInfo;
+    u32 glyphInfo;
     GSMsgVaList args;
 
     formatted = lbl_80401DE0 + 0x4D0;
@@ -1533,7 +1538,54 @@ s32 fn_800FAEF8(s32 arg0, s32 arg1, s32 arg2, const char* fmt, ...)
 
     *(f32*)(work + 0x0C) = *(f32*)(work + 0x04);
     *(f32*)(work + 0x10) = *(f32*)(work + 0x08);
-    GSmsgInitRuby(work);
+    for (;;) {
+        cursor = *(u16**)(work + 0x30);
+        code = *cursor;
+        if (code == 0) {
+            if ((s8)work[0x40] == 0) {
+                break;
+            }
+            work[0x40]--;
+            *(u32*)(work + 0x30) = *(u32*)(work + 0x34 + (s8)work[0x40] * 4);
+            continue;
+        }
+        *(u16**)(work + 0x30) = cursor + 1;
+        if (code == 0xA || code == 0xD) {
+            continue;
+        }
+        if (code == 0x20) {
+            *(f32*)(work + 0x14) = (f32)(work[0x22] >> 1) * *(f32*)(work + 0x60);
+        } else {
+            fontNode = NULL;
+            fontInfo = (u8*)_msgGetCodeInfo__FP13MSG_TASK_WORKUsPP12tagFONT_INFO(work, code, &fontNode, NULL);
+            if (fontInfo == NULL) {
+                s16 x0 = (s16)*(f32*)(work + 0x0C);
+                s16 y0 = (s16)*(f32*)(work + 0x10) + 2;
+                s16 x1 = (s16)((f32)work[0x22] * *(f32*)(work + 0x60)) + x0;
+                s16 y1 = (s16)((f32)work[0x23] * *(f32*)(work + 0x64)) + y0;
+
+                fn_800D888C(0x80000002);
+                fn_800D6A00(7);
+                fn_800D7820(lbl_80314E08);
+                fn_800D67BC(2);
+                fn_800D61E4(x0, y0);
+                fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+                fn_800D61E4(x1, y1);
+                fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+                fn_800D6728();
+                fn_800D88DC(0x80000002);
+                fn_800D7820(lbl_80314F98);
+                fn_800DC1D4(1);
+                *(f32*)(work + 0x14) = lbl_8047CD30 + (f32)work[0x22] * *(f32*)(work + 0x60);
+            } else {
+                glyphInfo = *(u32*)(fontInfo + 4);
+                fn_800FD69C(work, (u32)fontNode + (*(s32*)(fontNode + 4) + (glyphInfo & 0xFFFFFF)),
+                             fontInfo[2], fontInfo[3], (s8)(glyphInfo >> 24));
+                *(f32*)(work + 0x14) = (f32)(s16)fontInfo[2] * *(f32*)(work + 0x60);
+            }
+        }
+        *(f32*)(work + 0x0C) += *(f32*)(work + 0x14);
+    }
 
     (void)fontEntry;
     (void)rubyBias;
