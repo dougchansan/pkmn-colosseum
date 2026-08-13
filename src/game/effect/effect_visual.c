@@ -2062,13 +2062,13 @@ u32 fn_8013AD9C(void* ptr, u32 delta) {
     f32 end;
 
     if (ptr == NULL) {
-        return 0;
+        goto done;
     }
 
     p = ptr;
     node = *(u8**)(p + 0x54);
     if (node == NULL) {
-        return 0;
+        goto done;
     }
 
     duration = *(u32*)(node + 0x8);
@@ -2131,6 +2131,9 @@ u32 fn_8013AD9C(void* ptr, u32 delta) {
     }
     *(u32*)(p + 0x58) += delta;
     return 1;
+
+done:
+    return 0;
 }
 #endif
 
