@@ -408,41 +408,53 @@ s32 _sysvarsProcessData__FP16sysvarsFuncEntryPc(void* entry, char* data)
             }
         }
 
-        item = fn_80082EA4((void*)lbl_8047A434, (s8)base[0x48], menuState[0x24], menuState[0x26]);
-        fn_80034830(*(u8*)((u8*)item + 0x0C), base[0x48], item);
-        lbl_8047A43C++;
-        if (*(u8*)((u8*)item + 0x0D) != 0) {
-            randomPick = fn_800FA280(2);
-            effectType = (*(u8*)((u8*)item + 0x0E) >> (randomPick * 4)) & 0xF;
-            if (effectType == 0) {
-                effectType = 1;
+        selection = 1;
+        current = (s8)base[0x48];
+        if ((s8)menuState[0x61 + current] < 0) {
+            selection = 0;
+        } else {
+            for (candidate = 0;
+                 candidate < (s8)*(u8*)((u8*)lbl_8047A434 + 0x1C);
+                 candidate++) {
+                for (i = 0; i < (s8)menuState[0x5A]; i++) {
+                    item = fn_80082EA4((void*)lbl_8047A434, current,
+                                       candidate, i);
+                    if (*(u8*)((u8*)item + 0x0C) == 0) {
+                        selection = 0;
+                        break;
+                    }
+                }
+                if (selection == 0) {
+                    break;
+                }
             }
-            switch (effectType) {
-            case 1:
-                winMsgOpen(8, 0x3B76, 1, 0);
-                break;
-            case 2:
-                winMsgOpen(8, 0x3B77, 1, 0);
-                break;
-            case 3:
-                winMsgOpen(8, 0x3B78, 1, 0);
-                break;
-            case 4:
-                winMsgOpen(8, 0x3B79, 1, 0);
-                break;
-            default:
-                winMsgOpen(8, 0x3B76, 1, 0);
-                break;
+        }
+        if (selection == 0) {
+            fn_8007C414();
+            fn_801D0AFC(0);
+            save = savedataGetStatus(0, 2);
+            for (i = 0; i < 6; i++) {
+                party = heroBiosGetPokemonPtr(save, (u8)i);
+                pokemonBiosSetItemDataId(
+                    party, *(u16*)(base + 0xB0 + i * 2));
             }
+            winMsgOpen(8, 0x3B7C, 0, 0);
+            menuResult = menuOpen(0xA9, 1);
+            menuClose(0xA9);
             winMsgClose(1);
+            if (menuResult == 0) {
+                continue;
+            }
+            return 2;
         }
 
-        if (fn_800FF52C() != 0) {
-            fn_800FF660();
-        } else {
-            fn_80113828(0x80, 0);
-        }
-        lbl_8047A438 = 0;
+        fn_80165668(0x4CF, 0, 0xFF);
+        fn_800832C8(0, menuState, base[0x48]);
+        msgctrlSetValue(0x4D, menuState + 0x0A);
+        msgctrlSetValue(
+            0x57, menuState + 0x28 + (s8)base[0x48] * 0x10);
+        winMsgOpen(8, 0x3B7A, 1, 0);
+        winMsgClose(1);
         return 0;
     }
 }
