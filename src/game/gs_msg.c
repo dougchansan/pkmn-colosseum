@@ -336,22 +336,6 @@ u8 *fn_800F96E4(arg0, arg1, arg2)
     *(u16 *)(work + 0x20) = fontId;
     *(u32 *)(work + 0x1C) = arg2;
 
-    for (i = 0; i < *(u16 *)(mgr + 0x04); i++) {
-        entry = (u8 *)*(u32 *)(mgr + 0x24) + i * 8;
-        if (*(u16 *)entry == fontId) {
-            work[0x22] = entry[2];
-            work[0x23] = entry[3];
-            if (fontId == 0) {
-                *(s8 *)(work + 0x42) = 0xB;
-            } else if (fontId == 1) {
-                *(s8 *)(work + 0x42) = 6;
-            } else {
-                *(s8 *)(work + 0x42) = (s8)((lbl_8047CD20 * (f64)entry[3]) + lbl_8047CD18);
-            }
-            break;
-        }
-    }
-
     dst = arg0;
     count = 0;
     maxBytes = (arg1 - 1) * 2;
