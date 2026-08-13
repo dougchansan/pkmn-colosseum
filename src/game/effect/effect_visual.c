@@ -1094,6 +1094,17 @@ void _leaffxGenerateLeafData(void* ptr, void* entry) {
     u8* e;
     void* source;
     void* clone;
+    void* part;
+    f32 position[3];
+    f32 vecA[3];
+    f32 vecB[3];
+    f32 matrix[12];
+    f32 scale;
+    f32 yaw;
+    f32 pitch;
+    f32 radius;
+    f32 factor;
+    f32 f0;
 
     if (ptr == NULL || entry == NULL) {
         return;
@@ -1107,19 +1118,120 @@ void _leaffxGenerateLeafData(void* ptr, void* entry) {
     }
 
     clone = GSmodelClone(source);
+    *(void**)(e + 0x58) = clone;
     if (clone == NULL) {
         GSlogWrite((const char*)lbl_80272CC4);
         return;
     }
 
-    *(void**)(e + 0x58) = clone;
-    *(f32*)(e + 0x18) = *(f32*)(p + 0x18);
-    *(f32*)(e + 0x1C) = *(f32*)(p + 0x1C);
-    *(f32*)(e + 0x20) = *(f32*)(p + 0x20);
-    *(f32*)(e + 0x30) = *(f32*)(p + 0x30);
-    *(f32*)(e + 0x34) = *(f32*)(p + 0x34);
-    *(f32*)(e + 0x38) = *(f32*)(p + 0x2C);
     GSmodelSetVisibility(clone, 1);
+    if ((s16)*(u16*)(p + 0x4A) >= 0) {
+        part = GSmodelGetPart(source, *(s16*)(p + 0x4A));
+    } else {
+        part = NULL;
+    }
+
+    if (part != NULL) {
+        GSpartGetTransform(part, position, NULL, NULL);
+        GSpartFree(part);
+    } else {
+        GSmodelGetPosition(source, position);
+    }
+
+    *(f32*)(e + 0x50) =
+        (*(f32*)(p + 0x14) * fn_800E0BA0() + *(f32*)(p + 0x10)) * *(f32*)(p + 0x0C);
+    *(f32*)(e + 0x54) = *(f32*)&lbl_8047D168;
+
+    yaw = *(f32*)&lbl_8047D180 * fn_800E0BE4();
+    pitch = *(f32*)&lbl_8047D184 * fn_800E0BE4();
+    set__5GSvecFfff(vecA,
+                    (f32)sin(pitch) * (f32)sin(yaw),
+                    (f32)cos(pitch),
+                    (f32)sin(pitch) * (f32)cos(yaw));
+    fn_800E0718((u8*)e + 0x30, vecA, *(f32*)&lbl_8047D180 * fn_800E0BE4());
+
+    yaw = *(f32*)&lbl_8047D180 * fn_800E0BE4();
+    pitch = *(f32*)&lbl_8047D184 * fn_800E0BE4();
+    set__5GSvecFfff(vecB,
+                    (f32)sin(pitch) * (f32)sin(yaw),
+                    (f32)cos(pitch),
+                    (f32)sin(pitch) * (f32)cos(yaw));
+    fn_800E0718((u8*)e + 0x40, vecB, *(f32*)&lbl_8047D180 * fn_800E0BE4());
+
+    GSvecCopy(e, position);
+
+    radius = (*(f32*)(p + 0x24) * fn_800E0BA0() + *(f32*)(p + 0x20)) * *(f32*)(e + 0x50);
+    yaw = *(f32*)&lbl_8047D180 * fn_800E0BE4();
+    pitch = *(f32*)&lbl_8047D184 * fn_800E0BE4();
+    set__5GSvecFfff((u8*)e + 0x18,
+                    (f32)sin(pitch) * (f32)sin(yaw),
+                    (f32)cos(pitch),
+                    (f32)sin(pitch) * (f32)cos(yaw));
+    fn_800E013C((u8*)e + 0x18, (u8*)e + 0x18, radius);
+    GSvecAdd((u8*)e + 0x18, (u8*)e + 0x18, position);
+
+    yaw = *(f32*)&lbl_8047D180 * fn_800E0BE4();
+    pitch = *(f32*)&lbl_8047D188 * fn_800E0BE4();
+    radius =
+        ((*(f32*)(p + 0x34) * fn_800E0BA0() + *(f32*)(p + 0x30)) *
+         (*(f32*)(p + 0x1C) * fn_800E0BA0() + *(f32*)(p + 0x18))) *
+        *(f32*)(e + 0x50);
+    set__5GSvecFfff((u8*)e + 0x0C,
+                    (f32)sin(pitch) * (f32)sin(yaw),
+                    (f32)cos(pitch),
+                    (f32)sin(pitch) * (f32)cos(yaw));
+    fn_800E013C((u8*)e + 0x0C, (u8*)e + 0x0C, radius);
+    GSvecAdd((u8*)e + 0x0C, (u8*)e + 0x0C, position);
+
+    yaw = *(f32*)&lbl_8047D180 * fn_800E0BE4();
+    pitch = *(f32*)&lbl_8047D184 * fn_800E0BE4();
+    radius = (*(f32*)(p + 0x24) * fn_800E0BA0() + *(f32*)(p + 0x20)) * *(f32*)(e + 0x50);
+    set__5GSvecFfff((u8*)e + 0x24,
+                    (f32)sin(pitch) * (f32)sin(yaw),
+                    (f32)cos(pitch),
+                    (f32)sin(pitch) * (f32)cos(yaw));
+    fn_800E013C((u8*)e + 0x24, (u8*)e + 0x24, radius);
+    GSvecAdd((u8*)e + 0x24, (u8*)e + 0x24, (u8*)e + 0x0C);
+
+    GSvecCopy((u8*)e + 0x30, position);
+    radius = (*(f32*)(p + 0x24) * fn_800E0BA0() + *(f32*)(p + 0x20)) * *(f32*)(e + 0x50);
+    yaw = *(f32*)&lbl_8047D180 * fn_800E0BE4();
+    pitch = *(f32*)&lbl_8047D184 * fn_800E0BE4();
+    set__5GSvecFfff((u8*)e + 0x18,
+                    (f32)sin(pitch) * (f32)sin(yaw),
+                    (f32)cos(pitch),
+                    (f32)sin(pitch) * (f32)cos(yaw));
+    fn_800E013C((u8*)e + 0x18, (u8*)e + 0x18, radius);
+    GSvecAdd((u8*)e + 0x18, (u8*)e + 0x18, position);
+
+    yaw = *(f32*)&lbl_8047D180 * fn_800E0BE4();
+    pitch = *(f32*)&lbl_8047D188 * fn_800E0BE4();
+    radius =
+        ((*(f32*)(p + 0x34) * fn_800E0BA0() + *(f32*)(p + 0x30)) *
+         (*(f32*)(p + 0x1C) * fn_800E0BA0() + *(f32*)(p + 0x18))) *
+        *(f32*)(e + 0x50);
+    set__5GSvecFfff((u8*)e + 0x0C,
+                    (f32)sin(pitch) * (f32)sin(yaw),
+                    (f32)cos(pitch),
+                    (f32)sin(pitch) * (f32)cos(yaw));
+    fn_800E013C((u8*)e + 0x0C, (u8*)e + 0x0C, radius);
+    GSvecAdd((u8*)e + 0x0C, (u8*)e + 0x0C, position);
+
+    yaw = *(f32*)&lbl_8047D180 * fn_800E0BE4();
+    pitch = *(f32*)&lbl_8047D184 * fn_800E0BE4();
+    radius = (*(f32*)(p + 0x24) * fn_800E0BA0() + *(f32*)(p + 0x20)) * *(f32*)(e + 0x50);
+    set__5GSvecFfff((u8*)e + 0x24,
+                    (f32)sin(pitch) * (f32)sin(yaw),
+                    (f32)cos(pitch),
+                    (f32)sin(pitch) * (f32)cos(yaw));
+    fn_800E013C((u8*)e + 0x24, (u8*)e + 0x24, radius);
+    GSvecAdd((u8*)e + 0x24, (u8*)e + 0x24, (u8*)e + 0x0C);
+
+    fn_800E040C(matrix, (u8*)e + 0x30);
+    scale = *(f32*)(e + 0x50);
+    fn_800E02C4(matrix, scale, scale, scale);
+    fn_800E03B4(matrix, position);
+    GSmodelSetMatrix(*(void**)(e + 0x58), matrix);
 }
 #endif
 #endif
