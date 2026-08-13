@@ -1224,8 +1224,7 @@ s32 fn_80014574(u8* ctx) {
 
     p = *(u8**)(ctx + 0x60);
     state = windowGetKeyInfo();
-    bits = *(u16*)(state + 6);
-    if ((bits & 0xF) == 0) {
+    if ((*(u16*)(state + 6) & 0xF) == 0) {
         return 0;
     }
 
@@ -1272,7 +1271,7 @@ s32 fn_80014574(u8* ctx) {
         }
     }
 
-    if ((bits & 1) != 0) {
+    if ((*(u16*)(state + 6) & 1) != 0) {
         min_value = *(s32*)(p + 0xC);
         max_value = *(s32*)(p + 8);
         if (min_value != max_value) {
@@ -1343,7 +1342,7 @@ s32 fn_80014574(u8* ctx) {
         }
     }
 
-    if ((bits & 2) != 0) {
+    if ((*(u16*)(state + 6) & 2) != 0) {
         min_value = *(s32*)(p + 0xC);
         max_value = *(s32*)(p + 8);
         if (min_value != max_value) {
@@ -1414,14 +1413,14 @@ s32 fn_80014574(u8* ctx) {
         }
     }
 
-    if ((bits & 8) != 0) {
+    if ((*(u16*)(state + 6) & 8) != 0) {
         ctx[0x95] = (u8)(ctx[0x95] + 1);
         if ((s32)(s8)ctx[0x95] >= count) {
             ctx[0x95] = (u8)(s8)(count - 1);
         }
     }
 
-    if ((bits & 4) != 0) {
+    if ((*(u16*)(state + 6) & 4) != 0) {
         ctx[0x95] = (u8)(ctx[0x95] - 1);
         if ((s32)(s8)ctx[0x95] < 0) {
             ctx[0x95] = 0;
