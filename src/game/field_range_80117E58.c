@@ -433,7 +433,7 @@ void* fn_800D3094(void);
 extern u32 lbl_8047ADAC;
 extern u32 lbl_8047ADA8;
 u8* fn_801190DC(u8* texture, u32 selector, u32 subid);
-extern void psInitDataBank(void);
+extern void psInitDataBank(u8 texture_type, u8* description, u8* data, u8* texture, u32 flags);
 extern void DCFlushRange();
 extern u8 lbl_802727D8[];
 void* fn_801195AC(void* resource);
@@ -2407,8 +2407,7 @@ void* fn_801195AC(void* resource)
     for (i = 0; i < 0x40; i++) {
         bank->slots[i] = NULL;
     }
-    ((void (*)(u8, u8*, u8*, u8*, u32))psInitDataBank)(
-        bank->texture_type, file->description, file->data, file->texture, 0);
+    psInitDataBank(bank->texture_type, file->description, file->data, file->texture, 0);
     return bank;
 }
 #endif
