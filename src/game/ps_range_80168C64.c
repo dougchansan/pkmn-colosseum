@@ -4336,6 +4336,55 @@ void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
             if (pp->flags & 0x400) {
                 GX_FIFO_U8 = textureIndex + 3;
             }
+        } else {
+            u8* stream = polygonData;
+            u32 packetCount = *(u32*)stream;
+
+            stream += 4;
+            while (packetCount != 0) {
+                u8 primitive = stream[0];
+                u8 vertexCount = stream[1];
+                s32 i;
+
+                stream += 4;
+                fn_800B7D3C();
+                fn_800B7874(9, 1);
+                fn_800B7874(11, 1);
+                if (pp->flags & 0x400) {
+                    fn_800B7874(13, 1);
+                    fn_800B928C(primitive, 5, vertexCount);
+                } else {
+                    fn_800B928C(primitive, 3, vertexCount);
+                }
+
+                for (i = 0; i < vertexCount; i++) {
+                    f32 u = *(f32*)&stream[0];
+                    f32 v = *(f32*)&stream[4];
+                    f32 xWeight = lbl_8047D5CC * (u - lbl_8047D618);
+                    f32 yWeight = lbl_8047D5CC * (v - lbl_8047D618);
+
+                    stream += 8;
+                    if (pp->flags & 0x40000) {
+                        u = 1.0f - u;
+                    }
+                    if (pp->flags & 0x80000) {
+                        v = 1.0f - v;
+                    }
+
+                    GX_FIFO_F32 = centerX + axisXX * xWeight + axisYX * yWeight;
+                    GX_FIFO_F32 = centerY + axisXY * xWeight + axisYY * yWeight;
+                    GX_FIFO_F32 = centerZ + axisXZ * xWeight + axisYZ * yWeight;
+                    GX_FIFO_U8 = color.r;
+                    GX_FIFO_U8 = color.g;
+                    GX_FIFO_U8 = color.b;
+                    GX_FIFO_U8 = color.a;
+                    if (pp->flags & 0x400) {
+                        GX_FIFO_F32 = u;
+                        GX_FIFO_F32 = v;
+                    }
+                }
+                packetCount--;
+            }
         }
         return;
     }
