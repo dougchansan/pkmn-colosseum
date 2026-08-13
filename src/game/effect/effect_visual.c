@@ -148,7 +148,7 @@ extern void* memset(void* dst, int val, u32 size);
 extern void GSbezierCalculateVector();
 extern void* GSfilterCreate(void);
 extern void GSmaterialSetFlags();
-extern void sin();   /* MSL trig (renamed) ? referenced by asm incs */
+extern double sin(double);
 extern double cos(double);
 
 /* GSmem allocator */
@@ -179,6 +179,10 @@ extern void  GScameraGetPerspective(void* mtx, void* rx, void* ry, void* rz, voi
 extern void  GSvecDistance(void* vecA, void* vecB);
 extern void  fn_800E0168(void* dst, void* srcA, void* srcB);
 extern void  fn_800E0060(void* dst, void* src);
+extern void  fn_800E013C(void* dst, void* src, f32 scale);
+extern void  fn_800E019C(void* dst, void* a, void* b);
+extern void  fn_800E01D0(void* dst, void* src);
+extern void  fn_800E01F4(void* dst, f32 x, f32 y, f32 z);
 
 /* GX rendering pipeline */
 extern void  fn_800DA4C4(u32 a, u32 b, u32 c);
@@ -357,7 +361,7 @@ extern void  DCFlushRange(void* ptr, u32 size);
 extern void fn_800E008C(void);
 extern void fn_800D6728(void);
 extern void fn_800D85D4(u32 a, void* b);
-extern void fn_800E0BA0(void);
+extern f32 fn_800E0BA0(void);
 extern void fn_800D59B8(u32 a, f32 b, f32 c);
 extern void fn_800D7E5C(void);
 extern u32 lbl_8047D148;
@@ -639,7 +643,7 @@ extern void fn_800CE148(void);
 extern void set__5GSvecFfff(void* dst, f32 x, f32 y, f32 z);
 extern void GSvecCopy(void* dst, const void* src);
 extern void fn_800DFFCC(void* dst, void* src, const void* value);
-extern void fn_800E0718(void);
+extern void fn_800E0718(void*, void*, f32);
 extern void GSvecTransformQuat(void);
 extern void GSmtxMakeYRotation(void);
 extern void GSvecTransform(void);
@@ -896,7 +900,7 @@ u32 fn_80138DE4(void* ptr, u32 delta) {
     return 1;
 }
 #endif
-extern void fn_800E076C(void);
+extern void fn_800E076C(void*, void*, f32);
 extern u32 lbl_8047D160;
 extern u32 lbl_8047D180;
 extern u32 lbl_8047D184;
@@ -906,26 +910,57 @@ asm void fn_80139074(void) {
 }
 #else
 void fn_80139074(void* entry, void* parent) {
-    u8* e;
-    u8* p;
-    void* model;
+    u8* config = entry;
+    u8* leaf = parent;
+    f32 direction[3];
+    f32 yaw;
+    f32 pitch;
+    f32 distance;
 
-    if (entry == NULL || parent == NULL) {
-        return;
-    }
+    *(f32*)(leaf + 0x54) -= *(f32*)&lbl_8047D160;
+    fn_800E076C(leaf + 0x30, leaf + 0x40,
+                *(f32*)(leaf + 0x54) + *(f32*)&lbl_8047D160);
 
-    e = entry;
-    p = parent;
-    model = *(void**)(e + 0x58);
-    *(f32*)(e + 0x30) += *(f32*)(e + 0x40);
-    *(f32*)(e + 0x34) += *(f32*)(e + 0x44);
-    *(f32*)(e + 0x38) += *(f32*)(e + 0x48);
-    *(f32*)(e + 0x18) += *(f32*)(p + 0x18);
-    *(f32*)(e + 0x1C) += *(f32*)(p + 0x1C);
-    *(f32*)(e + 0x20) += *(f32*)(p + 0x20);
-    if (model != NULL) {
-        GSmodelSetVisibility(model, 1);
-    }
+    yaw = *(f32*)&lbl_8047D180 * fn_800E0BE4();
+    pitch = *(f32*)&lbl_8047D184 * fn_800E0BE4();
+    fn_800E01F4(direction,
+                (f32)sin(pitch) * (f32)cos(yaw),
+                (f32)cos(pitch),
+                (f32)sin(pitch) * (f32)sin(yaw));
+    fn_800E0718(leaf + 0x40, direction,
+                *(f32*)&lbl_8047D180 * fn_800E0BE4());
+
+    fn_800E01D0(leaf, leaf + 0xC);
+    fn_800E01D0(leaf + 0x18, leaf + 0x24);
+    fn_800E0168(leaf + 0x18, leaf + 0x18, leaf + 0xC);
+    fn_800E0060(leaf + 0x18, leaf + 0x18);
+    distance = (*(f32*)(config + 0x24) * fn_800E0BA0() +
+                *(f32*)(config + 0x20)) * *(f32*)(leaf + 0x50);
+    fn_800E013C(leaf + 0x18, leaf + 0x18, -distance);
+    fn_800E019C(leaf + 0x18, leaf + 0x18, leaf);
+
+    yaw = *(f32*)&lbl_8047D180 * fn_800E0BE4();
+    pitch = *(f32*)&lbl_8047D184 * fn_800E0BE4();
+    distance = (*(f32*)(config + 0x1C) * fn_800E0BA0() +
+                *(f32*)(config + 0x18)) * *(f32*)(leaf + 0x50);
+    fn_800E01F4(leaf + 0xC,
+                (f32)sin(pitch) * (f32)cos(yaw),
+                (f32)cos(pitch),
+                (f32)sin(pitch) * (f32)sin(yaw));
+    fn_800E013C(leaf + 0xC, leaf + 0xC, distance);
+    *(f32*)(leaf + 0x10) += *(f32*)(config + 0x28);
+    fn_800E019C(leaf + 0xC, leaf + 0xC, leaf);
+
+    yaw = *(f32*)&lbl_8047D180 * fn_800E0BE4();
+    pitch = *(f32*)&lbl_8047D184 * fn_800E0BE4();
+    distance = (*(f32*)(config + 0x24) * fn_800E0BA0() +
+                *(f32*)(config + 0x20)) * *(f32*)(leaf + 0x50);
+    fn_800E01F4(leaf + 0x24,
+                (f32)sin(pitch) * (f32)cos(yaw),
+                (f32)cos(pitch),
+                (f32)sin(pitch) * (f32)sin(yaw));
+    fn_800E013C(leaf + 0x24, leaf + 0x24, distance);
+    fn_800E019C(leaf + 0x24, leaf + 0x24, leaf + 0xC);
 }
 #endif
 extern void* GSmodelClone(void* model);
@@ -1422,9 +1457,6 @@ u32 fn_8013A520(void* ptr) {
     extern f32 fn_800E0040(f32*, f32*);
     extern void fn_800EE3BC(void*, f32*, s32, s32);
     extern void fn_800EE828(void*);
-    extern void fn_800E01D0(f32*, f32*);
-    extern void fn_800E01F4(f32*, f32, f32, f32);
-    extern void fn_800E019C(f32*, f32*, f32*);
     extern u32 fn_800C46B0(f32, f32, f32);
     extern f64 sin(f64);
     extern f64 cos(f64);
