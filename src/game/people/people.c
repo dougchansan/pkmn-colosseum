@@ -5126,8 +5126,8 @@ int fn_8018E1C4(PeopleEntry* entry, u32 groupId, u32 indexId, s32 objectId) {
                 GSmodelStartAnimation(model);
             }
         }
+        GSmodelSetBoundCheck(entryModel, fn_8018F490(info));
     }
-    GSmodelSetBoundCheck(entryModel, 0);
     return 1;
 }
 
