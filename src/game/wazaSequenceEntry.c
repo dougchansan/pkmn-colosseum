@@ -689,6 +689,9 @@ u8 _wazaSequenceParticleEntryStart(void* entry) {
     if ((flags & 0x800) != 0) {
         fn_80118CD0(*(void**)((u8*) node + 0x8C), 1);
     }
+    if ((flags & 0x1000) != 0) {
+        fn_80118CAC(*(void**)((u8*) node + 0x8C), 1);
+    }
     fn_80118CF4(*(void**)((u8*) node + 0x8C),
                 (flags >> 8) & 1,
                 (flags >> 10) & 1);
