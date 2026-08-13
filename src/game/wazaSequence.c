@@ -492,14 +492,99 @@ void* fn_801DC46C(void* entryPtr, void* dataPtr) {
  * Address: 0x801DC5F0 | Size: 0x22C
  */
 void* fn_801DC5F0(void* sequencePtr, void* dataPtr) {
+    extern void fn_8010147C(void* resource, u32 size, u32 group, u32 handle);
+    extern void fn_801012E8(void* archive, u32 resourceArg, u32 callbackArg);
+    extern void* GSresGetResource(u32 group, u32 resource);
     u8* sequence = sequencePtr;
     u8* data = dataPtr;
+    u8* next = data;
+    u8* owner = *(u8**)(sequence + 0x3C);
+    u32 firstHandle = wazaSequenceSysGetResID();
+    u32 secondHandle = wazaSequenceSysGetResID();
+    u32 size;
+    u32 flags;
+    u32 mode;
 
-    *(s32*)(sequence + 0x0C) = *(s32*)data;
-    *(s32*)(sequence + 0x18) = 0;
-    *(s32*)(sequence + 0x1C) = 0;
-    *(s32*)(sequence + 0x20) = 0;
-    return data;
+    *(u32*)(sequence + 0x0C) = *(u32*)(next + 0x00);
+    if (*(u32*)(sequence + 0x0C) == 0x0B) {
+        if (*(u16*)(owner + 0x14) < *(u32*)(sequence + 0x0C)) {
+            *(u32*)(sequence + 0x0C) = 0;
+        }
+    } else if (*(u32*)(sequence + 0x0C) >= 0x0C &&
+               *(u32*)(sequence + 0x0C) < 0x10 &&
+               *(u16*)(owner + 0x14) < *(u32*)(sequence + 0x0C)) {
+        *(u32*)(sequence + 0x0C) = 1;
+    }
+
+    flags = *(u32*)(next + 0x08);
+    *(u32*)(sequence + 0x08) = flags;
+    *(u8*)(sequence + 0x16) = 1;
+    *(u8*)(sequence + 0x17) = 2;
+
+    mode = *(u32*)(next + 0x10);
+    switch (mode) {
+    case 1:
+        size = 0;
+        next += 0x10;
+        break;
+    case 2:
+        size = 0;
+        next += 0x14;
+        break;
+    case 5:
+        *(u8*)(sequence + 0x17) = *(u32*)(next + 0x0C);
+        /* fallthrough */
+    default:
+        next = (u8*)((((u32)next + 0x37) & ~0x1F));
+        size = *(u32*)(data + 0x14);
+        break;
+    }
+
+    if (mode <= 3) {
+        *(u32*)(sequence + 0x08) |= 0x78;
+    }
+    if (mode <= 5) {
+        flags = *(u32*)(sequence + 0x08);
+        if (flags & 0x80000000) {
+            flags ^= 0x80000000;
+        }
+        if (flags & 0x00010000) {
+            flags ^= 0x00010000;
+        }
+        if (flags & 0x00020000) {
+            flags ^= 0x00020000;
+        }
+        if (flags & 0x00040000) {
+            flags ^= 0x00040000;
+        }
+        if (flags & 0x00080000) {
+            flags ^= 0x00080000;
+        }
+        if (flags & 0x00100000) {
+            flags ^= 0x00100000;
+        }
+        *(u32*)(sequence + 0x08) = flags;
+    }
+
+    if (size != 0) {
+        *(u32*)(sequence + 0x18) = 0x4E20;
+        fn_8010147C(next, size, 0x4E20, firstHandle);
+        if (GSresGetResource(0x4E20, firstHandle) != NULL) {
+            *(u32*)(sequence + 0x1C) = firstHandle;
+            fn_801012E8(GSresGetResource(0x4E20, firstHandle), 0x4E20,
+                        secondHandle);
+            if (GSresGetResource(0x4E20, secondHandle) != NULL) {
+                *(u32*)(sequence + 0x20) = secondHandle;
+            }
+        }
+        next += (size + 0x1F) & ~0x1F;
+    } else {
+        *(u32*)(sequence + 0x18) = 0;
+        *(u32*)(sequence + 0x20) = 0;
+        *(u32*)(sequence + 0x1C) = 0;
+    }
+
+    return next;
 }
 
 /**
