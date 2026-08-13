@@ -2997,7 +2997,7 @@ s32 fn_800210F0(void)
     extern void menuCloseCustom(s32, s32, s32);
     extern s32 menuColosseumBattle(s32);
     extern void fn_800205B8(u32);
-    extern s32 gamedatasaveGetStatus(s32, s32);
+    extern u32 gamedatasaveGetStatus(s32, s32);
     extern u16 fn_8006A718(s32);
     extern u8 fn_801D04E8(void);
     extern s32 fn_800FF58C(s32);
@@ -3159,7 +3159,7 @@ s32 fn_800210F0(void)
 
         case 0x64:
             result = (s32)lbl_8047A360;
-            if (result < 0 || result >= 5) {
+            if (result >= 5 || result < 0) {
                 result = 0;
             }
             lbl_8047A358 = result;
