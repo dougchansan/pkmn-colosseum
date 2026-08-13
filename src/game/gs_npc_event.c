@@ -1352,9 +1352,21 @@ void fn_800327FC(void)
         *(u16*)&display.data[0xCE] = *(u16*)&selected_record.data[0xC8];
 
         lbl_8047A43C = 0;
-        for (i = 0; i < 15; i++) {
-            lbl_803A3278[i] = 0;
-        }
+        lbl_803A3278[0] = 0;
+        lbl_803A3278[1] = 0;
+        lbl_803A3278[2] = 0;
+        lbl_803A3278[3] = 0;
+        lbl_803A3278[4] = 0;
+        lbl_803A3278[5] = 0;
+        lbl_803A3278[6] = 0;
+        lbl_803A3278[7] = 0;
+        lbl_803A3278[8] = 0;
+        lbl_803A3278[9] = 0;
+        lbl_803A3278[10] = 0;
+        lbl_803A3278[11] = 0;
+        lbl_803A3278[12] = 0;
+        lbl_803A3278[13] = 0;
+        lbl_803A3278[14] = 0;
         result = (s32)fn_80032ED8((s32)&display, 0x209,
                                   &display.data[0x28]);
     } else {
