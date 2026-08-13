@@ -2902,7 +2902,7 @@ u32 fn_8013C074(void* ptr, void* arg) {
     } EnvMapRenderState;
 
     EnvMapRenderState* state = arg;
-    EnvMapRenderDObj* dobj;
+    EnvMapRenderDObj* dobj = fn_8019FF48(*(void**)((u8*)ptr + 0x8));
     EnvMapRenderPObj* pobj;
     EnvMapRenderStage* stage;
     void* mobj;
@@ -2917,7 +2917,6 @@ u32 fn_8013C074(void* ptr, void* arg) {
     u16 span;
     u16 strip_count;
 
-    dobj = fn_8019FF48(*(void**)((u8*)ptr + 0x8));
     if (dobj != NULL) {
         pobj = dobj->pobj;
     } else {
@@ -3520,7 +3519,7 @@ typedef struct BlurRenderState {
 
 u32 fn_8013D0A8(void* ptr, void* arg) {
     BlurRenderState* state = arg;
-    BlurRenderDObj* dobj;
+    BlurRenderDObj* dobj = fn_8019FF48(*(void**)((u8*)ptr + 0x8));
     BlurRenderPObj* pobj;
     void* mobj;
     BlurRenderStage* stage;
@@ -3536,7 +3535,6 @@ u32 fn_8013D0A8(void* ptr, void* arg) {
     u16 vertex_count;
     u16 span;
 
-    dobj = fn_8019FF48(*(void**)((u8*)ptr + 0x8));
     if (dobj != NULL) {
         pobj = dobj->pobj;
     } else {
