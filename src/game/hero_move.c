@@ -3018,9 +3018,9 @@ void fn_8012DE94(u32 playerIndex)
     f32 distance;
     s32 historyIndex;
     s32 historyOffset;
-    u32 historyCount;
-    u32 historyHead;
-    u32 i;
+    s32 historyCount;
+    s32 historyHead;
+    s32 i;
     u8 blocked;
     u8 haveHistory;
 
