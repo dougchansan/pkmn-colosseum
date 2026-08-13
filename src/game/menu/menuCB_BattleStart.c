@@ -984,7 +984,7 @@ void fn_80062334(void)
     state->transitions.active[0] = lbl_8047BF60;
 }
 
-static void battleStartInterpolate(f32* current, f32 target, f32 delta)
+static inline void battleStartInterpolate(f32* current, f32 target, f32 delta)
 {
     extern const f32 lbl_8047BF90;
     extern const f32 lbl_8047BF94;
