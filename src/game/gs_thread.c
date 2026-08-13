@@ -6718,7 +6718,9 @@ s32 fn_800F4818(void* obj) {
             if (ctx->stackCount <= 0) { GSlogWritef((const char*)(errBase+0x14)); leftValue = ctx->stack[0]; }
             else { ctx->stackCount = ctx->stackCount - 1; leftValue = ctx->stack[ctx->stackCount]; }
         } else {
-            u32 fieldIdx = idx & 0x3F;
+            u32 fieldIdx;
+            if (ctx->stackCount <= 0) { GSlogWritef((const char*)(errBase+0x14)); fieldIdx = ctx->stack[0]; }
+            else { ctx->stackCount = ctx->stackCount - 1; fieldIdx = ctx->stack[ctx->stackCount]; }
             if (idx & 0x20) {
                 if (idx & 0x40) leftValue = (u32)&ctx->stack[ctx->frame + fieldIdx];
                 else leftValue = (u32)&ctx->globals[fieldIdx];
@@ -6741,7 +6743,9 @@ s32 fn_800F4818(void* obj) {
             if (ctx->stackCount <= 0) { GSlogWritef((const char*)(errBase+0x14)); rightValue = ctx->stack[0]; }
             else { ctx->stackCount = ctx->stackCount - 1; rightValue = ctx->stack[ctx->stackCount]; }
         } else {
-            u32 fieldIdx = idx & 0x3F;
+            u32 fieldIdx;
+            if (ctx->stackCount <= 0) { GSlogWritef((const char*)(errBase+0x14)); fieldIdx = ctx->stack[0]; }
+            else { ctx->stackCount = ctx->stackCount - 1; fieldIdx = ctx->stack[ctx->stackCount]; }
             if (idx & 0x20) {
                 if (idx & 0x40) rightValue = (u32)&ctx->stack[ctx->frame + fieldIdx];
                 else rightValue = (u32)&ctx->globals[fieldIdx];
