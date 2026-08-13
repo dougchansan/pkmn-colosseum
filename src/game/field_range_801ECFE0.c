@@ -237,10 +237,16 @@ void fn_801ED3B8(void)
         if (darkPokemonId != 0 && fn_801EEC74(darkPokemonId)) {
             darkPokemonId = 0;
         }
-        if (darkPokemonId != 0 && pokemonBiosGetDp(pokemon) != 0 &&
-            fn_801EE470(darkPokemonId) < 0x100) {
-            fn_801EE4DC(darkPokemonId,
-                        (u16)(fn_801EE470(darkPokemonId) + 1));
+        if (darkPokemonId != 0 && pokemonBiosGetDp(pokemon) != 0) {
+            u16 value = fn_801EE470(darkPokemonId);
+
+            if (value >= 0x100) {
+                pokemonAddDpFormPokemonDpFilterId(pokemon, 0, 1);
+                fn_801EE4DC(darkPokemonId, 0);
+            } else {
+                fn_801EE4DC(darkPokemonId,
+                              (u16)(fn_801EE470(darkPokemonId) + 1));
+            }
         }
     }
 
