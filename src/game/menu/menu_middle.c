@@ -7475,9 +7475,9 @@ void fn_80070D84(void) {
 
                 } else if ((s32)r0 < (s32)0xc8) {
                     r4 = 0x4;
-
+                } else {
+                    r4 = 0x5;
                 }
-                r4 = 0x5;
 
             }
 
@@ -7565,9 +7565,9 @@ void fn_80070D84(void) {
 
             } else if ((s32)r0 < (s32)0xc8) {
                 r4 = 0x4;
-
+            } else {
+                r4 = 0x5;
             }
-            r4 = 0x5;
 
         }
 
