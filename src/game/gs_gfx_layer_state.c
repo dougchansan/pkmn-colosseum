@@ -2105,57 +2105,159 @@ asm void fn_800D963C(void) {
 }
 #else
 void fn_800D963C(u32 idx, s32 mode) {
-    u8* state;
-    u8* a;
-    u8* b;
-    u8* c;
-    u8* d;
+    if (mode == 2) {
+        u8* ptr = (u8*) lbl_8047AA80 + idx * 5 + 0xAB;
+        ptr[0] = 0;
+        ptr[1] = 0;
+        ptr[2] = 0;
+        ptr[3] = 1;
+        ptr[4] = 0;
+        *(u32*) ((u8*) lbl_8047AA80 + 0x414) |= 4;
 
-    state = (u8*)lbl_8047AA80;
-    a = state + 0xab + idx * 5;
-    b = state + 0x14b + idx * 4;
-    c = state + 0xfb + idx * 5;
-    d = state + 0x18b + idx * 4;
+        ptr = (u8*) lbl_8047AA80 + idx * 4 + 0x14B;
+        ptr[0] = 15;
+        ptr[1] = 15;
+        ptr[2] = 15;
+        ptr[3] = 8;
+        *(u32*) ((u8*) lbl_8047AA80 + 0x414) |= 4;
 
-    if (mode < 0 || mode > 4) {
-        return;
+        ptr = (u8*) lbl_8047AA80 + idx * 5 + 0xFB;
+        ptr[0] = 0;
+        ptr[1] = 0;
+        ptr[2] = 0;
+        ptr[3] = 1;
+        ptr[4] = 0;
+        *(u32*) ((u8*) lbl_8047AA80 + 0x414) |= 4;
+
+        ptr = (u8*) lbl_8047AA80 + idx * 4 + 0x18B;
+        ptr[0] = 7;
+        ptr[1] = 7;
+        ptr[2] = 7;
+        ptr[3] = 4;
+        *(u32*) ((u8*) lbl_8047AA80 + 0x414) |= 4;
+    } else if (mode < 2) {
+        if (mode == 0) {
+            u8* ptr = (u8*) lbl_8047AA80 + idx * 5 + 0xAB;
+            ptr[0] = 0;
+            ptr[1] = 0;
+            ptr[2] = 0;
+            ptr[3] = 1;
+            ptr[4] = 0;
+            *(u32*) ((u8*) lbl_8047AA80 + 0x414) |= 4;
+
+            ptr = (u8*) lbl_8047AA80 + idx * 4 + 0x14B;
+            ptr[0] = 15;
+            ptr[1] = 10;
+            ptr[2] = 8;
+            ptr[3] = 15;
+            *(u32*) ((u8*) lbl_8047AA80 + 0x414) |= 4;
+
+            ptr = (u8*) lbl_8047AA80 + idx * 5 + 0xFB;
+            ptr[0] = 0;
+            ptr[1] = 0;
+            ptr[2] = 0;
+            ptr[3] = 1;
+            ptr[4] = 0;
+            *(u32*) ((u8*) lbl_8047AA80 + 0x414) |= 4;
+
+            ptr = (u8*) lbl_8047AA80 + idx * 4 + 0x18B;
+            ptr[0] = 7;
+            ptr[1] = 4;
+            ptr[2] = 5;
+            ptr[3] = 7;
+            *(u32*) ((u8*) lbl_8047AA80 + 0x414) |= 4;
+        } else if (mode >= 1) {
+            u8* ptr = (u8*) lbl_8047AA80 + idx * 5 + 0xAB;
+            ptr[0] = 0;
+            ptr[1] = 0;
+            ptr[2] = 0;
+            ptr[3] = 1;
+            ptr[4] = 0;
+            *(u32*) ((u8*) lbl_8047AA80 + 0x414) |= 4;
+
+            ptr = (u8*) lbl_8047AA80 + idx * 4 + 0x14B;
+            ptr[0] = 10;
+            ptr[1] = 8;
+            ptr[2] = 9;
+            ptr[3] = 15;
+            *(u32*) ((u8*) lbl_8047AA80 + 0x414) |= 4;
+
+            ptr = (u8*) lbl_8047AA80 + idx * 5 + 0xFB;
+            ptr[0] = 0;
+            ptr[1] = 0;
+            ptr[2] = 0;
+            ptr[3] = 1;
+            ptr[4] = 0;
+            *(u32*) ((u8*) lbl_8047AA80 + 0x414) |= 4;
+
+            ptr = (u8*) lbl_8047AA80 + idx * 4 + 0x18B;
+            ptr[0] = 7;
+            ptr[1] = 7;
+            ptr[2] = 7;
+            ptr[3] = 5;
+            *(u32*) ((u8*) lbl_8047AA80 + 0x414) |= 4;
+        }
+    } else if (mode == 4) {
+        u8* ptr = (u8*) lbl_8047AA80 + idx * 5 + 0xAB;
+        ptr[0] = 0;
+        ptr[1] = 0;
+        ptr[2] = 0;
+        ptr[3] = 1;
+        ptr[4] = 0;
+        *(u32*) ((u8*) lbl_8047AA80 + 0x414) |= 4;
+
+        ptr = (u8*) lbl_8047AA80 + idx * 4 + 0x14B;
+        ptr[0] = 15;
+        ptr[1] = 15;
+        ptr[2] = 15;
+        ptr[3] = 10;
+        *(u32*) ((u8*) lbl_8047AA80 + 0x414) |= 4;
+
+        ptr = (u8*) lbl_8047AA80 + idx * 5 + 0xFB;
+        ptr[0] = 0;
+        ptr[1] = 0;
+        ptr[2] = 0;
+        ptr[3] = 1;
+        ptr[4] = 0;
+        *(u32*) ((u8*) lbl_8047AA80 + 0x414) |= 4;
+
+        ptr = (u8*) lbl_8047AA80 + idx * 4 + 0x18B;
+        ptr[0] = 7;
+        ptr[1] = 7;
+        ptr[2] = 7;
+        ptr[3] = 5;
+        *(u32*) ((u8*) lbl_8047AA80 + 0x414) |= 4;
+    } else if (mode < 4) {
+        u8* ptr = (u8*) lbl_8047AA80 + idx * 5 + 0xAB;
+        ptr[0] = 0;
+        ptr[1] = 0;
+        ptr[2] = 0;
+        ptr[3] = 1;
+        ptr[4] = 0;
+        *(u32*) ((u8*) lbl_8047AA80 + 0x414) |= 4;
+
+        ptr = (u8*) lbl_8047AA80 + idx * 4 + 0x14B;
+        ptr[0] = 10;
+        ptr[1] = 12;
+        ptr[2] = 8;
+        ptr[3] = 15;
+        *(u32*) ((u8*) lbl_8047AA80 + 0x414) |= 4;
+
+        ptr = (u8*) lbl_8047AA80 + idx * 5 + 0xFB;
+        ptr[0] = 0;
+        ptr[1] = 0;
+        ptr[2] = 0;
+        ptr[3] = 1;
+        ptr[4] = 0;
+        *(u32*) ((u8*) lbl_8047AA80 + 0x414) |= 4;
+
+        ptr = (u8*) lbl_8047AA80 + idx * 4 + 0x18B;
+        ptr[0] = 7;
+        ptr[1] = 5;
+        ptr[2] = 4;
+        ptr[3] = 7;
+        *(u32*) ((u8*) lbl_8047AA80 + 0x414) |= 4;
     }
-
-    a[0] = 0;
-    a[1] = 0;
-    a[2] = 0;
-    a[3] = 1;
-    a[4] = 0;
-    c[0] = 0;
-    c[1] = 0;
-    c[2] = 0;
-    c[3] = 1;
-    c[4] = 0;
-
-    switch (mode) {
-        case 0:
-            b[0] = 15; b[1] = 10; b[2] = 8; b[3] = 15;
-            d[0] = 7; d[1] = 4; d[2] = 5; d[3] = 7;
-            break;
-        case 1:
-            b[0] = 10; b[1] = 8; b[2] = 9; b[3] = 15;
-            d[0] = 7; d[1] = 7; d[2] = 7; d[3] = 5;
-            break;
-        case 2:
-            b[0] = 15; b[1] = 15; b[2] = 15; b[3] = 8;
-            d[0] = 7; d[1] = 7; d[2] = 7; d[3] = 4;
-            break;
-        case 3:
-            b[0] = 10; b[1] = 12; b[2] = 8; b[3] = 15;
-            d[0] = 7; d[1] = 5; d[2] = 4; d[3] = 7;
-            break;
-        case 4:
-            b[0] = 15; b[1] = 15; b[2] = 15; b[3] = 10;
-            d[0] = 7; d[1] = 7; d[2] = 7; d[3] = 5;
-            break;
-    }
-
-    *(u32*)(state + 0x414) |= 4;
 }
 #endif
 #endif
