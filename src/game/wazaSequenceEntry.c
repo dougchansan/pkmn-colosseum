@@ -988,7 +988,7 @@ u8 wazaSequencePokemonMotionStart(void* ownerPtr, BOOL enabled) {
     extern f64 lbl_8047E380;
     u8* owner = ownerPtr;
     void* model = *(void**)(owner + 0x24);
-    u8* table = *(u8**)(owner + 0x2C) + *(u16*)(owner + 0x32) * 0xD4 + 0x8C;
+    u8* table;
     s32 duration;
     s32 animIndex;
     s32 frameCountInt;
@@ -1009,6 +1009,7 @@ u8 wazaSequencePokemonMotionStart(void* ownerPtr, BOOL enabled) {
     }
 
     fn_800E3CC8(model);
+    table = *(u8**)(owner + 0x2C) + *(u16*)(owner + 0x32) * 0xD4 + 0x8C;
     if ((*(u8*)(owner + 0x18) & 8) != 0) {
         return TRUE;
     }
