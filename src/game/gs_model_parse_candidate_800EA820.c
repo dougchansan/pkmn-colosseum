@@ -141,6 +141,8 @@ void _modelParseJObjDispSub__FP9_HSD_JObjP5GSmtxP5GSmtx12HSD_TrspMaskbPFP9_HSD_P
     extern void fn_8019F024(HSD_JObj* jobj);
     extern void fn_801AB63C(u32 first, u32 second);
     extern void HSD_DObjSetCurrent(HSD_DObj* dobj);
+    extern void _modelParseLoadEnvelopeMatrix__FP9_HSD_PObjP5GSmtxP5GSmtxP5GSmtx(
+        HSD_PObj* pobj, f32* vmtx, f32* pmtx, f32* matrices);
     HSD_DObj* dobj;
     HSD_PObj* pobj;
 
@@ -154,6 +156,11 @@ void _modelParseJObjDispSub__FP9_HSD_JObjP5GSmtxP5GSmtx12HSD_TrspMaskbPFP9_HSD_P
             for (pobj = dobj->pobj; pobj != NULL; pobj = pobj->next) {
                 if ((pobj->flags & 0x800) != 0) {
                     continue;
+                }
+
+                if (is_visible && (pobj->flags & 0x3000) == 0x2000) {
+                    _modelParseLoadEnvelopeMatrix__FP9_HSD_PObjP5GSmtxP5GSmtxP5GSmtx(
+                        pobj, vmtx, pmtx, lbl_804016D0);
                 }
 
                 if ((pobj->flags & 0x3000) == 0x1000) {
