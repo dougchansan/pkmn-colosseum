@@ -274,7 +274,7 @@ void fn_800704A4(void);
 void fn_800704A8(void);
 void fn_800704AC(void);
 void fn_800706C4(void);
-void fn_80070A9C(void);
+void fn_80070A9C(void* menu, void* sprite);
 void fn_80070D84(void);
 
 /* ===== Function implementations ===== */
@@ -7425,198 +7425,144 @@ void fn_800706C4(void) {
 
 
 /* 0x80070A9C | size: 0x2E8 */
-void fn_80070A9C(void) {
-    extern void winSpriteSetDisp();
-    extern void savedataGetStatus();
-    extern u8 jumptable_802EE31C[];
-    u8 sp[0x10];
-    u32 r0 = 0;
-    u32 r3 = 0;
-    u32 r4 = 0;
-    u32 r31 = 0;
-    void (*ctr_fn)(void) = 0;
-    u32 ctr = 0;
+void fn_80070A9C(void* menu, void* sprite) {
+    extern u8* savedataGetStatus(s32 idx, s32 type);
+    extern void winSpriteSetDisp(void* widget, s32 flag);
+    u32 message0;
+    u32 message1;
+    s32 param;
+    s32 menu_state;
+    u8* status;
 
-    
-    r31 = r4;
-    r0 = MENU_MIDDLE_U8_0001(r3)->unk_0001;
-    r0 = (s8)r0;
-    do {
-    if ((s32)r0 >= (s32)0x3) break;
-    if ((s32)r0 < (s32)0x0) {
-        break;
-    }
-    r0 = MENU_MIDDLE_U32_004C(r31)->unk_004C;
-    r4 = 0x0;
-    *(u32*)&lbl_8047A5E8 = r0;
-    r0 = MENU_MIDDLE_U32_004C(r31)->unk_004C;
-    *(u32*)&lbl_8047A5EC = r0;
-    ((void(*)(void))windowGetParam)();
-    /* subi r0, r3, 0xa8 */;
-    if (r0 > (u32)0x4d) break;
-    r3 = (u32)jumptable_802EE31C;
-    r0 = r0 << 2;
-    r3 = (u32)jumptable_802EE31C;
-    r0 = *(u32*)(r3 + r0);
-    ctr_fn = (void(*)(void))r0;
-    /* indirect jump via ctr */;
-    r0 = 0x0;
-    *(u32*)&lbl_8047A5E8 = r0;
-    break;
+    message0 = MENU_MIDDLE_U32_004C(sprite)->unk_004C;
+    message1 = MENU_MIDDLE_U32_004C(sprite)->unk_004C;
+    *(u32*) &lbl_8047A5E8 = message0;
+    *(u32*) &lbl_8047A5EC = message1;
 
-
-    *(u32*)&lbl_8047A5E8 = r3;
-    *(u32*)&lbl_8047A5EC = r0;
-    break;
-
-
-    *(u32*)&lbl_8047A5E8 = r3;
-    *(u32*)&lbl_8047A5EC = r0;
-    break;
-
-
-    *(u32*)&lbl_8047A5E8 = r3;
-    *(u32*)&lbl_8047A5EC = r0;
-    break;
-
-
-    *(u32*)&lbl_8047A5E8 = r3;
-    *(u32*)&lbl_8047A5EC = r0;
-    break;
-
-
-    *(u32*)&lbl_8047A5E8 = r3;
-    *(u32*)&lbl_8047A5EC = r0;
-    break;
-
-
-    *(u32*)&lbl_8047A5E8 = r3;
-    *(u32*)&lbl_8047A5EC = r0;
-    break;
-
-
-    *(u32*)&lbl_8047A5E8 = r3;
-    *(u32*)&lbl_8047A5EC = r0;
-    break;
-
-
-    *(u32*)&lbl_8047A5E8 = r3;
-    *(u32*)&lbl_8047A5EC = r0;
-    break;
-
-
-    if ((s32)r0 == (s32)0x0) {
-        r3 = 0x4237;
-        r0 = 0x0;
-        *(u32*)&lbl_8047A5E8 = r3;
-        *(u32*)&lbl_8047A5EC = r0;
-        break;
-    }
-    r3 = 0x0;
-    r4 = 0xe;
-    savedataGetStatus();
-    r0 = MENU_MIDDLE_U32_0008(r3)->unk_0008;
-    if ((s32)r0 != (s32)0x3) {
-        if ((s32)r0 < (s32)0x3) {
-            if ((s32)r0 != (s32)0x1) {
-                if ((s32)r0 < (s32)0x1) {
-                    if ((s32)r0 < (s32)0x0) {
-                        break;
-                    }
-                    if ((s32)r0 != (s32)0x5) {
-                        if ((s32)r0 >= (s32)0x5) break;
-                        goto L_80070C74;
-                        }
-                    r3 = 0x3d7c;
-                    r0 = 0x0;
-                    *(u32*)&lbl_8047A5E8 = r3;
-                    *(u32*)&lbl_8047A5EC = r0;
-                    break;
-                    }
-                r3 = 0x3d7d;
-                r0 = 0x0;
-                *(u32*)&lbl_8047A5E8 = r3;
-                *(u32*)&lbl_8047A5EC = r0;
+    menu_state = (s8) MENU_MIDDLE_U8_0001(menu)->unk_0001;
+    if (menu_state >= 0 && menu_state < 3) {
+        param = (s32) windowGetParam(menu, 0);
+        switch (param) {
+        case 0xA8:
+            message0 = 0x3D3A;
+            message1 = 0x3F3E;
+            break;
+        case 0xAA:
+        case 0xB6:
+        case 0xB8:
+        case 0xD4:
+            message0 = 0x3D3A;
+            message1 = 0;
+            break;
+        case 0xAC:
+            message0 = 0x3D3A;
+            message1 = 0x3DA6;
+            break;
+        case 0xAD:
+            message0 = 0x3D3A;
+            message1 = 0x3D50;
+            break;
+        case 0xB0:
+        case 0xB2:
+        case 0xEE:
+            message0 = 0x3D3A;
+            message1 = 0x3D2D;
+            break;
+        case 0xB3:
+            message0 = 0x3D6E;
+            message1 = 0;
+            break;
+        case 0xB9:
+            message0 = 0x4274;
+            message1 = 0;
+            break;
+        case 0xCC:
+            message0 = 0x3D3A;
+            message1 = 0x3D42;
+            break;
+        case 0xF5:
+            status = savedataGetStatus(0, 0xE);
+            if (MENU_MIDDLE_U32_0000(status)->unk_0000 == 0) {
+                message0 = 0x4237;
+                message1 = 0;
                 break;
-                    }
-            r3 = 0x3d7e;
-            r0 = 0x0;
-            *(u32*)&lbl_8047A5E8 = r3;
-            *(u32*)&lbl_8047A5EC = r0;
+            }
+        case 0xC0:
+        case 0xC1:
+            status = savedataGetStatus(0, 0xE);
+            switch (MENU_MIDDLE_U32_0008(status)->unk_0008) {
+            case 0:
+                message0 = 0x3D7C;
+                message1 = 0;
+                break;
+            case 1:
+                message0 = 0x3D7D;
+                message1 = 0;
+                break;
+            case 2:
+                message0 = 0x3D7E;
+                message1 = 0;
+                break;
+            case 3:
+                message0 = 0x3D7F;
+                message1 = 0;
+                break;
+            case 4:
+                message0 = 0x3D80;
+                message1 = 0;
+                break;
+            case 5:
+                message0 = 0x3D81;
+                message1 = 0;
+                break;
+            }
+            break;
+        case 0xAE:
+        case 0xAF:
+        case 0xB1:
+        case 0xB5:
+        case 0xBF:
+        case 0xC2:
+        case 0xC4:
+        case 0xC6:
+        case 0xDA:
+            status = savedataGetStatus(0, 0xE);
+            switch (MENU_MIDDLE_U32_0000(status)->unk_0000) {
+            case 0:
+                message0 = 0x3D3A;
+                message1 = 0x3DAB;
+                break;
+            case 1:
+                message0 = 0x3D3A;
+                message1 = 0x423C;
+                break;
+            case 2:
+                message0 = 0x3D3A;
+                message1 = 0x3D2D;
+                break;
+            case 3:
+                message0 = 0x3D6E;
+                message1 = 0;
+                break;
+            }
+            break;
+        default:
             break;
         }
-        r3 = 0x3d7f;
-        r0 = 0x0;
-        *(u32*)&lbl_8047A5E8 = r3;
-        *(u32*)&lbl_8047A5EC = r0;
-        break;
-        L_80070C74: ;
-        r3 = 0x3d80;
-        r0 = 0x0;
-        *(u32*)&lbl_8047A5E8 = r3;
-        *(u32*)&lbl_8047A5EC = r0;
-        break;
-                    }
-    r3 = 0x3d81;
-    r0 = 0x0;
-    *(u32*)&lbl_8047A5E8 = r3;
-    *(u32*)&lbl_8047A5EC = r0;
-    break;
+        *(u32*) &lbl_8047A5E8 = message0;
+        *(u32*) &lbl_8047A5EC = message1;
+    }
 
+    winSpriteSetDisp(sprite, *(u32*) &lbl_8047A5E8 != 0);
 
-    if ((s32)r0 != (s32)0x2) {
-        if ((s32)r0 < (s32)0x2) {
-            if ((s32)r0 != (s32)0x0) {
-                if ((s32)r0 < (s32)0x0) {
-                    break;
-                }
-                if ((s32)r0 >= (s32)0x4) break;
-                r3 = 0x3d6e;
-                r0 = 0x0;
-                *(u32*)&lbl_8047A5E8 = r3;
-                *(u32*)&lbl_8047A5EC = r0;
-                break;
-                }
-            r3 = 0x3d3a;
-            r0 = 0x3dab;
-            *(u32*)&lbl_8047A5E8 = r3;
-            *(u32*)&lbl_8047A5EC = r0;
-            break;
-                }
-        r3 = 0x3d3a;
-        r0 = 0x423c;
-        *(u32*)&lbl_8047A5E8 = r3;
-        *(u32*)&lbl_8047A5EC = r0;
+    switch (MENU_MIDDLE_S16_0006(sprite)->unk_0006) {
+    case 0x89B:
+        MENU_MIDDLE_U32_004C(sprite)->unk_004C = *(u32*) &lbl_8047A5E8;
+        break;
+    case 0x93E:
+        MENU_MIDDLE_U32_004C(sprite)->unk_004C = *(u32*) &lbl_8047A5EC;
         break;
     }
-    r3 = 0x3d3a;
-    r0 = 0x3d2d;
-    *(u32*)&lbl_8047A5E8 = r3;
-    *(u32*)&lbl_8047A5EC = r0;
-    } while (0);
-    r4 = *(u32*)&lbl_8047A5E8;
-    r3 = r31;
-    r0 = -r4;
-    r0 = r0 | r4;
-    r4 = (u32)r0 >> 31;
-    winSpriteSetDisp();
-    r0 = MENU_MIDDLE_S16_0006(r31)->unk_0006;
-    if ((s32)r0 != (s32)0x89b) {
-        if ((s32)r0 < (s32)0x89b) {
-            if ((s32)r0 == (s32)0x80a) return;
-            return;
-        }
-        if ((s32)r0 != (s32)0x93e) {
-            return;
-        }
-        r0 = *(u32*)&lbl_8047A5E8;
-        MENU_MIDDLE_U32_004C(r31)->unk_004C = r0;
-        return;
-        }
-    r0 = *(u32*)&lbl_8047A5EC;
-    MENU_MIDDLE_U32_004C(r31)->unk_004C = r0;
-
-    return;
 }
 
 
