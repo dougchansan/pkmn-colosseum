@@ -868,6 +868,9 @@ u8 fn_800E0E14(u32 verbose, u32 dumpMap) {
         }
     }
 
+    if (dumpMap != 0) {
+        GSlogWrite((char*)lbl_80270658 + 0x208);
+    }
     cursor = (u8*)lbl_8047AB68;
     end = (u8*)lbl_8047AB38;
     while (cursor < end) {
