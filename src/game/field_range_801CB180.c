@@ -1487,12 +1487,13 @@ void fn_801CDB04(void)
 
         case 38:
             fn_800056D4();
-            result = CARDWriteAsync(file_info, task->work_buffer, 0x2000,
+            result = CARDWriteAsync(file_info, task->work_buffer,
+                                    task->task_kind == 8 ? 0x1C000 : 0x1E000,
                                     task->field_20 * 0x1E000 + 0x6000, NULL);
             task->card_result = result == 0
                                     ? CARDGetResultCode(task->card_channel)
                                     : result;
-            task->field_38[0] /= 14;
+            *(u32*)&raw[0x38] = 0;
             task->state = 39;
             break;
 
