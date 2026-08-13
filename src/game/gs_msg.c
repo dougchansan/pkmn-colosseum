@@ -2643,6 +2643,7 @@ s32 GSmsgInit(arg0, arg1)
 #pragma push
 #pragma optimization_level 2
 #pragma optimizewithasm off
+#pragma peephole off
 #if 0
 asm s32 fn_800FC7E0(entry, type, arg)
     void* entry;
