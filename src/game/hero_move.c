@@ -1494,9 +1494,15 @@ void fn_8013024C(void)
 
     callbacks = (void (**)(void))(lbl_80426BD0 + 0x140);
     callback_counts = (u32*)(lbl_80426BD0 + 0x144);
-    for (i = 0; i < 9; i++) {
-        callbacks[i * 2] = NULL;
-    }
+    *(void**)(lbl_80426BD0 + 0x140) = NULL;
+    *(void**)(lbl_80426BD0 + 0x148) = NULL;
+    *(void**)(lbl_80426BD0 + 0x150) = NULL;
+    *(void**)(lbl_80426BD0 + 0x158) = NULL;
+    *(void**)(lbl_80426BD0 + 0x160) = NULL;
+    *(void**)(lbl_80426BD0 + 0x168) = NULL;
+    *(void**)(lbl_80426BD0 + 0x170) = NULL;
+    *(void**)(lbl_80426BD0 + 0x178) = NULL;
+    *(void**)(lbl_80426BD0 + 0x180) = NULL;
 
     for (i = 0; i < 8; i++) {
         if (callbacks[i * 2] == NULL) {
