@@ -1478,9 +1478,11 @@ void* fn_8007FDBC(void* window, const void* title) {
         CARDE_CTX_U32(ctx, 0xB0) = (u32)list;
 
         for (i = 0; i < count; i++) {
-            list[i] = (u32)fn_80083AF4(0, i);
+            ((u32*)CARDE_CTX_U32(ctx, 0xB0))[i] =
+                (u32)fn_80083AF4(0, i);
         }
-        qsort(list, count, 4, menuCardE_CompareEntryPtrs);
+        qsort((void*)CARDE_CTX_U32(ctx, 0xB0), count, 4,
+              menuCardE_CompareEntryPtrs);
     }
 
     if (count != 0) {
