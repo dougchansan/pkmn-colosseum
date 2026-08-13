@@ -328,7 +328,10 @@ u8 wazaSequenceEntryStart(void* entry) {
 
     switch (node->kind) {
     case 0:
-        if (node->resourceId >= 0 && node->resourceId < 4) {
+        if (node->resourceId >= 4) {
+            break;
+        }
+        if (node->resourceId >= 0) {
             goto started;
         }
         break;
