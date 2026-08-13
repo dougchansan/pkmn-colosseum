@@ -190,22 +190,21 @@ void fn_80198038(HSD_JObj* jobj, Mtx src, Mtx dst)
         dst[1][1] = sy * y.y;
         dst[2][1] = sy * y.z;
     } else {
-        DisplayFuncVec y2;
         f32 scale;
 
         magnitude = displayfunc_sqrtf(z.x * z.x + z.z * z.z);
         scale = -z.y / (lbl_80478ACC + magnitude);
-        y2.x = z.x * scale;
-        y2.y = lbl_80478ACC + magnitude;
-        y2.z = z.z * scale;
-        PSVECCrossProduct(&y2, &z, &x);
+        y.x = z.x * scale;
+        y.y = lbl_80478ACC + magnitude;
+        y.z = z.z * scale;
+        PSVECCrossProduct(&y, &z, &x);
         sx /= lbl_80478ACC + PSVECMag(&x);
         dst[0][0] = sx * x.x;
         dst[1][0] = sx * x.y;
         dst[2][0] = sx * x.z;
-        dst[0][1] = y2.x;
-        dst[1][1] = y2.y;
-        dst[2][1] = y2.z;
+        dst[0][1] = y.x;
+        dst[1][1] = y.y;
+        dst[2][1] = y.z;
     }
 
     dst[0][2] = sz * z.x;
