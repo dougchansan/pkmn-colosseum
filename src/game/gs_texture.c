@@ -147,60 +147,73 @@ u8 GStextureConvertFromHW(GStextureHandle* tex, u8 clear) {
     u16 width;
     u16 height;
     s32 gxFormat;
+    s32 format;
+    void* image;
 
-    if (!((tex->format >= 0x40 && tex->format < 0x46) ||
-          tex->format == 0x90 || tex->format == 0xA0)) {
-        return 0;
+    format = tex->format;
+    if (format != 0x90) {
+        if (format >= 0x90) {
+            if (format != 0xA0) {
+                return 0;
+            }
+        } else {
+            if (format >= 0x46) {
+                return 0;
+            }
+            if (format < 0x40) {
+                return 0;
+            }
+        }
     }
 
     tex->refCount++;
-    switch (tex->format) {
-    case 0:
-        gxFormat = 8;
-        break;
-    case 1:
-        gxFormat = 9;
-        break;
-    case 0x30:
-        gxFormat = 10;
-        break;
-    case 0x40:
-        gxFormat = 0;
-        break;
-    case 0x41:
-        gxFormat = 2;
-        break;
-    case 0x42:
-        gxFormat = 1;
-        break;
-    case 0x43:
+    format = tex->format;
+    image = tex->mipData[0];
+    if (format == 0x43) {
         gxFormat = 3;
-        break;
-    case 0x44:
-        gxFormat = 4;
-        break;
-    case 0x45:
-        gxFormat = 6;
-        break;
-    case 0x90:
-        gxFormat = 5;
-        break;
-    case 0xA0:
-        gxFormat = 0x27;
-        break;
-    case 0xB0:
-        gxFormat = 0xE;
-        break;
-    default:
+    } else if (format >= 0x43) {
+        if (format == 0xA0) {
+            gxFormat = 0x27;
+        } else if (format >= 0xA0) {
+            if (format == 0xB0) {
+                gxFormat = 0xE;
+            } else {
+                gxFormat = -1;
+            }
+        } else if (format == 0x90) {
+            gxFormat = 5;
+        } else if (format >= 0x90) {
+            gxFormat = -1;
+        } else if (format == 0x45) {
+            gxFormat = 6;
+        } else {
+            gxFormat = 4;
+        }
+    } else if (format == 0x30) {
+        gxFormat = 0xA;
+    } else if (format >= 0x30) {
+        if (format == 0x41) {
+            gxFormat = 2;
+        } else if (format >= 0x41) {
+            gxFormat = 1;
+        } else {
+            gxFormat = 0;
+        }
+    } else if (format == 1) {
+        gxFormat = 9;
+    } else if (format >= 1) {
         gxFormat = -1;
-        break;
+    } else if (format == 0) {
+        gxFormat = 8;
+    } else {
+        gxFormat = -1;
     }
 
     width = *(u16*)(lbl_80466BC0 + 4);
-    height = *(u16*)(lbl_80466BC0 + 6);
     if (tex->width < width) {
         width = tex->width;
     }
+    height = *(u16*)(lbl_80466BC0 + 6);
     if (tex->height < height) {
         height = tex->height;
     }
@@ -208,7 +221,7 @@ u8 GStextureConvertFromHW(GStextureHandle* tex, u8 clear) {
     fn_800B962C(0, 0, width, height);
     fn_800B96F8(width, height, gxFormat, tex->mipLevels > 1);
     GXSetZMode(1, 3, 1);
-    fn_800B9FE4(tex->mipData[0], clear);
+    fn_800B9FE4(image, clear);
     fn_800B8E74();
     GXInvalidateTexAll();
     DCFlushRange(tex->mipData[0], tex->totalSize);
