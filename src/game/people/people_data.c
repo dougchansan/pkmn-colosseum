@@ -611,7 +611,7 @@ s32 fn_80140ACC(u32* base, u16 count, u16 id, u16 amount, s16 index, u16 unusedL
         }
     }
 
-    if (needsSort) {
+    if (needsSort == 1) {
         fn_801425E8(base, count, sortMode);
     }
     return remaining;
