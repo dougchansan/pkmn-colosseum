@@ -239,6 +239,8 @@ u8* fn_801364A8(u8* work, u8* desc) {
             memcpy(copy, aligned, TRACEFX_ALIGN32_SIZE(size));
             *(u32*)(work + 0x1C) = (u32)GStextureLoad(copy);
             fn_800EFD14(*(void**)(work + 0x1C), handle);
+        } else {
+            *(u32*)(work + 0x1C) = 0;
         }
         if (*(u32*)(work + 0x1C) != 0) {
             GStextureSetWrap(*(void**)(work + 0x1C), 0, 0);
