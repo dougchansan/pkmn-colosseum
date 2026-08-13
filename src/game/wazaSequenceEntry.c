@@ -541,6 +541,7 @@ u8 _wazaSequenceParticleEntryStart(void* entry) {
     f32 position[3];
     f32 rotation[3];
     f32 scale[3];
+    f32 temp[3];
     u32 flags;
     s32 selector;
 
@@ -621,6 +622,17 @@ u8 _wazaSequenceParticleEntryStart(void* entry) {
     *(u32*)((u8*) node + 0x90) = 0;
 
     if ((node->flags & 4) != 0) {
+        clear__5GSvecFv(temp);
+        fn_80118F04(*(void**)((u8*) node + 0x8C), temp, 0, 0, 0);
+        fn_80118E8C(*(void**)((u8*) node + 0x8C), temp, 0, 0, 0);
+
+        if ((node->flags & 8) != 0) {
+            battleGridGetNormalisedScale(scale);
+        } else {
+            set__5GSvecFfff(scale, 0.0f, 0.0f, 0.0f);
+        }
+        fn_80118DE0(*(void**)((u8*) node + 0x8C), scale,
+                      (flags >> 5) & 1, (flags >> 9) & 1);
         return TRUE;
     }
 
@@ -969,6 +981,7 @@ u8 wazaSequencePokemonMotionStart(void* ownerPtr, BOOL enabled) {
                                      f32* texFrameCount);
     extern void GSmodelSetAnimFrame(void* model, f32 frame);
     extern void GSmodelStartAnimation(void* model);
+    extern void fn_801DEE14(void* owner);
     extern void fn_801DF070(void* owner, s32 arg1, s32 arg2);
     extern const char lbl_80279740[];
     extern f32 lbl_8047E348;
@@ -995,13 +1008,16 @@ u8 wazaSequencePokemonMotionStart(void* ownerPtr, BOOL enabled) {
     }
 
     fn_800E3CC8(model);
-    if ((*(u8*)(owner + 0x18) & 4) == 0) {
-        *(u8*)(owner + 0x19) = 0;
-        GSmodelLinkTexAnimToAnim(model, 1);
+    if ((*(u8*)(owner + 0x18) & 8) != 0) {
+        return TRUE;
     }
 
     duration = *(s32*)(table + 0x04);
     if (duration == 0) {
+        if (*(u16*)(owner + 0x32) == 10) {
+            fn_801DEE14(owner);
+            return TRUE;
+        }
         *(u16*)(owner + 0x34) = 1;
         if (*(s32*)(table + 0x08) == 0) {
             fn_801DF070(owner, *(s32*)(table + 0x0C), 0);
@@ -1013,6 +1029,10 @@ u8 wazaSequencePokemonMotionStart(void* ownerPtr, BOOL enabled) {
 
     *(u16*)(owner + 0x34) = 0;
     duration = fn_801DF160(owner);
+    if ((*(u8*)(owner + 0x18) & 4) == 0) {
+        *(u8*)(owner + 0x19) = 0;
+        GSmodelLinkTexAnimToAnim(model, 1);
+    }
     GSmodelSetAnimIndex(model, duration);
     GSmodelSetAnimType(model, 0);
     GSmodelSetAnimRate(model, lbl_8047E348);
