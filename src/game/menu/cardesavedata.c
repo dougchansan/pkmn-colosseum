@@ -821,8 +821,13 @@ s32 fn_8008102C(void** object_ref, const u32* descriptor, s32 index,
         }
         return 0;
     case 53:
-        record = object + index * 0x2A;
-        record[0x522] = (value >= 0 && value < 2) ? (s8)value : -1;
+        if (value < 2 && value >= 0) {
+            record = object + index * 0x2A;
+            record[0x522] = (s8)value;
+        } else {
+            record = object + index * 0x2A;
+            record[0x522] = -1;
+        }
         break;
     case 54:
         record = object + index * 0x2A;
