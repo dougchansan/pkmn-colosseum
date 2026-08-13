@@ -2084,11 +2084,7 @@ void fn_80084A8C(void) {
             *(u32*)(r27 + r24) = tmp;
             r3 = 0x2f;
             msgctrlSetValue();
-            r3 = 0x7;
-            r4 = 0x3c42;
-            r5 = 0x0;
-            r6 = 0x0;
-            ((void(*)(void))winMsgOpen)();
+            winMsgOpen(7, 0x3c42, 0, 0);
             r3 = r24;
             r4 = 0x6;
             fn_80087AE8();
