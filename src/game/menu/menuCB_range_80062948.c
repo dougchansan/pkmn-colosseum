@@ -1610,7 +1610,6 @@ static inline void menuCBPokemonEntryAdvancePositions(void)
     f32 target;
     f32 remaining;
     f32 step;
-    f32 elapsed;
     s32 player;
     s32 component;
     f32 denominator;
@@ -1618,15 +1617,15 @@ static inline void menuCBPokemonEntryAdvancePositions(void)
 
     denominator = (f32)fn_800D37CC();
     numerator = fn_800D3088();
-    elapsed = (f32)numerator / denominator;
-    *(f32*)&lbl_803A9F08[0xCD88] = elapsed;
+    *(f32*)&lbl_803A9F08[0xCD88] = (f32)numerator / denominator;
     for (player = 0; player < 4; player++) {
         current = (f32*)&lbl_803A9F08[0xCD8C + player * 0x30];
         for (component = 0; component < 6; component++) {
             target = current[component + 6];
             if (current[component] != target) {
                 step = lbl_8047C010 *
-                    (target - current[component]) * elapsed;
+                    (target - current[component]) *
+                    *(f32*)&lbl_803A9F08[0xCD88];
                 if (step > lbl_8047C010) {
                     step = lbl_8047C010;
                 }
