@@ -583,6 +583,7 @@ u32 _lightningRenderMain(void* ptr) {
         }
         fn_800D6728();
     }
+    fn_800D7E5C();
     return 1;
 }
 #endif
