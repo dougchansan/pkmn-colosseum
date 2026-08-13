@@ -2697,8 +2697,7 @@ L_628:
     itemDataBiosGetPtr((u16)sel);
     unitPrice = (s32)(u16)itemDataBiosGetCoupon();
     species   = (s32)(u16)sel;
-    fn_80029FAC(&msgBuf[1], mapIdx, 0xc, 0x2d, species, -1);
-    lbl_8047A3E4 = 0; /* result captured by fn_80029FAC via &msgBuf[1] path */
+    lbl_8047A3E4 = fn_80029FAC(&msgBuf[1], mapIdx, 0xc, 0x2d, species, -1);
 
     if (maxAfford >= 1) {
         qty.enable    = 1;
@@ -2725,8 +2724,10 @@ L_628:
 
     /* (5) total cost, confirm yes/no */
     totalCost = chosenQty * unitPrice;
-    fn_80029FAC(&msgBuf[1], mapIdx, 5, 0x2d, species, 0x2f, totalCost, -1, chosenQty, 0x4b);
-    winMsgOpenWithSE(2, lbl_8047A3E4, 1, 0, msgBuf[1]);
+    winMsgOpenWithSE(2,
+        fn_80029FAC(&msgBuf[1], mapIdx, 5, 0x2d, species, 0x2f,
+                    totalCost, -1, chosenQty, 0x4b),
+        1, 0, msgBuf[1]);
     yn = (s8)menuSubOpenYesNo(0, -1, -1, 0);
     winMsgClose(1);
     if (yn == 1) goto L_628;     /* cancel */
@@ -2766,8 +2767,8 @@ L_628:
 
     if ((mode & 0xff) == 4) {
         /* mode-4 "buy another?" loop */
-        fn_80029FAC(&msgBuf[1], mapIdx, 7, -1);
-        winMsgOpenWithSE(2, lbl_8047A3E4, 1, 0, msgBuf[1]);
+        winMsgOpenWithSE(2, fn_80029FAC(&msgBuf[1], mapIdx, 7, -1),
+                         1, 0, msgBuf[1]);
         yn = (s8)menuSubOpenYesNo(0, -1, -1, 0);
         winMsgClose(1);
         if (yn == -1) goto L_CB40;
@@ -2782,8 +2783,8 @@ L_CB40:
     }
 
     if (buf.exitFlag == 0) {
-        fn_80029FAC(&msgBuf[0], mapIdx, 0xd, -1);
-        winMsgOpenWithSE(2, lbl_8047A3E4, 1, 0, msgBuf[0]);
+        winMsgOpenWithSE(2, fn_80029FAC(&msgBuf[0], mapIdx, 0xd, -1),
+                         1, 0, msgBuf[0]);
         yn = (s8)menuSubOpenYesNo(0, -1, -1, 0);
         winMsgClose(1);
         if (yn == 1 || yn == -1) {
@@ -2797,8 +2798,8 @@ L_CB40:
         r25 = next;
         goto loop_test;
     } else {
-        fn_80029FAC(&msgBuf[0], mapIdx, 0xf, -1);
-        winMsgOpenWithSE(2, lbl_8047A3E4, 1, 0, msgBuf[0]);
+        winMsgOpenWithSE(2, fn_80029FAC(&msgBuf[0], mapIdx, 0xf, -1),
+                         1, 0, msgBuf[0]);
         yn = (s8)menuSubOpenYesNo(0, -1, -1, 0);
         winMsgClose(1);
         if (yn == 1 || yn == -1) {
