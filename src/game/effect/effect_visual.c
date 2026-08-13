@@ -5305,7 +5305,6 @@ u32 fn_8013FF0C(void* ptr) {
     f32 billboardScale[3];
     f32 up[3];
     f32 interest[3];
-    f32 direction[3];
     f32 fov;
     f32 aspect;
     f32 nearPlane;
@@ -5328,8 +5327,8 @@ u32 fn_8013FF0C(void* ptr) {
         _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
         GScameraGetPosition(camera, position);
         GScameraGetLookAt(camera, up, interest);
-        fn_800E0168(direction, interest, position);
-        fn_800E0060(direction, direction);
+        fn_800E0168(up, interest, position);
+        fn_800E0060(up, up);
         GScameraGetPerspective(camera, &fov, &aspect, &nearPlane, &farPlane);
         fov *= *(f32*)&lbl_8047D334 * *(f32*)&lbl_8047D328;
         nearPlane *= *(f32*)&lbl_8047D330;
@@ -5337,8 +5336,8 @@ u32 fn_8013FF0C(void* ptr) {
         billboardScale[1] = *(f32*)&lbl_8047D338 * nearPlane *
                             (f32)tan(fov) * aspect;
         billboardScale[2] = billboardScale[1] * farPlane;
-        fn_800E013C(direction, direction, nearPlane);
-        GSvecAdd(position, position, direction);
+        fn_800E013C(up, up, nearPlane);
+        GSvecAdd(position, position, up);
     }
 
     {
