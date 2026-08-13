@@ -162,6 +162,7 @@ extern s32 fn_8008102C(void** object_ref, const u32* descriptor, s32 index,
                        s32 value, const char* text, s32 subindex);
 
 /* Decode and validate a packed card-e record. */
+#pragma optimization_level 2
 u32 fn_80080310(void* output, const u8* packed, void* auxiliary)
 {
     u16 text0[256];
@@ -416,6 +417,7 @@ u32 fn_80080310(void* output, const u8* packed, void* auxiliary)
     }
 
 #undef READ_PACKED_BITS
+#pragma optimization_level 1
     if (!valid) {
         return 0;
     }
@@ -1819,6 +1821,7 @@ s32 fn_800849B4(s32 mode, s32 command, void* input, void* output)
 #pragma pop
 
 /* 0x80084A8C | size: 0x305C */
+#pragma peephole off
 void fn_80084A8C(void) {
     extern void fn_80087AE8();
     extern void fn_80128E04();
@@ -5247,6 +5250,7 @@ u32 fn_80087C64(const u16* expected)
 #undef CARDE_SHOW_MODEL
 #undef CARDE_GRID_TABLE
 
+#pragma peephole reset
 typedef struct CardEPageLayout {
     u8 field_00[0x10];
     u8 summary[0x66];
