@@ -651,10 +651,10 @@ void _wazaSequenceCameraDoPosition__FP13ModelSequenceP24wazaSequenceCameraParams
             (params->height_max - params->height_min) * fn_800E0BE4();
 
         if (reverse) {
-            rot_a = (params->rotation_base - params->rotation_min) * fn_800E0BE4() -
-                    (params->rotation_base - params->rotation_max);
-            rot_b = (params->rotation_base - params->rotation_min) * fn_800E0BE4() -
-                    (params->rotation_base - params->rotation_max);
+            rot_a = (params->rotation_min - params->rotation_max) * fn_800E0BE4() +
+                    (params->rotation_min - params->rotation_base);
+            rot_b = (params->rotation_min - params->rotation_max) * fn_800E0BE4() +
+                    (params->rotation_min - params->rotation_base);
         } else {
             rot_a = (params->rotation_max - params->rotation_min) * fn_800E0BE4() +
                     (params->rotation_base + params->rotation_min);
