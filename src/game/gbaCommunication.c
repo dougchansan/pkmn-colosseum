@@ -1472,10 +1472,16 @@ void fn_8009567C(u8* context, u8* sprite)
         fn_800FBB34(0, 0, x, y, color, 0xDE);
         break;
     case 0x148:
-    case 0x54D:
         value = (s16)pokemonGetStatus(pokemon, 0, 0x8C, 0);
         fn_80132A38(0x34, value);
         fn_800FBB34(0, 0, x, y, color, 0xDE);
+        break;
+    case 0x54D:
+        value = fn_8011CB6C((u16)fn_801248C4(pokemon));
+        fn_8011CB54();
+        value = fn_800FA280();
+        fn_80132A38(0x37, value);
+        fn_800FBB34(0, 0, x, y, color, 0xCF);
         break;
     case 0x149:
     case 0x585:
