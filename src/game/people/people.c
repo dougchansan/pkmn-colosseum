@@ -562,7 +562,7 @@ void fn_80181850(void)
     u8 layer;
     u8 subLayer;
     s32 shadowCount;
-    s32 frameCount;
+    f32 frameCount;
     u32 ticks;
     f32 angle;
     f32 fullTurn;
@@ -607,10 +607,10 @@ void fn_80181850(void)
                 switch (entry->subState) {
                 case 0:
                     if (entry->animBlendFactor > lbl_8047D7A0) {
-                        frameCount = fn_800D37CC();
+                        frameCount = (f32)fn_800D37CC();
                         ticks = fn_800D3088();
                         entry->animBlendFactor -=
-                            (f32)ticks / (f32)frameCount;
+                            (f32)ticks / frameCount;
                         if (entry->animBlendFactor < lbl_8047D7A0) {
                             entry->animBlendFactor = lbl_8047D7A0;
                         }
