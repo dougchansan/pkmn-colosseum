@@ -4124,28 +4124,52 @@ asm u32 fn_8013E258(void* model, void* unused, void* state) {
 }
 #else
 u32 fn_8013E258(void* model, void* unused, void* state) {
-    u8* p;
+    struct EffectVisualState {
+        f32 start;
+        f32 end;
+        u32 duration;
+    } *visual;
+    u32 alpha;
+    f32 amount;
 
     (void)unused;
     if (state == NULL) {
         return 0;
     }
 
-    p = state;
+    visual = *(struct EffectVisualState**)((u8*)state + 0x18);
+    amount = visual->start +
+        ((f32)*(u32*)((u8*)state + 0x1C) / (f32)visual->duration) *
+        (visual->end - visual->start);
+    alpha = (u32)(*(f32*)&lbl_8047D298 * amount);
     fn_800D9B58(*(f32*)&lbl_8047D27C, *(f32*)&lbl_8047D27C,
                 *(f32*)&lbl_8047D288, *(f32*)&lbl_8047D298);
-    fn_800DA4C4(1, 6, 1);
+    fn_800DA4C4(1, 6, 7);
     fn_800DA1E8(0, 7, 0);
+    fn_800D9ED8(1);
     fn_800DA2BC(1, 1, 0);
     fn_800DA028(0);
     fn_800D88DC(3);
     fn_800D888C(4);
-    fn_800D7820(model);
-    fn_800D85D4(0, *(void**)(p + 0xC));
+    fn_800D7820(lbl_80314AE8);
+    fn_800D85D4(0, model);
     fn_800D6A00(4);
     fn_800D67BC(4);
     fn_800D6680(*(f32*)&lbl_8047D27C, *(f32*)&lbl_8047D27C, *(f32*)&lbl_8047D27C);
-    fn_800D5CB8(0, p[8], p[9], p[0xA], p[0xB]);
+    fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, alpha);
+    fn_800D59B8(0, *(f32*)&lbl_8047D27C, *(f32*)&lbl_8047D27C);
+    fn_800D6680(*(f32*)&lbl_8047D27C, *(f32*)&lbl_8047D29C,
+                *(f32*)&lbl_8047D27C);
+    fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, alpha);
+    fn_800D59B8(0, *(f32*)&lbl_8047D280, *(f32*)&lbl_8047D27C);
+    fn_800D6680(*(f32*)&lbl_8047D27C, *(f32*)&lbl_8047D2A0,
+                *(f32*)&lbl_8047D27C);
+    fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, alpha);
+    fn_800D59B8(0, *(f32*)&lbl_8047D27C, *(f32*)&lbl_8047D280);
+    fn_800D6680(*(f32*)&lbl_8047D29C, *(f32*)&lbl_8047D2A0,
+                *(f32*)&lbl_8047D27C);
+    fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, alpha);
+    fn_800D59B8(0, *(f32*)&lbl_8047D280, *(f32*)&lbl_8047D280);
     fn_800D6728();
     fn_800D9ED8(0);
     return 1;
