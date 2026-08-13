@@ -56,6 +56,7 @@ void _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID(void);
 void _cameraPadMoveUpdate__FP9_GScamera(void* camera);
 void _cameraPadRotateUpdate__FP9_GScamera(void* sceneObj);
 void _cameraOffsetAnimeUpdate__FP9_GScamera(GSRenderCamera* camera);
+void cameraRefreshTargetPos(void);
 void cameraUpdate(u32 captureIndex) {
     GSRenderCamera* camera;
     CameraPadState* state;
@@ -73,9 +74,7 @@ void cameraUpdate(u32 captureIndex) {
 
     camera = (GSRenderCamera*)GSresGetResource(0, 0);
     state = (CameraPadState*)lbl_80478C40;
-    if (state->flags[0] != 1) {
-        return;
-    }
+    if (state->flags[0] == 1) {
 
     if (state->targetMoveActive != 0) {
         state->targetMoveTime += (f32)fn_800D3088() / (f32)fn_800D37CC();
@@ -201,6 +200,33 @@ void cameraUpdate(u32 captureIndex) {
     if (state->targetMoveActive == 0 && state->targetOffsetMoveActive == 0 &&
         state->positionMoveActive == 0 && state->rotationMoveActive == 0) {
         state->flags[0] = 0;
+    }
+    } else {
+        switch (state->mode) {
+        case 0:
+        case 1:
+        case 5:
+            cameraRefreshTargetPos();
+            break;
+        case 4:
+            animation = (GSRenderCamera*)GSresGetResource(state->animationGroup,
+                                                          state->animationId);
+            if (animation == 0) {
+                animation = (GSRenderCamera*)fn_800F92D4(state->animationId);
+            }
+            if (animation == 0) {
+                state->animationGroup = 0;
+                state->animationId = 0;
+                if (state->mode != state->flags[2]) {
+                    state->mode = state->flags[2];
+                }
+                state->targetGroup = 0;
+                state->targetId = 100;
+                state->targetSubId = -1;
+                camera = (GSRenderCamera*)GSresGetResource(0, 0);
+            }
+            break;
+        }
     }
 }
 #pragma pop
