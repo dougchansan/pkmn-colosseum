@@ -57,6 +57,7 @@ void _cameraPadMoveUpdate__FP9_GScamera(void* camera);
 void _cameraPadRotateUpdate__FP9_GScamera(void* sceneObj);
 void _cameraOffsetAnimeUpdate__FP9_GScamera(GSRenderCamera* camera);
 void cameraRefreshTargetPos(void);
+extern u8 lbl_8036C248[];
 void cameraUpdate(u32 captureIndex) {
     extern void* GSmodelGetPart(void* model, s32 partIndex);
     extern void GSpartGetTransform(void* part, void* transform, u32 arg2,
@@ -150,6 +151,9 @@ void cameraUpdate(u32 captureIndex) {
                 state->positionMoveActive != 0) {
                 state->rotation.y = (f32)atan2(delta.x, delta.z);
             }
+        }
+        if (state->mode == 1) {
+            break;
         }
         set__5GSvecFfff(&eye, lbl_8047D740, state->height, state->distance);
         GSmtxMakeYRotation(&delta, state->rotation.y);
@@ -254,6 +258,28 @@ void cameraUpdate(u32 captureIndex) {
             _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
             return;
         }
+    }
+
+    if (state->mode == 1 || state->mode == 2) {
+        GSvecAdd(&interest, &state->position, &state->view);
+        GScameraSetPosition(camera, &state->direction);
+        GScameraLookAt(
+            camera, (const GSRenderVec3*)lbl_8036C248, &interest);
+
+        fn_800E0168(&delta, &state->direction, &interest);
+        state->height = delta.y;
+        delta.x = delta.x * delta.x + delta.z * delta.z;
+        cameraSqrt(&delta.x);
+        state->distance = delta.x;
+
+        state->rotation.y = (f32)atan2(delta.x, delta.z);
+        state->rotation.x =
+            -(f32)atan2(state->height, state->distance);
+
+        GScameraGetPerspective(
+            camera, &aspect, &fov, &nearPlane, &farPlane);
+        GScameraSetPerspective(
+            camera, state->fov, fov, nearPlane, farPlane);
     }
 
     if (state->mode == 3) {
