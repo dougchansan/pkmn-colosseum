@@ -587,17 +587,17 @@ void fn_80031B4C(void) {
     extern void menuGetLastError();
     extern void fn_801021F8();
     extern void menuSetDisp();
-    extern void menuGetCursor();
+    extern u32 menuGetCursor();
     extern void fn_801024E8();
     extern void menuClose();
     extern void menuOpen();
     extern void menuOpenCustom();
     extern void menuSetEnablePort();
-    extern void windowGetValue();
+    extern u32 windowGetValue();
     extern void windowCheckCursor();
-    extern void windowGetActiveID();
-    extern void windowSearchItemID();
-    extern void windowSearchID();
+    extern u32 windowGetActiveID();
+    extern u32 windowSearchItemID();
+    extern u32 windowSearchID();
     extern void winMsgClose();
     extern void winMsgOpen();
     extern void winSpriteSetDisp();
@@ -643,6 +643,50 @@ void fn_80031B4C(void) {
         goto L_800323E4;
     do {
             if (tmp <= 0x13) {
+                switch (tmp) {
+                case 1:
+                    fn_8002FC58();
+                    goto L_800323E4;
+                case 2:
+                    fn_801021F8(0xd9, 0);
+                    *(u32*)(sp + 0xC) = 1;
+                    r28 = windowGetActiveID();
+                    menuOpenCustom(0xe3, r28, sp + 0xC, 0, 0, 0);
+
+                    r28 = windowSearchID(0xe3);
+                    r29 = windowSearchItemID(r28, 0x102a);
+                    if ((r28 != 0) && (r29 != 0)) {
+                        winSpriteSetDisp(r29, 1);
+                        *(u32*)((u8*)r29 + 0x4C) = 0x43e4;
+                    }
+
+                    r28 = windowSearchID(0xe3);
+                    r29 = windowSearchItemID(r28, 0x1029);
+                    if ((r28 != 0) && (r29 != 0)) {
+                        winSpriteSetDisp(r29, 1);
+                        *(u32*)((u8*)r29 + 0x4C) = 0x43e5;
+                    }
+
+                    windowCheckCursor(0xe3, 1);
+                    r29 = windowGetValue(0xe3);
+                    r26 = menuGetCursor(0xe3);
+                    menuClose(0xe3);
+                    if ((s32)r29 == -1) {
+                        r26 = -1;
+                    }
+                    if ((s32)r26 == 0) {
+                        lbl_8047A42C = 6;
+                    } else if ((s32)r26 < 0) {
+                        if ((s32)r26 >= -1) {
+                            lbl_8047A42C = 2;
+                        }
+                    } else if ((s32)r26 < 2) {
+                        lbl_8047A42C = 5;
+                    }
+                    goto L_800323E4;
+                default:
+                    break;
+                }
                 r3 = (u32)jumptable_802E4F90;
                 tmp = tmp << 2;
                 r3 = (u32)jumptable_802E4F90;
