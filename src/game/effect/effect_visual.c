@@ -479,6 +479,7 @@ u32 _lightningRenderMain(void* ptr) {
     f32 perspective;
     f32 unused;
     f32 scale;
+    f32 matrix[12];
     u16 count;
     u16 i;
     u32 segments;
@@ -512,6 +513,10 @@ u32 _lightningRenderMain(void* ptr) {
     fn_800D88DC(1);
     fn_800D888C(6);
     fn_800D7820(*(void**)(p + 0x14));
+    fn_800E05C0(matrix, modelPos[0], modelPos[1], modelPos[2]);
+    fn_800D7F14(matrix);
+    fn_800E048C(matrix, *(f32*)(p + 0x28), *(f32*)(p + 0x2C), *(f32*)(p + 0x30));
+    fn_800D7F14(matrix);
     fn_800D6A00(2);
 
     count = *(u16*)(p + 0x8);
@@ -4908,8 +4913,8 @@ asm void _distortionEffectUpdateMatrices(void) {
 #else
 void _distortionEffectUpdateMatrices(void* ptr) {
     void* camera;
-    void* cameraMatrix;
     void* matrix;
+    void* cameraMatrix;
     f32 lookAt[3];
     f32 eye[3];
     f32 projected[4];
