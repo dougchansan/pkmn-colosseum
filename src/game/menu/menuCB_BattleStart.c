@@ -2144,21 +2144,59 @@ u8 fn_80061D34(
     }
     if (lbl_803A9A60.status == 0) {
         if (kind == 2) {
-            valid = mode == 2;
+            if (mode != 2) {
+                msg->flags4 &= ~2;
+                valid = 0;
+            }
         } else if (kind == 0) {
-            valid = selection < 4 && mode != 2;
+            if (selection >= 4) {
+                msg->flags4 &= ~2;
+                valid = 0;
+            } else if (mode == 2) {
+                msg->flags4 &= ~2;
+                valid = 0;
+            }
         } else {
-            valid = selection >= 4 && mode != 2;
+            if (selection < 4) {
+                msg->flags4 &= ~2;
+                valid = 0;
+            } else if (mode == 2) {
+                msg->flags4 &= ~2;
+                valid = 0;
+            }
         }
-    } else if (kind == 2) {
-        valid = mode == 2 && selection <= slot;
-    } else if (kind == 0) {
-        valid = selection < 4 && mode != 2 && selection <= slot;
     } else {
-        valid = selection >= 4 && mode != 2 && selection <= slot;
-    }
-    if (!valid) {
-        msg->flags4 &= ~2;
+        if (kind == 2) {
+            if (mode != 2) {
+                msg->flags4 &= ~2;
+                valid = 0;
+            }
+            if (selection <= slot) {
+                valid = 0;
+            }
+        } else if (kind == 0) {
+            if (selection >= 4) {
+                msg->flags4 &= ~2;
+                valid = 0;
+            } else if (mode == 2) {
+                msg->flags4 &= ~2;
+                valid = 0;
+            } else if (selection <= slot) {
+                msg->flags4 &= ~2;
+                valid = 0;
+            }
+        } else {
+            if (selection < 4) {
+                msg->flags4 &= ~2;
+                valid = 0;
+            } else if (mode == 2) {
+                msg->flags4 &= ~2;
+                valid = 0;
+            } else if (selection <= slot) {
+                msg->flags4 &= ~2;
+                valid = 0;
+            }
+        }
     }
     return valid;
 }
