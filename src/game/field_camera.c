@@ -278,7 +278,7 @@ extern void cameraMoveTargetPos(u32, void*, f32);
 extern void cameraMovePosition(u32, void*, f32);
 extern void cameraMoveRotation(u32, void*, f32);
 extern void GSgappTerminate(void* application);
-extern void GSgappCreate(void);
+extern void* GSgappCreate(u32, u32, u32, void*);
 void fn_801176C8(u32 floorId);
 extern void* GScameraGetActiveCamera();
 extern void GSvecCopy();
@@ -1749,6 +1749,10 @@ void fn_801176C8(u32 floorId)
         (GSFieldWorldResourceState*)lbl_804083D0;
     u8* floor = floorDataBiosGetPtr(floorId);
     u8* previous;
+    u16 handle;
+    void* list;
+    u32 count;
+    u32 size;
 
     state->reloadPending = 0;
     if (state->floorId != 0) {
@@ -1774,7 +1778,60 @@ void fn_801176C8(u32 floorId)
         return;
     }
 
-    /* Resource allocation and camera-list setup continue in the target. */
+    state->application = GSgappCreate(1, 0x7F, 0, fn_8011791C);
+    if (state->application == NULL) {
+        goto cleanup;
+    }
+
+    handle = _toolentryAlloc__FUl(8);
+    if (handle == 0) {
+        goto cleanup;
+    }
+    state->cameraWorkHandle = handle;
+    state->cameraWork = fn_800E27B0(handle);
+    state->floorId = floorId;
+    list = floorDataBiosGetFieldCameraListPtr(floor);
+    state->floorCamera = *(u32*)(floor + 0x1C);
+    *(void**)state->cameraWork = (u8*)state + 8;
+    if (list == NULL) {
+        return;
+    }
+
+    count = **(u32**)list;
+    if (count == 0) {
+        return;
+    }
+    size = count * 0x18;
+    handle = _toolentryAlloc__FUl(size);
+    if (handle == 0) {
+        goto cleanup;
+    }
+    state->auxiliaryHandle = handle;
+    *(u32*)((u8*)state + 8) = count;
+    *(void**)state->cameraWork = fn_800E27B0(handle);
+    memcpy(*(void**)((u8*)state->cameraWork + 4), *(void**)((u8*)list + 4), size);
+    return;
+
+cleanup:
+    if (state->floorId != 0) {
+        previous = floorDataBiosGetPtr(state->floorId);
+        if (previous != NULL) {
+            *(u32*)(previous + 0x1C) = state->floorCamera;
+            fn_80117164();
+        }
+    }
+    if (state->application != NULL) {
+        GSgappTerminate(state->application);
+    }
+    if (state->auxiliaryHandle != 0) {
+        fn_800E24B0(state->auxiliaryHandle);
+        fn_800E209C(state->auxiliaryHandle);
+    }
+    if (state->cameraWorkHandle != 0) {
+        fn_800E24B0(state->cameraWorkHandle);
+        fn_800E209C(state->cameraWorkHandle);
+    }
+    memset(state, 0, 0x20);
 }
 /* 0x8011791C | 0x1B8 */
 extern u8 lbl_804083D0[0x30];
