@@ -76,8 +76,8 @@ extern void fn_800DC14C(void);
 extern void fn_800DC224(void);
 extern void windowDrawSprite(void);
 extern void fn_80166A28(void);
-extern void fn_800D59B8(void);
-extern void fn_800D5BA0(void);
+extern void fn_800D59B8(s32 slot, f32 xScale, f32 yScale);
+extern void fn_800D5BA0(s32 slot, u32 color);
 extern void fn_800D9D68(u16 a, u16 b, u16 c, u16 d);
 extern f64 tan(void);
 extern void fn_800D7FE4(void* mtx);
@@ -2665,7 +2665,157 @@ void fn_800FD69C(arg0, arg1, arg2, arg3, arg4)
     s16 arg3;
     s16 arg4;
 {
-    /* TODO: replace compile-only placeholder with real C decompilation. */
+    u8 *mgr;
+    u8 *buffer;
+    u8 *srcRow;
+    s16 curX;
+    s16 curY;
+    s16 row;
+    s16 rowPos;
+    s16 xPos;
+    s16 xEnd;
+    s16 drawX0;
+    s16 drawY0;
+    s16 drawX1;
+    s16 drawY1;
+    s16 widthRounded;
+    s16 copyBytes;
+    s16 clearBytes;
+    s32 srcOffset;
+    s32 tileOffset;
+    s32 texelOffset;
+    s32 rowIndex;
+    s32 colIndex;
+    s32 outlineAlpha;
+    u32 color;
+    f32 scaleX;
+    f32 scaleY;
+    f32 baseX;
+    f32 baseY;
+    f32 u0;
+    f32 v0;
+    f32 u1;
+    f32 v1;
+
+    mgr = (u8 *)lbl_80478B08;
+    if (*(s16 *)(mgr + 0x18) + (arg2 + 2) >= 0x200) {
+        *(s16 *)(mgr + 0x1A) = *(s16 *)(mgr + 0x1A) + *(u8 *)(mgr + 0x1C) + 2;
+        *(s16 *)(mgr + 0x18) = 2;
+        *(u8 *)(mgr + 0x1C) = arg0[0x23] + 2;
+        if (*(s16 *)(mgr + 0x1A) + *(u8 *)(mgr + 0x1C) >= 0x200) {
+            *(s16 *)(mgr + 0x1A) = 1;
+        }
+    }
+
+    if (*(u8 *)(mgr + 0x1C) < arg3) {
+        *(u8 *)(mgr + 0x1C) = arg0[0x23];
+    }
+
+    buffer = *(u8 **)(mgr + 0x14);
+    curX = *(s16 *)(mgr + 0x18);
+    curY = *(s16 *)(mgr + 0x1A);
+    widthRounded = (s16)(((arg2 + 1) & ~1) / 2);
+    clearBytes = (s16)((arg2 + 5) >> 1);
+
+    for (row = -1; row < arg3 + 1; row++) {
+        rowPos = curY + row;
+        tileOffset = (rowPos >> 3) << 6;
+        texelOffset = (rowPos & 7) << 3;
+        xPos = -2;
+        for (colIndex = 0; colIndex < clearBytes; colIndex++, xPos += 2) {
+            srcOffset = curX + xPos;
+            buffer[((tileOffset + (srcOffset >> 3)) << 5) +
+                   (((srcOffset & 7) + texelOffset) >> 1)] = 0;
+        }
+    }
+
+    copyBytes = (s16)(((arg2 + 1) & ~1) / 2);
+    srcOffset = 0;
+    for (rowIndex = 0; rowIndex < arg3; rowIndex++) {
+        rowPos = curY + rowIndex;
+        tileOffset = (rowPos >> 3) << 6;
+        texelOffset = (rowPos & 7) << 3;
+        srcRow = (u8 *)arg1 + srcOffset;
+        xPos = 0;
+        for (colIndex = 0; colIndex < copyBytes; colIndex++, xPos += 2) {
+            srcOffset = curX + xPos;
+            buffer[((tileOffset + (srcOffset >> 3)) << 5) +
+                   (((srcOffset & 7) + texelOffset) >> 1)] = srcRow[colIndex];
+        }
+        srcOffset = srcOffset + widthRounded;
+    }
+
+    scaleX = *(f32 *)(arg0 + 0x60);
+    scaleY = *(f32 *)(arg0 + 0x64);
+    baseX = (f32)(s16)*(f32 *)(arg0 + 0x0C);
+    baseY = *(f32 *)(arg0 + 0x10) + ((f32)((s16)arg4 + (s8)arg0[0x43]) * scaleY);
+    drawX0 = (s16)(baseX + ((f32)curX * scaleX));
+    drawY0 = (s16)(baseY + ((f32)curY * scaleY));
+    drawX1 = (s16)(baseX + ((f32)(curX + arg2) * scaleX));
+    drawY1 = (s16)(baseY + ((f32)(curY + arg3) * scaleY));
+
+    u0 = (f32)curX * lbl_8047CD4C;
+    v0 = (f32)curY * lbl_8047CD4C;
+    u1 = (f32)(curX + arg2) * lbl_8047CD4C;
+    v1 = (f32)(curY + arg3) * lbl_8047CD4C;
+
+    color = *(u32 *)(arg0 + 0x24);
+    outlineAlpha = (((s32)(color & 0xFF) * 0xC0) / 0xFF) & 0xFF;
+
+    switch (arg0[2]) {
+    case 1:
+        fn_800D67BC(4);
+        fn_800D61E4(drawX0 + 1, drawY0 + 1);
+        fn_800D5CB8(0, 0, 0, 0, outlineAlpha);
+        fn_800D59B8(0, u0, v0);
+        fn_800D61E4(drawX1 + 1, drawY1 + 1);
+        fn_800D5CB8(0, 0, 0, 0, outlineAlpha);
+        fn_800D59B8(0, u1, v1);
+        break;
+
+    case 2:
+        fn_800D67BC(0xA);
+        fn_800D61E4(drawX0 - 1, drawY0);
+        fn_800D5CB8(0, 0, 0, 0, outlineAlpha);
+        fn_800D59B8(0, u0, v0);
+        fn_800D61E4(drawX1 - 1, drawY1);
+        fn_800D5CB8(0, 0, 0, 0, outlineAlpha);
+        fn_800D59B8(0, u1, v1);
+        fn_800D61E4(drawX0 + 1, drawY0);
+        fn_800D5CB8(0, 0, 0, 0, outlineAlpha);
+        fn_800D59B8(0, u0, v0);
+        fn_800D61E4(drawX1 + 1, drawY1);
+        fn_800D5CB8(0, 0, 0, 0, outlineAlpha);
+        fn_800D59B8(0, u1, v1);
+        fn_800D61E4(drawX0, drawY0 - 1);
+        fn_800D5CB8(0, 0, 0, 0, outlineAlpha);
+        fn_800D59B8(0, u0, v0);
+        fn_800D61E4(drawX1, drawY1 - 1);
+        fn_800D5CB8(0, 0, 0, 0, outlineAlpha);
+        fn_800D59B8(0, u1, v1);
+        fn_800D61E4(drawX0, drawY0 + 1);
+        fn_800D5CB8(0, 0, 0, 0, outlineAlpha);
+        fn_800D59B8(0, u0, v0);
+        fn_800D61E4(drawX1, drawY1 + 1);
+        fn_800D5CB8(0, 0, 0, 0, outlineAlpha);
+        fn_800D59B8(0, u1, v1);
+        break;
+
+    default:
+        fn_800D67BC(2);
+        break;
+    }
+
+    fn_800D61E4(drawX0, drawY0);
+    fn_800D5BA0(0, color);
+    fn_800D59B8(0, u0, v0);
+    fn_800D61E4(drawX1, drawY1);
+    fn_800D5BA0(0, color);
+    fn_800D59B8(0, u1, v1);
+    fn_800D6728();
+
+    xEnd = (s16)(curX + (widthRounded * 2) + 2);
+    *(s16 *)(mgr + 0x18) = xEnd;
 }
 
 #endif
