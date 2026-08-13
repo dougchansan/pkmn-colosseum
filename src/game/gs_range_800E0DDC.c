@@ -591,10 +591,18 @@ u32 fn_800E1544(void)
             if (after != 0) {
                 after->prev = fresh;
             }
+            if (fresh->next != 0 &&
+                (u8*)fresh + fresh->size == (u8*)fresh->next) {
+                GSFreeBlock* mergeNext = fresh->next;
+                fresh->size += mergeNext->size;
+                fresh->next = mergeNext->next;
+                if (fresh->next != 0) {
+                    fresh->next->prev = fresh;
+                }
+            }
             if (wasHead != 0) {
                 lbl_8047AB30 = (u32)fresh;
             }
-            COALESCE_FREE(fresh);
             block = (GSFreeBlock*)lbl_8047AB30;
             continue;
         }
