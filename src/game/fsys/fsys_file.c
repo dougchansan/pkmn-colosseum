@@ -378,6 +378,44 @@ s32 fn_8017E30C(FSYSSlot* slot) {
             }
         }
 
+        {
+            u8* archive = (u8*)slot->archiveData;
+            u32 fileInfo;
+            u32 total;
+            u32 k;
+            FSYSFileEntry* totalEntry;
+
+            if ((*(u32*)(archive + 0x10) & 1) != 0) {
+                slot->tocBuffer = NULL;
+                if (fn_80167EF8(archive + fileEntry->dataOffset) != 0) {
+                    slot->tocBuffer =
+                        (void*)fn_80167F28((char*)archive + fileEntry->dataOffset);
+                }
+
+                fileInfo = (u32)slot->tocBuffer;
+                if (fileInfo != 0) {
+                    uncompSize = fn_80167E5C(fileInfo);
+                    fileEntry->decompressedSize = uncompSize;
+                    total = 0;
+                    for (k = 0; k < slot->numEntries; k++) {
+                        u8* totalArchive = (u8*)slot->archiveData;
+                        u32* firstTable =
+                            (u32*)(totalArchive + *(u32*)(totalArchive + 0x18));
+                        u32* entryTable =
+                            (u32*)(totalArchive + firstTable[0]);
+                        totalEntry =
+                            (FSYSFileEntry*)(totalArchive + entryTable[k]);
+                        total += totalEntry->decompressedSize;
+                    }
+                    total += *(u32*)(archive + slot->field_18 + 8);
+                    slot->totalDecompSize = total;
+                    fn_80167E64(fileInfo);
+                    slot->tocBuffer = NULL;
+                    subEntry->ready = 1;
+                }
+            }
+        }
+
         /* If a callback exists, use it to allocate/process the buffer */
         if (poolEntry != NULL && poolEntry->callback != NULL) {
             typedef void* (*AllocCallback)(u32 fileHandle, u32 fileID, u32 size);
