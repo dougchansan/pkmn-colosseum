@@ -11,6 +11,7 @@ extern void* fn_800E27B0(u16 handle);
 extern u64 OSGetTime(void);
 extern void OSTicksToCalendarTime(u64 ticks, void* td);
 extern u32 strlen(const char*);
+extern void* memcpy(void* dst, const void* src, u32 n);
 
 extern u32 lbl_8047AB10;
 extern u32 lbl_8047AB11;
@@ -241,19 +242,12 @@ void GSlogWrite(const char* fmt, ...) {
     buffer = (u8*)lbl_8047AAFC + used;
     if (*(u8*)&lbl_8047AB11 != 0) {
         u32 prefixLen = strlen((const char*)lbl_80401044);
-        for (i = 0; i < prefixLen; i++) {
-            buffer[i] = lbl_80401044[i];
-        }
+        memcpy(buffer, lbl_80401044, prefixLen);
         buffer += prefixLen;
     }
 
     message = (char*)lbl_80401058;
-    for (i = 0;; i++) {
-        buffer[i] = (u8)message[i];
-        if (message[i] == '\0') {
-            break;
-        }
-    }
+    memcpy(buffer, message, strlen(message) + 1);
 
     entries[lbl_8047AB08] = lineLength;
     lbl_8047AB08++;
