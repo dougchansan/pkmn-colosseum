@@ -7933,6 +7933,9 @@ asm void* fn_800F6D18(callback, arg, list)
 #include "src/game/gs_thread_fn_800F6D18.inc"
 }
 #else
+#pragma push
+#pragma optimization_level 3
+#pragma peephole off
 u8 *fn_800F6D18(arg0, arg1, arg2)
     u32 arg0;
     u32 arg1;
@@ -8047,6 +8050,7 @@ u8 *fn_800F6D18(arg0, arg1, arg2)
     GS_VM_PUSH(entry, arg1);
     return entry;
 }
+#pragma pop
 
 #endif
 
