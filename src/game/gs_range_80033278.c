@@ -601,7 +601,8 @@ typedef struct SysvarsOpponentSource {
     u16 field_14;
     u16 field_16;
     u16 field_18;
-    u32 field_1C;
+    u8 field_1C;
+    u8 pad_1D[3];
     u16 field_20;
     u8 pad_22[2];
     u8 field_24;
@@ -678,9 +679,9 @@ void fn_80034830(u8 enabled, u8 selection,
         if (moveIndex < 0) {
             *(u16*)destination->moves[i].data = 0;
         } else {
-            destination->moves[i] =
-                *(SysvarsMoveSnapshot*)(lbl_803A3334 + 0x514 +
-                                        moveIndex * 0x2A);
+            memcpy(destination->moves[i].data,
+                   lbl_803A3334 + 0x514 + moveIndex * 0x2A,
+                   sizeof(destination->moves[i].data));
         }
     }
 }
