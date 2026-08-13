@@ -1909,41 +1909,129 @@ void fn_801B5F08(ColTExpNode* texp, u32 sel_a, ColTExpNode* exp_a,
     }
 }
 
-/*
- * HSD_FullTextureSetup - 0x801B600C | Size: 0x4E0
- * Complete texture setup pipeline. Initializes GXTexObj,
- * configures wrap mode, filter settings, and loads the texture.
- * This is a large function because it handles all texture formats,
- * mipmap chains, and special texture types (TLUT, CI).
- */
-void fn_801B600C(HSD_TObj* tobj, u32 map_id) {
-    if (tobj == NULL) {
-        return;
+/* HSD_TExpAlphaInSub - 0x801B600C | Size: 0x4E0 */
+void fn_801B600C(ColTExpNode* tev, u32 sel, ColTExpNode* exp, s32 idx)
+{
+    ColTEArg prev;
+    u8 ksel;
+
+    prev = tev->a_in[idx];
+    tev->a_in[idx].sel = sel;
+    tev->a_in[idx].exp = exp;
+    tev->a_in[idx].type = ColTExpGetType(exp);
+    tev->a_in[idx].arg = 0xFF;
+
+    switch (sel) {
+    case 7:
+        tev->a_in[idx].type = COL_TE_ZERO;
+        tev->a_in[idx].arg = 7;
+        tev->a_in[idx].exp = NULL;
+        break;
+    case 8:
+    case 9:
+    case 10:
+    case 11:
+    case 12:
+    case 13:
+    case 14:
+    case 15:
+        tev->a_in[idx].exp = NULL;
+        tev->a_in[idx].arg = 6;
+        switch (sel) {
+        case 9:
+            ksel = 7;
+            break;
+        case 10:
+            ksel = 6;
+            break;
+        case 11:
+            ksel = 5;
+            break;
+        case 12:
+            ksel = 4;
+            break;
+        case 13:
+            ksel = 3;
+            break;
+        case 14:
+            ksel = 2;
+            break;
+        case 15:
+            ksel = 1;
+            break;
+        default:
+            ksel = 0;
+            break;
+        }
+        if (tev->kasel == 0xFF) {
+            tev->kasel = ksel;
+        } else if (tev->kasel != ksel) {
+            __assert(&lbl_8047DE70, 0x2EC, &lbl_8047DEA0);
+        }
+        tev->a_in[idx].type = 6;
+        break;
+    default:
+        switch (tev->a_in[idx].type) {
+        case COL_TE_ZERO:
+            tev->a_in[idx].exp = NULL;
+            tev->a_in[idx].type = COL_TE_ZERO;
+            tev->a_in[idx].sel = 7;
+            tev->a_in[idx].arg = 7;
+            break;
+        case COL_TE_TEV:
+            if (sel != 5) {
+                __assert(&lbl_8047DE70, 0x303, &lbl_8047DEA0);
+            }
+            if (idx != 3 && exp->a_clamp == 0) {
+                __assert(&lbl_8047DE70, 0x304, &lbl_8047DEA0);
+            }
+            if (ColTExpGetType(tev->a_in[idx].exp) == COL_TE_TEV) {
+                if (tev->a_in[idx].sel == 1) {
+                    tev->a_in[idx].exp->c_ref++;
+                } else {
+                    tev->a_in[idx].exp->a_ref++;
+                }
+            } else if (ColTExpGetType(tev->a_in[idx].exp) == COL_TE_CNST) {
+                ((ColTECnst*)tev->a_in[idx].exp)->ref++;
+            }
+            break;
+        case COL_TE_CNST:
+            if (sel != 5 && sel != 6) {
+                __assert(&lbl_8047DE70, 0x308, &lbl_8047DEA0);
+            }
+            if (((ColTECnst*)exp)->comp != 6) {
+                __assert(&lbl_8047DE70, 0x309, &lbl_8047DEA0);
+            }
+            tev->a_in[idx].sel = 6;
+            if (ColTExpGetType(tev->a_in[idx].exp) == COL_TE_TEV) {
+                if (tev->a_in[idx].sel == 1) {
+                    tev->a_in[idx].exp->c_ref++;
+                } else {
+                    tev->a_in[idx].exp->a_ref++;
+                }
+            } else if (ColTExpGetType(tev->a_in[idx].exp) == COL_TE_CNST) {
+                ((ColTECnst*)tev->a_in[idx].exp)->ref++;
+            }
+            break;
+        case COL_TE_TEX:
+            if (sel != 5) {
+                __assert(&lbl_8047DE70, 0x30E, &lbl_8047DEA0);
+            }
+            tev->a_in[idx].arg = 4;
+            break;
+        case COL_TE_RAS:
+            if (sel != 5) {
+                __assert(&lbl_8047DE70, 0x312, &lbl_8047DEA0);
+            }
+            tev->a_in[idx].arg = 5;
+            break;
+        default:
+            __assert(&lbl_8047DE70, 0x316, &lbl_8047DEA0);
+            break;
+        }
+        break;
     }
-
-    /* 1. Initialize texture object from image descriptor */
-    if (tobj->imagedesc != NULL) {
-        /* GXInitTexObj */
-    }
-
-    /* 2. Configure wrap mode */
-    /* GXInitTexObjWrapMode */
-
-    /* 3. Configure filter */
-    /* GXInitTexObjFilterMode */
-
-    /* 4. Configure LOD */
-    if (tobj->lod != NULL) {
-        /* GXInitTexObjLOD */
-    }
-
-    /* 5. Load TLUT if CI format */
-    if (tobj->tlut != NULL) {
-        /* GXLoadTlut */
-    }
-
-    /* 6. Load texture to GX */
-    /* GXLoadTexObj */
+    fn_801B750C(prev.exp, prev.sel);
 }
 
 /* HSD_TExpColorIn */
