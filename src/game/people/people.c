@@ -5237,7 +5237,7 @@ int fn_8018E1C4(PeopleEntry* entry, u32 groupId, u32 indexId, s32 objectId) {
         GSmodelEnableAnimBlend(entryModel);
     }
     floorDataBiosGetCurrentPtr();
-    useAlternateLight = groupId == 0 && (indexId == 100 || indexId == 101);
+    useAlternateLight = groupId != 0 || (indexId != 100 && indexId != 101);
     floorDataBiosGetCurrentPtr();
     shadowLight = (void*)floorDataBiosGetShadowLightID();
     if (shadowLight != NULL) {
@@ -5246,7 +5246,7 @@ int fn_8018E1C4(PeopleEntry* entry, u32 groupId, u32 indexId, s32 objectId) {
         shadowLight = (void*)lbl_8047B1F0[useAlternateLight];
     }
     GSmodelSetShadowFlags(entryModel, 1);
-    if (!useAlternateLight) {
+    if (useAlternateLight) {
         GSmodelSetShadowFlags(entryModel, 4);
     }
     GSmodelSetShadowLight(entryModel, shadowLight);
