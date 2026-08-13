@@ -3112,6 +3112,7 @@ void fn_800FD69C(arg0, arg1, arg2, arg3, arg4)
     s16 copyBytes;
     s16 clearBytes;
     s32 srcOffset;
+    s32 destOffset;
     s32 tileOffset;
     s32 texelOffset;
     s32 rowIndex;
@@ -3148,12 +3149,12 @@ void fn_800FD69C(arg0, arg1, arg2, arg3, arg4)
     clearBytes = (s16)((arg2 + 5) >> 1);
 
     for (row = -1; row < arg3 + 1; row++) {
-        rowPos = curY + row;
+        rowPos = *(s16 *)(lbl_80478B08 + 0x1A) + row;
         tileOffset = (rowPos >> 3) << 6;
         texelOffset = (rowPos & 7) << 3;
         xPos = -2;
         for (colIndex = 0; colIndex < clearBytes; colIndex++, xPos += 2) {
-            srcOffset = curX + xPos;
+            srcOffset = *(s16 *)(lbl_80478B08 + 0x18) + xPos;
             buffer[((tileOffset + (srcOffset >> 3)) << 5) +
                    (((srcOffset & 7) + texelOffset) >> 1)] = 0;
         }
@@ -3162,19 +3163,21 @@ void fn_800FD69C(arg0, arg1, arg2, arg3, arg4)
     copyBytes = (s16)(((arg2 + 1) & ~1) / 2);
     srcOffset = 0;
     for (rowIndex = 0; rowIndex < arg3; rowIndex++) {
-        rowPos = curY + rowIndex;
+        rowPos = *(s16 *)(lbl_80478B08 + 0x1A) + rowIndex;
         tileOffset = (rowPos >> 3) << 6;
         texelOffset = (rowPos & 7) << 3;
         srcRow = (u8 *)arg1 + srcOffset;
         xPos = 0;
         for (colIndex = 0; colIndex < copyBytes; colIndex++, xPos += 2) {
-            srcOffset = curX + xPos;
-            buffer[((tileOffset + (srcOffset >> 3)) << 5) +
-                   (((srcOffset & 7) + texelOffset) >> 1)] = srcRow[colIndex];
+            destOffset = *(s16 *)(lbl_80478B08 + 0x18) + xPos;
+            buffer[((tileOffset + (destOffset >> 3)) << 5) +
+                   (((destOffset & 7) + texelOffset) >> 1)] = srcRow[colIndex];
         }
         srcOffset = srcOffset + widthRounded;
     }
 
+    curX = *(s16 *)(lbl_80478B08 + 0x18);
+    curY = *(s16 *)(lbl_80478B08 + 0x1A);
     scaleX = *(f32 *)(arg0 + 0x60);
     scaleY = *(f32 *)(arg0 + 0x64);
     baseX = (f32)(s16)*(f32 *)(arg0 + 0x0C);
@@ -3191,6 +3194,8 @@ void fn_800FD69C(arg0, arg1, arg2, arg3, arg4)
 
     color = *(u32 *)(arg0 + 0x24);
     outlineAlpha = (((s32)(color & 0xFF) * 0xC0) / 0xFF) & 0xFF;
+
+    fn_800D6A00(7);
 
     switch (arg0[2]) {
     case 1:
