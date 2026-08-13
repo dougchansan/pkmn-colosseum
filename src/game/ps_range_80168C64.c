@@ -2617,7 +2617,7 @@ PSParticle* psInterpretParticle0(PSParticle* pp, PSParticle* parentCtx) {
                         f32 rng;
                         stream += 4;
                         rng = fn_801ADC7C();
-                        pp->repeatCount = (u16)(base + (s32)(((s32)(range ^ 0x8000)) * rng));
+                        pp->repeatCount = (u16)(base + (s32)((f32)range * rng));
                         break;
                     }
 
