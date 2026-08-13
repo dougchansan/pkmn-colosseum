@@ -226,7 +226,7 @@ void fn_8006C164(void);
 void fn_8006C5D8(void);
 void fn_8006C7D4(void* arg0, void* item);
 void fn_8006CCC0(void* arg0, void* arg1);
-void fn_8006D550(void);
+void fn_8006D550(void* window, void* sprite);
 void fn_8006D940(void* menu);
 void fn_8006D98C(void* menu);
 void fn_8006DAE4(void* arg0);
@@ -4127,10 +4127,10 @@ void fn_8006CCC0(void* arg0, void* arg1) {
 
 
 /* 0x8006D550 | size: 0x3F0 */
-void fn_8006D550(void) {
+void fn_8006D550(void* window, void* sprite) {
     extern void fn_8006A7E8();
     extern void menuCBBios_ControlerIDtoPortID();
-    extern void winSpriteGetDisp();
+    extern u8 winSpriteGetDisp(void*);
     extern void savedataGetStatus();
     extern void heroBiosGetSexDataId();
     extern void heroBiosGetRnd();
@@ -4142,7 +4142,7 @@ void fn_8006D550(void) {
     u32 r0 = 0;
     u32 r1 = (u32)sp;
     u32 r3 = 0;
-    u32 r4 = 0;
+    u32 r4 = (u32)sprite;
     u32 r5 = 0;
     u32 r6 = 0;
     u32 r7 = 0;
@@ -4162,13 +4162,11 @@ void fn_8006D550(void) {
 
     
     r31 = r4;
-    r3 = r31;
-    winSpriteGetDisp();
-    r0 = r3 & 0xFF;
+    r0 = (u32)winSpriteGetDisp((void*)r31);
     if (r0 == (u32)0x0) return;
     r3 = MENU_MIDDLE_S16_0006(r31)->unk_0006;
     r28 = 0x0;
-    /* subi r0, r3, 0xa4f */;
+    r0 = r3 - 0xA4F;
     if (r0 > (u32)0x27) return;
     r3 = (u32)jumptable_802EDFCC;
     r0 = r0 << 2;
