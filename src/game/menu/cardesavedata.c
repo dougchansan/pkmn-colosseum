@@ -772,10 +772,10 @@ s32 fn_8008102C(void** object_ref, const u32* descriptor, s32 index,
     case 48:
         record = object + index * 0x2A;
         *(u16*)(record + 0x514) = (u16)value;
+        tableEntry = (const u16*)(table + 0x6F0);
         for (i = 0; i < 0x2B; i++) {
-            for (j = 0; j < 9; j++) {
-                if (((const u16*)(table + 0x6F0))[i * 9 + j] ==
-                    (u8)value) {
+            for (j = 0; j < 9; j++, tableEntry++) {
+                if (*tableEntry == (u8)value) {
                     return 1;
                 }
             }
