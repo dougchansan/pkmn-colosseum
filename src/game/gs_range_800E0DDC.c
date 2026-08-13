@@ -553,7 +553,8 @@ u32 fn_800E1544(void)
     }
 
     block = (GSFreeBlock*)lbl_8047AB30;
-    while (block != 0 && block->next != 0) {
+    if (block != 0 && block->next != 0) {
+        do {
         u8* blockEnd = (u8*)block + block->size;
         if (blockEnd == (u8*)lbl_8047AB38) {
             block = block->next;
@@ -711,6 +712,7 @@ u32 fn_800E1544(void)
             }
         }
         block = (GSFreeBlock*)lbl_8047AB30;
+        } while (block != 0);
     }
 
     newLargest = 0;
