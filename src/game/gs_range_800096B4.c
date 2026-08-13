@@ -37,6 +37,7 @@ extern void* memcpy(void* dst, const void* src, u32 size);
 #define FN800096B4_CLAMP(v, lo, hi) \
     do { FN800096B4_CLAMP_MIN(v, lo); FN800096B4_CLAMP_MAX(v, hi); } while (0)
 
+#pragma peephole off
 s32 fn_800096B4(u32 arg0, s32 arg1, u8* arg2, u8* arg3, u8* arg4, u8* arg5) {
     extern u16 GSmsgGetGSchar();
     extern u16 fightTrainerGetStatus();
@@ -686,6 +687,7 @@ s32 fn_800096B4(u32 arg0, s32 arg1, u8* arg2, u8* arg3, u8* arg4, u8* arg5) {
 
 /* fn_8000BA94 - 0x8000BA94 | size: 0x24 */
 #pragma scheduling off
+#pragma peephole on
 s32 fn_8000BA94(void) {
     menuDbgItemCreate();
     return 0;
