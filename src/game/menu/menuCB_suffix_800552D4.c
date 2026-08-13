@@ -303,12 +303,12 @@ s32 fn_800552D4(s8 box, s8 slot)
         }
         if (alternatePokemon != NULL) {
             fn_800546F0(0);
-            while (fn_80054680() != 2) {
+            while (fn_80054680() == 2) {
                 _threadSwitch();
             }
             fn_800599AC(1);
             fn_800546C0(0);
-            while (fn_80054680() != 3) {
+            while (fn_80054680() == 3) {
                 _threadSwitch();
             }
         }
