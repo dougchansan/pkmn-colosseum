@@ -3854,6 +3854,8 @@ void psDispSubAppSRT(PSParticle* pp, Mtx parentMatrix) {
                 f32 peopleScale = people[17];
                 f32 peopleAngle = people[18];
                 f32 magnitude;
+                f32 cosVertical;
+                f32 sinVertical;
 
                 if (peopleScale < lbl_8047D5C8) {
                     peopleScale = -peopleScale;
@@ -3863,16 +3865,16 @@ void psDispSubAppSRT(PSParticle* pp, Mtx parentMatrix) {
                 }
                 magnitude = (horizontal * (f32)tan(peopleAngle) + peopleScale) *
                     pp->velocityY;
-                previous.x = people[8] + vertical * cosFriction +
+                cosVertical = magnitude * (f32)cos(vertical);
+                sinVertical = magnitude * (f32)sin(vertical);
+                previous.x = people[8] + cosVertical * cosFriction +
                     horizontal * sinFriction;
-                previous.y = people[9] +
-                    cosFriction * (horizontal * sinScale) +
-                    sinFriction * (-magnitude * sinScale) +
-                    magnitude * (f32)sin(vertical) * cosScale;
-                previous.z = people[10] +
-                    cosFriction * (horizontal * cosScale) +
-                    sinFriction * (-magnitude * cosScale) -
-                    magnitude * (f32)sin(vertical) * sinScale;
+                previous.y = people[9] + cosFriction *
+                    (horizontal * sinScale) + sinFriction *
+                    (-cosVertical * sinScale) + sinVertical * cosScale;
+                previous.z = people[10] + cosFriction *
+                    (horizontal * cosScale) + sinFriction *
+                    (-cosVertical * cosScale) - sinVertical * sinScale;
             } else {
                 previous.x = pp->positionX;
                 previous.y = pp->positionY;
@@ -3950,6 +3952,8 @@ void psDispSubAppSRT(PSParticle* pp, Mtx parentMatrix) {
                 f32 peopleScale = people[17];
                 f32 peopleAngle = people[18];
                 f32 magnitude;
+                f32 cosVertical;
+                f32 sinVertical;
 
                 if (peopleScale < lbl_8047D5C8) {
                     peopleScale = -peopleScale;
@@ -3959,16 +3963,16 @@ void psDispSubAppSRT(PSParticle* pp, Mtx parentMatrix) {
                 }
                 magnitude = (horizontal * (f32)tan(peopleAngle) + peopleScale) *
                     pp->velocityY;
-                previous.x = people[8] + vertical * cosFriction +
+                cosVertical = magnitude * (f32)cos(vertical);
+                sinVertical = magnitude * (f32)sin(vertical);
+                previous.x = people[8] + cosVertical * cosFriction +
                     horizontal * sinFriction;
-                previous.y = people[9] +
-                    cosFriction * (horizontal * sinScale) +
-                    sinFriction * (-magnitude * sinScale) +
-                    magnitude * (f32)sin(vertical) * cosScale;
-                previous.z = people[10] +
-                    cosFriction * (horizontal * cosScale) +
-                    sinFriction * (-magnitude * cosScale) -
-                    magnitude * (f32)sin(vertical) * sinScale;
+                previous.y = people[9] + cosFriction *
+                    (horizontal * sinScale) + sinFriction *
+                    (-cosVertical * sinScale) + sinVertical * cosScale;
+                previous.z = people[10] + cosFriction *
+                    (horizontal * cosScale) + sinFriction *
+                    (-cosVertical * cosScale) - sinVertical * sinScale;
             } else {
                 previous.x = pp->positionX;
                 previous.y = pp->positionY;
@@ -4695,6 +4699,20 @@ PSGeneratorState* psCreateGeneratorID(s32 linkNo, s32 bankIdx, s32 scriptId) {
             *(f32*) (raw + 0x58) = *(f32*) (entry + 0x34);
             *(f32*) (raw + 0x5C) = *(f32*) (entry + 0x38);
             break;
+        case 6:
+        case 7: {
+            f32 x = *(f32*) (entry + 0x30);
+            f32 y = *(f32*) (entry + 0x34);
+            if (x == lbl_8047D6B0 && y == lbl_8047D6B0) {
+                *(f32*) (raw + 0x54) = lbl_8047D6B0;
+                *(f32*) (raw + 0x58) = lbl_8047D6B8;
+            } else {
+                *(f32*) (raw + 0x54) = x;
+                *(f32*) (raw + 0x58) = y;
+            }
+            *(f32*) (raw + 0x5C) = *(f32*) (entry + 0x38);
+            break;
+        }
         case 5: {
             f32 x = *(f32*) (entry + 0x30);
             f32 y = *(f32*) (entry + 0x34);
@@ -4721,20 +4739,6 @@ PSGeneratorState* psCreateGeneratorID(s32 linkNo, s32 bankIdx, s32 scriptId) {
             if (*(f32*) (entry + 0x38) < lbl_8047D6B0) {
                 *(u16*) (raw + 0x84) |= 4;
             }
-            break;
-        }
-        case 6:
-        case 7: {
-            f32 x = *(f32*) (entry + 0x30);
-            f32 y = *(f32*) (entry + 0x34);
-            if (x == lbl_8047D6B0 && y == lbl_8047D6B0) {
-                *(f32*) (raw + 0x54) = lbl_8047D6B0;
-                *(f32*) (raw + 0x58) = lbl_8047D6B8;
-            } else {
-                *(f32*) (raw + 0x54) = x;
-                *(f32*) (raw + 0x58) = y;
-            }
-            *(f32*) (raw + 0x5C) = *(f32*) (entry + 0x38);
             break;
         }
         case 8: {
