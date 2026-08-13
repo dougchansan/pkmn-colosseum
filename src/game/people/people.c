@@ -4361,11 +4361,23 @@ void fn_80189490(u32 groupId, u32 index) {
 extern void winMsgOpenFieldWithSE(s32, s32, s32, s32);
 
 void fn_80189990(u32 groupId, u32 index, s32 messageId) {
+    extern u32 floorCharacterBiosGetNameID(void*);
+    extern u32 charNameBiosGetHearFlag(u32);
+    extern u32 charNameBiosGetNameID(u32);
+    extern u8 fn_801902E0(s32);
+    extern void msgctrlSetValue(u32, u32);
+
     PeopleEntry* entry;
     PeopleEntry* stateEntry;
+    void* info;
+    u8* floorCharacter;
     u32 flags;
+    u32 nameIndex;
+    u32 hearFlag;
+    u32 nameMessageId;
     s32 messageValue;
 
+    messageValue = 0;
     entry = peopleFindBySelf(peopleFindSelf(groupId, index));
     if (entry != NULL) {
         stateEntry = peopleFindBySelf(peopleFindSelf(groupId, index));
@@ -4395,9 +4407,22 @@ void fn_80189990(u32 groupId, u32 index, s32 messageId) {
             }
         }
 
-        messageValue = fn_8018F4AC(peopleInfoBiosGetPtr(entry->scriptRef));
-    } else {
-        messageValue = 0;
+        info = peopleInfoBiosGetPtr(entry->scriptRef);
+        if (info != NULL) {
+            messageValue = fn_8018F4AC(info);
+        }
+
+        nameMessageId = 0xFA3;
+        floorCharacter = ((u8* (*)(u32, u32))fn_801170A4)(
+            entry->groupId, entry->index);
+        if (floorCharacter != NULL) {
+            nameIndex = floorCharacterBiosGetNameID(floorCharacter);
+            hearFlag = charNameBiosGetHearFlag(nameIndex);
+            if (hearFlag == 0 || fn_801902E0(hearFlag) == 1) {
+                nameMessageId = charNameBiosGetNameID(nameIndex);
+            }
+        }
+        msgctrlSetValue(0x59, nameMessageId);
     }
     winMsgOpenFieldWithSE(messageId, 1, 0, messageValue);
 }
