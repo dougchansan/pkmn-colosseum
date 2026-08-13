@@ -4096,6 +4096,9 @@ void psDispSubAPPSRTPoint(PSParticle* pp) {
     Mtx appMatrix;
     Vec velocity;
     Vec position;
+    f32 widthValue;
+    s32 width;
+    u8 rasterWidth;
 
     if (lbl_8047B12C != 0) {
         lbl_8047B12C = 0;
@@ -4140,11 +4143,11 @@ void psDispSubAPPSRTPoint(PSParticle* pp) {
     }
 
     {
-        f32 widthValue = pp->lerpValue > lbl_8047D5E0
+        widthValue = pp->lerpValue > lbl_8047D5E0
             ? lbl_8047D5D8
             : lbl_8047D5DC * pp->lerpValue;
-        s32 width = (s32)widthValue;
-        u8 rasterWidth = (u8)width;
+        width = (s32)widthValue;
+        rasterWidth = (u8)width;
 
         if (pp->flags & 0x100000) {
             if (lbl_8047B164 != rasterWidth) {
@@ -4249,6 +4252,19 @@ void psDispSubAPPSRTPoint(PSParticle* pp) {
         GX_FIFO_U8 = color.a;
         if (pp->flags & 0x400) {
             GX_FIFO_U8 = 1;
+        }
+
+        if ((pp->flags & 0x400) == 0) {
+            if (lbl_8047B168 != rasterWidth) {
+                lbl_8047B168 = rasterWidth;
+                fn_800B944C(width, 5);
+            }
+            fn_800B7D3C();
+            fn_800B7874(9, 1);
+            fn_800B928C(0xB8, 1, 1);
+            GX_FIFO_F32 = position.x;
+            GX_FIFO_F32 = position.y;
+            GX_FIFO_F32 = position.z;
         }
     }
 }
