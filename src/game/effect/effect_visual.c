@@ -3264,10 +3264,10 @@ u32 fn_8013CA48(void* ptr, u32 delta) {
     f32* randomZ;
     f32* randomAngle;
     f32* grid;
-    u32 rows;
-    u32 columns;
-    u32 row;
-    u32 column;
+    s32 rows;
+    s32 columns;
+    s32 row;
+    s32 column;
 
     if (ptr == NULL) {
         return 0;
@@ -3295,13 +3295,16 @@ u32 fn_8013CA48(void* ptr, u32 delta) {
     amplitude = t * (span * *(f32*)(p + 0xA0));
     grid = *(f32**)(p + 0x4);
     for (row = 0; row < rows; row++) {
-        rowAngleStep = angleStep / randomZ[row];
-        angle = randomAngle[row] + amplitude / randomZ[row];
+        rowAngleStep = angleStep / *randomZ;
+        angle = *randomAngle + amplitude / *randomZ;
         for (column = 0; column < columns; column++) {
-            grid[1] = *(f32*)(p + 0x4C) + randomX[row] * fn_800E0CA0(angle);
+            grid[1] = *(f32*)(p + 0x4C) + *randomX * fn_800E0CA0(angle);
             angle += rowAngleStep;
             grid += 3;
         }
+        randomX++;
+        randomZ++;
+        randomAngle++;
     }
 
     *(u16*)(p + 0xA4) = *(u16*)(p + 0xA4) + delta;
