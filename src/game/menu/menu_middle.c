@@ -237,7 +237,7 @@ void fn_8006E160(u32 r3);
 void fn_8006E188(void);
 void fn_8006E18C(void* menu);
 void fn_8006E258(void* menu);
-void fn_8006E338(void);
+void fn_8006E338(void* obj);
 
 typedef struct KeyInfo_8006BB34 {
     u8 pad0[4];
@@ -4850,7 +4850,7 @@ void fn_8006E258(void* menu) {
 
 
 /* 0x8006E338 | size: 0x460 */
-void fn_8006E338(void) {
+void fn_8006E338(void* obj) {
     extern void fn_8006A7E8();
     extern void menuCBBios_ControlerIDtoPortID();
     extern void fn_80070D84();
@@ -4879,7 +4879,7 @@ void fn_8006E338(void) {
     u32 r31 = 0;
 
     
-    r30 = r3;
+    r30 = (u32)obj;
     r0 = MENU_MIDDLE_U8_0002(r30)->unk_0002;
     r4 = (u32)&lbl_80267EA8;
     r3 = *(u32*)&lbl_8047E708;
