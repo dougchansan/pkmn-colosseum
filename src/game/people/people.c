@@ -3601,7 +3601,7 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
         }
 
         if (job == NULL) {
-            return 0;
+            goto done;
         }
 
         job->taskParam = ((PeopleOpenSlot*)slot)->taskParam;
@@ -3663,7 +3663,7 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
         }
 
         if (job == NULL) {
-            return 0;
+            goto done;
         }
 
         job->taskParam = ((PeopleOpenSlot*)slot)->taskParam;
@@ -3700,6 +3700,7 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
             result = 1;
         }
     }
+done:
     return result;
 }
 
