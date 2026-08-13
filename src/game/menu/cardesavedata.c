@@ -1991,11 +1991,7 @@ void fn_80084A8C(void) {
             r3 = 0x2f;
             r4 = 0x1;
             msgctrlSetValue();
-            r3 = 0x7;
-            r4 = 0x3d88;
-            r5 = 0x0;
-            r6 = 0x0;
-            ((void(*)(void))winMsgOpen)();
+            winMsgOpen(7, 0x3d88, 0, 0);
             f27 = *(f32*)&lbl_8047C1A8;
             f31 = *(f64*)&lbl_8047C1B0;
             r17 = 0x43300000;
