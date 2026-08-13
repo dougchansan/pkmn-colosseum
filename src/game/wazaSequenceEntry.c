@@ -616,6 +616,7 @@ u8 _wazaSequenceParticleEntryStart(void* entry) {
     f32 rotation[3];
     f32 scale[3];
     f32 temp[3];
+    f32 offset[3];
     u32 flags;
     s32 selector;
 
@@ -623,6 +624,9 @@ u8 _wazaSequenceParticleEntryStart(void* entry) {
     extern void GSmodelGetRotation(void* model, void* out);
     extern void GSpartGetTransform(void* part, void* pos, void* rot,
                                    void* scale);
+    extern void fn_800E0108(void* dst, void* lhs, void* rhs);
+    extern void GSvecAdd(void* dst, void* lhs, void* rhs);
+    extern f32 lbl_8047E34C;
 
     /*
      * Particle entries cannot start until their resource was loaded.  The
@@ -695,13 +699,13 @@ u8 _wazaSequenceParticleEntryStart(void* entry) {
     fn_80118CF4(*(void**)((u8*) node + 0x8C),
                 (flags >> 8) & 1,
                 (flags >> 10) & 1);
-    fn_80118F7C(*(void**)((u8*) node + 0x8C), position);
+    fn_80118F7C(*(void**)((u8*) node + 0x8C), offset);
     *(u32*)((u8*) node + 0x90) = 0;
 
     if ((node->flags & 4) != 0) {
-        clear__5GSvecFv(temp);
-        fn_80118F04(*(void**)((u8*) node + 0x8C), temp, 0, 0, 0);
-        fn_80118E8C(*(void**)((u8*) node + 0x8C), temp, 0, 0, 0);
+        clear__5GSvecFv(offset);
+        fn_80118F04(*(void**)((u8*) node + 0x8C), offset);
+        fn_80118E8C(*(void**)((u8*) node + 0x8C), offset);
 
         if ((node->flags & 8) != 0) {
             battleGridGetNormalisedScale(scale);
@@ -725,16 +729,80 @@ u8 _wazaSequenceParticleEntryStart(void* entry) {
         *(u32*)((u8*) node + 0x90) = 1;
     }
 
-    if ((node->flags & 0x10) != 0) {
-        set__5GSvecFfff(position, 0.0f, 0.0f, 0.0f);
-        fn_80118F04(*(void**)((u8*) node + 0x8C), position, 0, 0, 0);
-        fn_80118E8C(*(void**)((u8*) node + 0x8C), position, 0, 0, 0);
-    } else {
-        GSpartGetTransform(part, NULL, NULL, position);
-        set__5GSvecFfff(scale, 1.0f, 1.0f, 1.0f);
+    GSpartGetTransform(part, NULL, NULL, temp);
+    fn_800E0108(temp, temp, scale);
+
+    if (selector == 0) {
+        offset[0] *= scale[0] - lbl_8047E34C;
+        offset[1] *= scale[1] - lbl_8047E34C;
+        offset[2] *= scale[2] - lbl_8047E34C;
+        GSvecAdd(offset, position, offset);
+        fn_80118F04(*(void**)((u8*) node + 0x8C), offset);
+        fn_80118E8C(*(void**)((u8*) node + 0x8C), rotation);
         fn_80118DE0(*(void**)((u8*) node + 0x8C), scale,
                     (flags >> 5) & 1, (flags >> 9) & 1);
-        fn_80118F04(*(void**)((u8*) node + 0x8C), position, 0, 0, 0);
+    } else {
+        switch (selector) {
+        case 1:
+            offset[0] *= scale[0] - lbl_8047E34C;
+            offset[1] *= scale[1] - lbl_8047E34C;
+            offset[2] *= scale[2] - lbl_8047E34C;
+            fn_80118F04(*(void**)((u8*) node + 0x8C), offset);
+            fn_80118DE0(*(void**)((u8*) node + 0x8C), scale,
+                        (flags >> 5) & 1, (flags >> 9) & 1);
+            fn_80118E8C(*(void**)((u8*) node + 0x8C), rotation);
+            break;
+        case 2:
+            offset[0] *= scale[0] - lbl_8047E34C;
+            offset[1] *= scale[1] - lbl_8047E34C;
+            offset[2] *= scale[2] - lbl_8047E34C;
+            GSvecAdd(offset, offset, position);
+            fn_80118F04(*(void**)((u8*) node + 0x8C), offset);
+            fn_80118DE0(*(void**)((u8*) node + 0x8C), scale,
+                        (flags >> 5) & 1, (flags >> 9) & 1);
+            break;
+        case 3:
+            offset[0] *= temp[0] - lbl_8047E34C;
+            offset[1] *= temp[1] - lbl_8047E34C;
+            offset[2] *= temp[2] - lbl_8047E34C;
+            GSvecAdd(offset, offset, position);
+            fn_80118F04(*(void**)((u8*) node + 0x8C), offset);
+            fn_80118E8C(*(void**)((u8*) node + 0x8C), rotation);
+            break;
+        case 4:
+            offset[0] *= scale[0] - lbl_8047E34C;
+            offset[1] *= scale[1] - lbl_8047E34C;
+            offset[2] *= scale[2] - lbl_8047E34C;
+            fn_80118F04(*(void**)((u8*) node + 0x8C), offset);
+            fn_80118DE0(*(void**)((u8*) node + 0x8C), scale,
+                        (flags >> 5) & 1, (flags >> 9) & 1);
+            break;
+        case 5:
+            offset[0] *= temp[0] - lbl_8047E34C;
+            offset[1] *= temp[1] - lbl_8047E34C;
+            offset[2] *= temp[2] - lbl_8047E34C;
+            GSvecAdd(offset, offset, position);
+            fn_80118F04(*(void**)((u8*) node + 0x8C), offset);
+            break;
+        case 6:
+            offset[0] *= temp[0] - lbl_8047E34C;
+            offset[1] *= temp[1] - lbl_8047E34C;
+            offset[2] *= temp[2] - lbl_8047E34C;
+            fn_80118F04(*(void**)((u8*) node + 0x8C), offset);
+            fn_80118E8C(*(void**)((u8*) node + 0x8C), rotation);
+            break;
+        case 7:
+            offset[0] *= temp[0] - lbl_8047E34C;
+            offset[1] *= temp[1] - lbl_8047E34C;
+            offset[2] *= temp[2] - lbl_8047E34C;
+            fn_80118F04(*(void**)((u8*) node + 0x8C), offset);
+            break;
+        default:
+            if (fn_800057A8() == 2) {
+                fn_801D744C(1);
+            }
+            break;
+        }
     }
 
     GSpartFree(part);
