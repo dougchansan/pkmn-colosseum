@@ -417,7 +417,7 @@ void fn_8001EC08(s32 x, s32 y, s32 width, s32 height, u8 color, u8 dimColor) {
     s32 i;
 
     if (dimColor != 0) {
-        color /= 2;
+        color = (u8)((s32)color / 2);
     }
 
     corners[0].x = x + width;
