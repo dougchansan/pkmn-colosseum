@@ -1579,8 +1579,7 @@ void itemParamConvertOrigFormat(u8* dst, u8* src) {
     }
     stream = src + 6;
 
-    for (i = 0; i < 0x20; i++) {
-        row = &table[i];
+    for (i = 0, row = table; i < 0x20; i++, row++) {
         type = row->type;
         srcByte = src[row->srcOffset];
         maskByte = (u8)(row->mask >> 24);
