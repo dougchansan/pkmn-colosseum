@@ -1139,8 +1139,10 @@ void resolveIKJoint1(HSD_JObj* jobj) {
             height_sq = 0.0f;
         }
         axial_sq = (first_sq - height_sq) / dist_sq;
-        axial_len = axial_sq * JObj_InvSqrt(1.0e-10f + axial_sq);
-        height_len = height_sq * JObj_InvSqrt(1.0e-10f + height_sq);
+        axial_len =
+            axial_sq * JObjIKSqrtf(1.0F / (1.0e-10F + axial_sq));
+        height_len =
+            height_sq * JObjIKSqrtf(1.0F / (1.0e-10F + height_sq));
     } else {
         height_len = first_len;
     }
@@ -1155,7 +1157,8 @@ void resolveIKJoint1(HSD_JObj* jobj) {
     }
     PSVECScale(&bend_axis, &pole, height_len);
     PSVECAdd(&tmp, &pole, &tmp);
-    norm_scale = JObj_InvSqrt(1.0e-10f + PSVECDotProduct(&tmp, &tmp));
+    norm_scale = JObjIKSqrtf(
+        1.0F / (1.0e-10F + PSVECDotProduct(&tmp, &tmp)));
     PSVECScale(&tmp, &tmp, norm_scale);
 
     JObjMtx_StoreScaledColumn(jobj, 0, &tmp, scale.x);
