@@ -938,7 +938,17 @@ void fn_8002E460(void* mapCtx)
         mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, 0x0FA6); winSpriteSetDisp(fh, notB);
     }
 
-    if ((doneA & 0xFF) != 0 && (doneB & 0xFF) != 0) {
+    if ((doneA & 0xFF) == 0 || (doneB & 0xFF) == 0) {
+        /* ---- abort path (L_8002E9A8) ---- */
+        menuClose(0xDB);
+        lbl_8047A428 = (u32)-1;
+        lbl_8047A424 = (u32)-1;
+        lbl_8047A420 = (u32)-1;
+        fn_8010A420(state + 0xD18);
+        fn_8010A420(state + 0xCD0);
+        (*(u8*)&lbl_8047A410) = 1;
+        lbl_8047A42C = 2;
+    } else {
         /* ---- commit path (L_8002E9E4) ---- */
         u32* src;
         u32* dst;
@@ -964,16 +974,6 @@ void fn_8002E460(void* mapCtx)
         fadeSet(lbl_8047B9D0, 3);
         fadeCheck(1);
         menuClose(0xDB);
-    } else {
-        /* ---- abort path (L_8002E9A8) ---- */
-        menuClose(0xDB);
-        lbl_8047A428 = (u32)-1;
-        lbl_8047A424 = (u32)-1;
-        lbl_8047A420 = (u32)-1;
-        fn_8010A420(state + 0xD18);
-        fn_8010A420(state + 0xCD0);
-        (*(u8*)&lbl_8047A410) = 1;
-        lbl_8047A42C = 2;
     }
 }
 #endif
