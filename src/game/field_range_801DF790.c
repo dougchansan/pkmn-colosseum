@@ -670,8 +670,11 @@ void fn_801E075C(u16 partyIndex)
             break;
         }
         case 1: {
-            f32 timer = lbl_8047E3F4;
-            f32 endTime = lbl_8047E414;
+            f32 endTime;
+            f32 timer;
+
+            timer = lbl_8047E3F4;
+            endTime = lbl_8047E414;
 
             while (timer < endTime) {
                 timer += (f32)fn_800D3088() / (f32)fn_800D37CC();
