@@ -1936,6 +1936,8 @@ type_done:
 }
 #pragma optimization_level 4
 
+void fn_801B600C(ColTExpNode* tev, u32 sel, ColTExpNode* exp, s32 idx);
+
 /* HSD_TExpAlphaIn */
 void fn_801B5F08(ColTExpNode* texp, u32 sel_a, ColTExpNode* exp_a,
                  u32 sel_b, ColTExpNode* exp_b, u32 sel_c,
@@ -1946,6 +1948,10 @@ void fn_801B5F08(ColTExpNode* texp, u32 sel_a, ColTExpNode* exp_a,
     if (ColTExpGetType(texp) != COL_TE_TEV) {
         __assert(&lbl_8047DE70, 0x357, lbl_802753DC);
     }
+    fn_801B600C(texp, sel_a, exp_a, 0);
+    fn_801B600C(texp, sel_b, exp_b, 1);
+    fn_801B600C(texp, sel_c, exp_c, 2);
+    fn_801B600C(texp, sel_d, exp_d, 3);
 }
 
 /* HSD_TExpAlphaInSub - 0x801B600C | Size: 0x4E0 */
