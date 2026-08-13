@@ -315,13 +315,11 @@ u8 wazaSequenceEntryStart(void* entry) {
     extern void GSthreadSetArgs(void* thread, s32 priority, ...);
     extern void fn_80165668(u32 id, void* buffer, u32 size);
     extern s32 lbl_8047B408;
+    extern const char lbl_80279610[];
     WazaSequenceNode* node = entry;
-    WazaSequence* sequence = node->sequence;
-    WazaSequenceOwner* owner = sequence->owner;
-    u8 started = FALSE;
 
-    if ((sequence->flags & 0x2000) == 0 &&
-        (owner->flags & 1) == 0 &&
+    if ((node->sequence->flags & 0x2000) == 0 &&
+        (node->sequence->owner->flags & 1) == 0 &&
         node->kind != 5 && node->kind != 6 && node->kind != 1) {
         node->runtimeState = 2;
         node->currentTime = node->startTime;
@@ -330,21 +328,28 @@ u8 wazaSequenceEntryStart(void* entry) {
 
     switch (node->kind) {
     case 0:
-        if (node->resourceId < 0 || node->resourceId >= 4) {
-            break;
+        if (node->resourceId >= 0 && node->resourceId < 4) {
+            goto started;
         }
-        started = TRUE;
         break;
     case 2:
-        started = _wazaSequenceModelEntryStart(node);
+        if (_wazaSequenceModelEntryStart(node)) {
+            goto started;
+        }
         break;
     case 3:
-        started = _wazaSequenceParticleEntryStart(node);
+        if (_wazaSequenceParticleEntryStart(node)) {
+            goto started;
+        }
         break;
     case 4:
-        started = _wazaSequenceEffectEntryStart(node);
+        if (_wazaSequenceEffectEntryStart(node)) {
+            goto started;
+        }
         break;
-    case 5:
+    case 5: {
+        u8 started = FALSE;
+
         if ((node->runtimeFlags & 1) != 0) {
             if (lbl_8047B408 == 0) {
                 lbl_8047B408 = (s32)GSthreadCreate(0x15, 0x4E20, 0x2000,
@@ -358,62 +363,64 @@ u8 wazaSequenceEntryStart(void* entry) {
         } else {
             started = fn_80166AB8(node->resourceId, 0, 0);
         }
+        if (started) {
+            goto started_entry;
+        }
         break;
-    case 6:
+    }
+    case 6: {
+        WazaSequenceOwner* owner = node->sequence->owner;
+
         switch (node->resourceId) {
         case 0:
             fn_801DD078(owner);
-            started = TRUE;
-            break;
+            goto started;
         case 1:
             fn_801DD028(owner);
-            started = TRUE;
-            break;
+            goto started;
         case 2:
             fn_801DA4E8(owner, 0);
-            started = TRUE;
-            break;
+            goto started;
         case 3:
             fn_801DA4E8(owner, 1);
-            started = TRUE;
-            break;
+            goto started;
         case 4:
             GSmodelRemoveNull(owner->model);
-            started = TRUE;
-            break;
+            goto started;
         case 5:
             fn_801DCF00(owner);
-            started = TRUE;
-            break;
+            goto started;
         case 6:
             fn_801DCEA8(owner);
-            started = TRUE;
-            break;
+            goto started;
         case 7:
             fn_801DCFD8(owner);
-            started = TRUE;
-            break;
+            goto started;
         case 8:
             fn_801DCF84(owner);
-            started = TRUE;
-            break;
+            goto started;
         case 9:
-            if (sequence == owner->currentSequence) {
+            if (node->sequence == owner->currentSequence) {
                 fn_801DBC30(owner);
-                started = TRUE;
+                goto started;
             }
             break;
         }
         break;
     }
+    }
 
-    if (started) {
+    GSlogWrite(lbl_80279610);
+    node->runtimeState = 2;
+    return FALSE;
+
+started:
+    {
+started_entry:
         node->runtimeState = 1;
         node->currentTime = node->startTime;
         return TRUE;
     }
-    node->runtimeState = 2;
-    return FALSE;
 }
 
 /**
