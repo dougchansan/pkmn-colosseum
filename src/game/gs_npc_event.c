@@ -684,6 +684,58 @@ void fn_80031B4C(void) {
                         lbl_8047A42C = 5;
                     }
                     goto L_800323E4;
+                case 3:
+                    fn_801021F8(0xd9, 0);
+                    r28 = windowSearchID(0xd9);
+                    r29 = windowSearchItemID(r28, 0x10b2);
+                    if ((r28 != 0) && (r29 != 0)) {
+                        *(u32*)((u8*)r29 + 0x4C) = 0;
+                        winSpriteSetDisp(r29, 0);
+                    }
+
+                    *(u32*)(sp + 8) = 1;
+                    r28 = windowGetActiveID();
+                    menuOpenCustom(0xe3, r28, sp + 8, 0, 0, 0);
+
+                    r28 = windowSearchID(0xe3);
+                    r29 = windowSearchItemID(r28, 0x102a);
+                    if ((r28 != 0) && (r29 != 0)) {
+                        winSpriteSetDisp(r29, 1);
+                        *(u32*)((u8*)r29 + 0x4C) = 0x43d4;
+                    }
+
+                    r28 = windowSearchID(0xe3);
+                    r29 = windowSearchItemID(r28, 0x1029);
+                    if ((r28 != 0) && (r29 != 0)) {
+                        winSpriteSetDisp(r29, 1);
+                        *(u32*)((u8*)r29 + 0x4C) = 0x43d5;
+                    }
+
+                    windowCheckCursor(0xe3, 1);
+                    r29 = windowGetValue(0xe3);
+                    r26 = menuGetCursor(0xe3);
+                    menuClose(0xe3);
+                    if ((s32)r29 == -1) {
+                        r26 = -1;
+                    }
+
+                    r28 = windowSearchID(0xd9);
+                    r29 = windowSearchItemID(r28, 0x10b2);
+                    if ((r28 != 0) && (r29 != 0)) {
+                        *(u32*)((u8*)r29 + 0x4C) = 0;
+                        winSpriteSetDisp(r29, 0);
+                    }
+
+                    if ((s32)r26 == 0) {
+                        lbl_8047A42C = 2;
+                    } else if ((s32)r26 < 0) {
+                        if ((s32)r26 >= -1) {
+                            lbl_8047A42C = 2;
+                        }
+                    } else if ((s32)r26 < 2) {
+                        lbl_8047A42C = 0;
+                    }
+                    goto L_800323E4;
                 default:
                     break;
                 }
