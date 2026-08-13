@@ -1867,6 +1867,22 @@ void psSetupTev(PSParticle* pp) {
         fn_800B884C(1);
         fn_800BC6F0(0, 0, 0, 4);
         GXSetTevOp(0, 0);
+    } else if (state == 0x100000) {
+        fn_800BC8C8(2);
+        fn_800B884C(1);
+        fn_800BC6F0(0, 0, 0, 4);
+        fn_800BC1A0(0, 0xF, 6, 0xA, 0xF);
+        fn_800BC1E4(0, 7, 3, 5, 7);
+        fn_800BC1A0(1, 0xF, 8, 0, 0xF);
+        fn_800BC1E4(1, 7, 4, 0, 7);
+    } else if (state == 0x100480) {
+        fn_800BC8C8(2);
+        fn_800B884C(1);
+        fn_800BC6F0(0, 0, 0, 4);
+        fn_800BC1A0(0, 4, 2, 8, 0xF);
+        fn_800BC1E4(0, 2, 1, 4, 7);
+        fn_800BC1A0(1, 0xF, 0, 0xF, 0xF);
+        fn_800BC1E4(1, 7, 5, 0, 7);
     } else if (state == (s32)0x80000400) {
         fn_800BC8C8(2);
         fn_800B884C(1);
