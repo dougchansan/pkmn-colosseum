@@ -1432,7 +1432,7 @@ extern u32 lbl_8047D1A0;
 BOOL fn_80139AC4(void* ptr, u32 tick) {
     u8* p;
     u8* entry;
-    u16 frame;
+    u32 frame;
     u16 endFrame;
     u16 i;
     u16 count;
@@ -1445,15 +1445,12 @@ BOOL fn_80139AC4(void* ptr, u32 tick) {
     }
 
     endFrame = *(u16*)(p + 0x4A);
-    if (frame >= endFrame) {
-        return 0;
-    }
-
+    if (frame < endFrame) {
     count = *(u16*)(p + 0x44);
     entry = *(u8**)p;
     for (i = 0; i < count; i++, entry += 0x12E4) {
-        if (frame >= *(u16*)(entry + 0x12DC)) {
-            if (frame < *(u16*)(entry + 0x12DE)) {
+        if (frame >= *(u16*)(entry + 0x12DC) &&
+            frame < *(u16*)(entry + 0x12DE)) {
                 f32 random_offset[3];
                 f32 offset[3];
                 f32 fade;
@@ -1483,9 +1480,6 @@ BOOL fn_80139AC4(void* ptr, u32 tick) {
                     *(u8*)(entry + 0x12DB) = (u8)(p[0x5F] * fade);
                 }
                 *(u16*)(entry + 0x12E0) = 1;
-            } else {
-                *(u16*)(entry + 0x12E0) = 0;
-            }
         } else {
             *(u16*)(entry + 0x12E0) = 0;
         }
@@ -1493,6 +1487,7 @@ BOOL fn_80139AC4(void* ptr, u32 tick) {
 
     *(u16*)(p + 0x48) = frame + tick;
         return 1;
+    }
     }
     return 0;
 }
