@@ -273,7 +273,7 @@ void fn_80070428(void* arg0, void* menu);
 void fn_800704A4(void);
 void fn_800704A8(void);
 void fn_800704AC(void);
-void fn_800706C4(void);
+void fn_800706C4(void* menu, void* sprite);
 void fn_80070A9C(void* menu, void* sprite);
 void fn_80070D84(void);
 
@@ -7165,262 +7165,155 @@ void fn_800704AC(void) {
 
 
 /* 0x800706C4 | size: 0x3D8 */
-void fn_800706C4(void) {
-    extern void fn_8006AFC4();
-    extern void fn_8006B420();
-    extern void winSpriteSetDisp();
-    extern void savedataGetStatus();
-    extern u8 jumptable_802EE20C[];
-    u8 sp[0x20];
-    u32 r0 = 0;
-    u32 r3 = 0;
-    u32 r4 = 0;
-    u32 r29 = 0;
-    u32 r30 = 0;
-    u32 r31 = 0;
-    void (*ctr_fn)(void) = 0;
-    u32 ctr = 0;
+void fn_800706C4(void* menu, void* sprite) {
+    extern void* fn_8006B420(void);
+    extern u8* fn_8006AFC4(u8* p);
+    extern void winSpriteSetDisp(void* sprite, u8 visible);
+    extern void savedataGetStatus(s32 index, s32 slot);
+    extern void* windowSearchItemID(void* menu, s32 itemId);
+    extern u32 GSmsgGetRect(u32 messageId);
+    extern u8 fn_800767B8(void* heroCopy, void* data);
+    u32* selectedState = (u32*)&lbl_8047A5F0;
+    u32* selectedMessage = (u32*)&lbl_8047A5F4;
+    s8 state = (s8)MENU_MIDDLE_U8_0001(menu)->unk_0001;
+    s16 itemId;
+    s16 width;
+    s32 messageIndex;
 
-    
-    r29 = r3;
-    r30 = r4;
-    r0 = MENU_MIDDLE_U8_0001(r29)->unk_0001;
-    r0 = (s8)r0;
-    do {
-    if ((s32)r0 >= (s32)0x3) break;
-    if ((s32)r0 < (s32)0x0) {
-        break;
-    }
-    r0 = MENU_MIDDLE_U32_004C(r30)->unk_004C;
-    r4 = 0x0;
-    *(u32*)&lbl_8047A5F4 = r0;
-    ((void(*)(void))windowGetParam)();
-    /* subi r0, r3, 0xa8 */;
-    do {
-    if (r0 > (u32)0x43) break;
-    r3 = (u32)jumptable_802EE20C;
-    r0 = r0 << 2;
-    r3 = (u32)jumptable_802EE20C;
-    r0 = *(u32*)(r3 + r0);
-    ctr_fn = (void(*)(void))r0;
-    /* indirect jump via ctr */;
-    r3 = 0x3be5;
-    r0 = 0x1;
-    *(u32*)&lbl_8047A5F4 = r3;
-    *(u32*)&lbl_8047A5F0 = r0;
-    break;
+    if (state >= 0 && state < 3) {
+        *selectedMessage = MENU_MIDDLE_U32_004C(sprite)->unk_004C;
+        messageIndex = (s32)windowGetParam(menu, 0) - 0xA8;
+        switch (messageIndex) {
+        case 0:
+            *selectedMessage = 0x3BE5;
+            *selectedState = 1;
+            break;
+        case 5:
+            *selectedMessage = 0x3C2A;
+            *selectedState = 1;
+            break;
+        case 7:
+            *selectedMessage = 0x3C1C;
+            *selectedState = 1;
+            break;
+        case 8:
+            *selectedMessage = 0x3C52;
+            *selectedState = 1;
+            break;
+        case 9: {
+            u8* saveData;
+            void* entry;
 
-
-    *(u32*)&lbl_8047A5F4 = r3;
-    *(u32*)&lbl_8047A5F0 = r0;
-    break;
-
-
-    *(u32*)&lbl_8047A5F4 = r3;
-    *(u32*)&lbl_8047A5F0 = r0;
-    break;
-
-
-    *(u32*)&lbl_8047A5F4 = r3;
-    *(u32*)&lbl_8047A5F0 = r0;
-    break;
-
-
-    *(u32*)&lbl_8047A5F4 = r3;
-    *(u32*)&lbl_8047A5F0 = r0;
-    break;
-
-
-    *(u32*)&lbl_8047A5F4 = r3;
-    *(u32*)&lbl_8047A5F0 = r0;
-    break;
-
-
-    *(u32*)&lbl_8047A5F4 = r3;
-    *(u32*)&lbl_8047A5F0 = r0;
-    break;
-
-
-    *(u32*)&lbl_8047A5F4 = r3;
-    *(u32*)&lbl_8047A5F0 = r0;
-    break;
-
-
-    *(u32*)&lbl_8047A5F4 = r3;
-    *(u32*)&lbl_8047A5F0 = r0;
-    break;
-
-
-    *(u32*)&lbl_8047A5F4 = r3;
-    *(u32*)&lbl_8047A5F0 = r0;
-    break;
-
-
-    *(u32*)&lbl_8047A5F4 = r3;
-    *(u32*)&lbl_8047A5F0 = r0;
-    break;
-
-
-    *(u32*)&lbl_8047A5F4 = r3;
-    *(u32*)&lbl_8047A5F0 = r0;
-    break;
-
-
-    if (r3 == (u32)0x0) break;
-    fn_8006B420();
-    r31 = r3;
-    r3 = 0x0;
-    r4 = 0xe;
-    savedataGetStatus();
-    fn_8006AFC4();
-    r4 = r31;
-    r3 = r3 + 0xb44;
-    ((void(*)(void))fn_800767B8)();
-    r0 = r3 & 0xFF;
-    if (r0 == (u32)0x0) break;
-    r3 = 0x3bfc;
-    r0 = 0x2;
-    *(u32*)&lbl_8047A5F4 = r3;
-    *(u32*)&lbl_8047A5F0 = r0;
-    break;
-    } while (0);
-    r0 = 0x0;
-    *(u32*)&lbl_8047A5F4 = r0;
-    *(u32*)&lbl_8047A5F0 = r0;
-    } while (0);
-    r3 = *(u32*)&lbl_8047A5F4;
-    ((void(*)(void))GSmsgGetRect)();
-    r0 = MENU_MIDDLE_S16_0006(r30)->unk_0006;
-    r3 = (u32)r3 >> 16;
-    /* subi r3, r3, 0x20 */;
-    r31 = (s16)r3;
-    if ((s32)r0 != (s32)0x939) {
-        if ((s32)r0 < (s32)0x939) {
-            if ((s32)r0 != (s32)0x809) {
-                if ((s32)r0 < (s32)0x809) {
-                    if ((s32)r0 < (s32)0x808) {
-                        return;
-                    }
-                    if ((s32)r0 != (s32)0x937) {
-                        if ((s32)r0 < (s32)0x937) {
-                            return;
-                        }
-                        if ((s32)r0 != (s32)0xef8) {
-                            if ((s32)r0 < (s32)0xef8) {
-                                if ((s32)r0 != (s32)0xef6) {
-                                    if ((s32)r0 < (s32)0xef6) {
-                                        return;
-                                    }
-                                    if ((s32)r0 >= (s32)0xefa) return;
-                                    r0 = *(u32*)&lbl_8047A5F0;
-                                    r3 = r30;
-                                    r0 = 0x2 - r0;
-                                    r0 = __cntlzw(r0);
-                                    r0 = (u32)r0 >> 5;
-                                    r4 = r0 & 0xFF;
-                                    winSpriteSetDisp();
-                                    r0 = *(u32*)&lbl_8047A5F0;
-                                    if ((s32)r0 == (s32)0x2) {
-                                        r0 = *(u32*)&lbl_8047A5F4;
-                                    } else {
-
-                                        r0 = 0x0;
-                                    }
-                                    MENU_MIDDLE_U32_004C(r30)->unk_004C = r0;
-                                    return;
-                                        }
-                                r0 = *(u32*)&lbl_8047A5F0;
-                                r3 = r30;
-                                r0 = 0x1 - r0;
-                                r0 = __cntlzw(r0);
-                                r0 = (u32)r0 >> 5;
-                                r4 = r0 & 0xFF;
-                                winSpriteSetDisp();
-                                r0 = *(u32*)&lbl_8047A5F0;
-                                if ((s32)r0 == (s32)0x1) {
-                                    r0 = *(u32*)&lbl_8047A5F4;
-                                } else {
-
-                                    r0 = 0x0;
-                                }
-                                MENU_MIDDLE_U32_004C(r30)->unk_004C = r0;
-                                return;
-                                }
-                            r3 = r30;
-                            r4 = 0x0;
-                            winSpriteSetDisp();
-                            return;
-                                    }
-                        r0 = *(u32*)&lbl_8047A5F0;
-                        r3 = r30;
-                        r0 = 0x2 - r0;
-                        r0 = __cntlzw(r0);
-                        r0 = (u32)r0 >> 5;
-                        r4 = r0 & 0xFF;
-                        winSpriteSetDisp();
-                        return;
-                                    }
-                    r0 = *(u32*)&lbl_8047A5F0;
-                    r3 = r30;
-                    r0 = 0x2 - r0;
-                    r0 = __cntlzw(r0);
-                    r0 = (u32)r0 >> 5;
-                    r4 = r0 & 0xFF;
-                    winSpriteSetDisp();
-                    MENU_MIDDLE_U16_0054(r30)->unk_0054 = r31;
-                    return;
+            savedataGetStatus(0, 0xE);
+            saveData = fn_8006AFC4(NULL);
+            if (saveData != NULL) {
+                entry = fn_8006B420();
+                savedataGetStatus(0, 0xE);
+                saveData = fn_8006AFC4(NULL);
+                if (fn_800767B8(saveData + 0xB44, entry) != 0) {
+                    *selectedMessage = 0x3BFC;
+                    *selectedState = 2;
+                    break;
                 }
-                r0 = *(u32*)&lbl_8047A5F0;
-                r3 = r30;
-                r0 = 0x2 - r0;
-                r0 = __cntlzw(r0);
-                r0 = (u32)r0 >> 5;
-                r4 = r0 & 0xFF;
-                winSpriteSetDisp();
-                r3 = r29;
-                r4 = 0x938;
-                ((void(*)(void))windowSearchItemID)();
-                r0 = MENU_MIDDLE_S16_0050(r3)->unk_0050;
-                r0 = r31 + r0;
-                r0 = (s16)r0;
-                MENU_MIDDLE_U16_0050(r30)->unk_0050 = r0;
-                return;
-                                    }
-            r0 = *(u32*)&lbl_8047A5F0;
-            r3 = r30;
-            r0 = 0x1 - r0;
-            r0 = __cntlzw(r0);
-            r0 = (u32)r0 >> 5;
-            r4 = r0 & 0xFF;
-            winSpriteSetDisp();
-            return;
-                                    }
-        r0 = *(u32*)&lbl_8047A5F0;
-        r3 = r30;
-        r0 = 0x1 - r0;
-        r0 = __cntlzw(r0);
-        r0 = (u32)r0 >> 5;
-        r4 = r0 & 0xFF;
-        winSpriteSetDisp();
-        MENU_MIDDLE_U16_0054(r30)->unk_0054 = r31;
-        return;
-                        }
-    r0 = *(u32*)&lbl_8047A5F0;
-    r3 = r30;
-    r0 = 0x1 - r0;
-    r0 = __cntlzw(r0);
-    r0 = (u32)r0 >> 5;
-    r4 = r0 & 0xFF;
-    winSpriteSetDisp();
-    r3 = r29;
-    r4 = 0xef7;
-    ((void(*)(void))windowSearchItemID)();
-    r0 = MENU_MIDDLE_S16_0050(r3)->unk_0050;
-    r0 = r31 + r0;
-    r0 = (s16)r0;
-    MENU_MIDDLE_U16_0050(r30)->unk_0050 = r0;
+            }
+            *selectedMessage = 0;
+            *selectedState = 0;
+            break;
+        }
+        case 10:
+            *selectedMessage = 0x3D87;
+            *selectedState = 2;
+            break;
+        case 13:
+            *selectedMessage = 0x3C18;
+            *selectedState = 2;
+            break;
+        case 17:
+            *selectedMessage = 0x3C1A;
+            *selectedState = 2;
+            break;
+        case 20:
+            break;
+        case 23:
+            *selectedMessage = 0x3C5A;
+            *selectedState = 2;
+            break;
+        case 26:
+            *selectedMessage = 0x4402;
+            *selectedState = 2;
+            break;
+        case 35:
+            *selectedMessage = 0x3D32;
+            *selectedState = 1;
+            break;
+        case 46:
+            *selectedMessage = 0x3BFC;
+            *selectedState = 2;
+            break;
+        case 67:
+            *selectedMessage = 0x44C7;
+            *selectedState = 2;
+            break;
+        default:
+            *selectedMessage = 0;
+            *selectedState = 0;
+            break;
+        }
+    }
 
-    return;
+    width = (s16)(((u32)GSmsgGetRect(*selectedMessage) >> 16) - 0x20);
+    itemId = MENU_MIDDLE_S16_0006(sprite)->unk_0006;
+
+    switch (itemId) {
+    case 0x808:
+        winSpriteSetDisp(sprite, *selectedState == 1);
+        MENU_MIDDLE_U16_0054(sprite)->unk_0054 = width;
+        return;
+    case 0x809:
+        winSpriteSetDisp(sprite, 0);
+        return;
+    case 0x937:
+        winSpriteSetDisp(sprite, *selectedState == 2);
+        return;
+    case 0x938:
+        winSpriteSetDisp(sprite, *selectedState == 2);
+        MENU_MIDDLE_U16_0054(sprite)->unk_0054 = width;
+        return;
+    case 0x939: {
+        MenuMiddleS16At0050* item;
+
+        winSpriteSetDisp(sprite, *selectedState == 2);
+        item = windowSearchItemID(menu, 0x938);
+        MENU_MIDDLE_U16_0050(sprite)->unk_0050 =
+            (u16)(width + item->unk_0050);
+        return;
+    }
+    case 0xEF6:
+        winSpriteSetDisp(sprite, *selectedState == 1);
+        MENU_MIDDLE_U32_004C(sprite)->unk_004C =
+            *selectedState == 1 ? *selectedMessage : 0;
+        return;
+    case 0xEF7:
+        winSpriteSetDisp(sprite, *selectedState == 1);
+        MENU_MIDDLE_U16_0054(sprite)->unk_0054 = width;
+        return;
+    case 0xEF8: {
+        MenuMiddleS16At0050* item;
+
+        winSpriteSetDisp(sprite, *selectedState == 1);
+        item = windowSearchItemID(menu, 0xEF7);
+        MENU_MIDDLE_U16_0050(sprite)->unk_0050 =
+            (u16)(width + item->unk_0050);
+        return;
+    }
+    case 0xEF9:
+        winSpriteSetDisp(sprite, *selectedState == 2);
+        MENU_MIDDLE_U32_004C(sprite)->unk_004C =
+            *selectedState == 2 ? *selectedMessage : 0;
+        return;
+    default:
+        return;
+    }
 }
 
 
