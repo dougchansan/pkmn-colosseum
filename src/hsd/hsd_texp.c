@@ -3572,6 +3572,12 @@ s32 fn_801B9320(ColTExpNode* tev)
                                 if (tev->chan == 0xFF) {
                                     tev->chan = child->chan;
                                 }
+                                if (tev->tex_swap == 0xFF) {
+                                    tev->tex_swap = child->tex_swap;
+                                }
+                                if (tev->ras_swap == 0xFF) {
+                                    tev->ras_swap = child->ras_swap;
+                                }
                                 TEXP_UNREF(child, child_sel);
                             }
                         }
@@ -3649,6 +3655,12 @@ s32 fn_801B9320(ColTExpNode* tev)
                                 }
                                 if (tev->chan == 0xFF) {
                                     tev->chan = child->chan;
+                                }
+                                if (tev->tex_swap == 0xFF) {
+                                    tev->tex_swap = child->tex_swap;
+                                }
+                                if (tev->ras_swap == 0xFF) {
+                                    tev->ras_swap = child->ras_swap;
                                 }
                                 TEXP_UNREF(child, child_sel);
                             }
