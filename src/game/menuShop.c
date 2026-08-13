@@ -2810,7 +2810,7 @@ L_CB40:
             /* default-mode close path: confirm-state query then optional restore */
             if (fn_801D0748(4, 2, 0) != 4) {
                 u32 snap = savedataGetStatus((u8*)0, 3);
-                memcpy((void*)lbl_8047A3DC, (const void*)snap, 0x7198);
+                memcpy((void*)snap, (const void*)lbl_8047A3DC, 0x7198);
                 heroSetStatus((u8*)0, 0xd, lbl_8047A3D8);
             }
             r25 = 1;
