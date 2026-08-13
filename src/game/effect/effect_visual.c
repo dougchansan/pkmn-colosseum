@@ -3505,13 +3505,14 @@ typedef struct BlurRenderState {
 
 u32 fn_8013D0A8(void* ptr, void* arg) {
     BlurRenderState* state = arg;
-    BlurRenderDObj* dobj = fn_8019FF48(*(void**)((u8*)ptr + 0x8));
+    BlurRenderDObj* dobj;
     BlurRenderPObj* pobj;
+    void* mobj;
     BlurRenderStage* stage;
     u32 found9 = 0;
     u32 found10 = 0;
-    u32 found11 = 0;
     u32 found13 = 0;
+    u32 found11 = 0;
     u32 stage_index;
     u32 strip;
     u32 row;
@@ -3519,21 +3520,30 @@ u32 fn_8013D0A8(void* ptr, void* arg) {
     u16 vertex_count;
     u16 span;
 
-    if (dobj == NULL) {
+    dobj = fn_8019FF48(*(void**)((u8*)ptr + 0x8));
+    if (dobj != NULL) {
+        pobj = dobj->pobj;
+    } else {
+        pobj = NULL;
+    }
+    if (dobj != NULL) {
+        mobj = dobj->mobj;
+    } else {
+        mobj = NULL;
+    }
+    if (mobj != NULL) {
+        HSD_MObjSetFlags(mobj, 0x40000000);
+        HSD_MObjCompileTev(mobj);
+    }
+    if (pobj == NULL) {
+        return 0;
+    }
+    stage = pobj->stages;
+    if (stage == NULL) {
         return 0;
     }
 
-    if (dobj->mobj != NULL) {
-        HSD_MObjSetFlags(dobj->mobj, 0x40000000);
-        HSD_MObjCompileTev(dobj->mobj);
-    }
-
-    pobj = dobj->pobj;
-    if (pobj == NULL || pobj->stages == NULL) {
-        return 0;
-    }
-
-    for (stage = pobj->stages; stage->kind != 0xFF; stage++) {
+    for (; stage->kind != 0xFF; stage++) {
         switch (stage->kind) {
         case 9:
             found9 = 1;
