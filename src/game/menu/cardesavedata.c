@@ -3057,19 +3057,29 @@ void fn_80084A8C(void) {
             r3 = 0x0;
             return;
         }
-        /* extrwi tmp, r3, 4, 24 */;
-        if (tmp <= 7) {
-            r3 = (u32)jumptable_802EEB78;
-            tmp = tmp << 2;
-            r3 = (u32)jumptable_802EEB78;
-            tmp = *(u32*)(r3 + tmp);
-            ctr_fn = (void(*)(void))tmp;
-            r17 = 0x1;
-
-
-        } else {
-        tmp = 0x0;
-        goto L_80085E1C;
+        tmp = (r3 >> 4) & 0xF;
+        switch (tmp) {
+        case 1:
+            r17 = 1;
+            break;
+        case 2:
+            r17 = 2;
+            break;
+        case 3:
+            r17 = 4;
+            break;
+        case 4:
+            r17 = 5;
+            break;
+        case 5:
+            r17 = 3;
+            break;
+        case 6:
+            r17 = 6;
+            break;
+        default:
+            tmp = 0;
+            goto L_80085E1C;
         }
         fn_80128E24();
         if (r3 != 0) {
