@@ -1478,6 +1478,7 @@ void fn_8009567C(u8* context, u8* sprite)
         fn_800FBB34(0, 0, x, y, color, 0xDE);
         break;
     case 0x149:
+    case 0x585:
         value = (s16)pokemonGetStatus(pokemon, 0, 0x8A, 0);
         fn_80132A38(0x34, value);
         fn_800FBB34(0, 0, x, y, color, 0xDE);
@@ -1559,11 +1560,8 @@ void fn_8009567C(u8* context, u8* sprite)
         fn_800FB680(0, 0, color, message);
         break;
     case 0x584:
-    case 0x585:
-        level = (u8)pokemonGetStatus(pokemon, 0, 0x7A, 0);
-        next_exp = fn_801229F4(pokemon, level + 1);
-        current_exp = pokemonGetStatus(pokemon, 0, 0x79, 0);
-        fn_80132A38(0x34, next_exp != 0 ? next_exp - current_exp : 0);
+        value = (s16)pokemonGetStatus(pokemon, 0, 0x8B, 0);
+        fn_80132A38(0x34, value);
         fn_800FBB34(0, 0, x, y, color, 0xDE);
         break;
     case 0x595:
