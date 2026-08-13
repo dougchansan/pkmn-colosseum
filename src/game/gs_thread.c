@@ -7338,7 +7338,7 @@ asm void fn_800F5CA0(void) {
 }
 #else
 #pragma push
-#pragma optimization_level 1
+#pragma optimization_level 0
 s32 fn_800F5CA0(arg0)
     u8 *arg0;
 {
