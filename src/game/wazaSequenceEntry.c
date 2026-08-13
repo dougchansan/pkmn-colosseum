@@ -654,11 +654,239 @@ u8 _wazaSequenceParticleEntryStart(void* entry) {
  */
 u8 _wazaSequenceModelEntryStart(void* entry) {
     WazaSequenceNode* node = entry;
+    WazaSequence* sequence = node->sequence;
+    WazaEffect* owner = sequence->owner;
+    void* ownerModel = owner->model;
+    void* model = node->model;
+    void* sourceModel = ownerModel;
+    WazaSequenceNode* linked;
+    GSpart* part;
+    f32 position[3];
+    f32 rotation[3];
+    f32 scale[3];
+    f32 temp[3];
+    u32 flags9c;
+    s32 selector;
 
-    /* A model entry cannot start until its model resource was created. */
-    if (node->model == NULL) {
+    extern void GSmodelGetPosition(void* model, void* out);
+    extern void GSmodelGetRotation(void* model, void* out);
+    extern void GSmodelSetPosition(void* model, void* position);
+    extern void GSmodelSetRotation(void* model, void* rotation);
+    extern void GSmodelSetScale(void* model, void* scale);
+    extern void* GSmodelGetBound(void* model);
+    extern void GSlerpGetLinearInterpolationVector(void* dst, void* src,
+                                                   void* target, f32 t);
+    extern void GSvecAdd(void* dst, void* lhs, void* rhs);
+    extern void fn_800E00E0(void* dst, void* src);
+    extern void GSmodelAttachToGSpart(void* model, void* part, s32 arg2,
+                                      s32 arg3, s32 arg4);
+    extern void GSmodelSetVisibility(void* model, u8 visible);
+    extern void fn_800E3CC8(void* model, u8 enable);
+    extern void GSmodelSet60fpsAnimFlag(void* model, u8 enable);
+    extern u8 GSmodelCanAnimate(void* model);
+    extern void GSmodelSetAnimIndex(void* model, s32 index);
+    extern void GSmodelSetAnimType(void* model, s32 type);
+    extern void GSmodelSetAnimRate(void* model, f32 rate);
+    extern void GSmodelSetAnimFrame(void* model, f32 frame);
+    extern void GSmodelStartAnimation(void* model);
+    extern u8 GSmodelCanTexAnimate(void* model);
+    extern void GSmodelSetTexAnimIndex(void* model, s32 index);
+    extern void GSmodelSetTexAnimType(void* model, s32 type);
+    extern void GSmodelSetTexAnimRate(void* model, f32 rate);
+    extern void GSmodelSetTexAnimFrame(void* model, f32 frame);
+    extern void GSmodelStartTexAnimation(void* model);
+    extern void GSmodelSetShadowFlags(void* model, u32 flags);
+    extern void GSmodelSetBoundCheck(void* model, u8 enable);
+    extern void fn_800E3B44(void* model, u8 enable);
+    extern const char lbl_80279694[];
+    extern const char lbl_802796CC[];
+    extern f32 lbl_8047E348;
+    extern f32 lbl_8047E34C;
+    extern f32 lbl_8047E350;
+
+    if (model == NULL) {
         return FALSE;
     }
+
+    if ((u32)node->positionType <= 7) {
+        selector = node->positionType;
+    } else {
+        selector = 0;
+    }
+
+    if ((node->flags & 1) != 0 && node->linkedEntryKey > 0) {
+        linked = fn_801DCDA8(sequence, node->linkedEntryKey);
+        if (linked != NULL && linked->startTime <= node->startTime &&
+            linked->kind == 2 && linked->model != NULL)
+        {
+            sourceModel = linked->model;
+            GSmodelForceAnimTransformUpdate(sourceModel);
+        }
+    }
+
+    GSmodelGetPosition(sourceModel, position);
+    GSmodelGetRotation(sourceModel, rotation);
+    fn_801D9950(sequence, scale, owner->scale_selector);
+    node->attached = 0;
+    flags9c = *(u32*)((u8*)node + 0x9C);
+
+    if ((node->flags & 4) != 0) {
+        if ((node->flags & 8) != 0) {
+            battleGridGetNormalisedScale(scale);
+            if ((node->flags & 0x10) != 0) {
+                scale[1] = lbl_8047E34C;
+            }
+            GSmodelSetScale(model, scale);
+        }
+    } else if (*(s32*)((u8*)node + 0x94) != 0) {
+        part = GSmodelGetPart(model, *(s32*)((u8*)node + 0x98));
+        GSmodelSetPosition(model, position);
+        GSmodelSetRotation(model, rotation);
+
+        if (selector != 7 && selector != 3 && selector != 5 && selector != 6)
+        {
+            GSmodelSetScale(model, scale);
+        }
+
+        if ((flags9c & 0x10) != 0) {
+            if (part != NULL && selector != 0) {
+                void* bound = GSmodelGetBound(ownerModel);
+
+                GSlerpGetLinearInterpolationVector(
+                    temp, (u8*)bound + 0x10, (u8*)bound + 0x1C, lbl_8047E348);
+                GSvecAdd(position, position, temp);
+                GSmodelSetPosition(model, position);
+                fn_800E00E0(temp, temp);
+                GSmodelAddNull(ownerModel, (GSvec*)temp, NULL, NULL);
+                GSmodelAttachToGSpart(ownerModel, part, selector, 0, 1);
+                node->attached = 1;
+            }
+            GSpartFree(part);
+        } else {
+            if (part != NULL && selector != 0) {
+                GSmodelAttachToGSpart(ownerModel, part, selector, 0, 1);
+                node->attached = 1;
+            }
+            GSpartFree(part);
+
+            switch (selector) {
+            case 0:
+            case 3:
+                GSmodelSetRotation(ownerModel, rotation);
+                GSmodelSetPosition(ownerModel, position);
+                break;
+            case 1:
+            case 6:
+                GSmodelSetRotation(ownerModel, rotation);
+                break;
+            case 2:
+            case 5:
+                GSmodelSetPosition(ownerModel, position);
+                break;
+            case 4:
+            case 7:
+                break;
+            default:
+                if (fn_800057A8() == 2) {
+                    fn_801D744C(1);
+                }
+                GSlogWrite(lbl_80279694);
+                break;
+            }
+        }
+    } else if (selector != 0) {
+        part = fn_801D97F0(node);
+        if (part != NULL) {
+            GSmodelAttachToGSpart(model, part, selector,
+                                  (node->flags >> 1) & 1, 1);
+            node->attached = 1;
+
+            switch (selector) {
+            case 1:
+                GSmodelSetScale(model, scale);
+                GSmodelSetRotation(model, rotation);
+                break;
+            case 2:
+                GSmodelSetScale(model, scale);
+                GSmodelSetPosition(model, position);
+                break;
+            case 3:
+                GSmodelSetPosition(model, position);
+                GSmodelSetRotation(model, rotation);
+                break;
+            case 4:
+                GSmodelSetScale(model, scale);
+                break;
+            case 5:
+                GSmodelSetPosition(model, position);
+                break;
+            case 6:
+                GSmodelSetRotation(model, rotation);
+                break;
+            case 7:
+                break;
+            default:
+                if (fn_800057A8() == 2) {
+                    fn_801D744C(1);
+                }
+                GSlogWrite(lbl_802796CC);
+                break;
+            }
+            GSpartFree(part);
+        }
+    }
+
+    GSmodelSetVisibility(model, 1);
+    fn_800E3CC8(model, flags9c & 1);
+    GSmodelSet60fpsAnimFlag(model, (flags9c >> 2) & 1);
+
+    if (*(s32*)((u8*)node + 0x88) >= 0) {
+        if (GSmodelCanAnimate(model)) {
+            GSmodelSetAnimIndex(model, *(s32*)((u8*)node + 0x88));
+            GSmodelSetAnimType(model, *(s32*)((u8*)node + 0x84));
+            GSmodelSetAnimRate(model, lbl_8047E348);
+            GSmodelSetAnimFrame(model, lbl_8047E350);
+            GSmodelStartAnimation(model);
+        } else {
+            if (fn_800057A8() == 2) {
+                fn_801D744C(0x200);
+            }
+            *(s32*)((u8*)node + 0x88) = -1;
+        }
+    }
+
+    if (*(s32*)((u8*)node + 0x88) != *(s32*)((u8*)node + 0x90) &&
+        *(s32*)((u8*)node + 0x90) >= 0)
+    {
+        if (GSmodelCanTexAnimate(model)) {
+            GSmodelSetTexAnimIndex(model, *(s32*)((u8*)node + 0x90));
+            GSmodelSetTexAnimType(model, *(s32*)((u8*)node + 0x8C));
+            GSmodelSetTexAnimRate(model, lbl_8047E348);
+            GSmodelSetTexAnimFrame(model, lbl_8047E350);
+            GSmodelStartTexAnimation(model);
+        } else {
+            if (fn_800057A8() == 2) {
+                fn_801D744C(0x400);
+            }
+            *(s32*)((u8*)node + 0x90) = -1;
+        }
+    }
+
+    if ((flags9c & 0x20) != 0 &&
+        wazaSequenceSysGetModelShadowLight__Fv() != 0 &&
+        wazaSequenceSysGetModelShadowCount__Fv() != 0)
+    {
+        void* shadowLight = (void*)wazaSequenceSysGetModelShadowLight__Fv();
+        void* shadowList = wazaSequenceSysGetModelShadowList__Fv();
+        s32 shadowCount = wazaSequenceSysGetModelShadowCount__Fv();
+
+        GSmodelSetShadowFlags(model, 1);
+        GSmodelSetShadowLight(model, shadowLight);
+        GSmodelSetShadowSurface(model, shadowCount, shadowList);
+        GSmodelSetBoundCheck(model, 1);
+        fn_800E3B44(model, 1);
+    }
+
     return TRUE;
 }
 
