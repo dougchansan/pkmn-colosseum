@@ -61,21 +61,29 @@ static void Read(void* address, u32 length, u32 offset,
 void __DVDInterruptHandler(__OSInterrupt interrupt, OSContext* context)
 {
     DVDLowCallback callback;
+    DVDLowCommand* commands;
+    DVDLowBuffer* previous;
+    DVDLowBuffer* current;
     OSContext exceptionContext;
     u32 cause;
     u32 reg;
     u32 mask;
     u32 intr;
+    BOOL processed;
+    s32 command;
 
     (void)interrupt;
 
+    commands = CommandList;
+    previous = (DVDLowBuffer*)((u8*)commands + 0xBC);
+    current = (DVDLowBuffer*)((u8*)commands + 0xC4);
     cause = 0;
     if (lbl_8047A7C0 != FALSE) {
         lbl_8047A7B0 = __OSGetSystemTime();
         lbl_804789B8 = FALSE;
-        DVD_PREV_BUFFER->address = DVD_CURR_BUFFER->address;
-        DVD_PREV_BUFFER->length = DVD_CURR_BUFFER->length;
-        DVD_PREV_BUFFER->offset = DVD_CURR_BUFFER->offset;
+        previous->address = current->address;
+        previous->length = current->length;
+        previous->offset = current->offset;
         if (StopAtNextInt == TRUE) {
             cause |= 8;
         }
@@ -137,23 +145,24 @@ void __DVDInterruptHandler(__OSInterrupt interrupt, OSContext* context)
     }
 
     if ((cause & 1) != 0) {
-        s32 command;
-
-        command = CommandList[NextCommandNumber].command;
+        processed = FALSE;
+        command = commands[NextCommandNumber].command;
         if (command == 1) {
-            DVDLowCommand* cmd = &CommandList[NextCommandNumber];
+            DVDLowCommand* cmd = &commands[NextCommandNumber];
             ++NextCommandNumber;
             Read(cmd->address, cmd->length, cmd->offset, cmd->callback);
-            return;
-        }
-        if (command == 2) {
-            DVDLowCommand* cmd = &CommandList[NextCommandNumber];
+            processed = TRUE;
+        } else if (command == 2) {
+            DVDLowCommand* cmd = &commands[NextCommandNumber];
             ++NextCommandNumber;
             DVDLowSeek(cmd->offset, cmd->callback);
+            processed = TRUE;
+        }
+        if (processed != FALSE) {
             return;
         }
     } else {
-        CommandList[0].command = -1;
+        commands[0].command = -1;
         NextCommandNumber = 0;
     }
 
