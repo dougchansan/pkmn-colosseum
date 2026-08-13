@@ -551,21 +551,32 @@ u32 fn_80100B24(GSFloorContext* ctx) {
     switch (ctx->isActive) {
     case 1:
         entry = ctx->floorDataEntry;
-        for (res = lbl_8047ACCC; res != NULL; res = next) {
-            next = res->next;
-            if (res->active != 1 || res->pending != 0) {
-                continue;
-            }
-            if (res->status == 0) {
-                ((GSFloorResInitFunc)res->callback)(entry, res->floorId);
-            }
-            if (res->status == 1) {
-                u32 groupId = floorDataBiosGetGroupID(entry);
+        if (ctx->doFadeOut == 0) {
+            for (res = lbl_8047ACCC; res != NULL; res = next) {
+                next = res->next;
+                if (res->active != 1 || res->pending != 0) {
+                    continue;
+                }
+                if (res->status == 0) {
+                    ((GSFloorResInitFunc)res->callback)(entry, res->floorId);
+                }
+                if (res->status == 1) {
+                    u32 groupId = floorDataBiosGetGroupID(entry);
 
-                res->textureHandle =
-                    fn_800F7318(res->priority, res->callback, 0x4000, 0, 0, 4,
-                                groupId, 0, 0, 0);
-                res->modelHandle = fn_800F7108(res->textureHandle);
+                    res->textureHandle = fn_800F7318(
+                        res->priority, res->callback, 0x4000, 0, 0, 4,
+                        groupId, 0, 0, 0);
+                    res->modelHandle = fn_800F7108(res->textureHandle);
+                }
+            }
+        } else {
+            for (res = lbl_8047ACCC; res != NULL; res = next) {
+                next = res->next;
+                if (res->active != 1 || res->pending != 0 ||
+                    res->status != 0) {
+                    continue;
+                }
+                ((GSFloorResInitFunc)res->callback)(entry, res->floorId);
             }
         }
         ctx->isActive = 2;
