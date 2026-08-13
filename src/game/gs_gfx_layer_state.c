@@ -694,9 +694,34 @@ void fn_800D6B00(void) {
             memcpy(shadow + 0x98, (void*)(state + 0x4ac), 0x18);
             memcpy(shadow + 0x80, (void*)(state + 0x4e8), 0x18);
             memcpy(shadow + 0x00, (void*)(state + 0x520), 0x80);
-            memcpy((void*)(state + 0x4ac), shadow + 0x148, 0x18);
+            *(u8*)(state + 0x4ac) = *(u8*)(shadow + 0x148);
+            *(u16*)(state + 0x4b0) = *(u16*)(shadow + 0x14c);
+            *(f32*)(state + 0x4b8) = *(f32*)(shadow + 0x154);
             memcpy((void*)(state + 0x4e8), shadow + 0x130, 0x18);
-            memcpy((void*)(state + 0x520), shadow + 0x0b0, 0x80);
+            *(u8*)(state + 0x520) = *(u8*)(shadow + 0x0b0);
+            *(u16*)(state + 0x522) = *(u16*)(shadow + 0x0b2);
+            *(f32*)(state + 0x528) = *(f32*)(shadow + 0x0b8);
+            *(u8*)(state + 0x530) = *(u8*)(shadow + 0x0c0);
+            *(u16*)(state + 0x532) = *(u16*)(shadow + 0x0c2);
+            *(f32*)(state + 0x538) = *(f32*)(shadow + 0x0c8);
+            *(u8*)(state + 0x540) = *(u8*)(shadow + 0x0d0);
+            *(u16*)(state + 0x542) = *(u16*)(shadow + 0x0d2);
+            *(f32*)(state + 0x548) = *(f32*)(shadow + 0x0d8);
+            *(u8*)(state + 0x550) = *(u8*)(shadow + 0x0e0);
+            *(u16*)(state + 0x552) = *(u16*)(shadow + 0x0e2);
+            *(f32*)(state + 0x558) = *(f32*)(shadow + 0x0e8);
+            *(u8*)(state + 0x560) = *(u8*)(shadow + 0x0f0);
+            *(u16*)(state + 0x562) = *(u16*)(shadow + 0x0f2);
+            *(f32*)(state + 0x568) = *(f32*)(shadow + 0x0f8);
+            *(u8*)(state + 0x570) = *(u8*)(shadow + 0x100);
+            *(u16*)(state + 0x572) = *(u16*)(shadow + 0x102);
+            *(f32*)(state + 0x578) = *(f32*)(shadow + 0x108);
+            *(u8*)(state + 0x580) = *(u8*)(shadow + 0x110);
+            *(u16*)(state + 0x582) = *(u16*)(shadow + 0x112);
+            *(f32*)(state + 0x588) = *(f32*)(shadow + 0x118);
+            *(u8*)(state + 0x590) = *(u8*)(shadow + 0x120);
+            *(u16*)(state + 0x592) = *(u16*)(shadow + 0x122);
+            *(f32*)(state + 0x598) = *(f32*)(shadow + 0x128);
 
             captureActive = *(u8*)(state + 0x47e);
             if (captureActive == 1) {
@@ -766,9 +791,33 @@ void fn_800D6B00(void) {
                 }
             }
 
-            memcpy((void*)(state + 0x4ac), shadow + 0x148, 0x18);
-            memcpy((void*)(state + 0x4e8), shadow + 0x130, 0x18);
-            memcpy((void*)(state + 0x520), shadow + 0x0b0, 0x80);
+            *(u8*)(state + 0x4ad) = *(u8*)(shadow + 0x149);
+            *(u16*)(state + 0x4b2) = *(u16*)(shadow + 0x14e);
+            *(f32*)(state + 0x4bc) = *(f32*)(shadow + 0x158);
+            *(u8*)(state + 0x521) = *(u8*)(shadow + 0x0b1);
+            *(u16*)(state + 0x524) = *(u16*)(shadow + 0x0b4);
+            *(f32*)(state + 0x52c) = *(f32*)(shadow + 0x0bc);
+            *(u8*)(state + 0x531) = *(u8*)(shadow + 0x0c1);
+            *(u16*)(state + 0x534) = *(u16*)(shadow + 0x0c4);
+            *(f32*)(state + 0x53c) = *(f32*)(shadow + 0x0cc);
+            *(u8*)(state + 0x541) = *(u8*)(shadow + 0x0d1);
+            *(u16*)(state + 0x544) = *(u16*)(shadow + 0x0d4);
+            *(f32*)(state + 0x54c) = *(f32*)(shadow + 0x0dc);
+            *(u8*)(state + 0x551) = *(u8*)(shadow + 0x0e1);
+            *(u16*)(state + 0x554) = *(u16*)(shadow + 0x0e4);
+            *(f32*)(state + 0x55c) = *(f32*)(shadow + 0x0ec);
+            *(u8*)(state + 0x561) = *(u8*)(shadow + 0x0f1);
+            *(u16*)(state + 0x564) = *(u16*)(shadow + 0x0f4);
+            *(f32*)(state + 0x56c) = *(f32*)(shadow + 0x0fc);
+            *(u8*)(state + 0x571) = *(u8*)(shadow + 0x101);
+            *(u16*)(state + 0x574) = *(u16*)(shadow + 0x104);
+            *(f32*)(state + 0x57c) = *(f32*)(shadow + 0x10c);
+            *(u8*)(state + 0x581) = *(u8*)(shadow + 0x111);
+            *(u16*)(state + 0x584) = *(u16*)(shadow + 0x114);
+            *(f32*)(state + 0x58c) = *(f32*)(shadow + 0x11c);
+            *(u8*)(state + 0x591) = *(u8*)(shadow + 0x121);
+            *(u16*)(state + 0x594) = *(u16*)(shadow + 0x124);
+            *(f32*)(state + 0x59c) = *(f32*)(shadow + 0x12c);
             *(u8*)(state + 0x18) = 0;
         } else {
             memcpy(shadow + 0x148, (void*)(state + 0x4ac), 0x18);
