@@ -212,7 +212,7 @@ extern u8* GScharCpy(u8* dst, u8* src);
 extern void GSmsgSetColor(void* obj);
 extern s32 GSmsgGetRect();
 extern void GSmsgInitRuby();
-extern s32 fn_800FAEF8();
+extern s32 fn_800FAEF8(s32, s32, s32, const char*, ...);
 extern s32 fn_800FB43C();
 extern s32 fn_800FB680();
 extern s32 fn_800FB8C8();
@@ -1459,26 +1459,84 @@ asm void fn_800FAEF8(void) {
 #include "src/game/gs_thread_fn_800FAEF8.inc"
 }
 #else
-s32 fn_800FAEF8(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, farg0, farg1, farg2, farg3, farg4, farg5, farg6, farg7, arg_sp8)
-    s32 arg0;
-    s32 arg1;
-    s32 arg2;
-    s32 arg3;
-    s32 arg4;
-    s32 arg5;
-    s32 arg6;
-    s32 arg7;
-    f64 farg0;
-    f64 farg1;
-    f64 farg2;
-    f64 farg3;
-    f64 farg4;
-    f64 farg5;
-    f64 farg6;
-    f64 farg7;
-    M2C_UNK arg_sp8;
+s32 fn_800FAEF8(s32 arg0, s32 arg1, s32 arg2, const char* fmt, ...)
 {
-    /* TODO: replace compile-only placeholder with real C decompilation. */
+    typedef struct __va_list_struct {
+        u8  gpr;
+        u8  fpr;
+        u16 padding;
+        u32* overflow_arg_area;
+        u32* reg_save_area;
+    } GSMsgVaList;
+    u8* formatted;
+    u16* message;
+    u8* work;
+    u8* mgr;
+    u8* fontEntry;
+    u32 texture;
+    s32 i;
+    f64 rubyBias;
+    GSMsgVaList args;
+
+    formatted = lbl_80401DE0 + 0x4D0;
+    message = (u16*)(lbl_80401DE0 + 0xD0);
+    work = lbl_80401DE0 + 0x5D0;
+    rubyBias = lbl_8047CD10;
+
+    __builtin_va_info(&args);
+    ((void (*)(char*, u32, const char*, void*))logVsnprintf_float)((char*)formatted, 0xFF, fmt, &args);
+    formatted[0xFF] = 0;
+    ((u32 (*)(u16*, const u8*))fn_80080ED8)(message, formatted);
+
+    memset(work, 0, 0x68);
+    work[0] = 1;
+    *(f32*)(work + 0x60) = lbl_8047CD08;
+    *(f32*)(work + 0x64) = lbl_8047CD08;
+    *(s32*)(work + 0x24) = arg2;
+    *(u32*)(work + 0x28) = (u32)message;
+    *(u32*)(work + 0x2C) = (u32)message;
+    *(u32*)(work + 0x30) = (u32)message;
+    *(u16*)(work + 0x20) = 2;
+    work[2] = 1;
+    *(f32*)(work + 0x04) = (f32)arg0;
+    *(f32*)(work + 0x08) = (f32)arg1;
+
+    mgr = (u8*)lbl_80478B08;
+    fontEntry = NULL;
+    for (i = 0; i < *(u16*)(mgr + 4); i++) {
+        u8* entry = *(u8**)(mgr + 0x24) + i * 8;
+        if (*(u16*)entry == *(u16*)(work + 0x20)) {
+            work[0x22] = entry[2];
+            work[0x23] = entry[3];
+            if (*(u16*)(work + 0x20) == 0) {
+                work[0x42] = 0x0B;
+            } else if (*(u16*)(work + 0x20) == 1) {
+                work[0x42] = 6;
+            } else {
+                rubyBias = lbl_8047CD28;
+                work[0x42] = (s8)((lbl_8047CD20 * (f64)entry[3]) + lbl_8047CD18);
+            }
+            fontEntry = entry;
+            break;
+        }
+    }
+
+    spriteSetEnv();
+    ((void (*)(s32))fn_800D9ED8)(1);
+    fn_800D88DC(3);
+    fn_800D888C(4);
+    fn_800D7820(lbl_80314F98);
+
+    texture = *(u32*)(mgr + ((s8)mgr[0x1D] * 4) + 0x0C);
+    ((void (*)(s32, u32))fn_800D85D4)(0, texture);
+    *(u32*)(mgr + 0x14) = (u32)((void* (*)(void*, u8))GStextureLockImage)((void*)texture, 0);
+
+    *(f32*)(work + 0x0C) = *(f32*)(work + 0x04);
+    *(f32*)(work + 0x10) = *(f32*)(work + 0x08);
+    GSmsgInitRuby(work);
+
+    (void)fontEntry;
+    (void)rubyBias;
     return 0;
 }
 
