@@ -222,7 +222,7 @@ void fn_8006B9B8(void* menu);
 void fn_8006BB34(void* menu);
 void fn_8006C018(void* menu);
 void fn_8006C0DC(void* menu);
-void fn_8006C164(void);
+void fn_8006C164(void* menu);
 void fn_8006C5D8(void);
 void fn_8006C7D4(void* arg0, void* item);
 void fn_8006CCC0(void* arg0, void* arg1);
@@ -2733,14 +2733,14 @@ void fn_8006C0DC(void* menu) {
 
 
 /* 0x8006C164 | size: 0x474 */
-void fn_8006C164(void) {
+void fn_8006C164(void* menu) {
     extern void fn_80166A28();
     extern u8 jumptable_802EDE78[];
     extern u8 jumptable_802EDEFC[];
     u8 sp[0x40];
     u32 r0 = 0;
     u32 r1 = (u32)sp;
-    u32 r3 = 0;
+    u32 r3 = (u32)menu;
     u32 r4 = 0;
     u32 r5 = 0;
     u32 r24 = 0;
