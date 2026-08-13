@@ -293,7 +293,7 @@ void fn_80031404(u8* arg0, u8* arg1) {
 
 /* 0x80031648 | 0x290 */
 extern void GSmsgGetRect(void);
-extern void pokemonBiosGetNicknamePtr(void);
+extern void* pokemonBiosGetNicknamePtr(void* pokemon);
 #if 0
 asm void fn_80031648(void) {
 #include "src/game/gs_npc_event_fn_80031648.inc"
@@ -609,7 +609,7 @@ void fn_80031B4C(void) {
     extern void floorLink();
     extern void floorGetPrevFloorID();
     extern void pokemonBiosSetFriend();
-    extern void pokemonBiosGetNicknamePtr();
+    extern void* pokemonBiosGetNicknamePtr(void* pokemon);
     extern void fadeCheck();
     extern void fadeSet();
     extern void fn_801D0314();
@@ -781,6 +781,30 @@ void fn_80031B4C(void) {
                     } else {
                         lbl_8047A42C = 7;
                     }
+                    goto L_800323E4;
+                case 13:
+                    r26 = heroGetStatus(lbl_803A2518 + 0x170, 1, 0);
+                    r28 = heroGetStatus(NULL, 3, (u16)lbl_8047A424);
+                    r29 = heroGetStatus(lbl_803A2518 + 0x170, 3,
+                                        (u16)lbl_8047A420);
+                    menuOpen(0xde, 0);
+                    menuModelInit(lbl_803A2518 + 0xd18, 0xe8, 0x11c);
+                    menuModelInit(lbl_803A2518 + 0xcd0, 0xe8, 0x11c);
+                    fn_80109C88(lbl_803A2518 + 0xd18, r28);
+                    fn_80109C88(lbl_803A2518 + 0xcd0, r29);
+                    r27 = (u32)pokemonBiosGetNicknamePtr((void*)r28);
+                    r28 = (u32)pokemonBiosGetNicknamePtr((void*)r29);
+                    msgctrlSetValue(0x4d, r26);
+                    msgctrlSetValue(0x32, r27);
+                    msgctrlSetValue(0x33, r28);
+                    fadeSet(2, lbl_8047B9D0);
+                    fadeCheck(1);
+                    winMsgOpen(2, 0x43d6, 1, 0);
+                    msgctrlSetValue(0x32, r27);
+                    msgctrlSetValue(0x33, r28);
+                    winMsgOpen(2, 0x43d8, 1, 0);
+                    winMsgClose(1);
+                    lbl_8047A42C = 14;
                     goto L_800323E4;
                 default:
                     break;
