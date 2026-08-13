@@ -3205,12 +3205,14 @@ alpha:
 s32 fn_801B9320(ColTExpNode* tev)
 {
     ColTExpNode* child;
+    ColTExpNode* src;
     s32 bias;
     s32 result;
     s32 merged;
     s32 i;
     s32 conflict;
     u8 type;
+    u8 sel;
     u8 child_sel;
     u8 new_op;
     ColTEArg tmp_arg;
@@ -3618,6 +3620,56 @@ s32 fn_801B9320(ColTExpNode* tev)
             result = 1;
         }
     } while (merged != 0);
+
+    for (i = 0; i < 4; i++) {
+        src = tev->c_in[i].exp;
+        sel = tev->c_in[i].sel;
+        if (tev->c_in[i].type == COL_TE_TEV && sel == COL_TE_RGB &&
+            src->c_op == 0 && src->c_in[0].sel == COL_TE_0 &&
+            src->c_in[1].sel == COL_TE_0 && src->c_bias == 0 &&
+            src->c_scale == 0)
+        {
+            switch (src->c_in[3].type) {
+            case 6:
+                if (tev->kcsel == 0xFF) {
+                    tev->kcsel = src->kcsel;
+                } else if (tev->kcsel != src->kcsel) {
+                    break;
+                }
+            case 5:
+                tev->c_in[i] = src->c_in[3];
+                fn_801B7BD4(tev->c_in[i].exp, tev->c_in[i].sel);
+                fn_801B750C(src, sel);
+                result = 1;
+                break;
+            }
+        }
+    }
+
+    for (i = 0; i < 4; i++) {
+        src = tev->a_in[i].exp;
+        sel = tev->a_in[i].sel;
+        if (tev->a_in[i].type == COL_TE_TEV && src->a_op == 0 &&
+            src->a_in[0].sel == COL_TE_0 &&
+            src->a_in[1].sel == COL_TE_0 && src->a_bias == 0 &&
+            src->a_scale == 0)
+        {
+            switch (src->a_in[3].type) {
+            case 6:
+                if (tev->kasel == 0xFF) {
+                    tev->kasel = src->kasel;
+                } else if (tev->kasel != src->kasel) {
+                    break;
+                }
+            case 5:
+                tev->a_in[i] = src->a_in[3];
+                fn_801B7BD4(tev->a_in[i].exp, tev->a_in[i].sel);
+                fn_801B750C(src, sel);
+                result = 1;
+                break;
+            }
+        }
+    }
 
     return result;
 }
