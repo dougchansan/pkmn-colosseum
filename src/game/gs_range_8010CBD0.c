@@ -743,15 +743,6 @@ s32 getCpPolyVec__FP5GSvecP5GSvecP5GSvecP5GSvec(
 }
 
 /* 0x8010E138 | 0x404 */
-#pragma push
-#pragma optimization_level 0
-#pragma optimizewithasm off
-s32 fn_8010E138(void* origin, void* direction) {
-    /* TODO: match -- 824 bytes at 0x8010E138 */
-}
-#pragma pop
-
-/* 0x8010E53C | 0x5EC */
 typedef struct GSFieldFixedMdlCell {
     u32 firstIndex;
     u32 count;
@@ -777,6 +768,15 @@ typedef struct GSFieldFixedMdlEventList {
     /* 0x20 */ f32 minZ;
 } GSFieldFixedMdlEventList;
 
+#pragma push
+#pragma optimization_level 0
+#pragma optimizewithasm off
+s32 fn_8010E138(void* origin, void* direction) {
+    /* TODO: match -- 824 bytes at 0x8010E138 */
+}
+#pragma pop
+
+/* 0x8010E53C | 0x5EC */
 typedef struct GSfieldEdgeMasks {
     u16 values[3];
 } GSfieldEdgeMasks;
@@ -991,7 +991,173 @@ s32 fn_8010E53C(Vec3f* point, void* data, f32 radius, Vec3f* result) {
 #pragma optimizewithasm off
 s32 fn_8010EB28(Vec3f* point, void* data, ColMtx inverse,
                 ColMtx forward, f32 radius, Vec3f* result) {
-    /* TODO: match -- 1212 bytes at 0x8010EB28 */
+    extern const f32 lbl_8047CF00;
+    extern const f32 lbl_8047CF04;
+    extern const f32 lbl_8047CF08[];
+    extern f32 PSVECSquareDistance(void* a, void* b);
+    ColDrawGroup* group;
+    GScolsys2Triangle* tri;
+    Vec3f transformedVerts[3];
+    Vec3f transformedNormal;
+    Vec3f planePoint;
+    Vec3f cp;
+    Vec3f lineCp;
+    Vec3f* currentVert;
+    Vec3f* otherVert;
+    u16 edgeMasksA[3];
+    u16 edgeMasksB[3];
+    u32 i;
+    s32 edge;
+    s32 next;
+    s32 hit;
+    f32 radiusSq;
+    f32 lineT;
+
+    group = data;
+    tri = (GScolsys2Triangle*)group->data;
+    radiusSq = radius * radius;
+
+    for (i = 0; i < group->count; i++, tri = (GScolsys2Triangle*)((u8*)tri + 0x34)) {
+        for (edge = 0; edge < 3; edge++) {
+            PSMTXMultVec(inverse, (const f32*)&tri->verts[edge],
+                         (f32*)&transformedVerts[edge]);
+        }
+        PSMTXMultVec(forward, (const f32*)&tri->normal, (f32*)&transformedNormal);
+
+        if (GScolsy2UtilGetSidePlanePoint(&transformedNormal, transformedVerts,
+                                          point) < lbl_8047CF00)
+        {
+            hit = 0;
+        } else {
+            GScolsy2UtilGetCpPlanePoint(&cp, &transformedNormal,
+                                        transformedVerts, point);
+            if (PSVECSquareDistance(&cp, point) >= radiusSq) {
+                hit = 0;
+            } else if (GScolsy2UtilChkInTri(&cp, transformedVerts,
+                                            &transformedNormal) == 0)
+            {
+                hit = 0;
+            } else {
+                lineCp = cp;
+                hit = 1;
+            }
+        }
+
+        if (hit != 0) {
+            if (result == NULL) {
+                return 1;
+            }
+            GScolsy2UtilGetPointExtentionLine(result, &lineCp, point,
+                                             lbl_8047CF08[0] + radius);
+            return 1;
+        }
+    }
+
+    edgeMasksA[0] = 1;
+    edgeMasksA[1] = 2;
+    edgeMasksA[2] = 4;
+
+    tri = (GScolsys2Triangle*)group->data;
+    for (i = 0; i < group->count; i++, tri = (GScolsys2Triangle*)((u8*)tri + 0x34)) {
+        if ((tri->flags & 7) == 0) {
+            continue;
+        }
+        for (edge = 0; edge < 3; edge++) {
+            PSMTXMultVec(inverse, (const f32*)&tri->verts[edge],
+                         (f32*)&transformedVerts[edge]);
+        }
+        PSMTXMultVec(forward, (const f32*)&tri->normal, (f32*)&transformedNormal);
+
+        if (GScolsy2UtilGetSidePlanePoint(&transformedNormal, transformedVerts,
+                                          point) < lbl_8047CF00)
+        {
+            hit = 0;
+        } else {
+            hit = 0;
+            currentVert = transformedVerts;
+            for (edge = 0; edge < 3; edge++, currentVert++) {
+                next = edge + 1;
+                if (next >= 3) {
+                    next = 0;
+                }
+                if ((tri->flags & edgeMasksA[edge]) == 0) {
+                    continue;
+                }
+                otherVert = &transformedVerts[next];
+                lineT = GScolsys2UtilGetCpLinePoint(&lineCp, currentVert,
+                                                    otherVert, point);
+                if (lineT < lbl_8047CF00 || lineT > lbl_8047CF04) {
+                    continue;
+                }
+                if (PSVECSquareDistance(&lineCp, point) < radiusSq) {
+                    hit = 1;
+                    break;
+                }
+            }
+        }
+
+        if (hit != 0) {
+            if (result == NULL) {
+                return 1;
+            }
+            GScolsy2UtilGetPointExtentionLine(result, &lineCp, point,
+                                             lbl_8047CF08[0] + radius);
+            return 1;
+        }
+    }
+
+    edgeMasksB[0] = 1;
+    edgeMasksB[1] = 2;
+    edgeMasksB[2] = 4;
+
+    tri = (GScolsys2Triangle*)group->data;
+    for (i = 0; i < group->count; i++, tri = (GScolsys2Triangle*)((u8*)tri + 0x34)) {
+        if ((tri->flags & 7) == 0) {
+            continue;
+        }
+        for (edge = 0; edge < 3; edge++) {
+            PSMTXMultVec(inverse, (const f32*)&tri->verts[edge],
+                         (f32*)&transformedVerts[edge]);
+        }
+        PSMTXMultVec(forward, (const f32*)&tri->normal, (f32*)&transformedNormal);
+
+        if (GScolsy2UtilGetSidePlanePoint(&transformedNormal, transformedVerts,
+                                          point) < lbl_8047CF00)
+        {
+            hit = 0;
+        } else {
+            hit = 0;
+            for (edge = 0; edge < 3; edge++) {
+                next = edge + 2;
+                if (next >= 3) {
+                    next -= 3;
+                }
+                if ((tri->flags & edgeMasksB[edge]) == 0 ||
+                    (tri->flags & edgeMasksB[next]) == 0)
+                {
+                    continue;
+                }
+                if (PSVECSquareDistance(&transformedVerts[edge], point) <
+                    radiusSq)
+                {
+                    lineCp = transformedVerts[edge];
+                    hit = 1;
+                    break;
+                }
+            }
+        }
+
+        if (hit != 0) {
+            if (result == NULL) {
+                return 1;
+            }
+            GScolsy2UtilGetPointExtentionLine(result, &lineCp, point,
+                                             lbl_8047CF08[0] + radius);
+            return 1;
+        }
+    }
+
+    return 0;
 }
 #pragma pop
 
