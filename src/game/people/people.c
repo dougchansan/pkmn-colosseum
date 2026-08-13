@@ -2090,6 +2090,16 @@ void fn_80184D80(PeopleEntry* entry)
     case 2:
         switch (fn_80185AAC(entry)) {
         case 2:
+            angle = lbl_8047D7A8 + entry->field_40;
+            linked = peopleFindBySelf(peopleFindSelf(entry->groupId, entry->index));
+            if (linked != NULL) {
+                fn_8018FC2C(linked, &rotation);
+                fullTurn = lbl_8047D7C0;
+                revolutions = (s32)(rotation.y / fullTurn);
+                linked->pad22 = 1;
+                linked->field_40 = angle + fullTurn * revolutions;
+                linked->field_44 = lbl_8047D79C;
+            }
             entry->subState = 2;
             break;
         case 1:
