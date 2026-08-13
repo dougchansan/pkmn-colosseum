@@ -1070,7 +1070,10 @@ void* fn_801DE418(u16 index) {
     extern u32 lbl_80478CC8;
     extern u8 lbl_80370840[];
     extern void* GSresGetResource(u32 group, u32 resource);
+    extern void* fn_801DB154(void);
+    extern void fn_801DB100(void* sequence);
     u8* entry;
+    u8* sequence;
     u32 group;
     u32 resourceId;
     void* resource;
@@ -1096,8 +1099,18 @@ void* fn_801DE418(u16 index) {
         return NULL;
     }
 
-    /* TODO: Allocate and initialize the effect from the loaded resource. */
-    return NULL;
+    sequence = fn_801DB154();
+    if (sequence == NULL) {
+        return NULL;
+    }
+    *(u16*)(sequence + 0x70) = index;
+    *(u16*)(sequence + 0x72) = group;
+    sequence[0x75] = 0;
+    if (sequenceLoad(sequence, resource) == 0) {
+        fn_801DB100(sequence);
+        return NULL;
+    }
+    return sequence;
 }
 #endif
 
