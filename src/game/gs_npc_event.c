@@ -1435,11 +1435,11 @@ void fn_800327FC(void)
         {
             s8 roster_slot = encounter->candidate_slots[selected_index];
             u32* source = (u32*)(lbl_803A3334 + roster_slot * 0x28 + 0x3AC);
-            u32* destination = (u32*)&display;
+            typedef struct NpcEventSetupData {
+                u32 words[10];
+            } NpcEventSetupData;
 
-            for (i = 0; i < 10; i++) {
-                destination[i] = source[i];
-            }
+            *(NpcEventSetupData*)&display = *(const NpcEventSetupData*)source;
         }
         result = (s32)fn_80032ED8((s32)&display, 0x209, 0);
     }
