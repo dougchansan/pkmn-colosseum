@@ -889,6 +889,9 @@ void* fn_80180694(void* src, void* dst, u32 size, u32 cbA, u32 cbB)
 }
 #pragma pop
 
+#pragma push
+#pragma optimization_level 3
+#pragma peephole off
 void* fn_801807A8(void* src, void* dst, u32 size)
 {
     GsRangeDVDQueueEntry* entry;
@@ -930,6 +933,7 @@ void* fn_801807A8(void* src, void* dst, u32 size)
     OSRestoreInterrupts(savedIntr);
     return entry;
 }
+#pragma pop
 
 void fn_801808E4(volatile GsRangeRequest* req)
 {
