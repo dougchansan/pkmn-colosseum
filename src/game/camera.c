@@ -226,7 +226,16 @@ void cameraUpdate(u32 captureIndex) {
                 camera = (GSRenderCamera*)GSresGetResource(0, 0);
             }
             break;
+        case 6:
+            _cameraPadMoveUpdate__FP9_GScamera(camera);
+            break;
+        case 8:
+            _cameraOffsetAnimeUpdate__FP9_GScamera(camera);
+            _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
+            return;
         }
+        fn_800D258C(camera);
+        _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
     }
 }
 #pragma pop
