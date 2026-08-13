@@ -4687,6 +4687,7 @@ PSGeneratorState* psCreateGeneratorID(s32 linkNo, s32 bankIdx, s32 scriptId) {
     }
     gen->familyId = familyId;
     gen->appSRT = NULL;
+    gen->pad17 = 0;
     gen->linkedJObj = NULL;
 
     raw = (u8*) gen;
@@ -4695,6 +4696,7 @@ PSGeneratorState* psCreateGeneratorID(s32 linkNo, s32 bankIdx, s32 scriptId) {
     gen->angleFlags = *(u16*) (entry + 0x00);
     gen->bankIndex = bankIdx;
     gen->linkNo = linkNo;
+    *(u16*) (raw + 0x8A) = (u16) scriptId;
     raw[0x16] = entry[0x02];
     gen->particleLife = *(u16*) (entry + 0x06);
     gen->maxLife = *(u16*) (entry + 0x04);
