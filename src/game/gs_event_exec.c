@@ -1289,12 +1289,44 @@ s32 fn_80014574(u8* ctx) {
                 lower = current - digit * place;
                 max_digit = 9;
                 probe = lower + place * 9;
-                while (probe > max_value) {
-                    max_digit--;
-                    if (max_digit < 0) {
-                        break;
-                    }
+                if (probe > max_value) {
+                    max_digit = 8;
                     probe -= place;
+                    if (probe > max_value) {
+                        max_digit = 7;
+                        probe -= place;
+                        if (probe > max_value) {
+                            max_digit = 6;
+                            probe -= place;
+                            if (probe > max_value) {
+                                max_digit = 5;
+                                probe -= place;
+                                if (probe > max_value) {
+                                    max_digit = 4;
+                                    probe -= place;
+                                    if (probe > max_value) {
+                                        max_digit = 3;
+                                        probe -= place;
+                                        if (probe > max_value) {
+                                            max_digit = 2;
+                                            probe -= place;
+                                            if (probe > max_value) {
+                                                max_digit = 1;
+                                                probe -= place;
+                                                if (probe > max_value) {
+                                                    max_digit = 0;
+                                                    probe -= place;
+                                                    if (probe > max_value) {
+                                                        max_digit = -1;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
                 digit++;
                 if (digit > max_digit) {
