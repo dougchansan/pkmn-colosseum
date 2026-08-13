@@ -1371,7 +1371,7 @@ s32 _wazaSequenceCameraSelectDuration__FUcPff(
 void _wazaSequenceCameraSelectMotion__FP13ModelSequenceP12WazaSequenceP24wazaSequenceCameraParams(
     void* modelSequence, void* wazaSequence, void* cameraParams)
 {
-    extern f32 fn_800E0BE4(u8, s32);
+    extern f32 fn_800E0BE4(void);
     extern s32 lbl_80478CD8;
     extern const f32 lbl_8047E1F4;
     u32 flags;
@@ -1440,7 +1440,7 @@ void _wazaSequenceCameraSelectMotion__FP13ModelSequenceP12WazaSequenceP24wazaSeq
         f32 random;
         f32 limit;
 
-        random = fn_800E0BE4(0, 0);
+        random = fn_800E0BE4();
         limit = interval;
         if (option0) {
             if (random < limit) {
