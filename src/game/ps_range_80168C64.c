@@ -2635,7 +2635,7 @@ PSParticle* psInterpretParticle0(PSParticle* pp, PSParticle* parentCtx) {
                     case 0xA7: {
                         u8 threshold = *stream++;
                         f32 rng = fn_801ADC7C();
-                        if (threshold < (s32)(0.5f * rng)) break;
+                        if (threshold < (s32)(lbl_8047D63C * rng)) break;
                         pp->repeatCount = 1;
                         delay = 1;
                         goto after_dispatch;
