@@ -1180,6 +1180,10 @@ u8 _leaffxGenerateLeafData(void* ptr, void* entry) {
     f32 heightBase;
     f32 radiusRange;
     f32 heightRange;
+    f32 sinPitch;
+    f32 sinYaw;
+    f32 cosPitch;
+    f32 cosYaw;
 
     p = ptr;
     e = entry;
@@ -1219,18 +1223,26 @@ u8 _leaffxGenerateLeafData(void* ptr, void* entry) {
 
     yaw = *(f32*)&lbl_8047D180 * fn_800E0BE4();
     pitch = *(f32*)&lbl_8047D184 * fn_800E0BE4();
+    sinPitch = (f32)sin(pitch);
+    sinYaw = (f32)sin(yaw);
+    cosPitch = (f32)cos(pitch);
+    cosYaw = (f32)cos(yaw);
     set__5GSvecFfff(vecA,
-                    (f32)sin(pitch) * (f32)cos(yaw),
-                    (f32)cos(pitch),
-                    (f32)sin(pitch) * (f32)sin(yaw));
+                    sinPitch * cosYaw,
+                    cosPitch,
+                    sinPitch * sinYaw);
     fn_800E0718((u8*)e + 0x30, vecA, *(f32*)&lbl_8047D180 * fn_800E0BE4());
 
     yaw = *(f32*)&lbl_8047D180 * fn_800E0BE4();
     pitch = *(f32*)&lbl_8047D184 * fn_800E0BE4();
+    sinPitch = (f32)sin(pitch);
+    sinYaw = (f32)sin(yaw);
+    cosPitch = (f32)cos(pitch);
+    cosYaw = (f32)cos(yaw);
     set__5GSvecFfff(vecB,
-                    (f32)sin(pitch) * (f32)cos(yaw),
-                    (f32)cos(pitch),
-                    (f32)sin(pitch) * (f32)sin(yaw));
+                    sinPitch * cosYaw,
+                    cosPitch,
+                    sinPitch * sinYaw);
     fn_800E0718((u8*)e + 0x40, vecB, *(f32*)&lbl_8047D180 * fn_800E0BE4());
 
     GSvecCopy(e, position);
