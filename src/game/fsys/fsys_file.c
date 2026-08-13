@@ -1935,7 +1935,11 @@ u32 fn_8017C8FC(FSYSSlot* slot) {
                     case 2:
                     case 7:
                         FSYS_SLOT_CURRENT_SUB(slot) = sub;
-                        FSYSScheduleSceneRead(slot, entry, sub);
+                        if ((entry->flags & FSYS_COMPRESSED_FLAG) != 0) {
+                            FSYSScheduleSceneRead(slot, entry, sub);
+                        } else {
+                            FSYSScheduleSceneRead(slot, entry, sub);
+                        }
                         break;
                     default:
                         break;
