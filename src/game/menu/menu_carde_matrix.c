@@ -381,7 +381,7 @@ void fn_8007C7EC(void) {
         r27 = r26 << 2;
         r4 = 0x20;
         tmp = r27 + 0x1f;
-        /* clrrwi r3, tmp, 5 */;
+        r3 = tmp & ~0x1F;
         ((void(*)(void))fn_800E2C04)();
         r28 = r3;
         tmp = r28 & 0xFFFF;
