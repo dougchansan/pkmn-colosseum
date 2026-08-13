@@ -881,6 +881,7 @@ void fn_80034FB0(void) {
 void fn_80034FB4(void) {
     extern u8 lbl_803A3278[];
     extern u32 lbl_8047A430;
+    extern u32 lbl_8047A434;
     extern u32 lbl_8047A444;
     extern u8 lbl_8047A438;
     extern u8 lbl_8047A439;
@@ -904,6 +905,8 @@ void fn_80034FB4(void) {
     extern void fn_800327FC(void);
     extern void fn_80034830(u8, u8, const void*);
     extern void fn_80034B5C(u8*, u8*, u8*);
+    extern void* fn_80082EA4(void*, s32, s32, s32);
+    extern void* fn_800836AC(void*, void*, s32);
     extern void fn_80166A28(u32);
     extern void fn_80165668(s32, s32, s32);
     extern void fn_801D0AFC(s32);
@@ -925,7 +928,10 @@ void fn_80034FB4(void) {
     u8* base = lbl_803A3278;
     void* save;
     void* pokemon;
+    u8* menuState = base + 0xBC;
+    u8* record;
     s32 result;
+    s32 code;
     s32 i;
     f32 progress;
     u8 value0;
@@ -1046,6 +1052,51 @@ void fn_80034FB4(void) {
                 lbl_8047A458 = 4;
             } else if (result == 1) {
                 lbl_8047A458 = 6;
+            } else if (*(s32*)menuState == 1) {
+                lbl_8047A458 = 7;
+            } else if (*(s32*)menuState == 0) {
+                lbl_8047A434 = (u32)fn_800836AC(
+                    savedataGetStatus(0, 0xD), menuState, 0);
+                code = 2;
+                if (lbl_8047A434 != 0) {
+                    record = (u8*)fn_80082EA4((void*)lbl_8047A434,
+                                              (s8)(menuState[0x58] - 1),
+                                              menuState[0x24], menuState[0x26]);
+                    code = 4;
+                    if (record[0xC] == 0) {
+                        code = 2;
+                    } else {
+                        value0 = 0;
+                        for (i = 0; i < (s32)lbl_8047A43C; i++) {
+                            if (base[i * 3] == menuState[8] &&
+                                (s8)base[i * 3 + 1] == (s8)menuState[0x24] &&
+                                (s8)base[i * 3 + 2] == (s8)menuState[0x26]) {
+                                value0 = 1;
+                                break;
+                            }
+                        }
+                        if (value0 == 0) {
+                            base[lbl_8047A43C * 3] = menuState[8];
+                            base[lbl_8047A43C * 3 + 1] = menuState[0x24];
+                            base[lbl_8047A43C * 3 + 2] = menuState[0x26];
+                            lbl_8047A43C++;
+                            if (lbl_8047A43C >= 5) {
+                                lbl_8047A43C = 4;
+                            }
+                        } else {
+                            code = 3;
+                        }
+                    }
+                }
+                if (code == 2) {
+                    lbl_8047A458 = 8;
+                } else if (code == 3) {
+                    lbl_8047A458 = 9;
+                } else if (code == 4) {
+                    lbl_8047A458 = 10;
+                } else {
+                    lbl_8047A458 = 4;
+                }
             }
             break;
         case 6:
