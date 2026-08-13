@@ -7031,7 +7031,13 @@ s32 fn_800F5404(void* obj) {
             }
         } else {
             /* index-based address resolution */
-            idx = r30 & 0x3F; /* clear upper bits */
+            if (*(u32*)(p+0x28) <= 0) {
+                GSlogWritef((const char*)(r31+0x14));
+                idx = *(u32*)(p+0x6C);
+            } else {
+                *(u32*)(p+0x28) = *(u32*)(p+0x28) - 1;
+                idx = *(u32*)(p + 0x6C + *(u32*)(p+0x28)*4);
+            }
             if (r30 & 0x20) {
                 if (r30 & 0x40) {
                     /* local stack relative, store address */
