@@ -4952,17 +4952,20 @@ int fn_8018E1C4(PeopleEntry* entry, u32 groupId, u32 indexId, s32 objectId) {
     PeopleEntry* stateEntry;
     PeopleEntry* linkedEntry;
     void* model;
+    void* entryModel;
     s32 i;
     s32 animIndex;
     s32 current;
     s32 secondary;
     u8 loop;
     u8 restart;
+    f32 frameCount;
 
     model = floorOpenObject(objectId, lbl_80273F90);
     if (model == NULL) {
         return 0;
     }
+    entryModel = model;
 
     GSresRegisterResource(groupId, indexId, 0);
     entry->modelHandle = model;
@@ -5064,7 +5067,26 @@ int fn_8018E1C4(PeopleEntry* entry, u32 groupId, u32 indexId, s32 objectId) {
     entry->walkNodeB = -1;
     entry->walkNodeC = -1;
     entry->moveType = PEOPLE_MOVE_NONE;
-    GSmodelSetBoundCheck(model, 0);
+    info = peopleInfoBiosGetPtr(entry->scriptRef);
+    if (info != NULL) {
+        fn_8018F4C8(info, 2, &animIndex, &loop);
+        if (animIndex != -1) {
+            GSmodelSetAnimIndex(entryModel, animIndex);
+            GSmodelGetFrameCount(entryModel, &frameCount, 0);
+            if (frameCount > lbl_8047D7A0) {
+                entry->field_34 = fn_8018F5CC(info) / frameCount;
+            }
+        }
+        fn_8018F4C8(info, 3, &animIndex, &loop);
+        if (animIndex != -1) {
+            GSmodelSetAnimIndex(entryModel, animIndex);
+            GSmodelGetFrameCount(entryModel, &frameCount, 0);
+            if (frameCount > lbl_8047D7A0) {
+                entry->field_38 = fn_8018F5B4(info) / frameCount;
+            }
+        }
+    }
+    GSmodelSetBoundCheck(entryModel, 0);
     return 1;
 }
 
