@@ -785,6 +785,11 @@ void fn_80034DC0(u8* arg0, u8* arg1) {
     extern u32 lbl_8047A44C;
     extern void fn_800FB680(s32, s32, u32, u16);
     extern void msgctrlSetValue(s32, s32);
+    extern void GScharCpy(void*, const void*);
+    extern void* fightFloorDataBiosGetPtr(u16);
+    extern const void* fightFloorDataBiosGetName(void*);
+    extern const void* GSmsgGetGSchar(const void*);
+    extern u8 lbl_8047BA1C[];
     extern void fn_800FBB34(s32, s32, s32, s32, u32, u16);
     u8 byte;
     s32 mask;
@@ -876,6 +881,7 @@ void fn_80034FB0(void) {
 void fn_80034FB4(void) {
     extern u8 lbl_803A3278[];
     extern u32 lbl_8047A430;
+    extern u32 lbl_8047A444;
     extern u8 lbl_8047A438;
     extern u8 lbl_8047A439;
     extern u32 lbl_8047A43C;
@@ -911,6 +917,11 @@ void fn_80034FB4(void) {
     extern u16 pokemonBiosGetItemDataId(void*);
     extern void pokemonBiosSetItemDataId(void*, u16);
     extern void msgctrlSetValue(s32, s32);
+    extern void GScharCpy(void*, const void*);
+    extern void* fightFloorDataBiosGetPtr(u16);
+    extern const void* fightFloorDataBiosGetName(void*);
+    extern const void* GSmsgGetGSchar(const void*);
+    extern u8 lbl_8047BA1C[];
     u8* base = lbl_803A3278;
     void* save;
     void* pokemon;
@@ -1075,6 +1086,19 @@ void fn_80034FB4(void) {
             menuClose(0xA5);
             break;
         case 7:
+            lbl_8047A444 = *(u32*)(base + 0xBB8);
+            if (*(u16*)(base + 0xBBC) != 0) {
+                GScharCpy(base + 0x10, base + 0xBBC);
+            } else {
+                pokemon = fightFloorDataBiosGetPtr((u16)lbl_8047A444);
+                if (pokemon != NULL) {
+                    GScharCpy(base + 0x10,
+                              GSmsgGetGSchar(fightFloorDataBiosGetName(pokemon)));
+                } else {
+                    GScharCpy(base + 0x10, lbl_8047BA1C);
+                }
+            }
+            msgctrlSetValue(0x4D, (s32)(base + 0x10));
             winMsgOpen(8, 0x3B57, 1, 0);
             winMsgClose(1);
             lbl_8047A458 = 5;
