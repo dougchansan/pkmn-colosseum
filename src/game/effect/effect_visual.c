@@ -2843,6 +2843,7 @@ u32 fn_8013C074(void* ptr, void* arg) {
     EnvMapRenderDObj* dobj = fn_8019FF48(*(void**)((u8*)ptr + 0x8));
     EnvMapRenderPObj* pobj;
     EnvMapRenderStage* stage;
+    void* mobj;
     u32 found9 = 0;
     u32 found10 = 0;
     u32 found11 = 0;
@@ -2858,12 +2859,21 @@ u32 fn_8013C074(void* ptr, void* arg) {
         return 0;
     }
 
-    if (dobj->mobj != NULL) {
-        HSD_MObjSetFlags(dobj->mobj, 0x40000000);
-        HSD_MObjCompileTev(dobj->mobj);
+    if (dobj != NULL) {
+        mobj = dobj->mobj;
+    } else {
+        mobj = NULL;
+    }
+    if (mobj != NULL) {
+        HSD_MObjSetFlags(mobj, 0x40000000);
+        HSD_MObjCompileTev(mobj);
     }
 
-    pobj = dobj->pobj;
+    if (dobj != NULL) {
+        pobj = dobj->pobj;
+    } else {
+        pobj = NULL;
+    }
     if (pobj == NULL || pobj->stages == NULL) {
         return 0;
     }
