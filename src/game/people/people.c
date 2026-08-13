@@ -4808,7 +4808,7 @@ void* fn_8018CD08(u32 groupId, u32 index, f32 radius, f32 angle) {
     extern f64 atan2(f64, f64);
     extern f64 fabs(f64);
     extern f64 fmod(f64);
-    extern s32 fn_8010F320(void* from, void* to, u32 flags);
+    extern s32 fn_8010F320(void* start, void* end, f32 radius, void* result);
     extern void GSlogWritef(const char* fmt, ...);
     extern f32 lbl_8047D83C;
     extern f32 lbl_8047D814;
@@ -4831,6 +4831,11 @@ void* fn_8018CD08(u32 groupId, u32 index, f32 radius, f32 angle) {
     GSvec memberPosition;
     GSvec delta;
     GSvec rotation;
+    GSvec midpoint;
+    GSvec memberDelta;
+    GSvec memberRotated;
+    u8 memberQuat[16];
+    f32 sourceRadius;
     f32 interactionRadius;
     f32 maxAngle;
     f32 bestScore;
@@ -4838,6 +4843,9 @@ void* fn_8018CD08(u32 groupId, u32 index, f32 radius, f32 angle) {
     f32 candidateAngle;
     f32 candidateRange;
     f32 distance;
+    f32 memberAngle;
+    f32 memberRadius;
+    f32 memberDistance;
     s32 partIndex;
     u32 memberGroup;
     u32 memberIndex;
@@ -4852,17 +4860,18 @@ void* fn_8018CD08(u32 groupId, u32 index, f32 radius, f32 angle) {
 
     GSvecCopy(&sourcePosition, fn_8018FCBC(source));
     sourceInfo = peopleInfoBiosGetPtr(source->scriptRef);
-    interactionRadius = sourceInfo != NULL ? fn_8018F5E4(sourceInfo)
-                                           : lbl_8047D83C;
-    interactionRadius += lbl_8047D800 * radius;
+    sourceRadius = sourceInfo != NULL ? fn_8018F5E4(sourceInfo)
+                                      : lbl_8047D83C;
+    interactionRadius = sourceRadius + lbl_8047D800 * radius;
     maxAngle = lbl_8047D814 * angle;
     best = NULL;
     bestScore = lbl_8047D880;
     bestAngle = lbl_8047D7A0;
 
     hasMember = heroMoveIsMember(1) != 0;
+    heroMoveGetResID(&memberGroup, &memberIndex, 1);
     memberEntry = NULL;
-    if (hasMember && heroMoveGetResID(&memberGroup, &memberIndex, 1) != 0) {
+    if (hasMember) {
         memberEntry = peopleFindBySelf(peopleFindSelf(memberGroup, memberIndex));
         if (memberEntry != NULL) {
             fn_8018FC98(memberEntry, &memberPosition);
@@ -4921,7 +4930,8 @@ void* fn_8018CD08(u32 groupId, u32 index, f32 radius, f32 angle) {
 
         if (floorCharacter != NULL) {
             if (floorCharacterBiosGetTalkWallThrough(floorCharacter) == 0 &&
-                fn_8010F320(&sourcePosition, &candidatePosition, 0) != 0)
+                fn_8010F320(&sourcePosition, &candidatePosition,
+                            sourceRadius, NULL) != 0)
             {
                 continue;
             }
@@ -4946,10 +4956,28 @@ void* fn_8018CD08(u32 groupId, u32 index, f32 radius, f32 angle) {
             }
         }
 
-        if (hasMember && memberEntry != NULL &&
-            fn_8018D680(&sourcePosition, &candidatePosition, &memberPosition, candidateRange))
-        {
-            continue;
+        if (hasMember) {
+            memberRadius = fn_8018F5E4(candidateInfo);
+            GSvecAdd(&midpoint, &sourcePosition, &candidatePosition);
+            fn_800E013C(&midpoint, &midpoint, lbl_8047D7A4);
+            fn_800E0168(&memberDelta, &candidatePosition, &sourcePosition);
+            memberAngle = (f32)atan2(memberDelta.x, memberDelta.z);
+            memberAngle =
+                (f32)fmod(lbl_8047D7F0 + (memberAngle - lbl_8047D7A0));
+            if (memberAngle > lbl_8047D7A8) {
+                memberAngle = (f32)(memberAngle - lbl_8047D7F0);
+            } else if (memberAngle < lbl_8047D820) {
+                memberAngle = (f32)(lbl_8047D7F0 + memberAngle);
+            }
+            fn_800E0718(memberQuat, lbl_8031554C, memberAngle);
+            fn_800E0168(&memberPosition, &memberPosition, &midpoint);
+            GSvecTransformQuat(&memberRotated, memberQuat, &memberPosition);
+            memberDistance = GSvecDistance(&midpoint, &candidatePosition);
+            if (memberRadius >= __fabs(memberRotated.x) &&
+                memberDistance >= __fabs(memberRotated.z))
+            {
+                continue;
+            }
         }
 
         distance = GSvecDistance(&sourcePosition, &candidatePosition);
