@@ -787,7 +787,7 @@ void* fn_80180450(void* src, void* dst, u32 size)
     entry->srcPtr = src;
     entry->dstPtr = dst;
     entry->size = alignedSize;
-    DCFlushRange(src, alignedSize);
+    DCFlushRange(src, size);
     ARQPostRequest(entry, (u32)entry, 0, 0, (u32)src, (u32)dst,
                    alignedSize, (void (*)(void*))fn_801808E4);
     OSRestoreInterrupts(savedIntr);
