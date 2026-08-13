@@ -501,7 +501,7 @@ asm void menuFightOpenWaza(void) {
 #include "src/game/gs_npc_interact_fn_800117BC.inc"
 }
 #else
-void menuFightOpenWaza(void) {
+s32 menuFightOpenWaza(void* arg0, void* arg1, void* arg2) {
     extern u32 _menuFightIsUse__FP16MENU_WAZA_STATUSUs();
     extern void menuCloseCustom();
     extern void menuIsCheck();
@@ -510,9 +510,9 @@ void menuFightOpenWaza(void) {
     extern void winMsgOpenFight();
     u8 sp[0x20];
     u32 tmp = 0;
-    u32 r3 = 0;
-    u32 r4 = 0;
-    u32 r5 = 0;
+    u32 r3 = (u32)arg0;
+    u32 r4 = (u32)arg1;
+    u32 r5 = (u32)arg2;
     u32 r6 = 0;
     u32 r7 = 0;
     u32 r8 = 0;
