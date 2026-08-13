@@ -4339,6 +4339,28 @@ void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
         } else {
             u8* stream = polygonData;
             u32 packetCount = *(u32*)stream;
+            f32 axisLength = sqrtf(axisYX * axisYX + axisYY * axisYY +
+                                   axisYZ * axisYZ);
+            f32 tailX;
+            f32 tailY;
+            f32 tailZ;
+            f32 tailLength;
+
+            if (__fabs(axisLength) < lbl_80478AC8) {
+                return;
+            }
+
+            tailX = centerX - velocityX;
+            tailY = centerY - velocityY;
+            tailZ = centerZ - velocityZ;
+            tailLength = sqrtf(tailX * tailX + tailY * tailY + tailZ * tailZ) /
+                         axisLength;
+            if (tailLength < 1.0f) {
+                tailLength = 1.0f;
+            }
+            axisYX *= tailLength;
+            axisYY *= tailLength;
+            axisYZ *= tailLength;
 
             stream += 4;
             while (packetCount != 0) {
