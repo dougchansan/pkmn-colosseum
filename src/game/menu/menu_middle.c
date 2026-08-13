@@ -7064,141 +7064,57 @@ void fn_800704A8(void) {
 #if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_RESIDUAL_800704AC_ONLY)
 /* 0x800704AC | size: 0x218 */
 void fn_800704AC(void* menu, void* sprite) {
-    extern void fn_8006B3C8();
-    extern void winSpriteSetDisp();
-    extern u8 jumptable_802EE0F0[];
-    u8 sp[0x20];
-    u32 r0 = 0;
-    u32 r3 = 0;
-    u32 r4 = 0;
-    u32 r28 = 0;
-    u32 r29 = 0;
-    u32 r30 = 0;
-    u32 r31 = 0;
-    void (*ctr_fn)(void) = 0;
-    u32 ctr = 0;
+    extern u8 fn_8006B3C8(s32);
+    extern void winSpriteSetDisp(void*, s32);
+    u8* table = NULL;
+    u8* menuData = lbl_80267EA8;
+    s32 command;
+    s32 i;
+    void* window;
 
-    
-    r3 = (u32)menu;
-    r4 = (u32)sprite;
-    r31 = r4;
-    r0 = MENU_MIDDLE_U8_0001(r3)->unk_0001;
-    r3 = (u32)&lbl_80267EA8;
-    r30 = (u32)&lbl_80267EA8;
-    r0 = (s8)r0;
-    if ((s32)r0 < (s32)0x3) {
-        if ((s32)r0 < (s32)0x0) {
-            goto L_80070624;
-        }
-        goto L_80070624;
-        }
-    ((void(*)(void))fn_8007162C)();
-    /* subi r0, r3, 0xa8 */;
-    if (r0 <= (u32)0x46) {
-        r3 = (u32)jumptable_802EE0F0;
-        r0 = r0 << 2;
-        r3 = (u32)jumptable_802EE0F0;
-        r0 = *(u32*)(r3 + r0);
-        ctr_fn = (void(*)(void))r0;
-        /* indirect jump via ctr */;
-        r0 = r30 + 0x28;
-        *(u32*)&lbl_8047A5F8 = r0;
-        goto L_80070624;
-
-        *(u32*)&lbl_8047A5F8 = r0;
-        goto L_80070624;
-
-        *(u32*)&lbl_8047A5F8 = r0;
-        goto L_80070624;
-
-        *(u32*)&lbl_8047A5F8 = r0;
-        goto L_80070624;
-
-
-        do {
-            r3 = r28;
-            fn_8006B3C8();
-            r0 = r3 & 0xFF;
-            if (r0 != (u32)0x0) {
-                r0 = MENU_MIDDLE_U32_0000(r30)->unk_0000;
-            } else {
-
-                r0 = 0x43fe;
+    if ((s8)MENU_MIDDLE_U8_0001(menu)->unk_0001 >= 0 &&
+        (s8)MENU_MIDDLE_U8_0001(menu)->unk_0001 < 3) {
+        command = ((s32 (*)(void))fn_8007162C)();
+        switch (command) {
+        case 0xA8: table = menuData + 0x58; break;
+        case 0xAA: table = menuData + 0x28; break;
+        case 0xAC: table = menuData + 0x40; break;
+        case 0xAE:
+            for (i = 0; i < 6; i++) {
+                ((u32*)lbl_802EDE58)[i] = fn_8006B3C8(i) ? ((u32*)(menuData + 0x78))[i] : 0x43FE;
             }
-            MENU_MIDDLE_U32_0000(r29)->unk_0000 = r0;
-            r30 = r30 + 0x4;
-            r29 = r29 + 0x4;
-            r28 = r28 + 0x1;
-        } while (r28 < (u32)0x6);
-        r3 = (u32)&lbl_802EDE58;
-        r0 = (u32)&lbl_802EDE58;
-        *(u32*)&lbl_8047A5F8 = r0;
-        goto L_80070624;
-
-
-        if (r3 != (u32)0x0) {
-            r0 = r30 + 0x90;
-            *(u32*)&lbl_8047A5F8 = r0;
-            goto L_80070624;
+            table = lbl_802EDE58;
+            break;
+        case 0xAF:
+            table = ((void* (*)(s32))windowSearchID)(0xBC) != NULL ? menuData + 0x90 : menuData + 0x9C;
+            break;
+        case 0xB0: table = menuData + 0xA8; break;
+        case 0xB3: table = menuData + 0x64; break;
+        case 0xB6:
+            table = (u8*)&lbl_8047C048 + (((s32 (*)(void))fn_8007162C)() !=
+                ((s32 (*)(void))windowGetActiveID)()) * 4;
+            break;
+        case 0xB9: table = menuData + 0xB4; break;
         }
-        r0 = r30 + 0x9c;
-        *(u32*)&lbl_8047A5F8 = r0;
-        goto L_80070624;
-
-        *(u32*)&lbl_8047A5F8 = r0;
-        goto L_80070624;
-
-        *(u32*)&lbl_8047A5F8 = r0;
-        goto L_80070624;
-
-
-        if ((s32)r3 == (s32)r30) {
-            r0 = 0x0;
-        } else {
-
-            r0 = 0x1;
-        }
-        r3 = r0 << 2;
-        r0 = (u32)&lbl_8047C048;
-        r0 = r0 + r3;
-        *(u32*)&lbl_8047A5F8 = r0;
-        goto L_80070624;
     }
-    r0 = 0x0;
-    *(u32*)&lbl_8047A5F8 = r0;
-    L_80070624: ;
-    r0 = *(u32*)&lbl_8047A5F8;
-    if (r0 != (u32)0x0) {
-        r3 = r31;
-        r4 = 0x1;
-        winSpriteSetDisp();
-        r0 = MENU_MIDDLE_S16_0006(r31)->unk_0006;
-        if ((s32)r0 != (s32)0x93d) {
-            if ((s32)r0 >= (s32)0x93d) return;
-            return;
-        }
-        ((void(*)(void))fn_8007162C)();
-        ((void(*)(void))windowSearchID)();
-        if (r3 == (u32)0x0) {
-            ((void(*)(void))windowGetActiveID)();
-            ((void(*)(void))windowSearchID)();
-        }
-        if (r3 == (u32)0x0) return;
-        r0 = MENU_MIDDLE_U8_0095(r3)->unk_0095;
-        r3 = *(u32*)&lbl_8047A5F8;
-        r0 = (s8)r0;
-        r0 = r0 << 2;
-        r0 = *(u32*)(r3 + r0);
-        MENU_MIDDLE_U32_004C(r31)->unk_004C = r0;
+    *(u32*)&lbl_8047A5F8 = (u32)table;
+
+    if (table == NULL) {
+        *(u32*)((u8*)sprite + 0x4C) = 0;
+        winSpriteSetDisp(sprite, 0);
         return;
     }
-    r0 = 0x0;
-    r3 = r31;
-    MENU_MIDDLE_U32_004C(r31)->unk_004C = r0;
-    r4 = 0x0;
-    winSpriteSetDisp();
 
-    return;
+    winSpriteSetDisp(sprite, 1);
+    if (*(s16*)((u8*)sprite + 6) == 0x93D) {
+        window = ((void* (*)(s32))windowSearchID)(((s32 (*)(void))fn_8007162C)());
+        if (window == NULL) {
+            window = ((void* (*)(s32))windowSearchID)(((s32 (*)(void))windowGetActiveID)());
+        }
+        if (window != NULL) {
+            *(u32*)((u8*)sprite + 0x4C) = ((u32*)table)[*(s8*)((u8*)window + 0x95)];
+        }
+    }
 }
 
 
