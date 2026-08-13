@@ -1326,6 +1326,8 @@ u8 fightOutPokemonGetJoutaiMigawariHp(void* trainer) {
 #pragma pop
 
 /* 0x801FF1BC | size: 0x974 | massive */
+#pragma push
+#pragma peephole off
 void fightOutPokemonCheckFightActionWazaSelect(void) {
     extern u8 lbl_80375CA8[];
     extern void fn_80119ED0();
@@ -1974,6 +1976,7 @@ void fightOutPokemonCheckFightActionWazaSelect(void) {
 }
 
 /* 0x801FFB30 | size: 0x398 | large */
+#pragma pop
 void fightOutPokemonGetOutOkWazaBanmeAry(void) {
     extern void fn_80119ED0();
     extern void fn_8011A3E4();
