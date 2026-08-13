@@ -4953,7 +4953,7 @@ cancelled:
 
 u8 fn_80079EF4(s32 arg0, u32 value) {
     s32 rank;
-    s8 choice;
+    s32 choice;
     f32 waitStart_ = lbl_8047C114;
     f32 waitLong_ = lbl_8047C128;
     f32 waitShort_ = lbl_8047C108;
@@ -5027,8 +5027,9 @@ u8 fn_80079EF4(s32 arg0, u32 value) {
     }
 
     winMsgOpenField(0x43d1, 1, 0);
-    choice = (s8)fn_8001E184();
+    choice = fn_8001E184();
     winMsgClose(1);
+    choice = (s8)choice;
     if (choice == 0 || choice < -1 || choice >= 2) {
         return 1;
     }
