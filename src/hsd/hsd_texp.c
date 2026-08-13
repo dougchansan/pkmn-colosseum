@@ -3261,7 +3261,6 @@ s32 fn_801B9320(ColTExpNode* tev)
             tev->a_op <= 1)
         {
             if ((tev->c_op == 0 || tev->c_op == 1) &&
-                tev->c_in[1].sel == COL_TE_0 &&
                 tev->c_in[2].sel == COL_TE_0 &&
                 HSD_TExpGetType((u8*) tev->c_in[0].exp) != COL_TE_CNST &&
                 HSD_TExpGetType((u8*) tev->c_in[3].exp) != COL_TE_CNST)
