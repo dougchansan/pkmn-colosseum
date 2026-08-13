@@ -5374,13 +5374,13 @@ s32 fn_800F13D0(void* obj) {
     *(u32*)(p+0x14) = *(u32*)(p+0x14) + 2;
 
     /* push 0x1C and r29 to stack */
-    if (*(u32*)(p+0x28) > 0x40) {
+    if (*(s32*)(p+0x28) > 0x40) {
         GSlogWritef((const char*)lbl_80271068);
     } else {
         *(u32*)(p + 0x6C + *(u32*)(p+0x28)*4) = *(u32*)(p+0x1C);
         *(u32*)(p+0x28) = *(u32*)(p+0x28) + 1;
     }
-    if (*(u32*)(p+0x28) > 0x40) {
+    if (*(s32*)(p+0x28) > 0x40) {
         GSlogWritef((const char*)lbl_80271068);
     } else {
         *(u32*)(p + 0x6C + *(u32*)(p+0x28)*4) = r29;
@@ -5399,7 +5399,7 @@ s32 fn_800F13D0(void* obj) {
         if (*(u8*)(p+0x4) == 4) *(u8*)(p+0x4) = 3;
         if (*(u8*)(p+0x4) == 3) {
             /* pop stackVal1 */
-            if (*(u32*)(p+0x28) <= 0) {
+            if (*(s32*)(p+0x28) <= 0) {
                 GSlogWritef((const char*)lbl_8027107C);
                 stackVal1 = *(u32*)(p+0x6C);
             } else {
@@ -5407,7 +5407,7 @@ s32 fn_800F13D0(void* obj) {
                 stackVal1 = *(u32*)(p + 0x6C + *(u32*)(p+0x28)*4);
             }
             /* pop stackVal0 */
-            if (*(u32*)(p+0x28) <= 0) {
+            if (*(s32*)(p+0x28) <= 0) {
                 GSlogWritef((const char*)lbl_8027107C);
                 stackVal0 = *(u32*)(p+0x6C);
             } else {
@@ -5418,7 +5418,7 @@ s32 fn_800F13D0(void* obj) {
             r28b = 0;
             *(u32*)(p+0x1C) = stackVal0;
             while (r28b < (s32)stackVal1) {
-                if (*(u32*)(p+0x28) <= 0) {
+                if (*(s32*)(p+0x28) <= 0) {
                     GSlogWritef((const char*)errStr);
                 } else {
                     *(u32*)(p+0x28) = *(u32*)(p+0x28) - 1;
@@ -5433,14 +5433,14 @@ s32 fn_800F13D0(void* obj) {
 
     /* exit loop: state=1, pop twice, drain */
     *(u8*)(p+0x4) = 1;
-    if (*(u32*)(p+0x28) <= 0) {
+    if (*(s32*)(p+0x28) <= 0) {
         GSlogWritef((const char*)lbl_8027107C);
         stackVal1 = *(u32*)(p+0x6C);
     } else {
         *(u32*)(p+0x28) = *(u32*)(p+0x28) - 1;
         stackVal1 = *(u32*)(p + 0x6C + *(u32*)(p+0x28)*4);
     }
-    if (*(u32*)(p+0x28) <= 0) {
+    if (*(s32*)(p+0x28) <= 0) {
         GSlogWritef((const char*)lbl_8027107C);
         stackVal0 = *(u32*)(p+0x6C);
     } else {
@@ -5451,7 +5451,7 @@ s32 fn_800F13D0(void* obj) {
     r28b = 0;
     errStr = (u8*)lbl_8027107C;
     while (r28b < (s32)stackVal1) {
-        if (*(u32*)(p+0x28) <= 0) {
+        if (*(s32*)(p+0x28) <= 0) {
             GSlogWritef((const char*)errStr);
         } else {
             *(u32*)(p+0x28) = *(u32*)(p+0x28) - 1;
