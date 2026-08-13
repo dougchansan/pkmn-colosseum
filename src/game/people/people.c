@@ -5085,6 +5085,47 @@ int fn_8018E1C4(PeopleEntry* entry, u32 groupId, u32 indexId, s32 objectId) {
                 entry->field_38 = fn_8018F5B4(info) / frameCount;
             }
         }
+        fn_8018F4C8(info, 1, &animIndex, &loop);
+        if (animIndex >= 0) {
+            linkedEntry = NULL;
+            for (i = 0; i < peopleGetMaxCount(); i++) {
+                stateEntry = peopleGetEntry(i);
+                if (stateEntry->active && stateEntry->groupId == groupId &&
+                    stateEntry->index == indexId) {
+                    linkedEntry = stateEntry->selfPtr;
+                    break;
+                }
+            }
+            if (linkedEntry == NULL) {
+                for (i = 0; i < peopleGetMaxCount(); i++) {
+                    stateEntry = peopleGetEntry(i);
+                    if (stateEntry->active && stateEntry->index == indexId) {
+                        linkedEntry = stateEntry->selfPtr;
+                        break;
+                    }
+                }
+            }
+            stateEntry = NULL;
+            for (i = 0; i < peopleGetMaxCount(); i++) {
+                PeopleEntry* candidate = peopleGetEntry(i);
+                if (candidate->active && candidate->selfPtr == linkedEntry) {
+                    stateEntry = candidate;
+                    break;
+                }
+            }
+            if (stateEntry != NULL && (model = peopleGetModel(stateEntry)) != NULL) {
+                stateEntry->walkTargetNode = animIndex;
+                stateEntry->walkAnimRate = lbl_8047D7A0;
+                GSmodelSetAnimIndex(model, animIndex);
+                GSmodelSetAnimFrame(model, lbl_8047D7A0);
+                GSmodelSetAnimRate(model, lbl_8047D7A4);
+                GSmodelSetTexAnimIndex(model, animIndex);
+                GSmodelSetTexAnimFrame(model, lbl_8047D7A0);
+                GSmodelSetTexAnimRate(model, lbl_8047D7A4);
+                GSmodelSetAnimType(model, 1);
+                GSmodelStartAnimation(model);
+            }
+        }
     }
     GSmodelSetBoundCheck(entryModel, 0);
     return 1;
