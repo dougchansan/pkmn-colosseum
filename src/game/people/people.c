@@ -198,6 +198,14 @@ extern f32 lbl_8047D8B0;           /* default moveSpeed constant */
 extern f32 lbl_8047D798;
 extern f32 lbl_8047D79C;
 extern f32 lbl_8047D7A0;
+extern f64 lbl_8047D7A8;
+extern f64 lbl_8047D7B0;
+extern f64 lbl_8047D7B8;
+extern f32 lbl_8047D7C0;
+extern f64 fmod();
+extern s32 fn_800D37CC(void);
+extern u32 fn_800D3088(void);
+extern f32 fn_800E0BA0(void);
 extern const void* lbl_80273F90[];
 
 /* ===== Global state (sbss, owned by the data split - extern here) ===== */
@@ -551,6 +559,12 @@ void fn_80181850(void)
     u8 layer;
     u8 subLayer;
     s32 shadowCount;
+    s32 frameCount;
+    u32 ticks;
+    f32 angle;
+    f32 fullTurn;
+    s32 revolutions;
+    PeopleEntry* linked;
 
     for (i = peopleGetMaxCount() - 1; i >= 0; i--) {
         entry = peopleGetEntry(i);
@@ -582,6 +596,45 @@ void fn_80181850(void)
                 break;
             case 4:
                 fn_80184D80(entry);
+                break;
+            case 5:
+                switch (entry->subState) {
+                case 0:
+                    if (entry->animBlendFactor > lbl_8047D7A0) {
+                        frameCount = fn_800D37CC();
+                        ticks = fn_800D3088();
+                        entry->animBlendFactor -=
+                            (f32)ticks / (f32)frameCount;
+                        if (entry->animBlendFactor < lbl_8047D7A0) {
+                            entry->animBlendFactor = lbl_8047D7A0;
+                        }
+                        break;
+                    }
+                    entry->subState = 1;
+                    /* fallthrough */
+                case 1:
+                    angle = (f32)fmod(
+                        lbl_8047D7A8 + lbl_8047D7B0 * fn_800E0BA0() +
+                            entry->field_40,
+                        lbl_8047D7B8);
+                    linked = peopleFindBySelf(
+                        peopleFindSelf(entry->groupId, entry->index));
+                    if (linked != NULL) {
+                        fn_8018FC2C(linked, &modelRotation);
+                        fullTurn = lbl_8047D7C0;
+                        revolutions = (s32)(modelRotation.y / fullTurn);
+                        linked->pad22 = 1;
+                        linked->field_40 = angle + fullTurn * revolutions;
+                        linked->field_44 = lbl_8047D79C;
+                    }
+                    entry->subState = 2;
+                    /* fallthrough */
+                case 2:
+                    entry->animBlendFactor =
+                        entry->field_8C * fn_800E0BA0() + entry->field_88;
+                    entry->subState = 0;
+                    break;
+                }
                 break;
             }
 
@@ -904,7 +957,6 @@ void fn_8018BC88(u32 groupId, u32 index, s32 motionId, void* target) {
 /* 0x8018D680 | 0x150 */
 extern f64 atan2(f64, f64);
 extern f64 fabs(f64);
-extern f64 fmod(f64 angle);
 extern void fn_800E0718(void*, void*, f32);
 extern void GSvecTransformQuat(void*, void*, void*);
 extern f32 GSvecDistance(void*, void*);
@@ -1044,13 +1096,11 @@ asm void fn_8018E9B4(void) {
 #endif
 
 /* 0x8018ECEC | 0x3A0 */
-extern u32 fn_800D3088(void);
 extern f32 lbl_8047D7A0;
 extern f64 lbl_8047D7F0;
 extern f64 lbl_8047D7A8;
 extern f64 lbl_8047D820;
 extern u32 lbl_8047D898;
-extern u32 lbl_8047D7B0;
 extern u32 lbl_8047D7D0;
 extern u32 lbl_8047D89C;
 #if 0
@@ -1934,11 +1984,9 @@ void fn_80184A90(PeopleEntry* entry) {
 #endif
 
 /* 0x80184D80 | 0x4CC */
-extern s32 fn_800D37CC(void);
 extern f32 fn_800E0BE4(void);
 extern void fn_800CE148(void);
 extern void fn_800CDBE0(void);
-extern f32 fn_800E0BA0(void);
 extern u8 lbl_80273FC0[];
 extern f32 lbl_8047D7A0;
 extern u32 lbl_8047D7C8;
