@@ -10,8 +10,8 @@
 #include "dolphin/types.h"
 
 /* 0x80011EA4 | 0x9B4 -- GSnpc_WarpToLocation continued */
-extern void winSpriteSetDisp();
-extern void winSpriteGetDisp();
+extern void winSpriteSetDisp(void*, s32);
+extern s32 winSpriteGetDisp(void*);
 extern void fn_8001DACC();
 extern void fn_8010B9E8();
 extern void fightFloorGetStatus();
@@ -38,13 +38,15 @@ extern f32 lbl_8047B71C;
 extern f32 lbl_8047B728;
 extern f32 lbl_8047B72C;
 extern u8 lbl_80314E08[];
+extern void* windowGetAllocPtr(void*);
+extern void* windowGetFreeWork(void*);
 
 #if 0
 asm void fn_80011EA4(void) {
 #include "src/game/gs_npc_interact_fn_80011EA4.inc"
 }
 #else
-void fn_80011EA4(void) {
+void fn_80011EA4(void* window, void* sprite) {
     extern u8 lbl_80314E08[];
     extern f32 lbl_8047B718;
     extern f32 lbl_8047B71C;
@@ -65,16 +67,13 @@ void fn_80011EA4(void) {
     extern void fn_800D888C();
     extern void fn_800D88DC();
     extern void GSmsgGetGSchar();
-    extern void windowGetAllocPtr();
-    extern void windowGetFreeWork();
     extern void windowDrawSprite2();
-    extern void winSpriteGetDisp();
     extern void fn_8010B9E8();
     extern void fightFloorGetStatus();
     u8 sp[0x70];
     u32 tmp = 0;
-    u32 r3 = 0;
-    u32 r4 = 0;
+    u32 r3 = (u32)window;
+    u32 r4 = (u32)sprite;
     u32 r5 = 0;
     u32 r6 = 0;
     u32 r7 = 0;
@@ -97,14 +96,9 @@ void fn_80011EA4(void) {
 
     r27 = r3;
     r28 = r4;
-    windowGetAllocPtr();
-    tmp = r3;
-    r3 = r27;
-    r30 = tmp;
-    windowGetFreeWork();
-    r31 = r3;
-    r3 = r27;
-    windowGetAllocPtr();
+    r30 = (u32)windowGetAllocPtr((void*)r27);
+    r31 = (u32)windowGetFreeWork((void*)r27);
+    r3 = (u32)windowGetAllocPtr((void*)r27);
     r6 = *(s16*)((u8*)r28 + 0x6);
     r4 = 0x1;
     r5 = *(u8*)((u8*)r3 + 0x16);
@@ -179,11 +173,8 @@ do {
         r4 = 0x0;
     }
 } while (0);
-    r3 = r28;
-    ((void(*)(void))winSpriteSetDisp)();
-    r3 = r28;
-    winSpriteGetDisp();
-    tmp = r3 & 0xFF;
+    winSpriteSetDisp((void*)r28, (s32)r4);
+    tmp = (u32)winSpriteGetDisp((void*)r28) & 0xFF;
     if (tmp == 0) return;
     tmp = *(s16*)((u8*)r28 + 0x6);
     r3 = -0x100;
@@ -247,9 +238,7 @@ do {
             f1 = f1 - f2;
             f1 = f1 / f0;
             fn_8001DACC();
-            r3 = r28;
-            r4 = 0x0;
-            ((void(*)(void))winSpriteSetDisp)();
+            winSpriteSetDisp((void*)r28, 0);
             return;
         L_8001215C:
             r5 = *(u16*)((u8*)r30 + 0x26);
