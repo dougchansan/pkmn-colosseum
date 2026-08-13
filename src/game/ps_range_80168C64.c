@@ -3793,6 +3793,8 @@ void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
  * camera/people-relative orientation modes remain asm-only; this covers the
  * direct basis path and target-verified generator scaling.
  */
+#pragma push
+#pragma optimization_level 2
 void psDispSub(PSParticle* pp, void* polygonData) {
     f32 axisXX;
     f32 axisXY;
@@ -3964,6 +3966,7 @@ void psDispSub(PSParticle* pp, void* polygonData) {
  * Configures point-trail raster width. Geometry/color emission remains
  * asm-only; this entry block is verified at 0x8016D8EC-0x8016D954.
  */
+#pragma pop
 #pragma push
 #pragma optimization_level 0
 void psDispSubPointTrail(PSParticle* pp) {
