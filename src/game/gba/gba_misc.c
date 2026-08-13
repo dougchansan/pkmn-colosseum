@@ -1988,6 +1988,8 @@ void fn_8008AC34(void) {
 }
 
 /* 0x8008AE18 | size: 0xDC4 */
+#pragma push
+#pragma peephole off
 void fn_8008AE18(void* src, GbaPokemon* dst) {
     extern s32 pokemonBiosGetEventGetFlag(void* pokemon);
     extern s32 pokemonBiosGetPara1Amari(void* pokemon);
@@ -2265,6 +2267,7 @@ void fn_8008AE18(void* src, GbaPokemon* dst) {
         memcpy(&dst->hpEffort, tmp, 12);
     }
 }
+#pragma pop
 
 /* 0x8008BBDC | size: 0x9F4 */
 void fn_8008BBDC(void* gc, GbaPokemon* src) {
