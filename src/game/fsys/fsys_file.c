@@ -421,14 +421,14 @@ s32 fn_8017E30C(FSYSSlot* slot) {
             typedef void* (*AllocCallback)(u32 fileHandle, u32 fileID, u32 size);
             AllocCallback cb = (AllocCallback)poolEntry->callback;
             allocatedBuf = cb(slot->fileHandle, fileEntry->nameHash,
-                             fileEntry->compressedSize);
+                             uncompSize);
         } else {
             /* No callback; allocate buffer from heap */
             u32 allocSize = (uncompSize + 0x1F) & ~0x1F;
             allocatedBuf = (void*)GSresAllocResourceAlign(allocSize,
+                                               0x20,
                                                slot->fileHandle,
-                                               fileEntry->nameHash,
-                                               0, 0);
+                                               fileEntry->nameHash, 0);
         }
     }
 
