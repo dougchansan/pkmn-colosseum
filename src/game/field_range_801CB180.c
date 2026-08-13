@@ -704,7 +704,7 @@ void fn_801CBBAC(u8 digest[20], const u8* input, u32 length)
     fn_801CBF64(digest, &context);
 }
 
-u32 fn_801CBCDC(u8* data, u32 size, const u32 expected[5], u32 offset)
+u8 fn_801CBCDC(u8* data, u32 size, const u32 expected[5], u32 offset)
 {
     u32* savedDigest;
     u32* digest;
