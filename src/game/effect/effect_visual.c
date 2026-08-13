@@ -1224,8 +1224,12 @@ void fn_80139E80(void* entry, void* parent, void* cameraPos, void* modelPos) {
     extern void fn_800D7E5C(void);
     extern void fn_800D7F14(void*);
     extern void fn_800DFFCC(void*, void*, void*);
-    extern void fn_800E0060(void*, void*);
-    extern f32 fn_800E008C(void*);
+    extern void fn_800E0060(f32*, f32*);
+    extern f32 fn_800E008C(f32*);
+    extern void fn_800E0108(f32*, f32*, f32*, u16, u16);
+    extern void fn_800E0560(f32 (*)[4], f32*);
+    extern void fn_800E042C(f32 (*)[4], f32*);
+    extern void fn_800E00AC(f32*, f32*);
     u8* e = entry;
     u8* p = parent;
     u8* pointEntry;
@@ -1235,7 +1239,7 @@ void fn_80139E80(void* entry, void* parent, void* cameraPos, void* modelPos) {
     f32 normal[3];
     f32 offset[3];
     f32 vertex[3];
-    f32 matrix[12];
+    f32 matrix[3][4];
     f32 threshold;
     u16 current;
     u16 start;
@@ -1244,15 +1248,11 @@ void fn_80139E80(void* entry, void* parent, void* cameraPos, void* modelPos) {
     u16 visible;
     u16 i;
 
-    if (entry == NULL || parent == NULL) {
-        return;
-    }
-
     start = *(u16*)(e + 0x12DC);
     current = *(u16*)(p + 0x48) - start;
     halfSpan = (*(u16*)(e + 0x12DE) - start) >> 1;
-    ((void (*)(f32*, void*, void*, u16, u16))fn_800E0108)(
-        interpolated, e + 0x12CC, p + 0x20, current, start);
+    fn_800E0108(interpolated, (f32*)(e + 0x12CC), (f32*)(p + 0x20), current,
+                start);
     fn_800E0168(interpolated, modelPos, interpolated);
     if (current < halfSpan) {
         threshold = *(f32*)(p + 0x38) *
@@ -1271,9 +1271,9 @@ void fn_80139E80(void* entry, void* parent, void* cameraPos, void* modelPos) {
         }
     }
 
-    ((void (*)(void*, void*))fn_800E0560)(matrix, interpolated);
+    fn_800E0560(matrix, interpolated);
     fn_800D7F14(matrix);
-    ((void (*)(void*, void*))fn_800E042C)(matrix, p + 0x20);
+    fn_800E042C(matrix, (f32*)(p + 0x20));
     fn_800D7F14(matrix);
     fn_800D67BC((visible * 4) & 0xFFFC);
 
@@ -1282,20 +1282,20 @@ void fn_80139E80(void* entry, void* parent, void* cameraPos, void* modelPos) {
         if (*(f32*)(*(u8**)(pointEntry + 0xC) + 4) <= threshold) {
             continue;
         }
-        ((void (*)(void*, void*))fn_800E0168)(tangent, pointEntry);
+        fn_800E0168(tangent, pointEntry, *(u8**)(pointEntry + 0xC));
         fn_800E0060(tangent, tangent);
-        fn_800E019C(cameraVector, pointEntry, *(u8**)(pointEntry + 0xC));
+        GSvecAdd(cameraVector, pointEntry, *(u8**)(pointEntry + 0xC));
         fn_800E013C(cameraVector, cameraVector, *(f32*)&lbl_8047D1A8);
         fn_800E0168(cameraVector, cameraPos, cameraVector);
         fn_800E0060(cameraVector, cameraVector);
         fn_800DFFCC(normal, cameraVector, tangent);
         if (fn_800E008C(normal) > *(f32*)&lbl_8047D1AC) {
-            ((void (*)(void*, void*))fn_800E00AC)(normal, normal);
+            fn_800E00AC(normal, normal);
         }
 
         fn_800E013C(offset, normal,
                     *(f32*)&lbl_8047D1A8 * *(f32*)(pointEntry + 0x10));
-        fn_800E019C(vertex, *(u8**)(pointEntry + 0xC), offset);
+        GSvecAdd(vertex, *(u8**)(pointEntry + 0xC), offset);
         fn_800D6680(vertex[0], vertex[1], vertex[2]);
         fn_800D5CB8(0, e[0x12D8], e[0x12D9], e[0x12DA], e[0x12DB]);
         fn_800D59B8(0, *(f32*)&lbl_8047D190, *(f32*)&lbl_8047D190);
@@ -1310,7 +1310,7 @@ void fn_80139E80(void* entry, void* parent, void* cameraPos, void* modelPos) {
         fn_800D6680(vertex[0], vertex[1], vertex[2]);
         fn_800D5CB8(0, e[0x12D8], e[0x12D9], e[0x12DA], e[0x12DB]);
         fn_800D59B8(0, *(f32*)&lbl_8047D1A0, *(f32*)&lbl_8047D1A0);
-        fn_800E019C(vertex, pointEntry, offset);
+        GSvecAdd(vertex, pointEntry, offset);
         fn_800D6680(vertex[0], vertex[1], vertex[2]);
         fn_800D5CB8(0, e[0x12D8], e[0x12D9], e[0x12DA], e[0x12DB]);
         fn_800D59B8(0, *(f32*)&lbl_8047D190, *(f32*)&lbl_8047D1A0);
