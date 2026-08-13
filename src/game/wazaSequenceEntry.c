@@ -610,6 +610,7 @@ u8 _wazaSequenceParticleEntryStart(void* entry) {
     WazaSequence* sequence;
     WazaEffect* owner;
     WazaSequenceNode* linked;
+    void* resource;
     void* model;
     void* part;
     f32 position[3];
@@ -629,10 +630,11 @@ u8 _wazaSequenceParticleEntryStart(void* entry) {
     extern f32 lbl_8047E34C;
 
     sequence = node->sequence;
+    resource = node->resource;
     owner = sequence->owner;
     model = owner->model;
 
-    switch ((u32) node->positionType) {
+    switch ((u32)node->positionType) {
     case 0: selector = 1; break;
     case 1: selector = 2; break;
     case 2: selector = 3; break;
@@ -657,7 +659,7 @@ u8 _wazaSequenceParticleEntryStart(void* entry) {
     GSmodelGetRotation(model, rotation);
     fn_801D9950(sequence, scale, owner->scale_selector);
 
-    if (node->resource == NULL) {
+    if (resource == NULL) {
         if (fn_800057A8() == 2) {
             fn_801D744C(0x20);
         }
@@ -665,7 +667,7 @@ u8 _wazaSequenceParticleEntryStart(void* entry) {
     }
 
     *(void**)((u8*) node + 0x8C) =
-        fn_801190DC((u8*) node->resource, node->field_80,
+        fn_801190DC(resource, node->field_80,
                     (u32) node->animationMode & 1);
     *(u32*)((u8*) node + 0x90) = 0;
 
