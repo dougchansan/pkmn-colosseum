@@ -678,10 +678,10 @@ void fn_80034830(u8 enabled, u8 selection,
             break;
         }
     }
+    history = (SysvarsOpponentSnapshot*)(lbl_8047A430 + 0x41E4);
     if (shouldAppend == 0) {
         return;
     }
-    history = (SysvarsOpponentSnapshot*)(lbl_8047A430 + 0x41E4);
 
     for (i = 0; i < 9; i++) {
         history[i] = history[i + 1];
