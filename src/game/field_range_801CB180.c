@@ -1217,12 +1217,11 @@ void fn_801CDB04(void)
 
         case 15:
             attributes = 0;
-            result = CARDGetAttributes(task->card_channel, raw[0x8C],
-                                       &attributes);
-            if (result == 0) {
-                result = fn_800B5BE4(task->card_channel, raw[0x8C],
-                                     attributes & ~1, fn_801D0080);
-            }
+            CARDGetAttributes(task->card_channel, *(s32*)&raw[0x90],
+                              &attributes);
+            attributes |= 0x18;
+            result = fn_800B5BE4(task->card_channel,
+                                 *(s32*)&raw[0x90], attributes, NULL);
             task->card_result = result == 0
                                     ? CARDGetResultCode(task->card_channel)
                                     : result;
