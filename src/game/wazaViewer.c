@@ -1327,7 +1327,7 @@ void fn_801D7464(void) {
     extern s32 fn_801DA94C(void* obj, s32 search_key1, s32 search_key2);
     extern void fn_801DA4E8(void* effect, u32 visible);
     extern void fn_801DA9E8(void* sequence, s32 moveID, s32 variant);
-    extern void fn_801DF070(s32 weatherType);
+    extern void fn_801DF070(void* effect, s32 weatherType, s32 enabled);
     WazaEffect* effect;
     void* node;
     void* camera;
@@ -1485,7 +1485,7 @@ void fn_801D7464(void) {
 
     if ((fn_800F7BC4(1) & fn_800F7AF0(1) & 0x100) != 0) {
         if (*(s32*)lbl_804673F8 == 1 && *(s32*)(lbl_804673F8 + 0x63C) != 0) {
-            fn_801DF070(*(s32*)(lbl_804673F8 + 0x638));
+            fn_801DF070(effect, *(s32*)(lbl_804673F8 + 0x638), 0);
         } else if (fn_801DA94C(effect, motionA, motionB) == 0) {
             fn_801DA4E8(effect, 1);
             fn_801DA9E8(effect, motionA, motionB);
