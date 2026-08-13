@@ -654,14 +654,20 @@ void fn_80034830(u8 enabled, u8 selection,
     SysvarsOpponentSnapshot* destination;
     s32 moveIndex;
     s32 i;
+    u8 shouldAppend;
 
     history = (SysvarsOpponentSnapshot*)(lbl_8047A430 + 0x41E4);
+    shouldAppend = 1;
     for (i = 0; i < 10; i++) {
         if (history[i].trainerType == lbl_803A3334[8] &&
             history[i].region == (s8)lbl_803A3334[0x24] &&
             history[i].variant == (s8)lbl_803A3334[0x26]) {
-            return;
+            shouldAppend = 0;
+            break;
         }
+    }
+    if (shouldAppend == 0) {
+        return;
     }
 
     for (i = 0; i < 9; i++) {
@@ -710,7 +716,7 @@ void fn_80034B5C(u8* valid, u8* selectionOut, u8* valueOut)
     u8* layer;
     u8* group;
     u8 maxLevel;
-    s32 maxRequired;
+    u8 maxRequired;
     u8 best;
     u8 ties;
     s32 candidate;
@@ -745,7 +751,7 @@ void fn_80034B5C(u8* valid, u8* selectionOut, u8* valueOut)
             for (slot = 0; slot < 4; slot++) {
                 index = (s8)group[0x3B9 + slot];
                 if (index >= 0) {
-                    s32 required = lbl_803A3334[index * 0x2A + 0x517];
+                    u8 required = lbl_803A3334[index * 0x2A + 0x517];
                     if (maxRequired < required) {
                         maxRequired = required;
                     }
