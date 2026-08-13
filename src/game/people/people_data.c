@@ -606,80 +606,365 @@ asm void fn_80141308(void) {
 #else
 #pragma optimization_level 4
 s32 fn_80141308(u32* base, u16 count, u16 id, u16 amount, s16 index, u16 maxCount, u8 sortMode, u8 forceIndex) {
-    u32* entry;
-    u16 current;
-    u16 next;
-    u16 overflow;
-    u16 i;
-    u8 needsSort;
+    u32 entryBase;
+    u32 entryPtr;
+    u32 freePtr;
+    u16 entryId;
+    u16 scanIndex;
+    u16 scanCount;
+    s32 nextValue;
+    s32 fieldValue;
+    s32 cappedValue;
+    u8 needsReorder;
+    u8 targetValid;
+    u8 entryValid;
+    u8 matchesTarget;
 
-    if (base == NULL) {
+    entryBase = (u32)base;
+    if (entryBase == 0) {
         return -1;
     }
-    if (!PEOPLE_ITEM_ID_VALID(id)) {
+
+    if (itemGetStatus(0, id, 1, 0) == 0) {
+        targetValid = 0;
+    } else if (id >= lbl_80478BD8) {
+        targetValid = 0;
+    } else {
+        targetValid = 1;
+    }
+    if (targetValid == 0) {
         return -1;
     }
 
-    entry = NULL;
-    overflow = amount;
-    needsSort = 0;
+    needsReorder = 0;
+    nextValue = amount;
 
     if (forceIndex == 0) {
-        for (i = 0; i < count; i++) {
-            if (PEOPLE_ENTRY_VALID(base + i) && PEOPLE_ENTRY_ID(base + i) == id) {
-                entry = base + i;
-                break;
+        if (entryBase == 0) {
+            entryPtr = 0;
+        } else {
+            if (itemGetStatus(0, id, 1, 0) == 0) {
+                targetValid = 0;
+            } else if (id >= lbl_80478BD8) {
+                targetValid = 0;
+            } else {
+                targetValid = 1;
             }
-        }
 
-        if (entry == NULL) {
-            for (i = 0; i < count; i++) {
-                if (!PEOPLE_ENTRY_VALID(base + i)) {
-                    entry = base + i;
-                    needsSort = 1;
-                    break;
+            if (targetValid == 0) {
+                entryPtr = 0;
+            } else {
+                scanCount = count;
+                scanIndex = 0;
+                while (TRUE) {
+                    if (scanIndex >= scanCount) {
+                        entryPtr = 0;
+                        break;
+                    }
+
+                    entryPtr = entryBase + ((scanIndex * 4) & 0x3FFFC);
+                    if (entryPtr == 0) {
+                        matchesTarget = 0;
+                    } else {
+                        if (entryPtr == 0) {
+                            entryValid = 0;
+                        } else {
+                            entryId = (u16)itemGetStatus(entryPtr, 0, 0x1B, 0);
+                            if (entryId == 0) {
+                                entryValid = 0;
+                            } else if (itemGetStatus(0, entryId, 1, 0) == 0) {
+                                entryValid = 0;
+                            } else if (entryId >= lbl_80478BD8) {
+                                entryValid = 0;
+                            } else {
+                                entryValid = 1;
+                            }
+                        }
+
+                        if (entryValid == 0) {
+                            matchesTarget = 0;
+                        } else if ((s32)id == itemGetStatus(entryPtr, 0, 0x1B, 0)) {
+                            matchesTarget = 1;
+                        } else {
+                            matchesTarget = 0;
+                        }
+                    }
+
+                    if (matchesTarget != 0) {
+                        entryPtr = entryBase + (scanIndex * 4);
+                        break;
+                    }
+                    scanIndex++;
                 }
             }
         }
-    } else {
-        if (index < 0 || (u16)index >= count) {
-            return -1;
-        }
-        entry = base + (u16)index;
-        needsSort = !PEOPLE_ENTRY_VALID(entry) || PEOPLE_ENTRY_ID(entry) != id;
-    }
 
-    if (entry == NULL) {
-        return overflow;
-    }
+        if (entryPtr != 0) {
+            if (itemGetStatus(entryPtr, 0, 0x1C, 0) < (s32)maxCount) {
+                if (entryPtr == 0) {
+                    nextValue = -1;
+                } else if (itemGetStatus(0, id, 1, 0) == 0) {
+                    nextValue = -1;
+                } else if (id >= lbl_80478BD8) {
+                    nextValue = -1;
+                } else {
+                    if (entryPtr == 0) {
+                        matchesTarget = 0;
+                    } else {
+                        entryId = (u16)itemGetStatus(entryPtr, 0, 0x1B, 0);
+                        if (entryId == 0) {
+                            entryValid = 0;
+                        } else if (itemGetStatus(0, entryId, 1, 0) == 0) {
+                            entryValid = 0;
+                        } else if (entryId >= lbl_80478BD8) {
+                            entryValid = 0;
+                        } else {
+                            entryValid = 1;
+                        }
 
-    if (!PEOPLE_ENTRY_VALID(entry) || PEOPLE_ENTRY_ID(entry) != id) {
-        fn_80142B24(entry, 0, 0x1b, 0, 0);
-        fn_80142B24(entry, 0, 0x1c, 0, 0);
-        fn_80142B24(entry, 0, 0x1b, 0, id);
-        current = 0;
-        needsSort = 1;
-    } else {
-        current = PEOPLE_ENTRY_COUNT(entry);
-    }
+                        if (entryValid == 0) {
+                            matchesTarget = 0;
+                        } else if ((s32)id == itemGetStatus(entryPtr, 0, 0x1B, 0)) {
+                            matchesTarget = 1;
+                        } else {
+                            matchesTarget = 0;
+                        }
+                    }
 
-    if (current >= maxCount) {
-        overflow = amount;
-    } else {
-        next = (u16)(current + amount);
-        if (next > maxCount || next < current) {
-            overflow = (u16)(next - maxCount);
-            next = maxCount;
+                    if (matchesTarget == 0) {
+                        nextValue = -1;
+                    } else {
+                        entryId = (u16)itemGetStatus(entryPtr, 0, 0x1B, 0);
+                        if (entryId == 0 || itemGetStatus(0, entryId, 1, 0) == 0 || entryId >= lbl_80478BD8) {
+                            nextValue = -1;
+                        } else {
+                            cappedValue = (u16)itemGetStatus(entryPtr, 0, 0x1C, 0) + (u16)nextValue;
+                            if (cappedValue > (s32)maxCount) {
+                                nextValue = cappedValue - maxCount;
+                                cappedValue = maxCount;
+                            } else {
+                                nextValue = 0;
+                            }
+                            fn_80142B24((void*)entryPtr, 0, 0x1C, 0, (u16)cappedValue);
+                        }
+                    }
+                }
+
+                if (nextValue < 0) {
+                    return nextValue;
+                }
+            }
         } else {
-            overflow = 0;
+            if (entryBase == 0) {
+                freePtr = 0;
+            } else {
+                if (itemGetStatus(0, id, 1, 0) == 0) {
+                    targetValid = 0;
+                } else if (id >= lbl_80478BD8) {
+                    targetValid = 0;
+                } else {
+                    targetValid = 1;
+                }
+
+                if (targetValid == 0) {
+                    freePtr = 0;
+                } else {
+                    scanCount = count;
+                    scanIndex = 0;
+                    while (TRUE) {
+                        if (scanIndex >= scanCount) {
+                            freePtr = 0;
+                            break;
+                        }
+
+                        freePtr = entryBase + ((scanIndex * 4) & 0x3FFFC);
+                        if (freePtr == 0) {
+                            entryValid = 0;
+                        } else {
+                            entryId = (u16)itemGetStatus(freePtr, 0, 0x1B, 0);
+                            if (entryId == 0) {
+                                entryValid = 0;
+                            } else if (itemGetStatus(0, entryId, 1, 0) == 0) {
+                                entryValid = 0;
+                            } else if (entryId >= lbl_80478BD8) {
+                                entryValid = 0;
+                            } else {
+                                entryValid = 1;
+                            }
+                        }
+
+                        if (entryValid == 0) {
+                            freePtr = entryBase + (scanIndex * 4);
+                            break;
+                        }
+                        scanIndex++;
+                    }
+                }
+            }
+
+            if (freePtr != 0) {
+                if (itemGetStatus(0, id, 1, 0) == 0) {
+                    nextValue = -1;
+                } else if (id >= lbl_80478BD8) {
+                    nextValue = -1;
+                } else {
+                    fn_80142B24((void*)freePtr, 0, 0x1B, 0, 0);
+                    fn_80142B24((void*)freePtr, 0, 0x1C, 0, 0);
+                    fn_80142B24((void*)freePtr, 0, 0x1B, 0, id);
+
+                    entryId = (u16)itemGetStatus(freePtr, 0, 0x1B, 0);
+                    if (entryId == 0 || itemGetStatus(0, entryId, 1, 0) == 0 || entryId >= lbl_80478BD8) {
+                        nextValue = -1;
+                    } else {
+                        cappedValue = (u16)itemGetStatus(freePtr, 0, 0x1C, 0) + (u16)nextValue;
+                        if (cappedValue > (s32)maxCount) {
+                            nextValue = cappedValue - maxCount;
+                            cappedValue = maxCount;
+                        } else {
+                            nextValue = 0;
+                        }
+                        fn_80142B24((void*)freePtr, 0, 0x1C, 0, (u16)cappedValue);
+                    }
+                }
+
+                if (nextValue < 0) {
+                    return nextValue;
+                }
+                needsReorder = 1;
+            }
         }
-        fn_80142B24(entry, 0, 0x1c, 0, next);
+    } else if (index < 0) {
+        while (TRUE) {
+            if (entryBase == 0) {
+                entryPtr = 0;
+            } else {
+                if (itemGetStatus(0, id, 1, 0) == 0) {
+                    targetValid = 0;
+                } else if (id >= lbl_80478BD8) {
+                    targetValid = 0;
+                } else {
+                    targetValid = 1;
+                }
+
+                if (targetValid == 0) {
+                    entryPtr = 0;
+                } else {
+                    scanCount = count;
+                    scanIndex = 0;
+                    while (TRUE) {
+                        if (scanIndex >= scanCount) {
+                            entryPtr = 0;
+                            break;
+                        }
+
+                        entryPtr = entryBase + ((scanIndex * 4) & 0x3FFFC);
+                        entryId = (u16)itemGetStatus(entryPtr, 0, 0x1B, 0);
+                        if (entryPtr != 0 && entryId != 0 && itemGetStatus(0, entryId, 1, 0) != 0 &&
+                            entryId < lbl_80478BD8 && (s32)id == itemGetStatus(entryPtr, 0, 0x1B, 0) &&
+                            itemGetStatus(entryPtr, 0, 0x1C, 0) < (s32)maxCount) {
+                            break;
+                        }
+                        scanIndex++;
+                    }
+                }
+            }
+
+            if (entryPtr != 0) {
+                if (itemGetStatus(0, id, 1, 0) == 0 || id >= lbl_80478BD8) {
+                    nextValue = -1;
+                } else if ((u16)itemGetStatus(entryPtr, 0, 0x1B, 0) == 0) {
+                    nextValue = -1;
+                } else {
+                    fieldValue = (u16)itemGetStatus(entryPtr, 0, 0x1C, 0) + (u16)nextValue;
+                    if (fieldValue > (s32)maxCount) {
+                        nextValue = fieldValue - maxCount;
+                        fieldValue = maxCount;
+                    } else {
+                        nextValue = 0;
+                    }
+                    fn_80142B24((void*)entryPtr, 0, 0x1C, 0, (u16)fieldValue);
+                }
+
+                if (nextValue < 0) {
+                    return nextValue;
+                }
+            } else {
+                if (entryBase == 0) {
+                    freePtr = 0;
+                } else {
+                    scanCount = count;
+                    scanIndex = 0;
+                    while (TRUE) {
+                        if (scanIndex >= scanCount) {
+                            freePtr = 0;
+                            break;
+                        }
+
+                        freePtr = entryBase + ((scanIndex * 4) & 0x3FFFC);
+                        entryId = (u16)itemGetStatus(freePtr, 0, 0x1B, 0);
+                        if (freePtr == 0 || entryId == 0 || itemGetStatus(0, entryId, 1, 0) == 0 || entryId >= lbl_80478BD8) {
+                            freePtr = entryBase + (scanIndex * 4);
+                            break;
+                        }
+                        scanIndex++;
+                    }
+                }
+
+                if (freePtr != 0) {
+                    if (itemGetStatus(0, id, 1, 0) == 0 || id >= lbl_80478BD8) {
+                        nextValue = -1;
+                    } else {
+                        fn_80142B24((void*)freePtr, 0, 0x1B, 0, 0);
+                        fn_80142B24((void*)freePtr, 0, 0x1C, 0, 0);
+                        fn_80142B24((void*)freePtr, 0, 0x1B, 0, id);
+
+                        fieldValue = (u16)itemGetStatus(freePtr, 0, 0x1C, 0) + (u16)nextValue;
+                        if (fieldValue > (s32)maxCount) {
+                            nextValue = fieldValue - maxCount;
+                            fieldValue = maxCount;
+                        } else {
+                            nextValue = 0;
+                        }
+                        fn_80142B24((void*)freePtr, 0, 0x1C, 0, (u16)fieldValue);
+                    }
+
+                    if (nextValue < 0) {
+                        return nextValue;
+                    }
+                    needsReorder = 1;
+                }
+            }
+
+            if (nextValue <= 0) {
+                break;
+            }
+        }
+    } else {
+        entryPtr = entryBase + (index * 4);
+        if (entryPtr == 0 || itemGetStatus(0, id, 1, 0) == 0 || id >= lbl_80478BD8) {
+            nextValue = -1;
+        } else {
+            entryId = (u16)itemGetStatus(entryPtr, 0, 0x1B, 0);
+            if (entryId == 0 || itemGetStatus(0, entryId, 1, 0) == 0 || entryId >= lbl_80478BD8 ||
+                (s32)id != itemGetStatus(entryPtr, 0, 0x1B, 0)) {
+                nextValue = -1;
+            } else {
+                fieldValue = (u16)itemGetStatus(entryPtr, 0, 0x1C, 0) + amount;
+                if (fieldValue > (s32)maxCount) {
+                    nextValue = fieldValue - maxCount;
+                    fieldValue = maxCount;
+                } else {
+                    nextValue = 0;
+                }
+                fn_80142B24((void*)entryPtr, 0, 0x1C, 0, (u16)fieldValue);
+            }
+        }
     }
 
-    if (needsSort) {
-        fn_801425E8(base, count, sortMode);
+    if (needsReorder == 1) {
+        fn_801425E8((u32*)entryBase, count, sortMode);
     }
-    return overflow;
+    return nextValue;
 }
 #endif
 extern u32 lbl_80478BD8;   /* gPeopleFieldCount */
