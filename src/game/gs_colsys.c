@@ -220,7 +220,7 @@ u16 fn_8010C508(u32 typeA, u32 typeB) {
 #pragma optimization_level 0
 #pragma optimizewithasm off
 s32 fn_8010C54C(u16 param1, u8 mode) {
-    u16 i;
+    s32 i;
     u16 code1;
     u16 code2;
     u16 result;
@@ -267,6 +267,8 @@ s32 fn_8010C54C(u16 param1, u8 mode) {
 #pragma pop
 
 /* 0x8010C650 | 0xFC */
+#pragma push
+#pragma dont_inline on
 u16 fn_8010C650(u16 typeA, u16* arr, u16 count) {
     u16 i;
     u16 countA = 0;
@@ -304,6 +306,8 @@ u16 fn_8010C650(u16 typeA, u16* arr, u16 count) {
     }
     return 0x42;
 }
+#pragma dont_inline reset
+#pragma pop
 
 /* 0x8010C74C | 0x30 */
 #pragma push
