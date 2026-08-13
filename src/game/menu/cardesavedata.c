@@ -1890,11 +1890,8 @@ void fn_80084A8C(void) {
            ((void(*)(void))fn_800932F0)(), (s32)r3 == 0) {
         ((void(*)(void))_threadSwitch)();
     }
-    r3 = 0xe4;
-    r4 = 0x0;
-    ((void(*)(void))menuOpen)();
-    r3 = 0xe4;
-    ((void(*)(void))windowSearchID)();
+    ((s32 (*)(s32, s32))menuOpen)(0xe4, 0);
+    r3 = (u32)((void* (*)(u32))windowSearchID)(0xe4);
     r16 = r3;
     if (r16 == 0) {
         r4 = 0x1f4;
@@ -1903,12 +1900,10 @@ void fn_80084A8C(void) {
         __assert();
     }
     if (r16 == 0) {
-        r3 = 0xa6;
-        ((void(*)(void))windowSearchID)();
+        r3 = (u32)((void* (*)(u32))windowSearchID)(0xa6);
         r16 = r3;
     }
-    r3 = r16;
-    ((void(*)(void))windowGetFreeWork)();
+    r3 = (u32)((void* (*)(void*))windowGetFreeWork)((void*)r16);
     r5 = 0x0;
     r16 = *(u32*)((u8*)r3 + 0x0);
     r30 = (u32)&lbl_80478954;
