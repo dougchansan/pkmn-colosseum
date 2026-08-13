@@ -324,9 +324,186 @@ void fn_801D3034(void* state) {
  * Address: 0x801D30BC | Size: 0x3E0
  */
 void battleCameraStartWaza(void* owner, void* sequence) {
-    /* TODO: Waza animation state dispatcher (0x3E0 bytes)
-     * Dispatches to type-specific animation handlers based on move type.
-     */
+    extern void* GSresGetResource(u32 group, u32 resource);
+    extern void clear__5GSvecFv(void* vec);
+    extern void GSlerpGetLinearInterpolationVector(void* dst, void* src,
+                                                   void* target, f32 t);
+    extern f32 lbl_8047E1F0;
+    extern f32 lbl_8047E1F4;
+    extern f32 lbl_8047E1F8;
+    extern f32 lbl_8047E1FC;
+    extern u8 lbl_804673A0[];
+    extern u16 battleGridGetNumPokemonsForTrainer(u32 id);
+    extern void cameraSetTargetExt(u32 a, u32 b, u32 c);
+    extern void cameraRefreshTargetPos(void);
+    extern void cameraMoveStop(void);
+    extern void cameraSetOffsetPosition(void* src);
+    extern void cameraSetOffsetRotation(void* src);
+    extern void cameraSetOffsetScale(void* src);
+    extern void cameraPlayOffsetAnime(u32 groupId, u32 animationId,
+                                      s32 frame, u8 loop);
+    extern void* GSmodelGetBound(void* model);
+    extern void GSmodelGetPosition(void* model, Vec* out);
+    extern void GSmodelGetRotation(void* model, Vec* out);
+    extern void fn_800D1070(s32 mode);
+    u8* ownerBytes = owner;
+    u8* sequenceBytes = sequence;
+    Vec offsetPosition;
+    Vec offsetRotation;
+    Vec offsetScale;
+    Vec center;
+    Vec rootPosition;
+    void* model;
+    u32 flags = 0;
+    s32 paramsFlags = 0;
+    f32 scaleValue;
+    s32 shift = 0;
+    u8 reverse = FALSE;
+
+    if (lbl_8047B3F4 == 0) {
+        return;
+    }
+
+    if (*(s8*)(ownerBytes + 0x76) < 0 &&
+        (sequenceBytes == NULL || ((*(u32*)(sequenceBytes + 0x08) & 0x80) == 0))) {
+        reverse = TRUE;
+    }
+
+    lbl_8047B3EC = owner;
+    lbl_8047B3F0 = sequence;
+    if (sequenceBytes != NULL) {
+        battleCameraDisable();
+        if (*(u32*)(sequenceBytes + 0x18) != 0 &&
+            *(u32*)(sequenceBytes + 0x20) != 0 &&
+            GSresGetResource(*(u32*)(sequenceBytes + 0x18),
+                             *(u32*)(sequenceBytes + 0x20)) != NULL) {
+            model = *(void**)(ownerBytes + 0x24);
+            if (reverse) {
+                shift = 4;
+            }
+
+            cameraPlayOffsetAnime(
+                *(u32*)(sequenceBytes + 0x18), *(u32*)(sequenceBytes + 0x20),
+                0, 0);
+
+            flags = *(u32*)(sequenceBytes + 0x08);
+            if (flags & 0x4) {
+                clear__5GSvecFv(&offsetPosition);
+                clear__5GSvecFv(&offsetRotation);
+                if (*(s8*)(ownerBytes + 0x76) < 0 &&
+                    (flags & 0x02000000)) {
+                    offsetRotation.y = lbl_8047E1F0;
+                }
+                if (flags & 0x00800000) {
+                    battleGridGetNormalisedScale((f32*)&offsetScale);
+                    if (flags & 0x01000000) {
+                        offsetScale.y = lbl_8047E1F4;
+                    }
+                } else {
+                    set__5GSvecFfff((f32*)&offsetScale, lbl_8047E1F4,
+                                    lbl_8047E1F4, lbl_8047E1F4);
+                }
+            } else {
+                GSmodelGetPosition(model, &offsetPosition);
+                if (flags & 0x00004000) {
+                    GSlerpGetLinearInterpolationVector(
+                        &center, (u8*)GSmodelGetBound(model) + 0x10,
+                        (u8*)GSmodelGetBound(model) + 0x1C, lbl_8047E1F8);
+                    GSvecAdd(&offsetPosition, &offsetPosition, &center);
+                }
+                if (*(u16*)(sequenceBytes + 0x2E) == 2 &&
+                    (ownerBytes[0x18] & 2) != 0 &&
+                    GSmodelIsRootNullAdded(model) != 0) {
+                    GSmodelGetRootPosition(model, (GSvec*)&rootPosition);
+                    offsetPosition.y += rootPosition.y;
+                }
+                GSmodelGetRotation(model, &offsetRotation);
+                scaleValue = fn_801DABAC(owner);
+                set__5GSvecFfff(
+                    (f32*)&offsetScale, scaleValue, scaleValue, scaleValue);
+            }
+
+            fn_801765F4(shift);
+            cameraMoveStop();
+            cameraSetOffsetPosition(&offsetPosition);
+            cameraSetOffsetRotation(&offsetRotation);
+            cameraSetOffsetScale(&offsetScale);
+            fn_800D1070(0);
+            cameraUpdate();
+            return;
+        }
+
+        flags = *(u32*)(sequenceBytes + 0x08);
+        if (flags & 0x00200000) {
+            paramsFlags |= 2;
+        } else if (flags & 0x00000200) {
+            paramsFlags |= 4;
+        } else if (flags & 0x00400000) {
+            GSmodelGetPosition(*(void**)(ownerBytes + 0x24), &rootPosition);
+            if (rootPosition.z < lbl_8047E1FC) {
+                paramsFlags |= 4;
+            } else {
+                paramsFlags |= 8;
+            }
+        }
+
+        if (flags & 0x00000400) {
+            paramsFlags |= 0x20;
+        } else if (flags & 0x00000800) {
+            paramsFlags |= 0x40;
+        } else if (flags & 0x00001000) {
+            paramsFlags |= 0x80;
+        }
+    } else {
+        paramsFlags = 4;
+    }
+
+    if (ownerBytes[0x75] == 0) {
+        u16 count = battleGridGetNumPokemonsForTrainer((u32)owner);
+
+        if (count == 1) {
+            paramsFlags &= ~0x1F;
+            paramsFlags |= 0x10;
+        } else if (count > 1) {
+            paramsFlags &= ~0x1F;
+            paramsFlags |= 1;
+        }
+    }
+
+    GSscene_SetMode(7);
+    cameraMoveStop();
+    {
+        u8* activeOwner = lbl_8047B3EC;
+        u8* activeSequence = lbl_8047B3F0;
+        u8* cameraParams = *(u8**)(activeOwner + 0x2C) +
+                           *(u16*)(activeOwner + 0x32) * 0xD4;
+        u32 targetId;
+
+        if (activeSequence != NULL) {
+            targetId = *(u32*)(cameraParams + 0x4C + activeSequence[0x17] * 4);
+        } else {
+            targetId = *(u32*)(cameraParams + 0x54);
+        }
+        cameraSetTargetExt(*(u32*)(ownerBytes + 0x00),
+                           *(u32*)(ownerBytes + 0x04), targetId);
+        cameraRefreshTargetPos();
+        cameraSetTargetExt(*(u32*)(ownerBytes + 0x00),
+                           *(u32*)(ownerBytes + 0x04), (u32)-1);
+    }
+
+    if (ownerBytes[0x75] == 0) {
+        shift = 1;
+    }
+
+    _wazaSequenceCameraCalculateParams__FP13ModelSequenceiP24wazaSequenceCameraParams(
+        owner, paramsFlags, lbl_804673A0);
+    _wazaSequenceCameraSelectMotion__FP13ModelSequenceP12WazaSequenceP24wazaSequenceCameraParams(
+        owner, sequence, lbl_804673A0);
+    _wazaSequenceCameraDoPosition__FP13ModelSequenceP24wazaSequenceCameraParamsfb(
+        owner, lbl_804673A0, shift, reverse);
+    _wazaSequenceCameraDoFOV__FP13ModelSequenceP24wazaSequenceCameraParamsif(
+        owner, lbl_804673A0, paramsFlags, shift);
+    cameraUpdate();
 }
 
 /**
