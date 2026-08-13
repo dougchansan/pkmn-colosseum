@@ -247,7 +247,16 @@ void fn_801D2D28(void) {
     cameraSetFov(lbl_80478CDC);
 
     if (lbl_8047B3F0 == NULL && !cameraMoveEndCheckSpecial(0)) {
-        GSscene_SetMode(8);
+        void* activeSequence = lbl_8047B3F0;
+        if (activeSequence == NULL) {
+            GSscene_SetMode(8);
+        } else {
+            if (*(u32*)((u8*)activeSequence + 0x18) != 0 &&
+                *(u32*)((u8*)activeSequence + 0x20) != 0) {
+                cameraStopAnime(activeSequence);
+            }
+            lbl_8047B3F0 = NULL;
+        }
         fn_801765F4(0);
         lbl_8047B3EC = NULL;
         if (fn_800057A8() == 2) {
