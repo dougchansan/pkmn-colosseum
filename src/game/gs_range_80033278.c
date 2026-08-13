@@ -40,6 +40,7 @@ s32 _sysvarsProcessData__FP16sysvarsFuncEntryPc(void* entry, char* data)
     extern u8 lbl_8047A439;
     extern u32 lbl_8047A43C;
     extern u32 lbl_8047A444;
+    extern u8 lbl_8047A448;
     extern u8 lbl_8047A449;
     extern u8 lbl_8047A44A;
     extern u32 lbl_8047A44C;
@@ -263,7 +264,20 @@ s32 _sysvarsProcessData__FP16sysvarsFuncEntryPc(void* entry, char* data)
             return 2;
         }
 
-        fn_8007C450(menuState[0x08], base[0x48], menuState[0x24], menuState[0x26], 1);
+        candidate = -1;
+        for (i = 0; i < (s8)menuState[0x58]; i++) {
+            item = fn_80082EA4((void*)lbl_8047A434, (s8)i,
+                                menuState[0x24], menuState[0x26]);
+            if (*(u8*)((u8*)item + 0x0C) == 0) {
+                candidate = i;
+                break;
+            }
+        }
+        lbl_8047A448 = (s8)candidate;
+        winMsgClose(1);
+        fn_80082CF0((void*)lbl_8047A434, menuState, lbl_8047A448);
+        fn_8007C450(menuState[0x08], lbl_8047A448,
+                    menuState[0x24], menuState[0x26], 1);
         fn_80166A28(0x4C5);
         progress = lbl_8047B9F8;
         while (progress < lbl_8047B9FC) {
