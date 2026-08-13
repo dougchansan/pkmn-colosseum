@@ -225,6 +225,7 @@ s32 fn_8017E30C(FSYSSlot* slot) {
     FSYSFileEntry* fileEntry = NULL;
     FSYSSubEntry* subEntry = NULL;
     void* allocatedBuf;
+    void* cachedBuf;
     u32 isCompressed;
 
     /* Search the archive TOC for the requested entry */
@@ -265,11 +266,11 @@ s32 fn_8017E30C(FSYSSlot* slot) {
      * the 2026-07-02 note near FSYSCacheLookup's old location below. */
     {
         extern u32 fn_8017F794();
-        allocatedBuf = (void*)fn_8017F794(slot->fileHandle,
-                                           fileEntry->groupID,
-                                           fileEntry->nameHash);
+        cachedBuf = (void*)fn_8017F794(slot->fileHandle,
+                                      fileEntry->groupID,
+                                      fileEntry->nameHash);
     }
-    if (allocatedBuf == NULL) {
+    if (cachedBuf == NULL) {
         return 0;
     }
 
@@ -296,7 +297,7 @@ s32 fn_8017E30C(FSYSSlot* slot) {
         subEntry->buffer = compBuf;
 
         /* Read compressed data from DVD into temporary buffer */
-        fn_80180320(subEntry->buffer, allocatedBuf, decompSize);
+        fn_80180320(subEntry->buffer, cachedBuf, decompSize);
 
         /* Flush the D-cache for the compressed data */
         DCFlushRange(subEntry->buffer, decompSize);
@@ -406,7 +407,7 @@ s32 fn_8017E30C(FSYSSlot* slot) {
 
     /* Read uncompressed data (or already have decompressed data) */
     if (isCompressed == 0) {
-        fn_80180320(subEntry->buffer, allocatedBuf, fileEntry->decompressedSize);
+        fn_80180320(subEntry->buffer, cachedBuf, fileEntry->decompressedSize);
         DCFlushRange(subEntry->buffer, fileEntry->decompressedSize);
     }
 
