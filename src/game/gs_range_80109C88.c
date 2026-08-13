@@ -1372,6 +1372,22 @@ retry:
 
 haveKey:
     found = _menuFaceBiosGetPtr__FUs(key);
+    entry = lbl_8047AD4C;
+    idx = -1;
+    for (i = 0; i < lbl_8047AD48; i++, entry++) {
+        if (found == entry->data) {
+            idx = i;
+            break;
+        }
+    }
+    if (idx >= 0) {
+        fn_8010BD6C(key, callback, arg);
+        key = 0;
+        goto retry;
+    }
+    fn_8010BD6C(key, callback, arg);
+
+    found = _menuFaceBiosGetPtr__FUs(key);
     if (found == NULL) {
         key = 0;
         goto retry;
