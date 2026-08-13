@@ -647,7 +647,7 @@ u8 _wazaSequenceParticleEntryStart(void* entry) {
 
     if ((node->flags & 1) != 0 && node->linkedEntryKey > 0) {
         linked = fn_801DCDA8(sequence, node->linkedEntryKey);
-        if (linked != NULL && linked->startTime <= node->startTime &&
+        if (linked->startTime <= node->startTime &&
             linked->kind == 2 && linked->model != NULL)
         {
             model = linked->model;
