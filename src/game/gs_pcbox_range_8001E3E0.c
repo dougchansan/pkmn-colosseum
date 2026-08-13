@@ -707,7 +707,7 @@ void fn_8001F304(void* arg0, void* arg1) {
     extern f32 lbl_8047B840;
     extern f32 lbl_8047B844;
     extern f32 lbl_8047B848;
-    extern void fn_800CE148();
+    extern f64 sin(f64);
     u8 sp[0x20];
     u32 tmp;
     u32 r3;
@@ -793,8 +793,7 @@ void fn_8001F304(void* arg0, void* arg1) {
                     }
                     f0 = f1 * f0;
                     f1 = f2 * f0;
-                    fn_800CE148();
-                    f3 = (f32)f1;
+                    f3 = (f32)sin((f64)f1);
                     f2 = lbl_8047B844;
                     f1 = lbl_8047B840;
                     f0 = lbl_8047B848;
@@ -806,8 +805,7 @@ void fn_8001F304(void* arg0, void* arg1) {
                     if (f1 < f0) {
                         f1 = f0;
                     }
-                    f0 = (f64)(s32)f1;
-                    *(u8*)((u8*)r31 + 0x67) = tmp;
+                    *(u8*)((u8*)r31 + 0x67) = (s32)f1;
                     return;
                                 }
                 tmp = lbl_8047A31C;
