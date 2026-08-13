@@ -729,6 +729,11 @@ config.libs = [
                 progress_category="sdk",
             ),
             Object(
+                NonMatching,
+                "dolphin/os/OSInterrupt.c",
+                progress_category="sdk",
+            ),
+            Object(
                 Matching,
                 "dolphin/os/OSEXI_fn_8009E7A8.c",
                 progress_category="sdk",
