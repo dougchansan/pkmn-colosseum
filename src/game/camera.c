@@ -58,6 +58,10 @@ void _cameraPadRotateUpdate__FP9_GScamera(void* sceneObj);
 void _cameraOffsetAnimeUpdate__FP9_GScamera(GSRenderCamera* camera);
 void cameraRefreshTargetPos(void);
 void cameraUpdate(u32 captureIndex) {
+    extern void* GSmodelGetPart(void* model, s32 partIndex);
+    extern void GSpartGetTransform(void* part, void* transform, u32 arg2,
+                                   u32 arg3);
+    extern void GSpartFree(void* part);
     GSRenderCamera* camera;
     CameraPadState* state;
     GSRenderCamera* animation;
@@ -205,9 +209,25 @@ void cameraUpdate(u32 captureIndex) {
         switch (state->mode) {
         case 0:
         case 1:
-        case 5:
-            cameraRefreshTargetPos();
+        case 5: {
+            void* target = GSresGetResource(state->targetGroup,
+                                             state->targetId);
+
+            if (target != NULL) {
+                GSmodelGetPosition(target, &state->position);
+                if (state->targetSubId >= 0) {
+                    void* part = GSmodelGetPart(target, state->targetSubId);
+
+                    if (part != NULL) {
+                        GSpartGetTransform(part, &state->view, 0, 0);
+                        fn_800E0168(&state->view, &state->view,
+                                    &state->position);
+                        GSpartFree(part);
+                    }
+                }
+            }
             break;
+        }
         case 4:
             animation = (GSRenderCamera*)GSresGetResource(state->animationGroup,
                                                           state->animationId);
