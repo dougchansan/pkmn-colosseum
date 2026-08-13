@@ -2643,7 +2643,7 @@ s32 GSmsgInit(arg0, arg1)
 
 /* 0x800FC7E0 | 0xB68 */
 #pragma push
-#pragma optimization_level 2
+#pragma optimization_level 3
 #pragma optimizewithasm off
 #pragma peephole off
 #if 0
