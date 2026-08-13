@@ -1235,7 +1235,7 @@ s32 GSmsgGetRect(arg0)
             if (code == 0x20) {
                 *(f32 *)(work + 0x14) = (f32)((work[0x22] >> 1) * *(f32 *)(work + 0x60));
             } else {
-                fontInfo = _msgGetCodeInfo__FP13MSG_TASK_WORKUsPP12tagFONT_INFO(work, code, NULL, NULL);
+                fontInfo = _msgGetCodeInfo__FP13MSG_TASK_WORKUsPP12tagFONT_INFO(work, code, NULL);
                 if (fontInfo == NULL) {
                     *(f32 *)(work + 0x14) = (f32)work[0x22] * *(f32 *)(work + 0x60);
                 } else {
@@ -1415,7 +1415,7 @@ void GSmsgInitRuby(arg0)
                 continue;
             }
 
-            fontInfo = _msgGetCodeInfo__FP13MSG_TASK_WORKUsPP12tagFONT_INFO(arg0, code, NULL, NULL);
+            fontInfo = _msgGetCodeInfo__FP13MSG_TASK_WORKUsPP12tagFONT_INFO(arg0, code, NULL);
             if (fontInfo != NULL) {
                 glyphWidth = ((u8 *)fontInfo)[2];
             } else {
@@ -1558,7 +1558,7 @@ s32 fn_800FAEF8(s32 arg0, s32 arg1, s32 arg2, const char* fmt, ...)
             *(f32*)(work + 0x14) = (f32)(work[0x22] >> 1) * *(f32*)(work + 0x60);
         } else {
             fontNode = NULL;
-            fontInfo = (u8*)_msgGetCodeInfo__FP13MSG_TASK_WORKUsPP12tagFONT_INFO(work, code, &fontNode, NULL);
+            fontInfo = (u8*)_msgGetCodeInfo__FP13MSG_TASK_WORKUsPP12tagFONT_INFO(work, code, &fontNode);
             if (fontInfo == NULL) {
                 s16 x0 = (s16)*(f32*)(work + 0x0C);
                 s16 y0 = (s16)*(f32*)(work + 0x10) + 2;
@@ -2943,7 +2943,7 @@ s32 fn_800FC7E0(arg0, arg1, arg2, arg3)
                 *(f32*)(arg0 + 0x14) = (f32)((arg0[0x22] >> 1) * *(f32*)(arg0 + 0x60));
             } else {
                 fontNode = NULL;
-                fontInfo = _msgGetCodeInfo__FP13MSG_TASK_WORKUsPP12tagFONT_INFO(arg0, code, &fontNode, NULL);
+                fontInfo = _msgGetCodeInfo__FP13MSG_TASK_WORKUsPP12tagFONT_INFO(arg0, code, &fontNode);
                 if (fontInfo == NULL) {
                     s16 x0 = (s16)*(f32*)(arg0 + 0x0C);
                     s16 y0 = (s16)((s32)*(f32*)(arg0 + 0x10) + 2);
@@ -3098,7 +3098,7 @@ void fn_800FD348(arg0, farg1)
             *(f32 *)(arg0 + 0x14) = (f32)((arg0[0x22] >> 1) * *(f32 *)(arg0 + 0x60));
         } else {
             fontNode = NULL;
-            fontInfo = _msgGetCodeInfo__FP13MSG_TASK_WORKUsPP12tagFONT_INFO(arg0, code, &fontNode, NULL);
+            fontInfo = _msgGetCodeInfo__FP13MSG_TASK_WORKUsPP12tagFONT_INFO(arg0, code, &fontNode);
             if (fontInfo == NULL) {
                 glyphHeight = arg0[0x23];
                 x0 = (s16)*(f32 *)(arg0 + 0x0C);
@@ -3340,11 +3340,10 @@ asm void* _msgGetCodeInfo__FP13MSG_TASK_WORKUsPP12tagFONT_INFO(obj, key, outNode
 #include "src/game/gs_thread_fn_800FDF1C.inc"
 }
 #else
-u16 *_msgGetCodeInfo__FP13MSG_TASK_WORKUsPP12tagFONT_INFO(arg0, arg1, arg2, arg7)
+u16 *_msgGetCodeInfo__FP13MSG_TASK_WORKUsPP12tagFONT_INFO(arg0, arg1, arg2)
     u8 *arg0;
     u16 arg1;
     void **arg2;
-    u16 *arg7;
 {
     s32 temp_cr0_lt;
     s32 var_r11;
@@ -3359,7 +3358,6 @@ u16 *_msgGetCodeInfo__FP13MSG_TASK_WORKUsPP12tagFONT_INFO(arg0, arg1, arg2, arg7
     u32 var_r8;
     u8 *var_r6;
 
-    var_r10 = (void*)(arg7);
     var_r11 = 0;
     var_r7 = 0;
     temp_r9 = M2C_FIELD(lbl_80478B08, u16 *, 4);
