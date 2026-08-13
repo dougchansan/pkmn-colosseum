@@ -2789,12 +2789,12 @@ asm void fn_8013BE04(void* ptr, void* mtx, u8* color, f32 x, f32 z, f32 scale) {
 #else
 void fn_8013BE04(void* ptr, void* mtx, u8* color, f32 x, f32 z, f32 scale) {
     u8* p = ptr;
+    u16 rows = *(u16*)(p + 0x1C);
+    u16 cols = *(u16*)(p + 0x1E);
     u8* positions = *(u8**)(p + 4);
     u8* normals = *(u8**)(p + 8);
     u8* texcoords = *(u8**)(p + 0xC);
     u8* colors = *(u8**)(p + 0x10);
-    u16 rows = *(u16*)(p + 0x1C);
-    u16 cols = *(u16*)(p + 0x1E);
     f32 base[3];
     f32 current[3];
     f32 rowStep[3];
