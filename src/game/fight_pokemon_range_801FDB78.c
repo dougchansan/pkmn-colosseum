@@ -1977,6 +1977,9 @@ void fightOutPokemonCheckFightActionWazaSelect(void) {
 
 /* 0x801FFB30 | size: 0x398 | large */
 #pragma pop
+#pragma push
+#pragma optimization_level 0
+#pragma peephole off
 void fightOutPokemonGetOutOkWazaBanmeAry(void) {
     extern void fn_80119ED0();
     extern void fn_8011A3E4();
@@ -2232,6 +2235,7 @@ void fightOutPokemonGetOutOkWazaBanmeAry(void) {
 }
 
 /* 0x801FFEC8 | size: 0xB94 | massive */
+#pragma pop
 #pragma push
 #pragma peephole off
 u8 fightOutPokemonCheckCanOutOkWazaBanme(void* fighter, u32 slot, u32 mode, u16* output) {
