@@ -3351,19 +3351,23 @@ void menuPokemonDrawItem(u8* ctx, u8* pane) {
         }
         break;
     case 0x543:
-    case 0x12A4:
+    case 0x12A4: {
+        value = 0;
         if ((s8)lbl_803A1D40[7] >= 0 && (s8)lbl_803A1D40[7] < 6) {
             base = lbl_802E4E58 + (s32)(s8)lbl_803A1D40[4] * 0x30 + (s32)(s8)lbl_803A1D40[7] * 8;
-            winSpriteSetDisp(pane, *(s16*)base == *(s32*)(ctx + 4));
-        } else {
-            winSpriteSetDisp(pane, 0);
+            value = *(s16*)base;
         }
+        winSpriteSetDisp(pane, value == *(s32*)(ctx + 4));
         break;
+    }
     case 0x542:
-    case 0x12A3:
+    case 0x12A3: {
+        value = 0;
         if ((s8)lbl_803A1D40[6] >= 0 && (s8)lbl_803A1D40[6] < 6) {
             base = lbl_802E4E58 + (s32)(s8)lbl_803A1D40[4] * 0x30 + (s32)(s8)lbl_803A1D40[6] * 8;
-            if (*(s16*)base == *(s32*)(ctx + 4)) {
+            value = *(s16*)base;
+        }
+            if (value == *(s32*)(ctx + 4)) {
                 winSpriteSetDisp(pane, 1);
                 if (lbl_803A1D40[0x14] == 0 || lbl_803A1D40[0x14] == 2) {
                     if ((u8)fn_80107E78(ctx, *(u16*)(pane + 6), 0x2D) == 0) {
@@ -3377,10 +3381,8 @@ void menuPokemonDrawItem(u8* ctx, u8* pane) {
             } else {
                 winSpriteSetDisp(pane, 0);
             }
-        } else {
-            winSpriteSetDisp(pane, 0);
-        }
         break;
+    }
     case 0x3B6:
     case 0x3B7:
         if (lbl_803A1D40[0x14] == 0 || lbl_803A1D40[0x14] == 2) {
