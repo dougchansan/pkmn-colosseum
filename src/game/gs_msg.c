@@ -3454,6 +3454,7 @@ s32 _msgGetSize__FPCUs(arg0)
     u8 *table;
     u8 *entry;
     u8 *node;
+    u8 *next;
     u32 flags;
     u32 result;
     u32 mode;
@@ -3537,45 +3538,45 @@ s32 _msgGetSize__FPCUs(arg0)
             continue;
         }
 
+        next = NULL;
         if (mode == 1) {
-            *(u32 *)(work + 0x30) = result;
+            next = (u8 *)result;
         } else if (mode == 2) {
-            node = NULL;
-            if (result != 0) {
-                subKey = result & 0xFFFFF;
-                node = (u8 *)*(u32 *)(mgr + 0x08);
-                while (node != NULL) {
-                    if (*(u16 *)node == (u16)(result >> 0x14)) {
-                        lo = 0;
-                        hi = *(u16 *)(node + 0x04);
-                        while (lo < hi) {
-                            mid = ((u32)lo + (u32)hi) >> 1;
-                            entry = node + 0x10 + mid * 8;
-                            if (*(u32 *)entry == subKey) {
-                                *(u32 *)(work + 0x30) = (u32)(node + *(s32 *)(entry + 4));
-                                node = NULL;
-                                break;
-                            }
-                            if (*(u32 *)entry < subKey) {
-                                lo = (u16)(mid + 1);
-                            } else {
-                                hi = (u16)mid;
-                            }
-                        }
-                        if (node == NULL) {
+            subKey = result & 0xFFFFF;
+            node = (u8 *)*(u32 *)(mgr + 0x08);
+            while (node != NULL) {
+                if (*(u16 *)node == (u16)(result >> 0x14)) {
+                    lo = 0;
+                    hi = *(u16 *)(node + 0x04);
+                    while (lo < hi) {
+                        mid = ((u32)lo + (u32)hi) >> 1;
+                        entry = node + 0x10 + mid * 8;
+                        if (*(u32 *)entry == subKey) {
+                            next = node + *(s32 *)(entry + 4);
+                            node = NULL;
                             break;
                         }
+                        if (*(u32 *)entry < subKey) {
+                            lo = (u16)(mid + 1);
+                        } else {
+                            hi = (u16)mid;
+                        }
                     }
-                    node = (u8 *)*(u32 *)(node + 0x08);
+                    if (node == NULL) {
+                        break;
+                    }
                 }
+                node = (u8 *)*(u32 *)(node + 0x08);
             }
         }
 
         if ((s8)work[0x40] >= 3) {
             GSlogWrite((const char *)lbl_80271700, lbl_80315678);
         } else {
-            *(u32 *)(work + 0x34 + (s8)work[0x40] * 4) = (u32)ip + 2;
+            *(u32 *)(work + 0x34 + (s8)work[0x40] * 4) =
+                *(u32 *)(work + 0x30);
             work[0x40]++;
+            *(u32 *)(work + 0x30) = (u32)next;
         }
     }
 
