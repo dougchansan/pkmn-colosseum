@@ -2532,7 +2532,379 @@ s32 fn_800FC7E0(arg0, arg1, arg2, arg3)
     s32 arg2;
     u8 arg3;
 {
-    /* TODO: replace compile-only placeholder with real C decompilation. */
+    typedef u32 (*MsgCtrlFunc)(u8*);
+    u8 *mgr;
+    u8 *table;
+    u8 *entry;
+    u8 *node;
+    u16 *cursor;
+    u16 *savedCursor;
+    u16 code;
+    u8 control;
+    u8 stackDepth;
+    u8 repeatCount;
+    u8 continueFlag;
+    u8 glyphWidth;
+    u8 normalFlag;
+    u8 savedStack0;
+    u8 savedStack1;
+    u8 savedStack2;
+    s32 loopCount;
+    s32 soundId;
+    s16 drawX;
+    s16 drawY;
+    u32 result;
+    u32 lowKey;
+    u32 texHandle;
+    f32 fx;
+    f32 fy;
+    f32 angle;
+    f64 amp;
+    u16 lo;
+    u16 hi;
+    u32 mid;
+    void *fontNode;
+    void *fontInfo;
+    u32 glyphInfo;
+    u32 backup34;
+    u32 backup38;
+    u32 backup3C;
+
+    if (arg0 == NULL) {
+        return -1;
+    }
+    if (arg0[0] == 0) {
+        return -1;
+    }
+
+    spriteSetEnv();
+    fn_800D88DC(0x80000003);
+    fn_800D888C(4);
+    fn_800D7820(lbl_80314F98);
+
+    mgr = (u8*)lbl_80478B08;
+    ((void (*)(s32, u32))fn_800D85D4)(0, *(u32*)(mgr + ((s8)mgr[0x1D] * 4) + 0x0C));
+    fn_800DC1D4(1);
+    ((void (*)(s32, s32, s32, s32, s32))fn_800DC224)(0, 0, 0, 0, 0);
+    texHandle = lbl_8047CD00;
+    fn_800DBEB4(0, &texHandle);
+    ((void (*)(s32, s32))fn_800DBF78)(0, 0x0C);
+    ((void (*)(s32, s32, s32, s32, s32))fn_800DC0D4)(0, 0x0F, 0x0E, 0x0A, 0x0F);
+    ((void (*)(s32, s32, s32, s32, s32, s32))fn_800DC14C)(0, 0, 0, 0, 1, 0);
+    ((void (*)(s32, s32, s32, s32, s32))fn_800DBFD4)(0, 7, 4, 5, 7);
+    ((void (*)(s32, s32, s32, s32, s32, s32))fn_800DC04C)(0, 0, 0, 0, 1, 0);
+
+    mgr = (u8*)lbl_80478B08;
+    texHandle = (u32)((void* (*)(void*, u8))GStextureLockImage)(*(void**)(mgr + ((s8)mgr[0x1D] * 4) + 0x0C), 0);
+    *(u32*)(mgr + 0x14) = texHandle;
+
+    arg0[0x45] = ((arg2 & 0x30) != 0);
+    arg0[1] = 0;
+    arg0[0x4B] = 0;
+    arg0[0x46] = 0;
+    normalFlag = 0;
+    continueFlag = 0;
+
+    if ((u8)arg3 == 0) {
+        for (loopCount = 0; (u32)loopCount < fn_800D3088(); loopCount++) {
+            for (;;) {
+                cursor = *(u16**)(arg0 + 0x30);
+                code = *cursor;
+                if (code == 0) {
+                    if ((s8)arg0[0x40] == 0) {
+                        arg0[0] = 2;
+                        break;
+                    }
+                    arg0[0x40]--;
+                    *(u32*)(arg0 + 0x30) = *(u32*)(arg0 + 0x34 + ((s8)arg0[0x40] * 4));
+                    continue;
+                }
+
+                *(u16**)(arg0 + 0x30) = cursor + 1;
+                if (code == 0xFFFF) {
+                    cursor = *(u16**)(arg0 + 0x30);
+                    control = *(u8*)cursor;
+                    *(u16**)(arg0 + 0x30) = (u16*)((u8*)cursor + 1);
+                    table = *(u8**)((u8*)lbl_80478B08 + 0x28);
+                    if (table != NULL) {
+                        entry = table + control * 8;
+                        if (arg0[1] == 0) {
+                            continueFlag = ((entry[0] >> 4) & 1);
+                        } else {
+                            continueFlag = ((entry[0] >> 3) & 1);
+                        }
+                        if (continueFlag != 0) {
+                            MsgCtrlFunc func = *(MsgCtrlFunc*)(entry + 4);
+                            if (func != NULL) {
+                                result = func(arg0);
+                                continueFlag = (entry[0] >> 5) & 1;
+                                if ((((entry[0] >> 6) & 3) != 0) && (result != 0)) {
+                                    if (((entry[0] >> 6) & 3) == 1) {
+                                        *(u32*)(arg0 + 0x30) = result;
+                                    } else if (((entry[0] >> 6) & 3) == 2) {
+                                        node = *(u8**)((u8*)lbl_80478B08 + 0x08);
+                                        lowKey = result & 0xFFFFF;
+                                        while (node != NULL) {
+                                            if (*(u16*)node == (u16)(result >> 20)) {
+                                                lo = 0;
+                                                hi = *(u16*)(node + 4);
+                                                while (lo < hi) {
+                                                    mid = ((u32)lo + (u32)hi) >> 1;
+                                                    entry = node + 0x10 + mid * 8;
+                                                    if (*(u32*)entry == lowKey) {
+                                                        *(u32*)(arg0 + 0x30) = (u32)(node + *(s32*)(entry + 4));
+                                                        node = NULL;
+                                                        break;
+                                                    }
+                                                    if (*(u32*)entry < lowKey) {
+                                                        lo = (u16)(mid + 1);
+                                                    } else {
+                                                        hi = (u16)mid;
+                                                    }
+                                                }
+                                                if (node == NULL) {
+                                                    break;
+                                                }
+                                            }
+                                            node = *(u8**)(node + 8);
+                                        }
+                                    }
+
+                                    stackDepth = arg0[0x40];
+                                    if ((s8)stackDepth >= 3) {
+                                        GSlogWrite((const char*)lbl_80271700, lbl_80315678);
+                                    } else {
+                                        *(u32*)(arg0 + 0x34 + ((s8)stackDepth * 4)) = (u32)*(u16**)(arg0 + 0x30);
+                                        arg0[0x40] = stackDepth + 1;
+                                    }
+                                }
+                            } else {
+                                continueFlag = 0;
+                            }
+                        }
+                    } else {
+                        continueFlag = 0;
+                    }
+                } else if (arg0[0x4B] != 2) {
+                    continueFlag = 1;
+                    if ((u8)arg1 != 0) {
+                        continueFlag = 0;
+                    }
+                    normalFlag = 1;
+                } else {
+                    continueFlag = 0;
+                }
+
+                if (continueFlag != 0) {
+                    break;
+                }
+            }
+        }
+    }
+
+    backup34 = *(u32*)(arg0 + 0x34);
+    backup38 = *(u32*)(arg0 + 0x38);
+    backup3C = *(u32*)(arg0 + 0x3C);
+    savedCursor = *(u16**)(arg0 + 0x30);
+    savedStack0 = arg0[0x40];
+
+    arg0[1] = 1;
+    *(f32*)(arg0 + 0x0C) = *(f32*)(arg0 + 0x04);
+    *(f32*)(arg0 + 0x10) = *(f32*)(arg0 + 0x08);
+    *(u32*)(arg0 + 0x30) = *(u32*)(arg0 + 0x2C);
+    arg0[0x40] = 0;
+    arg0[0x4B] = 0;
+
+    for (;;) {
+        if (*(u16**)(arg0 + 0x30) == savedCursor) {
+            stackDepth = arg0[0x40];
+            if ((s8)stackDepth > 0) {
+                s32 i;
+                for (i = 0; i < (s8)stackDepth; i++) {
+                    if (*(u32*)(arg0 + 0x34 + i * 4) != (&backup34)[i]) {
+                        break;
+                    }
+                }
+                if (i == (s8)stackDepth) {
+                    break;
+                }
+            } else {
+                break;
+            }
+        }
+
+        cursor = *(u16**)(arg0 + 0x30);
+        code = *cursor;
+        if (code == 0) {
+            if ((s8)arg0[0x40] == 0) {
+                break;
+            }
+            arg0[0x40]--;
+            *(u32*)(arg0 + 0x30) = *(u32*)(arg0 + 0x34 + ((s8)arg0[0x40] * 4));
+            continue;
+        }
+        *(u16**)(arg0 + 0x30) = cursor + 1;
+
+        if (code == 0xFFFF) {
+            cursor = *(u16**)(arg0 + 0x30);
+            control = *(u8*)cursor;
+            *(u16**)(arg0 + 0x30) = (u16*)((u8*)cursor + 1);
+            table = *(u8**)((u8*)lbl_80478B08 + 0x28);
+            if (table != NULL) {
+                entry = table + control * 8;
+                if (arg0[1] == 0) {
+                    continueFlag = ((entry[0] >> 4) & 1);
+                } else {
+                    continueFlag = ((entry[0] >> 3) & 1);
+                }
+                if (continueFlag != 0) {
+                    MsgCtrlFunc func = *(MsgCtrlFunc*)(entry + 4);
+                    if (func != NULL) {
+                        result = func(arg0);
+                        continueFlag = (entry[0] >> 5) & 1;
+                        if ((((entry[0] >> 6) & 3) != 0) && (result != 0)) {
+                            if (((entry[0] >> 6) & 3) == 1) {
+                                *(u32*)(arg0 + 0x30) = result;
+                            } else if (((entry[0] >> 6) & 3) == 2) {
+                                node = *(u8**)((u8*)lbl_80478B08 + 0x08);
+                                lowKey = result & 0xFFFFF;
+                                while (node != NULL) {
+                                    if (*(u16*)node == (u16)(result >> 20)) {
+                                        lo = 0;
+                                        hi = *(u16*)(node + 4);
+                                        while (lo < hi) {
+                                            mid = ((u32)lo + (u32)hi) >> 1;
+                                            entry = node + 0x10 + mid * 8;
+                                            if (*(u32*)entry == lowKey) {
+                                                *(u32*)(arg0 + 0x30) = (u32)(node + *(s32*)(entry + 4));
+                                                node = NULL;
+                                                break;
+                                            }
+                                            if (*(u32*)entry < lowKey) {
+                                                lo = (u16)(mid + 1);
+                                            } else {
+                                                hi = (u16)mid;
+                                            }
+                                        }
+                                        if (node == NULL) {
+                                            break;
+                                        }
+                                    }
+                                    node = *(u8**)(node + 8);
+                                }
+                            }
+
+                            stackDepth = arg0[0x40];
+                            if ((s8)stackDepth >= 3) {
+                                GSlogWrite((const char*)lbl_80271700, lbl_80315678);
+                            } else {
+                                *(u32*)(arg0 + 0x34 + ((s8)stackDepth * 4)) = (u32)*(u16**)(arg0 + 0x30);
+                                arg0[0x40] = stackDepth + 1;
+                            }
+                        }
+                    }
+                }
+
+                if (continueFlag != 0 && *(f32*)(arg0 + 0x0C) == *(f32*)(arg0 + 0x04)) {
+                    *(f32*)(arg0 + 0x0C) += (f32)arg0[0x22];
+                }
+            }
+        } else if (arg0[0x4B] != 2) {
+            if (code == 0x20) {
+                *(f32*)(arg0 + 0x14) = (f32)((arg0[0x22] >> 1) * *(f32*)(arg0 + 0x60));
+            } else {
+                fontNode = NULL;
+                fontInfo = _msgGetCodeInfo__FP13MSG_TASK_WORKUsPP12tagFONT_INFO(arg0, code, &fontNode, NULL);
+                if (fontInfo == NULL) {
+                    s16 x0 = (s16)*(f32*)(arg0 + 0x0C);
+                    s16 y0 = (s16)((s32)*(f32*)(arg0 + 0x10) + 2);
+                    s16 x1 = (s16)(((f32)arg0[0x22] * *(f32*)(arg0 + 0x60)) + (f32)x0);
+                    s16 y1 = (s16)(((f32)arg0[0x23] * *(f32*)(arg0 + 0x64)) + (f32)y0);
+
+                    fn_800D888C(0x80000002);
+                    fn_800D6A00(7);
+                    fn_800D7820(lbl_80314E08);
+                    fn_800D67BC(2);
+                    fn_800D61E4(x0, y0);
+                    fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+                    fn_800D61E4(x1, y1);
+                    fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+                    fn_800D6728();
+                    fn_800D88DC(0x80000002);
+                    fn_800D7820(lbl_80314F98);
+                    fn_800DC1D4(1);
+                    *(f32*)(arg0 + 0x14) = lbl_8047CD30 + ((f32)arg0[0x22] * *(f32*)(arg0 + 0x60));
+                } else {
+                    glyphInfo = *(u32*)((u8*)fontInfo + 4);
+                    glyphWidth = *(u8*)((u8*)fontInfo + 2);
+                    fn_800FD69C(arg0, (u32)fontNode + (*(s32*)((u8*)fontNode + 4) + (glyphInfo & 0xFFFFFF)),
+                                glyphWidth, *(u8*)((u8*)fontInfo + 3), (s8)(glyphInfo >> 24));
+                    *(f32*)(arg0 + 0x14) = (f32)((s16)glyphWidth * *(f32*)(arg0 + 0x60));
+                }
+            }
+            *(f32*)(arg0 + 0x0C) += *(f32*)(arg0 + 0x14);
+            if ((s8)arg0[0x41] == 0) {
+                if (code == 0x300C) {
+                    continueFlag = 1;
+                }
+                if (code == 0x300D) {
+                    continueFlag = 0;
+                }
+            }
+            if (arg0[0x4B] == 1) {
+                fn_800FD348(arg0, 0.0);
+            }
+        }
+    }
+
+    if ((u8)arg1 != 0) {
+        normalFlag = 0;
+    }
+    if (normalFlag != arg0[0x47]) {
+        soundId = 0;
+        switch ((s8)arg0[3]) {
+        case 1: soundId = 0x57; break;
+        case 2: soundId = 0x58; break;
+        case 3: soundId = 0x59; break;
+        case 4: soundId = 0x497; break;
+        case 5: soundId = 0x498; break;
+        }
+        if (soundId != 0) {
+            if (normalFlag != 0) {
+                fn_80166A28();
+            } else {
+                fn_801669BC(soundId);
+            }
+        }
+        arg0[0x47] = normalFlag;
+    }
+
+    if (arg0[0x46] != 0) {
+        angle = ((lbl_8047CD40 * (f32)lbl_8047AC68) / lbl_8047CD44);
+        fx = *(f32*)(arg0 + 0x0C) + lbl_8047CD30;
+        fy = *(f32*)(arg0 + 0x10) + lbl_8047CD3C;
+        amp = ((f64 (*)(f64))cos)(angle);
+        drawX = (s16)fx;
+        drawY = (s16)(fy + (lbl_8047CD48 * (f32)amp));
+        lbl_8047AC68 += fn_800D3088();
+        lbl_8047AC68 %= 0x32;
+        fn_800D888C(0x80000000);
+        fn_800D7820(lbl_80314E08);
+        ((void (*)(s16, s16, s32, s32, s32))windowDrawSprite)(drawX, drawY, 0, 0xB9, 0);
+        fn_800D88DC(0x80000000);
+        fn_800D7820(lbl_80314F98);
+        fn_800DC1D4(1);
+    }
+
+    *(u32*)(arg0 + 0x30) = (u32)savedCursor;
+    arg0[0x40] = savedStack0;
+    *(u32*)(arg0 + 0x34) = backup34;
+    *(u32*)(arg0 + 0x38) = backup38;
+    *(u32*)(arg0 + 0x3C) = backup3C;
+
+    mgr = (u8*)lbl_80478B08;
+    GStextureUnlockImage(*(void**)(mgr + ((s8)mgr[0x1D] * 4) + 0x0C));
+    fn_800D888C(0x80000000);
     return 0;
 }
 
