@@ -2813,6 +2813,22 @@ PSParticle* psInterpretParticle0(PSParticle* pp, PSParticle* parentCtx) {
                         break;
                     }
 
+                    case 0xF6: {
+                        PSGeneratorState* gen =
+                            (PSGeneratorState*)pp->peopleObj;
+                        u16 oldFlags;
+
+                        if (gen == NULL || gen->appSRT == NULL) {
+                            break;
+                        }
+                        oldFlags = gen->angleFlags;
+                        gen->angleFlags = oldFlags | 0x1000;
+                        if ((oldFlags & 0x1000) == 0) {
+                            genPosUpdate(gen);
+                        }
+                        break;
+                    }
+
                     /* ---- 0xAA: randomized child script ---- */
                     case 0xAA: {
                         s32 scriptId = ((u16)stream[0] << 8) | stream[1];
