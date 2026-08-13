@@ -435,9 +435,10 @@ s32 fn_8017E30C(FSYSSlot* slot) {
                 }
             }
 
-            if (poolEntry2->callback != NULL) {
+            if (*(void**)((u8*)poolEntry2 + 0xC) != NULL) {
                 typedef void* (*PostCallback)(u32 fh, u32 id, u32 sz);
-                PostCallback cb = (PostCallback)poolEntry2->callback;
+                PostCallback cb =
+                    (PostCallback)*(void**)((u8*)poolEntry2 + 0xC);
                 if (isCompressed) {
                     cb(slot->fileHandle, fileEntry->nameHash,
                        fileEntry->compressedSize);
