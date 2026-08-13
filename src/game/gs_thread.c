@@ -6815,15 +6815,16 @@ s32 fn_800F4C38(void* obj) {
             if (ctx->stackCount <= 0) { GSlogWritef((const char*)(errBase+0x14)); leftValue = ctx->stack[0]; }
             else { ctx->stackCount = ctx->stackCount - 1; leftValue = ctx->stack[ctx->stackCount]; }
         } else {
-            u32 fieldIdx = idx & 0x3F;
-            if (idx & 0x20) {
-                if (idx & 0x40) leftValue = (u32)&ctx->stack[ctx->frame + fieldIdx];
-                else leftValue = (u32)&ctx->globals[fieldIdx];
+            if (ctx->stackCount <= 0) { GSlogWritef((const char*)(errBase+0x14)); idx = ctx->stack[0]; }
+            else { ctx->stackCount = ctx->stackCount - 1; idx = ctx->stack[ctx->stackCount]; }
+            if (leftDesc & 0x20) {
+                if (leftDesc & 0x40) leftValue = (u32)&ctx->stack[ctx->frame + idx];
+                else leftValue = (u32)&ctx->globals[idx];
             } else {
                 u32 rawptr;
-                if (idx & 0x40) rawptr = (u32)&ctx->stack[ctx->frame + fieldIdx];
-                else rawptr = (u32)&ctx->globals[fieldIdx];
-                if (idx & 0x100) leftValue = rawptr;
+                if (leftDesc & 0x40) rawptr = (u32)&ctx->stack[ctx->frame + idx];
+                else rawptr = (u32)&ctx->globals[idx];
+                if (leftDesc & 0x100) leftValue = rawptr;
                 else leftValue = *(u32*)rawptr;
             }
         }
@@ -6838,15 +6839,16 @@ s32 fn_800F4C38(void* obj) {
             if (ctx->stackCount <= 0) { GSlogWritef((const char*)(errBase+0x14)); rightValue = ctx->stack[0]; }
             else { ctx->stackCount = ctx->stackCount - 1; rightValue = ctx->stack[ctx->stackCount]; }
         } else {
-            u32 fieldIdx = idx & 0x3F;
-            if (idx & 0x20) {
-                if (idx & 0x40) rightValue = (u32)&ctx->stack[ctx->frame + fieldIdx];
-                else rightValue = (u32)&ctx->globals[fieldIdx];
+            if (ctx->stackCount <= 0) { GSlogWritef((const char*)(errBase+0x14)); idx = ctx->stack[0]; }
+            else { ctx->stackCount = ctx->stackCount - 1; idx = ctx->stack[ctx->stackCount]; }
+            if (rightDesc & 0x20) {
+                if (rightDesc & 0x40) rightValue = (u32)&ctx->stack[ctx->frame + idx];
+                else rightValue = (u32)&ctx->globals[idx];
             } else {
                 u32 rawptr;
-                if (idx & 0x40) rawptr = (u32)&ctx->stack[ctx->frame + fieldIdx];
-                else rawptr = (u32)&ctx->globals[fieldIdx];
-                if (idx & 0x100) rightValue = rawptr;
+                if (rightDesc & 0x40) rawptr = (u32)&ctx->stack[ctx->frame + idx];
+                else rawptr = (u32)&ctx->globals[idx];
+                if (rightDesc & 0x100) rightValue = rawptr;
                 else rightValue = *(u32*)rawptr;
             }
         }
