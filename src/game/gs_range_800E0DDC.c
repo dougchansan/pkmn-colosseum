@@ -405,8 +405,8 @@ extern u32 lbl_8047AB5C;
 extern u32 lbl_8047AB58;
 extern u32 lbl_8047AB54;
 extern u32 lbl_8047AB50;
-extern u32 lbl_8047CB50;
-extern u32 lbl_8047CB48;
+extern f64 lbl_8047CB50;
+extern f32 lbl_8047CB48;
 extern u32 lbl_8047AB3C;
 extern u32 lbl_8047AB40;
 extern u32 lbl_8047AB44;
@@ -745,8 +745,8 @@ extern u32 lbl_8047AB5C;
 extern u32 lbl_8047AB58;
 extern u32 lbl_8047AB54;
 extern u32 lbl_8047AB50;
-extern u32 lbl_8047CB50;
-extern u32 lbl_8047CB48;
+extern f64 lbl_8047CB50;
+extern f32 lbl_8047CB48;
 extern u32 lbl_8047AB3C;
 #if 0
 asm void fn_800E0E14(void) {
@@ -768,6 +768,8 @@ u8 fn_800E0E14(u32 verbose, u32 dumpMap) {
     u8* end;
     u32 allocatedCount;
     u32 freeCount;
+    u32 largestFree;
+    u32 totalFree;
 
     ok = 1;
     if (verbose != 0) {
@@ -832,12 +834,23 @@ u8 fn_800E0E14(u32 verbose, u32 dumpMap) {
                 ok = 0;
             }
             if (*(u8*)&lbl_8047AB28 != 0) {
-                if (*(u32*)desc->data != 0 ||
-                    *(u32*)(desc->data + desc->size - 4) != 0) {
+                u8* tail;
+
+                tail = desc->data + desc->size - 4;
+                if (desc->data[0] != 0 || desc->data[1] != 0 ||
+                    desc->data[2] != 0 || desc->data[3] != 0 ||
+                    tail[0] != 0 || tail[1] != 0 ||
+                    tail[2] != 0 || tail[3] != 0) {
                     GSlogWrite((char*)lbl_80270658 + 0x1ac, desc->used);
                     ok = 0;
-                    *(u32*)desc->data = 0;
-                    *(u32*)(desc->data + desc->size - 4) = 0;
+                    desc->data[0] = 0;
+                    desc->data[1] = 0;
+                    desc->data[2] = 0;
+                    desc->data[3] = 0;
+                    tail[0] = 0;
+                    tail[1] = 0;
+                    tail[2] = 0;
+                    tail[3] = 0;
                 }
                 if (desc->locked == 0) {
                     sum = 0x3D94;
@@ -919,7 +932,34 @@ u8 fn_800E0E14(u32 verbose, u32 dumpMap) {
         GSlogWrite((char*)lbl_80270658 + 0x3cc, lbl_8047AB4C);
         GSlogWrite((char*)lbl_80270658 + 0x3e8, lbl_8047AB48);
         GSlogWrite((char*)lbl_80270658 + 0x404, lbl_8047AB34 - lbl_8047AB38 + 0x10);
+        largestFree = 0;
+        block = (u32*)lbl_8047AB30;
+        while (block != NULL) {
+            if (block[2] > largestFree) {
+                largestFree = block[2];
+            }
+            block = (u32*)block[1];
+        }
+        GSlogWrite((char*)lbl_80270658 + 0x424, largestFree);
+        totalFree = 0;
+        block = (u32*)lbl_8047AB30;
+        while (block != NULL) {
+            totalFree += block[2];
+            block = (u32*)block[1];
+        }
+        GSlogWrite((char*)lbl_80270658 + 0x444, totalFree);
         GSlogWrite((char*)lbl_80270658 + 0x464, freeCount);
+        GSlogWrite((char*)lbl_80270658 + 0x480, lbl_8047AB60);
+        GSlogWrite((char*)lbl_80270658 + 0x49c, lbl_8047AB5C);
+        GSlogWrite((char*)lbl_80270658 + 0x4b8, lbl_8047AB58);
+        GSlogWrite((char*)lbl_80270658 + 0x4d4, lbl_8047AB54);
+        GSlogWrite((char*)lbl_80270658 + 0x4f0, lbl_8047AB50);
+        GSlogWritef((char*)lbl_80270658 + 0x50c,
+                    lbl_8047CB48 *
+                        ((f32)((f64)(freeCount - 1) - lbl_8047CB50) /
+                         (f32)((f64)(freeCount + allocatedCount) -
+                               lbl_8047CB50)));
+        GSlogWrite((char*)lbl_80270658 + 0x52c);
     }
 
     if (!ok) {
