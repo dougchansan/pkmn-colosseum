@@ -243,7 +243,7 @@ u8 fn_80076398(void* pokemon, s32 check)
     u16 base_stat;
     s32 i;
 
-    if (pokemon != NULL && pokemonGetStatus(pokemon, 0, 0x6E, 0) == 0) {
+    if (pokemon == NULL || pokemonGetStatus(pokemon, 0, 0x6E, 0) == 0) {
         return 1;
     }
 
