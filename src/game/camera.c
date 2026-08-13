@@ -254,9 +254,22 @@ void cameraUpdate(u32 captureIndex) {
             _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
             return;
         }
-        fn_800D258C(camera);
-        _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
     }
+
+    if (state->mode == 3) {
+        GScameraSetPosition(camera, &state->direction);
+        GScameraSetRotation(
+            camera, (const GSRenderVec3*)&state->rotation);
+        GScameraGetLookAt(camera, &up, &interest);
+        fn_800E0168(&state->position, &interest, &state->view);
+        GScameraGetPerspective(
+            camera, &aspect, &fov, &nearPlane, &farPlane);
+        GScameraSetPerspective(
+            camera, state->fov, fov, nearPlane, farPlane);
+    }
+
+    fn_800D258C(camera);
+    _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
 }
 #pragma pop
 #pragma push
