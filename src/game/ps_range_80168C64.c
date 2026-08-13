@@ -3721,32 +3721,51 @@ void psDispSubAppSRT(PSParticle* pp, Mtx parentMatrix) {
     void psDispSubMakePolygon(PSParticle*, void*,
                               f32, f32, f32, f32, f32, f32,
                               f32, f32, f32, f32, f32, f32);
-    PSAppSRT* appSRT = (PSAppSRT*)pp->parentObj;
+    extern f32 lbl_8047D5E8;
+    extern f32 lbl_8047D5EC;
+    extern f32 lbl_8047D5F0;
+    extern f64 lbl_8047D5F8;
+    PSGeneratorState* generator = (PSGeneratorState*)pp->peopleObj;
     Mtx appMatrix;
+    Mtx scaleMatrix;
+    Mtx rotation;
     Vec velocity;
     Vec position;
+    Vec previous;
+    Vec axisA;
+    Vec axisB;
+    Vec normal;
+    f32 axisXX;
+    f32 axisXY;
+    f32 axisXZ;
+    f32 axisYX;
+    f32 axisYY;
+    f32 axisYZ;
+    f32 angle;
 
-    if (appSRT->flags != lbl_80478C30) {
-        if (appSRT->type != 2) {
-            HSD_MtxSRT(appSRT->matrix, &appSRT->scaleX,
-                       &appSRT->translationX, &appSRT->rotationX, NULL);
+    if (((PSAppSRT*)pp->parentObj)->flags != lbl_80478C30) {
+        if (((PSAppSRT*)pp->parentObj)->type != 2) {
+            HSD_MtxSRT(((PSAppSRT*)pp->parentObj)->matrix,
+                       &((PSAppSRT*)pp->parentObj)->scaleX,
+                       &((PSAppSRT*)pp->parentObj)->translationX,
+                       &((PSAppSRT*)pp->parentObj)->rotationX, NULL);
         }
-        if (appSRT->type == 1) {
-            appSRT->type = 2;
+        if (((PSAppSRT*)pp->parentObj)->type == 1) {
+            ((PSAppSRT*)pp->parentObj)->type = 2;
         }
     }
 
-    appSRT->flags = lbl_80478C30;
-    PSMTXCopy(appSRT->matrix, appMatrix);
-    appMatrix[0][3] -= appSRT->rotationX;
-    appMatrix[1][3] -= appSRT->rotationY;
-    appMatrix[2][3] -= appSRT->rotationZ;
+    ((PSAppSRT*)pp->parentObj)->flags = lbl_80478C30;
+    PSMTXCopy(((PSAppSRT*)pp->parentObj)->matrix, appMatrix);
+    appMatrix[0][3] -= ((PSAppSRT*)pp->parentObj)->rotationX;
+    appMatrix[1][3] -= ((PSAppSRT*)pp->parentObj)->rotationY;
+    appMatrix[2][3] -= ((PSAppSRT*)pp->parentObj)->rotationZ;
 
     velocity.x = pp->velocityX;
     velocity.y = pp->velocityY;
     velocity.z = pp->velocityZ;
     PSMTXMultVec(appMatrix, &velocity, &velocity);
-    if (appSRT->active != 0 && (pp->flags & 4) == 0) {
+    if (((PSAppSRT*)pp->parentObj)->active != 0 && (pp->flags & 4) == 0) {
         PSMTXMultVec((const f32(*)[4])lbl_80452DE8,
                      &velocity, &velocity);
     }
@@ -3754,27 +3773,21 @@ void psDispSubAppSRT(PSParticle* pp, Mtx parentMatrix) {
     position.x = pp->positionX;
     position.y = pp->positionY;
     position.z = pp->positionZ;
-    if (appSRT->active != 0) {
+    if (((PSAppSRT*)pp->parentObj)->active != 0) {
         PSMTXMultVec(appMatrix, &position, &position);
         PSMTXMultVec((const f32(*)[4])lbl_80452DE8,
                      &position, &position);
-        position.x += appSRT->rotationX;
-        position.y += appSRT->rotationY;
-        position.z += appSRT->rotationZ;
+        position.x += ((PSAppSRT*)pp->parentObj)->rotationX;
+        position.y += ((PSAppSRT*)pp->parentObj)->rotationY;
+        position.z += ((PSAppSRT*)pp->parentObj)->rotationZ;
     } else {
-        PSMTXMultVec(appSRT->matrix, &position, &position);
+        PSMTXMultVec(((PSAppSRT*)pp->parentObj)->matrix,
+                     &position, &position);
     }
 
     if (parentMatrix != NULL) {
-        Mtx scaleMatrix;
-        f32 axisXX;
-        f32 axisXY;
-        f32 axisXZ;
-        f32 axisYX;
-        f32 axisYY;
-        f32 axisYZ;
-
-        PSMTXScale(scaleMatrix, appSRT->scaleX, appSRT->scaleY, 1.0f);
+        PSMTXScale(scaleMatrix, ((PSAppSRT*)pp->parentObj)->scaleX,
+                    ((PSAppSRT*)pp->parentObj)->scaleY, 1.0f);
         PSMTXConcat((const f32(*)[4])(lbl_80452DE8 + 0x7C),
                     scaleMatrix, scaleMatrix);
         axisXX = scaleMatrix[0][0] * pp->lerpValue;
@@ -3783,39 +3796,263 @@ void psDispSubAppSRT(PSParticle* pp, Mtx parentMatrix) {
         axisYX = -scaleMatrix[1][1] * pp->lerpValue;
         axisYY = scaleMatrix[2][0] * pp->lerpValue;
         axisYZ = -scaleMatrix[2][1] * pp->lerpValue;
-        psDispSubMakePolygon(pp, parentMatrix,
-                             position.x, position.y, position.z,
-                             velocity.x, velocity.y, velocity.z,
-                             axisXX, axisXY, axisXZ,
-                             axisYX, axisYY, axisYZ);
     } else {
         f32* view = (f32*)(lbl_80452DE8 + 0xAC);
-        Vec axisA;
-        Vec axisB;
 
-        axisA.x = appSRT->scaleX + view[3];
-        axisA.y = appSRT->scaleY + view[7];
+        axisA.x = ((PSAppSRT*)pp->parentObj)->scaleX + view[3];
+        axisA.y = ((PSAppSRT*)pp->parentObj)->scaleY + view[7];
         axisA.z = view[11];
         axisB.x = axisA.x;
-        axisB.y = -appSRT->scaleY + view[7];
+        axisB.y = -((PSAppSRT*)pp->parentObj)->scaleY + view[7];
         axisB.z = axisA.z;
         PSMTXMultVec((const f32(*)[4])(lbl_80452DE8 + 0x7C),
                      &axisA, &axisA);
-        axisA.x *= pp->lerpValue;
-        axisA.y *= pp->lerpValue;
-        axisA.z *= pp->lerpValue;
         PSMTXMultVec((const f32(*)[4])(lbl_80452DE8 + 0x7C),
                      &axisB, &axisB);
-        axisB.x *= pp->lerpValue;
-        axisB.y *= pp->lerpValue;
-        axisB.z *= pp->lerpValue;
-        psDispSubMakePolygon(pp, NULL,
-                             position.x, position.y, position.z,
-                             velocity.x, velocity.y, velocity.z,
-                             axisA.x, axisA.y, axisA.z,
-                             axisB.x, axisB.y, axisB.z);
+        axisXX = axisA.x * pp->lerpValue;
+        axisXZ = axisA.y * pp->lerpValue;
+        axisYY = axisA.z * pp->lerpValue;
+        axisXY = axisB.x * pp->lerpValue;
+        axisYX = axisB.y * pp->lerpValue;
+        axisYZ = axisB.z * pp->lerpValue;
     }
 
+    if (generator != NULL && (generator->generatorFlags & 0x20)) {
+        axisXX *= generator->generatorData[3];
+        axisXY *= generator->generatorData[3];
+        axisXZ *= generator->generatorData[4];
+        axisYX *= generator->generatorData[4];
+        axisYY *= generator->generatorData[5];
+        axisYZ *= generator->generatorData[5];
+    }
+
+    if ((pp->flags & 0x00300000) == 0) {
+        goto use_heading;
+    }
+
+    if (*(f32*)(lbl_80452DE8 + 0x60) == lbl_8047D5C8) {
+        f32* view;
+        f32* projection;
+        f32 w;
+        f32 previousW;
+        f32 invW;
+        f32 invPreviousW;
+        f32 projectedX;
+        f32 projectedY;
+        f32 previousX;
+        f32 previousY;
+
+        if (pp->flags & 4) {
+            if (generator != NULL) {
+                f32 sinScale = (f32)sin(pp->scaleFactor);
+                f32 sinFriction = (f32)sin(pp->frictionFactor);
+                f32 cosScale = (f32)cos(pp->scaleFactor);
+                f32 cosFriction = (f32)cos(pp->frictionFactor);
+                f32* people = (f32*)generator;
+                f32 horizontal = pp->velocityZ - people[21];
+                f32 vertical = pp->velocityX - people[14];
+                f32 peopleScale = people[17];
+                f32 peopleAngle = people[18];
+                f32 magnitude;
+
+                if (peopleScale < lbl_8047D5C8) {
+                    peopleScale = -peopleScale;
+                }
+                if (peopleAngle < lbl_8047D5C8) {
+                    peopleAngle = -peopleAngle;
+                }
+                magnitude = (horizontal * (f32)tan(peopleAngle) + peopleScale) *
+                    pp->velocityY;
+                previous.x = people[8] + vertical * cosFriction +
+                    horizontal * sinFriction;
+                previous.y = people[9] +
+                    cosFriction * (horizontal * sinScale) +
+                    sinFriction * (-magnitude * sinScale) +
+                    magnitude * (f32)sin(vertical) * cosScale;
+                previous.z = people[10] +
+                    cosFriction * (horizontal * cosScale) +
+                    sinFriction * (-magnitude * cosScale) -
+                    magnitude * (f32)sin(vertical) * sinScale;
+            } else {
+                previous.x = pp->positionX;
+                previous.y = pp->positionY;
+                previous.z = pp->positionZ;
+            }
+
+            if (((PSAppSRT*)pp->parentObj)->active != 0) {
+                PSMTXMultVec(appMatrix, &previous, &previous);
+                PSMTXMultVec((const f32(*)[4])lbl_80452DE8,
+                             &previous, &previous);
+                previous.x += ((PSAppSRT*)pp->parentObj)->rotationX;
+                previous.y += ((PSAppSRT*)pp->parentObj)->rotationY;
+                previous.z += ((PSAppSRT*)pp->parentObj)->rotationZ;
+            } else {
+                PSMTXMultVec(((PSAppSRT*)pp->parentObj)->matrix,
+                             &previous, &previous);
+            }
+        } else {
+            previous.x = position.x - velocity.x;
+            previous.y = position.y - velocity.y;
+            previous.z = position.z - velocity.z;
+        }
+
+        view = (f32*)(lbl_80452DE8 + 0xAC);
+        w = view[8] * position.x + view[9] * position.y +
+            view[10] * position.z + view[11];
+        if (w == lbl_8047D5C8) {
+            goto use_heading;
+        }
+        invW = lbl_8047D5E8 / w;
+        previousW = view[8] * previous.x + view[9] * previous.y +
+            view[10] * previous.z + view[11];
+        if (previousW == lbl_8047D5C8) {
+            goto use_heading;
+        }
+        invPreviousW = lbl_8047D5E8 / previousW;
+        projection = (f32*)(lbl_80452DE8 + 0x30);
+        projectedX = (projection[0] * position.x +
+            projection[1] * position.y + projection[2] * position.z +
+            projection[3]) * invW;
+        projectedY = (projection[4] * position.x +
+            projection[5] * position.y + projection[6] * position.z +
+            projection[7]) * invW;
+        previousX = (projection[0] * previous.x +
+            projection[1] * previous.y + projection[2] * previous.z +
+            projection[3]) * invPreviousW;
+        previousY = (projection[4] * previous.x +
+            projection[5] * previous.y + projection[6] * previous.z +
+            projection[7]) * invPreviousW;
+        projectedX -= previousX;
+        projectedY -= previousY;
+        if (__fabs(projectedY) < lbl_80478AC8) {
+            angle = projectedX >= lbl_8047D5C8 ?
+                lbl_8047D5EC : lbl_8047D5F0;
+        } else {
+            angle = (f32)atan2(projectedX, projectedY);
+        }
+    } else {
+        f32* projection = (f32*)(lbl_80452DE8 + 0x30);
+        f32 dx;
+        f32 dy;
+        f32 dz;
+        f32 projectedX;
+        f32 projectedY;
+
+        if (pp->flags & 4) {
+            if (generator != NULL) {
+                f32 sinScale = (f32)sin(pp->scaleFactor);
+                f32 sinFriction = (f32)sin(pp->frictionFactor);
+                f32 cosScale = (f32)cos(pp->scaleFactor);
+                f32 cosFriction = (f32)cos(pp->frictionFactor);
+                f32* people = (f32*)generator;
+                f32 horizontal = pp->velocityZ - people[21];
+                f32 vertical = pp->velocityX - people[14];
+                f32 peopleScale = people[17];
+                f32 peopleAngle = people[18];
+                f32 magnitude;
+
+                if (peopleScale < lbl_8047D5C8) {
+                    peopleScale = -peopleScale;
+                }
+                if (peopleAngle < lbl_8047D5C8) {
+                    peopleAngle = -peopleAngle;
+                }
+                magnitude = (horizontal * (f32)tan(peopleAngle) + peopleScale) *
+                    pp->velocityY;
+                previous.x = people[8] + vertical * cosFriction +
+                    horizontal * sinFriction;
+                previous.y = people[9] +
+                    cosFriction * (horizontal * sinScale) +
+                    sinFriction * (-magnitude * sinScale) +
+                    magnitude * (f32)sin(vertical) * cosScale;
+                previous.z = people[10] +
+                    cosFriction * (horizontal * cosScale) +
+                    sinFriction * (-magnitude * cosScale) -
+                    magnitude * (f32)sin(vertical) * sinScale;
+            } else {
+                previous.x = pp->positionX;
+                previous.y = pp->positionY;
+                previous.z = pp->positionZ;
+            }
+
+            if (((PSAppSRT*)pp->parentObj)->active != 0) {
+                PSMTXMultVec(appMatrix, &previous, &previous);
+                PSMTXMultVec((const f32(*)[4])lbl_80452DE8,
+                             &previous, &previous);
+                previous.x += ((PSAppSRT*)pp->parentObj)->rotationX;
+                previous.y += ((PSAppSRT*)pp->parentObj)->rotationY;
+                previous.z += ((PSAppSRT*)pp->parentObj)->rotationZ;
+            } else {
+                PSMTXMultVec(((PSAppSRT*)pp->parentObj)->matrix,
+                             &previous, &previous);
+            }
+            dx = position.x - previous.x;
+            dy = position.y - previous.y;
+            dz = position.z - previous.z;
+        } else {
+            dx = velocity.x;
+            dy = velocity.y;
+            dz = velocity.z;
+        }
+
+        projectedX = projection[0] * dx + projection[1] * dy +
+            projection[2] * dz;
+        projectedY = projection[4] * dx + projection[5] * dy +
+            projection[6] * dz;
+        if (__fabs(projectedY) < lbl_80478AC8) {
+            angle = projectedX >= lbl_8047D5C8 ?
+                lbl_8047D5EC : lbl_8047D5F0;
+        } else {
+            angle = (f32)atan2(projectedX, projectedY);
+        }
+    }
+
+    if (pp->flags & 0x00200000) {
+        angle += pp->heading;
+    }
+    goto rotate_axes;
+
+use_heading:
+    angle = pp->heading;
+
+rotate_axes:
+    if (__fabs(angle) > lbl_8047D5F8) {
+        f32 firstX;
+        f32 firstY;
+        f32 firstZ;
+        f32 secondX;
+        f32 secondY;
+        f32 secondZ;
+
+        normal.x = axisXZ * axisYZ - axisYY * axisYX;
+        normal.y = axisYY * axisXY - axisXX * axisYZ;
+        normal.z = axisXX * axisYX - axisXZ * axisXY;
+        PSMTXRotAxisRad(rotation, &normal, angle);
+        firstX = rotation[0][0] * axisXX + rotation[0][1] * axisXZ +
+            rotation[0][2] * axisYY;
+        firstY = rotation[1][0] * axisXX + rotation[1][1] * axisXZ +
+            rotation[1][2] * axisYY;
+        firstZ = rotation[2][0] * axisXX + rotation[2][1] * axisXZ +
+            rotation[2][2] * axisYY;
+        secondX = rotation[0][0] * axisXY + rotation[0][1] * axisYX +
+            rotation[0][2] * axisYZ;
+        secondY = rotation[1][0] * axisXY + rotation[1][1] * axisYX +
+            rotation[1][2] * axisYZ;
+        secondZ = rotation[2][0] * axisXY + rotation[2][1] * axisYX +
+            rotation[2][2] * axisYZ;
+        axisXX = firstX;
+        axisXZ = firstY;
+        axisYY = firstZ;
+        axisXY = secondX;
+        axisYX = secondY;
+        axisYZ = secondZ;
+    }
+
+    psDispSubMakePolygon(pp, parentMatrix,
+                         position.x, position.y, position.z,
+                         velocity.x, velocity.y, velocity.z,
+                         axisXX, axisXZ, axisYY,
+                         axisXY, axisYX, axisYZ);
 }
 
 #pragma pop
