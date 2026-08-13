@@ -2941,43 +2941,36 @@ PSParticle* psInterpretParticle0(PSParticle* pp, PSParticle* parentCtx) {
                     }
 
                     case 0xBA: {
-                        u16 tableIndex = ((u16)stream[0] << 8) | stream[1];
-                        u32* bank = (u32*)lbl_804527C8[pp->bankIndex];
-                        u16 scriptId = bank != NULL ?
-                            (u16)bank[tableIndex] : tableIndex;
-
-                        stream += 2;
-                        spawned = psGenerateParticleID0(pp, pp->linkNo,
-                            pp->bankIndex, scriptId, NULL);
-                        if (spawned == NULL) {
-                            break;
+                        if (pp->color1Timer != 0) {
+                            s32 scale = ((u32)pp->color1Countdown << 16) /
+                                        pp->color1Timer;
+                            pp->color1.r = (u8)(((pp->color1Target.r << 16) +
+                                scale * (pp->color1.r - pp->color1Target.r)) >> 16);
+                            pp->color1.g = (u8)(((pp->color1Target.g << 16) +
+                                scale * (pp->color1.g - pp->color1Target.g)) >> 16);
+                            pp->color1.b = (u8)(((pp->color1Target.b << 16) +
+                                scale * (pp->color1.b - pp->color1Target.b)) >> 16);
+                            pp->color1.a = (u8)(((pp->color1Target.a << 16) +
+                                scale * (pp->color1.a - pp->color1Target.a)) >> 16);
                         }
-                        spawned->positionX = pp->positionX;
-                        spawned->positionY = pp->positionY;
-                        spawned->positionZ = pp->positionZ;
-                        spawned->velocityX = pp->velocityX;
-                        spawned->velocityY = pp->velocityY;
-                        spawned->velocityZ = pp->velocityZ;
-                        spawned->scriptId = pp->scriptId;
-                        spawned->peopleObj = pp->peopleObj;
-                        if (pp->peopleObj != NULL) {
-                            (*(u32*)((u8*)pp->peopleObj + 0x4C))++;
+                        scratch[0] = fn_801ADC7C();
+                        pp->color1Target.r = U8ClampAdd(pp->color1Target.r,
+                            (s8)stream[0] * 2 * scratch[0]);
+                        scratch[0] = fn_801ADC7C();
+                        pp->color1Target.g = U8ClampAdd(pp->color1Target.g,
+                            (s8)stream[1] * 2 * scratch[0]);
+                        scratch[0] = fn_801ADC7C();
+                        pp->color1Target.b = U8ClampAdd(pp->color1Target.b,
+                            (s8)stream[2] * 2 * scratch[0]);
+                        scratch[0] = fn_801ADC7C();
+                        pp->color1Target.a = U8ClampAdd(pp->color1Target.a,
+                            (s8)stream[3] * 2 * scratch[0]);
+                        stream += 4;
+                        if (pp->color1Timer == 0) {
+                            pp->color1 = pp->color1Target;
+                        } else {
+                            pp->color1Countdown = pp->color1Timer;
                         }
-                        if (*(u32*)((u8*)pp->peopleObj + 4) & 0x20000000) {
-                            spawned->flags |= 0x20000000;
-                        }
-                        psApplyVelocityLocalRotation(spawned);
-                        if (pp->parentObj != NULL) {
-                            if (pp->peopleObj != NULL &&
-                                (*(u16*)((u8*)pp->peopleObj + 0x12) & 0x40)) {
-                                psChangeParticleAppSRT(spawned,
-                                    (PSAppSRT*)pp->parentObj);
-                            } else {
-                                psAttachParticleAppSRT(spawned,
-                                    (PSAppSRT*)pp->parentObj);
-                            }
-                        }
-                        psInterpretParticle0(spawned, pp);
                         break;
                     }
 
