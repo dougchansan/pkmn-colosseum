@@ -1327,6 +1327,7 @@ u8 fightOutPokemonGetJoutaiMigawariHp(void* trainer) {
 
 /* 0x801FF1BC | size: 0x974 | massive */
 #pragma push
+#pragma optimization_level 0
 #pragma peephole off
 void fightOutPokemonCheckFightActionWazaSelect(void) {
     extern u8 lbl_80375CA8[];
