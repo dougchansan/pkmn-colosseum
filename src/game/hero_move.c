@@ -99,7 +99,7 @@ extern void pokemonResetBasisStatus(void* ptr);
 void pokemonSetLevelBasisStatus(void);
 extern void heroItemGetItemKindToItemAryPtr(void);
 extern void heroSetStatus();
-extern void heroGetStatus(void);
+extern u32 heroGetStatus(void*, u32, u32);
 extern void* GSresAllocResourceAlign(); /* K&R: called with 5 args, returns void* */
 extern u8 fn_800FF548(void);
 extern u32 _unloadScript__FPvUlUl(); /* K&R: asm void wrapper, used as function pointer */
@@ -3877,16 +3877,47 @@ u32 heroMoveGetKenObjID(void)
 
 void heroMoveSyncWithHero(void)
 {
-    HeroMoveMemberState* follower;
+    HeroMoveMemberState* members = (HeroMoveMemberState*)lbl_80426BD0;
+    HeroMoveMemberState* follower = members + 1;
+    s32 shouldFollow = 0;
+    f32 spacing;
 
-    if (fn_801906A0(0x8AE) != 0) {
-        return;
+    if (fn_801906A0(0x8AE) == 0 && heroGetStatus(0, 0x18, 0) != 0) {
+        shouldFollow = 1;
     }
 
-    follower = (HeroMoveMemberState*)lbl_80426BD0 + 1;
-    if (!(follower->flags & 1)) {
+    if (shouldFollow) {
+        u32 handle = *(u32*)&lbl_8047D034;
+        if (follower->flags & 1) {
+            return;
+        }
         follower->flags |= 1;
-        follower->spacing = lbl_8047D038;
+        if (follower->neckMode == 1) {
+            fn_80188AF4(0, handle);
+        }
+        fn_80188F78(0, handle);
+        follower->neckMode = 1;
+        members[members[0].field_00].spacing = lbl_8047D038;
+        spacing = lbl_8047D0D4;
+        if ((members[0].flags & 1) && members[0].field_00 != 0) {
+            members[0].spacing = spacing;
+            spacing += spacing;
+        }
+        if ((members[1].flags & 1) && members[0].field_00 != 1) {
+            members[1].spacing = spacing;
+        }
+        fn_8018C1E8(0, handle, 1);
+    } else if (members[0].field_00 != 1) {
+        follower->flags &= ~1;
+        members[members[0].field_00].spacing = lbl_8047D038;
+        spacing = lbl_8047D0D4;
+        if ((members[0].flags & 1) && members[0].field_00 != 0) {
+            members[0].spacing = spacing;
+            spacing += spacing;
+        }
+        if ((members[1].flags & 1) && members[0].field_00 != 1) {
+            members[1].spacing = spacing;
+        }
     }
 }
 
