@@ -204,6 +204,9 @@ extern s32 psAttachParticleAppSRT(PSParticle* pp, PSAppSRT* parentObj);
 extern s32 psChangeGeneratorAppSRT(PSGeneratorState* gen, PSAppSRT* parentObj); /* 0x8016A79C */
 extern s32 psAttachGeneratorAppSRT(PSGeneratorState* gen, PSAppSRT* parentObj);
 extern void genPosUpdate(void* obj);                                    /* 0x80175E88 */
+extern void fn_800BA6B0(u32 numChannels);
+extern void fn_800BA6F4(u32 chan, u32 enable, u32 ambSrc, u32 matSrc,
+                        u32 lightMask, u32 diffuseFn, u32 attnFn);
 extern void modifyDir(PSParticle* pp, f32 param);                       /* 0x80172FA8 */
 extern void modifyDirGenBase(PSParticle* pp, f32 a, f32 b, f32 c, f32 d); /* 0x801732A0 */
 extern f32 sqrtf(f32 x);
@@ -272,6 +275,7 @@ void psDispSubAPPSRTPoint(PSParticle* pp);
 void psDispSubPointTrail(PSParticle* pp);
 void psSetupTevInvalidState(void);
 void psSetupTevCommon(void);
+void psSetupTev(PSParticle* pp);
 void setupChanReg(PSParticle* pp);
 void setupTevReg(PSParticle* pp);
 extern f32 lbl_8047D5DC;
@@ -1422,6 +1426,40 @@ void fn_8016AB94(u32 linkMask, s32 mode) {
                                         pp->alphaMode & 7);
                         }
 
+                        psSetupTev(pp);
+                        {
+                            u32 lighting = pp->flags & 0x80100000;
+
+                            if (lighting != (u32)lbl_8047B144) {
+                                u32 attn;
+                                u32 diffuse;
+
+                                lbl_8047B144 = lighting;
+                                fn_800BA6B0(1);
+                                switch (lighting) {
+                                case 0x00100000:
+                                    fn_800BA6F4(4, 0, 1, 1, 0, 0, 2);
+                                    break;
+                                case 0:
+                                case 0x80000000:
+                                    attn = HSD_LObjGetLightMaskAttnFunc() != 0 ? 1 : 2;
+                                    diffuse = HSD_LObjGetLightMaskDiffuse();
+                                    fn_800BA6F4(0, 1, 0, 0, diffuse, 0, attn);
+                                    fn_800BA6F4(2, 0, 0, 0, 0, 0, 2);
+                                    break;
+                                case 0x80100000:
+                                    attn = HSD_LObjGetLightMaskAttnFunc() != 0 ? 1 : 2;
+                                    diffuse = HSD_LObjGetLightMaskDiffuse();
+                                    fn_800BA6F4(0, 1, 0, 0, diffuse, 0, attn);
+                                    fn_800BA6F4(2, 0, 1, 1, 0, 0, 2);
+                                    break;
+                                default:
+                                    fn_800BA6F4(4, 0, 0, 0, 0, 0, 2);
+                                    break;
+                                }
+                                fn_800BA6F4(5, 0, 0, 0, 0, 0, 2);
+                            }
+                        }
                         setupChanReg(pp);
                         setupTevReg(pp);
 
