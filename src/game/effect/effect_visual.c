@@ -4567,10 +4567,10 @@ void fn_8013EA44(void* ptr) {
     void* texture;
     u8* part;
     void* bound;
-    f32 maxVec[3];
     f32 minVec[3];
-    f32 mid[3];
     f32 scaledMin[3];
+    f32 maxVec[3];
+    f32 mid[3];
     f32 scaledMax[3];
     f32 alpha;
     f32 alphaStep;
