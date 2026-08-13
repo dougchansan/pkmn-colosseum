@@ -1319,7 +1319,9 @@ retry:
         }
         if (pokemon == NULL) {
             key = 0;
-        } else if (!pokemonCheckValid(pokemon) || pokemonBiosGetTamagoFlag(pokemon)) {
+        } else if (!pokemonCheckValid(pokemon)) {
+            key = 0x33D;
+        } else if (pokemonBiosGetTamagoFlag(pokemon)) {
             key = 0x33D;
         } else {
             u16 species = pokemonGetStatus(pokemon, 0, 0x6E, 0);
