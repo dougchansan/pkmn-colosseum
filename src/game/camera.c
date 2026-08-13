@@ -294,6 +294,22 @@ void cameraUpdate(u32 captureIndex) {
             camera, state->fov, fov, nearPlane, farPlane);
     }
 
+    if (state->mode == 7) {
+        set__5GSvecFfff(&eye, lbl_8047D740, state->height, state->distance);
+        GSmtxMakeYRotation(&delta, state->rotation.y);
+        GSvecTransform(&eye, &delta, &eye);
+        GSvecAdd(&state->direction, &state->position, &eye);
+        GSvecAdd(&interest, &state->position, &state->view);
+        GScameraSetPosition(camera, &state->direction);
+        GScameraLookAt(
+            camera, (const GSRenderVec3*)lbl_8036C248, &interest);
+        state->rotation.x = -(f32)atan2(state->height, state->distance);
+        GScameraGetPerspective(
+            camera, &aspect, &fov, &nearPlane, &farPlane);
+        GScameraSetPerspective(
+            camera, state->fov, fov, nearPlane, farPlane);
+    }
+
     fn_800D258C(camera);
     _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
 }
