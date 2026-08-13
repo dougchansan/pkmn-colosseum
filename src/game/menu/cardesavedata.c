@@ -240,7 +240,6 @@ u32 fn_80080310(void* output, const u8* packed, void* auxiliary)
     bitPosition = 0;
     switch (*(s32*)output) {
     case 0:
-    case 72:
         descriptor = (const u32*)lbl_80268DC0;
         for (descriptorIndex = 0; descriptorIndex < 40;
              descriptorIndex++, descriptor += 3)
