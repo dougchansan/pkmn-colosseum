@@ -134,6 +134,7 @@ s32 _sysvarsProcessData__FP16sysvarsFuncEntryPc(void* entry, char* data)
     s32 itemResult;
     s32 i;
     s32 current;
+    s32 occupiedMsg;
     s32 randomPick;
     u8 selection;
     u8 region;
@@ -248,7 +249,36 @@ s32 _sysvarsProcessData__FP16sysvarsFuncEntryPc(void* entry, char* data)
         region = menuState[0x24];
         current = (s8)menuState[0x5E + (s8)base[0x48]];
         if (current >= 0) {
-            msgctrlSetValue(0x31, (void*)0x3C7C);
+            switch (*((u8*)lbl_8047A434 + (s8)menuState[0x24] + 0x1E)) {
+            case 0:
+                occupiedMsg = 0x3C7C;
+                break;
+            case 1:
+                occupiedMsg = 0x3C7D;
+                break;
+            case 2:
+                occupiedMsg = 0x3C7F;
+                break;
+            case 3:
+                occupiedMsg = 0x3C81;
+                break;
+            case 4:
+                occupiedMsg = 0x3C83;
+                break;
+            case 5:
+                occupiedMsg = 0x3C85;
+                break;
+            case 6:
+                occupiedMsg = 0x3C88;
+                break;
+            case 7:
+                occupiedMsg = 0x3C8B;
+                break;
+            default:
+                occupiedMsg = 0x3C7C;
+                break;
+            }
+            msgctrlSetValue(0x31, (void*)(u32)occupiedMsg);
             msgctrlSetValue(0x4D, menuState + 0x28 + (s8)base[0x48] * 0x10);
             msgctrlSetValue(0x57, menuState + 0x38 + (s8)base[0x48] * 0x10);
             fn_8007C450(menuState[0x08], base[0x48], region, menuState[0x26], 6);
