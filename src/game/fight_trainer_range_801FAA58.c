@@ -105,7 +105,7 @@ extern void fn_801FCAFC(u8* ptr, u32 val);
 extern void fightTrainerPokemonPartDataBiosSetName(u8* ptr, u32 val);
 extern void fightTrainerPokemonPartDataBiosSetWazaTypeRevise(u8* ptr, u8 idx, u8 val);
 extern void fightTrainerPokemonDataBiosSetNickname(u8* ptr, u32 val);
-extern void fightTrainerPokemonDataBiosSetStatusRnd(u8* ptr, u8 idx, u8 val);
+extern void fightTrainerPokemonDataBiosSetStatusRnd(u8* ptr, u8 idx, s8 val);
 extern void fightTrainerPokemonDataBiosSetStatusEffort(u8* ptr, u8 idx, u16 val);
 extern void fightTrainerPokemonDataBiosSetLevel(u8* ptr, u8 val);
 extern void fightTrainerPokemonDataBiosSetItemBallId(u8* ptr, u16 val);
@@ -213,7 +213,7 @@ void fightTrainerSetStatus(void* ctx, u32 slot, u32 field, u32 idx, u32 val) {
     case 0x0B: fightTrainerPokemonPartDataBiosSetName(ptr, val); break;
     case 0x0C: fightTrainerPokemonPartDataBiosSetWazaTypeRevise(ptr, (u8)idx, (u8)val); break;
     case 0x0E: fightTrainerPokemonDataBiosSetNickname(ptr, val); break;
-    case 0x0F: fightTrainerPokemonDataBiosSetStatusRnd(ptr, (u8)idx, (u8)val); break;
+    case 0x0F: fightTrainerPokemonDataBiosSetStatusRnd(ptr, (u8)idx, (s8)val); break;
     case 0x10: fightTrainerPokemonDataBiosSetStatusEffort(ptr, (u8)idx, (u16)val); break;
     case 0x11: fightTrainerPokemonDataBiosSetLevel(ptr, (u8)val); break;
     case 0x12: fightTrainerPokemonDataBiosSetItemBallId(ptr, (u16)val); break;
