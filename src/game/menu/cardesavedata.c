@@ -1430,6 +1430,9 @@ s32 fn_80083BF8(void* arena)
 
 
 /* 0x8007FDBC | size: 0x554 */
+#pragma push
+#pragma optimization_level 3
+#pragma peephole off
 void* fn_8007FDBC(void* window, const void* title) {
     char* table;
     u8* ctx;
@@ -1569,6 +1572,7 @@ void* fn_8007FDBC(void* window, const void* title) {
 
     return ctx;
 }
+#pragma pop
 
 
 /* 0x80084034 | size: 0x4 */
