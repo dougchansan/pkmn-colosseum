@@ -1883,8 +1883,7 @@ void fn_80084A8C(void) {
     r15 = 0x0;
     tmp = (u32)&lbl_8026F2E8;
     *(u32*)(sp + 0xC34) = tmp;
-    r3 = 0x1;
-    ((void(*)(void))fn_80093698)();
+    r3 = ((s32 (*)(s32))fn_80093698)(1);
     /* Retail emits _threadSwitch before fn_800932F0: top-test rotation, so the
      * setup and the call move into the condition as a comma chain. */
     while (r5 = 0x0, r4 = r3 + 0x190, r3 = 0x1,
