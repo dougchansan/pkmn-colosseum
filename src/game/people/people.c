@@ -4946,6 +4946,12 @@ void* fn_8018E050(u32 groupId, u32 index, s32 objectId) {
 extern void* floorOpenObject(s32, const void*);
 extern void GSresRegisterResource(u32, u32, u32);
 extern void GSmodelSetBoundCheck(void*, s32);
+extern void GSmodelEnableAnimBlend(void*);
+extern void* floorDataBiosGetCurrentPtr(void);
+extern u32 floorDataBiosGetShadowLightID(void);
+extern void* GSresGetResource(u32, u32);
+extern void GSmodelSetShadowFlags(void*, u32);
+extern void GSmodelSetShadowLight(void*, void*);
 
 int fn_8018E1C4(PeopleEntry* entry, u32 groupId, u32 indexId, s32 objectId) {
     PeopleInfoBiosEntry* info;
@@ -4959,6 +4965,9 @@ int fn_8018E1C4(PeopleEntry* entry, u32 groupId, u32 indexId, s32 objectId) {
     s32 secondary;
     u8 loop;
     u8 restart;
+    u8 useAlternateLight;
+    u8* characterInfo;
+    void* shadowLight;
     f32 frameCount;
 
     model = floorOpenObject(objectId, lbl_80273F90);
@@ -5128,6 +5137,24 @@ int fn_8018E1C4(PeopleEntry* entry, u32 groupId, u32 indexId, s32 objectId) {
         }
         GSmodelSetBoundCheck(entryModel, fn_8018F490(info));
     }
+    characterInfo = ((u8* (*)(u32, u32))fn_801170A4)(groupId, indexId);
+    if (characterInfo != NULL && (characterInfo[0] & 8) != 0) {
+        GSmodelEnableAnimBlend(entryModel);
+    }
+    floorDataBiosGetCurrentPtr();
+    useAlternateLight = groupId == 0 && (indexId == 100 || indexId == 101);
+    floorDataBiosGetCurrentPtr();
+    shadowLight = (void*)floorDataBiosGetShadowLightID();
+    if (shadowLight != NULL) {
+        shadowLight = GSresGetResource(fn_80113F48(), (u32)shadowLight);
+    } else {
+        shadowLight = (void*)lbl_8047B1F0[useAlternateLight];
+    }
+    GSmodelSetShadowFlags(entryModel, 1);
+    if (!useAlternateLight) {
+        GSmodelSetShadowFlags(entryModel, 4);
+    }
+    GSmodelSetShadowLight(entryModel, shadowLight);
     return 1;
 }
 
