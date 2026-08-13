@@ -3601,7 +3601,7 @@ s32 fn_80021B14(u32 arg0, u32* arg1) {
 
         fn_80014198(slot);
         if (slot >= 0 && effect_count > 0) {
-            if (arg0 >= 0x27 && arg0 < 0x2C) {
+            if ((s32)arg0 < 0x2C && (s32)arg0 >= 0x27) {
                 *arg1 = 0;
             } else {
                 *arg1 = 1;
