@@ -6814,9 +6814,15 @@ s32 fn_800F4818(void* obj) {
                 result = *(u32*)&modResult;
             }
         } else {
-            f32 modResult = (f32)fmod((f64)(s32)rightValue,
-                                      (f64)*(f32*)&leftValue);
-            result = *(u32*)&modResult;
+            if ((leftDesc & 0x3F) == 2) {
+                f32 modResult = (f32)fmod((f64)(s32)rightValue,
+                                          (f64)*(f32*)&leftValue);
+                result = *(u32*)&modResult;
+            } else {
+                f32 modResult = (f32)fmod((f64)(s32)rightValue,
+                                          (f64)*(f32*)&leftValue);
+                result = *(u32*)&modResult;
+            }
         }
     }
     if (ctx->stackCount > 0x40) { GSlogWritef((const char*)errBase); }
