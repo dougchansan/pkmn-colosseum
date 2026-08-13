@@ -356,7 +356,7 @@ grp_done:
 #pragma pop
 #endif
 
-/* 0x800318D8 | 0x144 — scan 12-entry table for matching species, dispatch to winSpriteSetDisp */
+/* 0x800318D8 | 0x144 -- scan 12-entry table for matching species, dispatch to winSpriteSetDisp */
 extern u32 lbl_8047A424;
 extern u32 lbl_8047A420;
 extern u8  lbl_80266E90[];
