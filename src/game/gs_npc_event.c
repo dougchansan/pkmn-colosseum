@@ -1341,10 +1341,22 @@ void fn_800327FC(void)
         *(u16*)&display.data[0x22] = 0;
         display.data[0x24] = selected_record.data[0x20];
 
-        for (i = 0; i < 16; i++) {
-            *(u32*)&display.data[0x28 + i * 4] =
-                *(u32*)&selected_record.data[0x22 + i * 4];
-        }
+        *(u32*)&display.data[0x28] = *(u32*)&selected_record.data[0x22];
+        *(u32*)&display.data[0x2C] = *(u32*)&selected_record.data[0x26];
+        *(u32*)&display.data[0x30] = *(u32*)&selected_record.data[0x2A];
+        *(u32*)&display.data[0x34] = *(u32*)&selected_record.data[0x2E];
+        *(u32*)&display.data[0x38] = *(u32*)&selected_record.data[0x32];
+        *(u32*)&display.data[0x3C] = *(u32*)&selected_record.data[0x36];
+        *(u32*)&display.data[0x40] = *(u32*)&selected_record.data[0x3A];
+        *(u32*)&display.data[0x44] = *(u32*)&selected_record.data[0x3E];
+        *(u32*)&display.data[0x48] = *(u32*)&selected_record.data[0x42];
+        *(u32*)&display.data[0x4C] = *(u32*)&selected_record.data[0x46];
+        *(u32*)&display.data[0x50] = *(u32*)&selected_record.data[0x4A];
+        *(u32*)&display.data[0x54] = *(u32*)&selected_record.data[0x4E];
+        *(u32*)&display.data[0x58] = *(u32*)&selected_record.data[0x52];
+        *(u32*)&display.data[0x5C] = *(u32*)&selected_record.data[0x56];
+        *(u32*)&display.data[0x60] = *(u32*)&selected_record.data[0x5A];
+        *(u32*)&display.data[0x64] = *(u32*)&selected_record.data[0x5E];
         for (i = 0; i < 25; i++) {
             *(u32*)&display.data[0x6A + i * 4] =
                 *(u32*)&selected_record.data[0x64 + i * 4];
