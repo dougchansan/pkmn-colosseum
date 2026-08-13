@@ -223,7 +223,7 @@ void fn_8006BB34(void* menu);
 void fn_8006C018(void* menu);
 void fn_8006C0DC(void* menu);
 void fn_8006C164(void* menu);
-void fn_8006C5D8(void);
+void fn_8006C5D8(void* window, void* sprite);
 void fn_8006C7D4(void* arg0, void* item);
 void fn_8006CCC0(void* arg0, void* arg1);
 void fn_8006D550(void* window, void* sprite);
@@ -3025,11 +3025,11 @@ void fn_8006C164(void* menu) {
 
 
 /* 0x8006C5D8 | size: 0x1FC */
-void fn_8006C5D8(void) {
+void fn_8006C5D8(void* window, void* sprite) {
     u8 sp[0x20];
     u32 r0 = 0;
     u32 r3 = 0;
-    u32 r4 = 0;
+    u32 r4 = (u32)sprite;
     u32 r5 = 0;
     u32 r6 = 0;
     u32 r7 = 0;
