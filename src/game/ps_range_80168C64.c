@@ -2024,7 +2024,7 @@ void modifyDir(PSParticle* pp, f32 angle) {
     radialY = radial * sin(azimuth);
     forward = magnitude * cos(angle);
 
-    pp->velocityX = forward * pitchSin + radialX * pitchCos;
+    pp->velocityX = radialX * pitchCos + forward * pitchSin;
     pp->velocityY = pitchSin * (-radialX * yawSin) +
                     radialY * yawCos + pitchCos * (forward * yawSin);
     pp->velocityZ = pitchSin * (-radialX * yawCos) -
