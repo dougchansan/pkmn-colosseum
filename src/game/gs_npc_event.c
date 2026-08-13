@@ -513,7 +513,7 @@ extern void fn_8002F79C(void);
 extern void fn_8002F284(void);
 extern void fn_8002EE74(void);
 extern void menuSetEnablePort(void);
-extern void menuGetLastError(void);
+extern s32 menuGetLastError(void);
 extern void winMsgOpen(s32, s32, s32, s32);
 extern void fn_8002EA5C(void);
 extern void fn_8002E460(void);
@@ -586,7 +586,7 @@ void fn_80031B4C(void) {
     extern void GSmodelSetVisibility();
     extern void fn_800FF52C();
     extern void fn_800FF660();
-    extern void menuGetLastError();
+    extern s32 menuGetLastError();
     extern void fn_801021F8();
     extern void menuSetDisp();
     extern u32 menuGetCursor();
@@ -754,6 +754,33 @@ void fn_80031B4C(void) {
                     fadeSet(2, lbl_8047B9D0);
                     fadeCheck(1);
                     lbl_8047A42C = 2;
+                    goto L_800323E4;
+                case 10:
+                    fadeSet(3, lbl_8047B9D0);
+                    fadeCheck(1);
+                    GSmodelSetVisibility(lbl_8047A414, 0);
+                    menuSetDisp(0xdc, 0);
+                    menuSetDisp(0xd9, 0);
+                    fadeSet(2, lbl_8047B9D4);
+                    fadeCheck(1);
+                    r29 = heroGetStatus(lbl_803A2518 + 0x170, 3,
+                                        (u16)lbl_8047A428);
+                    menuSetEnablePort(2);
+                    fn_80097CD0(r29, 0, 0);
+                    menuSetEnablePort(1);
+                    fadeSet(3, lbl_8047B9D4);
+                    fadeCheck(1);
+                    GSmodelSetVisibility(lbl_8047A414, 1);
+                    menuSetDisp(0xd9, 1);
+                    fadeSet(2, lbl_8047B9D0);
+                    fadeCheck(1);
+                    if (menuGetLastError() == 1) {
+                        winMsgOpen(2, 0x4448, 1, 0);
+                        menuClose(0xd9);
+                        lbl_8047A42C = 0;
+                    } else {
+                        lbl_8047A42C = 7;
+                    }
                     goto L_800323E4;
                 default:
                     break;
