@@ -628,17 +628,6 @@ u8 _wazaSequenceParticleEntryStart(void* entry) {
     extern void GSvecAdd(void* dst, void* lhs, void* rhs);
     extern f32 lbl_8047E34C;
 
-    /*
-     * Particle entries cannot start until their resource was loaded.  The
-     * remaining target code selects an attachment mode and places the emitter.
-     */
-    if (node->resource == NULL) {
-        if (fn_800057A8() == 2) {
-            fn_801D744C(0x20);
-        }
-        return FALSE;
-    }
-
     sequence = node->sequence;
     owner = sequence->owner;
     model = owner->model;
@@ -667,6 +656,13 @@ u8 _wazaSequenceParticleEntryStart(void* entry) {
     GSmodelGetPosition(model, position);
     GSmodelGetRotation(model, rotation);
     fn_801D9950(sequence, scale, owner->scale_selector);
+
+    if (node->resource == NULL) {
+        if (fn_800057A8() == 2) {
+            fn_801D744C(0x20);
+        }
+        return FALSE;
+    }
 
     *(void**)((u8*) node + 0x8C) =
         fn_801190DC((u8*) node->resource, node->field_80,
