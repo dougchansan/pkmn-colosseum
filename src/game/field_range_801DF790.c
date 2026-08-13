@@ -618,18 +618,71 @@ void fn_801E03D4(void) {
  */
 void fn_801E075C(u16 partyIndex)
 {
-    extern void* savedataGetStatus(s32 side, s32 kind);
-    extern void* heroBiosGetPokemonPtr(void* hero, u16 index);
     extern u8 pokemonBiosGetCatchBallId(void* pokemon);
-    void* hero;
-    void* pokemon;
+    extern u16 pokemonBiosGetPokemonDataId(void* pokemon);
+    extern void* pokemonDataBiosGetPtr(u16 id);
+    extern u16 pokemonDataBiosGetVoice(void* data);
+    extern void* floorOpenObject(u32 resource);
+    extern void GSvecCopy(f32* dst, const f32* src);
+    extern void GSmodelSetPosition(void* model, f32* position);
+    extern void GSmodelSetScale(void* model, f32* scale);
+    extern void GSmodelSetVisibility(void* model, s32 visible);
+    extern void GSmodelFree(void* model);
+    extern s32 fn_800D37CC(void);
+    extern u32 fn_800D3088(void);
+    extern void _threadSwitch(void);
+    extern const f32 lbl_8047E3F4;
+    extern const f32 lbl_8047E414;
+    extern const f32 lbl_803750C8[];
+    u32 ballModels[13] = {
+        0x03640400, 0x03650400, 0x03640400, 0x03360400,
+        0x03360400, 0x036A0400, 0x03660400, 0x03400400,
+        0x03670400, 0x03690400, 0x036C0400, 0x03630400,
+        0x03680400
+    };
+    f32 position[3] = { 0.0f, 0.0f, 0.0f };
+    f32 scale[3] = { 1.0f, 1.0f, 1.0f };
+    void* model = NULL;
+    s32 state = 0;
+    s32 running = 1;
 
-    hero = savedataGetStatus(0, 2);
-    pokemon = heroBiosGetPokemonPtr(hero, partyIndex);
-    pokemonBiosGetCatchBallId(pokemon);
+    do {
+        switch (state) {
+        case 0: {
+            void* pokemon = heroBiosGetPokemonPtr(savedataGetStatus(0, 2), partyIndex);
+            u8 ball = pokemonBiosGetCatchBallId(pokemon);
+            u16 species;
 
-    /*
-     * The target next selects the ball's model resource from its immutable
-     * table, opens it, and runs the short appearance state machine.
-     */
+            model = floorOpenObject(ballModels[ball]);
+            GSvecCopy(position, lbl_803750C8);
+            pokemon = heroBiosGetPokemonPtr(savedataGetStatus(0, 2), partyIndex);
+            species = pokemonBiosGetPokemonDataId(pokemon);
+            if (pokemonCheckValid(pokemon) != 0) {
+                void* data = pokemonDataBiosGetPtr(species);
+                if (data != NULL) {
+                    fn_80166AB8(pokemonDataBiosGetVoice(data), 0, 0);
+                }
+            }
+            GSmodelSetPosition(model, position);
+            GSmodelSetScale(model, scale);
+            state = 1;
+            break;
+        }
+        case 1: {
+            f32 timer = lbl_8047E3F4;
+            while (timer < lbl_8047E414) {
+                timer += (f32)fn_800D3088() / (f32)fn_800D37CC();
+                _threadSwitch();
+            }
+            state = 100;
+            break;
+        }
+        case 100:
+            running = 0;
+            GSmodelSetVisibility(model, 0);
+            GSmodelFree(model);
+            model = NULL;
+            break;
+        }
+    } while (running != 0);
 }
