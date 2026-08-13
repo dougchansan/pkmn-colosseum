@@ -461,13 +461,13 @@ void fn_800D892C(u32 objArg) {
     u8* state;
     u8* buffer;
     u32 flags;
-    u32 mode;
+    s32 mode;
     u32 mask;
     u32 bit;
-    u32 i;
-    u32 last;
-    u32 count;
-    u32 enabled;
+    s32 i;
+    s32 last;
+    s32 count;
+    s32 enabled;
     u8* src;
     u8* dst;
 
@@ -591,10 +591,29 @@ void fn_800D892C(u32 objArg) {
         }
 
         last = 0;
-        for (i = 0; i < 8; i++) {
-            if (obj[0xB0 + i * 0x1C] == 1) {
-                last = i;
-            }
+        if (obj[0xB0] == 1) {
+            last = 0;
+        }
+        if (obj[0xCC] == 1) {
+            last = 1;
+        }
+        if (obj[0xE8] == 1) {
+            last = 2;
+        }
+        if (obj[0x104] == 1) {
+            last = 3;
+        }
+        if (obj[0x120] == 1) {
+            last = 4;
+        }
+        if (obj[0x13C] == 1) {
+            last = 5;
+        }
+        if (obj[0x158] == 1) {
+            last = 6;
+        }
+        if (obj[0x174] == 1) {
+            last = 7;
         }
 
         state = (u8*)lbl_8047AA80;
@@ -636,10 +655,29 @@ void fn_800D892C(u32 objArg) {
         }
     } else {
         last = 0;
-        for (i = 0; i < 8; i++) {
-            if (obj[0xB0 + i * 0x1C] == 1) {
-                last = i;
-            }
+        if (obj[0xB0] == 1) {
+            last = 0;
+        }
+        if (obj[0xCC] == 1) {
+            last = 1;
+        }
+        if (obj[0xE8] == 1) {
+            last = 2;
+        }
+        if (obj[0x104] == 1) {
+            last = 3;
+        }
+        if (obj[0x120] == 1) {
+            last = 4;
+        }
+        if (obj[0x13C] == 1) {
+            last = 5;
+        }
+        if (obj[0x158] == 1) {
+            last = 6;
+        }
+        if (obj[0x174] == 1) {
+            last = 7;
         }
 
         state = (u8*)lbl_8047AA80;
