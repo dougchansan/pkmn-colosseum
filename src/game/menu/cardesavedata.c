@@ -177,8 +177,8 @@ u32 fn_80080310(void* output, const u8* packed, void* auxiliary)
     s32 bitPosition;
     const u32* descriptor;
     s32 recordIndex;
-    s32 descriptorIndex;
-    s32 groupIndex;
+    u32 descriptorIndex;
+    u32 groupIndex;
     s32 elementIndex;
     s32 width;
     s32 remaining;
