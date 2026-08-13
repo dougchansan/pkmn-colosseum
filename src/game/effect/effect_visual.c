@@ -3517,8 +3517,8 @@ u32 fn_8013D0A8(void* ptr, void* arg) {
     u32 found13 = 0;
     u32 found11 = 0;
     u32 stage_ordinal;
-    u32 strip;
-    u32 row;
+    s32 strip;
+    s32 row;
     u8* saved_cursor;
     u8* out;
     u16 vertex_count;
