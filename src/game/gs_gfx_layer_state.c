@@ -2193,7 +2193,8 @@ asm void fn_800D963C(void) {
 }
 #else
 void fn_800D963C(u32 idx, s32 mode) {
-    if (mode == 2) {
+    switch (mode) {
+    case 2: {
         u8* ptr = (u8*) lbl_8047AA80 + idx * 5 + 0xAB;
         ptr[0] = 0;
         ptr[1] = 0;
@@ -2223,8 +2224,9 @@ void fn_800D963C(u32 idx, s32 mode) {
         ptr[2] = 7;
         ptr[3] = 4;
         *(u32*) ((u8*) lbl_8047AA80 + 0x414) |= 4;
-    } else if (mode < 2) {
-        if (mode == 0) {
+        break;
+    }
+    case 0: {
             u8* ptr = (u8*) lbl_8047AA80 + idx * 5 + 0xAB;
             ptr[0] = 0;
             ptr[1] = 0;
@@ -2254,7 +2256,9 @@ void fn_800D963C(u32 idx, s32 mode) {
             ptr[2] = 5;
             ptr[3] = 7;
             *(u32*) ((u8*) lbl_8047AA80 + 0x414) |= 4;
-        } else if (mode >= 1) {
+        break;
+    }
+    case 1: {
             u8* ptr = (u8*) lbl_8047AA80 + idx * 5 + 0xAB;
             ptr[0] = 0;
             ptr[1] = 0;
@@ -2284,8 +2288,9 @@ void fn_800D963C(u32 idx, s32 mode) {
             ptr[2] = 7;
             ptr[3] = 5;
             *(u32*) ((u8*) lbl_8047AA80 + 0x414) |= 4;
-        }
-    } else if (mode == 4) {
+        break;
+    }
+    case 4: {
         u8* ptr = (u8*) lbl_8047AA80 + idx * 5 + 0xAB;
         ptr[0] = 0;
         ptr[1] = 0;
@@ -2315,7 +2320,9 @@ void fn_800D963C(u32 idx, s32 mode) {
         ptr[2] = 7;
         ptr[3] = 5;
         *(u32*) ((u8*) lbl_8047AA80 + 0x414) |= 4;
-    } else if (mode < 4) {
+        break;
+    }
+    case 3: {
         u8* ptr = (u8*) lbl_8047AA80 + idx * 5 + 0xAB;
         ptr[0] = 0;
         ptr[1] = 0;
@@ -2345,6 +2352,8 @@ void fn_800D963C(u32 idx, s32 mode) {
         ptr[2] = 4;
         ptr[3] = 7;
         *(u32*) ((u8*) lbl_8047AA80 + 0x414) |= 4;
+        break;
+    }
     }
 }
 #endif
