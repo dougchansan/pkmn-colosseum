@@ -211,6 +211,8 @@ void fn_801ED3B8(void)
     extern u32 pokemonBiosGetDp(u8* pokemon);
     extern u16 fn_801EE470(u16 darkPokemonId);
     extern void fn_801EE4DC(u16 darkPokemonId, u16 value);
+    extern u16 fn_801906A0(u16 flag);
+    extern void _flagSet(u16 flag, u16 value);
     u8* hero = savedataGetStatus(NULL, 2);
     u16 partyIndex;
 
@@ -234,5 +236,14 @@ void fn_801ED3B8(void)
             fn_801EE4DC(darkPokemonId,
                         (u16)(fn_801EE470(darkPokemonId) + 1));
         }
+    }
+
+    if (fn_801906A0(0xD0) != 0) {
+        u16 value = fn_801906A0(0xD1);
+
+        if (value < 10000) {
+            value++;
+        }
+        _flagSet(0xD1, value);
     }
 }
