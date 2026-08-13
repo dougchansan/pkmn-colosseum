@@ -1561,7 +1561,7 @@ void fn_801CDB04(void)
             task->card_result = result == 0
                                     ? CARDGetResultCode(task->card_channel)
                                     : result;
-            task->field_38[0] /= 14;
+            *(u32*)&raw[0x38] /= 14;
             task->field_3d = 0;
             task->state = 42;
             break;
@@ -1571,16 +1571,23 @@ void fn_801CDB04(void)
             if (result == -1) {
                 result = CARDGetResultCode(task->card_channel);
                 task->card_result = result;
-                task->field_38[0]--;
+            }
+            if (result == -1) {
+                (*(u32*)&raw[0x38])--;
                 if (task->field_3d == 0) {
-                    if (fn_8008ABA0(2) == 0 ||
-                        (task->field_38[0] < 3 && fn_80089D74(2) != 0))
-                    {
+                    if (fn_8008ABA0(2) == 0) {
                         CARDCancel(file_info);
                         task->state = 0x2B;
                         break;
                     }
-                    task->field_3d = 1;
+                    if (*(u32*)&raw[0x38] < 3) {
+                        if (fn_80089D74(2) != 0) {
+                            CARDCancel(file_info);
+                            task->state = 0x2B;
+                            break;
+                        }
+                        task->field_3d = 1;
+                    }
                 }
                 task->state = 42;
             } else if (result == 0) {
