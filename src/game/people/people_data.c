@@ -570,7 +570,9 @@ s32 fn_80140ACC(u32* base, u16 count, u16 id, u16 amount, s16 index, u16 unusedL
             if (next == 0) {
                 fn_80142B24(entry, 0, 0x1b, 0, 0);
                 fn_80142B24(entry, 0, 0x1c, 0, 0);
-                needsSort = 1;
+                if (!PEOPLE_ENTRY_VALID(entry)) {
+                    needsSort = 1;
+                }
             }
         }
     } else {
@@ -603,7 +605,9 @@ s32 fn_80140ACC(u32* base, u16 count, u16 id, u16 amount, s16 index, u16 unusedL
         if (next == 0) {
             fn_80142B24(entry, 0, 0x1b, 0, 0);
             fn_80142B24(entry, 0, 0x1c, 0, 0);
-            needsSort = 1;
+            if (!PEOPLE_ENTRY_VALID(entry)) {
+                needsSort = 1;
+            }
         }
     }
 
