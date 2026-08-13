@@ -2854,6 +2854,7 @@ void fn_80020C9C(void) {
 
 /* fn_80020EA4 - 0x80020EA4 | size: 0xb0 */
 extern u32 lbl_8047A360;
+extern u32 lbl_8047A364;
 extern u32 lbl_802E4EF0[];
 extern u32 lbl_802E4ED8[];
 #if !defined(GS_TITLE_SPLIT) || defined(GS_TITLE_RANGE_80020EA4)
@@ -3024,7 +3025,7 @@ s32 fn_800210F0(void)
 
     state = 0;
     loop = 1;
-    (&lbl_8047A360)[1] = 1;
+    lbl_8047A364 = 1;
 
     while (loop != 0) {
         switch (state) {
@@ -3033,7 +3034,7 @@ s32 fn_800210F0(void)
             break;
 
         case 1:
-            (&lbl_8047A360)[1] = 1;
+            lbl_8047A364 = 1;
             menuOpen(0x7F, 0);
             result = menuOpenCustom(0xAA, windowGetActiveID(),
                                     &lbl_8047A360, 0, 1, 0);
@@ -3060,7 +3061,7 @@ s32 fn_800210F0(void)
                 loop = 0;
                 break;
             case 4:
-                (&lbl_8047A360)[1] = 4;
+                lbl_8047A364 = 4;
                 state = 4;
                 break;
             default:
@@ -3103,14 +3104,21 @@ s32 fn_800210F0(void)
             msgctrlSetValue(0x30, (void*)workB);
             menuOpen(0x16, 0);
             winMsgOpen(1, 0x3C22, 0, 1);
-            if ((s8)menuSubOpenYesNo(0, 0x3C, 0xD6, 1) == 0) {
+            switch ((s8)menuSubOpenYesNo(0, 0x3C, 0xD6, 1)) {
+            case 0:
                 heroMoveSyncWithHero();
                 fn_80113FE8();
                 state = 0x64;
                 fn_800056E4(1);
-            } else {
+                break;
+            case 1:
                 state = 1;
                 fn_800056E4(1);
+                break;
+            default:
+                state = 1;
+                fn_800056E4(1);
+                break;
             }
             menuCloseCustom(0x16, 0, 1);
             winMsgClose(1);
@@ -3120,7 +3128,7 @@ s32 fn_800210F0(void)
         case 4:
             menuCloseCustom(0x7F, 0, 1);
             fn_80020C9C();
-            (&lbl_8047A360)[1] = 1;
+            lbl_8047A364 = 1;
             state = 1;
             break;
 
@@ -3133,7 +3141,7 @@ s32 fn_800210F0(void)
                 result = 0x3C35;
             }
             winMsgOpen(2, result, 1, 1);
-            (&lbl_8047A360)[1] = 5;
+            lbl_8047A364 = 5;
             state = (s8)menuSubOpenYesNo(0, 0x3C, 0xA6, 1);
             winMsgClose(1);
             if (state == 0) {
