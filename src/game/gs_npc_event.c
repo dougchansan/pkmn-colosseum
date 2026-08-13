@@ -761,6 +761,17 @@ void fn_80031B4C(void) {
                 case 6:
                     fn_8002F79C();
                     goto L_800323E4;
+                case 7:
+                    fn_8002F284();
+                    goto L_800323E4;
+                case 8:
+                    fn_8002EE74();
+                    goto L_800323E4;
+                case 9:
+                    lbl_8047A410 = 1;
+                    lbl_8047A424 = -1;
+                    lbl_8047A42C = 2;
+                    goto L_800323E4;
                 case 10:
                     fadeSet(3, lbl_8047B9D0);
                     fadeCheck(1);
@@ -788,6 +799,9 @@ void fn_80031B4C(void) {
                         lbl_8047A42C = 7;
                     }
                     goto L_800323E4;
+                case 11:
+                    fn_8002EA5C();
+                    goto L_800323E4;
                 case 12:
                     fn_8002E460(r30);
                     goto L_800323E4;
@@ -814,6 +828,9 @@ void fn_80031B4C(void) {
                     winMsgOpen(2, 0x43d8, 1, 0);
                     winMsgClose(1);
                     lbl_8047A42C = 14;
+                    goto L_800323E4;
+                case 14:
+                    stateFunctionExChangeMain();
                     goto L_800323E4;
                 default:
                     break;
