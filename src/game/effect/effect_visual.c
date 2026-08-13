@@ -4425,9 +4425,9 @@ void fn_8013EA44(void* ptr) {
 
     count = p[0x18];
     alpha = *(f32*)(p + 0x28);
-    layerAlphaStep = *(f32*)&lbl_8047D2F8 / (f32)count;
-    alphaStep = (alpha - *(f32*)&lbl_8047D2F8) / (f32)count;
-    layerAlpha = *(f32*)&lbl_8047D2F8 - (f32)count * layerAlphaStep;
+    layerAlphaStep = *(f32*)&lbl_8047D2A8 / (f32)count;
+    alphaStep = (alpha - *(f32*)&lbl_8047D2A8) / (f32)count;
+    layerAlpha = *(f32*)&lbl_8047D2A8 - (f32)count * layerAlphaStep;
 
     fn_800E69C4(model, 0x20);
     fn_800E66B8(model);
