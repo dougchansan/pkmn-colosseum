@@ -1198,6 +1198,8 @@ void fn_8016AB94(u32 linkMask, s32 mode) {
     s32 linkNo;
     s32 needsInit = TRUE;
     s32 cachedAlphaMode = -1;
+    u32 cachedZMode = (u32)-1;
+    u32 previousFlags = 0;
     u8 cachedAlphaStart = 0;
     u8 cachedAlphaEnd = 0xFF;
 
@@ -1423,6 +1425,20 @@ void fn_8016AB94(u32 linkMask, s32 mode) {
                         setupChanReg(pp);
                         setupTevReg(pp);
 
+                        {
+                            u32 flags = pp->flags;
+                            u32 zMode = flags & 0x10000008;
+
+                            if (zMode != cachedZMode) {
+                                cachedZMode = zMode;
+                                GXSetZMode(((flags >> 29) & 1) ^ 1, 3,
+                                           (zMode & 8) != 0);
+                            }
+                            if ((flags ^ previousFlags) & 0x80) {
+                                HSD_FogSet((flags & 0x80) ? lbl_8047B128 : NULL);
+                            }
+                        }
+
                         if (lbl_8047B168 != rasterWidth) {
                             lbl_8047B168 = rasterWidth;
                             fn_800B944C(width, 5);
@@ -1450,6 +1466,7 @@ void fn_8016AB94(u32 linkMask, s32 mode) {
                     psDispSub(pp, polygonData);
                 }
             }
+            previousFlags = pp->flags;
             pp = next;
         }
     }
