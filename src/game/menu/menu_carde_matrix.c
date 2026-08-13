@@ -70,7 +70,7 @@ void fn_8007C7A8(u8 arg);
 void fn_8007C7EC(void);
 void fn_8007CAB0(void);
 void fn_8007CB54(u32 arg);
-void fn_8007CBB4(void);
+void fn_8007CBB4(void*, void*);
 void fn_8007D4FC(void* window, u8* param);
 void fn_8007D564(void);
 void fn_8007D79C(void* window, u8* param);
@@ -562,7 +562,7 @@ void fn_8007CB54(u32 arg) {
 }
 
 /* 0x8007CBB4 | size: 0x948 */
-void fn_8007CBB4(void) {
+void fn_8007CBB4(void* arg0, void* arg1) {
     u8 sp[0x30];
     u32 tmp = 0;
     u32 r3 = 0;
@@ -585,7 +585,8 @@ void fn_8007CBB4(void) {
     void (*ctr_fn)(void) = 0;
     u32 ctr = 0;
 
-    r31 = r4;
+    r3 = (u32)arg0;
+    r31 = (u32)arg1;
     r4 = (u32)&lbl_80268B88;
     r29 = (u32)&lbl_80268B88;
     if (r3 == 0) {
