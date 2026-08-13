@@ -599,6 +599,9 @@ s32 fn_8010B718(u8* context, void* srcNode, void* pokemon)
 }
 #pragma pop
 
+#pragma push
+#pragma optimization_level 3
+#pragma peephole off
 s32 fn_8010B9E8(u8* context, void* srcNode, u16 key)
 {
     typedef struct Entry {
@@ -701,6 +704,7 @@ s32 fn_8010B9E8(u8* context, void* srcNode, u16 key)
     winSpriteDrawTexture(context, &lbl_80404BF0);
     return 1;
 }
+#pragma pop
 s32 fn_8010A010(void* objPtr, u32 key)
 {
     extern u32 fn_800FF560(void);
