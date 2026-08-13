@@ -1154,7 +1154,7 @@ void fn_8001C7B8(void) {
                     r29 = 0x0;
                     r3 = (u32)lbl_803A1C20;
                     r27 = (u32)lbl_803A1C20;
-                    while (1) {
+                    while ((u16)r29 < 6) {
                     do {
                         tmp = r29 & 0xFFFF;
                     do {
