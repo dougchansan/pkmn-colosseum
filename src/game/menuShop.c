@@ -2710,7 +2710,8 @@ L_628:
         qty.colB      = colorEntry[2];
         qty.f2c       = 1;
         qtyTitle      = 1;
-        yn = menuOpenCustom((void*)0x61, windowGetActiveID(), 0, 1, &qtyTitle, (s32)&qty);
+        yn = menuOpenCustom((void*)0x61, windowGetActiveID(),
+                            (s32)&qtyTitle, 0, (void*)1, 1, &qty);
         menuClose(0x61);
         menuCloseSync((void*)0x61, 1);
         if (yn == -1) chosenQty = -1;
