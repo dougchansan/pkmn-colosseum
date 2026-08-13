@@ -6023,8 +6023,19 @@ static inline u8 menuRuleCheckPokemonMode(void* pokemon, const s16* levels,
     MenuRuleItemRestrictions* restrictions;
     u16 item;
     u32 i;
+    s32 is_null;
+    s32 blank;
 
-    if (pokemon == 0 || pokemonGetStatus(pokemon, 0, 0x6E, 0) == 0) {
+    is_null = pokemon == 0;
+    blank = 0;
+    if (is_null == 0) {
+        if (pokemonGetStatus(pokemon, 0, 0x6E, 0) != 0) {
+            goto pokemon_present;
+        }
+    }
+    blank = 1;
+pokemon_present:
+    if (blank != 0) {
         return 1;
     }
 
