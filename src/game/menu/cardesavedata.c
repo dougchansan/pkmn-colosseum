@@ -744,12 +744,14 @@ s32 fn_8008102C(void** object_ref, const u32* descriptor, s32 index,
     case 46:
         record = object + 0x3AC + index * 0x28;
         *(u16*)(record + 0x22) = (u16)value;
-        for (i = 0; i < 9; i++) {
-            if ((s8)object[0x5B + i] == index) {
-                return 1;
+        if ((s8)object[0x5B] == index ||
+            (s8)object[0x5C] == index ||
+            (s8)object[0x5D] == index) {
+            if ((u16)value > 999) {
+                return 0;
             }
         }
-        return 0;
+        break;
     case 47:
         record = object + 0x3AC + index * 0x28;
         record[0x24] = (u8)value;
