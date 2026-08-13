@@ -2345,7 +2345,7 @@ u8 fn_801870E8(void* resultArg, void* pointArg, void* startArg, void* endArg,
         GScolsy2UtilGetCpPlanePoint(&closest, normal, verts, point);
         if (PSVECSquareDistance(&closest, point) < reachSquared &&
             GScolsy2UtilChkInTri(&closest, verts, normal) != 0) {
-            GSvecCopy(result, &closest);
+            *result = closest;
             return 1;
         }
     }
@@ -2360,7 +2360,7 @@ u8 fn_801870E8(void* resultArg, void* pointArg, void* startArg, void* endArg,
         GScolsy2UtilGetCpPlanePoint(&closest, normal, verts, point);
         if (PSVECSquareDistance(&closest, point) < reachSquared &&
             GScolsy2UtilChkInTri(&closest, verts, normal) != 0) {
-            GSvecCopy(result, &closest);
+            *result = closest;
             return 1;
         }
     }
@@ -2378,7 +2378,7 @@ u8 fn_801870E8(void* resultArg, void* pointArg, void* startArg, void* endArg,
         GScolsy2UtilGetCpPlanePoint(&closest, normal, verts, point);
         if (PSVECSquareDistance(&closest, point) < reachSquared &&
             GScolsy2UtilChkInTri(&closest, verts, normal) != 0) {
-            GSvecCopy(result, &closest);
+            *result = closest;
             return 1;
         }
     }
@@ -2393,7 +2393,7 @@ u8 fn_801870E8(void* resultArg, void* pointArg, void* startArg, void* endArg,
         GScolsy2UtilGetCpPlanePoint(&closest, normal, verts, point);
         if (PSVECSquareDistance(&closest, point) < reachSquared &&
             GScolsy2UtilChkInTri(&closest, verts, normal) != 0) {
-            GSvecCopy(result, &closest);
+            *result = closest;
             return 1;
         }
     }
