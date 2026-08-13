@@ -3569,6 +3569,9 @@ u8 U8ClampAdd(u8 cur, f32 delta) {
  * entry block at 0x8016CE2C.
  */
 void psDispSubAppSRT(PSParticle* pp, Mtx parentMatrix) {
+    void psDispSubMakePolygon(PSParticle*, void*,
+                              f32, f32, f32, f32, f32, f32,
+                              f32, f32, f32, f32, f32, f32);
     PSAppSRT* appSRT = (PSAppSRT*)pp->parentObj;
     Mtx appMatrix;
     Vec velocity;
@@ -3615,10 +3618,27 @@ void psDispSubAppSRT(PSParticle* pp, Mtx parentMatrix) {
 
     if (parentMatrix != NULL) {
         Mtx scaleMatrix;
+        f32 axisXX;
+        f32 axisXY;
+        f32 axisXZ;
+        f32 axisYX;
+        f32 axisYY;
+        f32 axisYZ;
 
         PSMTXScale(scaleMatrix, appSRT->scaleX, appSRT->scaleY, 1.0f);
         PSMTXConcat((const f32(*)[4])(lbl_80452DE8 + 0x7C),
                     scaleMatrix, scaleMatrix);
+        axisXX = scaleMatrix[0][0] * pp->lerpValue;
+        axisXY = -scaleMatrix[0][1] * pp->lerpValue;
+        axisXZ = scaleMatrix[1][0] * pp->lerpValue;
+        axisYX = -scaleMatrix[1][1] * pp->lerpValue;
+        axisYY = scaleMatrix[2][0] * pp->lerpValue;
+        axisYZ = -scaleMatrix[2][1] * pp->lerpValue;
+        psDispSubMakePolygon(pp, parentMatrix,
+                             position.x, position.y, position.z,
+                             velocity.x, velocity.y, velocity.z,
+                             axisXX, axisXY, axisXZ,
+                             axisYX, axisYY, axisYZ);
     }
 
 }
