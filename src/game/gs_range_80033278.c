@@ -658,14 +658,27 @@ void fn_80034830(u8 enabled, u8 selection,
 
     history = (SysvarsOpponentSnapshot*)(lbl_8047A430 + 0x41E4);
     shouldAppend = 1;
-    for (i = 0; i < 10; i++) {
-        if (history[i].trainerType == lbl_803A3334[8] &&
-            history[i].region == (s8)lbl_803A3334[0x24] &&
-            history[i].variant == (s8)lbl_803A3334[0x26]) {
+    for (i = 0; i < 2; i++, history += 5) {
+        if ((history[0].trainerType == lbl_803A3334[8] &&
+             history[0].region == (s8)lbl_803A3334[0x24] &&
+             history[0].variant == (s8)lbl_803A3334[0x26]) ||
+            (history[1].trainerType == lbl_803A3334[8] &&
+             history[1].region == (s8)lbl_803A3334[0x24] &&
+             history[1].variant == (s8)lbl_803A3334[0x26]) ||
+            (history[2].trainerType == lbl_803A3334[8] &&
+             history[2].region == (s8)lbl_803A3334[0x24] &&
+             history[2].variant == (s8)lbl_803A3334[0x26]) ||
+            (history[3].trainerType == lbl_803A3334[8] &&
+             history[3].region == (s8)lbl_803A3334[0x24] &&
+             history[3].variant == (s8)lbl_803A3334[0x26]) ||
+            (history[4].trainerType == lbl_803A3334[8] &&
+             history[4].region == (s8)lbl_803A3334[0x24] &&
+             history[4].variant == (s8)lbl_803A3334[0x26])) {
             shouldAppend = 0;
             break;
         }
     }
+    history = (SysvarsOpponentSnapshot*)(lbl_8047A430 + 0x41E4);
     if (shouldAppend == 0) {
         return;
     }
