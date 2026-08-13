@@ -1438,6 +1438,7 @@ asm void fn_801821B8(void) {
 void fn_801821B8(u32 groupId, u32 index)
 {
     PeopleEntry* entry;
+    PeopleEntry* linked;
     PeopleInfoBiosEntry* info;
     void* model;
     GSvec position;
@@ -1514,8 +1515,11 @@ void fn_801821B8(u32 groupId, u32 index)
             stepDelta = lbl_8047D7A0;
         }
         position.y = step + stepDelta;
-        fn_8018FC74(entry, &position);
-        peopleSetTransform(entry, &position);
+        linked = peopleFindBySelf(peopleFindSelf(groupId, index));
+        if (linked != NULL) {
+            fn_8018FC74(linked, &position);
+            peopleSetTransform(linked, &position);
+        }
         if (stepDelta <= lbl_8047D7A0) {
             break;
         }
