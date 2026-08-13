@@ -464,6 +464,7 @@ void fn_800D892C(u32 objArg) {
     s32 mode;
     u32 mask;
     u32 bit;
+    u8 stage;
     s32 i;
     s32 last;
     s32 count;
@@ -499,7 +500,7 @@ void fn_800D892C(u32 objArg) {
 
                 dst = state + 0x61;
                 if (flags & 1) {
-                    for (i = 0; i < 2; i++, dst += 6) {
+                    for (stage = 0; stage < 2; stage++, dst += 6) {
                         dst[0] = 1;
                         dst[1] = 0;
                         dst[2] = 1;
@@ -508,7 +509,7 @@ void fn_800D892C(u32 objArg) {
                         dst[5] = 2;
                     }
                 } else {
-                    for (i = 0; i < 2; i++, dst += 6) {
+                    for (stage = 0; stage < 2; stage++, dst += 6) {
                         dst[0] = 1;
                         dst[1] = 0;
                         dst[2] = 0;
@@ -519,7 +520,7 @@ void fn_800D892C(u32 objArg) {
                 }
             } else {
                 dst = state + 0x61;
-                for (i = 0; i < 2; i++, dst += 6) {
+                for (stage = 0; stage < 2; stage++, dst += 6) {
                     dst[0] = 0;
                     dst[1] = 1;
                     dst[2] = 1;
@@ -532,7 +533,7 @@ void fn_800D892C(u32 objArg) {
 
             if (mode == 2) {
                 dst = state + 0x67;
-                for (i = 0; i < 2; i++, dst += 6) {
+                for (stage = 0; stage < 2; stage++, dst += 6) {
                     dst[0] = 0;
                     dst[1] = 1;
                     dst[2] = 1;
