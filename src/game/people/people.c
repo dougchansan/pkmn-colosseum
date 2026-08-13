@@ -1526,9 +1526,10 @@ void fn_801821B8(u32 groupId, u32 index)
     info = peopleInfoBiosGetPtr(entry->scriptRef);
     if (info != NULL) {
         fn_8018F4C8(info, (u8)entry->motionIndex, &animIndex, &loop);
-        if (animIndex >= 0) {
-            model = peopleGetModel(entry);
-            if (model != NULL) {
+        if (animIndex != -1) {
+            if (animIndex >= 0) {
+                model = peopleGetModel(entry);
+                if (model != NULL) {
                 restart = 0;
                 if (GSmodelHasAnimationEnded(model)) {
                     restart = 1;
@@ -1560,6 +1561,7 @@ void fn_801821B8(u32 groupId, u32 index)
                     GSmodelSetAnimType(model, 1);
                 } else {
                     GSmodelSetAnimType(model, 0);
+                }
                 }
             }
         }
