@@ -28,6 +28,9 @@ extern u8 lbl_803F7A30[];
 extern f32 lbl_8047B9F8;
 extern f32 lbl_8047BA28;
 
+#pragma push
+#pragma optimization_level 3
+#pragma peephole off
 s32 _sysvarsProcessData__FP16sysvarsFuncEntryPc(void* entry, char* data)
 {
     extern u8 lbl_803A3278[];
@@ -415,6 +418,7 @@ s32 _sysvarsProcessData__FP16sysvarsFuncEntryPc(void* entry, char* data)
         return 0;
     }
 }
+#pragma pop
 
 static void sysvarsWaitForTransfer(void)
 {
