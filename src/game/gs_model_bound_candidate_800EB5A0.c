@@ -31,30 +31,60 @@ void _modelIntpJObjAll__FP8_GSmodelP9_HSD_JObjP9_HSD_JObjP9_HSD_JObjff(
     GSmodel* model, HSD_JObj* out, HSD_JObj* from, HSD_JObj* to, f32 blend)
 {
     extern void fn_800EB904(GSmodel*, HSD_JObj*, HSD_JObj*, HSD_JObj*, f32);
-    ModelIntpJObj* outNode;
-    ModelIntpJObj* fromNode;
-    ModelIntpJObj* toNode;
+    ModelIntpJObj *out1, *from1, *to1;
+    ModelIntpJObj *out2, *from2, *to2;
+    ModelIntpJObj *out3, *from3, *to3;
+    ModelIntpJObj *out4, *from4, *to4;
+    ModelIntpJObj *out5, *from5, *to5;
 
     if (out == NULL || from == NULL || to == NULL) {
         return;
     }
 
     fn_800EB904(model, from, to, out, blend);
-    outNode = (ModelIntpJObj*)out;
-    fromNode = (ModelIntpJObj*)from;
-    toNode = (ModelIntpJObj*)to;
-    if (!(outNode->flags & 0x1000)) {
-        outNode = outNode->child;
-        fromNode = fromNode->child;
-        toNode = toNode->child;
-        while (outNode != NULL) {
-            _modelIntpJObjAll__FP8_GSmodelP9_HSD_JObjP9_HSD_JObjP9_HSD_JObjff(
-                model, (HSD_JObj*)outNode, (HSD_JObj*)fromNode,
-                (HSD_JObj*)toNode, blend);
-            outNode = outNode->next;
-            fromNode = fromNode->next;
-            toNode = toNode->next;
+    if (((ModelIntpJObj*)out)->flags & 0x1000) return;
+    out1 = ((ModelIntpJObj*)out)->child;
+    from1 = ((ModelIntpJObj*)from)->child;
+    to1 = ((ModelIntpJObj*)to)->child;
+    while (out1 != NULL) {
+        if (from1 != NULL && to1 != NULL) {
+            fn_800EB904(model, (HSD_JObj*)from1, (HSD_JObj*)to1, (HSD_JObj*)out1, blend);
+            if (!(out1->flags & 0x1000)) {
+                out2 = out1->child; from2 = from1->child; to2 = to1->child;
+                while (out2 != NULL) {
+                    if (from2 != NULL && to2 != NULL) {
+                        fn_800EB904(model, (HSD_JObj*)from2, (HSD_JObj*)to2, (HSD_JObj*)out2, blend);
+                        if (!(out2->flags & 0x1000)) {
+                            out3 = out2->child; from3 = from2->child; to3 = to2->child;
+                            while (out3 != NULL) {
+                                if (from3 != NULL && to3 != NULL) {
+                                    fn_800EB904(model, (HSD_JObj*)from3, (HSD_JObj*)to3, (HSD_JObj*)out3, blend);
+                                    if (!(out3->flags & 0x1000)) {
+                                        out4 = out3->child; from4 = from3->child; to4 = to3->child;
+                                        while (out4 != NULL) {
+                                            if (from4 != NULL && to4 != NULL) {
+                                                fn_800EB904(model, (HSD_JObj*)from4, (HSD_JObj*)to4, (HSD_JObj*)out4, blend);
+                                                if (!(out4->flags & 0x1000)) {
+                                                    out5 = out4->child; from5 = from4->child; to5 = to4->child;
+                                                    while (out5 != NULL) {
+                                                        _modelIntpJObjAll__FP8_GSmodelP9_HSD_JObjP9_HSD_JObjP9_HSD_JObjff(model, (HSD_JObj*)out5, (HSD_JObj*)from5, (HSD_JObj*)to5, blend);
+                                                        out5 = out5->next; from5 = from5->next; to5 = to5->next;
+                                                    }
+                                                }
+                                            }
+                                            out4 = out4->next; from4 = from4->next; to4 = to4->next;
+                                        }
+                                    }
+                                }
+                                out3 = out3->next; from3 = from3->next; to3 = to3->next;
+                            }
+                        }
+                    }
+                    out2 = out2->next; from2 = from2->next; to2 = to2->next;
+                }
+            }
         }
+        out1 = out1->next; from1 = from1->next; to1 = to1->next;
     }
 }
 
