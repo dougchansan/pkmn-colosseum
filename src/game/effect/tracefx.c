@@ -448,6 +448,8 @@ u8* fn_801364A8(u8* work, u8* desc) {
             memcpy(copy, aligned, TRACEFX_ALIGN32_SIZE(size));
             *(u32*)(work + 0x0C) = (u32)GStextureLoad(copy);
             fn_800EFD14(*(void**)(work + 0x0C), handle);
+        } else {
+            *(u32*)(work + 0x0C) = 0;
         }
         params = aligned + TRACEFX_ALIGN32_SIZE(size);
         break;
