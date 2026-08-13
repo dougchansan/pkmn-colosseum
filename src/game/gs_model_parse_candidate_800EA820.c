@@ -228,8 +228,13 @@ void _modelParseJObjDispSub__FP9_HSD_JObjP5GSmtxP5GSmtx12HSD_TrspMaskbPFP9_HSD_P
                 if ((pobj->flags & 0x3000) == 0x1000) {
                     disp(pobj, (f32(*)[4])vmtx, (f32(*)[4])pmtx, NULL, arg);
                 } else if (disp != NULL) {
-                    disp(pobj, (f32(*)[4])vmtx, (f32(*)[4])pmtx,
-                         is_visible ? (f32(*)[4])lbl_804016D0 : NULL, arg);
+                    if (is_visible) {
+                        disp(pobj, (f32(*)[4])vmtx, (f32(*)[4])pmtx,
+                             (f32(*)[4])lbl_804016D0, arg);
+                    } else {
+                        disp(pobj, (f32(*)[4])vmtx, (f32(*)[4])pmtx,
+                             NULL, arg);
+                    }
                 }
             }
         }
