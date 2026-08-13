@@ -3573,83 +3573,134 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
     PeopleJob* job;
     PeopleJob* current;
     PeopleJob* tail;
+    s32 activeCount;
+    s32 result;
     s32 i;
 
-    if (mode != 0 && mode != 1) {
-        return 0;
-    }
-
-    pool = (PeopleJobPool*)&lbl_8047B1E8;
-    job = NULL;
-    for (i = 0; i < pool->count; i++) {
-        PeopleJob* candidate = &pool->base[i];
-        if (candidate->active == 0) {
-            job = candidate;
-            break;
-        }
-    }
-    if (job == NULL) {
-        fn_80179F4C(1);
-    }
-
-    if (job == NULL) {
-        return 0;
-    }
-
-    job->taskParam = ((PeopleOpenSlot*)slot)->taskParam;
-    job->type = mode;
-    job->slot = (PeopleOpenSlot*)slot;
-    job->index = ((PeopleOpenSlot*)slot)->floorParam;
-    job->subEntry = subEntry;
-    job->nextJob = NULL;
-
+    result = 0;
     if (mode == 0) {
+        pool = (PeopleJobPool*)&lbl_8047B1E8;
+        job = NULL;
+        for (i = 0; i < pool->count; i++) {
+            PeopleJob* candidate = &pool->base[i];
+            if (candidate->active == 0) {
+                job = candidate;
+                break;
+            }
+        }
+        if (job == NULL) {
+            fn_80179F4C(1);
+            job = NULL;
+        }
+
+        activeCount = 0;
+        for (i = 0; i < pool->count; i++) {
+            if (pool->base[i].active == 1) {
+                activeCount++;
+            }
+        }
+
+        if (job == NULL) {
+            return 0;
+        }
+
+        job->taskParam = ((PeopleOpenSlot*)slot)->taskParam;
+        job->type = mode;
         job->callback = fn_8018114C;
+        job->slot = (PeopleOpenSlot*)slot;
+        job->subEntry = subEntry;
+        job->nextJob = NULL;
+        job->index = ((PeopleOpenSlot*)slot)->floorParam;
         if (gPeopleOpenWork != NULL) {
-            tail = (PeopleJob*)gPeopleOpenWork;
-            for (i = 0; i < pool->count && tail->nextJob != NULL; i++) {
-                tail = tail->nextJob;
+            current = (PeopleJob*)gPeopleOpenWork;
+            tail = NULL;
+            for (i = 0; i < pool->count; i++) {
+                if (current->nextJob != NULL) {
+                    current = current->nextJob;
+                } else {
+                    tail = current;
+                    break;
+                }
             }
             tail->nextJob = job;
             job->active = 2;
             job->state = 0;
-            return 1;
+            result = 1;
+        } else {
+            gPeopleOpenWork = (PeopleOpenWork*)job;
+            fn_8017C074(job->slot, job->subEntry, job->index, job);
+            current = (PeopleJob*)gPeopleOpenWork;
+            current->app =
+                GSgappCreate(fn_8017AC30(), 0xC8, current->slot->taskParam,
+                             fn_8018114C);
+            if (current->app != NULL) {
+                current->active = 1;
+                current->state = 1;
+                gPeopleOpenWork = (PeopleOpenWork*)current;
+            }
+            result = 1;
+        }
+    } else if (mode == 1) {
+        pool = (PeopleJobPool*)&lbl_8047B1E8;
+        job = NULL;
+        for (i = 0; i < pool->count; i++) {
+            PeopleJob* candidate = &pool->base[i];
+            if (candidate->active == 0) {
+                job = candidate;
+                break;
+            }
+        }
+        if (job == NULL) {
+            fn_80179F4C(1);
+            job = NULL;
         }
 
-        gPeopleOpenWork = (PeopleOpenWork*)job;
-        fn_8017C074(job->slot, job->subEntry, job->index, job);
-        current = (PeopleJob*)gPeopleOpenWork;
-        current->app =
-            GSgappCreate(fn_8017AC30(), 0xC8, current->slot->taskParam,
-                         fn_8018114C);
-        if (current->app != NULL) {
-            current->active = 1;
-            current->state = 1;
-            gPeopleOpenWork = (PeopleOpenWork*)current;
+        activeCount = 0;
+        for (i = 0; i < pool->count; i++) {
+            if (pool->base[i].active == 1) {
+                activeCount++;
+            }
         }
-        return 1;
-    }
 
-    job->callback = fn_80181094;
-    if (gPeopleOpenWork != NULL) {
-        tail = (PeopleJob*)gPeopleOpenWork;
-        for (i = 0; i < pool->count && tail->nextJob != NULL; i++) {
-            tail = tail->nextJob;
+        if (job == NULL) {
+            return 0;
         }
-        tail->nextJob = job;
-        job->active = 2;
-        job->state = 0;
-        return 1;
-    }
 
-    current = job;
-    current->app = GSgappCreate(1, 2, current->slot->taskParam, fn_80181094);
-    if (current->app != NULL) {
-        current->active = 1;
-        current->state = 1;
-        gPeopleOpenWork = (PeopleOpenWork*)current;
+        job->taskParam = ((PeopleOpenSlot*)slot)->taskParam;
+        job->type = mode;
+        job->callback = fn_80181094;
+        job->slot = (PeopleOpenSlot*)slot;
+        job->subEntry = subEntry;
+        job->nextJob = NULL;
+        job->index = ((PeopleOpenSlot*)slot)->floorParam;
+        if (gPeopleOpenWork != NULL) {
+            current = (PeopleJob*)gPeopleOpenWork;
+            tail = NULL;
+            for (i = 0; i < pool->count; i++) {
+                if (current->nextJob != NULL) {
+                    current = current->nextJob;
+                } else {
+                    tail = current;
+                    break;
+                }
+            }
+            tail->nextJob = job;
+            job->active = 2;
+            job->state = 0;
+            result = 1;
+        } else {
+            current = job;
+            current->app =
+                GSgappCreate(1, 2, current->slot->taskParam, fn_80181094);
+            if (current->app != NULL) {
+                current->active = 1;
+                current->state = 1;
+                gPeopleOpenWork = (PeopleOpenWork*)current;
+            }
+            result = 1;
+        }
     }
-    return 1;
+    return result;
 }
 
 /* fn_80181094 = peopleOpenThread (size 0xB8) */
