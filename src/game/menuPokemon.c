@@ -3751,6 +3751,10 @@ asm void menuPokemonSub(void) {
 s32 menuPokemonSub() {
     u8* ctx;
     u8* entries;
+    u8* slotState;
+    u8* trainerPtr;
+    u8* modePtr;
+    u8* entryData;
     u8* mon;
     s32 i;
     s32 mode;
@@ -3763,20 +3767,23 @@ s32 menuPokemonSub() {
 
     ctx = lbl_803A1D40;
     entries = lbl_803A1C20;
-    result = 0;
+    slotState = ctx + 6;
+    trainerPtr = ctx + 0xC;
+    modePtr = ctx + 8;
 
-    ctx[6] = 0;
+    slotState[0] = 0;
     ctx[5] = 0;
     ctx[7] = (u8)-1;
     if (ctx[1] == 0) {
-        ctx[6] = (u8)-1;
+        slotState[0] = (u8)-1;
     }
 
     memset(entries, 0, 0x120);
 
     for (i = 0; (u32)(u16)i < 6; i++) {
+        entryData = entries + (u16)i * 0x30;
         mon = NULL;
-        mode = *(s32*)(ctx + 8);
+        mode = *(s32*)modePtr;
         switch (mode) {
         case 0:
             if ((u32)(u16)i < 6) {
@@ -3816,11 +3823,11 @@ s32 menuPokemonSub() {
         }
 
         if (mon == NULL) {
-            *(u16*)(entries + i * 0x30) = 0;
+            *(u16*)entryData = 0;
         } else {
-            pokemonToMenuPokemonStatus(mon, entries + i * 0x30);
+            pokemonToMenuPokemonStatus(mon, entryData);
             if ((u8)pokemonGetStatus(mon, 0, 0x7B, 0) == 1) {
-                *(u16*)(entries + i * 0x30 + 0x1A) = 0;
+                *(u16*)(entryData + 0x1A) = 0;
             }
             if ((u8)pokemonGetStatus(mon, 0, 0x7B, 0) == 1) {
                 tmp = 1;
@@ -3847,12 +3854,14 @@ s32 menuPokemonSub() {
                     break;
                 }
             }
-            *(u16*)(entries + i * 0x30 + 0x24) = *(u16*)(lbl_802E4EB8 + (u16)tmp * 2);
+            *(u16*)(entryData + 0x24) =
+                *(u16*)(lbl_802E4EB8 + (u16)tmp * 2);
         }
     }
 
     *(u16*)lbl_8047A30A = 0;
     fn_8010B01C(0, fn_8001BEBC, lbl_8047A30A);
+    result = 0;
 
     while (1) {
         ctx[0x14] = 0;
@@ -3973,7 +3982,7 @@ s32 menuPokemonSub() {
             mode = *(s32*)(ctx + 8);
             switch (mode) {
             case 0:
-                if ((u32)(u16)i < 6) {
+                if ((u32)(u16)(s8)selection < 6) {
                     mon = (u8*)fn_801906A0(0x8AE);
                     if (mon == NULL) {
                         savedataGetStatus(0, 2);
@@ -3981,18 +3990,18 @@ s32 menuPokemonSub() {
                         fn_8006AEEC();
                     }
                     if (mon != NULL) {
-                        mon = (u8*)heroBiosGetPokemonPtr(mon, i);
+                        mon = (u8*)heroBiosGetPokemonPtr(mon, (s8)selection);
                     }
                 }
                 break;
             case 1:
-                if ((u32)(u16)i < 6) {
+                if ((u32)(u16)(s8)selection < 6) {
                     mon = *(u8**)(ctx + 0xC);
                     if (mon == NULL) {
                         mon = (u8*)fightFloorGetGcHeroFightTrainerPtr(0);
                     }
                     if (mon != NULL) {
-                        mon = (u8*)fightTrainerGetValidFightPokemonPtr(mon, i);
+                        mon = (u8*)fightTrainerGetValidFightPokemonPtr(mon, (s8)selection);
                         if (mon != NULL) {
                             mon = (u8*)pokemonGetStatus(mon, 0, 0xCC, 0);
                         }
@@ -4000,7 +4009,7 @@ s32 menuPokemonSub() {
                 }
                 break;
             case 2:
-                if ((u32)(u16)i < 0x1E) {
+                if ((u32)(u16)(s8)selection < 0x1E) {
                     mon = NULL;
                 }
                 break;
