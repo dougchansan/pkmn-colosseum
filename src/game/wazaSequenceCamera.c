@@ -1043,6 +1043,8 @@ void _wazaSequenceCameraDoFOV__FP13ModelSequenceP24wazaSequenceCameraParamsif(
     f32 lowFov;
     f32 highFov;
     f32 span;
+    f32 mixStart;
+    f32 mixEnd;
 
     timing = (WazaSequenceCameraFovTiming*)
         (*(u8**)(sequence + 0x2C) + *(u16*)(sequence + 0x32) * 0xD4);
@@ -1079,31 +1081,31 @@ void _wazaSequenceCameraDoFOV__FP13ModelSequenceP24wazaSequenceCameraParamsif(
             choice = 2;
         }
 
-        currentFov = lbl_8047E1FC;
-        span = lbl_8047E1F4;
+        mixStart = lbl_8047E1FC;
+        mixEnd = lbl_8047E1F4;
         hasFirst = FALSE;
         hasSecond = FALSE;
         if (choice & 1) {
-            currentFov = lbl_8047E1FC;
-            span = lbl_8047E1E0;
+            mixStart = lbl_8047E1FC;
+            mixEnd = lbl_8047E1E0;
             hasFirst = TRUE;
         }
         if (choice & 2) {
             if (!hasFirst) {
-                currentFov = lbl_8047E280;
+                mixStart = lbl_8047E280;
             }
-            span = lbl_8047E284;
+            mixEnd = lbl_8047E284;
             hasSecond = TRUE;
         }
         if (choice & 4) {
             if (!hasSecond) {
-                currentFov = lbl_8047E260;
+                mixStart = lbl_8047E260;
             }
-            span = lbl_8047E1F4;
+            mixEnd = lbl_8047E1F4;
         }
 
         currentFov = lowFov + (highFov - lowFov) *
-            (currentFov + (span - currentFov) * fn_800E0BE4());
+            (mixStart + (mixEnd - mixStart) * fn_800E0BE4());
         lbl_804673D4[0].start = currentFov;
         lbl_804673D4[0].end = currentFov;
         lbl_804673D4[1].start = currentFov;
@@ -1121,31 +1123,31 @@ void _wazaSequenceCameraDoFOV__FP13ModelSequenceP24wazaSequenceCameraParamsif(
     pattern = (WazaSequenceCameraFovPattern*)((u8*)wazaSequenceCameraGetPattern__Fbi(
         (*(u16*)(sequence + 0x32) != 8 && *(u16*)(sequence + 0x32) != 9), flags) + 4);
 
-    currentFov = lbl_8047E1FC;
-    span = lbl_8047E1F4;
+    mixStart = lbl_8047E1FC;
+    mixEnd = lbl_8047E1F4;
     hasFirst = FALSE;
     hasSecond = FALSE;
     if (pattern->initialFlags & 1) {
-        currentFov = lbl_8047E1FC;
-        span = lbl_8047E1E0;
+        mixStart = lbl_8047E1FC;
+        mixEnd = lbl_8047E1E0;
         hasFirst = TRUE;
     }
     if (pattern->initialFlags & 2) {
         if (!hasFirst) {
-            currentFov = lbl_8047E280;
+            mixStart = lbl_8047E280;
         }
-        span = lbl_8047E284;
+        mixEnd = lbl_8047E284;
         hasSecond = TRUE;
     }
     if (pattern->initialFlags & 4) {
         if (!hasSecond) {
-            currentFov = lbl_8047E260;
+            mixStart = lbl_8047E260;
         }
-        span = lbl_8047E1F4;
+        mixEnd = lbl_8047E1F4;
     }
 
     currentFov = lowFov + (highFov - lowFov) *
-        (currentFov + (span - currentFov) * fn_800E0BE4());
+        (mixStart + (mixEnd - mixStart) * fn_800E0BE4());
     lbl_804673D4[0].start = currentFov;
     lbl_804673D4[0].end = currentFov;
     lbl_804673D4[1].start = currentFov;
@@ -1205,31 +1207,29 @@ void _wazaSequenceCameraDoFOV__FP13ModelSequenceP24wazaSequenceCameraParamsif(
                 highFov = lbl_8047E27C;
             }
 
-            span = lbl_8047E1F4;
-            lowFov = currentFov;
             hasFirst = FALSE;
             hasSecond = FALSE;
             if (pattern->flags & 1) {
-                currentFov = lbl_8047E1FC;
-                span = lbl_8047E1E0;
+                mixStart = lbl_8047E1FC;
+                mixEnd = lbl_8047E1E0;
                 hasFirst = TRUE;
             }
             if (pattern->flags & 2) {
                 if (!hasFirst) {
-                    currentFov = lbl_8047E280;
+                    mixStart = lbl_8047E280;
                 }
-                span = lbl_8047E284;
+                mixEnd = lbl_8047E284;
                 hasSecond = TRUE;
             }
             if (pattern->flags & 4) {
                 if (!hasSecond) {
-                    currentFov = lbl_8047E260;
+                    mixStart = lbl_8047E260;
                 }
-                span = lbl_8047E1F4;
+                mixEnd = lbl_8047E1F4;
             }
 
-            key->end = highFov + (lowFov - highFov) *
-                (currentFov + (span - currentFov) * fn_800E0BE4());
+            key->end = lowFov + (highFov - lowFov) *
+                (mixStart + (mixEnd - mixStart) * fn_800E0BE4());
             if (pattern->timingMode == 2) {
                 key->endFrame = nextFrame << shift;
                 key->startFrame = (nextFrame - duration) << shift;
@@ -1237,7 +1237,7 @@ void _wazaSequenceCameraDoFOV__FP13ModelSequenceP24wazaSequenceCameraParamsif(
                 key->startFrame = prevFrame << shift;
                 key->endFrame = (prevFrame + duration) << shift;
             }
-            key->start = lowFov;
+            key->start = currentFov;
         } else {
             key->startFrame = prevFrame << shift;
             key->endFrame = nextFrame << shift;
