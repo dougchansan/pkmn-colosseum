@@ -7105,19 +7105,28 @@ s32 fn_800F55DC(void* obj) {
                 result = *(u32*)(p + 0x6C + *(u32*)(p+0x28)*4);
             }
         } else {
-            u32 idx2 = r30 & 0x3F;
+            s32 stackIndex = *(s32*)(p + 0x28);
+
+            if (stackIndex <= 0) {
+                GSlogWritef((const char*)(r31 + 0x14));
+                r4 = *(u32*)(p + 0x6C);
+            } else {
+                stackIndex--;
+                *(s32*)(p + 0x28) = stackIndex;
+                r4 = *(u32*)(p + 0x6C + stackIndex * 4);
+            }
             if (r30 & 0x20) {
                 if (r30 & 0x40) {
-                    result = (u32)(p + 0x6C + (*(u32*)(p+0x1C) + idx2)*4);
+                    result = (u32)(p + 0x6C + (*(u32*)(p+0x1C) + r4)*4);
                 } else {
-                    result = *(u32*)(p+0x18) + idx2*4;
+                    result = *(u32*)(p+0x18) + r4*4;
                 }
             } else {
                 u32 rawptr;
                 if (r30 & 0x40) {
-                    rawptr = (u32)(p + 0x6C + (*(u32*)(p+0x1C) + idx2)*4);
+                    rawptr = (u32)(p + 0x6C + (*(u32*)(p+0x1C) + r4)*4);
                 } else {
-                    rawptr = *(u32*)(p+0x18) + idx2*4;
+                    rawptr = *(u32*)(p+0x18) + r4*4;
                 }
                 if (r30 & 0x100) {
                     result = rawptr;
