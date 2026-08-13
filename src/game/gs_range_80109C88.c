@@ -1327,9 +1327,17 @@ retry:
             u16 species = pokemonGetStatus(pokemon, 0, 0x6E, 0);
             if (species == 0xC9) {
                 u8 form = pokemonGetAnnonKatati(pokemonBiosGetRnd(pokemon));
-                key = lbl_8035B478[form][pokemonCheckRare(pokemon) != 0];
+                if (pokemonCheckRare(pokemon) == 0) {
+                    key = lbl_8035B478[form][0];
+                } else {
+                    key = lbl_8035B478[form][1];
+                }
             } else {
-                key = pokemonGetStatus(NULL, species, 0x5B, pokemonCheckRare(pokemon) != 0);
+                if (pokemonCheckRare(pokemon) == 0) {
+                    key = pokemonGetStatus(NULL, species, 0x5B, 0);
+                } else {
+                    key = pokemonGetStatus(NULL, species, 0x5B, 1);
+                }
             }
         }
     }

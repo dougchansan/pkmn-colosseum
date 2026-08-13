@@ -758,6 +758,8 @@ s32 GScolsys2ThruGetEventList(
          regionIndex < wzx->regionCount && resultCount < 4;
          regionIndex++, region++) {
         GScolsys2TriangleList* list;
+        GSfieldQueryTriangle* temporaryEntry;
+        GSfieldQueryTriangle* outEntry;
         s32 temporaryCount;
         s32 i;
 
@@ -778,15 +780,19 @@ s32 GScolsys2ThruGetEventList(
             temporaryCount = GScolsys2ThruGetFixedMdlEventList(
                 point, dirVec, radius, list, temporary);
         }
-        for (i = 0; i < temporaryCount && resultCount < 4; i++) {
+        temporaryEntry = temporary;
+        for (i = 0; i < temporaryCount && resultCount < 4;
+             i++, temporaryEntry++) {
             s32 j;
-            for (j = 0; j < resultCount; j++) {
-                if (out[j].id == temporary[i].id) {
+            outEntry = out;
+            for (j = 0; j < resultCount; j++, outEntry++) {
+                if (outEntry->id == temporaryEntry->id) {
                     break;
                 }
             }
             if (j == resultCount) {
-                out[resultCount++] = temporary[i];
+                *outEntry = *temporaryEntry;
+                resultCount++;
             }
         }
     }
