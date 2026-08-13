@@ -188,20 +188,22 @@ do {
                         if ((s32)tmp == 0x9a) goto L_8001215C;
                         if ((s32)tmp < 0x9a) return;
                         if ((s32)tmp < 0x9d) return;
+                        goto L_80012110;
 
                     }
                     if ((s32)tmp == 0xa1) goto L_80012170;
-                    if ((s32)tmp < 0xa1) return;
+                    if ((s32)tmp < 0xa1) goto L_800122C8;
 
                 }
                 if ((s32)tmp < 0xaa) {
                     if ((s32)tmp == 0xa5) goto L_8001215C;
                     if ((s32)tmp < 0xa5) return;
                     if ((s32)tmp < 0xa8) return;
+                    goto L_80012110;
 
                 }
                 if ((s32)tmp == 0xac) goto L_80012170;
-                if ((s32)tmp < 0xac) return;
+                if ((s32)tmp < 0xac) goto L_800122C8;
 
             }
             if ((s32)tmp == 0x53a) goto L_800123A4;
@@ -226,6 +228,7 @@ do {
             if ((s32)tmp >= 0x540) return;
             goto L_80012758;
 
+        L_80012110:
             tmp = *(u8*)((u8*)r30 + 0x29);
             if (tmp != 2) return;
             r5 = *(u16*)((u8*)r31 + 0x6);
@@ -317,6 +320,7 @@ do {
             ((void(*)(void))fn_800FB680)();
             return;
 
+        L_800122C8:
             r4 = *(u8*)((u8*)r30 + 0x17);
             r3 = 0x34;
             ((void(*)(void))msgctrlSetValue)();
