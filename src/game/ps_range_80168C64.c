@@ -4003,11 +4003,42 @@ void psDispSubPointTrail(PSParticle* pp) {
 
     if (pp->flags & 4) {
         if (pp->peopleObj != NULL) {
-            return;
+            f32 sinScale = (f32)sin(pp->scaleFactor);
+            f32 sinFriction = (f32)sin(pp->frictionFactor);
+            f32 cosScale = (f32)cos(pp->scaleFactor);
+            f32 cosFriction = (f32)cos(pp->frictionFactor);
+            f32* people = (f32*)pp->peopleObj;
+            f32 horizontal = pp->velocityZ - people[21];
+            f32 vertical = pp->velocityX - people[14];
+            f32 peopleScale = people[17];
+            f32 peopleAngle = people[18];
+            f32 magnitude;
+            f32 magnitudeCos;
+            f32 magnitudeSin;
+
+            if (peopleScale < 0.0f) {
+                peopleScale = -peopleScale;
+            }
+            if (peopleAngle < 0.0f) {
+                peopleAngle = -peopleAngle;
+            }
+            magnitude = (horizontal * (f32)tan(peopleAngle) + peopleScale) *
+                        pp->velocityY;
+            magnitudeCos = magnitude * (f32)cos(vertical);
+            magnitudeSin = magnitude * (f32)sin(vertical);
+            previous.x = people[8] + magnitudeCos * cosFriction +
+                         horizontal * sinFriction;
+            previous.y = people[9] + cosFriction * (horizontal * sinScale) +
+                         sinFriction * (-magnitudeCos * sinScale) +
+                         magnitudeSin * cosScale;
+            previous.z = people[10] + cosFriction * (horizontal * cosScale) +
+                         sinFriction * (-magnitudeCos * cosScale) -
+                         magnitudeSin * sinScale;
+        } else {
+            previous.x = pp->positionX;
+            previous.y = pp->positionY;
+            previous.z = pp->positionZ;
         }
-        previous.x = pp->positionX;
-        previous.y = pp->positionY;
-        previous.z = pp->positionZ;
     } else {
         previous.x = pp->positionX - pp->velocityX;
         previous.y = pp->positionY - pp->velocityY;
