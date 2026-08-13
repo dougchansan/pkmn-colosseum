@@ -27,6 +27,13 @@
 
 #include "dolphin/types.h"
 #include "game/battle/battle_grid_types.h"
+#include "game/gs_render.h"
+
+typedef struct GSvec {
+    f32 x;
+    f32 y;
+    f32 z;
+} GSvec;
 
 extern void fadeSetFunctionOnly(s32 arg0); /* game/effect/fade.c, renamed from fn_801C431C */
 
@@ -46,7 +53,7 @@ extern void fadeSetFunctionOnly(s32 arg0); /* game/effect/fade.c, renamed from f
 #pragma scheduling off
 #pragma scheduling off
 f32 fadeEffectHookFunction_Doku_Init(s32 slot) {
-    extern void fadeEffectHookFunction_Doku(s32 slot, f32 x, f32 y, f32 z, f32 rot, f32 scale); /* renamed from fn_801C4A44 */
+    extern s32 fadeEffectHookFunction_Doku(s32 slot, f32 x, f32 y, f32 z, f32 rot, f32 scale); /* renamed from fn_801C4A44 */
 
     fadeSetFunctionOnly((s32)fadeEffectHookFunction_Doku);
 }
@@ -354,35 +361,83 @@ void fadeEffectHookFunction_yoko_Init(s32 slot, f32 scale) {
  * pass 2026-07-07).
  * Address: 0x801C4A44 | Size: 0x254
  */
-void fadeEffectHookFunction_Doku(s32 slot, f32 x, f32 y, f32 z, f32 rot, f32 scale) {
-    extern void  fn_8036A384(void* jobj, f32 x, f32 y, f32 z); /* HSD_JObjSetTranslate */
-    extern void  fn_8036A2D8(void* jobj, f32 rx, f32 ry, f32 rz); /* HSD_JObjSetRotation */
-    extern void  fn_8036A478(void* jobj, f32 x, f32 y, f32 z); /* HSD_JObjSetScale */
-    BattleGridSceneWork* state = (BattleGridSceneWork*)lbl_80466E50;
-    BattleGridSceneSlot* slotData;
+s32 fadeEffectHookFunction_Doku(s32 slot, f32 x, f32 y, f32 z, f32 rot, f32 scale) {
+    extern const u32 lbl_8047DFD8;
+    extern const f32 lbl_8047DFDC;
+    extern const f32 lbl_8047DFE0;
+    extern const f32 lbl_8047DFE4;
+    extern const f32 lbl_8047DFE8;
+    extern const f32 lbl_8047DFEC;
+    extern const f32 lbl_8047DFF0;
+    extern const f32 lbl_8047DFF4;
+    extern const f32 lbl_8047DFF8;
+    extern void* fadeEffectDokuStop(void);
+    extern void fn_800D9ED8(u32 enable);
+    extern void fn_800D88DC(u32 mask);
+    extern void fn_800D888C(u32 mask);
+    extern void fn_800D9B58(f32 left, f32 top, f32 right, f32 bottom);
+    extern void fn_800DA4C4(u32 arg0, u32 arg1, u32 arg2);
+    extern void fn_800DA2BC(u32 arg0, u32 arg1, u32 arg2);
+    extern void fn_800DA1E8(u32 arg0, u32 arg1, u32 arg2);
+    extern void fn_800DA028(u32 arg0);
+    extern void fn_800D6A00(u32 arg0);
+    extern void fn_800D7820(void* ptr);
+    extern void fn_800D67BC(u32 count);
+    extern void fn_800D6680(f32 x, f32 y, f32 z);
+    extern void fn_800D5CB8(u32 arg0, u8 r, u8 g, u8 b, u8 a);
+    extern void fn_800D6728(void);
+    GSvec start;
+    GSvec end;
+    GSvec interpolated;
+    f32 fade = z / rot;
+    f32 progress = x / y;
+    f32 t;
+    u32 color = lbl_8047DFD8;
+    s32 alpha;
 
-    if (slot < 0 || slot >= BATTLE_TOTAL_POKEMON) {
-        return;
-    }
-
-    slotData = &state->slots[slot];
-
-    /* Set all transform properties */
-    slotData->posX = x;
-    slotData->posY = y;
-    slotData->posZ = z;
-    slotData->rotationY = rot;
-    slotData->scale = scale;
-
-    /* Apply to JObj */
-    {
-        void* jobj = slotData->jobj;
-        if (jobj != NULL) {
-            fn_8036A384(jobj, x, y, z);
-            fn_8036A2D8(jobj, 0.0f, rot, 0.0f);
-            fn_8036A478(jobj, scale, scale, scale);
+    if (fade <= lbl_8047DFDC) {
+        start.x = start.y = start.z = lbl_8047DFE0;
+        end.x = end.y = end.z = lbl_8047DFE4;
+        t = lbl_8047DFE8 * fade;
+        if (t >= lbl_8047DFE4) {
+            t = lbl_8047DFE4;
+        }
+    } else {
+        start.x = start.y = start.z = lbl_8047DFE4;
+        end.x = end.y = end.z = lbl_8047DFE0;
+        t = lbl_8047DFEC * (fade - lbl_8047DFDC);
+        if (t >= lbl_8047DFE4) {
+            t = lbl_8047DFE4;
         }
     }
+
+    GSlerpGetLinearInterpolationVector(&interpolated, &start, &end, t);
+    alpha = (u8)(lbl_8047DFF0 * interpolated.x);
+    alpha = (s32)((f32)alpha * (lbl_8047DFE4 - progress));
+
+    fn_800D9ED8(1);
+    fn_800D88DC(1);
+    fn_800D888C(6);
+    fn_800D9B58(lbl_8047DFE0, lbl_8047DFE0, lbl_8047DFF4, lbl_8047DFF8);
+    fn_800DA4C4(1, 6, 1);
+    fn_800DA2BC(1, 1, 0);
+    fn_800DA1E8(0, 1, 1);
+    fn_800DA028(0);
+    fn_800D6A00(7);
+    fn_800D7820(NULL);
+    fn_800D67BC(2);
+    fn_800D6680(lbl_8047DFE0, lbl_8047DFE0, lbl_8047DFE0);
+    fn_800D5CB8(0, ((u8*)&color)[0], ((u8*)&color)[1], ((u8*)&color)[2], alpha);
+    fn_800D6680(lbl_8047DFF4, lbl_8047DFF8, lbl_8047DFE0);
+    fn_800D5CB8(0, ((u8*)&color)[0], ((u8*)&color)[1], ((u8*)&color)[2], alpha);
+    fn_800D6728();
+    fn_800D9ED8(0);
+
+    if (fade >= lbl_8047DFE4) {
+        fadeEffectDokuStop();
+        return 0;
+    }
+    return slot;
 }
 
 /**

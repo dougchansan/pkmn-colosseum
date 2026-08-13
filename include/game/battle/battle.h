@@ -369,7 +369,7 @@ typedef struct GStexture GStexture;
 /* fadeEffectHookFunction_yoko_or_tate_Init */ void fadeEffectHookFunction_yoko_or_tate_Init(s32 slot, f32 rotation);
 /* fadeEffectHookFunction_tate_Init */ f32  fadeEffectHookFunction_tate_Init(s32 slot);
 /* fadeEffectHookFunction_yoko_Init */ void fadeEffectHookFunction_yoko_Init(s32 slot, f32 scale);
-/* fadeEffectHookFunction_Doku (was fn_801C4A44) */ void fadeEffectHookFunction_Doku(s32 slot, f32 x, f32 y, f32 z, f32 rot, f32 scale);
+/* fadeEffectHookFunction_Doku (was fn_801C4A44) */ s32 fadeEffectHookFunction_Doku(s32 slot, f32 x, f32 y, f32 z, f32 rot, f32 scale);
 /* fadeEffectHookFunction_carde (was fn_801C4C98) */ f32  fadeEffectHookFunction_carde(void);
 /* fn_801C4CB8 */ void fn_801C4CB8(void);                        /* grid full render 0x704 (game/effect/fade_range_801C4CB8.c) */
 
