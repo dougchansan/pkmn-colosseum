@@ -2039,8 +2039,15 @@ asm void fn_80184D80(void) {
 void fn_80184D80(PeopleEntry* entry)
 {
     GSvec offset;
+    GSvec delta;
+    GSvec rotation;
+    PeopleEntry* linked;
     s32 frameCount;
+    s32 revolutions;
     u32 ticks;
+    f32 angle;
+    f32 fullTurn;
+    f32 phase;
 
     GSvecCopy(&offset, lbl_80273FC0);
     switch (entry->subState) {
@@ -2057,6 +2064,27 @@ void fn_80184D80(PeopleEntry* entry)
         entry->subState = 1;
         /* fallthrough */
     case 1:
+        phase = lbl_8047D818 * (lbl_8047D7C4 * fn_800E0BE4());
+        offset.x = entry->field_80 * (f32)sin(phase);
+        offset.z = entry->field_80 * ((f32 (*)(f32))cos)(phase);
+        fn_800E019C(entry->field_5C, &entry->collisionX, &offset);
+        fn_800E0168(&delta, entry->field_5C, fn_8018FCBC(entry));
+        angle = (f32)atan2(delta.x, delta.z);
+        angle = (f32)fmod(lbl_8047D7F0 + (angle - lbl_8047D7A0));
+        if (angle > lbl_8047D7A8) {
+            angle = (f32)(angle - lbl_8047D7F0);
+        } else if (angle < lbl_8047D820) {
+            angle = (f32)(lbl_8047D7F0 + angle);
+        }
+        linked = peopleFindBySelf(peopleFindSelf(entry->groupId, entry->index));
+        if (linked != NULL) {
+            fn_8018FC2C(linked, &rotation);
+            fullTurn = lbl_8047D7C0;
+            revolutions = (s32)(rotation.y / fullTurn);
+            linked->pad22 = 1;
+            linked->field_40 = angle + fullTurn * revolutions;
+            linked->field_44 = lbl_8047D79C;
+        }
         entry->subState = 2;
         /* fallthrough */
     case 2:
