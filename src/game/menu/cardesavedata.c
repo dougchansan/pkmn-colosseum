@@ -418,7 +418,6 @@ u32 fn_80080310(void* output, const u8* packed, void* auxiliary)
     }
 
 #undef READ_PACKED_BITS
-#pragma optimization_level 1
     if (!valid) {
         return 0;
     }
