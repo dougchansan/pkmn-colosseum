@@ -359,6 +359,52 @@ u8 wazaSequenceEntryStart(void* entry) {
             started = fn_80166AB8(node->resourceId, 0, 0);
         }
         break;
+    case 6:
+        switch (node->resourceId) {
+        case 0:
+            fn_801DD078(owner);
+            started = TRUE;
+            break;
+        case 1:
+            fn_801DD028(owner);
+            started = TRUE;
+            break;
+        case 2:
+            fn_801DA4E8(owner, 0);
+            started = TRUE;
+            break;
+        case 3:
+            fn_801DA4E8(owner, 1);
+            started = TRUE;
+            break;
+        case 4:
+            GSmodelRemoveNull(owner->model);
+            started = TRUE;
+            break;
+        case 5:
+            fn_801DCF00(owner);
+            started = TRUE;
+            break;
+        case 6:
+            fn_801DCEA8(owner);
+            started = TRUE;
+            break;
+        case 7:
+            fn_801DCFD8(owner);
+            started = TRUE;
+            break;
+        case 8:
+            fn_801DCF84(owner);
+            started = TRUE;
+            break;
+        case 9:
+            if (sequence == owner->currentSequence) {
+                fn_801DBC30(owner);
+                started = TRUE;
+            }
+            break;
+        }
+        break;
     }
 
     if (started) {
