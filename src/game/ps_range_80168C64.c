@@ -2307,6 +2307,8 @@ void psInterpretParticles(u32 linkMask) {
  * Executes one frame of a single particle script. See file header for
  * identification evidence and coverage notes.
  * ====================================================================== */
+#pragma push
+#pragma optimization_level 3
 PSParticle* psInterpretParticle0(PSParticle* pp, PSParticle* parentCtx) {
     extern PSParticle* _psListGetNext(PSParticle*);
     u8 opcode;
@@ -3571,6 +3573,7 @@ PSParticle* psInterpretParticle0(PSParticle* pp, PSParticle* parentCtx) {
     _psListGetNext(pp);
     return pp;
 }
+#pragma pop
 
 void psApplyOffsetLocalRotation(PSParticle* pp, f32* vec3) {
     typedef f32 Mtx[3][4];
