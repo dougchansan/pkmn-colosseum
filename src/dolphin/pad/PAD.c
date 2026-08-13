@@ -356,8 +356,11 @@ BOOL fn_800AAE34(u32 mask) {
  * fn_800AAF38 = PADInit (unmatched attempt)
  */
 BOOL fn_800AAF38(void) {
-    if (!lbl_8047A8A0) {
-        OSRegisterVersion(lbl_80478A08);
+    if (lbl_8047A8A0) {
+        return TRUE;
+    }
+
+    OSRegisterVersion(lbl_80478A08);
 
         if (__PADSpec)
             PADSetSpecInline(__PADSpec);
@@ -371,8 +374,7 @@ BOOL fn_800AAF38(void) {
         }
 
         fn_800D104C();
-        OSRegisterResetFunction(NULL);
-    }
+    OSRegisterResetFunction(NULL);
 
     return fn_800AAD34(0xF0000000);
 }
