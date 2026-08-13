@@ -971,6 +971,7 @@ void fn_801CDB04(void)
     s32 status;
     u32 serial[2];
     u8 attributes;
+    u8* buffer;
 
     do {
         switch (task->state) {
@@ -1232,14 +1233,15 @@ void fn_801CDB04(void)
             break;
 
         case 17:
-            memset(task->work_buffer, 0, task->card_work_size);
-            strcpy((char*) task->work_buffer, &lbl_802758E8[0x3A00]);
-            strcpy((char*) task->work_buffer + 0x20,
-                   &lbl_802758E8[0x3A20]);
-            memcpy((u8*) task->work_buffer + 0x40, &lbl_802758E8[0x3A40],
-                   0x20);
-            memcpy((u8*) task->work_buffer + 0x60, &lbl_802758E8[0x3A60],
-                   0x20);
+            buffer = (u8*) task->work_buffer;
+            memset(buffer, 0, 0x6000);
+            strcpy((char*) buffer, &lbl_802758E8[0x3A14]);
+            strcpy((char*) buffer + 0x20, &lbl_802758E8[0x3A28]);
+            memcpy(buffer + 0x40, &lbl_802758E8[0], 0x1800);
+            memcpy(buffer + 0x1840, &lbl_802758E8[0x1800], 0x2200);
+            for (status = 0; status < 0xE90; status++) {
+                *(u32*)(buffer + 0x3A40) += ((u32*) buffer)[status];
+            }
             task->state = 18;
             break;
 
