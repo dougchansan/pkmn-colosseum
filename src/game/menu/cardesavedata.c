@@ -4438,18 +4438,9 @@ void fn_80084A8C(void) {
             r3 = 0x2f;
             msgctrlSetValue();
             if ((s32)r15 == 0) {
-                r3 = 0x7;
-                r4 = 0x44c0;
-                r5 = 0x1;
-                r6 = 0x0;
-                ((void(*)(void))winMsgOpen)();
+                winMsgOpen(7, 0x44c0, 1, 0);
             } else {
-
-                r3 = 0x7;
-                r4 = 0x44b8;
-                r5 = 0x1;
-                r6 = 0x0;
-                ((void(*)(void))winMsgOpen)();
+                winMsgOpen(7, 0x44b8, 1, 0);
             }
             tmp = 0x8;
             r3 = 0x1;
