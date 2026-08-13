@@ -4599,20 +4599,11 @@ void fn_80084A8C(void) {
                 tmp = tmp << 2;
                 *(u32*)(r24 + tmp) = r3;
             }
-            tmp = *(u32*)((u8*)r24 + 0x2C);
-            if ((s32)tmp == 3) {
-                r3 = 0x7;
-                r4 = 0x44e7;
-                r5 = 0x1;
-                r6 = 0x0;
-                ((void(*)(void))winMsgOpen)();
-            } else {
-
-                r3 = 0x7;
-                r4 = 0x44e6;
-                r5 = 0x1;
-                r6 = 0x0;
-                ((void(*)(void))winMsgOpen)();
+        tmp = *(u32*)((u8*)r24 + 0x2C);
+        if ((s32)tmp == 3) {
+            winMsgOpen(7, 0x44e7, 1, 0);
+        } else {
+            winMsgOpen(7, 0x44e6, 1, 0);
             }
             r3 = *(u8*)((u8*)r24 + 0x21);
             r3 = (s8)r3;
