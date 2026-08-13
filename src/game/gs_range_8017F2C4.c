@@ -12,6 +12,8 @@
 extern u8 lbl_80452FC8[0x1000];
 extern u32 lbl_80453FDC[];
 
+#pragma push
+#pragma optimization_level 0
 void fn_8017F2C4(u8* destination, const u8* source)
 {
     u32 sourceIndex;
@@ -73,6 +75,7 @@ void fn_8017F2C4(u8* destination, const u8* source)
         }
     }
 }
+#pragma pop
 
 typedef struct GsRangeRequest {
     u8 _pad_0[0x20];
