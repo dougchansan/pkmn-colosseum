@@ -2939,7 +2939,6 @@ void fn_8006C164(void) {
                 *(u16*)(sp + 0x8) = r0;
                 r3 = MENU_MIDDLE_U32_0004(r24)->unk_0004;
                 ((void(*)(void))fn_801044D0)();
-                return;
                 if (r26 != (u32)0x0) {
                     r0 = MENU_MIDDLE_U8_000C(r31)->unk_000C;
                     if (r0 != (u32)r25) {
