@@ -490,17 +490,17 @@ s32 fn_8017E30C(FSYSSlot* slot) {
 void _fsysGetFilename(FSYSSlot* slot, u32 fileHandle,
                    u32 callbackA, u32 callbackB, u32 callbackC,
                    u32 loadMode) {
-    u32 status = slot->status;
+    s32 status = slot->status;
 #define FSYS_LOOKUP(buffer)                                                   \
     do {                                                                      \
-        void* tocData = gFSYSTocData;                                         \
-        u32 count = *(u32*)((u8*)tocData + 8);                                \
-        u32* entry = (u32*)((u8*)tocData + *(u32*)((u8*)tocData + 0x10));     \
+        volatile u32 count = *(u32*)((u8*)gFSYSTocData + 8);                  \
+        u32* entry = (u32*)((u8*)gFSYSTocData +                              \
+                            *(u32*)((u8*)gFSYSTocData + 0x10));              \
         u32 index = 0;                                                        \
         char* name = NULL;                                                    \
         while (index < count) {                                               \
             if (entry[0] == fileHandle) {                                    \
-                name = (char*)((u8*)tocData + entry[1]);                     \
+                name = (char*)((u8*)gFSYSTocData + entry[1]);                \
                 break;                                                        \
             }                                                                 \
             entry = (u32*)((u8*)entry + 8);                                  \
@@ -536,7 +536,19 @@ void _fsysGetFilename(FSYSSlot* slot, u32 fileHandle,
         return;                                                               \
     } while (0)
 
-    if (status == FSYS_STATUS_FREE || status == FSYS_STATUS_PENDING) {
+    if (status == FSYS_STATUS_PENDING) {
+        goto initial_load;
+    } else if (status >= FSYS_STATUS_PENDING) {
+        if (status == FSYS_STATUS_LOADED) {
+            goto loaded_archive;
+        }
+        goto reload_load;
+    } else if (status != FSYS_STATUS_FREE) {
+        goto reload_load;
+    }
+
+initial_load:
+    {
         char nameBuf[0x80];
         FSYS_INIT(0, 1);
         FSYS_LOOKUP(nameBuf);
@@ -549,7 +561,8 @@ void _fsysGetFilename(FSYSSlot* slot, u32 fileHandle,
         FSYS_SET_STATUS(FSYS_STATUS_LOADING);
     }
 
-    if (status == FSYS_STATUS_LOADED) {
+loaded_archive:
+    {
         if (loadMode == 3) {
             char nameBuf[0x80];
             FSYS_INIT(1, 0);
@@ -575,6 +588,7 @@ void _fsysGetFilename(FSYSSlot* slot, u32 fileHandle,
         }
     }
 
+reload_load:
     if (slot->reloadFlag == 1) {
         char nameBuf[0x80];
         slot->status = FSYS_STATUS_FREE;
