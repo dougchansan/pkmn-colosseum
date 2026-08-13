@@ -329,7 +329,20 @@ s32 fn_80059034(s32 slot)
         action = fn_80054B1C(context, 1);
         fn_800587D8();
     } else {
-        action = context >= 0 && context < 3 ? context : 8;
+        switch (context) {
+        case 0:
+            action = 0;
+            break;
+        case 1:
+            action = 1;
+            break;
+        case 2:
+            action = 2;
+            break;
+        default:
+            action = 8;
+            break;
+        }
     }
 
 #define COUNT_MARKED_PARTY(result)                                           \
