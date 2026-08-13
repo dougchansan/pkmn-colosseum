@@ -1361,30 +1361,89 @@ extern u32 lbl_8047D1A0;
 extern u32 lbl_8047D1A8;
 extern u32 lbl_8047D1AC;
 void fn_8013A1D4(void* arg0, void* arg1, void* arg2, u32 arg3, f32 arg4) {
-    u8* entry;
-    u8* parent;
-    u8* pos;
+    typedef struct ElectronPoint {
+        f32 x;
+        f32 y;
+        f32 z;
+        struct ElectronPoint* prev;
+        f32 startWeight;
+        f32 endWeight;
+    } ElectronPoint;
+    u8* entry = arg0;
+    u8* parent = arg1;
+    ElectronPoint* point = arg2;
+    ElectronPoint* previous;
+    ElectronPoint* current;
+    f32 spread[3];
+    f32 stopHeight;
+    f32 spawnChance;
+    f32 branchDecay;
+    u16 startCount;
+    u16 count;
+    u16 i;
 
-    if (arg0 == NULL) {
-        return;
+    GSvecCopy(spread, parent + 0x14);
+    startCount = *(u16*)(entry + 0x12E2);
+    if (arg3 != 0) {
+        stopHeight = *(f32*)&lbl_8047D1B4 * point->y;
+    } else {
+        stopHeight = *(f32*)&lbl_8047D190;
     }
-    if (arg1 == NULL) {
-        return;
+
+    spawnChance = *(f32*)&lbl_8047D1A8 / (f32)(arg3 + 1);
+    count = startCount;
+    current = (ElectronPoint*)(entry + count * sizeof(ElectronPoint));
+    previous = point;
+
+    while (count < 0xC8) {
+        current->prev = previous;
+        point = previous;
+        previous = current;
+
+        set__5GSvecFfff(
+            current,
+            spread[0] * fn_800E0BA0() + *(f32*)(parent + 0x2C),
+            spread[1] * fn_800E0BA0() + *(f32*)(parent + 0x30),
+            spread[2] * fn_800E0BA0() + *(f32*)(parent + 0x34));
+        GSvecAdd(current, current, point);
+
+        count++;
+        *(u16*)(entry + 0x12E2) = count;
+        if (current->y < stopHeight || fn_800E0BA0() > spawnChance) {
+            if (arg3 == 0) {
+                GSvecCopy(entry + 0x12CC, current);
+            }
+            break;
+        }
+
+        current = (ElectronPoint*)((u8*)current + sizeof(ElectronPoint));
     }
-    if (arg2 == NULL) {
+
+    if (arg3 >= *(u16*)(parent + 0x46)) {
         return;
     }
 
-    entry = arg0;
-    parent = arg1;
-    pos = arg2;
-    (void)arg3;
-    *(f32*)(entry + 0x12CC) = *(f32*)(pos + 0x0);
-    *(f32*)(entry + 0x12D0) = *(f32*)(pos + 0x4) + arg4;
-    *(f32*)(entry + 0x12D4) = *(f32*)(pos + 0x8);
-    *(f32*)(entry + 0xC4) = *(f32*)(parent + 0x20);
-    *(f32*)(entry + 0xC8) = *(f32*)(parent + 0x24);
-    *(f32*)(entry + 0xCC) = *(f32*)(parent + 0x28);
+    spawnChance = *(f32*)(parent + 0x40) *
+                  (f32)(*(u16*)(parent + 0x46) - arg3) /
+                  (f32)*(u16*)(parent + 0x46);
+    count = *(u16*)(entry + 0x12E2);
+    if (arg3 != 0) {
+        branchDecay = arg4 / (f32)(count - startCount);
+    } else {
+        branchDecay = *(f32*)&lbl_8047D190;
+    }
+
+    current = (ElectronPoint*)(entry + startCount * sizeof(ElectronPoint));
+    for (i = startCount; i < count; i++) {
+        current->startWeight = arg4;
+        arg4 -= branchDecay;
+        current->endWeight = arg4;
+        if (fn_800E0BA0() >= spawnChance) {
+            fn_8013A1D4(entry, parent, current->prev, arg3 + 1,
+                        *(f32*)&lbl_8047D1AC * arg4);
+        }
+        current = (ElectronPoint*)((u8*)current + sizeof(ElectronPoint));
+    }
 }
 #endif
 
