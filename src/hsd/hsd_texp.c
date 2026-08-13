@@ -3406,11 +3406,6 @@ s32 fn_801B9320(ColTExpNode* tev)
                                 }
                                 if (conflict == 0) {
                                     merged = 1;
-                                    for (i = 0; i < 4; i++) {
-                                        tev->c_in[i] = child->c_in[i];
-                                        TEXP_REF(tev->c_in[i].exp,
-                                                 tev->c_in[i].sel);
-                                    }
                                     tev->c_op = child->c_op;
                                     switch ((s32) child->c_bias) {
                                     case 1:
@@ -3463,7 +3458,13 @@ s32 fn_801B9320(ColTExpNode* tev)
                                     if (tev->ras_swap == 0xFF) {
                                         tev->ras_swap = child->ras_swap;
                                     }
-                                    TEXP_UNREF(child, child_sel);
+                                    for (i = 0; i < 4; i++) {
+                                        tmp_arg = tev->c_in[i];
+                                        tev->c_in[i] = child->c_in[i];
+                                        TEXP_REF(tev->c_in[i].exp,
+                                                 tev->c_in[i].sel);
+                                        TEXP_UNREF(tmp_arg.exp, tmp_arg.sel);
+                                    }
                                 }
                             }
                         }
@@ -3605,11 +3606,6 @@ s32 fn_801B9320(ColTExpNode* tev)
                             }
                             if (conflict == 0) {
                                 merged = 1;
-                                for (i = 0; i < 4; i++) {
-                                    tev->a_in[i] = child->a_in[i];
-                                    TEXP_REF(tev->a_in[i].exp,
-                                             tev->a_in[i].sel);
-                                }
                                 tev->a_op = child->a_op;
                                 switch ((s32) child->a_bias) {
                                 case 1:
@@ -3662,7 +3658,13 @@ s32 fn_801B9320(ColTExpNode* tev)
                                 if (tev->ras_swap == 0xFF) {
                                     tev->ras_swap = child->ras_swap;
                                 }
-                                TEXP_UNREF(child, child_sel);
+                                for (i = 0; i < 4; i++) {
+                                    tmp_arg = tev->a_in[i];
+                                    tev->a_in[i] = child->a_in[i];
+                                    TEXP_REF(tev->a_in[i].exp,
+                                             tev->a_in[i].sel);
+                                    TEXP_UNREF(tmp_arg.exp, tmp_arg.sel);
+                                }
                             }
                         }
                     }
