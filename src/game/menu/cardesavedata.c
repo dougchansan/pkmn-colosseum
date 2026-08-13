@@ -1615,6 +1615,9 @@ typedef struct CardEMessageEntry {
 
 extern char lbl_8047C198[];
 
+#pragma push
+#pragma optimization_level 3
+#pragma peephole off
 void fn_80084038(u8* window)
 {
     const u32* stateFlags = (const u32*)lbl_8026F2E8;
@@ -1808,6 +1811,7 @@ void fn_80084038(u8* window)
 #undef SET_STATUS_MESSAGE
 }
 
+#pragma pop
 #pragma peephole on
 
 #pragma push
