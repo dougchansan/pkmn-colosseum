@@ -888,7 +888,7 @@ extern u32 lbl_8047AC1C;
  * every GPR directly and cannot be produced by any C source.
  */
 #pragma push
-#pragma optimization_level 2
+#pragma optimization_level 0
 asm void threadSaveGPRRegisters(void) {
     nofralloc
     stwu    r1, -8(r1)
