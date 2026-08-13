@@ -327,9 +327,9 @@ s32 fn_8017E30C(FSYSSlot* slot) {
                              fileEntry->compressedSize);
         } else {
             allocSize = (fileEntry->compressedSize + 0x1F) & ~0x1F;
-            allocatedBuf = GSresAllocResourceAlign(allocSize,
-                                                    slot->archiveHandle,
-                                                    fileEntry->nameHash, 0, 0);
+            allocatedBuf = GSresAllocResourceAlign(allocSize, 0x20,
+                                                    fileEntry->nameHash,
+                                                    slot->field_08, 0);
         }
 
         subEntry->buffer = allocatedBuf;
