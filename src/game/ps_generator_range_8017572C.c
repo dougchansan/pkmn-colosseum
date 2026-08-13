@@ -73,6 +73,17 @@ typedef struct PSGeneratorKillNode {
     PSGeneratorKillAppSRT* appSRT;
 } PSGeneratorKillNode;
 
+typedef struct PSGeneratorObjectInfo {
+    u8 pad00[0x30];
+    void (*release)(void*);
+    void (*destroy)(void*);
+} PSGeneratorObjectInfo;
+
+typedef struct PSGeneratorObject {
+    PSGeneratorObjectInfo* info;
+    u16 refCount;
+} PSGeneratorObject;
+
 extern void* fn_801A6928(s32 size);
 extern void* fn_801A3E64(void*);
 extern void fn_801A6960(void*);
@@ -83,7 +94,7 @@ void psKillGenerator(PSGeneratorKillNode* generator);
 extern const f32 lbl_8047D6B0;
 extern u16 lbl_8047B112;
 extern u32 lbl_8047B180;
-extern u32 lbl_8047B190;
+extern PSGeneratorObject* lbl_8047B190;
 extern u32 lbl_8047B194;
 extern u32 lbl_8047B198;
 
@@ -264,6 +275,21 @@ void* psRemoveGenerator(u32 type, u32 param) {
         node = next;
     }
     lbl_8047B18C = 0;
+
+    if (lbl_8047B190 != NULL) {
+        PSGeneratorObject* object = lbl_8047B190;
+
+        if (object->refCount != 0xFFFF) {
+            if (object->refCount == 0) {
+                object->refCount--;
+                object->info->release(object);
+                object->info->destroy(object);
+            } else {
+                object->refCount--;
+            }
+        }
+        lbl_8047B190 = NULL;
+    }
     return NULL;
 }
 
@@ -287,7 +313,7 @@ void psInitGenerator(s32 count) {
     lbl_8047B118 = 0;
     lbl_8047B112 = 0;
     lbl_8047B180 = 0;
-    lbl_8047B190 = 0;
+    lbl_8047B190 = NULL;
     lbl_8047B198 = 0;
     lbl_8047B194 = 0;
     lbl_8047B184 = NULL;
