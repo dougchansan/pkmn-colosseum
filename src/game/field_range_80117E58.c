@@ -2352,6 +2352,8 @@ void* fn_801195AC(void* resource)
     FieldParticleFile* file = resource;
     FieldParticleBank* bank;
     u32 i;
+    u32 j;
+    u8 texture_type;
 
     switch (file->magic) {
     case 0x47505430:
@@ -2378,10 +2380,36 @@ void* fn_801195AC(void* resource)
     bank = lbl_8047AD9C;
     for (i = 0; i < lbl_8047ADA0; i++, bank++) {
         if (bank->active == 0) {
-            return bank;
+            break;
         }
     }
-    return NULL;
+    if (i == lbl_8047ADA0) {
+        return NULL;
+    }
+
+    for (texture_type = 0; texture_type < 0x40; texture_type++) {
+        for (j = 0; j < lbl_8047ADA0; j++) {
+            if (lbl_8047AD9C[j].texture_type == texture_type) {
+                break;
+            }
+        }
+        if (j == lbl_8047ADA0) {
+            break;
+        }
+    }
+    if (texture_type == 0x40) {
+        return NULL;
+    }
+
+    bank->active = 1;
+    bank->texture_type = texture_type;
+    *(void**)((u8*)bank + 4) = file;
+    for (i = 0; i < 0x40; i++) {
+        bank->slots[i] = NULL;
+    }
+    ((void (*)(u8, u8*, u8*, u8*, u32))psInitDataBank)(
+        bank->texture_type, file->description, file->data, file->texture, 0);
+    return bank;
 }
 #endif
 
