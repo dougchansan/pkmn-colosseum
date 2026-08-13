@@ -1053,15 +1053,17 @@ void fn_801CDB04(void)
             if (task->memory_size != 0x2000) {
                 result = -6;
             }
-            if (result == -1) {
+            switch (result) {
+            case -1:
                 task->state = 5;
-            } else if (result == 0) {
-                if (task->serial_check_enabled && task->task_kind != 3 &&
-                    task->task_kind != 9 && task->task_kind != 11)
+                break;
+            case 0:
+                if (task->task_kind != 3 && task->task_kind != 9 &&
+                    task->task_kind != 11 && task->serial_check_enabled)
                 {
                     CARDGetSerialNo(task->card_channel, serial);
-                    if (serial[0] != task->card_serial[0] ||
-                        serial[1] != task->card_serial[1])
+                    if (((serial[0] ^ task->card_serial[0]) |
+                         (serial[1] ^ task->card_serial[1])) != 0)
                     {
                         task->error_code = 0x10;
                         task->state = 0x2B;
@@ -1069,15 +1071,26 @@ void fn_801CDB04(void)
                     }
                 }
                 task->state = 9;
-            } else if ((result == -6 || result == -13) &&
-                       (task->task_kind == 1 || task->task_kind == 9))
-            {
-                task->error_code = 7;
-                task->resume_state = 6;
-                task->state = 0x30;
-            } else {
+                break;
+            case -6:
+            case -13:
+                switch (task->task_kind) {
+                case 1:
+                case 9:
+                    task->error_code = 7;
+                    task->resume_state = 6;
+                    task->state = 0x30;
+                    break;
+                default:
+                    task->error_code = result;
+                    task->state = 0x2B;
+                    break;
+                }
+                break;
+            default:
                 task->error_code = result;
                 task->state = 0x2B;
+                break;
             }
             break;
 
