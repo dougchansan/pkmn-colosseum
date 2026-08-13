@@ -3580,15 +3580,14 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
     result = 0;
     if (mode == 0) {
         pool = (PeopleJobPool*)&lbl_8047B1E8;
-        job = NULL;
+        job = pool->base;
         for (i = 0; i < pool->count; i++) {
-            PeopleJob* candidate = &pool->base[i];
-            if (candidate->active == 0) {
-                job = candidate;
+            if (job->active == 0) {
                 break;
             }
+            job++;
         }
-        if (job == NULL) {
+        if (i >= pool->count) {
             fn_80179F4C(1);
             job = NULL;
         }
@@ -3642,15 +3641,14 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
         }
     } else if (mode == 1) {
         pool = (PeopleJobPool*)&lbl_8047B1E8;
-        job = NULL;
+        job = pool->base;
         for (i = 0; i < pool->count; i++) {
-            PeopleJob* candidate = &pool->base[i];
-            if (candidate->active == 0) {
-                job = candidate;
+            if (job->active == 0) {
                 break;
             }
+            job++;
         }
-        if (job == NULL) {
+        if (i >= pool->count) {
             fn_80179F4C(1);
             job = NULL;
         }
