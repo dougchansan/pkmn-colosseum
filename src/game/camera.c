@@ -962,13 +962,9 @@ void fn_80179FA4(slot, offset, size, callbackA, callbackB, callbackC, path, entr
                         entryTable = (u32*)(archive + *firstTable);
                         currentEntry = (FSYSFileEntry*)(archive + entryTable[i]);
                     }
-                    if (currentEntry != NULL) {
-                        total += currentEntry->decompressedSize;
-                    }
+                    total += currentEntry->decompressedSize;
                 }
-                if (archive != NULL) {
-                    total += *(u32*)(archive + slot->field_18 + 8);
-                }
+                total += *(u32*)(archive + slot->field_18 + 8);
                 slot->totalDecompSize = total;
 
                 fn_80167E98(slot->tocBuffer, dvdBuffer, slot->dmaChunkSize, 0,
