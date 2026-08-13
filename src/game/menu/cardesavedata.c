@@ -583,11 +583,11 @@ s32 fn_8008102C(void** object_ref, const u32* descriptor, s32 index,
         }
         return 0;
     case 26:
-        half = (u16)value;
-        *(u16*)(object + 0x66) = half;
+        *(u16*)(object + 0x66) = (u16)value;
+        tableEntry = (const u16*)(table + 0x384);
         for (i = 0; i < 0x2F; i++) {
-            for (j = 0; j < 7; j++) {
-                if (((const u16*)(table + 0x384))[i * 7 + j] == half) {
+            for (j = 0; j < 7; j++, tableEntry++) {
+                if (*tableEntry == *(u16*)(object + 0x66)) {
                     return 1;
                 }
             }
