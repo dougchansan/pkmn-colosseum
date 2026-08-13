@@ -197,7 +197,7 @@ s32 fn_800096B4(u32 arg0, s32 arg1, u8* arg2, u8* arg3, u8* arg4, u8* arg5) {
             break;
         }
         case 0x12: {
-            s32 exp;
+            s32 exp = pokemonGetStatus(arg0, 0, 0x79, 0);
             if ((u32)(delta + 0x10000) == 1U) {
                 exp = 1;
             } else if ((u32)delta == (u32)-1) {
