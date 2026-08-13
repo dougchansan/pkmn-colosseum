@@ -2353,13 +2353,26 @@ void* fn_801195AC(void* resource)
     FieldParticleBank* bank;
     u32 i;
 
-    if (file->magic != 0x47505431) {
+    switch (file->magic) {
+    case 0x47505430:
+        GSlogWrite((char*)lbl_802727D8 + 0x50);
+        GSlogWrite((char*)lbl_802727D8 + 0xAC);
+        GSlogWrite((char*)lbl_802727D8 + 0x50);
+        return NULL;
+    case 0x47505431:
+        break;
+    default:
+        GSlogWrite((char*)lbl_802727D8 + 0x108);
         return NULL;
     }
 
     file->description += (u32)file;
     file->data += (u32)file;
     file->texture += (u32)file;
+    if (*(u16*)file->description != 0x43) {
+        GSlogWrite((char*)lbl_802727D8 + 0x128, 0x43);
+        return NULL;
+    }
     DCFlushRange(file->data, (file->dataSize + 0x1F) & ~0x1F);
 
     bank = lbl_8047AD9C;
