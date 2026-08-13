@@ -606,16 +606,20 @@ u32 fn_80100B24(GSFloorContext* ctx) {
 
     case 3:
         if (ctx->doFadeOut != 0) {
-            floorSetResourcesBlocked(lbl_8047ACB4, ctx->floorId, lbl_8047ACB0,
-                                     GSFLOOR_RES_FREE, 0);
             floorSetResourcesBlocked(lbl_8047ACB8, ctx->floorId,
                                      lbl_8047ACB0 + lbl_8047ACB4,
                                      GSFLOOR_RES_FREE, 0);
-            floorSetResourcesBlocked(lbl_8047ACB4, ctx->floorId, lbl_8047ACB0,
-                                     GSFLOOR_RES_LOADED, 0);
+            floorSetResourcesBlocked(
+                lbl_8047ACBC, ctx->floorId,
+                lbl_8047ACB0 + lbl_8047ACB4 + lbl_8047ACB8,
+                GSFLOOR_RES_FREE, 0);
             floorSetResourcesBlocked(lbl_8047ACB8, ctx->floorId,
                                      lbl_8047ACB0 + lbl_8047ACB4,
                                      GSFLOOR_RES_LOADED, 0);
+            floorSetResourcesBlocked(
+                lbl_8047ACBC, ctx->floorId,
+                lbl_8047ACB0 + lbl_8047ACB4 + lbl_8047ACB8,
+                GSFLOOR_RES_LOADED, 0);
         }
         ctx->isActive = 4;
         fn_801127BC();
