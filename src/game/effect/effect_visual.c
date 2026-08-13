@@ -4458,6 +4458,7 @@ void fn_8013EA44(void* ptr) {
     s32 i;
 
     p = ptr;
+    count = p[0x18];
     texture = *(void**)(p + 4);
     model = *(void**)p;
     if (texture == NULL) {
@@ -4493,7 +4494,6 @@ void fn_8013EA44(void* ptr) {
     fn_800D2248();
     fn_800D3410(texture, 0);
 
-    count = p[0x18];
     alpha = *(f32*)(p + 0x28);
     layerAlphaStep = *(f32*)&lbl_8047D2A8 / (f32)count;
     alphaStep = (alpha - *(f32*)&lbl_8047D2A8) / (f32)count;
