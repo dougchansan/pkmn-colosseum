@@ -3575,6 +3575,10 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
     PeopleJob* tail;
     s32 i;
 
+    if (mode != 0 && mode != 1) {
+        return 0;
+    }
+
     pool = (PeopleJobPool*)&lbl_8047B1E8;
     job = NULL;
     for (i = 0; i < pool->count; i++) {
