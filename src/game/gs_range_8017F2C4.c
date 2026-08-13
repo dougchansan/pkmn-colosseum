@@ -610,6 +610,7 @@ void* fn_8017FDB0(u32 size)
     }
 }
 
+#pragma optimize_for_size on
 void fn_801800F8(u32 queueCount, u32 field04, u32 initialSize)
 {
     GsRangeBufferEntry* buffer;
@@ -690,6 +691,7 @@ void fn_801800F8(u32 queueCount, u32 field04, u32 initialSize)
     allocation = fn_8017FDB0(initialSize);
     fn_8017FB08(allocation);
 }
+#pragma optimize_for_size reset
 
 void fn_80180320(void* dst, void* src, u32 size)
 {
