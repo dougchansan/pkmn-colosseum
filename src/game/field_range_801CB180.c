@@ -1503,15 +1503,35 @@ void fn_801CDB04(void)
                 result = CARDGetResultCode(task->card_channel);
                 task->card_result = result;
             }
+            (*(u32*)&raw[0x38])++;
             if (result == -1) {
                 task->state = 39;
             } else if (result == 0) {
-                status = gamedatasaveGetStatus(savedataGetStatus(0, 1), 4);
-                gamedatasaveSetStatus(savedataGetStatus(0, 1), 4,
-                                      status + 1);
-                task->error_code = 0;
-                task->task_result = 4;
-                task->state = task->format_requested ? 17 : 44;
+                switch (task->task_kind) {
+                case 8:
+                    task->resume_state = 40;
+                    task->state = 49;
+                    break;
+                case 1:
+                case 2:
+                case 3:
+                    task->error_code = 0x12;
+                    task->task_result = 3;
+                    task->state = task->format_requested ? 17 : 44;
+                    break;
+                case 4:
+                case 9:
+                case 10:
+                case 11:
+                    status = gamedatasaveGetStatus(savedataGetStatus(0, 1), 4);
+                    gamedatasaveSetStatus(savedataGetStatus(0, 1), 4,
+                                          status + 1);
+                default:
+                    task->error_code = 10;
+                    task->task_result = 4;
+                    task->state = task->format_requested ? 17 : 44;
+                    break;
+                }
             } else {
                 task->error_code = result;
                 task->state = 0x2B;
