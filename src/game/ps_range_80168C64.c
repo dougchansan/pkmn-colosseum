@@ -3678,6 +3678,8 @@ u8 U8ClampAdd(u8 cur, f32 delta) {
  * display-space composition is still asm-only; this verified prefix is the
  * entry block at 0x8016CE2C.
  */
+#pragma push
+#pragma optimization_level 0
 void psDispSubAppSRT(PSParticle* pp, Mtx parentMatrix) {
     void psDispSubMakePolygon(PSParticle*, void*,
                               f32, f32, f32, f32, f32, f32,
@@ -3779,6 +3781,7 @@ void psDispSubAppSRT(PSParticle* pp, Mtx parentMatrix) {
 
 }
 
+#pragma pop
 void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
                           f32 centerX, f32 centerY, f32 centerZ,
                           f32 velocityX, f32 velocityY, f32 velocityZ,
