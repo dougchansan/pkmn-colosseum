@@ -471,6 +471,8 @@ void fn_8007C7EC(void) {
             tmp = r3 & 0xFF;
             if (tmp != 0) break;
 
+            r29 = r29 - 1;
+
         }
 
         *(u8*)((u8*)r31 + 0xB5) = r29;
