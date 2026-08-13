@@ -232,6 +232,9 @@ void fn_8010C224(s32 count)
     }
 }
 
+#pragma push
+#pragma optimization_level 3
+#pragma peephole off
 u16 fn_8010B01C(void* pokemon, void* (*callback)(u32), u32 arg)
 {
     extern u16 fn_8010B16C(u16 key, void* (*callback)(u32), u32 arg);
@@ -260,6 +263,7 @@ u16 fn_8010B01C(void* pokemon, void* (*callback)(u32), u32 arg)
     }
     return fn_8010B16C(key, callback, arg);
 }
+#pragma pop
 
 #pragma push
 #pragma optimization_level 3
