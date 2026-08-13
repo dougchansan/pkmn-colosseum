@@ -660,33 +660,85 @@ asm void fn_80138838(void* ptr, u32 b) {
 void fn_80138838(void* ptr, u32 b) {
     u8* p;
     u8* entry;
-    void* model;
-    f32 pos[3];
+    u8* current;
+    void* previous;
     u16 count;
     u16 i;
-
-    if (ptr == NULL) {
-        return;
-    }
+    u16 j;
+    f32 base[3];
+    f32 direction[3];
+    f32 tangent[3];
+    f32 step[3];
+    f32 noise[3];
+    f32 rotation[12];
+    f32 radius;
+    f32 angle;
+    f32 valueA;
+    f32 valueB;
 
     p = ptr;
-    model = GSresGetResource(*(u16*)(p + 0xA), *(u16*)(p + 0xC));
-    if (model == NULL || *(void**)(p + 0x4) == NULL) {
-        return;
-    }
-
-    GSmodelGetPosition(model, pos);
     entry = *(u8**)(p + 0x4);
     count = *(u16*)(p + 0x8);
     for (i = 0; i < count; i++, entry += 0x97C) {
-        if (b != 0 || *(u32*)(entry + 0x978) == 0) {
-            *(f32*)(entry + 0x960) = pos[0];
-            *(f32*)(entry + 0x964) = pos[1];
-            *(f32*)(entry + 0x968) = pos[2];
-            *(f32*)(entry + 0x96C) = pos[0];
-            *(f32*)(entry + 0x970) = pos[1];
-            *(f32*)(entry + 0x974) = pos[2];
-            *(u32*)(entry + 0x978) = 1;
+        if (b != 0) {
+            radius = *(f32*)(p + 0x58) * fn_800E0BA0() + *(f32*)(p + 0x54);
+            angle = *(f32*)&lbl_8047D15C * fn_800E0BE4();
+            *(f32*)(entry + 0x960) = radius * (f32)cos(angle);
+            *(f32*)(entry + 0x964) = *(f32*)&lbl_8047D154;
+            *(f32*)(entry + 0x968) = radius * (f32)sin(angle);
+        }
+
+        fn_800E0060(base, entry + 0x960);
+        set__5GSvecFfff(direction, base[0], *(f32*)&lbl_8047D14C, base[2]);
+        fn_800E0060(direction, direction);
+        *(u32*)(entry + 0x978) = 0;
+        current = entry;
+        previous = entry + 0x960;
+
+        for (j = 0; j < 100; j++) {
+            GSvecCopy(tangent, direction);
+            tangent[1] = *(f32*)&lbl_8047D154;
+            fn_800E0060(tangent, tangent);
+            fn_800DFFCC(tangent, direction, tangent);
+            fn_800E0060(tangent, tangent);
+
+            fn_800E0718(step, tangent, *(f32*)(p + 0x4C) * fn_800E0BA0());
+            ((void (*)(void*, void*, void*))GSvecTransformQuat)(
+                direction, step, direction);
+            ((void (*)(void*, f32))GSmtxMakeYRotation)(
+                rotation, *(f32*)(p + 0x50) * fn_800E0BA0());
+            ((void (*)(void*, void*, void*))GSvecTransform)(
+                direction, rotation, direction);
+
+            if (b != 0) {
+                GSvecCopy(current + 0xC, direction);
+            } else {
+                fn_800E013C(current + 0xC, current + 0xC,
+                            *(f32*)&lbl_8047D14C - *(f32*)(p + 0x64));
+                fn_800E013C(direction, direction, *(f32*)(p + 0x64));
+                GSvecAdd(current + 0xC, current + 0xC, direction);
+                fn_800E0060(current + 0xC, current + 0xC);
+            }
+
+            fn_800E013C(direction, current + 0xC,
+                        *(f32*)(p + 0x60) * fn_800E0BA0() + *(f32*)(p + 0x5C));
+            valueA = *(f32*)(p + 0x48) * fn_800E0BA0();
+            valueB = *(f32*)(p + 0x44) * fn_800E0BA0();
+            set__5GSvecFfff(noise, *(f32*)(p + 0x40) * fn_800E0BA0(),
+                            valueB, valueA);
+            GSvecAdd(noise, noise, p + 0x34);
+            GSvecAdd(direction, direction, noise);
+            GSvecAdd(current, previous, direction);
+            GSvecCopy(current + 0xC, direction);
+            *(u32*)(entry + 0x978) += 1;
+
+            if (*(f32*)(current + 0x4) < *(f32*)&lbl_8047D154) {
+                GSvecCopy(entry + 0x96C, previous);
+                break;
+            }
+
+            previous = current;
+            current += 0x18;
         }
     }
 }
