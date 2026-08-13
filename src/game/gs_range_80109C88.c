@@ -261,6 +261,9 @@ u16 fn_8010B01C(void* pokemon, void* (*callback)(u32), u32 arg)
     return fn_8010B16C(key, callback, arg);
 }
 
+#pragma push
+#pragma optimization_level 3
+#pragma peephole off
 s32 fn_8010AE2C(void* pokemon, void* (*callback)(u32), u32 arg)
 {
     typedef struct Entry {
@@ -313,6 +316,7 @@ s32 fn_8010AE2C(void* pokemon, void* (*callback)(u32), u32 arg)
         _threadSwitch();
     }
 }
+#pragma pop
 
 void fn_8010B5C4(void* unused1, u32 unused2, u16 key)
 {
