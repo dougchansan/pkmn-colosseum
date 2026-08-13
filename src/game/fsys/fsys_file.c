@@ -1843,8 +1843,16 @@ u32 fn_8017C8FC(FSYSSlot* slot) {
                 break;
             }
 
-            if ((sub->state == 4 || sub->state == 6) &&
-                (s32)slot->reloadFlag == 1) {
+            if (sub->state == 4 && (s32)slot->reloadFlag == 1) {
+                FSYS_SLOT_CURRENT_SUB(slot) = sub;
+                if (cached == 0) {
+                    fn_8017B6B8(slot, entry, i);
+                } else {
+                    fn_8017B5C0(slot, entry, i);
+                }
+                break;
+            }
+            if (sub->state == 6 && (s32)slot->reloadFlag == 1) {
                 FSYS_SLOT_CURRENT_SUB(slot) = sub;
                 if (cached == 0) {
                     fn_8017B6B8(slot, entry, i);
