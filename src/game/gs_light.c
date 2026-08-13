@@ -243,7 +243,7 @@ extern void GStextureGetFormat(void);
 extern void GStextureSetWrap(void);
 extern void GStextureSetFilter(void);
 extern void* GStextureLockImage(void*, u32);
-extern void GStextureConvertFromHW(void);
+extern void GStextureConvertFromHW(void*, u32);
 extern void HSD_LObjReqAnimAll(void*, f32);
 extern void HSD_LObjAnimAll(void*);
 extern u32 lbl_8047AAEC;
@@ -428,9 +428,56 @@ asm void GSgfxBackFBDoFrame(void) {
 #include "src/game/gs_render_fn_800DC560.inc"
 }
 #else
+typedef struct GSbackFBFrameCapture {
+    u8 active;
+    u8 _pad[3];
+    void* texture;
+    u8 (*callback)(void*, u32, void*);
+    void* userData;
+    u32 frame;
+} GSbackFBFrameCapture;
+
 void GSgfxBackFBDoFrame(void) {
-    GSgfxBackFBInit__Fv();
-    GStextureConvertFromHW();
+    GSbackFBFrameCapture* capture;
+    GSbackFBFrameCapture* found;
+    u32 i;
+    u32 j;
+
+    if (lbl_8047AAE0 == 0) {
+        return;
+    }
+
+    capture = (GSbackFBFrameCapture*)lbl_80400EE0;
+    for (i = 0; i < 4; i++, capture++) {
+        if (capture->active != 1) {
+            continue;
+        }
+
+        GStextureConvertFromHW(capture->texture, 0);
+        if (capture->callback != NULL &&
+            capture->callback(capture->texture, capture->frame, capture->userData) == 0) {
+            found = NULL;
+            for (j = 0; j < 4; j++) {
+                GSbackFBFrameCapture* entry = ((GSbackFBFrameCapture*)lbl_80400EE0) + j;
+                if (entry->active == 1 && entry->texture == capture->texture) {
+                    found = entry;
+                    break;
+                }
+            }
+            if (found != NULL) {
+                GStextureUnlockImage(found->texture);
+                found->active = 0;
+                lbl_8047AAE0 = 0;
+                for (j = 0; j < 4; j++) {
+                    if (((GSbackFBFrameCapture*)lbl_80400EE0)[j].active == 1) {
+                        lbl_8047AAE0 = 1;
+                        break;
+                    }
+                }
+            }
+        }
+        capture->frame++;
+    }
 }
 #endif
 
