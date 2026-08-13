@@ -1555,8 +1555,10 @@ asm void fn_80142EF8(void) {
 #else
 #pragma optimization_level 4
 void itemParamConvertOrigFormat(u8* dst, u8* src) {
-    ItemParamConvertEntry* table;
+    ItemParamConvertEntry table[32];
     ItemParamConvertEntry* row;
+    u32* table_source;
+    u32* table_destination;
     u8* stream;
     u32 i;
     u32 bit;
@@ -1567,11 +1569,18 @@ void itemParamConvertOrigFormat(u8* dst, u8* src) {
     u8 maskByte;
     s8 signedValue;
 
-    table = (ItemParamConvertEntry*)lbl_802730E0;
+    table_source = (u32*)lbl_802730E0 - 1;
+    table_destination = (u32*)table - 1;
+    for (i = 0; i < 0x40; i++) {
+        table_destination[1] = table_source[1];
+        table_destination += 2;
+        table_source += 2;
+        table_destination[0] = table_source[0];
+    }
     stream = src + 6;
 
     for (i = 0; i < 0x20; i++) {
-        row = table + i;
+        row = &table[i];
         type = row->type;
         srcByte = src[row->srcOffset];
         maskByte = (u8)(row->mask >> 24);
