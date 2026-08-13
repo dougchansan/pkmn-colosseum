@@ -2042,7 +2042,7 @@ void fn_80185F44(u32 groupId, u32 index, f32 x, f32 y, f32 z) {
 /* 0x80186254 | 0x30 */
 extern const f32 lbl_8047D7EC;
 extern const f32 lbl_8047D838;
-extern void fn_80186284(u32 a, u32 b, f32 x, s32 c, s32 d, f32 y);
+extern u8 fn_80186284(u32 a, u32 b, f32 x, u32 c, u32 d, f32 y);
 #if 0
 asm void peopleGazeHeroCheck(void) {
 #include "src/game/people/people_fn_80186254.inc"
@@ -2057,7 +2057,7 @@ void peopleGazeHeroCheck(u32 a, u32 b) {
 #endif
 
 /* 0x80186284 | 0x39C */
-extern void fn_8010F188(void);
+extern s32 fn_8010F188(void*, void*, f32, void*);
 extern f32 lbl_8047D83C;
 extern f32 lbl_8047D800;
 extern f64 lbl_8047D7F0;
@@ -2070,7 +2070,64 @@ asm void fn_80186284(u32 a, u32 b, f32 x, s32 c, s32 d, f32 y) {
 #include "src/game/people/people_fn_80186284.inc"
 }
 #else
-void fn_80186284(u32 a, u32 b, f32 x, s32 c, s32 d, f32 y) { /* TODO: match -- 924 bytes at 0x80186284 */ }
+u8 fn_80186284(u32 groupId, u32 index, f32 range, u32 targetGroupId,
+               u32 targetIndex, f32 angleScale)
+{
+    PeopleEntry* target;
+    PeopleEntry* entry;
+    PeopleInfoBiosEntry* info;
+    GSvec targetPosition;
+    GSvec entryPosition;
+    GSvec delta;
+    GSvec rotation;
+    f32 distance;
+    f32 angle;
+    f32 radius;
+    f32 maxAngle;
+
+    target = peopleFindBySelf(peopleFindSelf(targetGroupId, targetIndex));
+    if (target == NULL) {
+        return 0;
+    }
+    GSvecCopy(&targetPosition, fn_8018FCBC(target));
+
+    entry = peopleFindBySelf(peopleFindSelf(groupId, index));
+    if (entry == NULL) {
+        return 0;
+    }
+    GSvecCopy(&entryPosition, fn_8018FCBC(entry));
+    fn_800E0168(&delta, &entryPosition, &targetPosition);
+
+    distance = lbl_8047D800 * range;
+    if (fn_800E008C(&delta) > distance) {
+        return 0;
+    }
+
+    fn_8018FC2C(entry, &rotation);
+    fn_800E0168(&delta, &targetPosition, &entryPosition);
+    angle = (f32)atan2(delta.x, delta.z);
+    angle = (f32)fmod(lbl_8047D7F0 + (angle - rotation.y));
+    if (angle > lbl_8047D7A8) {
+        angle = (f32)(angle - lbl_8047D7F0);
+    } else if (angle < lbl_8047D820) {
+        angle = (f32)(lbl_8047D7F0 + angle);
+    }
+
+    maxAngle = lbl_8047D7A4 * (lbl_8047D814 * angleScale);
+    if ((f32)fabs(angle) > maxAngle) {
+        return 0;
+    }
+
+    radius = lbl_8047D83C;
+    info = peopleInfoBiosGetPtr(entry->scriptRef);
+    if (info != NULL) {
+        radius = fn_8018F5E4(info);
+    }
+    if (fn_8010F188(&entryPosition, &targetPosition, radius, NULL) != 0) {
+        return 0;
+    }
+    return 1;
+}
 #endif
 
 /* 0x80186620 | 0x53C */
