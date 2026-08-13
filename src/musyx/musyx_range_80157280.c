@@ -206,7 +206,7 @@ void HandleReverb(s32* samples, ReverbWork* work, u32 channel)
     preDelayCursor = work->preDelayCursor[channel];
     filtered = work->previous[channel];
 
-    for (i = 0; i < 160; i++) {
+    for (i = 0; i < 159; i++) {
         input = (f32)samples[i];
         delayed = input;
         if (work->preDelayLength != 0) {
@@ -234,6 +234,31 @@ void HandleReverb(s32* samples, ReverbWork* work, u32 channel)
         work->previous[channel] = filtered;
         samples[i] = (s32)(wet * filtered + dry * input);
     }
+
+    input = (f32)samples[159];
+    delayed = input;
+    if (work->preDelayLength != 0) {
+        f32* end = preDelay + work->preDelayLength - 1;
+        delayed = *preDelayCursor;
+        *preDelayCursor = input;
+        preDelayCursor++;
+        if (preDelayCursor == end) {
+            preDelayCursor = preDelay;
+        }
+    }
+
+    mixed = ReverbCombSample(&comb[0], delayed, work->combGain[stageBase]);
+    mixed += ReverbCombSample(&comb[1], delayed,
+                              work->combGain[stageBase + 1]);
+    mixed += ReverbCombSample(&comb[2], delayed,
+                              work->combGain[stageBase + 2]);
+
+    mixed = ReverbAllpassSample(&allpass[0], mixed, work->feedback);
+    mixed = ReverbAllpassSample(&allpass[1], mixed, work->feedback);
+    mixed = ReverbAllpassSample(&allpass[2], mixed, work->feedback);
+    filtered = mixed * lbl_8047D534 + work->dampingMix * filtered;
+    work->previous[channel] = filtered;
+    samples[159] = (s32)(wet * filtered + dry * input);
 
     work->preDelayCursor[channel] = preDelayCursor;
 }
