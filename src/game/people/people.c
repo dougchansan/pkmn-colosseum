@@ -4948,8 +4948,16 @@ extern void GSresRegisterResource(u32, u32, u32);
 extern void GSmodelSetBoundCheck(void*, s32);
 
 int fn_8018E1C4(PeopleEntry* entry, u32 groupId, u32 indexId, s32 objectId) {
+    PeopleInfoBiosEntry* info;
     PeopleEntry* stateEntry;
+    PeopleEntry* linkedEntry;
     void* model;
+    s32 i;
+    s32 animIndex;
+    s32 current;
+    s32 secondary;
+    u8 loop;
+    u8 restart;
 
     model = floorOpenObject(objectId, lbl_80273F90);
     if (model == NULL) {
@@ -4964,6 +4972,65 @@ int fn_8018E1C4(PeopleEntry* entry, u32 groupId, u32 indexId, s32 objectId) {
     entry->visible = 1;
     entry->animId = 1;
     entry->motionIndex = 1;
+
+    info = peopleInfoBiosGetPtr(entry->scriptRef);
+    if (info != NULL) {
+        fn_8018F4C8(info, (u8)entry->motionIndex, &animIndex, &loop);
+        if (animIndex >= 0) {
+            linkedEntry = NULL;
+            for (i = 0; i < peopleGetMaxCount(); i++) {
+                stateEntry = peopleGetEntry(i);
+                if (stateEntry->active && stateEntry->groupId == groupId &&
+                    stateEntry->index == indexId) {
+                    linkedEntry = stateEntry->selfPtr;
+                    break;
+                }
+            }
+            if (linkedEntry == NULL) {
+                for (i = 0; i < peopleGetMaxCount(); i++) {
+                    stateEntry = peopleGetEntry(i);
+                    if (stateEntry->active && stateEntry->index == indexId) {
+                        linkedEntry = stateEntry->selfPtr;
+                        break;
+                    }
+                }
+            }
+            stateEntry = NULL;
+            for (i = 0; i < peopleGetMaxCount(); i++) {
+                PeopleEntry* candidate = peopleGetEntry(i);
+                if (candidate->active && candidate->selfPtr == linkedEntry) {
+                    stateEntry = candidate;
+                    break;
+                }
+            }
+            if (stateEntry != NULL && (model = peopleGetModel(stateEntry)) != NULL) {
+                restart = 0;
+                if (GSmodelHasAnimationEnded(model)) {
+                    restart = 1;
+                } else if (!GSmodelIsAnimating(model)) {
+                    restart = 1;
+                } else {
+                    GSmodelGetAnimIndex(model, &current, &secondary);
+                    if (current != animIndex || secondary == -1) {
+                        restart = 1;
+                    }
+                }
+                if (restart) {
+                    stateEntry->walkTargetNode = animIndex;
+                    stateEntry->walkAnimRate = lbl_8047D7A0;
+                    GSmodelSetAnimIndex(model, animIndex);
+                    GSmodelSetAnimFrame(model, lbl_8047D7A0);
+                    GSmodelSetAnimRate(model, lbl_8047D7A4);
+                    GSmodelSetTexAnimIndex(model, animIndex);
+                    GSmodelSetTexAnimFrame(model, lbl_8047D7A0);
+                    GSmodelSetTexAnimRate(model, lbl_8047D7A4);
+                    GSmodelSetAnimType(model, loop != 0);
+                    GSmodelStartAnimation(model);
+                }
+                GSmodelSetAnimType(model, loop != 0);
+            }
+        }
+    }
 
     stateEntry = peopleFindBySelf(peopleFindSelf(groupId, indexId));
     if (stateEntry != NULL) {
