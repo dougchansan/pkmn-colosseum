@@ -3245,6 +3245,7 @@ alpha:
  */
 #pragma push
 #pragma use_lmw_stmw on
+#pragma optimization_level 3
 s32 fn_801B9320(ColTExpNode* tev)
 {
     ColTExpNode* child;
