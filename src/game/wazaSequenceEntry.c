@@ -18,25 +18,144 @@
  * Proposed name from symbols: wazaSequenceEntryStop.
  */
 u8 wazaSequenceEntryStop(void* entry, BOOL immediate) {
-    WazaSequenceNode* node = entry;
+    extern void GSmodelStopTexAnimation(void* model);
+    extern void GSmodelGetScale(void* model, void* out);
+    extern void GSmodelSetPosition(void* model, void* position);
+    extern void GSmodelSetRotation(void* model, void* rotation);
+    extern void GSmodelSetScale(void* model, void* scale);
+    extern void* GSmodelGetBound(void* model);
+    extern void GSmodelDetachFromGSpart(void* model, s32 applyTransform);
+    extern void GSmodelSetModulationColor(void* model, void* color);
+    extern void GSlerpGetLinearInterpolationVector(void* dst, void* src,
+                                                   void* target, f32 t);
+    extern void modelRemoveCenterNull(void* model);
+    extern void* fn_8013151C(u32 arg);
+    extern const char lbl_80279588[];
+    extern u8 lbl_803725B0[];
+    extern u8 lbl_803725BC[];
+    extern f32 lbl_8047E348;
+    extern s32 lbl_8047B408;
+    u8* node = entry;
+    u8* sequence = *(u8**)(node + 0xB0);
+    u8* owner = *(u8**)(sequence + 0x3C);
+    void* ownerModel = *(void**)(owner + 0x24);
 
-    if (node->runtimeState == 2) {
+    if (*(s32*)(node + 0x6C) == 2) {
         return TRUE;
     }
-    if (!immediate && node->runtimeState != 1) {
+    if (!immediate && *(s32*)(node + 0x6C) != 1) {
         return FALSE;
     }
 
-    /*
-     * Kinds zero and six have no allocated object to tear down.  The other
-     * cases continue with their resource-specific cleanup below in the
-     * original routine.
-     */
-    if (node->kind == 0 || node->kind == 6) {
-        node->runtimeState = 2;
-        return TRUE;
+    switch (*(s32*)(node + 0x04)) {
+    case 0:
+    case 1:
+    case 6:
+        break;
+
+    case 2: {
+        void* model = *(void**)(node + 0xA4);
+
+        if (model != NULL) {
+            GSmodelStopAnimation(model);
+            GSmodelStopTexAnimation(model);
+            GSmodelSetVisibility(model, 0);
+
+            if (*(s32*)(node + 0x94) != 0) {
+                f32 position[3];
+                f32 rotation[3];
+                f32 scale[3];
+                f32 ownerPosition[3];
+                f32 boundCenter[3];
+
+                GSmodelGetPosition(model, position);
+                GSmodelGetRotation(model, rotation);
+                GSmodelGetScale(model, scale);
+                GSmodelGetPosition(ownerModel, ownerPosition);
+                fn_800E0168(ownerPosition, ownerPosition, position);
+                if (*(s32*)(node + 0xA0) != 0) {
+                    GSmodelDetachFromGSpart(ownerModel, 0);
+                }
+                GSmodelSetPosition(ownerModel, position);
+                GSmodelSetRotation(ownerModel, rotation);
+                GSmodelSetScale(ownerModel, lbl_803725BC);
+                if ((*(u32*)(node + 0x9C) & 0x10) != 0) {
+                    void* bound = GSmodelGetBound(ownerModel);
+
+                    GSlerpGetLinearInterpolationVector(
+                        boundCenter, (u8*)bound + 0x10, (u8*)bound + 0x1C,
+                        lbl_8047E348);
+                    fn_800E0168(position, position, boundCenter);
+                    GSmodelSetPosition(ownerModel, position);
+                    GSmodelRemoveNull(ownerModel);
+                }
+                if ((*(u32*)(node + 0x9C) & 8) != 0) {
+                    GSmodelAddNull(ownerModel, (GSvec*)ownerPosition, NULL, NULL);
+                    GSvecCopy(owner + 0x5C, ownerPosition);
+                }
+            } else {
+                if (*(s32*)(node + 0xA0) != 0) {
+                    GSmodelDetachFromGSpart(model, 0);
+                }
+                if ((*(u32*)(node + 0x1C) & 1) == 0 &&
+                    *(u32*)(node + 0x20) == 0x10) {
+                    modelRemoveCenterNull(ownerModel);
+                }
+            }
+
+            GSmodelSetPosition(model, lbl_803725B0);
+            GSmodelSetRotation(model, lbl_803725B0);
+            GSmodelSetScale(model, lbl_803725BC);
+        }
+        break;
     }
-    return FALSE;
+
+    case 3:
+        if (*(u32*)(node + 0x90) != 0 &&
+            (*(u32*)(node + 0x1C) & 1) == 0 &&
+            *(u32*)(node + 0x20) == 0x10) {
+            modelRemoveCenterNull(ownerModel);
+        }
+        break;
+
+    case 4:
+        if (*(u32*)(node + 0x78) != 0) {
+            if (*(s32*)(node + 0x88) == 6) {
+                u8* effect = fn_8013151C(*(u32*)(node + 0x78));
+
+                if (*(u32*)(effect + 0xA8) != 0) {
+                    f32 position[3];
+
+                    GSmodelGetPosition(ownerModel, position);
+                    fn_800E0168(position, position, effect + 0x48);
+                    GSmodelSetPosition(ownerModel, position);
+                }
+            } else if (*(s32*)(node + 0x88) == 0) {
+                u8* effect = fn_8013151C(*(u32*)(node + 0x78));
+
+                if (*(u8*)(effect + 0x4D) != 0) {
+                    GSmodelSetModulationColor(ownerModel, effect + 0x44);
+                }
+            }
+            fn_80131010(*(u32*)(node + 0x78));
+        }
+        break;
+
+    case 5:
+        if ((*(u32*)(node + 0x7C) & 1) != 0) {
+            lbl_8047B408 = 0;
+        }
+        fn_80166B18(*(u32*)(node + 0x78));
+        break;
+
+    default:
+        GSlogWrite(lbl_80279588);
+        *(s32*)(node + 0x6C) = -1;
+        return FALSE;
+    }
+
+    *(s32*)(node + 0x6C) = 2;
+    return TRUE;
 }
 
 /**
