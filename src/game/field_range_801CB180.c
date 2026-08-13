@@ -1300,9 +1300,9 @@ void fn_801CDB04(void)
             break;
 
         case 21:
-            result = CARDWriteAsync(file_info,
-                                    (u8*) task->work_buffer + 0x2000,
-                                    0x2000, 0x2000, NULL);
+            result = CARDWriteAsync(file_info, task->work_buffer, 0x2000,
+                                    task->field_20 * 0x1E000 + 0x6000,
+                                    NULL);
             task->card_result = result == 0
                                     ? CARDGetResultCode(task->card_channel)
                                     : result;
