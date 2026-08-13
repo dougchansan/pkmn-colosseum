@@ -198,7 +198,7 @@ extern void  fn_800D7F14(void* mtx);
 extern void  fn_800D6A00(u32 mode);
 extern void  fn_800D67BC(u16 index);
 extern void  fn_800D6680(f32 x, f32 y, f32 z);
-extern void  fn_800D5CB8(u32 a, u8 r, u8 g, u8 b, u8 alpha);
+extern void  fn_800D5CB8(u32 a, u8 r, u8 g, u8 b, u32 alpha);
 extern void  fn_800B9404(u32 index, u32 param);
 extern void  GXDrawDone(void);
 extern void  fn_800B856C(void);
@@ -4213,21 +4213,21 @@ u32 fn_8013E258(void* model, void* unused, void* state) {
         f32 end;
         u32 duration;
     } *visual;
-    u32 alpha;
+    s32 alpha;
     f32 amount;
 
     (void)unused;
     if (state == NULL) {
-        return 0;
+        goto ret0;
     }
 
     visual = *(struct EffectVisualState**)((u8*)state + 0x18);
     amount = visual->start +
         ((f32)*(u32*)((u8*)state + 0x1C) / (f32)visual->duration) *
         (visual->end - visual->start);
-    alpha = (u32)(*(f32*)&lbl_8047D298 * amount);
+    alpha = (s32)(*(f32*)&lbl_8047D298 * amount);
     fn_800D9B58(*(f32*)&lbl_8047D27C, *(f32*)&lbl_8047D27C,
-                *(f32*)&lbl_8047D288, *(f32*)&lbl_8047D298);
+                *(f32*)&lbl_8047D29C, *(f32*)&lbl_8047D298);
     fn_800DA4C4(1, 6, 7);
     fn_800DA1E8(0, 7, 0);
     fn_800D9ED8(1);
@@ -4257,6 +4257,9 @@ u32 fn_8013E258(void* model, void* unused, void* state) {
     fn_800D6728();
     fn_800D9ED8(0);
     return 1;
+
+ret0:
+    return 0;
 }
 #endif
 #endif
