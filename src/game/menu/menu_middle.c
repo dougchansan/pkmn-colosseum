@@ -6198,19 +6198,35 @@ void fn_8006F720(void) {
     } while (r26 < (u32)0x1a);
     r3 = MENU_MIDDLE_U32_0004(r29)->unk_0004;
     ((void(*)(void))menuGetCursorItemID)();
-    /* subi r0, r3, 0x9ca */;
-    if (r0 <= (u32)0x20) {
-        r3 = (u32)jumptable_802EE06C;
-        r0 = r0 << 2;
-        r3 = (u32)jumptable_802EE06C;
-        r0 = *(u32*)(r3 + r0);
-        ctr_fn = (void(*)(void))r0;
-        /* indirect jump via ctr */;
-        r25 = 0x0;
-
-
-    } else {
-    r25 = 0x8;
+    r0 = r3 - 0x9CA;
+    switch (r0) {
+    case 0:
+        r25 = 0;
+        break;
+    case 1:
+        r25 = 1;
+        break;
+    case 2:
+        r25 = 2;
+        break;
+    case 3:
+        r25 = 3;
+        break;
+    case 4:
+        r25 = 4;
+        break;
+    case 5:
+        r25 = 5;
+        break;
+    case 6:
+        r25 = 6;
+        break;
+    case 7:
+        r25 = 7;
+        break;
+    default:
+        r25 = 8;
+        break;
     }
     ((void(*)(void))fn_80077BD0)();
     r0 = r3 & 0xFF;
