@@ -605,13 +605,6 @@ next_command:
         state->delay = command->duration;
         break;
     case 2:
-        if (command->value0 != 0) {
-            target->flags = (s8)(target->flags | 2);
-        } else {
-            target->flags = (s8)(target->flags & ~2);
-        }
-        break;
-    case 3:
     case 9:
         if (command->type == 9) {
             state->endX = target->baseX;
@@ -654,24 +647,7 @@ next_command:
             }
         }
         break;
-    case 4:
-    case 5:
-        break;
-    case 6:
-        state->startScaleX = target->scaleX;
-        state->startScaleY = target->scaleY;
-        state->endScaleX = (f32)command->value0 / lbl_8047CE20;
-        state->endScaleY = (f32)command->value1 / lbl_8047CE20;
-        state->scaleFrame = 0;
-        state->scaleDuration = command->duration;
-        state->scaleMode = 1;
-        if (state->scaleDuration == 0) {
-            target->scaleX = state->endScaleX;
-            target->scaleY = state->endScaleY;
-            state->scaleMode = 0;
-        }
-        break;
-    case 7:
+    case 3:
         state->startColor[0] = target->color[0];
         state->startColor[1] = target->color[1];
         state->startColor[2] = target->color[2];
@@ -691,15 +667,31 @@ next_command:
             state->colorMode = 0;
         }
         break;
-    case 8:
-        sprite = menuSpriteBiosGetPtr(command->value0);
-        target->image = sprite->image;
-        target->imageX = sprite->x;
-        target->imageY = sprite->y;
-        target->imageW = sprite->width;
-        target->imageH = sprite->height;
+    case 4:
+        state->startScaleX = target->scaleX;
+        state->startScaleY = target->scaleY;
+        state->endScaleX = (f32)command->value0 / lbl_8047CE20;
+        state->endScaleY = (f32)command->value1 / lbl_8047CE20;
+        state->scaleFrame = 0;
+        state->scaleDuration = command->duration;
+        state->scaleMode = 1;
+        if (state->scaleDuration == 0) {
+            target->scaleX = state->endScaleX;
+            target->scaleY = state->endScaleY;
+            state->scaleMode = 0;
+        }
         break;
-    case 10:
+    case 5:
+        if (command->value0 != 0) {
+            target->flags = (s8)(target->flags | 2);
+        } else {
+            target->flags = (s8)(target->flags & ~2);
+        }
+        break;
+    case 6:
+        state->enabled = command->value0 != 0;
+        break;
+    case 7:
         if (state->loopActive == 0) {
             state->loopActive = 1;
             state->loopCount = command->duration;
@@ -715,8 +707,13 @@ next_command:
             goto next_command;
         }
         break;
-    case 11:
-        state->enabled = command->value0 != 0;
+    case 8:
+        sprite = menuSpriteBiosGetPtr(command->value0);
+        target->image = sprite->image;
+        target->imageX = sprite->x;
+        target->imageY = sprite->y;
+        target->imageW = sprite->width;
+        target->imageH = sprite->height;
         break;
     }
 
