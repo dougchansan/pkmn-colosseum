@@ -150,34 +150,82 @@ void battleCameraDisable(void) {
 }
 
 /**
- * battleCameraStartRandom - Battle grid cleanup / release resources
+ * battleCameraStartRandom - Periodically select a random battle camera owner
  * (renamed from fn_801C2D80; confirmed name -- naming pass 2026-07-07).
- * Referenced by battle_main.c as "battle grid cleanup".
- * Releases all grid models, clears slot state, frees memory.
+ * Defers selection while camera control is disabled or another sequence is
+ * active, then selects a different trainer or party member from the grid.
  * Address: 0x801C2D80 | Size: 0x180
  */
 void battleCameraStartRandom(void) {
+    extern BattleGridGroupEntry lbl_80466DE8[];
+    extern s32 lbl_80478CA8;
+    extern u32 lbl_80478CAC;
+    extern f32 lbl_8047DF58;
+    extern void* fn_801D2C6C(void);
+    extern void fn_801D2C74(void* owner);
+    extern s32 fn_800D3088(void);
+    extern f32 fn_800E0BE4(void);
+    extern u32 _fadeEffectGetRandom__FUl(u32 range);
+
+    BattleGridGroupEntry* group;
+    u16 groupCount;
+    u16 memberCount;
+    u32 candidate;
+    u32 ordinal;
     s32 i;
-    BattleGridSceneWork* state = (BattleGridSceneWork*)lbl_80466E50;
 
-    /* Release all grid slot models */
-    for (i = 0; i < BATTLE_TOTAL_POKEMON; i++) {
-        BattleGridSceneSlot* slot = &state->slots[i];
-        void* jobj = slot->jobj;
-
-        if (jobj != NULL) {
-            fn_80363CF4(jobj); /* HSD_JObjRemoveAll */
-            slot->jobj = NULL;
-        }
-
-        slot->active = 0;
+    groupCount = *(u16*)((u8*)lbl_80466DE8 + 0x40);
+    if (lbl_8047B398 != 0 || lbl_8047B399 != 0) {
+        lbl_80478CA8 = 200;
+        return;
     }
+    if (fn_801D2C6C() != NULL) {
+        lbl_80478CA8 = 200;
+        return;
+    }
+    lbl_80478CA8 -= fn_800D3088();
+    if (lbl_80478CA8 > 0) {
+        return;
+    }
+    if (groupCount + *(u16*)((u8*)lbl_80466DE8 + 0x42) == 0) {
+        lbl_80478CA8 = 200;
+        return;
+    }
+    if (fn_800E0BE4() > lbl_8047DF58) {
+        lbl_80478CA8 = 200;
+        return;
+    }
+    do {
+        candidate = _fadeEffectGetRandom__FUl(
+            groupCount + *(u16*)((u8*)lbl_80466DE8 + 0x42));
+    } while (candidate == lbl_80478CAC);
+    lbl_80478CAC = candidate;
 
-    /* Clear scene animation context */
-    memset(lbl_80466E50, 0, 0x1E0);
-
-    /* Reset camera state */
-    memset(lbl_80467030, 0, 0x20);
+    ordinal = 0;
+    group = lbl_80466DE8;
+    for (i = 0; i < groupCount; i++, group++) {
+        if (group->slot == NULL) {
+            continue;
+        }
+        if (ordinal == candidate) {
+            fn_801D2C74(group->slot);
+            lbl_80478CA8 = 200;
+        }
+        ordinal++;
+        memberCount = group->memberCount;
+        {
+            s32 j;
+            for (j = 0; j < memberCount; j++) {
+                if (group->pokemon[j] != NULL) {
+                    if (ordinal == candidate) {
+                        fn_801D2C74(group->pokemon[j]);
+                        lbl_80478CA8 = 200;
+                    }
+                    ordinal++;
+                }
+            }
+        }
+    }
 }
 
 /**
