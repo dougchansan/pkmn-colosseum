@@ -277,7 +277,7 @@ u32 fn_80089F58(u32 v);
 u32 fn_80089F60(u32 v);
 u32 fn_80089F68(u32 v);
 u32 fn_80089F70(u32 v);
-void fn_80089F78(void);
+void fn_80089F78(u32 arg0, u32 arg1, u32 arg2, u32 arg3);
 s32 fn_8008A99C(void);
 int gbaCommandEntryPokemon(u32 r3, u8* r4);
 s32 GbaMisc_GetEntryStatus(s32 idx, u32* out);
@@ -1027,7 +1027,7 @@ u32 fn_80089F70(u32 v) {
 }
 
 /* 0x80089F78 | size: 0xA24 */
-void fn_80089F78(void) {
+void fn_80089F78(u32 arg0, u32 arg1, u32 arg2, u32 arg3) {
     extern void gbaPokemonConditonFromGC();
     extern void pokemonBiosGetFightTrainerPokemonDataId();
     extern void pokemonBiosGetMailId();
@@ -1097,8 +1097,8 @@ void fn_80089F78(void) {
     void (*ctr_fn)(void) = 0;
     u32 ctr = 0;
 
-    r15 = r4;
-    r17 = r5;
+    r15 = arg1;
+    r17 = arg2;
     r3 = 0x0;
     r4 = 0x0;
     r5 = 0x14;
@@ -1212,7 +1212,7 @@ void fn_80089F78(void) {
     r4 = (r4 & ~0x0000007F) | (((tmp << 0) | (tmp >> 32)) & 0x0000007F);
     r25 = (u32)sp + 0x38;
     *(u8*)(sp + 0x3B) = r4;
-    r3 = tmp & 0xFF;
+    r3 = arg3 & 0xFF;
     tmp = r4 & 0xFF;
     tmp = (tmp & ~0x00000080) | (((r3 << 7) | (r3 >> 25)) & 0x00000080);
     *(u8*)(sp + 0x3F) = r23;
@@ -1672,6 +1672,7 @@ void fn_80089F78(void) {
     tmp = r20 * 0x154;
     r4 = (u32)sp + 0x38;
     r5 = tmp + r14;
+    r15 = arg0 - 1;
     r3 = r15;
     r5 = r5 + 0x24;
     ((void(*)(void))fn_80072D58)();
