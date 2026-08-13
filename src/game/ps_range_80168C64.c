@@ -3286,37 +3286,6 @@ PSParticle* psInterpretParticle0(PSParticle* pp, PSParticle* parentCtx) {
                         break;
                     }
 
-                    case 0xEF: {
-                        PSParticle* gen;
-                        u16 scriptId = ((u16)stream[0] << 8) | stream[1];
-                        u8 loopArg = stream[2];
-
-                        stream += 3;
-                        gen = (PSParticle*)psCreateGeneratorID(
-                            pp->linkNo, pp->bankIndex, scriptId);
-                        if (gen == NULL) {
-                            break;
-                        }
-                        gen->scriptId = pp->scriptId;
-                        psCopyGeneratorData(gen, pp->peopleObj);
-                        if (pp->parentObj != NULL) {
-                            if (pp->peopleObj != NULL &&
-                                (*(u16*)((u8*)pp->peopleObj + 0x12) & 0x40))
-                            {
-                                psChangeGeneratorAppSRT(
-                                    (PSGeneratorState*)gen,
-                                    (PSAppSRT*)pp->parentObj);
-                            } else {
-                                psAttachGeneratorAppSRT(
-                                    (PSGeneratorState*)gen,
-                                    (PSAppSRT*)pp->parentObj);
-                            }
-                        }
-                        gen->flags = (gen->flags & ~0x1F8) |
-                                     ((loopArg & 0x7) << 3);
-                        break;
-                    }
-
                     /* ---- 0xF1: SPAWN_GENERATOR via table (verified @ 0x80170364) ---- */
                     case 0xF1: {
                         PSParticle* gen;
@@ -3769,8 +3738,6 @@ void psDispSub(PSParticle* pp, void* polygonData) {
                 f32 peopleScale = people[17];
                 f32 peopleAngle = people[18];
                 f32 magnitude;
-                f32 sinVertical;
-                f32 cosVertical;
 
                 if (peopleScale < 0.0f) {
                     peopleScale = -peopleScale;
@@ -3779,16 +3746,13 @@ void psDispSub(PSParticle* pp, void* polygonData) {
                     peopleAngle = -peopleAngle;
                 }
                 magnitude = (horizontal * (f32)tan(peopleAngle) + peopleScale) * pp->velocityY;
-                sinVertical = (f32)sin(vertical);
-                cosVertical = (f32)cos(vertical);
-                dx = people[8] + horizontal * sinFriction +
-                    magnitude * cosVertical * cosFriction;
-                dy = people[9] + cosFriction * horizontal * sinScale -
-                    sinFriction * magnitude * cosVertical * sinScale +
-                    magnitude * sinVertical * cosScale;
-                dz = people[10] + cosFriction * horizontal * cosScale -
-                    sinFriction * magnitude * cosVertical * cosScale -
-                    magnitude * sinVertical * sinScale;
+                dx = people[8] + vertical * cosFriction + horizontal * sinFriction;
+                dy = people[9] + cosFriction * (horizontal * sinScale) +
+                    sinFriction * (-magnitude * sinScale) +
+                    magnitude * (f32)sin(vertical) * cosScale;
+                dz = people[10] + cosFriction * (horizontal * cosScale) +
+                    sinFriction * (-magnitude * cosScale) -
+                    magnitude * (f32)sin(vertical) * sinScale;
             } else {
                 dx = pp->positionX;
                 dy = pp->positionY;
