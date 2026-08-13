@@ -3346,7 +3346,6 @@ u16 *_msgGetCodeInfo__FP13MSG_TASK_WORKUsPP12tagFONT_INFO(arg0, arg1, arg2)
     u16 arg1;
     void **arg2;
 {
-    s32 temp_cr0_lt;
     s32 var_r11;
     s32 var_r7;
     u16 *temp_r3;
@@ -3354,9 +3353,9 @@ u16 *_msgGetCodeInfo__FP13MSG_TASK_WORKUsPP12tagFONT_INFO(arg0, arg1, arg2)
     u16 temp_r0;
     u16 temp_r9;
     u16 var_ctr;
-    u16 var_r9;
     u32 temp_r10;
     u32 var_r8;
+    u32 var_r9;
     u8 *var_r6;
 
     var_r11 = 0;
@@ -3379,38 +3378,28 @@ loop_1:
         return 0;
     }
     var_r6 = (void*)(M2C_FIELD(var_r10, void **, 4));
-loop_16:
-    if (var_r6 == 0) {
-
-        return 0;
-    }
-    var_r9 = M2C_FIELD(var_r6, u16 *, 0);
-    var_r8 = 0U;
-loop_13:
-    temp_cr0_lt = var_r8 < var_r9;
-    if (temp_cr0_lt == 0) {
-        if (temp_cr0_lt == 0) {
-            var_r6 = (void*)(M2C_FIELD(var_r6, void **, 8));
-            goto loop_16;
+    while (var_r6 != 0) {
+        var_r9 = M2C_FIELD(var_r6, u16 *, 0);
+        var_r8 = 0U;
+        while (var_r8 < var_r9) {
+            temp_r10 = (var_r8 + var_r9) >> 1U;
+            temp_r3 = (void*)(var_r6 + 0x10 + (temp_r10 * 8));
+            temp_r0 = *temp_r3;
+            if (temp_r0 == arg1) {
+                if (arg2 != 0) {
+                    *arg2 = var_r6;
+                }
+                return temp_r3;
+            }
+            if (temp_r0 < arg1) {
+                var_r8 = temp_r10 + 1;
+            } else {
+                var_r9 = temp_r10;
+            }
         }
-        return 0;
+        var_r6 = (void*)(M2C_FIELD(var_r6, void **, 8));
     }
-    temp_r10 = (u32) (var_r8 + var_r9) >> 1U;
-    temp_r3 = (void*)(var_r6 + 0x10 + (temp_r10 * 8));
-    temp_r0 = *temp_r3;
-    if (temp_r0 == arg1) {
-        if (arg2 != 0) {
-            *arg2 = var_r6;
-            return temp_r3;
-        }
-        return temp_r3;
-    }
-    if (temp_r0 < arg1) {
-        var_r8 = temp_r10 + 1;
-    } else {
-        var_r9 = (u16) temp_r10;
-    }
-    goto loop_13;
+    return 0;
 }
 #endif
 #pragma pop
