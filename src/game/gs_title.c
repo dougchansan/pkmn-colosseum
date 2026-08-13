@@ -3072,6 +3072,38 @@ s32 fn_800210F0(void)
             }
             break;
 
+        case 5:
+            if (gamedatasaveGetStatus(0, 4) == 0) {
+                result = 0x3C3A;
+            } else if ((u16)fn_8006A718(0) == 1) {
+                result = 0x44C9;
+            } else {
+                result = 0x3C35;
+            }
+            winMsgOpen(2, result, 1, 1);
+            lbl_8047A364 = 5;
+            state = (s8)menuSubOpenYesNo(0, 0x3C, 0xA6, 1);
+            winMsgClose(1);
+            if (state == 0) {
+                menuCloseCustom(0xAA, 0, 1);
+                menuCloseCustom(0x7A, 0, 1);
+                menuCloseCustom(0x7F, 0, 1);
+                fn_801CB9D8(lbl_8047A35C);
+                fn_8010A420(lbl_803A1FF8);
+                fn_80165A20(1, 0x3E8, 0xFF);
+                menuNameEntryOpen(0, 0);
+                menuNameEntryGetLastName(nameBuf);
+                savedataCreate(0, nameBuf);
+                fn_800056E4(1);
+                fn_800056EC(*(f32*)&lbl_8047B898);
+                heroMoveSyncWithHero();
+                floorLink(0x3A0, 0);
+                state = 0x64;
+            } else {
+                state = 1;
+            }
+            break;
+
         case 2:
             fn_800056E4(0);
             if (gamedatasaveGetStatus(0, 4) != 0) {
@@ -3123,38 +3155,6 @@ s32 fn_800210F0(void)
             fn_80020C9C();
             lbl_8047A364 = 1;
             state = 1;
-            break;
-
-        case 5:
-            if (gamedatasaveGetStatus(0, 4) == 0) {
-                result = 0x3C3A;
-            } else if ((u16)fn_8006A718(0) == 1) {
-                result = 0x44C9;
-            } else {
-                result = 0x3C35;
-            }
-            winMsgOpen(2, result, 1, 1);
-            lbl_8047A364 = 5;
-            state = (s8)menuSubOpenYesNo(0, 0x3C, 0xA6, 1);
-            winMsgClose(1);
-            if (state == 0) {
-                menuCloseCustom(0xAA, 0, 1);
-                menuCloseCustom(0x7A, 0, 1);
-                menuCloseCustom(0x7F, 0, 1);
-                fn_801CB9D8(lbl_8047A35C);
-                fn_8010A420(lbl_803A1FF8);
-                fn_80165A20(1, 0x3E8, 0xFF);
-                menuNameEntryOpen(0, 0);
-                menuNameEntryGetLastName(nameBuf);
-                savedataCreate(0, nameBuf);
-                fn_800056E4(1);
-                fn_800056EC(*(f32*)&lbl_8047B898);
-                heroMoveSyncWithHero();
-                floorLink(0x3A0, 0);
-                state = 0x64;
-            } else {
-                state = 1;
-            }
             break;
 
         case 0x64:
