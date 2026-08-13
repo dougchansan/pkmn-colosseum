@@ -218,9 +218,7 @@ void cameraUpdate(u32 captureIndex) {
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
-void _cameraPadRotateUpdate__FP9_GScamera(void* sceneObj) {
-    /* TODO: match -- 1400 bytes at 0x80178AA8 */
-}
+void _cameraPadRotateUpdate__FP9_GScamera(void* sceneObj);
 #pragma pop
 void* GSmodelGetPart(void* model, s32 partIndex);
 void GSpartGetTransform(void* part, void* transform, u32 arg2, u32 arg3);
@@ -511,6 +509,100 @@ void fn_80179748(f32 height, f32 distance, f32 rotationY, f32 fov) {
         floorEntry->fov = fov;
     }
     ((CameraPadState*)lbl_80478C40)->fov = fov;
+}
+#pragma pop
+
+#pragma push
+#pragma optimization_level 0
+#pragma optimizewithasm off
+extern const f32 lbl_8047D76C;
+extern const f32 lbl_8047D770;
+extern const f32 lbl_8047D77C;
+extern u8 lbl_8036C248[];
+void _cameraPadRotateUpdate__FP9_GScamera(void* sceneObj) {
+    GSRenderCamera* camera;
+    CameraPadState* state;
+    CameraFloorEntry* floorEntry;
+    GSRenderVec3 eye;
+    GSRenderVec3 interest;
+    GSRenderVec3 up;
+    GSRenderMtx rotation;
+    f32 aspect;
+    f32 perspective;
+    f32 nearPlane;
+    f32 farPlane;
+    f32 angle;
+    f32 radius;
+    s32 frameDelta;
+    s32 rotateX;
+    s32 rotateY;
+
+    camera = sceneObj;
+    if (dbgMenuIsOpen()) {
+        return;
+    }
+
+    frameDelta = fn_800D3088();
+    rotateX = (s8)fn_800F7994(1, 1) * frameDelta;
+    frameDelta = fn_800D3088();
+    rotateY = (s8)fn_800F7920(1, 1) * frameDelta;
+
+    state = (CameraPadState*)lbl_80478C40;
+    angle = (f32)atan2(state->height, state->distance);
+    radius = state->height * state->height + state->distance * state->distance;
+    cameraSqrt(&radius);
+
+    if ((fn_800F7BC4(1) & 0x20) != 0) {
+        state->fov += ((f32)rotateY) * lbl_8047D76C;
+        if (state->fov < lbl_8047D728.value) {
+            state->fov = lbl_8047D728.value;
+        }
+        if (state->fov > lbl_8047D72C.value) {
+            state->fov = lbl_8047D72C.value;
+        }
+        floorEntry = cameraFindFloorEntry(fn_800FF56C());
+        if (floorEntry != 0) {
+            floorEntry->fov = state->fov;
+        }
+    } else if ((fn_800F7BC4(1) & 0x40) != 0) {
+        radius += ((f32)rotateY) * lbl_8047D76C;
+    } else {
+        angle -= ((f32)rotateY) / lbl_8047D770;
+        state->height = radius * (f32)sin(angle);
+        state->distance = radius * (f32)cos(angle);
+        if (state->distance < lbl_8047D774.value) {
+            state->distance = lbl_8047D774.value;
+        }
+        if (state->distance > lbl_8047D778.value) {
+            state->distance = lbl_8047D778.value;
+        }
+        floorEntry = cameraFindFloorEntry(fn_800FF56C());
+        if (floorEntry != 0) {
+            floorEntry->height = state->height;
+        }
+        floorEntry = cameraFindFloorEntry(fn_800FF56C());
+        if (floorEntry != 0) {
+            floorEntry->distance = state->distance;
+        }
+    }
+
+    state->rotation.y += ((f32)rotateX) / lbl_8047D77C;
+    floorEntry = cameraFindFloorEntry(fn_800FF56C());
+    if (floorEntry != 0) {
+        floorEntry->rotationY = state->rotation.y;
+    }
+
+    set__5GSvecFfff(&eye, lbl_8047D740, state->height, state->distance);
+    GSmtxMakeYRotation(&rotation, state->rotation.y);
+    GSvecTransform(&eye, &rotation, &eye);
+    GSvecAdd(&interest, &state->position, &state->view);
+    GSvecAdd(&state->direction, &interest, &eye);
+    GScameraSetPosition(camera, &state->direction);
+    GSvecCopy(&up, lbl_8036C248);
+    GScameraLookAt(camera, &up, &interest);
+    state->rotation.x = -(f32)atan2(state->height, state->distance);
+    GScameraGetPerspective(camera, &aspect, &perspective, &nearPlane, &farPlane);
+    GScameraSetPerspective(camera, state->fov, perspective, nearPlane, farPlane);
 }
 #pragma pop
 
