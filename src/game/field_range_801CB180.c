@@ -1318,9 +1318,20 @@ void fn_801CDB04(void)
             break;
 
         case 23:
-            fn_800B5530(task->card_channel, raw[0x8C], &raw[0xA8]);
+            result = fn_800B5530(task->card_channel, raw[0x8C], &raw[0xA0]);
+            if (result != 0) {
+                task->error_code = result;
+                task->state = 0x2B;
+                break;
+            }
+            *(u32*)&raw[0xD8] = 0;
+            *(u32*)&raw[0xD0] = 0x40;
+            raw[0xCE] = (raw[0xCE] & ~0x03) | 0x02;
+            raw[0xCE] &= ~0x04;
+            *(u16*)&raw[0xD4] = 0x5555;
+            *(u16*)&raw[0xD6] = 0xAAAA;
             result = CARDSetStatusAsync(task->card_channel, raw[0x8C],
-                                        &raw[0xA8], NULL);
+                                        &raw[0xA0], NULL);
             task->card_result = result == 0
                                     ? CARDGetResultCode(task->card_channel)
                                     : result;
