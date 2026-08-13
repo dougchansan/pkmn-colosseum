@@ -4554,6 +4554,8 @@ void setupChanReg(PSParticle* pp) {
  * 0x8016E40C-0x8016E698.
  */
 #pragma pop
+#pragma push
+#pragma optimization_level 3
 void setupTevReg(PSParticle* pp) {
     GXColor reg1;
     GXColor reg2;
@@ -4649,6 +4651,7 @@ void setupTevReg(PSParticle* pp) {
  * Emits one particle polygon. The geometry modes remain asm-only; this
  * verified entry gate is shared by every mode at 0x8016C1E0-0x8016C240.
  */
+#pragma pop
 #pragma optimization_level 4
 void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
                           f32 centerX, f32 centerY, f32 centerZ,
