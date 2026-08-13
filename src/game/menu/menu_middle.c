@@ -3659,36 +3659,33 @@ void fn_8006CCC0(void* arg0, void* arg1) {
                                     goto L_8006D2C8;
                                     }
                                 if (r22 != (u32)0x0) {
-                                    r0 = MENU_MIDDLE_U32_000C(r22)->unk_000C;
-                                    if (r0 <= (u32)0x6) {
-                                        r3 = (u32)jumptable_802EDFB0;
-                                        r0 = r0 << 2;
-                                        r3 = (u32)jumptable_802EDFB0;
-                                        r0 = *(u32*)(r3 + r0);
-                                        ctr_fn = (void(*)(void))r0;
-                                        /* indirect jump via ctr */;
-                                        r0 = 0x3d91;
-                                        MENU_MIDDLE_U32_004C(r24)->unk_004C = r0;
+                                    switch (MENU_MIDDLE_U32_000C(r22)->unk_000C) {
+                                    case 0:
+                                        r0 = 0x3D91;
+                                        break;
+                                    case 1:
+                                        r0 = 0x3D93;
+                                        break;
+                                    case 2:
+                                        r0 = 0x3D94;
+                                        break;
+                                    case 3:
+                                        r0 = 0x3D95;
+                                        break;
+                                    case 4:
+                                        r0 = 0x3D9B;
+                                        break;
+                                    case 5:
+                                        r0 = 0x3D9C;
+                                        break;
+                                    case 6:
+                                        r0 = 0x3DAF;
+                                        break;
+                                    default:
+                                        goto L_8006D2C8;
+                                    }
+                                    MENU_MIDDLE_U32_004C(r24)->unk_004C = r0;
                                 }
-                                }
-                                goto L_8006D2C8;
-
-                                MENU_MIDDLE_U32_004C(r24)->unk_004C = r0;
-                                goto L_8006D2C8;
-
-                                MENU_MIDDLE_U32_004C(r24)->unk_004C = r0;
-                                goto L_8006D2C8;
-
-                                MENU_MIDDLE_U32_004C(r24)->unk_004C = r0;
-                                goto L_8006D2C8;
-
-                                MENU_MIDDLE_U32_004C(r24)->unk_004C = r0;
-                                goto L_8006D2C8;
-
-                                MENU_MIDDLE_U32_004C(r24)->unk_004C = r0;
-                                goto L_8006D2C8;
-
-                                MENU_MIDDLE_U32_004C(r24)->unk_004C = r0;
                                 goto L_8006D2C8;
                                 L_8006CFA4: ;
                                 if (r22 != (u32)0x0) {
