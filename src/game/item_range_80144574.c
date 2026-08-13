@@ -64,6 +64,7 @@ extern s8 itemParamGetFriend3Up(u8* p);
 extern void* fightFloorGetFightPokemonPtrToFightTrainerPtr(s32, void*);
 extern void* fightTrainerCheckFightPokemonFightOut(void*, void*);
 extern void fightSeqCheckSetMotoPokemonToHensinBuff(void*, s32);
+extern void fn_802331A4(void*, s32);
 extern u8 fightOutPokemonIsJoutaiDataId(void* fightPokemon, s32 statusId);
 extern void fightOutPokemonInitJoutaiDataId(void* fightPokemon, s32 statusId);
 extern u8 fightOutPokemonCheckWriteJoutaiDataId(void* fightPokemon, s32 statusId);
@@ -545,7 +546,7 @@ s16 fn_80144574(
                     side = fightFloorGetFightPokemonPtrToFightTrainerPtr(0, fightPokemon);
                     side = fightTrainerCheckFightPokemonFightOut(side, fightPokemon);
                     if (side != NULL) {
-                        fightSeqCheckSetMotoPokemonToHensinBuff(side, 0x8D);
+                        fn_802331A4(side, 0x8D);
                     }
                 }
                 delta = (u8)(newEffort - oldEffort);
@@ -582,7 +583,7 @@ s16 fn_80144574(
                 side = fightFloorGetFightPokemonPtrToFightTrainerPtr(0, fightPokemon);
                 side = fightTrainerCheckFightPokemonFightOut(side, fightPokemon);
                 if (side != NULL) {
-                    fightSeqCheckSetMotoPokemonToHensinBuff(side, 0x8E);
+                    fn_802331A4(side, 0x8E);
                 }
             }
             delta = (u8)(newEffort - oldEffort);
@@ -687,7 +688,7 @@ s16 fn_80144574(
                 side = fightFloorGetFightPokemonPtrToFightTrainerPtr(0, fightPokemon);
                 side = fightTrainerCheckFightPokemonFightOut(side, fightPokemon);
                 if (side != NULL) {
-                    fightSeqCheckSetMotoPokemonToHensinBuff(side, 0x8F);
+                    fn_802331A4(side, 0x8F);
                 }
             }
             delta = (u8)(newEffort - oldEffort);
@@ -723,7 +724,7 @@ s16 fn_80144574(
                 side = fightFloorGetFightPokemonPtrToFightTrainerPtr(0, fightPokemon);
                 side = fightTrainerCheckFightPokemonFightOut(side, fightPokemon);
                 if (side != NULL) {
-                    fightSeqCheckSetMotoPokemonToHensinBuff(side, 0x92);
+                    fn_802331A4(side, 0x92);
                 }
             }
             delta = (u8)(newEffort - oldEffort);
@@ -759,7 +760,7 @@ s16 fn_80144574(
                 side = fightFloorGetFightPokemonPtrToFightTrainerPtr(0, fightPokemon);
                 side = fightTrainerCheckFightPokemonFightOut(side, fightPokemon);
                 if (side != NULL) {
-                    fightSeqCheckSetMotoPokemonToHensinBuff(side, 0x91);
+                    fn_802331A4(side, 0x91);
                 }
             }
             delta = (u8)(newEffort - oldEffort);
@@ -795,7 +796,7 @@ s16 fn_80144574(
                 side = fightFloorGetFightPokemonPtrToFightTrainerPtr(0, fightPokemon);
                 side = fightTrainerCheckFightPokemonFightOut(side, fightPokemon);
                 if (side != NULL) {
-                    fightSeqCheckSetMotoPokemonToHensinBuff(side, 0x90);
+                    fn_802331A4(side, 0x90);
                 }
             }
             delta = (u8)(newEffort - oldEffort);
