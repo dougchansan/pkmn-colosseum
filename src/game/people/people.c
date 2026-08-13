@@ -42,6 +42,19 @@ typedef struct GSvec {
     f32 z;
 } GSvec;
 
+typedef struct PeopleECECState {
+    u8 pad00[0x0C];
+    f32 currentPitch;
+    f32 currentYaw;
+    u8 pad14[0x04];
+    GSvec* targetPos;
+    u8 pad1C[0x14];
+    void* scriptRef;
+    u8 pad34[0x80];
+    f32 targetPitch;
+    f32 targetYaw;
+} PeopleECECState;
+
 /* Forward declarations for functions defined later in this TU but used
  * earlier (order kept close to the archive's original topical grouping). */
 struct PeopleEntry;
@@ -1002,7 +1015,131 @@ asm void fn_8018ECEC(void) {
 #else
 #pragma dont_inline on
 void fn_8018ECEC(PeopleEntry* entry, f32 step) {
-    /* TODO: match -- 928 bytes at 0x8018ECEC */
+    PeopleECECState* state;
+    PeopleInfoBiosEntry* info;
+    void* model;
+    void* part;
+    GSvec partPos;
+    GSvec rotation;
+    GSvec delta;
+    f32 yawMin;
+    f32 yawMax;
+    f32 pitchMin;
+    f32 pitchMax;
+    f32 desiredYaw;
+    f32 pitchDistance;
+    f32 deltaStep;
+    s32 partIndex;
+    u8 clampToRange;
+
+    if (entry == NULL) {
+        return;
+    }
+
+    state = (PeopleECECState*)entry;
+    model = peopleGetModel(entry);
+    if (model == NULL) {
+        return;
+    }
+
+    if (state->targetPos != NULL) {
+        info = peopleInfoBiosGetPtr(state->scriptRef);
+        partIndex = fn_8018F698(info);
+        yawMin = fn_8018F678(info);
+        yawMax = fn_8018F658(info);
+        pitchMin = fn_8018F638(info);
+        pitchMax = fn_8018F618(info);
+
+        if (partIndex >= 0) {
+            part = GSmodelGetPart(model, (s8)partIndex);
+            GSpartGetTransform(part, &partPos, 0, 0);
+            GSpartFree(part);
+
+            clampToRange = 0;
+            if (peopleTestFlags(entry, 2) != 0) {
+                clampToRange = 1;
+            } else if (step < lbl_8047D7A0) {
+                clampToRange = 1;
+            } else if (GSvecDistance(state->targetPos, &partPos) <= step) {
+                clampToRange = 1;
+            }
+
+            if (clampToRange != 0) {
+                fn_8018FC2C(entry, &rotation);
+                fn_800E0168(&delta, state->targetPos, &partPos);
+                desiredYaw =
+                    (f32)fmod(lbl_8047D7F0 +
+                              ((f32)atan2(delta.x, delta.z) - rotation.y));
+                if (desiredYaw > (f32)lbl_8047D7A8) {
+                    desiredYaw = (f32)(desiredYaw - lbl_8047D7F0);
+                } else if (desiredYaw < (f32)lbl_8047D820) {
+                    desiredYaw = (f32)(lbl_8047D7F0 + desiredYaw);
+                }
+
+                if (desiredYaw < yawMin) {
+                    if (peopleTestFlags(entry, 2) != 0) {
+                        desiredYaw = yawMin;
+                    } else {
+                        clampToRange = 0;
+                    }
+                } else if (desiredYaw > yawMax) {
+                    if (peopleTestFlags(entry, 2) != 0) {
+                        desiredYaw = yawMax;
+                    } else {
+                        clampToRange = 0;
+                    }
+                }
+
+                if (clampToRange != 0) {
+                    state->targetYaw = desiredYaw;
+                    fn_800E0168(&delta, state->targetPos, &partPos);
+                    delta.y += *(f32*)&lbl_8047D898;
+                    pitchDistance =
+                        (delta.x > lbl_8047D7A0 ? delta.x : -delta.x) +
+                        (delta.z > lbl_8047D7A0 ? delta.z : -delta.z);
+                    desiredYaw = (f32)((f32)atan2(pitchDistance, delta.y) -
+                                       *(f64*)&lbl_8047D7B0);
+                    if (desiredYaw < pitchMin) {
+                        desiredYaw = pitchMin;
+                    } else if (desiredYaw > pitchMax) {
+                        desiredYaw = pitchMax;
+                    }
+                    state->targetPitch = desiredYaw;
+                } else {
+                    state->targetPitch = lbl_8047D7A0;
+                    state->targetYaw = lbl_8047D7A0;
+                }
+            } else {
+                state->targetPitch = lbl_8047D7A0;
+                state->targetYaw = lbl_8047D7A0;
+            }
+        }
+    }
+
+    deltaStep = *(f32*)&lbl_8047D89C * (f32)fn_800D3088();
+    if (state->currentPitch > state->targetPitch) {
+        state->currentPitch -= deltaStep;
+        if (state->currentPitch < state->targetPitch) {
+            state->currentPitch = state->targetPitch;
+        }
+    } else if (state->currentPitch < state->targetPitch) {
+        state->currentPitch += deltaStep;
+        if (state->currentPitch > state->targetPitch) {
+            state->currentPitch = state->targetPitch;
+        }
+    }
+
+    if (state->currentYaw > state->targetYaw) {
+        state->currentYaw -= deltaStep;
+        if (state->currentYaw < state->targetYaw) {
+            state->currentYaw = state->targetYaw;
+        }
+    } else if (state->currentYaw < state->targetYaw) {
+        state->currentYaw += deltaStep;
+        if (state->currentYaw > state->targetYaw) {
+            state->currentYaw = state->targetYaw;
+        }
+    }
 }
 #pragma dont_inline reset
 #endif
