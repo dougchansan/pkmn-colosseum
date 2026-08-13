@@ -498,8 +498,8 @@ void fn_800D892C(u32 objArg) {
                     }
                 }
 
-                dst = state + 0x61;
                 if (flags & 1) {
+                    dst = state + 0x61;
                     for (stage = 0; stage < 2; stage++, dst += 6) {
                         dst[0] = 1;
                         dst[1] = 0;
@@ -509,6 +509,7 @@ void fn_800D892C(u32 objArg) {
                         dst[5] = 2;
                     }
                 } else {
+                    dst = state + 0x61;
                     for (stage = 0; stage < 2; stage++, dst += 6) {
                         dst[0] = 1;
                         dst[1] = 0;
