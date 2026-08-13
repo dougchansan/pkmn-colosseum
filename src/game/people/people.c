@@ -569,8 +569,10 @@ void fn_80181850(void)
     s32 revolutions;
     PeopleEntry* linked;
     f32 distance;
+    f32 talkRange;
 
-    for (i = peopleGetMaxCount() - 1; i >= 0; i--) {
+    i = peopleGetMaxCount();
+    while (i-- > 0) {
         entry = peopleGetEntry(i);
         if (!entry->active) {
             continue;
@@ -650,22 +652,23 @@ void fn_80181850(void)
 
                 linked = peopleFindBySelf(
                     peopleFindSelf(entry->groupId, entry->index));
+                talkRange = lbl_8047D7A0;
                 if (linked == NULL) {
-                    entry->talkRange = lbl_8047D7A0;
                 } else {
                     distance = fn_800E008C(&modelPosition);
                     if (linked->field_38 <= distance) {
-                        entry->talkRange = lbl_8047D7C4;
+                        talkRange = lbl_8047D7C4;
                     } else if (linked->field_34 <= distance) {
                         if (linked->field_38 != lbl_8047D7A0) {
-                            entry->talkRange = lbl_8047D79C +
+                            talkRange = lbl_8047D79C +
                                 (distance - linked->field_34) /
                                     (linked->field_38 - linked->field_34);
                         }
                     } else if (linked->field_34 != lbl_8047D7A0) {
-                        entry->talkRange = distance / linked->field_34;
+                        talkRange = distance / linked->field_34;
                     }
                 }
+                entry->talkRange = talkRange;
             }
 
             fn_80184A90(entry);
