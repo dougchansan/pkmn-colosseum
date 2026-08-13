@@ -142,6 +142,7 @@ void _modelParseJObjDispSub__FP9_HSD_JObjP5GSmtxP5GSmtx12HSD_TrspMaskbPFP9_HSD_P
     extern void fn_801AB63C(u32 first, u32 second);
     extern void HSD_DObjSetCurrent(HSD_DObj* dobj);
     HSD_DObj* dobj;
+    HSD_PObj* pobj;
 
     fn_8019F024(jobj);
     fn_801AB63C(0, 0);
@@ -150,8 +151,18 @@ void _modelParseJObjDispSub__FP9_HSD_JObjP5GSmtxP5GSmtx12HSD_TrspMaskbPFP9_HSD_P
         if ((dobj->flags & 1) == 0 &&
             (dobj->flags & ((u32)pass << 1)) != 0) {
             HSD_DObjSetCurrent(dobj);
-            _modelParseDObjDisp__FP9_HSD_DObjP5GSmtxP5GSmtxbPFP9_HSD_PObjP5GSmtxP5GSmtxP5GSmtxPv_vPv(
-                dobj, vmtx, pmtx, is_visible, disp, arg);
+            for (pobj = dobj->pobj; pobj != NULL; pobj = pobj->next) {
+                if ((pobj->flags & 0x800) != 0) {
+                    continue;
+                }
+
+                if ((pobj->flags & 0x3000) == 0x1000) {
+                    disp(pobj, (f32(*)[4])vmtx, (f32(*)[4])pmtx, NULL, arg);
+                } else if (disp != NULL) {
+                    disp(pobj, (f32(*)[4])vmtx, (f32(*)[4])pmtx,
+                         is_visible ? (f32(*)[4])lbl_804016D0 : NULL, arg);
+                }
+            }
         }
     }
     HSD_DObjSetCurrent(NULL);
