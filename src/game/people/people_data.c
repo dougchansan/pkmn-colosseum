@@ -515,7 +515,8 @@ s32 fn_80140588(u32* entries, u16 count, u16 dataIndex, u16 extent,
     return result;
 }
 
-#pragma optimization_level 4
+#pragma push
+#pragma optimization_level 2
 s32 fn_80140ACC(u32* base, u16 count, u16 id, u16 amount, s16 index, u16 unusedLimit, u8 sortMode) {
     u32* entry;
     u16 remaining;
@@ -616,6 +617,7 @@ s32 fn_80140ACC(u32* base, u16 count, u16 id, u16 amount, s16 index, u16 unusedL
     }
     return remaining;
 }
+#pragma pop
 #endif
 extern u32 lbl_80478BD8;   /* gPeopleFieldCount */
 #if 0
