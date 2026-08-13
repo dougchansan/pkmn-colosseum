@@ -444,6 +444,9 @@ static GsRangeMemNode* rangeFindFreeDescriptor(void* data)
     return NULL;
 }
 
+#pragma push
+#pragma optimization_level 0
+#pragma peephole off
 void fn_8017FB08(void* allocation)
 {
     GsRangeMemNode* block;
@@ -532,6 +535,7 @@ void fn_8017FB08(void* allocation)
     lbl_8047B1D0 = previous;
 }
 
+#pragma pop
 void* fn_8017FDB0(u32 size)
 {
     GsRangeMemNode* block;
