@@ -49,6 +49,10 @@ s32 _sysvarsProcessData__FP16sysvarsFuncEntryPc(void* entry, char* data)
     extern f64 lbl_8047BA08;
     extern f64 lbl_8047BA10;
     extern u8 lbl_8047BA1C[];
+    extern u8 lbl_8047BA20[];
+    extern u8 lbl_80266FAC[];
+    extern u8 lbl_80266FB8[];
+    extern void __assert(const char*, s32, const char*);
     extern void fn_8003258C(void);
     extern void fn_800327FC(void);
     extern s32 fn_80033278(void);
@@ -180,11 +184,17 @@ s32 _sysvarsProcessData__FP16sysvarsFuncEntryPc(void* entry, char* data)
             lbl_8047A438 = 0;
             return 2;
         }
+        if (*(s32*)(menuState + 0x0) != 0) {
+            __assert((const char*)lbl_80266FAC, 0x6C8,
+                     (const char*)lbl_80266FB8);
+        }
 
         fn_8007CAB0();
         lbl_8047A434 = (u32)fn_800836AC(0, menuState, 1);
         fn_8007C7EC();
         if (lbl_8047A434 == 0) {
+            __assert((const char*)lbl_80266FAC, 0x6DB,
+                     (const char*)lbl_8047BA20);
             winMsgOpen(8, 0x3B91, 1, 0);
             lbl_8047A438 = 0;
             return 0;
