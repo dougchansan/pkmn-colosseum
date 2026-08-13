@@ -555,6 +555,8 @@ asm void fn_80031B4C(void) {
 #include "src/game/gs_npc_event_fn_80031B4C.inc"
 }
 #else
+#pragma push
+#pragma optimization_level 2
 void fn_80031B4C(void) {
     extern u8 lbl_80266F90[];
     extern u8 lbl_803A2518[];
@@ -1075,6 +1077,7 @@ L_80032484:
     lbl_8047A409 = tmp;
     return;
 }
+#pragma pop
 #endif
 
 /* 0x800324A0 | 0xC4 */
