@@ -3857,8 +3857,13 @@ PSGeneratorState* psCreateGeneratorID(s32 linkNo, s32 bankIdx, s32 scriptId) {
     u16 familyId;
     u16 shapeType;
 
-    if (bankIdx >= 64 || linkNo >= 8 ||
-        scriptId >= lbl_80452CC8[bankIdx]) {
+    if (bankIdx >= 64) {
+        return NULL;
+    }
+    if (linkNo >= 8) {
+        return NULL;
+    }
+    if (scriptId >= lbl_80452CC8[bankIdx]) {
         return NULL;
     }
 
