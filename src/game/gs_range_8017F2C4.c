@@ -627,15 +627,15 @@ void fn_801800F8(u32 queueCount, u32 field04, u32 initialSize)
         allocation = 0;
     }
 
+    lbl_80454018.field0C = 0;
+    lbl_80454018.tail = 0;
+    lbl_80454018.field18 = 0;
     lbl_80454018.field00 = 0;
+    lbl_80454018.entries = allocation;
     lbl_80454018.field04 = 0;
     lbl_80454018.field08 = 0;
-    lbl_80454018.field0C = 0;
     lbl_80454018.field10 = 0;
     lbl_80454018.field14 = 0;
-    lbl_80454018.field18 = 0;
-    lbl_80454018.entries = allocation;
-    lbl_80454018.tail = 0;
     lbl_80454018.count = 0x400;
     lbl_80454018.field2C = 0;
 
