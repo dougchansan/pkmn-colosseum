@@ -1145,6 +1145,7 @@ s32 fn_80141308(u32* base, u16 count, u16 id, u16 amount, s16 index, u16 maxCoun
                         nextValue = 0;
                     }
                     fn_80142B24((void*)entryPtr, 0, 0x1C, 0, (u16)fieldValue);
+                    needsReorder = 1;
                 }
             }
         }
