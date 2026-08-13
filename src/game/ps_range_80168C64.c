@@ -2591,32 +2591,80 @@ PSParticle* psInterpretParticle0(PSParticle* pp, PSParticle* parentCtx) {
                         break;
                     }
 
-                    /* ---- 0xA5: SPAWN_SCRIPT via table (verified @ 0x8016FE9C) ---- */
                     case 0xA5: {
-                        u16 tblIdx = ((u16)stream[0] << 8) | stream[1];
-                        u32* bank = (u32*)lbl_804527C8[pp->bankIndex];
-                        u16 scriptId = bank ? (u16)bank[tblIdx] : tblIdx;
+                        PSGeneratorState* gen;
+                        PSAppSRT* srcSRT = (PSAppSRT*)pp->parentObj;
+                        PSAppSRT* dstSRT;
+                        u16 scriptId = ((u16)stream[0] << 8) | stream[1];
+
                         stream += 2;
-                        spawned = psGenerateParticleID0(pp, pp->linkNo, pp->bankIndex, scriptId, NULL);
-                        if (spawned == NULL) break;
-                        spawned->scriptId = pp->scriptId;
-                        spawned->peopleObj = pp->peopleObj;
-                        if (pp->peopleObj != NULL) {
-                            (*(u32*)((u8*)pp->peopleObj + 0x4C))++;
-                            if (*(u32*)((u8*)pp->peopleObj + 4) & 0x2000)
-                                spawned->flags |= 0x2000;
+                        gen = psCreateGeneratorID(pp->linkNo, pp->bankIndex,
+                                                  scriptId);
+                        if (gen == NULL) {
+                            break;
                         }
-                        psApplyVelocityLocalRotation(spawned);
-                        if (pp->peopleObj != NULL &&
-                            (*(u16*)((u8*)pp->peopleObj + 0x12) & 0x40)) {
-                            psChangeParticleAppSRT(spawned, (PSAppSRT*)pp->parentObj);
+                        gen->familyId = pp->scriptId;
+                        psCopyGeneratorData((PSParticle*)gen, pp->peopleObj);
+                        if (srcSRT != NULL) {
+                            if (pp->peopleObj != NULL &&
+                                (((PSGeneratorState*)pp->peopleObj)->angleFlags &
+                                 0x40) != 0) {
+                                psChangeGeneratorAppSRT(gen, srcSRT);
+                            } else {
+                                psAttachGeneratorAppSRT(gen, srcSRT);
+                            }
+                        }
+
+                        dstSRT = (PSAppSRT*)gen->appSRT;
+                        if (srcSRT != NULL) {
+                            if (dstSRT != NULL) {
+                                gen->positionX = pp->positionX;
+                                gen->positionY = pp->positionY;
+                                gen->positionZ = pp->positionZ;
+                                if (dstSRT != srcSRT) {
+                                    dstSRT->rotationX = srcSRT->rotationX;
+                                    dstSRT->rotationY = srcSRT->rotationY;
+                                    dstSRT->rotationZ = srcSRT->rotationZ;
+                                }
+                            }
                         } else {
-                            psAttachParticleAppSRT(spawned, (PSAppSRT*)pp->parentObj);
+                            if (dstSRT != NULL) {
+                                dstSRT->rotationX = pp->positionX;
+                                dstSRT->rotationY = pp->positionY;
+                                dstSRT->rotationZ = pp->positionZ;
+                            }
+                            gen->positionX = pp->positionX;
+                            gen->positionY = pp->positionY;
+                            gen->positionZ = pp->positionZ;
                         }
-                        spawned->positionX = pp->positionX;
-                        spawned->positionY = pp->positionY;
-                        spawned->positionZ = pp->positionZ;
-                        psInterpretParticle0(spawned, pp);
+
+                        if (dstSRT == srcSRT) {
+                            break;
+                        }
+                        if (srcSRT == NULL) {
+                            if (dstSRT == NULL) {
+                                break;
+                            }
+                            genPosUpdate(gen);
+                            gen->positionX -= dstSRT->rotationX;
+                            gen->positionY -= dstSRT->rotationY;
+                            gen->positionZ -= dstSRT->rotationZ;
+                        } else {
+                            genPosUpdate(srcSRT->owner);
+                            if (dstSRT != NULL) {
+                                genPosUpdate(gen);
+                                gen->positionX +=
+                                    srcSRT->rotationX - dstSRT->rotationX;
+                                gen->positionY +=
+                                    srcSRT->rotationY - dstSRT->rotationY;
+                                gen->positionZ +=
+                                    srcSRT->rotationZ - dstSRT->rotationZ;
+                            } else {
+                                gen->positionX += srcSRT->rotationX;
+                                gen->positionY += srcSRT->rotationY;
+                                gen->positionZ += srcSRT->rotationZ;
+                            }
+                        }
                         break;
                     }
 
