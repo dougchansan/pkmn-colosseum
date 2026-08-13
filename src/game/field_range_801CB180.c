@@ -1246,7 +1246,8 @@ void fn_801CDB04(void)
             break;
 
         case 18:
-            result = CARDWriteAsync(file_info, task->work_buffer, 0x2000, 0,
+            result = CARDWriteAsync(file_info, task->work_buffer,
+                                    raw[0x40] != 0 ? 0x4000 : 0x6000, 0,
                                     NULL);
             task->card_result = result == 0
                                     ? CARDGetResultCode(task->card_channel)
@@ -1263,7 +1264,7 @@ void fn_801CDB04(void)
             if (result == -1) {
                 task->state = 19;
             } else if (result == 0) {
-                task->state = 20;
+                task->state = raw[0x40] != 0 ? 0x2C : 20;
             } else {
                 task->error_code = result;
                 task->state = 0x2B;
