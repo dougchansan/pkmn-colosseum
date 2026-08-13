@@ -241,6 +241,7 @@ extern void PSMTXCopy(const Mtx source, Mtx destination);
 extern void PSMTXRotRad(Mtx m, char axis, f32 angle);
 extern void PSMTXConcat(const Mtx a, const Mtx b, Mtx out);
 extern void PSMTXMultVec(const Mtx m, const Vec* src, Vec* dst);
+extern void PSMTXRotAxisRad(Mtx m, const Vec* axis, f32 angle);
 extern void PSVECNormalize(const Vec* src, Vec* dst);
 extern void PSVECCrossProduct(const Vec* a, const Vec* b, Vec* out);
 extern void HSD_CObjGetUpVector(void* camera, Vec* up);
@@ -3715,6 +3716,112 @@ void psDispSub(PSParticle* pp, void* polygonData) {
         axisYX *= generator->generatorData[4];
         axisYY *= generator->generatorData[5];
         axisYZ *= generator->generatorData[5];
+    }
+
+    if (pp->flags & 0x00300000) {
+        f32 angle = pp->heading;
+
+        if (pp->flags & 0x00200000) {
+            f32* camera = (f32*)(lbl_80452DE8 + 0x30);
+            f32 dx;
+            f32 dy;
+            f32 dz;
+
+            if (generator != NULL && (pp->flags & 4)) {
+                f32 sinScale = sinf(pp->scaleFactor);
+                f32 sinFriction = sinf(pp->frictionFactor);
+                f32 cosScale = cosf(pp->scaleFactor);
+                f32 cosFriction = cosf(pp->frictionFactor);
+                f32* people = (f32*)generator;
+                f32 horizontal = pp->velocityZ - people[21];
+                f32 vertical = pp->velocityX - people[14];
+                f32 peopleScale = people[17];
+                f32 peopleAngle = people[18];
+                f32 magnitude;
+
+                if (peopleScale < 0.0f) {
+                    peopleScale = -peopleScale;
+                }
+                if (peopleAngle < 0.0f) {
+                    peopleAngle = -peopleAngle;
+                }
+                magnitude = (horizontal * tanf(peopleAngle) + peopleScale) * pp->velocityY;
+                dx = people[8] + vertical * cosFriction + horizontal * sinFriction;
+                dy = people[9] + cosFriction * (horizontal * sinScale) +
+                    sinFriction * (-magnitude * sinScale) +
+                    magnitude * sinf(vertical) * cosScale;
+                dz = people[10] + cosFriction * (horizontal * cosScale) +
+                    sinFriction * (-magnitude * cosScale) -
+                    magnitude * sinf(vertical) * sinScale;
+            } else {
+                dx = pp->positionX;
+                dy = pp->positionY;
+                dz = pp->positionZ;
+            }
+
+            dx = pp->positionX - dx;
+            dy = pp->positionY - dy;
+            dz = pp->positionZ - dz;
+
+            if (*(f32*)(lbl_80452DE8 + 0x60) == 0.0f) {
+                f32 w = camera[9] + camera[6] * pp->positionX +
+                    camera[7] * pp->positionY + camera[8] * pp->positionZ;
+                f32 previousW = camera[9] + camera[6] * dx +
+                    camera[7] * dy + camera[8] * dz;
+
+                if (w != 0.0f && previousW != 0.0f) {
+                    f32 invW = 1.0f / w;
+                    f32 invPreviousW = 1.0f / previousW;
+                    f32* projection = (f32*)(lbl_80452DE8 + 0x30);
+                    f32 screenX = (projection[1] * pp->positionX +
+                        projection[4] * pp->positionY + projection[7] * pp->positionZ +
+                        projection[10]) * invW;
+                    f32 screenY = (projection[2] * pp->positionX +
+                        projection[5] * pp->positionY + projection[8] * pp->positionZ +
+                        projection[11]) * invW;
+                    f32 previousX = (projection[1] * dx + projection[4] * dy +
+                        projection[7] * dz + projection[10]) * invPreviousW;
+                    f32 previousY = (projection[2] * dx + projection[5] * dy +
+                        projection[8] * dz + projection[11]) * invPreviousW;
+
+                    angle = atan2f(screenY - previousY, screenX - previousX);
+                }
+            } else {
+                f32 screenX = camera[0] * pp->positionX + camera[3] * pp->positionY +
+                    camera[6] * pp->positionZ;
+                f32 screenY = camera[1] * pp->positionX + camera[4] * pp->positionY +
+                    camera[7] * pp->positionZ;
+                f32 previousX = camera[0] * dx + camera[3] * dy + camera[6] * dz;
+                f32 previousY = camera[1] * dx + camera[4] * dy + camera[7] * dz;
+
+                angle = atan2f(screenY - previousY, screenX - previousX);
+            }
+            angle += pp->heading;
+        }
+
+        if (angle > 0.000001f || angle < -0.000001f) {
+            Mtx rotation;
+            Vec normal;
+            Vec first;
+            Vec second;
+
+            first.x = axisXX;
+            first.y = axisXZ;
+            first.z = axisYY;
+            second.x = axisXY;
+            second.y = axisYX;
+            second.z = axisYZ;
+            PSVECCrossProduct(&first, &second, &normal);
+            PSMTXRotAxisRad(rotation, &normal, angle);
+            PSMTXMultVec(rotation, &first, &first);
+            PSMTXMultVec(rotation, &second, &second);
+            axisXX = first.x;
+            axisXZ = first.y;
+            axisYY = first.z;
+            axisXY = second.x;
+            axisYX = second.y;
+            axisYZ = second.z;
+        }
     }
 
     psDispSubMakePolygon(pp, polygonData,
