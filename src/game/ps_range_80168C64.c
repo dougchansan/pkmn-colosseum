@@ -1193,6 +1193,7 @@ s32 psInitAppSRT(s32 count, s32 size) {
  * frame-generation update is independently verified against 0x8016ABF4-
  * 0x8016AC14 in the Colosseum retail disassembly.
  */
+#pragma optimization_level 2
 void fn_8016AB94(u32 linkMask, s32 mode) {
     s32 linkNo;
     s32 needsInit = TRUE;
@@ -1453,6 +1454,8 @@ void fn_8016AB94(u32 linkMask, s32 mode) {
         }
     }
 }
+
+#pragma optimization_level 1
 
 #endif
 
