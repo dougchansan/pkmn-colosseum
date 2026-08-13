@@ -1285,9 +1285,18 @@ void fn_801CDB04(void)
             break;
 
         case 20:
-            memset((u8*) task->work_buffer + 0x2000, 0, 0x2000);
-            raw[0x80] = 1;
-            *(u32*) &raw[0x8C] = 0;
+            buffer = (u8*) task->work_buffer;
+            memset(buffer, 0, 0x2000);
+            buffer[0] = 1;
+            buffer[1] = 1;
+            buffer[2] = 0;
+            buffer[3] = 0;
+            ((u32*) buffer)[3] =
+                -(((u32*) buffer)[0] + ((u32*) buffer)[1] +
+                  ((u32*) buffer)[2] + ((u32*) buffer)[3] +
+                  ((u32*) buffer)[4] + ((u32*) buffer)[5] +
+                  ((u32*) buffer)[6] + ((u32*) buffer)[7]);
+            task->field_20 = 0;
             task->state = 21;
             break;
 
