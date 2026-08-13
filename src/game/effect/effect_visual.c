@@ -2796,9 +2796,9 @@ void fn_8013BE04(void* ptr, void* mtx, u8* color, f32 x, f32 z, f32 scale) {
     u16 rows = *(u16*)(p + 0x1C);
     u16 cols = *(u16*)(p + 0x1E);
     f32 base[3];
+    f32 current[3];
     f32 rowStep[3];
     f32 colStep[3];
-    f32 current[3];
     u16 row;
     u16 column;
 
@@ -5309,22 +5309,27 @@ u32 fn_8013FF0C(void* ptr) {
         fn_800E0060(p + 0x5C, p + 0x5C);
     }
 
-    if (model != NULL) {
-        if (GSmodelCanAnimate(model)) {
+    {
+        u32 updated = 0;
+
+        if (*(void**)(p + 0x20) != NULL &&
+            fn_80118DA8(*(void**)(p + 0x20)) != 0) {
+            fn_80118F04(*(void**)(p + 0x20), p + 0x38);
+            updated = 1;
+        }
+
+        if (model != NULL &&
+            ((GSmodelCanAnimate(model) && !GSmodelHasAnimationEnded(model)) ||
+             (GSmodelCanTexAnimate(model) && !GSmodelHasTexAnimationEnded(model)))) {
             material = GSmodelGetBound(model);
             if (material != NULL) {
-                GSmodelSetPosition(material, p + 0x38);
-                GSmodelSetScale(material, p + 0x44);
-            }
-        } else if (GSmodelCanTexAnimate(model)) {
-            material = GSmodelGetBound(model);
-            if (material != NULL) {
-                GSmodelSetPosition(material, p + 0x38);
-                GSmodelSetScale(material, p + 0x44);
+                GSmodelSetPosition(model, p + 0x38);
+                GSmodelSetScale(model, p + 0x44);
+                updated = 1;
             }
         }
+        return updated;
     }
-    return 1;
 }
 #endif
 
