@@ -3330,6 +3330,7 @@ void fn_8006C7D4(void* arg0, void* item) {
         ((void(*)(void*, void*))fn_80071318)((void*)r28, (void*)r3);
         return;
     }
+    if (r0 == 3) goto L_8006CB80;
     if ((s32)r0 != (s32)0x2) {
         if ((s32)r0 < (s32)0x2) {
             if ((s32)r0 == (s32)0x0) return;
@@ -3459,8 +3460,8 @@ void fn_8006C7D4(void* arg0, void* item) {
     r6 = (0x51ec << 16);
     r0 = r3 & 0xFFFF;
     r5 = (0x1062 << 16);
-    /* subi r9, r7, 0x3333 */;
-    /* subi r7, r6, 0x7ae1 */;
+    r9 = r7 - 0x3333;
+    r7 = r6 - 0x7ae1;
     r8 = (u32)((u64)r9 * (u64)r0 >> 32);
     r4 = (0xd1b7 << 16);
     r6 = r5 + 0x4dd3;
