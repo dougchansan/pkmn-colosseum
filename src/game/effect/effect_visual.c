@@ -4895,10 +4895,6 @@ void _distortionEffectUpdateMatrices(void* ptr) {
     f32 lookAt[3];
     f32 eye[3];
 
-    if (ptr == NULL) {
-        return;
-    }
-
     camera = GScameraGetActiveCamera();
     _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
     fn_800E064C((u8*)ptr + 0x38);
