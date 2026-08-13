@@ -7225,6 +7225,8 @@ asm void fn_800F57F0(void) {
 #include "src/game/gs_thread_fn_800F57F0.inc"
 }
 #else
+#pragma push
+#pragma optimization_level 1
 s32 fn_800F57F0(GSVMCtx* context)
 {
     union {
@@ -7292,6 +7294,7 @@ s32 fn_800F57F0(GSVMCtx* context)
     }
     return 1;
 }
+#pragma pop
 
 #endif
 
