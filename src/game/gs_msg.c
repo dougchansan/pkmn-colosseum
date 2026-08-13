@@ -1537,6 +1537,7 @@ s32 fn_800FAEF8(s32 arg0, s32 arg1, s32 arg2, const char* fmt, ...)
 
     (void)fontEntry;
     (void)rubyBias;
+    GStextureUnlockImage((void*)texture);
     return 0;
 }
 
