@@ -527,7 +527,7 @@ extern u8 lbl_80478AC0[4];
 extern f32 lbl_8047D060;
 u32 fn_8012B19C(s32 member, f32* start, f32* target, f32 extraRadius);
 u32 heroMoveChkHinderClear(s32 member);
-extern void fn_800D3088(void);
+extern u32 fn_800D3088(void);
 extern f64 lbl_8047D068;
 void getStep__FP8FOOTSTEPP8_GSmodelPiP8FOOTWORK(f32*, void*, s32*, f32*);
 extern u32 fn_8018CD08();
@@ -2189,7 +2189,7 @@ void getStep__FP8FOOTSTEPP8_GSmodelPiP8FOOTWORK(
     HeroMoveVec3 transform;
     f32 heights[4];
     f32 zero = lbl_8047D038;
-    f32 delta = (f32)((u32 (*)(void))fn_800D3088)();
+    f32 delta = (f32)fn_800D3088();
     void* part;
     s32 i;
 
