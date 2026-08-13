@@ -61,6 +61,7 @@ s32 _sysvarsProcessData__FP16sysvarsFuncEntryPc(void* entry, char* data)
     extern void fn_80034830(u8, u8, const void*);
     extern void fn_80034B5C(u8*, u8*, u8*);
     extern void* fn_80082EA4(void*, s32, s32, s32);
+    extern u8* fn_80082FE4(void*, s32);
     extern void* fn_800836AC(s32, void*, s32);
     extern s32 fn_800D3088(void);
     extern s32 fn_800D37CC(void);
@@ -126,12 +127,14 @@ s32 _sysvarsProcessData__FP16sysvarsFuncEntryPc(void* entry, char* data)
     s32 stateResult;
     s32 menuResult;
     s32 effectType;
+    s32 candidate;
     s32 itemResult;
     s32 i;
     s32 current;
     s32 randomPick;
     u8 selection;
     u8 region;
+    u8* transferEntry;
     f32 progress;
 
     (void)entry;
@@ -205,15 +208,35 @@ s32 _sysvarsProcessData__FP16sysvarsFuncEntryPc(void* entry, char* data)
         effectType = 4;
         if (*(u8*)((u8*)item + 0x0C) != 0) {
             effectType = 2;
+        } else {
+            candidate = -1;
+            for (i = 0; i < (s8)menuState[0x58]; i++) {
+                item = fn_80082EA4((void*)lbl_8047A434, i,
+                                    menuState[0x24], menuState[0x26]);
+                if (*(u8*)((u8*)item + 0x0C) == 0) {
+                    candidate = i;
+                    break;
+                }
+            }
+            if (candidate == -1) {
+                effectType = 2;
+            } else if (candidate >= 1 && candidate < 3) {
+                for (i = 0; i < candidate; i++) {
+                    if ((s8)menuState[0x5E + i] < 0) {
+                        continue;
+                    }
+                    transferEntry = fn_80082FE4((void*)lbl_8047A434, i);
+                    if (transferEntry[(s8)menuState[0x24] * 0xE + 0x1C] == 0) {
+                        effectType = 3;
+                        break;
+                    }
+                }
+            }
         }
 
-        if (effectType == 3) {
-            selection = 0;
-        } else if (effectType == 4) {
-            selection = 0;
+        selection = 0;
+        if (effectType == 4) {
             fn_80034B5C(&selection, base + 0x48, base + 0x49);
-        } else {
-            selection = 0;
         }
 
         if (effectType < 3) {
