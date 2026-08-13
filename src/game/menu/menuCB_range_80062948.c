@@ -1614,7 +1614,7 @@ static inline void menuCBPokemonEntryAdvancePositions(void)
     s32 player;
     s32 component;
     f32 denominator;
-    s32 numerator;
+    u32 numerator;
 
     denominator = (f32)fn_800D37CC();
     numerator = fn_800D3088();
