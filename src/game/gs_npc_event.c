@@ -1357,10 +1357,31 @@ void fn_800327FC(void)
         *(u32*)&display.data[0x5C] = *(u32*)&selected_record.data[0x56];
         *(u32*)&display.data[0x60] = *(u32*)&selected_record.data[0x5A];
         *(u32*)&display.data[0x64] = *(u32*)&selected_record.data[0x5E];
-        for (i = 0; i < 25; i++) {
-            *(u32*)&display.data[0x6A + i * 4] =
-                *(u32*)&selected_record.data[0x64 + i * 4];
-        }
+        *(u32*)&display.data[0x6A] = *(u32*)&selected_record.data[0x64];
+        *(u32*)&display.data[0x6E] = *(u32*)&selected_record.data[0x68];
+        *(u32*)&display.data[0x72] = *(u32*)&selected_record.data[0x6C];
+        *(u32*)&display.data[0x76] = *(u32*)&selected_record.data[0x70];
+        *(u32*)&display.data[0x7A] = *(u32*)&selected_record.data[0x74];
+        *(u32*)&display.data[0x7E] = *(u32*)&selected_record.data[0x78];
+        *(u32*)&display.data[0x82] = *(u32*)&selected_record.data[0x7C];
+        *(u32*)&display.data[0x86] = *(u32*)&selected_record.data[0x80];
+        *(u32*)&display.data[0x8A] = *(u32*)&selected_record.data[0x84];
+        *(u32*)&display.data[0x8E] = *(u32*)&selected_record.data[0x88];
+        *(u32*)&display.data[0x92] = *(u32*)&selected_record.data[0x8C];
+        *(u32*)&display.data[0x96] = *(u32*)&selected_record.data[0x90];
+        *(u32*)&display.data[0x9A] = *(u32*)&selected_record.data[0x94];
+        *(u32*)&display.data[0x9E] = *(u32*)&selected_record.data[0x98];
+        *(u32*)&display.data[0xA2] = *(u32*)&selected_record.data[0x9C];
+        *(u32*)&display.data[0xA6] = *(u32*)&selected_record.data[0xA0];
+        *(u32*)&display.data[0xAA] = *(u32*)&selected_record.data[0xA4];
+        *(u32*)&display.data[0xAE] = *(u32*)&selected_record.data[0xA8];
+        *(u32*)&display.data[0xB2] = *(u32*)&selected_record.data[0xAC];
+        *(u32*)&display.data[0xB6] = *(u32*)&selected_record.data[0xB0];
+        *(u32*)&display.data[0xBA] = *(u32*)&selected_record.data[0xB4];
+        *(u32*)&display.data[0xBE] = *(u32*)&selected_record.data[0xB8];
+        *(u32*)&display.data[0xC2] = *(u32*)&selected_record.data[0xBC];
+        *(u32*)&display.data[0xC6] = *(u32*)&selected_record.data[0xC0];
+        *(u32*)&display.data[0xCA] = *(u32*)&selected_record.data[0xC4];
         *(u16*)&display.data[0xCE] = *(u16*)&selected_record.data[0xC8];
 
         lbl_8047A43C = 0;
