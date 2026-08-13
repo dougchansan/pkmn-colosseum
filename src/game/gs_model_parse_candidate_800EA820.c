@@ -151,19 +151,15 @@ void _modelParseJObjDispSub__FP9_HSD_JObjP5GSmtxP5GSmtx12HSD_TrspMaskbPFP9_HSD_P
         HSD_PObj* pobj, f32* vmtx, f32* pmtx, f32* matrices);
     HSD_DObj* dobj;
     HSD_PObj* pobj;
-    HSD_JObj* current;
-    u32 marked_object;
-    u32 mark;
-    u8 setup_current;
-    u8 setup_joint;
-    f32 matrix[12];
+    u32 pass_mask;
 
     fn_8019F024(jobj);
+    pass_mask = (u32)pass << 1;
     fn_801AB63C(0, 0);
     for (dobj = *(HSD_DObj**)((u8*)jobj + 0x18);
          dobj != NULL; dobj = dobj->next) {
         if ((dobj->flags & 1) == 0 &&
-            (dobj->flags & ((u32)pass << 1)) != 0) {
+            (dobj->flags & pass_mask) != 0) {
             HSD_DObjSetCurrent(dobj);
             for (pobj = dobj->pobj; pobj != NULL; pobj = pobj->next) {
                 if ((pobj->flags & 0x800) != 0) {
@@ -174,6 +170,10 @@ void _modelParseJObjDispSub__FP9_HSD_JObjP5GSmtxP5GSmtx12HSD_TrspMaskbPFP9_HSD_P
                     switch (pobj->flags & 0x3000) {
                     case 0:
                         if (pobj->u.jobj == NULL) {
+                            HSD_JObj* current;
+                            u32 marked_object;
+                            u32 mark;
+
                             current = HSD_JObjGetCurrent();
                             HSD_PObjGetMtxMark(0, &marked_object, &mark);
                             if (marked_object != (u32)current || mark != 1) {
@@ -181,6 +181,13 @@ void _modelParseJObjDispSub__FP9_HSD_JObjP5GSmtxP5GSmtx12HSD_TrspMaskbPFP9_HSD_P
                                 fn_800E0628(lbl_804016D0, pmtx);
                             }
                         } else {
+                            HSD_JObj* current;
+                            u32 marked_object;
+                            u32 mark;
+                            u8 setup_current;
+                            u8 setup_joint;
+                            f32 matrix[12];
+
                             current = HSD_JObjGetCurrent();
                             setup_current = setup_joint = FALSE;
                             HSD_PObjGetMtxMark(0, &marked_object, &mark);
@@ -211,6 +218,11 @@ void _modelParseJObjDispSub__FP9_HSD_JObjP5GSmtxP5GSmtx12HSD_TrspMaskbPFP9_HSD_P
                         }
                         break;
                     case 0x1000:
+                    {
+                        HSD_JObj* current;
+                        u32 marked_object;
+                        u32 mark;
+
                         current = HSD_JObjGetCurrent();
                         HSD_PObjGetMtxMark(0, &marked_object, &mark);
                         if (marked_object != (u32)current || mark != 1) {
@@ -218,6 +230,7 @@ void _modelParseJObjDispSub__FP9_HSD_JObjP5GSmtxP5GSmtx12HSD_TrspMaskbPFP9_HSD_P
                             fn_800E0628(lbl_804016D0, pmtx);
                         }
                         break;
+                    }
                     case 0x2000:
                         _modelParseLoadEnvelopeMatrix__FP9_HSD_PObjP5GSmtxP5GSmtxP5GSmtx(
                             pobj, vmtx, pmtx, lbl_804016D0);
