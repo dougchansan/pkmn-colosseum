@@ -2211,12 +2211,30 @@ void getStep__FP8FOOTSTEPP8_GSmodelPiP8FOOTWORK(
         }
     }
 
-    for (i = 0; i < 4; i++) {
-        if (footwork[i] >= lbl_8047D040 && heights[i] < lbl_8047D040) {
-            step[i] = (footwork[i] - heights[i]) / delta;
-        }
-        footwork[i] = heights[i];
+    if (footwork[0] >= lbl_8047D040 && heights[0] < lbl_8047D040) {
+        step[0] = (footwork[0] - heights[0]) / delta;
+    } else {
+        step[0] = zero;
     }
+    if (footwork[1] >= lbl_8047D040 && heights[1] < lbl_8047D040) {
+        step[1] = (footwork[1] - heights[1]) / delta;
+    } else {
+        step[1] = zero;
+    }
+    if (footwork[2] >= lbl_8047D040 && heights[2] < lbl_8047D040) {
+        step[2] = (footwork[2] - heights[2]) / delta;
+    } else {
+        step[2] = zero;
+    }
+    if (footwork[3] >= lbl_8047D040 && heights[3] < lbl_8047D040) {
+        step[3] = (footwork[3] - heights[3]) / delta;
+    } else {
+        step[3] = zero;
+    }
+    footwork[0] = heights[0];
+    footwork[1] = heights[1];
+    footwork[2] = heights[2];
+    footwork[3] = heights[3];
 }
 /* 0x8012C0B4 | 0x48C */
 extern f32 lbl_8047D030;
