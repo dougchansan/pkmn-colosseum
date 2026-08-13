@@ -1122,8 +1122,14 @@ void resolveIKJoint1(HSD_JObj* jobj) {
             PSVECCrossProduct(&target, &pole_hint, &normal_axis);
         }
 
-        Vec_Normalize(&normal_axis, &normal_axis);
-        Vec_Normalize(&pole_hint, &bend_axis);
+        norm_scale = JObjIKSqrtf(1.0f / (1.0e-10f +
+                                        PSVECDotProduct(&normal_axis,
+                                                        &normal_axis)));
+        PSVECScale(&normal_axis, &bend_axis, norm_scale);
+        norm_scale = JObjIKSqrtf(1.0f / (1.0e-10f +
+                                        PSVECDotProduct(&pole_hint,
+                                                        &pole_hint)));
+        PSVECScale(&pole_hint, &normal_axis, norm_scale);
         diff_sq = first_sq - second_sq;
         height_sq =
             0.25f *
