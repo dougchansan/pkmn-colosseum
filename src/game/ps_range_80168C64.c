@@ -3904,6 +3904,76 @@ void psDispSubAPPSRTPoint(PSParticle* pp) {
             fn_800B944C(width, 5);
         }
     }
+
+    {
+        Vec previous;
+        PSColor color;
+
+        if (pp->flags & 4) {
+            if (pp->peopleObj != NULL) {
+                return;
+            }
+            previous.x = pp->positionX;
+            previous.y = pp->positionY;
+            previous.z = pp->positionZ;
+        } else {
+            previous.x = position.x - velocity.x;
+            previous.y = position.y - velocity.y;
+            previous.z = position.z - velocity.z;
+        }
+
+        switch (pp->flags & 0x80000080) {
+        case 0:
+            if (pp->color1Timer != 0) {
+                s32 step = ((s32)pp->color1Countdown << 16) / pp->color1Timer;
+                color.r = (((s32)pp->color1Target.r << 16) + step * ((s32)pp->color1.r - (s32)pp->color1Target.r)) >> 16;
+                color.g = (((s32)pp->color1Target.g << 16) + step * ((s32)pp->color1.g - (s32)pp->color1Target.g)) >> 16;
+                color.b = (((s32)pp->color1Target.b << 16) + step * ((s32)pp->color1.b - (s32)pp->color1Target.b)) >> 16;
+                color.a = (((s32)pp->color1Target.a << 16) + step * ((s32)pp->color1.a - (s32)pp->color1Target.a)) >> 16;
+            } else {
+                color = pp->color1;
+            }
+            break;
+        case 0x80:
+        case 0x80000080:
+            color.r = color.g = color.b = color.a = 0xFF;
+            break;
+        default:
+            return;
+        }
+
+        fn_800B7D3C();
+        fn_800B7874(9, 1);
+        fn_800B7874(11, 1);
+        if (pp->flags & 0x400) {
+            fn_800B7874(13, 2);
+            fn_800B928C(0xA8, 2, 2);
+        } else {
+            fn_800B928C(0xA8, 3, 2);
+        }
+
+        GX_FIFO_F32 = previous.x;
+        GX_FIFO_F32 = previous.y;
+        GX_FIFO_F32 = previous.z;
+        GX_FIFO_U8 = color.r;
+        GX_FIFO_U8 = color.g;
+        GX_FIFO_U8 = color.b;
+        GX_FIFO_U8 = (u8)(color.a * pp->alphaScale);
+        if (pp->flags & 0x400) {
+            GX_FIFO_U8 = 0;
+        }
+
+        GX_FIFO_F32 = position.x;
+        GX_FIFO_F32 = position.y;
+        GX_FIFO_F32 = position.z;
+        GX_FIFO_U8 = color.r;
+        GX_FIFO_U8 = color.g;
+        GX_FIFO_U8 = color.b;
+        GX_FIFO_U8 = color.a;
+        if (pp->flags & 0x400) {
+            GX_FIFO_U8 = 1;
+        }
+    }
 }
 
 /*
