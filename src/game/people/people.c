@@ -1012,12 +1012,95 @@ void fn_8018ECEC(PeopleEntry* entry, f32 step) {
 /* 0x80181478 | 0x3D8 */
 extern f32 lbl_8047D7A0;
 extern f32 lbl_8047D7A4;
+extern u8 fn_800EC954(void*);
+extern u8 fn_800EC960(void*);
+extern void fn_800EC578(void*, s32*, s32*);
+extern void fn_800ECCA8(void*, s16);
+extern void fn_800ECA78(void*, f32);
+extern void fn_800EC9DC(void*, f32);
+extern void fn_800EC35C(void*, s16);
+extern void fn_800EC2A4(void*, f32);
+extern void fn_800EC308(void*, f32);
+extern void fn_800ECB74(void*, u32);
+extern void fn_800EC990(void*);
 #if 0
 asm void fn_80181478(void) {
 #include "src/game/people/people_fn_80181478.inc"
 }
 #else
-s32 fn_80181478(u32 groupId, u32 index, u8 doSetup) { /* TODO: match -- 984 bytes at 0x80181478 */ return 0; }
+s32 fn_80181478(u32 groupId, u32 index, u8 doSetup)
+{
+    PeopleEntry* entry;
+    PeopleEntry* setupEntry;
+    PeopleInfoBiosEntry* info;
+    void* model;
+    s32 animIndex;
+    s32 currentAnim;
+    s32 secondaryAnim;
+    u8 loop;
+    u8 restart;
+
+    entry = peopleFindBySelf(peopleFindSelf(groupId, index));
+    if (entry == NULL) {
+        return 0;
+    }
+    if (entry->state == 0) {
+        return 1;
+    }
+
+    if (doSetup != 0) {
+        if (entry->talkLock == 0) {
+            entry->talkLock = 1;
+            entry->motionIndex = 1;
+            info = peopleInfoBiosGetPtr(entry->scriptRef);
+            if (info != NULL) {
+                fn_8018F4C8(info, (u8)entry->motionIndex, &animIndex, &loop);
+                if (animIndex >= 0) {
+                    setupEntry = peopleFindBySelf(
+                        peopleFindSelf(entry->groupId, entry->index));
+                    if (setupEntry != NULL) {
+                        model = peopleGetModel(setupEntry);
+                        if (model != NULL) {
+                            restart = 0;
+                            if (fn_800EC954(model)) {
+                                restart = 1;
+                            } else if (!fn_800EC960(model)) {
+                                restart = 1;
+                            } else {
+                                fn_800EC578(model, &currentAnim,
+                                           &secondaryAnim);
+                                if (currentAnim != animIndex ||
+                                    secondaryAnim != -1) {
+                                    restart = 1;
+                                }
+                            }
+
+                            if (restart != 0) {
+                                setupEntry->walkTargetNode = animIndex;
+                                setupEntry->walkAnimRate = lbl_8047D7A0;
+                                fn_800ECCA8(model, (s16)animIndex);
+                                fn_800ECA78(model, lbl_8047D7A0);
+                                fn_800EC9DC(model, lbl_8047D7A4);
+                                fn_800EC35C(model, (s16)animIndex);
+                                fn_800EC2A4(model, lbl_8047D7A0);
+                                fn_800EC308(model, lbl_8047D7A4);
+                                fn_800ECB74(model, loop != 0);
+                                fn_800EC990(model);
+                            }
+                            fn_800ECB74(model, loop != 0);
+                        }
+                    }
+                }
+            }
+        }
+        return 1;
+    }
+
+    if (entry->talkLock != 0) {
+        entry->talkLock = 0;
+    }
+    return 0;
+}
 #endif
 
 /* 0x80181EB0 | 0x308 */
