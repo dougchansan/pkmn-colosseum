@@ -3897,12 +3897,13 @@ s32 fn_8012F40C(s32 member)
     }
 
     members[0].field_00 = member;
-    if ((state->flags & 1) && state->neckMode == 1) {
+    if (member >= 0 && member < 2 &&
+        ((members + member)->flags & 1) && (members + member)->neckMode == 1) {
         handles[0] = *(u32*)&lbl_8047D030;
         handles[1] = *(u32*)&lbl_8047D034;
         handle = handles[member];
         fn_80188AF4(0, handle);
-        state->neckMode = 0;
+        (members + member)->neckMode = 0;
     }
 
     active = members[0].field_00;
