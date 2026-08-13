@@ -14,7 +14,7 @@ extern void winSpriteSetDisp(void*, s32);
 extern s32 winSpriteGetDisp(void*);
 extern void fn_8001DACC();
 extern void fn_8010B9E8();
-extern void fightFloorGetStatus();
+extern s32 fightFloorGetStatus(s32, s32, s32, s32);
 extern void GSmsgGetGSchar();
 extern void windowDrawSprite2();
 extern void fn_800D88DC();
@@ -69,7 +69,7 @@ void fn_80011EA4(void* window, void* sprite) {
     extern void GSmsgGetGSchar();
     extern void windowDrawSprite2();
     extern void fn_8010B9E8();
-    extern void fightFloorGetStatus();
+    extern s32 fightFloorGetStatus(s32, s32, s32, s32);
     u8 sp[0x70];
     u32 tmp = 0;
     u32 r3 = (u32)window;
@@ -251,12 +251,7 @@ do {
             return;
         L_80012170:
         do {
-            r3 = 0x0;
-            r4 = 0x0;
-            r5 = 0x32;
-            r6 = 0x0;
-            fightFloorGetStatus();
-            if ((s32)r3 != 0) {
+            if (fightFloorGetStatus(0, 0, 0x32, 0) != 0) {
                 tmp = *(u8*)((u8*)r30 + 0x16);
                 if (tmp != 0) return;
             }
