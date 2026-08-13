@@ -490,6 +490,7 @@ u32 _lightningRenderMain(void* ptr) {
     }
 
     p = ptr;
+    count = *(u16*)(p + 0x8);
     model = GSresGetResource(*(u16*)(p + 0xA), *(u16*)(p + 0xC));
     if (model == NULL) {
         return 0;
@@ -519,7 +520,6 @@ u32 _lightningRenderMain(void* ptr) {
     fn_800D7F14(matrix);
     fn_800D6A00(2);
 
-    count = *(u16*)(p + 0x8);
     entry = *(u8**)(p + 0x4);
     for (i = 0; i < count; i++, entry += 0x97C) {
         segments = *(u32*)(entry + 0x978);
