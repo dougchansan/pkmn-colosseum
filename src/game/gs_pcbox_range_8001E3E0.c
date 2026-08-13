@@ -193,15 +193,15 @@ void fn_8001E644(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
 
     left = (s16)(arg0 - 0xA);
     top = (s16)(arg1 - 0xA);
-    right = left + (s16)(arg2 + 0x14);
-    outerHeight = (s16)(arg3 + 0x14);
-    bottom = top + outerHeight;
 
     fn_800D67BC(4);
     fn_800D61E4(left, top);
     fn_800D5BA0(0, colors[0]);
+    right = left + (s16)(arg2 + 0x14);
     fn_800D61E4(right, top);
     fn_800D5BA0(0, colors[0]);
+    outerHeight = (s16)(arg3 + 0x14);
+    bottom = top + outerHeight;
     fn_800D61E4(right, bottom);
     fn_800D5BA0(0, colors[1]);
     fn_800D61E4(left, bottom);
