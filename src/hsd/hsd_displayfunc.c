@@ -75,7 +75,7 @@ extern f32 PSVECMag(void*);
 extern void PSVECCrossProduct(void*, void*, void*);
 extern const DisplayFuncVec lbl_802746D0; /* { 0.0f, 0.0f, 1.0f } */
 extern f32 lbl_80478ACC;
-extern const f32 lbl_8047DA14;   /* 1.0f in sdata2 */
+extern const f32 lbl_8047DA14 __attribute__((section(".sdata2"))); /* 1.0f */
 
 #define DISPLAYFUNC_FLAG_2000 0x2000
 #define DISPLAYFUNC_MTX(mtx, row, col) (((f32*) (mtx))[(row) * 4 + (col)])
