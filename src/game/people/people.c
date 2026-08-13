@@ -962,7 +962,7 @@ extern void fn_80101B90(void);
 extern void GScolsys2ThruGetEventID(void);
 extern void fn_8012BAF0(void);
 extern void GScolsys2HumanCollision(void);
-extern void fn_8010F320(void);
+extern s32 fn_8010F320(void*, void*, void*, f32);
 extern void PSVECSubtract(void);
 extern void PSVECAdd(void);
 extern void fn_801101B4(void);
@@ -1994,21 +1994,25 @@ void fn_80186284(u32 a, u32 b, f32 x, s32 c, s32 d, f32 y) { /* TODO: match -- 9
 extern void cameraGetActive(void);
 extern void fn_800D258C(void);
 extern void _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID(void);
-extern void fn_800DA028(void);
-extern void fn_800D7820(void);
-extern void fn_800D88DC(void);
-extern void fn_800D888C(void);
-extern void fn_800DA4C4(void);
-extern void fn_800D9ED8(void);
-extern void fn_800D6A00(void);
-extern void fn_800D67BC(void);
-extern void fn_800D6680(void);
-extern void fn_800D5CB8(void);
+extern void fn_800DA028(s32);
+extern void fn_800D7820(void*);
+extern void fn_800D88DC(s32);
+extern void fn_800D888C(s32);
+extern void fn_800DA4C4(s32, s32, s32);
+extern void fn_800D9ED8(s32);
+extern void fn_800D6A00(s32);
+extern void fn_800D67BC(s32);
+extern void fn_800D6680(f32, f32, f32);
+extern void fn_800D5CB8(s32, s32, s32, s32, s32);
 extern void fn_800D6728(void);
-extern void fn_800E0060(void);
-extern void fn_800E0000(void);
-extern void GScolsy2UtilGetPointExtentionLine(void);
-extern void heroMoveSetLockFrame(void);
+extern void fn_800E0060(void*, void*);
+extern f32 fn_800E0000(void*, void*);
+extern f32 fn_800E008C(void*);
+extern void fn_800E013C(void*, void*, f32);
+extern void fn_800E01D0(void*, void*);
+extern void fn_800E01F4(void*, f32, f32, f32);
+extern void GScolsy2UtilGetPointExtentionLine(void*, void*, void*, f32);
+extern void heroMoveSetLockFrame(s32);
 extern u32 lbl_8047D840;
 extern u8 lbl_80314638[];
 extern u32 lbl_8047D844;
@@ -2017,7 +2021,7 @@ extern f32 lbl_8047D7A0;
 extern f32 lbl_8047D79C;
 extern u32 lbl_8047D848;
 void fn_80186B5C(GSvec* output, u32 groupId, u32 index);
-void fn_801870E8(void*, void*, void*, void*, void*, f32);
+u8 fn_801870E8(void*, void*, void*, void*, void*, f32);
 #if 0
 asm void fn_80186620(void) {
 #include "src/game/people/people_fn_80186620.inc"
@@ -2027,12 +2031,26 @@ s32 fn_80186620(u32 groupId, u32 index, u8 mode, f32 x0, f32 z0,
                 f32 x1, f32 z1)
 {
     PeopleEntry* entry;
-    GSvec origin;
-    GSvec facing;
-    GSvec endpoint;
+    PeopleInfoBiosEntry* info;
+    GSvec direction;
+    GSvec scaledDirection;
+    GSvec position;
+    GSvec transform;
     GSvec lineStart;
     GSvec lineEnd;
+    GSvec lineDirection;
+    GSvec perpendicular;
+    GSvec projectedStart;
+    GSvec projectedDelta;
+    GSvec testPoint;
+    GSvec collisionPoint;
+    GSvec correction;
+    GSvec correctedPoint;
     void* resource;
+    f32 radius;
+    f32 step;
+    f32 distance;
+    f32 nextDistance;
     f32 reach;
 
     entry = peopleFindBySelf(peopleFindSelf(groupId, index));
@@ -2041,36 +2059,100 @@ s32 fn_80186620(u32 groupId, u32 index, u8 mode, f32 x0, f32 z0,
     }
 
     if (peopleTestFlags(entry, 0x40000000)) {
-        GSvecCopy(&origin, &entry->collisionX);
-        fn_800E013C(&facing, &origin, lbl_8047D840);
-        fn_80186B5C(&origin, 0, 100);
-        GSvecCopy(&facing, peopleGetTransform(entry));
-        GSvecAdd(&endpoint, &facing, &origin);
+        fn_800E01D0(&direction, &entry->collisionX);
+        fn_800E013C(&scaledDirection, &direction, *(f32*)&lbl_8047D840);
+        fn_80186B5C(&direction, 0, 100);
+        fn_800E01D0(&transform, peopleGetTransform(entry));
+        fn_800E019C(&position, &transform, &direction);
     } else {
-        GSvecCopy(&endpoint, fn_8018FCBC(entry));
-        GSvecCopy(&facing, peopleGetTransform(entry));
-        fn_800E0168(&origin, &endpoint, &facing);
+        fn_800E01D0(&position, fn_8018FCBC(entry));
+        fn_800E01D0(&transform, peopleGetTransform(entry));
+        fn_800E0168(&direction, &position, &transform);
     }
 
-    lineStart.x = x0;
-    lineStart.y = endpoint.y;
-    lineStart.z = z0;
-    lineEnd.x = x1;
-    lineEnd.y = endpoint.y;
-    lineEnd.z = z1;
+    fn_800E01F4(&lineStart, x0, position.y, z0);
+    fn_800E01F4(&lineEnd, x1, position.y, z1);
 
     resource = GSresGetResource(0, 2);
     if (resource != NULL && *(u8*)resource != 0) {
         cameraGetActive();
         fn_800D258C();
         _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
+        fn_800DA028(0);
+        fn_800D7820(lbl_80314638);
+        fn_800D88DC(1);
+        fn_800D888C(6);
+        fn_800DA4C4(1, 6, 7);
+        fn_800D9ED8(0);
+        fn_800D6A00(4);
+        fn_800D67BC(4);
+        fn_800D6680(x0, position.y - *(f32*)&lbl_8047D844, z0);
+        fn_800D5CB8(0, 0, 0x80, 0xFF, 0xC0);
+        fn_800D6680(x0, position.y + *(f32*)&lbl_8047D844, z0);
+        fn_800D5CB8(0, 0, 0x80, 0xFF, 0xC0);
+        fn_800D6680(x1, position.y - *(f32*)&lbl_8047D844, z1);
+        fn_800D5CB8(0, 0, 0x80, 0xFF, 0xC0);
+        fn_800D6680(x1, position.y + *(f32*)&lbl_8047D844, z1);
+        fn_800D5CB8(0, 0, 0x80, 0xFF, 0xC0);
+        fn_800D6728();
     }
 
-    reach = fn_800E008C(&origin);
-    if (reach <= lbl_8047D7A0) {
+    info = peopleInfoBiosGetPtr(entry->scriptRef);
+    if (info != NULL) {
+        radius = fn_8018F5E4(info);
+    } else {
+        radius = *(f32*)&lbl_8047D848;
+    }
+    reach = radius;
+    distance = fn_800E008C(&direction);
+    if (distance > lbl_8047D7A0) {
+        step = radius / distance;
+        if (step > lbl_8047D79C) {
+            step = lbl_8047D79C;
+        }
+    } else {
+        step = lbl_8047D79C;
+    }
+
+    fn_800E0168(&lineDirection, &lineEnd, &lineStart);
+    if (fn_800E008C(&lineDirection) < lbl_8047D83C) {
         return 0;
     }
-    fn_801870E8(&lineStart, &lineEnd, &endpoint, &facing, &origin, reach);
+
+    fn_800E0060(&lineDirection, &lineDirection);
+    fn_800E0168(&perpendicular, &transform, &lineStart);
+    fn_800E013C(&perpendicular, &lineDirection, fn_800E0000(&perpendicular, &lineDirection));
+    fn_800E019C(&projectedStart, &perpendicular, &lineStart);
+    fn_800E0168(&projectedDelta, &transform, &projectedStart);
+
+    distance = lbl_8047D7A0;
+    while (distance < lbl_8047D79C) {
+        nextDistance = distance + step;
+        if (nextDistance > lbl_8047D79C) {
+            nextDistance = lbl_8047D79C;
+        }
+        fn_800E013C(&testPoint, &direction, nextDistance);
+        fn_800E019C(&testPoint, &transform, &testPoint);
+        if (fn_801870E8(&projectedStart, &testPoint, &lineStart, &lineEnd,
+                       &projectedDelta, reach)) {
+            if (mode != 0) {
+                GScolsy2UtilGetPointExtentionLine(
+                    &collisionPoint, &projectedStart, &testPoint,
+                    lbl_8047D83C + reach);
+                if (fn_8010F320(&transform, &collisionPoint,
+                                &correctedPoint, *(f32*)&lbl_8047D848)) {
+                    fn_800E0168(&correction, &correctedPoint,
+                                &collisionPoint);
+                    fn_800E019C(&collisionPoint, &collisionPoint,
+                                &correction);
+                }
+                fn_8018FC74(entry, &collisionPoint);
+                heroMoveSetLockFrame(1);
+            }
+            return 1;
+        }
+        distance += step;
+    }
     return 0;
 }
 #endif
@@ -2155,10 +2237,11 @@ asm void fn_801870E8(void) {
 #include "src/game/people/people_fn_801870E8.inc"
 }
 #else
-void fn_801870E8(void* lineStart, void* lineEnd, void* endpoint, void* facing,
-                 void* direction, f32 reach)
+u8 fn_801870E8(void* lineStart, void* lineEnd, void* endpoint, void* facing,
+               void* direction, f32 reach)
 {
     /* Collision resolution after the recovered geometric setup remains. */
+    return 0;
 }
 #endif
 
