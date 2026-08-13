@@ -804,10 +804,10 @@ s32 fn_80063060(MenuCBBattleEntryContext* context)
     extern void fn_80106D3C(s32, s32, s32, s32);
     extern u8 fn_801070F4(s32);
     extern void fn_801080CC(s32, s32);
-    extern s32 fn_80129280(s32, s32);
-    extern s32 fn_8012A7C4(s32);
+    extern s32 savedataGetStatus(s32, s32);
+    extern s32 heroBiosGetPokecouponAll(s32);
     extern void fn_8012A7DC(s32, s32);
-    extern s32 fn_8012A80C(void);
+    extern s32 heroBiosGetPokecoupon(void);
     extern void fn_8012A824(s32, s32);
     extern void fn_80132A38(s32, s32);
     extern void fn_80166AB8(s32, s32, s32);
@@ -853,9 +853,9 @@ s32 fn_80063060(MenuCBBattleEntryContext* context)
     battleType = (u16)fn_801EF634();
     battleMode = fn_8025D9A8();
     battleCount = fn_8025DBB0();
-    savedPortState = fn_80129280(0, 2);
-    savedPortValue = fn_8012A80C();
-    tmp = fn_8012A7C4(savedPortState);
+    savedPortState = savedataGetStatus(0, 2);
+    savedPortValue = heroBiosGetPokecoupon();
+    tmp = heroBiosGetPokecouponAll(savedPortState);
     onesDigit = (battleCount + 1) % 10;
 
     while (keepRunning) {
@@ -1061,7 +1061,7 @@ s32 fn_80063060(MenuCBBattleEntryContext* context)
         case 10:
             fn_80106D3C(2, 0x3C41, 0, 1);
             if (fn_8001E074(0, lbl_80478920, lbl_80478922, 1) == 0) {
-                s32 restore = fn_80129280(0, 2);
+                s32 restore = savedataGetStatus(0, 2);
                 fn_8012A824(restore, savedPortValue);
                 fn_8012A7DC(restore, tmp);
                 state = 12;
