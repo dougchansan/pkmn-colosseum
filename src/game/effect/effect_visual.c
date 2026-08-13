@@ -2799,6 +2799,8 @@ void fn_8013BE04(void* ptr, void* mtx, u8* color, f32 x, f32 z, f32 scale) {
     f32 current[3];
     f32 rowStep[3];
     f32 colStep[3];
+    f32 inverseBaseX2;
+    f32 inverseBaseZ2;
     u16 row;
     u16 column;
 
@@ -2806,6 +2808,8 @@ void fn_8013BE04(void* ptr, void* mtx, u8* color, f32 x, f32 z, f32 scale) {
     set__5GSvecFfff(&rowStep, x / (rows - 1), 0.0f, 0.0f);
     set__5GSvecFfff(&colStep, 0.0f, 0.0f, z / (cols - 1));
     GSvecCopy(&current, &base);
+    inverseBaseX2 = 1.0f / (base[0] * base[0]);
+    inverseBaseZ2 = 1.0f / (base[2] * base[2]);
 
     for (row = 0; row < rows; row++) {
         for (column = 0; column < cols; column++) {
@@ -2823,8 +2827,8 @@ void fn_8013BE04(void* ptr, void* mtx, u8* color, f32 x, f32 z, f32 scale) {
             colors[1] = color[1];
             colors[2] = color[2];
             alpha = (f32)color[3] *
-                    (1.0f - current[0] * current[0] / (base[0] * base[0])) *
-                    (1.0f - current[2] * current[2] / (base[2] * base[2]));
+                    (1.0f - current[0] * current[0] * inverseBaseX2) *
+                    (1.0f - current[2] * current[2] * inverseBaseZ2);
             colors[3] = (u8)alpha;
             GSvecAdd(&current, &current, &colStep);
             positions += 0xC;
@@ -5293,6 +5297,15 @@ u32 fn_8013FF0C(void* ptr) {
     void* camera;
     void* model;
     void* material;
+    f32 position[3];
+    f32 billboardScale[3];
+    f32 up[3];
+    f32 interest[3];
+    f32 direction[3];
+    f32 fov;
+    f32 aspect;
+    f32 nearPlane;
+    f32 farPlane;
 
     if (ptr == NULL) {
         return 0;
@@ -5301,12 +5314,27 @@ u32 fn_8013FF0C(void* ptr) {
     p = ptr;
     model = *(void**)(p + 0x10);
     camera = cameraGetActive();
+    position[0] = *(f32*)(lbl_80273060 + 0);
+    position[1] = *(f32*)(lbl_80273060 + 4);
+    position[2] = *(f32*)(lbl_80273060 + 8);
+    billboardScale[0] = *(f32*)(lbl_8027306C + 0);
+    billboardScale[1] = *(f32*)(lbl_8027306C + 4);
+    billboardScale[2] = *(f32*)(lbl_8027306C + 8);
     if (camera != NULL) {
         _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
-        GScameraGetPosition(camera, p + 0x38);
-        GScameraGetLookAt(camera, p + 0x44, p + 0x50);
-        fn_800E0168(p + 0x5C, p + 0x44, p + 0x38);
-        fn_800E0060(p + 0x5C, p + 0x5C);
+        GScameraGetPosition(camera, position);
+        GScameraGetLookAt(camera, up, interest);
+        fn_800E0168(direction, interest, position);
+        fn_800E0060(direction, direction);
+        GScameraGetPerspective(camera, &fov, &aspect, &nearPlane, &farPlane);
+        fov *= *(f32*)&lbl_8047D334 * *(f32*)&lbl_8047D328;
+        nearPlane *= *(f32*)&lbl_8047D330;
+        billboardScale[0] = *(f32*)&lbl_8047D32C;
+        billboardScale[1] = *(f32*)&lbl_8047D338 * nearPlane *
+                            (f32)tan(fov) * aspect;
+        billboardScale[2] = billboardScale[1] * farPlane;
+        fn_800E013C(direction, direction, nearPlane);
+        GSvecAdd(position, position, direction);
     }
 
     {
@@ -5314,7 +5342,7 @@ u32 fn_8013FF0C(void* ptr) {
 
         if (*(void**)(p + 0x20) != NULL &&
             fn_80118DA8(*(void**)(p + 0x20)) != 0) {
-            fn_80118F04(*(void**)(p + 0x20), p + 0x38);
+            fn_80118F04(*(void**)(p + 0x20), position);
             updated = 1;
         }
 
@@ -5323,8 +5351,8 @@ u32 fn_8013FF0C(void* ptr) {
              (GSmodelCanTexAnimate(model) && !GSmodelHasTexAnimationEnded(model)))) {
             material = GSmodelGetBound(model);
             if (material != NULL) {
-                GSmodelSetPosition(model, p + 0x38);
-                GSmodelSetScale(model, p + 0x44);
+                GSmodelSetPosition(model, position);
+                GSmodelSetScale(model, billboardScale);
                 updated = 1;
             }
         }
