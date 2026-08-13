@@ -1483,6 +1483,7 @@ void fn_8007581C(void)
         result = fn_80063D14(status);
         if (result == 0xB3) {
             _menuPop_80071398(result);
+            break;
         } else {
             status = savedataGetStatus(0, 0xE);
             result = menuCB_Battle(status);
@@ -1532,8 +1533,9 @@ void fn_8007581C(void)
             floorSetFadeScript(0x5960009, 0);
             fadeCheck(1);
         }
+    } else {
+        fn_800FF58C(0x395);
     }
-    fn_800FF58C(0x395);
 }
 
 /* fn_80075A34 (0x80075A34): load the battle scene and start its camera. */
