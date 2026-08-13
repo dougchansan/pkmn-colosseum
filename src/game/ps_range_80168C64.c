@@ -1949,6 +1949,9 @@ s32 applyForceJObj(PSParticle* pp, PSForceJObj* jobj,
 }
 
 void setVelToJObj(PSParticle* pp, PSForceJObj* jobj) {
+    f32 velocityX = pp->velocityX;
+    f32 velocityY = pp->velocityY;
+    f32 velocityZ = pp->velocityZ;
     f32 dx;
     f32 dy;
     f32 dz;
@@ -1960,6 +1963,10 @@ void setVelToJObj(PSParticle* pp, PSForceJObj* jobj) {
         return;
     }
 
+    if (jobj == NULL) {
+        __assert(lbl_8047D670, 0x25D, lbl_8047D678);
+    }
+
     if (!(jobj->flags & 0x800000) && (jobj->flags & 0x40)) {
         fn_8019D9DC(jobj);
     }
@@ -1967,9 +1974,8 @@ void setVelToJObj(PSParticle* pp, PSForceJObj* jobj) {
     dx = jobj->worldX - pp->positionX;
     dy = jobj->worldY - pp->positionY;
     dz = jobj->worldZ - pp->positionZ;
-    speed = sqrtf(pp->velocityX * pp->velocityX +
-                  pp->velocityY * pp->velocityY +
-                  pp->velocityZ * pp->velocityZ);
+    speed = sqrtf(velocityX * velocityX + velocityY * velocityY +
+                  velocityZ * velocityZ);
     distanceSquared = dx * dx + dy * dy + dz * dz;
     if (distanceSquared == 0.0f) {
         return;
