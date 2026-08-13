@@ -61,7 +61,7 @@ extern void fn_801B7178(HSD_TExp* texp, u32 type, int flag);
 /* HSD_TExpSetupTev */
 
 extern HSD_TExp* HSD_TExpCnst(void* ptr, u32 comp, u32 type, HSD_TExp** list);
-extern u32 HSD_TExpGetType(HSD_TExp* texp);
+extern s32 HSD_TExpGetType(HSD_TExp* texp);
 extern void HSD_TExpCompile(HSD_TExp* texp, HSD_TExpTevDesc** tevdesc,
                             HSD_TExp** list);
 extern void HSD_TExpFreeTevDesc(HSD_TExpTevDesc* tevdesc);
@@ -404,13 +404,15 @@ HSD_TExp* MObjMakeTExp(HSD_MObj* mobj, HSD_TObj* tobj_top, HSD_TExp** list)
     exp = HSD_TExpTev(list);
 
     if (mobj->rendermode & RENDER_DIFFUSE) {
-        if (diffuse_bits == RENDER_DIFFUSE_VTX) {
+        switch (diffuse_bits) {
+        case RENDER_DIFFUSE_VTX:
             HSD_TExpColorOp(exp, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1,
                             GX_ENABLE);
             HSD_TExpColorIn(exp, HSD_TE_0, HSD_TEXP_ZERO, HSD_TE_0,
                             HSD_TEXP_ZERO, HSD_TE_0, HSD_TEXP_ZERO, HSD_TE_1,
                             HSD_TEXP_ZERO);
-        } else {
+            break;
+        default:
             cnst = HSD_TExpCnst(&mobj->mat->diffuse, HSD_TE_RGB, HSD_TE_U8,
                                 list);
             HSD_TExpColorOp(exp, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1,
@@ -418,15 +420,18 @@ HSD_TExp* MObjMakeTExp(HSD_MObj* mobj, HSD_TObj* tobj_top, HSD_TExp** list)
             HSD_TExpColorIn(exp, HSD_TE_0, HSD_TEXP_ZERO, HSD_TE_0,
                             HSD_TEXP_ZERO, HSD_TE_0, HSD_TEXP_ZERO,
                             HSD_TE_RGB, cnst);
+            break;
         }
-        if (alpha_bits == RENDER_ALPHA_VTX) {
+        switch (alpha_bits) {
+        case RENDER_ALPHA_VTX:
             cnst = HSD_TExpCnst(lbl_80478C88, HSD_TE_X, HSD_TE_U8, list);
             HSD_TExpAlphaOp(exp, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1,
                             GX_ENABLE);
             HSD_TExpAlphaIn(exp, HSD_TE_0, HSD_TEXP_ZERO, HSD_TE_0,
                             HSD_TEXP_ZERO, HSD_TE_0, HSD_TEXP_ZERO, HSD_TE_X,
                             cnst);
-        } else {
+            break;
+        default:
             cnst = HSD_TExpCnst(&mobj->mat->alpha, HSD_TE_X, HSD_TE_F32,
                                 list);
             HSD_TExpAlphaOp(exp, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1,
@@ -434,6 +439,7 @@ HSD_TExp* MObjMakeTExp(HSD_MObj* mobj, HSD_TObj* tobj_top, HSD_TExp** list)
             HSD_TExpAlphaIn(exp, HSD_TE_0, HSD_TEXP_ZERO, HSD_TE_0,
                             HSD_TEXP_ZERO, HSD_TE_0, HSD_TEXP_ZERO, HSD_TE_X,
                             cnst);
+            break;
         }
     } else {
         switch (diffuse_bits) {
