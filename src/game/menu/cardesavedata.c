@@ -162,7 +162,8 @@ extern s32 fn_8008102C(void** object_ref, const u32* descriptor, s32 index,
                        s32 value, const char* text, s32 subindex);
 
 /* Decode and validate a packed card-e record. */
-#pragma optimization_level 2
+#pragma optimization_level 3
+#pragma peephole off
 u32 fn_80080310(void* output, const u8* packed, void* auxiliary)
 {
     u16 text0[256];
