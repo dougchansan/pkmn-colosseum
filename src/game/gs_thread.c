@@ -7331,6 +7331,8 @@ asm void fn_800F5CA0(void) {
 #include "src/game/gs_thread_fn_800F5CA0.inc"
 }
 #else
+#pragma push
+#pragma optimization_level 1
 s32 fn_800F5CA0(arg0)
     u8 *arg0;
 {
@@ -7346,6 +7348,7 @@ s32 fn_800F5CA0(arg0)
     GS_VM_PUSH(arg0, addr);
     return 1;
 }
+#pragma pop
 
 #endif
 
