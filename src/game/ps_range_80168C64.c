@@ -4713,6 +4713,22 @@ PSGeneratorState* psCreateGeneratorID(s32 linkNo, s32 bankIdx, s32 scriptId) {
     gen->angle = *(f32*) (entry + 0x24);
     *(f32*) (raw + 0x08) = *(f32*) (entry + 0x28);
 
+    if (gen->flags & 0x100) {
+        if (*(f32*) (raw + 0x08) < lbl_8047D6B0) {
+            if (lbl_8047D6B4 + *(f32*) (raw + 0x08) <= lbl_80478ACC) {
+                gen->lifetime = lbl_8047D6B0;
+            } else {
+                gen->lifetime = lbl_8047D6B4;
+            }
+        } else {
+            gen->lifetime = lbl_8047D6B4 - lbl_80478ACC;
+        }
+    } else if (*(f32*) (raw + 0x08) < lbl_8047D6B0) {
+        gen->lifetime = lbl_8047D6B0;
+    } else {
+        gen->lifetime = fn_801ADC7C();
+    }
+
     textureEntry = ((u8**) lbl_804529C8[bankIdx])[scriptId];
     if (textureEntry != NULL && *(u16*) (textureEntry + 0x16) != 0) {
         gen->flags |= 0x10;
