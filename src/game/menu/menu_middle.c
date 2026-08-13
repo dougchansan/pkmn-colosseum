@@ -249,7 +249,7 @@ void fn_8006E798(void* menu);
 void fn_8006E9A4(void);
 void fn_8006EE7C(void* menu);
 void fn_8006EF24(void* menu);
-void fn_8006EFF8(void);
+void fn_8006EFF8(void* menu);
 void fn_8006F284(void);
 void fn_8006F720(void);
 void fn_8006FBFC(void* menu);
@@ -5281,7 +5281,7 @@ void fn_8006E9A4(void) {
                                                     }
                                                 r4 = (0x51ec << 16);
                                                 r0 = MENU_MIDDLE_S16_0000(r3)->unk_0000;
-                                                /* subi r3, r4, 0x7ae1 */;
+                                                r3 = r4 - 0x7ae1;
                                                 r0 = (s32)((s64)r3 * (s64)r0 >> 32);
                                                 r0 = (s32)r0 >> 5;
                                                 r3 = (u32)r0 >> 31;
@@ -5642,7 +5642,7 @@ normal:
 
 
 /* 0x8006EFF8 | size: 0x28C */
-void fn_8006EFF8(void) {
+void fn_8006EFF8(void* menu) {
     extern void winSpriteSetDisp();
     extern void fn_80142984();
     extern void itemDataBiosGetName();
@@ -5665,7 +5665,7 @@ void fn_8006EFF8(void) {
     u32 r31 = 0;
 
     
-    r31 = r3;
+    r31 = (u32)menu;
     r4 = 0x0;
     ((void(*)(void))windowGetParam)();
     r28 = r3;
