@@ -976,8 +976,8 @@ extern f32 lbl_8047D7A0;
 extern void heroMoveSetEventList();
 extern void sin();   /* MSL trig (renamed) — referenced by asm incs */
 extern void cos();   /* MSL trig (renamed) — referenced by asm incs */
-extern void GScolsy2UtilGetCpPlanePoint();
-extern void GScolsy2UtilChkInTri();
+extern void GScolsy2UtilGetCpPlanePoint(void*, void*, void*, void*);
+extern s32 GScolsy2UtilChkInTri(void*, void*, void*);
 extern void GSmodelPopState();
 #if 0
 asm void fn_8018E9B4(void) {
@@ -2226,10 +2226,8 @@ void fn_80186B5C(GSvec* output, u32 groupId, u32 index)
 #endif
 
 /* 0x801870E8 | 0x3D4 */
-extern void GScolsy2UtilGetSidePlanePoint(void);
-extern void fn_8010FA54(void);
-extern void PSVECSquareDistance(void);
-extern void fn_8010F71C(void);
+extern f32 GScolsy2UtilGetSidePlanePoint(void*, void*, void*);
+extern f32 PSVECSquareDistance(void*, void*);
 extern u32 lbl_8047D844;
 extern f32 lbl_8047D7A0;
 #if 0
@@ -2237,10 +2235,85 @@ asm void fn_801870E8(void) {
 #include "src/game/people/people_fn_801870E8.inc"
 }
 #else
-u8 fn_801870E8(void* lineStart, void* lineEnd, void* endpoint, void* facing,
-               void* direction, f32 reach)
+u8 fn_801870E8(void* resultArg, void* pointArg, void* startArg, void* endArg,
+               void* normalArg, f32 reach)
 {
-    /* Collision resolution after the recovered geometric setup remains. */
+    GSvec* result = resultArg;
+    GSvec* point = pointArg;
+    GSvec* start = startArg;
+    GSvec* end = endArg;
+    GSvec* normal = normalArg;
+    GSvec verts[3];
+    GSvec closest;
+    f32 lowerY = result->y - *(f32*)&lbl_8047D844;
+    f32 upperY = result->y + *(f32*)&lbl_8047D844;
+    f32 reachSquared = reach * reach;
+
+    verts[0].x = start->x;
+    verts[0].y = lowerY;
+    verts[0].z = start->z;
+    verts[1].x = end->x;
+    verts[1].y = lowerY;
+    verts[1].z = end->z;
+    verts[2].x = start->x;
+    verts[2].y = upperY;
+    verts[2].z = start->z;
+    if (GScolsy2UtilGetSidePlanePoint(normal, verts, point) >= lbl_8047D7A0) {
+        GScolsy2UtilGetCpPlanePoint(&closest, normal, verts, point);
+        if (PSVECSquareDistance(&closest, point) < reachSquared &&
+            GScolsy2UtilChkInTri(&closest, verts, normal) != 0) {
+            GSvecCopy(result, &closest);
+            return 1;
+        }
+    }
+
+    verts[0].x = end->x;
+    verts[0].y = lowerY;
+    verts[0].z = end->z;
+    verts[1].x = end->x;
+    verts[1].y = upperY;
+    verts[1].z = end->z;
+    if (GScolsy2UtilGetSidePlanePoint(normal, verts, point) >= lbl_8047D7A0) {
+        GScolsy2UtilGetCpPlanePoint(&closest, normal, verts, point);
+        if (PSVECSquareDistance(&closest, point) < reachSquared &&
+            GScolsy2UtilChkInTri(&closest, verts, normal) != 0) {
+            GSvecCopy(result, &closest);
+            return 1;
+        }
+    }
+
+    verts[0].x = end->x;
+    verts[0].y = lowerY;
+    verts[0].z = end->z;
+    verts[1].x = start->x;
+    verts[1].y = lowerY;
+    verts[1].z = start->z;
+    verts[2].x = start->x;
+    verts[2].y = upperY;
+    verts[2].z = start->z;
+    if (GScolsy2UtilGetSidePlanePoint(normal, verts, point) >= lbl_8047D7A0) {
+        GScolsy2UtilGetCpPlanePoint(&closest, normal, verts, point);
+        if (PSVECSquareDistance(&closest, point) < reachSquared &&
+            GScolsy2UtilChkInTri(&closest, verts, normal) != 0) {
+            GSvecCopy(result, &closest);
+            return 1;
+        }
+    }
+
+    verts[1].x = start->x;
+    verts[1].y = upperY;
+    verts[1].z = start->z;
+    verts[2].x = end->x;
+    verts[2].y = upperY;
+    verts[2].z = end->z;
+    if (GScolsy2UtilGetSidePlanePoint(normal, verts, point) >= lbl_8047D7A0) {
+        GScolsy2UtilGetCpPlanePoint(&closest, normal, verts, point);
+        if (PSVECSquareDistance(&closest, point) < reachSquared &&
+            GScolsy2UtilChkInTri(&closest, verts, normal) != 0) {
+            GSvecCopy(result, &closest);
+            return 1;
+        }
+    }
     return 0;
 }
 #endif
