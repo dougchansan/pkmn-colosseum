@@ -1965,6 +1965,51 @@ s32 applyForceJObj(PSParticle* pp, PSForceJObj* jobj,
     return FALSE;
 }
 
+static inline f32 psSetVelSqrtf(f32 value) {
+    union {
+        f32 value;
+        u32 bits;
+    } shape;
+    f64 estimate;
+    s32 exponent;
+    s32 fpclass;
+    extern const f64 lbl_8047D680;
+    extern const f64 lbl_8047D688;
+    extern const f32 lbl_80478AC0[];
+
+    if (value > lbl_8047D630) {
+        estimate = __frsqrte(value);
+        estimate = lbl_8047D650 * estimate *
+                   (lbl_8047D680 - value * (estimate * estimate));
+        estimate = lbl_8047D650 * estimate *
+                   (lbl_8047D680 - value * (estimate * estimate));
+        estimate = lbl_8047D650 * estimate *
+                   (lbl_8047D680 - value * (estimate * estimate));
+        return (f32)(value * estimate);
+    }
+    if ((f64)value < lbl_8047D688) {
+        return lbl_80478AC0[0];
+    }
+
+    shape.value = value;
+    exponent = shape.bits & 0x7F800000;
+    switch (exponent) {
+    case 0x7F800000:
+        fpclass = (shape.bits & 0x007FFFFF) != 0 ? 1 : 2;
+        break;
+    case 0:
+        fpclass = (shape.bits & 0x007FFFFF) != 0 ? 5 : 3;
+        break;
+    default:
+        fpclass = 4;
+        break;
+    }
+    if (fpclass == 1) {
+        return lbl_80478AC0[0];
+    }
+    return value;
+}
+
 void setVelToJObj(PSParticle* pp, PSForceJObj* jobj) {
     f32 velocityX = pp->velocityX;
     f32 velocityY = pp->velocityY;
@@ -1991,14 +2036,14 @@ void setVelToJObj(PSParticle* pp, PSForceJObj* jobj) {
     dx = jobj->worldX - pp->positionX;
     dy = jobj->worldY - pp->positionY;
     dz = jobj->worldZ - pp->positionZ;
-    speed = sqrtf(velocityX * velocityX + velocityY * velocityY +
-                  velocityZ * velocityZ);
+    speed = psSetVelSqrtf(velocityX * velocityX + velocityY * velocityY +
+                           velocityZ * velocityZ);
     distanceSquared = dx * dx + dy * dy + dz * dz;
     if (distanceSquared == 0.0f) {
         return;
     }
 
-    scale = speed / sqrtf(distanceSquared);
+    scale = speed / psSetVelSqrtf(distanceSquared);
     pp->velocityX = dx * scale;
     pp->velocityY = dy * scale;
     pp->velocityZ = dz * scale;
