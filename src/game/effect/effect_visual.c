@@ -4873,6 +4873,7 @@ extern void fn_800E0628(void* dst, void* src);
 extern void fn_800E0238(void* dst, void* src);
 extern void set__5GSvecFfff(void* vec, f32 x, f32 y, f32 z);
 extern void fn_800D2DE8(void);
+extern void GSlogWrite(const char* fmt, ...);
 extern u16 GStextureGetXsize(void* texture);
 extern u16 GStextureGetYsize(void* texture);
 extern void fn_800E03E8(void);
@@ -4900,6 +4901,8 @@ void _distortionEffectUpdateMatrices(void* ptr) {
     f32 cornerA[3];
     f32 cornerB[3];
     f32 viewMatrix[12];
+    f32 xScale;
+    f32 yScale;
 
     camera = GScameraGetActiveCamera();
     _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
@@ -4927,7 +4930,33 @@ void _distortionEffectUpdateMatrices(void* ptr) {
                     *(f32*)&lbl_8047D300);
     ((void (*)(void*, void*, void*))GSvecTransform)(
         cornerB, (u8*)ptr + 0x38, cornerB);
-    ((void (*)(void*, void*, s32))fn_800D2DE8)(cornerA, projected, 2);
+    if (((s32 (*)(void*, void*, s32))fn_800D2DE8)(cornerA, projected, 2) != 2) {
+        GSlogWrite((const char*)lbl_8027301C);
+        return;
+    }
+    projected[0] /= *(f32*)&lbl_8047D318;
+    projected[1] /= *(f32*)&lbl_8047D31C;
+    projected[2] /= *(f32*)&lbl_8047D318;
+    projected[3] /= *(f32*)&lbl_8047D31C;
+    *(f32*)((u8*)ptr + 0x98) = *(f32*)&lbl_8047D320;
+    *(f32*)((u8*)ptr + 0x9C) = *(f32*)&lbl_8047D300;
+    *(f32*)((u8*)ptr + 0xA0) = *(f32*)&lbl_8047D320 *
+                               (*(f32*)((u8*)ptr + 0x20) - *(f32*)&lbl_8047D308);
+    *(f32*)((u8*)ptr + 0xA4) = *(f32*)&lbl_8047D300;
+    *(f32*)((u8*)ptr + 0xA8) = *(f32*)&lbl_8047D320;
+    *(f32*)((u8*)ptr + 0xAC) = *(f32*)((u8*)ptr + 0xA0);
+    ((void (*)(void*, f32, f32, f32))fn_800E048C)(
+        (u8*)ptr + 0x68, projected[2] - projected[0],
+        projected[3] - projected[1], *(f32*)&lbl_8047D300);
+    xScale = *(f32*)&lbl_8047D324 /
+             (f32)GStextureGetXsize((void*)lbl_8047AEE8);
+    xScale *= *(f32*)((u8*)ptr + 0x20);
+    yScale = *(f32*)&lbl_8047D324 /
+             (f32)GStextureGetYsize((void*)lbl_8047AEE8);
+    ((void (*)(void*, f32, f32, f32))fn_800E03E8)(
+        (u8*)ptr + 0x68, xScale + projected[0],
+        yScale * *(f32*)((u8*)ptr + 0x20) + projected[1],
+        *(f32*)&lbl_8047D300);
 }
 #endif
 #endif
