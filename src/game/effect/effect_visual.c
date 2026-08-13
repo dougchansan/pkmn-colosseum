@@ -1892,7 +1892,7 @@ u32 fn_8013A520(void* ptr) {
     fn_800D6A00(2);
 
     for (firstIndex = 1; firstIndex < count; firstIndex++) {
-        first = fn_800EE150(resource, firstIndex);
+        first = GSmodelGetPart(resource, firstIndex);
         if (first == NULL) {
             continue;
         }
@@ -1908,7 +1908,7 @@ u32 fn_8013A520(void* ptr) {
 
         for (secondIndex = firstIndex + 1; secondIndex < count;
              secondIndex++) {
-            second = fn_800EE150(resource, secondIndex);
+            second = GSmodelGetPart(resource, secondIndex);
             if (second == NULL) {
                 continue;
             }
@@ -1916,8 +1916,8 @@ u32 fn_8013A520(void* ptr) {
                 *(f32*)(p + 0x20) > fn_800E0BE4()) {
                 fn_800EE3BC(second, secondPos, 0, 0);
                 if (GSvecDistance(firstPos, center) > *(f32*)&lbl_8047D1C4) {
-                    fn_800E01D0(firstBase, firstPos);
-                    fn_800E01D0(secondBase, secondPos);
+                    GSvecCopy(firstBase, firstPos);
+                    GSvecCopy(secondBase, secondPos);
                     radius = *(f32*)&lbl_8047D1C8 *
                              GSvecDistance(firstPos, secondPos);
                     yaw = *(f32*)&lbl_8047D1CC * fn_800E0BE4();
