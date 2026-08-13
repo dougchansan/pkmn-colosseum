@@ -3485,7 +3485,8 @@ s32 fn_80021B14(u32 arg0, u32* arg1) {
     fn_80142EF8(item_param, lbl_80478890);
     result = fn_801431AC(item_param);
 
-    if (result == 0) {
+    switch (result) {
+    case 0:
         slot = fn_80014110();
         fn_80014118(slot, &pokemon, &data);
         if ((u8)fn_80121ADC(pokemon, 0x3E) != 0) {
@@ -3553,9 +3554,16 @@ s32 fn_80021B14(u32 arg0, u32* arg1) {
             return 0;
         }
         return 1;
-    }
 
-    if (result >= 3 && result < 0xC) {
+    case 3:
+    case 4:
+    case 5:
+    case 6:
+    case 7:
+    case 8:
+    case 9:
+    case 10:
+    case 11:
         slot = fn_800141BC((void*)arg0, 1);
         if (slot >= 0) {
             fn_80014118(slot, &pokemon, &data);
@@ -3601,15 +3609,15 @@ s32 fn_80021B14(u32 arg0, u32* arg1) {
             return 0;
         }
         return 1;
-    }
 
-    if (result == 0x15) {
+    case 0x15:
         return fn_80023968(arg0, arg1);
-    }
 
+    default:
     winMsgOpen(2, 0x426A, 1, 0);
     winMsgClose(1);
     return 1;
+    }
 }
 #endif
 #endif
