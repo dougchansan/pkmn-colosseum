@@ -202,10 +202,13 @@ extern f64 lbl_8047D7A8;
 extern f64 lbl_8047D7B0;
 extern f64 lbl_8047D7B8;
 extern f32 lbl_8047D7C0;
+extern f32 lbl_8047D7C4;
 extern f64 fmod();
 extern s32 fn_800D37CC(void);
 extern u32 fn_800D3088(void);
 extern f32 fn_800E0BA0(void);
+extern f32 fn_800E008C(void* vector);
+extern void fn_800E00AC(void* vector, void* direction, f32 distance);
 extern const void* lbl_80273F90[];
 
 /* ===== Global state (sbss, owned by the data split - extern here) ===== */
@@ -565,6 +568,7 @@ void fn_80181850(void)
     f32 fullTurn;
     s32 revolutions;
     PeopleEntry* linked;
+    f32 distance;
 
     for (i = peopleGetMaxCount() - 1; i >= 0; i--) {
         entry = peopleGetEntry(i);
@@ -636,6 +640,32 @@ void fn_80181850(void)
                     break;
                 }
                 break;
+            }
+
+            if (fn_800D3088() != 0) {
+                fn_800E0168(&modelPosition, fn_8018FCBC(entry),
+                             &modelPosition);
+                fn_800E00AC(&modelPosition, &modelPosition,
+                             (f32)fn_800D3088());
+
+                linked = peopleFindBySelf(
+                    peopleFindSelf(entry->groupId, entry->index));
+                if (linked == NULL) {
+                    entry->talkRange = lbl_8047D7A0;
+                } else {
+                    distance = fn_800E008C(&modelPosition);
+                    if (linked->field_38 <= distance) {
+                        entry->talkRange = lbl_8047D7C4;
+                    } else if (linked->field_34 <= distance) {
+                        if (linked->field_38 != lbl_8047D7A0) {
+                            entry->talkRange = lbl_8047D79C +
+                                (distance - linked->field_34) /
+                                    (linked->field_38 - linked->field_34);
+                        }
+                    } else if (linked->field_34 != lbl_8047D7A0) {
+                        entry->talkRange = distance / linked->field_34;
+                    }
+                }
             }
 
             fn_80184A90(entry);
