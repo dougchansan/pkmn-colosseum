@@ -138,7 +138,7 @@ extern u8  lbl_8027177C[];
 extern u8  lbl_802717B4[];
 extern u8  lbl_802717D4[];
 /* .sdata symbol */
-extern float lbl_80478AC0;
+extern float lbl_80478AC0[];
 /* sdata2 (r2) float/double constants used in asm blocks */
 extern f64 lbl_8047CCC8;  /* f64 */
 extern f32 lbl_8047CCD0;  /* f32 */
@@ -641,7 +641,7 @@ void fn_800F8A54(arg0)
                        (lbl_8047CCF0 - len * (estimate * estimate));
             len = (f32)(len * estimate);
         } else if ((f64)len < lbl_8047CCF8) {
-            len = lbl_80478AC0;
+            len = lbl_80478AC0[0];
         } else {
             shape.value = len;
             switch (shape.bits & 0x7F800000) {
@@ -664,7 +664,7 @@ void fn_800F8A54(arg0)
                 break;
             }
             if (fpclass == 1) {
-                len = lbl_80478AC0;
+                len = lbl_80478AC0[0];
             }
         }
         x = (x * 0x38) / (s32)len;
@@ -702,7 +702,7 @@ void fn_800F8A54(arg0)
                        (lbl_8047CCF0 - len * (estimate * estimate));
             len = (f32)(len * estimate);
         } else if ((f64)len < lbl_8047CCF8) {
-            len = lbl_80478AC0;
+            len = lbl_80478AC0[0];
         } else {
             shape.value = len;
             switch (shape.bits & 0x7F800000) {
@@ -725,7 +725,7 @@ void fn_800F8A54(arg0)
                 break;
             }
             if (fpclass == 1) {
-                len = lbl_80478AC0;
+                len = lbl_80478AC0[0];
             }
         }
         x = (x * 0x2C) / (s32)len;
@@ -763,7 +763,7 @@ void fn_800F8A54(arg0)
                        (lbl_8047CCF0 - len * (estimate * estimate));
             len = (f32)(len * estimate);
         } else if ((f64)len < lbl_8047CCF8) {
-            len = lbl_80478AC0;
+            len = lbl_80478AC0[0];
         } else {
             shape.value = len;
             switch (shape.bits & 0x7F800000) {
@@ -786,7 +786,7 @@ void fn_800F8A54(arg0)
                 break;
             }
             if (fpclass == 1) {
-                len = lbl_80478AC0;
+                len = lbl_80478AC0[0];
             }
         }
         x = (x * 0x38) / (s32)len;
@@ -824,7 +824,7 @@ void fn_800F8A54(arg0)
                        (lbl_8047CCF0 - len * (estimate * estimate));
             len = (f32)(len * estimate);
         } else if ((f64)len < lbl_8047CCF8) {
-            len = lbl_80478AC0;
+            len = lbl_80478AC0[0];
         } else {
             shape.value = len;
             switch (shape.bits & 0x7F800000) {
@@ -847,7 +847,7 @@ void fn_800F8A54(arg0)
                 break;
             }
             if (fpclass == 1) {
-                len = lbl_80478AC0;
+                len = lbl_80478AC0[0];
             }
         }
         x = (x * 0x2C) / (s32)len;
