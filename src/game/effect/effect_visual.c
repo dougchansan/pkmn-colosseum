@@ -2785,10 +2785,10 @@ void fn_8013BE04(void* ptr, void* mtx, u8* color, f32 x, f32 z, f32 scale) {
     u8* colors = *(u8**)(p + 0x10);
     u16 rows = *(u16*)(p + 0x1C);
     u16 cols = *(u16*)(p + 0x1E);
-    GSvec base;
-    GSvec rowStep;
-    GSvec colStep;
-    GSvec current;
+    f32 base[3];
+    f32 rowStep[3];
+    f32 colStep[3];
+    f32 current[3];
     u16 row;
     u16 column;
 
@@ -2805,16 +2805,16 @@ void fn_8013BE04(void* ptr, void* mtx, u8* color, f32 x, f32 z, f32 scale) {
 
             GSvecAdd(positions, mtx, &current);
             GSvecCopy(normals, lbl_8031554C);
-            u = scale * (current.x - base.x);
-            v = scale * (current.z - base.z);
+            u = scale * (current[0] - base[0]);
+            v = scale * (current[2] - base[2]);
             *(f32*)(texcoords + 4) = u;
             *(f32*)(texcoords + 0) = v;
             colors[0] = color[0];
             colors[1] = color[1];
             colors[2] = color[2];
             alpha = (f32)color[3] *
-                    (1.0f - current.x * current.x / (base.x * base.x)) *
-                    (1.0f - current.z * current.z / (base.z * base.z));
+                    (1.0f - current[0] * current[0] / (base[0] * base[0])) *
+                    (1.0f - current[2] * current[2] / (base[2] * base[2]));
             colors[3] = (u8)alpha;
             GSvecAdd(&current, &current, &colStep);
             positions += 0xC;
@@ -2823,7 +2823,7 @@ void fn_8013BE04(void* ptr, void* mtx, u8* color, f32 x, f32 z, f32 scale) {
             colors += 4;
         }
         GSvecAdd(&current, &current, &rowStep);
-        current.z = base.z;
+        current[2] = base[2];
     }
     fn_800E0E14(0, 0);
 }
@@ -3584,14 +3584,18 @@ u32 fn_8013D0A8(void* ptr, void* arg) {
         out += 3;
 
         for (row = 0; row < state->rows; row++) {
-            u16 top = strip + row * span + 1;
+            u16 top = strip + (row + 1) * span + 1;
             u16 bottom = top - 1;
 
             *(u16*) (out + 0) = top;
             *(u16*) (out + 2) = 0;
-            *(u16*) (out + 4) = bottom;
-            *(u16*) (out + 6) = 0;
-            out += 8;
+            *(u16*) (out + 4) = top;
+            *(u16*) (out + 6) = top;
+            *(u16*) (out + 8) = bottom;
+            *(u16*) (out + 0xA) = 0;
+            *(u16*) (out + 0xC) = bottom;
+            *(u16*) (out + 0xE) = bottom;
+            out += 0x10;
         }
     }
 
