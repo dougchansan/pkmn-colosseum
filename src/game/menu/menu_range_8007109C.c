@@ -4198,8 +4198,11 @@ u32 fn_8007B6D8(GbaBootContext* context) {
             for (candidate = 0; candidate < 0x100; candidate++) {
                 reply_crc = context->crc;
                 crc_byte = candidate;
-                reply_crc = (reply_crc >> 8) ^
-                            lbl_803FAEF8[(reply_crc ^ crc_byte) & 0xFF];
+                for (i = 0; i < sizeof(crc_byte); i++) {
+                    reply_crc = (reply_crc >> 8) ^
+                                lbl_803FAEF8[(reply_crc ^
+                                             (&crc_byte)[i]) & 0xFF];
+                }
                 if (reply_crc == expected_crc) {
                     break;
                 }
