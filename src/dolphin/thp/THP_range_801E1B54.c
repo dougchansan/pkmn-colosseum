@@ -398,6 +398,73 @@ BOOL fn_801E1D7C(s32 priority)
     return TRUE;
 }
 
+typedef struct THPGXTexObj {
+    u8 data[0x20];
+} THPGXTexObj;
+
+void fn_801E1E1C(void *y, void *u, void *v, s16 x, s16 yPos,
+                 s16 width, s16 height, s16 quadWidth, s16 quadHeight)
+{
+    extern void fn_800BA9E4(THPGXTexObj *obj, void *image, u16 width,
+                            u16 height, u32 format, u32 wrapS, u32 wrapT,
+                            u32 mipmap);
+    extern void fn_800BACA0(THPGXTexObj *obj, u32 minFilter, u32 magFilter,
+                            f32 minLod, f32 maxLod, f32 lodBias,
+                            u8 biasClamp, u8 edgeLod, u32 maxAnisotropy);
+    extern void fn_800BAFFC(THPGXTexObj *obj, u32 mapId);
+    extern void fn_800B928C(u32 primitive, u32 vertexFormat, u16 vertexCount);
+    volatile s16 *fifo = (volatile s16 *)0xCC008000;
+    THPGXTexObj yTexObj;
+    THPGXTexObj uTexObj;
+    THPGXTexObj vTexObj;
+    s16 halfWidth;
+    s16 halfHeight;
+    s16 xEnd;
+    s16 yEnd;
+
+    fn_800BA9E4(&yTexObj, y, (u16)width, (u16)height, 1, 0, 0, 0);
+    fn_800BACA0(&yTexObj, 0, 0, 0.0f, 0.0f, 0.0f, 0, 0, 0);
+    fn_800BAFFC(&yTexObj, 0);
+
+    halfWidth = width >> 1;
+    halfHeight = height >> 1;
+    fn_800BA9E4(&uTexObj, u, (u16)halfWidth, (u16)halfHeight, 1, 0, 0, 0);
+    fn_800BACA0(&uTexObj, 0, 0, 0.0f, 0.0f, 0.0f, 0, 0, 0);
+    fn_800BAFFC(&uTexObj, 1);
+
+    fn_800BA9E4(&vTexObj, v, (u16)halfWidth, (u16)halfHeight, 1, 0, 0, 0);
+    fn_800BACA0(&vTexObj, 0, 0, 0.0f, 0.0f, 0.0f, 0, 0, 0);
+    fn_800BAFFC(&vTexObj, 2);
+
+    fn_800B928C(0x80, 7, 4);
+    xEnd = x + quadWidth;
+    yEnd = yPos + quadHeight;
+
+    *fifo = x;
+    *fifo = yPos;
+    *fifo = 0;
+    *fifo = 0;
+    *fifo = 0;
+
+    *fifo = xEnd;
+    *fifo = yPos;
+    *fifo = 0;
+    *fifo = 1;
+    *fifo = 0;
+
+    *fifo = xEnd;
+    *fifo = yEnd;
+    *fifo = 0;
+    *fifo = 1;
+    *fifo = 1;
+
+    *fifo = x;
+    *fifo = yEnd;
+    *fifo = 0;
+    *fifo = 0;
+    *fifo = 1;
+}
+
 BOOL fn_801E4A6C(void)
 {
     extern void *memset(void *dst, int value, u32 size);
