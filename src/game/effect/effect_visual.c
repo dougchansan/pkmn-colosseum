@@ -2890,14 +2890,14 @@ u32 fn_8013C074(void* ptr, void* arg) {
     } EnvMapRenderState;
 
     EnvMapRenderState* state = arg;
-    EnvMapRenderDObj* dobj = fn_8019FF48(*(void**)((u8*)ptr + 0x8));
+    EnvMapRenderDObj* dobj;
     EnvMapRenderPObj* pobj;
     EnvMapRenderStage* stage;
     void* mobj;
     u32 found9 = 0;
     u32 found10 = 0;
-    u32 found11 = 0;
     u32 found13 = 0;
+    u32 found11 = 0;
     u32 strip;
     u32 row;
     u8* out;
@@ -2905,10 +2905,12 @@ u32 fn_8013C074(void* ptr, void* arg) {
     u16 span;
     u16 strip_count;
 
-    if (dobj == NULL) {
-        return 0;
+    dobj = fn_8019FF48(*(void**)((u8*)ptr + 0x8));
+    if (dobj != NULL) {
+        pobj = dobj->pobj;
+    } else {
+        pobj = NULL;
     }
-
     if (dobj != NULL) {
         mobj = dobj->mobj;
     } else {
@@ -2918,17 +2920,15 @@ u32 fn_8013C074(void* ptr, void* arg) {
         HSD_MObjSetFlags(mobj, 0x40000000);
         HSD_MObjCompileTev(mobj);
     }
-
-    if (dobj != NULL) {
-        pobj = dobj->pobj;
-    } else {
-        pobj = NULL;
+    if (pobj == NULL) {
+        return 0;
     }
-    if (pobj == NULL || pobj->stages == NULL) {
+    stage = pobj->stages;
+    if (stage == NULL) {
         return 0;
     }
 
-    for (stage = pobj->stages; stage->kind != 0xFF; stage++) {
+    for (; stage->kind != 0xFF; stage++) {
         switch (stage->kind) {
         case 9:
             found9 = 1;
