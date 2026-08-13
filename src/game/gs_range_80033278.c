@@ -301,6 +301,20 @@ s32 _sysvarsProcessData__FP16sysvarsFuncEntryPc(void* entry, char* data)
             if (itemResult == 2) {
                 break;
             }
+            fn_801D0AFC(0);
+            save = savedataGetStatus(0, 2);
+            for (i = 0; i < 6; i++) {
+                party = heroBiosGetPokemonPtr(save, (u8)i);
+                pokemonBiosSetItemDataId(
+                    party, *(u16*)(base + 0xB0 + i * 2));
+            }
+            winMsgOpen(8, 0x3B70, 0, 0);
+            menuResult = menuOpen(0xA9, 1);
+            menuClose(0xA9);
+            winMsgClose(1);
+            if (menuResult == 0) {
+                continue;
+            }
             fn_8007C450(menuState[0x08], base[0x48], menuState[0x24], -1, 7);
             fn_80166A28(0x4C6);
             progress = lbl_8047B9F8;
