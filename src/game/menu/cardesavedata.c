@@ -426,6 +426,9 @@ u32 fn_80080310(void* output, const u8* packed, void* auxiliary)
 
 
 /* Apply one decoded card-e field and reject values outside its domain. */
+#pragma push
+#pragma optimization_level 3
+#pragma peephole off
 s32 fn_8008102C(void** object_ref, const u32* descriptor, s32 index,
                 s32 value, const char* text, s32 subindex)
 {
@@ -944,6 +947,7 @@ s32 fn_8008102C(void** object_ref, const u32* descriptor, s32 index,
 #undef object
     return 1;
 }
+#pragma pop
 
 typedef struct CardEGridEntry {
     u16 id;
