@@ -224,7 +224,7 @@ void fn_8006C018(void* menu);
 void fn_8006C0DC(void* menu);
 void fn_8006C164(void);
 void fn_8006C5D8(void);
-void fn_8006C7D4(void);
+void fn_8006C7D4(void* arg0, void* item);
 void fn_8006CCC0(void* arg0, void* arg1);
 void fn_8006D550(void);
 void fn_8006D940(void* menu);
@@ -3154,14 +3154,13 @@ void fn_8006C5D8(void) {
 
 
 /* 0x8006C7D4 | size: 0x4EC */
-void fn_8006C7D4(void) {
+void fn_8006C7D4(void* arg0, void* item) {
     extern void fn_8006A7E8();
     extern void savedataGetStatus();
     extern void heroBiosGetSexDataId();
     extern void heroBiosGetRnd();
     extern void heroBiosGetNamePtr();
     extern void msgctrlSetValue();
-    extern u8 jumptable_802EDF20[];
     u8 sp[0x1A0];
     u32 r0 = 0;
     u32 r1 = (u32)sp;
@@ -3183,7 +3182,7 @@ void fn_8006C7D4(void) {
     u32 ctr = 0;
 
     
-    r28 = r4;
+    r28 = (u32)item;
     r3 = MENU_MIDDLE_S16_0006(r28)->unk_0006;
     /* subi r0, r3, 0xec2 */;
     if (r0 > (u32)0x23) return;
@@ -3304,6 +3303,33 @@ void fn_8006C7D4(void) {
     break;
 
     } while (0);
+    r0 = r3 - 0xEC2;
+    r30 = r0 & 3;
+    if (r0 < 0xC) {
+        r0 = 2;
+    } else if (r0 < 0x18) {
+        r0 = 1;
+    } else {
+        r0 = 3;
+    }
+    if (r0 == 1) {
+        r29 = (u32)((u8*(*)(s32, s32))savedataGetStatus)(0, 0xE) + r30 * 0x1660 + 0x59A8;
+        r3 = ((u32(*)(u32))fn_8006A7E8)(r29);
+        if (r3 == 0) {
+            r31 = 0x29F;
+        } else if (r3 == 1) {
+            r3 = ((u32(*)(u32))heroBiosGetSexDataId)(r29 + 0xB44);
+            r31 = r3 == 0 ? 0x2A1 : r3 == 1 ? 0x2A2 : 0x2A1;
+        } else if (r3 == 2) {
+            r3 = ((u32(*)(u32))heroBiosGetSexDataId)(r29 + 0xB44);
+            r31 = r3 == 0 ? 0x2A3 : r3 == 1 ? 0x2A0 : 0x2A1;
+        } else {
+            r31 = 0x2A1;
+        }
+        r3 = ((u32(*)(u32))menuSpriteBiosGetPtr)(r31);
+        ((void(*)(void*, void*))fn_80071318)((void*)r28, (void*)r3);
+        return;
+    }
     if ((s32)r0 != (s32)0x2) {
         if ((s32)r0 < (s32)0x2) {
             if ((s32)r0 == (s32)0x0) return;
