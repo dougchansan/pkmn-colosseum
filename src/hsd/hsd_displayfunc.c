@@ -173,7 +173,9 @@ void fn_80198038(HSD_JObj* jobj, Mtx src, Mtx dst)
         magnitude = PSVECMag(&position);
         PSVECScale(&position, &z, -1.0F / (lbl_80478ACC + magnitude));
     } else {
-        z = lbl_802746D0;
+        z.x = 0.0F;
+        z.y = 0.0F;
+        z.z = 1.0F;
     }
 
     PSVECScale(&y, &y, 1.0F / (sy + lbl_80478ACC));
