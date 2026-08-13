@@ -41,7 +41,7 @@
 #include "game/camera_types.h"
 
 #pragma push
-#pragma optimization_level 0
+#pragma optimization_level 2
 #pragma optimizewithasm off
 void fn_800E0168(void* dst, void* lhs, void* rhs);
 static inline void cameraSqrt(f32* result);
