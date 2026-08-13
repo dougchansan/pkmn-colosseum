@@ -69,6 +69,8 @@ extern u8 fightOutPokemonIsJoutaiDataId(void* fightPokemon, s32 statusId);
 extern void fightOutPokemonInitJoutaiDataId(void* fightPokemon, s32 statusId);
 extern u8 fightOutPokemonCheckWriteJoutaiDataId(void* fightPokemon, s32 statusId);
 extern void fightOutPokemonWriteJoutaiDataId(void* fightPokemon, s32 statusId, u32 value);
+extern u8 fn_80121ADC(void*, s32);
+extern void fn_80121B4C(void*, s32);
 extern void* fightTargetGetPtrAsNowFightType(s32 type, void* fightPokemon);
 extern u8 fightSideCheckWriteJoutaiDataId(s32 statusId);
 extern void fightSideWriteJoutaiDataId(void* side, s32 statusId, u32 value);
@@ -139,6 +141,8 @@ s16 fn_80144574(
     u8 newPp;
     u8 maxPp;
     u8 moveIdx;
+    u8 poisonCleared;
+    u8 badPoisonCleared;
     s16 logCount;
     s16 friendDelta;
     u16 wazaDataId;
@@ -422,20 +426,28 @@ s16 fn_80144574(
     }
 
     if (itemParamGetPoisonFlag(itemParam) != 0) {
-        if (pokemonIsJoutaiDataId(activePokemon, 3) != 0) {
-            pokemonInitJoutaiDataId(activePokemon, 3);
-            ADD_LOG(log, logCount, 0xB, 0, 0);
+        poisonCleared = 0;
+        badPoisonCleared = 0;
+        if (fn_80121ADC(activePokemon, 3) != 0) {
+            fn_80121B4C(activePokemon, 3);
+            poisonCleared = 1;
         }
-        if (pokemonIsJoutaiDataId(activePokemon, 4) != 0) {
-            pokemonInitJoutaiDataId(activePokemon, 4);
-            ADD_LOG(log, logCount, 0xC, 0, 0);
+        if (fn_80121ADC(activePokemon, 4) != 0) {
+            fn_80121B4C(activePokemon, 4);
+            badPoisonCleared = 1;
         }
         if (fightPokemon != NULL) {
             trainer = fightFloorGetFightPokemonPtrToFightTrainerPtr(0, fightPokemon);
             trainer = fightTrainerCheckFightPokemonFightOut(trainer, fightPokemon);
             if (trainer != NULL) {
-                fightSeqCheckSetMotoPokemonToHensinBuff(trainer, 0x7C);
+                fn_802331A4(trainer, 0x7C);
             }
+        }
+        if (poisonCleared != 0) {
+            ADD_LOG(log, logCount, 0xB, 0, 0);
+        }
+        if (badPoisonCleared != 0) {
+            ADD_LOG(log, logCount, 0xC, 0, 0);
         }
     }
 
