@@ -265,7 +265,6 @@ s32 fn_800096B4(u32 arg0, s32 arg1, u8* arg2, u8* arg3, u8* arg4, u8* arg5) {
             break;
         }
         case 0x2A:
-        case 0x2B:
         case 0x2C:
         case 0x2D:
         case 0x2E:
@@ -285,6 +284,27 @@ s32 fn_800096B4(u32 arg0, s32 arg1, u8* arg2, u8* arg3, u8* arg4, u8* arg5) {
                     *arg3 = 1;
                 }
             }
+            break;
+        }
+        case 0x2B: {
+            s32 sum;
+            s32 v;
+
+            if (delta > 0) {
+                sum = pokemonGetStatus(arg0, 0, 0x8D, 0);
+                sum += pokemonGetStatus(arg0, 0, 0x8E, 0);
+                sum += pokemonGetStatus(arg0, 0, 0x8F, 0);
+                sum += pokemonGetStatus(arg0, 0, 0x90, 0);
+                sum += pokemonGetStatus(arg0, 0, 0x91, 0);
+                sum += pokemonGetStatus(arg0, 0, 0x92, 0);
+                if ((u32)sum >= 0x1FE) {
+                    break;
+                }
+            }
+            v = pokemonGetStatus(arg0, 0, 0x8E, 0) + delta;
+            FN800096B4_CLAMP(v, 0, 0xFF);
+            pokemonSetStatus(arg0, 0, 0x8E, 0, v);
+            changed = 1;
             break;
         }
         case 0x31:
