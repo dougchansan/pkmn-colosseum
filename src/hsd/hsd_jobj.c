@@ -1056,7 +1056,6 @@ void resolveIKJoint1(HSD_JObj* jobj) {
     hint = HSD_RObjGetByType(jobj->robj, REFTYPE_IKHINT, 0);
     if (hint == NULL) {
         __assert(&lbl_8047DB20, 0x85C, &lbl_8047DB3C);
-        return;
     }
     rotate_x = hint->u.ik_hint.rotate_x;
     first_len = hint->u.ik_hint.bone_length * scale.x;
@@ -1067,7 +1066,6 @@ void resolveIKJoint1(HSD_JObj* jobj) {
         hint = HSD_RObjGetByType(joint2->robj, REFTYPE_IKHINT, 0);
         if (hint == NULL) {
             __assert(&lbl_8047DB20, 0x867, &lbl_8047DB3C);
-            return;
         }
         second_len = hint->u.ik_hint.bone_length * joint2->scale_x * scale.x;
         flip = (hint->flags & 4) != 0;
@@ -1077,7 +1075,7 @@ void resolveIKJoint1(HSD_JObj* jobj) {
     }
 
     if (effector == NULL) {
-        return;
+        __assert(&lbl_8047DB20, 0x82D, &lbl_8047DB34);
     }
 
     if (HSD_RObjGetByType(jobj->robj, REFTYPE_JOBJ, 3) == NULL &&
