@@ -129,6 +129,7 @@ extern f64 lbl_8047D140;   /* int-to-float magic (unsigned) */
 
 /* 0x801364A8 | 0xC6C */
 #pragma push
+#pragma optimization_level 2
 #pragma peephole off
 u8* fn_801364A8(u8* work, u8* desc) {
     extern u8 lbl_80314638[];
