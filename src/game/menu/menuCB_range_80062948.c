@@ -1613,12 +1613,12 @@ static inline void menuCBPokemonEntryAdvancePositions(void)
     f32 elapsed;
     s32 player;
     s32 component;
-    s32 denominator;
+    f32 denominator;
     s32 numerator;
 
-    denominator = fn_800D37CC();
+    denominator = (f32)fn_800D37CC();
     numerator = fn_800D3088();
-    elapsed = (f32)numerator / (f32)denominator;
+    elapsed = (f32)numerator / denominator;
     *(f32*)&lbl_803A9F08[0xCD88] = elapsed;
     for (player = 0; player < 4; player++) {
         current = (f32*)&lbl_803A9F08[0xCD8C + player * 0x30];
