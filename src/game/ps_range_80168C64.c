@@ -3354,7 +3354,8 @@ PSParticle* psInterpretParticle0(PSParticle* pp, PSParticle* parentCtx) {
                                 psAttachGeneratorAppSRT((PSGeneratorState*)gen, (PSAppSRT*)pp->parentObj);
                             }
                         }
-                        gen->flags = (gen->flags & ~0x1F8) | ((loopArg & 0x7) << 3);
+                        gen->flags &= ~0x0E000000;
+                        gen->flags |= (loopArg & 0x7) << 25;
                         /* position blend between pp and gen->parentObj: left as
                          * asm-verified but not transcribed here for brevity. */
                         break;
