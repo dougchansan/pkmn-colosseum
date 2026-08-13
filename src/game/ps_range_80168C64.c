@@ -4239,9 +4239,105 @@ void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
                           f32 velocityX, f32 velocityY, f32 velocityZ,
                           f32 axisXX, f32 axisXY, f32 axisXZ,
                           f32 axisYX, f32 axisYY, f32 axisYZ) {
+    GXColor color;
+    Mtx parentMatrix;
+    PSAppSRT* parent;
+    u32 textureIndex;
+
     if (lbl_8047B12C != 0) {
         lbl_8047B12C = 0;
         fn_800BD554(0);
+    }
+
+    if (pp->flags & 0x100000) {
+        parent = (PSAppSRT*)pp->parentObj;
+        if (parent != NULL) {
+            Vec position;
+
+            HSD_MtxSRT(parentMatrix, &parent->scaleX,
+                       &parent->translationX, &parent->rotationX, NULL);
+            position.x = centerX;
+            position.y = centerY;
+            position.z = centerZ;
+            PSMTXMultVec(parentMatrix, &position, &position);
+            centerX = position.x;
+            centerY = position.y;
+            centerZ = position.z;
+        }
+
+        if (pp->color1Timer != 0) {
+            s32 ratio = (pp->color1Countdown << 16) / pp->color1Timer;
+
+            color.r = ((pp->color1Target.r << 16) +
+                       ratio * (pp->color1.r - pp->color1Target.r)) >> 16;
+            color.g = ((pp->color1Target.g << 16) +
+                       ratio * (pp->color1.g - pp->color1Target.g)) >> 16;
+            color.b = ((pp->color1Target.b << 16) +
+                       ratio * (pp->color1.b - pp->color1Target.b)) >> 16;
+            color.a = ((pp->color1Target.a << 16) +
+                       ratio * (pp->color1.a - pp->color1Target.a)) >> 16;
+        } else {
+            color = pp->color1;
+        }
+        color.a = (u8)((f32)color.a * pp->alphaScale);
+        textureIndex = (pp->flags >> 14) & 3;
+
+        if (polygonData == NULL) {
+            fn_800B7D3C();
+            fn_800B7874(9, 1);
+            fn_800B7874(11, 1);
+            if (pp->flags & 0x400) {
+                fn_800B7874(13, 2);
+                fn_800B928C(0x80, 2, 4);
+            } else {
+                fn_800B928C(0x80, 3, 4);
+            }
+
+            GX_FIFO_F32 = centerX - axisXX;
+            GX_FIFO_F32 = centerY - axisXY;
+            GX_FIFO_F32 = centerZ - axisXZ;
+            GX_FIFO_U8 = color.r;
+            GX_FIFO_U8 = color.g;
+            GX_FIFO_U8 = color.b;
+            GX_FIFO_U8 = color.a;
+            if (pp->flags & 0x400) {
+                GX_FIFO_U8 = textureIndex;
+            }
+
+            GX_FIFO_F32 = centerX - axisYX;
+            GX_FIFO_F32 = centerY - axisYY;
+            GX_FIFO_F32 = centerZ - axisYZ;
+            GX_FIFO_U8 = color.r;
+            GX_FIFO_U8 = color.g;
+            GX_FIFO_U8 = color.b;
+            GX_FIFO_U8 = color.a;
+            if (pp->flags & 0x400) {
+                GX_FIFO_U8 = textureIndex + 1;
+            }
+
+            GX_FIFO_F32 = centerX + axisXX;
+            GX_FIFO_F32 = centerY + axisXY;
+            GX_FIFO_F32 = centerZ + axisXZ;
+            GX_FIFO_U8 = color.r;
+            GX_FIFO_U8 = color.g;
+            GX_FIFO_U8 = color.b;
+            GX_FIFO_U8 = color.a;
+            if (pp->flags & 0x400) {
+                GX_FIFO_U8 = textureIndex + 2;
+            }
+
+            GX_FIFO_F32 = centerX + axisYX;
+            GX_FIFO_F32 = centerY + axisYY;
+            GX_FIFO_F32 = centerZ + axisYZ;
+            GX_FIFO_U8 = color.r;
+            GX_FIFO_U8 = color.g;
+            GX_FIFO_U8 = color.b;
+            GX_FIFO_U8 = color.a;
+            if (pp->flags & 0x400) {
+                GX_FIFO_U8 = textureIndex + 3;
+            }
+        }
+        return;
     }
 
     if ((pp->flags & 0x100000) == 0) {
