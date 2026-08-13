@@ -1742,6 +1742,8 @@ s32 fn_801B50C0(ColTExpNode* tev, ColTExpRes* res)
  * Resets TEV stages, disables texture coordinate generation,
  * and frees temporary resources.
  */
+#pragma push
+#pragma optimization_level 1
 s32 fn_801B5850(ColTExpNode* tev, s32 idx, ColTExpRes* res)
 {
     ColTECnst* cnst = (ColTECnst*)tev->a_in[idx].exp;
@@ -1781,6 +1783,7 @@ s32 fn_801B5850(ColTExpNode* tev, s32 idx, ColTExpRes* res)
     }
     return -1;
 }
+#pragma pop
 
 /*
  * HSD_TextureBindForPass - 0x801B5A00 | Size: 0x294
