@@ -3146,8 +3146,24 @@ s32 fn_801812E8(u32 groupId, u32 index, u8 doInteract) {
 void fn_80183018(void) {
 }
 
-/* fn_80183350 -- not recovered, gap in archive campaign (size 0x338) */
-void fn_80183350(void) {
+/* Clear the transient interaction flags and restore the high movement flag. */
+void fn_80183350(u32 groupId, u32 index) {
+    PeopleEntry* entry;
+
+    entry = peopleFindBySelf(peopleFindSelf(groupId, index));
+    if (entry != NULL) {
+        peopleClearFlags(entry, 0x100);
+    }
+
+    entry = peopleFindBySelf(peopleFindSelf(groupId, index));
+    if (entry != NULL) {
+        peopleClearFlags(entry, 0x400);
+    }
+
+    entry = peopleFindBySelf(peopleFindSelf(groupId, index));
+    if (entry != NULL) {
+        peopleSetFlags(entry, 0x80000000);
+    }
 }
 
 /* 0x80183688 | size: 0xA8 */
