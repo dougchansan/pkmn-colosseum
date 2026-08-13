@@ -1457,8 +1457,35 @@ BOOL fn_80139AC4(void* ptr, u32 tick) {
     for (i = 0; i < count; i++, entry += 0x12E4) {
         if (frame >= *(u16*)(entry + 0x12DC)) {
             if (frame < *(u16*)(entry + 0x12DE)) {
+                f32 random_offset[3];
+                f32 offset[3];
+                f32 fade;
+                u32 segment_count;
+                u32 segment;
+                u8* point;
+
+                GSvecCopy(offset, p + 8);
+                segment_count = *(u16*)(entry + 0x12E2);
+                point = entry;
+                for (segment = 0; segment < segment_count; segment++, point += 0x18) {
+                    set__5GSvecFfff(random_offset,
+                                    offset[0] * fn_800E0BA0(),
+                                    offset[1] * fn_800E0BA0(),
+                                    offset[2] * fn_800E0BA0());
+                    GSvecAdd(point, point, random_offset);
+                }
+
+                if (frame > ((*(u16*)(entry + 0x12DE) +
+                              *(u16*)(entry + 0x12DC)) >> 1)) {
+                    fade = (f32)(*(u16*)(entry + 0x12DE) - frame) /
+                           (f32)((*(u16*)(entry + 0x12DE) -
+                                  *(u16*)(entry + 0x12DC)) >> 1);
+                    *(u8*)(entry + 0x12D8) = (u8)(p[0x5C] * fade);
+                    *(u8*)(entry + 0x12D9) = (u8)(p[0x5D] * fade);
+                    *(u8*)(entry + 0x12DA) = (u8)(p[0x5E] * fade);
+                    *(u8*)(entry + 0x12DB) = (u8)(p[0x5F] * fade);
+                }
                 *(u16*)(entry + 0x12E0) = 1;
-                GSvecAdd(entry + 0x12CC, entry + 0xC4, p + 0x20);
             } else {
                 *(u16*)(entry + 0x12E0) = 0;
             }
