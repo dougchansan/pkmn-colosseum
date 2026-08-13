@@ -220,6 +220,7 @@ void fn_801ED3B8(void)
     extern void pokemonOboeWaza(u8* pokemon, u8 level, u32 flag, u8* learned);
     u8* hero = savedataGetStatus(NULL, 2);
     u16 partyIndex;
+    u16 progress;
 
     if (hero == NULL) {
         return;
@@ -244,12 +245,12 @@ void fn_801ED3B8(void)
     }
 
     if (fn_801906A0(0xD0) != 0) {
-        u16 value = fn_801906A0(0xD1);
+        progress = fn_801906A0(0xD1);
 
-        if (value < 10000) {
-            value++;
+        if (progress < 10000) {
+            progress++;
         }
-        _flagSet(0xD1, value);
+        _flagSet(0xD1, progress);
     }
 
     hero = savedataGetStatus(NULL, 0xB);
@@ -279,9 +280,9 @@ void fn_801ED3B8(void)
             pokemonGrowBasisStatus(pokemon, experience);
             pokemonOboeWaza(pokemon, pokemonBiosGetLevel(pokemon), 1, &learned);
         }
-        hero = savedataGetStatus(NULL, 0xB);
-        if (hero != NULL) {
-            *(u16*)(hero + 2) = fn_801906A0(0xD1);
-        }
+    }
+    hero = savedataGetStatus(NULL, 0xB);
+    if (hero != NULL) {
+        *(u16*)(hero + 2) = progress;
     }
 }
