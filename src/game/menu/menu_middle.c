@@ -2130,10 +2130,10 @@ void fn_8006BB34(void* menu) {
     s32 signOld;
     s32 absVal;
     s16 v;
-    CursorArg_8006BB34 argA;
-    CursorArg_8006BB34 argB;
     CursorArg_8006BB34 srcA;
     CursorArg_8006BB34 srcB;
+    CursorArg_8006BB34 argA;
+    CursorArg_8006BB34 argB;
 
     ki = (KeyInfo_8006BB34*)windowGetKeyInfo();
     if (m->disabled != 0) return;
