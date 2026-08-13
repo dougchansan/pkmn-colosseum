@@ -538,10 +538,13 @@ s32 fn_80140ACC(u32* base, u16 count, u16 id, u16 amount, s16 index, u16 unusedL
     if (index < 0) {
         while (remaining != 0) {
             entry = NULL;
-            for (i = 0; i < count; i++) {
-                if (PEOPLE_ENTRY_VALID(base + i) && PEOPLE_ENTRY_ID(base + i) == id) {
-                    entry = base + i;
-                    break;
+            if (base != NULL && PEOPLE_ITEM_ID_VALID(id)) {
+                for (i = 0; i < count; i++) {
+                    if (PEOPLE_ENTRY_VALID(base + i) &&
+                        PEOPLE_ENTRY_ID(base + i) == id) {
+                        entry = base + i;
+                        break;
+                    }
                 }
             }
 
