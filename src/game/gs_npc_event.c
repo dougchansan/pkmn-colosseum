@@ -788,6 +788,9 @@ void fn_80031B4C(void) {
                         lbl_8047A42C = 7;
                     }
                     goto L_800323E4;
+                case 12:
+                    fn_8002E460(r30);
+                    goto L_800323E4;
                 case 13:
                     r26 = heroGetStatus(lbl_803A2518 + 0x170, 1, 0);
                     r28 = heroGetStatus(NULL, 3, (u16)lbl_8047A424);
