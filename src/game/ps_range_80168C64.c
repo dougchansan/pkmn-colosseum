@@ -3146,11 +3146,12 @@ PSParticle* psInterpretParticle0(PSParticle* pp, PSParticle* parentCtx) {
                         break;
 
                     case 0xE8:
-                        stream = getFloat(stream, &pp->alphaScale);
-                        if (pp->alphaScale < lbl_8047D630) {
+                        stream = getFloat(stream, &scratch[0]);
+                        if (scratch[0] < lbl_8047D630) {
                             pp->flags &= ~0x100000;
                         } else {
                             pp->flags |= 0x100000;
+                            pp->alphaScale = scratch[0];
                         }
                         break;
 
