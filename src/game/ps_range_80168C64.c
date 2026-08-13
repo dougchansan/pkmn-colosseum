@@ -3639,6 +3639,32 @@ void psDispSubAppSRT(PSParticle* pp, Mtx parentMatrix) {
                              velocity.x, velocity.y, velocity.z,
                              axisXX, axisXY, axisXZ,
                              axisYX, axisYY, axisYZ);
+    } else {
+        f32* view = (f32*)(lbl_80452DE8 + 0xAC);
+        Vec axisA;
+        Vec axisB;
+
+        axisA.x = appSRT->scaleX + view[3];
+        axisA.y = appSRT->scaleY + view[7];
+        axisA.z = view[11];
+        axisB.x = axisA.x;
+        axisB.y = -appSRT->scaleY + view[7];
+        axisB.z = axisA.z;
+        PSMTXMultVec((const f32(*)[4])(lbl_80452DE8 + 0x7C),
+                     &axisA, &axisA);
+        axisA.x *= pp->lerpValue;
+        axisA.y *= pp->lerpValue;
+        axisA.z *= pp->lerpValue;
+        PSMTXMultVec((const f32(*)[4])(lbl_80452DE8 + 0x7C),
+                     &axisB, &axisB);
+        axisB.x *= pp->lerpValue;
+        axisB.y *= pp->lerpValue;
+        axisB.z *= pp->lerpValue;
+        psDispSubMakePolygon(pp, NULL,
+                             position.x, position.y, position.z,
+                             velocity.x, velocity.y, velocity.z,
+                             axisA.x, axisA.y, axisA.z,
+                             axisB.x, axisB.y, axisB.z);
     }
 
 }
