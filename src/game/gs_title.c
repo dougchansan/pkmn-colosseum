@@ -3104,21 +3104,14 @@ s32 fn_800210F0(void)
             msgctrlSetValue(0x30, (void*)workB);
             menuOpen(0x16, 0);
             winMsgOpen(1, 0x3C22, 0, 1);
-            switch ((s8)menuSubOpenYesNo(0, 0x3C, 0xD6, 1)) {
-            case 0:
+            if ((s8)menuSubOpenYesNo(0, 0x3C, 0xD6, 1) == 0) {
                 heroMoveSyncWithHero();
                 fn_80113FE8();
                 state = 0x64;
                 fn_800056E4(1);
-                break;
-            case 1:
+            } else {
                 state = 1;
                 fn_800056E4(1);
-                break;
-            default:
-                state = 1;
-                fn_800056E4(1);
-                break;
             }
             menuCloseCustom(0x16, 0, 1);
             winMsgClose(1);
