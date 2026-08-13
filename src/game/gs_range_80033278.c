@@ -698,69 +698,72 @@ void fn_80034B5C(u8* valid, u8* selectionOut, u8* valueOut)
     u8* pokemon;
     u8* layer;
     u8* group;
-    s32 maxLevel;
+    u8 maxLevel;
     s32 maxRequired;
-    s32 best;
-    s32 ties;
+    u8 best;
+    u8 ties;
     s32 candidate;
-    s32 party;
-    s32 slot;
+    u16 party;
+    u16 slot;
     s32 index;
     s32 difference;
-    s32 count;
+    s8 count;
+    s8 region;
 
+    region = (s8)lbl_803A3334[0x24];
+    best = 0;
+    ties = 1;
     maxLevel = 1;
     for (party = 0; party < 6; party++) {
         pokemon = heroGetStatus(0, 3, party);
         if (pokemonCheckValid(pokemon) == 1) {
             index = pokemonGetStatus(pokemon, 0, 0x7A, 0);
-            if (maxLevel < index) {
-                maxLevel = index;
+            if (maxLevel < (u8)index) {
+                maxLevel = (u8)index;
             }
         }
     }
 
     count = (s8)lbl_803A3334[0x58];
-    best = 0;
-    ties = 1;
     for (candidate = 0; candidate < count; candidate++) {
         score[candidate] = 0x7FFFFFFF;
-        layer = fn_80082FE4(lbl_8047A434, candidate);
-        if (layer[0x1C + (s8)lbl_803A3334[0x24] * 0xE] != 0) {
-            group = lbl_803A3334 +
-                    (s8)lbl_803A3334[0x5E + candidate] * 0x28;
+        layer = fn_80082FE4(lbl_8047A434, (s8)candidate);
+        if (layer[0x1C + region * 0xE] != 0) {
+            group = lbl_803A3334 + (s8)lbl_803A3334[0x5E + candidate] * 0x28;
             maxRequired = 0;
             for (slot = 0; slot < 4; slot++) {
                 index = (s8)group[0x3B9 + slot];
-                if (index >= 0 &&
-                    maxRequired < lbl_803A3334[index * 0x2A + 0x517]) {
-                    maxRequired = lbl_803A3334[index * 0x2A + 0x517];
+                if (index >= 0) {
+                    s32 required = lbl_803A3334[index * 0x2A + 0x517];
+                    if (maxRequired < required) {
+                        maxRequired = required;
+                    }
                 }
             }
-            difference = maxLevel - maxRequired;
+            difference = (u8)maxLevel - maxRequired;
             if (difference < 0) {
                 difference = -difference;
             }
             score[candidate] = difference;
-            if (score[candidate] < score[best]) {
-                best = candidate;
+            if (score[candidate] < score[(s8)best]) {
+                best = (u8)candidate;
                 ties = 1;
-            } else if (score[candidate] == score[best]) {
+            } else if (score[candidate] == score[(s8)best]) {
                 ties++;
                 if (_fadeEffectGetRandom__FUl(ties) == 0) {
-                    best = candidate;
+                    best = (u8)candidate;
                 }
             }
         }
     }
 
-    *valid = score[best] != 0x7FFFFFFF;
+    *valid = score[(s8)best] != 0x7FFFFFFF;
     if (*valid != 0) {
         *selectionOut = best;
-        *valueOut = lbl_803A3334[0x5E + (s8)*selectionOut];
+        *valueOut = lbl_803A3334[0x5E + (s8)(*selectionOut)];
     } else {
-        *selectionOut = count - 1;
-        *valueOut = lbl_803A3334[0x5B + (s8)*selectionOut];
+        *selectionOut = (u8)(count - 1);
+        *valueOut = lbl_803A3334[0x5B + (s8)(*selectionOut)];
     }
 }
 
