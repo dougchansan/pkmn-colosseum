@@ -4867,10 +4867,10 @@ u32 fn_8013F80C(void* ptr, u32 delta) {
     return remaining >> 31;
 }
 #endif
-extern void fn_800D7BF8(void);
+extern void* fn_800D7BF8(u32 index);
 extern void GScameraGetLookAt(void* mtx, void* lookAt, void* eye);
-extern void fn_800E0628(void);
-extern void fn_800E0238(void);
+extern void fn_800E0628(void* dst, void* src);
+extern void fn_800E0238(void* dst, void* src);
 extern void fn_800D2DE8(void);
 extern u16 GStextureGetXsize(void* texture);
 extern u16 GStextureGetYsize(void* texture);
@@ -4892,16 +4892,22 @@ asm void _distortionEffectUpdateMatrices(void) {
 #else
 void _distortionEffectUpdateMatrices(void* ptr) {
     void* camera;
+    void* cameraMatrix;
     f32 lookAt[3];
     f32 eye[3];
+    f32 viewMatrix[12];
 
     camera = GScameraGetActiveCamera();
     _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
+    cameraMatrix = fn_800D7BF8(0);
     fn_800E064C((u8*)ptr + 0x38);
     if (camera != NULL) {
         GScameraGetLookAt(camera, lookAt, eye);
-        fn_800E0168((u8*)ptr + 0x68, lookAt, eye);
-        fn_800E0060((u8*)ptr + 0x68, (u8*)ptr + 0x68);
+        fn_800E0628(viewMatrix, cameraMatrix);
+        viewMatrix[3] = 0.0f;
+        viewMatrix[7] = 0.0f;
+        viewMatrix[11] = 0.0f;
+        fn_800E0238((u8*)ptr + 0x38, viewMatrix);
     }
 }
 #endif
