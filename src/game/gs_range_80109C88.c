@@ -110,6 +110,9 @@ found:
     return lbl_8047AD4C[i].state == 2;
 }
 
+#pragma push
+#pragma optimization_level 3
+#pragma peephole off
 s32 fn_8010BD6C(u16 key, void* (*callback)(u32), u32 arg)
 {
     typedef struct Entry {
@@ -176,6 +179,7 @@ s32 fn_8010BD6C(u16 key, void* (*callback)(u32), u32 arg)
     lbl_8047AD4C[index] = saved;
     return index;
 }
+#pragma pop
 void fn_8010C220(void) {
 }
 
