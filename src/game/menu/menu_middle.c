@@ -5021,13 +5021,16 @@ void fn_8006E338(void* obj) {
             ((void(*)(void))menuSpriteBiosGetPtr)();
             r4 = r3;
             ((void(*)(void))fn_80071318)();
+            r6 = *(u32*)((u32)sp + 0x44);
             r3 = 0x0;
             r5 = MENU_MIDDLE_U32_0000(r26)->unk_0000;
             r4 = 0xe;
             r0 = MENU_MIDDLE_U32_0064(r6)->unk_0064;
+            r8 = *(u32*)((u32)sp + 0x48);
             r0 = r0 & 0xFF;
             r0 = r0 | r5;
             MENU_MIDDLE_U32_0064(r6)->unk_0064 = r0;
+            r7 = *(u32*)((u32)sp + 0x4C);
             r0 = MENU_MIDDLE_U32_0064(r8)->unk_0064;
             r0 = r0 & 0xFF;
             r0 = r0 | r5;
