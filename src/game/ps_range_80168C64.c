@@ -3995,38 +3995,37 @@ PSGeneratorState* psCreateGeneratorID(s32 linkNo, s32 bankIdx, s32 scriptId) {
             break;
         }
         case 8: {
-            f32 x = *(f32*) (entry + 0x30);
-            f32 y = *(f32*) (entry + 0x34);
-            f32 z = *(f32*) (entry + 0x38);
-            f32 magnitude = sqrtf(x * x + y * y + z * z);
+            f32 magnitude = sqrtf(gen->velocityX * gen->velocityX +
+                                  gen->velocityY * gen->velocityY +
+                                  gen->velocityZ * gen->velocityZ);
             *(f32*) (raw + 0x54) = magnitude;
 
-            if (__fabs(y) < lbl_80478AC8) {
-                if (x <= lbl_8047D6B0) {
+            if (__fabs(gen->velocityY) < lbl_80478AC8) {
+                if (gen->velocityX <= lbl_8047D6B0) {
                     *(f32*) (raw + 0x58) = lbl_8047D6D8;
                 } else {
                     *(f32*) (raw + 0x58) = lbl_8047D6DC;
                 }
             } else {
-                *(f32*) (raw + 0x58) = atan2(x, y);
+                *(f32*) (raw + 0x58) = atan2(gen->velocityX, gen->velocityY);
             }
 
-            if (__fabs(x) < lbl_80478AC8) {
-                if (z <= lbl_8047D6B0) {
+            if (__fabs(gen->velocityX) < lbl_80478AC8) {
+                if (gen->velocityZ <= lbl_8047D6B0) {
                     *(f32*) (raw + 0x60) = lbl_8047D6D8;
                 } else {
                     *(f32*) (raw + 0x60) = lbl_8047D6DC;
                 }
             } else {
-                *(f32*) (raw + 0x60) = atan2(x, z);
+                *(f32*) (raw + 0x60) = atan2(gen->velocityX, gen->velocityZ);
             }
 
-            *(f32*) (raw + 0x5C) = x;
+            *(f32*) (raw + 0x5C) = gen->velocityX;
             if (*(f32*) (raw + 0x5C) < lbl_8047D6B0) {
                 *(f32*) (raw + 0x5C) = -*(f32*) (raw + 0x5C);
                 *(f32*) (raw + 0x54) = -*(f32*) (raw + 0x54);
             }
-            *(f32*) (raw + 0x64) = z;
+            *(f32*) (raw + 0x64) = gen->velocityY;
             break;
         }
         }
