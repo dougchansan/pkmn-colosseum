@@ -1442,6 +1442,7 @@ void fn_801821B8(u32 groupId, u32 index)
     void* model;
     GSvec position;
     f32 step;
+    f32 stepDelta;
     s32 animIndex;
     s32 current;
     s32 secondary;
@@ -1449,6 +1450,7 @@ void fn_801821B8(u32 groupId, u32 index)
     u8 restart;
     u8 shadowAnim;
 
+    stepDelta = lbl_8047D7D8;
     entry = peopleFindBySelf(peopleFindSelf(groupId, index));
     if (entry == NULL) {
         return;
@@ -1503,7 +1505,7 @@ void fn_801821B8(u32 groupId, u32 index)
         }
     }
 
-    step = entry->animBlendFactor + lbl_8047D7D8;
+    step = entry->animBlendFactor + stepDelta;
     while (step > lbl_8047D7A0) {
         step -= (f32)((f64)fn_800D3088() * lbl_8047D7E0);
         if (step < lbl_8047D7A0) {
