@@ -5813,8 +5813,21 @@ s32 fn_800F2264(void* obj) {
     else { ctx->stackCount = ctx->stackCount - 1; dstIndex = ctx->stack[ctx->stackCount]; }
     if (dstDesc & 0x40) dst = &ctx->stack[ctx->frame + dstIndex];
     else dst = &ctx->globals[dstIndex];
-    for (i = 0; i < count; i++) {
+    i = 0;
+    while (i + 8 <= count) {
         dst[i] = src[i];
+        dst[i + 1] = src[i + 1];
+        dst[i + 2] = src[i + 2];
+        dst[i + 3] = src[i + 3];
+        dst[i + 4] = src[i + 4];
+        dst[i + 5] = src[i + 5];
+        dst[i + 6] = src[i + 6];
+        dst[i + 7] = src[i + 7];
+        i += 8;
+    }
+    while (i < count) {
+        dst[i] = src[i];
+        i++;
     }
     for (i = 0; i < count; i++) {
         if (ctx->stackCount > 0x40) { GSlogWritef((const char*)errBase); }
