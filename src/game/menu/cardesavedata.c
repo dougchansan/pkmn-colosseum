@@ -914,13 +914,15 @@ s32 fn_8008102C(void** object_ref, const u32* descriptor, s32 index,
     case 68:
         record = object + index * 0x2A;
         record[0x539] = (value & 0x20) ? -1 : (s8)(value - 1);
+        {
+            const s8* byteEntry = (const s8*)(table + 0xCE0);
         for (i = 0; i < 0x0D; i++) {
-            for (j = 0; j < 2; j++) {
-                if (((const s8*)(table + 0xCE0))[i * 2 + j] ==
-                    (s8)record[0x539]) {
+            for (j = 0; j < 2; j++, byteEntry++) {
+                if (*byteEntry == (s8)record[0x539]) {
                     return 1;
                 }
             }
+        }
         }
         return 0;
     case 69:
