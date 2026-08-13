@@ -1478,6 +1478,11 @@ void fn_801D7464(void) {
         }
     }
 
+    if ((fn_800F7BC4(1) & fn_800F7AF0(1) & 0x100) != 0 &&
+        *(s32*)lbl_804673F8 == 1 && *(void**)((u8*)effect + 0x68) == NULL) {
+        wazaSequencePokemonMotionStart(effect, 0);
+    }
+
     if ((fn_800F7BC4(1) & fn_800F7AF0(1) & 0x100) != 0) {
         if (*(s32*)lbl_804673F8 == 1 && *(s32*)(lbl_804673F8 + 0x63C) != 0) {
             fn_801DF070(*(s32*)(lbl_804673F8 + 0x638));
