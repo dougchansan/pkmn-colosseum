@@ -3054,7 +3054,7 @@ void fn_800FD348(arg0, farg1)
     f64 farg1;
 {
     void *fontNode;
-    u16 *scan;
+    u8 *scan;
     u16 code;
     u32 glyphInfo;
     f32 savedX;
@@ -3083,10 +3083,10 @@ void fn_800FD348(arg0, farg1)
 
     targetCount = (s32)(arg0[0x5B] * arg0[0x58]) / (s32)arg0[0x5A];
     drawCount = (u8)targetCount - arg0[0x59];
-    scan = *(u16 **)(arg0 + 0x54);
+    scan = *(u8 **)(arg0 + 0x54);
 
     while (drawCount != 0) {
-        code = *scan;
+        code = *(u16 *)scan;
         scan += 2;
         if (code == 0xFFFF) {
             scan++;
