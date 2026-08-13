@@ -7155,7 +7155,7 @@ s32 fn_800F55DC(void* obj) {
     } else {
         r30 = r29 & 0xFFFF;
         if (r29 & 0x80) {
-            if (*(u32*)(p+0x28) <= 0) {
+            if (*(s32*)(p+0x28) <= 0) {
                 GSlogWritef((const char*)(r31+0x14));
                 result = *(u32*)(p+0x6C);
             } else {
@@ -7206,7 +7206,7 @@ s32 fn_800F55DC(void* obj) {
     }
 
     /* push negated result */
-    if (*(u32*)(p+0x28) > 0x40) {
+    if (*(s32*)(p+0x28) > 0x40) {
         GSlogWritef((const char*)r31);
     } else {
         *(u32*)(p+0x28) = *(u32*)(p+0x28) + 1;
