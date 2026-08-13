@@ -554,7 +554,8 @@ void _winSeqMoveSub(void* targetPtr, void* statePtr) {
 
     if (state->colorMode != 0) {
         state->colorFrame++;
-        if (state->colorMode == 1) {
+        switch (state->colorMode) {
+        case 1:
             t = (f32)state->colorFrame / (f32)state->colorDuration;
             target->color[0] = state->startColor[0] +
                                t * (state->endColor[0] - state->startColor[0]);
@@ -564,6 +565,7 @@ void _winSeqMoveSub(void* targetPtr, void* statePtr) {
                                t * (state->endColor[2] - state->startColor[2]);
             target->color[3] = state->startColor[3] +
                                t * (state->endColor[3] - state->startColor[3]);
+            break;
         }
         if (state->colorFrame >= state->colorDuration) {
             state->colorMode = 0;
@@ -572,12 +574,14 @@ void _winSeqMoveSub(void* targetPtr, void* statePtr) {
 
     if (state->scaleMode != 0) {
         state->scaleFrame++;
-        if (state->scaleMode == 1) {
+        switch (state->scaleMode) {
+        case 1:
             t = (f32)state->scaleFrame / (f32)state->scaleDuration;
             target->scaleX = state->startScaleX +
                              t * (state->endScaleX - state->startScaleX);
             target->scaleY = state->startScaleY +
                              t * (state->endScaleY - state->startScaleY);
+            break;
         }
         if (state->scaleFrame >= state->scaleDuration) {
             state->scaleMode = 0;
