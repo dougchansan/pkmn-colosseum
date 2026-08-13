@@ -2919,8 +2919,6 @@ void fn_8006C164(void) {
         /* indirect jump via ctr */;
         r0 = r27 & 0xFF;
         if (r0 != (u32)0x0) {
-            return;
-
             if (r0 != (u32)0x0) return;
             r0 = r29 & 0xFF;
             if (r0 == (u32)0x0) {
