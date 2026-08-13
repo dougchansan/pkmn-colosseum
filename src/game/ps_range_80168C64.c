@@ -4576,7 +4576,6 @@ void setupTevReg(PSParticle* pp) {
  * verified entry gate is shared by every mode at 0x8016C1E0-0x8016C240.
  */
 #pragma optimization_level 4
-#pragma peephole off
 void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
                           f32 centerX, f32 centerY, f32 centerZ,
                           f32 velocityX, f32 velocityY, f32 velocityZ,
@@ -4844,7 +4843,6 @@ void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
 }
 
 #pragma optimization_level 2
-#pragma peephole reset
 void psExecGenerator(u32 linkMask) {
     PSGeneratorState* gen;
 
