@@ -1284,9 +1284,9 @@ u8 _leaffxGenerateLeafData(void* ptr, void* entry) {
          (heightRange * fn_800E0BA0() + heightBase)) *
         *(f32*)(e + 0x50);
     set__5GSvecFfff((u8*)e + 0x0C,
-                    (f32)sin(pitch) * (f32)sin(yaw),
+                    (f32)sin(pitch) * (f32)cos(yaw),
                     (f32)cos(pitch),
-                    (f32)sin(pitch) * (f32)cos(yaw));
+                    (f32)sin(pitch) * (f32)sin(yaw));
     fn_800E013C((u8*)e + 0x0C, (u8*)e + 0x0C, radius);
     GSvecAdd((u8*)e + 0x0C, (u8*)e + 0x0C, position);
 
@@ -1294,9 +1294,9 @@ u8 _leaffxGenerateLeafData(void* ptr, void* entry) {
     pitch = *(f32*)&lbl_8047D184 * fn_800E0BE4();
     radius = (radiusRange * fn_800E0BA0() + radiusBase) * *(f32*)(e + 0x50);
     set__5GSvecFfff((u8*)e + 0x24,
-                    (f32)sin(pitch) * (f32)sin(yaw),
+                    (f32)sin(pitch) * (f32)cos(yaw),
                     (f32)cos(pitch),
-                    (f32)sin(pitch) * (f32)cos(yaw));
+                    (f32)sin(pitch) * (f32)sin(yaw));
     fn_800E013C((u8*)e + 0x24, (u8*)e + 0x24, radius);
     GSvecAdd((u8*)e + 0x24, (u8*)e + 0x24, (u8*)e + 0x0C);
 
