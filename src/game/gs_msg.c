@@ -3434,7 +3434,7 @@ s32 _msgGetLength__FPCUs(const void* str) {
 
 /* 0x800FE010 | 0x34C */
 #pragma push
-#pragma optimization_level 2
+#pragma optimization_level 3
 #pragma optimizewithasm off
 #if 0
 asm s32 _msgGetSize__FPCUs(str)
