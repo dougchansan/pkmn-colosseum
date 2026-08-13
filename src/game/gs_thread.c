@@ -7068,7 +7068,7 @@ s32 fn_800F5404(void* obj) {
         r30 = r4 & 0xFFFF;
         if (r4 & 0x80) {
             /* pop from stack */
-            if (*(u32*)(p+0x28) <= 0) {
+            if (*(s32*)(p+0x28) <= 0) {
                 GSlogWritef((const char*)(r31+0x14));
                 result = *(u32*)(p+0x6C);
             } else {
@@ -7077,7 +7077,7 @@ s32 fn_800F5404(void* obj) {
             }
         } else {
             /* index-based address resolution */
-            if (*(u32*)(p+0x28) <= 0) {
+            if (*(s32*)(p+0x28) <= 0) {
                 GSlogWritef((const char*)(r31+0x14));
                 idx = *(u32*)(p+0x6C);
             } else {
@@ -7109,7 +7109,7 @@ s32 fn_800F5404(void* obj) {
     }
 
     /* push result to stack */
-    if (*(u32*)(p+0x28) > 0x40) {
+    if (*(s32*)(p+0x28) > 0x40) {
         GSlogWritef((const char*)r31);
     } else {
         *(u32*)(p+0x28) = *(u32*)(p+0x28) + 1;
