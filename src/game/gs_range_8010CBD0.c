@@ -1187,9 +1187,11 @@ s32 fn_8010EB28(Vec3f* point, void* data, ColMtx inverse,
     radiusSq = radius * radius;
 
     for (i = 0; i < group->count; i++, tri = (GScolsys2Triangle*)((u8*)tri + 0x34)) {
-        for (edge = 0; edge < 3; edge++) {
-            PSMTXMultVec(inverse, (const f32*)&tri->verts[edge],
-                         (f32*)&transformedVerts[edge]);
+        currentVert = tri->verts;
+        otherVert = transformedVerts;
+        for (edge = 0; edge < 3; edge++, currentVert++, otherVert++) {
+            PSMTXMultVec(inverse, (const f32*)currentVert,
+                         (f32*)otherVert);
         }
         PSMTXMultVec(forward, (const f32*)&tri->normal, (f32*)&transformedNormal);
 
