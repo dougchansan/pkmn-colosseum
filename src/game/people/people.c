@@ -3583,7 +3583,7 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
     PeopleJob* job;
     PeopleJob* current;
     PeopleJob* tail;
-    s32 activeCount;
+    volatile s32 activeCount;
     s32 result;
     s32 i;
 
