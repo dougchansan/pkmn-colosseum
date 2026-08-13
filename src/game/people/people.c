@@ -2872,11 +2872,10 @@ void fn_80186B5C(GSvec* output, u32 groupId, u32 index)
     cstickY = fn_800F7A08(1, 0);
 
     if (stickX == 0 && stickY == 0) {
-        u32 buttons = fn_800F7BC4(1);
-        if (buttons & 8) stickY = -56;
-        if (buttons & 4) stickY = 56;
-        if (buttons & 1) stickX = -56;
-        if (buttons & 2) stickX = 56;
+        if (fn_800F7BC4(1) & 8) stickY = -56;
+        if (fn_800F7BC4(1) & 4) stickY = 56;
+        if (fn_800F7BC4(1) & 1) stickX = -56;
+        if (fn_800F7BC4(1) & 2) stickX = 56;
         cstickX = stickX;
         cstickY = stickY;
     }
