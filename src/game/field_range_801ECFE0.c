@@ -260,7 +260,7 @@ void fn_801ED3B8(void)
     }
 
     hero = savedataGetStatus(NULL, 0xB);
-    if (hero != NULL && hero[0] != 0) {
+    if (hero[0] != 0) {
         u8* pokemon = hero + 8;
         u16 darkPokemonId = pokemonBiosGetDarkpokemonDataId(pokemon);
 
