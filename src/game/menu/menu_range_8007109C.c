@@ -3033,36 +3033,40 @@ u8 fn_800767B8(void* hero, const u8* rule)
                 case 2:
                     item = pokemonBiosGetItemDataId(pokemon);
                     itemRule = fn_8006B420();
-                    if (item == 0) {
-                        valid = 1;
-                    } else if (item == 0xAF) {
-                        valid = 0;
-                    } else {
-                        valid = fn_80142984(item);
-                    }
-                    if (!valid) {
-                        break;
-                    }
-
-                    switch (*(s32*)(itemRule + 8)) {
+                    switch (item) {
                     case 0:
                         valid = 1;
                         break;
-                    case 1:
-                        valid = item == 0;
-                        break;
-                    case 2:
-                        valid = 1;
-                        for (i = 0; (u32)i < lbl_80478928; i++) {
-                            if (item == lbl_802EE458[i]) {
-                                valid = itemRule[i + 0x18] == 0;
-                                break;
-                            }
-                        }
-                        break;
-                    default:
+                    case 0xAF:
                         valid = 0;
                         break;
+                    default:
+                        valid = fn_80142984(item);
+                        break;
+                    }
+                    if (valid) {
+                        switch (*(s32*)(itemRule + 8)) {
+                        case 0:
+                            valid = 1;
+                            break;
+                        case 1:
+                            valid = item == 0;
+                            break;
+                        case 2:
+                            valid = 1;
+                            for (i = 0; (u32)i < lbl_80478928; i++) {
+                                if (item == lbl_802EE458[i]) {
+                                    valid = itemRule[i + 0x18] == 0;
+                                    break;
+                                }
+                            }
+                            break;
+                        default:
+                            valid = 0;
+                            break;
+                        }
+                    } else {
+                        valid = 0;
                     }
                     break;
                 default:
@@ -5131,10 +5135,12 @@ s32 fn_8007AB10(u32 code, u32* state) {
             return fn_8007AB10_initial_result(code);
         case 1:
             OPEN_LINK_PROMPT(3);
-            if (code == 15) {
+            switch (code) {
+            case 15:
                 return 16;
+            default:
+                return 0;
             }
-            return 0;
         case 2:
             if (code == 18) {
                 OPEN_LINK_PROMPT(2);
