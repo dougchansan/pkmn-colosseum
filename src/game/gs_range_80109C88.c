@@ -1151,6 +1151,9 @@ s32 fn_8010A88C(void* objPtr)
     *(u32*)(obj + 0x28) = 0;
     return 1;
 }
+#pragma push
+#pragma optimization_level 3
+#pragma peephole off
 s32 fn_8010AB00(void* objPtr)
 {
     typedef struct Vec3 {
@@ -1289,6 +1292,7 @@ s32 fn_8010AB00(void* objPtr)
 
     return 1;
 }
+#pragma pop
 
 u16 fn_8010B16C(u16 key, void* (*callback)(u32), u32 arg)
 {
