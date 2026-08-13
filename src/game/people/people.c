@@ -3562,9 +3562,9 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
     typedef struct PeopleJob {
         s32 active;
         s32 field_04;
-        void* callback;
+        void* field_08;
         s32 state;
-        s32 field_10;
+        void* callback;
         s32 type;
         void* app;
         struct PeopleJob* nextJob;
