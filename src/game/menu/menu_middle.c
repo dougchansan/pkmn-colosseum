@@ -263,7 +263,7 @@ void fn_8006FDEC(u32 r3);
 void fn_8006FE14(u32 r3);
 void fn_8006FE3C(u32 r3);
 void fn_8006FE64(void* menu);
-void fn_8006FEE4(void);
+void fn_8006FEE4(void* menu);
 void fn_80070274(u32 r3);
 void fn_8007029C(u32 r3);
 void fn_800702C8(u32 r3);
@@ -6635,7 +6635,7 @@ void fn_8006FE64(void* menu) {
 
 #if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_RESIDUAL_8006FEE4_ONLY)
 /* 0x8006FEE4 | size: 0x390 */
-void fn_8006FEE4(void) {
+void fn_8006FEE4(void* menu) {
     extern void fn_8006B1F4();
     extern void fn_8006B3C8();
     extern void fn_80070D84();
@@ -6659,7 +6659,7 @@ void fn_8006FEE4(void) {
     f32 f2 = 0.0f;
 
     
-    r30 = r3;
+    r30 = (u32)menu;
     r0 = MENU_MIDDLE_U8_0095(r30)->unk_0095;
     r3 = (u32)&lbl_80267EA8;
     r31 = (u32)&lbl_80267EA8;
