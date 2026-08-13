@@ -31,6 +31,7 @@ extern OSHeapDesc* lbl_8047A6E8;
 extern s32 lbl_8047A6EC;
 extern void* lbl_8047A6F0;
 extern void* lbl_8047A6F4;
+extern const char lbl_80310198[];
 
 typedef struct OSAlarmQueue {
     OSAlarm* head;
@@ -327,5 +328,120 @@ s32 fn_8009ABD0(u32 start, u32 end) {
 #if defined(SDK_8009AC3C_SUFFIX_ACTIVE)
 void fn_8009AC3C(u32 xfb) {
     lbl_8047A6E8[xfb].size = -1;
+}
+#endif
+
+#if defined(SDK_8009AC50_CANDIDATE_ACTIVE)
+s32 fn_8009AC50(s32 heap)
+{
+    OSHeapDesc* hd;
+    OSAllocCell* cell;
+    s32 total;
+    s32 freeSpace;
+    void* arenaStart;
+    void* arenaEnd;
+
+    total = 0;
+    freeSpace = 0;
+
+    if (lbl_8047A6E8 == NULL) {
+        OSReport((const char*) lbl_80310198, 0x37D);
+        return -1;
+    }
+    if (heap < 0 || heap >= lbl_8047A6EC) {
+        OSReport((const char*) lbl_80310198 + 0x24, 0x37E);
+        return -1;
+    }
+
+    hd = &lbl_8047A6E8[heap];
+    if (hd->size <= 0) {
+        OSReport((const char*) lbl_80310198 + 0x5C, 0x381);
+        return -1;
+    }
+    if (hd->allocated != NULL && hd->allocated->prev != NULL) {
+        OSReport((const char*) lbl_80310198 + 0x84, 0x383);
+        return -1;
+    }
+
+    arenaStart = lbl_8047A6F0;
+    arenaEnd = lbl_8047A6F4;
+    cell = hd->allocated;
+    while (cell != NULL) {
+        if (cell < (OSAllocCell*) arenaStart || cell >= (OSAllocCell*) arenaEnd) {
+            OSReport((const char*) lbl_80310198 + 0xD4, 0x386);
+            return -1;
+        }
+        if (((u32) cell & 0x1F) != 0) {
+            OSReport((const char*) lbl_80310198 + 0x114, 0x387);
+            return -1;
+        }
+        if (cell->next != NULL && cell->next->prev != cell) {
+            OSReport((const char*) lbl_80310198 + 0x14C, 0x388);
+            return -1;
+        }
+        if (cell->size < 0x40) {
+            OSReport((const char*) lbl_80310198 + 0x198, 0x389);
+            return -1;
+        }
+        if ((cell->size & 0x1F) != 0) {
+            OSReport((const char*) lbl_80310198 + 0x1CC, 0x38A);
+            return -1;
+        }
+        total += cell->size;
+        if (total <= 0 || total > hd->size) {
+            OSReport((const char*) lbl_80310198 + 0x20C, 0x38D);
+            return -1;
+        }
+        cell = cell->next;
+    }
+
+    if (hd->free != NULL && hd->free->prev != NULL) {
+        OSReport((const char*) lbl_80310198 + 0x248, 0x395);
+        return -1;
+    }
+
+    cell = hd->free;
+    while (cell != NULL) {
+        if (cell < (OSAllocCell*) arenaStart || cell >= (OSAllocCell*) arenaEnd) {
+            OSReport((const char*) lbl_80310198 + 0xD4, 0x398);
+            return -1;
+        }
+        if (((u32) cell & 0x1F) != 0) {
+            OSReport((const char*) lbl_80310198 + 0x114, 0x399);
+            return -1;
+        }
+        if (cell->next != NULL && cell->next->prev != cell) {
+            OSReport((const char*) lbl_80310198 + 0x14C, 0x39A);
+            return -1;
+        }
+        if (cell->size < 0x40) {
+            OSReport((const char*) lbl_80310198 + 0x198, 0x39B);
+            return -1;
+        }
+        if ((cell->size & 0x1F) != 0) {
+            OSReport((const char*) lbl_80310198 + 0x1CC, 0x39C);
+            return -1;
+        }
+        if (cell->next != NULL &&
+            (u8*) cell + cell->size >= (u8*) cell->next)
+        {
+            OSReport((const char*) lbl_80310198 + 0x290, 0x39D);
+            return -1;
+        }
+
+        total += cell->size;
+        freeSpace += cell->size - 0x20;
+        if (total <= 0 || total > hd->size) {
+            OSReport((const char*) lbl_80310198 + 0x20C, 0x3A1);
+            return -1;
+        }
+        cell = cell->next;
+    }
+
+    if (total != hd->size) {
+        OSReport((const char*) lbl_80310198 + 0x2F0, 0x3A8);
+        return -1;
+    }
+    return freeSpace;
 }
 #endif
