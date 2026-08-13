@@ -1376,7 +1376,6 @@ void fn_801CDB04(void)
                 if (checksum != ((u32*)task->work_buffer)[0xE90]) {
                     raw[0x40] = 1;
                 }
-                task->format_requested = 0;
                 task->state = 28;
             } else {
                 task->error_code = result;
@@ -1385,13 +1384,28 @@ void fn_801CDB04(void)
             break;
 
         case 28:
-            if (task->error_code != 0) {
-                task->error_code = 5;
+            task->random_delay = 0;
+            task->field_20 = 0;
+            switch (task->task_kind) {
+            case 1:
+            case 2:
+                if (task->format_requested != 0) {
+                    task->error_code = 5;
+                    task->resume_state = 29;
+                    task->state = 0x30;
+                } else {
+                    task->state = 29;
+                }
+                break;
+            case 3:
+            case 8:
+                task->state = 29;
+                break;
+            default:
+                task->error_code = 2;
                 task->resume_state = 29;
                 task->state = 0x30;
-            } else {
-                task->error_code = 0;
-                task->state = 0x2B;
+                break;
             }
             break;
 
