@@ -993,7 +993,7 @@ extern f32 lbl_8047D800;
 extern f32 lbl_8047D7A0;
 /* renamed symbols referenced by asm incs (symbolmap port) */
 extern void heroMoveSetEventList(u8, void*, u32);
-extern void sin();   /* MSL trig (renamed) - referenced by asm incs */
+extern f64 sin(f64); /* MSL trig (renamed) - referenced by asm incs */
 extern void cos();   /* MSL trig (renamed) - referenced by asm incs */
 extern void GScolsy2UtilGetCpPlanePoint(void*, void*, void*, void*);
 extern s32 GScolsy2UtilChkInTri(void*, void*, void*);
@@ -2659,14 +2659,53 @@ asm void fn_80186B5C(void) {
 void fn_80186B5C(GSvec* output, u32 groupId, u32 index)
 {
     PeopleEntry* entry;
+    PeopleEntry* candidate;
+    void* self;
+    GSvec result;
+    GSvec quaternion;
+    GSvec localStep;
+    GSvec worldStep;
+    f32 x;
+    f32 z;
+    f32 length;
+    f32 angle;
+    f32 speed;
+    s32 i;
     s8 stickX;
     s8 stickY;
     s8 cstickX;
     s8 cstickY;
 
-    entry = peopleFindBySelf(peopleFindSelf(groupId, index));
+    result = *(GSvec*)lbl_80273FB4;
+    self = NULL;
+    for (i = 0; i < peopleGetMaxCount(); i++) {
+        candidate = peopleGetEntry(i);
+        if (candidate->active != 0 && candidate->groupId == groupId &&
+            candidate->index == index) {
+            self = candidate->selfPtr;
+            break;
+        }
+    }
+    if (self == NULL) {
+        for (i = 0; i < peopleGetMaxCount(); i++) {
+            candidate = peopleGetEntry(i);
+            if (candidate->active != 0 && candidate->index == index) {
+                GSlogWrite(lbl_80273FD8, groupId, index);
+                self = candidate->selfPtr;
+                break;
+            }
+        }
+    }
+    entry = NULL;
+    for (i = 0; i < peopleGetMaxCount(); i++) {
+        candidate = peopleGetEntry(i);
+        if (candidate->active != 0 && candidate->selfPtr == self) {
+            entry = candidate;
+            break;
+        }
+    }
     if (entry == NULL) {
-        GSvecCopy(output, lbl_80273FB4);
+        *output = result;
         return;
     }
 
@@ -2685,14 +2724,68 @@ void fn_80186B5C(GSvec* output, u32 groupId, u32 index)
         cstickY = stickY;
     }
 
+    if (stickX == 0 && stickY == 0) {
+        *output = result;
+        return;
+    }
+
     if (stickX > 56) stickX = 56;
     if (stickX < -56) stickX = -56;
     if (stickY > 56) stickY = 56;
     if (stickY < -56) stickY = -56;
 
-    output->x = (f32)stickX / lbl_8047D84C;
-    output->y = lbl_8047D7A0;
-    output->z = (f32)stickY / lbl_8047D84C;
+    x = (f32)(stickX < 0 ? -stickX : stickX) / *(f32*)&lbl_8047D84C;
+    z = (f32)(stickY < 0 ? -stickY : stickY) / *(f32*)&lbl_8047D84C;
+    length = sqrtf(x * x + z * z);
+    if (length > *(f32*)&lbl_8047D7C4) {
+        length = *(f32*)&lbl_8047D7C4;
+    }
+
+    if (cstickX <= -2 || cstickX >= 2 || cstickY <= -2 || cstickY >= 2) {
+        if (z < *(f32*)&lbl_8047D868) {
+            angle = *(f32*)&lbl_8047D86C;
+        } else {
+            angle = x / z;
+            if (angle > lbl_8047D7E8) {
+                angle = lbl_8047D7E8;
+            }
+            angle = (f32)sin((f64)(angle / *(f32*)&lbl_8047D870)) *
+                    *(f32*)&lbl_8047D86C;
+        }
+        if (stickY < 0) {
+            speed = *(f32*)&lbl_8047D818 - angle;
+        } else {
+            speed = angle;
+        }
+        if (stickX < 0) {
+            if (stickY >= 0) {
+                speed = *(f32*)&lbl_8047D818 +
+                        (*(f32*)&lbl_8047D818 - angle);
+            } else {
+                speed = *(f32*)&lbl_8047D818 + angle;
+            }
+        }
+        angle = cameraGetRotY() + speed;
+    } else {
+        angle = entry->field_40;
+    }
+
+    if (length <= lbl_8047D830) {
+        speed = (length / lbl_8047D830) * (entry->field_34 * lbl_8047D7A4);
+    } else if (length < lbl_8047D79C) {
+        x = (length - lbl_8047D830) / *(f32*)&lbl_8047D874;
+        z = entry->field_34 * lbl_8047D7A4;
+        speed = x * (entry->field_34 - z) + z;
+    } else {
+        speed = (length - lbl_8047D79C) *
+                (entry->field_38 - entry->field_34) + entry->field_34;
+    }
+
+    fn_800E0718(&quaternion, lbl_8031554C, angle);
+    set__5GSvecFfff(&localStep, lbl_8047D7A0, lbl_8047D7A0, speed);
+    GSvecTransformQuat(&worldStep, &quaternion, &localStep);
+    fn_800E013C(&result, &worldStep, (f32)fn_800D3088());
+    *output = result;
 }
 #endif
 
