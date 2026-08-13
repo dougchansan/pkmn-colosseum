@@ -990,6 +990,7 @@ u8 wazaSequencePokemonMotionStart(void* ownerPtr, BOOL enabled) {
     void* model = *(void**)(owner + 0x24);
     u8* table = *(u8**)(owner + 0x2C) + *(u16*)(owner + 0x32) * 0xD4 + 0x8C;
     s32 duration;
+    s32 animIndex;
     s32 frameCountInt;
     s32 quotient;
     s32 remainder;
@@ -1028,20 +1029,20 @@ u8 wazaSequencePokemonMotionStart(void* ownerPtr, BOOL enabled) {
     }
 
     *(u16*)(owner + 0x34) = 0;
-    duration = fn_801DF160(owner);
+    animIndex = fn_801DF160(owner);
     if ((*(u8*)(owner + 0x18) & 4) == 0) {
         *(u8*)(owner + 0x19) = 0;
         GSmodelLinkTexAnimToAnim(model, 1);
     }
-    GSmodelSetAnimIndex(model, duration);
+    GSmodelSetAnimIndex(model, animIndex);
     GSmodelSetAnimType(model, 0);
     GSmodelSetAnimRate(model, lbl_8047E348);
     GSmodelGetFrameCount(model, &frameCount, &texFrameCount);
 
     frameCountInt = (s32)frameCount;
-    quotient = (s32)(*(s32*)(table + 0x04) >> 1) / frameCountInt;
+    quotient = (duration >> 1) / frameCountInt;
     *(s32*)(table + 0x04) = quotient;
-    remainder = (s32)(*(s32*)(table + 0x04) >> 1) - quotient * frameCountInt;
+    remainder = (duration >> 1) - quotient * frameCountInt;
     if (remainder == 0 && *(s32*)(table + 0x04) != 0) {
         *(s32*)(table + 0x04) -= 1;
         remainder = frameCountInt;
