@@ -641,9 +641,7 @@ void logVsnprintf_float(char* output, u32 capacity, const char* format,
                             text[i] = 0;
                         }
                     }
-                    if ((u32)(dst - output) < capacity) {
-                        *dst++ = '.';
-                    }
+                    *dst++ = '.';
                     while (*text != 0 && (u32)(dst - output) < capacity) {
                         *dst++ = *text++;
                     }
