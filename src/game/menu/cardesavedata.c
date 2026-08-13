@@ -801,10 +801,10 @@ s32 fn_8008102C(void** object_ref, const u32* descriptor, s32 index,
         record = object + index * 0x2A;
         half = (u16)value;
         *(u16*)(record + 0x518 + subindex * 2) = half;
+        tableEntry = (const u16*)(table + 0xA18);
         for (i = 0; i < 0x47; i++) {
-            for (j = 0; j < 5; j++) {
-                if (((const u16*)(table + 0xA18))[i * 5 + j] ==
-                    (u8)value) {
+            for (j = 0; j < 5; j++, tableEntry++) {
+                if (*tableEntry == (u8)value) {
                     return 1;
                 }
             }
