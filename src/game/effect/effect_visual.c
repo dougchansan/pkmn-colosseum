@@ -853,12 +853,11 @@ allocation_error:
     return 0;
 }
 #endif
-extern void GSbezierCalculateVector(void);
-extern void fn_800E06B8(void);
-extern void fn_800E040C(void);
-extern void fn_800E02C4(void);
-extern void fn_800E03B4(void);
-extern void GSmodelSetMatrix(void);
+extern void fn_800E06B8();
+extern void fn_800E040C();
+extern void fn_800E02C4();
+extern void fn_800E03B4();
+extern void GSmodelSetMatrix();
 extern u32 lbl_8047D170;
 extern u32 lbl_8047D164;
 extern u32 lbl_8047D178;
@@ -872,10 +871,24 @@ asm void fn_80138DE4(void) {
 u32 fn_80138DE4(void* ptr, u32 delta) {
     u8* p;
     u8* entry;
+    void* model;
+    void* part;
+    void* obj;
     u16 cur;
-    u16 end;
-    u16 i;
-    u16 count;
+    u16 next;
+    u16 fadeStart;
+    u16 fadeEnd;
+    u16 entryCount;
+    u32 i;
+    u32 j;
+    u32 modelCount;
+    s32 partCount;
+    f32 deltaScale;
+    f32 alpha;
+    f32 scale;
+    f32 position[3];
+    f32 rotation[4];
+    f32 matrix[12];
 
     if (ptr == NULL) {
         return 0;
@@ -883,17 +896,66 @@ u32 fn_80138DE4(void* ptr, u32 delta) {
 
     p = ptr;
     cur = *(u16*)(p + 0x3C);
-    end = *(u16*)(p + 0x3E);
-    if (cur >= end) {
+    fadeEnd = *(u16*)(p + 0x3E);
+    if (cur >= fadeEnd) {
         return 0;
     }
 
-    *(u16*)(p + 0x3C) = cur + delta;
-    count = *(u16*)(p + 0x38);
+    next = cur + delta;
+    fadeStart = *(u16*)(p + 0x3A);
+    deltaScale = *(f32*)(p + 0x2C) * (f32)delta;
+    *(u16*)(p + 0x3C) = next;
+    entryCount = *(u16*)(p + 0x38);
     entry = *(u8**)p;
-    for (i = 0; i < count; i++, entry += 0x5C) {
+
+    if (next < fadeStart) {
+        deltaScale *= *(f32*)&lbl_8047D164 - ((f32)next / (f32)fadeStart);
+    } else {
+        model = GSresGetResource(*(u16*)(p + 0x40), *(u16*)(p + 0x44));
+        alpha = *(f32*)&lbl_8047D160 -
+                ((f32)(next - fadeStart) / (f32)(fadeEnd - fadeStart));
+        modelCount = fn_800EE0E8(model);
+        for (i = 0; i < modelCount; i++) {
+            part = GSmodelGetPart(model, i);
+            if (part != NULL) {
+                partCount = GSpartGetMaterialCount(part);
+                for (j = 0; j < (u32)partCount; j++) {
+                    obj = GSpartGetMaterial(part, j);
+                    if (obj != NULL) {
+                        GSmaterialSetAlpha(obj, alpha);
+                        fn_800DF608(obj);
+                    }
+                }
+                GSpartFree(part);
+            }
+        }
+    }
+
+    for (i = 0; i < entryCount; i++, entry += 0x5C) {
         if (*(void**)(entry + 0x58) != NULL) {
-            fn_80139074(entry, p);
+            *(f32*)(entry + 0x54) += deltaScale;
+            if (*(f32*)(entry + 0x54) >= *(f32*)&lbl_8047D160) {
+                fn_80139074(p, entry);
+            }
+
+            ((void (*)(f32*, void*, f32))GSbezierCalculateVector)(
+                position, entry, *(f32*)(entry + 0x54));
+            if (position[1] < *(f32*)&lbl_8047D168) {
+                GSmodelSetVisibility(*(void**)(entry + 0x58), 0);
+                GSmodelFree(*(void**)(entry + 0x58));
+                *(void**)(entry + 0x58) = NULL;
+            } else {
+                model = *(void**)(entry + 0x58);
+                scale = *(f32*)(entry + 0x50);
+                ((void (*)(f32*, void*, void*, f32))fn_800E06B8)(
+                    rotation, entry + 0x30, entry + 0x40,
+                    *(f32*)(entry + 0x54));
+                ((void (*)(f32*, f32*))fn_800E040C)(matrix, rotation);
+                ((void (*)(f32*, f32, f32, f32))fn_800E02C4)(
+                    matrix, scale, scale, scale);
+                ((void (*)(f32*, f32*))fn_800E03B4)(matrix, position);
+                ((void (*)(void*, f32*))GSmodelSetMatrix)(model, matrix);
+            }
         }
     }
 
