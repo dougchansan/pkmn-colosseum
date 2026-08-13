@@ -36,7 +36,6 @@ s32 _sysvarsProcessData__FP16sysvarsFuncEntryPc(void* entry, char* data)
     extern u8 lbl_803A3278[];
     extern u32 lbl_8047A430;
     extern u32 lbl_8047A434;
-    extern u8 lbl_8047A438;
     extern u8 lbl_8047A439;
     extern u32 lbl_8047A43C;
     extern u32 lbl_8047A444;
@@ -147,7 +146,6 @@ s32 _sysvarsProcessData__FP16sysvarsFuncEntryPc(void* entry, char* data)
     (void)data;
 
     base = lbl_803A3278;
-    lbl_8047A438 = 1;
     menuState = base + 0xBC;
     itemState = base + 0x10;
 
@@ -165,11 +163,9 @@ s32 _sysvarsProcessData__FP16sysvarsFuncEntryPc(void* entry, char* data)
     while (1) {
         stateResult = fn_80034280();
         if (stateResult == 0) {
-            lbl_8047A438 = 0;
             return 0;
         }
         if (stateResult == 1) {
-            lbl_8047A438 = 0;
             return 2;
         }
 
@@ -190,7 +186,6 @@ s32 _sysvarsProcessData__FP16sysvarsFuncEntryPc(void* entry, char* data)
             msgctrlSetValue(0x4D, base + 0x10);
             winMsgOpen(8, 0x3B55, 1, 0);
             winMsgClose(1);
-            lbl_8047A438 = 0;
             return 2;
         }
         if (*(s32*)(menuState + 0x0) != 0) {
@@ -205,7 +200,6 @@ s32 _sysvarsProcessData__FP16sysvarsFuncEntryPc(void* entry, char* data)
             __assert((const char*)lbl_80266FAC, 0x6DB,
                      (const char*)lbl_8047BA20);
             winMsgOpen(8, 0x3B91, 1, 0);
-            lbl_8047A438 = 0;
             return 0;
         }
 
@@ -248,7 +242,6 @@ s32 _sysvarsProcessData__FP16sysvarsFuncEntryPc(void* entry, char* data)
         if (effectType < 3) {
             winMsgOpen(8, 0x3B58, 1, 0);
             winMsgClose(1);
-            lbl_8047A438 = 0;
             return 2;
         }
 
@@ -262,7 +255,6 @@ s32 _sysvarsProcessData__FP16sysvarsFuncEntryPc(void* entry, char* data)
             winMsgOpen(8, 0x3B5B, 1, 0);
             winMsgClose(1);
             fn_8007C414();
-            lbl_8047A438 = 0;
             return 2;
         }
 
@@ -333,7 +325,6 @@ s32 _sysvarsProcessData__FP16sysvarsFuncEntryPc(void* entry, char* data)
             }
             fn_8007C414();
             fn_8007C7EC();
-            lbl_8047A438 = 0;
             return 2;
         }
 
