@@ -18,6 +18,9 @@ extern u8 pokemonCheckRare(void* pokemon);
 extern u16 lbl_8035B478[][2];
 extern void* memset(void* dst, int val, u32 size);
 
+#pragma push
+#pragma optimization_level 3
+#pragma peephole off
 u16 fn_8010BBB8(void* pokemon)
 {
     u16 species;
@@ -46,6 +49,7 @@ u16 fn_8010BBB8(void* pokemon)
     }
     return pokemonGetStatus((void*)0, species, 0x5B, 0);
 }
+#pragma pop
 
 u32 fn_8010B560(void) {
     typedef struct Entry {
