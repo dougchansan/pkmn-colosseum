@@ -2404,8 +2404,44 @@ void* fn_801195AC(void* resource)
     bank->active = 1;
     bank->texture_type = texture_type;
     *(void**)((u8*)bank + 4) = file;
-    for (i = 0; i < 0x40; i++) {
-        bank->slots[i] = NULL;
+    {
+        FieldParticleNode** slot = bank->slots;
+
+        for (i = 0; i < 2; i++) {
+            slot[0] = NULL;
+            slot[1] = NULL;
+            slot[2] = NULL;
+            slot[3] = NULL;
+            slot[4] = NULL;
+            slot[5] = NULL;
+            slot[6] = NULL;
+            slot[7] = NULL;
+            slot[8] = NULL;
+            slot[9] = NULL;
+            slot[10] = NULL;
+            slot[11] = NULL;
+            slot[12] = NULL;
+            slot[13] = NULL;
+            slot[14] = NULL;
+            slot[15] = NULL;
+            slot[16] = NULL;
+            slot[17] = NULL;
+            slot[18] = NULL;
+            slot[19] = NULL;
+            slot[20] = NULL;
+            slot[21] = NULL;
+            slot[22] = NULL;
+            slot[23] = NULL;
+            slot[24] = NULL;
+            slot[25] = NULL;
+            slot[26] = NULL;
+            slot[27] = NULL;
+            slot[28] = NULL;
+            slot[29] = NULL;
+            slot[30] = NULL;
+            slot[31] = NULL;
+            slot += 32;
+        }
     }
     psInitDataBank(bank->texture_type, file->description, file->data, file->texture, 0);
     return bank;
