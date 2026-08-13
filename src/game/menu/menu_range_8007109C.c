@@ -1558,7 +1558,7 @@ void fn_80075A34(void) {
 u8 fn_80076A8C(u32 hero, u32 pokemon, const u8* rule, s32 mode)
 {
     extern u8 fn_80076F2C();
-    extern u32 pokemonGetStatus();
+    extern s32 pokemonGetStatus();
     extern u8 pokemonBiosGetTamagoFlag();
     extern u8 pokemonCheckValid();
     extern u32 heroBiosGetPokemonPtr();
