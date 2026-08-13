@@ -1435,7 +1435,7 @@ BOOL fn_80139AC4(void* ptr, u32 tick) {
     u32 frame;
     u16 endFrame;
     u16 i;
-    u16 count;
+    u32 count;
 
     if (ptr != NULL) {
         p = ptr;
