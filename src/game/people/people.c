@@ -55,6 +55,12 @@ typedef struct PeopleECECState {
     f32 targetYaw;
 } PeopleECECState;
 
+typedef struct PeopleHeightHit {
+    f32 height;
+    f32 field_04;
+    f32 field_08;
+} PeopleHeightHit;
+
 /* Forward declarations for functions defined later in this TU but used
  * earlier (order kept close to the archive's original topical grouping). */
 struct PeopleEntry;
@@ -971,22 +977,22 @@ void fn_8018DCA8(PeopleEntry* original, u8 releaseWalkList) {
 /* 0x8018E9B4 | 0x338 */
 extern void* GSresGetResource();
 extern u32 fn_800F7BC4(s32);
-extern void fn_80101B90(void);
-extern void GScolsys2ThruGetEventID(void);
+extern void fn_80101B90(u32);
+extern s32 GScolsys2ThruGetEventID(void*, void*, void*, f32);
 extern void fn_8012BAF0(void);
-extern void GScolsys2HumanCollision(void);
+extern s32 GScolsys2HumanCollision(s32, void*, void*, void*);
 extern s32 fn_8010F320(void*, void*, void*, f32);
-extern void PSVECSubtract(void);
-extern void PSVECAdd(void);
-extern void fn_801101B4(void);
-extern void fn_8010E138(void);
+extern void PSVECSubtract(void*, void*, void*);
+extern void PSVECAdd(void*, void*, void*);
+extern s32 fn_801101B4(void*, void*, void*);
+extern s32 fn_8010E138(void*, void*);
 extern u32 lbl_8047D890;
 extern const f32 lbl_8047D7EC;
 extern u32 lbl_8047D894;
 extern f32 lbl_8047D800;
 extern f32 lbl_8047D7A0;
 /* renamed symbols referenced by asm incs (symbolmap port) */
-extern void heroMoveSetEventList();
+extern void heroMoveSetEventList(u8, void*, u32);
 extern void sin();   /* MSL trig (renamed) — referenced by asm incs */
 extern void cos();   /* MSL trig (renamed) — referenced by asm incs */
 extern void GScolsy2UtilGetCpPlanePoint(void*, void*, void*, void*);
@@ -2129,8 +2135,108 @@ s32 fn_80185AAC(PeopleEntry* entry) {
     return 0;
 }
 
-void fn_8018E9B4(PeopleEntry* entry, void* position, void* transform) {
-    /* TODO: match -- 824 bytes at 0x8018E9B4 */
+void fn_8018E9B4(PeopleEntry* entry, void* positionArg, void* transformArg) {
+    u8 eventList[0xD0];
+    GSvec* position = positionArg;
+    GSvec* transform = transformArg;
+    GSvec hitPosition;
+    GSvec delta;
+    PeopleHeightHit hits[4];
+    GSvec transformCopy;
+    GSvec positionCopy;
+    PeopleInfoBiosEntry* info;
+    f32 radius;
+    f32 bestAbove;
+    f32 bestAny;
+    s32 count;
+    s32 i;
+    BOOL foundAbove;
+    void* resource;
+
+    resource = GSresGetResource(0, 2);
+    if (resource != NULL && ((u8*)resource)[1] != 0) {
+        if (fn_800F7BC4(1) & 0x200) {
+            fn_8018FC74(entry, position);
+            return;
+        }
+    }
+
+    fn_80101B90(0xFF);
+    if (!peopleTestFlags(entry, 0x700)) {
+        fn_80101B90(0x00FF0000);
+        fn_8018FC74(entry, position);
+        return;
+    }
+
+    GSvecCopy(&transformCopy, transform);
+    GSvecCopy(&positionCopy, position);
+    transformCopy.y += *(f32*)&lbl_8047D890;
+    positionCopy.y += *(f32*)&lbl_8047D890;
+
+    info = peopleInfoBiosGetPtr(entry->scriptRef);
+    if (info == NULL) {
+        radius = lbl_8047D7EC;
+    } else {
+        radius = fn_8018F5E4(info);
+    }
+
+    if (peopleTestFlags(entry, 0x800)) {
+        count = GScolsys2ThruGetEventID(&transformCopy, &positionCopy,
+                                        eventList, radius);
+        heroMoveSetEventList(2, eventList, count);
+    }
+
+    if (peopleTestFlags(entry, 0x400)) {
+        if (GScolsys2HumanCollision(entry->shadowId, &transformCopy,
+                                    &positionCopy, &hitPosition) == 6) {
+            positionCopy = hitPosition;
+        }
+    }
+
+    if (peopleTestFlags(entry, 0x100)) {
+        if (fn_8010F320(&transformCopy, &positionCopy, &hitPosition,
+                        radius) != 0) {
+            PSVECSubtract(&hitPosition, &positionCopy, &delta);
+            PSVECAdd(&positionCopy, &delta, &positionCopy);
+        }
+    }
+
+    if (peopleTestFlags(entry, 0x800)) {
+        count = fn_801101B4(&transformCopy, &positionCopy, eventList);
+        heroMoveSetEventList(1, eventList, count);
+    }
+
+    if (peopleTestFlags(entry, 0x200)) {
+        count = fn_8010E138(&positionCopy, hits);
+        if (count >= 2) {
+            bestAbove = *(f32*)&lbl_8047D894;
+            bestAny = bestAbove;
+            foundAbove = FALSE;
+            for (i = 0; i < count; i++) {
+                if (bestAny < hits[i].height) {
+                    bestAny = hits[i].height;
+                }
+                if ((hits[i].height - positionCopy.y) > lbl_8047D800 &&
+                    bestAbove < hits[i].height) {
+                    bestAbove = hits[i].height;
+                    foundAbove = TRUE;
+                }
+            }
+            if (foundAbove) {
+                positionCopy.y = bestAbove;
+            } else {
+                positionCopy.y = bestAny;
+            }
+        } else if (count > 0) {
+            positionCopy.y = hits[0].height;
+        } else {
+            positionCopy.y = lbl_8047D7A0;
+        }
+    }
+
+    *position = positionCopy;
+    fn_80101B90(0x00FF0000);
+    fn_8018FC74(entry, position);
 }
 #endif
 
