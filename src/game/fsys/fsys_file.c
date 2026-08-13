@@ -283,6 +283,7 @@ s32 fn_8017E30C(FSYSSlot* slot) {
         u16 handle;
         DecompPoolEntry* poolEntry;
         void* compBuf;
+        void* compData;
 
         /* Allocate temporary buffer for compressed data */
         allocSize = (decompSize + 0x1F) & ~0x1F;
@@ -300,39 +301,10 @@ s32 fn_8017E30C(FSYSSlot* slot) {
         /* Flush the D-cache for the compressed data */
         DCFlushRange(subEntry->buffer, decompSize);
 
-        /* Save compressed data pointer and clear sub-entry buffer */
-        {
-            void* compData = subEntry->buffer;
-            subEntry->buffer = NULL;
+        compData = subEntry->buffer;
+        subEntry->buffer = NULL;
 
-            /* Copy the 16-byte LZSS header from the compressed data */
-            memcpy(&gLZSSContext, compData, LZSS_HEADER_SKIP);
-
-            /* Clear the LZSS sliding window */
-            {
-                u32 j;
-                for (j = 0; j < LZSS_WINDOW_SIZE; j++) {
-                    gLZSSWindow[j] = 0;
-                }
-            }
-
-            /* Decompress: output goes to allocatedBuf location */
-            FSYSDecompressLZSS(allocatedBuf, compData, gLZSSContext.decompSize);
-
-            /* Flush D-cache for decompressed data */
-            DCFlushRange(allocatedBuf, gLZSSContext.decompSize);
-        }
-
-        /* Free the temporary compressed data buffer handle */
-        {
-            u16 tmpHandle = fn_800E202C(compBuf);
-            if (tmpHandle != 0) {
-                fn_800E24B0(tmpHandle);
-                fn_800E209C(tmpHandle);
-            }
-        }
-
-        /* Look up decompression pool for a completion callback */
+        /* Find the output allocator before decoding the temporary input. */
         {
             u32 j;
             DecompPoolEntry* dp = gDecompPoolBase;
@@ -346,17 +318,44 @@ s32 fn_8017E30C(FSYSSlot* slot) {
                 dp = (DecompPoolEntry*)((u8*)dp + FSYS_DECOMP_ENTRY_SIZE);
             }
 
-            if (poolEntry == NULL) {
-                poolEntry = NULL; /* redundant, matches original */
-            }
         }
 
-        /* If a decompression callback exists, invoke it */
         if (poolEntry != NULL && poolEntry->callback != NULL) {
             typedef void* (*DecompCallback)(u32 fileHandle, u32 fileID, u32 compSize);
             DecompCallback cb = (DecompCallback)poolEntry->callback;
             allocatedBuf = cb(slot->fileHandle, fileEntry->nameHash,
                              fileEntry->compressedSize);
+        } else {
+            allocSize = (fileEntry->compressedSize + 0x1F) & ~0x1F;
+            allocatedBuf = GSresAllocResourceAlign(allocSize,
+                                                    slot->archiveHandle,
+                                                    fileEntry->nameHash, 0, 0);
+        }
+
+        subEntry->buffer = allocatedBuf;
+        if (subEntry->buffer == NULL) {
+            slot->status = FSYS_STATUS_ERROR;
+            subEntry->state = 7;
+            return 1;
+        }
+
+        /* Copy the LZSS header and decode from the temporary input. */
+        memcpy(&gLZSSContext, compData, LZSS_HEADER_SKIP);
+        {
+            u32 j;
+            for (j = 0; j < LZSS_WINDOW_SIZE; j++) {
+                gLZSSWindow[j] = 0;
+            }
+        }
+        FSYSDecompressLZSS(subEntry->buffer, compData, gLZSSContext.decompSize);
+        DCFlushRange(subEntry->buffer, gLZSSContext.decompSize);
+
+        {
+            u16 tmpHandle = fn_800E202C(compBuf);
+            if (tmpHandle != 0) {
+                fn_800E24B0(tmpHandle);
+                fn_800E209C(tmpHandle);
+            }
         }
     } else {
         /* ===== Uncompressed entry path ===== */
