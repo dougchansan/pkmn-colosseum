@@ -312,6 +312,9 @@ u8 wazaSequenceEntryUpdate(void* entry, s32 elapsed) {
  * Referenced by battle_logic.c.
  */
 u8 wazaSequenceEntryStart(void* entry) {
+    extern void GSthreadSetArgs(void* thread, s32 priority, ...);
+    extern void fn_80165668(u32 id, void* buffer, u32 size);
+    extern s32 lbl_8047B408;
     WazaSequenceNode* node = entry;
     WazaSequence* sequence = node->sequence;
     WazaSequenceOwner* owner = sequence->owner;
@@ -340,6 +343,21 @@ u8 wazaSequenceEntryStart(void* entry) {
         break;
     case 4:
         started = _wazaSequenceEffectEntryStart(node);
+        break;
+    case 5:
+        if ((node->runtimeFlags & 1) != 0) {
+            if (lbl_8047B408 == 0) {
+                lbl_8047B408 = (s32)GSthreadCreate(0x15, 0x4E20, 0x2000,
+                                                    1, 1, fn_80165668);
+                if (lbl_8047B408 != 0) {
+                    GSthreadSetArgs((void*)lbl_8047B408, 3,
+                                    node->resourceId, 0, 0xFF);
+                    started = TRUE;
+                }
+            }
+        } else {
+            started = fn_80166AB8(node->resourceId, 0, 0);
+        }
         break;
     }
 
