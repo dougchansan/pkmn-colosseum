@@ -604,6 +604,95 @@ BOOL fn_801E446C(u32 msg)
     return fn_8009F230(lbl_8046A4B4, msg, 1);
 }
 
+typedef struct THPBufferTextureSet {
+    void *yTexture;
+    void *uTexture;
+    void *vTexture;
+    u32 frameNumber;
+} THPBufferTextureSet;
+
+typedef struct THPBufferAudio {
+    s16 *buffer;
+    s16 *curPtr;
+    u32 validSample;
+} THPBufferAudio;
+
+extern s16 *lbl_8047B470;
+extern s16 *lbl_8047B474;
+
+BOOL fn_801E449C(u8 *buffer)
+{
+    u8 *player = lbl_8046AC60;
+    u8 *work = buffer;
+    u32 area;
+    u32 ySize;
+    u32 uvSize;
+    u32 audioBufferSize;
+    s32 i;
+
+    if (!*(BOOL *)(player + 0xA0) || player[0xA4] != 0) {
+        return FALSE;
+    }
+
+    if (*(BOOL *)(player + 0xB0)) {
+        *(u8 **)(player + 0xB4) = work;
+        work += *(u32 *)(player + 0x58);
+    } else {
+        THPReadBuffer *readBuffer = (THPReadBuffer *)(player + 0xF0);
+
+        for (i = 0; i < 10; i++, readBuffer++) {
+            readBuffer->ptr = work;
+            work += OSRoundUp32B(*(u32 *)(player + 0x44));
+        }
+    }
+
+    area = *(u32 *)(player + 0x80) * *(u32 *)(player + 0x84);
+    ySize = OSRoundUp32B(area);
+    uvSize = OSRoundUp32B(area >> 2);
+
+    {
+        THPBufferTextureSet *textureSet =
+            (THPBufferTextureSet *)(player + 0x168);
+
+        for (i = 0; i < 3; i++, textureSet++) {
+            textureSet->yTexture = work;
+            DCInvalidateRange(work, ySize);
+            work += ySize;
+
+            textureSet->uTexture = work;
+            DCInvalidateRange(work, uvSize);
+            work += uvSize;
+
+            textureSet->vTexture = work;
+            DCInvalidateRange(work, uvSize);
+            work += uvSize;
+        }
+    }
+
+    if (player[0xA7] != 0) {
+        THPBufferAudio *audioBuffer = (THPBufferAudio *)(player + 0x198);
+
+        audioBufferSize = OSRoundUp32B(*(u32 *)(player + 0x48) << 2);
+        for (i = 0; i < 3; i++, audioBuffer++) {
+            audioBuffer->buffer = (s16 *)work;
+            audioBuffer->curPtr = (s16 *)work;
+            audioBuffer->validSample = 0;
+            work += audioBufferSize;
+        }
+
+        lbl_8047B470 = (s16 *)work;
+        audioBufferSize = OSRoundUp32B(*(u32 *)(player + 0x90) * 40 / 500);
+        work += audioBufferSize;
+        if (*(u32 *)(player + 0x8C) == 2) {
+            lbl_8047B474 = (s16 *)work;
+            work += audioBufferSize;
+        }
+    }
+
+    *(u8 **)(player + 0x9C) = work;
+    return TRUE;
+}
+
 /* ---- Thread A: forwarding loop (drains lbl_8046A494, forwards to Thread C's send queue) ---- */
 #pragma peephole off
 void fn_801E386C(void)
