@@ -646,10 +646,18 @@ void fn_800F8A54(arg0)
             shape.value = len;
             switch (shape.bits & 0x7F800000) {
             case 0x7F800000:
-                fpclass = (shape.bits & 0x007FFFFF) != 0 ? 1 : 2;
+                if (shape.bits & 0x007FFFFF) {
+                    fpclass = 1;
+                } else {
+                    fpclass = 2;
+                }
                 break;
             case 0:
-                fpclass = (shape.bits & 0x007FFFFF) != 0 ? 5 : 3;
+                if (shape.bits & 0x007FFFFF) {
+                    fpclass = 5;
+                } else {
+                    fpclass = 3;
+                }
                 break;
             default:
                 fpclass = 4;
@@ -699,10 +707,18 @@ void fn_800F8A54(arg0)
             shape.value = len;
             switch (shape.bits & 0x7F800000) {
             case 0x7F800000:
-                fpclass = (shape.bits & 0x007FFFFF) != 0 ? 1 : 2;
+                if (shape.bits & 0x007FFFFF) {
+                    fpclass = 1;
+                } else {
+                    fpclass = 2;
+                }
                 break;
             case 0:
-                fpclass = (shape.bits & 0x007FFFFF) != 0 ? 5 : 3;
+                if (shape.bits & 0x007FFFFF) {
+                    fpclass = 5;
+                } else {
+                    fpclass = 3;
+                }
                 break;
             default:
                 fpclass = 4;
@@ -752,10 +768,18 @@ void fn_800F8A54(arg0)
             shape.value = len;
             switch (shape.bits & 0x7F800000) {
             case 0x7F800000:
-                fpclass = (shape.bits & 0x007FFFFF) != 0 ? 1 : 2;
+                if (shape.bits & 0x007FFFFF) {
+                    fpclass = 1;
+                } else {
+                    fpclass = 2;
+                }
                 break;
             case 0:
-                fpclass = (shape.bits & 0x007FFFFF) != 0 ? 5 : 3;
+                if (shape.bits & 0x007FFFFF) {
+                    fpclass = 5;
+                } else {
+                    fpclass = 3;
+                }
                 break;
             default:
                 fpclass = 4;
@@ -805,10 +829,18 @@ void fn_800F8A54(arg0)
             shape.value = len;
             switch (shape.bits & 0x7F800000) {
             case 0x7F800000:
-                fpclass = (shape.bits & 0x007FFFFF) != 0 ? 1 : 2;
+                if (shape.bits & 0x007FFFFF) {
+                    fpclass = 1;
+                } else {
+                    fpclass = 2;
+                }
                 break;
             case 0:
-                fpclass = (shape.bits & 0x007FFFFF) != 0 ? 5 : 3;
+                if (shape.bits & 0x007FFFFF) {
+                    fpclass = 5;
+                } else {
+                    fpclass = 3;
+                }
                 break;
             default:
                 fpclass = 4;
