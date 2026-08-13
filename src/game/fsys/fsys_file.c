@@ -1300,9 +1300,36 @@ void fn_8017B6B8(FSYSSlot* slot, FSYSFileEntry* entry, u32 index) {
         slot->padding100 = (u32)sub->buffer;
     } else {
         DecompPoolEntry* pool;
+        u8* archive;
+        u32 fileInfo;
         u32 i;
+        u32 total;
+        FSYSFileEntry* totalEntry;
 
-        size = FSYSRefreshExternalEntrySize(slot, entry);
+        size = entry->decompressedSize;
+        archive = (u8*)slot->archiveData;
+        if ((*(u32*)(archive + 0x10) & 1) != 0) {
+            FSYS_SLOT_FILE1(slot) = 0;
+            if (fn_80167EF8(archive + entry->dataOffset) != 0) {
+                FSYS_SLOT_FILE1(slot) = fn_80167F28((char*)archive + entry->dataOffset);
+            }
+
+            fileInfo = FSYS_SLOT_FILE1(slot);
+            if (fileInfo != 0) {
+                size = fn_80167E5C(fileInfo);
+                entry->decompressedSize = size;
+                total = 0;
+                for (i = 0; i < slot->numEntries; i++) {
+                    totalEntry = FSYSGetEntryByIndex(slot, i);
+                    total += totalEntry->decompressedSize;
+                }
+                total += *(u32*)(archive + slot->field_18 + 8);
+                slot->totalDecompSize = total;
+                fn_80167E64(fileInfo);
+                FSYS_SLOT_FILE1(slot) = 0;
+                FSYSFileEntry_GetSubEntry(entry)->ready = 1;
+            }
+        }
         pool = gDecompPoolBase;
         for (i = 0; i < gDVDPoolState; i++) {
             if (pool->fileID == entry->groupID) {
