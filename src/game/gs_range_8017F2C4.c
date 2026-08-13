@@ -536,6 +536,9 @@ void fn_8017FB08(void* allocation)
 }
 
 #pragma pop
+#pragma push
+#pragma optimization_level 3
+#pragma peephole off
 void* fn_8017FDB0(u32 size)
 {
     GsRangeMemNode* block;
@@ -616,6 +619,7 @@ void* fn_8017FDB0(u32 size)
         fn_8017FB08(descriptor->data);
     }
 }
+#pragma pop
 
 #pragma optimize_for_size on
 void fn_801800F8(u32 queueCount, u32 field04, u32 initialSize)
