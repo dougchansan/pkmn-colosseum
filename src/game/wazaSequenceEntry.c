@@ -726,17 +726,74 @@ void fn_801D9950(void* owner, f32* scale, s32 selector) {
  * Address: 0x801D9C1C | Size: 0x200
  */
 u8 wazaSequencePokemonMotionStart(void* ownerPtr, BOOL enabled) {
-    WazaSequenceOwner* owner = ownerPtr;
+    extern void fn_800E3CC8(void* model);
+    extern void GSmodelLinkTexAnimToAnim(void* model, s32 enable);
+    extern void GSmodelSetAnimIndex(void* model, s32 index);
+    extern void GSmodelSetAnimType(void* model, s32 type);
+    extern void GSmodelSetAnimRate(void* model, f32 rate);
+    extern void GSmodelGetFrameCount(void* model, f32* frameCount,
+                                     f32* texFrameCount);
+    extern void GSmodelSetAnimFrame(void* model, f32 frame);
+    extern void GSmodelStartAnimation(void* model);
+    extern void fn_801DF070(void* owner, s32 arg1, s32 arg2);
+    extern const char lbl_80279740[];
+    extern f32 lbl_8047E348;
+    extern f64 lbl_8047E380;
+    u8* owner = ownerPtr;
+    void* model = *(void**)(owner + 0x24);
+    u8* table = *(u8**)(owner + 0x2C) + *(u16*)(owner + 0x32) * 0xD4 + 0x8C;
+    s32 duration;
+    s32 frameCountInt;
+    s32 quotient;
+    s32 remainder;
+    f32 frameCount;
+    f32 texFrameCount;
 
-    if (owner->motionBusy != 0) {
+    if (*(u8*)(owner + 0x16) != 0) {
         return FALSE;
     }
-    if (owner->model == NULL) {
+    if (model == NULL) {
+        if (fn_800057A8() == 2) {
+            fn_801D744C(4);
+        }
+        GSlogWrite(lbl_80279740);
         return FALSE;
     }
-    fn_800E3CC8(owner->model, enabled);
-    if ((owner->flags & 8) != 0) {
+
+    fn_800E3CC8(model);
+    if ((*(u8*)(owner + 0x18) & 4) == 0) {
+        *(u8*)(owner + 0x19) = 0;
+        GSmodelLinkTexAnimToAnim(model, 1);
+    }
+
+    duration = *(s32*)(table + 0x04);
+    if (duration == 0) {
+        *(u16*)(owner + 0x34) = 1;
+        if (*(s32*)(table + 0x08) == 0) {
+            fn_801DF070(owner, *(s32*)(table + 0x0C), 0);
+        } else {
+            fn_801DEF0C(owner, 0, 0);
+        }
         return TRUE;
     }
-    return FALSE;
+
+    *(u16*)(owner + 0x34) = 0;
+    duration = fn_801DF160(owner);
+    GSmodelSetAnimIndex(model, duration);
+    GSmodelSetAnimType(model, 0);
+    GSmodelSetAnimRate(model, lbl_8047E348);
+    GSmodelGetFrameCount(model, &frameCount, &texFrameCount);
+
+    frameCountInt = (s32)frameCount;
+    quotient = (s32)(*(s32*)(table + 0x04) >> 1) / frameCountInt;
+    *(s32*)(table + 0x04) = quotient;
+    remainder = (s32)(*(s32*)(table + 0x04) >> 1) - quotient * frameCountInt;
+    if (remainder == 0 && *(s32*)(table + 0x04) != 0) {
+        *(s32*)(table + 0x04) -= 1;
+        remainder = frameCountInt;
+    }
+
+    GSmodelSetAnimFrame(model, frameCount - (f32)remainder);
+    GSmodelStartAnimation(model);
+    return TRUE;
 }
