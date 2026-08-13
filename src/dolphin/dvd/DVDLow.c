@@ -1,5 +1,6 @@
 #include "dolphin/dvd/dvd.h"
 #include "dolphin/os/OSAlarm.h"
+#include "dolphin/os/OSInterrupt.h"
 #include "dolphin/os/OSTime.h"
 
 #define OS_BUS_CLOCK (*(u32*) 0x800000F8)
@@ -56,6 +57,121 @@ extern DVDLowCommand CommandList[];
 
 static void Read(void* address, u32 length, u32 offset,
                  DVDLowCallback callback);
+
+void __DVDInterruptHandler(__OSInterrupt interrupt, OSContext* context)
+{
+    DVDLowCallback callback;
+    OSContext exceptionContext;
+    u32 cause;
+    u32 reg;
+    u32 mask;
+    u32 intr;
+
+    (void)interrupt;
+
+    cause = 0;
+    if (lbl_8047A7C0 != FALSE) {
+        lbl_8047A7B0 = __OSGetSystemTime();
+        lbl_804789B8 = FALSE;
+        DVD_PREV_BUFFER->address = DVD_CURR_BUFFER->address;
+        DVD_PREV_BUFFER->length = DVD_CURR_BUFFER->length;
+        DVD_PREV_BUFFER->offset = DVD_CURR_BUFFER->offset;
+        if (StopAtNextInt == TRUE) {
+            cause |= 8;
+        }
+    }
+
+    lbl_8047A7C0 = FALSE;
+    StopAtNextInt = FALSE;
+
+    reg = __DIRegs[0];
+    mask = reg & 0x2A;
+    intr = (reg & 0x54) & (mask << 1);
+
+    if ((intr & 0x40) != 0) {
+        cause |= 8;
+    }
+    if ((intr & 0x10) != 0) {
+        cause |= 1;
+    }
+    if ((intr & 4) != 0) {
+        cause |= 2;
+    }
+
+    if (cause != 0) {
+        ResetOccurred = FALSE;
+        OSCancelAlarm(&AlarmForTimeout);
+    }
+
+    __DIRegs[0] = intr | mask;
+
+    if (ResetOccurred &&
+        (__OSGetSystemTime() - LastResetEnd) < OSMillisecondsToTicks(200)) {
+        reg = __DIRegs[1];
+        mask = reg & 2;
+        intr = (reg & 4) & (mask << 1);
+
+        if ((intr & 4) != 0) {
+            if (lbl_8047A78C != NULL) {
+                lbl_8047A78C(4);
+            }
+            lbl_8047A78C = NULL;
+        }
+
+        __DIRegs[1] = __DIRegs[1];
+    } else if (WaitingCoverClose) {
+        reg = __DIRegs[1];
+        mask = reg & 2;
+        intr = (reg & 4) & (mask << 1);
+        if ((intr & 4) != 0) {
+            cause |= 4;
+        }
+        __DIRegs[1] = intr | mask;
+        WaitingCoverClose = FALSE;
+    } else {
+        __DIRegs[1] = 0;
+    }
+
+    if ((cause & 8) != 0 && !lbl_8047A7A0) {
+        cause &= ~8;
+    }
+
+    if ((cause & 1) != 0) {
+        s32 command;
+
+        command = CommandList[NextCommandNumber].command;
+        if (command == 1) {
+            DVDLowCommand* cmd = &CommandList[NextCommandNumber];
+            ++NextCommandNumber;
+            Read(cmd->address, cmd->length, cmd->offset, cmd->callback);
+            return;
+        }
+        if (command == 2) {
+            DVDLowCommand* cmd = &CommandList[NextCommandNumber];
+            ++NextCommandNumber;
+            DVDLowSeek(cmd->offset, cmd->callback);
+            return;
+        }
+    } else {
+        CommandList[0].command = -1;
+        NextCommandNumber = 0;
+    }
+
+    OSClearContext(&exceptionContext);
+    OSSetCurrentContext(&exceptionContext);
+
+    if (cause != 0) {
+        callback = Callback;
+        Callback = NULL;
+        if (callback != NULL) {
+            callback(cause);
+        }
+        lbl_8047A7A0 = FALSE;
+    }
+
+    OSClearContext(&exceptionContext);
+    OSSetCurrentContext(context);
+}
 
 void fn_800A41D0(OSAlarm* alarm, OSContext* context)
 {
