@@ -2009,7 +2009,95 @@ asm void fn_80185B90(void) {
 #include "src/game/people/people_fn_80185B90.inc"
 }
 #else
-void fn_80185B90(PeopleEntry* entry, f32 amount) { /* TODO: match -- 856 bytes at 0x80185B90 */ }
+void fn_80185B90(PeopleEntry* entry, f32 amount)
+{
+    PeopleInfoBiosEntry* info;
+    PeopleEntry* setupEntry;
+    void* model;
+    s32 animIndex;
+    s32 currentAnim;
+    s32 secondaryAnim;
+    s32 motion;
+    u8 loop;
+    u8 restart;
+
+    model = peopleGetModel(entry);
+    if (model == NULL) {
+        return;
+    }
+
+    if (lbl_8047D7A0 != entry->walkAnimRate) {
+        entry->syncMotion =
+            (entry->walkAnimRate * (f32)fn_800D3088()) + entry->syncMotion;
+        if (entry->syncMotion > lbl_8047D79C) {
+            entry->syncMotion = lbl_8047D79C;
+            entry->walkAnimRate = lbl_8047D7A0;
+        }
+        GSmodelSetBlendFactor(model, entry->syncMotion);
+    }
+
+    if (!peopleTestFlags(entry, 8)) {
+        return;
+    }
+
+    if (amount < lbl_8047D830) {
+        motion = 1;
+    } else if (amount < lbl_8047D834) {
+        motion = 2;
+    } else {
+        motion = 3;
+    }
+
+    if (entry->motionIndex == (u32)motion) {
+        return;
+    }
+    entry->motionIndex = motion;
+
+    info = peopleInfoBiosGetPtr(entry->scriptRef);
+    if (info == NULL) {
+        return;
+    }
+    fn_8018F4C8(info, (u8)entry->motionIndex, &animIndex, &loop);
+    if (animIndex < 0) {
+        return;
+    }
+
+    setupEntry = peopleFindBySelf(
+        peopleFindSelf(entry->groupId, entry->index));
+    if (setupEntry == NULL) {
+        return;
+    }
+    model = peopleGetModel(setupEntry);
+    if (model == NULL) {
+        return;
+    }
+
+    restart = 0;
+    if (fn_800EC954(model)) {
+        restart = 1;
+    } else if (!fn_800EC960(model)) {
+        restart = 1;
+    } else {
+        fn_800EC578(model, &currentAnim, &secondaryAnim);
+        if (currentAnim != animIndex || secondaryAnim != -1) {
+            restart = 1;
+        }
+    }
+
+    if (restart != 0) {
+        setupEntry->walkTargetNode = animIndex;
+        setupEntry->walkAnimRate = lbl_8047D7A0;
+        fn_800ECCA8(model, (s16)animIndex);
+        fn_800ECA78(model, lbl_8047D7A0);
+        fn_800EC9DC(model, lbl_8047D7A4);
+        fn_800EC35C(model, (s16)animIndex);
+        fn_800EC2A4(model, lbl_8047D7A0);
+        fn_800EC308(model, lbl_8047D7A4);
+        GSmodelSetAnimType(model, loop != 0);
+        fn_800EC990(model);
+    }
+    GSmodelSetAnimType(model, loop != 0);
+}
 #endif
 
 /* 0x80185F44 | 0x1B4 */
