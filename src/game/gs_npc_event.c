@@ -579,7 +579,7 @@ void fn_80031B4C(void) {
     extern void fn_8002F284();
     extern void fn_8002F79C();
     extern void fn_8002FC58();
-    extern void fn_800849B4();
+    extern s32 fn_800849B4(s32 mode, s32 command, void* input, void* output);
     extern void fn_80097CD0();
     extern void GSmodelSetVisibility();
     extern void fn_800FF52C();
@@ -659,7 +659,7 @@ void fn_80031B4C(void) {
                 r7 = *(u32*)((u8*)r10 + 0x8);
                 tmp = *(u32*)((u8*)r10 + 0xC);
                 *(u32*)(sp + 0x1C) = tmp;
-                fn_800849B4();
+                r3 = fn_800849B4(0, 1, sp + 0x10, 0);
                 if ((s32)r3 < 0) {
                     tmp = 0x0;
                     lbl_8047A40A = tmp;
