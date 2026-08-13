@@ -4517,17 +4517,18 @@ void psDispSubAPPSRTPoint(PSParticle* pp) {
                 f32 deltaZ = pp->velocityZ - people[21];
                 f32 deltaX = pp->velocityX - people[14];
                 f32 magnitude = (deltaZ * tan(fabsf(people[18])) + fabsf(people[17])) * pp->velocityY;
-                f32 sinDelta = sin(deltaX);
-                f32 cosDelta = cos(deltaX);
+                f32 magnitudeCos = magnitude * (f32)cos(deltaX);
+                f32 magnitudeSin = magnitude * (f32)sin(deltaX);
                 Vec offset;
 
-                offset.x = people[8] + deltaX * cosFriction + deltaZ * sinFriction;
+                offset.x = people[8] + magnitudeCos * cosFriction +
+                    deltaZ * sinFriction;
                 offset.y = people[9] + cosFriction * (deltaZ * sinScale) +
-                    sinFriction * (-magnitude * sinScale) +
-                    magnitude * sinDelta * cosScale;
+                    sinFriction * (-magnitudeCos * sinScale) +
+                    magnitudeSin * cosScale;
                 offset.z = people[10] + cosFriction * (deltaZ * cosScale) +
-                    sinFriction * (-magnitude * cosScale) -
-                    magnitude * sinDelta * sinScale;
+                    sinFriction * (-magnitudeCos * cosScale) -
+                    magnitudeSin * sinScale;
                 HSD_MtxSRT(appSRT->matrix, &appSRT->scaleX,
                            &appSRT->translationX, &appSRT->rotationX, NULL);
                 PSMTXMultVec(appSRT->matrix, &offset, &offset);
