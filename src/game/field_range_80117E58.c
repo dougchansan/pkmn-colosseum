@@ -2378,26 +2378,48 @@ void* fn_801195AC(void* resource)
     DCFlushRange(file->data, (file->dataSize + 0x1F) & ~0x1F);
 
     bank = lbl_8047AD9C;
-    for (i = 0; i < lbl_8047ADA0; i++, bank++) {
-        if (bank->active == 0) {
-            break;
+    i = lbl_8047ADA0;
+    if (i != 0) {
+        do {
+            if (bank->active == 0) {
+                break;
+            }
+            bank++;
+        } while (--i != 0);
+        if (i == 0) {
+            bank = NULL;
         }
+    } else {
+        bank = NULL;
     }
-    if (i == lbl_8047ADA0) {
+    if (bank == NULL) {
         return NULL;
     }
 
-    for (texture_type = 0; texture_type < 0x40; texture_type++) {
-        for (j = 0; j < lbl_8047ADA0; j++) {
-            if (lbl_8047AD9C[j].texture_type == texture_type) {
-                break;
-            }
+    texture_type = 0;
+    while (texture_type < 0x40) {
+        FieldParticleBank* other_bank = lbl_8047AD9C;
+        u32 in_use = 0;
+
+        j = lbl_8047ADA0;
+        if (j != 0) {
+            do {
+                if (other_bank->texture_type == texture_type) {
+                    in_use = 1;
+                    break;
+                }
+                other_bank++;
+            } while (--j != 0);
         }
-        if (j == lbl_8047ADA0) {
+        if (in_use == 0) {
             break;
         }
+        texture_type++;
     }
     if (texture_type == 0x40) {
+        texture_type = 0xFF;
+    }
+    if (texture_type == 0xFF) {
         return NULL;
     }
 
