@@ -393,6 +393,7 @@ s32 fadeEffectHookFunction_Doku(s32 slot, f32 x, f32 y, f32 z, f32 rot, f32 scal
     f32 progress = x / y;
     f32 t;
     u32 color = lbl_8047DFD8;
+    u8 intensity;
     s32 alpha;
 
     if (fade <= lbl_8047DFDC) {
@@ -412,8 +413,8 @@ s32 fadeEffectHookFunction_Doku(s32 slot, f32 x, f32 y, f32 z, f32 rot, f32 scal
     }
 
     GSlerpGetLinearInterpolationVector(&interpolated, &start, &end, t);
-    alpha = (u8)(lbl_8047DFF0 * interpolated.x);
-    alpha = (s32)((f32)alpha * (lbl_8047DFE4 - progress));
+    intensity = (u8)(lbl_8047DFF0 * interpolated.x);
+    alpha = (s32)((f32)intensity * (lbl_8047DFE4 - progress));
 
     fn_800D9ED8(1);
     fn_800D88DC(1);
