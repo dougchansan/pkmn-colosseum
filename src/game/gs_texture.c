@@ -601,8 +601,110 @@ texture_slot_found:
  *  to the old fictional TPL-texture-setup body, so no semantic name is
  *  asserted here.
  * ======================================================================= */
-void GStextureLoad(void) {
-    /* TODO: match -- 0x284 bytes at 0x800EFD3C */
+GStextureHandle* GStextureLoad(void* data) {
+    GStextureHandle* tex = data;
+    u32 i;
+    s32 gxTexFmt;
+    u32 gxTlutFmt;
+    u32 tlutEntries;
+    u32 hasMips;
+
+    for (i = 0; i < tex->mipLevels; i++) {
+        tex->mipData[i] = (u8*)tex + (u32)tex->mipData[i];
+    }
+    for (; i < 8; i++) {
+        tex->mipData[i] = NULL;
+    }
+
+    if (tex->tlutData != NULL) {
+        tex->tlutData = (u8*)tex + (u32)tex->tlutData;
+    }
+
+    gxTexFmt = -1;
+    switch (tex->format) {
+    case 0x00:
+        gxTexFmt = 0x08;
+        break;
+    case 0x01:
+        gxTexFmt = 0x09;
+        break;
+    case 0x30:
+        gxTexFmt = 0x0A;
+        break;
+    case 0x40:
+        gxTexFmt = 0x00;
+        break;
+    case 0x41:
+        gxTexFmt = 0x02;
+        break;
+    case 0x42:
+        gxTexFmt = 0x01;
+        break;
+    case 0x43:
+        gxTexFmt = 0x03;
+        break;
+    case 0x45:
+        gxTexFmt = 0x06;
+        break;
+    case 0x90:
+        gxTexFmt = 0x05;
+        break;
+    case 0xA0:
+        gxTexFmt = 0x01;
+        break;
+    case 0xB0:
+        gxTexFmt = 0x0E;
+        break;
+    default:
+        gxTexFmt = -1;
+        break;
+    }
+
+    if (tex->tlutData != NULL) {
+        tlutEntries = 0;
+        switch (tex->format) {
+        case 0x00:
+            tlutEntries = 0x10;
+            break;
+        case 0x01:
+            tlutEntries = 0x100;
+            break;
+        case 0x30:
+            tlutEntries = 0x400;
+            break;
+        default:
+            break;
+        }
+
+        gxTlutFmt = 0;
+        switch (tex->tlutFormat) {
+        case 1:
+            gxTlutFmt = 0;
+            break;
+        case 2:
+            gxTlutFmt = 1;
+            break;
+        case 3:
+            gxTlutFmt = 2;
+            break;
+        default:
+            break;
+        }
+
+        fn_800BB050(tex->gxTlutObj, tex->tlutData, gxTlutFmt, tlutEntries);
+    }
+
+    if (tex->mipLevels > 1) {
+        hasMips = 1;
+    } else {
+        hasMips = 0;
+    }
+    fn_800BA9E4(tex->gxTexObj, tex->mipData[0], tex->width, tex->height,
+                gxTexFmt, 0, 0, hasMips);
+
+    tex->dirty = 1;
+    tex->memHandle = 0;
+    return tex;
 }
 
 /* =======================================================================
