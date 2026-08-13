@@ -1517,13 +1517,22 @@ void* fn_8007FDBC(void* window, const void* title) {
     ids2 = (u16*)(table + 0x120);
     rowCtx = ctx;
     for (i = 0; i < 0x24; i++) {
+        u16* rowIds0 = ids0;
+        u16* rowIds1 = ids1;
+        u16* rowIds2 = ids2;
+        u8* rowItems = rowCtx;
+
         for (j = 0; j < 2; j++) {
-            CARDE_CTX_U32(rowCtx, 0x170 + j * 0x90) =
-                (u32)windowSearchItemID(window, ids0[j * 0x24]);
-            CARDE_CTX_U32(rowCtx, 0x3B0 + j * 0x90) =
-                (u32)windowSearchItemID(window, ids1[j * 0x24]);
-            CARDE_CTX_U32(rowCtx, 0x290 + j * 0x90) =
-                (u32)windowSearchItemID(window, ids2[j * 0x24]);
+            CARDE_CTX_U32(rowItems, 0x170) =
+                (u32)windowSearchItemID(window, *rowIds0);
+            CARDE_CTX_U32(rowItems, 0x3B0) =
+                (u32)windowSearchItemID(window, *rowIds1);
+            CARDE_CTX_U32(rowItems, 0x290) =
+                (u32)windowSearchItemID(window, *rowIds2);
+            rowIds0 += 0x24;
+            rowIds1 += 0x24;
+            rowIds2 += 0x24;
+            rowItems += 0x90;
         }
         ids0++;
         ids1++;
