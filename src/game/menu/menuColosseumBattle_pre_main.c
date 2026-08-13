@@ -293,20 +293,27 @@ s32 fn_80059034(s32 slot)
     s32 box;
     s32 selection;
     s32 haveCopy;
+    u8 pokemonValid;
     u32 name;
 
-    heroPokemon = heroGetStatus(0, 3, (u16)slot);
     alternatePokemon = 0;
+    heroPokemon = heroGetStatus(0, 3, (u16)slot);
+    pokemonValid = pokemonCheckValid(heroPokemon);
     battleMode = 1;
 
     if (fn_800576B4() != 3) {
-        context = 0;
-        if (!pokemonCheckValid(heroPokemon)) {
+        if (!pokemonValid) {
             battleMode = 0;
+        } else {
+            context = 0;
         }
     } else {
         alternatePokemon = fn_800574E0();
-        context = pokemonCheckValid(heroPokemon) ? 2 : 1;
+        if (!pokemonValid) {
+            context = 1;
+        } else {
+            context = 2;
+        }
     }
 
     if (battleMode == 0) {
