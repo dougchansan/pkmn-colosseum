@@ -144,11 +144,19 @@ void _modelParseJObjDispSub__FP9_HSD_JObjP5GSmtxP5GSmtx12HSD_TrspMaskbPFP9_HSD_P
     extern HSD_JObj* HSD_JObjGetCurrent(void);
     extern void HSD_PObjGetMtxMark(s32 index, u32* object, u32* mark);
     extern void fn_801AB5F8(s32 index, void* object, s32 mark);
+    extern void PSMTXConcat(f32* left, f32* right, f32* out);
     extern void fn_800E0628(void* dst, void* src);
+    extern void fn_8019D9DC(HSD_JObj*);
     extern void _modelParseLoadEnvelopeMatrix__FP9_HSD_PObjP5GSmtxP5GSmtxP5GSmtx(
         HSD_PObj* pobj, f32* vmtx, f32* pmtx, f32* matrices);
     HSD_DObj* dobj;
     HSD_PObj* pobj;
+    HSD_JObj* current;
+    u32 marked_object;
+    u32 mark;
+    u8 setup_current;
+    u8 setup_joint;
+    f32 matrix[12];
 
     fn_8019F024(jobj);
     fn_801AB63C(0, 0);
@@ -162,22 +170,59 @@ void _modelParseJObjDispSub__FP9_HSD_JObjP5GSmtxP5GSmtx12HSD_TrspMaskbPFP9_HSD_P
                     continue;
                 }
 
-                if (is_visible && (pobj->flags & 0x3000) == 0x1000) {
-                    HSD_JObj* current;
-                    u32 marked_object;
-                    u32 mark;
-
-                    current = HSD_JObjGetCurrent();
-                    HSD_PObjGetMtxMark(0, &marked_object, &mark);
-                    if (marked_object != (u32)current || mark != 1) {
-                        fn_801AB5F8(0, current, 1);
-                        fn_800E0628(lbl_804016D0, pmtx);
+                if (is_visible) {
+                    switch (pobj->flags & 0x3000) {
+                    case 0:
+                        if (pobj->u.jobj == NULL) {
+                            current = HSD_JObjGetCurrent();
+                            HSD_PObjGetMtxMark(0, &marked_object, &mark);
+                            if (marked_object != (u32)current || mark != 1) {
+                                fn_801AB5F8(0, current, 1);
+                                fn_800E0628(lbl_804016D0, pmtx);
+                            }
+                        } else {
+                            current = HSD_JObjGetCurrent();
+                            setup_current = setup_joint = FALSE;
+                            HSD_PObjGetMtxMark(0, &marked_object, &mark);
+                            if (marked_object != (u32)current && mark != 1) {
+                                setup_current = TRUE;
+                            }
+                            fn_801AB5F8(0, current, 1);
+                            HSD_PObjGetMtxMark(1, &marked_object, &mark);
+                            if (marked_object != (u32)pobj->u.jobj && mark != 1) {
+                                setup_joint = TRUE;
+                            }
+                            fn_801AB5F8(1, pobj->u.jobj, 1);
+                            if (setup_current || setup_joint) {
+                                if (setup_current) {
+                                    fn_800E0628(lbl_804016D0, pmtx);
+                                }
+                                if (setup_joint) {
+                                    if (pobj->u.jobj != NULL &&
+                                        HSD_JObjMtxIsDirty(pobj->u.jobj)) {
+                                        fn_8019D9DC(pobj->u.jobj);
+                                    }
+                                    PSMTXConcat(vmtx,
+                                                (f32*)((u8*)pobj->u.jobj + 0x44),
+                                                matrix);
+                                    fn_800E0628(lbl_804016D0 + 12, matrix);
+                                }
+                            }
+                        }
+                        break;
+                    case 0x1000:
+                        current = HSD_JObjGetCurrent();
+                        HSD_PObjGetMtxMark(0, &marked_object, &mark);
+                        if (marked_object != (u32)current || mark != 1) {
+                            fn_801AB5F8(0, current, 1);
+                            fn_800E0628(lbl_804016D0, pmtx);
+                        }
+                        break;
+                    case 0x2000:
+                        _modelParseLoadEnvelopeMatrix__FP9_HSD_PObjP5GSmtxP5GSmtxP5GSmtx(
+                            pobj, vmtx, pmtx, lbl_804016D0);
+                        break;
                     }
-                }
-
-                if (is_visible && (pobj->flags & 0x3000) == 0x2000) {
-                    _modelParseLoadEnvelopeMatrix__FP9_HSD_PObjP5GSmtxP5GSmtxP5GSmtx(
-                        pobj, vmtx, pmtx, lbl_804016D0);
                 }
 
                 if ((pobj->flags & 0x3000) == 0x1000) {
