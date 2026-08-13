@@ -194,7 +194,7 @@ extern f32 lbl_8047D79C;
 extern f32 lbl_8047D7A0;
 extern const void* lbl_80273F90[];
 
-/* ===== Global state (sbss, owned by the data split — extern here) ===== */
+/* ===== Global state (sbss, owned by the data split - extern here) ===== */
 
 extern void* lbl_8047B1E0;           /* current floor object link */
 extern PeopleOpenWork* lbl_8047B1E4; /* active PeopleOpenWork pointer */
@@ -993,8 +993,8 @@ extern f32 lbl_8047D800;
 extern f32 lbl_8047D7A0;
 /* renamed symbols referenced by asm incs (symbolmap port) */
 extern void heroMoveSetEventList(u8, void*, u32);
-extern void sin();   /* MSL trig (renamed) — referenced by asm incs */
-extern void cos();   /* MSL trig (renamed) — referenced by asm incs */
+extern void sin();   /* MSL trig (renamed) - referenced by asm incs */
+extern void cos();   /* MSL trig (renamed) - referenced by asm incs */
 extern void GScolsy2UtilGetCpPlanePoint(void*, void*, void*, void*);
 extern s32 GScolsy2UtilChkInTri(void*, void*, void*);
 extern void GSmodelPopState();
