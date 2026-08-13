@@ -2181,10 +2181,13 @@ void getStep__FP8FOOTSTEPP8_GSmodelPiP8FOOTWORK(
     f32* step, void* model, s32* partIndices, f32* footwork)
 {
     f32 modelPosition[3];
+    f32 transform[3];
+    f32 heights[4];
     f32 zero = lbl_8047D038;
+    f32 delta = (f32)((u32 (*)(void))fn_800D3088)();
+    void* part;
     s32 i;
 
-    fn_800D3088();
     GSmodelGetPosition(model, modelPosition);
 
     for (i = 0; i < 4; i++) {
@@ -2194,12 +2197,25 @@ void getStep__FP8FOOTSTEPP8_GSmodelPiP8FOOTWORK(
         position[1] = zero;
         position[2] = zero;
         step[i] = zero;
+        heights[i] = zero;
+        if (partIndices[i] >= 0) {
+            part = ((void* (*)(void*, s32))GSmodelGetPart)(model, partIndices[i]);
+            if (part != NULL) {
+                ((void (*)(void*, void*, void*, void*))GSpartGetTransform)(part, transform, NULL, NULL);
+                GSpartFree(part);
+                position[0] = transform[0];
+                position[1] = transform[1];
+                position[2] = transform[2];
+                heights[i] = transform[1] - modelPosition[1];
+            }
+        }
     }
 
-    for (i = 0; i < 3; i++) {
-        if (partIndices[i] >= 0 && footwork[i] >= lbl_8047D040) {
-            step[i] = footwork[i];
+    for (i = 0; i < 4; i++) {
+        if (footwork[i] >= lbl_8047D040 && heights[i] < lbl_8047D040) {
+            step[i] = (footwork[i] - heights[i]) / delta;
         }
+        footwork[i] = heights[i];
     }
 }
 /* 0x8012C0B4 | 0x48C */
