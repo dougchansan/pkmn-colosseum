@@ -2668,6 +2668,87 @@ PSParticle* psInterpretParticle0(PSParticle* pp, PSParticle* parentCtx) {
                         break;
                     }
 
+                    case 0xEF: {
+                        PSGeneratorState* gen;
+                        PSAppSRT* srcSRT = (PSAppSRT*)pp->parentObj;
+                        PSAppSRT* dstSRT;
+                        u16 scriptId = ((u16)stream[0] << 8) | stream[1];
+                        u8 phaseFlags = stream[2];
+
+                        stream += 3;
+                        gen = psCreateGeneratorID(pp->linkNo, pp->bankIndex,
+                                                  scriptId);
+                        if (gen == NULL) {
+                            break;
+                        }
+                        gen->familyId = pp->scriptId;
+                        psCopyGeneratorData((PSParticle*)gen, pp->peopleObj);
+                        if (srcSRT != NULL) {
+                            if (pp->peopleObj != NULL &&
+                                (((PSGeneratorState*)pp->peopleObj)->angleFlags &
+                                 0x2000) != 0) {
+                                psChangeGeneratorAppSRT(gen, srcSRT);
+                            } else {
+                                psAttachGeneratorAppSRT(gen, srcSRT);
+                            }
+                        }
+
+                        gen->flags &= ~0x0E000000;
+                        gen->flags |= (u32)(phaseFlags & 7) << 25;
+
+                        dstSRT = (PSAppSRT*)gen->appSRT;
+                        if (srcSRT != NULL) {
+                            if (dstSRT != NULL) {
+                                gen->positionX = pp->positionX;
+                                gen->positionY = pp->positionY;
+                                gen->positionZ = pp->positionZ;
+                                if (dstSRT != srcSRT) {
+                                    dstSRT->rotationX = srcSRT->rotationX;
+                                    dstSRT->rotationY = srcSRT->rotationY;
+                                    dstSRT->rotationZ = srcSRT->rotationZ;
+                                }
+                            }
+                        } else {
+                            if (dstSRT != NULL) {
+                                dstSRT->rotationX = pp->positionX;
+                                dstSRT->rotationY = pp->positionY;
+                                dstSRT->rotationZ = pp->positionZ;
+                            }
+                            gen->positionX = pp->positionX;
+                            gen->positionY = pp->positionY;
+                            gen->positionZ = pp->positionZ;
+                        }
+
+                        if (dstSRT == srcSRT) {
+                            break;
+                        }
+                        if (srcSRT == NULL) {
+                            if (dstSRT == NULL) {
+                                break;
+                            }
+                            genPosUpdate(gen);
+                            gen->positionX -= dstSRT->rotationX;
+                            gen->positionY -= dstSRT->rotationY;
+                            gen->positionZ -= dstSRT->rotationZ;
+                        } else {
+                            genPosUpdate(srcSRT->owner);
+                            if (dstSRT != NULL) {
+                                genPosUpdate(gen);
+                                gen->positionX +=
+                                    srcSRT->rotationX - dstSRT->rotationX;
+                                gen->positionY +=
+                                    srcSRT->rotationY - dstSRT->rotationY;
+                                gen->positionZ +=
+                                    srcSRT->rotationZ - dstSRT->rotationZ;
+                            } else {
+                                gen->positionX += srcSRT->rotationX;
+                                gen->positionY += srcSRT->rotationY;
+                                gen->positionZ += srcSRT->rotationZ;
+                            }
+                        }
+                        break;
+                    }
+
                     /* ---- 0xA6: random -> repeatCount (verified @ 0x801705F8) ---- */
                     case 0xA6: {
                         u16 base = ((u16)stream[0] << 8) | stream[1];
