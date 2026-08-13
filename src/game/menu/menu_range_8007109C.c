@@ -5870,9 +5870,9 @@ void fn_800753D0(void)
     f32 direction[3];
     f32 frames;
 
-    work = (u8*)lbl_8047A610;
     frames = (f32)fn_800D37CC();
-    *(f32*)work = (f32)fn_800D3088() / frames;
+    *(f32*)lbl_8047A610 = (f32)fn_800D3088() / frames;
+    work = (u8*)lbl_8047A610;
     *(f32*)(work + 0x18C) =
         lbl_8047C098 + lbl_8047C09C * (f32)sin(*(f32*)(work + 4));
     if (*(f32*)(work + 0x18C) > lbl_8047C0A0) {
