@@ -1487,7 +1487,7 @@ s32 fightTrainerAiGetFightPokemonIrekaeModosuValue(void* ctx, u32 param1, u32 pa
     r4 = r16;
     fn_8023785C();
     r0 = r3 & 0xFF;
-    if (r0 != (u32)r31) {
+    if (r0 != 0) {
         r4 = r15;
         r3 = 0x0;
         r5 = 0x1;
@@ -1510,7 +1510,7 @@ s32 fightTrainerAiGetFightPokemonIrekaeModosuValue(void* ctx, u32 param1, u32 pa
     r4 = r16;
     fn_8023753C();
     r0 = r3 & 0xFF;
-    if (r0 == (u32)r31) {
+    if (r0 != 0) {
         r3 = r24;
         r4 = r15;
         r5 = 0x2;
@@ -1534,7 +1534,7 @@ s32 fightTrainerAiGetFightPokemonIrekaeModosuValue(void* ctx, u32 param1, u32 pa
         r4 = r16;
         fn_8023785C();
         r0 = r3 & 0xFF;
-        if (r0 != (u32)r31) {
+        if (r0 != 0) {
             r3 = r24;
             r4 = r15;
             r5 = 0x3;
@@ -1601,7 +1601,7 @@ s32 fightTrainerAiGetFightPokemonIrekaeModosuValue(void* ctx, u32 param1, u32 pa
         fn_80239EE8();
     }
     r0 = r17 & 0xFF;
-    if (r0 == (u32)0x1) {
+    if (r0 == 0) {
         r3 = r24;
         r4 = r15;
         r5 = 0x6;
