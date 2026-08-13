@@ -5032,8 +5032,31 @@ int fn_8018E1C4(PeopleEntry* entry, u32 groupId, u32 indexId, s32 objectId) {
         }
     }
 
-    stateEntry = peopleFindBySelf(peopleFindSelf(groupId, indexId));
-    if (stateEntry != NULL) {
+    linkedEntry = NULL;
+    for (i = 0; i < peopleGetMaxCount(); i++) {
+        stateEntry = peopleGetEntry(i);
+        if (stateEntry->active && stateEntry->groupId == groupId &&
+            stateEntry->index == indexId) {
+            linkedEntry = stateEntry->selfPtr;
+            break;
+        }
+    }
+    if (linkedEntry == NULL) {
+        for (i = 0; i < peopleGetMaxCount(); i++) {
+            stateEntry = peopleGetEntry(i);
+            if (stateEntry->active && stateEntry->index == indexId) {
+                linkedEntry = stateEntry->selfPtr;
+                break;
+            }
+        }
+    }
+    for (i = 0; i < peopleGetMaxCount(); i++) {
+        stateEntry = peopleGetEntry(i);
+        if (stateEntry->active && stateEntry->selfPtr == linkedEntry) {
+            break;
+        }
+    }
+    if (i < peopleGetMaxCount()) {
         peopleWriteFlags(stateEntry, PEOPLE_WALK_LIST_ACTIVE);
     }
 
