@@ -1368,6 +1368,14 @@ void fn_801CDB04(void)
             if (result == -1) {
                 task->state = 27;
             } else if (result == 0) {
+                u32 checksum = 0;
+
+                for (status = 0; status < 0xE90; status++) {
+                    checksum += ((u32*)task->work_buffer)[status];
+                }
+                if (checksum != ((u32*)task->work_buffer)[0xE90]) {
+                    raw[0x40] = 1;
+                }
                 task->format_requested = 0;
                 task->state = 28;
             } else {
