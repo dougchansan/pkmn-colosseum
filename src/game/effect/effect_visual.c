@@ -1437,16 +1437,13 @@ BOOL fn_80139AC4(void* ptr, u32 tick) {
     u16 i;
     u16 count;
 
-    if (ptr == NULL) {
-        return 0;
-    }
-
-    p = ptr;
+    if (ptr != NULL) {
+        p = ptr;
+    frame = *(u16*)(p + 0x48);
     if (*(void**)(p + 0x58) == NULL) {
         return 0;
     }
 
-    frame = *(u16*)(p + 0x48);
     endFrame = *(u16*)(p + 0x4A);
     if (frame >= endFrame) {
         return 0;
@@ -1495,7 +1492,9 @@ BOOL fn_80139AC4(void* ptr, u32 tick) {
     }
 
     *(u16*)(p + 0x48) = frame + tick;
-    return 1;
+        return 1;
+    }
+    return 0;
 }
 extern u8 lbl_80272D08[];
 extern u32 lbl_8047D190;
