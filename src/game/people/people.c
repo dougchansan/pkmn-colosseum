@@ -2088,8 +2088,8 @@ void fn_80184D80(PeopleEntry* entry)
         entry->subState = 2;
         /* fallthrough */
     case 2:
-        switch (fn_80185AAC(entry)) {
-        case 2:
+        frameCount = fn_80185AAC(entry);
+        if (frameCount == 2) {
             angle = lbl_8047D7A8 + entry->field_40;
             linked = peopleFindBySelf(peopleFindSelf(entry->groupId, entry->index));
             if (linked != NULL) {
@@ -2101,12 +2101,10 @@ void fn_80184D80(PeopleEntry* entry)
                 linked->field_44 = lbl_8047D79C;
             }
             entry->subState = 2;
-            break;
-        case 1:
+        } else if (frameCount == 1) {
             entry->animBlendFactor =
                 entry->field_8C * fn_800E0BA0() + entry->field_88;
             entry->subState = 0;
-            break;
         }
         break;
     }
