@@ -807,8 +807,7 @@ s16 fn_80144574(
 
     if (itemParamGetPPMaxFullFlag(itemParam) != 0) {
         wazaDataId = pokemonBiosGetPokemonWazaDataId(activePokemon, moveSlot);
-        if (wazaDataId != 0x176 && wazaCheckDarkWaza(wazaDataId) == 0 &&
-            wazaDB_GetPp(wazaDataId) >= 5 &&
+        if ((u16)(wazaDataId - 0x164) > 1 &&
             pokemonBiosGetPokemonWazaPpCount(activePokemon, moveSlot) < 3) {
             maxPp = pokemonWazaGetMaxPP(activePokemon, moveSlot);
             pokemonBiosSetPokemonWazaPpCount(activePokemon, moveSlot, 3);
