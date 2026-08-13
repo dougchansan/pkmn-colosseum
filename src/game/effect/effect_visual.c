@@ -1870,12 +1870,12 @@ u32 fn_8013A520(void* ptr) {
     }
 
     count = fn_800EE0E8(resource);
-    fn_800E3D98(resource, center);
+    GSmodelGetPosition(resource, center);
     _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
     camera = GScameraGetActiveCamera();
     GScameraGetPosition(camera, cameraPos);
     GScameraGetPerspective(camera, &perspective, &unused, &unused, &unused);
-    distance = fn_800E0040(cameraPos, center);
+    distance = GSvecDistance(cameraPos, center);
     fn_800DA4C4(1, 6, 1);
     fn_800DA2BC(1, 1, 0);
     fn_800DA1E8(1, 1, 1);
@@ -1901,7 +1901,7 @@ u32 fn_8013A520(void* ptr) {
             continue;
         }
         fn_800EE3BC(first, firstPos, 0, 0);
-        if (fn_800E0040(firstPos, center) <= *(f32*)&lbl_8047D1C4) {
+        if (GSvecDistance(firstPos, center) <= *(f32*)&lbl_8047D1C4) {
             fn_800EE828(first);
             continue;
         }
@@ -1915,11 +1915,11 @@ u32 fn_8013A520(void* ptr) {
             if (((u8 (*)(void*))fn_800EE7E0)(second) != 0 &&
                 *(f32*)(p + 0x20) > fn_800E0BE4()) {
                 fn_800EE3BC(second, secondPos, 0, 0);
-                if (fn_800E0040(firstPos, center) > *(f32*)&lbl_8047D1C4) {
+                if (GSvecDistance(firstPos, center) > *(f32*)&lbl_8047D1C4) {
                     fn_800E01D0(firstBase, firstPos);
                     fn_800E01D0(secondBase, secondPos);
                     radius = *(f32*)&lbl_8047D1C8 *
-                             fn_800E0040(firstPos, secondPos);
+                             GSvecDistance(firstPos, secondPos);
                     yaw = *(f32*)&lbl_8047D1CC * fn_800E0BE4();
                     pitch = *(f32*)&lbl_8047D1D0 * fn_800E0BE4();
                     fn_800E01F4(
