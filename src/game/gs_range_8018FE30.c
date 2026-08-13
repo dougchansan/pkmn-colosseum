@@ -229,41 +229,47 @@ void fn_801909A8(u32* buffer1, u32 count1, u32* buffer2, u32 count2,
     extern FlagInitState* lbl_80478EEC;
     extern u8* lbl_80478F98;
     extern FlagDefinition* lbl_80478F9C;
-    FlagInitState* state;
+    u32* buffer;
+    u32 wordCount;
     u32 i;
 
     GSflagInitBitPos(lbl_80478F9C, *(u32*)lbl_80478F98, count1, count2,
                      count3);
 
-    state = lbl_80478EEC;
-    state->buffer1 = buffer1;
-    state->buffer2 = buffer2;
-    state->buffer3 = buffer3;
-    state->count1 = count1;
-    state->count2 = count2;
-    state->count3 = count3;
+    lbl_80478EEC->buffer1 = buffer1;
+    lbl_80478EEC->buffer2 = buffer2;
+    lbl_80478EEC->buffer3 = buffer3;
+    lbl_80478EEC->count1 = count1;
+    lbl_80478EEC->count2 = count2;
+    lbl_80478EEC->count3 = count3;
 
-    if (state->buffer1 == NULL) {
+    buffer = lbl_80478EEC->buffer1;
+    if (buffer == NULL) {
         GSlogWrite(lbl_802741F8 + 0x2C0);
     } else {
-        for (i = 0; i < state->count1; i++) {
-            state->buffer1[i] = 0;
+        wordCount = lbl_80478EEC->count1;
+        for (i = 0; i < wordCount; i++) {
+            buffer[i] = 0;
         }
     }
 
-    if (state->buffer2 == NULL) {
+    buffer = lbl_80478EEC->buffer2;
+    if (buffer == NULL) {
         GSlogWrite(lbl_802741F8 + 0x2C0);
     } else {
-        for (i = 0; i < state->count2; i++) {
-            state->buffer2[i] = 0;
+        wordCount = lbl_80478EEC->count2;
+        for (i = 0; i < wordCount; i++) {
+            buffer[i] = 0;
         }
     }
 
-    if (state->buffer3 == NULL) {
+    buffer = lbl_80478EEC->buffer3;
+    if (buffer == NULL) {
         GSlogWrite(lbl_802741F8 + 0x2C0);
     } else {
-        for (i = 0; i < state->count3; i++) {
-            state->buffer3[i] = 0;
+        wordCount = lbl_80478EEC->count3;
+        for (i = 0; i < wordCount; i++) {
+            buffer[i] = 0;
         }
     }
 }
