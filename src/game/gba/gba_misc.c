@@ -1140,6 +1140,7 @@ void fn_80089F78(u32 arg0, u32 arg1, u32 arg2, u32 arg3) {
         r4 = 0x0;
         r19 = r3;
         fightTrainerGetValidFightOutPokemonPtr();
+        *(u32*)(sp + 0x2C) = r3;
         r3 = r19;
         fightTrainer_GetControllerId();
         *(u8*)(sp + 0x25) = r3;
@@ -1150,6 +1151,7 @@ void fn_80089F78(u32 arg0, u32 arg1, u32 arg2, u32 arg3) {
         r4 = 0x0;
         r19 = r3;
         fightTrainerGetValidFightOutPokemonPtr();
+        *(u32*)(sp + 0x30) = r3;
         r3 = r19;
         fightTrainer_GetControllerId();
         *(u8*)(sp + 0x26) = r3;
@@ -1160,6 +1162,7 @@ void fn_80089F78(u32 arg0, u32 arg1, u32 arg2, u32 arg3) {
         r4 = 0x0;
         r19 = r3;
         fightTrainerGetValidFightOutPokemonPtr();
+        *(u32*)(sp + 0x34) = r3;
         r3 = r19;
         fightTrainer_GetControllerId();
         *(u8*)(sp + 0x27) = r3;
