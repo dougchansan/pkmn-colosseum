@@ -872,6 +872,43 @@ void fn_80034F84(void) {
 void fn_80034FB0(void) {
 }
 
+/* Initial GBA transfer-menu dispatch (0x80034FB4). */
+void fn_80034FB4(void) {
+    extern u8 lbl_8047A438;
+    extern u8 lbl_8047A454;
+    extern u32 lbl_8047A458;
+    extern f32 lbl_8047BA00;
+    extern void fadeSet(f32, s32);
+    extern void fadeCheck(s32);
+    extern s32 menuOpen(s32, s32);
+    extern void fn_80166A28(u32);
+    extern void winMsgOpen(s32, u32, s32, s32);
+    extern void winMsgClose(s32);
+    s32 result;
+
+    lbl_8047A438 = 1;
+    if (lbl_8047A454 == 1) {
+        fadeSet(lbl_8047BA00, 2);
+    }
+    result = menuOpen(0xA4, 1);
+    lbl_8047A454 = 1;
+    fadeCheck(1);
+    if (result == 1) {
+        lbl_8047A458 = 3;
+    } else if (result == -1) {
+        lbl_8047A458 = 0;
+    } else if (result >= 0 && result < 3) {
+        lbl_8047A458 = 0;
+    } else {
+        lbl_8047A458 = 0;
+    }
+    if (lbl_8047A458 == 0) {
+        fn_80166A28(0x3C7);
+        winMsgOpen(8, 0x3B54, 1, 0);
+        winMsgClose(1);
+    }
+}
+
 /* fn_80035C48 - 0x80035C48 | size: 0x128 */
 void fn_80035C48(void) {
     extern u8 lbl_803A3288[];
