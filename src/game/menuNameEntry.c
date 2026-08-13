@@ -3072,7 +3072,8 @@ s32 menuNameEntryBackCtrl(void* r3)
     ctl = (u8*)r3;
     mode = (s32)(s8)ctl[1];
 
-    if (mode == 0) {
+    switch (mode) {
+    case 0:
         if ((s32)(s8)ctl[2] != 0) {
             return 0;
         }
@@ -3123,9 +3124,8 @@ s32 menuNameEntryBackCtrl(void* r3)
 
         ctl[2] = 1;
         return 0;
-    }
 
-    if (mode == 2) {
+    case 2:
         /* probabilistic single spawn */
         if (fn_800E0BE4() <= lbl_8047B958) {
             for (slot = 0; slot < 30; slot++) {
@@ -3163,15 +3163,16 @@ s32 menuNameEntryBackCtrl(void* r3)
         }
 
         return 0;
-    }
 
-    if (mode == 3) {
+    case 3:
         if ((s32)(s8)ctl[2] == 0) {
             ctl[2] = 1;
         }
         return 0;
-    }
 
+    default:
+        break;
+    }
     return 0;
 }
 #endif

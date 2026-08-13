@@ -428,15 +428,14 @@ s32 GScolsys2ThruGetFixedMdlEventList(
                         for (vertIdx = 0; vertIdx < 3; vertIdx++, vsrc++) {
                             if ((flags & edgeMasksA.values[vertIdx]) != 0) {
                                 s32 next = vertIdx + 1;
+                                f32 lineT;
                                 if (next >= 3) {
                                     next = 0;
                                 }
-                                if (!(GScolsys2UtilGetCpLinePoint(
-                                          &lineCp, vsrc, &tri->verts[next], point) <
-                                      lbl_8047CF58) &&
-                                    !(GScolsys2UtilGetCpLinePoint(
-                                          &lineCp, vsrc, &tri->verts[next], point) >
-                                      lbl_8047CF5C) &&
+                                lineT = GScolsys2UtilGetCpLinePoint(
+                                    &lineCp, vsrc, &tri->verts[next], point);
+                                if (!(lineT < lbl_8047CF58) &&
+                                    !(lineT > lbl_8047CF5C) &&
                                     PSVECSquareDistance(&lineCp, point) < radiusSq) {
                                     hit = 1;
                                     break;
