@@ -215,8 +215,8 @@ extern void GSmodelSetAnimType(void);
 extern void GSmodelStartAnimation(void);
 extern void _threadSwitch(void);
 extern void GSmodelIsAnimating(void);
-extern void GSmodelGetPart(void);
-extern void GSpartGetTransform(void);
+extern void* GSmodelGetPart(void* model, s32 partIndex);
+extern void GSpartGetTransform(void* part, void* transform, void* arg2, void* arg3);
 extern void GSpartFree();
 extern void fn_8018AACC(void);
 extern void peopleMoveCheck(u32 groupId, u32 index, u8 waitFlag);
@@ -2204,9 +2204,9 @@ void getStep__FP8FOOTSTEPP8_GSmodelPiP8FOOTWORK(
         step[i] = zero;
         heights[i] = zero;
         if (partIndices[i] >= 0) {
-            part = ((void* (*)(void*, s32))GSmodelGetPart)(model, partIndices[i]);
+            part = GSmodelGetPart(model, partIndices[i]);
             if (part != NULL) {
-                ((void (*)(void*, void*, void*, void*))GSpartGetTransform)(part, &transform, NULL, NULL);
+                GSpartGetTransform(part, &transform, NULL, NULL);
                 GSpartFree(part);
                 *position = transform;
                 heights[i] = transform.y - modelPosition.y;
