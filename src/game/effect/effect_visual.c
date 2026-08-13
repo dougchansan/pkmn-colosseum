@@ -4871,6 +4871,7 @@ extern void* fn_800D7BF8(u32 index);
 extern void GScameraGetLookAt(void* mtx, void* lookAt, void* eye);
 extern void fn_800E0628(void* dst, void* src);
 extern void fn_800E0238(void* dst, void* src);
+extern void set__5GSvecFfff(void* vec, f32 x, f32 y, f32 z);
 extern void fn_800D2DE8(void);
 extern u16 GStextureGetXsize(void* texture);
 extern u16 GStextureGetYsize(void* texture);
@@ -4895,6 +4896,9 @@ void _distortionEffectUpdateMatrices(void* ptr) {
     void* cameraMatrix;
     f32 lookAt[3];
     f32 eye[3];
+    f32 projected[4];
+    f32 cornerA[3];
+    f32 cornerB[3];
     f32 viewMatrix[12];
 
     camera = GScameraGetActiveCamera();
@@ -4909,6 +4913,21 @@ void _distortionEffectUpdateMatrices(void* ptr) {
         viewMatrix[11] = 0.0f;
         fn_800E0238((u8*)ptr + 0x38, viewMatrix);
     }
+    ((void (*)(void*, f32, f32, f32))fn_800E02C4)(
+        (u8*)ptr + 0x38, *(f32*)((u8*)ptr + 0x10),
+        *(f32*)((u8*)ptr + 0x10), *(f32*)((u8*)ptr + 0x10));
+    *(f32*)((u8*)ptr + 0x44) = *(f32*)((u8*)ptr + 0x2C);
+    *(f32*)((u8*)ptr + 0x54) = *(f32*)((u8*)ptr + 0x30);
+    *(f32*)((u8*)ptr + 0x64) = *(f32*)((u8*)ptr + 0x34);
+    set__5GSvecFfff(cornerA, *(f32*)&lbl_8047D304, *(f32*)&lbl_8047D304,
+                    *(f32*)&lbl_8047D300);
+    ((void (*)(void*, void*, void*))GSvecTransform)(
+        cornerA, (u8*)ptr + 0x38, cornerA);
+    set__5GSvecFfff(cornerB, *(f32*)&lbl_8047D308, *(f32*)&lbl_8047D308,
+                    *(f32*)&lbl_8047D300);
+    ((void (*)(void*, void*, void*))GSvecTransform)(
+        cornerB, (u8*)ptr + 0x38, cornerB);
+    ((void (*)(void*, void*, s32))fn_800D2DE8)(cornerA, projected, 2);
 }
 #endif
 #endif
