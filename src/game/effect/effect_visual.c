@@ -5069,12 +5069,12 @@ void _distortionEffectUpdateMatrices(void* ptr) {
     void* camera;
     void* matrix;
     void* cameraMatrix;
-    f32 lookAt[3];
-    f32 eye[3];
-    f32 projected[4];
-    f32 cornerA[3];
-    f32 cornerB[3];
     f32 viewMatrix[12];
+    f32 cornerB[3];
+    f32 cornerA[3];
+    f32 projected[4];
+    f32 eye[3];
+    f32 lookAt[3];
     f32 xScale;
     f32 yScale;
 
