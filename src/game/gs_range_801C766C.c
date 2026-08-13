@@ -909,6 +909,11 @@ s32 fn_801C7730(s32 side, s32 slot)
     extern f32 GSvecDistance();
     extern void GSvecAdd();
     extern void fn_800E013C();
+    extern void fn_800E0168(Vec3*, const Vec3*, const Vec3*);
+    extern void fn_800E0060(Vec3*, const Vec3*);
+    extern void fn_800DFFCC(Vec3*, const Vec3*, const Vec3*);
+    extern s32 GScolsys2UtilGetCpPlaneLine(
+        Vec3*, f32*, const Vec3*, const Vec3*, const Vec3*, const Vec3*);
     extern u8 fn_8018D680();
     extern s32 fn_8010F320();
     extern void qsort();
@@ -924,9 +929,11 @@ s32 fn_801C7730(s32 side, s32 slot)
     s32 floorId, resId, floorId2, resId2;
     Vec3 origin = lbl_802758A0;
     Vec3 partner, requested, center, offset, midpoint, saved;
+    Vec3 requestedFlat, fullDirection, flatDirection, planeNormal, planeHit;
     DistanceSortEntry entries[8];
     f32 radius;
     f32 timeout;
+    f32 planeT;
     s32 i, k, hit, wanted;
     u8 done;
 
@@ -1007,6 +1014,20 @@ s32 fn_801C7730(s32 side, s32 slot)
         SEGMENT_HIT(hit, &origin, &entries[i].pos, &center);
         if (hit != 0) continue;
 
+        requestedFlat = requested;
+        requestedFlat.y = lbl_8047E100;
+        fn_800E0168(&fullDirection, &partner, &requested);
+        fn_800E0060(&fullDirection, &fullDirection);
+        fn_800E0168(&flatDirection, &partner, &requestedFlat);
+        fn_800E0060(&flatDirection, &flatDirection);
+        fn_800DFFCC(&planeNormal, &fullDirection, &flatDirection);
+        if (GScolsys2UtilGetCpPlaneLine(
+                &planeHit, &planeT, &planeNormal, &partner, &origin,
+                &entries[i].pos) != 0 &&
+            planeT >= lbl_8047E114 && planeT <= lbl_8047E100) {
+            continue;
+        }
+
         fn_80183350(resId, floorId);
         fn_8018AACC(resId, floorId, 1, &entries[i].pos);
         WAIT_MOVE(done);
@@ -1063,6 +1084,19 @@ s32 fn_801C7730(s32 side, s32 slot)
         center = entries[i].pos;
         SEGMENT_HIT(hit, &partner, &requested, &center);
         if (hit != 0) continue;
+        requestedFlat = requested;
+        requestedFlat.y = lbl_8047E100;
+        fn_800E0168(&fullDirection, &partner, &requested);
+        fn_800E0060(&fullDirection, &fullDirection);
+        fn_800E0168(&flatDirection, &partner, &requestedFlat);
+        fn_800E0060(&flatDirection, &flatDirection);
+        fn_800DFFCC(&planeNormal, &fullDirection, &flatDirection);
+        if (GScolsys2UtilGetCpPlaneLine(
+                &planeHit, &planeT, &planeNormal, &partner, &origin,
+                &entries[i].pos) != 0 &&
+            planeT >= lbl_8047E114 && planeT <= lbl_8047E100) {
+            continue;
+        }
         fn_80183350(resId, floorId);
         fn_8018AACC(resId, floorId, 1, &entries[i].pos);
         WAIT_MOVE(done);
