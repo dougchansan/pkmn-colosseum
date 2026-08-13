@@ -858,28 +858,28 @@ s32 fn_8010E138(void* origin, void* direction) {
                     continue;
                 }
 
-                duplicate = 0;
                 for (i = 0; i < temporaryCount; i++) {
                     if (temporary[i].height == hitPoint.y) {
-                        duplicate = 1;
                         break;
                     }
                 }
-                if (duplicate != 0) {
-                    continue;
+                duplicate = 0;
+                if (i >= temporaryCount) {
+                    tempWrite->height = hitPoint.y;
+                    field30 = *(u8*)((u8*)triangle + 0x30);
+                    tempWrite->surfaceType =
+                        ((field30 >> 4) == 0xF) ? 0xFFFF : (u16)(field30 >> 4);
+                    tempWrite->surfaceId =
+                        ((field30 & 0xF) == 0xF) ? 0xFFFF : (u16)(field30 & 0xF);
+                    field31 = *(u8*)((u8*)triangle + 0x31);
+                    tempWrite->layer = (u8)(field31 >> 4);
+                    tempWrite->subLayer = (u8)(field31 & 0xF);
+                    duplicate = 1;
                 }
-
-                tempWrite->height = hitPoint.y;
-                field30 = *(u8*)((u8*)triangle + 0x30);
-                tempWrite->surfaceType =
-                    ((field30 >> 4) == 0xF) ? 0xFFFF : (u16)(field30 >> 4);
-                tempWrite->surfaceId =
-                    ((field30 & 0xF) == 0xF) ? 0xFFFF : (u16)(field30 & 0xF);
-                field31 = *(u8*)((u8*)triangle + 0x31);
-                tempWrite->layer = (u8)(field31 >> 4);
-                tempWrite->subLayer = (u8)(field31 & 0xF);
-                tempWrite++;
-                temporaryCount++;
+                if (duplicate != 0) {
+                    tempWrite++;
+                    temporaryCount++;
+                }
             }
         } else {
             grid = (GSFieldFixedMdlEventList*)region->triList;
@@ -902,30 +902,30 @@ s32 fn_8010E138(void* origin, void* direction) {
                             continue;
                         }
 
-                        duplicate = 0;
                         for (i = 0; i < temporaryCount; i++) {
                             if (temporary[i].height == hitPoint.y) {
-                                duplicate = 1;
                                 break;
                             }
                         }
-                        if (duplicate != 0) {
-                            continue;
+                        duplicate = 0;
+                        if (i >= temporaryCount) {
+                            tempWrite->height = hitPoint.y;
+                            field30 = *(u8*)((u8*)triangle + 0x30);
+                            tempWrite->surfaceType =
+                                ((field30 >> 4) == 0xF) ? 0xFFFF
+                                                        : (u16)(field30 >> 4);
+                            tempWrite->surfaceId =
+                                ((field30 & 0xF) == 0xF) ? 0xFFFF
+                                                         : (u16)(field30 & 0xF);
+                            field31 = *(u8*)((u8*)triangle + 0x31);
+                            tempWrite->layer = (u8)(field31 >> 4);
+                            tempWrite->subLayer = (u8)(field31 & 0xF);
+                            duplicate = 1;
                         }
-
-                        tempWrite->height = hitPoint.y;
-                        field30 = *(u8*)((u8*)triangle + 0x30);
-                        tempWrite->surfaceType =
-                            ((field30 >> 4) == 0xF) ? 0xFFFF
-                                                    : (u16)(field30 >> 4);
-                        tempWrite->surfaceId =
-                            ((field30 & 0xF) == 0xF) ? 0xFFFF
-                                                     : (u16)(field30 & 0xF);
-                        field31 = *(u8*)((u8*)triangle + 0x31);
-                        tempWrite->layer = (u8)(field31 >> 4);
-                        tempWrite->subLayer = (u8)(field31 & 0xF);
-                        tempWrite++;
-                        temporaryCount++;
+                        if (duplicate != 0) {
+                            tempWrite++;
+                            temporaryCount++;
+                        }
                     }
                 }
             }
