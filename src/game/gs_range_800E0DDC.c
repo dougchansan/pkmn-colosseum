@@ -668,8 +668,18 @@ u32 fn_800E1544(void)
 
         if (remainder >= sizeof(GSFreeBlock)) {
             fresh = (GSFreeBlock*)destination;
+            fresh->prev = before;
+            fresh->next = after;
             fresh->size = remainder;
-            INSERT_FREE(fresh);
+            if (before != 0) {
+                before->next = fresh;
+            } else {
+                lbl_8047AB30 = (u32)fresh;
+            }
+            if (after != 0) {
+                after->prev = fresh;
+            }
+            COALESCE_FREE(fresh);
         } else {
             desc = chosen[chosenCount - 1];
             desc->size += remainder;
