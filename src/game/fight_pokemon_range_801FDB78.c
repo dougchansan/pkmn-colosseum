@@ -2326,8 +2326,7 @@ u8 fightOutPokemonCheckCanOutOkWazaBanme(void* fighter, u32 slot, u32 mode, u16*
     r5 = 0xd6;
     r6 = 0x0;
     ((void(*)(void))pokemonGetStatus)();
-    /* mr. r28, r3 */;
-    if (r3 == (u32)0x0) {
+    if ((r28 = r3) == (u32)0x0) {
         r27 = 0x0;
     } else {
 
