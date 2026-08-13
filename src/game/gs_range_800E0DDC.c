@@ -474,8 +474,6 @@ u32 fn_800E1544(void)
     u32 total;
     u32 bestTotal;
     u32 remainder;
-    u32 mask;
-    u32 bestMask;
     u32 candidateCount;
     u32 chosenCount;
     u32 i;
@@ -602,63 +600,43 @@ u32 fn_800E1544(void)
         }
 
         candidateCount = 0;
+        bestTotal = 0;
         for (desc = (GSAllocDesc*)lbl_8047AB34;
              desc >= (GSAllocDesc*)lbl_8047AB38; desc--) {
             if (desc->used == 0 || desc->locked != 0 || desc->pinned != 0 ||
                 desc->data <= (u8*)block || desc->size > block->size) {
                 continue;
             }
-            if (candidateCount < 4) {
+            if (candidateCount < 4 &&
+                bestTotal + desc->size <= block->size) {
                 candidates[candidateCount++] = desc;
+                bestTotal += desc->size;
             } else {
-                bestTotal = 0;
-                bestMask = 0;
-                for (mask = 1; mask < 16; mask++) {
+                for (i = 0; i < candidateCount; i++) {
+                    GSAllocDesc* displaced = candidates[i];
+
+                    candidates[i] = desc;
                     total = 0;
-                    for (i = 0; i < 4; i++) {
-                        if ((mask & (1 << i)) != 0) {
-                            total += candidates[i]->size;
-                        }
+                    for (j = 0; j < candidateCount; j++) {
+                        total += candidates[j]->size;
                     }
-                    if (total <= block->size && total > bestTotal) {
+                    if (total > bestTotal && total <= block->size) {
                         bestTotal = total;
-                        bestMask = mask;
-                    }
-                }
-                for (i = 0; i < 4; i++) {
-                    if ((bestMask & (1 << i)) == 0 &&
-                        desc->size > candidates[i]->size) {
-                        candidates[i] = desc;
                         break;
                     }
+                    candidates[i] = displaced;
                 }
             }
         }
 
-        bestTotal = 0;
-        bestMask = 0;
-        for (mask = 1; mask < (1U << candidateCount); mask++) {
-            total = 0;
-            for (i = 0; i < candidateCount; i++) {
-                if ((mask & (1U << i)) != 0) {
-                    total += candidates[i]->size;
-                }
-            }
-            if (total <= block->size && total > bestTotal) {
-                bestTotal = total;
-                bestMask = mask;
-            }
-        }
-        if (bestMask == 0) {
+        if (candidateCount == 0) {
             block = block->next;
             continue;
         }
 
-        chosenCount = 0;
+        chosenCount = candidateCount;
         for (i = 0; i < candidateCount; i++) {
-            if ((bestMask & (1U << i)) != 0) {
-                chosen[chosenCount++] = candidates[i];
-            }
+            chosen[i] = candidates[i];
         }
 
         before = block->prev;
