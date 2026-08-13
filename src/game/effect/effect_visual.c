@@ -4527,7 +4527,7 @@ u32 fn_8013E8A4(void* ptr, u32 delta) {
     return 1;
 }
 #endif
-extern void __assert(void);
+extern void __assert();
 extern void* GSmodelGetBound(void* model);
 extern void GSmodelGetMatrixPtr(void);
 extern void GSmodelSetRenderFlags(void);
@@ -4561,6 +4561,7 @@ asm void fn_8013EA44(void) {
 }
 #else
 void fn_8013EA44(void* ptr) {
+    extern void fn_800EC134(void*);
     u8* p;
     void* model;
     void* texture;
@@ -4595,15 +4596,28 @@ void fn_8013EA44(void* ptr) {
         return;
     }
 
-    ((void (*)(void*))fn_800EC134)(model);
+    fn_800EC134(model);
     fn_800E6478(model, lbl_80363CD8);
 
+    if (part == NULL) {
+        __assert(lbl_8047D2E0, 0x3E4, lbl_8047D2E8);
+    }
+    if (maxVec == NULL) {
+        __assert(lbl_8047D2E0, 0x3E5, lbl_80272FD0);
+    }
     maxVec[0] = *(f32*)(part + 0x38);
     maxVec[1] = *(f32*)(part + 0x3C);
     maxVec[2] = *(f32*)(part + 0x40);
     minVec[0] = *(f32*)(part + 0x2C);
     minVec[1] = *(f32*)(part + 0x30);
     minVec[2] = *(f32*)(part + 0x34);
+
+    if (part == NULL) {
+        __assert(lbl_8047D2E0, 0x351, lbl_8047D2E8);
+    }
+    if (minVec == NULL) {
+        __assert(lbl_8047D2E0, 0x352, lbl_8047D2F0);
+    }
 
     bound = fn_800E3C5C(model);
     GSvecAdd(mid, (u8*)bound + 0x1C, (u8*)bound + 0x10);
