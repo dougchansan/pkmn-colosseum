@@ -4949,6 +4949,8 @@ void psExecGenerator(u32 linkMask) {
  * implementation in Melee's baselib/generator.c; field offsets and the newer
  * Euler-basis extension were checked against this target's retail body.
  */
+#pragma optimization_level 4
+#pragma peephole off
 void generateParticle_8017424C(PSGeneratorState* gen) {
     extern PSParticle* psGenerateParticle(u8 linkNo, u8 bankIndex, u32 arg2, f32 posX, f32 posY, f32 posZ, u32 flags, f32 velocityX, f32 velocityY, f32 velocityZ, u8 animIndex, void* scriptData, u16 repeatCount, f32 lerpValue, void* arg14, f32 scaleFactor, f32 frictionFactor, PSGeneratorState* generator);
     Mtx basis;
@@ -5470,6 +5472,8 @@ void generateParticle_8017424C(PSGeneratorState* gen) {
     }
 }
 
+#pragma optimization_level 1
+#pragma peephole reset
 static inline s32 PSJObjMtxIsDirty(PSJObjTransform* jobj) {
     s32 dirty;
 
