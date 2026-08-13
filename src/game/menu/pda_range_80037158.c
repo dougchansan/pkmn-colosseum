@@ -6718,7 +6718,7 @@ void fn_800411FC(PdaSprite* alphaSprite, PdaEvent* event)
     if (pdaEntrySeen() != 0) {
         weight = pdaCurrentWeight();
         msgctrlSetValue(0x34, weight / 10);
-        msgctrlSetValue(0x35, weight - weight / 10 * 10);
+        msgctrlSetValue(0x35, weight % 10);
         fn_800FBB34(lbl_8047A4F0 +
                         (*(s16*)(layout + 0x5a92) - sprite->field_50),
                     *(s16*)(layout + 0x5a94) - sprite->field_52,
