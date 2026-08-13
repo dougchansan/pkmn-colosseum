@@ -797,6 +797,8 @@ s32 fn_8010E138(void* origin, void* direction) {
     Vec3f plane;
     Vec3f hitPoint;
     Vec3f* point;
+    Vec3f* sourceVert;
+    Vec3f* destVert;
     GScolsys2TriangleList* list;
     GSFieldFixedMdlEventList* grid;
     GSFieldFixedMdlCell* cell;
@@ -846,9 +848,11 @@ s32 fn_8010E138(void* origin, void* direction) {
                  triIdx < (s32)list->count && temporaryCount < 8;
                  triIdx++, triangle++)
             {
-                for (i = 0; i < 3; i++) {
-                    PSMTXMultVec(inverse, (const f32*)&triangle->verts[i],
-                                 (f32*)&transformed[i]);
+                sourceVert = triangle->verts;
+                destVert = transformed;
+                for (i = 0; i < 3; i++, sourceVert++, destVert++) {
+                    PSMTXMultVec(inverse, (const f32*)sourceVert,
+                                 (f32*)destVert);
                 }
                 PSMTXMultVec(forward, (const f32*)&triangle->normal,
                              (f32*)&plane);
