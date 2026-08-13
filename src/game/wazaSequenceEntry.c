@@ -164,22 +164,145 @@ u8 wazaSequenceEntryStop(void* entry, BOOL immediate) {
  * Proposed name from symbols: wazaSequenceEntryUpdate.
  */
 u8 wazaSequenceEntryUpdate(void* entry, s32 elapsed) {
-    WazaSequenceNode* node = entry;
+    extern u8 GSmodelHasAnimationEnded(void* model);
+    extern u8 GSmodelHasTexAnimationEnded(void* model);
+    extern s32 fn_80118DA8(void* ptr);
+    extern u32 fn_80118D84(void* obj);
+    extern u8 GSthreadIsRunning(u32 task);
+    extern BOOL fn_801310A8(u32 effectId);
+    extern void* fn_8013151C(u32 arg);
+    extern u32 fn_8013AB34(void* ptr);
+    extern const char lbl_802795B4[];
+    extern s32 lbl_8047B408;
+    u8* node = entry;
+    u32 kind;
 
-    node->currentTime += elapsed;
-    if ((u32)node->kind > 6) {
+    *(s32*)(node + 0x74) += elapsed;
+    kind = *(u32*)(node + 0x04);
+
+    if (kind > 6) {
+        if (fn_800057A8() == 2) {
+            fn_801D744C(1);
+        }
+        GSlogWrite(lbl_802795B4);
         return FALSE;
     }
 
-    /*
-     * Entries without a live resource have already completed.  Model,
-     * particle, sound, and camera entries perform their individual end tests
-     * in the remainder of the target routine.
-     */
-    if (node->kind != 0 && node->resource == NULL) {
-        return TRUE;
+    switch (kind) {
+    case 2: {
+        void* model = *(void**)(node + 0xA4);
+        u8 done;
+
+        if (model == NULL) {
+            return TRUE;
+        }
+
+        if (*(s32*)(node + 0x88) < 0) {
+            done = TRUE;
+        } else if (*(s32*)(node + 0x84) == 1) {
+            u8* sequence = *(u8**)(node + 0xB0);
+            s32 target = *(s32*)(node + 0x70) +
+                         *(s32*)(node + 0x28 + (*(s32*)(node + 0x14) * 4));
+            done = *(s32*)sequence >= target;
+        } else {
+            done = GSmodelHasAnimationEnded(model);
+        }
+
+        if (*(s32*)(node + 0x88) != *(s32*)(node + 0x90) &&
+            *(s32*)(node + 0x90) >= 0) {
+            u8 texDone;
+
+            if (*(s32*)(node + 0x8C) == 1) {
+                u8* sequence = *(u8**)(node + 0xB0);
+                s32 target = *(s32*)(node + 0x70) +
+                             *(s32*)(node + 0x28 + (*(s32*)(node + 0x14) * 4));
+                texDone = *(s32*)sequence >= target;
+            } else {
+                texDone = GSmodelHasTexAnimationEnded(model);
+            }
+
+            done = done && texDone;
+        }
+
+        if (!done) {
+            return TRUE;
+        }
+        if ((*(u32*)(node + 0x9C) & 2) != 0) {
+            *(s32*)(node + 0x6C) = 3;
+            return TRUE;
+        }
+        return FALSE;
     }
-    return FALSE;
+
+    case 5:
+        if ((*(u32*)(node + 0x7C) & 1) != 0) {
+            if (lbl_8047B408 != 0) {
+                return GSthreadIsRunning(lbl_8047B408);
+            }
+            return FALSE;
+        } else {
+            u32 status = fn_801666BC(*(u32*)(node + 0x78));
+            return status == 2 || status == 3;
+        }
+
+    case 4:
+        if (*(s32*)(node + 0x78) == 0) {
+            return TRUE;
+        } else {
+            u32 effectId = *(u32*)(node + 0x78);
+
+            if (!fn_801310A8(effectId)) {
+                return FALSE;
+            }
+            if (*(s32*)(node + 0x88) == 0) {
+                if (fn_8013AB34(fn_8013151C(effectId))) {
+                    *(s32*)(node + 0x6C) = 3;
+                }
+            }
+            return TRUE;
+        }
+
+    case 3:
+        if (*(void**)(node + 0x8C) == NULL) {
+            return TRUE;
+        }
+        if (fn_80118DA8(*(void**)(node + 0x8C)) != 0) {
+            return TRUE;
+        }
+        return fn_80118D84(*(void**)(node + 0x8C)) != 0;
+
+    case 1:
+        if (*(s32*)(node + 0x78) != 0) {
+            return FALSE;
+        }
+        if ((*(s32*)(node + 0x74) - *(s32*)(node + 0x70)) < *(s32*)(node + 0x7C)) {
+            return TRUE;
+        } else {
+            u8* sequence = *(u8**)(node + 0xB0);
+            u8* current = *(u8**)(sequence + 0x24);
+
+            while (current != NULL) {
+                if (*(s32*)(current + 0x6C) == 3) {
+                    *(s8*)(sequence + 0x15) = -1;
+                    return FALSE;
+                }
+                current = *(u8**)(current + 0xA8);
+            }
+            *(u8*)(sequence + 0x15) = 1;
+            return FALSE;
+        }
+
+    case 6:
+        return FALSE;
+
+    case 0:
+    default:
+        if (fn_800057A8() == 2) {
+            fn_801D744C(1);
+        }
+        GSlogWrite(lbl_802795B4);
+        return FALSE;
+    }
 }
 
 /**
