@@ -1418,11 +1418,13 @@ void fn_8009567C(u8* context, u8* sprite)
 
     switch (window_id) {
     case 0x13B:
+    case 0x57B:
         value = (u16)fn_8010C46C(
             (u8)pokemonDataBiosGetZokuseiDataId(pokemon_data, 0));
         fn_801040F0(0, 0, context, value, 0);
         break;
     case 0x13C:
+    case 0x57D:
         value = (u8)pokemonDataBiosGetZokuseiDataId(pokemon_data, 0);
         message = (u8)pokemonDataBiosGetZokuseiDataId(pokemon_data, 1);
         if (value != message) {
@@ -1555,12 +1557,10 @@ void fn_8009567C(u8* context, u8* sprite)
         }
         break;
     case 0x54E:
-    case 0x57B:
         value = pokemonGetStatus(pokemon, 0, 0x79, 0);
         fn_80132A38(0x34, value);
         fn_800FBB34(0, 0, x, y, color, 0xDE);
         break;
-    case 0x57D:
     case 0x582:
         value = fn_8011F77C(pokemon);
         message = 0x2BD9 + (value < 7 ? value : 0);
