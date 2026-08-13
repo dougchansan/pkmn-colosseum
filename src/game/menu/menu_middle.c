@@ -5162,19 +5162,15 @@ void fn_8006E798(void* menu) {
     u16 sequence;
 
     if (*(s8*)((u8*)menu + 2) == 0) {
-        switch (*(s8*)((u8*)menu + 1)) {
-        case 0:
+        if (*(s8*)((u8*)menu + 1) == 0) {
             sequence = *(u16*)(data + 0x18);
-            break;
-        case 3:
+            for (i = 0; i < 7; i++) {
+                sprite = windowSearchItemID(
+                    menu, *(u16*)(data + 0x5F4 + i * 2));
+                winSetSequence((u8*)sprite + 0xC, sequence);
+            }
+        } else if (*(s8*)((u8*)menu + 1) == 3) {
             sequence = *(u16*)(data + 0x1A);
-            break;
-        default:
-            sequence = 0;
-            break;
-        }
-        if (*(s8*)((u8*)menu + 1) == 0 ||
-            *(s8*)((u8*)menu + 1) == 3) {
             for (i = 0; i < 7; i++) {
                 sprite = windowSearchItemID(
                     menu, *(u16*)(data + 0x5F4 + i * 2));
