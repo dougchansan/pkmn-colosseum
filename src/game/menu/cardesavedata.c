@@ -785,12 +785,15 @@ s32 fn_8008102C(void** object_ref, const u32* descriptor, s32 index,
     case 49:
         record = object + index * 0x2A;
         record[0x516] = (u8)value;
+        {
+            const u8* byteEntry = table + 0x9F8;
         for (i = 0; i < 3; i++) {
-            for (j = 0; j < 10; j++) {
-                if ((table + 0x9F8)[i * 10 + j] == (u8)value) {
+            for (j = 0; j < 10; j++, byteEntry++) {
+                if (*byteEntry == (u8)value) {
                     return 1;
                 }
             }
+        }
         }
         return 0;
     case 50:
