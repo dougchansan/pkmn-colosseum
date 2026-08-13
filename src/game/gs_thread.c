@@ -7956,7 +7956,6 @@ u8 *fn_800F6D18(arg0, arg1, arg2)
     u16 key;
     u32 i;
     u32 lowId;
-    u32 attempts;
     const char *msgs;
 
     msgs = (const char *)lbl_80271068;
@@ -8009,10 +8008,11 @@ u8 *fn_800F6D18(arg0, arg1, arg2)
     mgr = (u8 *)lbl_80478B00;
     oldKey = *(u16 *)(mgr + 0x04);
     key = oldKey;
-    for (attempts = 0; attempts < 0x10000; attempts++) {
+    for (;;) {
         key++;
         if (key == oldKey) {
-            break;
+            GSlogWritef(msgs + 0x1F0, (u16)arg0);
+            return NULL;
         }
         if (key == 0) {
             continue;
@@ -8030,10 +8030,6 @@ u8 *fn_800F6D18(arg0, arg1, arg2)
             *(u16 *)(mgr + 0x04) = key;
             break;
         }
-    }
-    if (attempts == 0x10000 || key == oldKey) {
-        GSlogWritef(msgs + 0x1F0, (u16)arg0);
-        return NULL;
     }
 
     lowId = arg0 & 0xFFFF;
