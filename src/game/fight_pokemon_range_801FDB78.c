@@ -1329,7 +1329,7 @@ u8 fightOutPokemonGetJoutaiMigawariHp(void* trainer) {
 #pragma push
 #pragma optimization_level 0
 #pragma peephole off
-void fightOutPokemonCheckFightActionWazaSelect(void) {
+u8 fightOutPokemonCheckFightActionWazaSelect(void* fighter, u8 mode) {
     extern u8 lbl_80375CA8[];
     extern void fn_80119ED0();
     extern void fn_8011A3E4();
@@ -1362,15 +1362,13 @@ void fightOutPokemonCheckFightActionWazaSelect(void) {
     u32 r9 = 0;
     u32 r26 = 0;
     u32 r27 = 0;
-    u32 r28 = 0;
+    u32 r28 = mode;
     u32 r29 = 0;
     u32 r30 = 0;
-    u32 r31 = 0;
+    u32 r31 = (u32)fighter;
 
     r5 = 0x14;
     r6 = 0x0;
-    r31 = r3;
-    r28 = r4;
     r3 = 0x0;
     r4 = 0x0;
     fightFloorGetStatus();
