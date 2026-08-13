@@ -217,8 +217,8 @@ u16 fn_8010C508(u32 typeA, u32 typeB) {
 
 /* 0x8010C54C | 0x104 */
 #pragma push
-#pragma optimization_level 0
-#pragma optimizewithasm off
+#pragma optimization_level 4
+#pragma dont_inline on
 s32 fn_8010C54C(u16 param1, u8 mode) {
     s32 i;
     u16 code1;
