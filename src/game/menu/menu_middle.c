@@ -246,7 +246,7 @@ typedef struct KeyInfo_8006BB34 {
     u8 padA[2];
 } KeyInfo_8006BB34;
 void fn_8006E798(void* menu);
-void fn_8006E9A4(void);
+void fn_8006E9A4(void* window, void* sprite);
 void fn_8006EE7C(void* menu);
 void fn_8006EF24(void* menu);
 void fn_8006EFF8(void* menu);
@@ -5239,15 +5239,15 @@ void fn_8006E798(void* menu) {
 
 
 /* 0x8006E9A4 | size: 0x4D8 */
-void fn_8006E9A4(void) {
+void fn_8006E9A4(void* window, void* sprite) {
     extern void fn_8006B3C8();
     extern void winSpriteGetDisp();
     extern void msgctrlSetValue();
     u8 sp[0x910];
     u32 r0 = 0;
     u32 r1 = (u32)sp;
-    u32 r3 = 0;
-    u32 r4 = 0;
+    u32 r3 = (u32)window;
+    u32 r4 = (u32)sprite;
     u32 r5 = 0;
     u32 r6 = 0;
     u32 r30 = 0;
