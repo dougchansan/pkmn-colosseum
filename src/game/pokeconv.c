@@ -74,24 +74,65 @@ s32 fn_80089380(u8* destination, const u8* source)
     extern void __assert(const char*, u32, const char*);
     u32 value;
     u32 swapped;
+    u32 word0;
+    u32 word1;
+    u32 word2;
+    u32 valid;
     u32 i;
-    u16 count;
+    const u8* input;
+    u8* output;
 
-    *(u32*)(destination + 0) = BSWAP32(*(const u32*)(source + 0));
-    *(u32*)(destination + 4) = BSWAP32(*(const u32*)(source + 4));
-    *(u32*)(destination + 8) = BSWAP32(*(const u32*)(source + 8));
-    value = BSWAP32(*(const u32*)(source + 0xC));
-    *(u16*)(destination + 0xC) = value >> 16;
-    *(u16*)(destination + 0xE) = value;
+    word0 = *(const u32*)(source + 0);
+    input = source + 0x10;
+    word1 = *(const u32*)(source + 4);
+    valid = 0;
+    word2 = *(const u32*)(source + 8);
+    swapped = word0 << 24;
+    swapped |= (word0 & 0x00FF0000) << 8;
+    swapped |= (word0 & 0x0000FF00) >> 8;
+    swapped |= word0 >> 24;
+    *(u32*)(destination + 0) = swapped;
 
-    count = *(u16*)(destination + 0xE);
-    if (count != 0x32 && count != 0x1E) {
+    swapped = word1 << 24;
+    swapped |= (word1 & 0x00FF0000) << 8;
+    swapped |= (word1 & 0x0000FF00) >> 8;
+    swapped |= word1 >> 24;
+    *(u32*)(destination + 4) = swapped;
+
+    swapped = word2 << 24;
+    swapped |= (word2 & 0x00FF0000) << 8;
+    swapped |= (word2 & 0x0000FF00) >> 8;
+    swapped |= word2 >> 24;
+    *(u32*)(destination + 8) = swapped;
+
+    value = *(const u32*)(source + 0xC);
+    swapped = value << 24;
+    swapped |= (value & 0x00FF0000) << 8;
+    swapped |= (value & 0x0000FF00) >> 8;
+    swapped |= value >> 24;
+    *(u16*)(destination + 0xC) = swapped >> 16;
+    *(u16*)(destination + 0xE) = swapped;
+
+    if (*(u16*)(destination + 0xE) == 0x32 ||
+        *(u16*)(destination + 0xE) == 0x1E)
+    {
+        valid = 1;
+    }
+    if (valid == 0) {
         __assert(lbl_8026F568, 0x6F, lbl_8026F574);
     }
-    for (i = 0; i < count; i++) {
-        swapped = BSWAP32(*(const u32*)(source + 0x10 + i * 4));
-        *(u16*)(destination + 0x10 + i * 4) = swapped;
-        *(u16*)(destination + 0x12 + i * 4) = swapped >> 16;
+
+    output = destination;
+    for (i = 0; i < *(u16*)(destination + 0xE); i++) {
+        value = *(const u32*)input;
+        input += 4;
+        swapped = value << 24;
+        swapped |= (value & 0x00FF0000) << 8;
+        swapped |= (value & 0x0000FF00) >> 8;
+        swapped |= value >> 24;
+        *(u16*)(output + 0x10) = swapped;
+        *(u16*)(output + 0x12) = swapped >> 16;
+        output += 4;
     }
 
     if (lbl_8047A664 != 0) {
