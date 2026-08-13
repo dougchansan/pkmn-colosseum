@@ -1964,12 +1964,12 @@ void setVelToJObj(PSParticle* pp, PSForceJObj* jobj) {
         fn_8019D9DC(jobj);
     }
 
-    speed = sqrtf(pp->velocityX * pp->velocityX +
-                  pp->velocityY * pp->velocityY +
-                  pp->velocityZ * pp->velocityZ);
     dx = jobj->worldX - pp->positionX;
     dy = jobj->worldY - pp->positionY;
     dz = jobj->worldZ - pp->positionZ;
+    speed = sqrtf(pp->velocityX * pp->velocityX +
+                  pp->velocityY * pp->velocityY +
+                  pp->velocityZ * pp->velocityZ);
     distanceSquared = dx * dx + dy * dy + dz * dz;
     if (distanceSquared == 0.0f) {
         return;
@@ -3848,7 +3848,6 @@ PSGeneratorState* psCreateGeneratorID(s32 linkNo, s32 bankIdx, s32 scriptId) {
     u16 activeCount;
     u16 familyId;
     u16 shapeType;
-    u16 shapeFlags;
 
     if (bankIdx >= 64 || linkNo >= 8 ||
         scriptId >= lbl_80452CC8[bankIdx]) {
@@ -3967,17 +3966,16 @@ PSGeneratorState* psCreateGeneratorID(s32 linkNo, s32 bankIdx, s32 scriptId) {
             *(f32*) (raw + 0x74) = lbl_8047D6B0;
             *(f32*) (raw + 0x78) = lbl_8047D6B0;
             *(f32*) (raw + 0x7C) = lbl_8047D6B0;
-            shapeFlags = 0;
-            if (x < lbl_8047D6B0) {
-                shapeFlags |= 1;
+            *(u16*) (raw + 0x84) = 0;
+            if (*(f32*) (entry + 0x30) < lbl_8047D6B0) {
+                *(u16*) (raw + 0x84) |= 1;
             }
-            if (y < lbl_8047D6B0) {
-                shapeFlags |= 2;
+            if (*(f32*) (entry + 0x34) < lbl_8047D6B0) {
+                *(u16*) (raw + 0x84) |= 2;
             }
-            if (z < lbl_8047D6B0) {
-                shapeFlags |= 4;
+            if (*(f32*) (entry + 0x38) < lbl_8047D6B0) {
+                *(u16*) (raw + 0x84) |= 4;
             }
-            *(u16*) (raw + 0x84) = shapeFlags;
             break;
         }
         case 6:
