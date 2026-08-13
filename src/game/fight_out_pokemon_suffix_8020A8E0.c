@@ -54,6 +54,7 @@ extern void  fn_8011B67C(void);
 extern void  pokemonGetSoubiItemDataId(void);
 extern void* fightActionGetPri(void* p);
 extern void  wazaGetStatus(void);
+extern u32   statusGetStatus();
 
 /* SDA table pointers for event data arrays */
 extern u32 lbl_80478D38;   /* Event table count */
@@ -66,7 +67,6 @@ int fn_8020A8E0(u32 r3,u32 r4)
 
 {
     extern int _fadeEffectGetRandom__FUl();
-    extern u32 fn_80135E44();
     extern u32 fightTargetDataBiosGetStatusKid();
     extern void fightTargetDataBiosGetPtr();
     extern int fightTargetGetPtr();
@@ -145,10 +145,10 @@ LAB_00207c9c:
                 fightTargetDataBiosGetPtr(uVar4);
                 uVar7 = fightTargetDataBiosGetStatusKid();
                 if (cVar13 == 0) {
-                  uVar8 = fn_80135E44(uVar7,iVar6,sVar9,uVar5,sVar10);
+                  uVar8 = statusGetStatus(uVar7,iVar6,sVar9,uVar5,sVar10);
                 }
                 else {
-                  uVar8 = fn_80135E44(uVar7,iVar6,0,uVar5,0);
+                  uVar8 = statusGetStatus(uVar7,iVar6,0,uVar5,0);
                 }
                 goto LAB_00207c9c;
               }
@@ -208,10 +208,10 @@ LAB_00207a34:
         fightTargetDataBiosGetPtr(uVar8);
         uVar3 = fightTargetDataBiosGetStatusKid();
         if (cVar13 == 0) {
-          uVar1 = fn_80135E44(uVar3,iVar2,sVar9,uVar4,sVar10);
+          uVar1 = statusGetStatus(uVar3,iVar2,sVar9,uVar4,sVar10);
         }
         else {
-          uVar1 = fn_80135E44(uVar3,iVar2,0,uVar4,0);
+          uVar1 = statusGetStatus(uVar3,iVar2,0,uVar4,0);
         }
         goto LAB_00207a34;
       }
