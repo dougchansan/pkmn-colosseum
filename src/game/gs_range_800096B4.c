@@ -61,7 +61,7 @@ s32 fn_800096B4(u32 arg0, s32 arg1, u8* arg2, u8* arg3, u8* arg4, u8* arg5) {
     extern s8 pokemonCheckRare();
     extern u8 pokemonCheckValid();
     extern void pokemonCreate();
-    extern u16 pokemonCreateRndFit();
+    extern u32 pokemonCreateRndFit(void*, s8, s8, s8, u32);
     extern void pokemonDoItemSoubi();
     extern u16 pokemonGetJoutaiDataId();
     extern u16 pokemonGetNowLevelToExp();
@@ -445,10 +445,10 @@ s32 fn_800096B4(u32 arg0, s32 arg1, u8* arg2, u8* arg3, u8* arg4, u8* arg5) {
             pokemonSetStatus(
                 arg0, 0, 0x6F, 0,
                 pokemonCreateRndFit(
-                    arg0,
-                    a,
-                    pokemonGetStatus(arg0, 0, 0xBF, 0),
-                    pokemonCheckRare(arg0),
+                    (void*)arg0,
+                    (s8)a,
+                    (s8)pokemonGetStatus(arg0, 0, 0xBF, 0),
+                    (s8)pokemonCheckRare(arg0),
                     pokemonGetStatus(arg0, 0, 0x75, 0)));
             changed = 1;
             if (arg2 != NULL) {
@@ -465,10 +465,10 @@ s32 fn_800096B4(u32 arg0, s32 arg1, u8* arg2, u8* arg3, u8* arg4, u8* arg5) {
             pokemonSetStatus(
                 arg0, 0, 0x6F, 0,
                 pokemonCreateRndFit(
-                    arg0,
-                    pokemonGetStatus(arg0, 0, 0xBA, 0),
-                    b,
-                    pokemonCheckRare(arg0),
+                    (void*)arg0,
+                    (s8)pokemonGetStatus(arg0, 0, 0xBA, 0),
+                    (s8)b,
+                    (s8)pokemonCheckRare(arg0),
                     pokemonGetStatus(arg0, 0, 0x75, 0)));
             changed = 1;
             if (arg2 != NULL) {
@@ -483,10 +483,10 @@ s32 fn_800096B4(u32 arg0, s32 arg1, u8* arg2, u8* arg3, u8* arg4, u8* arg5) {
             pokemonSetStatus(
                 arg0, 0, 0x6F, 0,
                 pokemonCreateRndFit(
-                    arg0,
-                    pokemonGetStatus(arg0, 0, 0xBA, 0),
-                    pokemonGetStatus(arg0, 0, 0xBF, 0),
-                    (delta > 0) ? 1 : 0,
+                    (void*)arg0,
+                    (s8)pokemonGetStatus(arg0, 0, 0xBA, 0),
+                    (s8)pokemonGetStatus(arg0, 0, 0xBF, 0),
+                    (s8)((delta > 0) ? 1 : 0),
                     pokemonGetStatus(arg0, 0, 0x75, 0)));
             changed = 1;
             if (arg2 != NULL) {
