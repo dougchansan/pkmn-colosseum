@@ -768,11 +768,180 @@ typedef struct GSFieldFixedMdlEventList {
     /* 0x20 */ f32 minZ;
 } GSFieldFixedMdlEventList;
 
+typedef struct GScolsys2TriangleList {
+    GScolsys2Triangle* triangles;
+    u32 count;
+} GScolsys2TriangleList;
+
+typedef struct GScolsys2Region {
+    u8 pad_00[0x24];
+    void* triList;
+    u8 pad_28[0x14];
+    u16 flags;
+    u8 pad_3E[2];
+} GScolsys2Region;
+
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
 s32 fn_8010E138(void* origin, void* direction) {
-    /* TODO: match -- 824 bytes at 0x8010E138 */
+    ColDrawScene* scene;
+    GScolsys2Region* region;
+    ColWalkHit temporary[8];
+    ColWalkHit* tempWrite;
+    ColWalkHit* tempRead;
+    ColWalkHit* outHit;
+    ColMtx inverse;
+    ColMtx forward;
+    Vec3f transformed[3];
+    Vec3f plane;
+    Vec3f hitPoint;
+    Vec3f* point;
+    GScolsys2TriangleList* list;
+    GSFieldFixedMdlEventList* grid;
+    GSFieldFixedMdlCell* cell;
+    GScolsys2Triangle* triangle;
+    u32* triangleIndices;
+    s32 enabled;
+    s32 totalCount;
+    u32 regionIndex;
+    s32 temporaryCount;
+    s32 i;
+    s32 duplicate;
+    u8 field30;
+    u8 field31;
+    s32 cellX;
+    s32 cellZ;
+    s32 triCount;
+    s32 triIdx;
+
+    point = origin;
+    outHit = direction;
+    totalCount = 0;
+    scene = fn_8010CBC0();
+    if (scene == NULL) {
+        return 0;
+    }
+
+    region = (GScolsys2Region*)scene->objects;
+    for (regionIndex = 0;
+         regionIndex < scene->count && totalCount < 8;
+         regionIndex++, region = (GScolsys2Region*)((u8*)region + 0x40))
+    {
+        GScolsys2GetObjEnable(regionIndex, &enabled);
+        if (enabled == 0 || region->triList == NULL) {
+            continue;
+        }
+
+        temporaryCount = 0;
+        tempWrite = temporary;
+
+        if ((region->flags & 1) != 0) {
+            fn_8010CA30(inverse, regionIndex);
+            fn_8010C8D0(forward, regionIndex);
+
+            list = (GScolsys2TriangleList*)region->triList;
+            triangle = list->triangles;
+            for (triIdx = 0;
+                 triIdx < (s32)list->count && temporaryCount < 8;
+                 triIdx++, triangle++)
+            {
+                for (i = 0; i < 3; i++) {
+                    PSMTXMultVec(inverse, (const f32*)&triangle->verts[i],
+                                 (f32*)&transformed[i]);
+                }
+                PSMTXMultVec(forward, (const f32*)&triangle->normal,
+                             (f32*)&plane);
+                if (getCpPolyVec__FP5GSvecP5GSvecP5GSvecP5GSvec(
+                        &hitPoint, point, transformed, &plane) == 0)
+                {
+                    continue;
+                }
+
+                duplicate = 0;
+                for (i = 0; i < temporaryCount; i++) {
+                    if (temporary[i].height == hitPoint.y) {
+                        duplicate = 1;
+                        break;
+                    }
+                }
+                if (duplicate != 0) {
+                    continue;
+                }
+
+                tempWrite->height = hitPoint.y;
+                field30 = *(u8*)((u8*)triangle + 0x30);
+                tempWrite->surfaceType =
+                    ((field30 >> 4) == 0xF) ? 0xFFFF : (u16)(field30 >> 4);
+                tempWrite->surfaceId =
+                    ((field30 & 0xF) == 0xF) ? 0xFFFF : (u16)(field30 & 0xF);
+                field31 = *(u8*)((u8*)triangle + 0x31);
+                tempWrite->layer = (u8)(field31 >> 4);
+                tempWrite->subLayer = (u8)(field31 & 0xF);
+                tempWrite++;
+                temporaryCount++;
+            }
+        } else {
+            grid = (GSFieldFixedMdlEventList*)region->triList;
+            cellX = (s32)((point->x - grid->minX) / grid->cellWidth);
+            if (cellX >= 0 && cellX < (s32)grid->cellCountX) {
+                cellZ = (s32)((point->z - grid->minZ) / grid->cellDepth);
+                if (cellZ >= 0 && cellZ < (s32)grid->cellCountZ) {
+                    cell = grid->cells + (cellX + cellZ * grid->cellCountX);
+                    triangleIndices = grid->triangleIndices + cell->firstIndex;
+                    triCount = cell->count;
+                    for (triIdx = 0;
+                         triIdx < triCount && temporaryCount < 8;
+                         triIdx++, triangleIndices++)
+                    {
+                        triangle = grid->triangles + *triangleIndices;
+                        if (getCpPolyVec__FP5GSvecP5GSvecP5GSvecP5GSvec(
+                                &hitPoint, point, &triangle->verts[0],
+                                &triangle->normal) == 0)
+                        {
+                            continue;
+                        }
+
+                        duplicate = 0;
+                        for (i = 0; i < temporaryCount; i++) {
+                            if (temporary[i].height == hitPoint.y) {
+                                duplicate = 1;
+                                break;
+                            }
+                        }
+                        if (duplicate != 0) {
+                            continue;
+                        }
+
+                        tempWrite->height = hitPoint.y;
+                        field30 = *(u8*)((u8*)triangle + 0x30);
+                        tempWrite->surfaceType =
+                            ((field30 >> 4) == 0xF) ? 0xFFFF
+                                                    : (u16)(field30 >> 4);
+                        tempWrite->surfaceId =
+                            ((field30 & 0xF) == 0xF) ? 0xFFFF
+                                                     : (u16)(field30 & 0xF);
+                        field31 = *(u8*)((u8*)triangle + 0x31);
+                        tempWrite->layer = (u8)(field31 >> 4);
+                        tempWrite->subLayer = (u8)(field31 & 0xF);
+                        tempWrite++;
+                        temporaryCount++;
+                    }
+                }
+            }
+        }
+
+        tempRead = temporary;
+        while (temporaryCount > 0 && totalCount < 8) {
+            *outHit = *tempRead;
+            outHit++;
+            tempRead++;
+            temporaryCount--;
+            totalCount++;
+        }
+    }
+
+    return totalCount;
 }
 #pragma pop
 
