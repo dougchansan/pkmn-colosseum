@@ -213,6 +213,11 @@ void fn_801ED3B8(void)
     extern void fn_801EE4DC(u16 darkPokemonId, u16 value);
     extern u16 fn_801906A0(u16 flag);
     extern void _flagSet(u16 flag, u16 value);
+    extern void pokemonAddDpFormPokemonDpFilterId(u8* pokemon, u32 filter, u32 form);
+    extern u8 pokemonBiosGetLevel(u8* pokemon);
+    extern u32 pokemonBiosGetExp(u8* pokemon);
+    extern void pokemonGrowBasisStatus(u8* pokemon, u32 experience);
+    extern void pokemonOboeWaza(u8* pokemon, u8 level, u32 flag, u8* learned);
     u8* hero = savedataGetStatus(NULL, 2);
     u16 partyIndex;
 
@@ -245,5 +250,38 @@ void fn_801ED3B8(void)
             value++;
         }
         _flagSet(0xD1, value);
+    }
+
+    hero = savedataGetStatus(NULL, 0xB);
+    if (hero != NULL && hero[0] != 0) {
+        u8* pokemon = hero + 8;
+        u16 darkPokemonId = pokemonBiosGetDarkpokemonDataId(pokemon);
+
+        if (darkPokemonId != 0 && fn_801EEC74(darkPokemonId)) {
+            darkPokemonId = 0;
+        }
+        if (darkPokemonId != 0 && pokemonBiosGetDp(pokemon) != 0) {
+            u16 value = fn_801EE470(darkPokemonId);
+
+            if (value >= 0x100) {
+                pokemonAddDpFormPokemonDpFilterId(pokemon, 0, 3);
+                fn_801EE4DC(darkPokemonId, 0);
+            } else {
+                fn_801EE4DC(darkPokemonId, value + 1);
+            }
+        } else if (pokemonBiosGetLevel(pokemon) < 100) {
+            u32 experience = pokemonBiosGetExp(pokemon);
+            u8 learned = FALSE;
+
+            if (experience != (u32)-1) {
+                experience++;
+            }
+            pokemonGrowBasisStatus(pokemon, experience);
+            pokemonOboeWaza(pokemon, pokemonBiosGetLevel(pokemon), 1, &learned);
+        }
+        hero = savedataGetStatus(NULL, 0xB);
+        if (hero != NULL) {
+            *(u16*)(hero + 2) = fn_801906A0(0xD1);
+        }
     }
 }
