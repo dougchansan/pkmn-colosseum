@@ -1363,13 +1363,14 @@ void fn_801D7464(void) {
     }
 
     if (*(s32*)lbl_804673F8 == 0 && GSscene_GetMode() == 2) {
+        forward = *(const WazaViewerVec*)lbl_80279338;
         GSscene_GetCameraDirectionVector(&direction);
         GSscene_GetCameraPositionVector(&position);
         GSscene_GetCameraViewVector(&view);
         GSvecAdd(&target, &position, &view);
         fn_800E0168(&target, &target, &direction);
         fn_800E0060(&target, &target);
-        fn_800DFFCC(&axisX, &position, &target);
+        fn_800DFFCC(&axisX, &forward, &target);
         fn_800E0060(&axisX, &axisX);
         fn_800DFFCC(&forward, &target, &axisX);
         fn_800E0060(&forward, &forward);
