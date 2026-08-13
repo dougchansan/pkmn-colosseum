@@ -2940,6 +2940,49 @@ PSParticle* psInterpretParticle0(PSParticle* pp, PSParticle* parentCtx) {
                         break;
                     }
 
+                    case 0xF2: {
+                        s32 scriptId = ((u16)stream[0] << 8) | stream[1];
+                        u32* bank;
+
+                        stream += 2;
+                        bank = (u32*)lbl_804527C8[pp->bankIndex];
+                        if (bank != NULL) {
+                            scriptId = bank[scriptId];
+                        }
+                        spawned = psGenerateParticleID0(
+                            pp, pp->linkNo, pp->bankIndex, scriptId, NULL);
+                        if (spawned == NULL) {
+                            break;
+                        }
+                        spawned->positionX = pp->positionX;
+                        spawned->positionY = pp->positionY;
+                        spawned->positionZ = pp->positionZ;
+                        spawned->velocityX = pp->velocityX;
+                        spawned->velocityY = pp->velocityY;
+                        spawned->velocityZ = pp->velocityZ;
+                        spawned->scriptId = pp->scriptId;
+                        spawned->peopleObj = pp->peopleObj;
+                        if (pp->peopleObj != NULL) {
+                            (*(u32*)((u8*)pp->peopleObj + 0x4C))++;
+                        }
+                        if (*(u32*)((u8*)pp->peopleObj + 4) & 0x20000000) {
+                            spawned->flags |= 0x20000000;
+                        }
+                        psApplyVelocityLocalRotation(spawned);
+                        if (pp->parentObj != NULL) {
+                            if (pp->peopleObj != NULL &&
+                                (*(u16*)((u8*)pp->peopleObj + 0x12) & 0x40)) {
+                                psChangeParticleAppSRT(
+                                    spawned, (PSAppSRT*)pp->parentObj);
+                            } else {
+                                psAttachParticleAppSRT(
+                                    spawned, (PSAppSRT*)pp->parentObj);
+                            }
+                        }
+                        psInterpretParticle0(spawned, pp);
+                        break;
+                    }
+
                     case 0xBA: {
                         if (pp->color1Timer != 0) {
                             s32 scale = ((u32)pp->color1Countdown << 16) /
