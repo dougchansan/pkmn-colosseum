@@ -812,8 +812,8 @@ s32 fn_8010E138(void* origin, void* direction) {
     u8 field31;
     s32 cellX;
     s32 cellZ;
-    s32 triCount;
-    s32 triIdx;
+    u32 triCount;
+    u32 triIdx;
 
     point = origin;
     outHit = direction;
@@ -843,7 +843,7 @@ s32 fn_8010E138(void* origin, void* direction) {
             list = (GScolsys2TriangleList*)region->triList;
             triangle = list->triangles;
             for (triIdx = 0;
-                 triIdx < (s32)list->count && temporaryCount < 8;
+                 triIdx < list->count && temporaryCount < 8;
                  triIdx++, triangle++)
             {
                 for (i = 0; i < 3; i++) {
