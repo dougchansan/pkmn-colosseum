@@ -2820,8 +2820,6 @@ void fn_8013BE04(void* ptr, void* mtx, u8* color, f32 x, f32 z, f32 scale) {
             f32 u;
             f32 v;
             f32 alpha;
-            f32 alphaX;
-            f32 alphaZ;
 
             GSvecAdd(positions, mtx, &current);
             GSvecCopy(normals, lbl_8031554C);
@@ -2832,9 +2830,9 @@ void fn_8013BE04(void* ptr, void* mtx, u8* color, f32 x, f32 z, f32 scale) {
             colors[0] = color[0];
             colors[1] = color[1];
             colors[2] = color[2];
-            alphaX = 1.0f - current[0] * current[0] * inverseBaseX2;
-            alphaZ = 1.0f - current[2] * current[2] * inverseBaseZ2;
-            alpha = (f32)color[3] * alphaX * alphaZ;
+            alpha = (f32)color[3] *
+                    (1.0f - current[0] * current[0] * inverseBaseX2) *
+                    (1.0f - current[2] * current[2] * inverseBaseZ2);
             colors[3] = (u8)alpha;
             GSvecAdd(&current, &current, &colStep);
             positions += 0xC;
