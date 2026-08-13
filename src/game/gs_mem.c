@@ -454,8 +454,6 @@ static u16 fn_800E2DB0(void* address, u32 size)
                 block->next->prev = suffix;
             }
             block->next = suffix;
-        } else {
-            allocationSize += suffixSize;
         }
     }
 
