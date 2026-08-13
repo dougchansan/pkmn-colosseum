@@ -3481,7 +3481,7 @@ void fn_8003F2DC(u8* arr, s32 count, s32 dir) {
 void fn_80044630(void) {
     extern void  _threadSwitch(void);
     extern u32   menuCloseCustom(u32 a, u32 b, u32 c);
-    extern u32   fn_8010264C(u32 a, u32 b);
+    extern s32   menuOpen(s32 menu, s32 mode);
     extern void  GSvecCopy(void* dst, void* src);
     extern void  GSscene_SetMode(u32 mode);
     extern void  GScameraSetPerspective(void* cam, f32 a, f32 b, f32 c, f32 d);
@@ -3540,18 +3540,18 @@ void fn_80044630(void) {
         switch (*(s32*)(S + 0x1C)) {
         case 0: {   /* .L_800446F0 */
             fn_8004BDB8(-1, 1);
-            fn_8010264C(0x35, 0);
-            fn_8010264C(0x3b, 0);
-            fn_8010264C(0x36, 0);
-            fn_8010264C(0x37, 0);
-            fn_8010264C(0x38, 0);
-            fn_8010264C(0x39, 0);
+            menuOpen(0x35, 0);
+            menuOpen(0x3b, 0);
+            menuOpen(0x36, 0);
+            menuOpen(0x37, 0);
+            menuOpen(0x38, 0);
+            menuOpen(0x39, 0);
             *(s32*)(S + 0x1c) = 1;
         } break;
 
         case 1: {   /* .L_80044750 */
             s32 r;
-            r = (s32)fn_8010264C(0x3a, 1);
+            r = menuOpen(0x3a, 1);
             *(s32*)(S + 0x28) = 0;
             if (r >= 0) {
                 if (*(s32*)(S + 0x18) == 1) {
@@ -3576,9 +3576,9 @@ void fn_80044630(void) {
 
         case 4: {   /* .L_800447D4 */
             s32 r;
-            fn_8010264C(0x96, 0);
-            fn_8010264C(0xa1, 0);
-            r = (s32)fn_8010264C(0xa2, 1);
+            menuOpen(0x96, 0);
+            menuOpen(0xa1, 0);
+            r = menuOpen(0xa2, 1);
             if (r >= 0)
                 break;
             if (*(s32*)(S + 0x1c) == 4) {
@@ -3591,8 +3591,8 @@ void fn_80044630(void) {
 
         case 5: {   /* .L_80044830 */
             s32 r;
-            fn_8010264C(0x96, 0);
-            r = (s32)fn_8010264C(0xa2, 1);
+            menuOpen(0x96, 0);
+            r = menuOpen(0xa2, 1);
             if (r >= 0)
                 break;
             if (*(s32*)(S + 0x1c) == 5) {
@@ -3626,7 +3626,7 @@ void fn_80044630(void) {
             *(u8*)(S + 0x1a0) = 0;
             *(u8*)(S + 0x1b4) = 0;
             *(s32*)(S + 0x1e4) = 0;
-            r = (s32)fn_8010264C(0xce, 1);
+            r = menuOpen(0xce, 1);
             if (r < 0) {
                 *(s32*)(S + 0x1c) = 0xc;
                 *(f32*)(S + 0x50) = lbl_8047BC94;
