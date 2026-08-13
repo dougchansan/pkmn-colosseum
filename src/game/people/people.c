@@ -4380,6 +4380,29 @@ void fn_80189990(u32 groupId, u32 index, s32 messageId) {
     messageValue = 0;
     entry = peopleFindBySelf(peopleFindSelf(groupId, index));
     if (entry != NULL) {
+        GSvec cameraPosition;
+        GSvec delta;
+        GSvec rotation;
+        void* camera;
+        f32 angle;
+        f32 fullTurn;
+        s32 revolutions;
+
+        camera = GSresGetResource(0, 0x64);
+        if (camera != NULL) {
+            GSvecCopy(&cameraPosition, GSmodelGetPositionPtr(camera));
+            fn_800E0168(&delta, &cameraPosition, fn_8018FCBC(entry));
+            angle = (f32)atan2(delta.x, delta.z);
+            stateEntry = peopleFindBySelf(peopleFindSelf(groupId, index));
+            if (stateEntry != NULL) {
+                fn_8018FC2C(stateEntry, &rotation);
+                fullTurn = lbl_8047D7C0;
+                revolutions = (s32)(rotation.y / fullTurn);
+                stateEntry->pad22 = 1;
+                stateEntry->field_40 = angle + fullTurn * revolutions;
+                stateEntry->field_44 = lbl_8047D79C;
+            }
+        }
         stateEntry = peopleFindBySelf(peopleFindSelf(groupId, index));
         flags = stateEntry != NULL ? stateEntry->flags : 0;
         if (flags & 0x20) {
