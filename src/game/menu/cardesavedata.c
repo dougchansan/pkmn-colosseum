@@ -99,6 +99,7 @@ extern void qsort(void*, u32, u32, s32 (*)(u32, u32));
 extern void __assert();
 extern char lbl_80268B88[];
 extern char lbl_8047C140[];
+extern char lbl_8047C178[];
 extern const u16 lbl_8047C190[4];
 
 typedef struct MenuCardEItem {
@@ -942,6 +943,7 @@ s32 fn_8008102C(void** object_ref, const u32* descriptor, s32 index,
         GScharCpy(object + 0xB00, text);
         break;
     default:
+        __assert(table + 0x63E8, 0x8C5, lbl_8047C178);
         return 0;
     }
 #undef object
