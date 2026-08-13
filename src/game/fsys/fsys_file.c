@@ -2410,7 +2410,7 @@ void fn_8017DB74(FSYSSlot* slot) {
         }
     }
 
-    archiveSize = slot->field_1C;
+    archiveSize = FSYSAlign32(slot->field_1C);
     archive = FSYSAllocHandle2C04(archiveSize);
     slot->archiveData = archive;
 
