@@ -399,13 +399,11 @@ s16 fn_80144574(
                 pokemonDataBiosGetGrowDataId(
                     pokemonDataBiosGetPtr(
                         pokemonBiosGetPokemonDataId(activePokemon))));
-            if (growthData != NULL) {
-                pokemonBiosSetExp(activePokemon,
-                    pokemonGrowDataBiosGetExp(growthData, (u8)(boost + 1)));
-                pokemonResetBasisStatus(activePokemon);
-                levelAfterHp = pokemonBiosGetMaxHp(activePokemon) - levelBeforeHp;
-                ADD_LOG(log, logCount, 8, 0, 0);
-            }
+            pokemonBiosSetExp(activePokemon,
+                pokemonGrowDataBiosGetExp(growthData, (u8)(boost + 1)));
+            pokemonResetBasisStatus(activePokemon);
+            levelAfterHp = pokemonBiosGetMaxHp(activePokemon) - levelBeforeHp;
+            ADD_LOG(log, logCount, 8, 0, 0);
         }
     }
 
