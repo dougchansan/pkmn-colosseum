@@ -2799,6 +2799,8 @@ void fn_8013BE04(void* ptr, void* mtx, u8* color, f32 x, f32 z, f32 scale) {
     f32 current[3];
     f32 rowStep[3];
     f32 colStep[3];
+    f32 baseX2;
+    f32 baseZ2;
     f32 inverseBaseX2;
     f32 inverseBaseZ2;
     u16 row;
@@ -2808,14 +2810,18 @@ void fn_8013BE04(void* ptr, void* mtx, u8* color, f32 x, f32 z, f32 scale) {
     set__5GSvecFfff(&rowStep, x / (rows - 1), 0.0f, 0.0f);
     set__5GSvecFfff(&colStep, 0.0f, 0.0f, z / (cols - 1));
     GSvecCopy(&current, &base);
-    inverseBaseX2 = 1.0f / (base[0] * base[0]);
-    inverseBaseZ2 = 1.0f / (base[2] * base[2]);
+    baseX2 = base[0] * base[0];
+    baseZ2 = base[2] * base[2];
+    inverseBaseX2 = 1.0f / baseX2;
+    inverseBaseZ2 = 1.0f / baseZ2;
 
     for (row = 0; row < rows; row++) {
         for (column = 0; column < cols; column++) {
             f32 u;
             f32 v;
             f32 alpha;
+            f32 alphaX;
+            f32 alphaZ;
 
             GSvecAdd(positions, mtx, &current);
             GSvecCopy(normals, lbl_8031554C);
@@ -2826,9 +2832,9 @@ void fn_8013BE04(void* ptr, void* mtx, u8* color, f32 x, f32 z, f32 scale) {
             colors[0] = color[0];
             colors[1] = color[1];
             colors[2] = color[2];
-            alpha = (f32)color[3] *
-                    (1.0f - current[0] * current[0] * inverseBaseX2) *
-                    (1.0f - current[2] * current[2] * inverseBaseZ2);
+            alphaX = 1.0f - current[0] * current[0] * inverseBaseX2;
+            alphaZ = 1.0f - current[2] * current[2] * inverseBaseZ2;
+            alpha = (f32)color[3] * alphaX * alphaZ;
             colors[3] = (u8)alpha;
             GSvecAdd(&current, &current, &colStep);
             positions += 0xC;
