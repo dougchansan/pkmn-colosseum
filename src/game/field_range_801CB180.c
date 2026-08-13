@@ -1446,8 +1446,10 @@ void fn_801CDB04(void)
 
         case 30:
             result = fn_800B4C7C(file_info,
-                                 (u8*) task->work_buffer + 0x2000,
-                                 0x2000, 0x2000, NULL);
+                                 (u8*)task->work_buffer + 0x1E000 +
+                                     task->field_20 * 0x200,
+                                 0x200,
+                                 task->field_20 * 0x1E000 + 0x6000, NULL);
             task->card_result = result == 0
                                     ? CARDGetResultCode(task->card_channel)
                                     : result;
