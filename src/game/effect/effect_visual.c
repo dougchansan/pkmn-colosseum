@@ -1469,9 +1469,11 @@ BOOL fn_80139AC4(void* ptr, u32 tick) {
                     GSvecAdd(point, point, random_offset);
                 }
 
-                if (frame > ((*(u16*)(entry + 0x12DE) +
-                              *(u16*)(entry + 0x12DC)) >> 1)) {
-                    fade = (f32)(*(u16*)(entry + 0x12DE) - frame) /
+                if (*(u16*)(p + 0x48) >
+                    ((*(u16*)(entry + 0x12DE) +
+                      *(u16*)(entry + 0x12DC)) >> 1)) {
+                    fade = (f32)(*(u16*)(entry + 0x12DE) -
+                                 *(u16*)(p + 0x48)) /
                            (f32)((*(u16*)(entry + 0x12DE) -
                                   *(u16*)(entry + 0x12DC)) >> 1);
                     *(u8*)(entry + 0x12D8) = (u8)(p[0x5C] * fade);
@@ -1485,7 +1487,7 @@ BOOL fn_80139AC4(void* ptr, u32 tick) {
         }
     }
 
-    *(u16*)(p + 0x48) = frame + tick;
+    *(u16*)(p + 0x48) = *(u16*)(p + 0x48) + tick;
         return 1;
     }
     }
