@@ -791,7 +791,7 @@ void fn_8010147C(u32 resource, u32 archive, s32 loadParam, s32 callbackArg) {
     extern u8 lbl_80402518[];
     extern void* fn_800F9418(u32, u32, s32, s32, void*);
     extern void fn_80101910(void*);
-    extern void fn_80191F64(void*, u32, u32);
+    extern void HSD_ArchiveParse(void*, void*, u32);
     extern ModelPublicData* fn_80191ECC(void*, const char*);
     ModelResourceEntry* table;
     ModelResourceEntry* object;
@@ -822,7 +822,7 @@ void fn_8010147C(u32 resource, u32 archive, s32 loadParam, s32 callbackArg) {
             GSlogWrite(lbl_802717F0 + 0x540, 0x44);
             return;
         }
-        fn_80191F64(object, resource, archive);
+        HSD_ArchiveParse(object, (void*)resource, archive);
 
         for (i = 0; i < 128; i++) {
             if (table[i].refs != 0 && table[i].handle == object->handle) {
