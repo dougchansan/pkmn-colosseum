@@ -5886,7 +5886,9 @@ s32 fn_800F24F4(void* obj) {
             if (ctx->stackCount <= 0) { GSlogWritef((const char*)(errBase+0x14)); value = ctx->stack[0]; }
             else { ctx->stackCount = ctx->stackCount - 1; value = ctx->stack[ctx->stackCount]; }
         } else {
-            u32 fieldIdx = idx & 0x3F;
+            u32 fieldIdx;
+            if (ctx->stackCount <= 0) { GSlogWritef((const char*)(errBase+0x14)); fieldIdx = ctx->stack[0]; }
+            else { ctx->stackCount = ctx->stackCount - 1; fieldIdx = ctx->stack[ctx->stackCount]; }
             if (idx & 0x20) {
                 if (idx & 0x40) value = (u32)&ctx->stack[ctx->frame + fieldIdx];
                 else value = (u32)&ctx->globals[fieldIdx];
