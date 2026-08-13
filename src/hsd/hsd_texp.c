@@ -1320,6 +1320,8 @@ void fn_801B750C(ColTExpNode* texp, u8 sel);
 extern s32 lbl_8036D278[4];
 extern s32 lbl_8036D288[4][4];
 extern s32 lbl_8036D2C8[4];
+extern s32 lbl_8036D258[4];
+extern s32 lbl_8036D268[4];
 extern s32 lbl_8036D2D8[4][4];
 
 extern void fn_800B8E74(void);
@@ -1864,9 +1866,9 @@ s32 fn_801B5C94(ColTExpNode* tev, s32 idx, ColTExpRes* res)
         }
         tev->c_in[idx].type = 5;
         if (cnst->comp == 6) {
-            tev->c_in[idx].arg = lbl_8036D2C8[cnst->reg - 4];
+            tev->c_in[idx].arg = lbl_8036D258[cnst->reg - 4];
         } else {
-            tev->c_in[idx].arg = lbl_8036D278[cnst->reg - 4];
+            tev->c_in[idx].arg = lbl_8036D268[cnst->reg - 4];
         }
         return 0;
     }
@@ -1878,7 +1880,7 @@ s32 fn_801B5C94(ColTExpNode* tev, s32 idx, ColTExpRes* res)
                 cnst->reg = i;
                 cnst->idx = 3;
                 tev->c_in[idx].type = 5;
-                tev->c_in[idx].arg = lbl_8036D2C8[i - 4];
+                tev->c_in[idx].arg = lbl_8036D258[i - 4];
                 return 0;
             }
         }
@@ -1889,7 +1891,7 @@ s32 fn_801B5C94(ColTExpNode* tev, s32 idx, ColTExpRes* res)
                 cnst->reg = i;
                 cnst->idx = 0;
                 tev->c_in[idx].type = 5;
-                tev->c_in[idx].arg = lbl_8036D278[i - 4];
+                tev->c_in[idx].arg = lbl_8036D268[i - 4];
                 return 0;
             }
         }
