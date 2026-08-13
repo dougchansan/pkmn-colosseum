@@ -1455,57 +1455,13 @@ void fn_8017BD34(FSYSSlot* slot, FSYSFileEntry* entry) {
     void* cached;
     u32 offset;
     u32 size;
-    DecompPoolEntry* pool;
-    u8* archive;
-    u32 fileInfo;
-    u32 i;
-    u32 total;
-    FSYSFileEntry* totalEntry;
 
     sub = FSYS_SLOT_CURRENT_SUB(slot);
     sub->state = 5;
     slot->status = 0x65;
 
-    size = entry->decompressedSize;
-    archive = (u8*)slot->archiveData;
-    if ((*(u32*)(archive + 0x10) & 1) != 0) {
-        FSYS_SLOT_FILE1(slot) = 0;
-        if (fn_80167EF8(archive + entry->dataOffset) != 0) {
-            FSYS_SLOT_FILE1(slot) = fn_80167F28((char*)archive + entry->dataOffset);
-        }
-        fileInfo = FSYS_SLOT_FILE1(slot);
-        if (fileInfo != 0) {
-            size = fn_80167E5C(fileInfo);
-            entry->decompressedSize = size;
-            total = 0;
-            for (i = 0; i < slot->numEntries; i++) {
-                totalEntry = FSYSGetEntryByIndex(slot, i);
-                total += totalEntry->decompressedSize;
-            }
-            total += *(u32*)(archive + slot->field_18 + 8);
-            slot->totalDecompSize = total;
-            fn_80167E64(fileInfo);
-            FSYS_SLOT_FILE1(slot) = 0;
-            FSYSFileEntry_GetSubEntry(entry)->ready = 1;
-        }
-    }
-    pool = gDecompPoolBase;
-    for (i = 0; i < gDVDPoolState; i++) {
-        if (pool->fileID == entry->groupID) {
-            break;
-        }
-        pool = (DecompPoolEntry*)((u8*)pool + FSYS_DECOMP_ENTRY_SIZE);
-    }
-    if (i == gDVDPoolState) {
-        pool = NULL;
-    }
-    if (FSYS_POOL_ALLOC_CB(pool) != NULL) {
-        sub->buffer = ((FSYSAllocCallback)FSYS_POOL_ALLOC_CB(pool))(
-            slot->fileHandle, entry->nameHash, size);
-    } else {
-        sub->buffer = (void*)GSresAllocResourceAlign(
-            FSYSAlign32(size), 0x20, slot->fileHandle, entry->nameHash, 0);
-    }
+    size = FSYSRefreshExternalEntrySize(slot, entry);
+    sub->buffer = FSYSAllocEntryBuffer(slot, entry, size);
 
     cached = (void*)fn_8017F794(slot->fileHandle, entry->groupID, entry->nameHash);
     offset = fn_8017F728(slot->fileHandle, entry->groupID, entry->nameHash);
