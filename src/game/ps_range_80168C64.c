@@ -268,8 +268,11 @@ extern void fn_800BC52C(s32 stage, s32 a, s32 b);
 void psDispSub(PSParticle* pp, void* polygonData);
 void psDispSubAppSRT(PSParticle* pp, Mtx parentMatrix);
 void psDispSubAPPSRTPoint(PSParticle* pp);
+void psDispSubPointTrail(PSParticle* pp);
 void psSetupTevInvalidState(void);
 void psSetupTevCommon(void);
+void setupChanReg(PSParticle* pp);
+void setupTevReg(PSParticle* pp);
 extern f32 lbl_8047D5DC;
 extern f32 lbl_8047B14C;
 extern f32 lbl_8047B150;
@@ -1192,6 +1195,9 @@ s32 psInitAppSRT(s32 count, s32 size) {
 void fn_8016AB94(u32 linkMask, s32 mode) {
     s32 linkNo;
     s32 needsInit = TRUE;
+    s32 cachedAlphaMode = -1;
+    u8 cachedAlphaStart = 0;
+    u8 cachedAlphaEnd = 0xFF;
 
     if (mode == 0) {
         u8 frame = lbl_80478C30;
@@ -1349,6 +1355,92 @@ void fn_8016AB94(u32 linkMask, s32 mode) {
                 if (pp->flags & 0x40000000) {
                     if (pp->parentObj != NULL) {
                         psDispSubAPPSRTPoint(pp);
+                    } else if (pp->flags & 0x00100000) {
+                        psDispSubPointTrail(pp);
+                    } else {
+                        f32 widthValue = pp->lerpValue > lbl_8047D5E0
+                            ? lbl_8047D5D8
+                            : lbl_8047D5DC * pp->lerpValue;
+                        s32 width = (s32)widthValue;
+                        u8 rasterWidth = (u8)width;
+
+                        switch ((pp->flags >> 22) & 3) {
+                        case 0:
+                            if (lbl_8047B148 != 0) {
+                                lbl_8047B148 = 0;
+                                GXSetBlendMode(1, 4, 5, 0);
+                            }
+                            break;
+                        case 1:
+                            if (lbl_8047B148 != 1) {
+                                lbl_8047B148 = 1;
+                                GXSetBlendMode(1, 4, 1, 0);
+                            }
+                            break;
+                        case 2:
+                            if (lbl_8047B148 != 2) {
+                                lbl_8047B148 = 2;
+                                GXSetBlendMode(3, 4, 5, 0);
+                            }
+                            break;
+                        default:
+                            if (lbl_8047B148 != 3) {
+                                lbl_8047B148 = 3;
+                                GXSetBlendMode(1, 2, 0, 0);
+                            }
+                            break;
+                        }
+
+                        if (pp->alphaTimer != 0) {
+                            s32 step =
+                                ((s32)pp->alphaCountdown << 16) / pp->alphaTimer;
+                            cachedAlphaStart =
+                                (((s32)pp->alphaTargetStart << 16) +
+                                 step * ((s32)pp->alphaStart -
+                                         (s32)pp->alphaTargetStart)) >> 16;
+                            cachedAlphaEnd =
+                                (((s32)pp->alphaTargetEnd << 16) +
+                                 step * ((s32)pp->alphaEnd -
+                                         (s32)pp->alphaTargetEnd)) >> 16;
+                        } else {
+                            cachedAlphaStart = pp->alphaStart;
+                            cachedAlphaEnd = pp->alphaEnd;
+                        }
+
+                        if (cachedAlphaMode != (s32)pp->alphaMode ||
+                            cachedAlphaStart != pp->alphaStart ||
+                            cachedAlphaEnd != pp->alphaEnd) {
+                            cachedAlphaMode = pp->alphaMode;
+                            fn_800BC618((pp->alphaMode >> 5) & 7,
+                                        cachedAlphaStart,
+                                        (pp->alphaMode >> 3) & 3,
+                                        cachedAlphaEnd,
+                                        pp->alphaMode & 7);
+                        }
+
+                        setupChanReg(pp);
+                        setupTevReg(pp);
+
+                        if (lbl_8047B168 != rasterWidth) {
+                            lbl_8047B168 = rasterWidth;
+                            fn_800B944C(width, 5);
+                        }
+
+                        fn_800B7D3C();
+                        fn_800B7874(9, 1);
+                        if (pp->flags & PS_FLAG_OBJ_REF) {
+                            fn_800B7874(0xD, 2);
+                            fn_800B928C(0xB8, 0, 1);
+                        } else {
+                            fn_800B928C(0xB8, 1, 1);
+                        }
+
+                        GX_FIFO_F32 = pp->positionX;
+                        GX_FIFO_F32 = pp->positionY;
+                        GX_FIFO_F32 = pp->positionZ;
+                        if (pp->flags & PS_FLAG_OBJ_REF) {
+                            GX_FIFO_U8 = 1;
+                        }
                     }
                 } else if (pp->parentObj != NULL) {
                     psDispSubAppSRT(pp, (f32(*)[4])polygonData);
