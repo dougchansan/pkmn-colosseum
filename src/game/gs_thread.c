@@ -7223,7 +7223,8 @@ s32 fn_800F57F0(GSVMCtx* context)
         result = result == 0;
     } else {
         operand.word = result;
-        result = operand.real == 0.0f;
+        operand.real = operand.real == 0.0f;
+        result = operand.word;
     }
 
     stackIndex = context->stackCount;
