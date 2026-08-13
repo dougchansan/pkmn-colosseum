@@ -2351,8 +2351,10 @@ void* fn_801195AC(void* resource)
 {
     FieldParticleFile* file = resource;
     FieldParticleBank* bank;
+    FieldParticleBank* banks;
     u32 i;
     u32 j;
+    u32 bank_count;
     u8 texture_type;
     char* messages = (char*)lbl_802727D8;
     u16 description_magic;
@@ -2380,8 +2382,10 @@ void* fn_801195AC(void* resource)
     }
     DCFlushRange(file->data, (file->dataSize + 0x1F) & ~0x1F);
 
-    bank = lbl_8047AD9C;
-    i = lbl_8047ADA0;
+    banks = lbl_8047AD9C;
+    bank_count = lbl_8047ADA0;
+    bank = banks;
+    i = bank_count;
     if (i != 0) {
         do {
             if (bank->active == 0) {
@@ -2401,10 +2405,10 @@ void* fn_801195AC(void* resource)
 
     texture_type = 0;
     while (texture_type < 0x40) {
-        FieldParticleBank* other_bank = lbl_8047AD9C;
+        FieldParticleBank* other_bank = banks;
         u32 in_use = 0;
 
-        j = lbl_8047ADA0;
+        j = bank_count;
         if (j != 0) {
             do {
                 if (other_bank->texture_type == texture_type) {
@@ -2430,42 +2434,42 @@ void* fn_801195AC(void* resource)
     bank->texture_type = texture_type;
     *(void**)((u8*)bank + 4) = file;
     {
-        FieldParticleNode** slot = bank->slots;
+        u8* clear = (u8*)bank;
 
         for (i = 0; i < 2; i++) {
-            slot[0] = NULL;
-            slot[1] = NULL;
-            slot[2] = NULL;
-            slot[3] = NULL;
-            slot[4] = NULL;
-            slot[5] = NULL;
-            slot[6] = NULL;
-            slot[7] = NULL;
-            slot[8] = NULL;
-            slot[9] = NULL;
-            slot[10] = NULL;
-            slot[11] = NULL;
-            slot[12] = NULL;
-            slot[13] = NULL;
-            slot[14] = NULL;
-            slot[15] = NULL;
-            slot[16] = NULL;
-            slot[17] = NULL;
-            slot[18] = NULL;
-            slot[19] = NULL;
-            slot[20] = NULL;
-            slot[21] = NULL;
-            slot[22] = NULL;
-            slot[23] = NULL;
-            slot[24] = NULL;
-            slot[25] = NULL;
-            slot[26] = NULL;
-            slot[27] = NULL;
-            slot[28] = NULL;
-            slot[29] = NULL;
-            slot[30] = NULL;
-            slot[31] = NULL;
-            slot += 32;
+            *(u32*)(clear + 0x08) = 0;
+            *(u32*)(clear + 0x0C) = 0;
+            *(u32*)(clear + 0x10) = 0;
+            *(u32*)(clear + 0x14) = 0;
+            *(u32*)(clear + 0x18) = 0;
+            *(u32*)(clear + 0x1C) = 0;
+            *(u32*)(clear + 0x20) = 0;
+            *(u32*)(clear + 0x24) = 0;
+            *(u32*)(clear + 0x28) = 0;
+            *(u32*)(clear + 0x2C) = 0;
+            *(u32*)(clear + 0x30) = 0;
+            *(u32*)(clear + 0x34) = 0;
+            *(u32*)(clear + 0x38) = 0;
+            *(u32*)(clear + 0x3C) = 0;
+            *(u32*)(clear + 0x40) = 0;
+            *(u32*)(clear + 0x44) = 0;
+            *(u32*)(clear + 0x48) = 0;
+            *(u32*)(clear + 0x4C) = 0;
+            *(u32*)(clear + 0x50) = 0;
+            *(u32*)(clear + 0x54) = 0;
+            *(u32*)(clear + 0x58) = 0;
+            *(u32*)(clear + 0x5C) = 0;
+            *(u32*)(clear + 0x60) = 0;
+            *(u32*)(clear + 0x64) = 0;
+            *(u32*)(clear + 0x68) = 0;
+            *(u32*)(clear + 0x6C) = 0;
+            *(u32*)(clear + 0x70) = 0;
+            *(u32*)(clear + 0x74) = 0;
+            *(u32*)(clear + 0x78) = 0;
+            *(u32*)(clear + 0x7C) = 0;
+            *(u32*)(clear + 0x80) = 0;
+            *(u32*)(clear + 0x84) = 0;
+            clear += 0x80;
         }
     }
     psInitDataBank(bank->texture_type, file->description, file->data, file->texture, 0);
