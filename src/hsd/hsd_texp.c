@@ -1744,6 +1744,42 @@ s32 fn_801B50C0(ColTExpNode* tev, ColTExpRes* res)
  */
 s32 fn_801B5850(ColTExpNode* tev, s32 idx, ColTExpRes* res)
 {
+    ColTECnst* cnst = (ColTECnst*)tev->a_in[idx].exp;
+    s32 i;
+
+    if (cnst->reg != 0xFF) {
+        if (cnst->reg >= 4) {
+            return -1;
+        }
+        tev->kasel = lbl_8036D2D8[cnst->reg][cnst->idx];
+        tev->a_in[idx].type = 6;
+        tev->a_in[idx].arg = 6;
+        return 0;
+    }
+
+    for (i = 1; i < 4; i++) {
+        if (res->reg[i].alpha == 0) {
+            res->reg[i].alpha = 1;
+            cnst->reg = i;
+            cnst->idx = 3;
+            tev->kasel = lbl_8036D2D8[cnst->reg][cnst->idx];
+            tev->a_in[idx].type = 6;
+            tev->a_in[idx].arg = 6;
+            return 0;
+        }
+    }
+
+    for (i = 0; i < 4; i++) {
+        if (res->reg[i].color < 3) {
+            cnst->reg = i;
+            cnst->idx = res->reg[i].color++;
+            tev->kasel = lbl_8036D2D8[cnst->reg][cnst->idx];
+            tev->a_in[idx].type = 6;
+            tev->a_in[idx].arg = 6;
+            return 0;
+        }
+    }
+    return -1;
 }
 
 /*
