@@ -3513,9 +3513,10 @@ u32 fn_8013D0A8(void* ptr, void* arg) {
     u32 found10 = 0;
     u32 found13 = 0;
     u32 found11 = 0;
-    u32 stage_index;
+    u32 stage_ordinal;
     u32 strip;
     u32 row;
+    u8* saved_cursor;
     u8* out;
     u16 vertex_count;
     u16 span;
@@ -3543,31 +3544,31 @@ u32 fn_8013D0A8(void* ptr, void* arg) {
         return 0;
     }
 
-    for (; stage->kind != 0xFF; stage++) {
+    for (stage_ordinal = 1; stage->kind != 0xFF; stage++, stage_ordinal++) {
         switch (stage->kind) {
         case 9:
-            found9 = 1;
+            found9 = stage_ordinal;
             if (stage->field_08 != 1 || stage->field_0C != 4 ||
                 stage->field_12 != 12) {
                 return 0;
             }
             break;
         case 10:
-            found10 = 1;
+            found10 = stage_ordinal;
             if (stage->field_08 != 0 || stage->field_0C != 4 ||
                 stage->field_12 != 12) {
                 return 0;
             }
             break;
         case 11:
-            found11 = 1;
+            found11 = stage_ordinal;
             if (stage->field_08 != 1 || stage->field_0C != 5 ||
                 stage->field_12 != 4) {
                 return 0;
             }
             break;
         case 13:
-            found13 = 1;
+            found13 = stage_ordinal;
             if (stage->field_08 != 1 || stage->field_0C != 4 ||
                 stage->field_12 != 8) {
                 return 0;
@@ -3582,10 +3583,10 @@ u32 fn_8013D0A8(void* ptr, void* arg) {
         return 0;
     }
 
-    for (stage = pobj->stages, stage_index = 0; stage->kind != 0xFF;
-         stage++, stage_index++) {
-        state->saved_field_04[stage_index] = stage->field_04;
-        state->saved_field_14[stage_index] = stage->field_14;
+    for (stage = pobj->stages, saved_cursor = (u8*)state; stage->kind != 0xFF;
+         stage++, saved_cursor += sizeof(u32)) {
+        *(u32*)(saved_cursor + 0x20) = stage->field_04;
+        *(u32*)(saved_cursor + 0x30) = stage->field_14;
         stage->field_04 = 3;
 
         switch (stage->kind) {
