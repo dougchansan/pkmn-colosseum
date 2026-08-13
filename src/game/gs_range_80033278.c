@@ -1282,16 +1282,22 @@ void fn_80035C48(void) {
     u8 resetFlag;
 
     if (lbl_8047A438 == 0) {
-        if (lbl_8047A439 != 0) {
+        switch (lbl_8047A439) {
+        default:
             lbl_8047A458 = 2;
-        } else {
+            break;
+        case 0:
             lbl_8047A458 = 1;
+            break;
         }
         fn_80176E0C(fn_80113F48(), 0x11171800, 0, 0);
-        if (lbl_8047A439 != 0) {
+        switch (lbl_8047A439) {
+        default:
             soundId = 0x446;
-        } else {
+            break;
+        case 0:
             soundId = 0x4CD;
+            break;
         }
         if (soundId != fn_801653C4()) {
             fn_80165A20(soundId, 0, 0x7F);
