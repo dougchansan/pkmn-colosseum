@@ -763,6 +763,9 @@ s32 fn_8010A010(void* objPtr, u32 key)
     return 0;
 }
 
+#pragma push
+#pragma optimization_level 3
+#pragma peephole off
 s32 fn_8010A210(void* objPtr, void* pokemon)
 {
     extern u32 pokemonGetStatus(void* pokemon, u32 index, u32 field, u32 rare);
@@ -812,6 +815,7 @@ s32 fn_8010A210(void* objPtr, void* pokemon)
 
     return match;
 }
+#pragma pop
 
 #pragma push
 #pragma optimization_level 3
