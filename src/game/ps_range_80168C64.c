@@ -1982,6 +1982,9 @@ void setVelToJObj(PSParticle* pp, PSForceJObj* jobj) {
 }
 
 void modifyDir(PSParticle* pp, f32 angle) {
+    f32 velocityX = pp->velocityX;
+    f32 velocityY = pp->velocityY;
+    f32 velocityZ = pp->velocityZ;
     f32 yaw;
     f32 pitch;
     f32 yawSin;
@@ -1996,26 +1999,25 @@ void modifyDir(PSParticle* pp, f32 angle) {
     f32 forward;
     f32 flattened;
 
-    if (fabsf(pp->velocityZ) < lbl_80478AC8) {
-        yaw = pp->velocityY >= 0.0f ? lbl_8047D694 : lbl_8047D698;
+    if (fabsf(velocityZ) < lbl_80478AC8) {
+        yaw = velocityY >= 0.0f ? lbl_8047D694 : lbl_8047D698;
     } else {
-        yaw = atan2(pp->velocityY, pp->velocityZ);
+        yaw = atan2(velocityY, velocityZ);
     }
     yawSin = sin(yaw);
     yawCos = cos(yaw);
 
-    flattened = pp->velocityZ * yawCos + pp->velocityY * yawSin;
+    flattened = velocityZ * yawCos + velocityY * yawSin;
     if (fabsf(flattened) < lbl_80478AC8) {
-        pitch = pp->velocityX >= 0.0f ? lbl_8047D694 : lbl_8047D698;
+        pitch = velocityX >= 0.0f ? lbl_8047D694 : lbl_8047D698;
     } else {
-        pitch = atan2(pp->velocityX, flattened);
+        pitch = atan2(velocityX, flattened);
     }
     pitchSin = sin(pitch);
     pitchCos = cos(pitch);
 
-    magnitude = sqrtf(pp->velocityX * pp->velocityX +
-                      pp->velocityY * pp->velocityY +
-                      pp->velocityZ * pp->velocityZ);
+    magnitude = sqrtf(velocityX * velocityX + velocityY * velocityY +
+                      velocityZ * velocityZ);
     azimuth = lbl_8047D6A0 * lbl_8047D6A8 * fn_801ADC7C();
     radial = magnitude * sin(angle);
     radialX = radial * cos(azimuth);
