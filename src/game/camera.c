@@ -160,13 +160,6 @@ void cameraUpdate(u32 captureIndex) {
         GScameraGetPerspective(camera, &aspect, &fov, &nearPlane, &farPlane);
         GScameraSetPerspective(camera, state->fov, fov, nearPlane, farPlane);
         break;
-    case 2:
-        _cameraPadMoveUpdate__FP9_GScamera(camera);
-        break;
-    case 3:
-        _cameraPadRotateUpdate__FP9_GScamera(camera);
-        break;
-    case 4:
     case 8:
         animation = (GSRenderCamera*)GSresGetResource(state->animationGroup,
                                                       state->animationId);
@@ -175,11 +168,7 @@ void cameraUpdate(u32 captureIndex) {
         }
         if (animation != 0 && GScameraIsAnimating(animation) != 0 &&
             GScameraHasAnimationEnded(animation) == 0) {
-            if (state->mode == 8) {
-                _cameraOffsetAnimeUpdate__FP9_GScamera(camera);
-                _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
-            }
-            return;
+            break;
         }
         state->animationGroup = 0;
         state->animationId = 0;
