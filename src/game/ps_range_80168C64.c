@@ -5202,6 +5202,8 @@ void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
                           f32 axisYX, f32 axisYY, f32 axisYZ) {
     GXColor color;
     Mtx parentMatrix;
+    Vec previous;
+    PSGeneratorState* generator;
     PSAppSRT* parent;
     u32 textureIndex;
 
@@ -5212,18 +5214,60 @@ void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
 
     if (pp->flags & 0x100000) {
         parent = (PSAppSRT*)pp->parentObj;
-        if (parent != NULL) {
-            Vec position;
+        if (pp->flags & 4) {
+            generator = (PSGeneratorState*)pp->peopleObj;
+            if (generator != NULL) {
+                f32* people = (f32*)generator;
+                f32 sinScale = (f32)sin(pp->scaleFactor);
+                f32 sinFriction = (f32)sin(pp->frictionFactor);
+                f32 cosScale = (f32)cos(pp->scaleFactor);
+                f32 cosFriction = (f32)cos(pp->frictionFactor);
+                f32 horizontal = pp->velocityZ - people[21];
+                f32 vertical = pp->velocityX - people[14];
+                f32 peopleScale = people[17];
+                f32 peopleAngle = people[18];
+                f32 magnitude;
+                f32 cosVertical;
+                f32 sinVertical;
 
-            HSD_MtxSRT(parentMatrix, &parent->scaleX,
-                       &parent->translationX, &parent->rotationX, NULL);
-            position.x = centerX;
-            position.y = centerY;
-            position.z = centerZ;
-            PSMTXMultVec(parentMatrix, &position, &position);
-            centerX = position.x;
-            centerY = position.y;
-            centerZ = position.z;
+                if (peopleScale < lbl_8047D5C8) {
+                    peopleScale = -peopleScale;
+                }
+                if (peopleAngle < lbl_8047D5C8) {
+                    peopleAngle = -peopleAngle;
+                }
+                magnitude = (horizontal * (f32)tan(peopleAngle) +
+                             peopleScale) * pp->velocityY;
+                cosVertical = magnitude * (f32)cos(vertical);
+                sinVertical = magnitude * (f32)sin(vertical);
+                velocityX = people[8] + cosVertical * cosFriction +
+                            horizontal * sinFriction;
+                velocityY = people[9] + cosFriction *
+                    (horizontal * sinScale) + sinFriction *
+                    (-cosVertical * sinScale) + sinVertical * cosScale;
+                velocityZ = people[10] + cosFriction *
+                    (horizontal * cosScale) + sinFriction *
+                    (-cosVertical * cosScale) - sinVertical * sinScale;
+            } else {
+                velocityX = pp->positionX;
+                velocityY = pp->positionY;
+                velocityZ = pp->positionZ;
+            }
+            if (parent != NULL) {
+                HSD_MtxSRT(parentMatrix, &parent->scaleX,
+                           &parent->translationX, &parent->rotationX, NULL);
+                previous.x = velocityX;
+                previous.y = velocityY;
+                previous.z = velocityZ;
+                PSMTXMultVec(parentMatrix, &previous, &previous);
+                velocityX = previous.x;
+                velocityY = previous.y;
+                velocityZ = previous.z;
+            }
+        } else {
+            velocityX = centerX - velocityX;
+            velocityY = centerY - velocityY;
+            velocityZ = centerZ - velocityZ;
         }
 
         if (pp->color1Timer != 0) {
@@ -5254,9 +5298,9 @@ void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
                 fn_800B928C(0x80, 3, 4);
             }
 
-            GX_FIFO_F32 = centerX - axisXX;
-            GX_FIFO_F32 = centerY - axisXY;
-            GX_FIFO_F32 = centerZ - axisXZ;
+            GX_FIFO_F32 = velocityX - axisXX;
+            GX_FIFO_F32 = velocityY - axisXY;
+            GX_FIFO_F32 = velocityZ - axisXZ;
             GX_FIFO_U8 = color.r;
             GX_FIFO_U8 = color.g;
             GX_FIFO_U8 = color.b;
@@ -5287,9 +5331,9 @@ void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
                 GX_FIFO_U8 = textureIndex + 2;
             }
 
-            GX_FIFO_F32 = centerX + axisYX;
-            GX_FIFO_F32 = centerY + axisYY;
-            GX_FIFO_F32 = centerZ + axisYZ;
+            GX_FIFO_F32 = velocityX + axisYX;
+            GX_FIFO_F32 = velocityY + axisYY;
+            GX_FIFO_F32 = velocityZ + axisYZ;
             GX_FIFO_U8 = color.r;
             GX_FIFO_U8 = color.g;
             GX_FIFO_U8 = color.b;
