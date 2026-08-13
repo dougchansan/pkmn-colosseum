@@ -478,6 +478,7 @@ u32 _lightningRenderMain(void* ptr) {
     f32 cameraPos[3];
     f32 perspective;
     f32 unused;
+    f32 distance;
     f32 scale;
     f32 matrix[12];
     u16 count;
@@ -501,16 +502,17 @@ u32 _lightningRenderMain(void* ptr) {
     camera = GScameraGetActiveCamera();
     GScameraGetPosition(camera, cameraPos);
     GScameraGetPerspective(camera, &perspective, &unused, &unused, &unused);
-    scale = *(f32*)&lbl_8047D148 * fn_800E008C(p + 0x28);
-    scale /= GSvecDistance(cameraPos, modelPos) * perspective;
-    if (scale > *(f32*)&lbl_8047D14C) {
-        scale = *(f32*)&lbl_8047D14C;
-    }
-    fn_800B9404((u32)(*(f32*)&lbl_8047D150 * scale), 5);
+    distance = GSvecDistance(cameraPos, modelPos);
     fn_800DA4C4(1, 6, 1);
     fn_800DA2BC(1, 1, 1);
     fn_800DA1E8(1, 1, 1);
     fn_800DA028(0);
+    scale = *(f32*)&lbl_8047D148 * fn_800E008C(p + 0x28);
+    scale /= distance * perspective;
+    if (scale > *(f32*)&lbl_8047D14C) {
+        scale = *(f32*)&lbl_8047D14C;
+    }
+    fn_800B9404((u32)(*(f32*)&lbl_8047D150 * scale), 5);
     fn_800D88DC(1);
     fn_800D888C(6);
     fn_800D7820(*(void**)(p + 0x14));
