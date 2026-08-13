@@ -2098,6 +2098,8 @@ void fn_801B64EC(ColTExpNode* texp, u32 sel_a, ColTExpNode* exp_a,
  * generation sources: UV, reflection, highlight, shadow, toon,
  * and gradation mapping.
  */
+#pragma push
+#pragma optimization_level 1
 void fn_801B65F0(ColTExpNode* tev, u32 sel, ColTExpNode* exp, s32 idx)
 {
     ColTEArg prev = tev->c_in[idx];
@@ -2264,6 +2266,8 @@ void fn_801B65F0(ColTExpNode* tev, u32 sel, ColTExpNode* exp, s32 idx)
     }
     fn_801B750C(prev.exp, prev.sel);
 }
+
+#pragma pop
 
 /* ========================================================================= */
 /*  TObj rendering helpers                                                   */
