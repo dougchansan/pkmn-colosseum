@@ -2229,6 +2229,8 @@ void fightOutPokemonGetOutOkWazaBanmeAry(void) {
 }
 
 /* 0x801FFEC8 | size: 0xB94 | massive */
+#pragma push
+#pragma peephole off
 u8 fightOutPokemonCheckCanOutOkWazaBanme(void* fighter, u32 slot, u32 mode, u16* output) {
     extern u8 lbl_80279C90[];
     extern void fn_80119ED0();
@@ -3028,6 +3030,8 @@ u8 fightOutPokemonCheckCanOutOkWazaBanme(void* fighter, u32 slot, u32 mode, u16*
 
     return;
 }
+
+#pragma pop
 
 /* 0x80200A5C | size: 0xB4 */
 typedef struct { u16 fields[9]; } FieldTable9;
