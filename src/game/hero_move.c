@@ -3786,18 +3786,43 @@ typedef struct HeroMoveMemberState {
 s32 fn_8012F1FC(s32 member)
 {
     HeroMoveMemberState* state;
+    HeroMoveMemberState* members = (HeroMoveMemberState*)lbl_80426BD0;
+    u32 handles[2];
+    u32 handle;
+    s32 active;
+    f32 spacing;
 
     if (member < 0 || member >= 2) {
         return 0;
     }
 
-    state = (HeroMoveMemberState*)lbl_80426BD0 + member;
+    state = members + member;
     if (state->flags & 1) {
         return 1;
     }
 
     state->flags |= 1;
-    state->spacing = lbl_8047D038;
+    handles[0] = *(u32*)&lbl_8047D030;
+    handles[1] = *(u32*)&lbl_8047D034;
+    handle = handles[member];
+    if (state->neckMode == 1) {
+        fn_80188AF4(0, handle);
+    }
+    fn_80188F78(0, handle);
+    state->neckMode = 1;
+
+    active = members[0].field_00;
+    members[active].spacing = lbl_8047D038;
+    spacing = lbl_8047D0D4;
+    if ((members[0].flags & 1) && active != 0) {
+        members[0].spacing = spacing;
+        spacing += spacing;
+    }
+    if ((members[1].flags & 1) && active != 1) {
+        members[1].spacing = spacing;
+    }
+
+    fn_8018C1E8(0, handle, 1);
     return 1;
 }
 
