@@ -490,149 +490,108 @@ s32 fn_8017E30C(FSYSSlot* slot) {
 void _fsysGetFilename(FSYSSlot* slot, u32 fileHandle,
                    u32 callbackA, u32 callbackB, u32 callbackC,
                    u32 loadMode) {
-    FSYSManager* mgr = &gFSYSManager;
     u32 status = slot->status;
-    void* tocData;
-    u32 numTocEntries;
-    u32 i;
-    u32* tocEntryPtr;
-    char* tocName;
-    char nameBuf[0x80];
+#define FSYS_LOOKUP(buffer)                                                   \
+    do {                                                                      \
+        void* tocData = gFSYSTocData;                                         \
+        u32 count = *(u32*)((u8*)tocData + 8);                                \
+        u32* entry = (u32*)((u8*)tocData + *(u32*)((u8*)tocData + 0x10));     \
+        u32 index = 0;                                                        \
+        char* name = NULL;                                                    \
+        while (index < count) {                                               \
+            if (entry[0] == fileHandle) {                                    \
+                name = (char*)((u8*)tocData + entry[1]);                     \
+                break;                                                        \
+            }                                                                 \
+            entry = (u32*)((u8*)entry + 8);                                  \
+            index++;                                                          \
+        }                                                                     \
+        sprintf(buffer, "%s.fsys", name);                                   \
+        strcpy(slot->filename, buffer);                                       \
+    } while (0)
+#define FSYS_INIT(reload, clear_data)                                         \
+    do {                                                                      \
+        slot->archiveHandle = 0;                                              \
+        if (clear_data) slot->archiveData = NULL;                             \
+        slot->archiveSize = 0;                                                \
+        slot->callbackA = callbackA;                                          \
+        slot->callbackB = callbackB;                                          \
+        slot->callbackC = callbackC;                                          \
+        slot->fileHandle = fileHandle;                                        \
+        slot->fileIndex = 0;                                                  \
+        slot->loadMode = loadMode;                                            \
+        slot->reloadFlag = reload;                                            \
+        if (clear_data) slot->padding100 = 0;                                 \
+    } while (0)
+#define FSYS_SET_STATUS(error_state)                                          \
+    do {                                                                      \
+        if (loadMode >= 4) {                                                  \
+            if (loadMode != 7) return;                                       \
+            slot->status = error_state;                                      \
+        } else if (loadMode == 1) {                                          \
+            slot->status = FSYS_STATUS_READING;                              \
+        } else if (loadMode >= 0) {                                          \
+            slot->status = error_state;                                      \
+        }                                                                     \
+        return;                                                               \
+    } while (0)
 
-    /* Handle current status */
-    if (status == FSYS_STATUS_PENDING) {
-        goto state_loaded;
-    } else if (status >= FSYS_STATUS_PENDING) {
-        if (status == FSYS_STATUS_LOADED) {
-            goto state_loaded;
-        }
-        return; /* unknown state */
-    } else if (status == FSYS_STATUS_FREE) {
-        /* Fall through to initial load */
-    } else {
-        return; /* busy */
-    }
-
-    /* Initialize the slot for a new load */
-    slot->archiveHandle = 0;
-    slot->archiveData   = NULL;
-    slot->archiveSize   = 0;
-    slot->callbackA     = callbackA;
-    slot->callbackB     = callbackB;
-    slot->callbackC     = callbackC;
-    slot->fileHandle    = fileHandle;
-    slot->fileIndex     = 0;
-    slot->loadMode      = loadMode;
-    slot->reloadFlag    = 0;
-    slot->padding100    = 0;
-
-    /* Search the TOC for the matching entry */
-    tocData = gFSYSTocData;
-    numTocEntries = *(u32*)((u8*)tocData + 0x08);
-    tocEntryPtr = (u32*)((u8*)tocData + *(u32*)((u8*)tocData + 0x10));
-    tocName = NULL;
-
-    for (i = 0; i < numTocEntries; i++) {
-        if (tocEntryPtr[0] == fileHandle) {
-            /* Found: resolve the name string */
-            u32 nameOff = tocEntryPtr[1];
-            tocName = (char*)((u8*)tocData + nameOff);
-            break;
-        }
-        tocEntryPtr = (u32*)((u8*)tocEntryPtr + 8);
-    }
-
-    /* Format the filename as "%s.fsys" */
-    sprintf(nameBuf, "%s.fsys", tocName);
-    strcpy(slot->filename, nameBuf);
-
-    /* Check if another slot is already actively loading */
-    if (mgr->activeSlot != NULL) {
-        if (slot != mgr->activeSlot) {
-            /* Queue this load -- set status to PENDING */
+    if (status == FSYS_STATUS_FREE || status == FSYS_STATUS_PENDING) {
+        char nameBuf[0x80];
+        FSYS_INIT(0, 1);
+        FSYS_LOOKUP(nameBuf);
+        if (gFSYSManager.activeSlot != NULL && slot != gFSYSManager.activeSlot) {
             slot->status = FSYS_STATUS_PENDING;
             return;
         }
+        gFSYSManager.activeSlot = slot;
+        gFSYSManager.currentSlot = slot;
+        FSYS_SET_STATUS(FSYS_STATUS_LOADING);
     }
 
-    /* Mark this slot as the active loader */
-    mgr->activeSlot  = slot;
-    mgr->currentSlot = slot;
-
-    /* Apply status based on load mode */
-    if (loadMode >= 4) {
-        if (loadMode == 7) {
-            slot->status = FSYS_STATUS_LOADING;
+    if (status == FSYS_STATUS_LOADED) {
+        if (loadMode == 3) {
+            char nameBuf[0x80];
+            FSYS_INIT(1, 0);
+            FSYS_LOOKUP(nameBuf);
+            if (gFSYSManager.activeSlot != NULL) {
+                slot->status = FSYS_STATUS_PENDING;
+                return;
+            }
+            gFSYSManager.activeSlot = slot;
+            gFSYSManager.currentSlot = slot;
+            FSYS_SET_STATUS(FSYS_STATUS_ERROR);
         } else {
+            char nameBuf[0x80];
+            FSYS_INIT(1, 0);
+            FSYS_LOOKUP(nameBuf);
+            if (gFSYSManager.activeSlot != NULL) {
+                slot->status = FSYS_STATUS_PENDING;
+                return;
+            }
+            gFSYSManager.activeSlot = slot;
+            gFSYSManager.currentSlot = slot;
+            FSYS_SET_STATUS(FSYS_STATUS_ERROR);
+        }
+    }
+
+    if (slot->reloadFlag == 1) {
+        char nameBuf[0x80];
+        slot->status = FSYS_STATUS_FREE;
+        FSYS_INIT(0, 1);
+        FSYS_LOOKUP(nameBuf);
+        if (gFSYSManager.activeSlot != NULL && slot != gFSYSManager.activeSlot) {
+            slot->status = FSYS_STATUS_PENDING;
             return;
         }
-    } else if (loadMode == 1) {
-        slot->status = FSYS_STATUS_READING;
-    } else if (loadMode == 0) {
-        slot->status = FSYS_STATUS_LOADING;
-    } else {
-        return;
-    }
-    return;
-
-state_loaded:
-    /* Re-entry: archive is loaded, process a specific file */
-    if (loadMode != 3) {
-        goto state_check_mode;
+        gFSYSManager.activeSlot = slot;
+        gFSYSManager.currentSlot = slot;
+        FSYS_SET_STATUS(FSYS_STATUS_LOADING);
     }
 
-    /* Mode 3: resolve file within loaded archive */
-    slot->archiveHandle = 0;
-    slot->archiveSize   = 0;
-    slot->callbackA     = callbackA;
-    slot->callbackB     = callbackB;
-    slot->callbackC     = callbackC;
-    slot->fileHandle    = fileHandle;
-    slot->fileIndex     = 0;
-    slot->loadMode      = loadMode;
-    slot->reloadFlag    = 1;
-
-    /* Search TOC again for the entry */
-    tocData = gFSYSTocData;
-    numTocEntries = *(u32*)((u8*)tocData + 0x08);
-    tocEntryPtr = (u32*)((u8*)tocData + *(u32*)((u8*)tocData + 0x10));
-    tocName = NULL;
-
-    for (i = 0; i < numTocEntries; i++) {
-        if (tocEntryPtr[0] == fileHandle) {
-            u32 nameOff = tocEntryPtr[1];
-            tocName = (char*)((u8*)tocData + nameOff);
-            break;
-        }
-        tocEntryPtr = (u32*)((u8*)tocEntryPtr + 8);
-    }
-
-    /* Format filename and set up for re-load */
-    sprintf(nameBuf, "%s.fsys", tocName);
-    strcpy(slot->filename, nameBuf);
-
-    /* Check if loading is blocked */
-    if (mgr->activeSlot != NULL) {
-        slot->status = FSYS_STATUS_PENDING;
-        return;
-    }
-
-    mgr->activeSlot  = slot;
-    mgr->currentSlot = slot;
-
-state_check_mode:
-    if (loadMode >= 4) {
-        if (loadMode == 7) {
-            slot->status = FSYS_STATUS_ERROR;
-        } else {
-            return;
-        }
-    } else if (loadMode == 1) {
-        slot->status = FSYS_STATUS_ERROR;
-    } else {
-        slot->status = FSYS_STATUS_ERROR;
-    }
-    return;
+#undef FSYS_SET_STATUS
+#undef FSYS_INIT
+#undef FSYS_LOOKUP
 }
 
 /*
