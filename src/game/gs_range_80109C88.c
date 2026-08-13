@@ -809,6 +809,9 @@ s32 fn_8010A210(void* objPtr, void* pokemon)
     return match;
 }
 
+#pragma push
+#pragma optimization_level 3
+#pragma peephole off
 s32 fn_80109C88(void* objPtr, void* pokemon)
 {
     extern u32 GSthreadCreate(s32 priority, void* stack, u32 stackSize,
@@ -1025,6 +1028,7 @@ s32 menuModelInit(u8* objPtr, s32 w, s32 h)
     lbl_8047AD40++;
     return 1;
 }
+#pragma pop
 s32 fn_8010A88C(void* objPtr)
 {
     extern s32 lbl_8047AD40;
