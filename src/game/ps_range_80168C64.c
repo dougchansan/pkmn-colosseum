@@ -3286,6 +3286,37 @@ PSParticle* psInterpretParticle0(PSParticle* pp, PSParticle* parentCtx) {
                         break;
                     }
 
+                    case 0xEF: {
+                        PSParticle* gen;
+                        u16 scriptId = ((u16)stream[0] << 8) | stream[1];
+                        u8 loopArg = stream[2];
+
+                        stream += 3;
+                        gen = (PSParticle*)psCreateGeneratorID(
+                            pp->linkNo, pp->bankIndex, scriptId);
+                        if (gen == NULL) {
+                            break;
+                        }
+                        gen->scriptId = pp->scriptId;
+                        psCopyGeneratorData(gen, pp->peopleObj);
+                        if (pp->parentObj != NULL) {
+                            if (pp->peopleObj != NULL &&
+                                (*(u16*)((u8*)pp->peopleObj + 0x12) & 0x40))
+                            {
+                                psChangeGeneratorAppSRT(
+                                    (PSGeneratorState*)gen,
+                                    (PSAppSRT*)pp->parentObj);
+                            } else {
+                                psAttachGeneratorAppSRT(
+                                    (PSGeneratorState*)gen,
+                                    (PSAppSRT*)pp->parentObj);
+                            }
+                        }
+                        gen->flags = (gen->flags & ~0x1F8) |
+                                     ((loopArg & 0x7) << 3);
+                        break;
+                    }
+
                     /* ---- 0xF1: SPAWN_GENERATOR via table (verified @ 0x80170364) ---- */
                     case 0xF1: {
                         PSParticle* gen;
@@ -3728,16 +3759,18 @@ void psDispSub(PSParticle* pp, void* polygonData) {
             f32 dz;
 
             if (generator != NULL && (pp->flags & 4)) {
-                f32 sinScale = sinf(pp->scaleFactor);
-                f32 sinFriction = sinf(pp->frictionFactor);
-                f32 cosScale = cosf(pp->scaleFactor);
-                f32 cosFriction = cosf(pp->frictionFactor);
+                f32 sinScale = (f32)sin(pp->scaleFactor);
+                f32 sinFriction = (f32)sin(pp->frictionFactor);
+                f32 cosScale = (f32)cos(pp->scaleFactor);
+                f32 cosFriction = (f32)cos(pp->frictionFactor);
                 f32* people = (f32*)generator;
                 f32 horizontal = pp->velocityZ - people[21];
                 f32 vertical = pp->velocityX - people[14];
                 f32 peopleScale = people[17];
                 f32 peopleAngle = people[18];
                 f32 magnitude;
+                f32 sinVertical;
+                f32 cosVertical;
 
                 if (peopleScale < 0.0f) {
                     peopleScale = -peopleScale;
@@ -3745,14 +3778,17 @@ void psDispSub(PSParticle* pp, void* polygonData) {
                 if (peopleAngle < 0.0f) {
                     peopleAngle = -peopleAngle;
                 }
-                magnitude = (horizontal * tanf(peopleAngle) + peopleScale) * pp->velocityY;
-                dx = people[8] + vertical * cosFriction + horizontal * sinFriction;
-                dy = people[9] + cosFriction * (horizontal * sinScale) +
-                    sinFriction * (-magnitude * sinScale) +
-                    magnitude * sinf(vertical) * cosScale;
-                dz = people[10] + cosFriction * (horizontal * cosScale) +
-                    sinFriction * (-magnitude * cosScale) -
-                    magnitude * sinf(vertical) * sinScale;
+                magnitude = (horizontal * (f32)tan(peopleAngle) + peopleScale) * pp->velocityY;
+                sinVertical = (f32)sin(vertical);
+                cosVertical = (f32)cos(vertical);
+                dx = people[8] + horizontal * sinFriction +
+                    magnitude * cosVertical * cosFriction;
+                dy = people[9] + cosFriction * horizontal * sinScale -
+                    sinFriction * magnitude * cosVertical * sinScale +
+                    magnitude * sinVertical * cosScale;
+                dz = people[10] + cosFriction * horizontal * cosScale -
+                    sinFriction * magnitude * cosVertical * cosScale -
+                    magnitude * sinVertical * sinScale;
             } else {
                 dx = pp->positionX;
                 dy = pp->positionY;
@@ -3784,7 +3820,7 @@ void psDispSub(PSParticle* pp, void* polygonData) {
                     f32 previousY = (projection[2] * dx + projection[5] * dy +
                         projection[8] * dz + projection[11]) * invPreviousW;
 
-                    angle = atan2f(screenY - previousY, screenX - previousX);
+                    angle = (f32)atan2(screenY - previousY, screenX - previousX);
                 }
             } else {
                 f32 screenX = camera[0] * pp->positionX + camera[3] * pp->positionY +
@@ -3794,7 +3830,7 @@ void psDispSub(PSParticle* pp, void* polygonData) {
                 f32 previousX = camera[0] * dx + camera[3] * dy + camera[6] * dz;
                 f32 previousY = camera[1] * dx + camera[4] * dy + camera[7] * dz;
 
-                angle = atan2f(screenY - previousY, screenX - previousX);
+                angle = (f32)atan2(screenY - previousY, screenX - previousX);
             }
             angle += pp->heading;
         }
@@ -3804,6 +3840,12 @@ void psDispSub(PSParticle* pp, void* polygonData) {
             Vec normal;
             Vec first;
             Vec second;
+            f32 firstX;
+            f32 firstY;
+            f32 firstZ;
+            f32 secondX;
+            f32 secondY;
+            f32 secondZ;
 
             first.x = axisXX;
             first.y = axisXZ;
@@ -3811,16 +3853,28 @@ void psDispSub(PSParticle* pp, void* polygonData) {
             second.x = axisXY;
             second.y = axisYX;
             second.z = axisYZ;
-            PSVECCrossProduct(&first, &second, &normal);
+            normal.x = first.y * second.z - first.z * second.y;
+            normal.y = first.z * second.x - first.x * second.z;
+            normal.z = first.x * second.y - first.y * second.x;
             PSMTXRotAxisRad(rotation, &normal, angle);
-            PSMTXMultVec(rotation, &first, &first);
-            PSMTXMultVec(rotation, &second, &second);
-            axisXX = first.x;
-            axisXZ = first.y;
-            axisYY = first.z;
-            axisXY = second.x;
-            axisYX = second.y;
-            axisYZ = second.z;
+            firstX = rotation[0][0] * first.x + rotation[0][1] * first.y +
+                rotation[0][2] * first.z;
+            firstY = rotation[1][0] * first.x + rotation[1][1] * first.y +
+                rotation[1][2] * first.z;
+            firstZ = rotation[2][0] * first.x + rotation[2][1] * first.y +
+                rotation[2][2] * first.z;
+            secondX = rotation[0][0] * second.x + rotation[0][1] * second.y +
+                rotation[0][2] * second.z;
+            secondY = rotation[1][0] * second.x + rotation[1][1] * second.y +
+                rotation[1][2] * second.z;
+            secondZ = rotation[2][0] * second.x + rotation[2][1] * second.y +
+                rotation[2][2] * second.z;
+            axisXX = firstX;
+            axisXZ = firstY;
+            axisYY = firstZ;
+            axisXY = secondX;
+            axisYX = secondY;
+            axisYZ = secondZ;
         }
     }
 
