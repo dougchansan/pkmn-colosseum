@@ -1299,8 +1299,28 @@ void fn_8017B6B8(FSYSSlot* slot, FSYSFileEntry* entry, u32 index) {
         sub->buffer = FSYSAllocHandle2B00(entry->decompressedSize);
         slot->padding100 = (u32)sub->buffer;
     } else {
+        DecompPoolEntry* pool;
+        u32 i;
+
         size = FSYSRefreshExternalEntrySize(slot, entry);
-        sub->buffer = FSYSAllocEntryBuffer(slot, entry, size);
+        pool = gDecompPoolBase;
+        for (i = 0; i < gDVDPoolState; i++) {
+            if (pool->fileID == entry->groupID) {
+                break;
+            }
+            pool = (DecompPoolEntry*)((u8*)pool + FSYS_DECOMP_ENTRY_SIZE);
+        }
+        if (i == gDVDPoolState) {
+            pool = NULL;
+        }
+
+        if (FSYS_POOL_ALLOC_CB(pool) != NULL) {
+            sub->buffer = ((FSYSAllocCallback)FSYS_POOL_ALLOC_CB(pool))(
+                slot->fileHandle, entry->nameHash, size);
+        } else {
+            sub->buffer = (void*)GSresAllocResourceAlign(
+                FSYSAlign32(size), 0x20, slot->fileHandle, entry->nameHash, 0);
+        }
     }
 
     if (sub->buffer == NULL) {
