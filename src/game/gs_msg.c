@@ -3251,12 +3251,13 @@ void fn_800FD69C(arg0, arg1, arg2, arg3, arg4)
     curY = *(s16 *)(lbl_80478B08 + 0x1A);
     scaleX = *(f32 *)(arg0 + 0x60);
     scaleY = *(f32 *)(arg0 + 0x64);
-    baseX = (f32)(s16)*(f32 *)(arg0 + 0x0C);
-    baseY = *(f32 *)(arg0 + 0x10) + ((f32)((s16)arg4 + (s8)arg0[0x43]) * scaleY);
-    drawX0 = (s16)(baseX + ((f32)curX * scaleX));
-    drawY0 = (s16)(baseY + ((f32)curY * scaleY));
-    drawX1 = (s16)(baseX + ((f32)(curX + arg2) * scaleX));
-    drawY1 = (s16)(baseY + ((f32)(curY + arg3) * scaleY));
+    baseX = *(f32 *)(arg0 + 0x0C);
+    baseY = ((f32)(s16)arg4 * scaleY) + *(f32 *)(arg0 + 0x10);
+    baseY += (f32)(s8)arg0[0x43];
+    drawX0 = (s16)baseX;
+    drawY0 = (s16)baseY;
+    drawX1 = (s16)(((f32)(s16)arg2 * scaleX) + (f32)drawX0);
+    drawY1 = (s16)(((f32)(s16)arg3 * scaleY) + (f32)drawY0);
 
     u0 = (f32)curX * lbl_8047CD4C;
     v0 = (f32)curY * lbl_8047CD4C;
