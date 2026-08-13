@@ -2186,9 +2186,7 @@ void fn_80084A8C(void) {
                 } else {
                     winMsgOpen(7, 0x44e6, 1, 0);
                 }
-                r3 = *(u8*)((u8*)r24 + 0x21);
-                r3 = (s8)r3;
-                ((void(*)(void))fn_80093698)();
+                fn_80093698((s8)*(u8*)((u8*)r24 + 0x21));
                 r3 = 0x0;
                 return;
             }
@@ -2336,9 +2334,7 @@ void fn_80084A8C(void) {
                 } else {
                     winMsgOpen(7, 0x44e6, 1, 0);
                 }
-                r3 = *(u8*)((u8*)r24 + 0x21);
-                r3 = (s8)r3;
-                ((void(*)(void))fn_80093698)();
+                fn_80093698((s8)*(u8*)((u8*)r24 + 0x21));
                 r3 = 0x0;
                 return;
             }
@@ -2492,9 +2488,7 @@ void fn_80084A8C(void) {
             } else {
                 winMsgOpen(7, 0x44e6, 1, 0);
             }
-            r3 = *(u8*)((u8*)r24 + 0x21);
-            r3 = (s8)r3;
-            ((void(*)(void))fn_80093698)();
+            fn_80093698((s8)*(u8*)((u8*)r24 + 0x21));
             r3 = 0x0;
             return;
         } while (0);
@@ -2619,9 +2613,7 @@ void fn_80084A8C(void) {
                 break;
             }
             }
-            r3 = *(u8*)((u8*)r24 + 0x21);
-            r3 = (s8)r3;
-            ((void(*)(void))fn_80093698)();
+            fn_80093698((s8)*(u8*)((u8*)r24 + 0x21));
             tmp = 0x0;
         } while (0);
             tmp = tmp & 0xFF;
@@ -2818,9 +2810,7 @@ void fn_80084A8C(void) {
         } else {
             winMsgOpen(7, 0x44e6, 1, 0);
         }
-        r3 = *(u8*)((u8*)r24 + 0x21);
-        r3 = (s8)r3;
-        ((void(*)(void))fn_80093698)();
+        fn_80093698((s8)*(u8*)((u8*)r24 + 0x21));
         r3 = 0x0;
         return;
     L_80085B40:
@@ -2947,9 +2937,7 @@ void fn_80084A8C(void) {
                 break;
             }
             }
-            r3 = *(u8*)((u8*)r24 + 0x21);
-            r3 = (s8)r3;
-            ((void(*)(void))fn_80093698)();
+            fn_80093698((s8)*(u8*)((u8*)r24 + 0x21));
             tmp = 0x0;
         } while (0);
             tmp = tmp & 0xFF;
@@ -3122,9 +3110,7 @@ void fn_80084A8C(void) {
                 break;
             }
             }
-            r3 = *(u8*)((u8*)r24 + 0x21);
-            r3 = (s8)r3;
-            ((void(*)(void))fn_80093698)();
+            fn_80093698((s8)*(u8*)((u8*)r24 + 0x21));
             tmp = 0x0;
         } while (0);
             tmp = tmp & 0xFF;
@@ -3259,9 +3245,7 @@ void fn_80084A8C(void) {
             break;
         }
         }
-        r3 = *(u8*)((u8*)r24 + 0x21);
-        r3 = (s8)r3;
-        ((void(*)(void))fn_80093698)();
+        fn_80093698((s8)*(u8*)((u8*)r24 + 0x21));
         tmp = 0x0;
     } while (0);
         tmp = tmp & 0xFF;
@@ -3408,9 +3392,7 @@ void fn_80084A8C(void) {
                 break;
             }
             }
-            r3 = *(u8*)((u8*)r24 + 0x21);
-            r3 = (s8)r3;
-            ((void(*)(void))fn_80093698)();
+            fn_80093698((s8)*(u8*)((u8*)r24 + 0x21));
             tmp = 0x0;
         } while (0);
             tmp = tmp & 0xFF;
@@ -3543,9 +3525,7 @@ void fn_80084A8C(void) {
                     break;
                 }
                 }
-                r3 = *(u8*)((u8*)r24 + 0x21);
-                r3 = (s8)r3;
-                ((void(*)(void))fn_80093698)();
+                fn_80093698((s8)*(u8*)((u8*)r24 + 0x21));
                 tmp = 0x0;
             } while (0);
                 tmp = tmp & 0xFF;
@@ -3798,9 +3778,7 @@ void fn_80084A8C(void) {
         } else {
             winMsgOpen(7, 0x44e6, 1, 0);
         }
-        r3 = *(u8*)((u8*)r24 + 0x21);
-        r3 = (s8)r3;
-        ((void(*)(void))fn_80093698)();
+        fn_80093698((s8)*(u8*)((u8*)r24 + 0x21));
         r3 = 0x0;
         return;
     L_80086B90:
@@ -3925,9 +3903,7 @@ void fn_80084A8C(void) {
             break;
         }
         }
-        r3 = *(u8*)((u8*)r24 + 0x21);
-        r3 = (s8)r3;
-        ((void(*)(void))fn_80093698)();
+        fn_80093698((s8)*(u8*)((u8*)r24 + 0x21));
         tmp = 0x0;
     } while (0);
         tmp = tmp & 0xFF;
@@ -4061,9 +4037,7 @@ void fn_80084A8C(void) {
                 break;
             }
             }
-            r3 = *(u8*)((u8*)r24 + 0x21);
-            r3 = (s8)r3;
-            ((void(*)(void))fn_80093698)();
+            fn_80093698((s8)*(u8*)((u8*)r24 + 0x21));
             tmp = 0x0;
         } while (0);
             tmp = tmp & 0xFF;
@@ -4079,8 +4053,7 @@ void fn_80084A8C(void) {
             return;
         }
     do {
-        r3 = r28;
-        ((void(*)(void))fn_80093698)();
+        fn_80093698(r28);
         r3 = 0x3cc;
         fn_80166A28();
         tmp = 0x5;
@@ -4209,9 +4182,7 @@ void fn_80084A8C(void) {
                 } else {
                     winMsgOpen(7, 0x44e6, 1, 0);
                 }
-                r3 = *(u8*)((u8*)r24 + 0x21);
-                r3 = (s8)r3;
-                ((void(*)(void))fn_80093698)();
+                fn_80093698((s8)*(u8*)((u8*)r24 + 0x21));
                 r3 = 0x0;
                 return;
                     }
@@ -4322,9 +4293,7 @@ void fn_80084A8C(void) {
             } else {
                 winMsgOpen(7, 0x44e6, 1, 0);
             }
-            r3 = *(u8*)((u8*)r24 + 0x21);
-            r3 = (s8)r3;
-            ((void(*)(void))fn_80093698)();
+            fn_80093698((s8)*(u8*)((u8*)r24 + 0x21));
             r3 = 0x0;
             return;
         }
@@ -4435,9 +4404,7 @@ void fn_80084A8C(void) {
         } else {
             winMsgOpen(7, 0x44e6, 1, 0);
         }
-        r3 = *(u8*)((u8*)r24 + 0x21);
-        r3 = (s8)r3;
-        ((void(*)(void))fn_80093698)();
+        fn_80093698((s8)*(u8*)((u8*)r24 + 0x21));
         r3 = 0x0;
         return;
     L_8008769C:
@@ -4548,9 +4515,7 @@ void fn_80084A8C(void) {
         } else {
             winMsgOpen(7, 0x44e6, 1, 0);
             }
-            r3 = *(u8*)((u8*)r24 + 0x21);
-            r3 = (s8)r3;
-            ((void(*)(void))fn_80093698)();
+            fn_80093698((s8)*(u8*)((u8*)r24 + 0x21));
             r3 = 0x0;
             return;
         }
@@ -4659,9 +4624,7 @@ void fn_80084A8C(void) {
             } else {
                 winMsgOpen(7, 0x44e6, 1, 0);
             }
-            r3 = *(u8*)((u8*)r24 + 0x21);
-            r3 = (s8)r3;
-            ((void(*)(void))fn_80093698)();
+            fn_80093698((s8)*(u8*)((u8*)r24 + 0x21));
             r3 = 0x0;
             return;
         }
