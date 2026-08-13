@@ -736,6 +736,23 @@ void fn_80031B4C(void) {
                         lbl_8047A42C = 0;
                     }
                     goto L_800323E4;
+                case 4:
+                    fadeSet(3, lbl_8047B9D0);
+                    fadeCheck(1);
+                    GSmodelSetVisibility(lbl_8047A414, 0);
+                    menuSetDisp(0xd9, 0);
+                    fadeSet(2, lbl_8047B9D4);
+                    fadeCheck(1);
+                    r29 = heroGetStatus(0, 3, (u16)lbl_8047A428);
+                    fn_80097CD0(r29, 0, 0);
+                    fadeSet(3, lbl_8047B9D4);
+                    fadeCheck(1);
+                    GSmodelSetVisibility(lbl_8047A414, 1);
+                    menuSetDisp(0xd9, 1);
+                    fadeSet(2, lbl_8047B9D0);
+                    fadeCheck(1);
+                    lbl_8047A42C = 2;
+                    goto L_800323E4;
                 default:
                     break;
                 }
