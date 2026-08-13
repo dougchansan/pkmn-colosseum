@@ -4579,7 +4579,8 @@ void setupTevReg(PSParticle* pp) {
 
     flags = pp->flags;
     if ((flags & PS_FLAG_INVISIBLE) ||
-        ((flags & 0x80000000) && (flags & 0x00100000))) {
+        (((flags & 0x80000000) == 0) &&
+         ((flags & 0x00100000) == 0))) {
         if (lbl_8047B138.r != reg1.r || lbl_8047B138.g != reg1.g ||
             lbl_8047B138.b != reg1.b || lbl_8047B138.a != reg1.a) {
             lbl_8047B138 = reg1;
