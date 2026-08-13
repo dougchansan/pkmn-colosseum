@@ -612,6 +612,13 @@ void fn_801E03D4(void) {
     } while (running != 0);
 }
 
+static const u32 sBallModels[13] = {
+    0x03640400, 0x03650400, 0x03640400, 0x03360400,
+    0x03360400, 0x036A0400, 0x03660400, 0x03400400,
+    0x03670400, 0x03690400, 0x036C0400, 0x03630400,
+    0x03680400
+};
+
 /**
  * fn_801E075C - Create the field model used for the selected party Pokemon.
  * Address: 0x801E075C | Size: 0x284
@@ -634,12 +641,6 @@ void fn_801E075C(u16 partyIndex)
     extern const f32 lbl_8047E3F4;
     extern const f32 lbl_8047E414;
     extern const f32 lbl_803750C8[];
-    u32 ballModels[13] = {
-        0x03640400, 0x03650400, 0x03640400, 0x03360400,
-        0x03360400, 0x036A0400, 0x03660400, 0x03400400,
-        0x03670400, 0x03690400, 0x036C0400, 0x03630400,
-        0x03680400
-    };
     f32 position[3] = { 0.0f, 0.0f, 0.0f };
     f32 scale[3] = { 1.0f, 1.0f, 1.0f };
     void* model = NULL;
@@ -653,7 +654,7 @@ void fn_801E075C(u16 partyIndex)
             u8 ball = pokemonBiosGetCatchBallId(pokemon);
             u16 species;
 
-            model = floorOpenObject(ballModels[ball]);
+            model = floorOpenObject(sBallModels[ball]);
             GSvecCopy(position, lbl_803750C8);
             pokemon = heroBiosGetPokemonPtr(savedataGetStatus(0, 2), partyIndex);
             species = pokemonBiosGetPokemonDataId(pokemon);
