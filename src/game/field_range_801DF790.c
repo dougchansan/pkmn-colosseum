@@ -623,7 +623,7 @@ static const u32 sBallModels[13] = {
  * fn_801E075C - Create the field model used for the selected party Pokemon.
  * Address: 0x801E075C | Size: 0x284
  */
-void fn_801E075C(u16 partyIndex)
+void fn_801E075C(s32 partyIndex)
 {
     extern u8 pokemonBiosGetCatchBallId(void* pokemon);
     extern u16 pokemonBiosGetPokemonDataId(void* pokemon);
