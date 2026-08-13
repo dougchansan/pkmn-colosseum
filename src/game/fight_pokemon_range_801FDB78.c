@@ -2229,7 +2229,7 @@ void fightOutPokemonGetOutOkWazaBanmeAry(void) {
 }
 
 /* 0x801FFEC8 | size: 0xB94 | massive */
-void fightOutPokemonCheckCanOutOkWazaBanme(void) {
+u8 fightOutPokemonCheckCanOutOkWazaBanme(void* fighter, u32 slot, u32 mode, u16* output) {
     extern u8 lbl_80279C90[];
     extern void fn_80119ED0();
     extern void fn_8011A6D4();
@@ -2265,16 +2265,16 @@ void fightOutPokemonCheckCanOutOkWazaBanme(void) {
     void (*ctr_fn)(void) = 0;
     u32 ctr = 0;
 
-    /* mr. r31, r3 */;
-    r25 = r4;
-    r24 = r5;
-    r23 = r6;
+    r31 = (u32)fighter;
+    r25 = slot;
+    r24 = mode;
+    r23 = (u32)output;
     r30 = 0x0;
-    if ((s32)r0 == (s32)0) {
+    if ((s32)r31 == (s32)0) {
         r3 = 0x6;
         return;
     }
-    if ((s32)r0 == (s32)0) {
+    if ((s32)r24 == (s32)0) {
         r26 = 0x0;
     } else {
 
