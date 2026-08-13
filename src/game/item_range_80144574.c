@@ -416,7 +416,8 @@ s16 fn_80144574(
             trainer = fightFloorGetFightPokemonPtrToFightTrainerPtr(0, fightPokemon);
             trainer = fightTrainerCheckFightPokemonFightOut(trainer, fightPokemon);
             if (trainer != NULL) {
-                fightSeqCheckSetMotoPokemonToHensinBuff(trainer, 0x7C);
+                ((void (*)(void*, s32))fightOutPokemonWriteJoutaiDataId)(
+                    trainer, 0x17);
             }
         }
         ADD_LOG(log, logCount, 9, 0, 0);
