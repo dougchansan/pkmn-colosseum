@@ -2337,9 +2337,7 @@ void fn_80084A8C(void) {
             }
             r15 = 0x1;
         }
-        r3 = r28;
-        r4 = 0x0;
-        ((void(*)(void))fn_80093160)();
+        fn_80093160(r28, NULL);
         tmp = 0x0;
         *(u32*)((u8*)r24 + 0x28) = tmp;
         goto L_8008538C;
@@ -2661,11 +2659,8 @@ void fn_80084A8C(void) {
         r3 = r22;
         heroInit();
         tmp = 0x0;
-        r3 = r28;
         *(u32*)(sp + 0x18) = tmp;
-        r4 = r22;
-        r5 = (u32)sp + 0x18;
-        ((void(*)(void))fn_80092FC8)();
+        fn_80092FC8(r28, (void*)r22, sp + 0x18);
         tmp = 0x0;
         *(u32*)((u8*)r24 + 0x28) = tmp;
         goto L_80085934;
