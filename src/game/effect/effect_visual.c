@@ -536,6 +536,53 @@ u32 _lightningRenderMain(void* ptr) {
     }
 
     fn_800D7E5C();
+    if (*(void**)(p + 0x1C) != NULL) {
+        fn_800DA1E8(1, 2, 1);
+        fn_800DA2BC(1, 1, 0);
+        fn_800D88DC(3);
+        fn_800D888C(4);
+        fn_800D7820(*(void**)(p + 0x18));
+        fn_800D85D4(0, *(void**)(p + 0x1C));
+        fn_800D6A00(6);
+        fn_800D67BC((u16)(count << 3));
+        entry = *(u8**)(p + 4);
+        for (i = 0; i < count; i++, entry += 0x97C) {
+            f32 width = *(f32*)(p + 0x68) + *(f32*)(p + 0x6C) * fn_800E0BA0();
+            f32 x = *(f32*)(entry + 0x960);
+            f32 y = *(f32*)(entry + 0x964);
+            f32 z = *(f32*)(entry + 0x968);
+            fn_800D6680(x - width, y, z - width);
+            fn_800D5CB8(0, p[0x24], p[0x25], p[0x26], p[0x27]);
+            fn_800D59B8(0, *(f32*)&lbl_8047D154, *(f32*)&lbl_8047D154);
+            fn_800D6680(x + width, y, z - width);
+            fn_800D5CB8(0, p[0x24], p[0x25], p[0x26], p[0x27]);
+            fn_800D59B8(0, *(f32*)&lbl_8047D158, *(f32*)&lbl_8047D154);
+            fn_800D6680(x + width, y, z + width);
+            fn_800D5CB8(0, p[0x24], p[0x25], p[0x26], p[0x27]);
+            fn_800D59B8(0, *(f32*)&lbl_8047D158, *(f32*)&lbl_8047D158);
+            fn_800D6680(x - width, y, z + width);
+            fn_800D5CB8(0, p[0x24], p[0x25], p[0x26], p[0x27]);
+            fn_800D59B8(0, *(f32*)&lbl_8047D154, *(f32*)&lbl_8047D158);
+
+            width *= *(f32*)&lbl_8047D158;
+            x = *(f32*)(entry + 0x96C);
+            y = *(f32*)(entry + 0x970);
+            z = *(f32*)(entry + 0x974);
+            fn_800D6680(x - width, y, z - width);
+            fn_800D5CB8(0, p[0x24], p[0x25], p[0x26], p[0x27]);
+            fn_800D59B8(0, *(f32*)&lbl_8047D154, *(f32*)&lbl_8047D154);
+            fn_800D6680(x + width, y, z - width);
+            fn_800D5CB8(0, p[0x24], p[0x25], p[0x26], p[0x27]);
+            fn_800D59B8(0, *(f32*)&lbl_8047D158, *(f32*)&lbl_8047D154);
+            fn_800D6680(x + width, y, z + width);
+            fn_800D5CB8(0, p[0x24], p[0x25], p[0x26], p[0x27]);
+            fn_800D59B8(0, *(f32*)&lbl_8047D158, *(f32*)&lbl_8047D158);
+            fn_800D6680(x - width, y, z + width);
+            fn_800D5CB8(0, p[0x24], p[0x25], p[0x26], p[0x27]);
+            fn_800D59B8(0, *(f32*)&lbl_8047D154, *(f32*)&lbl_8047D158);
+        }
+        fn_800D6728();
+    }
     return 1;
 }
 #endif
