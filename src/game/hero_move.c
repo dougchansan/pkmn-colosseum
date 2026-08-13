@@ -4358,7 +4358,7 @@ u32 updateChat__F15HEROMOVE_MEMBER(s32 player)
     u32 positionPtr;
     u32 rotationPtr;
     u32 interaction;
-    u32 i;
+    s32 i;
     u8 collision[0xD0];
     HeroChatVec3 position;
     HeroChatVec3 offset;
@@ -4404,11 +4404,14 @@ u32 updateChat__F15HEROMOVE_MEMBER(s32 player)
 
     fn_800F7D38(1, 0, 0);
     fn_800F7C8C(1, 0, 0);
-    for (i = 0; (s32)i < 2; i++) {
-        if ((*(u16*)(lbl_80426BD0 + i * 0x20 + 4) & 1) != 0) {
+    for (i = 0; i < 2; i++) {
+        if (i >= 0 && i < 2 &&
+            (*(u16*)(lbl_80426BD0 + i * 0x20 + 4) & 1) != 0) {
             handles[0] = *(u32*)&lbl_8047D030;
             handles[1] = *(u32*)&lbl_8047D034;
-            handle = handles[i];
+            if (i >= 0 && i < 2) {
+                handle = handles[i];
+            }
             resource = (u32)GSresGetResource(0, handle);
             updateAnimation__Ff15HEROMOVE_MEMBER(resource, lbl_8047D038, i);
             fn_8018C7C8(0, handle, 0x80000008);
@@ -4445,11 +4448,14 @@ u32 updateChat__F15HEROMOVE_MEMBER(s32 player)
                                 *(u32*)(eventObject + 0x2C)));
     }
 
-    for (i = 0; (s32)i < 2; i++) {
-        if ((*(u16*)(lbl_80426BD0 + i * 0x20 + 4) & 1) != 0) {
+    for (i = 0; i < 2; i++) {
+        if (i >= 0 && i < 2 &&
+            (*(u16*)(lbl_80426BD0 + i * 0x20 + 4) & 1) != 0) {
             handles[0] = *(u32*)&lbl_8047D030;
             handles[1] = *(u32*)&lbl_8047D034;
-            handle = handles[i];
+            if (i >= 0 && i < 2) {
+                handle = handles[i];
+            }
             fn_8018CA20(0, handle, 1);
             fn_8018C7C8(0, handle, 0x700);
             fn_8018C69C(0, handle, 0x80000008);
