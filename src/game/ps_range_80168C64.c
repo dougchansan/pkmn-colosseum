@@ -298,6 +298,7 @@ extern void fn_800B944C(s32 width, s32 offset);
 extern void fn_800B9494(u32 chan, u32 enable0, u32 enable1);
 extern void fn_800B94F0(u32 value);
 extern void fn_800B84E0(u32 attr, u32 value, u8 value2);
+extern void fn_801B25C4(s32 flags);
 extern void generateParticle_8017424C(PSGeneratorState* gen);
 extern void HSD_MulColor(GXColor* a, GXColor* b, GXColor* dest);
 extern void fn_800060F0(const char* file, s32 line, const char* message, ...);
@@ -1507,6 +1508,9 @@ void fn_8016AB94(u32 linkMask, s32 mode) {
             previousFlags = pp->flags;
             pp = next;
         }
+    }
+    if (!needsInit) {
+        fn_801B25C4(-1);
     }
 }
 
