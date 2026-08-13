@@ -4482,6 +4482,8 @@ PSGeneratorState* psCreateGeneratorID(s32 linkNo, s32 bankIdx, s32 scriptId) {
  * Updates the particle material and ambient channel colors, including the
  * active alpha-light contribution. Verified against 0x8016E814-0x8016EA78.
  */
+#pragma push
+#pragma optimization_level 3
 void setupChanReg(PSParticle* pp) {
     GXColor mat;
     GXColor amb;
@@ -4551,6 +4553,7 @@ void setupChanReg(PSParticle* pp) {
  * remains asm-only; these register-cache paths are verified against
  * 0x8016E40C-0x8016E698.
  */
+#pragma pop
 void setupTevReg(PSParticle* pp) {
     GXColor reg1;
     GXColor reg2;
