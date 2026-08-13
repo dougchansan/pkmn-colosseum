@@ -5018,6 +5018,8 @@ extern void GSmodelStartAnimation(void* model);
 extern void GSmodelSetAnimType(void* model, u32 type);
 extern u8 GSmodelIsAnimating(void* model);
 
+#pragma push
+#pragma optimization_level 2
 u32 fn_80087C64(const u16* expected)
 {
     u32 occupied[3][3];
@@ -5246,6 +5248,8 @@ u32 fn_80087C64(const u16* expected)
 
     return count < 0 ? 1 : 0;
 }
+
+#pragma pop
 
 #undef CARDE_SHOW_MODEL
 #undef CARDE_GRID_TABLE
