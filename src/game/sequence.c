@@ -956,18 +956,43 @@ BOOL fn_801DE164(s32 slot) {
  */
 void* fn_801DE190(u16 index, void* model, u8 variant) {
     extern u32 lbl_80478CD0;
+    extern u32 lbl_80478CF0;
+    extern u32 lbl_80478CF8;
     extern u8 lbl_80370BD0[];
+    extern u32 lbl_80374E40[][2];
+    extern u8 lbl_80374F20[];
+    extern u8 pokemonGetAnnonKatati(void* model);
+    extern void fn_8017B3E4(u32 group);
+    extern void* GSresGetResource(u32 group, u32 resource);
+    extern void* fn_801DB154(void);
+    extern void fn_801DB100(void* sequence);
+    extern void fn_801DCE0C(void* sequence);
+    extern u8 sequenceLoad(void* sequence, void* resource);
+    extern void fn_80140190(void* dst, u32 arg1, void* model);
+    extern const char lbl_802799C8[];
     u8* entry;
+    u8* override;
+    void* resourcePtr;
+    u8* sequence;
     u32 group;
     u32 resource;
+    u32 i;
+    s32 state;
+    u8 overridden = 0;
 
     if (index == 0 || index >= lbl_80478CD0) {
         return NULL;
     }
 
-    entry = lbl_80370BD0 + index * 12;
-    group = *(u32*)entry;
-    resource = *(u32*)(entry + 4);
+    if (index == 0xC9) {
+        i = pokemonGetAnnonKatati(model) % lbl_80478CF0;
+        group = lbl_80374E40[i][0];
+        resource = lbl_80374E40[i][1];
+    } else {
+        entry = lbl_80370BD0 + index * 12;
+        group = *(u32*)entry;
+        resource = *(u32*)(entry + 4);
+    }
     if (group == 0 || resource == 0) {
         group = *(u32*)(lbl_80370BD0 + 0xD38);
         resource = *(u32*)(lbl_80370BD0 + 0xD3C);
@@ -976,8 +1001,65 @@ void* fn_801DE190(u16 index, void* model, u8 variant) {
         }
     }
 
-    /* TODO: Resolve the variant resource and create its effect object. */
-    return NULL;
+    if (variant != 0) {
+        override = lbl_80374F20;
+        for (i = 0; i < lbl_80478CF8; i++, override += 12) {
+            if (*(u16*)override == index) {
+                u32 overrideGroup = *(u32*)(override + 4);
+                u32 overrideResource = *(u32*)(override + 8);
+                if (overrideGroup != 0 && overrideResource != 0) {
+                    group = overrideGroup;
+                    resource = overrideResource;
+                    overridden = 1;
+                }
+                break;
+            }
+        }
+    }
+
+    state = fn_8017B2CC(group);
+    if (state < 0) {
+        fn_8017B3E4(group);
+    } else if (fn_8017B2CC(group) == 0 && resource != 0 &&
+               GSresGetResource(group, resource) == NULL) {
+        fn_8017B3E4(group);
+    }
+
+    for (;;) {
+        state = fn_8017B2CC(group);
+        if (state < 0) {
+            GSlogWrite(lbl_802799C8);
+        }
+        if (state == 0) {
+            break;
+        }
+        _threadSwitch();
+    }
+
+    resourcePtr = GSresGetResource(group, resource);
+    if (resourcePtr == NULL) {
+        return NULL;
+    }
+    sequence = fn_801DB154();
+    if (sequence == NULL) {
+        return NULL;
+    }
+    *(u16*)(sequence + 0x70) = index;
+    *(u16*)(sequence + 0x72) = group;
+    sequence[0x75] = 1;
+    *(void**)(sequence + 0x78) = model;
+    sequence[0x77] = variant;
+    if (sequenceLoad(sequence, resourcePtr) == 0) {
+        fn_801DB100(sequence);
+        return NULL;
+    }
+    if (variant != 0 && overridden == 0) {
+        fn_801DCE0C(sequence);
+    }
+    if (index == 0x134) {
+        fn_80140190(sequence + 0x50, *(u32*)(sequence + 0x24), model);
+    }
+    return sequence;
 }
 
 /**
