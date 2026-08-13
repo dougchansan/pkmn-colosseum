@@ -381,7 +381,7 @@ extern u32 fn_80138BBC(void* ptr);
 extern u32 fn_80138CCC(void* ptr);
 extern u32 fn_80138DE4(void* ptr, u32 delta);
 extern void fn_80139074(void* entry, void* parent);
-extern void _leaffxGenerateLeafData(void* ptr, void* entry);
+extern u8 _leaffxGenerateLeafData(void* ptr, void* entry);
 extern u32 fn_80139898(void* ptr);
 extern u32 fn_801398E0(void* ptr);
 extern u32 fn_80139934(void* ptr);
@@ -1156,7 +1156,7 @@ asm void _leaffxGenerateLeafData(void* ptr, void* entry) {
 #include "src/game/effect/effect_visual__leaffxGenerateLeafData.inc"
 }
 #else
-void _leaffxGenerateLeafData(void* ptr, void* entry) {
+u8 _leaffxGenerateLeafData(void* ptr, void* entry) {
     u8* p;
     u8* e;
     void* source;
@@ -1177,14 +1177,14 @@ void _leaffxGenerateLeafData(void* ptr, void* entry) {
     e = entry;
     source = GSresGetResource(*(u16*)(p + 0x46), *(u16*)(p + 0x48));
     if (source == NULL) {
-        return;
+        return 0;
     }
 
     clone = GSmodelClone(*(void**)(p + 0x08));
     *(void**)(e + 0x58) = clone;
     if (clone == NULL) {
         GSlogWrite((const char*)lbl_80272CC4);
-        return;
+        return 0;
     }
 
     GSmodelSetVisibility(clone, 1);
@@ -1295,6 +1295,7 @@ void _leaffxGenerateLeafData(void* ptr, void* entry) {
     fn_800E02C4(matrix, scale, scale, scale);
     fn_800E03B4(matrix, position);
     GSmodelSetMatrix(*(void**)(e + 0x58), matrix);
+    return 1;
 }
 #endif
 #endif
