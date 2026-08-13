@@ -147,19 +147,12 @@ void GSlogWritef(const char* fmt, ...) {
     buffer = (u8*)lbl_8047AAFC + used;
     if (*(u8*)&lbl_8047AB11 != 0) {
         u32 prefixLen = strlen((const char*)lbl_80400F30);
-        for (i = 0; i < prefixLen; i++) {
-            buffer[i] = lbl_80400F30[i];
-        }
+        memcpy(buffer, lbl_80400F30, prefixLen);
         buffer += prefixLen;
     }
 
     message = (char*)lbl_80400F44;
-    for (i = 0;; i++) {
-        buffer[i] = (u8)message[i];
-        if (message[i] == '\0') {
-            break;
-        }
-    }
+    memcpy(buffer, message, strlen(message) + 1);
 
     entries[lbl_8047AB08] = lineLength;
     lbl_8047AB08++;
