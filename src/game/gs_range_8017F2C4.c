@@ -642,10 +642,10 @@ void fn_801800F8(u32 queueCount, u32 field04, u32 initialSize)
     buffer = lbl_80454018.entries;
     i = 0;
     while (i < lbl_80454018.count) {
-        buffer->field00 = 0;
-        buffer->field04 = 0;
-        buffer->field08 = 0;
         buffer->field0C = 0;
+        buffer->field08 = 0;
+        buffer->field04 = 0;
+        buffer->field00 = 0;
         buffer->field1C = 0;
         buffer++;
         i++;
