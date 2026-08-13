@@ -1459,6 +1459,7 @@ asm void fn_800FAEF8(void) {
 #include "src/game/gs_thread_fn_800FAEF8.inc"
 }
 #else
+#pragma peephole off
 s32 fn_800FAEF8(s32 arg0, s32 arg1, s32 arg2, const char* fmt, ...)
 {
     typedef struct __va_list_struct {
@@ -1605,6 +1606,7 @@ asm void fn_800FB43C(void) {
 #include "src/game/gs_thread_fn_800FB43C.inc"
 }
 #else
+#pragma peephole on
 s32 fn_800FB43C(arg0, arg1, arg2)
     s32 arg0;
     s32 arg1;
