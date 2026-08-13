@@ -1130,6 +1130,7 @@ void fn_80089F78(u32 arg0, u32 arg1, u32 arg2, u32 arg3) {
     fightTrainerGetValidFightOutPokemonPtr();
     tmp = r19 & 0xFF;
     r4 = 0x1;
+    *(u32*)(sp + 0x28) = r3;
     *(u8*)(sp + 0x24) = r4;
     if (tmp == 2) {
         r4 = r20;
