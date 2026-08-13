@@ -2197,11 +2197,7 @@ void fn_80084A8C(void) {
         r4 = r26;
         r3 = 0x2f;
         msgctrlSetValue();
-        r3 = 0x7;
-        r4 = 0x3c43;
-        r5 = 0x0;
-        r6 = 0x0;
-        ((void(*)(void))winMsgOpen)();
+        winMsgOpen(7, 0x3c43, 0, 0);
         tmp = r15 & 0xFF;
         r3 = 0x3;
         *(u32*)(r27 + r24) = r3;
@@ -2606,11 +2602,7 @@ void fn_80084A8C(void) {
             r4 = (s8)tmp;
             r4 = r4 + 0x1;
             msgctrlSetValue();
-            r3 = 0x7;
-            r4 = 0x3c47;
-            r5 = 0x0;
-            r6 = 0x0;
-            ((void(*)(void))winMsgOpen)();
+        winMsgOpen(7, 0x3c47, 0, 0);
             tmp = *(u32*)((u8*)r24 + 0x24);
             tmp = tmp & 0x00000008;
             if (tmp == 0) {
@@ -2662,11 +2654,7 @@ void fn_80084A8C(void) {
             r4 = r26;
             r3 = 0x2f;
             msgctrlSetValue();
-            r3 = 0x7;
-            r4 = 0x3c4d;
-            r5 = 0x0;
-            r6 = 0x0;
-            ((void(*)(void))winMsgOpen)();
+        winMsgOpen(7, 0x3c4d, 0, 0);
             f27 = *(f32*)&lbl_8047C1A8;
             f28 = *(f64*)&lbl_8047C1B0;
             r16 = 0x43300000;
@@ -2942,11 +2930,7 @@ void fn_80084A8C(void) {
             r4 = (s8)tmp;
             r4 = r4 + 0x1;
             msgctrlSetValue();
-            r3 = 0x7;
-            r4 = 0x3c49;
-            r5 = 0x0;
-            r6 = 0x0;
-            ((void(*)(void))winMsgOpen)();
+        winMsgOpen(7, 0x3c49, 0, 0);
             tmp = *(u32*)((u8*)r24 + 0x24);
             tmp = tmp & 0x00000008;
             if (tmp == 0) {
@@ -3121,11 +3105,7 @@ void fn_80084A8C(void) {
             r4 = (s8)tmp;
             r4 = r4 + 0x1;
             msgctrlSetValue();
-            r3 = 0x7;
-            r4 = 0x44f0;
-            r5 = 0x0;
-            r6 = 0x0;
-            ((void(*)(void))winMsgOpen)();
+        winMsgOpen(7, 0x44f0, 0, 0);
             tmp = *(u32*)((u8*)r24 + 0x24);
             tmp = tmp & 0x00000008;
             if (tmp == 0) {
@@ -3262,11 +3242,7 @@ void fn_80084A8C(void) {
         r4 = (s8)tmp;
         r4 = r4 + 0x1;
         msgctrlSetValue();
-        r3 = 0x7;
-        r4 = 0x3c49;
-        r5 = 0x0;
-        r6 = 0x0;
-        ((void(*)(void))winMsgOpen)();
+        winMsgOpen(7, 0x3c49, 0, 0);
         tmp = *(u32*)((u8*)r24 + 0x24);
         tmp = tmp & 0x00000008;
         if (tmp == 0) {
@@ -3415,11 +3391,7 @@ void fn_80084A8C(void) {
             r4 = (s8)tmp;
             r4 = r4 + 0x1;
             msgctrlSetValue();
-            r3 = 0x7;
-            r4 = 0x44c3;
-            r5 = 0x0;
-            r6 = 0x0;
-            ((void(*)(void))winMsgOpen)();
+        winMsgOpen(7, 0x44c3, 0, 0);
             tmp = *(u32*)((u8*)r24 + 0x24);
             tmp = tmp & 0x00000008;
             if (tmp == 0) {
@@ -3554,11 +3526,7 @@ void fn_80084A8C(void) {
                 r4 = (s8)tmp;
                 r4 = r4 + 0x1;
                 msgctrlSetValue();
-                r3 = 0x7;
-                r4 = 0x44c3;
-                r5 = 0x0;
-                r6 = 0x0;
-                ((void(*)(void))winMsgOpen)();
+        winMsgOpen(7, 0x44c3, 0, 0);
                 tmp = *(u32*)((u8*)r24 + 0x24);
                 tmp = tmp & 0x00000008;
                 if (tmp == 0) {
@@ -3940,11 +3908,7 @@ void fn_80084A8C(void) {
         r4 = (s8)tmp;
         r4 = r4 + 0x1;
         msgctrlSetValue();
-        r3 = 0x7;
-        r4 = 0x3c47;
-        r5 = 0x0;
-        r6 = 0x0;
-        ((void(*)(void))winMsgOpen)();
+        winMsgOpen(7, 0x3c47, 0, 0);
         tmp = *(u32*)((u8*)r24 + 0x24);
         tmp = tmp & 0x00000008;
         if (tmp == 0) {
@@ -4080,11 +4044,7 @@ void fn_80084A8C(void) {
             r4 = (s8)tmp;
             r4 = r4 + 0x1;
             msgctrlSetValue();
-            r3 = 0x7;
-            r4 = 0x4417;
-            r5 = 0x0;
-            r6 = 0x0;
-            ((void(*)(void))winMsgOpen)();
+        winMsgOpen(7, 0x4417, 0, 0);
             tmp = *(u32*)((u8*)r24 + 0x24);
             tmp = tmp & 0x00000008;
             if (tmp == 0) {
@@ -4112,11 +4072,7 @@ void fn_80084A8C(void) {
             r3 = 0x2f;
             r4 = 0x0;
             msgctrlSetValue();
-            r3 = 0x7;
-            r4 = 0x44cf;
-            r5 = 0x0;
-            r6 = 0x0;
-            ((void(*)(void))winMsgOpen)();
+        winMsgOpen(7, 0x44cf, 0, 0);
             r3 = r24;
             r4 = 0x1;
             fn_80087AE8();
@@ -4139,11 +4095,7 @@ void fn_80084A8C(void) {
         r4 = r26;
         r3 = 0x2f;
         msgctrlSetValue();
-        r3 = 0x7;
-        r4 = 0x3c4b;
-        r5 = 0x0;
-        r6 = 0x0;
-        ((void(*)(void))winMsgOpen)();
+        winMsgOpen(7, 0x3c4b, 0, 0);
         if ((s32)tmp != 2) {
             if ((s32)tmp < 2) {
                 if ((s32)tmp != 0) {
