@@ -162,6 +162,12 @@ extern void* fn_80167F28(const char* name);         /* field lookup by name */
 extern void* fn_80167E5C(void);                     /* get current field */
 extern void  fn_80167ED0(void* field, void* obj, void* data, u32 param);
 extern void  fn_80167E64(void* field);              /* field finalize */
+extern void* floorDataBiosGetCurrentPtr(void);
+extern u32 floorDataBiosGetShadowReciveNum(void* floor);
+extern u32 floorDataBiosGetShadowReciveID(void* floor, u32 index);
+extern int fn_80113F48(void);
+extern s32 GScolsys2WalkGetLayer(void* position, u8* layer, u8* subLayer);
+extern void GSmodelSetShadowSurface(void* model, s32 count, void* surfaces);
 
 /* Thread/task system */
 extern void* GSgappCreate(u32 pri, u32 type, void* taskBuf, void* callback);
@@ -538,6 +544,13 @@ void fn_80181850(void)
     GSvec modelRotation;
     GSvec currentPosition;
     BOOL visible;
+    void* floor;
+    void* resourceContext;
+    void* shadowSurfaces[2];
+    u32 receiverCount;
+    u8 layer;
+    u8 subLayer;
+    s32 shadowCount;
 
     for (i = peopleGetMaxCount() - 1; i >= 0; i--) {
         entry = peopleGetEntry(i);
@@ -575,6 +588,32 @@ void fn_80181850(void)
             fn_80184A90(entry);
             fn_80185B90(entry, entry->talkRange);
             fn_8018ECEC(entry, lbl_8047D798);
+
+            floor = floorDataBiosGetCurrentPtr();
+            if (floor != NULL) {
+                resourceContext = (void*)fn_80113F48();
+                fn_8018FC98(entry, &currentPosition);
+                if (GScolsys2WalkGetLayer(&currentPosition, &layer, &subLayer) == 0) {
+                    layer = 0;
+                    subLayer = 0;
+                }
+
+                receiverCount = floorDataBiosGetShadowReciveNum(floor);
+                if (layer < receiverCount && subLayer < receiverCount) {
+                    shadowCount = 1;
+                    shadowSurfaces[0] = GSresGetResource(
+                        (u32)resourceContext,
+                        floorDataBiosGetShadowReciveID(floor, layer));
+                    if (layer != subLayer) {
+                        shadowCount = 2;
+                        shadowSurfaces[1] = GSresGetResource(
+                            (u32)resourceContext,
+                            floorDataBiosGetShadowReciveID(floor, subLayer));
+                    }
+                    GSmodelSetShadowSurface(entry->modelHandle, shadowCount,
+                                            shadowSurfaces);
+                }
+            }
         }
     }
 
@@ -1247,7 +1286,6 @@ s32 fn_80181478(u32 groupId, u32 index, u8 doSetup)
 #endif
 
 /* 0x80181EB0 | 0x308 */
-extern u32 fn_80113F48(void);
 extern u32 fn_801CBA0C(u32);
 extern void fn_800E3CC8(void*, u8);
 extern void GSmodelClearShadowFlags(void*, u32);
