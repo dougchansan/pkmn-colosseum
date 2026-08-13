@@ -3964,6 +3964,8 @@ void psDispSub(PSParticle* pp, void* polygonData) {
  * Configures point-trail raster width. Geometry/color emission remains
  * asm-only; this entry block is verified at 0x8016D8EC-0x8016D954.
  */
+#pragma push
+#pragma optimization_level 0
 void psDispSubPointTrail(PSParticle* pp) {
     f32 widthValue;
     s32 width;
@@ -4076,6 +4078,7 @@ void psDispSubPointTrail(PSParticle* pp) {
  * velocity.  Point raster emission remains to be decompiled; this is the
  * verified transform prefix at 0x8016DD68-0x8016DF14.
  */
+#pragma pop
 #pragma push
 #pragma optimization_level 0
 void psDispSubAPPSRTPoint(PSParticle* pp) {
