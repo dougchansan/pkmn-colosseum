@@ -722,8 +722,8 @@ s32 getCpPolyVec__FP5GSvecP5GSvecP5GSvecP5GSvec(
     for (i = 0; i < 3; i++) {
         a = &vertices[i];
         b = &vertices[(i + 1) % 3];
-        cross = (b->z - a->z) * (point->x - a->x) -
-                (b->x - a->x) * (point->z - a->z);
+        cross = (b->x - a->x) * (point->z - a->z) -
+                (b->z - a->z) * (point->x - a->x);
         if (cross > lbl_8047CEE0) {
             return 0;
         }
