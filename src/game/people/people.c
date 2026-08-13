@@ -5000,10 +5000,11 @@ int fn_8018E1C4(PeopleEntry* entry, u32 groupId, u32 indexId, s32 objectId) {
             }
             if (linkedEntry == NULL) {
                 for (i = 0; i < peopleGetMaxCount(); i++) {
-                    stateEntry = peopleGetEntry(i);
-                    if (stateEntry->active && stateEntry->index == indexId) {
-                        linkedEntry = stateEntry->selfPtr;
-                        break;
+                stateEntry = peopleGetEntry(i);
+                if (stateEntry->active && stateEntry->index == indexId) {
+                    GSlogWrite(lbl_80273FD8, groupId, indexId);
+                    linkedEntry = stateEntry->selfPtr;
+                    break;
                     }
                 }
             }
@@ -5057,6 +5058,7 @@ int fn_8018E1C4(PeopleEntry* entry, u32 groupId, u32 indexId, s32 objectId) {
         for (i = 0; i < peopleGetMaxCount(); i++) {
             stateEntry = peopleGetEntry(i);
             if (stateEntry->active && stateEntry->index == indexId) {
+                GSlogWrite(lbl_80273FD8, groupId, indexId);
                 linkedEntry = stateEntry->selfPtr;
                 break;
             }
@@ -5107,10 +5109,11 @@ int fn_8018E1C4(PeopleEntry* entry, u32 groupId, u32 indexId, s32 objectId) {
             }
             if (linkedEntry == NULL) {
                 for (i = 0; i < peopleGetMaxCount(); i++) {
-                    stateEntry = peopleGetEntry(i);
-                    if (stateEntry->active && stateEntry->index == indexId) {
-                        linkedEntry = stateEntry->selfPtr;
-                        break;
+                stateEntry = peopleGetEntry(i);
+                if (stateEntry->active && stateEntry->index == indexId) {
+                    GSlogWrite(lbl_80273FD8, groupId, indexId);
+                    linkedEntry = stateEntry->selfPtr;
+                    break;
                     }
                 }
             }
