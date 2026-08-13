@@ -2655,10 +2655,62 @@ typedef struct HeroMoveVec3 {
     f32 z;
 } HeroMoveVec3;
 
+typedef union HeroMoveFloatShape {
+    f32 value;
+    u32 bits;
+} HeroMoveFloatShape;
+
+static inline f32 heroMoveSqrt(f32 value)
+{
+    HeroMoveFloatShape shape;
+    f64 estimate;
+    u32 exponent;
+    s32 fpclass;
+
+    if (value > lbl_8047D038) {
+        estimate = __frsqrte(value);
+        estimate = lbl_8047D048 * estimate *
+                   (lbl_8047D050 - value * (estimate * estimate));
+        estimate = lbl_8047D048 * estimate *
+                   (lbl_8047D050 - value * (estimate * estimate));
+        estimate = lbl_8047D048 * estimate *
+                   (lbl_8047D050 - value * (estimate * estimate));
+        return (f32)(value * estimate);
+    }
+    if ((f64)value < lbl_8047D058) {
+        return *(f32*)lbl_80478AC0;
+    }
+
+    shape.value = value;
+    exponent = shape.bits & 0x7F800000;
+    switch (exponent) {
+    case 0x7F800000:
+        if ((shape.bits & 0x007FFFFF) != 0) {
+            fpclass = 1;
+        } else {
+            fpclass = 2;
+        }
+        break;
+    case 0:
+        if ((shape.bits & 0x007FFFFF) != 0) {
+            fpclass = 5;
+        } else {
+            fpclass = 3;
+        }
+        break;
+    default:
+        fpclass = 4;
+        break;
+    }
+    if (fpclass == 1) {
+        return *(f32*)lbl_80478AC0;
+    }
+    return value;
+}
+
 s32 fn_8012D39C(void* start_, void* end_, void* center_, void* reference_,
                 void* result_, f32 radius)
 {
-    extern f32 sqrtf(f32);
     HeroMoveVec3* start = start_;
     HeroMoveVec3* end = end_;
     HeroMoveVec3* center = center_;
@@ -2698,7 +2750,7 @@ s32 fn_8012D39C(void* start_, void* end_, void* center_, void* reference_,
         return -1;
     }
 
-    invLength = lbl_8047D080 / sqrtf(lengthSquared);
+    invLength = lbl_8047D080 / heroMoveSqrt(lengthSquared);
     dirX = -dz * invLength;
     dirZ = dx * invLength;
     lineOffset = invLength *
@@ -2708,7 +2760,7 @@ s32 fn_8012D39C(void* start_, void* end_, void* center_, void* reference_,
     scale = lbl_8047D080 / normalLengthSquared;
     originX = dirX * (-lineOffset * scale);
     originZ = dirZ * (-lineOffset * scale);
-    normalLength = sqrtf(scale);
+    normalLength = heroMoveSqrt(scale);
     {
         f32 temp = -dirX;
         dirX = dirZ * normalLength;
@@ -2728,7 +2780,7 @@ s32 fn_8012D39C(void* start_, void* end_, void* center_, void* reference_,
     }
 
     projection = dirX * relX + dirZ * relZ;
-    if (discriminant < projection) {
+    if (discriminant < lbl_8047D0A8) {
         scale = projection / normalLengthSquared;
         result->x = dirX * scale + originX;
         result->y = lbl_8047D038;
@@ -2736,7 +2788,7 @@ s32 fn_8012D39C(void* start_, void* end_, void* center_, void* reference_,
         return 1;
     }
 
-    root = sqrtf(discriminant);
+    root = heroMoveSqrt(discriminant);
     scale = lbl_8047D080 / normalLengthSquared;
     nearX = dirX * (scale * (projection - root)) + originX;
     nearZ = dirZ * (scale * (projection - root)) + originZ;
