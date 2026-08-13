@@ -1173,10 +1173,6 @@ void _leaffxGenerateLeafData(void* ptr, void* entry) {
     f32 factor;
     f32 f0;
 
-    if (ptr == NULL || entry == NULL) {
-        return;
-    }
-
     p = ptr;
     e = entry;
     source = GSresGetResource(*(u16*)(p + 0x46), *(u16*)(p + 0x48));
@@ -1184,7 +1180,7 @@ void _leaffxGenerateLeafData(void* ptr, void* entry) {
         return;
     }
 
-    clone = GSmodelClone(source);
+    clone = GSmodelClone(*(void**)(p + 0x08));
     *(void**)(e + 0x58) = clone;
     if (clone == NULL) {
         GSlogWrite((const char*)lbl_80272CC4);
