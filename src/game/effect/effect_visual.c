@@ -1922,24 +1922,24 @@ u32 fn_8013A520(void* ptr) {
                              GSvecDistance(firstPos, secondPos);
                     yaw = *(f32*)&lbl_8047D1CC * fn_800E0BE4();
                     pitch = *(f32*)&lbl_8047D1D0 * fn_800E0BE4();
-                    fn_800E01F4(
+                    set__5GSvecFfff(
                         offset,
                         (f32)sin(pitch) *
                             (radius * fn_800E0BE4() * (f32)cos(yaw)),
                         radius * fn_800E0BE4() * (f32)cos(pitch),
                         (f32)sin(pitch) *
                             (radius * fn_800E0BE4() * (f32)sin(yaw)));
-                    fn_800E019C(firstBase, firstPos, offset);
+                    GSvecAdd(firstBase, firstPos, offset);
                     yaw = *(f32*)&lbl_8047D1CC * fn_800E0BE4();
                     pitch = *(f32*)&lbl_8047D1D0 * fn_800E0BE4();
-                    fn_800E01F4(
+                    set__5GSvecFfff(
                         offset,
                         (f32)sin(pitch) *
                             (radius * fn_800E0BE4() * (f32)cos(yaw)),
                         radius * fn_800E0BE4() * (f32)cos(pitch),
                         (f32)sin(pitch) *
                             (radius * fn_800E0BE4() * (f32)sin(yaw)));
-                    fn_800E019C(secondBase, secondPos, offset);
+                    GSvecAdd(secondBase, secondPos, offset);
                     segments = fn_800C46B0(
                         *(f32*)(p + 0x10) *
                             (*(f32*)(p + 0x1C) *
@@ -1958,12 +1958,12 @@ u32 fn_8013A520(void* ptr) {
                         pitch = *(f32*)&lbl_8047D1D0 * fn_800E0BE4();
                         radius = *(f32*)(p + 0x14) * *(f32*)(p + 0x10) *
                                  ((f32 (*)(void))fn_800E0BA0)();
-                        fn_800E01F4(
+                        set__5GSvecFfff(
                             offset,
                             (f32)sin(pitch) * (radius * (f32)cos(yaw)),
                             radius * (f32)cos(pitch),
                             (f32)sin(pitch) * (radius * (f32)sin(yaw)));
-                        fn_800E019C(point, point, offset);
+                        GSvecAdd(point, point, offset);
                         fn_800D6680(point[0], point[1], point[2]);
                         fn_800D5CB8(0, p[0], p[1], p[2], p[3]);
                         t += step;
@@ -2778,24 +2778,54 @@ asm void fn_8013BE04(void* ptr, void* mtx, u8* color, f32 x, f32 z, f32 scale) {
 }
 #else
 void fn_8013BE04(void* ptr, void* mtx, u8* color, f32 x, f32 z, f32 scale) {
-    u8* p;
+    u8* p = ptr;
+    u8* positions = *(u8**)(p + 4);
+    u8* normals = *(u8**)(p + 8);
+    u8* texcoords = *(u8**)(p + 0xC);
+    u8* colors = *(u8**)(p + 0x10);
+    u16 rows = *(u16*)(p + 0x1C);
+    u16 cols = *(u16*)(p + 0x1E);
+    GSvec base;
+    GSvec rowStep;
+    GSvec colStep;
+    GSvec current;
+    u16 row;
+    u16 column;
 
-    if (ptr == NULL || mtx == NULL || color == NULL) {
-        return;
+    set__5GSvecFfff(&base, 0.5f * x, 0.0f, 0.5f * z);
+    set__5GSvecFfff(&rowStep, x / (rows - 1), 0.0f, 0.0f);
+    set__5GSvecFfff(&colStep, 0.0f, 0.0f, z / (cols - 1));
+    GSvecCopy(&current, &base);
+
+    for (row = 0; row < rows; row++) {
+        for (column = 0; column < cols; column++) {
+            f32 u;
+            f32 v;
+            f32 alpha;
+
+            GSvecAdd(positions, mtx, &current);
+            GSvecCopy(normals, lbl_8031554C);
+            u = scale * (current.x - base.x);
+            v = scale * (current.z - base.z);
+            *(f32*)(texcoords + 4) = u;
+            *(f32*)(texcoords + 0) = v;
+            colors[0] = color[0];
+            colors[1] = color[1];
+            colors[2] = color[2];
+            alpha = (f32)color[3] *
+                    (1.0f - current.x * current.x / (base.x * base.x)) *
+                    (1.0f - current.z * current.z / (base.z * base.z));
+            colors[3] = (u8)alpha;
+            GSvecAdd(&current, &current, &colStep);
+            positions += 0xC;
+            normals += 0xC;
+            texcoords += 8;
+            colors += 4;
+        }
+        GSvecAdd(&current, &current, &rowStep);
+        current.z = base.z;
     }
-
-    p = ptr;
-    fn_800D7F14(mtx);
-    fn_800D67BC(4);
-    fn_800D6680(x - scale, *(f32*)(p + 0xC4), z - scale);
-    fn_800D5CB8(0, color[0], color[1], color[2], color[3]);
-    fn_800D6680(x + scale, *(f32*)(p + 0xC4), z - scale);
-    fn_800D5CB8(0, color[0], color[1], color[2], color[3]);
-    fn_800D6680(x + scale, *(f32*)(p + 0xC4), z + scale);
-    fn_800D5CB8(0, color[0], color[1], color[2], color[3]);
-    fn_800D6680(x - scale, *(f32*)(p + 0xC4), z + scale);
-    fn_800D5CB8(0, color[0], color[1], color[2], color[3]);
-    fn_800D6728();
+    fn_800E0E14(0, 0);
 }
 #endif
 extern void* fn_8019FF48(void* model);
