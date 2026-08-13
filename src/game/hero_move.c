@@ -2208,8 +2208,10 @@ void getStep__FP8FOOTSTEPP8_GSmodelPiP8FOOTWORK(
             if (part != NULL) {
                 GSpartGetTransform(part, &transform, NULL, NULL);
                 GSpartFree(part);
-                *position = transform;
+                position->x = transform.x;
+                position->y = transform.y;
                 heights[i] = transform.y - modelPosition.y;
+                position->z = transform.z;
             }
         }
     }
