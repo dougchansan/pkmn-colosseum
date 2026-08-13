@@ -552,6 +552,11 @@ s32 fn_80140ACC(u32* base, u16 count, u16 id, u16 amount, s16 index, u16 unusedL
                 break;
             }
 
+            if (!PEOPLE_ITEM_ID_VALID(id) || !PEOPLE_ENTRY_VALID(entry) ||
+                PEOPLE_ENTRY_ID(entry) != id) {
+                return -1;
+            }
+
             current = PEOPLE_ENTRY_COUNT(entry);
             if (current > remaining) {
                 next = (u16)(current - remaining);
