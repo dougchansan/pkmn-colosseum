@@ -5354,13 +5354,11 @@ u32 fn_8013FF0C(void* ptr) {
             ((GSmodelCanAnimate(model) && !GSmodelHasAnimationEnded(model)) ||
              (GSmodelCanTexAnimate(model) && !GSmodelHasTexAnimationEnded(model)))) {
             material = GSmodelGetBound(model);
-            if (material != NULL) {
-                billboardScale[0] /= *(f32*)((u8*)material + 0x28);
-                billboardScale[1] /= *(f32*)((u8*)material + 0x2C);
-                GSmodelSetPosition(model, position);
-                GSmodelSetScale(model, billboardScale);
-                updated = 1;
-            }
+            billboardScale[0] /= *(f32*)((u8*)material + 0x28);
+            billboardScale[1] /= *(f32*)((u8*)material + 0x2C);
+            GSmodelSetPosition(model, position);
+            GSmodelSetScale(model, billboardScale);
+            updated = 1;
         }
         return updated;
     }
