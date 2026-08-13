@@ -2161,6 +2161,9 @@ void modifyDir(PSParticle* pp, f32 angle) {
                     radialY * yawSin + pitchCos * (forward * yawCos);
 }
 
+#pragma push
+#pragma optimization_level 4
+#pragma peephole off
 void modifyDirGenBase(PSParticle* pp, f32 angle, f32 offsetX,
                       f32 offsetY, f32 offsetZ) {
     PSGeneratorState* generator = pp->peopleObj;
@@ -2214,6 +2217,7 @@ void modifyDirGenBase(PSParticle* pp, f32 angle, f32 offsetX,
                     radialY * yawSin + pitchCos * (forward * yawCos);
 }
 
+#pragma pop
 void psCopyGeneratorData(PSParticle* gen, void* peopleObj) {
     extern void psSetGeneratorAngleRadiusScale(PSGeneratorState*, f32*, u8);
     PSGeneratorState* dst = (PSGeneratorState*)gen;
