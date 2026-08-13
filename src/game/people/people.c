@@ -2738,7 +2738,7 @@ s32 fn_80186620(u32 groupId, u32 index, u8 mode, f32 x0, f32 z0,
     if (info != NULL) {
         radius = fn_8018F5E4(info);
     } else {
-        radius = *(f32*)&lbl_8047D848;
+        radius = lbl_8047D83C;
     }
     reach = radius;
     distance = fn_800E008C(&direction);
@@ -2752,7 +2752,7 @@ s32 fn_80186620(u32 groupId, u32 index, u8 mode, f32 x0, f32 z0,
     }
 
     fn_800E0168(&lineDirection, &lineEnd, &lineStart);
-    if (fn_800E008C(&lineDirection) < lbl_8047D83C) {
+    if (fn_800E008C(&lineDirection) < *(f32*)&lbl_8047D848) {
         return 0;
     }
 
@@ -2775,9 +2775,9 @@ s32 fn_80186620(u32 groupId, u32 index, u8 mode, f32 x0, f32 z0,
             if (mode != 0) {
                 GScolsy2UtilGetPointExtentionLine(
                     &collisionPoint, &projectedStart, &testPoint,
-                    lbl_8047D83C + reach);
+                    *(f32*)&lbl_8047D848 + reach);
                 if (fn_8010F320(&transform, &collisionPoint,
-                                &correctedPoint, *(f32*)&lbl_8047D848)) {
+                                &correctedPoint, lbl_8047D83C)) {
                     fn_800E0168(&correction, &correctedPoint,
                                 &collisionPoint);
                     fn_800E019C(&collisionPoint, &collisionPoint,
