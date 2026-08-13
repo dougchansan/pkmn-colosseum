@@ -704,6 +704,9 @@ void fn_801800F8(u32 queueCount, u32 field04, u32 initialSize)
 }
 #pragma optimize_for_size reset
 
+#pragma push
+#pragma optimization_level 3
+#pragma peephole off
 void fn_80180320(void* dst, void* src, u32 size)
 {
     GsRangeDVDQueueEntry* entry;
@@ -747,6 +750,7 @@ void fn_80180320(void* dst, void* src, u32 size)
         }
     }
 }
+#pragma pop
 
 void* fn_80180450(void* src, void* dst, u32 size)
 {
