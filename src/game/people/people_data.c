@@ -735,7 +735,17 @@ s32 fn_80141308(u32* base, u16 count, u16 id, u16 amount, s16 index, u16 maxCoun
                         nextValue = -1;
                     } else {
                         entryId = (u16)itemGetStatus(entryPtr, 0, 0x1B, 0);
-                        if (entryId == 0 || itemGetStatus(0, entryId, 1, 0) == 0 || entryId >= lbl_80478BD8) {
+                        if (entryId == 0) {
+                            entryValid = 0;
+                        } else if (itemGetStatus(0, entryId, 1, 0) == 0) {
+                            entryValid = 0;
+                        } else if (entryId >= lbl_80478BD8) {
+                            entryValid = 0;
+                        } else {
+                            entryValid = 1;
+                        }
+
+                        if (entryValid == 0) {
                             nextValue = -1;
                         } else {
                             cappedValue = (u16)itemGetStatus(entryPtr, 0, 0x1C, 0) + (u16)nextValue;
@@ -813,7 +823,17 @@ s32 fn_80141308(u32* base, u16 count, u16 id, u16 amount, s16 index, u16 maxCoun
                     fn_80142B24((void*)freePtr, 0, 0x1B, 0, id);
 
                     entryId = (u16)itemGetStatus(freePtr, 0, 0x1B, 0);
-                    if (entryId == 0 || itemGetStatus(0, entryId, 1, 0) == 0 || entryId >= lbl_80478BD8) {
+                    if (entryId == 0) {
+                        entryValid = 0;
+                    } else if (itemGetStatus(0, entryId, 1, 0) == 0) {
+                        entryValid = 0;
+                    } else if (entryId >= lbl_80478BD8) {
+                        entryValid = 0;
+                    } else {
+                        entryValid = 1;
+                    }
+
+                    if (entryValid == 0) {
                         nextValue = -1;
                     } else {
                         cappedValue = (u16)itemGetStatus(freePtr, 0, 0x1C, 0) + (u16)nextValue;
@@ -967,14 +987,29 @@ s32 fn_80141308(u32* base, u16 count, u16 id, u16 amount, s16 index, u16 maxCoun
                         fn_80142B24((void*)freePtr, 0, 0x1C, 0, 0);
                         fn_80142B24((void*)freePtr, 0, 0x1B, 0, id);
 
-                        fieldValue = (u16)itemGetStatus(freePtr, 0, 0x1C, 0) + (u16)nextValue;
-                        if (fieldValue > (s32)maxCount) {
-                            nextValue = fieldValue - maxCount;
-                            fieldValue = maxCount;
+                        entryId = (u16)itemGetStatus(freePtr, 0, 0x1B, 0);
+                        if (entryId == 0) {
+                            entryValid = 0;
+                        } else if (itemGetStatus(0, entryId, 1, 0) == 0) {
+                            entryValid = 0;
+                        } else if (entryId >= lbl_80478BD8) {
+                            entryValid = 0;
                         } else {
-                            nextValue = 0;
+                            entryValid = 1;
                         }
-                        fn_80142B24((void*)freePtr, 0, 0x1C, 0, (u16)fieldValue);
+
+                        if (entryValid == 0) {
+                            nextValue = -1;
+                        } else {
+                            fieldValue = (u16)itemGetStatus(freePtr, 0, 0x1C, 0) + (u16)nextValue;
+                            if (fieldValue > (s32)maxCount) {
+                                nextValue = fieldValue - maxCount;
+                                fieldValue = maxCount;
+                            } else {
+                                nextValue = 0;
+                            }
+                            fn_80142B24((void*)freePtr, 0, 0x1C, 0, (u16)fieldValue);
+                        }
                     }
 
                     if (nextValue < 0) {
@@ -994,8 +1029,25 @@ s32 fn_80141308(u32* base, u16 count, u16 id, u16 amount, s16 index, u16 maxCoun
             nextValue = -1;
         } else {
             entryId = (u16)itemGetStatus(entryPtr, 0, 0x1B, 0);
-            if (entryId == 0 || itemGetStatus(0, entryId, 1, 0) == 0 || entryId >= lbl_80478BD8 ||
-                (s32)id != itemGetStatus(entryPtr, 0, 0x1B, 0)) {
+            if (entryId == 0) {
+                entryValid = 0;
+            } else if (itemGetStatus(0, entryId, 1, 0) == 0) {
+                entryValid = 0;
+            } else if (entryId >= lbl_80478BD8) {
+                entryValid = 0;
+            } else {
+                entryValid = 1;
+            }
+
+            if (entryValid == 0) {
+                matchesTarget = 0;
+            } else if ((s32)id == itemGetStatus(entryPtr, 0, 0x1B, 0)) {
+                matchesTarget = 1;
+            } else {
+                matchesTarget = 0;
+            }
+
+            if (matchesTarget == 0) {
                 nextValue = -1;
             } else {
                 fieldValue = (u16)itemGetStatus(entryPtr, 0, 0x1C, 0) + amount;
