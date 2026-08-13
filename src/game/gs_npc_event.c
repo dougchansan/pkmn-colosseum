@@ -755,6 +755,9 @@ void fn_80031B4C(void) {
                     fadeCheck(1);
                     lbl_8047A42C = 2;
                     goto L_800323E4;
+                case 5:
+                    fn_8002EA5C();
+                    goto L_800323E4;
                 case 10:
                     fadeSet(3, lbl_8047B9D0);
                     fadeCheck(1);
