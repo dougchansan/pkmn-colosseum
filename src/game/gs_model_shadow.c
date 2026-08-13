@@ -301,6 +301,15 @@ _modelShadowAddAsNewReceiver__FP8_GSmodelP8_GSmodelP7GSlightP7GSbound(
         slot =
             _modelShadowFindValidReceiveModel__FP8_GSmodelP8_GSmodelP7GSlightP7GSbound(
                 model, receiveModel, light, NULL);
+        if (slot != NULL) {
+            for (i = 0; i < 16; i++) {
+                if (slot->receivers[i] != NULL &&
+                    ((*(u32*)slot->receivers[i] & 2) != 0)) {
+                    slot = NULL;
+                    break;
+                }
+            }
+        }
     }
     if (slot == NULL) {
         return;
