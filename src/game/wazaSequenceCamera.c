@@ -1014,6 +1014,7 @@ void _wazaSequenceCameraDoFOV__FP13ModelSequenceP24wazaSequenceCameraParamsif(
     extern void cameraSetFov(f32);
     extern CameraFovKey lbl_804673D4[];
     extern f32 lbl_80478CDC;
+    extern u32 lbl_8047B3E8;
     extern f32 lbl_8047E1E0;
     extern f32 lbl_8047E1F4;
     extern f32 lbl_8047E1F8;
@@ -1069,7 +1070,7 @@ void _wazaSequenceCameraDoFOV__FP13ModelSequenceP24wazaSequenceCameraParamsif(
         highFov = lbl_8047E27C;
     }
 
-    if (params->mode >= 0 && params->mode < 6) {
+    if (params->mode == 0 || (params->mode >= 4 && params->mode < 6)) {
         if (flags & 0x20) {
             choice = 1;
         } else if (flags & 0x80) {
@@ -1112,6 +1113,7 @@ void _wazaSequenceCameraDoFOV__FP13ModelSequenceP24wazaSequenceCameraParamsif(
         lbl_804673D4[0].endFrame = timing->frame0 << shift;
         lbl_804673D4[1].startFrame = timing->frame0 << shift;
         lbl_804673D4[1].endFrame = timing->frame0 << shift;
+        lbl_8047B3E8 = timing->frame0 << shift;
         cameraSetFov(currentFov);
         return;
     }
@@ -1153,6 +1155,7 @@ void _wazaSequenceCameraDoFOV__FP13ModelSequenceP24wazaSequenceCameraParamsif(
     lbl_804673D4[0].endFrame = timing->frame0 << shift;
     lbl_804673D4[1].startFrame = timing->frame0 << shift;
     lbl_804673D4[1].endFrame = timing->frame0 << shift;
+    lbl_8047B3E8 = timing->frame0 << shift;
     cameraSetFov(currentFov);
 
     if (count <= 2) {

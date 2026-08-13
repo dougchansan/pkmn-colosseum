@@ -488,7 +488,7 @@ u32 fn_800E1544(void)
         u8* copyDst = (u8*)(dst_);                                         \
         u8* copySrc = (u8*)(src_);                                         \
         u32 copyCount = (count_);                                          \
-        if (copyDst < copySrc) {                                           \
+        if (copySrc > copyDst) {                                           \
             for (i = 0; i < copyCount; i++) {                             \
                 copyDst[i] = copySrc[i];                                   \
             }                                                               \
