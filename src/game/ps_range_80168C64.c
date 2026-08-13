@@ -3597,6 +3597,14 @@ void psDispSubAppSRT(PSParticle* pp, Mtx parentMatrix) {
         PSMTXMultVec(appSRT->matrix, &position, &position);
     }
 
+    if (parentMatrix != NULL) {
+        Mtx scaleMatrix;
+
+        PSMTXScale(scaleMatrix, appSRT->scaleX, appSRT->scaleY, 1.0f);
+        PSMTXConcat((const f32(*)[4])(lbl_80452DE8 + 0x7C),
+                    scaleMatrix, scaleMatrix);
+    }
+
 }
 
 void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
