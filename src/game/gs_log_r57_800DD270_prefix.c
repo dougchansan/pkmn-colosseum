@@ -170,7 +170,100 @@ done:
     strlen((const char*)lbl_80400F44);
 }
 
-void GSlogWrite(const char* fmt, ...) { (void)fmt; }
+void GSlogWrite(const char* fmt, ...) {
+    GSLogVaList args;
+    GSCalendarTime time;
+    u16* entries;
+    u8* buffer;
+    char* message;
+    u32 used;
+    u32 i;
+    u16 lineLength;
+
+    if (*(u8*)&lbl_8047AB11 != 0) {
+        OSTicksToCalendarTime(OSGetTime(), &time);
+        fn_800DE09C((char*)lbl_80401044, 0x14, (const char*)lbl_802704B4,
+                    time.mon + 1, time.mday, time.hour, time.min, time.sec);
+    }
+
+    __builtin_va_info(&args);
+    fn_800DE128((char*)lbl_80401058, 0xFF, fmt, &args);
+    lbl_80401058[0xFF] = 0;
+
+    if (lbl_8047AAFC == 0) {
+        goto done;
+    }
+
+    if (*(u8*)&lbl_8047AB11 != 0) {
+        lineLength =
+            (u16)(strlen((const char*)lbl_80401044) +
+                  strlen((const char*)lbl_80401058) + 1);
+    } else {
+        lineLength = (u16)(strlen((const char*)lbl_80401058) + 1);
+    }
+
+    for (;;) {
+        used = 0;
+        entries = (u16*)lbl_8047AB00;
+        for (i = 0; i < lbl_8047AB08; i++) {
+            used += entries[i];
+        }
+        if (lbl_8047AB08 < lbl_8047AB0C && lineLength + used < lbl_8047AB04) {
+            break;
+        }
+        if (lbl_8047AB08 == 0) {
+            break;
+        }
+
+        {
+            u32 removeLen = entries[0];
+            u8* src = (u8*)lbl_8047AAFC + removeLen;
+            u8* dst = (u8*)lbl_8047AAFC;
+            u32 remaining = lbl_8047AB04 - removeLen;
+
+            for (i = 0; i < remaining; i++) {
+                dst[i] = src[i];
+            }
+
+            for (i = 1; i < lbl_8047AB08; i++) {
+                entries[i - 1] = entries[i];
+            }
+            lbl_8047AB08--;
+        }
+    }
+
+    used = 0;
+    entries = (u16*)lbl_8047AB00;
+    for (i = 0; i < lbl_8047AB08; i++) {
+        used += entries[i];
+    }
+
+    buffer = (u8*)lbl_8047AAFC + used;
+    if (*(u8*)&lbl_8047AB11 != 0) {
+        u32 prefixLen = strlen((const char*)lbl_80401044);
+        for (i = 0; i < prefixLen; i++) {
+            buffer[i] = lbl_80401044[i];
+        }
+        buffer += prefixLen;
+    }
+
+    message = (char*)lbl_80401058;
+    for (i = 0;; i++) {
+        buffer[i] = (u8)message[i];
+        if (message[i] == '\0') {
+            break;
+        }
+    }
+
+    entries[lbl_8047AB08] = lineLength;
+    lbl_8047AB08++;
+
+done:
+    if (*(u8*)&lbl_8047AB11 != 0) {
+        strlen((const char*)lbl_80401044);
+    }
+    strlen((const char*)lbl_80401058);
+}
 
 u32 GSlogInit(u32 size, u8 flag) {
     const char* strings;
