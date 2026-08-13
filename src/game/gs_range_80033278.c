@@ -138,6 +138,8 @@ s32 _sysvarsProcessData__FP16sysvarsFuncEntryPc(void* entry, char* data)
     s32 randomPick;
     u8 selection;
     u8 region;
+    u16 rewardItem;
+    u8 rewardStored;
     u8* transferEntry;
     f32 progress;
 
@@ -400,12 +402,36 @@ s32 _sysvarsProcessData__FP16sysvarsFuncEntryPc(void* entry, char* data)
                 lbl_8047A438 = 0;
                 return 2;
             }
-            fn_8007C450(menuState[0x08], base[0x48], menuState[0x24], menuState[0x26], 4);
+            fn_8007C450(menuState[0x08], base[0x48], menuState[0x24], -1, 2);
             progress = lbl_8047B9F8;
             while (progress < lbl_8047B9FC) {
                 _threadSwitch();
                 progress += (f32)fn_800D3088() / (f32)fn_800D37CC();
             }
+            fn_8007C450(menuState[0x08], base[0x48], menuState[0x24], -1, 4);
+            fn_80166A28(0x3C6);
+            progress = lbl_8047B9F8;
+            while (progress < lbl_8047B9FC) {
+                _threadSwitch();
+                progress += (f32)fn_800D3088() / (f32)fn_800D37CC();
+            }
+            fn_80166AB8(0x3CC, 0, 0);
+            heroAddPokecoupon(0, 0x50);
+            winMsgOpen(8, 0x3B76, 1, 0);
+            rewardItem = *(u16*)(menuState + 0x64 +
+                                 ((s8)base[0x48] * 2));
+            rewardStored = 1;
+            if (rewardItem == 0 ||
+                heroItemAddItemDataId(0, rewardItem, 1, -1) == 0 ||
+                pcboxDelItem(0, rewardItem, -1) != 0)
+            {
+                rewardStored = 0;
+            }
+            if (rewardStored != 0) {
+                msgctrlSetValue(0x2D, (void*)(u32)rewardItem);
+                winMsgOpen(8, 0x4273, 1, 0);
+            }
+            fn_8007C414();
         }
 
         selection = 1;
