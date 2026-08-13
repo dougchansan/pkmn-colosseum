@@ -512,7 +512,7 @@ u32 _lightningRenderMain(void* ptr) {
     if (scale > *(f32*)&lbl_8047D14C) {
         scale = *(f32*)&lbl_8047D14C;
     }
-    fn_800B9404((u32)(*(f32*)&lbl_8047D150 * scale), 5);
+    fn_800B9404((s32)(*(f32*)&lbl_8047D150 * scale), 5);
     fn_800D88DC(1);
     fn_800D888C(6);
     fn_800D7820(*(void**)(p + 0x14));
