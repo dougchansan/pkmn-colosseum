@@ -2865,7 +2865,6 @@ void fn_8012D7F0(s32 playerIndex, void* velocityOut_, void* resultOut_)
     extern void PSVECScale(HeroMoveVec3*, HeroMoveVec3*, f32);
     extern void PSVECAdd(HeroMoveVec3*, HeroMoveVec3*, HeroMoveVec3*);
     extern void PSVECSubtract(HeroMoveVec3*, HeroMoveVec3*, HeroMoveVec3*);
-    extern f32 sqrtf(f32);
 
     HeroMoveVec3* velocityOut = (HeroMoveVec3*)velocityOut_;
     HeroMoveVec3* resultOut = (HeroMoveVec3*)resultOut_;
@@ -2923,12 +2922,13 @@ void fn_8012D7F0(s32 playerIndex, void* velocityOut_, void* resultOut_)
     direction.x = targetPosition.x - currentPosition.x;
     direction.y = lbl_8047D038;
     direction.z = targetPosition.z - currentPosition.z;
-    targetDistance = sqrtf(direction.x * direction.x + direction.z * direction.z);
+    targetDistance =
+        heroMoveSqrt(direction.x * direction.x + direction.z * direction.z);
 
     if (hasHistory) {
         f32 dx = currentPosition.x - historyPosition.x;
         f32 dz = currentPosition.z - historyPosition.z;
-        historyDistance = sqrtf(dx * dx + dz * dz);
+        historyDistance = heroMoveSqrt(dx * dx + dz * dz);
     } else {
         historyDistance = lbl_8047D038;
     }
@@ -2959,7 +2959,8 @@ void fn_8012D7F0(s32 playerIndex, void* velocityOut_, void* resultOut_)
     direction.x = historyPosition.x - currentPosition.x;
     direction.y = lbl_8047D038;
     direction.z = historyPosition.z - currentPosition.z;
-    historyDistance = sqrtf(direction.x * direction.x + direction.z * direction.z);
+    historyDistance =
+        heroMoveSqrt(direction.x * direction.x + direction.z * direction.z);
     if (historyDistance > frameDistance) {
         PSVECScale(&direction, &step, frameDistance / historyDistance);
     } else {
