@@ -861,8 +861,9 @@ s32 fn_8010E138(void* origin, void* direction) {
                     continue;
                 }
 
-                for (i = 0; i < temporaryCount; i++) {
-                    if (temporary[i].height == hitPoint.y) {
+                tempRead = temporary;
+                for (i = 0; i < temporaryCount; i++, tempRead++) {
+                    if (tempRead->height == hitPoint.y) {
                         break;
                     }
                 }
@@ -905,8 +906,9 @@ s32 fn_8010E138(void* origin, void* direction) {
                             continue;
                         }
 
-                        for (i = 0; i < temporaryCount; i++) {
-                            if (temporary[i].height == hitPoint.y) {
+                        tempRead = temporary;
+                        for (i = 0; i < temporaryCount; i++, tempRead++) {
+                            if (tempRead->height == hitPoint.y) {
                                 break;
                             }
                         }
@@ -935,11 +937,10 @@ s32 fn_8010E138(void* origin, void* direction) {
         }
 
         tempRead = temporary;
-        while (temporaryCount > 0 && totalCount < 8) {
+        for (i = 0; i < temporaryCount && totalCount < 8; i++) {
             *outHit = *tempRead;
             outHit++;
             tempRead++;
-            temporaryCount--;
             totalCount++;
         }
     }
