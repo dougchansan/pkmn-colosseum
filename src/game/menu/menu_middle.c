@@ -2836,15 +2836,14 @@ void fn_8006C164(void* menu) {
         }
     }
     r0 = r3 - 0x9e2;
-    if (r0 <= (u32)0x8) {
-        r4 = (u32)jumptable_802EDEFC;
-        r0 = r0 << 2;
-        r4 = (u32)jumptable_802EDEFC;
-        r0 = *(u32*)(r4 + r0);
-        ctr_fn = (void(*)(void))r0;
-        /* indirect jump via ctr */;
+    switch (r0) {
+    case 0:
         r5 = r5 * 0xa;
+        /* fall through */
+    case 1:
         r5 = r5 * 0xa;
+        /* fall through */
+    case 2:
         r0 = MENU_MIDDLE_S16_0000(r31)->unk_0000;
         r0 = r0 + r5;
         r0 = (s16)r0;
@@ -2854,9 +2853,14 @@ void fn_8006C164(void* menu) {
         if ((s32)r0 < (s32)r4) {
             MENU_MIDDLE_U16_0002(r31)->unk_0002 = r4;
         }
-        /* case 1: handled above */
+        break;
+    case 3:
         r5 = r5 * 0xa;
+        /* fall through */
+    case 4:
         r5 = r5 * 0xa;
+        /* fall through */
+    case 5:
         r0 = MENU_MIDDLE_S16_0002(r31)->unk_0002;
         r0 = r0 + r5;
         r0 = (s16)r0;
@@ -2866,16 +2870,23 @@ void fn_8006C164(void* menu) {
         if ((s32)r4 < (s32)r0) {
             MENU_MIDDLE_U16_0000(r31)->unk_0000 = r4;
         }
-        /* case 2: handled above */
+        break;
+    case 6:
         r5 = r5 * 0xa;
+        /* fall through */
+    case 7:
         r5 = r5 * 0xa;
+        /* fall through */
+    case 8:
         r0 = MENU_MIDDLE_S16_0004(r31)->unk_0004;
         r0 = r0 + r5;
         r0 = (s16)r0;
         MENU_MIDDLE_U16_0004(r31)->unk_0004 = r0;
-        /* case 3: handled above */
+        break;
+    default:
+        r5 = 0;
+        break;
     }
-    r5 = 0x0;
     if ((s32)r5 != (s32)0x0) {
         r0 = MENU_MIDDLE_S16_0000(r31)->unk_0000;
         if ((s32)r0 < (s32)0x1) {
