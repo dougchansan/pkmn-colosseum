@@ -2952,7 +2952,7 @@ void fn_800965C8(void* window, u8* sprite) {
         break;
     case 0x551:
         value = pokemonGetSoubiItemDataId(pokemon);
-        if (value != 0) {
+        if ((u16)value != 0) {
             msgctrlSetValue(0x2D, (u16)value);
             fn_800FBB34(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0x2BD3);
         }
