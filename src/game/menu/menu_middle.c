@@ -2921,6 +2921,124 @@ void fn_8006C164(void* menu) {
     r0 = r3 - 0x9ca;
     r3 = MENU_MIDDLE_U16_0094(r24)->unk_0094;
     *(u16*)(sp + 0x14) = r3;
+    switch (r0) {
+    case 0:
+        if (r27 != 0) {
+            return;
+        }
+        break;
+    case 2:
+        if (r26 == 0) {
+            break;
+        }
+        r0 = MENU_MIDDLE_U8_000C(r31)->unk_000C;
+        if (r0 != r25) {
+            fn_80166A28(0x24);
+        }
+        MENU_MIDDLE_U8_000C(r31)->unk_000C = r25;
+        return;
+    case 3:
+        if (r29 != 0) {
+            r0 = MENU_MIDDLE_U32_0008(r31)->unk_0008 - 1;
+            MENU_MIDDLE_U32_0008(r31)->unk_0008 = r0;
+            if ((s32)r0 < 0) {
+                MENU_MIDDLE_U32_0008(r31)->unk_0008 = 0;
+                return;
+            }
+            fn_80166A28(0x24);
+            return;
+        }
+        if (r30 != 0) {
+            r0 = MENU_MIDDLE_U32_0008(r31)->unk_0008 + 1;
+            MENU_MIDDLE_U32_0008(r31)->unk_0008 = r0;
+            if ((s32)r0 >= 3) {
+                MENU_MIDDLE_U32_0008(r31)->unk_0008 = 2;
+                return;
+            }
+            fn_80166A28(0x24);
+            return;
+        }
+        break;
+    case 4:
+        if (r26 == 0) {
+            break;
+        }
+        r0 = MENU_MIDDLE_U8_000D(r31)->unk_000D;
+        if (r0 != r25) {
+            fn_80166A28(0x24);
+        }
+        MENU_MIDDLE_U8_000D(r31)->unk_000D = r25;
+        return;
+    case 5:
+        if (r26 == 0) {
+            break;
+        }
+        r0 = MENU_MIDDLE_U8_000E(r31)->unk_000E;
+        if (r0 != r25) {
+            fn_80166A28(0x24);
+        }
+        MENU_MIDDLE_U8_000E(r31)->unk_000E = r25;
+        return;
+    case 6:
+        if (r26 == 0) {
+            break;
+        }
+        r0 = MENU_MIDDLE_U8_000F(r31)->unk_000F;
+        if (r0 != r25) {
+            fn_80166A28(0x24);
+        }
+        MENU_MIDDLE_U8_000F(r31)->unk_000F = r25;
+        return;
+    case 7:
+        if (r26 == 0) {
+            break;
+        }
+        r0 = MENU_MIDDLE_U8_0010(r31)->unk_0010;
+        if (r0 != r25) {
+            fn_80166A28(0x24);
+        }
+        MENU_MIDDLE_U8_0010(r31)->unk_0010 = r25;
+        return;
+    case 24:
+    case 30:
+        goto L_8006C43C;
+    case 25:
+    case 26:
+    case 27:
+    case 28:
+    case 31:
+        goto L_8006C448;
+    case 29:
+    case 32:
+        if (r30 != 0) {
+            return;
+        }
+    L_8006C43C:
+        if (r30 != 0) {
+            return;
+        }
+        if (r29 != 0) {
+            break;
+        }
+    L_8006C448:
+        if (r29 != 0) {
+            (*(u8*)(sp + 0x15))--;
+        }
+        if (r30 != 0) {
+            (*(u8*)(sp + 0x15))++;
+        }
+        *(u16*)(sp + 0x8) = *(u16*)(sp + 0x14);
+        r3 = MENU_MIDDLE_U32_0004(r24)->unk_0004;
+        r4 = (u32)sp + 0x8;
+        ((void(*)(void))fn_801044D0)();
+        return;
+    default:
+        break;
+    }
+    r3 = r24;
+    ((void(*)(void))menuCursorNormal)();
+    return;
+
     if (r0 <= (u32)0x20) {
         r3 = (u32)jumptable_802EDE78;
         r0 = r0 << 2;
