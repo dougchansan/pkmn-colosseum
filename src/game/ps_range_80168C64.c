@@ -5338,7 +5338,6 @@ void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
             color.r = color.g = color.b = color.a = 0xFF;
             break;
         }
-        color.a = (u8)((f32)color.a * pp->alphaScale);
         textureIndex = (pp->flags >> 14) & 3;
 
         if (polygonData == NULL) {
@@ -5358,7 +5357,7 @@ void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
             GX_FIFO_U8 = color.r;
             GX_FIFO_U8 = color.g;
             GX_FIFO_U8 = color.b;
-            GX_FIFO_U8 = color.a;
+            GX_FIFO_U8 = (u8)((f32)color.a * pp->alphaScale);
             if (pp->flags & 0x400) {
                 GX_FIFO_U8 = textureIndex;
             }
@@ -5391,7 +5390,7 @@ void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
             GX_FIFO_U8 = color.r;
             GX_FIFO_U8 = color.g;
             GX_FIFO_U8 = color.b;
-            GX_FIFO_U8 = color.a;
+            GX_FIFO_U8 = (u8)((f32)color.a * pp->alphaScale);
             if (pp->flags & 0x400) {
                 GX_FIFO_U8 = textureIndex + 3;
             }
@@ -5446,6 +5445,16 @@ void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
                     f32 v = *(f32*)&stream[4];
                     f32 xWeight = lbl_8047D5CC * (u - lbl_8047D618);
                     f32 yWeight = lbl_8047D5CC * (v - lbl_8047D618);
+                    f32 alphaValue =
+                        255.0f - v * (255.0f * (1.0f - pp->alphaScale));
+                    s32 vertexAlpha = (s32)alphaValue;
+
+                    if (vertexAlpha < 0) {
+                        vertexAlpha = 0;
+                    }
+                    if (vertexAlpha > 0xFF) {
+                        vertexAlpha = 0xFF;
+                    }
 
                     stream += 8;
                     if (pp->flags & 0x40000) {
@@ -5461,7 +5470,7 @@ void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
                     GX_FIFO_U8 = color.r;
                     GX_FIFO_U8 = color.g;
                     GX_FIFO_U8 = color.b;
-                    GX_FIFO_U8 = color.a;
+                    GX_FIFO_U8 = vertexAlpha;
                     if (pp->flags & 0x400) {
                         GX_FIFO_F32 = u;
                         GX_FIFO_F32 = v;
