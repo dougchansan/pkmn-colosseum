@@ -275,7 +275,7 @@ s32 fn_8017E30C(FSYSSlot* slot) {
     }
 
     /* Check compression flag (bit 0 of entry->flags) */
-    isCompressed = fileEntry->flags & 1;
+    isCompressed = fileEntry->flags & 0x80000000;
 
     if (isCompressed) {
         /* ===== Compressed entry path ===== */
@@ -358,6 +358,46 @@ s32 fn_8017E30C(FSYSSlot* slot) {
                 fn_800E209C(tmpHandle);
             }
         }
+
+        {
+            u32 j;
+            DecompPoolEntry* dp = gDecompPoolBase;
+            DecompPoolEntry* poolEntry2 = NULL;
+
+            for (j = 0; j < gDVDPoolState; j++) {
+                if (dp->fileID == fileEntry->groupID) {
+                    poolEntry2 = dp;
+                    break;
+                }
+                dp = (DecompPoolEntry*)((u8*)dp + FSYS_DECOMP_ENTRY_SIZE);
+            }
+
+            if (poolEntry2 != NULL) {
+                void* readResult = GSresGetResource(
+                    slot->fileHandle, fileEntry->nameHash);
+                if (readResult != NULL) {
+                    if ((fileEntry->flags & 0x80000000) != 0) {
+                        DCFlushRange(readResult, fileEntry->compressedSize);
+                    } else {
+                        DCFlushRange(readResult, fileEntry->decompressedSize);
+                    }
+                }
+
+                if (*(void**)((u8*)poolEntry2 + 0xC) != NULL) {
+                    typedef void* (*PostCallback)(u32, u32, u32);
+                    PostCallback cb =
+                        (PostCallback)*(void**)((u8*)poolEntry2 + 0xC);
+                    if ((fileEntry->flags & 0x80000000) != 0) {
+                        cb(slot->fileHandle, fileEntry->nameHash,
+                           fileEntry->compressedSize);
+                    } else {
+                        cb(slot->fileHandle, fileEntry->nameHash,
+                           fileEntry->decompressedSize);
+                    }
+                }
+            }
+        }
+        return 1;
     } else {
         /* ===== Uncompressed entry path ===== */
         DecompPoolEntry* poolEntry;
