@@ -2758,25 +2758,25 @@ void fn_8006C164(void* menu) {
     r24 = r3;
     r0 = MENU_MIDDLE_U8_000A(r24)->unk_000A;
     if (r0 != (u32)0x0) return;
-    ((void(*)(void))windowGetKeyInfo)();
+    r3 = (u32)windowGetKeyInfo();
     r0 = MENU_MIDDLE_U16_0006(r3)->unk_0006;
     r3 = r0 & 0x1;
     r0 = -r3;
     r0 = r0 | r3;
     r27 = (u32)r0 >> 31;
-    ((void(*)(void))windowGetKeyInfo)();
+    r3 = (u32)windowGetKeyInfo();
     r0 = MENU_MIDDLE_U16_0006(r3)->unk_0006;
     r3 = r0 & 0x00000002;
     r0 = -r3;
     r0 = r0 | r3;
     r28 = (u32)r0 >> 31;
-    ((void(*)(void))windowGetKeyInfo)();
+    r3 = (u32)windowGetKeyInfo();
     r0 = MENU_MIDDLE_U16_0006(r3)->unk_0006;
     r3 = r0 & 0x00000004;
     r0 = -r3;
     r0 = r0 | r3;
     r29 = (u32)r0 >> 31;
-    ((void(*)(void))windowGetKeyInfo)();
+    r3 = (u32)windowGetKeyInfo();
     r4 = MENU_MIDDLE_U16_0006(r3)->unk_0006;
     r0 = r29 & 0xFF;
     r3 = 0x0;
@@ -2800,14 +2800,14 @@ void fn_8006C164(void* menu) {
         r3 = 0x1;
         }
     r25 = r3 & 0xFF;
-    ((void(*)(void))fn_80077BD0)();
+    r3 = (u32)fn_80077BD0();
     r0 = r3 & 0xFF;
     if (r0 != (u32)0x0) {
         r0 = r28 & 0xFF;
         if (r0 == (u32)0x0) return;
         r3 = MENU_MIDDLE_U32_0004(r24)->unk_0004;
         r4 = 0x9d2;
-        ((void(*)(void))menuGetCursorFromItemID)();
+        r3 = (u32)menuGetCursorFromItemID((s32)r3, (s32)r4);
         r3 = (s8)r3;
         r0 = 0x0;
         *(u8*)(sp + 0x11) = r3;
@@ -2821,7 +2821,7 @@ void fn_8006C164(void* menu) {
     }
     r3 = r24;
     r4 = 0x0;
-    ((void(*)(void))windowGetParam)();
+    r3 = (u32)windowGetParam((void*)r3, (s32)r4);
     r31 = r3;
     r3 = MENU_MIDDLE_U32_0004(r24)->unk_0004;
     ((void(*)(void))menuGetCursorItemID)();
