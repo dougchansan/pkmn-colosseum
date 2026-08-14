@@ -3000,15 +3000,18 @@ void fn_800965C8(void* window, u8* sprite) {
     }
     case 0xF3:
     case 0x110:
-        winSpriteSetDisp(sprite, state == 0);
+        value = state == 0;
+        winSpriteSetDisp(sprite, (u8)value);
         break;
     case 0xF5:
     case 0x112:
-        winSpriteSetDisp(sprite, state == 1);
+        value = state == 1;
+        winSpriteSetDisp(sprite, (u8)value);
         break;
     case 0xF4:
     case 0x111:
-        winSpriteSetDisp(sprite, state == 2);
+        value = state == 2;
+        winSpriteSetDisp(sprite, (u8)value);
         break;
     case 0x106: {
         u32 disp = 0;
