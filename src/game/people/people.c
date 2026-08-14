@@ -3584,7 +3584,12 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
     PeopleJob* current;
     PeopleJob* tail;
     PeopleJob* volatile foundJob;
-    volatile s32 activeCount;
+    volatile s32 activeCount0;
+    volatile s32 activeCountStage0;
+    volatile s32 activeCountCopy0;
+    volatile s32 activeCount1;
+    volatile s32 activeCountStage1;
+    volatile s32 activeCountCopy1;
     s32 result;
     s32 i;
 
@@ -3605,12 +3610,14 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
             foundJob = NULL;
         }
 
-        activeCount = 0;
+        activeCount0 = 0;
         for (i = 0; i < pool->count; i++) {
             if (pool->base[i].active == 1) {
-                activeCount++;
+                activeCount0++;
             }
         }
+        activeCountStage0 = activeCount0;
+        activeCountCopy0 = activeCountStage0;
 
         job = foundJob;
         if (job == NULL) {
@@ -3669,12 +3676,14 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
             foundJob = NULL;
         }
 
-        activeCount = 0;
+        activeCount1 = 0;
         for (i = 0; i < pool->count; i++) {
             if (pool->base[i].active == 1) {
-                activeCount++;
+                activeCount1++;
             }
         }
+        activeCountStage1 = activeCount1;
+        activeCountCopy1 = activeCountStage1;
 
         job = foundJob;
         if (job == NULL) {
