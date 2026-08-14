@@ -1559,6 +1559,11 @@ u8 fightTrainerCreateFightTrainerPokemonDataIdToPokemon(
     r7 = *(u32*)((u8*)r6 + 0x4);
     r0 = *(u32*)((u8*)r6 + 0x8);
     r6 = 0x0;
+    *(u32*)(sp + 0x20) = r11;
+    *(u32*)(sp + 0x24) = r10;
+    *(u32*)(sp + 0x28) = r9;
+    *(u32*)(sp + 0x14) = r8;
+    *(u32*)(sp + 0x18) = r7;
     *(u32*)(sp + 0x1C) = r0;
     fightTrainerGetStatus();
     r23 = r3 & 0xFFFF;
