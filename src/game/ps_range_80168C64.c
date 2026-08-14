@@ -1353,6 +1353,111 @@ void fn_8016AB94(u32 linkMask, s32 mode) {
                     needsInit = FALSE;
                 }
 
+                switch ((pp->flags >> 22) & 3) {
+                case 0:
+                    if (lbl_8047B148 != 0) {
+                        lbl_8047B148 = 0;
+                        GXSetBlendMode(1, 4, 5, 0);
+                    }
+                    break;
+                case 1:
+                    if (lbl_8047B148 != 1) {
+                        lbl_8047B148 = 1;
+                        GXSetBlendMode(1, 4, 1, 0);
+                    }
+                    break;
+                case 2:
+                    if (lbl_8047B148 != 2) {
+                        lbl_8047B148 = 2;
+                        GXSetBlendMode(3, 4, 5, 0);
+                    }
+                    break;
+                default:
+                    if (lbl_8047B148 != 3) {
+                        lbl_8047B148 = 3;
+                        GXSetBlendMode(1, 2, 0, 0);
+                    }
+                    break;
+                }
+
+                if (pp->alphaTimer != 0) {
+                    s32 step =
+                        ((s32)pp->alphaCountdown << 16) / pp->alphaTimer;
+                    cachedAlphaStart =
+                        (((s32)pp->alphaTargetStart << 16) +
+                         step * ((s32)pp->alphaStart -
+                                 (s32)pp->alphaTargetStart)) >> 16;
+                    cachedAlphaEnd =
+                        (((s32)pp->alphaTargetEnd << 16) +
+                         step * ((s32)pp->alphaEnd -
+                                 (s32)pp->alphaTargetEnd)) >> 16;
+                } else {
+                    cachedAlphaStart = pp->alphaStart;
+                    cachedAlphaEnd = pp->alphaEnd;
+                }
+
+                if (cachedAlphaMode != (s32)pp->alphaMode ||
+                    cachedAlphaStart != pp->alphaStart ||
+                    cachedAlphaEnd != pp->alphaEnd) {
+                    cachedAlphaMode = pp->alphaMode;
+                    fn_800BC618((pp->alphaMode >> 5) & 7,
+                                cachedAlphaStart,
+                                (pp->alphaMode >> 3) & 3,
+                                cachedAlphaEnd,
+                                pp->alphaMode & 7);
+                }
+
+                psSetupTev(pp);
+                {
+                    u32 lighting = pp->flags & 0x80100000;
+
+                    if (lighting != (u32)lbl_8047B144) {
+                        u32 attn;
+                        u32 diffuse;
+
+                        lbl_8047B144 = lighting;
+                        fn_800BA6B0(1);
+                        switch (lighting) {
+                        case 0x00100000:
+                            fn_800BA6F4(4, 0, 1, 1, 0, 0, 2);
+                            break;
+                        case 0:
+                        case 0x80000000:
+                            attn = HSD_LObjGetLightMaskAttnFunc() != 0 ? 1 : 2;
+                            diffuse = HSD_LObjGetLightMaskDiffuse();
+                            fn_800BA6F4(0, 1, 0, 0, diffuse, 0, attn);
+                            fn_800BA6F4(2, 0, 0, 0, 0, 0, 2);
+                            break;
+                        case 0x80100000:
+                            attn = HSD_LObjGetLightMaskAttnFunc() != 0 ? 1 : 2;
+                            diffuse = HSD_LObjGetLightMaskDiffuse();
+                            fn_800BA6F4(0, 1, 0, 0, diffuse, 0, attn);
+                            fn_800BA6F4(2, 0, 1, 1, 0, 0, 2);
+                            break;
+                        default:
+                            fn_800BA6F4(4, 0, 0, 0, 0, 0, 2);
+                            break;
+                        }
+                        fn_800BA6F4(5, 0, 0, 0, 0, 0, 2);
+                    }
+                }
+                setupChanReg(pp);
+                setupTevReg(pp);
+
+                {
+                    u32 flags = pp->flags;
+                    u32 zMode = flags & 0x10000008;
+
+                    if (zMode != cachedZMode) {
+                        cachedZMode = zMode;
+                        GXSetZMode(((flags >> 29) & 1) ^ 1, 3,
+                                   (zMode & 8) != 0);
+                    }
+                    if ((flags ^ previousFlags) & 0x80) {
+                        HSD_FogSet((flags & 0x80) ? lbl_8047B128 : NULL);
+                    }
+                }
+
                 if (bank != NULL) {
                     void** object = (void**)bank[pp->animIndex];
 
@@ -1372,111 +1477,6 @@ void fn_8016AB94(u32 linkMask, s32 mode) {
                             : lbl_8047D5DC * pp->lerpValue;
                         s32 width = (s32)widthValue;
                         u8 rasterWidth = (u8)width;
-
-                        switch ((pp->flags >> 22) & 3) {
-                        case 0:
-                            if (lbl_8047B148 != 0) {
-                                lbl_8047B148 = 0;
-                                GXSetBlendMode(1, 4, 5, 0);
-                            }
-                            break;
-                        case 1:
-                            if (lbl_8047B148 != 1) {
-                                lbl_8047B148 = 1;
-                                GXSetBlendMode(1, 4, 1, 0);
-                            }
-                            break;
-                        case 2:
-                            if (lbl_8047B148 != 2) {
-                                lbl_8047B148 = 2;
-                                GXSetBlendMode(3, 4, 5, 0);
-                            }
-                            break;
-                        default:
-                            if (lbl_8047B148 != 3) {
-                                lbl_8047B148 = 3;
-                                GXSetBlendMode(1, 2, 0, 0);
-                            }
-                            break;
-                        }
-
-                        if (pp->alphaTimer != 0) {
-                            s32 step =
-                                ((s32)pp->alphaCountdown << 16) / pp->alphaTimer;
-                            cachedAlphaStart =
-                                (((s32)pp->alphaTargetStart << 16) +
-                                 step * ((s32)pp->alphaStart -
-                                         (s32)pp->alphaTargetStart)) >> 16;
-                            cachedAlphaEnd =
-                                (((s32)pp->alphaTargetEnd << 16) +
-                                 step * ((s32)pp->alphaEnd -
-                                         (s32)pp->alphaTargetEnd)) >> 16;
-                        } else {
-                            cachedAlphaStart = pp->alphaStart;
-                            cachedAlphaEnd = pp->alphaEnd;
-                        }
-
-                        if (cachedAlphaMode != (s32)pp->alphaMode ||
-                            cachedAlphaStart != pp->alphaStart ||
-                            cachedAlphaEnd != pp->alphaEnd) {
-                            cachedAlphaMode = pp->alphaMode;
-                            fn_800BC618((pp->alphaMode >> 5) & 7,
-                                        cachedAlphaStart,
-                                        (pp->alphaMode >> 3) & 3,
-                                        cachedAlphaEnd,
-                                        pp->alphaMode & 7);
-                        }
-
-                        psSetupTev(pp);
-                        {
-                            u32 lighting = pp->flags & 0x80100000;
-
-                            if (lighting != (u32)lbl_8047B144) {
-                                u32 attn;
-                                u32 diffuse;
-
-                                lbl_8047B144 = lighting;
-                                fn_800BA6B0(1);
-                                switch (lighting) {
-                                case 0x00100000:
-                                    fn_800BA6F4(4, 0, 1, 1, 0, 0, 2);
-                                    break;
-                                case 0:
-                                case 0x80000000:
-                                    attn = HSD_LObjGetLightMaskAttnFunc() != 0 ? 1 : 2;
-                                    diffuse = HSD_LObjGetLightMaskDiffuse();
-                                    fn_800BA6F4(0, 1, 0, 0, diffuse, 0, attn);
-                                    fn_800BA6F4(2, 0, 0, 0, 0, 0, 2);
-                                    break;
-                                case 0x80100000:
-                                    attn = HSD_LObjGetLightMaskAttnFunc() != 0 ? 1 : 2;
-                                    diffuse = HSD_LObjGetLightMaskDiffuse();
-                                    fn_800BA6F4(0, 1, 0, 0, diffuse, 0, attn);
-                                    fn_800BA6F4(2, 0, 1, 1, 0, 0, 2);
-                                    break;
-                                default:
-                                    fn_800BA6F4(4, 0, 0, 0, 0, 0, 2);
-                                    break;
-                                }
-                                fn_800BA6F4(5, 0, 0, 0, 0, 0, 2);
-                            }
-                        }
-                        setupChanReg(pp);
-                        setupTevReg(pp);
-
-                        {
-                            u32 flags = pp->flags;
-                            u32 zMode = flags & 0x10000008;
-
-                            if (zMode != cachedZMode) {
-                                cachedZMode = zMode;
-                                GXSetZMode(((flags >> 29) & 1) ^ 1, 3,
-                                           (zMode & 8) != 0);
-                            }
-                            if ((flags ^ previousFlags) & 0x80) {
-                                HSD_FogSet((flags & 0x80) ? lbl_8047B128 : NULL);
-                            }
-                        }
 
                         if (lbl_8047B168 != rasterWidth) {
                             lbl_8047B168 = rasterWidth;
