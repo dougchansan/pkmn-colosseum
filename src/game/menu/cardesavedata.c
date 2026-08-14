@@ -2120,9 +2120,7 @@ void fn_80084A8C(void) {
                 r19 = (u32)&lbl_80478950;
                 do {
                     tmp = *(u32*)((u8*)r18 + 0x0);
-                    if ((s32)tmp != 5) {
-                        if ((s32)tmp == 4) {
-                        }
+                    if ((s32)tmp == 5 || (s32)tmp == 4) {
                         r3 = r17 + 0x1;
                         ((void(*)(void))fn_8008ABA0)();
                         tmp = r3 & 0xFF;
