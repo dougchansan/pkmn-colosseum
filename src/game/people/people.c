@@ -3591,6 +3591,7 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
     volatile s32 activeCountStage1;
     volatile s32 activeCountCopy1;
     volatile s32 activeIndex1;
+    volatile s32 freeIndex1;
     volatile s32 tailIndex0;
     volatile s32 tailIndex1;
     s32 result;
@@ -3598,7 +3599,6 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
 
     result = 0;
     if (mode == 0) {
-        foundJob = NULL;
         job = *(PeopleJob**)((u8*)&lbl_8047B1E8 + 4);
         for (i = 0; i < *(volatile s32*)&lbl_8047B1E8; i++) {
             if (job->active == 0) {
@@ -3671,16 +3671,17 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
             result = 1;
         }
     } else if (mode == 1) {
-        foundJob = NULL;
         job = *(PeopleJob**)((u8*)&lbl_8047B1E8 + 4);
-        for (i = 0; i < *(volatile s32*)&lbl_8047B1E8; i++) {
+        freeIndex1 = 0;
+        while (freeIndex1 < *(volatile s32*)&lbl_8047B1E8) {
             if (job->active == 0) {
                 foundJob = job;
                 break;
             }
             job++;
+            freeIndex1++;
         }
-        if (i >= *(volatile s32*)&lbl_8047B1E8) {
+        if (freeIndex1 >= *(volatile s32*)&lbl_8047B1E8) {
             fn_80179F4C(1);
             foundJob = NULL;
         }
