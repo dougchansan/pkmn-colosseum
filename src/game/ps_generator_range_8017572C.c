@@ -315,9 +315,71 @@ void psKillGenerator(PSGeneratorKillNode* generator) {
 
 void* psRemoveGenerator(u32 type, u32 param) {
     PSGeneratorPoolNode* node;
+    PSGeneratorKillNode* generator;
+    PSGeneratorKillNode* current;
+    PSGeneratorKillNode* previous;
 
     psKillAllParticle();
-    psKillAllGenerator();
+
+    generator = (PSGeneratorKillNode*)lbl_8047B188;
+    while (generator != NULL) {
+        PSGeneratorKillNode* next = generator->next;
+
+        lbl_8047B184 = NULL;
+        current = (PSGeneratorKillNode*)lbl_8047B188;
+        while (current != NULL) {
+            if (current == generator) {
+                previous = (PSGeneratorKillNode*)lbl_8047B184;
+                if (generator->generatorFlags & 0x80) {
+                    psKillGeneratorChild(generator);
+                }
+                if (generator->childCount != 0) {
+                    generator->age = lbl_8047D6B0;
+                    generator->life = 1;
+                    previous = generator;
+                } else if ((generator->generatorFlags & 0x3800) != 0 &&
+                           generator->appSRT != NULL &&
+                           generator->appSRT->owner == generator &&
+                           generator->appSRT->refCount != 1) {
+                    generator->age = lbl_8047D6B0;
+                    generator->life = 1;
+                    previous = generator;
+                } else {
+                    if (previous == NULL) {
+                        lbl_8047B188 = generator->next;
+                    } else {
+                        previous->next = generator->next;
+                    }
+                    if (generator->appSRT != NULL) {
+                        psRemoveGeneratorAppSRT(generator);
+                    }
+                    generator->next = (PSGeneratorKillNode*)lbl_8047B18C;
+                    lbl_8047B18C = generator;
+                    lbl_8047B118--;
+                }
+                lbl_8047B184 = previous;
+                if (previous != NULL) {
+                    while (((PSGeneratorKillNode*)lbl_8047B184)->next != NULL) {
+                        lbl_8047B184 =
+                            ((PSGeneratorKillNode*)lbl_8047B184)->next;
+                    }
+                } else if (lbl_8047B188 != NULL) {
+                    lbl_8047B184 = lbl_8047B188;
+                    while (((PSGeneratorKillNode*)lbl_8047B184)->next != NULL) {
+                        lbl_8047B184 =
+                            ((PSGeneratorKillNode*)lbl_8047B184)->next;
+                    }
+                }
+                break;
+            }
+            lbl_8047B184 = current;
+            current = current->next;
+        }
+        generator = next;
+    }
+    while (lbl_8047B180 != 0) {
+        lbl_8047B180 = (u32)fn_801A3E64((void*)lbl_8047B180);
+    }
 
     node = (PSGeneratorPoolNode*)lbl_8047B18C;
     while (node != NULL) {
