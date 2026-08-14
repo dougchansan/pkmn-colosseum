@@ -1323,7 +1323,8 @@ void fn_801CDB04(void)
             if (result == -1) {
                 task->state = 22;
             } else if (result == 0) {
-                task->state = 23;
+                task->field_20++;
+                task->state = (u32)task->field_20 < 3 ? 21 : 23;
             } else {
                 task->error_code = result;
                 task->state = 0x2B;
