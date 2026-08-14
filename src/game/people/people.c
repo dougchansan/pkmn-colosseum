@@ -4961,7 +4961,7 @@ void* fn_8018CD08(u32 groupId, u32 index, f32 radius, f32 angle) {
     extern void* floorEventGetTresureList(u32 indexId);
     extern f64 atan2(f64, f64);
     extern f64 fabs(f64);
-    extern f64 fmod(f64);
+    extern f64 fmod(f64, f64);
     extern s32 fn_8010F320(void* start, void* end, f32 radius, void* result);
     extern void GSlogWritef(const char* fmt, ...);
     extern f32 lbl_8047D83C;
@@ -5071,8 +5071,9 @@ void* fn_8018CD08(u32 groupId, u32 index, f32 radius, f32 angle) {
 
         fn_800E0168(&delta, &candidatePosition, &sourcePosition);
         candidateAngle = (f32)atan2(delta.x, delta.z);
-        candidateAngle =
-            (f32)fmod(lbl_8047D7F0 + (candidateAngle - source->field_40));
+        candidateAngle = (f32)fmod(
+            lbl_8047D7F0 + (candidateAngle - source->field_40),
+            lbl_8047D7F0);
         if (candidateAngle > lbl_8047D7A8) {
             candidateAngle = (f32)(candidateAngle - lbl_8047D7F0);
         } else if (candidateAngle < lbl_8047D820) {
@@ -5097,8 +5098,8 @@ void* fn_8018CD08(u32 groupId, u32 index, f32 radius, f32 angle) {
                 fn_8018FC2C(candidate, &rotation);
                 fn_800E0168(&delta, &sourcePosition, &candidatePosition);
                 distance = (f32)atan2(delta.x, delta.z);
-                distance =
-                    (f32)fmod(lbl_8047D7F0 + (distance - rotation.y));
+                distance = (f32)fmod(
+                    lbl_8047D7F0 + (distance - rotation.y), lbl_8047D7F0);
                 if (distance > lbl_8047D7A8) {
                     distance = (f32)(distance - lbl_8047D7F0);
                 } else if (distance < lbl_8047D820) {
@@ -5116,8 +5117,9 @@ void* fn_8018CD08(u32 groupId, u32 index, f32 radius, f32 angle) {
             fn_800E013C(&midpoint, &midpoint, lbl_8047D7A4);
             fn_800E0168(&memberDelta, &candidatePosition, &sourcePosition);
             memberAngle = (f32)atan2(memberDelta.x, memberDelta.z);
-            memberAngle =
-                (f32)fmod(lbl_8047D7F0 + (memberAngle - lbl_8047D7A0));
+            memberAngle = (f32)fmod(
+                lbl_8047D7F0 + (memberAngle - lbl_8047D7A0),
+                lbl_8047D7F0);
             if (memberAngle > lbl_8047D7A8) {
                 memberAngle = (f32)(memberAngle - lbl_8047D7F0);
             } else if (memberAngle < lbl_8047D820) {
