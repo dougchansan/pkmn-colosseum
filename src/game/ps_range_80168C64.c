@@ -5648,9 +5648,9 @@ f32 generateParticle_8017424C(PSGeneratorState* gen) {
         emissionVelocity.y *= gen->generatorData[4];
         emissionVelocity.z *= gen->generatorData[5];
     }
-    magnitude = sqrtf(emissionVelocity.x * emissionVelocity.x +
-                      emissionVelocity.y * emissionVelocity.y +
-                      emissionVelocity.z * emissionVelocity.z);
+    magnitude = psSetVelSqrtf(emissionVelocity.x * emissionVelocity.x +
+                              emissionVelocity.y * emissionVelocity.y +
+                              emissionVelocity.z * emissionVelocity.z);
 
     PSMTXIdentity(basis);
 
@@ -5819,7 +5819,7 @@ f32 generateParticle_8017424C(PSGeneratorState* gen) {
             } else {
                 radiusFactor = fn_801ADC7C();
                 if (mode == 3 || mode == 4) {
-                    radiusFactor = sqrtf(radiusFactor);
+                    radiusFactor = psSetVelSqrtf(radiusFactor);
                 }
                 radius = radiusFactor * gen->radius;
             }
@@ -6049,9 +6049,9 @@ f32 generateParticle_8017424C(PSGeneratorState* gen) {
             emissionPosition.z += gen->positionZ;
 
             axisMagnitude =
-                sqrtf(gen->shape.rect.zx * gen->shape.rect.zx +
-                      gen->shape.rect.zy * gen->shape.rect.zy +
-                      gen->shape.rect.zz * gen->shape.rect.zz);
+                psSetVelSqrtf(gen->shape.rect.zx * gen->shape.rect.zx +
+                              gen->shape.rect.zy * gen->shape.rect.zy +
+                              gen->shape.rect.zz * gen->shape.rect.zz);
             particleVelocity.x = gen->shape.rect.zx *
                                  magnitude / axisMagnitude;
             particleVelocity.y = gen->shape.rect.zy *
