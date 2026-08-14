@@ -4428,6 +4428,7 @@ void fn_80189990(u32 groupId, u32 index, s32 messageId) {
                     peopleTestFlags(stateEntry, PEOPLE_FLAG_TALKABLE);
                 peopleSetFlags(stateEntry, PEOPLE_FLAG_TALKABLE);
             }
+            fn_80188984(groupId, index, 1);
         }
 
         info = peopleInfoBiosGetPtr(entry->scriptRef);
