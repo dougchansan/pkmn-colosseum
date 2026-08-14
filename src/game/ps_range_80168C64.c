@@ -2512,12 +2512,15 @@ PSParticle* psInterpretParticle0(PSParticle* pp, PSParticle* parentCtx) {
 
                         pp->objRefIndex = objRef;
                         bankData = (void**)lbl_804529C8[pp->bankIndex];
-                        objTable = bankData ? ((void**)bankData)[pp->animIndex] : NULL;
+                        objTable = ((void**)bankData)[pp->animIndex];
                         if (objTable != NULL) {
                             void** objEntry = (void**)((u8*)objTable + 0x18);
-                            void* ref = objEntry[objRef];
-                            if (ref != NULL) {
-                                pp->flags |= PS_FLAG_OBJ_REF;
+
+                            if (objEntry != NULL) {
+                                void* ref = objEntry[objRef];
+                                if (ref != NULL) {
+                                    pp->flags |= PS_FLAG_OBJ_REF;
+                                }
                             }
                         }
                     }
