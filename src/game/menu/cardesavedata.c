@@ -1864,14 +1864,14 @@ s32 fn_800849B4(s32 mode, s32 command, void* input, void* output)
 #pragma peephole off
 void fn_80084A8C(s32 mode, u32 command, void* input, void* output) {
     extern void fn_80087AE8();
-    extern void fn_80128E04();
-    extern void fn_80128E24();
+    extern void* fn_80128E04(void);
+    extern u32 fn_80128E24(void);
     extern void* savedataGetStatus(u32, u32);
     extern void heroInit();
     extern void heroBiosCopy();
     extern void msgctrlSetValue();
-    extern void gamedataAttestBiosGetLangareaId();
-    extern void gamedataBiosGetGamedataAtttestPtr();
+    extern u8 gamedataAttestBiosGetLangareaId(void*);
+    extern u32 gamedataBiosGetGamedataAtttestPtr(void*);
     extern void fn_80166A28();
     extern void __assert();
     extern u8 jumptable_802EEB78[];
@@ -2970,20 +2970,20 @@ void fn_80084A8C(s32 mode, u32 command, void* input, void* output) {
         case 5:
             r17 = 3;
             break;
-        case 6:
+        case 7:
             r17 = 6;
             break;
         default:
             tmp = 0;
             goto L_80085E1C;
         }
-        fn_80128E24();
+        r3 = fn_80128E24();
         if (r3 != 0) {
-            fn_80128E04();
+            r3 = (u32)fn_80128E04();
             if (r3 != 0) {
-                gamedataBiosGetGamedataAtttestPtr();
+                r3 = gamedataBiosGetGamedataAtttestPtr((void*)r3);
                 if (r3 != 0) {
-                    gamedataAttestBiosGetLangareaId();
+                    r3 = gamedataAttestBiosGetLangareaId((void*)r3);
                     r3 = r3 & 0xFF;
                     tmp = r17 & 0xFF;
                     if (r3 == tmp) {
