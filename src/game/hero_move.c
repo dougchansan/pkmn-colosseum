@@ -3161,7 +3161,6 @@ void fn_8012E388(s32 playerIndex, f32* magnitudeOut)
     extern u32 fn_800F7BC4(u32);
     extern u32 GSscene_GetMode(void);
     extern f64 sin(f32);
-    extern f32 sqrtf(f32);
     extern f32 cameraGetRotY(void);
     extern void fn_8018805C(u32, u32, f32, f32);
     extern void fn_80188214(u32, u32, f32);
@@ -3220,7 +3219,7 @@ void fn_8012E388(s32 playerIndex, f32* magnitudeOut)
     if ((s8)stickY < -0x38) stickY = -0x38;
     x = (f32)((s8)stickX < 0 ? -(s8)stickX : (s8)stickX) / lbl_8047D0B4;
     y = (f32)((s8)stickY < 0 ? -(s8)stickY : (s8)stickY) / lbl_8047D0B4;
-    magnitude = sqrtf(x * x + y * y);
+    magnitude = heroMoveSqrt(x * x + y * y);
     *magnitudeOut = magnitude;
     if (*magnitudeOut > lbl_8047D084) {
         *magnitudeOut = lbl_8047D084;
