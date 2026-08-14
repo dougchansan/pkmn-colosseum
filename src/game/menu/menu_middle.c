@@ -5286,7 +5286,6 @@ void fn_8006E798(void* menu) {
 
 /* 0x8006E9A4 | size: 0x4D8 */
 void fn_8006E9A4(void* window, void* sprite) {
-    extern void fn_8006B3C8();
     extern void winSpriteGetDisp();
     extern void msgctrlSetValue();
     u8 sp[0x910];
@@ -5512,9 +5511,7 @@ void fn_8006E9A4(void* window, void* sprite) {
                 return;
                             }
             r31 = MENU_MIDDLE_U32_0064(r31)->unk_0064;
-            r3 = 0x3;
-            fn_8006B3C8();
-            r0 = r3 & 0xFF;
+            r0 = fn_8006B3C8(3) & 0xFF;
             if (r0 != (u32)0x0) {
                 r5 = 0x32;
             } else {
@@ -5566,9 +5563,7 @@ void fn_8006E9A4(void* window, void* sprite) {
         return;
                             }
     r31 = MENU_MIDDLE_U32_0064(r31)->unk_0064;
-    r3 = 0x5;
-    fn_8006B3C8();
-    r0 = r3 & 0xFF;
+    r0 = fn_8006B3C8(5) & 0xFF;
     if (r0 != (u32)0x0) {
         r5 = 0x64;
     } else {
