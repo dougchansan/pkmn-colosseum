@@ -2585,7 +2585,7 @@ typedef struct HSD_TExpDag {
     struct HSD_TExpDag* depend[8];
 } HSD_TExpDag;
 
-extern s32 lbl_8036D380[];
+extern u8 lbl_8036D380[];
 extern s32 HSD_TExpGetType(u8* texp);
 extern void CalcDistance(u8** nodes, s32* dist, u8* root, s32 num, s32 val);
 void fn_801B89BC(s32 num, u32* dep, u32* full_dep, HSD_TExpDag* list,
@@ -2594,19 +2594,73 @@ void fn_801B89BC(s32 num, u32* dep, u32* full_dep, HSD_TExpDag* list,
 s32 fn_801B8B84(s32 num, u32* unused, HSD_TExpDag* list, s32* order);
 
 /*
- * HSD_GObjRenderSorted - 0x801B7CA0 | Size: 0x384
+ * Order a TExp DAG and assign the temporary TEV register references.
+ * 0x801B7CA0 | Size: 0x384
  */
-void fn_801B7CA0(u32 pass)
+void fn_801B7CA0(s32 num, HSD_TExpDag* list, ColTExpNode** result,
+                 ColTExpRes* resource)
 {
-    u32 i;
+    u32 dep[32];
+    u32 full_dep[32];
+    s32 min_order[32] = { 0 };
+    s32 work_order[32];
+    s32 min = 5;
+    s32 changed;
+    s32 i;
+    s32 j;
 
-    for (i = 0; i < 64; i++) {
-        HSD_GObj* gobj = gobj_render_list[i];
-        while (gobj != NULL) {
-            if (gobj->render_cb != NULL) {
-                gobj->render_cb(gobj, pass);
+    for (i = 0; i < num; i++) {
+        dep[i] = 0;
+        for (j = 0; j < list[i].nb_dep; j++) {
+            dep[i] |= 1U << list[i].depend[j]->idx;
+        }
+        full_dep[i] = dep[i];
+    }
+
+    do {
+        changed = 0;
+        for (i = 0; i < num; i++) {
+            for (j = 0; j < num; j++) {
+                if (full_dep[j] & (1U << i)) {
+                    u32 old = full_dep[j];
+                    full_dep[j] |= full_dep[i];
+                    if (old != full_dep[j]) {
+                        changed = 1;
+                    }
+                }
             }
-            gobj = gobj->next_gx;
+        }
+    } while (changed != 0);
+
+    fn_801B89BC(num, dep, full_dep, list, 0, 0, 0, 0, work_order, &min,
+                 min_order);
+
+    for (i = 0; i < num; i++) {
+        ColTExpNode* tev = result[i] = list[min_order[i]].tev;
+
+        if (tev->c_dst != 0xFF) {
+            ((u8*)resource)[0x14 + tev->c_dst * 2] = 3;
+            for (j = 0; j < 4; j++) {
+                if (HSD_TExpGetType((u8*)tev->c_in[j].exp) == COL_TE_TEV) {
+                    if (tev->c_in[j].sel == COL_TE_RGB) {
+                        tev->c_in[j].arg =
+                            lbl_8036D380[tev->c_in[j].exp->c_dst];
+                    } else {
+                        tev->c_in[j].arg =
+                            lbl_8036D380[4 + tev->c_in[j].exp->a_dst];
+                    }
+                }
+            }
+        }
+
+        if (tev->a_dst != 0xFF) {
+            ((u8*)resource)[0x15 + tev->a_dst * 2] = 1;
+            for (j = 0; j < 4; j++) {
+                if (HSD_TExpGetType((u8*)tev->a_in[j].exp) == COL_TE_TEV) {
+                    tev->a_in[j].arg =
+                        lbl_8036D380[8 + tev->a_in[j].exp->a_dst];
+                }
+            }
         }
     }
 }
