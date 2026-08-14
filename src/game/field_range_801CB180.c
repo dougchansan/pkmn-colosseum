@@ -1355,10 +1355,17 @@ void fn_801CDB04(void)
             if (result == -1) {
                 task->state = 24;
             } else if (result == 0) {
-                savedataGetStatus(0, 1);
-                task->error_code = 0;
-                task->task_result = 1;
-                task->state = 25;
+                if (task->task_kind == 9) {
+                    task->work_buffer->savedata =
+                        *(SavedataBody*)savedataGetStatus(0, 0);
+                    task->field_2c = 0;
+                    task->field_20 = -1;
+                    task->state = 37;
+                } else {
+                    task->error_code = 11;
+                    task->task_result = 2;
+                    task->state = 44;
+                }
             } else {
                 task->error_code = result;
                 task->state = 0x2B;
