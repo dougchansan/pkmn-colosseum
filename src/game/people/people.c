@@ -3662,9 +3662,13 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
             job->state = 0;
             result = 1;
         } else {
-            gPeopleOpenWork = (PeopleOpenWork*)job;
-            fn_8017C074(job->slot, job->subEntry, job->index, job);
-            current = (PeopleJob*)gPeopleOpenWork;
+            current = job;
+            *(PeopleJob* volatile*)&lbl_8047B1E4 = current;
+            fn_8017C074(
+                (*(PeopleJob* volatile*)&lbl_8047B1E4)->slot,
+                (*(PeopleJob* volatile*)&lbl_8047B1E4)->subEntry,
+                (*(PeopleJob* volatile*)&lbl_8047B1E4)->index,
+                *(PeopleJob* volatile*)&lbl_8047B1E4);
             current->app =
                 GSgappCreate(fn_8017AC30(), 0xC8, current->slot->taskParam,
                              fn_8018114C);
