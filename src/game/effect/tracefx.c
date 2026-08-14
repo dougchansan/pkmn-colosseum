@@ -184,7 +184,7 @@ u8* fn_801364A8(u8* work, u8* desc) {
         GSvecCopy(work + 0x28, params + 0x18);
 
         size = *(u32*)(params + 0x4C);
-        aligned = TRACEFX_ALIGN32(params + 0x53);
+        aligned = TRACEFX_ALIGN32(params + 0x54);
         handle = fn_800E2C04(TRACEFX_ALIGN32_SIZE(size), 0x20);
         if (handle != 0) {
             void* copy = fn_800E27B0(handle);
@@ -232,7 +232,7 @@ u8* fn_801364A8(u8* work, u8* desc) {
         *(u16*)(work + 0x32) = *(u32*)(params + 0x0C);
 
         size = *(u32*)(params + 0x10);
-        aligned = TRACEFX_ALIGN32(params + 0x37);
+        aligned = TRACEFX_ALIGN32(params + 0x18);
         handle = fn_800E2C04(TRACEFX_ALIGN32_SIZE(size), 0x20);
         if (handle != 0) {
             void* copy = fn_800E27B0(handle);
@@ -270,7 +270,7 @@ u8* fn_801364A8(u8* work, u8* desc) {
         *(u16*)(work + 0x4C) = wazaSequenceSysGetResID();
 
         size = *(u32*)(params + 0x34);
-        aligned = TRACEFX_ALIGN32(params + 0x3B);
+        aligned = TRACEFX_ALIGN32(params + 0x3C);
         {
             void* model;
 
@@ -312,7 +312,7 @@ u8* fn_801364A8(u8* work, u8* desc) {
         *(u32*)(work + 0x5C) = wazaSequenceSysGetResID();
 
         size = *(u32*)(params + 0x2C);
-        aligned = TRACEFX_ALIGN32(params + 0x33);
+        aligned = TRACEFX_ALIGN32(params + 0x34);
         {
             void* model;
 
@@ -401,7 +401,7 @@ u8* fn_801364A8(u8* work, u8* desc) {
         *(u16*)(work + 0x26) = *(u32*)(params + 0x0C);
         *(u32*)(work + 0x08) = 0x4E20;
 
-        aligned = TRACEFX_ALIGN32(params + 0x37);
+        aligned = TRACEFX_ALIGN32(params + 0x18);
         size = *(u32*)(params + 0x00);
         if (size != 0) {
             void* model;
@@ -441,7 +441,7 @@ u8* fn_801364A8(u8* work, u8* desc) {
         *(u16*)(work + 0x32) = *(u32*)(params + 0x04);
 
         size = *(u32*)(params + 0x10);
-        aligned = TRACEFX_ALIGN32(aligned + 0x3B);
+        aligned = TRACEFX_ALIGN32(aligned + 0x1C);
         handle = fn_800E2C04(TRACEFX_ALIGN32_SIZE(size), 0x20);
         if (handle != 0) {
             void* copy = fn_800E27B0(handle);
