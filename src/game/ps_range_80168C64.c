@@ -5396,7 +5396,7 @@ void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
             }
         } else {
             u8* stream = polygonData;
-            u32 packetCount = *(u32*)stream;
+            u32 packetCount;
             f32 alphaFade = 255.0f * (1.0f - pp->alphaScale);
             f32 axisLength =
                 psPolygonSqrtf(axisYX * axisYX + axisYY * axisYY +
@@ -5424,6 +5424,7 @@ void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
             axisYY *= tailLength;
             axisYZ *= tailLength;
 
+            packetCount = *(u32*)stream;
             stream += 4;
             while (packetCount != 0) {
                 u8 primitive = stream[0];
