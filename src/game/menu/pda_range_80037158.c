@@ -2642,6 +2642,7 @@ void fn_80044378(u8* context, PdaSprite* sprite)
     s32 i;
     s32 offset;
     f32 y;
+    f32 stride;
     u16 pokemonId;
     u32 model;
     u32 pokemonRnd;
@@ -2680,6 +2681,7 @@ void fn_80044378(u8* context, PdaSprite* sprite)
         *(s16*)(lbl_802EF0A8 + 0x5718));
     y = *(f32*)(scene + 0x30);
     offset = 0;
+    stride = lbl_8047BCF4;
     for (i = 0; i < lbl_8047A4E8; i++, offset += 2) {
         if (i >= *(s32*)(scene + 8) - 1 &&
             i <= *(s32*)(scene + 0xC) + 1) {
@@ -2706,7 +2708,7 @@ void fn_80044378(u8* context, PdaSprite* sprite)
             fn_800FB680(0, (s32)y - 2, (s8)context[0x8B],
                          (void*)0xE7);
         }
-        y += lbl_8047BCF4;
+        y += stride;
     }
     fn_800FE35C();
 }
