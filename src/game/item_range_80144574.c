@@ -65,6 +65,8 @@ extern void* fightFloorGetFightPokemonPtrToFightTrainerPtr(s32, void*);
 extern void* fightTrainerCheckFightPokemonFightOut(void*, void*);
 extern void fightSeqCheckSetMotoPokemonToHensinBuff(void*, s32);
 extern void fn_802331A4(void*, s32);
+extern void fn_8020248C(void*, s32, u32);
+extern u8 fn_802025B8(void*, s32);
 extern u8 fightOutPokemonIsJoutaiDataId(void* fightPokemon, s32 statusId);
 extern void fightOutPokemonInitJoutaiDataId(void* fightPokemon, s32 statusId);
 extern u8 fightOutPokemonCheckWriteJoutaiDataId(void* fightPokemon, s32 statusId);
@@ -201,15 +203,20 @@ s16 fn_80144574(
             trainer = fightFloorGetFightPokemonPtrToFightTrainerPtr(0, fightPokemon);
             trainer = fightTrainerCheckFightPokemonFightOut(trainer, fightPokemon);
         }
-        if (trainer != NULL &&
-            fightOutPokemonCheckWriteJoutaiDataId(trainer, 0xF) == 2) {
-            fightOutPokemonWriteJoutaiDataId(trainer, 0xF, 0);
+        if (trainer != NULL && fn_802025B8(trainer, 0xF) == 2) {
+            fn_8020248C(trainer, 0xF, 0);
             if (fightPokemon != NULL) {
                 side = fightFloorGetFightPokemonPtrToFightTrainerPtr(0, fightPokemon);
                 side = fightTrainerCheckFightPokemonFightOut(side, fightPokemon);
                 if (side != NULL) {
-                    fightSeqCheckSetMotoPokemonToHensinBuff(side, 0x7C);
-                    fightSeqCheckSetMotoPokemonToHensinBuff(side, 0x99);
+                    fn_802331A4(side, 0x7C);
+                }
+            }
+            if (fightPokemon != NULL) {
+                side = fightFloorGetFightPokemonPtrToFightTrainerPtr(0, fightPokemon);
+                side = fightTrainerCheckFightPokemonFightOut(side, fightPokemon);
+                if (side != NULL) {
+                    fn_802331A4(side, 0x99);
                 }
             }
             ADD_LOG(log, logCount, 1, 0, 0);
