@@ -2072,6 +2072,52 @@ static inline f32 psSetVelSqrtf(f32 value) {
     return value;
 }
 
+static inline f32 psPolygonSqrtf(f32 value) {
+    union {
+        f32 value;
+        u32 bits;
+    } shape;
+    f64 estimate;
+    s32 exponent;
+    s32 fpclass;
+    extern const f64 lbl_8047D600;
+    extern const f64 lbl_8047D608;
+    extern const f64 lbl_8047D610;
+    extern const f32 lbl_80478AC0[];
+
+    if (value > lbl_8047D5C8) {
+        estimate = __frsqrte(value);
+        estimate = lbl_8047D600 * estimate *
+                   (lbl_8047D608 - value * (estimate * estimate));
+        estimate = lbl_8047D600 * estimate *
+                   (lbl_8047D608 - value * (estimate * estimate));
+        estimate = lbl_8047D600 * estimate *
+                   (lbl_8047D608 - value * (estimate * estimate));
+        return (f32)(value * estimate);
+    }
+    if ((f64)value < lbl_8047D610) {
+        return lbl_80478AC0[0];
+    }
+
+    shape.value = value;
+    exponent = shape.bits & 0x7F800000;
+    switch (exponent) {
+    case 0x7F800000:
+        fpclass = (shape.bits & 0x007FFFFF) != 0 ? 1 : 2;
+        break;
+    case 0:
+        fpclass = (shape.bits & 0x007FFFFF) != 0 ? 5 : 3;
+        break;
+    default:
+        fpclass = 4;
+        break;
+    }
+    if (fpclass == 1) {
+        return lbl_80478AC0[0];
+    }
+    return value;
+}
+
 void setVelToJObj(PSParticle* pp, PSForceJObj* jobj) {
     f32 velocityX = pp->velocityX;
     f32 velocityY = pp->velocityY;
@@ -5344,8 +5390,9 @@ void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
         } else {
             u8* stream = polygonData;
             u32 packetCount = *(u32*)stream;
-            f32 axisLength = sqrtf(axisYX * axisYX + axisYY * axisYY +
-                                   axisYZ * axisYZ);
+            f32 axisLength =
+                psPolygonSqrtf(axisYX * axisYX + axisYY * axisYY +
+                               axisYZ * axisYZ);
             f32 tailX;
             f32 tailY;
             f32 tailZ;
@@ -5358,8 +5405,10 @@ void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
             tailX = centerX - velocityX;
             tailY = centerY - velocityY;
             tailZ = centerZ - velocityZ;
-            tailLength = sqrtf(tailX * tailX + tailY * tailY + tailZ * tailZ) /
-                         axisLength;
+            tailLength =
+                psPolygonSqrtf(tailX * tailX + tailY * tailY +
+                               tailZ * tailZ) /
+                axisLength;
             if (tailLength < 1.0f) {
                 tailLength = 1.0f;
             }
