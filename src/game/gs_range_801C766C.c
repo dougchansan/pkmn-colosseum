@@ -1023,8 +1023,8 @@ s32 fn_801C7730(s32 side, s32 slot)
         fn_800DFFCC(&planeNormal, &fullDirection, &flatDirection);
         if (GScolsys2UtilGetCpPlaneLine(
                 &planeHit, &planeT, &planeNormal, &partner, &origin,
-                &entries[i].pos) != 0 &&
-            planeT >= lbl_8047E114 && planeT <= lbl_8047E100) {
+                &entries[i].pos) == 0 ||
+            planeT < lbl_8047E114 || planeT > lbl_8047E100) {
             continue;
         }
 
@@ -1093,8 +1093,8 @@ s32 fn_801C7730(s32 side, s32 slot)
         fn_800DFFCC(&planeNormal, &fullDirection, &flatDirection);
         if (GScolsys2UtilGetCpPlaneLine(
                 &planeHit, &planeT, &planeNormal, &partner, &origin,
-                &entries[i].pos) != 0 &&
-            planeT >= lbl_8047E114 && planeT <= lbl_8047E100) {
+                &entries[i].pos) == 0 ||
+            planeT < lbl_8047E114 || planeT > lbl_8047E100) {
             continue;
         }
         fn_80183350(resId, floorId);
