@@ -15,6 +15,58 @@
 #include "game/world/gs_field.h"
 #include "game/gs_field_colquery_types.h"
 
+typedef union GScolsys2HumanFloatShape {
+    f32 value;
+    u32 bits;
+} GScolsys2HumanFloatShape;
+
+extern f32 lbl_8047CF20;
+extern f64 lbl_8047CF28;
+extern f64 lbl_8047CF30;
+extern f64 lbl_8047CF38;
+extern f32 lbl_80478AC0[];
+extern f64 __frsqrte(f64 value);
+
+static inline f32 GScolsys2HumanSqrt(f32 value)
+{
+    GScolsys2HumanFloatShape shape;
+    f64 estimate;
+    u32 exponent;
+    s32 fpclass;
+
+    if (value > lbl_8047CF20) {
+        estimate = __frsqrte(value);
+        estimate = lbl_8047CF28 * estimate *
+                   (lbl_8047CF30 - value * (estimate * estimate));
+        estimate = lbl_8047CF28 * estimate *
+                   (lbl_8047CF30 - value * (estimate * estimate));
+        estimate = lbl_8047CF28 * estimate *
+                   (lbl_8047CF30 - value * (estimate * estimate));
+        return (f32)(value * estimate);
+    }
+    if ((f64)value < lbl_8047CF38) {
+        return lbl_80478AC0[0];
+    }
+
+    shape.value = value;
+    exponent = shape.bits & 0x7F800000;
+    switch (exponent) {
+    case 0x7F800000:
+        fpclass = (shape.bits & 0x007FFFFF) != 0 ? 1 : 2;
+        break;
+    case 0:
+        fpclass = (shape.bits & 0x007FFFFF) != 0 ? 5 : 3;
+        break;
+    default:
+        fpclass = 4;
+        break;
+    }
+    if (fpclass == 1) {
+        return lbl_80478AC0[0];
+    }
+    return value;
+}
+
 /* 0x8010FAF4 | 0x304 */
 s32 fn_8010FAF4(
     u8* source, f32 unusedStep, s32 excludedIndex,
@@ -25,7 +77,6 @@ s32 fn_8010FAF4(
     extern void* fn_8018D998(s32, s32);
     extern void* peopleSearchID(void*);
     extern GScolsys2Vec3* fn_8018FCBC(void*);
-    extern f32 sqrtf(f32);
     extern f32 lbl_8047CF20;
     extern f32 lbl_8047CF40;
     extern f32 lbl_8047CF44;
@@ -77,7 +128,7 @@ s32 fn_8010FAF4(
 
             dx = current.x - other->x;
             dz = current.z - other->z;
-            distance = sqrtf(dx * dx + dz * dz);
+            distance = GScolsys2HumanSqrt(dx * dx + dz * dz);
             combinedRadius =
                 *(f32*)(entry + 8) + *(f32*)(source + 8);
             if (distance >= combinedRadius) {
