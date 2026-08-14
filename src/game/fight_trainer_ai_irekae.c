@@ -242,6 +242,7 @@ s32 fightTrainerAiSelectIrekaeDasuFightPokemon(void* ctx, u32 param1, u32 param2
     r6 = 0x0;
     r7 = 0x1;
     fightFloorGetFightTrainerFightOutPokemonPtrAry();
+    *(u32*)(sp + 0x7FC) = r3;
     r4 = r15;
     r5 = (u32)sp + 0xb0;
     r3 = 0x0;
@@ -249,9 +250,10 @@ s32 fightTrainerAiSelectIrekaeDasuFightPokemon(void* ctx, u32 param1, u32 param2
     r7 = 0x1;
     fightFloorGetFightTrainerFightPokemonPtrAry();
     r0 = r20 & 0xFFFF;
-    if (r0 == (u32)0x1) {
+    *(u32*)(sp + 0x800) = r3;
+    if (r0 == (u32)0x0) {
         r3 = -0x1;
-        return;
+        return (s32)r3;
     }
     r4 = r21;
     r3 = 0x0;
