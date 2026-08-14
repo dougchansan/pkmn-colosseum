@@ -547,9 +547,10 @@ s32 fn_800096B4(u32 arg0, s32 arg1, u8* arg2, u8* arg3, u8* arg4, u8* arg5) {
         }
         case 0x4E: {
             s32 joutai = pokemonGetJoutaiDataId(arg0);
+            s32 max;
             if (joutai != 0) {
+                max = fn_8012189C(arg0, joutai);
                 if (joutai != 4) {
-                    s32 max = fn_8012189C(arg0, joutai);
                     if (max >= 0) {
                         s32 v = max + delta;
                         FN800096B4_CLAMP(v, 0, 0x10);
@@ -574,12 +575,16 @@ s32 fn_800096B4(u32 arg0, s32 arg1, u8* arg2, u8* arg3, u8* arg4, u8* arg5) {
         }
         case 0x4F: {
             s32 joutai = pokemonGetJoutaiDataId(arg0);
-            if ((joutai != 0) && (joutai != 4) && (fn_8012189C(arg0, joutai) >= 0)) {
-                s32 v = fn_8012182C(arg0, joutai) + delta;
-                FN800096B4_CLAMP(v, 0, fn_8012189C(arg0, joutai));
-                fn_801217B4(arg0, joutai, v);
-                if (arg3 != NULL) {
-                    *arg3 = 1;
+            s32 max;
+            if (joutai != 0) {
+                max = fn_8012189C(arg0, joutai);
+                if ((joutai != 4) && (max >= 0)) {
+                    s32 v = fn_8012182C(arg0, joutai) + delta;
+                    FN800096B4_CLAMP(v, 0, fn_8012189C(arg0, joutai));
+                    fn_801217B4(arg0, joutai, v);
+                    if (arg3 != NULL) {
+                        *arg3 = 1;
+                    }
                 }
             }
             break;
