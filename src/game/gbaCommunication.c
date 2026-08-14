@@ -2983,6 +2983,8 @@ void fn_800965C8(void* window, u8* sprite) {
         case 1:
             sexMsg = 0xD68;
             break;
+        case 2:
+        case 3:
         default:
             sexMsg = 0;
             break;
