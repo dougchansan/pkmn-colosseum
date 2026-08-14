@@ -7403,7 +7403,6 @@ s32 fn_800F5CA0(arg0)
     GS_VM_READ_U8(arg0, desc);
     GS_VM_POP(arg0, index);
     GS_VM_PUSH(arg0, index);
-    GS_VM_PUSH(arg0, index);
     GS_VM_RESOLVE_INDEXED(arg0, (u16)desc | 0x100, addr);
     GS_VM_PUSH(arg0, addr);
     return 1;
