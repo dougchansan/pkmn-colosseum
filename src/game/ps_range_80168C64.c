@@ -5341,13 +5341,16 @@ void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
         textureIndex = (pp->flags >> 14) & 3;
 
         if (polygonData == NULL) {
-            fn_800B7D3C();
-            fn_800B7874(9, 1);
-            fn_800B7874(11, 1);
             if (pp->flags & 0x400) {
+                fn_800B7D3C();
+                fn_800B7874(9, 1);
+                fn_800B7874(11, 1);
                 fn_800B7874(13, 2);
                 fn_800B928C(0x80, 2, 4);
             } else {
+                fn_800B7D3C();
+                fn_800B7874(9, 1);
+                fn_800B7874(11, 1);
                 fn_800B928C(0x80, 3, 4);
             }
 
@@ -5490,12 +5493,14 @@ void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
         if (polygonData == NULL) {
             u32 textureIndex = (pp->flags >> 14) & 3;
 
-            fn_800B7D3C();
-            fn_800B7874(9, 1);
             if (pp->flags & 0x400) {
+                fn_800B7D3C();
+                fn_800B7874(9, 1);
                 fn_800B7874(13, 2);
                 fn_800B928C(0x80, 0, 4);
             } else {
+                fn_800B7D3C();
+                fn_800B7874(9, 1);
                 fn_800B928C(0x80, 1, 4);
             }
 
