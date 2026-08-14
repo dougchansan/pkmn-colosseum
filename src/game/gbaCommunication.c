@@ -3230,7 +3230,7 @@ void fn_80096FA0(u8* menu)
     extern void fn_80103484(s32, s32);
     extern void fn_80109C88(void*, u32);
     extern u8 fn_80123CD4(u32, s32);
-    extern u16 fn_8012640C(u32, u32, u32, s32);
+    extern u32 fn_8012640C(u32, u32, u32, s32);
 
     void* keyObject;
     u16 input;
