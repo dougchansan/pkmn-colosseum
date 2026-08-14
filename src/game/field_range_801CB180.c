@@ -984,7 +984,7 @@ void fn_801CDB04(void)
             fn_800056C4(task->initial_dialog_result);
             if (task->task_kind >= 1 && task->task_kind <= 2) {
                 task->serial_check_enabled = 0;
-            } else if ((task->task_kind == 3 || task->task_kind == 4) &&
+            } else if (task->task_kind == 4 &&
                        gamedatasaveGetStatus(0, 4) == 0)
             {
                 task->task_kind = 9;
