@@ -3567,7 +3567,7 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
         void* callback;
         s32 type;
         void* app;
-        struct PeopleJob* nextJob;
+        struct PeopleJob* volatile nextJob;
         PeopleOpenSlot* slot;
         u32 index;
         void* subEntry;
