@@ -5397,6 +5397,7 @@ void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
         } else {
             u8* stream = polygonData;
             u32 packetCount = *(u32*)stream;
+            f32 alphaFade = 255.0f * (1.0f - pp->alphaScale);
             f32 axisLength =
                 psPolygonSqrtf(axisYX * axisYX + axisYY * axisYY +
                                axisYZ * axisYZ);
@@ -5445,8 +5446,7 @@ void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
                     f32 v = *(f32*)&stream[4];
                     f32 xWeight = lbl_8047D5CC * (u - lbl_8047D618);
                     f32 yWeight = lbl_8047D5CC * (v - lbl_8047D618);
-                    f32 alphaValue =
-                        255.0f - v * (255.0f * (1.0f - pp->alphaScale));
+                    f32 alphaValue = 255.0f - v * alphaFade;
                     s32 vertexAlpha = (s32)alphaValue;
 
                     if (vertexAlpha < 0) {
