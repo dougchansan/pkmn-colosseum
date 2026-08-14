@@ -7295,10 +7295,10 @@ void fn_80048918(void)
         GSmodelSetVisibility(res, 0);
     }
     fn_801CB9D8(NULL);
-    *(f32*)((u8*)&lbl_803A6818 + 0x6c) = c94;
-    *(f32*)((u8*)&lbl_803A6818 + 0x70) = c94;
-    *(f32*)((u8*)&lbl_803A6818 + 0x74) = c94;
-    *(f32*)((u8*)&lbl_803A6818 + 0x64) = cf0;
+    *(f32*)((u8*)&lbl_803A6818 + 0x6c) = lbl_8047BC94;
+    *(f32*)((u8*)&lbl_803A6818 + 0x70) = lbl_8047BC94;
+    *(f32*)((u8*)&lbl_803A6818 + 0x74) = lbl_8047BC94;
+    *(f32*)((u8*)&lbl_803A6818 + 0x64) = lbl_8047BCF0;
     anim = fn_801CBA0C(0xd171000);
     *(void**)((u8*)&lbl_803A6818 + 0x10c) = anim;
     res = GSresGetResource((u32)fn_80113F48(), (u32)anim);
@@ -7437,7 +7437,7 @@ void fn_80048918(void)
     fn_8018F4C8(peopleInfoBiosGetPtr(0xf70400), 1, &motion, &out8);
     menuModelSetMotion((u8*)&lbl_803A6818 + 0xc4, motion);
     total = lbl_8047A4E8;
-    *(f32*)((u8*)&lbl_803A6818 + 0x40) = c94;
+    *(f32*)((u8*)&lbl_803A6818 + 0x40) = lbl_8047BC94;
     *(s32*)((u8*)&lbl_803A6818 + 0x8) = -5;
     if (total >= 5) {
         *(s32*)((u8*)&lbl_803A6818 + 0xc) = 5;
