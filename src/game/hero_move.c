@@ -3539,7 +3539,6 @@ void fn_8012CA84(s32 playerIdx, f32* dirVec, f32* fwdVec) {
     extern f32  fn_8018F678(void*);                       /* getMaxTurnRatePos(obj) */
     extern f32  fn_8018F658(void*);                       /* getMaxTurnRateNeg(obj) */
     extern u8   lbl_80426BD0[];                           /* player state array (stride 0x20) */
-    extern f32  sqrtf(f32);                               /* host CRT */
 
     u32 htbl[2];
     u32 entityHandle = 0;
@@ -3566,8 +3565,7 @@ void fn_8012CA84(s32 playerIdx, f32* dirVec, f32* fwdVec) {
 
     {
         f32 sq = dirVec[0] * dirVec[0] + dirVec[2] * dirVec[2];
-        /* original is inline frsqrte + 3x Newton-Raphson; sqrtf is x86-equivalent */
-        dirMag = (sq > 0.0f) ? sqrtf(sq) : 0.0f;
+        dirMag = heroMoveSqrt(sq);
     }
 
     if (dirMag > lbl_8047D038) {
@@ -3607,7 +3605,7 @@ void fn_8012CA84(s32 playerIdx, f32* dirVec, f32* fwdVec) {
 
         {
             f32 fwdSq = fwdVec[0] * fwdVec[0] + fwdVec[2] * fwdVec[2];
-            f32 fwdMag = (fwdSq > 0.0f) ? sqrtf(fwdSq) : 0.0f;
+            f32 fwdMag = heroMoveSqrt(fwdSq);
 
             if (fwdMag > lbl_8047D060) {
                 f32 angle = (f32)atan2(fwdVec[0], fwdVec[2]);
