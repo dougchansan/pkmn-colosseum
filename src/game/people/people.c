@@ -3615,11 +3615,10 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
         fn_80179F4C(1);
         foundJob = NULL;
 found_job0:
-        job = foundJob;
-
         activeCount0 = 0;
-        current = *(PeopleJob**)((u8*)&lbl_8047B1E8 + 4);
+        job = foundJob;
         activeIndex0 = 0;
+        current = *(PeopleJob**)((u8*)&lbl_8047B1E8 + 4);
         while (activeIndex0 < *(volatile s32*)&lbl_8047B1E8) {
             if (current->active == 1) {
                 activeCount0++;
@@ -3693,11 +3692,10 @@ found_job0:
         fn_80179F4C(1);
         foundJob = NULL;
 found_job1:
-        job = foundJob;
-
         activeCount1 = 0;
-        current = *(PeopleJob**)((u8*)&lbl_8047B1E8 + 4);
+        job = foundJob;
         activeIndex1 = 0;
+        current = *(PeopleJob**)((u8*)&lbl_8047B1E8 + 4);
         while (activeIndex1 < *(volatile s32*)&lbl_8047B1E8) {
             if (current->active == 1) {
                 activeCount1++;
