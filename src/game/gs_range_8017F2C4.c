@@ -14,7 +14,7 @@ extern u32 lbl_80453FDC[];
 
 #pragma push
 #pragma optimization_level 0
-void fn_8017F2C4(u8* destination, const u8* source)
+void fn_8017F2C4(u8* destination, const u8* source, u32 size)
 {
     u32 sourceIndex;
     u32 destinationIndex;
@@ -24,6 +24,7 @@ void fn_8017F2C4(u8* destination, const u8* source)
     u32 offset;
     u32 length;
     u32 index;
+    u32 chunkCount;
     u8 value;
     u8 first;
     u8 second;
@@ -32,6 +33,7 @@ void fn_8017F2C4(u8* destination, const u8* source)
     destinationIndex = 0;
     dictionaryIndex = 0xFEE;
     flags = 0;
+    chunkCount = 0;
     source += 0x10;
     sourceLimit = lbl_80453FDC[2] - 0x10;
 
@@ -73,6 +75,7 @@ void fn_8017F2C4(u8* destination, const u8* source)
                 index++;
             } while (index <= length);
         }
+        chunkCount++;
     }
 }
 #pragma pop
