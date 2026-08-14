@@ -275,7 +275,7 @@ void fn_800704A8(void);
 void fn_800704AC(void* menu, void* sprite);
 void fn_800706C4(void* menu, void* sprite);
 void fn_80070A9C(void* menu, void* sprite);
-void fn_80070D84(void);
+void fn_80070D84(void* menu, void* entries, u32 count);
 
 /* ===== Function implementations ===== */
 
@@ -7462,13 +7462,13 @@ void fn_80070A9C(void* menu, void* sprite) {
 
 
 /* 0x80070D84 | size: 0x318 */
-void fn_80070D84(void) {
+void fn_80070D84(void* menu, void* entries, u32 count) {
     u8 sp[0x20];
     u32 r0 = 0;
     u32 r1 = (u32)sp;
-    u32 r3 = 0;
-    u32 r4 = 0;
-    u32 r5 = 0;
+    u32 r3 = (u32)menu;
+    u32 r4 = (u32)entries;
+    u32 r5 = count;
     u32 r26 = 0;
     u32 r27 = 0;
     u32 r28 = 0;
