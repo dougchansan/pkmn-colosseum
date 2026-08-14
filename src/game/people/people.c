@@ -3594,11 +3594,15 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
     volatile s32 freeIndex1;
     volatile s32 tailIndex0;
     volatile s32 tailIndex1;
+    void* volatile savedSubEntry;
+    volatile s32 savedMode;
     s32 result;
     s32 i;
 
     result = 0;
-    switch (mode) {
+    savedMode = mode;
+    savedSubEntry = subEntry;
+    switch (savedMode) {
     case 0:
         job = *(PeopleJob**)((u8*)&lbl_8047B1E8 + 4);
         for (i = 0; i < *(volatile s32*)&lbl_8047B1E8; i++) {
@@ -3632,10 +3636,10 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
         }
 
         job->taskParam = ((PeopleOpenSlot*)slot)->taskParam;
-        job->type = mode;
+        job->type = savedMode;
         job->callback = fn_8018114C;
         job->slot = (PeopleOpenSlot*)slot;
-        job->subEntry = subEntry;
+        job->subEntry = savedSubEntry;
         job->nextJob = NULL;
         job->index = ((PeopleOpenSlot*)slot)->floorParam;
         if (gPeopleOpenWork != NULL) {
@@ -3707,10 +3711,10 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
         }
 
         job->taskParam = ((PeopleOpenSlot*)slot)->taskParam;
-        job->type = mode;
+        job->type = savedMode;
         job->callback = fn_80181094;
         job->slot = (PeopleOpenSlot*)slot;
-        job->subEntry = subEntry;
+        job->subEntry = savedSubEntry;
         job->nextJob = NULL;
         job->index = ((PeopleOpenSlot*)slot)->floorParam;
         if (gPeopleOpenWork != NULL) {
