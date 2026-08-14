@@ -2861,6 +2861,7 @@ void fn_800965C8(void* window, u8* sprite) {
     s32 state;
     s32 value;
     u32 msg;
+    u32 ball;
 
     pokemon = *(void**)(lbl_803FB380 + 0x0C);
     if (pokemon == NULL) {
@@ -2920,9 +2921,9 @@ void fn_800965C8(void* window, u8* sprite) {
         break;
     }
     case 0x10B:
-        value = pokemonBiosGetCatchBallId(pokemon);
-        if (value < 13) {
-            windowDrawSprite(0, 0, window, lbl_802EED28[value], 0);
+        ball = pokemonBiosGetCatchBallId(pokemon);
+        if (ball < 13) {
+            windowDrawSprite(0, 0, window, lbl_802EED28[ball], 0);
         }
         break;
     case 0x10C:
