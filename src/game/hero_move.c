@@ -3277,7 +3277,6 @@ s32 member;
     extern f32 PSVECDistance(HeroMoveVec3*, HeroMoveVec3*);
     extern f32 fn_801887D8(u32, u32, HeroMoveVec3*);
     extern u32 fn_800D3088(void);
-    extern f32 sqrtf(f32);
     u32 resources[2];
     HeroMoveVec3 before;
     HeroMoveVec3 after;
@@ -3364,12 +3363,7 @@ s32 member;
                 (previous_position.x - active_position.x) +
             (previous_position.z - active_position.z) *
                 (previous_position.z - active_position.z);
-        distance = distance_squared > lbl_8047D038
-                       ? sqrtf(distance_squared)
-                       : lbl_8047D038;
-        if (distance != distance) {
-            distance = *(f32*)lbl_80478AC0;
-        }
+        distance = heroMoveSqrt(distance_squared);
         record_position = distance > lbl_8047D0D4;
     }
 
