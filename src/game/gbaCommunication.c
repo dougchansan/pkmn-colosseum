@@ -3236,6 +3236,7 @@ void fn_80096FA0(u8* menu)
     u16 input;
     s32 action;
     s32 limit;
+    u8 tabSelection;
     s32 selection;
     u32 pokemon;
     u16 valid;
@@ -3260,20 +3261,20 @@ void fn_80096FA0(u8* menu)
         case 1:
         case 2:
         case 5:
-            selection = menu[0x95];
+            tabSelection = menu[0x95];
             if (input & 8) {
-                selection++;
+                tabSelection++;
             } else if (input & 4) {
-                selection--;
+                tabSelection--;
             }
-            if ((s8)selection > 2) {
-                selection = 2;
+            if ((s8)tabSelection > 2) {
+                tabSelection = 2;
             }
-            if ((s8)selection < 0) {
-                selection = 0;
+            if ((s8)tabSelection < 0) {
+                tabSelection = 0;
             }
-            menu[0x95] = selection;
-            switch ((s8)selection) {
+            menu[0x95] = tabSelection;
+            switch ((s8)tabSelection) {
             case 0:
                 lbl_803FB380[1] = 1;
                 break;
