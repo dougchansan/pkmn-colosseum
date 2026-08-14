@@ -525,21 +525,21 @@ u32 fn_800E1544(void)
 #define INSERT_FREE(node_)                                                  \
     do {                                                                    \
         GSFreeBlock* insertNode = (node_);                                 \
-        before = 0;                                                        \
-        after = (GSFreeBlock*)lbl_8047AB30;                                \
-        while (after != 0 && after < insertNode) {                         \
-            before = after;                                                \
-            after = after->next;                                           \
+        GSFreeBlock* insertBefore = 0;                                     \
+        GSFreeBlock* insertAfter = (GSFreeBlock*)lbl_8047AB30;             \
+        while (insertAfter != 0 && insertAfter < insertNode) {             \
+            insertBefore = insertAfter;                                    \
+            insertAfter = insertAfter->next;                               \
         }                                                                   \
-        insertNode->prev = before;                                         \
-        insertNode->next = after;                                          \
-        if (before != 0) {                                                 \
-            before->next = insertNode;                                     \
+        insertNode->prev = insertBefore;                                   \
+        insertNode->next = insertAfter;                                    \
+        if (insertBefore != 0) {                                           \
+            insertBefore->next = insertNode;                               \
         } else {                                                            \
             lbl_8047AB30 = (u32)insertNode;                                \
         }                                                                   \
-        if (after != 0) {                                                  \
-            after->prev = insertNode;                                      \
+        if (insertAfter != 0) {                                            \
+            insertAfter->prev = insertNode;                                \
         }                                                                   \
         COALESCE_FREE(insertNode);                                         \
     } while (0)
