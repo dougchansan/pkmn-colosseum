@@ -2817,6 +2817,53 @@ extern f32 lbl_8047D7A4;
 extern f32 lbl_8047D79C;
 extern f32 lbl_8047D874;
 extern u32 lbl_8047D7D0;
+
+typedef union PeopleMoveFloatShape {
+    f32 value;
+    u32 bits;
+} PeopleMoveFloatShape;
+
+static inline f32 peopleMoveSqrtf(f32 value)
+{
+    extern f64 __frsqrte(f64);
+    PeopleMoveFloatShape shape;
+    f64 estimate;
+    s32 exponent;
+    s32 fpclass;
+
+    if (value > lbl_8047D7A0) {
+        estimate = __frsqrte(value);
+        estimate = *(f64*)&lbl_8047D850 * estimate *
+                   (*(f64*)&lbl_8047D858 - value * (estimate * estimate));
+        estimate = *(f64*)&lbl_8047D850 * estimate *
+                   (*(f64*)&lbl_8047D858 - value * (estimate * estimate));
+        estimate = *(f64*)&lbl_8047D850 * estimate *
+                   (*(f64*)&lbl_8047D858 - value * (estimate * estimate));
+        return (f32)(value * estimate);
+    }
+    if ((f64)value < *(f64*)&lbl_8047D860) {
+        return *(f32*)lbl_80478AC0;
+    }
+
+    shape.value = value;
+    exponent = shape.bits & 0x7F800000;
+    switch (exponent) {
+    case 0x7F800000:
+        fpclass = (shape.bits & 0x007FFFFF) != 0 ? 1 : 2;
+        break;
+    case 0:
+        fpclass = (shape.bits & 0x007FFFFF) != 0 ? 5 : 3;
+        break;
+    default:
+        fpclass = 4;
+        break;
+    }
+    if (fpclass == 1) {
+        return *(f32*)lbl_80478AC0;
+    }
+    return value;
+}
+
 #if 0
 asm void fn_80186B5C(void) {
 #include "src/game/people/people_fn_80186B5C.inc"
@@ -2901,7 +2948,7 @@ void fn_80186B5C(GSvec* output, u32 groupId, u32 index)
 
     x = (f32)(stickX < 0 ? -stickX : stickX) / *(f32*)&lbl_8047D84C;
     z = (f32)(stickY < 0 ? -stickY : stickY) / *(f32*)&lbl_8047D84C;
-    length = sqrtf(x * x + z * z);
+    length = peopleMoveSqrtf(x * x + z * z);
     if (length > *(f32*)&lbl_8047D7C4) {
         length = *(f32*)&lbl_8047D7C4;
     }
