@@ -162,22 +162,37 @@ void fn_8003686C(void) {
                     lbl_804788B8 = 1;
                 }
                 winMsgOpen(1, 0x3B51, 1, 1);
+                timer = lbl_8047BA30;
+                limit = lbl_8047BA34;
+                while (timer < limit) {
+                    _threadSwitch();
+                    timer += (f32)fn_800D3088() / (f32)fn_800D37CC();
+                }
             } else {
                 if (((OSGetResetCode() + 0x80000000U) == 0U && OSGetProgressiveMode() == 1U) ||
                     ((OSGetResetCode() + 0x80000000U) != 0U)) {
                     lbl_804788B8 = 0;
                 }
                 winMsgOpen(1, 0x3B52, 1, 1);
-            }
-            timer = lbl_8047BA30;
-            limit = lbl_8047BA34;
-            while (timer < limit) {
-                _threadSwitch();
-                timer += (f32)fn_800D3088() / (f32)fn_800D37CC();
+                timer = lbl_8047BA30;
+                limit = lbl_8047BA34;
+                while (timer < limit) {
+                    _threadSwitch();
+                    timer += (f32)fn_800D3088() / (f32)fn_800D37CC();
+                }
             }
             winMsgClose(1);
             goto boot_done;
         }
+
+        fadeCheck(1);
+        timer = lbl_8047BA30;
+        limit = lbl_8047BA34;
+        while (timer < limit) {
+            _threadSwitch();
+            timer += (f32)fn_800D3088() / (f32)fn_800D37CC();
+        }
+        goto boot_done;
     }
 
     fadeCheck(1);
@@ -187,6 +202,7 @@ void fn_8003686C(void) {
         _threadSwitch();
         timer += (f32)fn_800D3088() / (f32)fn_800D37CC();
     }
+    fn_800A0FC8(0);
 
 boot_done:
     for (;;) {
