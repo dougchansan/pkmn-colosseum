@@ -322,7 +322,7 @@ static void dbgMenuFightTrainerSelectStatus08460(u16 trainerId, u32 field,
     }
 }
 
-void fn_80051E38(u16 trainerId)
+s32 fn_80051E38(u16 trainerId)
 {
     extern DebugTrainerData* fn_801FC658(void);
     extern s32 fn_801026A4(s32, s32, s32, s32, s32, s32, u32);
@@ -335,7 +335,7 @@ void fn_80051E38(u16 trainerId)
     s32 item;
 
     if (trainerId == 0) {
-        return;
+        return 1;
     }
 
     trainer = fn_801FC658();
@@ -345,7 +345,7 @@ void fn_80051E38(u16 trainerId)
         if (result == -1) {
             fn_80102568(0x86, 0, 1);
             *trainer = saved;
-            return;
+            return -1;
         }
         if (result == -2) {
             result = fn_8010264C(0x44, 1);
@@ -354,7 +354,7 @@ void fn_80051E38(u16 trainerId)
                 continue;
             }
             fn_80102568(0x86, 0, 1);
-            return;
+            return 1;
         }
 
         item = fn_801022B8(0x86);
