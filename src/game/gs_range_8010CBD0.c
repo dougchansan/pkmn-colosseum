@@ -1030,6 +1030,7 @@ s32 fn_8010E53C(Vec3f* point, void* data, f32 radius, Vec3f* result) {
                     {
                         hit = 0;
                     } else {
+                        lineCp = cp;
                         hit = 1;
                     }
                 }
@@ -1037,7 +1038,7 @@ s32 fn_8010E53C(Vec3f* point, void* data, f32 radius, Vec3f* result) {
                     if (result == NULL) {
                         return 1;
                     }
-                    GScolsy2UtilGetPointExtentionLine(result, &cp, point,
+                    GScolsy2UtilGetPointExtentionLine(result, &lineCp, point,
                                                      lbl_8047CF08[0] + radius);
                     return 1;
                 }
