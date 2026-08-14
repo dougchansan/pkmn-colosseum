@@ -2668,6 +2668,14 @@ s32 fn_800FC7E0(arg0, arg1, arg2, arg3)
     u8 arg3;
 {
     typedef u32 (*MsgCtrlFunc)(u8*);
+    extern void fn_800D85D4(s32, u32);
+    extern void fn_800DC224(s32, s32, s32, s32, s32);
+    extern void fn_800DBF78(s32, s32);
+    extern void fn_800DC0D4(s32, s32, s32, s32, s32);
+    extern void fn_800DC14C(s32, s32, s32, s32, s32, s32);
+    extern void fn_800DBFD4(s32, s32, s32, s32, s32);
+    extern void fn_800DC04C(s32, s32, s32, s32, s32, s32);
+    extern void* GStextureLockImage(void*, u8);
     u8 *mgr;
     u8 *table;
     u8 *entry;
@@ -2718,19 +2726,20 @@ s32 fn_800FC7E0(arg0, arg1, arg2, arg3)
     fn_800D7820(lbl_80314F98);
 
     mgr = (u8*)lbl_80478B08;
-    ((void (*)(s32, u32))fn_800D85D4)(0, *(u32*)(mgr + ((s8)mgr[0x1D] * 4) + 0x0C));
+    fn_800D85D4(0, *(u32*)(mgr + ((s8)mgr[0x1D] * 4) + 0x0C));
     fn_800DC1D4(1);
-    ((void (*)(s32, s32, s32, s32, s32))fn_800DC224)(0, 0, 0, 0, 0);
+    fn_800DC224(0, 0, 0, 0, 0);
     texHandle = lbl_8047CD00;
     fn_800DBEB4(0, &texHandle);
-    ((void (*)(s32, s32))fn_800DBF78)(0, 0x0C);
-    ((void (*)(s32, s32, s32, s32, s32))fn_800DC0D4)(0, 0x0F, 0x0E, 0x0A, 0x0F);
-    ((void (*)(s32, s32, s32, s32, s32, s32))fn_800DC14C)(0, 0, 0, 0, 1, 0);
-    ((void (*)(s32, s32, s32, s32, s32))fn_800DBFD4)(0, 7, 4, 5, 7);
-    ((void (*)(s32, s32, s32, s32, s32, s32))fn_800DC04C)(0, 0, 0, 0, 1, 0);
+    fn_800DBF78(0, 0x0C);
+    fn_800DC0D4(0, 0x0F, 0x0E, 0x0A, 0x0F);
+    fn_800DC14C(0, 0, 0, 0, 1, 0);
+    fn_800DBFD4(0, 7, 4, 5, 7);
+    fn_800DC04C(0, 0, 0, 0, 1, 0);
 
     mgr = (u8*)lbl_80478B08;
-    texHandle = (u32)((void* (*)(void*, u8))GStextureLockImage)(*(void**)(mgr + ((s8)mgr[0x1D] * 4) + 0x0C), 0);
+    texHandle = (u32)GStextureLockImage(
+        *(void**)(mgr + ((s8)mgr[0x1D] * 4) + 0x0C), 0);
     *(u32*)(mgr + 0x14) = texHandle;
 
     arg0[0x45] = ((arg2 & 0x30) != 0);
