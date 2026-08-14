@@ -3635,22 +3635,84 @@ s32 fn_801B9320(ColTExpNode* tev)
                 HSD_TExpGetType((u8*) tev->a_in[0].exp) != COL_TE_CNST &&
                 HSD_TExpGetType((u8*) tev->a_in[3].exp) != COL_TE_CNST)
             {
-                if (tev->a_op == 0 && tev->a_in[3].type == COL_TE_TEV &&
-                    tev->a_in[3].exp->a_clamp != 0)
+                merge_ok = 0;
+                child = tev->a_in[0].exp;
+                child_sel = tev->a_in[0].sel;
+                if (tev->a_in[0].type == COL_TE_TEV &&
+                    child->a_range == 0 &&
+                    child->a_in[3].sel == COL_TE_0)
                 {
-                    type = tev->a_in[0].type;
-                    switch ((s32) type) {
-                    case COL_TE_TEX:
-                    case COL_TE_RAS:
-                        tmp_arg = tev->a_in[0];
-                        tev->a_in[0] = tev->a_in[3];
-                        tev->a_in[3] = tmp_arg;
-                        break;
+                    if (tev->tex != NULL && child->tex != NULL &&
+                        tev->tex != child->tex)
+                    {
+                        conflict = 1;
+                    } else if (tev->chan != 0xFF && child->chan != 0xFF &&
+                               tev->chan != child->chan)
+                    {
+                        conflict = 1;
+                    } else {
+                        conflict = 0;
+                    }
+                    if (conflict == 0 &&
+                        !((tev->a_in[0].type == COL_TE_CNST ||
+                           tev->a_in[1].type == COL_TE_CNST ||
+                           tev->a_in[2].type == COL_TE_CNST ||
+                           tev->a_in[3].type == COL_TE_CNST) &&
+                          (child->a_in[0].type == COL_TE_CNST ||
+                           child->a_in[1].type == COL_TE_CNST ||
+                           child->a_in[2].type == COL_TE_CNST ||
+                           child->a_in[3].type == COL_TE_CNST)))
+                    {
+                        merge_ok = 1;
+                    }
+                }
+
+                if (merge_ok == 0 && tev->a_op == 0 &&
+                    tev->a_in[3].type == COL_TE_TEV)
+                {
+                    child = tev->a_in[3].exp;
+                    child_sel = tev->a_in[3].sel;
+                    if (child->a_range == 0 &&
+                        child->a_in[3].sel == COL_TE_0)
+                    {
+                        if (tev->tex != NULL && child->tex != NULL &&
+                            tev->tex != child->tex)
+                        {
+                            conflict = 1;
+                        } else if (tev->chan != 0xFF &&
+                                   child->chan != 0xFF &&
+                                   tev->chan != child->chan)
+                        {
+                            conflict = 1;
+                        } else {
+                            conflict = 0;
+                        }
+                        if (conflict == 0 &&
+                            !((child->a_in[0].type == COL_TE_CNST ||
+                               child->a_in[1].type == COL_TE_CNST ||
+                               child->a_in[2].type == COL_TE_CNST ||
+                               child->a_in[3].type == COL_TE_CNST) &&
+                              (child->a_in[0].type == COL_TE_CNST ||
+                               child->a_in[1].type == COL_TE_CNST ||
+                               child->a_in[2].type == COL_TE_CNST ||
+                               child->a_in[3].type == COL_TE_CNST)) &&
+                            (tev->a_in[0].type != COL_TE_TEV ||
+                             tev->a_in[0].exp->a_range == 0 ||
+                             tev->a_in[0].exp->a_clamp == 1))
+                        {
+                            tmp_arg = tev->a_in[0];
+                            tev->a_in[0] = tev->a_in[3];
+                            tev->a_in[3] = tmp_arg;
+                            merge_ok = 1;
+                        }
                     }
                 }
 
                 switch (tev->a_in[0].type) {
                 case COL_TE_TEV:
+                    if (merge_ok == 0) {
+                        break;
+                    }
                     child = tev->a_in[0].exp;
                     child_sel = tev->a_in[0].sel;
                     if ((child->a_op == 0 || child->a_op == 1) &&
