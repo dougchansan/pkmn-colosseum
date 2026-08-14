@@ -1545,6 +1545,30 @@ s32 fn_80017028(u8* ctx) {
         }
     }
 
+    pageIndex = SUMMARY_CTX_S8(ctx, 0x95);
+    packed = (u16)(cursorBiosGetPos(
+                       (u16)*(u32*)(labelBase +
+                                   pageIndex * SUMMARY_ENTRY_STRIDE)) >>
+                   16);
+    dataSource = *(s32*)(dataSourceBase +
+                         pageIndex * SUMMARY_ENTRY_STRIDE);
+    if (dataSource >= 0) {
+        list = heroItemGetItemKindToItemAryPtr((void*)lbl_8047A2F8,
+                                               (u8)dataSource, &count,
+                                               0, 0, 0);
+    } else {
+        list = heroHizukiItemGetItemAryPtr((void*)lbl_8047A2F8,
+                                           &count, 0, 0, 0);
+    }
+    field = list;
+    validCount = 0;
+    for (i = 0; i < count; i++) {
+        if (fn_801429E8(field) != 0) {
+            validCount++;
+        }
+        field = (u8*)field + 4;
+    }
+
     currentPacked = packed;
     baseIndex = (s32)(s8)((u8*)&currentPacked)[0];
 
