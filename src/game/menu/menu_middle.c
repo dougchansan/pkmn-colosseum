@@ -4196,62 +4196,63 @@ void fn_8006D550(void* window, void* sprite) {
     u32 r29 = 0;
     u32 r30 = 0;
     u32 r31 = 0;
-    void (*ctr_fn)(void) = 0;
-    u32 ctr = 0;
-
-    
     r31 = r4;
     r0 = (u32)winSpriteGetDisp((void*)r31);
     if (r0 == (u32)0x0) return;
     r3 = MENU_MIDDLE_S16_0006(r31)->unk_0006;
     r28 = 0x0;
-    r0 = r3 - 0xA4F;
-    if (r0 > (u32)0x27) return;
-    r3 = (u32)jumptable_802EDFCC;
-    r0 = r0 << 2;
-    r3 = (u32)jumptable_802EDFCC;
-    r0 = *(u32*)(r3 + r0);
-    ctr_fn = (void(*)(void))r0;
-    /* indirect jump via ctr */;
-    r30 = 0x2;
-    r26 = 0x0;
-    do {
-    break;
-
-
-    break;
-
-
-    break;
-
-
-    break;
-
-
-    break;
-
-
-    break;
-
-
-    break;
-
-
-    break;
-
-
-    break;
-
-
-    break;
-
-
-    break;
-
-
-    break;
-
-    } while (0);
+    switch ((s16)r3) {
+    case 0xA73:
+        r30 = 2;
+        r26 = 0;
+        break;
+    case 0xA74:
+        r30 = 2;
+        r26 = 1;
+        break;
+    case 0xA75:
+        r30 = 2;
+        r26 = 2;
+        break;
+    case 0xA76:
+        r30 = 2;
+        r26 = 3;
+        break;
+    case 0xA6F:
+        r30 = 1;
+        r26 = 0;
+        break;
+    case 0xA70:
+        r30 = 1;
+        r26 = 1;
+        break;
+    case 0xA71:
+        r30 = 1;
+        r26 = 2;
+        break;
+    case 0xA72:
+        r30 = 1;
+        r26 = 3;
+        break;
+    case 0xA4F:
+        r30 = 3;
+        r26 = 0;
+        break;
+    case 0xA50:
+        r30 = 3;
+        r26 = 1;
+        break;
+    case 0xA51:
+        r30 = 3;
+        r26 = 2;
+        break;
+    case 0xA52:
+        r30 = 3;
+        r26 = 3;
+        break;
+    default:
+        return;
+    }
     r27 = 0x0;
     r29 = 0x0;
     do {
