@@ -1196,7 +1196,7 @@ void fn_801CDB04(void)
         case 13:
             result = CARDCreateAsync(task->card_channel,
                                      &lbl_802758E8[0x3A00],
-                                     task->card_work_size, file_info, NULL);
+                                     0x60000, file_info, NULL);
             task->card_result = result == 0
                                     ? CARDGetResultCode(task->card_channel)
                                     : result;
