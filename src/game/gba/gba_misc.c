@@ -353,6 +353,9 @@ void fn_800895A4(void) {
     u32 r29 = 0;
     u32 r30 = 0;
     u32 r31 = 0;
+    void (*ctr_fn)(void) = 0;
+    u32 ctr = 0;
+
 
     r30 = r3;
     r31 = r4;
@@ -1094,9 +1097,6 @@ u32 fn_80089F78(u32 arg0, u32 arg1, u32 arg2, u32 arg3) {
     u32 r29 = 0;
     u32 r30 = 0;
     u32 r31 = 0;
-    void (*ctr_fn)(void) = 0;
-    u32 ctr = 0;
-
     r15 = arg1;
     r17 = arg2;
     r3 = 0x0;
@@ -1173,6 +1173,7 @@ u32 fn_80089F78(u32 arg0, u32 arg1, u32 arg2, u32 arg3) {
             r3 = r20;
             r4 = 0x1;
             fightTrainerGetValidFightOutPokemonPtr();
+            *(u32*)(sp + 0x2C) = r3;
             r4 = r20;
             r5 = r24;
             r3 = 0x9;
@@ -1180,9 +1181,11 @@ u32 fn_80089F78(u32 arg0, u32 arg1, u32 arg2, u32 arg3) {
             r4 = 0x0;
             r19 = r3;
             fightTrainerGetValidFightOutPokemonPtr();
+            *(u32*)(sp + 0x30) = r3;
             r3 = r19;
             r4 = 0x1;
             fightTrainerGetValidFightOutPokemonPtr();
+            *(u32*)(sp + 0x34) = r3;
             tmp = 0x2;
             r4 = 0x1;
             *(u8*)(sp + 0x25) = r4;
@@ -1196,6 +1199,7 @@ u32 fn_80089F78(u32 arg0, u32 arg1, u32 arg2, u32 arg3) {
             fightTargetGetPtr();
             r4 = 0x0;
             fightTrainerGetValidFightOutPokemonPtr();
+            *(u32*)(sp + 0x2C) = r3;
             tmp = 0x1;
             *(u8*)(sp + 0x25) = tmp;
         }
@@ -1448,7 +1452,7 @@ u32 fn_80089F78(u32 arg0, u32 arg1, u32 arg2, u32 arg3) {
         tmp = 0x0;
         *(u16*)(sp + 0x4A) = tmp;
     }
-    if ((s32)tmp != 0) {
+    if (arg3 != 0) {
         r3 = 0x0;
         r6 = 0x0;
 
@@ -1459,6 +1463,7 @@ u32 fn_80089F78(u32 arg0, u32 arg1, u32 arg2, u32 arg3) {
         fightFloorCheckFightActionFightOutPokemonIrekaeSelect();
         tmp = r3 & 0xFF;
         if (tmp == 2) {
+            r3 = *(u32*)(sp + 0x18);
             fightOutPokemonGetTokuseiDataId();
             tmp = r3 & 0xFFFF;
             if (tmp == 0x17) {
@@ -1475,15 +1480,18 @@ u32 fn_80089F78(u32 arg0, u32 arg1, u32 arg2, u32 arg3) {
             }
             r3 = tmp & 0xFF;
         }
+        r6 = r23 - 1;
         r4 = (u32)sp + 0x28;
         tmp = r6 << 2;
         r4 = r4 + tmp;
-        ctr_fn = (void(*)(void))r6;
+        r5 = *(u32*)(sp + 0x18);
         if ((s32)r6 > 0) {
             do {
                 tmp = *(u32*)((u8*)r4 + 0x0);
                 if (r5 == tmp) break;
-            } while (--ctr != 0);
+                r4 -= 4;
+                r6--;
+            } while ((s32)r6 > 0);
         }
     }
     tmp = *(u8*)(sp + 0x5B);
