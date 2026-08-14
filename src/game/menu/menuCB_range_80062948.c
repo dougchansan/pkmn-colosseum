@@ -75,8 +75,10 @@ extern u8 lbl_802EDB40[];
 extern u8 lbl_802EF0A8[];
 
 /* Reintroduced from the previous campaign's ui_core.c through this range's
- * active dtk split. The recovered C scores 91.86% without per-function
- * compiler-control pragmas. */
+ * active dtk split. Retail preserves the mask-building operations emitted
+ * with peephole optimization disabled. */
+#pragma push
+#pragma peephole off
 void fn_800643D4(void* arg0, void* arg1)
 {
     UICmdMsg* msg;
@@ -665,6 +667,7 @@ void fn_800643D4(void* arg0, void* arg1)
     }
     }
 }
+#pragma pop
 #endif
 
 #if defined(MENUCB_RANGE_RESIDUAL_EMPTY_ONLY)
