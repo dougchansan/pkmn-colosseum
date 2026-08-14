@@ -74,7 +74,7 @@ extern void fightOutPokemonWriteJoutaiDataId(void* fightPokemon, s32 statusId, u
 extern u8 fn_80121ADC(void*, s32);
 extern void fn_80121B4C(void*, s32);
 extern void* fightTargetGetPtrAsNowFightType(s32 type, void* fightPokemon);
-extern u8 fightSideCheckWriteJoutaiDataId(s32 statusId);
+extern u8 fightSideCheckWriteJoutaiDataId(void* side, s32 statusId);
 extern void fightSideWriteJoutaiDataId(void* side, s32 statusId, u32 value);
 extern void* fightPokemonGetPokemonPtr(void* fightPokemon);
 extern void* fightPokemonBiosGetMotoPokemonPtr(void* fightPokemon);
@@ -388,7 +388,7 @@ s16 fn_80144574(
         }
         if (trainer != NULL) {
             side = fightTargetGetPtrAsNowFightType(2, trainer);
-            if (fightSideCheckWriteJoutaiDataId(0x4C) == 2) {
+            if (fightSideCheckWriteJoutaiDataId(side, 0x4C) == 2) {
                 fightSideWriteJoutaiDataId(side, 0x4C, 0);
                 if (fightPokemon != NULL) {
                     side = fightFloorGetFightPokemonPtrToFightTrainerPtr(0, fightPokemon);
