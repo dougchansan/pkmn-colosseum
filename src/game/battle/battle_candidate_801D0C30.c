@@ -67,6 +67,7 @@ void fn_801D0DB0(s32 peopleGroup, s32 peopleId)
     u8 hadPerson;
     s32 state;
     f32 timer;
+    f32 frameDelta;
 
     map = (BattleIntroModelMap*)(lbl_8036E030 + 0x58);
     partTable = (u32*)(lbl_8036E030 + 0x34);
@@ -135,8 +136,9 @@ void fn_801D0DB0(s32 peopleGroup, s32 peopleId)
             state = 4;
             break;
         case 4:
-            timer += (f32)fn_800D3088() / (f32)fn_800D37CC();
-            lbl_8047B3E0 = timer;
+            frameDelta = (f32)fn_800D3088() / (f32)fn_800D37CC();
+            timer += frameDelta;
+            lbl_8047B3E0 = frameDelta;
             if (timer >= lbl_8047E190) {
                 i++;
                 if (i == count) {
@@ -165,8 +167,9 @@ void fn_801D0DB0(s32 peopleGroup, s32 peopleId)
             }
             timer = lbl_8047E188;
             while (timer < lbl_8047E198) {
-                timer += (f32)fn_800D3088() / (f32)fn_800D37CC();
-                lbl_8047B3E0 = timer;
+                frameDelta = (f32)fn_800D3088() / (f32)fn_800D37CC();
+                timer += frameDelta;
+                lbl_8047B3E0 = frameDelta;
                 _threadSwitch();
             }
             state = 7;
@@ -180,8 +183,9 @@ void fn_801D0DB0(s32 peopleGroup, s32 peopleId)
             }
             timer = lbl_8047E188;
             while (timer < lbl_8047E198) {
-                timer += (f32)fn_800D3088() / (f32)fn_800D37CC();
-                lbl_8047B3E0 = timer;
+                frameDelta = (f32)fn_800D3088() / (f32)fn_800D37CC();
+                timer += frameDelta;
+                lbl_8047B3E0 = frameDelta;
                 _threadSwitch();
             }
             fn_80165548(handle);
