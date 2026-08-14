@@ -723,6 +723,27 @@ next_emitter:
 #pragma push
 #pragma optimization_level 4
 #pragma optimizewithasm off
+static inline f32 musyxEmitterSqrtPositive(f32 value) {
+    extern f64 __frsqrte(f64);
+    extern f64 lbl_8047D480;
+    extern f64 lbl_8047D490;
+    f64 estimate;
+    volatile f32 rounded;
+
+    if (value > lbl_8047D468) {
+        estimate = __frsqrte(value);
+        estimate = lbl_8047D480 * estimate *
+                   (lbl_8047D490 - value * (estimate * estimate));
+        estimate = lbl_8047D480 * estimate *
+                   (lbl_8047D490 - value * (estimate * estimate));
+        estimate = lbl_8047D480 * estimate *
+                   (lbl_8047D490 - value * (estimate * estimate));
+        rounded = (f32)(value * estimate);
+        value = rounded;
+    }
+    return value;
+}
+
 void fn_8015E374(MusyxEmitter* emitter, f32* outVolume, f32* outDoppler,
                  f32* outX, f32* outY, f32* outCone) {
     MusyxEmitterListener* listener;
@@ -750,7 +771,7 @@ void fn_8015E374(MusyxEmitter* emitter, f32* outVolume, f32* outDoppler,
         distSq = rel.x * rel.x + rel.y * rel.y + rel.z * rel.z;
         dist = distSq;
         if (distSq > lbl_8047D468) {
-            dist = sqrtf(distSq);
+            dist = musyxEmitterSqrtPositive(distSq);
         }
 
         if (dist <= emitter->maxDistance) {
@@ -810,7 +831,7 @@ void fn_8015E374(MusyxEmitter* emitter, f32* outVolume, f32* outDoppler,
                 travelSq = dx * dx + dy * dy + dz * dz;
                 spreadDist = travelSq;
                 if (travelSq > lbl_8047D468) {
-                    spreadDist = sqrtf(travelSq);
+                    spreadDist = musyxEmitterSqrtPositive(travelSq);
                 }
             }
 
@@ -836,7 +857,7 @@ void fn_8015E374(MusyxEmitter* emitter, f32* outVolume, f32* outDoppler,
                 aheadSq = aheadX * aheadX + aheadY * aheadY + aheadZ * aheadZ;
                 aheadDist = aheadSq;
                 if (aheadSq > lbl_8047D468) {
-                    aheadDist = sqrtf(aheadSq);
+                    aheadDist = musyxEmitterSqrtPositive(aheadSq);
                 }
 
                 if (aheadDist < dist) {
