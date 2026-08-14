@@ -635,7 +635,7 @@ void _menuCBBattleStartSetIndex__Fv(void)
     u16 count[4];
     s32 battleType;
     s32 player;
-    s32 slot;
+    u16 slot;
 
     order = (u32 (*)[6])lbl_803A9E40;
     battleType = toolentryTaisenGetBattleType();
