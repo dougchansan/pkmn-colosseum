@@ -1195,7 +1195,10 @@ s32 fn_8010EB28(Vec3f* point, void* data, ColMtx inverse,
     tri = (GScolsys2Triangle*)group->data;
     radiusSq = radius * radius;
 
-    for (i = 0; i < group->count; i++, tri = (GScolsys2Triangle*)((u8*)tri + 0x34)) {
+    i = 0;
+    hit = 0;
+    for (; i < group->count && hit == 0;
+         i++, tri = (GScolsys2Triangle*)((u8*)tri + 0x34)) {
         currentVert = tri->verts;
         otherVert = transformedVerts;
         for (edge = 0; edge < 3; edge++, currentVert++, otherVert++) {
@@ -1222,23 +1225,25 @@ s32 fn_8010EB28(Vec3f* point, void* data, ColMtx inverse,
                 hit = 1;
             }
         }
-
-        if (hit != 0) {
-            if (result == NULL) {
-                return 1;
-            }
-            GScolsy2UtilGetPointExtentionLine(result, &lineCp, point,
-                                             lbl_8047CF08[0] + radius);
+    }
+    if (hit != 0) {
+        if (result == NULL) {
             return 1;
         }
+        GScolsy2UtilGetPointExtentionLine(result, &lineCp, point,
+                                         lbl_8047CF08[0] + radius);
+        return 1;
     }
 
     edgeMasksA[0] = 1;
     edgeMasksA[1] = 2;
     edgeMasksA[2] = 4;
 
+    i = 0;
     tri = (GScolsys2Triangle*)group->data;
-    for (i = 0; i < group->count; i++, tri = (GScolsys2Triangle*)((u8*)tri + 0x34)) {
+    hit = 0;
+    for (; i < group->count && hit == 0;
+         i++, tri = (GScolsys2Triangle*)((u8*)tri + 0x34)) {
         if ((tri->flags & 7) == 0) {
             continue;
         }
@@ -1275,23 +1280,25 @@ s32 fn_8010EB28(Vec3f* point, void* data, ColMtx inverse,
                 }
             }
         }
-
-        if (hit != 0) {
-            if (result == NULL) {
-                return 1;
-            }
-            GScolsy2UtilGetPointExtentionLine(result, &lineCp, point,
-                                             lbl_8047CF08[0] + radius);
+    }
+    if (hit != 0) {
+        if (result == NULL) {
             return 1;
         }
+        GScolsy2UtilGetPointExtentionLine(result, &lineCp, point,
+                                         lbl_8047CF08[0] + radius);
+        return 1;
     }
 
     edgeMasksB[0] = 1;
     edgeMasksB[1] = 2;
     edgeMasksB[2] = 4;
 
+    i = 0;
     tri = (GScolsys2Triangle*)group->data;
-    for (i = 0; i < group->count; i++, tri = (GScolsys2Triangle*)((u8*)tri + 0x34)) {
+    hit = 0;
+    for (; i < group->count && hit == 0;
+         i++, tri = (GScolsys2Triangle*)((u8*)tri + 0x34)) {
         if ((tri->flags & 7) == 0) {
             continue;
         }
@@ -1326,15 +1333,14 @@ s32 fn_8010EB28(Vec3f* point, void* data, ColMtx inverse,
                 }
             }
         }
-
-        if (hit != 0) {
-            if (result == NULL) {
-                return 1;
-            }
-            GScolsy2UtilGetPointExtentionLine(result, &lineCp, point,
-                                             lbl_8047CF08[0] + radius);
+    }
+    if (hit != 0) {
+        if (result == NULL) {
             return 1;
         }
+        GScolsy2UtilGetPointExtentionLine(result, &lineCp, point,
+                                         lbl_8047CF08[0] + radius);
+        return 1;
     }
 
     return 0;
