@@ -991,35 +991,47 @@ s32 fn_80141308(u32* base, u16 count, u16 id, u16 amount, s16 index, u16 maxCoun
                 if (entryBase == 0) {
                     freePtr = 0;
                 } else {
-                    scanCount = count;
-                    scanIndex = 0;
-                    while (TRUE) {
-                        if (scanIndex >= scanCount) {
-                            freePtr = 0;
-                            break;
-                        }
+                    if (itemGetStatus(0, id, 1, 0) == 0) {
+                        targetValid = 0;
+                    } else if (id >= lbl_80478BD8) {
+                        targetValid = 0;
+                    } else {
+                        targetValid = 1;
+                    }
 
-                        freePtr = entryBase + ((scanIndex * 4) & 0x3FFFC);
-                        if (freePtr == 0) {
-                            entryValid = 0;
-                        } else {
-                            entryId = (u16)itemGetStatus(freePtr, 0, 0x1B, 0);
-                            if (entryId == 0) {
-                                entryValid = 0;
-                            } else if (itemGetStatus(0, entryId, 1, 0) == 0) {
-                                entryValid = 0;
-                            } else if (entryId >= lbl_80478BD8) {
+                    if (targetValid == 0) {
+                        freePtr = 0;
+                    } else {
+                        scanCount = count;
+                        scanIndex = 0;
+                        while (TRUE) {
+                            if (scanIndex >= scanCount) {
+                                freePtr = 0;
+                                break;
+                            }
+
+                            freePtr = entryBase + ((scanIndex * 4) & 0x3FFFC);
+                            if (freePtr == 0) {
                                 entryValid = 0;
                             } else {
-                                entryValid = 1;
+                                entryId = (u16)itemGetStatus(freePtr, 0, 0x1B, 0);
+                                if (entryId == 0) {
+                                    entryValid = 0;
+                                } else if (itemGetStatus(0, entryId, 1, 0) == 0) {
+                                    entryValid = 0;
+                                } else if (entryId >= lbl_80478BD8) {
+                                    entryValid = 0;
+                                } else {
+                                    entryValid = 1;
+                                }
                             }
-                        }
 
-                        if (entryValid == 0) {
-                            freePtr = entryBase + (scanIndex * 4);
-                            break;
+                            if (entryValid == 0) {
+                                freePtr = entryBase + (scanIndex * 4);
+                                break;
+                            }
+                            scanIndex++;
                         }
-                        scanIndex++;
                     }
                 }
 
