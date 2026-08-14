@@ -1165,10 +1165,58 @@ void GSthreadTerminate(u32 ctxArg) {
         fn_800E209C(thr->ctxHandle);
     }
 }
-/* 0x800F0654 | 0x154
- * Parameters match this file's own extern declaration/call site for
- * GSthreadSetArgs (fn_800F7318: `GSthreadSetArgs(thread, 1, entry);`). */
-void GSthreadSetArgs(void* thread, s32 priority, ...) { /* TODO */ }
+typedef struct GSthreadVaInfo {
+    u8 gpr;
+    u8 fpr;
+    u16 padding;
+    u32* overflow_arg_area;
+    u32* reg_save_area;
+} GSthreadVaInfo;
+typedef GSthreadVaInfo GSthreadVaList[1];
+
+#define GS_THREAD_VA_START(ap, last) \
+    ((void)(last), __builtin_va_info(&(ap)))
+
+extern u32* __va_arg(void* ap, u32 type);
+
+/* 0x800F0654 | 0x154 */
+void GSthreadSetArgs(void* threadPtr, s32 count, ...)
+{
+    GSThread* thread = threadPtr;
+    GSthreadVaList args;
+    u32* stack;
+    GSThreadCtx* context;
+    s32 directCount;
+    s32 i;
+    u32 stackOffset;
+
+    if (thread->pad0 == 1) {
+        return;
+    }
+
+    stack = fn_800E27B0(thread->stackHandle);
+    context = fn_800E27B0(thread->ctxHandle);
+    GS_THREAD_VA_START(args, count);
+
+    directCount = count < 8 ? count : 8;
+    for (i = 0; i < directCount; i++) {
+        (&context->r3)[i] = *__va_arg(args, 1);
+    }
+
+    if (count > 8) {
+        context->sp -= (count - i) * sizeof(u32);
+        stackOffset = ((context->sp >> 2) + 2) << 2;
+        for (i = 8; i < count; i++) {
+            *(u32*)((u8*)stack + stackOffset) = *__va_arg(args, 1);
+            stackOffset += sizeof(u32);
+        }
+    }
+
+    fn_800E24B0(thread->stackHandle);
+    fn_800E24B0(thread->ctxHandle);
+}
+
+#undef GS_THREAD_VA_START
 #pragma dont_inline reset
 
 
