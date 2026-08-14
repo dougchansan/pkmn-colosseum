@@ -3273,12 +3273,9 @@ s32 fn_801B9320(ColTExpNode* tev)
     do {
         merged = 0;
 
-        if (tev->a_op == 0xFF || tev->a_op == 0xE || tev->a_op == 0xF ||
-            tev->a_op <= 1)
+        if ((tev->c_op == 0 || tev->c_op == 1) &&
+            tev->c_in[2].sel == COL_TE_0)
         {
-            if ((tev->c_op == 0 || tev->c_op == 1) &&
-                tev->c_in[2].sel == COL_TE_0)
-            {
                 if (tev->c_in[0].type == COL_TE_TEV &&
                     (tev->c_in[0].sel == COL_TE_RGB ||
                      tev->c_in[0].sel == COL_TE_A))
@@ -3505,8 +3502,11 @@ s32 fn_801B9320(ColTExpNode* tev)
                     }
                     break;
                 }
-            }
+        }
 
+        if (tev->a_op == 0xFF || tev->a_op == 0xE || tev->a_op == 0xF ||
+            tev->a_op <= 1)
+        {
             if ((tev->a_op == 0 || tev->a_op == 1) &&
                 tev->a_in[1].sel == COL_TE_0 &&
                 tev->a_in[2].sel == COL_TE_0 &&
