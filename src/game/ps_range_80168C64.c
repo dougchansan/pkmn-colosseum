@@ -3891,8 +3891,7 @@ PSParticle* psInterpretParticle0(PSParticle* pp, PSParticle* parentCtx) {
         }
     }
 
-    _psListGetNext(pp);
-    return pp;
+    return _psListGetNext(pp);
 }
 #pragma pop
 
