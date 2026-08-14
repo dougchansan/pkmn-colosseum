@@ -1474,11 +1474,13 @@ s32 fightTrainerAiGetFightPokemonIrekaeModosuValue(void* ctx, u32 param1, u32 pa
     r3 = r16;
     fightOutPokemonGetPokemonPtr();
     r8 = 0x0;
+    *(u32*)(sp + 0x8) = r8;
     r5 = (0x1 << 16);
     r0 = 0x227;
     r7 = r3;
     r6 = r20;
     *(u32*)(sp + 0xC) = r0;
+    *(u32*)(sp + 0x10) = r8;
     r8 = 0x0;
     r9 = 0x0;
     r10 = 0x0;
@@ -1686,7 +1688,7 @@ s32 fightTrainerAiGetFightPokemonIrekaeModosuValue(void* ctx, u32 param1, u32 pa
     fightTrainerAiGetFightOutPokemonIrekaeJoutaiBadJoutaiAddsbuDataId();
     r0 = r3 & 0xFFFF;
     r14 = r3;
-    if (r0 != (u32)r14) {
+    if (r0 != 0) {
         r3 = r24;
         r4 = r15;
         r5 = r14;
