@@ -996,17 +996,20 @@ void fn_801CDB04(void)
         case 1:
             result = CARDProbeEx(task->card_channel, &task->sector_size,
                                  &task->memory_size);
+            status = result;
             if (result == 0) {
-                task->card_result = CARDGetResultCode(task->card_channel);
+                result = CARDGetResultCode(task->card_channel);
+            }
+            task->card_result = result;
+            if (status == 0) {
                 task->state = 2;
-            } else if (result == -1) {
-                task->card_result = result;
+            } else if (status == -1) {
                 task->state = 1;
             } else if (task->retry_count++ < 6) {
                 task->card_result = -1;
                 task->state = 1;
             } else {
-                task->error_code = result;
+                task->error_code = status;
                 task->state = 0x2B;
             }
             break;
