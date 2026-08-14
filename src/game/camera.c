@@ -139,7 +139,6 @@ void cameraUpdate(u32 captureIndex) {
     switch (state->mode) {
     case 0:
     case 1:
-    case 5:
         if ((u8)fn_801174C4() != 0 && (u8)fn_801174EC() != 0) {
             GSvecAdd(&delta, &state->position, &state->view);
             fn_800E0168(&delta, &delta, &state->direction);
@@ -292,6 +291,10 @@ void cameraUpdate(u32 captureIndex) {
             camera, &aspect, &fov, &nearPlane, &farPlane);
         GScameraSetPerspective(
             camera, state->fov, fov, nearPlane, farPlane);
+    }
+
+    if (state->mode == 5) {
+        _cameraPadRotateUpdate__FP9_GScamera(camera);
     }
 
     if (state->mode == 7) {
