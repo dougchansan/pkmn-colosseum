@@ -1930,14 +1930,16 @@ void psSetupTev(PSParticle* pp) {
         fn_800B884C(1);
         fn_800BC6F0(0, 0, 0, 4);
         GXSetTevOp(0, 0);
-    } else if (state == 0x100000) {
-        fn_800BC8C8(2);
-        fn_800B884C(1);
-        fn_800BC6F0(0, 0, 0, 4);
-        fn_800BC1A0(0, 0xF, 6, 0xA, 0xF);
-        fn_800BC1E4(0, 7, 3, 5, 7);
-        fn_800BC1A0(1, 0xF, 8, 0, 0xF);
-        fn_800BC1E4(1, 7, 4, 0, 7);
+    } else if (state == 0x100000 || state == 0x100080) {
+        if (state == 0x100080) {
+            pp->flags &= ~0x180;
+            lbl_8047B170 &= ~0x180;
+        }
+        fn_800BC8C8(1);
+        fn_800B884C(0);
+        fn_800BC6F0(0, 0xFF, 0xFF, 4);
+        fn_800BC1A0(0, 0xA, 0xF, 0xF, 0xF);
+        fn_800BC1E4(0, 5, 7, 7, 7);
     } else if (state == 0x100480) {
         fn_800BC8C8(2);
         fn_800B884C(1);
@@ -1982,6 +1984,19 @@ void psSetupTev(PSParticle* pp) {
         fn_800BC1E4(1, 7, 3, 0, 7);
         fn_800BC1A0(2, 0xF, 0xA, 0, 0xF);
         fn_800BC1E4(2, 7, 5, 0, 7);
+    } else if (state == (s32)0x80100000 ||
+               state == (s32)0x80100080) {
+        if (state == (s32)0x80100080) {
+            pp->flags &= ~0x180;
+            lbl_8047B170 &= ~0x180;
+        }
+        fn_800BC8C8(2);
+        fn_800B884C(0);
+        fn_800BC6F0(0, 0xFF, 0xFF, 4);
+        fn_800BC1A0(0, 0xF, 6, 0xA, 0xF);
+        fn_800BC1E4(0, 7, 3, 5, 7);
+        fn_800BC1A0(1, 0xF, 2, 0, 0xF);
+        fn_800BC1E4(1, 7, 1, 0, 7);
     }
 }
 
