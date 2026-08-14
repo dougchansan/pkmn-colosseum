@@ -1372,11 +1372,14 @@ void fn_8016AB94(u32 linkMask, s32 mode) {
                         GXSetBlendMode(3, 4, 5, 0);
                     }
                     break;
-                default:
+                case 3:
                     if (lbl_8047B148 != 3) {
                         lbl_8047B148 = 3;
                         GXSetBlendMode(1, 2, 0, 0);
                     }
+                    break;
+                default:
+                    OSReport((const char*)lbl_802738B8 + 0x80);
                     break;
                 }
 
