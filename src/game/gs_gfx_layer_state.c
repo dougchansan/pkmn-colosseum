@@ -585,7 +585,7 @@ void fn_800D892C(u32 objArg) {
         state = (u8*)lbl_8047AA80;
         state[0x3AC] = 0;
         *(u32*)(state + 0x414) |= 4;
-    } else if ((flags & 0xFFFFFFFE) != 0) {
+    } else if ((flags & 0x80000000) != 0) {
         buffer = lbl_80400B28;
         if (buffer[0x34C] != 0) {
             buffer[0x34C]++;
