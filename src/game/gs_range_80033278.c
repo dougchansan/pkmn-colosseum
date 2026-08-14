@@ -873,13 +873,12 @@ void fn_80034B5C(u8* valid, u8* selectionOut, u8* valueOut)
     u8 maxLevel;
     u8 maxRequired;
     u8 best;
-    u8 ties;
+    s32 ties;
     s32 candidate;
     u16 party;
     u16 slot;
     s32 index;
     s32 difference;
-    s8 count;
     s8 region;
 
     region = (s8)lbl_803A3334[0x24];
@@ -896,8 +895,8 @@ void fn_80034B5C(u8* valid, u8* selectionOut, u8* valueOut)
         }
     }
 
-    count = (s8)lbl_803A3334[0x58];
-    for (candidate = 0; candidate < count; candidate++) {
+    for (candidate = 0; candidate < (s8)lbl_803A3334[0x58];
+         candidate++) {
         score[candidate] = 0x7FFFFFFF;
         layer = fn_80082FE4(lbl_8047A434, (s8)candidate);
         if (layer[0x1C + region * 0xE] != 0) {
@@ -934,7 +933,7 @@ void fn_80034B5C(u8* valid, u8* selectionOut, u8* valueOut)
         *selectionOut = best;
         *valueOut = lbl_803A3334[0x5E + (s8)(*selectionOut)];
     } else {
-        *selectionOut = (u8)(count - 1);
+        *selectionOut = (u8)((s8)lbl_803A3334[0x58] - 1);
         *valueOut = lbl_803A3334[0x5B + (s8)(*selectionOut)];
     }
 }
