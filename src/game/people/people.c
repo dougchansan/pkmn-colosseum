@@ -4527,7 +4527,7 @@ void fn_80189990(u32 groupId, u32 index, s32 messageId) {
             }
         } else if (flags & 0x10) {
             if (!entry->field_94) {
-                entry->threadHandle = entry->nextLink;
+                entry->nextLink = entry->threadHandle;
                 entry->field_94 = 1;
             }
             fn_80188F78(groupId, index);
