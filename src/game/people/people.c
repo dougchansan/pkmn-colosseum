@@ -1469,40 +1469,44 @@ void fn_801821B8(u32 groupId, u32 index)
         fn_8018F4C8(info, (u8)entry->motionIndex, &animIndex, &loop);
         if (animIndex != -1) {
             if (animIndex >= 0) {
-                model = peopleGetModel(entry);
-                if (model != NULL) {
-                restart = 0;
-                if (GSmodelHasAnimationEnded(model)) {
-                    restart = 1;
-                } else if (!GSmodelIsAnimating(model)) {
-                    restart = 1;
-                } else {
-                    GSmodelGetAnimIndex(model, &current, &secondary);
-                    if (current != animIndex || secondary != -1) {
-                        restart = 1;
+                linked = peopleFindBySelf(
+                    peopleFindSelf(entry->groupId, entry->index));
+                if (linked != NULL) {
+                    model = peopleGetModel(linked);
+                    if (model != NULL) {
+                        restart = 0;
+                        if (GSmodelHasAnimationEnded(model)) {
+                            restart = 1;
+                        } else if (!GSmodelIsAnimating(model)) {
+                            restart = 1;
+                        } else {
+                            GSmodelGetAnimIndex(model, &current, &secondary);
+                            if (current != animIndex || secondary != -1) {
+                                restart = 1;
+                            }
+                        }
+                        if (restart) {
+                            linked->walkTargetNode = animIndex;
+                            linked->walkAnimRate = lbl_8047D7A0;
+                            GSmodelSetAnimIndex(model, animIndex);
+                            GSmodelSetAnimFrame(model, lbl_8047D7A0);
+                            GSmodelSetAnimRate(model, lbl_8047D7A4);
+                            GSmodelSetTexAnimIndex(model, animIndex);
+                            GSmodelSetTexAnimFrame(model, lbl_8047D7A0);
+                            GSmodelSetTexAnimRate(model, lbl_8047D7A4);
+                            if (loop != 0) {
+                                GSmodelSetAnimType(model, 1);
+                            } else {
+                                GSmodelSetAnimType(model, 0);
+                            }
+                            GSmodelStartAnimation(model);
+                        }
+                        if (loop != 0) {
+                            GSmodelSetAnimType(model, 1);
+                        } else {
+                            GSmodelSetAnimType(model, 0);
+                        }
                     }
-                }
-                if (restart) {
-                    entry->walkTargetNode = animIndex;
-                    entry->walkAnimRate = lbl_8047D7A0;
-                    GSmodelSetAnimIndex(model, animIndex);
-                    GSmodelSetAnimFrame(model, lbl_8047D7A0);
-                    GSmodelSetAnimRate(model, lbl_8047D7A4);
-                    GSmodelSetTexAnimIndex(model, animIndex);
-                    GSmodelSetTexAnimFrame(model, lbl_8047D7A0);
-                    GSmodelSetTexAnimRate(model, lbl_8047D7A4);
-                    if (loop != 0) {
-                        GSmodelSetAnimType(model, 1);
-                    } else {
-                        GSmodelSetAnimType(model, 0);
-                    }
-                    GSmodelStartAnimation(model);
-                }
-                if (loop != 0) {
-                    GSmodelSetAnimType(model, 1);
-                } else {
-                    GSmodelSetAnimType(model, 0);
-                }
                 }
             }
         }
