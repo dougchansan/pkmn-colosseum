@@ -272,7 +272,7 @@ extern void fn_800BC52C(s32 stage, s32 a, s32 b);
 void psDispSub(PSParticle* pp, void* polygonData);
 void psDispSubAppSRT(PSParticle* pp, Mtx parentMatrix);
 void psDispSubAPPSRTPoint(PSParticle* pp);
-void psDispSubPointTrail(PSParticle* pp);
+PSParticle* psDispSubPointTrail(PSParticle* pp);
 void psSetupTevInvalidState(void);
 void psSetupTevCommon(void);
 void psSetupTev(PSParticle* pp);
@@ -1234,8 +1234,6 @@ void fn_8016AB94(u32 linkMask, s32 mode) {
         }
 
         while (pp != NULL) {
-            PSParticle* next = pp->next;
-
             if (mode == 1 && (pp->flags & 8) == 0) {
                 break;
             }
@@ -1473,7 +1471,7 @@ void fn_8016AB94(u32 linkMask, s32 mode) {
                     if (pp->parentObj != NULL) {
                         psDispSubAPPSRTPoint(pp);
                     } else if (pp->flags & 0x00100000) {
-                        psDispSubPointTrail(pp);
+                        pp = psDispSubPointTrail(pp);
                     } else {
                         f32 widthValue;
                         s32 width;
@@ -1518,7 +1516,7 @@ void fn_8016AB94(u32 linkMask, s32 mode) {
                 }
             }
             previousFlags = pp->flags;
-            pp = next;
+            pp = pp->next;
         }
     }
     if (!needsInit) {
@@ -4538,7 +4536,7 @@ void psDispSub(PSParticle* pp, void* polygonData) {
 #pragma pop
 #pragma push
 #pragma optimization_level 0
-void psDispSubPointTrail(PSParticle* pp) {
+PSParticle* psDispSubPointTrail(PSParticle* pp) {
     f32 widthValue;
     s32 width;
     u8 cachedWidth;
@@ -4674,6 +4672,7 @@ void psDispSubPointTrail(PSParticle* pp) {
     if (pp->flags & 0x400) {
         GX_FIFO_U8 = 1;
     }
+    return pp;
 }
 
 /*
