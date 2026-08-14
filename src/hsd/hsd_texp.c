@@ -3331,12 +3331,11 @@ s32 fn_801B9320(ColTExpNode* tev)
             tev->c_in[2].sel == COL_TE_0)
         {
                 if (tev->c_in[0].type == COL_TE_TEV &&
-                    (tev->c_in[0].sel == COL_TE_RGB ||
-                     tev->c_in[0].sel == COL_TE_A))
+                    tev->c_in[0].sel == COL_TE_RGB)
                 {
                     child = tev->c_in[0].exp;
                     child_sel = tev->c_in[0].sel;
-                    if (child->c_op == 0 &&
+                    if (child->c_range == 0 &&
                         child->c_in[3].sel == COL_TE_0)
                     {
                         if (tev->tex != NULL && child->tex != NULL &&
