@@ -3586,9 +3586,11 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
     volatile s32 activeCount0;
     volatile s32 activeCountStage0;
     volatile s32 activeCountCopy0;
+    volatile s32 activeIndex0;
     volatile s32 activeCount1;
     volatile s32 activeCountStage1;
     volatile s32 activeCountCopy1;
+    volatile s32 activeIndex1;
     volatile s32 tailIndex0;
     volatile s32 tailIndex1;
     s32 result;
@@ -3612,11 +3614,13 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
 
         activeCount0 = 0;
         current = *(PeopleJob**)((u8*)&lbl_8047B1E8 + 4);
-        for (i = 0; i < *(volatile s32*)&lbl_8047B1E8; i++) {
+        activeIndex0 = 0;
+        while (activeIndex0 < *(volatile s32*)&lbl_8047B1E8) {
             if (current->active == 1) {
                 activeCount0++;
             }
             current++;
+            activeIndex0++;
         }
         activeCountStage0 = activeCount0;
         activeCountCopy0 = activeCountStage0;
@@ -3683,11 +3687,13 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
 
         activeCount1 = 0;
         current = *(PeopleJob**)((u8*)&lbl_8047B1E8 + 4);
-        for (i = 0; i < *(volatile s32*)&lbl_8047B1E8; i++) {
+        activeIndex1 = 0;
+        while (activeIndex1 < *(volatile s32*)&lbl_8047B1E8) {
             if (current->active == 1) {
                 activeCount1++;
             }
             current++;
+            activeIndex1++;
         }
         activeCountStage1 = activeCount1;
         activeCountCopy1 = activeCountStage1;
