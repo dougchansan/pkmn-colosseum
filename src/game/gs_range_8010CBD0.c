@@ -1115,6 +1115,11 @@ s32 fn_8010E53C(Vec3f* point, void* data, f32 radius, Vec3f* result) {
                 tri = grid->triangles + (*triIndexPtr);
                 if ((tri->flags & 7) == 0) {
                     hit = 0;
+                } else if (GScolsy2UtilGetSidePlanePoint(&tri->normal, tri,
+                                                         point) <
+                           lbl_8047CF00)
+                {
+                    hit = 0;
                 } else {
                     hit = 0;
                     for (edge = 0; edge < 3; edge++) {
