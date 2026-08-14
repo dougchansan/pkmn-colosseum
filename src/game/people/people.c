@@ -3581,12 +3581,16 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
     PeopleJob* volatile foundJob;
     PeopleJob* volatile foundTail0;
     PeopleJob* volatile foundTail1;
+    PeopleJob* volatile tailCopy0;
+    PeopleJob* volatile tailCopy1;
     volatile s32 activeCount0;
     volatile s32 activeCountStage0;
     volatile s32 activeCountCopy0;
     volatile s32 activeCount1;
     volatile s32 activeCountStage1;
     volatile s32 activeCountCopy1;
+    volatile s32 tailIndex0;
+    volatile s32 tailIndex1;
     s32 result;
     s32 i;
 
@@ -3632,15 +3636,18 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
         if (gPeopleOpenWork != NULL) {
             current = (PeopleJob*)gPeopleOpenWork;
             foundTail0 = NULL;
-            for (i = 0; i < *(volatile s32*)&lbl_8047B1E8; i++) {
+            tailIndex0 = 0;
+            while (tailIndex0 < *(volatile s32*)&lbl_8047B1E8) {
                 if (current->nextJob != NULL) {
                     current = current->nextJob;
                 } else {
                     foundTail0 = current;
                     break;
                 }
+                tailIndex0++;
             }
-            tail = foundTail0;
+            tailCopy0 = foundTail0;
+            tail = tailCopy0;
             tail->nextJob = job;
             job->active = 2;
             job->state = 0;
@@ -3700,15 +3707,18 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
         if (gPeopleOpenWork != NULL) {
             current = (PeopleJob*)gPeopleOpenWork;
             foundTail1 = NULL;
-            for (i = 0; i < *(volatile s32*)&lbl_8047B1E8; i++) {
+            tailIndex1 = 0;
+            while (tailIndex1 < *(volatile s32*)&lbl_8047B1E8) {
                 if (current->nextJob != NULL) {
                     current = current->nextJob;
                 } else {
                     foundTail1 = current;
                     break;
                 }
+                tailIndex1++;
             }
-            tail = foundTail1;
+            tailCopy1 = foundTail1;
+            tail = tailCopy1;
             tail->nextJob = job;
             job->active = 2;
             job->state = 0;
