@@ -3256,8 +3256,7 @@ void fn_80096FA0(u8* menu)
     keyObject = fn_80105624();
     input = *(u16*)((u8*)keyObject + 6);
 
-    if (lbl_803FB380[1] <= 8) {
-        switch (lbl_803FB380[1]) {
+    switch (lbl_803FB380[1]) {
         case 1:
         case 2:
         case 5:
@@ -3413,7 +3412,6 @@ void fn_80096FA0(u8* menu)
         case 0:
         case 8:
             break;
-        }
     }
 }
 #pragma pop
