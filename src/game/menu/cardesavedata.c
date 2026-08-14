@@ -2121,8 +2121,7 @@ void fn_80084A8C(void) {
                 do {
                     tmp = *(u32*)((u8*)r18 + 0x0);
                     if ((s32)tmp == 5 || (s32)tmp == 4) {
-                        r3 = r17 + 0x1;
-                        ((void(*)(void))fn_8008ABA0)();
+                        r3 = ((u8 (*)(s32))fn_8008ABA0)((s32)r17 + 1);
                         tmp = r3 & 0xFF;
                         if (tmp == 0) {
                             r3 = ((u8 (*)(void))menuGetEnablePort)();
