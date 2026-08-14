@@ -3352,7 +3352,7 @@ s32 fn_801B9320(ColTExpNode* tev)
                         }
 
                         if (conflict == 0 &&
-                            !((tev->c_in[0].type == COL_TE_CNST ||
+                            ((tev->c_in[0].type == COL_TE_CNST ||
                                tev->c_in[1].type == COL_TE_CNST ||
                                tev->c_in[2].type == COL_TE_CNST ||
                                tev->c_in[3].type == COL_TE_CNST) &&
