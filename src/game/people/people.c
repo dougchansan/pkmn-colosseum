@@ -1596,8 +1596,11 @@ void fn_801821B8(u32 groupId, u32 index)
     if (info != NULL) {
         fn_8018F4C8(info, (u8)entry->motionIndex, &animIndex, &loop);
         if (animIndex >= 0) {
-            model = peopleGetModel(entry);
-            if (model != NULL) {
+            linked = peopleFindBySelf(
+                peopleFindSelf(entry->groupId, entry->index));
+            if (linked != NULL) {
+                model = peopleGetModel(linked);
+                if (model != NULL) {
                 restart = 0;
                 if (GSmodelHasAnimationEnded(model)) {
                     restart = 1;
@@ -1610,8 +1613,8 @@ void fn_801821B8(u32 groupId, u32 index)
                     }
                 }
                 if (restart) {
-                    entry->walkTargetNode = animIndex;
-                    entry->walkAnimRate = lbl_8047D7A0;
+                    linked->walkTargetNode = animIndex;
+                    linked->walkAnimRate = lbl_8047D7A0;
                     GSmodelSetAnimIndex(model, animIndex);
                     GSmodelSetAnimFrame(model, lbl_8047D7A0);
                     GSmodelSetAnimRate(model, lbl_8047D7A4);
@@ -1630,6 +1633,7 @@ void fn_801821B8(u32 groupId, u32 index)
                 } else {
                     GSmodelSetAnimType(model, 0);
                 }
+            }
             }
         }
     }
