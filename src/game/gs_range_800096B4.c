@@ -66,7 +66,7 @@ s32 fn_800096B4(u32 arg0, s32 arg1, u8* arg2, u8* arg3, u8* arg4, u8* arg5) {
     extern u16 pokemonGetJoutaiDataId();
     extern u16 pokemonGetNowLevelToExp();
     extern u16 pokemonGetSoubiItemDataId();
-    extern u16 pokemonGetStatus();
+    extern u32 pokemonGetStatus();
     extern void pokemonGrowBasisStatus();
     extern void pokemonInitDarkPokemon();
     extern void pokemonInitJoutai();
@@ -460,7 +460,7 @@ s32 fn_800096B4(u32 arg0, s32 arg1, u8* arg2, u8* arg3, u8* arg4, u8* arg5) {
             break;
         }
         case 0x44: {
-            s32 b = pokemonGetStatus(arg0, 0, 0xBF, 0) + delta;
+            s32 b = (u8)pokemonGetStatus(arg0, 0, 0xBF, 0) + delta;
             FN800096B4_CLAMP(b, 0, (s32)(*lbl_80478E60) - 1);
             pokemonSetStatus(
                 arg0, 0, 0x6F, 0,
