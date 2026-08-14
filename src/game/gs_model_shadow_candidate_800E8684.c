@@ -80,6 +80,7 @@ void modelShadowRender__FP10GSgfxLayer(void* layer)
     u32 j;
     u32 activeCount;
     u32 valid;
+    s32 receiverIndex;
     f32 largest;
     f32 size;
 
@@ -154,16 +155,31 @@ void modelShadowRender__FP10GSgfxLayer(void* layer)
                 continue;
             }
 
+            receiverIndex = -1;
             for (activeCount = 0; activeCount < 16; activeCount++) {
                 if (slot->receivers[activeCount] == receiveModel) {
+                    receiverIndex = (s32)activeCount;
                     break;
                 }
             }
-            if (activeCount == 16) {
+            if (receiverIndex != -1) {
+                continue;
+            }
+
+            receiverIndex = -1;
+            for (activeCount = 0; activeCount < 16; activeCount++) {
+                if (slot->receivers[activeCount] == NULL) {
+                    receiverIndex = (s32)activeCount;
+                    break;
+                }
+            }
+            if (receiverIndex == -1) {
                 _modelShadowAddAsNewReceiver__FP8_GSmodelP8_GSmodelP7GSlightP7GSbound(
                     castModel, receiveModel, light, (GSshadowBound*)((u8*)receiveModel + 0x4C));
                 continue;
             }
+
+            slot->receivers[receiverIndex] = receiveModel;
 
             ObjInfoInit((u8*)receiveModel + 0x4C, &dims);
             largest = dims.x;
