@@ -4964,7 +4964,7 @@ void* fn_8018CD08(u32 groupId, u32 index, f32 radius, f32 angle) {
     void* part;
     GSvec sourcePosition;
     GSvec candidatePosition;
-    GSvec memberPosition;
+    GSvec memberPosition = {0.0f, 0.0f, 0.0f};
     GSvec delta;
     GSvec rotation;
     GSvec midpoint;
