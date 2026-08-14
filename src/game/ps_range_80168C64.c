@@ -1475,11 +1475,20 @@ void fn_8016AB94(u32 linkMask, s32 mode) {
                     } else if (pp->flags & 0x00100000) {
                         psDispSubPointTrail(pp);
                     } else {
-                        f32 widthValue = pp->lerpValue > lbl_8047D5E0
+                        f32 widthValue;
+                        s32 width;
+                        u8 rasterWidth;
+
+                        if (lbl_8047B12C != 0) {
+                            lbl_8047B12C = 0;
+                            fn_800BD554(0);
+                        }
+
+                        widthValue = pp->lerpValue > lbl_8047D5E0
                             ? lbl_8047D5D8
                             : lbl_8047D5DC * pp->lerpValue;
-                        s32 width = (s32)widthValue;
-                        u8 rasterWidth = (u8)width;
+                        width = (s32)widthValue;
+                        rasterWidth = (u8)width;
 
                         if (lbl_8047B168 != rasterWidth) {
                             lbl_8047B168 = rasterWidth;
