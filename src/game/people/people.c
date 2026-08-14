@@ -3608,14 +3608,13 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
         for (i = 0; i < *(volatile s32*)&lbl_8047B1E8; i++) {
             if (job->active == 0) {
                 foundJob = job;
-                break;
+                goto found_job0;
             }
             job++;
         }
-        if (i >= *(volatile s32*)&lbl_8047B1E8) {
-            fn_80179F4C(1);
-            foundJob = NULL;
-        }
+        fn_80179F4C(1);
+        foundJob = NULL;
+found_job0:
 
         activeCount0 = 0;
         current = *(PeopleJob**)((u8*)&lbl_8047B1E8 + 4);
@@ -3686,15 +3685,14 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
         while (freeIndex1 < *(volatile s32*)&lbl_8047B1E8) {
             if (job->active == 0) {
                 foundJob = job;
-                break;
+                goto found_job1;
             }
             job++;
             freeIndex1++;
         }
-        if (freeIndex1 >= *(volatile s32*)&lbl_8047B1E8) {
-            fn_80179F4C(1);
-            foundJob = NULL;
-        }
+        fn_80179F4C(1);
+        foundJob = NULL;
+found_job1:
 
         activeCount1 = 0;
         current = *(PeopleJob**)((u8*)&lbl_8047B1E8 + 4);
