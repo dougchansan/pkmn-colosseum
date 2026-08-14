@@ -3542,8 +3542,7 @@ void fn_80084A8C(void) {
                 r3 = 0x0;
                 return;
             }
-            r3 = r22;
-            ((void(*)(void))fn_800776E4)();
+            r3 = ((u8 (*)(void*))fn_800776E4)((void*)r22);
             tmp = r3 & 0xFF;
             if (tmp != 0) break;
             r3 = 0xe4;
@@ -3553,6 +3552,7 @@ void fn_80084A8C(void) {
             r3 = r22;
             r4 = 0x1;
             ((void(*)(void))fn_8005CF2C)();
+            tmp = *(u32*)(sp + 0xC20);
             if (tmp == 0) {
                 r3 = 0x0;
                 return;
@@ -3560,8 +3560,7 @@ void fn_80084A8C(void) {
             r3 = 0xe4;
             r4 = 0x0;
             ((void(*)(void))menuOpen)();
-            r3 = 0xe4;
-            ((void(*)(void))windowSearchID)();
+            r3 = (u32)((void* (*)(u32))windowSearchID)(0xe4);
             r16 = r3;
             if (r16 == 0) {
                 r4 = 0x1f4;
@@ -3570,16 +3569,17 @@ void fn_80084A8C(void) {
                 __assert();
             }
             if (r16 == 0) {
-                r3 = 0xa6;
-                ((void(*)(void))windowSearchID)();
+                r3 = (u32)((void* (*)(u32))windowSearchID)(0xa6);
                 r16 = r3;
             }
-            r3 = r16;
-            ((void(*)(void))windowGetFreeWork)();
+            r3 = (u32)((void* (*)(void*))windowGetFreeWork)((void*)r16);
             r5 = *(u32*)((u8*)r3 + 0x0);
             r4 = 0x0;
+            tmp = *(u32*)(sp + 0xC);
             *(u32*)((u8*)r5 + 0x24) = tmp;
+            tmp = *(u32*)(sp + 0x8);
             *(u32*)((u8*)r5 + 0x2C) = tmp;
+            r3 = *(u32*)(sp + 0xC30);
             tmp = *(u8*)((u8*)r3 + 0x0);
             *(u8*)((u8*)r5 + 0x21) = tmp;
             tmp = 0x5;
