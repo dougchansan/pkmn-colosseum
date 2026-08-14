@@ -1833,7 +1833,7 @@ void fn_80084038(u8* window)
 s32 fn_800849B4(s32 mode, s32 command, void* input, void* output)
 {
     extern void fn_80093698(s32);
-    extern u8 fn_80084A8C();
+    extern u8 fn_80084A8C(s32, s32, void*, void*);
     extern void menuCloseCustom(s32, s32, s32);
     extern u8 menuIsCheck(s32);
     extern u8 menuSetEnablePort(u8);
@@ -1862,7 +1862,7 @@ s32 fn_800849B4(s32 mode, s32 command, void* input, void* output)
 
 /* 0x80084A8C | size: 0x305C */
 #pragma peephole off
-void fn_80084A8C(void) {
+void fn_80084A8C(s32 mode, u32 command, void* input, void* output) {
     extern void fn_80087AE8();
     extern void fn_80128E04();
     extern void fn_80128E24();
@@ -1933,11 +1933,11 @@ void fn_80084A8C(void) {
     r5 = 0x0;
     r16 = *(u32*)((u8*)r3 + 0x0);
     r30 = (u32)&lbl_80478954;
-    r4 = tmp << 4;
-    *(u32*)((u8*)r16 + 0x24) = tmp;
+    r4 = (u32)mode << 4;
+    *(u32*)((u8*)r16 + 0x24) = command;
     r29 = r3 + 0x30;
     r29 = r29 + r4;
-    *(u32*)((u8*)r16 + 0x2C) = tmp;
+    *(u32*)((u8*)r16 + 0x2C) = (u32)mode;
     tmp = *(u8*)&lbl_80478954;
     *(u8*)((u8*)r16 + 0x21) = tmp;
     tmp = 0x5;
@@ -1992,19 +1992,15 @@ void fn_80084A8C(void) {
     }
     }
     r24 = r16;
-    tmp = tmp & 0x00000010;
-    if (tmp != 0) {
-        if ((s32)tmp != 0) {
-        }
-        if ((s32)tmp == 2) {
-            }
+    tmp = command & 0x00000010;
+    if (tmp != 0 && (mode == 0 || mode == 2)) {
         r3 = 0x0;
         r4 = 0x2;
         savedataGetStatus();
         r4 = 0x0;
         *(u8*)((u8*)r16 + 0x21) = r4;
         r4 = 0x8;
-        tmp = tmp & 0x00000002;
+        tmp = command & 0x00000002;
         r18 = r3;
         *(u32*)((u8*)r16 + 0x0) = r4;
         if (tmp != 0) {
@@ -2020,10 +2016,16 @@ void fn_80084A8C(void) {
             while (f27 < f28) {
 
                 ((void(*)(void))_threadSwitch)();
-                ((void(*)(void))fn_800D37CC)();
+                r3 = ((s32 (*)(void))fn_800D37CC)();
+                tmp = r3 ^ 0x80000000;
+                *(u32*)(sp + 0xC10) = r17;
                 *(u32*)(sp + 0xC14) = tmp;
+                f0 = *(f64*)(sp + 0xC10);
                 f30 = f0 - f31;
-                ((void(*)(void))fn_800D3088)();
+                r3 = ((u32 (*)(void))fn_800D3088)();
+                *(u32*)(sp + 0xC1C) = r3;
+                *(u32*)(sp + 0xC18) = r17;
+                f0 = *(f64*)(sp + 0xC18);
                 f0 = f0 - f29;
                 f0 = f0 / f30;
                 f27 = f27 + f0;
@@ -2044,8 +2046,8 @@ void fn_80084A8C(void) {
                 return;
         }
         }
-        if (tmp != 0) {
-            r3 = tmp;
+        if (input != NULL) {
+            r3 = (u32)input;
             r3 = *(u32*)((u8*)r3 + 0x0);
             if (r3 != 0) {
                 r4 = r18;
@@ -2056,22 +2058,24 @@ void fn_80084A8C(void) {
         *(u32*)((u8*)r16 + 0x0) = tmp;
         }
     r25 = 0x0;
-    tmp = tmp & 0x00000040;
+    *(u32*)(sp + 0xC30) = r30;
+    tmp = command & 0x00000040;
     *(u32*)(sp + 0xC2C) = tmp;
-    tmp = tmp & 0x1;
+    tmp = command & 0x1;
     *(u32*)(sp + 0xC28) = tmp;
-    tmp = tmp & 0x00000002;
+    tmp = command & 0x00000002;
     *(u32*)(sp + 0xC24) = tmp;
-    tmp = tmp & 0x00000008;
+    tmp = command & 0x00000008;
     *(u32*)(sp + 0xC20) = tmp;
-    r31 = tmp & 0x00000020;
+    r31 = command & 0x00000020;
     do {
+        r3 = *(u32*)(sp + 0xC30);
         r23 = *(u8*)((u8*)r3 + 0x0);
         *(u8*)((u8*)r24 + 0x21) = r23;
-        if (tmp != 0) {
+        if (input != NULL) {
             tmp = (s8)r23;
             tmp = tmp << 2;
-            tmp = *(u32*)(r3 + tmp);
+            tmp = *(u32*)((u8*)input + tmp);
             if (tmp != 0) {
                 r22 = tmp;
                 goto L_80084E14;
@@ -2079,9 +2083,10 @@ void fn_80084A8C(void) {
         }
         r22 = (u32)sp + 0xf4;
     L_80084E14:
-        if (tmp != 0) {
+        if (output != NULL) {
             tmp = (s8)r23;
             if ((s32)tmp == 1) {
+                r21 = (u32)output;
                 goto L_80084E38;
             }
         }
