@@ -80,7 +80,8 @@ void fightTrainerGetStatus(void);
 #if !defined(FIGHT_POKEMON_EXACT_80201248_ONLY)
 
 /* 0x801FDB78 | size: 0x5F0 | large */
-void fightOutPokemonGetRndStatus(void) {
+void fightOutPokemonGetRndStatus(void* pokemon, u32* outStatus,
+                                 u32* outRndStatus) {
     extern void fn_80119ED0();
     extern void fn_8011A3E4();
     extern void fn_8011A6D4();
@@ -106,9 +107,9 @@ void fightOutPokemonGetRndStatus(void) {
     u32 r30 = 0;
     u32 r31 = 0;
 
-    r31 = r3;
-    r28 = r4;
-    r27 = r5;
+    r31 = (u32)pokemon;
+    r28 = (u32)outStatus;
+    r27 = (u32)outRndStatus;
     r3 = 0x10;
     fn_80119ED0();
     r0 = r3 & 0xFFFF;
