@@ -5432,13 +5432,16 @@ void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
                 s32 i;
 
                 stream += 4;
-                fn_800B7D3C();
-                fn_800B7874(9, 1);
-                fn_800B7874(11, 1);
                 if (pp->flags & 0x400) {
+                    fn_800B7D3C();
+                    fn_800B7874(9, 1);
+                    fn_800B7874(11, 1);
                     fn_800B7874(13, 1);
                     fn_800B928C(primitive, 5, vertexCount);
                 } else {
+                    fn_800B7D3C();
+                    fn_800B7874(9, 1);
+                    fn_800B7874(11, 1);
                     fn_800B928C(primitive, 3, vertexCount);
                 }
 
@@ -5534,12 +5537,14 @@ void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
                 s32 i;
 
                 stream += 4;
-                fn_800B7D3C();
-                fn_800B7874(9, 1);
                 if (pp->flags & 0x400) {
+                    fn_800B7D3C();
+                    fn_800B7874(9, 1);
                     fn_800B7874(13, 1);
                     fn_800B928C(primitive, 4, vertexCount);
                 } else {
+                    fn_800B7D3C();
+                    fn_800B7874(9, 1);
                     fn_800B928C(primitive, 1, vertexCount);
                 }
 
