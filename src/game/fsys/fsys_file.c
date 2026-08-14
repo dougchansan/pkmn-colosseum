@@ -1531,6 +1531,8 @@ asm void fn_8017BD34(void) {
 #else
 void fn_8017BD34(FSYSSlot* slot, FSYSFileEntry* entry) {
     FSYSSubEntry* sub;
+    DecompPoolEntry* pool;
+    FSYSAllocCallback callback;
     void* cached;
     u32 offset;
     u32 size;
@@ -1539,8 +1541,15 @@ void fn_8017BD34(FSYSSlot* slot, FSYSFileEntry* entry) {
     sub->state = 5;
     slot->status = 0x65;
 
+    pool = FSYSFindDecompPool(entry->groupID);
     size = FSYSRefreshExternalEntrySize(slot, entry);
-    sub->buffer = FSYSAllocEntryBuffer(slot, entry, size);
+    if (FSYS_POOL_ALLOC_CB(pool) != NULL) {
+        callback = (FSYSAllocCallback)FSYS_POOL_ALLOC_CB(pool);
+        sub->buffer = callback(slot->fileHandle, entry->nameHash, size);
+    } else {
+        sub->buffer = (void*)GSresAllocResourceAlign(
+            FSYSAlign32(size), 0x20, slot->fileHandle, entry->nameHash, 0);
+    }
 
     cached = (void*)fn_8017F794(slot->fileHandle, entry->groupID, entry->nameHash);
     offset = fn_8017F728(slot->fileHandle, entry->groupID, entry->nameHash);
