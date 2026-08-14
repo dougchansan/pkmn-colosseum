@@ -605,12 +605,12 @@ s32 fn_800096B4(u32 arg0, s32 arg1, u8* arg2, u8* arg3, u8* arg4, u8* arg5) {
         }
         case 0xA7D:
             if (pokemonGetStatus(arg0, 0, 0xC3, 0) != 0) {
-                s32 v;
+                s32 v = pokemonGetStatus(arg0, 0, 0xC5, 0);
                 if ((u32)(delta + 0x10000) == 1U) {
                     v = -1;
                 } else if ((u32)delta == (u32)-1) {
                     v = 0x639C;
-                } else if (fn_8001E224(&v, 0, 0x32, 0x32, 0) == 0) {
+                } else if (fn_8001E224(v, &v, 0, 0x32, 0x32, 0) == 0) {
                     menuSubCloseNumberInput();
                     break;
                 } else {
@@ -630,12 +630,12 @@ s32 fn_800096B4(u32 arg0, s32 arg1, u8* arg2, u8* arg3, u8* arg4, u8* arg5) {
             break;
         case 0xA7F:
             if (pokemonGetStatus(arg0, 0, 0xC3, 0) != 0) {
-                s32 v;
+                s32 v = pokemonGetStatus(arg0, 0, 0xC6, 0);
                 if ((u32)(delta + 0x10000) == 1U) {
                     v = 0;
                 } else if ((u32)delta == (u32)-1) {
                     v = 0x1E8480;
-                } else if (fn_8001E224(&v, 1, 0x32, 0x32, 0) == 0) {
+                } else if (fn_8001E224(v, &v, 1, 0x32, 0x32, 0) == 0) {
                     menuSubCloseNumberInput();
                     break;
                 } else {
