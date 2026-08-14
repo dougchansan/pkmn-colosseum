@@ -2636,8 +2636,7 @@ void fn_80084A8C(void) {
         r16 = 0x0;
         *(u32*)(r27 + r24) = tmp;
         do {
-            r3 = r26;
-            ((void(*)(void))fn_8008ABA0)();
+            r3 = ((u8 (*)(s32))fn_8008ABA0)((s32)r26);
             tmp = r3 & 0xFF;
             if (tmp != 0) {
                 r3 = ((u8 (*)(void))menuGetEnablePort)();
@@ -2652,6 +2651,7 @@ void fn_80084A8C(void) {
             r16 = r16 + 0x1;
         } while ((s32)r16 < 0x12c);
 
+        tmp = *(u32*)(sp + 0xC2C);
         if (tmp == 0) {
             r4 = r26;
             r3 = 0x2f;
@@ -2663,16 +2663,20 @@ void fn_80084A8C(void) {
             f30 = *(f64*)&lbl_8047C1B8;
             f31 = *(f32*)&lbl_8047C1AC;
             while (f27 < f31) {
-
                 ((void(*)(void))_threadSwitch)();
-                ((void(*)(void))fn_800D37CC)();
+                r3 = ((s32 (*)(void))fn_800D37CC)();
+                tmp = r3 ^ 0x80000000;
+                *(u32*)(sp + 0xC18) = r16;
                 *(u32*)(sp + 0xC1C) = tmp;
+                f0 = *(f64*)(sp + 0xC18);
                 f29 = f0 - f28;
-                ((void(*)(void))fn_800D3088)();
+                r3 = ((u32 (*)(void))fn_800D3088)();
+                *(u32*)(sp + 0xC14) = r3;
+                *(u32*)(sp + 0xC10) = r16;
+                f0 = *(f64*)(sp + 0xC10);
                 f0 = f0 - f30;
                 f0 = f0 / f29;
                 f27 = f27 + f0;
-
             }
         }
         r3 = r22;
