@@ -3573,7 +3573,7 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
         void* subEntry;
         u8 pad_2C[8];
         void* taskParam;
-        u8 pad_38[4];
+        u8 pad_38[8];
     } PeopleJob;
     typedef struct PeopleJobPool {
         s32 count;
