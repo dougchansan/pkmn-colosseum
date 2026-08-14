@@ -2917,7 +2917,8 @@ void fn_800965C8(void* window, u8* sprite) {
             mask = 1;
             break;
         }
-        winSpriteSetDisp(sprite, value & mask);
+        value &= mask;
+        winSpriteSetDisp(sprite, (u8)value);
         break;
     }
     case 0x10B:
