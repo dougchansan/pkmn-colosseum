@@ -3615,6 +3615,7 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
         fn_80179F4C(1);
         foundJob = NULL;
 found_job0:
+        job = foundJob;
 
         activeCount0 = 0;
         current = *(PeopleJob**)((u8*)&lbl_8047B1E8 + 4);
@@ -3629,7 +3630,6 @@ found_job0:
         activeCountStage0 = activeCount0;
         activeCountCopy0 = activeCountStage0;
 
-        job = foundJob;
         if (job == NULL) {
             goto done;
         }
@@ -3693,6 +3693,7 @@ found_job0:
         fn_80179F4C(1);
         foundJob = NULL;
 found_job1:
+        job = foundJob;
 
         activeCount1 = 0;
         current = *(PeopleJob**)((u8*)&lbl_8047B1E8 + 4);
@@ -3707,7 +3708,6 @@ found_job1:
         activeCountStage1 = activeCount1;
         activeCountCopy1 = activeCountStage1;
 
-        job = foundJob;
         if (job == NULL) {
             goto done;
         }
