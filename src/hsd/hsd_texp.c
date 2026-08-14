@@ -3653,8 +3653,7 @@ s32 fn_801B9320(ColTExpNode* tev)
                     child = tev->a_in[0].exp;
                     child_sel = tev->a_in[0].sel;
                     if ((child->a_op == 0 || child->a_op == 1) &&
-                        child->a_in[3].sel == COL_TE_0 &&
-                        child->a_scale == 0)
+                        child->a_in[3].sel == COL_TE_0)
                     {
                         if (tev->tex != NULL && child->tex != NULL &&
                             tev->tex != child->tex)
@@ -3668,60 +3667,123 @@ s32 fn_801B9320(ColTExpNode* tev)
                         } else {
                             conflict = 0;
                         }
+
                         if (conflict == 0) {
-                            switch ((s32) child->a_bias) {
-                            case 1:
-                                bias = 1;
-                                break;
-                            case 2:
-                                bias = -1;
-                                break;
-                            default:
-                                bias = 0;
-                                break;
-                            }
-                            if (child->a_op == 1) {
-                                bias = -bias;
-                            }
-                            switch ((s32) tev->a_bias) {
-                            case 1:
-                                bias += 1;
-                                break;
-                            case 2:
-                                bias -= 1;
-                                break;
-                            }
-                            switch (bias) {
-                            case 0:
-                                tev->a_bias = 0;
-                                merged = 1;
-                                break;
-                            case 1:
-                                tev->a_bias = 1;
-                                merged = 1;
-                                break;
-                            case -1:
-                                tev->a_bias = 2;
-                                merged = 1;
-                                break;
-                            default:
-                                merged = 0;
-                                break;
-                            }
-                            if (merged != 0) {
+                            merge_ok = 0;
+
+                            if (child->a_scale == 0) {
+                                switch ((s32) child->a_bias) {
+                                case 1:
+                                    bias = 1;
+                                    break;
+                                case 2:
+                                    bias = -1;
+                                    break;
+                                default:
+                                    bias = 0;
+                                    break;
+                                }
                                 if (child->a_op == 1) {
-                                    if (tev->a_op == 0) {
-                                        new_op = 1;
-                                    } else {
-                                        new_op = 0;
-                                    }
-                                    tev->a_op = new_op;
+                                    bias = -bias;
+                                }
+                                switch ((s32) tev->a_bias) {
+                                case 1:
+                                    bias += 1;
+                                    break;
+                                case 2:
+                                    bias -= 1;
+                                    break;
+                                }
+                                switch (bias) {
+                                case 0:
+                                    out_bias = 0;
+                                    merge_ok = 1;
+                                    break;
+                                case 1:
+                                    out_bias = 1;
+                                    merge_ok = 1;
+                                    break;
+                                case -1:
+                                    out_bias = 2;
+                                    merge_ok = 1;
+                                    break;
+                                }
+                                out_scale = tev->a_scale;
+                            } else if (tev->a_in[3].sel == COL_TE_0 &&
+                                       tev->a_bias == 0)
+                            {
+                                switch ((s32) tev->a_scale) {
+                                case 0:
+                                    parent_scale = 2;
+                                    break;
+                                case 1:
+                                    parent_scale = 4;
+                                    break;
+                                case 2:
+                                    parent_scale = 8;
+                                    break;
+                                case 3:
+                                    parent_scale = 1;
+                                    break;
+                                default:
+                                    parent_scale = 2;
+                                    break;
+                                }
+                                switch ((s32) child->a_scale) {
+                                case 0:
+                                    child_scale = 2;
+                                    break;
+                                case 1:
+                                    child_scale = 4;
+                                    break;
+                                case 2:
+                                    child_scale = 8;
+                                    break;
+                                case 3:
+                                    child_scale = 1;
+                                    break;
+                                default:
+                                    child_scale = 2;
+                                    break;
+                                }
+
+                                combined_scale =
+                                    (parent_scale * child_scale) / 2;
+                                switch (combined_scale) {
+                                case 1:
+                                    out_scale = 3;
+                                    merge_ok = 1;
+                                    break;
+                                case 2:
+                                    out_scale = 0;
+                                    merge_ok = 1;
+                                    break;
+                                case 4:
+                                    out_scale = 1;
+                                    merge_ok = 1;
+                                    break;
+                                case 8:
+                                    out_scale = 2;
+                                    merge_ok = 1;
+                                    break;
+                                }
+                                out_bias = child->a_bias;
+                            }
+
+                            if (merge_ok != 0) {
+                                if (tev->a_op == 1) {
+                                    tev->a_op = child->a_op == 0;
+                                } else {
+                                    tev->a_op = child->a_op;
                                 }
                                 for (i = 0; i < 3; i++) {
                                     tev->a_in[i] = child->a_in[i];
                                     TEXP_REF(tev->a_in[i].exp,
                                              tev->a_in[i].sel);
                                 }
+                                tev->a_bias = out_bias;
+                                tev->a_scale = out_scale;
+                                TEXP_UNREF(child, child_sel);
                                 if (tev->tex == NULL) {
                                     tev->tex = child->tex;
                                 }
@@ -3734,7 +3796,7 @@ s32 fn_801B9320(ColTExpNode* tev)
                                 if (tev->ras_swap == 0xFF) {
                                     tev->ras_swap = child->ras_swap;
                                 }
-                                TEXP_UNREF(child, child_sel);
+                                merged = 1;
                             }
                         }
                     }
