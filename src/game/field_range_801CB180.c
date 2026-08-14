@@ -1181,7 +1181,12 @@ void fn_801CDB04(void)
             if (result == -1) {
                 task->state = 12;
             } else if (result == 0 || result == -4) {
-                task->state = 13;
+                if (task->task_kind == 12) {
+                    task->error_code = 10;
+                    task->state = 0x2B;
+                } else {
+                    task->state = 13;
+                }
             } else {
                 task->error_code = result;
                 task->state = 0x2B;
