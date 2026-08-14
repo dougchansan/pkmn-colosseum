@@ -608,66 +608,66 @@ void fn_8007CBB4(void* arg0, void* arg1) {
     r5 = r6;
     r4 = 0x0;
     tmp = tmp & 0xFFFF;
-    r3 = 0x4;
-    ctr_fn = (void(*)(void))r3;
+    ctr = 4;
     do {
         r3 = *(u16*)((u8*)r5 + 0x0);
         if (tmp == r3) {
-            break;
+            goto first_search_done;
         }
         r5 = r5 + 0x2;
         r4 = r4 + 0x1;
         r3 = *(u16*)((u8*)r5 + 0x0);
         if (tmp == r3) {
-            break;
+            goto first_search_done;
         }
         r5 = r5 + 0x2;
         r4 = r4 + 0x1;
         r3 = *(u16*)((u8*)r5 + 0x0);
         if (tmp == r3) {
-            break;
+            goto first_search_done;
         }
         r5 = r5 + 0x2;
         r4 = r4 + 0x1;
         r3 = *(u16*)((u8*)r5 + 0x0);
         if (tmp == r3) {
-            break;
+            goto first_search_done;
         }
         r5 = r5 + 0x2;
         r4 = r4 + 0x1;
         r3 = *(u16*)((u8*)r5 + 0x0);
         if (tmp == r3) {
-            break;
+            goto first_search_done;
         }
         r5 = r5 + 0x2;
         r4 = r4 + 0x1;
         r3 = *(u16*)((u8*)r5 + 0x0);
         if (tmp == r3) {
-            break;
+            goto first_search_done;
         }
         r5 = r5 + 0x2;
         r4 = r4 + 0x1;
         r3 = *(u16*)((u8*)r5 + 0x0);
         if (tmp == r3) {
-            break;
+            goto first_search_done;
         }
         r5 = r5 + 0x2;
         r4 = r4 + 0x1;
         r3 = *(u16*)((u8*)r5 + 0x0);
         if (tmp == r3) {
-            break;
+            goto first_search_done;
         }
         r5 = r5 + 0x2;
         r4 = r4 + 0x1;
         r3 = *(u16*)((u8*)r5 + 0x0);
         if (tmp == r3) {
-            break;
+            goto first_search_done;
         }
         r5 = r5 + 0x2;
         r4 = r4 + 0x1;
     } while (--ctr != 0);
     r4 = -0x1;
 
+first_search_done:
     r7 = r4;
     if ((s32)r4 >= 0) {
         tmp = 0x0;
