@@ -1866,7 +1866,7 @@ void fn_80084A8C(s32 mode, u32 command, void* input, void* output) {
     extern void fn_80087AE8();
     extern void fn_80128E04();
     extern void fn_80128E24();
-    extern void savedataGetStatus();
+    extern void* savedataGetStatus(u32, u32);
     extern void heroInit();
     extern void heroBiosCopy();
     extern void msgctrlSetValue();
@@ -1994,9 +1994,7 @@ void fn_80084A8C(s32 mode, u32 command, void* input, void* output) {
     r24 = r16;
     tmp = command & 0x00000010;
     if (tmp != 0 && (mode == 0 || mode == 2)) {
-        r3 = 0x0;
-        r4 = 0x2;
-        savedataGetStatus();
+        r3 = (u32)savedataGetStatus(0, 2);
         r4 = 0x0;
         *(u8*)((u8*)r16 + 0x21) = r4;
         r4 = 0x8;
@@ -2031,27 +2029,23 @@ void fn_80084A8C(s32 mode, u32 command, void* input, void* output) {
                 f27 = f27 + f0;
 
             }
-            r3 = r18;
-            ((void(*)(void))fn_800776E4)();
+            r3 = ((u8 (*)(void*))fn_800776E4)((void*)r18);
             tmp = r3 & 0xFF;
             if (tmp == 0) {
                 r3 = 0xe4;
                 r4 = 0x0;
                 r5 = 0x1;
                 ((void(*)(void))menuCloseCustom)();
-                r3 = r18;
-                r4 = 0x0;
-                ((void(*)(void))fn_8005CF2C)();
+                ((void (*)(void*, s32))fn_8005CF2C)((void*)r18, 0);
                 r3 = 0x0;
                 return;
         }
         }
         if (input != NULL) {
-            r3 = (u32)input;
-            r3 = *(u32*)((u8*)r3 + 0x0);
+            r3 = *(u32*)input;
             if (r3 != 0) {
-                r4 = r18;
-                heroBiosCopy();
+                ((void (*)(void*, void*))heroBiosCopy)((void*)r3,
+                                                       (void*)r18);
         }
         }
         tmp = 0xa;
