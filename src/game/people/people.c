@@ -3598,7 +3598,8 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
     s32 i;
 
     result = 0;
-    if (mode == 0) {
+    switch (mode) {
+    case 0:
         job = *(PeopleJob**)((u8*)&lbl_8047B1E8 + 4);
         for (i = 0; i < *(volatile s32*)&lbl_8047B1E8; i++) {
             if (job->active == 0) {
@@ -3670,7 +3671,8 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
             }
             result = 1;
         }
-    } else if (mode == 1) {
+        break;
+    case 1:
         job = *(PeopleJob**)((u8*)&lbl_8047B1E8 + 4);
         freeIndex1 = 0;
         while (freeIndex1 < *(volatile s32*)&lbl_8047B1E8) {
@@ -3741,6 +3743,7 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
             }
             result = 1;
         }
+        break;
     }
 done:
     return result;
