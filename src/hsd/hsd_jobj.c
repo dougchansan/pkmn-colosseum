@@ -144,6 +144,7 @@ void fn_8019D620(HSD_JObj* jobj)
 
 void resolveIKJoint1(HSD_JObj* jobj);
 void resolveIKJoint2(HSD_JObj* jobj);
+static inline f32 JObjIKSqrtf(f32 value);
 
 void fn_8019D9DC(HSD_JObj* jobj)
 {
@@ -180,9 +181,10 @@ void fn_8019D9DC(HSD_JObj* jobj)
                     direction.z = parent->mtx[2][0];
                     PSVECScale(
                         &direction, &direction,
-                        sqrtf(1.0F /
-                              (1.0e-10F +
-                               PSVECDotProduct(&direction, &direction))));
+                        JObjIKSqrtf(
+                            1.0F /
+                            (1.0e-10F +
+                             PSVECDotProduct(&direction, &direction))));
                     if (parent->scl != NULL) {
                         x_scale = parent->scl[0];
                     }
