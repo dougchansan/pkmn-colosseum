@@ -88,7 +88,7 @@ extern void* menuSpriteBiosGetPtr(u16 id);
 extern u16* windowGetKeyInfo(void);
 extern void* pokemonDataBiosGetPtr(u32 id);
 extern u8 pokemonBiosGetCatchBallId(void* pokemon);
-extern u16 pokemonGetSoubiItemDataId(void* pokemon);
+extern u32 pokemonGetSoubiItemDataId(void* pokemon);
 extern u32 pokemonDataBiosGetName(void* bios);
 extern u32 GSmsgGetGSchar(u32 id);
 extern u32 GSmsgGetRect(u32 id);
