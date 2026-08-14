@@ -2221,14 +2221,13 @@ void fn_80084A8C(void) {
             *(u32*)((u8*)r24 + 0x28) = tmp;
             goto L_80085114;
         L_800850BC:
-            r3 = 0x10c;
-            ((void(*)(void))menuIsCheck)();
+            r3 = ((u8 (*)(s32))menuIsCheck)(0x10c);
             tmp = r3 & 0xFF;
             if (tmp != 0) {
                 ((void(*)(void))_threadSwitch)();
                 goto L_80085114;
             }
-            ((void(*)(void))windowGetKeyInfo)();
+            r3 = (u32)((void* (*)(void))windowGetKeyInfo)();
             tmp = *(u16*)((u8*)r3 + 0x4);
             tmp = tmp & 0x00000020;
             if ((s32)tmp != 0) {
