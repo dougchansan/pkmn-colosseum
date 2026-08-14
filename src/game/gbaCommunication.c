@@ -3032,6 +3032,11 @@ void fn_800965C8(void* window, u8* sprite) {
         case 2:
             msg = 0x2BCF;
             break;
+        case 5:
+            if (*(s32*)(lbl_803FB380 + 0x1C) > 0) {
+                msg = 0x2BD2;
+            }
+            break;
         case 3:
             if (lbl_803FB380[0] & 2) {
                 msg = 0x2BD0;
@@ -3039,11 +3044,6 @@ void fn_800965C8(void* window, u8* sprite) {
             break;
         case 4:
             msg = 0x2BD0;
-            break;
-        case 5:
-            if (*(s32*)(lbl_803FB380 + 0x1C) > 0) {
-                msg = 0x2BD2;
-            }
             break;
         }
         if (msg != 0) {
