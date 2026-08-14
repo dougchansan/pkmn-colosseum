@@ -3343,9 +3343,7 @@ void fn_80096FA0(u8* menu)
             if (input & 1) {
                 scan = row;
             scan_up:
-                previous = scan > 0;
-                scan--;
-                if (previous) {
+                if (scan-- > 0) {
                     inner = column;
                     cell = lbl_803FB380 + scan + column * 4;
                 scan_up_row:
@@ -3354,10 +3352,8 @@ void fn_80096FA0(u8* menu)
                         column = inner;
                         scan = -1;
                     } else {
-                        previous = inner > 0;
                         cell -= 4;
-                        inner--;
-                        if (previous) {
+                        if (inner-- > 0) {
                             goto scan_up_row;
                         }
                     }
@@ -3376,10 +3372,8 @@ void fn_80096FA0(u8* menu)
                         column = inner;
                         scan = 5;
                     } else {
-                        previous = inner > 0;
                         cell -= 4;
-                        inner--;
-                        if (previous) {
+                        if (inner-- > 0) {
                             goto scan_down_row;
                         }
                     }
