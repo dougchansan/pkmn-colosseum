@@ -11,6 +11,7 @@
  */
 
 #include "game/battle/battle_waza_types.h"
+#include "crt/math.h"
 #include "dolphin/mtx.h"
 
 #pragma peephole on
@@ -101,6 +102,54 @@ extern void* lbl_8047B3F0;
 extern u32 lbl_8047B3E8;
 extern s32 lbl_8047B410;
 extern f32 lbl_80478CDC;
+
+typedef union WazaCameraFloatShape {
+    f32 value;
+    u32 bits;
+} WazaCameraFloatShape;
+
+static inline f32 wazaCameraSqrtf(f32 value)
+{
+    extern f32 lbl_8047E1FC;
+    extern f64 lbl_8047E218;
+    extern f64 lbl_8047E220;
+    extern f64 lbl_8047E228;
+    WazaCameraFloatShape shape;
+    f64 estimate;
+    s32 exponent;
+    s32 fpclass;
+
+    if (value > lbl_8047E1FC) {
+        estimate = __frsqrte(value);
+        estimate = lbl_8047E218 * estimate *
+                   (lbl_8047E220 - value * (estimate * estimate));
+        estimate = lbl_8047E218 * estimate *
+                   (lbl_8047E220 - value * (estimate * estimate));
+        estimate = lbl_8047E218 * estimate *
+                   (lbl_8047E220 - value * (estimate * estimate));
+        return (f32)(value * estimate);
+    }
+    if ((f64)value < lbl_8047E228) {
+        return lbl_80478AC0[0];
+    }
+    shape.value = value;
+    exponent = shape.bits & 0x7F800000;
+    switch (exponent) {
+    case 0x7F800000:
+        fpclass = (shape.bits & 0x007FFFFF) != 0 ? 1 : 2;
+        break;
+    case 0:
+        fpclass = (shape.bits & 0x007FFFFF) != 0 ? 5 : 3;
+        break;
+    default:
+        fpclass = 4;
+        break;
+    }
+    if (fpclass == 1) {
+        return lbl_80478AC0[0];
+    }
+    return value;
+}
 
 extern u8 lbl_80467CC0[];
 extern void fn_801DD158(void* obj);
@@ -552,7 +601,6 @@ void _wazaSequenceCameraDoPosition__FP13ModelSequenceP24wazaSequenceCameraParams
     extern void cameraMoveRotationXYZ(f32, f32, f32, f32);
     extern void GSscene_GetCameraDirectionVector(Vec*);
     extern void GSscene_SetCameraDirectionVector(Vec*);
-    extern f32 sqrtf(f32);
     extern f32 lbl_8047E1F4;
     extern f32 lbl_8047E1F8;
     extern f32 lbl_8047E1FC;
@@ -629,8 +677,8 @@ void _wazaSequenceCameraDoPosition__FP13ModelSequenceP24wazaSequenceCameraParams
         duration_scale = (f32)duration / (f32)fn_800D37CC();
         cameraMovePosition(7, &direction, duration_scale);
 
-        len0 = sqrtf(offset_distance * offset_distance + height * height);
-        len2 = sqrtf(distance * distance + len0 * len0);
+        len0 = wazaCameraSqrtf(offset_distance * offset_distance + height * height);
+        len2 = wazaCameraSqrtf(distance * distance + len0 * len0);
         params->out_near = len0;
         params->out_far = len2;
         params->out_mid = lbl_8047E1F8 * (len0 + len2);
@@ -684,8 +732,8 @@ void _wazaSequenceCameraDoPosition__FP13ModelSequenceP24wazaSequenceCameraParams
         duration_scale = (f32)duration / (f32)fn_800D37CC();
         cameraMoveRotationXYZ(lbl_8047E1FC, rot_b, lbl_8047E1FC, duration_scale);
 
-        len0 = sqrtf(distance * distance + height * height);
-        len2 = sqrtf(rot_b * rot_b + len0 * len0);
+        len0 = wazaCameraSqrtf(distance * distance + height * height);
+        len2 = wazaCameraSqrtf(rot_b * rot_b + len0 * len0);
         params->out_near = len0;
         params->out_far = len2;
         params->out_mid = lbl_8047E1F8 * (len0 + len2);
@@ -729,7 +777,8 @@ void _wazaSequenceCameraDoPosition__FP13ModelSequenceP24wazaSequenceCameraParams
         duration_scale = (f32)duration / (f32)fn_800D37CC();
         cameraMovePosition(7, &direction, duration_scale);
 
-        length = sqrtf(distance * distance + height * height + rotation * rotation);
+        length = wazaCameraSqrtf(distance * distance + height * height +
+                                 rotation * rotation);
         params->out_far = length;
         params->out_mid = length;
         params->out_near = length;
@@ -765,7 +814,7 @@ void _wazaSequenceCameraDoPosition__FP13ModelSequenceP24wazaSequenceCameraParams
         duration_scale = (f32)duration / (f32)fn_800D37CC();
         cameraMovePosition(7, &direction, duration_scale);
 
-        length = sqrtf((f32)lbl_8047E238);
+        length = wazaCameraSqrtf((f32)lbl_8047E238);
         params->out_far = length;
         params->out_mid = length;
         params->out_near = length;
@@ -829,8 +878,8 @@ void _wazaSequenceCameraDoPosition__FP13ModelSequenceP24wazaSequenceCameraParams
             cameraMovePosition(7, &direction, duration_scale);
         }
 
-        length = sqrtf(distance * distance + height * height +
-                       lbl_8047E254 * lbl_8047E254);
+        length = wazaCameraSqrtf(distance * distance + height * height +
+                                 lbl_8047E254 * lbl_8047E254);
         params->out_far = length;
         params->out_mid = length;
         params->out_near = length;
@@ -876,7 +925,6 @@ void _wazaSequenceCameraDoDollyPosition__FP21TemplateExpFileHeaderP24wazaSequenc
     extern void GSvecAdd(Vec*, Vec*, Vec*);
     extern s32 fn_800D37CC(void);
     extern void cameraMovePosition(s32, Vec*, f32);
-    extern f32 sqrtf(f32);
     extern f32 lbl_8047E1F8;
     extern f32 lbl_8047E1FC;
     extern f32 lbl_8047E260;
@@ -973,10 +1021,13 @@ void _wazaSequenceCameraDoDollyPosition__FP21TemplateExpFileHeaderP24wazaSequenc
     delay = duration - randomDelay;
     cameraMovePosition(7, &direction, (f32)delay / (f32)fn_800D37CC());
 
-    camera->nearLength = sqrtf(nearDistance * nearDistance + height * height);
+    camera->nearLength =
+        wazaCameraSqrtf(nearDistance * nearDistance + height * height);
     distance0 = lbl_8047E1F8 * (nearDistance + farDistance);
-    camera->middleLength = sqrtf(distance0 * distance0 + height * height);
-    camera->farLength = sqrtf(farDistance * farDistance + height * height);
+    camera->middleLength =
+        wazaCameraSqrtf(distance0 * distance0 + height * height);
+    camera->farLength =
+        wazaCameraSqrtf(farDistance * farDistance + height * height);
 }
 
 /**
