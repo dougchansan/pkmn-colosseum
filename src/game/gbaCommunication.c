@@ -1443,11 +1443,46 @@ void fn_8009567C(u8* context, u8* sprite)
         fn_80132A38(0x56, value == 0xC86 || value == 0xC96 ? 1 : 0x2BD8);
         value = (u8)pokemonGetStatus(pokemon, 0, 0x72, 0);
         fn_80132A38(0x34, value == 0 ? 5 : value);
-        trainer_id = pokemonGetStatus(pokemon, 0, 0x75, 0);
-        trainer_name = pokemonGetStatus(pokemon, 0, 0x76, 0);
+
+        trainer_id = *(u32*)(lbl_803FB380 + 8);
+        valid = 0;
+        if (pokemon != NULL &&
+            (u8)fn_80135938(
+                pokemonGetStatus(pokemon, 0, 0x70, 0), 2) == 0xB) {
+            if ((lbl_803FB380[0] & 0x20) != 0) {
+                if (trainer_id == 0) {
+                    trainer_id = fn_801F2A7C(0);
+                }
+                if (trainer_id != 0) {
+                    trainer_id = fn_801FCEAC(trainer_id);
+                    valid = 1;
+                }
+            } else {
+                if (fn_801906A0(0x8AE) == 0) {
+                    trainer_id = fn_80129280(0, 2);
+                } else {
+                    trainer_id = fn_8006AEEC();
+                }
+                valid = 1;
+            }
+
+            if (valid != 0) {
+                trainer_name = fn_8012AC54(trainer_id);
+                trainer_id = fn_8012AC3C(trainer_id);
+                if (trainer_id ==
+                        pokemonGetStatus(pokemon, 0, 0x75, 0) &&
+                    fn_800F9EE4(
+                        trainer_name,
+                        pokemonGetStatus(pokemon, 0, 0x76, 0)) == 0) {
+                    valid = 1;
+                } else {
+                    valid = 0;
+                }
+            }
+        }
+
         message = 0x2BCD;
-        if (trainer_id == fn_8012AC3C(lbl_803FB380[8]) &&
-            fn_800F9EE4(fn_8012AC54(lbl_803FB380[8]), trainer_name) == 0) {
+        if (valid != 0) {
             value = (u16)pokemonGetStatus(pokemon, 0, 0x6E, 0);
             message = (value >= 0xC4 && value < 0xC6) ? 0x2BE3 : 0x2BCD;
         }
