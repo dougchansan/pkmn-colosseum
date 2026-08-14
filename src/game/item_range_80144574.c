@@ -143,6 +143,7 @@ s16 fn_80144574(
     u8 newPp;
     u8 maxPp;
     u8 moveIdx;
+    u8 battleSleepCleared;
     u8 poisonCleared;
     u8 badPoisonCleared;
     s16 logCount;
@@ -418,18 +419,26 @@ s16 fn_80144574(
         }
     }
 
-    if (itemParamGetSleepFlag(itemParam) != 0 &&
-        pokemonIsJoutaiDataId(activePokemon, 8) != 0) {
-        pokemonInitJoutaiDataId(activePokemon, 8);
-        if (fightPokemon != NULL) {
-            trainer = fightFloorGetFightPokemonPtrToFightTrainerPtr(0, fightPokemon);
-            trainer = fightTrainerCheckFightPokemonFightOut(trainer, fightPokemon);
-            if (trainer != NULL) {
-                ((void (*)(void*, s32))fightOutPokemonWriteJoutaiDataId)(
-                    trainer, 0x17);
+    if (itemParamGetSleepFlag(itemParam) != 0) {
+        battleSleepCleared = 0;
+        if (pokemonIsJoutaiDataId(activePokemon, 8) != 0) {
+            pokemonInitJoutaiDataId(activePokemon, 8);
+            if (fightPokemon != NULL) {
+                trainer = fightFloorGetFightPokemonPtrToFightTrainerPtr(
+                    0, fightPokemon);
+                trainer = fightTrainerCheckFightPokemonFightOut(
+                    trainer, fightPokemon);
+                if (trainer != NULL) {
+                    ((void (*)(void*, s32))fightOutPokemonWriteJoutaiDataId)(
+                        trainer, 0x17);
+                    battleSleepCleared = 1;
+                }
+            }
+            ADD_LOG(log, logCount, 9, 0, 0);
+            if (battleSleepCleared != 0) {
+                ADD_LOG(log, logCount, 0xA, 0, 0);
             }
         }
-        ADD_LOG(log, logCount, 9, 0, 0);
     }
 
     if (itemParamGetPoisonFlag(itemParam) != 0) {
@@ -447,7 +456,7 @@ s16 fn_80144574(
             trainer = fightFloorGetFightPokemonPtrToFightTrainerPtr(0, fightPokemon);
             trainer = fightTrainerCheckFightPokemonFightOut(trainer, fightPokemon);
             if (trainer != NULL) {
-                fn_802331A4(trainer, 0x7C);
+                fightSeqCheckSetMotoPokemonToHensinBuff(trainer, 0x7C);
             }
         }
         if (poisonCleared != 0) {
@@ -491,7 +500,7 @@ s16 fn_80144574(
             trainer = fightFloorGetFightPokemonPtrToFightTrainerPtr(0, fightPokemon);
             trainer = fightTrainerCheckFightPokemonFightOut(trainer, fightPokemon);
             if (trainer != NULL) {
-                fightSeqCheckSetMotoPokemonToHensinBuff(trainer, 0x7C);
+                fn_802331A4(trainer, 0x7C);
             }
         }
         ADD_LOG(log, logCount, 0x10, 0, 0);
