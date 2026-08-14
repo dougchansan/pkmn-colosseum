@@ -3182,6 +3182,7 @@ s32 HSD_TExpSimplify(ColTExpNode* texp) {
     if (fn_801B9320(texp) != 0) {
         res = 1;
     }
+    fn_801B9048(texp);
     return res;
 }
 
