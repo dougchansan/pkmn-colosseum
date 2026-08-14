@@ -299,7 +299,7 @@ extern void fn_800B9494(u32 chan, u32 enable0, u32 enable1);
 extern void fn_800B94F0(u32 value);
 extern void fn_800B84E0(u32 attr, u32 value, u8 value2);
 extern void fn_801B25C4(s32 flags);
-extern void generateParticle_8017424C(PSGeneratorState* gen);
+extern f32 generateParticle_8017424C(PSGeneratorState* gen);
 extern void HSD_MulColor(GXColor* a, GXColor* b, GXColor* dest);
 extern void fn_800060F0(const char* file, s32 line, const char* message, ...);
 extern void PSMTXInverse(const Mtx source, Mtx destination);
@@ -5550,7 +5550,7 @@ void psExecGenerator(u32 linkMask) {
         }
 
         if (gen->lifetime >= 1.0f) {
-            generateParticle_8017424C(gen);
+            gen->lifetime = generateParticle_8017424C(gen);
         }
 
         if (gen->maxLife != 0) {
@@ -5614,7 +5614,7 @@ void psExecGenerator(u32 linkMask) {
  */
 #pragma optimization_level 4
 #pragma peephole off
-void generateParticle_8017424C(PSGeneratorState* gen) {
+f32 generateParticle_8017424C(PSGeneratorState* gen) {
     extern PSParticle* psGenerateParticle(u8 linkNo, u8 bankIndex, u32 arg2, f32 posX, f32 posY, f32 posZ, u32 flags, f32 velocityX, f32 velocityY, f32 velocityZ, u8 animIndex, void* scriptData, u16 repeatCount, f32 lerpValue, void* arg14, f32 scaleFactor, f32 frictionFactor, PSGeneratorState* generator);
     Mtx basis;
     Mtx rotationX;
@@ -5636,7 +5636,7 @@ void generateParticle_8017424C(PSGeneratorState* gen) {
     f32 currentAngle = 0.0f;
 
     if (gen->lifetime < lbl_8047D6B4) {
-        return;
+        return gen->lifetime;
     }
 
     emissionVelocity.x = gen->velocityX;
@@ -6133,6 +6133,7 @@ void generateParticle_8017424C(PSGeneratorState* gen) {
 
         gen->lifetime -= 1.0f;
     }
+    return gen->lifetime;
 }
 
 #pragma optimization_level 1
