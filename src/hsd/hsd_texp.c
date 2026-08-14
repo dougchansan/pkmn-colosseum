@@ -3913,6 +3913,14 @@ s32 fn_801BAC8C(ColTExpNode* tev)
                     }
                 }
                 if (tev->c_in[0].sel == COL_TE_0 &&
+                    tev->c_in[1].sel == 8)
+                {
+                    changed = 1;
+                    tev->c_in[0] = tev->c_in[2];
+                    tev->c_in[1] = lbl_80478CA0;
+                    tev->c_in[2] = lbl_80478CA0;
+                }
+                if (tev->c_in[0].sel == COL_TE_0 &&
                     tev->c_in[1].sel == COL_TE_0 &&
                     tev->c_in[3].sel == COL_TE_0 && tev->c_bias == 0)
                 {
