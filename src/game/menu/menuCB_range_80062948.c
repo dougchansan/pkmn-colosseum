@@ -107,6 +107,7 @@ void fn_800643D4(void* arg0, void* arg1)
         case 1:
             snd = 0xd68;
             break;
+        case 3:
         default:
             snd = 0;
             break;
