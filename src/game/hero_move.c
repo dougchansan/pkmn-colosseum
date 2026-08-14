@@ -3010,7 +3010,6 @@ void fn_8012DE94(u32 playerIndex)
     extern u8 fn_800E3C64();
     extern void fn_8018C0A8();
     extern void PSVECSubtract(HeroMoveVec3*, HeroMoveVec3*, HeroMoveVec3*);
-    extern f32 sqrtf(f32);
 
     HeroMoveVec3 targetPosition;
     HeroMoveVec3 playerPosition;
@@ -3054,7 +3053,7 @@ void fn_8012DE94(u32 playerIndex)
     separation.z = targetPosition.z - playerPosition.z;
     distanceSquared =
         separation.x * separation.x + separation.z * separation.z;
-    sqrtf(distanceSquared);
+    heroMoveSqrt(distanceSquared);
 
     fn_8012D7F0(playerIndex, &velocity, &movement);
     fn_8012CA84(playerIndex, &velocity, &movement);
@@ -3071,7 +3070,7 @@ void fn_8012DE94(u32 playerIndex)
     separation.z = targetPosition.z - modelPosition.z;
     distanceSquared =
         separation.x * separation.x + separation.z * separation.z;
-    distance = sqrtf(distanceSquared);
+    distance = heroMoveSqrt(distanceSquared);
     PSVECSubtract(&modelPosition, &playerPosition, &separation);
 
     if (distance < lbl_8047D0B0) {
