@@ -2192,8 +2192,8 @@ void modifyDir(PSParticle* pp, f32 angle) {
     pitchSin = sin(pitch);
     pitchCos = cos(pitch);
 
-    magnitude = sqrtf(velocityX * velocityX + velocityY * velocityY +
-                      velocityZ * velocityZ);
+    magnitude = psSetVelSqrtf(velocityX * velocityX + velocityY * velocityY +
+                             velocityZ * velocityZ);
     azimuth = lbl_8047D6A0 * lbl_8047D6A8 * fn_801ADC7C();
     radial = magnitude * sin(angle);
     radialX = radial * cos(azimuth);
@@ -2247,9 +2247,9 @@ void modifyDirGenBase(PSParticle* pp, f32 angle, f32 offsetX,
     pitchSin = sin(pitch);
     pitchCos = cos(pitch);
 
-    magnitude = sqrtf(pp->velocityX * pp->velocityX +
-                      pp->velocityY * pp->velocityY +
-                      pp->velocityZ * pp->velocityZ);
+    magnitude = psSetVelSqrtf(pp->velocityX * pp->velocityX +
+                             pp->velocityY * pp->velocityY +
+                             pp->velocityZ * pp->velocityZ);
     azimuth = lbl_8047D6A0 * lbl_8047D6A8 * fn_801ADC7C();
     radial = magnitude * sin(angle);
     radialX = radial * cos(azimuth);
