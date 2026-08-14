@@ -5316,19 +5316,27 @@ void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
             velocityZ = centerZ - velocityZ;
         }
 
-        if (pp->color1Timer != 0) {
-            s32 ratio = (pp->color1Countdown << 16) / pp->color1Timer;
+        switch (pp->flags & 0x80000080) {
+        case 0:
+            if (pp->color1Timer != 0) {
+                s32 ratio = (pp->color1Countdown << 16) / pp->color1Timer;
 
-            color.r = ((pp->color1Target.r << 16) +
-                       ratio * (pp->color1.r - pp->color1Target.r)) >> 16;
-            color.g = ((pp->color1Target.g << 16) +
-                       ratio * (pp->color1.g - pp->color1Target.g)) >> 16;
-            color.b = ((pp->color1Target.b << 16) +
-                       ratio * (pp->color1.b - pp->color1Target.b)) >> 16;
-            color.a = ((pp->color1Target.a << 16) +
-                       ratio * (pp->color1.a - pp->color1Target.a)) >> 16;
-        } else {
-            color = pp->color1;
+                color.r = ((pp->color1Target.r << 16) +
+                           ratio * (pp->color1.r - pp->color1Target.r)) >> 16;
+                color.g = ((pp->color1Target.g << 16) +
+                           ratio * (pp->color1.g - pp->color1Target.g)) >> 16;
+                color.b = ((pp->color1Target.b << 16) +
+                           ratio * (pp->color1.b - pp->color1Target.b)) >> 16;
+                color.a = ((pp->color1Target.a << 16) +
+                           ratio * (pp->color1.a - pp->color1Target.a)) >> 16;
+            } else {
+                color = pp->color1;
+            }
+            break;
+        case 0x80:
+        case 0x80000080:
+            color.r = color.g = color.b = color.a = 0xFF;
+            break;
         }
         color.a = (u8)((f32)color.a * pp->alphaScale);
         textureIndex = (pp->flags >> 14) & 3;
