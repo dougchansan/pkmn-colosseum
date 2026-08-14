@@ -1457,10 +1457,26 @@ void fn_801821B8(u32 groupId, u32 index)
         return;
     }
 
-    fn_8018FC98(entry, &position);
-    fn_8018FB60(entry, 1);
-    shadowAnim = entry->animId != 0;
-    fn_8018FB2C(entry, shadowAnim);
+    if (&position != NULL) {
+        linked = peopleFindBySelf(peopleFindSelf(groupId, index));
+        if (linked != NULL) {
+            fn_8018FC98(linked, &position);
+        }
+    }
+    step = position.y;
+
+    linked = peopleFindBySelf(peopleFindSelf(groupId, index));
+    if (linked != NULL) {
+        fn_8018FB60(linked, 1);
+        shadowAnim = 1;
+        linked = peopleFindBySelf(peopleFindSelf(groupId, index));
+        if (linked != NULL) {
+            if (linked->animId == 0) {
+                shadowAnim = 0;
+            }
+            fn_8018FB2C(linked, shadowAnim);
+        }
+    }
     peopleClearFlags(entry, 8);
     fn_80166A28(0x49E);
     entry->motionIndex = 7;
@@ -1512,7 +1528,6 @@ void fn_801821B8(u32 groupId, u32 index)
         }
     }
 
-    step = position.y;
     do {
         stepDelta -= (f32)((f64)fn_800D3088() * lbl_8047D7E0);
         if (stepDelta < lbl_8047D7A0) {
