@@ -4497,20 +4497,26 @@ void fn_80189990(u32 groupId, u32 index, s32 messageId) {
                 entry->field_98 = entry->field_40;
                 entry->field_94 = 1;
             }
-            camera = GSresGetResource(0, 0x64);
-            if (camera != NULL) {
-                GSvecCopy(&cameraPosition, GSmodelGetPositionPtr(camera));
-                fn_800E0168(&delta, &cameraPosition, fn_8018FCBC(entry));
-                angle = (f32)atan2(delta.x, delta.z);
-                stateEntry =
-                    peopleFindBySelf(peopleFindSelf(groupId, index));
-                if (stateEntry != NULL) {
-                    fn_8018FC2C(stateEntry, &rotation);
-                    fullTurn = lbl_8047D7C0;
-                    revolutions = (s32)(rotation.y / fullTurn);
-                    stateEntry->pad22 = 1;
-                    stateEntry->field_40 = angle + fullTurn * revolutions;
-                    stateEntry->field_44 = lbl_8047D79C;
+            stateEntry = peopleFindBySelf(peopleFindSelf(groupId, index));
+            if (stateEntry != NULL) {
+                camera = GSresGetResource(0, 0x64);
+                if (camera != NULL) {
+                    GSvecCopy(&cameraPosition,
+                              GSmodelGetPositionPtr(camera));
+                    fn_800E0168(&delta, &cameraPosition,
+                                fn_8018FCBC(stateEntry));
+                    angle = (f32)atan2(delta.x, delta.z);
+                    stateEntry =
+                        peopleFindBySelf(peopleFindSelf(groupId, index));
+                    if (stateEntry != NULL) {
+                        fn_8018FC2C(stateEntry, &rotation);
+                        fullTurn = lbl_8047D7C0;
+                        revolutions = (s32)(rotation.y / fullTurn);
+                        stateEntry->pad22 = 1;
+                        stateEntry->field_40 =
+                            angle + fullTurn * revolutions;
+                        stateEntry->field_44 = lbl_8047D79C;
+                    }
                 }
             }
             stateEntry = peopleFindBySelf(peopleFindSelf(groupId, index));
