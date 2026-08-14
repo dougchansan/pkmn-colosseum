@@ -1377,7 +1377,7 @@ void fn_801CDB04(void)
             break;
 
         case 26:
-            result = fn_800B4C7C(file_info, task->work_buffer, 0x2000, 0,
+            result = fn_800B4C7C(file_info, task->work_buffer, 0x4000, 0,
                                  NULL);
             task->card_result = result == 0
                                     ? CARDGetResultCode(task->card_channel)
