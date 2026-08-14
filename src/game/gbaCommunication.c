@@ -3238,7 +3238,7 @@ void fn_80096FA0(u8* menu)
     s32 limit;
     u8 tabSelection;
     s8 moveSelection;
-    s32 selection;
+    s8 selection;
     u32 pokemon;
     u16 valid;
     u32 result;
@@ -3392,7 +3392,7 @@ void fn_80096FA0(u8* menu)
             selection = column + row * 9;
             if ((s8)selection != (s8)lbl_803FB380[0x1A]) {
                 fn_80103484(*(s32*)(menu + 4), 1);
-                lbl_803FB380[0x1A] = selection;
+                *(s8*)(lbl_803FB380 + 0x1A) = selection;
             }
             break;
 
