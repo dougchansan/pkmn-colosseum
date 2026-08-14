@@ -212,7 +212,7 @@ extern u8* GScharCpy(u8* dst, u8* src);
 extern void GSmsgSetColor(void* obj);
 extern s32 GSmsgGetRect();
 extern void GSmsgInitRuby();
-extern s32 fn_800FAEF8(s32, s32, s32, const char*, ...);
+extern void fn_800FAEF8(s32, s32, u32, const char*, ...);
 extern s32 fn_800FB43C();
 extern s32 fn_800FB680();
 extern s32 fn_800FB8C8();
@@ -1443,141 +1443,163 @@ asm void fn_800FAEF8(void) {
 #include "src/game/gs_thread_fn_800FAEF8.inc"
 }
 #else
-#pragma peephole off
-s32 fn_800FAEF8(s32 arg0, s32 arg1, s32 arg2, const char* fmt, ...)
-{
-    typedef struct __va_list_struct {
-        u8  gpr;
-        u8  fpr;
-        u16 padding;
-        u32* overflow_arg_area;
-        u32* reg_save_area;
-    } GSMsgVaList;
-    u8* formatted;
-    u16* message;
-    u8* work;
-    u8* mgr;
-    u8* fontEntry;
-    u32 texture;
-    s32 i;
-    f64 rubyBias;
-    u16 *cursor;
-    u16 code;
-    u8 *fontNode;
-    u8 *fontInfo;
-    u32 glyphInfo;
-    GSMsgVaList args;
+#pragma fp_contract on
+void fn_800FAEF8(s32 x, s32 y, u32 color, const char* fmt, ...) {
+    typedef struct GSVaList {
+        u32 flags;
+        void* inputArgArea;
+        void* regSaveArea;
+    } GSVaList;
 
-    formatted = lbl_80401DE0 + 0x4D0;
-    message = (u16*)(lbl_80401DE0 + 0xD0);
-    work = lbl_80401DE0 + 0x5D0;
-    rubyBias = lbl_8047CD10;
+    extern u32 lbl_80478B08;
+    extern u8 lbl_80401DE0[];
+    extern u8 lbl_80314E08[];
+    extern u8 lbl_80314F98[];
+    extern void fn_800DE680(void* dst, s32 limit, const char* fmt, void* args);
+    extern void fn_80080ED8(void* dst);
+    extern void fn_800FE4D4(void);
+    extern void fn_800D9ED8(s32 arg);
+    extern void fn_800D88DC(s32 arg);
+    extern void fn_800D888C(u32 mask);
+    extern void fn_800D7820(void* tex);
+    extern void fn_800D85D4(s32 index, void* texture);
+    extern void* fn_800EF548(void* texture, s32 arg);
+    extern void fn_800EF504(void* texture);
+    extern void fn_800D6A00(s32 mode);
+    extern void fn_800D67BC(s32 mode);
+    extern void fn_800D61E4(s16 x, s16 y);
+    extern void fn_800D5CB8(s32 a, s32 b, s32 c, s32 d, u32 color);
+    extern void fn_800D6728(void);
+    extern void fn_800DC1D4(s32 arg);
+
+    u8* base;
+    u8* work;
+    u8* messageHead;
+    u8* codeEntry;
+    u8* fontInfo;
+    u8* glyph;
+    u16* stream;
+    u16 code;
+    u16 fontId;
+    u32 count;
+    u32 index;
+    u32 offset;
+    void* outNode;
+    s16 drawX0;
+    s16 drawY0;
+    s16 drawX1;
+    s16 drawY1;
+    f32 advance;
+    GSVaList args;
 
     __builtin_va_info(&args);
-    ((void (*)(char*, u32, const char*, void*))logVsnprintf_float)((char*)formatted, 0xFF, fmt, &args);
-    formatted[0xFF] = 0;
-    ((u32 (*)(u16*, const u8*))fn_80080ED8)(message, formatted);
+    base = lbl_80401DE0;
+    fn_800DE680(base + 0x4D0, 0xFF, fmt, &args);
+    *(u8*)(base + 0x5CF) = 0;
+    fn_80080ED8(base + 0x0D0);
 
+    work = base + 0x5D0;
     memset(work, 0, 0x68);
-    work[0] = 1;
-    *(f32*)(work + 0x60) = lbl_8047CD08;
-    *(f32*)(work + 0x64) = lbl_8047CD08;
-    *(s32*)(work + 0x24) = arg2;
-    *(u32*)(work + 0x28) = (u32)message;
-    *(u32*)(work + 0x2C) = (u32)message;
-    *(u32*)(work + 0x30) = (u32)message;
+    *(u8*)(work + 0x00) = 1;
+    *(u32*)(work + 0x24) = 0xFFFFFFFF;
+    *(u32*)(work + 0x28) = (u32)(base + 0x0D0);
+    *(u32*)(work + 0x2C) = (u32)(base + 0x0D0);
+    *(u32*)(work + 0x30) = (u32)(base + 0x0D0);
+    *(f32*)(work + 0x04) = (f32)x;
+    *(f32*)(work + 0x08) = (f32)y;
+    *(f32*)(work + 0x60) = 1.0f;
+    *(f32*)(work + 0x64) = 1.0f;
+    *(u32*)(work + 0x24) = color;
+    *(u8*)(work + 0x02) = 1;
     *(u16*)(work + 0x20) = 2;
-    work[2] = 1;
-    *(f32*)(work + 0x04) = (f32)arg0;
-    *(f32*)(work + 0x08) = (f32)arg1;
 
-    mgr = (u8*)lbl_80478B08;
-    fontEntry = NULL;
-    for (i = 0; i < *(u16*)(mgr + 4); i++) {
-        u8* entry = *(u8**)(mgr + 0x24) + i * 8;
-        if (*(u16*)entry == *(u16*)(work + 0x20)) {
-            work[0x22] = entry[2];
-            work[0x23] = entry[3];
-            if (*(u16*)(work + 0x20) == 0) {
-                work[0x42] = 0x0B;
-            } else if (*(u16*)(work + 0x20) == 1) {
-                work[0x42] = 6;
-            } else {
-                rubyBias = lbl_8047CD28;
-                work[0x42] = (s8)((lbl_8047CD20 * (f64)entry[3]) + lbl_8047CD18);
+    messageHead = (u8*)lbl_80478B08;
+    count = *(u16*)(messageHead + 4);
+    fontId = *(u16*)(work + 0x20);
+    offset = 0;
+    if ((s32)count > 0) {
+        do {
+            codeEntry = *(u8**)(messageHead + 0x24) + offset;
+            if (*(u16*)codeEntry == fontId) {
+                *(u8*)(work + 0x22) = codeEntry[2];
+                *(u8*)(work + 0x23) = codeEntry[3];
+                if (fontId == 0) {
+                    *(u8*)(work + 0x42) = 0xB;
+                } else if (fontId == 1) {
+                    *(u8*)(work + 0x42) = 6;
+                } else {
+                    *(s8*)(work + 0x42) = (s8)(s32)(lbl_8047CD20 * (f64)(u32)codeEntry[3] + lbl_8047CD18);
+                }
+                break;
             }
-            fontEntry = entry;
-            break;
-        }
+            offset += 8;
+            count--;
+        } while (count > 0);
     }
 
-    spriteSetEnv();
-    ((void (*)(s32))fn_800D9ED8)(1);
+    fn_800FE4D4();
+    fn_800D9ED8(1);
     fn_800D88DC(3);
     fn_800D888C(4);
     fn_800D7820(lbl_80314F98);
-
-    texture = *(u32*)(mgr + ((s8)mgr[0x1D] * 4) + 0x0C);
-    ((void (*)(s32, u32))fn_800D85D4)(0, texture);
-    *(u32*)(mgr + 0x14) = (u32)((void* (*)(void*, u8))GStextureLockImage)((void*)texture, 0);
-
+    messageHead = (u8*)lbl_80478B08;
+    fn_800D85D4(0, *(void**)(messageHead + 0x0C + ((s8)messageHead[0x1D] * 4)));
+    *(u32*)(messageHead + 0x14) = (u32)fn_800EF548(*(void**)(messageHead + 0x0C + ((s8)messageHead[0x1D] * 4)), 0);
     *(f32*)(work + 0x0C) = *(f32*)(work + 0x04);
     *(f32*)(work + 0x10) = *(f32*)(work + 0x08);
+
     for (;;) {
-        cursor = *(u16**)(work + 0x30);
-        code = *cursor;
+        stream = *(u16**)(work + 0x30);
+        code = *stream;
         if (code == 0) {
-            if ((s8)work[0x40] == 0) {
+            if ((s8)*(u8*)(work + 0x40) == 0) {
                 break;
             }
-            work[0x40]--;
-            *(u32*)(work + 0x30) = *(u32*)(work + 0x34 + (s8)work[0x40] * 4);
+            *(u8*)(work + 0x40) = (u8)(*(u8*)(work + 0x40) - 1);
+            *(u32*)(work + 0x30) = *(u32*)(work + 0x34 + ((s8)*(u8*)(work + 0x40) * 4));
             continue;
         }
-        *(u16**)(work + 0x30) = cursor + 1;
-        if (code == 0xA || code == 0xD) {
+
+        *(u32*)(work + 0x30) = (u32)(stream + 1);
+        if (code == 0x0A || code == 0x0D) {
             continue;
         }
         if (code == 0x20) {
-            *(f32*)(work + 0x14) = (f32)(work[0x22] >> 1) * *(f32*)(work + 0x60);
+            advance = (f32)(((u8)*(u8*)(work + 0x22)) >> 1) * *(f32*)(work + 0x60);
+            *(f32*)(work + 0x14) = advance;
         } else {
-            fontNode = NULL;
-            fontInfo = (u8*)_msgGetCodeInfo__FP13MSG_TASK_WORKUsPP12tagFONT_INFO(work, code, &fontNode);
-            if (fontInfo == NULL) {
-                s16 x0 = (s16)*(f32*)(work + 0x0C);
-                s16 y0 = (s16)*(f32*)(work + 0x10) + 2;
-                s16 x1 = (s16)((f32)work[0x22] * *(f32*)(work + 0x60)) + x0;
-                s16 y1 = (s16)((f32)work[0x23] * *(f32*)(work + 0x64)) + y0;
-
-                fn_800D888C(0x80000002);
+            glyph = (u8*)_msgGetCodeInfo__FP13MSG_TASK_WORKUsPP12tagFONT_INFO(work, code, &outNode);
+            if (glyph == NULL) {
+                drawX0 = (s16)*(f32*)(work + 0x0C);
+                drawY0 = (s16)((s16)*(f32*)(work + 0x10) + 2);
+                drawX1 = (s16)((f32)*(u8*)(work + 0x22) * *(f32*)(work + 0x60) + (f32)drawX0);
+                drawY1 = (s16)((f32)*(u8*)(work + 0x23) * *(f32*)(work + 0x64) + (f32)drawY0);
+                fn_800D888C(0x80000002u);
                 fn_800D6A00(7);
                 fn_800D7820(lbl_80314E08);
                 fn_800D67BC(2);
-                fn_800D61E4(x0, y0);
+                fn_800D61E4(drawX0, drawY0);
                 fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
-                fn_800D61E4(x1, y1);
+                fn_800D61E4(drawX1, drawY1);
                 fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
                 fn_800D6728();
-                fn_800D88DC(0x80000002);
+                fn_800D88DC(0x80000002u);
                 fn_800D7820(lbl_80314F98);
                 fn_800DC1D4(1);
-                *(f32*)(work + 0x14) = lbl_8047CD30 + (f32)work[0x22] * *(f32*)(work + 0x60);
+                *(f32*)(work + 0x14) = 2.0f + ((f32)*(u8*)(work + 0x22) * *(f32*)(work + 0x60));
             } else {
-                glyphInfo = *(u32*)(fontInfo + 4);
-                fn_800FD69C(work, (u32)fontNode + (*(s32*)(fontNode + 4) + (glyphInfo & 0xFFFFFF)),
-                             fontInfo[2], fontInfo[3], (s8)(glyphInfo >> 24));
-                *(f32*)(work + 0x14) = (f32)(s16)fontInfo[2] * *(f32*)(work + 0x60);
+                fontInfo = (u8*)outNode;
+                fn_800FD69C(work, fontInfo + *(u32*)(glyph + 4), glyph[2], glyph[3], (s8)(*(u32*)(glyph + 4) >> 24));
+                *(f32*)(work + 0x14) = (f32)(s16)glyph[2] * *(f32*)(work + 0x60);
             }
         }
+
         *(f32*)(work + 0x0C) += *(f32*)(work + 0x14);
     }
 
-    (void)fontEntry;
-    (void)rubyBias;
-    GStextureUnlockImage((void*)texture);
-    return 0;
+    messageHead = (u8*)lbl_80478B08;
+    fn_800EF504(*(void**)(messageHead + 0x0C + ((s8)messageHead[0x1D] * 4)));
 }
-
 #endif
 #pragma pop
 
