@@ -4393,7 +4393,7 @@ void psDispSub(PSParticle* pp, void* polygonData) {
     if (pp->flags & 0x00300000) {
         f32 angle = pp->heading;
 
-        if (pp->flags & 0x00200000) {
+        {
             f32* camera = (f32*)(lbl_80452DE8 + 0x30);
             f32 dx;
             f32 dy;
@@ -4468,7 +4468,9 @@ void psDispSub(PSParticle* pp, void* polygonData) {
 
                 angle = (f32)atan2(screenY - previousY, screenX - previousX);
             }
-            angle += pp->heading;
+            if (pp->flags & 0x00200000) {
+                angle += pp->heading;
+            }
         }
 
         if (angle > 0.000001f || angle < -0.000001f) {
