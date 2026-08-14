@@ -3642,17 +3642,18 @@ found_job0:
         job->index = ((PeopleOpenSlot*)slot)->floorParam;
         if (gPeopleOpenWork != NULL) {
             current = (PeopleJob*)gPeopleOpenWork;
-            foundTail0 = NULL;
             tailIndex0 = 0;
             while (tailIndex0 < *(volatile s32*)&lbl_8047B1E8) {
                 if (current->nextJob != NULL) {
                     current = current->nextJob;
                 } else {
                     foundTail0 = current;
-                    break;
+                    goto found_tail0;
                 }
                 tailIndex0++;
             }
+            foundTail0 = NULL;
+found_tail0:
             tailCopy0 = foundTail0;
             tail = tailCopy0;
             tail->nextJob = job;
@@ -3719,17 +3720,18 @@ found_job1:
         job->index = ((PeopleOpenSlot*)slot)->floorParam;
         if (gPeopleOpenWork != NULL) {
             current = (PeopleJob*)gPeopleOpenWork;
-            foundTail1 = NULL;
             tailIndex1 = 0;
             while (tailIndex1 < *(volatile s32*)&lbl_8047B1E8) {
                 if (current->nextJob != NULL) {
                     current = current->nextJob;
                 } else {
                     foundTail1 = current;
-                    break;
+                    goto found_tail1;
                 }
                 tailIndex1++;
             }
+            foundTail1 = NULL;
+found_tail1:
             tailCopy1 = foundTail1;
             tail = tailCopy1;
             tail->nextJob = job;
