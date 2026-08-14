@@ -62,7 +62,7 @@ u16 battleGridGetNumPokemonsForTrainer(u32 id) {
 void battleGridResetModelVisibilityFlags(void) {
     extern BattleGridGroupEntry lbl_80466DE8[];
     extern u8 lbl_8047B39A;
-    extern u8 lbl_8047B39C[8];
+    extern u8 lbl_8047B39C[12] __attribute__((section(".sdata")));
     extern void fn_801DA4E8(void*, u32);
     BattleGridGroupEntry* group = lbl_80466DE8;
     u16 i;
@@ -90,18 +90,46 @@ void battleGridResetModelVisibilityFlags(void) {
  * Address: 0x801C2BE0 | Size: 0x174
  */
 void battleGridHideModelsExcept(void* ctx) {
-    u8* state = (u8*)ctx;
-    if (state == NULL) {
-        return;
+    extern BattleGridGroupEntry lbl_80466DE8[];
+    extern u8 lbl_8047B39A;
+    extern u8 lbl_8047B39C[12] __attribute__((section(".sdata")));
+    extern u32 fn_801DA42C(void*);
+    extern void fn_801DA4E8(void*, u32);
+    BattleGridGroupEntry* group;
+    u16 visibilityIndex;
+    u16 i;
+    u16 j;
+
+    group = lbl_80466DE8;
+    visibilityIndex = 0;
+    if (lbl_8047B39A != 0) {
+        for (i = 0; i < 4; i++, group++) {
+            fn_801DA4E8(group->slot, lbl_8047B39C[visibilityIndex++]);
+            for (j = 0; j < 2; j++) {
+                fn_801DA4E8(group->pokemon[j],
+                            lbl_8047B39C[visibilityIndex++]);
+            }
+        }
+        lbl_8047B39A = 0;
     }
-    /* Finalize pre-grid setup:
-     * - Apply final slot positions
-     * - Set up rendering callbacks
-     * - Initialize camera for battle view
-     * - Mark grid as ready for battle
-     */
-    battleGridResetModelVisibilityFlags();
-    *(s32*)(state + 0x00) = 7; /* GRID_READY */
+
+    memset(lbl_8047B39C, 0, 8);
+    group = lbl_80466DE8;
+    visibilityIndex = 0;
+    for (i = 0; i < 4; i++, group++) {
+        lbl_8047B39C[visibilityIndex++] = (u8)fn_801DA42C(group->slot);
+        if (group->slot != ctx) {
+            fn_801DA4E8(group->slot, 0);
+        }
+        for (j = 0; j < 2; j++) {
+            lbl_8047B39C[visibilityIndex++] =
+                (u8)fn_801DA42C(group->pokemon[j]);
+            if (group->pokemon[j] != ctx) {
+                fn_801DA4E8(group->pokemon[j], 0);
+            }
+        }
+    }
+    lbl_8047B39A = 1;
 }
 
 /* =========================================================================
