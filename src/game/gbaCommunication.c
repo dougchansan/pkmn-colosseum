@@ -3237,6 +3237,7 @@ void fn_80096FA0(u8* menu)
     s32 action;
     s32 limit;
     u8 tabSelection;
+    s8 moveSelection;
     s32 selection;
     u32 pokemon;
     u16 valid;
@@ -3308,30 +3309,30 @@ void fn_80096FA0(u8* menu)
         case 3:
         case 4:
         case 7:
-            selection = lbl_803FB380[2];
+            moveSelection = lbl_803FB380[2];
             if (input & 1) {
-                selection--;
+                moveSelection--;
             } else if (input & 2) {
-                selection++;
+                moveSelection++;
             }
-            if ((s8)selection >= limit) {
-                selection = (s8)(limit - 1);
+            if (moveSelection >= limit) {
+                moveSelection = (s8)(limit - 1);
             }
-            if ((s8)selection < 0) {
-                selection = 0;
+            if (moveSelection < 0) {
+                moveSelection = 0;
             }
             pokemon = *(u32*)(lbl_803FB380 + 0x0C);
-            if ((u16)(s8)selection == 4) {
+            if ((u16)moveSelection == 4) {
                 valid = *(u16*)(lbl_803FB380 + 0x18);
             } else {
-                valid = fn_8012640C(pokemon, 0, 0x7F, (s8)selection);
-                if (fn_80123CD4(pokemon, (s8)selection) == 0) {
+                valid = fn_8012640C(pokemon, 0, 0x7F, moveSelection);
+                if (fn_80123CD4(pokemon, moveSelection) == 0) {
                     valid = 0;
                 }
             }
-            if (valid != 0 && (s8)selection != (s8)lbl_803FB380[2]) {
+            if (valid != 0 && moveSelection != (s8)lbl_803FB380[2]) {
                 fn_80103484(*(s32*)(menu + 4), 1);
-                lbl_803FB380[2] = selection;
+                lbl_803FB380[2] = moveSelection;
                 return;
             }
             break;
