@@ -3579,6 +3579,8 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
     PeopleJob* current;
     PeopleJob* tail;
     PeopleJob* volatile foundJob;
+    PeopleJob* volatile foundTail0;
+    PeopleJob* volatile foundTail1;
     volatile s32 activeCount0;
     volatile s32 activeCountStage0;
     volatile s32 activeCountCopy0;
@@ -3629,15 +3631,16 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
         job->index = ((PeopleOpenSlot*)slot)->floorParam;
         if (gPeopleOpenWork != NULL) {
             current = (PeopleJob*)gPeopleOpenWork;
-            tail = NULL;
+            foundTail0 = NULL;
             for (i = 0; i < *(volatile s32*)&lbl_8047B1E8; i++) {
                 if (current->nextJob != NULL) {
                     current = current->nextJob;
                 } else {
-                    tail = current;
+                    foundTail0 = current;
                     break;
                 }
             }
+            tail = foundTail0;
             tail->nextJob = job;
             job->active = 2;
             job->state = 0;
@@ -3696,15 +3699,16 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
         job->index = ((PeopleOpenSlot*)slot)->floorParam;
         if (gPeopleOpenWork != NULL) {
             current = (PeopleJob*)gPeopleOpenWork;
-            tail = NULL;
+            foundTail1 = NULL;
             for (i = 0; i < *(volatile s32*)&lbl_8047B1E8; i++) {
                 if (current->nextJob != NULL) {
                     current = current->nextJob;
                 } else {
-                    tail = current;
+                    foundTail1 = current;
                     break;
                 }
             }
+            tail = foundTail1;
             tail->nextJob = job;
             job->active = 2;
             job->state = 0;
