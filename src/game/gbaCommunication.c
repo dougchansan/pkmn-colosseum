@@ -3332,7 +3332,7 @@ void fn_80096FA0(u8* menu)
             }
             if (valid != 0 && moveSelection != (s8)lbl_803FB380[2]) {
                 fn_80103484(*(s32*)(menu + 4), 1);
-                lbl_803FB380[2] = moveSelection;
+                *(s8*)(lbl_803FB380 + 2) = moveSelection;
                 return;
             }
             break;
