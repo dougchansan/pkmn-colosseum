@@ -3583,6 +3583,7 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
     PeopleJob* job;
     PeopleJob* current;
     PeopleJob* tail;
+    PeopleJob* volatile foundJob;
     volatile s32 activeCount;
     s32 result;
     s32 i;
@@ -3590,16 +3591,18 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
     result = 0;
     if (mode == 0) {
         pool = (PeopleJobPool*)&lbl_8047B1E8;
+        foundJob = NULL;
         job = pool->base;
         for (i = 0; i < pool->count; i++) {
             if (job->active == 0) {
+                foundJob = job;
                 break;
             }
             job++;
         }
         if (i >= pool->count) {
             fn_80179F4C(1);
-            job = NULL;
+            foundJob = NULL;
         }
 
         activeCount = 0;
@@ -3609,6 +3612,7 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
             }
         }
 
+        job = foundJob;
         if (job == NULL) {
             goto done;
         }
@@ -3651,16 +3655,18 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
         }
     } else if (mode == 1) {
         pool = (PeopleJobPool*)&lbl_8047B1E8;
+        foundJob = NULL;
         job = pool->base;
         for (i = 0; i < pool->count; i++) {
             if (job->active == 0) {
+                foundJob = job;
                 break;
             }
             job++;
         }
         if (i >= pool->count) {
             fn_80179F4C(1);
-            job = NULL;
+            foundJob = NULL;
         }
 
         activeCount = 0;
@@ -3670,6 +3676,7 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
             }
         }
 
+        job = foundJob;
         if (job == NULL) {
             goto done;
         }
