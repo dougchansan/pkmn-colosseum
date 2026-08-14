@@ -1594,15 +1594,18 @@ void fn_801821B8(u32 groupId, u32 index)
         }
     }
 
-    model = peopleGetModel(entry);
-    if (model != NULL) {
-        while (!GSmodelHasAnimationEnded(model)) {
-            if (*(s32*)((u8*)model + 0x8C) == 1) {
-                GSlogWrite((const char*)lbl_80274008, lbl_8036C4F8,
-                           groupId, index);
-                break;
+    linked = peopleFindBySelf(peopleFindSelf(groupId, index));
+    if (linked != NULL) {
+        model = peopleGetModel(linked);
+        if (model != NULL) {
+            while (!GSmodelHasAnimationEnded(model)) {
+                if (*(s32*)((u8*)model + 0x8C) == 1) {
+                    GSlogWrite((const char*)lbl_80274008, lbl_8036C4F8,
+                               groupId, index);
+                    break;
+                }
+                _threadSwitch();
             }
-            _threadSwitch();
         }
     }
 
