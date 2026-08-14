@@ -3575,11 +3575,6 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
         void* taskParam;
         u8 pad_38[8];
     } PeopleJob;
-    typedef struct PeopleJobPool {
-        volatile s32 count;
-        PeopleJob* base;
-    } PeopleJobPool;
-    PeopleJobPool* pool;
     PeopleJob* job;
     PeopleJob* current;
     PeopleJob* tail;
@@ -3595,26 +3590,27 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
 
     result = 0;
     if (mode == 0) {
-        pool = (PeopleJobPool*)&lbl_8047B1E8;
         foundJob = NULL;
-        job = pool->base;
-        for (i = 0; i < pool->count; i++) {
+        job = *(PeopleJob**)((u8*)&lbl_8047B1E8 + 4);
+        for (i = 0; i < *(volatile s32*)&lbl_8047B1E8; i++) {
             if (job->active == 0) {
                 foundJob = job;
                 break;
             }
             job++;
         }
-        if (i >= pool->count) {
+        if (i >= *(volatile s32*)&lbl_8047B1E8) {
             fn_80179F4C(1);
             foundJob = NULL;
         }
 
         activeCount0 = 0;
-        for (i = 0; i < pool->count; i++) {
-            if (pool->base[i].active == 1) {
+        current = *(PeopleJob**)((u8*)&lbl_8047B1E8 + 4);
+        for (i = 0; i < *(volatile s32*)&lbl_8047B1E8; i++) {
+            if (current->active == 1) {
                 activeCount0++;
             }
+            current++;
         }
         activeCountStage0 = activeCount0;
         activeCountCopy0 = activeCountStage0;
@@ -3634,7 +3630,7 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
         if (gPeopleOpenWork != NULL) {
             current = (PeopleJob*)gPeopleOpenWork;
             tail = NULL;
-            for (i = 0; i < pool->count; i++) {
+            for (i = 0; i < *(volatile s32*)&lbl_8047B1E8; i++) {
                 if (current->nextJob != NULL) {
                     current = current->nextJob;
                 } else {
@@ -3661,26 +3657,27 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
             result = 1;
         }
     } else if (mode == 1) {
-        pool = (PeopleJobPool*)&lbl_8047B1E8;
         foundJob = NULL;
-        job = pool->base;
-        for (i = 0; i < pool->count; i++) {
+        job = *(PeopleJob**)((u8*)&lbl_8047B1E8 + 4);
+        for (i = 0; i < *(volatile s32*)&lbl_8047B1E8; i++) {
             if (job->active == 0) {
                 foundJob = job;
                 break;
             }
             job++;
         }
-        if (i >= pool->count) {
+        if (i >= *(volatile s32*)&lbl_8047B1E8) {
             fn_80179F4C(1);
             foundJob = NULL;
         }
 
         activeCount1 = 0;
-        for (i = 0; i < pool->count; i++) {
-            if (pool->base[i].active == 1) {
+        current = *(PeopleJob**)((u8*)&lbl_8047B1E8 + 4);
+        for (i = 0; i < *(volatile s32*)&lbl_8047B1E8; i++) {
+            if (current->active == 1) {
                 activeCount1++;
             }
+            current++;
         }
         activeCountStage1 = activeCount1;
         activeCountCopy1 = activeCountStage1;
@@ -3700,7 +3697,7 @@ s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
         if (gPeopleOpenWork != NULL) {
             current = (PeopleJob*)gPeopleOpenWork;
             tail = NULL;
-            for (i = 0; i < pool->count; i++) {
+            for (i = 0; i < *(volatile s32*)&lbl_8047B1E8; i++) {
                 if (current->nextJob != NULL) {
                     current = current->nextJob;
                 } else {
