@@ -1424,7 +1424,7 @@ void fn_80181EB0(u32 groupId, u32 index) {
 #endif
 
 /* 0x801821B8 | 0xE60 */
-extern u32 lbl_8047D7D8;
+extern f32 lbl_8047D7D8;
 extern f32 lbl_8047D7A0;
 extern f32 lbl_8047D7A4;
 extern u32 lbl_8047D7D0;
