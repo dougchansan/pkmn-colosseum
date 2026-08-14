@@ -418,9 +418,12 @@ void fn_8010D20C(void* model, ColMtx matrix, ColMtx normalMatrix)
         level = flags >> 4;
         color.channel.g =
             (u8)(127.0f * ((f32)level / 15.0f) + 128.0f);
-        if ((flags & 0xF) + 1 >= 16) {
-            color.channel.b = 0;
+        level = (flags & 0xF) + 1;
+        if (level >= 16) {
+            level = 0;
         }
+        color.channel.b =
+            (u8)(255.0f * ((f32)level / 15.0f));
 
         level = triangle[0x31] >> 4;
         if (level > 0) {
