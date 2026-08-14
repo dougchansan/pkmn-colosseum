@@ -72,7 +72,7 @@ void fn_8007CAB0(void);
 void fn_8007CB54(u32 arg);
 void fn_8007CBB4(void*, void*);
 void fn_8007D4FC(void* window, u8* param);
-void fn_8007D564(void);
+void fn_8007D564(void* window, void* param);
 void fn_8007D79C(void* window, u8* param);
 void fn_8007D89C(void* window, u8* param);
 void fn_8007D978(u32 r3);
@@ -1196,7 +1196,7 @@ void fn_8007D4FC(void* window, u8* param) {
 #pragma pop
 
 /* 0x8007D564 | size: 0x238 */
-void fn_8007D564(void) {
+void fn_8007D564(void* window, void* param) {
     u8 sp[0x20];
     u32 tmp = 0;
     u32 r3 = 0;
@@ -1205,12 +1205,13 @@ void fn_8007D564(void) {
     u32 r30 = 0;
     u32 r31 = 0;
 
+    r3 = (u32)window;
+    r4 = (u32)param;
     r30 = r4;
     if (r3 == 0) {
-        r3 = 0xa6;
-        ((void(*)(void))windowSearchID)();
+        r3 = (u32)((void* (*)(u32))windowSearchID)(0xa6);
     }
-    ((void(*)(void))windowGetFreeWork)();
+    r3 = (u32)((void* (*)(void*))windowGetFreeWork)((void*)r3);
     r3 = *(u32*)((u8*)r3 + 0x0);
     if (r3 == 0) return;
     tmp = *(s16*)((u8*)r30 + 0x6);
@@ -1332,9 +1333,8 @@ void fn_8007D564(void) {
         r3 = (s8)r31;
         tmp = (s8)tmp;
         if ((s32)r3 < (s32)tmp) {
-            r3 = r29;
-            r4 = r31;
-            ((void(*)(void))fn_80082FE4)();
+            r3 = (u32)((void* (*)(void*, s8))fn_80082FE4)(
+                (void*)r29, (s8)r31);
             tmp = 0xe4;
             r4 = r3;
             *(u32*)((u8*)r30 + 0x4C) = tmp;
