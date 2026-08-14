@@ -277,7 +277,7 @@ u32 fn_80089F58(u32 v);
 u32 fn_80089F60(u32 v);
 u32 fn_80089F68(u32 v);
 u32 fn_80089F70(u32 v);
-void fn_80089F78(u32 arg0, u32 arg1, u32 arg2, u32 arg3);
+u32 fn_80089F78(u32 arg0, u32 arg1, u32 arg2, u32 arg3);
 s32 fn_8008A99C(void);
 int gbaCommandEntryPokemon(u32 r3, u8* r4);
 s32 GbaMisc_GetEntryStatus(s32 idx, u32* out);
@@ -1027,7 +1027,7 @@ u32 fn_80089F70(u32 v) {
 }
 
 /* 0x80089F78 | size: 0xA24 */
-void fn_80089F78(u32 arg0, u32 arg1, u32 arg2, u32 arg3) {
+u32 fn_80089F78(u32 arg0, u32 arg1, u32 arg2, u32 arg3) {
     extern void gbaPokemonConditonFromGC();
     extern void pokemonBiosGetFightTrainerPokemonDataId();
     extern void pokemonBiosGetMailId();
@@ -1686,8 +1686,7 @@ void fn_80089F78(u32 arg0, u32 arg1, u32 arg2, u32 arg3) {
         if (tmp == 1) {
             r3 = r15;
             ((void(*)(void))fn_80072A00)();
-            r3 = 0x50000;
-            return;
+            return 0x50000;
         }
         r3 = 0x0;
         fightFloorIsUseFightTimerCommand();
@@ -1698,16 +1697,14 @@ void fn_80089F78(u32 arg0, u32 arg1, u32 arg2, u32 arg3) {
             if (tmp == 1) {
                 r3 = r15;
                 ((void(*)(void))fn_80072A00)();
-                r3 = 0x40000;
-                return;
+                return 0x40000;
         }
         }
         r3 = r15;
         r4 = (u32)sp + 0x14;
         ((void(*)(void))fn_80072C74)();
         if ((s32)r3 > 0) {
-            r3 = r3 | (0x5 << 16);
-            return;
+            return r3 | (0x5 << 16);
         }
         if ((s32)r3 == 0) {
             tmp = r5 & 0x0000FF00;
@@ -1718,13 +1715,12 @@ void fn_80089F78(u32 arg0, u32 arg1, u32 arg2, u32 arg3) {
             r4 = (u32)r4 >> 8;
             tmp = r3 | tmp;
             tmp = r4 | tmp;
-            r3 = r5 | tmp;
-            return;
+            return r5 | tmp;
         }
         ((void(*)(void))_threadSwitch)();
     } while (1);
 
-    return;
+    return 0;
 }
 
 /* 0x8008A99C | size: 0x10 */

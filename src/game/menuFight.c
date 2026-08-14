@@ -90,7 +90,7 @@ u8 fn_8000DAA8(void) {
  * ========================================================================= */
 
 /* 0x800111C4 | 0x24 -- small accessor */
-extern void fn_80089F78(u32, u32, u32, u32);
+extern u32 fn_80089F78(u32, u32, u32, u32);
 #if 0
 asm void menuFightOpenGBAMain(void) {
 #include "src/game/gs_npc_interact_fn_800111C4.inc"
