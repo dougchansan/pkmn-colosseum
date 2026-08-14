@@ -3342,42 +3342,33 @@ void fn_80096FA0(u8* menu)
             column = (s8)lbl_803FB380[0x1A] % 9;
             if (input & 1) {
                 scan = row;
-            scan_up:
-                if (scan-- > 0) {
+                while (scan-- > 0) {
                     inner = column;
                     cell = lbl_803FB380 + scan + column * 4;
-                scan_up_row:
-                    if ((s8)cell[0x20] >= 0) {
-                        row = scan;
-                        column = inner;
-                        scan = -1;
-                    } else {
-                        cell -= 4;
-                        if (inner-- > 0) {
-                            goto scan_up_row;
+                    do {
+                        if ((s8)cell[0x20] >= 0) {
+                            row = scan;
+                            column = inner;
+                            scan = -1;
+                            break;
                         }
-                    }
-                    goto scan_up;
+                        cell -= 4;
+                    } while (inner-- > 0);
                 }
             } else if (input & 2) {
                 scan = row;
-            scan_down:
-                scan++;
-                if (scan < 4) {
+                while (++scan < 4) {
                     inner = column;
                     cell = lbl_803FB380 + scan + column * 4;
-                scan_down_row:
-                    if ((s8)cell[0x20] >= 0) {
-                        row = scan;
-                        column = inner;
-                        scan = 5;
-                    } else {
-                        cell -= 4;
-                        if (inner-- > 0) {
-                            goto scan_down_row;
+                    do {
+                        if ((s8)cell[0x20] >= 0) {
+                            row = scan;
+                            column = inner;
+                            scan = 5;
+                            break;
                         }
-                    }
-                    goto scan_down;
+                        cell -= 4;
+                    } while (inner-- > 0);
                 }
             } else if (input & 8) {
                 previous = column;
