@@ -2,7 +2,27 @@
 #define SDK_800BC618_SUFFIX_ACTIVE
 #include "src/dolphin/sdk_range_800BB30C.c"
 
-extern f32 sqrtf(f32 value);
+extern const f32 lbl_8047C388;
+extern const f64 lbl_8047C3A8;
+extern const f64 lbl_8047C3C8;
+extern f64 __frsqrte(f64 value);
+
+static inline f32 GXInitFogAdjSqrt(f32 value)
+{
+    f64 estimate;
+
+    if (value > lbl_8047C388) {
+        estimate = __frsqrte(value);
+        estimate = lbl_8047C3A8 * estimate *
+                   (lbl_8047C3C8 - value * (estimate * estimate));
+        estimate = lbl_8047C3A8 * estimate *
+                   (lbl_8047C3C8 - value * (estimate * estimate));
+        estimate = lbl_8047C3A8 * estimate *
+                   (lbl_8047C3C8 - value * (estimate * estimate));
+        return (f32)(value * estimate);
+    }
+    return value;
+}
 
 void fn_800BC8F8(u32 type, GXColor_800BC2F8 color, f32 startz, f32 endz,
                  f32 nearz, f32 farz)
@@ -120,7 +140,7 @@ void fn_800BCB14(GXFogAdjTable_800BCCDC* table, u16 width,
         xi = (i + 1) << 5;
         xi *= iw;
         xi *= sideX;
-        range = sqrtf(1.0f + (xi * xi) / (nearZ * nearZ));
+        range = GXInitFogAdjSqrt(1.0f + (xi * xi) / (nearZ * nearZ));
         table->r[i] = (u32) (256.0f * range) & 0xFFF;
     }
 }
