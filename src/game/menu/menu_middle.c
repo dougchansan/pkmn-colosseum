@@ -2824,7 +2824,7 @@ void fn_8006C164(void* menu) {
     r3 = (u32)windowGetParam((void*)r3, (s32)r4);
     r31 = r3;
     r3 = MENU_MIDDLE_U32_0004(r24)->unk_0004;
-    ((void(*)(void))menuGetCursorItemID)();
+    r3 = (u32)menuGetCursorItemID((s32)r3);
     r0 = r28 & 0xFF;
     r5 = 0x0;
     if (r0 != (u32)0x0) {
@@ -2835,7 +2835,7 @@ void fn_8006C164(void* menu) {
             r5 = 0x1;
         }
     }
-    /* subi r0, r3, 0x9e2 */;
+    r0 = r3 - 0x9e2;
     if (r0 <= (u32)0x8) {
         r4 = (u32)jumptable_802EDEFC;
         r0 = r0 << 2;
@@ -2907,7 +2907,7 @@ void fn_8006C164(void* menu) {
         MENU_MIDDLE_U16_0004(r31)->unk_0004 = r0;
         return;
     }
-    /* subi r0, r3, 0x9ca */;
+    r0 = r3 - 0x9ca;
     r3 = MENU_MIDDLE_U16_0094(r24)->unk_0094;
     *(u16*)(sp + 0x14) = r3;
     if (r0 <= (u32)0x20) {
