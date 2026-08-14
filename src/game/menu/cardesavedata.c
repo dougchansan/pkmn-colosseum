@@ -2821,7 +2821,8 @@ void fn_80084A8C(void) {
         r3 = 0x0;
         return;
     L_80085B40:
-        /* extrwi tmp, r3, 2, 22 */;
+        r3 = *(u32*)(sp + 0x18);
+        tmp = (r3 >> 8) & 0x3;
         if (tmp != 0) {
             r20 = 0x0;
         L_80085B54:
