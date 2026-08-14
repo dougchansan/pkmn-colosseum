@@ -3024,6 +3024,11 @@ void fn_800965C8(void* window, u8* sprite) {
                 disp = 1;
             }
             break;
+        case 1:
+        case 6:
+        case 7:
+        default:
+            break;
         }
         winSpriteSetDisp(sprite, disp);
         break;
@@ -3046,6 +3051,11 @@ void fn_800965C8(void* window, u8* sprite) {
             break;
         case 4:
             msg = 0x2BD0;
+            break;
+        case 1:
+        case 6:
+        case 7:
+        default:
             break;
         }
         if (msg != 0) {
