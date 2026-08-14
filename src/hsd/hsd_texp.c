@@ -3277,24 +3277,50 @@ s32 fn_801B9320(ColTExpNode* tev)
             tev->a_op <= 1)
         {
             if ((tev->c_op == 0 || tev->c_op == 1) &&
-                tev->c_in[2].sel == COL_TE_0 &&
-                HSD_TExpGetType((u8*) tev->c_in[0].exp) != COL_TE_CNST &&
-                HSD_TExpGetType((u8*) tev->c_in[3].exp) != COL_TE_CNST)
+                tev->c_in[2].sel == COL_TE_0)
             {
-                if (tev->c_op == 0 && tev->c_in[3].type == COL_TE_TEV &&
-                    ((tev->c_in[3].sel == COL_TE_RGB &&
-                      tev->c_in[3].exp->c_clamp != 0) ||
-                     (tev->c_in[3].sel == COL_TE_A &&
-                      tev->c_in[3].exp->a_clamp != 0)))
+                if (tev->c_in[0].type == COL_TE_TEV &&
+                    (tev->c_in[0].sel == COL_TE_RGB ||
+                     tev->c_in[0].sel == COL_TE_A))
                 {
-                    type = tev->c_in[0].type;
-                    switch (type) {
-                    case COL_TE_TEX:
-                    case COL_TE_RAS:
-                        tmp_arg = tev->c_in[0];
-                        tev->c_in[0] = tev->c_in[3];
-                        tev->c_in[3] = tmp_arg;
-                        break;
+                    child = tev->c_in[0].exp;
+                    child_sel = tev->c_in[0].sel;
+                    if (child->c_op == 0 &&
+                        child->c_in[3].sel == COL_TE_0)
+                    {
+                        if (tev->tex != NULL && child->tex != NULL &&
+                            tev->tex != child->tex)
+                        {
+                            conflict = 1;
+                        } else if (tev->chan != 0xFF &&
+                                   child->chan != 0xFF &&
+                                   tev->chan != child->chan)
+                        {
+                            conflict = 1;
+                        } else {
+                            conflict = 0;
+                        }
+
+                        if (conflict == 0 &&
+                            !((tev->c_in[0].type == COL_TE_CNST ||
+                               tev->c_in[1].type == COL_TE_CNST ||
+                               tev->c_in[2].type == COL_TE_CNST ||
+                               tev->c_in[3].type == COL_TE_CNST) &&
+                              (child->c_in[0].type == COL_TE_CNST ||
+                               child->c_in[1].type == COL_TE_CNST ||
+                               child->c_in[2].type == COL_TE_CNST ||
+                               child->c_in[3].type == COL_TE_CNST)) &&
+                            ((child_sel == COL_TE_RGB &&
+                              (child->c_range == 0 ||
+                               child->c_clamp == 1)) ||
+                             (child_sel == COL_TE_A &&
+                              (child->a_range == 0 ||
+                               child->a_clamp == 1))))
+                        {
+                            tmp_arg = tev->c_in[0];
+                            tev->c_in[0] = tev->c_in[3];
+                            tev->c_in[3] = tmp_arg;
+                        }
                     }
                 }
 
