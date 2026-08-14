@@ -5053,11 +5053,13 @@ void fn_8006E338(void* obj) {
             }
             ((void(*)(void))menuSpriteBiosGetPtr)();
             r0 = r3;
+            r3 = *(u32*)((u32)sp + 0x54);
             r4 = r0;
             ((void(*)(void))fn_80071318)();
             r3 = MENU_MIDDLE_U16_0000(r27)->unk_0000;
             ((void(*)(void))menuSpriteBiosGetPtr)();
             r4 = r3;
+            r3 = *(u32*)((u32)sp + 0x58);
             ((void(*)(void))fn_80071318)();
             r6 = *(u32*)((u32)sp + 0x44);
             r3 = 0x0;
@@ -5141,6 +5143,7 @@ void fn_8006E338(void* obj) {
 
                 r0 = 0x3f3f;
             }
+            r3 = *(u32*)((u32)sp + 0x34);
             MENU_MIDDLE_U32_004C(r3)->unk_004C = r0;
             if (r21 != (u32)0x0) {
                 r0 = 0x0;
@@ -5149,12 +5152,16 @@ void fn_8006E338(void* obj) {
                 r0 = 0x3f40;
             }
             r4 = r29 & 0xFF;
+            r5 = *(u32*)((u32)sp + 0x30);
             MENU_MIDDLE_U32_004C(r5)->unk_004C = r0;
+            r3 = *(u32*)((u32)sp + 0x14);
             winSpriteSetDisp();
             r0 = __cntlzw(r21);
             r23 = (u32)r0 >> 5;
+            r3 = *(u32*)((u32)sp + 0x2C);
             r4 = r23 & 0xFF;
             winSpriteSetDisp();
+            r3 = *(u32*)((u32)sp + 0x28);
             r4 = r23 & 0xFF;
             winSpriteSetDisp();
             r0 = 0x0;
@@ -5162,6 +5169,7 @@ void fn_8006E338(void* obj) {
 
                 r0 = 0x1;
             }
+            r3 = *(u32*)((u32)sp + 0x40);
             r4 = r0 & 0xFF;
             winSpriteSetDisp();
 
