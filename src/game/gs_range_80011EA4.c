@@ -431,8 +431,7 @@ L_800123CC:
             *(u32*)(sp + 0x34) = tmp;
             f0 = f0 / f1;
             f2 = f2 - f3;
-            /* cror eq, lt, eq */;
-            if (f2 == f0) {
+            if (f2 <= f0) {
                 r31 = 0x80000000;
                 break;
             }
@@ -441,8 +440,7 @@ L_800123CC:
             f0 = f0 * f30;
             f0 = f0 / f1;
             f1 = f1 - f3;
-            /* cror eq, lt, eq */;
-            if (f1 == f0) {
+            if (f1 <= f0) {
                 r31 = 0x64640000;
                 break;
             }
@@ -488,9 +486,8 @@ L_800123CC:
         fn_800D6728();
     }
     f0 = lbl_8047B718;
-    /* cror eq, lt, eq */;
     do {
-        if (f31 == f0) {
+        if (f31 <= f0) {
             r9 = 0x0;
             break;
         }
@@ -498,16 +495,14 @@ L_800123CC:
         f1 = lbl_8047B71C;
         f0 = f0 * f30;
         f0 = f0 / f1;
-        /* cror eq, lt, eq */;
-        if (f31 == f0) {
+        if (f31 <= f0) {
             r9 = 0x1ad;
             break;
         }
         f0 = lbl_8047B728;
         f0 = f0 * f30;
         f0 = f0 / f1;
-        /* cror eq, lt, eq */;
-        if (f31 == f0) {
+        if (f31 <= f0) {
             r9 = 0x1b0;
             break;
         }
