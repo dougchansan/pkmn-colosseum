@@ -4478,6 +4478,7 @@ void fn_80189990(u32 groupId, u32 index, s32 messageId) {
     u32 hearFlag;
     u32 nameMessageId;
     s32 messageValue;
+    u8 talkable;
 
     messageValue = 0;
     entry = peopleFindBySelf(peopleFindSelf(groupId, index));
@@ -4533,10 +4534,12 @@ void fn_80189990(u32 groupId, u32 index, s32 messageId) {
             fn_80188F78(groupId, index);
             stateEntry = peopleFindBySelf(peopleFindSelf(groupId, index));
             if (stateEntry != NULL) {
-                entry->isTalkable =
-                    peopleTestFlags(stateEntry, PEOPLE_FLAG_TALKABLE);
+                talkable = peopleTestFlags(stateEntry, PEOPLE_FLAG_TALKABLE);
                 peopleSetFlags(stateEntry, PEOPLE_FLAG_TALKABLE);
+            } else {
+                talkable = 0;
             }
+            entry->isTalkable = talkable;
             fn_80188984(groupId, index, 1);
         }
 
