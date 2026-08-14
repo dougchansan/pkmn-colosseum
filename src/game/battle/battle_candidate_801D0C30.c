@@ -12,6 +12,9 @@ void fn_801D0DB0(s32 peopleGroup, s32 peopleId)
     extern void* fn_800F92D4(u32 id);
     extern void* fn_8018D998(s32 group, s32 id);
     extern void* peopleSearchID(void*);
+    extern void* peopleGetPosition(void* person);
+    extern void* fn_8018FCBC(void* person);
+    extern void fn_800E0168(void* dst, const void* a, const void* b);
     extern void peopleMoveCheck(s32 group, s32 id, s32 wait);
     extern void fn_8018A280(s32 group, s32 id, s32 wait);
     extern void GSmodelSetAnimIndex(void* model, s32 index);
@@ -56,6 +59,8 @@ void fn_801D0DB0(s32 peopleGroup, s32 peopleId)
     u32* partTable;
     u16* animTable;
     f32 pos[3];
+    f32 personPosition[3];
+    f32 delta[3];
     f32 scale[3];
     u32 color;
     void* personPos;
@@ -92,17 +97,14 @@ void fn_801D0DB0(s32 peopleGroup, s32 peopleId)
 
         fn_800EE3BC(part, pos, 0, 0);
         fn_800EE828(part);
-        personPos = peopleSearchID(fn_8018D998(peopleGroup, peopleId));
-        if (personPos != NULL) {
-            void* vec = (void*)fn_8018FC50((s32)personPos);
-            ((u32*)pos)[0] = ((u32*)vec)[0];
-            ((u32*)pos)[1] = ((u32*)vec)[1];
-            ((u32*)pos)[2] = ((u32*)vec)[2];
-            fn_8018805C(peopleGroup, peopleId,
-                        (f32)fn_800CE2D8(*(f32*)&((u8*)vec)[0],
-                                         *(f32*)&((u8*)vec)[8]),
-                        lbl_8047E18C);
-        }
+        personPos = peopleGetPosition(person);
+        ((u32*)personPosition)[0] = ((u32*)personPos)[0];
+        ((u32*)personPosition)[1] = ((u32*)personPos)[1];
+        ((u32*)personPosition)[2] = ((u32*)personPos)[2];
+        fn_800E0168(delta, pos, fn_8018FCBC(person));
+        fn_8018805C(peopleGroup, peopleId,
+                    (f32)fn_800CE2D8(delta[0], delta[2]),
+                    lbl_8047E18C);
         state = 1;
     } else {
         state = 3;
@@ -194,7 +196,7 @@ void fn_801D0DB0(s32 peopleGroup, s32 peopleId)
         case 8:
             if (hadPerson != 0) {
                 peopleSearchID(fn_8018D998(peopleGroup, peopleId));
-                fn_8018805C(peopleGroup, peopleId, *(f32*)&((u8*)pos)[4],
+                fn_8018805C(peopleGroup, peopleId, personPosition[1],
                             lbl_8047E18C);
                 state = 2;
             } else {
