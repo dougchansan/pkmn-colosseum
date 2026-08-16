@@ -504,6 +504,8 @@ void fn_80034FB0(void) {
 }
 
 /* fn_80035C48 - 0x80035C48 | size: 0x128 */
+#pragma push
+#pragma peephole off
 void fn_80035C48(void) {
     extern u8 lbl_803A3288[];
     extern u32 lbl_8047A430;
@@ -517,12 +519,12 @@ void fn_80035C48(void) {
     extern u32 lbl_8047A458;
     extern void* fn_80083AF4(s32, s32);
     extern s32 fn_80083BF8(s32);
-    extern u32 fn_800FA280(u32);
+    extern u32 GSmsgGetGSchar(u32);
     extern u32 fn_80113F48(void);
-    extern u8* fn_80129280(s32, s32);
+    extern u8* savedataGetStatus(s32, s32);
     extern u32 fn_801653C4(void);
     extern void fn_80165A20(u32, s32, s32);
-    extern void fn_80176E0C(u32, u32, s32, s32);
+    extern void cameraPlayAnime(u32, u32, s32, s32);
     extern void GScharLenCpy(void*, u32, s32);
     u8* work;
     u32 soundId;
@@ -534,7 +536,7 @@ void fn_80035C48(void) {
         } else {
             lbl_8047A458 = 1;
         }
-        fn_80176E0C(fn_80113F48(), 0x11171800, 0, 0);
+        cameraPlayAnime(fn_80113F48(), 0x11171800, 0, 0);
         if (lbl_8047A439 != 0) {
             soundId = 0x446;
         } else {
@@ -546,9 +548,9 @@ void fn_80035C48(void) {
         lbl_8047A454 = 0;
         lbl_8047A449 = 0;
         lbl_8047A444 = 0x21;
-        GScharLenCpy(lbl_803A3288, fn_800FA280(0x3CD1), 0x50);
+        GScharLenCpy(lbl_803A3288, GSmsgGetGSchar(0x3CD1), 0x50);
         *(u16*)(lbl_803A3288 + 0x9E) = 0;
-        work = fn_80129280(0, 0xD);
+        work = savedataGetStatus(0, 0xD);
         lbl_8047A430 = (u32)work;
         resetFlag = lbl_8047A440;
         lbl_8047A44C = *(u32*)(work + 0x49C8);
@@ -560,6 +562,7 @@ void fn_80035C48(void) {
         }
     }
 }
+#pragma pop
 
 /* fn_80035D70 - 0x80035D70 | size: 0x30 */
 #pragma push
