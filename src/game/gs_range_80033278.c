@@ -563,17 +563,18 @@ void fn_80035C48(void) {
 
 /* fn_80035D70 - 0x80035D70 | size: 0x30 */
 #pragma push
-#pragma scheduling off
-#pragma optimize_for_size on
+#pragma peephole off
 void fn_80035D70(void) {
     extern void fn_800FF730(u32);
     extern void _threadSwitch(void);
-    extern volatile u8 lbl_8047A439;
+    extern u8 lbl_8047A439;
+    u32 flag;
 
-    fn_800FF730((lbl_8047A439 = 1, 0x393));
+    flag = 1;
+    lbl_8047A439 = flag;
+    fn_800FF730(0x393);
     _threadSwitch();
 }
-#pragma optimize_for_size reset
 #pragma pop
 
 /* fn_80035DA0 - 0x80035DA0 | size: 0x34 */
