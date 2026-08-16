@@ -489,13 +489,14 @@ void fn_80034EF0(u8* arg0, u8* arg1) {
     extern void msgctrlSetValue(s32, s32);
     extern void fn_800FBB34(s32, s32, s32, s32, u32, u16);
     s32 mask;
+    u32 byte;
     s32 value;
     s32 status;
     s16 position;
 
-    value = arg0[0x8B];
+    byte = arg0[0x8B];
     mask = -0x100;
-    value |= mask;
+    value = byte | mask;
     fn_800FB680(0, 0, value, 0x3CC6);
     status = heroGetStatus(0, 0xD, 0);
     msgctrlSetValue(0x34, status);
