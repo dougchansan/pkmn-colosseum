@@ -28,6 +28,90 @@ extern u8 lbl_803F7A30[];
 extern const f32 lbl_8047B9F8;
 extern const f32 lbl_8047BA28;
 
+extern u8 lbl_803A3278[];
+
+extern u8 lbl_8047A439;
+extern void* lbl_8047A434;
+extern u32 lbl_8047A444;
+extern s8 lbl_8047A448;
+
+extern f32 lbl_8047BA18;
+
+extern char lbl_80266FAC[];
+extern char lbl_80266FB8[];
+extern char lbl_8047BA20[];
+
+extern void fn_8007C764(s32);
+extern void fn_8007C7A8(s32);
+
+extern s32 menuOpen(s32, s32);
+extern void menuClose(s32);
+extern s32 menuOpenCustom(s32, s32, s32, s32, s32, s32, ...);
+
+extern s32 fn_80034280(void);
+
+extern void GScharCpy(void*, const void*);
+extern void* fightFloorDataBiosGetPtr(u16);
+extern void* fightFloorDataBiosGetName(void*);
+extern void* GSmsgGetGSchar(void*);
+
+extern void fn_8007CB54(void*);
+
+/*
+ * The repository elsewhere declares this as two fixed 32-bit arguments.
+ * Keeping it non-variadic is important on PPC because variadic calls affect
+ * the generated CR setup.
+ */
+extern void msgctrlSetValue(u32, u32);
+
+extern void winMsgOpen(s32, u32, s32, s32);
+extern void winMsgClose(s32);
+
+extern void __assert(const char*, s32, const char*);
+
+extern void fn_8007CAB0(void);
+extern void* fn_800836AC(s32, void*, s32);
+extern void fn_8007C7EC(void);
+
+extern u8* fn_80082EA4(void*, s32, s32, s32);
+extern u8* fn_80082FE4(void*, s32);
+
+extern void fn_8007C450(s32, s32, s32, s32, s32);
+extern void fn_8007C414(void);
+
+extern void fn_80082CF0(void*, void*, s32);
+extern void fn_80082BA4(void*, void*, s32);
+extern void fn_80082960(void*, void*, s32);
+
+extern void fn_80166A28(u32);
+
+extern void _threadSwitch(void);
+extern s32 fn_800D37CC(void);
+extern u32 fn_800D3088(void);
+
+extern void fn_801D0AFC(s32);
+extern void* savedataGetStatus(s32, s32);
+extern void* heroBiosGetPokemonPtr(void*, u8);
+extern void pokemonBiosSetItemDataId(void*, u16);
+
+extern u32 fn_80032ED8(void*, s32, s32);
+extern s32 windowGetActiveID(void);
+
+extern void fn_8007C300(s32, s32);
+
+extern u8 fn_80082738(void*, void*, s32);
+extern void fn_8007C634(void);
+extern void fn_80082650(void*);
+
+extern void fn_80166AB8(s32, s32, s32);
+extern void heroAddPokecoupon(s32, s32);
+
+extern s32 heroItemAddItemDataId(s32, u16, s32, s32);
+extern u16 pcboxDelItem(s32, u16, s32);
+
+extern void fn_80165668(s32, s32, s32);
+extern void fn_800832C8(s32, void*, s32);
+
 #pragma push
 #pragma peephole off
 static void sysvarsWaitForTransfer(void)
@@ -39,6 +123,773 @@ static void sysvarsWaitForTransfer(void)
         _threadSwitch();
         progress += (f32)fn_800D3088() / (f32)fn_800D37CC();
     }
+}
+
+s32 _sysvarsProcessData__FP16sysvarsFuncEntryPc(
+    void* unusedEntry,
+    char* unusedText)
+{
+    extern u8 lbl_8047BA1C;
+    u8* base;
+    u8* name;
+    u16* partyItems;
+    u8* sv;
+
+    s32 state;
+    s32 action;
+    s32 secondary;
+    s32 empty;
+    s32 i;
+    s32 j;
+    s32 slot;
+    s32 region;
+    s32 menuResult;
+    s32 choice;
+
+    u8 valid;
+    u8* ptr;
+
+    u16 item;
+    u32 message;
+
+    (void)unusedEntry;
+    (void)unusedText;
+
+    base = lbl_803A3278;
+
+    name = base + 0x10;
+    partyItems = (u16*)(base + 0xB0);
+    sv = base + 0xBC;
+
+    /*
+     * Original:
+     *   fn_8007C764(lbl_8047A439 == 0);
+     *   fn_8007C7A8(1);
+     *   menuOpen(0xA6, 1);
+     */
+    fn_8007C764(lbl_8047A439 == 0);
+
+    fn_8007C7A8(1);
+    state = menuOpen(0xA6, 1);
+    fn_8007C7A8(0);
+
+    if (state != 0) {
+        return 1;
+    }
+
+    if (lbl_8047A439 != 0) {
+        return 2;
+    }
+
+restart:
+
+    state = fn_80034280();
+
+    if (state == 0) {
+        return 0;
+    }
+
+    if (state == 1) {
+        return 2;
+    }
+
+    /*
+     * sv[0..3] is a state/mode field.
+     */
+    if (*(s32*)sv == 1) {
+        lbl_8047A444 = *(u32*)(sv + 0xAFC);
+
+        if (*(u16*)(sv + 0xB00) != 0) {
+            GScharCpy(name, sv + 0xB00);
+        } else {
+            ptr = fightFloorDataBiosGetPtr((u16)lbl_8047A444);
+
+            if (ptr != NULL) {
+                ptr = fightFloorDataBiosGetName(ptr);
+                ptr = GSmsgGetGSchar(ptr);
+                GScharCpy(name, ptr);
+            } else {
+                GScharCpy(name, &lbl_8047BA1C);
+            }
+        }
+
+        fn_8007CB54(name);
+
+        msgctrlSetValue(0x4D, (u32)name);
+
+        winMsgOpen(8, 0x3B55, 1, 0);
+        winMsgClose(1);
+
+        return 2;
+    }
+
+    if (*(s32*)sv != 0) {
+        __assert(lbl_80266FAC, 0x6C8, lbl_80266FB8);
+    }
+
+    fn_8007CAB0();
+
+    lbl_8047A434 = fn_800836AC(0, sv, 1);
+
+    fn_8007C7EC();
+
+    if (lbl_8047A434 == NULL) {
+        __assert(lbl_80266FAC, 0x6DB, lbl_8047BA20);
+
+        winMsgOpen(8, 0x3B91, 1, 0);
+
+        return 0;
+    }
+
+    /*
+     * Determine which path is currently possible.
+     *
+     * 2 = failure/message path
+     * 3 = alternate availability path
+     * 4 = normal path
+     */
+    action = 4;
+
+    slot = (s8)(sv[0x58] - 1);
+
+    ptr = fn_80082EA4(
+        lbl_8047A434,
+        slot,
+        sv[0x24],
+        sv[0x26]);
+
+    if (ptr[0x0C] != 0) {
+        action = 2;
+    } else {
+        secondary = 4;
+        empty = -1;
+
+        i = 0;
+
+        while (i < (s8)sv[0x58]) {
+            ptr = fn_80082EA4(
+                lbl_8047A434,
+                (s8)i,
+                sv[0x24],
+                sv[0x26]);
+
+            if (ptr[0x0C] == 0) {
+                empty = i;
+                break;
+            }
+
+            i++;
+        }
+
+        switch (empty) {
+        case -1:
+            secondary = 2;
+            break;
+
+        case 1:
+        case 2:
+            j = 0;
+
+            while ((s8)j < empty) {
+                region = (s8)sv[0x24];
+
+                /*
+                 * The target assembly literally contains a self-compare
+                 * here (cmpw r21,r21). Preserve this odd shape initially;
+                 * it may be the result of an optimized source condition.
+                 */
+                if (region == region &&
+                    (s8)sv[0x5E + j] < 0) {
+                    valid = 0;
+                } else {
+                    ptr = fn_80082FE4(lbl_8047A434, j);
+
+                    if (ptr[0x1C + region * 0x0E] != 0) {
+                        valid = 0;
+                    } else {
+                        valid = 1;
+                    }
+                }
+
+                if (valid != 0) {
+                    secondary = 3;
+                    break;
+                }
+
+                j++;
+            }
+
+            break;
+        }
+
+        if (secondary != 4) {
+            action = secondary;
+        }
+    }
+
+    /*
+     * Alternate availability/error path.
+     */
+    if (action == 3) {
+        slot = 0;
+
+        while ((s8)slot < (s8)sv[0x58]) {
+            region = (s8)sv[0x24];
+
+            /*
+             * The second instance also compiles to a self-compare in
+             * the original assembly.
+             */
+            if (region == region &&
+                (s8)sv[0x5E + slot] < 0) {
+                valid = 0;
+            } else {
+                ptr = fn_80082FE4(lbl_8047A434, slot);
+
+                if (ptr[0x1C + region * 0x0E] != 0) {
+                    valid = 0;
+                } else {
+                    valid = 1;
+                }
+            }
+
+            if (valid != 0) {
+                break;
+            }
+
+            slot++;
+        }
+
+        /*
+         * Message chosen from the byte at lbl_8047A434 +
+         * 0x1E + region.
+         *
+         * The assembly contains a real 8-entry jump table here.
+         */
+        switch (((u8*)lbl_8047A434)[
+            0x1E + (s8)sv[0x24]]) {
+        case 0:
+            message = 0x3C7C;
+            break;
+
+        case 1:
+            message = 0x3C7D;
+            break;
+
+        case 2:
+            message = 0x3C7F;
+            break;
+
+        case 3:
+            message = 0x3C81;
+            break;
+
+        case 4:
+            message = 0x3C83;
+            break;
+
+        case 5:
+            message = 0x3C85;
+            break;
+
+        case 6:
+            message = 0x3C88;
+            break;
+
+        case 7:
+            message = 0x3C8B;
+            break;
+
+        default:
+            message = 0x3C7C;
+            break;
+        }
+
+        msgctrlSetValue(0x31, message);
+
+        msgctrlSetValue(
+            0x4D,
+            (u32)(sv + 0x28 + (s8)slot * 0x10));
+
+        msgctrlSetValue(
+            0x57,
+            (u32)(sv + 0x28 +
+                  ((s8)slot + 1) * 0x10));
+
+        fn_8007C450(
+            sv[8],
+            slot,
+            sv[0x24],
+            sv[0x26],
+            6);
+
+        winMsgOpen(8, 0x3B5B, 1, 0);
+        winMsgClose(1);
+
+        fn_8007C414();
+
+        return 2;
+    }
+
+    /*
+     * action == 2 (and any other non-normal value).
+     */
+    if (action != 4) {
+        winMsgOpen(8, 0x3B58, 1, 0);
+        winMsgClose(1);
+
+        return 2;
+    }
+
+    /*
+     * Locate first empty candidate.
+     */
+    slot = -1;
+    i = 0;
+
+    while (i < (s8)sv[0x58]) {
+        ptr = fn_80082EA4(
+            lbl_8047A434,
+            (s8)i,
+            sv[0x24],
+            sv[0x26]);
+
+        if (ptr[0x0C] == 0) {
+            slot = i;
+            break;
+        }
+
+        i++;
+    }
+
+    lbl_8047A448 = (s8)slot;
+
+    winMsgClose(1);
+
+    fn_80082CF0(
+        lbl_8047A434,
+        sv,
+        (u8)lbl_8047A448);
+
+    fn_8007C450(
+        sv[8],
+        (u8)lbl_8047A448,
+        sv[0x24],
+        sv[0x26],
+        1);
+
+    fn_80166A28(0x4C5);
+
+    SYSVARS_WAIT_EFFECT();
+
+    winMsgOpen(8, 0x3B6D, 1, 0);
+    winMsgClose(1);
+
+    SYSVARS_RESTORE_PARTY_ITEMS();
+
+first_menu:
+
+    /*
+     * NOTE OFFSET 0x5B HERE.
+     */
+    menuResult = fn_80032ED8(
+        sv + 0x3AC +
+            (s8)sv[0x5B + (s8)lbl_8047A448] *
+                0x28,
+        8,
+        0);
+
+    /*
+     * This call really is variadic in terms of generated ABI:
+     * the target has a crclr immediately before menuOpenCustom.
+     */
+    menuOpenCustom(
+        0xA6,
+        windowGetActiveID(),
+        0,
+        0,
+        0,
+        1,
+        name);
+
+    fn_8007C300(
+        sv[8],
+        (u8)lbl_8047A448);
+
+    if (menuResult != 2) {
+        SYSVARS_RESTORE_PARTY_ITEMS();
+
+        winMsgOpen(8, 0x3B70, 0, 0);
+
+        choice = menuOpen(0xA9, 1);
+
+        menuClose(0xA9);
+        winMsgClose(1);
+
+        if (choice == 0) {
+            goto first_menu;
+        }
+
+        fn_8007C450(
+            sv[8],
+            (u8)lbl_8047A448,
+            sv[0x24],
+            sv[0x26],
+            7);
+
+        fn_80166A28(0x4C6);
+
+        SYSVARS_WAIT_EFFECT();
+
+        fn_8007CAB0();
+
+        if (fn_80082738(
+                lbl_8047A434,
+                sv,
+                (u8)lbl_8047A448) != 0) {
+
+            fn_8007C414();
+            fn_8007C634();
+
+            fn_8007CAB0();
+            fn_80082650(lbl_8047A434);
+        }
+
+        fn_8007C414();
+        fn_8007C7EC();
+
+        return 2;
+    }
+
+    /*
+     * First menu accepted.
+     */
+    fn_8007C450(
+        sv[8],
+        (u8)lbl_8047A448,
+        sv[0x24],
+        sv[0x26],
+        2);
+
+    SYSVARS_WAIT_EFFECT();
+
+    fn_8007C450(
+        sv[8],
+        (u8)lbl_8047A448,
+        sv[0x24],
+        sv[0x26],
+        4);
+
+    fn_80166A28(0x3C6);
+
+    SYSVARS_WAIT_EFFECT();
+
+    fn_80166AB8(0x3CC, 0, 0);
+
+    heroAddPokecoupon(0, 0x32);
+
+    winMsgOpen(8, 0x3B72, 1, 0);
+
+    /*
+     * Check whether the second stage is available.
+     */
+    valid = 1;
+
+    if ((s8)sv[
+            0x5E + (s8)lbl_8047A448] < 0) {
+
+        valid = 0;
+    } else {
+        i = 0;
+
+        while (i < (s8)sv[0x5A]) {
+            ptr = fn_80082EA4(
+                lbl_8047A434,
+                (u8)lbl_8047A448,
+                sv[0x24],
+                (s8)i);
+
+            if (ptr[0x0C] == 0) {
+                valid = 0;
+                break;
+            }
+
+            i++;
+        }
+    }
+
+    if (valid == 0) {
+        goto post_validate;
+    }
+
+    fn_80082BA4(
+        lbl_8047A434,
+        sv,
+        (u8)lbl_8047A448);
+
+    fn_8007C450(
+        sv[8],
+        (u8)lbl_8047A448,
+        sv[0x24],
+        -1,
+        1);
+
+    fn_80166A28(0x4C5);
+
+    SYSVARS_WAIT_EFFECT();
+
+    winMsgOpen(8, 0x3B74, 1, 0);
+    winMsgClose(1);
+
+    /*
+     * NOTE OFFSET 0x5E HERE, unlike the first menu's 0x5B.
+     */
+    menuResult = fn_80032ED8(
+        sv + 0x3AC +
+            (s8)sv[
+                0x5E + (s8)lbl_8047A448] *
+                0x28,
+        9,
+        0);
+
+    menuOpenCustom(
+        0xA6,
+        windowGetActiveID(),
+        0,
+        0,
+        0,
+        1,
+        name);
+
+    fn_8007C300(
+        sv[8],
+        (u8)lbl_8047A448);
+
+    /*
+     * Second menu cancelled/rejected.
+     */
+    if (menuResult != 2) {
+        fn_8007C450(
+            sv[8],
+            (u8)lbl_8047A448,
+            sv[0x24],
+            -1,
+            7);
+
+        fn_80166A28(0x4C6);
+
+        SYSVARS_WAIT_EFFECT();
+
+        fn_80082960(
+            lbl_8047A434,
+            sv,
+            (u8)lbl_8047A448);
+
+        fn_8007C450(
+            sv[8],
+            (u8)lbl_8047A448,
+            sv[0x24],
+            sv[0x26],
+            8);
+
+        fn_80166A28(0x4C6);
+
+        SYSVARS_WAIT_EFFECT();
+
+        fn_8007CAB0();
+
+        if (fn_80082738(
+                lbl_8047A434,
+                sv,
+                (u8)lbl_8047A448) != 0) {
+
+            fn_8007C414();
+            fn_8007C634();
+
+            fn_8007CAB0();
+            fn_80082650(lbl_8047A434);
+        }
+
+        fn_8007C414();
+        fn_8007C7EC();
+
+        winMsgOpen(8, 0x3B78, 1, 0);
+
+        fn_8007C414();
+
+        SYSVARS_RESTORE_PARTY_ITEMS();
+
+        winMsgOpen(8, 0x3B7C, 0, 0);
+
+        choice = menuOpen(0xA9, 1);
+
+        menuClose(0xA9);
+        winMsgClose(1);
+
+        if (choice == 0) {
+            goto restart;
+        }
+
+        return 2;
+    }
+
+    /*
+     * Second menu accepted.
+     */
+    fn_8007C450(
+        sv[8],
+        (u8)lbl_8047A448,
+        sv[0x24],
+        -1,
+        2);
+
+    SYSVARS_WAIT_EFFECT();
+
+    fn_8007C450(
+        sv[8],
+        (u8)lbl_8047A448,
+        sv[0x24],
+        -1,
+        4);
+
+    fn_80166A28(0x3C6);
+
+    SYSVARS_WAIT_EFFECT();
+
+    fn_80166AB8(0x3CC, 0, 0);
+
+    /*
+     * This branch awards 80, versus the earlier branch's 50.
+     */
+    heroAddPokecoupon(0, 0x50);
+
+    winMsgOpen(8, 0x3B76, 1, 0);
+
+    item = *(u16*)(
+        sv +
+        0x64 +
+        (s8)lbl_8047A448 * 2);
+
+    valid = 1;
+
+    if (item == 0) {
+        valid = 0;
+    } else if (
+        heroItemAddItemDataId(
+            0,
+            item,
+            1,
+            -1) != 0) {
+
+        if (pcboxDelItem(
+                0,
+                item,
+                1) != 0) {
+
+            valid = 0;
+        }
+    }
+
+    if (valid != 0) {
+        msgctrlSetValue(
+            0x2D,
+            item);
+
+        winMsgOpen(
+            8,
+            0x4273,
+            1,
+            0);
+    }
+
+    fn_8007C414();
+
+post_validate:
+
+    valid = 0;
+
+    if ((s8)sv[
+            0x61 + (s8)lbl_8047A448] >= 0) {
+
+        valid = 1;
+
+        i = 0;
+
+        while ((s8)i <
+               (s8)((u8*)lbl_8047A434)[0x1C]) {
+
+            j = 0;
+
+            while (j < (s8)sv[0x5A]) {
+                ptr = fn_80082EA4(
+                    lbl_8047A434,
+                    (u8)lbl_8047A448,
+                    i,
+                    (s8)j);
+
+                if (ptr[0x0C] == 0) {
+                    valid = 0;
+                    goto validation_done;
+                }
+
+                j++;
+            }
+
+            i++;
+        }
+    }
+
+validation_done:
+
+    if (valid == 0) {
+        fn_8007C414();
+
+        SYSVARS_RESTORE_PARTY_ITEMS();
+
+        winMsgOpen(8, 0x3B7C, 0, 0);
+
+        choice = menuOpen(0xA9, 1);
+
+        menuClose(0xA9);
+        winMsgClose(1);
+
+        if (choice == 0) {
+            goto restart;
+        }
+
+        return 2;
+    }
+
+    fn_80165668(
+        0x4CF,
+        0,
+        0xFF);
+
+    fn_800832C8(
+        0,
+        sv,
+        (u8)lbl_8047A448);
+
+    msgctrlSetValue(
+        0x4D,
+        (u32)(sv + 0x0A));
+
+    msgctrlSetValue(
+        0x57,
+        (u32)(
+            sv +
+            0x28 +
+            (s8)lbl_8047A448 * 0x10));
+
+    winMsgOpen(
+        8,
+        0x3B7A,
+        1,
+        0);
+
+    winMsgClose(1);
+
+    return 0;
 }
 
 /* Run the GBA transfer UI until it finishes or the user cancels it. */
