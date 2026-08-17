@@ -624,17 +624,16 @@ void fn_80035D70(void) {
 
 /* fn_80035DA0 - 0x80035DA0 | size: 0x34 */
 #pragma push
-#pragma scheduling off
-#pragma optimize_for_size on
+#pragma peephole off
 void fn_80035DA0(void) {
-    extern void floorLink(s32, s32);
+    extern void floorLink(u32, s32);
     extern void _threadSwitch(void);
-    extern volatile u8 lbl_8047A439;
+    extern u8 lbl_8047A439;
 
-    floorLink((lbl_8047A439 = 0, 0x393), 0);
+    lbl_8047A439 = 0;
+    floorLink(0x393, 0);
     _threadSwitch();
 }
-#pragma optimize_for_size reset
 #pragma pop
 
 /* fn_80035DD4 - 0x80035DD4 | size: 0x30 */
