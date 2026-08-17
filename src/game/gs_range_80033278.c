@@ -273,8 +273,8 @@ typedef struct SysvarsMoveSnapshot {
 
 typedef struct SysvarsOpponentSnapshot {
     u8 trainerType;
-    s8 region;
-    s8 variant;
+    u8 region;
+    u8 variant;
     u8 enabled;
     u8 selection;
     u8 pad_05;
@@ -293,57 +293,83 @@ typedef struct SysvarsOpponentSnapshot {
     SysvarsMoveSnapshot moves[4];
 } SysvarsOpponentSnapshot;
 
-void fn_80034830(u8 enabled, u8 selection,
-                 const SysvarsOpponentSource* source)
+/*
+ * Savedata block 0xD, as handed out by savedataGetStatus(0, 0xD). Only the
+ * recent-opponent history is modelled; the offset is part of the member so
+ * the loads keep the retail 0x41E4-based displacements.
+ */
+typedef struct SysvarsSaveWork {
+    u8 pad_0000[0x41E4];
+    SysvarsOpponentSnapshot history[10];
+} SysvarsSaveWork;
+
+/*
+ * Record the current opponent in the recent-opponent history. Nothing happens
+ * if this trainer/region/variant triple is already listed; otherwise the ten
+ * slots shift down by one and the new record is written into the last slot.
+ *
+ * The new record is filled through a byte cursor: after the header it walks
+ * the four 0x2A-byte move slots, which is how the retail code addresses them
+ * (base advancing by 0x2A, move payload at displacement 0x22).
+ */
+#pragma push
+#pragma peephole off
+void fn_80034830(u8 enabled, s32 selection,
+                 SysvarsOpponentSource* source)
 {
     extern u8 lbl_803A3334[];
-    extern u8* lbl_8047A430;
+    extern SysvarsSaveWork* lbl_8047A430;
     extern void GScharCpy(void*, const void*);
-    SysvarsOpponentSnapshot* history;
-    SysvarsOpponentSnapshot* destination;
+    u8* destination;
     s32 moveIndex;
     s32 i;
+    u8 isNew;
 
-    history = (SysvarsOpponentSnapshot*)(lbl_8047A430 + 0x41E4);
+    isNew = 1;
     for (i = 0; i < 10; i++) {
-        if (history[i].trainerType == lbl_803A3334[8] &&
-            history[i].region == (s8)lbl_803A3334[0x24] &&
-            history[i].variant == (s8)lbl_803A3334[0x26]) {
-            return;
+        if (lbl_8047A430->history[i].trainerType == lbl_803A3334[8] &&
+            lbl_8047A430->history[i].region == (s8)lbl_803A3334[0x24] &&
+            lbl_8047A430->history[i].variant == (s8)lbl_803A3334[0x26]) {
+            isNew = 0;
+            break;
         }
     }
 
-    for (i = 0; i < 9; i++) {
-        history[i] = history[i + 1];
-    }
+    if (isNew) {
+        for (i = 0; i < 9; i++) {
+            lbl_8047A430->history[i] = lbl_8047A430->history[i + 1];
+        }
 
-    destination = &history[9];
-    destination->trainerType = lbl_803A3334[8];
-    destination->region = lbl_803A3334[0x24];
-    destination->variant = lbl_803A3334[0x26];
-    destination->enabled = enabled;
-    destination->selection = selection;
-    GScharCpy(destination->name, source->name);
-    destination->category = source->category;
-    destination->field_14 = source->field_12;
-    destination->field_16 = source->field_14;
-    destination->field_18 = source->field_16;
-    destination->field_1A = source->field_18;
-    destination->field_1C = source->field_1C;
-    destination->field_1E = source->field_20;
-    destination->field_20 = source->field_24;
+        destination = (u8*)&lbl_8047A430->history[9];
+        destination[0] = lbl_803A3334[8];
+        destination[1] = lbl_803A3334[0x24];
+        destination[2] = lbl_803A3334[0x26];
+        destination[3] = enabled;
+        destination[4] = selection;
+        GScharCpy(destination + 6, source->name);
+        destination[0x12] = source->category;
+        *(u16*)(destination + 0x14) = source->field_12;
+        *(u16*)(destination + 0x16) = source->field_14;
+        *(u16*)(destination + 0x18) = source->field_16;
+        *(u16*)(destination + 0x1A) = source->field_18;
+        destination[0x1C] = source->field_1C;
+        *(u16*)(destination + 0x1E) = source->field_20;
+        destination[0x20] = source->field_24;
 
-    for (i = 0; i < 4; i++) {
-        moveIndex = source->moveIndex[i];
-        if (moveIndex < 0) {
-            *(u16*)destination->moves[i].data = 0;
-        } else {
-            destination->moves[i] =
-                *(SysvarsMoveSnapshot*)(lbl_803A3334 + 0x514 +
-                                        moveIndex * 0x2A);
+        for (i = 0; i < 4; i++) {
+            moveIndex = source->moveIndex[i];
+            if (moveIndex < 0) {
+                *(u16*)(destination + 0x22) = 0;
+            } else {
+                *(SysvarsMoveSnapshot*)(destination + 0x22) =
+                    *(SysvarsMoveSnapshot*)(lbl_803A3334 + 0x514 +
+                                            moveIndex * 0x2A);
+            }
+            destination += 0x2A;
         }
     }
 }
+#pragma pop
 
 void fn_80034B5C(u8* valid, u8* selectionOut, u8* valueOut)
 {
