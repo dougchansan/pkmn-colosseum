@@ -35,13 +35,13 @@ extern void* lbl_8047A434;
 extern u32 lbl_8047A444;
 extern s8 lbl_8047A448;
 
-extern f32 lbl_8047BA18;
+extern const f32 lbl_8047BA18;
 
 extern char lbl_80266FAC[];
 extern char lbl_80266FB8[];
 extern char lbl_8047BA20[];
 
-extern void fn_8007C764(s32);
+extern void fn_8007C764(u8);
 extern void fn_8007C7A8(s32);
 
 extern s32 menuOpen(s32, s32);
@@ -119,7 +119,7 @@ static void sysvarsWaitForTransfer(void)
     f32 progress;
 
     progress = lbl_8047B9F8;
-    while (progress < lbl_8047BA28) {
+    while (progress < lbl_8047BA18) {
         _threadSwitch();
         progress += (f32)fn_800D3088() / (f32)fn_800D37CC();
     }
@@ -148,6 +148,12 @@ s32 _sysvarsProcessData__FP16sysvarsFuncEntryPc(
 
     u8 valid;
     u8* ptr;
+    s32 area;
+    s32 mode;
+    u8 chosen;
+    s32 index;
+    void* save;
+    void* pokemon;
 
     u16 item;
     u32 message;
@@ -156,10 +162,6 @@ s32 _sysvarsProcessData__FP16sysvarsFuncEntryPc(
     (void)unusedText;
 
     base = lbl_803A3278;
-
-    name = base + 0x10;
-    partyItems = (u16*)(base + 0xB0);
-    sv = base + 0xBC;
 
     /*
      * Original:
@@ -181,16 +183,24 @@ s32 _sysvarsProcessData__FP16sysvarsFuncEntryPc(
         return 2;
     }
 
+    sv = base + 0xBC;
+    name = base + 0x10;
+    partyItems = (u16*)(base + 0xB0);
+
 restart:
 
     state = fn_80034280();
 
-    if (state == 0) {
+    switch (state) {
+    case 0:
         return 0;
-    }
 
-    if (state == 1) {
+    case 1:
         return 2;
+
+    case 3:
+    default:
+        break;
     }
 
     /*
@@ -229,7 +239,7 @@ restart:
 
     fn_8007CAB0();
 
-    lbl_8047A434 = fn_800836AC(0, sv, 1);
+    lbl_8047A434 = fn_800836AC(0, base + 0xBC, 1);
 
     fn_8007C7EC();
 
@@ -264,14 +274,17 @@ restart:
         secondary = 4;
         empty = -1;
 
+        area = sv[0x24];
+        mode = sv[0x26];
+
         i = 0;
 
         while (i < (s8)sv[0x58]) {
             ptr = fn_80082EA4(
                 lbl_8047A434,
                 (s8)i,
-                sv[0x24],
-                sv[0x26]);
+                area,
+                mode);
 
             if (ptr[0x0C] == 0) {
                 empty = i;
@@ -298,7 +311,7 @@ restart:
                  * here (cmpw r21,r21). Preserve this odd shape initially;
                  * it may be the result of an optimized source condition.
                  */
-                if (region == region &&
+                if (region == (s8)sv[0x24] &&
                     (s8)sv[0x5E + j] < 0) {
                     valid = 0;
                 } else {
@@ -327,10 +340,21 @@ restart:
         }
     }
 
+    switch (action) {
+    /*
+     * action == 2 (and any other non-normal value).
+     */
+    case 2:
+    default:
+        winMsgOpen(8, 0x3B58, 1, 0);
+        winMsgClose(1);
+
+        return 2;
+
     /*
      * Alternate availability/error path.
      */
-    if (action == 3) {
+    case 3:
         slot = 0;
 
         while ((s8)slot < (s8)sv[0x58]) {
@@ -340,7 +364,7 @@ restart:
              * The second instance also compiles to a self-compare in
              * the original assembly.
              */
-            if (region == region &&
+            if (region == (s8)sv[0x24] &&
                 (s8)sv[0x5E + slot] < 0) {
                 valid = 0;
             } else {
@@ -429,30 +453,25 @@ restart:
         fn_8007C414();
 
         return 2;
-    }
 
-    /*
-     * action == 2 (and any other non-normal value).
-     */
-    if (action != 4) {
-        winMsgOpen(8, 0x3B58, 1, 0);
-        winMsgClose(1);
-
-        return 2;
+    case 4:
+        break;
     }
 
     /*
      * Locate first empty candidate.
      */
+    area = sv[0x24];
     slot = -1;
+    mode = sv[0x26];
     i = 0;
 
     while (i < (s8)sv[0x58]) {
         ptr = fn_80082EA4(
             lbl_8047A434,
             (s8)i,
-            sv[0x24],
-            sv[0x26]);
+            area,
+            mode);
 
         if (ptr[0x0C] == 0) {
             slot = i;
@@ -468,7 +487,7 @@ restart:
 
     fn_80082CF0(
         lbl_8047A434,
-        sv,
+        base + 0xBC,
         (u8)lbl_8047A448);
 
     fn_8007C450(
@@ -480,12 +499,17 @@ restart:
 
     fn_80166A28(0x4C5);
 
-    SYSVARS_WAIT_EFFECT();
+    sysvarsWaitForTransfer();
 
     winMsgOpen(8, 0x3B6D, 1, 0);
     winMsgClose(1);
 
-    SYSVARS_RESTORE_PARTY_ITEMS();
+    fn_801D0AFC(0);
+    save = savedataGetStatus(0, 2);
+    for (index = 0; index < 6; index++) {
+        pokemon = heroBiosGetPokemonPtr(save, (u8)index);
+        pokemonBiosSetItemDataId(pokemon, partyItems[index]);
+    }
 
 first_menu:
 
@@ -517,7 +541,12 @@ first_menu:
         (u8)lbl_8047A448);
 
     if (menuResult != 2) {
-        SYSVARS_RESTORE_PARTY_ITEMS();
+        fn_801D0AFC(0);
+        save = savedataGetStatus(0, 2);
+        for (index = 0; index < 6; index++) {
+            pokemon = heroBiosGetPokemonPtr(save, (u8)index);
+            pokemonBiosSetItemDataId(pokemon, partyItems[index]);
+        }
 
         winMsgOpen(8, 0x3B70, 0, 0);
 
@@ -539,13 +568,13 @@ first_menu:
 
         fn_80166A28(0x4C6);
 
-        SYSVARS_WAIT_EFFECT();
+        sysvarsWaitForTransfer();
 
         fn_8007CAB0();
 
         if (fn_80082738(
                 lbl_8047A434,
-                sv,
+                base + 0xBC,
                 (u8)lbl_8047A448) != 0) {
 
             fn_8007C414();
@@ -571,7 +600,7 @@ first_menu:
         sv[0x26],
         2);
 
-    SYSVARS_WAIT_EFFECT();
+    sysvarsWaitForTransfer();
 
     fn_8007C450(
         sv[8],
@@ -582,7 +611,7 @@ first_menu:
 
     fn_80166A28(0x3C6);
 
-    SYSVARS_WAIT_EFFECT();
+    sysvarsWaitForTransfer();
 
     fn_80166AB8(0x3CC, 0, 0);
 
@@ -593,11 +622,11 @@ first_menu:
     /*
      * Check whether the second stage is available.
      */
+    chosen = lbl_8047A448;
     valid = 1;
+    area = sv[0x24];
 
-    if ((s8)sv[
-            0x5E + (s8)lbl_8047A448] < 0) {
-
+    if ((s8)sv[0x5E + (s8)chosen] < 0) {
         valid = 0;
     } else {
         i = 0;
@@ -605,8 +634,8 @@ first_menu:
         while (i < (s8)sv[0x5A]) {
             ptr = fn_80082EA4(
                 lbl_8047A434,
-                (u8)lbl_8047A448,
-                sv[0x24],
+                chosen,
+                area,
                 (s8)i);
 
             if (ptr[0x0C] == 0) {
@@ -624,7 +653,7 @@ first_menu:
 
     fn_80082BA4(
         lbl_8047A434,
-        sv,
+        base + 0xBC,
         (u8)lbl_8047A448);
 
     fn_8007C450(
@@ -636,7 +665,7 @@ first_menu:
 
     fn_80166A28(0x4C5);
 
-    SYSVARS_WAIT_EFFECT();
+    sysvarsWaitForTransfer();
 
     winMsgOpen(8, 0x3B74, 1, 0);
     winMsgClose(1);
@@ -678,11 +707,11 @@ first_menu:
 
         fn_80166A28(0x4C6);
 
-        SYSVARS_WAIT_EFFECT();
+        sysvarsWaitForTransfer();
 
         fn_80082960(
             lbl_8047A434,
-            sv,
+            base + 0xBC,
             (u8)lbl_8047A448);
 
         fn_8007C450(
@@ -694,13 +723,13 @@ first_menu:
 
         fn_80166A28(0x4C6);
 
-        SYSVARS_WAIT_EFFECT();
+        sysvarsWaitForTransfer();
 
         fn_8007CAB0();
 
         if (fn_80082738(
                 lbl_8047A434,
-                sv,
+                base + 0xBC,
                 (u8)lbl_8047A448) != 0) {
 
             fn_8007C414();
@@ -717,7 +746,12 @@ first_menu:
 
         fn_8007C414();
 
-        SYSVARS_RESTORE_PARTY_ITEMS();
+        fn_801D0AFC(0);
+        save = savedataGetStatus(0, 2);
+        for (index = 0; index < 6; index++) {
+            pokemon = heroBiosGetPokemonPtr(save, (u8)index);
+            pokemonBiosSetItemDataId(pokemon, partyItems[index]);
+        }
 
         winMsgOpen(8, 0x3B7C, 0, 0);
 
@@ -743,7 +777,7 @@ first_menu:
         -1,
         2);
 
-    SYSVARS_WAIT_EFFECT();
+    sysvarsWaitForTransfer();
 
     fn_8007C450(
         sv[8],
@@ -754,7 +788,7 @@ first_menu:
 
     fn_80166A28(0x3C6);
 
-    SYSVARS_WAIT_EFFECT();
+    sysvarsWaitForTransfer();
 
     fn_80166AB8(0x3CC, 0, 0);
 
@@ -844,7 +878,12 @@ validation_done:
     if (valid == 0) {
         fn_8007C414();
 
-        SYSVARS_RESTORE_PARTY_ITEMS();
+        fn_801D0AFC(0);
+        save = savedataGetStatus(0, 2);
+        for (index = 0; index < 6; index++) {
+            pokemon = heroBiosGetPokemonPtr(save, (u8)index);
+            pokemonBiosSetItemDataId(pokemon, partyItems[index]);
+        }
 
         winMsgOpen(8, 0x3B7C, 0, 0);
 
@@ -867,7 +906,7 @@ validation_done:
 
     fn_800832C8(
         0,
-        sv,
+        base + 0xBC,
         (u8)lbl_8047A448);
 
     msgctrlSetValue(
