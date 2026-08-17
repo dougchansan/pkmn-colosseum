@@ -15,7 +15,7 @@ extern s32 windowGetActiveID(void);
 extern u8* windowGetKeyInfo(void);
 extern void fn_8007AAFC(void);
 extern void fn_8007AAA8(void);
-extern s32 fn_8007AB10(s32, u32*);
+extern s32 fn_8007AB10(s32, s32*);
 extern void fn_80166A28(u32);
 extern void winMsgClose(s32);
 extern void winMsgOpen(s32, u32, s32, s32);
@@ -25,9 +25,11 @@ extern u32 fn_800D3088(void);
 extern void fn_80080310(void*, const void*, u32);
 extern u8 lbl_803A3334[];
 extern u8 lbl_803F7A30[];
-extern f32 lbl_8047B9F8;
-extern f32 lbl_8047BA28;
+extern const f32 lbl_8047B9F8;
+extern const f32 lbl_8047BA28;
 
+#pragma push
+#pragma peephole off
 static void sysvarsWaitForTransfer(void)
 {
     f32 progress;
@@ -42,11 +44,11 @@ static void sysvarsWaitForTransfer(void)
 /* Run the GBA transfer UI until it finishes or the user cancels it. */
 s32 fn_80034280(void)
 {
-    s32 watchedWindow;
     s32 state;
     s32 nextState;
-    u32 transferActive;
+    s32 transferActive;
     u8 waitForWindow;
+    s32 watchedWindow;
 
     watchedWindow = -1;
     GBAInit();
@@ -86,6 +88,8 @@ s32 fn_80034280(void)
         case 2:
             winMsgOpen(8, 0x3B88, 0, 0);
             sysvarsWaitForTransfer();
+            /* fallthrough */
+        case 19:
             fn_80166A28(0x3C7);
             if (transferActive != 0) {
                 fn_8007AAA8();
@@ -100,26 +104,6 @@ s32 fn_80034280(void)
             fn_8007AB10(state, &transferActive);
             break;
 
-        case 18:
-            winMsgOpen(8, 0x3B8E, 0, 0);
-            watchedWindow = windowGetActiveID();
-            waitForWindow = 1;
-            break;
-
-        case 19:
-            fn_80166A28(0x3C7);
-            if (transferActive != 0) {
-                fn_8007AAA8();
-            }
-            winMsgOpen(8, 0x3B91, 1, 0);
-            return 0;
-
-        case 20:
-            fn_8007AAA8();
-            fn_80080310(lbl_803A3334, lbl_803F7A30 + 0x2388,
-                        0x1040);
-            return 2;
-
         case 21:
             if (transferActive != 0) {
                 fn_8007AAA8();
@@ -129,9 +113,22 @@ s32 fn_80034280(void)
             winMsgOpen(8, 0x44ED, 1, 0);
             winMsgClose(1);
             return 1;
+
+        case 18:
+            winMsgOpen(8, 0x3B8E, 0, 0);
+            watchedWindow = windowGetActiveID();
+            waitForWindow = 1;
+            break;
+
+        case 20:
+            fn_8007AAA8();
+            fn_80080310(lbl_803A3334, lbl_803F7A30 + 0x2388,
+                        0x1040);
+            return 2;
         }
     }
 }
+#pragma pop
 
 /* fn_800345A4 - 0x800345A4 | size: 0x164 */
 #pragma push
