@@ -545,6 +545,500 @@ void fn_80034F84(void) {
 void fn_80034FB0(void) {
 }
 
+/* fn_80034FB4 - 0x80034FB4 | size: 0xC94 */
+#pragma push
+#pragma peephole off
+void fn_80034FB4(void)
+{
+    extern u8 lbl_803A3278[];
+    extern u32 lbl_8047A430;
+    extern void* lbl_8047A434;
+    extern u8 lbl_8047A438;
+    extern u8 lbl_8047A439;
+    extern u32 lbl_8047A43C;
+    extern u32 lbl_8047A444;
+    extern u8 lbl_8047A449;
+    extern u8 lbl_8047A44A;
+    extern u32 lbl_8047A44C;
+    extern u32 lbl_8047A450;
+    extern u8 lbl_8047A454;
+    extern s32 lbl_8047A458;
+    extern const f32 lbl_8047B9FC;
+    extern const f32 lbl_8047BA00;
+    extern u8 lbl_8047BA1C;
+    extern s32 _sysvarsProcessData__FP16sysvarsFuncEntryPc(void);
+    extern void fn_8003258C(void);
+    extern void fn_800327FC(void);
+    extern void* fn_80082EA4(void*, s8, u8, u8);
+    extern void* fn_800836AC(void*, void*, s32);
+    extern u8 fn_800FF52C(void);
+    extern void fn_800FF660(void);
+    extern s32 menuOpen(s32, s32);
+    extern void menuClose(s32);
+    extern u8 menuIsCheck(s32);
+    extern s32 menuOpenCustom(s32, ...);
+    extern void* savedataGetStatus(s32, s32);
+    extern void* heroBiosGetPokemonPtr(void*, u8);
+    extern u16 pokemonBiosGetItemDataId(void*);
+    extern void pokemonBiosSetItemDataId(void*, u16);
+    extern void fn_801D0AFC(s32);
+    extern void fn_80165668(u32, s32, u32);
+    extern void fadeSet(f32, u32);
+    extern void fadeCheck(u32);
+    extern void floorLink(u32, s32);
+    extern void GScharCpy(void*, const void*);
+    extern void* fightFloorDataBiosGetPtr(u16);
+    extern u32 fightFloorDataBiosGetName(void*);
+    extern void* GSmsgGetGSchar(u32);
+    extern void msgctrlSetValue(s32, u32);
+    u8* work;
+    u8* menuData;
+    u8* name;
+    u8* floorName;
+    u8* clear;
+    u8* history;
+    u16* heldItems;
+    void* save;
+    void* pokemon;
+    void* entry;
+    s32 result;
+    s32 index;
+    u32 amount;
+    u32 historyIndex;
+    u32 historyCount;
+    u8 value;
+    s8 selection;
+    u8 valid;
+    u8 duplicate;
+    f32 progress;
+
+    work = lbl_803A3278;
+    lbl_8047A438 = 1;
+    menuData = work + 0xBC;
+    name = work + 0x10;
+    floorName = menuData + 0xB00;
+
+    while (lbl_8047A458 > 0) {
+        switch (lbl_8047A458) {
+        case 1:
+            if (lbl_8047A454 == 1) {
+                fadeSet(lbl_8047BA00, 2);
+            }
+            result = menuOpen(0xA4, 1);
+            lbl_8047A454 = 1;
+            fadeCheck(1);
+            switch (result) {
+            case -1:
+                lbl_8047A458 = 2;
+                break;
+            case 1:
+                lbl_8047A458 = 3;
+                break;
+            case 0:
+                lbl_8047A458 = 0;
+                break;
+            case 2:
+                lbl_8047A458 = 0;
+                break;
+            default:
+                lbl_8047A458 = 0;
+                break;
+            }
+            if (lbl_8047A458 == 0) {
+                fn_80166A28(0x3C7);
+                winMsgOpen(8, 0x3B54, 1, 0);
+                winMsgClose(1);
+            } else {
+                fadeSet(lbl_8047BA00, 3);
+                fadeCheck(1);
+                menuClose(0xA4);
+            }
+            break;
+
+        case 2:
+            fadeSet(lbl_8047BA00, 2);
+            menuOpenCustom(0xA6, windowGetActiveID(), 0, 0, 0, 1, name);
+            fadeCheck(1);
+            save = savedataGetStatus(0, 2);
+            heldItems = (u16*)(work + 0xB0);
+            for (index = 0; index < 6; index++) {
+                pokemon = heroBiosGetPokemonPtr(save, (u8)index);
+                heldItems[index] = pokemonBiosGetItemDataId(pokemon);
+            }
+            while (lbl_8047A458 == 2) {
+                lbl_8047A458 = _sysvarsProcessData__FP16sysvarsFuncEntryPc();
+            }
+            fn_801D0AFC(0);
+            save = savedataGetStatus(0, 2);
+            for (index = 0; index < 6; index++) {
+                pokemon = heroBiosGetPokemonPtr(save, (u8)index);
+                pokemonBiosSetItemDataId(pokemon, heldItems[index]);
+            }
+            if (lbl_8047A439 != 0) {
+                lbl_8047A458 = 0;
+            }
+            if (lbl_8047A458 != 0) {
+                fn_80166A28(0x3C7);
+                fadeSet(lbl_8047BA00, 3);
+                fadeCheck(1);
+                menuClose(0xA6);
+            }
+            break;
+
+        case 3:
+            save = savedataGetStatus(0, 2);
+            heldItems = (u16*)(work + 0xB0);
+            for (index = 0; index < 6; index++) {
+                pokemon = heroBiosGetPokemonPtr(save, (u8)index);
+                heldItems[index] = pokemonBiosGetItemDataId(pokemon);
+            }
+            lbl_8047A450 = 0;
+            lbl_8047A44A = 0;
+            lbl_8047A43C = 0;
+            clear = work;
+            work[0] = 0;
+            clear[1] = 0;
+            clear[2] = 0;
+            clear[3] = 0;
+            clear[4] = 0;
+            clear[5] = 0;
+            clear[6] = 0;
+            clear[7] = 0;
+            clear[8] = 0;
+            clear[9] = 0;
+            clear[10] = 0;
+            clear[11] = 0;
+            clear[12] = 0;
+            clear[13] = 0;
+            clear[14] = 0;
+            if (menuIsCheck(0xA5) != 0) {
+                menuClose(0xA5);
+            }
+            fadeSet(lbl_8047BA00, 2);
+            menuOpen(0xA5, 1);
+            fadeCheck(1);
+            lbl_8047A458 = 5;
+            break;
+
+        case 4:
+            if (lbl_8047A449 != 0) {
+                fn_801D0AFC(0);
+            }
+            if (lbl_8047A450 > lbl_8047A44C) {
+                fn_80165668(0x4CE, 0, 0xFF);
+                amount = lbl_8047A450;
+                amount = amount <= 0x98967F ? amount : 0x98967F;
+                lbl_8047A44C = amount;
+                *(u32*)((u8*)lbl_8047A430 + 0x49C8) = amount;
+                winMsgOpen(8, 0x3B8D, 1, 0);
+                winMsgClose(1);
+                progress = lbl_8047B9F8;
+                while (progress < lbl_8047B9FC) {
+                    _threadSwitch();
+                    progress += (f32)fn_800D3088() / (f32)fn_800D37CC();
+                }
+            }
+            winMsgOpen(8, 0x3B54, 1, 1);
+            winMsgClose(1);
+            clear = work;
+            lbl_8047A43C = 0;
+            work[0] = 0;
+            clear[1] = 0;
+            clear[2] = 0;
+            clear[3] = 0;
+            clear[4] = 0;
+            clear[5] = 0;
+            clear[6] = 0;
+            clear[7] = 0;
+            clear[8] = 0;
+            clear[9] = 0;
+            clear[10] = 0;
+            clear[11] = 0;
+            clear[12] = 0;
+            clear[13] = 0;
+            clear[14] = 0;
+            save = savedataGetStatus(0, 2);
+            heldItems = (u16*)(work + 0xB0);
+            for (index = 0; index < 6; index++) {
+                pokemon = heroBiosGetPokemonPtr(save, (u8)index);
+                pokemonBiosSetItemDataId(pokemon, heldItems[index]);
+            }
+            lbl_8047A458 = 0;
+            break;
+
+        case 5:
+            result = fn_80034280();
+            switch (result) {
+            case 0:
+                lbl_8047A458 = 4;
+                continue;
+            case 1:
+                lbl_8047A458 = 6;
+                continue;
+            case 2:
+            default:
+                break;
+            }
+            switch (*(s32*)menuData) {
+            case 1:
+                lbl_8047A458 = 7;
+                continue;
+            case 0:
+                break;
+            default:
+                continue;
+            }
+            save = savedataGetStatus(0, 0xD);
+            lbl_8047A434 = fn_800836AC(save, menuData, 0);
+            if (lbl_8047A434 != 0) {
+                entry = fn_80082EA4(lbl_8047A434, (s8)(menuData[0x58] - 1),
+                                    menuData[0x24], menuData[0x26]);
+                result = 4;
+                if (*(u8*)((u8*)entry + 0xC) != 0) {
+                    duplicate = 0;
+                    historyCount = lbl_8047A43C;
+                    history = work;
+                    if ((s32)historyCount > 0) {
+                        do {
+                            if (history[0] == menuData[8] &&
+                                (s8)history[1] == (s8)menuData[0x24] &&
+                                (s8)history[2] == (s8)menuData[0x26]) {
+                                duplicate = 1;
+                                break;
+                            }
+                            history += 3;
+                        } while (--historyCount != 0);
+                    }
+                    if (duplicate == 0) {
+                        historyIndex = lbl_8047A43C;
+                        history = work + historyIndex * 3;
+                        history[0] = menuData[8];
+                        history[1] = menuData[0x24];
+                        history[2] = menuData[0x26];
+                        lbl_8047A43C = historyIndex + 1;
+                        if (lbl_8047A43C >= 5) {
+                            lbl_8047A43C = 4;
+                        }
+                    }
+                    if (duplicate != 0) {
+                        result = 3;
+                    }
+                } else {
+                    result = 2;
+                }
+            } else {
+                result = 2;
+            }
+            switch (result) {
+            case 2:
+                lbl_8047A458 = 8;
+                break;
+            case 3:
+                lbl_8047A458 = 9;
+                break;
+            case 4:
+                lbl_8047A458 = 10;
+                break;
+            case 5:
+            default:
+                lbl_8047A458 = 4;
+                break;
+            }
+            break;
+
+        case 6:
+            winMsgOpen(8, 0x3B8A, 0, 0);
+            result = menuOpen(0xA9, 1);
+            menuClose(0xA9);
+            winMsgClose(1);
+            switch (result) {
+            case -1:
+                lbl_8047A458 = 5;
+                continue;
+            case 1:
+                lbl_8047A458 = 5;
+                continue;
+            case 0:
+            case 2:
+            default:
+                break;
+            }
+            if (lbl_8047A450 > lbl_8047A44C) {
+                fn_80165668(0x4CE, 0, 0xFF);
+                amount = lbl_8047A450;
+                amount = amount <= 0x98967F ? amount : 0x98967F;
+                lbl_8047A44C = amount;
+                *(u32*)((u8*)lbl_8047A430 + 0x49C8) = amount;
+                winMsgOpen(8, 0x3B8D, 1, 0);
+                winMsgClose(1);
+                progress = lbl_8047B9F8;
+                while (progress < lbl_8047B9FC) {
+                    _threadSwitch();
+                    progress += (f32)fn_800D3088() / (f32)fn_800D37CC();
+                }
+            }
+            if (lbl_8047A449 != 0) {
+                fn_801D0AFC(0);
+            }
+            save = savedataGetStatus(0, 2);
+            heldItems = (u16*)(work + 0xB0);
+            for (index = 0; index < 6; index++) {
+                pokemon = heroBiosGetPokemonPtr(save, (u8)index);
+                pokemonBiosSetItemDataId(pokemon, heldItems[index]);
+            }
+            result = 1;
+            lbl_8047A458 = result;
+            if (result != 0) {
+                fadeSet(lbl_8047BA00, 3);
+                fadeCheck(1);
+                menuClose(0xA5);
+            }
+            break;
+
+        case 7:
+            lbl_8047A444 = *(u32*)(menuData + 0xAFC);
+            if (*(u16*)floorName != 0) {
+                GScharCpy(name, floorName);
+            } else {
+                entry = fightFloorDataBiosGetPtr((u16)lbl_8047A444);
+                if (entry != 0) {
+                    GScharCpy(name, GSmsgGetGSchar(fightFloorDataBiosGetName(entry)));
+                } else {
+                    GScharCpy(name, &lbl_8047BA1C);
+                }
+            }
+            msgctrlSetValue(0x4D, (u32)name);
+            winMsgOpen(8, 0x3B57, 1, 0);
+            winMsgClose(1);
+            lbl_8047A458 = 5;
+            break;
+
+        case 8:
+            winMsgOpen(8, 0x3B5A, 1, 0);
+            winMsgClose(1);
+            lbl_8047A458 = 5;
+            break;
+
+        case 9:
+            winMsgOpen(8, 0x3B5D, 1, 0);
+            winMsgClose(1);
+            lbl_8047A458 = 5;
+            break;
+
+        case 10:
+            fn_80034B5C(&valid, (void*)&selection, &value);
+            fn_80034830(valid, selection,
+                        (SysvarsOpponentSource*)(menuData + 0x3AC +
+                                                 (s8)value * 0x28));
+            amount = lbl_8047A450 + 1;
+            if (amount > 0x98967F) {
+                amount = 0x98967F;
+            }
+            msgctrlSetValue(0x2F, amount);
+            winMsgOpen(8, 0x3B5E, 1, 0);
+            winMsgClose(1);
+            if (lbl_8047A450 == 0) {
+                fn_801D0AFC(0);
+            }
+            lbl_8047A458 = 11;
+            break;
+
+        case 11:
+            fn_800327FC();
+            break;
+
+        case 12:
+            lbl_8047A44A = 0;
+            if (lbl_8047A450 > lbl_8047A44C) {
+                fn_80165668(0x4CE, 0, 0xFF);
+                amount = lbl_8047A450;
+                amount = amount <= 0x98967F ? amount : 0x98967F;
+                lbl_8047A44C = amount;
+                *(u32*)((u8*)lbl_8047A430 + 0x49C8) = amount;
+                winMsgOpen(8, 0x3B75, 1, 0);
+                winMsgClose(1);
+            }
+            clear = work;
+            lbl_8047A43C = 0;
+            work[0] = 0;
+            clear[1] = 0;
+            clear[2] = 0;
+            clear[3] = 0;
+            clear[4] = 0;
+            clear[5] = 0;
+            clear[6] = 0;
+            clear[7] = 0;
+            clear[8] = 0;
+            clear[9] = 0;
+            clear[10] = 0;
+            clear[11] = 0;
+            clear[12] = 0;
+            clear[13] = 0;
+            clear[14] = 0;
+            fn_801D0AFC(0);
+            winMsgOpen(8, 0x3BD7, 1, 0);
+            result = menuOpen(0xA9, 1);
+            menuClose(0xA9);
+            winMsgClose(1);
+            switch (result) {
+            case 0:
+                lbl_8047A458 = 3;
+                continue;
+            case -1:
+                lbl_8047A458 = 1;
+                break;
+            case 1:
+                lbl_8047A458 = 1;
+                break;
+            case 2:
+            default:
+                break;
+            }
+            progress = lbl_8047B9F8;
+            while (progress < lbl_8047B9FC) {
+                _threadSwitch();
+                progress += (f32)fn_800D3088() / (f32)fn_800D37CC();
+            }
+            save = savedataGetStatus(0, 2);
+            heldItems = (u16*)(work + 0xB0);
+            for (index = 0; index < 6; index++) {
+                pokemon = heroBiosGetPokemonPtr(save, (u8)index);
+                pokemonBiosSetItemDataId(pokemon, heldItems[index]);
+            }
+            if (lbl_8047A458 != 0) {
+                fadeSet(lbl_8047BA00, 3);
+                fadeCheck(1);
+                menuClose(0xA5);
+            }
+            break;
+
+        case 13:
+            fn_8003258C();
+            break;
+
+        case 14:
+            if (lbl_8047A450 > 0x1E) {
+                winMsgOpen(8, 0x3B5C, 1, 0);
+                winMsgClose(1);
+            } else {
+                winMsgOpen(8, 0x3B5F, 1, 0);
+                winMsgClose(1);
+            }
+            lbl_8047A44A = 1;
+            lbl_8047A458 = 11;
+            break;
+        }
+    }
+
+    if (fn_800FF52C() != 0) {
+        fn_800FF660();
+    } else {
+        floorLink(0x80, 0);
+    }
+    lbl_8047A438 = 0;
+}
+#pragma pop
+
 /* fn_80035C48 - 0x80035C48 | size: 0x128 */
 #pragma push
 #pragma peephole off
