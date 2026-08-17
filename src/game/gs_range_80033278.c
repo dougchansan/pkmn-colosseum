@@ -1222,63 +1222,67 @@ void fn_80034830(u8 enabled, s32 selection,
 }
 #pragma pop
 
-void fn_80034B5C(u8* valid, u8* selectionOut, u8* valueOut)
+#pragma push
+#pragma peephole off
+void fn_80034B5C(u8* valid, s8* selectionOut, u8* valueOut)
 {
     extern u8 lbl_803A3334[];
     extern void* lbl_8047A434;
-    extern void* heroGetStatus(s32, s32, s32);
+    extern void* heroGetStatus(s32, s32, u16);
     extern u8 pokemonCheckValid(void*);
-    extern s32 pokemonGetStatus(void*, s32, s32, s32);
+    extern u32 pokemonGetStatus(void*, s32, s32, s32);
     extern void* fn_80082FE4(void*, s8);
     extern u32 _fadeEffectGetRandom__FUl(u32);
-    s32 score[6];
     u8* pokemon;
-    u8* layer;
-    u8* group;
-    s32 maxLevel;
-    s32 maxRequired;
-    s32 best;
-    s32 ties;
+    u8 maxLevel;
+    u8 maxRequired;
+    u16 slot;
     s32 candidate;
-    s32 party;
-    s32 slot;
+    s8 best;
+    u16 party;
+    u8 region;
+    u8* layer;
+    s32 ties;
+    u8 level;
+    s32 score[6];
+    u8* group;
     s32 index;
     s32 difference;
-    s32 count;
+    s32 sign;
+    u8 required;
 
+    best = 0;
+    ties = 1;
+    region = lbl_803A3334[0x24];
     maxLevel = 1;
     for (party = 0; party < 6; party++) {
         pokemon = heroGetStatus(0, 3, party);
         if (pokemonCheckValid(pokemon) == 1) {
-            index = pokemonGetStatus(pokemon, 0, 0x7A, 0);
-            if (maxLevel < index) {
-                maxLevel = index;
+            level = pokemonGetStatus(pokemon, 0, 0x7A, 0);
+            if (maxLevel < level) {
+                maxLevel = level;
             }
         }
     }
 
-    count = (s8)lbl_803A3334[0x58];
-    best = 0;
-    ties = 1;
-    for (candidate = 0; candidate < count; candidate++) {
+    for (candidate = 0; candidate < (s8)lbl_803A3334[0x58]; candidate++) {
         score[candidate] = 0x7FFFFFFF;
         layer = fn_80082FE4(lbl_8047A434, candidate);
-        if (layer[0x1C + (s8)lbl_803A3334[0x24] * 0xE] != 0) {
-            group = lbl_803A3334 +
-                    (s8)lbl_803A3334[0x5E + candidate] * 0x28;
+        if (layer[0x1C + (s8)region * 0xE] != 0) {
+            group = lbl_803A3334 + (s8)lbl_803A3334[0x5E + candidate] * 0x28;
             maxRequired = 0;
             for (slot = 0; slot < 4; slot++) {
                 index = (s8)group[0x3B9 + slot];
-                if (index >= 0 &&
-                    maxRequired < lbl_803A3334[index * 0x2A + 0x517]) {
-                    maxRequired = lbl_803A3334[index * 0x2A + 0x517];
+                if (index >= 0) {
+                    required = lbl_803A3334[index * 0x2A + 0x517];
+                    if (maxRequired < required) {
+                        maxRequired = required;
+                    }
                 }
             }
             difference = maxLevel - maxRequired;
-            if (difference < 0) {
-                difference = -difference;
-            }
-            score[candidate] = difference;
+            sign = difference >> 31;
+            score[candidate] = (sign ^ difference) - sign;
             if (score[candidate] < score[best]) {
                 best = candidate;
                 ties = 1;
@@ -1291,15 +1295,16 @@ void fn_80034B5C(u8* valid, u8* selectionOut, u8* valueOut)
         }
     }
 
-    *valid = score[best] != 0x7FFFFFFF;
+    *valid = score[best] < 0x7FFFFFFF;
     if (*valid != 0) {
         *selectionOut = best;
-        *valueOut = lbl_803A3334[0x5E + (s8)*selectionOut];
+        *valueOut = lbl_803A3334[0x5E + *selectionOut];
     } else {
-        *selectionOut = count - 1;
-        *valueOut = lbl_803A3334[0x5B + (s8)*selectionOut];
+        *selectionOut = (s8)(lbl_803A3334[0x58] - 1);
+        *valueOut = lbl_803A3334[0x5B + *selectionOut];
     }
 }
+#pragma pop
 
 /* fn_80034DC0 - 0x80034DC0 | size: 0x78 */
 #pragma push
