@@ -700,28 +700,55 @@ s32 fn_80073C38(s32 chan)
     }
 }
 
+static inline s32 fn_80072A00_setup(s32 chan) {
+    u32 timeout;
+    u32 start;
+    s32 expired;
+    s32 result;
+
+    timeout = OSMillisecondsToTicks(5);
+    start = OSGetTick();
+    do {
+        expired = OSGetTick() - start > timeout;
+        result = fn_80073C38(chan);
+    } while (result == 1 && !expired);
+    return result;
+}
+
+/* fn_80072A00 (0x80072A00): hold one GBA channel in the 0x60 handshake until
+ * it answers 0xAA, retrying for three seconds. */
+#pragma push
+#pragma peephole off
 s32 fn_80072A00(s32 chan)
 {
     u32 command;
     u32 response;
-    u32 outerTimeout;
-    u32 outerStart;
-    u32 setupTimeout;
-    u32 setupStart;
-    u8 length;
-    u8 status;
+    u32 pingCommand;
+    s32 keyChannel;
     s32 result;
     s32 innerResult;
-    s32 setupExpired;
+    u32 outerTimeout;
+    u8 length;
+    u8 pingLength;
+    u32 outerStart;
+    u8 status;
 
-    gbaCommandSetKeyState(chan + 1, 2);
-    result = fn_80073C38(chan);
-    if (result != 0) {
-        goto done;
+    keyChannel = chan + 1;
+    gbaCommandSetKeyState(keyChannel, 2);
+
+    {
+        s32 setupResult;
+
+        setupResult = fn_80073C38(chan);
+        if (setupResult != 0) {
+            result = setupResult;
+            goto done;
+        }
     }
 
     command = 0x60;
-    if (GBAWrite(chan, &command, &length) != 0) {
+    result = GBAWrite(chan, &command, &length);
+    if (result != 0) {
         result = 0xB;
         goto done;
     }
@@ -729,42 +756,51 @@ s32 fn_80072A00(s32 chan)
     outerTimeout = OS_TIMER_CLOCK * 3;
     outerStart = OSGetTick();
     do {
+        s32 setupResult;
+
         if (OSGetTick() - outerStart > outerTimeout) {
             result = 0x10;
+            goto done;
+        }
+
+        setupResult = fn_80072A00_setup(chan);
+
+        if (setupResult != 0) {
+            innerResult = setupResult;
+            goto iteration_done;
+        }
+
+        pingCommand = 0xAA;
+        if (GBAWrite(chan, &pingCommand, &pingLength) != 0) {
+            innerResult = 0xB;
+            goto header_done;
+        }
+
+        {
+            s32 pollResult;
+
+            pollResult = fn_80071AE4_poll_read(chan, &response, &pingLength,
+                                               &status);
+            innerResult = pollResult != 0 ? pollResult + 0xB : 0;
+        }
+
+header_done:
+        switch (innerResult) {
+        case 0:
+            innerResult = (response >> 24) != 0xAA ? 0xF : 0;
+            break;
+        default:
             break;
         }
-
-        setupTimeout = OSMillisecondsToTicks(5);
-        setupStart = OSGetTick();
-        setupExpired = OSGetTick() - setupStart > setupTimeout;
-        innerResult = fn_80073C38(chan);
-        if (innerResult == 1) {
-            if (!setupExpired) {
-                innerResult = 0;
-            }
-        }
-
-        if (innerResult == 0) {
-            command = 0xAA;
-            if (GBAWrite(chan, &command, &length) != 0) {
-                innerResult = 0xB;
-            } else {
-                innerResult =
-                    fn_80071AE4_poll_read(chan, &response, &length, &status);
-                if (innerResult != 0) {
-                    innerResult += 0xB;
-                } else if ((response >> 24) != 0xAA) {
-                    innerResult = 0xF;
-                }
-            }
-        }
+iteration_done:
         _threadSwitch();
     } while (innerResult != 0);
 
 done:
-    gbaCommandSetKeyState(chan + 1, 1);
+    gbaCommandSetKeyState(keyChannel, 1);
     return result;
 }
+#pragma pop
 
 s32 fn_800730F8(s32 chan, u32 value)
 {
