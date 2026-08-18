@@ -5873,6 +5873,8 @@ static inline s32 menuReadGbaZeroResponse(s32 channel)
     return result;
 }
 
+#pragma push
+#pragma peephole off
 s32 fn_800719A8(s32 channel)
 {
     return menuReadGbaZeroResponse(channel);
@@ -5882,6 +5884,7 @@ s32 fn_80072548(s32 channel)
 {
     return menuReadGbaZeroResponse(channel);
 }
+#pragma pop
 
 extern u32 lbl_8047A610;
 extern f32 lbl_8047C098;
