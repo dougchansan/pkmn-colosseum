@@ -572,46 +572,45 @@ static inline s32 fn_80071AE4_poll_read(s32 chan, u32* response, u8* length,
 }
 
 static inline u32 fn_80071AE4_swap_word(u32 value) {
-    u32 result;
-
-    result = value >> 24;
-    result |= (value >> 8) & 0x0000FF00;
-    result |= (value << 8) & 0x00FF0000;
-    result |= value << 24;
-    return result;
+    return (value >> 24) | ((value >> 8) & 0x0000FF00)
+         | ((value << 8) & 0x00FF0000) | (value << 24);
 }
 
+#pragma push
+#pragma peephole off
 s32 fn_80073A44(s32 chan, u16* buttons)
 {
-    u32 setupTimeout;
-    u32 setupStart;
+    u32 timeout;
+    u32 start;
     u32 response;
     u32 command;
     u8 length;
     u8 status;
     s32 result;
-    s32 setupExpired;
+    s32 expired;
 
-    setupTimeout = OSMillisecondsToTicks(5);
-    setupStart = OSGetTick();
-    setupExpired = OSGetTick() - setupStart > setupTimeout;
-    result = fn_80073C38(chan);
-    if (result == 1) {
-        if (setupExpired) {
-            return 1;
-        }
-    } else if (result != 0) {
+    timeout = OSMillisecondsToTicks(5);
+    start = OSGetTick();
+    do {
+        expired = OSGetTick() - start > timeout;
+        result = fn_80073C38(chan);
+    } while (result == 1 && !expired);
+    if (result != 0) {
         return result;
     }
 
     command = 0xAA;
     if (GBAWrite(chan, &command, &length) != 0) {
-        return 0xB;
+        result = 0xB;
+        goto header_done;
     }
 
     result = fn_80071AE4_poll_read(chan, &response, &length, &status);
+    result = result != 0 ? result + 0xB : 0;
+
+header_done:
     if (result != 0) {
-        return result + 0xB;
+        return result;
     }
     if ((response >> 24) != 0xAA) {
         return 0xF;
@@ -620,6 +619,7 @@ s32 fn_80073A44(s32 chan, u16* buttons)
     *buttons = fn_80071AE4_swap_word(response) >> 16;
     return 0;
 }
+#pragma pop
 
 s32 fn_80073C38(s32 chan)
 {
