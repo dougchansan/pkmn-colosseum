@@ -148,7 +148,7 @@ extern u8 lbl_80268AE0[];
 extern f32 lbl_8047C0E0;
 extern f32 lbl_8047C0E4;
 extern f32 lbl_8047C100;
-extern f32 lbl_8047C108;
+extern const f32 lbl_8047C108;
 extern u8 lbl_8047C10C;
 extern u32 OSGetTick(void);
 extern void _threadSwitch(void);
@@ -3697,7 +3697,7 @@ extern u8 lbl_8047A633;
 extern u8 lbl_8047A634;
 extern u8 lbl_8047A635;
 extern u32 lbl_8047A638;
-extern f32 lbl_8047C108;
+extern const f32 lbl_8047C108;
 extern f32 lbl_8047C114;
 extern f64 lbl_8047C118;
 extern f64 lbl_8047C120;
@@ -5372,6 +5372,20 @@ s32 fn_8007A82C(void) {
 }
 #pragma pop
 
+/* fn_8007A850 (0x8007A850): GBA-link e-card shop top loop.
+ *
+ * lbl_8047C108 is `SDATA2 const f32` in src/game/data/sdata2_8047C0A0.c, and
+ * retail hoists its load out of the wait loop; the file-scope declaration has
+ * to carry the `const` or LICM cannot move it past the calls, and without that
+ * hoist the FPR colouring for the whole loop comes out one register off.
+ *
+ * Ceiling is 98.44%: the two int->float conversion biases are compiler-owned
+ * literals, so we emit private .sdata2 pool entries (@2117/@2119) where retail
+ * relocates against lbl_8047C118/lbl_8047C120 in the canonical sdata2 unit.
+ * Every other instruction, register and branch matches. This is the
+ * "private unowned sdata2 constants" class recorded in
+ * docs/CAMPAIGN_OPERATIONS.md; no C construct emits `fsubs` against a named
+ * external double (a union spelling yields fsub+frsp). */
 void fn_8007A850(void)
 {
     extern void* fn_801D036C(void);
@@ -5380,7 +5394,7 @@ void fn_8007A850(void)
 
     backup = fn_801D036C();
     fadeCheck(1);
-    do {
+    while ((s32)lbl_8047A638 > 0) {
         switch (lbl_8047A638) {
         case 1:
         {
@@ -5390,14 +5404,22 @@ void fn_8007A850(void)
             choice = menuOpen(0xE1, 1);
             winMsgClose(1);
             switch (choice) {
-            case 1:
+            case 0:
                 lbl_8047A638 = 3;
                 break;
-            case 2:
+            case 1:
                 lbl_8047A638 = 4;
                 break;
-            case 3:
+            case 2:
                 lbl_8047A638 = 2;
+                break;
+            case 3:
+                menuClose(0xE1);
+                lbl_8047A638 = 0;
+                break;
+            case -1:
+                menuClose(0xE1);
+                lbl_8047A638 = 0;
                 break;
             default:
                 menuClose(0xE1);
@@ -5408,19 +5430,16 @@ void fn_8007A850(void)
         }
         case 2:
         {
+            extern u32 fn_800D3088(void);
+            extern s32 fn_800D37CC(void);
             f32 elapsed;
 
             winMsgOpenField(0x43A5, 1, 0);
             winMsgClose(1);
             elapsed = lbl_8047C114;
             while (elapsed < lbl_8047C108) {
-                s32 frames;
-                u32 ticks;
-
                 _threadSwitch();
-                frames = fn_800D37CC();
-                ticks = fn_800D3088();
-                elapsed += (f32)ticks / (f32)frames;
+                elapsed += (f32)fn_800D3088() / (f32)fn_800D37CC();
             }
             lbl_8047A638 = 1;
             break;
@@ -5432,7 +5451,7 @@ void fn_8007A850(void)
             fn_800792D8();
             break;
         }
-    } while ((s32)lbl_8047A638 > 0);
+    }
 
     fn_801D0314(backup);
     floorLink(0x321, 0);
