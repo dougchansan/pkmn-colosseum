@@ -2544,6 +2544,8 @@ transfer_done:
 }
 #pragma pop
 
+#pragma push
+#pragma peephole off
 /* fn_80072D58 (0x80072D58): send a variable-size data block to one GBA
  * channel. */
 s32 fn_80072D58(s32 chan, const u32* data, s32 size) {
@@ -2633,10 +2635,11 @@ header_done:
             }
 
             {
-                const u32* data_ptr = data;
+                const u32* data_ptr;
 
-                for (offset = 0; offset < size;
-                     offset += 4, data_ptr++) {
+                offset = 0;
+                data_ptr = data;
+                for (; offset < size; offset += 4, data_ptr++) {
                     send_word = *data_ptr;
                     if (GBAWrite(chan, &send_word, &send_status) != 0) {
                         result = 0x10;
@@ -2675,6 +2678,7 @@ transfer_done:
     gbaCommandSetKeyState(key_channel, result != 0 ? 1 : 3);
     return result;
 }
+#pragma pop
 
 /* fn_80073E84 (0x80073E84): constant-1 accessor. */
 s32 fn_80073E84(void) {
