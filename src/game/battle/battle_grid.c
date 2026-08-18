@@ -136,21 +136,27 @@ void fn_801C3114(void) {
  * battleGridGetMaxPokemonField - Highest field/level value among the
  * Pokemon currently occupying the grid, or 0 when no trainer is set up.
  *
- * Inferred inline helper: it owns no retail address of its own because
- * 0x801C31EC is its only call site and -inline auto expands it there.
- * The expansion is what produces `addi r29, r3, lbl_80466DE8@l` writing
- * the group pointer straight into its callee-saved register; the same
- * code written flat inside battleGrid_Setup costs an extra `mr` and one
- * instruction more than the retail function.
+ * Inferred inline helper: it owns no retail address, because -inline
+ * auto expands it into all three of its call sites (battleGrid_Setup,
+ * battleGridGetDistance, battleGridGetNormalisedScale). The expansion is
+ * what writes the group pointer straight into its callee-saved register
+ * (`addi rN, r3, lbl_80466DE8@l`); the same code written flat in a
+ * caller costs an extra `mr` and one instruction more than retail.
+ *
+ * The declaration order below is not arbitrary. It is the order that
+ * makes battleGridGetDistance and battleGridGetNormalisedScale come out
+ * byte-exact, and those two are compiled as separate units under
+ * different flags (-O4,s and MW 1.2.5n) from the -O4,p unit that scores
+ * battleGrid_Setup -- two independent confirmations of the same order.
  */
 static inline s32 battleGridGetMaxPokemonField(void) {
     extern BattleGridGroupTable lbl_80466DE8;
     extern s32 fn_801DAC24(void*);
-    s32 maxField = -2;
-    u8** pokemon;
-    BattleGridGroupEntry* group = lbl_80466DE8.entries;
     u16 i;
     u16 j;
+    BattleGridGroupEntry* group = lbl_80466DE8.entries;
+    u8** pokemon;
+    s32 maxField = -2;
 
     if (lbl_80466DE8.count == 0) {
         return 0;
@@ -175,18 +181,19 @@ static inline s32 battleGridGetMaxPokemonField(void) {
  * fn_801C31EC / battleGrid_Setup - Full grid setup with model loading.
  * Address: 0x801C31EC | Size: 0x244
  *
- * 99.21%, not yet exact. Instruction count, control flow and scheduling
- * all agree with retail; what is left is the register assignment inside
- * the inlined battleGridResetModelVisibilityFlags() tail, where retail
- * pairs (group, visibilityIndex, j, i) with (r27, r28, r29, r30) and we
- * emit (r30, r27, r28, r29). That assignment is caller-context driven,
- * not a property of the helper: 0x801C3114 inlines the same helper and
- * lands on retail's own (r27, r28, r29, r30) mapping. Swept without
- * finding a form that satisfies both call sites -- helper declaration
- * orders, group passed as a parameter, caller declaration order and
- * placement, helper linkage and definition order, if/else vs early
- * return in the field scan, for vs while in both loops, and writing the
- * tail out flat (which caps at 97.72%).
+ * 98.55%, not yet exact. Instruction count, control flow and scheduling
+ * all agree with retail; what is left is register assignment inside the
+ * two inlined helpers. Retail allocates both of them here in reverse
+ * declaration order, while battleGridGetDistance and
+ * battleGridGetNormalisedScale allocate the field-scan helper in
+ * declaration order and come out exact. No single form satisfies every
+ * call site, and the declaration order is pinned by the two that do
+ * match, so the residual is spent here rather than there. Swept without
+ * finding a form that resolves it: all 120 field-scan declaration
+ * orders, all 24 visibility-helper orders, group passed as a parameter,
+ * caller declaration order and placement, helper linkage and definition
+ * order, if/else vs early return in the scan, for vs while in both
+ * loops, and writing the tail out flat (which caps at 97.72%).
  * Referenced by battle_main.c (battle_FightEnd calls this for cleanup).
  * Sets up the complete battle field layout including stage model,
  * position markers, and initial camera placement.
@@ -309,8 +316,6 @@ void battleGridUpdate(void) {
  * Chooses the battle-grid distance from the largest active Pokemon class.
  */
 f32 battleGridGetDistance(u8 side) {
-    extern BattleGridGroupTable lbl_80466DE8;
-    extern s32 fn_801DAC24(void*);
     extern const f32 lbl_8047DF64;
     extern const f32 lbl_8047DF68;
     extern const f32 lbl_8047DF6C;
@@ -319,31 +324,9 @@ f32 battleGridGetDistance(u8 side) {
     extern const f32 lbl_8047DF78;
     extern const f32 lbl_8047DF7C;
     s32 maxField;
-    u8** pokemon;
-    BattleGridGroupEntry* group;
     f32 distance;
-    u16 j;
-    u16 i;
 
-    group = (BattleGridGroupEntry*)&lbl_80466DE8;
-    maxField = -2;
-    if (((BattleGridGroupTable*)group)->count == 0) {
-        maxField = 0;
-    } else {
-        for (i = 0; i < 4; i++, group++) {
-            if (group->slot != NULL) {
-                pokemon = group->pokemon;
-                for (j = 0; j < 2; j++, pokemon++) {
-                    if (*pokemon != NULL) {
-                        s32 field = fn_801DAC24(*pokemon);
-                        if (field > maxField) {
-                            maxField = field;
-                        }
-                    }
-                }
-            }
-        }
-    }
+    maxField = battleGridGetMaxPokemonField();
 
     switch (maxField) {
     case -2:
@@ -377,8 +360,6 @@ f32 battleGridGetDistance(u8 side) {
  * Chooses the model scale from the largest active Pokemon class.
  */
 void battleGridGetNormalisedScale(f32* scale) {
-    extern BattleGridGroupTable lbl_80466DE8;
-    extern s32 fn_801DAC24(void*);
     extern void set__5GSvecFfff(f32*, f32, f32, f32);
     extern const f32 lbl_8047DF64;
     extern const f32 lbl_8047DF68;
@@ -387,30 +368,9 @@ void battleGridGetNormalisedScale(f32* scale) {
     extern const f32 lbl_8047DF74;
     extern const f32 lbl_8047DFA0;
     s32 maxField;
-    u8** pokemon;
-    BattleGridGroupEntry* group = lbl_80466DE8.entries;
     f32 scaleValue;
-    u16 j;
-    u16 i;
 
-    maxField = -2;
-    if (lbl_80466DE8.count == 0) {
-        maxField = 0;
-    } else {
-        for (i = 0; i < 4; i++, group++) {
-            if (group->slot != NULL) {
-                pokemon = group->pokemon;
-                for (j = 0; j < 2; j++, pokemon++) {
-                    if (*pokemon != NULL) {
-                        s32 field = fn_801DAC24(*pokemon);
-                        if (field > maxField) {
-                            maxField = field;
-                        }
-                    }
-                }
-            }
-        }
-    }
+    maxField = battleGridGetMaxPokemonField();
 
     switch (maxField) {
     case -2:
