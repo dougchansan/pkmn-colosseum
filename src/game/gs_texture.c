@@ -63,6 +63,9 @@ extern u8 lbl_80466BC0[];  /* current display descriptor */
 /* ===== Global state (sbss/sdata) ===== */
 /* lbl_8047ABF0 : u16 -- texture pool allocation handle */
 static u16 gsTexPoolHandle;
+
+extern u16 _toolentryAlloc__FUl(u32 size); /* GSmemAllocRaw */
+extern void* fn_800E27B0(u16 handle); /* GSmemGetPtr */
 /* lbl_8047ABF8 : u32 -- max texture count */
 static u32 gsTexMaxCount;               /* @sda21 lbl_8047ABF8 */
 /* lbl_8047ABF4 : GStextureHandle* -- base pointer to texture pool */

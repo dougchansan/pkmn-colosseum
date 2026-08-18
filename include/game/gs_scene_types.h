@@ -22,8 +22,9 @@ extern void* memcpy(void* dst, const void* src, u32 n);
 extern void* memset(void* dst, int val, u32 size);
 
 /* GSmem */
-extern u16   _toolentryAlloc__FUl(u32 size);                     /* GSmemAllocRaw */
-extern void* fn_800E27B0(u16 handle);                   /* GSmemGetPtr */
+/* _toolentryAlloc__FUl (GSmemAllocRaw) is declared per-TU: retail codegen
+ * depends on whether the caller sees the u16 handle or the raw u32 return. */
+/* fn_800E27B0 (GSmemGetPtr) is likewise declared per-TU. */
 extern void  fn_800E209C(u16 handle);                   /* GSmemFree */
 
 /* GSgfx math/render */
@@ -70,7 +71,7 @@ extern void* lbl_80478FB8;  /* scene render table */
 extern void* lbl_8047B1A8;  /* scene object table */
 extern u16   lbl_8047B1A2;  /* scene param halfword */
 extern u32   lbl_8047B1A4;  /* scene param word */
-extern u32   lbl_8047B1AC;  /* scene state param */
+extern u16   lbl_8047B1AC;  /* floor-entry table alloc handle */
 
 extern u32   lbl_80478C4C;  /* scene state word */
 
