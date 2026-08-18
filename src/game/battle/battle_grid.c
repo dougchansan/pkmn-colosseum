@@ -133,8 +133,60 @@ void fn_801C3114(void) {
 }
 
 /**
+ * battleGridGetMaxPokemonField - Highest field/level value among the
+ * Pokemon currently occupying the grid, or 0 when no trainer is set up.
+ *
+ * Inferred inline helper: it owns no retail address of its own because
+ * 0x801C31EC is its only call site and -inline auto expands it there.
+ * The expansion is what produces `addi r29, r3, lbl_80466DE8@l` writing
+ * the group pointer straight into its callee-saved register; the same
+ * code written flat inside battleGrid_Setup costs an extra `mr` and one
+ * instruction more than the retail function.
+ */
+static inline s32 battleGridGetMaxPokemonField(void) {
+    extern BattleGridGroupTable lbl_80466DE8;
+    extern s32 fn_801DAC24(void*);
+    s32 maxField = -2;
+    u8** pokemon;
+    BattleGridGroupEntry* group = lbl_80466DE8.entries;
+    u16 i;
+    u16 j;
+
+    if (lbl_80466DE8.count == 0) {
+        return 0;
+    }
+    for (i = 0; i < 4; i++, group++) {
+        if (group->slot != NULL) {
+            pokemon = group->pokemon;
+            for (j = 0; j < 2; j++, pokemon++) {
+                if (*pokemon != NULL) {
+                    s32 field = fn_801DAC24(*pokemon);
+                    if (field > maxField) {
+                        maxField = field;
+                    }
+                }
+            }
+        }
+    }
+    return maxField;
+}
+
+/**
  * fn_801C31EC / battleGrid_Setup - Full grid setup with model loading.
  * Address: 0x801C31EC | Size: 0x244
+ *
+ * 99.21%, not yet exact. Instruction count, control flow and scheduling
+ * all agree with retail; what is left is the register assignment inside
+ * the inlined battleGridResetModelVisibilityFlags() tail, where retail
+ * pairs (group, visibilityIndex, j, i) with (r27, r28, r29, r30) and we
+ * emit (r30, r27, r28, r29). That assignment is caller-context driven,
+ * not a property of the helper: 0x801C3114 inlines the same helper and
+ * lands on retail's own (r27, r28, r29, r30) mapping. Swept without
+ * finding a form that satisfies both call sites -- helper declaration
+ * orders, group passed as a parameter, caller declaration order and
+ * placement, helper linkage and definition order, if/else vs early
+ * return in the field scan, for vs while in both loops, and writing the
+ * tail out flat (which caps at 97.72%).
  * Referenced by battle_main.c (battle_FightEnd calls this for cleanup).
  * Sets up the complete battle field layout including stage model,
  * position markers, and initial camera placement.
@@ -151,14 +203,11 @@ void fn_801C31EC(void) {
     extern s32 lbl_80478CA8;
     extern s32 lbl_80478CAC;
     extern u8 lbl_8047B399;
-    extern u8 lbl_8047B39A;
-    extern u8 lbl_8047B39C[12] __attribute__((section(".sdata")));
     extern const f32 lbl_8047DF5C;
     extern const f32 lbl_8047DF60;
     extern const f32 lbl_8047DF64;
     extern const f32 lbl_8047DF68;
     extern char lbl_802757FC[];
-    extern s32 fn_801DAC24(void*);
     extern FloorData* floorDataBiosGetCurrentPtr(void);
     extern void* fn_80113F48(void);
     extern void set__5GSvecFfff(f32*, f32, f32, f32);
@@ -167,45 +216,29 @@ void fn_801C31EC(void) {
     extern u32 floorReadMakeModelResID(u32);
     extern void GSmodelSetScale(void*, f32*);
     extern void cameraSetOffsetScale(f32*);
-    extern void fn_801DA4E8(void*, u32);
-    BattleGridGroupEntry* group;
     FloorData* floor;
     ModelList* modelList;
     void* resourceBase;
     void* resource;
     s32 maxField;
     u32 modelId;
+    u32 modelIndex;
     f32 scaleValue;
-    u16 visibilityIndex;
-    u16 i;
-    u16 j;
     f32 scale[3];
 
     memset(&lbl_80466DE8, 0, 0x44);
     lbl_80478CAC = -1;
     lbl_80478CA8 = 200;
 
-    maxField = -2;
-    group = lbl_80466DE8.entries;
-    if (lbl_80466DE8.count == 0) {
-        maxField = 0;
-    } else {
-        for (i = 0; i < 4; i++, group++) {
-            if (group->slot != NULL) {
-                for (j = 0; j < 2; j++) {
-                    if (group->pokemon[j] != NULL) {
-                        s32 field = fn_801DAC24(group->pokemon[j]);
-                        if (field > maxField) {
-                            maxField = field;
-                        }
-                    }
-                }
-            }
-        }
-    }
+    maxField = battleGridGetMaxPokemonField();
 
     floor = floorDataBiosGetCurrentPtr();
     resourceBase = fn_80113F48();
+    /* Retail materialises the model index here, before the switch, and
+     * keeps it in a callee-saved register across the four calls that
+     * follow; only the strength-reduced byte offset is set up in the
+     * loop preheader. */
+    modelIndex = 0;
     switch (maxField) {
     case 1:
         scaleValue = lbl_8047DF5C;
@@ -227,8 +260,9 @@ void fn_801C31EC(void) {
         modelList = HSD_ArchiveGetPublicAddress(resource, lbl_802757FC);
         if (modelList != NULL && modelList->models != NULL) {
             modelId = floorReadMakeModelResID(floor->resourceId);
-            for (i = 0; modelList->models[i] != NULL; i++) {
-                void* model = GSresGetResource(resourceBase, modelId | i);
+            for (; modelList->models[modelIndex] != NULL; modelIndex++) {
+                void* model =
+                    GSresGetResource(resourceBase, modelId | modelIndex);
                 if (model != NULL) {
                     GSmodelSetScale(model, scale);
                 }
@@ -238,18 +272,7 @@ void fn_801C31EC(void) {
     cameraSetOffsetScale(scale);
 
     lbl_8047B399 = 0;
-    group = lbl_80466DE8.entries;
-    visibilityIndex = 0;
-    if (lbl_8047B39A != 0) {
-        for (i = 0; i < 4; i++, group++) {
-            fn_801DA4E8(group->slot, lbl_8047B39C[visibilityIndex++]);
-            for (j = 0; j < 2; j++) {
-                fn_801DA4E8(group->pokemon[j],
-                            lbl_8047B39C[visibilityIndex++]);
-            }
-        }
-        lbl_8047B39A = 0;
-    }
+    battleGridResetModelVisibilityFlags();
 }
 
 /**
