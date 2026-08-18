@@ -1342,7 +1342,7 @@ s32 fn_80073990(s32 chan) {
  * re-verified against this unit's own compiler flags.
  */
 extern s32 fn_80190528(s32);
-extern s32 fn_801902E0(s32);
+extern u8 fn_801902E0(s32);
 extern s32 menuClose(s32);
 extern s32 fn_801906A0(s32);
 extern void _flagSet();
@@ -1984,7 +1984,7 @@ s32 fn_80075A9C(void) { return fn_80190528(0xab5); }
 
 #pragma push
 #pragma scheduling off
-s32 fn_80075AC0(void) { return fn_801902E0(0xab5); }
+u8 fn_80075AC0(void) { return fn_801902E0(0xab5); }
 #pragma pop
 
 #pragma push
@@ -1994,7 +1994,7 @@ s32 fn_80075AE4(void) { return fn_80190528(0xab4); }
 
 #pragma push
 #pragma scheduling off
-s32 fn_80075B08(void) { return fn_801902E0(0xab4); }
+u8 fn_80075B08(void) { return fn_801902E0(0xab4); }
 #pragma pop
 
 #pragma push
@@ -2004,7 +2004,7 @@ s32 fn_80075B2C(void) { return fn_80190528(0xab3); }
 
 #pragma push
 #pragma scheduling off
-s32 fn_80075B50(void) { return fn_801902E0(0xab3); }
+u8 fn_80075B50(void) { return fn_801902E0(0xab3); }
 #pragma pop
 
 #pragma push
@@ -2014,12 +2014,12 @@ s32 fn_80075BFC(void) { return fn_80190528(0xab1); }
 
 #pragma push
 #pragma scheduling off
-s32 fn_80075C20(void) { return fn_801902E0(0xab1); }
+u8 fn_80075C20(void) { return fn_801902E0(0xab1); }
 #pragma pop
 
 #pragma push
 #pragma scheduling off
-s32 fn_80075C44(void) { return fn_801902E0(0xa14); }
+u8 fn_80075C44(void) { return fn_801902E0(0xa14); }
 #pragma pop
 
 #pragma push
@@ -4848,6 +4848,17 @@ void fn_800792D8(void) {
 }
 #pragma pop
 
+/* fn_800798E8 (0x800798E8): e-card save/commit flow for the shop menu.
+ *
+ * Retail keeps the compare and the sign/zero extension apart (`clrlwi`+`cmplwi`,
+ * one `extsb` feeding three compares), so the peephole pass has to be off; the
+ * flag getters then have to return u8 like the canonical fn_801902E0 in
+ * src/game/gs_range_8018FE30.c, or peephole-off leaves a redundant truncation
+ * in front of each `stb`. `hero` is declared after the party-loop counter
+ * because that is what puts it above `backup` in the callee-saved ranking and
+ * lets it share r29 with the dead saveResult, as retail does. */
+#pragma push
+#pragma peephole off
 void fn_800798E8(void* backup)
 {
     typedef struct MenuSaveSnapshot {
@@ -4865,12 +4876,12 @@ void fn_800798E8(void* backup)
     extern void* floorDataBiosGetCurrentPtr(void);
     extern u32 floorDataBiosGetFloorID(void*);
     extern void heroPokemonGetPikachu(void*, u32);
-    void* hero;
     u32 canBag;
     void* pcbox;
     s32 saveResult;
     u32 canParty;
     u8 i;
+    void* hero;
     void* pokemon;
     u32 partyResult;
     u32 heroValue;
@@ -4969,6 +4980,7 @@ cancelled:
     menuClose(0xEF);
     lbl_8047A638 = 1;
 }
+#pragma pop
 
 #pragma push
 #pragma peephole off
