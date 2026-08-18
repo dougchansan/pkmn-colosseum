@@ -39,13 +39,6 @@
 #include "game/gs_render_util.h"
 #include "game/camera_types.h"
 
-#pragma push
-#pragma optimization_level 0
-#pragma optimizewithasm off
-void cameraUpdate(u32 captureIndex) {
-    /* TODO: match -- 3064 bytes at 0x80177A64 */
-}
-#pragma pop
 void* GSmodelGetPart(void* model, s32 partIndex);
 void GSpartGetTransform(void* part, void* transform, u32 arg2, u32 arg3);
 void GSpartFree(void* part);
@@ -833,6 +826,312 @@ static inline GSRenderCamera* cameraGetCurrentAnimation(void) {
     }
     return animation;
 }
+
+extern void GSlerpGetLinearInterpolationVector(void* dst, const void* start,
+                                               const void* end, f32 t);
+extern u8 GScameraIsAnimating(GSRenderCamera* camera);
+extern u8 fn_801174C4(void);
+extern u8 fn_801174EC(void);
+extern s32 fn_800D37CC(void);
+extern u8 lbl_8036C248[];
+extern void _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID(void);
+
+/* Re-applies the state's fov to the camera, keeping its other frustum
+ * parameters. */
+static inline void cameraApplyPerspective(GSRenderCamera* camera) {
+    f32 aspect;
+    f32 fov;
+    f32 near;
+    f32 far;
+
+    GScameraGetPerspective(camera, &aspect, &fov, &near, &far);
+    GScameraSetPerspective(camera, ((CameraPadState*)lbl_80478C40)->fov, fov,
+                           near, far);
+}
+
+/* Reports whether any of the four move channels is still interpolating. */
+static inline u8 cameraIsMoving(void) {
+    if (((CameraPadState*)lbl_80478C40)->targetMoveActive == 0 &&
+        ((CameraPadState*)lbl_80478C40)->targetOffsetMoveActive == 0 &&
+        ((CameraPadState*)lbl_80478C40)->positionMoveActive == 0 &&
+        ((CameraPadState*)lbl_80478C40)->rotationMoveActive == 0) {
+        return 0;
+    }
+    return 1;
+}
+
+#pragma push
+#pragma optimization_level 4
+void cameraUpdate(u32 captureIndex) {
+    GSRenderCamera* camera;
+    GSRenderCamera* animation;
+    GSSceneVec3 moveVec;
+    GSSceneVec3 padOffset;
+    GSRenderMtx padRotation;
+    GSSceneVec3 padInterest;
+    GSSceneVec3 followEye;
+    GSSceneVec3 followInterest;
+    GSSceneVec3 lookUp;
+    GSSceneVec3 lookInterest;
+    GSSceneVec3 fixedOffset;
+    GSRenderMtx fixedRotation;
+    GSSceneVec3 fixedInterest;
+    f32 distanceA;
+    f32 distanceB;
+    f32 distanceC;
+    u8 previousMode;
+
+    camera = GSresGetResource(0, 0);
+    if (((CameraPadState*)lbl_80478C40)->flags[0] == 1) {
+        if (((CameraPadState*)lbl_80478C40)->targetMoveActive != 0) {
+            ((CameraPadState*)lbl_80478C40)->targetMoveTime +=
+                (f32)(u32)fn_800D3088() / (f32)fn_800D37CC();
+            if (((CameraPadState*)lbl_80478C40)->targetMoveTime >=
+                ((CameraPadState*)lbl_80478C40)->targetMoveDuration) {
+                GSvecCopy(&((CameraPadState*)lbl_80478C40)->position,
+                          &((CameraPadState*)lbl_80478C40)->targetMoveEnd);
+                ((CameraPadState*)lbl_80478C40)->targetMoveTime = lbl_8047D740;
+                ((CameraPadState*)lbl_80478C40)->targetMoveActive = 0;
+            } else {
+                GSlerpGetLinearInterpolationVector(
+                    &((CameraPadState*)lbl_80478C40)->position,
+                    &((CameraPadState*)lbl_80478C40)->targetMoveStart,
+                    &((CameraPadState*)lbl_80478C40)->targetMoveEnd,
+                    ((CameraPadState*)lbl_80478C40)->targetMoveTime /
+                        ((CameraPadState*)lbl_80478C40)->targetMoveDuration);
+            }
+        }
+        if (((CameraPadState*)lbl_80478C40)->targetOffsetMoveActive != 0) {
+            ((CameraPadState*)lbl_80478C40)->targetOffsetMoveTime +=
+                (f32)(u32)fn_800D3088() / (f32)fn_800D37CC();
+            if (((CameraPadState*)lbl_80478C40)->targetOffsetMoveTime >=
+                ((CameraPadState*)lbl_80478C40)->targetOffsetMoveDuration) {
+                GSvecCopy(
+                    &((CameraPadState*)lbl_80478C40)->view,
+                    &((CameraPadState*)lbl_80478C40)->targetOffsetMoveEnd);
+                ((CameraPadState*)lbl_80478C40)->targetOffsetMoveTime =
+                    lbl_8047D740;
+                ((CameraPadState*)lbl_80478C40)->targetOffsetMoveActive = 0;
+            } else {
+                GSlerpGetLinearInterpolationVector(
+                    &((CameraPadState*)lbl_80478C40)->view,
+                    &((CameraPadState*)lbl_80478C40)->targetOffsetMoveStart,
+                    &((CameraPadState*)lbl_80478C40)->targetOffsetMoveEnd,
+                    ((CameraPadState*)lbl_80478C40)->targetOffsetMoveTime /
+                        ((CameraPadState*)lbl_80478C40)
+                            ->targetOffsetMoveDuration);
+            }
+        }
+        if (((CameraPadState*)lbl_80478C40)->positionMoveActive != 0) {
+            ((CameraPadState*)lbl_80478C40)->positionMoveTime +=
+                (f32)(u32)fn_800D3088() / (f32)fn_800D37CC();
+            if (((CameraPadState*)lbl_80478C40)->positionMoveTime >=
+                ((CameraPadState*)lbl_80478C40)->positionMoveDuration) {
+                GSvecCopy(&((CameraPadState*)lbl_80478C40)->direction,
+                          &((CameraPadState*)lbl_80478C40)->positionMoveEnd);
+                ((CameraPadState*)lbl_80478C40)->positionMoveTime =
+                    lbl_8047D740;
+                ((CameraPadState*)lbl_80478C40)->positionMoveActive = 0;
+            } else {
+                GSlerpGetLinearInterpolationVector(
+                    &((CameraPadState*)lbl_80478C40)->direction,
+                    &((CameraPadState*)lbl_80478C40)->positionMoveStart,
+                    &((CameraPadState*)lbl_80478C40)->positionMoveEnd,
+                    ((CameraPadState*)lbl_80478C40)->positionMoveTime /
+                        ((CameraPadState*)lbl_80478C40)->positionMoveDuration);
+            }
+        }
+        if (((CameraPadState*)lbl_80478C40)->rotationMoveActive != 0) {
+            ((CameraPadState*)lbl_80478C40)->rotationMoveTime +=
+                (f32)(u32)fn_800D3088() / (f32)fn_800D37CC();
+            if (((CameraPadState*)lbl_80478C40)->rotationMoveTime >=
+                ((CameraPadState*)lbl_80478C40)->rotationMoveDuration) {
+                GSvecCopy(&((CameraPadState*)lbl_80478C40)->rotation,
+                          &((CameraPadState*)lbl_80478C40)->rotationMoveEnd);
+                ((CameraPadState*)lbl_80478C40)->rotationMoveTime =
+                    lbl_8047D740;
+                ((CameraPadState*)lbl_80478C40)->rotationMoveActive = 0;
+            } else {
+                GSlerpGetLinearInterpolationVector(
+                    &((CameraPadState*)lbl_80478C40)->rotation,
+                    &((CameraPadState*)lbl_80478C40)->rotationMoveStart,
+                    &((CameraPadState*)lbl_80478C40)->rotationMoveEnd,
+                    ((CameraPadState*)lbl_80478C40)->rotationMoveTime /
+                        ((CameraPadState*)lbl_80478C40)->rotationMoveDuration);
+            }
+        }
+
+        switch (((CameraPadState*)lbl_80478C40)->mode) {
+        case 0:
+        case 1:
+        case 5:
+            if (fn_801174C4() != 0 && fn_801174EC() != 0) {
+                GSvecAdd(&moveVec,
+                         &((CameraPadState*)lbl_80478C40)->position,
+                         &((CameraPadState*)lbl_80478C40)->view);
+                fn_800E0168(&moveVec,
+                            &((CameraPadState*)lbl_80478C40)->direction,
+                            &moveVec);
+                ((CameraPadState*)lbl_80478C40)->height = moveVec.y;
+                distanceA = moveVec.x * moveVec.x + moveVec.z * moveVec.z;
+                cameraSqrt(&distanceA);
+                ((CameraPadState*)lbl_80478C40)->distance = distanceA;
+            }
+            break;
+        case 7:
+            fn_800E0168(&moveVec,
+                        &((CameraPadState*)lbl_80478C40)->direction,
+                        &((CameraPadState*)lbl_80478C40)->position);
+            ((CameraPadState*)lbl_80478C40)->height = moveVec.y;
+            distanceB = moveVec.x * moveVec.x + moveVec.z * moveVec.z;
+            cameraSqrt(&distanceB);
+            ((CameraPadState*)lbl_80478C40)->distance = distanceB;
+            if (((CameraPadState*)lbl_80478C40)->rotationMoveActive == 0 &&
+                ((CameraPadState*)lbl_80478C40)->positionMoveActive != 0) {
+                ((CameraPadState*)lbl_80478C40)->rotation.y =
+                    (f32)atan2(moveVec.x, moveVec.z);
+            }
+            break;
+        case 8:
+            animation = cameraGetCurrentAnimation();
+            if (animation == 0) {
+                return;
+            }
+            if (GScameraIsAnimating(animation) == 0) {
+                return;
+            }
+            if (GScameraHasAnimationEnded(animation) != 0) {
+                return;
+            }
+            break;
+        }
+
+        if (cameraIsMoving() == 0) {
+            ((CameraPadState*)lbl_80478C40)->flags[0] = 0;
+        }
+    } else {
+        switch (((CameraPadState*)lbl_80478C40)->mode) {
+        case 0:
+        case 1:
+        case 5:
+        case 7:
+            cameraRefreshTargetPos();
+            break;
+        case 2:
+        case 3:
+        case 6:
+        case 8:
+            break;
+        case 4:
+            camera = cameraGetCurrentAnimation();
+            if (camera == 0) {
+                ((CameraPadState*)lbl_80478C40)->animationGroup = 0;
+                ((CameraPadState*)lbl_80478C40)->animationId = 0;
+                previousMode = ((CameraPadState*)lbl_80478C40)->flags[1];
+                if (((CameraPadState*)lbl_80478C40)->mode != previousMode) {
+                    ((CameraPadState*)lbl_80478C40)->mode = previousMode;
+                }
+                ((CameraPadState*)lbl_80478C40)->targetGroup = 0;
+                ((CameraPadState*)lbl_80478C40)->targetId = 100;
+                ((CameraPadState*)lbl_80478C40)->targetSubId = -1;
+                camera = GSresGetResource(0, 0);
+            }
+            break;
+        }
+    }
+
+    switch (((CameraPadState*)lbl_80478C40)->mode) {
+    case 0:
+        set__5GSvecFfff(&padOffset, lbl_8047D740,
+                        ((CameraPadState*)lbl_80478C40)->height,
+                        ((CameraPadState*)lbl_80478C40)->distance);
+        GSmtxMakeYRotation(padRotation,
+                           ((CameraPadState*)lbl_80478C40)->rotation.y);
+        GSvecTransform(&padOffset, padRotation, &padOffset);
+        GSvecAdd(&((CameraPadState*)lbl_80478C40)->direction,
+                 &((CameraPadState*)lbl_80478C40)->position, &padOffset);
+        GScameraSetPosition(camera,
+                            &((CameraPadState*)lbl_80478C40)->direction);
+        GSvecAdd(&padInterest, &((CameraPadState*)lbl_80478C40)->position,
+                 &((CameraPadState*)lbl_80478C40)->view);
+        GScameraLookAt(camera, (const GSRenderVec3*)lbl_8036C248,
+                       (const GSRenderVec3*)&padInterest);
+        ((CameraPadState*)lbl_80478C40)->rotation.x =
+            -(f32)atan2(((CameraPadState*)lbl_80478C40)->height,
+                        ((CameraPadState*)lbl_80478C40)->distance);
+        cameraApplyPerspective(camera);
+        break;
+    case 1:
+    case 2:
+        GSvecAdd(&followInterest,
+                 &((CameraPadState*)lbl_80478C40)->position,
+                 &((CameraPadState*)lbl_80478C40)->view);
+        GScameraSetPosition(camera,
+                            &((CameraPadState*)lbl_80478C40)->direction);
+        GScameraLookAt(camera, (const GSRenderVec3*)lbl_8036C248,
+                       (const GSRenderVec3*)&followInterest);
+        fn_800E0168(&followEye, &((CameraPadState*)lbl_80478C40)->direction,
+                    &followInterest);
+        ((CameraPadState*)lbl_80478C40)->height = followEye.y;
+        distanceC = followEye.x * followEye.x + followEye.z * followEye.z;
+        cameraSqrt(&distanceC);
+        ((CameraPadState*)lbl_80478C40)->distance = distanceC;
+        ((CameraPadState*)lbl_80478C40)->rotation.y =
+            (f32)atan2(followEye.x, followEye.z);
+        ((CameraPadState*)lbl_80478C40)->rotation.x =
+            -(f32)atan2(((CameraPadState*)lbl_80478C40)->height,
+                        ((CameraPadState*)lbl_80478C40)->distance);
+        cameraApplyPerspective(camera);
+        break;
+    case 6:
+        _cameraPadMoveUpdate__FP9_GScamera(camera);
+        break;
+    case 5:
+        _cameraPadRotateUpdate__FP9_GScamera(camera);
+        break;
+    case 3:
+        GScameraSetPosition(camera,
+                            &((CameraPadState*)lbl_80478C40)->direction);
+        GScameraSetRotation(
+            camera,
+            (const GSRenderVec3*)&((CameraPadState*)lbl_80478C40)->rotation);
+        GScameraGetLookAt(camera, (GSRenderVec3*)&lookUp,
+                          (GSRenderVec3*)&lookInterest);
+        fn_800E0168(&((CameraPadState*)lbl_80478C40)->position, &lookInterest,
+                    &((CameraPadState*)lbl_80478C40)->view);
+        cameraApplyPerspective(camera);
+        break;
+    case 8:
+        _cameraOffsetAnimeUpdate__FP9_GScamera(camera);
+        _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
+        return;
+    
+    case 7:
+        set__5GSvecFfff(&fixedOffset, lbl_8047D740,
+                        ((CameraPadState*)lbl_80478C40)->height,
+                        ((CameraPadState*)lbl_80478C40)->distance);
+        GSmtxMakeYRotation(fixedRotation,
+                           ((CameraPadState*)lbl_80478C40)->rotation.y);
+        GSvecTransform(&fixedOffset, fixedRotation, &fixedOffset);
+        GSvecAdd(&((CameraPadState*)lbl_80478C40)->direction,
+                 &((CameraPadState*)lbl_80478C40)->position, &fixedOffset);
+        GSvecAdd(&fixedInterest, &((CameraPadState*)lbl_80478C40)->position,
+                 &((CameraPadState*)lbl_80478C40)->view);
+        GScameraSetPosition(camera,
+                            &((CameraPadState*)lbl_80478C40)->direction);
+        GScameraLookAt(camera, (const GSRenderVec3*)lbl_8036C248,
+                       (const GSRenderVec3*)&fixedInterest);
+        ((CameraPadState*)lbl_80478C40)->rotation.x =
+            -(f32)atan2(((CameraPadState*)lbl_80478C40)->height,
+                        ((CameraPadState*)lbl_80478C40)->distance);
+        cameraApplyPerspective(camera);
+        break;
+    }
+
+    fn_800D258C(camera);
+    _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
+}
+#pragma pop
 
 s32 cameraWaitSyncAnime(s32 sync) {
     GSRenderCamera* animation;
