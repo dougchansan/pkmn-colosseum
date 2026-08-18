@@ -75,29 +75,31 @@ void* battleGridGetPtr(void) {
     defined(BATTLE_GRID_RESIDUAL_PREFIX_801C3114_ONLY)
 
 /**
- * fn_801C3114 / battleGrid_Init - Initialize the battle grid.
- * Address: 0x801C3114 | Size: 0xD8
- * Clears all grid slots, initializes the camera state,
- * sets up the 4-position double battle layout.
+ * battleGridResetModelVisibilityFlags - Apply the cached per-model
+ * visibility flags to every grid slot, then drop the cache.
+ *
+ * The retail TU keeps an out-of-line copy of this helper at 0x801C2B2C
+ * (decompiled in game/battle/battle_camera.c) and, with -inline auto,
+ * also inlines it into battleGrid_Init below -- 0x801C3114 has no `bl`
+ * to it, but carries the whole loop verbatim. Reproducing that needs a
+ * real call the compiler can inline: hand-expanding the body at the call
+ * site schedules the group pointer and the shared zero constant
+ * differently and does not match. Declared file-local here so the object
+ * keeps only the inlined instance and never redefines the 0x801C2B2C
+ * symbol.
  */
-void fn_801C3114(void) {
+static inline void battleGridResetModelVisibilityFlags(void) {
     extern BattleGridGroupTable lbl_80466DE8;
-    extern s32 lbl_80478CA8;
-    extern s32 lbl_80478CAC;
-    extern u8 lbl_8047B399;
     extern u8 lbl_8047B39A;
     extern u8 lbl_8047B39C[12] __attribute__((section(".sdata")));
     extern void fn_801DA4E8(void*, u32);
-    u16 visibilityIndex;
-    u16 j;
+    BattleGridGroupEntry* group;
     u16 i;
-    BattleGridGroupEntry* group = lbl_80466DE8.entries;
+    u16 j;
+    u16 visibilityIndex;
 
-    memset(&lbl_80466DE8, 0, 0x44);
+    group = lbl_80466DE8.entries;
     visibilityIndex = 0;
-    lbl_80478CAC = -1;
-    lbl_80478CA8 = 200;
-    lbl_8047B399 = 0;
 
     if (lbl_8047B39A != 0) {
         for (i = 0; i < 4; i++, group++) {
@@ -109,6 +111,25 @@ void fn_801C3114(void) {
         }
         lbl_8047B39A = 0;
     }
+}
+
+/**
+ * fn_801C3114 / battleGrid_Init - Initialize the battle grid.
+ * Address: 0x801C3114 | Size: 0xD8
+ * Clears all grid slots, initializes the camera state,
+ * sets up the 4-position double battle layout.
+ */
+void fn_801C3114(void) {
+    extern BattleGridGroupTable lbl_80466DE8;
+    extern s32 lbl_80478CA8;
+    extern s32 lbl_80478CAC;
+    extern u8 lbl_8047B399;
+
+    memset(&lbl_80466DE8, 0, 0x44);
+    lbl_80478CAC = -1;
+    lbl_80478CA8 = 200;
+    lbl_8047B399 = 0;
+    battleGridResetModelVisibilityFlags();
 }
 
 /**
