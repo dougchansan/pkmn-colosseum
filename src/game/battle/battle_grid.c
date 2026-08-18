@@ -137,9 +137,12 @@ void fn_801C3114(void) {
  * Pokemon currently occupying the grid, or 0 when no trainer is set up.
  *
  * Inferred inline helper: it owns no retail address, because -inline
- * auto expands it into all three of its call sites (battleGrid_Setup,
- * battleGridGetDistance, battleGridGetNormalisedScale). The expansion is
- * what writes the group pointer straight into its callee-saved register
+ * auto expands it into every call site -- directly in
+ * battleGridGetBaseDistance and battleGridApplyFloorScale, and through
+ * those into battleGrid_Setup, battleGridGetDistance,
+ * battleGridGetNormalisedScale and battleGridUpdate (which carries two
+ * separate expansions of it). The expansion is what writes the group
+ * pointer straight into its callee-saved register
  * (`addi rN, r3, lbl_80466DE8@l`); the same code written flat in a
  * caller costs an extra `mr` and one instruction more than retail.
  *
@@ -177,39 +180,55 @@ static inline s32 battleGridGetMaxPokemonField(void) {
     return maxField;
 }
 
+typedef struct FloorData {
+    u8 pad_00[8];
+    u32 resourceId;
+} FloorData;
+
+typedef struct ModelList {
+    void** models;
+} ModelList;
+
 /**
- * fn_801C31EC / battleGrid_Setup - Full grid setup with model loading.
- * Address: 0x801C31EC | Size: 0x244
- *
- * 98.55%, not yet exact. Instruction count, control flow and scheduling
- * all agree with retail; what is left is register assignment inside the
- * two inlined helpers. Retail allocates both of them here in reverse
- * declaration order, while battleGridGetDistance and
- * battleGridGetNormalisedScale allocate the field-scan helper in
- * declaration order and come out exact. No single form satisfies every
- * call site, and the declaration order is pinned by the two that do
- * match, so the residual is spent here rather than there. Swept without
- * finding a form that resolves it: all 120 field-scan declaration
- * orders, all 24 visibility-helper orders, group passed as a parameter,
- * caller declaration order and placement, helper linkage and definition
- * order, if/else vs early return in the scan, for vs while in both
- * loops, and writing the tail out flat (which caps at 97.72%).
- * Referenced by battle_main.c (battle_FightEnd calls this for cleanup).
- * Sets up the complete battle field layout including stage model,
- * position markers, and initial camera placement.
+ * battleGridGetBaseDistance - Grid spacing for the largest Pokemon class
+ * currently on the field. Inline helper behind battleGridGetDistance,
+ * battleGridGetNormalisedScale and battleGridUpdate.
  */
-void fn_801C31EC(void) {
-    typedef struct FloorData {
-        u8 pad_00[8];
-        u32 resourceId;
-    } FloorData;
-    typedef struct ModelList {
-        void** models;
-    } ModelList;
-    extern BattleGridGroupTable lbl_80466DE8;
-    extern s32 lbl_80478CA8;
-    extern s32 lbl_80478CAC;
-    extern u8 lbl_8047B399;
+static inline f32 battleGridGetBaseDistance(void) {
+    extern const f32 lbl_8047DF64;
+    extern const f32 lbl_8047DF68;
+    extern const f32 lbl_8047DF6C;
+    extern const f32 lbl_8047DF70;
+    extern const f32 lbl_8047DF74;
+    f32 distance;
+
+    switch (battleGridGetMaxPokemonField()) {
+    case -2:
+    case -1:
+        distance = lbl_8047DF6C;
+        break;
+    case 1:
+        distance = lbl_8047DF64;
+        break;
+    case 2:
+        distance = lbl_8047DF70;
+        break;
+    case 3:
+        distance = lbl_8047DF74;
+        break;
+    default:
+        distance = lbl_8047DF68;
+        break;
+    }
+    return distance;
+}
+
+/**
+ * battleGridApplyFloorScale - Scale every floor model for the current
+ * Pokemon class and hand the same scale to the camera. Inlined into
+ * battleGrid_Setup and battleGridUpdate.
+ */
+static inline void battleGridApplyFloorScale(void) {
     extern const f32 lbl_8047DF5C;
     extern const f32 lbl_8047DF60;
     extern const f32 lbl_8047DF64;
@@ -233,18 +252,10 @@ void fn_801C31EC(void) {
     f32 scaleValue;
     f32 scale[3];
 
-    memset(&lbl_80466DE8, 0, 0x44);
-    lbl_80478CAC = -1;
-    lbl_80478CA8 = 200;
-
     maxField = battleGridGetMaxPokemonField();
 
     floor = floorDataBiosGetCurrentPtr();
     resourceBase = fn_80113F48();
-    /* Retail materialises the model index here, before the switch, and
-     * keeps it in a callee-saved register across the four calls that
-     * follow; only the strength-reduced byte offset is set up in the
-     * loop preheader. */
     modelIndex = 0;
     switch (maxField) {
     case 1:
@@ -277,38 +288,181 @@ void fn_801C31EC(void) {
         }
     }
     cameraSetOffsetScale(scale);
+}
+
+/**
+ * fn_801C31EC / battleGrid_Setup - Full grid setup with model loading.
+ * Address: 0x801C31EC | Size: 0x244
+ * Referenced by battle_main.c (battle_FightEnd calls this for cleanup).
+ */
+void fn_801C31EC(void) {
+    extern BattleGridGroupTable lbl_80466DE8;
+    extern s32 lbl_80478CA8;
+    extern s32 lbl_80478CAC;
+    extern u8 lbl_8047B399;
+
+    memset(&lbl_80466DE8, 0, 0x44);
+    lbl_80478CAC = -1;
+    lbl_80478CA8 = 200;
+
+    battleGridApplyFloorScale();
 
     lbl_8047B399 = 0;
     battleGridResetModelVisibilityFlags();
 }
-
 /**
- * battleGridUpdate - Main grid setup (large) (renamed from fn_801C3430;
- * confirmed name -- naming pass 2026-07-07).
- * Address: 0x801C3430 | Size: 0x634
- * This is the primary grid initialization function that:
- *   1. Loads the stage model from FDAT
- *   2. Sets up position transforms for all 4 battle slots
- *   3. Configures lighting and shadow rendering
- *   4. Sets up the battle camera default view
- *   5. Initializes the model animation system
+ * battleGridPlaceModel - Point one grid object's model at a position and
+ * rotation, then stamp its facing byte. Inlined at every call site.
  */
-void battleGridUpdate(void) {
-    extern void HSD_AObjInterpretAnim(void* ctx, f32 posX, f32 posZ);
-    f32 scale[3];
-    /* Main battle grid setup:
-     * 1. Load stage model from FDAT
-     * 2. Set up position transforms for all 4 battle slots
-     * 3. Configure lighting (ambient + 2 directional)
-     * 4. Configure shadow rendering
-     * 5. Set up battle camera default overhead view
-     * 6. Initialize model animation system
-     */
-    HSD_AObjInterpretAnim((void*)lbl_80466E50, 0.0f, 0.0f);
-    battleGridGetDistance(0);
-    battleGridGetNormalisedScale(scale);
+static inline void battleGridPlaceModel(u8* obj, f32* pos, f32* rot,
+                                        u8 mirrored) {
+    extern void* fn_801DAC3C(void*);
+    extern void GSmodelSetPosition(void*, f32*);
+    extern void GSmodelSetRotation(void*, f32*);
+    void* model;
+    s8 facing;
+
+    if (obj != NULL) {
+        model = fn_801DAC3C(obj);
+        if (model != NULL) {
+            GSmodelSetPosition(model, pos);
+            GSmodelSetRotation(model, rot);
+            facing = 1;
+            if (mirrored != 0) {
+                facing = -1;
+            }
+            obj[0x76] = facing;
+        }
+    }
 }
 
+/**
+ * battleGridUpdate - Lay out the whole grid: floor scale, then a
+ * position/rotation pass over the four slots and their Pokemon.
+ * Address: 0x801C3430 | Size: 0x634
+ *
+ * 98.79%, not yet exact. Instruction count (401), stack layout, control
+ * flow, both scan expansions and the whole placement loop agree with
+ * retail. Two things are left. Retail folds the early-out test and the
+ * first scan's own count test into a single load and compare off one
+ * long-lived table register; we re-materialise the address and re-read
+ * the count for the scan, costing four instructions. Threading the
+ * table through the helpers as a parameter expresses that but scores
+ * worse (98.51), as do reading the count through the group pointer,
+ * through the global directly, checking before or after the group
+ * assignment, wrapping the body in `if (count != 0)`, and expanding the
+ * base-distance switch here instead of calling the helper. The other is
+ * `lfd f1, @300` where retail has `lfd f1, lbl_8047DF98`: that is the
+ * int-to-float conversion literal mwcc emits for us as a fresh .sdata2
+ * entry, against a target that references the pooled one.
+ */
+void battleGridUpdate(void) {
+    extern BattleGridGroupTable lbl_80466DE8;
+    extern const f32 lbl_8047DF78;
+    extern const f32 lbl_8047DF7C;
+    extern const f32 lbl_8047DF80;
+    extern const f32 lbl_8047DF84;
+    extern const f32 lbl_8047DF88;
+    extern const f32 lbl_8047DF8C;
+    extern const f32 lbl_8047DF90;
+    extern void clear__5GSvecFv(f32*);
+    extern void GSvecCopy(f32*, f32*);
+    extern void fn_801DA4E8(void*, u32);
+    BattleGridGroupTable* table;
+    BattleGridGroupEntry* group;
+    f32 distance;
+    f32 negDistance;
+    f32 slotXMirror;
+    f32 modelXMirror;
+    f32 slotX;
+    f32 modelX;
+    f32 depthScale;
+    f32 soloOffset;
+    f32 pairOffset;
+    u16 i;
+    f32 pos[3];
+    f32 rot[3];
+    f32 slotPos[3];
+    f32 pairPos[3];
+
+    table = &lbl_80466DE8;
+    group = table->entries;
+    if (table->count == 0) {
+        return;
+    }
+
+    distance = battleGridGetBaseDistance();
+    battleGridApplyFloorScale();
+
+    clear__5GSvecFv(slotPos);
+    clear__5GSvecFv(pos);
+    clear__5GSvecFv(rot);
+
+    negDistance = -distance;
+    slotX = lbl_8047DF78 * distance;
+    slotXMirror = lbl_8047DF78 * negDistance;
+    modelXMirror = lbl_8047DF7C * negDistance;
+    modelX = lbl_8047DF7C * distance;
+    depthScale = lbl_8047DF80 * distance;
+    soloOffset = lbl_8047DF84 * distance;
+    pairOffset = lbl_8047DF88 * distance;
+
+    for (i = 0; i < 4; i++, group++) {
+        if (group->slot != NULL) {
+            f32 depth;
+
+            if (group->arg1 != 0) {
+                slotPos[0] = slotXMirror;
+                pos[0] = modelXMirror;
+                rot[1] = lbl_8047DF8C;
+            } else {
+                slotPos[0] = slotX;
+                pos[0] = modelX;
+                rot[1] = lbl_8047DF90;
+            }
+
+            depth = depthScale * (f32)(s8)group->arg2;
+            slotPos[2] = depth;
+            pos[2] = depth;
+
+            switch (group->memberCount) {
+            case 0:
+                break;
+            case 1:
+                slotPos[2] = depth + soloOffset;
+                if (group->pokemon[0] != NULL) {
+                    battleGridPlaceModel(group->pokemon[0], pos, rot,
+                                         group->arg1);
+                } else {
+                    battleGridPlaceModel(group->pokemon[1], pos, rot,
+                                         group->arg1);
+                }
+                break;
+            case 2:
+                GSvecCopy(pairPos, pos);
+                if (group->arg1 != 0) {
+                    pairPos[2] = pos[2] - pairOffset;
+                    battleGridPlaceModel(group->pokemon[0], pairPos, rot,
+                                         group->arg1);
+                    pairPos[2] = pos[2] + pairOffset;
+                    battleGridPlaceModel(group->pokemon[1], pairPos, rot,
+                                         group->arg1);
+                } else {
+                    pairPos[2] = pos[2] - pairOffset;
+                    battleGridPlaceModel(group->pokemon[1], pairPos, rot,
+                                         group->arg1);
+                    pairPos[2] = pos[2] + pairOffset;
+                    battleGridPlaceModel(group->pokemon[0], pairPos, rot,
+                                         group->arg1);
+                }
+                break;
+            }
+
+            battleGridPlaceModel(group->slot, slotPos, rot, group->arg1);
+            fn_801DA4E8(group->slot, 1);
+        }
+    }
+}
 /**
  * battleGridGetDistance (renamed from fn_801C3A64; confirmed name --
  * naming pass 2026-07-07).
