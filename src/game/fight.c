@@ -600,14 +600,23 @@ FightEncountData* fightEncountDataBiosGetPtr(u16 index) {
 }
 
 /* 0x8020E124 | size: 0x80 | small */
+/* The bounds-check index is a separate local, not the u16 parameter: retail
+ * keeps the widened index in r7 (the last-coloured slot), which only happens
+ * when it is a declared local rather than a compiler temp.  It is spelled
+ * `unsigned int`, not `u32` -- both are 32-bit unsigned here, but MWCC ranks
+ * int- and long-typed locals separately when it colours them, and only the
+ * int spelling puts trainerNum/count/idx in r5/r6/r7 the way retail has it.
+ * Same lever as fightTrainerAiWazaValueHimitunotikara's param2. */
 u16 fightTypeGetFightSideFightOutPokemonMax(u16 index) {
     FightTypeData* type;
-    u32 count;
     u8 trainerNum;
     u8 fightoutPokemonNum;
+    u32 count;
+    unsigned int idx;
 
+    idx = index;
     count = *lbl_80478F00;
-    if (index > count) {
+    if (idx > count) {
         type = NULL;
     } else {
         type = &lbl_80478F04[index];
@@ -617,7 +626,7 @@ u16 fightTypeGetFightSideFightOutPokemonMax(u16 index) {
     } else {
         trainerNum = type->trainerNum;
     }
-    if (index > count) {
+    if (idx > count) {
         type = NULL;
     } else {
         type = &lbl_80478F04[index];
