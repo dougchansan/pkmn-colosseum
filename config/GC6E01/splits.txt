@@ -1218,8 +1218,26 @@ dolphin/os/OSContext.c:
 dolphin/os/OSContextClear.c:
 	.text       start:0x8009BD60 end:0x8009BD84
 
-dolphin/sdk_range_8009BD84.c:
-	.text       start:0x8009BD84 end:0x8009DF88
+dolphin/sdk_candidate_8009BD84.c:
+	.text       start:0x8009BD84 end:0x8009C2E0
+
+dolphin/sdk_exact_8009C2E0.c:
+	.text       start:0x8009C2E0 end:0x8009C578
+
+dolphin/sdk_candidate_8009C578.c:
+	.text       start:0x8009C578 end:0x8009C860
+
+dolphin/sdk_exact_8009C860.c:
+	.text       start:0x8009C860 end:0x8009CD38
+
+dolphin/sdk_candidate_8009CD38.c:
+	.text       start:0x8009CD38 end:0x8009D510
+
+dolphin/sdk_exact_8009D510.c:
+	.text       start:0x8009D510 end:0x8009DF3C
+
+dolphin/sdk_candidate_8009DF3C.c:
+	.text       start:0x8009DF3C end:0x8009DF88
 
 dolphin/os/OSInterruptHandlers.c:
 	.text       start:0x8009DF88 end:0x8009DFB8

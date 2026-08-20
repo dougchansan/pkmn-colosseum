@@ -3523,15 +3523,27 @@ config.libs = [
                 mw_version="GC/1.2.5n",
                 progress_category="sdk",
             ),
-            Object(
-                CodeCandidate,
-                "dolphin/sdk_range_8009BD84.c",
-                mw_version="GC/1.2.5n",
-                progress_category="sdk",
-                # OSFatal.c's RGB2YUV is emitted with separate fmuls/fadds, so
-                # this SDK object predates the project-wide -fp_contract on.
-                extra_cflags=["-fp_contract off"],
-            ),
+            *[
+                Object(
+                    status,
+                    path,
+                    mw_version="GC/1.2.5n",
+                    progress_category="sdk",
+                    # OSFatal.c's RGB2YUV is emitted with separate fmuls/fadds,
+                    # so this SDK family predates the project-wide
+                    # -fp_contract on.
+                    extra_cflags=["-fp_contract off"],
+                )
+                for status, path in [
+                    (CodeCandidate, "dolphin/sdk_candidate_8009BD84.c"),
+                    (Matching, "dolphin/sdk_exact_8009C2E0.c"),
+                    (CodeCandidate, "dolphin/sdk_candidate_8009C578.c"),
+                    (Matching, "dolphin/sdk_exact_8009C860.c"),
+                    (CodeCandidate, "dolphin/sdk_candidate_8009CD38.c"),
+                    (Matching, "dolphin/sdk_exact_8009D510.c"),
+                    (CodeCandidate, "dolphin/sdk_candidate_8009DF3C.c"),
+                ]
+            ],
             *[
                 Object(status, path, mw_version="GC/1.2.5n", progress_category="sdk")
                 for status, path in [

@@ -18,6 +18,8 @@
 
 #define OS_FPUCONTEXT (*(OSContext* volatile*)0x800000D8)
 
+#if !defined(SDK_8009BD84_BANK_ACTIVE) || \
+    defined(SDK_CANDIDATE_8009BD84_8009C2E0)
 void OSInitContext(OSContext* context, u32 pc, u32 newsp) {
     extern u8 _SDA_BASE_[];
     extern u8 _SDA2_BASE_[];
@@ -157,7 +159,6 @@ void OSSwitchFPUContext(u8 exception, OSContext* context) {
     context->state &= ~OS_CONTEXT_STATE_EXC;
 }
 #pragma scheduling reset
-
 #pragma peephole off
 void __OSContextInit(void) {
     __OSSetExceptionHandler(OS_EXCEPTION_FLOATING_POINT,
@@ -166,7 +167,16 @@ void __OSContextInit(void) {
     DBPrintf("FPU-unavailable handler installed\n");
 }
 #pragma peephole reset
+#endif
 
+/* FPSCR bits left standing when an FP exception is cleared. */
+#define FPSCR_KEEP 0x6005F8FF
+/* FPSCR VE|OE|UE|ZE|XE, and MSR FE0|FE1. */
+#define FPSCR_ENABLE 0xF8
+#define MSR_FE 0x900
+
+#if !defined(SDK_8009BD84_BANK_ACTIVE) || \
+    defined(SDK_EXACT_8009C2E0_8009C578)
 void OSReport(const char* format, ...) {
     typedef struct {
         u8 gpr;
@@ -181,12 +191,6 @@ void OSReport(const char* format, ...) {
     __builtin_va_info(&args);
     vprintf(format, args);
 }
-
-/* FPSCR bits left standing when an FP exception is cleared. */
-#define FPSCR_KEEP 0x6005F8FF
-/* FPSCR VE|OE|UE|ZE|XE, and MSR FE0|FE1. */
-#define FPSCR_ENABLE 0xF8
-#define MSR_FE 0x900
 
 OSErrorHandler OSSetErrorHandler(u16 error, OSErrorHandler handler) {
     extern OSErrorHandler __OSErrorTable[17];
@@ -249,7 +253,10 @@ OSErrorHandler OSSetErrorHandler(u16 error, OSErrorHandler handler) {
     OSRestoreInterrupts(enabled);
     return oldHandler;
 }
+#endif
 
+#if !defined(SDK_8009BD84_BANK_ACTIVE) || \
+    defined(SDK_CANDIDATE_8009C578_8009C860)
 void __OSUnhandledException(u8 exception, OSContext* context, u32 dsisr,
                             u32 dar) {
     extern OSErrorHandler __OSErrorTable[17];
@@ -349,6 +356,7 @@ void __OSUnhandledException(u8 exception, OSContext* context, u32 dsisr,
              __OSLastInterruptSrr0, __OSLastInterruptTime);
     PPCHalt();
 }
+#endif
 
 typedef struct OSFontHeader {
     u16 fontType;
@@ -386,23 +394,8 @@ typedef struct OSFatalParam {
     /* 0x08 */ const char* msg;
 } OSFatalParam;
 
-/* Inlined into fn_8009CE8C (Halt); emits no standalone code. */
-static void ScreenClear(void* xfb, u16 xfbW, u16 xfbH, GXColor yuv) {
-    int i;
-    int j;
-    u8* ptr;
-
-    ptr = xfb;
-    for (i = 0; i < xfbH; i++) {
-        for (j = 0; j < xfbW; j += 2) {
-            *ptr++ = yuv.r;
-            *ptr++ = yuv.g;
-            *ptr++ = yuv.r;
-            *ptr++ = yuv.b;
-        }
-    }
-}
-
+#if !defined(SDK_8009BD84_BANK_ACTIVE) || \
+    defined(SDK_EXACT_8009C860_8009CD38)
 void ScreenReport(void* xfb, u16 xfbW, u16 xfbH, GXColor yuv, s32 x, s32 y,
                   s32 leading, const char* string) {
     extern char* fn_8009DC38(const char* string, void* image, s32 pos,
@@ -513,7 +506,10 @@ void ConfigureVideo(u16 fbWidth, u16 xfbHeight) {
     VIConfigure(&mode);
     VIConfigurePan(0, 0, 640, 480);
 }
+#endif
 
+#if !defined(SDK_8009BD84_BANK_ACTIVE) || \
+    defined(SDK_CANDIDATE_8009CD38_8009D510)
 /* Inlined into fn_8009CE8C (Halt); emits no standalone code. */
 static GXColor RGB2YUV(GXColor rgb) {
     f32 Y;
@@ -535,11 +531,14 @@ static GXColor RGB2YUV(GXColor rgb) {
 
     return yuv;
 }
+#endif
 
 /**
  * OSFatal. Halts the machine, then hands off to fn_8009CE8C (Halt) on a fresh
  * fiber stack at the top of the arena to draw the message to the screen.
  */
+#if !defined(SDK_8009BD84_BANK_ACTIVE) || \
+    defined(SDK_CANDIDATE_8009CD38_8009D510)
 void fn_8009CD38(GXColor fg, GXColor bg, const char* msg) {
     extern void __OSStopAudioSystem(void);
     extern void AISetStreamVolLeft(u8 vol);
@@ -595,9 +594,29 @@ void fn_8009CD38(GXColor fg, GXColor bg, const char* msg) {
     fp->msg = msg;
     OSSwitchFiber((u32)fn_8009CE8C, (u32)OSGetArenaHi());
 }
+#endif
 
 /** EXI channel register file; [3] is the channel-0 control register. */
 volatile u32 __EXIRegs[15] : 0xCC006800;
+
+#if !defined(SDK_8009BD84_BANK_ACTIVE) || \
+    defined(SDK_CANDIDATE_8009CD38_8009D510)
+/* Inlined into fn_8009CE8C (Halt); emits no standalone code. */
+static void ScreenClear(void* xfb, u16 xfbW, u16 xfbH, GXColor yuv) {
+    int i;
+    int j;
+    u8* ptr;
+
+    ptr = xfb;
+    for (i = 0; i < xfbH; i++) {
+        for (j = 0; j < xfbW; j += 2) {
+            *ptr++ = yuv.r;
+            *ptr++ = yuv.g;
+            *ptr++ = yuv.r;
+            *ptr++ = yuv.b;
+        }
+    }
+}
 
 /**
  * Halt: OSFatal's fiber entry point. Copies the message into the fresh arena,
@@ -683,9 +702,12 @@ void fn_8009CE8C(void) {
     OSReport(lbl_80478998, fp->msg);
     PPCHalt();
 }
+#endif
 
 
 /* 0x8009D820 | 0x58 */
+#if !defined(SDK_8009BD84_BANK_ACTIVE) || \
+    defined(SDK_EXACT_8009D510_8009DF3C)
 static BOOL IsSjisTrailByte(u8 c) {
     return (0x40 <= c && c <= 0xFC) && (c != 0x7F);
 }
@@ -994,3 +1016,4 @@ char* fn_8009DC38(const char* string, void* image, s32 pos, s32 stride,
 
     return (char*)string;
 }
+#endif
