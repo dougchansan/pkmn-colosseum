@@ -10,6 +10,15 @@
 #include "dolphin/os/OSInterrupt.h"
 #include "dolphin/vi/VI.h"
 
+/*
+ * The retail TU was built with the global optimizer disabled: with it on,
+ * MWCC canonicalises `&lbl_80466BC0 + i * sizeof(XFB)` with the constant
+ * address on the right and evaluates the scaled index first, which swaps the
+ * base/offset temporaries in every `xfb[]` access.  Turning it off restores
+ * the retail base-first allocation across the whole file.
+ */
+#pragma global_optimizer off
+
 #define HSD_VI_XFB_MAX 3
 #define HSD_ANTIALIAS_OVERLAP 4
 
@@ -87,10 +96,16 @@ typedef struct HSD_VIInfo {
 
 extern HSD_VIInfo lbl_80466BC0;
 extern u8 lbl_804657C0[];
-extern char lbl_8047DF30[];
+extern const char lbl_8047DF30[8];
 extern char lbl_802756F8[];
 extern char lbl_80275704[];
 extern char lbl_8027575C[];
+extern int lbl_8047B380;
+extern int lbl_8047B384;
+
+/* HSD_VIPreRetraceCB's frame-period counters, in .sbss outside this split. */
+#define vr_count lbl_8047B380
+#define renew_count lbl_8047B384
 
 #define _p (&lbl_80466BC0)
 
@@ -352,17 +367,12 @@ void fn_801BFF18(u32 retraceCount)
     if (flush) {
         VIFlush();
     }
-    {
-        static int vr_count = 0;
-        static int renew_count = 0;
-
-        if (renew) {
-            renew_count++;
-        }
-        if (++vr_count >= _p->perf.frame_period) {
-            _p->perf.frame_renew = renew_count;
-            vr_count = renew_count = 0;
-        }
+    if (renew) {
+        renew_count++;
+    }
+    if (++vr_count >= _p->perf.frame_period) {
+        _p->perf.frame_renew = renew_count;
+        vr_count = renew_count = 0;
     }
     if (_p->pre_cb) {
         _p->pre_cb(retraceCount);
