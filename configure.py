@@ -9638,7 +9638,7 @@ config.libs = [
                     (Matching, "game/camera_exact_80176F68.c"),
                     (Matching, "game/camera_exact_80176F98.c"),
                     (Matching, "game/camera_exact_80177004.c"),
-                    (CodeCandidate, "game/camera_candidate_8017707C.c"),
+                    (Matching, "game/camera_candidate_8017707C.c"),
                     (Matching, "game/camera_exact_801773F4.c"),
                     (Matching, "game/camera_exact_80177478.c"),
                     (Matching, "game/camera_exact_801778B4.c"),
