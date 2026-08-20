@@ -3348,13 +3348,18 @@ u32 fn_8013CE58(void* inner, void* ptr) {
     u8* material;
     u8* stages;
     u8* stage;
-    u32 stageIndex;
-    u32 found9 = 0;
-    u32 found10 = 0;
-    u32 found11 = 0;
-    u32 found13 = 0;
+    s32 op;
+    s32 found9;
+    s32 found10;
+    s32 found13;
+    s32 found11;
+    s32 stageIndex;
 
     displayObject = fn_8019FF48(*(void**)((u8*)inner + 0x8));
+    found9 = 0;
+    found10 = 0;
+    found13 = 0;
+    found11 = 0;
     if (p[0x46] == 0) {
         return 1;
     }
@@ -3362,42 +3367,64 @@ u32 fn_8013CE58(void* inner, void* ptr) {
         return 0;
     }
 
-    material = *(u8**)(displayObject + 0xC);
+    material = displayObject != NULL ? *(u8**)(displayObject + 0xC) : NULL;
     if (material == NULL) {
         return 0;
     }
     stages = *(u8**)(material + 0x8);
+    stage = stages;
     if (stages == NULL) {
         return 0;
     }
 
-    for (stage = stages; *(s32*)stage != 0xFF; stage += 0x18) {
-        switch (*(s32*)stage) {
+    stageIndex = 1;
+    for (; (op = *(s32*)stage) != 0xFF; stage += 0x18, stageIndex++) {
+        switch (op) {
         case 9:
-            found9 = 1;
-            if (*(s32*)(stage + 0x8) != 1 || *(s32*)(stage + 0xC) != 4 ||
-                *(u16*)(stage + 0x12) != 12) {
+            found9 = stageIndex;
+            if (*(s32*)(stage + 0x8) != 1) {
+                return 0;
+            }
+            if (*(s32*)(stage + 0xC) != 4) {
+                return 0;
+            }
+            if (*(u16*)(stage + 0x12) != 12) {
                 return 0;
             }
             break;
         case 10:
-            found10 = 1;
-            if (*(s32*)(stage + 0x8) != 0 || *(s32*)(stage + 0xC) != 4 ||
-                *(u16*)(stage + 0x12) != 12) {
+            found10 = stageIndex;
+            if (*(s32*)(stage + 0x8) != 0) {
+                return 0;
+            }
+            if (*(s32*)(stage + 0xC) != 4) {
+                return 0;
+            }
+            if (*(u16*)(stage + 0x12) != 12) {
                 return 0;
             }
             break;
         case 11:
-            found11 = 1;
-            if (*(s32*)(stage + 0x8) != 1 || *(s32*)(stage + 0xC) != 5 ||
-                *(u16*)(stage + 0x12) != 4) {
+            found11 = stageIndex;
+            if (*(s32*)(stage + 0x8) != 1) {
+                return 0;
+            }
+            if (*(s32*)(stage + 0xC) != 5) {
+                return 0;
+            }
+            if (*(u16*)(stage + 0x12) != 4) {
                 return 0;
             }
             break;
         case 13:
-            found13 = 1;
-            if (*(s32*)(stage + 0x8) != 1 || *(s32*)(stage + 0xC) != 4 ||
-                *(u16*)(stage + 0x12) != 8) {
+            found13 = stageIndex;
+            if (*(s32*)(stage + 0x8) != 1) {
+                return 0;
+            }
+            if (*(s32*)(stage + 0xC) != 4) {
+                return 0;
+            }
+            if (*(u16*)(stage + 0x12) != 8) {
                 return 0;
             }
             break;
@@ -3410,13 +3437,12 @@ u32 fn_8013CE58(void* inner, void* ptr) {
         return 0;
     }
 
-    stage = stages;
     stageIndex = 0;
-    while (*(s32*)stage != 0xFF) {
-        *(u32*)(stage + 0x4) = *(u32*)(p + 0x20 + stageIndex * 4);
-        *(u32*)(stage + 0x14) = *(u32*)(p + 0x30 + stageIndex * 4);
+    while (*(s32*)stages != 0xFF) {
+        *(u32*)(stages + 0x4) = *(u32*)(p + 0x20 + stageIndex * 4);
+        *(u32*)(stages + 0x14) = *(u32*)(p + 0x30 + stageIndex * 4);
         stageIndex++;
-        stage += 0x18;
+        stages += 0x18;
     }
     *(u32*)(material + 0x10) = *(u32*)(p + 0x40);
     *(u16*)(material + 0xE) = *(u16*)(p + 0x44);
