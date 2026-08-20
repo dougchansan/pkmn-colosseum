@@ -90,6 +90,8 @@ void cameraResetFloor(void) {
 extern const GSSceneVec3 lbl_80273D98[4];
 extern u8 lbl_80452EC8[];
 extern u8* lbl_80478FBC;
+extern u32 _toolentryAlloc__FUl(u32 size); /* GSmemAllocRaw, raw return */
+extern void* fn_800E27B0(u16 handle); /* GSmemGetPtr */
 extern void* fn_800D29A0(void);
 extern void GSresRegisterResource(void* resource, u32 group, u32 id, u32 flags);
 extern void clear__5GSvecFv(void* vector);
@@ -101,10 +103,7 @@ void cameraInit(void) {
     GSSceneVec3 interest = lbl_80273D98[1];
     GSSceneVec3 eye = lbl_80273D98[2];
     GSSceneVec3 floorData = lbl_80273D98[3];
-    CameraPadState* state;
-    CameraFloorEntry* floorEntries;
     void* camera;
-    u32 count;
     u32 i;
     u16 handle;
 
@@ -113,32 +112,30 @@ void cameraInit(void) {
     camera = fn_800D29A0();
     GSresRegisterResource(camera, 0, 0, 0);
 
-    state = lbl_80478C40;
-    if (state->mode != 0) {
-        state->mode = 0;
+    if (((CameraPadState*)lbl_80478C40)->mode != 0) {
+        ((CameraPadState*)lbl_80478C40)->mode = 0;
     }
-    state->targetGroup = 0;
-    state->targetId = 100;
-    state->targetSubId = -1;
-    GSvecCopy(&state->view, &view);
+    ((CameraPadState*)lbl_80478C40)->targetGroup = 0;
+    ((CameraPadState*)lbl_80478C40)->targetId = 100;
+    ((CameraPadState*)lbl_80478C40)->targetSubId = -1;
+    GSvecCopy(&((CameraPadState*)lbl_80478C40)->view, &view);
 
-    count = *(u32*)lbl_80478FB8;
-    handle = _toolentryAlloc__FUl(count * sizeof(CameraFloorEntry));
+    handle = _toolentryAlloc__FUl(*(u32*)lbl_80478FB8 *
+                                  sizeof(CameraFloorEntry));
     lbl_8047B1AC = handle;
-    floorEntries = fn_800E27B0(handle);
-    lbl_8047B1A8 = floorEntries;
-    memset(floorEntries, 0, count * sizeof(CameraFloorEntry));
-    for (i = 0; i < count; i++) {
-        floorEntries[i].field_00 = 0;
-        floorEntries[i].floor =
+    lbl_8047B1A8 = fn_800E27B0(handle);
+    memset(lbl_8047B1A8, 0, *(u32*)lbl_80478FB8 * sizeof(CameraFloorEntry));
+    for (i = 0; i < *(u32*)lbl_80478FB8; i++) {
+        ((CameraFloorEntry*)lbl_8047B1A8)[i].field_00 = 0;
+        ((CameraFloorEntry*)lbl_8047B1A8)[i].floor =
             *(void**)(lbl_80478FBC + 0x0C + i * 0x4C);
     }
 
-    clear__5GSvecFv(&state->offsetPosition);
-    clear__5GSvecFv(&state->offsetRotation);
-    set__5GSvecFfff(&state->offsetScale, lbl_8047D724,
-                    lbl_8047D724, lbl_8047D724);
-    state->fov = lbl_8047D720.value;
+    clear__5GSvecFv(&((CameraPadState*)lbl_80478C40)->offsetPosition);
+    clear__5GSvecFv(&((CameraPadState*)lbl_80478C40)->offsetRotation);
+    set__5GSvecFfff(&((CameraPadState*)lbl_80478C40)->offsetScale,
+                    lbl_8047D724, lbl_8047D724, lbl_8047D724);
+    ((CameraPadState*)lbl_80478C40)->fov = lbl_8047D720.value;
     fn_800FF4D4(&floorData, 1);
     fn_800FF4D4(&floorData, 2);
     GScameraLookAt((GSRenderCamera*)camera,
