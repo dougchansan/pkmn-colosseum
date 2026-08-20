@@ -3231,61 +3231,56 @@ asm u32 fn_8013CA48(void* ptr, u32 delta) {
 #else
 u32 fn_8013CA48(void* ptr, u32 delta) {
     u8* p;
-    f32 t;
-    f32 span;
-    f32 amplitude;
     f32 angleStep;
     f32 rowAngleStep;
     f32 angle;
-    f32* randomX;
-    f32* randomZ;
-    f32* randomAngle;
+    f32 amplitude;
+    f32 span;
     f32* grid;
-    s32 rows;
     s32 columns;
-    s32 row;
+    s32 rows;
     s32 column;
-
-    if (ptr == NULL) {
-        return 0;
-    }
+    s32 row;
+    f32* randomAngle;
+    f32* randomZ;
+    f32* randomX;
 
     p = ptr;
-    if (*(u16*)(p + 0xA4) >= *(u16*)(p + 0xA6)) {
-        return 0;
-    }
-
-    t = (f32)*(u16*)(p + 0xA4) / (f32)*(u16*)(p + 0xA6);
-    randomX = *(f32**)(p + 0x80);
-    randomZ = *(f32**)(p + 0x84);
-    randomAngle = *(f32**)(p + 0x88);
-    rows = *(u16*)(p + 0x18);
-    columns = *(u16*)(p + 0x1A);
-
-    GXDrawDone();
-    fn_800B856C();
-    set__5GSvecFfff(lbl_80363CB8, *(f32*)&lbl_8047D23C, *(f32*)&lbl_8047D240,
-                    *(f32*)&lbl_8047D23C);
-
-    span = *(f32*)&lbl_8047D244 * *(f32*)(p + 0x68);
-    angleStep = span / (f32)(s32)(columns - 1);
-    amplitude = t * (span * *(f32*)(p + 0xA0));
-    grid = *(f32**)(p + 0x4);
-    for (row = 0; row < rows; row++) {
-        rowAngleStep = angleStep / *randomZ;
-        angle = *randomAngle + amplitude / *randomZ;
-        for (column = 0; column < columns; column++) {
-            grid[1] = *(f32*)(p + 0x4C) + *randomX * fn_800E0CA0(angle);
-            angle += rowAngleStep;
-            grid += 3;
+    if (p != NULL) {
+        if (*(u16*)(p + 0xA4) >= *(u16*)(p + 0xA6)) {
+            return 0;
         }
-        randomX++;
-        randomZ++;
-        randomAngle++;
-    }
 
-    *(u16*)(p + 0xA4) = *(u16*)(p + 0xA4) + delta;
-    return 1;
+        amplitude = (f32)*(u16*)(p + 0xA4) / (f32)*(u16*)(p + 0xA6);
+        randomX = *(f32**)(p + 0x80);
+        randomZ = *(f32**)(p + 0x84);
+        randomAngle = *(f32**)(p + 0x88);
+        rows = *(u16*)(p + 0x18);
+        columns = *(u16*)(p + 0x1A);
+
+        GXDrawDone();
+        fn_800B856C();
+        set__5GSvecFfff(lbl_80363CB8, *(f32*)&lbl_8047D23C, *(f32*)&lbl_8047D240,
+                        *(f32*)&lbl_8047D23C);
+
+        span = *(f32*)&lbl_8047D244 * *(f32*)(p + 0x68);
+        amplitude = amplitude * (span * *(f32*)(p + 0xA0));
+        angleStep = span / (f32)(columns - 1);
+        grid = *(f32**)(p + 0x4);
+        for (row = 0; row < rows; row++, randomX++, randomZ++, randomAngle++) {
+            rowAngleStep = angleStep / *randomZ;
+            angle = *randomAngle + amplitude / *randomZ;
+            for (column = 0; column < columns; column++) {
+                grid[1] = *(f32*)(p + 0x4C) + *randomX * fn_800E0CA0(angle);
+                angle += rowAngleStep;
+                grid += 3;
+            }
+        }
+
+        *(u16*)(p + 0xA4) = *(u16*)(p + 0xA4) + delta;
+        return 1;
+    }
+    return 0;
 }
 #endif
 extern u32 lbl_8047D23C;
