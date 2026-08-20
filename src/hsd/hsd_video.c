@@ -22,6 +22,9 @@
 #define HSD_VI_XFB_MAX 3
 #define HSD_ANTIALIAS_OVERLAP 4
 
+/* Two YUY2 pixels of XFB black (Y=0x10, Cb=Cr=0x80). */
+#define HSD_VI_XFB_BLACK2 0x10801080
+
 typedef void (*HSD_VIGXDrawDoneCallback)(int);
 
 typedef enum HSD_VIXFBDrawDispStatus {
@@ -100,6 +103,7 @@ extern const char lbl_8047DF30[8];
 extern char lbl_802756F8[];
 extern char lbl_80275704[];
 extern char lbl_8027575C[];
+extern const f32 lbl_8047DF38[2]; /* { 1.0f, 0.0f } */
 extern int lbl_8047B380;
 extern int lbl_8047B384;
 
@@ -141,30 +145,27 @@ static inline int HSD_VISearchXFBByStatus(HSD_VIXFBDrawDispStatus status)
 
 static inline int HSD_VIGetXFBDrawEnable(void)
 {
-    BOOL intr;
     int idx = -1;
 
-    if (_p->nb_xfb < 2) {
-        return idx;
-    }
-    intr = OSDisableInterrupts();
-    if ((idx = HSD_VISearchXFBByStatus(HSD_VI_XFB_DRAWING)) == -1) {
-        if ((idx = HSD_VISearchXFBByStatus(HSD_VI_XFB_FREE)) != -1) {
-            _p->xfb[idx].status = HSD_VI_XFB_DRAWING;
+    if (_p->nb_xfb >= 2) {
+        BOOL intr = OSDisableInterrupts();
+        if ((idx = HSD_VISearchXFBByStatus(HSD_VI_XFB_DRAWING)) == -1) {
+            if ((idx = HSD_VISearchXFBByStatus(HSD_VI_XFB_FREE)) != -1) {
+                _p->xfb[idx].status = HSD_VI_XFB_DRAWING;
+            }
         }
+        OSRestoreInterrupts(intr);
     }
-    OSRestoreInterrupts(intr);
     return idx;
 }
 
 static inline int HSD_VIWaitXFBDrawEnable(void)
 {
     int idx = -1;
-    if (_p->nb_xfb < 2) {
-        return idx;
-    }
-    while ((idx = HSD_VIGetXFBDrawEnable()) == -1) {
-        VIWaitForRetrace();
+    if (_p->nb_xfb >= 2) {
+        while ((idx = HSD_VIGetXFBDrawEnable()) == -1) {
+            VIWaitForRetrace();
+        }
     }
     return idx;
 }
@@ -184,23 +185,29 @@ static inline int HSD_VIWaitXFBFlushSub(void)
 /* Finalize the active XFB draw and advance its state. */
 void fn_801BF6AC(void)
 {
-    BOOL intr;
+    /*
+     * The three assert expressions are one -str reuse literal pool, and the
+     * retail code keeps its base in a callee-saved register for the whole
+     * function.  The pool lives in .rodata that splits.txt gives to
+     * game/data/rodata_80270008.c, so it has to be reached through the extern
+     * rather than written back as string literals here.
+     */
+    const char* msg = lbl_802756F8;
     BOOL inner;
+    BOOL intr;
     int idx;
 
     if (_p->nb_xfb < 2) {
         return;
     }
-
     intr = OSDisableInterrupts();
     idx = HSD_VISearchXFBByStatus(HSD_VI_XFB_DRAWING);
     if (idx == -1) {
-        __assert(lbl_8047DF30, 0x30D, lbl_802756F8);
+        __assert(lbl_8047DF30, 0x30D, msg + 0x0);
     }
-
     inner = OSDisableInterrupts();
     if (_p->xfb[idx].status != HSD_VI_XFB_DRAWING) {
-        __assert(lbl_8047DF30, 0x260, lbl_802756F8 + 0xC);
+        __assert(lbl_8047DF30, 0x260, msg + 0xC);
     }
     _p->xfb[idx].status = HSD_VI_XFB_WAITDONE;
     _p->xfb[idx].vi_all = _p->current;
@@ -209,12 +216,11 @@ void fn_801BF6AC(void)
 
     inner = OSDisableInterrupts();
     if (_p->xfb[idx].status != HSD_VI_XFB_WAITDONE) {
-        __assert(lbl_8047DF30, 0x2E4, lbl_802756F8 + 0x38);
+        __assert(lbl_8047DF30, 0x2E4, msg + 0x38);
     }
-    _p->xfb[idx].status =
-        HSD_VISearchXFBByStatus(HSD_VI_XFB_NEXT) != -1
-            ? HSD_VI_XFB_DRAWDONE
-            : HSD_VI_XFB_NEXT;
+    _p->xfb[idx].status = HSD_VISearchXFBByStatus(HSD_VI_XFB_NEXT) == -1
+                              ? HSD_VI_XFB_NEXT
+                              : HSD_VI_XFB_DRAWDONE;
     OSRestoreInterrupts(inner);
     OSRestoreInterrupts(intr);
 }
@@ -225,12 +231,14 @@ void fn_801BFA1C(HSD_VIStatus* vi, void* buffer, HSD_RenderPass rpass);
 void fn_801BF8A0(HSD_RenderPass rpass)
 {
     int idx;
+    void* buffer;
 
     if (_p->nb_xfb < 2) {
         return;
     }
     idx = HSD_VIWaitXFBDrawEnable();
-    fn_801BFA1C(&_p->current.vi, _p->xfb[idx].buffer, rpass);
+    buffer = _p->xfb[idx].buffer;
+    fn_801BFA1C(&_p->current.vi, buffer, rpass);
 
     while (fn_801BFCA0()) {
         fn_800B8DA8();
@@ -245,7 +253,9 @@ void fn_801BFA1C(HSD_VIStatus* vi, void* buffer, HSD_RenderPass rpass)
 {
     GXRenderModeObj* rmode = &vi->rmode;
     int n_xfb_lines;
+    int rest;
     u16 lines;
+    u16 pitch;
     u32 offset;
 
     fn_800B9C44(rmode->aa, rmode->sample_pattern, vi->vf, rmode->vfilter);
@@ -264,11 +274,26 @@ void fn_801BFA1C(HSD_VIStatus* vi, void* buffer, HSD_RenderPass rpass)
                                           rmode->xfbHeight));
         fn_800B96BC(rmode->fbWidth, n_xfb_lines);
         fn_800B9E88(buffer, TRUE);
+        /* Blank the XFB lines the copy did not reach. */
+        rest = rmode->xfbHeight - n_xfb_lines;
+        if (rest != 0) {
+            u32 bpl;
+            u32 nb;
+            u32* dst;
+
+            pitch = (rmode->fbWidth + 15) & ~15;
+            bpl = pitch * 2;
+            dst = (u32*) ((u8*) buffer + bpl * n_xfb_lines);
+            nb = (rest * bpl) / 4;
+            while (nb-- != 0) {
+                *dst++ = HSD_VI_XFB_BLACK2;
+            }
+        }
         break;
     case HSD_RP_TOPHALF:
         fn_800B959C(0, 0, rmode->fbWidth,
                     rmode->efbHeight - HSD_ANTIALIAS_OVERLAP);
-        n_xfb_lines = fn_800B9B14(1.0F);
+        n_xfb_lines = fn_800B9B14(lbl_8047DF38[0]);
         fn_800B96BC(rmode->fbWidth, n_xfb_lines);
         fn_800B9874(1);
         lines = rmode->efbHeight - HSD_ANTIALIAS_OVERLAP;
@@ -279,12 +304,13 @@ void fn_801BFA1C(HSD_VIStatus* vi, void* buffer, HSD_RenderPass rpass)
     case HSD_RP_BOTTOMHALF:
         fn_800B959C(0, 0, rmode->fbWidth,
                     rmode->efbHeight - HSD_ANTIALIAS_OVERLAP);
-        n_xfb_lines = fn_800B9B14(1.0F);
+        n_xfb_lines = fn_800B9B14(lbl_8047DF38[0]);
         fn_800B96BC(rmode->fbWidth, n_xfb_lines);
         fn_800B9874(2);
         lines = rmode->efbHeight - HSD_ANTIALIAS_OVERLAP;
         fn_800B959C(0, HSD_ANTIALIAS_OVERLAP, rmode->fbWidth, lines);
-        offset = (((rmode->fbWidth + 15) & ~15) * lines * 2);
+        pitch = (rmode->fbWidth + 15) & ~15;
+        offset = pitch * lines * 2;
         fn_800B9E88((u8*) buffer + offset, TRUE);
         fn_800B959C(0, 0, rmode->fbWidth, HSD_ANTIALIAS_OVERLAP);
         fn_800B9874(3);
