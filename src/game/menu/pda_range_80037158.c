@@ -445,8 +445,8 @@ void fn_80037870(void* window, volatile PdaSprite* sprite)
         }
         value = *(f32*)&lbl_8047BA58;
         sprite->alpha = (u8)(alpha + 0xff);
-        velocity = *(f32*)(lbl_803A654C + 0x20);
-        next = *(f32*)(lbl_803A654C + 0x28) + velocity;
+        next = *(f32*)(lbl_803A654C + 0x28) +
+               (velocity = *(f32*)(lbl_803A654C + 0x20));
         *(f32*)(lbl_803A654C + 0x28) = next;
         *(f32*)(lbl_803A654C + 0x20) =
             lbl_8047A494 * *(f32*)(lbl_803A654C + 0x1c) + velocity;
