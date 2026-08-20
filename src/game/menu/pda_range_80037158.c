@@ -1804,21 +1804,30 @@ s32 fn_8003ACE8(s32 arg0, s32 arg1, s32 arg2)
 s32 fn_8003AD6C(PdaSelectionWork* work, PdaSprite* sprite)
 {
     extern const s32 lbl_80267140[4];
+    s32 groups[4];
     s32 group;
     s32 found;
     s32 i;
+    s16 eventId;
+    s32 flag;
+    s8 selectedIndex;
 
+    groups[0] = lbl_80267140[0];
+    groups[1] = lbl_80267140[1];
+    groups[2] = lbl_80267140[2];
+    groups[3] = lbl_80267140[3];
     found = 0;
     group = 0;
+    eventId = sprite->eventId;
     for (i = 0; i < 2 && !found; i++) {
-        if (sprite->eventId == lbl_80267140[i]) {
+        if ((s32)eventId == groups[i]) {
             found = 1;
         }
     }
     if (!found) {
         group = 1;
         for (i = 0; i < 2 && !found; i++) {
-            if (sprite->eventId == lbl_80267140[i + 2]) {
+            if ((s32)eventId == groups[i + 2]) {
                 found = 1;
             }
         }
@@ -1830,7 +1839,13 @@ s32 fn_8003AD6C(PdaSelectionWork* work, PdaSprite* sprite)
         return 0;
     }
 
-    winSpriteSetDisp(sprite, group == work->selectedIndex);
+    selectedIndex = work->selectedIndex;
+    if (group == (s32)selectedIndex) {
+        flag = 1;
+    } else {
+        flag = 0;
+    }
+    winSpriteSetDisp(sprite, flag);
     return 0;
 }
 #pragma peephole reset
