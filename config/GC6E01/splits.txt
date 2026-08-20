@@ -5480,8 +5480,20 @@ game/field_r55_801CBE44_suffix.c:
 game/field_candidate_801CBA90_r40_801CBF64_gc25.c:
 	.text       start:0x801CBF64 end:0x801CC380
 
-game/field_candidate_801CBA90_r40_801CC380.c:
-	.text       start:0x801CC380 end:0x801D0080
+game/field_exact_801CC380.c:
+	.text       start:0x801CC380 end:0x801CDB04
+
+game/field_candidate_801CDB04.c:
+	.text       start:0x801CDB04 end:0x801CF320
+
+game/field_exact_801CF320.c:
+	.text       start:0x801CF320 end:0x801CF7E4
+
+game/field_candidate_801CF7E4.c:
+	.text       start:0x801CF7E4 end:0x801CFD08
+
+game/field_exact_801CFD08.c:
+	.text       start:0x801CFD08 end:0x801D0080
 
 game/field_exact_801D0080.c:
 	.text       start:0x801D0080 end:0x801D0090
