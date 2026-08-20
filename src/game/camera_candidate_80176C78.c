@@ -26,8 +26,11 @@ void cameraPlayOffsetAnime(u32 groupId, u32 animationId, s32 frame, u8 loop) {
         }
     }
 
+    /* Already-in-mode short-circuits the store and reports the mode itself. */
     previousMode = ((CameraPadState*)lbl_80478C40)->mode;
-    if (previousMode != 8) {
+    if (previousMode == 8) {
+        previousMode = 8;
+    } else {
         ((CameraPadState*)lbl_80478C40)->mode = 8;
     }
     ((CameraPadState*)lbl_80478C40)->animationGroup = groupId;
@@ -73,15 +76,22 @@ void cameraPlayAnime(u32 groupId, u32 animationId, s32 frame, u8 loop) {
         }
     }
 
+    /* Already-in-mode short-circuits the store and reports the mode itself. */
     previousMode = ((CameraPadState*)lbl_80478C40)->mode;
-    if (previousMode != 4) {
+    if (previousMode == 4) {
+        previousMode = 4;
+    } else {
         ((CameraPadState*)lbl_80478C40)->mode = 4;
     }
     ((CameraPadState*)lbl_80478C40)->animationGroup = groupId;
     ((CameraPadState*)lbl_80478C40)->animationId = animationId;
     ((CameraPadState*)lbl_80478C40)->flags[1] = previousMode;
 
-    animation = cameraGetCurrentAnimation();
+    state = lbl_80478C40;
+    animation = GSresGetResource(state->animationGroup, state->animationId);
+    if (animation == NULL) {
+        animation = fn_800F92D4(state->animationId);
+    }
     if (animation == NULL) {
         return;
     }
