@@ -1198,6 +1198,7 @@ s32 psInitAppSRT(s32 count, s32 size) {
  * frame-generation update is independently verified against 0x8016ABF4-
  * 0x8016AC14 in the Colosseum retail disassembly.
  */
+#pragma push
 #pragma optimization_level 2
 void fn_8016AB94(u32 linkMask, s32 mode) {
     s32 linkNo;
@@ -1524,7 +1525,7 @@ void fn_8016AB94(u32 linkMask, s32 mode) {
     }
 }
 
-#pragma optimization_level 1
+#pragma pop
 
 #endif
 
@@ -4536,8 +4537,6 @@ void psDispSub(PSParticle* pp, void* polygonData) {
  * asm-only; this entry block is verified at 0x8016D8EC-0x8016D954.
  */
 #pragma pop
-#pragma push
-#pragma optimization_level 0
 PSParticle* psDispSubPointTrail(PSParticle* pp) {
     f32 widthValue;
     s32 width;
@@ -4565,42 +4564,11 @@ PSParticle* psDispSubPointTrail(PSParticle* pp) {
 
     if (pp->flags & 4) {
         if (pp->peopleObj != NULL) {
-            f32 sinScale = (f32)sin(pp->scaleFactor);
-            f32 sinFriction = (f32)sin(pp->frictionFactor);
-            f32 cosScale = (f32)cos(pp->scaleFactor);
-            f32 cosFriction = (f32)cos(pp->frictionFactor);
-            f32* people = (f32*)pp->peopleObj;
-            f32 horizontal = pp->velocityZ - people[21];
-            f32 vertical = pp->velocityX - people[14];
-            f32 peopleScale = people[17];
-            f32 peopleAngle = people[18];
-            f32 magnitude;
-            f32 magnitudeCos;
-            f32 magnitudeSin;
-
-            if (peopleScale < 0.0f) {
-                peopleScale = -peopleScale;
-            }
-            if (peopleAngle < 0.0f) {
-                peopleAngle = -peopleAngle;
-            }
-            magnitude = (horizontal * (f32)tan(peopleAngle) + peopleScale) *
-                        pp->velocityY;
-            magnitudeCos = magnitude * (f32)cos(vertical);
-            magnitudeSin = magnitude * (f32)sin(vertical);
-            previous.x = people[8] + magnitudeCos * cosFriction +
-                         horizontal * sinFriction;
-            previous.y = people[9] + cosFriction * (horizontal * sinScale) +
-                         sinFriction * (-magnitudeCos * sinScale) +
-                         magnitudeSin * cosScale;
-            previous.z = people[10] + cosFriction * (horizontal * cosScale) +
-                         sinFriction * (-magnitudeCos * cosScale) -
-                         magnitudeSin * sinScale;
-        } else {
-            previous.x = pp->positionX;
-            previous.y = pp->positionY;
-            previous.z = pp->positionZ;
+            return pp;
         }
+        previous.x = pp->positionX;
+        previous.y = pp->positionY;
+        previous.z = pp->positionZ;
     } else {
         previous.x = pp->positionX - pp->velocityX;
         previous.y = pp->positionY - pp->velocityY;
@@ -4640,7 +4608,7 @@ PSParticle* psDispSubPointTrail(PSParticle* pp) {
         color.a = 0xFF;
         break;
     default:
-        return;
+        return pp;
     }
 
     fn_800B7D3C();
@@ -4682,7 +4650,6 @@ PSParticle* psDispSubPointTrail(PSParticle* pp) {
  * velocity.  Point raster emission remains to be decompiled; this is the
  * verified transform prefix at 0x8016DD68-0x8016DF14.
  */
-#pragma pop
 #pragma push
 #pragma optimization_level 0
 void psDispSubAPPSRTPoint(PSParticle* pp) {
@@ -5190,8 +5157,6 @@ void setupChanReg(PSParticle* pp) {
  * 0x8016E40C-0x8016E698.
  */
 #pragma pop
-#pragma push
-#pragma optimization_level 3
 void setupTevReg(PSParticle* pp) {
     GXColor reg1;
     GXColor reg2;
@@ -5229,8 +5194,7 @@ void setupTevReg(PSParticle* pp) {
 
     flags = pp->flags;
     if ((flags & PS_FLAG_INVISIBLE) ||
-        (((flags & 0x80000000) == 0) &&
-         ((flags & 0x00100000) == 0))) {
+        ((flags & 0x80000000) && (flags & 0x00100000))) {
         if (lbl_8047B138.r != reg1.r || lbl_8047B138.g != reg1.g ||
             lbl_8047B138.b != reg1.b || lbl_8047B138.a != reg1.a) {
             lbl_8047B138 = reg1;
@@ -5287,7 +5251,6 @@ void setupTevReg(PSParticle* pp) {
  * Emits one particle polygon. The geometry modes remain asm-only; this
  * verified entry gate is shared by every mode at 0x8016C1E0-0x8016C240.
  */
-#pragma pop
 #pragma optimization_level 4
 void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
                           f32 centerX, f32 centerY, f32 centerZ,
@@ -5630,6 +5593,7 @@ void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
     }
 }
 
+#pragma push
 #pragma optimization_level 2
 void psExecGenerator(u32 linkMask) {
     PSGeneratorState* gen;
@@ -5732,11 +5696,14 @@ void psExecGenerator(u32 linkMask) {
     }
 }
 
+#pragma pop
+
 /*
  * Generator emitter. The shape cases follow the matching HSD generator
  * implementation in Melee's baselib/generator.c; field offsets and the newer
  * Euler-basis extension were checked against this target's retail body.
  */
+#pragma push
 #pragma optimization_level 4
 #pragma peephole off
 f32 generateParticle_8017424C(PSGeneratorState* gen) {
@@ -6261,8 +6228,7 @@ f32 generateParticle_8017424C(PSGeneratorState* gen) {
     return gen->lifetime;
 }
 
-#pragma optimization_level 1
-#pragma peephole reset
+#pragma pop
 static inline s32 PSJObjMtxIsDirty(PSJObjTransform* jobj) {
     s32 dirty;
 

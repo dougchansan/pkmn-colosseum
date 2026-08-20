@@ -3182,6 +3182,25 @@ s32 HSD_TExpSimplify(ColTExpNode* texp) {
     if (fn_801B9320(texp) != 0) {
         res = 1;
     }
+    return res;
+}
+
+static inline s32 HSD_TExpSimplifyChild(ColTExpNode* texp)
+{
+    s32 res = 0;
+
+    if (((s32 (*)(ColTExpNode*)) HSD_TExpGetType)(texp) != COL_TE_TEV) {
+        return 0;
+    }
+    if (fn_801BB4C4(texp) != 0) {
+        res = 1;
+    }
+    if (fn_801BAC8C(texp) != 0) {
+        res = 1;
+    }
+    if (fn_801B9320(texp) != 0) {
+        res = 1;
+    }
     fn_801B9048(texp);
     return res;
 }
@@ -4287,7 +4306,7 @@ s32 fn_801BB4C4(ColTExpNode* tev)
         if (tev->c_in[i].type == COL_TE_TEV) {
             src = tev->c_in[i].exp;
             sel = tev->c_in[i].sel;
-            if (HSD_TExpSimplify(src) != 0) {
+            if (HSD_TExpSimplifyChild(src) != 0) {
                 result = 1;
             }
             if (sel == COL_TE_RGB) {
@@ -4364,7 +4383,7 @@ s32 fn_801BB4C4(ColTExpNode* tev)
         if (tev->a_in[i].type == COL_TE_TEV) {
             src = tev->a_in[i].exp;
             sel = tev->a_in[i].sel;
-            if (HSD_TExpSimplify(src) != 0) {
+            if (HSD_TExpSimplifyChild(src) != 0) {
                 result = 1;
             }
             switch (src->a_op) {

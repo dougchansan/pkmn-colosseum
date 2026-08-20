@@ -163,6 +163,7 @@ extern s32 fn_8008102C(void** object_ref, const u32* descriptor, s32 index,
                        s32 value, const char* text, s32 subindex);
 
 /* Decode and validate a packed card-e record. */
+#pragma push
 #pragma optimization_level 3
 #pragma peephole off
 u32 fn_80080310(void* output, const u8* packed, void* auxiliary)
@@ -423,6 +424,7 @@ u32 fn_80080310(void* output, const u8* packed, void* auxiliary)
     }
     return bitPosition <= ((u32)auxiliary << 3);
 }
+#pragma pop
 
 
 /* Apply one decoded card-e field and reject values outside its domain. */
@@ -1066,6 +1068,9 @@ void* fn_80082FE4(CardEGridEntry* entry, s8 layer)
 }
 #pragma pop
 
+#pragma push
+#pragma optimization_level 3
+#pragma peephole off
 void fn_800832C8(u8* arena, u8* cardData, s8 layer)
 {
     typedef struct CardEObjectRecord {
@@ -1269,6 +1274,7 @@ void fn_800830A4(u8* arena)
                         (0x76 + entry->rows * entry->columns * 0x10) +
       0x95) = 1;
 }
+#pragma pop
 
 void* fn_800836AC(u8* arena, u8* descriptor, u8 create)
 {
@@ -4689,8 +4695,6 @@ extern void GSmodelStartAnimation(void* model);
 extern void GSmodelSetAnimType(void* model, u32 type);
 extern u8 GSmodelIsAnimating(void* model);
 
-#pragma push
-#pragma optimization_level 2
 u32 fn_80087C64(const u16* expected)
 {
     u32 occupied[3][3];
@@ -4919,8 +4923,6 @@ u32 fn_80087C64(const u16* expected)
 
     return count < 0 ? 1 : 0;
 }
-
-#pragma pop
 
 #undef CARDE_SHOW_MODEL
 #undef CARDE_GRID_TABLE

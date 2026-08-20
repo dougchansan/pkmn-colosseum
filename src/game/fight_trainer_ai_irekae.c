@@ -1982,36 +1982,44 @@ void fightTrainerAiSelectFightActionItem(void* ctx, u32 param1, u32 param2, u32 
     u32 r4 = param1;
     u32 r5 = param2;
     u32 r6 = param3;
-    u32 (*getTrainerStatus)(u32, u32, u32, u32);
-    u16 (*getItemIds)(void*, u16*, u32, u32);
-    u16 (*getOutPokemon)(u32, void*, u32, u32, u32);
-    u16 (*getFightPokemon)(u32, void*, u32, u32, u32);
-    u8 (*checkOutPokemon)(void*);
-    u8 (*checkOutState)(void*, void*);
-
+    r6 = 0x0;
     r29 = r4;
     r22 = r5;
     r28 = r3;
-    getTrainerStatus = (u32 (*)(u32, u32, u32, u32))fightTrainerGetStatus;
-    getItemIds = (u16 (*)(void*, u16*, u32, u32))
-        fightTrainerGetTemotiNormalItemDataIdAry;
-    getOutPokemon = (u16 (*)(u32, void*, u32, u32, u32))
-        fightFloorGetFightTrainerFightOutPokemonPtrAry;
-    getFightPokemon = (u16 (*)(u32, void*, u32, u32, u32))
-        fightFloorGetFightTrainerFightPokemonPtrAry;
-    checkOutPokemon = (u8 (*)(void*))fightOutPokemonCheckFightOut;
-    checkOutState = (u8 (*)(void*, void*))fn_80235714;
-    r4 = getTrainerStatus(r28, 0, 0x43, 0) & 0xFFFF;
-    r3 = getTrainerStatus(0, r4, 2, 0);
+    r4 = 0x0;
+    r5 = 0x43;
+    fightTrainerGetStatus();
+    r4 = r3 & 0xFFFF;
+    r3 = 0x0;
+    r5 = 0x2;
+    r6 = 0x0;
+    fightTrainerGetStatus();
+    r3 = r28;
+    r4 = (u32)sp + 0x38;
     r30 = 0x0;
-    r31 = getItemIds((void*)r28, (u16*)(sp + 0x38), 0x14, 1);
-    r0 = r31 & 0xFFFF;
+    r5 = 0x14;
+    r6 = 0x1;
+    fightTrainerGetTemotiNormalItemDataIdAry();
+    r0 = r3 & 0xFFFF;
+    r31 = r3;
     if ((s32)r0 == (s32)0) {
         r3 = 0x0;
         return;
     }
-    r17 = getOutPokemon(0, (void*)(sp + 0x18), r28, 1, 1);
-    r26 = getFightPokemon(0, (void*)(sp + 0x60), r28, 1, 1);
+    r4 = r28;
+    r5 = (u32)sp + 0x18;
+    r3 = 0x0;
+    r6 = 0x1;
+    r7 = 0x1;
+    fightFloorGetFightTrainerFightOutPokemonPtrAry();
+    r17 = r3;
+    r4 = r28;
+    r5 = (u32)sp + 0x60;
+    r3 = 0x0;
+    r6 = 0x1;
+    r7 = 0x1;
+    fightFloorGetFightTrainerFightPokemonPtrAry();
+    r26 = r3;
     r18 = (u32)sp + 0x18;
     r17 = r17 & 0xFFFF;
     r20 = 0x0;
@@ -2020,10 +2028,13 @@ void fightTrainerAiSelectFightActionItem(void* ctx, u32 param1, u32 param2, u32 
         if (r0 >= (u32)r17) break;
         r19 = *(u32*)(r18 + r0);
         if (r19 != (u32)0x0) {
-            r3 = checkOutPokemon((void*)r19);
+            r3 = r19;
+            fightOutPokemonCheckFightOut();
             r0 = r3 & 0xFF;
             if (r19 != (u32)0x0) {
-                r3 = checkOutState((void*)r28, (void*)r19);
+                r3 = r28;
+                r4 = r19;
+                fn_80235714();
                 r0 = r3 & 0xFF;
                 if (r0 == (u32)0x1) {
                     r30 = 0x0;
