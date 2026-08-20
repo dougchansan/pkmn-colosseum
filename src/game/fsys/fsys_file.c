@@ -973,25 +973,27 @@ static u32 FSYSAlign32(u32 size) {
 
 static FSYSFileEntry* FSYSGetEntryByIndex(FSYSSlot* slot, u32 index) {
     u8* archive;
-    u32* firstTable;
     u32* entryTable;
+    u32* firstTable;
 
     archive = (u8*)slot->archiveData;
-    if (archive == NULL) {
-        return NULL;
+    if (archive != 0) {
+        firstTable = (u32*)(archive + *(u32*)(archive + 0x18));
+        entryTable = (u32*)(archive + firstTable[0]);
+        return (FSYSFileEntry*)(archive + entryTable[index]);
     }
 
-    firstTable = (u32*)(archive + *(u32*)(archive + 0x18));
-    entryTable = (u32*)(archive + firstTable[0]);
-    return (FSYSFileEntry*)(archive + entryTable[index]);
+    return 0;
 }
 
 static DecompPoolEntry* FSYSFindDecompPool(u32 groupID) {
     DecompPoolEntry* pool;
+    u32 count;
     u32 i;
 
     pool = gDecompPoolBase;
-    for (i = 0; i < gDVDPoolState; i++) {
+    count = gDVDPoolState;
+    for (i = 0; i < count; i++) {
         if (pool->fileID == groupID) {
             return pool;
         }
@@ -1152,30 +1154,37 @@ static void* FSYSAllocEntryBuffer(FSYSSlot* slot, FSYSFileEntry* entry, u32 size
     return (void*)GSresAllocResourceAlign(FSYSAlign32(size), 0x20, slot->fileHandle, entry->nameHash, 0);
 }
 
-static void FSYSRunDoneCallback(FSYSSlot* slot, FSYSFileEntry* entry) {
+static inline void FSYSRunDoneCallback(FSYSSlot* slot, FSYSFileEntry* entry) {
     DecompPoolEntry* pool;
     FSYSDoneCallback callback;
     void* cached;
+    /* Unrecovered local: the original frame carries a zero-initialised word
+     * here that is never read back. */
+    u32 spare;
     u32 size;
 
+    spare = 0;
     pool = FSYSFindDecompPool(entry->groupID);
-    if (pool == NULL || FSYS_POOL_DONE_CB(pool) == NULL) {
+    size = entry->compressedSize;
+    if (FSYS_POOL_DONE_CB(pool) == 0) {
         return;
     }
 
     cached = GSresGetResource(slot->fileHandle, entry->nameHash);
-    if (entry->flags & FSYS_COMPRESSED_FLAG) {
-        size = entry->compressedSize;
-    } else {
-        size = entry->decompressedSize;
-    }
-
-    if (cached != NULL) {
-        DCFlushRange(cached, size);
+    if (cached != 0) {
+        if (entry->flags & FSYS_COMPRESSED_FLAG) {
+            DCFlushRange(cached, entry->compressedSize);
+        } else {
+            DCFlushRange(cached, entry->decompressedSize);
+        }
     }
 
     callback = (FSYSDoneCallback)FSYS_POOL_DONE_CB(pool);
-    callback(slot->fileHandle, entry->nameHash, size);
+    if (entry->flags & FSYS_COMPRESSED_FLAG) {
+        callback(slot->fileHandle, entry->nameHash, entry->compressedSize);
+    } else {
+        callback(slot->fileHandle, entry->nameHash, entry->decompressedSize);
+    }
 }
 
 static void FSYSReadEntryAsync(FSYSSlot* slot, FSYSSubEntry* sub, FSYSFileEntry* entry) {
@@ -1586,67 +1595,72 @@ u32 fn_8017C008(FSYSSlot* slot) {
 
 /* 0x8017C074 | 0x164 */
 extern u32 lbl_80478C48;
+#pragma push
+#pragma optimization_level 0
 #if 0
 asm void fn_8017C074(void) {
 #include "src/game/fsys/fsys_file_fn_8017C074.inc"
 }
 #else
-void fn_8017C074(FSYSSlot* slot, FSYSSubEntry* sub, u32 index, void* work) {
-    FSYSFileEntry* entry;
-    DecompPoolEntry* pool;
-    FSYSAllocCallback callback;
+void fn_8017C074(FSYSSlot* slot, FSYSSubEntry* sub, u32 index, void** work) {
+    u32 aligned;
+    u32 handle;
+    u32 hash;
     void* buffer;
+    FSYSAllocCallback callback;
+    DecompPoolEntry* pool;
+    FSYSFileEntry* entry;
 
     entry = FSYSGetEntryByIndex(slot, index);
-    if (entry == NULL) {
-        return;
-    }
-
-    *(void**)((u8*)work + 0x38) = sub->buffer;
-    sub->buffer = NULL;
+    work[14] = sub->buffer;
+    sub->buffer = 0;
 
     pool = FSYSFindDecompPool(entry->groupID);
-    if (pool != NULL && FSYS_POOL_ALLOC_CB(pool) != NULL) {
+    if (FSYS_POOL_ALLOC_CB(pool) != 0) {
         callback = (FSYSAllocCallback)FSYS_POOL_ALLOC_CB(pool);
         buffer = callback(slot->fileHandle, entry->nameHash, entry->compressedSize);
     } else {
-        buffer = (void*)GSresAllocResourceAlign(FSYSAlign32(entry->compressedSize), 0x20,
-                                    slot->field_08, entry->nameHash, 0);
+        aligned = FSYSAlign32(entry->compressedSize);
+        handle = slot->field_08;
+        hash = entry->nameHash;
+        buffer = (void*)GSresAllocResourceAlign(aligned, 0x20, handle, hash, 0);
     }
 
     sub->buffer = buffer;
     sub->buffer = buffer;
 }
 #endif
+#pragma pop
 
 /* 0x8017C1D8 | 0x1BC */
 extern u32 lbl_80478C48;
+#pragma push
+#pragma optimization_level 0
 #if 0
 asm void fn_8017C1D8(void) {
 #include "src/game/fsys/fsys_file_fn_8017C1D8.inc"
 }
 #else
-void fn_8017C1D8(FSYSSlot* slot, FSYSSubEntry* sub, u32 index, void* work) {
+void fn_8017C1D8(FSYSSlot* slot, FSYSSubEntry* sub, u32 index, void** work) {
     FSYSFileEntry* entry;
     void* temp;
 
     entry = FSYSGetEntryByIndex(slot, index);
-    temp = *(void**)((u8*)work + 0x38);
+    temp = work[14];
     FSYSFreeByPointer(temp);
-    *(void**)((u8*)work + 0x38) = NULL;
+    work[14] = 0;
     slot->padding100 = 0;
 
-    if (sub->buffer == NULL) {
+    if (sub->buffer == 0) {
         sub->state = 7;
         return;
     }
 
     sub->state = 6;
-    if (entry != NULL) {
-        FSYSRunDoneCallback(slot, entry);
-    }
+    FSYSRunDoneCallback(slot, entry);
 }
 #endif
+#pragma pop
 
 /* 0x8017C39C | 0x78 */
 #pragma push
