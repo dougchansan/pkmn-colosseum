@@ -175,7 +175,15 @@ FightKoukaData* fightKoukaDataBiosGetPtr(u16 index) {
 }
 
 /* Address: 0x8020DA14 | Size: 0xbc */
+/* Retail schedules this one against the 603 model, not the gekko model the rest
+ * of the unit uses: under `-proc gekko` MWCC splits each `x = f(...)` whose
+ * successor needs r3 into `mr r0,r3 ... mr rNV,r0`, manufacturing a filler for
+ * the slot before the bl, and that costs three instructions here.  The 603
+ * model leaves the copies alone while keeping the argument and parameter-save
+ * ordering the gekko model gets right (plain `scheduling off` loses those).
+ * fn_8020DAD0 below genuinely needs the gekko form, so this stays scoped. */
 #pragma dont_inline on
+#pragma scheduling 603
 u32 fightKoukaDoFightKoukaJoukenAndKouka(void* target, u16 koukaDataIndex) {
     extern void koukaExec(u16 koukaDataId, void* fightTarget, void* target, u32 flags);
     extern void* fightTargetGetPtr(u32 targetDataId, void* target, u16 fightType);
@@ -201,6 +209,7 @@ u32 fightKoukaDoFightKoukaJoukenAndKouka(void* target, u16 koukaDataIndex) {
     }
     return result;
 }
+#pragma scheduling reset
 #pragma dont_inline reset
 
 /* Address: 0x8020DAD0 | Size: 0x274 */
@@ -854,4 +863,5 @@ s32 fightAbicntFitMinMax(s32 value) {
     }
     return value;
 }
+
 
