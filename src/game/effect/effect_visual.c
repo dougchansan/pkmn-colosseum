@@ -3088,7 +3088,7 @@ extern void GSmodelLinkTexAnimToAnim(void* model, u32 enable);
 extern u32 lbl_8047D230;
 extern u32 lbl_8047D234;
 extern u32 lbl_8047D238;
-extern u32 lbl_8047D23C;
+extern const f32 lbl_8047D23C;
 extern u8 lbl_80272ED0[];
 #if 0
 asm u16 seaEffectStart(void) {
@@ -3192,7 +3192,7 @@ u16 seaEffectStart(void* ptr) {
     if (GSmodelCanTexAnimate(model)) {
         GSmodelSetTexAnimIndex(model, 0);
         GSmodelSetTexAnimRate(model, *(f32*)&lbl_8047D238);
-        GSmodelSetTexAnimFrame(model, *(f32*)&lbl_8047D23C);
+        GSmodelSetTexAnimFrame(model, lbl_8047D23C);
         GSmodelSetTexAnimType(model, 1);
         GSmodelStartTexAnimation(model);
     }
@@ -3219,10 +3219,10 @@ fail:
 #endif
 extern f32 fn_800E0CA0(f32 angle);
 extern u32 lbl_8047D248;
-extern u32 lbl_8047D23C;
+extern const f32 lbl_8047D23C;
 extern u8 lbl_80363CB8[];
-extern u32 lbl_8047D240;
-extern u32 lbl_8047D244;
+extern const f32 lbl_8047D240;
+extern const f32 lbl_8047D244;
 extern u32 lbl_8047D250;
 #if 0
 asm u32 fn_8013CA48(void* ptr, u32 delta) {
@@ -3260,10 +3260,10 @@ u32 fn_8013CA48(void* ptr, u32 delta) {
 
         GXDrawDone();
         fn_800B856C();
-        set__5GSvecFfff(lbl_80363CB8, *(f32*)&lbl_8047D23C, *(f32*)&lbl_8047D240,
-                        *(f32*)&lbl_8047D23C);
+        set__5GSvecFfff(lbl_80363CB8, lbl_8047D23C, lbl_8047D240,
+                        lbl_8047D23C);
 
-        span = *(f32*)&lbl_8047D244 * *(f32*)(p + 0x68);
+        span = lbl_8047D244 * *(f32*)(p + 0x68);
         amplitude = amplitude * (span * *(f32*)(p + 0xA0));
         angleStep = span / (f32)(columns - 1);
         grid = *(f32**)(p + 0x4);
@@ -3283,9 +3283,6 @@ u32 fn_8013CA48(void* ptr, u32 delta) {
     return 0;
 }
 #endif
-extern u32 lbl_8047D23C;
-extern u32 lbl_8047D240;
-extern u32 lbl_8047D258;
 extern u32 lbl_8047D250;
 extern u32 lbl_8047D248;
 #if 0
@@ -3295,51 +3292,45 @@ asm void fn_8013CBF0(void* ptr, void* mtx, u8* color, f32 x, f32 z, f32 scale) {
 #else
 void fn_8013CBF0(void* ptr, void* mtx, u8* color, f32 x, f32 z, f32 scale) {
     u8* p = ptr;
+    u32 rows = *(u16*)(p + 0x18);
+    u32 columns = *(u16*)(p + 0x1A);
     f32* positions = *(f32**)(p + 0x4);
     f32* texcoords = *(f32**)(p + 0x8);
     u8* colors = *(u8**)(p + 0xC);
-    u32 rows = *(u16*)(p + 0x18);
-    u32 columns = *(u16*)(p + 0x1A);
     f32 offset[3];
+    f32 current[3];
     f32 rowStep[3];
     f32 columnStep[3];
-    f32 current[3];
     f32 inverseX;
     f32 inverseZ;
     f32 factorX;
     f32 factorZ;
-    u32 row;
-    u32 column;
+    u16 row;
+    u16 column;
 
     GXDrawDone();
     fn_800B856C();
-    set__5GSvecFfff(lbl_80363CB8, *(f32*)&lbl_8047D23C, *(f32*)&lbl_8047D240,
-                    *(f32*)&lbl_8047D23C);
-    set__5GSvecFfff(offset, *(f32*)&lbl_8047D258 * x, *(f32*)&lbl_8047D23C,
-                    *(f32*)&lbl_8047D258 * z);
-    set__5GSvecFfff(rowStep, x / (f32)(s32)(rows - 1), *(f32*)&lbl_8047D23C,
-                    *(f32*)&lbl_8047D23C);
-    set__5GSvecFfff(columnStep, *(f32*)&lbl_8047D23C, *(f32*)&lbl_8047D23C,
-                    z / (f32)(s32)(columns - 1));
-    inverseX = *(f32*)&lbl_8047D240 / (offset[0] * offset[0]);
-    inverseZ = *(f32*)&lbl_8047D240 / (offset[2] * offset[2]);
+    set__5GSvecFfff(lbl_80363CB8, 0.0f, 1.0f, 0.0f);
+    set__5GSvecFfff(offset, -0.5f * x, 0.0f, -0.5f * z);
+    set__5GSvecFfff(rowStep, x / (f32)(s32)(rows - 1), 0.0f, 0.0f);
+    set__5GSvecFfff(columnStep, 0.0f, 0.0f, z / (f32)(s32)(columns - 1));
+    inverseX = 1.0f / (offset[0] * offset[0]);
+    inverseZ = 1.0f / (offset[2] * offset[2]);
     GSvecCopy(current, offset);
 
     for (row = 0; row < rows; row++) {
-        for (column = 0; column < columns; column++) {
+        for (column = 0; column < columns; column++, positions += 3, texcoords += 2,
+             colors += 4) {
             GSvecAdd(positions, mtx, current);
             texcoords[1] = scale * (current[0] - offset[0]);
             texcoords[0] = scale * (current[2] - offset[2]);
             colors[0] = color[0];
             colors[1] = color[1];
             colors[2] = color[2];
-            factorX = *(f32*)&lbl_8047D240 - inverseX * current[0] * current[0];
-            factorZ = *(f32*)&lbl_8047D240 - inverseZ * current[2] * current[2];
+            factorX = 1.0f - inverseX * (current[0] * current[0]);
+            factorZ = 1.0f - inverseZ * (current[2] * current[2]);
             colors[3] = (u8)((f32)color[3] * factorX * factorZ);
             GSvecAdd(current, current, columnStep);
-            positions += 3;
-            texcoords += 2;
-            colors += 4;
         }
         GSvecAdd(current, current, rowStep);
         current[2] = offset[2];
