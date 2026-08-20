@@ -99,7 +99,7 @@ extern void pokemonResetBasisStatus(void* ptr);
 void pokemonSetLevelBasisStatus(void);
 extern void heroItemGetItemKindToItemAryPtr(void);
 extern void heroSetStatus();
-extern void heroGetStatus(void);
+extern u32 heroGetStatus(void*, u32, u32);
 extern void* GSresAllocResourceAlign(); /* K&R: called with 5 args, returns void* */
 extern u8 fn_800FF548(void);
 extern u32 _unloadScript__FPvUlUl(); /* K&R: asm void wrapper, used as function pointer */
@@ -215,8 +215,8 @@ extern void GSmodelSetAnimType(void);
 extern void GSmodelStartAnimation(void);
 extern void _threadSwitch(void);
 extern void GSmodelIsAnimating(void);
-extern void GSmodelGetPart(void);
-extern void GSpartGetTransform(void);
+extern void* GSmodelGetPart(void* model, s32 partIndex);
+extern void GSpartGetTransform(void* part, void* transform, void* arg2, void* arg3);
 extern void GSpartFree();
 extern void fn_8018AACC(void);
 extern void peopleMoveCheck(u32 groupId, u32 index, u8 waitFlag);
@@ -527,7 +527,7 @@ extern u8 lbl_80478AC0[4];
 extern f32 lbl_8047D060;
 u32 fn_8012B19C(s32 member, f32* start, f32* target, f32 extraRadius);
 u32 heroMoveChkHinderClear(s32 member);
-extern void fn_800D3088(void);
+extern u32 fn_800D3088(void);
 extern f64 lbl_8047D068;
 void getStep__FP8FOOTSTEPP8_GSmodelPiP8FOOTWORK(f32*, void*, s32*, f32*);
 extern u32 fn_8018CD08();
@@ -1494,9 +1494,15 @@ void fn_8013024C(void)
 
     callbacks = (void (**)(void))(lbl_80426BD0 + 0x140);
     callback_counts = (u32*)(lbl_80426BD0 + 0x144);
-    for (i = 0; i < 9; i++) {
-        callbacks[i * 2] = NULL;
-    }
+    *(void**)(lbl_80426BD0 + 0x140) = NULL;
+    *(void**)(lbl_80426BD0 + 0x148) = NULL;
+    *(void**)(lbl_80426BD0 + 0x150) = NULL;
+    *(void**)(lbl_80426BD0 + 0x158) = NULL;
+    *(void**)(lbl_80426BD0 + 0x160) = NULL;
+    *(void**)(lbl_80426BD0 + 0x168) = NULL;
+    *(void**)(lbl_80426BD0 + 0x170) = NULL;
+    *(void**)(lbl_80426BD0 + 0x178) = NULL;
+    *(void**)(lbl_80426BD0 + 0x180) = NULL;
 
     for (i = 0; i < 8; i++) {
         if (callbacks[i * 2] == NULL) {
@@ -2180,27 +2186,66 @@ extern f32 lbl_8047D040;
 void getStep__FP8FOOTSTEPP8_GSmodelPiP8FOOTWORK(
     f32* step, void* model, s32* partIndices, f32* footwork)
 {
-    f32 modelPosition[3];
+    typedef struct HeroMoveVec3 {
+        f32 x;
+        f32 y;
+        f32 z;
+    } HeroMoveVec3;
+    HeroMoveVec3 modelPosition;
+    HeroMoveVec3 transform;
+    f32 heights[4];
     f32 zero = lbl_8047D038;
+    f32 delta = (f32)fn_800D3088();
+    void* part;
     s32 i;
 
-    fn_800D3088();
-    GSmodelGetPosition(model, modelPosition);
+    GSmodelGetPosition(model, &modelPosition);
 
     for (i = 0; i < 4; i++) {
-        f32* position = step + 4 + i * 3;
+        HeroMoveVec3* position = (HeroMoveVec3*)(step + 4 + i * 3);
 
-        position[0] = zero;
-        position[1] = zero;
-        position[2] = zero;
+        position->x = zero;
+        position->y = zero;
+        position->z = zero;
         step[i] = zero;
-    }
-
-    for (i = 0; i < 3; i++) {
-        if (partIndices[i] >= 0 && footwork[i] >= lbl_8047D040) {
-            step[i] = footwork[i];
+        heights[i] = zero;
+        if (partIndices[i] >= 0) {
+            part = GSmodelGetPart(model, partIndices[i]);
+            if (part != NULL) {
+                GSpartGetTransform(part, &transform, NULL, NULL);
+                GSpartFree(part);
+                position->x = transform.x;
+                position->y = transform.y;
+                heights[i] = transform.y - modelPosition.y;
+                position->z = transform.z;
+            }
         }
     }
+
+    if (footwork[0] >= lbl_8047D040 && heights[0] < lbl_8047D040) {
+        step[0] = (footwork[0] - heights[0]) / delta;
+    } else {
+        step[0] = zero;
+    }
+    if (footwork[1] >= lbl_8047D040 && heights[1] < lbl_8047D040) {
+        step[1] = (footwork[1] - heights[1]) / delta;
+    } else {
+        step[1] = zero;
+    }
+    if (footwork[2] >= lbl_8047D040 && heights[2] < lbl_8047D040) {
+        step[2] = (footwork[2] - heights[2]) / delta;
+    } else {
+        step[2] = zero;
+    }
+    if (footwork[3] >= lbl_8047D040 && heights[3] < lbl_8047D040) {
+        step[3] = (footwork[3] - heights[3]) / delta;
+    } else {
+        step[3] = zero;
+    }
+    footwork[0] = heights[0];
+    footwork[1] = heights[1];
+    footwork[2] = heights[2];
+    footwork[3] = heights[3];
 }
 /* 0x8012C0B4 | 0x48C */
 extern f32 lbl_8047D030;
@@ -2655,10 +2700,62 @@ typedef struct HeroMoveVec3 {
     f32 z;
 } HeroMoveVec3;
 
+typedef union HeroMoveFloatShape {
+    f32 value;
+    u32 bits;
+} HeroMoveFloatShape;
+
+static inline f32 heroMoveSqrt(f32 value)
+{
+    HeroMoveFloatShape shape;
+    f64 estimate;
+    u32 exponent;
+    s32 fpclass;
+
+    if (value > lbl_8047D038) {
+        estimate = __frsqrte(value);
+        estimate = lbl_8047D048 * estimate *
+                   (lbl_8047D050 - value * (estimate * estimate));
+        estimate = lbl_8047D048 * estimate *
+                   (lbl_8047D050 - value * (estimate * estimate));
+        estimate = lbl_8047D048 * estimate *
+                   (lbl_8047D050 - value * (estimate * estimate));
+        return (f32)(value * estimate);
+    }
+    if ((f64)value < lbl_8047D058) {
+        return *(f32*)lbl_80478AC0;
+    }
+
+    shape.value = value;
+    exponent = shape.bits & 0x7F800000;
+    switch (exponent) {
+    case 0x7F800000:
+        if ((shape.bits & 0x007FFFFF) != 0) {
+            fpclass = 1;
+        } else {
+            fpclass = 2;
+        }
+        break;
+    case 0:
+        if ((shape.bits & 0x007FFFFF) != 0) {
+            fpclass = 5;
+        } else {
+            fpclass = 3;
+        }
+        break;
+    default:
+        fpclass = 4;
+        break;
+    }
+    if (fpclass == 1) {
+        return *(f32*)lbl_80478AC0;
+    }
+    return value;
+}
+
 s32 fn_8012D39C(void* start_, void* end_, void* center_, void* reference_,
                 void* result_, f32 radius)
 {
-    extern f32 sqrtf(f32);
     HeroMoveVec3* start = start_;
     HeroMoveVec3* end = end_;
     HeroMoveVec3* center = center_;
@@ -2698,7 +2795,7 @@ s32 fn_8012D39C(void* start_, void* end_, void* center_, void* reference_,
         return -1;
     }
 
-    invLength = lbl_8047D080 / sqrtf(lengthSquared);
+    invLength = lbl_8047D080 / heroMoveSqrt(lengthSquared);
     dirX = -dz * invLength;
     dirZ = dx * invLength;
     lineOffset = invLength *
@@ -2708,7 +2805,7 @@ s32 fn_8012D39C(void* start_, void* end_, void* center_, void* reference_,
     scale = lbl_8047D080 / normalLengthSquared;
     originX = dirX * (-lineOffset * scale);
     originZ = dirZ * (-lineOffset * scale);
-    normalLength = sqrtf(scale);
+    normalLength = heroMoveSqrt(scale);
     {
         f32 temp = -dirX;
         dirX = dirZ * normalLength;
@@ -2728,7 +2825,7 @@ s32 fn_8012D39C(void* start_, void* end_, void* center_, void* reference_,
     }
 
     projection = dirX * relX + dirZ * relZ;
-    if (discriminant < projection) {
+    if (discriminant < lbl_8047D0A8) {
         scale = projection / normalLengthSquared;
         result->x = dirX * scale + originX;
         result->y = lbl_8047D038;
@@ -2736,7 +2833,7 @@ s32 fn_8012D39C(void* start_, void* end_, void* center_, void* reference_,
         return 1;
     }
 
-    root = sqrtf(discriminant);
+    root = heroMoveSqrt(discriminant);
     scale = lbl_8047D080 / normalLengthSquared;
     nearX = dirX * (scale * (projection - root)) + originX;
     nearZ = dirZ * (scale * (projection - root)) + originZ;
@@ -2768,7 +2865,6 @@ void fn_8012D7F0(s32 playerIndex, void* velocityOut_, void* resultOut_)
     extern void PSVECScale(HeroMoveVec3*, HeroMoveVec3*, f32);
     extern void PSVECAdd(HeroMoveVec3*, HeroMoveVec3*, HeroMoveVec3*);
     extern void PSVECSubtract(HeroMoveVec3*, HeroMoveVec3*, HeroMoveVec3*);
-    extern f32 sqrtf(f32);
 
     HeroMoveVec3* velocityOut = (HeroMoveVec3*)velocityOut_;
     HeroMoveVec3* resultOut = (HeroMoveVec3*)resultOut_;
@@ -2826,12 +2922,13 @@ void fn_8012D7F0(s32 playerIndex, void* velocityOut_, void* resultOut_)
     direction.x = targetPosition.x - currentPosition.x;
     direction.y = lbl_8047D038;
     direction.z = targetPosition.z - currentPosition.z;
-    targetDistance = sqrtf(direction.x * direction.x + direction.z * direction.z);
+    targetDistance =
+        heroMoveSqrt(direction.x * direction.x + direction.z * direction.z);
 
     if (hasHistory) {
         f32 dx = currentPosition.x - historyPosition.x;
         f32 dz = currentPosition.z - historyPosition.z;
-        historyDistance = sqrtf(dx * dx + dz * dz);
+        historyDistance = heroMoveSqrt(dx * dx + dz * dz);
     } else {
         historyDistance = lbl_8047D038;
     }
@@ -2862,7 +2959,8 @@ void fn_8012D7F0(s32 playerIndex, void* velocityOut_, void* resultOut_)
     direction.x = historyPosition.x - currentPosition.x;
     direction.y = lbl_8047D038;
     direction.z = historyPosition.z - currentPosition.z;
-    historyDistance = sqrtf(direction.x * direction.x + direction.z * direction.z);
+    historyDistance =
+        heroMoveSqrt(direction.x * direction.x + direction.z * direction.z);
     if (historyDistance > frameDistance) {
         PSVECScale(&direction, &step, frameDistance / historyDistance);
     } else {
@@ -2912,7 +3010,6 @@ void fn_8012DE94(u32 playerIndex)
     extern u8 fn_800E3C64();
     extern void fn_8018C0A8();
     extern void PSVECSubtract(HeroMoveVec3*, HeroMoveVec3*, HeroMoveVec3*);
-    extern f32 sqrtf(f32);
 
     HeroMoveVec3 targetPosition;
     HeroMoveVec3 playerPosition;
@@ -2929,9 +3026,9 @@ void fn_8012DE94(u32 playerIndex)
     f32 distance;
     s32 historyIndex;
     s32 historyOffset;
-    u32 historyCount;
-    u32 historyHead;
-    u32 i;
+    s32 historyCount;
+    s32 historyHead;
+    s32 i;
     u8 blocked;
     u8 haveHistory;
 
@@ -2956,7 +3053,7 @@ void fn_8012DE94(u32 playerIndex)
     separation.z = targetPosition.z - playerPosition.z;
     distanceSquared =
         separation.x * separation.x + separation.z * separation.z;
-    sqrtf(distanceSquared);
+    heroMoveSqrt(distanceSquared);
 
     fn_8012D7F0(playerIndex, &velocity, &movement);
     fn_8012CA84(playerIndex, &velocity, &movement);
@@ -2973,7 +3070,7 @@ void fn_8012DE94(u32 playerIndex)
     separation.z = targetPosition.z - modelPosition.z;
     distanceSquared =
         separation.x * separation.x + separation.z * separation.z;
-    distance = sqrtf(distanceSquared);
+    distance = heroMoveSqrt(distanceSquared);
     PSVECSubtract(&modelPosition, &playerPosition, &separation);
 
     if (distance < lbl_8047D0B0) {
@@ -3063,7 +3160,6 @@ void fn_8012E388(s32 playerIndex, f32* magnitudeOut)
     extern u32 fn_800F7BC4(u32);
     extern u32 GSscene_GetMode(void);
     extern f64 sin(f32);
-    extern f32 sqrtf(f32);
     extern f32 cameraGetRotY(void);
     extern void fn_8018805C(u32, u32, f32, f32);
     extern void fn_80188214(u32, u32, f32);
@@ -3122,7 +3218,7 @@ void fn_8012E388(s32 playerIndex, f32* magnitudeOut)
     if ((s8)stickY < -0x38) stickY = -0x38;
     x = (f32)((s8)stickX < 0 ? -(s8)stickX : (s8)stickX) / lbl_8047D0B4;
     y = (f32)((s8)stickY < 0 ? -(s8)stickY : (s8)stickY) / lbl_8047D0B4;
-    magnitude = sqrtf(x * x + y * y);
+    magnitude = heroMoveSqrt(x * x + y * y);
     *magnitudeOut = magnitude;
     if (*magnitudeOut > lbl_8047D084) {
         *magnitudeOut = lbl_8047D084;
@@ -3179,7 +3275,6 @@ s32 member;
     extern f32 PSVECDistance(HeroMoveVec3*, HeroMoveVec3*);
     extern f32 fn_801887D8(u32, u32, HeroMoveVec3*);
     extern u32 fn_800D3088(void);
-    extern f32 sqrtf(f32);
     u32 resources[2];
     HeroMoveVec3 before;
     HeroMoveVec3 after;
@@ -3266,12 +3361,7 @@ s32 member;
                 (previous_position.x - active_position.x) +
             (previous_position.z - active_position.z) *
                 (previous_position.z - active_position.z);
-        distance = distance_squared > lbl_8047D038
-                       ? sqrtf(distance_squared)
-                       : lbl_8047D038;
-        if (distance != distance) {
-            distance = *(f32*)lbl_80478AC0;
-        }
+        distance = heroMoveSqrt(distance_squared);
         record_position = distance > lbl_8047D0D4;
     }
 
@@ -3441,7 +3531,6 @@ void fn_8012CA84(s32 playerIdx, f32* dirVec, f32* fwdVec) {
     extern f32  fn_8018F678(void*);                       /* getMaxTurnRatePos(obj) */
     extern f32  fn_8018F658(void*);                       /* getMaxTurnRateNeg(obj) */
     extern u8   lbl_80426BD0[];                           /* player state array (stride 0x20) */
-    extern f32  sqrtf(f32);                               /* host CRT */
 
     u32 htbl[2];
     u32 entityHandle = 0;
@@ -3468,8 +3557,7 @@ void fn_8012CA84(s32 playerIdx, f32* dirVec, f32* fwdVec) {
 
     {
         f32 sq = dirVec[0] * dirVec[0] + dirVec[2] * dirVec[2];
-        /* original is inline frsqrte + 3x Newton-Raphson; sqrtf is x86-equivalent */
-        dirMag = (sq > 0.0f) ? sqrtf(sq) : 0.0f;
+        dirMag = heroMoveSqrt(sq);
     }
 
     if (dirMag > lbl_8047D038) {
@@ -3509,7 +3597,7 @@ void fn_8012CA84(s32 playerIdx, f32* dirVec, f32* fwdVec) {
 
         {
             f32 fwdSq = fwdVec[0] * fwdVec[0] + fwdVec[2] * fwdVec[2];
-            f32 fwdMag = (fwdSq > 0.0f) ? sqrtf(fwdSq) : 0.0f;
+            f32 fwdMag = heroMoveSqrt(fwdSq);
 
             if (fwdMag > lbl_8047D060) {
                 f32 angle = (f32)atan2(fwdVec[0], fwdVec[2]);
@@ -3786,36 +3874,87 @@ typedef struct HeroMoveMemberState {
 s32 fn_8012F1FC(s32 member)
 {
     HeroMoveMemberState* state;
+    HeroMoveMemberState* members = (HeroMoveMemberState*)lbl_80426BD0;
+    u32 handles[2];
+    u32 handle;
+    s32 active;
+    f32 spacing;
 
     if (member < 0 || member >= 2) {
         return 0;
     }
 
-    state = (HeroMoveMemberState*)lbl_80426BD0 + member;
+    state = members + member;
     if (state->flags & 1) {
         return 1;
     }
 
     state->flags |= 1;
-    state->spacing = lbl_8047D038;
+    handles[0] = *(u32*)&lbl_8047D030;
+    handles[1] = *(u32*)&lbl_8047D034;
+    handle = handles[member];
+    if (state->neckMode == 1) {
+        fn_80188AF4(0, handle);
+    }
+    fn_80188F78(0, handle);
+    state->neckMode = 1;
+
+    active = members[0].field_00;
+    members[active].spacing = lbl_8047D038;
+    spacing = lbl_8047D0D4;
+    if ((members[0].flags & 1) && active != 0) {
+        members[0].spacing = spacing;
+        spacing += spacing;
+    }
+    if ((members[1].flags & 1) && active != 1) {
+        members[1].spacing = spacing;
+    }
+
+    fn_8018C1E8(0, handle, 1);
     return 1;
 }
 
 s32 fn_8012F40C(s32 member)
 {
+    HeroMoveMemberState* members = (HeroMoveMemberState*)lbl_80426BD0;
     HeroMoveMemberState* state;
+    u32 handles[2];
+    u32 handle;
+    s32 active;
+    f32 spacing;
 
     if (member < 0 || member >= 2) {
         return 0;
     }
 
-    state = (HeroMoveMemberState*)lbl_80426BD0 + member;
+    state = members + member;
     if (!(state->flags & 1)) {
         return 0;
     }
 
-    *(s32*)lbl_80426BD0 = member;
-    state->spacing = lbl_8047D038;
+    members[0].field_00 = member;
+    if (member >= 0 && member < 2 &&
+        ((members + member)->flags & 1) && (members + member)->neckMode == 1) {
+        handles[0] = *(u32*)&lbl_8047D030;
+        handles[1] = *(u32*)&lbl_8047D034;
+        handle = handles[member];
+        fn_80188AF4(0, handle);
+        (members + member)->neckMode = 0;
+    }
+
+    active = members[0].field_00;
+    members[active].spacing = lbl_8047D038;
+    spacing = lbl_8047D0D4;
+    if ((members[0].flags & 1) && active != 0) {
+        members[0].spacing = spacing;
+        spacing += spacing;
+    }
+    if ((members[1].flags & 1) && active != 1) {
+        members[1].spacing = spacing;
+    }
+
+    *(u32*)((u8*)members + 0x44) = 0;
+    *(u32*)((u8*)members + 0x48) = 0;
     return 1;
 }
 
@@ -3852,16 +3991,47 @@ u32 heroMoveGetKenObjID(void)
 
 void heroMoveSyncWithHero(void)
 {
-    HeroMoveMemberState* follower;
+    HeroMoveMemberState* members = (HeroMoveMemberState*)lbl_80426BD0;
+    HeroMoveMemberState* follower = members + 1;
+    s32 shouldFollow = 0;
+    f32 spacing;
 
-    if (fn_801906A0(0x8AE) != 0) {
-        return;
+    if (fn_801906A0(0x8AE) == 0 && heroGetStatus(0, 0x18, 0) != 0) {
+        shouldFollow = 1;
     }
 
-    follower = (HeroMoveMemberState*)lbl_80426BD0 + 1;
-    if (!(follower->flags & 1)) {
+    if (shouldFollow) {
+        u32 handle = *(u32*)&lbl_8047D034;
+        if (follower->flags & 1) {
+            return;
+        }
         follower->flags |= 1;
-        follower->spacing = lbl_8047D038;
+        if (follower->neckMode == 1) {
+            fn_80188AF4(0, handle);
+        }
+        fn_80188F78(0, handle);
+        follower->neckMode = 1;
+        members[members[0].field_00].spacing = lbl_8047D038;
+        spacing = lbl_8047D0D4;
+        if ((members[0].flags & 1) && members[0].field_00 != 0) {
+            members[0].spacing = spacing;
+            spacing += spacing;
+        }
+        if ((members[1].flags & 1) && members[0].field_00 != 1) {
+            members[1].spacing = spacing;
+        }
+        fn_8018C1E8(0, handle, 1);
+    } else if (members[0].field_00 != 1) {
+        follower->flags &= ~1;
+        members[members[0].field_00].spacing = lbl_8047D038;
+        spacing = lbl_8047D0D4;
+        if ((members[0].flags & 1) && members[0].field_00 != 0) {
+            members[0].spacing = spacing;
+            spacing += spacing;
+        }
+        if ((members[1].flags & 1) && members[0].field_00 != 1) {
+            members[1].spacing = spacing;
+        }
     }
 }
 
@@ -4187,7 +4357,7 @@ u32 updateChat__F15HEROMOVE_MEMBER(s32 player)
     u32 positionPtr;
     u32 rotationPtr;
     u32 interaction;
-    u32 i;
+    s32 i;
     u8 collision[0xD0];
     HeroChatVec3 position;
     HeroChatVec3 offset;
@@ -4233,11 +4403,14 @@ u32 updateChat__F15HEROMOVE_MEMBER(s32 player)
 
     fn_800F7D38(1, 0, 0);
     fn_800F7C8C(1, 0, 0);
-    for (i = 0; (s32)i < 2; i++) {
-        if ((*(u16*)(lbl_80426BD0 + i * 0x20 + 4) & 1) != 0) {
+    for (i = 0; i < 2; i++) {
+        if (i >= 0 && i < 2 &&
+            (*(u16*)(lbl_80426BD0 + i * 0x20 + 4) & 1) != 0) {
             handles[0] = *(u32*)&lbl_8047D030;
             handles[1] = *(u32*)&lbl_8047D034;
-            handle = handles[i];
+            if (i >= 0 && i < 2) {
+                handle = handles[i];
+            }
             resource = (u32)GSresGetResource(0, handle);
             updateAnimation__Ff15HEROMOVE_MEMBER(resource, lbl_8047D038, i);
             fn_8018C7C8(0, handle, 0x80000008);
@@ -4274,11 +4447,14 @@ u32 updateChat__F15HEROMOVE_MEMBER(s32 player)
                                 *(u32*)(eventObject + 0x2C)));
     }
 
-    for (i = 0; (s32)i < 2; i++) {
-        if ((*(u16*)(lbl_80426BD0 + i * 0x20 + 4) & 1) != 0) {
+    for (i = 0; i < 2; i++) {
+        if (i >= 0 && i < 2 &&
+            (*(u16*)(lbl_80426BD0 + i * 0x20 + 4) & 1) != 0) {
             handles[0] = *(u32*)&lbl_8047D030;
             handles[1] = *(u32*)&lbl_8047D034;
-            handle = handles[i];
+            if (i >= 0 && i < 2) {
+                handle = handles[i];
+            }
             fn_8018CA20(0, handle, 1);
             fn_8018C7C8(0, handle, 0x700);
             fn_8018C69C(0, handle, 0x80000008);

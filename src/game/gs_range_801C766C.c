@@ -3,7 +3,7 @@
  * @brief gs-engine, 0x801C766C - 0x801CA7EC.
  *
  * Boundary evidence-verified from asm (sdata clusters, callee families,
- * static linkage, call chains) — mixed-block split pass, 2026-07-01.
+ * static linkage, call chains) - mixed-block split pass, 2026-07-01.
  * All functions asm-only until matched.
  */
 #include "dolphin/types.h"
@@ -909,6 +909,11 @@ s32 fn_801C7730(s32 side, s32 slot)
     extern f32 GSvecDistance();
     extern void GSvecAdd();
     extern void fn_800E013C();
+    extern void fn_800E0168(Vec3*, const Vec3*, const Vec3*);
+    extern void fn_800E0060(Vec3*, const Vec3*);
+    extern void fn_800DFFCC(Vec3*, const Vec3*, const Vec3*);
+    extern s32 GScolsys2UtilGetCpPlaneLine(
+        Vec3*, f32*, const Vec3*, const Vec3*, const Vec3*, const Vec3*);
     extern u8 fn_8018D680();
     extern s32 fn_8010F320();
     extern void qsort();
@@ -924,9 +929,11 @@ s32 fn_801C7730(s32 side, s32 slot)
     s32 floorId, resId, floorId2, resId2;
     Vec3 origin = lbl_802758A0;
     Vec3 partner, requested, center, offset, midpoint, saved;
+    Vec3 requestedFlat, fullDirection, flatDirection, planeNormal, planeHit;
     DistanceSortEntry entries[8];
     f32 radius;
     f32 timeout;
+    f32 planeT;
     s32 i, k, hit, wanted;
     u8 done;
 
@@ -1007,6 +1014,20 @@ s32 fn_801C7730(s32 side, s32 slot)
         SEGMENT_HIT(hit, &origin, &entries[i].pos, &center);
         if (hit != 0) continue;
 
+        requestedFlat = requested;
+        requestedFlat.y = lbl_8047E100;
+        fn_800E0168(&fullDirection, &partner, &requested);
+        fn_800E0060(&fullDirection, &fullDirection);
+        fn_800E0168(&flatDirection, &partner, &requestedFlat);
+        fn_800E0060(&flatDirection, &flatDirection);
+        fn_800DFFCC(&planeNormal, &fullDirection, &flatDirection);
+        if (GScolsys2UtilGetCpPlaneLine(
+                &planeHit, &planeT, &planeNormal, &partner, &origin,
+                &entries[i].pos) == 0 ||
+            planeT < lbl_8047E114 || planeT > lbl_8047E100) {
+            continue;
+        }
+
         fn_80183350(resId, floorId);
         fn_8018AACC(resId, floorId, 1, &entries[i].pos);
         WAIT_MOVE(done);
@@ -1063,6 +1084,19 @@ s32 fn_801C7730(s32 side, s32 slot)
         center = entries[i].pos;
         SEGMENT_HIT(hit, &partner, &requested, &center);
         if (hit != 0) continue;
+        requestedFlat = requested;
+        requestedFlat.y = lbl_8047E100;
+        fn_800E0168(&fullDirection, &partner, &requested);
+        fn_800E0060(&fullDirection, &fullDirection);
+        fn_800E0168(&flatDirection, &partner, &requestedFlat);
+        fn_800E0060(&flatDirection, &flatDirection);
+        fn_800DFFCC(&planeNormal, &fullDirection, &flatDirection);
+        if (GScolsys2UtilGetCpPlaneLine(
+                &planeHit, &planeT, &planeNormal, &partner, &origin,
+                &entries[i].pos) == 0 ||
+            planeT < lbl_8047E114 || planeT > lbl_8047E100) {
+            continue;
+        }
         fn_80183350(resId, floorId);
         fn_8018AACC(resId, floorId, 1, &entries[i].pos);
         WAIT_MOVE(done);
@@ -1250,7 +1284,11 @@ s32 fn_801C8E14(s32 floorDataId, u32 actorIndex, u16 mode, u8 direction)
     }
 
     mode = (u16)mode;
-    if (mode == 1 || mode == 2 || mode == 0x81 || mode == 0x82) {
+    switch (mode) {
+    case 1:
+    case 2:
+    case 0x81:
+    case 0x82:
         START_MODEL_ANIM(actor->enterAnim, frame);
         if ((mode & 0x80) != 0) {
             fn_80166A28(0x44);
@@ -1323,13 +1361,17 @@ s32 fn_801C8E14(s32 floorDataId, u32 actorIndex, u16 mode, u8 direction)
             fn_80166A28(0x44);
         }
         WAIT_MODEL();
-    } else if (mode == 0xC0) {
+        break;
+    case 0xC0:
         WAIT_MODEL();
         if ((mode & 0x80) != 0) {
             fn_801669BC(0x45);
             fn_80166A28(0x46);
         }
-    } else if (mode != 0x100) {
+        break;
+    case 0x100:
+        break;
+    default:
         if ((mode & 4) != 0) {
             animIndex = actor->actionAnimA;
         } else if ((mode & 8) != 0) {
@@ -1368,6 +1410,7 @@ s32 fn_801C8E14(s32 floorDataId, u32 actorIndex, u16 mode, u8 direction)
         } else if ((mode & 0x80) != 0) {
             fn_80166A28(0x45);
         }
+        break;
     }
 
     GSmodelGetFrameCount(model, &frame, 0);

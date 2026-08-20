@@ -418,9 +418,12 @@ void fn_8010D20C(void* model, ColMtx matrix, ColMtx normalMatrix)
         level = flags >> 4;
         color.channel.g =
             (u8)(127.0f * ((f32)level / 15.0f) + 128.0f);
-        if ((flags & 0xF) + 1 >= 16) {
-            color.channel.b = 0;
+        level = (flags & 0xF) + 1;
+        if (level >= 16) {
+            level = 0;
         }
+        color.channel.b =
+            (u8)(255.0f * ((f32)level / 15.0f));
 
         level = triangle[0x31] >> 4;
         if (level > 0) {
@@ -722,8 +725,8 @@ s32 getCpPolyVec__FP5GSvecP5GSvecP5GSvecP5GSvec(
     for (i = 0; i < 3; i++) {
         a = &vertices[i];
         b = &vertices[(i + 1) % 3];
-        cross = (b->z - a->z) * (point->x - a->x) -
-                (b->x - a->x) * (point->z - a->z);
+        cross = (b->x - a->x) * (point->z - a->z) -
+                (b->z - a->z) * (point->x - a->x);
         if (cross > lbl_8047CEE0) {
             return 0;
         }
@@ -743,20 +746,421 @@ s32 getCpPolyVec__FP5GSvecP5GSvecP5GSvecP5GSvec(
 }
 
 /* 0x8010E138 | 0x404 */
+typedef struct GSFieldFixedMdlCell {
+    u32 firstIndex;
+    u32 count;
+} GSFieldFixedMdlCell;
+
+typedef struct GScolsys2Triangle {
+    Vec3f verts[3];
+    Vec3f normal;
+    u16 flags;
+    u16 id;
+} GScolsys2Triangle;
+
+typedef struct GSFieldFixedMdlEventList {
+    /* 0x00 */ GScolsys2Triangle* triangles;
+    /* 0x04 */ u8 pad_04[4];
+    /* 0x08 */ GSFieldFixedMdlCell* cells;
+    /* 0x0C */ u32* triangleIndices;
+    /* 0x10 */ u16 cellCountX;
+    /* 0x12 */ u16 cellCountZ;
+    /* 0x14 */ f32 cellWidth;
+    /* 0x18 */ f32 cellDepth;
+    /* 0x1C */ f32 minX;
+    /* 0x20 */ f32 minZ;
+} GSFieldFixedMdlEventList;
+
+typedef struct GScolsys2TriangleList {
+    GScolsys2Triangle* triangles;
+    u32 count;
+} GScolsys2TriangleList;
+
+typedef struct GScolsys2Region {
+    u8 pad_00[0x24];
+    void* triList;
+    u8 pad_28[0x14];
+    u16 flags;
+    u8 pad_3E[2];
+} GScolsys2Region;
+
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
 s32 fn_8010E138(void* origin, void* direction) {
-    /* TODO: match -- 824 bytes at 0x8010E138 */
+    ColDrawScene* scene;
+    GScolsys2Region* region;
+    ColWalkHit temporary[8];
+    ColWalkHit* tempWrite;
+    ColWalkHit* tempRead;
+    ColWalkHit* outHit;
+    ColMtx inverse;
+    ColMtx forward;
+    Vec3f transformed[3];
+    Vec3f plane;
+    Vec3f hitPoint;
+    Vec3f* point;
+    GScolsys2TriangleList* list;
+    GSFieldFixedMdlEventList* grid;
+    GSFieldFixedMdlCell* cell;
+    GScolsys2Triangle* triangle;
+    u32* triangleIndices;
+    s32 enabled;
+    s32 totalCount;
+    u32 regionIndex;
+    s32 temporaryCount;
+    s32 i;
+    s32 duplicate;
+    u8 field30;
+    u8 field31;
+    s32 cellX;
+    s32 cellZ;
+    u32 triCount;
+    u32 triIdx;
+
+    point = origin;
+    outHit = direction;
+    totalCount = 0;
+    scene = fn_8010CBC0();
+    if (scene == NULL) {
+        return 0;
+    }
+
+    region = (GScolsys2Region*)scene->objects;
+    for (regionIndex = 0;
+         regionIndex < scene->count && totalCount < 8;
+         regionIndex++, region = (GScolsys2Region*)((u8*)region + 0x40))
+    {
+        GScolsys2GetObjEnable(regionIndex, &enabled);
+        if (enabled == 0 || region->triList == NULL) {
+            continue;
+        }
+
+        temporaryCount = 0;
+        tempWrite = temporary;
+
+        if ((region->flags & 1) != 0) {
+            fn_8010CA30(inverse, regionIndex);
+            fn_8010C8D0(forward, regionIndex);
+
+            list = (GScolsys2TriangleList*)region->triList;
+            triangle = list->triangles;
+            for (triIdx = 0;
+                 triIdx < list->count && temporaryCount < 8;
+                 triIdx++, triangle++)
+            {
+                for (i = 0; i < 3; i++) {
+                    PSMTXMultVec(inverse, (const f32*)&triangle->verts[i],
+                                 (f32*)&transformed[i]);
+                }
+                PSMTXMultVec(forward, (const f32*)&triangle->normal,
+                             (f32*)&plane);
+                if (getCpPolyVec__FP5GSvecP5GSvecP5GSvecP5GSvec(
+                        &hitPoint, point, transformed, &plane) == 0)
+                {
+                    continue;
+                }
+
+                tempRead = temporary;
+                for (i = 0; i < temporaryCount; i++, tempRead++) {
+                    if (tempRead->height == hitPoint.y) {
+                        break;
+                    }
+                }
+                duplicate = 0;
+                if (i >= temporaryCount) {
+                    tempWrite->height = hitPoint.y;
+                    field30 = *(u8*)((u8*)triangle + 0x30);
+                    tempWrite->surfaceType =
+                        ((field30 >> 4) == 0xF) ? 0xFFFF : (u16)(field30 >> 4);
+                    tempWrite->surfaceId =
+                        ((field30 & 0xF) == 0xF) ? 0xFFFF : (u16)(field30 & 0xF);
+                    field31 = *(u8*)((u8*)triangle + 0x31);
+                    tempWrite->layer = (u8)(field31 >> 4);
+                    tempWrite->subLayer = (u8)(field31 & 0xF);
+                    duplicate = 1;
+                }
+                if (duplicate != 0) {
+                    tempWrite++;
+                    temporaryCount++;
+                }
+            }
+        } else {
+            grid = (GSFieldFixedMdlEventList*)region->triList;
+            cellX = (s32)((point->x - grid->minX) / grid->cellWidth);
+            if (cellX >= 0 && cellX < (s32)grid->cellCountX) {
+                cellZ = (s32)((point->z - grid->minZ) / grid->cellDepth);
+                if (cellZ >= 0 && cellZ < (s32)grid->cellCountZ) {
+                    cell = grid->cells + (cellX + cellZ * grid->cellCountX);
+                    triangleIndices = grid->triangleIndices + cell->firstIndex;
+                    triCount = cell->count;
+                    for (triIdx = 0;
+                         triIdx < triCount && temporaryCount < 8;
+                         triIdx++, triangleIndices++)
+                    {
+                        triangle = grid->triangles + *triangleIndices;
+                        if (getCpPolyVec__FP5GSvecP5GSvecP5GSvecP5GSvec(
+                                &hitPoint, point, &triangle->verts[0],
+                                &triangle->normal) == 0)
+                        {
+                            continue;
+                        }
+
+                        tempRead = temporary;
+                        for (i = 0; i < temporaryCount; i++, tempRead++) {
+                            if (tempRead->height == hitPoint.y) {
+                                break;
+                            }
+                        }
+                        duplicate = 0;
+                        if (i >= temporaryCount) {
+                            tempWrite->height = hitPoint.y;
+                            field30 = *(u8*)((u8*)triangle + 0x30);
+                            tempWrite->surfaceType =
+                                ((field30 >> 4) == 0xF) ? 0xFFFF
+                                                        : (u16)(field30 >> 4);
+                            tempWrite->surfaceId =
+                                ((field30 & 0xF) == 0xF) ? 0xFFFF
+                                                         : (u16)(field30 & 0xF);
+                            field31 = *(u8*)((u8*)triangle + 0x31);
+                            tempWrite->layer = (u8)(field31 >> 4);
+                            tempWrite->subLayer = (u8)(field31 & 0xF);
+                            duplicate = 1;
+                        }
+                        if (duplicate != 0) {
+                            tempWrite++;
+                            temporaryCount++;
+                        }
+                    }
+                }
+            }
+        }
+
+        tempRead = temporary;
+        for (i = 0; i < temporaryCount && totalCount < 8; i++) {
+            *outHit = *tempRead;
+            outHit++;
+            tempRead++;
+            totalCount++;
+        }
+    }
+
+    return totalCount;
 }
 #pragma pop
 
 /* 0x8010E53C | 0x5EC */
+typedef struct GSfieldEdgeMasks {
+    u16 values[3];
+} GSfieldEdgeMasks;
+
+extern f32 GScolsy2UtilGetSidePlanePoint(void*, void*, void*);
+extern void GScolsy2UtilGetCpPlanePoint(void*, void*, void*, void*);
+extern s32 GScolsy2UtilChkInTri(void*, void*, void*);
+extern void GScolsy2UtilGetPointExtentionLine(void*, void*, void*, f32);
+f32 GScolsys2UtilGetCpLinePoint(Vec3f*, Vec3f*, Vec3f*, Vec3f*);
+
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
 s32 fn_8010E53C(Vec3f* point, void* data, f32 radius, Vec3f* result) {
-    /* TODO: match -- 1516 bytes at 0x8010E53C */
+    extern const f32 lbl_8047CF00;
+    extern const f32 lbl_8047CF04;
+    extern const f32 lbl_8047CF08[];
+    extern f32 PSVECSquareDistance(void* a, void* b);
+    GSFieldFixedMdlEventList* grid;
+    GSFieldFixedMdlCell* cell;
+    GScolsys2Triangle* tri;
+    GSfieldEdgeMasks edgeMasksA;
+    GSfieldEdgeMasks edgeMasksB;
+    Vec3f planePoint;
+    Vec3f cp;
+    Vec3f lineCp;
+    s32 startX;
+    s32 startZ;
+    s32 endX;
+    s32 endZ;
+    s32 x;
+    s32 z;
+    s32 hit;
+    s32 edge;
+    f32 radiusSq;
+
+    grid = data;
+    startX = (s32)((point->x - radius - grid->minX) / grid->cellWidth);
+    if (startX < 0) {
+        startX = 0;
+    }
+    startZ = (s32)((point->z - radius - grid->minZ) / grid->cellDepth);
+    if (startZ < 0) {
+        startZ = 0;
+    }
+    endX = (s32)((point->x + radius - grid->minX) / grid->cellWidth);
+    if (endX > (s32)grid->cellCountX - 1) {
+        endX = (s32)grid->cellCountX - 1;
+    }
+    endZ = (s32)((point->z + radius - grid->minZ) / grid->cellDepth);
+    if (endZ > (s32)grid->cellCountZ - 1) {
+        endZ = (s32)grid->cellCountZ - 1;
+    }
+
+    radiusSq = radius * radius;
+    edgeMasksA.values[0] = 1;
+    edgeMasksA.values[1] = 2;
+    edgeMasksA.values[2] = 4;
+    edgeMasksB = edgeMasksA;
+
+    for (z = startZ; z <= endZ; z++) {
+        cell = grid->cells + (startX + z * grid->cellCountX);
+        for (x = startX; x <= endX; x++, cell++) {
+            u32* triIndexPtr;
+            u32 cellTriIdx;
+
+            triIndexPtr = grid->triangleIndices + cell->firstIndex;
+            cellTriIdx = 0;
+            while (cellTriIdx < cell->count) {
+                tri = grid->triangles + (*triIndexPtr);
+                if (GScolsy2UtilGetSidePlanePoint(&tri->normal, tri, point) <
+                    lbl_8047CF00)
+                {
+                    hit = 0;
+                } else {
+                    GScolsy2UtilGetCpPlanePoint(&cp, &tri->normal,
+                                                (Vec3f*)tri, point);
+                    if (PSVECSquareDistance(&cp, point) >= radiusSq) {
+                        hit = 0;
+                    } else if (GScolsy2UtilChkInTri(&cp, tri, &tri->normal) ==
+                               0)
+                    {
+                        hit = 0;
+                    } else {
+                        lineCp = cp;
+                        hit = 1;
+                    }
+                }
+                if (hit != 0) {
+                    if (result == NULL) {
+                        return 1;
+                    }
+                    GScolsy2UtilGetPointExtentionLine(result, &lineCp, point,
+                                                     lbl_8047CF08[0] + radius);
+                    return 1;
+                }
+                cellTriIdx++;
+                triIndexPtr++;
+            }
+        }
+    }
+
+    for (z = startZ; z <= endZ; z++) {
+        cell = grid->cells + (startX + z * grid->cellCountX);
+        for (x = startX; x <= endX; x++, cell++) {
+            u32* triIndexPtr;
+            u32 cellTriIdx;
+
+            triIndexPtr = grid->triangleIndices + cell->firstIndex;
+            cellTriIdx = 0;
+            while (cellTriIdx < cell->count) {
+                tri = grid->triangles + (*triIndexPtr);
+                if ((tri->flags & 7) == 0) {
+                    hit = 0;
+                } else if (GScolsy2UtilGetSidePlanePoint(&tri->normal, tri,
+                                                         point) <
+                           lbl_8047CF00)
+                {
+                    hit = 0;
+                } else {
+                    hit = 0;
+                    for (edge = 0; edge < 3; edge++) {
+                        s32 next = edge + 1;
+                        f32 lineT;
+
+                        if (next >= 3) {
+                            next = 0;
+                        }
+                        if ((tri->flags & edgeMasksA.values[edge]) == 0) {
+                            continue;
+                        }
+                        lineT = GScolsys2UtilGetCpLinePoint(
+                            &lineCp, &tri->verts[edge], &tri->verts[next],
+                            point);
+                        if (lineT < lbl_8047CF00 || lineT > lbl_8047CF04) {
+                            continue;
+                        }
+                        if (PSVECSquareDistance(&lineCp, point) < radiusSq) {
+                            hit = 1;
+                            break;
+                        }
+                    }
+                }
+                if (hit != 0) {
+                    if (result == NULL) {
+                        return 1;
+                    }
+                    GScolsy2UtilGetPointExtentionLine(
+                        result, &lineCp, point, lbl_8047CF08[0] + radius);
+                    return 1;
+                }
+                cellTriIdx++;
+                triIndexPtr++;
+            }
+        }
+    }
+
+    for (z = startZ; z <= endZ; z++) {
+        cell = grid->cells + (startX + z * grid->cellCountX);
+        for (x = startX; x <= endX; x++, cell++) {
+            u32* triIndexPtr;
+            u32 cellTriIdx;
+
+            triIndexPtr = grid->triangleIndices + cell->firstIndex;
+            cellTriIdx = 0;
+            while (cellTriIdx < cell->count) {
+                tri = grid->triangles + (*triIndexPtr);
+                if ((tri->flags & 7) == 0) {
+                    hit = 0;
+                } else if (GScolsy2UtilGetSidePlanePoint(&tri->normal, tri,
+                                                         point) <
+                           lbl_8047CF00)
+                {
+                    hit = 0;
+                } else {
+                    hit = 0;
+                    for (edge = 0; edge < 3; edge++) {
+                        s32 next = edge + 2;
+
+                        if (next >= 3) {
+                            next -= 3;
+                        }
+                        if ((tri->flags & edgeMasksB.values[edge]) == 0 ||
+                            (tri->flags & edgeMasksB.values[next]) == 0)
+                        {
+                            continue;
+                        }
+                        if (PSVECSquareDistance(&tri->verts[edge], point) <
+                            radiusSq)
+                        {
+                            lineCp = tri->verts[edge];
+                            hit = 1;
+                            break;
+                        }
+                    }
+                }
+                if (hit != 0) {
+                    if (result == NULL) {
+                        return 1;
+                    }
+                    GScolsy2UtilGetPointExtentionLine(
+                        result, &lineCp, point, lbl_8047CF08[0] + radius);
+                    return 1;
+                }
+                cellTriIdx++;
+                triIndexPtr++;
+            }
+        }
+    }
+
+    return 0;
 }
 #pragma pop
 
@@ -766,7 +1170,181 @@ s32 fn_8010E53C(Vec3f* point, void* data, f32 radius, Vec3f* result) {
 #pragma optimizewithasm off
 s32 fn_8010EB28(Vec3f* point, void* data, ColMtx inverse,
                 ColMtx forward, f32 radius, Vec3f* result) {
-    /* TODO: match -- 1212 bytes at 0x8010EB28 */
+    extern const f32 lbl_8047CF00;
+    extern const f32 lbl_8047CF04;
+    extern const f32 lbl_8047CF08[];
+    extern f32 PSVECSquareDistance(void* a, void* b);
+    ColDrawGroup* group;
+    GScolsys2Triangle* tri;
+    Vec3f transformedVerts[3];
+    Vec3f transformedNormal;
+    Vec3f planePoint;
+    Vec3f cp;
+    Vec3f lineCp;
+    Vec3f* currentVert;
+    Vec3f* otherVert;
+    u16 edgeMasksA[3];
+    u16 edgeMasksB[3];
+    u32 i;
+    s32 edge;
+    s32 next;
+    s32 hit;
+    f32 radiusSq;
+    f32 lineT;
+
+    group = data;
+    tri = (GScolsys2Triangle*)group->data;
+    radiusSq = radius * radius;
+
+    i = 0;
+    hit = 0;
+    for (; i < group->count && hit == 0;
+         i++, tri = (GScolsys2Triangle*)((u8*)tri + 0x34)) {
+        currentVert = tri->verts;
+        otherVert = transformedVerts;
+        for (edge = 0; edge < 3; edge++, currentVert++, otherVert++) {
+            PSMTXMultVec(inverse, (const f32*)currentVert,
+                         (f32*)otherVert);
+        }
+        PSMTXMultVec(forward, (const f32*)&tri->normal, (f32*)&transformedNormal);
+
+        if (GScolsy2UtilGetSidePlanePoint(&transformedNormal, transformedVerts,
+                                          point) < lbl_8047CF00)
+        {
+            hit = 0;
+        } else {
+            GScolsy2UtilGetCpPlanePoint(&cp, &transformedNormal,
+                                        transformedVerts, point);
+            if (PSVECSquareDistance(&cp, point) >= radiusSq) {
+                hit = 0;
+            } else if (GScolsy2UtilChkInTri(&cp, transformedVerts,
+                                            &transformedNormal) == 0)
+            {
+                hit = 0;
+            } else {
+                lineCp = cp;
+                hit = 1;
+            }
+        }
+    }
+    if (hit != 0) {
+        if (result == NULL) {
+            return 1;
+        }
+        GScolsy2UtilGetPointExtentionLine(result, &lineCp, point,
+                                         lbl_8047CF08[0] + radius);
+        return 1;
+    }
+
+    edgeMasksA[0] = 1;
+    edgeMasksA[1] = 2;
+    edgeMasksA[2] = 4;
+
+    i = 0;
+    tri = (GScolsys2Triangle*)group->data;
+    hit = 0;
+    for (; i < group->count && hit == 0;
+         i++, tri = (GScolsys2Triangle*)((u8*)tri + 0x34)) {
+        if ((tri->flags & 7) == 0) {
+            continue;
+        }
+        for (edge = 0; edge < 3; edge++) {
+            PSMTXMultVec(inverse, (const f32*)&tri->verts[edge],
+                         (f32*)&transformedVerts[edge]);
+        }
+        PSMTXMultVec(forward, (const f32*)&tri->normal, (f32*)&transformedNormal);
+
+        if (GScolsy2UtilGetSidePlanePoint(&transformedNormal, transformedVerts,
+                                          point) < lbl_8047CF00)
+        {
+            hit = 0;
+        } else {
+            hit = 0;
+            currentVert = transformedVerts;
+            for (edge = 0; edge < 3; edge++, currentVert++) {
+                next = edge + 1;
+                if (next >= 3) {
+                    next = 0;
+                }
+                if ((tri->flags & edgeMasksA[edge]) == 0) {
+                    continue;
+                }
+                otherVert = &transformedVerts[next];
+                lineT = GScolsys2UtilGetCpLinePoint(&lineCp, currentVert,
+                                                    otherVert, point);
+                if (lineT < lbl_8047CF00 || lineT > lbl_8047CF04) {
+                    continue;
+                }
+                if (PSVECSquareDistance(&lineCp, point) < radiusSq) {
+                    hit = 1;
+                    break;
+                }
+            }
+        }
+    }
+    if (hit != 0) {
+        if (result == NULL) {
+            return 1;
+        }
+        GScolsy2UtilGetPointExtentionLine(result, &lineCp, point,
+                                         lbl_8047CF08[0] + radius);
+        return 1;
+    }
+
+    edgeMasksB[0] = 1;
+    edgeMasksB[1] = 2;
+    edgeMasksB[2] = 4;
+
+    i = 0;
+    tri = (GScolsys2Triangle*)group->data;
+    hit = 0;
+    for (; i < group->count && hit == 0;
+         i++, tri = (GScolsys2Triangle*)((u8*)tri + 0x34)) {
+        if ((tri->flags & 7) == 0) {
+            continue;
+        }
+        for (edge = 0; edge < 3; edge++) {
+            PSMTXMultVec(inverse, (const f32*)&tri->verts[edge],
+                         (f32*)&transformedVerts[edge]);
+        }
+        PSMTXMultVec(forward, (const f32*)&tri->normal, (f32*)&transformedNormal);
+
+        if (GScolsy2UtilGetSidePlanePoint(&transformedNormal, transformedVerts,
+                                          point) < lbl_8047CF00)
+        {
+            hit = 0;
+        } else {
+            hit = 0;
+            for (edge = 0; edge < 3; edge++) {
+                next = edge + 2;
+                if (next >= 3) {
+                    next -= 3;
+                }
+                if ((tri->flags & edgeMasksB[edge]) == 0 ||
+                    (tri->flags & edgeMasksB[next]) == 0)
+                {
+                    continue;
+                }
+                if (PSVECSquareDistance(&transformedVerts[edge], point) <
+                    radiusSq)
+                {
+                    lineCp = transformedVerts[edge];
+                    hit = 1;
+                    break;
+                }
+            }
+        }
+    }
+    if (hit != 0) {
+        if (result == NULL) {
+            return 1;
+        }
+        GScolsy2UtilGetPointExtentionLine(result, &lineCp, point,
+                                         lbl_8047CF08[0] + radius);
+        return 1;
+    }
+
+    return 0;
 }
 #pragma pop
 

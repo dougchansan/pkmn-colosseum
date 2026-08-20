@@ -405,8 +405,8 @@ extern u32 lbl_8047AB5C;
 extern u32 lbl_8047AB58;
 extern u32 lbl_8047AB54;
 extern u32 lbl_8047AB50;
-extern u32 lbl_8047CB50;
-extern u32 lbl_8047CB48;
+extern f64 lbl_8047CB50;
+extern f32 lbl_8047CB48;
 extern u32 lbl_8047AB3C;
 extern u32 lbl_8047AB40;
 extern u32 lbl_8047AB44;
@@ -474,8 +474,6 @@ u32 fn_800E1544(void)
     u32 total;
     u32 bestTotal;
     u32 remainder;
-    u32 mask;
-    u32 bestMask;
     u32 candidateCount;
     u32 chosenCount;
     u32 i;
@@ -488,7 +486,7 @@ u32 fn_800E1544(void)
         u8* copyDst = (u8*)(dst_);                                         \
         u8* copySrc = (u8*)(src_);                                         \
         u32 copyCount = (count_);                                          \
-        if (copyDst < copySrc) {                                           \
+        if (copySrc > copyDst) {                                           \
             for (i = 0; i < copyCount; i++) {                             \
                 copyDst[i] = copySrc[i];                                   \
             }                                                               \
@@ -527,21 +525,21 @@ u32 fn_800E1544(void)
 #define INSERT_FREE(node_)                                                  \
     do {                                                                    \
         GSFreeBlock* insertNode = (node_);                                 \
-        before = 0;                                                        \
-        after = (GSFreeBlock*)lbl_8047AB30;                                \
-        while (after != 0 && after < insertNode) {                         \
-            before = after;                                                \
-            after = after->next;                                           \
+        GSFreeBlock* insertBefore = 0;                                     \
+        GSFreeBlock* insertAfter = (GSFreeBlock*)lbl_8047AB30;             \
+        while (insertAfter != 0 && insertAfter < insertNode) {             \
+            insertBefore = insertAfter;                                    \
+            insertAfter = insertAfter->next;                               \
         }                                                                   \
-        insertNode->prev = before;                                         \
-        insertNode->next = after;                                          \
-        if (before != 0) {                                                 \
-            before->next = insertNode;                                     \
+        insertNode->prev = insertBefore;                                   \
+        insertNode->next = insertAfter;                                    \
+        if (insertBefore != 0) {                                           \
+            insertBefore->next = insertNode;                               \
         } else {                                                            \
             lbl_8047AB30 = (u32)insertNode;                                \
         }                                                                   \
-        if (after != 0) {                                                  \
-            after->prev = insertNode;                                      \
+        if (insertAfter != 0) {                                            \
+            insertAfter->prev = insertNode;                                \
         }                                                                   \
         COALESCE_FREE(insertNode);                                         \
     } while (0)
@@ -555,7 +553,8 @@ u32 fn_800E1544(void)
     }
 
     block = (GSFreeBlock*)lbl_8047AB30;
-    while (block != 0 && block->next != 0) {
+    if (block != 0 && block->next != 0) {
+        do {
         u8* blockEnd = (u8*)block + block->size;
         if (blockEnd == (u8*)lbl_8047AB38) {
             block = block->next;
@@ -593,72 +592,60 @@ u32 fn_800E1544(void)
             if (after != 0) {
                 after->prev = fresh;
             }
+            if (fresh->next != 0 &&
+                (u8*)fresh + fresh->size == (u8*)fresh->next) {
+                GSFreeBlock* mergeNext = fresh->next;
+                fresh->size += mergeNext->size;
+                fresh->next = mergeNext->next;
+                if (fresh->next != 0) {
+                    fresh->next->prev = fresh;
+                }
+            }
             if (wasHead != 0) {
                 lbl_8047AB30 = (u32)fresh;
             }
-            COALESCE_FREE(fresh);
             block = (GSFreeBlock*)lbl_8047AB30;
             continue;
         }
 
         candidateCount = 0;
+        bestTotal = 0;
         for (desc = (GSAllocDesc*)lbl_8047AB34;
              desc >= (GSAllocDesc*)lbl_8047AB38; desc--) {
             if (desc->used == 0 || desc->locked != 0 || desc->pinned != 0 ||
                 desc->data <= (u8*)block || desc->size > block->size) {
                 continue;
             }
-            if (candidateCount < 4) {
+            if (candidateCount < 4 &&
+                bestTotal + desc->size <= block->size) {
                 candidates[candidateCount++] = desc;
+                bestTotal += desc->size;
             } else {
-                bestTotal = 0;
-                bestMask = 0;
-                for (mask = 1; mask < 16; mask++) {
+                for (i = 0; i < candidateCount; i++) {
+                    GSAllocDesc* displaced = candidates[i];
+
+                    candidates[i] = desc;
                     total = 0;
-                    for (i = 0; i < 4; i++) {
-                        if ((mask & (1 << i)) != 0) {
-                            total += candidates[i]->size;
-                        }
+                    for (j = 0; j < candidateCount; j++) {
+                        total += candidates[j]->size;
                     }
-                    if (total <= block->size && total > bestTotal) {
+                    if (total > bestTotal && total <= block->size) {
                         bestTotal = total;
-                        bestMask = mask;
-                    }
-                }
-                for (i = 0; i < 4; i++) {
-                    if ((bestMask & (1 << i)) == 0 &&
-                        desc->size > candidates[i]->size) {
-                        candidates[i] = desc;
                         break;
                     }
+                    candidates[i] = displaced;
                 }
             }
         }
 
-        bestTotal = 0;
-        bestMask = 0;
-        for (mask = 1; mask < (1U << candidateCount); mask++) {
-            total = 0;
-            for (i = 0; i < candidateCount; i++) {
-                if ((mask & (1U << i)) != 0) {
-                    total += candidates[i]->size;
-                }
-            }
-            if (total <= block->size && total > bestTotal) {
-                bestTotal = total;
-                bestMask = mask;
-            }
-        }
-        if (bestMask == 0) {
+        if (candidateCount == 0) {
             block = block->next;
             continue;
         }
 
-        chosenCount = 0;
+        chosenCount = candidateCount;
         for (i = 0; i < candidateCount; i++) {
-            if ((bestMask & (1U << i)) != 0) {
-                chosen[chosenCount++] = candidates[i];
-            }
+            chosen[i] = candidates[i];
         }
 
         before = block->prev;
@@ -690,8 +677,18 @@ u32 fn_800E1544(void)
 
         if (remainder >= sizeof(GSFreeBlock)) {
             fresh = (GSFreeBlock*)destination;
+            fresh->prev = before;
+            fresh->next = after;
             fresh->size = remainder;
-            INSERT_FREE(fresh);
+            if (before != 0) {
+                before->next = fresh;
+            } else {
+                lbl_8047AB30 = (u32)fresh;
+            }
+            if (after != 0) {
+                after->prev = fresh;
+            }
+            COALESCE_FREE(fresh);
         } else {
             desc = chosen[chosenCount - 1];
             desc->size += remainder;
@@ -715,6 +712,7 @@ u32 fn_800E1544(void)
             }
         }
         block = (GSFreeBlock*)lbl_8047AB30;
+        } while (block != 0);
     }
 
     newLargest = 0;
@@ -745,8 +743,8 @@ extern u32 lbl_8047AB5C;
 extern u32 lbl_8047AB58;
 extern u32 lbl_8047AB54;
 extern u32 lbl_8047AB50;
-extern u32 lbl_8047CB50;
-extern u32 lbl_8047CB48;
+extern f64 lbl_8047CB50;
+extern f32 lbl_8047CB48;
 extern u32 lbl_8047AB3C;
 #if 0
 asm void fn_800E0E14(void) {
@@ -754,11 +752,22 @@ asm void fn_800E0E14(void) {
 }
 #else
 u8 fn_800E0E14(u32 verbose, u32 dumpMap) {
+    typedef struct GSAllocDescCheck {
+        u16 used;
+        u16 locked;
+        u8* data;
+        u32 size;
+        u16 pinned;
+        u16 checksum;
+    } GSAllocDescCheck;
     u8 ok;
     u32* block;
     u8* cursor;
     u8* end;
-    u32 count;
+    u32 allocatedCount;
+    u32 freeCount;
+    u32 largestFree;
+    u32 totalFree;
 
     ok = 1;
     if (verbose != 0) {
@@ -766,9 +775,15 @@ u8 fn_800E0E14(u32 verbose, u32 dumpMap) {
     }
 
     block = (u32*)lbl_8047AB30;
-    count = 0;
+    if (block != NULL && block[0] != 0) {
+        GSlogWrite((char*)lbl_80270658 + 0x34);
+        ok = 0;
+    }
+    freeCount = 0;
     while (block != 0) {
-        count++;
+        u32* next;
+
+        freeCount++;
         if ((u32)block < lbl_8047AB68 || (u32)block > lbl_8047AB64) {
             ok = 0;
             GSlogWrite((char*)lbl_80270658 + 0x64);
@@ -781,21 +796,125 @@ u8 fn_800E0E14(u32 verbose, u32 dumpMap) {
             ok = 0;
             GSlogWrite((char*)lbl_80270658 + 0xc0);
         }
-        block = (u32*)block[1];
+        next = (u32*)block[1];
+        if (next != NULL) {
+            if (next[0] != (u32)block) {
+                GSlogWrite((char*)lbl_80270658 + 0xf8);
+                ok = 0;
+            }
+            if (next == (u32*)((u8*)block + block[2])) {
+                GSlogWrite((char*)lbl_80270658 + 0x124);
+                ok = 0;
+            }
+            if (block > next) {
+                GSlogWrite((char*)lbl_80270658 + 0x154);
+                ok = 0;
+            }
+        }
+        block = next;
     }
 
+    allocatedCount = 0;
+    {
+        GSAllocDescCheck* desc;
+        for (desc = (GSAllocDescCheck*)lbl_8047AB34;
+             desc >= (GSAllocDescCheck*)lbl_8047AB38; desc--) {
+            u32 sum;
+            u32 i;
+
+            if (desc->used == 0) {
+                continue;
+            }
+            allocatedCount++;
+            if ((u32)desc->data < lbl_8047AB68 ||
+                (u32)(desc->data + desc->size) > lbl_8047AB38) {
+                GSlogWrite((char*)lbl_80270658 + 0x180);
+                ok = 0;
+            }
+            if (*(u8*)&lbl_8047AB28 != 0) {
+                u8* tail;
+
+                tail = desc->data + desc->size - 4;
+                if (desc->data[0] != 0 || desc->data[1] != 0 ||
+                    desc->data[2] != 0 || desc->data[3] != 0 ||
+                    tail[0] != 0 || tail[1] != 0 ||
+                    tail[2] != 0 || tail[3] != 0) {
+                    GSlogWrite((char*)lbl_80270658 + 0x1ac, desc->used);
+                    ok = 0;
+                    desc->data[0] = 0;
+                    desc->data[1] = 0;
+                    desc->data[2] = 0;
+                    desc->data[3] = 0;
+                    tail[0] = 0;
+                    tail[1] = 0;
+                    tail[2] = 0;
+                    tail[3] = 0;
+                }
+                if (desc->locked == 0) {
+                    sum = 0x3D94;
+                    for (i = 0; i + 1 < desc->size; i += 2) {
+                        sum += *(u16*)(desc->data + i);
+                    }
+                    if ((desc->size & 1) != 0) {
+                        sum += desc->data[desc->size - 1];
+                    }
+                    if (desc->checksum != (u16)sum) {
+                        GSlogWrite((char*)lbl_80270658 + 0x1d8,
+                                   desc->used);
+                        ok = 0;
+                    }
+                }
+            }
+        }
+    }
+
+    if (dumpMap != 0) {
+        GSlogWrite((char*)lbl_80270658 + 0x208);
+    }
     cursor = (u8*)lbl_8047AB68;
     end = (u8*)lbl_8047AB38;
     while (cursor < end) {
-        u32 size = *(u32*)(cursor + 0x8);
-        if (size == 0 || cursor + size > end) {
-            ok = 0;
-            GSlogWrite((char*)lbl_80270658 + 0x2e8, cursor);
-            break;
+        GSAllocDescCheck* desc;
+        GSAllocDescCheck* found;
+        u32 size;
+
+        found = NULL;
+        for (desc = (GSAllocDescCheck*)lbl_8047AB34;
+             desc >= (GSAllocDescCheck*)lbl_8047AB38; desc--) {
+            if (desc->used != 0 && desc->data == cursor) {
+                found = desc;
+                break;
+            }
         }
-        if (dumpMap != 0) {
-            GSlogWrite((char*)lbl_80270658 + 0x268, cursor, cursor + size - 1,
-                        *(u32*)cursor, *(u32*)(cursor + 4));
+        if (found != NULL && found->used != 0) {
+            size = found->size;
+            if (dumpMap != 0) {
+                GSlogWrite((char*)lbl_80270658 + 0x21c, cursor,
+                            cursor + size - 1, size, found->used,
+                            found->locked, found->pinned);
+            }
+        } else {
+            size = *(u32*)(cursor + 8);
+            if (dumpMap != 0) {
+                GSlogWrite((char*)lbl_80270658 + 0x268, cursor,
+                            cursor + size - 1, *(u32*)cursor,
+                            *(u32*)(cursor + 4));
+            }
+            if ((*(u32*)cursor != 0 &&
+                 (*(u32*)cursor < lbl_8047AB68 ||
+                  *(u32*)cursor > lbl_8047AB64)) ||
+                (*(u32*)(cursor + 4) != 0 &&
+                 (*(u32*)(cursor + 4) < lbl_8047AB68 ||
+                  *(u32*)(cursor + 4) > lbl_8047AB64))) {
+                GSlogWrite((char*)lbl_80270658 + 0x2a8, cursor);
+                ok = 0;
+                break;
+            }
+            if (size == 0 || cursor + size > end) {
+                GSlogWrite((char*)lbl_80270658 + 0x2e8, cursor);
+                ok = 0;
+                break;
+            }
         }
         cursor += size;
     }
@@ -804,7 +923,7 @@ u8 fn_800E0E14(u32 verbose, u32 dumpMap) {
         ok = 0;
         GSlogWrite((char*)lbl_80270658 + 0x318, cursor);
     }
-    if (count != lbl_8047AB4C) {
+    if (allocatedCount != lbl_8047AB4C) {
         ok = 0;
         GSlogWrite((char*)lbl_80270658 + 0x36c);
     }
@@ -814,6 +933,34 @@ u8 fn_800E0E14(u32 verbose, u32 dumpMap) {
         GSlogWrite((char*)lbl_80270658 + 0x3cc, lbl_8047AB4C);
         GSlogWrite((char*)lbl_80270658 + 0x3e8, lbl_8047AB48);
         GSlogWrite((char*)lbl_80270658 + 0x404, lbl_8047AB34 - lbl_8047AB38 + 0x10);
+        largestFree = 0;
+        block = (u32*)lbl_8047AB30;
+        while (block != NULL) {
+            if (block[2] > largestFree) {
+                largestFree = block[2];
+            }
+            block = (u32*)block[1];
+        }
+        GSlogWrite((char*)lbl_80270658 + 0x424, largestFree);
+        totalFree = 0;
+        block = (u32*)lbl_8047AB30;
+        while (block != NULL) {
+            totalFree += block[2];
+            block = (u32*)block[1];
+        }
+        GSlogWrite((char*)lbl_80270658 + 0x444, totalFree);
+        GSlogWrite((char*)lbl_80270658 + 0x464, freeCount);
+        GSlogWrite((char*)lbl_80270658 + 0x480, lbl_8047AB60);
+        GSlogWrite((char*)lbl_80270658 + 0x49c, lbl_8047AB5C);
+        GSlogWrite((char*)lbl_80270658 + 0x4b8, lbl_8047AB58);
+        GSlogWrite((char*)lbl_80270658 + 0x4d4, lbl_8047AB54);
+        GSlogWrite((char*)lbl_80270658 + 0x4f0, lbl_8047AB50);
+        GSlogWritef((char*)lbl_80270658 + 0x50c,
+                    lbl_8047CB48 *
+                        ((f32)((f64)(freeCount - 1) - lbl_8047CB50) /
+                         (f32)((f64)(freeCount + allocatedCount) -
+                               lbl_8047CB50)));
+        GSlogWrite((char*)lbl_80270658 + 0x52c);
     }
 
     if (!ok) {

@@ -42,6 +42,25 @@ typedef struct GSvec {
     f32 z;
 } GSvec;
 
+typedef struct PeopleECECState {
+    u8 pad00[0x0C];
+    f32 currentPitch;
+    f32 currentYaw;
+    u8 pad14[0x04];
+    GSvec* targetPos;
+    u8 pad1C[0x14];
+    void* scriptRef;
+    u8 pad34[0x80];
+    f32 targetPitch;
+    f32 targetYaw;
+} PeopleECECState;
+
+typedef struct PeopleHeightHit {
+    f32 height;
+    f32 field_04;
+    f32 field_08;
+} PeopleHeightHit;
+
 /* Forward declarations for functions defined later in this TU but used
  * earlier (order kept close to the archive's original topical grouping). */
 struct PeopleEntry;
@@ -59,7 +78,8 @@ void peopleSetTransform(PeopleEntry* entry, void* mtx);
 void* peopleGetTransform(PeopleEntry* entry);
 void fn_80181224(void);
 void fn_80181850(void);
-s32 fn_80180C78(PeopleOpenWork* work);
+s32 fn_80180C78(void* slot, void* subEntry, s32 mode);
+void fn_80181094(void);
 void fn_8018114C(void);
 void fn_801812C4(PeopleEntry* entry);
 s32 fn_80183688(void* self);
@@ -93,6 +113,8 @@ u8 fn_80188214(u32 groupId, u32 index, f32 distance);
 void fn_8018E9B4(PeopleEntry* entry, void* position, void* transform);
 void fn_8018DCA8(PeopleEntry*, u8);
 void fn_8018AACC(u32, u32, u8, GSvec*);
+BOOL peopleWaitSyncMotion(u32 groupId, u32 index, u8 wait);
+void fn_8018F08C(PeopleEntry* original, u32 motionIndex);
 
 /* ===== External SDK / engine functions ===== */
 extern void  GSlogWrite(const char* fmt, ...);     /* OSReport / debug printf */
@@ -140,6 +162,12 @@ extern void* fn_80167F28(const char* name);         /* field lookup by name */
 extern void* fn_80167E5C(void);                     /* get current field */
 extern void  fn_80167ED0(void* field, void* obj, void* data, u32 param);
 extern void  fn_80167E64(void* field);              /* field finalize */
+extern void* floorDataBiosGetCurrentPtr(void);
+extern u32 floorDataBiosGetShadowReciveNum(void* floor);
+extern u32 floorDataBiosGetShadowReciveID(void* floor, u32 index);
+extern int fn_80113F48(void);
+extern s32 GScolsys2WalkGetLayer(void* position, u8* layer, u8* subLayer);
+extern void GSmodelSetShadowSurface(void* model, s32 count, void* surfaces);
 
 /* Thread/task system */
 extern void* GSgappCreate(u32 pri, u32 type, void* taskBuf, void* callback);
@@ -161,6 +189,7 @@ extern void  fn_800FF4D4(void* data, u8 type);
 /* Collision/model helpers */
 extern void  GSvecCopy(void* dst, void* src);     /* matrix/vector copy */
 extern void  fn_800E0168(void* dst, void* srcA, void* srcB);  /* cross/setup */
+extern void  fn_800E019C(void* dst, void* srcA, void* srcB);
 
 /* ===== Rodata string references ===== */
 extern const char lbl_80273F80[];  /* floor name for blank-frame init */
@@ -169,9 +198,20 @@ extern f32 lbl_8047D8B0;           /* default moveSpeed constant */
 extern f32 lbl_8047D798;
 extern f32 lbl_8047D79C;
 extern f32 lbl_8047D7A0;
+extern f64 lbl_8047D7A8;
+extern f64 lbl_8047D7B0;
+extern f64 lbl_8047D7B8;
+extern f32 lbl_8047D7C0;
+extern f32 lbl_8047D7C4;
+extern f64 fmod();
+extern s32 fn_800D37CC(void);
+extern u32 fn_800D3088(void);
+extern f32 fn_800E0BA0(void);
+extern f32 fn_800E008C(void* vector);
+extern void fn_800E00AC(void* vector, void* direction, f32 distance);
 extern const void* lbl_80273F90[];
 
-/* ===== Global state (sbss, owned by the data split — extern here) ===== */
+/* ===== Global state (sbss, owned by the data split - extern here) ===== */
 
 extern void* lbl_8047B1E0;           /* current floor object link */
 extern PeopleOpenWork* lbl_8047B1E4; /* active PeopleOpenWork pointer */
@@ -515,8 +555,24 @@ void fn_80181850(void)
     GSvec modelRotation;
     GSvec currentPosition;
     BOOL visible;
+    void* floor;
+    void* resourceContext;
+    void* shadowSurfaces[2];
+    u32 receiverCount;
+    u8 layer;
+    u8 subLayer;
+    s32 shadowCount;
+    f32 frameCount;
+    u32 ticks;
+    f32 angle;
+    f32 fullTurn;
+    s32 revolutions;
+    PeopleEntry* linked;
+    f32 distance;
+    f32 talkRange;
 
-    for (i = peopleGetMaxCount() - 1; i >= 0; i--) {
+    i = peopleGetMaxCount();
+    while (i-- > 0) {
         entry = peopleGetEntry(i);
         if (!entry->active) {
             continue;
@@ -547,11 +603,103 @@ void fn_80181850(void)
             case 4:
                 fn_80184D80(entry);
                 break;
+            case 5:
+                switch (entry->subState) {
+                case 0:
+                    if (entry->animBlendFactor > lbl_8047D7A0) {
+                        frameCount = (f32)fn_800D37CC();
+                        ticks = fn_800D3088();
+                        entry->animBlendFactor -=
+                            (f32)ticks / frameCount;
+                        if (entry->animBlendFactor < lbl_8047D7A0) {
+                            entry->animBlendFactor = lbl_8047D7A0;
+                        }
+                        break;
+                    }
+                    entry->subState = 1;
+                    /* fallthrough */
+                case 1:
+                    angle = (f32)fmod(
+                        lbl_8047D7A8 + lbl_8047D7B0 * fn_800E0BA0() +
+                            entry->field_40,
+                        lbl_8047D7B8);
+                    linked = peopleFindBySelf(
+                        peopleFindSelf(entry->groupId, entry->index));
+                    if (linked != NULL) {
+                        fn_8018FC2C(linked, &modelRotation);
+                        fullTurn = lbl_8047D7C0;
+                        revolutions = (s32)(modelRotation.y / fullTurn);
+                        linked->pad22 = 1;
+                        linked->field_40 = angle + fullTurn * revolutions;
+                        linked->field_44 = lbl_8047D79C;
+                    }
+                    entry->subState = 2;
+                    /* fallthrough */
+                case 2:
+                    entry->animBlendFactor =
+                        entry->field_8C * fn_800E0BA0() + entry->field_88;
+                    entry->subState = 0;
+                    break;
+                }
+                break;
+            }
+
+            if (fn_800D3088() != 0) {
+                fn_800E0168(&modelPosition, fn_8018FCBC(entry),
+                             &modelPosition);
+                fn_800E00AC(&modelPosition, &modelPosition,
+                             (f32)fn_800D3088());
+
+                linked = peopleFindBySelf(
+                    peopleFindSelf(entry->groupId, entry->index));
+                talkRange = lbl_8047D7A0;
+                if (linked == NULL) {
+                } else {
+                    distance = fn_800E008C(&modelPosition);
+                    if (linked->field_38 <= distance) {
+                        talkRange = lbl_8047D7C4;
+                    } else if (linked->field_34 <= distance) {
+                        if (linked->field_38 != lbl_8047D7A0) {
+                            talkRange = lbl_8047D79C +
+                                (distance - linked->field_34) /
+                                    (linked->field_38 - linked->field_34);
+                        }
+                    } else if (linked->field_34 != lbl_8047D7A0) {
+                        talkRange = distance / linked->field_34;
+                    }
+                }
+                entry->talkRange = talkRange;
             }
 
             fn_80184A90(entry);
             fn_80185B90(entry, entry->talkRange);
             fn_8018ECEC(entry, lbl_8047D798);
+
+            floor = floorDataBiosGetCurrentPtr();
+            if (floor != NULL) {
+                resourceContext = (void*)fn_80113F48();
+                fn_8018FC98(entry, &currentPosition);
+                if (GScolsys2WalkGetLayer(&currentPosition, &layer, &subLayer) == 0) {
+                    layer = 0;
+                    subLayer = 0;
+                }
+
+                receiverCount = floorDataBiosGetShadowReciveNum(floor);
+                if (layer < receiverCount && subLayer < receiverCount) {
+                    shadowCount = 1;
+                    shadowSurfaces[0] = GSresGetResource(
+                        (u32)resourceContext,
+                        floorDataBiosGetShadowReciveID(floor, layer));
+                    if (layer != subLayer) {
+                        shadowCount = 2;
+                        shadowSurfaces[1] = GSresGetResource(
+                            (u32)resourceContext,
+                            floorDataBiosGetShadowReciveID(floor, subLayer));
+                    }
+                    GSmodelSetShadowSurface(entry->modelHandle, shadowCount,
+                                            shadowSurfaces);
+                }
+            }
         }
     }
 
@@ -842,7 +990,6 @@ void fn_8018BC88(u32 groupId, u32 index, s32 motionId, void* target) {
 /* 0x8018D680 | 0x150 */
 extern f64 atan2(f64, f64);
 extern f64 fabs(f64);
-extern f64 fmod(f64 angle);
 extern void fn_800E0718(void*, void*, f32);
 extern void GSvecTransformQuat(void*, void*, void*);
 extern f32 GSvecDistance(void*, void*);
@@ -954,26 +1101,26 @@ void fn_8018DCA8(PeopleEntry* original, u8 releaseWalkList) {
 /* 0x8018E9B4 | 0x338 */
 extern void* GSresGetResource();
 extern u32 fn_800F7BC4(s32);
-extern void fn_80101B90(void);
-extern void GScolsys2ThruGetEventID(void);
+extern void fn_80101B90(u32);
+extern s32 GScolsys2ThruGetEventID(void*, void*, void*, f32);
 extern void fn_8012BAF0(void);
-extern void GScolsys2HumanCollision(void);
-extern void fn_8010F320(void);
-extern void PSVECSubtract(void);
-extern void PSVECAdd(void);
-extern void fn_801101B4(void);
-extern void fn_8010E138(void);
+extern s32 GScolsys2HumanCollision(s32, void*, void*, void*);
+extern s32 fn_8010F320(void*, void*, void*, f32);
+extern void PSVECSubtract(void*, void*, void*);
+extern void PSVECAdd(void*, void*, void*);
+extern s32 fn_801101B4(void*, void*, void*);
+extern s32 fn_8010E138(void*, void*);
 extern u32 lbl_8047D890;
 extern const f32 lbl_8047D7EC;
 extern u32 lbl_8047D894;
 extern f32 lbl_8047D800;
 extern f32 lbl_8047D7A0;
 /* renamed symbols referenced by asm incs (symbolmap port) */
-extern void heroMoveSetEventList();
-extern void sin();   /* MSL trig (renamed) — referenced by asm incs */
-extern void cos();   /* MSL trig (renamed) — referenced by asm incs */
-extern void GScolsy2UtilGetCpPlanePoint();
-extern void GScolsy2UtilChkInTri();
+extern void heroMoveSetEventList(u8, void*, u32);
+extern f64 sin(f64); /* MSL trig (renamed) - referenced by asm incs */
+extern void cos();   /* MSL trig (renamed) - referenced by asm incs */
+extern void GScolsy2UtilGetCpPlanePoint(void*, void*, void*, void*);
+extern s32 GScolsy2UtilChkInTri(void*, void*, void*);
 extern void GSmodelPopState();
 #if 0
 asm void fn_8018E9B4(void) {
@@ -982,13 +1129,11 @@ asm void fn_8018E9B4(void) {
 #endif
 
 /* 0x8018ECEC | 0x3A0 */
-extern u32 fn_800D3088(void);
 extern f32 lbl_8047D7A0;
 extern f64 lbl_8047D7F0;
 extern f64 lbl_8047D7A8;
 extern f64 lbl_8047D820;
 extern u32 lbl_8047D898;
-extern u32 lbl_8047D7B0;
 extern u32 lbl_8047D7D0;
 extern u32 lbl_8047D89C;
 #if 0
@@ -998,7 +1143,131 @@ asm void fn_8018ECEC(void) {
 #else
 #pragma dont_inline on
 void fn_8018ECEC(PeopleEntry* entry, f32 step) {
-    /* TODO: match -- 928 bytes at 0x8018ECEC */
+    PeopleECECState* state;
+    PeopleInfoBiosEntry* info;
+    void* model;
+    void* part;
+    GSvec partPos;
+    GSvec rotation;
+    GSvec delta;
+    f32 yawMin;
+    f32 yawMax;
+    f32 pitchMin;
+    f32 pitchMax;
+    f32 desiredYaw;
+    f32 pitchDistance;
+    f32 deltaStep;
+    s32 partIndex;
+    u8 clampToRange;
+
+    if (entry == NULL) {
+        return;
+    }
+
+    state = (PeopleECECState*)entry;
+    model = peopleGetModel(entry);
+    if (model == NULL) {
+        return;
+    }
+
+    if (state->targetPos != NULL) {
+        info = peopleInfoBiosGetPtr(state->scriptRef);
+        partIndex = fn_8018F698(info);
+        yawMin = fn_8018F678(info);
+        yawMax = fn_8018F658(info);
+        pitchMin = fn_8018F638(info);
+        pitchMax = fn_8018F618(info);
+
+        if (partIndex >= 0) {
+            part = GSmodelGetPart(model, (s8)partIndex);
+            GSpartGetTransform(part, &partPos, 0, 0);
+            GSpartFree(part);
+
+            clampToRange = 0;
+            if (peopleTestFlags(entry, 2) != 0) {
+                clampToRange = 1;
+            } else if (step < lbl_8047D7A0) {
+                clampToRange = 1;
+            } else if (GSvecDistance(state->targetPos, &partPos) <= step) {
+                clampToRange = 1;
+            }
+
+            if (clampToRange != 0) {
+                fn_8018FC2C(entry, &rotation);
+                fn_800E0168(&delta, state->targetPos, &partPos);
+                desiredYaw =
+                    (f32)fmod(lbl_8047D7F0 +
+                              ((f32)atan2(delta.x, delta.z) - rotation.y));
+                if (desiredYaw > (f32)lbl_8047D7A8) {
+                    desiredYaw = (f32)(desiredYaw - lbl_8047D7F0);
+                } else if (desiredYaw < (f32)lbl_8047D820) {
+                    desiredYaw = (f32)(lbl_8047D7F0 + desiredYaw);
+                }
+
+                if (desiredYaw < yawMin) {
+                    if (peopleTestFlags(entry, 2) != 0) {
+                        desiredYaw = yawMin;
+                    } else {
+                        clampToRange = 0;
+                    }
+                } else if (desiredYaw > yawMax) {
+                    if (peopleTestFlags(entry, 2) != 0) {
+                        desiredYaw = yawMax;
+                    } else {
+                        clampToRange = 0;
+                    }
+                }
+
+                if (clampToRange != 0) {
+                    state->targetYaw = desiredYaw;
+                    fn_800E0168(&delta, state->targetPos, &partPos);
+                    delta.y += *(f32*)&lbl_8047D898;
+                    pitchDistance =
+                        (delta.x > lbl_8047D7A0 ? delta.x : -delta.x) +
+                        (delta.z > lbl_8047D7A0 ? delta.z : -delta.z);
+                    desiredYaw = (f32)((f32)atan2(pitchDistance, delta.y) -
+                                       *(f64*)&lbl_8047D7B0);
+                    if (desiredYaw < pitchMin) {
+                        desiredYaw = pitchMin;
+                    } else if (desiredYaw > pitchMax) {
+                        desiredYaw = pitchMax;
+                    }
+                    state->targetPitch = desiredYaw;
+                } else {
+                    state->targetPitch = lbl_8047D7A0;
+                    state->targetYaw = lbl_8047D7A0;
+                }
+            } else {
+                state->targetPitch = lbl_8047D7A0;
+                state->targetYaw = lbl_8047D7A0;
+            }
+        }
+    }
+
+    deltaStep = *(f32*)&lbl_8047D89C * (f32)fn_800D3088();
+    if (state->currentPitch > state->targetPitch) {
+        state->currentPitch -= deltaStep;
+        if (state->currentPitch < state->targetPitch) {
+            state->currentPitch = state->targetPitch;
+        }
+    } else if (state->currentPitch < state->targetPitch) {
+        state->currentPitch += deltaStep;
+        if (state->currentPitch > state->targetPitch) {
+            state->currentPitch = state->targetPitch;
+        }
+    }
+
+    if (state->currentYaw > state->targetYaw) {
+        state->currentYaw -= deltaStep;
+        if (state->currentYaw < state->targetYaw) {
+            state->currentYaw = state->targetYaw;
+        }
+    } else if (state->currentYaw < state->targetYaw) {
+        state->currentYaw += deltaStep;
+        if (state->currentYaw > state->targetYaw) {
+            state->currentYaw = state->targetYaw;
+        }
+    }
 }
 #pragma dont_inline reset
 #endif
@@ -1008,16 +1277,98 @@ void fn_8018ECEC(PeopleEntry* entry, f32 step) {
 /* 0x80181478 | 0x3D8 */
 extern f32 lbl_8047D7A0;
 extern f32 lbl_8047D7A4;
+extern u8 fn_800EC954(void*);
+extern u8 fn_800EC960(void*);
+extern void fn_800EC578(void*, s32*, s32*);
+extern void fn_800ECCA8(void*, s16);
+extern void fn_800ECA78(void*, f32);
+extern void fn_800EC9DC(void*, f32);
+extern void fn_800EC35C(void*, s16);
+extern void fn_800EC2A4(void*, f32);
+extern void fn_800EC308(void*, f32);
+extern void fn_800ECB74(void*, u32);
+extern void fn_800EC990(void*);
 #if 0
 asm void fn_80181478(void) {
 #include "src/game/people/people_fn_80181478.inc"
 }
 #else
-s32 fn_80181478(u32 groupId, u32 index, u8 doSetup) { /* TODO: match -- 984 bytes at 0x80181478 */ return 0; }
+s32 fn_80181478(u32 groupId, u32 index, u8 doSetup)
+{
+    PeopleEntry* entry;
+    PeopleEntry* setupEntry;
+    PeopleInfoBiosEntry* info;
+    void* model;
+    s32 animIndex;
+    s32 currentAnim;
+    s32 secondaryAnim;
+    u8 loop;
+    u8 restart;
+
+    entry = peopleFindBySelf(peopleFindSelf(groupId, index));
+    if (entry == NULL) {
+        return 0;
+    }
+    if (entry->state == 0) {
+        return 1;
+    }
+
+    if (doSetup != 0) {
+        if (entry->talkLock == 0) {
+            entry->talkLock = 1;
+            entry->motionIndex = 1;
+            info = peopleInfoBiosGetPtr(entry->scriptRef);
+            if (info != NULL) {
+                fn_8018F4C8(info, (u8)entry->motionIndex, &animIndex, &loop);
+                if (animIndex >= 0) {
+                    setupEntry = peopleFindBySelf(
+                        peopleFindSelf(entry->groupId, entry->index));
+                    if (setupEntry != NULL) {
+                        model = peopleGetModel(setupEntry);
+                        if (model != NULL) {
+                            restart = 0;
+                            if (fn_800EC954(model)) {
+                                restart = 1;
+                            } else if (!fn_800EC960(model)) {
+                                restart = 1;
+                            } else {
+                                fn_800EC578(model, &currentAnim,
+                                           &secondaryAnim);
+                                if (currentAnim != animIndex ||
+                                    secondaryAnim != -1) {
+                                    restart = 1;
+                                }
+                            }
+
+                            if (restart != 0) {
+                                setupEntry->walkTargetNode = animIndex;
+                                setupEntry->walkAnimRate = lbl_8047D7A0;
+                                fn_800ECCA8(model, (s16)animIndex);
+                                fn_800ECA78(model, lbl_8047D7A0);
+                                fn_800EC9DC(model, lbl_8047D7A4);
+                                fn_800EC35C(model, (s16)animIndex);
+                                fn_800EC2A4(model, lbl_8047D7A0);
+                                fn_800EC308(model, lbl_8047D7A4);
+                                fn_800ECB74(model, loop != 0);
+                                fn_800EC990(model);
+                            }
+                            fn_800ECB74(model, loop != 0);
+                        }
+                    }
+                }
+            }
+        }
+        return 1;
+    }
+
+    if (entry->talkLock != 0) {
+        entry->talkLock = 0;
+    }
+    return 0;
+}
 #endif
 
 /* 0x80181EB0 | 0x308 */
-extern u32 fn_80113F48(void);
 extern u32 fn_801CBA0C(u32);
 extern void fn_800E3CC8(void*, u8);
 extern void GSmodelClearShadowFlags(void*, u32);
@@ -1073,11 +1424,11 @@ void fn_80181EB0(u32 groupId, u32 index) {
 #endif
 
 /* 0x801821B8 | 0xE60 */
-extern u32 lbl_8047D7D8;
+extern f32 lbl_8047D7D8;
 extern f32 lbl_8047D7A0;
 extern f32 lbl_8047D7A4;
 extern u32 lbl_8047D7D0;
-extern u32 lbl_8047D7E0;
+extern const f64 lbl_8047D7E0;
 extern u8 lbl_8036C4F8[];
 #if 0
 asm void fn_801821B8(void) {
@@ -1087,25 +1438,223 @@ asm void fn_801821B8(void) {
 void fn_801821B8(u32 groupId, u32 index)
 {
     PeopleEntry* entry;
+    PeopleEntry* linked;
+    PeopleInfoBiosEntry* info;
+    void* model;
     GSvec position;
+    f32 step;
+    f32 stepDelta;
+    s32 animIndex;
+    s32 current;
+    s32 secondary;
+    u8 loop;
+    u8 restart;
     u8 shadowAnim;
 
+    stepDelta = lbl_8047D7D8;
     entry = peopleFindBySelf(peopleFindSelf(groupId, index));
     if (entry == NULL) {
         return;
     }
 
-    fn_8018FC98(entry, &position);
-    fn_8018FB60(entry, 1);
-    shadowAnim = entry->animId != 0;
-    fn_8018FB2C(entry, shadowAnim);
+    if (&position != NULL) {
+        linked = peopleFindBySelf(peopleFindSelf(groupId, index));
+        if (linked != NULL) {
+            fn_8018FC98(linked, &position);
+        }
+    }
+    step = position.y;
+
+    linked = peopleFindBySelf(peopleFindSelf(groupId, index));
+    if (linked != NULL) {
+        fn_8018FB60(linked, 1);
+        shadowAnim = 1;
+        linked = peopleFindBySelf(peopleFindSelf(groupId, index));
+        if (linked != NULL) {
+            if (linked->animId == 0) {
+                shadowAnim = 0;
+            }
+            fn_8018FB2C(linked, shadowAnim);
+        }
+    }
     peopleClearFlags(entry, 8);
     fn_80166A28(0x49E);
     entry->motionIndex = 7;
+    info = peopleInfoBiosGetPtr(entry->scriptRef);
+    if (info != NULL) {
+        fn_8018F4C8(info, (u8)entry->motionIndex, &animIndex, &loop);
+        if (animIndex != -1) {
+            if (animIndex >= 0) {
+                linked = peopleFindBySelf(
+                    peopleFindSelf(entry->groupId, entry->index));
+                if (linked != NULL) {
+                    model = peopleGetModel(linked);
+                    if (model != NULL) {
+                        restart = 0;
+                        if (GSmodelHasAnimationEnded(model)) {
+                            restart = 1;
+                        } else if (!GSmodelIsAnimating(model)) {
+                            restart = 1;
+                        } else {
+                            GSmodelGetAnimIndex(model, &current, &secondary);
+                            if (current != animIndex || secondary != -1) {
+                                restart = 1;
+                            }
+                        }
+                        if (restart) {
+                            linked->walkTargetNode = animIndex;
+                            linked->walkAnimRate = lbl_8047D7A0;
+                            GSmodelSetAnimIndex(model, animIndex);
+                            GSmodelSetAnimFrame(model, lbl_8047D7A0);
+                            GSmodelSetAnimRate(model, lbl_8047D7A4);
+                            GSmodelSetTexAnimIndex(model, animIndex);
+                            GSmodelSetTexAnimFrame(model, lbl_8047D7A0);
+                            GSmodelSetTexAnimRate(model, lbl_8047D7A4);
+                            if (loop != 0) {
+                                GSmodelSetAnimType(model, 1);
+                            } else {
+                                GSmodelSetAnimType(model, 0);
+                            }
+                            GSmodelStartAnimation(model);
+                        }
+                        if (loop != 0) {
+                            GSmodelSetAnimType(model, 1);
+                        } else {
+                            GSmodelSetAnimType(model, 0);
+                        }
+                    }
+                }
+            }
+        }
+    }
 
-    entry->animBlendFactor += lbl_8047D7D8;
-    fn_8018FC74(entry, &position);
-    peopleSetTransform(entry, &position);
+    do {
+        stepDelta -= (f32)((f64)fn_800D3088() * lbl_8047D7E0);
+        if (stepDelta < lbl_8047D7A0) {
+            stepDelta = lbl_8047D7A0;
+        }
+        position.y = step + stepDelta;
+        linked = peopleFindBySelf(peopleFindSelf(groupId, index));
+        if (linked != NULL) {
+            fn_8018FC74(linked, &position);
+            peopleSetTransform(linked, &position);
+        }
+        if (stepDelta <= lbl_8047D7A0) {
+            break;
+        }
+        _threadSwitch();
+    } while (1);
+
+    entry->motionIndex = 8;
+    info = peopleInfoBiosGetPtr(entry->scriptRef);
+    if (info != NULL) {
+        fn_8018F4C8(info, (u8)entry->motionIndex, &animIndex, &loop);
+        if (animIndex != -1) {
+            if (animIndex >= 0) {
+                linked = peopleFindBySelf(
+                    peopleFindSelf(entry->groupId, entry->index));
+                if (linked != NULL) {
+                    model = peopleGetModel(linked);
+                    if (model != NULL) {
+                restart = 0;
+                if (GSmodelHasAnimationEnded(model)) {
+                    restart = 1;
+                } else if (!GSmodelIsAnimating(model)) {
+                    restart = 1;
+                } else {
+                    GSmodelGetAnimIndex(model, &current, &secondary);
+                    if (current != animIndex || secondary != -1) {
+                        restart = 1;
+                    }
+                }
+                if (restart) {
+                    linked->walkTargetNode = animIndex;
+                    linked->walkAnimRate = lbl_8047D7A0;
+                    GSmodelSetAnimIndex(model, animIndex);
+                    GSmodelSetAnimFrame(model, lbl_8047D7A0);
+                    GSmodelSetAnimRate(model, lbl_8047D7A4);
+                    GSmodelSetTexAnimIndex(model, animIndex);
+                    GSmodelSetTexAnimFrame(model, lbl_8047D7A0);
+                    GSmodelSetTexAnimRate(model, lbl_8047D7A4);
+                    if (loop != 0) {
+                        GSmodelSetAnimType(model, 1);
+                    } else {
+                        GSmodelSetAnimType(model, 0);
+                    }
+                    GSmodelStartAnimation(model);
+                }
+                if (loop != 0) {
+                    GSmodelSetAnimType(model, 1);
+                } else {
+                    GSmodelSetAnimType(model, 0);
+                }
+                }
+                }
+            }
+        }
+    }
+
+    linked = peopleFindBySelf(peopleFindSelf(groupId, index));
+    if (linked != NULL) {
+        model = peopleGetModel(linked);
+        if (model != NULL) {
+            while (!GSmodelHasAnimationEnded(model)) {
+                if (*(s32*)((u8*)model + 0x8C) == 1) {
+                    GSlogWrite((const char*)lbl_80274008, lbl_8036C4F8,
+                               groupId, index);
+                    break;
+                }
+                _threadSwitch();
+            }
+        }
+    }
+
+    entry->motionIndex = 1;
+    info = peopleInfoBiosGetPtr(entry->scriptRef);
+    if (info != NULL) {
+        fn_8018F4C8(info, (u8)entry->motionIndex, &animIndex, &loop);
+        if (animIndex >= 0) {
+            linked = peopleFindBySelf(
+                peopleFindSelf(entry->groupId, entry->index));
+            if (linked != NULL) {
+                model = peopleGetModel(linked);
+                if (model != NULL) {
+                restart = 0;
+                if (GSmodelHasAnimationEnded(model)) {
+                    restart = 1;
+                } else if (!GSmodelIsAnimating(model)) {
+                    restart = 1;
+                } else {
+                    GSmodelGetAnimIndex(model, &current, &secondary);
+                    if (current != animIndex || secondary != -1) {
+                        restart = 1;
+                    }
+                }
+                if (restart) {
+                    linked->walkTargetNode = animIndex;
+                    linked->walkAnimRate = lbl_8047D7A0;
+                    GSmodelSetAnimIndex(model, animIndex);
+                    GSmodelSetAnimFrame(model, lbl_8047D7A0);
+                    GSmodelSetAnimRate(model, lbl_8047D7A4);
+                    GSmodelSetTexAnimIndex(model, animIndex);
+                    GSmodelSetTexAnimFrame(model, lbl_8047D7A0);
+                    GSmodelSetTexAnimRate(model, lbl_8047D7A4);
+                    if (loop != 0) {
+                        GSmodelSetAnimType(model, 1);
+                    } else {
+                        GSmodelSetAnimType(model, 0);
+                    }
+                    GSmodelStartAnimation(model);
+                }
+                if (loop != 0) {
+                    GSmodelSetAnimType(model, 1);
+                } else {
+                    GSmodelSetAnimType(model, 0);
+                }
+            }
+            }
+        }
+    }
 }
 #endif
 
@@ -1509,11 +2058,9 @@ void fn_80184A90(PeopleEntry* entry) {
 #endif
 
 /* 0x80184D80 | 0x4CC */
-extern s32 fn_800D37CC(void);
 extern f32 fn_800E0BE4(void);
 extern void fn_800CE148(void);
 extern void fn_800CDBE0(void);
-extern f32 fn_800E0BA0(void);
 extern u8 lbl_80273FC0[];
 extern f32 lbl_8047D7A0;
 extern u32 lbl_8047D7C8;
@@ -1533,8 +2080,15 @@ asm void fn_80184D80(void) {
 void fn_80184D80(PeopleEntry* entry)
 {
     GSvec offset;
+    GSvec delta;
+    GSvec rotation;
+    PeopleEntry* linked;
     s32 frameCount;
+    s32 revolutions;
     u32 ticks;
+    f32 angle;
+    f32 fullTurn;
+    f32 phase;
 
     GSvecCopy(&offset, lbl_80273FC0);
     switch (entry->subState) {
@@ -1551,18 +2105,47 @@ void fn_80184D80(PeopleEntry* entry)
         entry->subState = 1;
         /* fallthrough */
     case 1:
+        phase = lbl_8047D818 * (lbl_8047D7C4 * fn_800E0BE4());
+        offset.x = entry->field_80 * (f32)sin(phase);
+        offset.z = entry->field_80 * ((f32 (*)(f32))cos)(phase);
+        fn_800E019C(entry->field_5C, &entry->collisionX, &offset);
+        fn_800E0168(&delta, entry->field_5C, fn_8018FCBC(entry));
+        angle = (f32)atan2(delta.x, delta.z);
+        angle = (f32)fmod(lbl_8047D7F0 + (angle - lbl_8047D7A0));
+        if (angle > lbl_8047D7A8) {
+            angle = (f32)(angle - lbl_8047D7F0);
+        } else if (angle < lbl_8047D820) {
+            angle = (f32)(lbl_8047D7F0 + angle);
+        }
+        linked = peopleFindBySelf(peopleFindSelf(entry->groupId, entry->index));
+        if (linked != NULL) {
+            fn_8018FC2C(linked, &rotation);
+            fullTurn = lbl_8047D7C0;
+            revolutions = (s32)(rotation.y / fullTurn);
+            linked->pad22 = 1;
+            linked->field_40 = angle + fullTurn * revolutions;
+            linked->field_44 = lbl_8047D79C;
+        }
         entry->subState = 2;
         /* fallthrough */
     case 2:
-        switch (fn_80185AAC(entry)) {
-        case 2:
+        frameCount = fn_80185AAC(entry);
+        if (frameCount == 2) {
+            angle = lbl_8047D7A8 + entry->field_40;
+            linked = peopleFindBySelf(peopleFindSelf(entry->groupId, entry->index));
+            if (linked != NULL) {
+                fn_8018FC2C(linked, &rotation);
+                fullTurn = lbl_8047D7C0;
+                revolutions = (s32)(rotation.y / fullTurn);
+                linked->pad22 = 1;
+                linked->field_40 = angle + fullTurn * revolutions;
+                linked->field_44 = lbl_8047D79C;
+            }
             entry->subState = 2;
-            break;
-        case 1:
+        } else if (frameCount == 1) {
             entry->animBlendFactor =
                 entry->field_8C * fn_800E0BA0() + entry->field_88;
             entry->subState = 0;
-            break;
         }
         break;
     }
@@ -1587,47 +2170,97 @@ void fn_8018524C(PeopleEntry* entry, u8 loopPath)
 {
     GSvec delta;
     GSvec target;
-    f32 oldDistance;
+    GSvec rotation;
+    f32 moveDistance;
     f32 distance;
+    f32 angle;
+    f32 fullTurn;
+    PeopleEntry* linked;
+    s32 revolutions;
 
-    if (entry->subState == 1) {
+    (void)loopPath;
+
+    switch (entry->subState) {
+    case 1:
         GSvecCopy(entry->field_5C,
                   &entry->walkList[entry->walkListCount]);
         fn_800E0168(&delta, entry->field_5C, fn_8018FCBC(entry));
-        entry->subState = 2;
-    }
-
-    if (entry->subState != 2) {
-        return;
-    }
-
-    fn_80188214(entry->groupId, entry->index, entry->moveSpeed);
-    fn_800E0168(&delta, entry->transform, fn_8018FCBC(entry));
-    oldDistance = fn_800E008C(&delta);
-
-    fn_800E0168(&delta, entry->transform, entry->field_5C);
-    distance = fn_800E008C(&delta);
-    if (distance < oldDistance) {
-        GSvecCopy(entry->transform, entry->field_5C);
-        entry->walkListCount++;
-        if (entry->walkListCount >= entry->walkListCapacity) {
-            if (loopPath) {
-                entry->walkListCount = 0;
-            } else {
-                fn_8018FC74(entry, entry->field_5C);
-                peopleSetTransform(entry, entry->field_5C);
-                entry->state = PEOPLE_STATE_IDLE;
-                return;
-            }
+        angle = (f32)atan2(delta.x, delta.z);
+        angle = (f32)fmod(lbl_8047D7F0 + (angle - lbl_8047D7A0));
+        if (angle > lbl_8047D7A8) {
+            angle = (f32)(angle - lbl_8047D7F0);
+        } else if (angle < lbl_8047D820) {
+            angle = (f32)(lbl_8047D7F0 + angle);
         }
-        GSvecCopy(entry->field_5C,
-                  &entry->walkList[entry->walkListCount]);
+
+        linked = peopleFindBySelf(peopleFindSelf(entry->groupId, entry->index));
+        if (linked != NULL) {
+            fn_8018FC2C(linked, &rotation);
+            fullTurn = lbl_8047D7C0;
+            revolutions = (s32)(rotation.y / fullTurn);
+            linked->pad22 = 1;
+            linked->field_40 = angle + fullTurn * revolutions;
+            linked->field_44 = lbl_8047D79C;
+        }
+        entry->subState = 2;
+        /* fallthrough */
+    case 2:
+        fn_80188214(entry->groupId, entry->index, entry->moveSpeed);
+        fn_800E0168(&delta, entry->transform, fn_8018FCBC(entry));
+        moveDistance = fn_800E008C(&delta);
+
+        for (;;) {
+            fn_800E0168(&delta, entry->transform, entry->field_5C);
+            distance = fn_800E008C(&delta);
+            if (distance >= moveDistance) {
+                break;
+            }
+
+            GSvecCopy(entry->transform, entry->field_5C);
+            entry->walkListCount++;
+            if (entry->walkListCount >= entry->walkListCapacity) {
+                if (entry->state == 3) {
+                    entry->walkListCount = 0;
+                } else {
+                    linked = peopleFindBySelf(peopleFindSelf(entry->groupId, entry->index));
+                    if (linked != NULL) {
+                        fn_8018FC74(linked, entry->field_5C);
+                        peopleSetTransform(linked, entry->field_5C);
+                    }
+                    entry->state = PEOPLE_STATE_IDLE;
+                    return;
+                }
+            }
+
+            GSvecCopy(entry->field_5C,
+                      &entry->walkList[entry->walkListCount]);
+            fn_800E0168(&delta, entry->field_5C, entry->transform);
+            angle = (f32)atan2(delta.x, delta.z);
+            angle = (f32)fmod(lbl_8047D7F0 + (angle - lbl_8047D7A0));
+            if (angle > lbl_8047D7A8) {
+                angle = (f32)(angle - lbl_8047D7F0);
+            } else if (angle < lbl_8047D820) {
+                angle = (f32)(lbl_8047D7F0 + angle);
+            }
+
+            linked = peopleFindBySelf(peopleFindSelf(entry->groupId, entry->index));
+            if (linked != NULL) {
+                fn_8018FC2C(linked, &rotation);
+                fullTurn = lbl_8047D7C0;
+                revolutions = (s32)(rotation.y / fullTurn);
+                linked->pad22 = 1;
+                linked->field_40 = angle + fullTurn * revolutions;
+                linked->field_44 = lbl_8047D7C4;
+            }
+            moveDistance -= distance;
+        }
+
+        fn_800E0168(&target, entry->field_5C, entry->transform);
+        fn_800E013C(&target, &target, moveDistance / distance);
+        fn_800E019C(&target, entry->transform, &target);
+        fn_8018E9B4(entry, &target, entry->transform);
         return;
     }
-
-    fn_800E013C(&target, &delta, oldDistance / distance);
-    GSvecAdd(&target, entry->transform, &target);
-    fn_8018E9B4(entry, &target, entry->transform);
 }
 #endif
 
@@ -1698,8 +2331,108 @@ s32 fn_80185AAC(PeopleEntry* entry) {
     return 0;
 }
 
-void fn_8018E9B4(PeopleEntry* entry, void* position, void* transform) {
-    /* TODO: match -- 824 bytes at 0x8018E9B4 */
+void fn_8018E9B4(PeopleEntry* entry, void* positionArg, void* transformArg) {
+    u8 eventList[0xD0];
+    GSvec* position = positionArg;
+    GSvec* transform = transformArg;
+    GSvec hitPosition;
+    GSvec delta;
+    PeopleHeightHit hits[4];
+    GSvec transformCopy;
+    GSvec positionCopy;
+    PeopleInfoBiosEntry* info;
+    f32 radius;
+    f32 bestAbove;
+    f32 bestAny;
+    s32 count;
+    s32 i;
+    BOOL foundAbove;
+    void* resource;
+
+    resource = GSresGetResource(0, 2);
+    if (resource != NULL && ((u8*)resource)[1] != 0) {
+        if (fn_800F7BC4(1) & 0x200) {
+            fn_8018FC74(entry, position);
+            return;
+        }
+    }
+
+    fn_80101B90(0xFF);
+    if (!peopleTestFlags(entry, 0x700)) {
+        fn_80101B90(0x00FF0000);
+        fn_8018FC74(entry, position);
+        return;
+    }
+
+    GSvecCopy(&transformCopy, transform);
+    GSvecCopy(&positionCopy, position);
+    transformCopy.y += *(f32*)&lbl_8047D890;
+    positionCopy.y += *(f32*)&lbl_8047D890;
+
+    info = peopleInfoBiosGetPtr(entry->scriptRef);
+    if (info == NULL) {
+        radius = lbl_8047D7EC;
+    } else {
+        radius = fn_8018F5E4(info);
+    }
+
+    if (peopleTestFlags(entry, 0x800)) {
+        count = GScolsys2ThruGetEventID(&transformCopy, &positionCopy,
+                                        eventList, radius);
+        heroMoveSetEventList(2, eventList, count);
+    }
+
+    if (peopleTestFlags(entry, 0x400)) {
+        if (GScolsys2HumanCollision(entry->shadowId, &transformCopy,
+                                    &positionCopy, &hitPosition) == 6) {
+            positionCopy = hitPosition;
+        }
+    }
+
+    if (peopleTestFlags(entry, 0x100)) {
+        if (fn_8010F320(&transformCopy, &positionCopy, &hitPosition,
+                        radius) != 0) {
+            PSVECSubtract(&hitPosition, &positionCopy, &delta);
+            PSVECAdd(&positionCopy, &delta, &positionCopy);
+        }
+    }
+
+    if (peopleTestFlags(entry, 0x800)) {
+        count = fn_801101B4(&transformCopy, &positionCopy, eventList);
+        heroMoveSetEventList(1, eventList, count);
+    }
+
+    if (peopleTestFlags(entry, 0x200)) {
+        count = fn_8010E138(&positionCopy, hits);
+        if (count >= 2) {
+            bestAbove = *(f32*)&lbl_8047D894;
+            bestAny = bestAbove;
+            foundAbove = FALSE;
+            for (i = 0; i < count; i++) {
+                if (bestAny < hits[i].height) {
+                    bestAny = hits[i].height;
+                }
+                if ((hits[i].height - positionCopy.y) > lbl_8047D800 &&
+                    bestAbove < hits[i].height) {
+                    bestAbove = hits[i].height;
+                    foundAbove = TRUE;
+                }
+            }
+            if (foundAbove) {
+                positionCopy.y = bestAbove;
+            } else {
+                positionCopy.y = bestAny;
+            }
+        } else if (count > 0) {
+            positionCopy.y = hits[0].height;
+        } else {
+            positionCopy.y = lbl_8047D7A0;
+        }
+    }
+
+    *position = positionCopy;
+    fn_80101B90(0x00FF0000);
+    fn_8018FC74(entry, position);
 }
 #endif
 
@@ -1715,7 +2448,95 @@ asm void fn_80185B90(void) {
 #include "src/game/people/people_fn_80185B90.inc"
 }
 #else
-void fn_80185B90(PeopleEntry* entry, f32 amount) { /* TODO: match -- 856 bytes at 0x80185B90 */ }
+void fn_80185B90(PeopleEntry* entry, f32 amount)
+{
+    PeopleInfoBiosEntry* info;
+    PeopleEntry* setupEntry;
+    void* model;
+    s32 animIndex;
+    s32 currentAnim;
+    s32 secondaryAnim;
+    s32 motion;
+    u8 loop;
+    u8 restart;
+
+    model = peopleGetModel(entry);
+    if (model == NULL) {
+        return;
+    }
+
+    if (lbl_8047D7A0 != entry->walkAnimRate) {
+        entry->syncMotion =
+            (entry->walkAnimRate * (f32)fn_800D3088()) + entry->syncMotion;
+        if (entry->syncMotion > lbl_8047D79C) {
+            entry->syncMotion = lbl_8047D79C;
+            entry->walkAnimRate = lbl_8047D7A0;
+        }
+        GSmodelSetBlendFactor(model, entry->syncMotion);
+    }
+
+    if (!peopleTestFlags(entry, 8)) {
+        return;
+    }
+
+    if (amount < lbl_8047D830) {
+        motion = 1;
+    } else if (amount < lbl_8047D834) {
+        motion = 2;
+    } else {
+        motion = 3;
+    }
+
+    if (entry->motionIndex == (u32)motion) {
+        return;
+    }
+    entry->motionIndex = motion;
+
+    info = peopleInfoBiosGetPtr(entry->scriptRef);
+    if (info == NULL) {
+        return;
+    }
+    fn_8018F4C8(info, (u8)entry->motionIndex, &animIndex, &loop);
+    if (animIndex < 0) {
+        return;
+    }
+
+    setupEntry = peopleFindBySelf(
+        peopleFindSelf(entry->groupId, entry->index));
+    if (setupEntry == NULL) {
+        return;
+    }
+    model = peopleGetModel(setupEntry);
+    if (model == NULL) {
+        return;
+    }
+
+    restart = 0;
+    if (fn_800EC954(model)) {
+        restart = 1;
+    } else if (!fn_800EC960(model)) {
+        restart = 1;
+    } else {
+        fn_800EC578(model, &currentAnim, &secondaryAnim);
+        if (currentAnim != animIndex || secondaryAnim != -1) {
+            restart = 1;
+        }
+    }
+
+    if (restart != 0) {
+        setupEntry->walkTargetNode = animIndex;
+        setupEntry->walkAnimRate = lbl_8047D7A0;
+        fn_800ECCA8(model, (s16)animIndex);
+        fn_800ECA78(model, lbl_8047D7A0);
+        fn_800EC9DC(model, lbl_8047D7A4);
+        fn_800EC35C(model, (s16)animIndex);
+        fn_800EC2A4(model, lbl_8047D7A0);
+        fn_800EC308(model, lbl_8047D7A4);
+        GSmodelSetAnimType(model, loop != 0);
+        fn_800EC990(model);
+    }
+    GSmodelSetAnimType(model, loop != 0);
+}
 #endif
 
 /* 0x80185F44 | 0x1B4 */
@@ -1748,7 +2569,7 @@ void fn_80185F44(u32 groupId, u32 index, f32 x, f32 y, f32 z) {
 /* 0x80186254 | 0x30 */
 extern const f32 lbl_8047D7EC;
 extern const f32 lbl_8047D838;
-extern void fn_80186284(u32 a, u32 b, f32 x, s32 c, s32 d, f32 y);
+extern u8 fn_80186284(u32 a, u32 b, f32 x, u32 c, u32 d, f32 y);
 #if 0
 asm void peopleGazeHeroCheck(void) {
 #include "src/game/people/people_fn_80186254.inc"
@@ -1763,7 +2584,7 @@ void peopleGazeHeroCheck(u32 a, u32 b) {
 #endif
 
 /* 0x80186284 | 0x39C */
-extern void fn_8010F188(void);
+extern s32 fn_8010F188(void*, void*, f32, void*);
 extern f32 lbl_8047D83C;
 extern f32 lbl_8047D800;
 extern f64 lbl_8047D7F0;
@@ -1776,28 +2597,89 @@ asm void fn_80186284(u32 a, u32 b, f32 x, s32 c, s32 d, f32 y) {
 #include "src/game/people/people_fn_80186284.inc"
 }
 #else
-void fn_80186284(u32 a, u32 b, f32 x, s32 c, s32 d, f32 y) { /* TODO: match -- 924 bytes at 0x80186284 */ }
+u8 fn_80186284(u32 groupId, u32 index, f32 range, u32 targetGroupId,
+               u32 targetIndex, f32 angleScale)
+{
+    PeopleEntry* target;
+    PeopleEntry* entry;
+    PeopleInfoBiosEntry* info;
+    GSvec targetPosition;
+    GSvec entryPosition;
+    GSvec delta;
+    GSvec rotation;
+    f32 distance;
+    f32 angle;
+    f32 radius;
+    f32 maxAngle;
+
+    target = peopleFindBySelf(peopleFindSelf(targetGroupId, targetIndex));
+    if (target == NULL) {
+        return 0;
+    }
+    GSvecCopy(&targetPosition, fn_8018FCBC(target));
+
+    entry = peopleFindBySelf(peopleFindSelf(groupId, index));
+    if (entry == NULL) {
+        return 0;
+    }
+    GSvecCopy(&entryPosition, fn_8018FCBC(entry));
+    fn_800E0168(&delta, &entryPosition, &targetPosition);
+
+    distance = lbl_8047D800 * range;
+    if (fn_800E008C(&delta) > distance) {
+        return 0;
+    }
+
+    fn_8018FC2C(entry, &rotation);
+    fn_800E0168(&delta, &targetPosition, &entryPosition);
+    angle = (f32)atan2(delta.x, delta.z);
+    angle = (f32)fmod(lbl_8047D7F0 + (angle - rotation.y));
+    if (angle > lbl_8047D7A8) {
+        angle = (f32)(angle - lbl_8047D7F0);
+    } else if (angle < lbl_8047D820) {
+        angle = (f32)(lbl_8047D7F0 + angle);
+    }
+
+    maxAngle = lbl_8047D7A4 * (lbl_8047D814 * angleScale);
+    if ((f32)fabs(angle) > maxAngle) {
+        return 0;
+    }
+
+    radius = lbl_8047D83C;
+    info = peopleInfoBiosGetPtr(entry->scriptRef);
+    if (info != NULL) {
+        radius = fn_8018F5E4(info);
+    }
+    if (fn_8010F188(&entryPosition, &targetPosition, radius, NULL) != 0) {
+        return 0;
+    }
+    return 1;
+}
 #endif
 
 /* 0x80186620 | 0x53C */
 extern void cameraGetActive(void);
 extern void fn_800D258C(void);
 extern void _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID(void);
-extern void fn_800DA028(void);
-extern void fn_800D7820(void);
-extern void fn_800D88DC(void);
-extern void fn_800D888C(void);
-extern void fn_800DA4C4(void);
-extern void fn_800D9ED8(void);
-extern void fn_800D6A00(void);
-extern void fn_800D67BC(void);
-extern void fn_800D6680(void);
-extern void fn_800D5CB8(void);
+extern void fn_800DA028(s32);
+extern void fn_800D7820(void*);
+extern void fn_800D88DC(s32);
+extern void fn_800D888C(s32);
+extern void fn_800DA4C4(s32, s32, s32);
+extern void fn_800D9ED8(s32);
+extern void fn_800D6A00(s32);
+extern void fn_800D67BC(s32);
+extern void fn_800D6680(f32, f32, f32);
+extern void fn_800D5CB8(s32, s32, s32, s32, s32);
 extern void fn_800D6728(void);
-extern void fn_800E0060(void);
-extern void fn_800E0000(void);
-extern void GScolsy2UtilGetPointExtentionLine(void);
-extern void heroMoveSetLockFrame(void);
+extern void fn_800E0060(void*, void*);
+extern f32 fn_800E0000(void*, void*);
+extern f32 fn_800E008C(void*);
+extern void fn_800E013C(void*, void*, f32);
+extern void fn_800E01D0(void*, void*);
+extern void fn_800E01F4(void*, f32, f32, f32);
+extern void GScolsy2UtilGetPointExtentionLine(void*, void*, void*, f32);
+extern void heroMoveSetLockFrame(s32);
 extern u32 lbl_8047D840;
 extern u8 lbl_80314638[];
 extern u32 lbl_8047D844;
@@ -1806,7 +2688,7 @@ extern f32 lbl_8047D7A0;
 extern f32 lbl_8047D79C;
 extern u32 lbl_8047D848;
 void fn_80186B5C(GSvec* output, u32 groupId, u32 index);
-void fn_801870E8(void*, void*, void*, void*, void*, f32);
+u8 fn_801870E8(void*, void*, void*, void*, void*, f32);
 #if 0
 asm void fn_80186620(void) {
 #include "src/game/people/people_fn_80186620.inc"
@@ -1816,12 +2698,26 @@ s32 fn_80186620(u32 groupId, u32 index, u8 mode, f32 x0, f32 z0,
                 f32 x1, f32 z1)
 {
     PeopleEntry* entry;
-    GSvec origin;
-    GSvec facing;
-    GSvec endpoint;
+    PeopleInfoBiosEntry* info;
+    GSvec direction;
+    GSvec scaledDirection;
+    GSvec position;
+    GSvec transform;
     GSvec lineStart;
     GSvec lineEnd;
+    GSvec lineDirection;
+    GSvec perpendicular;
+    GSvec projectedStart;
+    GSvec projectedDelta;
+    GSvec testPoint;
+    GSvec collisionPoint;
+    GSvec correction;
+    GSvec correctedPoint;
     void* resource;
+    f32 radius;
+    f32 step;
+    f32 distance;
+    f32 nextDistance;
     f32 reach;
 
     entry = peopleFindBySelf(peopleFindSelf(groupId, index));
@@ -1830,36 +2726,100 @@ s32 fn_80186620(u32 groupId, u32 index, u8 mode, f32 x0, f32 z0,
     }
 
     if (peopleTestFlags(entry, 0x40000000)) {
-        GSvecCopy(&origin, &entry->collisionX);
-        fn_800E013C(&facing, &origin, lbl_8047D840);
-        fn_80186B5C(&origin, 0, 100);
-        GSvecCopy(&facing, peopleGetTransform(entry));
-        GSvecAdd(&endpoint, &facing, &origin);
+        fn_800E01D0(&direction, &entry->collisionX);
+        fn_800E013C(&scaledDirection, &direction, *(f32*)&lbl_8047D840);
+        fn_80186B5C(&direction, 0, 100);
+        fn_800E01D0(&transform, peopleGetTransform(entry));
+        fn_800E019C(&position, &transform, &direction);
     } else {
-        GSvecCopy(&endpoint, fn_8018FCBC(entry));
-        GSvecCopy(&facing, peopleGetTransform(entry));
-        fn_800E0168(&origin, &endpoint, &facing);
+        fn_800E01D0(&position, fn_8018FCBC(entry));
+        fn_800E01D0(&transform, peopleGetTransform(entry));
+        fn_800E0168(&direction, &position, &transform);
     }
 
-    lineStart.x = x0;
-    lineStart.y = endpoint.y;
-    lineStart.z = z0;
-    lineEnd.x = x1;
-    lineEnd.y = endpoint.y;
-    lineEnd.z = z1;
+    fn_800E01F4(&lineStart, x0, position.y, z0);
+    fn_800E01F4(&lineEnd, x1, position.y, z1);
 
     resource = GSresGetResource(0, 2);
     if (resource != NULL && *(u8*)resource != 0) {
         cameraGetActive();
         fn_800D258C();
         _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
+        fn_800DA028(0);
+        fn_800D7820(lbl_80314638);
+        fn_800D88DC(1);
+        fn_800D888C(6);
+        fn_800DA4C4(1, 6, 7);
+        fn_800D9ED8(0);
+        fn_800D6A00(4);
+        fn_800D67BC(4);
+        fn_800D6680(x0, position.y - *(f32*)&lbl_8047D844, z0);
+        fn_800D5CB8(0, 0, 0x80, 0xFF, 0xC0);
+        fn_800D6680(x0, position.y + *(f32*)&lbl_8047D844, z0);
+        fn_800D5CB8(0, 0, 0x80, 0xFF, 0xC0);
+        fn_800D6680(x1, position.y - *(f32*)&lbl_8047D844, z1);
+        fn_800D5CB8(0, 0, 0x80, 0xFF, 0xC0);
+        fn_800D6680(x1, position.y + *(f32*)&lbl_8047D844, z1);
+        fn_800D5CB8(0, 0, 0x80, 0xFF, 0xC0);
+        fn_800D6728();
     }
 
-    reach = fn_800E008C(&origin);
-    if (reach <= lbl_8047D7A0) {
+    info = peopleInfoBiosGetPtr(entry->scriptRef);
+    if (info != NULL) {
+        radius = fn_8018F5E4(info);
+    } else {
+        radius = lbl_8047D83C;
+    }
+    reach = radius;
+    distance = fn_800E008C(&direction);
+    if (distance > lbl_8047D7A0) {
+        step = radius / distance;
+        if (step > lbl_8047D79C) {
+            step = lbl_8047D79C;
+        }
+    } else {
+        step = lbl_8047D79C;
+    }
+
+    fn_800E0168(&lineDirection, &lineEnd, &lineStart);
+    if (fn_800E008C(&lineDirection) < *(f32*)&lbl_8047D848) {
         return 0;
     }
-    fn_801870E8(&lineStart, &lineEnd, &endpoint, &facing, &origin, reach);
+
+    fn_800E0060(&lineDirection, &lineDirection);
+    fn_800E0168(&perpendicular, &transform, &lineStart);
+    fn_800E013C(&perpendicular, &lineDirection, fn_800E0000(&perpendicular, &lineDirection));
+    fn_800E019C(&projectedStart, &perpendicular, &lineStart);
+    fn_800E0168(&projectedDelta, &transform, &projectedStart);
+
+    distance = lbl_8047D7A0;
+    while (distance < lbl_8047D79C) {
+        nextDistance = distance + step;
+        if (nextDistance > lbl_8047D79C) {
+            nextDistance = lbl_8047D79C;
+        }
+        fn_800E013C(&testPoint, &direction, nextDistance);
+        fn_800E019C(&testPoint, &transform, &testPoint);
+        if (fn_801870E8(&projectedStart, &testPoint, &lineStart, &lineEnd,
+                       &projectedDelta, reach)) {
+            if (mode != 0) {
+                GScolsy2UtilGetPointExtentionLine(
+                    &collisionPoint, &projectedStart, &testPoint,
+                    *(f32*)&lbl_8047D848 + reach);
+                if (fn_8010F320(&transform, &collisionPoint,
+                                &correctedPoint, lbl_8047D83C)) {
+                    fn_800E0168(&correction, &correctedPoint,
+                                &collisionPoint);
+                    fn_800E019C(&collisionPoint, &collisionPoint,
+                                &correction);
+                }
+                fn_8018FC74(entry, &collisionPoint);
+                heroMoveSetLockFrame(1);
+            }
+            return 1;
+        }
+        distance += step;
+    }
     return 0;
 }
 #endif
@@ -1887,6 +2847,53 @@ extern f32 lbl_8047D7A4;
 extern f32 lbl_8047D79C;
 extern f32 lbl_8047D874;
 extern u32 lbl_8047D7D0;
+
+typedef union PeopleMoveFloatShape {
+    f32 value;
+    u32 bits;
+} PeopleMoveFloatShape;
+
+static inline f32 peopleMoveSqrtf(f32 value)
+{
+    extern f64 __frsqrte(f64);
+    PeopleMoveFloatShape shape;
+    f64 estimate;
+    s32 exponent;
+    s32 fpclass;
+
+    if (value > lbl_8047D7A0) {
+        estimate = __frsqrte(value);
+        estimate = *(f64*)&lbl_8047D850 * estimate *
+                   (*(f64*)&lbl_8047D858 - value * (estimate * estimate));
+        estimate = *(f64*)&lbl_8047D850 * estimate *
+                   (*(f64*)&lbl_8047D858 - value * (estimate * estimate));
+        estimate = *(f64*)&lbl_8047D850 * estimate *
+                   (*(f64*)&lbl_8047D858 - value * (estimate * estimate));
+        return (f32)(value * estimate);
+    }
+    if ((f64)value < *(f64*)&lbl_8047D860) {
+        return *(f32*)lbl_80478AC0;
+    }
+
+    shape.value = value;
+    exponent = shape.bits & 0x7F800000;
+    switch (exponent) {
+    case 0x7F800000:
+        fpclass = (shape.bits & 0x007FFFFF) != 0 ? 1 : 2;
+        break;
+    case 0:
+        fpclass = (shape.bits & 0x007FFFFF) != 0 ? 5 : 3;
+        break;
+    default:
+        fpclass = 4;
+        break;
+    }
+    if (fpclass == 1) {
+        return *(f32*)lbl_80478AC0;
+    }
+    return value;
+}
+
 #if 0
 asm void fn_80186B5C(void) {
 #include "src/game/people/people_fn_80186B5C.inc"
@@ -1895,14 +2902,53 @@ asm void fn_80186B5C(void) {
 void fn_80186B5C(GSvec* output, u32 groupId, u32 index)
 {
     PeopleEntry* entry;
+    PeopleEntry* candidate;
+    void* self;
+    GSvec result;
+    GSvec quaternion;
+    GSvec localStep;
+    GSvec worldStep;
+    f32 x;
+    f32 z;
+    f32 length;
+    f32 angle;
+    f32 speed;
+    s32 i;
     s8 stickX;
     s8 stickY;
     s8 cstickX;
     s8 cstickY;
 
-    entry = peopleFindBySelf(peopleFindSelf(groupId, index));
+    result = *(GSvec*)lbl_80273FB4;
+    self = NULL;
+    for (i = 0; i < peopleGetMaxCount(); i++) {
+        candidate = peopleGetEntry(i);
+        if (candidate->active != 0 && candidate->groupId == groupId &&
+            candidate->index == index) {
+            self = candidate->selfPtr;
+            break;
+        }
+    }
+    if (self == NULL) {
+        for (i = 0; i < peopleGetMaxCount(); i++) {
+            candidate = peopleGetEntry(i);
+            if (candidate->active != 0 && candidate->index == index) {
+                GSlogWrite(lbl_80273FD8, groupId, index);
+                self = candidate->selfPtr;
+                break;
+            }
+        }
+    }
+    entry = NULL;
+    for (i = 0; i < peopleGetMaxCount(); i++) {
+        candidate = peopleGetEntry(i);
+        if (candidate->active != 0 && candidate->selfPtr == self) {
+            entry = candidate;
+            break;
+        }
+    }
     if (entry == NULL) {
-        GSvecCopy(output, lbl_80273FB4);
+        *output = result;
         return;
     }
 
@@ -1912,13 +2958,17 @@ void fn_80186B5C(GSvec* output, u32 groupId, u32 index)
     cstickY = fn_800F7A08(1, 0);
 
     if (stickX == 0 && stickY == 0) {
-        u32 buttons = fn_800F7BC4(1);
-        if (buttons & 8) stickY = -56;
-        if (buttons & 4) stickY = 56;
-        if (buttons & 1) stickX = -56;
-        if (buttons & 2) stickX = 56;
+        if (fn_800F7BC4(1) & 8) stickY = -56;
+        if (fn_800F7BC4(1) & 4) stickY = 56;
+        if (fn_800F7BC4(1) & 1) stickX = -56;
+        if (fn_800F7BC4(1) & 2) stickX = 56;
         cstickX = stickX;
         cstickY = stickY;
+    }
+
+    if (stickX == 0 && stickY == 0) {
+        *output = result;
+        return;
     }
 
     if (stickX > 56) stickX = 56;
@@ -1926,17 +2976,64 @@ void fn_80186B5C(GSvec* output, u32 groupId, u32 index)
     if (stickY > 56) stickY = 56;
     if (stickY < -56) stickY = -56;
 
-    output->x = (f32)stickX / lbl_8047D84C;
-    output->y = lbl_8047D7A0;
-    output->z = (f32)stickY / lbl_8047D84C;
+    x = (f32)(stickX < 0 ? -stickX : stickX) / *(f32*)&lbl_8047D84C;
+    z = (f32)(stickY < 0 ? -stickY : stickY) / *(f32*)&lbl_8047D84C;
+    length = peopleMoveSqrtf(x * x + z * z);
+    if (length > *(f32*)&lbl_8047D7C4) {
+        length = *(f32*)&lbl_8047D7C4;
+    }
+
+    if (cstickX <= -2 || cstickX >= 2 || cstickY <= -2 || cstickY >= 2) {
+        if (z < *(f32*)&lbl_8047D868) {
+            angle = *(f32*)&lbl_8047D86C;
+        } else {
+            angle = x / z;
+            if (angle > lbl_8047D7E8) {
+                angle = lbl_8047D7E8;
+            }
+            angle = (f32)sin((f64)(angle / *(f32*)&lbl_8047D870)) *
+                    *(f32*)&lbl_8047D86C;
+        }
+        if (stickY < 0) {
+            speed = *(f32*)&lbl_8047D818 - angle;
+        } else {
+            speed = angle;
+        }
+        if (stickX < 0) {
+            if (stickY >= 0) {
+                speed = *(f32*)&lbl_8047D818 +
+                        (*(f32*)&lbl_8047D818 - angle);
+            } else {
+                speed = *(f32*)&lbl_8047D818 + angle;
+            }
+        }
+        angle = cameraGetRotY() + speed;
+    } else {
+        angle = entry->field_40;
+    }
+
+    if (length <= lbl_8047D830) {
+        speed = (length / lbl_8047D830) * (entry->field_34 * lbl_8047D7A4);
+    } else if (length < lbl_8047D79C) {
+        x = (length - lbl_8047D830) / *(f32*)&lbl_8047D874;
+        z = entry->field_34 * lbl_8047D7A4;
+        speed = x * (entry->field_34 - z) + z;
+    } else {
+        speed = (length - lbl_8047D79C) *
+                (entry->field_38 - entry->field_34) + entry->field_34;
+    }
+
+    fn_800E0718(&quaternion, lbl_8031554C, angle);
+    set__5GSvecFfff(&localStep, lbl_8047D7A0, lbl_8047D7A0, speed);
+    GSvecTransformQuat(&worldStep, &quaternion, &localStep);
+    fn_800E013C(&result, &worldStep, (f32)fn_800D3088());
+    *output = result;
 }
 #endif
 
 /* 0x801870E8 | 0x3D4 */
-extern void GScolsy2UtilGetSidePlanePoint(void);
-extern void fn_8010FA54(void);
-extern void PSVECSquareDistance(void);
-extern void fn_8010F71C(void);
+extern f32 GScolsy2UtilGetSidePlanePoint(void*, void*, void*);
+extern f32 PSVECSquareDistance(void*, void*);
 extern u32 lbl_8047D844;
 extern f32 lbl_8047D7A0;
 #if 0
@@ -1944,10 +3041,86 @@ asm void fn_801870E8(void) {
 #include "src/game/people/people_fn_801870E8.inc"
 }
 #else
-void fn_801870E8(void* lineStart, void* lineEnd, void* endpoint, void* facing,
-                 void* direction, f32 reach)
+u8 fn_801870E8(void* resultArg, void* pointArg, void* startArg, void* endArg,
+               void* normalArg, f32 reach)
 {
-    /* Collision resolution after the recovered geometric setup remains. */
+    GSvec* result = resultArg;
+    GSvec* point = pointArg;
+    GSvec* start = startArg;
+    GSvec* end = endArg;
+    GSvec* normal = normalArg;
+    GSvec verts[3];
+    GSvec closest;
+    f32 lowerY = result->y - *(f32*)&lbl_8047D844;
+    f32 upperY = result->y + *(f32*)&lbl_8047D844;
+    f32 reachSquared = reach * reach;
+
+    verts[0].x = start->x;
+    verts[0].y = lowerY;
+    verts[0].z = start->z;
+    verts[1].x = end->x;
+    verts[1].y = lowerY;
+    verts[1].z = end->z;
+    verts[2].x = start->x;
+    verts[2].y = upperY;
+    verts[2].z = start->z;
+    if (GScolsy2UtilGetSidePlanePoint(normal, verts, point) >= lbl_8047D7A0) {
+        GScolsy2UtilGetCpPlanePoint(&closest, normal, verts, point);
+        if (PSVECSquareDistance(&closest, point) < reachSquared &&
+            GScolsy2UtilChkInTri(&closest, verts, normal) != 0) {
+            *result = closest;
+            return 1;
+        }
+    }
+
+    verts[0].x = end->x;
+    verts[0].y = lowerY;
+    verts[0].z = end->z;
+    verts[1].x = end->x;
+    verts[1].y = upperY;
+    verts[1].z = end->z;
+    if (GScolsy2UtilGetSidePlanePoint(normal, verts, point) >= lbl_8047D7A0) {
+        GScolsy2UtilGetCpPlanePoint(&closest, normal, verts, point);
+        if (PSVECSquareDistance(&closest, point) < reachSquared &&
+            GScolsy2UtilChkInTri(&closest, verts, normal) != 0) {
+            *result = closest;
+            return 1;
+        }
+    }
+
+    verts[0].x = end->x;
+    verts[0].y = lowerY;
+    verts[0].z = end->z;
+    verts[1].x = start->x;
+    verts[1].y = lowerY;
+    verts[1].z = start->z;
+    verts[2].x = start->x;
+    verts[2].y = upperY;
+    verts[2].z = start->z;
+    if (GScolsy2UtilGetSidePlanePoint(normal, verts, point) >= lbl_8047D7A0) {
+        GScolsy2UtilGetCpPlanePoint(&closest, normal, verts, point);
+        if (PSVECSquareDistance(&closest, point) < reachSquared &&
+            GScolsy2UtilChkInTri(&closest, verts, normal) != 0) {
+            *result = closest;
+            return 1;
+        }
+    }
+
+    verts[1].x = start->x;
+    verts[1].y = upperY;
+    verts[1].z = start->z;
+    verts[2].x = end->x;
+    verts[2].y = upperY;
+    verts[2].z = end->z;
+    if (GScolsy2UtilGetSidePlanePoint(normal, verts, point) >= lbl_8047D7A0) {
+        GScolsy2UtilGetCpPlanePoint(&closest, normal, verts, point);
+        if (PSVECSquareDistance(&closest, point) < reachSquared &&
+            GScolsy2UtilChkInTri(&closest, verts, normal) != 0) {
+            *result = closest;
+            return 1;
+        }
+    }
+    return 0;
 }
 #endif
 
@@ -1958,7 +3131,77 @@ asm void fn_801874BC(void) {
 #include "src/game/people/people_fn_801874BC.inc"
 }
 #else
-void fn_801874BC(void) { /* TODO: match -- 1104 bytes at 0x801874BC */ }
+u8 fn_801874BC(u32 groupId, u32 index, f32 x0, f32 z0, f32 x1, f32 z1)
+{
+    PeopleEntry* entry;
+    GSvec position;
+    void* resource;
+    f32 minX;
+    f32 maxX;
+    f32 minZ;
+    f32 maxZ;
+
+    entry = peopleFindBySelf(peopleFindSelf(groupId, index));
+    if (entry == NULL) {
+        return 0;
+    }
+
+    GSvecCopy(&position, fn_8018FCBC(entry));
+
+    resource = GSresGetResource(0, 2);
+    if (resource != NULL && *(u8*)resource != 0) {
+        cameraGetActive();
+        fn_800D258C();
+        _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
+        fn_800DA028(0);
+        fn_800D7820(lbl_80314638);
+        fn_800D88DC(1);
+        fn_800D888C(6);
+        fn_800DA4C4(1, 6, 7);
+        fn_800D9ED8(0);
+        fn_800D6A00(4);
+        fn_800D67BC(0xA);
+        fn_800D6680(x0, position.y, z0);
+        fn_800D5CB8(0, 0, 0x80, 0xFF, 0xC0);
+        fn_800D6680(x0, position.y + *(f32*)&lbl_8047D844, z0);
+        fn_800D5CB8(0, 0, 0x80, 0xFF, 0xC0);
+        fn_800D6680(x0, position.y, z1);
+        fn_800D5CB8(0, 0, 0x80, 0xFF, 0xC0);
+        fn_800D6680(x0, position.y + *(f32*)&lbl_8047D844, z1);
+        fn_800D5CB8(0, 0, 0x80, 0xFF, 0xC0);
+        fn_800D6680(x1, position.y + *(f32*)&lbl_8047D844, z1);
+        fn_800D5CB8(0, 0, 0x80, 0xFF, 0xC0);
+        fn_800D6680(x1, position.y, z1);
+        fn_800D5CB8(0, 0, 0x80, 0xFF, 0xC0);
+        fn_800D6680(x1, position.y + *(f32*)&lbl_8047D844, z0);
+        fn_800D5CB8(0, 0, 0x80, 0xFF, 0xC0);
+        fn_800D6680(x1, position.y, z0);
+        fn_800D5CB8(0, 0, 0x80, 0xFF, 0xC0);
+        fn_800D6728();
+    }
+
+    if (x0 < x1) {
+        minX = x0;
+        maxX = x1;
+    } else {
+        minX = x1;
+        maxX = x0;
+    }
+
+    if (z0 < z1) {
+        minZ = z0;
+        maxZ = z1;
+    } else {
+        minZ = z1;
+        maxZ = z0;
+    }
+
+    if (minX <= position.x && position.x <= maxX &&
+        minZ <= position.z && position.z <= maxZ) {
+        return 1;
+    }
+    return 0;
+}
 #endif
 
 /* 0x80187A60 | 0x2E8 */
@@ -2387,8 +3630,206 @@ struct GSvec* peopleGetPosition(PeopleEntry* entry) {
  * already named/documented there; otherwise a safe void(void) stub is used.
  * ========================================================================= */
 /* fn_80180C78 = peopleOpenCallback (see people.h) -- not recovered, gap in archive campaign */
-s32 fn_80180C78(PeopleOpenWork* work) {
-    return 0;
+s32 fn_80180C78(void* slot, void* subEntry, s32 mode) {
+    typedef struct PeopleOpenSlot {
+        u8 pad_00[0xF4];
+        u32 floorParam;
+        void* taskParam;
+    } PeopleOpenSlot;
+    typedef struct PeopleJob {
+        s32 active;
+        s32 field_04;
+        void* field_08;
+        s32 state;
+        void* callback;
+        s32 type;
+        void* app;
+        struct PeopleJob* volatile nextJob;
+        PeopleOpenSlot* slot;
+        u32 index;
+        void* subEntry;
+        u8 pad_2C[8];
+        void* taskParam;
+        u8 pad_38[8];
+    } PeopleJob;
+    PeopleJob* job;
+    PeopleJob* current;
+    PeopleJob* tail;
+    PeopleJob* volatile foundJob;
+    PeopleJob* volatile foundTail0;
+    PeopleJob* volatile foundTail1;
+    PeopleJob* volatile tailCopy0;
+    PeopleJob* volatile tailCopy1;
+    volatile s32 activeCount0;
+    volatile s32 activeCountStage0;
+    volatile s32 activeCountCopy0;
+    volatile s32 activeIndex0;
+    volatile s32 activeCount1;
+    volatile s32 activeCountStage1;
+    volatile s32 activeCountCopy1;
+    volatile s32 activeIndex1;
+    volatile s32 freeIndex1;
+    volatile s32 tailIndex0;
+    volatile s32 tailIndex1;
+    void* volatile savedSubEntry;
+    volatile s32 savedMode;
+    s32 result;
+    s32 i;
+
+    result = 0;
+    savedMode = mode;
+    savedSubEntry = subEntry;
+    switch (savedMode) {
+    case 0:
+        job = *(PeopleJob**)((u8*)&lbl_8047B1E8 + 4);
+        for (i = 0; i < *(volatile s32*)&lbl_8047B1E8; i++) {
+            if (job->active == 0) {
+                foundJob = job;
+                goto found_job0;
+            }
+            job++;
+        }
+        fn_80179F4C(1);
+        foundJob = NULL;
+found_job0:
+        activeCount0 = 0;
+        job = foundJob;
+        activeIndex0 = 0;
+        current = *(PeopleJob**)((u8*)&lbl_8047B1E8 + 4);
+        while (activeIndex0 < *(volatile s32*)&lbl_8047B1E8) {
+            if (current->active == 1) {
+                activeCount0++;
+            }
+            current++;
+            activeIndex0++;
+        }
+        activeCountStage0 = activeCount0;
+        activeCountCopy0 = activeCountStage0;
+
+        if (job == NULL) {
+            goto done;
+        }
+
+        job->taskParam = ((PeopleOpenSlot*)slot)->taskParam;
+        job->type = savedMode;
+        job->callback = fn_8018114C;
+        job->slot = (PeopleOpenSlot*)slot;
+        job->subEntry = savedSubEntry;
+        job->nextJob = NULL;
+        job->index = ((PeopleOpenSlot*)slot)->floorParam;
+        if (gPeopleOpenWork != NULL) {
+            current = (PeopleJob*)gPeopleOpenWork;
+            tailIndex0 = 0;
+            while (tailIndex0 < *(volatile s32*)&lbl_8047B1E8) {
+                if (current->nextJob != NULL) {
+                    current = current->nextJob;
+                } else {
+                    foundTail0 = current;
+                    goto found_tail0;
+                }
+                tailIndex0++;
+            }
+            foundTail0 = NULL;
+found_tail0:
+            tailCopy0 = foundTail0;
+            tail = tailCopy0;
+            tail->nextJob = job;
+            job->active = 2;
+            job->state = 0;
+            result = 1;
+        } else {
+            current = job;
+            *(PeopleJob* volatile*)&lbl_8047B1E4 = current;
+            fn_8017C074(
+                (*(PeopleJob* volatile*)&lbl_8047B1E4)->slot,
+                (*(PeopleJob* volatile*)&lbl_8047B1E4)->subEntry,
+                (*(PeopleJob* volatile*)&lbl_8047B1E4)->index,
+                *(PeopleJob* volatile*)&lbl_8047B1E4);
+            current->app =
+                GSgappCreate(fn_8017AC30(), 0xC8, current->slot->taskParam,
+                             fn_8018114C);
+            if (current->app != NULL) {
+                current->active = 1;
+                current->state = 1;
+                gPeopleOpenWork = (PeopleOpenWork*)current;
+            }
+            result = 1;
+        }
+        break;
+    case 1:
+        job = *(PeopleJob**)((u8*)&lbl_8047B1E8 + 4);
+        freeIndex1 = 0;
+        while (freeIndex1 < *(volatile s32*)&lbl_8047B1E8) {
+            if (job->active == 0) {
+                foundJob = job;
+                goto found_job1;
+            }
+            job++;
+            freeIndex1++;
+        }
+        fn_80179F4C(1);
+        foundJob = NULL;
+found_job1:
+        activeCount1 = 0;
+        job = foundJob;
+        activeIndex1 = 0;
+        current = *(PeopleJob**)((u8*)&lbl_8047B1E8 + 4);
+        while (activeIndex1 < *(volatile s32*)&lbl_8047B1E8) {
+            if (current->active == 1) {
+                activeCount1++;
+            }
+            current++;
+            activeIndex1++;
+        }
+        activeCountStage1 = activeCount1;
+        activeCountCopy1 = activeCountStage1;
+
+        if (job == NULL) {
+            goto done;
+        }
+
+        job->taskParam = ((PeopleOpenSlot*)slot)->taskParam;
+        job->type = savedMode;
+        job->callback = fn_80181094;
+        job->slot = (PeopleOpenSlot*)slot;
+        job->subEntry = savedSubEntry;
+        job->nextJob = NULL;
+        job->index = ((PeopleOpenSlot*)slot)->floorParam;
+        if (gPeopleOpenWork != NULL) {
+            current = (PeopleJob*)gPeopleOpenWork;
+            tailIndex1 = 0;
+            while (tailIndex1 < *(volatile s32*)&lbl_8047B1E8) {
+                if (current->nextJob != NULL) {
+                    current = current->nextJob;
+                } else {
+                    foundTail1 = current;
+                    goto found_tail1;
+                }
+                tailIndex1++;
+            }
+            foundTail1 = NULL;
+found_tail1:
+            tailCopy1 = foundTail1;
+            tail = tailCopy1;
+            tail->nextJob = job;
+            job->active = 2;
+            job->state = 0;
+            result = 1;
+        } else {
+            current = job;
+            current->app =
+                GSgappCreate(1, 2, current->slot->taskParam, fn_80181094);
+            if (current->app != NULL) {
+                current->active = 1;
+                current->state = 1;
+                gPeopleOpenWork = (PeopleOpenWork*)current;
+            }
+            result = 1;
+        }
+        break;
+    }
+done:
+    return result;
 }
 
 /* fn_80181094 = peopleOpenThread (size 0xB8) */
@@ -2464,12 +3905,44 @@ s32 fn_801812E8(u32 groupId, u32 index, u8 doInteract) {
     return 1;
 }
 
-/* fn_80183018 -- not recovered, gap in archive campaign (size 0x338) */
-void fn_80183018(void) {
+/* Set the transient interaction flags and suspend the high movement flag. */
+void fn_80183018(u32 groupId, u32 index) {
+    PeopleEntry* entry;
+
+    entry = peopleFindBySelf(peopleFindSelf(groupId, index));
+    if (entry != NULL) {
+        peopleSetFlags(entry, 0x100);
+    }
+
+    entry = peopleFindBySelf(peopleFindSelf(groupId, index));
+    if (entry != NULL) {
+        peopleSetFlags(entry, 0x400);
+    }
+
+    entry = peopleFindBySelf(peopleFindSelf(groupId, index));
+    if (entry != NULL) {
+        peopleClearFlags(entry, 0x80000000);
+    }
 }
 
-/* fn_80183350 -- not recovered, gap in archive campaign (size 0x338) */
-void fn_80183350(void) {
+/* Clear the transient interaction flags and restore the high movement flag. */
+void fn_80183350(u32 groupId, u32 index) {
+    PeopleEntry* entry;
+
+    entry = peopleFindBySelf(peopleFindSelf(groupId, index));
+    if (entry != NULL) {
+        peopleClearFlags(entry, 0x100);
+    }
+
+    entry = peopleFindBySelf(peopleFindSelf(groupId, index));
+    if (entry != NULL) {
+        peopleClearFlags(entry, 0x400);
+    }
+
+    entry = peopleFindBySelf(peopleFindSelf(groupId, index));
+    if (entry != NULL) {
+        peopleSetFlags(entry, 0x80000000);
+    }
 }
 
 /* 0x80183688 | size: 0xA8 */
@@ -3008,13 +4481,34 @@ void fn_80189490(u32 groupId, u32 index) {
 extern void winMsgOpenFieldWithSE(s32, s32, s32, s32);
 
 void fn_80189990(u32 groupId, u32 index, s32 messageId) {
+    extern u32 floorCharacterBiosGetNameID(void*);
+    extern u32 charNameBiosGetHearFlag(u32);
+    extern u32 charNameBiosGetNameID(u32);
+    extern u8 fn_801902E0(s32);
+    extern void msgctrlSetValue(u32, u32);
+
     PeopleEntry* entry;
     PeopleEntry* stateEntry;
+    void* info;
+    u8* floorCharacter;
     u32 flags;
+    u32 nameIndex;
+    u32 hearFlag;
+    u32 nameMessageId;
     s32 messageValue;
+    u8 talkable;
 
+    messageValue = 0;
     entry = peopleFindBySelf(peopleFindSelf(groupId, index));
     if (entry != NULL) {
+        GSvec cameraPosition;
+        GSvec delta;
+        GSvec rotation;
+        void* camera;
+        f32 angle;
+        f32 fullTurn;
+        s32 revolutions;
+
         stateEntry = peopleFindBySelf(peopleFindSelf(groupId, index));
         flags = stateEntry != NULL ? stateEntry->flags : 0;
         if (flags & 0x20) {
@@ -3024,27 +4518,65 @@ void fn_80189990(u32 groupId, u32 index, s32 messageId) {
             }
             stateEntry = peopleFindBySelf(peopleFindSelf(groupId, index));
             if (stateEntry != NULL) {
+                camera = GSresGetResource(0, 0x64);
+                if (camera != NULL) {
+                    GSvecCopy(&cameraPosition,
+                              GSmodelGetPositionPtr(camera));
+                    fn_800E0168(&delta, &cameraPosition,
+                                fn_8018FCBC(stateEntry));
+                    angle = (f32)atan2(delta.x, delta.z);
+                    stateEntry =
+                        peopleFindBySelf(peopleFindSelf(groupId, index));
+                    if (stateEntry != NULL) {
+                        fn_8018FC2C(stateEntry, &rotation);
+                        fullTurn = lbl_8047D7C0;
+                        revolutions = (s32)(rotation.y / fullTurn);
+                        stateEntry->pad22 = 1;
+                        stateEntry->field_40 =
+                            angle + fullTurn * revolutions;
+                        stateEntry->field_44 = lbl_8047D79C;
+                    }
+                }
+            }
+            stateEntry = peopleFindBySelf(peopleFindSelf(groupId, index));
+            if (stateEntry != NULL) {
                 while (stateEntry->pad22) {
                     _threadSwitch();
                 }
             }
         } else if (flags & 0x10) {
             if (!entry->field_94) {
-                entry->threadHandle = entry->nextLink;
+                entry->nextLink = entry->threadHandle;
                 entry->field_94 = 1;
             }
             fn_80188F78(groupId, index);
             stateEntry = peopleFindBySelf(peopleFindSelf(groupId, index));
             if (stateEntry != NULL) {
-                entry->isTalkable =
-                    peopleTestFlags(stateEntry, PEOPLE_FLAG_TALKABLE);
+                talkable = peopleTestFlags(stateEntry, PEOPLE_FLAG_TALKABLE);
                 peopleSetFlags(stateEntry, PEOPLE_FLAG_TALKABLE);
+            } else {
+                talkable = 0;
             }
+            entry->isTalkable = talkable;
+            fn_80188984(groupId, index, 1);
         }
 
-        messageValue = fn_8018F4AC(peopleInfoBiosGetPtr(entry->scriptRef));
-    } else {
-        messageValue = 0;
+        info = peopleInfoBiosGetPtr(entry->scriptRef);
+        if (info != NULL) {
+            messageValue = fn_8018F4AC(info);
+        }
+
+        nameMessageId = 0xFA3;
+        floorCharacter = ((u8* (*)(u32, u32))fn_801170A4)(
+            entry->groupId, entry->index);
+        if (floorCharacter != NULL) {
+            nameIndex = floorCharacterBiosGetNameID(floorCharacter);
+            hearFlag = charNameBiosGetHearFlag(nameIndex);
+            if (hearFlag == 0 || fn_801902E0(hearFlag) == 1) {
+                nameMessageId = charNameBiosGetNameID(nameIndex);
+            }
+        }
+        msgctrlSetValue(0x59, nameMessageId);
     }
     winMsgOpenFieldWithSE(messageId, 1, 0, messageValue);
 }
@@ -3421,13 +4953,59 @@ void fn_8018CB5C(u32 groupId, u32 index) {
 
 /* fn_8018CD08 -- not recovered, gap in archive campaign (size 0x978) */
 void* fn_8018CD08(u32 groupId, u32 index, f32 radius, f32 angle) {
+    extern u8 heroMoveIsMember(s32 member);
+    extern u32 heroMoveGetResID(u32* out_group, u32* out_index, s32 member);
+    extern u8* fn_801170A4(u32 groupId, u32 index);
+    extern u32 floorCharacterBiosGetTalkStartType(u8* ptr);
+    extern u32 floorCharacterBiosGetTalkWallThrough(u8* ptr);
+    extern void* floorEventGetTresureList(u32 indexId);
+    extern f64 atan2(f64, f64);
+    extern f64 fabs(f64);
+    extern f64 fmod(f64, f64);
+    extern s32 fn_8010F320(void* start, void* end, f32 radius, void* result);
+    extern void GSlogWritef(const char* fmt, ...);
+    extern f32 lbl_8047D83C;
+    extern f32 lbl_8047D814;
+    extern f32 lbl_8047D880;
+    extern f64 lbl_8047D7F0;
+    extern f64 lbl_8047D7A8;
+    extern f64 lbl_8047D820;
+    extern f64 lbl_8047D888;
+
     PeopleEntry* source;
     PeopleEntry* candidate;
-    PeopleInfoBiosEntry* info;
+    PeopleEntry* memberEntry;
+    PeopleInfoBiosEntry* sourceInfo;
+    PeopleInfoBiosEntry* candidateInfo;
+    u8* floorCharacter;
+    void* treasureList;
+    void* part;
     GSvec sourcePosition;
     GSvec candidatePosition;
+    GSvec memberPosition = {0.0f, 0.0f, 0.0f};
+    GSvec delta;
+    GSvec rotation;
+    GSvec midpoint;
+    GSvec memberDelta;
+    GSvec memberRotated;
+    u8 memberQuat[16];
+    f32 sourceRadius;
     f32 interactionRadius;
+    f32 maxAngle;
+    f32 bestScore;
+    f32 bestAngle;
+    f32 candidateAngle;
+    f32 candidateRange;
+    f32 distance;
+    f32 memberAngle;
+    f32 memberRadius;
+    f32 memberDistance;
+    s32 partIndex;
+    u32 memberGroup;
+    u32 memberIndex;
+    u8 hasMember;
     s32 i;
+    PeopleEntry* best;
 
     source = peopleFindBySelf(peopleFindSelf(groupId, index));
     if (source == NULL) {
@@ -3435,25 +5013,147 @@ void* fn_8018CD08(u32 groupId, u32 index, f32 radius, f32 angle) {
     }
 
     GSvecCopy(&sourcePosition, fn_8018FCBC(source));
-    info = peopleInfoBiosGetPtr(source->scriptRef);
-    interactionRadius =
-        info != NULL ? fn_8018F5E4(info) : lbl_8047D83C;
-    interactionRadius += radius;
+    sourceInfo = peopleInfoBiosGetPtr(source->scriptRef);
+    sourceRadius = sourceInfo != NULL ? fn_8018F5E4(sourceInfo)
+                                      : lbl_8047D83C;
+    interactionRadius = sourceRadius + lbl_8047D800 * radius;
+    maxAngle = lbl_8047D814 * angle;
+    best = NULL;
+    bestScore = lbl_8047D880;
+    bestAngle = lbl_8047D7A0;
+
+    hasMember = heroMoveIsMember(1) != 0;
+    heroMoveGetResID(&memberGroup, &memberIndex, 1);
+    memberEntry = NULL;
+    if (hasMember) {
+        memberEntry = peopleFindBySelf(peopleFindSelf(memberGroup, memberIndex));
+        if (memberEntry != NULL) {
+            fn_8018FC98(memberEntry, &memberPosition);
+        }
+    }
 
     for (i = 0; i < peopleGetMaxCount(); i++) {
         candidate = peopleGetEntry(i);
-        if (!candidate->active || candidate == source ||
-            candidate->animId == 0 || peopleTestFlags(candidate, 1)) {
+        if (candidate->active == 0 || candidate == source) {
+            continue;
+        }
+        if (candidate->animId == 0 || peopleTestFlags(candidate, 1)) {
             continue;
         }
 
-        GSvecCopy(&candidatePosition, fn_8018FCBC(candidate));
-        if (GSvecDistance(&sourcePosition, &candidatePosition) <=
-            interactionRadius) {
-            return candidate;
+        floorCharacter = fn_801170A4(candidate->groupId, candidate->index);
+        if (floorCharacter != NULL &&
+            floorCharacterBiosGetTalkStartType(floorCharacter) == 3)
+        {
+            continue;
+        }
+
+        candidateInfo = peopleInfoBiosGetPtr(candidate->scriptRef);
+        if (candidateInfo == NULL) {
+            continue;
+        }
+
+        partIndex = fn_8018F698(candidateInfo);
+        if (partIndex >= 0) {
+            part = GSmodelGetPart(candidate->modelHandle, partIndex);
+            GSpartGetTransform(part, &candidatePosition, 0, 0);
+            GSpartFree(part);
+        } else {
+            GSvecCopy(&candidatePosition, fn_8018FCBC(candidate));
+        }
+        candidatePosition.y = ((GSvec*)fn_8018FCBC(candidate))->y;
+
+        distance = GSvecDistance(&sourcePosition, &candidatePosition);
+        candidateRange = fn_8018F5E4(candidateInfo);
+        if (distance > interactionRadius + candidateRange) {
+            continue;
+        }
+
+        fn_800E0168(&delta, &candidatePosition, &sourcePosition);
+        candidateAngle = (f32)atan2(delta.x, delta.z);
+        candidateAngle = (f32)fmod(
+            lbl_8047D7F0 + (candidateAngle - source->field_40),
+            lbl_8047D7F0);
+        if (candidateAngle > lbl_8047D7A8) {
+            candidateAngle = (f32)(candidateAngle - lbl_8047D7F0);
+        } else if (candidateAngle < lbl_8047D820) {
+            candidateAngle = (f32)(candidateAngle + lbl_8047D7F0);
+        }
+        if (fabs(candidateAngle) > maxAngle) {
+            continue;
+        }
+
+        if (floorCharacter != NULL) {
+            if (floorCharacterBiosGetTalkWallThrough(floorCharacter) == 0 &&
+                fn_8010F320(&sourcePosition, &candidatePosition,
+                            sourceRadius, NULL) != 0)
+            {
+                continue;
+            }
+        } else {
+            treasureList = floorEventGetTresureList(candidate->index);
+            if (treasureList != NULL &&
+                (((*(u8*)treasureList) >> 5) & 7) == 1)
+            {
+                fn_8018FC2C(candidate, &rotation);
+                fn_800E0168(&delta, &sourcePosition, &candidatePosition);
+                distance = (f32)atan2(delta.x, delta.z);
+                distance = (f32)fmod(
+                    lbl_8047D7F0 + (distance - rotation.y), lbl_8047D7F0);
+                if (distance > lbl_8047D7A8) {
+                    distance = (f32)(distance - lbl_8047D7F0);
+                } else if (distance < lbl_8047D820) {
+                    distance = (f32)(distance + lbl_8047D7F0);
+                }
+                if (fabs(distance) > lbl_8047D888) {
+                    continue;
+                }
+            }
+        }
+
+        if (hasMember) {
+            memberRadius = fn_8018F5E4(candidateInfo);
+            GSvecAdd(&midpoint, &sourcePosition, &candidatePosition);
+            fn_800E013C(&midpoint, &midpoint, lbl_8047D7A4);
+            fn_800E0168(&memberDelta, &candidatePosition, &sourcePosition);
+            memberAngle = (f32)atan2(memberDelta.x, memberDelta.z);
+            memberAngle = (f32)fmod(
+                lbl_8047D7F0 + (memberAngle - lbl_8047D7A0),
+                lbl_8047D7F0);
+            if (memberAngle > lbl_8047D7A8) {
+                memberAngle = (f32)(memberAngle - lbl_8047D7F0);
+            } else if (memberAngle < lbl_8047D820) {
+                memberAngle = (f32)(lbl_8047D7F0 + memberAngle);
+            }
+            fn_800E0718(memberQuat, lbl_8031554C, memberAngle);
+            fn_800E0168(&memberPosition, &memberPosition, &midpoint);
+            GSvecTransformQuat(&memberRotated, memberQuat, &memberPosition);
+            memberDistance = GSvecDistance(&midpoint, &candidatePosition);
+            if (memberRadius >= __fabs(memberRotated.x) &&
+                memberDistance >= __fabs(memberRotated.z))
+            {
+                continue;
+            }
+        }
+
+        distance = GSvecDistance(&sourcePosition, &candidatePosition);
+        candidateRange = (f32)(0.5 * ((distance * distance) * fabs(candidateAngle)));
+        GSlogWritef((const char*)lbl_80273F90 + 0x118, candidate->groupId,
+                    candidate->index, distance, candidateAngle, candidateRange);
+
+        if (candidateRange < bestScore ||
+            (candidateRange == bestScore &&
+             ((fabs(bestAngle) < fabs(candidateAngle)) ||
+              (fabs(bestAngle) == fabs(candidateAngle) &&
+               candidateAngle > lbl_8047D7A0))))
+        {
+            bestScore = candidateRange;
+            best = candidate;
+            bestAngle = candidateAngle;
         }
     }
-    return NULL;
+
+    return best;
 }
 
 /* fn_8018D7D0 -- not recovered, gap in archive campaign (size 0x158) */
@@ -3555,15 +5255,35 @@ void* fn_8018E050(u32 groupId, u32 index, s32 objectId) {
 extern void* floorOpenObject(s32, const void*);
 extern void GSresRegisterResource(u32, u32, u32);
 extern void GSmodelSetBoundCheck(void*, s32);
+extern void GSmodelEnableAnimBlend(void*);
+extern void* floorDataBiosGetCurrentPtr(void);
+extern u32 floorDataBiosGetShadowLightID(void);
+extern void* GSresGetResource(u32, u32);
+extern void GSmodelSetShadowFlags(void*, u32);
+extern void GSmodelSetShadowLight(void*, void*);
 
 int fn_8018E1C4(PeopleEntry* entry, u32 groupId, u32 indexId, s32 objectId) {
+    PeopleInfoBiosEntry* info;
     PeopleEntry* stateEntry;
+    PeopleEntry* linkedEntry;
     void* model;
+    void* entryModel;
+    s32 i;
+    s32 animIndex;
+    s32 current;
+    s32 secondary;
+    u8 loop;
+    u8 restart;
+    u8 useAlternateLight;
+    u8* characterInfo;
+    void* shadowLight;
+    f32 frameCount;
 
     model = floorOpenObject(objectId, lbl_80273F90);
     if (model == NULL) {
         return 0;
     }
+    entryModel = model;
 
     GSresRegisterResource(groupId, indexId, 0);
     entry->modelHandle = model;
@@ -3574,8 +5294,92 @@ int fn_8018E1C4(PeopleEntry* entry, u32 groupId, u32 indexId, s32 objectId) {
     entry->animId = 1;
     entry->motionIndex = 1;
 
-    stateEntry = peopleFindBySelf(peopleFindSelf(groupId, indexId));
-    if (stateEntry != NULL) {
+    info = peopleInfoBiosGetPtr(entry->scriptRef);
+    if (info != NULL) {
+        fn_8018F4C8(info, (u8)entry->motionIndex, &animIndex, &loop);
+        if (animIndex >= 0) {
+            linkedEntry = NULL;
+            for (i = 0; i < peopleGetMaxCount(); i++) {
+                stateEntry = peopleGetEntry(i);
+                if (stateEntry->active && stateEntry->groupId == groupId &&
+                    stateEntry->index == indexId) {
+                    linkedEntry = stateEntry->selfPtr;
+                    break;
+                }
+            }
+            if (linkedEntry == NULL) {
+                for (i = 0; i < peopleGetMaxCount(); i++) {
+                stateEntry = peopleGetEntry(i);
+                if (stateEntry->active && stateEntry->index == indexId) {
+                    GSlogWrite(lbl_80273FD8, groupId, indexId);
+                    linkedEntry = stateEntry->selfPtr;
+                    break;
+                    }
+                }
+            }
+            stateEntry = NULL;
+            for (i = 0; i < peopleGetMaxCount(); i++) {
+                PeopleEntry* candidate = peopleGetEntry(i);
+                if (candidate->active && candidate->selfPtr == linkedEntry) {
+                    stateEntry = candidate;
+                    break;
+                }
+            }
+            if (stateEntry != NULL && (model = peopleGetModel(stateEntry)) != NULL) {
+                restart = 0;
+                if (GSmodelHasAnimationEnded(model)) {
+                    restart = 1;
+                } else if (!GSmodelIsAnimating(model)) {
+                    restart = 1;
+                } else {
+                    GSmodelGetAnimIndex(model, &current, &secondary);
+                    if (current != animIndex || secondary == -1) {
+                        restart = 1;
+                    }
+                }
+                if (restart) {
+                    stateEntry->walkTargetNode = animIndex;
+                    stateEntry->walkAnimRate = lbl_8047D7A0;
+                    GSmodelSetAnimIndex(model, animIndex);
+                    GSmodelSetAnimFrame(model, lbl_8047D7A0);
+                    GSmodelSetAnimRate(model, lbl_8047D7A4);
+                    GSmodelSetTexAnimIndex(model, animIndex);
+                    GSmodelSetTexAnimFrame(model, lbl_8047D7A0);
+                    GSmodelSetTexAnimRate(model, lbl_8047D7A4);
+                    GSmodelSetAnimType(model, loop != 0);
+                    GSmodelStartAnimation(model);
+                }
+                GSmodelSetAnimType(model, loop != 0);
+            }
+        }
+    }
+
+    linkedEntry = NULL;
+    for (i = 0; i < peopleGetMaxCount(); i++) {
+        stateEntry = peopleGetEntry(i);
+        if (stateEntry->active && stateEntry->groupId == groupId &&
+            stateEntry->index == indexId) {
+            linkedEntry = stateEntry->selfPtr;
+            break;
+        }
+    }
+    if (linkedEntry == NULL) {
+        for (i = 0; i < peopleGetMaxCount(); i++) {
+            stateEntry = peopleGetEntry(i);
+            if (stateEntry->active && stateEntry->index == indexId) {
+                GSlogWrite(lbl_80273FD8, groupId, indexId);
+                linkedEntry = stateEntry->selfPtr;
+                break;
+            }
+        }
+    }
+    for (i = 0; i < peopleGetMaxCount(); i++) {
+        stateEntry = peopleGetEntry(i);
+        if (stateEntry->active && stateEntry->selfPtr == linkedEntry) {
+            break;
+        }
+    }
+    if (i < peopleGetMaxCount()) {
         peopleWriteFlags(stateEntry, PEOPLE_WALK_LIST_ACTIVE);
     }
 
@@ -3583,7 +5387,86 @@ int fn_8018E1C4(PeopleEntry* entry, u32 groupId, u32 indexId, s32 objectId) {
     entry->walkNodeB = -1;
     entry->walkNodeC = -1;
     entry->moveType = PEOPLE_MOVE_NONE;
-    GSmodelSetBoundCheck(model, 0);
+    info = peopleInfoBiosGetPtr(entry->scriptRef);
+    if (info != NULL) {
+        fn_8018F4C8(info, 2, &animIndex, &loop);
+        if (animIndex != -1) {
+            GSmodelSetAnimIndex(entryModel, animIndex);
+            GSmodelGetFrameCount(entryModel, &frameCount, 0);
+            if (frameCount > lbl_8047D7A0) {
+                entry->field_34 = fn_8018F5CC(info) / frameCount;
+            }
+        }
+        fn_8018F4C8(info, 3, &animIndex, &loop);
+        if (animIndex != -1) {
+            GSmodelSetAnimIndex(entryModel, animIndex);
+            GSmodelGetFrameCount(entryModel, &frameCount, 0);
+            if (frameCount > lbl_8047D7A0) {
+                entry->field_38 = fn_8018F5B4(info) / frameCount;
+            }
+        }
+        fn_8018F4C8(info, 1, &animIndex, &loop);
+        if (animIndex >= 0) {
+            linkedEntry = NULL;
+            for (i = 0; i < peopleGetMaxCount(); i++) {
+                stateEntry = peopleGetEntry(i);
+                if (stateEntry->active && stateEntry->groupId == groupId &&
+                    stateEntry->index == indexId) {
+                    linkedEntry = stateEntry->selfPtr;
+                    break;
+                }
+            }
+            if (linkedEntry == NULL) {
+                for (i = 0; i < peopleGetMaxCount(); i++) {
+                stateEntry = peopleGetEntry(i);
+                if (stateEntry->active && stateEntry->index == indexId) {
+                    GSlogWrite(lbl_80273FD8, groupId, indexId);
+                    linkedEntry = stateEntry->selfPtr;
+                    break;
+                    }
+                }
+            }
+            stateEntry = NULL;
+            for (i = 0; i < peopleGetMaxCount(); i++) {
+                PeopleEntry* candidate = peopleGetEntry(i);
+                if (candidate->active && candidate->selfPtr == linkedEntry) {
+                    stateEntry = candidate;
+                    break;
+                }
+            }
+            if (stateEntry != NULL && (model = peopleGetModel(stateEntry)) != NULL) {
+                stateEntry->walkTargetNode = animIndex;
+                stateEntry->walkAnimRate = lbl_8047D7A0;
+                GSmodelSetAnimIndex(model, animIndex);
+                GSmodelSetAnimFrame(model, lbl_8047D7A0);
+                GSmodelSetAnimRate(model, lbl_8047D7A4);
+                GSmodelSetTexAnimIndex(model, animIndex);
+                GSmodelSetTexAnimFrame(model, lbl_8047D7A0);
+                GSmodelSetTexAnimRate(model, lbl_8047D7A4);
+                GSmodelSetAnimType(model, 1);
+                GSmodelStartAnimation(model);
+            }
+        }
+        GSmodelSetBoundCheck(entryModel, fn_8018F490(info));
+    }
+    characterInfo = ((u8* (*)(u32, u32))fn_801170A4)(groupId, indexId);
+    if (characterInfo != NULL && (characterInfo[0] & 8) != 0) {
+        GSmodelEnableAnimBlend(entryModel);
+    }
+    floorDataBiosGetCurrentPtr();
+    useAlternateLight = groupId != 0 || (indexId != 100 && indexId != 101);
+    floorDataBiosGetCurrentPtr();
+    shadowLight = (void*)floorDataBiosGetShadowLightID();
+    if (shadowLight != NULL) {
+        shadowLight = GSresGetResource(fn_80113F48(), (u32)shadowLight);
+    } else {
+        shadowLight = (void*)lbl_8047B1F0[useAlternateLight];
+    }
+    GSmodelSetShadowFlags(entryModel, 1);
+    if (useAlternateLight) {
+        GSmodelSetShadowFlags(entryModel, 4);
+    }
+    GSmodelSetShadowLight(entryModel, shadowLight);
     return 1;
 }
 

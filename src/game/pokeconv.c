@@ -19,44 +19,80 @@ s32 fn_80089048(u8* destination, const u8* source, void* pokemon)
     extern u8 fn_80123FBC(void*);
     extern u16 fn_8011F5C8(void*);
     extern void fn_8008AE18(void*, void*);
-    extern u8 exribbonGetNo(s32);
+    extern u8 fn_80265F14(s32);
     extern void* memset(void*, s32, u32);
     extern const char lbl_8026F568[];
     extern const char lbl_8026F574[];
-    extern void __assert(const char*, u32, const char*);
-    u32 value;
+    extern void fn_80196E10(const char*, u32, const char*);
+    u32 word0;
+    u32 word1;
+    u32 word2;
+    u32 packed;
+    u32 count4;
     u32 i;
     u16 count;
+    const u8* input;
     u8* output;
 
     if (pokemon != NULL && fn_80123FBC(pokemon) == 0) {
         return 0;
     }
 
-    *(u32*)(destination + 0) = BSWAP32(*(const u32*)(source + 0));
-    *(u32*)(destination + 4) = BSWAP32(*(const u32*)(source + 4));
-    *(u32*)(destination + 8) = BSWAP32(*(const u32*)(source + 8));
+    word0 = *(const u32*)(source + 0);
+    word1 = *(const u32*)(source + 4);
+    word2 = *(const u32*)(source + 8);
+    *(u32*)(destination + 0) = BSWAP32(word0);
+    *(u32*)(destination + 4) = BSWAP32(word1);
+    *(u32*)(destination + 8) = BSWAP32(word2);
 
-    value = *(const u16*)(source + 0xE);
+    packed = *(const u16*)(source + 0xE);
     if (pokemon != NULL) {
-        value |= fn_8011F5C8(pokemon) << 16;
+        packed |= (u32)fn_8011F5C8(pokemon) << 16;
     }
-    *(u32*)(destination + 0xC) = BSWAP32(value);
+    *(u32*)(destination + 0xC) = BSWAP32(packed);
 
     count = *(const u16*)(source + 0xE);
-    if (count != 0x32 && count != 0x1E) {
-        __assert(lbl_8026F568, 0xB7, lbl_8026F574);
+    i = 0;
+    if (count == 0x32 || count == 0x1E) {
+        i = 1;
     }
+    if (i == 0) {
+        fn_80196E10(lbl_8026F568, 0xB7, lbl_8026F574);
+    }
+
+    input = source + 0x10;
     output = destination + 0x10;
-    for (i = 0; i < count; i++, output += 4) {
-        *(u32*)output = BSWAP32(*(const u32*)(source + 0x10 + i * 4));
+    if ((s32)count > 0) {
+        count4 = count >> 2;
+        while (count4 != 0) {
+            *(u32*)output = BSWAP32(*(const u32*)input);
+            input += 4;
+            output += 4;
+            *(u32*)output = BSWAP32(*(const u32*)input);
+            input += 4;
+            output += 4;
+            *(u32*)output = BSWAP32(*(const u32*)input);
+            input += 4;
+            output += 4;
+            *(u32*)output = BSWAP32(*(const u32*)input);
+            input += 4;
+            output += 4;
+            count4--;
+        }
+        count &= 3;
+        while (count != 0) {
+            *(u32*)output = BSWAP32(*(const u32*)input);
+            input += 4;
+            output += 4;
+            count--;
+        }
     }
 
     if (pokemon != NULL) {
         fn_8008AE18(pokemon, output);
         memset(output + 0x64, 0, 0xC);
         for (i = 0; i < 11; i++) {
-            output[0x64 + i] = exribbonGetNo(i);
+            output[0x64 + i] = fn_80265F14(i);
         }
     }
     return 1;
@@ -74,24 +110,65 @@ s32 fn_80089380(u8* destination, const u8* source)
     extern void __assert(const char*, u32, const char*);
     u32 value;
     u32 swapped;
+    u32 word0;
+    u32 word1;
+    u32 word2;
+    u32 valid;
     u32 i;
-    u16 count;
+    const u8* input;
+    u8* output;
 
-    *(u32*)(destination + 0) = BSWAP32(*(const u32*)(source + 0));
-    *(u32*)(destination + 4) = BSWAP32(*(const u32*)(source + 4));
-    *(u32*)(destination + 8) = BSWAP32(*(const u32*)(source + 8));
-    value = BSWAP32(*(const u32*)(source + 0xC));
-    *(u16*)(destination + 0xC) = value >> 16;
-    *(u16*)(destination + 0xE) = value;
+    word0 = *(const u32*)(source + 0);
+    input = source + 0x10;
+    word1 = *(const u32*)(source + 4);
+    valid = 0;
+    word2 = *(const u32*)(source + 8);
+    swapped = word0 << 24;
+    swapped |= (word0 & 0x00FF0000) << 8;
+    swapped |= (word0 & 0x0000FF00) >> 8;
+    swapped |= word0 >> 24;
+    *(u32*)(destination + 0) = swapped;
 
-    count = *(u16*)(destination + 0xE);
-    if (count != 0x32 && count != 0x1E) {
+    swapped = word1 << 24;
+    swapped |= (word1 & 0x00FF0000) << 8;
+    swapped |= (word1 & 0x0000FF00) >> 8;
+    swapped |= word1 >> 24;
+    *(u32*)(destination + 4) = swapped;
+
+    swapped = word2 << 24;
+    swapped |= (word2 & 0x00FF0000) << 8;
+    swapped |= (word2 & 0x0000FF00) >> 8;
+    swapped |= word2 >> 24;
+    *(u32*)(destination + 8) = swapped;
+
+    value = *(const u32*)(source + 0xC);
+    swapped = value << 24;
+    swapped |= (value & 0x00FF0000) << 8;
+    swapped |= (value & 0x0000FF00) >> 8;
+    swapped |= value >> 24;
+    *(u16*)(destination + 0xC) = swapped >> 16;
+    *(u16*)(destination + 0xE) = swapped;
+
+    if (*(u16*)(destination + 0xE) == 0x32 ||
+        *(u16*)(destination + 0xE) == 0x1E)
+    {
+        valid = 1;
+    }
+    if (valid == 0) {
         __assert(lbl_8026F568, 0x6F, lbl_8026F574);
     }
-    for (i = 0; i < count; i++) {
-        swapped = BSWAP32(*(const u32*)(source + 0x10 + i * 4));
-        *(u16*)(destination + 0x10 + i * 4) = swapped;
-        *(u16*)(destination + 0x12 + i * 4) = swapped >> 16;
+
+    output = destination;
+    for (i = 0; i < *(u16*)(destination + 0xE); i++) {
+        value = *(const u32*)input;
+        input += 4;
+        swapped = value << 24;
+        swapped |= (value & 0x00FF0000) << 8;
+        swapped |= (value & 0x0000FF00) >> 8;
+        swapped |= value >> 24;
+        *(u16*)(output + 0x10) = swapped;
+        *(u16*)(output + 0x12) = swapped >> 16;
+        output += 4;
     }
 
     if (lbl_8047A664 != 0) {

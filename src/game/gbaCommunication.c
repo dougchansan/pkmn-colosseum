@@ -88,7 +88,7 @@ extern void* menuSpriteBiosGetPtr(u16 id);
 extern u16* windowGetKeyInfo(void);
 extern void* pokemonDataBiosGetPtr(u32 id);
 extern u8 pokemonBiosGetCatchBallId(void* pokemon);
-extern u16 pokemonGetSoubiItemDataId(void* pokemon);
+extern u32 pokemonGetSoubiItemDataId(void* pokemon);
 extern u32 pokemonDataBiosGetName(void* bios);
 extern u32 GSmsgGetGSchar(u32 id);
 extern u32 GSmsgGetRect(u32 id);
@@ -1418,11 +1418,13 @@ void fn_8009567C(u8* context, u8* sprite)
 
     switch (window_id) {
     case 0x13B:
+    case 0x57B:
         value = (u16)fn_8010C46C(
             (u8)pokemonDataBiosGetZokuseiDataId(pokemon_data, 0));
         fn_801040F0(0, 0, context, value, 0);
         break;
     case 0x13C:
+    case 0x57D:
         value = (u8)pokemonDataBiosGetZokuseiDataId(pokemon_data, 0);
         message = (u8)pokemonDataBiosGetZokuseiDataId(pokemon_data, 1);
         if (value != message) {
@@ -1431,6 +1433,7 @@ void fn_8009567C(u8* context, u8* sprite)
         }
         break;
     case 0x142:
+    case 0x581:
         if ((u8)fn_8011F77C(pokemon) < 3) {
             value = 0x934;
         } else {
@@ -1440,15 +1443,66 @@ void fn_8009567C(u8* context, u8* sprite)
         fn_80132A38(0x56, value == 0xC86 || value == 0xC96 ? 1 : 0x2BD8);
         value = (u8)pokemonGetStatus(pokemon, 0, 0x72, 0);
         fn_80132A38(0x34, value == 0 ? 5 : value);
-        trainer_id = pokemonGetStatus(pokemon, 0, 0x75, 0);
-        trainer_name = pokemonGetStatus(pokemon, 0, 0x76, 0);
+
+        trainer_id = *(u32*)(lbl_803FB380 + 8);
+        valid = 0;
+        if (pokemon != NULL &&
+            (u8)fn_80135938(
+                pokemonGetStatus(pokemon, 0, 0x70, 0), 2) == 0xB) {
+            if ((lbl_803FB380[0] & 0x20) != 0) {
+                if (trainer_id == 0) {
+                    trainer_id = fn_801F2A7C(0);
+                }
+                if (trainer_id != 0) {
+                    trainer_id = fn_801FCEAC(trainer_id);
+                    valid = 1;
+                }
+            } else {
+                if (fn_801906A0(0x8AE) == 0) {
+                    trainer_id = fn_80129280(0, 2);
+                } else {
+                    trainer_id = fn_8006AEEC();
+                }
+                valid = 1;
+            }
+
+            if (valid != 0) {
+                trainer_name = fn_8012AC54(trainer_id);
+                trainer_id = fn_8012AC3C(trainer_id);
+                if (trainer_id ==
+                        pokemonGetStatus(pokemon, 0, 0x75, 0) &&
+                    fn_800F9EE4(
+                        trainer_name,
+                        pokemonGetStatus(pokemon, 0, 0x76, 0)) == 0) {
+                    valid = 1;
+                } else {
+                    valid = 0;
+                }
+            }
+        }
+
         message = 0x2BCD;
-        if (trainer_id == fn_8012AC3C(lbl_803FB380[8]) &&
-            fn_800F9EE4(fn_8012AC54(lbl_803FB380[8]), trainer_name) == 0) {
+        if (valid != 0) {
             value = (u16)pokemonGetStatus(pokemon, 0, 0x6E, 0);
             message = (value >= 0xC4 && value < 0xC6) ? 0x2BE3 : 0x2BCD;
         }
         fn_800FBB34(0, 0, x, y, color, message);
+        break;
+    case 0x143:
+        level = (u8)pokemonGetStatus(pokemon, 0, 0x7A, 0);
+        next_exp = pokemonGetLevelToExp(pokemon, level + 1);
+        if (next_exp == 0) {
+            value = 0;
+        } else {
+            value = next_exp - pokemonGetStatus(pokemon, 0, 0x79, 0);
+        }
+        fn_80132A38(0x34, value);
+        fn_800FBB34(0, 0, x, y, color, 0xDE);
+        break;
+    case 0x144:
+        value = pokemonGetStatus(pokemon, 0, 0x79, 0);
+        fn_80132A38(0x34, value);
+        fn_800FBB34(0, 0, x, y, color, 0xDE);
         break;
     case 0x147:
         value = (s16)pokemonGetStatus(pokemon, 0, 0x8B, 0);
@@ -1456,12 +1510,19 @@ void fn_8009567C(u8* context, u8* sprite)
         fn_800FBB34(0, 0, x, y, color, 0xDE);
         break;
     case 0x148:
-    case 0x54D:
         value = (s16)pokemonGetStatus(pokemon, 0, 0x8C, 0);
         fn_80132A38(0x34, value);
         fn_800FBB34(0, 0, x, y, color, 0xDE);
         break;
+    case 0x54D:
+        value = fn_8011CB6C((u16)fn_801248C4(pokemon));
+        fn_8011CB54();
+        value = fn_800FA280();
+        fn_80132A38(0x37, value);
+        fn_800FBB34(0, 0, x, y, color, 0xCF);
+        break;
     case 0x149:
+    case 0x585:
         value = (s16)pokemonGetStatus(pokemon, 0, 0x8A, 0);
         fn_80132A38(0x34, value);
         fn_800FBB34(0, 0, x, y, color, 0xDE);
@@ -1478,7 +1539,7 @@ void fn_8009567C(u8* context, u8* sprite)
         fn_800FBB34(0, 0, x, y, color, 0xDE);
         break;
     case 0x14C:
-    case 0x581:
+    case 0x588:
         value = (u16)pokemonGetStatus(pokemon, 0, 0x83, 0);
         fn_80132A38(0x34, value);
         fn_800FBB34(0, 0, 0x37, y, color, 0xDE);
@@ -1531,23 +1592,18 @@ void fn_8009567C(u8* context, u8* sprite)
         }
         break;
     case 0x54E:
-    case 0x57B:
         value = pokemonGetStatus(pokemon, 0, 0x79, 0);
         fn_80132A38(0x34, value);
         fn_800FBB34(0, 0, x, y, color, 0xDE);
         break;
-    case 0x57D:
     case 0x582:
         value = fn_8011F77C(pokemon);
         message = 0x2BD9 + (value < 7 ? value : 0);
         fn_800FB680(0, 0, color, message);
         break;
     case 0x584:
-    case 0x585:
-        level = (u8)pokemonGetStatus(pokemon, 0, 0x7A, 0);
-        next_exp = fn_801229F4(pokemon, level + 1);
-        current_exp = pokemonGetStatus(pokemon, 0, 0x79, 0);
-        fn_80132A38(0x34, next_exp != 0 ? next_exp - current_exp : 0);
+        value = (s16)pokemonGetStatus(pokemon, 0, 0x8B, 0);
+        fn_80132A38(0x34, value);
         fn_800FBB34(0, 0, x, y, color, 0xDE);
         break;
     case 0x595:
@@ -2840,6 +2896,7 @@ void fn_800965C8(void* window, u8* sprite) {
     s32 state;
     s32 value;
     u32 msg;
+    u32 ball;
 
     pokemon = *(void**)(lbl_803FB380 + 0x0C);
     if (pokemon == NULL) {
@@ -2895,13 +2952,14 @@ void fn_800965C8(void* window, u8* sprite) {
             mask = 1;
             break;
         }
-        winSpriteSetDisp(sprite, value & mask);
+        value &= mask;
+        winSpriteSetDisp(sprite, (u8)value);
         break;
     }
     case 0x10B:
-        value = pokemonBiosGetCatchBallId(pokemon);
-        if (value < 13) {
-            windowDrawSprite(0, 0, window, lbl_802EED28[value], 0);
+        ball = pokemonBiosGetCatchBallId(pokemon);
+        if (ball < 13) {
+            windowDrawSprite(0, 0, window, lbl_802EED28[ball], 0);
         }
         break;
     case 0x10C:
@@ -2919,15 +2977,17 @@ void fn_800965C8(void* window, u8* sprite) {
         windowDrawSprite(0, 0, window, (u16)fn_8001D624(pokemon, 1), 0);
         break;
     case 0x10E:
-        if (pokemonGetSoubiItemDataId(pokemon) != 0) {
-            winSpriteSetDisp(sprite, 1);
+        value = pokemonGetSoubiItemDataId(pokemon);
+        if ((u16)value != 0) {
+            value = 1;
         } else {
-            winSpriteSetDisp(sprite, 0);
+            value = 0;
         }
+        winSpriteSetDisp(sprite, (u8)value);
         break;
     case 0x551:
         value = pokemonGetSoubiItemDataId(pokemon);
-        if (value != 0) {
+        if ((u16)value != 0) {
             msgctrlSetValue(0x2D, (u16)value);
             fn_800FBB34(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0x2BD3);
         }
@@ -2962,6 +3022,8 @@ void fn_800965C8(void* window, u8* sprite) {
         case 1:
             sexMsg = 0xD68;
             break;
+        case 2:
+        case 3:
         default:
             sexMsg = 0;
             break;
@@ -2974,15 +3036,18 @@ void fn_800965C8(void* window, u8* sprite) {
     }
     case 0xF3:
     case 0x110:
-        winSpriteSetDisp(sprite, state == 0);
+        value = state == 0;
+        winSpriteSetDisp(sprite, (u8)value);
         break;
     case 0xF5:
     case 0x112:
-        winSpriteSetDisp(sprite, state == 1);
+        value = state == 1;
+        winSpriteSetDisp(sprite, (u8)value);
         break;
     case 0xF4:
     case 0x111:
-        winSpriteSetDisp(sprite, state == 2);
+        value = state == 2;
+        winSpriteSetDisp(sprite, (u8)value);
         break;
     case 0x106: {
         u32 disp = 0;
@@ -3001,6 +3066,11 @@ void fn_800965C8(void* window, u8* sprite) {
                 disp = 1;
             }
             break;
+        case 1:
+        case 6:
+        case 7:
+        default:
+            break;
         }
         winSpriteSetDisp(sprite, disp);
         break;
@@ -3011,6 +3081,11 @@ void fn_800965C8(void* window, u8* sprite) {
         case 2:
             msg = 0x2BCF;
             break;
+        case 5:
+            if (*(s32*)(lbl_803FB380 + 0x1C) > 0) {
+                msg = 0x2BD2;
+            }
+            break;
         case 3:
             if (lbl_803FB380[0] & 2) {
                 msg = 0x2BD0;
@@ -3019,10 +3094,10 @@ void fn_800965C8(void* window, u8* sprite) {
         case 4:
             msg = 0x2BD0;
             break;
-        case 5:
-            if (*(s32*)(lbl_803FB380 + 0x1C) > 0) {
-                msg = 0x2BD2;
-            }
+        case 1:
+        case 6:
+        case 7:
+        default:
             break;
         }
         if (msg != 0) {
@@ -3190,13 +3265,15 @@ void fn_80096FA0(u8* menu)
     extern void fn_80103484(s32, s32);
     extern void fn_80109C88(void*, u32);
     extern u8 fn_80123CD4(u32, s32);
-    extern u16 fn_8012640C(u32, u32, u32, s32);
+    extern u32 fn_8012640C(u32, u32, u32, s32);
 
     void* keyObject;
     u16 input;
     s32 action;
     s32 limit;
-    s32 selection;
+    u8 tabSelection;
+    s8 moveSelection;
+    s8 selection;
     u32 pokemon;
     u16 valid;
     u32 result;
@@ -3216,25 +3293,24 @@ void fn_80096FA0(u8* menu)
     keyObject = fn_80105624();
     input = *(u16*)((u8*)keyObject + 6);
 
-    if (lbl_803FB380[1] <= 8) {
-        switch (lbl_803FB380[1]) {
+    switch (lbl_803FB380[1]) {
         case 1:
         case 2:
         case 5:
-            selection = menu[0x95];
+            tabSelection = menu[0x95];
             if (input & 8) {
-                selection++;
+                tabSelection++;
             } else if (input & 4) {
-                selection--;
+                tabSelection--;
             }
-            if ((s8)selection > 2) {
-                selection = 2;
+            if ((s8)tabSelection > 2) {
+                tabSelection = 2;
             }
-            if ((s8)selection < 0) {
-                selection = 0;
+            if ((s8)tabSelection < 0) {
+                tabSelection = 0;
             }
-            menu[0x95] = selection;
-            switch ((s8)selection) {
+            menu[0x95] = tabSelection;
+            switch ((s8)tabSelection) {
             case 0:
                 lbl_803FB380[1] = 1;
                 break;
@@ -3268,30 +3344,30 @@ void fn_80096FA0(u8* menu)
         case 3:
         case 4:
         case 7:
-            selection = lbl_803FB380[2];
+            moveSelection = lbl_803FB380[2];
             if (input & 1) {
-                selection--;
+                moveSelection--;
             } else if (input & 2) {
-                selection++;
+                moveSelection++;
             }
-            if ((s8)selection >= limit) {
-                selection = (s8)(limit - 1);
+            if (moveSelection >= limit) {
+                moveSelection = (s8)(limit - 1);
             }
-            if ((s8)selection < 0) {
-                selection = 0;
+            if (moveSelection < 0) {
+                moveSelection = 0;
             }
             pokemon = *(u32*)(lbl_803FB380 + 0x0C);
-            if ((u16)(s8)selection == 4) {
+            if ((u16)moveSelection == 4) {
                 valid = *(u16*)(lbl_803FB380 + 0x18);
             } else {
-                valid = fn_8012640C(pokemon, 0, 0x7F, (s8)selection);
-                if (fn_80123CD4(pokemon, (s8)selection) == 0) {
+                valid = fn_8012640C(pokemon, 0, 0x7F, moveSelection);
+                if (fn_80123CD4(pokemon, moveSelection) == 0) {
                     valid = 0;
                 }
             }
-            if (valid != 0 && (s8)selection != (s8)lbl_803FB380[2]) {
+            if (valid != 0 && moveSelection != (s8)lbl_803FB380[2]) {
                 fn_80103484(*(s32*)(menu + 4), 1);
-                lbl_803FB380[2] = selection;
+                *(s8*)(lbl_803FB380 + 2) = moveSelection;
                 return;
             }
             break;
@@ -3301,48 +3377,33 @@ void fn_80096FA0(u8* menu)
             column = (s8)lbl_803FB380[0x1A] % 9;
             if (input & 1) {
                 scan = row;
-            scan_up:
-                previous = scan > 0;
-                scan--;
-                if (previous) {
+                while (scan-- > 0) {
                     inner = column;
                     cell = lbl_803FB380 + scan + column * 4;
-                scan_up_row:
-                    if ((s8)cell[0x20] >= 0) {
-                        row = scan;
-                        column = inner;
-                        scan = -1;
-                    } else {
-                        previous = inner > 0;
-                        cell -= 4;
-                        inner--;
-                        if (previous) {
-                            goto scan_up_row;
+                    do {
+                        if ((s8)cell[0x20] >= 0) {
+                            row = scan;
+                            column = inner;
+                            scan = -1;
+                            break;
                         }
-                    }
-                    goto scan_up;
+                        cell -= 4;
+                    } while (inner-- > 0);
                 }
             } else if (input & 2) {
                 scan = row;
-            scan_down:
-                scan++;
-                if (scan < 4) {
+                while (++scan < 4) {
                     inner = column;
                     cell = lbl_803FB380 + scan + column * 4;
-                scan_down_row:
-                    if ((s8)cell[0x20] >= 0) {
-                        row = scan;
-                        column = inner;
-                        scan = 5;
-                    } else {
-                        previous = inner > 0;
-                        cell -= 4;
-                        inner--;
-                        if (previous) {
-                            goto scan_down_row;
+                    do {
+                        if ((s8)cell[0x20] >= 0) {
+                            row = scan;
+                            column = inner;
+                            scan = 5;
+                            break;
                         }
-                    }
-                    goto scan_down;
+                        cell -= 4;
+                    } while (inner-- > 0);
                 }
             } else if (input & 8) {
                 previous = column;
@@ -3366,14 +3427,13 @@ void fn_80096FA0(u8* menu)
             selection = column + row * 9;
             if ((s8)selection != (s8)lbl_803FB380[0x1A]) {
                 fn_80103484(*(s32*)(menu + 4), 1);
-                lbl_803FB380[0x1A] = selection;
+                *(s8*)(lbl_803FB380 + 0x1A) = selection;
             }
             break;
 
         case 0:
         case 8:
             break;
-        }
     }
 }
 #pragma pop

@@ -76,8 +76,8 @@ extern void fn_800DC14C(void);
 extern void fn_800DC224(void);
 extern void windowDrawSprite(void);
 extern void fn_80166A28(void);
-extern void fn_800D59B8(void);
-extern void fn_800D5BA0(void);
+extern void fn_800D59B8(s32 slot, f32 xScale, f32 yScale);
+extern void fn_800D5BA0(s32 slot, u32 color);
 extern void fn_800D9D68(u16 a, u16 b, u16 c, u16 d);
 extern f64 tan(void);
 extern void fn_800D7FE4(void* mtx);
@@ -212,7 +212,7 @@ extern u8* GScharCpy(u8* dst, u8* src);
 extern void GSmsgSetColor(void* obj);
 extern s32 GSmsgGetRect();
 extern void GSmsgInitRuby();
-extern s32 fn_800FAEF8();
+extern void fn_800FAEF8(s32, s32, u32, const char*, ...);
 extern s32 fn_800FB43C();
 extern s32 fn_800FB680();
 extern s32 fn_800FB8C8();
@@ -335,22 +335,6 @@ u8 *fn_800F96E4(arg0, arg1, arg2)
     fontId = bank[3];
     *(u16 *)(work + 0x20) = fontId;
     *(u32 *)(work + 0x1C) = arg2;
-
-    for (i = 0; i < *(u16 *)(mgr + 0x04); i++) {
-        entry = (u8 *)*(u32 *)(mgr + 0x24) + i * 8;
-        if (*(u16 *)entry == fontId) {
-            work[0x22] = entry[2];
-            work[0x23] = entry[3];
-            if (fontId == 0) {
-                *(s8 *)(work + 0x42) = 0xB;
-            } else if (fontId == 1) {
-                *(s8 *)(work + 0x42) = 6;
-            } else {
-                *(s8 *)(work + 0x42) = (s8)((lbl_8047CD20 * (f64)entry[3]) + lbl_8047CD18);
-            }
-            break;
-        }
-    }
 
     dst = arg0;
     count = 0;
@@ -1235,7 +1219,7 @@ s32 GSmsgGetRect(arg0)
             if (code == 0x20) {
                 *(f32 *)(work + 0x14) = (f32)((work[0x22] >> 1) * *(f32 *)(work + 0x60));
             } else {
-                fontInfo = _msgGetCodeInfo__FP13MSG_TASK_WORKUsPP12tagFONT_INFO(work, code, NULL, NULL);
+                fontInfo = _msgGetCodeInfo__FP13MSG_TASK_WORKUsPP12tagFONT_INFO(work, code, NULL);
                 if (fontInfo == NULL) {
                     *(f32 *)(work + 0x14) = (f32)work[0x22] * *(f32 *)(work + 0x60);
                 } else {
@@ -1415,7 +1399,7 @@ void GSmsgInitRuby(arg0)
                 continue;
             }
 
-            fontInfo = _msgGetCodeInfo__FP13MSG_TASK_WORKUsPP12tagFONT_INFO(arg0, code, NULL, NULL);
+            fontInfo = _msgGetCodeInfo__FP13MSG_TASK_WORKUsPP12tagFONT_INFO(arg0, code, NULL);
             if (fontInfo != NULL) {
                 glyphWidth = ((u8 *)fontInfo)[2];
             } else {
@@ -1459,29 +1443,163 @@ asm void fn_800FAEF8(void) {
 #include "src/game/gs_thread_fn_800FAEF8.inc"
 }
 #else
-s32 fn_800FAEF8(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, farg0, farg1, farg2, farg3, farg4, farg5, farg6, farg7, arg_sp8)
-    s32 arg0;
-    s32 arg1;
-    s32 arg2;
-    s32 arg3;
-    s32 arg4;
-    s32 arg5;
-    s32 arg6;
-    s32 arg7;
-    f64 farg0;
-    f64 farg1;
-    f64 farg2;
-    f64 farg3;
-    f64 farg4;
-    f64 farg5;
-    f64 farg6;
-    f64 farg7;
-    M2C_UNK arg_sp8;
-{
-    /* TODO: replace compile-only placeholder with real C decompilation. */
-    return 0;
-}
+#pragma fp_contract on
+void fn_800FAEF8(s32 x, s32 y, u32 color, const char* fmt, ...) {
+    typedef struct GSVaList {
+        u32 flags;
+        void* inputArgArea;
+        void* regSaveArea;
+    } GSVaList;
 
+    extern u32 lbl_80478B08;
+    extern u8 lbl_80401DE0[];
+    extern u8 lbl_80314E08[];
+    extern u8 lbl_80314F98[];
+    extern void fn_800DE680(void* dst, s32 limit, const char* fmt, void* args);
+    extern void fn_80080ED8(void* dst);
+    extern void fn_800FE4D4(void);
+    extern void fn_800D9ED8(s32 arg);
+    extern void fn_800D88DC(s32 arg);
+    extern void fn_800D888C(u32 mask);
+    extern void fn_800D7820(void* tex);
+    extern void fn_800D85D4(s32 index, void* texture);
+    extern void* fn_800EF548(void* texture, s32 arg);
+    extern void fn_800EF504(void* texture);
+    extern void fn_800D6A00(s32 mode);
+    extern void fn_800D67BC(s32 mode);
+    extern void fn_800D61E4(s16 x, s16 y);
+    extern void fn_800D5CB8(s32 a, s32 b, s32 c, s32 d, u32 color);
+    extern void fn_800D6728(void);
+    extern void fn_800DC1D4(s32 arg);
+
+    u8* base;
+    u8* work;
+    u8* messageHead;
+    u8* codeEntry;
+    u8* fontInfo;
+    u8* glyph;
+    u16* stream;
+    u16 code;
+    u16 fontId;
+    u32 count;
+    u32 index;
+    u32 offset;
+    void* outNode;
+    s16 drawX0;
+    s16 drawY0;
+    s16 drawX1;
+    s16 drawY1;
+    f32 advance;
+    GSVaList args;
+
+    __builtin_va_info(&args);
+    base = lbl_80401DE0;
+    fn_800DE680(base + 0x4D0, 0xFF, fmt, &args);
+    *(u8*)(base + 0x5CF) = 0;
+    fn_80080ED8(base + 0x0D0);
+
+    work = base + 0x5D0;
+    memset(work, 0, 0x68);
+    *(u8*)(work + 0x00) = 1;
+    *(u32*)(work + 0x24) = 0xFFFFFFFF;
+    *(u32*)(work + 0x28) = (u32)(base + 0x0D0);
+    *(u32*)(work + 0x2C) = (u32)(base + 0x0D0);
+    *(u32*)(work + 0x30) = (u32)(base + 0x0D0);
+    *(f32*)(work + 0x04) = (f32)x;
+    *(f32*)(work + 0x08) = (f32)y;
+    *(f32*)(work + 0x60) = 1.0f;
+    *(f32*)(work + 0x64) = 1.0f;
+    *(u32*)(work + 0x24) = color;
+    *(u8*)(work + 0x02) = 1;
+    *(u16*)(work + 0x20) = 2;
+
+    messageHead = (u8*)lbl_80478B08;
+    count = *(u16*)(messageHead + 4);
+    fontId = *(u16*)(work + 0x20);
+    offset = 0;
+    if ((s32)count > 0) {
+        do {
+            codeEntry = *(u8**)(messageHead + 0x24) + offset;
+            if (*(u16*)codeEntry == fontId) {
+                *(u8*)(work + 0x22) = codeEntry[2];
+                *(u8*)(work + 0x23) = codeEntry[3];
+                if (fontId == 0) {
+                    *(u8*)(work + 0x42) = 0xB;
+                } else if (fontId == 1) {
+                    *(u8*)(work + 0x42) = 6;
+                } else {
+                    *(s8*)(work + 0x42) = (s8)(s32)(lbl_8047CD20 * (f64)(u32)codeEntry[3] + lbl_8047CD18);
+                }
+                break;
+            }
+            offset += 8;
+            count--;
+        } while (count > 0);
+    }
+
+    fn_800FE4D4();
+    fn_800D9ED8(1);
+    fn_800D88DC(3);
+    fn_800D888C(4);
+    fn_800D7820(lbl_80314F98);
+    messageHead = (u8*)lbl_80478B08;
+    fn_800D85D4(0, *(void**)(messageHead + 0x0C + ((s8)messageHead[0x1D] * 4)));
+    *(u32*)(messageHead + 0x14) = (u32)fn_800EF548(*(void**)(messageHead + 0x0C + ((s8)messageHead[0x1D] * 4)), 0);
+    *(f32*)(work + 0x0C) = *(f32*)(work + 0x04);
+    *(f32*)(work + 0x10) = *(f32*)(work + 0x08);
+
+    for (;;) {
+        stream = *(u16**)(work + 0x30);
+        code = *stream;
+        if (code == 0) {
+            if ((s8)*(u8*)(work + 0x40) == 0) {
+                break;
+            }
+            *(u8*)(work + 0x40) = (u8)(*(u8*)(work + 0x40) - 1);
+            *(u32*)(work + 0x30) = *(u32*)(work + 0x34 + ((s8)*(u8*)(work + 0x40) * 4));
+            continue;
+        }
+
+        *(u32*)(work + 0x30) = (u32)(stream + 1);
+        if (code == 0x0A || code == 0x0D) {
+            continue;
+        }
+        if (code == 0x20) {
+            advance = (f32)(((u8)*(u8*)(work + 0x22)) >> 1) * *(f32*)(work + 0x60);
+            *(f32*)(work + 0x14) = advance;
+        } else {
+            glyph = (u8*)_msgGetCodeInfo__FP13MSG_TASK_WORKUsPP12tagFONT_INFO(work, code, &outNode);
+            if (glyph == NULL) {
+                drawX0 = (s16)*(f32*)(work + 0x0C);
+                drawY0 = (s16)((s16)*(f32*)(work + 0x10) + 2);
+                drawX1 = (s16)((f32)*(u8*)(work + 0x22) * *(f32*)(work + 0x60) + (f32)drawX0);
+                drawY1 = (s16)((f32)*(u8*)(work + 0x23) * *(f32*)(work + 0x64) + (f32)drawY0);
+                fn_800D888C(0x80000002u);
+                fn_800D6A00(7);
+                fn_800D7820(lbl_80314E08);
+                fn_800D67BC(2);
+                fn_800D61E4(drawX0, drawY0);
+                fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+                fn_800D61E4(drawX1, drawY1);
+                fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+                fn_800D6728();
+                fn_800D88DC(0x80000002u);
+                fn_800D7820(lbl_80314F98);
+                fn_800DC1D4(1);
+                *(f32*)(work + 0x14) = 2.0f + ((f32)*(u8*)(work + 0x22) * *(f32*)(work + 0x60));
+            } else {
+                fontInfo = (u8*)outNode;
+                fn_800FD69C(work, fontInfo + *(u32*)(glyph + 4), glyph[2], glyph[3], (s8)(*(u32*)(glyph + 4) >> 24));
+                *(f32*)(work + 0x14) = (f32)(s16)glyph[2] * *(f32*)(work + 0x60);
+            }
+        }
+
+        *(f32*)(work + 0x0C) += *(f32*)(work + 0x14);
+    }
+
+    messageHead = (u8*)lbl_80478B08;
+    fn_800EF504(*(void**)(messageHead + 0x0C + ((s8)messageHead[0x1D] * 4)));
+}
 #endif
 #pragma pop
 
@@ -1494,6 +1612,7 @@ asm void fn_800FB43C(void) {
 #include "src/game/gs_thread_fn_800FB43C.inc"
 }
 #else
+#pragma peephole on
 s32 fn_800FB43C(arg0, arg1, arg2)
     s32 arg0;
     s32 arg1;
@@ -1907,7 +2026,9 @@ s32 fn_800FBB34(arg0, arg1, arg2, arg3, arg4, arg5)
     u8 *temp_r8;
     u8 *var_r24;
     u8 *var_r9;
+    u8 *work;
 
+    work = (u8 *)&lbl_80402418;
     if (arg5 == 0) {
         var_r24 = 0;
     } else {
@@ -1949,44 +2070,44 @@ block_13:
     if (var_r24 == 0) {
         return -1;
     }
-    memset((u8 *)&lbl_80402418, 0, 0x68);
+    memset(work, 0, 0x68);
     var_f2 = lbl_8047CD10;
     var_r7_2 = 0;
-    M2C_FIELD((u8 *)&lbl_80402418, s8 *, 0) = 1;
-    M2C_FIELD((u8 *)&lbl_80402418, f32 *, 0x60) = (f32) lbl_8047CD08;
-    M2C_FIELD((u8 *)&lbl_80402418, f32 *, 0x64) = (f32) lbl_8047CD08;
-    M2C_FIELD((u8 *)&lbl_80402418, s32 *, 0x24) = -1;
-    M2C_FIELD((u8 *)&lbl_80402418, void **, 0x28) = var_r24;
-    M2C_FIELD((u8 *)&lbl_80402418, void **, 0x2C) = var_r24;
-    M2C_FIELD((u8 *)&lbl_80402418, void **, 0x30) = var_r24;
+    M2C_FIELD(work, s8 *, 0) = 1;
+    M2C_FIELD(work, f32 *, 0x60) = (f32) lbl_8047CD08;
+    M2C_FIELD(work, f32 *, 0x64) = (f32) lbl_8047CD08;
+    M2C_FIELD(work, s32 *, 0x24) = -1;
+    M2C_FIELD(work, void **, 0x28) = var_r24;
+    M2C_FIELD(work, void **, 0x2C) = var_r24;
+    M2C_FIELD(work, void **, 0x30) = var_r24;
     temp_r3_2 = M2C_FIELD(sp8, u8 *, 3);
-    M2C_FIELD((u8 *)&lbl_80402418, s16 *, 0x20) = (s16) temp_r3_2;
-    M2C_FIELD((u8 *)&lbl_80402418, u32 *, 0x1C) = arg5;
-    M2C_FIELD((u8 *)&lbl_80402418, f32 *, 4) = (f32) arg0;
-    M2C_FIELD((u8 *)&lbl_80402418, f32 *, 8) = (f32) arg1;
-    M2C_FIELD((u8 *)&lbl_80402418, s16 *, 0x18) = arg2;
-    M2C_FIELD((u8 *)&lbl_80402418, s16 *, 0x1A) = arg3;
-    M2C_FIELD((u8 *)&lbl_80402418, u8 *, 0x44) = 3U;
-    M2C_FIELD((u8 *)&lbl_80402418, s32 *, 0x24) = arg4;
-    M2C_FIELD((u8 *)&lbl_80402418, s8 *, 2) = 1;
+    M2C_FIELD(work, s16 *, 0x20) = (s16) temp_r3_2;
+    M2C_FIELD(work, u32 *, 0x1C) = arg5;
+    M2C_FIELD(work, f32 *, 4) = (f32) arg0;
+    M2C_FIELD(work, f32 *, 8) = (f32) arg1;
+    M2C_FIELD(work, s16 *, 0x18) = arg2;
+    M2C_FIELD(work, s16 *, 0x1A) = arg3;
+    M2C_FIELD(work, u8 *, 0x44) = 3U;
+    M2C_FIELD(work, s32 *, 0x24) = arg4;
+    M2C_FIELD(work, s8 *, 2) = 1;
     temp_r0_2 = M2C_FIELD(lbl_80478B08, u16 *, 4);
     var_ctr = temp_r0_2;
     if ((s32) temp_r0_2 > 0) {
 loop_19:
         temp_r3_3 = (void*)(M2C_FIELD(lbl_80478B08, s32 *, 0x24) + var_r7_2);
         if ((u16) M2C_FIELD(temp_r3_3, u16 *, 0) == (u16) temp_r3_2) {
-            M2C_FIELD((u8 *)&lbl_80402418, u8 *, 0x22) = (u8) M2C_FIELD(temp_r3_3, u8 *, 2);
+            M2C_FIELD(work, u8 *, 0x22) = (u8) M2C_FIELD(temp_r3_3, u8 *, 2);
             temp_r3_4 = M2C_FIELD(temp_r3_3, u8 *, 3);
-            M2C_FIELD((u8 *)&lbl_80402418, u8 *, 0x23) = temp_r3_4;
+            M2C_FIELD(work, u8 *, 0x23) = temp_r3_4;
             if ((u16) temp_r3_2 == 0) {
-                M2C_FIELD((u8 *)&lbl_80402418, s8 *, 0x42) = 0xB;
+                M2C_FIELD(work, s8 *, 0x42) = 0xB;
             } else {
                 temp_cr0_eq = (u16) temp_r3_2 == 1;
                 if ((temp_cr0_eq != 0) || (temp_cr0_eq != 0)) {
-                    M2C_FIELD((u8 *)&lbl_80402418, s8 *, 0x42) = 6;
+                    M2C_FIELD(work, s8 *, 0x42) = 6;
                 } else {
                     var_f2 = lbl_8047CD28;
-                    M2C_FIELD((u8 *)&lbl_80402418, s8 *, 0x42) = (s8) ((lbl_8047CD20 * (f64) temp_r3_4) + lbl_8047CD18);
+                    M2C_FIELD(work, s8 *, 0x42) = (s8) ((lbl_8047CD20 * (f64) temp_r3_4) + lbl_8047CD18);
                 }
             }
         } else {
@@ -1997,7 +2118,7 @@ loop_19:
             }
         }
     }
-    return fn_800FC7E0((u8 *)&lbl_80402418, M2C_FIELD((u8 *)&lbl_80402418, u8 *, 0x44), 0, 0, var_f2);
+    return fn_800FC7E0(work, M2C_FIELD(work, u8 *, 0x44), 0, 0, var_f2);
 }
 #endif
 #pragma pop
@@ -2499,10 +2620,23 @@ s32 GSmsgInit(arg0, arg1)
         *(f32 *)(work + 0x64) = lbl_8047CD08;
     }
     *(u16 *)(mgr + 0x00) = arg0;
-    for (i = 0; i < arg1; i++) {
+    i = 0;
+    while (i + 8 <= arg1) {
+        slot = (u8 *)*(u32 *)(mgr + 0x24) + i * 8;
+        *(u16 *)(slot + 0x00) = 0xFFFF; *(u32 *)(slot + 0x04) = 0;
+        *(u16 *)(slot + 0x08) = 0xFFFF; *(u32 *)(slot + 0x0C) = 0;
+        *(u16 *)(slot + 0x10) = 0xFFFF; *(u32 *)(slot + 0x14) = 0;
+        *(u16 *)(slot + 0x18) = 0xFFFF; *(u32 *)(slot + 0x1C) = 0;
+        *(u16 *)(slot + 0x20) = 0xFFFF; *(u32 *)(slot + 0x24) = 0;
+        *(u16 *)(slot + 0x28) = 0xFFFF; *(u32 *)(slot + 0x2C) = 0;
+        *(u16 *)(slot + 0x30) = 0xFFFF; *(u32 *)(slot + 0x34) = 0;
+        *(u16 *)(slot + 0x38) = 0xFFFF; *(u32 *)(slot + 0x3C) = 0;
+        i += 8;
+    }
+    for (; i < arg1; i++) {
         slot = (u8 *)*(u32 *)(mgr + 0x24) + i * 8;
         *(u16 *)slot = 0xFFFF;
-        *(u32 *)(slot + 0x04) = 0;
+        *(u32 *)(slot + 4) = 0;
     }
     *(u16 *)(mgr + 0x04) = arg1;
     *(u32 *)(mgr + 0x0C) = (u32)GStextureCreate(0x200, 0x200, 0x40, 0, 0);
@@ -2515,8 +2649,9 @@ s32 GSmsgInit(arg0, arg1)
 
 /* 0x800FC7E0 | 0xB68 */
 #pragma push
-#pragma optimization_level 2
+#pragma optimization_level 3
 #pragma optimizewithasm off
+#pragma peephole off
 #if 0
 asm s32 fn_800FC7E0(entry, type, arg)
     void* entry;
@@ -2532,7 +2667,388 @@ s32 fn_800FC7E0(arg0, arg1, arg2, arg3)
     s32 arg2;
     u8 arg3;
 {
-    /* TODO: replace compile-only placeholder with real C decompilation. */
+    typedef u32 (*MsgCtrlFunc)(u8*);
+    extern void fn_800D85D4(s32, u32);
+    extern void fn_800DC224(s32, s32, s32, s32, s32);
+    extern void fn_800DBF78(s32, s32);
+    extern void fn_800DC0D4(s32, s32, s32, s32, s32);
+    extern void fn_800DC14C(s32, s32, s32, s32, s32, s32);
+    extern void fn_800DBFD4(s32, s32, s32, s32, s32);
+    extern void fn_800DC04C(s32, s32, s32, s32, s32, s32);
+    extern void* GStextureLockImage(void*, u8);
+    u8 *mgr;
+    u8 *table;
+    u8 *entry;
+    u8 *node;
+    u16 *cursor;
+    u16 *savedCursor;
+    u16 code;
+    u8 control;
+    u8 stackDepth;
+    u8 repeatCount;
+    u8 continueFlag;
+    u8 glyphWidth;
+    u8 normalFlag;
+    u8 savedStack0;
+    u8 savedStack1;
+    u8 savedStack2;
+    s32 loopCount;
+    s32 soundId;
+    s16 drawX;
+    s16 drawY;
+    u32 result;
+    u32 lowKey;
+    u32 texHandle;
+    f32 fx;
+    f32 fy;
+    f32 angle;
+    f64 amp;
+    u16 lo;
+    u16 hi;
+    u32 mid;
+    void *fontNode;
+    void *fontInfo;
+    u32 glyphInfo;
+    u32 backup34;
+    u32 backup38;
+    u32 backup3C;
+
+    if (arg0 == NULL) {
+        return -1;
+    }
+    if (arg0[0] == 0) {
+        return -1;
+    }
+
+    spriteSetEnv();
+    fn_800D88DC(0x80000003);
+    fn_800D888C(4);
+    fn_800D7820(lbl_80314F98);
+
+    mgr = (u8*)lbl_80478B08;
+    fn_800D85D4(0, *(u32*)(mgr + ((s8)mgr[0x1D] * 4) + 0x0C));
+    fn_800DC1D4(1);
+    fn_800DC224(0, 0, 0, 0, 0);
+    texHandle = lbl_8047CD00;
+    fn_800DBEB4(0, &texHandle);
+    fn_800DBF78(0, 0x0C);
+    fn_800DC0D4(0, 0x0F, 0x0E, 0x0A, 0x0F);
+    fn_800DC14C(0, 0, 0, 0, 1, 0);
+    fn_800DBFD4(0, 7, 4, 5, 7);
+    fn_800DC04C(0, 0, 0, 0, 1, 0);
+
+    mgr = (u8*)lbl_80478B08;
+    texHandle = (u32)GStextureLockImage(
+        *(void**)(mgr + ((s8)mgr[0x1D] * 4) + 0x0C), 0);
+    *(u32*)(mgr + 0x14) = texHandle;
+
+    arg0[0x45] = ((arg2 & 0x30) != 0);
+    arg0[1] = 0;
+    arg0[0x4B] = 0;
+    arg0[0x46] = 0;
+    normalFlag = 0;
+    continueFlag = 0;
+
+    if ((u8)arg3 == 0) {
+        for (loopCount = 0; (u32)loopCount < fn_800D3088(); loopCount++) {
+            for (;;) {
+                cursor = *(u16**)(arg0 + 0x30);
+                code = *cursor;
+                if (code == 0) {
+                    if ((s8)arg0[0x40] == 0) {
+                        arg0[0] = 2;
+                        break;
+                    }
+                    arg0[0x40]--;
+                    *(u32*)(arg0 + 0x30) = *(u32*)(arg0 + 0x34 + ((s8)arg0[0x40] * 4));
+                    continue;
+                }
+
+                *(u16**)(arg0 + 0x30) = cursor + 1;
+                if (code == 0xFFFF) {
+                    cursor = *(u16**)(arg0 + 0x30);
+                    control = *(u8*)cursor;
+                    *(u16**)(arg0 + 0x30) = (u16*)((u8*)cursor + 1);
+                    table = *(u8**)((u8*)lbl_80478B08 + 0x28);
+                    if (table != NULL) {
+                        entry = table + control * 8;
+                        if (arg0[1] == 0) {
+                            continueFlag = ((entry[0] >> 4) & 1);
+                        } else {
+                            continueFlag = ((entry[0] >> 3) & 1);
+                        }
+                        if (continueFlag != 0) {
+                            MsgCtrlFunc func = *(MsgCtrlFunc*)(entry + 4);
+                            if (func != NULL) {
+                                result = func(arg0);
+                                continueFlag = (entry[0] >> 5) & 1;
+                                if ((((entry[0] >> 6) & 3) != 0) && (result != 0)) {
+                                    if (((entry[0] >> 6) & 3) == 1) {
+                                        *(u32*)(arg0 + 0x30) = result;
+                                    } else if (((entry[0] >> 6) & 3) == 2) {
+                                        node = *(u8**)((u8*)lbl_80478B08 + 0x08);
+                                        lowKey = result & 0xFFFFF;
+                                        while (node != NULL) {
+                                            if (*(u16*)node == (u16)(result >> 20)) {
+                                                lo = 0;
+                                                hi = *(u16*)(node + 4);
+                                                while (lo < hi) {
+                                                    mid = ((u32)lo + (u32)hi) >> 1;
+                                                    entry = node + 0x10 + mid * 8;
+                                                    if (*(u32*)entry == lowKey) {
+                                                        *(u32*)(arg0 + 0x30) = (u32)(node + *(s32*)(entry + 4));
+                                                        node = NULL;
+                                                        break;
+                                                    }
+                                                    if (*(u32*)entry < lowKey) {
+                                                        lo = (u16)(mid + 1);
+                                                    } else {
+                                                        hi = (u16)mid;
+                                                    }
+                                                }
+                                                if (node == NULL) {
+                                                    break;
+                                                }
+                                            }
+                                            node = *(u8**)(node + 8);
+                                        }
+                                    }
+
+                                    stackDepth = arg0[0x40];
+                                    if ((s8)stackDepth >= 3) {
+                                        GSlogWrite((const char*)lbl_80271700, lbl_80315678);
+                                    } else {
+                                        *(u32*)(arg0 + 0x34 + ((s8)stackDepth * 4)) = (u32)*(u16**)(arg0 + 0x30);
+                                        arg0[0x40] = stackDepth + 1;
+                                    }
+                                }
+                            } else {
+                                continueFlag = 0;
+                            }
+                        }
+                    } else {
+                        continueFlag = 0;
+                    }
+                } else if (arg0[0x4B] != 2) {
+                    continueFlag = 1;
+                    if ((u8)arg1 != 0) {
+                        continueFlag = 0;
+                    }
+                    normalFlag = 1;
+                } else {
+                    continueFlag = 0;
+                }
+
+                if (continueFlag != 0) {
+                    break;
+                }
+            }
+        }
+    }
+
+    backup34 = *(u32*)(arg0 + 0x34);
+    backup38 = *(u32*)(arg0 + 0x38);
+    backup3C = *(u32*)(arg0 + 0x3C);
+    savedCursor = *(u16**)(arg0 + 0x30);
+    savedStack0 = arg0[0x40];
+
+    arg0[1] = 1;
+    *(f32*)(arg0 + 0x0C) = *(f32*)(arg0 + 0x04);
+    *(f32*)(arg0 + 0x10) = *(f32*)(arg0 + 0x08);
+    *(u32*)(arg0 + 0x30) = *(u32*)(arg0 + 0x2C);
+    arg0[0x40] = 0;
+    arg0[0x4B] = 0;
+
+    for (;;) {
+        if (*(u16**)(arg0 + 0x30) == savedCursor) {
+            stackDepth = arg0[0x40];
+            if ((s8)stackDepth > 0) {
+                s32 i;
+                for (i = 0; i < (s8)stackDepth; i++) {
+                    if (*(u32*)(arg0 + 0x34 + i * 4) != (&backup34)[i]) {
+                        break;
+                    }
+                }
+                if (i == (s8)stackDepth) {
+                    break;
+                }
+            } else {
+                break;
+            }
+        }
+
+        cursor = *(u16**)(arg0 + 0x30);
+        code = *cursor;
+        if (code == 0) {
+            if ((s8)arg0[0x40] == 0) {
+                break;
+            }
+            arg0[0x40]--;
+            *(u32*)(arg0 + 0x30) = *(u32*)(arg0 + 0x34 + ((s8)arg0[0x40] * 4));
+            continue;
+        }
+        *(u16**)(arg0 + 0x30) = cursor + 1;
+
+        if (code == 0xFFFF) {
+            cursor = *(u16**)(arg0 + 0x30);
+            control = *(u8*)cursor;
+            *(u16**)(arg0 + 0x30) = (u16*)((u8*)cursor + 1);
+            table = *(u8**)((u8*)lbl_80478B08 + 0x28);
+            if (table != NULL) {
+                entry = table + control * 8;
+                if (arg0[1] == 0) {
+                    continueFlag = ((entry[0] >> 4) & 1);
+                } else {
+                    continueFlag = ((entry[0] >> 3) & 1);
+                }
+                if (continueFlag != 0) {
+                    MsgCtrlFunc func = *(MsgCtrlFunc*)(entry + 4);
+                    if (func != NULL) {
+                        result = func(arg0);
+                        continueFlag = (entry[0] >> 5) & 1;
+                        if ((((entry[0] >> 6) & 3) != 0) && (result != 0)) {
+                            if (((entry[0] >> 6) & 3) == 1) {
+                                *(u32*)(arg0 + 0x30) = result;
+                            } else if (((entry[0] >> 6) & 3) == 2) {
+                                node = *(u8**)((u8*)lbl_80478B08 + 0x08);
+                                lowKey = result & 0xFFFFF;
+                                while (node != NULL) {
+                                    if (*(u16*)node == (u16)(result >> 20)) {
+                                        lo = 0;
+                                        hi = *(u16*)(node + 4);
+                                        while (lo < hi) {
+                                            mid = ((u32)lo + (u32)hi) >> 1;
+                                            entry = node + 0x10 + mid * 8;
+                                            if (*(u32*)entry == lowKey) {
+                                                *(u32*)(arg0 + 0x30) = (u32)(node + *(s32*)(entry + 4));
+                                                node = NULL;
+                                                break;
+                                            }
+                                            if (*(u32*)entry < lowKey) {
+                                                lo = (u16)(mid + 1);
+                                            } else {
+                                                hi = (u16)mid;
+                                            }
+                                        }
+                                        if (node == NULL) {
+                                            break;
+                                        }
+                                    }
+                                    node = *(u8**)(node + 8);
+                                }
+                            }
+
+                            stackDepth = arg0[0x40];
+                            if ((s8)stackDepth >= 3) {
+                                GSlogWrite((const char*)lbl_80271700, lbl_80315678);
+                            } else {
+                                *(u32*)(arg0 + 0x34 + ((s8)stackDepth * 4)) = (u32)*(u16**)(arg0 + 0x30);
+                                arg0[0x40] = stackDepth + 1;
+                            }
+                        }
+                    }
+                }
+
+                if (continueFlag != 0 && *(f32*)(arg0 + 0x0C) == *(f32*)(arg0 + 0x04)) {
+                    *(f32*)(arg0 + 0x0C) += (f32)arg0[0x22];
+                }
+            }
+        } else if (arg0[0x4B] != 2) {
+            if (code == 0x20) {
+                *(f32*)(arg0 + 0x14) = (f32)((arg0[0x22] >> 1) * *(f32*)(arg0 + 0x60));
+            } else {
+                fontNode = NULL;
+                fontInfo = _msgGetCodeInfo__FP13MSG_TASK_WORKUsPP12tagFONT_INFO(arg0, code, &fontNode);
+                if (fontInfo == NULL) {
+                    s16 x0 = (s16)*(f32*)(arg0 + 0x0C);
+                    s16 y0 = (s16)((s32)*(f32*)(arg0 + 0x10) + 2);
+                    s16 x1 = (s16)(((f32)arg0[0x22] * *(f32*)(arg0 + 0x60)) + (f32)x0);
+                    s16 y1 = (s16)(((f32)arg0[0x23] * *(f32*)(arg0 + 0x64)) + (f32)y0);
+
+                    fn_800D888C(0x80000002);
+                    fn_800D6A00(7);
+                    fn_800D7820(lbl_80314E08);
+                    fn_800D67BC(2);
+                    fn_800D61E4(x0, y0);
+                    fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+                    fn_800D61E4(x1, y1);
+                    fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+                    fn_800D6728();
+                    fn_800D88DC(0x80000002);
+                    fn_800D7820(lbl_80314F98);
+                    fn_800DC1D4(1);
+                    *(f32*)(arg0 + 0x14) = lbl_8047CD30 + ((f32)arg0[0x22] * *(f32*)(arg0 + 0x60));
+                } else {
+                    glyphInfo = *(u32*)((u8*)fontInfo + 4);
+                    glyphWidth = *(u8*)((u8*)fontInfo + 2);
+                    fn_800FD69C(arg0, (u32)fontNode + (*(s32*)((u8*)fontNode + 4) + (glyphInfo & 0xFFFFFF)),
+                                glyphWidth, *(u8*)((u8*)fontInfo + 3), (s8)(glyphInfo >> 24));
+                    *(f32*)(arg0 + 0x14) = (f32)((s16)glyphWidth * *(f32*)(arg0 + 0x60));
+                }
+            }
+            *(f32*)(arg0 + 0x0C) += *(f32*)(arg0 + 0x14);
+            if ((s8)arg0[0x41] == 0) {
+                if (code == 0x300C) {
+                    continueFlag = 1;
+                }
+                if (code == 0x300D) {
+                    continueFlag = 0;
+                }
+            }
+            if (arg0[0x4B] == 1) {
+                fn_800FD348(arg0, 0.0);
+            }
+        }
+    }
+
+    if ((u8)arg1 != 0) {
+        normalFlag = 0;
+    }
+    if (normalFlag != arg0[0x47]) {
+        soundId = 0;
+        switch ((s8)arg0[3]) {
+        case 1: soundId = 0x57; break;
+        case 2: soundId = 0x58; break;
+        case 3: soundId = 0x59; break;
+        case 4: soundId = 0x497; break;
+        case 5: soundId = 0x498; break;
+        }
+        if (soundId != 0) {
+            if (normalFlag != 0) {
+                fn_80166A28();
+            } else {
+                fn_801669BC(soundId);
+            }
+        }
+        arg0[0x47] = normalFlag;
+    }
+
+    if (arg0[0x46] != 0) {
+        angle = ((lbl_8047CD40 * (f32)lbl_8047AC68) / lbl_8047CD44);
+        fx = *(f32*)(arg0 + 0x0C) + lbl_8047CD30;
+        fy = *(f32*)(arg0 + 0x10) + lbl_8047CD3C;
+        amp = ((f64 (*)(f64))cos)(angle);
+        drawX = (s16)fx;
+        drawY = (s16)(fy + (lbl_8047CD48 * (f32)amp));
+        lbl_8047AC68 += fn_800D3088();
+        lbl_8047AC68 %= 0x32;
+        fn_800D888C(0x80000000);
+        fn_800D7820(lbl_80314E08);
+        ((void (*)(s16, s16, s32, s32, s32))windowDrawSprite)(drawX, drawY, 0, 0xB9, 0);
+        fn_800D88DC(0x80000000);
+        fn_800D7820(lbl_80314F98);
+        fn_800DC1D4(1);
+    }
+
+    *(u32*)(arg0 + 0x30) = (u32)savedCursor;
+    arg0[0x40] = savedStack0;
+    *(u32*)(arg0 + 0x34) = backup34;
+    *(u32*)(arg0 + 0x38) = backup38;
+    *(u32*)(arg0 + 0x3C) = backup3C;
+
+    mgr = (u8*)lbl_80478B08;
+    GStextureUnlockImage(*(void**)(mgr + ((s8)mgr[0x1D] * 4) + 0x0C));
+    fn_800D888C(0x80000000);
     return 0;
 }
 
@@ -2553,7 +3069,7 @@ void fn_800FD348(arg0, farg1)
     f64 farg1;
 {
     void *fontNode;
-    u16 *scan;
+    u8 *scan;
     u16 code;
     u32 glyphInfo;
     f32 savedX;
@@ -2582,10 +3098,10 @@ void fn_800FD348(arg0, farg1)
 
     targetCount = (s32)(arg0[0x5B] * arg0[0x58]) / (s32)arg0[0x5A];
     drawCount = (u8)targetCount - arg0[0x59];
-    scan = *(u16 **)(arg0 + 0x54);
+    scan = *(u8 **)(arg0 + 0x54);
 
     while (drawCount != 0) {
-        code = *scan;
+        code = *(u16 *)scan;
         scan += 2;
         if (code == 0xFFFF) {
             scan++;
@@ -2597,7 +3113,7 @@ void fn_800FD348(arg0, farg1)
             *(f32 *)(arg0 + 0x14) = (f32)((arg0[0x22] >> 1) * *(f32 *)(arg0 + 0x60));
         } else {
             fontNode = NULL;
-            fontInfo = _msgGetCodeInfo__FP13MSG_TASK_WORKUsPP12tagFONT_INFO(arg0, code, &fontNode, NULL);
+            fontInfo = _msgGetCodeInfo__FP13MSG_TASK_WORKUsPP12tagFONT_INFO(arg0, code, &fontNode);
             if (fontInfo == NULL) {
                 glyphHeight = arg0[0x23];
                 x0 = (s16)*(f32 *)(arg0 + 0x0C);
@@ -2665,7 +3181,163 @@ void fn_800FD69C(arg0, arg1, arg2, arg3, arg4)
     s16 arg3;
     s16 arg4;
 {
-    /* TODO: replace compile-only placeholder with real C decompilation. */
+    u8 *mgr;
+    u8 *buffer;
+    u8 *srcRow;
+    s16 curX;
+    s16 curY;
+    s16 row;
+    s16 rowPos;
+    s16 xPos;
+    s16 xEnd;
+    s16 drawX0;
+    s16 drawY0;
+    s16 drawX1;
+    s16 drawY1;
+    s16 widthRounded;
+    s16 copyBytes;
+    s16 clearBytes;
+    s32 srcOffset;
+    s32 destOffset;
+    s32 tileOffset;
+    s32 texelOffset;
+    s32 rowIndex;
+    s32 colIndex;
+    s32 outlineAlpha;
+    u32 color;
+    f32 scaleX;
+    f32 scaleY;
+    f32 baseX;
+    f32 baseY;
+    f32 u0;
+    f32 v0;
+    f32 u1;
+    f32 v1;
+
+    mgr = (u8 *)lbl_80478B08;
+    if (*(s16 *)(mgr + 0x18) + (arg2 + 2) >= 0x200) {
+        *(s16 *)(mgr + 0x1A) = *(s16 *)(mgr + 0x1A) + *(u8 *)(mgr + 0x1C) + 2;
+        *(s16 *)(mgr + 0x18) = 2;
+        *(u8 *)(mgr + 0x1C) = arg0[0x23] + 2;
+        if (*(s16 *)(mgr + 0x1A) + *(u8 *)(mgr + 0x1C) >= 0x200) {
+            *(s16 *)(mgr + 0x1A) = 1;
+        }
+    }
+
+    if (*(u8 *)(mgr + 0x1C) < arg3) {
+        *(u8 *)(mgr + 0x1C) = arg0[0x23];
+    }
+
+    buffer = *(u8 **)(mgr + 0x14);
+    curX = *(s16 *)(mgr + 0x18);
+    curY = *(s16 *)(mgr + 0x1A);
+    widthRounded = (s16)(((arg2 + 1) & ~1) / 2);
+    clearBytes = (s16)((arg2 + 5) >> 1);
+
+    for (row = -1; row < arg3 + 1; row++) {
+        rowPos = *(s16 *)(lbl_80478B08 + 0x1A) + row;
+        tileOffset = (rowPos >> 3) << 6;
+        texelOffset = (rowPos & 7) << 3;
+        xPos = -2;
+        for (colIndex = 0; colIndex < clearBytes; colIndex++, xPos += 2) {
+            srcOffset = *(s16 *)(lbl_80478B08 + 0x18) + xPos;
+            buffer[((tileOffset + (srcOffset >> 3)) << 5) +
+                   (((srcOffset & 7) + texelOffset) >> 1)] = 0;
+        }
+    }
+
+    copyBytes = (s16)(((arg2 + 1) & ~1) / 2);
+    srcOffset = 0;
+    for (rowIndex = 0; rowIndex < arg3; rowIndex++) {
+        rowPos = *(s16 *)(lbl_80478B08 + 0x1A) + rowIndex;
+        tileOffset = (rowPos >> 3) << 6;
+        texelOffset = (rowPos & 7) << 3;
+        srcRow = (u8 *)arg1 + srcOffset;
+        xPos = 0;
+        for (colIndex = 0; colIndex < copyBytes; colIndex++, xPos += 2) {
+            destOffset = *(s16 *)(lbl_80478B08 + 0x18) + xPos;
+            buffer[((tileOffset + (destOffset >> 3)) << 5) +
+                   (((destOffset & 7) + texelOffset) >> 1)] = srcRow[colIndex];
+        }
+        srcOffset = srcOffset + widthRounded;
+    }
+
+    curX = *(s16 *)(lbl_80478B08 + 0x18);
+    curY = *(s16 *)(lbl_80478B08 + 0x1A);
+    scaleX = *(f32 *)(arg0 + 0x60);
+    scaleY = *(f32 *)(arg0 + 0x64);
+    baseX = *(f32 *)(arg0 + 0x0C);
+    baseY = ((f32)(s16)arg4 * scaleY) + *(f32 *)(arg0 + 0x10);
+    baseY += (f32)(s8)arg0[0x43];
+    drawX0 = (s16)baseX;
+    drawY0 = (s16)baseY;
+    drawX1 = (s16)(((f32)(s16)arg2 * scaleX) + (f32)drawX0);
+    drawY1 = (s16)(((f32)(s16)arg3 * scaleY) + (f32)drawY0);
+
+    u0 = (f32)curX * lbl_8047CD4C;
+    v0 = (f32)curY * lbl_8047CD4C;
+    u1 = (f32)(curX + arg2) * lbl_8047CD4C;
+    v1 = (f32)(curY + arg3) * lbl_8047CD4C;
+
+    color = *(u32 *)(arg0 + 0x24);
+    outlineAlpha = (((s32)(color & 0xFF) * 0xC0) / 0xFF) & 0xFF;
+
+    fn_800D6A00(7);
+
+    switch (arg0[2]) {
+    case 1:
+        fn_800D67BC(4);
+        fn_800D61E4(drawX0 + 1, drawY0 + 1);
+        fn_800D5CB8(0, 0, 0, 0, outlineAlpha);
+        fn_800D59B8(0, u0, v0);
+        fn_800D61E4(drawX1 + 1, drawY1 + 1);
+        fn_800D5CB8(0, 0, 0, 0, outlineAlpha);
+        fn_800D59B8(0, u1, v1);
+        break;
+
+    case 2:
+        fn_800D67BC(0xA);
+        fn_800D61E4(drawX0 - 1, drawY0);
+        fn_800D5CB8(0, 0, 0, 0, outlineAlpha);
+        fn_800D59B8(0, u0, v0);
+        fn_800D61E4(drawX1 - 1, drawY1);
+        fn_800D5CB8(0, 0, 0, 0, outlineAlpha);
+        fn_800D59B8(0, u1, v1);
+        fn_800D61E4(drawX0 + 1, drawY0);
+        fn_800D5CB8(0, 0, 0, 0, outlineAlpha);
+        fn_800D59B8(0, u0, v0);
+        fn_800D61E4(drawX1 + 1, drawY1);
+        fn_800D5CB8(0, 0, 0, 0, outlineAlpha);
+        fn_800D59B8(0, u1, v1);
+        fn_800D61E4(drawX0, drawY0 - 1);
+        fn_800D5CB8(0, 0, 0, 0, outlineAlpha);
+        fn_800D59B8(0, u0, v0);
+        fn_800D61E4(drawX1, drawY1 - 1);
+        fn_800D5CB8(0, 0, 0, 0, outlineAlpha);
+        fn_800D59B8(0, u1, v1);
+        fn_800D61E4(drawX0, drawY0 + 1);
+        fn_800D5CB8(0, 0, 0, 0, outlineAlpha);
+        fn_800D59B8(0, u0, v0);
+        fn_800D61E4(drawX1, drawY1 + 1);
+        fn_800D5CB8(0, 0, 0, 0, outlineAlpha);
+        fn_800D59B8(0, u1, v1);
+        break;
+
+    default:
+        fn_800D67BC(2);
+        break;
+    }
+
+    fn_800D61E4(drawX0, drawY0);
+    fn_800D5BA0(0, color);
+    fn_800D59B8(0, u0, v0);
+    fn_800D61E4(drawX1, drawY1);
+    fn_800D5BA0(0, color);
+    fn_800D59B8(0, u1, v1);
+    fn_800D6728();
+
+    xEnd = (s16)(curX + (widthRounded * 2) + 2);
+    *(s16 *)(mgr + 0x18) = xEnd;
 }
 
 #endif
@@ -2684,13 +3356,11 @@ asm void* _msgGetCodeInfo__FP13MSG_TASK_WORKUsPP12tagFONT_INFO(obj, key, outNode
 #include "src/game/gs_thread_fn_800FDF1C.inc"
 }
 #else
-u16 *_msgGetCodeInfo__FP13MSG_TASK_WORKUsPP12tagFONT_INFO(arg0, arg1, arg2, arg7)
+u16 *_msgGetCodeInfo__FP13MSG_TASK_WORKUsPP12tagFONT_INFO(arg0, arg1, arg2)
     u8 *arg0;
     u16 arg1;
     void **arg2;
-    u16 *arg7;
 {
-    s32 temp_cr0_lt;
     s32 var_r11;
     s32 var_r7;
     u16 *temp_r3;
@@ -2698,12 +3368,11 @@ u16 *_msgGetCodeInfo__FP13MSG_TASK_WORKUsPP12tagFONT_INFO(arg0, arg1, arg2, arg7
     u16 temp_r0;
     u16 temp_r9;
     u16 var_ctr;
-    u16 var_r9;
     u32 temp_r10;
     u32 var_r8;
+    u32 var_r9;
     u8 *var_r6;
 
-    var_r10 = (void*)(arg7);
     var_r11 = 0;
     var_r7 = 0;
     temp_r9 = M2C_FIELD(lbl_80478B08, u16 *, 4);
@@ -2724,38 +3393,28 @@ loop_1:
         return 0;
     }
     var_r6 = (void*)(M2C_FIELD(var_r10, void **, 4));
-loop_16:
-    if (var_r6 == 0) {
-
-        return 0;
-    }
-    var_r9 = M2C_FIELD(var_r6, u16 *, 0);
-    var_r8 = 0U;
-loop_13:
-    temp_cr0_lt = var_r8 < var_r9;
-    if (temp_cr0_lt == 0) {
-        if (temp_cr0_lt == 0) {
-            var_r6 = (void*)(M2C_FIELD(var_r6, void **, 8));
-            goto loop_16;
+    while (var_r6 != 0) {
+        var_r9 = M2C_FIELD(var_r6, u16 *, 0);
+        var_r8 = 0U;
+        while (var_r8 < var_r9) {
+            temp_r10 = (var_r8 + var_r9) >> 1U;
+            temp_r3 = (void*)(var_r6 + 0x10 + (temp_r10 * 8));
+            temp_r0 = *temp_r3;
+            if (temp_r0 == arg1) {
+                if (arg2 != 0) {
+                    *arg2 = var_r6;
+                }
+                return temp_r3;
+            }
+            if (temp_r0 < arg1) {
+                var_r8 = temp_r10 + 1;
+            } else {
+                var_r9 = temp_r10;
+            }
         }
-        return 0;
+        var_r6 = (void*)(M2C_FIELD(var_r6, void **, 8));
     }
-    temp_r10 = (u32) (var_r8 + var_r9) >> 1U;
-    temp_r3 = (void*)(var_r6 + 0x10 + (temp_r10 * 8));
-    temp_r0 = *temp_r3;
-    if (temp_r0 == arg1) {
-        if (arg2 != 0) {
-            *arg2 = var_r6;
-            return temp_r3;
-        }
-        return temp_r3;
-    }
-    if (temp_r0 < arg1) {
-        var_r8 = temp_r10 + 1;
-    } else {
-        var_r9 = (u16) temp_r10;
-    }
-    goto loop_13;
+    return 0;
 }
 #endif
 #pragma pop
@@ -2780,7 +3439,7 @@ s32 _msgGetLength__FPCUs(const void* str) {
 
 /* 0x800FE010 | 0x34C */
 #pragma push
-#pragma optimization_level 2
+#pragma optimization_level 3
 #pragma optimizewithasm off
 #if 0
 asm s32 _msgGetSize__FPCUs(str)
@@ -2800,6 +3459,7 @@ s32 _msgGetSize__FPCUs(arg0)
     u8 *table;
     u8 *entry;
     u8 *node;
+    u8 *next;
     u32 flags;
     u32 result;
     u32 mode;
@@ -2883,45 +3543,45 @@ s32 _msgGetSize__FPCUs(arg0)
             continue;
         }
 
+        next = NULL;
         if (mode == 1) {
-            *(u32 *)(work + 0x30) = result;
+            next = (u8 *)result;
         } else if (mode == 2) {
-            node = NULL;
-            if (result != 0) {
-                subKey = result & 0xFFFFF;
-                node = (u8 *)*(u32 *)(mgr + 0x08);
-                while (node != NULL) {
-                    if (*(u16 *)node == (u16)(result >> 0x14)) {
-                        lo = 0;
-                        hi = *(u16 *)(node + 0x04);
-                        while (lo < hi) {
-                            mid = ((u32)lo + (u32)hi) >> 1;
-                            entry = node + 0x10 + mid * 8;
-                            if (*(u32 *)entry == subKey) {
-                                *(u32 *)(work + 0x30) = (u32)(node + *(s32 *)(entry + 4));
-                                node = NULL;
-                                break;
-                            }
-                            if (*(u32 *)entry < subKey) {
-                                lo = (u16)(mid + 1);
-                            } else {
-                                hi = (u16)mid;
-                            }
-                        }
-                        if (node == NULL) {
+            subKey = result & 0xFFFFF;
+            node = (u8 *)*(u32 *)(mgr + 0x08);
+            while (node != NULL) {
+                if (*(u16 *)node == (u16)(result >> 0x14)) {
+                    lo = 0;
+                    hi = *(u16 *)(node + 0x04);
+                    while (lo < hi) {
+                        mid = ((u32)lo + (u32)hi) >> 1;
+                        entry = node + 0x10 + mid * 8;
+                        if (*(u32 *)entry == subKey) {
+                            next = node + *(s32 *)(entry + 4);
+                            node = NULL;
                             break;
                         }
+                        if (*(u32 *)entry < subKey) {
+                            lo = (u16)(mid + 1);
+                        } else {
+                            hi = (u16)mid;
+                        }
                     }
-                    node = (u8 *)*(u32 *)(node + 0x08);
+                    if (node == NULL) {
+                        break;
+                    }
                 }
+                node = (u8 *)*(u32 *)(node + 0x08);
             }
         }
 
         if ((s8)work[0x40] >= 3) {
             GSlogWrite((const char *)lbl_80271700, lbl_80315678);
         } else {
-            *(u32 *)(work + 0x34 + (s8)work[0x40] * 4) = (u32)ip + 2;
+            *(u32 *)(work + 0x34 + (s8)work[0x40] * 4) =
+                *(u32 *)(work + 0x30);
             work[0x40]++;
+            *(u32 *)(work + 0x30) = (u32)next;
         }
     }
 

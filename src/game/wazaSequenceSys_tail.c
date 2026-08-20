@@ -285,8 +285,185 @@ void wazaSequenceSysFreeWazaResource(void* seqData, ...) {
  * Address: 0x801DB3F8 | Size: 0x450
  */
 s32 wazaSequenceSysGetWazaTime(void* owner, void* sequence, s32 timeType) {
-    /* TODO: Complex sequence data parse (0x450 bytes) */
-    return 0;
+    extern const char lbl_80279788[];
+    WazaSequence* waza = sequence;
+    const char* logBase = lbl_80279788;
+    s32 pointName = waza->kind;
+    s32 time = waza->field_10;
+    u8 type = timeType;
+    u8* timing = (u8*)*(void**)((u8*)owner + 0x2C) + (pointName * 0xD4);
+
+    switch (waza->animationMode) {
+    case 1:
+        switch (pointName) {
+        case 0:
+        case 0xB:
+        case 0x10:
+            switch (type) {
+            case 0:
+                return time;
+            case 3:
+            case 4:
+                return time + *(s32*)(timing + 0x0C);
+            case 5:
+                GSlogWrite(&logBase[0]);
+                return time + *(s32*)(timing + 0x0C);
+            case 1:
+            case 2:
+            case 6:
+                return time + *(s32*)(timing + 0x10);
+            case 7:
+                return 0;
+            default:
+                GSlogWrite(&logBase[0x4C]);
+                return 0;
+            }
+        default:
+            if (pointName >= 8 && pointName < 0xB) {
+                GSlogWrite(&logBase[0x88]);
+                return 0;
+            }
+            switch (type) {
+            case 0:
+                return time;
+            case 1:
+                GSlogWrite(&logBase[0]);
+                return time + *(s32*)(timing + 0x0C);
+            case 2:
+                return time + *(s32*)(timing + 0x10);
+            case 3:
+            case 4:
+                return time + *(s32*)(timing + 0x14);
+            case 5:
+                return time + *(s32*)(timing + 0x18);
+            case 6:
+                return time + *(s32*)(timing + 0x10);
+            case 7:
+                return 0;
+            default:
+                GSlogWrite(&logBase[0x4C]);
+                return 0;
+            }
+        }
+    case 2:
+        switch (pointName) {
+        case 0:
+        case 0xB:
+        case 0x10:
+            switch (type) {
+            case 0:
+                return time;
+            case 3:
+            case 4:
+                GSlogWrite(&logBase[0xDC]);
+                return time + *(s32*)(timing + 0x0C);
+            case 5:
+                return time + *(s32*)(timing + 0x0C);
+            case 1:
+            case 2:
+            case 6:
+                return time + *(s32*)(timing + 0x10);
+            case 7:
+                return 0;
+            default:
+                GSlogWrite(&logBase[0x4C]);
+                return 0;
+            }
+        default:
+            if (pointName >= 8 && pointName < 0xB) {
+                GSlogWrite(&logBase[0x88]);
+                return 0;
+            }
+            switch (type) {
+            case 0:
+                return time;
+            case 1:
+            case 5:
+                GSlogWrite(&logBase[0xDC]);
+                return time + *(s32*)(timing + 0x0C);
+            case 2:
+                return time + *(s32*)(timing + 0x10);
+            case 3:
+            case 4:
+            case 6:
+                return time + *(s32*)(timing + 0x14);
+            case 7:
+                return 0;
+            default:
+                GSlogWrite(&logBase[0x4C]);
+                return 0;
+            }
+        }
+    case 3:
+    case 4:
+        switch (pointName) {
+        case 0:
+        case 0xB:
+        case 0x10:
+            switch (type) {
+            case 0:
+                return time;
+            case 3:
+            case 4:
+            case 5:
+                return time + *(s32*)(timing + 0x0C);
+            case 1:
+            case 2:
+            case 6:
+                return time + *(s32*)(timing + 0x10);
+            case 7:
+                return 0;
+            default:
+                GSlogWrite(&logBase[0x4C]);
+                return 0;
+            }
+        default:
+            if (pointName >= 8 && pointName < 0xB) {
+                switch (type) {
+                case 0:
+                    return time;
+                case 3:
+                case 4:
+                case 5:
+                    return time + *(s32*)(timing + 0x0C);
+                case 1:
+                    return time + *(s32*)(timing + 0x10);
+                case 2:
+                case 6:
+                    return time + *(s32*)(timing + 0x14);
+                case 7:
+                    return 0;
+                default:
+                    GSlogWrite(&logBase[0x4C]);
+                    return 0;
+                }
+            }
+            switch (type) {
+            case 0:
+                return time;
+            case 1:
+                return time + *(s32*)(timing + 0x0C);
+            case 2:
+                return time + *(s32*)(timing + 0x10);
+            case 3:
+                return time + *(s32*)(timing + 0x14);
+            case 4:
+                return time + *(s32*)(timing + 0x18);
+            case 5:
+                return time + *(s32*)(timing + 0x14);
+            case 6:
+                return time + *(s32*)(timing + 0x10);
+            case 7:
+                return 0;
+            default:
+                GSlogWrite(&logBase[0x4C]);
+                return 0;
+            }
+        }
+    default:
+        GSlogWrite(&logBase[0x128]);
+        return 0;
+    }
 }
 
 #endif

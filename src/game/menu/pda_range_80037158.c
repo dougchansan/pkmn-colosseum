@@ -2328,11 +2328,11 @@ extern u32 fn_800E24B0();
 extern u32 fn_800E27B0();
 extern u32 fn_800E2C04();
 extern u32 fn_800FA280();
-extern void fn_8005DA18(u32);
+extern void* menuDataBiosGetPtr(s32);
 extern u32 fn_80102510();
 extern u32 fn_8010264C();
 extern u32 fn_801040F0();
-extern u8* fn_80105624();
+extern void* windowGetKeyInfo(void*);
 extern u32 menuModelRender();
 extern u32 fn_80109B90();
 extern u32 fn_8011D8D8();
@@ -2609,8 +2609,8 @@ void fn_80040018(u8* menu)
         u8* keyInfo;
         u16 buttons;
 
-        fn_8005DA18(*(u32*)(menu + 4));
-        keyInfo = fn_80105624();
+        keyInfo = (u8*)windowGetKeyInfo(
+            menuDataBiosGetPtr(*(s32*)(menu + 4)));
         buttons = *(u16*)(keyInfo + 4);
         if (lbl_804788C0 != 0) {
             if (buttons & 0x10) {
@@ -2642,6 +2642,7 @@ void fn_80044378(u8* context, PdaSprite* sprite)
     s32 i;
     s32 offset;
     f32 y;
+    f32 stride;
     u16 pokemonId;
     u32 model;
     u32 pokemonRnd;
@@ -2680,6 +2681,7 @@ void fn_80044378(u8* context, PdaSprite* sprite)
         *(s16*)(lbl_802EF0A8 + 0x5718));
     y = *(f32*)(scene + 0x30);
     offset = 0;
+    stride = lbl_8047BCF4;
     for (i = 0; i < lbl_8047A4E8; i++, offset += 2) {
         if (i >= *(s32*)(scene + 8) - 1 &&
             i <= *(s32*)(scene + 0xC) + 1) {
@@ -2706,7 +2708,7 @@ void fn_80044378(u8* context, PdaSprite* sprite)
             fn_800FB680(0, (s32)y - 2, (s8)context[0x8B],
                          (void*)0xE7);
         }
-        y += lbl_8047BCF4;
+        y += stride;
     }
     fn_800FE35C();
 }
@@ -3481,7 +3483,7 @@ void fn_8003F2DC(u8* arr, s32 count, s32 dir) {
 void fn_80044630(void) {
     extern void  _threadSwitch(void);
     extern u32   menuCloseCustom(u32 a, u32 b, u32 c);
-    extern u32   fn_8010264C(u32 a, u32 b);
+    extern s32   menuOpen(s32 menu, s32 mode);
     extern void  GSvecCopy(void* dst, void* src);
     extern void  GSscene_SetMode(u32 mode);
     extern void  GScameraSetPerspective(void* cam, f32 a, f32 b, f32 c, f32 d);
@@ -3540,18 +3542,18 @@ void fn_80044630(void) {
         switch (*(s32*)(S + 0x1C)) {
         case 0: {   /* .L_800446F0 */
             fn_8004BDB8(-1, 1);
-            fn_8010264C(0x35, 0);
-            fn_8010264C(0x3b, 0);
-            fn_8010264C(0x36, 0);
-            fn_8010264C(0x37, 0);
-            fn_8010264C(0x38, 0);
-            fn_8010264C(0x39, 0);
+            menuOpen(0x35, 0);
+            menuOpen(0x3b, 0);
+            menuOpen(0x36, 0);
+            menuOpen(0x37, 0);
+            menuOpen(0x38, 0);
+            menuOpen(0x39, 0);
             *(s32*)(S + 0x1c) = 1;
         } break;
 
         case 1: {   /* .L_80044750 */
             s32 r;
-            r = (s32)fn_8010264C(0x3a, 1);
+            r = menuOpen(0x3a, 1);
             *(s32*)(S + 0x28) = 0;
             if (r >= 0) {
                 if (*(s32*)(S + 0x18) == 1) {
@@ -3576,9 +3578,9 @@ void fn_80044630(void) {
 
         case 4: {   /* .L_800447D4 */
             s32 r;
-            fn_8010264C(0x96, 0);
-            fn_8010264C(0xa1, 0);
-            r = (s32)fn_8010264C(0xa2, 1);
+            menuOpen(0x96, 0);
+            menuOpen(0xa1, 0);
+            r = menuOpen(0xa2, 1);
             if (r >= 0)
                 break;
             if (*(s32*)(S + 0x1c) == 4) {
@@ -3591,8 +3593,8 @@ void fn_80044630(void) {
 
         case 5: {   /* .L_80044830 */
             s32 r;
-            fn_8010264C(0x96, 0);
-            r = (s32)fn_8010264C(0xa2, 1);
+            menuOpen(0x96, 0);
+            r = menuOpen(0xa2, 1);
             if (r >= 0)
                 break;
             if (*(s32*)(S + 0x1c) == 5) {
@@ -3626,7 +3628,7 @@ void fn_80044630(void) {
             *(u8*)(S + 0x1a0) = 0;
             *(u8*)(S + 0x1b4) = 0;
             *(s32*)(S + 0x1e4) = 0;
-            r = (s32)fn_8010264C(0xce, 1);
+            r = menuOpen(0xce, 1);
             if (r < 0) {
                 *(s32*)(S + 0x1c) = 0xc;
                 *(f32*)(S + 0x50) = lbl_8047BC94;
@@ -6718,7 +6720,7 @@ void fn_800411FC(PdaSprite* alphaSprite, PdaEvent* event)
     if (pdaEntrySeen() != 0) {
         weight = pdaCurrentWeight();
         msgctrlSetValue(0x34, weight / 10);
-        msgctrlSetValue(0x35, weight - weight / 10 * 10);
+        msgctrlSetValue(0x35, weight % 10);
         fn_800FBB34(lbl_8047A4F0 +
                         (*(s16*)(layout + 0x5a92) - sprite->field_50),
                     *(s16*)(layout + 0x5a94) - sprite->field_52,
@@ -7295,10 +7297,10 @@ void fn_80048918(void)
         GSmodelSetVisibility(res, 0);
     }
     fn_801CB9D8(NULL);
-    *(f32*)((u8*)&lbl_803A6818 + 0x6c) = c94;
-    *(f32*)((u8*)&lbl_803A6818 + 0x70) = c94;
-    *(f32*)((u8*)&lbl_803A6818 + 0x74) = c94;
-    *(f32*)((u8*)&lbl_803A6818 + 0x64) = cf0;
+    *(f32*)((u8*)&lbl_803A6818 + 0x6c) = lbl_8047BC94;
+    *(f32*)((u8*)&lbl_803A6818 + 0x70) = lbl_8047BC94;
+    *(f32*)((u8*)&lbl_803A6818 + 0x74) = lbl_8047BC94;
+    *(f32*)((u8*)&lbl_803A6818 + 0x64) = lbl_8047BCF0;
     anim = fn_801CBA0C(0xd171000);
     *(void**)((u8*)&lbl_803A6818 + 0x10c) = anim;
     res = GSresGetResource((u32)fn_80113F48(), (u32)anim);
@@ -7437,7 +7439,7 @@ void fn_80048918(void)
     fn_8018F4C8(peopleInfoBiosGetPtr(0xf70400), 1, &motion, &out8);
     menuModelSetMotion((u8*)&lbl_803A6818 + 0xc4, motion);
     total = lbl_8047A4E8;
-    *(f32*)((u8*)&lbl_803A6818 + 0x40) = c94;
+    *(f32*)((u8*)&lbl_803A6818 + 0x40) = lbl_8047BC94;
     *(s32*)((u8*)&lbl_803A6818 + 0x8) = -5;
     if (total >= 5) {
         *(s32*)((u8*)&lbl_803A6818 + 0xc) = 5;

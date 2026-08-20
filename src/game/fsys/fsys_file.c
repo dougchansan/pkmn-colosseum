@@ -225,6 +225,7 @@ s32 fn_8017E30C(FSYSSlot* slot) {
     FSYSFileEntry* fileEntry = NULL;
     FSYSSubEntry* subEntry = NULL;
     void* allocatedBuf;
+    void* cachedBuf;
     u32 isCompressed;
 
     /* Search the archive TOC for the requested entry */
@@ -265,16 +266,16 @@ s32 fn_8017E30C(FSYSSlot* slot) {
      * the 2026-07-02 note near FSYSCacheLookup's old location below. */
     {
         extern u32 fn_8017F794();
-        allocatedBuf = (void*)fn_8017F794(slot->fileHandle,
-                                           fileEntry->groupID,
-                                           fileEntry->nameHash);
+        cachedBuf = (void*)fn_8017F794(slot->fileHandle,
+                                      fileEntry->groupID,
+                                      fileEntry->nameHash);
     }
-    if (allocatedBuf == NULL) {
+    if (cachedBuf == NULL) {
         return 0;
     }
 
     /* Check compression flag (bit 0 of entry->flags) */
-    isCompressed = fileEntry->flags & 1;
+    isCompressed = fileEntry->flags & 0x80000000;
 
     if (isCompressed) {
         /* ===== Compressed entry path ===== */
@@ -283,6 +284,7 @@ s32 fn_8017E30C(FSYSSlot* slot) {
         u16 handle;
         DecompPoolEntry* poolEntry;
         void* compBuf;
+        void* compData;
 
         /* Allocate temporary buffer for compressed data */
         allocSize = (decompSize + 0x1F) & ~0x1F;
@@ -295,44 +297,15 @@ s32 fn_8017E30C(FSYSSlot* slot) {
         subEntry->buffer = compBuf;
 
         /* Read compressed data from DVD into temporary buffer */
-        fn_80180320(subEntry->buffer, allocatedBuf, decompSize);
+        fn_80180320(subEntry->buffer, cachedBuf, decompSize);
 
         /* Flush the D-cache for the compressed data */
         DCFlushRange(subEntry->buffer, decompSize);
 
-        /* Save compressed data pointer and clear sub-entry buffer */
-        {
-            void* compData = subEntry->buffer;
-            subEntry->buffer = NULL;
+        compData = subEntry->buffer;
+        subEntry->buffer = NULL;
 
-            /* Copy the 16-byte LZSS header from the compressed data */
-            memcpy(&gLZSSContext, compData, LZSS_HEADER_SKIP);
-
-            /* Clear the LZSS sliding window */
-            {
-                u32 j;
-                for (j = 0; j < LZSS_WINDOW_SIZE; j++) {
-                    gLZSSWindow[j] = 0;
-                }
-            }
-
-            /* Decompress: output goes to allocatedBuf location */
-            FSYSDecompressLZSS(allocatedBuf, compData, gLZSSContext.decompSize);
-
-            /* Flush D-cache for decompressed data */
-            DCFlushRange(allocatedBuf, gLZSSContext.decompSize);
-        }
-
-        /* Free the temporary compressed data buffer handle */
-        {
-            u16 tmpHandle = fn_800E202C(compBuf);
-            if (tmpHandle != 0) {
-                fn_800E24B0(tmpHandle);
-                fn_800E209C(tmpHandle);
-            }
-        }
-
-        /* Look up decompression pool for a completion callback */
+        /* Find the output allocator before decoding the temporary input. */
         {
             u32 j;
             DecompPoolEntry* dp = gDecompPoolBase;
@@ -346,18 +319,85 @@ s32 fn_8017E30C(FSYSSlot* slot) {
                 dp = (DecompPoolEntry*)((u8*)dp + FSYS_DECOMP_ENTRY_SIZE);
             }
 
-            if (poolEntry == NULL) {
-                poolEntry = NULL; /* redundant, matches original */
-            }
         }
 
-        /* If a decompression callback exists, invoke it */
         if (poolEntry != NULL && poolEntry->callback != NULL) {
             typedef void* (*DecompCallback)(u32 fileHandle, u32 fileID, u32 compSize);
             DecompCallback cb = (DecompCallback)poolEntry->callback;
             allocatedBuf = cb(slot->fileHandle, fileEntry->nameHash,
                              fileEntry->compressedSize);
+        } else {
+            allocSize = (fileEntry->compressedSize + 0x1F) & ~0x1F;
+            allocatedBuf = GSresAllocResourceAlign(allocSize, 0x20,
+                                                    fileEntry->nameHash,
+                                                    slot->field_08, 0);
         }
+
+        subEntry->buffer = allocatedBuf;
+        if (subEntry->buffer == NULL) {
+            slot->status = FSYS_STATUS_ERROR;
+            subEntry->state = 7;
+            return 1;
+        }
+
+        /* Copy the LZSS header and decode from the temporary input. */
+        memcpy(&gLZSSContext, compData, LZSS_HEADER_SKIP);
+        {
+            u32 j;
+            for (j = 0; j < LZSS_WINDOW_SIZE; j++) {
+                gLZSSWindow[j] = 0;
+            }
+        }
+        FSYSDecompressLZSS(subEntry->buffer, compData, gLZSSContext.decompSize);
+        DCFlushRange(subEntry->buffer, gLZSSContext.decompSize);
+
+        {
+            u16 tmpHandle = fn_800E202C(compBuf);
+            if (tmpHandle != 0) {
+                fn_800E24B0(tmpHandle);
+                fn_800E209C(tmpHandle);
+            }
+        }
+
+        {
+            u32 j;
+            DecompPoolEntry* dp = gDecompPoolBase;
+            DecompPoolEntry* poolEntry2 = NULL;
+
+            for (j = 0; j < gDVDPoolState; j++) {
+                if (dp->fileID == fileEntry->groupID) {
+                    poolEntry2 = dp;
+                    break;
+                }
+                dp = (DecompPoolEntry*)((u8*)dp + FSYS_DECOMP_ENTRY_SIZE);
+            }
+
+            if (poolEntry2 != NULL) {
+                void* readResult = GSresGetResource(
+                    slot->fileHandle, fileEntry->nameHash);
+                if (readResult != NULL) {
+                    if ((fileEntry->flags & 0x80000000) != 0) {
+                        DCFlushRange(readResult, fileEntry->compressedSize);
+                    } else {
+                        DCFlushRange(readResult, fileEntry->decompressedSize);
+                    }
+                }
+
+                if (*(void**)((u8*)poolEntry2 + 0xC) != NULL) {
+                    typedef void* (*PostCallback)(u32, u32, u32);
+                    PostCallback cb =
+                        (PostCallback)*(void**)((u8*)poolEntry2 + 0xC);
+                    if ((fileEntry->flags & 0x80000000) != 0) {
+                        cb(slot->fileHandle, fileEntry->nameHash,
+                           fileEntry->compressedSize);
+                    } else {
+                        cb(slot->fileHandle, fileEntry->nameHash,
+                           fileEntry->decompressedSize);
+                    }
+                }
+            }
+        }
+        return 1;
     } else {
         /* ===== Uncompressed entry path ===== */
         DecompPoolEntry* poolEntry;
@@ -378,19 +418,57 @@ s32 fn_8017E30C(FSYSSlot* slot) {
             }
         }
 
+        {
+            u8* archive = (u8*)slot->archiveData;
+            u32 fileInfo;
+            u32 total;
+            u32 k;
+            FSYSFileEntry* totalEntry;
+
+            if ((*(u32*)(archive + 0x10) & 1) != 0) {
+                slot->tocBuffer = NULL;
+                if (fn_80167EF8(archive + fileEntry->dataOffset) != 0) {
+                    slot->tocBuffer =
+                        (void*)fn_80167F28((char*)archive + fileEntry->dataOffset);
+                }
+
+                fileInfo = (u32)slot->tocBuffer;
+                if (fileInfo != 0) {
+                    uncompSize = fn_80167E5C(fileInfo);
+                    fileEntry->decompressedSize = uncompSize;
+                    total = 0;
+                    for (k = 0; k < slot->numEntries; k++) {
+                        u8* totalArchive = (u8*)slot->archiveData;
+                        u32* firstTable =
+                            (u32*)(totalArchive + *(u32*)(totalArchive + 0x18));
+                        u32* entryTable =
+                            (u32*)(totalArchive + firstTable[0]);
+                        totalEntry =
+                            (FSYSFileEntry*)(totalArchive + entryTable[k]);
+                        total += totalEntry->decompressedSize;
+                    }
+                    total += *(u32*)(archive + slot->field_18 + 8);
+                    slot->totalDecompSize = total;
+                    fn_80167E64(fileInfo);
+                    slot->tocBuffer = NULL;
+                    subEntry->ready = 1;
+                }
+            }
+        }
+
         /* If a callback exists, use it to allocate/process the buffer */
         if (poolEntry != NULL && poolEntry->callback != NULL) {
             typedef void* (*AllocCallback)(u32 fileHandle, u32 fileID, u32 size);
             AllocCallback cb = (AllocCallback)poolEntry->callback;
             allocatedBuf = cb(slot->fileHandle, fileEntry->nameHash,
-                             fileEntry->compressedSize);
+                             uncompSize);
         } else {
             /* No callback; allocate buffer from heap */
             u32 allocSize = (uncompSize + 0x1F) & ~0x1F;
             allocatedBuf = (void*)GSresAllocResourceAlign(allocSize,
-                                               slot->fileHandle,
+                                               0x20,
                                                fileEntry->nameHash,
-                                               0, 0);
+                                               slot->fileHandle, 0);
         }
     }
 
@@ -407,7 +485,7 @@ s32 fn_8017E30C(FSYSSlot* slot) {
 
     /* Read uncompressed data (or already have decompressed data) */
     if (isCompressed == 0) {
-        fn_80180320(subEntry->buffer, allocatedBuf, fileEntry->decompressedSize);
+        fn_80180320(subEntry->buffer, cachedBuf, fileEntry->decompressedSize);
         DCFlushRange(subEntry->buffer, fileEntry->decompressedSize);
     }
 
@@ -436,9 +514,10 @@ s32 fn_8017E30C(FSYSSlot* slot) {
                 }
             }
 
-            if (poolEntry2->callback != NULL) {
+            if (*(void**)((u8*)poolEntry2 + 0xC) != NULL) {
                 typedef void* (*PostCallback)(u32 fh, u32 id, u32 sz);
-                PostCallback cb = (PostCallback)poolEntry2->callback;
+                PostCallback cb =
+                    (PostCallback)*(void**)((u8*)poolEntry2 + 0xC);
                 if (isCompressed) {
                     cb(slot->fileHandle, fileEntry->nameHash,
                        fileEntry->compressedSize);
@@ -490,149 +569,122 @@ s32 fn_8017E30C(FSYSSlot* slot) {
 void _fsysGetFilename(FSYSSlot* slot, u32 fileHandle,
                    u32 callbackA, u32 callbackB, u32 callbackC,
                    u32 loadMode) {
-    FSYSManager* mgr = &gFSYSManager;
-    u32 status = slot->status;
-    void* tocData;
-    u32 numTocEntries;
-    u32 i;
-    u32* tocEntryPtr;
-    char* tocName;
-    char nameBuf[0x80];
+    s32 status = slot->status;
+#define FSYS_LOOKUP(buffer)                                                   \
+    do {                                                                      \
+        volatile u32 count = *(u32*)((u8*)gFSYSTocData + 8);                  \
+        u32* entry = (u32*)((u8*)gFSYSTocData +                              \
+                            *(u32*)((u8*)gFSYSTocData + 0x10));              \
+        u32 index = 0;                                                        \
+        char* name = NULL;                                                    \
+        while (index < count) {                                               \
+            if (entry[0] == fileHandle) {                                    \
+                name = (char*)((u8*)gFSYSTocData + entry[1]);                \
+                break;                                                        \
+            }                                                                 \
+            entry = (u32*)((u8*)entry + 8);                                  \
+            index++;                                                          \
+        }                                                                     \
+        sprintf(buffer, "%s.fsys", name);                                   \
+        strcpy(slot->filename, buffer);                                       \
+    } while (0)
+#define FSYS_INIT(reload, clear_data)                                         \
+    do {                                                                      \
+        slot->archiveHandle = 0;                                              \
+        if (clear_data) slot->archiveData = NULL;                             \
+        slot->archiveSize = 0;                                                \
+        slot->callbackA = callbackA;                                          \
+        slot->callbackB = callbackB;                                          \
+        slot->callbackC = callbackC;                                          \
+        slot->fileHandle = fileHandle;                                        \
+        slot->fileIndex = 0;                                                  \
+        slot->loadMode = loadMode;                                            \
+        slot->reloadFlag = reload;                                            \
+        if (clear_data) slot->padding100 = 0;                                 \
+    } while (0)
+#define FSYS_SET_STATUS(error_state)                                          \
+    do {                                                                      \
+        if (loadMode >= 4) {                                                  \
+            if (loadMode != 7) return;                                       \
+            slot->status = error_state;                                      \
+        } else if (loadMode == 1) {                                          \
+            slot->status = FSYS_STATUS_READING;                              \
+        } else if (loadMode >= 0) {                                          \
+            slot->status = error_state;                                      \
+        }                                                                     \
+        return;                                                               \
+    } while (0)
 
-    /* Handle current status */
     if (status == FSYS_STATUS_PENDING) {
-        goto state_loaded;
+        goto initial_load;
     } else if (status >= FSYS_STATUS_PENDING) {
         if (status == FSYS_STATUS_LOADED) {
-            goto state_loaded;
+            goto loaded_archive;
         }
-        return; /* unknown state */
-    } else if (status == FSYS_STATUS_FREE) {
-        /* Fall through to initial load */
-    } else {
-        return; /* busy */
+        goto reload_load;
+    } else if (status != FSYS_STATUS_FREE) {
+        goto reload_load;
     }
 
-    /* Initialize the slot for a new load */
-    slot->archiveHandle = 0;
-    slot->archiveData   = NULL;
-    slot->archiveSize   = 0;
-    slot->callbackA     = callbackA;
-    slot->callbackB     = callbackB;
-    slot->callbackC     = callbackC;
-    slot->fileHandle    = fileHandle;
-    slot->fileIndex     = 0;
-    slot->loadMode      = loadMode;
-    slot->reloadFlag    = 0;
-    slot->padding100    = 0;
-
-    /* Search the TOC for the matching entry */
-    tocData = gFSYSTocData;
-    numTocEntries = *(u32*)((u8*)tocData + 0x08);
-    tocEntryPtr = (u32*)((u8*)tocData + *(u32*)((u8*)tocData + 0x10));
-    tocName = NULL;
-
-    for (i = 0; i < numTocEntries; i++) {
-        if (tocEntryPtr[0] == fileHandle) {
-            /* Found: resolve the name string */
-            u32 nameOff = tocEntryPtr[1];
-            tocName = (char*)((u8*)tocData + nameOff);
-            break;
-        }
-        tocEntryPtr = (u32*)((u8*)tocEntryPtr + 8);
-    }
-
-    /* Format the filename as "%s.fsys" */
-    sprintf(nameBuf, "%s.fsys", tocName);
-    strcpy(slot->filename, nameBuf);
-
-    /* Check if another slot is already actively loading */
-    if (mgr->activeSlot != NULL) {
-        if (slot != mgr->activeSlot) {
-            /* Queue this load -- set status to PENDING */
+initial_load:
+    {
+        char nameBuf[0x80];
+        FSYS_INIT(0, 1);
+        FSYS_LOOKUP(nameBuf);
+        if (gFSYSManager.activeSlot != NULL && slot != gFSYSManager.activeSlot) {
             slot->status = FSYS_STATUS_PENDING;
             return;
         }
+        gFSYSManager.activeSlot = slot;
+        gFSYSManager.currentSlot = slot;
+        FSYS_SET_STATUS(FSYS_STATUS_LOADING);
     }
 
-    /* Mark this slot as the active loader */
-    mgr->activeSlot  = slot;
-    mgr->currentSlot = slot;
-
-    /* Apply status based on load mode */
-    if (loadMode >= 4) {
-        if (loadMode == 7) {
-            slot->status = FSYS_STATUS_LOADING;
+loaded_archive:
+    {
+        if (loadMode == 3) {
+            char nameBuf[0x80];
+            FSYS_INIT(1, 0);
+            FSYS_LOOKUP(nameBuf);
+            if (gFSYSManager.activeSlot != NULL) {
+                slot->status = FSYS_STATUS_PENDING;
+                return;
+            }
+            gFSYSManager.activeSlot = slot;
+            gFSYSManager.currentSlot = slot;
+            FSYS_SET_STATUS(FSYS_STATUS_ERROR);
         } else {
+            char nameBuf[0x80];
+            FSYS_INIT(1, 0);
+            FSYS_LOOKUP(nameBuf);
+            if (gFSYSManager.activeSlot != NULL) {
+                slot->status = FSYS_STATUS_PENDING;
+                return;
+            }
+            gFSYSManager.activeSlot = slot;
+            gFSYSManager.currentSlot = slot;
+            FSYS_SET_STATUS(FSYS_STATUS_ERROR);
+        }
+    }
+
+reload_load:
+    if (slot->reloadFlag == 1) {
+        char nameBuf[0x80];
+        slot->status = FSYS_STATUS_FREE;
+        FSYS_INIT(0, 1);
+        FSYS_LOOKUP(nameBuf);
+        if (gFSYSManager.activeSlot != NULL && slot != gFSYSManager.activeSlot) {
+            slot->status = FSYS_STATUS_PENDING;
             return;
         }
-    } else if (loadMode == 1) {
-        slot->status = FSYS_STATUS_READING;
-    } else if (loadMode == 0) {
-        slot->status = FSYS_STATUS_LOADING;
-    } else {
-        return;
-    }
-    return;
-
-state_loaded:
-    /* Re-entry: archive is loaded, process a specific file */
-    if (loadMode != 3) {
-        goto state_check_mode;
+        gFSYSManager.activeSlot = slot;
+        gFSYSManager.currentSlot = slot;
+        FSYS_SET_STATUS(FSYS_STATUS_LOADING);
     }
 
-    /* Mode 3: resolve file within loaded archive */
-    slot->archiveHandle = 0;
-    slot->archiveSize   = 0;
-    slot->callbackA     = callbackA;
-    slot->callbackB     = callbackB;
-    slot->callbackC     = callbackC;
-    slot->fileHandle    = fileHandle;
-    slot->fileIndex     = 0;
-    slot->loadMode      = loadMode;
-    slot->reloadFlag    = 1;
-
-    /* Search TOC again for the entry */
-    tocData = gFSYSTocData;
-    numTocEntries = *(u32*)((u8*)tocData + 0x08);
-    tocEntryPtr = (u32*)((u8*)tocData + *(u32*)((u8*)tocData + 0x10));
-    tocName = NULL;
-
-    for (i = 0; i < numTocEntries; i++) {
-        if (tocEntryPtr[0] == fileHandle) {
-            u32 nameOff = tocEntryPtr[1];
-            tocName = (char*)((u8*)tocData + nameOff);
-            break;
-        }
-        tocEntryPtr = (u32*)((u8*)tocEntryPtr + 8);
-    }
-
-    /* Format filename and set up for re-load */
-    sprintf(nameBuf, "%s.fsys", tocName);
-    strcpy(slot->filename, nameBuf);
-
-    /* Check if loading is blocked */
-    if (mgr->activeSlot != NULL) {
-        slot->status = FSYS_STATUS_PENDING;
-        return;
-    }
-
-    mgr->activeSlot  = slot;
-    mgr->currentSlot = slot;
-
-state_check_mode:
-    if (loadMode >= 4) {
-        if (loadMode == 7) {
-            slot->status = FSYS_STATUS_ERROR;
-        } else {
-            return;
-        }
-    } else if (loadMode == 1) {
-        slot->status = FSYS_STATUS_ERROR;
-    } else {
-        slot->status = FSYS_STATUS_ERROR;
-    }
-    return;
+#undef FSYS_SET_STATUS
+#undef FSYS_INIT
+#undef FSYS_LOOKUP
 }
 
 /*
@@ -1335,8 +1387,55 @@ void fn_8017B6B8(FSYSSlot* slot, FSYSFileEntry* entry, u32 index) {
         sub->buffer = FSYSAllocHandle2B00(entry->decompressedSize);
         slot->padding100 = (u32)sub->buffer;
     } else {
-        size = FSYSRefreshExternalEntrySize(slot, entry);
-        sub->buffer = FSYSAllocEntryBuffer(slot, entry, size);
+        DecompPoolEntry* pool;
+        u8* archive;
+        u32 fileInfo;
+        u32 i;
+        u32 total;
+        FSYSFileEntry* totalEntry;
+
+        size = entry->decompressedSize;
+        archive = (u8*)slot->archiveData;
+        if ((*(u32*)(archive + 0x10) & 1) != 0) {
+            FSYS_SLOT_FILE1(slot) = 0;
+            if (fn_80167EF8(archive + entry->dataOffset) != 0) {
+                FSYS_SLOT_FILE1(slot) = fn_80167F28((char*)archive + entry->dataOffset);
+            }
+
+            fileInfo = FSYS_SLOT_FILE1(slot);
+            if (fileInfo != 0) {
+                size = fn_80167E5C(fileInfo);
+                entry->decompressedSize = size;
+                total = 0;
+                for (i = 0; i < slot->numEntries; i++) {
+                    totalEntry = FSYSGetEntryByIndex(slot, i);
+                    total += totalEntry->decompressedSize;
+                }
+                total += *(u32*)(archive + slot->field_18 + 8);
+                slot->totalDecompSize = total;
+                fn_80167E64(fileInfo);
+                FSYS_SLOT_FILE1(slot) = 0;
+                FSYSFileEntry_GetSubEntry(entry)->ready = 1;
+            }
+        }
+        pool = gDecompPoolBase;
+        for (i = 0; i < gDVDPoolState; i++) {
+            if (pool->fileID == entry->groupID) {
+                break;
+            }
+            pool = (DecompPoolEntry*)((u8*)pool + FSYS_DECOMP_ENTRY_SIZE);
+        }
+        if (i == gDVDPoolState) {
+            pool = NULL;
+        }
+
+        if (FSYS_POOL_ALLOC_CB(pool) != NULL) {
+            sub->buffer = ((FSYSAllocCallback)FSYS_POOL_ALLOC_CB(pool))(
+                slot->fileHandle, entry->nameHash, size);
+        } else {
+            sub->buffer = (void*)GSresAllocResourceAlign(
+                FSYSAlign32(size), 0x20, slot->fileHandle, entry->nameHash, 0);
+        }
     }
 
     if (sub->buffer == NULL) {
@@ -1441,6 +1540,8 @@ asm void fn_8017BD34(void) {
 #else
 void fn_8017BD34(FSYSSlot* slot, FSYSFileEntry* entry) {
     FSYSSubEntry* sub;
+    DecompPoolEntry* pool;
+    FSYSAllocCallback callback;
     void* cached;
     u32 offset;
     u32 size;
@@ -1449,8 +1550,15 @@ void fn_8017BD34(FSYSSlot* slot, FSYSFileEntry* entry) {
     sub->state = 5;
     slot->status = 0x65;
 
+    pool = FSYSFindDecompPool(entry->groupID);
     size = FSYSRefreshExternalEntrySize(slot, entry);
-    sub->buffer = FSYSAllocEntryBuffer(slot, entry, size);
+    if (FSYS_POOL_ALLOC_CB(pool) != NULL) {
+        callback = (FSYSAllocCallback)FSYS_POOL_ALLOC_CB(pool);
+        sub->buffer = callback(slot->fileHandle, entry->nameHash, size);
+    } else {
+        sub->buffer = (void*)GSresAllocResourceAlign(
+            FSYSAlign32(size), 0x20, slot->fileHandle, entry->nameHash, 0);
+    }
 
     cached = (void*)fn_8017F794(slot->fileHandle, entry->groupID, entry->nameHash);
     offset = fn_8017F728(slot->fileHandle, entry->groupID, entry->nameHash);
@@ -1837,8 +1945,16 @@ u32 fn_8017C8FC(FSYSSlot* slot) {
                 break;
             }
 
-            if ((sub->state == 4 || sub->state == 6) &&
-                (s32)slot->reloadFlag == 1) {
+            if (sub->state == 4 && (s32)slot->reloadFlag == 1) {
+                FSYS_SLOT_CURRENT_SUB(slot) = sub;
+                if (cached == 0) {
+                    fn_8017B6B8(slot, entry, i);
+                } else {
+                    fn_8017B5C0(slot, entry, i);
+                }
+                break;
+            }
+            if (sub->state == 6 && (s32)slot->reloadFlag == 1) {
                 FSYS_SLOT_CURRENT_SUB(slot) = sub;
                 if (cached == 0) {
                     fn_8017B6B8(slot, entry, i);
@@ -1882,7 +1998,11 @@ u32 fn_8017C8FC(FSYSSlot* slot) {
                     case 2:
                     case 7:
                         FSYS_SLOT_CURRENT_SUB(slot) = sub;
-                        FSYSScheduleSceneRead(slot, entry, sub);
+                        if ((entry->flags & FSYS_COMPRESSED_FLAG) != 0) {
+                            FSYSScheduleSceneRead(slot, entry, sub);
+                        } else {
+                            FSYSScheduleSceneRead(slot, entry, sub);
+                        }
                         break;
                     default:
                         break;
@@ -1953,9 +2073,54 @@ u32 fn_8017CED8(FSYSSlot* slot) {
     archiveSize = slot->field_1C;
     cached = fn_8017F794(slot->fileHandle, 0, 1);
     if (cached == 0) {
+        FSYSFileHandle* table;
+        s32 handleID;
+        s32 found;
+        s32 j;
+
         alignedArchiveSize = FSYSAlign32(archiveSize);
         DCFlushRange(slot->archiveData, alignedArchiveSize);
-        FSYSEvictUntilSpace(slot, alignedArchiveSize);
+        if (alignedArchiveSize > fn_8017FA5C()) {
+            table = (FSYSFileHandle*)lbl_8047B1B8;
+            found = -1;
+            for (j = 0; j < (s32)lbl_8047B1BC; j++) {
+                if (table[j].handleID == (s32)slot->field_08) {
+                    found = table[j].handleID;
+                    break;
+                }
+            }
+            if (found < 0) {
+                do {
+                    table = (FSYSFileHandle*)lbl_8047B1B8;
+                    handleID = table[0].handleID;
+                    if (handleID < 0) {
+                        break;
+                    }
+                    fn_8017F800((u32)handleID);
+
+                    found = -1;
+                    table = (FSYSFileHandle*)lbl_8047B1B8;
+                    for (j = 0; j < (s32)lbl_8047B1BC; j++) {
+                        if (table[j].handleID == handleID) {
+                            table[j].handleID = -1;
+                            found = j;
+                            break;
+                        }
+                    }
+                    if (found < 0) {
+                        break;
+                    }
+
+                    for (j = 0; j < (s32)lbl_8047B1BC - 1; j++) {
+                        if (j >= found) {
+                            table[j] = table[j + 1];
+                        }
+                    }
+                    lbl_8047B1BC--;
+                    table[lbl_8047B1BC].handleID = -1;
+                } while (alignedArchiveSize > fn_8017FA5C());
+            }
+        }
         cached = fn_8017F928(alignedArchiveSize, slot->fileHandle, 0, 1);
         if (cached != 0) {
             fn_80180450(slot->archiveData, (void*)cached, alignedArchiveSize);
@@ -2294,6 +2459,7 @@ void fn_8017DB74(FSYSSlot* slot) {
     u32 headerSize;
     u32 archiveSize;
     u32 cached;
+    u8 loaded;
     void* archive;
 
     headerSize = 0x40;
@@ -2305,27 +2471,69 @@ void fn_8017DB74(FSYSSlot* slot) {
 
     cached = fn_8017F794(slot->fileHandle, 0, 0);
     if (cached == 0) {
-        FSYSEvictUntilSpace(slot, FSYSAlign32(headerSize));
+        FSYSFileHandle* table;
+        s32 handleID;
+        s32 found;
+        s32 j;
+
+        table = (FSYSFileHandle*)lbl_8047B1B8;
+        found = -1;
+        for (j = 0; j < (s32)lbl_8047B1BC; j++) {
+            if (table[j].handleID == (s32)slot->field_08) {
+                found = table[j].handleID;
+                break;
+            }
+        }
+        if (found < 0) {
+            while (FSYSAlign32(headerSize) > fn_8017FA5C()) {
+                table = (FSYSFileHandle*)lbl_8047B1B8;
+                handleID = table[0].handleID;
+                if (handleID < 0) {
+                    break;
+                }
+                fn_8017F800((u32)handleID);
+                found = -1;
+                table = (FSYSFileHandle*)lbl_8047B1B8;
+                for (j = 0; j < (s32)lbl_8047B1BC; j++) {
+                    if (table[j].handleID == handleID) {
+                        table[j].handleID = -1;
+                        found = j;
+                        break;
+                    }
+                }
+                if (found < 0) {
+                    break;
+                }
+                for (j = 0; j < (s32)lbl_8047B1BC - 1; j++) {
+                    if (j >= found) {
+                        table[j] = table[j + 1];
+                    }
+                }
+                lbl_8047B1BC--;
+                table[lbl_8047B1BC].handleID = -1;
+            }
+        }
         cached = fn_8017F928(FSYSAlign32(headerSize), slot->fileHandle, 0, 0);
         if (cached != 0) {
             fn_80180450(slot, (void*)cached, FSYSAlign32(headerSize));
         }
     }
 
-    archiveSize = slot->field_1C;
+    archiveSize = FSYSAlign32(slot->field_1C);
     archive = FSYSAllocHandle2C04(archiveSize);
     slot->archiveData = archive;
 
+    loaded = 0;
     cached = fn_8017F794(slot->fileHandle, 0, 1);
-    if (cached != 0 && archive != NULL) {
+    if (cached != 0) {
         fn_80180320(archive, (void*)cached, FSYSAlign32(archiveSize));
         DCFlushRange(archive, FSYSAlign32(archiveSize));
         slot->status = 4;
-        return;
+        loaded = 1;
     }
 
-    slot->status = 3;
-    if (archive != NULL) {
+    if (loaded == 0) {
+        slot->status = 3;
         memcpy(archive, slot, headerSize);
         fn_80167E98(FSYS_SLOT_FILE0(slot), (u8*)archive + headerSize,
                     (archiveSize - 0x21) & ~0x1Fu, headerSize, fn_8017F108);

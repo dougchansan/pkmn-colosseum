@@ -10,11 +10,11 @@
 #include "dolphin/types.h"
 
 /* 0x80011EA4 | 0x9B4 -- GSnpc_WarpToLocation continued */
-extern void winSpriteSetDisp();
-extern void winSpriteGetDisp();
+extern void winSpriteSetDisp(void*, s32);
+extern s32 winSpriteGetDisp(void*);
 extern void fn_8001DACC();
 extern void fn_8010B9E8();
-extern void fightFloorGetStatus();
+extern s32 fightFloorGetStatus(s32, s32, s32, s32);
 extern void GSmsgGetGSchar();
 extern void windowDrawSprite2();
 extern void fn_800D88DC();
@@ -38,13 +38,15 @@ extern f32 lbl_8047B71C;
 extern f32 lbl_8047B728;
 extern f32 lbl_8047B72C;
 extern u8 lbl_80314E08[];
+extern void* windowGetAllocPtr(void*);
+extern void* windowGetFreeWork(void*);
 
 #if 0
 asm void fn_80011EA4(void) {
 #include "src/game/gs_npc_interact_fn_80011EA4.inc"
 }
 #else
-void fn_80011EA4(void) {
+void fn_80011EA4(void* window, void* sprite) {
     extern u8 lbl_80314E08[];
     extern f32 lbl_8047B718;
     extern f32 lbl_8047B71C;
@@ -65,16 +67,13 @@ void fn_80011EA4(void) {
     extern void fn_800D888C();
     extern void fn_800D88DC();
     extern void GSmsgGetGSchar();
-    extern void windowGetAllocPtr();
-    extern void windowGetFreeWork();
     extern void windowDrawSprite2();
-    extern void winSpriteGetDisp();
     extern void fn_8010B9E8();
-    extern void fightFloorGetStatus();
+    extern s32 fightFloorGetStatus(s32, s32, s32, s32);
     u8 sp[0x70];
     u32 tmp = 0;
-    u32 r3 = 0;
-    u32 r4 = 0;
+    u32 r3 = (u32)window;
+    u32 r4 = (u32)sprite;
     u32 r5 = 0;
     u32 r6 = 0;
     u32 r7 = 0;
@@ -97,14 +96,9 @@ void fn_80011EA4(void) {
 
     r27 = r3;
     r28 = r4;
-    windowGetAllocPtr();
-    tmp = r3;
-    r3 = r27;
-    r30 = tmp;
-    windowGetFreeWork();
-    r31 = r3;
-    r3 = r27;
-    windowGetAllocPtr();
+    r30 = (u32)windowGetAllocPtr((void*)r27);
+    r31 = (u32)windowGetFreeWork((void*)r27);
+    r3 = (u32)windowGetAllocPtr((void*)r27);
     r6 = *(s16*)((u8*)r28 + 0x6);
     r4 = 0x1;
     r5 = *(u8*)((u8*)r3 + 0x16);
@@ -179,11 +173,8 @@ do {
         r4 = 0x0;
     }
 } while (0);
-    r3 = r28;
-    ((void(*)(void))winSpriteSetDisp)();
-    r3 = r28;
-    winSpriteGetDisp();
-    tmp = r3 & 0xFF;
+    winSpriteSetDisp((void*)r28, (s32)r4);
+    tmp = (u32)winSpriteGetDisp((void*)r28) & 0xFF;
     if (tmp == 0) return;
     tmp = *(s16*)((u8*)r28 + 0x6);
     r3 = -0x100;
@@ -197,20 +188,22 @@ do {
                         if ((s32)tmp == 0x9a) goto L_8001215C;
                         if ((s32)tmp < 0x9a) return;
                         if ((s32)tmp < 0x9d) return;
+                        goto L_80012110;
 
                     }
                     if ((s32)tmp == 0xa1) goto L_80012170;
-                    if ((s32)tmp < 0xa1) return;
+                    if ((s32)tmp < 0xa1) goto L_800122C8;
 
                 }
                 if ((s32)tmp < 0xaa) {
                     if ((s32)tmp == 0xa5) goto L_8001215C;
                     if ((s32)tmp < 0xa5) return;
                     if ((s32)tmp < 0xa8) return;
+                    goto L_80012110;
 
                 }
                 if ((s32)tmp == 0xac) goto L_80012170;
-                if ((s32)tmp < 0xac) return;
+                if ((s32)tmp < 0xac) goto L_800122C8;
 
             }
             if ((s32)tmp == 0x53a) goto L_800123A4;
@@ -235,6 +228,7 @@ do {
             if ((s32)tmp >= 0x540) return;
             goto L_80012758;
 
+        L_80012110:
             tmp = *(u8*)((u8*)r30 + 0x29);
             if (tmp != 2) return;
             r5 = *(u16*)((u8*)r31 + 0x6);
@@ -247,9 +241,7 @@ do {
             f1 = f1 - f2;
             f1 = f1 / f0;
             fn_8001DACC();
-            r3 = r28;
-            r4 = 0x0;
-            ((void(*)(void))winSpriteSetDisp)();
+            winSpriteSetDisp((void*)r28, 0);
             return;
         L_8001215C:
             r5 = *(u16*)((u8*)r30 + 0x26);
@@ -259,12 +251,7 @@ do {
             return;
         L_80012170:
         do {
-            r3 = 0x0;
-            r4 = 0x0;
-            r5 = 0x32;
-            r6 = 0x0;
-            fightFloorGetStatus();
-            if ((s32)r3 != 0) {
+            if (fightFloorGetStatus(0, 0, 0x32, 0) != 0) {
                 tmp = *(u8*)((u8*)r30 + 0x16);
                 if (tmp != 0) return;
             }
@@ -328,6 +315,7 @@ do {
             ((void(*)(void))fn_800FB680)();
             return;
 
+        L_800122C8:
             r4 = *(u8*)((u8*)r30 + 0x17);
             r3 = 0x34;
             ((void(*)(void))msgctrlSetValue)();
@@ -443,8 +431,7 @@ L_800123CC:
             *(u32*)(sp + 0x34) = tmp;
             f0 = f0 / f1;
             f2 = f2 - f3;
-            /* cror eq, lt, eq */;
-            if (f2 == f0) {
+            if (f2 <= f0) {
                 r31 = 0x80000000;
                 break;
             }
@@ -453,8 +440,7 @@ L_800123CC:
             f0 = f0 * f30;
             f0 = f0 / f1;
             f1 = f1 - f3;
-            /* cror eq, lt, eq */;
-            if (f1 == f0) {
+            if (f1 <= f0) {
                 r31 = 0x64640000;
                 break;
             }
@@ -500,9 +486,8 @@ L_800123CC:
         fn_800D6728();
     }
     f0 = lbl_8047B718;
-    /* cror eq, lt, eq */;
     do {
-        if (f31 == f0) {
+        if (f31 <= f0) {
             r9 = 0x0;
             break;
         }
@@ -510,16 +495,14 @@ L_800123CC:
         f1 = lbl_8047B71C;
         f0 = f0 * f30;
         f0 = f0 / f1;
-        /* cror eq, lt, eq */;
-        if (f31 == f0) {
+        if (f31 <= f0) {
             r9 = 0x1ad;
             break;
         }
         f0 = lbl_8047B728;
         f0 = f0 * f30;
         f0 = f0 / f1;
-        /* cror eq, lt, eq */;
-        if (f31 == f0) {
+        if (f31 <= f0) {
             r9 = 0x1b0;
             break;
         }

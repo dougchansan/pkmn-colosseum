@@ -378,6 +378,133 @@ u32 fn_800566E8(void) {
 
 #pragma optimization_level 4
 #pragma scheduling off
+void fn_80056C54(u8* a, u8* b, u32 c) {
+    extern f32 lbl_8047A58C;
+    extern f32 lbl_8047BEF8;
+    extern f32 lbl_8047BEF0;
+    extern f32 lbl_8047BEF4;
+    extern f32 lbl_8047BEFC;
+    extern f64 lbl_8047BEE8;
+    extern f64 lbl_8047BEE0;
+    extern u8 lbl_80314F98[];
+    extern void fn_800FE6D0(s16, s16);
+    extern void spriteSetEnv(void);
+    extern s32 fn_80057DE8(void*);
+    extern void* fn_80057F94(void*);
+    extern u16 GStextureGetXsize(void*);
+    extern u16 GStextureGetYsize(void*);
+    extern void fn_800D7820(void*);
+    extern void fn_800D85D4(s32, void*);
+    extern void fn_800D6A00(s32);
+    extern void fn_800D67BC(s32);
+    extern void fn_800D61E4(s16, s16);
+    extern void fn_800D5CB8(s32, s32, s32, s32, s32);
+    extern void fn_800D59B8(s32, f32, f32);
+    extern void fn_800D6728(void);
+    extern void fn_800D88DC(u32);
+    extern void* menuSpriteBiosGetPtr(s32);
+    extern void windowDrawSprite2(s32, s32, s16, s16, s32, void*, s32, s32);
+    u8* pokemon;
+    void* texture;
+    s32 alpha;
+    s16 left;
+    s16 top;
+    s16 width;
+    s16 height;
+    s16 insetX;
+    s16 insetY;
+    s16 right;
+    s16 bottom;
+    f32 t;
+    f32 scaleS0;
+    f32 scaleS1;
+    f32 scaleT0;
+    f32 scaleT1;
+
+    *(s16*)(a + 0x84) = (s16)(s32)*(f32*)(lbl_803A9768 + 0x27c);
+    *(s16*)(a + 0x86) = (s16)(s32)*(f32*)(lbl_803A9768 + 0x280);
+    fn_800FE6D0((s16)(*(s16*)(a + 0x84) + *(s16*)(b + 0x50)),
+                (s16)(*(s16*)(a + 0x86) + *(s16*)(b + 0x52)));
+    spriteSetEnv();
+
+    pokemon = lbl_803A9768 + c * 0x138 + 8;
+    if (fn_80123FBC(pokemon) != 0) {
+        texture = fn_80057F94(pokemon);
+        if (texture != NULL) {
+            if (fn_80057DE8(pokemon) != 0) {
+                if (lbl_8047A58C < lbl_8047BEF8) {
+                    t = lbl_8047BEF0 * lbl_8047A58C;
+                } else {
+                    t = lbl_8047BEF4 -
+                        (lbl_8047BEF0 * (lbl_8047A58C - lbl_8047BEF8));
+                }
+                alpha = (s32)(lbl_8047BEFC * t);
+            } else {
+                alpha = 0;
+            }
+
+            if (lbl_8047A588 < lbl_8047BEF4) {
+                t = lbl_8047BEF4 - lbl_8047A588;
+                insetX = (s16)(((s16)*(u16*)(b + 0x54) -
+                                (s16)(t * *(s16*)(b + 0x54))) /
+                               2);
+                insetY = (s16)(((s16)*(u16*)(b + 0x56) -
+                                (s16)(t * *(s16*)(b + 0x56))) /
+                               2);
+                width = (s16)(*(s16*)(b + 0x54) - insetX);
+                height = (s16)(*(s16*)(b + 0x56) - insetY);
+            } else {
+                insetX = 0;
+                insetY = 0;
+                width = *(s16*)(b + 0x54);
+                height = *(s16*)(b + 0x56);
+            }
+
+            left = *(s16*)(b + 0x54);
+            top = *(s16*)(b + 0x56);
+            right = *(s16*)(b + 0x56);
+            bottom = *(s16*)(b + 0x54);
+            fn_800D88DC(-0x7ffffffe);
+            fn_800DC0D4(0, 0xf, 0xb, 0xa, 8);
+            fn_800DC14C(0, 0, 0, 0, 1, 0);
+            fn_800DBFD4(0, 7, 7, 7, 4);
+            fn_800DC04C(0, 0, 0, 0, 1, 0);
+
+            scaleS0 = lbl_8047BF00 / (f32)GStextureGetXsize(texture);
+            scaleS1 = (f32)left / (f32)GStextureGetXsize(texture);
+            scaleT0 = lbl_8047BF00 / (f32)GStextureGetYsize(texture);
+            scaleT1 = (f32)right / (f32)GStextureGetYsize(texture);
+
+            fn_800D7820(lbl_80314F98);
+            fn_800D85D4(0, texture);
+            fn_800D6A00(7);
+            fn_800D67BC(2);
+            fn_800D61E4(insetX, insetY);
+            fn_800D5CB8(0, 0x3c, 0xc, 0xff, alpha);
+            fn_800D59B8(0, scaleS0, scaleT0);
+            fn_800D61E4((s16)(insetX + width), (s16)(insetY + height));
+            fn_800D5CB8(0, 0x3c, 0xc, 0xff, alpha);
+            fn_800D59B8(0, scaleS1, scaleT1);
+            fn_800D6728();
+            fn_800D888C(0x80000000);
+            return;
+        }
+
+        {
+            void* bios = menuSpriteBiosGetPtr(0x232);
+            s16 drawW = *(s16*)((u8*)bios + 0xc);
+
+            bios = menuSpriteBiosGetPtr(0x232);
+            windowDrawSprite2(0, 0, drawW, *(s16*)((u8*)bios + 0xe), -1,
+                              a, 0x232, 0);
+        }
+    }
+    return;
+}
+#pragma scheduling on
+
+#pragma optimization_level 4
+#pragma scheduling off
 void fn_80057094(s16* a, s16* b) {
     *a = (s16)(s32)*(f32*)(lbl_803A9768 + 0x27c);
     *b = (s16)(s32)*(f32*)(lbl_803A9768 + 0x280);

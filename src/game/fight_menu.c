@@ -1657,6 +1657,7 @@ u32 fightMenuFightTrainerAgbHeroOpenMenu(u32 r3, u32 r4)
     u32 targetIndex;
     u32 sideIndex;
     u32 optionIndex;
+    u32 pokemonIndex;
     u32 scanIndex;
     u32 sideObj;
     u32 optionObj;
@@ -1804,12 +1805,20 @@ u32 fightMenuFightTrainerAgbHeroOpenMenu(u32 r3, u32 r4)
                             while ((optionIndex & 0xffff) < optionCount) {
                                 optionObj = fightSideGetValidFightTrainerPtr(sideObj, optionIndex);
                                 if (optionObj != 0) {
-                                    selected = fightTrainerGetStatus(optionObj, 0, 0x46, scanIndex);
-                                    if ((u16)scanIndex == targetIndex) {
-                                        done = 1;
+                                    pokemonIndex = 0;
+                                    while ((pokemonIndex & 0xffff) < count) {
+                                        selected = fightTrainerGetStatus(
+                                            optionObj, 0, 0x46, pokemonIndex);
+                                        if ((u16)scanIndex == targetIndex) {
+                                            done = 1;
+                                            break;
+                                        }
+                                        scanIndex++;
+                                        pokemonIndex++;
+                                    }
+                                    if (done == 1) {
                                         break;
                                     }
-                                    scanIndex++;
                                 }
                                 optionIndex++;
                             }

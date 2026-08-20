@@ -4,7 +4,7 @@
  * Score-isolation candidate: the inherited semantic recovery lived in the
  * broad gs_event_exec scratch TU, while this object owns the retail range.
  */
-extern u8* windowGetFreeWork(void);
+extern void* windowGetFreeWork(void*);
 extern void* windowAllocMemory(void*, s32);
 extern void* windowGetAllocPtr(void*);
 extern u8 windowSearchID(s32);
@@ -18,7 +18,7 @@ s32 fn_800129A8(u8* ctx)
     s32 kind;
     void* buffer;
 
-    work = windowGetFreeWork();
+    work = windowGetFreeWork(ctx);
     if ((s8)ctx[1] == 0) {
         buffer = windowAllocMemory(ctx, 0x30);
         if (buffer != NULL) {

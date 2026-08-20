@@ -851,23 +851,127 @@ asm void _matGSmatEnableEnvMapExt(void) {
 }
 #else
 void _matGSmatEnableEnvMapExt(u8* obj) {
+    extern void* fn_800EF548(u32, u32);
+    extern u16 fn_800EF4FC(u32);
+    extern u16 fn_800EF4F4(u32);
+    extern s32 fn_800EF3E0(u32, u32);
+    extern u8 fn_800EF4E4(u32);
+    extern void fn_800EF504(u32);
+    extern void* fn_801BE4CC(void);
+    extern void* fn_801A6DC4(void*);
+    extern void fn_801A6FF0(void*);
+    extern void fn_801BBED4(void*);
+    void (*imageDescFree)(void*) = (void (*)(void*))HSD_ImageDescFree;
+    void (*imageDescRemove)(void*) = (void (*)(void*))HSD_ImageDescRemove;
+    void (*mobjAddNext)(void*, void*, void*) =
+        (void (*)(void*, void*, void*))HSD_MObjAddTObjNext;
+    void (*mobjAdd)(void*, void*) = (void (*)(void*, void*))fn_801A6DA0;
     u32 image;
-
-    if (obj == 0) {
-        return;
-    }
+    u16 enabledFlags;
+    u8* mobj;
+    u8* imageDesc;
+    u8* tobj;
+    u8* current;
+    u32 textureFlags;
+    s32 format;
 
     image = *(u32*)(obj + 0x28);
-    if (image == 0) {
+    mobj = *(u8**)(obj + 8);
+    if (image != 0) {
+        imageDesc = HSD_ImageDescAlloc();
+        *(u32*)(lbl_803154E4 + 0x40) = 0x80;
+        *(f32*)(lbl_803154E4 + 0x44) = *(f32*)(obj + 0x34);
+        switch (*(s32*)(obj + 0x2C)) {
+        case 1:
+            *(u32*)(lbl_803154E4 + 0x40) = 0x85;
+            break;
+        case 0:
+            *(u32*)(lbl_803154E4 + 0x40) = 0x81;
+            break;
+        default:
+            *(u32*)(lbl_803154E4 + 0x40) |= 6;
+            break;
+        }
+        if (*(s32*)(obj + 0x30) == 0) {
+            *(u32*)(lbl_803154E4 + 0x40) |= 0x40000;
+        } else {
+            *(u32*)(lbl_803154E4 + 0x40) |= 0x30000;
+        }
+
+        *(void**)(imageDesc + 0) = fn_800EF548(image, 0);
+        *(u16*)(imageDesc + 4) = fn_800EF4FC(image);
+        *(u16*)(imageDesc + 6) = fn_800EF4F4(image);
+        format = fn_800EF3E0(image, 1);
+        *(s32*)(imageDesc + 8) = format;
+        if (!((format >= 0 && format < 7) || format == 14)) {
+            GSlogWrite(lbl_802705D0);
+            imageDescFree(imageDesc);
+            imageDescRemove(imageDesc);
+        } else {
+            textureFlags = fn_800EF4E4(image);
+            *(u32*)(imageDesc + 0xC) = textureFlags != 0;
+            *(f32*)(imageDesc + 0x10) = lbl_8047CAC8;
+            *(f32*)(imageDesc + 0x14) = lbl_8047CAC8;
+            *(void**)(lbl_803154E4 + 0x4C) = imageDesc;
+            tobj = fn_801BE4CC();
+            current = fn_801A6DC4(mobj);
+            if (current != NULL) {
+                while (*(u8**)(current + 8) != NULL) {
+                    current = *(u8**)(current + 8);
+                }
+                mobjAddNext(mobj, current, tobj);
+            } else {
+                mobjAdd(mobj, tobj);
+            }
+            *(u8**)(obj + 0x20) = tobj;
+            *(u8**)(obj + 0x24) = imageDesc;
+            fn_800EF504(image);
+            return;
+        }
+    } else {
         GSlogWrite(lbl_80270610);
-        return;
     }
 
-    *(u32*)(*(u8**)(obj + 0x8) + 0x20) = (u32)obj;
-    *(u32*)(obj + 0x20) = image;
-    *(u32*)(obj + 0x24) = 0;
-    GStextureUnlockImage((void*)image);
-    HSD_MObjCompileTev(*(void**)(obj + 0x8));
+    enabledFlags = *(u16*)(obj + 2) & 4;
+    if (enabledFlags & 1) {
+        obj[0xC] = 0x7F;
+        obj[0xD] = 0x7F;
+        obj[0xE] = 0x7F;
+        obj[0xF] = 0x7F;
+    }
+    if (enabledFlags & 2) {
+        *(u32*)(obj + 0x10) = 0;
+        *(u32*)(obj + 0x14) = 1;
+        *(u32*)(obj + 0x18) = 2;
+        *(u32*)(obj + 0x1C) = 3;
+    }
+    if (enabledFlags & 4) {
+        tobj = *(u8**)(obj + 0x20);
+        current = *(u8**)(mobj + 8);
+        if (current != NULL && tobj != NULL) {
+            if (current == tobj) {
+                *(u8**)(mobj + 8) = *(u8**)(tobj + 8);
+            } else {
+                while (current != NULL) {
+                    if (*(u8**)(current + 8) == tobj) {
+                        *(u8**)(current + 8) = *(u8**)(tobj + 8);
+                    }
+                    current = *(u8**)(current + 8);
+                }
+            }
+            imageDesc = *(u8**)(obj + 0x24);
+            if (imageDesc != NULL) {
+                imageDescFree(imageDesc);
+            }
+            fn_801BBED4(tobj);
+        }
+        *(u32*)(obj + 0x28) = 0;
+    }
+    *(u16*)(obj + 2) &= ~enabledFlags;
+    if (*(u16*)(obj + 2) == 0) {
+        *(u32*)(mobj + 0x20) = 0;
+    }
+    fn_801A6FF0(mobj);
 }
 #endif
 

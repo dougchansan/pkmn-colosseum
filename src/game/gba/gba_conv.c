@@ -5353,6 +5353,7 @@ void fn_800889E4(void) {
     savedataGetStatus();
     r31 = r3;
     r27 = r31 + (0x1 << 16);
+    r28 = r27 - 0x3658;
     ((void(*)(void))fn_8006A7BC)();
     tmp = r3 & 0xFF;
     if (tmp != 0) {

@@ -835,7 +835,7 @@ static inline void FObjLaunchKeyDataInline(HSD_FObj* fobj)
 {
     if (fobj->flags & 0x40) {
         fobj->op_intrp = fobj->op;
-        fobj->flags &= (u8)~0x40;
+        fobj->flags &= ~0x40;
         fobj->flags |= 0x80;
         fobj->p0 = fobj->p1;
     }

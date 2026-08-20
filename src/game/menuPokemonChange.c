@@ -804,11 +804,6 @@ void fn_8002E460(void* mapCtx)
     s32 status;
     s32 i;
 
-    /* field-id groups refreshed every tick: index 0 carries the flag itself,
-       the remaining four carry its logical negation (lit/unlit state). */
-    static const s32 idsA[5] = { 0x11A8, 0x0F9B, 0x0F9A, 0x0FA3, 0x0FA5 };
-    static const s32 idsB[5] = { 0x11A9, 0x0F99, 0x0F98, 0x0FA4, 0x0FA6 };
-
     handleA = heroGetStatus((void*)0, 3, lbl_8047A424 & 0xFFFF);
     handleB = heroGetStatus(state + 0x170, 3, lbl_8047A420 & 0xFFFF);
 
@@ -822,10 +817,16 @@ void fn_8002E460(void* mapCtx)
     /* initial menu-field priming: first of each group = 0, the rest = 1 */
     {
         u8* mo; u8* fh;
-        mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, idsA[0]); winSpriteSetDisp(fh, 0);
-        for (i = 1; i < 5; i++) { mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, idsA[i]); winSpriteSetDisp(fh, 1); }
-        mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, idsB[0]); winSpriteSetDisp(fh, 0);
-        for (i = 1; i < 5; i++) { mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, idsB[i]); winSpriteSetDisp(fh, 1); }
+        mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, 0x11A8); winSpriteSetDisp(fh, 0);
+        mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, 0x0F9B); winSpriteSetDisp(fh, 1);
+        mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, 0x0F9A); winSpriteSetDisp(fh, 1);
+        mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, 0x0FA3); winSpriteSetDisp(fh, 1);
+        mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, 0x0FA5); winSpriteSetDisp(fh, 1);
+        mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, 0x11A9); winSpriteSetDisp(fh, 0);
+        mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, 0x0F99); winSpriteSetDisp(fh, 1);
+        mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, 0x0F98); winSpriteSetDisp(fh, 1);
+        mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, 0x0FA4); winSpriteSetDisp(fh, 1);
+        mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, 0x0FA6); winSpriteSetDisp(fh, 1);
     }
 
     fadeSet(lbl_8047B9D0, 2);
@@ -907,10 +908,16 @@ void fn_8002E460(void* mapCtx)
             u8* mo; u8* fh;
             s32 notA = ((doneA & 0xFF) == 0) ? 1 : 0;
             s32 notB = ((doneB & 0xFF) == 0) ? 1 : 0;
-            mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, idsA[0]); winSpriteSetDisp(fh, doneA);
-            for (i = 1; i < 5; i++) { mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, idsA[i]); winSpriteSetDisp(fh, notA); }
-            mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, idsB[0]); winSpriteSetDisp(fh, doneB);
-            for (i = 1; i < 5; i++) { mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, idsB[i]); winSpriteSetDisp(fh, notB); }
+            mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, 0x11A8); winSpriteSetDisp(fh, doneA);
+            mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, 0x0F9B); winSpriteSetDisp(fh, notA);
+            mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, 0x0F9A); winSpriteSetDisp(fh, notA);
+            mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, 0x0FA3); winSpriteSetDisp(fh, notA);
+            mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, 0x0FA5); winSpriteSetDisp(fh, notA);
+            mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, 0x11A9); winSpriteSetDisp(fh, doneB);
+            mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, 0x0F99); winSpriteSetDisp(fh, notB);
+            mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, 0x0F98); winSpriteSetDisp(fh, notB);
+            mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, 0x0FA4); winSpriteSetDisp(fh, notB);
+            mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, 0x0FA6); winSpriteSetDisp(fh, notB);
         }
     }
 
@@ -919,13 +926,29 @@ void fn_8002E460(void* mapCtx)
         u8* mo; u8* fh;
         s32 notA = ((doneA & 0xFF) == 0) ? 1 : 0;
         s32 notB = ((doneB & 0xFF) == 0) ? 1 : 0;
-        mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, idsA[0]); winSpriteSetDisp(fh, doneA);
-        for (i = 1; i < 5; i++) { mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, idsA[i]); winSpriteSetDisp(fh, notA); }
-        mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, idsB[0]); winSpriteSetDisp(fh, doneB);
-        for (i = 1; i < 5; i++) { mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, idsB[i]); winSpriteSetDisp(fh, notB); }
+        mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, 0x11A8); winSpriteSetDisp(fh, doneA);
+        mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, 0x0F9B); winSpriteSetDisp(fh, notA);
+        mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, 0x0F9A); winSpriteSetDisp(fh, notA);
+        mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, 0x0FA3); winSpriteSetDisp(fh, notA);
+        mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, 0x0FA5); winSpriteSetDisp(fh, notA);
+        mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, 0x11A9); winSpriteSetDisp(fh, doneB);
+        mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, 0x0F99); winSpriteSetDisp(fh, notB);
+        mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, 0x0F98); winSpriteSetDisp(fh, notB);
+        mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, 0x0FA4); winSpriteSetDisp(fh, notB);
+        mo = windowSearchID(0xDB); fh = windowSearchItemID(mo, 0x0FA6); winSpriteSetDisp(fh, notB);
     }
 
-    if ((doneA & 0xFF) != 0 && (doneB & 0xFF) != 0) {
+    if ((doneA & 0xFF) == 0 || (doneB & 0xFF) == 0) {
+        /* ---- abort path (L_8002E9A8) ---- */
+        menuClose(0xDB);
+        lbl_8047A428 = (u32)-1;
+        lbl_8047A424 = (u32)-1;
+        lbl_8047A420 = (u32)-1;
+        fn_8010A420(state + 0xD18);
+        fn_8010A420(state + 0xCD0);
+        (*(u8*)&lbl_8047A410) = 1;
+        lbl_8047A42C = 2;
+    } else {
         /* ---- commit path (L_8002E9E4) ---- */
         u32* src;
         u32* dst;
@@ -951,16 +974,6 @@ void fn_8002E460(void* mapCtx)
         fadeSet(lbl_8047B9D0, 3);
         fadeCheck(1);
         menuClose(0xDB);
-    } else {
-        /* ---- abort path (L_8002E9A8) ---- */
-        menuClose(0xDB);
-        lbl_8047A428 = (u32)-1;
-        lbl_8047A424 = (u32)-1;
-        lbl_8047A420 = (u32)-1;
-        fn_8010A420(state + 0xD18);
-        fn_8010A420(state + 0xCD0);
-        (*(u8*)&lbl_8047A410) = 1;
-        lbl_8047A42C = 2;
     }
 }
 #endif

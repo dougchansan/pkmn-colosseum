@@ -1297,6 +1297,7 @@ s32 __CARDUnlock(s32 chan, u8 flashID[12]) {
     u32 answer2 = 0;
     u32* words;
     u8 readBuffer[64];
+    volatile u32 unused[1];
     u32 parameter1A = 0;
     u32 parameter1B = 0;
     u32 parameter2A = 0;

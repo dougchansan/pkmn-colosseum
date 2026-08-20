@@ -75,7 +75,7 @@ extern f32 PSVECMag(void*);
 extern void PSVECCrossProduct(void*, void*, void*);
 extern const DisplayFuncVec lbl_802746D0; /* { 0.0f, 0.0f, 1.0f } */
 extern f32 lbl_80478ACC;
-extern const f32 lbl_8047DA14;   /* 1.0f in sdata2 */
+extern const f32 lbl_8047DA14 __attribute__((section(".sdata2"))); /* 1.0f */
 
 #define DISPLAYFUNC_FLAG_2000 0x2000
 #define DISPLAYFUNC_MTX(mtx, row, col) (((f32*) (mtx))[(row) * 4 + (col)])
@@ -173,7 +173,9 @@ void fn_80198038(HSD_JObj* jobj, Mtx src, Mtx dst)
         magnitude = PSVECMag(&position);
         PSVECScale(&position, &z, -1.0F / (lbl_80478ACC + magnitude));
     } else {
-        z = lbl_802746D0;
+        z.x = 0.0F;
+        z.y = 0.0F;
+        z.z = 1.0F;
     }
 
     PSVECScale(&y, &y, 1.0F / (sy + lbl_80478ACC));
@@ -190,22 +192,21 @@ void fn_80198038(HSD_JObj* jobj, Mtx src, Mtx dst)
         dst[1][1] = sy * y.y;
         dst[2][1] = sy * y.z;
     } else {
-        DisplayFuncVec y2;
         f32 scale;
 
         magnitude = displayfunc_sqrtf(z.x * z.x + z.z * z.z);
         scale = -z.y / (lbl_80478ACC + magnitude);
-        y2.x = z.x * scale;
-        y2.y = lbl_80478ACC + magnitude;
-        y2.z = z.z * scale;
-        PSVECCrossProduct(&y2, &z, &x);
+        y.x = z.x * scale;
+        y.y = lbl_80478ACC + magnitude;
+        y.z = z.z * scale;
+        PSVECCrossProduct(&y, &z, &x);
         sx /= lbl_80478ACC + PSVECMag(&x);
         dst[0][0] = sx * x.x;
         dst[1][0] = sx * x.y;
         dst[2][0] = sx * x.z;
-        dst[0][1] = y2.x;
-        dst[1][1] = y2.y;
-        dst[2][1] = y2.z;
+        dst[0][1] = y.x;
+        dst[1][1] = y.y;
+        dst[2][1] = y.z;
     }
 
     dst[0][2] = sz * z.x;

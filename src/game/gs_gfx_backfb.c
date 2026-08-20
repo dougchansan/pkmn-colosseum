@@ -239,9 +239,9 @@ extern void jumptable_80315364();
 extern u32 GStextureUnlockImage(void*);
 extern u8 lbl_80400EE0[];
 extern u8 lbl_8047AAE0;
-extern void GStextureGetFormat(void);
-extern void GStextureSetWrap(void);
-extern void GStextureSetFilter(void);
+extern u32 GStextureGetFormat(void*);
+extern void GStextureSetWrap(void*, u32, u32);
+extern void GStextureSetFilter(void*, u32, u32, u32);
 extern void* GStextureLockImage(void*, u32);
 extern void GStextureConvertFromHW(void);
 extern void HSD_LObjReqAnimAll(void*, f32);
@@ -460,14 +460,39 @@ asm void GSgfxBeginBackFBCapture(void) {
 #include "src/game/gs_render_GSgfxBeginBackFBCapture.inc"
 }
 #else
-void GSgfxBeginBackFBCapture(void) {
-    if (lbl_8047AAE0 == 0) {
-        GStextureGetFormat();
-        GStextureLockImage(lbl_80400EE0, 0);
-        GStextureSetWrap();
-        GStextureSetFilter();
-        lbl_8047AAE0 = 1;
+u32 GSgfxBeginBackFBCapture(void* texture, void* callback, void* userData) {
+    GSbackFBCapture* capture;
+    u32 i;
+
+    i = GStextureGetFormat(texture);
+    if (!((i >= 0x40 && i < 0x46) || i == 0x90)) {
+        return 0;
     }
+
+    if (GSbackFBFindCapture(texture) != NULL) {
+        return 0;
+    }
+
+    capture = (GSbackFBCapture*)lbl_80400EE0;
+    for (i = 0; i < 4; i++, capture++) {
+        if (capture->active == 0) {
+            break;
+        }
+    }
+    if (i == 4) {
+        return 0;
+    }
+
+    capture->active = 1;
+    capture->texture = texture;
+    capture->callback = callback;
+    capture->userData = userData;
+    capture->param = 0;
+    GStextureSetWrap(capture->texture, 0, 0);
+    GStextureSetFilter(capture->texture, 2, 2, 0);
+    GStextureLockImage(capture->texture, 0);
+    lbl_8047AAE0 = 1;
+    return 1;
 }
 #endif
 

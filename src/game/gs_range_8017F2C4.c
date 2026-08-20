@@ -12,7 +12,9 @@
 extern u8 lbl_80452FC8[0x1000];
 extern u32 lbl_80453FDC[];
 
-void fn_8017F2C4(u8* destination, const u8* source)
+#pragma push
+#pragma optimization_level 0
+void fn_8017F2C4(u8* destination, const u8* source, u32 size)
 {
     u32 sourceIndex;
     u32 destinationIndex;
@@ -22,6 +24,7 @@ void fn_8017F2C4(u8* destination, const u8* source)
     u32 offset;
     u32 length;
     u32 index;
+    u32 chunkCount;
     u8 value;
     u8 first;
     u8 second;
@@ -30,6 +33,7 @@ void fn_8017F2C4(u8* destination, const u8* source)
     destinationIndex = 0;
     dictionaryIndex = 0xFEE;
     flags = 0;
+    chunkCount = 0;
     source += 0x10;
     sourceLimit = lbl_80453FDC[2] - 0x10;
 
@@ -71,8 +75,10 @@ void fn_8017F2C4(u8* destination, const u8* source)
                 index++;
             } while (index <= length);
         }
+        chunkCount++;
     }
 }
+#pragma pop
 
 typedef struct GsRangeRequest {
     u8 _pad_0[0x20];
@@ -441,6 +447,9 @@ static GsRangeMemNode* rangeFindFreeDescriptor(void* data)
     return NULL;
 }
 
+#pragma push
+#pragma optimization_level 0
+#pragma peephole off
 void fn_8017FB08(void* allocation)
 {
     GsRangeMemNode* block;
@@ -529,6 +538,10 @@ void fn_8017FB08(void* allocation)
     lbl_8047B1D0 = previous;
 }
 
+#pragma pop
+#pragma push
+#pragma optimization_level 3
+#pragma peephole off
 void* fn_8017FDB0(u32 size)
 {
     GsRangeMemNode* block;
@@ -609,7 +622,9 @@ void* fn_8017FDB0(u32 size)
         fn_8017FB08(descriptor->data);
     }
 }
+#pragma pop
 
+#pragma optimize_for_size on
 void fn_801800F8(u32 queueCount, u32 field04, u32 initialSize)
 {
     GsRangeBufferEntry* buffer;
@@ -627,25 +642,25 @@ void fn_801800F8(u32 queueCount, u32 field04, u32 initialSize)
         allocation = 0;
     }
 
+    lbl_80454018.field0C = 0;
+    lbl_80454018.tail = 0;
+    lbl_80454018.field18 = 0;
     lbl_80454018.field00 = 0;
+    lbl_80454018.entries = allocation;
     lbl_80454018.field04 = 0;
     lbl_80454018.field08 = 0;
-    lbl_80454018.field0C = 0;
     lbl_80454018.field10 = 0;
     lbl_80454018.field14 = 0;
-    lbl_80454018.field18 = 0;
-    lbl_80454018.entries = allocation;
-    lbl_80454018.tail = 0;
     lbl_80454018.count = 0x400;
     lbl_80454018.field2C = 0;
 
     buffer = lbl_80454018.entries;
     i = 0;
     while (i < lbl_80454018.count) {
-        buffer->field00 = 0;
-        buffer->field04 = 0;
-        buffer->field08 = 0;
         buffer->field0C = 0;
+        buffer->field08 = 0;
+        buffer->field04 = 0;
+        buffer->field00 = 0;
         buffer->field1C = 0;
         buffer++;
         i++;
@@ -690,7 +705,11 @@ void fn_801800F8(u32 queueCount, u32 field04, u32 initialSize)
     allocation = fn_8017FDB0(initialSize);
     fn_8017FB08(allocation);
 }
+#pragma optimize_for_size reset
 
+#pragma push
+#pragma optimization_level 3
+#pragma peephole off
 void fn_80180320(void* dst, void* src, u32 size)
 {
     GsRangeDVDQueueEntry* entry;
@@ -734,6 +753,7 @@ void fn_80180320(void* dst, void* src, u32 size)
         }
     }
 }
+#pragma pop
 
 void* fn_80180450(void* src, void* dst, u32 size)
 {
@@ -770,7 +790,7 @@ void* fn_80180450(void* src, void* dst, u32 size)
     entry->srcPtr = src;
     entry->dstPtr = dst;
     entry->size = alignedSize;
-    DCFlushRange(src, alignedSize);
+    DCFlushRange(src, size);
     ARQPostRequest(entry, (u32)entry, 0, 0, (u32)src, (u32)dst,
                    alignedSize, (void (*)(void*))fn_801808E4);
     OSRestoreInterrupts(savedIntr);
@@ -784,6 +804,9 @@ void* fn_80180450(void* src, void* dst, u32 size)
     return result;
 }
 
+#pragma push
+#pragma optimization_level 3
+#pragma peephole off
 void* fn_80180584(void* src, void* dst, u32 size, u32 cbA, u32 cbB)
 {
     GsRangeDVDQueueEntry* entry;
@@ -819,13 +842,17 @@ void* fn_80180584(void* src, void* dst, u32 size, u32 cbA, u32 cbB)
     entry->srcPtr = src;
     entry->dstPtr = dst;
     entry->size = alignedSize;
-    DCFlushRange(src, alignedSize);
+    DCFlushRange(src, size);
     ARQPostRequest(entry, (u32)entry, 1, 0, (u32)dst, (u32)src,
                    alignedSize, (void (*)(void*))fn_801808E4);
     OSRestoreInterrupts(savedIntr);
     return entry;
 }
+#pragma pop
 
+#pragma push
+#pragma optimization_level 3
+#pragma peephole off
 void* fn_80180694(void* src, void* dst, u32 size, u32 cbA, u32 cbB)
 {
     GsRangeDVDQueueEntry* entry;
@@ -861,13 +888,17 @@ void* fn_80180694(void* src, void* dst, u32 size, u32 cbA, u32 cbB)
     entry->srcPtr = src;
     entry->dstPtr = dst;
     entry->size = alignedSize;
-    DCFlushRange(src, alignedSize);
-    fn_800AE630(entry, entry, 0, 0, fn_801808E4, entry, src, dst,
-                alignedSize);
+    DCFlushRange(src, size);
+    ARQPostRequest(entry, (u32)entry, 0, 0, (u32)src, (u32)dst,
+                   alignedSize, (void (*)(void*))fn_801808E4);
     OSRestoreInterrupts(savedIntr);
     return entry;
 }
+#pragma pop
 
+#pragma push
+#pragma optimization_level 3
+#pragma peephole off
 void* fn_801807A8(void* src, void* dst, u32 size)
 {
     GsRangeDVDQueueEntry* entry;
@@ -903,12 +934,13 @@ void* fn_801807A8(void* src, void* dst, u32 size)
     entry->srcPtr = src;
     entry->dstPtr = dst;
     entry->size = alignedSize;
-    DCFlushRange(src, alignedSize);
-    fn_800AE630(entry, entry, 0, 0, fn_801808E4, entry, src, dst,
-                alignedSize);
+    DCFlushRange(src, size);
+    ARQPostRequest(entry, (u32)entry, 0, 0, (u32)src, (u32)dst,
+                   alignedSize, (void (*)(void*))fn_801808E4);
     OSRestoreInterrupts(savedIntr);
     return entry;
 }
+#pragma pop
 
 void fn_801808E4(volatile GsRangeRequest* req)
 {

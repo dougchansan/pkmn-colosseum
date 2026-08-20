@@ -2854,6 +2854,7 @@ void fn_80020C9C(void) {
 
 /* fn_80020EA4 - 0x80020EA4 | size: 0xb0 */
 extern u32 lbl_8047A360;
+extern u32 lbl_8047A364;
 extern u32 lbl_802E4EF0[];
 extern u32 lbl_802E4ED8[];
 #if !defined(GS_TITLE_SPLIT) || defined(GS_TITLE_RANGE_80020EA4)
@@ -2985,7 +2986,197 @@ asm void fn_800210F0(void) {
 #include "src/game/gs_title_fn_800210F0.inc"
 }
 #else
-void fn_800210F0(void) { /* TODO */ }
+s32 fn_800210F0(void)
+{
+    extern u8 lbl_802EF0A8[];
+    extern u8 lbl_803A1FF8[];
+    extern s32 windowGetActiveID(void);
+    extern s32 menuOpen(s32, s32);
+    extern s32 menuOpenCustom(s32, ...);
+    extern s8 menuSubOpenYesNo(s32, s32, s32, s32);
+    extern void menuCloseCustom(s32, s32, s32);
+    extern s32 menuColosseumBattle(s32);
+    extern void fn_800205B8(u32);
+    extern u32 gamedatasaveGetStatus(s32, s32);
+    extern u16 fn_8006A718(s32);
+    extern u8 fn_801D04E8(void);
+    extern s32 fn_800FF58C(s32);
+    extern void menuModelInit(void*, s16, s16);
+    extern s32 menuModelSetMotion(void*, u32);
+    extern void fn_8010A010(void*, u32);
+    extern void* peopleInfoBiosGetPtr(u32);
+    extern void fn_8018F4C8(void*, s32, s32*, void*);
+    extern s32 menuNameEntryOpen(s32, s32);
+    extern void menuNameEntryGetLastName(void*);
+    extern void savedataCreate(u32, const void*);
+    extern void fn_80165A20(s32, s32, s32);
+    extern void fn_800056E4(u8);
+    extern void fn_800056EC(f32);
+    extern void floorLink(s32, s32);
+    extern s32 fn_80005748(void);
+    extern s32 fn_801EF214(void);
+    extern s32 fn_801EF274(void);
+    s32 state;
+    s32 loop;
+    s32 result;
+    s32 workA;
+    s32 workB;
+    u8 nameBuf[0x10];
+
+    state = 0;
+    loop = 1;
+    lbl_8047A364 = 1;
+
+    while (loop != 0) {
+        switch (state) {
+        case 0:
+            state = 1;
+            break;
+
+        case 1:
+            lbl_8047A364 = 1;
+            menuOpen(0x7F, 0);
+            result = menuOpenCustom(0xAA, windowGetActiveID(),
+                                    &lbl_8047A360, 0, 1, 0);
+            if (result < 0) {
+                lbl_8047A360 = -1;
+            }
+            if (result == 0) {
+                state = 5;
+                break;
+            }
+
+            switch ((s32)lbl_8047A360) {
+            case 0:
+                break;
+            case 1:
+                state = 2;
+                break;
+            case 2:
+                menuColosseumBattle(0);
+                loop = 0;
+                break;
+            case 3:
+                menuColosseumBattle(3);
+                loop = 0;
+                break;
+            case 4:
+                lbl_8047A364 = 4;
+                state = 4;
+                break;
+            default:
+                fn_800205B8(1);
+                fn_800FF58C(0x384);
+                state = 0x64;
+                break;
+            }
+            break;
+
+        case 5:
+            if (gamedatasaveGetStatus(0, 4) == 0) {
+                result = 0x3C3A;
+            } else if ((u16)fn_8006A718(0) == 1) {
+                result = 0x44C9;
+            } else {
+                result = 0x3C35;
+            }
+            winMsgOpen(2, result, 1, 1);
+            lbl_8047A364 = 5;
+            state = (s8)menuSubOpenYesNo(0, 0x3C, 0xA6, 1);
+            winMsgClose(1);
+            if (state == 0) {
+                menuCloseCustom(0xAA, 0, 1);
+                menuCloseCustom(0x7A, 0, 1);
+                menuCloseCustom(0x7F, 0, 1);
+                fn_801CB9D8(lbl_8047A35C);
+                fn_8010A420(lbl_803A1FF8);
+                fn_80165A20(1, 0x3E8, 0xFF);
+                menuNameEntryOpen(0, 0);
+                menuNameEntryGetLastName(nameBuf);
+                savedataCreate(0, nameBuf);
+                fn_800056E4(1);
+                fn_800056EC(*(f32*)&lbl_8047B898);
+                heroMoveSyncWithHero();
+                floorLink(0x3A0, 0);
+                state = 0x64;
+            } else {
+                state = 1;
+            }
+            break;
+
+        case 2:
+            fn_800056E4(0);
+            if (gamedatasaveGetStatus(0, 4) != 0) {
+                state = 3;
+                break;
+            }
+            if ((u8)fn_801D04E8() == 0) {
+                winMsgOpen(2, 0x44EA, 1, 0);
+            } else {
+                winMsgOpen(2, 0x444B, 1, 0);
+            }
+            winMsgClose(1);
+            state = 1;
+            break;
+
+        case 3:
+            menuCloseCustom(0xAA, 0, 1);
+            menuCloseCustom(0x7F, 0, 1);
+            menuModelInit(lbl_803A1FF8,
+                          *(s16*)(lbl_802EF0A8 + 0x4EFE),
+                          *(s16*)(lbl_802EF0A8 + 0x4F00));
+            fn_8010A010(lbl_803A1FF8, 0xF70400);
+            fn_8018F4C8(peopleInfoBiosGetPtr(0xF70400), 1, &workA, &workB);
+            menuModelSetMotion(lbl_803A1FF8, workA);
+            workA = fn_80005748();
+            workB = fn_801EF214();
+            result = fn_801EF274();
+            msgctrlSetValue(0x4C, (void*)workA);
+            msgctrlSetValue(0x2F, (void*)result);
+            msgctrlSetValue(0x30, (void*)workB);
+            menuOpen(0x16, 0);
+            winMsgOpen(1, 0x3C22, 0, 1);
+            if ((s8)menuSubOpenYesNo(0, 0x3C, 0xD6, 1) == 0) {
+                heroMoveSyncWithHero();
+                fn_80113FE8();
+                state = 0x64;
+                fn_800056E4(1);
+            } else {
+                state = 1;
+                fn_800056E4(1);
+            }
+            menuCloseCustom(0x16, 0, 1);
+            winMsgClose(1);
+            fn_8010A420(lbl_803A1FF8);
+            break;
+
+        case 4:
+            menuCloseCustom(0x7F, 0, 1);
+            fn_80020C9C();
+            lbl_8047A364 = 1;
+            state = 1;
+            break;
+
+        case 0x64:
+            result = (s32)lbl_8047A360;
+            if (result >= 5 || result < 0) {
+                result = 0;
+            }
+            lbl_8047A358 = result;
+            loop = 0;
+            break;
+
+        default:
+            break;
+        }
+    }
+
+    menuCloseCustom(0xAA, 0, 1);
+    menuCloseCustom(0x7A, 0, 1);
+    menuCloseCustom(0x7F, 0, 1);
+    fn_801CB9D8(lbl_8047A35C);
+    return lbl_8047A360;
+}
 #endif
 #endif
 
@@ -3260,7 +3451,174 @@ asm void fn_80021B14(void) {
 #include "src/game/gs_title_fn_80021B14.inc"
 }
 #else
-void fn_80021B14(void) { /* TODO */ }
+s32 fn_80021B14(u32 arg0, u32* arg1) {
+    typedef struct TitleEffectEntry {
+        s32 code;
+        s16 x;
+        s16 y;
+    } TitleEffectEntry;
+    typedef struct TitleSpecialEntry {
+        s32 code;
+        s32 message;
+    } TitleSpecialEntry;
+    typedef struct TitleBgmTable {
+        u16 entries[5];
+    } TitleBgmTable;
+    extern void fn_80142EF8(void* dst, void* src);
+    extern s32 fn_801431AC(void* param);
+
+    u8 item_param[0x1CC];
+    TitleBgmTable bgm;
+    TitleSpecialEntry special[7];
+    TitleEffectEntry effects[32];
+    char message[0x84];
+    s32 slot;
+    s32 pokemon;
+    s32 data;
+    s32 count;
+    s32 i;
+    s32 special_index;
+    s32 effect_index;
+    s32 result;
+    s16 effect_count;
+
+    fn_80142EF8(item_param, lbl_80478890);
+    result = fn_801431AC(item_param);
+
+    switch (result) {
+    case 0:
+        slot = fn_80014110();
+        fn_80014118(slot, &pokemon, &data);
+        if ((u8)fn_80121ADC(pokemon, 0x3E) != 0) {
+            msgctrlSetValue(0x32, (void*)pokemonBiosGetNicknamePtr(pokemon));
+            winMsgOpen(2, 0x424D, 1, 0);
+            winMsgClose(1);
+            return 1;
+        }
+
+        effect_count = fn_80144574(effects, pokemon, data, (u16)arg0, 0);
+        if (effect_count > 0) {
+            bgm = *(TitleBgmTable*)lbl_80266DB0;
+            for (i = 0; i < 5; i++) {
+                if (arg0 == bgm.entries[i]) {
+                    break;
+                }
+            }
+            if (i < 5) {
+                result = 0x466;
+            } else {
+                result = 0x465;
+            }
+            fn_80166A50(result, 0, 0xFF, 0);
+            fn_8001D378();
+        }
+
+        special[0] = *(TitleSpecialEntry*)(lbl_80266D78 + 0x00);
+        special[1] = *(TitleSpecialEntry*)(lbl_80266D78 + 0x08);
+        special[2] = *(TitleSpecialEntry*)(lbl_80266D78 + 0x10);
+        special[3] = *(TitleSpecialEntry*)(lbl_80266D78 + 0x18);
+        special[4] = *(TitleSpecialEntry*)(lbl_80266D78 + 0x20);
+        special[5] = *(TitleSpecialEntry*)(lbl_80266D78 + 0x28);
+        special[6] = *(TitleSpecialEntry*)(lbl_80266D78 + 0x30);
+
+        count = (s32)effect_count;
+        if (count <= 0) {
+            fn_800F96E4(message, 0x41, (void*)0x4261);
+        } else {
+            for (special_index = 0; special_index < 7; special_index++) {
+                for (effect_index = 0; effect_index < count; effect_index++) {
+                    if (special[special_index].code == effects[effect_index].code) {
+                        break;
+                    }
+                }
+                if (effect_index < count) {
+                    break;
+                }
+            }
+
+            if (special_index >= 7) {
+                fn_800F96E4(message, 0x41, (void*)0x4261);
+            } else {
+                msgctrlSetValue(0x32, (void*)pokemonBiosGetNicknamePtr(pokemon));
+                msgctrlSetValue(0x2F, (void*)(s32)effects[effect_index].x);
+                msgctrlSetValue(0x30, (void*)(s32)effects[effect_index].y);
+                fn_800F96E4(message, 0x41, (void*)special[special_index].message);
+            }
+        }
+
+        msgctrlSetValue(0x4D, message);
+        winMsgOpen(2, 0xE0, 1, 0);
+        winMsgClose(1);
+        if (effect_count > 0) {
+            *arg1 = 1;
+            return 0;
+        }
+        return 1;
+
+    case 3:
+    case 4:
+    case 5:
+    case 6:
+    case 7:
+    case 8:
+    case 9:
+    case 10:
+    case 11:
+        slot = fn_800141BC((void*)arg0, 1);
+        if (slot >= 0) {
+            fn_80014118(slot, &pokemon, &data);
+            if ((u8)fn_80121ADC(pokemon, 0x3E) == 0) {
+                effect_count = fn_80144574(effects, pokemon, data, (u16)arg0, 0);
+                if (effect_count > 0) {
+                    bgm = *(TitleBgmTable*)lbl_80266DB0;
+                    for (i = 0; i < 5; i++) {
+                        if (arg0 == bgm.entries[i]) {
+                            break;
+                        }
+                    }
+                    if (i < 5) {
+                        result = 0x466;
+                    } else {
+                        result = 0x465;
+                    }
+                    fn_80166A50(result, 0, 0xFF, 0);
+                    fn_8001D378();
+                }
+
+                fn_800216E8(message, 0x40, (u8*)effects, effect_count, pokemon);
+                msgctrlSetValue(0x4D, message);
+                winMsgOpen(2, 0xE0, 1, 0);
+                winMsgClose(1);
+            } else {
+                msgctrlSetValue(0x32, (void*)pokemonBiosGetNicknamePtr(pokemon));
+                winMsgOpen(2, 0x424D, 1, 0);
+                winMsgClose(1);
+                effect_count = 0;
+            }
+        } else {
+            effect_count = 0;
+        }
+
+        fn_80014198(slot);
+        if (slot >= 0 && effect_count > 0) {
+            if ((s32)arg0 < 0x2C && (s32)arg0 >= 0x27) {
+                *arg1 = 0;
+            } else {
+                *arg1 = 1;
+            }
+            return 0;
+        }
+        return 1;
+
+    case 0x15:
+        return fn_80023968(arg0, arg1);
+
+    default:
+    winMsgOpen(2, 0x426A, 1, 0);
+    winMsgClose(1);
+    return 1;
+    }
+}
 #endif
 #endif
 
@@ -3429,7 +3787,7 @@ s32 fn_8002217C(u16 wazaDataId, u32* result) {
 extern void jumptable_802E4F00();
 extern u8 lbl_80478888[8];
 extern s32 fn_80023068(u32, u32*);
-extern void fn_800232F0(void);
+extern s32 fn_800232F0(u32, u32*);
 extern s32 fn_80023760(u32, u32*);
 #if 0
 asm void fn_80022478(void) {
@@ -4084,13 +4442,163 @@ extern void winMsgCloseLevelUpStatus(void);
 extern void pokemonSearchWazaDataId(void);
 extern void pokemonGetOboeWazaDataId(void);
 extern f32 lbl_8047B8A4;
+extern void fn_8011FC74(void);
+extern void fn_80106D3C(void);
+extern void fn_801069FC(void);
+extern void fn_80132A38(void);
+extern void fn_8011F4F0(void);
+extern void fn_8011F4A8(void);
+extern void fn_80105D48(void);
+extern void fn_80105C68(void);
+extern void fn_801236F8(void);
+extern void fn_80123B5C(void);
+extern void fn_802600E4(void);
+extern void fn_80123D58(void);
+extern void fn_80128A64(void);
+extern void fn_801C41C8(void);
+extern void fn_801C40F0(void);
+extern void fn_801096F8(void);
+extern void fn_8012805C(void);
+extern s32 cbForgetWazaSelect__FP7PokemonUsl(s32, s32);
 #if !defined(GS_TITLE_SPLIT) || defined(GS_TITLE_RANGE_800232F0)
 #if 0
 asm void fn_800232F0(void) {
 #include "src/game/gs_title_fn_800232F0.inc"
 }
 #else
-void fn_800232F0(void) { /* TODO */ }
+s32 fn_800232F0(u32 wazaDataId, u32* result) {
+    extern u8 pokemonBiosGetLevel(s32);
+    extern s32 winMsgOpenLevelUpFiledStatus(void*, s32);
+    extern void winMsgCloseLevelUpStatus(s32);
+    extern s8 pokemonSearchWazaDataId(s32, u16);
+    extern u16 pokemonGetOboeWazaDataId(s32, u8, u8*);
+    extern s32 evolutionWazaLearn(s32, u16, u8*, s32, void*, s32);
+    extern void pokemonWazaCreate(s32, u8, u16);
+
+    struct {
+        u8 unk0;
+        s16 unk2;
+        s16 unk4;
+        s16 unk6;
+        s16 unk8;
+        s16 unkA;
+        s16 unkC;
+    } delta;
+    struct {
+        u8 unk0;
+    } reset;
+    u8 effects[0x10C];
+    s32 pokemon;
+    s32 data;
+    s32 slot;
+    s16 effectCount;
+    s16 old87;
+    s16 old88;
+    s16 old89;
+    s16 old8A;
+    s16 old8B;
+    s16 old8C;
+    s16 new87;
+    s16 new88;
+    s16 new89;
+    s16 new8A;
+    s16 new8B;
+    s16 new8C;
+    u16 moveId;
+    u16 value;
+    u32 valueData;
+    u8 learnSlot;
+    u8 index;
+    u8 pokemonLevel;
+
+    index = 0;
+    slot = fn_800141BC((void*)wazaDataId, 1);
+    if (slot >= 0) {
+        fn_80014118(slot, &pokemon, &data);
+        if (pokemonIsDarkPokemon(pokemon) == 0) {
+            old87 = (s16)pokemonGetStatus(pokemon, 0, 0x87, 0);
+            old88 = (s16)pokemonGetStatus(pokemon, 0, 0x88, 0);
+            old89 = (s16)pokemonGetStatus(pokemon, 0, 0x89, 0);
+            old8A = (s16)pokemonGetStatus(pokemon, 0, 0x8A, 0);
+            old8B = (s16)pokemonGetStatus(pokemon, 0, 0x8B, 0);
+            old8C = (s16)pokemonGetStatus(pokemon, 0, 0x8C, 0);
+            effectCount = fn_80144574(effects, pokemon, data, (u16)wazaDataId, 0);
+            if (effectCount > 0) {
+                fn_8001D378();
+            } else {
+                effectCount = 0;
+            }
+        } else {
+            effectCount = -1;
+        }
+
+        switch (effectCount) {
+        case 0:
+            ((void (*)(s32, s32, s32, s32))fn_80106D3C)(2, 0x4261, 1, 0);
+            ((void (*)(s32))fn_801069FC)(1);
+            break;
+        case -1:
+            ((void (*)(s32, s32, s32, s32))fn_80106D3C)(2, 0x424C, 1, 0);
+            ((void (*)(s32))fn_801069FC)(1);
+            break;
+        default:
+            ((void (*)(s32, s32, s32))fn_80165668)(0x4CA, 0, 0xFF);
+            msgctrlSetValue(0x32, pokemonBiosGetNicknamePtr(pokemon));
+            msgctrlSetValue(0x2F, (void*)(u32)pokemonBiosGetLevel(pokemon));
+            ((void (*)(s32, s32, s32, s32))fn_80106D3C)(2, 0x423E, 1, 0);
+            ((void (*)(s32))fn_801069FC)(1);
+
+            new87 = (s16)pokemonGetStatus(pokemon, 0, 0x87, 0);
+            new88 = (s16)pokemonGetStatus(pokemon, 0, 0x88, 0);
+            new89 = (s16)pokemonGetStatus(pokemon, 0, 0x89, 0);
+            new8A = (s16)pokemonGetStatus(pokemon, 0, 0x8A, 0);
+            new8B = (s16)pokemonGetStatus(pokemon, 0, 0x8B, 0);
+            new8C = (s16)pokemonGetStatus(pokemon, 0, 0x8C, 0);
+            delta.unk0 = 1;
+            delta.unk2 = new87 - old87;
+            delta.unk4 = new88 - old88;
+            delta.unk6 = new89 - old89;
+            delta.unk8 = new8C - old8C;
+            delta.unkA = new8A - old8A;
+            delta.unkC = new8B - old8B;
+            winMsgOpenLevelUpFiledStatus(&delta, 1);
+            reset.unk0 = 0;
+            winMsgOpenLevelUpFiledStatus(&reset, 1);
+            winMsgCloseLevelUpStatus(1);
+
+            pokemonLevel = pokemonBiosGetLevel(pokemon);
+            index = 0;
+            while ((moveId = pokemonGetOboeWazaDataId(
+                        pokemon, pokemonLevel, &index)) != 0) {
+                if (pokemonSearchWazaDataId(pokemon, moveId) == -1 &&
+                    evolutionWazaLearn(pokemon, moveId, &learnSlot, 1,
+                        cbForgetWazaSelect__FP7PokemonUsl, 0) != 0) {
+                    pokemonWazaCreate(pokemon, learnSlot, moveId);
+                }
+                index++;
+            }
+            value = pokemonEvolutionCheck(pokemon, 0, 0, &moveId, &valueData);
+            break;
+        }
+    }
+
+    fn_80014198(slot);
+    if (slot >= 0 && effectCount > 0) {
+        if (value != 0) {
+            fadeSet(lbl_8047B8A4, 3);
+            fadeCheck(1);
+            menuOffScreenSetDisp(0);
+            pokemonEvolutionAll(
+                pokemon, value, moveId, &valueData, 0, 1, 1, 0);
+            menuOffScreenSetDisp(1);
+            fadeSet(lbl_8047B8A4, 2);
+            fadeCheck(1);
+        }
+        *result = 1;
+        return 0;
+    }
+    return 1;
+}
 #endif
 
 /* fn_80023760 - 0x80023760 | size: 0x208 */

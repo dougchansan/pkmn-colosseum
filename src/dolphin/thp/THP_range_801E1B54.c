@@ -398,6 +398,73 @@ BOOL fn_801E1D7C(s32 priority)
     return TRUE;
 }
 
+typedef struct THPGXTexObj {
+    u8 data[0x20];
+} THPGXTexObj;
+
+void fn_801E1E1C(void *y, void *u, void *v, s16 x, s16 yPos,
+                 s16 width, s16 height, s16 quadWidth, s16 quadHeight)
+{
+    extern void fn_800BA9E4(THPGXTexObj *obj, void *image, u16 width,
+                            u16 height, u32 format, u32 wrapS, u32 wrapT,
+                            u32 mipmap);
+    extern void fn_800BACA0(THPGXTexObj *obj, u32 minFilter, u32 magFilter,
+                            f32 minLod, f32 maxLod, f32 lodBias,
+                            u8 biasClamp, u8 edgeLod, u32 maxAnisotropy);
+    extern void fn_800BAFFC(THPGXTexObj *obj, u32 mapId);
+    extern void fn_800B928C(u32 primitive, u32 vertexFormat, u16 vertexCount);
+    volatile s16 *fifo = (volatile s16 *)0xCC008000;
+    THPGXTexObj yTexObj;
+    THPGXTexObj uTexObj;
+    THPGXTexObj vTexObj;
+    s16 halfWidth;
+    s16 halfHeight;
+    s16 xEnd;
+    s16 yEnd;
+
+    fn_800BA9E4(&yTexObj, y, (u16)width, (u16)height, 1, 0, 0, 0);
+    fn_800BACA0(&yTexObj, 0, 0, 0.0f, 0.0f, 0.0f, 0, 0, 0);
+    fn_800BAFFC(&yTexObj, 0);
+
+    halfWidth = width >> 1;
+    halfHeight = height >> 1;
+    fn_800BA9E4(&uTexObj, u, (u16)halfWidth, (u16)halfHeight, 1, 0, 0, 0);
+    fn_800BACA0(&uTexObj, 0, 0, 0.0f, 0.0f, 0.0f, 0, 0, 0);
+    fn_800BAFFC(&uTexObj, 1);
+
+    fn_800BA9E4(&vTexObj, v, (u16)halfWidth, (u16)halfHeight, 1, 0, 0, 0);
+    fn_800BACA0(&vTexObj, 0, 0, 0.0f, 0.0f, 0.0f, 0, 0, 0);
+    fn_800BAFFC(&vTexObj, 2);
+
+    fn_800B928C(0x80, 7, 4);
+    xEnd = x + quadWidth;
+    yEnd = yPos + quadHeight;
+
+    *fifo = x;
+    *fifo = yPos;
+    *fifo = 0;
+    *fifo = 0;
+    *fifo = 0;
+
+    *fifo = xEnd;
+    *fifo = yPos;
+    *fifo = 0;
+    *fifo = 1;
+    *fifo = 0;
+
+    *fifo = xEnd;
+    *fifo = yEnd;
+    *fifo = 0;
+    *fifo = 1;
+    *fifo = 1;
+
+    *fifo = x;
+    *fifo = yEnd;
+    *fifo = 0;
+    *fifo = 0;
+    *fifo = 1;
+}
+
 BOOL fn_801E4A6C(void)
 {
     extern void *memset(void *dst, int value, u32 size);
@@ -535,6 +602,95 @@ void *fn_801E4C80(void *arg)
 BOOL fn_801E446C(u32 msg)
 {
     return fn_8009F230(lbl_8046A4B4, msg, 1);
+}
+
+typedef struct THPBufferTextureSet {
+    void *yTexture;
+    void *uTexture;
+    void *vTexture;
+    u32 frameNumber;
+} THPBufferTextureSet;
+
+typedef struct THPBufferAudio {
+    s16 *buffer;
+    s16 *curPtr;
+    u32 validSample;
+} THPBufferAudio;
+
+extern s16 *lbl_8047B470;
+extern s16 *lbl_8047B474;
+
+BOOL fn_801E449C(u8 *buffer)
+{
+    u8 *player = lbl_8046AC60;
+    u8 *work = buffer;
+    u32 area;
+    u32 ySize;
+    u32 uvSize;
+    u32 audioBufferSize;
+    s32 i;
+
+    if (!*(BOOL *)(player + 0xA0) || player[0xA4] != 0) {
+        return FALSE;
+    }
+
+    if (*(BOOL *)(player + 0xB0)) {
+        *(u8 **)(player + 0xB4) = work;
+        work += *(u32 *)(player + 0x58);
+    } else {
+        THPReadBuffer *readBuffer = (THPReadBuffer *)(player + 0xF0);
+
+        for (i = 0; i < 10; i++, readBuffer++) {
+            readBuffer->ptr = work;
+            work += OSRoundUp32B(*(u32 *)(player + 0x44));
+        }
+    }
+
+    area = *(u32 *)(player + 0x80) * *(u32 *)(player + 0x84);
+    ySize = OSRoundUp32B(area);
+    uvSize = OSRoundUp32B(area >> 2);
+
+    {
+        THPBufferTextureSet *textureSet =
+            (THPBufferTextureSet *)(player + 0x168);
+
+        for (i = 0; i < 3; i++, textureSet++) {
+            textureSet->yTexture = work;
+            DCInvalidateRange(work, ySize);
+            work += ySize;
+
+            textureSet->uTexture = work;
+            DCInvalidateRange(work, uvSize);
+            work += uvSize;
+
+            textureSet->vTexture = work;
+            DCInvalidateRange(work, uvSize);
+            work += uvSize;
+        }
+    }
+
+    if (player[0xA7] != 0) {
+        THPBufferAudio *audioBuffer = (THPBufferAudio *)(player + 0x198);
+
+        audioBufferSize = OSRoundUp32B(*(u32 *)(player + 0x48) << 2);
+        for (i = 0; i < 3; i++, audioBuffer++) {
+            audioBuffer->buffer = (s16 *)work;
+            audioBuffer->curPtr = (s16 *)work;
+            audioBuffer->validSample = 0;
+            work += audioBufferSize;
+        }
+
+        lbl_8047B470 = (s16 *)work;
+        audioBufferSize = OSRoundUp32B(*(u32 *)(player + 0x90) * 40 / 500);
+        work += audioBufferSize;
+        if (*(u32 *)(player + 0x8C) == 2) {
+            lbl_8047B474 = (s16 *)work;
+            work += audioBufferSize;
+        }
+    }
+
+    *(u8 **)(player + 0x9C) = work;
+    return TRUE;
 }
 
 /* ---- Thread A: forwarding loop (drains lbl_8046A494, forwards to Thread C's send queue) ---- */

@@ -11,6 +11,7 @@
  */
 
 #include "game/battle/battle_waza_types.h"
+#include "crt/math.h"
 #include "dolphin/mtx.h"
 
 #pragma peephole on
@@ -101,6 +102,54 @@ extern void* lbl_8047B3F0;
 extern u32 lbl_8047B3E8;
 extern s32 lbl_8047B410;
 extern f32 lbl_80478CDC;
+
+typedef union WazaCameraFloatShape {
+    f32 value;
+    u32 bits;
+} WazaCameraFloatShape;
+
+static inline f32 wazaCameraSqrtf(f32 value)
+{
+    extern f32 lbl_8047E1FC;
+    extern f64 lbl_8047E218;
+    extern f64 lbl_8047E220;
+    extern f64 lbl_8047E228;
+    WazaCameraFloatShape shape;
+    f64 estimate;
+    s32 exponent;
+    s32 fpclass;
+
+    if (value > lbl_8047E1FC) {
+        estimate = __frsqrte(value);
+        estimate = lbl_8047E218 * estimate *
+                   (lbl_8047E220 - value * (estimate * estimate));
+        estimate = lbl_8047E218 * estimate *
+                   (lbl_8047E220 - value * (estimate * estimate));
+        estimate = lbl_8047E218 * estimate *
+                   (lbl_8047E220 - value * (estimate * estimate));
+        return (f32)(value * estimate);
+    }
+    if ((f64)value < lbl_8047E228) {
+        return lbl_80478AC0[0];
+    }
+    shape.value = value;
+    exponent = shape.bits & 0x7F800000;
+    switch (exponent) {
+    case 0x7F800000:
+        fpclass = (shape.bits & 0x007FFFFF) != 0 ? 1 : 2;
+        break;
+    case 0:
+        fpclass = (shape.bits & 0x007FFFFF) != 0 ? 5 : 3;
+        break;
+    default:
+        fpclass = 4;
+        break;
+    }
+    if (fpclass == 1) {
+        return lbl_80478AC0[0];
+    }
+    return value;
+}
 
 extern u8 lbl_80467CC0[];
 extern void fn_801DD158(void* obj);
@@ -247,7 +296,16 @@ void fn_801D2D28(void) {
     cameraSetFov(lbl_80478CDC);
 
     if (lbl_8047B3F0 == NULL && !cameraMoveEndCheckSpecial(0)) {
-        GSscene_SetMode(8);
+        void* activeSequence = lbl_8047B3F0;
+        if (activeSequence == NULL) {
+            GSscene_SetMode(8);
+        } else {
+            if (*(u32*)((u8*)activeSequence + 0x18) != 0 &&
+                *(u32*)((u8*)activeSequence + 0x20) != 0) {
+                cameraStopAnime(activeSequence);
+            }
+            lbl_8047B3F0 = NULL;
+        }
         fn_801765F4(0);
         lbl_8047B3EC = NULL;
         if (fn_800057A8() == 2) {
@@ -324,9 +382,186 @@ void fn_801D3034(void* state) {
  * Address: 0x801D30BC | Size: 0x3E0
  */
 void battleCameraStartWaza(void* owner, void* sequence) {
-    /* TODO: Waza animation state dispatcher (0x3E0 bytes)
-     * Dispatches to type-specific animation handlers based on move type.
-     */
+    extern void* GSresGetResource(u32 group, u32 resource);
+    extern void clear__5GSvecFv(void* vec);
+    extern void GSlerpGetLinearInterpolationVector(void* dst, void* src,
+                                                   void* target, f32 t);
+    extern f32 lbl_8047E1F0;
+    extern f32 lbl_8047E1F4;
+    extern f32 lbl_8047E1F8;
+    extern f32 lbl_8047E1FC;
+    extern u8 lbl_804673A0[];
+    extern u16 battleGridGetNumPokemonsForTrainer(u32 id);
+    extern void cameraSetTargetExt(u32 a, u32 b, u32 c);
+    extern void cameraRefreshTargetPos(void);
+    extern void cameraMoveStop(void);
+    extern void cameraSetOffsetPosition(void* src);
+    extern void cameraSetOffsetRotation(void* src);
+    extern void cameraSetOffsetScale(void* src);
+    extern void cameraPlayOffsetAnime(u32 groupId, u32 animationId,
+                                      s32 frame, u8 loop);
+    extern void* GSmodelGetBound(void* model);
+    extern void GSmodelGetPosition(void* model, Vec* out);
+    extern void GSmodelGetRotation(void* model, Vec* out);
+    extern void fn_800D1070(s32 mode);
+    u8* ownerBytes = owner;
+    u8* sequenceBytes = sequence;
+    Vec offsetPosition;
+    Vec offsetRotation;
+    Vec offsetScale;
+    Vec center;
+    Vec rootPosition;
+    void* model;
+    u32 flags = 0;
+    s32 paramsFlags = 0;
+    f32 scaleValue;
+    s32 shift = 0;
+    u8 reverse = FALSE;
+
+    if (lbl_8047B3F4 == 0) {
+        return;
+    }
+
+    if (*(s8*)(ownerBytes + 0x76) < 0 &&
+        (sequenceBytes == NULL || ((*(u32*)(sequenceBytes + 0x08) & 0x80) == 0))) {
+        reverse = TRUE;
+    }
+
+    lbl_8047B3EC = owner;
+    lbl_8047B3F0 = sequence;
+    if (sequenceBytes != NULL) {
+        battleCameraDisable();
+        if (*(u32*)(sequenceBytes + 0x18) != 0 &&
+            *(u32*)(sequenceBytes + 0x20) != 0 &&
+            GSresGetResource(*(u32*)(sequenceBytes + 0x18),
+                             *(u32*)(sequenceBytes + 0x20)) != NULL) {
+            model = *(void**)(ownerBytes + 0x24);
+            if (reverse) {
+                shift = 4;
+            }
+
+            cameraPlayOffsetAnime(
+                *(u32*)(sequenceBytes + 0x18), *(u32*)(sequenceBytes + 0x20),
+                0, 0);
+
+            flags = *(u32*)(sequenceBytes + 0x08);
+            if (flags & 0x4) {
+                clear__5GSvecFv(&offsetPosition);
+                clear__5GSvecFv(&offsetRotation);
+                if (*(s8*)(ownerBytes + 0x76) < 0 &&
+                    (flags & 0x02000000)) {
+                    offsetRotation.y = lbl_8047E1F0;
+                }
+                if (flags & 0x00800000) {
+                    battleGridGetNormalisedScale((f32*)&offsetScale);
+                    if (flags & 0x01000000) {
+                        offsetScale.y = lbl_8047E1F4;
+                    }
+                } else {
+                    set__5GSvecFfff((f32*)&offsetScale, lbl_8047E1F4,
+                                    lbl_8047E1F4, lbl_8047E1F4);
+                }
+            } else {
+                GSmodelGetPosition(model, &offsetPosition);
+                if (flags & 0x00004000) {
+                    GSlerpGetLinearInterpolationVector(
+                        &center, (u8*)GSmodelGetBound(model) + 0x10,
+                        (u8*)GSmodelGetBound(model) + 0x1C, lbl_8047E1F8);
+                    GSvecAdd(&offsetPosition, &offsetPosition, &center);
+                }
+                if (*(u16*)(sequenceBytes + 0x2E) == 2 &&
+                    (ownerBytes[0x18] & 2) != 0 &&
+                    GSmodelIsRootNullAdded(model) != 0) {
+                    GSmodelGetRootPosition(model, (GSvec*)&rootPosition);
+                    offsetPosition.y += rootPosition.y;
+                }
+                GSmodelGetRotation(model, &offsetRotation);
+                scaleValue = fn_801DABAC(owner);
+                set__5GSvecFfff(
+                    (f32*)&offsetScale, scaleValue, scaleValue, scaleValue);
+            }
+
+            fn_801765F4(shift);
+            cameraMoveStop();
+            cameraSetOffsetPosition(&offsetPosition);
+            cameraSetOffsetRotation(&offsetRotation);
+            cameraSetOffsetScale(&offsetScale);
+            fn_800D1070(0);
+            cameraUpdate();
+            return;
+        }
+
+        flags = *(u32*)(sequenceBytes + 0x08);
+        if (flags & 0x00200000) {
+            paramsFlags |= 2;
+        } else if (flags & 0x00000200) {
+            paramsFlags |= 4;
+        } else if (flags & 0x00400000) {
+            GSmodelGetPosition(*(void**)(ownerBytes + 0x24), &rootPosition);
+            if (rootPosition.z < lbl_8047E1FC) {
+                paramsFlags |= 4;
+            } else {
+                paramsFlags |= 8;
+            }
+        }
+
+        if (flags & 0x00000400) {
+            paramsFlags |= 0x20;
+        } else if (flags & 0x00000800) {
+            paramsFlags |= 0x40;
+        } else if (flags & 0x00001000) {
+            paramsFlags |= 0x80;
+        }
+    } else {
+        paramsFlags = 4;
+    }
+
+    if (ownerBytes[0x75] == 0) {
+        u16 count = battleGridGetNumPokemonsForTrainer((u32)owner);
+
+        if (count == 1) {
+            paramsFlags &= ~0x1F;
+            paramsFlags |= 0x10;
+        } else if (count > 1) {
+            paramsFlags &= ~0x1F;
+            paramsFlags |= 1;
+        }
+    }
+
+    GSscene_SetMode(7);
+    cameraMoveStop();
+    {
+        u8* activeOwner = lbl_8047B3EC;
+        u8* activeSequence = lbl_8047B3F0;
+        u8* cameraParams = *(u8**)(activeOwner + 0x2C) +
+                           *(u16*)(activeOwner + 0x32) * 0xD4;
+        u32 targetId;
+
+        if (activeSequence != NULL) {
+            targetId = *(u32*)(cameraParams + 0x4C + activeSequence[0x17] * 4);
+        } else {
+            targetId = *(u32*)(cameraParams + 0x54);
+        }
+        cameraSetTargetExt(*(u32*)(ownerBytes + 0x00),
+                           *(u32*)(ownerBytes + 0x04), targetId);
+        cameraRefreshTargetPos();
+        cameraSetTargetExt(*(u32*)(ownerBytes + 0x00),
+                           *(u32*)(ownerBytes + 0x04), (u32)-1);
+    }
+
+    if (ownerBytes[0x75] == 0) {
+        shift = 1;
+    }
+
+    _wazaSequenceCameraCalculateParams__FP13ModelSequenceiP24wazaSequenceCameraParams(
+        owner, paramsFlags, lbl_804673A0);
+    _wazaSequenceCameraSelectMotion__FP13ModelSequenceP12WazaSequenceP24wazaSequenceCameraParams(
+        owner, sequence, lbl_804673A0);
+    _wazaSequenceCameraDoPosition__FP13ModelSequenceP24wazaSequenceCameraParamsfb(
+        owner, lbl_804673A0, shift, reverse);
+    _wazaSequenceCameraDoFOV__FP13ModelSequenceP24wazaSequenceCameraParamsif(
+        owner, lbl_804673A0, paramsFlags, shift);
+    cameraUpdate();
 }
 
 /**
@@ -335,8 +570,322 @@ void battleCameraStartWaza(void* owner, void* sequence) {
  * Massive state machine (~2.8KB) for a class of move animations.
  * Likely handles physical/contact move animations.
  */
-void _wazaSequenceCameraDoPosition__FP13ModelSequenceP24wazaSequenceCameraParamsfb(void) {
-    /* TODO: Move animation state machine A (0xAE0 bytes) */
+void _wazaSequenceCameraDoPosition__FP13ModelSequenceP24wazaSequenceCameraParamsfb(
+    void* modelSequence, void* cameraParams, s32 shift, u8 reverse)
+{
+    typedef struct WazaSequenceCameraPattern {
+        u32 duration_index;
+        u8 pad_04[0xD4 - 4];
+    } WazaSequenceCameraPattern;
+    typedef struct WazaSequenceCameraParamsLocal {
+        s32 mode;
+        u8 pad_04[8];
+        f32 rotation_min;
+        f32 rotation_max;
+        f32 rotation_base;
+        f32 height_min;
+        f32 height_max;
+        f32 distance_min;
+        f32 distance_max;
+        f32 out_near;
+        f32 out_mid;
+        f32 out_far;
+    } WazaSequenceCameraParamsLocal;
+    extern f32 fn_800E0BE4(void);
+    extern s32 fn_800D37CC(void);
+    extern void cameraSetDistance(f32);
+    extern void cameraSetHeight(f32);
+    extern void cameraSetRotY(f32);
+    extern void cameraUpdate(void);
+    extern void cameraMovePosition(s32, Vec*, f32);
+    extern void cameraMoveRotationXYZ(f32, f32, f32, f32);
+    extern void GSscene_GetCameraDirectionVector(Vec*);
+    extern void GSscene_SetCameraDirectionVector(Vec*);
+    extern f32 lbl_8047E1F4;
+    extern f32 lbl_8047E1F8;
+    extern f32 lbl_8047E1FC;
+    extern f32 lbl_8047E200;
+    extern f32 lbl_8047E204;
+    extern f32 lbl_8047E208;
+    extern f32 lbl_8047E20C;
+    extern f32 lbl_8047E210;
+    extern f64 lbl_8047E218;
+    extern f64 lbl_8047E220;
+    extern f64 lbl_8047E228;
+    extern f32 lbl_8047E230;
+    extern f32 lbl_8047E234;
+    extern f64 lbl_8047E238;
+    extern f32 lbl_8047E240;
+    extern f32 lbl_8047E244;
+    extern f32 lbl_8047E248;
+    extern f32 lbl_8047E24C;
+    extern f32 lbl_8047E250;
+    extern f32 lbl_8047E254;
+    u8* sequence = modelSequence;
+    WazaSequenceCameraParamsLocal* params = cameraParams;
+    WazaSequenceCameraPattern* pattern;
+    s32 duration;
+
+    pattern = (WazaSequenceCameraPattern*)
+        (*(u8**)(sequence + 0x2C) + *(u16*)(sequence + 0x32) * 0xD4);
+
+    switch (params->mode) {
+    case 0:
+        _wazaSequenceCameraDoDollyPosition__FP21TemplateExpFileHeaderP24wazaSequenceCameraParamsfb(
+            pattern, params, shift, reverse);
+        break;
+
+    case 1: {
+        Vec direction;
+        f32 offset_distance;
+        f32 height;
+        f32 distance;
+        f32 duration_scale;
+        f32 len0;
+        f32 len2;
+        u8* duration_ptr =
+            (u8*)pattern + (*(u32*)pattern << 2);
+
+        duration = *(s32*)(duration_ptr + 4);
+        if (duration == 0) {
+            duration = *(s32*)(duration_ptr + 8);
+        }
+        duration <<= shift;
+
+        offset_distance = lbl_8047E200 + lbl_8047E204 * fn_800E0BE4();
+        height = lbl_8047E1F4 + lbl_8047E208 * fn_800E0BE4();
+        distance = lbl_8047E20C + lbl_8047E210 * fn_800E0BE4();
+
+        cameraSetDistance(distance);
+        cameraSetHeight(height);
+        cameraSetRotY(lbl_8047E1FC);
+        cameraUpdate();
+
+        GSscene_GetCameraDirectionVector(&direction);
+        if (reverse) {
+            direction.x += lbl_8047E204;
+        } else {
+            direction.x -= lbl_8047E204;
+        }
+        GSscene_SetCameraDirectionVector(&direction);
+        if (reverse) {
+            direction.x += offset_distance;
+        } else {
+            direction.x -= offset_distance;
+        }
+
+        duration_scale = (f32)duration / (f32)fn_800D37CC();
+        cameraMovePosition(7, &direction, duration_scale);
+
+        len0 = wazaCameraSqrtf(offset_distance * offset_distance + height * height);
+        len2 = wazaCameraSqrtf(distance * distance + len0 * len0);
+        params->out_near = len0;
+        params->out_far = len2;
+        params->out_mid = lbl_8047E1F8 * (len0 + len2);
+        break;
+    }
+
+    case 2: {
+        f32 distance;
+        f32 height;
+        f32 rot_a;
+        f32 rot_b;
+        f32 duration_scale;
+        f32 len0;
+        f32 len2;
+        u8* duration_ptr =
+            (u8*)pattern + (*(u32*)pattern << 2);
+
+        duration = *(s32*)(duration_ptr + 4);
+        if (duration == 0) {
+            duration = *(s32*)(duration_ptr + 8);
+        }
+        duration <<= shift;
+
+        distance = params->distance_min +
+            (params->distance_max - params->distance_min) * fn_800E0BE4();
+        height = params->height_min +
+            (params->height_max - params->height_min) * fn_800E0BE4();
+
+        if (reverse) {
+            rot_a = (params->rotation_min - params->rotation_max) * fn_800E0BE4() +
+                    (params->rotation_min - params->rotation_base);
+            rot_b = (params->rotation_min - params->rotation_max) * fn_800E0BE4() +
+                    (params->rotation_min - params->rotation_base);
+        } else {
+            rot_a = (params->rotation_max - params->rotation_min) * fn_800E0BE4() +
+                    (params->rotation_base + params->rotation_min);
+            rot_b = (params->rotation_max - params->rotation_min) * fn_800E0BE4() +
+                    (params->rotation_base + params->rotation_min);
+        }
+        if (rot_a > rot_b) {
+            f32 tmp = rot_a;
+            rot_a = rot_b;
+            rot_b = tmp;
+        }
+
+        cameraSetDistance(distance);
+        cameraSetHeight(height);
+        cameraSetRotY(rot_a);
+        cameraUpdate();
+
+        duration_scale = (f32)duration / (f32)fn_800D37CC();
+        cameraMoveRotationXYZ(lbl_8047E1FC, rot_b, lbl_8047E1FC, duration_scale);
+
+        len0 = wazaCameraSqrtf(distance * distance + height * height);
+        len2 = wazaCameraSqrtf(rot_b * rot_b + len0 * len0);
+        params->out_near = len0;
+        params->out_far = len2;
+        params->out_mid = lbl_8047E1F8 * (len0 + len2);
+        break;
+    }
+
+    case 3: {
+        Vec direction;
+        f32 distance;
+        f32 height;
+        f32 rotation;
+        f32 duration_scale;
+        f32 length;
+        u8* duration_ptr =
+            (u8*)pattern + (*(u32*)pattern << 2);
+
+        duration = *(s32*)(duration_ptr + 4);
+        if (duration == 0) {
+            duration = *(s32*)(duration_ptr + 8);
+        }
+        duration <<= shift;
+
+        distance = params->distance_min +
+            (params->distance_max - params->distance_min) * fn_800E0BE4();
+        height = params->height_min +
+            (params->height_max - params->height_min) * fn_800E0BE4();
+        if (reverse) {
+            rotation = (params->rotation_base - params->rotation_min) * fn_800E0BE4() -
+                       (params->rotation_base - params->rotation_min);
+        } else {
+            rotation = (params->rotation_max - params->rotation_min) * fn_800E0BE4() +
+                       (params->rotation_base + params->rotation_min);
+        }
+
+        cameraSetDistance(distance);
+        cameraSetHeight(height);
+        cameraSetRotY(rotation);
+        cameraUpdate();
+        GSscene_GetCameraDirectionVector(&direction);
+
+        duration_scale = (f32)duration / (f32)fn_800D37CC();
+        cameraMovePosition(7, &direction, duration_scale);
+
+        length = wazaCameraSqrtf(distance * distance + height * height +
+                                 rotation * rotation);
+        params->out_far = length;
+        params->out_mid = length;
+        params->out_near = length;
+        break;
+    }
+
+    case 4: {
+        Vec direction;
+        f32 rotation;
+        f32 duration_scale;
+        f32 length;
+        u8* duration_ptr =
+            (u8*)pattern + (*(u32*)pattern << 2);
+
+        duration = *(s32*)(duration_ptr + 4);
+        if (duration == 0) {
+            duration = *(s32*)(duration_ptr + 8);
+        }
+        duration <<= shift;
+
+        if (reverse) {
+            rotation = params->rotation_base - lbl_8047E230;
+        } else {
+            rotation = lbl_8047E230 + params->rotation_base;
+        }
+
+        cameraSetDistance(lbl_8047E234);
+        cameraSetHeight(lbl_8047E200);
+        cameraSetRotY(rotation);
+        cameraUpdate();
+        GSscene_GetCameraDirectionVector(&direction);
+
+        duration_scale = (f32)duration / (f32)fn_800D37CC();
+        cameraMovePosition(7, &direction, duration_scale);
+
+        length = wazaCameraSqrtf((f32)lbl_8047E238);
+        params->out_far = length;
+        params->out_mid = length;
+        params->out_near = length;
+        break;
+    }
+
+    case 5: {
+        f32 scale_factor;
+        f32 distance;
+        f32 height;
+        f32 rotation;
+        f32 duration_scale;
+        f32 length;
+        s32 mode = *(s32*)(sequence + 0x10);
+        u8* duration_ptr =
+            (u8*)pattern + (*(u32*)pattern << 2);
+
+        duration = *(s32*)(duration_ptr + 4);
+        if (duration == 0) {
+            duration = *(s32*)(duration_ptr + 8);
+        }
+        duration <<= shift;
+
+        switch (mode) {
+        case -2:
+        case -1:
+            scale_factor = lbl_8047E240;
+            break;
+        case 1:
+            scale_factor = lbl_8047E244;
+            break;
+        case 2:
+            scale_factor = lbl_8047E248;
+            break;
+        case 3:
+            scale_factor = lbl_8047E24C;
+            break;
+        default:
+            scale_factor = lbl_8047E1F4;
+            break;
+        }
+
+        distance = lbl_8047E250 * scale_factor;
+        height = params->height_min +
+            (params->height_max - params->height_min) * fn_800E0BE4();
+        if (reverse) {
+            rotation = params->rotation_base - lbl_8047E254;
+        } else {
+            rotation = lbl_8047E254 + params->rotation_base;
+        }
+
+        cameraSetDistance(distance);
+        cameraSetHeight(height);
+        cameraSetRotY(rotation);
+        cameraUpdate();
+
+        {
+            Vec direction;
+            GSscene_GetCameraDirectionVector(&direction);
+            duration_scale = (f32)duration / (f32)fn_800D37CC();
+            cameraMovePosition(7, &direction, duration_scale);
+        }
+
+        length = wazaCameraSqrtf(distance * distance + height * height +
+                                 lbl_8047E254 * lbl_8047E254);
+        params->out_far = length;
+        params->out_mid = length;
+        params->out_near = length;
+        break;
+    }
+    }
 }
 
 /**
@@ -344,8 +893,141 @@ void _wazaSequenceCameraDoPosition__FP13ModelSequenceP24wazaSequenceCameraParams
  * Address: 0x801D3F7C | Size: 0x548
  * State machine for beam/projectile move animations.
  */
-void _wazaSequenceCameraDoDollyPosition__FP21TemplateExpFileHeaderP24wazaSequenceCameraParamsfb(void) {
-    /* TODO: Move animation state machine B (0x548 bytes) */
+void _wazaSequenceCameraDoDollyPosition__FP21TemplateExpFileHeaderP24wazaSequenceCameraParamsfb(
+    void* header, void* params, s32 shift, u8 reverse)
+{
+    typedef struct WazaCameraParams {
+        u8 pad_00[0x0C];
+        f32 rotationBase;
+        f32 rotationRange;
+        f32 rotationOffset;
+        f32 heightMin;
+        f32 heightMax;
+        f32 distanceMin;
+        f32 distanceMax;
+        f32 nearDistance;
+        f32 middleDistance;
+        f32 farDistance;
+        f32 nearLength;
+        f32 middleLength;
+        f32 farLength;
+    } WazaCameraParams;
+    extern f32 fn_800E0BE4();
+    extern u32 _fadeEffectGetRandom__FUl(u32);
+    extern void cameraSetDistance(f32);
+    extern void cameraSetHeight(f32);
+    extern void cameraSetRotY(f32);
+    extern void cameraUpdate(void);
+    extern void GSscene_GetCameraDirectionVector(Vec*);
+    extern void GSscene_GetCameraPositionVector(Vec*);
+    extern void fn_800E0168(Vec*, Vec*, Vec*);
+    extern void fn_800E013C(Vec*, Vec*, f32);
+    extern void GSvecAdd(Vec*, Vec*, Vec*);
+    extern s32 fn_800D37CC(void);
+    extern void cameraMovePosition(s32, Vec*, f32);
+    extern f32 lbl_8047E1F8;
+    extern f32 lbl_8047E1FC;
+    extern f32 lbl_8047E260;
+    extern f32 lbl_8047E264;
+    extern f32 lbl_8047E268;
+    extern f32 lbl_8047E26C;
+    u8* file = header;
+    WazaCameraParams* camera = params;
+    Vec direction;
+    Vec position;
+    s32 duration;
+    s32 delay;
+    s32 randomDelay;
+    f32 threshold0 = lbl_8047E1F8;
+    f32 threshold1 = lbl_8047E260;
+    f32 distance0;
+    f32 distance1;
+    f32 nearDistance;
+    f32 farDistance;
+    f32 height;
+    f32 rotation;
+    BOOL alternate;
+
+    duration = *(s32*)(file + (*(s32*)file << 2) + 4);
+    if (duration == 0) {
+        duration = *(s32*)(file + (*(s32*)file << 2) + 8);
+    }
+    duration <<= shift;
+
+    if (fn_800E0BE4() <= lbl_8047E264) {
+        threshold0 = lbl_8047E268;
+        threshold1 = lbl_8047E26C;
+        alternate = TRUE;
+    } else {
+        alternate = FALSE;
+    }
+
+    if (fn_800E0BE4() < threshold0) {
+        randomDelay = 0;
+    } else if (fn_800E0BE4() < threshold1) {
+        s32 minimumDuration = duration >> 1;
+
+        randomDelay = 0;
+        duration = _fadeEffectGetRandom__FUl(duration);
+        if (duration < minimumDuration) {
+            duration = minimumDuration;
+        }
+    } else {
+        randomDelay = _fadeEffectGetRandom__FUl(duration);
+        if (randomDelay > (duration >> 1)) {
+            randomDelay = duration >> 1;
+        }
+    }
+
+    distance0 = camera->nearDistance +
+        (camera->middleDistance - camera->nearDistance) * fn_800E0BE4();
+    distance1 = camera->nearDistance +
+        (camera->middleDistance - camera->nearDistance) * fn_800E0BE4();
+    nearDistance = distance0;
+    farDistance = distance1;
+    if (alternate) {
+        if (distance0 < distance1) {
+            nearDistance = distance1;
+            farDistance = distance0;
+        }
+    } else if (distance0 > distance1) {
+        nearDistance = distance1;
+        farDistance = distance0;
+    }
+
+    height = camera->heightMin +
+        (camera->heightMax - camera->heightMin) * fn_800E0BE4();
+    if (reverse) {
+        rotation = -((camera->rotationRange - camera->rotationBase) *
+                     fn_800E0BE4() -
+                     (camera->rotationOffset - camera->rotationBase));
+    } else {
+        rotation = (camera->rotationRange - camera->rotationBase) *
+                       fn_800E0BE4() +
+                   (camera->rotationOffset + camera->rotationBase);
+    }
+
+    cameraSetDistance(nearDistance);
+    cameraSetHeight(height);
+    cameraSetRotY(rotation);
+    cameraUpdate();
+    GSscene_GetCameraDirectionVector(&direction);
+    GSscene_GetCameraPositionVector(&position);
+    fn_800E0168(&direction, &direction, &position);
+    direction.z = lbl_8047E1FC;
+    fn_800E013C(&direction, &direction, farDistance / nearDistance);
+    direction.z = height;
+    GSvecAdd(&direction, &direction, &position);
+    delay = duration - randomDelay;
+    cameraMovePosition(7, &direction, (f32)delay / (f32)fn_800D37CC());
+
+    camera->nearLength =
+        wazaCameraSqrtf(nearDistance * nearDistance + height * height);
+    distance0 = lbl_8047E1F8 * (nearDistance + farDistance);
+    camera->middleLength =
+        wazaCameraSqrtf(distance0 * distance0 + height * height);
+    camera->farLength =
+        wazaCameraSqrtf(farDistance * farDistance + height * height);
 }
 
 /**
@@ -353,8 +1035,279 @@ void _wazaSequenceCameraDoDollyPosition__FP21TemplateExpFileHeaderP24wazaSequenc
  * Address: 0x801D44C4 | Size: 0x514
  * State machine for status/field effect move animations.
  */
-void _wazaSequenceCameraDoFOV__FP13ModelSequenceP24wazaSequenceCameraParamsif(void) {
-    /* TODO: Move animation state machine C (0x514 bytes) */
+void _wazaSequenceCameraDoFOV__FP13ModelSequenceP24wazaSequenceCameraParamsif(
+    void* modelSequence, void* cameraParams, s32 flags, s32 shift)
+{
+    typedef struct CameraFovKey {
+        f32 start;
+        f32 end;
+        u32 startFrame;
+        u32 endFrame;
+    } CameraFovKey;
+    typedef struct WazaSequenceCameraParamsFov {
+        s32 mode;
+        f32 scaleMin;
+        f32 scaleMax;
+        u8 pad_0C[0x1C];
+        f32 range0;
+        f32 range1;
+        f32 range2;
+    } WazaSequenceCameraParamsFov;
+    typedef struct WazaSequenceCameraFovTiming {
+        s32 count;
+        u8 pad_04[8];
+        s32 frame0;
+        s32 frame1;
+        s32 frame2;
+    } WazaSequenceCameraFovTiming;
+    typedef struct WazaSequenceCameraFovPattern {
+        s32 mode;
+        s32 durationMode;
+        f32 thresholds[4];
+        u32 initialFlags;
+        u32 flags;
+        s32 timingMode;
+    } WazaSequenceCameraFovPattern;
+    extern f32 atan2(f32, f32);
+    extern f32 fn_800E0BE4(void);
+    extern void battleCameraDisable(void);
+    extern void cameraSetFov(f32);
+    extern CameraFovKey lbl_804673D4[];
+    extern f32 lbl_80478CDC;
+    extern u32 lbl_8047B3E8;
+    extern f32 lbl_8047E1E0;
+    extern f32 lbl_8047E1F4;
+    extern f32 lbl_8047E1F8;
+    extern f32 lbl_8047E1FC;
+    extern f32 lbl_8047E260;
+    extern f32 lbl_8047E270;
+    extern f32 lbl_8047E274;
+    extern f32 lbl_8047E278;
+    extern f32 lbl_8047E27C;
+    extern f32 lbl_8047E280;
+    extern f32 lbl_8047E284;
+    u8* sequence = modelSequence;
+    WazaSequenceCameraParamsFov* params = cameraParams;
+    WazaSequenceCameraFovTiming* timing;
+    WazaSequenceCameraFovPattern* pattern;
+    CameraFovKey* key;
+    u8* timingCursor;
+    s32 prevFrame;
+    s32 nextFrame;
+    s32 count;
+    s32 i;
+    u32 choice;
+    u8 hasFirst;
+    u8 hasSecond;
+    f32 currentFov;
+    f32 lowFov;
+    f32 highFov;
+    f32 span;
+    f32 mixStart;
+    f32 mixEnd;
+
+    timing = (WazaSequenceCameraFovTiming*)
+        (*(u8**)(sequence + 0x2C) + *(u16*)(sequence + 0x32) * 0xD4);
+    count = timing->count;
+    span = lbl_8047E260 * params->scaleMin;
+    if (params->scaleMax > span) {
+        span = params->scaleMax;
+    }
+
+    lowFov = lbl_8047E270 *
+        (lbl_8047E274 * atan2(lbl_8047E1F8 * span, params->range0));
+    highFov = lbl_8047E270 *
+        (lbl_8047E274 * atan2(lbl_8047E274 * span, params->range0));
+
+    if (lowFov < lbl_8047E278) {
+        lowFov = lbl_8047E278;
+    }
+    if (highFov < lbl_8047E278) {
+        highFov = lbl_8047E278;
+    }
+    if (lowFov > lbl_8047E27C) {
+        lowFov = lbl_8047E27C;
+    }
+    if (highFov > lbl_8047E27C) {
+        highFov = lbl_8047E27C;
+    }
+
+    if (params->mode == 0 || (params->mode >= 4 && params->mode < 6)) {
+        if (flags & 0x20) {
+            choice = 1;
+        } else if (flags & 0x80) {
+            choice = 4;
+        } else {
+            choice = 2;
+        }
+
+        mixStart = lbl_8047E1FC;
+        mixEnd = lbl_8047E1F4;
+        hasFirst = FALSE;
+        hasSecond = FALSE;
+        if (choice & 1) {
+            mixStart = lbl_8047E1FC;
+            mixEnd = lbl_8047E1E0;
+            hasFirst = TRUE;
+        }
+        if (choice & 2) {
+            if (!hasFirst) {
+                mixStart = lbl_8047E280;
+            }
+            mixEnd = lbl_8047E284;
+            hasSecond = TRUE;
+        }
+        if (choice & 4) {
+            if (!hasSecond) {
+                mixStart = lbl_8047E260;
+            }
+            mixEnd = lbl_8047E1F4;
+        }
+
+        currentFov = lowFov + (highFov - lowFov) *
+            (mixStart + (mixEnd - mixStart) * fn_800E0BE4());
+        lbl_804673D4[0].start = currentFov;
+        lbl_804673D4[0].end = currentFov;
+        lbl_804673D4[1].start = currentFov;
+        lbl_804673D4[1].end = currentFov;
+        lbl_80478CDC = currentFov;
+        lbl_804673D4[0].startFrame = timing->frame0 << shift;
+        lbl_804673D4[0].endFrame = timing->frame0 << shift;
+        lbl_804673D4[1].startFrame = timing->frame0 << shift;
+        lbl_804673D4[1].endFrame = timing->frame0 << shift;
+        lbl_8047B3E8 = timing->frame0 << shift;
+        cameraSetFov(currentFov);
+        return;
+    }
+
+    pattern = (WazaSequenceCameraFovPattern*)((u8*)wazaSequenceCameraGetPattern__Fbi(
+        (*(u16*)(sequence + 0x32) != 8 && *(u16*)(sequence + 0x32) != 9), flags) + 4);
+
+    mixStart = lbl_8047E1FC;
+    mixEnd = lbl_8047E1F4;
+    hasFirst = FALSE;
+    hasSecond = FALSE;
+    if (pattern->initialFlags & 1) {
+        mixStart = lbl_8047E1FC;
+        mixEnd = lbl_8047E1E0;
+        hasFirst = TRUE;
+    }
+    if (pattern->initialFlags & 2) {
+        if (!hasFirst) {
+            mixStart = lbl_8047E280;
+        }
+        mixEnd = lbl_8047E284;
+        hasSecond = TRUE;
+    }
+    if (pattern->initialFlags & 4) {
+        if (!hasSecond) {
+            mixStart = lbl_8047E260;
+        }
+        mixEnd = lbl_8047E1F4;
+    }
+
+    currentFov = lowFov + (highFov - lowFov) *
+        (mixStart + (mixEnd - mixStart) * fn_800E0BE4());
+    lbl_804673D4[0].start = currentFov;
+    lbl_804673D4[0].end = currentFov;
+    lbl_804673D4[1].start = currentFov;
+    lbl_804673D4[1].end = currentFov;
+    lbl_80478CDC = currentFov;
+    lbl_804673D4[0].startFrame = timing->frame0 << shift;
+    lbl_804673D4[0].endFrame = timing->frame0 << shift;
+    lbl_804673D4[1].startFrame = timing->frame0 << shift;
+    lbl_804673D4[1].endFrame = timing->frame0 << shift;
+    lbl_8047B3E8 = timing->frame0 << shift;
+    cameraSetFov(currentFov);
+
+    if (count <= 2) {
+        return;
+    }
+
+    prevFrame = timing->frame0;
+    key = lbl_804673D4;
+    timingCursor = (u8*)timing;
+    for (i = 0; i < 2; i++, key++, pattern++, timingCursor += 4, currentFov = key->end) {
+        nextFrame = *(s32*)(timingCursor + 0x10);
+        if (prevFrame == nextFrame) {
+            key->startFrame = prevFrame << shift;
+            key->endFrame = prevFrame << shift;
+            key->start = currentFov;
+            key->end = currentFov;
+            continue;
+        }
+
+        if (pattern->mode >= 3 && pattern->mode < 5) {
+            s32 duration =
+                _wazaSequenceCameraSelectDuration__FUcPff(
+                    pattern->durationMode, pattern->thresholds,
+                    nextFrame - prevFrame);
+            f32 radius = *(f32*)((u8*)params + 0x2C);
+
+            span = lbl_8047E260 * params->scaleMin;
+            if (params->scaleMax > span) {
+                span = params->scaleMax;
+            }
+
+            lowFov = lbl_8047E270 *
+                (lbl_8047E274 * atan2(lbl_8047E1F8 * span, radius));
+            highFov = lbl_8047E270 *
+                (lbl_8047E274 * atan2(lbl_8047E274 * span, radius));
+
+            if (lowFov < lbl_8047E278) {
+                lowFov = lbl_8047E278;
+            }
+            if (highFov < lbl_8047E278) {
+                highFov = lbl_8047E278;
+            }
+            if (lowFov > lbl_8047E27C) {
+                lowFov = lbl_8047E27C;
+            }
+            if (highFov > lbl_8047E27C) {
+                highFov = lbl_8047E27C;
+            }
+
+            hasFirst = FALSE;
+            hasSecond = FALSE;
+            if (pattern->flags & 1) {
+                mixStart = lbl_8047E1FC;
+                mixEnd = lbl_8047E1E0;
+                hasFirst = TRUE;
+            }
+            if (pattern->flags & 2) {
+                if (!hasFirst) {
+                    mixStart = lbl_8047E280;
+                }
+                mixEnd = lbl_8047E284;
+                hasSecond = TRUE;
+            }
+            if (pattern->flags & 4) {
+                if (!hasSecond) {
+                    mixStart = lbl_8047E260;
+                }
+                mixEnd = lbl_8047E1F4;
+            }
+
+            key->end = lowFov + (highFov - lowFov) *
+                (mixStart + (mixEnd - mixStart) * fn_800E0BE4());
+            if (pattern->timingMode == 2) {
+                key->endFrame = nextFrame << shift;
+                key->startFrame = (nextFrame - duration) << shift;
+            } else {
+                key->startFrame = prevFrame << shift;
+                key->endFrame = (prevFrame + duration) << shift;
+            }
+            key->start = currentFov;
+        } else {
+            key->startFrame = prevFrame << shift;
+            key->endFrame = nextFrame << shift;
+            key->start = currentFov;
+            key->end = currentFov;
+        }
+
+        params = (WazaSequenceCameraParamsFov*)((u8*)params + 4);
+        prevFrame = nextFrame;
+    }
 }
 
 /**
@@ -478,7 +1431,7 @@ s32 _wazaSequenceCameraSelectDuration__FUcPff(
 void _wazaSequenceCameraSelectMotion__FP13ModelSequenceP12WazaSequenceP24wazaSequenceCameraParams(
     void* modelSequence, void* wazaSequence, void* cameraParams)
 {
-    extern f32 fn_800E0BE4(u8, s32);
+    extern f32 fn_800E0BE4(void);
     extern s32 lbl_80478CD8;
     extern const f32 lbl_8047E1F4;
     u32 flags;
@@ -547,7 +1500,7 @@ void _wazaSequenceCameraSelectMotion__FP13ModelSequenceP12WazaSequenceP24wazaSeq
         f32 random;
         f32 limit;
 
-        random = fn_800E0BE4(0, 0);
+        random = fn_800E0BE4();
         limit = interval;
         if (option0) {
             if (random < limit) {

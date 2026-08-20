@@ -80,7 +80,8 @@ void fightTrainerGetStatus(void);
 #if !defined(FIGHT_POKEMON_EXACT_80201248_ONLY)
 
 /* 0x801FDB78 | size: 0x5F0 | large */
-void fightOutPokemonGetRndStatus(void) {
+void fightOutPokemonGetRndStatus(void* pokemon, u32* outStatus,
+                                 u32* outRndStatus) {
     extern void fn_80119ED0();
     extern void fn_8011A3E4();
     extern void fn_8011A6D4();
@@ -106,9 +107,9 @@ void fightOutPokemonGetRndStatus(void) {
     u32 r30 = 0;
     u32 r31 = 0;
 
-    r31 = r3;
-    r28 = r4;
-    r27 = r5;
+    r31 = (u32)pokemon;
+    r28 = (u32)outStatus;
+    r27 = (u32)outRndStatus;
     r3 = 0x10;
     fn_80119ED0();
     r0 = r3 & 0xFFFF;
@@ -1326,7 +1327,10 @@ u8 fightOutPokemonGetJoutaiMigawariHp(void* trainer) {
 #pragma pop
 
 /* 0x801FF1BC | size: 0x974 | massive */
-void fightOutPokemonCheckFightActionWazaSelect(void) {
+#pragma push
+#pragma optimization_level 0
+#pragma peephole off
+u8 fightOutPokemonCheckFightActionWazaSelect(void* fighter, u8 mode) {
     extern u8 lbl_80375CA8[];
     extern void fn_80119ED0();
     extern void fn_8011A3E4();
@@ -1359,15 +1363,13 @@ void fightOutPokemonCheckFightActionWazaSelect(void) {
     u32 r9 = 0;
     u32 r26 = 0;
     u32 r27 = 0;
-    u32 r28 = 0;
+    u32 r28 = mode;
     u32 r29 = 0;
     u32 r30 = 0;
-    u32 r31 = 0;
+    u32 r31 = (u32)fighter;
 
     r5 = 0x14;
     r6 = 0x0;
-    r31 = r3;
-    r28 = r4;
     r3 = 0x0;
     r4 = 0x0;
     fightFloorGetStatus();
@@ -1974,6 +1976,10 @@ void fightOutPokemonCheckFightActionWazaSelect(void) {
 }
 
 /* 0x801FFB30 | size: 0x398 | large */
+#pragma pop
+#pragma push
+#pragma optimization_level 0
+#pragma peephole off
 void fightOutPokemonGetOutOkWazaBanmeAry(void) {
     extern void fn_80119ED0();
     extern void fn_8011A3E4();
@@ -2229,7 +2235,10 @@ void fightOutPokemonGetOutOkWazaBanmeAry(void) {
 }
 
 /* 0x801FFEC8 | size: 0xB94 | massive */
-void fightOutPokemonCheckCanOutOkWazaBanme(void) {
+#pragma pop
+#pragma push
+#pragma peephole off
+u8 fightOutPokemonCheckCanOutOkWazaBanme(void* fighter, u32 slot, u32 mode, u16* output) {
     extern u8 lbl_80279C90[];
     extern void fn_80119ED0();
     extern void fn_8011A6D4();
@@ -2265,16 +2274,16 @@ void fightOutPokemonCheckCanOutOkWazaBanme(void) {
     void (*ctr_fn)(void) = 0;
     u32 ctr = 0;
 
-    /* mr. r31, r3 */;
-    r25 = r4;
-    r24 = r5;
-    r23 = r6;
+    r31 = (u32)fighter;
+    r25 = slot;
+    r24 = mode;
+    r23 = (u32)output;
     r30 = 0x0;
-    if ((s32)r0 == (s32)0) {
+    if ((s32)r31 == (s32)0) {
         r3 = 0x6;
         return;
     }
-    if ((s32)r0 == (s32)0) {
+    if ((s32)r24 == (s32)0) {
         r26 = 0x0;
     } else {
 
@@ -2316,8 +2325,7 @@ void fightOutPokemonCheckCanOutOkWazaBanme(void) {
     r5 = 0xd6;
     r6 = 0x0;
     ((void(*)(void))pokemonGetStatus)();
-    /* mr. r28, r3 */;
-    if (r3 == (u32)0x0) {
+    if ((r28 = r3) == (u32)0x0) {
         r27 = 0x0;
     } else {
 
@@ -3028,6 +3036,8 @@ void fightOutPokemonCheckCanOutOkWazaBanme(void) {
 
     return;
 }
+
+#pragma pop
 
 /* 0x80200A5C | size: 0xB4 */
 typedef struct { u16 fields[9]; } FieldTable9;

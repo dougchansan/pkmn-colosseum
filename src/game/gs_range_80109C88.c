@@ -18,6 +18,9 @@ extern u8 pokemonCheckRare(void* pokemon);
 extern u16 lbl_8035B478[][2];
 extern void* memset(void* dst, int val, u32 size);
 
+#pragma push
+#pragma optimization_level 3
+#pragma peephole off
 u16 fn_8010BBB8(void* pokemon)
 {
     u16 species;
@@ -46,6 +49,7 @@ u16 fn_8010BBB8(void* pokemon)
     }
     return pokemonGetStatus((void*)0, species, 0x5B, 0);
 }
+#pragma pop
 
 u32 fn_8010B560(void) {
     typedef struct Entry {
@@ -110,6 +114,9 @@ found:
     return lbl_8047AD4C[i].state == 2;
 }
 
+#pragma push
+#pragma optimization_level 3
+#pragma peephole off
 s32 fn_8010BD6C(u16 key, void* (*callback)(u32), u32 arg)
 {
     typedef struct Entry {
@@ -176,6 +183,7 @@ s32 fn_8010BD6C(u16 key, void* (*callback)(u32), u32 arg)
     lbl_8047AD4C[index] = saved;
     return index;
 }
+#pragma pop
 void fn_8010C220(void) {
 }
 
@@ -228,6 +236,9 @@ void fn_8010C224(s32 count)
     }
 }
 
+#pragma push
+#pragma optimization_level 3
+#pragma peephole off
 u16 fn_8010B01C(void* pokemon, void* (*callback)(u32), u32 arg)
 {
     extern u16 fn_8010B16C(u16 key, void* (*callback)(u32), u32 arg);
@@ -256,7 +267,11 @@ u16 fn_8010B01C(void* pokemon, void* (*callback)(u32), u32 arg)
     }
     return fn_8010B16C(key, callback, arg);
 }
+#pragma pop
 
+#pragma push
+#pragma optimization_level 3
+#pragma peephole off
 s32 fn_8010AE2C(void* pokemon, void* (*callback)(u32), u32 arg)
 {
     typedef struct Entry {
@@ -309,6 +324,7 @@ s32 fn_8010AE2C(void* pokemon, void* (*callback)(u32), u32 arg)
         _threadSwitch();
     }
 }
+#pragma pop
 
 void fn_8010B5C4(void* unused1, u32 unused2, u16 key)
 {
@@ -475,6 +491,9 @@ s32 fn_8010A420(void* obj)
 
     return 1;
 }
+#pragma push
+#pragma optimization_level 3
+#pragma peephole off
 s32 fn_8010B718(u8* context, void* srcNode, void* pokemon)
 {
     typedef struct Entry {
@@ -586,7 +605,11 @@ s32 fn_8010B718(u8* context, void* srcNode, void* pokemon)
     winSpriteDrawTexture(context, &lbl_80404BF0);
     return 1;
 }
+#pragma pop
 
+#pragma push
+#pragma optimization_level 3
+#pragma peephole off
 s32 fn_8010B9E8(u8* context, void* srcNode, u16 key)
 {
     typedef struct Entry {
@@ -689,6 +712,7 @@ s32 fn_8010B9E8(u8* context, void* srcNode, u16 key)
     winSpriteDrawTexture(context, &lbl_80404BF0);
     return 1;
 }
+#pragma pop
 s32 fn_8010A010(void* objPtr, u32 key)
 {
     extern u32 fn_800FF560(void);
@@ -759,6 +783,9 @@ s32 fn_8010A010(void* objPtr, u32 key)
     return 0;
 }
 
+#pragma push
+#pragma optimization_level 3
+#pragma peephole off
 s32 fn_8010A210(void* objPtr, void* pokemon)
 {
     extern u32 pokemonGetStatus(void* pokemon, u32 index, u32 field, u32 rare);
@@ -808,7 +835,11 @@ s32 fn_8010A210(void* objPtr, void* pokemon)
 
     return match;
 }
+#pragma pop
 
+#pragma push
+#pragma optimization_level 3
+#pragma peephole off
 s32 fn_80109C88(void* objPtr, void* pokemon)
 {
     extern u32 GSthreadCreate(s32 priority, void* stack, u32 stackSize,
@@ -1025,6 +1056,10 @@ s32 menuModelInit(u8* objPtr, s32 w, s32 h)
     lbl_8047AD40++;
     return 1;
 }
+#pragma pop
+#pragma push
+#pragma optimization_level 3
+#pragma peephole off
 s32 fn_8010A88C(void* objPtr)
 {
     extern s32 lbl_8047AD40;
@@ -1147,6 +1182,10 @@ s32 fn_8010A88C(void* objPtr)
     *(u32*)(obj + 0x28) = 0;
     return 1;
 }
+#pragma pop
+#pragma push
+#pragma optimization_level 3
+#pragma peephole off
 s32 fn_8010AB00(void* objPtr)
 {
     typedef struct Vec3 {
@@ -1285,6 +1324,7 @@ s32 fn_8010AB00(void* objPtr)
 
     return 1;
 }
+#pragma pop
 
 u16 fn_8010B16C(u16 key, void* (*callback)(u32), u32 arg)
 {
@@ -1319,15 +1359,25 @@ retry:
         }
         if (pokemon == NULL) {
             key = 0;
-        } else if (!pokemonCheckValid(pokemon) || pokemonBiosGetTamagoFlag(pokemon)) {
+        } else if (!pokemonCheckValid(pokemon)) {
+            key = 0x33D;
+        } else if (pokemonBiosGetTamagoFlag(pokemon)) {
             key = 0x33D;
         } else {
             u16 species = pokemonGetStatus(pokemon, 0, 0x6E, 0);
             if (species == 0xC9) {
                 u8 form = pokemonGetAnnonKatati(pokemonBiosGetRnd(pokemon));
-                key = lbl_8035B478[form][pokemonCheckRare(pokemon) != 0];
+                if (pokemonCheckRare(pokemon) == 0) {
+                    key = lbl_8035B478[form][0];
+                } else {
+                    key = lbl_8035B478[form][1];
+                }
             } else {
-                key = pokemonGetStatus(NULL, species, 0x5B, pokemonCheckRare(pokemon) != 0);
+                if (pokemonCheckRare(pokemon) == 0) {
+                    key = pokemonGetStatus(NULL, species, 0x5B, 0);
+                } else {
+                    key = pokemonGetStatus(NULL, species, 0x5B, 1);
+                }
             }
         }
     }
@@ -1371,6 +1421,22 @@ retry:
     }
 
 haveKey:
+    found = _menuFaceBiosGetPtr__FUs(key);
+    entry = lbl_8047AD4C;
+    idx = -1;
+    for (i = 0; i < lbl_8047AD48; i++, entry++) {
+        if (found == entry->data) {
+            idx = i;
+            break;
+        }
+    }
+    if (idx >= 0) {
+        fn_8010BD6C(key, callback, arg);
+        key = 0;
+        goto retry;
+    }
+    fn_8010BD6C(key, callback, arg);
+
     found = _menuFaceBiosGetPtr__FUs(key);
     if (found == NULL) {
         key = 0;

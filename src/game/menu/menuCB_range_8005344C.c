@@ -263,10 +263,18 @@ extern const MenuCBTweenFrame lbl_80267338[2];
 
 s32 fn_8005351C(MenuCBPane* pane, MenuCBPane* sprite)
 {
-    const MenuCBTweenFrame* start = &lbl_80267338[0];
-    const MenuCBTweenFrame* end = &lbl_80267338[1];
-    f32 amount = lbl_8047A540;
-    u8 visible = fn_80057E40(pane) != 2;
+    MenuCBTweenFrame frames[2];
+    const MenuCBTweenFrame* start;
+    const MenuCBTweenFrame* end;
+    f32 amount;
+    u8 visible;
+
+    frames[0] = lbl_80267338[0];
+    frames[1] = lbl_80267338[1];
+    start = &frames[0];
+    end = &frames[1];
+    visible = fn_80057E40(pane) != 2;
+    amount = lbl_8047A540;
 
     winSpriteSetDisp(sprite, visible);
     if (visible) {

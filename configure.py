@@ -729,6 +729,11 @@ config.libs = [
                 progress_category="sdk",
             ),
             Object(
+                NonMatching,
+                "dolphin/os/OSInterrupt.c",
+                progress_category="sdk",
+            ),
+            Object(
                 Matching,
                 "dolphin/os/OSEXI_fn_8009E7A8.c",
                 progress_category="sdk",
@@ -5271,7 +5276,7 @@ config.libs = [
                 CodeCandidate,
                 "game/menu/menuColosseumBattle_pre_main.c",
                 mw_version="GC/1.3",
-                extra_cflags=["-use_lmw_stmw off", "-sdata 8", "-sdata2 8"],
+                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
             Object(

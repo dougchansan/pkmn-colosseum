@@ -151,6 +151,10 @@ extern const char lbl_8047DED0[4]; /* "0" */
 extern const char lbl_8047DED4[4]; /* "" */
 extern const char lbl_8047DF10[8]; /* "tobj" */
 extern const char lbl_8047DEE8[8]; /* "cobj" */
+extern const f32 lbl_8047DED8;
+extern const f32 lbl_8047DEDC;
+extern const f32 lbl_8047DEE0;
+extern const f32 lbl_8047DEE4;
 extern Mtx lbl_8036D43C;
 extern HSD_TexLODDesc lbl_8036D594;
 
@@ -171,6 +175,10 @@ static HSD_TObj* lbl_8047B37C = NULL;      /* tobj_head */
 #define tobj_head lbl_8047B37C
 
 static void TObjSetupMtx(HSD_TObj* tobj);
+
+#ifndef HSD_TOBJ_SETUP_TEXGEN
+#define HSD_TOBJ_SETUP_TEXGEN HSD_Index2TexCoord
+#endif
 
 /* ------------------------------------------------------------------ */
 /*  sysdolphin's small deallocators.  They are always inlined; keeping  */
@@ -832,7 +840,7 @@ void HSD_TObjSetup(HSD_TObj* tobj)
 
     num = HSD_TObjAssignResources(tobj);
     if (num > 0) {
-        HSD_StateRegisterTexGen(HSD_Index2TexCoord(num - 1));
+        HSD_StateRegisterTexGen(HSD_TOBJ_SETUP_TEXGEN(num - 1));
     }
 
     for (; tobj != NULL; tobj = tobj->next) {
@@ -1030,6 +1038,67 @@ static void TObjSetupMtx(HSD_TObj* tobj)
                         0.5F * tobj->mtx[i][1] + tobj->mtx[i][2] +
                         tobj->mtx[i][3];
         }
+        GXLoadTexMtxImm(mtx, tobj->mtxid, GX_MTX3x4);
+        break;
+    }
+
+    case TEX_COORD_GRADATION: {
+        extern void C_MTXLightPerspective(Mtx, f32, f32, f32, f32, f32,
+                                          f32);
+        extern void C_MTXLightFrustum(Mtx, f32, f32, f32, f32, f32, f32,
+                                      f32, f32, f32);
+        extern void C_MTXLightOrtho(Mtx, f32, f32, f32, f32, f32, f32,
+                                    f32, f32);
+        HSD_CObj* cobj;
+        Mtx texture;
+        Mtx projection;
+
+        for (i = 0; i < 3; i++) {
+            texture[i][0] = lbl_8047DED8 * tobj->mtx[i][0];
+            texture[i][1] = lbl_8047DEDC * tobj->mtx[i][1];
+            texture[i][2] = lbl_8047DEE0;
+            texture[i][3] = lbl_8047DED8 * tobj->mtx[i][0] +
+                            lbl_8047DED8 * tobj->mtx[i][1] +
+                            tobj->mtx[i][2] + tobj->mtx[i][3];
+        }
+
+        cobj = HSD_CObjGetCurrent();
+        switch (HSD_CObjGetProjectionType(cobj)) {
+        case PROJ_PERSPECTIVE:
+            C_MTXLightPerspective(
+                projection, cobj->projection_param.perspective.fov,
+                cobj->projection_param.perspective.aspect, lbl_8047DED8,
+                lbl_8047DEDC, lbl_8047DED8, lbl_8047DED8);
+            break;
+        case PROJ_FRUSTUM:
+            C_MTXLightFrustum(
+                projection, cobj->projection_param.frustum.top,
+                cobj->projection_param.frustum.bottom,
+                cobj->projection_param.frustum.left,
+                cobj->projection_param.frustum.right, cobj->near,
+                lbl_8047DED8, lbl_8047DEDC, lbl_8047DED8, lbl_8047DED8);
+            break;
+        default:
+            C_MTXLightOrtho(projection,
+                            cobj->projection_param.ortho.top,
+                            cobj->projection_param.ortho.bottom,
+                            cobj->projection_param.ortho.left,
+                            cobj->projection_param.ortho.right,
+                            lbl_8047DED8, lbl_8047DEDC, lbl_8047DED8,
+                            lbl_8047DED8);
+            break;
+        }
+        PSMTXConcat(texture, projection, texture);
+        GXLoadTexMtxImm(texture, tobj->mtxid, GX_MTX3x4);
+        break;
+    }
+
+    case 6: {
+        Mtx mtx = {
+            { 1.0F, 0.0F, 0.0F, 0.0F },
+            { 0.0F, 1.0F, 0.0F, 0.0F },
+            { 0.0F, 0.0F, 0.0F, 1.0F },
+        };
         GXLoadTexMtxImm(mtx, tobj->mtxid, GX_MTX3x4);
         break;
     }

@@ -148,7 +148,7 @@ extern void* memset(void* dst, int val, u32 size);
 extern void GSbezierCalculateVector();
 extern void* GSfilterCreate(void);
 extern void GSmaterialSetFlags();
-extern void sin();   /* MSL trig (renamed) ? referenced by asm incs */
+extern double sin(double);
 extern double cos(double);
 
 /* GSmem allocator */
@@ -176,9 +176,13 @@ extern void  _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID(void);
 extern void* GScameraGetActiveCamera(void);
 extern void  GScameraGetPosition(void* mtx, void* vec);
 extern void  GScameraGetPerspective(void* mtx, void* rx, void* ry, void* rz, void* scale);
-extern void  GSvecDistance(void* vecA, void* vecB);
+extern f32   GSvecDistance(void* vecA, void* vecB);
 extern void  fn_800E0168(void* dst, void* srcA, void* srcB);
 extern void  fn_800E0060(void* dst, void* src);
+extern void  fn_800E013C(void* dst, void* src, f32 scale);
+extern void  fn_800E019C(void* dst, void* a, void* b);
+extern void  fn_800E01D0(void* dst, void* src);
+extern void  fn_800E01F4(void* dst, f32 x, f32 y, f32 z);
 
 /* GX rendering pipeline */
 extern void  fn_800DA4C4(u32 a, u32 b, u32 c);
@@ -194,7 +198,7 @@ extern void  fn_800D7F14(void* mtx);
 extern void  fn_800D6A00(u32 mode);
 extern void  fn_800D67BC(u16 index);
 extern void  fn_800D6680(f32 x, f32 y, f32 z);
-extern void  fn_800D5CB8(u32 a, u8 r, u8 g, u8 b, u8 alpha);
+extern void  fn_800D5CB8(u32 a, u8 r, u8 g, u8 b, u32 alpha);
 extern void  fn_800B9404(u32 index, u32 param);
 extern void  GXDrawDone(void);
 extern void  fn_800B856C(void);
@@ -354,10 +358,10 @@ extern void  DCFlushRange(void* ptr, u32 size);
 /* Unload__13ModelSequenceFPUc: _billboardTransformHelper */
 /* fn_80140190: _billboardTransformHelper2 (0x11C bytes) */
 /* _pachiruEffectCreateTexture__FP9GStextureP9GStextureUl: _billboardTransformMain (0x2DC bytes) */
-extern void fn_800E008C(void);
+extern f32 fn_800E008C(void*);
 extern void fn_800D6728(void);
 extern void fn_800D85D4(u32 a, void* b);
-extern void fn_800E0BA0(void);
+extern f32 fn_800E0BA0(void);
 extern void fn_800D59B8(u32 a, f32 b, f32 c);
 extern void fn_800D7E5C(void);
 extern u32 lbl_8047D148;
@@ -377,7 +381,7 @@ extern u32 fn_80138BBC(void* ptr);
 extern u32 fn_80138CCC(void* ptr);
 extern u32 fn_80138DE4(void* ptr, u32 delta);
 extern void fn_80139074(void* entry, void* parent);
-extern void _leaffxGenerateLeafData(void* ptr, void* entry);
+extern u8 _leaffxGenerateLeafData(void* ptr, void* entry);
 extern u32 fn_80139898(void* ptr);
 extern u32 fn_801398E0(void* ptr);
 extern u32 fn_80139934(void* ptr);
@@ -469,7 +473,14 @@ u32 _lightningRenderMain(void* ptr) {
     u8* p;
     u8* entry;
     void* model;
+    void* camera;
     f32 modelPos[3];
+    f32 cameraPos[3];
+    f32 perspective;
+    f32 unused;
+    f32 distance;
+    f32 scale;
+    f32 matrix[12];
     u16 count;
     u16 i;
     u32 segments;
@@ -480,6 +491,7 @@ u32 _lightningRenderMain(void* ptr) {
     }
 
     p = ptr;
+    count = *(u16*)(p + 0x8);
     model = GSresGetResource(*(u16*)(p + 0xA), *(u16*)(p + 0xC));
     if (model == NULL) {
         return 0;
@@ -487,16 +499,29 @@ u32 _lightningRenderMain(void* ptr) {
 
     GSmodelGetPosition(model, modelPos);
     _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
+    camera = GScameraGetActiveCamera();
+    GScameraGetPosition(camera, cameraPos);
+    GScameraGetPerspective(camera, &perspective, &unused, &unused, &unused);
+    distance = GSvecDistance(cameraPos, modelPos);
     fn_800DA4C4(1, 6, 1);
     fn_800DA2BC(1, 1, 1);
     fn_800DA1E8(1, 1, 1);
     fn_800DA028(0);
+    scale = *(f32*)&lbl_8047D148 * fn_800E008C(p + 0x28);
+    scale /= distance * perspective;
+    if (scale > *(f32*)&lbl_8047D14C) {
+        scale = *(f32*)&lbl_8047D14C;
+    }
+    fn_800B9404((s32)(*(f32*)&lbl_8047D150 * scale), 5);
     fn_800D88DC(1);
     fn_800D888C(6);
     fn_800D7820(*(void**)(p + 0x14));
+    fn_800E05C0(matrix, modelPos[0], modelPos[1], modelPos[2]);
+    fn_800D7F14(matrix);
+    fn_800E048C(matrix, *(f32*)(p + 0x28), *(f32*)(p + 0x2C), *(f32*)(p + 0x30));
+    fn_800D7F14(matrix);
     fn_800D6A00(2);
 
-    count = *(u16*)(p + 0x8);
     entry = *(u8**)(p + 0x4);
     for (i = 0; i < count; i++, entry += 0x97C) {
         segments = *(u32*)(entry + 0x978);
@@ -512,6 +537,54 @@ u32 _lightningRenderMain(void* ptr) {
         }
     }
 
+    fn_800D7E5C();
+    if (*(void**)(p + 0x1C) != NULL) {
+        fn_800DA1E8(1, 2, 1);
+        fn_800DA2BC(1, 1, 0);
+        fn_800D88DC(3);
+        fn_800D888C(4);
+        fn_800D7820(*(void**)(p + 0x18));
+        fn_800D85D4(0, *(void**)(p + 0x1C));
+        fn_800D6A00(6);
+        fn_800D67BC((u16)(count << 3));
+        entry = *(u8**)(p + 4);
+        for (i = 0; i < count; i++, entry += 0x97C) {
+            f32 width = *(f32*)(p + 0x68) + *(f32*)(p + 0x6C) * fn_800E0BA0();
+            f32 x = *(f32*)(entry + 0x960);
+            f32 y = *(f32*)(entry + 0x964);
+            f32 z = *(f32*)(entry + 0x968);
+            fn_800D6680(x - width, y, z - width);
+            fn_800D5CB8(0, p[0x24], p[0x25], p[0x26], p[0x27]);
+            fn_800D59B8(0, *(f32*)&lbl_8047D154, *(f32*)&lbl_8047D154);
+            fn_800D6680(x + width, y, z - width);
+            fn_800D5CB8(0, p[0x24], p[0x25], p[0x26], p[0x27]);
+            fn_800D59B8(0, *(f32*)&lbl_8047D158, *(f32*)&lbl_8047D154);
+            fn_800D6680(x + width, y, z + width);
+            fn_800D5CB8(0, p[0x24], p[0x25], p[0x26], p[0x27]);
+            fn_800D59B8(0, *(f32*)&lbl_8047D158, *(f32*)&lbl_8047D158);
+            fn_800D6680(x - width, y, z + width);
+            fn_800D5CB8(0, p[0x24], p[0x25], p[0x26], p[0x27]);
+            fn_800D59B8(0, *(f32*)&lbl_8047D154, *(f32*)&lbl_8047D158);
+
+            width *= *(f32*)&lbl_8047D158;
+            x = *(f32*)(entry + 0x96C);
+            y = *(f32*)(entry + 0x970);
+            z = *(f32*)(entry + 0x974);
+            fn_800D6680(x - width, y, z - width);
+            fn_800D5CB8(0, p[0x24], p[0x25], p[0x26], p[0x27]);
+            fn_800D59B8(0, *(f32*)&lbl_8047D154, *(f32*)&lbl_8047D154);
+            fn_800D6680(x + width, y, z - width);
+            fn_800D5CB8(0, p[0x24], p[0x25], p[0x26], p[0x27]);
+            fn_800D59B8(0, *(f32*)&lbl_8047D158, *(f32*)&lbl_8047D154);
+            fn_800D6680(x + width, y, z + width);
+            fn_800D5CB8(0, p[0x24], p[0x25], p[0x26], p[0x27]);
+            fn_800D59B8(0, *(f32*)&lbl_8047D158, *(f32*)&lbl_8047D158);
+            fn_800D6680(x - width, y, z + width);
+            fn_800D5CB8(0, p[0x24], p[0x25], p[0x26], p[0x27]);
+            fn_800D59B8(0, *(f32*)&lbl_8047D154, *(f32*)&lbl_8047D158);
+        }
+        fn_800D6728();
+    }
     fn_800D7E5C();
     return 1;
 }
@@ -639,10 +712,10 @@ extern void fn_800CE148(void);
 extern void set__5GSvecFfff(void* dst, f32 x, f32 y, f32 z);
 extern void GSvecCopy(void* dst, const void* src);
 extern void fn_800DFFCC(void* dst, void* src, const void* value);
-extern void fn_800E0718(void);
+extern void fn_800E0718(void*, void*, f32);
 extern void GSvecTransformQuat(void);
 extern void GSmtxMakeYRotation(void);
-extern void GSvecTransform(void);
+extern void GSvecTransform(void* dst, void* matrix, void* vec);
 extern void fn_800E013C(void* dst, void* src, f32 scale);
 extern void GSvecAdd(void* dst, void* srcA, void* srcB);
 extern u32 lbl_8047D154;
@@ -656,33 +729,85 @@ asm void fn_80138838(void* ptr, u32 b) {
 void fn_80138838(void* ptr, u32 b) {
     u8* p;
     u8* entry;
-    void* model;
-    f32 pos[3];
+    u8* current;
+    void* previous;
     u16 count;
     u16 i;
-
-    if (ptr == NULL) {
-        return;
-    }
+    u16 j;
+    f32 base[3];
+    f32 direction[3];
+    f32 tangent[3];
+    f32 step[3];
+    f32 noise[3];
+    f32 rotation[12];
+    f32 radius;
+    f32 angle;
+    f32 valueA;
+    f32 valueB;
 
     p = ptr;
-    model = GSresGetResource(*(u16*)(p + 0xA), *(u16*)(p + 0xC));
-    if (model == NULL || *(void**)(p + 0x4) == NULL) {
-        return;
-    }
-
-    GSmodelGetPosition(model, pos);
     entry = *(u8**)(p + 0x4);
     count = *(u16*)(p + 0x8);
     for (i = 0; i < count; i++, entry += 0x97C) {
-        if (b != 0 || *(u32*)(entry + 0x978) == 0) {
-            *(f32*)(entry + 0x960) = pos[0];
-            *(f32*)(entry + 0x964) = pos[1];
-            *(f32*)(entry + 0x968) = pos[2];
-            *(f32*)(entry + 0x96C) = pos[0];
-            *(f32*)(entry + 0x970) = pos[1];
-            *(f32*)(entry + 0x974) = pos[2];
-            *(u32*)(entry + 0x978) = 1;
+        if (b != 0) {
+            radius = *(f32*)(p + 0x58) * fn_800E0BA0() + *(f32*)(p + 0x54);
+            angle = *(f32*)&lbl_8047D15C * fn_800E0BE4();
+            *(f32*)(entry + 0x960) = radius * (f32)cos(angle);
+            *(f32*)(entry + 0x964) = *(f32*)&lbl_8047D154;
+            *(f32*)(entry + 0x968) = radius * (f32)sin(angle);
+        }
+
+        fn_800E0060(base, entry + 0x960);
+        set__5GSvecFfff(direction, base[0], *(f32*)&lbl_8047D14C, base[2]);
+        fn_800E0060(direction, direction);
+        *(u32*)(entry + 0x978) = 0;
+        current = entry;
+        previous = entry + 0x960;
+
+        for (j = 0; j < 100; j++) {
+            GSvecCopy(tangent, direction);
+            tangent[1] = *(f32*)&lbl_8047D154;
+            fn_800E0060(tangent, tangent);
+            fn_800DFFCC(tangent, direction, tangent);
+            fn_800E0060(tangent, tangent);
+
+            fn_800E0718(step, tangent, *(f32*)(p + 0x4C) * fn_800E0BA0());
+            ((void (*)(void*, void*, void*))GSvecTransformQuat)(
+                direction, step, direction);
+            ((void (*)(void*, f32))GSmtxMakeYRotation)(
+                rotation, *(f32*)(p + 0x50) * fn_800E0BA0());
+            ((void (*)(void*, void*, void*))GSvecTransform)(
+                direction, rotation, direction);
+
+            if (b != 0) {
+                GSvecCopy(current + 0xC, direction);
+            } else {
+                fn_800E013C(current + 0xC, current + 0xC,
+                            *(f32*)&lbl_8047D14C - *(f32*)(p + 0x64));
+                fn_800E013C(direction, direction, *(f32*)(p + 0x64));
+                GSvecAdd(current + 0xC, current + 0xC, direction);
+                fn_800E0060(current + 0xC, current + 0xC);
+            }
+
+            fn_800E013C(direction, current + 0xC,
+                        *(f32*)(p + 0x60) * fn_800E0BA0() + *(f32*)(p + 0x5C));
+            valueA = *(f32*)(p + 0x48) * fn_800E0BA0();
+            valueB = *(f32*)(p + 0x44) * fn_800E0BA0();
+            set__5GSvecFfff(noise, *(f32*)(p + 0x40) * fn_800E0BA0(),
+                            valueB, valueA);
+            GSvecAdd(noise, noise, p + 0x34);
+            GSvecAdd(direction, direction, noise);
+            GSvecAdd(current, previous, direction);
+            GSvecCopy(current + 0xC, direction);
+            *(u32*)(entry + 0x978) += 1;
+
+            if (*(f32*)(current + 0x4) < *(f32*)&lbl_8047D154) {
+                GSvecCopy(entry + 0x96C, previous);
+                break;
+            }
+
+            previous = current;
+            current += 0x18;
         }
     }
 }
@@ -849,12 +974,11 @@ allocation_error:
     return 0;
 }
 #endif
-extern void GSbezierCalculateVector(void);
-extern void fn_800E06B8(void);
-extern void fn_800E040C(void);
-extern void fn_800E02C4(void);
-extern void fn_800E03B4(void);
-extern void GSmodelSetMatrix(void);
+extern void fn_800E06B8();
+extern void fn_800E040C();
+extern void fn_800E02C4(void* matrix, f32 x, f32 y, f32 z);
+extern void fn_800E03B4();
+extern void GSmodelSetMatrix();
 extern u32 lbl_8047D170;
 extern u32 lbl_8047D164;
 extern u32 lbl_8047D178;
@@ -868,10 +992,25 @@ asm void fn_80138DE4(void) {
 u32 fn_80138DE4(void* ptr, u32 delta) {
     u8* p;
     u8* entry;
+    void* model;
+    void* part;
+    void* obj;
     u16 cur;
-    u16 end;
-    u16 i;
-    u16 count;
+    u16 next;
+    u16 fadeStart;
+    u16 fadeEnd;
+    u16 entryCount;
+    u16 tickDelta;
+    u32 i;
+    u32 j;
+    u32 modelCount;
+    s32 partCount;
+    f32 deltaScale;
+    f32 alpha;
+    f32 scale;
+    f32 position[3];
+    f32 rotation[4];
+    f32 matrix[12];
 
     if (ptr == NULL) {
         return 0;
@@ -879,24 +1018,74 @@ u32 fn_80138DE4(void* ptr, u32 delta) {
 
     p = ptr;
     cur = *(u16*)(p + 0x3C);
-    end = *(u16*)(p + 0x3E);
-    if (cur >= end) {
+    fadeEnd = *(u16*)(p + 0x3E);
+    if (cur >= fadeEnd) {
         return 0;
     }
 
-    *(u16*)(p + 0x3C) = cur + delta;
-    count = *(u16*)(p + 0x38);
+    next = cur + delta;
+    tickDelta = delta;
+    fadeStart = *(u16*)(p + 0x3A);
+    deltaScale = *(f32*)(p + 0x2C) * (f32)tickDelta;
+    *(u16*)(p + 0x3C) = next;
+    entryCount = *(u16*)(p + 0x38);
     entry = *(u8**)p;
-    for (i = 0; i < count; i++, entry += 0x5C) {
+
+    if (next < fadeStart) {
+        deltaScale *= *(f32*)&lbl_8047D164 - ((f32)next / (f32)fadeStart);
+    } else {
+        model = GSresGetResource(*(u16*)(p + 0x40), *(u16*)(p + 0x44));
+        alpha = *(f32*)&lbl_8047D160 -
+                ((f32)(next - fadeStart) / (f32)(fadeEnd - fadeStart));
+        modelCount = fn_800EE0E8(model);
+        for (i = 0; i < modelCount; i++) {
+            part = GSmodelGetPart(model, i);
+            if (part != NULL) {
+                partCount = GSpartGetMaterialCount(part);
+                for (j = 0; j < (u32)partCount; j++) {
+                    obj = GSpartGetMaterial(part, j);
+                    if (obj != NULL) {
+                        GSmaterialSetAlpha(obj, alpha);
+                        fn_800DF608(obj);
+                    }
+                }
+                GSpartFree(part);
+            }
+        }
+    }
+
+    for (i = 0; i < entryCount; i++, entry += 0x5C) {
         if (*(void**)(entry + 0x58) != NULL) {
-            fn_80139074(entry, p);
+            *(f32*)(entry + 0x54) += deltaScale;
+            if (*(f32*)(entry + 0x54) >= *(f32*)&lbl_8047D160) {
+                fn_80139074(p, entry);
+            }
+
+            ((void (*)(f32*, void*, f32))GSbezierCalculateVector)(
+                position, entry, *(f32*)(entry + 0x54));
+            if (position[1] < *(f32*)&lbl_8047D168) {
+                GSmodelSetVisibility(*(void**)(entry + 0x58), 0);
+                GSmodelFree(*(void**)(entry + 0x58));
+                *(void**)(entry + 0x58) = NULL;
+            } else {
+                model = *(void**)(entry + 0x58);
+                scale = *(f32*)(entry + 0x50);
+                ((void (*)(f32*, void*, void*, f32))fn_800E06B8)(
+                    rotation, entry + 0x30, entry + 0x40,
+                    *(f32*)(entry + 0x54));
+                ((void (*)(f32*, f32*))fn_800E040C)(matrix, rotation);
+                ((void (*)(f32*, f32, f32, f32))fn_800E02C4)(
+                    matrix, scale, scale, scale);
+                ((void (*)(f32*, f32*))fn_800E03B4)(matrix, position);
+                ((void (*)(void*, f32*))GSmodelSetMatrix)(model, matrix);
+            }
         }
     }
 
     return 1;
 }
 #endif
-extern void fn_800E076C(void);
+extern void fn_800E076C(void*, void*, f32);
 extern u32 lbl_8047D160;
 extern u32 lbl_8047D180;
 extern u32 lbl_8047D184;
@@ -906,26 +1095,57 @@ asm void fn_80139074(void) {
 }
 #else
 void fn_80139074(void* entry, void* parent) {
-    u8* e;
-    u8* p;
-    void* model;
+    u8* config = entry;
+    u8* leaf = parent;
+    f32 direction[3];
+    f32 yaw;
+    f32 pitch;
+    f32 distance;
 
-    if (entry == NULL || parent == NULL) {
-        return;
-    }
+    *(f32*)(leaf + 0x54) -= *(f32*)&lbl_8047D160;
+    fn_800E076C(leaf + 0x30, leaf + 0x40,
+                *(f32*)(leaf + 0x54) + *(f32*)&lbl_8047D160);
 
-    e = entry;
-    p = parent;
-    model = *(void**)(e + 0x58);
-    *(f32*)(e + 0x30) += *(f32*)(e + 0x40);
-    *(f32*)(e + 0x34) += *(f32*)(e + 0x44);
-    *(f32*)(e + 0x38) += *(f32*)(e + 0x48);
-    *(f32*)(e + 0x18) += *(f32*)(p + 0x18);
-    *(f32*)(e + 0x1C) += *(f32*)(p + 0x1C);
-    *(f32*)(e + 0x20) += *(f32*)(p + 0x20);
-    if (model != NULL) {
-        GSmodelSetVisibility(model, 1);
-    }
+    yaw = *(f32*)&lbl_8047D180 * fn_800E0BE4();
+    pitch = *(f32*)&lbl_8047D184 * fn_800E0BE4();
+    fn_800E01F4(direction,
+                (f32)sin(pitch) * (f32)cos(yaw),
+                (f32)cos(pitch),
+                (f32)sin(pitch) * (f32)sin(yaw));
+    fn_800E0718(leaf + 0x40, direction,
+                *(f32*)&lbl_8047D180 * fn_800E0BE4());
+
+    fn_800E01D0(leaf, leaf + 0xC);
+    fn_800E01D0(leaf + 0x18, leaf + 0x24);
+    fn_800E0168(leaf + 0x18, leaf + 0x18, leaf + 0xC);
+    fn_800E0060(leaf + 0x18, leaf + 0x18);
+    distance = (*(f32*)(config + 0x24) * fn_800E0BA0() +
+                *(f32*)(config + 0x20)) * *(f32*)(leaf + 0x50);
+    fn_800E013C(leaf + 0x18, leaf + 0x18, -distance);
+    fn_800E019C(leaf + 0x18, leaf + 0x18, leaf);
+
+    yaw = *(f32*)&lbl_8047D180 * fn_800E0BE4();
+    pitch = *(f32*)&lbl_8047D184 * fn_800E0BE4();
+    distance = (*(f32*)(config + 0x1C) * fn_800E0BA0() +
+                *(f32*)(config + 0x18)) * *(f32*)(leaf + 0x50);
+    fn_800E01F4(leaf + 0xC,
+                (f32)sin(pitch) * (f32)cos(yaw),
+                (f32)cos(pitch),
+                (f32)sin(pitch) * (f32)sin(yaw));
+    fn_800E013C(leaf + 0xC, leaf + 0xC, distance);
+    *(f32*)(leaf + 0x10) += *(f32*)(config + 0x28);
+    fn_800E019C(leaf + 0xC, leaf + 0xC, leaf);
+
+    yaw = *(f32*)&lbl_8047D180 * fn_800E0BE4();
+    pitch = *(f32*)&lbl_8047D184 * fn_800E0BE4();
+    distance = (*(f32*)(config + 0x24) * fn_800E0BA0() +
+                *(f32*)(config + 0x20)) * *(f32*)(leaf + 0x50);
+    fn_800E01F4(leaf + 0x24,
+                (f32)sin(pitch) * (f32)cos(yaw),
+                (f32)cos(pitch),
+                (f32)sin(pitch) * (f32)sin(yaw));
+    fn_800E013C(leaf + 0x24, leaf + 0x24, distance);
+    fn_800E019C(leaf + 0x24, leaf + 0x24, leaf + 0xC);
 }
 #endif
 extern void* GSmodelClone(void* model);
@@ -940,37 +1160,132 @@ asm void _leaffxGenerateLeafData(void* ptr, void* entry) {
 #include "src/game/effect/effect_visual__leaffxGenerateLeafData.inc"
 }
 #else
-void _leaffxGenerateLeafData(void* ptr, void* entry) {
+u8 _leaffxGenerateLeafData(void* ptr, void* entry) {
     u8* p;
     u8* e;
     void* source;
     void* clone;
-
-    if (ptr == NULL || entry == NULL) {
-        return;
-    }
+    void* part;
+    f32 position[3];
+    f32 vecA[3];
+    f32 vecB[3];
+    f32 matrix[12];
+    f32 scale;
+    f32 yaw;
+    f32 pitch;
+    f32 radius;
+    f32 factor;
+    f32 f0;
+    f32 radiusBase;
+    f32 heightBase;
+    f32 radiusRange;
+    f32 heightRange;
+    f32 sinPitch;
+    f32 sinYaw;
+    f32 cosPitch;
+    f32 cosYaw;
 
     p = ptr;
     e = entry;
+    radiusBase = *(f32*)(p + 0x20);
+    heightBase = *(f32*)(p + 0x18);
+    radiusRange = *(f32*)(p + 0x24);
+    heightRange = *(f32*)(p + 0x1C);
     source = GSresGetResource(*(u16*)(p + 0x46), *(u16*)(p + 0x48));
     if (source == NULL) {
-        return;
+        return 0;
     }
 
-    clone = GSmodelClone(source);
+    clone = GSmodelClone(*(void**)(p + 0x08));
+    *(void**)(e + 0x58) = clone;
     if (clone == NULL) {
         GSlogWrite((const char*)lbl_80272CC4);
-        return;
+        return 0;
     }
 
-    *(void**)(e + 0x58) = clone;
-    *(f32*)(e + 0x18) = *(f32*)(p + 0x18);
-    *(f32*)(e + 0x1C) = *(f32*)(p + 0x1C);
-    *(f32*)(e + 0x20) = *(f32*)(p + 0x20);
-    *(f32*)(e + 0x30) = *(f32*)(p + 0x30);
-    *(f32*)(e + 0x34) = *(f32*)(p + 0x34);
-    *(f32*)(e + 0x38) = *(f32*)(p + 0x2C);
     GSmodelSetVisibility(clone, 1);
+    if ((s16)*(u16*)(p + 0x4A) >= 0) {
+        part = GSmodelGetPart(source, *(s16*)(p + 0x4A));
+    } else {
+        part = NULL;
+    }
+
+    if (part != NULL) {
+        GSpartGetTransform(part, position, NULL, NULL);
+        GSpartFree(part);
+    } else {
+        GSmodelGetPosition(source, position);
+    }
+
+    *(f32*)(e + 0x50) =
+        (*(f32*)(p + 0x14) * fn_800E0BA0() + *(f32*)(p + 0x10)) * *(f32*)(p + 0x0C);
+    *(f32*)(e + 0x54) = *(f32*)&lbl_8047D168;
+
+    yaw = *(f32*)&lbl_8047D180 * fn_800E0BE4();
+    pitch = *(f32*)&lbl_8047D184 * fn_800E0BE4();
+    sinPitch = (f32)sin(pitch);
+    sinYaw = (f32)sin(yaw);
+    cosPitch = (f32)cos(pitch);
+    cosYaw = (f32)cos(yaw);
+    set__5GSvecFfff(vecA,
+                    sinPitch * cosYaw,
+                    cosPitch,
+                    sinPitch * sinYaw);
+    fn_800E0718((u8*)e + 0x30, vecA, *(f32*)&lbl_8047D180 * fn_800E0BE4());
+
+    yaw = *(f32*)&lbl_8047D180 * fn_800E0BE4();
+    pitch = *(f32*)&lbl_8047D184 * fn_800E0BE4();
+    sinPitch = (f32)sin(pitch);
+    sinYaw = (f32)sin(yaw);
+    cosPitch = (f32)cos(pitch);
+    cosYaw = (f32)cos(yaw);
+    set__5GSvecFfff(vecB,
+                    sinPitch * cosYaw,
+                    cosPitch,
+                    sinPitch * sinYaw);
+    fn_800E0718((u8*)e + 0x40, vecB, *(f32*)&lbl_8047D180 * fn_800E0BE4());
+
+    GSvecCopy(e, position);
+
+    radius = (radiusRange * fn_800E0BA0() + radiusBase) * *(f32*)(e + 0x50);
+    yaw = *(f32*)&lbl_8047D180 * fn_800E0BE4();
+    pitch = *(f32*)&lbl_8047D184 * fn_800E0BE4();
+    set__5GSvecFfff((u8*)e + 0x18,
+                    (f32)sin(pitch) * (f32)cos(yaw),
+                    (f32)cos(pitch),
+                    (f32)sin(pitch) * (f32)sin(yaw));
+    fn_800E013C((u8*)e + 0x18, (u8*)e + 0x18, radius);
+    GSvecAdd((u8*)e + 0x18, (u8*)e + 0x18, position);
+
+    yaw = *(f32*)&lbl_8047D180 * fn_800E0BE4();
+    pitch = *(f32*)&lbl_8047D188 * fn_800E0BE4();
+    f0 = (f32)sin(pitch);
+    factor = heightRange * fn_800E0BA0() + heightBase;
+    radius = (*(f32*)(p + 0x34) * fn_800E0BA0() + *(f32*)(p + 0x30)) *
+             factor * *(f32*)(e + 0x50);
+    set__5GSvecFfff((u8*)e + 0x0C,
+                    f0 * (f32)cos(yaw),
+                    (f32)cos(pitch),
+                    f0 * (f32)sin(yaw));
+    fn_800E013C((u8*)e + 0x0C, (u8*)e + 0x0C, radius);
+    GSvecAdd((u8*)e + 0x0C, (u8*)e + 0x0C, position);
+
+    yaw = *(f32*)&lbl_8047D180 * fn_800E0BE4();
+    pitch = *(f32*)&lbl_8047D184 * fn_800E0BE4();
+    radius = (radiusRange * fn_800E0BA0() + radiusBase) * *(f32*)(e + 0x50);
+    set__5GSvecFfff((u8*)e + 0x24,
+                    (f32)sin(pitch) * (f32)cos(yaw),
+                    (f32)cos(pitch),
+                    (f32)sin(pitch) * (f32)sin(yaw));
+    fn_800E013C((u8*)e + 0x24, (u8*)e + 0x24, radius);
+    GSvecAdd((u8*)e + 0x24, (u8*)e + 0x24, (u8*)e + 0x0C);
+
+    fn_800E040C(matrix, (u8*)e + 0x30);
+    scale = *(f32*)(e + 0x50);
+    fn_800E02C4(matrix, scale, scale, scale);
+    fn_800E03B4(matrix, position);
+    GSmodelSetMatrix(*(void**)(e + 0x58), matrix);
+    return 1;
 }
 #endif
 #endif
@@ -1104,43 +1419,66 @@ extern u32 lbl_8047D1A0;
 BOOL fn_80139AC4(void* ptr, u32 tick) {
     u8* p;
     u8* entry;
-    u16 frame;
+    u32 frame;
     u16 endFrame;
     u16 i;
-    u16 count;
+    u32 count;
 
-    if (ptr == NULL) {
-        return 0;
-    }
-
-    p = ptr;
+    if (ptr != NULL) {
+        p = ptr;
+    frame = *(u16*)(p + 0x48);
     if (*(void**)(p + 0x58) == NULL) {
         return 0;
     }
 
-    frame = *(u16*)(p + 0x48);
     endFrame = *(u16*)(p + 0x4A);
-    if (frame >= endFrame) {
-        return 0;
-    }
-
+    if (frame < endFrame) {
     count = *(u16*)(p + 0x44);
     entry = *(u8**)p;
     for (i = 0; i < count; i++, entry += 0x12E4) {
-        if (frame >= *(u16*)(entry + 0x12DC)) {
-            if (frame < *(u16*)(entry + 0x12DE)) {
+        if (frame >= *(u16*)(entry + 0x12DC) &&
+            frame < *(u16*)(entry + 0x12DE)) {
+                f32 random_offset[3];
+                f32 offset[3];
+                f32 fade;
+                u32 segment_count;
+                u32 segment;
+                u8* point;
+
+                GSvecCopy(offset, p + 8);
+                segment_count = *(u16*)(entry + 0x12E2);
+                point = entry;
+                for (segment = 0; segment < segment_count; segment++, point += 0x18) {
+                    set__5GSvecFfff(random_offset,
+                                    offset[0] * fn_800E0BA0(),
+                                    offset[1] * fn_800E0BA0(),
+                                    offset[2] * fn_800E0BA0());
+                    GSvecAdd(point, point, random_offset);
+                }
+
+                if (*(u16*)(p + 0x48) >
+                    ((*(u16*)(entry + 0x12DE) +
+                      *(u16*)(entry + 0x12DC)) >> 1)) {
+                    fade = (f32)(*(u16*)(entry + 0x12DE) -
+                                 *(u16*)(p + 0x48)) /
+                           (f32)((*(u16*)(entry + 0x12DE) -
+                                  *(u16*)(entry + 0x12DC)) >> 1);
+                    *(u8*)(entry + 0x12D8) = (u8)(p[0x5C] * fade);
+                    *(u8*)(entry + 0x12D9) = (u8)(p[0x5D] * fade);
+                    *(u8*)(entry + 0x12DA) = (u8)(p[0x5E] * fade);
+                    *(u8*)(entry + 0x12DB) = (u8)(p[0x5F] * fade);
+                }
                 *(u16*)(entry + 0x12E0) = 1;
-                GSvecAdd(entry + 0x12CC, entry + 0xC4, p + 0x20);
-            } else {
-                *(u16*)(entry + 0x12E0) = 0;
-            }
         } else {
             *(u16*)(entry + 0x12E0) = 0;
         }
     }
 
-    *(u16*)(p + 0x48) = frame + tick;
-    return 1;
+    *(u16*)(p + 0x48) = *(u16*)(p + 0x48) + tick;
+        return 1;
+    }
+    }
+    return 0;
 }
 extern u8 lbl_80272D08[];
 extern u32 lbl_8047D190;
@@ -1221,25 +1559,103 @@ asm void fn_80139E80(void* entry, void* parent, void* cameraPos, void* modelPos)
 }
 #else
 void fn_80139E80(void* entry, void* parent, void* cameraPos, void* modelPos) {
-    u8* e;
-    u8* p;
+    extern void fn_800D7E5C(void);
+    extern void fn_800D7F14(void*);
+    extern void fn_800DFFCC(void*, void*, void*);
+    extern void fn_800E0060(f32*, f32*);
+    extern f32 fn_800E008C(f32*);
+    extern void fn_800E0108(f32*, f32*, f32*, u16, u16);
+    extern void fn_800E0560(f32 (*)[4], f32*);
+    extern void fn_800E042C(f32 (*)[4], f32*);
+    extern void fn_800E00AC(f32*, f32*);
+    u8* e = entry;
+    u8* p = parent;
+    u8* pointEntry;
+    f32 interpolated[3];
+    f32 tangent[3];
+    f32 cameraVector[3];
+    f32 normal[3];
+    f32 offset[3];
+    f32 vertex[3];
+    f32 matrix[3][4];
+    f32 threshold;
+    u16 current;
+    u16 start;
+    u16 halfSpan;
+    u16 count;
+    u16 visible;
+    u16 i;
 
-    if (entry == NULL || parent == NULL) {
-        return;
+    start = *(u16*)(e + 0x12DC);
+    current = *(u16*)(p + 0x48) - start;
+    halfSpan = (*(u16*)(e + 0x12DE) - start) >> 1;
+    fn_800E0108(interpolated, (f32*)(e + 0x12CC), (f32*)(p + 0x20), current,
+                start);
+    fn_800E0168(interpolated, modelPos, interpolated);
+    if (current < halfSpan) {
+        threshold = *(f32*)(p + 0x38) *
+                    (*(f32*)&lbl_8047D1A0 -
+                     (f32)current / (f32)halfSpan);
+    } else {
+        threshold = *(f32*)&lbl_8047D190;
     }
 
-    e = entry;
-    p = parent;
-    (void)cameraPos;
-    (void)modelPos;
-    fn_800D67BC(4);
-    fn_800D6680(*(f32*)(e + 0x12CC), *(f32*)(e + 0x12D0), *(f32*)(e + 0x12D4));
-    fn_800D5CB8(0, p[0x5C], p[0x5D], p[0x5E], p[0x5F]);
-    fn_800D59B8(0, *(f32*)&lbl_8047D190, *(f32*)&lbl_8047D190);
-    fn_800D6680(*(f32*)(e + 0xC4), *(f32*)(e + 0xC8), *(f32*)(e + 0xCC));
-    fn_800D5CB8(0, p[0x5C], p[0x5D], p[0x5E], p[0x5F]);
-    fn_800D59B8(0, *(f32*)&lbl_8047D1A0, *(f32*)&lbl_8047D1A0);
+    count = *(u16*)(e + 0x12E2);
+    visible = 0;
+    pointEntry = e;
+    for (i = 0; i < count; i++, pointEntry += 0x18) {
+        if (*(f32*)(*(u8**)(pointEntry + 0xC) + 4) > threshold) {
+            visible++;
+        }
+    }
+
+    fn_800E0560(matrix, interpolated);
+    fn_800D7F14(matrix);
+    fn_800E042C(matrix, (f32*)(p + 0x20));
+    fn_800D7F14(matrix);
+    fn_800D67BC((visible * 4) & 0xFFFC);
+
+    pointEntry = e;
+    for (i = 0; i < count; i++, pointEntry += 0x18) {
+        if (*(f32*)(*(u8**)(pointEntry + 0xC) + 4) <= threshold) {
+            continue;
+        }
+        fn_800E0168(tangent, pointEntry, *(u8**)(pointEntry + 0xC));
+        fn_800E0060(tangent, tangent);
+        GSvecAdd(cameraVector, pointEntry, *(u8**)(pointEntry + 0xC));
+        fn_800E013C(cameraVector, cameraVector, *(f32*)&lbl_8047D1A8);
+        fn_800E0168(cameraVector, cameraPos, cameraVector);
+        fn_800E0060(cameraVector, cameraVector);
+        fn_800DFFCC(normal, cameraVector, tangent);
+        if (fn_800E008C(normal) > *(f32*)&lbl_8047D1AC) {
+            fn_800E00AC(normal, normal);
+        }
+
+        fn_800E013C(offset, normal,
+                    *(f32*)&lbl_8047D1A8 * *(f32*)(pointEntry + 0x10));
+        GSvecAdd(vertex, *(u8**)(pointEntry + 0xC), offset);
+        fn_800D6680(vertex[0], vertex[1], vertex[2]);
+        fn_800D5CB8(0, e[0x12D8], e[0x12D9], e[0x12DA], e[0x12DB]);
+        fn_800D59B8(0, *(f32*)&lbl_8047D190, *(f32*)&lbl_8047D190);
+        fn_800E0168(vertex, *(u8**)(pointEntry + 0xC), offset);
+        fn_800D6680(vertex[0], vertex[1], vertex[2]);
+        fn_800D5CB8(0, e[0x12D8], e[0x12D9], e[0x12DA], e[0x12DB]);
+        fn_800D59B8(0, *(f32*)&lbl_8047D1A0, *(f32*)&lbl_8047D190);
+
+        fn_800E013C(offset, normal,
+                    *(f32*)&lbl_8047D1A8 * *(f32*)(pointEntry + 0x14));
+        fn_800E0168(vertex, pointEntry, offset);
+        fn_800D6680(vertex[0], vertex[1], vertex[2]);
+        fn_800D5CB8(0, e[0x12D8], e[0x12D9], e[0x12DA], e[0x12DB]);
+        fn_800D59B8(0, *(f32*)&lbl_8047D1A0, *(f32*)&lbl_8047D1A0);
+        GSvecAdd(vertex, pointEntry, offset);
+        fn_800D6680(vertex[0], vertex[1], vertex[2]);
+        fn_800D5CB8(0, e[0x12D8], e[0x12D9], e[0x12DA], e[0x12DB]);
+        fn_800D59B8(0, *(f32*)&lbl_8047D190, *(f32*)&lbl_8047D1A0);
+    }
     fn_800D6728();
+    fn_800D7E5C();
+    fn_800D7E5C();
 }
 #endif
 extern u32 lbl_8047D1B4;
@@ -1248,30 +1664,89 @@ extern u32 lbl_8047D1A0;
 extern u32 lbl_8047D1A8;
 extern u32 lbl_8047D1AC;
 void fn_8013A1D4(void* arg0, void* arg1, void* arg2, u32 arg3, f32 arg4) {
-    u8* entry;
-    u8* parent;
-    u8* pos;
+    typedef struct ElectronPoint {
+        f32 x;
+        f32 y;
+        f32 z;
+        struct ElectronPoint* prev;
+        f32 startWeight;
+        f32 endWeight;
+    } ElectronPoint;
+    u8* entry = arg0;
+    u8* parent = arg1;
+    ElectronPoint* point = arg2;
+    ElectronPoint* previous;
+    ElectronPoint* current;
+    f32 spread[3];
+    f32 stopHeight;
+    f32 spawnChance;
+    f32 branchDecay;
+    u16 startCount;
+    u16 count;
+    u16 i;
 
-    if (arg0 == NULL) {
-        return;
+    GSvecCopy(spread, parent + 0x14);
+    startCount = *(u16*)(entry + 0x12E2);
+    if (arg3 != 0) {
+        stopHeight = *(f32*)&lbl_8047D1B4 * point->y;
+    } else {
+        stopHeight = *(f32*)&lbl_8047D190;
     }
-    if (arg1 == NULL) {
-        return;
+
+    spawnChance = *(f32*)&lbl_8047D1A8 / (f32)(arg3 + 1);
+    count = startCount;
+    current = (ElectronPoint*)(entry + count * sizeof(ElectronPoint));
+    previous = point;
+
+    while (count < 0xC8) {
+        current->prev = previous;
+        point = previous;
+        previous = current;
+
+        set__5GSvecFfff(
+            current,
+            spread[0] * fn_800E0BA0() + *(f32*)(parent + 0x2C),
+            spread[1] * fn_800E0BA0() + *(f32*)(parent + 0x30),
+            spread[2] * fn_800E0BA0() + *(f32*)(parent + 0x34));
+        GSvecAdd(current, current, point);
+
+        count++;
+        *(u16*)(entry + 0x12E2) = count;
+        if (current->y < stopHeight || fn_800E0BA0() > spawnChance) {
+            if (arg3 == 0) {
+                GSvecCopy(entry + 0x12CC, current);
+            }
+            break;
+        }
+
+        current = (ElectronPoint*)((u8*)current + sizeof(ElectronPoint));
     }
-    if (arg2 == NULL) {
+
+    if (arg3 >= *(u16*)(parent + 0x46)) {
         return;
     }
 
-    entry = arg0;
-    parent = arg1;
-    pos = arg2;
-    (void)arg3;
-    *(f32*)(entry + 0x12CC) = *(f32*)(pos + 0x0);
-    *(f32*)(entry + 0x12D0) = *(f32*)(pos + 0x4) + arg4;
-    *(f32*)(entry + 0x12D4) = *(f32*)(pos + 0x8);
-    *(f32*)(entry + 0xC4) = *(f32*)(parent + 0x20);
-    *(f32*)(entry + 0xC8) = *(f32*)(parent + 0x24);
-    *(f32*)(entry + 0xCC) = *(f32*)(parent + 0x28);
+    spawnChance = *(f32*)(parent + 0x40) *
+                  (f32)(*(u16*)(parent + 0x46) - arg3) /
+                  (f32)*(u16*)(parent + 0x46);
+    count = *(u16*)(entry + 0x12E2);
+    if (arg3 != 0) {
+        branchDecay = arg4 / (f32)(count - startCount);
+    } else {
+        branchDecay = *(f32*)&lbl_8047D190;
+    }
+
+    current = (ElectronPoint*)(entry + startCount * sizeof(ElectronPoint));
+    for (i = startCount; i < count; i++) {
+        current->startWeight = arg4;
+        arg4 -= branchDecay;
+        current->endWeight = arg4;
+        if (fn_800E0BA0() >= spawnChance) {
+            fn_8013A1D4(entry, parent, current->prev, arg3 + 1,
+                        *(f32*)&lbl_8047D1AC * arg4);
+        }
+        current = (ElectronPoint*)((u8*)current + sizeof(ElectronPoint));
+    }
 }
 #endif
 
@@ -1338,30 +1813,159 @@ asm void fn_8013A520(void) {
 }
 #else
 u32 fn_8013A520(void* ptr) {
-    u8* p;
-    void* model;
+    extern u32 fn_800EE0E8(void*);
+    extern void* fn_800EE150(void*, u32);
+    extern void fn_800E3D98(void*, f32*);
+    extern f32 fn_800E0040(f32*, f32*);
+    extern void fn_800EE3BC(void*, f32*, s32, s32);
+    extern void fn_800EE828(void*);
+    extern u32 fn_800C46B0(f32, f32, f32);
+    extern f64 sin(f64);
+    extern f64 cos(f64);
+    u8* p = ptr;
+    void* resource;
+    void* first;
+    void* second;
+    void* camera;
+    f32 center[3];
+    f32 cameraPos[3];
+    f32 firstPos[3];
+    f32 secondPos[3];
+    f32 firstBase[3];
+    f32 secondBase[3];
+    f32 offset[3];
+    f32 point[3];
+    f32 perspective;
+    f32 unused;
+    f32 distance;
+    f32 scale;
+    f32 t;
+    f32 step;
+    f32 yaw;
+    f32 pitch;
+    f32 radius;
+    u32 count;
+    u32 firstIndex;
+    u32 secondIndex;
+    u32 segments;
+    u32 segment;
 
     if (ptr == NULL) {
         return 0;
     }
 
-    p = ptr;
-    model = GSresGetResource(*(u16*)(p + 0xC), *(u16*)(p + 0xE));
-    if (model == NULL) {
+    resource = GSresGetResource(*(u16*)(p + 0xC), *(u16*)(p + 0xE));
+    if (resource == NULL) {
         return 0;
     }
 
+    count = fn_800EE0E8(resource);
+    GSmodelGetPosition(resource, center);
     _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
+    camera = GScameraGetActiveCamera();
+    GScameraGetPosition(camera, cameraPos);
+    GScameraGetPerspective(camera, &perspective, &unused, &unused, &unused);
+    distance = GSvecDistance(cameraPos, center);
     fn_800DA4C4(1, 6, 1);
     fn_800DA2BC(1, 1, 0);
     fn_800DA1E8(1, 1, 1);
     fn_800DA028(0);
-    fn_800D88DC(3);
-    fn_800D888C(4);
-    fn_800D7820(model);
-    fn_800D6A00(6);
-    if (*(void**)(p + 0x54) != NULL) {
-        fn_8013B268(p, *(u8**)(p + 0x54));
+    scale = (*(f32*)&lbl_8047D1B8 * *(f32*)(p + 0x10)) /
+            (distance * perspective);
+    if (scale > *(f32*)&lbl_8047D1BC) {
+        scale = *(f32*)&lbl_8047D1BC;
+    }
+    fn_800B9404((u32)(*(f32*)&lbl_8047D1C0 * scale), 5);
+    fn_800D88DC(1);
+    fn_800D888C(6);
+    fn_800D7820(*(void**)(p + 4));
+    fn_800D6A00(2);
+
+    for (firstIndex = 1; firstIndex < count; firstIndex++) {
+        first = GSmodelGetPart(resource, firstIndex);
+        if (first == NULL) {
+            continue;
+        }
+        if (((u8 (*)(void*))fn_800EE7E0)(first) == 0) {
+            fn_800EE828(first);
+            continue;
+        }
+        fn_800EE3BC(first, firstPos, 0, 0);
+        if (GSvecDistance(firstPos, center) <= *(f32*)&lbl_8047D1C4) {
+            fn_800EE828(first);
+            continue;
+        }
+
+        for (secondIndex = firstIndex + 1; secondIndex < count;
+             secondIndex++) {
+            second = GSmodelGetPart(resource, secondIndex);
+            if (second == NULL) {
+                continue;
+            }
+            if (((u8 (*)(void*))fn_800EE7E0)(second) != 0 &&
+                *(f32*)(p + 0x20) > fn_800E0BE4()) {
+                fn_800EE3BC(second, secondPos, 0, 0);
+                if (GSvecDistance(firstPos, center) > *(f32*)&lbl_8047D1C4) {
+                    GSvecCopy(firstBase, firstPos);
+                    GSvecCopy(secondBase, secondPos);
+                    radius = *(f32*)&lbl_8047D1C8 *
+                             GSvecDistance(firstPos, secondPos);
+                    yaw = *(f32*)&lbl_8047D1CC * fn_800E0BE4();
+                    pitch = *(f32*)&lbl_8047D1D0 * fn_800E0BE4();
+                    set__5GSvecFfff(
+                        offset,
+                        (f32)sin(pitch) *
+                            (radius * fn_800E0BE4() * (f32)cos(yaw)),
+                        radius * fn_800E0BE4() * (f32)cos(pitch),
+                        (f32)sin(pitch) *
+                            (radius * fn_800E0BE4() * (f32)sin(yaw)));
+                    GSvecAdd(firstBase, firstPos, offset);
+                    yaw = *(f32*)&lbl_8047D1CC * fn_800E0BE4();
+                    pitch = *(f32*)&lbl_8047D1D0 * fn_800E0BE4();
+                    set__5GSvecFfff(
+                        offset,
+                        (f32)sin(pitch) *
+                            (radius * fn_800E0BE4() * (f32)cos(yaw)),
+                        radius * fn_800E0BE4() * (f32)cos(pitch),
+                        (f32)sin(pitch) *
+                            (radius * fn_800E0BE4() * (f32)sin(yaw)));
+                    GSvecAdd(secondBase, secondPos, offset);
+                    segments = fn_800C46B0(
+                        *(f32*)(p + 0x10) *
+                            (*(f32*)(p + 0x1C) *
+                                 ((f32 (*)(void))fn_800E0BA0)() +
+                             *(f32*)(p + 0x18)),
+                        *(f32*)(p + 0x18), *(f32*)(p + 0x1C));
+                    step = *(f32*)&lbl_8047D1BC / (f32)segments;
+                    fn_800D67BC((u16)(segments + 1));
+                    fn_800D6680(firstBase[0], firstBase[1], firstBase[2]);
+                    fn_800D5CB8(0, p[0], p[1], p[2], p[3]);
+                    t = step;
+                    for (segment = 1; segment < segments; segment++) {
+                        ((void (*)(f32*, f32*, f32))GSbezierCalculateVector)(
+                            point, firstBase, t);
+                        yaw = *(f32*)&lbl_8047D1CC * fn_800E0BE4();
+                        pitch = *(f32*)&lbl_8047D1D0 * fn_800E0BE4();
+                        radius = *(f32*)(p + 0x14) * *(f32*)(p + 0x10) *
+                                 ((f32 (*)(void))fn_800E0BA0)();
+                        set__5GSvecFfff(
+                            offset,
+                            (f32)sin(pitch) * (radius * (f32)cos(yaw)),
+                            radius * (f32)cos(pitch),
+                            (f32)sin(pitch) * (radius * (f32)sin(yaw)));
+                        GSvecAdd(point, point, offset);
+                        fn_800D6680(point[0], point[1], point[2]);
+                        fn_800D5CB8(0, p[0], p[1], p[2], p[3]);
+                        t += step;
+                    }
+                    fn_800D6680(secondBase[0], secondBase[1], secondBase[2]);
+                    fn_800D5CB8(0, p[0], p[1], p[2], p[3]);
+                    fn_800D6728();
+                }
+            }
+            fn_800EE828(second);
+        }
+        fn_800EE828(first);
     }
     return 1;
 }
@@ -1535,13 +2139,13 @@ u32 fn_8013AD9C(void* ptr, u32 delta) {
     f32 end;
 
     if (ptr == NULL) {
-        return 0;
+        goto done;
     }
 
     p = ptr;
     node = *(u8**)(p + 0x54);
     if (node == NULL) {
-        return 0;
+        goto done;
     }
 
     duration = *(u32*)(node + 0x8);
@@ -1604,6 +2208,9 @@ u32 fn_8013AD9C(void* ptr, u32 delta) {
     }
     *(u32*)(p + 0x58) += delta;
     return 1;
+
+done:
+    return 0;
 }
 #endif
 
@@ -2161,48 +2768,229 @@ asm void fn_8013BE04(void* ptr, void* mtx, u8* color, f32 x, f32 z, f32 scale) {
 }
 #else
 void fn_8013BE04(void* ptr, void* mtx, u8* color, f32 x, f32 z, f32 scale) {
-    u8* p;
+    u8* p = ptr;
+    u16 rows = *(u16*)(p + 0x1C);
+    u16 cols = *(u16*)(p + 0x1E);
+    u8* positions = *(u8**)(p + 4);
+    u8* normals = *(u8**)(p + 8);
+    u8* texcoords = *(u8**)(p + 0xC);
+    u8* colors = *(u8**)(p + 0x10);
+    f32 base[3];
+    f32 current[3];
+    f32 rowStep[3];
+    f32 colStep[3];
+    f32 baseX2;
+    f32 baseZ2;
+    f32 inverseBaseX2;
+    f32 inverseBaseZ2;
+    u16 row;
+    u16 column;
 
-    if (ptr == NULL || mtx == NULL || color == NULL) {
-        return;
+    set__5GSvecFfff(&base, 0.5f * x, 0.0f, 0.5f * z);
+    set__5GSvecFfff(&rowStep, x / (rows - 1), 0.0f, 0.0f);
+    set__5GSvecFfff(&colStep, 0.0f, 0.0f, z / (cols - 1));
+    GSvecCopy(&current, &base);
+    baseX2 = base[0] * base[0];
+    baseZ2 = base[2] * base[2];
+    inverseBaseX2 = 1.0f / baseX2;
+    inverseBaseZ2 = 1.0f / baseZ2;
+
+    for (row = 0; row < rows; row++) {
+        for (column = 0; column < cols; column++) {
+            f32 u;
+            f32 v;
+            f32 alpha;
+
+            GSvecAdd(positions, mtx, &current);
+            GSvecCopy(normals, lbl_8031554C);
+            u = scale * (current[0] - base[0]);
+            v = scale * (current[2] - base[2]);
+            *(f32*)(texcoords + 4) = u;
+            *(f32*)(texcoords + 0) = v;
+            colors[0] = color[0];
+            colors[1] = color[1];
+            colors[2] = color[2];
+            alpha = (f32)color[3] *
+                    (1.0f - current[0] * current[0] * inverseBaseX2) *
+                    (1.0f - current[2] * current[2] * inverseBaseZ2);
+            colors[3] = (u8)alpha;
+            GSvecAdd(&current, &current, &colStep);
+            positions += 0xC;
+            normals += 0xC;
+            texcoords += 8;
+            colors += 4;
+        }
+        GSvecAdd(&current, &current, &rowStep);
+        current[2] = base[2];
     }
-
-    p = ptr;
-    fn_800D7F14(mtx);
-    fn_800D67BC(4);
-    fn_800D6680(x - scale, *(f32*)(p + 0xC4), z - scale);
-    fn_800D5CB8(0, color[0], color[1], color[2], color[3]);
-    fn_800D6680(x + scale, *(f32*)(p + 0xC4), z - scale);
-    fn_800D5CB8(0, color[0], color[1], color[2], color[3]);
-    fn_800D6680(x + scale, *(f32*)(p + 0xC4), z + scale);
-    fn_800D5CB8(0, color[0], color[1], color[2], color[3]);
-    fn_800D6680(x - scale, *(f32*)(p + 0xC4), z + scale);
-    fn_800D5CB8(0, color[0], color[1], color[2], color[3]);
-    fn_800D6728();
+    fn_800E0E14(0, 0);
 }
 #endif
 extern void* fn_8019FF48(void* model);
-extern void HSD_MObjSetFlags(void);
-extern void HSD_MObjCompileTev(void);
+extern void HSD_MObjSetFlags(void* mobj, u32 flags);
+extern void HSD_MObjCompileTev(void* mobj);
 #if 0
 asm void fn_8013C074(void) {
 #include "src/game/effect/effect_visual_fn_8013C074.inc"
 }
 #else
 u32 fn_8013C074(void* ptr, void* arg) {
-    void* material;
+    typedef struct EnvMapRenderStage {
+        s32 kind;
+        u32 field_04;
+        s32 field_08;
+        s32 field_0C;
+        u16 field_10;
+        u16 field_12;
+        u32 field_14;
+    } EnvMapRenderStage;
+    typedef struct EnvMapRenderPObj {
+        u8 pad_00[8];
+        EnvMapRenderStage* stages;
+        u16 flags;
+        u16 display_count;
+        u8* display;
+    } EnvMapRenderPObj;
+    typedef struct EnvMapRenderDObj {
+        u8 pad_00[8];
+        void* mobj;
+        EnvMapRenderPObj* pobj;
+    } EnvMapRenderDObj;
+    typedef struct EnvMapRenderState {
+        void* model;
+        u8* field_04;
+        u8* field_08;
+        u8* field_0C;
+        u8* display;
+        u32 display_size;
+        u16 rows;
+        u16 cols;
+    } EnvMapRenderState;
 
-    if (ptr == NULL) {
+    EnvMapRenderState* state = arg;
+    EnvMapRenderDObj* dobj = fn_8019FF48(*(void**)((u8*)ptr + 0x8));
+    EnvMapRenderPObj* pobj;
+    EnvMapRenderStage* stage;
+    void* mobj;
+    u32 found9 = 0;
+    u32 found10 = 0;
+    u32 found13 = 0;
+    u32 found11 = 0;
+    u32 strip;
+    u32 row;
+    u8* out;
+    u16 vertex_count;
+    u16 span;
+    u16 strip_count;
+
+    if (dobj != NULL) {
+        pobj = dobj->pobj;
+    } else {
+        pobj = NULL;
+    }
+    if (dobj != NULL) {
+        mobj = dobj->mobj;
+    } else {
+        mobj = NULL;
+    }
+    if (mobj != NULL) {
+        HSD_MObjSetFlags(mobj, 0x40000000);
+        HSD_MObjCompileTev(mobj);
+    }
+    if (pobj == NULL) {
+        return 0;
+    }
+    stage = pobj->stages;
+    if (stage == NULL) {
         return 0;
     }
 
-    material = fn_8019FF48(*(void**)((u8*)ptr + 0x8));
-    if (material == NULL) {
+    for (; stage->kind != 0xFF; stage++) {
+        switch (stage->kind) {
+        case 9:
+            found9 = 1;
+            if (stage->field_08 != 1 || stage->field_0C != 4 ||
+                stage->field_12 != 12) {
+                return 0;
+            }
+            break;
+        case 10:
+            found10 = 1;
+            if (stage->field_08 != 0 || stage->field_0C != 4 ||
+                stage->field_12 != 12) {
+                return 0;
+            }
+            break;
+        case 11:
+            found11 = 1;
+            if (stage->field_08 != 1 || stage->field_0C != 5 ||
+                stage->field_12 != 4) {
+                return 0;
+            }
+            break;
+        case 13:
+            found13 = 1;
+            if (stage->field_08 != 1 || stage->field_0C != 4 ||
+                stage->field_12 != 8) {
+                return 0;
+            }
+            break;
+        default:
+            return 0;
+        }
+    }
+
+    if (!found9 || !found10 || !found11 || !found13) {
         return 0;
     }
 
-    (void)arg;
-    fn_800E0E14();
+    for (stage = pobj->stages; stage->kind != 0xFF; stage++) {
+        stage->field_04 = 3;
+        switch (stage->kind) {
+        case 9:
+            stage->field_14 = (u32) state->field_04;
+            break;
+        case 10:
+            stage->field_14 = (u32) state->field_08;
+            break;
+        case 11:
+            stage->field_14 = (u32) state->display;
+            break;
+        case 13:
+            stage->field_14 = (u32) state->field_0C;
+            break;
+        }
+    }
+
+    vertex_count = state->rows * 2;
+    span = state->cols;
+    strip_count = state->cols - 1;
+    out = state->display;
+
+    for (strip = 0; strip < strip_count; strip++) {
+        *(u8*) out = 0x98;
+        *(u16*) (out + 1) = vertex_count;
+        out += 3;
+
+        for (row = 0; row < state->rows; row++) {
+            u16 top = strip + row * span + 1;
+            u16 bottom = top - 1;
+
+            *(u16*) (out + 0x0) = top;
+            *(u16*) (out + 0x2) = top;
+            *(u16*) (out + 0x4) = top;
+            *(u16*) (out + 0x6) = top;
+            *(u16*) (out + 0x8) = bottom;
+            *(u16*) (out + 0xA) = bottom;
+            *(u16*) (out + 0xC) = bottom;
+            *(u16*) (out + 0xE) = bottom;
+            out += 0x10;
+        }
+    }
+
+    fn_800E0E14(0, 0);
+    pobj->display = state->display;
+    pobj->display_count = state->display_size >> 5;
     return 1;
 }
 #endif
@@ -2453,10 +3241,10 @@ u32 fn_8013CA48(void* ptr, u32 delta) {
     f32* randomZ;
     f32* randomAngle;
     f32* grid;
-    u32 rows;
-    u32 columns;
-    u32 row;
-    u32 column;
+    s32 rows;
+    s32 columns;
+    s32 row;
+    s32 column;
 
     if (ptr == NULL) {
         return 0;
@@ -2484,13 +3272,16 @@ u32 fn_8013CA48(void* ptr, u32 delta) {
     amplitude = t * (span * *(f32*)(p + 0xA0));
     grid = *(f32**)(p + 0x4);
     for (row = 0; row < rows; row++) {
-        rowAngleStep = angleStep / randomZ[row];
-        angle = randomAngle[row] + amplitude / randomZ[row];
+        rowAngleStep = angleStep / *randomZ;
+        angle = *randomAngle + amplitude / *randomZ;
         for (column = 0; column < columns; column++) {
-            grid[1] = *(f32*)(p + 0x4C) + randomX[row] * fn_800E0CA0(angle);
+            grid[1] = *(f32*)(p + 0x4C) + *randomX * fn_800E0CA0(angle);
             angle += rowAngleStep;
             grid += 3;
         }
+        randomX++;
+        randomZ++;
+        randomAngle++;
     }
 
     *(u16*)(p + 0xA4) = *(u16*)(p + 0xA4) + delta;
@@ -2651,20 +3442,178 @@ asm void fn_8013D0A8(void) {
 #include "src/game/effect/effect_visual_fn_8013D0A8.inc"
 }
 #else
+typedef struct BlurRenderStage {
+    s32 kind;
+    u32 field_04;
+    s32 field_08;
+    s32 field_0C;
+    u16 field_10;
+    u16 field_12;
+    u32 field_14;
+} BlurRenderStage;
+
+typedef struct BlurRenderPObj {
+    u8 pad_00[8];
+    BlurRenderStage* stages;
+    u16 flags;
+    u16 display_count;
+    u8* display;
+} BlurRenderPObj;
+
+typedef struct BlurRenderDObj {
+    u8 pad_00[8];
+    void* mobj;
+    BlurRenderPObj* pobj;
+} BlurRenderDObj;
+
+typedef struct BlurRenderState {
+    void* model;
+    u8* positions;
+    u8* texcoords;
+    u8* colors;
+    u8* display;
+    u32 display_size;
+    u16 rows;
+    u16 cols;
+    u32 pad_1C;
+    u32 saved_field_04[4];
+    u32 saved_field_14[4];
+    u8* old_display;
+    u16 old_display_count;
+    u8 applied;
+} BlurRenderState;
+
 u32 fn_8013D0A8(void* ptr, void* arg) {
-    void* material;
+    BlurRenderState* state = arg;
+    BlurRenderDObj* dobj = fn_8019FF48(*(void**)((u8*)ptr + 0x8));
+    BlurRenderPObj* pobj;
+    void* mobj;
+    BlurRenderStage* stage;
+    u32 found9 = 0;
+    u32 found10 = 0;
+    u32 found13 = 0;
+    u32 found11 = 0;
+    u32 stage_ordinal;
+    s32 strip;
+    s32 row;
+    u8* saved_cursor;
+    u8* out;
+    u16 vertex_count;
+    u16 span;
 
-    if (ptr == NULL) {
+    if (dobj != NULL) {
+        pobj = dobj->pobj;
+    } else {
+        pobj = NULL;
+    }
+    if (dobj != NULL) {
+        mobj = dobj->mobj;
+    } else {
+        mobj = NULL;
+    }
+    if (mobj != NULL) {
+        HSD_MObjSetFlags(mobj, 0x40000000);
+        HSD_MObjCompileTev(mobj);
+    }
+    if (pobj == NULL) {
+        return 0;
+    }
+    stage = pobj->stages;
+    if (stage == NULL) {
         return 0;
     }
 
-    material = fn_8019FF48(*(void**)((u8*)ptr + 0x8));
-    if (material == NULL) {
+    for (stage_ordinal = 1; stage->kind != 0xFF; stage++, stage_ordinal++) {
+        switch (stage->kind) {
+        case 9:
+            found9 = stage_ordinal;
+            if (stage->field_08 != 1 || stage->field_0C != 4 ||
+                stage->field_12 != 12) {
+                return 0;
+            }
+            break;
+        case 10:
+            found10 = stage_ordinal;
+            if (stage->field_08 != 0 || stage->field_0C != 4 ||
+                stage->field_12 != 12) {
+                return 0;
+            }
+            break;
+        case 11:
+            found11 = stage_ordinal;
+            if (stage->field_08 != 1 || stage->field_0C != 5 ||
+                stage->field_12 != 4) {
+                return 0;
+            }
+            break;
+        case 13:
+            found13 = stage_ordinal;
+            if (stage->field_08 != 1 || stage->field_0C != 4 ||
+                stage->field_12 != 8) {
+                return 0;
+            }
+            break;
+        default:
+            return 0;
+        }
+    }
+
+    if (!found9 || !found10 || !found11 || !found13) {
         return 0;
     }
 
-    (void)arg;
-    fn_800D4604(1);
+    for (stage = pobj->stages, saved_cursor = (u8*)state; stage->kind != 0xFF;
+         stage++, saved_cursor += sizeof(u32)) {
+        *(u32*)(saved_cursor + 0x20) = stage->field_04;
+        *(u32*)(saved_cursor + 0x30) = stage->field_14;
+        stage->field_04 = 3;
+
+        switch (stage->kind) {
+        case 9:
+            stage->field_14 = (u32) state->positions;
+            break;
+        case 10:
+            stage->field_14 = (u32) lbl_80363CB8;
+            break;
+        case 11:
+            stage->field_14 = (u32) state->colors;
+            break;
+        case 13:
+            stage->field_14 = (u32) state->texcoords;
+            break;
+        }
+    }
+
+    out = state->display;
+    vertex_count = state->rows * 2;
+    span = state->cols;
+
+    for (strip = 0; strip < state->cols - 1; strip++) {
+        *(u8*) out = 0x98;
+        *(u16*) (out + 1) = vertex_count;
+        out += 3;
+
+        for (row = 0; row < state->rows; row++) {
+            u16 top = strip + row * span + 1;
+            u16 bottom = top - 1;
+
+            *(u16*) (out + 0) = top;
+            *(u16*) (out + 2) = 0;
+            *(u16*) (out + 4) = top;
+            *(u16*) (out + 6) = top;
+            *(u16*) (out + 8) = bottom;
+            *(u16*) (out + 0xA) = 0;
+            *(u16*) (out + 0xC) = bottom;
+            *(u16*) (out + 0xE) = bottom;
+            out += 0x10;
+        }
+    }
+
+    state->old_display = pobj->display;
+    state->old_display_count = pobj->display_count;
+    pobj->display = state->display;
+    pobj->display_count = state->display_size >> 5;
+    state->applied = 1;
     return 1;
 }
 #endif
@@ -3111,29 +4060,128 @@ asm void fn_8013DE6C(void) {
 }
 #else
 u32 fn_8013DE6C(void* ptr) {
-    u8* p;
+    extern u8 fn_800EC960(void*);
+    extern f32 fn_800EC570(void*);
+    extern void fn_800E6478(void*, void*);
+    extern s32 fn_800D45F8(void);
+    extern u32 fn_800DF3F0(void);
+    extern void fn_800DF188(void*);
+    extern void fn_800EC990(void*);
+    extern void fn_800ECA78(void*, f32);
+    extern void fn_800EC134(void*);
+    extern void fn_800DF21C(f32);
+    extern void fn_800E3760(void*, u32);
+    extern void fn_800DF140(void);
+    extern void fn_800DF504(void*);
+    extern void fn_800E638C(void*);
+    u8* p = ptr;
     void* model;
+    u8* timing;
+    void** materials;
+    s32 materialCount;
+    s32 oldMode;
+    s32 copies = 0;
+    s32 i;
+    u32 frame;
+    f32 blend;
+    f32 animFrame;
+    f32 animRate;
+    f32 startFrame;
+    f32 alphaStep;
+    f32 alpha;
 
     if (ptr == NULL) {
         return 0;
     }
 
-    p = ptr;
     model = *(void**)p;
-    if (model == NULL && *(s32*)(p + 0x10) == 0) {
-        return 0;
+    timing = *(u8**)(p + 0x18);
+    materialCount = *(s32*)(p + 8);
+    if (*(s32*)(p + 0x10) != 0 || model == NULL) {
+        return 1;
+    }
+    if (fn_800EC960(model) == 0) {
+        return 1;
     }
 
-    fn_800D4604(1);
-    _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
-    if (model != NULL) {
-        GSmodelSetVisibility(model, 1);
-        GSmodelDrawModel(model, 0);
+    frame = *(u32*)(p + 0x1C);
+    blend = (f32)frame / (f32)*(u32*)(timing + 8);
+    blend = blend * (*(f32*)(timing + 4) - *(f32*)timing) + *(f32*)timing;
+    switch (((s32 (*)(u32))fn_800D3068)(frame)) {
+    case 1:
+        copies = (s32)(*(f32*)&lbl_8047D26C * blend +
+                       *(f32*)&lbl_8047D268);
+        break;
+    case 2:
+        copies = (s32)(*(f32*)&lbl_8047D270 * blend +
+                       *(f32*)&lbl_8047D268);
+        break;
+    case 3:
+        copies = (s32)(*(f32*)&lbl_8047D274 * blend +
+                       *(f32*)&lbl_8047D268);
+        break;
+    case 4:
+        copies = (s32)(*(f32*)&lbl_8047D278 * blend +
+                       *(f32*)&lbl_8047D268);
+        break;
     }
-    if (*(void**)(p + 0xC) != NULL) {
-        fn_800D85D4(0, *(void**)(p + 0xC));
+    if (copies == 0) {
+        return 1;
     }
-    fn_800D4604(0);
+
+    animFrame = ((f32 (*)(void*))GSmodelGetAnimFrame)(model);
+    animRate = fn_800EC570(model);
+    startFrame = -((animRate * copies) - animFrame);
+    if (startFrame < *(f32*)&lbl_8047D27C) {
+        startFrame = *(f32*)&lbl_8047D27C;
+        copies = (s32)(animFrame / animRate);
+    }
+    if (copies == 0 || startFrame >= animFrame) {
+        return 1;
+    }
+
+    fn_800E6478(model, lbl_80363CC8);
+    oldMode = fn_800D45F8();
+    fn_800D4604(2);
+    fn_800D2248();
+    materials = *(void***)(p + 4);
+    for (i = 0; i < materialCount; i++) {
+        if (materials[i] != NULL) {
+            ((void (*)(void*, u32))GSmaterialSetFlags)(
+                materials[i], fn_800DF3F0() | 0x20);
+            fn_800DF188(materials[i]);
+        }
+    }
+
+    fn_800EC990(model);
+    alphaStep = *(f32*)&lbl_8047D280 / (f32)copies;
+    alpha = alphaStep;
+    while (startFrame + animRate < animFrame) {
+        fn_800ECA78(model, startFrame);
+        fn_800EC134(model);
+        materials = *(void***)(p + 4);
+        for (i = 0; i < materialCount; i++) {
+            if (materials[i] != NULL) {
+                fn_800DF21C(*(f32*)&lbl_8047D268 * (alpha * alpha));
+            }
+        }
+        fn_800E3760(model, 0x3010);
+        startFrame += animRate;
+        alpha += alphaStep;
+    }
+
+    materials = *(void***)(p + 4);
+    for (i = 0; i < materialCount; i++) {
+        if (materials[i] != NULL) {
+            fn_800DF140();
+            fn_800DF504(materials[i]);
+        }
+    }
+    fn_800E638C(model);
+    fn_800ECA78(model, animFrame);
+    fn_800EC134(model);
+    fn_800E3760(model, 0x3010);
+    fn_800D4604(oldMode);
     return 1;
 }
 #endif
@@ -3150,31 +4198,58 @@ asm u32 fn_8013E258(void* model, void* unused, void* state) {
 }
 #else
 u32 fn_8013E258(void* model, void* unused, void* state) {
-    u8* p;
+    struct EffectVisualState {
+        f32 start;
+        f32 end;
+        u32 duration;
+    } *visual;
+    s32 alpha;
+    f32 amount;
 
     (void)unused;
     if (state == NULL) {
-        return 0;
+        goto ret0;
     }
 
-    p = state;
+    visual = *(struct EffectVisualState**)((u8*)state + 0x18);
+    amount = visual->start +
+        ((f32)*(u32*)((u8*)state + 0x1C) / (f32)visual->duration) *
+        (visual->end - visual->start);
+    alpha = (s32)(*(f32*)&lbl_8047D298 * amount);
     fn_800D9B58(*(f32*)&lbl_8047D27C, *(f32*)&lbl_8047D27C,
-                *(f32*)&lbl_8047D288, *(f32*)&lbl_8047D298);
-    fn_800DA4C4(1, 6, 1);
+                *(f32*)&lbl_8047D29C, *(f32*)&lbl_8047D298);
+    fn_800DA4C4(1, 6, 7);
     fn_800DA1E8(0, 7, 0);
+    fn_800D9ED8(1);
     fn_800DA2BC(1, 1, 0);
     fn_800DA028(0);
     fn_800D88DC(3);
     fn_800D888C(4);
-    fn_800D7820(model);
-    fn_800D85D4(0, *(void**)(p + 0xC));
+    fn_800D7820(lbl_80314AE8);
+    fn_800D85D4(0, model);
     fn_800D6A00(4);
     fn_800D67BC(4);
     fn_800D6680(*(f32*)&lbl_8047D27C, *(f32*)&lbl_8047D27C, *(f32*)&lbl_8047D27C);
-    fn_800D5CB8(0, p[8], p[9], p[0xA], p[0xB]);
+    fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, alpha);
+    fn_800D59B8(0, *(f32*)&lbl_8047D27C, *(f32*)&lbl_8047D27C);
+    fn_800D6680(*(f32*)&lbl_8047D27C, *(f32*)&lbl_8047D29C,
+                *(f32*)&lbl_8047D27C);
+    fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, alpha);
+    fn_800D59B8(0, *(f32*)&lbl_8047D280, *(f32*)&lbl_8047D27C);
+    fn_800D6680(*(f32*)&lbl_8047D27C, *(f32*)&lbl_8047D2A0,
+                *(f32*)&lbl_8047D27C);
+    fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, alpha);
+    fn_800D59B8(0, *(f32*)&lbl_8047D27C, *(f32*)&lbl_8047D280);
+    fn_800D6680(*(f32*)&lbl_8047D29C, *(f32*)&lbl_8047D2A0,
+                *(f32*)&lbl_8047D27C);
+    fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, alpha);
+    fn_800D59B8(0, *(f32*)&lbl_8047D280, *(f32*)&lbl_8047D280);
     fn_800D6728();
     fn_800D9ED8(0);
     return 1;
+
+ret0:
+    return 0;
 }
 #endif
 #endif
@@ -3431,15 +4506,26 @@ u32 fn_8013E8A4(void* ptr, u32 delta) {
     return 1;
 }
 #endif
-extern void __assert(void);
+extern void __assert();
 extern void* GSmodelGetBound(void* model);
 extern void GSmodelGetMatrixPtr(void);
 extern void GSmodelSetRenderFlags(void);
 extern void GSmodelInitMaterialAlpha(void);
-extern void fn_8019D620(void);
+extern void fn_8019D620(void* jobj);
 extern void GSmodelSetMaterialAlpha(void);
 extern void GSmodelResetMaterialAlpha(void);
 extern void GSmodelResetRenderFlags(void);
+extern void fn_800DFF98(void* dst, void* mtx, void* src);
+extern void* fn_800E3C5C(void* model);
+extern void fn_800E3760(void* model, u32 flags);
+extern void* fn_800E4514(void* model);
+extern void fn_800E638C(void* model);
+extern void fn_800E6478(void* model, void* peDescr);
+extern void fn_800E65CC(void* model);
+extern void fn_800E66B8(void* model);
+extern void fn_800E6804(void* model, f32 alpha);
+extern void fn_800E68D8(void* model);
+extern void fn_800E69C4(void* model, u32 flags);
 extern u8 lbl_80363CD8[];
 extern u8 lbl_8047D2E0[];
 extern u8 lbl_8047D2E8[];
@@ -3454,21 +4540,144 @@ asm void fn_8013EA44(void) {
 }
 #else
 void fn_8013EA44(void* ptr) {
+    extern void fn_800EC134(void*);
     u8* p;
-
-    if (ptr == NULL) {
-        return;
-    }
+    void* model;
+    void* texture;
+    u8* part;
+    void* bound;
+    f32 minVec[3];
+    f32 scaledMin[3];
+    f32 maxVec[3];
+    f32 mid[3];
+    f32 scaledMax[3];
+    f32 alpha;
+    f32 alphaStep;
+    f32 layerAlpha;
+    f32 layerAlphaStep;
+    u32 flags;
+    s32 count;
+    s32 i;
 
     p = ptr;
-    if (*(void**)(p + 0x4) == NULL) {
+    count = p[0x18];
+    texture = *(void**)(p + 4);
+    model = *(void**)p;
+    if (texture == NULL) {
+        return;
+    }
+    if (model == NULL) {
         return;
     }
 
-    _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
-    *(f32*)(p + 0x1C) = *(f32*)(p + 0x20);
-    *(f32*)(p + 0x20) = *(f32*)(p + 0x24);
-    *(f32*)(p + 0x24) = *(f32*)(p + 0x28);
+    part = *(u8**)((u8*)model + 8);
+    if (part == NULL) {
+        return;
+    }
+
+    fn_800EC134(model);
+    fn_800E6478(model, lbl_80363CD8);
+
+    if (part == NULL) {
+        __assert(lbl_8047D2E0, 0x3E4, lbl_8047D2E8);
+    }
+    if (maxVec == NULL) {
+        __assert(lbl_8047D2E0, 0x3E5, lbl_80272FD0);
+    }
+    maxVec[0] = *(f32*)(part + 0x38);
+    maxVec[1] = *(f32*)(part + 0x3C);
+    maxVec[2] = *(f32*)(part + 0x40);
+    minVec[0] = *(f32*)(part + 0x2C);
+    minVec[1] = *(f32*)(part + 0x30);
+    minVec[2] = *(f32*)(part + 0x34);
+
+    if (part == NULL) {
+        __assert(lbl_8047D2E0, 0x351, lbl_8047D2E8);
+    }
+    if (minVec == NULL) {
+        __assert(lbl_8047D2E0, 0x352, lbl_8047D2F0);
+    }
+
+    bound = fn_800E3C5C(model);
+    GSvecAdd(mid, (u8*)bound + 0x1C, (u8*)bound + 0x10);
+    fn_800E013C(mid, mid, *(f32*)&lbl_8047D2D4);
+    fn_800DFF98(mid, fn_800E4514(model), mid);
+    fn_800E0168(mid, mid, maxVec);
+
+    fn_800D377C(2);
+    fn_800D4604(2);
+    fn_800D2248();
+    fn_800D3410(texture, 0);
+
+    alpha = *(f32*)(p + 0x28);
+    layerAlphaStep = *(f32*)&lbl_8047D2A8 / (f32)count;
+    alphaStep = (alpha - *(f32*)&lbl_8047D2A8) / (f32)count;
+    layerAlpha = *(f32*)&lbl_8047D2A8 - (f32)count * layerAlphaStep;
+
+    fn_800E69C4(model, 0x20);
+    fn_800E66B8(model);
+    lbl_80363CD8[4] = 1;
+    lbl_80363CD8[5] = 4;
+    lbl_80363CD8[6] = 5;
+
+    for (i = 0; i < count; i++) {
+        alpha -= alphaStep;
+        layerAlpha += layerAlphaStep;
+
+        fn_800E013C(scaledMin, minVec, alpha);
+        scaledMax[0] = mid[0] * (scaledMin[0] - minVec[0]);
+        scaledMax[1] = mid[1] * (scaledMin[1] - minVec[1]);
+        scaledMax[2] = mid[2] * (scaledMin[2] - minVec[2]);
+        fn_800E0168(scaledMax, maxVec, scaledMax);
+
+        *(f32*)(part + 0x2C) = scaledMin[0];
+        *(f32*)(part + 0x30) = scaledMin[1];
+        *(f32*)(part + 0x34) = scaledMin[2];
+        flags = *(u32*)(part + 0x14);
+        if (!(flags & 0x02000000) && ((flags & 0x00800000) != 0 || !(flags & 0x40))) {
+            fn_8019D620(part);
+        }
+
+        *(f32*)(part + 0x38) = scaledMax[0];
+        *(f32*)(part + 0x3C) = scaledMax[1];
+        *(f32*)(part + 0x40) = scaledMax[2];
+        flags = *(u32*)(part + 0x14);
+        if (!(flags & 0x02000000) && ((flags & 0x00800000) != 0 || !(flags & 0x40))) {
+            fn_8019D620(part);
+        }
+
+        fn_800E6804(model, layerAlpha);
+        fn_800E3760(model, 0x3010);
+    }
+
+    *(f32*)(part + 0x38) = maxVec[0];
+    *(f32*)(part + 0x3C) = maxVec[1];
+    *(f32*)(part + 0x40) = maxVec[2];
+    flags = *(u32*)(part + 0x14);
+    if (!(flags & 0x02000000) && ((flags & 0x00800000) != 0 || !(flags & 0x40))) {
+        fn_8019D620(part);
+    }
+
+    *(f32*)(part + 0x2C) = minVec[0];
+    *(f32*)(part + 0x30) = minVec[1];
+    *(f32*)(part + 0x34) = minVec[2];
+    flags = *(u32*)(part + 0x14);
+    if (!(flags & 0x02000000) && ((flags & 0x00800000) != 0 || !(flags & 0x40))) {
+        fn_8019D620(part);
+    }
+
+    lbl_80363CD8[4] = 2;
+    lbl_80363CD8[5] = 5;
+    lbl_80363CD8[6] = 0;
+    fn_800E6804(model, *(f32*)&lbl_8047D2F8);
+    fn_800E3760(model, 0x3010);
+    fn_800E65CC(model);
+    fn_800E68D8(model);
+    fn_800E65CC(model);
+    fn_800D3190();
+    fn_800D4604(1);
+    fn_800D377C(1);
+    fn_800E638C(model);
 }
 #endif
 #endif
@@ -3840,14 +5049,16 @@ u32 fn_8013F80C(void* ptr, u32 delta) {
     return remaining >> 31;
 }
 #endif
-extern void fn_800D7BF8(void);
+extern void* fn_800D7BF8(u32 index);
 extern void GScameraGetLookAt(void* mtx, void* lookAt, void* eye);
-extern void fn_800E0628(void);
-extern void fn_800E0238(void);
-extern void fn_800D2DE8(void);
+extern void fn_800E0628(void* dst, void* src);
+extern void fn_800E0238(void* dst, void* src);
+extern void set__5GSvecFfff(void* vec, f32 x, f32 y, f32 z);
+extern s32 fn_800D2DE8(void* input, void* output, s32 count);
+extern void GSlogWrite(const char* fmt, ...);
 extern u16 GStextureGetXsize(void* texture);
 extern u16 GStextureGetYsize(void* texture);
-extern void fn_800E03E8(void);
+extern void fn_800E03E8(void* matrix, f32 x, f32 y, f32 z);
 extern u32 lbl_8047D300;
 extern u32 lbl_8047D304;
 extern u32 lbl_8047D308;
@@ -3865,21 +5076,66 @@ asm void _distortionEffectUpdateMatrices(void) {
 #else
 void _distortionEffectUpdateMatrices(void* ptr) {
     void* camera;
-    f32 lookAt[3];
+    void* matrix;
+    void* cameraMatrix;
+    f32 viewMatrix[12];
+    f32 cornerB[3];
+    f32 cornerA[3];
+    f32 projected[6];
     f32 eye[3];
-
-    if (ptr == NULL) {
-        return;
-    }
+    f32 lookAt[3];
+    f32 xScale;
+    f32 yScale;
 
     camera = GScameraGetActiveCamera();
+    matrix = (u8*)ptr + 0x38;
     _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
-    fn_800E064C((u8*)ptr + 0x38);
+    cameraMatrix = fn_800D7BF8(0);
+    fn_800E064C(matrix);
     if (camera != NULL) {
         GScameraGetLookAt(camera, lookAt, eye);
-        fn_800E0168((u8*)ptr + 0x68, lookAt, eye);
-        fn_800E0060((u8*)ptr + 0x68, (u8*)ptr + 0x68);
+        fn_800E0628(viewMatrix, cameraMatrix);
+        viewMatrix[3] = 0.0f;
+        viewMatrix[7] = 0.0f;
+        viewMatrix[11] = 0.0f;
+        fn_800E0238(matrix, viewMatrix);
     }
+    fn_800E02C4(matrix, *(f32*)((u8*)ptr + 0x10),
+                *(f32*)((u8*)ptr + 0x10), *(f32*)((u8*)ptr + 0x10));
+    *(f32*)((u8*)ptr + 0x44) = *(f32*)((u8*)ptr + 0x2C);
+    *(f32*)((u8*)ptr + 0x54) = *(f32*)((u8*)ptr + 0x30);
+    *(f32*)((u8*)ptr + 0x64) = *(f32*)((u8*)ptr + 0x34);
+    set__5GSvecFfff(cornerA, *(f32*)&lbl_8047D304, *(f32*)&lbl_8047D304,
+                    *(f32*)&lbl_8047D300);
+    GSvecTransform(cornerA, matrix, cornerA);
+    set__5GSvecFfff(cornerB, *(f32*)&lbl_8047D308, *(f32*)&lbl_8047D308,
+                    *(f32*)&lbl_8047D300);
+    GSvecTransform(cornerB, matrix, cornerB);
+    if (fn_800D2DE8(cornerA, projected, 2) != 2) {
+        GSlogWrite((const char*)lbl_8027301C);
+        return;
+    }
+    projected[0] /= *(f32*)&lbl_8047D318;
+    projected[1] /= *(f32*)&lbl_8047D31C;
+    projected[2] /= *(f32*)&lbl_8047D318;
+    projected[3] /= *(f32*)&lbl_8047D31C;
+    *(f32*)((u8*)ptr + 0x98) = *(f32*)&lbl_8047D320;
+    *(f32*)((u8*)ptr + 0x9C) = *(f32*)&lbl_8047D300;
+    *(f32*)((u8*)ptr + 0xA0) = *(f32*)&lbl_8047D320 *
+                               (*(f32*)((u8*)ptr + 0x20) - *(f32*)&lbl_8047D308);
+    *(f32*)((u8*)ptr + 0xA4) = *(f32*)&lbl_8047D300;
+    *(f32*)((u8*)ptr + 0xA8) = *(f32*)&lbl_8047D320;
+    *(f32*)((u8*)ptr + 0xAC) = *(f32*)((u8*)ptr + 0xA0);
+    fn_800E048C((u8*)ptr + 0x68, projected[2] - projected[0],
+                 projected[3] - projected[1], *(f32*)&lbl_8047D300);
+    xScale = *(f32*)&lbl_8047D324 /
+             (f32)GStextureGetXsize((void*)lbl_8047AEE8);
+    xScale *= *(f32*)((u8*)ptr + 0x20);
+    yScale = *(f32*)&lbl_8047D324 /
+             (f32)GStextureGetYsize((void*)lbl_8047AEE8);
+    fn_800E03E8((u8*)ptr + 0x68, xScale + projected[0],
+                yScale * *(f32*)((u8*)ptr + 0x20) + projected[1],
+                *(f32*)&lbl_8047D300);
 }
 #endif
 #endif
@@ -4054,6 +5310,14 @@ u32 fn_8013FF0C(void* ptr) {
     void* camera;
     void* model;
     void* material;
+    f32 position[3];
+    f32 billboardScale[3];
+    f32 up[3];
+    f32 interest[3];
+    f32 fov;
+    f32 aspect;
+    f32 nearPlane;
+    f32 farPlane;
 
     if (ptr == NULL) {
         return 0;
@@ -4062,30 +5326,50 @@ u32 fn_8013FF0C(void* ptr) {
     p = ptr;
     model = *(void**)(p + 0x10);
     camera = cameraGetActive();
+    position[0] = *(f32*)(lbl_80273060 + 0);
+    position[1] = *(f32*)(lbl_80273060 + 4);
+    position[2] = *(f32*)(lbl_80273060 + 8);
+    billboardScale[0] = *(f32*)(lbl_8027306C + 0);
+    billboardScale[1] = *(f32*)(lbl_8027306C + 4);
+    billboardScale[2] = *(f32*)(lbl_8027306C + 8);
     if (camera != NULL) {
         _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
-        GScameraGetPosition(camera, p + 0x38);
-        GScameraGetLookAt(camera, p + 0x44, p + 0x50);
-        fn_800E0168(p + 0x5C, p + 0x44, p + 0x38);
-        fn_800E0060(p + 0x5C, p + 0x5C);
+        GScameraGetPosition(camera, position);
+        GScameraGetLookAt(camera, up, interest);
+        fn_800E0168(up, interest, position);
+        fn_800E0060(up, up);
+        GScameraGetPerspective(camera, &fov, &aspect, &nearPlane, &farPlane);
+        fov *= *(f32*)&lbl_8047D334 * *(f32*)&lbl_8047D328;
+        nearPlane *= *(f32*)&lbl_8047D330;
+        billboardScale[0] = *(f32*)&lbl_8047D32C;
+        billboardScale[1] = *(f32*)&lbl_8047D338 * nearPlane *
+                            (f32)tan(fov) * aspect;
+        billboardScale[2] = billboardScale[1] * farPlane;
+        fn_800E013C(up, up, nearPlane);
+        GSvecAdd(position, position, up);
     }
 
-    if (model != NULL) {
-        if (GSmodelCanAnimate(model)) {
-            material = GSmodelGetBound(model);
-            if (material != NULL) {
-                GSmodelSetPosition(material, p + 0x38);
-                GSmodelSetScale(material, p + 0x44);
-            }
-        } else if (GSmodelCanTexAnimate(model)) {
-            material = GSmodelGetBound(model);
-            if (material != NULL) {
-                GSmodelSetPosition(material, p + 0x38);
-                GSmodelSetScale(material, p + 0x44);
-            }
+    {
+        u32 updated = 0;
+
+        if (*(void**)(p + 0x20) != NULL &&
+            fn_80118DA8(*(void**)(p + 0x20)) != 0) {
+            fn_80118F04(*(void**)(p + 0x20), position);
+            updated = 1;
         }
+
+        if (model != NULL &&
+            ((GSmodelCanAnimate(model) && !GSmodelHasAnimationEnded(model)) ||
+             (GSmodelCanTexAnimate(model) && !GSmodelHasTexAnimationEnded(model)))) {
+            material = GSmodelGetBound(model);
+            billboardScale[0] /= *(f32*)((u8*)material + 0x28);
+            billboardScale[1] /= *(f32*)((u8*)material + 0x2C);
+            GSmodelSetPosition(model, position);
+            GSmodelSetScale(model, billboardScale);
+            updated = 1;
+        }
+        return updated;
     }
-    return 1;
 }
 #endif
 

@@ -1626,11 +1626,11 @@ asm void fn_8002B594(void) {
  * Finally windowDrawSprite2 is called to emit the actual sprite draw call.
  *
  * Parameters (CW EABI):
- *   ctx        r3  – sprite/render context pointer passed through to windowDrawSprite2
- *   data       r4  – sprite data packet; s16 at +0x56 = vert coord, s16 at +0x54 = horiz coord
- *   sprite_id  r5  – sprite index; lower 16 bits passed to windowDrawSprite2
- *   color_byte r6  – low 8 bits = alpha/colour value; OR-merged with 0xFFFFFF00 to form r7
- *   pos        f1  – continuous position parameter along the curve
+ *   ctx        r3  - sprite/render context pointer passed through to windowDrawSprite2
+ *   data       r4  - sprite data packet; s16 at +0x56 = vert coord, s16 at +0x54 = horiz coord
+ *   sprite_id  r5  - sprite index; lower 16 bits passed to windowDrawSprite2
+ *   color_byte r6  - low 8 bits = alpha/colour value; OR-merged with 0xFFFFFF00 to form r7
+ *   pos        f1  - continuous position parameter along the curve
  *
  * ENDIAN-QA: the asm uses the classic CW big-endian 0x4330/xoris double-word trick
  * to convert the two s16 fields to f32.  On x86 this is a plain (f32)(s16) cast.
@@ -2273,7 +2273,7 @@ asm void fn_8002C284(void) {
  * loc_idx: world-map location index (indexes into lbl_80478E54 table)
  * mode:    dialog mode; low byte 0x02 or 0x03 = skip the format-text preamble call
  *
- * Functional C for x86 host build — byte-match irrelevant.
+ * Functional C for x86 host build - byte-match irrelevant.
  */
 void fn_8002C284(u32 loc_idx, u32 mode)
 {
@@ -2524,7 +2524,7 @@ void fn_8002C408(s32 mapIdx, u32 mode)
         u32 c;                 /* +0x38 = field764 */
         u16 zero;              /* +0x3c */
         u16 n;                 /* +0x3e = count */
-        struct { u16 id; u16 qty; } items[51]; /* +0x40.. */
+        struct { u16 id; u16 qty; } items[50]; /* +0x40..+0x107 */
     } inv;
 
     u8  msgBuf[4];             /* small format scratch (frame +0x10/+0x11) */
@@ -2552,9 +2552,8 @@ void fn_8002C408(s32 mapIdx, u32 mode)
     r25 = 0;
 
     /* ===== Phase A: per-mode init ===== */
-    if (modeLow == 3) {
-        ok = fn_80029CC0((u8*)&buf);
-    } else if (modeLow == 2) {
+    switch (modeLow) {
+    case 2:
         fn_80142A88((u8*)&buf, 0xeb);
         fn_80142A88((u8*)&buf + 0x3ac, 0xeb);
         buf.credit0 = 0;
@@ -2566,8 +2565,13 @@ void fn_8002C408(s32 mapIdx, u32 mode)
         }
         lbl_8047A3D8 = heroGetStatus((u8*)0, 0xd, 0);
         ok = 1;
-    } else {
+        break;
+    case 3:
+        ok = fn_80029CC0((u8*)&buf);
+        break;
+    default:
         ok = 1;
+        break;
     }
     if (ok == 0) {
         goto done;
@@ -2575,8 +2579,31 @@ void fn_8002C408(s32 mapIdx, u32 mode)
 
     /* ===== Phase B: mode-4 affordability gate ===== */
     if ((mode & 0xff) == 4) {
-        /* modeLow is provably 4 here -> available currency via interaction getter */
-        r15_have = (s32)heroGetStatus((u8*)0, 0xd, 0);
+        switch (modeLow) {
+        case 2:
+            r15_have = (s32)heroGetStatus((u8*)0, 0xd, 0);
+            break;
+        case 3:
+            if ((void*)&buf != 0) {
+                if ((s32)*(volatile u32*)&lbl_8047A660 > 0) {
+                    buf.credit0 += *(volatile u32*)&lbl_8047A660;
+                    buf.credit1 += *(volatile u32*)&lbl_8047A660;
+                    *(volatile u32*)&lbl_8047A660 = 0;
+                }
+                if ((s32)*(volatile u32*)&lbl_8047A664 > 0) {
+                    buf.credit0 = 0;
+                    buf.credit1 = 0;
+                    *(volatile u32*)&lbl_8047A664 = 0;
+                }
+                r15_have = (s32)buf.credit0;
+            } else {
+                r15_have = 0;
+            }
+            break;
+        default:
+            r15_have = (s32)heroGetStatus((u8*)0, 0xd, 0);
+            break;
+        }
 
         /* min entry value across this location's list */
         listStart = (u16*)((u8*)lbl_80478E44 +
@@ -2670,8 +2697,7 @@ L_628:
     itemDataBiosGetPtr((u16)sel);
     unitPrice = (s32)(u16)itemDataBiosGetCoupon();
     species   = (s32)(u16)sel;
-    fn_80029FAC(&msgBuf[1], mapIdx, 0xc, 0x2d, species, -1);
-    lbl_8047A3E4 = 0; /* result captured by fn_80029FAC via &msgBuf[1] path */
+    lbl_8047A3E4 = fn_80029FAC(&msgBuf[1], mapIdx, 0xc, 0x2d, species, -1);
 
     if (maxAfford >= 1) {
         qty.enable    = 1;
@@ -2684,7 +2710,8 @@ L_628:
         qty.colB      = colorEntry[2];
         qty.f2c       = 1;
         qtyTitle      = 1;
-        yn = menuOpenCustom((void*)0x61, windowGetActiveID(), 0, 1, &qtyTitle, (s32)&qty);
+        yn = menuOpenCustom((void*)0x61, windowGetActiveID(),
+                            (s32)&qtyTitle, 0, (void*)1, 1, &qty);
         menuClose(0x61);
         menuCloseSync((void*)0x61, 1);
         if (yn == -1) chosenQty = -1;
@@ -2698,8 +2725,10 @@ L_628:
 
     /* (5) total cost, confirm yes/no */
     totalCost = chosenQty * unitPrice;
-    fn_80029FAC(&msgBuf[1], mapIdx, 5, 0x2d, species, 0x2f, totalCost, -1, chosenQty, 0x4b);
-    winMsgOpenWithSE(2, lbl_8047A3E4, 1, 0, msgBuf[1]);
+    winMsgOpenWithSE(2,
+        fn_80029FAC(&msgBuf[1], mapIdx, 5, 0x2d, species, 0x2f,
+                    totalCost, -1, chosenQty, 0x4b),
+        1, 0, msgBuf[1]);
     yn = (s8)menuSubOpenYesNo(0, -1, -1, 0);
     winMsgClose(1);
     if (yn == 1) goto L_628;     /* cancel */
@@ -2739,8 +2768,8 @@ L_628:
 
     if ((mode & 0xff) == 4) {
         /* mode-4 "buy another?" loop */
-        fn_80029FAC(&msgBuf[1], mapIdx, 7, -1);
-        winMsgOpenWithSE(2, lbl_8047A3E4, 1, 0, msgBuf[1]);
+        winMsgOpenWithSE(2, fn_80029FAC(&msgBuf[1], mapIdx, 7, -1),
+                         1, 0, msgBuf[1]);
         yn = (s8)menuSubOpenYesNo(0, -1, -1, 0);
         winMsgClose(1);
         if (yn == -1) goto L_CB40;
@@ -2755,8 +2784,8 @@ L_CB40:
     }
 
     if (buf.exitFlag == 0) {
-        fn_80029FAC(&msgBuf[0], mapIdx, 0xd, -1);
-        winMsgOpenWithSE(2, lbl_8047A3E4, 1, 0, msgBuf[0]);
+        winMsgOpenWithSE(2, fn_80029FAC(&msgBuf[0], mapIdx, 0xd, -1),
+                         1, 0, msgBuf[0]);
         yn = (s8)menuSubOpenYesNo(0, -1, -1, 0);
         winMsgClose(1);
         if (yn == 1 || yn == -1) {
@@ -2770,8 +2799,8 @@ L_CB40:
         r25 = next;
         goto loop_test;
     } else {
-        fn_80029FAC(&msgBuf[0], mapIdx, 0xf, -1);
-        winMsgOpenWithSE(2, lbl_8047A3E4, 1, 0, msgBuf[0]);
+        winMsgOpenWithSE(2, fn_80029FAC(&msgBuf[0], mapIdx, 0xf, -1),
+                         1, 0, msgBuf[0]);
         yn = (s8)menuSubOpenYesNo(0, -1, -1, 0);
         winMsgClose(1);
         if (yn == 1 || yn == -1) {
@@ -2783,7 +2812,7 @@ L_CB40:
             /* default-mode close path: confirm-state query then optional restore */
             if (fn_801D0748(4, 2, 0) != 4) {
                 u32 snap = savedataGetStatus((u8*)0, 3);
-                memcpy((void*)lbl_8047A3DC, (const void*)snap, 0x7198);
+                memcpy((void*)snap, (const void*)lbl_8047A3DC, 0x7198);
                 heroSetStatus((u8*)0, 0xd, lbl_8047A3D8);
             }
             r25 = 1;

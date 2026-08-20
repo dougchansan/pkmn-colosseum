@@ -97,14 +97,21 @@ extern void  psRemoveGenerator(void);
 extern void  psRemoveAppSRT(void);
 extern void  GSmodelFreeAllShadowTextures(void);
 extern void  fn_80112780(void);
+extern void  fn_801127BC(void);
 extern void* fn_800E27B0(u16 handle);
 extern void  fn_800E24B0(u16 handle);
 extern void  fn_800E209C(u16 handle);
+extern u32   fn_800F7318(u32 task, void* callback, u32 stackSize, u32 arg3,
+                         u32 arg4, u32 arg5, ...);
+extern void* fn_800F7108(u16 handle);
+extern u8    GSthreadIsRunning(u32 task);
+extern void  GSthreadClose(u32 task);
 void fn_800FF970(void);
 
 /** Resource-handler callback shapes, reached through the table at lbl_80404918. */
 typedef u32  (*GSFloorResSizeFunc)(void);
 typedef void (*GSFloorResIoFunc)(void* buf, u32 size);
+typedef void (*GSFloorResInitFunc)(void* entry, u32 floorId);
 
 /**
  * Locate the floor table entry for a floor index, or NULL. Inlined at both
@@ -537,8 +544,171 @@ void fn_800FF970(void) {
 #pragma optimization_level 0
 #pragma optimizewithasm off
 u32 fn_80100B24(GSFloorContext* ctx) {
-    /* TODO: match -- 1824 bytes at 0x80100B24 */
-    return 0;
+    GSFloorResource* res;
+    GSFloorResource* next;
+    void* entry;
+
+    switch (ctx->isActive) {
+    case 1:
+        entry = ctx->floorDataEntry;
+        if (ctx->doFadeOut == 0) {
+            for (res = lbl_8047ACCC; res != NULL; res = next) {
+                next = res->next;
+                if (res->active != 1 || res->pending != 0) {
+                    continue;
+                }
+                if (res->status == 0) {
+                    ((GSFloorResInitFunc)res->callback)(entry, res->floorId);
+                }
+                if (res->status == 1) {
+                    u32 groupId = floorDataBiosGetGroupID(entry);
+
+                    res->textureHandle = fn_800F7318(
+                        res->priority, res->callback, 0x4000, 0, 0, 4,
+                        groupId, 0, 0, 0);
+                    res->modelHandle = fn_800F7108(res->textureHandle);
+                }
+            }
+        } else {
+            for (res = lbl_8047ACCC; res != NULL; res = next) {
+                next = res->next;
+                if (res->active != 1 || res->pending != 0 ||
+                    res->status != 0) {
+                    continue;
+                }
+                ((GSFloorResInitFunc)res->callback)(entry, res->floorId);
+            }
+        }
+        ctx->isActive = 2;
+        break;
+
+    case 2:
+        for (res = lbl_8047ACB0; res < lbl_8047ACB0 + lbl_8047ACB4; res++) {
+            if (res->active == 0 || res->status != GSFLOOR_RES_LOADED ||
+                res->pending != 0 || res->modelHandle == NULL) {
+                continue;
+            }
+            if (GSthreadIsRunning((u32)res->modelHandle) != 0) {
+                return 1;
+            }
+        }
+        for (res = lbl_8047ACB0 + lbl_8047ACB4;
+             res < lbl_8047ACB0 + lbl_8047ACB4 + lbl_8047ACB8; res++) {
+            if (res->active == 0 || res->status != GSFLOOR_RES_LOADED ||
+                res->pending != 0 || res->modelHandle == NULL) {
+                continue;
+            }
+            GSthreadClose((u32)res->modelHandle);
+            res->modelHandle = NULL;
+        }
+        ctx->isActive = 3;
+        break;
+
+    case 3:
+        if (ctx->doFadeOut != 0) {
+            floorSetResourcesBlocked(lbl_8047ACB8, ctx->floorId,
+                                     lbl_8047ACB0 + lbl_8047ACB4,
+                                     GSFLOOR_RES_FREE, 0);
+            floorSetResourcesBlocked(
+                lbl_8047ACBC, ctx->floorId,
+                lbl_8047ACB0 + lbl_8047ACB4 + lbl_8047ACB8,
+                GSFLOOR_RES_FREE, 0);
+            floorSetResourcesBlocked(lbl_8047ACB8, ctx->floorId,
+                                     lbl_8047ACB0 + lbl_8047ACB4,
+                                     GSFLOOR_RES_LOADED, 0);
+            floorSetResourcesBlocked(
+                lbl_8047ACBC, ctx->floorId,
+                lbl_8047ACB0 + lbl_8047ACB4 + lbl_8047ACB8,
+                GSFLOOR_RES_LOADED, 0);
+        }
+        ctx->isActive = 4;
+        fn_801127BC();
+        break;
+
+    case 4:
+        entry = ctx->floorDataEntry;
+        for (res = lbl_8047ACCC; res != NULL; res = next) {
+            next = res->next;
+            if (res->active != 3 || res->pending != 0) {
+                continue;
+            }
+            if (res->status == 0) {
+                ((GSFloorResInitFunc)res->callback)(entry, res->floorId);
+            }
+            if (res->status == 1) {
+                u32 groupId = floorDataBiosGetGroupID(entry);
+
+                res->textureHandle =
+                    fn_800F7318(res->priority, res->callback, 0x4000, 0, 0, 4,
+                                groupId, 0, 0, 0);
+                res->modelHandle = fn_800F7108(res->textureHandle);
+            }
+        }
+        if (ctx->isActive == 3) {
+            ctx->isActive = 4;
+        }
+        break;
+
+    case 5:
+        entry = ctx->floorDataEntry;
+        for (res = lbl_8047ACCC; res != NULL; res = next) {
+            next = res->next;
+            if (res->active != 3 || res->pending != 0 || res->status != 0) {
+                continue;
+            }
+            ((GSFloorResInitFunc)res->callback)(entry, res->floorId);
+        }
+        break;
+
+    case 6:
+        fn_80112780();
+        entry = ctx->floorDataEntry;
+        for (res = lbl_8047ACCC; res != NULL; res = next) {
+            next = res->next;
+            if (res->active != 5 || res->pending != 0) {
+                continue;
+            }
+            if (res->status == 0) {
+                ((GSFloorResInitFunc)res->callback)(entry, res->floorId);
+            }
+            if (res->status == 1) {
+                u32 groupId = floorDataBiosGetGroupID(entry);
+
+                res->textureHandle =
+                    fn_800F7318(res->priority, res->callback, 0x4000, 0, 0, 4,
+                                groupId, 0, 0, 0);
+                res->modelHandle = fn_800F7108(res->textureHandle);
+            }
+        }
+        ctx->isActive = 6;
+        break;
+
+    default:
+        for (res = lbl_8047ACB0 + lbl_8047ACB4 + lbl_8047ACB8;
+             res < lbl_8047ACB0 + lbl_8047ACB4 + lbl_8047ACB8 + lbl_8047ACBC;
+             res++) {
+            if (res->active == 0 || res->status != GSFLOOR_RES_LOADED ||
+                res->pending != 0 || res->modelHandle == NULL) {
+                continue;
+            }
+            if (GSthreadIsRunning((u32)res->modelHandle) != 0) {
+                return 1;
+            }
+        }
+        for (res = lbl_8047ACB0 + lbl_8047ACB4 + lbl_8047ACB8;
+             res < lbl_8047ACB0 + lbl_8047ACB4 + lbl_8047ACB8 + lbl_8047ACBC;
+             res++) {
+            if (res->active == 0 || res->status != GSFLOOR_RES_LOADED ||
+                res->pending != 0 || res->modelHandle == NULL) {
+                continue;
+            }
+            GSthreadClose((u32)res->modelHandle);
+            res->modelHandle = NULL;
+        }
+        return 0;
+    }
+
+    return 1;
 }
 #pragma pop
 
@@ -622,10 +792,106 @@ void fn_801013A0(void* archive, u32 resourceArg, u32 modelIndex,
 }
 
 /* 0x8010147C | 0x494 */
-#pragma push
-#pragma optimization_level 0
-#pragma optimizewithasm off
-void fn_8010147C(void) {
-    /* TODO: match -- 1172 bytes at 0x8010147C */
+void fn_8010147C(u32 resource, u32 archive, s32 loadParam, s32 callbackArg) {
+    typedef struct ModelResourceEntry {
+        u8 data[0x40];
+        u32 handle;
+        s32 refs;
+    } ModelResourceEntry;
+    typedef struct ModelPublicData {
+        u32* models;
+        u32 unused;
+        u32* animations;
+    } ModelPublicData;
+    extern u8 lbl_80402518[];
+    extern void* fn_800F9418(u32, u32, s32, s32, void*);
+    extern void fn_80101910(void*);
+    extern void HSD_ArchiveParse(void*, void*, u32);
+    extern ModelPublicData* fn_80191ECC(void*, const char*);
+    ModelResourceEntry* table;
+    ModelResourceEntry* object;
+    ModelResourceEntry* copy;
+    ModelPublicData* publicData;
+    s32 modelCount;
+    s32 animationCount;
+    s32 i;
+
+    if (resource == 0 || archive == 0) {
+        return;
+    }
+
+    GSlogWrite(lbl_802717F0 + 0x520);
+    table = (ModelResourceEntry*)lbl_80402518;
+    object = NULL;
+    for (i = 0; i < 128; i++) {
+        if (table[i].refs != 0 && table[i].handle == resource) {
+            object = &table[i];
+            break;
+        }
+    }
+
+    if (object == NULL) {
+        object = fn_800F9418(0x60, 0x20, loadParam, callbackArg,
+                             (void*)fn_80101910);
+        if (object == NULL) {
+            GSlogWrite(lbl_802717F0 + 0x540, 0x44);
+            return;
+        }
+        HSD_ArchiveParse(object, (void*)resource, archive);
+
+        for (i = 0; i < 128; i++) {
+            if (table[i].refs != 0 && table[i].handle == object->handle) {
+                table[i].refs++;
+                break;
+            }
+        }
+        if (i == 128) {
+            for (i = 0; i < 128; i++) {
+                if (table[i].refs == 0) {
+                    memcpy(&table[i], object, 0x44);
+                    table[i].refs = 1;
+                    break;
+                }
+            }
+        }
+    } else {
+        copy = fn_800F9418(0x60, 0x20, loadParam, callbackArg,
+                           (void*)fn_80101910);
+        if (copy == NULL) {
+            GSlogWrite(lbl_802717F0 + 0x540, 0x44);
+            return;
+        }
+        memcpy(copy, object, 0x44);
+
+        for (i = 0; i < 128; i++) {
+            if (table[i].refs != 0 && table[i].handle == copy->handle) {
+                table[i].refs++;
+                break;
+            }
+        }
+        if (i == 128) {
+            for (i = 0; i < 128; i++) {
+                if (table[i].refs == 0) {
+                    memcpy(&table[i], copy, 0x44);
+                    table[i].refs = 1;
+                    break;
+                }
+            }
+        }
+    }
+
+    publicData = fn_80191ECC(object, lbl_802717F0 + 0x2C8);
+    modelCount = 0;
+    if (publicData->models != NULL) {
+        while (publicData->models[modelCount] != 0) {
+            modelCount++;
+        }
+    }
+    animationCount = 0;
+    if (publicData->animations != NULL) {
+        while (publicData->animations[animationCount] != 0) {
+            animationCount++;
+        }
+    }
+    GSlogWrite(lbl_802717F0 + 0x574, modelCount, animationCount);
 }
-#pragma pop

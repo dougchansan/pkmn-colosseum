@@ -206,7 +206,7 @@ void HandleReverb(s32* samples, ReverbWork* work, u32 channel)
     preDelayCursor = work->preDelayCursor[channel];
     filtered = work->previous[channel];
 
-    for (i = 0; i < 160; i++) {
+    for (i = 0; i < 159; i++) {
         input = (f32)samples[i];
         delayed = input;
         if (work->preDelayLength != 0) {
@@ -234,6 +234,31 @@ void HandleReverb(s32* samples, ReverbWork* work, u32 channel)
         work->previous[channel] = filtered;
         samples[i] = (s32)(wet * filtered + dry * input);
     }
+
+    input = (f32)samples[159];
+    delayed = input;
+    if (work->preDelayLength != 0) {
+        f32* end = preDelay + work->preDelayLength - 1;
+        delayed = *preDelayCursor;
+        *preDelayCursor = input;
+        preDelayCursor++;
+        if (preDelayCursor == end) {
+            preDelayCursor = preDelay;
+        }
+    }
+
+    mixed = ReverbCombSample(&comb[0], delayed, work->combGain[stageBase]);
+    mixed += ReverbCombSample(&comb[1], delayed,
+                              work->combGain[stageBase + 1]);
+    mixed += ReverbCombSample(&comb[2], delayed,
+                              work->combGain[stageBase + 2]);
+
+    mixed = ReverbAllpassSample(&allpass[0], mixed, work->feedback);
+    mixed = ReverbAllpassSample(&allpass[1], mixed, work->feedback);
+    mixed = ReverbAllpassSample(&allpass[2], mixed, work->feedback);
+    filtered = mixed * lbl_8047D534 + work->dampingMix * filtered;
+    work->previous[channel] = filtered;
+    samples[159] = (s32)(wet * filtered + dry * input);
 
     work->preDelayCursor[channel] = preDelayCursor;
 }
@@ -698,6 +723,27 @@ next_emitter:
 #pragma push
 #pragma optimization_level 4
 #pragma optimizewithasm off
+static inline f32 musyxEmitterSqrtPositive(f32 value) {
+    extern f64 __frsqrte(f64);
+    extern f64 lbl_8047D480;
+    extern f64 lbl_8047D490;
+    f64 estimate;
+    volatile f32 rounded;
+
+    if (value > lbl_8047D468) {
+        estimate = __frsqrte(value);
+        estimate = lbl_8047D480 * estimate *
+                   (lbl_8047D490 - value * (estimate * estimate));
+        estimate = lbl_8047D480 * estimate *
+                   (lbl_8047D490 - value * (estimate * estimate));
+        estimate = lbl_8047D480 * estimate *
+                   (lbl_8047D490 - value * (estimate * estimate));
+        rounded = (f32)(value * estimate);
+        value = rounded;
+    }
+    return value;
+}
+
 void fn_8015E374(MusyxEmitter* emitter, f32* outVolume, f32* outDoppler,
                  f32* outX, f32* outY, f32* outCone) {
     MusyxEmitterListener* listener;
@@ -725,7 +771,7 @@ void fn_8015E374(MusyxEmitter* emitter, f32* outVolume, f32* outDoppler,
         distSq = rel.x * rel.x + rel.y * rel.y + rel.z * rel.z;
         dist = distSq;
         if (distSq > lbl_8047D468) {
-            dist = sqrtf(distSq);
+            dist = musyxEmitterSqrtPositive(distSq);
         }
 
         if (dist <= emitter->maxDistance) {
@@ -785,7 +831,7 @@ void fn_8015E374(MusyxEmitter* emitter, f32* outVolume, f32* outDoppler,
                 travelSq = dx * dx + dy * dy + dz * dz;
                 spreadDist = travelSq;
                 if (travelSq > lbl_8047D468) {
-                    spreadDist = sqrtf(travelSq);
+                    spreadDist = musyxEmitterSqrtPositive(travelSq);
                 }
             }
 
@@ -811,7 +857,7 @@ void fn_8015E374(MusyxEmitter* emitter, f32* outVolume, f32* outDoppler,
                 aheadSq = aheadX * aheadX + aheadY * aheadY + aheadZ * aheadZ;
                 aheadDist = aheadSq;
                 if (aheadSq > lbl_8047D468) {
-                    aheadDist = sqrtf(aheadSq);
+                    aheadDist = musyxEmitterSqrtPositive(aheadSq);
                 }
 
                 if (aheadDist < dist) {

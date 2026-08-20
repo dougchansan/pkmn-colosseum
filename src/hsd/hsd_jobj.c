@@ -144,6 +144,7 @@ void fn_8019D620(HSD_JObj* jobj)
 
 void resolveIKJoint1(HSD_JObj* jobj);
 void resolveIKJoint2(HSD_JObj* jobj);
+static inline f32 JObjIKSqrtf(f32 value);
 
 void fn_8019D9DC(HSD_JObj* jobj)
 {
@@ -180,9 +181,10 @@ void fn_8019D9DC(HSD_JObj* jobj)
                     direction.z = parent->mtx[2][0];
                     PSVECScale(
                         &direction, &direction,
-                        sqrtf(1.0F /
-                              (1.0e-10F +
-                               PSVECDotProduct(&direction, &direction))));
+                        JObjIKSqrtf(
+                            1.0F /
+                            (1.0e-10F +
+                             PSVECDotProduct(&direction, &direction))));
                     if (parent->scl != NULL) {
                         x_scale = parent->scl[0];
                     }
@@ -1056,7 +1058,6 @@ void resolveIKJoint1(HSD_JObj* jobj) {
     hint = HSD_RObjGetByType(jobj->robj, REFTYPE_IKHINT, 0);
     if (hint == NULL) {
         __assert(&lbl_8047DB20, 0x85C, &lbl_8047DB3C);
-        return;
     }
     rotate_x = hint->u.ik_hint.rotate_x;
     first_len = hint->u.ik_hint.bone_length * scale.x;
@@ -1067,7 +1068,6 @@ void resolveIKJoint1(HSD_JObj* jobj) {
         hint = HSD_RObjGetByType(joint2->robj, REFTYPE_IKHINT, 0);
         if (hint == NULL) {
             __assert(&lbl_8047DB20, 0x867, &lbl_8047DB3C);
-            return;
         }
         second_len = hint->u.ik_hint.bone_length * joint2->scale_x * scale.x;
         flip = (hint->flags & 4) != 0;
@@ -1077,7 +1077,7 @@ void resolveIKJoint1(HSD_JObj* jobj) {
     }
 
     if (effector == NULL) {
-        return;
+        __assert(&lbl_8047DB20, 0x82D, &lbl_8047DB34);
     }
 
     if (HSD_RObjGetByType(jobj->robj, REFTYPE_JOBJ, 3) == NULL &&
@@ -1124,8 +1124,14 @@ void resolveIKJoint1(HSD_JObj* jobj) {
             PSVECCrossProduct(&target, &pole_hint, &normal_axis);
         }
 
-        Vec_Normalize(&normal_axis, &normal_axis);
-        Vec_Normalize(&pole_hint, &bend_axis);
+        norm_scale = JObjIKSqrtf(1.0f / (1.0e-10f +
+                                        PSVECDotProduct(&normal_axis,
+                                                        &normal_axis)));
+        PSVECScale(&normal_axis, &bend_axis, norm_scale);
+        norm_scale = JObjIKSqrtf(1.0f / (1.0e-10f +
+                                        PSVECDotProduct(&pole_hint,
+                                                        &pole_hint)));
+        PSVECScale(&pole_hint, &normal_axis, norm_scale);
         diff_sq = first_sq - second_sq;
         height_sq =
             0.25f *
@@ -1135,8 +1141,10 @@ void resolveIKJoint1(HSD_JObj* jobj) {
             height_sq = 0.0f;
         }
         axial_sq = (first_sq - height_sq) / dist_sq;
-        axial_len = axial_sq * JObj_InvSqrt(1.0e-10f + axial_sq);
-        height_len = height_sq * JObj_InvSqrt(1.0e-10f + height_sq);
+        axial_len =
+            axial_sq * JObjIKSqrtf(1.0F / (1.0e-10F + axial_sq));
+        height_len =
+            height_sq * JObjIKSqrtf(1.0F / (1.0e-10F + height_sq));
     } else {
         height_len = first_len;
     }
@@ -1151,7 +1159,8 @@ void resolveIKJoint1(HSD_JObj* jobj) {
     }
     PSVECScale(&bend_axis, &pole, height_len);
     PSVECAdd(&tmp, &pole, &tmp);
-    norm_scale = JObj_InvSqrt(1.0e-10f + PSVECDotProduct(&tmp, &tmp));
+    norm_scale = JObjIKSqrtf(
+        1.0F / (1.0e-10F + PSVECDotProduct(&tmp, &tmp)));
     PSVECScale(&tmp, &tmp, norm_scale);
 
     JObjMtx_StoreScaledColumn(jobj, 0, &tmp, scale.x);

@@ -54,6 +54,7 @@ extern void  fn_8011B67C(void);
 extern void  pokemonGetSoubiItemDataId(void);
 extern void* fightActionGetPri(void* p);
 extern void  wazaGetStatus(void);
+extern u32   statusGetStatus();
 
 /* SDA table pointers for event data arrays */
 extern u32 lbl_80478D38;   /* Event table count */
@@ -62,11 +63,9 @@ extern u32 lbl_80478D28; /* Pair-row table count */
 extern ColosseumEventPairRow lbl_80375A08[]; /* 0x18-byte pair rows */
 /* Address: 0x8020A8E0 | Size: 0x424 | Ghidra import */
 
-int fn_8020A8E0(u32 r3,u32 r4)
-
+int fn_8020A8E0(u32 conditionId, u32 target)
 {
     extern int _fadeEffectGetRandom__FUl();
-    extern u32 fn_80135E44();
     extern u32 fightTargetDataBiosGetStatusKid();
     extern void fightTargetDataBiosGetPtr();
     extern int fightTargetGetPtr();
@@ -82,143 +81,148 @@ int fn_8020A8E0(u32 r3,u32 r4)
     extern u8 fn_8020A7F0();
     extern u16 fn_8020A860();
     extern u8 fn_8020A8A0();
-  u32 uVar1;
-  int iVar2;
-  u32 uVar3;
-  u8 bVar12;
-  u32 uVar4;
-  u32 uVar5;
-  short sVar9;
-  short sVar10;
-  s8 cVar13;
-  u16 uVar11;
-  int iVar6;
-  u32 uVar7;
-  u32 uVar8;
-  u8 bVar14;
-  u32 local_48 [5];
+    u32 values[2];
+    u32 row;
+    u32 value;
+    u32 targetId;
+    u32 statusId;
+    u16 next;
+    s16 numerator;
+    s16 denominator;
+    u16 parameter;
+    u8 valueMode;
+    u8 scaleMode;
+    u8 slot;
+    u8 compareMode;
+    u8 combineMode;
+    int result;
+    int rowResult;
+    void* targetPtr;
 
-  bVar14 = 0;
-  do {
-    if (1 < bVar14) {
-      uVar1 = fn_8020A8A0(r3);
-      if ((uVar1 & 0xff) < 7) {
+    for (slot = 0; slot < 2; slot++) {
+        value = 0;
+        valueMode = fn_8020A7F0(conditionId, slot);
+        targetId = fn_8020A780(conditionId, slot);
+        parameter = fn_8020A710(conditionId, slot);
+        numerator = fn_8020A630(conditionId, slot);
+        denominator = fn_8020A5C0(conditionId, slot);
+        scaleMode = fn_8020A6A0(conditionId, slot);
+        switch (valueMode) {
+        case 1:
+            value = (u16)targetId;
+            break;
+        case 2:
+            value = (u16)targetId +
+                _fadeEffectGetRandom__FUl((u16)parameter - (u16)targetId);
+            break;
+        case 3:
+            targetPtr = (void*)fightTargetGetPtr(
+                targetId, target, (u16)fightFloorGetStatus(0, 0, 0x14, 0));
+            if (targetPtr != NULL) {
+                fightTargetDataBiosGetPtr(targetId);
+                statusId = fightTargetDataBiosGetStatusKid();
+                if (scaleMode == 0) {
+                    value = statusGetStatus(statusId, targetPtr,
+                                            (u16)numerator, parameter,
+                                            (u16)denominator);
+                } else {
+                    value = statusGetStatus(statusId, targetPtr, 0,
+                                            parameter, 0);
+                }
+            }
+            break;
+        }
+        if (scaleMode == 1) {
+            value *= numerator;
+            if (denominator != 0) {
+                value = (s32)value / denominator;
+            }
+        }
+        values[slot] = value;
+    }
 
-        iVar2 = ((int (*)(void))**(void ***)((uVar1 & 0xff) * 4 + -0x7fc8a6ac))();
-        return iVar2;
-      }
-      iVar2 = 0;
-      uVar1 = fn_8020A860(r3);
-      if ((uVar1 & 0xffff) == 0) {
-        iVar2 = 0;
-      }
-      else {
-        do {
-          uVar3 = fn_8020A540(uVar1);
-          for (bVar14 = 0; bVar14 < 2; bVar14 = bVar14 + 1) {
-            uVar8 = 0;
-            bVar12 = fn_8020A7F0(uVar3,bVar14);
-            uVar4 = fn_8020A780(uVar3,bVar14);
-            uVar5 = fn_8020A710(uVar3,bVar14);
-            sVar9 = fn_8020A630(uVar3,bVar14);
-            sVar10 = fn_8020A5C0(uVar3,bVar14);
-            cVar13 = fn_8020A6A0(uVar3,bVar14);
-            if (bVar12 == 2) {
-              iVar6 = _fadeEffectGetRandom__FUl((uVar5 & 0xffff) - (uVar4 & 0xffff));
-              uVar8 = (uVar4 & 0xffff) + iVar6;
-LAB_00207c9c:
-              if ((cVar13 == 1) && (uVar8 = uVar8 * (int)sVar9, sVar10 != 0)) {
-                uVar8 = (int)uVar8 / (int)sVar10;
-              }
-            }
-            else {
-              if (bVar12 < 2) {
-                if (bVar12 != 0) {
-                  uVar8 = uVar4 & 0xffff;
-                }
-                goto LAB_00207c9c;
-              }
-              if (3 < bVar12) goto LAB_00207c9c;
-              uVar11 = fightFloorGetStatus(0,0,0x14,0);
-              iVar6 = fightTargetGetPtr(uVar4,r4,uVar11);
-              if (iVar6 != 0) {
-                fightTargetDataBiosGetPtr(uVar4);
-                uVar7 = fightTargetDataBiosGetStatusKid();
-                if (cVar13 == 0) {
-                  uVar8 = fn_80135E44(uVar7,iVar6,sVar9,uVar5,sVar10);
-                }
-                else {
-                  uVar8 = fn_80135E44(uVar7,iVar6,0,uVar5,0);
-                }
-                goto LAB_00207c9c;
-              }
-              uVar8 = 0;
-            }
-            local_48[bVar14] = uVar8;
-          }
-          uVar8 = fn_8020A8A0(uVar3);
-          if ((uVar8 & 0xff) < 7) {
+    compareMode = fn_8020A8A0(conditionId);
+    switch (compareMode) {
+    case 0: result = 1; break;
+    case 1: result = values[0] == values[1]; break;
+    case 2: result = values[0] != values[1]; break;
+    case 3: result = (s32)values[0] >= (s32)values[1]; break;
+    case 4: result = (s32)values[0] <= (s32)values[1]; break;
+    case 5: result = (s32)values[0] < (s32)values[1]; break;
+    case 6: result = (s32)values[0] > (s32)values[1]; break;
+    default: result = 0; break;
+    }
 
-            iVar2 = ((int (*)(void))**(void ***)((uVar8 & 0xff) * 4 + -0x7fc8a6c8))();
-            return iVar2;
-          }
-          bVar14 = fn_8020A580(uVar3);
-          if (bVar14 == 2) {
-            iVar2 = 0;
-          }
-          else if ((bVar14 < 2) && (bVar14 != 0)) {
-            if (iVar2 == 0) {
-              iVar2 = 0;
+    next = fn_8020A860(conditionId);
+    if (next == 0) {
+        return result;
+    }
+    do {
+        row = fn_8020A540(next);
+        for (slot = 0; slot < 2; slot++) {
+            value = 0;
+            valueMode = fn_8020A7F0(row, slot);
+            targetId = fn_8020A780(row, slot);
+            parameter = fn_8020A710(row, slot);
+            numerator = fn_8020A630(row, slot);
+            denominator = fn_8020A5C0(row, slot);
+            scaleMode = fn_8020A6A0(row, slot);
+            switch (valueMode) {
+            case 1:
+                value = (u16)targetId;
+                break;
+            case 2:
+                value = (u16)targetId +
+                    _fadeEffectGetRandom__FUl(
+                        (u16)parameter - (u16)targetId);
+                break;
+            case 3:
+                targetPtr = (void*)fightTargetGetPtr(
+                    targetId, target,
+                    (u16)fightFloorGetStatus(0, 0, 0x14, 0));
+                if (targetPtr != NULL) {
+                    fightTargetDataBiosGetPtr(targetId);
+                    statusId = fightTargetDataBiosGetStatusKid();
+                    if (scaleMode == 0) {
+                        value = statusGetStatus(statusId, targetPtr,
+                                                (u16)numerator, parameter,
+                                                (u16)denominator);
+                    } else {
+                        value = statusGetStatus(statusId, targetPtr, 0,
+                                                parameter, 0);
+                    }
+                }
+                break;
             }
-            else {
-              iVar2 = 1;
+            if (scaleMode == 1) {
+                value *= numerator;
+                if (denominator != 0) {
+                    value = (s32)value / denominator;
+                }
             }
-          }
-          uVar1 = fn_8020A500(uVar1);
-        } while ((uVar1 & 0xffff) != 0);
-      }
-      return iVar2;
-    }
-    uVar1 = 0;
-    bVar12 = fn_8020A7F0(r3,bVar14);
-    uVar8 = fn_8020A780(r3,bVar14);
-    uVar4 = fn_8020A710(r3,bVar14);
-    sVar9 = fn_8020A630(r3,bVar14);
-    sVar10 = fn_8020A5C0(r3,bVar14);
-    cVar13 = fn_8020A6A0(r3,bVar14);
-    if (bVar12 == 2) {
-      iVar2 = _fadeEffectGetRandom__FUl((uVar4 & 0xffff) - (uVar8 & 0xffff));
-      uVar1 = (uVar8 & 0xffff) + iVar2;
-LAB_00207a34:
-      if ((cVar13 == 1) && (uVar1 = uVar1 * (int)sVar9, sVar10 != 0)) {
-        uVar1 = (int)uVar1 / (int)sVar10;
-      }
-    }
-    else {
-      if (bVar12 < 2) {
-        if (bVar12 != 0) {
-          uVar1 = uVar8 & 0xffff;
+            values[slot] = value;
         }
-        goto LAB_00207a34;
-      }
-      if (3 < bVar12) goto LAB_00207a34;
-      uVar11 = fightFloorGetStatus(0,0,0x14,0);
-      iVar2 = fightTargetGetPtr(uVar8,r4,uVar11);
-      if (iVar2 != 0) {
-        fightTargetDataBiosGetPtr(uVar8);
-        uVar3 = fightTargetDataBiosGetStatusKid();
-        if (cVar13 == 0) {
-          uVar1 = fn_80135E44(uVar3,iVar2,sVar9,uVar4,sVar10);
+
+        compareMode = fn_8020A8A0(row);
+        switch (compareMode) {
+        case 0: rowResult = 1; break;
+        case 1: rowResult = values[0] == values[1]; break;
+        case 2: rowResult = values[0] != values[1]; break;
+        case 3: rowResult = (s32)values[0] >= (s32)values[1]; break;
+        case 4: rowResult = (s32)values[0] <= (s32)values[1]; break;
+        case 5: rowResult = (s32)values[0] < (s32)values[1]; break;
+        case 6: rowResult = (s32)values[0] > (s32)values[1]; break;
+        default: rowResult = 0; break;
         }
-        else {
-          uVar1 = fn_80135E44(uVar3,iVar2,0,uVar4,0);
+
+        combineMode = fn_8020A580(row);
+        if (combineMode == 1) {
+            result = result || rowResult;
+        } else if (combineMode == 2) {
+            result = result && rowResult;
         }
-        goto LAB_00207a34;
-      }
-      uVar1 = 0;
-    }
-    uVar8 = (u32)bVar14;
-    bVar14 = bVar14 + 1;
-    local_48[uVar8 + 2] = uVar1;
-  } while (1);
+        next = fn_8020A500(next);
+    } while (next != 0);
+
+    return result;
 }

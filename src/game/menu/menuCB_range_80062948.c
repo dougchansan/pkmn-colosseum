@@ -75,8 +75,10 @@ extern u8 lbl_802EDB40[];
 extern u8 lbl_802EF0A8[];
 
 /* Reintroduced from the previous campaign's ui_core.c through this range's
- * active dtk split. The recovered C scores 91.86% without per-function
- * compiler-control pragmas. */
+ * active dtk split. Retail preserves the mask-building operations emitted
+ * with peephole optimization disabled. */
+#pragma push
+#pragma peephole off
 void fn_800643D4(void* arg0, void* arg1)
 {
     UICmdMsg* msg;
@@ -105,6 +107,7 @@ void fn_800643D4(void* arg0, void* arg1)
         case 1:
             snd = 0xd68;
             break;
+        case 3:
         default:
             snd = 0;
             break;
@@ -665,6 +668,7 @@ void fn_800643D4(void* arg0, void* arg1)
     }
     }
 }
+#pragma pop
 #endif
 
 #if defined(MENUCB_RANGE_RESIDUAL_EMPTY_ONLY)
@@ -778,22 +782,362 @@ s32 fn_80062948(MenuCBBattleEntryContext* context)
     return result;
 }
 
+s32 fn_80063060(MenuCBBattleEntryContext* context)
+{
+    extern void fn_8006A7D0(void);
+    extern s32 fn_8006AC6C(void);
+    extern void fn_8006ADB4(void);
+    extern s32 fn_8006ADEC(void);
+    extern void fn_8006B09C(s32);
+    extern s32 fn_800886D0(void);
+    extern s32 fn_800889E4(void);
+    extern s32 fn_80088D84(void);
+    extern s32 fn_8001E074(s32, s32, s32, s32);
+    extern void fn_80069944(void);
+    extern s32 fn_80062284(s32);
+    extern void fn_80062834(void);
+    extern void fn_800637B0(void);
+    extern s32 fn_801046B8(void);
+    extern s32 fn_801043A4(s32);
+    extern s32 fn_801026A4(s32, s32, s32, s32, s32, s32);
+    extern void fn_80102568(s32, s32, s32);
+    extern void fn_8010264C(s32, s32);
+    extern void fn_80102868(s32, s32, s32);
+    extern void fn_801045A8(s32, s32);
+    extern void fn_801069FC(s32);
+    extern void fn_80106D3C(s32, s32, s32, s32);
+    extern u8 fn_801070F4(s32);
+    extern void fn_801080CC(s32, s32);
+    extern s32 savedataGetStatus(s32, s32);
+    extern s32 heroBiosGetPokecouponAll(s32);
+    extern void fn_8012A7DC(s32, s32);
+    extern s32 heroBiosGetPokecoupon(void);
+    extern void fn_8012A824(s32, s32);
+    extern void fn_80132A38(s32, s32);
+    extern void fn_80166AB8(s32, s32, s32);
+    extern s32 fn_801906A0(s32);
+    extern s32 fn_801EE398(void);
+    extern u16 fn_801EF634(void);
+    extern void fn_8025D06C(void);
+    extern s32 fn_8025D164(void);
+    extern s32 fn_8025D9A8(void);
+    extern void fn_8025DAF4(void);
+    extern void fn_8025DB2C(void);
+    extern s32 fn_8025DB5C(void);
+    extern void fn_8025DB80(void);
+    extern s32 fn_8025DBB0(void);
+    extern s16 lbl_80478920;
+    extern s16 lbl_80478922;
+    s32 state;
+    s32 result;
+    s32 battleMode;
+    s32 battleCount;
+    s32 battleType;
+    s32 onesDigit;
+    s32 savedPortState;
+    s32 savedPortValue;
+    s32 tmp;
+    s32 waitDone;
+    BOOL keepRunning;
+    BOOL pendingSetup;
+    BOOL openedCustomMenu;
+    BOOL usedCancelRoute;
+    BOOL allowDbCleanup;
+    BOOL pendingPostCopy;
+
+    state = 0;
+    result = -1;
+    keepRunning = TRUE;
+    pendingSetup = FALSE;
+    openedCustomMenu = FALSE;
+    usedCancelRoute = FALSE;
+    allowDbCleanup = TRUE;
+    pendingPostCopy = FALSE;
+
+    battleType = (u16)fn_801EF634();
+    battleMode = fn_8025D9A8();
+    battleCount = fn_8025DBB0();
+    savedPortState = savedataGetStatus(0, 2);
+    savedPortValue = heroBiosGetPokecoupon();
+    tmp = heroBiosGetPokecouponAll(savedPortState);
+    onesDigit = (battleCount + 1) % 10;
+
+    while (keepRunning) {
+        switch (state) {
+        case 0:
+            fn_8010264C(0xDF, 0);
+            fn_8010264C(0xBA, 1);
+
+            if (battleType == 2 || (battleType >= 5 && battleType < 8)) {
+                if (fn_8025DB5C() == 0) {
+                    result = (battleMode == 1) ? 0x105 : 0xAC;
+                    state = 9;
+                } else {
+                    state = 2;
+                }
+                break;
+            }
+
+            if (battleMode == 0) {
+                if (battleCount == 7) {
+                    fn_8025D164();
+                    fn_8006ADB4();
+                    pendingSetup = TRUE;
+                    fn_800637B0();
+                }
+            } else if (battleMode == 1) {
+                if (onesDigit == 0) {
+                    fn_8025D164();
+                    fn_8006ADEC();
+                    fn_8006ADB4();
+                }
+                if (battleCount + 1 == 0x64) {
+                    pendingSetup = TRUE;
+                }
+            }
+
+            if (pendingSetup) {
+                if (battleMode == 1 && fn_801906A0(0xAFD) == 0) {
+                    pendingPostCopy = fn_801EE398() != 0;
+                }
+                state = 5;
+                break;
+            }
+
+            if ((u8)fn_80062284(0) != 0) {
+                fn_80106D3C(2, 0x3C10, 1, 1);
+                fn_801069FC(1);
+                fn_8025DB2C();
+            } else {
+                fn_80106D3C(2, 0x30DD, 0, 1);
+            }
+            state = 1;
+            break;
+
+        case 1: {
+            s32 window = fn_801046B8();
+            s32 choice;
+
+            fn_801026A4(0xEC, window, 0, 8, 0, 0);
+            fn_80102868(0xEC, lbl_80478920, lbl_80478922);
+            fn_801045A8(0xEC, 1);
+            choice = (s8)fn_801043A4(0xEC);
+            fn_80102568(0xEC, 0, 1);
+            fn_801069FC(1);
+
+            if (choice == 0) {
+                if (allowDbCleanup) {
+                    fn_8025DB80();
+                }
+                openedCustomMenu = TRUE;
+                usedCancelRoute = FALSE;
+                result = 0xD1;
+                state = 9;
+            } else {
+                if (allowDbCleanup) {
+                    fn_8025DB80();
+                }
+                openedCustomMenu = TRUE;
+                usedCancelRoute = TRUE;
+                result = 0xAC;
+                state = 9;
+            }
+            break;
+        }
+
+        case 2:
+            fn_80106D3C(2, 0x44E3, 0, 1);
+            if (fn_8001E074(0, lbl_80478920, lbl_80478922, 1) == 0) {
+                state = 12;
+            } else {
+                state = 1;
+            }
+            fn_801069FC(1);
+            break;
+
+        case 3:
+            fn_80132A38(0x30, fn_8025DB5C());
+            fn_80106D3C(2, 0x3C13, 0, 1);
+            if (fn_8001E074(0, lbl_80478920, lbl_80478922, 0) == 0) {
+                fn_8025DAF4();
+                result = 0xD1;
+                state = 9;
+            } else {
+                state = 3;
+            }
+            fn_801069FC(1);
+            break;
+
+        case 4:
+            fn_80132A38(0x30, fn_8025DB5C());
+            fn_80106D3C(2, 0x44DF, 0, 1);
+            if (fn_8001E074(0, lbl_80478920, lbl_80478922, 1) == 0) {
+                result = 0xAC;
+                state = 12;
+            } else {
+                state = 2;
+            }
+            fn_801069FC(1);
+            break;
+
+        case 5: {
+            s32 entryResult;
+
+            fn_80132A38(0x30, fn_8006ADEC());
+            fn_80166AB8(0x3CC, 0, 0);
+            fn_80106D3C(2, 0x3C11, 1, 1);
+            fn_8006B09C(0);
+            fn_8006A7D0();
+            entryResult = fn_8006AC6C();
+
+            if (pendingPostCopy) {
+                state = 8;
+            } else if (entryResult > 0 && entryResult < 3) {
+                result = 0x105;
+                state = 12;
+            } else {
+                state = 6;
+            }
+            break;
+        }
+
+        case 6:
+            fn_80106D3C(2, 0x3C23, 0, 1);
+            if (fn_8001E074(0, lbl_80478920, lbl_80478922, 0) == 0) {
+                result = 0x105;
+                state = 12;
+            } else {
+                state = 11;
+            }
+            break;
+
+        case 7:
+            fn_80106D3C(2, 0x3C0F, 0, 1);
+            if (fn_8001E074(0, lbl_80478920, lbl_80478922, 1) == 0) {
+                result = 0xAC;
+                state = 12;
+            } else {
+                state = 10;
+            }
+            fn_801069FC(1);
+            break;
+
+        case 8:
+            fn_80106D3C(2, 0x3C03, 0, 1);
+            if (fn_8001E074(0, lbl_80478920, lbl_80478922, 0) == 0) {
+                if (allowDbCleanup) {
+                    fn_8025D06C();
+                }
+                usedCancelRoute = TRUE;
+                result = 0xAC;
+                state = 9;
+            } else {
+                state = 7;
+            }
+            fn_801069FC(1);
+            break;
+
+        case 9:
+            if (usedCancelRoute) {
+                if (openedCustomMenu) {
+                    if (fn_800889E4() < 0) {
+                        state = 4;
+                        allowDbCleanup = FALSE;
+                        break;
+                    }
+                    fn_80069C0C(context);
+                } else {
+                    if (fn_80088D84() < 0) {
+                        state = 6;
+                        pendingPostCopy = FALSE;
+                        break;
+                    }
+                    fn_80069C0C(context);
+                }
+            } else {
+                if (openedCustomMenu) {
+                    fn_80069C0C(context);
+                }
+                keepRunning = FALSE;
+            }
+            break;
+
+        case 10:
+            fn_80106D3C(2, 0x3C41, 0, 1);
+            if (fn_8001E074(0, lbl_80478920, lbl_80478922, 1) == 0) {
+                s32 restore = savedataGetStatus(0, 2);
+                fn_8012A824(restore, savedPortValue);
+                fn_8012A7DC(restore, tmp);
+                state = 12;
+            } else {
+                state = 6;
+            }
+            break;
+
+        case 11:
+            fn_80106D3C(2, 0x3C12, 0, 1);
+            fn_801069FC(1);
+            fn_801080CC(0xDF, 0x1C6);
+            fn_801080CC(0xBA, 0x1C6);
+            while (fn_801070F4(0xDF) != 0) {
+                _threadSwitch();
+            }
+            while (fn_801070F4(0xBA) != 0) {
+                _threadSwitch();
+            }
+            fn_80069944();
+            fn_80062834();
+            fn_80061028(1);
+            fn_80102568(0xDF, 0, 1);
+            fn_800886D0();
+            result = 0x105;
+            state = 9;
+            break;
+
+        case 12:
+            keepRunning = FALSE;
+            break;
+
+        default:
+            keepRunning = FALSE;
+            break;
+        }
+    }
+
+    fn_801069FC(1);
+    return result;
+}
+
 s32 fn_80062AB4(void* arg)
 {
     extern u16 fn_801EF634(void);
     extern void menuSetEnablePort(s32 port);
     extern s32 toolentryTaisenGetEntryPlayerNum(void);
     extern s32 toolentryTaisenGetControlerType(s32 player);
+    extern s32 toolentryTaisenGetBattleType(void);
+    extern s32 toolentryTaisenGetHomePlace(s32 player);
     extern u8 fn_8008ABA0(s32 controller);
+    extern void _threadSwitch(void);
+    extern s32 fn_801046B8(void);
+    extern s32 fn_801026A4(s32, s32, s32, s32, s32, s32);
+    extern void fn_80102568(s32, s32, s32);
+    extern u8 fn_800F7EF8(s32);
+    extern s32 fn_800F7C28(s32);
+    extern void fn_8025D788(void);
     extern void msgctrlSetValue(s32 index, s32 value);
     extern void winMsgOpen(s32 type, s32 message, s32 a, s32 b);
     extern void winMsgClose(s32 window);
     MenuCBBattleEntryContext* context = arg;
+    s32 state;
+    s32 menuId;
+    s32 choice;
     s32 player;
     s32 count;
     s32 home;
     s32 controller;
+    u32 specialMode;
     BOOL invalid = FALSE;
+    BOOL keepRunning;
 
     menuSetEnablePort(0);
     menuOpen(0xDF, 0);
@@ -801,9 +1145,12 @@ s32 fn_80062AB4(void* arg)
 
     if (fn_801EF634() == 1) {
         menuSetEnablePort(1);
-        if (toolentryTaisenGetBattleType() != 2 ||
-            toolentryTaisenGetHomePlace(0) == 0) {
+        specialMode =
+            (toolentryTaisenGetBattleType() == 2 &&
+             toolentryTaisenGetHomePlace(0) != 0);
+        if (specialMode == 0) {
             count = toolentryTaisenGetEntryPlayerNum();
+            controller = 2;
             for (player = 0; player < count; player++) {
                 home = toolentryTaisenGetHomePlace(player);
                 controller = toolentryTaisenGetControlerType(player);
@@ -819,11 +1166,136 @@ s32 fn_80062AB4(void* arg)
                 winMsgClose(1);
                 return 0xB3;
             }
+        } else {
+            count = toolentryTaisenGetEntryPlayerNum();
+            for (player = 0; player < count; player++) {
+                home = toolentryTaisenGetHomePlace(player);
+                controller = toolentryTaisenGetControlerType(player);
+                if (controller != 0 && (home == 1 || home == 2) &&
+                    !fn_8008ABA0(controller)) {
+                    break;
+                }
+            }
+            winMsgOpen(2, 0x44E7, 1, 1);
+            keepRunning = TRUE;
+            while (keepRunning) {
+                if (fn_800F7EF8(1) != 0 && fn_800F7C28(1) == 0) {
+                    keepRunning = FALSE;
+                } else {
+                    _threadSwitch();
+                }
+            }
+            winMsgClose(1);
+            return 0xB3;
         }
     }
 
     menuSetEnablePort(1);
-    return context->mode == 2 ? 0xD5 : 0xD4;
+    menuId = context->mode == 2 ? 0xD5 : 0xD4;
+
+    winMsgOpen(2, 0x3C20, 1, 1);
+    choice = fn_801026A4(menuId, fn_801046B8(), 0, 8, 1, 0);
+    if (context->mode != 2 && choice > 0) {
+        choice++;
+    }
+
+    switch (choice) {
+    case 0:
+        fn_8025D788();
+        menuId = 0xD1;
+        break;
+    case 1:
+        menuId = 0xB5;
+        break;
+    case 2:
+        menuId = 0xB3;
+        break;
+    default:
+        menuId = -1;
+        break;
+    }
+
+    winMsgClose(1);
+    if (menuId == -1) {
+        return menuId;
+    }
+
+    state = 0;
+    keepRunning = TRUE;
+    specialMode =
+        (toolentryTaisenGetBattleType() == 2 &&
+         toolentryTaisenGetHomePlace(0) != 0);
+    while (keepRunning) {
+        switch (state) {
+        case 0:
+            state = specialMode == 0 ? 1 : 2;
+            break;
+        case 1:
+            fn_80102568(menuId, 0, 1);
+            winMsgOpen(2, 0x4446, 1, 1);
+            invalid = TRUE;
+            while (invalid) {
+                invalid = FALSE;
+                for (player = 0; player < 4; player++) {
+                    home = toolentryTaisenGetHomePlace(player);
+                    controller = toolentryTaisenGetControlerType(player);
+                    if (controller != 0 && (home == 1 || home == 2) &&
+                        fn_8008ABA0(controller) != 0) {
+                        invalid = TRUE;
+                        break;
+                    }
+                }
+                if (invalid) {
+                    _threadSwitch();
+                }
+            }
+            winMsgClose(1);
+            state = 4;
+            break;
+        case 2:
+            fn_80102568(menuId, 0, 1);
+            winMsgOpen(2, 0x4445, 1, 1);
+            invalid = TRUE;
+            while (invalid) {
+                invalid = FALSE;
+                for (player = 0; player < 4; player++) {
+                    home = toolentryTaisenGetHomePlace(player);
+                    controller = toolentryTaisenGetControlerType(player);
+                    if (controller != 0 && (home == 1 || home == 2) &&
+                        fn_8008ABA0(controller) != 0) {
+                        invalid = TRUE;
+                        break;
+                    }
+                }
+                if (invalid) {
+                    _threadSwitch();
+                }
+            }
+            winMsgClose(1);
+            state = 3;
+            break;
+        case 3:
+            fn_80102568(menuId, 0, 1);
+            winMsgOpen(2, 0x44E2, 1, 1);
+            keepRunning = TRUE;
+            while (keepRunning) {
+                if (fn_800F7EF8(1) != 0 && fn_800F7C28(1) == 0) {
+                    keepRunning = FALSE;
+                } else {
+                    _threadSwitch();
+                }
+            }
+            winMsgClose(1);
+            state = 4;
+            keepRunning = TRUE;
+            break;
+        case 4:
+            keepRunning = FALSE;
+            break;
+        }
+    }
+
+    return menuId;
 }
 
 void fn_800637B0(void)
@@ -1142,27 +1614,26 @@ static inline void menuCBPokemonEntryAdvancePositions(void)
     f32 target;
     f32 remaining;
     f32 step;
-    f32 elapsed;
     s32 player;
     s32 component;
-    s32 denominator;
-    s32 numerator;
+    f32 denominator;
+    u32 numerator;
 
-    denominator = fn_800D37CC();
+    denominator = (f32)fn_800D37CC();
     numerator = fn_800D3088();
-    elapsed = (f32)numerator / (f32)denominator;
-    *(f32*)&lbl_803A9F08[0xCD88] = elapsed;
+    *(f32*)&lbl_803A9F08[0xCD88] = (f32)numerator / denominator;
     for (player = 0; player < 4; player++) {
         current = (f32*)&lbl_803A9F08[0xCD8C + player * 0x30];
         for (component = 0; component < 6; component++) {
             target = current[component + 6];
             if (current[component] != target) {
                 step = lbl_8047C010 *
-                    (target - current[component]) * elapsed;
+                    (target - current[component]) *
+                    *(f32*)&lbl_803A9F08[0xCD88];
                 if (step > lbl_8047C010) {
                     step = lbl_8047C010;
                 }
-                if (step < lbl_8047C014) {
+                if (step <= lbl_8047C014) {
                     step = lbl_8047C014;
                 }
                 current[component] += step;
@@ -1173,7 +1644,7 @@ static inline void menuCBPokemonEntryAdvancePositions(void)
                 if (step < lbl_8047BFE8) {
                     step = -step;
                 }
-                if (remaining == step || remaining < lbl_8047C018) {
+                if (remaining <= step || remaining < lbl_8047C018) {
                     current[component] = target;
                 }
             }

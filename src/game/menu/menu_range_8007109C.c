@@ -243,7 +243,7 @@ u8 fn_80076398(void* pokemon, s32 check)
     u16 base_stat;
     s32 i;
 
-    if (pokemon != NULL && pokemonGetStatus(pokemon, 0, 0x6E, 0) == 0) {
+    if (pokemon == NULL || pokemonGetStatus(pokemon, 0, 0x6E, 0) == 0) {
         return 1;
     }
 
@@ -1483,6 +1483,7 @@ void fn_8007581C(void)
         result = fn_80063D14(status);
         if (result == 0xB3) {
             _menuPop_80071398(result);
+            break;
         } else {
             status = savedataGetStatus(0, 0xE);
             result = menuCB_Battle(status);
@@ -1532,8 +1533,9 @@ void fn_8007581C(void)
             floorSetFadeScript(0x5960009, 0);
             fadeCheck(1);
         }
+    } else {
+        fn_800FF58C(0x395);
     }
-    fn_800FF58C(0x395);
 }
 
 /* fn_80075A34 (0x80075A34): load the battle scene and start its camera. */
@@ -1556,7 +1558,7 @@ void fn_80075A34(void) {
 u8 fn_80076A8C(u32 hero, u32 pokemon, const u8* rule, s32 mode)
 {
     extern u8 fn_80076F2C();
-    extern u32 pokemonGetStatus();
+    extern s32 pokemonGetStatus();
     extern u8 pokemonBiosGetTamagoFlag();
     extern u8 pokemonCheckValid();
     extern u32 heroBiosGetPokemonPtr();
@@ -3031,36 +3033,40 @@ u8 fn_800767B8(void* hero, const u8* rule)
                 case 2:
                     item = pokemonBiosGetItemDataId(pokemon);
                     itemRule = fn_8006B420();
-                    if (item == 0) {
-                        valid = 1;
-                    } else if (item == 0xAF) {
-                        valid = 0;
-                    } else {
-                        valid = fn_80142984(item);
-                    }
-                    if (!valid) {
-                        break;
-                    }
-
-                    switch (*(s32*)(itemRule + 8)) {
+                    switch (item) {
                     case 0:
                         valid = 1;
                         break;
-                    case 1:
-                        valid = item == 0;
-                        break;
-                    case 2:
-                        valid = 1;
-                        for (i = 0; (u32)i < lbl_80478928; i++) {
-                            if (item == lbl_802EE458[i]) {
-                                valid = itemRule[i + 0x18] == 0;
-                                break;
-                            }
-                        }
-                        break;
-                    default:
+                    case 0xAF:
                         valid = 0;
                         break;
+                    default:
+                        valid = fn_80142984(item);
+                        break;
+                    }
+                    if (valid) {
+                        switch (*(s32*)(itemRule + 8)) {
+                        case 0:
+                            valid = 1;
+                            break;
+                        case 1:
+                            valid = item == 0;
+                            break;
+                        case 2:
+                            valid = 1;
+                            for (i = 0; (u32)i < lbl_80478928; i++) {
+                                if (item == lbl_802EE458[i]) {
+                                    valid = itemRule[i + 0x18] == 0;
+                                    break;
+                                }
+                            }
+                            break;
+                        default:
+                            valid = 0;
+                            break;
+                        }
+                    } else {
+                        valid = 0;
                     }
                     break;
                 default:
@@ -4192,8 +4198,11 @@ u32 fn_8007B6D8(GbaBootContext* context) {
             for (candidate = 0; candidate < 0x100; candidate++) {
                 reply_crc = context->crc;
                 crc_byte = candidate;
-                reply_crc = (reply_crc >> 8) ^
-                            lbl_803FAEF8[(reply_crc ^ crc_byte) & 0xFF];
+                for (i = 0; i < sizeof(crc_byte); i++) {
+                    reply_crc = (reply_crc >> 8) ^
+                                lbl_803FAEF8[(reply_crc ^
+                                             (&crc_byte)[i]) & 0xFF];
+                }
                 if (reply_crc == expected_crc) {
                     break;
                 }
@@ -4953,7 +4962,7 @@ cancelled:
 
 u8 fn_80079EF4(s32 arg0, u32 value) {
     s32 rank;
-    s8 choice;
+    s32 choice;
     f32 waitStart_ = lbl_8047C114;
     f32 waitLong_ = lbl_8047C128;
     f32 waitShort_ = lbl_8047C108;
@@ -5027,8 +5036,9 @@ u8 fn_80079EF4(s32 arg0, u32 value) {
     }
 
     winMsgOpenField(0x43d1, 1, 0);
-    choice = (s8)fn_8001E184();
+    choice = fn_8001E184();
     winMsgClose(1);
+    choice = (s8)choice;
     if (choice == 0 || choice < -1 || choice >= 2) {
         return 1;
     }
@@ -5128,10 +5138,12 @@ s32 fn_8007AB10(u32 code, u32* state) {
             return fn_8007AB10_initial_result(code);
         case 1:
             OPEN_LINK_PROMPT(3);
-            if (code == 15) {
+            switch (code) {
+            case 15:
                 return 16;
+            default:
+                return 0;
             }
-            return 0;
         case 2:
             if (code == 18) {
                 OPEN_LINK_PROMPT(2);
@@ -5867,9 +5879,9 @@ void fn_800753D0(void)
     f32 direction[3];
     f32 frames;
 
-    work = (u8*)lbl_8047A610;
     frames = (f32)fn_800D37CC();
-    *(f32*)work = (f32)fn_800D3088() / frames;
+    *(f32*)lbl_8047A610 = (f32)fn_800D3088() / frames;
+    work = (u8*)lbl_8047A610;
     *(f32*)(work + 0x18C) =
         lbl_8047C098 + lbl_8047C09C * (f32)sin(*(f32*)(work + 4));
     if (*(f32*)(work + 0x18C) > lbl_8047C0A0) {
@@ -6011,8 +6023,19 @@ static inline u8 menuRuleCheckPokemonMode(void* pokemon, const s16* levels,
     MenuRuleItemRestrictions* restrictions;
     u16 item;
     u32 i;
+    s32 is_null;
+    s32 blank;
 
-    if (pokemon == 0 || pokemonGetStatus(pokemon, 0, 0x6E, 0) == 0) {
+    is_null = pokemon == 0;
+    blank = 0;
+    if (is_null == 0) {
+        if (pokemonGetStatus(pokemon, 0, 0x6E, 0) != 0) {
+            goto pokemon_present;
+        }
+    }
+    blank = 1;
+pokemon_present:
+    if (blank != 0) {
         return 1;
     }
 

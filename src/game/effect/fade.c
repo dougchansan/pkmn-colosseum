@@ -260,19 +260,132 @@ void* myBackFB__FP9GStextureUlPv(void) {
  * Address: 0x801C43F4 | Size: 0x3DC
  */
 void fadeDaemon(s32 seqType, f32 param1, f32 param2) {
-    BattleGridCameraWork* cam = (BattleGridCameraWork*)lbl_80467030;
+    extern u8 lbl_80466E30[];
+    extern u32 lbl_8047DFA8;
+    extern u32 lbl_8047DFAC;
+    extern f32 lbl_8047DFB8;
+    extern f32 lbl_8047DFBC;
+    extern f32 lbl_8047DFC0;
+    extern f32 lbl_8047DFC4;
+    extern f64 lbl_8047DFC8;
+    extern f64 lbl_8047DFD0;
+    extern s32 menuOffScreenGetPtr(void);
+    extern void GStextureFree(void* texture);
+    extern s32 fn_800D37CC(void);
+    extern s32 fn_800D3088(void);
+    extern void fn_800D9ED8(u32 arg0);
+    extern void fn_800D88DC(u32 arg0);
+    extern void fn_800D888C(u32 arg0);
+    extern void fn_800D9B58(f32 left, f32 top, f32 right, f32 bottom);
+    extern void fn_800DA4C4(u32 arg0, u32 arg1, u32 arg2);
+    extern void fn_800DA2BC(u32 arg0, u32 arg1, u32 arg2);
+    extern void fn_800DA1E8(u32 arg0, u32 arg1, u32 arg2);
+    extern void fn_800DA028(u32 arg0);
+    extern void fn_800D6A00(u32 arg0);
+    extern void fn_800D7820(u32 arg0);
+    extern void fn_800D67BC(u32 arg0);
+    extern void fn_800D6680(f32 x, f32 y, f32 z);
+    extern void fn_800D5CB8(u32 arg0, u32 r, u32 g, u32 b, u32 a);
+    extern void fn_800D6728(void);
 
-    /* Camera complex movement sequence:
-     * seqType 0: Pan to position (param1=angle, param2=speed)
-     * seqType 1: Orbit around center (param1=radius, param2=speed)
-     * seqType 2: Zoom in/out (param1=distance, param2=speed)
-     * seqType 3: Shake/vibration (param1=amplitude, param2=frequency)
-     * seqType 4: Custom path (param1=pathID, param2=speed)
-     */
-    cam->sequenceType = seqType;
-    cam->sequenceParam1 = param1;
-    cam->sequenceParam2 = param2;
-    cam->sequenceTimer = 0.0f;
+    typedef u8 (*FadeHook)(u8, void*, f32, f32, f32, f32);
+    u8* state;
+    FadeHook hook;
+    void* texture;
+    f32 fps;
+    f32 step;
+    f32 progress;
+    u32 colorWord;
+    u32 alpha;
+    u32 r;
+    u32 g;
+    u32 b;
+
+    (void)seqType;
+    (void)param1;
+    (void)param2;
+
+    state = lbl_80466E30;
+
+    if (state[1] == 1 && state[0] != 0 && state[0] < 4 && state[0] != 4) {
+        fps = (f32)((f64)(s32)fn_800D37CC() - lbl_8047DFC8);
+        step = (f32)((f64)(s32)fn_800D3088() - lbl_8047DFD0) / fps;
+        *(f32*)(state + 0x08) += step;
+        if (*(f32*)(state + 0x08) >= *(f32*)(state + 0x04)) {
+            *(f32*)(state + 0x08) = *(f32*)(state + 0x04);
+            state[1] = 0;
+            if ((*(u16*)(state + 0x02) & 1) != 0) {
+                state[0] = 2;
+            } else {
+                state[0] = 0;
+            }
+        }
+    }
+
+    hook = *(FadeHook*)(state + 0x0C);
+    if (hook != NULL) {
+        fps = (f32)((f64)(s32)fn_800D37CC() - lbl_8047DFC8);
+        step = (f32)((f64)(s32)fn_800D3088() - lbl_8047DFD0) / fps;
+        *(f32*)(state + 0x18) += step;
+        if (*(f32*)(state + 0x18) >= *(f32*)(state + 0x14)) {
+            *(f32*)(state + 0x18) = *(f32*)(state + 0x14);
+        }
+
+        texture = *(void**)(state + 0x10);
+        if (hook(state[1], texture, *(f32*)(state + 0x08), *(f32*)(state + 0x04),
+                 *(f32*)(state + 0x18), *(f32*)(state + 0x14)) == 0) {
+            *(FadeHook*)(state + 0x0C) = NULL;
+            if (texture != NULL) {
+                if ((u32)texture != (u32)menuOffScreenGetPtr()) {
+                    GStextureFree(texture);
+                }
+                *(void**)(state + 0x10) = NULL;
+            }
+        }
+    }
+
+    if (state[0] != 1 && state[0] != 2) {
+        return;
+    }
+
+    if (*(f32*)(state + 0x04) == lbl_8047DFB8) {
+        progress = 1.0f;
+    } else {
+        progress = *(f32*)(state + 0x08) / *(f32*)(state + 0x04);
+    }
+
+    if ((*(u16*)(state + 0x02) & 1) != 0) {
+        alpha = (u32)(lbl_8047DFBC * progress);
+    } else {
+        alpha = 0xFF - (u32)(lbl_8047DFBC * progress);
+    }
+
+    if ((*(u16*)(state + 0x02) & 2) != 0) {
+        colorWord = lbl_8047DFAC;
+    } else {
+        colorWord = lbl_8047DFA8;
+    }
+    r = (colorWord >> 24) & 0xFF;
+    g = (colorWord >> 16) & 0xFF;
+    b = (colorWord >> 8) & 0xFF;
+
+    fn_800D9ED8(1);
+    fn_800D88DC(1);
+    fn_800D888C(6);
+    fn_800D9B58(lbl_8047DFB8, lbl_8047DFB8, lbl_8047DFC0, lbl_8047DFC4);
+    fn_800DA4C4(1, 6, 7);
+    fn_800DA2BC(1, 1, 0);
+    fn_800DA1E8(0, 1, 1);
+    fn_800DA028(0);
+    fn_800D6A00(7);
+    fn_800D7820(0);
+    fn_800D67BC(2);
+    fn_800D6680(lbl_8047DFB8, lbl_8047DFB8, lbl_8047DFB8);
+    fn_800D5CB8(0, r, g, b, alpha & 0xFF);
+    fn_800D6680(lbl_8047DFC0, lbl_8047DFC4, lbl_8047DFB8);
+    fn_800D5CB8(0, r, g, b, alpha & 0xFF);
+    fn_800D6728();
+    fn_800D9ED8(0);
 }
 
 /**

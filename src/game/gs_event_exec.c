@@ -1224,21 +1224,23 @@ s32 fn_80014574(u8* ctx) {
 
     p = *(u8**)(ctx + 0x60);
     state = windowGetKeyInfo();
-    bits = *(u16*)(state + 6);
-    if ((bits & 0xF) == 0) {
+    if ((*(u16*)(state + 6) & 0xF) == 0) {
         return 0;
     }
 
     table = (EvTbl*)lbl_80266B58;
     key = *(s32*)(p + 4);
     table_idx = 0;
-    if (key != table[0].key) {
+    if (key != table->key) {
         table_idx = 1;
-        if (key != table[1].key) {
+        table++;
+        if (key != table->key) {
             table_idx = 2;
-            if (key != table[2].key) {
+            table++;
+            if (key != table->key) {
                 table_idx = 3;
-                if (key != table[3].key) {
+                table++;
+                if (key != table->key) {
                     table_idx = 4;
                 }
             }
@@ -1272,7 +1274,7 @@ s32 fn_80014574(u8* ctx) {
         }
     }
 
-    if ((bits & 1) != 0) {
+    if ((*(u16*)(state + 6) & 1) != 0) {
         min_value = *(s32*)(p + 0xC);
         max_value = *(s32*)(p + 8);
         if (min_value != max_value) {
@@ -1289,12 +1291,44 @@ s32 fn_80014574(u8* ctx) {
                 lower = current - digit * place;
                 max_digit = 9;
                 probe = lower + place * 9;
-                while (probe > max_value) {
-                    max_digit--;
-                    if (max_digit < 0) {
-                        break;
-                    }
+                if (probe > max_value) {
+                    max_digit = 8;
                     probe -= place;
+                    if (probe > max_value) {
+                        max_digit = 7;
+                        probe -= place;
+                        if (probe > max_value) {
+                            max_digit = 6;
+                            probe -= place;
+                            if (probe > max_value) {
+                                max_digit = 5;
+                                probe -= place;
+                                if (probe > max_value) {
+                                    max_digit = 4;
+                                    probe -= place;
+                                    if (probe > max_value) {
+                                        max_digit = 3;
+                                        probe -= place;
+                                        if (probe > max_value) {
+                                            max_digit = 2;
+                                            probe -= place;
+                                            if (probe > max_value) {
+                                                max_digit = 1;
+                                                probe -= place;
+                                                if (probe > max_value) {
+                                                    max_digit = 0;
+                                                    probe -= place;
+                                                    if (probe > max_value) {
+                                                        max_digit = -1;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
                 digit++;
                 if (digit > max_digit) {
@@ -1311,7 +1345,7 @@ s32 fn_80014574(u8* ctx) {
         }
     }
 
-    if ((bits & 2) != 0) {
+    if ((*(u16*)(state + 6) & 2) != 0) {
         min_value = *(s32*)(p + 0xC);
         max_value = *(s32*)(p + 8);
         if (min_value != max_value) {
@@ -1328,12 +1362,44 @@ s32 fn_80014574(u8* ctx) {
                 lower = current - digit * place;
                 max_digit = 9;
                 probe = lower + place * 9;
-                while (probe > max_value) {
-                    max_digit--;
-                    if (max_digit < 0) {
-                        break;
-                    }
+                if (probe > max_value) {
+                    max_digit = 8;
                     probe -= place;
+                    if (probe > max_value) {
+                        max_digit = 7;
+                        probe -= place;
+                        if (probe > max_value) {
+                            max_digit = 6;
+                            probe -= place;
+                            if (probe > max_value) {
+                                max_digit = 5;
+                                probe -= place;
+                                if (probe > max_value) {
+                                    max_digit = 4;
+                                    probe -= place;
+                                    if (probe > max_value) {
+                                        max_digit = 3;
+                                        probe -= place;
+                                        if (probe > max_value) {
+                                            max_digit = 2;
+                                            probe -= place;
+                                            if (probe > max_value) {
+                                                max_digit = 1;
+                                                probe -= place;
+                                                if (probe > max_value) {
+                                                    max_digit = 0;
+                                                    probe -= place;
+                                                    if (probe > max_value) {
+                                                        max_digit = -1;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
                 digit--;
                 if (digit < 0) {
@@ -1350,14 +1416,14 @@ s32 fn_80014574(u8* ctx) {
         }
     }
 
-    if ((bits & 8) != 0) {
+    if ((*(u16*)(state + 6) & 8) != 0) {
         ctx[0x95] = (u8)(ctx[0x95] + 1);
         if ((s32)(s8)ctx[0x95] >= count) {
             ctx[0x95] = (u8)(s8)(count - 1);
         }
     }
 
-    if ((bits & 4) != 0) {
+    if ((*(u16*)(state + 6) & 4) != 0) {
         ctx[0x95] = (u8)(ctx[0x95] - 1);
         if ((s32)(s8)ctx[0x95] < 0) {
             ctx[0x95] = 0;

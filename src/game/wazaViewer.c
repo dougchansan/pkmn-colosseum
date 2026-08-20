@@ -1282,13 +1282,218 @@ void fn_801D744C(u32 bits) {
  * Referenced by battle_logic.c.
  */
 void fn_801D7464(void) {
-    /* TODO: Waza sequence load (0x730 bytes)
-     * 1. Looks up the move in the waza data table
-     * 2. Counts the number of entries
-     * 3. Allocates entry structures for each type
-     * 4. Loads particle data, model data, camera scripts, sound IDs
-     * 5. Sets up initial positions relative to attacker/target slots
-     */
+    extern u8 lbl_804673F8[];
+    extern u8 lbl_803725A0[];
+    extern u8 lbl_8047B3FC;
+    extern u8 lbl_8047B3FD;
+    extern u8 lbl_8047B3FE;
+    extern u8 lbl_8047B3FF;
+    extern const f32 lbl_8047E318;
+    extern const f32 lbl_8047E31C;
+    extern const f32 lbl_8047E320;
+    extern const f32 lbl_8047E328;
+    extern void GSscene_GetCameraDirectionVector(WazaViewerVec* src);
+    extern void GSscene_GetCameraPositionVector(WazaViewerVec* src);
+    extern void GSscene_GetCameraViewVector(WazaViewerVec* src);
+    extern void GSscene_SetCameraDirectionVector(WazaViewerVec* src);
+    extern void GSscene_SetCameraPositionVector(WazaViewerVec* src);
+    extern void GSscene_SetCameraViewVector(WazaViewerVec* src);
+    extern u8 GSscene_GetMode(void);
+    extern void fn_800E0168(WazaViewerVec* dst, const WazaViewerVec* a,
+                            const WazaViewerVec* b);
+    extern f32 fn_800E008C(const WazaViewerVec* v);
+    extern void fn_800E0060(WazaViewerVec* dst, const WazaViewerVec* src);
+    extern void fn_800DFFCC(WazaViewerVec* dst, const WazaViewerVec* a,
+                            const WazaViewerVec* b);
+    extern void fn_800E013C(WazaViewerVec* dst, const WazaViewerVec* src,
+                            f32 scale);
+    extern void fn_800E0718(void* out, const void* axis, f32 angle);
+    extern void GSvecTransformQuat(void* out, const void* quat, const void* vec);
+    extern void GSvecAdd(WazaViewerVec* dst, const WazaViewerVec* a,
+                         const WazaViewerVec* b);
+    extern void set__5GSvecFfff(f32* vec, f32 x, f32 y, f32 z);
+    extern u8 fn_800F7AF0(s32 pad);
+    extern u32 fn_800F7BC4(s32 pad);
+    extern s32 fn_800F7A7C(s32 pad, s32 mode);
+    extern s32 fn_800F7A08(s32 pad, s32 mode);
+    extern s32 fn_800F7994(s32 pad, s32 mode);
+    extern s32 fn_800F7920(s32 pad, s32 mode);
+    extern u32 fn_800F7B5C(s32 pad);
+    extern void* GScameraGetActiveCamera(void);
+    extern void GScameraSetPosition(void* cam, WazaViewerVec* pos);
+    extern void GScameraLookAt(void* cam, void* up, WazaViewerVec* at);
+    extern void _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID(void);
+    extern u8 wazaSequencePokemonMotionStart(void* owner, BOOL enabled);
+    extern s32 fn_801DA94C(void* obj, s32 search_key1, s32 search_key2);
+    extern void fn_801DA4E8(void* effect, u32 visible);
+    extern void fn_801DA9E8(void* sequence, s32 moveID, s32 variant);
+    extern void fn_801DF070(void* effect, s32 weatherType, s32 enabled);
+    WazaEffect* effect;
+    void* node;
+    void* camera;
+    WazaViewerVec direction;
+    WazaViewerVec position;
+    WazaViewerVec view;
+    WazaViewerVec target;
+    WazaViewerVec axisX;
+    WazaViewerVec axisY;
+    WazaViewerVec forward;
+    WazaViewerVec temp;
+    f32 angleStep;
+    s32 currentIdx;
+    s32 motionA;
+    s32 motionB;
+    s32 moveX;
+    s32 moveY;
+    s32 rotateX;
+    s32 rotateY;
+
+    currentIdx = *(s32*)(lbl_804673F8 + 0x624);
+    effect = ((WazaEffect**)(lbl_804673F8 + 0x61C))[currentIdx];
+    if (effect == NULL) {
+        return;
+    }
+
+    node = *(void**)((u8*)effect + 0x68);
+    motionA = 0;
+    motionB = 0;
+    if (node != NULL) {
+        motionA = *(u16*)((u8*)node + 0x2C);
+        motionB = *(u16*)((u8*)node + 0x2E);
+    }
+
+    if (*(s32*)lbl_804673F8 == 0 && GSscene_GetMode() == 2) {
+        forward = *(const WazaViewerVec*)lbl_80279338;
+        GSscene_GetCameraDirectionVector(&direction);
+        GSscene_GetCameraPositionVector(&position);
+        GSscene_GetCameraViewVector(&view);
+        GSvecAdd(&target, &position, &view);
+        fn_800E0168(&target, &target, &direction);
+        fn_800E0060(&target, &target);
+        fn_800DFFCC(&axisX, &forward, &target);
+        fn_800E0060(&axisX, &axisX);
+        fn_800DFFCC(&forward, &target, &axisX);
+        fn_800E0060(&forward, &forward);
+
+        moveX = fn_800F7A7C(1, 1);
+        moveY = fn_800F7A08(1, 1);
+        rotateX = fn_800F7994(1, 1);
+        rotateY = fn_800F7920(1, 1);
+
+        if ((fn_800F7BC4(1) & fn_800F7AF0(1) & 0x08) != 0) {
+            lbl_8047B3FC = 1;
+        }
+        if ((fn_800F7BC4(1) & fn_800F7AF0(1) & 0x04) != 0) {
+            lbl_8047B3FD = 1;
+        }
+        if ((fn_800F7BC4(1) & fn_800F7AF0(1) & 0x01) != 0) {
+            lbl_8047B3FE = 1;
+        }
+        if ((fn_800F7BC4(1) & fn_800F7AF0(1) & 0x02) != 0) {
+            lbl_8047B3FF = 1;
+        }
+
+        angleStep = lbl_8047E318 * (f32)fn_800D3088();
+        if (lbl_8047B3FC != 0) {
+            fn_800E013C(&temp, &target, angleStep);
+            GSvecAdd(&position, &position, &target);
+            if ((fn_800F7B5C(1) & fn_800F7AF0(1) & 0x08) != 0) {
+                lbl_8047B3FC = 0;
+            }
+        }
+        if (lbl_8047B3FD != 0) {
+            fn_800E013C(&temp, &target, angleStep);
+            fn_800E0168(&position, &position, &temp);
+            if ((fn_800F7B5C(1) & fn_800F7AF0(1) & 0x04) != 0) {
+                lbl_8047B3FD = 0;
+            }
+        }
+        if (lbl_8047B3FE != 0) {
+            fn_800E013C(&temp, &axisX, angleStep);
+            GSvecAdd(&position, &position, &temp);
+            if ((fn_800F7B5C(1) & fn_800F7AF0(1) & 0x01) != 0) {
+                lbl_8047B3FE = 0;
+            }
+        }
+        if (lbl_8047B3FF != 0) {
+            fn_800E013C(&temp, &axisX, angleStep);
+            fn_800E0168(&position, &position, &temp);
+            if ((fn_800F7B5C(1) & fn_800F7AF0(1) & 0x02) != 0) {
+                lbl_8047B3FF = 0;
+            }
+        }
+
+        if (moveX != 0 || moveY != 0 || rotateX != 0 || rotateY != 0) {
+            set__5GSvecFfff((f32*)&temp, lbl_8047E320 * (f32)moveX,
+                            lbl_8047E320 * (f32)moveY, 0.0f);
+            fn_800E0060(&temp, &temp);
+            fn_800DFFCC(&target, &target, &temp);
+            if (moveY > 0) {
+                if (fn_800E008C(&target) > lbl_8047E320) {
+                    fn_800E0060(&target, &target);
+                    fn_800E0718(&axisY, &target, lbl_8047E31C * angleStep);
+                    GSvecTransformQuat(&target, &axisY, &target);
+                }
+            }
+            if (rotateY != 0) {
+                GSvecCopy(&temp, &target);
+                fn_800E0060(&temp, &temp);
+                if (rotateY > 0) {
+                    fn_800E013C(&temp, &temp, angleStep);
+                } else {
+                    fn_800E013C(&temp, &temp, -angleStep);
+                }
+                GSvecAdd(&target, &target, &temp);
+            }
+
+            GSvecAdd(&target, &target, &view);
+            GSscene_SetCameraDirectionVector(&target);
+            GSscene_SetCameraPositionVector(&position);
+            GSscene_SetCameraViewVector(&view);
+            camera = GScameraGetActiveCamera();
+            if (camera != NULL) {
+                GSvecAdd(&temp, &position, &view);
+                GScameraSetPosition(camera, &target);
+                GScameraLookAt(camera, lbl_803725A0, &temp);
+                _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
+            }
+        }
+    }
+
+    if (*(s32*)(lbl_804673F8 + 0x4) == 1 && *(void**)((u8*)effect + 0x68) == NULL) {
+        if ((fn_800F7BC4(1) & fn_800F7AF0(1) & 0x40) != 0) {
+            (*(u16*)((u8*)effect + 0x32))--;
+        }
+        if ((fn_800F7BC4(1) & fn_800F7AF0(1) & 0x20) != 0) {
+            (*(u16*)((u8*)effect + 0x32))++;
+            if (*(u16*)((u8*)effect + 0x32) > *(u16*)((u8*)effect + 0x14) - 1) {
+                *(u16*)((u8*)effect + 0x32) = 0;
+            }
+        }
+    }
+
+    if (((WazaViewerCtrl*)(lbl_804673F8 + 0x08))->advance &&
+        (fn_800F7BC4(1) & fn_800F7AF0(1) & 0x100) != 0) {
+        (*(s32*)(lbl_804673F8 + 0x18))++;
+        if (*(s32*)(lbl_804673F8 + 0x18) >= 0x10) {
+            *(s32*)(lbl_804673F8 + 0x18) = -1;
+        }
+    }
+
+    if ((fn_800F7BC4(1) & fn_800F7AF0(1) & 0x100) != 0 &&
+        *(s32*)lbl_804673F8 == 1 && *(void**)((u8*)effect + 0x68) == NULL) {
+        wazaSequencePokemonMotionStart(effect, 0);
+    }
+
+    if ((fn_800F7BC4(1) & fn_800F7AF0(1) & 0x100) != 0) {
+        if (*(s32*)lbl_804673F8 == 1 && *(s32*)(lbl_804673F8 + 0x63C) != 0) {
+            fn_801DF070(effect, *(s32*)(lbl_804673F8 + 0x638), 0);
+        } else if (fn_801DA94C(effect, motionA, motionB) == 0) {
+            fn_801DA4E8(effect, 1);
+            fn_801DA9E8(effect, motionA, motionB);
+            *(s32*)(lbl_804673F8 + 0x62C) = 1;
+        }
+    }
 }
 
 /**

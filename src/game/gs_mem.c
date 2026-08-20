@@ -454,8 +454,6 @@ static u16 fn_800E2DB0(void* address, u32 size)
                 block->next->prev = suffix;
             }
             block->next = suffix;
-        } else {
-            allocationSize += suffixSize;
         }
     }
 
@@ -465,6 +463,9 @@ static u16 fn_800E2DB0(void* address, u32 size)
     entry->size = allocationSize;
     entry->align = 0xFFFF;
     entry->pad = 0;
+    if (suffix == NULL) {
+        entry->size += suffixSize;
+    }
 
     if (lbl_80478AF0 == 1) {
         memset(entry->data, 0, entry->size);

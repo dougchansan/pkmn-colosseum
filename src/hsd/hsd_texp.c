@@ -1320,6 +1320,8 @@ void fn_801B750C(ColTExpNode* texp, u8 sel);
 extern s32 lbl_8036D278[4];
 extern s32 lbl_8036D288[4][4];
 extern s32 lbl_8036D2C8[4];
+extern s32 lbl_8036D258[4];
+extern s32 lbl_8036D268[4];
 extern s32 lbl_8036D2D8[4][4];
 
 extern void fn_800B8E74(void);
@@ -1742,9 +1744,48 @@ s32 fn_801B50C0(ColTExpNode* tev, ColTExpRes* res)
  * Resets TEV stages, disables texture coordinate generation,
  * and frees temporary resources.
  */
+#pragma push
+#pragma optimization_level 1
 s32 fn_801B5850(ColTExpNode* tev, s32 idx, ColTExpRes* res)
 {
+    ColTECnst* cnst = (ColTECnst*)tev->a_in[idx].exp;
+    s32 i;
+
+    if (cnst->reg != 0xFF) {
+        if (cnst->reg >= 4) {
+            return -1;
+        }
+        tev->kasel = lbl_8036D2D8[cnst->reg][cnst->idx];
+        tev->a_in[idx].type = 6;
+        tev->a_in[idx].arg = 6;
+        return 0;
+    }
+
+    for (i = 1; i < 4; i++) {
+        if (res->reg[i].alpha == 0) {
+            res->reg[i].alpha = 1;
+            cnst->reg = i;
+            cnst->idx = 3;
+            tev->kasel = lbl_8036D2D8[cnst->reg][cnst->idx];
+            tev->a_in[idx].type = 6;
+            tev->a_in[idx].arg = 6;
+            return 0;
+        }
+    }
+
+    for (i = 0; i < 4; i++) {
+        if (res->reg[i].color < 3) {
+            cnst->reg = i;
+            cnst->idx = res->reg[i].color++;
+            tev->kasel = lbl_8036D2D8[cnst->reg][cnst->idx];
+            tev->a_in[idx].type = 6;
+            tev->a_in[idx].arg = 6;
+            return 0;
+        }
+    }
+    return -1;
 }
+#pragma pop
 
 /*
  * HSD_TextureBindForPass - 0x801B5A00 | Size: 0x294
@@ -1825,9 +1866,9 @@ s32 fn_801B5C94(ColTExpNode* tev, s32 idx, ColTExpRes* res)
         }
         tev->c_in[idx].type = 5;
         if (cnst->comp == 6) {
-            tev->c_in[idx].arg = lbl_8036D2C8[cnst->reg - 4];
+            tev->c_in[idx].arg = lbl_8036D258[cnst->reg - 4];
         } else {
-            tev->c_in[idx].arg = lbl_8036D278[cnst->reg - 4];
+            tev->c_in[idx].arg = lbl_8036D268[cnst->reg - 4];
         }
         return 0;
     }
@@ -1839,7 +1880,7 @@ s32 fn_801B5C94(ColTExpNode* tev, s32 idx, ColTExpRes* res)
                 cnst->reg = i;
                 cnst->idx = 3;
                 tev->c_in[idx].type = 5;
-                tev->c_in[idx].arg = lbl_8036D2C8[i - 4];
+                tev->c_in[idx].arg = lbl_8036D258[i - 4];
                 return 0;
             }
         }
@@ -1850,7 +1891,7 @@ s32 fn_801B5C94(ColTExpNode* tev, s32 idx, ColTExpRes* res)
                 cnst->reg = i;
                 cnst->idx = 0;
                 tev->c_in[idx].type = 5;
-                tev->c_in[idx].arg = lbl_8036D278[i - 4];
+                tev->c_in[idx].arg = lbl_8036D268[i - 4];
                 return 0;
             }
         }
@@ -1897,6 +1938,8 @@ type_done:
 }
 #pragma optimization_level 4
 
+void fn_801B600C(ColTExpNode* tev, u32 sel, ColTExpNode* exp, s32 idx);
+
 /* HSD_TExpAlphaIn */
 void fn_801B5F08(ColTExpNode* texp, u32 sel_a, ColTExpNode* exp_a,
                  u32 sel_b, ColTExpNode* exp_b, u32 sel_c,
@@ -1907,43 +1950,135 @@ void fn_801B5F08(ColTExpNode* texp, u32 sel_a, ColTExpNode* exp_a,
     if (ColTExpGetType(texp) != COL_TE_TEV) {
         __assert(&lbl_8047DE70, 0x357, lbl_802753DC);
     }
+    fn_801B600C(texp, sel_a, exp_a, 0);
+    fn_801B600C(texp, sel_b, exp_b, 1);
+    fn_801B600C(texp, sel_c, exp_c, 2);
+    fn_801B600C(texp, sel_d, exp_d, 3);
 }
 
-/*
- * HSD_FullTextureSetup - 0x801B600C | Size: 0x4E0
- * Complete texture setup pipeline. Initializes GXTexObj,
- * configures wrap mode, filter settings, and loads the texture.
- * This is a large function because it handles all texture formats,
- * mipmap chains, and special texture types (TLUT, CI).
- */
-void fn_801B600C(HSD_TObj* tobj, u32 map_id) {
-    if (tobj == NULL) {
-        return;
+/* HSD_TExpAlphaInSub - 0x801B600C | Size: 0x4E0 */
+void fn_801B600C(ColTExpNode* tev, u32 sel, ColTExpNode* exp, s32 idx)
+{
+    ColTEArg prev;
+    u8 ksel;
+
+    prev = tev->a_in[idx];
+    tev->a_in[idx].sel = sel;
+    tev->a_in[idx].exp = exp;
+    tev->a_in[idx].type = ColTExpGetType(exp);
+    tev->a_in[idx].arg = 0xFF;
+
+    switch (sel) {
+    case 7:
+        tev->a_in[idx].type = COL_TE_ZERO;
+        tev->a_in[idx].arg = 7;
+        tev->a_in[idx].exp = NULL;
+        break;
+    case 8:
+    case 9:
+    case 10:
+    case 11:
+    case 12:
+    case 13:
+    case 14:
+    case 15:
+        tev->a_in[idx].exp = NULL;
+        tev->a_in[idx].arg = 6;
+        switch (sel) {
+        case 9:
+            ksel = 7;
+            break;
+        case 10:
+            ksel = 6;
+            break;
+        case 11:
+            ksel = 5;
+            break;
+        case 12:
+            ksel = 4;
+            break;
+        case 13:
+            ksel = 3;
+            break;
+        case 14:
+            ksel = 2;
+            break;
+        case 15:
+            ksel = 1;
+            break;
+        default:
+            ksel = 0;
+            break;
+        }
+        if (tev->kasel == 0xFF) {
+            tev->kasel = ksel;
+        } else if (tev->kasel != ksel) {
+            __assert(&lbl_8047DE70, 0x2EC, &lbl_8047DEA0);
+        }
+        tev->a_in[idx].type = 6;
+        break;
+    default:
+        switch (tev->a_in[idx].type) {
+        case COL_TE_ZERO:
+            tev->a_in[idx].exp = NULL;
+            tev->a_in[idx].type = COL_TE_ZERO;
+            tev->a_in[idx].sel = 7;
+            tev->a_in[idx].arg = 7;
+            break;
+        case COL_TE_TEV:
+            if (sel != 5) {
+                __assert(&lbl_8047DE70, 0x303, &lbl_8047DEA0);
+            }
+            if (idx != 3 && exp->a_clamp == 0) {
+                __assert(&lbl_8047DE70, 0x304, &lbl_8047DEA0);
+            }
+            if (ColTExpGetType(tev->a_in[idx].exp) == COL_TE_TEV) {
+                if (tev->a_in[idx].sel == 1) {
+                    tev->a_in[idx].exp->c_ref++;
+                } else {
+                    tev->a_in[idx].exp->a_ref++;
+                }
+            } else if (ColTExpGetType(tev->a_in[idx].exp) == COL_TE_CNST) {
+                ((ColTECnst*)tev->a_in[idx].exp)->ref++;
+            }
+            break;
+        case COL_TE_CNST:
+            if (sel != 5 && sel != 6) {
+                __assert(&lbl_8047DE70, 0x308, &lbl_8047DEA0);
+            }
+            if (((ColTECnst*)exp)->comp != 6) {
+                __assert(&lbl_8047DE70, 0x309, &lbl_8047DEA0);
+            }
+            tev->a_in[idx].sel = 6;
+            if (ColTExpGetType(tev->a_in[idx].exp) == COL_TE_TEV) {
+                if (tev->a_in[idx].sel == 1) {
+                    tev->a_in[idx].exp->c_ref++;
+                } else {
+                    tev->a_in[idx].exp->a_ref++;
+                }
+            } else if (ColTExpGetType(tev->a_in[idx].exp) == COL_TE_CNST) {
+                ((ColTECnst*)tev->a_in[idx].exp)->ref++;
+            }
+            break;
+        case COL_TE_TEX:
+            if (sel != 5) {
+                __assert(&lbl_8047DE70, 0x30E, &lbl_8047DEA0);
+            }
+            tev->a_in[idx].arg = 4;
+            break;
+        case COL_TE_RAS:
+            if (sel != 5) {
+                __assert(&lbl_8047DE70, 0x312, &lbl_8047DEA0);
+            }
+            tev->a_in[idx].arg = 5;
+            break;
+        default:
+            __assert(&lbl_8047DE70, 0x316, &lbl_8047DEA0);
+            break;
+        }
+        break;
     }
-
-    /* 1. Initialize texture object from image descriptor */
-    if (tobj->imagedesc != NULL) {
-        /* GXInitTexObj */
-    }
-
-    /* 2. Configure wrap mode */
-    /* GXInitTexObjWrapMode */
-
-    /* 3. Configure filter */
-    /* GXInitTexObjFilterMode */
-
-    /* 4. Configure LOD */
-    if (tobj->lod != NULL) {
-        /* GXInitTexObjLOD */
-    }
-
-    /* 5. Load TLUT if CI format */
-    if (tobj->tlut != NULL) {
-        /* GXLoadTlut */
-    }
-
-    /* 6. Load texture to GX */
-    /* GXLoadTexObj */
+    fn_801B750C(prev.exp, prev.sel);
 }
 
 /* HSD_TExpColorIn */
@@ -1971,6 +2106,8 @@ void fn_801B64EC(ColTExpNode* texp, u32 sel_a, ColTExpNode* exp_a,
  * generation sources: UV, reflection, highlight, shadow, toon,
  * and gradation mapping.
  */
+#pragma push
+#pragma optimization_level 1
 void fn_801B65F0(ColTExpNode* tev, u32 sel, ColTExpNode* exp, s32 idx)
 {
     ColTEArg prev = tev->c_in[idx];
@@ -2137,6 +2274,8 @@ void fn_801B65F0(ColTExpNode* tev, u32 sel, ColTExpNode* exp, s32 idx)
     }
     fn_801B750C(prev.exp, prev.sel);
 }
+
+#pragma pop
 
 /* ========================================================================= */
 /*  TObj rendering helpers                                                   */
@@ -2446,7 +2585,7 @@ typedef struct HSD_TExpDag {
     struct HSD_TExpDag* depend[8];
 } HSD_TExpDag;
 
-extern s32 lbl_8036D380[];
+extern u8 lbl_8036D380[];
 extern s32 HSD_TExpGetType(u8* texp);
 extern void CalcDistance(u8** nodes, s32* dist, u8* root, s32 num, s32 val);
 void fn_801B89BC(s32 num, u32* dep, u32* full_dep, HSD_TExpDag* list,
@@ -2455,19 +2594,73 @@ void fn_801B89BC(s32 num, u32* dep, u32* full_dep, HSD_TExpDag* list,
 s32 fn_801B8B84(s32 num, u32* unused, HSD_TExpDag* list, s32* order);
 
 /*
- * HSD_GObjRenderSorted - 0x801B7CA0 | Size: 0x384
+ * Order a TExp DAG and assign the temporary TEV register references.
+ * 0x801B7CA0 | Size: 0x384
  */
-void fn_801B7CA0(u32 pass)
+void fn_801B7CA0(s32 num, HSD_TExpDag* list, ColTExpNode** result,
+                 ColTExpRes* resource)
 {
-    u32 i;
+    u32 dep[32];
+    u32 full_dep[32];
+    s32 min_order[32] = { 0 };
+    s32 work_order[32];
+    s32 min = 5;
+    s32 changed;
+    s32 i;
+    s32 j;
 
-    for (i = 0; i < 64; i++) {
-        HSD_GObj* gobj = gobj_render_list[i];
-        while (gobj != NULL) {
-            if (gobj->render_cb != NULL) {
-                gobj->render_cb(gobj, pass);
+    for (i = 0; i < num; i++) {
+        dep[i] = 0;
+        for (j = 0; j < list[i].nb_dep; j++) {
+            dep[i] |= 1U << list[i].depend[j]->idx;
+        }
+        full_dep[i] = dep[i];
+    }
+
+    do {
+        changed = 0;
+        for (i = 0; i < num; i++) {
+            for (j = 0; j < num; j++) {
+                if (full_dep[j] & (1U << i)) {
+                    u32 old = full_dep[j];
+                    full_dep[j] |= full_dep[i];
+                    if (old != full_dep[j]) {
+                        changed = 1;
+                    }
+                }
             }
-            gobj = gobj->next_gx;
+        }
+    } while (changed != 0);
+
+    fn_801B89BC(num, dep, full_dep, list, 0, 0, 0, 0, work_order, &min,
+                 min_order);
+
+    for (i = 0; i < num; i++) {
+        ColTExpNode* tev = result[i] = list[min_order[i]].tev;
+
+        if (tev->c_dst != 0xFF) {
+            ((u8*)resource)[0x14 + tev->c_dst * 2] = 3;
+            for (j = 0; j < 4; j++) {
+                if (HSD_TExpGetType((u8*)tev->c_in[j].exp) == COL_TE_TEV) {
+                    if (tev->c_in[j].sel == COL_TE_RGB) {
+                        tev->c_in[j].arg =
+                            lbl_8036D380[tev->c_in[j].exp->c_dst];
+                    } else {
+                        tev->c_in[j].arg =
+                            lbl_8036D380[4 + tev->c_in[j].exp->a_dst];
+                    }
+                }
+            }
+        }
+
+        if (tev->a_dst != 0xFF) {
+            ((u8*)resource)[0x15 + tev->a_dst * 2] = 1;
+            for (j = 0; j < 4; j++) {
+                if (HSD_TExpGetType((u8*)tev->a_in[j].exp) == COL_TE_TEV) {
+                    tev->a_in[j].arg =
+                        lbl_8036D380[8 + tev->a_in[j].exp->a_dst];
+                }
+            }
         }
     }
 }
@@ -2989,6 +3182,7 @@ s32 HSD_TExpSimplify(ColTExpNode* texp) {
     if (fn_801B9320(texp) != 0) {
         res = 1;
     }
+    fn_801B9048(texp);
     return res;
 }
 
@@ -3114,46 +3308,76 @@ alpha:
  */
 #pragma push
 #pragma use_lmw_stmw on
+#pragma optimization_level 3
 s32 fn_801B9320(ColTExpNode* tev)
 {
     ColTExpNode* child;
+    ColTExpNode* src;
     s32 bias;
     s32 result;
     s32 merged;
     s32 i;
     s32 conflict;
+    s32 merge_ok;
+    s32 parent_scale;
+    s32 child_scale;
+    s32 combined_scale;
     u8 type;
+    u8 sel;
     u8 child_sel;
     u8 new_op;
+    u8 out_bias;
+    u8 out_scale;
     ColTEArg tmp_arg;
 
     result = 0;
     do {
         merged = 0;
 
-        if (tev->a_op == 0xFF || tev->a_op == 0xE || tev->a_op == 0xF ||
-            tev->a_op <= 1)
+        if ((tev->c_op == 0 || tev->c_op == 1) &&
+            tev->c_in[2].sel == COL_TE_0)
         {
-            if ((tev->c_op == 0 || tev->c_op == 1) &&
-                tev->c_in[1].sel == COL_TE_0 &&
-                tev->c_in[2].sel == COL_TE_0 &&
-                HSD_TExpGetType((u8*) tev->c_in[0].exp) != COL_TE_CNST &&
-                HSD_TExpGetType((u8*) tev->c_in[3].exp) != COL_TE_CNST)
-            {
-                if (tev->c_op == 0 && tev->c_in[3].type == COL_TE_TEV &&
-                    ((tev->c_in[3].sel == COL_TE_RGB &&
-                      tev->c_in[3].exp->c_clamp != 0) ||
-                     (tev->c_in[3].sel == COL_TE_A &&
-                      tev->c_in[3].exp->a_clamp != 0)))
+                if (tev->c_in[0].type == COL_TE_TEV &&
+                    tev->c_in[0].sel == COL_TE_RGB)
                 {
-                    type = tev->c_in[0].type;
-                    switch (type) {
-                    case COL_TE_TEX:
-                    case COL_TE_RAS:
-                        tmp_arg = tev->c_in[0];
-                        tev->c_in[0] = tev->c_in[3];
-                        tev->c_in[3] = tmp_arg;
-                        break;
+                    child = tev->c_in[0].exp;
+                    child_sel = tev->c_in[0].sel;
+                    if (child->c_range == 0 &&
+                        child->c_in[3].sel == COL_TE_0)
+                    {
+                        if (tev->tex != NULL && child->tex != NULL &&
+                            tev->tex != child->tex)
+                        {
+                            conflict = 1;
+                        } else if (tev->chan != 0xFF &&
+                                   child->chan != 0xFF &&
+                                   tev->chan != child->chan)
+                        {
+                            conflict = 1;
+                        } else {
+                            conflict = 0;
+                        }
+
+                        if (conflict == 0 &&
+                            ((tev->c_in[0].type == COL_TE_CNST ||
+                               tev->c_in[1].type == COL_TE_CNST ||
+                               tev->c_in[2].type == COL_TE_CNST ||
+                               tev->c_in[3].type == COL_TE_CNST) &&
+                              (child->c_in[0].type == COL_TE_CNST ||
+                               child->c_in[1].type == COL_TE_CNST ||
+                               child->c_in[2].type == COL_TE_CNST ||
+                               child->c_in[3].type == COL_TE_CNST)) &&
+                            ((child_sel == COL_TE_RGB &&
+                              (child->c_range == 0 ||
+                               child->c_clamp == 1)) ||
+                             (child_sel == COL_TE_A &&
+                              (child->a_range == 0 ||
+                               child->a_clamp == 1))))
+                        {
+                            tmp_arg = tev->c_in[0];
+                            tev->c_in[0] = tev->c_in[3];
+                            tev->c_in[3] = tmp_arg;
+                        }
                     }
                 }
 
@@ -3163,8 +3387,7 @@ s32 fn_801B9320(ColTExpNode* tev)
                         child = tev->c_in[0].exp;
                         child_sel = tev->c_in[0].sel;
                         if ((child->c_op == 0 || child->c_op == 1) &&
-                            child->c_in[3].sel == COL_TE_0 &&
-                            child->c_scale == 0)
+                            child->c_in[3].sel == COL_TE_0)
                         {
                             if (tev->tex != NULL && child->tex != NULL &&
                                 tev->tex != child->tex)
@@ -3178,60 +3401,123 @@ s32 fn_801B9320(ColTExpNode* tev)
                             } else {
                                 conflict = 0;
                             }
+
                             if (conflict == 0) {
-                                switch ((s32) child->c_bias) {
-                                case 1:
-                                    bias = 1;
-                                    break;
-                                case 2:
-                                    bias = -1;
-                                    break;
-                                default:
-                                    bias = 0;
-                                    break;
-                                }
-                                if (child->c_op == 1) {
-                                    bias = -bias;
-                                }
-                                switch ((s32) tev->c_bias) {
-                                case 1:
-                                    bias += 1;
-                                    break;
-                                case 2:
-                                    bias -= 1;
-                                    break;
-                                }
-                                switch (bias) {
-                                case 0:
-                                    tev->c_bias = 0;
-                                    merged = 1;
-                                    break;
-                                case 1:
-                                    tev->c_bias = 1;
-                                    merged = 1;
-                                    break;
-                                case -1:
-                                    tev->c_bias = 2;
-                                    merged = 1;
-                                    break;
-                                default:
-                                    merged = 0;
-                                    break;
-                                }
-                                if (merged != 0) {
+                                merge_ok = 0;
+
+                                if (child->c_scale == 0) {
+                                    switch ((s32) child->c_bias) {
+                                    case 1:
+                                        bias = 1;
+                                        break;
+                                    case 2:
+                                        bias = -1;
+                                        break;
+                                    default:
+                                        bias = 0;
+                                        break;
+                                    }
                                     if (child->c_op == 1) {
-                                        if (tev->c_op == 0) {
-                                            new_op = 1;
-                                        } else {
-                                            new_op = 0;
-                                        }
-                                        tev->c_op = new_op;
+                                        bias = -bias;
+                                    }
+                                    switch ((s32) tev->c_bias) {
+                                    case 1:
+                                        bias += 1;
+                                        break;
+                                    case 2:
+                                        bias -= 1;
+                                        break;
+                                    }
+                                    switch (bias) {
+                                    case 0:
+                                        out_bias = 0;
+                                        merge_ok = 1;
+                                        break;
+                                    case 1:
+                                        out_bias = 1;
+                                        merge_ok = 1;
+                                        break;
+                                    case -1:
+                                        out_bias = 2;
+                                        merge_ok = 1;
+                                        break;
+                                    }
+                                    out_scale = tev->c_scale;
+                                } else if (tev->c_in[3].sel == COL_TE_0 &&
+                                           tev->c_bias == 0)
+                                {
+                                    switch ((s32) tev->c_scale) {
+                                    case 0:
+                                        parent_scale = 2;
+                                        break;
+                                    case 1:
+                                        parent_scale = 4;
+                                        break;
+                                    case 2:
+                                        parent_scale = 8;
+                                        break;
+                                    case 3:
+                                        parent_scale = 1;
+                                        break;
+                                    default:
+                                        parent_scale = 2;
+                                        break;
+                                    }
+                                    switch ((s32) child->c_scale) {
+                                    case 0:
+                                        child_scale = 2;
+                                        break;
+                                    case 1:
+                                        child_scale = 4;
+                                        break;
+                                    case 2:
+                                        child_scale = 8;
+                                        break;
+                                    case 3:
+                                        child_scale = 1;
+                                        break;
+                                    default:
+                                        child_scale = 2;
+                                        break;
+                                    }
+
+                                    combined_scale =
+                                        (parent_scale * child_scale) / 2;
+                                    switch (combined_scale) {
+                                    case 1:
+                                        out_scale = 3;
+                                        merge_ok = 1;
+                                        break;
+                                    case 2:
+                                        out_scale = 0;
+                                        merge_ok = 1;
+                                        break;
+                                    case 4:
+                                        out_scale = 1;
+                                        merge_ok = 1;
+                                        break;
+                                    case 8:
+                                        out_scale = 2;
+                                        merge_ok = 1;
+                                        break;
+                                    }
+                                    out_bias = child->c_bias;
+                                }
+
+                                if (merge_ok != 0) {
+                                    if (tev->c_op == 1) {
+                                        tev->c_op = child->c_op == 0;
+                                    } else {
+                                        tev->c_op = child->c_op;
                                     }
                                     for (i = 0; i < 3; i++) {
                                         tev->c_in[i] = child->c_in[i];
                                         TEXP_REF(tev->c_in[i].exp,
                                                  tev->c_in[i].sel);
                                     }
+                                    tev->c_bias = out_bias;
+                                    tev->c_scale = out_scale;
+                                    TEXP_UNREF(child, child_sel);
                                     if (tev->tex == NULL) {
                                         tev->tex = child->tex;
                                     }
@@ -3244,7 +3530,7 @@ s32 fn_801B9320(ColTExpNode* tev)
                                     if (tev->ras_swap == 0xFF) {
                                         tev->ras_swap = child->ras_swap;
                                     }
-                                    TEXP_UNREF(child, child_sel);
+                                    merged = 1;
                                 }
                             }
                         }
@@ -3273,11 +3559,6 @@ s32 fn_801B9320(ColTExpNode* tev)
                                 }
                                 if (conflict == 0) {
                                     merged = 1;
-                                    for (i = 0; i < 4; i++) {
-                                        tev->c_in[i] = child->c_in[i];
-                                        TEXP_REF(tev->c_in[i].exp,
-                                                 tev->c_in[i].sel);
-                                    }
                                     tev->c_op = child->c_op;
                                     switch ((s32) child->c_bias) {
                                     case 1:
@@ -3330,42 +3611,69 @@ s32 fn_801B9320(ColTExpNode* tev)
                                     if (tev->ras_swap == 0xFF) {
                                         tev->ras_swap = child->ras_swap;
                                     }
-                                    TEXP_UNREF(child, child_sel);
+                                    for (i = 0; i < 4; i++) {
+                                        tmp_arg = tev->c_in[i];
+                                        tev->c_in[i] = child->c_in[i];
+                                        TEXP_REF(tev->c_in[i].exp,
+                                                 tev->c_in[i].sel);
+                                        TEXP_UNREF(tmp_arg.exp, tmp_arg.sel);
+                                    }
                                 }
                             }
                         }
                     }
                     break;
                 }
-            }
+        }
 
+        if (tev->a_op == 0xFF || tev->a_op == 0xE || tev->a_op == 0xF ||
+            tev->a_op <= 1)
+        {
             if ((tev->a_op == 0 || tev->a_op == 1) &&
                 tev->a_in[1].sel == COL_TE_0 &&
                 tev->a_in[2].sel == COL_TE_0 &&
                 HSD_TExpGetType((u8*) tev->a_in[0].exp) != COL_TE_CNST &&
                 HSD_TExpGetType((u8*) tev->a_in[3].exp) != COL_TE_CNST)
             {
-                if (tev->a_op == 0 && tev->a_in[3].type == COL_TE_TEV &&
-                    tev->a_in[3].exp->a_clamp != 0)
+                merge_ok = 0;
+                child = tev->a_in[0].exp;
+                child_sel = tev->a_in[0].sel;
+                if (tev->a_in[0].type == COL_TE_TEV &&
+                    child->a_range == 0 &&
+                    child->a_in[3].sel == COL_TE_0)
                 {
-                    type = tev->a_in[0].type;
-                    switch ((s32) type) {
-                    case COL_TE_TEX:
-                    case COL_TE_RAS:
-                        tmp_arg = tev->a_in[0];
-                        tev->a_in[0] = tev->a_in[3];
-                        tev->a_in[3] = tmp_arg;
-                        break;
+                    if (tev->tex != NULL && child->tex != NULL &&
+                        tev->tex != child->tex)
+                    {
+                        conflict = 1;
+                    } else if (tev->chan != 0xFF && child->chan != 0xFF &&
+                               tev->chan != child->chan)
+                    {
+                        conflict = 1;
+                    } else {
+                        conflict = 0;
+                    }
+                    if (conflict == 0 &&
+                        !((tev->a_in[0].type == COL_TE_CNST ||
+                           tev->a_in[1].type == COL_TE_CNST ||
+                           tev->a_in[2].type == COL_TE_CNST ||
+                           tev->a_in[3].type == COL_TE_CNST) &&
+                          (child->a_in[0].type == COL_TE_CNST ||
+                           child->a_in[1].type == COL_TE_CNST ||
+                           child->a_in[2].type == COL_TE_CNST ||
+                           child->a_in[3].type == COL_TE_CNST)))
+                    {
+                        merge_ok = 1;
                     }
                 }
 
-                switch (tev->a_in[0].type) {
-                case COL_TE_TEV:
-                    child = tev->a_in[0].exp;
-                    child_sel = tev->a_in[0].sel;
-                    if ((child->a_op == 0 || child->a_op == 1) &&
-                        child->a_in[3].sel == COL_TE_0 &&
-                        child->a_scale == 0)
+                if (merge_ok == 0 && tev->a_op == 0 &&
+                    tev->a_in[3].type == COL_TE_TEV)
+                {
+                    child = tev->a_in[3].exp;
+                    child_sel = tev->a_in[3].sel;
+                    if (child->a_range == 0 &&
+                        child->a_in[3].sel == COL_TE_0)
                     {
                         if (tev->tex != NULL && child->tex != NULL &&
                             tev->tex != child->tex)
@@ -3379,67 +3687,179 @@ s32 fn_801B9320(ColTExpNode* tev)
                         } else {
                             conflict = 0;
                         }
+                        if (conflict == 0 &&
+                            !((child->a_in[0].type == COL_TE_CNST ||
+                               child->a_in[1].type == COL_TE_CNST ||
+                               child->a_in[2].type == COL_TE_CNST ||
+                               child->a_in[3].type == COL_TE_CNST) &&
+                              (child->a_in[0].type == COL_TE_CNST ||
+                               child->a_in[1].type == COL_TE_CNST ||
+                               child->a_in[2].type == COL_TE_CNST ||
+                               child->a_in[3].type == COL_TE_CNST)) &&
+                            (tev->a_in[0].type != COL_TE_TEV ||
+                             tev->a_in[0].exp->a_range == 0 ||
+                             tev->a_in[0].exp->a_clamp == 1))
+                        {
+                            tmp_arg = tev->a_in[0];
+                            tev->a_in[0] = tev->a_in[3];
+                            tev->a_in[3] = tmp_arg;
+                            merge_ok = 1;
+                        }
+                    }
+                }
+
+                switch (tev->a_in[0].type) {
+                case COL_TE_TEV:
+                    if (merge_ok == 0) {
+                        break;
+                    }
+                    child = tev->a_in[0].exp;
+                    child_sel = tev->a_in[0].sel;
+                    if ((child->a_op == 0 || child->a_op == 1) &&
+                        child->a_in[3].sel == COL_TE_0)
+                    {
+                        if (tev->tex != NULL && child->tex != NULL &&
+                            tev->tex != child->tex)
+                        {
+                            conflict = 1;
+                        } else if (tev->chan != 0xFF &&
+                                   child->chan != 0xFF &&
+                                   tev->chan != child->chan)
+                        {
+                            conflict = 1;
+                        } else {
+                            conflict = 0;
+                        }
+
                         if (conflict == 0) {
-                            switch ((s32) child->a_bias) {
-                            case 1:
-                                bias = 1;
-                                break;
-                            case 2:
-                                bias = -1;
-                                break;
-                            default:
-                                bias = 0;
-                                break;
-                            }
-                            if (child->a_op == 1) {
-                                bias = -bias;
-                            }
-                            switch ((s32) tev->a_bias) {
-                            case 1:
-                                bias += 1;
-                                break;
-                            case 2:
-                                bias -= 1;
-                                break;
-                            }
-                            switch (bias) {
-                            case 0:
-                                tev->a_bias = 0;
-                                merged = 1;
-                                break;
-                            case 1:
-                                tev->a_bias = 1;
-                                merged = 1;
-                                break;
-                            case -1:
-                                tev->a_bias = 2;
-                                merged = 1;
-                                break;
-                            default:
-                                merged = 0;
-                                break;
-                            }
-                            if (merged != 0) {
+                            merge_ok = 0;
+
+                            if (child->a_scale == 0) {
+                                switch ((s32) child->a_bias) {
+                                case 1:
+                                    bias = 1;
+                                    break;
+                                case 2:
+                                    bias = -1;
+                                    break;
+                                default:
+                                    bias = 0;
+                                    break;
+                                }
                                 if (child->a_op == 1) {
-                                    if (tev->a_op == 0) {
-                                        new_op = 1;
-                                    } else {
-                                        new_op = 0;
-                                    }
-                                    tev->a_op = new_op;
+                                    bias = -bias;
+                                }
+                                switch ((s32) tev->a_bias) {
+                                case 1:
+                                    bias += 1;
+                                    break;
+                                case 2:
+                                    bias -= 1;
+                                    break;
+                                }
+                                switch (bias) {
+                                case 0:
+                                    out_bias = 0;
+                                    merge_ok = 1;
+                                    break;
+                                case 1:
+                                    out_bias = 1;
+                                    merge_ok = 1;
+                                    break;
+                                case -1:
+                                    out_bias = 2;
+                                    merge_ok = 1;
+                                    break;
+                                }
+                                out_scale = tev->a_scale;
+                            } else if (tev->a_in[3].sel == COL_TE_0 &&
+                                       tev->a_bias == 0)
+                            {
+                                switch ((s32) tev->a_scale) {
+                                case 0:
+                                    parent_scale = 2;
+                                    break;
+                                case 1:
+                                    parent_scale = 4;
+                                    break;
+                                case 2:
+                                    parent_scale = 8;
+                                    break;
+                                case 3:
+                                    parent_scale = 1;
+                                    break;
+                                default:
+                                    parent_scale = 2;
+                                    break;
+                                }
+                                switch ((s32) child->a_scale) {
+                                case 0:
+                                    child_scale = 2;
+                                    break;
+                                case 1:
+                                    child_scale = 4;
+                                    break;
+                                case 2:
+                                    child_scale = 8;
+                                    break;
+                                case 3:
+                                    child_scale = 1;
+                                    break;
+                                default:
+                                    child_scale = 2;
+                                    break;
+                                }
+
+                                combined_scale =
+                                    (parent_scale * child_scale) / 2;
+                                switch (combined_scale) {
+                                case 1:
+                                    out_scale = 3;
+                                    merge_ok = 1;
+                                    break;
+                                case 2:
+                                    out_scale = 0;
+                                    merge_ok = 1;
+                                    break;
+                                case 4:
+                                    out_scale = 1;
+                                    merge_ok = 1;
+                                    break;
+                                case 8:
+                                    out_scale = 2;
+                                    merge_ok = 1;
+                                    break;
+                                }
+                                out_bias = child->a_bias;
+                            }
+
+                            if (merge_ok != 0) {
+                                if (tev->a_op == 1) {
+                                    tev->a_op = child->a_op == 0;
+                                } else {
+                                    tev->a_op = child->a_op;
                                 }
                                 for (i = 0; i < 3; i++) {
                                     tev->a_in[i] = child->a_in[i];
                                     TEXP_REF(tev->a_in[i].exp,
                                              tev->a_in[i].sel);
                                 }
+                                tev->a_bias = out_bias;
+                                tev->a_scale = out_scale;
+                                TEXP_UNREF(child, child_sel);
                                 if (tev->tex == NULL) {
                                     tev->tex = child->tex;
                                 }
                                 if (tev->chan == 0xFF) {
                                     tev->chan = child->chan;
                                 }
-                                TEXP_UNREF(child, child_sel);
+                                if (tev->tex_swap == 0xFF) {
+                                    tev->tex_swap = child->tex_swap;
+                                }
+                                if (tev->ras_swap == 0xFF) {
+                                    tev->ras_swap = child->ras_swap;
+                                }
+                                merged = 1;
                             }
                         }
                     }
@@ -3466,11 +3886,6 @@ s32 fn_801B9320(ColTExpNode* tev)
                             }
                             if (conflict == 0) {
                                 merged = 1;
-                                for (i = 0; i < 4; i++) {
-                                    tev->a_in[i] = child->a_in[i];
-                                    TEXP_REF(tev->a_in[i].exp,
-                                             tev->a_in[i].sel);
-                                }
                                 tev->a_op = child->a_op;
                                 switch ((s32) child->a_bias) {
                                 case 1:
@@ -3517,7 +3932,19 @@ s32 fn_801B9320(ColTExpNode* tev)
                                 if (tev->chan == 0xFF) {
                                     tev->chan = child->chan;
                                 }
-                                TEXP_UNREF(child, child_sel);
+                                if (tev->tex_swap == 0xFF) {
+                                    tev->tex_swap = child->tex_swap;
+                                }
+                                if (tev->ras_swap == 0xFF) {
+                                    tev->ras_swap = child->ras_swap;
+                                }
+                                for (i = 0; i < 4; i++) {
+                                    tmp_arg = tev->a_in[i];
+                                    tev->a_in[i] = child->a_in[i];
+                                    TEXP_REF(tev->a_in[i].exp,
+                                             tev->a_in[i].sel);
+                                    TEXP_UNREF(tmp_arg.exp, tmp_arg.sel);
+                                }
                             }
                         }
                     }
@@ -3530,6 +3957,56 @@ s32 fn_801B9320(ColTExpNode* tev)
             result = 1;
         }
     } while (merged != 0);
+
+    for (i = 0; i < 4; i++) {
+        src = tev->c_in[i].exp;
+        sel = tev->c_in[i].sel;
+        if (tev->c_in[i].type == COL_TE_TEV && sel == COL_TE_RGB &&
+            src->c_op == 0 && src->c_in[0].sel == COL_TE_0 &&
+            src->c_in[1].sel == COL_TE_0 && src->c_bias == 0 &&
+            src->c_scale == 0)
+        {
+            switch (src->c_in[3].type) {
+            case 6:
+                if (tev->kcsel == 0xFF) {
+                    tev->kcsel = src->kcsel;
+                } else if (tev->kcsel != src->kcsel) {
+                    break;
+                }
+            case 5:
+                tev->c_in[i] = src->c_in[3];
+                fn_801B7BD4(tev->c_in[i].exp, tev->c_in[i].sel);
+                fn_801B750C(src, sel);
+                result = 1;
+                break;
+            }
+        }
+    }
+
+    for (i = 0; i < 4; i++) {
+        src = tev->a_in[i].exp;
+        sel = tev->a_in[i].sel;
+        if (tev->a_in[i].type == COL_TE_TEV && src->a_op == 0 &&
+            src->a_in[0].sel == COL_TE_0 &&
+            src->a_in[1].sel == COL_TE_0 && src->a_bias == 0 &&
+            src->a_scale == 0)
+        {
+            switch (src->a_in[3].type) {
+            case 6:
+                if (tev->kasel == 0xFF) {
+                    tev->kasel = src->kasel;
+                } else if (tev->kasel != src->kasel) {
+                    break;
+                }
+            case 5:
+                tev->a_in[i] = src->a_in[3];
+                fn_801B7BD4(tev->a_in[i].exp, tev->a_in[i].sel);
+                fn_801B750C(src, sel);
+                result = 1;
+                break;
+            }
+        }
+    }
 
     return result;
 }
@@ -3627,6 +4104,14 @@ s32 fn_801BAC8C(ColTExpNode* tev)
                         tev->c_in[1] = lbl_80478CA0;
                         tev->c_in[2] = lbl_80478CA0;
                     }
+                }
+                if (tev->c_in[0].sel == COL_TE_0 &&
+                    tev->c_in[1].sel == 8)
+                {
+                    changed = 1;
+                    tev->c_in[0] = tev->c_in[2];
+                    tev->c_in[1] = lbl_80478CA0;
+                    tev->c_in[2] = lbl_80478CA0;
                 }
                 if (tev->c_in[0].sel == COL_TE_0 &&
                     tev->c_in[1].sel == COL_TE_0 &&

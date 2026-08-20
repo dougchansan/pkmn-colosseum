@@ -204,6 +204,9 @@ extern s32 psAttachParticleAppSRT(PSParticle* pp, PSAppSRT* parentObj);
 extern s32 psChangeGeneratorAppSRT(PSGeneratorState* gen, PSAppSRT* parentObj); /* 0x8016A79C */
 extern s32 psAttachGeneratorAppSRT(PSGeneratorState* gen, PSAppSRT* parentObj);
 extern void genPosUpdate(void* obj);                                    /* 0x80175E88 */
+extern void fn_800BA6B0(u32 numChannels);
+extern void fn_800BA6F4(u32 chan, u32 enable, u32 ambSrc, u32 matSrc,
+                        u32 lightMask, u32 diffuseFn, u32 attnFn);
 extern void modifyDir(PSParticle* pp, f32 param);                       /* 0x80172FA8 */
 extern void modifyDirGenBase(PSParticle* pp, f32 a, f32 b, f32 c, f32 d); /* 0x801732A0 */
 extern f32 sqrtf(f32 x);
@@ -241,11 +244,14 @@ extern void PSMTXCopy(const Mtx source, Mtx destination);
 extern void PSMTXRotRad(Mtx m, char axis, f32 angle);
 extern void PSMTXConcat(const Mtx a, const Mtx b, Mtx out);
 extern void PSMTXMultVec(const Mtx m, const Vec* src, Vec* dst);
+extern void PSMTXRotAxisRad(Mtx m, const Vec* axis, f32 angle);
 extern void PSVECNormalize(const Vec* src, Vec* dst);
 extern void PSVECCrossProduct(const Vec* a, const Vec* b, Vec* out);
 extern void HSD_CObjGetUpVector(void* camera, Vec* up);
 extern f32 lbl_8047D6B4;
 extern f32 lbl_8047D5CC;
+extern f32 lbl_8047D5C8;
+extern f32 lbl_8047D5D0;
 extern f32 lbl_8047D618;
 extern f64 lbl_8047D5E0;
 extern f32 lbl_8047D5D8;
@@ -266,8 +272,12 @@ extern void fn_800BC52C(s32 stage, s32 a, s32 b);
 void psDispSub(PSParticle* pp, void* polygonData);
 void psDispSubAppSRT(PSParticle* pp, Mtx parentMatrix);
 void psDispSubAPPSRTPoint(PSParticle* pp);
+PSParticle* psDispSubPointTrail(PSParticle* pp);
 void psSetupTevInvalidState(void);
 void psSetupTevCommon(void);
+void psSetupTev(PSParticle* pp);
+void setupChanReg(PSParticle* pp);
+void setupTevReg(PSParticle* pp);
 extern f32 lbl_8047D5DC;
 extern f32 lbl_8047B14C;
 extern f32 lbl_8047B150;
@@ -280,16 +290,24 @@ extern void fn_800BD554(s32 mode);
 extern void fn_800BCEBC(s32 mode);
 extern void HSD_FogSet(void* fog);
 extern void fn_800B7D3C(void);
+extern void fn_800B7D74(u32 vtxfmt, u32 attr, u32 cnt, u32 type, u8 frac);
 extern void fn_800B7874(s32 attribute, s32 type);
 extern void fn_800B928C(s32 primitive, s32 format, s32 count);
 extern void fn_800B9404(s32 width, s32 offset);
 extern void fn_800B944C(s32 width, s32 offset);
-extern void generateParticle_8017424C(PSGeneratorState* gen);
+extern void fn_800B9494(u32 chan, u32 enable0, u32 enable1);
+extern void fn_800B94F0(u32 value);
+extern void fn_800B84E0(u32 attr, u32 value, u8 value2);
+extern void fn_801B25C4(s32 flags);
+extern f32 generateParticle_8017424C(PSGeneratorState* gen);
 extern void HSD_MulColor(GXColor* a, GXColor* b, GXColor* dest);
 extern void fn_800060F0(const char* file, s32 line, const char* message, ...);
 extern void PSMTXInverse(const Mtx source, Mtx destination);
 extern void fn_800BD454(f32* projection);
+extern void fn_801A958C(f32 src[3][4], f32 dst[3][4], char axis0, char axis1);
 extern void (*lbl_8047B198)(PSGeneratorState*, Mtx);
+extern const u8 lbl_802738B8[176];
+extern u8 lbl_8036BFC0[];
 
 #if !defined(PR410_PS_TARGET_ONLY)
 
@@ -1180,9 +1198,15 @@ s32 psInitAppSRT(s32 count, s32 size) {
  * frame-generation update is independently verified against 0x8016ABF4-
  * 0x8016AC14 in the Colosseum retail disassembly.
  */
+#pragma optimization_level 2
 void fn_8016AB94(u32 linkMask, s32 mode) {
     s32 linkNo;
-    s32 initialized = FALSE;
+    s32 needsInit = TRUE;
+    s32 cachedAlphaMode = -1;
+    u32 cachedZMode = (u32)-1;
+    u32 previousFlags = 0;
+    u8 cachedAlphaStart = 0;
+    u8 cachedAlphaEnd = 0xFF;
 
     if (mode == 0) {
         u8 frame = lbl_80478C30;
@@ -1210,8 +1234,6 @@ void fn_8016AB94(u32 linkMask, s32 mode) {
         }
 
         while (pp != NULL) {
-            PSParticle* next = pp->next;
-
             if (mode == 1 && (pp->flags & 8) == 0) {
                 break;
             }
@@ -1221,8 +1243,12 @@ void fn_8016AB94(u32 linkMask, s32 mode) {
                 void* polygonData = NULL;
                 void** bank = lbl_804528C8[pp->bankIndex];
 
-                if (!initialized) {
-                    initialized = TRUE;
+                if (needsInit) {
+                    f32* view = (f32*)(lbl_80452DE8 + 0xAC);
+                    f32* invView = (f32*)(lbl_80452DE8 + 0x7C);
+                    f32* projection = (f32*)(lbl_80452DE8 + 0x60);
+                    f32* tmp = (f32*)(lbl_80452DE8 + 0x30);
+
                     lbl_8047B168 = -1;
                     lbl_8047B164 = -1;
                     lbl_8047B144 = -1;
@@ -1267,6 +1293,170 @@ void fn_8016AB94(u32 linkMask, s32 mode) {
                         (const f32(*)[4])(lbl_80452DE8 + 0xAC),
                         (f32(*)[4])(lbl_80452DE8 + 0x7C));
                     fn_800BD454((f32*)(lbl_80452DE8 + 0x60));
+
+                    if (projection[0] == lbl_8047D5C8) {
+                        tmp[0] = projection[1] * view[0] + projection[2] * view[8];
+                        tmp[1] = projection[1] * view[1] + projection[2] * view[9];
+                        tmp[2] = projection[1] * view[2] + projection[2] * view[10];
+                        tmp[3] = projection[1] * view[3] + projection[2] * view[11];
+                        tmp[4] = projection[3] * view[4] + projection[4] * view[8];
+                        tmp[5] = projection[3] * view[5] + projection[4] * view[9];
+                        tmp[6] = projection[3] * view[6] + projection[4] * view[10];
+                        tmp[7] = projection[3] * view[7] + projection[4] * view[11];
+                    } else {
+                        tmp[0] = projection[1] * view[0] + projection[2];
+                        tmp[1] = projection[1] * view[1] + projection[2];
+                        tmp[2] = projection[1] * view[2] + projection[2];
+                        tmp[3] = projection[1] * view[3] + projection[2];
+                        tmp[4] = projection[3] * view[4] + projection[4];
+                        tmp[5] = projection[3] * view[5] + projection[4];
+                        tmp[6] = projection[3] * view[6] + projection[4];
+                        tmp[7] = projection[3] * view[7] + projection[4];
+                    }
+
+                    lbl_8047B160 = invView[0] + invView[1];
+                    lbl_8047B15C = invView[0] - invView[1];
+                    lbl_8047B158 = invView[4] + invView[5];
+                    lbl_8047B154 = invView[4] - invView[5];
+                    lbl_8047B150 = invView[8] + invView[9];
+                    lbl_8047B14C = invView[8] - invView[9];
+
+                    GXLoadPosMtxImm((f32(*)[4])(lbl_80452DE8 + 0xAC), 0);
+                    GXLoadPosMtxImm((f32(*)[4])(lbl_802738B8 + 0x50), 3);
+                    lbl_8047B12C = 3;
+                    if (lbl_8047B12C != 0) {
+                        lbl_8047B12C = 0;
+                        fn_800BD554(0);
+                    }
+                    fn_800B9494(0, 1, 1);
+                    fn_801A958C(
+                        (f32(*)[4])(lbl_80452DE8 + 0x7C),
+                        (f32(*)[4])lbl_80452DE8,
+                        0x7A, 0x78);
+                    fn_800B94F0(2);
+                    fn_800B84E0(0xD, (u32)lbl_8036BFC0, 2);
+                    fn_800B7D74(0, 9, 1, 4, 0);
+                    fn_800B7D74(0, 0xD, 1, 0, 0);
+                    fn_800B7D74(1, 9, 1, 4, 0);
+                    fn_800B7D74(2, 9, 1, 4, 0);
+                    fn_800B7D74(2, 0xB, 1, 5, 0);
+                    fn_800B7D74(2, 0xD, 1, 0, 0);
+                    fn_800B7D74(3, 9, 1, 4, 0);
+                    fn_800B7D74(3, 0xB, 1, 5, 0);
+                    fn_800B7D74(4, 9, 1, 4, 0);
+                    fn_800B7D74(4, 0xD, 1, 4, 0);
+                    fn_800B7D74(5, 9, 1, 4, 0);
+                    fn_800B7D74(5, 0xB, 1, 5, 0);
+                    fn_800B7D74(5, 0xD, 1, 4, 0);
+                    needsInit = FALSE;
+                }
+
+                switch ((pp->flags >> 22) & 3) {
+                case 0:
+                    if (lbl_8047B148 != 0) {
+                        lbl_8047B148 = 0;
+                        GXSetBlendMode(1, 4, 5, 0);
+                    }
+                    break;
+                case 1:
+                    if (lbl_8047B148 != 1) {
+                        lbl_8047B148 = 1;
+                        GXSetBlendMode(1, 4, 1, 0);
+                    }
+                    break;
+                case 2:
+                    if (lbl_8047B148 != 2) {
+                        lbl_8047B148 = 2;
+                        GXSetBlendMode(3, 4, 5, 0);
+                    }
+                    break;
+                case 3:
+                    if (lbl_8047B148 != 3) {
+                        lbl_8047B148 = 3;
+                        GXSetBlendMode(1, 2, 0, 0);
+                    }
+                    break;
+                default:
+                    OSReport((const char*)lbl_802738B8 + 0x80);
+                    break;
+                }
+
+                if (pp->alphaTimer != 0) {
+                    s32 step =
+                        ((s32)pp->alphaCountdown << 16) / pp->alphaTimer;
+                    cachedAlphaStart =
+                        (((s32)pp->alphaTargetStart << 16) +
+                         step * ((s32)pp->alphaStart -
+                                 (s32)pp->alphaTargetStart)) >> 16;
+                    cachedAlphaEnd =
+                        (((s32)pp->alphaTargetEnd << 16) +
+                         step * ((s32)pp->alphaEnd -
+                                 (s32)pp->alphaTargetEnd)) >> 16;
+                } else {
+                    cachedAlphaStart = pp->alphaStart;
+                    cachedAlphaEnd = pp->alphaEnd;
+                }
+
+                if (cachedAlphaMode != (s32)pp->alphaMode ||
+                    cachedAlphaStart != pp->alphaStart ||
+                    cachedAlphaEnd != pp->alphaEnd) {
+                    cachedAlphaMode = pp->alphaMode;
+                    fn_800BC618((pp->alphaMode >> 5) & 7,
+                                cachedAlphaStart,
+                                (pp->alphaMode >> 3) & 3,
+                                cachedAlphaEnd,
+                                pp->alphaMode & 7);
+                }
+
+                psSetupTev(pp);
+                {
+                    u32 lighting = pp->flags & 0x80100000;
+
+                    if (lighting != (u32)lbl_8047B144) {
+                        u32 attn;
+                        u32 diffuse;
+
+                        lbl_8047B144 = lighting;
+                        fn_800BA6B0(1);
+                        switch (lighting) {
+                        case 0x00100000:
+                            fn_800BA6F4(4, 0, 1, 1, 0, 0, 2);
+                            break;
+                        case 0:
+                        case 0x80000000:
+                            attn = HSD_LObjGetLightMaskAttnFunc() != 0 ? 1 : 2;
+                            diffuse = HSD_LObjGetLightMaskDiffuse();
+                            fn_800BA6F4(0, 1, 0, 0, diffuse, 0, attn);
+                            fn_800BA6F4(2, 0, 0, 0, 0, 0, 2);
+                            break;
+                        case 0x80100000:
+                            attn = HSD_LObjGetLightMaskAttnFunc() != 0 ? 1 : 2;
+                            diffuse = HSD_LObjGetLightMaskDiffuse();
+                            fn_800BA6F4(0, 1, 0, 0, diffuse, 0, attn);
+                            fn_800BA6F4(2, 0, 1, 1, 0, 0, 2);
+                            break;
+                        default:
+                            fn_800BA6F4(4, 0, 0, 0, 0, 0, 2);
+                            break;
+                        }
+                        fn_800BA6F4(5, 0, 0, 0, 0, 0, 2);
+                    }
+                }
+                setupChanReg(pp);
+                setupTevReg(pp);
+
+                {
+                    u32 flags = pp->flags;
+                    u32 zMode = flags & 0x10000008;
+
+                    if (zMode != cachedZMode) {
+                        cachedZMode = zMode;
+                        GXSetZMode(((flags >> 29) & 1) ^ 1, 3,
+                                   (zMode & 8) != 0);
+                    }
+                    if ((flags ^ previousFlags) & 0x80) {
+                        HSD_FogSet((flags & 0x80) ? lbl_8047B128 : NULL);
+                    }
                 }
 
                 if (bank != NULL) {
@@ -1280,6 +1470,44 @@ void fn_8016AB94(u32 linkMask, s32 mode) {
                 if (pp->flags & 0x40000000) {
                     if (pp->parentObj != NULL) {
                         psDispSubAPPSRTPoint(pp);
+                    } else if (pp->flags & 0x00100000) {
+                        pp = psDispSubPointTrail(pp);
+                    } else {
+                        f32 widthValue;
+                        s32 width;
+                        u8 rasterWidth;
+
+                        if (lbl_8047B12C != 0) {
+                            lbl_8047B12C = 0;
+                            fn_800BD554(0);
+                        }
+
+                        widthValue = pp->lerpValue > lbl_8047D5E0
+                            ? lbl_8047D5D8
+                            : lbl_8047D5DC * pp->lerpValue;
+                        width = (s32)widthValue;
+                        rasterWidth = (u8)width;
+
+                        if (lbl_8047B168 != rasterWidth) {
+                            lbl_8047B168 = rasterWidth;
+                            fn_800B944C(width, 5);
+                        }
+
+                        fn_800B7D3C();
+                        fn_800B7874(9, 1);
+                        if (pp->flags & PS_FLAG_OBJ_REF) {
+                            fn_800B7874(0xD, 2);
+                            fn_800B928C(0xB8, 0, 1);
+                        } else {
+                            fn_800B928C(0xB8, 1, 1);
+                        }
+
+                        GX_FIFO_F32 = pp->positionX;
+                        GX_FIFO_F32 = pp->positionY;
+                        GX_FIFO_F32 = pp->positionZ;
+                        if (pp->flags & PS_FLAG_OBJ_REF) {
+                            GX_FIFO_U8 = 1;
+                        }
                     }
                 } else if (pp->parentObj != NULL) {
                     psDispSubAppSRT(pp, (f32(*)[4])polygonData);
@@ -1287,10 +1515,16 @@ void fn_8016AB94(u32 linkMask, s32 mode) {
                     psDispSub(pp, polygonData);
                 }
             }
-            pp = next;
+            previousFlags = pp->flags;
+            pp = pp->next;
         }
     }
+    if (!needsInit) {
+        fn_801B25C4(-1);
+    }
 }
+
+#pragma optimization_level 1
 
 #endif
 
@@ -1706,6 +1940,24 @@ void psSetupTev(PSParticle* pp) {
         fn_800B884C(1);
         fn_800BC6F0(0, 0, 0, 4);
         GXSetTevOp(0, 0);
+    } else if (state == 0x100000 || state == 0x100080) {
+        if (state == 0x100080) {
+            pp->flags &= ~0x180;
+            lbl_8047B170 &= ~0x180;
+        }
+        fn_800BC8C8(1);
+        fn_800B884C(0);
+        fn_800BC6F0(0, 0xFF, 0xFF, 4);
+        fn_800BC1A0(0, 0xA, 0xF, 0xF, 0xF);
+        fn_800BC1E4(0, 5, 7, 7, 7);
+    } else if (state == 0x100480) {
+        fn_800BC8C8(2);
+        fn_800B884C(1);
+        fn_800BC6F0(0, 0, 0, 4);
+        fn_800BC1A0(0, 4, 2, 8, 0xF);
+        fn_800BC1E4(0, 2, 1, 4, 7);
+        fn_800BC1A0(1, 0xF, 0, 0xF, 0xF);
+        fn_800BC1E4(1, 7, 5, 0, 7);
     } else if (state == (s32)0x80000400) {
         fn_800BC8C8(2);
         fn_800B884C(1);
@@ -1724,6 +1976,37 @@ void psSetupTev(PSParticle* pp) {
         fn_800BC1E4(1, 7, 3, 0, 7);
         fn_800BC1A0(2, 0xF, 0xA, 0, 0xF);
         fn_800BC1E4(2, 0, 7, 7, 7);
+    } else if (state == (s32)0x80100400) {
+        fn_800BC8C8(2);
+        fn_800B884C(1);
+        fn_800BC6F0(0, 0, 0, 4);
+        fn_800BC1A0(0, 0xF, 6, 0xA, 0xF);
+        fn_800BC1E4(0, 7, 3, 5, 7);
+        fn_800BC1A0(1, 0xF, 8, 0, 0xF);
+        fn_800BC1E4(1, 7, 4, 0, 7);
+    } else if (state == (s32)0x80100480) {
+        fn_800BC8C8(3);
+        fn_800B884C(1);
+        fn_800BC6F0(0, 0, 0, 4);
+        fn_800BC1A0(0, 4, 2, 8, 0xF);
+        fn_800BC1E4(0, 2, 1, 4, 7);
+        fn_800BC1A0(1, 0xF, 6, 0, 0xF);
+        fn_800BC1E4(1, 7, 3, 0, 7);
+        fn_800BC1A0(2, 0xF, 0xA, 0, 0xF);
+        fn_800BC1E4(2, 7, 5, 0, 7);
+    } else if (state == (s32)0x80100000 ||
+               state == (s32)0x80100080) {
+        if (state == (s32)0x80100080) {
+            pp->flags &= ~0x180;
+            lbl_8047B170 &= ~0x180;
+        }
+        fn_800BC8C8(2);
+        fn_800B884C(0);
+        fn_800BC6F0(0, 0xFF, 0xFF, 4);
+        fn_800BC1A0(0, 0xF, 6, 0xA, 0xF);
+        fn_800BC1E4(0, 7, 3, 5, 7);
+        fn_800BC1A0(1, 0xF, 2, 0, 0xF);
+        fn_800BC1E4(1, 7, 1, 0, 7);
     }
 }
 
@@ -1787,7 +2070,101 @@ s32 applyForceJObj(PSParticle* pp, PSForceJObj* jobj,
     return FALSE;
 }
 
+static inline f32 psSetVelSqrtf(f32 value) {
+    union {
+        f32 value;
+        u32 bits;
+    } shape;
+    f64 estimate;
+    s32 exponent;
+    s32 fpclass;
+    extern const f64 lbl_8047D680;
+    extern const f64 lbl_8047D688;
+    extern const f32 lbl_80478AC0[];
+
+    if (value > lbl_8047D630) {
+        estimate = __frsqrte(value);
+        estimate = lbl_8047D650 * estimate *
+                   (lbl_8047D680 - value * (estimate * estimate));
+        estimate = lbl_8047D650 * estimate *
+                   (lbl_8047D680 - value * (estimate * estimate));
+        estimate = lbl_8047D650 * estimate *
+                   (lbl_8047D680 - value * (estimate * estimate));
+        return (f32)(value * estimate);
+    }
+    if ((f64)value < lbl_8047D688) {
+        return lbl_80478AC0[0];
+    }
+
+    shape.value = value;
+    exponent = shape.bits & 0x7F800000;
+    switch (exponent) {
+    case 0x7F800000:
+        fpclass = (shape.bits & 0x007FFFFF) != 0 ? 1 : 2;
+        break;
+    case 0:
+        fpclass = (shape.bits & 0x007FFFFF) != 0 ? 5 : 3;
+        break;
+    default:
+        fpclass = 4;
+        break;
+    }
+    if (fpclass == 1) {
+        return lbl_80478AC0[0];
+    }
+    return value;
+}
+
+static inline f32 psPolygonSqrtf(f32 value) {
+    union {
+        f32 value;
+        u32 bits;
+    } shape;
+    f64 estimate;
+    s32 exponent;
+    s32 fpclass;
+    extern const f64 lbl_8047D600;
+    extern const f64 lbl_8047D608;
+    extern const f64 lbl_8047D610;
+    extern const f32 lbl_80478AC0[];
+
+    if (value > lbl_8047D5C8) {
+        estimate = __frsqrte(value);
+        estimate = lbl_8047D600 * estimate *
+                   (lbl_8047D608 - value * (estimate * estimate));
+        estimate = lbl_8047D600 * estimate *
+                   (lbl_8047D608 - value * (estimate * estimate));
+        estimate = lbl_8047D600 * estimate *
+                   (lbl_8047D608 - value * (estimate * estimate));
+        return (f32)(value * estimate);
+    }
+    if ((f64)value < lbl_8047D610) {
+        return lbl_80478AC0[0];
+    }
+
+    shape.value = value;
+    exponent = shape.bits & 0x7F800000;
+    switch (exponent) {
+    case 0x7F800000:
+        fpclass = (shape.bits & 0x007FFFFF) != 0 ? 1 : 2;
+        break;
+    case 0:
+        fpclass = (shape.bits & 0x007FFFFF) != 0 ? 5 : 3;
+        break;
+    default:
+        fpclass = 4;
+        break;
+    }
+    if (fpclass == 1) {
+        return lbl_80478AC0[0];
+    }
+    return value;
+}
+
 void setVelToJObj(PSParticle* pp, PSForceJObj* jobj) {
+    f32 velocityX = pp->velocityX;
+    f32 velocityY = pp->velocityY;
+    f32 velocityZ = pp->velocityZ;
     f32 dx;
     f32 dy;
     f32 dz;
@@ -1799,28 +2176,34 @@ void setVelToJObj(PSParticle* pp, PSForceJObj* jobj) {
         return;
     }
 
+    if (jobj == NULL) {
+        __assert(lbl_8047D670, 0x25D, lbl_8047D678);
+    }
+
     if (!(jobj->flags & 0x800000) && (jobj->flags & 0x40)) {
         fn_8019D9DC(jobj);
     }
 
-    speed = sqrtf(pp->velocityX * pp->velocityX +
-                  pp->velocityY * pp->velocityY +
-                  pp->velocityZ * pp->velocityZ);
     dx = jobj->worldX - pp->positionX;
     dy = jobj->worldY - pp->positionY;
     dz = jobj->worldZ - pp->positionZ;
+    speed = psSetVelSqrtf(velocityX * velocityX + velocityY * velocityY +
+                           velocityZ * velocityZ);
     distanceSquared = dx * dx + dy * dy + dz * dz;
     if (distanceSquared == 0.0f) {
         return;
     }
 
-    scale = speed / sqrtf(distanceSquared);
+    scale = speed / psSetVelSqrtf(distanceSquared);
     pp->velocityX = dx * scale;
     pp->velocityY = dy * scale;
     pp->velocityZ = dz * scale;
 }
 
 void modifyDir(PSParticle* pp, f32 angle) {
+    f32 velocityX = pp->velocityX;
+    f32 velocityY = pp->velocityY;
+    f32 velocityZ = pp->velocityZ;
     f32 yaw;
     f32 pitch;
     f32 yawSin;
@@ -1835,39 +2218,41 @@ void modifyDir(PSParticle* pp, f32 angle) {
     f32 forward;
     f32 flattened;
 
-    if (fabsf(pp->velocityZ) < lbl_80478AC8) {
-        yaw = pp->velocityY >= 0.0f ? lbl_8047D694 : lbl_8047D698;
+    if (fabsf(velocityZ) < lbl_80478AC8) {
+        yaw = velocityY >= 0.0f ? lbl_8047D694 : lbl_8047D698;
     } else {
-        yaw = atan2(pp->velocityY, pp->velocityZ);
+        yaw = atan2(velocityY, velocityZ);
     }
     yawSin = sin(yaw);
     yawCos = cos(yaw);
 
-    flattened = pp->velocityZ * yawCos + pp->velocityY * yawSin;
+    flattened = velocityZ * yawCos + velocityY * yawSin;
     if (fabsf(flattened) < lbl_80478AC8) {
-        pitch = pp->velocityX >= 0.0f ? lbl_8047D694 : lbl_8047D698;
+        pitch = velocityX >= 0.0f ? lbl_8047D694 : lbl_8047D698;
     } else {
-        pitch = atan2(pp->velocityX, flattened);
+        pitch = atan2(velocityX, flattened);
     }
     pitchSin = sin(pitch);
     pitchCos = cos(pitch);
 
-    magnitude = sqrtf(pp->velocityX * pp->velocityX +
-                      pp->velocityY * pp->velocityY +
-                      pp->velocityZ * pp->velocityZ);
+    magnitude = psSetVelSqrtf(velocityX * velocityX + velocityY * velocityY +
+                             velocityZ * velocityZ);
     azimuth = lbl_8047D6A0 * lbl_8047D6A8 * fn_801ADC7C();
     radial = magnitude * sin(angle);
     radialX = radial * cos(azimuth);
     radialY = radial * sin(azimuth);
     forward = magnitude * cos(angle);
 
-    pp->velocityX = forward * pitchSin + radialX * pitchCos;
+    pp->velocityX = radialX * pitchCos + forward * pitchSin;
     pp->velocityY = pitchSin * (-radialX * yawSin) +
                     radialY * yawCos + pitchCos * (forward * yawSin);
     pp->velocityZ = pitchSin * (-radialX * yawCos) -
                     radialY * yawSin + pitchCos * (forward * yawCos);
 }
 
+#pragma push
+#pragma optimization_level 4
+#pragma peephole off
 void modifyDirGenBase(PSParticle* pp, f32 angle, f32 offsetX,
                       f32 offsetY, f32 offsetZ) {
     PSGeneratorState* generator = pp->peopleObj;
@@ -1905,9 +2290,9 @@ void modifyDirGenBase(PSParticle* pp, f32 angle, f32 offsetX,
     pitchSin = sin(pitch);
     pitchCos = cos(pitch);
 
-    magnitude = sqrtf(pp->velocityX * pp->velocityX +
-                      pp->velocityY * pp->velocityY +
-                      pp->velocityZ * pp->velocityZ);
+    magnitude = psSetVelSqrtf(pp->velocityX * pp->velocityX +
+                             pp->velocityY * pp->velocityY +
+                             pp->velocityZ * pp->velocityZ);
     azimuth = lbl_8047D6A0 * lbl_8047D6A8 * fn_801ADC7C();
     radial = magnitude * sin(angle);
     radialX = radial * cos(azimuth);
@@ -1921,6 +2306,7 @@ void modifyDirGenBase(PSParticle* pp, f32 angle, f32 offsetX,
                     radialY * yawSin + pitchCos * (forward * yawCos);
 }
 
+#pragma pop
 void psCopyGeneratorData(PSParticle* gen, void* peopleObj) {
     extern void psSetGeneratorAngleRadiusScale(PSGeneratorState*, f32*, u8);
     PSGeneratorState* dst = (PSGeneratorState*)gen;
@@ -2014,6 +2400,8 @@ void psInterpretParticles(u32 linkMask) {
  * Executes one frame of a single particle script. See file header for
  * identification evidence and coverage notes.
  * ====================================================================== */
+#pragma push
+#pragma optimization_level 3
 PSParticle* psInterpretParticle0(PSParticle* pp, PSParticle* parentCtx) {
     extern PSParticle* _psListGetNext(PSParticle*);
     u8 opcode;
@@ -2124,12 +2512,15 @@ PSParticle* psInterpretParticle0(PSParticle* pp, PSParticle* parentCtx) {
 
                         pp->objRefIndex = objRef;
                         bankData = (void**)lbl_804529C8[pp->bankIndex];
-                        objTable = bankData ? ((void**)bankData)[pp->animIndex] : NULL;
+                        objTable = ((void**)bankData)[pp->animIndex];
                         if (objTable != NULL) {
                             void** objEntry = (void**)((u8*)objTable + 0x18);
-                            void* ref = objEntry[objRef];
-                            if (ref != NULL) {
-                                pp->flags |= PS_FLAG_OBJ_REF;
+
+                            if (objEntry != NULL) {
+                                void* ref = objEntry[objRef];
+                                if (ref != NULL) {
+                                    pp->flags |= PS_FLAG_OBJ_REF;
+                                }
                             }
                         }
                     }
@@ -2292,32 +2683,161 @@ PSParticle* psInterpretParticle0(PSParticle* pp, PSParticle* parentCtx) {
                         break;
                     }
 
-                    /* ---- 0xA5: SPAWN_SCRIPT via table (verified @ 0x8016FE9C) ---- */
                     case 0xA5: {
-                        u16 tblIdx = ((u16)stream[0] << 8) | stream[1];
-                        u32* bank = (u32*)lbl_804527C8[pp->bankIndex];
-                        u16 scriptId = bank ? (u16)bank[tblIdx] : tblIdx;
+                        PSGeneratorState* gen;
+                        PSAppSRT* srcSRT = (PSAppSRT*)pp->parentObj;
+                        PSAppSRT* dstSRT;
+                        u16 scriptId = ((u16)stream[0] << 8) | stream[1];
+
                         stream += 2;
-                        spawned = psGenerateParticleID0(pp, pp->linkNo, pp->bankIndex, scriptId, NULL);
-                        if (spawned == NULL) break;
-                        spawned->scriptId = pp->scriptId;
-                        spawned->peopleObj = pp->peopleObj;
-                        if (pp->peopleObj != NULL) {
-                            (*(u32*)((u8*)pp->peopleObj + 0x4C))++;
-                            if (*(u32*)((u8*)pp->peopleObj + 4) & 0x2000)
-                                spawned->flags |= 0x2000;
+                        gen = psCreateGeneratorID(pp->linkNo, pp->bankIndex,
+                                                  scriptId);
+                        if (gen == NULL) {
+                            break;
                         }
-                        psApplyVelocityLocalRotation(spawned);
-                        if (pp->peopleObj != NULL &&
-                            (*(u16*)((u8*)pp->peopleObj + 0x12) & 0x40)) {
-                            psChangeParticleAppSRT(spawned, (PSAppSRT*)pp->parentObj);
+                        gen->familyId = pp->scriptId;
+                        psCopyGeneratorData((PSParticle*)gen, pp->peopleObj);
+                        if (srcSRT != NULL) {
+                            if (pp->peopleObj != NULL &&
+                                (((PSGeneratorState*)pp->peopleObj)->angleFlags &
+                                 0x40) != 0) {
+                                psChangeGeneratorAppSRT(gen, srcSRT);
+                            } else {
+                                psAttachGeneratorAppSRT(gen, srcSRT);
+                            }
+                        }
+
+                        dstSRT = (PSAppSRT*)gen->appSRT;
+                        if (srcSRT != NULL) {
+                            if (dstSRT != NULL) {
+                                gen->positionX = pp->positionX;
+                                gen->positionY = pp->positionY;
+                                gen->positionZ = pp->positionZ;
+                                if (dstSRT != srcSRT) {
+                                    dstSRT->rotationX = srcSRT->rotationX;
+                                    dstSRT->rotationY = srcSRT->rotationY;
+                                    dstSRT->rotationZ = srcSRT->rotationZ;
+                                }
+                            }
                         } else {
-                            psAttachParticleAppSRT(spawned, (PSAppSRT*)pp->parentObj);
+                            if (dstSRT != NULL) {
+                                dstSRT->rotationX = pp->positionX;
+                                dstSRT->rotationY = pp->positionY;
+                                dstSRT->rotationZ = pp->positionZ;
+                            }
+                            gen->positionX = pp->positionX;
+                            gen->positionY = pp->positionY;
+                            gen->positionZ = pp->positionZ;
                         }
-                        spawned->positionX = pp->positionX;
-                        spawned->positionY = pp->positionY;
-                        spawned->positionZ = pp->positionZ;
-                        psInterpretParticle0(spawned, pp);
+
+                        if (dstSRT == srcSRT) {
+                            break;
+                        }
+                        if (srcSRT == NULL) {
+                            if (dstSRT == NULL) {
+                                break;
+                            }
+                            genPosUpdate(gen);
+                            gen->positionX -= dstSRT->rotationX;
+                            gen->positionY -= dstSRT->rotationY;
+                            gen->positionZ -= dstSRT->rotationZ;
+                        } else {
+                            genPosUpdate(srcSRT->owner);
+                            if (dstSRT != NULL) {
+                                genPosUpdate(gen);
+                                gen->positionX +=
+                                    srcSRT->rotationX - dstSRT->rotationX;
+                                gen->positionY +=
+                                    srcSRT->rotationY - dstSRT->rotationY;
+                                gen->positionZ +=
+                                    srcSRT->rotationZ - dstSRT->rotationZ;
+                            } else {
+                                gen->positionX += srcSRT->rotationX;
+                                gen->positionY += srcSRT->rotationY;
+                                gen->positionZ += srcSRT->rotationZ;
+                            }
+                        }
+                        break;
+                    }
+
+                    case 0xEF: {
+                        PSGeneratorState* gen;
+                        PSAppSRT* srcSRT = (PSAppSRT*)pp->parentObj;
+                        PSAppSRT* dstSRT;
+                        u16 scriptId = ((u16)stream[0] << 8) | stream[1];
+                        u8 phaseFlags = stream[2];
+
+                        stream += 3;
+                        gen = psCreateGeneratorID(pp->linkNo, pp->bankIndex,
+                                                  scriptId);
+                        if (gen == NULL) {
+                            break;
+                        }
+                        gen->familyId = pp->scriptId;
+                        psCopyGeneratorData((PSParticle*)gen, pp->peopleObj);
+                        if (srcSRT != NULL) {
+                            if (pp->peopleObj != NULL &&
+                                (((PSGeneratorState*)pp->peopleObj)->angleFlags &
+                                 0x2000) != 0) {
+                                psChangeGeneratorAppSRT(gen, srcSRT);
+                            } else {
+                                psAttachGeneratorAppSRT(gen, srcSRT);
+                            }
+                        }
+
+                        gen->flags &= ~0x0E000000;
+                        gen->flags |= (u32)(phaseFlags & 7) << 25;
+
+                        dstSRT = (PSAppSRT*)gen->appSRT;
+                        if (srcSRT != NULL) {
+                            if (dstSRT != NULL) {
+                                gen->positionX = pp->positionX;
+                                gen->positionY = pp->positionY;
+                                gen->positionZ = pp->positionZ;
+                                if (dstSRT != srcSRT) {
+                                    dstSRT->rotationX = srcSRT->rotationX;
+                                    dstSRT->rotationY = srcSRT->rotationY;
+                                    dstSRT->rotationZ = srcSRT->rotationZ;
+                                }
+                            }
+                        } else {
+                            if (dstSRT != NULL) {
+                                dstSRT->rotationX = pp->positionX;
+                                dstSRT->rotationY = pp->positionY;
+                                dstSRT->rotationZ = pp->positionZ;
+                            }
+                            gen->positionX = pp->positionX;
+                            gen->positionY = pp->positionY;
+                            gen->positionZ = pp->positionZ;
+                        }
+
+                        if (dstSRT == srcSRT) {
+                            break;
+                        }
+                        if (srcSRT == NULL) {
+                            if (dstSRT == NULL) {
+                                break;
+                            }
+                            genPosUpdate(gen);
+                            gen->positionX -= dstSRT->rotationX;
+                            gen->positionY -= dstSRT->rotationY;
+                            gen->positionZ -= dstSRT->rotationZ;
+                        } else {
+                            genPosUpdate(srcSRT->owner);
+                            if (dstSRT != NULL) {
+                                genPosUpdate(gen);
+                                gen->positionX +=
+                                    srcSRT->rotationX - dstSRT->rotationX;
+                                gen->positionY +=
+                                    srcSRT->rotationY - dstSRT->rotationY;
+                                gen->positionZ +=
+                                    srcSRT->rotationZ - dstSRT->rotationZ;
+                            } else {
+                                gen->positionX += srcSRT->rotationX;
+                                gen->positionY += srcSRT->rotationY;
+                                gen->positionZ += srcSRT->rotationZ;
+                            }
+                        }
                         break;
                     }
 
@@ -2328,7 +2848,7 @@ PSParticle* psInterpretParticle0(PSParticle* pp, PSParticle* parentCtx) {
                         f32 rng;
                         stream += 4;
                         rng = fn_801ADC7C();
-                        pp->repeatCount = (u16)(base + (s32)(((s32)(range ^ 0x8000)) * rng));
+                        pp->repeatCount = (u16)(base + (s32)((f32)range * rng));
                         break;
                     }
 
@@ -2336,7 +2856,7 @@ PSParticle* psInterpretParticle0(PSParticle* pp, PSParticle* parentCtx) {
                     case 0xA7: {
                         u8 threshold = *stream++;
                         f32 rng = fn_801ADC7C();
-                        if (threshold < (s32)(0.5f * rng)) break;
+                        if (threshold < (s32)(lbl_8047D63C * rng)) break;
                         pp->repeatCount = 1;
                         delay = 1;
                         goto after_dispatch;
@@ -2368,16 +2888,79 @@ PSParticle* psInterpretParticle0(PSParticle* pp, PSParticle* parentCtx) {
                         break;
                     }
 
-                    /* ---- 0xAA: MODIFY_DIR_GEN_BASE (verified @ 0x80170844... entry
-                     * partially transcribed at 0x80170764) ---- */
+                    case 0xF5: {
+                        PSGeneratorState* gen =
+                            (PSGeneratorState*)pp->peopleObj;
+                        u16 oldFlags;
+
+                        if (gen == NULL || gen->appSRT == NULL) {
+                            break;
+                        }
+                        oldFlags = gen->angleFlags;
+                        gen->angleFlags = oldFlags | 0x2000;
+                        ((PSAppSRT*)gen->appSRT)->active = 0;
+                        if ((oldFlags & 0x2000) == 0) {
+                            genPosUpdate(gen);
+                        }
+                        break;
+                    }
+
+                    case 0xF6: {
+                        PSGeneratorState* gen =
+                            (PSGeneratorState*)pp->peopleObj;
+                        u16 oldFlags;
+
+                        if (gen == NULL || gen->appSRT == NULL) {
+                            break;
+                        }
+                        oldFlags = gen->angleFlags;
+                        gen->angleFlags = oldFlags | 0x1000;
+                        if ((oldFlags & 0x1000) == 0) {
+                            genPosUpdate(gen);
+                        }
+                        break;
+                    }
+
+                    /* ---- 0xAA: randomized child script ---- */
                     case 0xAA: {
-                        stream = getFloat(stream, &scratch[0]);
-                        stream = getFloat(stream, &scratch[1]);
-                        stream = getFloat(stream, &scratch[2]);
-                        stream = getFloat(stream, &scratch[3]);
-                        if (pp->peopleObj == NULL) break;
-                        modifyDirGenBase(pp, scratch[3], scratch[0], scratch[1],
-                                         scratch[2]);
+                        s32 scriptId = ((u16)stream[0] << 8) | stream[1];
+                        u16 range = ((u16)stream[2] << 8) | stream[3];
+                        u32* bank;
+
+                        stream += 4;
+                        scriptId += (s32)((f32)range * fn_801ADC7C());
+                        bank = (u32*)lbl_804527C8[pp->bankIndex];
+                        if (bank != NULL) {
+                            scriptId = bank[scriptId];
+                        }
+                        spawned = psGenerateParticleID0(pp, pp->linkNo,
+                            pp->bankIndex, scriptId, NULL);
+                        if (spawned == NULL) {
+                            break;
+                        }
+                        spawned->positionX = pp->positionX;
+                        spawned->positionY = pp->positionY;
+                        spawned->positionZ = pp->positionZ;
+                        spawned->scriptId = pp->scriptId;
+                        spawned->peopleObj = pp->peopleObj;
+                        if (pp->peopleObj != NULL) {
+                            (*(u32*)((u8*)pp->peopleObj + 0x4C))++;
+                        }
+                        if (*(u32*)((u8*)pp->peopleObj + 4) & 0x20000000) {
+                            spawned->flags |= 0x20000000;
+                        }
+                        psApplyVelocityLocalRotation(spawned);
+                        if (pp->parentObj != NULL) {
+                            if (pp->peopleObj != NULL &&
+                                (*(u16*)((u8*)pp->peopleObj + 0x12) & 0x40)) {
+                                psChangeParticleAppSRT(spawned,
+                                    (PSAppSRT*)pp->parentObj);
+                            } else {
+                                psAttachParticleAppSRT(spawned,
+                                    (PSAppSRT*)pp->parentObj);
+                            }
+                        }
+                        psInterpretParticle0(spawned, pp);
                         break;
                     }
 
@@ -2563,15 +3146,17 @@ PSParticle* psInterpretParticle0(PSParticle* pp, PSParticle* parentCtx) {
                         break;
                     }
 
-                    case 0xBA: {
-                        u16 tableIndex = ((u16)stream[0] << 8) | stream[1];
-                        u32* bank = (u32*)lbl_804527C8[pp->bankIndex];
-                        u16 scriptId = bank != NULL ?
-                            (u16)bank[tableIndex] : tableIndex;
+                    case 0xF2: {
+                        s32 scriptId = ((u16)stream[0] << 8) | stream[1];
+                        u32* bank;
 
                         stream += 2;
-                        spawned = psGenerateParticleID0(pp, pp->linkNo,
-                            pp->bankIndex, scriptId, NULL);
+                        bank = (u32*)lbl_804527C8[pp->bankIndex];
+                        if (bank != NULL) {
+                            scriptId = bank[scriptId];
+                        }
+                        spawned = psGenerateParticleID0(
+                            pp, pp->linkNo, pp->bankIndex, scriptId, NULL);
                         if (spawned == NULL) {
                             break;
                         }
@@ -2593,14 +3178,48 @@ PSParticle* psInterpretParticle0(PSParticle* pp, PSParticle* parentCtx) {
                         if (pp->parentObj != NULL) {
                             if (pp->peopleObj != NULL &&
                                 (*(u16*)((u8*)pp->peopleObj + 0x12) & 0x40)) {
-                                psChangeParticleAppSRT(spawned,
-                                    (PSAppSRT*)pp->parentObj);
+                                psChangeParticleAppSRT(
+                                    spawned, (PSAppSRT*)pp->parentObj);
                             } else {
-                                psAttachParticleAppSRT(spawned,
-                                    (PSAppSRT*)pp->parentObj);
+                                psAttachParticleAppSRT(
+                                    spawned, (PSAppSRT*)pp->parentObj);
                             }
                         }
                         psInterpretParticle0(spawned, pp);
+                        break;
+                    }
+
+                    case 0xBA: {
+                        if (pp->color1Timer != 0) {
+                            s32 scale = ((u32)pp->color1Countdown << 16) /
+                                        pp->color1Timer;
+                            pp->color1.r = (u8)(((pp->color1Target.r << 16) +
+                                scale * (pp->color1.r - pp->color1Target.r)) >> 16);
+                            pp->color1.g = (u8)(((pp->color1Target.g << 16) +
+                                scale * (pp->color1.g - pp->color1Target.g)) >> 16);
+                            pp->color1.b = (u8)(((pp->color1Target.b << 16) +
+                                scale * (pp->color1.b - pp->color1Target.b)) >> 16);
+                            pp->color1.a = (u8)(((pp->color1Target.a << 16) +
+                                scale * (pp->color1.a - pp->color1Target.a)) >> 16);
+                        }
+                        scratch[0] = fn_801ADC7C();
+                        pp->color1Target.r = U8ClampAdd(pp->color1Target.r,
+                            (s8)stream[0] * 2 * scratch[0]);
+                        scratch[0] = fn_801ADC7C();
+                        pp->color1Target.g = U8ClampAdd(pp->color1Target.g,
+                            (s8)stream[1] * 2 * scratch[0]);
+                        scratch[0] = fn_801ADC7C();
+                        pp->color1Target.b = U8ClampAdd(pp->color1Target.b,
+                            (s8)stream[2] * 2 * scratch[0]);
+                        scratch[0] = fn_801ADC7C();
+                        pp->color1Target.a = U8ClampAdd(pp->color1Target.a,
+                            (s8)stream[3] * 2 * scratch[0]);
+                        stream += 4;
+                        if (pp->color1Timer == 0) {
+                            pp->color1 = pp->color1Target;
+                        } else {
+                            pp->color1Countdown = pp->color1Timer;
+                        }
                         break;
                     }
 
@@ -2912,11 +3531,12 @@ PSParticle* psInterpretParticle0(PSParticle* pp, PSParticle* parentCtx) {
                         break;
 
                     case 0xE8:
-                        stream = getFloat(stream, &pp->alphaScale);
-                        if (pp->alphaScale < lbl_8047D630) {
+                        stream = getFloat(stream, &scratch[0]);
+                        if (scratch[0] < lbl_8047D630) {
                             pp->flags &= ~0x100000;
                         } else {
                             pp->flags |= 0x100000;
+                            pp->alphaScale = scratch[0];
                         }
                         break;
 
@@ -3120,7 +3740,8 @@ PSParticle* psInterpretParticle0(PSParticle* pp, PSParticle* parentCtx) {
                                 psAttachGeneratorAppSRT((PSGeneratorState*)gen, (PSAppSRT*)pp->parentObj);
                             }
                         }
-                        gen->flags = (gen->flags & ~0x1F8) | ((loopArg & 0x7) << 3);
+                        gen->flags &= ~0x0E000000;
+                        gen->flags |= (loopArg & 0x7) << 25;
                         /* position blend between pp and gen->parentObj: left as
                          * asm-verified but not transcribed here for brevity. */
                         break;
@@ -3273,9 +3894,9 @@ PSParticle* psInterpretParticle0(PSParticle* pp, PSParticle* parentCtx) {
         }
     }
 
-    _psListGetNext(pp);
-    return pp;
+    return _psListGetNext(pp);
 }
+#pragma pop
 
 void psApplyOffsetLocalRotation(PSParticle* pp, f32* vec3) {
     typedef f32 Mtx[3][4];
@@ -3383,33 +4004,57 @@ u8 U8ClampAdd(u8 cur, f32 delta) {
  * display-space composition is still asm-only; this verified prefix is the
  * entry block at 0x8016CE2C.
  */
+#pragma push
+#pragma optimization_level 0
 void psDispSubAppSRT(PSParticle* pp, Mtx parentMatrix) {
-    PSAppSRT* appSRT = (PSAppSRT*)pp->parentObj;
+    void psDispSubMakePolygon(PSParticle*, void*,
+                              f32, f32, f32, f32, f32, f32,
+                              f32, f32, f32, f32, f32, f32);
+    extern f32 lbl_8047D5E8;
+    extern f32 lbl_8047D5EC;
+    extern f32 lbl_8047D5F0;
+    extern f64 lbl_8047D5F8;
+    PSGeneratorState* generator = (PSGeneratorState*)pp->peopleObj;
     Mtx appMatrix;
+    Mtx scaleMatrix;
+    Mtx rotation;
     Vec velocity;
     Vec position;
+    Vec previous;
+    Vec axisA;
+    Vec axisB;
+    Vec normal;
+    f32 axisXX;
+    f32 axisXY;
+    f32 axisXZ;
+    f32 axisYX;
+    f32 axisYY;
+    f32 axisYZ;
+    f32 angle;
 
-    if (appSRT->flags != lbl_80478C30) {
-        if (appSRT->type != 2) {
-            HSD_MtxSRT(appSRT->matrix, &appSRT->scaleX,
-                       &appSRT->translationX, &appSRT->rotationX, NULL);
+    if (((PSAppSRT*)pp->parentObj)->flags != lbl_80478C30) {
+        if (((PSAppSRT*)pp->parentObj)->type != 2) {
+            HSD_MtxSRT(((PSAppSRT*)pp->parentObj)->matrix,
+                       &((PSAppSRT*)pp->parentObj)->scaleX,
+                       &((PSAppSRT*)pp->parentObj)->translationX,
+                       &((PSAppSRT*)pp->parentObj)->rotationX, NULL);
         }
-        if (appSRT->type == 1) {
-            appSRT->type = 2;
+        if (((PSAppSRT*)pp->parentObj)->type == 1) {
+            ((PSAppSRT*)pp->parentObj)->type = 2;
         }
     }
 
-    appSRT->flags = lbl_80478C30;
-    PSMTXCopy(appSRT->matrix, appMatrix);
-    appMatrix[0][3] -= appSRT->rotationX;
-    appMatrix[1][3] -= appSRT->rotationY;
-    appMatrix[2][3] -= appSRT->rotationZ;
+    ((PSAppSRT*)pp->parentObj)->flags = lbl_80478C30;
+    PSMTXCopy(((PSAppSRT*)pp->parentObj)->matrix, appMatrix);
+    appMatrix[0][3] -= ((PSAppSRT*)pp->parentObj)->rotationX;
+    appMatrix[1][3] -= ((PSAppSRT*)pp->parentObj)->rotationY;
+    appMatrix[2][3] -= ((PSAppSRT*)pp->parentObj)->rotationZ;
 
     velocity.x = pp->velocityX;
     velocity.y = pp->velocityY;
     velocity.z = pp->velocityZ;
     PSMTXMultVec(appMatrix, &velocity, &velocity);
-    if (appSRT->active != 0 && (pp->flags & 4) == 0) {
+    if (((PSAppSRT*)pp->parentObj)->active != 0 && (pp->flags & 4) == 0) {
         PSMTXMultVec((const f32(*)[4])lbl_80452DE8,
                      &velocity, &velocity);
     }
@@ -3417,19 +4062,293 @@ void psDispSubAppSRT(PSParticle* pp, Mtx parentMatrix) {
     position.x = pp->positionX;
     position.y = pp->positionY;
     position.z = pp->positionZ;
-    if (appSRT->active != 0) {
+    if (((PSAppSRT*)pp->parentObj)->active != 0) {
         PSMTXMultVec(appMatrix, &position, &position);
         PSMTXMultVec((const f32(*)[4])lbl_80452DE8,
                      &position, &position);
-        position.x += appSRT->rotationX;
-        position.y += appSRT->rotationY;
-        position.z += appSRT->rotationZ;
+        position.x += ((PSAppSRT*)pp->parentObj)->rotationX;
+        position.y += ((PSAppSRT*)pp->parentObj)->rotationY;
+        position.z += ((PSAppSRT*)pp->parentObj)->rotationZ;
     } else {
-        PSMTXMultVec(appSRT->matrix, &position, &position);
+        PSMTXMultVec(((PSAppSRT*)pp->parentObj)->matrix,
+                     &position, &position);
     }
 
+    if (parentMatrix != NULL) {
+        PSMTXScale(scaleMatrix, ((PSAppSRT*)pp->parentObj)->scaleX,
+                    ((PSAppSRT*)pp->parentObj)->scaleY, 1.0f);
+        PSMTXConcat((const f32(*)[4])(lbl_80452DE8 + 0x7C),
+                    scaleMatrix, scaleMatrix);
+        axisXX = scaleMatrix[0][0] * pp->lerpValue;
+        axisXY = -scaleMatrix[0][1] * pp->lerpValue;
+        axisXZ = scaleMatrix[1][0] * pp->lerpValue;
+        axisYX = -scaleMatrix[1][1] * pp->lerpValue;
+        axisYY = scaleMatrix[2][0] * pp->lerpValue;
+        axisYZ = -scaleMatrix[2][1] * pp->lerpValue;
+    } else {
+        f32* view = (f32*)(lbl_80452DE8 + 0xAC);
+
+        axisA.x = ((PSAppSRT*)pp->parentObj)->scaleX + view[3];
+        axisA.y = ((PSAppSRT*)pp->parentObj)->scaleY + view[7];
+        axisA.z = view[11];
+        axisB.x = axisA.x;
+        axisB.y = -((PSAppSRT*)pp->parentObj)->scaleY + view[7];
+        axisB.z = axisA.z;
+        PSMTXMultVec((const f32(*)[4])(lbl_80452DE8 + 0x7C),
+                     &axisA, &axisA);
+        PSMTXMultVec((const f32(*)[4])(lbl_80452DE8 + 0x7C),
+                     &axisB, &axisB);
+        axisXX = axisA.x * pp->lerpValue;
+        axisXZ = axisA.y * pp->lerpValue;
+        axisYY = axisA.z * pp->lerpValue;
+        axisXY = axisB.x * pp->lerpValue;
+        axisYX = axisB.y * pp->lerpValue;
+        axisYZ = axisB.z * pp->lerpValue;
+    }
+
+    if (generator != NULL && (generator->generatorFlags & 0x20)) {
+        axisXX *= generator->generatorData[3];
+        axisXY *= generator->generatorData[3];
+        axisXZ *= generator->generatorData[4];
+        axisYX *= generator->generatorData[4];
+        axisYY *= generator->generatorData[5];
+        axisYZ *= generator->generatorData[5];
+    }
+
+    if ((pp->flags & 0x00300000) == 0) {
+        goto use_heading;
+    }
+
+    if (*(f32*)(lbl_80452DE8 + 0x60) == lbl_8047D5C8) {
+        f32* view;
+        f32* projection;
+        f32 w;
+        f32 previousW;
+        f32 invW;
+        f32 invPreviousW;
+        f32 projectedX;
+        f32 projectedY;
+        f32 previousX;
+        f32 previousY;
+
+        if (pp->flags & 4) {
+            if (generator != NULL) {
+                f32 sinScale = (f32)sin(pp->scaleFactor);
+                f32 sinFriction = (f32)sin(pp->frictionFactor);
+                f32 cosScale = (f32)cos(pp->scaleFactor);
+                f32 cosFriction = (f32)cos(pp->frictionFactor);
+                f32* people = (f32*)generator;
+                f32 horizontal = pp->velocityZ - people[21];
+                f32 vertical = pp->velocityX - people[14];
+                f32 peopleScale = people[17];
+                f32 peopleAngle = people[18];
+                f32 magnitude;
+                f32 cosVertical;
+                f32 sinVertical;
+
+                if (peopleScale < lbl_8047D5C8) {
+                    peopleScale = -peopleScale;
+                }
+                if (peopleAngle < lbl_8047D5C8) {
+                    peopleAngle = -peopleAngle;
+                }
+                magnitude = (horizontal * (f32)tan(peopleAngle) + peopleScale) *
+                    pp->velocityY;
+                cosVertical = magnitude * (f32)cos(vertical);
+                sinVertical = magnitude * (f32)sin(vertical);
+                previous.x = people[8] + cosVertical * cosFriction +
+                    horizontal * sinFriction;
+                previous.y = people[9] + cosFriction *
+                    (horizontal * sinScale) + sinFriction *
+                    (-cosVertical * sinScale) + sinVertical * cosScale;
+                previous.z = people[10] + cosFriction *
+                    (horizontal * cosScale) + sinFriction *
+                    (-cosVertical * cosScale) - sinVertical * sinScale;
+            } else {
+                previous.x = pp->positionX;
+                previous.y = pp->positionY;
+                previous.z = pp->positionZ;
+            }
+
+            if (((PSAppSRT*)pp->parentObj)->active != 0) {
+                PSMTXMultVec(appMatrix, &previous, &previous);
+                PSMTXMultVec((const f32(*)[4])lbl_80452DE8,
+                             &previous, &previous);
+                previous.x += ((PSAppSRT*)pp->parentObj)->rotationX;
+                previous.y += ((PSAppSRT*)pp->parentObj)->rotationY;
+                previous.z += ((PSAppSRT*)pp->parentObj)->rotationZ;
+            } else {
+                PSMTXMultVec(((PSAppSRT*)pp->parentObj)->matrix,
+                             &previous, &previous);
+            }
+        } else {
+            previous.x = position.x - velocity.x;
+            previous.y = position.y - velocity.y;
+            previous.z = position.z - velocity.z;
+        }
+
+        view = (f32*)(lbl_80452DE8 + 0xAC);
+        w = view[8] * position.x + view[9] * position.y +
+            view[10] * position.z + view[11];
+        if (w == lbl_8047D5C8) {
+            goto use_heading;
+        }
+        invW = lbl_8047D5E8 / w;
+        previousW = view[8] * previous.x + view[9] * previous.y +
+            view[10] * previous.z + view[11];
+        if (previousW == lbl_8047D5C8) {
+            goto use_heading;
+        }
+        invPreviousW = lbl_8047D5E8 / previousW;
+        projection = (f32*)(lbl_80452DE8 + 0x30);
+        projectedX = (projection[0] * position.x +
+            projection[1] * position.y + projection[2] * position.z +
+            projection[3]) * invW;
+        projectedY = (projection[4] * position.x +
+            projection[5] * position.y + projection[6] * position.z +
+            projection[7]) * invW;
+        previousX = (projection[0] * previous.x +
+            projection[1] * previous.y + projection[2] * previous.z +
+            projection[3]) * invPreviousW;
+        previousY = (projection[4] * previous.x +
+            projection[5] * previous.y + projection[6] * previous.z +
+            projection[7]) * invPreviousW;
+        projectedX -= previousX;
+        projectedY -= previousY;
+        if (__fabs(projectedY) < lbl_80478AC8) {
+            angle = projectedX >= lbl_8047D5C8 ?
+                lbl_8047D5EC : lbl_8047D5F0;
+        } else {
+            angle = (f32)atan2(projectedX, projectedY);
+        }
+    } else {
+        f32* projection = (f32*)(lbl_80452DE8 + 0x30);
+        f32 dx;
+        f32 dy;
+        f32 dz;
+        f32 projectedX;
+        f32 projectedY;
+
+        if (pp->flags & 4) {
+            if (generator != NULL) {
+                f32 sinScale = (f32)sin(pp->scaleFactor);
+                f32 sinFriction = (f32)sin(pp->frictionFactor);
+                f32 cosScale = (f32)cos(pp->scaleFactor);
+                f32 cosFriction = (f32)cos(pp->frictionFactor);
+                f32* people = (f32*)generator;
+                f32 horizontal = pp->velocityZ - people[21];
+                f32 vertical = pp->velocityX - people[14];
+                f32 peopleScale = people[17];
+                f32 peopleAngle = people[18];
+                f32 magnitude;
+                f32 cosVertical;
+                f32 sinVertical;
+
+                if (peopleScale < lbl_8047D5C8) {
+                    peopleScale = -peopleScale;
+                }
+                if (peopleAngle < lbl_8047D5C8) {
+                    peopleAngle = -peopleAngle;
+                }
+                magnitude = (horizontal * (f32)tan(peopleAngle) + peopleScale) *
+                    pp->velocityY;
+                cosVertical = magnitude * (f32)cos(vertical);
+                sinVertical = magnitude * (f32)sin(vertical);
+                previous.x = people[8] + cosVertical * cosFriction +
+                    horizontal * sinFriction;
+                previous.y = people[9] + cosFriction *
+                    (horizontal * sinScale) + sinFriction *
+                    (-cosVertical * sinScale) + sinVertical * cosScale;
+                previous.z = people[10] + cosFriction *
+                    (horizontal * cosScale) + sinFriction *
+                    (-cosVertical * cosScale) - sinVertical * sinScale;
+            } else {
+                previous.x = pp->positionX;
+                previous.y = pp->positionY;
+                previous.z = pp->positionZ;
+            }
+
+            if (((PSAppSRT*)pp->parentObj)->active != 0) {
+                PSMTXMultVec(appMatrix, &previous, &previous);
+                PSMTXMultVec((const f32(*)[4])lbl_80452DE8,
+                             &previous, &previous);
+                previous.x += ((PSAppSRT*)pp->parentObj)->rotationX;
+                previous.y += ((PSAppSRT*)pp->parentObj)->rotationY;
+                previous.z += ((PSAppSRT*)pp->parentObj)->rotationZ;
+            } else {
+                PSMTXMultVec(((PSAppSRT*)pp->parentObj)->matrix,
+                             &previous, &previous);
+            }
+            dx = position.x - previous.x;
+            dy = position.y - previous.y;
+            dz = position.z - previous.z;
+        } else {
+            dx = velocity.x;
+            dy = velocity.y;
+            dz = velocity.z;
+        }
+
+        projectedX = projection[0] * dx + projection[1] * dy +
+            projection[2] * dz;
+        projectedY = projection[4] * dx + projection[5] * dy +
+            projection[6] * dz;
+        if (__fabs(projectedY) < lbl_80478AC8) {
+            angle = projectedX >= lbl_8047D5C8 ?
+                lbl_8047D5EC : lbl_8047D5F0;
+        } else {
+            angle = (f32)atan2(projectedX, projectedY);
+        }
+    }
+
+    if (pp->flags & 0x00200000) {
+        angle += pp->heading;
+    }
+    goto rotate_axes;
+
+use_heading:
+    angle = pp->heading;
+
+rotate_axes:
+    if (__fabs(angle) > lbl_8047D5F8) {
+        f32 firstX;
+        f32 firstY;
+        f32 firstZ;
+        f32 secondX;
+        f32 secondY;
+        f32 secondZ;
+
+        normal.x = axisXZ * axisYZ - axisYY * axisYX;
+        normal.y = axisYY * axisXY - axisXX * axisYZ;
+        normal.z = axisXX * axisYX - axisXZ * axisXY;
+        PSMTXRotAxisRad(rotation, &normal, angle);
+        firstX = rotation[0][0] * axisXX + rotation[0][1] * axisXZ +
+            rotation[0][2] * axisYY;
+        firstY = rotation[1][0] * axisXX + rotation[1][1] * axisXZ +
+            rotation[1][2] * axisYY;
+        firstZ = rotation[2][0] * axisXX + rotation[2][1] * axisXZ +
+            rotation[2][2] * axisYY;
+        secondX = rotation[0][0] * axisXY + rotation[0][1] * axisYX +
+            rotation[0][2] * axisYZ;
+        secondY = rotation[1][0] * axisXY + rotation[1][1] * axisYX +
+            rotation[1][2] * axisYZ;
+        secondZ = rotation[2][0] * axisXY + rotation[2][1] * axisYX +
+            rotation[2][2] * axisYZ;
+        axisXX = firstX;
+        axisXZ = firstY;
+        axisYY = firstZ;
+        axisXY = secondX;
+        axisYX = secondY;
+        axisYZ = secondZ;
+    }
+
+    psDispSubMakePolygon(pp, parentMatrix,
+                         position.x, position.y, position.z,
+                         velocity.x, velocity.y, velocity.z,
+                         axisXX, axisXZ, axisYY,
+                         axisXY, axisYX, axisYZ);
 }
 
+#pragma pop
 void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
                           f32 centerX, f32 centerY, f32 centerZ,
                           f32 velocityX, f32 velocityY, f32 velocityZ,
@@ -3441,6 +4360,8 @@ void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
  * camera/people-relative orientation modes remain asm-only; this covers the
  * direct basis path and target-verified generator scaling.
  */
+#pragma push
+#pragma optimization_level 2
 void psDispSub(PSParticle* pp, void* polygonData) {
     f32 axisXX;
     f32 axisXY;
@@ -3478,6 +4399,132 @@ void psDispSub(PSParticle* pp, void* polygonData) {
         axisYZ *= generator->generatorData[5];
     }
 
+    if (pp->flags & 0x00300000) {
+        f32 angle = pp->heading;
+
+        {
+            f32* camera = (f32*)(lbl_80452DE8 + 0x30);
+            f32 dx;
+            f32 dy;
+            f32 dz;
+
+            if (generator != NULL && (pp->flags & 4)) {
+                f32 sinScale = (f32)sin(pp->scaleFactor);
+                f32 sinFriction = (f32)sin(pp->frictionFactor);
+                f32 cosScale = (f32)cos(pp->scaleFactor);
+                f32 cosFriction = (f32)cos(pp->frictionFactor);
+                f32* people = (f32*)generator;
+                f32 horizontal = pp->velocityZ - people[21];
+                f32 vertical = pp->velocityX - people[14];
+                f32 peopleScale = people[17];
+                f32 peopleAngle = people[18];
+                f32 magnitude;
+
+                if (peopleScale < 0.0f) {
+                    peopleScale = -peopleScale;
+                }
+                if (peopleAngle < 0.0f) {
+                    peopleAngle = -peopleAngle;
+                }
+                magnitude = (horizontal * (f32)tan(peopleAngle) + peopleScale) * pp->velocityY;
+                dx = people[8] + vertical * cosFriction + horizontal * sinFriction;
+                dy = people[9] + cosFriction * (horizontal * sinScale) +
+                    sinFriction * (-magnitude * sinScale) +
+                    magnitude * (f32)sin(vertical) * cosScale;
+                dz = people[10] + cosFriction * (horizontal * cosScale) +
+                    sinFriction * (-magnitude * cosScale) -
+                    magnitude * (f32)sin(vertical) * sinScale;
+            } else {
+                dx = pp->positionX;
+                dy = pp->positionY;
+                dz = pp->positionZ;
+            }
+
+            dx = pp->positionX - dx;
+            dy = pp->positionY - dy;
+            dz = pp->positionZ - dz;
+
+            if (*(f32*)(lbl_80452DE8 + 0x60) == 0.0f) {
+                f32 w = camera[9] + camera[6] * pp->positionX +
+                    camera[7] * pp->positionY + camera[8] * pp->positionZ;
+                f32 previousW = camera[9] + camera[6] * dx +
+                    camera[7] * dy + camera[8] * dz;
+
+                if (w != 0.0f && previousW != 0.0f) {
+                    f32 invW = 1.0f / w;
+                    f32 invPreviousW = 1.0f / previousW;
+                    f32* projection = (f32*)(lbl_80452DE8 + 0x30);
+                    f32 screenX = (projection[1] * pp->positionX +
+                        projection[4] * pp->positionY + projection[7] * pp->positionZ +
+                        projection[10]) * invW;
+                    f32 screenY = (projection[2] * pp->positionX +
+                        projection[5] * pp->positionY + projection[8] * pp->positionZ +
+                        projection[11]) * invW;
+                    f32 previousX = (projection[1] * dx + projection[4] * dy +
+                        projection[7] * dz + projection[10]) * invPreviousW;
+                    f32 previousY = (projection[2] * dx + projection[5] * dy +
+                        projection[8] * dz + projection[11]) * invPreviousW;
+
+                    angle = (f32)atan2(screenY - previousY, screenX - previousX);
+                }
+            } else {
+                f32 screenX = camera[0] * pp->positionX + camera[3] * pp->positionY +
+                    camera[6] * pp->positionZ;
+                f32 screenY = camera[1] * pp->positionX + camera[4] * pp->positionY +
+                    camera[7] * pp->positionZ;
+                f32 previousX = camera[0] * dx + camera[3] * dy + camera[6] * dz;
+                f32 previousY = camera[1] * dx + camera[4] * dy + camera[7] * dz;
+
+                angle = (f32)atan2(screenY - previousY, screenX - previousX);
+            }
+            if (pp->flags & 0x00200000) {
+                angle += pp->heading;
+            }
+        }
+
+        if (angle > 0.000001f || angle < -0.000001f) {
+            Mtx rotation;
+            Vec normal;
+            Vec first;
+            Vec second;
+            f32 firstX;
+            f32 firstY;
+            f32 firstZ;
+            f32 secondX;
+            f32 secondY;
+            f32 secondZ;
+
+            first.x = axisXX;
+            first.y = axisXZ;
+            first.z = axisYY;
+            second.x = axisXY;
+            second.y = axisYX;
+            second.z = axisYZ;
+            normal.x = first.y * second.z - first.z * second.y;
+            normal.y = first.z * second.x - first.x * second.z;
+            normal.z = first.x * second.y - first.y * second.x;
+            PSMTXRotAxisRad(rotation, &normal, angle);
+            firstX = rotation[0][0] * first.x + rotation[0][1] * first.y +
+                rotation[0][2] * first.z;
+            firstY = rotation[1][0] * first.x + rotation[1][1] * first.y +
+                rotation[1][2] * first.z;
+            firstZ = rotation[2][0] * first.x + rotation[2][1] * first.y +
+                rotation[2][2] * first.z;
+            secondX = rotation[0][0] * second.x + rotation[0][1] * second.y +
+                rotation[0][2] * second.z;
+            secondY = rotation[1][0] * second.x + rotation[1][1] * second.y +
+                rotation[1][2] * second.z;
+            secondZ = rotation[2][0] * second.x + rotation[2][1] * second.y +
+                rotation[2][2] * second.z;
+            axisXX = firstX;
+            axisXZ = firstY;
+            axisYY = firstZ;
+            axisXY = secondX;
+            axisYX = secondY;
+            axisYZ = secondZ;
+        }
+    }
+
     psDispSubMakePolygon(pp, polygonData,
                          pp->positionX, pp->positionY, pp->positionZ,
                          pp->velocityX, pp->velocityY, pp->velocityZ,
@@ -3488,7 +4535,10 @@ void psDispSub(PSParticle* pp, void* polygonData) {
  * Configures point-trail raster width. Geometry/color emission remains
  * asm-only; this entry block is verified at 0x8016D8EC-0x8016D954.
  */
-void psDispSubPointTrail(PSParticle* pp) {
+#pragma pop
+#pragma push
+#pragma optimization_level 0
+PSParticle* psDispSubPointTrail(PSParticle* pp) {
     f32 widthValue;
     s32 width;
     u8 cachedWidth;
@@ -3515,11 +4565,42 @@ void psDispSubPointTrail(PSParticle* pp) {
 
     if (pp->flags & 4) {
         if (pp->peopleObj != NULL) {
-            return;
+            f32 sinScale = (f32)sin(pp->scaleFactor);
+            f32 sinFriction = (f32)sin(pp->frictionFactor);
+            f32 cosScale = (f32)cos(pp->scaleFactor);
+            f32 cosFriction = (f32)cos(pp->frictionFactor);
+            f32* people = (f32*)pp->peopleObj;
+            f32 horizontal = pp->velocityZ - people[21];
+            f32 vertical = pp->velocityX - people[14];
+            f32 peopleScale = people[17];
+            f32 peopleAngle = people[18];
+            f32 magnitude;
+            f32 magnitudeCos;
+            f32 magnitudeSin;
+
+            if (peopleScale < 0.0f) {
+                peopleScale = -peopleScale;
+            }
+            if (peopleAngle < 0.0f) {
+                peopleAngle = -peopleAngle;
+            }
+            magnitude = (horizontal * (f32)tan(peopleAngle) + peopleScale) *
+                        pp->velocityY;
+            magnitudeCos = magnitude * (f32)cos(vertical);
+            magnitudeSin = magnitude * (f32)sin(vertical);
+            previous.x = people[8] + magnitudeCos * cosFriction +
+                         horizontal * sinFriction;
+            previous.y = people[9] + cosFriction * (horizontal * sinScale) +
+                         sinFriction * (-magnitudeCos * sinScale) +
+                         magnitudeSin * cosScale;
+            previous.z = people[10] + cosFriction * (horizontal * cosScale) +
+                         sinFriction * (-magnitudeCos * cosScale) -
+                         magnitudeSin * sinScale;
+        } else {
+            previous.x = pp->positionX;
+            previous.y = pp->positionY;
+            previous.z = pp->positionZ;
         }
-        previous.x = pp->positionX;
-        previous.y = pp->positionY;
-        previous.z = pp->positionZ;
     } else {
         previous.x = pp->positionX - pp->velocityX;
         previous.y = pp->positionY - pp->velocityY;
@@ -3593,6 +4674,7 @@ void psDispSubPointTrail(PSParticle* pp) {
     if (pp->flags & 0x400) {
         GX_FIFO_U8 = 1;
     }
+    return pp;
 }
 
 /*
@@ -3600,11 +4682,17 @@ void psDispSubPointTrail(PSParticle* pp) {
  * velocity.  Point raster emission remains to be decompiled; this is the
  * verified transform prefix at 0x8016DD68-0x8016DF14.
  */
+#pragma pop
+#pragma push
+#pragma optimization_level 0
 void psDispSubAPPSRTPoint(PSParticle* pp) {
     PSAppSRT* appSRT = (PSAppSRT*)pp->parentObj;
     Mtx appMatrix;
     Vec velocity;
     Vec position;
+    f32 widthValue;
+    s32 width;
+    u8 rasterWidth;
 
     if (lbl_8047B12C != 0) {
         lbl_8047B12C = 0;
@@ -3649,11 +4737,11 @@ void psDispSubAPPSRTPoint(PSParticle* pp) {
     }
 
     {
-        f32 widthValue = pp->lerpValue > lbl_8047D5E0
+        widthValue = pp->lerpValue > lbl_8047D5E0
             ? lbl_8047D5D8
             : lbl_8047D5DC * pp->lerpValue;
-        s32 width = (s32)widthValue;
-        u8 rasterWidth = (u8)width;
+        width = (s32)widthValue;
+        rasterWidth = (u8)width;
 
         if (pp->flags & 0x100000) {
             if (lbl_8047B164 != rasterWidth) {
@@ -3665,7 +4753,117 @@ void psDispSubAPPSRTPoint(PSParticle* pp) {
             fn_800B944C(width, 5);
         }
     }
+
+    {
+        Vec previous;
+        PSColor color;
+
+        if (pp->flags & 4) {
+            if (pp->peopleObj != NULL) {
+                f32* people = (f32*)pp->peopleObj;
+                f32 sinScale = sin(pp->scaleFactor);
+                f32 sinFriction = sin(pp->frictionFactor);
+                f32 cosScale = cos(pp->scaleFactor);
+                f32 cosFriction = cos(pp->frictionFactor);
+                f32 deltaZ = pp->velocityZ - people[21];
+                f32 deltaX = pp->velocityX - people[14];
+                f32 magnitude = (deltaZ * tan(fabsf(people[18])) + fabsf(people[17])) * pp->velocityY;
+                f32 magnitudeCos = magnitude * (f32)cos(deltaX);
+                f32 magnitudeSin = magnitude * (f32)sin(deltaX);
+                Vec offset;
+
+                offset.x = people[8] + magnitudeCos * cosFriction +
+                    deltaZ * sinFriction;
+                offset.y = people[9] + cosFriction * (deltaZ * sinScale) +
+                    sinFriction * (-magnitudeCos * sinScale) +
+                    magnitudeSin * cosScale;
+                offset.z = people[10] + cosFriction * (deltaZ * cosScale) +
+                    sinFriction * (-magnitudeCos * cosScale) -
+                    magnitudeSin * sinScale;
+                HSD_MtxSRT(appSRT->matrix, &appSRT->scaleX,
+                           &appSRT->translationX, &appSRT->rotationX, NULL);
+                PSMTXMultVec(appSRT->matrix, &offset, &offset);
+                previous.x = position.x - offset.x;
+                previous.y = position.y - offset.y;
+                previous.z = position.z - offset.z;
+            } else {
+                previous.x = pp->positionX;
+                previous.y = pp->positionY;
+                previous.z = pp->positionZ;
+            }
+        } else {
+            previous.x = position.x - velocity.x;
+            previous.y = position.y - velocity.y;
+            previous.z = position.z - velocity.z;
+        }
+
+        switch (pp->flags & 0x80000080) {
+        case 0:
+            if (pp->color1Timer != 0) {
+                s32 step = ((s32)pp->color1Countdown << 16) / pp->color1Timer;
+                color.r = (((s32)pp->color1Target.r << 16) + step * ((s32)pp->color1.r - (s32)pp->color1Target.r)) >> 16;
+                color.g = (((s32)pp->color1Target.g << 16) + step * ((s32)pp->color1.g - (s32)pp->color1Target.g)) >> 16;
+                color.b = (((s32)pp->color1Target.b << 16) + step * ((s32)pp->color1.b - (s32)pp->color1Target.b)) >> 16;
+                color.a = (((s32)pp->color1Target.a << 16) + step * ((s32)pp->color1.a - (s32)pp->color1Target.a)) >> 16;
+            } else {
+                color = pp->color1;
+            }
+            break;
+        case 0x80:
+        case 0x80000080:
+            color.r = color.g = color.b = color.a = 0xFF;
+            break;
+        default:
+            return;
+        }
+
+        fn_800B7D3C();
+        fn_800B7874(9, 1);
+        fn_800B7874(11, 1);
+        if (pp->flags & 0x400) {
+            fn_800B7874(13, 2);
+            fn_800B928C(0xA8, 2, 2);
+        } else {
+            fn_800B928C(0xA8, 3, 2);
+        }
+
+        GX_FIFO_F32 = previous.x;
+        GX_FIFO_F32 = previous.y;
+        GX_FIFO_F32 = previous.z;
+        GX_FIFO_U8 = color.r;
+        GX_FIFO_U8 = color.g;
+        GX_FIFO_U8 = color.b;
+        GX_FIFO_U8 = (u8)(color.a * pp->alphaScale);
+        if (pp->flags & 0x400) {
+            GX_FIFO_U8 = 0;
+        }
+
+        GX_FIFO_F32 = position.x;
+        GX_FIFO_F32 = position.y;
+        GX_FIFO_F32 = position.z;
+        GX_FIFO_U8 = color.r;
+        GX_FIFO_U8 = color.g;
+        GX_FIFO_U8 = color.b;
+        GX_FIFO_U8 = color.a;
+        if (pp->flags & 0x400) {
+            GX_FIFO_U8 = 1;
+        }
+
+        if ((pp->flags & 0x400) == 0) {
+            if (lbl_8047B168 != rasterWidth) {
+                lbl_8047B168 = rasterWidth;
+                fn_800B944C(width, 5);
+            }
+            fn_800B7D3C();
+            fn_800B7874(9, 1);
+            fn_800B928C(0xB8, 1, 1);
+            GX_FIFO_F32 = position.x;
+            GX_FIFO_F32 = position.y;
+            GX_FIFO_F32 = position.z;
+        }
+    }
 }
+#pragma pop
 
 /*
  * Allocates and links a generator after validating its bank/script tuple.
@@ -3673,13 +4871,28 @@ void psDispSubAPPSRTPoint(PSParticle* pp) {
  * validation and pool/list prefix at 0x80173718-0x80173888.
  */
 PSGeneratorState* psCreateGeneratorID(s32 linkNo, s32 bankIdx, s32 scriptId) {
+    extern f32 lbl_8047D6B0;
+    extern f32 lbl_8047D6B4;
+    extern f32 lbl_8047D6B8;
+    extern f32 lbl_8047D6D8;
+    extern f32 lbl_8047D6DC;
+    extern void (*lbl_8047B194)(PSGeneratorState*);
     PSGeneratorState* gen;
     void** bank;
+    u8* entry;
+    u8* textureEntry;
+    u8* raw;
     u16 activeCount;
     u16 familyId;
+    u16 shapeType;
 
-    if (bankIdx >= 64 || linkNo >= 8 ||
-        scriptId >= lbl_80452CC8[bankIdx]) {
+    if (bankIdx >= 64) {
+        return NULL;
+    }
+    if (linkNo >= 8) {
+        return NULL;
+    }
+    if (scriptId >= lbl_80452CC8[bankIdx]) {
         return NULL;
     }
 
@@ -3725,17 +4938,179 @@ PSGeneratorState* psCreateGeneratorID(s32 linkNo, s32 bankIdx, s32 scriptId) {
     }
     gen->familyId = familyId;
     gen->appSRT = NULL;
-    gen->generatorFlags = 2;
+    gen->pad17 = 0;
     gen->linkedJObj = NULL;
-    gen->generatorData[0] = 0.0f;
-    gen->generatorData[1] = 0.0f;
-    gen->generatorData[2] = 0.0f;
-    gen->generatorData[3] = 1.0f;
-    gen->generatorData[4] = 1.0f;
-    gen->generatorData[5] = 1.0f;
-    gen->angleRadiusScale[0] = 1.0f;
-    gen->angleRadiusScale[1] = 1.0f;
-    gen->angleRadiusScale[2] = 1.0f;
+
+    raw = (u8*) gen;
+    entry = bank[scriptId];
+
+    gen->angleFlags = *(u16*) (entry + 0x00);
+    gen->bankIndex = bankIdx;
+    gen->linkNo = linkNo;
+    *(u16*) (raw + 0x8A) = (u16) scriptId;
+    raw[0x16] = entry[0x02];
+    gen->particleLife = *(u16*) (entry + 0x06);
+    gen->maxLife = *(u16*) (entry + 0x04);
+    gen->flags = *(u32*) (entry + 0x08);
+    *(f32*) (raw + 0x20) = lbl_8047D6B0;
+    *(f32*) (raw + 0x24) = lbl_8047D6B0;
+    *(f32*) (raw + 0x28) = lbl_8047D6B0;
+    gen->velocityX = *(f32*) (entry + 0x14);
+    gen->velocityY = *(f32*) (entry + 0x18);
+    gen->velocityZ = *(f32*) (entry + 0x1C);
+    gen->gravity = *(f32*) (entry + 0x0C);
+    gen->friction = *(f32*) (entry + 0x10);
+    gen->particleSize = *(f32*) (entry + 0x2C);
+    gen->scriptData = *(void**) (entry + 0x3C);
+    gen->radius = *(f32*) (entry + 0x20);
+    gen->angle = *(f32*) (entry + 0x24);
+    *(f32*) (raw + 0x08) = *(f32*) (entry + 0x28);
+
+    if (gen->flags & 0x100) {
+        if (*(f32*) (raw + 0x08) < lbl_8047D6B0) {
+            if (lbl_8047D6B4 + *(f32*) (raw + 0x08) <= lbl_80478ACC) {
+                gen->lifetime = lbl_8047D6B0;
+            } else {
+                gen->lifetime = lbl_8047D6B4;
+            }
+        } else {
+            gen->lifetime = lbl_8047D6B4 - lbl_80478ACC;
+        }
+    } else if (*(f32*) (raw + 0x08) < lbl_8047D6B0) {
+        gen->lifetime = lbl_8047D6B0;
+    } else {
+        gen->lifetime = fn_801ADC7C();
+    }
+
+    textureEntry = ((u8**) lbl_804529C8[bankIdx])[scriptId];
+    if (textureEntry != NULL && *(u16*) (textureEntry + 0x16) != 0) {
+        gen->flags |= 0x10;
+    }
+
+    gen->childCount = 0;
+    shapeType = gen->angleFlags & 0xF;
+    if (shapeType <= 8) {
+        switch (shapeType) {
+        case 0:
+        case 3:
+        case 4: {
+            f32 x = *(f32*) (entry + 0x30);
+            f32 y = *(f32*) (entry + 0x34);
+            if (x == lbl_8047D6B0 && y == lbl_8047D6B0) {
+                *(f32*) (raw + 0x54) = lbl_8047D6B0;
+                *(f32*) (raw + 0x58) = lbl_8047D6B8;
+            } else {
+                *(f32*) (raw + 0x54) = x;
+                *(f32*) (raw + 0x58) = y;
+            }
+            break;
+        }
+        case 1:
+            *(f32*) (raw + 0x54) = *(f32*) (entry + 0x30);
+            *(f32*) (raw + 0x58) = *(f32*) (entry + 0x34);
+            *(f32*) (raw + 0x5C) = *(f32*) (entry + 0x38);
+            break;
+        case 6:
+        case 7: {
+            f32 x = *(f32*) (entry + 0x30);
+            f32 y = *(f32*) (entry + 0x34);
+            if (x == lbl_8047D6B0 && y == lbl_8047D6B0) {
+                *(f32*) (raw + 0x54) = lbl_8047D6B0;
+                *(f32*) (raw + 0x58) = lbl_8047D6B8;
+            } else {
+                *(f32*) (raw + 0x54) = x;
+                *(f32*) (raw + 0x58) = y;
+            }
+            *(f32*) (raw + 0x5C) = *(f32*) (entry + 0x38);
+            break;
+        }
+        case 5: {
+            f32 x = *(f32*) (entry + 0x30);
+            f32 y = *(f32*) (entry + 0x34);
+            f32 z = *(f32*) (entry + 0x38);
+            *(f32*) (raw + 0x54) = x;
+            *(f32*) (raw + 0x60) = x;
+            *(f32*) (raw + 0x58) = y;
+            *(f32*) (raw + 0x70) = y;
+            *(f32*) (raw + 0x5C) = z;
+            *(f32*) (raw + 0x80) = z;
+            *(f32*) (raw + 0x64) = lbl_8047D6B0;
+            *(f32*) (raw + 0x68) = lbl_8047D6B0;
+            *(f32*) (raw + 0x6C) = lbl_8047D6B0;
+            *(f32*) (raw + 0x74) = lbl_8047D6B0;
+            *(f32*) (raw + 0x78) = lbl_8047D6B0;
+            *(f32*) (raw + 0x7C) = lbl_8047D6B0;
+            *(u16*) (raw + 0x84) = 0;
+            if (*(f32*) (entry + 0x30) < lbl_8047D6B0) {
+                *(u16*) (raw + 0x84) |= 1;
+            }
+            if (*(f32*) (entry + 0x34) < lbl_8047D6B0) {
+                *(u16*) (raw + 0x84) |= 2;
+            }
+            if (*(f32*) (entry + 0x38) < lbl_8047D6B0) {
+                *(u16*) (raw + 0x84) |= 4;
+            }
+            break;
+        }
+        case 8: {
+            f32 magnitude = sqrtf(gen->velocityX * gen->velocityX +
+                                  gen->velocityY * gen->velocityY +
+                                  gen->velocityZ * gen->velocityZ);
+            *(f32*) (raw + 0x54) = magnitude;
+
+            if (__fabs(gen->velocityY) < lbl_80478AC8) {
+                if (gen->velocityX <= lbl_8047D6B0) {
+                    *(f32*) (raw + 0x58) = lbl_8047D6D8;
+                } else {
+                    *(f32*) (raw + 0x58) = lbl_8047D6DC;
+                }
+            } else {
+                *(f32*) (raw + 0x58) = atan2(gen->velocityX, gen->velocityY);
+            }
+
+            if (__fabs(gen->velocityX) < lbl_80478AC8) {
+                if (gen->velocityZ <= lbl_8047D6B0) {
+                    *(f32*) (raw + 0x60) = lbl_8047D6D8;
+                } else {
+                    *(f32*) (raw + 0x60) = lbl_8047D6DC;
+                }
+            } else {
+                *(f32*) (raw + 0x60) = atan2(gen->velocityX, gen->velocityZ);
+            }
+
+            *(f32*) (raw + 0x5C) = gen->velocityX;
+            if (*(f32*) (raw + 0x5C) < lbl_8047D6B0) {
+                *(f32*) (raw + 0x5C) = -*(f32*) (raw + 0x5C);
+                *(f32*) (raw + 0x54) = -*(f32*) (raw + 0x54);
+            }
+            *(f32*) (raw + 0x64) = gen->velocityY;
+            break;
+        }
+        }
+    } else if (lbl_8047B194 != NULL) {
+        lbl_8047B194(gen);
+    }
+
+    if (gen->flags & 0x20000) {
+        gen->angleFlags |= 0x800;
+        psAddGeneratorAppSRT(gen, 0);
+        if (gen->appSRT != NULL) {
+            ((PSAppSRT*)gen->appSRT)->active = 1;
+            ((PSAppSRT*)gen->appSRT)->owner = gen;
+        }
+    }
+
+    gen->generatorFlags = 2;
+    *(u32*) (raw + 0xA4) = 0;
+    gen->generatorData[0] = lbl_8047D6B0;
+    gen->generatorData[1] = lbl_8047D6B0;
+    gen->generatorData[2] = lbl_8047D6B0;
+    gen->generatorData[3] = lbl_8047D6B4;
+    gen->generatorData[4] = lbl_8047D6B4;
+    gen->generatorData[5] = lbl_8047D6B4;
+    gen->angleRadiusScale[0] = lbl_8047D6B4;
+    gen->angleRadiusScale[1] = lbl_8047D6B4;
+    gen->angleRadiusScale[2] = lbl_8047D6B4;
     return gen;
 }
 
@@ -3743,6 +5118,8 @@ PSGeneratorState* psCreateGeneratorID(s32 linkNo, s32 bankIdx, s32 scriptId) {
  * Updates the particle material and ambient channel colors, including the
  * active alpha-light contribution. Verified against 0x8016E814-0x8016EA78.
  */
+#pragma push
+#pragma optimization_level 3
 void setupChanReg(PSParticle* pp) {
     GXColor mat;
     GXColor amb;
@@ -3812,6 +5189,9 @@ void setupChanReg(PSParticle* pp) {
  * remains asm-only; these register-cache paths are verified against
  * 0x8016E40C-0x8016E698.
  */
+#pragma pop
+#pragma push
+#pragma optimization_level 3
 void setupTevReg(PSParticle* pp) {
     GXColor reg1;
     GXColor reg2;
@@ -3849,7 +5229,8 @@ void setupTevReg(PSParticle* pp) {
 
     flags = pp->flags;
     if ((flags & PS_FLAG_INVISIBLE) ||
-        ((flags & 0x80000000) && (flags & 0x00100000))) {
+        (((flags & 0x80000000) == 0) &&
+         ((flags & 0x00100000) == 0))) {
         if (lbl_8047B138.r != reg1.r || lbl_8047B138.g != reg1.g ||
             lbl_8047B138.b != reg1.b || lbl_8047B138.a != reg1.a) {
             lbl_8047B138 = reg1;
@@ -3906,26 +5287,268 @@ void setupTevReg(PSParticle* pp) {
  * Emits one particle polygon. The geometry modes remain asm-only; this
  * verified entry gate is shared by every mode at 0x8016C1E0-0x8016C240.
  */
+#pragma pop
+#pragma optimization_level 4
 void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
                           f32 centerX, f32 centerY, f32 centerZ,
                           f32 velocityX, f32 velocityY, f32 velocityZ,
                           f32 axisXX, f32 axisXY, f32 axisXZ,
                           f32 axisYX, f32 axisYY, f32 axisYZ) {
+    GXColor color;
+    Mtx parentMatrix;
+    Vec previous;
+    PSGeneratorState* generator;
+    PSAppSRT* parent;
+    u32 textureIndex;
+
     if (lbl_8047B12C != 0) {
         lbl_8047B12C = 0;
         fn_800BD554(0);
+    }
+
+    if (pp->flags & 0x100000) {
+        parent = (PSAppSRT*)pp->parentObj;
+        if (pp->flags & 4) {
+            generator = (PSGeneratorState*)pp->peopleObj;
+            if (generator != NULL) {
+                f32* people = (f32*)generator;
+                f32 sinScale = (f32)sin(pp->scaleFactor);
+                f32 sinFriction = (f32)sin(pp->frictionFactor);
+                f32 cosScale = (f32)cos(pp->scaleFactor);
+                f32 cosFriction = (f32)cos(pp->frictionFactor);
+                f32 horizontal = pp->velocityZ - people[21];
+                f32 vertical = pp->velocityX - people[14];
+                f32 peopleScale = people[17];
+                f32 peopleAngle = people[18];
+                f32 magnitude;
+                f32 cosVertical;
+                f32 sinVertical;
+
+                if (peopleScale < lbl_8047D5C8) {
+                    peopleScale = -peopleScale;
+                }
+                if (peopleAngle < lbl_8047D5C8) {
+                    peopleAngle = -peopleAngle;
+                }
+                magnitude = (horizontal * (f32)tan(peopleAngle) +
+                             peopleScale) * pp->velocityY;
+                cosVertical = magnitude * (f32)cos(vertical);
+                sinVertical = magnitude * (f32)sin(vertical);
+                velocityX = people[8] + cosVertical * cosFriction +
+                            horizontal * sinFriction;
+                velocityY = people[9] + cosFriction *
+                    (horizontal * sinScale) + sinFriction *
+                    (-cosVertical * sinScale) + sinVertical * cosScale;
+                velocityZ = people[10] + cosFriction *
+                    (horizontal * cosScale) + sinFriction *
+                    (-cosVertical * cosScale) - sinVertical * sinScale;
+            } else {
+                velocityX = pp->positionX;
+                velocityY = pp->positionY;
+                velocityZ = pp->positionZ;
+            }
+            if (parent != NULL) {
+                HSD_MtxSRT(parentMatrix, &parent->scaleX,
+                           &parent->translationX, &parent->rotationX, NULL);
+                previous.x = velocityX;
+                previous.y = velocityY;
+                previous.z = velocityZ;
+                PSMTXMultVec(parentMatrix, &previous, &previous);
+                velocityX = previous.x;
+                velocityY = previous.y;
+                velocityZ = previous.z;
+            }
+        } else {
+            velocityX = centerX - velocityX;
+            velocityY = centerY - velocityY;
+            velocityZ = centerZ - velocityZ;
+        }
+
+        switch (pp->flags & 0x80000080) {
+        case 0:
+            if (pp->color1Timer != 0) {
+                s32 ratio = (pp->color1Countdown << 16) / pp->color1Timer;
+
+                color.r = ((pp->color1Target.r << 16) +
+                           ratio * (pp->color1.r - pp->color1Target.r)) >> 16;
+                color.g = ((pp->color1Target.g << 16) +
+                           ratio * (pp->color1.g - pp->color1Target.g)) >> 16;
+                color.b = ((pp->color1Target.b << 16) +
+                           ratio * (pp->color1.b - pp->color1Target.b)) >> 16;
+                color.a = ((pp->color1Target.a << 16) +
+                           ratio * (pp->color1.a - pp->color1Target.a)) >> 16;
+            } else {
+                color = pp->color1;
+            }
+            break;
+        case 0x80:
+        case 0x80000080:
+            color.r = color.g = color.b = color.a = 0xFF;
+            break;
+        }
+        textureIndex = (pp->flags >> 14) & 3;
+
+        if (polygonData == NULL) {
+            if (pp->flags & 0x400) {
+                fn_800B7D3C();
+                fn_800B7874(9, 1);
+                fn_800B7874(11, 1);
+                fn_800B7874(13, 2);
+                fn_800B928C(0x80, 2, 4);
+            } else {
+                fn_800B7D3C();
+                fn_800B7874(9, 1);
+                fn_800B7874(11, 1);
+                fn_800B928C(0x80, 3, 4);
+            }
+
+            GX_FIFO_F32 = velocityX - axisXX;
+            GX_FIFO_F32 = velocityY - axisXY;
+            GX_FIFO_F32 = velocityZ - axisXZ;
+            GX_FIFO_U8 = color.r;
+            GX_FIFO_U8 = color.g;
+            GX_FIFO_U8 = color.b;
+            GX_FIFO_U8 = (u8)((f32)color.a * pp->alphaScale);
+            if (pp->flags & 0x400) {
+                GX_FIFO_U8 = textureIndex;
+            }
+
+            GX_FIFO_F32 = centerX - axisYX;
+            GX_FIFO_F32 = centerY - axisYY;
+            GX_FIFO_F32 = centerZ - axisYZ;
+            GX_FIFO_U8 = color.r;
+            GX_FIFO_U8 = color.g;
+            GX_FIFO_U8 = color.b;
+            GX_FIFO_U8 = color.a;
+            if (pp->flags & 0x400) {
+                GX_FIFO_U8 = textureIndex + 1;
+            }
+
+            GX_FIFO_F32 = centerX + axisXX;
+            GX_FIFO_F32 = centerY + axisXY;
+            GX_FIFO_F32 = centerZ + axisXZ;
+            GX_FIFO_U8 = color.r;
+            GX_FIFO_U8 = color.g;
+            GX_FIFO_U8 = color.b;
+            GX_FIFO_U8 = color.a;
+            if (pp->flags & 0x400) {
+                GX_FIFO_U8 = textureIndex + 2;
+            }
+
+            GX_FIFO_F32 = velocityX + axisYX;
+            GX_FIFO_F32 = velocityY + axisYY;
+            GX_FIFO_F32 = velocityZ + axisYZ;
+            GX_FIFO_U8 = color.r;
+            GX_FIFO_U8 = color.g;
+            GX_FIFO_U8 = color.b;
+            GX_FIFO_U8 = (u8)((f32)color.a * pp->alphaScale);
+            if (pp->flags & 0x400) {
+                GX_FIFO_U8 = textureIndex + 3;
+            }
+        } else {
+            u8* stream = polygonData;
+            u32 packetCount;
+            f32 alphaFade = 255.0f * (1.0f - pp->alphaScale);
+            f32 axisLength =
+                psPolygonSqrtf(axisYX * axisYX + axisYY * axisYY +
+                               axisYZ * axisYZ);
+            f32 tailX;
+            f32 tailY;
+            f32 tailZ;
+            f32 tailLength;
+
+            if (__fabs(axisLength) < lbl_80478AC8) {
+                return;
+            }
+
+            tailX = centerX - velocityX;
+            tailY = centerY - velocityY;
+            tailZ = centerZ - velocityZ;
+            tailLength =
+                psPolygonSqrtf(tailX * tailX + tailY * tailY +
+                               tailZ * tailZ) /
+                axisLength;
+            if (tailLength < 1.0f) {
+                tailLength = 1.0f;
+            }
+            axisYX *= tailLength;
+            axisYY *= tailLength;
+            axisYZ *= tailLength;
+
+            packetCount = *(u32*)stream;
+            stream += 4;
+            while (packetCount != 0) {
+                u8 primitive = stream[0];
+                u8 vertexCount = stream[1];
+                s32 i;
+
+                stream += 4;
+                if (pp->flags & 0x400) {
+                    fn_800B7D3C();
+                    fn_800B7874(9, 1);
+                    fn_800B7874(11, 1);
+                    fn_800B7874(13, 1);
+                    fn_800B928C(primitive, 5, vertexCount);
+                } else {
+                    fn_800B7D3C();
+                    fn_800B7874(9, 1);
+                    fn_800B7874(11, 1);
+                    fn_800B928C(primitive, 3, vertexCount);
+                }
+
+                for (i = 0; i < vertexCount; i++) {
+                    f32 u = *(f32*)&stream[0];
+                    f32 v = *(f32*)&stream[4];
+                    f32 xWeight = lbl_8047D5CC * (u - lbl_8047D618);
+                    f32 yWeight = lbl_8047D5CC * (v - lbl_8047D618);
+                    f32 alphaValue = 255.0f - v * alphaFade;
+                    s32 vertexAlpha = (s32)alphaValue;
+
+                    if (vertexAlpha < 0) {
+                        vertexAlpha = 0;
+                    }
+                    if (vertexAlpha > 0xFF) {
+                        vertexAlpha = 0xFF;
+                    }
+
+                    stream += 8;
+                    if (pp->flags & 0x40000) {
+                        u = 1.0f - u;
+                    }
+                    if (pp->flags & 0x80000) {
+                        v = 1.0f - v;
+                    }
+
+                    GX_FIFO_F32 = centerX + axisXX * xWeight + axisYX * yWeight;
+                    GX_FIFO_F32 = centerY + axisXY * xWeight + axisYY * yWeight;
+                    GX_FIFO_F32 = centerZ + axisXZ * xWeight + axisYZ * yWeight;
+                    GX_FIFO_U8 = color.r;
+                    GX_FIFO_U8 = color.g;
+                    GX_FIFO_U8 = color.b;
+                    GX_FIFO_U8 = vertexAlpha;
+                    if (pp->flags & 0x400) {
+                        GX_FIFO_F32 = u;
+                        GX_FIFO_F32 = v;
+                    }
+                }
+                packetCount--;
+            }
+        }
+        return;
     }
 
     if ((pp->flags & 0x100000) == 0) {
         if (polygonData == NULL) {
             u32 textureIndex = (pp->flags >> 14) & 3;
 
-            fn_800B7D3C();
-            fn_800B7874(9, 1);
             if (pp->flags & 0x400) {
+                fn_800B7D3C();
+                fn_800B7874(9, 1);
                 fn_800B7874(13, 2);
                 fn_800B928C(0x80, 0, 4);
             } else {
+                fn_800B7D3C();
+                fn_800B7874(9, 1);
                 fn_800B928C(0x80, 1, 4);
             }
 
@@ -3967,12 +5590,14 @@ void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
                 s32 i;
 
                 stream += 4;
-                fn_800B7D3C();
-                fn_800B7874(9, 1);
                 if (pp->flags & 0x400) {
+                    fn_800B7D3C();
+                    fn_800B7874(9, 1);
                     fn_800B7874(13, 1);
                     fn_800B928C(primitive, 4, vertexCount);
                 } else {
+                    fn_800B7D3C();
+                    fn_800B7874(9, 1);
                     fn_800B928C(primitive, 1, vertexCount);
                 }
 
@@ -4005,6 +5630,7 @@ void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
     }
 }
 
+#pragma optimization_level 2
 void psExecGenerator(u32 linkMask) {
     PSGeneratorState* gen;
 
@@ -4049,7 +5675,7 @@ void psExecGenerator(u32 linkMask) {
         }
 
         if (gen->lifetime >= 1.0f) {
-            generateParticle_8017424C(gen);
+            gen->lifetime = generateParticle_8017424C(gen);
         }
 
         if (gen->maxLife != 0) {
@@ -4111,7 +5737,9 @@ void psExecGenerator(u32 linkMask) {
  * implementation in Melee's baselib/generator.c; field offsets and the newer
  * Euler-basis extension were checked against this target's retail body.
  */
-void generateParticle_8017424C(PSGeneratorState* gen) {
+#pragma optimization_level 4
+#pragma peephole off
+f32 generateParticle_8017424C(PSGeneratorState* gen) {
     extern PSParticle* psGenerateParticle(u8 linkNo, u8 bankIndex, u32 arg2, f32 posX, f32 posY, f32 posZ, u32 flags, f32 velocityX, f32 velocityY, f32 velocityZ, u8 animIndex, void* scriptData, u16 repeatCount, f32 lerpValue, void* arg14, f32 scaleFactor, f32 frictionFactor, PSGeneratorState* generator);
     Mtx basis;
     Mtx rotationX;
@@ -4133,7 +5761,7 @@ void generateParticle_8017424C(PSGeneratorState* gen) {
     f32 currentAngle = 0.0f;
 
     if (gen->lifetime < lbl_8047D6B4) {
-        return;
+        return gen->lifetime;
     }
 
     emissionVelocity.x = gen->velocityX;
@@ -4145,9 +5773,9 @@ void generateParticle_8017424C(PSGeneratorState* gen) {
         emissionVelocity.y *= gen->generatorData[4];
         emissionVelocity.z *= gen->generatorData[5];
     }
-    magnitude = sqrtf(emissionVelocity.x * emissionVelocity.x +
-                      emissionVelocity.y * emissionVelocity.y +
-                      emissionVelocity.z * emissionVelocity.z);
+    magnitude = psSetVelSqrtf(emissionVelocity.x * emissionVelocity.x +
+                              emissionVelocity.y * emissionVelocity.y +
+                              emissionVelocity.z * emissionVelocity.z);
 
     PSMTXIdentity(basis);
 
@@ -4316,7 +5944,7 @@ void generateParticle_8017424C(PSGeneratorState* gen) {
             } else {
                 radiusFactor = fn_801ADC7C();
                 if (mode == 3 || mode == 4) {
-                    radiusFactor = sqrtf(radiusFactor);
+                    radiusFactor = psSetVelSqrtf(radiusFactor);
                 }
                 radius = radiusFactor * gen->radius;
             }
@@ -4546,9 +6174,9 @@ void generateParticle_8017424C(PSGeneratorState* gen) {
             emissionPosition.z += gen->positionZ;
 
             axisMagnitude =
-                sqrtf(gen->shape.rect.zx * gen->shape.rect.zx +
-                      gen->shape.rect.zy * gen->shape.rect.zy +
-                      gen->shape.rect.zz * gen->shape.rect.zz);
+                psSetVelSqrtf(gen->shape.rect.zx * gen->shape.rect.zx +
+                              gen->shape.rect.zy * gen->shape.rect.zy +
+                              gen->shape.rect.zz * gen->shape.rect.zz);
             particleVelocity.x = gen->shape.rect.zx *
                                  magnitude / axisMagnitude;
             particleVelocity.y = gen->shape.rect.zy *
@@ -4630,8 +6258,11 @@ void generateParticle_8017424C(PSGeneratorState* gen) {
 
         gen->lifetime -= 1.0f;
     }
+    return gen->lifetime;
 }
 
+#pragma optimization_level 1
+#pragma peephole reset
 static inline s32 PSJObjMtxIsDirty(PSJObjTransform* jobj) {
     s32 dirty;
 

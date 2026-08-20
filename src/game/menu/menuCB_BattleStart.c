@@ -100,7 +100,226 @@ typedef struct UICmdMsg {
 extern MenuCBBattleStartState lbl_803A9A60;
 extern u8 lbl_803A9E40[];
 
-extern void fn_8005DFC8(void* arg);
+void fn_8005DFC8(void* arg)
+{
+    extern u8 fn_80069048(void);
+    extern u32 fn_800D3088(void);
+    extern s32 fn_800D37CC(void);
+    extern s32 fn_801666BC(u32);
+    extern s32 toolentryTaisenGetBattleType(void);
+    extern s32 menuCBPokemonEntryGetReadFlag(void);
+    extern void fn_80060A28(void);
+    extern void fn_8017B000();
+    extern void _menuCBBattleStartDispTrainerTexCallBack__FlPvl(void);
+    extern void winSeqSetMenu(s32 sequence, s32 menu);
+    extern const f32 lbl_8047BF60;
+    extern const f32 lbl_8047BF64;
+    extern const f32 lbl_8047BF68;
+    extern const f32 lbl_8047BF6C;
+    extern const f32 lbl_8047BF70;
+    extern const f32 lbl_8047BF74;
+    extern const f32 lbl_8047BF78;
+    extern const f32 lbl_8047BF7C;
+
+    MenuCBBattleStartState* state = &lbl_803A9A60;
+    MenuCBBattleStartPlayerLayout* player;
+    MenuCBBattleStartPosition* position;
+    f32* pair;
+    f32 delta_time;
+    f32 diff;
+    f32 step;
+    int i;
+    int j;
+    int ready;
+    u8* state_bytes = (u8*) state;
+    u8* arg_bytes = (u8*) arg;
+
+#define STATE_U8(off) (*(u8*) (state_bytes + (off)))
+#define STATE_U32(off) (*(u32*) (state_bytes + (off)))
+#define STATE_F32(off) (*(f32*) (state_bytes + (off)))
+
+    delta_time = (f32) ((f64) fn_800D3088() / (f64) fn_800D37CC());
+    state->deltaTime = delta_time;
+
+    switch (STATE_U32(0x38)) {
+    case 0:
+        if (!menuCBPokemonEntryGetReadFlag()) {
+            break;
+        }
+        if (STATE_U8(0x34) == 0) {
+            STATE_U8(0x34) = 0;
+            STATE_U32(0x2C) = 0;
+            if (toolentryTaisenGetBattleType() == 2) {
+                STATE_U32(0x30) = 4;
+            } else {
+                STATE_U32(0x30) = 2;
+            }
+            STATE_U32(0x0C) = 0;
+            STATE_U32(0x10) = 0;
+            STATE_U32(0x14) = 0;
+            STATE_U32(0x18) = 0;
+            STATE_U32(0x1C) = 0;
+            STATE_U32(0x20) = 0;
+            STATE_U32(0x24) = 0;
+            STATE_U32(0x28) = 0;
+            STATE_U8(0x34) = 1;
+            if (toolentryTaisenGetBattleType() == 2) {
+                fn_8017B000(0x5C4, 0,
+                            _menuCBBattleStartDispTrainerTexCallBack__FlPvl, 0,
+                            0);
+            } else {
+                fn_8017B000(0x5C3, 0,
+                            _menuCBBattleStartDispTrainerTexCallBack__FlPvl, 0,
+                            0);
+            }
+            STATE_U32(0x38) = 1;
+        } else {
+            STATE_U32(0x38) = 2;
+        }
+        break;
+
+    case 1:
+        if (menuCBPokemonEntryGetReadFlag() && STATE_U8(0x34) != 0) {
+            STATE_U32(0x38) = 2;
+        }
+        break;
+
+    case 2:
+        fn_80060A28();
+        ready = 1;
+        for (i = 0; i < 4; i++) {
+            player = &state->players[i];
+            for (j = 0; j < 6; j++) {
+                if (player->view.side[j] != player->view.alpha[j]) {
+                    ready = 0;
+                    goto finish_check;
+                }
+            }
+        }
+        for (i = 0; i < 4; i++) {
+            position = &state->trainerPositions[i];
+            if (position->y != position->z) {
+                ready = 0;
+                goto finish_check;
+            }
+        }
+        if (state->transitions.current[0] != state->transitions.target[0] ||
+            state->transitions.current[1] != state->transitions.target[1])
+        {
+            ready = 0;
+            goto finish_check;
+        }
+        STATE_U8(0x368) = 1;
+    finish_check:
+        if (!ready) {
+            break;
+        }
+        if (state->status == 0) {
+            STATE_U32(0x38) = 3;
+            STATE_F32(0x3B8) = lbl_8047BF60;
+        } else {
+            STATE_U32(0x38) = 4;
+        }
+        break;
+
+    case 3:
+        STATE_F32(0x3B8) += delta_time;
+        if (STATE_F32(0x3B8) >= lbl_8047BF64) {
+            STATE_U32(0x38) = 0xA;
+        }
+        break;
+
+    case 4:
+        ready = 1;
+        for (i = 0; i < 4; i++) {
+            player = &state->players[i];
+            for (j = 0; j < 6; j++) {
+                if (player->maxHp[j] != player->hp[j]) {
+                    step = player->maxHpDisplay[j] * state->deltaTime;
+                    step *= lbl_8047BF68;
+                    player->maxHp[j] -= step;
+                    if (player->maxHp[j] < player->hp[j]) {
+                        player->maxHp[j] = player->hp[j];
+                    }
+                    ready = 0;
+                }
+            }
+        }
+        if (ready) {
+            STATE_U32(0x38) = 5;
+        }
+        break;
+
+    case 5:
+        state->model.scale += delta_time;
+        if (state->model.scale >= lbl_8047BF6C) {
+            STATE_U32(0x38) = 6;
+        }
+        break;
+
+    case 6:
+        pair = &state->field358;
+        for (i = 0; i < 2; i++, pair += 2) {
+            if (pair[0] != pair[1]) {
+                diff = pair[1] - pair[0];
+                step = lbl_8047BF70 * diff * state->deltaTime;
+                if (step > lbl_8047BF70) {
+                    step = lbl_8047BF70;
+                }
+                if (step <= lbl_8047BF74) {
+                    step = lbl_8047BF74;
+                }
+                pair[0] += step;
+                diff = pair[1] - pair[0];
+                if (step <= lbl_8047BF60) {
+                    step = -step;
+                }
+                if (diff <= lbl_8047BF60) {
+                    diff = -diff;
+                }
+                if (diff <= step) {
+                    pair[0] = pair[1];
+                }
+            }
+        }
+        diff = state->field358 - state->field35C;
+        if (diff <= lbl_8047BF60) {
+            diff = -diff;
+        }
+        if (diff <= lbl_8047BF78) {
+            STATE_U32(0x38) = 7;
+            STATE_F32(0x3B8) = lbl_8047BF60;
+        }
+        break;
+
+    case 7:
+        STATE_F32(0x3B8) += delta_time;
+        if (STATE_F32(0x3B8) >= lbl_8047BF7C) {
+            STATE_U32(0x38) = 8;
+        }
+        break;
+
+    case 8:
+        STATE_U32(0x38) = 9;
+        break;
+
+    case 0xA:
+        if (fn_801666BC(STATE_U32(0x3BC)) == 0) {
+            STATE_U32(0x38) = 0xB;
+        }
+        break;
+
+    case 0xB:
+        STATE_U32(0x38) = 0x64;
+        winSeqSetMenu(*(u32*) (arg_bytes + 4), 0x1C6);
+        arg_bytes[2] = 1;
+        break;
+    }
+
+#undef STATE_F32
+#undef STATE_U32
+#undef STATE_U8
+}
 
 #pragma push
 #pragma peephole off
@@ -416,7 +635,7 @@ void _menuCBBattleStartSetIndex__Fv(void)
     u16 count[4];
     s32 battleType;
     s32 player;
-    s32 slot;
+    u16 slot;
 
     order = (u32 (*)[6])lbl_803A9E40;
     battleType = toolentryTaisenGetBattleType();
@@ -626,10 +845,12 @@ void fn_80062334(void)
     extern const f32 lbl_8047BFBC;
     extern const f32 lbl_8047BFC0;
     extern const f32 lbl_8047BFC4;
+    MenuCBBattleStartState* state;
+    MenuCBBattleStartPosition* position;
+    MenuCBBattleStartPlayerView* view;
+    u32* orderGroups[4];
     f32 forward[6];
     f32 reverse[6];
-    u32* orders;
-    MenuCBBattleStartPlayerView* view;
     s32 battleType;
     s32 player;
     s32 slot;
@@ -649,78 +870,121 @@ void fn_80062334(void)
     reverse[4] = lbl_8047BFA8;
     reverse[5] = lbl_8047BFA4;
 
+    orderGroups[0] = (u32*)lbl_803A9E40;
+    orderGroups[1] = (u32*)(lbl_803A9E40 + 0x18);
+    orderGroups[2] = (u32*)(lbl_803A9E40 + 0x30);
+    orderGroups[3] = (u32*)(lbl_803A9E40 + 0x48);
+
     battleType = toolentryTaisenGetBattleType();
-    orders = (u32*)lbl_803A9E40;
+    state = &lbl_803A9A60;
 
     for (player = 0; player < 4; player++) {
-        view = &lbl_803A9A60.players[player].view;
+        view = &state->players[player].view;
         if (battleType == 2) {
+            u16* marker = view->header.marker;
+            f32* reset = view->reset;
+            f32* viewPosition = view->position;
+            f32* side = view->side;
+            f32* alpha = view->alpha;
+            f32* forwardPosition = forward;
+            f32* reversePosition = reverse;
+
             for (slot = 0; slot < 6; slot++) {
-                if (lbl_803A9A60.status == 0) {
-                    view->header.marker[slot] = 3;
-                    view->reset[slot] = lbl_8047BF60;
-                } else if (lbl_803A9A60.status == 1) {
-                    view->header.marker[slot] = 0;
-                    view->reset[slot] = lbl_8047BF60;
+                if (state->status == 1) {
+                    *marker = 0;
+                    reset[0] = lbl_8047BF60;
+                } else if (state->status == 0) {
+                    *marker = 3;
+                    reset[0] = lbl_8047BF60;
                 }
+
                 if (player < 2) {
-                    view->side[slot] = lbl_8047BFBC;
-                    view->position[slot] = forward[slot];
+                    side[0] = lbl_8047BFBC;
+                    alpha[0] = lbl_8047BF60;
+                    viewPosition[0] = forwardPosition[0];
                 } else {
-                    view->side[slot] = lbl_8047BFC0;
-                    view->position[slot] = reverse[slot];
+                    side[0] = lbl_8047BFC0;
+                    alpha[0] = lbl_8047BF60;
+                    viewPosition[0] = reversePosition[0];
                 }
-                view->alpha[slot] = lbl_8047BF60;
+                marker++;
+                reset++;
+                viewPosition++;
+                side++;
+                alpha++;
+                forwardPosition++;
+                reversePosition++;
             }
         } else {
-            rightSide = player & 1;
+            u32* group = orderGroups[player];
+            u16* marker = view->header.marker;
+            f32* reset = view->reset;
+            f32* side = view->side;
+            f32* alpha = view->alpha;
+
+            rightSide = player % 2;
             for (slot = 0; slot < 6; slot++) {
-                destination = orders[player * 6 + slot];
-                if (lbl_803A9A60.status == 0) {
-                    view->header.marker[slot] = 3;
-                    view->reset[slot] = lbl_8047BF60;
-                } else if (lbl_803A9A60.status == 1) {
-                    view->header.marker[slot] = 0;
-                    view->reset[slot] = lbl_8047BF60;
+                destination = group[slot];
+                if (state->status == 1) {
+                    *marker = 0;
+                    reset[0] = lbl_8047BF60;
+                } else if (state->status == 0) {
+                    *marker = 3;
+                    reset[0] = lbl_8047BF60;
                 }
-                view->side[slot] =
-                    rightSide ? lbl_8047BFC0 : lbl_8047BFBC;
-                view->alpha[slot] = lbl_8047BF60;
-                if (rightSide) {
+
+                if (rightSide != 0) {
+                    side[0] = lbl_8047BFC0;
+                    alpha[0] = lbl_8047BF60;
                     view->position[destination] = reverse[3 + slot % 3];
                 } else {
+                    side[0] = lbl_8047BFBC;
+                    alpha[0] = lbl_8047BF60;
                     view->position[destination] = forward[slot % 3];
                 }
+
+                marker++;
+                reset++;
+                side++;
+                alpha++;
             }
         }
     }
 
-    for (player = 0; player < 4; player++) {
-        lbl_803A9A60.trainerPositions[player].x = lbl_8047BFC4;
+    position = state->trainerPositions;
+    for (player = 0; player < 4; player++, position++) {
         if (battleType == 2) {
-            lbl_803A9A60.trainerPositions[player].y =
-                player < 2 ? lbl_8047BFBC : lbl_8047BFC0;
+            if (player < 2) {
+                position->y = lbl_8047BFBC;
+            } else {
+                position->y = lbl_8047BFC0;
+            }
         } else {
-            lbl_803A9A60.trainerPositions[player].y =
-                (player & 1) ? lbl_8047BFC0 : lbl_8047BFBC;
+            rightSide = player % 2;
+            if (rightSide != 0) {
+                position->y = lbl_8047BFC0;
+            } else {
+                position->y = lbl_8047BFBC;
+            }
         }
-        lbl_803A9A60.trainerPositions[player].z = lbl_8047BF60;
+        position->z = lbl_8047BF60;
+        position->x = lbl_8047BFC4;
     }
 
-    lbl_803A9A60.field368 = 0;
-    lbl_803A9A60.field358 = lbl_8047BF70;
-    lbl_803A9A60.field35C = lbl_8047BF90;
-    lbl_803A9A60.field360 = lbl_8047BF70;
-    lbl_803A9A60.field364 = lbl_8047BF90;
-    lbl_803A9A60.transitions.target[1] = lbl_8047BF60;
-    lbl_803A9A60.transitions.current[1] = lbl_8047BFBC;
-    lbl_803A9A60.transitions.active[1] = lbl_8047BF60;
-    lbl_803A9A60.transitions.target[0] = lbl_8047BF60;
-    lbl_803A9A60.transitions.current[0] = lbl_8047BFC0;
-    lbl_803A9A60.transitions.active[0] = lbl_8047BF60;
+    state->field368 = 0;
+    state->field358 = lbl_8047BF70;
+    state->field35C = lbl_8047BF90;
+    state->field360 = lbl_8047BF70;
+    state->field364 = lbl_8047BF90;
+    state->transitions.target[1] = lbl_8047BF60;
+    state->transitions.current[1] = lbl_8047BFBC;
+    state->transitions.active[1] = lbl_8047BF60;
+    state->transitions.target[0] = lbl_8047BF60;
+    state->transitions.current[0] = lbl_8047BFC0;
+    state->transitions.active[0] = lbl_8047BF60;
 }
 
-static void battleStartInterpolate(f32* current, f32 target, f32 delta)
+static inline void battleStartInterpolate(f32* current, f32 target, f32 delta)
 {
     extern const f32 lbl_8047BF90;
     extern const f32 lbl_8047BF94;
@@ -1577,14 +1841,19 @@ static void menuCBBattleStartPlace(
 
 void fn_80060D70(void* context, UICmdMsg* msg, s32 player, s32 kind)
 {
+    extern const u32 lbl_8047BF50;
+    extern const u32 lbl_8047BF54;
+    extern const f32 lbl_8047BFA0;
     s32 expected[2];
     u16 battle_kind;
     f32 scale;
+    f32 difference;
 
-    if (lbl_803A9A60.status != 1) {
-        msg->flags4 &= ~2;
-        return;
-    }
+    expected[0] = lbl_8047BF50;
+    expected[1] = lbl_8047BF54;
+    if (lbl_803A9A60.status != 1)
+        goto hide;
+
     battle_kind = fn_801EF634();
     if (battle_kind == 2 || battle_kind == 5) {
         expected[0] = 0;
@@ -1598,13 +1867,17 @@ void fn_80060D70(void* context, UICmdMsg* msg, s32 player, s32 kind)
     }
     if (lbl_803A9A60.timer >= 6 && kind == expected[player]) {
         scale = *(f32*)((u8*)&lbl_803A9A60 + 0x358 + player * 8);
-        msg->alpha67 = (u8)(255.0f * (2.0f - scale));
+        difference = scale - lbl_8047BF90;
+        msg->alpha67 = (u8)(lbl_8047BFA0 * (lbl_8047BF90 - difference));
         msg->scale68 = scale;
         msg->scale6C = scale;
         msg->flags4 |= 2;
-    } else {
-        msg->flags4 &= ~2;
+        goto done;
     }
+hide:
+    msg->flags4 &= ~2;
+done:
+    return;
 }
 
 void fn_80060EF4(void* context, UICmdMsg* msg, s32 index)
@@ -1880,21 +2153,59 @@ u8 fn_80061D34(
     }
     if (lbl_803A9A60.status == 0) {
         if (kind == 2) {
-            valid = mode == 2;
+            if (mode != 2) {
+                msg->flags4 &= ~2;
+                valid = 0;
+            }
         } else if (kind == 0) {
-            valid = selection < 4 && mode != 2;
+            if (selection >= 4) {
+                msg->flags4 &= ~2;
+                valid = 0;
+            } else if (mode == 2) {
+                msg->flags4 &= ~2;
+                valid = 0;
+            }
         } else {
-            valid = selection >= 4 && mode != 2;
+            if (selection < 4) {
+                msg->flags4 &= ~2;
+                valid = 0;
+            } else if (mode == 2) {
+                msg->flags4 &= ~2;
+                valid = 0;
+            }
         }
-    } else if (kind == 2) {
-        valid = mode == 2 && selection <= slot;
-    } else if (kind == 0) {
-        valid = selection < 4 && mode != 2 && selection <= slot;
     } else {
-        valid = selection >= 4 && mode != 2 && selection <= slot;
-    }
-    if (!valid) {
-        msg->flags4 &= ~2;
+        if (kind == 2) {
+            if (mode != 2) {
+                msg->flags4 &= ~2;
+                valid = 0;
+            }
+            if (selection <= slot) {
+                valid = 0;
+            }
+        } else if (kind == 0) {
+            if (selection >= 4) {
+                msg->flags4 &= ~2;
+                valid = 0;
+            } else if (mode == 2) {
+                msg->flags4 &= ~2;
+                valid = 0;
+            } else if (selection <= slot) {
+                msg->flags4 &= ~2;
+                valid = 0;
+            }
+        } else {
+            if (selection < 4) {
+                msg->flags4 &= ~2;
+                valid = 0;
+            } else if (mode == 2) {
+                msg->flags4 &= ~2;
+                valid = 0;
+            } else if (selection <= slot) {
+                msg->flags4 &= ~2;
+                valid = 0;
+            }
+        }
     }
     return valid;
 }
