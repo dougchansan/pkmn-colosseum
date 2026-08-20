@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196100,
     "total_functions": 8603,
-    "total_units": 2287
+    "total_units": 2292
   },
   "topology_status": {
     "auto_units": 67,
-    "named_units": 2220,
-    "source_backed_units": 2215,
+    "named_units": 2225,
+    "source_backed_units": 2220,
     "auto_code": 0,
     "auto_data": 57511,
     "auto_functions": 0
@@ -23,7 +23,7 @@
     "matched_data_percent": 97.29471,
     "matched_functions": 6786,
     "matched_functions_percent": 78.879456,
-    "fuzzy_match_percent": 88.046974
+    "fuzzy_match_percent": 88.04696
   },
   "unit_topology": [
     {
@@ -24169,17 +24169,82 @@
       "total_functions": 32
     },
     {
-      "name": "main/game/gs_range_801C766C",
+      "name": "main/game/gs_range_exact_801C766C",
       "sections": [
         {
           "name": ".text",
-          "size": 12672,
+          "size": 196,
           "virtual_address": 2149348972
         }
       ],
-      "total_code": 12672,
+      "total_code": 196,
       "total_data": 0,
-      "total_functions": 29
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/gs_range_candidate_801C7730",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 3532,
+          "virtual_address": 2149349168
+        }
+      ],
+      "total_code": 3532,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/gs_range_exact_801C84FC",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 396,
+          "virtual_address": 2149352700
+        }
+      ],
+      "total_code": 396,
+      "total_data": 0,
+      "total_functions": 3
+    },
+    {
+      "name": "main/game/gs_range_candidate_801C8688",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 380,
+          "virtual_address": 2149353096
+        }
+      ],
+      "total_code": 380,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/gs_range_exact_801C8804",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 48,
+          "virtual_address": 2149353476
+        }
+      ],
+      "total_code": 48,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/gs_range_candidate_801C8834",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 8120,
+          "virtual_address": 2149353524
+        }
+      ],
+      "total_code": 8120,
+      "total_data": 0,
+      "total_functions": 22
     },
     {
       "name": "main/game/field_range_801CA7EC_prefix",

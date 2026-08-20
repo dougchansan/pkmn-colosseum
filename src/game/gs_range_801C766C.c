@@ -89,7 +89,9 @@ extern const f32 lbl_8047E108;
 extern const f32 lbl_8047E114;
 extern const f64 lbl_8047E120;
 extern const f64 lbl_8047E128;
+extern s32 _fnDistanceSortFunc__FPCvPCv(const void* lhs, const void* rhs);
 
+#if defined(GS_RANGE_801C766C_801C7730)
 u8 fn_801C766C(void)
 {
     void* save;
@@ -118,7 +120,9 @@ u8 fn_801C766C(void)
 
     return 0;
 }
+#endif
 
+#if defined(GS_RANGE_801C84FC_801C8688)
 s32 _fnDistanceSortFunc__FPCvPCv(const void* lhs, const void* rhs)
 {
     const DistanceSortEntry* left = (const DistanceSortEntry*)lhs;
@@ -183,9 +187,11 @@ void fn_801C8628(void)
     cursorBiosSetPos(2, &pos);
     fn_8000D710(1);
 }
+#endif
 
 extern u32 fn_800884BC(u32 arg0, u32 arg1, u32 arg2);
 
+#if defined(GS_RANGE_801C8688_801C8804)
 u8 fn_801C8688(u16 arg0, u16 arg1, u16 arg2)
 {
     u32 v0;
@@ -233,7 +239,9 @@ u8 fn_801C8688(u16 arg0, u16 arg1, u16 arg2)
 
     return fn_800884BC(v0, v1, v2) == 0;
 }
+#endif
 
+#if defined(GS_RANGE_801C8804_801C8834)
 void fn_801C8804(void)
 {
     u32 ready = (u8)fn_80075638();
@@ -242,11 +250,13 @@ void fn_801C8804(void)
         fn_8007565C();
     }
 }
+#endif
 
 extern u32 fn_800756C8(s32 pokemonId);
 extern s32 heroItemAddItemDataId(u8* ptr, u32 itemId, u32 count, u32 arg4);
 extern s32 heroItemDecItemDataId(u8* ptr, u32 itemId, u32 count, u32 arg4);
 
+#if defined(GS_RANGE_801C8834_801C89F8)
 s32 fn_801C8834(u16 arg0)
 {
     u16 v31;
@@ -289,7 +299,9 @@ s32 fn_801C8834(u16 arg0)
 
     return v31;
 }
+#endif
 
+#if defined(GS_RANGE_801C89F8_801C8E14)
 s32 fn_801C89F8(s32 arg0, s32 arg1)
 {
     s32 linkState;
@@ -429,6 +441,7 @@ void fn_801C8DD0(s32 a, s32 b, s32 c, s32 d, s32 e)
 {
     menuSubOpenSelect(1, a, b, c, d, e);
 }
+#endif
 
 extern s32 fn_801C8E14(s32 floorDataId, u32 actorIndex, u16 mode,
                        u8 direction);
@@ -437,6 +450,7 @@ extern void floorEventCtrlElevator(s32 arg0, s32 arg1, u16 arg2,
                                    u8 arg3, s32 speed);
 extern u8 lbl_8047B3C4;
 
+#if defined(GS_RANGE_801C9910_801C9B6C)
 u8 fn_801C9910(void)
 {
     extern u8 fn_8012B19C(s32 arg0, s32 arg1, Vec3* pos);
@@ -509,7 +523,9 @@ u8 fn_801C9910(void)
 
     return 0;
 }
+#endif
 
+#if defined(GS_RANGE_801C9B6C_801CA5C4)
 void fn_801C9B6C(s32 arg0, s32 arg1, u16 arg2, u8 arg3)
 {
     s32 floorId;
@@ -805,7 +821,9 @@ void fn_801CA4F8(f32 frames)
         elapsed += (f32)fn_800D3088() / (f32)fn_800D37CC();
     }
 }
+#endif
 
+#if defined(GS_RANGE_801CA5C4_801CA708)
 u16 fn_801CA5C4(u32 arg0, u8 arg1, s32 arg2)
 {
     extern void fn_80112700(void);
@@ -865,7 +883,9 @@ u16 fn_801CA5C4(u32 arg0, u8 arg1, s32 arg2)
     fn_801903B0(0xE05);
     return (u16)result;
 }
+#endif
 
+#if defined(GS_RANGE_801CA708_801CA7EC)
 void fn_801CA708(void)
 {
     fn_8025D164();
@@ -893,9 +913,11 @@ s32 fn_801CA7CC(void)
 {
     return fn_8006ADEC();
 }
+#endif
 
 
 /* Eight-direction collision search used to place a battle actor. */
+#if defined(GS_RANGE_801C7730_801C84FC)
 s32 fn_801C7730(s32 side, s32 slot)
 {
     extern const Vec3 lbl_802758A0;
@@ -1114,8 +1136,10 @@ s32 fn_801C7730(s32 side, s32 slot)
 #undef SEGMENT_HIT
     return 0;
 }
+#endif
 
 /* Drive one scripted field actor animation and its paired movement actors. */
+#if defined(GS_RANGE_801C8E14_801C9910)
 s32 fn_801C8E14(s32 floorDataId, u32 actorIndex, u16 mode, u8 direction)
 {
     typedef struct FieldAnimActor {
@@ -1422,4 +1446,5 @@ s32 fn_801C8E14(s32 floorDataId, u32 actorIndex, u16 mode, u8 direction)
 #undef WAIT_MODEL
 #undef START_MODEL_ANIM
 }
+#endif
 #pragma peephole reset

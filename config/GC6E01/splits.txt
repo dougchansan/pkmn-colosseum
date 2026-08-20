@@ -5432,8 +5432,23 @@ game/effect/fade_effect_exact_801C4C98.c:
 game/effect/fade_range_801C4CB8.c:
 	.text       start:0x801C4CB8 end:0x801C766C
 
-game/gs_range_801C766C.c:
-	.text       start:0x801C766C end:0x801CA7EC
+game/gs_range_exact_801C766C.c:
+	.text       start:0x801C766C end:0x801C7730
+
+game/gs_range_candidate_801C7730.c:
+	.text       start:0x801C7730 end:0x801C84FC
+
+game/gs_range_exact_801C84FC.c:
+	.text       start:0x801C84FC end:0x801C8688
+
+game/gs_range_candidate_801C8688.c:
+	.text       start:0x801C8688 end:0x801C8804
+
+game/gs_range_exact_801C8804.c:
+	.text       start:0x801C8804 end:0x801C8834
+
+game/gs_range_candidate_801C8834.c:
+	.text       start:0x801C8834 end:0x801CA7EC
 
 game/field_range_801CA7EC_prefix.c:
 	.text       start:0x801CA7EC end:0x801CA9F0
