@@ -168,6 +168,7 @@ config.sjiswrap_path = args.sjiswrap
 # Project
 config.config_path = Path("config") / config.version / "config.yml"
 config.check_sha_path = Path("config") / config.version / "build.sha1"
+config.force_active_symbols["main"] = ["dbgMenuColisionDisp"]
 config.asflags = [
     "-mgekko",
     "--strip-local-absolute",
@@ -968,7 +969,7 @@ config.libs = [
                     (CodeCandidate, "game/dbgMenu_candidate_80133218.c"),
                     (CodeCandidate, "game/dbgMenu_candidate_80133250.c"),
                     (CodeCandidate, "game/dbgMenu_r61_middle_8013327C.c"),
-                    (CodeCandidate, "game/dbgMenu_candidate_801333AC.c"),
+                    (Matching, "game/dbgMenu_candidate_801333AC.c"),
                     (CodeCandidate, "game/dbgMenu_candidate_80133450.c"),
                     (CodeCandidate, "game/dbgMenu_candidate_801334A8.c"),
                     (CodeCandidate, "game/dbgMenu_candidate_801334DC.c"),
