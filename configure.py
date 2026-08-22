@@ -10451,7 +10451,7 @@ config.libs = [
                 progress_category="hsd",
             ),
             Object(
-                CodeCandidate,
+                Matching,
                 "hsd/hsd_mobj_candidate_801A6FF0.c",
                 mw_version="GC/1.3.2",
                 extra_cflags=["-use_lmw_stmw on", "-O1"],
