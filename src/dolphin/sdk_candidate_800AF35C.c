@@ -1,5 +1,7 @@
-/** Candidate-only residual range. */
-#include "src/dolphin/sdk_range_800AE3F0.c"
+/** Standalone owner for __CARDExiHandler. */
+#include "dolphin/exi/EXI.h"
+#include "dolphin/os/OSContext.h"
+#include "src/dolphin/card_dsp_private.h"
 
 extern s32 fn_800AF660(s32 chan, u8* status);
 extern s32 __CARDClearStatus(s32 chan);
@@ -7,13 +9,12 @@ extern s32 fn_800AF8A0(s32 chan);
 
 void __CARDExiHandler(s32 chan, OSContext* context)
 {
-    extern s32 fn_800AF660(s32 chan, u8* status);
-    extern s32 __CARDClearStatus(s32 chan);
-    extern s32 fn_800AF8A0(s32 chan);
     CARDControl* card;
     CARDCallback callback;
     u8 status;
     s32 result;
+
+    (void)context;
 
     card = &lbl_803FC620[chan];
     OSCancelAlarm(&card->alarm);
