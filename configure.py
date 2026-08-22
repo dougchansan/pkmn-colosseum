@@ -6907,7 +6907,7 @@ config.libs = [
             ),
             *[
                 Object(
-                    CodeCandidate,
+                    Matching if path == "game/fight_trainer_ai_irekae_r58b_80250070_suffix.c" else CodeCandidate,
                     path,
                     mw_version="GC/1.3",
                     extra_cflags=[
