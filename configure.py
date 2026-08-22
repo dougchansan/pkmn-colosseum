@@ -1596,7 +1596,7 @@ config.libs = [
                     (Matching, "musyx/musyx_irq_disable_exact_80164398.c"),
                     (Matching, "musyx/musyx_candidate_801643B8.c"),
                     (Matching, "musyx/musyx_exact_80164488.c"),
-                    (CodeCandidate, "musyx/musyx_r50_801644E0_prefix.c"),
+                    (Matching, "musyx/musyx_r50_801644E0_prefix.c"),
                     (CodeCandidate, "musyx/musyx_r50_80164520_inline_noauto.c"),
                     (CodeCandidate, "musyx/musyx_r51_80164A2C_inline_noauto.c"),
                 ]
