@@ -3647,10 +3647,16 @@ config.libs = [
                     ("dolphin/sdk_r58_800A2D38_prefix.c", "GC/1.2.5n", False),
                     ("dolphin/sdk_r58_800A30E4_o2.c", "GC/1.1p1", True),
                     ("dolphin/sdk_r59_800A3194_prefix.c", "GC/1.2.5n", False),
-                    ("dolphin/sdk_r59_800A335C_o2.c", "GC/1.1p1", True),
                     ("dolphin/sdk_r59_800A33B4_suffix.c", "GC/1.2.5n", False),
                 ]
             ],
+            Object(
+                Matching,
+                "dolphin/sdk_r59_800A335C_o2.c",
+                mw_version="GC/1.1p1",
+                cflags=["-O2" if flag == "-O4,p" else flag for flag in cflags_base],
+                progress_category="sdk",
+            ),
             Object(
                 CodeCandidate,
                 "dolphin/sdk_candidate_800A3458.c",

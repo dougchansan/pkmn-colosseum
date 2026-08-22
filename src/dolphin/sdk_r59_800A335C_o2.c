@@ -1,3 +1,11 @@
 /* Score instrumentation only; not evidence of a retail TU boundary. */
 #define SDK_MTX_IDENTITY_COPY_EXCLUDE
+#define SDK_PSMTXROTRAD_EXCLUDE
+#define SDK_PSMTXROTTRIG_EXCLUDE
+#define SDK_PSMTXROTAXIS_INTERNAL_EXCLUDE
+#define SDK_PSMTXROTAXISRAD_EXCLUDE
+#define SDK_PSMTXTRANS_EXCLUDE
+#define SDK_PSMTXTRANSAPPLY_EXCLUDE
+#define SDK_PSMTXSCALE_EXCLUDE
+#define SDK_PSMTXQUAT_EXCLUDE
 #include "src/dolphin/sdk_candidate_800A2D38_prefix.c"
