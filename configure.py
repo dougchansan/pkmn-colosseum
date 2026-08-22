@@ -10102,7 +10102,7 @@ config.libs = [
                 progress_category="hsd",
             ),
             Object(
-                CodeCandidate,
+                Matching,
                 "hsd/hsd_jobj_residual_801A0CE8.c",
                 mw_version="GC/1.3",
                 progress_category="hsd",
