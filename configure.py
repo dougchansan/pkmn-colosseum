@@ -7679,7 +7679,7 @@ config.libs = [
                     (Matching, "game/gba/gba_conv_exact_80088EA8.c"),
                     (CodeCandidate, "game/gba/gba_conv_candidate_80088F58.c"),
                     (Matching, "game/gba/gba_conv_exact_80089028.c"),
-                    (CodeCandidate, "game/gba/gba_conv_candidate_80089030.c"),
+                    (Matching, "game/gba/gba_conv_candidate_80089030.c"),
                 ]
             ],
             Object(
