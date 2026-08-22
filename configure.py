@@ -2622,7 +2622,7 @@ config.libs = [
                 )
                 for status, path in [
                     (Matching, "game/window_exact_80103FE4.c"),
-                    (CodeCandidate, "game/window.c"),
+                    (Matching, "game/window.c"),
                     (Matching, "game/window_exact_801040A0.c"),
                     (CodeCandidate, "game/window_candidate_801040F0.c"),
                     (Matching, "game/window_exact_801046B8.c"),
