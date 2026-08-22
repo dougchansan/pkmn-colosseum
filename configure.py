@@ -1894,7 +1894,9 @@ config.libs = [
             ),
             *[
                 Object(
-                    CodeCandidate,
+                    Matching
+                    if path == "game/fight_pokemon_r58_801FEC10_prefix.c"
+                    else CodeCandidate,
                     path,
                     mw_version=(
                         "GC/2.0"
