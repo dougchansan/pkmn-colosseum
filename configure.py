@@ -168,7 +168,15 @@ config.sjiswrap_path = args.sjiswrap
 # Project
 config.config_path = Path("config") / config.version / "config.yml"
 config.check_sha_path = Path("config") / config.version / "build.sha1"
-config.force_active_symbols["main"] = ["dbgMenuColisionDisp"]
+config.force_active_symbols["main"] = [
+    "dbgMenuColisionDisp",
+    "fn_80133050",
+    "fn_8013308C",
+    "dbgMenuGSmemOptimize",
+    "debugMenuColorBarDisp",
+    "fn_801334DC",
+    "fn_80133630",
+]
 config.asflags = [
     "-mgekko",
     "--strip-local-absolute",
@@ -963,18 +971,18 @@ config.libs = [
                 )
                 for status, path in [
                     (CodeCandidate, "game/dbgMenu_r61_prefix_80132C6C.c"),
-                    (CodeCandidate, "game/dbgMenu_candidate_80133050.c"),
-                    (CodeCandidate, "game/dbgMenu_candidate_8013308C.c"),
+                    (Matching, "game/dbgMenu_candidate_80133050.c"),
+                    (Matching, "game/dbgMenu_candidate_8013308C.c"),
                     (CodeCandidate, "game/dbgMenu_r61_middle_801330C8.c"),
-                    (CodeCandidate, "game/dbgMenu_candidate_80133218.c"),
+                    (Matching, "game/dbgMenu_candidate_80133218.c"),
                     (CodeCandidate, "game/dbgMenu_candidate_80133250.c"),
                     (CodeCandidate, "game/dbgMenu_r61_middle_8013327C.c"),
                     (Matching, "game/dbgMenu_candidate_801333AC.c"),
-                    (CodeCandidate, "game/dbgMenu_candidate_80133450.c"),
+                    (Matching, "game/dbgMenu_candidate_80133450.c"),
                     (CodeCandidate, "game/dbgMenu_candidate_801334A8.c"),
-                    (CodeCandidate, "game/dbgMenu_candidate_801334DC.c"),
+                    (Matching, "game/dbgMenu_candidate_801334DC.c"),
                     (CodeCandidate, "game/dbgMenu_r61_middle_80133510.c"),
-                    (CodeCandidate, "game/dbgMenu_candidate_80133630.c"),
+                    (Matching, "game/dbgMenu_candidate_80133630.c"),
                     (CodeCandidate, "game/dbgMenu_r61_suffix_80133664.c"),
                     (Matching, "game/dbgMenu_exact_801337A0.c"),
                     (CodeCandidate, "game/dbgMenu_candidate_801337E4.c"),
