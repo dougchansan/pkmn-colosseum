@@ -4085,7 +4085,7 @@ config.libs = [
                 progress_category="sdk",
             ),
             Object(
-                CodeCandidate,
+                Matching,
                 "dolphin/sdk_range_800BA1B4.c",
                 mw_version="GC/1.2.5n",
                 extra_cflags=["-fp_contract off"],
