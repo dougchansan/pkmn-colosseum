@@ -7116,7 +7116,7 @@ config.libs = [
                 )
                 for status, path in [
                     (Matching, "game/memo_exact_8025FEE4.c"),
-                    (CodeCandidate, "game/memo_candidate_8025FF18.c"),
+                    (Matching, "game/memo_candidate_8025FF18.c"),
                 ]
             ],
             Object(
