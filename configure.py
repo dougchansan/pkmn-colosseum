@@ -6095,7 +6095,7 @@ config.libs = [
                 for status, path in [
                     (CodeCandidate, "game/field_range_801ECFE0.c"),
                     (Matching, "game/field_exact_801ED218.c"),
-                    (CodeCandidate, "game/field_candidate_801ED310.c"),
+                    (Matching, "game/field_candidate_801ED310.c"),
                     (Matching, "game/field_exact_801ED388.c"),
                 ]
             ],
