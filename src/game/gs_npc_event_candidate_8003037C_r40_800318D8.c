@@ -19,36 +19,15 @@ void fn_800318D8(s32 unused, u8* tgt)
     s32 i;
 
     for (i = 0; i < 2; i++) {
-        if ((s32) * (s16*) (tgt + 6) == (s32) * (u16*) (p + 0xE)) {
-            group = p[0];
-            sub = p[1];
+        s32 j;
+
+        for (j = 0; j < 6; j++) {
+            if ((s32) * (s16*) (tgt + 6) == (s32) * (u16*) (p + 0xE)) {
+                group = p[0];
+                sub = p[1];
+            }
+            p += 0x12;
         }
-        p += 0x12;
-        if ((s32) * (s16*) (tgt + 6) == (s32) * (u16*) (p + 0xE)) {
-            group = p[0];
-            sub = p[1];
-        }
-        p += 0x12;
-        if ((s32) * (s16*) (tgt + 6) == (s32) * (u16*) (p + 0xE)) {
-            group = p[0];
-            sub = p[1];
-        }
-        p += 0x12;
-        if ((s32) * (s16*) (tgt + 6) == (s32) * (u16*) (p + 0xE)) {
-            group = p[0];
-            sub = p[1];
-        }
-        p += 0x12;
-        if ((s32) * (s16*) (tgt + 6) == (s32) * (u16*) (p + 0xE)) {
-            group = p[0];
-            sub = p[1];
-        }
-        p += 0x12;
-        if ((s32) * (s16*) (tgt + 6) == (s32) * (u16*) (p + 0xE)) {
-            group = p[0];
-            sub = p[1];
-        }
-        p += 0x12;
     }
     if (group == 1 && (s32) lbl_8047A424 == sub) {
         winSpriteSetDisp(tgt, 1);
