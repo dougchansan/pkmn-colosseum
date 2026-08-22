@@ -11479,7 +11479,7 @@ config.libs = [
                 progress_category="game",
             ),
             Object(
-                DataCandidate,
+                Matching,
                 "game/data/data_803140F8.c",
                 progress_category="game",
             ),
