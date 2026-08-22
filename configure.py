@@ -4200,14 +4200,25 @@ config.libs = [
                 mw_version="GC/1.3.2",
                 progress_category="sdk",
             ),
-            *[
-                Object(status, path, mw_version="GC/1.3", progress_category="runtime")
-                for status, path in [
-                    (Matching, "trk/trk_exact_800C3EBC.c"),
-                    (CodeCandidate, "trk/trk_range_800C3EBC.c"),
-                    (Matching, "trk/trk_exact_800C4154.c"),
-                ]
-            ],
+            Object(
+                Matching,
+                "trk/trk_exact_800C3EBC.c",
+                mw_version="GC/1.3",
+                progress_category="runtime",
+            ),
+            Object(
+                Matching,
+                "trk/trk_range_800C3EBC.c",
+                mw_version="GC/1.3",
+                extra_cflags=["-DTRK_RANGE_800C3EBC_ONLY"],
+                progress_category="runtime",
+            ),
+            Object(
+                Matching,
+                "trk/trk_exact_800C4154.c",
+                mw_version="GC/1.3",
+                progress_category="runtime",
+            ),
             Object(
                 Matching,
                 "trk/trk_range_800C4470.c",
