@@ -390,7 +390,7 @@ config.libs = [
                 progress_category="runtime",
             ),
             Object(
-                CodeCandidate,
+                Matching,
                 "trk/TRKDispatch_r52_800C0504_prefix.c",
                 mw_version="GC/1.3",
                 extra_cflags=["-use_lmw_stmw on"],
