@@ -10384,7 +10384,7 @@ config.libs = [
             Object(CodeCandidate, "hsd/hsd_shadow_r60_801B04E0_suffix.c", mw_version="GC/1.3", extra_cflags=["-O1"], progress_category="hsd"),
             *[
                 Object(
-                    CodeCandidate,
+                    status,
                     path,
                     mw_version="GC/1.3",
                     cflags=(
@@ -10394,10 +10394,10 @@ config.libs = [
                     ),
                     progress_category="hsd",
                 )
-                for path, use_o1 in [
-                    ("hsd/hsd_shadow_r58_801B06DC_prefix.c", False),
-                    ("hsd/hsd_shadow_r58_801B073C_o1.c", True),
-                    ("hsd/hsd_shadow_r58_801B07D4_suffix.c", False),
+                for status, path, use_o1 in [
+                    (Matching, "hsd/hsd_shadow_r58_801B06DC_prefix.c", False),
+                    (CodeCandidate, "hsd/hsd_shadow_r58_801B073C_o1.c", True),
+                    (CodeCandidate, "hsd/hsd_shadow_r58_801B07D4_suffix.c", False),
                 ]
             ],
             *[
