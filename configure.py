@@ -1585,7 +1585,7 @@ config.libs = [
             ],
             *[
                 Object(
-                    CodeCandidate,
+                    Matching if path == "hsd/hsd_tobj_r58_801BEE68_middle.c" else CodeCandidate,
                     path,
                     mw_version=version,
                     cflags=[opt if flag == "-O4,p" else flag for flag in cflags_base],
