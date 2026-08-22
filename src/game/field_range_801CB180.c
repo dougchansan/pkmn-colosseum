@@ -228,6 +228,8 @@ extern s32 fn_801CF7E4(void);
 extern s32 fn_801CF9C8(void);
 extern s32 fn_801CFD08(void);
 
+#if !defined(FIELD_801CB180_SPLIT) || defined(FIELD_801CB180_RANGE_801CB180)
+
 #pragma push
 #pragma scheduling off
 #pragma peephole off
@@ -399,6 +401,9 @@ void fn_801CB530(u32 model_id, u32 particle_bank_id)
 }
 #pragma pop
 
+#endif
+
+#if defined(FIELD_801CB180_RANGE_801CB59C)
 s32 fn_801CB59C(u32 resource)
 {
     u32 group = fn_80113F48();
@@ -416,7 +421,9 @@ s32 fn_801CB59C(u32 resource)
 
     return 1;
 }
+#endif
 
+#if defined(FIELD_801CB180_RANGE_801CB61C)
 #pragma push
 #pragma scheduling off
 #pragma peephole off
@@ -476,7 +483,9 @@ s32 scriptWaitSyncMotion(u32 resource, s32 wait)
     }
 }
 #pragma pop
+#endif
 
+#if defined(FIELD_801CB180_RANGE_801CB7C4)
 void fn_801CB7C4(u32 resource)
 {
     u32 group = fn_80113F48();
@@ -491,7 +500,9 @@ void fn_801CB7C4(u32 resource)
         }
     }
 }
+#endif
 
+#if defined(FIELD_801CB180_RANGE_801CB834)
 #pragma push
 #pragma peephole off
 void fn_801CB834(u32 resource, u32 anim_index, s32 frame, s32 loop)
@@ -539,12 +550,16 @@ void fn_801CB954(u32 resource, s32 visible)
     }
 }
 #pragma pop
+#endif
 
+#if defined(FIELD_801CB180_RANGE_801CB9D8)
 void fn_801CB9D8(u32 resource)
 {
     fn_8018DB68(fn_80113F48(), resource);
 }
+#endif
 
+#if defined(FIELD_801CB180_RANGE_801CBA0C)
 #pragma push
 #pragma scheduling off
 s32 fn_801CBA0C(void* param)
@@ -568,13 +583,16 @@ s32 fn_801CBA0C(void* param)
     return people_id;
 }
 #pragma pop
+#endif
 
+#if defined(FIELD_801CB180_RANGE_801CBA84)
 void fn_801CBA84(void)
 {
     lbl_8047B3C8 = 0;
 }
+#endif
 
-#if !defined(FIELD_801CBA90_SPLIT) || defined(FIELD_801CBA90_RANGE_PREFIX)
+#if defined(FIELD_801CBA90_RANGE_PREFIX)
 #pragma push
 #pragma scheduling off
 s32 fn_801CBA90(void)
@@ -667,7 +685,7 @@ static inline void fieldSha1Update(FieldSha1Context* context,
     memcpy(&context->buffer[index], &input[i], length - i);
 }
 
-#if !defined(FIELD_801CBA90_SPLIT) || defined(FIELD_801CBA90_RANGE_PREFIX)
+#if defined(FIELD_801CBA90_RANGE_PREFIX)
 void fn_801CBBAC(u8 digest[20], const u8* input, u32 length)
 {
     FieldSha1Context context;
@@ -708,7 +726,7 @@ void fn_801CBBAC(u8 digest[20], const u8* input, u32 length)
 }
 #endif
 
-#if !defined(FIELD_801CBA90_SPLIT) || defined(FIELD_801CBA90_RANGE_801CBCDC)
+#if defined(FIELD_801CBA90_RANGE_801CBCDC)
 u8 fn_801CBCDC(u8* data, u32 size, const u32 expected[5], u32 offset)
 {
     u32* savedDigest;
@@ -752,7 +770,7 @@ u8 fn_801CBCDC(u8* data, u32 size, const u32 expected[5], u32 offset)
 }
 #endif
 
-#if !defined(FIELD_801CBA90_SPLIT) || defined(FIELD_801CBA90_RANGE_801CBE44)
+#if defined(FIELD_801CBA90_RANGE_801CBE44)
 void fn_801CBE44(void* dataArg, u32 size, void* outArg, u32 offset)
 {
     extern u32 lbl_80467128[];
@@ -791,7 +809,7 @@ void fn_801CBE44(void* dataArg, u32 size, void* outArg, u32 offset)
 }
 #endif
 
-#if !defined(FIELD_801CBA90_SPLIT) || defined(FIELD_801CBA90_RANGE_801CBF64)
+#if defined(FIELD_801CBA90_RANGE_801CBF64)
 void fn_801CBF64(u8 digest[20], FieldSha1Context* context)
 {
     u8 bits[8];
@@ -852,7 +870,7 @@ typedef union SHA1Block {
     z += (w ^ x ^ y) + SHA1_BLK(i) + 0xCA62C1D6 + SHA1_ROTL(v, 5); \
     w = SHA1_ROTL(w, 30)
 
-#if !defined(FIELD_801CBA90_SPLIT) || defined(FIELD_801CBA90_RANGE_801CC380)
+#if defined(FIELD_801CBA90_RANGE_801CC380)
 void fn_801CC380(u32 state[5], const u8 input[64])
 {
     u32 a;
@@ -977,7 +995,7 @@ void fn_801CC380(u32 state[5], const u8 input[64])
 #define task lbl_8047B3D4
 #define raw ((u8*)lbl_8047B3D4)
 #define file_info ((void*)((u8*)lbl_8047B3D4 + 0x8C))
-#if !defined(FIELD_801CBA90_SPLIT) || defined(FIELD_801CBA90_RANGE_801CDB04)
+#if defined(FIELD_801CBA90_RANGE_801CDB04)
 void fn_801CDB04(void)
 {
     s32 result;
@@ -1779,7 +1797,7 @@ static inline void memcardFillRandom(u8* random, s32 count)
     }
 }
 
-#if !defined(FIELD_801CBA90_SPLIT) || defined(FIELD_801CBA90_RANGE_801CF320)
+#if defined(FIELD_801CBA90_RANGE_801CF320)
 s32 fn_801CF320(void)
 {
     u32 serial[2];
@@ -1893,7 +1911,7 @@ s32 fn_801CF568(void)
 }
 #endif
 
-#if !defined(FIELD_801CBA90_SPLIT) || defined(FIELD_801CBA90_RANGE_801CF7E4)
+#if defined(FIELD_801CBA90_RANGE_801CF7E4)
 s32 fn_801CF7E4(void)
 {
     u8* task;
@@ -2093,7 +2111,7 @@ s32 fn_801CF9C8(void)
 }
 #endif
 
-#if !defined(FIELD_801CBA90_SPLIT) || defined(FIELD_801CBA90_RANGE_801CFD08)
+#if defined(FIELD_801CBA90_RANGE_801CFD08)
 s32 fn_801CFD08(void)
 {
     s32 free_bytes;
@@ -2226,12 +2244,14 @@ scan_done:
 }
 #endif
 
-
+#if defined(FIELD_801CBA90_RANGE_801D0080)
 void fn_801D0080(void)
 {
     lbl_8047B3D4->callback_finished = 1;
 }
+#endif
 
+#if defined(FIELD_801CBA90_RANGE_801D0090)
 s32 fn_801D0090(s32 error)
 {
     extern void winMsgOpen(s32 window, u32 message, s32 arg2, s32 arg3);
@@ -2360,3 +2380,4 @@ s32 fn_801D0090(s32 error)
     }
     return ask;
 }
+#endif
