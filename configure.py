@@ -1626,7 +1626,7 @@ config.libs = [
                     (CodeCandidate, "game/people/people_data_candidate_80142368.c"),
                     (Matching, "game/people/people_field_lookup_exact_80142984.c"),
                     (CodeCandidate, "game/people/people_data_r51_80142A88_prefix.c"),
-                    (CodeCandidate, "game/people/people_data_r51_801431AC_suffix.c"),
+                    (Matching, "game/people/people_data_r51_801431AC_suffix.c"),
                     (Matching, "game/people/people_item_friend_exact_8014369C.c"),
                     (CodeCandidate, "game/people/people_data_candidate_801436F0.c"),
                     (Matching, "game/people/people_item_effort_exact_80143718.c"),
