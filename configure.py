@@ -422,7 +422,7 @@ config.libs = [
                 progress_category="runtime",
             ),
             Object(
-                CodeCandidate,
+                Matching,
                 "trk/TRKTarget_range_800C1348.c",
                 mw_version="GC/1.3",
                 extra_cflags=["-use_lmw_stmw on"],

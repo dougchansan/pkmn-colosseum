@@ -107,6 +107,8 @@ s32 TRKTargetSupportRequest(void)
 
 #endif
 
+#if defined(TRK_TARGET_RANGE_SPLIT)
+
 #if !defined(TRK_TARGET_RANGE_SPLIT) || \
     defined(TRK_TARGET_RANGE_800C1548_800C17CC)
 
@@ -721,3 +723,5 @@ s32 TRKValidMemory32(const void* address, u32 length, s32 write)
 }
 
 #endif
+
+#endif /* TRK_TARGET_RANGE_SPLIT */
