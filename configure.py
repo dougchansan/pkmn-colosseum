@@ -3689,7 +3689,7 @@ config.libs = [
                 progress_category="sdk",
             ),
             Object(
-                CodeCandidate,
+                Matching,
                 "dolphin/sdk_range_800A37CC.c",
                 mw_version="GC/1.2.5n",
                 progress_category="sdk",
