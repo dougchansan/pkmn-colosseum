@@ -750,6 +750,8 @@ asm void PSMTXMultVecSR(const register Mtx m, const register Vec* src,
 }
 #endif
 
+#if !defined(SDK_POST_MTXVEC_EXCLUDE)
+
 #if !defined(SDK_PROJECTION_PREFIX_EXCLUDE)
 void C_MTXFrustum(Mtx44 m, f32 top, f32 bottom, f32 left, f32 right, f32 near, f32 far)
 {
@@ -1119,7 +1121,9 @@ void C_QUATRotAxisRad(Quaternion* quat, const Vec* axis, f32 rad)
 #endif
 #endif
 #endif
+#endif
 
+#if !defined(SDK_POST_MTXVEC_EXCLUDE)
 #if !defined(SDK_CQUATSLERP_EXCLUDE)
 void C_QUATSlerp(const Quaternion* p, const Quaternion* q, Quaternion* r, f32 t)
 {
@@ -1157,5 +1161,6 @@ void C_QUATSlerp(const Quaternion* p, const Quaternion* q, Quaternion* r, f32 t)
     r->z = pScale * p->z + qScale * q->z;
     r->w = pScale * p->w + qScale * q->w;
 }
+#endif
 #endif
 #endif
