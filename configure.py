@@ -8749,7 +8749,7 @@ config.libs = [
                     (CodeCandidate, "game/gs_npc_event_candidate_8003037C_r40_80030C14.c", "GC/1.3"),
                     (CodeCandidate, "game/gs_npc_event_candidate_8003037C_r40_80030D34_gc20.c", "GC/2.0"),
                     (CodeCandidate, "game/gs_npc_event_candidate_8003037C_r40_80030F0C_gc20.c", "GC/2.0"),
-                    (CodeCandidate, "game/gs_npc_event_candidate_8003037C_r40_80031188.c", "GC/1.3"),
+                    (Matching, "game/gs_npc_event_candidate_8003037C_r40_80031188.c", "GC/1.3"),
                     (CodeCandidate, "game/gs_npc_event_candidate_8003037C_r40_80031228_gc20.c", "GC/2.0"),
                     (CodeCandidate, "game/gs_npc_event_candidate_8003037C_r40_80031404_gc20.c", "GC/2.0"),
                     (CodeCandidate, "game/gs_npc_event_candidate_8003037C_r40_80031648_gc20.c", "GC/2.0"),
