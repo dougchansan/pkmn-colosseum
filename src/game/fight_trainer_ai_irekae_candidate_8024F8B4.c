@@ -1,1 +1,1 @@
-#include "src/game/fight_trainer_ai_irekae.c"
+#include "src/game/fight_trainer_ai_irekae_parent.c"
