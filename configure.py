@@ -2677,7 +2677,7 @@ config.libs = [
                     progress_category="game",
                 )
                 for status, path in [
-                    (CodeCandidate, "game/win_sequence.c"),
+                    (Matching, "game/win_sequence.c"),
                     (Matching, "game/win_sequence_exact_801070F4.c"),
                     (CodeCandidate, "game/win_sequence_candidate_80107170.c"),
                 ]
