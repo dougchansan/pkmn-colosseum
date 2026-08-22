@@ -1575,7 +1575,7 @@ config.libs = [
                     (Matching, "musyx/musyx_exact_80163188.c"),
                     (Matching, "musyx/musyx_candidate_801631C0.c"),
                     (Matching, "musyx/musyx_exact_801631CC.c"),
-                    (CodeCandidate, "musyx/musyx_candidate_801631F4.c"),
+                    (Matching, "musyx/musyx_candidate_801631F4.c"),
                     (Matching, "musyx/musyx_aram_callback_exact_80163214.c"),
                     (Matching, "musyx/musyx_candidate_801632B4.c"),
                     (Matching, "musyx/musyx_aram_wait_exact_80163490.c"),
