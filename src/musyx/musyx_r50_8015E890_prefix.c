@@ -1,2 +1,12 @@
-/* Score instrumentation only; not evidence of a retail TU boundary. */
-#include "src/musyx/musyx_range_80157280.c"
+#include "dolphin/types.h"
+
+extern u8 lbl_8047AF18;
+
+u8 fn_8015E890(void* emitter)
+{
+    if (lbl_8047AF18 != 0) {
+        return (((u32*)emitter)[4] >> 0x10) & 1;
+    }
+
+    return 0;
+}

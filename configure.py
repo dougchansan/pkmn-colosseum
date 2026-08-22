@@ -1514,7 +1514,7 @@ config.libs = [
                     (CodeCandidate, "musyx/musyx_r50_8015D678_prefix.c", "GC/1.3.2"),
                     (CodeCandidate, "musyx/musyx_r50_8015DEC0_fp_contract_off.c", "GC/1.3.2"),
                     (CodeCandidate, "musyx/musyx_r50_8015E374_fp_contract_off.c", "GC/1.3.2"),
-                    (CodeCandidate, "musyx/musyx_r50_8015E890_prefix.c", "GC/1.3.2"),
+                    (Matching, "musyx/musyx_r50_8015E890_prefix.c", "GC/1.3.2"),
                     (CodeCandidate, "musyx/musyx_r50_8015E8B0_inline_noauto.c", "GC/1.3.2"),
                     (CodeCandidate, "musyx/musyx_r50_8015ECA8_suffix.c", "GC/1.3.2"),
                     (CodeCandidate, "musyx/musyx_candidate_8015D678_r40_801603C0_gc125n.c", "GC/1.3"),
