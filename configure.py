@@ -3523,15 +3523,27 @@ config.libs = [
                 mw_version="GC/1.2.5n",
                 progress_category="sdk",
             ),
-            Object(
-                CodeCandidate,
-                "dolphin/sdk_range_8009BD84.c",
-                mw_version="GC/1.2.5n",
-                progress_category="sdk",
-                # OSFatal.c's RGB2YUV is emitted with separate fmuls/fadds, so
-                # this SDK object predates the project-wide -fp_contract on.
-                extra_cflags=["-fp_contract off"],
-            ),
+            *[
+                Object(
+                    status,
+                    path,
+                    mw_version="GC/1.2.5n",
+                    progress_category="sdk",
+                    # OSFatal.c's RGB2YUV is emitted with separate fmuls/fadds,
+                    # so this SDK family predates the project-wide
+                    # -fp_contract on.
+                    extra_cflags=["-fp_contract off"],
+                )
+                for status, path in [
+                    (CodeCandidate, "dolphin/sdk_candidate_8009BD84.c"),
+                    (Matching, "dolphin/sdk_exact_8009C2E0.c"),
+                    (CodeCandidate, "dolphin/sdk_candidate_8009C578.c"),
+                    (Matching, "dolphin/sdk_exact_8009C860.c"),
+                    (CodeCandidate, "dolphin/sdk_candidate_8009CD38.c"),
+                    (Matching, "dolphin/sdk_exact_8009D510.c"),
+                    (CodeCandidate, "dolphin/sdk_candidate_8009DF3C.c"),
+                ]
+            ],
             *[
                 Object(status, path, mw_version="GC/1.2.5n", progress_category="sdk")
                 for status, path in [
@@ -5847,7 +5859,11 @@ config.libs = [
                     (CodeCandidate, "game/field_candidate_801CBA0C.c", "GC/1.3"),
                     (Matching, "game/field_exact_801CBA84.c", "GC/1.3"),
                     (CodeCandidate, "game/field_candidate_801CBA90_r40_801CBF64_gc25.c", "GC/2.5"),
-                    (CodeCandidate, "game/field_candidate_801CBA90_r40_801CC380.c", "GC/1.3"),
+                    (Matching, "game/field_exact_801CC380.c", "GC/1.3"),
+                    (CodeCandidate, "game/field_candidate_801CDB04.c", "GC/1.3"),
+                    (Matching, "game/field_exact_801CF320.c", "GC/1.3"),
+                    (CodeCandidate, "game/field_candidate_801CF7E4.c", "GC/1.3"),
+                    (Matching, "game/field_exact_801CFD08.c", "GC/1.3"),
                     (Matching, "game/field_exact_801D0080.c", "GC/1.3"),
                     (CodeCandidate, "game/field_candidate_801D0090.c", "GC/1.3"),
                 ]
@@ -9622,7 +9638,7 @@ config.libs = [
                     (Matching, "game/camera_exact_80176F68.c"),
                     (Matching, "game/camera_exact_80176F98.c"),
                     (Matching, "game/camera_exact_80177004.c"),
-                    (CodeCandidate, "game/camera_candidate_8017707C.c"),
+                    (Matching, "game/camera_candidate_8017707C.c"),
                     (Matching, "game/camera_exact_801773F4.c"),
                     (Matching, "game/camera_exact_80177478.c"),
                     (Matching, "game/camera_exact_801778B4.c"),

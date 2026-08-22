@@ -6,12 +6,12 @@
     "total_code": 2495108,
     "total_data": 2196100,
     "total_functions": 8603,
-    "total_units": 2277
+    "total_units": 2287
   },
   "topology_status": {
     "auto_units": 67,
-    "named_units": 2210,
-    "source_backed_units": 2205,
+    "named_units": 2220,
+    "source_backed_units": 2215,
     "auto_code": 0,
     "auto_data": 57511,
     "auto_functions": 0
@@ -23,7 +23,7 @@
     "matched_data_percent": 97.29471,
     "matched_functions": 6786,
     "matched_functions_percent": 78.879456,
-    "fuzzy_match_percent": 88.046974
+    "fuzzy_match_percent": 88.04734
   },
   "unit_topology": [
     {
@@ -5401,17 +5401,95 @@
       "total_functions": 1
     },
     {
-      "name": "main/dolphin/sdk_range_8009BD84",
+      "name": "main/dolphin/sdk_candidate_8009BD84",
       "sections": [
         {
           "name": ".text",
-          "size": 8708,
+          "size": 1372,
           "virtual_address": 2148121988
         }
       ],
-      "total_code": 8708,
+      "total_code": 1372,
       "total_data": 0,
-      "total_functions": 21
+      "total_functions": 5
+    },
+    {
+      "name": "main/dolphin/sdk_exact_8009C2E0",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 664,
+          "virtual_address": 2148123360
+        }
+      ],
+      "total_code": 664,
+      "total_data": 0,
+      "total_functions": 2
+    },
+    {
+      "name": "main/dolphin/sdk_candidate_8009C578",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 744,
+          "virtual_address": 2148124024
+        }
+      ],
+      "total_code": 744,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/dolphin/sdk_exact_8009C860",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1240,
+          "virtual_address": 2148124768
+        }
+      ],
+      "total_code": 1240,
+      "total_data": 0,
+      "total_functions": 2
+    },
+    {
+      "name": "main/dolphin/sdk_candidate_8009CD38",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 2008,
+          "virtual_address": 2148126008
+        }
+      ],
+      "total_code": 2008,
+      "total_data": 0,
+      "total_functions": 2
+    },
+    {
+      "name": "main/dolphin/sdk_exact_8009D510",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 2604,
+          "virtual_address": 2148128016
+        }
+      ],
+      "total_code": 2604,
+      "total_data": 0,
+      "total_functions": 6
+    },
+    {
+      "name": "main/dolphin/sdk_candidate_8009DF3C",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 76,
+          "virtual_address": 2148130620
+        }
+      ],
+      "total_code": 76,
+      "total_data": 0,
+      "total_functions": 3
     },
     {
       "name": "main/dolphin/os/OSInterruptHandlers",
@@ -24377,17 +24455,69 @@
       "total_functions": 1
     },
     {
-      "name": "main/game/field_candidate_801CBA90_r40_801CC380",
+      "name": "main/game/field_exact_801CC380",
       "sections": [
         {
           "name": ".text",
-          "size": 15616,
+          "size": 6020,
           "virtual_address": 2149368704
         }
       ],
-      "total_code": 15616,
+      "total_code": 6020,
       "total_data": 0,
-      "total_functions": 7
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/field_candidate_801CDB04",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 6172,
+          "virtual_address": 2149374724
+        }
+      ],
+      "total_code": 6172,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/field_exact_801CF320",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1220,
+          "virtual_address": 2149380896
+        }
+      ],
+      "total_code": 1220,
+      "total_data": 0,
+      "total_functions": 2
+    },
+    {
+      "name": "main/game/field_candidate_801CF7E4",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 1316,
+          "virtual_address": 2149382116
+        }
+      ],
+      "total_code": 1316,
+      "total_data": 0,
+      "total_functions": 2
+    },
+    {
+      "name": "main/game/field_exact_801CFD08",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 888,
+          "virtual_address": 2149383432
+        }
+      ],
+      "total_code": 888,
+      "total_data": 0,
+      "total_functions": 1
     },
     {
       "name": "main/game/field_exact_801D0080",

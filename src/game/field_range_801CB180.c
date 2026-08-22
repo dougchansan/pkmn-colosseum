@@ -574,6 +574,7 @@ void fn_801CBA84(void)
     lbl_8047B3C8 = 0;
 }
 
+#if !defined(FIELD_801CBA90_SPLIT) || defined(FIELD_801CBA90_RANGE_PREFIX)
 #pragma push
 #pragma scheduling off
 s32 fn_801CBA90(void)
@@ -628,6 +629,7 @@ s32 fn_801CBAB8(void)
 }
 #pragma scheduling on
 #pragma pop
+#endif
 
 typedef struct FieldSha1Context {
     u32 state[5];
@@ -665,6 +667,7 @@ static inline void fieldSha1Update(FieldSha1Context* context,
     memcpy(&context->buffer[index], &input[i], length - i);
 }
 
+#if !defined(FIELD_801CBA90_SPLIT) || defined(FIELD_801CBA90_RANGE_PREFIX)
 void fn_801CBBAC(u8 digest[20], const u8* input, u32 length)
 {
     FieldSha1Context context;
@@ -703,7 +706,9 @@ void fn_801CBBAC(u8 digest[20], const u8* input, u32 length)
     memcpy(&context.buffer[index], &input[i], length - i);
     fn_801CBF64(digest, &context);
 }
+#endif
 
+#if !defined(FIELD_801CBA90_SPLIT) || defined(FIELD_801CBA90_RANGE_801CBCDC)
 u8 fn_801CBCDC(u8* data, u32 size, const u32 expected[5], u32 offset)
 {
     u32* savedDigest;
@@ -745,7 +750,9 @@ u8 fn_801CBCDC(u8* data, u32 size, const u32 expected[5], u32 offset)
     }
     return 1;
 }
+#endif
 
+#if !defined(FIELD_801CBA90_SPLIT) || defined(FIELD_801CBA90_RANGE_801CBE44)
 void fn_801CBE44(void* dataArg, u32 size, void* outArg, u32 offset)
 {
     extern u32 lbl_80467128[];
@@ -782,7 +789,9 @@ void fn_801CBE44(void* dataArg, u32 size, void* outArg, u32 offset)
     }
     memcpy(outDigest, digest, 20);
 }
+#endif
 
+#if !defined(FIELD_801CBA90_SPLIT) || defined(FIELD_801CBA90_RANGE_801CBF64)
 void fn_801CBF64(u8 digest[20], FieldSha1Context* context)
 {
     u8 bits[8];
@@ -809,6 +818,7 @@ void fn_801CBF64(u8 digest[20], FieldSha1Context* context)
     memset(bits, 0, sizeof(bits));
     fn_801CC380(context->state, context->buffer);
 }
+#endif
 
 
 /* SHA-1's 16-word circular message schedule. */
@@ -842,6 +852,7 @@ typedef union SHA1Block {
     z += (w ^ x ^ y) + SHA1_BLK(i) + 0xCA62C1D6 + SHA1_ROTL(v, 5); \
     w = SHA1_ROTL(w, 30)
 
+#if !defined(FIELD_801CBA90_SPLIT) || defined(FIELD_801CBA90_RANGE_801CC380)
 void fn_801CC380(u32 state[5], const u8 input[64])
 {
     u32 a;
@@ -946,6 +957,7 @@ void fn_801CC380(u32 state[5], const u8 input[64])
     state[3] += d;
     state[4] += e;
 }
+#endif
 
 #undef SHA1_R4
 #undef SHA1_R3
@@ -965,6 +977,7 @@ void fn_801CC380(u32 state[5], const u8 input[64])
 #define task lbl_8047B3D4
 #define raw ((u8*)lbl_8047B3D4)
 #define file_info ((void*)((u8*)lbl_8047B3D4 + 0x8C))
+#if !defined(FIELD_801CBA90_SPLIT) || defined(FIELD_801CBA90_RANGE_801CDB04)
 void fn_801CDB04(void)
 {
     s32 result;
@@ -1726,6 +1739,7 @@ void fn_801CDB04(void)
         }
     } while (lbl_8047B3D4->card_result != -1);
 }
+#endif
 #undef file_info
 #undef raw
 #undef task
@@ -1765,6 +1779,7 @@ static inline void memcardFillRandom(u8* random, s32 count)
     }
 }
 
+#if !defined(FIELD_801CBA90_SPLIT) || defined(FIELD_801CBA90_RANGE_801CF320)
 s32 fn_801CF320(void)
 {
     u32 serial[2];
@@ -1876,7 +1891,9 @@ s32 fn_801CF568(void)
                           (u8)gamedatasaveGetStatus(NULL, 10));
     return 37;
 }
+#endif
 
+#if !defined(FIELD_801CBA90_SPLIT) || defined(FIELD_801CBA90_RANGE_801CF7E4)
 s32 fn_801CF7E4(void)
 {
     u8* task;
@@ -2074,7 +2091,9 @@ s32 fn_801CF9C8(void)
         return 0x2B;
     }
 }
+#endif
 
+#if !defined(FIELD_801CBA90_SPLIT) || defined(FIELD_801CBA90_RANGE_801CFD08)
 s32 fn_801CFD08(void)
 {
     s32 free_bytes;
@@ -2205,6 +2224,7 @@ scan_done:
     lbl_8047B3D4->error_code = error;
     return 0x2B;
 }
+#endif
 
 
 void fn_801D0080(void)
