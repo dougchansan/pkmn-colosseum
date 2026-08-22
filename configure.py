@@ -5897,7 +5897,7 @@ config.libs = [
                     (Matching, "game/field_exact_801CB7C4.c", "GC/1.3"),
                     (CodeCandidate, "game/field_candidate_801CB834.c", "GC/1.3"),
                     (Matching, "game/field_exact_801CB9D8.c", "GC/1.3"),
-                    (CodeCandidate, "game/field_candidate_801CBA0C.c", "GC/1.3"),
+                    (Matching, "game/field_candidate_801CBA0C.c", "GC/1.3"),
                     (Matching, "game/field_exact_801CBA84.c", "GC/1.3"),
                     (CodeCandidate, "game/field_candidate_801CBA90_r40_801CBF64_gc25.c", "GC/2.5"),
                     (Matching, "game/field_exact_801CC380.c", "GC/1.3"),
