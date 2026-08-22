@@ -921,7 +921,8 @@ void fn_800A6BD4(u32 intType)
  * cbForStateError - Callback for DVD error recovery state
  * 0x800A5810 | size: 0xAC
  */
-#if !defined(DVD_BANK_EXACT_ACTIVE)
+#if !defined(DVD_BANK_EXACT_ACTIVE) || \
+    defined(DVD_EXACT_800A5810_800A58BC)
 DVD_SPLIT_CALLBACK_SCOPE void cbForStateError(u32 intType) {
     DVDCommandBlock* finished;
 
