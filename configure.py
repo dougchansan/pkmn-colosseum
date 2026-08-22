@@ -176,6 +176,10 @@ config.force_active_symbols["main"] = [
     "debugMenuColorBarDisp",
     "fn_801334DC",
     "fn_80133630",
+    "sprintf",
+    "vsprintf",
+    "vprintf",
+    "printf",
 ]
 config.asflags = [
     "-mgekko",
@@ -505,7 +509,7 @@ config.libs = [
                     progress_category="runtime",
                 )
                 for status, path in [
-                    (CodeCandidate, "crt/printf.c"),
+                    (Matching, "crt/printf.c"),
                     (Matching, "crt/printf_exact_800C87F8.c"),
                     (Matching, "crt/printf_residual_800C8864.c"),
                 ]
