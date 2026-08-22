@@ -10990,7 +10990,7 @@ config.libs = [
                 progress_category="sdk",
             ),
             Object(
-                CodeCandidate,
+                Matching,
                 "dolphin/dvd/DVD_range_800A7728.c",
                 progress_category="sdk",
             ),
