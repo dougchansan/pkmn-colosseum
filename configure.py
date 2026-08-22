@@ -1583,7 +1583,7 @@ config.libs = [
                     (Matching, "musyx/musyx_aram_upload_exact_801637B8.c"),
                     (CodeCandidate, "musyx/musyx_candidate_80163810.c"),
                     (Matching, "musyx/musyx_exact_80163BCC.c"),
-                    (CodeCandidate, "musyx/musyx_candidate_80163BE4.c"),
+                    (Matching, "musyx/musyx_candidate_80163BE4.c"),
                     (Matching, "musyx/musyx_exact_80163F88.c"),
                     (CodeCandidate, "musyx/musyx_candidate_80163F98.c"),
                     (Matching, "musyx/musyx_ai_start_exact_801640C4.c"),
