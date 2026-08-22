@@ -9026,7 +9026,7 @@ config.libs = [
                 progress_category="hsd",
             ),
             Object(
-                CodeCandidate,
+                Matching,
                 "hsd/hsd_class_candidate_80193A94.c",
                 mw_version="GC/1.3",
                 progress_category="hsd",
