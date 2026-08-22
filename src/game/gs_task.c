@@ -251,10 +251,11 @@ s32 dbgMenuCameraSetType(void* unused, s32 mode) {
 #pragma push
 #pragma scheduling off
 s32 fn_80006724(void) {
+    extern u16 lbl_8047A288;
     void* result;
     u16 sceneId;
 
-    sceneId = *(volatile u16*)&gCurrentSceneId;
+    sceneId = *(volatile u16*)&lbl_8047A288;
     result = fightTrainerGetStatus(0, sceneId, 8, 3);
     if (result == NULL) {
         return -1;
@@ -274,10 +275,11 @@ s32 fn_80006724(void) {
  * Same structure as fn_80006724 but with priority 2.
  * ========================================================================= */
 s32 fn_8000677C(void) {
+    extern u16 lbl_8047A288;
     void* result;
     u16 sceneId;
 
-    sceneId = *(volatile u16*)&gCurrentSceneId;
+    sceneId = *(volatile u16*)&lbl_8047A288;
     result = fightTrainerGetStatus(0, sceneId, 8, 2);
     if (result == NULL) {
         return -1;
@@ -296,10 +298,11 @@ s32 fn_8000677C(void) {
  * Loads the PC box menu archive (priority 1).
  * ========================================================================= */
 s32 fn_800067D4(void) {
+    extern u16 lbl_8047A288;
     void* result;
     u16 sceneId;
 
-    sceneId = *(volatile u16*)&gCurrentSceneId;
+    sceneId = *(volatile u16*)&lbl_8047A288;
     result = fightTrainerGetStatus(0, sceneId, 8, 1);
     if (result == NULL) {
         return -1;
@@ -318,10 +321,11 @@ s32 fn_800067D4(void) {
  * Loads the battle menu archive (priority 0 -- highest).
  * ========================================================================= */
 s32 fn_8000682C(void) {
+    extern u16 lbl_8047A288;
     void* result;
     u16 sceneId;
 
-    sceneId = *(volatile u16*)&gCurrentSceneId;
+    sceneId = *(volatile u16*)&lbl_8047A288;
     result = fightTrainerGetStatus(0, sceneId, 8, 0);
     if (result == NULL) {
         return -1;
