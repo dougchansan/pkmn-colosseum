@@ -1,2 +1,8 @@
-/** Candidate-only owner for GSscene_GetMode (0x80177A38-0x80177A44). */
-#include "src/game/camera.c"
+#include "dolphin/types.h"
+
+extern u32 lbl_80478C40;
+
+u32 GSscene_GetMode(void)
+{
+    return *(u8*) lbl_80478C40;
+}
