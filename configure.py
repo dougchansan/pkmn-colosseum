@@ -3774,7 +3774,7 @@ config.libs = [
                     (CodeCandidate, "dolphin/vi/VI_candidate_800A8894.c"),
                     (Matching, "dolphin/vi/VI_exact_800A8FE4.c"),
                     (CodeCandidate, "dolphin/vi/VI_candidate_800A9038.c"),
-                    (CodeCandidate, "dolphin/vi/VI_candidate_800AA198.c"),
+                    (Matching, "dolphin/vi/VI_candidate_800AA198.c"),
                 ]
             ],
             Object(
