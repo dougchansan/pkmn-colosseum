@@ -10444,7 +10444,7 @@ config.libs = [
                 progress_category="hsd",
             ),
             Object(
-                CodeCandidate,
+                Matching,
                 "hsd/hsd_mobj_candidate_801A6E24.c",
                 mw_version="GC/1.3",
                 extra_cflags=["-O1"],
