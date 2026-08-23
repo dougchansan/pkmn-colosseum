@@ -265,7 +265,7 @@ u32 fightSeqGetEffectAminFlag(void) {
 #endif
 
 #if !defined(PR424_FIGHT_SEQ_SPLIT) || \
-    defined(PR424_FIGHT_SEQ_80211810_802119D4)
+    defined(PR424_FIGHT_SEQ_80211810_80211830)
 /* fightSeqSetEffectAminFlag | Size: 0x20 | Set/clear bit 0x80 in flags */
 void fightSeqSetEffectAminFlag(u8 enable) {
     extern u32 lbl_8047B618;
@@ -279,7 +279,10 @@ void fightSeqSetEffectAminFlag(u8 enable) {
     }
     lbl_8047B618 = result;
 }
+#endif
 
+#if !defined(PR424_FIGHT_SEQ_SPLIT) || \
+    defined(PR424_FIGHT_SEQ_80211830_802118FC)
 /* 0x80211830 | size: 0xCC */
 void fightSeqInit(void) {
     extern u8 lbl_80478D78[1];
@@ -307,7 +310,10 @@ void fightSeqInit(void) {
     lbl_8047B62C = 0;
     fightFloorLoopValidFightOutPokemon(0, (u32)_fightSeqInitSubFightOutPokemon__FPvUsPv, 0, 0);
 }
+#endif
 
+#if !defined(PR424_FIGHT_SEQ_SPLIT) || \
+    defined(PR424_FIGHT_SEQ_802118FC_802119D4)
 /* _fightSeqInitSubFightOutPokemon__FPvUsPv | Size: 0x4C | Check state and optionally trigger event 0x11 */
 #pragma push
 #pragma peephole on

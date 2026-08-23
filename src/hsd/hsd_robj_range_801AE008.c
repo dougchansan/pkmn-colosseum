@@ -155,31 +155,48 @@ HSD_RObj* fn_801AE4B0(void)
     return robj;
 }
 
+static inline void RObjReleaseRvalue(HSD_Rvalue* rvalue)
+{
+    if (rvalue != NULL) {
+        HSD_JObjUnrefThis(rvalue->jobj);
+        HSD_ObjFree(lbl_80465688, rvalue);
+    }
+}
+
+static inline void RObjReleaseType(HSD_RObj* robj)
+{
+    switch (robj->flags & ROBJ_TYPE_MASK) {
+    case REFTYPE_JOBJ:
+        HSD_JObjUnrefThis(robj->u.jobj);
+        break;
+    case REFTYPE_EXP: {
+        HSD_Rvalue* rvalue;
+        HSD_Rvalue* rvalue_next;
+
+        for (rvalue = robj->u.exp.rvalue; rvalue != NULL;
+             rvalue = rvalue_next)
+        {
+            rvalue_next = rvalue->next;
+            RObjReleaseRvalue(rvalue);
+        }
+        break;
+        }
+    }
+}
+
 void fn_801AE50C(HSD_RObj* robj)
 {
     HSD_RObj* next;
 
     for (; robj != NULL; robj = next) {
-        HSD_Rvalue* rvalue;
-        HSD_Rvalue* rvalue_next;
-
         next = robj->next;
-        switch (robj->flags & ROBJ_TYPE_MASK) {
-        case REFTYPE_JOBJ:
-            HSD_JObjUnrefThis(robj->u.jobj);
-            break;
-        case REFTYPE_EXP:
-            for (rvalue = robj->u.exp.rvalue; rvalue != NULL;
-                 rvalue = rvalue_next)
-            {
-                rvalue_next = rvalue->next;
-                HSD_JObjUnrefThis(rvalue->jobj);
-                HSD_ObjFree(lbl_80465688, rvalue);
-            }
-            break;
+        if (robj == NULL) {
+            goto next_iter;
         }
+        RObjReleaseType(robj);
         HSD_AObjRemove(robj->aobj);
         HSD_ObjFree(lbl_804656B4, robj);
+    next_iter:;
     }
 }
 

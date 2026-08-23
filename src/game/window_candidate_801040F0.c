@@ -1,2 +1,3 @@
 /** Candidate-only residual range. */
-#include "src/game/window.c"
+#define WINDOW_RANGE_801040F0
+#include "src/game/window_residual_body.c"

@@ -121,6 +121,7 @@ extern void fn_800A640C(void);
 extern void fn_800A836C(void);
 extern void fn_800A6508(u32 intType);
 extern void fn_800A6578(void);
+extern void stateCoverClosed_CMD(DVDCommandBlock* command);
 extern void fn_800A48DC(void (*callback)(u32));
 extern void stateCheckID2(DVDCommandBlock* block);
 extern void DVDChangeDisk(u32 intType);
@@ -921,7 +922,8 @@ void fn_800A6BD4(u32 intType)
  * cbForStateError - Callback for DVD error recovery state
  * 0x800A5810 | size: 0xAC
  */
-#if !defined(DVD_BANK_EXACT_ACTIVE)
+#if !defined(DVD_BANK_EXACT_ACTIVE) || \
+    defined(DVD_EXACT_800A5810_800A58BC)
 DVD_SPLIT_CALLBACK_SCOPE void cbForStateError(u32 intType) {
     DVDCommandBlock* finished;
 
@@ -1166,7 +1168,8 @@ void stateCoverClosed_CMD(DVDCommandBlock* command)
  * AlarmHandler - Generic DVD alarm handler for retry/timeout
  * 0x800A63C8 | size: 0x44
  */
-#if !defined(DVD_BANK_EXACT_ACTIVE)
+#if !defined(DVD_BANK_EXACT_ACTIVE) || \
+    defined(DVD_EXACT_800A63C8_800A640C)
 DVD_SPLIT_CALLBACK_SCOPE void AlarmHandler(OSAlarm* alarm, OSContext* context) {
     extern void DVDReset(void);
 

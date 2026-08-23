@@ -786,14 +786,14 @@ void fn_800BD2E0(f32* projection, s32 type) {
 
     GX_FIFO_U8 = 0x10;
     GX_FIFO_U32 = 0x00061020;
-    GX_FIFO_F32 = p->field_424;
-    GX_FIFO_F32 = p->field_428;
-    GX_FIFO_F32 = p->field_42C;
-    GX_FIFO_F32 = p->field_430;
-    GX_FIFO_F32 = p->field_434;
-    GX_FIFO_F32 = p->field_438;
-    GX_FIFO_U32 = p->field_420;
-    p->field_002 = 1;
+    GX_FIFO_F32 = gx->field_424;
+    GX_FIFO_F32 = gx->field_428;
+    GX_FIFO_F32 = gx->field_42C;
+    GX_FIFO_F32 = gx->field_430;
+    GX_FIFO_F32 = gx->field_434;
+    GX_FIFO_F32 = gx->field_438;
+    GX_FIFO_U32 = gx->field_420;
+    gx->field_002 = 1;
 }
 
 void fn_800BD394(f32* projection) {

@@ -1,5 +1,59 @@
-/** Candidate-only owner for 0x8017707C - 0x801773F4. */
-#include "src/game/camera.c"
+/** Source owner for 0x8017707C - 0x801773F4. */
+#include "game/data/sdata2_8047D690.h"
+#include "game/camera_types.h"
+
+typedef struct CameraFloorEntry {
+    /* 0x00 */ s32 field_00;
+    /* 0x04 */ void* floor;
+    /* 0x08 */ f32 defaultHeight;
+    /* 0x0C */ f32 defaultDistance;
+    /* 0x10 */ f32 defaultRotationY;
+    /* 0x14 */ f32 defaultFov;
+    /* 0x18 */ f32 height;
+    /* 0x1C */ f32 distance;
+    /* 0x20 */ f32 rotationY;
+    /* 0x24 */ f32 fov;
+} CameraFloorEntry;
+
+typedef struct CameraFloatConstant {
+    f32 value;
+} CameraFloatConstant;
+
+extern const CameraFloatConstant lbl_8047D728;
+extern const CameraFloatConstant lbl_8047D72C;
+
+static inline CameraFloorEntry* cameraFindFloorEntry(void* floor)
+{
+    CameraFloorEntry* entries = (CameraFloorEntry*)lbl_8047B1A8;
+    u32 i;
+
+    for (i = 0; i < *(u32*)lbl_80478FB8; i++) {
+        if (floor == entries[i].floor) {
+            return &entries[i];
+        }
+    }
+    return 0;
+}
+
+static inline u32 cameraMoveEndCheck(u8 wait)
+{
+    CameraPadState* state;
+
+    for (;;) {
+        state = lbl_80478C40;
+        if (state->targetMoveActive == 0 &&
+            state->targetOffsetMoveActive == 0 &&
+            state->positionMoveActive == 0 &&
+            state->rotationMoveActive == 0) {
+            return 0;
+        }
+        if (wait != 0) {
+            _threadSwitch();
+        } else {
+            return 1;
+        }
+    }
+}
 
 extern u8 fn_801174C4(void);
 extern void fn_80117500(void);

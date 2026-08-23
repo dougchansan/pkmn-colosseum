@@ -127,6 +127,7 @@ typedef struct MenuCardEMatrixContext {
  * Proposed role: set the current Card-E entry by entry+0x1A card id and copy
  * that target into both current/previous entry and sub-selection fields.
  */
+#if defined(MENU_CARDE_R48_8007C300_PREFIX_ACTIVE)
 void fn_8007C300(u8 cardId, u8 subIndex) {
     extern void* windowSearchID(s32 id);
     extern MenuCardEMatrixContext** windowGetFreeWork(void* window);
@@ -316,12 +317,14 @@ void fn_8007C7A8(u8 arg) {
     }
     return;
 }
+#endif
 
 /*
  * 0x8007C7EC | size: 0x2C4
  * Proposed role: rebuild and sort the Card-E entry pointer array, then
  * reselect the current entry using the saved card id at context+0xAA.
  */
+#if defined(MENU_CARDE_R48_8007C7EC_O2_ACTIVE)
 void fn_8007C7EC(void) {
     extern s32 menuCardE_CompareEntryPtrs(u32, u32);
     u8 sp[0x20];
@@ -511,8 +514,10 @@ void fn_8007C7EC(void) {
 
     return;
 }
+#endif
 
 /* 0x8007CAB0 | size: 0xA4 */
+#if defined(MENU_CARDE_R48_8007CAB0_SUFFIX_ACTIVE)
 #pragma push
 #pragma scheduling off
 void fn_8007CAB0(void) {
@@ -560,8 +565,10 @@ void fn_8007CB54(u32 arg) {
     }
     return;
 }
+#endif
 
 /* 0x8007CBB4 | size: 0x948 */
+#if defined(MENU_CARDE_MATRIX_8007CBB4_ACTIVE)
 void fn_8007CBB4(void* arg0, void* arg1) {
     u8 sp[0x30];
     u32 tmp = 0;
@@ -1174,6 +1181,9 @@ do {
 }
 
 /* 0x8007D4FC | size: 0x68 */
+#endif
+
+#if defined(MENU_CARDE_MATRIX_8007D4FC_GC20_ACTIVE)
 #pragma push
 #pragma peephole off
 void fn_8007D4FC(void* window, u8* param) {
@@ -1460,6 +1470,9 @@ void fn_8007D89C(void* window, u8* param) {
  * Proposed role: Card-E matrix main state machine. The switch over
  * jumptable_802EE868 has 10 cases and uses context+0xBC as its selector.
  */
+#endif
+
+#if defined(MENU_CARDE_MATRIX_8007D978_ACTIVE)
 #pragma push
 #pragma peephole off
 #pragma scheduling off
@@ -3210,3 +3223,4 @@ carde_matrix_detail_case:
     return;
 }
 #pragma pop
+#endif

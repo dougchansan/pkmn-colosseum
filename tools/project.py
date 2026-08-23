@@ -200,6 +200,9 @@ class ProjectConfig:
         self.link_order_callback: Optional[Callable[[int, List[str]], List[str]]] = (
             None  # Callback to add/remove/reorder units within a module
         )
+        self.force_active_symbols: Dict[
+            str, List[str]
+        ] = {}  # Additional linker FORCEACTIVE symbols per module name
         self.context_exclude_globs: List[
             str
         ] = []  # Globs to exclude from context files
@@ -491,6 +494,7 @@ def generate_build_ninja(
     report_path = build_path / "report.json"
     build_tools_path = config.build_dir / "tools"
     download_tool = config.tools_dir / "download_tool.py"
+    patch_forceactive_ldscript = config.tools_dir / "patch_forceactive_ldscript.py"
     n.rule(
         name="download_tool",
         command=f"$python {download_tool} $tool $out --tag $tag",
@@ -504,6 +508,14 @@ def generate_build_ninja(
         description="CTX $in",
         depfile="$out.d",
         deps="gcc",
+    )
+    n.rule(
+        name="patch_forceactive_ldscript",
+        command=(
+            f"$python {patch_forceactive_ldscript} $in $out "
+            "--symbols $forceactive_symbols"
+        ),
+        description="FORCEACTIVE $out",
     )
 
     cargo_rule_written = False
@@ -900,9 +912,26 @@ def generate_build_ninja(
 
         def write(self, n: ninja_syntax.Writer) -> None:
             n.comment(f"Link {self.name}")
+            ldscript = self.ldscript
+            forceactive_symbols = list(
+                dict.fromkeys(config.force_active_symbols.get(self.name, []))
+            )
+            if ldscript is not None and forceactive_symbols:
+                ldscript = config.build_dir / (
+                    f"{build_path.name}.{self.name}.forceactive{ldscript.suffix}"
+                )
+                n.build(
+                    outputs=ldscript,
+                    rule="patch_forceactive_ldscript",
+                    inputs=self.ldscript,
+                    implicit=patch_forceactive_ldscript,
+                    variables={
+                        "forceactive_symbols": ",".join(forceactive_symbols)
+                    },
+                )
             if self.module_id == 0:
                 elf_path = build_path / f"{self.name}.elf"
-                elf_ldflags = f"$ldflags -lcf {serialize_path(self.ldscript)}"
+                elf_ldflags = f"$ldflags -lcf {serialize_path(ldscript)}"
                 if config.generate_map:
                     elf_map = map_path(elf_path)
                     elf_ldflags += f" -map {serialize_path(elf_map)}"
@@ -913,7 +942,7 @@ def generate_build_ninja(
                     rule="link",
                     inputs=self.inputs,
                     implicit=[
-                        self.ldscript,
+                        ldscript,
                         *mwld_implicit,
                     ],
                     implicit_outputs=elf_map,
@@ -924,7 +953,7 @@ def generate_build_ninja(
                 preplf_path = build_path / self.name / f"{self.name}.preplf"
                 plf_path = build_path / self.name / f"{self.name}.plf"
                 preplf_ldflags = "$ldflags -sdata 0 -sdata2 0 -r"
-                plf_ldflags = f"$ldflags -sdata 0 -sdata2 0 -r1 -lcf {serialize_path(self.ldscript)}"
+                plf_ldflags = f"$ldflags -sdata 0 -sdata2 0 -r1 -lcf {serialize_path(ldscript)}"
                 if self.entry:
                     plf_ldflags += f" -m {self.entry}"
                     # -strip_partial is only valid with -m
@@ -951,7 +980,7 @@ def generate_build_ninja(
                     outputs=plf_path,
                     rule="link",
                     inputs=self.inputs,
-                    implicit=[self.ldscript, preplf_path, *mwld_implicit],
+                    implicit=[ldscript, preplf_path, *mwld_implicit],
                     implicit_outputs=plf_map,
                     variables={"ldflags": plf_ldflags},
                     order_only="post-compile",
@@ -960,6 +989,19 @@ def generate_build_ninja(
 
     link_outputs: List[Path] = []
     if build_config:
+        known_module_names = {
+            build_config["name"],
+            *[module["name"] for module in build_config["modules"]],
+        }
+        unknown_forceactive_modules = sorted(
+            set(config.force_active_symbols) - known_module_names
+        )
+        if unknown_forceactive_modules:
+            sys.exit(
+                "Unknown force_active_symbols module(s): "
+                + ", ".join(unknown_forceactive_modules)
+            )
+
         link_steps: List[LinkStep] = []
         used_compiler_versions: Set[str] = set()
         source_inputs: List[Path] = []

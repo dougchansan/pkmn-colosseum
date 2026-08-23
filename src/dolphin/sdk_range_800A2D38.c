@@ -288,6 +288,7 @@ regular_x:
 #endif
 
 #pragma peephole off
+#if !defined(SDK_PSMTXROTRAD_EXCLUDE)
 void PSMTXRotRad(Mtx m, char axis, f32 rad)
 {
     extern f32 sinf(f32 x);
@@ -300,8 +301,10 @@ void PSMTXRotRad(Mtx m, char axis, f32 rad)
     cosA = cosf(rad);
     PSMTXRotTrig(m, axis, sinA, cosA);
 }
+#endif
 #pragma peephole reset
 
+#if !defined(SDK_PSMTXROTTRIG_EXCLUDE)
 void PSMTXRotTrig(register Mtx m, register char axis, register f32 sinA,
                   register f32 cosA)
 {
@@ -356,7 +359,9 @@ rot_z:
 rot_done:
     }
 }
+#endif
 
+#if !defined(SDK_PSMTXROTAXIS_INTERNAL_EXCLUDE)
 void __PSMTXRotAxisRadInternal(register Mtx m, const register Vec* axis,
                               register f32 sinA, register f32 cosA)
 {
@@ -410,8 +415,10 @@ void __PSMTXRotAxisRadInternal(register Mtx m, const register Vec* axis,
         psq_st f7, 40(m), 0, 0
     }
 }
+#endif
 
 #pragma peephole off
+#if !defined(SDK_PSMTXROTAXISRAD_EXCLUDE)
 void PSMTXRotAxisRad(Mtx m, const Vec* axis, f32 rad)
 {
     extern f32 sinf(f32 x);
@@ -423,8 +430,10 @@ void PSMTXRotAxisRad(Mtx m, const Vec* axis, f32 rad)
     cosA = cosf(rad);
     __PSMTXRotAxisRadInternal(m, axis, sinA, cosA);
 }
+#endif
 #pragma peephole reset
 
+#if !defined(SDK_PSMTXTRANS_EXCLUDE)
 void PSMTXTrans(register Mtx m, register f32 xT, register f32 yT,
                 register f32 zT)
 {
@@ -444,7 +453,9 @@ void PSMTXTrans(register Mtx m, register f32 xT, register f32 yT,
         stfs one, 0(m)
     }
 }
+#endif
 
+#if !defined(SDK_PSMTXTRANSAPPLY_EXCLUDE)
 asm void PSMTXTransApply(const register Mtx src, register Mtx dst,
                          register f32 xT, register f32 yT, register f32 zT)
 {
@@ -469,7 +480,9 @@ asm void PSMTXTransApply(const register Mtx src, register Mtx dst,
     psq_st f8, 40(dst), 0, 0
     blr
 }
+#endif
 
+#if !defined(SDK_PSMTXSCALE_EXCLUDE)
 void PSMTXScale(register Mtx m, register f32 xS, register f32 yS,
                 register f32 zS)
 {
@@ -486,7 +499,9 @@ void PSMTXScale(register Mtx m, register f32 xS, register f32 yS,
         stfs zero, 44(m)
     }
 }
+#endif
 
+#if !defined(SDK_PSMTXSCALEAPPLY_EXCLUDE)
 asm void PSMTXScaleApply(const register Mtx src, register Mtx dst,
                          register f32 xS, register f32 yS, register f32 zS)
 {
@@ -514,7 +529,9 @@ asm void PSMTXScaleApply(const register Mtx src, register Mtx dst,
     psq_st f2, 40(dst), 0, 0
     blr
 }
+#endif
 
+#if !defined(SDK_PSMTXQUAT_EXCLUDE)
 void PSMTXQuat(register Mtx m, const register Quaternion* q)
 {
     register f32 zero;
@@ -574,6 +591,7 @@ void PSMTXQuat(register Mtx m, const register Quaternion* q)
         psq_st tmp9, 32(m), 0, 0
     }
 }
+#endif
 #endif
 
 #if !defined(SDK_MTXLOOKAT_EXCLUDE)
@@ -731,6 +749,8 @@ asm void PSMTXMultVecSR(const register Mtx m, const register Vec* src,
     blr
 }
 #endif
+
+#if !defined(SDK_POST_MTXVEC_EXCLUDE)
 
 #if !defined(SDK_PROJECTION_PREFIX_EXCLUDE)
 void C_MTXFrustum(Mtx44 m, f32 top, f32 bottom, f32 left, f32 right, f32 near, f32 far)
@@ -1101,7 +1121,9 @@ void C_QUATRotAxisRad(Quaternion* quat, const Vec* axis, f32 rad)
 #endif
 #endif
 #endif
+#endif
 
+#if !defined(SDK_POST_MTXVEC_EXCLUDE)
 #if !defined(SDK_CQUATSLERP_EXCLUDE)
 void C_QUATSlerp(const Quaternion* p, const Quaternion* q, Quaternion* r, f32 t)
 {
@@ -1139,5 +1161,6 @@ void C_QUATSlerp(const Quaternion* p, const Quaternion* q, Quaternion* r, f32 t)
     r->z = pScale * p->z + qScale * q->z;
     r->w = pScale * p->w + qScale * q->w;
 }
+#endif
 #endif
 #endif

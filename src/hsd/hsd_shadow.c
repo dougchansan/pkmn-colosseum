@@ -202,7 +202,6 @@ void fn_801B019C(HSDViewingRect* rect, HSDShadowVec* point,
     HSDShadowVec projected;
     HSDShadowVec normal_distance;
     f32 distance;
-    f32 scale;
     f32 x;
     f32 y;
 
@@ -216,6 +215,8 @@ void fn_801B019C(HSDViewingRect* rect, HSDShadowVec* point,
     PSVECSubtract(point, &rect->origin, &delta);
     distance = PSVECDotProduct(&delta, &rect->normal);
     if ((s32)rect->object != 0) {
+        f32 scale;
+
         if (distance <= lbl_8047DDC0) {
             return;
         }

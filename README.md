@@ -30,11 +30,11 @@ uv run --with matplotlib tools/plot_progress.py -o /tmp/progress.png
 
 | Metric | Value |
 |---|---|
-| Fuzzy match | 81.04% |
-| Function match | 78.62% (6,764 / 8,603 functions) |
-| Code match | 42.52% (1,060,804 / 2,495,108 matched code bytes) |
+| Fuzzy match | 87.85% |
+| Function match | 78.90% (6,788 / 8,603 functions) |
+| Code match | 43.15% (1,076,544 / 2,495,108 matched code bytes) |
 | Data match | 97.29% (2,136,689 / 2,196,100 matched data bytes) |
-| Linked into DOL | 1,088 / 2,275 scoring units (27.78% of code) |
+| Linked into DOL | 1,164 / 2,287 scoring units (29.37% of code) |
 
 These numbers come from the canonical dtk/objdiff report generated at
 `build/GC6E01/report.json`. Old campaign metrics and helper reports are archived
@@ -44,12 +44,11 @@ under `archive/previous_campaign/` and are not used for the published progress.
 needs different compiler flags than its neighbours, the address range is split
 and each piece becomes its own scoring unit, compiled from the *same* `.c` file
 through a one-line `#include` shim — the `_o2`, `_o4p` and `_gc20` suffixes name
-the flag variant. 890 of the 2,266 units are such shims, so the units are backed
-by roughly 1,376 distinct source files. This does not double-count: every unit
-owns a disjoint address range (all 8,603 functions resolve to 8,603 distinct
-addresses, none claimed twice), and the 2,495,108-byte code denominator matches
-the real `main.dol` text across its seven sections, 2,503,264 bytes, to within
-0.3%. The percentages are measured against the whole game exactly once.
+the flag variant. This does not double-count: every unit owns a disjoint address
+range (all 8,603 functions resolve to 8,603 distinct addresses, none claimed
+twice), and the 2,495,108-byte code denominator matches the real `main.dol` text
+across its seven sections, 2,503,264 bytes, to within 0.3%. The percentages are
+measured against the whole game exactly once.
 
 After rebuilding the report, refresh the table with:
 

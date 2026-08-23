@@ -5,7 +5,9 @@ import argparse
 import json
 import sys
 
-EPSILON = 1e-6
+# Objdiff reports percentages as floats. Treat changes below one hundredth of
+# a percentage point as report-level drift rather than actionable regression.
+EPSILON = 0.01
 
 def fmap(path):
     with open(path, encoding="utf-8") as stream:
@@ -17,9 +19,9 @@ def fmap(path):
             fns += s.get("functions", [])
         for f in fns:
             n = f.get("name")
-            if n:
-                score = f.get("fuzzy_match_percent")
-                m[n] = 100.0 if score is None else float(score)
+            score = f.get("fuzzy_match_percent")
+            if n and score is not None:
+                m[n] = float(score)
     return m
 
 

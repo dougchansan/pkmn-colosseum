@@ -481,9 +481,10 @@ void fn_800D3EC4(s32 flag, f32 p1, f32 p2, f32 p3, f32 p4, f32 p5, f32 p6)
  *   stb r0, lbl_8047AA91@sda21(r0)
  *   blr
  * ================================================================== */
-void GSgfx_DrawDoneCallback(void) {
-    /* Set draw-done flag */
-    extern u8 lbl_8047AA91;
+extern u8 lbl_8047AA91;
+
+void fn_800D3F50(void)
+{
     lbl_8047AA91 = 1;
 }
 
@@ -507,12 +508,4 @@ void fn_800D3F5C(void)
     if (callback != 0) {
         callback(*(u32*)(state + 0x4C));
     }
-}
-
-
-extern u8 lbl_8047AA91;
-
-void fn_800D3F50(void)
-{
-    lbl_8047AA91 = 1;
 }

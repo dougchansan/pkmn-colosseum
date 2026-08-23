@@ -84,7 +84,7 @@ class RegressionCleanupTests(unittest.TestCase):
                 self.base, self.head, self.manifest, "approved-base"
             )
 
-    def test_omitted_fuzzy_score_is_an_exact_match(self):
+    def test_omitted_fuzzy_score_is_not_comparable(self):
         self.base.write_text(json.dumps(report({"target": 53.396824})))
         self.head.write_text(
             json.dumps(
@@ -96,7 +96,25 @@ class RegressionCleanupTests(unittest.TestCase):
             )
         )
         self.assertEqual(check_regression.check(self.base, self.head), 0)
-        self.assertEqual(check_regression.fmap(self.head)["target"], 100.0)
+        self.assertNotIn("target", check_regression.fmap(self.head))
+
+    def test_omitted_base_score_does_not_create_false_regression(self):
+        self.base.write_text(
+            json.dumps(
+                {
+                    "units": [
+                        {"functions": [{"name": "target", "size": "252"}]}
+                    ]
+                }
+            )
+        )
+        self.head.write_text(json.dumps(report({"target": 53.396824})))
+        self.assertEqual(check_regression.check(self.base, self.head), 0)
+
+    def test_sub_hundredth_score_drift_is_ignored(self):
+        self.base.write_text(json.dumps(report({"target": 52.94297})))
+        self.head.write_text(json.dumps(report({"target": 52.93899})))
+        self.assertEqual(check_regression.check(self.base, self.head), 0)
 
 
 if __name__ == "__main__":

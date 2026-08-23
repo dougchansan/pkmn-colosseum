@@ -138,6 +138,7 @@ extern const char lbl_8047DC20[5]; /* "tobj" */
 extern const char lbl_8047DC28[4]; /* "mat" */
 extern const char lbl_8047DC30[5]; /* "mobj" */
 extern const char lbl_8047DC38[5]; /* "list" */
+extern const f32 lbl_8047DC2C;     /* 1.0f */
 extern const char lbl_80274E5C[];  /* "mobj->tevdesc" */
 extern const char lbl_80274E6C[];  /* "hsdIsDescendantOf(info, &hsdMObj)" */
 
@@ -632,14 +633,6 @@ HSD_TExp* MObjMakeTExp(HSD_MObj* mobj, HSD_TObj* tobj_top, HSD_TExp** list)
 /*  Loading                                                                  */
 /* ========================================================================= */
 
-static HSD_MObj* HSD_MObjAlloc(void)
-{
-    HSD_MObj* mobj =
-        hsdNew(default_class != NULL ? default_class : &hsdMObj.parent);
-    MOBJ_ASSERT(1098, mobj, lbl_8047DC30);
-    return mobj;
-}
-
 /* 0x801A7B24 | 0x1D8 */
 HSD_MObj* HSD_MObjLoadDesc(HSD_MObjDesc* mobjdesc)
 {
@@ -650,7 +643,10 @@ HSD_MObj* HSD_MObjLoadDesc(HSD_MObjDesc* mobjdesc)
         if (mobjdesc->class_name == NULL ||
             (info = hsdSearchClassInfo(mobjdesc->class_name)) == NULL)
         {
-            mobj = HSD_MObjAlloc();
+            mobj = hsdNew(default_class != NULL ? default_class : &hsdMObj.parent);
+            if (mobj == NULL) {
+                __assert(lbl_8047DC18, 1098, lbl_8047DC30);
+            }
         } else {
             mobj = hsdNew(info);
             MOBJ_ASSERT(373, mobj, lbl_8047DC30);
@@ -674,21 +670,20 @@ void HSD_MObjSetDefaultClass(HSD_ClassInfo* info)
     default_class = info;
 }
 
-static HSD_Material* HSD_MaterialAlloc(void)
-{
-    HSD_Material* mat = hsdAllocMemPiece(sizeof(HSD_Material));
-    MOBJ_ASSERT(1126, mat, lbl_8047DC28);
-    memset(mat, 0, sizeof(HSD_Material));
-    mat->alpha = 1.0F;
-    return mat;
-}
-
 /* 0x801A7D58 | 0xE4 */
 int MObjLoad(HSD_MObj* mobj, HSD_MObjDesc* desc)
 {
+    HSD_Material* mat;
+    u32 mat_addr;
+
     mobj->rendermode = desc->rendermode;
     mobj->tobj = HSD_TObjLoadDesc(desc->texdesc);
-    mobj->mat = HSD_MaterialAlloc();
+    mat = hsdAllocMemPiece(sizeof(HSD_Material));
+    MOBJ_ASSERT(1126, mat, lbl_8047DC28);
+    memset(mat, 0, sizeof(HSD_Material));
+    mat->alpha = lbl_8047DC2C;
+    mat_addr = (u32) mat;
+    mobj->mat = (HSD_Material*) mat_addr;
     memcpy(mobj->mat, desc->mat, sizeof(HSD_Material));
     mobj->rendermode |= RENDER_TOON;
     if (desc->pedesc != NULL) {

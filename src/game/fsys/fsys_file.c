@@ -2073,54 +2073,9 @@ u32 fn_8017CED8(FSYSSlot* slot) {
     archiveSize = slot->field_1C;
     cached = fn_8017F794(slot->fileHandle, 0, 1);
     if (cached == 0) {
-        FSYSFileHandle* table;
-        s32 handleID;
-        s32 found;
-        s32 j;
-
         alignedArchiveSize = FSYSAlign32(archiveSize);
         DCFlushRange(slot->archiveData, alignedArchiveSize);
-        if (alignedArchiveSize > fn_8017FA5C()) {
-            table = (FSYSFileHandle*)lbl_8047B1B8;
-            found = -1;
-            for (j = 0; j < (s32)lbl_8047B1BC; j++) {
-                if (table[j].handleID == (s32)slot->field_08) {
-                    found = table[j].handleID;
-                    break;
-                }
-            }
-            if (found < 0) {
-                do {
-                    table = (FSYSFileHandle*)lbl_8047B1B8;
-                    handleID = table[0].handleID;
-                    if (handleID < 0) {
-                        break;
-                    }
-                    fn_8017F800((u32)handleID);
-
-                    found = -1;
-                    table = (FSYSFileHandle*)lbl_8047B1B8;
-                    for (j = 0; j < (s32)lbl_8047B1BC; j++) {
-                        if (table[j].handleID == handleID) {
-                            table[j].handleID = -1;
-                            found = j;
-                            break;
-                        }
-                    }
-                    if (found < 0) {
-                        break;
-                    }
-
-                    for (j = 0; j < (s32)lbl_8047B1BC - 1; j++) {
-                        if (j >= found) {
-                            table[j] = table[j + 1];
-                        }
-                    }
-                    lbl_8047B1BC--;
-                    table[lbl_8047B1BC].handleID = -1;
-                } while (alignedArchiveSize > fn_8017FA5C());
-            }
-        }
+        FSYSEvictUntilSpace(slot, alignedArchiveSize);
         cached = fn_8017F928(alignedArchiveSize, slot->fileHandle, 0, 1);
         if (cached != 0) {
             fn_80180450(slot->archiveData, (void*)cached, alignedArchiveSize);
