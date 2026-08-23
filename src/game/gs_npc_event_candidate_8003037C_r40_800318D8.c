@@ -91,6 +91,7 @@ void fn_80031AC0(void* r3, void* r4)
     }
 }
 
+#pragma peephole off
 void fn_80031B10(void)
 {
     while ((u8) fn_8010B560() != 0) {
@@ -98,3 +99,4 @@ void fn_80031B10(void)
     }
     fn_801CB9D8(lbl_8047A418);
 }
+#pragma peephole on
