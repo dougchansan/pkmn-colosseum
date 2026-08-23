@@ -2321,7 +2321,7 @@ extern f32 lbl_8047BCBC;
 extern f32 lbl_8047BCC0;
 extern f32 lbl_8047BCC4;
 extern f32 lbl_8047BCC8;
-extern f32 lbl_8047BCF4;
+extern const f32 lbl_8047BCF4;
 extern f32 lbl_8047BCF8;
 extern f32 lbl_8047BAC0;
 extern f32 lbl_8047BDAC;
@@ -2649,27 +2649,102 @@ void fn_80040018(u8* menu)
 }
 #pragma peephole reset
 
-void fn_80044378(u8* context, PdaSprite* sprite)
+/* Load the memo row at byte `offset` into the shared PDA work Pokemon. */
+static inline u32 pdaLoadRowPokemon(s32 offset)
 {
-    u8* scene;
-    u8* entry;
-    s16 messageId;
-    s32 i;
-    s32 offset;
-    f32 y;
-    f32 stride;
-    u16 pokemonId;
-    u32 model;
-    u32 pokemonRnd;
+    extern u32 gamedataGetStatus(s32 a, s32 b);
+    extern void pokemonCreate(u32 work, u16 species, s32 level, u32 trainer);
+    extern u32 memoDataGetPokemonRndFromID(s32 a, u32 id);
+    extern u32 memoDataGetPokemonTrainerRndFromID(s32 a, u32 id);
+    extern void pokemonBiosSetRnd(u32 work, u32 rnd);
+    extern void pokemonBiosSetCatchTrainerRnd(u32 work, u32 rnd);
+    u32 work = lbl_8047A4E0;
+    u32 rnd;
+    u32 species;
     u32 trainerRnd;
 
-    scene = (u8*)&lbl_803A6818;
+    if (work != 0) {
+        species = *(u16*)((u8*)lbl_8047A4E4 + offset);
+        if (species >= 0x8000) {
+            species = species & 0x3fff;
+        }
+        pokemonCreate(work, (u16)species, 10, gamedataGetStatus(0, 1));
+        rnd = memoDataGetPokemonRndFromID(0, species);
+        trainerRnd = memoDataGetPokemonTrainerRndFromID(0, species);
+        pokemonBiosSetRnd(work, rnd);
+        pokemonBiosSetCatchTrainerRnd(work, trainerRnd);
+        return lbl_8047A4E0;
+    }
+    return 0;
+}
+
+/* Species-name message for the memo row at byte `offset`, 0 when
+   unavailable. */
+static inline u32 pdaRowNameMsg(s32 offset)
+{
+    extern u32 pokemonBiosGetPokemonDataId(u32 work);
+    extern void* pokemonDataBiosGetPtr(u32 id);
+    extern void* pokemonDataBiosGetName(void* data);
+    extern u32 GSmsgGetGSchar(u32 msg);
+    u32 work = lbl_8047A4E0;
+
+    if (work != 0) {
+        work = pdaLoadRowPokemon(offset);
+        if (work != 0) {
+            return GSmsgGetGSchar((u32)pokemonDataBiosGetName(
+                pokemonDataBiosGetPtr(pokemonBiosGetPokemonDataId(work))));
+        }
+        return 0;
+    }
+    return 0;
+}
+
+/* Draw the visible slice of the species-name column. */
+static inline void pdaDrawNameRows(u8* context, s32 first, f32 y)
+{
+    extern void msgctrlSetValue(s32 id, u32 value);
+    extern u32 GSmsgGetGSchar(u32 msg);
+    s32 offset;
+    s32 i;
+    u32 name;
+
+    for (i = first, offset = first; i < lbl_8047A4E8; i++) {
+        if (i >= *(s32*)((u8*)&lbl_803A6818 + 8) - 1 &&
+            i <= *(s32*)((u8*)&lbl_803A6818 + 0xC) + 1) {
+            name = pdaRowNameMsg(offset);
+            if (name == 0) {
+                name = GSmsgGetGSchar(1);
+            }
+            msgctrlSetValue(0x37, name);
+            fn_800FB680(0, (s32)y - 2, (u32)context[0x8B] | -0x100LL,
+                        (void*)0xE7);
+        }
+        y += lbl_8047BCF4;
+        offset += 2;
+    }
+}
+
+/* Species-name column of the memo list. */
+#pragma peephole off
+void fn_80044378(u8* context, PdaSprite* sprite)
+{
+    extern void msgctrlSetValue(s32 id, u32 value);
+    extern u16 memoDataGetCount(s32 a);
+    extern u32 GSmsgGetGSchar(u32 msg);
+    extern s8 fn_8004BDEC(void);
+    extern s8 fn_8004BDFC(void);
+    u8* entry;
+    s16 messageId;
+
     /* retail reads the s16 eventId at +6 here, not messageId at +0x4c;
        0x12B2 is an eventId value -- it appears as a case in the switch below */
-    if (sprite->eventId != 0x12B2) {
-        context[0x8B] = lbl_8047BCA0 * *(f32*)(scene + 0x4C);
-    } else {
-        context[0x8B] = lbl_8047BCA0 * *(f32*)(scene + 0x54);
+    switch (sprite->eventId) {
+    case 0x12B2:
+        context[0x8B] = lbl_8047BCA0 * *(f32*)((u8*)&lbl_803A6818 + 0x54);
+        break;
+    default:
+        context[0x8B] = lbl_8047BCA0 * *(f32*)((u8*)&lbl_803A6818 + 0x4C);
+        break;
     }
     messageId = sprite->eventId;
     switch (messageId) {
@@ -2677,56 +2752,29 @@ void fn_80044378(u8* context, PdaSprite* sprite)
     case 0x12B2:
     case 0x31D:
     case 0x31E:
-        return;
+        break;
     case 0x119B:
         if (fn_8004BDEC() == 1 && fn_8004BDFC() >= 1) {
             fn_800492CC(context, sprite);
         }
-        return;
+        break;
     case 0x76D:
-        fn_80132A38(0x34, memoDataGetCount(0));
-        return;
+        msgctrlSetValue(0x34, memoDataGetCount(0));
+        break;
+    default:
+        entry = lbl_802EF0A8 + messageId * 0x1C;
+        fn_800FE38C(
+            *(s16*)(lbl_802EF0A8 + 0x5712) - *(s16*)(entry + 2),
+            *(s16*)(lbl_802EF0A8 + 0x5714) - *(s16*)(entry + 4),
+            *(s16*)(lbl_802EF0A8 + 0x5716),
+            *(s16*)(lbl_802EF0A8 + 0x5718));
+        pdaDrawNameRows(context, 0,
+                        *(f32*)((u8*)&lbl_803A6818 + 0x30));
+        fn_800FE35C();
+        break;
     }
-
-    entry = lbl_802EF0A8 + messageId * 0x1C;
-    fn_800FE38C(
-        *(s16*)(lbl_802EF0A8 + 0x5712) - *(s16*)(entry + 2),
-        *(s16*)(lbl_802EF0A8 + 0x5714) - *(s16*)(entry + 4),
-        *(s16*)(lbl_802EF0A8 + 0x5716),
-        *(s16*)(lbl_802EF0A8 + 0x5718));
-    y = *(f32*)(scene + 0x30);
-    offset = 0;
-    stride = lbl_8047BCF4;
-    for (i = 0; i < lbl_8047A4E8; i++, offset += 2) {
-        if (i >= *(s32*)(scene + 8) - 1 &&
-            i <= *(s32*)(scene + 0xC) + 1) {
-            model = lbl_8047A4E0;
-            if (model != 0) {
-                pokemonId = lbl_8047A4E4[i];
-                if (pokemonId >= 0x8000) {
-                    pokemonId &= 0x3FFF;
-                }
-                fn_801240C4(model, pokemonId, 0xA,
-                             gamedataGetStatus(0, 1));
-                pokemonRnd = fn_8025FDDC(0, pokemonId);
-                trainerRnd = fn_8025FD34(0, pokemonId);
-                fn_8011DFE0(model, pokemonRnd);
-                fn_8011DF90(model, trainerRnd);
-                fn_8011F5C8();
-                fn_8011E778();
-                model = fn_800FA280(fn_8011E760());
-            }
-            if (model == 0) {
-                model = fn_800FA280(1);
-            }
-            fn_80132A38(0x37, model);
-            fn_800FB680(0, (s32)y - 2, (s8)context[0x8B],
-                         (void*)0xE7);
-        }
-        y += stride;
-    }
-    fn_800FE35C();
 }
+#pragma peephole reset
 
 #pragma peephole off
 void fn_8003B478(u8* context)
