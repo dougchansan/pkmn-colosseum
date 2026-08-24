@@ -2725,7 +2725,6 @@ static inline void pdaDrawNameRows(u8* context, s32 first, f32 y)
 }
 
 /* Species-name column of the memo list. */
-#pragma peephole off
 void fn_80044378(u8* context, PdaSprite* sprite)
 {
     extern void msgctrlSetValue(s32 id, u32 value);
@@ -2774,7 +2773,6 @@ void fn_80044378(u8* context, PdaSprite* sprite)
         break;
     }
 }
-#pragma peephole reset
 
 #pragma peephole off
 void fn_8003B478(u8* context)
