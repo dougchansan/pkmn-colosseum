@@ -863,5 +863,3 @@ s32 fightAbicntFitMinMax(s32 value) {
     }
     return value;
 }
-
-
