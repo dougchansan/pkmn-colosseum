@@ -3217,7 +3217,6 @@ void fn_80037180(u32 unused, u8* p) {
 }
 #pragma peephole reset
 
-#pragma peephole off
 s32 fn_80039F70(u8* ctx)
 {
     extern void winSeqSetMenu(s32 sequence, s32 menu);
@@ -3299,7 +3298,6 @@ s32 fn_80039F70(u8* ctx)
     }
     return 0;
 }
-#pragma peephole reset
 
 #pragma peephole off
 void fn_8003B6D0(u8* ctx) {
