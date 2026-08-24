@@ -572,8 +572,13 @@ static inline s32 fn_80071AE4_poll_read(s32 chan, u32* response, u8* length,
 }
 
 static inline u32 fn_80071AE4_swap_word(u32 value) {
-    return (value >> 24) | ((value >> 8) & 0x0000FF00)
-         | ((value << 8) & 0x00FF0000) | (value << 24);
+    u32 result;
+
+    result = value >> 24;
+    result |= (value >> 8) & 0x0000FF00;
+    result |= (value << 8) & 0x00FF0000;
+    result |= value << 24;
+    return result;
 }
 
 #pragma push
@@ -616,7 +621,8 @@ header_done:
         return 0xF;
     }
 
-    *buttons = fn_80071AE4_swap_word(response) >> 16;
+    *buttons = ((response >> 24) | ((response >> 8) & 0x0000FF00)
+             | ((response << 8) & 0x00FF0000) | (response << 24)) >> 16;
     return 0;
 }
 #pragma pop
@@ -817,7 +823,8 @@ s32 fn_800730F8(s32 chan, u32 value)
     gbaCommandSetKeyState(chan + 1, 2);
     timeout = OSMillisecondsToTicks(100);
     start = OSGetTick();
-    sendValue = fn_80071AE4_swap_word(value);
+    sendValue = (value >> 24) | ((value >> 8) & 0x0000FF00)
+              | ((value << 8) & 0x00FF0000) | (value << 24);
 
     do {
         expired = OSGetTick() - start > timeout;
