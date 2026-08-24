@@ -361,6 +361,11 @@ void fn_800376C8(void)
 #pragma opt_propagation reset
 #pragma scheduling reset
 
+/* Four copies of the same fade-in step, one per 0x18-byte record in
+   lbl_803A654C. Two shapes here are load-bearing: 0.0f as a literal, because
+   retail reloads the constant instead of reusing the compare's copy, and the
+   embedded `velocity =`, which orders the record load ahead of the velocity
+   load. */
 #pragma peephole off
 void fn_800376F8(void* window, volatile PdaSprite* sprite)
 {
@@ -377,10 +382,10 @@ void fn_800376F8(void* window, volatile PdaSprite* sprite)
         if ((s16)alpha < -0xff) {
             alpha = -0xff;
         }
-        value = *(f32*)&lbl_8047BA58;
+        value = 0.0f;
         sprite->alpha = (u8)(alpha + 0xff);
-        velocity = *(f32*)(lbl_803A654C + 0x50);
-        next = *(f32*)(lbl_803A654C + 0x58) + velocity;
+        next = *(f32*)(lbl_803A654C + 0x58) +
+               (velocity = *(f32*)(lbl_803A654C + 0x50));
         *(f32*)(lbl_803A654C + 0x58) = next;
         *(f32*)(lbl_803A654C + 0x50) =
             lbl_8047A494 * *(f32*)(lbl_803A654C + 0x4c) + velocity;
@@ -410,10 +415,10 @@ void fn_800377B4(void* window, volatile PdaSprite* sprite)
         if ((s16)alpha < -0xff) {
             alpha = -0xff;
         }
-        value = *(f32*)&lbl_8047BA58;
+        value = 0.0f;
         sprite->alpha = (u8)(alpha + 0xff);
-        velocity = *(f32*)(lbl_803A654C + 0x38);
-        next = *(f32*)(lbl_803A654C + 0x40) + velocity;
+        next = *(f32*)(lbl_803A654C + 0x40) +
+               (velocity = *(f32*)(lbl_803A654C + 0x38));
         *(f32*)(lbl_803A654C + 0x40) = next;
         *(f32*)(lbl_803A654C + 0x38) =
             lbl_8047A494 * *(f32*)(lbl_803A654C + 0x34) + velocity;
@@ -443,10 +448,10 @@ void fn_80037870(void* window, volatile PdaSprite* sprite)
         if ((s16)alpha < -0xff) {
             alpha = -0xff;
         }
-        value = *(f32*)&lbl_8047BA58;
+        value = 0.0f;
         sprite->alpha = (u8)(alpha + 0xff);
-        velocity = *(f32*)(lbl_803A654C + 0x20);
-        next = *(f32*)(lbl_803A654C + 0x28) + velocity;
+        next = *(f32*)(lbl_803A654C + 0x28) +
+               (velocity = *(f32*)(lbl_803A654C + 0x20));
         *(f32*)(lbl_803A654C + 0x28) = next;
         *(f32*)(lbl_803A654C + 0x20) =
             lbl_8047A494 * *(f32*)(lbl_803A654C + 0x1c) + velocity;
@@ -476,10 +481,10 @@ void fn_8003792C(void* window, volatile PdaSprite* sprite)
         if ((s16)alpha < -0xff) {
             alpha = -0xff;
         }
-        value = *(f32*)&lbl_8047BA58;
+        value = 0.0f;
         sprite->alpha = (u8)(alpha + 0xff);
-        velocity = *(f32*)(lbl_803A654C + 0x8);
-        next = *(f32*)(lbl_803A654C + 0x10) + velocity;
+        next = *(f32*)(lbl_803A654C + 0x10) +
+               (velocity = *(f32*)(lbl_803A654C + 0x8));
         *(f32*)(lbl_803A654C + 0x10) = next;
         *(f32*)(lbl_803A654C + 0x8) =
             lbl_8047A494 * *(f32*)(lbl_803A654C + 0x4) + velocity;
