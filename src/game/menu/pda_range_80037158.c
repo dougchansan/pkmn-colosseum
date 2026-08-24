@@ -493,6 +493,14 @@ void fn_8003792C(void* window, volatile PdaSprite* sprite)
 }
 #pragma peephole reset
 
+/* Current orbit angle relative to a reference. Kept as its own helper: the
+   extra inlining level is what puts both angle loads ahead of the target
+   lookup in fn_80037F40's first block. */
+static inline f32 pdaOrbitDelta(f32 base)
+{
+    return lbl_8047A484 - base;
+}
+
 /* |v|. Retail's shape -- `> 0` first -- is what emits the two-way
    branch rather than an inverted single one. */
 static inline f32 pdaOrbitAbs(f32 v)
@@ -517,10 +525,10 @@ static inline void pdaUpdateOrbitSprite(PdaSprite* sprite, f32 baseAngle,
     f32 magnitude;
     s8 direction;
 
-    angle = lbl_8047A484 - baseAngle;
     if (updateTarget) {
         lbl_8047A488 = lbl_802E52A8[lbl_8047A47C];
     }
+    angle = pdaOrbitDelta(baseAngle);
     if (angle < 0.0f) {
         angle += 6.28318548f;
     }
