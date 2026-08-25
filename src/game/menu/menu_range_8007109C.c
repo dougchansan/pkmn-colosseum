@@ -148,7 +148,7 @@ extern u8 lbl_80268AE0[];
 extern f32 lbl_8047C0E0;
 extern f32 lbl_8047C0E4;
 extern f32 lbl_8047C100;
-extern f32 lbl_8047C108;
+extern const f32 lbl_8047C108;
 extern u8 lbl_8047C10C;
 extern u32 OSGetTick(void);
 extern void _threadSwitch(void);
@@ -581,45 +581,51 @@ static inline u32 fn_80071AE4_swap_word(u32 value) {
     return result;
 }
 
+#pragma push
+#pragma peephole off
 s32 fn_80073A44(s32 chan, u16* buttons)
 {
-    u32 setupTimeout;
-    u32 setupStart;
+    u32 timeout;
+    u32 start;
     u32 response;
     u32 command;
     u8 length;
     u8 status;
     s32 result;
-    s32 setupExpired;
+    s32 expired;
 
-    setupTimeout = OSMillisecondsToTicks(5);
-    setupStart = OSGetTick();
-    setupExpired = OSGetTick() - setupStart > setupTimeout;
-    result = fn_80073C38(chan);
-    if (result == 1) {
-        if (setupExpired) {
-            return 1;
-        }
-    } else if (result != 0) {
+    timeout = OSMillisecondsToTicks(5);
+    start = OSGetTick();
+    do {
+        expired = OSGetTick() - start > timeout;
+        result = fn_80073C38(chan);
+    } while (result == 1 && !expired);
+    if (result != 0) {
         return result;
     }
 
     command = 0xAA;
     if (GBAWrite(chan, &command, &length) != 0) {
-        return 0xB;
+        result = 0xB;
+        goto header_done;
     }
 
     result = fn_80071AE4_poll_read(chan, &response, &length, &status);
+    result = result != 0 ? result + 0xB : 0;
+
+header_done:
     if (result != 0) {
-        return result + 0xB;
+        return result;
     }
     if ((response >> 24) != 0xAA) {
         return 0xF;
     }
 
-    *buttons = fn_80071AE4_swap_word(response) >> 16;
+    *buttons = ((response >> 24) | ((response >> 8) & 0x0000FF00)
+             | ((response << 8) & 0x00FF0000) | (response << 24)) >> 16;
     return 0;
 }
+#pragma pop
 
 s32 fn_80073C38(s32 chan)
 {
@@ -700,28 +706,55 @@ s32 fn_80073C38(s32 chan)
     }
 }
 
+static inline s32 fn_80072A00_setup(s32 chan) {
+    u32 timeout;
+    u32 start;
+    s32 expired;
+    s32 result;
+
+    timeout = OSMillisecondsToTicks(5);
+    start = OSGetTick();
+    do {
+        expired = OSGetTick() - start > timeout;
+        result = fn_80073C38(chan);
+    } while (result == 1 && !expired);
+    return result;
+}
+
+/* fn_80072A00 (0x80072A00): hold one GBA channel in the 0x60 handshake until
+ * it answers 0xAA, retrying for three seconds. */
+#pragma push
+#pragma peephole off
 s32 fn_80072A00(s32 chan)
 {
     u32 command;
     u32 response;
-    u32 outerTimeout;
-    u32 outerStart;
-    u32 setupTimeout;
-    u32 setupStart;
-    u8 length;
-    u8 status;
+    u32 pingCommand;
+    s32 keyChannel;
     s32 result;
     s32 innerResult;
-    s32 setupExpired;
+    u32 outerTimeout;
+    u8 length;
+    u8 pingLength;
+    u32 outerStart;
+    u8 status;
 
-    gbaCommandSetKeyState(chan + 1, 2);
-    result = fn_80073C38(chan);
-    if (result != 0) {
-        goto done;
+    keyChannel = chan + 1;
+    gbaCommandSetKeyState(keyChannel, 2);
+
+    {
+        s32 setupResult;
+
+        setupResult = fn_80073C38(chan);
+        if (setupResult != 0) {
+            result = setupResult;
+            goto done;
+        }
     }
 
     command = 0x60;
-    if (GBAWrite(chan, &command, &length) != 0) {
+    result = GBAWrite(chan, &command, &length);
+    if (result != 0) {
         result = 0xB;
         goto done;
     }
@@ -729,42 +762,51 @@ s32 fn_80072A00(s32 chan)
     outerTimeout = OS_TIMER_CLOCK * 3;
     outerStart = OSGetTick();
     do {
+        s32 setupResult;
+
         if (OSGetTick() - outerStart > outerTimeout) {
             result = 0x10;
+            goto done;
+        }
+
+        setupResult = fn_80072A00_setup(chan);
+
+        if (setupResult != 0) {
+            innerResult = setupResult;
+            goto iteration_done;
+        }
+
+        pingCommand = 0xAA;
+        if (GBAWrite(chan, &pingCommand, &pingLength) != 0) {
+            innerResult = 0xB;
+            goto header_done;
+        }
+
+        {
+            s32 pollResult;
+
+            pollResult = fn_80071AE4_poll_read(chan, &response, &pingLength,
+                                               &status);
+            innerResult = pollResult != 0 ? pollResult + 0xB : 0;
+        }
+
+header_done:
+        switch (innerResult) {
+        case 0:
+            innerResult = (response >> 24) != 0xAA ? 0xF : 0;
+            break;
+        default:
             break;
         }
-
-        setupTimeout = OSMillisecondsToTicks(5);
-        setupStart = OSGetTick();
-        setupExpired = OSGetTick() - setupStart > setupTimeout;
-        innerResult = fn_80073C38(chan);
-        if (innerResult == 1) {
-            if (!setupExpired) {
-                innerResult = 0;
-            }
-        }
-
-        if (innerResult == 0) {
-            command = 0xAA;
-            if (GBAWrite(chan, &command, &length) != 0) {
-                innerResult = 0xB;
-            } else {
-                innerResult =
-                    fn_80071AE4_poll_read(chan, &response, &length, &status);
-                if (innerResult != 0) {
-                    innerResult += 0xB;
-                } else if ((response >> 24) != 0xAA) {
-                    innerResult = 0xF;
-                }
-            }
-        }
+iteration_done:
         _threadSwitch();
     } while (innerResult != 0);
 
 done:
-    gbaCommandSetKeyState(chan + 1, 1);
+    gbaCommandSetKeyState(keyChannel, 1);
     return result;
 }
+#pragma pop
 
 s32 fn_800730F8(s32 chan, u32 value)
 {
@@ -781,7 +823,8 @@ s32 fn_800730F8(s32 chan, u32 value)
     gbaCommandSetKeyState(chan + 1, 2);
     timeout = OSMillisecondsToTicks(100);
     start = OSGetTick();
-    sendValue = fn_80071AE4_swap_word(value);
+    sendValue = (value >> 24) | ((value >> 8) & 0x0000FF00)
+              | ((value << 8) & 0x00FF0000) | (value << 24);
 
     do {
         expired = OSGetTick() - start > timeout;
@@ -1306,7 +1349,7 @@ s32 fn_80073990(s32 chan) {
  * re-verified against this unit's own compiler flags.
  */
 extern s32 fn_80190528(s32);
-extern s32 fn_801902E0(s32);
+extern u8 fn_801902E0(s32);
 extern s32 menuClose(s32);
 extern s32 fn_801906A0(s32);
 extern void _flagSet();
@@ -1948,7 +1991,7 @@ s32 fn_80075A9C(void) { return fn_80190528(0xab5); }
 
 #pragma push
 #pragma scheduling off
-s32 fn_80075AC0(void) { return fn_801902E0(0xab5); }
+u8 fn_80075AC0(void) { return fn_801902E0(0xab5); }
 #pragma pop
 
 #pragma push
@@ -1958,7 +2001,7 @@ s32 fn_80075AE4(void) { return fn_80190528(0xab4); }
 
 #pragma push
 #pragma scheduling off
-s32 fn_80075B08(void) { return fn_801902E0(0xab4); }
+u8 fn_80075B08(void) { return fn_801902E0(0xab4); }
 #pragma pop
 
 #pragma push
@@ -1968,7 +2011,7 @@ s32 fn_80075B2C(void) { return fn_80190528(0xab3); }
 
 #pragma push
 #pragma scheduling off
-s32 fn_80075B50(void) { return fn_801902E0(0xab3); }
+u8 fn_80075B50(void) { return fn_801902E0(0xab3); }
 #pragma pop
 
 #pragma push
@@ -1978,12 +2021,12 @@ s32 fn_80075BFC(void) { return fn_80190528(0xab1); }
 
 #pragma push
 #pragma scheduling off
-s32 fn_80075C20(void) { return fn_801902E0(0xab1); }
+u8 fn_80075C20(void) { return fn_801902E0(0xab1); }
 #pragma pop
 
 #pragma push
 #pragma scheduling off
-s32 fn_80075C44(void) { return fn_801902E0(0xa14); }
+u8 fn_80075C44(void) { return fn_801902E0(0xa14); }
 #pragma pop
 
 #pragma push
@@ -2508,6 +2551,8 @@ transfer_done:
 }
 #pragma pop
 
+#pragma push
+#pragma peephole off
 /* fn_80072D58 (0x80072D58): send a variable-size data block to one GBA
  * channel. */
 s32 fn_80072D58(s32 chan, const u32* data, s32 size) {
@@ -2597,10 +2642,11 @@ header_done:
             }
 
             {
-                const u32* data_ptr = data;
+                const u32* data_ptr;
 
-                for (offset = 0; offset < size;
-                     offset += 4, data_ptr++) {
+                offset = 0;
+                data_ptr = data;
+                for (; offset < size; offset += 4, data_ptr++) {
                     send_word = *data_ptr;
                     if (GBAWrite(chan, &send_word, &send_status) != 0) {
                         result = 0x10;
@@ -2639,6 +2685,7 @@ transfer_done:
     gbaCommandSetKeyState(key_channel, result != 0 ? 1 : 3);
     return result;
 }
+#pragma pop
 
 /* fn_80073E84 (0x80073E84): constant-1 accessor. */
 s32 fn_80073E84(void) {
@@ -3657,7 +3704,7 @@ extern u8 lbl_8047A633;
 extern u8 lbl_8047A634;
 extern u8 lbl_8047A635;
 extern u32 lbl_8047A638;
-extern f32 lbl_8047C108;
+extern const f32 lbl_8047C108;
 extern f32 lbl_8047C114;
 extern f64 lbl_8047C118;
 extern f64 lbl_8047C120;
@@ -4808,6 +4855,17 @@ void fn_800792D8(void) {
 }
 #pragma pop
 
+/* fn_800798E8 (0x800798E8): e-card save/commit flow for the shop menu.
+ *
+ * Retail keeps the compare and the sign/zero extension apart (`clrlwi`+`cmplwi`,
+ * one `extsb` feeding three compares), so the peephole pass has to be off; the
+ * flag getters then have to return u8 like the canonical fn_801902E0 in
+ * src/game/gs_range_8018FE30.c, or peephole-off leaves a redundant truncation
+ * in front of each `stb`. `hero` is declared after the party-loop counter
+ * because that is what puts it above `backup` in the callee-saved ranking and
+ * lets it share r29 with the dead saveResult, as retail does. */
+#pragma push
+#pragma peephole off
 void fn_800798E8(void* backup)
 {
     typedef struct MenuSaveSnapshot {
@@ -4825,12 +4883,12 @@ void fn_800798E8(void* backup)
     extern void* floorDataBiosGetCurrentPtr(void);
     extern u32 floorDataBiosGetFloorID(void*);
     extern void heroPokemonGetPikachu(void*, u32);
-    void* hero;
     u32 canBag;
     void* pcbox;
     s32 saveResult;
     u32 canParty;
     u8 i;
+    void* hero;
     void* pokemon;
     u32 partyResult;
     u32 heroValue;
@@ -4929,6 +4987,7 @@ cancelled:
     menuClose(0xEF);
     lbl_8047A638 = 1;
 }
+#pragma pop
 
 #pragma push
 #pragma peephole off
@@ -5332,6 +5391,20 @@ s32 fn_8007A82C(void) {
 }
 #pragma pop
 
+/* fn_8007A850 (0x8007A850): GBA-link e-card shop top loop.
+ *
+ * lbl_8047C108 is `SDATA2 const f32` in src/game/data/sdata2_8047C0A0.c, and
+ * retail hoists its load out of the wait loop; the file-scope declaration has
+ * to carry the `const` or LICM cannot move it past the calls, and without that
+ * hoist the FPR colouring for the whole loop comes out one register off.
+ *
+ * Ceiling is 98.44%: the two int->float conversion biases are compiler-owned
+ * literals, so we emit private .sdata2 pool entries (@2117/@2119) where retail
+ * relocates against lbl_8047C118/lbl_8047C120 in the canonical sdata2 unit.
+ * Every other instruction, register and branch matches. This is the
+ * "private unowned sdata2 constants" class recorded in
+ * docs/CAMPAIGN_OPERATIONS.md; no C construct emits `fsubs` against a named
+ * external double (a union spelling yields fsub+frsp). */
 void fn_8007A850(void)
 {
     extern void* fn_801D036C(void);
@@ -5340,7 +5413,7 @@ void fn_8007A850(void)
 
     backup = fn_801D036C();
     fadeCheck(1);
-    do {
+    while ((s32)lbl_8047A638 > 0) {
         switch (lbl_8047A638) {
         case 1:
         {
@@ -5350,14 +5423,22 @@ void fn_8007A850(void)
             choice = menuOpen(0xE1, 1);
             winMsgClose(1);
             switch (choice) {
-            case 1:
+            case 0:
                 lbl_8047A638 = 3;
                 break;
-            case 2:
+            case 1:
                 lbl_8047A638 = 4;
                 break;
-            case 3:
+            case 2:
                 lbl_8047A638 = 2;
+                break;
+            case 3:
+                menuClose(0xE1);
+                lbl_8047A638 = 0;
+                break;
+            case -1:
+                menuClose(0xE1);
+                lbl_8047A638 = 0;
                 break;
             default:
                 menuClose(0xE1);
@@ -5368,19 +5449,16 @@ void fn_8007A850(void)
         }
         case 2:
         {
+            extern u32 fn_800D3088(void);
+            extern s32 fn_800D37CC(void);
             f32 elapsed;
 
             winMsgOpenField(0x43A5, 1, 0);
             winMsgClose(1);
             elapsed = lbl_8047C114;
             while (elapsed < lbl_8047C108) {
-                s32 frames;
-                u32 ticks;
-
                 _threadSwitch();
-                frames = fn_800D37CC();
-                ticks = fn_800D3088();
-                elapsed += (f32)ticks / (f32)frames;
+                elapsed += (f32)fn_800D3088() / (f32)fn_800D37CC();
             }
             lbl_8047A638 = 1;
             break;
@@ -5392,7 +5470,7 @@ void fn_8007A850(void)
             fn_800792D8();
             break;
         }
-    } while ((s32)lbl_8047A638 > 0);
+    }
 
     fn_801D0314(backup);
     floorLink(0x321, 0);
@@ -5837,6 +5915,8 @@ static inline s32 menuReadGbaZeroResponse(s32 channel)
     return result;
 }
 
+#pragma push
+#pragma peephole off
 s32 fn_800719A8(s32 channel)
 {
     return menuReadGbaZeroResponse(channel);
@@ -5846,6 +5926,7 @@ s32 fn_80072548(s32 channel)
 {
     return menuReadGbaZeroResponse(channel);
 }
+#pragma pop
 
 extern u32 lbl_8047A610;
 extern f32 lbl_8047C098;
