@@ -543,7 +543,17 @@ static inline void pdaUpdateOrbitSprite(PdaSprite* sprite, f32 baseAngle,
             step = -step;
         }
         /* The step is stored to +0x48C at full width but narrowed once
-           (frsp) for the angle update and the magnitude test. */
+           (frsp) for the angle update and the magnitude test.  Same
+           mechanism as hsd_cobj.c's cobj_fabsf_p -- an f32 <- f64
+           assignment is what emits frsp; effect/fade.c layers its f64/f32
+           conversions the same way.
+
+           Do not "simplify" this to `delta = step`.  The frsp is a real
+           instruction in the target at 0x80037A74, sitting between the
+           fneg and the stfs of the un-narrowed value to +0x48C, and
+           removing the cast drops all four functions to 97.15%.  Declaring
+           step as f64 instead is not a substitute either: that turns the
+           fmuls at 0x80037A54 into fmul and scores the same 97.15%. */
         delta = (f64)step;
         lbl_8047A48C = step;
         lbl_8047A484 += delta;
