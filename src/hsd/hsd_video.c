@@ -16,6 +16,21 @@
  * address on the right and evaluates the scaled index first, which swaps the
  * base/offset temporaries in every `xfb[]` access.  Turning it off restores
  * the retail base-first allocation across the whole file.
+ *
+ * This must stay at file scope.  Do not narrow it to push/pop pairs around
+ * individual functions the way effect_visual.c and
+ * fight_trainer_ai_waza_damage.c scope their pragmas.  Every function here
+ * that touches _p->xfb[] needs it, including ones with no other reason to be
+ * edited: re-enabling the optimizer for fn_801BFD10 alone, via
+ * `#pragma push` / `#pragma global_optimizer on` / `#pragma pop` around its
+ * body, regresses it from 100% to 97.115% (measured).
+ *
+ * There is no command-line equivalent to move this into the build config.
+ * mwcceppc's -opt keyword table (off/on/all/space/speed, level=0..4, cse,
+ * deadcode, deadstore, dead, lifetimes, loop, prop, strength, peep, schedule,
+ * inter/local/unroll) has no global-optimizer entry, and even `-opt level=0`
+ * still runs the global optimizer for temporaries, so it is not the same
+ * thing -- it scores 90.97% on fn_801BFD10 against the pragma's 100%.
  */
 #pragma global_optimizer off
 
@@ -274,7 +289,14 @@ void fn_801BFA1C(HSD_VIStatus* vi, void* buffer, HSD_RenderPass rpass)
                                           rmode->xfbHeight));
         fn_800B96BC(rmode->fbWidth, n_xfb_lines);
         fn_800B9E88(buffer, TRUE);
-        /* Blank the XFB lines the copy did not reach. */
+        /*
+         * Blank the XFB lines the copy did not reach.  `rest` is signed but
+         * cannot go negative: GXGetYScaleFactor walks its scale down until
+         * __GXGetNumXfbLines stops exceeding xfbHeight, so n_xfb_lines <=
+         * xfbHeight and the unsigned conversion in `rest * bpl` below is
+         * safe.  Retail tests equality here, not `> 0` -- the target is
+         * `subf.` + `beq` at 0x801BFB04, where `> 0` would need `ble`.
+         */
         rest = rmode->xfbHeight - n_xfb_lines;
         if (rest != 0) {
             u32 bpl;
