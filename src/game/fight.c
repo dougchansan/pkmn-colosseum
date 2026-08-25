@@ -183,7 +183,6 @@ FightKoukaData* fightKoukaDataBiosGetPtr(u16 index) {
  * ordering the gekko model gets right (plain `scheduling off` loses those).
  * fn_8020DAD0 below genuinely needs the gekko form, so this stays scoped. */
 #pragma dont_inline on
-#pragma scheduling 603
 u32 fightKoukaDoFightKoukaJoukenAndKouka(void* target, u16 koukaDataIndex) {
     extern void koukaExec(u16 koukaDataId, void* fightTarget, void* target, u32 flags);
     extern void* fightTargetGetPtr(u32 targetDataId, void* target, u16 fightType);
@@ -209,7 +208,6 @@ u32 fightKoukaDoFightKoukaJoukenAndKouka(void* target, u16 koukaDataIndex) {
     }
     return result;
 }
-#pragma scheduling reset
 #pragma dont_inline reset
 
 /* Address: 0x8020DAD0 | Size: 0x274 */
