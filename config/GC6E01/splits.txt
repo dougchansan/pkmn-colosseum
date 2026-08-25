@@ -6173,7 +6173,10 @@ game/fight_kouka_exact_8020D968.c:
 	.text       start:0x8020D968 end:0x8020DA14
 
 game/fight_candidate_8020DA14.c:
-	.text       start:0x8020DA14 end:0x8020DD44
+	.text       start:0x8020DA14 end:0x8020DAD0
+
+game/fight_candidate_8020DAD0.c:
+	.text       start:0x8020DAD0 end:0x8020DD44
 
 game/fight_encount_exact_8020DD44.c:
 	.text       start:0x8020DD44 end:0x8020DF10
