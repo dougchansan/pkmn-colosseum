@@ -361,6 +361,11 @@ void fn_800376C8(void)
 #pragma opt_propagation reset
 #pragma scheduling reset
 
+/* Four copies of the same fade-in step, one per 0x18-byte record in
+   lbl_803A654C. Two shapes here are load-bearing: 0.0f as a literal, because
+   retail reloads the constant instead of reusing the compare's copy, and the
+   embedded `velocity =`, which orders the record load ahead of the velocity
+   load. */
 #pragma peephole off
 void fn_800376F8(void* window, volatile PdaSprite* sprite)
 {
@@ -377,10 +382,10 @@ void fn_800376F8(void* window, volatile PdaSprite* sprite)
         if ((s16)alpha < -0xff) {
             alpha = -0xff;
         }
-        value = *(f32*)&lbl_8047BA58;
+        value = 0.0f;
         sprite->alpha = (u8)(alpha + 0xff);
-        velocity = *(f32*)(lbl_803A654C + 0x50);
-        next = *(f32*)(lbl_803A654C + 0x58) + velocity;
+        next = *(f32*)(lbl_803A654C + 0x58) +
+               (velocity = *(f32*)(lbl_803A654C + 0x50));
         *(f32*)(lbl_803A654C + 0x58) = next;
         *(f32*)(lbl_803A654C + 0x50) =
             lbl_8047A494 * *(f32*)(lbl_803A654C + 0x4c) + velocity;
@@ -410,10 +415,10 @@ void fn_800377B4(void* window, volatile PdaSprite* sprite)
         if ((s16)alpha < -0xff) {
             alpha = -0xff;
         }
-        value = *(f32*)&lbl_8047BA58;
+        value = 0.0f;
         sprite->alpha = (u8)(alpha + 0xff);
-        velocity = *(f32*)(lbl_803A654C + 0x38);
-        next = *(f32*)(lbl_803A654C + 0x40) + velocity;
+        next = *(f32*)(lbl_803A654C + 0x40) +
+               (velocity = *(f32*)(lbl_803A654C + 0x38));
         *(f32*)(lbl_803A654C + 0x40) = next;
         *(f32*)(lbl_803A654C + 0x38) =
             lbl_8047A494 * *(f32*)(lbl_803A654C + 0x34) + velocity;
@@ -443,10 +448,10 @@ void fn_80037870(void* window, volatile PdaSprite* sprite)
         if ((s16)alpha < -0xff) {
             alpha = -0xff;
         }
-        value = *(f32*)&lbl_8047BA58;
+        value = 0.0f;
         sprite->alpha = (u8)(alpha + 0xff);
-        velocity = *(f32*)(lbl_803A654C + 0x20);
-        next = *(f32*)(lbl_803A654C + 0x28) + velocity;
+        next = *(f32*)(lbl_803A654C + 0x28) +
+               (velocity = *(f32*)(lbl_803A654C + 0x20));
         *(f32*)(lbl_803A654C + 0x28) = next;
         *(f32*)(lbl_803A654C + 0x20) =
             lbl_8047A494 * *(f32*)(lbl_803A654C + 0x1c) + velocity;
@@ -476,10 +481,10 @@ void fn_8003792C(void* window, volatile PdaSprite* sprite)
         if ((s16)alpha < -0xff) {
             alpha = -0xff;
         }
-        value = *(f32*)&lbl_8047BA58;
+        value = 0.0f;
         sprite->alpha = (u8)(alpha + 0xff);
-        velocity = *(f32*)(lbl_803A654C + 0x8);
-        next = *(f32*)(lbl_803A654C + 0x10) + velocity;
+        next = *(f32*)(lbl_803A654C + 0x10) +
+               (velocity = *(f32*)(lbl_803A654C + 0x8));
         *(f32*)(lbl_803A654C + 0x10) = next;
         *(f32*)(lbl_803A654C + 0x8) =
             lbl_8047A494 * *(f32*)(lbl_803A654C + 0x4) + velocity;
@@ -2337,7 +2342,7 @@ extern f32 lbl_8047BCBC;
 extern f32 lbl_8047BCC0;
 extern f32 lbl_8047BCC4;
 extern f32 lbl_8047BCC8;
-extern f32 lbl_8047BCF4;
+extern const f32 lbl_8047BCF4;
 extern f32 lbl_8047BCF8;
 extern f32 lbl_8047BAC0;
 extern f32 lbl_8047BDAC;
@@ -2665,27 +2670,101 @@ void fn_80040018(u8* menu)
 }
 #pragma peephole reset
 
-void fn_80044378(u8* context, PdaSprite* sprite)
+/* Load the memo row at byte `offset` into the shared PDA work Pokemon. */
+static inline u32 pdaLoadRowPokemon(s32 offset)
 {
-    u8* scene;
-    u8* entry;
-    s16 messageId;
-    s32 i;
-    s32 offset;
-    f32 y;
-    f32 stride;
-    u16 pokemonId;
-    u32 model;
-    u32 pokemonRnd;
+    extern u32 gamedataGetStatus(s32 a, s32 b);
+    extern void pokemonCreate(u32 work, u16 species, s32 level, u32 trainer);
+    extern u32 memoDataGetPokemonRndFromID(s32 a, u32 id);
+    extern u32 memoDataGetPokemonTrainerRndFromID(s32 a, u32 id);
+    extern void pokemonBiosSetRnd(u32 work, u32 rnd);
+    extern void pokemonBiosSetCatchTrainerRnd(u32 work, u32 rnd);
+    u32 work = lbl_8047A4E0;
+    u32 rnd;
+    u32 species;
     u32 trainerRnd;
 
-    scene = (u8*)&lbl_803A6818;
+    if (work != 0) {
+        species = *(u16*)((u8*)lbl_8047A4E4 + offset);
+        if (species >= 0x8000) {
+            species = species & 0x3fff;
+        }
+        pokemonCreate(work, (u16)species, 10, gamedataGetStatus(0, 1));
+        rnd = memoDataGetPokemonRndFromID(0, species);
+        trainerRnd = memoDataGetPokemonTrainerRndFromID(0, species);
+        pokemonBiosSetRnd(work, rnd);
+        pokemonBiosSetCatchTrainerRnd(work, trainerRnd);
+        return lbl_8047A4E0;
+    }
+    return 0;
+}
+
+/* Species-name message for the memo row at byte `offset`, 0 when
+   unavailable. */
+static inline u32 pdaRowNameMsg(s32 offset)
+{
+    extern u32 pokemonBiosGetPokemonDataId(u32 work);
+    extern void* pokemonDataBiosGetPtr(u32 id);
+    extern void* pokemonDataBiosGetName(void* data);
+    extern u32 GSmsgGetGSchar(u32 msg);
+    u32 work = lbl_8047A4E0;
+
+    if (work != 0) {
+        work = pdaLoadRowPokemon(offset);
+        if (work != 0) {
+            return GSmsgGetGSchar((u32)pokemonDataBiosGetName(
+                pokemonDataBiosGetPtr(pokemonBiosGetPokemonDataId(work))));
+        }
+        return 0;
+    }
+    return 0;
+}
+
+/* Draw the visible slice of the species-name column. */
+static inline void pdaDrawNameRows(u8* context, s32 first, f32 y)
+{
+    extern void msgctrlSetValue(s32 id, u32 value);
+    extern u32 GSmsgGetGSchar(u32 msg);
+    s32 offset;
+    s32 i;
+    u32 name;
+
+    for (i = first, offset = first; i < lbl_8047A4E8; i++) {
+        if (i >= *(s32*)((u8*)&lbl_803A6818 + 8) - 1 &&
+            i <= *(s32*)((u8*)&lbl_803A6818 + 0xC) + 1) {
+            name = pdaRowNameMsg(offset);
+            if (name == 0) {
+                name = GSmsgGetGSchar(1);
+            }
+            msgctrlSetValue(0x37, name);
+            fn_800FB680(0, (s32)y - 2, (u32)context[0x8B] | -0x100LL,
+                        (void*)0xE7);
+        }
+        y += lbl_8047BCF4;
+        offset += 2;
+    }
+}
+
+/* Species-name column of the memo list. */
+void fn_80044378(u8* context, PdaSprite* sprite)
+{
+    extern void msgctrlSetValue(s32 id, u32 value);
+    extern u16 memoDataGetCount(s32 a);
+    extern u32 GSmsgGetGSchar(u32 msg);
+    extern s8 fn_8004BDEC(void);
+    extern s8 fn_8004BDFC(void);
+    u8* entry;
+    s16 messageId;
+
     /* retail reads the s16 eventId at +6 here, not messageId at +0x4c;
        0x12B2 is an eventId value -- it appears as a case in the switch below */
-    if (sprite->eventId != 0x12B2) {
-        context[0x8B] = lbl_8047BCA0 * *(f32*)(scene + 0x4C);
-    } else {
-        context[0x8B] = lbl_8047BCA0 * *(f32*)(scene + 0x54);
+    switch (sprite->eventId) {
+    case 0x12B2:
+        context[0x8B] = lbl_8047BCA0 * *(f32*)((u8*)&lbl_803A6818 + 0x54);
+        break;
+    default:
+        context[0x8B] = lbl_8047BCA0 * *(f32*)((u8*)&lbl_803A6818 + 0x4C);
+        break;
     }
     messageId = sprite->eventId;
     switch (messageId) {
@@ -2693,55 +2772,27 @@ void fn_80044378(u8* context, PdaSprite* sprite)
     case 0x12B2:
     case 0x31D:
     case 0x31E:
-        return;
+        break;
     case 0x119B:
         if (fn_8004BDEC() == 1 && fn_8004BDFC() >= 1) {
             fn_800492CC(context, sprite);
         }
-        return;
+        break;
     case 0x76D:
-        fn_80132A38(0x34, memoDataGetCount(0));
-        return;
+        msgctrlSetValue(0x34, memoDataGetCount(0));
+        break;
+    default:
+        entry = lbl_802EF0A8 + messageId * 0x1C;
+        fn_800FE38C(
+            *(s16*)(lbl_802EF0A8 + 0x5712) - *(s16*)(entry + 2),
+            *(s16*)(lbl_802EF0A8 + 0x5714) - *(s16*)(entry + 4),
+            *(s16*)(lbl_802EF0A8 + 0x5716),
+            *(s16*)(lbl_802EF0A8 + 0x5718));
+        pdaDrawNameRows(context, 0,
+                        *(f32*)((u8*)&lbl_803A6818 + 0x30));
+        fn_800FE35C();
+        break;
     }
-
-    entry = lbl_802EF0A8 + messageId * 0x1C;
-    fn_800FE38C(
-        *(s16*)(lbl_802EF0A8 + 0x5712) - *(s16*)(entry + 2),
-        *(s16*)(lbl_802EF0A8 + 0x5714) - *(s16*)(entry + 4),
-        *(s16*)(lbl_802EF0A8 + 0x5716),
-        *(s16*)(lbl_802EF0A8 + 0x5718));
-    y = *(f32*)(scene + 0x30);
-    offset = 0;
-    stride = lbl_8047BCF4;
-    for (i = 0; i < lbl_8047A4E8; i++, offset += 2) {
-        if (i >= *(s32*)(scene + 8) - 1 &&
-            i <= *(s32*)(scene + 0xC) + 1) {
-            model = lbl_8047A4E0;
-            if (model != 0) {
-                pokemonId = lbl_8047A4E4[i];
-                if (pokemonId >= 0x8000) {
-                    pokemonId &= 0x3FFF;
-                }
-                fn_801240C4(model, pokemonId, 0xA,
-                             gamedataGetStatus(0, 1));
-                pokemonRnd = fn_8025FDDC(0, pokemonId);
-                trainerRnd = fn_8025FD34(0, pokemonId);
-                fn_8011DFE0(model, pokemonRnd);
-                fn_8011DF90(model, trainerRnd);
-                fn_8011F5C8();
-                fn_8011E778();
-                model = fn_800FA280(fn_8011E760());
-            }
-            if (model == 0) {
-                model = fn_800FA280(1);
-            }
-            fn_80132A38(0x37, model);
-            fn_800FB680(0, (s32)y - 2, (s8)context[0x8B],
-                         (void*)0xE7);
-        }
-        y += stride;
-    }
-    fn_800FE35C();
 }
 
 #pragma peephole off
@@ -3233,15 +3284,22 @@ void fn_80037180(u32 unused, u8* p) {
 }
 #pragma peephole reset
 
-#pragma peephole off
-void fn_80039F70(u8* ctx) {
+s32 fn_80039F70(u8* ctx)
+{
+    extern void winSeqSetMenu(s32 sequence, s32 menu);
+    extern u8 fn_801429E8(void* item);
+    extern u16 pcboxGetNbItemSlot(s32 box);
+    extern u16 itemBiosGetItemDataId(void* item);
+    extern void* itemDataBiosGetPtr(s32 id);
+    extern s32 itemDataBiosGetDoc(void* data);
     s8 state;
-    void* entry;
-    u32 seen;
-    u32 index;
-    u16 count;
-    u32 target;
-    u32 message;
+    s32 found;
+    s32 i;
+    void* item;
+    s32 target;
+    u16 itemId;
+    s32 message;
+    s32 slots;
     f32 f0;
     f32 f1;
     f32 f2;
@@ -3249,42 +3307,38 @@ void fn_80039F70(u8* ctx) {
     state = (s8)ctx[1];
     switch (state) {
     case 0:
-        if ((s8)ctx[2] != 0) {
-            return;
-        }
-        winSeqSetMenu(0x25, 0xb4);
-        target = lbl_8047A4A8 + lbl_8047A4AC;
-        count = (u16)fn_801347D0(0);
-        seen = (u32)-1;
-        entry = (void*)0;
-        for (index = 0; index < (u32)count; index++) {
-            entry = pcboxGetItem((void*)0, (s16)index);
-            if ((u8)fn_801429E8(entry) != 0) {
-                seen++;
-                if (seen >= target) {
-                    break;
+        if ((s8)ctx[2] == 0) {
+            winSeqSetMenu(0x25, 0xb4);
+            target = lbl_8047A4A8 + lbl_8047A4AC;
+            slots = pcboxGetNbItemSlot(0);
+            found = -1;
+            for (i = 0; i < slots; i++) {
+                item = pcboxGetItem(0, (s16)i);
+                if ((u8)fn_801429E8(item) != 0) {
+                    found++;
+                    if (found >= target) {
+                        itemId = itemBiosGetItemDataId(item);
+                        goto haveDoc;
+                    }
                 }
             }
+            itemId = 0;
+        haveDoc:
+            if (itemId != 0) {
+                message = itemDataBiosGetDoc(itemDataBiosGetPtr(itemId));
+            } else {
+                message = 0x1b68;
+            }
+            lbl_8047A4B4 = message;
+            lbl_8047A4C0 = 0.0f;
+            lbl_8047A4BC = 0;
+            lbl_8047A4B8 = -1;
+            ctx[2] = 1;
         }
-        if (index < (u32)count) {
-            message = (u32)(u16)fn_80143C68(entry);
-        } else {
-            message = 0;
-        }
-        if (message != 0) {
-            message = itemDataBiosGetDoc((void*)fn_801440A0(message));
-        } else {
-            message = 0x1b68;
-        }
-        lbl_8047A4B4 = message;
-        lbl_8047A4C0 = lbl_8047BAB0;
-        lbl_8047A4BC = 0;
-        lbl_8047A4B8 = (u32)-1;
-        ctx[2] = 1;
         break;
     case 2:
         f2 = lbl_8047A4C0;
-        f1 = lbl_8047BAB0;
+        f1 = 0.0f;
         if (f2 > f1) {
             f0 = f2 - lbl_8047BABC;
             lbl_8047A4C0 = f0;
@@ -3293,7 +3347,7 @@ void fn_80039F70(u8* ctx) {
             }
         }
         f2 = lbl_8047A4C0;
-        f1 = lbl_8047BAB0;
+        f1 = 0.0f;
         if (f2 < f1) {
             f0 = f2 + lbl_8047BABC;
             lbl_8047A4C0 = f0;
@@ -3309,8 +3363,8 @@ void fn_80039F70(u8* ctx) {
         }
         break;
     }
+    return 0;
 }
-#pragma peephole reset
 
 #pragma peephole off
 void fn_8003B6D0(u8* ctx) {

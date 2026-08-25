@@ -175,6 +175,13 @@ FightKoukaData* fightKoukaDataBiosGetPtr(u16 index) {
 }
 
 /* Address: 0x8020DA14 | Size: 0xbc */
+/* Retail schedules this one against the 603 model, not the gekko model the rest
+ * of the unit uses: under `-proc gekko` MWCC splits each `x = f(...)` whose
+ * successor needs r3 into `mr r0,r3 ... mr rNV,r0`, manufacturing a filler for
+ * the slot before the bl, and that costs three instructions here.  The 603
+ * model leaves the copies alone while keeping the argument and parameter-save
+ * ordering the gekko model gets right (plain `scheduling off` loses those).
+ * fn_8020DAD0 below genuinely needs the gekko form, so this stays scoped. */
 #pragma dont_inline on
 u32 fightKoukaDoFightKoukaJoukenAndKouka(void* target, u16 koukaDataIndex) {
     extern void koukaExec(u16 koukaDataId, void* fightTarget, void* target, u32 flags);
@@ -203,7 +210,15 @@ u32 fightKoukaDoFightKoukaJoukenAndKouka(void* target, u16 koukaDataIndex) {
 }
 #pragma dont_inline reset
 
-/* Address: 0x8020DAD0 | Size: 0x274 | Ghidra import */
+/* Address: 0x8020DAD0 | Size: 0x274 */
+/* Un-merged from the Ghidra import: the decompiler folded several distinct
+ * locals into one `uVar2`, and retail colours them as separate variables --
+ * the wipe-data pointer (wipeData) and the msgctrl value (msgValue) each need
+ * their own slot, as does the floor-data id (uVar4), before the non-volatiles
+ * fall out as r27..r31.  The values the import passed implicitly through r3
+ * (the wipe id, the wipe accessors' pointer, the hear flag) are written as
+ * real arguments here; the fightTrainerDataBiosGetPtr chain above is *not*,
+ * because folding it into one expression costs an instruction. */
 #pragma push
 #pragma peephole on
 u32 fn_8020DAD0(u32 p1) {
@@ -245,7 +260,7 @@ u32 fn_8020DAD0(u32 p1) {
     extern u32 fightEncountDataBiosGetWipeFunction();
     extern u32 fightEncountWipeDataBiosGetPtr();
     extern u8 fightEncountDataBiosGetZenmetuFlag();
-    extern void fightEncountDataBiosGetWipeId();
+    extern u32 fightEncountDataBiosGetWipeId();
     extern u16 fightEncountDataBiosGetFightTrainerDataId();
     extern u32 fightEncountDataBiosGetFightFloorDataId();
     extern u8 fightEncountDataBiosGetFightKind();
@@ -258,6 +273,8 @@ u32 fn_8020DAD0(u32 p1) {
     extern f32 lbl_8047E52C;
 
     u32 uVar1;
+    u32 wipeData;
+    u32 msgValue;
     u32 uVar2;
     u16 uVar7;
     u8 uVar9;
@@ -266,7 +283,6 @@ u32 fn_8020DAD0(u32 p1) {
     u8 cVar10;
     u16 sVar8;
     u32 uVar4;
-    u32 uVar5;
     u32 uVar6;
 
     if ((p1 & 0xffff) == 0) {
@@ -278,8 +294,8 @@ u32 fn_8020DAD0(u32 p1) {
         fn_801EF61C(p1);
         uVar2 = fn_800FF56C();
         fightFloorSetStatus(0, 0, 0x4a, 0, uVar2);
-        uVar2 = fightEncountDataBiosGetFightFloorDataId(uVar1);
-        uVar7 = fightFloorGetStatus(0, uVar2, 2, 0);
+        uVar4 = fightEncountDataBiosGetFightFloorDataId(uVar1);
+        uVar7 = fightFloorGetStatus(0, uVar4, 2, 0);
         mailMainReceiveTerminate();
         uVar9 = fightEncountDataBiosGetFightKind(uVar1);
         iVar3 = fightKindDataBiosGetPtr(uVar9);
@@ -287,22 +303,21 @@ u32 fn_8020DAD0(u32 p1) {
             fightEncountDataBiosGetFightTrainerDataId(uVar1, 1);
             trainerData = fightTrainerDataBiosGetPtr();
             if (trainerData != 0) {
-                uVar2 = fn_801FCC7C();
+                msgValue = fn_801FCC7C();
                 sVar8 = charNameBiosSearchIndex();
                 if ((sVar8 != 0) && (sVar8 = charNameBiosGetHearFlag(), sVar8 != 0)) {
-                    fn_80190528();
+                    fn_80190528(sVar8);
                 }
-                msgctrlSetValue(0x59, uVar2);
+                msgctrlSetValue(0x59, msgValue);
             }
         }
         fn_80165A20(1, 1000, 0xff);
         scriptSoundStop(1000);
-        fightEncountDataBiosGetWipeId(uVar1);
-        uVar2 = fightEncountWipeDataBiosGetPtr();
-        uVar4 = fightEncountDataBiosGetWipeSnapshotUse();
-        uVar5 = fightEncountDataBiosGetWipeFunction(uVar2);
-        fadeSetEX(lbl_8047E528, fightEncountDataBiosGetWipeEffectTime(uVar2), 9, uVar5, uVar4);
-        sVar8 = fightEncountDataBiosGetWipeEffectSndID(uVar2);
+        wipeData = fightEncountWipeDataBiosGetPtr(fightEncountDataBiosGetWipeId(uVar1));
+        fadeSetEX(lbl_8047E528, fightEncountDataBiosGetWipeEffectTime(wipeData), 9,
+                  fightEncountDataBiosGetWipeFunction(wipeData),
+                  fightEncountDataBiosGetWipeSnapshotUse(wipeData));
+        sVar8 = fightEncountDataBiosGetWipeEffectSndID(wipeData);
         if (sVar8 != 0) {
             fn_80166AB8(sVar8, 0, 0);
         }
@@ -319,7 +334,7 @@ u32 fn_8020DAD0(u32 p1) {
                 fn_801EF61C(0);
                 fn_801903B0(0xe05);
                 uVar6 = heroGetStatus(0, 0xc, 0);
-                heroDecPokedoru(0, ((s32)uVar6 >> 1) + (((s32)uVar6 < 0) & (uVar6 & 1)));
+                heroDecPokedoru(0, (s32)uVar6 / 2);
                 fn_801D0AFC(1);
                 fn_8018DA88();
                 fn_80113FE8();
@@ -600,14 +615,23 @@ FightEncountData* fightEncountDataBiosGetPtr(u16 index) {
 }
 
 /* 0x8020E124 | size: 0x80 | small */
+/* The bounds-check index is a separate local, not the u16 parameter: retail
+ * keeps the widened index in r7 (the last-coloured slot), which only happens
+ * when it is a declared local rather than a compiler temp.  It is spelled
+ * `unsigned int`, not `u32` -- both are 32-bit unsigned here, but MWCC ranks
+ * int- and long-typed locals separately when it colours them, and only the
+ * int spelling puts trainerNum/count/idx in r5/r6/r7 the way retail has it.
+ * Same lever as fightTrainerAiWazaValueHimitunotikara's param2. */
 u16 fightTypeGetFightSideFightOutPokemonMax(u16 index) {
     FightTypeData* type;
-    u32 count;
     u8 trainerNum;
     u8 fightoutPokemonNum;
+    u32 count;
+    unsigned int idx;
 
+    idx = index;
     count = *lbl_80478F00;
-    if (index > count) {
+    if (idx > count) {
         type = NULL;
     } else {
         type = &lbl_80478F04[index];
@@ -617,7 +641,7 @@ u16 fightTypeGetFightSideFightOutPokemonMax(u16 index) {
     } else {
         trainerNum = type->trainerNum;
     }
-    if (index > count) {
+    if (idx > count) {
         type = NULL;
     } else {
         type = &lbl_80478F04[index];
