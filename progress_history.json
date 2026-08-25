@@ -5668,6 +5668,18 @@
   "build_clean": true
  },
  {
+  "commit": "12ea0a3dc0c66e48634f8382d783e9abe886a8ce",
+  "ts": 1787655571,
+  "fuzzy": 87.865295,
+  "code": 43.254883,
+  "fn": 79.007324,
+  "data": 97.29471,
+  "total_functions": 8603,
+  "matched_functions": 6797,
+  "source": "ci",
+  "build_clean": true
+ },
+ {
   "commit": "1c0abdd0bd67611f2e8170029eabc33ab84e81dc",
   "ts": 1787655576,
   "fuzzy": 87.88158,
