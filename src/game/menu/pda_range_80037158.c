@@ -3268,15 +3268,22 @@ void fn_80037180(u32 unused, u8* p) {
 }
 #pragma peephole reset
 
-#pragma peephole off
-void fn_80039F70(u8* ctx) {
+s32 fn_80039F70(u8* ctx)
+{
+    extern void winSeqSetMenu(s32 sequence, s32 menu);
+    extern u8 fn_801429E8(void* item);
+    extern u16 pcboxGetNbItemSlot(s32 box);
+    extern u16 itemBiosGetItemDataId(void* item);
+    extern void* itemDataBiosGetPtr(s32 id);
+    extern s32 itemDataBiosGetDoc(void* data);
     s8 state;
-    void* entry;
-    u32 seen;
-    u32 index;
-    u16 count;
-    u32 target;
-    u32 message;
+    s32 found;
+    s32 i;
+    void* item;
+    s32 target;
+    u16 itemId;
+    s32 message;
+    s32 slots;
     f32 f0;
     f32 f1;
     f32 f2;
@@ -3284,42 +3291,38 @@ void fn_80039F70(u8* ctx) {
     state = (s8)ctx[1];
     switch (state) {
     case 0:
-        if ((s8)ctx[2] != 0) {
-            return;
-        }
-        winSeqSetMenu(0x25, 0xb4);
-        target = lbl_8047A4A8 + lbl_8047A4AC;
-        count = (u16)fn_801347D0(0);
-        seen = (u32)-1;
-        entry = (void*)0;
-        for (index = 0; index < (u32)count; index++) {
-            entry = pcboxGetItem((void*)0, (s16)index);
-            if ((u8)fn_801429E8(entry) != 0) {
-                seen++;
-                if (seen >= target) {
-                    break;
+        if ((s8)ctx[2] == 0) {
+            winSeqSetMenu(0x25, 0xb4);
+            target = lbl_8047A4A8 + lbl_8047A4AC;
+            slots = pcboxGetNbItemSlot(0);
+            found = -1;
+            for (i = 0; i < slots; i++) {
+                item = pcboxGetItem(0, (s16)i);
+                if ((u8)fn_801429E8(item) != 0) {
+                    found++;
+                    if (found >= target) {
+                        itemId = itemBiosGetItemDataId(item);
+                        goto haveDoc;
+                    }
                 }
             }
+            itemId = 0;
+        haveDoc:
+            if (itemId != 0) {
+                message = itemDataBiosGetDoc(itemDataBiosGetPtr(itemId));
+            } else {
+                message = 0x1b68;
+            }
+            lbl_8047A4B4 = message;
+            lbl_8047A4C0 = 0.0f;
+            lbl_8047A4BC = 0;
+            lbl_8047A4B8 = -1;
+            ctx[2] = 1;
         }
-        if (index < (u32)count) {
-            message = (u32)(u16)fn_80143C68(entry);
-        } else {
-            message = 0;
-        }
-        if (message != 0) {
-            message = itemDataBiosGetDoc((void*)fn_801440A0(message));
-        } else {
-            message = 0x1b68;
-        }
-        lbl_8047A4B4 = message;
-        lbl_8047A4C0 = lbl_8047BAB0;
-        lbl_8047A4BC = 0;
-        lbl_8047A4B8 = (u32)-1;
-        ctx[2] = 1;
         break;
     case 2:
         f2 = lbl_8047A4C0;
-        f1 = lbl_8047BAB0;
+        f1 = 0.0f;
         if (f2 > f1) {
             f0 = f2 - lbl_8047BABC;
             lbl_8047A4C0 = f0;
@@ -3328,7 +3331,7 @@ void fn_80039F70(u8* ctx) {
             }
         }
         f2 = lbl_8047A4C0;
-        f1 = lbl_8047BAB0;
+        f1 = 0.0f;
         if (f2 < f1) {
             f0 = f2 + lbl_8047BABC;
             lbl_8047A4C0 = f0;
@@ -3344,8 +3347,8 @@ void fn_80039F70(u8* ctx) {
         }
         break;
     }
+    return 0;
 }
-#pragma peephole reset
 
 #pragma peephole off
 void fn_8003B6D0(u8* ctx) {
