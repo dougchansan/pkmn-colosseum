@@ -1,25 +1,25 @@
 {
-  "base_sha": "f8b67c12f14cba7f99820924e1cb3239c92c4578",
+  "base_sha": "787b7f4ab63f4f75dc900d844277cf060efac1d2",
   "regressions": {
-    "menuSubGetPokemonSexForFightDisp": {
+    "fn_801BFA1C": {
       "base": 100.0,
-      "head": 97.94118
+      "head": 85.65
     },
-    "winMsgClose": {
-      "base": 100.0,
-      "head": 98.125
+    "fn_801BF6AC": {
+      "base": 95.84,
+      "head": 84.22
     },
-    "winMsgCloseField": {
+    "fn_801BFD10": {
       "base": 100.0,
-      "head": 98.125
+      "head": 97.12
     },
-    "winMsgCloseFight": {
-      "base": 100.0,
-      "head": 98.125
+    "fn_801BF8A0": {
+      "base": 99.79,
+      "head": 97.63
     },
-    "winMsgCloseLevelUpStatus": {
+    "fn_801BFF18": {
       "base": 100.0,
-      "head": 98.125
+      "head": 97.03
     }
   }
 }
