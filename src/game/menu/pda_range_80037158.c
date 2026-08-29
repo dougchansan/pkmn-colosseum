@@ -498,6 +498,16 @@ void fn_8003792C(void* window, volatile PdaSprite* sprite)
 }
 #pragma peephole reset
 
+/* |v|. Retail's shape -- `> 0` first -- is what emits the two-way
+   branch rather than an inverted single one. */
+static inline f32 pdaOrbitAbs(f32 v)
+{
+    if (v > 0.0f) {
+        return v;
+    }
+    return -v;
+}
+
 static inline void pdaUpdateOrbitSprite(PdaSprite* sprite, f32 baseAngle,
                                         s32 updateTarget)
 {
@@ -511,43 +521,37 @@ static inline void pdaUpdateOrbitSprite(PdaSprite* sprite, f32 baseAngle,
     f32 magnitude;
     s8 direction;
 
-    angle = lbl_8047A484 - baseAngle;
     if (updateTarget) {
         lbl_8047A488 = lbl_802E52A8[lbl_8047A47C];
     }
-    if (angle < lbl_8047BA58) {
-        angle += lbl_8047BA60;
+    angle = lbl_8047A484 - baseAngle;
+    if (angle < 0.0f) {
+        angle += 6.28318548f;
     }
-    if (angle >= lbl_8047BA60) {
-        angle -= lbl_8047BA60;
+    if (angle >= 6.28318548f) {
+        angle -= 6.28318548f;
     }
 
     windowGetKeyInfo();
     step = lbl_8047BA64 * lbl_8047A494;
     if (lbl_8047A484 != lbl_8047A488) {
-        if (lbl_8047A488 - lbl_8047A484 < lbl_8047BA58) {
+        if (lbl_8047A488 - lbl_8047A484 < 0.0f) {
             step = -step;
         }
         lbl_8047A48C = step;
         lbl_8047A484 += step;
-        if (lbl_8047A484 >= lbl_8047BA60) {
-            lbl_8047A484 -= lbl_8047BA60;
+        if (lbl_8047A484 >= 6.28318548f) {
+            lbl_8047A484 -= 6.28318548f;
         }
-        if (lbl_8047A484 < lbl_8047BA58) {
-            lbl_8047A484 += lbl_8047BA60;
+        if (lbl_8047A484 < 0.0f) {
+            lbl_8047A484 += 6.28318548f;
         }
 
-        distance = lbl_8047A484 - lbl_8047A488;
-        if (distance <= lbl_8047BA58) {
-            distance = -distance;
-        }
-        magnitude = step;
-        if (magnitude <= lbl_8047BA58) {
-            magnitude = -magnitude;
-        }
+        distance = pdaOrbitAbs(lbl_8047A484 - lbl_8047A488);
+        magnitude = pdaOrbitAbs(step);
         if (distance < magnitude) {
             lbl_8047A484 = lbl_8047A488;
-            lbl_8047A48C = lbl_8047BA58;
+            lbl_8047A48C = 0.0f;
         }
     } else if (lbl_8047A47D != lbl_8047A47C) {
         direction = lbl_8047A47D - lbl_8047A47C;
