@@ -10,35 +10,8 @@
 #include "dolphin/os/OSInterrupt.h"
 #include "dolphin/vi/VI.h"
 
-/*
- * The retail TU was built with the global optimizer disabled: with it on,
- * MWCC canonicalises `&lbl_80466BC0 + i * sizeof(XFB)` with the constant
- * address on the right and evaluates the scaled index first, which swaps the
- * base/offset temporaries in every `xfb[]` access.  Turning it off restores
- * the retail base-first allocation across the whole file.
- *
- * This must stay at file scope.  Do not narrow it to push/pop pairs around
- * individual functions the way effect_visual.c and
- * fight_trainer_ai_waza_damage.c scope their pragmas.  Every function here
- * that touches _p->xfb[] needs it, including ones with no other reason to be
- * edited: re-enabling the optimizer for fn_801BFD10 alone, via
- * `#pragma push` / `#pragma global_optimizer on` / `#pragma pop` around its
- * body, regresses it from 100% to 97.115% (measured).
- *
- * There is no command-line equivalent to move this into the build config.
- * mwcceppc's -opt keyword table (off/on/all/space/speed, level=0..4, cse,
- * deadcode, deadstore, dead, lifetimes, loop, prop, strength, peep, schedule,
- * inter/local/unroll) has no global-optimizer entry, and even `-opt level=0`
- * still runs the global optimizer for temporaries, so it is not the same
- * thing -- it scores 90.97% on fn_801BFD10 against the pragma's 100%.
- */
-#pragma global_optimizer off
-
 #define HSD_VI_XFB_MAX 3
 #define HSD_ANTIALIAS_OVERLAP 4
-
-/* Two YUY2 pixels of XFB black (Y=0x10, Cb=Cr=0x80). */
-#define HSD_VI_XFB_BLACK2 0x10801080
 
 typedef void (*HSD_VIGXDrawDoneCallback)(int);
 
@@ -114,17 +87,10 @@ typedef struct HSD_VIInfo {
 
 extern HSD_VIInfo lbl_80466BC0;
 extern u8 lbl_804657C0[];
-extern const char lbl_8047DF30[8];
+extern char lbl_8047DF30[];
 extern char lbl_802756F8[];
 extern char lbl_80275704[];
 extern char lbl_8027575C[];
-extern const f32 lbl_8047DF38[2]; /* { 1.0f, 0.0f } */
-extern int lbl_8047B380;
-extern int lbl_8047B384;
-
-/* HSD_VIPreRetraceCB's frame-period counters, in .sbss outside this split. */
-#define vr_count lbl_8047B380
-#define renew_count lbl_8047B384
 
 #define _p (&lbl_80466BC0)
 
@@ -160,27 +126,30 @@ static inline int HSD_VISearchXFBByStatus(HSD_VIXFBDrawDispStatus status)
 
 static inline int HSD_VIGetXFBDrawEnable(void)
 {
+    BOOL intr;
     int idx = -1;
 
-    if (_p->nb_xfb >= 2) {
-        BOOL intr = OSDisableInterrupts();
-        if ((idx = HSD_VISearchXFBByStatus(HSD_VI_XFB_DRAWING)) == -1) {
-            if ((idx = HSD_VISearchXFBByStatus(HSD_VI_XFB_FREE)) != -1) {
-                _p->xfb[idx].status = HSD_VI_XFB_DRAWING;
-            }
-        }
-        OSRestoreInterrupts(intr);
+    if (_p->nb_xfb < 2) {
+        return idx;
     }
+    intr = OSDisableInterrupts();
+    if ((idx = HSD_VISearchXFBByStatus(HSD_VI_XFB_DRAWING)) == -1) {
+        if ((idx = HSD_VISearchXFBByStatus(HSD_VI_XFB_FREE)) != -1) {
+            _p->xfb[idx].status = HSD_VI_XFB_DRAWING;
+        }
+    }
+    OSRestoreInterrupts(intr);
     return idx;
 }
 
 static inline int HSD_VIWaitXFBDrawEnable(void)
 {
     int idx = -1;
-    if (_p->nb_xfb >= 2) {
-        while ((idx = HSD_VIGetXFBDrawEnable()) == -1) {
-            VIWaitForRetrace();
-        }
+    if (_p->nb_xfb < 2) {
+        return idx;
+    }
+    while ((idx = HSD_VIGetXFBDrawEnable()) == -1) {
+        VIWaitForRetrace();
     }
     return idx;
 }
@@ -200,29 +169,23 @@ static inline int HSD_VIWaitXFBFlushSub(void)
 /* Finalize the active XFB draw and advance its state. */
 void fn_801BF6AC(void)
 {
-    /*
-     * The three assert expressions are one -str reuse literal pool, and the
-     * retail code keeps its base in a callee-saved register for the whole
-     * function.  The pool lives in .rodata that splits.txt gives to
-     * game/data/rodata_80270008.c, so it has to be reached through the extern
-     * rather than written back as string literals here.
-     */
-    const char* msg = lbl_802756F8;
-    BOOL inner;
     BOOL intr;
+    BOOL inner;
     int idx;
 
     if (_p->nb_xfb < 2) {
         return;
     }
+
     intr = OSDisableInterrupts();
     idx = HSD_VISearchXFBByStatus(HSD_VI_XFB_DRAWING);
     if (idx == -1) {
-        __assert(lbl_8047DF30, 0x30D, msg + 0x0);
+        __assert(lbl_8047DF30, 0x30D, lbl_802756F8);
     }
+
     inner = OSDisableInterrupts();
     if (_p->xfb[idx].status != HSD_VI_XFB_DRAWING) {
-        __assert(lbl_8047DF30, 0x260, msg + 0xC);
+        __assert(lbl_8047DF30, 0x260, lbl_802756F8 + 0xC);
     }
     _p->xfb[idx].status = HSD_VI_XFB_WAITDONE;
     _p->xfb[idx].vi_all = _p->current;
@@ -231,11 +194,12 @@ void fn_801BF6AC(void)
 
     inner = OSDisableInterrupts();
     if (_p->xfb[idx].status != HSD_VI_XFB_WAITDONE) {
-        __assert(lbl_8047DF30, 0x2E4, msg + 0x38);
+        __assert(lbl_8047DF30, 0x2E4, lbl_802756F8 + 0x38);
     }
-    _p->xfb[idx].status = HSD_VISearchXFBByStatus(HSD_VI_XFB_NEXT) == -1
-                              ? HSD_VI_XFB_NEXT
-                              : HSD_VI_XFB_DRAWDONE;
+    _p->xfb[idx].status =
+        HSD_VISearchXFBByStatus(HSD_VI_XFB_NEXT) != -1
+            ? HSD_VI_XFB_DRAWDONE
+            : HSD_VI_XFB_NEXT;
     OSRestoreInterrupts(inner);
     OSRestoreInterrupts(intr);
 }
@@ -246,14 +210,12 @@ void fn_801BFA1C(HSD_VIStatus* vi, void* buffer, HSD_RenderPass rpass);
 void fn_801BF8A0(HSD_RenderPass rpass)
 {
     int idx;
-    void* buffer;
 
     if (_p->nb_xfb < 2) {
         return;
     }
     idx = HSD_VIWaitXFBDrawEnable();
-    buffer = _p->xfb[idx].buffer;
-    fn_801BFA1C(&_p->current.vi, buffer, rpass);
+    fn_801BFA1C(&_p->current.vi, _p->xfb[idx].buffer, rpass);
 
     while (fn_801BFCA0()) {
         fn_800B8DA8();
@@ -268,9 +230,7 @@ void fn_801BFA1C(HSD_VIStatus* vi, void* buffer, HSD_RenderPass rpass)
 {
     GXRenderModeObj* rmode = &vi->rmode;
     int n_xfb_lines;
-    int rest;
     u16 lines;
-    u16 pitch;
     u32 offset;
 
     fn_800B9C44(rmode->aa, rmode->sample_pattern, vi->vf, rmode->vfilter);
@@ -289,33 +249,11 @@ void fn_801BFA1C(HSD_VIStatus* vi, void* buffer, HSD_RenderPass rpass)
                                           rmode->xfbHeight));
         fn_800B96BC(rmode->fbWidth, n_xfb_lines);
         fn_800B9E88(buffer, TRUE);
-        /*
-         * Blank the XFB lines the copy did not reach.  `rest` is signed but
-         * cannot go negative: GXGetYScaleFactor walks its scale down until
-         * __GXGetNumXfbLines stops exceeding xfbHeight, so n_xfb_lines <=
-         * xfbHeight and the unsigned conversion in `rest * bpl` below is
-         * safe.  Retail tests equality here, not `> 0` -- the target is
-         * `subf.` + `beq` at 0x801BFB04, where `> 0` would need `ble`.
-         */
-        rest = rmode->xfbHeight - n_xfb_lines;
-        if (rest != 0) {
-            u32 bpl;
-            u32 nb;
-            u32* dst;
-
-            pitch = (rmode->fbWidth + 15) & ~15;
-            bpl = pitch * 2;
-            dst = (u32*) ((u8*) buffer + bpl * n_xfb_lines);
-            nb = (rest * bpl) / 4;
-            while (nb-- != 0) {
-                *dst++ = HSD_VI_XFB_BLACK2;
-            }
-        }
         break;
     case HSD_RP_TOPHALF:
         fn_800B959C(0, 0, rmode->fbWidth,
                     rmode->efbHeight - HSD_ANTIALIAS_OVERLAP);
-        n_xfb_lines = fn_800B9B14(lbl_8047DF38[0]);
+        n_xfb_lines = fn_800B9B14(1.0F);
         fn_800B96BC(rmode->fbWidth, n_xfb_lines);
         fn_800B9874(1);
         lines = rmode->efbHeight - HSD_ANTIALIAS_OVERLAP;
@@ -326,13 +264,12 @@ void fn_801BFA1C(HSD_VIStatus* vi, void* buffer, HSD_RenderPass rpass)
     case HSD_RP_BOTTOMHALF:
         fn_800B959C(0, 0, rmode->fbWidth,
                     rmode->efbHeight - HSD_ANTIALIAS_OVERLAP);
-        n_xfb_lines = fn_800B9B14(lbl_8047DF38[0]);
+        n_xfb_lines = fn_800B9B14(1.0F);
         fn_800B96BC(rmode->fbWidth, n_xfb_lines);
         fn_800B9874(2);
         lines = rmode->efbHeight - HSD_ANTIALIAS_OVERLAP;
         fn_800B959C(0, HSD_ANTIALIAS_OVERLAP, rmode->fbWidth, lines);
-        pitch = (rmode->fbWidth + 15) & ~15;
-        offset = pitch * lines * 2;
+        offset = (((rmode->fbWidth + 15) & ~15) * lines * 2);
         fn_800B9E88((u8*) buffer + offset, TRUE);
         fn_800B959C(0, 0, rmode->fbWidth, HSD_ANTIALIAS_OVERLAP);
         fn_800B9874(3);
@@ -415,12 +352,17 @@ void fn_801BFF18(u32 retraceCount)
     if (flush) {
         VIFlush();
     }
-    if (renew) {
-        renew_count++;
-    }
-    if (++vr_count >= _p->perf.frame_period) {
-        _p->perf.frame_renew = renew_count;
-        vr_count = renew_count = 0;
+    {
+        static int vr_count = 0;
+        static int renew_count = 0;
+
+        if (renew) {
+            renew_count++;
+        }
+        if (++vr_count >= _p->perf.frame_period) {
+            _p->perf.frame_renew = renew_count;
+            vr_count = renew_count = 0;
+        }
     }
     if (_p->pre_cb) {
         _p->pre_cb(retraceCount);
