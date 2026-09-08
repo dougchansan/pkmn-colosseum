@@ -103,11 +103,10 @@ u32 fightTrainerAiWazaValueTuikouSubayasaDaun(void* ctx, u32 param1, u32 param2,
     extern u32 fightTrainerAiAddValue(u32, s32);
     extern void fn_80239CCC(u32, void*, u32, u32, u32, u32, u32, u32, s32);
     extern void fn_80239EE8(u32, void*, u32, u32, u32, u32, u32, u32);
-    s32 denom;
-    u8 numerator;
-    s32 quotient;
-    s32 finalQuotient;
     u32 handle;
+    s32 quotient;
+    s32 denom;
+    s32 finalQuotient;
 
     quotient = (s32)(fn_80239564(ctx, param2) & 0xff);
     denom = fightTrainerGetStatus(0, 0xc7, 0x3e, 0);
@@ -129,19 +128,14 @@ u32 fightTrainerAiWazaValueTuikouSubayasaDaun(void* ctx, u32 param1, u32 param2,
         handle = fightTrainerAiAddValue(handle, quotient);
         fn_80239CCC(0xec64, ctx, fightOutPokemonGetPokemonPtr(param1), 0, 0, param2, 0, 0xca, quotient);
     }
-    if ((u8)fn_80237F74(ctx, param3, 0x1d) != 1) {
-        if ((u8)fn_80237F74(ctx, param3, 0x13) != 1) {
-            if ((u8)fn_80237F74(ctx, param3, 0x49) != 1) {
-                goto done;
-            }
-        }
+    if ((u8)fn_80237F74(ctx, param3, 0x1d) == 1 || (u8)fn_80237F74(ctx, param3, 0x13) == 1 ||
+        (u8)fn_80237F74(ctx, param3, 0x49) == 1) {
+        quotient = (s32)(fn_80239564(ctx, param2) & 0xff);
+        denom = fightTrainerGetStatus(0, 0xcb, 0x3e, 0);
+        finalQuotient = quotient / denom;
+        handle = fightTrainerAiAddValue(handle, finalQuotient);
+        fn_80239CCC(0xec64, ctx, fightOutPokemonGetPokemonPtr(param1), 0, 0, param2, 0, 0xcb, finalQuotient);
     }
-    numerator = (s32)(fn_80239564(ctx, param2) & 0xff);
-    denom = fightTrainerGetStatus(0, 0xcb, 0x3e, 0);
-    finalQuotient = numerator / denom;
-    handle = fightTrainerAiAddValue(handle, finalQuotient);
-    fn_80239CCC(0xec64, ctx, fightOutPokemonGetPokemonPtr(param1), 0, 0, param2, 0, 0xcb, finalQuotient);
-done:
     return handle;
 }
 /* Address: 0x8024A924 | Size: 0x25C (604 bytes) */
@@ -156,11 +150,10 @@ u32 fightTrainerAiWazaValueTuikouBougyoDaun(void* ctx, u32 param1, u32 param2, u
     extern u32 fightTrainerAiAddValue(u32, s32);
     extern void fn_80239CCC(u32, void*, u32, u32, u32, u32, u32, u32, s32);
     extern void fn_80239EE8(u32, void*, u32, u32, u32, u32, u32, u32);
-    s32 denom;
-    u8 numerator;
-    s32 quotient;
-    s32 finalQuotient;
     u32 handle;
+    s32 quotient;
+    s32 denom;
+    s32 finalQuotient;
 
     quotient = (s32)(fn_80239564(ctx, param2) & 0xff);
     denom = fightTrainerGetStatus(0, 0xc3, 0x3e, 0);
@@ -178,19 +171,14 @@ u32 fightTrainerAiWazaValueTuikouBougyoDaun(void* ctx, u32 param1, u32 param2, u
         handle = fightTrainerAiAddValue(handle, quotient);
         fn_80239CCC(0xec64, ctx, fightOutPokemonGetPokemonPtr(param1), 0, 0, param2, 0, 0xc5, quotient);
     }
-    if ((u8)fn_80237F74(ctx, param3, 0x1d) != 1) {
-        if ((u8)fn_80237F74(ctx, param3, 0x13) != 1) {
-            if ((u8)fn_80237F74(ctx, param3, 0x49) != 1) {
-                goto done;
-            }
-        }
+    if ((u8)fn_80237F74(ctx, param3, 0x1d) == 1 || (u8)fn_80237F74(ctx, param3, 0x13) == 1 ||
+        (u8)fn_80237F74(ctx, param3, 0x49) == 1) {
+        quotient = (s32)(fn_80239564(ctx, param2) & 0xff);
+        denom = fightTrainerGetStatus(0, 0xc6, 0x3e, 0);
+        finalQuotient = quotient / denom;
+        handle = fightTrainerAiAddValue(handle, finalQuotient);
+        fn_80239CCC(0xec64, ctx, fightOutPokemonGetPokemonPtr(param1), 0, 0, param2, 0, 0xc6, finalQuotient);
     }
-    numerator = (s32)(fn_80239564(ctx, param2) & 0xff);
-    denom = fightTrainerGetStatus(0, 0xc6, 0x3e, 0);
-    finalQuotient = numerator / denom;
-    handle = fightTrainerAiAddValue(handle, finalQuotient);
-    fn_80239CCC(0xec64, ctx, fightOutPokemonGetPokemonPtr(param1), 0, 0, param2, 0, 0xc6, finalQuotient);
-done:
     return handle;
 }
 /* Address: 0x8024AB80 | Size: 0x204 (516 bytes) */
