@@ -1,0 +1,47 @@
+{
+  "target": "GC6E01",
+  "description": "Co-op input probe (gate G1). Observation only: no retail behaviour is changed.",
+
+  "supported_original_sha1": [
+    "870e8b9693ca780782d80f22a6a4572d8ba9458f"
+  ],
+
+  "payload_sources": [
+    "mods/coop/src/coop_probe.s"
+  ],
+
+  "reservation": {
+    "_why": [
+      "OSInit's retail path loads __ArenaLo from the lis/addi immediate pair at",
+      "0x80099B54 and passes it to OSSetArenaLo. The second OSSetArenaLo path at",
+      "0x80099B8C only runs on a debug boot (BootInfo->arenaLo == 0 and",
+      "*BI2DebugFlag < 2), so retail arena base is __ArenaLo = 0x80496740.",
+      "Placing the co-op block at the arena base and raising that immediate past",
+      "it means the game's own allocator can never hand out the reserved region.",
+      "This is a derived reservation, not an address that merely looks unused."
+    ],
+    "base": "0x80496740",
+    "size": "0x2000",
+    "arena_lo_site": "0x80099B54",
+    "arena_lo_expect": "3C 60 80 49 38 63 67 40"
+  },
+
+  "hooks": [
+    {
+      "name": "poll_fn_800F7F64",
+      "address": "0x800F7F64",
+      "expect": "94 21 FF E0",
+      "kind": "b",
+      "target": "coop_hook_poll",
+      "note": "stwu r1,-0x20(r1) at the per-pad poll boundary. Displaced instruction is re-executed by the trampoline, which then resumes at 0x800F7F68."
+    },
+    {
+      "name": "register_fn_800F80B0",
+      "address": "0x800F80B0",
+      "expect": "3C 80 80 40",
+      "kind": "b",
+      "target": "coop_hook_register",
+      "note": "lis r4, lbl_80401C10@ha at the pad allocator entry. Counts registration attempts per logical ID."
+    }
+  ]
+}

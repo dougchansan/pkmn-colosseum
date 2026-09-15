@@ -169,17 +169,73 @@ registered. The open question — the one thing that must be answered at runtime
 before any movement work — is whether story mode calls `fn_800F80B0(2)` at all,
 or registers ID 1 only.
 
-## 6. Open items before G1 can be called done
+## 6. Memory map and overlay reservation [D]
 
+Parsed from the original DOL header (`tools/coop/doldef.py`):
+
+| Region | Range |
+|---|---|
+| text0 | `0x80003100` – `0x800055E0` |
+| text1 | `0x800055E0` – `0x80266360` |
+| data0–3 | `0x80266360` – `0x8039A6E0` |
+| bss | `0x8039A700` – `0x8047E738` |
+| data4 (sdata) | `0x80478820` – `0x80478DC0` (inside the bss span) |
+| data5 (sdata2) | `0x8047B6A0` – `0x8047E700` |
+
+Five text and five data section slots are unused, so a new loaded section can
+be added without disturbing the existing ones.
+
+`OSInit` (`0x80099A44`) establishes the heap base from **instruction
+immediates**, not from a data word:
+
+```
+80099B40  lwz   r3, BootInfo->arenaLo (+0x30)
+80099B50  bne   .L_80099B60          ; keep BootInfo's value if nonzero
+80099B54  lis   r3, __ArenaLo@ha     ; 3C 60 80 49
+80099B58  addi  r3, r3, __ArenaLo@l  ; 38 63 67 40  -> 0x80496740
+80099B60  bl    OSSetArenaLo
+...
+80099B74  lwz   r3, BI2DebugFlag     ; second path is debug-only:
+80099B7C  beq   .L_80099BA0          ;   requires a debug flag
+80099B88  bge   .L_80099BA0          ;   and *BI2DebugFlag < 2
+80099B8C  lis   r3, _stack_addr@ha   ; -> (0x8048E738 + 0x1f) & ~0x1f
+80099B9C  bl    OSSetArenaLo
+```
+
+Cross-checked against `config/GC6E01/ldscript.tpl`, the immediates are
+self-consistent: `_stack_end` = bss end `0x8047E738`; `_stack_addr` =
+`0x8048E738` (64 KB stack); `_db_stack_addr` = `0x80496738` (32 KB debug
+stack); `__ArenaLo` = `(_db_stack_addr + 0x1f) & ~0x1f` = `0x80496740`. ✅
+`__ArenaHi` = `0x81700000`.
+
+**Therefore a retail boot has arena base `0x80496740`**, and the second
+`OSSetArenaLo` only fires on a debug boot.
+
+The reservation strategy follows directly, and is derived rather than guessed:
+place the co-op section **at** `0x80496740` and rewrite the `lis`/`addi` pair
+at `0x80099B54` so `__ArenaLo` becomes `0x80498740`. The game's own allocator
+then starts above the co-op block and can never hand it out. Current
+reservation: `0x80496740` + `0x2000`.
+
+Residual risk: if an apploader ever sets `BootInfo->arenaLo` nonzero, the
+patched immediate is bypassed and the reservation does not apply. That is a
+runtime check, listed in §7.
+
+## 7. Open items before G1 can be called done
+
+- [x] Choose a hook mechanism and reserve overlay space against the real memory
+      map (not by inspection of apparently-unused addresses) — see §6.
+- [x] Record original instruction bytes for each chosen hook site — encoded in
+      `mods/coop/config/GC6E01-hooks.json` and enforced by the builder.
 - [ ] **[R]** Confirm at runtime how many IDs story mode registers, and the
       logical-ID → GameCube-port mapping. Nothing above proves port 2 is polled.
 - [ ] **[R]** Confirm `fn_800F7F64` is driven once per pad per tick in story
       mode, and locate its caller(s).
-- [ ] Choose a hook mechanism and reserve overlay space against the real memory
-      map (not by inspection of apparently-unused addresses).
-- [ ] Record original instruction bytes for each chosen hook site.
+- [ ] **[R]** Confirm `BootInfo->arenaLo` is zero on a real boot, so the arena
+      reservation actually takes effect.
+- [ ] **[R]** Boot the patched DOL and read `coop_stats`.
 
-## 7. Checkpoint gap
+## 8. Checkpoint gap
 
 `tools/dolphin_harness/states/` holds `intro_start`, `main_menu_fresh`,
 `name_entry`, `outskirt_stand`, `test_title`. **None of these is a checkpoint
@@ -187,7 +243,7 @@ where Rui is present and script-free** — Outskirt Stand precedes her entirely.
 A disposable save at or after Phenac City must be produced before G2 movement
 work or the G5 LAN test can begin.
 
-## 8. LAN test note
+## 9. LAN test note
 
 Both machines are local and each has a human driver, so this is the
 architecture doc's §7 LAN procedure as written, not a WAN substitute. The
