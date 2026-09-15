@@ -347,6 +347,55 @@ def reserve_arena(dol: Dol, reservation: dict, payload_size: int) -> dict:
 # --------------------------------------------------------------------------
 
 
+def reserve_inplace(dol: Dol, reservation: dict, image: bytes) -> dict:
+    """Overwrite a verified-dead span inside an already-loaded section.
+
+    Added DOL sections are silently ignored on this game's disc boot path.
+    Tested and rejected: an added text slot, an added data slot, and a slot
+    aliasing existing in-file bytes. In all three the payload was absent from
+    memory while patched text1 bytes were resident, which proves text1 loads
+    and that edits to it take effect. So the payload is written into text1
+    over code that never executes at retail, which also keeps the patched DOL
+    exactly the original size.
+    """
+    base = int(str(reservation["base"]), 16)
+    size = int(str(reservation["size"]), 16)
+    expect_sha1 = reservation["expect_sha1"].lower()
+
+    if len(image) > size:
+        raise BuildError(
+            f"payload is 0x{len(image):X} bytes but the in-place region is "
+            f"only 0x{size:X}"
+        )
+
+    original = dol.read(base, size)
+    actual_sha1 = sha1_bytes(original)
+    if actual_sha1 != expect_sha1:
+        raise BuildError(
+            f"in-place region 0x{base:08X}+0x{size:X} does not contain the "
+            f"expected original bytes. expected sha1 {expect_sha1}, found "
+            f"{actual_sha1}. Refusing to overwrite an unrecognised region."
+        )
+
+    section = dol.find_section(base, size)
+    if section is None:
+        raise BuildError(
+            f"in-place region 0x{base:08X} is not inside any loaded section"
+        )
+
+    dol.write(base, image + b"\x00" * (size - len(image)))
+
+    return {
+        "mode": "inplace",
+        "base": f"0x{base:08X}",
+        "size": f"0x{size:X}",
+        "payload_size": f"0x{len(image):X}",
+        "host_section": f"{section.kind}{section.index}",
+        "original_sha1": actual_sha1,
+        "displaced_symbols": reservation.get("displaced_symbols", []),
+    }
+
+
 def git_commit() -> str:
     try:
         return subprocess.run(
@@ -399,9 +448,16 @@ def main() -> int:
         )
 
         dol = Dol.load(args.orig)
-        reservation = reserve_arena(dol, config["reservation"], len(image))
+        mode = config["reservation"].get("mode", "section")
+        if mode == "inplace":
+            reservation = reserve_inplace(dol, config["reservation"], image)
+            section = dol.find_section(base)
+        else:
+            reservation = reserve_arena(dol, config["reservation"], len(image))
+            section = dol.add_text_section(
+                base, image, kind=config["reservation"].get("section_kind", "text")
+            )
         applied = apply_hooks(dol, config.get("hooks", []), symbols)
-        section = dol.add_text_section(base, image)
 
         args.out.parent.mkdir(parents=True, exist_ok=True)
         dol.save(args.out)
@@ -425,7 +481,7 @@ def main() -> int:
             "payload": {
                 "sha1": sha1_bytes(image),
                 "size": f"0x{len(image):X}",
-                "section_slot": f"text{section.index}",
+                "section_slot": f"{section.kind}{section.index}",
                 "sources": config["payload_sources"],
                 "symbols": {k: f"0x{v:08X}" for k, v in sorted(symbols.items())},
             },
@@ -441,12 +497,19 @@ def main() -> int:
         print(f"patched   {manifest['patched_dol']['sha1']}  {args.out}")
         print(
             f"payload   0x{len(image):X} bytes at 0x{base:08X} "
-            f"(slot text{section.index})"
+            f"(slot {section.kind}{section.index})"
         )
-        print(
-            f"arena     {reservation['arena_lo_before']} -> "
-            f"{reservation['arena_lo_after']}"
-        )
+        if reservation.get("mode") == "inplace":
+            print(
+                f"inplace   {reservation['base']}+{reservation['size']} in "
+                f"{reservation['host_section']} "
+                f"(displaced: {', '.join(reservation['displaced_symbols'])})"
+            )
+        else:
+            print(
+                f"arena     {reservation['arena_lo_before']} -> "
+                f"{reservation['arena_lo_after']}"
+            )
         print(f"hooks     {len(applied)} applied")
         for hook in applied:
             print(f"  {hook['address']}  {hook['name']}: {hook['detail']}")

@@ -1,31 +1,36 @@
 {
   "target": "GC6E01",
   "description": "Co-op input probe (gate G1). Observation only: no retail behaviour is changed.",
-
   "supported_original_sha1": [
     "870e8b9693ca780782d80f22a6a4572d8ba9458f"
   ],
-
   "payload_sources": [
     "mods/coop/src/coop_probe.s"
   ],
-
   "reservation": {
     "_why": [
-      "OSInit's retail path loads __ArenaLo from the lis/addi immediate pair at",
-      "0x80099B54 and passes it to OSSetArenaLo. The second OSSetArenaLo path at",
-      "0x80099B8C only runs on a debug boot (BootInfo->arenaLo == 0 and",
-      "*BI2DebugFlag < 2), so retail arena base is __ArenaLo = 0x80496740.",
-      "Placing the co-op block at the arena base and raising that immediate past",
-      "it means the game's own allocator can never hand out the reserved region.",
-      "This is a derived reservation, not an address that merely looks unused."
+      "Added DOL sections are ignored on this game's disc boot path. Tested and",
+      "rejected: an added text slot, an added data slot, and a slot aliasing",
+      "existing in-file bytes. In all three the payload was absent from memory",
+      "while patched text1 bytes were resident, which proves text1 loads and",
+      "our edits to it take effect.",
+      "So the payload is written directly into text1, over TRK__write_aram and",
+      "TRK__read_aram. Those two are reachable only from TRKInterrupt, the",
+      "CodeWarrior debugger interrupt path, which does not run without a",
+      "hardware debugger attached. InitMetroTRK_BBA at 0x800C2E18 is",
+      "deliberately NOT included: __start calls it on every boot.",
+      "This keeps the patched DOL exactly the original size.",
+      "Base is 32-byte aligned because mwldeppc aligns .text; the first 20 bytes of TRK__write_aram are left intact."
     ],
-    "base": "0x80496740",
-    "size": "0x2000",
-    "arena_lo_site": "0x80099B54",
-    "arena_lo_expect": "3C 60 80 49 38 63 67 40"
+    "mode": "inplace",
+    "base": "0x800C2EC0",
+    "size": "0x30C",
+    "expect_sha1": "315856dffabd2ee87b6adcc1777fed271209b19d",
+    "displaced_symbols": [
+      "TRK__write_aram (0x800C2EAC+0x1EC)",
+      "TRK__read_aram (0x800C3098+0x134)"
+    ]
   },
-
   "hooks": [
     {
       "name": "poll_fn_800F7F64",

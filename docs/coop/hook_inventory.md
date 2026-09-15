@@ -250,3 +250,81 @@ architecture doc's §7 LAN procedure as written, not a WAN substitute. The
 Windows side has a bundled Dolphin at `dolphin-2603a-x64/Dolphin-x64/`; the
 Linux peer must run a **version-identical** Dolphin build, which that bundle's
 `build_info.txt` does not state. Pin the exact version before the G5 attempt.
+
+
+---
+
+## 10. Runtime results (G1) — payload resident, second pad confirmed
+
+All [R] tags below come from booting the patched image under Dolphin's
+scripting fork and reading memory (`tools/coop/runtime/`).
+
+### Boot-path finding: added DOL sections are ignored
+
+The disc boot path does not honour sections added to the DOL header. Three
+variants were built and booted; in each the payload was absent from memory
+(`0x00000000` from frame 1) while the patched `text1` bytes *were* resident:
+
+| Attempt | Result |
+|---|---|
+| New text slot (`text2`) at `0x80496740` | not loaded |
+| New data slot (`data6`), same address | not loaded |
+| Slot aliasing existing in-file bytes (no file growth) | not loaded |
+| Bare DOL booted directly (Dolphin's own loader) | **loaded** |
+
+So the loader reads our header well enough to apply `text0`/`text1`, but will
+not take an added slot. Relocating the DOL on the disc did not help either.
+
+**Resolution:** write the payload *into* `text1`, over code that never runs at
+retail. This also keeps the patched DOL exactly the original size
+(3,779,808 bytes), so it splices into the ISO at the original `dol_offset`
+and the image stays retail-sized.
+
+Region: `0x800C2EC0` + `0x30C`, displacing `TRK__write_aram` and
+`TRK__read_aram`, which are called only from `TRKInterrupt` (the CodeWarrior
+debugger interrupt path). `InitMetroTRK_BBA` at `0x800C2E18` is deliberately
+excluded — `__start` calls it on every boot. Base is 32-byte aligned because
+`mwldeppc` aligns `.text`.
+
+### The second controller is already registered
+
+With the payload resident (`magic` = `COOP`, `payload_entry` = `0x4E800020`),
+the pad table at `lbl_80401C10` holds logical IDs **1, 2, 3, 4**. The entry
+`+0x0C` status word is the connection state, established differentially by
+changing only Dolphin's `SIDevice1`:
+
+| slot | 1 pad configured | 2 pads configured |
+|---|---|---|
+| id 1 | status 0 | status 0 |
+| id 2 | status **3** | status **0** |
+| id 3 | status 3 | status 3 |
+| id 4 | status 3 | status 3 |
+
+**status 0 = connected, 3 = absent.** [R]
+
+This answers the §5 open question and is better news than expected: story mode
+does *not* need to be forced to call `fn_800F80B0(2)`. Rui's pad slot exists
+and reports connected as soon as a second controller is present.
+
+### Unresolved: the counters do not add up
+
+`poll_total = 1` and `reg_total = 1` after 3600 frames, yet
+`reg_count = [1,1,1,1]` (four distinct per-ID slots each incremented once).
+Those cannot all be true — four registrations should leave `reg_total = 4`.
+
+More importantly, **`poll_total = 1` means `fn_800F7F64` is not the per-frame
+poll.** It is called once during init. The real per-frame input path is
+elsewhere — most likely the SDK PAD callback installed by `fn_800F8138`. The
+§4 claim that `fn_800F7F64` is "the polling boundary" is therefore **wrong as
+a per-frame statement** and must be corrected once the true cadence is found.
+
+The slot snapshot above is unaffected by this: it is copied straight out of
+the game's own pad table and it responds correctly to the controller change.
+
+### Remaining for G1
+
+- [ ] Find the actual per-frame input path and re-point the poll hook at it.
+- [ ] Explain or fix the counter inconsistency in `coop_hook_register`.
+- [ ] Capture non-zero stick/button values with a human driving both pads;
+      every sample so far was at rest (`held=0`, sticks 0), which shows the
+      slots but not yet independent input.

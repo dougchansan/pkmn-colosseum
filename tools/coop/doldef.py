@@ -135,12 +135,20 @@ class Dol:
         """End of the highest loaded section, ignoring bss."""
         return max(s.end for s in self.sections if s.used)
 
-    def add_text_section(self, address: int, payload: bytes) -> Section:
-        """Append a new loaded text section carrying `payload` at `address`.
+    def add_text_section(
+        self, address: int, payload: bytes, kind: str = "text"
+    ) -> Section:
+        """Append a new loaded section carrying `payload` at `address`.
 
         The payload is placed at the end of the file; DOL sections are not
         required to be ordered by address, only to be individually contiguous.
+
+        `kind` selects a text or data slot. GameCube has no execute
+        protection, so code runs from either; which one a given loader
+        actually honours is an empirical question.
         """
+        if kind == "data":
+            return self._add_data_section(address, payload)
         slot = self.free_text_slot()
         if slot is None:
             raise RuntimeError("no free text section slot in this DOL")
@@ -161,6 +169,29 @@ class Dol:
         self._put_u32(_OFF_TEXT_SIZE + slot * 4, size)
 
         section = Section("text", slot, file_off, address, size)
+        self.sections.append(section)
+        return section
+
+    def _add_data_section(self, address: int, payload: bytes) -> Section:
+        slot = self.free_data_slot()
+        if slot is None:
+            raise RuntimeError("no free data section slot in this DOL")
+        if address % 32:
+            raise ValueError("section address must be 32-byte aligned")
+
+        pad = (-len(self.data)) % 32
+        self.data.extend(b"\x00" * pad)
+        file_off = len(self.data)
+        self.data.extend(payload)
+        tail = (-len(self.data)) % 32
+        self.data.extend(b"\x00" * tail)
+
+        size = len(payload) + tail
+        self._put_u32(_OFF_DATA_FILE + slot * 4, file_off)
+        self._put_u32(_OFF_DATA_ADDR + slot * 4, address)
+        self._put_u32(_OFF_DATA_SIZE + slot * 4, size)
+
+        section = Section("data", slot, file_off, address, size)
         self.sections.append(section)
         return section
 
