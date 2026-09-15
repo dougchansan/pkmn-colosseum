@@ -76,6 +76,9 @@ def snapshot():
         "version": memory.read_u32(STATS + 0x04),
         "poll_total": memory.read_u32(STATS + 0x08),
         "reg_total": memory.read_u32(STATS + 0x0C),
+        "frame_total": memory.read_u32(STATS + 0x10),
+        "gate_allow": memory.read_u32(STATS + 0x14),
+        "gate_block": memory.read_u32(STATS + 0x18),
         "reg_count": [memory.read_u32(STATS + 0x20 + i * 4) for i in range(4)],
         "reg_other": memory.read_u32(STATS + 0x34),
         "last_poll_id": memory.read_u32(STATS + 0x38),
@@ -122,7 +125,8 @@ try:
                 first_magic_frame = frame
             w(
                 f"frame={frame} magic=0x{snap['magic']:08X} "
-                f"poll={snap['poll_total']} reg={snap['reg_total']} "
+                f"frames={snap['frame_total']} poll={snap['poll_total']} "
+                f"gate(a/b)={snap['gate_allow']}/{snap['gate_block']} reg={snap['reg_total']} "
                 f"reg_count={snap['reg_count']} "
                 f"ids={[s['logical_id'] for s in snap['slots']]}"
             )

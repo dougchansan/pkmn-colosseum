@@ -328,3 +328,86 @@ the game's own pad table and it responds correctly to the controller change.
 - [ ] Capture non-zero stick/button values with a human driving both pads;
       every sample so far was at rest (`held=0`, sticks 0), which shows the
       slots but not yet independent input.
+
+
+---
+
+## 11. The per-frame input path — causally confirmed [R]
+
+```
+main (0x800059BC)
+  GSgappCreate(1, 0, 0, fn_8000604C)      registers a per-frame task
+    -> fn_8000604C            0x8000604C  per-frame pad driver
+         for id = 1..4:
+           fn_8008ABA0(id)    0x8008ABA0  gate; poll only when it returns 0
+           fn_800F7F64(id)    0x80006078 -> 0x800F7F64   per-pad latch
+```
+
+`fn_8000604C` is never reached by `bl`; its address is taken in `main` and
+handed to `GSgappCreate` with priority 0, which is why a caller search for it
+comes up empty.
+
+**Causal proof.** Replacing the single `bl fn_800F7F64` at `0x80006078` with a
+`nop` (`48 0F 1E ED` -> `60 00 00 00`) and changing nothing else makes all
+input stop reaching the pad table — buttons and sticks alike read 0 in every
+phase. Restoring it restores input. So this call is the per-frame path, not
+merely a plausible one.
+
+### The gate, `fn_8008ABA0(id)` [D]
+
+Reads `lbl_803FB318[id-1]` (call it A) and `lbl_803FB308[id-1]` (B):
+
+- returns 1 when `A != 0 && B == 0`
+- returns 0 otherwise
+
+The driver polls when it returns **0**. Any co-op input work must respect this
+gate rather than bypassing it.
+
+### Port and button mapping [R]
+
+Established by injecting input per port via Dolphin's scripting `controller`
+module and reading the game's own table — no co-op payload involved, so this
+describes the stock game:
+
+| Dolphin port | logical pad ID |
+|---|---|
+| port 0 | **1** |
+| port 1 | **2** |
+
+| Input | `+0x24` bits |
+|---|---|
+| A | `0x0100` |
+| B | `0x0200` |
+
+Stick raw bytes centre at 128; full deflection reads 200 and 56 (+/-72), and
+`+0x26` (raw) and `+0x58` (processed) agreed in every sample taken at rest or
+at full deflection.
+
+### Independent two-pad input works in the stock game [R]
+
+Driving port 0 with A and port 1 with B in the same frame yields
+`id1 held=0x0100` and `id2 held=0x0200` simultaneously. Opposite stick
+deflections give `id1 rawx=200` / `id2 rawx=56`. Both pads are latched
+independently by the retail code with no patch at all.
+
+## 12. Corrections to earlier sections
+
+- **§10's "the game hangs" reading was wrong.** The patched build and the stock
+  build produce identical pad-table behaviour over 1800 frames
+  (ids `[1,2,3,4]`, statuses `[0,0,3,3]`). The in-place patch does not break
+  the game.
+
+- **§4 stands in substance.** `fn_800F7F64` really is the per-frame latch; what
+  was missing was its driver and gate, now documented in §11.
+
+- **The in-game telemetry counters are not trustworthy.** `frame_total`,
+  `poll_total` and `reg_total` all stick at 1 while the game demonstrably runs
+  and latches input every frame, and `reg_total` contradicts `reg_count`. The
+  counters live inside `text1` alongside the payload code, which is the leading
+  suspect. This is unresolved and must be fixed before any in-game co-op logic
+  relies on payload-resident state.
+
+- **Observation should be script-side.** Reading the game's own structures from
+  the Dolphin scripting harness needs no payload, no hooks and no patched DOL,
+  and it produced every result in §11. Use it for evidence; reserve the payload
+  for changing behaviour.

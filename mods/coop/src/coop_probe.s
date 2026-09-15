@@ -138,6 +138,77 @@ coop_reg_done:
 
 
 # ---------------------------------------------------------------------------
+# Per-frame driver hook — entry of fn_8000604C
+#
+# Displaced instruction: stwu r1, -0x10(r1)   (94 21 FF F0)
+# fn_8000604C is registered via GSgappCreate(1, 0, 0, fn_8000604C) as a
+# per-frame task. It walks logical IDs 1..4 and calls fn_800F7F64(id) only
+# when the gate fn_8008ABA0(id) returns 0. Counting entries here separates
+# "the game never reaches the per-frame task" from "the task runs but the
+# gate suppresses the poll".
+# ---------------------------------------------------------------------------
+    .global coop_hook_frame
+coop_hook_frame:
+    stwu    r1, -0x20(r1)
+    stw     r3, 0x08(r1)
+
+    lis     r3, coop_stats@ha
+    addi    r3, r3, coop_stats@l
+    lwz     r0, 0x10(r3)            # frame_total++
+    addi    r0, r0, 1
+    stw     r0, 0x10(r3)
+
+    lis     r0, 0x8000              # continue at fn_8000604C + 4
+    ori     r0, r0, 0x6050
+    mtctr   r0
+
+    lwz     r3, 0x08(r1)
+    addi    r1, r1, 0x20
+
+    stwu    r1, -0x10(r1)           # displaced original instruction
+    bctr
+
+
+# ---------------------------------------------------------------------------
+# Gate hook — exit path of fn_8008ABA0
+#
+# Counts how often the gate allows a poll (r3 == 0) versus blocks it.
+# Hooked at the final clrlwi so the return value is already in r4.
+# Displaced instruction: clrlwi r3, r4, 24   (54 83 06 3E)
+# ---------------------------------------------------------------------------
+    .global coop_hook_gate
+coop_hook_gate:
+    stwu    r1, -0x20(r1)
+    stw     r5, 0x08(r1)
+    stw     r6, 0x0C(r1)
+
+    lis     r5, coop_stats@ha
+    addi    r5, r5, coop_stats@l
+    clrlwi  r6, r4, 24
+    cmplwi  r6, 0x0
+    bne     coop_gate_blocked
+    lwz     r0, 0x14(r5)            # gate_allow++
+    addi    r0, r0, 1
+    stw     r0, 0x14(r5)
+    b       coop_gate_done
+coop_gate_blocked:
+    lwz     r0, 0x18(r5)            # gate_block++
+    addi    r0, r0, 1
+    stw     r0, 0x18(r5)
+coop_gate_done:
+    lis     r0, 0x8008              # continue at fn_8008ABA0 + 4
+    ori     r0, r0, 0xABE0
+    mtctr   r0
+
+    lwz     r5, 0x08(r1)
+    lwz     r6, 0x0C(r1)
+    addi    r1, r1, 0x20
+
+    clrlwi  r3, r4, 24              # displaced original instruction
+    bctr
+
+
+# ---------------------------------------------------------------------------
 # Telemetry block.
 #
 #   +0x00  magic 'COOP'

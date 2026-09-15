@@ -47,6 +47,22 @@
       "kind": "b",
       "target": "coop_hook_register",
       "note": "lis r4, lbl_80401C10@ha at the pad allocator entry. Counts registration attempts per logical ID."
+    },
+    {
+      "name": "frame_fn_8000604C",
+      "address": "0x8000604C",
+      "expect": "94 21 FF F0",
+      "kind": "b",
+      "target": "coop_hook_frame",
+      "note": "Entry of the GSgappCreate-registered per-frame pad task. Counts how often the per-frame driver actually runs."
+    },
+    {
+      "name": "gate_fn_8008ABA0",
+      "address": "0x8008ABDC",
+      "expect": "54 83 06 3E",
+      "kind": "b",
+      "target": "coop_hook_gate",
+      "note": "Exit of the poll gate. Return value is in r4 at this point; counts allow (0) vs block (non-zero)."
     }
   ]
 }
