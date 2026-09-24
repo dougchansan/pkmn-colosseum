@@ -954,6 +954,9 @@ static void InquiryCallback(s32 result, DVDCommandBlock* block) {
 static void OSExceptionInit(void);
 
 /* 0x80099A44 | size: 0x3D8 */
+const char* __OSVersion =
+    "<< Dolphin SDK - OS\trelease build: Mar 17 2003 04:20:41 (0x2301) >>";
+
 void OSInit(void) {
     extern void OSDisableInterrupts(void);
     extern void OSEnableInterrupts(void);
@@ -997,7 +1000,6 @@ void OSInit(void) {
     extern u32 __DVDLongFileNameFlag;
     extern u32 __OSInIPL;
     extern u32 __OSIsGcam;
-    extern const char* __OSVersion;
     extern u8 __ArenaLo[];
     extern u8 __ArenaHi[];
     extern u8 _stack_addr[];

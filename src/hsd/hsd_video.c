@@ -87,10 +87,13 @@ typedef struct HSD_VIInfo {
 
 extern HSD_VIInfo lbl_80466BC0;
 extern u8 lbl_804657C0[];
-extern char lbl_8047DF30[];
+extern const char lbl_8047DF30[8];
 extern char lbl_802756F8[];
 extern char lbl_80275704[];
 extern char lbl_8027575C[];
+extern const f32 lbl_8047DF38[2]; /* { 1.0f, 0.0f } */
+
+#define HSD_VI_XFB_BLACK2 0x10801080
 
 #define _p (&lbl_80466BC0)
 
@@ -230,7 +233,9 @@ void fn_801BFA1C(HSD_VIStatus* vi, void* buffer, HSD_RenderPass rpass)
 {
     GXRenderModeObj* rmode = &vi->rmode;
     int n_xfb_lines;
+    int rest;
     u16 lines;
+    u16 pitch;
     u32 offset;
 
     fn_800B9C44(rmode->aa, rmode->sample_pattern, vi->vf, rmode->vfilter);
@@ -249,6 +254,26 @@ void fn_801BFA1C(HSD_VIStatus* vi, void* buffer, HSD_RenderPass rpass)
                                           rmode->xfbHeight));
         fn_800B96BC(rmode->fbWidth, n_xfb_lines);
         fn_800B9E88(buffer, TRUE);
+        rest = rmode->xfbHeight - n_xfb_lines;
+        /*
+         * rest cannot go negative: GXGetYScaleFactor walks its scale down
+         * until __GXGetNumXfbLines stops exceeding xfbHeight, so
+         * n_xfb_lines <= xfbHeight and the unsigned `rest * bpl` below is
+         * safe.
+         */
+        if (rest != 0) {
+            u32 bpl;
+            u32 nb;
+            u32* dst;
+
+            pitch = (rmode->fbWidth + 15) & ~15;
+            bpl = pitch * 2;
+            dst = (u32*) ((u8*) buffer + bpl * n_xfb_lines);
+            nb = (rest * bpl) / 4;
+            while (nb-- != 0) {
+                *dst++ = HSD_VI_XFB_BLACK2;
+            }
+        }
         break;
     case HSD_RP_TOPHALF:
         fn_800B959C(0, 0, rmode->fbWidth,
@@ -269,7 +294,8 @@ void fn_801BFA1C(HSD_VIStatus* vi, void* buffer, HSD_RenderPass rpass)
         fn_800B9874(2);
         lines = rmode->efbHeight - HSD_ANTIALIAS_OVERLAP;
         fn_800B959C(0, HSD_ANTIALIAS_OVERLAP, rmode->fbWidth, lines);
-        offset = (((rmode->fbWidth + 15) & ~15) * lines * 2);
+        pitch = (rmode->fbWidth + 15) & ~15;
+        offset = pitch * lines * 2;
         fn_800B9E88((u8*) buffer + offset, TRUE);
         fn_800B959C(0, 0, rmode->fbWidth, HSD_ANTIALIAS_OVERLAP);
         fn_800B9874(3);

@@ -11,7 +11,7 @@ extern u32 lbl_80478990; /* __OSFpscrEnableBits */
 
 static OSThreadQueue RunQueue[32];
 static volatile u32 RunQueueBits;
-static volatile int RunQueueHint;
+static volatile int RunQueueHint_8047A764;
 static int Reschedule;
 static OSThread IdleThread;
 static OSThread DefaultThread;
@@ -96,7 +96,7 @@ static OSThread* SelectThread(BOOL yield);
         (thread)->queue = &RunQueue[(thread)->priority];                       \
         AddTail((thread)->queue, (thread), link);                              \
         RunQueueBits |= 1 << (31 - (thread)->priority);                        \
-        RunQueueHint = TRUE;                                                   \
+        RunQueueHint_8047A764 = TRUE;                                          \
     } while (0)
 
 s32 OSDisableScheduler(void)
@@ -168,7 +168,7 @@ static OSThread* SetEffectivePriority(OSThread* thread, s32 priority)
         break;
 
     case OS_THREAD_STATE_RUNNING:
-        RunQueueHint = TRUE;
+        RunQueueHint_8047A764 = TRUE;
         thread->priority = priority;
         break;
     }
@@ -250,7 +250,7 @@ static OSThread* SelectThread(BOOL yield)
         OSClearContext(&IdleContext);
     }
 
-    RunQueueHint = FALSE;
+    RunQueueHint_8047A764 = FALSE;
     priority = __cntlzw(RunQueueBits);
     RemoveHead(&RunQueue[priority], nextThread, link);
     if (RunQueue[priority].head == NULL) {
@@ -267,7 +267,7 @@ static OSThread* SelectThread(BOOL yield)
 
 void __OSReschedule(void)
 {
-    if (RunQueueHint) {
+    if (RunQueueHint_8047A764) {
         SelectThread(FALSE);
     }
 }
@@ -347,7 +347,7 @@ void OSExitThread(void* val)
     }
     __OSUnlockAllMutex(currentThread);
     OSWakeupThread(&currentThread->queueJoin);
-    RunQueueHint = TRUE;
+    RunQueueHint_8047A764 = TRUE;
     __OSReschedule();
     OSRestoreInterrupts(enabled);
 }
@@ -366,7 +366,7 @@ void OSCancelThread(OSThread* thread)
         break;
 
     case OS_THREAD_STATE_RUNNING:
-        RunQueueHint = TRUE;
+        RunQueueHint_8047A764 = TRUE;
         break;
 
     case OS_THREAD_STATE_WAITING:
@@ -481,7 +481,7 @@ s32 OSSuspendThread(OSThread* thread)
     if (suspendCount == 0) {
         switch (thread->state) {
         case OS_THREAD_STATE_RUNNING:
-            RunQueueHint = TRUE;
+            RunQueueHint_8047A764 = TRUE;
             thread->state = OS_THREAD_STATE_READY;
             break;
 
@@ -514,7 +514,7 @@ void OSSleepThread(OSThreadQueue* queue)
     currentThread->state = OS_THREAD_STATE_WAITING;
     currentThread->queue = queue;
     AddPrio(queue, currentThread, link);
-    RunQueueHint = TRUE;
+    RunQueueHint_8047A764 = TRUE;
     __OSReschedule();
     OSRestoreInterrupts(enabled);
 }
