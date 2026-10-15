@@ -209,7 +209,7 @@ extern void* GSmodelGetPart(void* model, u32 mode);
 extern void  GSpartGetTransform(void* obj, void* a, void* b, void* c);
 extern void  GSpartFree(void* handle);
 extern void* GSpartGetMaterial(void* handle, u32 idx);
-extern void* GStextureCreate(u32 a, u32 b, u32 size, u32 d, u32 e);
+extern void* GStextureCreate(u16 width, u16 height, u32 format, u32 tlut, u8 mip);
 extern void* fn_800E3B08(u32 index);
 extern void  fn_800E24B0(u16 handle);
 extern void  fn_800E209C(u16 handle);
@@ -4649,7 +4649,7 @@ asm void fn_8013E5AC(void) {
 #else
 u32 fn_8013E5AC(u8* p) {
     extern u8 lbl_80466BC0[];
-    extern void* GStextureCreate(u32 a, u32 b, u32 size, u32 d, u32 e);
+    extern void* GStextureCreate(u16 width, u16 height, u32 format, u32 tlut, u8 mip);
     extern void* GStextureLockImage(void* buf, u32 b);
     extern void GStextureUnlockImage(void* buf);
     u8* tbl;
@@ -5802,7 +5802,7 @@ void* _pachiruEffectCreateTexture__FP9GStextureP9GStextureUl(void* baseTexture,
                                                              void* spotTexture,
                                                              u32 pattern)
 {
-    extern u32 GStextureGetMiplevels(void* texture);
+    extern u8 GStextureGetMiplevels(void* texture);
     extern u32 GStextureGetTlutFormat(void* texture);
     extern u32 GStextureGetFormat(void* texture);
     extern void* GStextureLockImage(void* texture, u32 level);
@@ -5813,9 +5813,10 @@ void* _pachiruEffectCreateTexture__FP9GStextureP9GStextureUl(void* baseTexture,
     extern const f32 lbl_8047D340;
     extern const u8 lbl_80478BA8[8];
     extern const char lbl_802730B8[];
-    void* outputTexture;
-    u32 image;
     u16* sourcePixels;
+    void* outputTexture;
+    s16 heightTemp;
+    u32 image;
     s32 baseWidth;
     s32 baseHeight;
     s32 pixelCount;
@@ -5823,12 +5824,12 @@ void* _pachiruEffectCreateTexture__FP9GStextureP9GStextureUl(void* baseTexture,
 
     sourcePixels = NULL;
     baseWidth = (s16)GStextureGetXsize(baseTexture);
-    baseHeight = (s16)GStextureGetYsize(baseTexture);
-    image = GStextureGetMiplevels(baseTexture);
-    scratch = GStextureGetTlutFormat(baseTexture);
-    outputTexture = GStextureCreate((u16)baseWidth, (u16)baseHeight,
-                                    GStextureGetFormat(baseTexture), scratch,
-                                    image);
+    heightTemp = (s16)GStextureGetYsize(baseTexture);
+    baseHeight = heightTemp;
+    outputTexture = GStextureCreate(baseWidth, baseHeight,
+                                    GStextureGetFormat(baseTexture),
+                                    GStextureGetTlutFormat(baseTexture),
+                                    GStextureGetMiplevels(baseTexture));
     image = (u32)GStextureLockImage(outputTexture, 0);
     if (image == 0) {
         goto fail;
@@ -5854,15 +5855,14 @@ void* _pachiruEffectCreateTexture__FP9GStextureP9GStextureUl(void* baseTexture,
 
     {
     u16* lastOutputPixel;
-    const u8* placement;
-    s32 spotHeight;
-    s32 spot;
+    s16 spotHeight;
     s32 row;
-    s32 sourceRowOffset;
-    s32 outputRowOffset;
-    s32 startPixel;
-    s32 outputIndex;
+    s32 spot;
     s32 x;
+    s32 startPixel;
+    const u8* placement;
+    s32 outputIndex;
+    s16 sourceIndex;
     s32 y;
     s32 xOffset;
     s32 yOffset;
@@ -5874,19 +5874,22 @@ void* _pachiruEffectCreateTexture__FP9GStextureP9GStextureUl(void* baseTexture,
     }
 
     lastOutputPixel = (u16*)image + (pixelCount - 1);
+    spot = 0;
     placement = lbl_80478BA8;
-    for (spot = 0; (s16)spot < 4;) {
+    for (; (s16)spot < 4;) {
         yOffset = (s16)((s16)((pattern >> 4) & 0xF) - 8);
-        xOffset = (s16)((s16)(pattern & 0xF) - 8);
+        outputIndex = (s16)(pattern & 0xF) - 8;
+        xOffset = (s16)outputIndex;
         pattern >>= 8;
-        y = placement[1] + (s32)(lbl_8047D340 * (f32)yOffset);
-        x = placement[0] + (s32)(lbl_8047D340 * (f32)xOffset);
-        startPixel = (s16)(y * baseWidth + x);
-        sourceRowOffset = 0;
-        outputRowOffset = 0;
+        y = (s32)(lbl_8047D340 * (f32)yOffset) + placement[1];
+        x = (s32)(lbl_8047D340 * (f32)xOffset);
+        yOffset = y * baseWidth;
+        x = x + placement[0];
+        startPixel = (s16)(x + yOffset);
 
         for (row = 0; (s16)row < spotHeight; row++) {
-            outputIndex = (s16)(startPixel + outputRowOffset);
+            sourceIndex = (s16)(row * scratch);
+            outputIndex = (s16)(startPixel + row * baseWidth);
             if (outputIndex >= 0) {
                 u16* source;
                 u16* output;
@@ -5895,7 +5898,7 @@ void* _pachiruEffectCreateTexture__FP9GStextureP9GStextureUl(void* baseTexture,
                 output = (u16*)image + outputIndex;
 
                 if (output <= lastOutputPixel) {
-                    source = sourcePixels + (s16)sourceRowOffset;
+                    source = sourcePixels + sourceIndex;
 
                     for (column = 0; (s16)column < scratch;) {
                         if (output <= lastOutputPixel && *source > *output) {
@@ -5907,8 +5910,6 @@ void* _pachiruEffectCreateTexture__FP9GStextureP9GStextureUl(void* baseTexture,
                     }
                 }
             }
-            sourceRowOffset += scratch;
-            outputRowOffset += baseWidth;
         }
         placement += 2;
         spot++;
