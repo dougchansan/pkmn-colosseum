@@ -160,7 +160,7 @@ extern void* windowSearchItemID(void* head, s32 key);
 extern void  menuOpenCustom(void* p, u32 r4, s32 r5, s32 r6, void* r7, s32 r8, ...);
 extern u8    menuOffScreenSetPriority(u8 val);
 extern u8    menuOffScreenSetDisp(u8 val);
-extern u32   msgGetCharsPerFrame(void);
+extern u32   GSgetFrameStep(void);
 extern u8    lbl_80404B68[];  /* scratch table for fn_80107F38, fn_801081F8 */
 extern u8    lbl_80404B8C[];  /* scratch table for winSeqSetMenu */
 extern u8    lbl_8047AD10;     /* resource request gate byte (sda21) - authoritative decl, use as-is */
@@ -290,7 +290,7 @@ extern void gfxLoadTexture(s32, void*);
 extern void gfxVtxTexCoord(s32, f32, f32);
 extern s32 fn_800D37CC(void);
 extern void fn_800D9F40(s32);
-extern u32 msgGetCharsPerFrame(void);
+extern u32 GSgetFrameStep(void);
 
 /* 0x801093C8 | 0x29C */
 void fn_801093C8(void) {
@@ -298,7 +298,7 @@ void fn_801093C8(void) {
     f32 progress;
 
     if (lbl_8047AD24 != 0) {
-        lbl_8047AD3C += (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+        lbl_8047AD3C += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
         if (lbl_8047AD3C >= lbl_8047AD38) {
             lbl_8047AD3C = lbl_8047AD38;
             lbl_8047AD24 = 0;

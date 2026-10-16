@@ -192,7 +192,7 @@ extern void fn_80083D30();
 extern void fn_80083ECC();
 extern void __cvt_fp2unsigned();
 extern void memmove();
-extern void msgGetCharsPerFrame();
+extern void GSgetFrameStep();
 extern void fn_800D37CC();
 extern void GSmodelSetGSparticleLinkAttachMode();
 extern void GSmodelLinkToGSparticleBank();
@@ -2053,7 +2053,7 @@ void fn_8008C7B0(void) {
     while (r30 < r29) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r30 = r30 + r3;
 
     }
@@ -2168,7 +2168,7 @@ void fn_8008C7B0(void) {
     while (r29 < r30) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r29 = r29 + r3;
 
     }
@@ -2270,7 +2270,7 @@ void fn_8008CACC(void) {
     while (r30 < r29) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r30 = r30 + r3;
 
     }
@@ -2352,7 +2352,7 @@ void fn_8008CACC(void) {
     while (r29 < r30) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r29 = r29 + r3;
 
     }
@@ -2394,7 +2394,7 @@ void fn_8008CACC(void) {
     while (r29 < r30) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r29 = r29 + r3;
 
     }
@@ -2479,7 +2479,7 @@ void fn_8008CDD8(void) {
     while (r30 < r29) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r30 = r30 + r3;
 
     }
@@ -2577,7 +2577,7 @@ void fn_8008CDD8(void) {
     while (r29 < r30) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r29 = r29 + r3;
 
     }
@@ -2669,7 +2669,7 @@ void fn_8008D0A0(void) {
     while (r30 < r29) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r30 = r30 + r3;
 
     }
@@ -2767,7 +2767,7 @@ void fn_8008D0A0(void) {
     while (r29 < r30) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r29 = r29 + r3;
 
     }
@@ -2862,7 +2862,7 @@ void fn_8008D348(void) {
     while (r21 < r22) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r21 = r21 + r3;
 
     }
@@ -3079,7 +3079,7 @@ void fn_8008D348(void) {
     while (r21 < r22) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r21 = r21 + r3;
 
     }
@@ -3275,7 +3275,7 @@ void fn_8008D938(void) {
     while (r14 < r16) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r14 = r14 + r3;
 
     }
@@ -3357,7 +3357,7 @@ void fn_8008D938(void) {
     while (r14 < r16) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r14 = r14 + r3;
 
     }
@@ -3552,7 +3552,7 @@ void fn_8008D938(void) {
     while (r14 < r16) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r14 = r14 + r3;
 
     }
@@ -3931,7 +3931,7 @@ void fn_8008E320(void) {
     while (r26 < r27) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r26 = r26 + r3;
 
     }
@@ -4013,7 +4013,7 @@ void fn_8008E320(void) {
     while (r26 < r27) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r26 = r26 + r3;
 
     }
@@ -4121,7 +4121,7 @@ void fn_8008E320(void) {
     while (r26 < r25) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r26 = r26 + r3;
 
     }
@@ -4255,7 +4255,7 @@ void fn_8008E7D4(void) {
     while (r27 < r29) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r27 = r27 + r3;
 
     }
@@ -4337,7 +4337,7 @@ void fn_8008E7D4(void) {
     while (r27 < r29) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r27 = r27 + r3;
 
     }
@@ -4428,7 +4428,7 @@ void fn_8008E7D4(void) {
     while (r27 < r26) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r27 = r27 + r3;
 
     }
@@ -4551,7 +4551,7 @@ void fn_8008EC28(void) {
     while (r30 < r29) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r30 = r30 + r3;
 
     }
@@ -4649,7 +4649,7 @@ void fn_8008EC28(void) {
     while (r29 < r30) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r29 = r29 + r3;
 
     }
@@ -4734,7 +4734,7 @@ void fn_8008EED0(void) {
     while (r30 < r29) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r30 = r30 + r3;
 
     }
@@ -4835,7 +4835,7 @@ void fn_8008EED0(void) {
     while (r29 < r30) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r29 = r29 + r3;
 
     }
@@ -4925,7 +4925,7 @@ void fn_8008F190(void) {
     while (r30 < r29) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r30 = r30 + r3;
 
     }
@@ -5007,7 +5007,7 @@ void fn_8008F190(void) {
     while (r29 < r30) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r29 = r29 + r3;
 
     }
@@ -5067,7 +5067,7 @@ void fn_8008F190(void) {
     while (r29 < r30) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r29 = r29 + r3;
 
     }
@@ -5171,7 +5171,7 @@ void fn_8008F524(void) {
     while (r29 < r30) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r29 = r29 + r3;
 
     }
@@ -5253,7 +5253,7 @@ void fn_8008F524(void) {
     while (r29 < r30) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r29 = r29 + r3;
 
     }
@@ -5329,7 +5329,7 @@ void fn_8008F524(void) {
     while (r27 < r26) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r27 = r27 + r3;
 
     }
@@ -5446,7 +5446,7 @@ void fn_8008F91C(void) {
     while (r30 < r29) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r30 = r30 + r3;
 
     }
@@ -5546,7 +5546,7 @@ void fn_8008F91C(void) {
     while (r29 < r30) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r29 = r29 + r3;
 
     }
@@ -5647,7 +5647,7 @@ void fn_8008FBF4(void) {
     while (r30 < r29) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r30 = r30 + r3;
 
     }
@@ -5748,7 +5748,7 @@ void fn_8008FBF4(void) {
     while (r29 < r30) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r29 = r29 + r3;
 
     }
@@ -5828,7 +5828,7 @@ void fn_8008FE94(void) {
     while (r30 < r29) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r30 = r30 + r3;
 
     }
@@ -5911,7 +5911,7 @@ void fn_8008FE94(void) {
     while (r29 < r30) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r29 = r29 + r3;
 
     }
@@ -6009,7 +6009,7 @@ void fn_80090100(void) {
     while (r17 < r18) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r17 = r17 + r3;
 
     }
@@ -6030,7 +6030,7 @@ void fn_80090100(void) {
     while (r17 < r18) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r17 = r17 + r3;
 
     }
@@ -6234,7 +6234,7 @@ void fn_80090100(void) {
     while (r17 < r18) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r17 = r17 + r3;
 
     }
@@ -6450,7 +6450,7 @@ void fn_80090720(void) {
     while (r30 < r29) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r30 = r30 + r3;
 
     }
@@ -6505,7 +6505,7 @@ void fn_80090720(void) {
     while (r29 < r30) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r29 = r29 + r3;
 
     }
@@ -6640,7 +6640,7 @@ void fn_800909E4(void) {
     while (r30 < r29) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r30 = r30 + r3;
 
     }
@@ -6684,7 +6684,7 @@ void fn_800909E4(void) {
     while (r29 < r30) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r29 = r29 + r3;
 
     }
@@ -6743,7 +6743,7 @@ void fn_800909E4(void) {
     while (r29 < r30) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r29 = r29 + r3;
 
     }
@@ -6872,7 +6872,7 @@ void fn_80090D34(void) {
     while (r30 < r29) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r30 = r30 + r3;
 
     }
@@ -6944,7 +6944,7 @@ void fn_80090D34(void) {
     while (r29 < r30) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r29 = r29 + r3;
 
     }
@@ -7210,7 +7210,7 @@ void fn_8009100C(void) {
     while (r14 < r25) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r14 = r14 + r3;
 
     }
@@ -7432,7 +7432,7 @@ void fn_80091564(void) {
     while (r30 < r29) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r30 = r30 + r3;
 
     }
@@ -7477,7 +7477,7 @@ void fn_80091564(void) {
     while (r29 < r30) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r29 = r29 + r3;
 
     }
@@ -7575,7 +7575,7 @@ void fn_80091774(void) {
     while (r30 < r29) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r30 = r30 + r3;
 
     }
@@ -7620,7 +7620,7 @@ void fn_80091774(void) {
     while (r29 < r30) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r29 = r29 + r3;
 
     }
@@ -7718,7 +7718,7 @@ void fn_80091984(void) {
     while (r30 < r29) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r30 = r30 + r3;
 
     }
@@ -7763,7 +7763,7 @@ void fn_80091984(void) {
     while (r29 < r30) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r29 = r29 + r3;
 
     }
@@ -7861,7 +7861,7 @@ void fn_80091B94(void) {
     while (r30 < r29) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r30 = r30 + r3;
 
     }
@@ -7906,7 +7906,7 @@ void fn_80091B94(void) {
     while (r29 < r30) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r29 = r29 + r3;
 
     }
@@ -8006,7 +8006,7 @@ void fn_80091DA4(void) {
     while (r31 < r30) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r31 = r31 + r3;
 
     }
@@ -8030,7 +8030,7 @@ void fn_80091DA4(void) {
     while (r30 < r31) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r30 = r30 + r3;
 
     }
@@ -8134,7 +8134,7 @@ void fn_80091F48(void) {
     while (r29 < r28) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r29 = r29 + r3;
 
     }
@@ -8333,7 +8333,7 @@ void fn_80092140(void) {
     while (r25 < r24) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r25 = r25 + r3;
 
     }
@@ -8473,7 +8473,7 @@ void fn_80092498(void) {
     while (r31 < r30) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r31 = r31 + r3;
 
     }
@@ -8527,7 +8527,7 @@ void fn_80092498(void) {
     while (r30 < r31) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r30 = r30 + r3;
 
     }
@@ -8693,7 +8693,7 @@ void fn_80092664(void) {
     while (r25 < r24) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r25 = r25 + r3;
 
     }
@@ -8833,7 +8833,7 @@ void fn_800929BC(void) {
     while (r31 < r30) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r31 = r31 + r3;
 
     }
@@ -8870,7 +8870,7 @@ void fn_800929BC(void) {
     while (r30 < r31) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r30 = r30 + r3;
 
     }
@@ -8958,7 +8958,7 @@ void fn_80092B2C(void) {
     while (r31 < r30) {
 
         ((void(*)(void))_threadSwitch)();
-        ((void(*)(void))msgGetCharsPerFrame)();
+        ((void(*)(void))GSgetFrameStep)();
         r31 = r31 + r3;
 
     }

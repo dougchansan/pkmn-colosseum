@@ -256,7 +256,7 @@ extern u8 fn_801174EC(void);
 extern void fn_80117500(void);
 extern void fn_80117330(f32 duration);
 extern s32 fn_800D37CC(void);
-extern s32 msgGetCharsPerFrame(void);
+extern s32 GSgetFrameStep(void);
 extern u8 dbgMenuIsOpen(void);
 extern u32 fn_800F7AF0(s32 pad);
 extern u32 fn_800F7BC4(s32 pad);
@@ -584,7 +584,7 @@ void _cameraPadMoveUpdate__FP9_GScamera(void* camera) {
     f32 rotateY;
     f32 movementDivisor;
 
-    frameDelta = msgGetCharsPerFrame();
+    frameDelta = GSgetFrameStep();
     movementDivisor = 64.0f;
     if (dbgMenuIsOpen()) {
         return;
@@ -660,8 +660,8 @@ void _cameraPadRotateUpdate__FP9_GScamera(void* camera) {
         return;
     }
 
-    rotateX = fn_800F7994(1, 1) * msgGetCharsPerFrame();
-    rotateY = fn_800F7920(1, 1) * msgGetCharsPerFrame();
+    rotateX = fn_800F7994(1, 1) * GSgetFrameStep();
+    rotateY = fn_800F7920(1, 1) * GSgetFrameStep();
 
     angle = atan2f(((CameraPadState*)lbl_80478C40)->height,
                    ((CameraPadState*)lbl_80478C40)->distance);
@@ -936,7 +936,7 @@ void cameraUpdate(u32 captureIndex) {
     if (((CameraPadState*)lbl_80478C40)->flags[0] == 1) {
         if (((CameraPadState*)lbl_80478C40)->targetMoveActive != 0) {
             ((CameraPadState*)lbl_80478C40)->targetMoveTime +=
-                (f32)(u32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+                (f32)(u32)GSgetFrameStep() / (f32)fn_800D37CC();
             if (((CameraPadState*)lbl_80478C40)->targetMoveTime >=
                 ((CameraPadState*)lbl_80478C40)->targetMoveDuration) {
                 GSvecCopy(&((CameraPadState*)lbl_80478C40)->position,
@@ -954,7 +954,7 @@ void cameraUpdate(u32 captureIndex) {
         }
         if (((CameraPadState*)lbl_80478C40)->targetOffsetMoveActive != 0) {
             ((CameraPadState*)lbl_80478C40)->targetOffsetMoveTime +=
-                (f32)(u32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+                (f32)(u32)GSgetFrameStep() / (f32)fn_800D37CC();
             if (((CameraPadState*)lbl_80478C40)->targetOffsetMoveTime >=
                 ((CameraPadState*)lbl_80478C40)->targetOffsetMoveDuration) {
                 GSvecCopy(
@@ -975,7 +975,7 @@ void cameraUpdate(u32 captureIndex) {
         }
         if (((CameraPadState*)lbl_80478C40)->positionMoveActive != 0) {
             ((CameraPadState*)lbl_80478C40)->positionMoveTime +=
-                (f32)(u32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+                (f32)(u32)GSgetFrameStep() / (f32)fn_800D37CC();
             if (((CameraPadState*)lbl_80478C40)->positionMoveTime >=
                 ((CameraPadState*)lbl_80478C40)->positionMoveDuration) {
                 GSvecCopy(&((CameraPadState*)lbl_80478C40)->direction,
@@ -994,7 +994,7 @@ void cameraUpdate(u32 captureIndex) {
         }
         if (((CameraPadState*)lbl_80478C40)->rotationMoveActive != 0) {
             ((CameraPadState*)lbl_80478C40)->rotationMoveTime +=
-                (f32)(u32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+                (f32)(u32)GSgetFrameStep() / (f32)fn_800D37CC();
             if (((CameraPadState*)lbl_80478C40)->rotationMoveTime >=
                 ((CameraPadState*)lbl_80478C40)->rotationMoveDuration) {
                 GSvecCopy(&((CameraPadState*)lbl_80478C40)->rotation,

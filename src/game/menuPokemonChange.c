@@ -32,13 +32,13 @@ typedef struct { u8 data[0x1DFD0]; } SaveDataImage;
 static inline void menuPokemonChangeWait(f32 seconds) {
     extern const f32 lbl_8047B9D4;
     extern void _threadSwitch(void);
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     extern s32 fn_800D37CC(void);
     f32 elapsed = lbl_8047B9D4;
 
     while (elapsed < seconds) {
         _threadSwitch();
-        elapsed += (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+        elapsed += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
     }
 }
 

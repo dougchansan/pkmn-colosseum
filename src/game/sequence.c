@@ -333,7 +333,7 @@ void fn_801DD23C(void* obj) {
     extern void fn_801DA4E8();
     extern void fn_801193BC(s32);
     extern void fn_800F9210();
-    extern void Unload__13ModelSequenceFPUc(void*);
+    extern void pachiruEffectRelease(void*);
     extern void wazaSequenceSysFreeSequenceResource(void* obj);
     extern void fn_801D9E34(void* obj);
     extern void fn_801DA014(void* obj);
@@ -383,7 +383,7 @@ void fn_801DD23C(void* obj) {
             fn_800F9210(*(u32*)data, *(u32*)(data + 0x0C));
         }
 
-        Unload__13ModelSequenceFPUc(data + 0x50);
+        pachiruEffectRelease(data + 0x50);
 
         if (*(u32*)data != 0) {
             if (*(u32*)(data + 4) != 0) {
@@ -1035,7 +1035,7 @@ void* fn_801DE190(u16 index, void* model, u8 variant) {
     extern void fn_801DB100(void* sequence);
     extern void fn_801DCE0C(void* sequence);
     extern u8 sequenceLoad(void* sequence, void* resource);
-    extern void fn_80140190(void* dst, u32 arg1, void* model);
+    extern void pachiruEffectSetupModel(void* dst, u32 arg1, void* model);
     void* resourcePtr;
     u8* sequence;
     u32 group;
@@ -1104,7 +1104,7 @@ void* fn_801DE190(u16 index, void* model, u8 variant) {
         fn_801DCE0C(sequence);
     }
     if (index == 0x134) {
-        fn_80140190(sequence + 0x50, *(u32*)(sequence + 0x24), model);
+        pachiruEffectSetupModel(sequence + 0x50, *(u32*)(sequence + 0x24), model);
     }
     return sequence;
 }

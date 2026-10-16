@@ -15,7 +15,7 @@
  * for this unit). Only DVDInit, DVDReadDiskID, DVDInquiryAsync,
  * DVDReset, DVDGetDriveStatus, cbForStateError, AlarmHandler,
  * DVDReadAbsAsyncPrio, DVDReadAbsAsyncForBS, DVDSeekAbsAsyncPrio,
- * DVDGetCommandBlockStatus and DVDChangeDisk have real
+ * DVDGetCommandBlockStatus and cbForStateCheckID2 have real
  * (name-paired) counterparts in objdiff; DVDReadDiskID and
  * DVDInquiryAsync are byte-exact matches. 2026-07-02 reconciliation:
  * removed DVDReadAsyncPrio, DVDGetTransferredSize,
@@ -131,7 +131,7 @@ extern void fn_800A6578(void);
 extern void stateCoverClosed_CMD(DVDCommandBlock* command);
 extern void fn_800A48DC(void (*callback)(u32));
 extern void stateCheckID2(DVDCommandBlock* block);
-extern void DVDChangeDisk(u32 intType);
+extern void cbForStateCheckID2(u32 intType);
 extern void fn_800A6BD4(u32 intType);
 static inline BOOL dvdCheckCancel(u32 resume);
 extern void (*lbl_804789D0)(DVDCommandBlock* block, DVDLowCallback callback);
@@ -1606,7 +1606,7 @@ void fn_800A6028(u32 intType)
 void stateCheckID2(DVDCommandBlock* block)
 {
     DVDLowRead(&BB2_803FC360.bb2, sizeof(DVDBB2), 0x420,
-               (DVDLowCallback)DVDChangeDisk);
+               (DVDLowCallback)cbForStateCheckID2);
 }
 #endif
 
@@ -1619,7 +1619,7 @@ void stateCheckID2(DVDCommandBlock* block)
 #if defined(DVD_BANK_EXACT_ACTIVE)
 /*
  * stateReadingFST (0x800A56F0) is linked from DVD_exact_800A5624.c;
- * DVDChangeDisk expands it inline, so this unit carries the body.
+ * cbForStateCheckID2 expands it inline, so this unit carries the body.
  */
 extern void stateReadingFST(void);
 
@@ -1667,10 +1667,10 @@ void fn_800A60D4(u32 intType)
 }
 
 /*
- * DVDChangeDisk - 0x800A61E8 | size: 0xE4
+ * cbForStateCheckID2 - 0x800A61E8 | size: 0xE4
  * Continue after the replacement disk ID has been read.
  */
-void DVDChangeDisk(u32 intType) {
+void cbForStateCheckID2(u32 intType) {
     extern void DVDReset(void);
 
     if (intType == 0x10) {

@@ -78,7 +78,7 @@ extern u32  menuOpen(u32 sceneId, u32 arg);
 extern void menuClose(u32 sceneId);
 extern void fn_8017B370(u32 arg);
 extern s32  fn_8017B2CC(u32 arg);
-extern u32  msgGetCharsPerFrame(void);                         /* frames since the last call */
+extern u32  GSgetFrameStep(void);                         /* frames since the last call */
 extern s32  fn_800D37CC(void);                         /* frames per second */
 extern void fn_800A0FC8(u32 mode);                     /* OSSetProgressiveMode */
 extern void fn_800D37D4(u32 a, u32 b, u32 c, u32 d, u32 e, u16 size);
@@ -401,7 +401,7 @@ static s8 movieSelectProgressive(void)
             lastCursor = cursor;
         }
         _threadSwitch();
-        time += (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+        time += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
     }
     if (time >= 10.0f) {
         answer = windowSearchID(0x11)->cursor;
@@ -418,7 +418,7 @@ static void movieWait(void)
     time = 0.0f;
     while (time < 2.0f) {
         _threadSwitch();
-        time += (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+        time += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
     }
 }
 

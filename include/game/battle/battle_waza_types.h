@@ -165,7 +165,7 @@ extern void* memcpy(void* dst, const void* src, u32 size);
 /* Engine core */
 extern void  GSlogWrite(const char* fmt, ...);           /* GSlog_Print */
 extern s32   fn_800D37CC(void);                            /* GSrandom_Get */
-extern s32   msgGetCharsPerFrame(void);                            /* GSgfx tick */
+extern s32   GSgetFrameStep(void);                            /* GSgfx tick */
 extern void* fn_800DB940(u32 size);                        /* GSmem_Alloc */
 extern void  fn_800DB9A4(void* ptr);                       /* GSmem_Free */
 

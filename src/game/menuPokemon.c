@@ -568,7 +568,7 @@ void fn_8001D378(void) {
 
 /* 0x8001D718 | 0xCC */
 extern s32 fn_800D37CC(void);
-extern u32 msgGetCharsPerFrame(void);
+extern u32 GSgetFrameStep(void);
 extern f32 lbl_8047B7C8;
 extern f64 lbl_8047B7D0;
 extern f64 lbl_8047B7D8;
@@ -583,7 +583,7 @@ void fn_8001D718(f32 target) {
 
     while (progress < target) {
         _threadSwitch();
-        progress += (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+        progress += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
     }
 }
 #endif

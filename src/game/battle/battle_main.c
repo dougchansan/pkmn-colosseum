@@ -56,7 +56,7 @@ extern void* memcpy(void* dst, const void* src, u32 size);
 extern u8   fn_800FF548(void);                      /* check if floor is loaded */
 extern void std092_getCurrentRoomID(void);                      /* tick floor */
 extern void _threadSwitch(void);                      /* tick render */
-extern void msgGetCharsPerFrame(void);                      /* GSgfx tick */
+extern void GSgetFrameStep(void);                      /* GSgfx tick */
 extern void GSlogWrite(const char* fmt, ...);      /* GSlog_Print */
 
 /* Scene management */
@@ -596,7 +596,7 @@ BATTLE_MAIN_HELPER void fn_801EF95C(void) {
     extern void dbgMenuMain(s32 mode);
     extern void menuGetKeyInfo(void* padData, s32 port);
     extern void _threadSwitch(void);
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     u8 ticks;
     u8 mode;
     u8 input[0x1C];
@@ -611,7 +611,7 @@ BATTLE_MAIN_HELPER void fn_801EF95C(void) {
             menuGetKeyInfo(input, 1);
             if (!(*(u16*)input & 0x800)) {
                 _threadSwitch();
-                ticks += msgGetCharsPerFrame();
+                ticks += GSgetFrameStep();
             } else {
                 break;
             }
@@ -652,7 +652,7 @@ void fn_801EFA08(void) {
     extern u8 fightTimerAllIsOver(void);
     extern void fightTimerAllBlock(void);
     extern void fightTimerAllTerminate(void);
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     u32 status;
     u32 frames;
     u32 elapsed;
@@ -695,7 +695,7 @@ void fn_801EFA08(void) {
                     elapsed = 0;
                     while (elapsed < frames) {
                         _threadSwitch();
-                        elapsed += msgGetCharsPerFrame();
+                        elapsed += GSgetFrameStep();
                     }
                 }
                 break;
@@ -760,13 +760,13 @@ void fn_801EFA08(void) {
 
 /* 0x801EFFC4 | size: 0x48 | small */
 void fn_801EFFC4(u32 count) {
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     u32 i;
     if (count != 0) {
         i = 0;
         while (i < count) {
             _threadSwitch();
-            i += msgGetCharsPerFrame();
+            i += GSgetFrameStep();
         }
     }
 }
@@ -774,7 +774,7 @@ void fn_801EFFC4(u32 count) {
 /* 0x801F000C | size: 0x4C | small */
 void fightMainWaitFrame(void) {
     extern u32 dbgMenuFightGetMsgSpeedToFrame(void);
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     u32 total;
     u32 elapsed;
     total = dbgMenuFightGetMsgSpeedToFrame();
@@ -782,7 +782,7 @@ void fightMainWaitFrame(void) {
         elapsed = 0;
         while (elapsed < total) {
             _threadSwitch();
-            elapsed += msgGetCharsPerFrame();
+            elapsed += GSgetFrameStep();
         }
     }
 }

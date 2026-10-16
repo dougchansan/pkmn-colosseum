@@ -2611,7 +2611,7 @@ void fn_8002C408(s32 mapIdx, u32 mode)
 #endif /* guard split */
 #if !defined(MENUSHOP_ISLAND_ONLY) || defined(MENUSHOP_ISLAND_8002CE6C_ONLY)
 /* fn_8002CE6C - 0x8002CE6C | size: 0x2e8 */
-extern void msgGetCharsPerFrame(void);
+extern void GSgetFrameStep(void);
 extern void heroDecPokedoru(void);
 extern u32 lbl_804788A8;
 extern u32 lbl_80478E54;
@@ -2637,7 +2637,7 @@ void fn_8002CE6C(u8* loc, u8 mode)
     extern u32  menuCloseCustom(u32 a, u32 b, u32 c);
     extern void fn_8002A2CC(u8* obj, s32 msgId, s32 arg2, ...);
     extern void _threadSwitch(void);
-    extern s32  msgGetCharsPerFrame(void);
+    extern s32  GSgetFrameStep(void);
     extern u32  heroGetStatus(u8* ptr, u32 sel, u32 idx);
     extern u32  windowGetActiveID(void);
     extern s32  menuOpenCustom(u32 sceneId, u32 a, u32 b, u32 c, u32 d, u32 e, ...);
@@ -2672,7 +2672,7 @@ loop:
     frames = 0;
     while (frames < 0x1e) {
         _threadSwitch();
-        frames += msgGetCharsPerFrame();
+        frames += GSgetFrameStep();
     }
     if ((s32)lbl_804788A8 != 0) {
         for (i = 0; i < 5; i++) {

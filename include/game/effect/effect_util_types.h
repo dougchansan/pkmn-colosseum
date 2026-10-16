@@ -140,7 +140,7 @@ typedef struct EffectParamBlock {
 } EffectParamBlock;
 
 
-/* lbl_803635C0 (GSEffectGlobals) is only used by fn_8013151C, which was
+/* lbl_803635C0 (GSEffectGlobals) is only used by GSeffectGetData, which was
  * merged into game/effect/gs_effect.c (where it is already declared as
  * `extern u8 lbl_803635C0[];` -- see that file). Not redeclared here to
  * avoid depending on gs_effect.h's GSEffectGlobals type in every TU. */
@@ -619,7 +619,7 @@ extern void GSmodelSetVisibility(void);
 
 extern void fn_8013735C(void);
 
-extern void fn_8013D604(void);
+extern void envMapAddKey(void);
 
 extern void fn_80137114(void);
 

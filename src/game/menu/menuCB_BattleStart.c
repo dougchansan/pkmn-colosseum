@@ -220,7 +220,7 @@ static inline u8 battleStartDrainHp(void)
 void fn_8005DFC8(void* arg)
 {
     extern u8 fn_80069048(void);
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     extern s32 fn_800D37CC(void);
     extern s32 soundGetStatus(u32);
     extern s32 toolentryTaisenGetBattleType(void);
@@ -257,7 +257,7 @@ void fn_8005DFC8(void* arg)
 #define STATE_F32(off) (*(f32*) ((u8*)&lbl_803A9A60 + (off)))
 
     rate = fn_800D37CC();
-    lbl_803A9A60.deltaTime = msgGetCharsPerFrame() / rate;
+    lbl_803A9A60.deltaTime = GSgetFrameStep() / rate;
     delta_time = lbl_803A9A60.deltaTime;
 
     switch (STATE_U32(0x38)) {

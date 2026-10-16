@@ -77,7 +77,7 @@ extern void fn_8012F1FC(s32 member);
 extern void heroMoveDismissMember(s32 member);
 extern u32 _fadeEffectGetRandom__FUl(u32 limit);
 extern s32 fn_800D37CC(void);
-extern u32 msgGetCharsPerFrame(void);
+extern u32 GSgetFrameStep(void);
 extern void fn_8025D164(void);
 extern s32 fn_8006ADEC(void);
 extern f32 fn_8025D0A8(void* status);
@@ -156,7 +156,7 @@ static inline void fieldWaitSeconds(f32 seconds)
 
     while (timer < seconds) {
         _threadSwitch();
-        timer += (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+        timer += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
     }
 }
 
@@ -170,7 +170,7 @@ static inline u8 fieldWaitPartnerMove(void)
             return 0;
         }
         _threadSwitch();
-        timer -= (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+        timer -= (f32)GSgetFrameStep() / (f32)fn_800D37CC();
     }
     return 1;
 }
@@ -741,7 +741,7 @@ s32 std200_gbaConnectEvent(s32 arg0, s32 arg1)
                 elapsed = lbl_8047E114;
                 while (elapsed < lbl_8047E100) {
                     _threadSwitch();
-                    elapsed += (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+                    elapsed += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
                 }
                 linkState = 16;
                 break;
@@ -1265,7 +1265,7 @@ u8 std182_tvNewsEvent(void)
         elapsed = lbl_8047E114;
         while (elapsed < lbl_8047E11C) {
             _threadSwitch();
-            elapsed += (f32)(u32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+            elapsed += (f32)(u32)GSgetFrameStep() / (f32)fn_800D37CC();
         }
 
         winMsgOpenFieldWithSE(0x439F, 1, 0, 5);
@@ -1283,7 +1283,7 @@ u8 std182_tvNewsEvent(void)
         elapsed = lbl_8047E114;
         while (elapsed < lbl_8047E11C) {
             _threadSwitch();
-            elapsed += (f32)(u32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+            elapsed += (f32)(u32)GSgetFrameStep() / (f32)fn_800D37CC();
         }
 
         winMsgOpenFieldWithSE(0x439D, 1, 0, 5);
@@ -1316,7 +1316,7 @@ u8 std182_tvNewsEvent(void)
     elapsed = lbl_8047E114;
     while (elapsed < lbl_8047E11C) {
         _threadSwitch();
-        elapsed += (f32)(u32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+        elapsed += (f32)(u32)GSgetFrameStep() / (f32)fn_800D37CC();
     }
 
     switch (mode) {
@@ -1408,7 +1408,7 @@ void std157_sleep(f32 frames)
 
     while (elapsed < frames) {
         _threadSwitch();
-        elapsed += (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+        elapsed += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
     }
 }
 

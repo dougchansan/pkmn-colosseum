@@ -107,7 +107,7 @@ extern void GStextureLockImage(void);
 extern void soundStopSE(u32 type);
 extern void* GStextureCreate(u16 width, u16 height, u32 format, u32 tlutFormat, u8 mipLevels);
 extern void fn_800CDBE0(void);
-extern u32 msgGetCharsPerFrame(void);
+extern u32 GSgetFrameStep(void);
 extern void fn_800DBF78(void);
 extern void fn_800DBFD4(void);
 extern void fn_800DC04C(void);

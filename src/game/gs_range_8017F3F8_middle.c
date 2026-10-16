@@ -33,7 +33,7 @@ extern void* fn_800E27B0(u16 handle);
 extern u16 fn_800E202C(void* ptr);
 extern void fn_800E24B0(u16 handle);
 extern void fn_800E209C(u16 handle);
-extern BOOL fn_8009ED4C(OSModuleInfo* module, void* bss);
+extern BOOL OSLink(OSModuleInfo* module, void* bss);
 extern BOOL fn_8009EFE4(OSModuleInfo* module);
 extern void fn_8017FB08(void* allocation);
 extern void* fn_8017FDB0(u32 size);
@@ -110,7 +110,7 @@ void* fn_8017F484(u32 group, u32 handle, u32 size)
             module = resource;
             bss = (u8*)module + alignedSize;
             bss = (void*)(((u32)bss + 0x1F) & ~0x1F);
-            fn_8009ED4C(&module->info, bss);
+            OSLink(&module->info, bss);
         } else {
             alignedSize = (size + 0x1F) & ~0x1F;
             image = memAllocTail(alignedSize);
@@ -123,10 +123,10 @@ void* fn_8017F484(u32 group, u32 handle, u32 size)
             module = resource;
             bss = (u8*)module + module->fixSize;
             bss = (void*)(((u32)bss + 0x1F) & ~0x1F);
-            fn_8009ED4C(&module->info, bss);
+            OSLink(&module->info, bss);
         }
     } else {
-        fn_8009ED4C(&module->info, bss);
+        OSLink(&module->info, bss);
     }
     if (module->prolog) {
         ((void (*)(void))module->prolog)();

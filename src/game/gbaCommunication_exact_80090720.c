@@ -120,7 +120,7 @@ void fn_80090720(u32 ctx) {
     extern void scriptWaitSyncMotion(u32 id, u32 val);
     extern s32 fn_800D37CC(void);
     extern void _threadSwitch(void);
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     extern u32 std112_modelGetResourceID(u32 id);
     extern u32 GSmodelSetShadowFlags(u32 handle, u32 val);
     extern void GSmodelSetShadowLight(u32 handle, u32 val);
@@ -171,7 +171,7 @@ void fn_80090720(u32 ctx) {
     }
     for (elapsed = 0; elapsed < waitFrames; ) {
         _threadSwitch();
-        elapsed += msgGetCharsPerFrame();
+        elapsed += GSgetFrameStep();
     }
 
     std116_mapObjectStopAnimation(0x0CE61000);
@@ -196,7 +196,7 @@ void fn_80090720(u32 ctx) {
     }
     for (elapsed = 0; elapsed < waitFrames; ) {
         _threadSwitch();
-        elapsed += msgGetCharsPerFrame();
+        elapsed += GSgetFrameStep();
     }
 
     finalResult = std112_modelGetResourceID(0x0CE91000);
@@ -224,7 +224,7 @@ void fn_800909E4(u32 ctx) {
     extern void GSmodelSetGSparticleLinkAttachMode(u32 handle, u32 val);
     extern void std115_mapObjectPlayAnimation(u32 id, u32 slot, u32 x, u32 y);
     extern s32 fn_800D37CC(void);
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     extern u32 std112_modelGetResourceID(u32 id);
     extern u32 GSmodelSetShadowFlags(u32 handle, u32 val);
     extern void GSmodelSetShadowLight(u32 handle, u32 val);
@@ -273,7 +273,7 @@ void fn_800909E4(u32 ctx) {
     }
     for (elapsed = 0; elapsed < waitFrames; ) {
         _threadSwitch();
-        elapsed += msgGetCharsPerFrame();
+        elapsed += GSgetFrameStep();
     }
 
     std116_mapObjectStopAnimation(0x0CE61000);
@@ -290,7 +290,7 @@ void fn_800909E4(u32 ctx) {
     }
     for (elapsed = 0; elapsed < waitFrames; ) {
         _threadSwitch();
-        elapsed += msgGetCharsPerFrame();
+        elapsed += GSgetFrameStep();
     }
 
     iconHandle = std112_modelGetResourceID(0x06BD0400);
@@ -315,7 +315,7 @@ void fn_800909E4(u32 ctx) {
     }
     for (elapsed = 0; elapsed < waitFrames; ) {
         _threadSwitch();
-        elapsed += msgGetCharsPerFrame();
+        elapsed += GSgetFrameStep();
     }
 
     finalResult = std112_modelGetResourceID(0x0CE81001);
@@ -335,7 +335,7 @@ void fn_80090D34(u32 ctx) {
     extern void std116_mapObjectStopAnimation(u32 id);
     extern void std115_mapObjectPlayAnimation(u32 id, u32 slot, u32 x, u32 y);
     extern s32 fn_800D37CC(void);
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     extern u32 std112_modelGetResourceID(u32 id);
     extern u32 GSmodelSetShadowFlags(u32 handle, u32 val);
     extern void GSmodelSetShadowLight(u32 handle, u32 val);
@@ -386,7 +386,7 @@ void fn_80090D34(u32 ctx) {
     }
     for (elapsed = 0; elapsed < waitFrames; ) {
         _threadSwitch();
-        elapsed += msgGetCharsPerFrame();
+        elapsed += GSgetFrameStep();
     }
 
     std116_mapObjectStopAnimation(0x0CE61000);
@@ -418,7 +418,7 @@ void fn_80090D34(u32 ctx) {
     }
     for (elapsed = 0; elapsed < waitFrames; ) {
         _threadSwitch();
-        elapsed += msgGetCharsPerFrame();
+        elapsed += GSgetFrameStep();
     }
 
     finalResult = std112_modelGetResourceID(0x0CE71001);
@@ -447,7 +447,7 @@ void fn_8009100C(u32 ctx) {
     extern void GSmodelSetShadowSurface(u32, u32, u32*);
     extern void cameraPlayAnime(u32, u32, u32, u32);
     extern s32 fn_800D37CC(void);
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     extern void std070_characterAttachToCharacter(u32, u32, u32, u32, u32);
     extern void std115_mapObjectPlayAnimation(u32, u32, u32, u32);
     extern void cameraWaitSyncAnime(s32);
@@ -490,7 +490,7 @@ void fn_8009100C(u32 ctx) {
     }
     for (elapsed = 0; elapsed < waitFrames;) {
         _threadSwitch();
-        elapsed += msgGetCharsPerFrame();
+        elapsed += GSgetFrameStep();
     }
 
     animation0 = std112_modelGetResourceID(0x0C381000);
@@ -536,7 +536,7 @@ void fn_80091564(u32 ctx) {
     extern void std115_mapObjectPlayAnimation(u32 id, u32 slot, u32 x, u32 y);
     extern s32 fn_800D37CC(void);
     extern void _threadSwitch(void);
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     extern u32 std112_modelGetResourceID(u32 id);
     extern u32 GSmodelSetShadowFlags(u32 handle, u32 val);
     extern void GSmodelSetShadowLight(u32 handle, u32 val);
@@ -571,7 +571,7 @@ void fn_80091564(u32 ctx) {
     }
     for (elapsed = 0; elapsed < waitFrames; ) {
         _threadSwitch();
-        elapsed += msgGetCharsPerFrame();
+        elapsed += GSgetFrameStep();
     }
 
     iconHandle = std112_modelGetResourceID(0x06BD0400);
@@ -592,7 +592,7 @@ void fn_80091564(u32 ctx) {
     }
     for (elapsed = 0; elapsed < waitFrames; ) {
         _threadSwitch();
-        elapsed += msgGetCharsPerFrame();
+        elapsed += GSgetFrameStep();
     }
 
     finalResult = std112_modelGetResourceID(0x0C3D1000);
@@ -613,7 +613,7 @@ void fn_80091774(u32 ctx) {
     extern void std115_mapObjectPlayAnimation(u32 id, u32 slot, u32 x, u32 y);
     extern s32 fn_800D37CC(void);
     extern void _threadSwitch(void);
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     extern u32 std112_modelGetResourceID(u32 id);
     extern u32 GSmodelSetShadowFlags(u32 handle, u32 val);
     extern void GSmodelSetShadowLight(u32 handle, u32 val);
@@ -648,7 +648,7 @@ void fn_80091774(u32 ctx) {
     }
     for (elapsed = 0; elapsed < waitFrames; ) {
         _threadSwitch();
-        elapsed += msgGetCharsPerFrame();
+        elapsed += GSgetFrameStep();
     }
 
     iconHandle = std112_modelGetResourceID(0x06BD0400);
@@ -669,7 +669,7 @@ void fn_80091774(u32 ctx) {
     }
     for (elapsed = 0; elapsed < waitFrames; ) {
         _threadSwitch();
-        elapsed += msgGetCharsPerFrame();
+        elapsed += GSgetFrameStep();
     }
 
     finalResult = std112_modelGetResourceID(0x0C3C1000);
@@ -690,7 +690,7 @@ void fn_80091984(u32 ctx) {
     extern void std115_mapObjectPlayAnimation(u32 id, u32 slot, u32 x, u32 y);
     extern s32 fn_800D37CC(void);
     extern void _threadSwitch(void);
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     extern u32 std112_modelGetResourceID(u32 id);
     extern u32 GSmodelSetShadowFlags(u32 handle, u32 val);
     extern void GSmodelSetShadowLight(u32 handle, u32 val);
@@ -725,7 +725,7 @@ void fn_80091984(u32 ctx) {
     }
     for (elapsed = 0; elapsed < waitFrames; ) {
         _threadSwitch();
-        elapsed += msgGetCharsPerFrame();
+        elapsed += GSgetFrameStep();
     }
 
     iconHandle = std112_modelGetResourceID(0x06BD0400);
@@ -746,7 +746,7 @@ void fn_80091984(u32 ctx) {
     }
     for (elapsed = 0; elapsed < waitFrames; ) {
         _threadSwitch();
-        elapsed += msgGetCharsPerFrame();
+        elapsed += GSgetFrameStep();
     }
 
     finalResult = std112_modelGetResourceID(0x0C3B1000);
@@ -767,7 +767,7 @@ void fn_80091B94(u32 ctx) {
     extern void std115_mapObjectPlayAnimation(u32 id, u32 slot, u32 x, u32 y);
     extern s32 fn_800D37CC(void);
     extern void _threadSwitch(void);
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     extern u32 std112_modelGetResourceID(u32 id);
     extern u32 GSmodelSetShadowFlags(u32 handle, u32 val);
     extern void GSmodelSetShadowLight(u32 handle, u32 val);
@@ -802,7 +802,7 @@ void fn_80091B94(u32 ctx) {
     }
     for (elapsed = 0; elapsed < waitFrames; ) {
         _threadSwitch();
-        elapsed += msgGetCharsPerFrame();
+        elapsed += GSgetFrameStep();
     }
 
     iconHandle = std112_modelGetResourceID(0x06BD0400);
@@ -823,7 +823,7 @@ void fn_80091B94(u32 ctx) {
     }
     for (elapsed = 0; elapsed < waitFrames; ) {
         _threadSwitch();
-        elapsed += msgGetCharsPerFrame();
+        elapsed += GSgetFrameStep();
     }
 
     finalResult = std112_modelGetResourceID(0x10491000);

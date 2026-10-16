@@ -27,7 +27,7 @@ extern void fn_800932F0();
 extern void fn_800934E4();
 extern void fn_80093610();
 extern void fn_80093698();
-extern void msgGetCharsPerFrame();
+extern void GSgetFrameStep();
 extern void fn_800D37CC();
 extern void menuCloseCustom();
 extern s32 menuIsCheck();
@@ -3528,7 +3528,7 @@ static inline void CardEWaitSecond(void)
 
     while (t < 1.0f) {
         CardE_threadSwitch();
-        t += (f32)((u32 (*)(void))msgGetCharsPerFrame)() /
+        t += (f32)((u32 (*)(void))GSgetFrameStep)() /
              (f32)((s32 (*)(void))fn_800D37CC)();
     }
 }

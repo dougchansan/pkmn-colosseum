@@ -217,7 +217,7 @@ void _eyeTexAnimEnded(void* model, u8* callback) {
     extern u32 GSmodelGetAnimType(void*);
     extern void GSmodelGetAnimIndex(void*, u32*, u32*);
     extern void GSmodelSetTexAnimIndex(void*, u32);
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     extern void GSmodelSetTexAnimFrame(void*, f32);
     extern void GSmodelSetTexAnimRate(void*, f32);
     extern void GSmodelSetTexAnimType(void*, u32);
@@ -262,7 +262,7 @@ void _eyeTexAnimEnded(void* model, u8* callback) {
             type = GSmodelGetAnimType(model);
             GSmodelGetAnimIndex(model, (u32*)&animIndex, &unused);
             GSmodelSetTexAnimIndex(model, animIndex);
-            GSmodelSetTexAnimFrame(model, frame + rate * msgGetCharsPerFrame());
+            GSmodelSetTexAnimFrame(model, frame + rate * GSgetFrameStep());
             GSmodelSetTexAnimRate(model, rate);
             GSmodelSetTexAnimType(model, type);
             GSmodelStartTexAnimation(model);
@@ -503,7 +503,7 @@ s32 fn_801DF160(u8* obj) {
  */
 void fn_801DF1D0(void* obj) {
     extern u8 fn_801DAC54(void*);
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     extern f32 fn_800E0BE4(void);
     extern void GSmodelLinkTexAnimToAnim(void*, u32);
     extern void GSmodelSetTexAnimIndex(void*, u32);
@@ -535,7 +535,7 @@ void fn_801DF1D0(void* obj) {
     if (*(s16*)(effect + 0x1C) < 0) {
         return;
     }
-    *(u16*)(effect + 0x20) += (u16)msgGetCharsPerFrame();
+    *(u16*)(effect + 0x20) += (u16)GSgetFrameStep();
     timer = *(u16*)(effect + 0x20);
     if (timer < 10) {
         return;

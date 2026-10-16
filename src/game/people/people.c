@@ -264,7 +264,7 @@ extern void* memset(void* dst, int val, u32 size);
 extern void _threadSwitch(void);
 extern void GSthreadBlock(void* thread);
 extern void GSthreadUnblock(void* thread);
-extern u32 msgGetCharsPerFrame(void);
+extern u32 GSgetFrameStep(void);
 extern s32 fn_800D37CC(void);
 extern f32 fn_800E0BA0(void);
 extern f32 fn_800E0BE4(void);
@@ -1374,7 +1374,7 @@ void peopleHeadLookUpdate(PeopleEntry* entry, f32 step)
         }
     }
 
-    turn = 0.04f * (f32)msgGetCharsPerFrame();
+    turn = 0.04f * (f32)GSgetFrameStep();
     peopleApproach(&entry->headRotation[0], entry->headTarget[0], turn);
     peopleApproach(&entry->headRotation[1], entry->headTarget[1], turn);
 }
@@ -2756,7 +2756,7 @@ static inline u8 peopleMoveAlongAngle(u32 groupId, u32 index, f32 yaw, f32 speed
     fn_800E0718(rotation, &lbl_8031554C, yaw);
     set__5GSvecFfff(&localStep, 0.0f, 0.0f, speed);
     GSvecTransformQuat(&worldStep, rotation, &localStep);
-    ticks = (f32)msgGetCharsPerFrame();
+    ticks = (f32)GSgetFrameStep();
     position.x += worldStep.x * ticks;
     position.z += worldStep.z * ticks;
     return peopleMoveCommit(entry, &position, (GSvec*)entry->transform);
@@ -3086,7 +3086,7 @@ GSvec fn_80186B5C(u32 groupId, u32 index)
         fn_800E0718(rotation, &lbl_8031554C, angle);
         set__5GSvecFfff(&localStep, 0.0f, 0.0f, speed);
         GSvecTransformQuat(&worldStep, rotation, &localStep);
-        vecScale(&result, &worldStep, (f32)msgGetCharsPerFrame());
+        vecScale(&result, &worldStep, (f32)GSgetFrameStep());
     }
     return result;
 }
@@ -3321,7 +3321,7 @@ void fn_80185B90(PeopleEntry* entry, f32 speed)
         return;
     }
     if (0.0f != entry->walkAnimRate) {
-        entry->syncMotion += entry->walkAnimRate * (f32)msgGetCharsPerFrame();
+        entry->syncMotion += entry->walkAnimRate * (f32)GSgetFrameStep();
         if (entry->syncMotion > 1.0f) {
             entry->syncMotion = 1.0f;
             entry->walkAnimRate = 0.0f;
@@ -3493,7 +3493,7 @@ void fn_80184D80(PeopleEntry* entry)
     case 0:
         if (entry->animBlendFactor > 0.0f) {
             frameRate = (f32)fn_800D37CC();
-            entry->animBlendFactor -= (f32)msgGetCharsPerFrame() / frameRate;
+            entry->animBlendFactor -= (f32)GSgetFrameStep() / frameRate;
             if (entry->animBlendFactor < 0.0f) {
                 entry->animBlendFactor = 0.0f;
             }
@@ -3555,7 +3555,7 @@ void peopleTurnUpdate(PeopleEntry* entry)
         rotation.y = peopleNormalizeYaw(rotation.y);
         target = peopleNormalizeYaw(entry->field_40);
         step = 0.15707964f * entry->field_44;
-        for (ticks = msgGetCharsPerFrame(); ticks != 0; ticks--) {
+        for (ticks = GSgetFrameStep(); ticks != 0; ticks--) {
             difference = target - rotation.y;
             if (fabs(difference) >= 3.141592653589793) {
                 if (difference < 0.0f) {
@@ -3585,7 +3585,7 @@ void peopleTurnUpdate(PeopleEntry* entry)
         if (fabs(step) <= 0.017453292f) {
             step = step < 0.0f ? -0.017453292f : 0.017453292f;
         }
-        rotation.y += step * (f32)msgGetCharsPerFrame();
+        rotation.y += step * (f32)GSgetFrameStep();
         if (step < 0.0f) {
             if (rotation.y <= entry->field_40) {
                 rotation.y = entry->field_40;
@@ -3941,7 +3941,7 @@ void std178_characterPlayAnimationAndWait(u32 groupId, u32 index)
     soundStartSE(0x49E);
     peopleSetMotionIndex(entry, 7);
     for (;;) {
-        height -= 1.3 * msgGetCharsPerFrame();
+        height -= 1.3 * GSgetFrameStep();
         if (height < 0.0f) {
             height = 0.0f;
         }
@@ -4023,7 +4023,7 @@ static inline void peopleMoveTypeRandomRot(PeopleEntry* entry)
     case 0:
         if (entry->animBlendFactor > 0.0f) {
             frameCount = (f32)fn_800D37CC();
-            entry->animBlendFactor -= (f32)msgGetCharsPerFrame() / frameCount;
+            entry->animBlendFactor -= (f32)GSgetFrameStep() / frameCount;
             if (entry->animBlendFactor < 0.0f) {
                 entry->animBlendFactor = 0.0f;
             }
@@ -4144,9 +4144,9 @@ void peopleMain(void)
                 break;
             }
 
-            if (msgGetCharsPerFrame() != 0) {
+            if (GSgetFrameStep() != 0) {
                 GSvecSub(&currentPosition, peopleGetPositionPtr(entry), &currentPosition);
-                vecNormalize(&currentPosition, &currentPosition, (f32)msgGetCharsPerFrame());
+                vecNormalize(&currentPosition, &currentPosition, (f32)GSgetFrameStep());
                 entry->talkRange = peopleCalcRange(entry->groupId, entry->index,
                                                    &currentPosition);
             }

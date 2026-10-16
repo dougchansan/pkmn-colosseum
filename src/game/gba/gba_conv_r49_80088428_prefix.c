@@ -31,7 +31,7 @@ extern void fn_800934E4();
 extern void fn_80093610();
 extern void fn_80093698();
 extern void fn_800D0F44();
-extern void msgGetCharsPerFrame();
+extern void GSgetFrameStep();
 extern void fn_800D37CC();
 extern void fn_800E202C();
 extern void fn_800E209C();

@@ -4,7 +4,7 @@ extern void GXDrawDone(void);
 extern void fn_800B856C(void);
 extern void GStextureFree(void* texture);
 
-u32 fn_8013E54C(void* arg)
+u32 _auraDestroy(void* arg)
 {
     void* ptr;
 

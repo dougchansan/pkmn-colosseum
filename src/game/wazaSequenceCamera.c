@@ -192,7 +192,7 @@ void fn_801D2D28(void)
     extern u8 lbl_8047B3F4;
     extern u32 lbl_8047B3E8;
     extern f32 lbl_80478CDC;
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     extern void* GSmodelGetPart(void*, u32);
     extern void GSpartGetTransform(void*, Vec*, void*, void*);
     extern void GSpartFree(void*);
@@ -217,7 +217,7 @@ void fn_801D2D28(void)
     if (lbl_8047B3F4 != 0 && lbl_8047B3EC != NULL &&
         (lbl_8047B3F0 == NULL || *(u32*)((u8*)lbl_8047B3F0 + 0x18) == 0 ||
          *(u32*)((u8*)lbl_8047B3F0 + 0x20) == 0)) {
-        frame = msgGetCharsPerFrame();
+        frame = GSgetFrameStep();
         move = &((WazaCameraSequence*)lbl_8047B3EC)->moves[
             ((WazaCameraSequence*)lbl_8047B3EC)->moveIndex];
         model = ((WazaCameraSequence*)lbl_8047B3EC)->model;

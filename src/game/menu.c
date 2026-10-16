@@ -137,7 +137,7 @@ double atan2(double y, double x);
 void GSlogWrite(const char* fmt, ...);
 u32 GSthreadGetCurrentThread(void);
 void _threadSwitch(void);
-u32 msgGetCharsPerFrame(void);
+u32 GSgetFrameStep(void);
 void fn_800D9E4C(s32);
 void fn_800D9ED8(s32);
 void gfxSetBlendMode(s32, s32, s32);
@@ -681,7 +681,7 @@ void menuDaemon(void) {
         if ((node->flags & 4) != 0) {
             winSeqMoveMenu(node);
             if (data->tickCallback != NULL) {
-                for (i = 0; i < msgGetCharsPerFrame(); i++) {
+                for (i = 0; i < GSgetFrameStep(); i++) {
                     data->tickCallback(node);
                 }
             }
@@ -1191,7 +1191,7 @@ void _menuUpdateKeyInfo__FP15WINDOW_SYS_WORK(MenuSystem* work) {
                 keyInfo->repeatTimer[i] = 15;
                 repeat |= bit;
             } else if (keys & bit) {
-                keyInfo->repeatTimer[i] -= msgGetCharsPerFrame();
+                keyInfo->repeatTimer[i] -= GSgetFrameStep();
                 if (keyInfo->repeatTimer[i] <= 0) {
                     keyInfo->repeatTimer[i] = 5;
                     repeat |= bit;

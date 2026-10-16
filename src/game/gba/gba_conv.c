@@ -31,7 +31,7 @@ extern void fn_800934E4();
 extern void fn_80093610();
 extern void fn_80093698();
 extern void fn_800D0F44();
-extern void msgGetCharsPerFrame();
+extern void GSgetFrameStep();
 extern void fn_800D37CC();
 extern void fn_800E202C();
 extern void fn_800E209C();
@@ -1405,7 +1405,7 @@ void fn_80084A8C(void) {
                 ((void(*)(void))fn_800D37CC)();
                 *(u32*)(sp + 0xC14) = tmp;
                 f30 = f0 - f31;
-                ((void(*)(void))msgGetCharsPerFrame)();
+                ((void(*)(void))GSgetFrameStep)();
                 f0 = f0 - f29;
                 f0 = f0 / f30;
                 f27 = f27 + f0;
@@ -2147,7 +2147,7 @@ void fn_80084A8C(void) {
                 ((void(*)(void))fn_800D37CC)();
                 *(u32*)(sp + 0xC1C) = tmp;
                 f29 = f0 - f28;
-                ((void(*)(void))msgGetCharsPerFrame)();
+                ((void(*)(void))GSgetFrameStep)();
                 f0 = f0 - f30;
                 f0 = f0 / f29;
                 f27 = f27 + f0;

@@ -11,108 +11,108 @@
  *
  * Sub-modules identified by rodata debug strings:
  *
- *   lightningStartEffect   (fn_801380D4)  -- Lightning bolt effect
+ *   lightningStartEffect   (lightningEffectCreate)  -- Lightning bolt effect
  *     "lightningStartEffect: Could not start lightning effect -
  *      invalid model: group %d, model %d."
  *     "lightningStartEffect: Could not start lightning effect -
  *      not enough memory!"
  *     "lightningStartEffect: Could not start lightning effect!"
  *     Struct size: 0x70 bytes (passed to GSEffectAllocSlot)
- *     Callbacks: start=fn_80138630, stop=fn_801386DC,
- *                update=fn_80138680, render=fn_801387C0
+ *     Callbacks: start=_lightningDestroy, stop=lightningStartEffect,
+ *                update=_lightningStop, render=_lightningUpdate
  *     Core logic: _lightningRenderMain (0x4E4 bytes -- main render with
  *       GX pipeline setup: fog, lighting, material color,
  *       position/rotation matrix, GX draw calls)
- *     Helper: fn_80138838 (0x2C8 bytes -- model transform)
+ *     Helper: _lightningGenerate (0x2C8 bytes -- model transform)
  *
- *   leaffxStartEffect      (0x80138B00)  -- Leaf particle effect
+ *   leaffxEffectCreate      (0x80138B00)  -- Leaf particle effect
  *     "leaffxStartEffect: Could not start leaf effect -
  *      invalid leaf model: groupRes %d, modelRes %d!"
  *     "leaffxStartEffect: Could not start leaf effect!"
  *     "_leaffxGenerateLeafData: Could not create leaf clone model."
  *     Struct size: 0x98 bytes
- *     Callbacks: start=fn_80138CCC, stop=fn_80139074,
- *                update=fn_80138BBC, render=_leaffxGenerateLeafData
- *     Core logic: fn_80138DE4 (0x290 bytes), fn_80139074 (0x304 bytes)
+ *     Callbacks: start=leaffxStartEffect, stop=_leaffxMoveLeaf,
+ *                update=_leaffxStop, render=_leaffxGenerateLeafData
+ *     Core logic: _leaffxUpdate (0x290 bytes), _leaffxMoveLeaf (0x304 bytes)
  *
- *   electronStartEffect    (0x80139820)  -- Electrical arc effect
+ *   boltEffectCreate    (0x80139820)  -- Electrical arc effect
  *     "electronStartEffect: Could not start electron effect -
  *      invalid model: groupRes %d, modelRes %d!"
  *     "leaffxStartEffect: Could not start electron effect!"
  *     Struct size: 0x78 bytes
- *     Callbacks: start=fn_801398E0, stop=fn_8013A1D4,
- *                update=fn_80139934, render=fn_80139AC4
- *     Core logic: fn_80139D10 (0x170 bytes), fn_80139E80 (0x354 bytes)
+ *     Callbacks: start=_boltStop, stop=_boltSubdivide,
+ *                update=_boltRender, render=_boltUpdate
+ *     Core logic: boltStartEffect (0x170 bytes), _boltDrawStrip (0x354 bytes)
  *
- *   filterStart             (fn_8013A42C)  -- Full-screen colour filter
+ *   filterStart             (electronEffectCreate)  -- Full-screen colour filter
  *     "filterStart: Could not start filter effect - invalid filter!"
  *     "filterStart: Could not start filter effect!"
  *     Struct size: 0x14 bytes
- *     Callbacks: start=fn_8013A520, stop=fn_8013AB60,
- *                update=fn_8013A49C, render=fn_8013AD9C
- *     Core logic: fn_8013A520 (0x56C bytes -- large switch on filter type)
+ *     Callbacks: start=_electronRender, stop=filterAddKey,
+ *                update=electronStartEffect, render=_filterUpdate
+ *     Core logic: _electronRender (0x56C bytes -- large switch on filter type)
  *
- *   surfEffectStart         (fn_8013AABC)  -- Water surface wave effect
+ *   surfEffectStart         (filterEffectCreate)  -- Water surface wave effect
  *     "surfEffectStart: Could not start wave effect!"
  *     Struct size: 0x28 bytes
  *
- *   seaEffectStart          (fn_8013B490)  -- Ocean/sea effect
+ *   seaEffectStart          (surfEffectCreate)  -- Ocean/sea effect
  *     "seaEffectStart: Could not start sea effect!"
  *     Struct size: 0x2C bytes
- *     Callbacks: start=fn_8013B558, stop=fn_8013B85C,
- *                update=fn_8013B504, render=surfEffectStart
+ *     Callbacks: start=_surfStop, stop=_surfUpdate,
+ *                update=_surfDestroy, render=surfEffectStart
  *
- *   envMapEffectInit        (fn_8013C5A0)  -- Environment-mapped reflections
+ *   envMapEffectInit        (seaEffectCreate)  -- Environment-mapped reflections
  *     "envMapEffectInit: Could not initialise env map effect!"
  *     "envMapEffectStart: Could not start env map effect!"
  *     Struct size: 0x48 bytes
- *     Callbacks: start=fn_8013C670, stop=fn_8013CBF0,
- *                update=fn_8013C614, render=seaEffectStart
- *     Core logic: fn_8013C074 (0x52C bytes), fn_8013CA48 (0x1A8 bytes),
- *                 fn_8013CE58 (0x250 bytes)
+ *     Callbacks: start=_seaStop, stop=_seaBuildMesh,
+ *                update=_seaDestroy, render=seaEffectStart
+ *     Core logic: _surfSetupMaterial (0x52C bytes), _seaUpdate (0x1A8 bytes),
+ *                 _seaResetMaterial (0x250 bytes)
  *
- *   blurEffectStart         (fn_8013D6B8)  -- Motion blur post-process
+ *   blurEffectStart         (envMapEffectCreate)  -- Motion blur post-process
  *     "blurEffectStart: Could not start blur effect!"
  *     Struct size: 0x24 bytes
- *     Callbacks: start=fn_8013D730, stop=fn_8013D984,
- *                update=fn_8013D7CC, render=envMapEffectInit
- *     Core logic: fn_8013D0A8 (0x55C bytes -- large GX pipeline setup)
+ *     Callbacks: start=_envMapDestroy, stop=_envMapUpdate,
+ *                update=_envMapStop, render=envMapEffectInit
+ *     Core logic: _seaSetupMaterial (0x55C bytes -- large GX pipeline setup)
  *
- *   auraEffectStart         (fn_8013DC18)  -- Aura glow (Shadow Pokemon)
+ *   auraEffectStart         (blurEffectCreate)  -- Aura glow (Shadow Pokemon)
  *     "auraEffectStart: Could not start aura effect!"
  *     Struct size: 0x20 bytes
- *     Callbacks: start=blurEffectStart, stop=fn_8013E258,
- *                update=fn_8013DC94, render=fn_8013DE6C
- *     Core logic: fn_8013DE6C (0x3EC bytes -- aura rendering)
+ *     Callbacks: start=blurEffectStart, stop=_blurDrawCapture,
+ *                update=_blurDestroy, render=_blurRender
+ *     Core logic: _blurRender (0x3EC bytes -- aura rendering)
  *
- *   distortionEffectStart   (fn_8013E4D4)  -- Screen distortion / heat-haze
+ *   distortionEffectStart   (auraEffectCreate)  -- Screen distortion / heat-haze
  *     "distortionEffectStart: Could not start distortion effect!"
  *     "_distortionEffectUpdateMatrices: Could not project points on screen"
  *     Struct size: 0x50 bytes
  *     Uses rodata string "translate" for matrix node lookup
- *     Callbacks: start=fn_8013E5AC, stop=fn_8013E8A4,
- *                update=fn_8013E54C, render=auraEffectStart
- *     Core logic: fn_8013E6C4 (0x1E0 bytes), fn_8013EA44 (0x5BC bytes)
+ *     Callbacks: start=_auraInit, stop=_auraUpdate,
+ *                update=_auraDestroy, render=auraEffectStart
+ *     Core logic: _auraRender (0x1E0 bytes), _auraDrawModel (0x5BC bytes)
  *
- *   billboardEffectStart    (fn_8013F000)  -- Billboard sprite particles
+ *   billboardEffectStart    (distortionEffectCreate)  -- Billboard sprite particles
  *     "billboardEffectStart: Could not start billboard effect!"
  *     Struct size: 0xB4 bytes
- *     Callbacks: start=fn_8013F114, stop=distortionEffectStart,
- *                update=fn_8013F078, render=fn_8013F410
- *     Core logic: fn_8013F80C (0x170 bytes), _distortionEffectUpdateMatrices (0x264 bytes),
- *                 fn_8013FF0C (0x22C bytes -- billboard transform setup)
+ *     Callbacks: start=_distortionInit, stop=distortionEffectStart,
+ *                update=_distortionDestroy, render=_distortionRender
+ *     Core logic: _distortionUpdate (0x170 bytes), _distortionEffectUpdateMatrices (0x264 bytes),
+ *                 _billboardUpdate (0x22C bytes -- billboard transform setup)
  *
- *   patchiruTextureStart   (0x8013FBE0)  -- Patchiru (Spinda) texture effect
+ *   billboardEffectCreate   (0x8013FBE0)  -- Patchiru (Spinda) texture effect
  *     "Failed to create Patchiru texture"
  *     Struct size: 0x40 bytes
  *     Uses custom texture generation for the Spinda spot pattern
- *     Callbacks: start=fn_8013FCC4, stop=billboardEffectStart,
- *                update=fn_8013FC58, render=fn_8013FD68
+ *     Callbacks: start=_billboardInit, stop=billboardEffectStart,
+ *                update=_billboardDestroy, render=_billboardStop
  *
  * External references:
- *   fn_80131428 (GSEffectAllocSlot)  -- allocate effect slot
- *   fn_80131200 (GSEffectRegister)   -- register callbacks
- *   fn_8013139C (GSEffectResetState) -- re-trigger effect
+ *   GSeffectCreate (GSEffectAllocSlot)  -- allocate effect slot
+ *   GSeffectSetCallbacks (GSEffectRegister)   -- register callbacks
+ *   GSeffectSetup (GSEffectResetState) -- re-trigger effect
  *   GSresGetResource (floor resource lookup)
  *   GSmodelGetPosition (GSmem / resource helper)
  *   _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID, GScameraGetActiveCamera, GScameraGetPosition, GScameraGetPerspective -- matrix/vector ops
@@ -129,9 +129,9 @@
  *   cameraGetActive -- camera matrix helper
  *
  * All 12 sub-modules follow the same pattern:
- *   1. xxxStart allocates a slot via fn_80131428 with a struct size
- *   2. Registers callbacks via fn_80131200
- *   3. Calls fn_8013139C to enter IDLE state
+ *   1. xxxStart allocates a slot via GSeffectCreate with a struct size
+ *   2. Registers callbacks via GSeffectSetCallbacks
+ *   3. Calls GSeffectSetup to enter IDLE state
  *   4. The update callback handles per-frame logic
  *   5. The render callback sets up GX pipeline and draws geometry
  *   6. The stop callback frees resources
@@ -156,8 +156,8 @@ extern u16   _toolentryAlloc__FUl(u32 size);
 extern void* fn_800E27B0(u16 handle);
 
 /* Effect system core */
-extern u32   fn_80131428(void* callbacks, u16 dataSize);  /* GSEffectAllocSlot */
-extern void  fn_80131200(u32 effectId,
+extern u32   GSeffectCreate(void* callbacks, u16 dataSize);  /* GSEffectAllocSlot */
+extern void  GSeffectSetCallbacks(u32 effectId,
                           GSEffectStartFunc startFunc,
                           GSEffectStopFunc  destroyFunc,
                           GSEffectStartFunc triggerFunc,
@@ -165,7 +165,7 @@ extern void  fn_80131200(u32 effectId,
                           void* extraParam,
                           GSEffectUpdateFunc updateFunc,
                           GSEffectRenderFunc renderFunc);  /* GSEffectRegister */
-extern void  fn_8013139C(u32 effectId, u32 param);        /* GSEffectResetState */
+extern void  GSeffectSetup(u32 effectId, u32 param);        /* GSEffectResetState */
 
 /* Floor resource system */
 extern void* GSresGetResource(u32 group, u32 model);
@@ -243,120 +243,120 @@ extern void  DCFlushRange(void* ptr, u32 size);
  * =================================================================== */
 
 /* ---- Lightning effect ---- */
-/* fn_801380D4: lightningStartEffect -- allocate slot, register, reset */
+/* lightningEffectCreate: lightningStartEffect -- allocate slot, register, reset */
 /* _lightningRenderMain (0x8013814C, 0x4E4 bytes) -- GX pipeline + draw */
-/* fn_80138630: _lightningStart callback */
-/* fn_80138680: _lightningUpdate callback */
-/* fn_801386DC: _lightningStop callback */
-/* fn_801387C0: _lightningRender callback */
-/* fn_80138838: _lightningTransformModel (0x2C8 bytes) */
+/* _lightningDestroy: _lightningStart callback */
+/* _lightningStop: _lightningUpdate callback */
+/* lightningStartEffect: _lightningStop callback */
+/* _lightningUpdate: _lightningRender callback */
+/* _lightningGenerate: _lightningTransformModel (0x2C8 bytes) */
 
 /* ---- Leaf effect ---- */
-/* leaffxStartEffect (0x80138B00) */
-/* fn_80138B74: _leaffxHelper */
-/* fn_80138BBC: _leaffxUpdate callback */
-/* fn_80138CCC: _leaffxStart callback */
-/* fn_80138DE4: _leaffxGenerateLeafData (0x290 bytes) */
-/* fn_80139074: _leaffxStop callback (0x304 bytes) */
+/* leaffxEffectCreate (0x80138B00) */
+/* _leaffxDestroy: _leaffxHelper */
+/* _leaffxStop: _leaffxUpdate callback */
+/* leaffxStartEffect: _leaffxStart callback */
+/* _leaffxUpdate: _leaffxGenerateLeafData (0x290 bytes) */
+/* _leaffxMoveLeaf: _leaffxStop callback (0x304 bytes) */
 /* _leaffxGenerateLeafData: _leaffxRender callback (0x4A8 bytes) */
 
 /* ---- Electron effect ---- */
-/* electronStartEffect (0x80139820) */
-/* fn_80139898: _electronHelper */
-/* fn_801398E0: _electronStart callback */
-/* fn_80139934: _electronUpdate callback (0x190 bytes) */
-/* fn_80139AC4: _electronRender callback (0x24C bytes) */
-/* fn_80139D10: _electronCalcArc (0x170 bytes) */
-/* fn_80139E80: _electronRenderArc (0x354 bytes) */
-/* fn_8013A1D4: _electronStop callback (0x258 bytes) */
+/* boltEffectCreate (0x80139820) */
+/* _boltDestroy: _electronHelper */
+/* _boltStop: _electronStart callback */
+/* _boltRender: _electronUpdate callback (0x190 bytes) */
+/* _boltUpdate: _electronRender callback (0x24C bytes) */
+/* boltStartEffect: _electronCalcArc (0x170 bytes) */
+/* _boltDrawStrip: _electronRenderArc (0x354 bytes) */
+/* _boltSubdivide: _electronStop callback (0x258 bytes) */
 
 /* ---- Filter effect ---- */
-/* fn_8013A42C: filterAlloc */
-/* fn_8013A49C: _filterUpdate callback */
-/* fn_8013A520: _filterStart callback (0x56C bytes -- large switch) */
-/* fn_8013AA8C: _filterHelper */
-/* fn_8013AABC: surfEffectStart */
-/* fn_8013AB34: _surfHelper */
-/* fn_8013AB60: _filterStop callback (0x208 bytes) */
-/* fn_8013AD68: _filterHelper2 */
-/* fn_8013AD9C: _filterRender callback (0x298 bytes) */
+/* electronEffectCreate: filterAlloc */
+/* electronStartEffect: _filterUpdate callback */
+/* _electronRender: _filterStart callback (0x56C bytes -- large switch) */
+/* _electronUpdate: _filterHelper */
+/* filterEffectCreate: surfEffectStart */
+/* filterIsHolding: _surfHelper */
+/* filterAddKey: _filterStop callback (0x208 bytes) */
+/* _filterNextKey: _filterHelper2 */
+/* _filterUpdate: _filterRender callback (0x298 bytes) */
 
 /* ---- Surf / wave effect ---- */
-/* fn_8013B034: _surfUpdate callback */
-/* fn_8013B0A0: _surfRender callback */
+/* _filterDestroy: _surfUpdate callback */
+/* _filterStop: _surfRender callback */
 /* filterStart: _surfCalcWave (0x110 bytes) */
-/* fn_8013B268: _surfRenderWave (0x228 bytes) */
+/* _filterApplyColor: _surfRenderWave (0x228 bytes) */
 
 /* ---- Sea effect ---- */
-/* fn_8013B490: seaEffectStart */
-/* fn_8013B504: _seaUpdate callback */
-/* fn_8013B558: _seaStart callback */
+/* surfEffectCreate: seaEffectStart */
+/* _surfDestroy: _seaUpdate callback */
+/* _surfStop: _seaStart callback */
 /* surfEffectStart: _seaRender callback (0x278 bytes) */
-/* fn_8013B85C: _seaStop callback (0x23C bytes) */
-/* fn_8013BA98: _seaCalcSurface (0x178 bytes) */
-/* fn_8013BC10: _seaRenderSurface (0x1F4 bytes) */
-/* fn_8013BE04: _seaRenderReflection (0x270 bytes) */
+/* _surfUpdate: _seaStop callback (0x23C bytes) */
+/* _surfCalcNormals: _seaCalcSurface (0x178 bytes) */
+/* _surfCalcWaveProfile: _seaRenderSurface (0x1F4 bytes) */
+/* _surfBuildMesh: _seaRenderReflection (0x270 bytes) */
 
 /* ---- EnvMap effect ---- */
-/* fn_8013C074: _envMapRenderMain (0x52C bytes) */
-/* fn_8013C5A0: envMapEffectInit */
-/* fn_8013C614: _envMapUpdate callback */
-/* fn_8013C670: _envMapStart callback */
+/* _surfSetupMaterial: _envMapRenderMain (0x52C bytes) */
+/* seaEffectCreate: envMapEffectInit */
+/* _seaDestroy: _envMapUpdate callback */
+/* _seaStop: _envMapStart callback */
 /* seaEffectStart: _envMapRender callback (0x330 bytes) */
-/* fn_8013CA48: _envMapCalcReflection (0x1A8 bytes) */
-/* fn_8013CBF0: _envMapStop callback (0x268 bytes) */
-/* fn_8013CE58: _envMapUpdateTexture (0x250 bytes) */
+/* _seaUpdate: _envMapCalcReflection (0x1A8 bytes) */
+/* _seaBuildMesh: _envMapStop callback (0x268 bytes) */
+/* _seaResetMaterial: _envMapUpdateTexture (0x250 bytes) */
 
 /* ---- Blur effect ---- */
-/* fn_8013D0A8: _blurRenderMain (0x55C bytes -- large GX setup) */
-/* fn_8013D604: _blurHelper */
-/* fn_8013D6B8: blurEffectStart */
-/* fn_8013D730: _blurStart callback */
-/* fn_8013D7CC: _blurUpdate callback */
+/* _seaSetupMaterial: _blurRenderMain (0x55C bytes -- large GX setup) */
+/* envMapAddKey: _blurHelper */
+/* envMapEffectCreate: blurEffectStart */
+/* _envMapDestroy: _blurStart callback */
+/* _envMapStop: _blurUpdate callback */
 /* envMapEffectInit: _blurRender callback (0x104 bytes) */
 /* envMapEffectStart: _blurCalcMotion */
-/* fn_8013D984: _blurStop callback (0x1E0 bytes) */
-/* fn_8013DB64: _blurCleanup */
+/* _envMapUpdate: _blurStop callback (0x1E0 bytes) */
+/* blurAddKey: _blurCleanup */
 
 /* ---- Aura effect (Shadow Pokemon) ---- */
-/* fn_8013DC18: auraEffectStart -- allocate 0x20 bytes */
-/* fn_8013DC94: _auraUpdate callback */
-/* fn_8013DD10: _auraHelper */
-/* fn_8013DD7C: _auraHelper2 */
+/* blurEffectCreate: auraEffectStart -- allocate 0x20 bytes */
+/* _blurDestroy: _auraUpdate callback */
+/* _blurInit: _auraHelper */
+/* _blurStop: _auraHelper2 */
 /* blurEffectStart: _auraStart callback */
-/* fn_8013DE6C: _auraRender callback (0x3EC bytes) */
-/* fn_8013E258: _auraStop callback (0x218 bytes) */
+/* _blurRender: _auraRender callback (0x3EC bytes) */
+/* _blurDrawCapture: _auraStop callback (0x218 bytes) */
 
 /* ---- Distortion / heat-haze effect ---- */
-/* fn_8013E470: _distortionHelper */
-/* fn_8013E4D4: distortionEffectStart */
-/* fn_8013E54C: _distortionUpdate callback */
-/* fn_8013E5AC: _distortionStart callback */
+/* _blurUpdate: _distortionHelper */
+/* auraEffectCreate: distortionEffectStart */
+/* _auraDestroy: _distortionUpdate callback */
+/* _auraInit: _distortionStart callback */
 /* auraEffectStart: _distortionRender callback */
-/* fn_8013E6C4: _distortionCalcMatrices (0x1E0 bytes) */
-/* fn_8013E8A4: _distortionStop callback (0x1A0 bytes) */
-/* fn_8013EA44: _distortionEffectUpdateMatrices (0x5BC bytes) */
+/* _auraRender: _distortionCalcMatrices (0x1E0 bytes) */
+/* _auraUpdate: _distortionStop callback (0x1A0 bytes) */
+/* _auraDrawModel: _distortionEffectUpdateMatrices (0x5BC bytes) */
 
 /* ---- Billboard sprite effect ---- */
-/* fn_8013F000: billboardEffectStart -- allocate 0xB4 bytes */
-/* fn_8013F078: _billboardUpdate callback */
-/* fn_8013F114: _billboardStart callback (0x230 bytes) */
+/* distortionEffectCreate: billboardEffectStart -- allocate 0xB4 bytes */
+/* _distortionDestroy: _billboardUpdate callback */
+/* _distortionInit: _billboardStart callback (0x230 bytes) */
 /* distortionEffectStart: _billboardStop callback */
-/* fn_8013F410: _billboardRender callback (0x3FC bytes) */
-/* fn_8013F80C: _billboardCalcTransform (0x170 bytes) */
+/* _distortionRender: _billboardRender callback (0x3FC bytes) */
+/* _distortionUpdate: _billboardCalcTransform (0x170 bytes) */
 /* _distortionEffectUpdateMatrices: _billboardRenderQuad (0x264 bytes) */
 
 /* ---- Patchiru (Spinda) texture effect ---- */
-/* patchiruTextureStart (0x8013FBE0) -- allocate 0x40 bytes */
-/* fn_8013FC58: _patchiruUpdate callback */
-/* fn_8013FCC4: _patchiruStart callback */
-/* fn_8013FD68: _patchiruRender callback */
+/* billboardEffectCreate (0x8013FBE0) -- allocate 0x40 bytes */
+/* _billboardDestroy: _patchiruUpdate callback */
+/* _billboardInit: _patchiruStart callback */
+/* _billboardStop: _patchiruRender callback */
 /* billboardEffectStart: _patchiruStop callback (0x13C bytes) */
 
 /* ---- Billboard transform helpers ---- */
-/* fn_8013FF0C: _billboardTransformSetup (0x22C bytes) */
-/* Unload__13ModelSequenceFPUc: _billboardTransformHelper */
-/* fn_80140190: _billboardTransformHelper2 (0x11C bytes) */
+/* _billboardUpdate: _billboardTransformSetup (0x22C bytes) */
+/* pachiruEffectRelease: _billboardTransformHelper */
+/* pachiruEffectSetupModel: _billboardTransformHelper2 (0x11C bytes) */
 /* _pachiruEffectCreateTexture__FP9GStextureP9GStextureUl: _billboardTransformMain (0x2DC bytes) */
 extern f32 vecMag(void*);
 extern void gfxEnd(void);
@@ -367,94 +367,94 @@ extern void fn_800D7E5C(void);
 extern void set__5GSvecFfff(void* dst, f32 x, f32 y, f32 z);
 /* Forward declarations for self-referencing asm blocks */
 extern u32 _lightningRenderMain(void* ptr);
-extern u32 fn_80138630(void* ptr);
-extern u32 fn_80138680(void* ptr);
-extern u32 fn_801386DC(void* ptr);
-extern u32 fn_801387C0(void* ptr, u32 delta);
-extern void fn_80138838(void* ptr, u32 b);
-extern u32 fn_80138B74(void* ptr);
-extern u32 fn_80138BBC(void* ptr);
-extern u32 fn_80138CCC(void* ptr);
-extern u32 fn_80138DE4(void* ptr, u32 delta);
-extern void fn_80139074(void* entry, u8* leaf);
+extern u32 _lightningDestroy(void* ptr);
+extern u32 _lightningStop(void* ptr);
+extern u32 lightningStartEffect(void* ptr);
+extern u32 _lightningUpdate(void* ptr, u32 delta);
+extern void _lightningGenerate(void* ptr, u32 b);
+extern u32 _leaffxDestroy(void* ptr);
+extern u32 _leaffxStop(void* ptr);
+extern u32 leaffxStartEffect(void* ptr);
+extern u32 _leaffxUpdate(void* ptr, u32 delta);
+extern void _leaffxMoveLeaf(void* entry, u8* leaf);
 extern u8 _leaffxGenerateLeafData(void* ptr, void* entry);
-extern u32 fn_80139898(void* ptr);
-extern u32 fn_801398E0(void* ptr);
-extern u32 fn_80139934(void* ptr);
-extern BOOL fn_80139AC4(void* ptr, u32 tick);
-extern u32 fn_80139D10(void* ptr);
-extern void fn_80139E80(u8* e, u8* p, void* cameraPos, void* modelPos);
+extern u32 _boltDestroy(void* ptr);
+extern u32 _boltStop(void* ptr);
+extern u32 _boltRender(void* ptr);
+extern BOOL _boltUpdate(void* ptr, u32 tick);
+extern u32 boltStartEffect(void* ptr);
+extern void _boltDrawStrip(u8* e, u8* p, void* cameraPos, void* modelPos);
 struct ElectronPoint;
-extern void fn_8013A1D4(u8* entry, u8* parent, struct ElectronPoint* origin, u32 depth, f32 weight);
-extern u32 fn_8013A49C(void* ptr);
-extern u32 fn_8013A520(void* ptr);
-extern u32 fn_8013AA8C(void* ptr, u16 delta);
-extern u32 fn_8013AD68(void* ptr);
-extern u32 fn_8013AD9C(void* ptr, u32 delta);
-extern u32 fn_8013B034(void* ptr);
-extern u32 fn_8013B0A0(void* ptr);
+extern void _boltSubdivide(u8* entry, u8* parent, struct ElectronPoint* origin, u32 depth, f32 weight);
+extern u32 electronStartEffect(void* ptr);
+extern u32 _electronRender(void* ptr);
+extern u32 _electronUpdate(void* ptr, u16 delta);
+extern u32 _filterNextKey(void* ptr);
+extern u32 _filterUpdate(void* ptr, u32 delta);
+extern u32 _filterDestroy(void* ptr);
+extern u32 _filterStop(void* ptr);
 extern u16 filterStart(void* ptr);
-extern void fn_8013B268(void* ptr, u8* color);
-extern u32 fn_8013B504(void* ptr);
-extern u32 fn_8013B558(void* ptr);
+extern void _filterApplyColor(void* ptr, u8* color);
+extern u32 _surfDestroy(void* ptr);
+extern u32 _surfStop(void* ptr);
 extern u16 surfEffectStart(void* ptr);
-extern u32 fn_8013B85C(void* ptr, u32 delta);
-extern void fn_8013BA98(void* ptr);
-extern void fn_8013BC10(void* ptr, f32 t);
-extern void fn_8013BE04(void* ptr, void* mtx, u8* color, f32 x, f32 z, f32 scale);
-extern u32 fn_8013C074(void* ptr, void* arg);
-extern u32 fn_8013C614(void* ptr);
-extern u32 fn_8013C670(void* ptr);
+extern u32 _surfUpdate(void* ptr, u32 delta);
+extern void _surfCalcNormals(void* ptr);
+extern void _surfCalcWaveProfile(void* ptr, f32 t);
+extern void _surfBuildMesh(void* ptr, void* mtx, u8* color, f32 x, f32 z, f32 scale);
+extern u32 _surfSetupMaterial(void* ptr, void* arg);
+extern u32 _seaDestroy(void* ptr);
+extern u32 _seaStop(void* ptr);
 extern u16 seaEffectStart(void* ptr);
-extern u32 fn_8013CA48(void* ptr, u32 delta);
-extern void fn_8013CBF0(void* ptr, void* mtx, u8* color, f32 x, f32 z, f32 scale);
-extern u32 fn_8013CE58(void* inner, void* ptr);
-extern u32 fn_8013D0A8(void* ptr, void* arg);
-extern u32 fn_8013D730(void* ptr);
-extern u32 fn_8013D7CC(void* ptr);
+extern u32 _seaUpdate(void* ptr, u32 delta);
+extern void _seaBuildMesh(void* ptr, void* mtx, u8* color, f32 x, f32 z, f32 scale);
+extern u32 _seaResetMaterial(void* inner, void* ptr);
+extern u32 _seaSetupMaterial(void* ptr, void* arg);
+extern u32 _envMapDestroy(void* ptr);
+extern u32 _envMapStop(void* ptr);
 extern u32 envMapEffectInit(void* ptr);
 extern u32 envMapEffectStart(void* ptr);
 extern void fn_800D4604(u32 mode);
-extern u32 fn_8013D984(void* ptr, u32 delta);
-extern u32 fn_8013DC94(void* ptr);
-extern u32 fn_8013DD10(void* ptr);
-extern u32 fn_8013DD7C(void* ptr);
+extern u32 _envMapUpdate(void* ptr, u32 delta);
+extern u32 _blurDestroy(void* ptr);
+extern u32 _blurInit(void* ptr);
+extern u32 _blurStop(void* ptr);
 extern u32 blurEffectStart(void* ptr);
-extern u32 fn_8013DE6C(void* ptr);
-extern u32 fn_8013E258(void* model, void* unused, void* state);
-extern u32 fn_8013E470(void* ptr, u32 delta);
-extern u32 fn_8013E54C(void* ptr);
-extern u32  fn_8013E5AC(u8* p);
+extern u32 _blurRender(void* ptr);
+extern u32 _blurDrawCapture(void* model, void* unused, void* state);
+extern u32 _blurUpdate(void* ptr, u32 delta);
+extern u32 _auraDestroy(void* ptr);
+extern u32  _auraInit(u8* p);
 extern u32 auraEffectStart(void* ptr);
-extern u32 fn_8013E6C4(u8* ptr);
-extern u32 fn_8013E8A4(void* ptr, u32 delta);
-extern void fn_8013EA44(void* ptr);
-extern u32 fn_8013F078(void* ptr);
-extern u32 fn_8013F114(void* ptr);
+extern u32 _auraRender(u8* ptr);
+extern u32 _auraUpdate(void* ptr, u32 delta);
+extern void _auraDrawModel(void* ptr);
+extern u32 _distortionDestroy(void* ptr);
+extern u32 _distortionInit(void* ptr);
 extern u16 distortionEffectStart(void* ptr);
-extern u32 fn_8013F410(void* ptr);
-extern u32 fn_8013F80C(void* ptr, u32 delta);
+extern u32 _distortionRender(void* ptr);
+extern u32 _distortionUpdate(void* ptr, u32 delta);
 extern void _distortionEffectUpdateMatrices(void* ptr);
-extern u32 fn_8013FC58(void* ptr);
-extern u32 fn_8013FCC4(void* ptr);
-extern u32 fn_8013FD68(void* ptr);
+extern u32 _billboardDestroy(void* ptr);
+extern u32 _billboardInit(void* ptr);
+extern u32 _billboardStop(void* ptr);
 extern u16 billboardEffectStart(void* ptr);
-extern u32 fn_8013FF0C(void* ptr);
+extern u32 _billboardUpdate(void* ptr);
 
 #if !defined(EFFECT_VISUAL_BANK_ACTIVE) || \
     defined(EFFECT_VISUAL_EXACT_801380D4_8013814C)
-u32 fn_801380D4(void* callbacks) {
-    u32 effectId = fn_80131428(callbacks, 0x70);
+u32 lightningEffectCreate(void* callbacks) {
+    u32 effectId = GSeffectCreate(callbacks, 0x70);
     if (effectId) {
-        fn_80131200(effectId,
+        GSeffectSetCallbacks(effectId,
             0,
-            (GSEffectStopFunc)fn_80138630,
-            (GSEffectStartFunc)fn_801386DC,
-            (GSEffectStopFunc)fn_80138680,
+            (GSEffectStopFunc)_lightningDestroy,
+            (GSEffectStartFunc)lightningStartEffect,
+            (GSEffectStopFunc)_lightningStop,
             0,
-            (GSEffectUpdateFunc)fn_801387C0,
+            (GSEffectUpdateFunc)_lightningUpdate,
             (GSEffectRenderFunc)_lightningRenderMain);
-        fn_8013139C(effectId, 0);
+        GSeffectSetup(effectId, 0);
     }
     return effectId;
 }
@@ -470,7 +470,7 @@ asm void _lightningRenderMain(void) {
 /*
  * RULE-EXCEPTION(user-approved): _lightningRenderMain's .sdata2 pool
  * (0x8047D148-0x8047D160) as named stand-ins, defined after the function so
- * MWCC still loads them; fn_80138838's 1.0f, 0.0f and 2*pi literals are
+ * MWCC still loads them; _lightningGenerate's 1.0f, 0.0f and 2*pi literals are
  * redirected to these names (constant_import) — see docs/RULE_EXCEPTIONS.md
  */
 extern u32 lbl_8047D148;
@@ -621,7 +621,7 @@ __declspec(section ".sdata2") u32 lbl_8047D150 = 0x437F0000; /* 255.0f */
 __declspec(section ".sdata2") u32 lbl_8047D154 = 0x00000000; /* 0.0f */
 #pragma pop
 __declspec(section ".sdata2") u32 lbl_8047D158 = 0x40000000; /* 2.0f */
-/* fn_80138838's 2*pi: an .sdata2 object always starts 8-aligned, so the
+/* _lightningGenerate's 2*pi: an .sdata2 object always starts 8-aligned, so the
    0x8047D15C word has to come from this object. */
 __declspec(section ".sdata2") u32 lbl_8047D15C = 0x40C90FDB; /* 6.2831855f */
 #endif
@@ -634,7 +634,7 @@ asm void fn_80138630(void* ptr) {
 #include "src/game/effect/effect_visual_fn_80138630.inc"
 }
 #else
-u32 fn_80138630(void* ptr) {
+u32 _lightningDestroy(void* ptr) {
     if (ptr) {
         GXDrawDone();
         fn_800B856C();
@@ -653,7 +653,7 @@ asm void fn_80138680(void* ptr) {
 #include "src/game/effect/effect_visual_fn_80138680.inc"
 }
 #else
-u32 fn_80138680(void* ptr) {
+u32 _lightningStop(void* ptr) {
     u32 val;
     u32 ret;
     if (ptr) {
@@ -681,7 +681,7 @@ asm u32 fn_801386DC(void* ptr) {
 #include "src/game/effect/effect_visual_fn_801386DC.inc"
 }
 #else
-u32 fn_801386DC(void* ptr) {
+u32 lightningStartEffect(void* ptr) {
     u8* p;
     u16 handle;
 
@@ -702,7 +702,7 @@ u32 fn_801386DC(void* ptr) {
 
         *(void**)(p + 4) = fn_800E27B0(handle);
         memset(*(void**)(p + 4), 0, *(u16*)(p + 0x8) * 0x97C);
-        fn_80138838(p, 1);
+        _lightningGenerate(p, 1);
         *(u16*)(p + 0x10) = 0;
         return 1;
     }
@@ -720,7 +720,7 @@ asm void fn_801387C0(void* ptr, u32 delta) {
 #include "src/game/effect/effect_visual_fn_801387C0.inc"
 }
 #else
-u32 fn_801387C0(void* ptr, u32 delta) {
+u32 _lightningUpdate(void* ptr, u32 delta) {
     u8* p;
     u32 d;
     u16 limit;
@@ -733,7 +733,7 @@ u32 fn_801387C0(void* ptr, u32 delta) {
     if (limit != 0 && *(u16*)(p + 0x10) >= limit) {
         goto fail;
     }
-    fn_80138838(p, 0);
+    _lightningGenerate(p, 0);
     *(u16*)(p + 0x10) = *(u16*)(p + 0x10) + d;
     return 1;
 fail:
@@ -760,7 +760,7 @@ asm void fn_80138838(void* ptr, u32 b) {
 #include "src/game/effect/effect_visual_fn_80138838.inc"
 }
 #else
-void fn_80138838(void* ptr, u32 b) {
+void _lightningGenerate(void* ptr, u32 b) {
     u8* p;
     u8* current;
     u8* entry;
@@ -849,18 +849,18 @@ asm void leaffxStartEffect(void) {
 #include "src/game/effect/effect_visual_leaffxStartEffect.inc"
 }
 #else
-u32 leaffxStartEffect(void* callbacks) {
-    u32 effectId = fn_80131428(callbacks, 0x4c);
+u32 leaffxEffectCreate(void* callbacks) {
+    u32 effectId = GSeffectCreate(callbacks, 0x4c);
     if (effectId) {
-        fn_80131200(effectId,
+        GSeffectSetCallbacks(effectId,
             0,
-            (GSEffectStopFunc)fn_80138B74,
-            (GSEffectStartFunc)fn_80138CCC,
-            (GSEffectStopFunc)fn_80138BBC,
+            (GSEffectStopFunc)_leaffxDestroy,
+            (GSEffectStartFunc)leaffxStartEffect,
+            (GSEffectStopFunc)_leaffxStop,
             0,
-            (GSEffectUpdateFunc)fn_80138DE4,
+            (GSEffectUpdateFunc)_leaffxUpdate,
             0);
-        fn_8013139C(effectId, 0);
+        GSeffectSetup(effectId, 0);
     }
     return effectId;
 }
@@ -871,7 +871,7 @@ asm void fn_80138B74(void* ptr) {
 #include "src/game/effect/effect_visual_fn_80138B74.inc"
 }
 #else
-u32 fn_80138B74(void* ptr) {
+u32 _leaffxDestroy(void* ptr) {
     if (ptr) {
         fn_800F9210(*(u16*)((u8*)ptr + 0x40), *(u16*)((u8*)ptr + 0x44));
         fn_800F9210(*(u16*)((u8*)ptr + 0x40), *(u16*)((u8*)ptr + 0x42));
@@ -896,7 +896,7 @@ asm u32 fn_80138BBC(void* ptr) {
 #include "src/game/effect/effect_visual_fn_80138BBC.inc"
 }
 #else
-u32 fn_80138BBC(void* ptr) {
+u32 _leaffxStop(void* ptr) {
     u32 j;
     u32 k;
     void* obj;
@@ -955,7 +955,7 @@ asm u32 fn_80138CCC(void* ptr) {
 #include "src/game/effect/effect_visual_fn_80138CCC.inc"
 }
 #else
-u32 fn_80138CCC(void* ptr) {
+u32 leaffxStartEffect(void* ptr) {
     u8* entry;
     u8* p;
     u16 handle;
@@ -1022,7 +1022,7 @@ asm void fn_80138DE4(void) {
 #include "src/game/effect/effect_visual_fn_80138DE4.inc"
 }
 #else
-u32 fn_80138DE4(void* ptr, u32 delta) {
+u32 _leaffxUpdate(void* ptr, u32 delta) {
     u8* p;
     u32 j;
     u32 i;
@@ -1082,7 +1082,7 @@ u32 fn_80138DE4(void* ptr, u32 delta) {
                 if (*(void**)(entry + 0x58) != NULL) {
                     *(f32*)(entry + 0x54) += deltaScale;
                     if (*(f32*)(entry + 0x54) >= 1.0f) {
-                        fn_80139074(p, entry);
+                        _leaffxMoveLeaf(p, entry);
                     }
 
                     GSbezierCalculateVector(position, entry, *(f32*)(entry + 0x54));
@@ -1128,7 +1128,7 @@ asm void fn_80139074(void) {
 #include "src/game/effect/effect_visual_fn_80139074.inc"
 }
 #else
-void fn_80139074(void* entry, u8* leaf) {
+void _leaffxMoveLeaf(void* entry, u8* leaf) {
     u8* config = entry;
     f32* vec;
     f32 direction[3];
@@ -1222,7 +1222,7 @@ extern void* GSmodelClone(void* model);
 extern void GSpartGetTransform(void* obj, void* a, void* b, void* c);
 extern u8 lbl_80272CC4[];
 /* RULE-EXCEPTION(user-approved): extern-named stand-in for the 0.0f shared
-   with fn_80138DE4 (0x8047D168, in effect_visual_sdata2_8047D160) — see
+   with _leaffxUpdate (0x8047D168, in effect_visual_sdata2_8047D160) — see
    docs/RULE_EXCEPTIONS.md */
 extern const f32 lbl_8047D168;
 extern u32 lbl_8047D180;
@@ -1397,18 +1397,18 @@ asm void electronStartEffect(void) {
 #include "src/game/effect/effect_visual_electronStartEffect.inc"
 }
 #else
-u32 electronStartEffect(void* callbacks) {
-    u32 effectId = fn_80131428(callbacks, 0x60);
+u32 boltEffectCreate(void* callbacks) {
+    u32 effectId = GSeffectCreate(callbacks, 0x60);
     if (effectId) {
-        fn_80131200(effectId,
+        GSeffectSetCallbacks(effectId,
             0,
-            (GSEffectStopFunc)fn_80139898,
-            (GSEffectStartFunc)fn_80139D10,
-            (GSEffectStopFunc)fn_801398E0,
+            (GSEffectStopFunc)_boltDestroy,
+            (GSEffectStartFunc)boltStartEffect,
+            (GSEffectStopFunc)_boltStop,
             0,
-            (GSEffectUpdateFunc)fn_80139AC4,
-            (GSEffectRenderFunc)fn_80139934);
-        fn_8013139C(effectId, 0);
+            (GSEffectUpdateFunc)_boltUpdate,
+            (GSEffectRenderFunc)_boltRender);
+        GSeffectSetup(effectId, 0);
     }
     return effectId;
 }
@@ -1418,7 +1418,7 @@ asm void fn_80139898(void* ptr) {
 #include "src/game/effect/effect_visual_fn_80139898.inc"
 }
 #else
-u32 fn_80139898(void* ptr) {
+u32 _boltDestroy(void* ptr) {
     if (ptr) {
         GXDrawDone();
         fn_800B856C();
@@ -1434,7 +1434,7 @@ asm void fn_801398E0(void* ptr) {
 #include "src/game/effect/effect_visual_fn_801398E0.inc"
 }
 #else
-u32 fn_801398E0(void* ptr) {
+u32 _boltStop(void* ptr) {
     u32 val;
     if (ptr) {
         val = *(u16*)((u8*)ptr + 0x4);
@@ -1451,7 +1451,7 @@ u32 fn_801398E0(void* ptr) {
 extern u32 fn_800EE7E0(void* obj);
 extern const f32 lbl_8047D190;
 #if 1
-u32 fn_80139934(void* ptr) {
+u32 _boltRender(void* ptr) {
     f32 cameraPos[3];
     f32 pos[3];
     u8* p;
@@ -1499,7 +1499,7 @@ u32 fn_80139934(void* ptr) {
         i = 0;
         while (i < count) {
             if (*(u16*)(entry + 0x12e0) != 0) {
-                fn_80139E80(entry, p, cameraPos, pos);
+                _boltDrawStrip(entry, p, cameraPos, pos);
             }
             i++;
             entry += 0x12e4;
@@ -1509,7 +1509,7 @@ u32 fn_80139934(void* ptr) {
     return 0;
 }
 #else
-u32 fn_80139934(void* ptr) { /* TODO */ }
+u32 _boltRender(void* ptr) { /* TODO */ }
 #endif
 #endif
 
@@ -1518,7 +1518,7 @@ u32 fn_80139934(void* ptr) { /* TODO */ }
 extern u32 lbl_8047D198;
 extern u32 lbl_8047D1A0;
 
-BOOL fn_80139AC4(void* ptr, u32 tick) {
+BOOL _boltUpdate(void* ptr, u32 tick) {
     u8* p;
     u32 frame;
     u16 endFrame;
@@ -1590,7 +1590,7 @@ asm u32 fn_80139D10(void* ptr) {
 #include "src/game/effect/effect_visual_fn_80139D10.inc"
 }
 #else
-u32 fn_80139D10(void* ptr) {
+u32 boltStartEffect(void* ptr) {
     u16 handle;
     u32 size;
     u8* entry;
@@ -1628,7 +1628,7 @@ u32 fn_80139D10(void* ptr) {
         for (i = 0; i < count; i++, entry += 0x12E4) {
             *(u16*)(entry + 0x12E2) = 0;
             set__5GSvecFfff(entry + 0x12C0, 0.0f, *(f32*)(p + 0x38), 0.0f);
-            fn_8013A1D4(entry, p, (struct ElectronPoint*)(entry + 0x12C0), 0, *(f32*)(p + 0x3C));
+            _boltSubdivide(entry, p, (struct ElectronPoint*)(entry + 0x12C0), 0, *(f32*)(p + 0x3C));
             entry[0x12D8] = p[0x5C];
             entry[0x12D9] = p[0x5D];
             entry[0x12DA] = p[0x5E];
@@ -1661,7 +1661,7 @@ asm void fn_80139E80(void* entry, void* parent, void* cameraPos, void* modelPos)
 #include "src/game/effect/effect_visual_fn_80139E80.inc"
 }
 #else
-void fn_80139E80(u8* e, u8* p, void* cameraPos, void* modelPos) {
+void _boltDrawStrip(u8* e, u8* p, void* cameraPos, void* modelPos) {
     extern void fn_800D7E5C(void);
     extern void fn_800D7F14(void*);
     extern void fn_800DFFCC(void*, void*, void*);
@@ -1780,7 +1780,7 @@ typedef struct ElectronPoint {
     f32 endWeight;
 } ElectronPoint;
 
-void fn_8013A1D4(u8* entry, u8* parent, ElectronPoint* origin, u32 depth, f32 weight) {
+void _boltSubdivide(u8* entry, u8* parent, ElectronPoint* origin, u32 depth, f32 weight) {
     ElectronPoint* first;
     u32 i;
     u32 j;
@@ -1846,7 +1846,7 @@ void fn_8013A1D4(u8* entry, u8* parent, ElectronPoint* origin, u32 depth, f32 we
         first->startWeight = weight;
         weight = first->endWeight = weight - branchDecay;
         if (branchChance > fn_800E0BE4()) {
-            fn_8013A1D4(entry, parent, first->prev, depth + 1,
+            _boltSubdivide(entry, parent, first->prev, depth + 1,
                         0.5f * weight);
         }
     }
@@ -1862,18 +1862,18 @@ asm void fn_8013A42C(void) {
 #include "src/game/effect/effect_visual_fn_8013A42C.inc"
 }
 #else
-u32 fn_8013A42C(void* callbacks) {
-    u32 effectId = fn_80131428(callbacks, 0x24);
+u32 electronEffectCreate(void* callbacks) {
+    u32 effectId = GSeffectCreate(callbacks, 0x24);
     if (effectId) {
-        fn_80131200(effectId,
+        GSeffectSetCallbacks(effectId,
             0,
             0,
-            (GSEffectStartFunc)fn_8013A49C,
+            (GSEffectStartFunc)electronStartEffect,
             0,
             0,
-            (GSEffectUpdateFunc)fn_8013AA8C,
-            (GSEffectRenderFunc)fn_8013A520);
-        fn_8013139C(effectId, 0);
+            (GSEffectUpdateFunc)_electronUpdate,
+            (GSEffectRenderFunc)_electronRender);
+        GSeffectSetup(effectId, 0);
     }
     return effectId;
 }
@@ -1885,7 +1885,7 @@ asm u32 fn_8013A49C(void* ptr) {
 #include "src/game/effect/effect_visual_fn_8013A49C.inc"
 }
 #else
-u32 fn_8013A49C(void* ptr) {
+u32 electronStartEffect(void* ptr) {
     void* res;
     if (ptr) {
         res = GSresGetResource(*(u16*)((u8*)ptr + 0xc), *(u16*)((u8*)ptr + 0xe));
@@ -1923,7 +1923,7 @@ asm void fn_8013A520(void) {
 #include "src/game/effect/effect_visual_fn_8013A520.inc"
 }
 #else
-u32 fn_8013A520(void* ptr) {
+u32 _electronRender(void* ptr) {
     extern u32 fn_800EE0E8(void*);
     extern f64 sin(f64);
     extern f64 cos(f64);
@@ -2110,7 +2110,7 @@ asm u32 fn_8013AA8C(void* ptr, u16 delta) {
 #include "src/game/effect/effect_visual_fn_8013AA8C.inc"
 }
 #else
-u32 fn_8013AA8C(void* ptr, u16 delta) {
+u32 _electronUpdate(void* ptr, u16 delta) {
     u16 cur;
     u16 max;
     if (ptr) {
@@ -2129,18 +2129,18 @@ asm void fn_8013AABC(void) {
 #include "src/game/effect/effect_visual_fn_8013AABC.inc"
 }
 #else
-u32 fn_8013AABC(void* callbacks) {
-    u32 effectId = fn_80131428(callbacks, 0x5c);
+u32 filterEffectCreate(void* callbacks) {
+    u32 effectId = GSeffectCreate(callbacks, 0x5c);
     if (effectId) {
-        fn_80131200(effectId,
+        GSeffectSetCallbacks(effectId,
             0,
-            (GSEffectStopFunc)fn_8013B034,
+            (GSEffectStopFunc)_filterDestroy,
             (GSEffectStartFunc)filterStart,
-            (GSEffectStopFunc)fn_8013B0A0,
-            (void*)fn_8013AD68,
-            (GSEffectUpdateFunc)fn_8013AD9C,
+            (GSEffectStopFunc)_filterStop,
+            (void*)_filterNextKey,
+            (GSEffectUpdateFunc)_filterUpdate,
             0);
-        fn_8013139C(effectId, 0);
+        GSeffectSetup(effectId, 0);
     }
     return effectId;
 }
@@ -2150,7 +2150,7 @@ asm u32 fn_8013AB34(void* ptr) {
 #include "src/game/effect/effect_visual_fn_8013AB34.inc"
 }
 #else
-u32 fn_8013AB34(void* ptr) {
+u32 filterIsHolding(void* ptr) {
     void* inner;
     u32 val;
     inner = *(void**)((u8*)ptr + 0x54);
@@ -2174,7 +2174,7 @@ asm u32 fn_8013AB60(void* ptr, u8* src, u8* dst, u32 alpha) {
 #include "src/game/effect/effect_visual_fn_8013AB60.inc"
 }
 #else
-u32 fn_8013AB60(void* ptr, u8* src, u8* dst, u32 alpha) {
+u32 filterAddKey(void* ptr, u8* src, u8* dst, u32 alpha) {
     u8* p;
     u8* node;
     u8* tail;
@@ -2238,7 +2238,7 @@ asm u32 fn_8013AD68(void* ptr) {
 #include "src/game/effect/effect_visual_fn_8013AD68.inc"
 }
 #else
-u32 fn_8013AD68(void* ptr) {
+u32 _filterNextKey(void* ptr) {
     void* ptr2;
     if (ptr) {
         ptr2 = *(void**)((u8*)ptr + 0x54);
@@ -2259,7 +2259,7 @@ extern void fn_80168408(void* filter, u8* color);
 extern u32 lbl_8047D1E8;
 extern const f32 lbl_8047D1F0;
 extern const f32 lbl_8047D1F4;
-u32 fn_8013AD9C(void* ptr, u32 delta) {
+u32 _filterUpdate(void* ptr, u32 delta) {
     u8* p;
     u8* node;
     u8* previous;
@@ -2289,7 +2289,7 @@ u32 fn_8013AD9C(void* ptr, u32 delta) {
         *(void**)(p + 0x54) = node;
         if (node == NULL) {
             if (*(u8*)(p + 0x4C) != 0) {
-                fn_8013B268(p, previous + 4);
+                _filterApplyColor(p, previous + 4);
             } else {
                 filter = *(void**)p;
                 if (filter != NULL) {
@@ -2326,7 +2326,7 @@ u32 fn_8013AD9C(void* ptr, u32 delta) {
     color[3] = start + ratio * (end - start);
 
     if (*(u8*)(p + 0x4C) != 0) {
-        fn_8013B268(p, color);
+        _filterApplyColor(p, color);
     } else {
         filter = *(void**)p;
         if (filter != NULL) {
@@ -2350,7 +2350,7 @@ asm void fn_8013B034(void* ptr) {
 #include "src/game/effect/effect_visual_fn_8013B034.inc"
 }
 #else
-u32 fn_8013B034(void* ptr) {
+u32 _filterDestroy(void* ptr) {
     void* next;
     u32 val;
     u32 ret;
@@ -2378,7 +2378,7 @@ asm void fn_8013B0A0(void) {
 #include "src/game/effect/effect_visual_fn_8013B0A0.inc"
 }
 #else
-u32 fn_8013B0A0(void* ptr) {
+u32 _filterStop(void* ptr) {
     u8 flag2;
     u8 flag1;
     u16 i;
@@ -2508,7 +2508,7 @@ asm void fn_8013B268(void* ptr, u8* color) {
 #include "src/game/effect/effect_visual_fn_8013B268.inc"
 }
 #else
-void fn_8013B268(void* ptr, u8* color) {
+void _filterApplyColor(void* ptr, u8* color) {
     u8* p;
     void** textures;
     u16 count;
@@ -2548,18 +2548,18 @@ asm void fn_8013B490(void) {
 #include "src/game/effect/effect_visual_fn_8013B490.inc"
 }
 #else
-u32 fn_8013B490(void* callbacks) {
-    u32 effectId = fn_80131428(callbacks, 0xd0);
+u32 surfEffectCreate(void* callbacks) {
+    u32 effectId = GSeffectCreate(callbacks, 0xd0);
     if (effectId) {
-        fn_80131200(effectId,
+        GSeffectSetCallbacks(effectId,
             0,
-            (GSEffectStopFunc)fn_8013B504,
+            (GSEffectStopFunc)_surfDestroy,
             (GSEffectStartFunc)surfEffectStart,
-            (GSEffectStopFunc)fn_8013B558,
+            (GSEffectStopFunc)_surfStop,
             0,
-            (GSEffectUpdateFunc)fn_8013B85C,
+            (GSEffectUpdateFunc)_surfUpdate,
             0);
-        fn_8013139C(effectId, 0);
+        GSeffectSetup(effectId, 0);
     }
     return effectId;
 }
@@ -2569,7 +2569,7 @@ asm u32 fn_8013B504(void* ptr) {
 #include "src/game/effect/effect_visual_fn_8013B504.inc"
 }
 #else
-u32 fn_8013B504(void* ptr) {
+u32 _surfDestroy(void* ptr) {
     if (ptr) {
         if (*(s32*)((u8*)ptr + 0x58) != 0) {
             fn_800F9210(*(u32*)((u8*)ptr + 0x50), *(u32*)((u8*)ptr + 0x54));
@@ -2584,7 +2584,7 @@ asm u32 fn_8013B558(void* ptr) {
 #include "src/game/effect/effect_visual_fn_8013B558.inc"
 }
 #else
-u32 fn_8013B558(void* ptr) {
+u32 _surfStop(void* ptr) {
     u16 val;
     if (ptr) {
         if (*(void**)ptr != NULL) {
@@ -2718,9 +2718,9 @@ u16 surfEffectStart(void* ptr) {
         goto fail;
     }
 
-    fn_8013BE04(p, p + 0x24, p + 0x3C, *(f32*)(p + 0x40), *(f32*)(p + 0x44),
+    _surfBuildMesh(p, p + 0x24, p + 0x3C, *(f32*)(p + 0x40), *(f32*)(p + 0x44),
                 *(f32*)(p + 0x48));
-    if (!(u8)fn_8013C074(model, p)) {
+    if (!(u8)_surfSetupMaterial(model, p)) {
         goto cleanup;
     }
     if (!surfAllocColumn(p)) {
@@ -2760,7 +2760,7 @@ asm u32 fn_8013B85C(void* ptr, u32 delta) {
 #include "src/game/effect/effect_visual_fn_8013B85C.inc"
 }
 #else
-u32 fn_8013B85C(void* ptr, u32 delta) {
+u32 _surfUpdate(void* ptr, u32 delta) {
     u8* p;
     s32 half;
     s32 column;
@@ -2777,7 +2777,7 @@ u32 fn_8013B85C(void* ptr, u32 delta) {
         p = ptr;
         t = (f32)*(u16*)(p + 0xCC) / (f32)*(u16*)(p + 0xCE);
         GSmodelSetVisibility(*(void**)p, 1);
-        fn_8013BC10(p, t);
+        _surfCalcWaveProfile(p, t);
 
         count = *(u16*)(p + 0x1E);
         if (count % 2 != 0) {
@@ -2802,7 +2802,7 @@ u32 fn_8013B85C(void* ptr, u32 delta) {
             }
         }
 
-        fn_8013BA98(p);
+        _surfCalcNormals(p);
         *(u16*)(p + 0xCC) = *(u16*)(p + 0xCC) + delta;
         return (*(u16*)(p + 0xCC) < *(u16*)(p + 0xCE));
     }
@@ -2821,7 +2821,7 @@ static inline void surfCopyColumn(u8* column, s32 depth, s32 width) {
     }
 }
 
-void fn_8013BA98(void* ptr) {
+void _surfCalcNormals(void* ptr) {
     s32 width;
     s32 depth;
     u8* p;
@@ -2872,7 +2872,7 @@ extern const f32 lbl_8047D210;
 extern const f32 lbl_8047D214;
 extern const f32 lbl_8047D218;
 extern const f32 lbl_8047D21C;
-void fn_8013BC10(void* ptr, f32 t) {
+void _surfCalcWaveProfile(void* ptr, f32 t) {
     u8* p;
     f32 upperLeft[3];
     f32 upperRight[3];
@@ -2940,7 +2940,7 @@ asm void fn_8013BE04(void* ptr, void* mtx, u8* color, f32 x, f32 z, f32 scale) {
 #include "src/game/effect/effect_visual_fn_8013BE04.inc"
 }
 #else
-void fn_8013BE04(void* ptr, void* mtx, u8* color, f32 x, f32 z, f32 scale) {
+void _surfBuildMesh(void* ptr, void* mtx, u8* color, f32 x, f32 z, f32 scale) {
     u8* p = ptr;
     u16 row;
     u16 rows = *(u16*)(p + 0x1C);
@@ -3036,14 +3036,14 @@ typedef struct SurfRenderState {
 } SurfRenderState;
 
 /* RULE-EXCEPTION(user-approved): single-use inline helper (an HSD_DObjGetMObj-style
-   accessor, as in fn_8013D0A8) chosen for register allocation — see
+   accessor, as in _seaSetupMaterial) chosen for register allocation — see
    docs/RULE_EXCEPTIONS.md */
 static inline void* surfDObjGetMObj(SurfRenderDObj* dobj) {
     return dobj ? dobj->mobj : NULL;
 }
 
 /* RULE-EXCEPTION(user-approved): single-use inline helper (the strip loop, as
-   blurBuildStrips in fn_8013D0A8) chosen for register allocation — see
+   blurBuildStrips in _seaSetupMaterial) chosen for register allocation — see
    docs/RULE_EXCEPTIONS.md */
 static inline void surfBuildStrips(SurfRenderState* state) {
     s32 top;
@@ -3082,7 +3082,7 @@ static inline void surfBuildStrips(SurfRenderState* state) {
     }
 }
 
-u32 fn_8013C074(void* ptr, void* arg) {
+u32 _surfSetupMaterial(void* ptr, void* arg) {
     SurfRenderState* state = arg;
     SurfRenderDObj* dobj = fn_8019FF48(*(void**)((u8*)ptr + 0x8));
     SurfRenderPObj* pobj;
@@ -3206,18 +3206,18 @@ asm void fn_8013C5A0(void) {
 #include "src/game/effect/effect_visual_fn_8013C5A0.inc"
 }
 #else
-u32 fn_8013C5A0(void* callbacks) {
-    u32 effectId = fn_80131428(callbacks, 0xac);
+u32 seaEffectCreate(void* callbacks) {
+    u32 effectId = GSeffectCreate(callbacks, 0xac);
     if (effectId) {
-        fn_80131200(effectId,
+        GSeffectSetCallbacks(effectId,
             0,
-            (GSEffectStopFunc)fn_8013C614,
+            (GSEffectStopFunc)_seaDestroy,
             (GSEffectStartFunc)seaEffectStart,
-            (GSEffectStopFunc)fn_8013C670,
+            (GSEffectStopFunc)_seaStop,
             0,
-            (GSEffectUpdateFunc)fn_8013CA48,
+            (GSEffectUpdateFunc)_seaUpdate,
             0);
-        fn_8013139C(effectId, 0);
+        GSeffectSetup(effectId, 0);
     }
     return effectId;
 }
@@ -3227,7 +3227,7 @@ asm u32 fn_8013C614(void* ptr) {
 #include "src/game/effect/effect_visual_fn_8013C614.inc"
 }
 #else
-u32 fn_8013C614(void* ptr) {
+u32 _seaDestroy(void* ptr) {
     if (ptr) {
         GXDrawDone();
         fn_800B856C();
@@ -3248,7 +3248,7 @@ asm void fn_8013C670(void) {
 #include "src/game/effect/effect_visual_fn_8013C670.inc"
 }
 #else
-u32 fn_8013C670(void* arg) {
+u32 _seaStop(void* arg) {
     void* ptr;
     void* inner;
 
@@ -3261,7 +3261,7 @@ u32 fn_8013C670(void* arg) {
         }
         GXDrawDone();
         fn_800B856C();
-        fn_8013CE58(inner, ptr);
+        _seaResetMaterial(inner, ptr);
 
         {
             u16 val;
@@ -3413,9 +3413,9 @@ u16 seaEffectStart(void* ptr) {
         goto fail;
     }
 
-    fn_8013CBF0(p, p + 0x48, p + 0x60, *(f32*)(p + 0x64), *(f32*)(p + 0x68),
+    _seaBuildMesh(p, p + 0x48, p + 0x60, *(f32*)(p + 0x64), *(f32*)(p + 0x68),
                 *(f32*)(p + 0x6C));
-    if (!(u8)fn_8013D0A8(model, p)) {
+    if (!(u8)_seaSetupMaterial(model, p)) {
         goto cleanup;
     }
     if (!seaAllocRandomTable(p)) {
@@ -3458,7 +3458,7 @@ fail:
 /*
  * RULE-EXCEPTION(user-approved): seaEffectStart's .sdata2 pool
  * (0x8047D230-0x8047D240) as named constants defined after the function, so
- * the linked fn_8013CA48 unit still resolves the shared 0.0f by name — see
+ * the linked _seaUpdate unit still resolves the shared 0.0f by name — see
  * docs/RULE_EXCEPTIONS.md
  */
 __declspec(section ".sdata2") const f32 lbl_8047D230 = 6.2831855f;
@@ -3493,7 +3493,7 @@ asm u32 fn_8013CA48(void* ptr, u32 delta) {
 #include "src/game/effect/effect_visual_fn_8013CA48.inc"
 }
 #else
-u32 fn_8013CA48(void* ptr, u32 delta) {
+u32 _seaUpdate(void* ptr, u32 delta) {
     u8* p;
     f32 angleStep;
     f32 rowAngleStep;
@@ -3554,7 +3554,7 @@ asm void fn_8013CBF0(void* ptr, void* mtx, u8* color, f32 x, f32 z, f32 scale) {
 #include "src/game/effect/effect_visual_fn_8013CBF0.inc"
 }
 #else
-void fn_8013CBF0(void* ptr, void* mtx, u8* color, f32 x, f32 z, f32 scale) {
+void _seaBuildMesh(void* ptr, void* mtx, u8* color, f32 x, f32 z, f32 scale) {
     u8* p = ptr;
     u32 rows = *(u16*)(p + 0x18);
     u32 columns = *(u16*)(p + 0x1A);
@@ -3611,7 +3611,7 @@ asm u32 fn_8013CE58(void* inner, void* ptr) {
 #include "src/game/effect/effect_visual_fn_8013CE58.inc"
 }
 #else
-u32 fn_8013CE58(void* inner, void* ptr) {
+u32 _seaResetMaterial(void* inner, void* ptr) {
     u8* p = ptr;
     u8* displayObject;
     u8* material;
@@ -3818,7 +3818,7 @@ static inline void blurBuildStrips(BlurRenderState* state) {
     }
 }
 
-u32 fn_8013D0A8(void* ptr, void* arg) {
+u32 _seaSetupMaterial(void* ptr, void* arg) {
     BlurRenderState* state = arg;
     BlurRenderDObj* dobj = fn_8019FF48(*(void**)((u8*)ptr + 0x8));
     BlurRenderPObj* pobj;
@@ -3949,7 +3949,7 @@ asm void fn_8013D604(void* ptr, u32 val, f32 f1, f32 f2) {
 #include "src/game/effect/effect_visual_fn_8013D604.inc"
 }
 #else
-u32 fn_8013D604(void* ptr, u32 val, f32 f1, f32 f2) {
+u32 envMapAddKey(void* ptr, u32 val, f32 f1, f32 f2) {
     u16 handle;
     void* node;
     void* cur;
@@ -3979,18 +3979,18 @@ asm void fn_8013D6B8(void) {
 #include "src/game/effect/effect_visual_fn_8013D6B8.inc"
 }
 #else
-u32 fn_8013D6B8(void* callbacks) {
-    u32 effectId = fn_80131428(callbacks, 0x18);
+u32 envMapEffectCreate(void* callbacks) {
+    u32 effectId = GSeffectCreate(callbacks, 0x18);
     if (effectId) {
-        fn_80131200(effectId,
+        GSeffectSetCallbacks(effectId,
             (GSEffectStartFunc)envMapEffectInit,
-            (GSEffectStopFunc)fn_8013D730,
+            (GSEffectStopFunc)_envMapDestroy,
             (GSEffectStartFunc)envMapEffectStart,
-            (GSEffectStopFunc)fn_8013D7CC,
+            (GSEffectStopFunc)_envMapStop,
             0,
-            (GSEffectUpdateFunc)fn_8013D984,
+            (GSEffectUpdateFunc)_envMapUpdate,
             0);
-        fn_8013139C(effectId, 0);
+        GSeffectSetup(effectId, 0);
     }
     return effectId;
 }
@@ -4002,7 +4002,7 @@ asm void fn_8013D730(void* ptr) {
 #include "src/game/effect/effect_visual_fn_8013D730.inc"
 }
 #else
-u32 fn_8013D730(void* ptr) {
+u32 _envMapDestroy(void* ptr) {
     void* next;
     u32 val;
     u32 ret;
@@ -4035,7 +4035,7 @@ asm u32 fn_8013D7CC(void* ptr) {
 #include "src/game/effect/effect_visual_fn_8013D7CC.inc"
 }
 #else
-u32 fn_8013D7CC(void* ptr) {
+u32 _envMapStop(void* ptr) {
     void* inner;
     if (ptr != NULL) {
         inner = *(void**)ptr;
@@ -4134,7 +4134,7 @@ asm u32 fn_8013D984(void* ptr, u32 delta) {
 #include "src/game/effect/effect_visual_fn_8013D984.inc"
 }
 #else
-u32 fn_8013D984(void* ptr, u32 delta) {
+u32 _envMapUpdate(void* ptr, u32 delta) {
     u8* p;
     u8* node;
     void* model;
@@ -4208,7 +4208,7 @@ asm void fn_8013DB64(void* ptr, u32 val, f32 f1, f32 f2) {
 #include "src/game/effect/effect_visual_fn_8013DB64.inc"
 }
 #else
-u32 fn_8013DB64(void* ptr, u32 val, f32 f1, f32 f2) {
+u32 blurAddKey(void* ptr, u32 val, f32 f1, f32 f2) {
     u16 handle;
     void* node;
     void* cur;
@@ -4238,18 +4238,18 @@ asm void fn_8013DC18(void) {
 #include "src/game/effect/effect_visual_fn_8013DC18.inc"
 }
 #else
-u32 fn_8013DC18(void* callbacks) {
-    u32 effectId = fn_80131428(callbacks, 0x20);
+u32 blurEffectCreate(void* callbacks) {
+    u32 effectId = GSeffectCreate(callbacks, 0x20);
     if (effectId) {
-        fn_80131200(effectId,
-            (GSEffectStartFunc)fn_8013DD10,
-            (GSEffectStopFunc)fn_8013DC94,
+        GSeffectSetCallbacks(effectId,
+            (GSEffectStartFunc)_blurInit,
+            (GSEffectStopFunc)_blurDestroy,
             (GSEffectStartFunc)blurEffectStart,
-            (GSEffectStopFunc)fn_8013DD7C,
+            (GSEffectStopFunc)_blurStop,
             0,
-            (GSEffectUpdateFunc)fn_8013E470,
-            (GSEffectRenderFunc)fn_8013DE6C);
-        fn_8013139C(effectId, 0);
+            (GSEffectUpdateFunc)_blurUpdate,
+            (GSEffectRenderFunc)_blurRender);
+        GSeffectSetup(effectId, 0);
     }
     return effectId;
 }
@@ -4259,7 +4259,7 @@ asm u32 fn_8013DC94(void* ptr) {
 #include "src/game/effect/effect_visual_fn_8013DC94.inc"
 }
 #else
-u32 fn_8013DC94(void* ptr) {
+u32 _blurDestroy(void* ptr) {
     void* node;
     u16 val;
     if (ptr) {
@@ -4284,7 +4284,7 @@ asm u32 fn_8013DD10(void* ptr) {
 #include "src/game/effect/effect_visual_fn_8013DD10.inc"
 }
 #else
-u32 fn_8013DD10(void* ptr) {
+u32 _blurInit(void* ptr) {
     if (ptr) {
         if (*(s32*)((u8*)ptr + 0x10) != 0) {
             *(void**)((u8*)ptr + 0xc) = GStextureCreate(0, 0, 0x44, 0, 0);
@@ -4303,7 +4303,7 @@ asm u32 fn_8013DD7C(void* ptr) {
 #include "src/game/effect/effect_visual_fn_8013DD7C.inc"
 }
 #else
-u32 fn_8013DD7C(void* ptr) {
+u32 _blurStop(void* ptr) {
     void* inner;
     if (ptr) {
         if (*(s32*)((u8*)ptr + 0x10) != 0) {
@@ -4332,7 +4332,7 @@ u32 blurEffectStart(void* ptr) {
         *(u32*)((u8*)ptr + 0x1c) = 0;
         if (*(s32*)((u8*)ptr + 0x10) != 0) {
             if (*(void**)((u8*)ptr + 0xc) != NULL) {
-                GSgfxBeginBackFBCapture(*(void**)((u8*)ptr + 0xc), (void*)fn_8013E258, ptr);
+                GSgfxBeginBackFBCapture(*(void**)((u8*)ptr + 0xc), (void*)_blurDrawCapture, ptr);
                 return 1;
             }
         } else {
@@ -4378,7 +4378,7 @@ asm void fn_8013DE6C(void) {
 #include "src/game/effect/effect_visual_fn_8013DE6C.inc"
 }
 #else
-u32 fn_8013DE6C(void* ptr) {
+u32 _blurRender(void* ptr) {
     extern void fn_800D4604(s32);
     u8* timing;
     f32 halfRate;
@@ -4508,7 +4508,7 @@ asm u32 fn_8013E258(void* model, void* unused, void* state) {
 #include "src/game/effect/effect_visual_fn_8013E258.inc"
 }
 #else
-u32 fn_8013E258(void* model, void* unused, void* state) {
+u32 _blurDrawCapture(void* model, void* unused, void* state) {
     struct EffectVisualState {
         f32 start;
         f32 end;
@@ -4572,7 +4572,7 @@ asm void fn_8013E470(void) {
 #include "src/game/effect/effect_visual_fn_8013E470.inc"
 }
 #else
-u32 fn_8013E470(void* ptr, u32 delta) {
+u32 _blurUpdate(void* ptr, u32 delta) {
     void* node;
     if (ptr == NULL) {
         goto ret0;
@@ -4600,18 +4600,18 @@ asm void fn_8013E4D4(void) {
 #include "src/game/effect/effect_visual_fn_8013E4D4.inc"
 }
 #else
-u32 fn_8013E4D4(void* callbacks) {
-    u32 effectId = fn_80131428(callbacks, 0x34);
+u32 auraEffectCreate(void* callbacks) {
+    u32 effectId = GSeffectCreate(callbacks, 0x34);
     if (effectId) {
-        fn_80131200(effectId,
-            (GSEffectStartFunc)fn_8013E5AC,
-            (GSEffectStopFunc)fn_8013E54C,
+        GSeffectSetCallbacks(effectId,
+            (GSEffectStartFunc)_auraInit,
+            (GSEffectStopFunc)_auraDestroy,
             (GSEffectStartFunc)auraEffectStart,
             0,
             0,
-            (GSEffectUpdateFunc)fn_8013E8A4,
-            (GSEffectRenderFunc)fn_8013E6C4);
-        fn_8013139C(effectId, 0);
+            (GSEffectUpdateFunc)_auraUpdate,
+            (GSEffectRenderFunc)_auraRender);
+        GSeffectSetup(effectId, 0);
     }
     return effectId;
 }
@@ -4624,7 +4624,7 @@ asm void fn_8013E54C(void) {
 #include "src/game/effect/effect_visual_fn_8013E54C.inc"
 }
 #else
-u32 fn_8013E54C(void* arg) {
+u32 _auraDestroy(void* arg) {
     void* ptr;
     if (arg != 0) {
         ptr = arg;
@@ -4647,7 +4647,7 @@ asm void fn_8013E5AC(void) {
 #include "src/game/effect/effect_visual_fn_8013E5AC.inc"
 }
 #else
-u32 fn_8013E5AC(u8* p) {
+u32 _auraInit(u8* p) {
     extern u8 lbl_80466BC0[];
     extern void* GStextureCreate(u32 a, u32 b, u32 size, u32 d, u32 e);
     extern void* GStextureLockImage(void* buf, u32 b);
@@ -4693,7 +4693,7 @@ extern const f32 lbl_8047D2B0;
 extern const f32 lbl_8047D2B4;
 extern const f32 lbl_8047D2A8;
 #if 1
-u32 fn_8013E6C4(u8* ptr)
+u32 _auraRender(u8* ptr)
 {
     void* model;
 
@@ -4702,7 +4702,7 @@ u32 fn_8013E6C4(u8* ptr)
         if (model == NULL) {
             return 0;
         }
-        fn_8013EA44(ptr);
+        _auraDrawModel(ptr);
         gfxSetOrtho(*(f32*)&lbl_8047D2AC, *(f32*)&lbl_8047D2AC,
                     *(f32*)&lbl_8047D2B0, *(f32*)&lbl_8047D2B4);
         if (ptr[0x19] & 4) {
@@ -4741,7 +4741,7 @@ u32 fn_8013E6C4(u8* ptr)
     return 0;
 }
 #else
-void fn_8013E6C4(void) { /* TODO */ }
+void _auraRender(void) { /* TODO */ }
 #endif
 #endif
 
@@ -4750,7 +4750,7 @@ void fn_8013E6C4(void) { /* TODO */ }
 extern double fmod(double value, double modulus);
 extern const f32 lbl_8047D2B8;
 /* RULE-EXCEPTION(user-approved): extern-named stand-in for the 1.0f this
-   function shares with the linked fn_8013E6C4 (0x8047D2A8) — see
+   function shares with the linked _auraRender (0x8047D2A8) — see
    docs/RULE_EXCEPTIONS.md */
 extern const f32 lbl_8047D2A8;
 extern const f32 lbl_8047D2BC;
@@ -4764,7 +4764,7 @@ asm u32 fn_8013E8A4(void* ptr, u32 delta) {
 #include "src/game/effect/effect_visual_fn_8013E8A4.inc"
 }
 #else
-u32 fn_8013E8A4(void* ptr, u32 delta) {
+u32 _auraUpdate(void* ptr, u32 delta) {
     u8* p;
     u8 flags;
     f32 period;
@@ -4830,7 +4830,7 @@ extern void GSmodelDrawModel(void* model, u32 flags);
 extern void GSmodelSetPEdescr(void* model, void* peDescr);
 extern u8 lbl_80363CD8[];
 /* RULE-EXCEPTION(user-approved): the jobj.h assert strings as named .sdata2
-   arrays, placed between fn_8013E8A4's pool and fn_8013EA44's conversion
+   arrays, placed between _auraUpdate's pool and _auraDrawModel's conversion
    constant as in retail — see docs/RULE_EXCEPTIONS.md */
 const char lbl_8047D2E0[7] = "jobj.h";
 const char lbl_8047D2E8[5] = "jobj";
@@ -4893,7 +4893,7 @@ typedef struct LayerVec {
         LAYER_JOBJ_FLUSH(jobj);                                                 \
     } while (0)
 
-void fn_8013EA44(void* ptr) {
+void _auraDrawModel(void* ptr) {
     extern void fn_800EC134(void*);
     u8* p;
     void* model;
@@ -5012,18 +5012,18 @@ asm void fn_8013F000(void) {
 #include "src/game/effect/effect_visual_fn_8013F000.inc"
 }
 #else
-u32 fn_8013F000(void* callbacks) {
-    u32 effectId = fn_80131428(callbacks, 0xb4);
+u32 distortionEffectCreate(void* callbacks) {
+    u32 effectId = GSeffectCreate(callbacks, 0xb4);
     if (effectId) {
-        fn_80131200(effectId,
-            (GSEffectStartFunc)fn_8013F114,
-            (GSEffectStopFunc)fn_8013F078,
+        GSeffectSetCallbacks(effectId,
+            (GSEffectStartFunc)_distortionInit,
+            (GSEffectStopFunc)_distortionDestroy,
             (GSEffectStartFunc)distortionEffectStart,
             0,
             0,
-            (GSEffectUpdateFunc)fn_8013F80C,
-            (GSEffectRenderFunc)fn_8013F410);
-        fn_8013139C(effectId, 0);
+            (GSEffectUpdateFunc)_distortionUpdate,
+            (GSEffectRenderFunc)_distortionRender);
+        GSeffectSetup(effectId, 0);
     }
     return effectId;
 }
@@ -5036,7 +5036,7 @@ asm void fn_8013F078(void) {
 #include "src/game/effect/effect_visual_fn_8013F078.inc"
 }
 #else
-u32 fn_8013F078(void* ptr) {
+u32 _distortionDestroy(void* ptr) {
     if (ptr) {
         GXDrawDone();
         fn_800B856C();
@@ -5065,7 +5065,7 @@ extern void fn_800D7868(void* handle, u32 a, u32 b, u32 c, u32 d, u32 e, u32 f, 
 extern u32 lbl_8047AEE8;
 extern u32 lbl_8047AEEC;
 #if 1
-u32 fn_8013F114(void* ptr) {
+u32 _distortionInit(void* ptr) {
     u8* p;
 
     p = ptr;
@@ -5134,7 +5134,7 @@ u32 fn_8013F114(void* ptr) {
     return 0;
 }
 #else
-u32 fn_8013F114(void* ptr) { /* TODO */ }
+u32 _distortionInit(void* ptr) { /* TODO */ }
 #endif
 #endif
 
@@ -5225,7 +5225,7 @@ extern const f32 lbl_8047D304;
 extern const f32 lbl_8047D300;
 extern const f32 lbl_8047D308;
 #if 1
-u32 fn_8013F410(void* ptr) {
+u32 _distortionRender(void* ptr) {
     f32 mtx[12];
     u8* p;
     s32 count;
@@ -5319,11 +5319,11 @@ u32 fn_8013F410(void* ptr) {
     return 0;
 }
 #else
-u32 fn_8013F410(void* ptr) { /* TODO */ }
+u32 _distortionRender(void* ptr) { /* TODO */ }
 #endif
 #endif
 
-/* fn_8013F80C's own object does not see distortionEffectStart's block. */
+/* _distortionUpdate's own object does not see distortionEffectStart's block. */
 #if defined(EFFECT_VISUAL_EXACT_8013F80C) && \
     !defined(EFFECT_VISUAL_EXACT_8013F344_8013F410)
 typedef struct DistortionState {
@@ -5358,7 +5358,7 @@ asm u32 fn_8013F80C(void* ptr, u32 delta) {
 #include "src/game/effect/effect_visual_fn_8013F80C.inc"
 }
 #else
-u32 fn_8013F80C(void* ptr, u32 delta) {
+u32 _distortionUpdate(void* ptr, u32 delta) {
     DistortionState* s = ptr;
     void* part;
     f32 threshold;
@@ -5491,18 +5491,18 @@ asm void patchiruTextureStart(void) {
 #include "src/game/effect/effect_visual_patchiruTextureStart.inc"
 }
 #else
-u32 patchiruTextureStart(void* callbacks) {
-    u32 effectId = fn_80131428(callbacks, 0x24);
+u32 billboardEffectCreate(void* callbacks) {
+    u32 effectId = GSeffectCreate(callbacks, 0x24);
     if (effectId) {
-        fn_80131200(effectId,
-            (GSEffectStartFunc)fn_8013FCC4,
-            (GSEffectStopFunc)fn_8013FC58,
+        GSeffectSetCallbacks(effectId,
+            (GSEffectStartFunc)_billboardInit,
+            (GSEffectStopFunc)_billboardDestroy,
             (GSEffectStartFunc)billboardEffectStart,
-            (GSEffectStopFunc)fn_8013FD68,
+            (GSEffectStopFunc)_billboardStop,
             0,
-            (GSEffectUpdateFunc)fn_8013FF0C,
+            (GSEffectUpdateFunc)_billboardUpdate,
             0);
-        fn_8013139C(effectId, 0);
+        GSeffectSetup(effectId, 0);
     }
     return effectId;
 }
@@ -5512,7 +5512,7 @@ asm void fn_8013FC58(void) {
 #include "src/game/effect/effect_visual_fn_8013FC58.inc"
 }
 #else
-u32 fn_8013FC58(void* ptr) {
+u32 _billboardDestroy(void* ptr) {
     if (ptr) {
         if (*(u32*)((u8*)ptr + 0x10) != 0) {
             fn_800F9210(*(u32*)ptr, *(u32*)((u8*)ptr + 0x8));
@@ -5531,7 +5531,7 @@ asm void fn_8013FCC4(void) {
 #include "src/game/effect/effect_visual_fn_8013FCC4.inc"
 }
 #else
-u32 fn_8013FCC4(void* ptr) {
+u32 _billboardInit(void* ptr) {
     void* res;
     if (ptr) {
         if (*(u32*)((u8*)ptr + 0x4) != 0 && *(u32*)((u8*)ptr + 0x8) != 0) {
@@ -5561,7 +5561,7 @@ asm u32 fn_8013FD68(void* ptr) {
 #include "src/game/effect/effect_visual_fn_8013FD68.inc"
 }
 #else
-u32 fn_8013FD68(void* ptr) {
+u32 _billboardStop(void* ptr) {
     void* inner;
     if (ptr) {
         inner = *(void**)((u8*)ptr + 0x14);
@@ -5660,7 +5660,7 @@ typedef struct BillboardVec {
     f32 z;
 } BillboardVec;
 
-u32 fn_8013FF0C(void* ptr) {
+u32 _billboardUpdate(void* ptr) {
     u8* p;
     void* camera;
     void* model;
@@ -5728,7 +5728,7 @@ asm void Unload__13ModelSequenceFPUc(void) {
 #include "src/game/effect/effect_visual_fn_80140138.inc"
 }
 #else
-void Unload__13ModelSequenceFPUc(u8* ptr) {
+void pachiruEffectRelease(u8* ptr) {
     extern void fn_800DF608(void* handle);
     if (*(u32*)(ptr) != 0) {
         fn_800DF608(*(void**)(ptr));
@@ -5747,7 +5747,7 @@ asm void fn_80140190(void) {
 #include "src/game/effect/effect_visual_fn_80140190.inc"
 }
 #else
-u32 fn_80140190(void** out, void* model, u32 arg) {
+u32 pachiruEffectSetupModel(void** out, void* model, u32 arg) {
     u32 ret;
     void* handle;
     void* tex1;

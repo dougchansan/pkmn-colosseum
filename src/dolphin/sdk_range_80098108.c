@@ -892,7 +892,7 @@ static inline int EXIGetID_Detach(s32 chan) {
     }
 
     exi->state &= ~8;
-    __OSMaskInterrupts(0x500000U >> (chan * 3));
+    __OSMaskInterrupts(0x700000U >> (chan * 3));
 
     OSRestoreInterrupts(enabled);
     return 1;

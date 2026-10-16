@@ -73,7 +73,7 @@ typedef void (*GSEffectRenderFunc)(void* userData);
 /* -----------------------------------------------------------------------
  * GSEffectInstance -- 0x34 bytes per effect slot.
  *
- * Deduced from fn_80131200 (GSEffectRegister) which writes fields at
+ * Deduced from GSeffectSetCallbacks (GSEffectRegister) which writes fields at
  * offsets 0x08..0x20, and GSeffect (GSEffectTrigger) which reads
  * the state at 0x04 and calls through 0x10 / 0x14.
  *
@@ -100,8 +100,8 @@ typedef struct GSEffectInstance {
 /* -----------------------------------------------------------------------
  * GSEffectGlobals -- master state at lbl_803635C0 (0x18 bytes in .data).
  *
- * Deduced from fn_80130CE0 (GSEffectInit) which populates this structure,
- * and fn_80131428 (GSEffectAllocSlot) which manipulates the free/active
+ * Deduced from GSeffectInit (GSEffectInit) which populates this structure,
+ * and GSeffectCreate (GSEffectAllocSlot) which manipulates the free/active
  * linked lists.
  * ----------------------------------------------------------------------- */
 typedef struct GSEffectGlobals {
@@ -152,9 +152,9 @@ typedef struct TraceFXWork {
  * Public API -- Core effect manager (gs_effect.c)
  *
  * The manager's ten functions are all matched at 100% under their real
- * fn_ names (fn_80130CE0, fn_80130F04, fn_80130F68, fn_80131010,
- * fn_801310A8, GSeffect, fn_80131200, fn_80131268, fn_8013139C,
- * fn_80131428 -- see gs_effect.c). Nothing outside gs_effect.c calls them
+ * fn_ names (GSeffectInit, _GSeffectDrawAll, _GSeffectUpdateAll, GSeffectStop,
+ * GSeffectIsRunning, GSeffect, GSeffectSetCallbacks, GSeffectFree, GSeffectSetup,
+ * GSeffectCreate -- see gs_effect.c). Nothing outside gs_effect.c calls them
  * yet, so no prototypes are declared here; effect_visual.c and tracefx.c
  * extern-declare the fn_ names directly where they need them. A prior
  * campaign transplant's invented "GSEffectXxx" wrapper API had no real

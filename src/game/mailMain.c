@@ -193,7 +193,7 @@ void fn_801D2404(void) {
     extern void gfxEnd(void);
     extern s32 gamedatasaveGetStatus(s32, s32);
     extern void fn_800F78A4(s32, s32, s32, s32, s32);
-    extern s32 msgGetCharsPerFrame(void);
+    extern s32 GSgetFrameStep(void);
     extern s32 soundGetStatus(u32);
     extern void fn_800F9210(s32, s32);
     extern void soundKill(u32);
@@ -243,7 +243,7 @@ void fn_801D2404(void) {
         }
     }
 
-    lbl_80467390[1] += msgGetCharsPerFrame();
+    lbl_80467390[1] += GSgetFrameStep();
     sound = lbl_80467390[2];
     if (sound != 0 && soundGetStatus(sound) != 2) {
         fn_800F9210(0, 0x408);

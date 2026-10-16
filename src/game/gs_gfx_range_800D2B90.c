@@ -230,7 +230,7 @@ void fn_800D3074(u32 flag)
     lbl_8047AA80->renderEnabled = flag;
 }
 
-u32 msgGetCharsPerFrame(void)
+u32 GSgetFrameStep(void)
 {
     return lbl_8047AA80->frameDelta;
 }

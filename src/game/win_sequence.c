@@ -1,7 +1,7 @@
 #include "dolphin/types.h"
 
 extern void* menuItemBiosGetPtr(s16 idx);
-extern u32 msgGetCharsPerFrame(void);
+extern u32 GSgetFrameStep(void);
 extern void _winSeqMoveSub(void* targetPtr, void* statePtr);
 extern void* windowSearchID(s32 id);
 extern u8 lbl_80404B68[];
@@ -36,7 +36,7 @@ void fn_80106F98(s32 windowId)
         *(s16*)(scratch + 0x08) = *(s16*)(item + 0x02);
         item = menuItemBiosGetPtr(*(s16*)(node + 0x06));
         *(s16*)(scratch + 0x0A) = *(s16*)(item + 0x04);
-        for (i = 0; i < msgGetCharsPerFrame(); i++) {
+        for (i = 0; i < GSgetFrameStep(); i++) {
             _winSeqMoveSub(scratch, node + 0x0C);
         }
         *(s16*)(node + 0x50) = *(s16*)(scratch + 0x00);

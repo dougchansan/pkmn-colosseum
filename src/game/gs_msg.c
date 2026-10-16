@@ -90,7 +90,7 @@ extern void fn_800DC1D4(s32 a);
 extern void logVsnprintf_float(char* output, u32 capacity, const char* format, void* arguments);
 extern void soundStopSE(u32 type);
 extern void fn_800CDBE0(void);
-extern u32 msgGetCharsPerFrame(void);
+extern u32 GSgetFrameStep(void);
 extern void fn_800DBF78(void);
 extern void fn_800DBFD4(void);
 extern void fn_800DC04C(void);
@@ -1717,7 +1717,7 @@ s32 msgTaskDraw(u8* arg0, u32 arg1, u32 arg2, u32 arg3)
     continueFlag = 0;
 
     if ((u8)arg3 == 0) {
-        for (loopCount = 0; (u32)loopCount < msgGetCharsPerFrame(); loopCount++) {
+        for (loopCount = 0; (u32)loopCount < GSgetFrameStep(); loopCount++) {
             for (;;) {
                 code = GSmsgReadCode(arg0);
                 if (code == 0) {
@@ -1827,7 +1827,7 @@ s32 msgTaskDraw(u8* arg0, u32 arg1, u32 arg2, u32 arg3)
         drawY = (s32)(8.0f + *(f32*)(arg0 + 0x10));
         amp = (f32)cos(angle);
         drawY += (s32)(4.0f * amp);
-        lbl_8047AC68 += msgGetCharsPerFrame();
+        lbl_8047AC68 += GSgetFrameStep();
         lbl_8047AC68 %= 0x32;
         gfxClearFlags(0x80000000);
         gfxSetVtxDesc(lbl_80314E08);

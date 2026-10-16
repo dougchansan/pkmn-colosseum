@@ -350,13 +350,13 @@ void fightTimerAllTerminate(void)
 /* Address: 0x80265DB0 | Size: 0x84 | Ghidra import (PSQ removed) */
 void fightTimerThreadFunc(ColosseumBattleTimerState *r3)
 {
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     extern void _threadSwitch(void);
 
   r3->elapsed = 0.0f;
   while (r3->elapsed < 60.0f * r3->limit) {
     _threadSwitch();
-    r3->elapsed = (f32)msgGetCharsPerFrame() + r3->elapsed;
+    r3->elapsed = (f32)GSgetFrameStep() + r3->elapsed;
   }
   r3->done = 1;
   do {

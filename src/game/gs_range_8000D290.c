@@ -189,7 +189,7 @@ s32 fn_8000D710(u8 mode)
     extern void fn_800D3074(s32);
     extern u32 std082_flagGetValue(u32 flag);
     extern void* floorGetCurrentContext(void);
-    extern u32 fn_80130CD8(void);
+    extern u32 GSeffectGetUpdateGapp(void);
     extern void GSgappBlock(u32 task);
     extern void GSgappUnblock(u32 task);
     extern void GSthreadBlockGroup(void* stack);
@@ -252,13 +252,13 @@ s32 fn_8000D710(u8 mode)
                 fn_800D3074(1);
                 lbl_8047A2A4 = menuId;
                 lbl_8047A2A8 = floorGetCurrentContext();
-                GSgappBlock(fn_80130CD8());
+                GSgappBlock(GSeffectGetUpdateGapp());
                 GSthreadBlockGroup(lbl_8047A2A8);
                 lbl_8047A2AC = (u8*)lbl_8047A2A8 - 0x20;
                 GSthreadCreate(0xF, lbl_8047A2AC, 0x4000, 1, 1,
                                fn_8000DAB0);
                 _threadSwitch();
-                GSgappUnblock(fn_80130CD8());
+                GSgappUnblock(GSeffectGetUpdateGapp());
 
                 if (lbl_8047A2B0 == 0) {
                     menuClose(menuId);
@@ -292,13 +292,13 @@ s32 fn_8000D710(u8 mode)
                 fn_800D3074(1);
                 lbl_8047A2A4 = menuId;
                 lbl_8047A2A8 = floorGetCurrentContext();
-                GSgappBlock(fn_80130CD8());
+                GSgappBlock(GSeffectGetUpdateGapp());
                 GSthreadBlockGroup(lbl_8047A2A8);
                 lbl_8047A2AC = (u8*)lbl_8047A2A8 - 0x20;
                 GSthreadCreate(0xF, lbl_8047A2AC, 0x4000, 1, 1,
                                fn_8000DAB0);
                 _threadSwitch();
-                GSgappUnblock(fn_80130CD8());
+                GSgappUnblock(GSeffectGetUpdateGapp());
 
                 if (lbl_8047A2B0 == 0) {
                     menuClose(menuId);

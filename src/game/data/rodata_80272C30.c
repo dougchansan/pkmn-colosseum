@@ -1,6 +1,6 @@
 #include "dolphin/types.h"
 
-/* .rodata after fn_801386DC's strings (0x80272B40 - 0x80272C30, owned by
+/* .rodata after lightningStartEffect's strings (0x80272B40 - 0x80272C30, owned by
  * effect_visual_candidate_801386DC.c). */
 
 const u8 lbl_80272C30[96] = {

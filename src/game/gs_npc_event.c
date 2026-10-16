@@ -1074,7 +1074,7 @@ extern u32 pokemonGetStatus(void*, u32, u32, u32);
 extern void fn_80082EA4(u32, s8, u8, u8);
 extern u32 menuIsCheck(u32);
 extern s32 fn_800D37CC(void);
-extern u32 msgGetCharsPerFrame(void);
+extern u32 GSgetFrameStep(void);
 extern u8 lbl_8047A44A;
 extern u32 lbl_8047A430;
 extern u32 lbl_8047A43C;
@@ -1307,7 +1307,7 @@ void fn_800327FC(void)
 
         while (elapsed < 1.0f) {
             _threadSwitch();
-            elapsed += (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+            elapsed += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
         }
     }
 

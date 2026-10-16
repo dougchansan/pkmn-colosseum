@@ -413,7 +413,7 @@ void fn_800ED7E4(GSmodel* model, u8 tex_anim, f32 delta)
 
 #if !defined(GS_MODEL_ANIM_SUFFIX_SPLIT) || \
     defined(GS_MODEL_ANIM_SUFFIX_MIDDLE)
-extern u32 msgGetCharsPerFrame(void);
+extern u32 GSgetFrameStep(void);
 extern f64 fmod(f64 x, f64 y);
 extern u8 lbl_80478AF8;
 
@@ -435,7 +435,7 @@ f32 fn_800ED8C4(s32 type, u8 fractional_frames, f32 frame,
     if (lbl_80478AF8 == 1 && fn_800D37CC() == 60) {
         if (!fractional_frames) {
             if (frame - (f32)(s32)frame > lbl_8047CC78) {
-                advance = rate * (f32)(msgGetCharsPerFrame() - 1);
+                advance = rate * (f32)(GSgetFrameStep() - 1);
 
                 if (advance >= lbl_8047CC60) {
                     advance = lbl_8047CC5C;

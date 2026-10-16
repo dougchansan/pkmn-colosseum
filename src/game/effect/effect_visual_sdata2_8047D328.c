@@ -4,7 +4,7 @@
 #define SDATA2 __declspec(section ".sdata2")
 
 /*
- * effect_visual .sdata2 constants after fn_8013F80C's pool (0x8047D310 -
+ * effect_visual .sdata2 constants after _distortionUpdate's pool (0x8047D310 -
  * 0x8047D328), which links with that function. Source references for this
  * range are in src/game/effect/effect_visual.c; the target slice has no
  * relocations.

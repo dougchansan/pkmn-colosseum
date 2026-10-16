@@ -174,7 +174,7 @@ extern void fn_80083D30();
 extern void fn_80083ECC();
 extern void __cvt_fp2unsigned();
 extern void memmove();
-extern void msgGetCharsPerFrame();
+extern void GSgetFrameStep();
 extern void fn_800D37CC();
 extern void GSmodelSetGSparticleLinkAttachMode();
 extern void GSmodelLinkToGSparticleBank();

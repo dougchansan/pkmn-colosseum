@@ -12,7 +12,7 @@
 #include "dolphin/types.h"
 #include "game/gs_vm.h"
 
-extern u32 msgGetCharsPerFrame(void);
+extern u32 GSgetFrameStep(void);
 extern void _threadSwitch(void);
 
 /* 0x800F13D0 | 0x2F0 */
@@ -31,7 +31,7 @@ s32 cms_op36_yield(GSVMCtx* ctx)
     args = &ctx->stack[ctx->frame];
     wait = args[0].s;
     ctx->status = 2;
-    for (elapsed = 0; elapsed < wait; elapsed += msgGetCharsPerFrame()) {
+    for (elapsed = 0; elapsed < wait; elapsed += GSgetFrameStep()) {
         if (ctx->status == 4) {
             ctx->status = 3;
         }

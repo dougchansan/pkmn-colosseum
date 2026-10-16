@@ -882,11 +882,11 @@ void fn_800388C4(void)
 void fn_80038990(void)
 {
     extern s32 fn_800D37CC(void);
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     extern void _threadSwitch(void);
 
     while (1) {
-        lbl_8047A494 = (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+        lbl_8047A494 = (f32)GSgetFrameStep() / (f32)fn_800D37CC();
         _threadSwitch();
     }
 }
@@ -3862,6 +3862,13 @@ void fn_80044630(void) {
                     *(f32*)(S + 0x74) = lbl_8047BC94;
                     *(f32*)(S + 0x64) = lbl_8047BCF0;
                     switch (sub) {
+                    case 0:
+                        *(s32*)(S + 0x1C) = 0xD;
+                        *(s32*)(S + 0x24) = 2;
+                        *(f32*)(S + 0x60) = lbl_8047BC94;
+                        if (fn_801DAC3C(*(void**)(S + 0xA0)) != 0)
+                            GSmodelDestroyLinkedParticles();
+                        break;
                     case 1:
                         *(s32*)(S + 0x1C) = 0xD;
                         *(s32*)(S + 0x24) = 4;
@@ -3873,13 +3880,6 @@ void fn_80044630(void) {
                     case 2:
                         *(s32*)(S + 0x1C) = 0xD;
                         *(s32*)(S + 0x24) = 5;
-                        *(f32*)(S + 0x60) = lbl_8047BC94;
-                        if (fn_801DAC3C(*(void**)(S + 0xA0)) != 0)
-                            GSmodelDestroyLinkedParticles();
-                        break;
-                    case 0:
-                        *(s32*)(S + 0x1C) = 0xD;
-                        *(s32*)(S + 0x24) = 2;
                         *(f32*)(S + 0x60) = lbl_8047BC94;
                         if (fn_801DAC3C(*(void**)(S + 0xA0)) != 0)
                             GSmodelDestroyLinkedParticles();
@@ -5177,7 +5177,7 @@ void fn_800439BC(void* scene)
     extern s8 fn_800F7A08(s32 chan, s32 index);
     extern s8 fn_800F7A7C(s32 chan, s32 index);
     extern u32 fn_800F7BC4(s32 chan);
-    extern s8 msgGetCharsPerFrame(void);
+    extern s8 GSgetFrameStep(void);
     extern f64 atan2(f64 y, f64 x);
     s8 x;
     s8 y;
@@ -5201,10 +5201,10 @@ void fn_800439BC(void* scene)
             buttons |= 1;
         }
         if (lbl_8047BD04 < pdaFabs(ang) && pdaFabs(ang) < lbl_8047BD08) {
-            if (ang >= lbl_8047BC94) {
-                buttons |= 8;
-            } else {
+            if (ang < lbl_8047BC94) {
                 buttons |= 4;
+            } else {
+                buttons |= 8;
             }
         }
     }
@@ -5253,7 +5253,7 @@ void fn_800439BC(void* scene)
             work[i + 0xa] = 15;
             trig |= mask;
         } else if ((buttons & mask) != 0) {
-            work[i + 0xa] -= msgGetCharsPerFrame();
+            work[i + 0xa] -= GSgetFrameStep();
             if ((s8)work[i + 0xa] <= 0) {
                 work[i + 0xa] = lbl_804788C4;
                 trig |= mask;
@@ -6821,7 +6821,7 @@ static inline void pdaRamp(f32* cur, f32 dst, f32 rate)
 #define G(off) (*(f32*)((u8*)&lbl_803A6818 + (off)))
 s32 fn_80041E48(void* work, s32 mode)
 {
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     extern s32 fn_800D37CC(void);
     u8* S = (u8*)&lbl_803A6818;
     u16 keys;
@@ -6834,7 +6834,7 @@ s32 fn_80041E48(void* work, s32 mode)
     (void)work;
     (void)mode;
     keys = *(u16*)(lbl_803A67FC + 6);
-    dt = (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+    dt = (f32)GSgetFrameStep() / (f32)fn_800D37CC();
     G(0x3c) = dt;
     G(0x40) = G(0x40) + dt;
     if (G(0x40) >= lbl_8047BCBC) {
@@ -7046,7 +7046,7 @@ static inline void pdaCloseLevelWindows(u8* S)
 #pragma peephole off
 s32 fn_80042658(void* work, s32 mode)
 {
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     extern s32 fn_800D37CC(void);
     u8* K = lbl_803A67FC;
     PdaVec3 spin;
@@ -7079,7 +7079,7 @@ s32 fn_80042658(void* work, s32 mode)
     if ((*(u16*)K & 3) != 0) {
         held = 1;
     }
-    dt = (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+    dt = (f32)GSgetFrameStep() / (f32)fn_800D37CC();
     *(f32*)((u8*)&lbl_803A6818 + 0x3c) = dt;
     *(f32*)((u8*)&lbl_803A6818 + 0x40) = *(f32*)((u8*)&lbl_803A6818 + 0x40) + dt;
     if (*(f32*)((u8*)&lbl_803A6818 + 0x40) >= lbl_8047BCBC) {
@@ -8138,7 +8138,7 @@ extern void menuItemBiosSetSelectFlag(s32 id, s32 flag);
 #pragma peephole off
 s32 fn_8004B278(u8* work)
 {
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     extern s32 fn_800D37CC(void);
     u8* data;
     f32 delta;
@@ -8147,7 +8147,7 @@ s32 fn_8004B278(u8* work)
     f32* p;
 
     data = *(u8**)(work + 0x60);
-    *(f32*)((u8*)&lbl_803A6A60 + 8) = (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+    *(f32*)((u8*)&lbl_803A6A60 + 8) = (f32)GSgetFrameStep() / (f32)fn_800D37CC();
     if (std081_flagCheckTrue(0x3f0) != 0) {
         menuItemBiosSetSelectFlag(0x438, 1);
     } else {
@@ -8995,7 +8995,7 @@ extern void pokemonBiosSetDp(u32 work, s32 dp);
 #pragma peephole off
 s32 fn_8003B85C(void* window, s32 enabled)
 {
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     extern s32 fn_800D37CC(void);
     u16* keys;
     s32 prevIndex;
@@ -9016,7 +9016,7 @@ s32 fn_8003B85C(void* window, s32 enabled)
     keys = windowGetKeyInfo(window);
     held = 0;
     prevIndex = *(s32*)&lbl_803A6748;
-    dt = (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+    dt = (f32)GSgetFrameStep() / (f32)fn_800D37CC();
     *(f32*)((u8*)&lbl_803A6748 + 0x24) = dt;
     *(f32*)((u8*)&lbl_803A6748 + 0x28) = *(f32*)((u8*)&lbl_803A6748 + 0x28) + dt;
     if (*(f32*)((u8*)&lbl_803A6748 + 0x28) >= lbl_8047BAC8) {

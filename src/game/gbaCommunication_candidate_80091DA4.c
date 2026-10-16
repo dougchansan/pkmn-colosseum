@@ -21,7 +21,7 @@ void fn_80091DA4(u32 ctx) {
     extern void scriptWaitSyncMotion(u32 id, u32 val);
     extern s32 fn_800D37CC(void);
     extern void _threadSwitch(void);
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     extern u32 std112_modelGetResourceID(u32 id);
     extern u32 GSmodelSetShadowFlags(u32 handle, u32 val);
     extern void GSmodelSetShadowLight(u32 handle, u32 val);
@@ -58,7 +58,7 @@ void fn_80091DA4(u32 ctx) {
     }
     for (elapsed = 0; elapsed < waitFrames; ) {
         _threadSwitch();
-        elapsed += msgGetCharsPerFrame();
+        elapsed += GSgetFrameStep();
     }
 
     cameraPlayAnime(ctx, 0x0CEF1800, 0, 0);
@@ -71,7 +71,7 @@ void fn_80091DA4(u32 ctx) {
     }
     for (cameraElapsed = 0; cameraElapsed < cameraWaitFrames; ) {
         _threadSwitch();
-        cameraElapsed += msgGetCharsPerFrame();
+        cameraElapsed += GSgetFrameStep();
     }
 
     cameraWaitSyncAnime(1);
@@ -105,7 +105,7 @@ void fn_80091F48(u32 ctx) {
     extern void scriptWaitSyncMotion(u32 id, u32 val);
     extern s32 fn_800D37CC(void);
     extern void _threadSwitch(void);
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     extern u32 std112_modelGetResourceID(u32 id);
     extern u32 GSmodelSetShadowFlags(u32 handle, u32 val);
     extern void GSmodelSetShadowLight(u32 handle, u32 val);
@@ -146,7 +146,7 @@ void fn_80091F48(u32 ctx) {
     }
     for (elapsed = 0; elapsed < waitFrames; ) {
         _threadSwitch();
-        elapsed += msgGetCharsPerFrame();
+        elapsed += GSgetFrameStep();
     }
 
     animA = std112_modelGetResourceID(0x0B861000);
@@ -174,7 +174,7 @@ void fn_80092140(u32 ctx) {
     extern void GSmodelSetShadowSurface(u32, u32, u32*);
     extern void cameraPlayAnime(u32, u32, u32, u32);
     extern s32 fn_800D37CC(void);
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     extern void std070_characterAttachToCharacter(u32, u32, u32, u32, u32);
     extern void std115_mapObjectPlayAnimation(u32, u32, u32, u32);
     extern void cameraWaitSyncAnime(s32);
@@ -223,7 +223,7 @@ void fn_80092140(u32 ctx) {
     }
     for (elapsed = 0; elapsed < waitFrames;) {
         _threadSwitch();
-        elapsed += msgGetCharsPerFrame();
+        elapsed += GSgetFrameStep();
     }
 
     animation0 = std112_modelGetResourceID(0x0B851004);
@@ -257,7 +257,7 @@ void fn_80092498(u32 ctx) {
     extern void scriptWaitSyncMotion(u32 id, u32 val);
     extern s32 fn_800D37CC(void);
     extern void _threadSwitch(void);
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     extern u32 std112_modelGetResourceID(u32 id);
     extern u32 GSmodelSetShadowFlags(u32 handle, u32 val);
     extern void GSmodelSetShadowLight(u32 handle, u32 val);
@@ -289,7 +289,7 @@ void fn_80092498(u32 ctx) {
     }
     for (elapsed = 0; elapsed < waitFrames; ) {
         _threadSwitch();
-        elapsed += msgGetCharsPerFrame();
+        elapsed += GSgetFrameStep();
     }
 
     std116_mapObjectStopAnimation(0x0B631000);
@@ -312,7 +312,7 @@ void fn_80092498(u32 ctx) {
     }
     for (cameraElapsed = 0; cameraElapsed < cameraWaitFrames; ) {
         _threadSwitch();
-        cameraElapsed += msgGetCharsPerFrame();
+        cameraElapsed += GSgetFrameStep();
     }
 
     std115_mapObjectPlayAnimation(0x0B631000, 0, 0, 0);
@@ -330,7 +330,7 @@ void fn_80092664(u32 ctx) {
     extern void GSmodelSetShadowSurface(u32, u32, u32*);
     extern void cameraPlayAnime(u32, u32, u32, u32);
     extern s32 fn_800D37CC(void);
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     extern void std070_characterAttachToCharacter(u32, u32, u32, u32, u32);
     extern void std115_mapObjectPlayAnimation(u32, u32, u32, u32);
     extern void cameraWaitSyncAnime(s32);
@@ -379,7 +379,7 @@ void fn_80092664(u32 ctx) {
     }
     for (elapsed = 0; elapsed < waitFrames;) {
         _threadSwitch();
-        elapsed += msgGetCharsPerFrame();
+        elapsed += GSgetFrameStep();
     }
 
     animation0 = std112_modelGetResourceID(0x0B841004);
@@ -413,7 +413,7 @@ void fn_800929BC(u32 ctx) {
     extern void scriptWaitSyncMotion(u32 id, u32 val);
     extern s32 fn_800D37CC(void);
     extern void _threadSwitch(void);
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     extern u32 std112_modelGetResourceID(u32 id);
     extern u32 GSmodelSetShadowFlags(u32 handle, u32 val);
     extern void GSmodelSetShadowLight(u32 handle, u32 val);
@@ -445,7 +445,7 @@ void fn_800929BC(u32 ctx) {
     }
     for (elapsed = 0; elapsed < waitFrames; ) {
         _threadSwitch();
-        elapsed += msgGetCharsPerFrame();
+        elapsed += GSgetFrameStep();
     }
 
     std116_mapObjectStopAnimation(0x0B631000);
@@ -464,7 +464,7 @@ void fn_800929BC(u32 ctx) {
     }
     for (cameraElapsed = 0; cameraElapsed < cameraWaitFrames; ) {
         _threadSwitch();
-        cameraElapsed += msgGetCharsPerFrame();
+        cameraElapsed += GSgetFrameStep();
     }
 
     cameraWaitSyncAnime(1);
@@ -483,7 +483,7 @@ void fn_80092B2C(u32 ctx) {
     extern void scriptWaitSyncMotion(u32 id, u32 val);
     extern s32 fn_800D37CC(void);
     extern void _threadSwitch(void);
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     extern u32 std112_modelGetResourceID(u32 id);
     extern u32 GSmodelSetShadowFlags(u32 handle, u32 val);
     extern void GSmodelSetShadowLight(u32 handle, u32 val);
@@ -524,7 +524,7 @@ void fn_80092B2C(u32 ctx) {
     }
     for (elapsed = 0; elapsed < waitFrames; ) {
         _threadSwitch();
-        elapsed += msgGetCharsPerFrame();
+        elapsed += GSgetFrameStep();
     }
 
     anim = std112_modelGetResourceID(0x0B731000);

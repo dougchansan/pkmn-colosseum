@@ -18,7 +18,7 @@ extern void msgctrlSetValue(s32 id, void* value);
 extern void* sodateyaGetPokemonPtr(s32 slot);
 void fn_801E075C(s32 partyIndex);
 void fn_801E09E0(s32 unused);
-extern u32 msgGetCharsPerFrame(void);
+extern u32 GSgetFrameStep(void);
 extern s32 fn_800D37CC(void);
 extern void _threadSwitch(void);
 extern void GSvecCopy(void*, const void*);
@@ -567,7 +567,7 @@ void std085_sequenceJump85(void) {
     extern void std077_characterEventFlagsSet(u32, u32);
     extern void fn_801ECFE0(s32, void*);
     extern s32 fn_800D37CC(void);
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     extern void _threadSwitch(void);
 
     s32 i;
@@ -713,7 +713,7 @@ void std085_sequenceJump85(void) {
                 soundStartRaw(0x3CB, 0, 0);
                 timer = 0.0f;
                 while (timer < 0.7f) {
-                    timer += (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+                    timer += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
                     _threadSwitch();
                 }
                 state = 17;
@@ -971,7 +971,7 @@ void fn_801E075C(s32 partyIndex)
             f32 endTime = 1.5f;
 
             while (timer < endTime) {
-                timer += (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+                timer += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
                 _threadSwitch();
             }
             state = 100;
@@ -993,7 +993,7 @@ void fn_801E075C(s32 partyIndex)
         f32 elapsed = 0.0f;                                        \
         f32 limit = (duration);                                            \
         while (elapsed < limit) {                                          \
-            elapsed += (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();            \
+            elapsed += (f32)GSgetFrameStep() / (f32)fn_800D37CC();            \
             _threadSwitch();                                               \
         }                                                                  \
     } while (0)

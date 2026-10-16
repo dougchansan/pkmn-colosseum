@@ -10,11 +10,11 @@ extern f32 lbl_8047A494;
 void fn_80038990(void)
 {
     extern s32 fn_800D37CC(void);
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     extern void _threadSwitch(void);
 
     while (1) {
-        lbl_8047A494 = (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+        lbl_8047A494 = (f32)GSgetFrameStep() / (f32)fn_800D37CC();
         _threadSwitch();
     }
 }

@@ -174,14 +174,14 @@ extern void _threadSwitch(void);
  * later than the first call sites. */
 static inline void MenuWaitMotionInterval(void)
 {
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     extern s32 fn_800D37CC(void);
     f32 elapsed;
 
     elapsed = lbl_8047C0E0;
     while (elapsed < lbl_8047C0E4) {
         _threadSwitch();
-        elapsed += (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+        elapsed += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
     }
 }
 extern void winMsgOpenField(s32, s32, s32);

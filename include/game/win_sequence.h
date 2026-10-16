@@ -143,7 +143,7 @@ extern WinSeqSpriteData* menuSpriteBiosGetPtr(s32 id);
 extern WinSeqCommand* menuSeqBiosGetPtr(u32 id);
 extern tagWINDOW_WORK* windowSearchID(s32 id);
 extern tagSPRITE_WORK* windowSearchItemID(tagWINDOW_WORK* window, u16 id);
-extern u32 msgGetCharsPerFrame(void);
+extern u32 GSgetFrameStep(void);
 extern f64 sqrt(f64 value);
 
 extern WinSeqTarget lbl_80404B68;  /* sprite move target */
@@ -171,7 +171,7 @@ static inline void winSeqMoveSprite(tagSPRITE_WORK* sprite) {
     lbl_80404B68.imageH = sprite->imageH;
     lbl_80404B68.baseX = menuItemBiosGetPtr(sprite->itemId)->x;
     lbl_80404B68.baseY = menuItemBiosGetPtr(sprite->itemId)->y;
-    for (i = 0; i < msgGetCharsPerFrame(); i++) {
+    for (i = 0; i < GSgetFrameStep(); i++) {
         _winSeqMoveSub(&lbl_80404B68, &sprite->sequence);
     }
     sprite->x = lbl_80404B68.x;
@@ -197,7 +197,7 @@ static inline void winSeqMoveWindow(tagWINDOW_WORK* window) {
     lbl_80404B8C.flags = window->flags;
     lbl_80404B8C.baseX = menuDataBiosGetPtr(window->id)->x;
     lbl_80404B8C.baseY = menuDataBiosGetPtr(window->id)->y;
-    for (i = 0; i < msgGetCharsPerFrame(); i++) {
+    for (i = 0; i < GSgetFrameStep(); i++) {
         _winSeqMoveSub(&lbl_80404B8C, &window->menuSequence);
     }
     window->x = lbl_80404B8C.x;

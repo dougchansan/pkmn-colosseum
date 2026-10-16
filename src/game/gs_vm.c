@@ -246,7 +246,7 @@ extern f64 fmod(f64 value, f64 modulus);
 extern void GSlogWrite(const char* fmt, ...);
 extern void GSlogWritef(const char* fmt, ...);
 extern u32 cms_CallStdTrampoline(void);
-extern u32 msgGetCharsPerFrame(void);
+extern u32 GSgetFrameStep(void);
 extern void _threadSwitch(void);
 extern u32 fn_800F0374(GSThread* thread);
 extern void GSthreadTerminate(GSThread* thread);
@@ -384,7 +384,7 @@ s32 cms_op36_yield(GSVMCtx* ctx)
     args = &ctx->stack[ctx->frame];
     wait = args[0].s;
     ctx->status = 2;
-    for (elapsed = 0; elapsed < wait; elapsed += msgGetCharsPerFrame()) {
+    for (elapsed = 0; elapsed < wait; elapsed += GSgetFrameStep()) {
         if (ctx->status == 4) {
             ctx->status = 3;
         }

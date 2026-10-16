@@ -58,7 +58,7 @@ extern void GStextureFree(GStexture* texture);
 extern void GSgfxBeginBackFBCapture(GStexture* texture, void* callback, void* userData);
 extern void fn_801C6928(void);
 extern s32 fn_800D37CC(void);
-extern u32 msgGetCharsPerFrame(void);
+extern u32 GSgetFrameStep(void);
 extern void fn_800D9ED8(u32 arg0);
 extern void gfxSetFlags(u32 arg0);
 extern void gfxClearFlags(u32 arg0);
@@ -225,7 +225,7 @@ void fadeDaemon(void) {
         case 2:
         case 3:
             fps = fn_800D37CC();
-            lbl_80466E30.elapsed += (f32)msgGetCharsPerFrame() / fps;
+            lbl_80466E30.elapsed += (f32)GSgetFrameStep() / fps;
             if (lbl_80466E30.elapsed >= lbl_80466E30.duration) {
                 lbl_80466E30.elapsed = lbl_80466E30.duration;
                 lbl_80466E30.pending = 0;
@@ -241,7 +241,7 @@ void fadeDaemon(void) {
 
     if (lbl_80466E30.hook != NULL) {
         fps = fn_800D37CC();
-        lbl_80466E30.hookElapsed += (f32)msgGetCharsPerFrame() / fps;
+        lbl_80466E30.hookElapsed += (f32)GSgetFrameStep() / fps;
         if (lbl_80466E30.hookElapsed >= lbl_80466E30.hookDuration) {
             lbl_80466E30.hookElapsed = lbl_80466E30.hookDuration;
         }

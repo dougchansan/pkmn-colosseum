@@ -25,7 +25,7 @@ s32 wazaSequenceUpdate(void* sequence) {
     WazaSequence* obj = sequence;
     WazaSequenceNode* node = obj->firstNode;
     WazaSequenceOwner* owner;
-    s32 elapsed = msgGetCharsPerFrame();
+    s32 elapsed = GSgetFrameStep();
     s32 running = 0;
     s32 pending = 0;
 
@@ -667,19 +667,19 @@ void* _wazaSequenceEffectEntryLoad(void* entryPtr, void* dataPtr)
 {
     extern s32 fn_800D37CC(void);
     extern u8* fn_801364A8(u8* work, u8* desc);
-    extern u32 fn_8013AABC(void* callbacks);
-    extern u32 electronStartEffect(void* callbacks);
-    extern u32 fn_8013A42C(void* callbacks);
-    extern u32 fn_801380D4(void* callbacks);
+    extern u32 filterEffectCreate(void* callbacks);
+    extern u32 boltEffectCreate(void* callbacks);
+    extern u32 electronEffectCreate(void* callbacks);
+    extern u32 lightningEffectCreate(void* callbacks);
     extern u32 fn_8013796C(void* callbacks);
-    extern u32 leaffxStartEffect(void* callbacks);
-    extern u32 fn_8013C5A0(void* callbacks);
-    extern u32 fn_8013B490(void* callbacks);
-    extern u32 fn_8013D6B8(void* callbacks);
-    extern u32 fn_8013DC18(void* callbacks);
-    extern u32 fn_8013E4D4(void* callbacks);
-    extern u32 patchiruTextureStart(void* callbacks);
-    extern u32 fn_8013F000(void* callbacks);
+    extern u32 leaffxEffectCreate(void* callbacks);
+    extern u32 seaEffectCreate(void* callbacks);
+    extern u32 surfEffectCreate(void* callbacks);
+    extern u32 envMapEffectCreate(void* callbacks);
+    extern u32 blurEffectCreate(void* callbacks);
+    extern u32 auraEffectCreate(void* callbacks);
+    extern u32 billboardEffectCreate(void* callbacks);
+    extern u32 distortionEffectCreate(void* callbacks);
     extern const f32 lbl_8047E3A0;
     u8 parsed[0xD8];
     u32 type;
@@ -701,7 +701,7 @@ void* _wazaSequenceEffectEntryLoad(void* entryPtr, void* dataPtr)
     switch (type) {
     case 0:
         list = *(const WazaEffectLoadList**)(parsed + 0x58);
-        entry->resourceId = fn_8013AABC(parsed + 8);
+        entry->resourceId = filterEffectCreate(parsed + 8);
         while (list != NULL) {
             handle += list->size;
             list = list->next;
@@ -709,16 +709,16 @@ void* _wazaSequenceEffectEntryLoad(void* entryPtr, void* dataPtr)
         break;
     case 1:
         entry->field_80 = *(u32*)(parsed + 0x58);
-        entry->resourceId = electronStartEffect(parsed + 8);
+        entry->resourceId = boltEffectCreate(parsed + 8);
         handle = *(u16*)(parsed + 0x52);
         break;
     case 2:
-        entry->resourceId = fn_8013A42C(parsed + 8);
+        entry->resourceId = electronEffectCreate(parsed + 8);
         handle = *(u16*)(parsed + 0x12);
         break;
     case 3:
         entry->field_80 = *(u16*)(parsed + 0x16);
-        entry->resourceId = fn_801380D4(parsed + 8);
+        entry->resourceId = lightningEffectCreate(parsed + 8);
         handle = *(u16*)(parsed + 0x1A);
         break;
     case 4:
@@ -729,19 +729,19 @@ void* _wazaSequenceEffectEntryLoad(void* entryPtr, void* dataPtr)
         break;
     case 5:
         entry->field_80 = *(s16*)(parsed + 0x52);
-        entry->resourceId = leaffxStartEffect(parsed + 8);
+        entry->resourceId = leaffxEffectCreate(parsed + 8);
         handle = *(u16*)(parsed + 0x46);
         break;
     case 6:
-        entry->resourceId = fn_8013C5A0(parsed + 8);
+        entry->resourceId = seaEffectCreate(parsed + 8);
         handle = *(u16*)(parsed + 0xAE);
         break;
     case 7:
-        entry->resourceId = fn_8013B490(parsed + 8);
+        entry->resourceId = surfEffectCreate(parsed + 8);
         handle = *(u16*)(parsed + 0xD6);
         break;
     case 8:
-        entry->resourceId = fn_8013D6B8(parsed + 8);
+        entry->resourceId = envMapEffectCreate(parsed + 8);
         handle = 0;
         node = *(const WazaEffectLoadList**)(parsed + 0x14);
         while (node != NULL) {
@@ -750,7 +750,7 @@ void* _wazaSequenceEffectEntryLoad(void* entryPtr, void* dataPtr)
         }
         break;
     case 9:
-        entry->resourceId = fn_8013DC18(parsed + 8);
+        entry->resourceId = blurEffectCreate(parsed + 8);
         handle = 0;
         node = *(const WazaEffectLoadList**)(parsed + 0x1C);
         while (node != NULL) {
@@ -759,16 +759,16 @@ void* _wazaSequenceEffectEntryLoad(void* entryPtr, void* dataPtr)
         }
         break;
     case 10:
-        entry->resourceId = fn_8013E4D4(parsed + 8);
+        entry->resourceId = auraEffectCreate(parsed + 8);
         handle = *(u16*)(parsed + 0x3A);
         break;
     case 11:
-        entry->resourceId = patchiruTextureStart(parsed + 8);
+        entry->resourceId = billboardEffectCreate(parsed + 8);
         /* RULE-EXCEPTION(user-approved): redundant reset retail performs here - see docs/RULE_EXCEPTIONS.md */
         handle = 0;
         break;
     case 12:
-        entry->resourceId = fn_8013F000(parsed + 8);
+        entry->resourceId = distortionEffectCreate(parsed + 8);
         handle = *(u16*)(parsed + 0xBA);
         break;
     }

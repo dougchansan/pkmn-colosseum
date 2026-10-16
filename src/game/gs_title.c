@@ -342,7 +342,7 @@ void fn_800216E0(u32 val) {
 #endif
 
 extern void* menuItemBiosGetPtr(u32);
-extern u32 msgGetCharsPerFrame(void);
+extern u32 GSgetFrameStep(void);
 
 /* Menu table at lbl_80478DDC (count at *lbl_80478DD8), 0x10 per entry. */
 typedef struct TitleMenuEntry {
@@ -619,7 +619,7 @@ s32 wmapMenuInput(u8* arg0) {
         }
     }
 
-    f2 = (f32)(u32)msgGetCharsPerFrame();
+    f2 = (f32)(u32)GSgetFrameStep();
     f3 = lbl_8047A378;
     f0 = f3 * f2 + lbl_8047A374;
     lbl_8047A374 = f0;
@@ -636,7 +636,7 @@ s32 wmapMenuInput(u8* arg0) {
     }
 
     if ((s32)lbl_8047A370 == 1) {
-        f3 = (f32)(u32)msgGetCharsPerFrame();
+        f3 = (f32)(u32)GSgetFrameStep();
         f1 = lbl_80478898 - 4.5f * f3;
         lbl_80478898 = f1;
         if (f1 < 0.0f) {
@@ -937,7 +937,7 @@ void fn_80024BA4(u8* arg0, u8* arg1) {
  * splits them (99.5%). Linked in gs_title_80023DA8.c, which owns the
  * int->float bias doubles (lbl_8047B8B8 / lbl_8047B8D0) in its pool.
  */
-extern u32 msgGetCharsPerFrame(void);
+extern u32 GSgetFrameStep(void);
 extern u32 lbl_8047A390;
 extern f32 lbl_8047A37C;
 #if !defined(GS_TITLE_SPLIT) || defined(GS_TITLE_RANGE_80024CDC)
@@ -952,7 +952,7 @@ void fn_80024CDC(s32 arg0, u8* arg1) {
     }
 
     iVar4 = *(u8*)(arg1 + 0x67);          /* current alpha (0..255)    */
-    uVar3 = msgGetCharsPerFrame();                /* u32 tick counter          */
+    uVar3 = GSgetFrameStep();                /* u32 tick counter          */
     fVar2 = lbl_8047A37C;                 /* f32 pulse speed           */
     iVar4 += fVar2 * (f32)uVar3;          /* one web: alpha stays in r31 */
 
@@ -1472,7 +1472,7 @@ void worldMapPost(void) {
     extern u32 lbl_8047A384;
     extern u32 lbl_8047A388;
     extern u32 lbl_8047A38C;
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     extern s32 fn_800D37CC(void);
     extern void GStextureFree(u32);
     extern void _threadSwitch(void);
@@ -1491,7 +1491,7 @@ void worldMapPost(void) {
         accum = 0.0f;
         while (accum < 1.0f) {
             _threadSwitch();
-            accum = accum + (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+            accum = accum + (f32)GSgetFrameStep() / (f32)fn_800D37CC();
         }
         std137_soundStopAll(std228_soundGetCurrentBackgroundMusic(), 0x7d0, 0);
     } else {
@@ -1800,7 +1800,7 @@ void gsTitleStrippedCaptureWait(void)
 {
     extern u8 lbl_803A2040[];
     extern s32 fn_800D37CC(void);
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     extern void gfxSetOrtho(f32, f32, f32, f32);
     u32 frames;
     u32 elapsed;
@@ -1817,7 +1817,7 @@ void gsTitleStrippedCaptureWait(void)
     }
     for (elapsed = 0; elapsed < frames; elapsed += tick) {
         _threadSwitch();
-        tick = msgGetCharsPerFrame();
+        tick = GSgetFrameStep();
     }
 }
 #pragma pop
@@ -2076,7 +2076,7 @@ void worldMapBikeRide(void) {
     extern f32 lbl_8047A3A0;
     extern f32 lbl_8047A3A4;
     extern u32 __cvt_fp2unsigned(f64);
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     extern s32 fn_800D37CC(void);
     extern void GSgfxBeginBackFBCapture(u32, void*, s32);
     extern void GSmodelSetGSparticleLinkAttachMode(u32, s32);
@@ -2186,7 +2186,7 @@ void worldMapBikeRide(void) {
         }
         for (elapsed = 0; elapsed < delay; elapsed = elapsed + tick) {
             _threadSwitch();
-            tick = msgGetCharsPerFrame();
+            tick = GSgetFrameStep();
         }
         std115_mapObjectPlayAnimation(0xC6A1000, frame_a, 0, 0);
         wait2 = 0xae;
@@ -2197,7 +2197,7 @@ void worldMapBikeRide(void) {
         }
         for (elapsed = 0; elapsed < wait2; elapsed = elapsed + tick) {
             _threadSwitch();
-            tick = msgGetCharsPerFrame();
+            tick = GSgetFrameStep();
         }
     }
 
@@ -2217,7 +2217,7 @@ void worldMapBikeRide(void) {
     }
     for (elapsed = 0; elapsed < wait2; elapsed = elapsed + tick) {
         _threadSwitch();
-        tick = msgGetCharsPerFrame();
+        tick = GSgetFrameStep();
     }
 }
 #endif
@@ -2295,7 +2295,7 @@ s32 fn_80020618(void) {
 
     keyInfo = windowGetKeyInfo();
     tickScale = (f32)(s32)fn_800D37CC();
-    ((TitleOptionState*)lbl_803A1FC8)->delta = (f32)(u32)msgGetCharsPerFrame() / tickScale;
+    ((TitleOptionState*)lbl_803A1FC8)->delta = (f32)(u32)GSgetFrameStep() / tickScale;
     ((TitleOptionState*)lbl_803A1FC8)->phase += ((TitleOptionState*)lbl_803A1FC8)->delta;
     if (((TitleOptionState*)lbl_803A1FC8)->phase >= 1.0f) {
         ((TitleOptionState*)lbl_803A1FC8)->phase = 0.0f;
@@ -3803,12 +3803,12 @@ s32 std163_useCologne(s32 arg0, s32 arg1) {
     if (gamedatasaveGetStatus(0, 9) == 0) {
         for (j = 0; j < 2; j++) {
             fn_800F78A4(1, 0, 0xFF, 0x15, 0);
-            for (wait = 0; wait < 0x3C; wait += msgGetCharsPerFrame()) {
+            for (wait = 0; wait < 0x3C; wait += GSgetFrameStep()) {
                 _threadSwitch();
             }
         }
         fn_800F78A4(1, 0, 0xFF, 0x30, 0);
-        for (wait = 0; wait < 0x60; wait += msgGetCharsPerFrame()) {
+        for (wait = 0; wait < 0x60; wait += GSgetFrameStep()) {
             _threadSwitch();
         }
     }

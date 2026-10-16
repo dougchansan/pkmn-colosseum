@@ -11,7 +11,7 @@
 #include "dolphin/types.h"
 
 extern u8 fn_801DAC54(void* effect);
-extern u32 msgGetCharsPerFrame(void);
+extern u32 GSgetFrameStep(void);
 extern f32 fn_800E0BE4(void);
 extern void GSmodelLinkTexAnimToAnim(void* model, u32 enable);
 extern void GSmodelSetTexAnimIndex(void* model, u32 index);
@@ -47,7 +47,7 @@ void fn_801DF1D0(void* obj) {
     if (*(s16*)(effect + 0x1C) < 0) {
         return;
     }
-    *(u16*)(effect + 0x20) += (u16)msgGetCharsPerFrame();
+    *(u16*)(effect + 0x20) += (u16)GSgetFrameStep();
     timer = *(u16*)(effect + 0x20);
     if (timer < 10) {
         return;

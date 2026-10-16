@@ -158,7 +158,7 @@ extern void soundResumeMusic(u32 handle);
 extern void soundPlayFanfare(s32 id, s32 fade, s32 volume);
 extern void soundStartRaw(s32 id, s32 pan, s32 volume);
 extern s32 fn_800D37CC(void);
-extern u32 msgGetCharsPerFrame(void);
+extern u32 GSgetFrameStep(void);
 extern void _threadSwitch(void);
 
 static inline u32 battleIntroFindModel(s32 fieldId, BattleIntroModelMap* map)
@@ -250,7 +250,7 @@ void fn_801D0DB0(s32 peopleGroup, s32 peopleId)
             state = 4;
             break;
         case 4:
-            frameDelta = (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+            frameDelta = (f32)GSgetFrameStep() / (f32)fn_800D37CC();
             timer += frameDelta;
             lbl_8047B3E0 = frameDelta;
             if (timer >= 0.5f) {
@@ -282,7 +282,7 @@ void fn_801D0DB0(s32 peopleGroup, s32 peopleId)
             }
             timer = 0.0f;
             while (timer < 0.7f) {
-                frameDelta = (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+                frameDelta = (f32)GSgetFrameStep() / (f32)fn_800D37CC();
                 timer += frameDelta;
                 lbl_8047B3E0 = frameDelta;
                 _threadSwitch();
@@ -298,7 +298,7 @@ void fn_801D0DB0(s32 peopleGroup, s32 peopleId)
             }
             timer = 0.0f;
             while (timer < 0.7f) {
-                frameDelta = (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+                frameDelta = (f32)GSgetFrameStep() / (f32)fn_800D37CC();
                 timer += frameDelta;
                 lbl_8047B3E0 = frameDelta;
                 _threadSwitch();

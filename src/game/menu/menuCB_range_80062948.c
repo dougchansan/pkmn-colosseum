@@ -705,7 +705,7 @@ extern s32 toolentryTaisenGetPokemonNum(s32);
 extern s32 toolentryTaisengetEtnryPokemonOrderNum(s32);
 extern s32 fn_8025D9CC(void);
 extern s32 fn_800D37CC(void);
-extern s32 msgGetCharsPerFrame(void);
+extern s32 GSgetFrameStep(void);
 extern f32 lbl_8047BFE8;
 extern f32 lbl_8047BFF8;
 extern f32 lbl_8047BFFC;
@@ -1977,7 +1977,7 @@ static inline void menuCBPokemonEntryAdvancePositions(void)
     u32 numerator;
 
     denominator = (f32)fn_800D37CC();
-    numerator = msgGetCharsPerFrame();
+    numerator = GSgetFrameStep();
     *(f32*)&lbl_803A9F08[0xCD88] = (f32)numerator / denominator;
     for (player = 0; player < 4; player++) {
         current = (f32*)(lbl_803A9F08 + player * 0x30 + 0xCD8C);
@@ -2076,7 +2076,7 @@ void fn_80068418(PokemonEntryInputRepeat* input, int device)
             input->timer[bit] = 15;
             repeated |= mask;
         } else if ((current & mask) != 0) {
-            input->timer[bit] -= msgGetCharsPerFrame();
+            input->timer[bit] -= GSgetFrameStep();
             if (input->timer[bit] <= 0) {
                 input->timer[bit] = 5;
                 repeated |= mask;

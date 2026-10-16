@@ -26,7 +26,7 @@ extern void winMsgClose(s32);
 extern void winMsgOpen(s32, u32, s32, s32);
 extern void _threadSwitch(void);
 extern s32 fn_800D37CC(void);
-extern u32 msgGetCharsPerFrame(void);
+extern u32 GSgetFrameStep(void);
 extern void fn_80080310(void*, const void*, u32);
 extern u8 lbl_803A3334[];
 extern u8 lbl_803F7A30[];
@@ -92,7 +92,7 @@ extern void soundStartSE(u32);
 
 extern void _threadSwitch(void);
 extern s32 fn_800D37CC(void);
-extern u32 msgGetCharsPerFrame(void);
+extern u32 GSgetFrameStep(void);
 
 extern void fn_801D0AFC(s32);
 extern void* savedataGetStatus(s32, s32);
@@ -126,7 +126,7 @@ static void sysvarsWaitForTransfer(void)
     progress = lbl_8047B9F8;
     while (progress < lbl_8047BA18) {
         _threadSwitch();
-        progress += (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+        progress += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
     }
 }
 
@@ -138,7 +138,7 @@ static void sysvarsWaitTwoSeconds(void)
     progress = lbl_8047B9F8;
     while (progress < lbl_8047BA28) {
         _threadSwitch();
-        progress += (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+        progress += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
     }
 }
 
@@ -1670,7 +1670,7 @@ void fn_80034FB4(void)
                 progress = lbl_8047B9F8;
                 while (progress < lbl_8047B9FC) {
                     _threadSwitch();
-                    progress += (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+                    progress += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
                 }
             }
             winMsgOpen(8, 0x3B54, 1, 1);
@@ -1809,7 +1809,7 @@ void fn_80034FB4(void)
                 progress = lbl_8047B9F8;
                 while (progress < lbl_8047B9FC) {
                     _threadSwitch();
-                    progress += (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+                    progress += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
                 }
             }
             if (lbl_8047A449 != 0) {
@@ -1932,7 +1932,7 @@ void fn_80034FB4(void)
             progress = lbl_8047B9F8;
             while (progress < lbl_8047B9FC) {
                 _threadSwitch();
-                progress += (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+                progress += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
             }
             save = savedataGetStatus(0, 2);
             heldItems = (u16*)(work + 0xB0);

@@ -229,7 +229,7 @@ int cbWazaForget(u32 r3,u32 r4,int r5)
 int doWazaSequence(u32 *r3,int r4,int r5,u32 r6)
 
 {
-    extern int msgGetCharsPerFrame();
+    extern int GSgetFrameStep();
     extern u32 fn_800F7AF0();
     extern u32 fn_800F7BC4();
     extern const f32 lbl_8047E6C0;
@@ -307,7 +307,7 @@ int doWazaSequence(u32 *r3,int r4,int r5,u32 r6)
       savedView[1] = view[1];
       savedView[2] = view[2];
       ((volatile float *)savedView)[3] = local_a8;
-      iVar3 = msgGetCharsPerFrame();
+      iVar3 = GSgetFrameStep();
       iVar8 = iVar8 + iVar3;
       if (r5 != 0) {
         uVar4 = fn_800F7AF0(1);
@@ -691,7 +691,7 @@ u32 evolutionDemo(EvoWork *work,int canSkip,u32 before,u32 after)
     extern const f32 lbl_8047E6B4;
     extern const f32 lbl_8047E6C0;
     extern const f32 lbl_8047E6C4;
-    extern int msgGetCharsPerFrame();
+    extern int GSgetFrameStep();
     extern u32 fn_800F7AF0();
     extern u32 fn_800F7BC4();
   u32 voice;
@@ -741,7 +741,7 @@ u32 evolutionDemo(EvoWork *work,int canSkip,u32 before,u32 after)
       break;
     case 1:
       if (soundGetStatus(0x3d3) != 2) {
-        wait += msgGetCharsPerFrame();
+        wait += GSgetFrameStep();
         if (wait >= 0x1e) {
           std104_soundSetBackgroundMusic(0x3d4,0,0xff);
           state = 2;
@@ -754,7 +754,7 @@ u32 evolutionDemo(EvoWork *work,int canSkip,u32 before,u32 after)
       first = FALSE;
     }
     _threadSwitch();
-    time += msgGetCharsPerFrame();
+    time += GSgetFrameStep();
   }
   fadeSet(lbl_8047E6C0,5);
   while ((s8)fadeCheck(0) != 0) {
@@ -765,7 +765,7 @@ u32 evolutionDemo(EvoWork *work,int canSkip,u32 before,u32 after)
   t = lbl_8047E6B0;
   while (t < lbl_8047E6B4) {
     _threadSwitch();
-    t += (u32)msgGetCharsPerFrame();
+    t += (u32)GSgetFrameStep();
   }
   if (skipped) {
     winMsgCloseField(1);
@@ -807,7 +807,7 @@ u32 evolutionDemo(EvoWork *work,int canSkip,u32 before,u32 after)
   t = lbl_8047E6B0;
   while (t < lbl_8047E6C4) {
     _threadSwitch();
-    t += (u32)msgGetCharsPerFrame();
+    t += (u32)GSgetFrameStep();
   }
   return 1;
 }

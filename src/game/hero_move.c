@@ -534,7 +534,7 @@ extern void GScolsys2HumanCollision(void);
 extern u8 lbl_80478AC0[];
 u32 fn_8012B19C(s32 member, HeroMoveVec* start, HeroMoveVec* target, f32 extraRadius);
 u32 heroMoveChkHinderClear(s32 member);
-extern u32 msgGetCharsPerFrame(void);
+extern u32 GSgetFrameStep(void);
 void getStep__FP8FOOTSTEPP8_GSmodelPiP8FOOTWORK(f32*, void*, s32*, f32*);
 extern u32 peopleFindTalkTarget(u32, u32, f32, f32);
 extern u32 peopleGetPositionPtr();
@@ -1005,7 +1005,7 @@ extern u8 heroBiosGetSexDataId(u8* ptr);
 extern void heroBiosSetSexDataId(u8* ptr, u8 val);
 extern void heroBiosSetRnd(u8* ptr, u32 val);
 extern u32 heroBiosGetRnd(u8* ptr);
-extern u32 fn_80130CD8(void);
+extern u32 GSeffectGetUpdateGapp(void);
 extern u16 pokemonBiosGetPokemonDataId(u8* ptr);
 extern u32 fn_80128E24(void);
 extern void* floorReadMapPreFunc(void* owner, u32 param, u32 alloc_size);
@@ -1837,7 +1837,7 @@ static inline void procStep(s32 member)
     f32 footstep[0x10];
     void* model;
 
-    msgGetCharsPerFrame();
+    GSgetFrameStep();
     model = heroMoveGetModel(member);
     if (model != NULL) {
         getStep__FP8FOOTSTEPP8_GSmodelPiP8FOOTWORK(footstep, model, parts.part[member],
@@ -2580,7 +2580,7 @@ f32 moveLeader__F15HEROMOVE_MEMBER(s32 member)
     extern void PSVECScale(HeroMoveVec*, HeroMoveVec*, f32);
     extern f32 PSVECDistance(HeroMoveVec*, HeroMoveVec*);
     extern f32 peopleAmountFromMove(u32, u32, HeroMoveVec*);
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     HeroMoveVec before;
     HeroMoveVec after;
     HeroMoveVec direction;
@@ -2601,7 +2601,7 @@ f32 moveLeader__F15HEROMOVE_MEMBER(s32 member)
     heroReadStick(member, &speed);
     getPos(&after, member);
     PSVECSubtract(&after, &before, &direction);
-    PSVECScale(&direction, &direction, 1.0f / (f32)msgGetCharsPerFrame());
+    PSVECScale(&direction, &direction, 1.0f / (f32)GSgetFrameStep());
 
     getResID(&group, &id, member);
     turn = peopleAmountFromMove(group, id, &direction);
@@ -2764,7 +2764,7 @@ static inline f32 heroMoveSqrtDE94(f32 value)
 
 void partnerMove(s32 member)
 {
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     extern void PSVECSubtract(HeroMoveVec*, HeroMoveVec*, HeroMoveVec*);
 
     HeroMoveVec leaderPos;
@@ -2797,7 +2797,7 @@ void partnerMove(s32 member)
         return;
     }
 
-    if ((lbl_80426BD0.member[member].timer -= msgGetCharsPerFrame()) > 0) {
+    if ((lbl_80426BD0.member[member].timer -= GSgetFrameStep()) > 0) {
         return;
     }
     if (heroMoveCheckHit(member, NULL)) {
@@ -2818,7 +2818,7 @@ void partnerMove(s32 member)
 
 void partnerGetTarget(s32 member, HeroMoveVec* velocity, HeroMoveVec* result)
 {
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     extern void PSVECScale(HeroMoveVec*, HeroMoveVec*, f32);
     extern void PSVECAdd(HeroMoveVec*, HeroMoveVec*, HeroMoveVec*);
     extern void PSVECSubtract(HeroMoveVec*, HeroMoveVec*, HeroMoveVec*);
@@ -2841,7 +2841,7 @@ void partnerGetTarget(s32 member, HeroMoveVec* velocity, HeroMoveVec* result)
 
     /* RULE-EXCEPTION(user-approved): raw byte-offset read keeps retail's address order — see docs/RULE_EXCEPTIONS.md */
     spacing = *(f32*)((u8*)&lbl_80426BD0 + member * 0x20 + 8);
-    frames = (f32)msgGetCharsPerFrame();
+    frames = (f32)GSgetFrameStep();
 
     getPos(&leaderPos, lbl_80426BD0.leader);
     hasLog = getLeaderLog(&logPos, 0);
@@ -3028,7 +3028,7 @@ void heroMoveGetHeroRot(u32 param) {
 
 void partnerApplyMove(s32 member, HeroMoveVec* dir, HeroMoveVec* fwd)
 {
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     extern void PSVECSubtract(void*, void*, void*);
     extern void PSVECScale(void*, void*, f32);
     extern f32 PSVECDotProduct(void*, void*);
@@ -3061,7 +3061,7 @@ void partnerApplyMove(s32 member, HeroMoveVec* dir, HeroMoveVec* fwd)
     void* info;
     u8 rotate;
 
-    frames = (f32)msgGetCharsPerFrame();
+    frames = (f32)GSgetFrameStep();
     getResID(&group, &id, member);
     length = heroMoveSqrt(dir->x * dir->x + dir->z * dir->z);
 
@@ -3366,7 +3366,7 @@ void getStep__FP8FOOTSTEPP8_GSmodelPiP8FOOTWORK(
     HeroMoveVec3 transform;
     f32 heights[4];
     f32* height;
-    f32 delta = (f32)msgGetCharsPerFrame();
+    f32 delta = (f32)GSgetFrameStep();
     void* part;
     s32 i;
 

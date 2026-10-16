@@ -117,7 +117,7 @@ extern const char lbl_8035B060[];
 extern void GSlogWrite(const char* fmt, ...);
 extern u32 GSthreadGetCurrentThread(void);
 extern void _threadSwitch(void);
-extern u32 msgGetCharsPerFrame(void);
+extern u32 GSgetFrameStep(void);
 extern void fn_800D9E4C(s32);
 extern void fn_800D9ED8(s32);
 extern void gfxSetBlendMode(s32, s32, s32);
@@ -610,7 +610,7 @@ void menuDaemon(void) {
         if ((node->flags & 4) != 0) {
             winSeqMoveMenu(node);
             if (data->tickCallback != NULL) {
-                for (i = 0; i < msgGetCharsPerFrame(); i++) {
+                for (i = 0; i < GSgetFrameStep(); i++) {
                     data->tickCallback(node);
                 }
             }

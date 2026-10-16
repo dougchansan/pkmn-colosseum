@@ -44,7 +44,7 @@ extern MenuSystem lbl_80404ACC;
 extern u8 lbl_8047AD04[4]; /* input type per port: 0 none, 1 GC pad, 2 AGB, 3 AGB lost */
 extern u8 lbl_8047AD08[4]; /* the same, one frame earlier */
 
-u32 msgGetCharsPerFrame(void);
+u32 GSgetFrameStep(void);
 MenuWindow* windowSearchID(u32 id);
 u32 windowGetActiveID(void);
 MenuKeyInfo* windowGetPortKeyInfo(u8 ports);
@@ -128,7 +128,7 @@ void _menuUpdateKeyInfo__FP15WINDOW_SYS_WORK(MenuSystem* work) {
                 keyInfo->repeatTimer[i] = 15;
                 repeat |= bit;
             } else if (keys & bit) {
-                keyInfo->repeatTimer[i] -= msgGetCharsPerFrame();
+                keyInfo->repeatTimer[i] -= GSgetFrameStep();
                 if (keyInfo->repeatTimer[i] <= 0) {
                     keyInfo->repeatTimer[i] = 5;
                     repeat |= bit;

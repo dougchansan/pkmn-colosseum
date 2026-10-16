@@ -13,7 +13,7 @@
 extern void* std093_getCurrentGroupID(void);
 extern void cameraPlayAnime(s32, u32, s32, s32);
 extern s32 fn_800D37CC(void);
-extern u32 msgGetCharsPerFrame(void);
+extern u32 GSgetFrameStep(void);
 extern void _threadSwitch(void);
 extern void std115_mapObjectPlayAnimation(u32 object, s32 arg1, s32 arg2, s32 arg3);
 extern s32 menuOpenCustom(s32, ...);
@@ -42,7 +42,7 @@ void fn_80075DC8(void)
     elapsed = 0;
     while (elapsed < waitTicks) {
         _threadSwitch();
-        elapsed += msgGetCharsPerFrame();
+        elapsed += GSgetFrameStep();
     }
 
     std115_mapObjectPlayAnimation(0x0B541000, 2, 0, 1);

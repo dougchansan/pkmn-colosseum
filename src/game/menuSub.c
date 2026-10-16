@@ -46,12 +46,12 @@ extern u8 lbl_80314E08[];
 /* 0x8001D718 | 0xCC */
 void fn_8001D718(f32 target) {
     extern s32 fn_800D37CC(void);
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     f32 progress = 0.0f;
 
     while (progress < target) {
         _threadSwitch();
-        progress += (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+        progress += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
     }
 }
 

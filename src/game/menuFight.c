@@ -405,7 +405,7 @@ extern void soundDuck(void);
 extern void fn_800D3074(void);
 extern void* std082_flagGetValue();
 extern u32 floorGetCurrentContext();
-extern void fn_80130CD8(void);
+extern void GSeffectGetUpdateGapp(void);
 extern void GSgappBlock(void);
 extern void GSthreadBlockGroup(void);
 extern void GSthreadCreate(void);
@@ -449,7 +449,7 @@ u32 fn_8000D710(u32 mode) {
     extern void fn_800D3074(s32);
     extern void* std082_flagGetValue(s32);
     extern u32 floorGetCurrentContext(void);
-    extern void fn_80130CD8(void);
+    extern void GSeffectGetUpdateGapp(void);
     extern void GSgappBlock(void);
     extern void GSthreadBlockGroup(u32);
     extern void GSthreadCreate(s32, void*, u32, s32, s32, void*);
@@ -506,13 +506,13 @@ u32 fn_8000D710(u32 mode) {
             fn_800D3074(1);
             lbl_8047A2A4 = dialogId;
             lbl_8047A2A8 = floorGetCurrentContext();
-            fn_80130CD8();
+            GSeffectGetUpdateGapp();
             GSgappBlock();
             GSthreadBlockGroup(lbl_8047A2A8);
             lbl_8047A2AC = lbl_8047A2A8 - 0x20;
             GSthreadCreate(0xF, (void*)lbl_8047A2AC, 0x4000, 1, 1, threadEntry);
             _threadSwitch();
-            fn_80130CD8();
+            GSeffectGetUpdateGapp();
             GSgappUnblock();
 
             if (lbl_8047A2B0 == 0) {

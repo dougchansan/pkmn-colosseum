@@ -218,7 +218,7 @@ static inline void wazaViewerPollCommand(const char* messages) {
         }
         *(s32*)(lbl_804673F8 + 0x870) = 0x3C;
     } else {
-        *(s32*)(lbl_804673F8 + 0x870) -= msgGetCharsPerFrame();
+        *(s32*)(lbl_804673F8 + 0x870) -= GSgetFrameStep();
     }
 }
 
@@ -1291,7 +1291,7 @@ void fn_801D7464(void) {
                          const WazaViewerVec* b);
     extern void set__5GSvecFfff(f32* vec, f32 x, f32 y, f32 z);
     extern u32 fn_800F7AF0(s32 pad);
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     extern u32 fn_800F7BC4(s32 pad);
     extern s8 fn_800F7A7C(s32 pad, s32 mode);
     extern s8 fn_800F7A08(s32 pad, s32 mode);
@@ -1349,7 +1349,7 @@ void fn_801D7464(void) {
     if (*(s32*)lbl_804673F8 == 0) {
         if (GSscene_GetMode() == 2) {
             forward = *(const WazaViewerVec*)lbl_80279338;
-            angleStep = lbl_8047E318 * (f32)msgGetCharsPerFrame();
+            angleStep = lbl_8047E318 * (f32)GSgetFrameStep();
             GSscene_GetCameraDirectionVector(&direction);
             GSscene_GetCameraPositionVector(&position);
             GSscene_GetCameraViewVector(&view);

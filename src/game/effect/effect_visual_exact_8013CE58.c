@@ -1,6 +1,6 @@
 /**
  * @file effect_visual_exact_8013CE58.c
- * @brief fn_8013CE58 (_envMapUpdateTexture), 0x8013CE58 - 0x8013D0A8.
+ * @brief _seaResetMaterial (_envMapUpdateTexture), 0x8013CE58 - 0x8013D0A8.
  *
  * Function-boundary carve of the effect_visual suffix chunk (see
  * effect_visual.c): the stage checks are a compare chain (no jump table),
@@ -25,7 +25,7 @@ static inline u8* dobjGetMObj(u8* dobj)
 /* Copy the env-map texture parameters into the display object's TEV
  * stages once its material is the expected four-stage setup (stages 9, 10,
  * 11 and 13 with their fixed input/scale values); 0 if it is not. */
-u32 fn_8013CE58(void* inner, void* ptr) {
+u32 _seaResetMaterial(void* inner, void* ptr) {
     u8* p = ptr;
     u8* displayObject;
     u8* material;

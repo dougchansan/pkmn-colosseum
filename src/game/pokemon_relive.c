@@ -1022,7 +1022,7 @@ void waitTime__Ff(float r3)
   fVar1 = lbl_8047E660;
   while (fVar1 < dVar4) {
     _threadSwitch();
-    uVar2 = msgGetCharsPerFrame();
+    uVar2 = GSgetFrameStep();
     fVar1 += (float)uVar2;
   }
 

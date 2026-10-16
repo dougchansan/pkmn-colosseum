@@ -63,7 +63,7 @@ extern f32 lbl_8047A348;
 extern u8 lbl_8047A34C;
 
 extern s32 fn_800D37CC(void);
-extern u32 msgGetCharsPerFrame(void);
+extern u32 GSgetFrameStep(void);
 extern s32 soundGetStatus(s32 id);
 extern u32 fn_800F7AF0(s32 pad);
 extern u32 fn_800F7BC4(s32 pad);
@@ -161,7 +161,7 @@ void fn_8001EF78(void)
     TitleMenuWork* work;
 
     rate = fn_800D37CC();
-    lbl_8047A344 = msgGetCharsPerFrame() / rate;
+    lbl_8047A344 = GSgetFrameStep() / rate;
     lbl_8047A338 += lbl_8047A344 / 2.0f;
     if (lbl_8047A338 >= 1.0f) {
         lbl_8047A338 = 0.0f;

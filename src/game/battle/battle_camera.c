@@ -226,7 +226,7 @@ void battleCameraStartRandom(void) {
     extern f32 lbl_8047DF58;
     extern void* fn_801D2C6C(void);
     extern void fn_801D2C74(void* owner);
-    extern s32 msgGetCharsPerFrame(void);
+    extern s32 GSgetFrameStep(void);
     extern f32 fn_800E0BE4(void);
     extern u32 _fadeEffectGetRandom__FUl(u32 range);
 
@@ -247,7 +247,7 @@ void battleCameraStartRandom(void) {
         lbl_80478CA8 = 200;
         return;
     }
-    lbl_80478CA8 -= msgGetCharsPerFrame();
+    lbl_80478CA8 -= GSgetFrameStep();
     if (lbl_80478CA8 > 0) {
         return;
     }

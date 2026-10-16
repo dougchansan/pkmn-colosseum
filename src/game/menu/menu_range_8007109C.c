@@ -175,14 +175,14 @@ extern void _threadSwitch(void);
  * later than the first call sites. */
 static inline void MenuWaitMotionInterval(void)
 {
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
     extern s32 fn_800D37CC(void);
     f32 elapsed;
 
     elapsed = lbl_8047C0E0;
     while (elapsed < lbl_8047C0E4) {
         _threadSwitch();
-        elapsed += (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+        elapsed += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
     }
 }
 extern void winMsgOpenField(s32, s32, s32);
@@ -1656,7 +1656,7 @@ u8 fn_80077EA4(u16* s1, u16* s2) {
 
 
 extern s32 fn_800D37CC(void);
-extern u32 msgGetCharsPerFrame(void);
+extern u32 GSgetFrameStep(void);
 extern s32 menuOpen(s32, s32);
 extern s32 std011_dialogDisplayYesNoMenu(void);
 
@@ -1683,7 +1683,7 @@ extern const f32 lbl_8047C128;
             u32 ticks_;                  \
             _threadSwitch();             \
             frames_ = fn_800D37CC();     \
-            ticks_ = msgGetCharsPerFrame();      \
+            ticks_ = GSgetFrameStep();      \
             elapsed_ += (f32)ticks_ / (f32)frames_; \
         }                                \
     } while (0)
@@ -2299,7 +2299,7 @@ u32 fn_8007B6D8(GbaBootContext* context) {
 extern void __assert(const char* file, u32 line, const char* msg);
 extern s32 menuClose(s32);
 extern s32 fn_800D37CC(void);
-extern u32 msgGetCharsPerFrame(void);
+extern u32 GSgetFrameStep(void);
 extern s32 std011_dialogDisplayYesNoMenu(void);
 #endif /* MENU_R47_80077ED4_ONLY */
 
@@ -2330,7 +2330,7 @@ void fn_80077ED4(void)
     extern s32 fn_80093610(u32);
     extern void fn_80093698(u32);
     extern s32 fn_800D37CC(void);
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
 
     void* pokemon;
     void* name;
@@ -2352,7 +2352,7 @@ void fn_80077ED4(void)
         elapsed = lbl_8047C0E0;
         while (elapsed < lbl_8047C0E4) {
             _threadSwitch();
-            elapsed += (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+            elapsed += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
         }
         msgctrlSetValue(0x4D, (u32)name);
         menuSetEnablePort(1);
@@ -2406,7 +2406,7 @@ void fn_80077ED4(void)
             elapsed = lbl_8047C0E0;
             while (elapsed < lbl_8047C0E4) {
                 _threadSwitch();
-                elapsed += (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+                elapsed += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
             }
             msgctrlSetValue(0x4D, (u32)name);
             menuSetEnablePort(1);
@@ -2502,7 +2502,7 @@ void fn_80078390(void)
     elapsed = lbl_8047C0E0;
         while (elapsed < lbl_8047C0E4) {
             _threadSwitch();
-            elapsed += (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+            elapsed += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
         }
         msgctrlSetValue(0x4D, (u32)name);
         menuSetEnablePort(1);
@@ -2520,7 +2520,7 @@ void fn_80078390(void)
     elapsed = lbl_8047C0E0;
     while (elapsed < lbl_8047C0E4) {
         _threadSwitch();
-        elapsed += (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+        elapsed += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
     }
     msgctrlSetValue(0x4D, (u32)name);
     menuSetEnablePort(1);
@@ -2538,7 +2538,7 @@ void fn_80078390(void)
         elapsed = lbl_8047C0E0;
         while (elapsed < lbl_8047C0E4) {
             _threadSwitch();
-            elapsed += (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+            elapsed += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
         }
         menuSetEnablePort(1);
         winMsgOpenField(0x44B0, 1, 0);
@@ -2584,7 +2584,7 @@ void fn_800788BC(void* backup)
     extern s32 fn_801D0748(u32, u32, u32);
     extern void std130_soundUnk_801653cc(u32, u32, u32);
     extern s32 fn_800D37CC(void);
-    extern u32 msgGetCharsPerFrame(void);
+    extern u32 GSgetFrameStep(void);
 
     MenuSaveSnapshot* savedataBackup = backup;
     void* hero;
@@ -2619,7 +2619,7 @@ void fn_800788BC(void* backup)
         elapsed = lbl_8047C0E0;
         while (elapsed < lbl_8047C0E4) {
             _threadSwitch();
-            elapsed += (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+            elapsed += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
         }
         winMsgOpenField(0x43AC, 1, 0);
         winMsgClose(1);
@@ -2633,7 +2633,7 @@ void fn_800788BC(void* backup)
     elapsed = lbl_8047C0E0;
     while (elapsed < lbl_8047C0E4) {
         _threadSwitch();
-        elapsed += (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+        elapsed += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
     }
 
     *savedataBackup =
@@ -2649,7 +2649,7 @@ void fn_800788BC(void* backup)
         elapsed = lbl_8047C0E0;
         while (elapsed < lbl_8047C0E4) {
             _threadSwitch();
-            elapsed += (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+            elapsed += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
         }
         *(MenuSaveSnapshot*)savedataGetStatus(0, 0) =
             *savedataBackup;
@@ -2751,7 +2751,7 @@ void fn_80078D5C(void)
             elapsed = lbl_8047C0E0;
             while (elapsed < lbl_8047C0E4) {
                 _threadSwitch();
-                elapsed += (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+                elapsed += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
             }
             lbl_8047A620 = 0;
             break;
@@ -3164,7 +3164,7 @@ extern u32 lbl_802E61D8[];
 extern f32 lbl_8047C114;
 extern const f32 lbl_8047C128;
 extern s32 fn_800D37CC(void);
-extern u32 msgGetCharsPerFrame(void);
+extern u32 GSgetFrameStep(void);
 
 #define WAIT_MENU_TIME(limit_)           \
     do {                                 \
@@ -3174,7 +3174,7 @@ extern u32 msgGetCharsPerFrame(void);
             u32 ticks_;                  \
             _threadSwitch();             \
             frames_ = fn_800D37CC();     \
-            ticks_ = msgGetCharsPerFrame();      \
+            ticks_ = GSgetFrameStep();      \
             elapsed_ += (f32)ticks_ / (f32)frames_; \
         }                                \
     } while (0)
@@ -3299,7 +3299,7 @@ int fn_80079C1C(s32 arg0, int arg1, int arg2, s32 arg3) {
         f32 elapsed_ = lbl_8047C114;                          \
         while (elapsed_ < (limit_)) {                         \
             _threadSwitch();                                  \
-            elapsed_ += (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC(); \
+            elapsed_ += (f32)GSgetFrameStep() / (f32)fn_800D37CC(); \
         }                                                     \
     } while (0)
 
@@ -3536,7 +3536,7 @@ void fn_8007A850(void)
         }
         case 2:
         {
-            extern u32 msgGetCharsPerFrame(void);
+            extern u32 GSgetFrameStep(void);
             extern s32 fn_800D37CC(void);
             f32 elapsed;
 
@@ -3545,7 +3545,7 @@ void fn_8007A850(void)
             elapsed = lbl_8047C114;
             while (elapsed < lbl_8047C108) {
                 _threadSwitch();
-                elapsed += (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
+                elapsed += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
             }
             lbl_8047A638 = 1;
             break;
@@ -4084,7 +4084,7 @@ extern f64 sin(f64);
 extern void _flagSet();
 extern s32 menuIsCheck(s32);
 extern s32 fn_800D37CC(void);
-extern u32 msgGetCharsPerFrame(void);
+extern u32 GSgetFrameStep(void);
 extern u32 lbl_8047A610;
 extern u8 menuModelCheck(void*, s32);
 extern void* menuModelRender(void*);
@@ -4125,7 +4125,7 @@ void fn_800753D0(void)
     f32 delta;
 
     frames = (f32)fn_800D37CC();
-    *(f32*)lbl_8047A610 = (f32)msgGetCharsPerFrame() / frames;
+    *(f32*)lbl_8047A610 = (f32)GSgetFrameStep() / frames;
     *(f32*)(lbl_8047A610 + 0x18C) =
         180.0f + 40.0f * (f32)sin(*(f32*)(lbl_8047A610 + 4));
     if (*(f32*)(lbl_8047A610 + 0x18C) > 255.0f) {
@@ -4368,7 +4368,7 @@ void fn_80075DC8(void)
     elapsed = 0;
     while (elapsed < waitTicks) {
         _threadSwitch();
-        elapsed += msgGetCharsPerFrame();
+        elapsed += GSgetFrameStep();
     }
 
     std115_mapObjectPlayAnimation(0x0B541000, 2, 0, 1);

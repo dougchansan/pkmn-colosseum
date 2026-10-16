@@ -27,7 +27,7 @@ extern u32 dbgMenuFightGetMsgSpeedToFrame(void);
 extern void _threadSwitch(void);
 
 /* fn_800D3088: Returns frame delta or similar timing value */
-extern u32 msgGetCharsPerFrame(void);
+extern u32 GSgetFrameStep(void);
 
 /**
  * FightFloorData: static floor-definition record used by the

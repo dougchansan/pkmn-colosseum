@@ -7,7 +7,7 @@ typedef struct OSModuleInfo {
 
 extern BOOL Link(OSModuleInfo* module, void* bss, BOOL fixed);
 
-BOOL fn_8009ED4C(OSModuleInfo* module, void* bss)
+BOOL OSLink(OSModuleInfo* module, void* bss)
 {
     return Link(module, bss, FALSE);
 }
