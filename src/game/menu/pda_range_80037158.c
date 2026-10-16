@@ -5201,10 +5201,10 @@ void fn_800439BC(void* scene)
             buttons |= 1;
         }
         if (lbl_8047BD04 < pdaFabs(ang) && pdaFabs(ang) < lbl_8047BD08) {
-            if (ang >= lbl_8047BC94) {
-                buttons |= 8;
-            } else {
+            if (ang < lbl_8047BC94) {
                 buttons |= 4;
+            } else {
+                buttons |= 8;
             }
         }
     }
