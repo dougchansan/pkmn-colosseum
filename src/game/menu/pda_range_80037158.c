@@ -3862,6 +3862,13 @@ void fn_80044630(void) {
                     *(f32*)(S + 0x74) = lbl_8047BC94;
                     *(f32*)(S + 0x64) = lbl_8047BCF0;
                     switch (sub) {
+                    case 0:
+                        *(s32*)(S + 0x1C) = 0xD;
+                        *(s32*)(S + 0x24) = 2;
+                        *(f32*)(S + 0x60) = lbl_8047BC94;
+                        if (fn_801DAC3C(*(void**)(S + 0xA0)) != 0)
+                            GSmodelDestroyLinkedParticles();
+                        break;
                     case 1:
                         *(s32*)(S + 0x1C) = 0xD;
                         *(s32*)(S + 0x24) = 4;
@@ -3873,13 +3880,6 @@ void fn_80044630(void) {
                     case 2:
                         *(s32*)(S + 0x1C) = 0xD;
                         *(s32*)(S + 0x24) = 5;
-                        *(f32*)(S + 0x60) = lbl_8047BC94;
-                        if (fn_801DAC3C(*(void**)(S + 0xA0)) != 0)
-                            GSmodelDestroyLinkedParticles();
-                        break;
-                    case 0:
-                        *(s32*)(S + 0x1C) = 0xD;
-                        *(s32*)(S + 0x24) = 2;
                         *(f32*)(S + 0x60) = lbl_8047BC94;
                         if (fn_801DAC3C(*(void**)(S + 0xA0)) != 0)
                             GSmodelDestroyLinkedParticles();
