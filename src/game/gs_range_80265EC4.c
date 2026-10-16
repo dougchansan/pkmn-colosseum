@@ -70,10 +70,10 @@ void fn_80265F94(int r3)
 
 {
     extern s8 winMsgCheck();
-    extern u16 pokemonDataBiosGetVoice();
+    extern int pokemonDataBiosGetVoice();
     extern void* pokemonDataBiosGetPtr();
-    extern int soundGetStatus();
-    extern int soundStartSE();
+    extern int soundGetStatus(u16);
+    extern int soundStartSE(u16);
     extern u16 lbl_8047E6F8;
     extern f32 lbl_8047E6FC;
   u16 uVar1;
