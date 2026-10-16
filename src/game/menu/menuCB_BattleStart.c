@@ -16,11 +16,14 @@
 /* Wrapper units define one of these to emit only their own functions. */
 #if defined(MENUCB_BATTLESTART_8005E7F0_ONLY) || \
     defined(MENUCB_BATTLESTART_80060434_ONLY) || \
+    defined(MENUCB_BATTLESTART_800609B4_ONLY) || \
+    defined(MENUCB_BATTLESTART_80060A28_ONLY) || \
     defined(MENUCB_BATTLESTART_80060D70_ONLY) || \
     defined(MENUCB_BATTLESTART_8006106C_ONLY) || \
     defined(MENUCB_BATTLESTART_80061454_ONLY) || \
     defined(MENUCB_BATTLESTART_80061BBC_ONLY) || \
     defined(MENUCB_BATTLESTART_80061D34_ONLY) || \
+    defined(MENUCB_BATTLESTART_80061F6C_ONLY) || \
     defined(MENUCB_BATTLESTART_80062284_ONLY) || \
     defined(MENUCB_BATTLESTART_800626CC_ONLY) || \
     defined(MENUCB_BATTLESTART_80062834_ONLY) || \
@@ -219,7 +222,7 @@ static inline u8 battleStartDrainHp(void)
 #if !defined(MENUCB_BATTLESTART_SPLIT_UNIT) || defined(MENUCB_BATTLESTART_8005DFC8_ONLY)
 void fn_8005DFC8(void* arg)
 {
-    extern u8 fn_80069048(void);
+    extern u8 menuCBPokemonEntryGetReadFlag(void);
     extern u32 msgGetCharsPerFrame(void);
     extern s32 fn_800D37CC(void);
     extern s32 soundGetStatus(u32);
@@ -657,6 +660,7 @@ typedef struct MenuCBBattleStartSpriteEntry {
 } MenuCBBattleStartSpriteEntry;
 
 #if !defined(MENUCB_BATTLESTART_SPLIT_UNIT) || \
+    defined(MENUCB_BATTLESTART_800609B4_ONLY) || \
     defined(MENUCB_BATTLESTART_8006106C_ONLY) || \
     defined(MENUCB_BATTLESTART_80061BBC_ONLY)
 #if defined(MENUCB_BATTLESTART_8006106C_ONLY) || \
@@ -771,7 +775,7 @@ void _menuCBBattleStartSetIndex__Fv(void)
 }
 #endif
 
-#if !defined(MENUCB_BATTLESTART_SPLIT_UNIT)
+#if !defined(MENUCB_BATTLESTART_SPLIT_UNIT) || defined(MENUCB_BATTLESTART_80061F6C_ONLY)
 /* RULE-EXCEPTION(user-approved): single-function inline helper (menuCBBattleStartInit) — see docs/RULE_EXCEPTIONS.md */
 static inline u8 battleStartTypeCompatible(void)
 {
@@ -794,7 +798,7 @@ static inline u8 battleStartTypeCompatible(void)
 }
 #endif
 
-#if !defined(MENUCB_BATTLESTART_SPLIT_UNIT)
+#if !defined(MENUCB_BATTLESTART_SPLIT_UNIT) || defined(MENUCB_BATTLESTART_80061F6C_ONLY)
 /* RULE-EXCEPTION(user-approved): single-function inline helper (menuCBBattleStartInit) — see docs/RULE_EXCEPTIONS.md */
 static inline void battleStartInitHp(void)
 {
@@ -828,7 +832,7 @@ static inline void battleStartInitHp(void)
 }
 #endif
 
-#if !defined(MENUCB_BATTLESTART_SPLIT_UNIT)
+#if !defined(MENUCB_BATTLESTART_SPLIT_UNIT) || defined(MENUCB_BATTLESTART_80061F6C_ONLY)
 void menuCBBattleStartInit(void* menu, s32 mode)
 {
     extern s32 toolentryTaisenGetBattleType(void);
@@ -1107,7 +1111,7 @@ static inline void battleStartInterpolate(f32* current, f32* target, f32 delta)
     }
 }
 
-#if !defined(MENUCB_BATTLESTART_SPLIT_UNIT)
+#if !defined(MENUCB_BATTLESTART_SPLIT_UNIT) || defined(MENUCB_BATTLESTART_80060A28_ONLY)
 void fn_80060A28(void)
 {
     extern const f32 lbl_8047BF60;

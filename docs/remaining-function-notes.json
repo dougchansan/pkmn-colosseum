@@ -1,0 +1,362 @@
+{
+  "fn_80009178": {
+    "best_local_change": "Linked exact in gs_range_80009178; existing C body was already 100%.",
+    "remaining_diff": "None; the whole three-function unit is 100% and canonical hashes pass.",
+    "pipeline_action": "When all functions in a candidate unit are text-exact, test whole-unit source order and the final link before asking m2c for another translation.",
+    "rejected_probes": "The first promotion failed because the function definitions were out of retail order and an unreferenced sibling was dead-stripped."
+  },
+  "fn_800093D0": {
+    "best_local_change": "Moved its unchanged C definition before fn_800094A4 and added it to main force_active_symbols; linked exact.",
+    "remaining_diff": "None; retail address 0x800093D0 is preserved and canonical hashes pass.",
+    "pipeline_action": "Detect exact functions dropped by linker garbage collection; report a force-active or reference requirement separately from C matching.",
+    "rejected_probes": "Reordering alone left this function dead-stripped, placing fn_800094A4 at its address."
+  },
+  "fn_800094A4": {
+    "best_local_change": "Moved behind fn_800093D0 in source order; existing C body was already 100% and is now linked exact.",
+    "remaining_diff": "None; retail address 0x800094A4 is preserved and canonical hashes pass.",
+    "pipeline_action": "Compare candidate function order with retail addresses when promoting a multi-function unit; exact per-function text alone is insufficient.",
+    "rejected_probes": "Promotion before source reordering linked this function at 0x800093D0."
+  },
+  "fn_8002B40C": {
+    "best_local_change": "Carved the already 100% shop angle callback into a standalone exact unit; imported its byte-verified shared float pool and linked it.",
+    "remaining_diff": "None; all 392 code bytes match and all 26 canonical hashes pass.",
+    "pipeline_action": "For exact functions trapped between nonexact neighbors, propose a split and verify both private literal ownership and the complete DOL hash before promotion.",
+    "rejected_probes": "Linking the isolated object without a constant import duplicated a 24-byte private .sdata2 pool and failed the main.dol hash."
+  },
+  "fn_8002B594": {
+    "best_local_change": "No accepted change; original shop draw routine remains 99.919785% in its own candidate unit.",
+    "remaining_diff": "The final color-mask sequence differs in three register/scheduling instructions: retail uses clrlwi r5; li r0,-0x100; or r7,r5,r0.",
+    "pipeline_action": "Distinguish register-allocation and expression-lowering mismatches even when equivalent color-mask forms are available; do not promote lower-score variants. A stale Windows full-TU workunit scored 1750 rather than its recorded 15 on this Mac, and a freshly generated isolated unit failed the full-TU fidelity gate even with peephole and optimization pragmas; regenerate a valid owner-context workunit before trusting permuter results.",
+    "rejected_probes": "One-line OR, explicit low-byte/mask temporaries, an OR expression directly in the draw call, and initializing color from the low byte before ORing the mask all compiled to a larger oris/ori sequence. Using color_byte & 0xff was byte-identical. Scoped opt_propagation off rotated registers throughout the function and regressed sharply."
+  },
+  "fn_8004E180": {
+    "best_local_change": "Carved this 352-byte PDA mail attachment-label callback and its exact sibling into one complete linked unit.",
+    "remaining_diff": "None; the two-function unit is 100% and all 26 canonical hashes pass.",
+    "pipeline_action": "Keep the proven pdaMailIsAttachReady/pdaMailCountAttachItems inline context with both callbacks, then validate the combined .text, shared bias import, and full link.",
+    "rejected_probes": "Without the byte-verified constant import, the isolated object emitted a duplicate 8-byte signed conversion bias."
+  },
+  "fn_8004E2E0": {
+    "best_local_change": "Carved this 352-byte PDA mail attachment-position callback with fn_8004E180 into one complete linked unit.",
+    "remaining_diff": "None; the combined unit is 100% and all 26 canonical hashes pass.",
+    "pipeline_action": "Verify that its private signed-conversion bias is 4330000080000000 and import retail-owned lbl_8047BE40 before linking.",
+    "rejected_probes": "The first isolated object had a private .sdata2 bias; text-only 100% was not sufficient for the DOL hash."
+  },
+  "fn_80073E8C": {
+    "best_local_change": "Carved fn_80073E8C into its own GC/2.0 object and imported the 101-byte .rodata string prefix from lbl_80268780; the full unit is linked exact.",
+    "remaining_diff": "None; the 1176-byte function and unit are 100%, and all 26 canonical hashes pass.",
+    "pipeline_action": "For an exact text candidate in an oversized wrapper, isolate the function, compare emitted data to retail ownership, and import a verified shared -rostr pool prefix before promotion.",
+    "rejected_probes": "Direct promotion of the uncarved wrapper duplicated unrelated code and data; isolated promotion without constant_import duplicated its 101-byte string pool and failed all canonical hashes."
+  },
+  "__OSReboot": {
+    "best_local_change": "No accepted local improvement; full-report score remains 99.49519%.",
+    "remaining_diff": "At offset 0x14 retail emits addi directly into r30, while MWCC emits addi into r0 followed by mr r30,r0.",
+    "pipeline_action": "Classify addi-plus-mr versus direct-addi as a register-allocation mismatch; simple pointer qualifiers did not fix it.",
+    "rejected_probes": "A const pointer, register pointer, and separately assigned pointer produced the same extra copy."
+  },
+  "fn_800192A8": {
+    "best_local_change": "No source change yet; full-report score is 99.60145%.",
+    "remaining_diff": "Nine aligned instructions differ only in the r28/r30 assignment to the indexed item pointer and loop counter.",
+    "pipeline_action": "Surface register-role permutations as a distinct diff class so generated drafts can vary lifetime and declaration order deliberately.",
+    "rejected_probes": "None yet. This is a register-allocation target, not a missing expression or opcode."
+  },
+  "fn_800308D4": {
+    "best_local_change": "No accepted local improvement; full-report score is 99.13043%.",
+    "remaining_diff": "The sprite, pokemon, and combined values are allocated to r31/r30/r29 in retail but r30/r29/r31 in the candidate.",
+    "pipeline_action": "Track long-lived local register roles across calls; declaration swaps alone need not change MWCC allocation.",
+    "rejected_probes": "Swapping the pokemon and combined declarations did not affect the register assignment."
+  },
+  "fn_80068794": {
+    "best_local_change": "No accepted local improvement; baseline full-report score is 98.552635%.",
+    "remaining_diff": "Retail loads the shared lbl_8047BFE8 zero at offset 0x7c and branches with ble; candidate uses a local zero at 0x7c and bge plus b.",
+    "pipeline_action": "Score literal ownership, instruction scheduling, and branch shape together; substituting the right symbol in isolation regressed the match.",
+    "rejected_probes": "Replacing 0.0f with lbl_8047BFE8 scored 92.36842%; changing < to <= as well scored 91.052635%. Both moved the zero load after pointer arithmetic and changed register scheduling. Local <= 0.0f emitted cror plus bne and the same private zero. !(difference > 0.0f) emitted mfcr/extrwi/cmpwi. A > 0.0f ternary produced the target ble/b branch pair but moved the scale load early and changed floating register assignment. All source probes were reverted."
+  },
+  "fn_8007C7EC": {
+    "best_local_change": "No source change yet; full-report score is 99.830505%.",
+    "remaining_diff": "Five aligned instructions differ only by r29 versus r27 for the byte at context offset 0xB5.",
+    "pipeline_action": "Label pure register-allocation diffs separately from semantic translation errors.",
+    "rejected_probes": "None yet. The current evidence points to register allocation rather than a missing operation."
+  },
+  "menuFightDrawTargetSecret": {
+    "best_local_change": "No accepted local improvement; current full-report score is 99.2%.",
+    "remaining_diff": "The only aligned diff is retail li r4,0 versus candidate subi r4,r5,2 for the final winSpriteSetDisp call.",
+    "pipeline_action": "Keep local value-lifetime effects in the search space: replacing an expression with the retail literal changed earlier loop register allocation.",
+    "rejected_probes": "Replacing i-2 with literal 0 or i-i changed loop liveness and lowered the score to 97.10667%."
+  },
+  "fn_8003842C": {
+    "best_local_change": "Isolated the driver in its candidate object; full report remains 98.146255%.",
+    "remaining_diff": "Global table address load order, repeated addi-zero versus mr copies, and the save-result copy differ from retail. The isolated compiled .text is 0x494 bytes against the 0x498-byte retail function. GC/1.3 microprobes of assignment, +0, first-member addresses, volatile first-member addresses, typed-row iteration, canceled nonzero offsets, and C++ zero-offset base conversion all emitted mr; these tests do not prove an exact C source impossible, but rule out more identity-pointer spelling probes.",
+    "pipeline_action": "Require the full-TU fidelity gate and target-local peephole off for a local permuter workunit, then validate candidates in the canonical report. Search source shapes that separate global load order from long-lived r29/r30 allocation; base-first evaluation, an inlined refs initializer, and reversed field order all rotated those registers to 97.87415%. A sequenced assignment also scored 97.87415%; a typed first-member zero-offset source, scoped opt_common_subs off, and interleaving state initialization between the two refs assignments were byte-identical. -O4,s and helper-local peephole off were byte-identical. The first 1,067-variant search and a second 1,470-variant search with additional expression/inline/block mutations found nothing below score 1545; shift to a different source hypothesis. The best local m2c draft remains 96.20748%, below source. The Windows farm was unreachable on 2026-10-14.",
+    "rejected_probes": "Swapping table initialization scored 97.87415%; moving state assignment before model teardown or assigning the save result directly to state scored 97.82313%; deriving the first helper's zero offset from its loop index scored 98.0102%. Computing the first copy source as tbl + i*0x18 inside the loop retained 294 instructions but cut aligned-same instructions from 280 to 250; reverted. Aggregate initialization of the retained pointers spilled them to the stack and scored 82.02381%. Function-level opt_lifetimes off scored 97.68707%; unit-wide -opt nopeephole and void*-parameter helper locals left the 98.146255% score unchanged. Direct-global helpers, structured global typing, save-result local, refs field order, a typed 0x18-byte table-record pointer, peephole off around the inline helpers, function-level opt_propagation off, and passing &base[0] lowered or did not change the match. Initializing state/running before the retained pointers and spelling the first table source as tbl rather than tbl+0 were byte-identical. A preloaded base-pointer alias put the global loads in retail order and restored their later register roles, but inserted an r0-to-r29 copy and scored 97.14286%; declaration initialization and a register hint did not change that output. Function-level scheduling off scored 86.15646%. Swapping both refs field and assignment order scored 97.87415%; plain pointer locals scored 97.19388% or 97.46599% depending on ordering. GC/1.3.2 and GC/2.0 also scored 98.146255%; GC/1.2.5n scored 74.34013%. The best m2c draft across local batches scored 96.20748%. A freshly generated full-TU-fidelity workunit needed target-local peephole off and scored 1545 with the local permuter; a bounded search produced no lower score. Moving the refs declaration below scalar locals was byte-identical. A full-TU probe colocating the table definition and base BSS symbol scored 92.94218% and retained the wrong global load order and mr copies."
+  },
+  "menuShopOpen": {
+    "best_local_change": "No accepted source change; the 184-byte function remains 99.67391% in a two-function incomplete unit.",
+    "remaining_diff": "Retail loads literal 1 before the state address; candidate emits the same two instructions in reverse order at offsets 0x44 and 0x48.",
+    "pipeline_action": "Treat adjacent independent instruction-order mismatches as scheduling problems; do not assume statement reordering preserves store order or that pointer-shape changes are local.",
+    "rejected_probes": "Reversing the two state stores scored 97.065216%; a separate active local and a volatile state pointer both emitted baseline code; an array-pointer rewrite scored 89.54348%. A standalone menuShopOpen candidate retained the same scheduling mismatch under GC/1.3, GC/1.3.2, and GC/2.0 and introduced a private conversion-bias literal. Function-local scheduling off regressed to 68.41304%. All probes were reverted."
+  },
+  "menuCBBattleStartInit": {
+    "best_local_change": "Isolated the 792-byte function and imported its private 8-byte conversion bias from retail-owned lbl_8047BF88; score stays 99.79798% in an incomplete unit.",
+    "remaining_diff": "Only eight uses of menu, mode, and first-battle-type values rotate among r28/r30/r31; there are no inserted, deleted, or reordered instructions and no private literal remains.",
+    "pipeline_action": "Separate register-role rotations from literal-pool ownership: isolate the function, import a byte-verified shared bias, and search register live ranges against an independently reproduced score before promotion.",
+    "rejected_probes": "Reordering the compatibility helper's local declarations, local argument aliases, an inline menu-state helper in both argument orders, declaration initializers, register hint, and scoped opt_lifetimes off were byte-identical. Initializing compatible before the first battle-type call scored 98.78788%; widening the helper's boolean and return type to s32 scored 98.71212%. GC/1.3.2 and GC/2.0 scored the same 99.79798% as GC/1.3; target-verified GC/1.2.5n scored 74.08081%. A local permuter baseline reproduced 8 register differences (score 40); 1111 reorder variants and a bounded register-focused run found no score below 40."
+  },
+  "fn_80038A0C": {
+    "best_local_change": "Using s16 state and initializing running before state raised the full-report score to 98.241135%. A byte-verified constant import now resolves the conversion bias to retail-owned lbl_8047BA88.",
+    "remaining_diff": "Register allocation and four extra text bytes remain; the private conversion literal is resolved.",
+    "pipeline_action": "Include signedness and initialization-order variants for state-machine locals; s16 state plus running-first initialization improved this candidate. Use a byte-verified constant import when a candidate's private literal is identical to a retail-owned shared constant. Passing slot-0x48 to the reset helper, deriving the teardown base from slot-0x48, and a register hint on slot all compiled byte-identically; none kept the slot pointer in a saved register. GC/1.3.2 and GC/2.0 produced the same 98.241135%/96.4% paired-unit scores as GC/1.3.",
+    "rejected_probes": "s32 state with reversed table initialization, a wider saved flag, and field-order changes lowered or did not change the match. Reversing table initialization with the improved s16 state scored 98.17021%; routing the first floor-id store through the existing slot pointer emitted baseline code. Plain base/table locals scored 97.8688%, and initializing base before table scored 97.797874%. A typed floor-slot pointer was byte-identical and still did not retain the pointer in r28. A separate s32-state probe scored 98.11702%; volatile accesses through the save-slot pointer emitted the same base-offset stores. -O3 was byte-identical; -O4,s kept fn_80038A0C at 98.241135% but regressed sibling fn_80038E74 from 96.4% to 61.18%. All source probes were reverted."
+  },
+  "fn_80038E74": {
+    "best_local_change": "The current volatile first float load plus byte-indexed record lookup scores 96.4% in the full report.",
+    "remaining_diff": "The byte-index cast emits an extra clrlwi; full-width indexing removes it but changes register allocation and instruction order.",
+    "pipeline_action": "Require a full-TU fidelity gate with target-local peephole off before permuting this widget; remeasure every lower permuter score in the canonical report because its score is not monotonic with fuzzy match. Sharing the coordinate base with full-width indexing scored 92.45%, and sharing it with the byte-index expression scored 93.05%; do not repeat these forms. GC/1.3.2 and GC/2.0 were byte-identical to the GC/1.3 paired-unit baseline.",
+    "rejected_probes": "Changing the enabled-byte lookup to a direct full-width byte offset scored 95.9%; a separate s32 index or full-width typed access scored 95.6%; a typed record-pointer local scored 96.2%; a narrowed u8 index or permuter's i&0xff position index scored 95.44%; moving the first sprite-coordinate store before the enabled lookup scored 93.4%. A shared position pointer plus full-width lookup scored 92.45% because MWCC duplicated the float load and changed loop-index registers; changing only the lookup width scored 95.6%. Pointer/declaration order changes did not improve the full-width variant. Removing the (u8)i record index rotated the loop register and regressed the canonical score; moving the position-pointer declaration before the volatile float load was byte-identical. The local permuter passed its fidelity gate only with target-local peephole off; its score improved from 640 to 460, but the canonical score regressed. A fresh full-width record index scored 95.6%; precomputing its typed record pointer before the float loads was byte-identical to that regression. All probes were reverted."
+  },
+  "fn_8004E144": {
+    "best_local_change": "No accepted change; the original candidate remains unlinked despite a text-only 100% report score.",
+    "remaining_diff": "The original source overwrites the 2pi local with zero. Its compiled second lfd relocates to a private 0.0 double, while retail loads lbl_8047BE30 (2pi). Correcting the source gives the right relocation but rotates f1/f2 and scores 98.333336%.",
+    "pipeline_action": "Require relocation-target and literal-value comparison, not text-only fuzzy 100%, before promoting an isolated function. Flag semantically wrong dead-value assignments even when instruction bytes match.",
+    "rejected_probes": "The text-exact standalone carve failed the main.dol hash because it added a private eight-byte zero pool. A correct 2pi assignment, a changed alias, reversed initialization, and scoped opt_lifetimes off scored 98.333336%; an explicit angle temporary regressed further. The carve and probes were removed."
+  },
+  "fn_8004DFCC": {
+    "best_local_change": "Carved the already-exact 376-byte PDA mail picker into its own complete linked unit.",
+    "remaining_diff": "None in this function; all canonical DOL/REL hashes pass.",
+    "pipeline_action": "For an exact function in a mixed candidate, isolate its source and check private sections and the full link; do not infer acceptability from fuzzy text alone.",
+    "rejected_probes": "No source-shape probe was needed; the standalone object had only text and relocations."
+  },
+  "fn_8004E440": {
+    "best_local_change": "Carved the existing 208-byte attachment callback and its two inline helpers into a standalone exact unit; linked with no private data.",
+    "remaining_diff": "None in this function; fn_8004E510 remains 99.4375% in the adjacent candidate.",
+    "pipeline_action": "Isolate a text-exact callback with its proven inline helpers, inspect relocations and private sections, then require all canonical hashes before promotion.",
+    "rejected_probes": "No source-shape probe was needed; the first isolated object matched all text and passed the complete link."
+  },
+  "fn_80043CD8": {
+    "best_local_change": "Carved the existing 232-byte exact PDA sprite callback into its own Matching unit, preserving its approved allocation-shaping C and peephole-off pragma; 100% complete and linked with all 26 canonical hashes passing.",
+    "remaining_diff": "None in this function; the preceding PDA candidate remains incomplete.",
+    "pipeline_action": "Isolate an already-exact callback while preserving function-local compiler controls, then compare its private literal pool and retail relocation. A byte-verified import of the int-to-float bias from lbl_8047BCB0 removes the duplicate section without touching code bytes.",
+    "rejected_probes": "Text-only promotion emitted a private 8-byte .sdata2 bias and failed the DOL hash."
+  },
+  "fn_80076054": {
+    "best_local_change": "No accepted local improvement; current full-report score is 99.891304%.",
+    "remaining_diff": "Retail uses slwi index; addi table base by 0xFC; lhzx. Candidate combines index and 0xFC before lhzx.",
+    "pipeline_action": "Compare indexed-address decomposition as an explicit codegen feature rather than rewriting the base type without measurement.",
+    "rejected_probes": "A direct pointer to text+0xFC, separately named byte-offset/table-base locals, a volatile-qualified table access, and a static inline table-base helper all scored 99.347824%; reusing a shared table-base pointer for the error table and nearby rule strings scored 98.49457%; typing the pooled text base as MenuRuleText scored 95.42391%."
+  },
+  "fn_8006F720": {
+    "best_local_change": "Linked the existing 1244-byte text-exact carve by importing retail-owned jumptable_802EE06C after byte-for-byte and 33-relocation comparison; the complete unit is 100% and all 26 canonical hashes pass.",
+    "remaining_diff": "None. The compiler's private 0x84-byte .data table was identical to the extracted retail owner and is removed after its two text references are redirected.",
+    "pipeline_action": "For text-exact switch functions, compare compiled and retail-owned table bytes and every function-offset relocation. A verified table import can link a 4-mod-8 retail table from an isolated 8-aligned compiler object without duplicating data.",
+    "rejected_probes": "Direct CodeCandidate-to-Matching promotion without table sharing duplicated 0x84 bytes of .data and failed all 26 canonical hashes. The existing constant_import tool correctly rejects relocated .data tables."
+  },
+  "fn_8007C7EC": {
+    "best_local_change": "Isolated 708-byte GC/2.0 candidate remains 99.830505%.",
+    "remaining_diff": "Five instructions in the final sub-index loop use r27 instead of retail r29; other instruction shape and order match.",
+    "pipeline_action": "Search live-range/register-allocation variants for the signed-byte countdown without changing its u8 storage or introducing a separate data section.",
+    "rejected_probes": "Moving subIndex after count or into the entry block scored 99.717514%; changing it to s8 scored 98.38983%. Register hint, swapping it before savedIndex, and spelling the for loop as while were byte-identical. A generated workunit passed exact-compiler/full-TU fidelity at scorer baseline 30; a bounded 508-iteration local permuter search found no lower score. All source probes were reverted."
+  },
+  "fn_800308D4": {
+    "best_local_change": "Single-function 368-byte candidate remains 99.13043%.",
+    "remaining_diff": "Sixteen instruction operands form a consistent r29/r30/r31 register-role rotation; instruction shape and order match.",
+    "pipeline_action": "Classify consistent register-role rotations separately from missing instructions; prioritize live-range or helper-boundary candidates over semantic rewrites.",
+    "rejected_probes": "Swapping pokemon/combined declaration order and adding a register hint to combined were byte-identical; both were reverted."
+  },
+  "fn_80021B14": {
+    "best_local_change": "The isolated 1340-byte GC/1.3 candidate remains 99.82089%; a local validation artifact confirms exactly one different 32-bit instruction word.",
+    "remaining_diff": "At instruction 316, retail emits mr r3,r0 (7c030378), while the u8 result local emits clrlwi r3,r0,24 (5403063e). Text length and relocation identity match.",
+    "pipeline_action": "Search a return-value source shape that keeps the result in r0 but omits redundant byte extension under GC/1.3 with -opt nopeephole; validate the full owner and linked hashes before promotion.",
+    "rejected_probes": "s32 or u32 result and direct 0/1 returns scored 99.656715% because MWCC wrote r3 directly; s32 declaration before item_param was identical to that regression. s8 result stayed 99.82089% but emitted extsb r3,r0. GC/1.3.2 with the original source scored 99.656715%; enabling peephole optimization for this object scored 80.48358%. The cached 65-variant refinement run reported no improvement. All probes were reverted."
+  },
+  "fn_8003D818": {
+    "best_local_change": "180-byte function remains 99.333336% inside a seven-function incomplete PDA unit.",
+    "remaining_diff": "Only the final store differs: retail loads lbl_8047A4E8 into r3 then addresses lbl_803A6818 in r4; candidate loads the address into r3 and count into r0.",
+    "pipeline_action": "For near-exact global stores, score address/value evaluation order separately from control flow. Preserve the full translation-unit context while searching: standalone isolation lowered this function from 99.333336% to 94.888885%.",
+    "rejected_probes": "Using the existing work pointer for the final field store scored 95.22222%; named count/destination locals, a two-argument inline store helper, a local aggregate, and volatile qualification on either the final read or destination were byte-identical. Standalone isolation scored 94.888885% under GC/1.3, GC/1.3.2, GC/2.0 and default optimization; the full-context candidate scored 99.333336% under all three compiler versions. All probes were reverted."
+  },
+  "fn_800609B4": {
+    "best_local_change": "Carved the existing 116-byte exact function from the two-function battle-start candidate into its own Matching unit; 100% complete and linked, with all 26 canonical hashes passing.",
+    "remaining_diff": "None for fn_800609B4. Its 840-byte neighbor fn_80060A28 remains a 98.5% CodeCandidate in a separate unit.",
+    "pipeline_action": "When a multi-function candidate contains an exact function, test a one-function wrapper and split before regenerating that function; preserve the unmatched sibling as a separate candidate.",
+    "rejected_probes": "No C-body rewrite needed; whole-unit promotion was blocked by the unmatched sibling."
+  },
+  "fn_80039A50": {
+    "best_local_change": "Carved the 52-byte PDA caption function into its own Matching unit with its approved local peephole-off pragma; the unit is 100% complete and linked, with all 26 canonical hashes passing.",
+    "remaining_diff": "None. Neighbor fn_80039A84 is now also 100% in its own complete linked unit.",
+    "pipeline_action": "When an exact function is trapped beside an unmatched sibling, split the text range and preserve any function-local compiler setting in the isolated unit; exact text in the combined candidate did not guarantee an exact standalone build.",
+    "rejected_probes": "The first standalone C copy without the approved peephole-off pragma scored 69.23077% because argument and return-value scheduling changed."
+  },
+  "fn_80039A84": {
+    "best_local_change": "100% and whole unit linked on 2026-10-16: REA's matched cursor idiom removed both down-cursor temporaries; a faithful GC/2.6 MWCC allocator trace then motivated countTotal/target reuse with opt_lifetimes off, plus a distinct previousPageTop. Canonical GC/1.3 emits all 1216 text bytes and 70 relocation records exactly. Standalone unit emits only fn_80039A84; all 26 canonical hashes and native policy acceptance pass with documented byte-match-first exceptions.",
+    "remaining_diff": "None. The complete one-function unit main/game/menu/pda_candidate_80039A50 is Matching, linked and native-policy accepted. Native binding and other incomplete PDA units are separate work.",
+    "pipeline_action": "Use REA for matched examples and full dependency-expression changes, then compiler IR when assembly semantics no longer explain allocation. Verify debugger-lane fidelity first: GC/2.6 and canonical GC/1.3 emitted the same 304 incumbent instructions. Trace allocation priority/range splitting, test interacting local reuse and optimizer settings, and isolate lifetimes that regress elsewhere. Keep canonical objdiff/raw bytes/relocations/full-link gates; explicitly tag and list every shaping or pragma exception and run the native policy checker. Evidence: docs/REA_FN_80039A84_TRIAL.md.",
+    "rejected_probes": "Before the full REA trial: lookup-helper reorder regressed to 99.27631%; inline touch loops, count/index type and scope variants, register hints, cursor temporaries, and helper peephole changes did not beat 99.93421%. GC/1.3.2 and GC/2.0 retained an older 99.802635% candidate. The full REA trial measured 118 isolated builds: 27 bounded-count/cursor variants, 43 ignored-result helper/parameter variants, and 48 item-local helper variants. Three equivalent direct-global cursor spellings reached 99.96710%; all follow-up count-helper trials tied or regressed. Ghidra value-flow/type queries did not recover an original source type; Rizin decoded the mismatching instructions but its function analysis missed conditional branches. No rejected candidate was integrated."
+  },
+  "fn_8003C24C": {
+    "best_local_change": "Carved the existing 108-byte exact PDA sprite callback into a standalone Matching unit at 0x8003C24C-0x8003C2B8; fresh report marks it 100% and complete, and all 26 canonical hashes pass.",
+    "remaining_diff": "None in this function; the adjacent candidates remain incomplete because their own functions are unmatched.",
+    "pipeline_action": "Carve byte-exact functions from mixed candidate units by splitting at their function boundaries; use a standalone source with only the required structure offsets and verify the complete link before promotion.",
+    "rejected_probes": "No body rewrite required."
+  },
+  "fn_8003C728": {
+    "best_local_change": "Carved the existing 152-byte exact PDA sprite callback into its own Matching unit; 100% complete and linked with all 26 canonical hashes passing.",
+    "remaining_diff": "None in this function; its neighboring PDA candidates still contain unmatched functions.",
+    "pipeline_action": "Split exact callbacks at function boundaries, then inspect standalone .sdata2 for duplicated literals. Reuse the retail-owned int-to-float bias lbl_8047BAE0 through a byte-verified constant import.",
+    "rejected_probes": "Text-only promotion emitted a private 8-byte .sdata2 bias and failed the DOL hash."
+  },
+  "fn_8003CE1C": {
+    "best_local_change": "Carved the existing 284-byte exact PDA caption callback into its own Matching unit, preserving the approved function-local peephole-off pragma; 100% complete and linked with all 26 canonical hashes passing.",
+    "remaining_diff": "None in this function; preceding PDA candidates remain incomplete.",
+    "pipeline_action": "Preserve scoped compiler-control pragmas when isolating an exact function from a mixed candidate unit, and verify the full link after the split.",
+    "rejected_probes": "No body rewrite or constant import required."
+  },
+  "fn_8003D1FC": {
+    "best_local_change": "Carved the existing 716-byte exact PDA memo-camera function and its inline setup helper into a standalone Matching unit; 100% complete and linked with all 26 canonical hashes passing.",
+    "remaining_diff": "None in this function; the following PDA memo functions remain in an incomplete candidate unit.",
+    "pipeline_action": "For a large exact function with an inline helper, copy its C body and only the helper's required declarations into a dedicated source object, split at the next function boundary, and verify the complete DOL/REL link. This function needed no constant import.",
+    "rejected_probes": "No body rewrite required."
+  },
+  "fn_800478B4": {
+    "best_local_change": "Carved the existing 1,036-byte exact PDA compared-model framing function into a standalone Matching unit; 100% complete and linked with all 26 canonical hashes passing.",
+    "remaining_diff": "None in this function; its preceding PDA candidate remains incomplete.",
+    "pipeline_action": "When isolating a floating-point function, compare the standalone literal pool and objdiff relocations after text matching. This carve needed a byte-verified import of the retail-owned int-to-float bias lbl_8047BCB0.",
+    "rejected_probes": "Text-only promotion emitted a private 8-byte .sdata2 bias and failed the DOL hash."
+  },
+  "fn_80039F70": {
+    "best_local_change": "Carved the existing 412-byte exact PDA callback into its own Matching unit at 0x80039F70-0x8003A10C; full report marks it 100% and complete, and all 26 canonical hashes pass.",
+    "remaining_diff": "None for this function. Its sibling fn_8003A10C remains 99.02299% and unlinked in the suffix candidate.",
+    "pipeline_action": "For exact functions isolated from a larger translation unit, compare full DOL hashes after text matching. This callback's three 0.0f references needed relocation-verified reuse of lbl_8047BAB0; text-only matching was insufficient.",
+    "rejected_probes": "Without constant import, the new private .sdata2 word changed DOL size and failed the hash. Importing the equally valued lbl_8047BC94 restored size but left three wrong relocations; the retail symbol is lbl_8047BAB0."
+  },
+  "fn_800376F8": {
+    "best_local_change": "Carved the four 188-byte fade callbacks into one 752-byte Matching unit; this function is 100% linked and all 26 canonical hashes pass.",
+    "remaining_diff": "None; the following four orbit callbacks remain incomplete in the suffix candidate.",
+    "pipeline_action": "Group adjacent exact callbacks with the same compiler setting, then verify shared literal ownership and the full DOL hash. GC/1.3 -opt nopeephole and a byte-verified import of 0.0f from lbl_8047BA58 linked the run.",
+    "rejected_probes": "Text-exact promotion without the import emitted a private .sdata2 word and failed the DOL hash."
+  },
+  "fn_800377B4": {
+    "best_local_change": "Carved with the contiguous fade-callback run into a 100% linked unit; all 26 canonical hashes pass.",
+    "remaining_diff": "None in this function.",
+    "pipeline_action": "Use the same source macro and unit-level no-peephole setting for repeated callbacks, then check literal relocations during link validation.",
+    "rejected_probes": "Text-only matching did not account for the isolated unit's private 0.0f literal."
+  },
+  "fn_80037870": {
+    "best_local_change": "Carved with the contiguous fade-callback run into a 100% linked unit; all 26 canonical hashes pass.",
+    "remaining_diff": "None in this function.",
+    "pipeline_action": "Use the same source macro and unit-level no-peephole setting for repeated callbacks, then check literal relocations during link validation.",
+    "rejected_probes": "Text-only matching did not account for the isolated unit's private 0.0f literal."
+  },
+  "fn_8003792C": {
+    "best_local_change": "Carved with the contiguous fade-callback run into a 100% linked unit; all 26 canonical hashes pass.",
+    "remaining_diff": "None in this function; fn_800379E8 begins the incomplete suffix.",
+    "pipeline_action": "Use the same source macro and unit-level no-peephole setting for repeated callbacks, then check literal relocations during link validation.",
+    "rejected_probes": "Text-only matching did not account for the isolated unit's private 0.0f literal."
+  },
+  "fn_8003B814": {
+    "best_local_change": "Carved the two exact 36-byte PDA worker wrappers into one Matching unit at 0x8003B814-0x8003B85C; 100% linked with all 26 canonical hashes passing.",
+    "remaining_diff": "None in this wrapper; its fn_8003B85C worker remains 88.14798% and unlinked.",
+    "pipeline_action": "Split adjacent exact wrappers from an unmatched worker and carry their shared -schedule off compiler setting at unit scope.",
+    "rejected_probes": "No C-body rewrite required."
+  },
+  "fn_8003B838": {
+    "best_local_change": "Carved with fn_8003B814 into a 100% linked two-function PDA wrapper unit; all 26 canonical hashes pass.",
+    "remaining_diff": "None in this wrapper.",
+    "pipeline_action": "Group exact wrappers with the same compiler flags before promoting a mixed candidate unit.",
+    "rejected_probes": "No C-body rewrite required."
+  },
+  "fn_8003BF54": {
+    "best_local_change": "Carved the four exact sprite callbacks into a 760-byte Matching unit at 0x8003BF54-0x8003C24C; 100% linked with all 26 canonical hashes passing.",
+    "remaining_diff": "None; the neighboring fn_8003B85C worker remains unlinked.",
+    "pipeline_action": "Separate adjacent exact functions and use a byte-verified import for retail's shared int-to-float bias lbl_8047BAE0 when isolation creates a private copy.",
+    "rejected_probes": "Text-only promotion emitted a private 8-byte .sdata2 bias and failed the DOL hash."
+  },
+  "fn_8003C03C": {
+    "best_local_change": "Carved with the 0x8003BF54-0x8003C24C sprite-callback run into a 100% linked unit; all 26 canonical hashes pass.",
+    "remaining_diff": "None in this function.",
+    "pipeline_action": "Preserve no-peephole codegen at unit scope and check shared floating-point conversion literals during the full link.",
+    "rejected_probes": "The isolated unit's private bias prevented a canonical DOL match until imported."
+  },
+  "fn_8003C13C": {
+    "best_local_change": "Carved with the 0x8003BF54-0x8003C24C sprite-callback run into a 100% linked unit; all 26 canonical hashes pass.",
+    "remaining_diff": "None in this function.",
+    "pipeline_action": "Preserve no-peephole codegen at unit scope and check shared floating-point conversion literals during the full link.",
+    "rejected_probes": "The isolated unit's private bias prevented a canonical DOL match until imported."
+  },
+  "fn_8003C21C": {
+    "best_local_change": "Carved with the 0x8003BF54-0x8003C24C sprite-callback run into a 100% linked unit; all 26 canonical hashes pass.",
+    "remaining_diff": "None in this function.",
+    "pipeline_action": "Preserve no-peephole codegen at unit scope and verify the whole unit, not just this short callback.",
+    "rejected_probes": "No function-body rewrite required."
+  },
+  "evolutionStart": {
+    "best_local_change": "No accepted change; the isolated function remains 99.84674% matched and unlinked.",
+    "remaining_diff": "Only six instructions differ: the retained r6/r8 pointer roles and the two pointers in the final move-learning loop rotate among r25/r27/r28.",
+    "pipeline_action": "Treat parameter and late-loop pointer live ranges as a register-allocation search; preserve the inlined evolutionRun context and remeasure candidates in the canonical report.",
+    "rejected_probes": "Reversing the waza-list/slot-list pointer declaration order scored 98.98467%; delaying both pointer initializations until after pokemonBiosCopy scored 98.10345%. Both were reverted."
+  },
+  "menuFightButtonTargetSecret": {
+    "best_local_change": "Carved the already text-exact 532-byte battle target-button callback into a standalone C unit; it is now 100% linked with all 26 canonical hashes passing.",
+    "remaining_diff": "None in this function; adjacent menuFightDrawTargetSecret remains 99.2% and unlinked.",
+    "pipeline_action": "When a mixed unit contains an exact sibling, split at the function boundary and compile its inline helpers in a standalone object; require a full canonical link before accepting it.",
+    "rejected_probes": "Combining the switch's separate 0x47 and 0x48 return cases changed MWCC's branch tree and scored 95.21805% in the standalone object; preserving separate cases restored 100%."
+  },
+  "menuFightDrawTargetSecret": {
+    "best_local_change": "No accepted C-body change; the isolated 300-byte callback remains 99.2% and unlinked.",
+    "remaining_diff": "Only its final winSpriteSetDisp argument differs: retail loads literal zero, while the candidate computes i - 2 after the two-iteration loop.",
+    "pipeline_action": "Preserve the loop counter's live use while searching for a source shape that emits a literal-zero final argument; compare the entire callback, not the final instruction alone.",
+    "rejected_probes": "Replacing i - 2 with literal zero removed the now-unused loop counter and regressed the canonical score to 97.10667%. Recomputing the entry pointer from the loop index preserved the counter but changed the callback's code shape and scored 95.05334%. Both were reverted."
+  },
+  "fn_800776E4": {
+    "best_local_change": "No accepted change; the isolated battle-rule function remains 99.79798% matched and unlinked.",
+    "remaining_diff": "Eight uses of two values in the inlined party-rule helper swap r26 and r31; the function has the same 222-instruction shape and order as retail.",
+    "pipeline_action": "Search register live ranges in the full inlined owner context and validate every candidate in the canonical report; declaration or initialization order alone did not recover the retail allocation.",
+    "rejected_probes": "Swapping slot and partyCount declaration order scored 99.54955%; moving partyCount initialization after the early-return check scored 98.67117%. Both were reverted."
+  },
+  "menuFightDrawSecretPokemon": {
+    "best_local_change": "Carved the existing 100%-text secret-Pokemon draw function and its inline lookup into an 804-byte standalone C unit; it is 100% linked with all 26 canonical hashes passing.",
+    "remaining_diff": "None in this function; its status-draw and button-control neighbors remain 99.552086% and 98.36% respectively.",
+    "pipeline_action": "Promote exact functions from mixed units by retaining inline helper source and validating the complete link, including switch-table relocation and section ownership.",
+    "rejected_probes": "No function-body rewrite was needed."
+  },
+  "fn_801D56B0": {
+    "best_local_change": "Split the already exact move-viewer function into a complete C unit with its exact successor; canonical link and all 26 hashes pass.",
+    "remaining_diff": "None in this function; later functions in the original mixed unit remain incomplete.",
+    "pipeline_action": "Detect contiguous exact prefixes of mixed units and verify them as separately linked objects.",
+    "rejected_probes": "No function-body rewrite was needed."
+  },
+  "fn_801D58E4": {
+    "best_local_change": "Included the already exact move-viewer function in the new complete 0x801D56B0-0x801D5A94 C unit; canonical link and all 26 hashes pass.",
+    "remaining_diff": "None in this function.",
+    "pipeline_action": "Keep compiler version and source guards identical when carving exact siblings from a mixed unit.",
+    "rejected_probes": "No function-body rewrite was needed."
+  },
+  "fn_80089380": {
+    "best_local_change": "Split the already exact GBA conversion suffix into a complete C unit; canonical link and all 26 hashes pass.",
+    "remaining_diff": "None in this function; the preceding fn_80089048 remains unmatched.",
+    "pipeline_action": "Promote contiguous exact suffixes of mixed units without changing their function bodies or compiler flags.",
+    "rejected_probes": "No function-body rewrite was needed."
+  },
+  "fn_800895A4": {
+    "best_local_change": "Linked with the exact GBA conversion suffix in a complete C unit; canonical link and all 26 hashes pass.",
+    "remaining_diff": "None in this function.",
+    "pipeline_action": "Check complete-unit status and full binary hashes when moving exact functions out of a mixed unit.",
+    "rejected_probes": "No function-body rewrite was needed."
+  },
+  "GSsplineFree": {
+    "best_local_change": "Split the already exact spline free function into a complete C prefix unit with its exact successor; canonical link and all 26 hashes pass.",
+    "remaining_diff": "None in this function; GSsplineCreate remains nonexact in the suffix.",
+    "pipeline_action": "Promote exact contiguous prefixes while retaining the original compiler flags and shared declarations.",
+    "rejected_probes": "No function-body rewrite was needed."
+  },
+  "GSsplineAddControlVectorValue": {
+    "best_local_change": "Linked with GSsplineFree in the exact 0x80176068-0x80176228 C unit; canonical link and all 26 hashes pass.",
+    "remaining_diff": "None in this function.",
+    "pipeline_action": "Verify complete-unit status and all canonical hashes after splitting matched text from a mixed unit.",
+    "rejected_probes": "No function-body rewrite was needed."
+  },
+  "fn_80034280": {
+    "best_local_change": "Linked this function and 13 exact siblings in the complete 0x80034280-0x80034FB4 game unit; all 26 canonical hashes pass.",
+    "remaining_diff": "None in the linked middle unit. The flanking _sysvarsProcessData__FP16sysvarsFuncEntryPc and fn_80034FB4 remain nonexact.",
+    "pipeline_action": "When carving an exact block, suppress unused out-of-line inline helpers, import byte-verified shared conversion constants, and import an interior retail-owned jump table only after its entire byte span and relocation list match. A text-only 100% score is insufficient.",
+    "rejected_probes": "The first carve emitted a 0xCC-byte unused wait helper, a private 0x58-byte switch table, and two private double constants; the DOL hash failed. Splitting the retail .data owner around its 4-byte-aligned table shifted later sections despite 100% section scores. Both failed layouts were replaced by verified imports."
+  }
+}

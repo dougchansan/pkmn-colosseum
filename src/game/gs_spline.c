@@ -41,6 +41,7 @@ typedef struct GSspline {
 
 extern const char lbl_80273A10[];
 
+#ifdef GS_SPLINE_EXACT_PREFIX
 #if 0
 asm void GSsplineFree(void) {
 #include "src/game/gs_scene_fn_80176068.inc"
@@ -102,6 +103,7 @@ void GSsplineAddControlVectorValue(GSspline* spline, void* vector, f32 value)
     }
 }
 
+#else
 GSspline* GSsplineCreate(s32 kind, s32 state, u8 capacity)
 {
     extern u16 _toolentryAlloc__FUl(u32 size);
@@ -255,3 +257,4 @@ GSspline* GSsplineCreate(s32 kind, s32 state, u8 capacity)
 
     return spline;
 }
+#endif

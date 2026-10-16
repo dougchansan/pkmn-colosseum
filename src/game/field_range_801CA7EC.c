@@ -242,8 +242,10 @@ u32 scriptGetItem(s32 a, s32 b)
 u32 scriptCheckTemochiPokemon(u8* arg)
 {
     u8 used[6];
-    u32* wantedSpecies;
-    u8* p;
+    struct {
+        u32* species;
+        u8* used;
+    } scan;
     TemochiEntry* wanted;
     u8* usedBase;
     s32 i;
@@ -263,15 +265,15 @@ u32 scriptCheckTemochiPokemon(u8* arg)
     for (i = 0; i < 6; i++) {
         wanted = &lbl_804670B4[i];
         if (wanted->field_4 != 0) {
-            p = usedBase;
-            wantedSpecies = &wanted->field_4;
-            for (j = 0; j < 6; p++, j++) {
-                if (*p == 0) {
+            scan.used = usedBase;
+            scan.species = &wanted->field_4;
+            for (j = 0; j < 6; scan.used++, j++) {
+                if (*scan.used == 0) {
                     mon = heroGetStatus(arg, 3, j);
                     if (mon != NULL && pokemonCheckValid(mon) != 0) {
                         species = (u16)pokemonGetStatus(mon, 0, 0x6e, 0);
                         pid = pokemonGetStatus(mon, 0, 0x6f, 0);
-                        if (species == *wantedSpecies && pid == wanted->field_0) {
+                        if (species == *scan.species && pid == wanted->field_0) {
                             break;
                         }
                     }
