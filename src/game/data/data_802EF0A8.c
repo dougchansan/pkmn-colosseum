@@ -136,7 +136,7 @@ extern u8 fn_8002B0BC[];
 extern u8 fn_8002B134[];
 extern u8 menuShopDrawListText[];
 extern u8 fn_8002B40C[];
-extern u8 fn_8002B880[];
+extern u8 menuShopDrawMarqueeFrame[];
 extern u8 fn_8002BCE8[];
 extern u8 fn_800301A8[];
 extern u8 fn_800301B0[];
@@ -4844,7 +4844,7 @@ void* lbl_802EF0A8[33726] = {
     (void*)0x001E0000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8002B880),
+    (void*)((u8*)menuShopDrawMarqueeFrame),
     (void*)0x02860000,
     (void*)0x00FF013E,
     (void*)0x0059011A,

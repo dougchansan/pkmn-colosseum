@@ -31,10 +31,10 @@ uv run --with matplotlib tools/plot_progress.py -o /tmp/progress.png
 | Metric | Value |
 |---|---|
 | Fuzzy match | 99.69% |
-| Function match | 98.43% (8,541 / 8,677 functions) |
-| Code match | 91.95% (2,303,400 / 2,504,940 matched code bytes) |
+| Function match | 98.46% (8,543 / 8,677 functions) |
+| Code match | 92.03% (2,305,308 / 2,504,940 matched code bytes) |
 | Data match | 58.84% (2,098,410 / 3,566,037 matched data bytes) |
-| Source-linked | 1,894 / 2,166 scoring units (90.62% of code) |
+| Source-linked | 1,896 / 2,168 scoring units (90.70% of code) |
 
 These measurements cover the **DOL and all 25 configured REL modules**, from the
 full `build/GC6E01/report.json` built for the PR #638 merge plus the matches

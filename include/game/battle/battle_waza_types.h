@@ -340,7 +340,7 @@ extern void _wazaViewerInitialize(void);
 extern void wazaViewerThread(void);
 extern void fn_801D56B0(void);
 extern void fn_801D58E4(void);
-extern void fn_801D5A94(s32 moveID);
+extern void wazaViewerLoadSequenceFiles(s32 slot);
 extern void fn_801D5DA0(void);
 extern void fn_801D603C(void); /* GSgapp per-frame callback; takes no arguments */
 extern void fn_801D624C(void);

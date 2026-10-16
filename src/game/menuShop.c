@@ -30,6 +30,7 @@ extern u32 GSmsgGetRect(u32 id);
     defined(MENUSHOP_CANDIDATE_8002AB00_ONLY) || \
     defined(MENUSHOP_CANDIDATE_8002AE9C_ONLY) || \
     defined(MENUSHOP_ISLAND_8002BCE8_ONLY) || \
+    defined(MENUSHOP_ISLAND_8002B880_ONLY) || \
     defined(MENUSHOP_ISLAND_8002CE6C_ONLY) || \
     defined(MENUSHOP_ISLAND_80029850_ONLY) || \
     defined(MENUSHOP_ISLAND_80029EF4_ONLY)
@@ -1432,7 +1433,7 @@ s32 fn_8002B40C(ShopAngleOwner* owner, ShopAngleDrawData* draw) {
 #pragma pop
 #endif
 
-/* fn_8002B594 - 0x8002B594 | size: 0x2ec */
+/* menuShopDrawMarqueeDot - 0x8002B594 | size: 0x2ec */
 extern void fn_800CDBE0(void);
 extern void fn_800CE148(void);
 extern const f32 lbl_8047B980;
@@ -1451,9 +1452,10 @@ asm void fn_8002B594(void) {
 }
 #else
 /*
- * GSmap_DrawPartyIcons  0x8002B594 | 0x2EC bytes
+ * menuShopDrawMarqueeDot  0x8002B594 | 0x2EC bytes
  *
- * Draws a party-icon sprite along a piecewise parametric curve.
+ * Draws one marquee dot along the outline of a window item: a stadium-shaped
+ * path (two straight sides and two semicircular ends) of the item's size.
  * The curve is divided into 5 segments defined by 5 break-point thresholds
  * computed from the two s16 fields (at +0x54/+0x56) in the data packet.
  * For each segment a normalised fractional parameter f31 is computed and
@@ -1472,7 +1474,7 @@ asm void fn_8002B594(void) {
  */
 #pragma push
 #pragma peephole off
-void fn_8002B594(void* ctx, u8* data, u32 sprite_id, u32 color_byte, f32 pos)
+void menuShopDrawMarqueeDot(void* ctx, u8* data, u32 sprite_id, u32 color_byte, f32 pos)
 {
     f32 thresholds[5];
     f32* next_threshold;
@@ -1562,7 +1564,9 @@ void fn_8002B594(void* ctx, u8* data, u32 sprite_id, u32 color_byte, f32 pos)
 #pragma pop
 #endif
 
-/* fn_8002B880 - 0x8002B880 | size: 0x468 */
+#endif /* guard split */
+#if !defined(MENUSHOP_ISLAND_ONLY) || defined(MENUSHOP_ISLAND_8002B880_ONLY)
+/* menuShopDrawMarqueeFrame - 0x8002B880 | size: 0x468 */
 extern void fn_800FE6D0(void);
 extern void spriteSetEnv(void);
 extern f64 lbl_8047B998;
@@ -1580,14 +1584,14 @@ asm void fn_8002B880(void) {
 #include "src/game/gs_worldmap_fn_8002B880.inc"
 }
 #else
-/* fn_8002B880  GSmap_DrawInfoPanel - 0x8002B880, size 0x468
+/* menuShopDrawMarqueeFrame - 0x8002B880, size 0x468
  *
- * Worldmap info-panel draw. r3 = worldmap state object (its +0x60 is the
+ * Draw callback for window item 0x0286: an animated marquee border. r3 = worldmap state object (its +0x60 is the
  * panel context), r4 = the draw/sprite entity. Only runs when the context's
  * primary flag word (*(u16*)*(void**)ctx) is zero. It first computes a sprite
  * column/alpha exactly like fn_8002BCE8 (5-entry lbl_802E4F68 lookup table,
  * keyed on entity->0x6), positions the panel via fn_800FE6D0/spriteSetEnv, then
- * draws four 45-step radial rings of icons by calling fn_8002B594 in a loop,
+ * draws four 45-step radial rings of icons by calling menuShopDrawMarqueeDot in a loop,
  * each ring starting from a different phase offset and advancing by a fixed
  * per-step increment that wraps at lbl_8047B97C.
  *
@@ -1597,12 +1601,14 @@ asm void fn_8002B880(void) {
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-s32 fn_8002B880(u8* state, u8* entity)
+#pragma push
+#pragma opt_common_subs off
+s32 menuShopDrawMarqueeFrame(u8* state, u8* entity)
 {
     /* Cross-TU callees (real arg lists inferred from register state at each bl). */
     extern void fn_800FE6D0(s32 x, s32 y);
     extern void spriteSetEnv(void);
-    extern void fn_8002B594(void* panel, u8* entity, u32 mode, s32 step, f32 phase);
+    extern void menuShopDrawMarqueeDot(void* panel, u8* entity, u32 mode, s32 step, f32 phase);
 
     /* r2-relative read-only float constants. */
     extern f64 lbl_8047B998; /* int->float bias double (folds into the casts) */
@@ -1621,6 +1627,7 @@ s32 fn_8002B880(u8* state, u8* entity)
 
     u8* ctx = *(u8**)(state + 0x60);
 
+    f32 scaledY;
     f32 phase;
     f32 incr;
     f32 denom;
@@ -1683,13 +1690,14 @@ s32 fn_8002B880(u8* state, u8* entity)
     /* ---- Fixed per-step phase increment ---- */
     fx = (f32)(s16)*(s16*)(entity + 0x54);
     fy = (f32)(s16)*(s16*)(entity + 0x56);
-    denom = lbl_8047B9A4 * (fx + (lbl_8047B98C * fy) * lbl_8047B9A0);
+    scaledY = lbl_8047B98C * fy;
+    denom = lbl_8047B9A4 * (fx + scaledY * lbl_8047B9A0);
     incr = lbl_8047B9A4 / denom;
 
     /* ---- Ring 1: phase starts at the live r13 base ---- */
     phase = lbl_8047A3F0;
     for (i = 0; i < 0x2d; i++) {
-        fn_8002B594(state, entity, 0xd1,
+        menuShopDrawMarqueeDot(state, entity, 0xd1,
                     (s32)(lbl_8047B978 * ((f32)i / lbl_8047B9AC)), phase);
         phase += incr;
         if (phase >= lbl_8047B97C) {
@@ -1703,7 +1711,7 @@ s32 fn_8002B880(u8* state, u8* entity)
         phase -= lbl_8047B97C;
     }
     for (i = 0; i < 0x2d; i++) {
-        fn_8002B594(state, entity, 0xd1,
+        menuShopDrawMarqueeDot(state, entity, 0xd1,
                     (s32)(lbl_8047B978 * ((f32)i / lbl_8047B9AC)), phase);
         phase += incr;
         if (phase >= lbl_8047B97C) {
@@ -1717,7 +1725,7 @@ s32 fn_8002B880(u8* state, u8* entity)
         phase -= lbl_8047B97C;
     }
     for (i = 0; i < 0x2d; i++) {
-        fn_8002B594(state, entity, 0xd1,
+        menuShopDrawMarqueeDot(state, entity, 0xd1,
                     (s32)(lbl_8047B978 * ((f32)i / lbl_8047B9AC)), phase);
         phase += incr;
         if (phase >= lbl_8047B97C) {
@@ -1731,7 +1739,7 @@ s32 fn_8002B880(u8* state, u8* entity)
         phase -= lbl_8047B97C;
     }
     for (i = 0; i < 0x2d; i++) {
-        fn_8002B594(state, entity, 0xd1,
+        menuShopDrawMarqueeDot(state, entity, 0xd1,
                     (s32)(lbl_8047B978 * ((f32)i / lbl_8047B9AC)), phase);
         phase += incr;
         if (phase >= lbl_8047B97C) {
@@ -1741,6 +1749,7 @@ s32 fn_8002B880(u8* state, u8* entity)
 
     return 0;
 }
+#pragma pop
 #pragma pop
 #endif
 

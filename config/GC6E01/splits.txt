@@ -528,7 +528,7 @@ game/menuShop_exact_8002B03C.c:
 game/menuShop_candidate_8002B1A0.c:
 	.text       start:0x8002B1A0 end:0x8002B880
 
-game/menuShop_r40_8002B880_gc125n.c:
+game/menuShop_island_8002B880.c:
 	.text       start:0x8002B880 end:0x8002BCE8
 
 game/menuShop_island_8002BCE8.c:
@@ -5417,7 +5417,13 @@ game/wazaViewer_candidate_801D5464.c:
 	.text       start:0x801D5464 end:0x801D56B0
 
 game/wazaViewer_candidate_801D56B0.c:
-	.text       start:0x801D56B0 end:0x801D744C
+	.text       start:0x801D56B0 end:0x801D5A94
+
+game/wazaViewer_exact_801D5A94.c:
+	.text       start:0x801D5A94 end:0x801D5DA0
+
+game/wazaViewer_candidate_801D5DA0.c:
+	.text       start:0x801D5DA0 end:0x801D744C
 
 game/wazaViewer_exact_801D744C.c:
 	.text       start:0x801D744C end:0x801D7464

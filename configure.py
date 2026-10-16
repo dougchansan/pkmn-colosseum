@@ -2485,6 +2485,8 @@ config.libs = [
                         in {
                             "game/wazaViewer_candidate_801D5464.c",
                             "game/wazaViewer_candidate_801D56B0.c",
+                            "game/wazaViewer_exact_801D5A94.c",
+                            "game/wazaViewer_candidate_801D5DA0.c",
                         }
                         else "GC/1.3"
                     ),
@@ -2497,6 +2499,8 @@ config.libs = [
                     (Matching, "game/wazaViewer_exact_801D53D8.c"),
                     (Matching, "game/wazaViewer_candidate_801D5464.c"),
                     (CodeCandidate, "game/wazaViewer_candidate_801D56B0.c"),
+                    (Matching, "game/wazaViewer_exact_801D5A94.c"),
+                    (CodeCandidate, "game/wazaViewer_candidate_801D5DA0.c"),
                     (Matching, "game/wazaViewer_exact_801D744C.c"),
                     (CodeCandidate, "game/wazaViewer_candidate_801D7464.c"),
                 ]
@@ -7890,9 +7894,11 @@ config.libs = [
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
+            # TEMPORARY constant_import
             Object(
-                CodeCandidate,
-                "game/menuShop_r40_8002B880_gc125n.c",
+                Matching,
+                "game/menuShop_island_8002B880.c",
+                constant_import=[{"symbol": "lbl_8047B998", "offset": 0, "expected": "4330000080000000"}],
                 mw_version="GC/1.3",
                 extra_cflags=[
                     "-use_lmw_stmw on",
