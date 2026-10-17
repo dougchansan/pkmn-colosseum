@@ -79,7 +79,7 @@ typedef struct CardESelection {
 } CardESelection;
 
 extern void* fn_801054B8();
-extern void* fn_800F92D4(u32);
+extern void* GSresFindById(u32);
 extern void fn_800ECCA8(void*, s16);
 extern void fn_800ECA78(void*, f32);
 extern void fn_800EC9DC(void*, f32);
@@ -92,7 +92,7 @@ extern s32 GSsndGetStatus();
 extern void GScharLenCpy(void*, const void*, u32);
 extern u16 fn_800E2C04(u32, u32);
 extern void* fn_800E27B0(u16);
-extern u16 fn_800E202C(void*);
+extern u16 GSmemGetHandleByPtr(void*);
 extern void fn_800E24B0(u16);
 extern void fn_800E209C(u16);
 extern s32 fn_80083BF8(void*);
@@ -2949,7 +2949,7 @@ static inline void* menuCardE_Alloc(u32 size, char* pool) {
 static inline void menuCardE_Free(void* buf, char* pool) {
     u16 handle;
 
-    handle = fn_800E202C(buf);
+    handle = GSmemGetHandleByPtr(buf);
     if (handle == 0) {
         __assert(pool + 0x1F0, 0x1AB, lbl_8047C140);
     }
@@ -3252,7 +3252,7 @@ void fn_80084038(u8* window)
         status->refreshMessages = 1;
         break;
     case 5:
-        handle = ((u16 (*)(void*))fn_800E202C)(status);
+        handle = ((u16 (*)(void*))GSmemGetHandleByPtr)(status);
         if (handle == 0) {
             __assert((const char*)data + 0x184, 0xF3, lbl_8047C198);
         }
@@ -3864,7 +3864,7 @@ u8 cardeGbaTransfer(s32 mode, u32 command, void* input, void* output)
 #define CARDE_SHOW_MODEL(model_id, anim_id)                                      \
     do {                                                                         \
         void* model_;                                                            \
-        model_ = fn_800F92D4((model_id));                                        \
+        model_ = GSresFindById((model_id));                                        \
         if (model_ != 0) {                                                       \
             fn_800ECCA8(model_, (anim_id));                                      \
             fn_800ECA78(model_, lbl_8047C1CC);                                   \
@@ -3936,7 +3936,7 @@ static inline void cardGridSelectCell(CardGridCells cells, s32 x, s32 y)
         s32 anim;
 
         anim = cells.cell[y][x].selectAnim;
-        model = fn_800F92D4(cells.cell[y][x].modelId);
+        model = GSresFindById(cells.cell[y][x].modelId);
         if (model != 0) {
             cardGridAnimate(model, anim);
         }
@@ -3947,7 +3947,7 @@ static inline void cardGridResetCell(CardGridCells cells, s32 x, s32 y)
 {
     if (x >= 0 && x < 3 && y >= 0 && y < 3) {
         s32 anim = cells.cell[y][x].resetAnim;
-        void* model = fn_800F92D4(cells.cell[y][x].modelId);
+        void* model = GSresFindById(cells.cell[y][x].modelId);
         if (model != 0) {
             cardGridAnimate(model, anim);
         }
@@ -3978,7 +3978,7 @@ static inline void cardGridShowCount(s32 count)
     ((u32*)anims)[1] = lbl_8047C1C4;
     if (count >= 0 && count < 4) {
         s32 anim = anims[count];
-        void* model = fn_800F92D4(0x107E100B);
+        void* model = GSresFindById(0x107E100B);
         if (model != 0) {
             cardGridAnimate(model, anim);
         }
@@ -4034,7 +4034,7 @@ static inline void cardGridShowCursor(CardGridCursor cursor, s32 x, s32 y)
 {
     if (x >= 0 && x < 3 && y >= 0 && y < 3) {
         s32 anim = cursor.anim[y][x];
-        void* model = fn_800F92D4(0x107E1009);
+        void* model = GSresFindById(0x107E1009);
         if (model != 0) {
             cardGridAnimate(model, anim);
             GSmodelSetAnimType(model, 0);

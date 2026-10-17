@@ -65,7 +65,7 @@ extern u32 lbl_8047A60C;
 
 extern void _threadSwitch(void);
 extern void gbaCommandSetKeyState(s32 mode, s32 flag);
-extern u32 fn_800D0F44(s32 chan);
+extern u32 SIProbe(s32 chan);
 extern OSThread* fn_800A13F8(void);
 
 void fn_80072684(OSAlarm* alarm, OSContext* context);
@@ -201,7 +201,7 @@ static inline s32 pkjbWaitZeroResponse(s32 chan)
     OSSuspendThread(lbl_8047A600);
     OSRestoreInterrupts(enabled);
 
-    if (fn_800D0F44(chan) != PKJB_SI_GBA) {
+    if (SIProbe(chan) != PKJB_SI_GBA) {
         result = 1;
     } else if (GBAGetStatus(chan, &status) != 0) {
         result = 2;

@@ -32,7 +32,7 @@ s32 pkjbProbe(s32 chan)
     u8 status;
     s32 result;
 
-    if (fn_800D0F44(chan) != PKJB_SI_GBA) {
+    if (SIProbe(chan) != PKJB_SI_GBA) {
         return 1;
     }
     if (GBAReset(chan, &status) != 0) {

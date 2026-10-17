@@ -42,9 +42,9 @@ extern void  fn_800E209C(u16 handle);                   /* GSmemFree */
 extern void  PSMTXMultVec(void* mtx, void* vec, void* out); /* MTXMultVec3 */
 extern void  PSVECSubtract(void* out, void* in, f32 s);     /* VEC normalize */
 /* GSgfx renderer */
-extern void  fn_800D7868(void* handle, u32 a, u32 b, u32 c,
+extern void  gfxVtxDescSetAttr(void* handle, u32 a, u32 b, u32 c,
                           u32 d, u32 e, u32 f, u32 g);     /* GSgfx draw setup */
-extern void* fn_800D7894(void);                             /* GSgfx create render obj */
+extern void* gfxVtxDescAlloc(void);                             /* GSgfx create render obj */
 /* Real named labels referenced by remaining inline-asm wrappers in this TU. */
 extern void _modelSetRotateEulerToQuatAll__FP9_HSD_JObj();
 extern void cos();
@@ -318,15 +318,15 @@ extern u32 lbl_8047AD84;
 extern void fn_800EC134(u32);
 extern void fn_800D4604();
 extern void fn_800D377C();
-extern void fn_800D3410();
+extern void GSgfxRenderLayer();
 extern void fn_800D9B24();
 extern void fn_800D9AF0();
 extern void fn_800D258C();
-extern void fn_800D9D68();
-extern void fn_800D9C24();
+extern void gfxSetScissor();
+extern void gfxSetViewport();
 extern void _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID(void);
 extern void GSmodelDrawModel();
-extern void fn_800D3190(void);
+extern void GSgfxRenderEnd(void);
 extern void fn_800FF4D4(void);
 extern u32 lbl_802727C8[];
 extern void psSetBillboardCamera();
@@ -339,7 +339,7 @@ extern void psKillGenerator();
 extern u32 lbl_8047AD9C;
 extern u32 lbl_8047ADA0;
 void fn_801181B0(void);
-extern void fn_800E06EC(void);
+extern void GSquatFromEuler(void);
 extern void GSvecTransformQuat(void);
 extern void fn_800E0108(void);
 extern void psInterpretParticles(void);
@@ -543,8 +543,8 @@ extern void fn_800CE148(void);
 extern void fn_800CDBE0(void);
 extern s32 GScolsys2CheckGetEventID();
 extern void peopleStopTurn(void);
-extern void fn_800F7D38(void);
-extern void fn_800F7C8C(void);
+extern void GSinputResetLeftSmoothing(void);
+extern void GSinputResetRightSmoothing(void);
 extern void fn_8018BA04(void);
 extern void peopleTurnToPoint(void);
 extern u8 fn_8018D7D0();
@@ -564,13 +564,13 @@ s32 circleLineIntersect(HeroMoveVec*, HeroMoveVec*, HeroMoveVec*, HeroMoveVec*, 
 void partnerGetTarget(s32, HeroMoveVec*, HeroMoveVec*);
 extern void fn_800E3C64(void);
 void partnerMove(s32 member);
-extern void fn_800F7A7C(void);
-extern void fn_800F7A08(void);
+extern void GSinputGetLeftStickXData(void);
+extern void GSinputGetLeftStickYData(void);
 extern void fn_800F7BC4(void);
 extern void peopleSetSpeedFromAmount(void);
 extern void fn_80166458(void);
 void heroReadStick(s32, f32*);
-extern void fn_800F7AF0(void);
+extern void GSinputButtonsChanged(void);
 extern void peopleAmountFromMove(void);
 extern void PSVECDistance(void);
 f32 moveLeader__F15HEROMOVE_MEMBER();
@@ -603,12 +603,12 @@ void heroMoveSyncWithHero(void);
 void fn_8013024C(void);
 extern void gamedataGetStatus(void);
 extern void gamedataAttestCreate(void);
-extern void fn_800F76E4();
+extern void cms_RegisterScript();
 extern void fn_80112700(void);
 extern void GSmsgFontOpen();
 extern void GSmsgOpen();
 extern u8 fn_800FF554(void);
-extern void fn_800F760C();
+extern void cms_UnregisterScript();
 extern void fn_800FC2A8();
 extern void GSmsgClose();
 extern u8 lbl_8035BA98[];
@@ -2498,7 +2498,7 @@ static void proc1Step(f32 distance);
 
 u32 heroMoveMain(void)
 {
-    extern u32 fn_800F7AF0(s32);
+    extern u32 GSinputButtonsChanged(s32);
     extern u32 fn_800F7BC4(s32);
     extern u32 std082_flagGetValue(u32);
     extern void cmsRunSync(void*, u32, ...);
@@ -2552,7 +2552,7 @@ u32 heroMoveMain(void)
         return 0;
     }
 
-    if (fn_800F7BC4(1) & fn_800F7AF0(1) & 0x1C00) {
+    if (fn_800F7BC4(1) & GSinputButtonsChanged(1) & 0x1C00) {
         heroMoveRunEvent(0);
         return 0;
     }
@@ -2574,7 +2574,7 @@ u32 heroMoveMain(void)
 
 f32 moveLeader__F15HEROMOVE_MEMBER(s32 member)
 {
-    extern u32 fn_800F7AF0(s32);
+    extern u32 GSinputButtonsChanged(s32);
     extern u32 fn_800F7BC4(s32);
     extern void PSVECSubtract(HeroMoveVec*, HeroMoveVec*, HeroMoveVec*);
     extern void PSVECScale(HeroMoveVec*, HeroMoveVec*, f32);
@@ -2592,7 +2592,7 @@ f32 moveLeader__F15HEROMOVE_MEMBER(s32 member)
     u32 id;
     f32 turn;
 
-    if ((fn_800F7BC4(1) & fn_800F7AF0(1) & 0x100) != 0 &&
+    if ((fn_800F7BC4(1) & GSinputButtonsChanged(1) & 0x100) != 0 &&
         updateChat__F15HEROMOVE_MEMBER(member) != 0) {
         return 0.0f;
     }
@@ -2640,8 +2640,8 @@ f32 moveLeader__F15HEROMOVE_MEMBER(s32 member)
 void heroReadStick(s32 member, f32* speed)
 {
     extern void* GSresGetResource(u32, u32);
-    extern s8 fn_800F7A7C(u32, u32);
-    extern s8 fn_800F7A08(u32, u32);
+    extern s8 GSinputGetLeftStickXData(u32, u32);
+    extern s8 GSinputGetLeftStickYData(u32, u32);
     extern u32 fn_800F7BC4(u32);
     extern u32 GSscene_GetMode(void);
     extern f64 sin(f64);
@@ -2667,10 +2667,10 @@ void heroReadStick(s32 member, f32* speed)
     getResID(&group, &id, member);
     heroMoveGetModel(member);
 
-    x = fn_800F7A7C(1, 1);
-    y = fn_800F7A08(1, 1);
-    subX = fn_800F7A7C(1, 0);
-    subY = fn_800F7A08(1, 0);
+    x = GSinputGetLeftStickXData(1, 1);
+    y = GSinputGetLeftStickYData(1, 1);
+    subX = GSinputGetLeftStickXData(1, 0);
+    subY = GSinputGetLeftStickYData(1, 0);
     if (x == 0 && y == 0) {
         if (fn_800F7BC4(1) & 8) {
             y = -56;
@@ -3297,8 +3297,8 @@ u8 updateChat__F15HEROMOVE_MEMBER(s32 member)
 {
     extern void cmsRunSync(void*, u32, ...);
     extern void peopleStopTurn(u32, u32);
-    extern void fn_800F7D38(u32, u32, u32);
-    extern void fn_800F7C8C(u32, u32, u32);
+    extern void GSinputResetLeftSmoothing(u32, u32, u32);
+    extern void GSinputResetRightSmoothing(u32, u32, u32);
     extern void fn_8018BA04(u32, u32, HeroMoveVec*);
     extern void peopleTurnToPoint(u32, u32, f32, f32, f32, f32);
     extern void floorEventCtrlTresure(u32, u32, u32);
@@ -3327,8 +3327,8 @@ u8 updateChat__F15HEROMOVE_MEMBER(s32 member)
         return FALSE;
     }
 
-    fn_800F7D38(1, 0, 0);
-    fn_800F7C8C(1, 0, 0);
+    GSinputResetLeftSmoothing(1, 0, 0);
+    GSinputResetRightSmoothing(1, 0, 0);
     heroMoveInitEventChat();
 
     fn_8018BA04(target->group, target->id, &talkPos);
@@ -3348,8 +3348,8 @@ u8 updateChat__F15HEROMOVE_MEMBER(s32 member)
     }
 
     heroMoveTermEvent();
-    fn_800F7D38(1, 0, 0);
-    fn_800F7C8C(1, 0, 0);
+    GSinputResetLeftSmoothing(1, 0, 0);
+    GSinputResetRightSmoothing(1, 0, 0);
     return TRUE;
 }
 #pragma pop

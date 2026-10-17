@@ -2,7 +2,7 @@
  * @file gs_gfx_layer_candidate_800D6B00.c
  * @brief GSgfx vertex flush for line primitives, 0x800D6B00 - 0x800D7230.
  *
- * fn_800D6B00 replays the pending vertex
+ * gfxFlushPendingVertex replays the pending vertex
  * through the installed emitters; for primitive type 7 it keeps the
  * previous vertex in two save slots and emits the extra segment vertex.
  * The emitter sequence is expanded three times (repeated expansion), so
@@ -67,7 +67,7 @@ static inline void GSgfxEmitVertex(void) {
     }
 }
 
-void fn_800D6B00(void) {
+void gfxFlushPendingVertex(void) {
     s32 k;
 
     if (lbl_8047AA80->vtxPending == 0) {

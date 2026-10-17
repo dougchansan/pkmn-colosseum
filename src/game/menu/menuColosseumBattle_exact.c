@@ -57,7 +57,7 @@ s32 fn_80057694(void);
 void fn_800576A4(s32);
 void fn_80057830(s32, s32, s32);
 extern void msgctrlSetValue();
-extern void fn_800F96E4(void*, s32, void*);
+extern void GSmsgGetText(void*, s32, void*);
 extern void menuCloseCustom();
 extern s32 menuOpen(s32, s32);
 MenuCursorItem* windowGetCursorToItem(MenuWindow*);
@@ -123,7 +123,7 @@ void fn_80058804(void* text, s32 closeAfterOpen) {
     } else {
         ColosseumMessageBuffer* message = (ColosseumMessageBuffer*)lbl_803A9A18;
 
-        fn_800F96E4(message, 0x21, text);
+        GSmsgGetText(message, 0x21, text);
     }
 
     menuOpen(0x9B, (u8)closeAfterOpen);

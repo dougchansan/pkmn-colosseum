@@ -995,7 +995,7 @@ void reliveMain(void)
 						    lbl_8047B66C = 0xffffffff;
 				    *(u16 *)((u8 *)lbl_804782BC + 4) = 0;
     lbl_804782BC[2] = 0;
-    fn_800FF660();
+    floorBattleEndTerminateScripts();
     floorSetFadeScript(0,0);
     _threadSwitch();
   }

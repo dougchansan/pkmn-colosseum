@@ -151,12 +151,12 @@ void cmsRunSync(void*, u32, ...);
 int soundStartSE(u16);
 u8 fn_8008ABA0(s32);
 s32 fn_8008AB8C(s32);
-u8 fn_800F7EF8(s32 pad_id);
-u32 fn_800F7A08(s32 pad_id, s32 axis);
-u32 fn_800F7A7C(s32 pad_id, s32 axis);
+u8 GSinputIsConnected(s32 pad_id);
+u32 GSinputGetLeftStickYData(s32 pad_id, s32 axis);
+u32 GSinputGetLeftStickXData(s32 pad_id, s32 axis);
 u32 fn_800F7BC4(s32 pad_id);
-u32 fn_800D7894(void);
-void fn_800D7868(u32, u32, u32, u32, u32, u32, u32, u32);
+u32 gfxVtxDescAlloc(void);
+void gfxVtxDescSetAttr(u32, u32, u32, u32, u32, u32, u32, u32);
 void* GStextureLoad(void* data);
 void GSresRegisterResource(void* texture, u32, u32 resourceId, u32);
 
@@ -1072,12 +1072,12 @@ u8 _menuGetGcKeyInfo__FlPUs(s32 port, u16* keys) {
     f32 angle;
 
     padId = padIds[port];
-    if (fn_800F7EF8(padId) == 0) {
+    if (GSinputIsConnected(padId) == 0) {
         return 0;
     }
 
-    stickX = fn_800F7A08(padId, 0);
-    stickY = fn_800F7A7C(padId, 0);
+    stickX = GSinputGetLeftStickYData(padId, 0);
+    stickY = GSinputGetLeftStickXData(padId, 0);
     if (((s8)stickY < 0 ? -(s8)stickY : (s8)stickY) > 0x20 ||
         ((s8)stickX < 0 ? -(s8)stickX : (s8)stickX) > 0x20) {
         angle = atan2((s8)stickY, (s8)stickX);
@@ -1270,12 +1270,12 @@ void menuInit(u16 windowCount) {
     }
 
     if (lbl_8047AD00 == 0) {
-        lbl_8047AD00 = fn_800D7894();
-        fn_800D7868(lbl_8047AD00, 1, 0, 0, 3, 0, 0, 0);
-        fn_800D7868(lbl_8047AD00, 4, 0, 6, 10, 0, 0, 0);
-        fn_800D7868(lbl_8047AD00, 6, 0, 8, 4, 0, 0, 0);
-        fn_800D7868(lbl_8047AD00, 7, 0, 8, 4, 0, 0, 0);
-        fn_800D7868(lbl_8047AD00, 8, 0, 8, 4, 0, 0, 0);
+        lbl_8047AD00 = gfxVtxDescAlloc();
+        gfxVtxDescSetAttr(lbl_8047AD00, 1, 0, 0, 3, 0, 0, 0);
+        gfxVtxDescSetAttr(lbl_8047AD00, 4, 0, 6, 10, 0, 0, 0);
+        gfxVtxDescSetAttr(lbl_8047AD00, 6, 0, 8, 4, 0, 0, 0);
+        gfxVtxDescSetAttr(lbl_8047AD00, 7, 0, 8, 4, 0, 0, 0);
+        gfxVtxDescSetAttr(lbl_8047AD00, 8, 0, 8, 4, 0, 0, 0);
     }
 
     texture = GStextureLoad(lbl_803156E0);

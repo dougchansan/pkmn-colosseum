@@ -178,7 +178,7 @@ void d2presentPlayGiftScene(int r3)
 /* Address: 0x80266250 | Size: 0xD0 | Ghidra import */
 void fn_80266250(void)
 {
-    extern int fn_800FF660();
+    extern int floorBattleEndTerminateScripts();
     extern u32 lbl_8047B680;
     extern int fn_801653BC();
     extern int std228_soundGetCurrentBackgroundMusic();
@@ -219,7 +219,7 @@ void fn_80266250(void)
     if (iVar2 != 0) {
         std105_soundPlayEffect(iVar2, 0x32, uVar4);
     }
-    fn_800FF660();
+    floorBattleEndTerminateScripts();
     floorSetFadeScript(0, 0x5960008);
 }
 

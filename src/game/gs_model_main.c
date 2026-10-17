@@ -195,7 +195,7 @@ extern void GSmaterialResetTexture(void* material);
 extern void GSmaterialResetPEdescr(void* material);
 extern void GSmaterialResetAlpha(void* material);
 extern void GSmaterialResetFlags(void* material);
-extern void fn_800DF608(void* material);
+extern void GSmaterialRemoveExtraTObj(void* material);
 extern void fn_800E24B0(u32 handle);
 extern void fn_800E209C(u32 handle);
 extern void modelShadowFreeModelList__FP8_GSmodel(GSmodel* model);
@@ -242,9 +242,9 @@ extern s32 HSD_CObjSetCurrent(void* camera);
 extern void GSlightSetupLights(void* camera);
 extern void modelShadowPrepare__FP8_GSmodelb(GSmodel* model, s32 active);
 extern void fn_801A13CC(HSDJObj* jobj, s32 arg1, s32 flags, s32 arg3);
-extern void fn_800D6A5C(s32 vertexCount, s32 polygonCount);
+extern void gfxAddDrawStats(s32 vertexCount, s32 polygonCount);
 extern void fn_80195A48(void);
-extern void fn_800D87AC(s32 mode);
+extern void _gfxSetFlagsImm(s32 mode);
 
 void GSmodelDrawAll(s32 flags, u8 slot)
 {
@@ -270,7 +270,7 @@ void GSmodelDrawAll(s32 flags, u8 slot)
                                                  : model->renderJObj;
                 if ((flags & 0x10) != 0) {
                     fn_801A13CC(jobj, 0, 1, 0);
-                    fn_800D6A5C(model->vertexCount, model->polygonCount);
+                    gfxAddDrawStats(model->vertexCount, model->polygonCount);
                 }
                 if ((flags & 0x1000) != 0) {
                     fn_801A13CC(jobj, 0, 4, 0);
@@ -283,7 +283,7 @@ void GSmodelDrawAll(s32 flags, u8 slot)
         }
         fn_80195A48();
     }
-    fn_800D87AC(-1);
+    _gfxSetFlagsImm(-1);
 }
 
 void GSmodelDrawModel(GSmodel* model, u32 flags)
@@ -306,7 +306,7 @@ void GSmodelDrawModel(GSmodel* model, u32 flags)
                                              : model->renderJObj;
             if ((flags & 0x10) != 0) {
                 fn_801A13CC(jobj, 0, 1, 0);
-                fn_800D6A5C(model->vertexCount, model->polygonCount);
+                gfxAddDrawStats(model->vertexCount, model->polygonCount);
             }
             if ((flags & 0x1000) != 0) {
                 fn_801A13CC(jobj, 0, 4, 0);
@@ -321,7 +321,7 @@ void GSmodelDrawModel(GSmodel* model, u32 flags)
             fn_80190E60(&model->bound);
         }
     }
-    fn_800D87AC(-1);
+    _gfxSetFlagsImm(-1);
 }
 
 

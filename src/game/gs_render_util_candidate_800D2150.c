@@ -1,7 +1,7 @@
 /**
  * GS camera scissor, 0x800D2150 - 0x800D21C8.
  *
- * The rectangle arrives as u16 (fn_800D9D68 passes its u16 scissor corners)
+ * The rectangle arrives as u16 (gfxSetScissor passes its u16 scissor corners)
  * and HSD_CObjSetScissorx4 takes u16 edges, so the clamped values are passed
  * through without re-extension.
  */
@@ -9,7 +9,7 @@
 #include "game/gs_render_util.h"
 #include "hsd/hsd_cobj.h"
 
-void fn_800D2150(GSRenderCamera* camera, u16 x0, u16 y0, u16 x1, u16 y1)
+void GScameraSetScissor(GSRenderCamera* camera, u16 x0, u16 y0, u16 x1, u16 y1)
 {
     if (x0 > 0x27E) {
         x0 = 0x27E;

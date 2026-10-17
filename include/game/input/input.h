@@ -4,7 +4,7 @@
  *
  * Layouts are recovered from the functions in 0x800F75FC-0x800F915C,
  * including the PAD sampling callback, rumble driver and stick filter
- * (fn_800F8268, fn_800F8428, fn_800F8654, fn_800F8A54). status, smoothMode
+ * (inputPadCallback, inputUpdateMotors, inputSmoothStick, inputClampSticks). status, smoothMode
  * and rumbleMode are signed: those functions compare them with cmpwi.
  */
 
@@ -17,12 +17,12 @@
 #define INPUT_PAD_COUNT 4
 
 /* One logical controller slot. Slots are bound to a PAD channel by
- * fn_800F80B0; the sampling callback fills `latched`, and fn_800F7F64 copies
+ * GSinputOpen; the sampling callback fills `latched`, and GSinputRead copies
  * it to `current` once per game frame and runs the stick filter. */
 typedef struct InputPad {
     /* 0x00 */ s32 id;             /* PAD channel + 1 (1..4); 0 = free slot */
     /* 0x04 */ u32 type;           /* 0 = standard controller, 2 = other SI type */
-    /* 0x08 */ u32 outputMode;     /* fn_800F8A54: 0 = filtered sticks, 2 = dead zone + circle */
+    /* 0x08 */ u32 outputMode;     /* inputClampSticks: 0 = filtered sticks, 2 = dead zone + circle */
     /* 0x0C */ s32 status;         /* 0 = connected, 3 = no controller, 4 = error */
     /* 0x10 */ u8 smoothFrames;    /* stick filter length */
     /* 0x11 */ u8 smoothCount;
@@ -48,9 +48,9 @@ typedef struct InputPad {
     /* 0x5A */ s8 outSubstickX;
     /* 0x5B */ s8 outSubstickY;
     /* 0x5C */ s32 rumbleMode;     /* 1 = pulse, 2 = stop, 3 = hard stop */
-    /* Rumble request: set by the game thread (fn_800F78A4), consumed and
+    /* Rumble request: set by the game thread (GSinputMotorStart), consumed and
      * decayed by the PAD sampling callback from the SI interrupt
-     * (fn_800F8428). Retail re-reads these on every use there, with no store
+     * (inputUpdateMotors). Retail re-reads these on every use there, with no store
      * in between, so they are volatile. */
     /* 0x60 */ volatile u32 rumbleStrength;
     /* 0x64 */ volatile u32 rumbleFrames;
@@ -61,7 +61,7 @@ typedef struct InputPad {
 /* The pad slots (lbl_80401C10), the rumble accumulators (lbl_80401DC0) and
  * the motor commands (lbl_80401DD0) are three objects defined in input.c. */
 
-/* One loaded GS script, linked into GSVMPool.scripts by fn_800F76E4. */
+/* One loaded GS script, linked into GSVMPool.scripts by cms_RegisterScript. */
 typedef struct GSVMScript {
     /* 0x00 */ u16 id;
     /* 0x02 */ u8 unk02[4];

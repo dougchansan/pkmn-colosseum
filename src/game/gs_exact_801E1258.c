@@ -17,7 +17,7 @@ void GSvtrLoadTexture(void)
 {
     extern void* lbl_8047B438;
 
-    lbl_8047B438 = fn_800F92D4(0x0B521200);
+    lbl_8047B438 = GSresFindById(0x0B521200);
 }
 
 s32 GSvtrRegisterGSgapp(u32 taskId)

@@ -2,7 +2,7 @@
 
 extern s32 heroGetStatus(void* partyData, s32 slot, s32 p3);
 extern void msgctrlSetValue(s32 paramId, s32 value);
-extern void fn_800FB680(s32, s32, u32, u16);
+extern void GSmsgPrintColor(s32, s32, u32, u16);
 extern u8 lbl_803A2688[];
 
 void fn_8003037C(u32 r3, u32* r4)
@@ -18,13 +18,13 @@ void fn_80030388(u8* r3, u8* r4)
 
     switch (evtype) {
     case 0x10CB:
-        fn_800FB680(0, 0, combined, 0x4412);
+        GSmsgPrintColor(0, 0, combined, 0x4412);
         break;
     case 0x10CA:
     {
         s32 val = heroGetStatus((void*)lbl_803A2688, 1, 0);
         msgctrlSetValue(0x4D, val);
-        fn_800FB680(0, 0, combined, 0x4413);
+        GSmsgPrintColor(0, 0, combined, 0x4413);
         break;
     }
     }

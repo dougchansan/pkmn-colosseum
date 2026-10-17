@@ -13,9 +13,9 @@ extern void HSD_CObjGetPerspective(void* cobj, f32* fovy, f32* aspect);
 extern f32 HSD_CObjGetNear(void* cobj);
 extern f32 HSD_CObjGetFar(void* cobj);
 extern void HSD_CObjGetOrtho(void* cobj, f32* top, f32* bottom, f32* left, f32* right);
-extern void fn_800D7FE4(void* mtx);
-extern void fn_800D834C(void);
-extern void fn_800D9BD0(f32 fovy, f32 aspect, f32 near, f32 far);
+extern void gfxMultMatrix(void* mtx);
+extern void gfxLoadIdentity(void);
+extern void gfxSetPerspective(f32 fovy, f32 aspect, f32 near, f32 far);
 extern void gfxSetOrtho(f32 a, f32 b, f32 c, f32 d);
 
 void _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID(void) {
@@ -39,10 +39,10 @@ void _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID(void) {
         HSD_CObjGetPerspective(c->cobj, &p0, &p1);
         p2 = HSD_CObjGetNear(c->cobj);
         p3 = HSD_CObjGetFar(c->cobj);
-        fn_800D9BD0(p0, p1, p2, p3);
+        gfxSetPerspective(p0, p1, p2, p3);
         fn_800E0628(c->viewMtx, HSD_CObjGetViewingMtxPtr(c->cobj));
-        fn_800D834C();
-        fn_800D7FE4(c->viewMtx);
+        gfxLoadIdentity();
+        gfxMultMatrix(c->viewMtx);
         HSD_CObjGetEyePosition(c->cobj, &c->eye);
         HSD_CObjGetUpVector(c->cobj, &c->upVector);
         HSD_CObjGetInterest(c->cobj, &c->interest);
@@ -59,12 +59,12 @@ void _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID(void) {
         HSD_CObjGetPerspective(c->cobj, &p0, &p1);
         p2 = HSD_CObjGetNear(c->cobj);
         p3 = HSD_CObjGetFar(c->cobj);
-        fn_800D9BD0(p0, p1, p2, p3);
-        fn_800D834C();
-        fn_800D7FE4(c->viewMtx);
+        gfxSetPerspective(p0, p1, p2, p3);
+        gfxLoadIdentity();
+        gfxMultMatrix(c->viewMtx);
     } else {
         HSD_CObjGetOrtho(c->cobj, &p1, &p3, &p0, &p2);
         gfxSetOrtho(p0, p1, p2, p3);
-        fn_800D834C();
+        gfxLoadIdentity();
     }
 }

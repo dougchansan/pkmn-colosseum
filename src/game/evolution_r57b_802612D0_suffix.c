@@ -2,7 +2,7 @@
 
 extern u32 lbl_804787E0[];
 extern u32 evolutionStart(u32, u32, u32, u16*, u32, u8*);
-extern void fn_800FF660(void);
+extern void floorBattleEndTerminateScripts(void);
 extern void std098_mapWarpToMenuRoom(u32);
 extern void floorSetFadeScript(u32, u32);
 extern void _threadSwitch(void);
@@ -14,7 +14,7 @@ void evolution(void)
     base[6] =
         evolutionStart(base[0], base[1], base[2], (u16*) base[4], base[3],
                        (u8*) base[5]);
-    fn_800FF660();
+    floorBattleEndTerminateScripts();
     floorSetFadeScript(0, 0);
 }
 

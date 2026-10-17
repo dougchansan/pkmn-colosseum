@@ -74,7 +74,7 @@ extern u8 std001_messageFormatLookup[];
 extern u8 fn_800FEE68[];
 extern u8 fn_800FEF8C[];
 extern u8 std092_getCurrentRoomID[];
-extern u8 fn_800FF660[];
+extern u8 floorBattleEndTerminateScripts[];
 extern u8 std098_mapWarpToMenuRoom[];
 extern u8 menuSetCursor[];
 extern u8 menuGetCursor[];
@@ -94091,7 +94091,7 @@ void* lbl_802E1CF0[742] = {
     (void*)((u8*)std098_mapWarpToMenuRoom),
     (void*)0x01000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_800FF660),
+    (void*)((u8*)floorBattleEndTerminateScripts),
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)((u8*)scriptFloorCharSetDisp),

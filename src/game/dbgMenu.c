@@ -256,13 +256,13 @@ u32 fn_801330C8(void) {
     gfxSetVtxDesc(0);
     gfxBegin(3);
     gfxVtxPos(lbl_8047D0FC, -*(f32*)lbl_80478AC0, lbl_8047D0F0);
-    fn_800D5CB8(0, 0xFF, 0x80, 0x40, 0);
+    gfxVtxColor4u8(0, 0xFF, 0x80, 0x40, 0);
     gfxVtxPos(*(f32*)lbl_80478AC4, lbl_8047D100, lbl_8047D0F0);
-    fn_800D5CB8(0, 0x40, 0xFF, 0, 0);
+    gfxVtxColor4u8(0, 0x40, 0xFF, 0, 0);
     gfxVtxPos(lbl_8047D104, *(f32*)lbl_80478AC4, lbl_8047D0F0);
-    fn_800D5CB8(0, 0, 0x40, 0xFF, 0);
+    gfxVtxColor4u8(0, 0, 0x40, 0xFF, 0);
     gfxVtxPos(lbl_8047D0FC, -*(f32*)lbl_80478AC0, lbl_8047D0F0);
-    fn_800D5CB8(0, 0xFF, 0x80, 0x40, 0);
+    gfxVtxColor4u8(0, 0xFF, 0x80, 0x40, 0);
     gfxEnd();
     return 0;
 }
@@ -278,9 +278,9 @@ u32 dbgMenuGSmemOptimize(void) {
 }
 
 
-/* 0x80133250 | 0x2C -- fn_800E0E14(1, 1), return 0 */
+/* 0x80133250 | 0x2C -- GSmemDumpMap(1, 1), return 0 */
 u32 dbgMenuGSmemDispMap(void) {
-    fn_800E0E14(1, 1);
+    GSmemDumpMap(1, 1);
     return 0;
 }
 
@@ -290,7 +290,7 @@ asm void dbgMenuGSmemCheck(void) {
 }
 #else
 u32 dbgMenuGSmemCheck(void) {
-    if ((u32)(fn_800E0E14(1, 0) & 0xFF) == 1) {
+    if ((u32)(GSmemDumpMap(1, 0) & 0xFF) == 1) {
         GSlogWrite(lbl_80272AE0);
     } else {
         GSlogWrite(lbl_80272AF0);
@@ -300,7 +300,7 @@ u32 dbgMenuGSmemCheck(void) {
 #endif
 
 
-/* 0x5C | dbgMenuGSmemCheck -- fn_800E0E14(1,0) check then print */
+/* 0x5C | dbgMenuGSmemCheck -- GSmemDumpMap(1,0) check then print */
 /* 0x801332D8 | 0x28 -- fn_800D3074(2), return 0 */
 u32 dbgMenuFrameRate20(void) {
     fn_800D3074(2);

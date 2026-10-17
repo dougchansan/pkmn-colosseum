@@ -39,7 +39,7 @@ s32 fn_80073990(s32 chan)
     start = OSGetTick();
     while (OSGetTick() - start < delay) {
     }
-    if (fn_800D0F44(chan) != PKJB_SI_GBA) {
+    if (SIProbe(chan) != PKJB_SI_GBA) {
         return 1;
     }
     command = 0x11;
@@ -90,7 +90,7 @@ s32 fn_80073C38(s32 chan)
     u32 timeout;
     u32 start;
 
-    if (fn_800D0F44(chan) != PKJB_SI_GBA) {
+    if (SIProbe(chan) != PKJB_SI_GBA) {
         return 1;
     }
     if (GBAReset(chan, &status) != 0) {

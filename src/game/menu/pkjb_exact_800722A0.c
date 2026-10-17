@@ -95,7 +95,7 @@ static inline s32 pkjbSend55(s32 chan, const u32* data)
         if (OSGetTick() - start > timeout) {
             return 1;
         }
-        if (fn_800D0F44(chan) == PKJB_SI_GBA) {
+        if (SIProbe(chan) == PKJB_SI_GBA) {
             break;
         }
         if (lbl_803B6E18[chan].func != NULL) {

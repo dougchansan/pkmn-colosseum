@@ -10,9 +10,9 @@ typedef struct CameraSaveData {
 extern void* lbl_80478C40;
 
 extern void* GSresGetResource(u32 group, u32 id);
-extern void* fn_800F92D4(u32 id);
-extern void fn_800D13C8(void* camera, void* snapshot);
-extern void fn_800D1674(void* camera, void* snapshot);
+extern void* GSresFindById(u32 id);
+extern void GScameraRestoreState(void* camera, void* snapshot);
+extern void GScameraSaveState(void* camera, void* snapshot);
 extern void fn_800D258C(void* camera);
 extern void* memcpy(void* dst, const void* src, u32 n);
 
@@ -24,7 +24,7 @@ static inline GSRenderCamera* cameraGetCurrentAnimation(void)
         state->animationGroup, state->animationId);
 
     if (animation == NULL) {
-        animation = fn_800F92D4(state->animationId);
+        animation = GSresFindById(state->animationId);
     }
     return animation;
 }
@@ -40,7 +40,7 @@ void _cameraRestoreStateData(void* data)
         ((CameraPadState*)lbl_80478C40)->mode == 8) {
         camera = cameraGetCurrentAnimation();
     }
-    fn_800D13C8(camera, &save->camera);
+    GScameraRestoreState(camera, &save->camera);
     fn_800D258C(camera);
 }
 
@@ -54,5 +54,5 @@ void _cameraMakeStateData(void* data)
         camera = cameraGetCurrentAnimation();
     }
     memcpy(&save->state, lbl_80478C40, sizeof(CameraPadState));
-    fn_800D1674(camera, &save->camera);
+    GScameraSaveState(camera, &save->camera);
 }

@@ -19,7 +19,7 @@
  *   locals declared between the index and the triangle pointer. That
  *   numbering gives the index a low enough colouring degree that it is
  *   coloured after the vertex cursor (r26), as in retail.
- * - fn_800D5CB8 takes its colour components as s32 (as cursor_bios.c
+ * - gfxVtxColor4u8 takes its colour components as s32 (as cursor_bios.c
  *   declares it). With u8 parameters the red byte, read straight from the
  *   colour local, is not hoisted out of the face loops.
  * - The callers test each group for NULL; the helpers do not.
@@ -94,7 +94,7 @@ extern void PSMTXMultVec(ColMtx, const f32*, f32*);
 extern void gfxSetPrimitive(s32);
 extern void gfxBegin(s32);
 extern void gfxVtxPos(f32, f32, f32);
-extern void fn_800D5CB8(s32, s32, s32, s32, s32);
+extern void gfxVtxColor4u8(s32, s32, s32, s32, s32);
 extern void gfxEnd(void);
 extern void* GScolsys2Draw(void);
 extern void GSgfxDLDraw(void*);
@@ -141,7 +141,7 @@ void fn_8010D20C(ColTriGroup* group, ColMtx matrix, ColMtx normalMatrix)
         for (v = 0; v < 3; v++) {
             PSMTXMultVec(matrix, &tri->verts[v].x, &pos.x);
             gfxVtxPos(pos.x, pos.y, pos.z);
-            fn_800D5CB8(0, color.r, color.g, color.b, color.a);
+            gfxVtxColor4u8(0, color.r, color.g, color.b, color.a);
         }
         gfxEnd();
     }
@@ -174,10 +174,10 @@ static inline void drawHitMdl(ColDrawGroup* head, ColMtx matrix)
             gfxBegin(2);
             gfxVtxPos(transformed[vertex][0], transformed[vertex][1],
                         transformed[vertex][2]);
-            fn_800D5CB8(0, color.r, color.g, color.b, color.a);
+            gfxVtxColor4u8(0, color.r, color.g, color.b, color.a);
             gfxVtxPos(transformed[next][0], transformed[next][1],
                         transformed[next][2]);
-            fn_800D5CB8(0, color.r, color.g, color.b, color.a);
+            gfxVtxColor4u8(0, color.r, color.g, color.b, color.a);
             gfxEnd();
         }
     }
@@ -200,7 +200,7 @@ static inline void drawSunMdl(ColDrawGroup* head, ColMtx matrix)
             PSMTXMultVec(matrix, *(ColVec3*)(element + vertex * 12),
                          transformed);
             gfxVtxPos(transformed[0], transformed[1], transformed[2]);
-            fn_800D5CB8(0, color.r, color.g, color.b, color.a);
+            gfxVtxColor4u8(0, color.r, color.g, color.b, color.a);
         }
         gfxEnd();
     }
@@ -223,7 +223,7 @@ static inline void drawCheckMdl(ColDrawGroup* head, ColMtx matrix)
             PSMTXMultVec(matrix, *(ColVec3*)(element + vertex * 12),
                          transformed);
             gfxVtxPos(transformed[0], transformed[1], transformed[2]);
-            fn_800D5CB8(0, color.r, color.g, color.b, color.a);
+            gfxVtxColor4u8(0, color.r, color.g, color.b, color.a);
         }
         gfxEnd();
     }
@@ -246,7 +246,7 @@ static inline void drawThruMdl(ColDrawGroup* head, ColMtx matrix)
             PSMTXMultVec(matrix, *(ColVec3*)(element + vertex * 12),
                          transformed);
             gfxVtxPos(transformed[0], transformed[1], transformed[2]);
-            fn_800D5CB8(0, color.r, color.g, color.b, color.a);
+            gfxVtxColor4u8(0, color.r, color.g, color.b, color.a);
         }
         gfxEnd();
     }

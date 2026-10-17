@@ -230,7 +230,7 @@ int doWazaSequence(u32 *r3,int r4,int r5,u32 r6)
 
 {
     extern int msgGetCharsPerFrame();
-    extern u32 fn_800F7AF0();
+    extern u32 GSinputButtonsChanged();
     extern u32 fn_800F7BC4();
     extern const f32 lbl_8047E6C0;
   u32 *savedRotationPtr;
@@ -310,7 +310,7 @@ int doWazaSequence(u32 *r3,int r4,int r5,u32 r6)
       iVar3 = msgGetCharsPerFrame();
       iVar8 = iVar8 + iVar3;
       if (r5 != 0) {
-        uVar4 = fn_800F7AF0(1);
+        uVar4 = GSinputButtonsChanged(1);
         uVar5 = fn_800F7BC4(1);
         if ((uVar5 & uVar4 & 0x200) != 0) {
           bVar2 = 1;
@@ -488,11 +488,11 @@ void evolution(void)
 {
     extern u32 lbl_804787E0[];
     extern u32 evolutionStart();
-    extern void fn_800FF660();
+    extern void floorBattleEndTerminateScripts();
     extern void floorSetFadeScript();
     u32 *base = lbl_804787E0;
     base[6] = evolutionStart(base[0], base[1], base[2], (u16*)base[4], base[3], (u8*)base[5]);
-    fn_800FF660();
+    floorBattleEndTerminateScripts();
     floorSetFadeScript(0, 0);
 }
 
@@ -692,7 +692,7 @@ u32 evolutionDemo(EvoWork *work,int canSkip,u32 before,u32 after)
     extern const f32 lbl_8047E6C0;
     extern const f32 lbl_8047E6C4;
     extern int msgGetCharsPerFrame();
-    extern u32 fn_800F7AF0();
+    extern u32 GSinputButtonsChanged();
     extern u32 fn_800F7BC4();
   u32 voice;
   u32 nickname;
@@ -720,7 +720,7 @@ u32 evolutionDemo(EvoWork *work,int canSkip,u32 before,u32 after)
   time = 0;
   while (time < 0x23a) {
     if (canSkip != 0 && time >= 0x78 && state >= 2) {
-      trigger = fn_800F7AF0(1);
+      trigger = GSinputButtonsChanged(1);
       held = fn_800F7BC4(1);
       if ((held & trigger & 0x200) != 0) {
         skipped = TRUE;

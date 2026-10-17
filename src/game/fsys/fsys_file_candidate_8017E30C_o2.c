@@ -69,7 +69,7 @@ extern void* memcpy(void* dst, const void* src, u32 n);
 extern void DCFlushRange(void* addr, u32 nBytes);
 extern u16 fn_800E2B00(u32 size, u32 align);
 extern void* fn_800E27B0(u16 handle);
-extern u16 fn_800E202C(void* ptr);
+extern u16 GSmemGetHandleByPtr(void* ptr);
 extern void fn_800E24B0(u16 handle);
 extern void fn_800E209C(u16 handle);
 extern void* GSresAllocResourceAlign(u32 size, u32 align, u32 group, u32 id, u32 param);
@@ -101,7 +101,7 @@ static inline void fsysFree(void* ptr)
 {
     u16 handle;
 
-    handle = fn_800E202C(ptr);
+    handle = GSmemGetHandleByPtr(ptr);
     if (handle != 0) {
         fn_800E24B0(handle);
         fn_800E209C(handle);

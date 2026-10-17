@@ -198,7 +198,7 @@ s32 fn_800129A8(u8* ctx) {
 /* fn_80012B94 - 0x80012B94 | size: 0x18c */
 extern void* windowGetParam(void*, s32);
 extern s32   GSmsgGetRect(s32);
-extern void  fn_800FB680(s32, s32, s32, s32);
+extern void  GSmsgPrintColor(s32, s32, s32, s32);
 extern void fn_8001E644(s32, s32, s32, s32, u8);
 extern void windowDrawPanel(s32, s32, s32, s32);
 extern void windowDrawSprite(s32, s16, void*, s32, s32);
@@ -250,7 +250,7 @@ s32 fn_80012B94(u8* ctx) {
         val = *(s32*)iter;
         if (val != 0) {
             rng = GSmsgGetRect(val);
-            fn_800FB680(0x20, acc, -1, val);
+            GSmsgPrintColor(0x20, acc, -1, val);
             delay = (s32)(rng & 0xFFFF) + 2;
         } else {
             delay = 0x14;
@@ -473,11 +473,11 @@ static inline void eventDrawCount(u8* ctx, u8* tgt, u8* data, s32 value) {
     s32 width;
     if (data[0] != 0) {
         width = GSmsgGetRect(0x1A0);
-        fn_800FB680((*(s16*)(tgt + 0x54) - 0x20) - (s32)(s16)((u32)width >> 16), 0, eventMsgColor(ctx), 0x1A0);
+        GSmsgPrintColor((*(s16*)(tgt + 0x54) - 0x20) - (s32)(s16)((u32)width >> 16), 0, eventMsgColor(ctx), 0x1A0);
     }
     msgctrlSetValue(0x34, value);
     width = GSmsgGetRect(0xC9);
-    fn_800FB680(*(s16*)(tgt + 0x54) - (s32)(s16)((u32)width >> 16), 0, eventMsgColor(ctx), 0xC9);
+    GSmsgPrintColor(*(s16*)(tgt + 0x54) - (s32)(s16)((u32)width >> 16), 0, eventMsgColor(ctx), 0xC9);
 }
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
@@ -1178,7 +1178,7 @@ s32 fn_8001431C(void* arg0, u8* arg1) {
     if (count <= 0) return 0;
     msgctrlSetValue(0x50, count * (s32)lbl_8047A2FC);
     rand = GSmsgGetRect(0x151);
-    fn_800FB680(*(s16*)(arg1 + 0x54) - (s32)(s16)((u32)rand >> 16), 0, -1, 0x151);
+    GSmsgPrintColor(*(s16*)(arg1 + 0x54) - (s32)(s16)((u32)rand >> 16), 0, -1, 0x151);
     return 0;
 }
 #endif
@@ -1368,7 +1368,7 @@ s32 fn_80014574(u8* ctx) {
 /* menuPocket2NumCtrl..fn_80014F48 also build alone for the linked
  * gs_event_exec_r47_suffix unit. */
 #ifdef GS_EVENT_EXEC_ONLY_80014A48
-extern void fn_800FB680(s32, s32, s32, s32);
+extern void GSmsgPrintColor(s32, s32, s32, s32);
 extern void winSeqSetMenu(s32, s32);
 extern u8* windowGetKeyInfo(void);
 #endif
@@ -1499,7 +1499,7 @@ s32 fn_80014C38(u8* ctx, u8* tgt) {
     if (idx < 0 || idx >= base) return 0;
     inner = *(u8**)(p + 0x4) + idx * 0xC;
     flag  = (*(u16*)(inner + 0x8)) & 1;
-    fn_800FB680(0, 0, flag ? 0x7f7f7fff : -1, *(s32*)inner);
+    GSmsgPrintColor(0, 0, flag ? 0x7f7f7fff : -1, *(s32*)inner);
     return 0;
 }
 #pragma pop

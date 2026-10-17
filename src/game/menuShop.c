@@ -589,7 +589,7 @@ s32 fn_8002A400(void* r3, u8* r4) {
         id = 0x151;
     }
     ret = GSmsgGetRect(id);
-    fn_800FB680((s32)*(s16*)(r30 + 0x54) - (s32)(ret >> 16), 0, -1, id);
+    GSmsgPrintColor((s32)*(s16*)(r30 + 0x54) - (s32)(ret >> 16), 0, -1, id);
     return 0;
 }
 #endif
@@ -943,7 +943,7 @@ s32 fn_8002ACB8(void* r3, u8* r4) {
         msgctrlSetValue(0x50, heroGetStatus(0, 0xC, 0));
         text_id = 0x151;
         x = (s32)*(s16*)(r4 + 0x54) - (s32)(s16)(GSmsgGetRect(text_id) >> 16);
-        fn_800FB680(x, 0, -1, text_id);
+        GSmsgPrintColor(x, 0, -1, text_id);
         goto done;
     }
 
@@ -976,7 +976,7 @@ s32 fn_8002ACB8(void* r3, u8* r4) {
     msgctrlSetValue(0x50, (void*)value);
     text_id = 0x153;
     x = (s32)*(s16*)(r4 + 0x54) - (s32)(s16)(GSmsgGetRect(text_id) >> 16);
-    fn_800FB680(x + 6, 0, -1, text_id);
+    GSmsgPrintColor(x + 6, 0, -1, text_id);
 done:
     return 0;
 }
@@ -1101,7 +1101,7 @@ s32 fn_8002AEF8(void* r3, u8* r4) {
             owned = shopCountOwned(item);
             msgctrlSetValue(0x2d, (void*)(u32)(u16)item);
             msgctrlSetValue(0x34, (void*)owned);
-            fn_800FB680(0, 0, -1, 0x2b2f);
+            GSmsgPrintColor(0, 0, -1, 0x2b2f);
         }
     }
     return 0;
@@ -1126,7 +1126,7 @@ s32 fn_8002B03C(void* r3) {
     ctx = *(void**)((u8*)r3 + 0x60);
     v = ((u8*)ctx)[0x1c];
     if (v == 0 || v == 1) {
-        fn_800FB680(0, 0, -1, 0x2b2e);
+        GSmsgPrintColor(0, 0, -1, 0x2b2e);
     }
     return 0;
 }
@@ -1140,7 +1140,7 @@ asm void fn_8002B088(void) {
 }
 #else
 s32 fn_8002B088(void) {
-    fn_800FB680(0, 0, -1, lbl_8047A3E4);
+    GSmsgPrintColor(0, 0, -1, lbl_8047A3E4);
     return 0;
 }
 #endif
@@ -1236,7 +1236,7 @@ s32 menuShopDrawListText(void* arg0, u8* arg1)
 
     extern void msgctrlSetValue(s32, void*);
     extern u32 GSmsgGetRect(u32);
-    extern void fn_800FB680(s32, s32, s32, u32);
+    extern void GSmsgPrintColor(s32, s32, s32, u32);
     extern void itemDataBiosGetPtr(u32);
 
     extern u8 lbl_802EF0A8[];
@@ -1302,29 +1302,29 @@ s32 menuShopDrawListText(void* arg0, u8* arg1)
         itemDataBiosGetPtr(slot_id);
         icon = itemDataBiosGetName();
         if (icon != 0) {
-            fn_800FB680(0, x_pos, -1, icon);
+            GSmsgPrintColor(0, x_pos, -1, icon);
         }
 
         mode = ctx[0x1c];
         if (mode == 0 || mode == 1) {
-            fn_800FB680(x_mid, x_pos, -1, 0x14f);
+            GSmsgPrintColor(x_mid, x_pos, -1, 0x14f);
             itemDataBiosGetPtr(slot_id);
             value = itemDataBiosGetPrice();
             msgctrlSetValue(0x50, (void*)(u16)value);
-            fn_800FB680(*(s16*)(arg1 + 0x54) - (GSmsgGetRect(0xdb) >> 16),
+            GSmsgPrintColor(*(s16*)(arg1 + 0x54) - (GSmsgGetRect(0xdb) >> 16),
                         x_pos, -1, 0xdb);
         } else {
             itemDataBiosGetPtr(slot_id);
             value = itemDataBiosGetCoupon();
             msgctrlSetValue(0x50, (void*)(u16)value);
-            fn_800FB680(*(s16*)(arg1 + 0x54) - (GSmsgGetRect(0x153) >> 16),
+            GSmsgPrintColor(*(s16*)(arg1 + 0x54) - (GSmsgGetRect(0x153) >> 16),
                         x_pos, -1, 0x153);
         }
     }
 
     /* trailing "add"/"locked" button if visual columns remain */
     if (loop_i < loop_lim) {
-        fn_800FB680(0, loop_i * 0x1f - scroll_px, -1,
+        GSmsgPrintColor(0, loop_i * 0x1f - scroll_px, -1,
                     (ctx[0x1d] & 1) ? 0x2b47 : 0x2b2c);
     }
 
@@ -3072,7 +3072,7 @@ void std026_unkMenuSequence26(void)
     }
 
     if ((s32)*(&lbl_8047A3FC + 1) != 0) {
-        fn_800FF660();
+        floorBattleEndTerminateScripts();
         floorSetFadeScript(0, 0);
     }
 }
@@ -3180,7 +3180,7 @@ void fn_8002D91C(u32 arg0)
     }
 
     if ((s32)*(&lbl_8047A3FC + 1) != 0) {
-        fn_800FF660();
+        floorBattleEndTerminateScripts();
         floorSetFadeScript(0, 0);
     }
 }

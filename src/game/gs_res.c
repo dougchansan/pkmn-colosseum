@@ -6,7 +6,7 @@
  * XD class: game/pxdvs/GSAPI/GSres/GSres.cpp
  *
  * The unit starts at the three release functions (fn_800F915C, fn_800F9210,
- * fn_800F92D4): they walk this registry's table, and fn_800F9210 is the
+ * GSresFindById): they walk this registry's table, and fn_800F9210 is the
  * resFindEntry lookup below inlined (its found-path `b` over the NULL
  * store is the inline's return), so they cannot belong to the pad manager
  * that precedes them.
@@ -118,7 +118,7 @@ void fn_800F9210(u32 group, u32 id) {
 }
 
 /* 0x800F92D4 | 0x44 -- first live entry with this id, any group */
-void* fn_800F92D4(u32 id) {
+void* GSresFindById(u32 id) {
     GSresEntry* entry = lbl_8047AC5C;
     u32 i;
 

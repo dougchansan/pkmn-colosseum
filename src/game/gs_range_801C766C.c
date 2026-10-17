@@ -62,7 +62,7 @@ extern void std055_characterEndSpeech(s32, s32);
 extern void menuSubOpenSelect(s32, s32, s32, s32, s32, s32);
 extern u8 heroMoveGetResID(s32* floorId, s32* resId, s32 member);
 extern u32 heroMoveChkHinderClear(s32 member);
-extern void* fn_800F92D4(s32 lightId);
+extern void* GSresFindById(s32 lightId);
 extern void GSlogWrite(const char* fmt, ...);
 extern u8 GSlightHasAnimationEnded(void* light);
 extern void GSlightStopAnimation(void* light);
@@ -1161,7 +1161,7 @@ void fn_801C9C9C(void)
 
 u8 std193_lightWaitForAnimation(s32 lightId, s32 wait)
 {
-    void* light = fn_800F92D4(lightId);
+    void* light = GSresFindById(lightId);
 
     if (light == NULL) {
         GSlogWrite(lbl_802758AC, lightId);
@@ -1184,7 +1184,7 @@ u8 std193_lightWaitForAnimation(s32 lightId, s32 wait)
 
 void scriptLightStopMotion(s32 lightId)
 {
-    void* light = fn_800F92D4(lightId);
+    void* light = GSresFindById(lightId);
 
     if (light == NULL) {
         GSlogWrite(lbl_802758AC, lightId);
@@ -1195,7 +1195,7 @@ void scriptLightStopMotion(s32 lightId)
 
 void std191_mapTransformElement(s32 lightId, s32 animIndex, s32 frame, s32 loop)
 {
-    void* light = fn_800F92D4(lightId);
+    void* light = GSresFindById(lightId);
 
     if (light == NULL) {
         GSlogWrite(lbl_802758AC, lightId);
@@ -1213,7 +1213,7 @@ void std191_mapTransformElement(s32 lightId, s32 animIndex, s32 frame, s32 loop)
 
 void std190_lightSetActive(s32 lightId, s32 active)
 {
-    void* light = fn_800F92D4(lightId);
+    void* light = GSresFindById(lightId);
 
     if (light == NULL) {
         GSlogWrite(lbl_802758AC, lightId);

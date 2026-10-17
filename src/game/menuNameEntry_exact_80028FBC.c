@@ -56,7 +56,7 @@ void menuNameEntry(void) {
     extern void pokemonBiosSetNicknamePtr(u32 v, u8* ctx);
     extern void pcboxSetPokemonBoxName(s32 a, s32 name, u8* ctx);
     extern s32  GScharCmp(u8* ctx, void* nameBuf);
-    extern void fn_800FF660(void);
+    extern void floorBattleEndTerminateScripts(void);
     extern void floorSetFadeScript(s32 a, u32 b);
 
     u8* ctx;        /* lbl_803A2068 context block          */
@@ -284,7 +284,7 @@ void menuNameEntry(void) {
 
     /* Async finalize: post the appropriate completion event. */
     if (*(s32*)(ctx2 + 0x28) != 0) {
-        fn_800FF660();
+        floorBattleEndTerminateScripts();
         if (*(s32*)(lbl_803A2068 + 0x24) != 0) {
             floorSetFadeScript(0, 0x05960008);
         } else {

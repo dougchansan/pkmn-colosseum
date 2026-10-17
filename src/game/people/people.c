@@ -267,7 +267,7 @@ extern void GSthreadUnblock(void* thread);
 extern u32 msgGetCharsPerFrame(void);
 extern s32 fn_800D37CC(void);
 extern f32 fn_800E0BA0(void);
-extern f32 fn_800E0BE4(void);
+extern f32 GSrandf(void);
 
 /* GSvec */
 extern void GSvecCopy(void* dst, void* src);
@@ -277,7 +277,7 @@ extern void GSvecSub(void* dst, void* a, void* b);
 extern void vecScale(void* dst, void* src, f32 scale);
 extern f32 vecMag(void* vec);
 extern void vecNormalize(void* dst, void* src, f32 length);
-extern f32 fn_800E0000(void* a, void* b);
+extern f32 GSvecDot(void* a, void* b);
 extern void fn_800E0060(void* dst, void* src);
 extern void fn_800E0718(void* quat, void* axis, f32 angle);
 extern void GSvecTransformQuat(void* dst, void* quat, void* src);
@@ -340,8 +340,8 @@ extern void GSlightSetTarget(void* light, void* target);
 extern void GSlightSetPosition(void* light, void* position);
 
 /* Pad, flags, scripts, messages */
-extern s8 fn_800F7A7C(s32 pad, s32 stick);
-extern s8 fn_800F7A08(s32 pad, s32 stick);
+extern s8 GSinputGetLeftStickXData(s32 pad, s32 stick);
+extern s8 GSinputGetLeftStickYData(s32 pad, s32 stick);
 extern u32 fn_800F7BC4(s32 pad);
 extern void* fn_800F7108(u16 id);
 extern u16 fn_800F7318(u32 type, u32 scriptId, u32 stackSize, u32 a, u32 b, s32 argc, ...);
@@ -403,7 +403,7 @@ extern void fn_800D9ED8(s32 a);
 extern void gfxSetPrimitive(s32 a);
 extern void gfxBegin(s32 a);
 extern void gfxVtxPos(f32 x, f32 y, f32 z);
-extern void fn_800D5CB8(s32 a, s32 b, s32 c, s32 d, s32 e);
+extern void gfxVtxColor4u8(s32 a, s32 b, s32 c, s32 d, s32 e);
 extern void gfxEnd(void);
 extern u8 lbl_80314638[];
 
@@ -2877,25 +2877,25 @@ u8 std058_characterCheckWithinBounds(u32 groupId, u32 index, f32 x0, f32 z0, f32
         gfxSetPrimitive(4);
         gfxBegin(10);
         gfxVtxPos(x0, position.y, z0);
-        fn_800D5CB8(0, 0, 0x80, 0xFF, 0xC0);
+        gfxVtxColor4u8(0, 0, 0x80, 0xFF, 0xC0);
         gfxVtxPos(x0, position.y + 50.0f, z0);
-        fn_800D5CB8(0, 0, 0x80, 0xFF, 0xC0);
+        gfxVtxColor4u8(0, 0, 0x80, 0xFF, 0xC0);
         gfxVtxPos(x0, position.y, z1);
-        fn_800D5CB8(0, 0, 0x80, 0xFF, 0xC0);
+        gfxVtxColor4u8(0, 0, 0x80, 0xFF, 0xC0);
         gfxVtxPos(x0, position.y + 50.0f, z1);
-        fn_800D5CB8(0, 0, 0x80, 0xFF, 0xC0);
+        gfxVtxColor4u8(0, 0, 0x80, 0xFF, 0xC0);
         gfxVtxPos(x1, position.y, z1);
-        fn_800D5CB8(0, 0, 0x80, 0xFF, 0xC0);
+        gfxVtxColor4u8(0, 0, 0x80, 0xFF, 0xC0);
         gfxVtxPos(x1, position.y + 50.0f, z1);
-        fn_800D5CB8(0, 0, 0x80, 0xFF, 0xC0);
+        gfxVtxColor4u8(0, 0, 0x80, 0xFF, 0xC0);
         gfxVtxPos(x1, position.y, z0);
-        fn_800D5CB8(0, 0, 0x80, 0xFF, 0xC0);
+        gfxVtxColor4u8(0, 0, 0x80, 0xFF, 0xC0);
         gfxVtxPos(x1, position.y + 50.0f, z0);
-        fn_800D5CB8(0, 0, 0x80, 0xFF, 0xC0);
+        gfxVtxColor4u8(0, 0, 0x80, 0xFF, 0xC0);
         gfxVtxPos(x0, position.y, z0);
-        fn_800D5CB8(0, 0, 0x80, 0xFF, 0xC0);
+        gfxVtxColor4u8(0, 0, 0x80, 0xFF, 0xC0);
         gfxVtxPos(x0, position.y + 50.0f, z0);
-        fn_800D5CB8(0, 0, 0x80, 0xFF, 0xC0);
+        gfxVtxColor4u8(0, 0, 0x80, 0xFF, 0xC0);
         gfxEnd();
     }
 
@@ -3012,10 +3012,10 @@ GSvec fn_80186B5C(u32 groupId, u32 index)
     if (entry == NULL) {
         return result;
     }
-    stickX = fn_800F7A7C(1, 1);
-    stickY = fn_800F7A08(1, 1);
-    subStickX = fn_800F7A7C(1, 0);
-    subStickY = fn_800F7A08(1, 0);
+    stickX = GSinputGetLeftStickXData(1, 1);
+    stickY = GSinputGetLeftStickYData(1, 1);
+    subStickX = GSinputGetLeftStickXData(1, 0);
+    subStickY = GSinputGetLeftStickYData(1, 0);
     if (stickX == 0 && stickY == 0) {
         if (fn_800F7BC4(1) & 8) {
             stickY = -56;
@@ -3156,13 +3156,13 @@ u8 std170_cameraFocusOnCharacter(u32 groupId, u32 index, u8 push, f32 x0, f32 z0
         gfxSetPrimitive(4);
         gfxBegin(4);
         gfxVtxPos(x0, position.y - 50.0f, z0);
-        fn_800D5CB8(0, 0, 0x80, 0xFF, 0xC0);
+        gfxVtxColor4u8(0, 0, 0x80, 0xFF, 0xC0);
         gfxVtxPos(x0, position.y + 50.0f, z0);
-        fn_800D5CB8(0, 0, 0x80, 0xFF, 0xC0);
+        gfxVtxColor4u8(0, 0, 0x80, 0xFF, 0xC0);
         gfxVtxPos(x1, position.y - 50.0f, z1);
-        fn_800D5CB8(0, 0, 0x80, 0xFF, 0xC0);
+        gfxVtxColor4u8(0, 0, 0x80, 0xFF, 0xC0);
         gfxVtxPos(x1, position.y + 50.0f, z1);
-        fn_800D5CB8(0, 0, 0x80, 0xFF, 0xC0);
+        gfxVtxColor4u8(0, 0, 0x80, 0xFF, 0xC0);
         gfxEnd();
     }
 
@@ -3189,7 +3189,7 @@ u8 std170_cameraFocusOnCharacter(u32 groupId, u32 index, u8 push, f32 x0, f32 z0
     }
     fn_800E0060(&lineDirection, &lineDirection);
     GSvecSub(&offset, &transform, &lineStart);
-    vecScale(&offset, &lineDirection, fn_800E0000(&offset, &lineDirection));
+    vecScale(&offset, &lineDirection, GSvecDot(&offset, &lineDirection));
     GSvecAdd(&projectedStart, &offset, &lineStart);
     GSvecSub(&projectedDelta, &transform, &projectedStart);
 
@@ -3502,7 +3502,7 @@ void fn_80184D80(PeopleEntry* entry)
         entry->subState = 1;
         /* fallthrough */
     case 1:
-        angle = 3.1415927f * (2.0f * fn_800E0BE4());
+        angle = 3.1415927f * (2.0f * GSrandf());
         offset.x = entry->field_80 * sin(angle);
         offset.z = entry->field_80 * cos(angle);
         GSvecAdd(entry->field_5C, &entry->collisionX, &offset);

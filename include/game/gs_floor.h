@@ -87,7 +87,7 @@ typedef enum GSFloorResStatus {
  * Size: at least 0x14 bytes. Stored in the GSmem-allocated pool
  * (handle gsFloorPoolHandle, pointer gsFloorPoolPtr).
  *
- * Fields recovered from disassembly of fn_800FF788 and fn_800FF970:
+ * Fields recovered from disassembly of fn_800FF788 and _floorManagerThread:
  *   0x00: void*  floorDataEntry  -- pointer to GSFloorDataEntry for this floor
  *   0x04: u32    floorId         -- composite floor ID (floor_index * 0x5001 + base)
  *   0x08: u16    resMemHandle    -- GSmem handle for resource memory block
@@ -115,7 +115,7 @@ typedef struct GSFloorContext {
  *   Pool 1: extended pool 1 (count = maxExt1, starts at base[maxBase])
  *   Pool 2: extended pool 2 (count = maxExt2, starts at pool1[maxExt1])
  *
- * Fields recovered from iteration patterns in fn_800FF970:
+ * Fields recovered from iteration patterns in _floorManagerThread:
  *   0x00: GSFloorResource* prev  -- linked list: previous resource
  *   0x04: GSFloorResource* next  -- linked list: next resource
  *   0x08: u32  active            -- nonzero if resource is in use
@@ -170,7 +170,7 @@ typedef struct GSFloorDataEntry {
  * a pair of callbacks: one to compute the size of the resource,
  * and one to read/load it into memory.
  *
- * Fields recovered from fn_800FF970 (state 4):
+ * Fields recovered from _floorManagerThread (state 4):
  *   0x00: u8   typeId        -- resource type identifier (matched against header byte)
  *   0x01-0x03: padding
  *   0x04: void* loadFunc     -- function to restore the resource

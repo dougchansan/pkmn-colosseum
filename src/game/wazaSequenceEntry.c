@@ -1249,7 +1249,7 @@ void* fn_801D97F0(void* entry) {
                          *(u16*)(owner + 0x32) * 0xD4);
     if (selector == 0x10) {
         if (GSmodelCenterNull(*(void**)(owner + 0x24))) {
-            partIndex = fn_800EE0E8(*(void**)(owner + 0x24)) - 1;
+            partIndex = GSmodelWalkJObjs(*(void**)(owner + 0x24)) - 1;
         } else {
             partIndex = *(s32*)((u8*)table + 0x54);
         }

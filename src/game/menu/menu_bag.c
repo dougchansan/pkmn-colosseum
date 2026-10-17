@@ -42,7 +42,7 @@ extern s32   menuOpenCustom(u32 sceneId, u32 a, u32 b, u32 c,
                          u32 d, u32 e, ...);
 extern u32   menuGetCursorItemID(u32 a);                /* scene message get */
 extern void  winSpriteSetDisp(u32 obj, u8 visible);  /* model visibility */
-extern void  fn_800FB680(u32 a, u32 b, s32 c, u32 d); /* sound trigger */
+extern void  GSmsgPrintColor(u32 a, u32 b, s32 c, u32 d); /* sound trigger */
 extern void  msgctrlSetValue(u32 effectId, u32 param);
 
 /* ===== Pokemon data ===== */

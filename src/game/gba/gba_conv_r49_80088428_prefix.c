@@ -30,10 +30,10 @@ extern void gbaCommStartTransferFile();
 extern void gbaCommIsBusy();
 extern void fn_80093610();
 extern void gbaCommEnd();
-extern void fn_800D0F44();
+extern void SIProbe();
 extern void msgGetCharsPerFrame();
 extern void fn_800D37CC();
-extern void fn_800E202C();
+extern void GSmemGetHandleByPtr();
 extern void fn_800E209C();
 extern void fn_800E24B0();
 extern void fn_800E27B0();
@@ -45,11 +45,11 @@ extern void GSmodelSetAnimFrame();
 extern void GSmodelSetAnimType();
 extern void GSmodelSetAnimIndex();
 extern void _threadSwitch();
-extern void fn_800F92D4();
-extern void fn_800F9AEC();
+extern void GSresFindById();
+extern void GScharToGBA();
 extern void GSmsgGetGSchar();
 extern void std092_getCurrentRoomID();
-extern void fn_800FF660();
+extern void floorBattleEndTerminateScripts();
 extern void std098_mapWarpToMenuRoom();
 extern void menuClose();
 extern void menuCloseCustom();
@@ -142,7 +142,7 @@ void fn_80088428(void) {
     extern void soundStartSE(s32);
     extern void cameraWaitSyncAnime(s32);
     extern void cameraPlayAnime(s32, s32, s32, s32);
-    extern void fn_800FF660(void);
+    extern void floorBattleEndTerminateScripts(void);
     GbaConvChannelState* state = (GbaConvChannelState*)&lbl_803FB2F8;
     u32 r31;
 
@@ -153,7 +153,7 @@ void fn_80088428(void) {
     soundStartSE(0x28);
     cameraPlayAnime(0x62d, 0x107D1800, 0, 0);
     cameraWaitSyncAnime(1);
-    fn_800FF660();
+    floorBattleEndTerminateScripts();
     state->result = r31;
 }
 

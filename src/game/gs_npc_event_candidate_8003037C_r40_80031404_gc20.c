@@ -11,7 +11,7 @@
 
 extern s32 heroGetStatus(void* partyData, s32 slot, s32 p3);
 extern void msgctrlSetValue(s32 paramId, s32 value);
-extern void fn_800FB680(s32, s32, u32, u16);
+extern void GSmsgPrintColor(s32, s32, u32, u16);
 extern s32 GSmsgGetGSchar(u32 msg);
 extern u8 pokemonCheckValid(void* pokemon);
 extern u8 menuCBRule_CheckPokemonEventFlag(void* pokemon);
@@ -74,7 +74,7 @@ void fn_80031404(u8* r3, u8* r4)
         }
         if (msg != 0) {
             msgctrlSetValue(0x37, GSmsgGetGSchar(msg));
-            fn_800FB680(2, 0, combined, 0xCF);
+            GSmsgPrintColor(2, 0, combined, 0xCF);
             winSpriteSetDisp(r4, 1);
         } else {
             winSpriteSetDisp(r4, 0);

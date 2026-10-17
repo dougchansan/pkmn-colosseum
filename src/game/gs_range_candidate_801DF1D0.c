@@ -12,7 +12,7 @@
 
 extern u8 fn_801DAC54(void* effect);
 extern u32 msgGetCharsPerFrame(void);
-extern f32 fn_800E0BE4(void);
+extern f32 GSrandf(void);
 extern void GSmodelLinkTexAnimToAnim(void* model, u32 enable);
 extern void GSmodelSetTexAnimIndex(void* model, u32 index);
 extern void GSmodelSetTexAnimRate(void* model, f32 rate);
@@ -63,7 +63,7 @@ void fn_801DF1D0(void* obj) {
         threshold = t * (2.0f - t);
         threshold *= 0.016666668f;
     }
-    if (threshold >= fn_800E0BE4()) {
+    if (threshold >= GSrandf()) {
         model = *(void**)(effect + 0x24);
         if (model != NULL) {
             effect[0x19] = 3;

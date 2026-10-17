@@ -1,14 +1,14 @@
 #include "dolphin/types.h"
 
 extern void gfxBegin(u16 count);
-extern void fn_800D6028(u16 vertex);
-extern void fn_800D5FA4(u8 vertex);
-extern void fn_800D5DD0(u16 vertex);
-extern void fn_800D5D6C(u8 vertex);
-extern void fn_800D5AB0(u32 layer, u16 vertex);
-extern void fn_800D5A38(u32 layer, u8 vertex);
-extern void fn_800D579C(u32 layer, u16 vertex);
-extern void fn_800D5724(u32 layer, u8 vertex);
+extern void gfxVtxPos1x16(u16 vertex);
+extern void gfxVtxPos1x8(u8 vertex);
+extern void gfxVtxNormal1x16(u16 vertex);
+extern void gfxVtxNormal1x8(u8 vertex);
+extern void gfxVtxColor1x16(u32 layer, u16 vertex);
+extern void gfxVtxColor1x8(u32 layer, u8 vertex);
+extern void gfxVtxTexCoord1x16(u32 layer, u16 vertex);
+extern void gfxVtxTexCoord1x8(u32 layer, u8 vertex);
 extern void gfxEnd(void);
 
 void fn_800D7940(u8* object, u16 vertexCount)
@@ -21,16 +21,16 @@ void fn_800D7940(u8* object, u16 vertexCount)
     gfxBegin(vertexCount);
     for (vertex = 0; vertex < vertexCount; vertex++) {
         if (*(s32*)(object + 0x28) == 2) {
-            fn_800D6028(vertex);
+            gfxVtxPos1x16(vertex);
         } else {
-            fn_800D5FA4(vertex);
+            gfxVtxPos1x8(vertex);
         }
 
         if (*(u8*)(object + 0x40) == 1) {
             if (*(s32*)(object + 0x44) == 2) {
-                fn_800D5DD0(vertex);
+                gfxVtxNormal1x16(vertex);
             } else {
-                fn_800D5D6C(vertex);
+                gfxVtxNormal1x8(vertex);
             }
         }
 
@@ -39,9 +39,9 @@ void fn_800D7940(u8* object, u16 vertexCount)
             if (entry[0x8] == 1) {
                 layer = i - 4;
                 if (*(s32*)(entry + 0xc) == 2) {
-                    fn_800D5AB0(layer, vertex);
+                    gfxVtxColor1x16(layer, vertex);
                 } else {
-                    fn_800D5A38(layer, vertex);
+                    gfxVtxColor1x8(layer, vertex);
                 }
             }
         }
@@ -51,9 +51,9 @@ void fn_800D7940(u8* object, u16 vertexCount)
             if (entry[0x8] == 1) {
                 layer = i - 6;
                 if (*(s32*)(entry + 0xc) == 2) {
-                    fn_800D579C(layer, vertex);
+                    gfxVtxTexCoord1x16(layer, vertex);
                 } else {
-                    fn_800D5724(layer, vertex);
+                    gfxVtxTexCoord1x8(layer, vertex);
                 }
             }
         }

@@ -77,7 +77,7 @@ void fn_800BD554(u32 id);
 void fn_800BD7A0(u32 left, u32 top, u32 wd, u32 ht);
 
 /* GSmemFindHandle */
-u16 fn_800E202C(void* ptr);
+u16 GSmemGetHandleByPtr(void* ptr);
 /* GSmemLock */
 void fn_800E24B0(u16 handle);
 /* GSmemFree */
@@ -564,7 +564,7 @@ void fn_801B06DC(HSD_Shadow* shadow)
     HSD_ImageDesc* idesc = shadow->texture->imagedesc;
 
     if (idesc->image_ptr) {
-        handle = fn_800E202C(idesc->image_ptr);
+        handle = GSmemGetHandleByPtr(idesc->image_ptr);
         fn_800E24B0(handle);
         fn_800E209C(handle);
         idesc->image_ptr = NULL;

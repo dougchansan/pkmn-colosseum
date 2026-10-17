@@ -127,11 +127,11 @@ s32 fn_80057694(void);
 void fn_800576A4(s32);
 void fn_80057830(s32, s32, s32);
 extern u8 menuColosseumBattleGetFlag(void);
-extern u32 fn_800E202C(void*);
+extern u32 GSmemGetHandleByPtr(void*);
 extern void fn_800E209C(u32);
 extern void fn_800E24B0(u32);
 extern void* fn_800E27B0(u32);
-extern void fn_800F96E4(void*, s32, void*);
+extern void GSmsgGetText(void*, s32, void*);
 extern void fn_8002D91C();
 extern void menuTaisenRun(void);
 extern void menuCBBattleSetupFight();
@@ -516,7 +516,7 @@ void menuColosseumBattleMain(void) {
     extern s32 fn_80071160(void);
     extern s32 menuOpenCustom(s32, s32, void*, s32, s32, s32, ...);
     extern s32 menuIsCheck(s32);
-    extern s32 fn_800F7EF8(s32);
+    extern s32 GSinputIsConnected(s32);
     extern s32 fn_8008ABA0(s32);
     extern u8* savedataBattleGetSavedHero(void*);
     extern s32 fn_8006A7E8(void*);
@@ -1374,7 +1374,7 @@ void menuColosseumBattleMain(void) {
                 case 0:
                     if ((u8)fn_8008ABA0(1) != 0) {
                         winMsgOpen(2, 0x4445, 1, 0);
-                        while ((u8)fn_800F7EF8(1) == 0) {
+                        while ((u8)GSinputIsConnected(1) == 0) {
                             _threadSwitch();
                         }
                     } else {
@@ -1383,7 +1383,7 @@ void menuColosseumBattleMain(void) {
                     break;
                 case 1:
                     winMsgOpen(2, 0x44C0, 1, 0);
-                    while ((u8)fn_800F7EF8(1) == 0) {
+                    while ((u8)GSinputIsConnected(1) == 0) {
                         _threadSwitch();
                     }
                     break;
@@ -1393,9 +1393,9 @@ void menuColosseumBattleMain(void) {
                     break;
                 }
                 winMsgClose(1);
-                if ((u8)fn_800F7EF8(1) == 0) {
+                if ((u8)GSinputIsConnected(1) == 0) {
                     winMsgOpen(2, (u8)fn_8008ABA0(1) ? 0x4445 : 0x3C4F, 1, 0);
-                    while ((u8)fn_800F7EF8(1) == 0) {
+                    while ((u8)GSinputIsConnected(1) == 0) {
                         _threadSwitch();
                     }
                     winMsgClose(1);
@@ -1411,7 +1411,7 @@ void menuColosseumBattleMain(void) {
                 case 0:
                     if ((u8)fn_8008ABA0(1) != 0) {
                         winMsgOpen(2, 0x4445, 1, 0);
-                        while ((u8)fn_800F7EF8(1) == 0) {
+                        while ((u8)GSinputIsConnected(1) == 0) {
                             _threadSwitch();
                         }
                     } else {
@@ -1420,7 +1420,7 @@ void menuColosseumBattleMain(void) {
                     break;
                 case 1:
                     winMsgOpen(2, 0x44C0, 1, 0);
-                    while ((u8)fn_800F7EF8(1) == 0) {
+                    while ((u8)GSinputIsConnected(1) == 0) {
                         _threadSwitch();
                     }
                     break;
@@ -1430,9 +1430,9 @@ void menuColosseumBattleMain(void) {
                     break;
                 }
                 winMsgClose(1);
-                if ((u8)fn_800F7EF8(1) == 0) {
+                if ((u8)GSinputIsConnected(1) == 0) {
                     winMsgOpen(2, (u8)fn_8008ABA0(1) ? 0x4445 : 0x3C4F, 1, 0);
-                    while ((u8)fn_800F7EF8(1) == 0) {
+                    while ((u8)GSinputIsConnected(1) == 0) {
                         _threadSwitch();
                     }
                     winMsgClose(1);
@@ -1473,7 +1473,7 @@ void menuColosseumBattleMain(void) {
                 case 0:
                     if ((u8)fn_8008ABA0(1) != 0) {
                         winMsgOpen(2, 0x4445, 1, 0);
-                        while ((u8)fn_800F7EF8(1) == 0) {
+                        while ((u8)GSinputIsConnected(1) == 0) {
                             _threadSwitch();
                         }
                     } else {
@@ -1482,7 +1482,7 @@ void menuColosseumBattleMain(void) {
                     break;
                 case 1:
                     winMsgOpen(2, 0x44C0, 1, 0);
-                    while ((u8)fn_800F7EF8(1) == 0) {
+                    while ((u8)GSinputIsConnected(1) == 0) {
                         _threadSwitch();
                     }
                     break;
@@ -1492,9 +1492,9 @@ void menuColosseumBattleMain(void) {
                     break;
                 }
                 winMsgClose(1);
-                if ((u8)fn_800F7EF8(1) == 0) {
+                if ((u8)GSinputIsConnected(1) == 0) {
                     winMsgOpen(2, (u8)fn_8008ABA0(1) ? 0x4445 : 0x3C4F, 1, 0);
-                    while ((u8)fn_800F7EF8(1) == 0) {
+                    while ((u8)GSinputIsConnected(1) == 0) {
                         _threadSwitch();
                     }
                     winMsgClose(1);
@@ -1536,7 +1536,7 @@ void menuColosseumBattleMain(void) {
             case 1:
                 if ((u8)fn_8008ABA0(1) != 0) {
                     winMsgOpen(2, 0x4445, 1, 0);
-                    while ((u8)fn_800F7EF8(1) == 0) {
+                    while ((u8)GSinputIsConnected(1) == 0) {
                         _threadSwitch();
                     }
                     winMsgClose(1);
@@ -1667,9 +1667,9 @@ void menuColosseumBattleMain(void) {
         default:
             break;
         }
-        if ((u8)fn_800F7EF8(1) == 0 && (u8)fn_8008ABA0(1) == 0) {
+        if ((u8)GSinputIsConnected(1) == 0 && (u8)fn_8008ABA0(1) == 0) {
             winMsgOpen(2, 0x3C4F, 1, 0);
-            while ((u8)fn_800F7EF8(1) == 0) {
+            while ((u8)GSinputIsConnected(1) == 0) {
                 _threadSwitch();
             }
             winMsgClose(1);
@@ -1711,9 +1711,9 @@ done:
         }
         if (floorId == 0x3A1) {
             menuColosseumBattleClearFlag();
-            if ((u8)fn_800F7EF8(1) == 0) {
+            if ((u8)GSinputIsConnected(1) == 0) {
                 winMsgOpen(2, (u8)fn_8008ABA0(1) ? 0x4445 : 0x3C4F, 1, 0);
-                while ((u8)fn_800F7EF8(1) == 0) {
+                while ((u8)GSinputIsConnected(1) == 0) {
                     _threadSwitch();
                 }
                 winMsgClose(1);
@@ -1752,7 +1752,7 @@ void menuColosseumBattleExit(void) {
     menuClose(0xD3);
     toolentryTaisenFreePokemonData();
     std113_mapObjectUnk_8018db68(((ColosseumMenuHeap*)lbl_8047A5A0)->resourceHandle);
-    handle = fn_800E202C(lbl_8047A5A0);
+    handle = GSmemGetHandleByPtr(lbl_8047A5A0);
     if ((u16)handle == 0) {
         __assert(lbl_802678D8, 0x252, &lbl_8047BF28);
     }

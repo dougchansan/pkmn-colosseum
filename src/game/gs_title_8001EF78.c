@@ -65,7 +65,7 @@ extern u8 lbl_8047A34C;
 extern s32 fn_800D37CC(void);
 extern u32 msgGetCharsPerFrame(void);
 extern s32 GSsndGetStatus(s32 id);
-extern u32 fn_800F7AF0(s32 pad);
+extern u32 GSinputButtonsChanged(s32 pad);
 extern u32 fn_800F7BC4(s32 pad);
 extern u8* windowGetKeyInfo(void);
 extern void dbgMenuSetEnable(s32 enable);
@@ -73,7 +73,7 @@ extern void soundStopRaw(s32 id, s32 a, s32 b);
 extern void soundStartRaw(s32 id, s32 a, s32 b);
 extern void* menuDataBiosGetPtr(u32 id);
 extern f64 sin(f64);
-extern GSmodel* fn_800F92D4(u32 resourceId);
+extern GSmodel* GSresFindById(u32 resourceId);
 extern void GSmodelSetAnimIndex(GSmodel* model, s32 index);
 extern void GSmodelSetAnimFrame(GSmodel* model, f32 frame);
 extern void GSmodelSetAnimRate(GSmodel* model, f32 rate);
@@ -203,14 +203,14 @@ void fn_8001F1E8(u8* arg)
         dbgMenuSetEnable(0);
         if (arg == 0) return;
         menuDataBiosGetPtr(*(u32*)(arg + 0x4));
-        a = fn_800F7AF0(1);
+        a = GSinputButtonsChanged(1);
         b = fn_800F7BC4(1);
         if ((b & a) & 0x1100) {
             lbl_8047A31C = 4;
             soundStopRaw(0x46e, 0, 0);
             lbl_8047A328 = 1;
         }
-        a = fn_800F7AF0(1);
+        a = GSinputButtonsChanged(1);
         b = fn_800F7BC4(1);
         if (((b & a) & 0x200) == 0) return;
         lbl_8047A31C = 4;
@@ -363,7 +363,7 @@ void std021_newGameIntroSequence(void)
     running = 1;
     lbl_8047A31C = 0;
     lbl_8047A348 = 0.0f;
-    model = fn_800F92D4(0x0B541000);
+    model = GSresFindById(0x0B541000);
     lbl_8047A340 = 0.0f;
     lbl_8047A324 = model;
     lbl_8047A33C = 0;

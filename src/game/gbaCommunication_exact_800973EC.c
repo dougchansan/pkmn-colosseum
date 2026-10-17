@@ -136,7 +136,7 @@ u32 menuPokemonStatusOpen(u8 flags, u32 arg1, s32 pokemon, u16 arg3, u32 arg4, u
     extern void winMsgClose(s32 slot);
     extern s32 menuIsCheck(s32 menu);
     extern void menuCloseCustom(s32 menu, s32 mode, s32 wait);
-    extern void fn_800FF660(void);
+    extern void floorBattleEndTerminateScripts(void);
     extern void fn_8010A420(void* model);
 
     u32 cursor;
@@ -225,7 +225,7 @@ u32 menuPokemonStatusOpen(u8 flags, u32 arg1, s32 pokemon, u16 arg3, u32 arg4, u
     menuCloseCustom(0x53, 0, 1);
 
     if (lbl_803FB380[0] & 1) {
-        fn_800FF660();
+        floorBattleEndTerminateScripts();
         if (lbl_803FB380[0] & 8) {
             floorSetFadeScript(0, 0);
         }

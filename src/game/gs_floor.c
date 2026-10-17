@@ -7,8 +7,8 @@
  *   fn_800FF788   request a floor (idle worker only)
  *   fn_800FF81C   install the floor table
  *   fn_800FF828   allocate the floor-context stack and the three resource
- *                 pools, then start fn_800FF970 as a GS thread
- *   fn_800FF970   the cooperative floor worker: a state machine over
+ *                 pools, then start _floorManagerThread as a GS thread
+ *   _floorManagerThread   the cooperative floor worker: a state machine over
  *                 lbl_8047ACD8 (idle / loading / running / unloading /
  *                 entering a nested floor / returning from one) that yields
  *                 through _threadSwitch
@@ -128,7 +128,7 @@ extern u32   fn_800F7318(u32 task, void* callback, u32 stackSize, u32 arg3,
 extern void* fn_800F7108(u16 handle);
 extern u8    GSthreadIsRunning(u32 task);
 extern void  GSthreadClose(u32 task);
-void fn_800FF970(void);
+void _floorManagerThread(void);
 
 /** Resource-handler callback shapes, reached through the table at lbl_80404918. */
 typedef u32  (*GSFloorResSizeFunc)(void);
@@ -612,7 +612,7 @@ void fn_800FF828(u32 contextCount, u32 baseCount, u32 extCount1,
             lbl_8047ACC8->isActive = 0;
             lbl_8047ACD8 = 0;
             lbl_80478B18 = -1;
-            GSthreadCreate(0, 0x7D0, 0x4000, 1, 1, fn_800FF970);
+            GSthreadCreate(0, 0x7D0, 0x4000, 1, 1, _floorManagerThread);
         }
     }
 }
@@ -636,7 +636,7 @@ void fn_800FF828(u32 contextCount, u32 baseCount, u32 extCount1,
  * across loops come last, in the order its first loop header assigned them.
  * A change in one state therefore shifts every later state.
  */
-void fn_800FF970(void) {
+void _floorManagerThread(void) {
 
     while (TRUE) {
         switch (lbl_8047ACD8) {
@@ -769,7 +769,7 @@ void fn_800FF970(void) {
  * a later expansion, which is what lets floorStopPoolThreads declare `n`
  * before `res` (phase 6's r28/r27) without disturbing phase 2.
  *
- * See the note on fn_800FF970 for the colouring order.
+ * See the note on _floorManagerThread for the colouring order.
  */
 u8 fn_80100B24(GSFloorContext* ctx) {
     switch (ctx->isActive) {
@@ -840,7 +840,7 @@ void loadParticle(void* dst, u32 size, void* callback, void* callbackArg) {
 
 /* 0x801012E8 | 0xB8 */
 void loadCamera(void* archive, u32 resourceArg, u32 callbackArg) {
-    extern void* fn_800D27FC(void*);
+    extern void* GScameraCreateFromDesc(void*);
     extern void GSresRegisterResource(void*, u32, u32, void*);
     extern void fn_80101A28(void);
     const char* messages = lbl_802717F0;
@@ -856,7 +856,7 @@ void loadCamera(void* archive, u32 resourceArg, u32 callbackArg) {
         GSlogWrite(messages + 0x328);
         return;
     }
-    resource = fn_800D27FC(publicData[1]);
+    resource = GScameraCreateFromDesc(publicData[1]);
     if (resource == NULL) {
         GSlogWrite(messages + 0x358);
     }

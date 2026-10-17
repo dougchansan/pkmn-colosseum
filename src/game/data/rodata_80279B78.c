@@ -199,7 +199,7 @@ extern u8 fn_80220868[];
 extern u8 fn_8022106C[];
 extern u8 fn_802222F4[];
 extern u8 fn_80222370[];
-extern u8 fn_802223E0[];
+extern u8 wsCmd43[];
 extern u8 fn_80222438[];
 extern u8 fn_80222494[];
 extern u8 fn_80222500[];
@@ -545,7 +545,7 @@ const void* lbl_8027A00C[255] = {
     (void*)fn_80229C90,
     (void*)fn_80222494,
     (void*)fn_80222438,
-    (void*)fn_802223E0,
+    (void*)wsCmd43,
     (void*)WS_ALERTEND,
     (void*)fn_80222370,
     (void*)fn_802222F4,

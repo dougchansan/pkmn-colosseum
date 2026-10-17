@@ -23,7 +23,7 @@ extern u8 pokemonCheckValid(void*);
 extern u16 pokemonBiosGetPokemonDataId(void*);
 extern u8 pokemonGetAnnonKatati();
 extern u32 pokemonGetStatus(void*, u16, s32, u16);
-extern void* fn_800F92D4(u32);
+extern void* GSresFindById(u32);
 extern const u32 lbl_802676F0[56];
 
 #ifndef MENU_COLOSSEUM_BATTLE_80057F94_ONLY
@@ -125,7 +125,7 @@ void* fn_80057F94(void* pokemon)
         return NULL;
     }
     if (fn_8017B07C(0x48A, menuId)) {
-        return fn_800F92D4(menuId);
+        return GSresFindById(menuId);
     }
     return NULL;
 }

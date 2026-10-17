@@ -364,7 +364,7 @@ typedef struct WinSpriteDrawNode {
 static inline s32 faceDraw(u8* context, void* srcNode, u16 key)
 {
     extern void* _menuFaceBiosGetPtr__FUs(u16 key);
-    extern void* fn_800F92D4(u32 key);
+    extern void* GSresFindById(u32 key);
     extern u8 fn_8010C388(u16 idx);
     extern u16 GStextureGetXsize(void* tex);
     extern u16 GStextureGetYsize(void* tex);
@@ -383,7 +383,7 @@ static inline s32 faceDraw(u8* context, void* srcNode, u16 key)
         return 0;
     }
 
-    tex = fn_800F92D4((u32)texKey);
+    tex = GSresFindById((u32)texKey);
     if (tex == NULL) {
         return 0;
     }
@@ -702,7 +702,7 @@ s32 fn_8010A420(void* obj)
     extern void fn_801DB100(u32 handle);
     extern void GSmodelFree(void* a);
     extern void GSlightFree(void* a);
-    extern void fn_800D2738(void* camera);
+    extern void GScameraFree(void* camera);
     extern void GStextureFree(void* a);
     extern int wazaSequenceSysRelease();
 
@@ -753,7 +753,7 @@ s32 fn_8010A420(void* obj)
     }
 
     if (o->camera != NULL) {
-        fn_800D2738(o->camera);
+        GScameraFree(o->camera);
         o->camera = NULL;
     }
 
@@ -780,7 +780,7 @@ s32 fn_8010A420(void* obj)
 static inline s32 faceDrawPokemon(u8* context, void* srcNode, void* pokemon)
 {
     extern void* _menuFaceBiosGetPtr__FUs(u16 key);
-    extern void* fn_800F92D4(u32 key);
+    extern void* GSresFindById(u32 key);
     extern u8 fn_8010C388(u16 idx);
     extern u16 GStextureGetXsize(void* tex);
     extern u16 GStextureGetYsize(void* tex);
@@ -801,7 +801,7 @@ static inline s32 faceDrawPokemon(u8* context, void* srcNode, void* pokemon)
         return 0;
     }
 
-    tex = fn_800F92D4((u32)texKey);
+    tex = GSresFindById((u32)texKey);
     if (tex == NULL) {
         return 0;
     }
@@ -882,7 +882,7 @@ s32 menuModelInit(MenuModel* obj, s32 w, s32 h)
     extern void GSlogWrite(const char* fmt, ...);
     extern void* GStextureCreate(u16 w, u16 h, u32 format, u32 a, u32 b);
     extern void GStextureSetFilter(void* tex, u32 min, u32 mag, u32 unk);
-    extern void* fn_800D29A0(void);
+    extern void* GScameraCreate(void);
     extern void GScameraSetPosition(void* camera, Vec3* pos);
     extern void GScameraSetRotation(void* camera, Vec3* rot);
     extern void* GSlightCreate(void);
@@ -942,7 +942,7 @@ s32 menuModelInit(MenuModel* obj, s32 w, s32 h)
 
     GStextureSetFilter(obj->texture, 2, 2, 0);
 
-    obj->camera = fn_800D29A0();
+    obj->camera = GScameraCreate();
     if (obj->camera == NULL) {
         GSlogWrite((const char*)(tbl + 0xac), lbl_8035B448);
         return 0;
@@ -1119,7 +1119,7 @@ s32 fn_8010AB00(void* objPtr)
     extern s32 fn_801DAC24(u32 object);
     extern void memoGetScaleAngle(u16 key, f32* scale, f32* angle);
     extern void GSmodelCenterNull(u32 model);
-    extern s32 fn_800EE0E8(u32 model);
+    extern s32 GSmodelWalkJObjs(u32 model);
     extern void* GSmodelGetPart(u32 model, s32 index);
     extern void GSpartGetTransform(void* part, Vec3* out, u32 a, u32 b);
     extern void GSpartFree(void* part);
@@ -1211,7 +1211,7 @@ s32 fn_8010AB00(void* objPtr)
     }
 
     GSmodelCenterNull(model);
-    part = GSmodelGetPart(model, fn_800EE0E8(model) - 1);
+    part = GSmodelGetPart(model, GSmodelWalkJObjs(model) - 1);
     if (part != NULL) {
         GSpartGetTransform(part, &transform, 0, 0);
         GSpartFree(part);

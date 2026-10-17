@@ -71,9 +71,9 @@ extern void winMsgClose(u32 id);
 extern s8   menuSubOpenYesNo(u8 menuType, s16 x, s16 y, s32 initialValue);
 extern s32  fn_801D0748(u32 a, u32 b, u32 c);
 extern s32  fn_8017B1AC(void);
-extern u32  fn_800F7AF0(u32);
+extern u32  GSinputButtonsChanged(u32);
 extern u32  fn_800F7BC4(u32);
-extern void fn_800F7F64(u32);
+extern void GSinputRead(u32);
 extern u32  menuOpen(u32 sceneId, u32 arg);
 extern void menuClose(u32 sceneId);
 extern void fn_8017B370(u32 arg);
@@ -261,7 +261,7 @@ void bootWaitLogo(void)
 
     if (!movieIsRestart()) {
         if (VIGetDTVStatus() == 1) {
-            fn_800F7F64(1);
+            GSinputRead(1);
             if (fn_800F7BC4(1) & 0x200) {
                 movieAskProgressive();
             } else if (OSGetProgressiveMode() == 1) {
@@ -557,9 +557,9 @@ void fn_80036240(void)
             _threadSwitch();
             continue;
         }
-        /* Retail calls fn_800F7AF0 first; MWCC evaluates the right-hand
+        /* Retail calls GSinputButtonsChanged first; MWCC evaluates the right-hand
          * call of an & first. */
-        if ((fn_800F7BC4(1) & fn_800F7AF0(1) & 0x1300) != 0) {
+        if ((fn_800F7BC4(1) & GSinputButtonsChanged(1) & 0x1300) != 0) {
             GSmovieClose();
             break;
         }

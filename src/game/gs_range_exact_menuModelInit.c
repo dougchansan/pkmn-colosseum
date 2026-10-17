@@ -32,7 +32,7 @@ s32 menuModelInit(MenuModel* obj, s32 w, s32 h)
     extern void GSlogWrite(const char* fmt, ...);
     extern void* GStextureCreate(u16 w, u16 h, u32 format, u32 a, u32 b);
     extern void GStextureSetFilter(void* tex, u32 min, u32 mag, u32 unk);
-    extern void* fn_800D29A0(void);
+    extern void* GScameraCreate(void);
     extern void GScameraSetPosition(void* camera, Vec3* pos);
     extern void GScameraSetRotation(void* camera, Vec3* rot);
     extern void* GSlightCreate(void);
@@ -92,7 +92,7 @@ s32 menuModelInit(MenuModel* obj, s32 w, s32 h)
 
     GStextureSetFilter(obj->texture, 2, 2, 0);
 
-    obj->camera = fn_800D29A0();
+    obj->camera = GScameraCreate();
     if (obj->camera == NULL) {
         GSlogWrite((const char*)(tbl + 0xac), lbl_8035B448);
         return 0;

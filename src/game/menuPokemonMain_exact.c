@@ -7,7 +7,7 @@
 extern u8 lbl_803A1D40[];
 extern void menuPokemonSub();
 extern void menuCloseCustom();
-extern void fn_800FF660();
+extern void floorBattleEndTerminateScripts();
 extern void floorSetFadeScript();
 extern void _threadSwitch();
 
@@ -23,7 +23,7 @@ s32 menuPokemonMain(void)
     menuPokemonSub((u32)mode, (u32)selection, context);
     menuCloseCustom(0x63, 0, 1);
     if (lbl_803A1D40[2] != 0) {
-        fn_800FF660();
+        floorBattleEndTerminateScripts();
         if (lbl_803A1D40[3] != 1) {
             floorSetFadeScript(0, 0);
         }

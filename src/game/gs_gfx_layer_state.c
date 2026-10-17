@@ -22,7 +22,7 @@ extern void* memset(void* dst, int val, u32 size);
 /* External functions referenced from asm wrappers */
 extern void DCFlushRange(void* addr, u32 size);
 extern u64 OSGetTime(void);
-extern void fn_800D3EC4(s32, f32, f32, f32, f32, f32, f32);
+extern void GSgfxSetViewportJitter(s32, f32, f32, f32, f32, f32, f32);
 extern void gfxRecordCommand(u32, ...);
 extern void gfxBegin(u16);
 extern void gfxSetupChannelsTev(u32);
@@ -58,55 +58,55 @@ extern u8 lbl_80400B28[];  /* light/material command buffer */
 /* No-op functions (1) */
 /* Address: 0x800DC874 | Size: 0x4 */
 /* Forward declarations for self-referencing asm blocks */
-extern void fn_800D6B00(void);
-extern void fn_800D724C(u32 idx);
-extern void fn_800D7268(u32 idx);
-extern void fn_800D72A4(u32 idx);
-extern void fn_800D72C4(u32 idx);
-extern void fn_800D72E4(u32 idx);
-extern void fn_800D7304(u32 idx);
-extern void fn_800D7328(u32 idx);
-extern void fn_800D7344(u32 idx);
-extern void fn_800D7360(u32 idx);
-extern void fn_800D737C(u32 idx);
-extern void fn_800D7398(u32 idx);
-extern void fn_800D73C4(u32 idx);
-extern void fn_800D73F8(void);
-extern void fn_800D740C(void);
-extern void fn_800D7420(void);
-extern void fn_800D7444(void);
-extern void fn_800D7468(void);
-extern void fn_800D748C(void);
-extern void fn_800D74A0(void);
-extern void fn_800D74B4(void);
-extern void fn_800D74D0(void);
-extern void fn_800D74EC(void);
-extern void fn_800D7508(void);
-extern void fn_800D7524(void);
-extern void fn_800D7540(void);
-extern void fn_800D7564(void);
-extern void fn_800D7588(void);
-extern void fn_800D75AC(void);
-extern void fn_800D7650(u8*);
-extern void fn_800D7868(u8*, u32, u32, u32, u32, u8, u32, u8);
+extern void gfxFlushPendingVertex(void);
+extern void _gfxEmitTexCoord1x8(u32 idx);
+extern void _gfxEmitTexCoord1x16(u32 idx);
+extern void _gfxEmitTexCoord2u8(u32 idx);
+extern void _gfxEmitTexCoord2s16(u32 idx);
+extern void _gfxEmitTexCoord2u16(u32 idx);
+extern void _gfxEmitTexCoord2f32(u32 idx);
+extern void _gfxEmitColor1x8(u32 idx);
+extern void _gfxEmitColor1x16(u32 idx);
+extern void _gfxEmitColor1u16(u32 idx);
+extern void _gfxEmitColor1u32(u32 idx);
+extern void _gfxEmitColor3u8(u32 idx);
+extern void _gfxEmitColor4u8(u32 idx);
+extern void _gfxEmitNormal1x8(void);
+extern void _gfxEmitNormal1x16(void);
+extern void _gfxEmitNormal3s8(void);
+extern void _gfxEmitNormal3s16(void);
+extern void _gfxEmitNormal3f32(void);
+extern void _gfxEmitPos1x8(void);
+extern void _gfxEmitPos1x16(void);
+extern void _gfxEmitPos2s8(void);
+extern void _gfxEmitPos2u8(void);
+extern void _gfxEmitPos2s16(void);
+extern void _gfxEmitPos2u16(void);
+extern void _gfxEmitPos2f32(void);
+extern void _gfxEmitPos3s8(void);
+extern void _gfxEmitPos3u8(void);
+extern void _gfxEmitPos3s16(void);
+extern void _gfxEmitPos3u16(void);
+extern void gfxVtxDescClear(u8*);
+extern void gfxVtxDescSetAttr(u8*, u32, u32, u32, u32, u8, u32, u8);
 extern void fn_800D7940(u8*, u16);
 extern void gfxLoadVtxDesc(u32);
-extern void fn_800D923C(void);
+extern void _gfxFlushTevState(void);
 extern void gfxSetTevOp(u32, s32);
 extern void fn_800DB098(void);
 extern void fn_800DB758(u16);
 extern void lightGetFrameCount__FP9_HSD_AObj(u8*);
-extern void fn_800DE09C(void);
-extern void fn_800DE128(void);
+extern void GSlogVPrintf(void);
+extern void GSlogFormat(void);
 extern void fn_800E09E8(void*, void*, u32);
-extern u8 fn_800E0E14(u32, u32);
+extern u8 GSmemDumpMap(u32, u32);
 extern u32 _matGSmatObjMakeTExp(void*, void*, void*, void*, void*);
 extern void _matGSmatEnableEnvMapExt(u8*);
 extern s32 _matGSmatObjLoad(u8*);
 extern void fn_800E0290(void*, void*, void*);
 extern void fn_800E02C4(void*);
-extern void fn_800E02E8(void*, f32);
-extern void fn_800E032C(void*, f32);
+extern void GSmtxRotateZ(void*, f32);
+extern void GSmtxRotateY(void*, f32);
 extern void fn_800E0370(void*, f32);
 extern void fn_800E03E8(void*, f32, f32, f32);
 extern void fn_800E0628(void*, void*);
@@ -128,8 +128,8 @@ extern f32 lbl_8047CA30;
 extern f32 lbl_8047CA34;
 extern f32 lbl_8047CA38;
 extern void fn_800B9404(u32, u32);
-extern void fn_800D7230(void);
-extern void fn_800D75D0(void);
+extern void _gfxEmitMtxIdx(void);
+extern void _gfxEmitPos3f32(void);
 extern void fn_800B928C(u32, u32, u16);
 extern u8 lbl_80314350[];
 extern u8 lbl_804001F0[];
@@ -210,7 +210,7 @@ extern u32 lbl_8047CA60;
 extern u32 lbl_8047CA68;
 extern u32 lbl_8047CA58;
 extern void fn_800BD7A0(u32, u32, u32, u32);
-extern void fn_800D2150(u32, u16, u16, u16, u16);
+extern void GScameraSetScissor(u32, u16, u16, u16, u16);
 extern void HSD_FogSet(u32);
 extern u32 lbl_8047AA8C;
 extern void GXSetClipMode(u32);
@@ -441,7 +441,7 @@ typedef struct GSgfxStatePartial {
  * ================================================================== */
 
 #if defined(GS_GFX_LAYER_800D7230_800D76A8)
-void fn_800D7230(void) {
+void _gfxEmitMtxIdx(void) {
     GSgfxStatePartial* state = (GSgfxStatePartial*)lbl_8047AA80;
     u8 value = state->fifoAttrBase;
 
@@ -457,7 +457,7 @@ void fn_800D7230(void) {
  * ================================================================== */
 /* fn_800D892C: owner is the standalone gs_gfx_layer_candidate_800D892C.c. */
 
-/* fn_800D6B00: owner is the standalone gs_gfx_layer_candidate_800D6B00.c. */
+/* gfxFlushPendingVertex: owner is the standalone gs_gfx_layer_candidate_800D6B00.c. */
 
 #if defined(GS_GFX_LAYER_800D7230_800D76A8)
 extern u32 lbl_8047AA80;
@@ -466,7 +466,7 @@ asm void fn_800D724C(void) {
 #include "src/game/gs_render_fn_800D724C.inc"
 }
 #else
-void fn_800D724C(u32 idx) { *(volatile u8*)0xCC008000 = *(u8*)(lbl_8047AA80 + 0x520 + idx*16); }
+void _gfxEmitTexCoord1x8(u32 idx) { *(volatile u8*)0xCC008000 = *(u8*)(lbl_8047AA80 + 0x520 + idx*16); }
 #endif
 
 extern u32 lbl_8047AA80;
@@ -475,7 +475,7 @@ asm void fn_800D7268(void) {
 #include "src/game/gs_render_fn_800D7268.inc"
 }
 #else
-void fn_800D7268(u32 idx) { *(volatile u16*)0xCC008000 = *(u16*)(lbl_8047AA80 + 0x522 + idx*16); }
+void _gfxEmitTexCoord1x16(u32 idx) { *(volatile u16*)0xCC008000 = *(u16*)(lbl_8047AA80 + 0x522 + idx*16); }
 #endif
 
 extern u32 lbl_8047AA80;
@@ -484,7 +484,7 @@ asm void fn_800D7284(void) {
 #include "src/game/gs_render_fn_800D7284.inc"
 }
 #else
-void fn_800D7284(u32 idx) { u8 v = *(u8*)(lbl_8047AA80 + 0x520 + idx*16); *(volatile u8*)0xCC008000 = v; *(volatile u8*)0xCC008000 = v; }
+void _gfxEmitTexCoord2s8(u32 idx) { u8 v = *(u8*)(lbl_8047AA80 + 0x520 + idx*16); *(volatile u8*)0xCC008000 = v; *(volatile u8*)0xCC008000 = v; }
 #endif
 
 extern u32 lbl_8047AA80;
@@ -493,7 +493,7 @@ asm void fn_800D72A4(void) {
 #include "src/game/gs_render_fn_800D72A4.inc"
 }
 #else
-void fn_800D72A4(u32 idx) { u8 v = *(u8*)(lbl_8047AA80 + 0x520 + idx*16); *(volatile u8*)0xCC008000 = v; *(volatile u8*)0xCC008000 = v; }
+void _gfxEmitTexCoord2u8(u32 idx) { u8 v = *(u8*)(lbl_8047AA80 + 0x520 + idx*16); *(volatile u8*)0xCC008000 = v; *(volatile u8*)0xCC008000 = v; }
 #endif
 
 extern u32 lbl_8047AA80;
@@ -502,7 +502,7 @@ asm void fn_800D72C4(void) {
 #include "src/game/gs_render_fn_800D72C4.inc"
 }
 #else
-void fn_800D72C4(u32 idx) { u16 v = *(u16*)(lbl_8047AA80 + 0x522 + idx*16); *(volatile u16*)0xCC008000 = v; *(volatile u16*)0xCC008000 = v; }
+void _gfxEmitTexCoord2s16(u32 idx) { u16 v = *(u16*)(lbl_8047AA80 + 0x522 + idx*16); *(volatile u16*)0xCC008000 = v; *(volatile u16*)0xCC008000 = v; }
 #endif
 
 extern u32 lbl_8047AA80;
@@ -511,7 +511,7 @@ asm void fn_800D72E4(void) {
 #include "src/game/gs_render_fn_800D72E4.inc"
 }
 #else
-void fn_800D72E4(u32 idx) { u16 v = *(u16*)(lbl_8047AA80 + 0x522 + idx*16); *(volatile u16*)0xCC008000 = v; *(volatile u16*)0xCC008000 = v; }
+void _gfxEmitTexCoord2u16(u32 idx) { u16 v = *(u16*)(lbl_8047AA80 + 0x522 + idx*16); *(volatile u16*)0xCC008000 = v; *(volatile u16*)0xCC008000 = v; }
 #endif
 
 extern u32 lbl_8047AA80;
@@ -520,7 +520,7 @@ asm void fn_800D7304(void) {
 #include "src/game/gs_render_fn_800D7304.inc"
 }
 #else
-void fn_800D7304(u32 idx) {
+void _gfxEmitTexCoord2f32(u32 idx) {
     u32 base = lbl_8047AA80 + idx*16;
     f32 a = *(f32*)(base + 0x528);
     f32 b = *(f32*)(base + 0x52c);
@@ -535,7 +535,7 @@ asm void fn_800D7328(void) {
 #include "src/game/gs_render_fn_800D7328.inc"
 }
 #else
-void fn_800D7328(u32 idx) { *(volatile u8*)0xCC008000 = *(u8*)(lbl_8047AA80 + 0x4e8 + idx*12); }
+void _gfxEmitColor1x8(u32 idx) { *(volatile u8*)0xCC008000 = *(u8*)(lbl_8047AA80 + 0x4e8 + idx*12); }
 #endif
 
 extern u32 lbl_8047AA80;
@@ -544,7 +544,7 @@ asm void fn_800D7344(void) {
 #include "src/game/gs_render_fn_800D7344.inc"
 }
 #else
-void fn_800D7344(u32 idx) { *(volatile u16*)0xCC008000 = *(u16*)(lbl_8047AA80 + 0x4ec + idx*12); }
+void _gfxEmitColor1x16(u32 idx) { *(volatile u16*)0xCC008000 = *(u16*)(lbl_8047AA80 + 0x4ec + idx*12); }
 #endif
 
 extern u32 lbl_8047AA80;
@@ -553,7 +553,7 @@ asm void fn_800D7360(void) {
 #include "src/game/gs_render_fn_800D7360.inc"
 }
 #else
-void fn_800D7360(u32 idx) { *(volatile u16*)0xCC008000 = *(u16*)(lbl_8047AA80 + 0x4ec + idx*12); }
+void _gfxEmitColor1u16(u32 idx) { *(volatile u16*)0xCC008000 = *(u16*)(lbl_8047AA80 + 0x4ec + idx*12); }
 #endif
 
 extern u32 lbl_8047AA80;
@@ -562,7 +562,7 @@ asm void fn_800D737C(void) {
 #include "src/game/gs_render_fn_800D737C.inc"
 }
 #else
-void fn_800D737C(u32 idx) { *(volatile u32*)0xCC008000 = *(u32*)(lbl_8047AA80 + 0x4f0 + idx*12); }
+void _gfxEmitColor1u32(u32 idx) { *(volatile u32*)0xCC008000 = *(u32*)(lbl_8047AA80 + 0x4f0 + idx*12); }
 #endif
 
 extern u32 lbl_8047AA80;
@@ -571,7 +571,7 @@ asm void fn_800D7398(void) {
 #include "src/game/gs_render_fn_800D7398.inc"
 }
 #else
-void fn_800D7398(u32 idx) {
+void _gfxEmitColor3u8(u32 idx) {
     u8 b;
     u8 c;
     u8 a;
@@ -591,7 +591,7 @@ asm void fn_800D73C4(void) {
 #include "src/game/gs_render_fn_800D73C4.inc"
 }
 #else
-void fn_800D73C4(u32 idx) {
+void _gfxEmitColor4u8(u32 idx) {
     u8 b;
     u8 c;
     u8 d;
@@ -614,7 +614,7 @@ asm void fn_800D73F8(void) {
 #include "src/game/gs_render_fn_800D73F8.inc"
 }
 #else
-void fn_800D73F8(void) { *(volatile u8*)0xCC008000 = *(u8*)(lbl_8047AA80 + 0x4c8); }
+void _gfxEmitNormal1x8(void) { *(volatile u8*)0xCC008000 = *(u8*)(lbl_8047AA80 + 0x4c8); }
 #endif
 
 extern u32 lbl_8047AA80;
@@ -623,7 +623,7 @@ asm void fn_800D740C(void) {
 #include "src/game/gs_render_fn_800D740C.inc"
 }
 #else
-void fn_800D740C(void) { *(volatile u16*)0xCC008000 = *(u16*)(lbl_8047AA80 + 0x4cc); }
+void _gfxEmitNormal1x16(void) { *(volatile u16*)0xCC008000 = *(u16*)(lbl_8047AA80 + 0x4cc); }
 #endif
 
 extern u32 lbl_8047AA80;
@@ -632,7 +632,7 @@ asm void fn_800D7420(void) {
 #include "src/game/gs_render_fn_800D7420.inc"
 }
 #else
-void fn_800D7420(void) {
+void _gfxEmitNormal3s8(void) {
     u8 a, b, c;
     u8 *base = (u8*)lbl_8047AA80;
     c = base[0x4ca];
@@ -650,7 +650,7 @@ asm void fn_800D7444(void) {
 #include "src/game/gs_render_fn_800D7444.inc"
 }
 #else
-void fn_800D7444(void) {
+void _gfxEmitNormal3s16(void) {
     u16 a, b, c;
     u8 *base = (u8*)lbl_8047AA80;
     c = *(u16*)(base + 0x4d0);
@@ -668,7 +668,7 @@ asm void fn_800D7468(void) {
 #include "src/game/gs_render_fn_800D7468.inc"
 }
 #else
-void fn_800D7468(void) {
+void _gfxEmitNormal3f32(void) {
     u8 *base = (u8*)lbl_8047AA80;
     f32 b;
     f32 c;
@@ -688,7 +688,7 @@ asm void fn_800D748C(void) {
 #include "src/game/gs_render_fn_800D748C.inc"
 }
 #else
-void fn_800D748C(void) { *(volatile u8*)0xCC008000 = *(u8*)(lbl_8047AA80 + 0x4ac); }
+void _gfxEmitPos1x8(void) { *(volatile u8*)0xCC008000 = *(u8*)(lbl_8047AA80 + 0x4ac); }
 #endif
 
 extern u32 lbl_8047AA80;
@@ -697,7 +697,7 @@ asm void fn_800D74A0(void) {
 #include "src/game/gs_render_fn_800D74A0.inc"
 }
 #else
-void fn_800D74A0(void) { *(volatile u16*)0xCC008000 = *(u16*)(lbl_8047AA80 + 0x4b0); }
+void _gfxEmitPos1x16(void) { *(volatile u16*)0xCC008000 = *(u16*)(lbl_8047AA80 + 0x4b0); }
 #endif
 
 extern u32 lbl_8047AA80;
@@ -706,7 +706,7 @@ asm void fn_800D74B4(void) {
 #include "src/game/gs_render_fn_800D74B4.inc"
 }
 #else
-void fn_800D74B4(void) {
+void _gfxEmitPos2s8(void) {
     u8 a, b;
     u8 *base = (u8*)lbl_8047AA80;
     b = *(u8*)(base + 0x4ad);
@@ -722,7 +722,7 @@ asm void fn_800D74D0(void) {
 #include "src/game/gs_render_fn_800D74D0.inc"
 }
 #else
-void fn_800D74D0(void) {
+void _gfxEmitPos2u8(void) {
     u8 a, b;
     u8 *base = (u8*)lbl_8047AA80;
     b = *(u8*)(base + 0x4ad);
@@ -738,7 +738,7 @@ asm void fn_800D74EC(void) {
 #include "src/game/gs_render_fn_800D74EC.inc"
 }
 #else
-void fn_800D74EC(void) {
+void _gfxEmitPos2s16(void) {
     u16 a, b;
     u8 *base = (u8*)lbl_8047AA80;
     b = *(u16*)(base + 0x4b2);
@@ -754,7 +754,7 @@ asm void fn_800D7508(void) {
 #include "src/game/gs_render_fn_800D7508.inc"
 }
 #else
-void fn_800D7508(void) {
+void _gfxEmitPos2u16(void) {
     u16 a, b;
     u8 *base = (u8*)lbl_8047AA80;
     b = *(u16*)(base + 0x4b2);
@@ -770,7 +770,7 @@ asm void fn_800D7524(void) {
 #include "src/game/gs_render_fn_800D7524.inc"
 }
 #else
-void fn_800D7524(void) {
+void _gfxEmitPos2f32(void) {
     u8 *base = (u8*)lbl_8047AA80;
     f32 b = *(f32*)(base + 0x4bc);
     f32 a = *(f32*)(base + 0x4b8);
@@ -785,7 +785,7 @@ asm void fn_800D7540(void) {
 #include "src/game/gs_render_fn_800D7540.inc"
 }
 #else
-void fn_800D7540(void) {
+void _gfxEmitPos3s8(void) {
     u8 a, b, c;
     u8 *base = (u8*)lbl_8047AA80;
     c = *(u8*)(base + 0x4ae);
@@ -803,7 +803,7 @@ asm void fn_800D7564(void) {
 #include "src/game/gs_render_fn_800D7564.inc"
 }
 #else
-void fn_800D7564(void) {
+void _gfxEmitPos3u8(void) {
     u8 a, b, c;
     u8 *base = (u8*)lbl_8047AA80;
     c = *(u8*)(base + 0x4ae);
@@ -821,7 +821,7 @@ asm void fn_800D7588(void) {
 #include "src/game/gs_render_fn_800D7588.inc"
 }
 #else
-void fn_800D7588(void) {
+void _gfxEmitPos3s16(void) {
     u16 a, b, c;
     u8 *base = (u8*)lbl_8047AA80;
     c = *(u16*)(base + 0x4b4);
@@ -839,7 +839,7 @@ asm void fn_800D75AC(void) {
 #include "src/game/gs_render_fn_800D75AC.inc"
 }
 #else
-void fn_800D75AC(void) {
+void _gfxEmitPos3u16(void) {
     u16 a, b, c;
     u8 *base = (u8*)lbl_8047AA80;
     c = *(u16*)(base + 0x4b4);
@@ -856,7 +856,7 @@ asm void fn_800D75F4(void) {
 #include "src/game/gs_render_fn_800D75F4.inc"
 }
 #else
-void fn_800D75D0(void) {
+void _gfxEmitPos3f32(void) {
     GSgfxStatePartial* state = (GSgfxStatePartial*)lbl_8047AA80;
     f32 x;
     f32 y;
@@ -871,7 +871,7 @@ void fn_800D75D0(void) {
     *(volatile f32*)0xCC008000 = z;
 }
 
-void fn_800D75F4(u8* obj) {
+void gfxVtxDescFree(u8* obj) {
     if (*(u32*)(lbl_8047AA80 + 0x24) == (u32)obj) *(u32*)(lbl_8047AA80 + 0x24) = 0;
     obj[0x008] = 0; obj[0x024] = 0; obj[0x040] = 0; obj[0x05c] = 0;
     obj[0x078] = 0; obj[0x094] = 0; obj[0x0b0] = 0; obj[0x0cc] = 0;
@@ -885,7 +885,7 @@ asm void fn_800D7650(void) {
 #include "src/game/gs_render_fn_800D7650.inc"
 }
 #else
-void fn_800D7650(u8* obj) {
+void gfxVtxDescClear(u8* obj) {
     if (*(u32*)(lbl_8047AA80 + 0x24) == (u32)obj) *(u32*)(lbl_8047AA80 + 0x24) = 0;
     obj[0x008] = 0; obj[0x024] = 0; obj[0x040] = 0; obj[0x05c] = 0;
     obj[0x078] = 0; obj[0x094] = 0; obj[0x0b0] = 0; obj[0x0cc] = 0;
@@ -905,7 +905,7 @@ asm void fn_800D76A8(void) {
 #include "src/game/gs_render_fn_800D76A8.inc"
 }
 #else
-void fn_800D76A8(u32 obj, u16 vertCount) {
+void gfxSetVtxDescRaw(u32 obj, u16 vertCount) {
     u32 state;
     u32 oldObj;
 
@@ -947,7 +947,7 @@ asm void fn_800D7868(void) {
 #include "src/game/gs_render_fn_800D7868.inc"
 }
 #else
-void fn_800D7868(u8* arr, u32 idx, u32 a, u32 b, u32 c, u8 d, u32 e, u8 f) {
+void gfxVtxDescSetAttr(u8* arr, u32 idx, u32 a, u32 b, u32 c, u8 d, u32 e, u8 f) {
     u8* p = arr + idx * 0x1c;
     p[0x8] = 1;
     *(u32*)(p + 0xc) = a;
@@ -970,7 +970,7 @@ asm void fn_800D7894(void) {
 #include "src/game/gs_render_fn_800D7894.inc"
 }
 #else
-u8* fn_800D7894(void) {
+u8* gfxVtxDescAlloc(void) {
     u32 i;
     u32 cnt = lbl_8047AAB0;
     u8* p = (u8*)lbl_8047AAAC;
@@ -1012,14 +1012,14 @@ asm void fn_800D7940(void) {
 #include "src/game/gs_render_fn_800D7940.inc"
 }
 #else
-extern void fn_800D6028(u16);
-extern void fn_800D5FA4(u8);
-extern void fn_800D5DD0(u16);
-extern void fn_800D5D6C(u8);
-extern void fn_800D5AB0(u32, u16);
-extern void fn_800D5A38(u32, u8);
-extern void fn_800D579C(u32, u16);
-extern void fn_800D5724(u32, u8);
+extern void gfxVtxPos1x16(u16);
+extern void gfxVtxPos1x8(u8);
+extern void gfxVtxNormal1x16(u16);
+extern void gfxVtxNormal1x8(u8);
+extern void gfxVtxColor1x16(u32, u16);
+extern void gfxVtxColor1x8(u32, u8);
+extern void gfxVtxTexCoord1x16(u32, u16);
+extern void gfxVtxTexCoord1x8(u32, u8);
 extern void gfxEnd(void);
 
 void fn_800D7940(u8* obj, u16 vertCount) {
@@ -1031,16 +1031,16 @@ void fn_800D7940(u8* obj, u16 vertCount) {
     gfxBegin(vertCount);
     for (vertex = 0; vertex < vertCount; vertex++) {
         if (*(s32*)(obj + 0x28) == 2) {
-            fn_800D6028(vertex);
+            gfxVtxPos1x16(vertex);
         } else {
-            fn_800D5FA4(vertex);
+            gfxVtxPos1x8(vertex);
         }
 
         if (*(u8*)(obj + 0x40) == 1) {
             if (*(s32*)(obj + 0x44) == 2) {
-                fn_800D5DD0(vertex);
+                gfxVtxNormal1x16(vertex);
             } else {
-                fn_800D5D6C(vertex);
+                gfxVtxNormal1x8(vertex);
             }
         }
 
@@ -1049,9 +1049,9 @@ void fn_800D7940(u8* obj, u16 vertCount) {
             if (entry[0x8] == 1) {
                 layer = i - 4;
                 if (*(s32*)(entry + 0xc) == 2) {
-                    fn_800D5AB0(layer, vertex);
+                    gfxVtxColor1x16(layer, vertex);
                 } else {
-                    fn_800D5A38(layer, vertex);
+                    gfxVtxColor1x8(layer, vertex);
                 }
             }
         }
@@ -1061,9 +1061,9 @@ void fn_800D7940(u8* obj, u16 vertCount) {
             if (entry[0x8] == 1) {
                 layer = i - 6;
                 if (*(s32*)(entry + 0xc) == 2) {
-                    fn_800D579C(layer, vertex);
+                    gfxVtxTexCoord1x16(layer, vertex);
                 } else {
-                    fn_800D5724(layer, vertex);
+                    gfxVtxTexCoord1x8(layer, vertex);
                 }
             }
         }
@@ -1120,7 +1120,7 @@ asm void fn_800D7B80(void) {
 #include "src/game/gs_render_fn_800D7B80.inc"
 }
 #else
-void fn_800D7B80(u32 count) {
+void gfxVtxDescPoolInit(u32 count) {
     u16 handle;
     u32 off;
     u32 i;
@@ -1163,7 +1163,7 @@ asm void fn_800D7C74(void) {
 #include "src/game/gs_render_fn_800D7C74.inc"
 }
 #else
-void fn_800D7C74(void) {
+void gfxFlushMatrix(void) {
     u32 state = lbl_8047AA80;
     u32 mtx;
     if (*(s32*)state == 1) {
@@ -1184,7 +1184,7 @@ asm void fn_800D7D10(void) {
 #include "src/game/gs_render_fn_800D7D10.inc"
 }
 #else
-void fn_800D7D10(u8 idx, void* src) {
+void gfxGetMatrix(u8 idx, void* src) {
     if (*(s32*)lbl_8047AA80 == 1) { gfxRecordCommand(0x44, 2, (u32)idx, src); }
     else if (idx > 9) { GSlogWrite(lbl_80270440); }
     else { fn_800E0628(src, &lbl_80400948[idx * 0x30]); }
@@ -1199,7 +1199,7 @@ asm void fn_800D7D90(void) {
 #include "src/game/gs_render_fn_800D7D90.inc"
 }
 #else
-void fn_800D7D90(u8 idx, void* src) {
+void gfxSetMatrix(u8 idx, void* src) {
     if (*(s32*)lbl_8047AA80 == 1) {
         gfxRecordCommand(0x43, 0x11, (u32)idx, src);
     } else if (idx > 9) {
@@ -1224,7 +1224,7 @@ asm void fn_800D7E5C(void) {
 #include "src/game/gs_render_fn_800D7E5C.inc"
 }
 #else
-void fn_800D7E5C(void) {
+void gfxPopMatrix(void) {
     u32 state = lbl_8047AA80;
     u32 mtx;
     if (*(s32*)state == 1) {
@@ -1251,7 +1251,7 @@ asm void fn_800D7F14(void) {
 #include "src/game/gs_render_fn_800D7F14.inc"
 }
 #else
-void fn_800D7F14(void* src) {
+void gfxPushMultMatrix(void* src) {
     u32 state = lbl_8047AA80;
     u32 mtx;
     if (*(s32*)state == 1) {
@@ -1278,7 +1278,7 @@ asm void fn_800D7FE4(void) {
 #include "src/game/gs_render_fn_800D7FE4.inc"
 }
 #else
-void fn_800D7FE4(void* param) {
+void gfxMultMatrix(void* param) {
     u32 state = lbl_8047AA80;
     u32 mtx;
     if (*(s32*)state == 1) {
@@ -1303,7 +1303,7 @@ asm void fn_800D8088(void) {
 #include "src/game/gs_render_fn_800D8088.inc"
 }
 #else
-void fn_800D8088(void* src) {
+void gfxPushLoadMatrix(void* src) {
     u32 state = lbl_8047AA80;
     u32 mtx;
     if (*(s32*)state == 1) {
@@ -1330,7 +1330,7 @@ asm void fn_800D8154(void) {
 #include "src/game/gs_render_fn_800D8154.inc"
 }
 #else
-void fn_800D8154(f32 a, f32 b, f32 c) {
+void gfxScaleMatrix(f32 a, f32 b, f32 c) {
     u32 state = lbl_8047AA80;
     u32 mtx;
     if (*(s32*)state == 1) {
@@ -1354,7 +1354,7 @@ asm void fn_800D81EC(void) {
 #include "src/game/gs_render_fn_800D81EC.inc"
 }
 #else
-void fn_800D81EC(f32 a, f32 b, f32 c) {
+void gfxTranslateMatrix(f32 a, f32 b, f32 c) {
     u32 state = lbl_8047AA80;
     u32 mtx;
     if (*(s32*)state == 1) {
@@ -1378,7 +1378,7 @@ asm void fn_800D8284(void) {
 #include "src/game/gs_render_fn_800D8284.inc"
 }
 #else
-void fn_800D8284(f32 a, f32 b, f32 c) {
+void gfxRotateXYZ(f32 a, f32 b, f32 c) {
     f32 y;
     f32 z;
     u32 matrixIndex;
@@ -1388,8 +1388,8 @@ void fn_800D8284(f32 a, f32 b, f32 c) {
         gfxRecordCommand(0x3c, 0xd, a, y, z);
     } else {
         fn_800E0370((void*)lbl_8047AAC0, a);
-        fn_800E032C((void*)lbl_8047AAC0, y);
-        fn_800E02E8((void*)lbl_8047AAC0, z);
+        GSmtxRotateY((void*)lbl_8047AAC0, y);
+        GSmtxRotateZ((void*)lbl_8047AAC0, z);
         matrixIndex = *(u32*)(lbl_80314610 + 0x24);
         GXLoadPosMtxImm(lbl_8047AAC0, matrixIndex);
         GXLoadNrmMtxImm(lbl_8047AAC0, matrixIndex);
@@ -1407,7 +1407,7 @@ asm void fn_800D834C(void) {
 #include "src/game/gs_render_fn_800D834C.inc"
 }
 #else
-void fn_800D834C(void) {
+void gfxLoadIdentity(void) {
     u32 state = lbl_8047AA80;
     u32 mtx;
     if (*(s32*)state == 1) {
@@ -1434,7 +1434,7 @@ asm void fn_800D83E4(void) {
 #include "src/game/gs_render_fn_800D83E4.inc"
 }
 #else
-void fn_800D83E4(u32 count) {
+void gfxMatrixStackInit(u32 count) {
     u16 handle;
     u32 mtx;
     u32 ptr;
@@ -1468,7 +1468,7 @@ asm void fn_800D848C(void) {
 #include "src/game/gs_render_fn_800D848C.inc"
 }
 #else
-void fn_800D848C(u32 idx, s32 mode, u32 arg, void* mtx) {
+void gfxLoadTexMatrix(u32 idx, s32 mode, u32 arg, void* mtx) {
     if (*(s32*)lbl_8047AA80 == 1) {
         gfxRecordCommand(0x27, 0x13, idx, mode, arg, mtx);
     } else {
@@ -1553,7 +1553,7 @@ asm void fn_800D87AC(void) {
 #include "src/game/gs_render_fn_800D87AC.inc"
 }
 #else
-void fn_800D87AC(u32 mask) {
+void _gfxSetFlagsImm(u32 mask) {
     s32 i;
     u8* textureSlot;
 
@@ -1601,6 +1601,6 @@ void gfxSetFlags(u32 mask) {
 #endif
 #endif
 
-/* fn_800D923C: linked owner is the standalone gs_gfx_layer_candidate_800D923C.c. */
+/* _gfxFlushTevState: linked owner is the standalone gs_gfx_layer_candidate_800D923C.c. */
 
 /* fn_800D963C: linked owner is the standalone gs_gfx_layer_candidate_800D963C.c. */

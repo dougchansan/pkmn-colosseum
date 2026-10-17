@@ -77,7 +77,7 @@ extern void  set__5GSvecFfff(void* dst, void* src);
 extern void  GSvecCopy(void* dst, void* src);
 extern void  GSvecAdd(void* model, void* param);
 extern void  fn_800E0BA0(void* param);
-extern void  fn_800E0BE4(void* param);
+extern void  GSrandf(void* param);
 extern void  vecScale(void* param);
 extern u32   __cvt_fp2unsigned(f64 val);
 

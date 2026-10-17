@@ -195,7 +195,7 @@ extern void GSmaterialResetTexture(void* material);
 extern void GSmaterialResetPEdescr(void* material);
 extern void GSmaterialResetAlpha(void* material);
 extern void GSmaterialResetFlags(void* material);
-extern void fn_800DF608(void* material);
+extern void GSmaterialRemoveExtraTObj(void* material);
 extern void fn_800E24B0(u32 handle);
 extern void fn_800E209C(u32 handle);
 extern void modelShadowFreeModelList__FP8_GSmodel(GSmodel* model);

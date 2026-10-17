@@ -5,11 +5,11 @@
  * This unit spans 0x800FF0A0-0x800FF788 (15 functions, 0x6E8 bytes total)
  * and sits between the GStexture/resource layer (floorTerminateScriptThreads etc.) and
  * gs_floor.c's GSfloorOpen (0x800FF788+). It contains only:
- *   - 4 floor-resource table walkers (fn_800FF0A0, fn_800FF178,
- *     fn_800FF2A0, fn_800FF3C0). fn_800FF0A0 is exact pure C; the other
+ *   - 4 floor-resource table walkers (floorTerminateTasks, fn_800FF178,
+ *     fn_800FF2A0, fn_800FF3C0). floorTerminateTasks is exact pure C; the other
  *     three remain honest TODO stubs. No rodata string references exist
  *     for any of the four, and no evidence supports semantic names.
- *     fn_800FF0A0 calls floorTerminateScriptThreads only; the other three call nothing.
+ *     floorTerminateTasks calls floorTerminateScriptThreads only; the other three call nothing.
  *   - 11 small floor-state accessors/helpers (fn_800FF4D4 through
  *     fn_800FF784), all matched at 100% -- must stay byte-identical.
  *
@@ -66,7 +66,7 @@ extern GSFloorResHandler lbl_80404918[];
     defined(GS_FLOOR_DATA_EXACT_800FF0A0_ONLY)
 
 /* 0x800FF0A0 | 0xD8 */
-void fn_800FF0A0(u32 callback) {
+void floorTerminateTasks(u32 callback) {
     GSFloorResource* resource;
     u32 remaining;
 
@@ -320,7 +320,7 @@ void floorRequestChange(u32 floorId) {
 #if defined(GS_FLOOR_DATA_ALL)
 
 /* 0x800FF660 | 0xD0 */
-void fn_800FF660(void) {
+void floorBattleEndTerminateScripts(void) {
     GSFloorContext* currentFloor;
     GSFloorResource* resource;
     u32 remaining;

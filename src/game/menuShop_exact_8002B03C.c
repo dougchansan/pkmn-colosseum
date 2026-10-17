@@ -17,7 +17,7 @@ s32 fn_8002B03C(void* r3)
     ctx = *(void**)((u8*)r3 + 0x60);
     v = ((u8*)ctx)[0x1c];
     if (v == 0 || v == 1) {
-        fn_800FB680(0, 0, -1, 0x2b2e);
+        GSmsgPrintColor(0, 0, -1, 0x2b2e);
     }
     return 0;
 }
@@ -27,7 +27,7 @@ s32 fn_8002B03C(void* r3)
 #pragma peephole off
 s32 fn_8002B088(void)
 {
-    fn_800FB680(0, 0, -1, lbl_8047A3E4);
+    GSmsgPrintColor(0, 0, -1, lbl_8047A3E4);
     return 0;
 }
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (peephole on) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */

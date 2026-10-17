@@ -207,8 +207,8 @@ extern void GSmodelSetAnimType();
 extern void GSmodelSetAnimIndex();
 extern void _threadSwitch();
 extern void GSresGetResource();
-extern void fn_800F9AEC();
-extern void fn_800F9C04();
+extern void GScharToGBA();
+extern void GScharFromGBA();
 extern void floorRequestChange();
 extern void floorSetFadeScript();
 extern void std093_getCurrentGroupID();
@@ -381,7 +381,7 @@ void gbaReceiveHero(void) {
     r3 = (u32)sp + 0x8;
     r4 = r31 + 0x4;
     r5 = 0x7;
-    ((void(*)(void))fn_800F9C04)();
+    ((void(*)(void))GScharFromGBA)();
     r3 = r30;
     r4 = (u32)sp + 0x8;
     heroBiosSetNamePtr();
@@ -1121,7 +1121,7 @@ u32 fn_80089F78(u32 port, u32 trainer, u32 slot, s32 irekae) {
             foePokemon = fightOutPokemonGetPokemonPtr(targets[i]);
             attest = pokemonBiosGetAttest(foePokemon);
             lang = gamedataAttestBiosGetLangareaId(attest);
-            length = ((s32 (*)(u8*, void*, u8))fn_800F9AEC)(snap.foes[i].name,
+            length = ((s32 (*)(u8*, void*, u8))GScharToGBA)(snap.foes[i].name,
                                                           pokemonBiosGetNicknamePtr(foePokemon), lang);
             if (length < 10) {
                 snap.foes[i].name[length] = 0xFF;
@@ -1482,7 +1482,7 @@ void pokeconvPokemonToGBA(void* src, void* dst_) {
     extern u8 pokemonCheckValid(void* pokemon);
     extern u8 gamedataAttestBiosGetLangareaId(void* attest);
     extern u8 gamedataAttestBiosGetVerId(void* attest);
-    extern s32 fn_800F9AEC(u8* out, void* name, s32 langId);
+    extern s32 GScharToGBA(u8* out, void* name, s32 langId);
     extern void* memmove(void* dst, const void* src, u32 size);
     GbaPokemon* dst;
     u8 tmp[12];
@@ -1537,13 +1537,13 @@ void pokeconvPokemonToGBA(void* src, void* dst_) {
         dst->amariFlags = pokemonBiosGetFlagAmari(src);
         dst->isBadEgg = pokemonBiosGetFuseiFlag(src) != 0;
 
-        length = fn_800F9AEC(dst->nickname, pokemonBiosGetNicknameOrgPtr(src), gamedataAttestBiosGetLangareaId(attest));
+        length = GScharToGBA(dst->nickname, pokemonBiosGetNicknameOrgPtr(src), gamedataAttestBiosGetLangareaId(attest));
         if (length < 10) {
             dst->nickname[length] = 0xFF;
             memset(dst->nickname + 1 + length, 0, 9 - length);
         }
 
-        length = fn_800F9AEC(dst->otName, pokemonBiosGetCatchTrainerNamePtr(src), gamedataAttestBiosGetLangareaId(attest));
+        length = GScharToGBA(dst->otName, pokemonBiosGetCatchTrainerNamePtr(src), gamedataAttestBiosGetLangareaId(attest));
         if (length < 7) {
             dst->otName[length] = 0xFF;
             memset(dst->otName + 1 + length, 0, 6 - length);
@@ -1687,7 +1687,7 @@ void pokeconvPokemonFromGBA(void* gc, GbaPokemon* src) {
     extern void* pokemonBiosGetAttest(void* pokemon);
     extern void* pokemonBiosGetCatchTrainerNamePtr(void* pokemon);
     extern void gamedataAttestCreate(void* attest, s32 verId, s32 kind, s32 region, s32 langId);
-    extern void fn_800F9C04(void* out, const u8* name, s32 count, u8 langId);
+    extern void GScharFromGBA(void* out, const u8* name, s32 count, u8 langId);
     extern void pokemonBiosSetRnd(void* pokemon, u32 value);
     extern void pokemonBiosSetCatchTrainerRnd(void* pokemon, u32 value);
     extern void pokemonBiosSetNicknamePtr(void* pokemon, void* name);
@@ -1840,11 +1840,11 @@ void pokeconvPokemonFromGBA(void* gc, GbaPokemon* src) {
     gamedataAttestCreate(pokemonBiosGetAttest(gc), verId, 3, region, langId);
 
     lang = langId;
-    fn_800F9C04(nickname, src->nickname, 10, lang);
+    GScharFromGBA(nickname, src->nickname, 10, lang);
     pokemonBiosSetNicknamePtr(gc, nickname);
     pokemonBiosSetFlagAmari(gc, src->amariFlags);
     pokemonBiosSetFuseiFlag(gc, src->isBadEgg);
-    fn_800F9C04(pokemonBiosGetCatchTrainerNamePtr(gc), src->otName, 7, lang);
+    GScharFromGBA(pokemonBiosGetCatchTrainerNamePtr(gc), src->otName, 7, lang);
 
     pokemonBiosSetPcboxMark(gc, src->markings);
     pokemonBiosSetAmari(gc, GbaSwap16(src->amari));

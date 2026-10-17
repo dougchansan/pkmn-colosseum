@@ -234,7 +234,7 @@ extern u8 fn_80220868[];
 extern u8 fn_8022106C[];
 extern u8 fn_802222F4[];
 extern u8 fn_80222370[];
-extern u8 fn_802223E0[];
+extern u8 wsCmd43[];
 extern u8 fn_80222438[];
 extern u8 fn_80222494[];
 extern u8 fn_80222500[];

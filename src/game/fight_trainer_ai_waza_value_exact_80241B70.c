@@ -363,7 +363,7 @@ u32 fightTrainerAiWazaValueUrami(void* ctx, u32 param1, u32 param2, u32 param3) 
     extern u32 fightOutPokemonGetPokemonPtr(u32);
     extern u32 fn_80236520(void*, u32);
     extern s32 fn_80236D60(void*, u32, u32);
-    extern u8 fn_802391E0(void*, u32);
+    extern u8 fightAiGetWazaPp(void*, u32);
     extern u32 fn_80239984(u32, void*, u32);
     extern void fn_80239EE8(u32, void*, u32, u32, u32, u32, u32, u32);
     u32 handle;
@@ -374,7 +374,7 @@ u32 fightTrainerAiWazaValueUrami(void* ctx, u32 param1, u32 param2, u32 param3) 
     move = fn_80236520(ctx, param3);
     if ((move & 0xFFFF) != 0 && (move & 0xFFFF) != 0xFFFF && (move & 0xFFFF) != 0x165 &&
         (move & 0xFFFF) != 0x163 && fn_80236D60(ctx, param1, param3) > 0) {
-        value = fn_802391E0(ctx, move);
+        value = fightAiGetWazaPp(ctx, move);
         if ((value & 0xFF) <= 5) {
             handle = fn_80239984(0, ctx, 0x197);
             fn_80239EE8(0xEC64, ctx, fightOutPokemonGetPokemonPtr(param1), 0, 0, param2, 0, 0x197);

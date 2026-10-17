@@ -78,7 +78,7 @@ extern u32 windowGetActiveID(void);
 extern s32 menuOpenCustom(s32 menuId, ...);
 extern void menuClose(s32 menuId);
 extern void menuCloseSync(s32 menuId, s32 flag);
-extern void* fn_800F92D4(u32 resourceId);
+extern void* GSresFindById(u32 resourceId);
 extern void fn_800E3CC8(void* model, s32 value);
 extern void cameraPlayAnime(s32 camera, u32 resourceId, s32 startFrame, s32 flags);
 extern void GSmodelSetAnimIndex(void* model, s32 index);
@@ -103,10 +103,10 @@ extern u8 std081_flagCheckTrue(s32 id);
 extern void fn_8004C120(void);
 extern void fadeSet(s32 type, f32 speed);
 extern s8 fadeCheck(s32 type);
-extern void fn_800FF660(void);
+extern void floorBattleEndTerminateScripts(void);
 extern void floorSetFadeScript(s32 a, u32 b);
 extern void _threadSwitch(void);
-extern void fn_800FB680(s32 x, s32 y, u32 color, s32 msgId);
+extern void GSmsgPrintColor(s32 x, s32 y, u32 color, s32 msgId);
 
 typedef struct PdaMailAttachmentConfig {
     f32* scroll;
@@ -149,8 +149,8 @@ void std027_unkMenuSequence27(void)
     state->exiting = 0;
 
     menuOffScreenSetPriority(0);
-    model = fn_800F92D4(0x0C541000);
-    light = fn_800F92D4(0x0C541601);
+    model = GSresFindById(0x0C541000);
+    light = GSresFindById(0x0C541601);
     fn_800E3CC8(model, 1);
     cameraPlayAnime(0x17, 0x0C541800, 0, 0);
     if (model != 0) {
@@ -173,10 +173,10 @@ void std027_unkMenuSequence27(void)
     GSmodelStopAnimation(model);
     cameraWaitSyncAnime(1);
     GSlightSetActive(light, 0);
-    GSlightSetActive(fn_800F92D4(0x0C541600), 0);
-    GSlightSetActive(fn_800F92D4(0x0C541602), 0);
-    fn_800F92D4(0x0C540200);
-    fn_800F92D4(0x0C541800);
+    GSlightSetActive(GSresFindById(0x0C541600), 0);
+    GSlightSetActive(GSresFindById(0x0C541602), 0);
+    GSresFindById(0x0C540200);
+    GSresFindById(0x0C541800);
     fn_8004A47C();
 
     config.message = &lbl_8047A4FC;
@@ -318,7 +318,7 @@ void std027_unkMenuSequence27(void)
             break;
         }
     }
-    fn_800FF660();
+    floorBattleEndTerminateScripts();
     floorSetFadeScript(0, 0);
 }
 #pragma peephole reset
@@ -1042,7 +1042,7 @@ s32 fn_8004C3E4(PdaMailSortLabelWindow* window)
     } MailSortMessageIds;
     extern const u32 lbl_802672C8[];
     extern u32 GSmsgGetRect(u32 msgId);
-    extern void fn_800FB680(s32 x, s32 y, s32 color, u32 msgId);
+    extern void GSmsgPrintColor(s32 x, s32 y, s32 color, u32 msgId);
     MailSortMessageIds messageIds;
     s32 sortMode;
     u32 messageId;
@@ -1059,8 +1059,8 @@ s32 fn_8004C3E4(PdaMailSortLabelWindow* window)
         u32 alpha = window->color;
         s32 color = alpha | colorMask;
 
-        fn_800FB680(0, 0, color, messageId);
-        fn_800FB680(GSmsgGetRect(messageId) >> 16, 0,
+        GSmsgPrintColor(0, 0, color, messageId);
+        GSmsgPrintColor(GSmsgGetRect(messageId) >> 16, 0,
                      color, 0x36c1);
     }
     return 0;
@@ -1734,10 +1734,10 @@ s32 pdaMailAttachDrawTitle(u8* context, u8* object)
         (selectedWidth + normalWidth * (count - 1)) / 2;
     for (index = 0; index < count; index++) {
         if (index == current) {
-            fn_800FB680(x, 0, 0xE6AA00FF, 0x36CE);
+            GSmsgPrintColor(x, 0, 0xE6AA00FF, 0x36CE);
             x += selectedWidth;
         } else {
-            fn_800FB680(x, 0, 0xAAAAAAFF, 0x36CF);
+            GSmsgPrintColor(x, 0, 0xAAAAAAFF, 0x36CF);
             x += normalWidth;
         }
     }
@@ -1779,8 +1779,8 @@ extern void gfxClearFlags(u32 value);
 extern void gfxLoadTexture(u32 slot, void* texture);
 extern void gfxSetPrimitive(u32 mode);
 extern void gfxBegin(u32 count);
-extern void fn_800D61E4(s16 x, s16 y);
-extern void fn_800D5BA0(u32 slot, s32 value);
+extern void gfxVtxPos2s16(s16 x, s16 y);
+extern void gfxVtxColor1u32(u32 slot, s32 value);
 extern void gfxVtxTexCoord(u32 slot, f32 x, f32 y);
 extern void gfxEnd(void);
 extern f32 lbl_8047BE48;
@@ -1844,7 +1844,7 @@ s32 fn_8004E510(u8* context, u8* object)
         return 0;
     }
 
-    texture = (u32)fn_800F92D4(entry);
+    texture = (u32)GSresFindById(entry);
     if (texture == 0) {
         return 0;
     }
@@ -1853,11 +1853,11 @@ s32 fn_8004E510(u8* context, u8* object)
     gfxLoadTexture(0, (void*)texture);
     gfxSetPrimitive(7);
     gfxBegin(2);
-    fn_800D61E4(0, 0);
-    fn_800D5BA0(0, -1);
+    gfxVtxPos2s16(0, 0);
+    gfxVtxColor1u32(0, -1);
     gfxVtxTexCoord(0, lbl_8047BE48, lbl_8047BE48);
-    fn_800D61E4(*(s16*)(object + 0x54), *(s16*)(object + 0x56));
-    fn_800D5BA0(0, -1);
+    gfxVtxPos2s16(*(s16*)(object + 0x54), *(s16*)(object + 0x56));
+    gfxVtxColor1u32(0, -1);
     gfxVtxTexCoord(0, lbl_8047BE4C, lbl_8047BE4C);
     gfxEnd();
     return 0;

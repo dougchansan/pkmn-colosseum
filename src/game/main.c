@@ -100,24 +100,24 @@ extern void fn_800D2AD4(u32 count);                     /* GSgfx light init */
 extern void GSlightInit(u32 count);                     /* GSgfx texture init */
 extern void gsParticleInit(u32 a, u32 b);                  /* GSmaterial init */
 extern void fn_80132C6C(u32 a, u32 b, u32 c, u32 d);  /* GStexture cache init */
-extern void fn_800F8138(void);                           /* GSgfx camera/viewport init */
+extern void GSinputInit(void);                           /* GSgfx camera/viewport init */
 
-extern void fn_800F80B0(u32 padIdx);                    /* PAD motor init per-controller */
-extern void fn_800F7E9C(u32 padIdx, u32 param);        /* PAD rumble config */
-extern void fn_800F7E40(u32 padIdx, u32 param);        /* PAD deadzone config */
-extern void fn_800F7DE4(u32 padIdx, u32 param);        /* PAD stick config */
+extern void GSinputOpen(u32 padIdx);                    /* PAD motor init per-controller */
+extern void GSinputSetClamping(u32 padIdx, u32 param);        /* PAD rumble config */
+extern void GSinputSetSmoothingRate(u32 padIdx, u32 param);        /* PAD deadzone config */
+extern void GSinputSetSmoothingFunc(u32 padIdx, u32 param);        /* PAD stick config */
 
 extern void GSgappInit(u32 numTasks, u32 numQueues);  /* GSthread init */
 extern void GSresInit(u32 maxSteps);                  /* GSthread step limit */
 extern void fn_800FF828(u32 a, u32 b, u32 c, u32 d);  /* GSthread pool config */
 extern void fn_8010D170(void);                           /* GSthread scheduler init */
-extern void fn_800F7758(u32 maxPads);                   /* PAD system init */
+extern void cms_InitThreadPool(u32 maxPads);                   /* PAD system init */
 extern void fn_800F75FC(void* padTable);                 /* PAD set mapping table */
 extern void GSmsgInit(u32 numFloors, u32 numLayers);  /* GSfloor system init */
 extern void GSmsgSetCtrlFunc(void* sndTable);                 /* GSfloor sound table */
 extern void GSmsgFontOpen(void* relData);                  /* GSfloor register REL data */
 extern void GSmsgOpen(void* relData);                  /* GSfloor register REL data (alt) */
-extern void fn_800F76E4(void* relData);                  /* GSfloor register REL data (floor) */
+extern void cms_RegisterScript(void* relData);                  /* GSfloor register REL data (floor) */
 extern void fn_80167DC0(u32 a, u32 b, u32 c, u32 d, u32 e); /* set the five DVD error message IDs */
 extern void fn_801E1300(void);                           /* Save/card system init */
 extern void flareCreateTask(void);                           /* GBA communication init */
@@ -137,7 +137,7 @@ extern s32 GSvtrRegisterGSgapp(u32 taskId);              /* Save task registrati
 extern void fadeInit(void);                           /* Script engine init */
 extern void fn_80168638(u32 numSlots);                   /* Floor/scene loader init */
 extern void fn_80130CE0(u32 maxEffects);                 /* 3D model/effect loader */
-extern u32  fn_800E0DDC(void);                           /* OSGetFreeMemSize-like */
+extern u32  GSmemGetFreeTotal(void);                           /* OSGetFreeMemSize-like */
 extern void GSlogWrite(const char* fmt, ...);           /* OSReport / debug printf */
 extern f32 __cvt_fp2unsigned(f32 volume);                     /* volume clamp/process */
 
@@ -222,14 +222,14 @@ extern u8   fn_8000DAA8(void);    /* IsLanguageJapanese or locale check */
 extern void peopleMain(u32 a, u32 b); /* Retry/reconnect handler */
 
 extern u8   fn_8008ABA0(u32 padIdx); /* PAD is connected check */
-extern void fn_800F7F64(u32 padIdx); /* PAD disconnect handler */
-extern u8 fn_800F7EF8(u32 padIdx); /* PAD connection check */
+extern void GSinputRead(u32 padIdx); /* PAD disconnect handler */
+extern u8 GSinputIsConnected(u32 padIdx); /* PAD connection check */
 extern void fn_8008AC34(u32 padIdx); /* PAD recalibrate */
 
 extern void fn_80101B90(u32 mask);   /* GXSetChanCtrl / GX render state */
 extern void fn_80101D8C(void);       /* GX render flush */
 extern void fn_80101D5C(void);       /* GX render end */
-extern void fn_800D361C(u8 mode);    /* GSgfx set draw mode */
+extern void GSgfxWaitRetrace(u8 mode);    /* GSgfx set draw mode */
 extern void fn_800D30F0(u32 flag);   /* GSgfx swap buffers */
 extern void GSgfxCaptureUpdate(void);       /* World/scene render tick */
 
@@ -248,7 +248,7 @@ extern u32  std082_flagGetValue(u32 evtId);  /* Event system check state */
 extern s32  fn_800D37CC(void);       /* GSgfx get frame counter */
 extern u32  msgGetCharsPerFrame(void);       /* GSgfx get tick counter */
 
-extern u32  fn_800F7AF0(u32 padIdx); /* PAD get buttons pressed */
+extern u32  GSinputButtonsChanged(u32 padIdx); /* PAD get buttons pressed */
 extern u32  fn_800F7BC4(u32 padIdx); /* PAD get buttons held */
 extern void dbgMovieCaptureUpdate(void);       /* Debug menu toggle */
 
@@ -594,14 +594,14 @@ void fn_800057B0(void) {
     fn_80132C6C(0x10, 0x40, 0x1, 0x2000);
 
     /* Initialize camera/viewport defaults */
-    fn_800F8138();
+    GSinputInit();
 
     /* Configure all 4 controller pads (indices 1-4) */
     for (i = 1; i <= 4; i++) {
-        fn_800F80B0(i);        /* Init motor for pad i */
-        fn_800F7E9C(i, 2);    /* Set rumble mode */
-        fn_800F7E40(i, 7);    /* Set analog deadzone */
-        fn_800F7DE4(i, 1);    /* Set stick mode */
+        GSinputOpen(i);        /* Init motor for pad i */
+        GSinputSetClamping(i, 2);    /* Set rumble mode */
+        GSinputSetSmoothingRate(i, 7);    /* Set analog deadzone */
+        GSinputSetSmoothingFunc(i, 1);    /* Set stick mode */
     }
 
     /* Initialize GSthread system: 16 tasks, 4 queues */
@@ -617,7 +617,7 @@ void fn_800057B0(void) {
     fn_8010D170();
 
     /* Allocate 16 script VM contexts (0x16C bytes each) */
-    fn_800F7758(0x10);
+    cms_InitThreadPool(0x10);
 
     /* Set the script VM native-call dispatch table (12-byte entries) */
     fn_800F75FC(lbl_802E1CF0);
@@ -697,7 +697,7 @@ void fn_800057B0(void) {
 
     /* Print available memory to debug console */
     {
-        u32 freeMem = (u32)fn_800E0DDC();
+        u32 freeMem = (u32)GSmemGetFreeTotal();
         GSlogWrite(lbl_80266420, freeMem); /* "OS avail memory: %d\n" */
     }
 
@@ -765,7 +765,7 @@ void mainGameThread(void) {
      * to its data, which is then registered with the floor system. */
     GSmsgFontOpen(tableResBiosGetResPtr(1));  /* REL 1 -> register scene data */
     GSmsgOpen(tableResBiosGetResPtr(4));  /* REL 4 -> register scene data (alt) */
-    fn_800F76E4(tableResBiosGetResPtr(7));  /* REL 7 -> register floor data */
+    cms_RegisterScript(tableResBiosGetResPtr(7));  /* REL 7 -> register floor data */
 
     /* Seed the RNG using the low bits of the OS tick counter.
      * OSGetTime returns u64 in r3:r4; we use r4 (low 32 bits).
@@ -896,7 +896,7 @@ void mainRetraceDraw(void) {
     fn_80101B90(0xFF00);
 
     /* Apply the draw mode from the per-frame flag */
-    fn_800D361C(lbl_80478DD0);
+    GSgfxWaitRetrace(lbl_80478DD0);
 
     /* Flush GX render commands */
     fn_80101D8C();
@@ -944,14 +944,14 @@ void mainRetraceLogic(void) {
 
     fn_80101B90(0xFF);
 
-    pressed = fn_800F7AF0(1);
+    pressed = GSinputButtonsChanged(1);
     held = fn_800F7BC4(1);
     if (held & pressed & 0x10) {
         dbgMovieCaptureUpdate();
     }
 
     if (fn_801E11E8()) {
-        pressed = fn_800F7AF0(1);
+        pressed = GSinputButtonsChanged(1);
         held = fn_800F7BC4(1);
         if (held & pressed & 0x40) {
             if (fn_801E11E0() == 2) {
@@ -960,7 +960,7 @@ void mainRetraceLogic(void) {
                 fn_801E119C();
             }
         }
-        pressed = fn_800F7AF0(1);
+        pressed = GSinputButtonsChanged(1);
         held = fn_800F7BC4(1);
         if (held & pressed & 0x20) {
             fn_801E118C();

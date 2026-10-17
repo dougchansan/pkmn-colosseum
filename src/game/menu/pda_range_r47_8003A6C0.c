@@ -150,7 +150,7 @@ extern void pdaReadPadInput(void* scene);
 extern void GSscene_SetMode(s32 mode);
 extern void menuButtonNormal(void* button);
 extern void winSpriteSetDisp(void* sprite, s32 disp);
-extern void fn_800FB680(s32 arg0, s32 arg1, s32 arg2, void* data);
+extern void GSmsgPrintColor(s32 arg0, s32 arg1, s32 arg2, void* data);
 
 #if !defined(PDA_RANGE_EXACT_80037174_ONLY)
 
@@ -645,6 +645,6 @@ void pdaSnagListDrawCount(PdaSprite* sprite)
     } else {
         msgctrlSetValue(0x31, value);
     }
-    fn_800FB680(0, 0, (u32)sprite->alphaByte | -0x100LL, message);
+    GSmsgPrintColor(0, 0, (u32)sprite->alphaByte | -0x100LL, message);
 }
 #endif

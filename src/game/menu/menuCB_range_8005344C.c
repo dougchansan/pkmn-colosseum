@@ -125,7 +125,7 @@ extern void* pcBoxGetCursorPokemon();
 extern s32 fn_800573C0(void);
 extern s32 fn_800566E8(void);
 extern s32 fn_80057E40(MenuCBPane* pane);
-extern void fn_800FB680(s32 x, s32 y, s32 color, u32 msgId);
+extern void GSmsgPrintColor(s32 x, s32 y, s32 color, u32 msgId);
 extern u32 GSmsgGetGSchar(u32 msgId);
 extern u32 GSmsgGetRect(u32 msgId);
 extern void* itemDataBiosGetPtr(u16 itemId);
@@ -191,8 +191,8 @@ extern void gfxSetVtxDesc(void* resource);
 extern void gfxLoadTexture(s32 slot, void* texture);
 extern void gfxSetPrimitive(s32 mode);
 extern void gfxBegin(s32 mode);
-extern void fn_800D61E4(s16 x, s16 y);
-extern void fn_800D5CB8(s32, s32, s32, s32, s32);
+extern void gfxVtxPos2s16(s16 x, s16 y);
+extern void gfxVtxColor4u8(s32, s32, s32, s32, s32);
 extern void gfxVtxTexCoord(s32 slot, f32 xScale, f32 yScale);
 extern void gfxEnd(void);
 extern void gfxClearFlags(u32 flags);
@@ -298,7 +298,7 @@ u32 fn_80053778(u32 unused, u8* pane) {
     MenuCBPokemonBlob* pokemon;
     f32 heightScale;
     f32 fade;
-    extern void fn_800D61E4();
+    extern void gfxVtxPos2s16();
     extern s32 fn_80057E40();
 
     texture = 0;
@@ -319,14 +319,14 @@ u32 fn_80053778(u32 unused, u8* pane) {
         alpha = (s32)(102.0f * (1.0f - fade));
 
         gfxBegin(4);
-        fn_800D61E4(0, 0);
-        fn_800D5CB8(0, 0xff, 0xff, 0xff, 0);
-        fn_800D61E4(*(s16*)(pane + 0x54), 0);
-        fn_800D5CB8(0, 0xff, 0xff, 0xff, 0);
-        fn_800D61E4(*(s16*)(pane + 0x54), height);
-        fn_800D5CB8(0, 0xff, 0xff, 0xff, alpha);
-        fn_800D61E4(0, height);
-        fn_800D5CB8(0, 0xff, 0xff, 0xff, alpha);
+        gfxVtxPos2s16(0, 0);
+        gfxVtxColor4u8(0, 0xff, 0xff, 0xff, 0);
+        gfxVtxPos2s16(*(s16*)(pane + 0x54), 0);
+        gfxVtxColor4u8(0, 0xff, 0xff, 0xff, 0);
+        gfxVtxPos2s16(*(s16*)(pane + 0x54), height);
+        gfxVtxColor4u8(0, 0xff, 0xff, 0xff, alpha);
+        gfxVtxPos2s16(0, height);
+        gfxVtxColor4u8(0, 0xff, 0xff, 0xff, alpha);
         gfxEnd();
         return 0;
     }
@@ -352,11 +352,11 @@ u32 fn_80053778(u32 unused, u8* pane) {
         gfxSetVtxDesc(lbl_80314F98);
         gfxLoadTexture(0, (void*)texture);
         gfxBegin(2);
-        fn_800D61E4(0, 0);
-        fn_800D5CB8(0, 0xff, 0xff, 0xff, 0xff);
+        gfxVtxPos2s16(0, 0);
+        gfxVtxColor4u8(0, 0xff, 0xff, 0xff, 0xff);
         gfxVtxTexCoord(0, 0.0f, 0.0f);
-        fn_800D61E4(*(s16*)(pane + 0x54), *(s16*)(pane + 0x56));
-        fn_800D5CB8(0, 0xff, 0xff, 0xff, 0xff);
+        gfxVtxPos2s16(*(s16*)(pane + 0x54), *(s16*)(pane + 0x56));
+        gfxVtxColor4u8(0, 0xff, 0xff, 0xff, 0xff);
         gfxVtxTexCoord(0, 1.0f, 1.0f);
         gfxEnd();
     }
@@ -454,7 +454,7 @@ s32 fn_80053C00(MenuCBPane* pane, MenuCBPane* sprite)
             itemData = itemDataBiosGetPtr(itemId);
             if (itemData != NULL) {
                 msgctrlSetValue(0x37, GSmsgGetGSchar(itemDataBiosGetName(itemData)));
-                fn_800FB680(0, 0, -1, 0xe7);
+                GSmsgPrintColor(0, 0, -1, 0xe7);
             }
         }
     }
@@ -513,7 +513,7 @@ s32 fn_80053D64(MenuCBPane* pane, MenuCBPane* sprite)
     if (pokemon != NULL) {
         msgctrlSetValue(0x37, GSmsgGetGSchar(pokemonDataBiosGetName(
                                      pokemonDataBiosGetPtr(pokemonBiosGetPokemonDataId(pokemon)))));
-        fn_800FB680(0, 0, -1, 0xe7);
+        GSmsgPrintColor(0, 0, -1, 0xe7);
     }
     result = 0;
     sprite->textId = result;
@@ -537,7 +537,7 @@ s32 pcBoxDrawLevel(MenuCBPane* pane, MenuCBPane* sprite)
             textId += 3;
         }
         rect = GSmsgGetRect(0x1b82);
-        fn_800FB680(sprite->width - (textId * 15) - (rect >> 16), 0, -1, 0x1b82);
+        GSmsgPrintColor(sprite->width - (textId * 15) - (rect >> 16), 0, -1, 0x1b82);
         msgctrlSetValue(0x34, level);
         textId = 0xde;
     }
@@ -556,7 +556,7 @@ s32 pcBoxDrawNickname(MenuCBPane* pane)
     }
     nickname = pokemonBiosGetNicknamePtr(pokemon);
     msgctrlSetValue(0x37, (u32)nickname);
-    fn_800FB680(0, 0, -1, 0xe7);
+    GSmsgPrintColor(0, 0, -1, 0xe7);
     return 0;
 }
 
@@ -679,12 +679,12 @@ s32 fn_80053ED8(MenuCBPane* pane, MenuCBPane* sprite) {
         gfxLoadTexture(0, texture);
         gfxSetPrimitive(7);
         gfxBegin(2);
-        fn_800D61E4(insetX, insetY);
-        fn_800D5CB8(0, 0x3c, 0xc, 0xff, alpha);
+        gfxVtxPos2s16(insetX, insetY);
+        gfxVtxColor4u8(0, 0x3c, 0xc, 0xff, alpha);
         gfxVtxTexCoord(0, scaleS0, scaleT0);
         /* RULE-EXCEPTION(user-approved): codegen-only (s32) casts drop a second extsh of the insets — see docs/RULE_EXCEPTIONS.md */
-        fn_800D61E4((s16)((s32)insetX + width), (s16)((s32)insetY + height));
-        fn_800D5CB8(0, 0x3c, 0xc, 0xff, alpha);
+        gfxVtxPos2s16((s16)((s32)insetX + width), (s16)((s32)insetY + height));
+        gfxVtxColor4u8(0, 0x3c, 0xc, 0xff, alpha);
         gfxVtxTexCoord(0, scaleS1, scaleT1);
         gfxEnd();
         gfxClearFlags(0x80000000);

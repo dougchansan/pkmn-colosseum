@@ -406,12 +406,12 @@ extern char lbl_8047C090;
 
 /* menuCommonFree (0x8007109C): release the current heap handle, if any. */
 void menuCommonFree(void) {
-    extern u16 fn_800E202C(void);
+    extern u16 GSmemGetHandleByPtr(void);
     extern void fn_800E24B0(u16 handle);
     extern void fn_800E209C(u16 handle);
     u16 handle;
 
-    handle = fn_800E202C();
+    handle = GSmemGetHandleByPtr();
     if (!(handle != 0)) {
         __assert((const char*)lbl_80268708, 0xDE, (const char*)&lbl_8047C090);
     }
@@ -459,7 +459,7 @@ s32 fn_80071160(void) {
     return 0;
 }
 
-extern u32 fn_800F7AF0(s32);
+extern u32 GSinputButtonsChanged(s32);
 extern u32 fn_800F7BC4(s32);
 extern u8 fn_8008ABA0(s32);
 extern s32 menuCBBios_ControlerIDtoPortID(s32);
@@ -469,7 +469,7 @@ extern void* windowSearchID(s32);
 extern void menuCloseCustom(s32, s32, s32);
 extern u32 fn_800A13F8(void);
 extern u8 lbl_803B6DE0[];
-extern int fn_800D0F44();
+extern int SIProbe();
 extern f64 sin(f64);
 
 u32 fn_80071208(s32 controller)
@@ -478,7 +478,7 @@ u32 fn_80071208(s32 controller)
     u32 input;
     s32 port;
 
-    input = fn_800F7BC4(controller) & fn_800F7AF0(controller);
+    input = fn_800F7BC4(controller) & GSinputButtonsChanged(controller);
     if (input == 0 && fn_8008ABA0(controller) != 0) {
         port = menuCBBios_ControlerIDtoPortID(controller);
         if (fn_80073A44(port, &buttons) == 0) {
@@ -668,14 +668,14 @@ extern void _flagSet();
 /* fn_80074324 (0x80074324): prep key-state then perform per-channel reset path. */
 s32 pkjbProbe(s32 chan)
 {
-    extern u32 fn_800D0F44(s32 chan);
+    extern u32 SIProbe(s32 chan);
     u32 response;
     u32 timeout;
     u32 start;
     u8 status;
     s32 result;
 
-    if (fn_800D0F44(chan) != 0x40000) {
+    if (SIProbe(chan) != 0x40000) {
         return 1;
     }
     if (GBAReset(chan, &status) != 0) {
@@ -2000,7 +2000,7 @@ s32 pkjbValidateKey(s32 channel, s32 use_primary_image) {
         if (OSGetTick() - start > timeout) {
             return 0x15;
         }
-        if (fn_800D0F44(channel) != 0x40000) {
+        if (SIProbe(channel) != 0x40000) {
             return 0;
         }
         if (lbl_803B6E18[channel].func != NULL) {
@@ -3158,7 +3158,7 @@ extern s32 menuClose(s32);
 extern void* memcpy(void* dst, const void* src, u32 size);
 extern s32 menuOpen(s32, s32);
 extern s32 std011_dialogDisplayYesNoMenu(void);
-extern int fn_800D0F44();
+extern int SIProbe();
 extern u32 lbl_804788F0;
 extern u32 lbl_802E61D8[];
 extern f32 lbl_8047C114;
@@ -3395,7 +3395,7 @@ void fn_8007A5E8(s32 unused, u8* window) {
     extern u32 lbl_8047A62C;
     extern void msgctrlSetValue(s32, u32);
     extern u32 GSmsgGetRect(s32);
-    extern void fn_800FB680(s32, s32, s32, s32);
+    extern void GSmsgPrintColor(s32, s32, s32, s32);
     u32 value;
     u32 rect;
 
@@ -3406,7 +3406,7 @@ void fn_8007A5E8(s32 unused, u8* window) {
     }
     msgctrlSetValue(0x50, value);
     rect = GSmsgGetRect(0x153);
-    fn_800FB680(*(s16*)(window + 0x54) - (rect >> 16), 0, -1, 0x153);
+    GSmsgPrintColor(*(s16*)(window + 0x54) - (rect >> 16), 0, -1, 0x153);
 }
 
 /* fn_8007A664 (0x8007A664): show the sprite selected by the current mode. */
@@ -3640,7 +3640,7 @@ s32 gbaBootRun(s32 code, s32* state) {
     }
 
     if (state[0] == 0) {
-        if (fn_800D0F44(1) != 0x40000) {
+        if (SIProbe(1) != 0x40000) {
             return fn_8007AB10_initial_result(code);
         }
         state[0] = 1;
@@ -3651,7 +3651,7 @@ s32 gbaBootRun(s32 code, s32* state) {
         fn_800A1E54(lbl_803F7A30 + 0x28, &event);
         lbl_803F7A30[0x345] = 0;
 
-        if (fn_800D0F44(1) != 0x40000) {
+        if (SIProbe(1) != 0x40000) {
             kind = 10;
         } else {
             kind = event;
@@ -4068,8 +4068,8 @@ extern void gfxSetPrimitive(s32);
 extern void gfxSetVtxDesc(void*);
 extern void gfxLoadTexture(s32, void*);
 extern void gfxBegin(s32);
-extern void fn_800D61E4(s32, s32);
-extern void fn_800D5CB8(s32, s32, s32, s32, s32);
+extern void gfxVtxPos2s16(s32, s32);
+extern void gfxVtxColor4u8(s32, s32, s32, s32, s32);
 extern void gfxVtxTexCoord(s32, f32, f32);
 extern void gfxEnd(void);
 extern u8 lbl_80314F98[];
@@ -4096,8 +4096,8 @@ extern void gfxSetPrimitive(s32);
 extern void gfxSetVtxDesc(void*);
 extern void gfxLoadTexture(s32, void*);
 extern void gfxBegin(s32);
-extern void fn_800D61E4(s32, s32);
-extern void fn_800D5CB8(s32, s32, s32, s32, s32);
+extern void gfxVtxPos2s16(s32, s32);
+extern void gfxVtxColor4u8(s32, s32, s32, s32, s32);
 extern void gfxVtxTexCoord(s32, f32, f32);
 extern void gfxEnd(void);
 extern u8 lbl_80314F98[];
@@ -4173,11 +4173,11 @@ void fn_80075518(u8* context, u8* message)
     gfxSetVtxDesc(lbl_80314F98);
     gfxLoadTexture(0, model);
     gfxBegin(2);
-    fn_800D61E4(0, 0);
-    fn_800D5CB8(0, 0x28, 0x3E, 0xC8, alpha);
+    gfxVtxPos2s16(0, 0);
+    gfxVtxColor4u8(0, 0x28, 0x3E, 0xC8, alpha);
     gfxVtxTexCoord(0, 0.0f, 0.0f);
-    fn_800D61E4(*(s16*)(message + 0x54), *(s16*)(message + 0x56));
-    fn_800D5CB8(0, 0x28, 0x3E, 0xC8, alpha);
+    gfxVtxPos2s16(*(s16*)(message + 0x54), *(s16*)(message + 0x56));
+    gfxVtxColor4u8(0, 0x28, 0x3E, 0xC8, alpha);
     gfxVtxTexCoord(0, 1.0f, 1.0f);
     gfxEnd();
 }
@@ -4199,14 +4199,14 @@ s32 exShrineModelIsOpen(void) { return menuIsCheck(0xd8); }
 void fn_8007565C(void) {
     extern void fn_8010A420(u32);
     extern void menuCloseCustom(s32, s32, s32);
-    extern u16 fn_800E202C(u32);
+    extern u16 GSmemGetHandleByPtr(u32);
     extern void fn_800E24B0(void);
     extern void fn_800E209C(u16);
     u16 handle;
 
     fn_8010A420(*(u32*)&lbl_8047A610 + 0x144);
     menuCloseCustom(0xD8, 0, 1);
-    handle = fn_800E202C(*(u32*)&lbl_8047A610);
+    handle = GSmemGetHandleByPtr(*(u32*)&lbl_8047A610);
     if (handle != 0) {
         fn_800E24B0();
         fn_800E209C(handle);
@@ -4267,7 +4267,7 @@ void menuToolBattleRun(void)
     extern s32 menuCB_Battle(void*);
     extern s32 menuTaisenRun(void*);
     extern u8 fn_800FF52C(void);
-    extern void fn_800FF660(void);
+    extern void floorBattleEndTerminateScripts(void);
     extern void floorRequestChange(s32);
     extern void floorSetFadeScript(s32, u32);
     extern char lbl_802688F8[];
@@ -4330,7 +4330,7 @@ done:
         if (*(s32*)savedataGetStatus(0, 0xE) != 1) {
             __assert(lbl_802688F8, 0xA7, lbl_8026890C);
         }
-        fn_800FF660();
+        floorBattleEndTerminateScripts();
         switch (*(s32*)savedataGetStatus(0, 0xE)) {
         case 1:
             if (result != 0xD1) {

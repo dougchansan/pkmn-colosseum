@@ -153,7 +153,7 @@ GSpart* GSmodelGetPart(GSmodel* model, s32 index);
 void GSpartGetTransform(GSpart* part, GSvec* position, GSvec* rotation,
                         GSvec* scale);
 void GSpartFree(GSpart* part);
-void fn_800E06EC(GSquat* quaternion, GSvec* rotation);
+void GSquatFromEuler(GSquat* quaternion, GSvec* rotation);
 void GSvecTransformQuat(GSvec* dst, GSquat* quaternion, GSvec* src);
 void GSvecAdd(GSvec* dst, GSvec* lhs, GSvec* rhs);
 void fn_800E0108(GSvec* dst, GSvec* lhs, GSvec* rhs);
@@ -222,7 +222,7 @@ typedef struct GSmodelAnimEndedInfo {
 #undef MODEL_RESET_PART_ANIM_MIX_DIRTY
 
 /* sModelJObjCount / sModelJObjLastIndex are .sbss globals owned by the
- * gs_model_anim split (config/GC6E01/symbols.txt). fn_800EE0E8 uses them
+ * gs_model_anim split (config/GC6E01/symbols.txt). GSmodelWalkJObjs uses them
  * as a shared counter/scratch during a JObj traversal driven by fn_800EE20C. */
 extern s32 sModelJObjCount;
 extern s32 sModelJObjLastIndex;

@@ -199,7 +199,7 @@ extern void GSmaterialResetTexture(void* material);
 extern void GSmaterialResetPEdescr(void* material);
 extern void GSmaterialResetAlpha(void* material);
 extern void GSmaterialResetFlags(void* material);
-extern void fn_800DF608(void* material);
+extern void GSmaterialRemoveExtraTObj(void* material);
 extern void fn_800E24B0(u32 handle);
 extern void fn_800E209C(u32 handle);
 extern void modelShadowFreeModelList__FP8_GSmodel(GSmodel* model);
@@ -967,7 +967,7 @@ void GSmodelResetTextureChange(GSmodel* model)
 
                 material = materialEntry->materials[0];
                 if (material != NULL) {
-                    fn_800DF608(material);
+                    GSmaterialRemoveExtraTObj(material);
                 }
 
                 i++;
@@ -1012,7 +1012,7 @@ void fn_800E5790(GSmodel* model)
 
                 material = materialEntry->materials[0];
                 if (material != NULL) {
-                    fn_800DF608(material);
+                    GSmaterialRemoveExtraTObj(material);
                 }
 
                 i++;
@@ -1062,7 +1062,7 @@ void GSmodelDisableModulation(GSmodel* model)
 
                 material = cleanupEntry->materials[0];
                 if (material != NULL) {
-                    fn_800DF608(material);
+                    GSmaterialRemoveExtraTObj(material);
                 }
 
                 i++;
@@ -1127,7 +1127,7 @@ void GSmodelDisableColorSwap(GSmodel* model)
 
                 material = cleanupEntry->materials[0];
                 if (material != NULL) {
-                    fn_800DF608(material);
+                    GSmaterialRemoveExtraTObj(material);
                 }
 
                 i++;
@@ -1192,7 +1192,7 @@ void GSmodelDisableEnvMap(GSmodel* model)
 
                 material = cleanupEntry->materials[0];
                 if (material != NULL) {
-                    fn_800DF608(material);
+                    GSmaterialRemoveExtraTObj(material);
                 }
 
                 i++;
@@ -1267,7 +1267,7 @@ void GSmodelResetPEdescr(GSmodel* model)
 
                 material = materialEntry->materials[0];
                 if (material != NULL) {
-                    fn_800DF608(material);
+                    GSmaterialRemoveExtraTObj(material);
                 }
 
                 i++;
@@ -1327,7 +1327,7 @@ void GSmodelResetMaterialAlpha(GSmodel* model)
 
                 material = materialEntry->materials[0];
                 if (material != NULL) {
-                    fn_800DF608(material);
+                    GSmaterialRemoveExtraTObj(material);
                 }
 
                 i++;
@@ -1414,7 +1414,7 @@ void GSmodelResetRenderFlags(GSmodel* model)
 
                 material = materialEntry->materials[0];
                 if (material != NULL) {
-                    fn_800DF608(material);
+                    GSmaterialRemoveExtraTObj(material);
                 }
 
                 i++;
@@ -1719,7 +1719,7 @@ void fn_800E85E8(GSmodel* model)
 
         material = materialEntry->materials[0];
         if (material != NULL) {
-            fn_800DF608(material);
+            GSmaterialRemoveExtraTObj(material);
         }
 
         i++;

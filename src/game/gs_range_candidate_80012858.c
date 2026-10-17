@@ -96,7 +96,7 @@ s32 fn_80012B94(u8* ctx)
     extern s32 GSmsgGetRect(s32);
     extern void windowDrawPanel(s32, s32, s32, s32);
     extern void fn_8001E644(s32, s32, s32, s32, u8);
-    extern void fn_800FB680(s32, s32, s32, s32);
+    extern void GSmsgPrintColor(s32, s32, s32, s32);
     extern void windowDrawSprite(s32, s16, u8*, s32, s32);
     u8* iter;
     u8* cursor;
@@ -147,7 +147,7 @@ s32 fn_80012B94(u8* ctx)
         if (*(u32*)cursor != 0) {
             range = GSmsgGetRect(*(s32*)cursor);
             delay = (range & 0xFFFF) + 2;
-            fn_800FB680(0x20, position, -1, *(s32*)cursor);
+            GSmsgPrintColor(0x20, position, -1, *(s32*)cursor);
         } else {
             delay = 0x14;
         }

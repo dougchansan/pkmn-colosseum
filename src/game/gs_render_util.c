@@ -96,9 +96,9 @@ extern double lbl_8047C9A0; /* double 1.0 constant, SDA2 */
 extern double lbl_8047C9A8; /* SDA2 double: 4503599627370496.0 (int-to-float bias, 0x4330000000000000) */
 extern u8 lbl_804001B0[0x40]; /* light state buffer (.bss) */
 extern s32  fn_800D37CC(void);
-extern void fn_800D7FE4(void* obj);
-extern void fn_800D834C(void);
-extern void fn_800D9BD0(f32 a, f32 b, f32 c, f32 d);
+extern void gfxMultMatrix(void* obj);
+extern void gfxLoadIdentity(void);
+extern void gfxSetPerspective(f32 a, f32 b, f32 c, f32 d);
 extern void gfxSetOrtho(f32 a, f32 b, f32 c, f32 d);
 extern void* HSD_CObjLoadDesc(void* modelSub);
 extern char lbl_8047C9C4[] __attribute__((section(".sdata2")));
@@ -128,7 +128,7 @@ extern void fn_8016EA88(void);
 extern void fn_8016EB30(void);
 
 /* Forward declarations for functions defined later in this file */
-void fn_800D2B44(void* obj);
+void _GScameraAnimCallback(void* obj);
 
 #if defined(GS_RENDER_UTIL_LEGACY_PREFIX_800D104C)
 
@@ -255,11 +255,11 @@ void fn_800D13C4(void) {
 }
 
 /* ==================================================================
- * fn_800D13C8 - GS render: copy saved state into render object
+ * GScameraRestoreState - GS render: copy saved state into render object
  * Address: 0x800D13C8, Size: 0x2AC
  * Copies state from src (saved snapshot) into dst (render object).
  * ================================================================== */
-void fn_800D13C8(void* dst, void* src) {
+void GScameraRestoreState(void* dst, void* src) {
     GSRenderCamera* c = (GSRenderCamera*)dst;
     GSRenderCameraSnapshot* s = (GSRenderCameraSnapshot*)src;
     f32 fov;
@@ -286,7 +286,7 @@ void fn_800D13C8(void* dst, void* src) {
                 HSD_CObjAddAnim(c->cobj, c->desc->animations[c->animIndex]);
                 HSD_CObjReqAnim(c->cobj, lbl_8047C998);
                 lbl_8047AA78 = lbl_8047C998;
-                HSD_ForeachAnim(c->cobj, (u32)2, (u32)0xffff, fn_800D2B44, (u32)0);
+                HSD_ForeachAnim(c->cobj, (u32)2, (u32)0xffff, _GScameraAnimCallback, (u32)0);
                 c->animEndFrame = lbl_8047AA78;
             }
         }
@@ -329,10 +329,10 @@ done:
 }
 
 /* ==================================================================
- * fn_800D1674 - GS render: copy object data to dest struct
+ * GScameraSaveState - GS render: copy object data to dest struct
  * Address: 0x800D1674, Size: 0xB8
  * ================================================================== */
-void fn_800D1674(void* src, void* dst) {
+void GScameraSaveState(void* src, void* dst) {
     GSRenderCamera* c = (GSRenderCamera*)src;
     GSRenderCameraSnapshot* s = (GSRenderCameraSnapshot*)dst;
     s->isAnimating = c->isAnimating;
@@ -448,7 +448,7 @@ void GScameraSetAnimIndex(GSRenderCamera* camera, u32 animIndex) {
             HSD_CObjAddAnim(camera->cobj, camera->desc->animations[camera->animIndex]);
             HSD_CObjReqAnim(camera->cobj, lbl_8047C998);
             lbl_8047AA78 = lbl_8047C998;
-            HSD_ForeachAnim(camera->cobj, (u32)2, (u32)0xffff, fn_800D2B44, (u32)0);
+            HSD_ForeachAnim(camera->cobj, (u32)2, (u32)0xffff, _GScameraAnimCallback, (u32)0);
             camera->animEndFrame = lbl_8047AA78;
         }
     }
@@ -682,10 +682,10 @@ void GScameraSetPerspective(GSRenderCamera* camera, f32 x, f32 y, f32 z, f32 w) 
 }
 
 /* ==================================================================
- * fn_800D2150 - GS render: set scissor rect (clamped)
+ * GScameraSetScissor - GS render: set scissor rect (clamped)
  * Address: 0x800D2150, Size: 0x78
  * ================================================================== */
-void fn_800D2150(GSRenderCamera* camera, u16 x0, u16 y0, u16 x1, u16 y1) {
+void GScameraSetScissor(GSRenderCamera* camera, u16 x0, u16 y0, u16 x1, u16 y1) {
     if (x0 > 0x27e) x0 = 0x27e;
     if (y0 > 0x1de) y0 = 0x1de;
     if (x1 > 0x27f) x1 = 0x27f;
@@ -732,10 +732,10 @@ void _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID(void) {
         HSD_CObjGetPerspective(c->cobj, &x, &z);
         w = HSD_CObjGetNear(c->cobj);
         h = HSD_CObjGetFar(c->cobj);
-        fn_800D9BD0(x, z, w, h);
+        gfxSetPerspective(x, z, w, h);
         fn_800E0628(c->viewMtx, HSD_CObjGetViewingMtxPtr(c->cobj));
-        fn_800D834C();
-        fn_800D7FE4(c->viewMtx);
+        gfxLoadIdentity();
+        gfxMultMatrix(c->viewMtx);
         HSD_CObjGetEyePosition(c->cobj, &c->eye);
         HSD_CObjGetUpVector(c->cobj, &c->upVector);
         HSD_CObjGetInterest(c->cobj, &c->interest);
@@ -793,9 +793,9 @@ void _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID(void) {
         HSD_CObjGetPerspective(c->cobj, &x, &z);
         w = HSD_CObjGetNear(c->cobj);
         h = HSD_CObjGetFar(c->cobj);
-        fn_800D9BD0(x, z, w, h);
-        fn_800D834C();
-        fn_800D7FE4(c->viewMtx);
+        gfxSetPerspective(x, z, w, h);
+        gfxLoadIdentity();
+        gfxMultMatrix(c->viewMtx);
     }
     return;
 
@@ -804,7 +804,7 @@ lab_ortho:
         f32 a, b, c2, d;
         HSD_CObjGetOrtho(jobj, &b, &d, &a, &c2);
         gfxSetOrtho(b, d, a, c2);
-        fn_800D834C();
+        gfxLoadIdentity();
     }
 }
 
@@ -865,10 +865,10 @@ void fn_800D258C(void* obj) {
 }
 
 /* ==================================================================
- * fn_800D2738 - GS render: effect render cleanup
+ * GScameraFree - GS render: effect render cleanup
  * Address: 0x800D2738, Size: 0xC4
  * ================================================================== */
-void fn_800D2738(void* obj) {
+void GScameraFree(void* obj) {
     GSRenderCamera* c = (GSRenderCamera*)obj;
     void* jobj;
     if (obj == (void*)lbl_8047AA74) {
@@ -882,7 +882,7 @@ void fn_800D2738(void* obj) {
 }
 
 /* ==================================================================
- * fn_800D27FC - GS render: find free slot and init with model data
+ * GScameraCreateFromDesc - GS render: find free slot and init with model data
  * Address: 0x800D27FC, Size: 0x1A4
  * ================================================================== */
 static inline void GScameraIncrementAnimCount(GSRenderCamera* camera)
@@ -890,7 +890,7 @@ static inline void GScameraIncrementAnimCount(GSRenderCamera* camera)
     camera->animCount++;
 }
 
-void* fn_800D27FC(void* model) {
+void* GScameraCreateFromDesc(void* model) {
     u32 i;
     void* slot;
     GSRenderCamera* c;
@@ -930,7 +930,7 @@ found:
                 lbl_8047AA78 = lbl_8047C998;
                 {
                     lis_r3_fn_800D2B44:
-                    HSD_ForeachAnim(c->cobj, (u32)2, (u32)0xffff, fn_800D2B44, (u32)0);
+                    HSD_ForeachAnim(c->cobj, (u32)2, (u32)0xffff, _GScameraAnimCallback, (u32)0);
                 }
                 c->animEndFrame = lbl_8047AA78;
             }
@@ -946,10 +946,10 @@ found:
 }
 
 /* ==================================================================
- * fn_800D29A0 - GS render: find free slot and init with defaults
+ * GScameraCreate - GS render: find free slot and init with defaults
  * Address: 0x800D29A0, Size: 0x134
  * ================================================================== */
-void* fn_800D29A0(void) {
+void* GScameraCreate(void) {
     u32 count = lbl_8047AA70;
     void* slot = (void*)lbl_8047AA6C;
     GSRenderCamera* c;
@@ -1062,12 +1062,12 @@ void fn_800D2AD4(u32 count) {
 }
 
 /* ==================================================================
- * fn_800D2B44 - GS render: animation step callback
+ * _GScameraAnimCallback - GS render: animation step callback
  * Address: 0x800D2B44, Size: 0x4C
  * Called by HSD_ForeachAnim as a callback with the JObj*.
  * Accumulates animation step into lbl_8047AA78.
  * ================================================================== */
-void fn_800D2B44(void* obj) {
+void _GScameraAnimCallback(void* obj) {
     if (!obj) {
         __assert(lbl_8047C9DC, 0xab, lbl_8047C9E4);
     }

@@ -118,7 +118,7 @@ void menuTaisenDrawPokemonStatus(u8* ctx, UICmdMsg* msg)
             t = GSmsgGetGSchar(1);
         }
         msgctrlSetValue(0x37, t);
-        fn_800FB680(0, 0, (ctx[0x8b] | mask), 0xe7);
+        GSmsgPrintColor(0, 0, (ctx[0x8b] | mask), 0xe7);
         switch ((u8) menuSubGetPokemonSexForDisp(q)) {
         case 0:
             snd = 0xd67;
@@ -133,7 +133,7 @@ void menuTaisenDrawPokemonStatus(u8* ctx, UICmdMsg* msg)
         }
         if (snd != 0) {
             msgctrlSetValue(0x37, GSmsgGetGSchar(snd));
-            fn_800FB680(0x5a, 0, (ctx[0x8b] | mask), 0xcf);
+            GSmsgPrintColor(0x5a, 0, (ctx[0x8b] | mask), 0xcf);
         }
         break;
     }
@@ -142,7 +142,7 @@ void menuTaisenDrawPokemonStatus(u8* ctx, UICmdMsg* msg)
         h = toolentryTaisenGetPokemonPtr(0, ((u32*) lbl_803A9F08)[3]);
         if ((u32) h != 0) {
             msgctrlSetValue(0x34, (u8) pokemonGetStatus(h, 0, 0x7a, 0));
-            fn_800FB680(0, 0, (ctx[0x8b] | mask), 0xd3);
+            GSmsgPrintColor(0, 0, (ctx[0x8b] | mask), 0xd3);
         }
         break;
     }
@@ -152,7 +152,7 @@ void menuTaisenDrawPokemonStatus(u8* ctx, UICmdMsg* msg)
         toolentryTaisenGetPokemonPtr(0, ((u32*) lbl_803A9F08)[3]);
         v = pokemonBiosGetHp();
         msgctrlSetValue(0x34, (u16) v);
-        fn_800FB680(0, 0, (ctx[0x8b] | mask), 0xd3);
+        GSmsgPrintColor(0, 0, (ctx[0x8b] | mask), 0xd3);
         break;
     }
     case 0xB2C: {
@@ -725,16 +725,16 @@ extern void savedataBattleSetCourseCleared(s32, s32);
 extern u8 savedataBattleIsCourseUnlocked(s32);
 extern void savedataBattleUnlockCourse(s32);
 extern s32 fn_8025DAAC(void);
-extern void fn_800FB680(s32, s32, s32, u32);
+extern void GSmsgPrintColor(s32, s32, s32, u32);
 extern void fn_80063AD4(u8*, UICmdMsg*);
 extern void gfxSetFlags(s32);
 extern void gfxClearFlags(s32);
-extern void fn_800D5648(f32);
+extern void gfxSetLineWidth(f32);
 extern void gfxSetPrimitive(s32);
 extern void gfxSetVtxDesc(void*);
 extern void gfxBegin(s32);
-extern void fn_800D61E4(s32, s32);
-extern void fn_800D5BA0(s32, u32);
+extern void gfxVtxPos2s16(s32, s32);
+extern void gfxVtxColor1u32(s32, u32);
 extern void gfxEnd(void);
 extern void fn_800FE38C(s32, s32, s32, s32);
 extern void fn_800FE35C(void);
@@ -758,8 +758,8 @@ extern void _threadSwitch(void);
 extern s32 windowGetActiveID(void);
 extern s32 menuOpenCustom(s32 menuId, s32 owner, s32 arg2, s32 arg3, s32 arg4, s32 arg5, ...);
 extern void menuCloseCustom(s32, s32, s32);
-extern u8 fn_800F7EF8(s32);
-extern s32 fn_800F7C28(s32);
+extern u8 GSinputIsConnected(s32);
+extern s32 GSinputGetSubType(s32);
 extern void toolentryCopyHero(void);
 extern s32 fn_8025D9A8(void);
 extern u16 std103_battleGetResult(void);
@@ -876,8 +876,8 @@ static inline u8 fn_80062AB4_AllReleased(void)
 
 static inline u8 fn_80062AB4_Decided(void)
 {
-    if (fn_800F7EF8(1)) {
-        if (fn_800F7C28(1) == 0) {
+    if (GSinputIsConnected(1)) {
+        if (GSinputGetSubType(1) == 0) {
             return 1;
         } else {
             return 0;
@@ -1447,31 +1447,31 @@ void fn_800638F4(u8* context, UICmdMsg* msg)
         fn_80063AD4(context, msg);
         return;
     case 0xE14:
-        fn_800FB680(0, 0, context[0x8B] | ~0xFF, 0x3C21U);
+        GSmsgPrintColor(0, 0, context[0x8B] | ~0xFF, 0x3C21U);
         return;
     case 0xE15:
-        fn_800FB680(0, 0, context[0x8B] | ~0xFF, 0x3DB2U);
+        GSmsgPrintColor(0, 0, context[0x8B] | ~0xFF, 0x3DB2U);
         return;
     case 0xE16:
-        fn_800FB680(0, 0, context[0x8B] | ~0xFF, 0x3DB3U);
+        GSmsgPrintColor(0, 0, context[0x8B] | ~0xFF, 0x3DB3U);
         return;
     case 0xE24:
-        fn_800FB680(0, 0, context[0x8B] | ~0xFF, 0x3C21U);
+        GSmsgPrintColor(0, 0, context[0x8B] | ~0xFF, 0x3C21U);
         return;
     case 0xE25:
-        fn_800FB680(0, 0, context[0x8B] | ~0xFF, 0x3DAEU);
+        GSmsgPrintColor(0, 0, context[0x8B] | ~0xFF, 0x3DAEU);
         return;
     case 0xE26:
-        fn_800FB680(0, 0, context[0x8B] | ~0xFF, 0x3DB2U);
+        GSmsgPrintColor(0, 0, context[0x8B] | ~0xFF, 0x3DB2U);
         return;
     case 0xE27:
-        fn_800FB680(0, 0, context[0x8B] | ~0xFF, 0x3DB3U);
+        GSmsgPrintColor(0, 0, context[0x8B] | ~0xFF, 0x3DB3U);
         return;
     case 0x126F:
-        fn_800FB680(0, 0, context[0x8B] | ~0xFF, 0x3C21U);
+        GSmsgPrintColor(0, 0, context[0x8B] | ~0xFF, 0x3C21U);
         return;
     case 0x1270:
-        fn_800FB680(0, 0, context[0x8B] | ~0xFF, 0x3DB3U);
+        GSmsgPrintColor(0, 0, context[0x8B] | ~0xFF, 0x3DB3U);
         return;
     case 0x1123:
         fn_80063AD4(context, msg);
@@ -1511,20 +1511,20 @@ void fn_80063AD4(u8* context, UICmdMsg* msg)
     gfxSetPrimitive(6);
     gfxSetVtxDesc(lbl_80314E08);
     gfxBegin(4);
-    fn_800D61E4(0, 0);
-    fn_800D5BA0(0, top.value);
-    fn_800D61E4(msg->s54, 0);
-    fn_800D5BA0(0, top.value);
-    fn_800D61E4(msg->s54, msg->s56);
-    fn_800D5BA0(0, bottom.value);
-    fn_800D61E4(0, msg->s56);
-    fn_800D5BA0(0, bottom.value);
+    gfxVtxPos2s16(0, 0);
+    gfxVtxColor1u32(0, top.value);
+    gfxVtxPos2s16(msg->s54, 0);
+    gfxVtxColor1u32(0, top.value);
+    gfxVtxPos2s16(msg->s54, msg->s56);
+    gfxVtxColor1u32(0, bottom.value);
+    gfxVtxPos2s16(0, msg->s56);
+    gfxVtxColor1u32(0, bottom.value);
     gfxEnd();
     fn_800FE38C(0, 0, msg->s54, msg->s56);
 
     gfxSetFlags(1);
     gfxClearFlags(6);
-    fn_800D5648(1.0f);
+    gfxSetLineWidth(1.0f);
     gfxSetPrimitive(1);
     gfxSetVtxDesc(lbl_80314E08);
     top.channel.red = 0xFF;
@@ -1533,10 +1533,10 @@ void fn_80063AD4(u8* context, UICmdMsg* msg)
     top.channel.alpha = 56.0f * opacity;
     for (y = 0; (s16)y < msg->s56; y += 4) {
         gfxBegin(2);
-        fn_800D61E4(0, y);
-        fn_800D5BA0(0, top.value);
-        fn_800D61E4(msg->s54, y);
-        fn_800D5BA0(0, top.value);
+        gfxVtxPos2s16(0, y);
+        gfxVtxColor1u32(0, top.value);
+        gfxVtxPos2s16(msg->s54, y);
+        gfxVtxColor1u32(0, top.value);
         gfxEnd();
     }
     fn_800FE35C();
@@ -1681,7 +1681,7 @@ extern f32 lbl_8047BFEC;
 extern MenuCBAfe4* savedataBattleGetEntryById(s32);
 extern s32 fn_8006B1D4(void);
 extern u8 fn_8008ABA0(s32);
-extern u32 fn_800F7AF0(void);
+extern u32 GSinputButtonsChanged(void);
 extern u32 fn_800F7BC4(s32);
 extern void soundStartRaw(u32, u32, u32);
 extern s32 fn_8025D9CC(void);
@@ -1732,7 +1732,7 @@ static inline void menuCBEntryPadInput(int player)
     u16 maxPokemon;
 
     controller = toolentryTaisenGetControlerType(player);
-    buttons = fn_800F7BC4(controller) & fn_800F7AF0();
+    buttons = fn_800F7BC4(controller) & GSinputButtonsChanged();
 
     toolentryTaisenGetBattlePlayerID(player);
     if ((buttons & 0x40) != 0) {
@@ -2019,8 +2019,8 @@ typedef struct PokemonEntryInputRepeat {
 
 void fn_80068418(PokemonEntryInputRepeat* input, int device)
 {
-    extern s8 fn_800F7A08(s32, s32);
-    extern s8 fn_800F7A7C(s32, s32);
+    extern s8 GSinputGetLeftStickYData(s32, s32);
+    extern s8 GSinputGetLeftStickXData(s32, s32);
     extern u32 fn_800F7BC4(s32);
     s32 bit;
     f32 angle;
@@ -2033,8 +2033,8 @@ void fn_80068418(PokemonEntryInputRepeat* input, int device)
 
     input->previous = input->current;
     current = 0;
-    horizontal = fn_800F7A08(device, 0);
-    vertical = fn_800F7A7C(device, 0);
+    horizontal = GSinputGetLeftStickYData(device, 0);
+    vertical = GSinputGetLeftStickXData(device, 0);
 
     if ((vertical < 0 ? -vertical : vertical) > 32 ||
         (horizontal < 0 ? -horizontal : horizontal) > 32) {
@@ -2420,11 +2420,11 @@ void fn_80063D10(void)
 void fn_80064378(u8* ctx, UICmdMsg* msg)
 {
     extern void fn_80063AD4(u8*, UICmdMsg*);
-    extern void fn_800FB680(s32, s32, s32, u32);
+    extern void GSmsgPrintColor(s32, s32, s32, u32);
 
     switch (msg->cmd) {
     case 0xA9E:
-        fn_800FB680(0, 0, ctx[0x8B] | -0x100LL, 0x3C1A);
+        GSmsgPrintColor(0, 0, ctx[0x8B] | -0x100LL, 0x3C1A);
         break;
     case 0xA88:
         fn_80063AD4(ctx, msg);
@@ -2463,7 +2463,7 @@ extern void* toolentryTaisenGetPokemonPtr(s32, u16);
 extern void* heroBiosGetNamePtr(void*);
 extern void* GSmsgGetGSchar(u32);
 extern void msgctrlSetValue();
-extern void fn_800FB680(s32, s32, u32, u32);
+extern void GSmsgPrintColor(s32, s32, u32, u32);
 extern u16 pokemonGetSoubiItemDataId(void*);
 extern u8 pokemonCheckValid(void*);
 extern u32 pokemonGetStatus(void*, s32, s32, s32);
@@ -2561,11 +2561,11 @@ void fn_800688C4(u8* context, UICmdMsg* msg, s32 player, s32 kind)
         msgctrlSetValue(0x34, toolentryTaisenGetBattlePlayerID(player) + 1);
         msgctrlSetValue(0x37, name);
         if (fn_8025D9CC() == 4) {
-            fn_800FB680(0, 0, 0xFFFFFF00 | context[0x8B], 0x30DC);
+            GSmsgPrintColor(0, 0, 0xFFFFFF00 | context[0x8B], 0x30DC);
         } else if (kind == 2) {
-            fn_800FB680(0, 0, 0xFFFFFF00 | context[0x8B], 0x30E6);
+            GSmsgPrintColor(0, 0, 0xFFFFFF00 | context[0x8B], 0x30E6);
         } else {
-            fn_800FB680(0, 0, 0xFFFFFF00 | context[0x8B], 0x30DC);
+            GSmsgPrintColor(0, 0, 0xFFFFFF00 | context[0x8B], 0x30DC);
         }
     }
 }
@@ -2597,9 +2597,9 @@ void fn_80068BB0(u8* context, UICmdMsg* msg, s32 player, s32 kind)
             } else {
                 msgctrlSetValue(0x34, (u8)pokemonGetStatus(pokemon, 0, 0x7A, 0));
                 if (kind == 0) {
-                    fn_800FB680(0, 0, 0xFFFFFF00 | context[0x8B], 0x30D4);
+                    GSmsgPrintColor(0, 0, 0xFFFFFF00 | context[0x8B], 0x30D4);
                 } else {
-                    fn_800FB680(0, 0, 0xFFFFFF00 | context[0x8B], 0xD3);
+                    GSmsgPrintColor(0, 0, 0xFFFFFF00 | context[0x8B], 0xD3);
                 }
             }
         }
@@ -2623,7 +2623,7 @@ void fn_80068DBC(u8* context, UICmdMsg* msg, s32 player)
             nickname = GSmsgGetGSchar(1);
         }
         msgctrlSetValue(0x37, nickname);
-        fn_800FB680(0, 0, 0xFFFFFF00 | context[0x8B], 0xE9);
+        GSmsgPrintColor(0, 0, 0xFFFFFF00 | context[0x8B], 0xE9);
     }
 }
 #pragma pop

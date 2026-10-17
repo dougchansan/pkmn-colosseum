@@ -58,15 +58,15 @@ extern void gfxClearFlags(u32 value);
 extern void gfxSetOrtho(f32 red, f32 green, f32 blue, f32 alpha);
 extern void gfxSetBlendMode(u32, u32, u32);
 extern void gfxSetUpdates(u32, u32, u32);
-extern void fn_800DA100(u32, u32, u32, u32, u32, u32);
+extern void gfxSetAlphaCompare(u32, u32, u32, u32, u32, u32);
 extern void gfxSetZMode(u32, u32, u32);
 extern void fn_800D9ED8(u32);
 extern void gfxSetCullMode(u32);
 extern void gfxSetVtxDesc(u32);
 extern void gfxSetPrimitive(u32);
 extern void gfxBegin(u32);
-extern void fn_800D5FA4(u32);
-extern void fn_800D5A38(u32, u32);
+extern void gfxVtxPos1x8(u32);
+extern void gfxVtxColor1x8(u32, u32);
 extern void gfxEnd(void);
 
 extern GSDVDWork* lbl_8047B0F4;
@@ -217,7 +217,7 @@ void fn_80168284(void)
                         lbl_8047D5A8);
             gfxSetBlendMode(1, 6, 7);
             gfxSetUpdates(1, 1, 0);
-            fn_800DA100(0, 7, 0, 0, 7, 0);
+            gfxSetAlphaCompare(0, 7, 0, 0, 7, 0);
             gfxSetZMode(1, 1, 1);
             fn_800D9ED8(1);
             gfxSetCullMode(0);
@@ -226,14 +226,14 @@ void fn_80168284(void)
             gfxBegin((u16)(lbl_804526E0.drawingCount * 4));
             for (index = 0; (u8)index < capacity; index++, filter++) {
                 if (filter->drawing != 0) {
-                    fn_800D5FA4(0);
-                    fn_800D5A38(0, index);
-                    fn_800D5FA4(1);
-                    fn_800D5A38(0, index);
-                    fn_800D5FA4(2);
-                    fn_800D5A38(0, index);
-                    fn_800D5FA4(3);
-                    fn_800D5A38(0, index);
+                    gfxVtxPos1x8(0);
+                    gfxVtxColor1x8(0, index);
+                    gfxVtxPos1x8(1);
+                    gfxVtxColor1x8(0, index);
+                    gfxVtxPos1x8(2);
+                    gfxVtxColor1x8(0, index);
+                    gfxVtxPos1x8(3);
+                    gfxVtxColor1x8(0, index);
                 }
             }
             gfxEnd();

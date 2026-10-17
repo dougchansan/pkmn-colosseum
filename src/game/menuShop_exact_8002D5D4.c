@@ -34,7 +34,7 @@ extern u32 _toolentryAlloc__FUl(u32 size);
 extern void* fn_800E27B0(u32 handle);
 extern void fn_800E24B0(u32 handle);
 extern void fn_800E209C(u32 handle);
-extern void fn_800FF660(void);
+extern void floorBattleEndTerminateScripts(void);
 extern void floorSetFadeScript(s32 mode, u32 value);
 
 static inline s32 shopQueryMenu(s32 menu)
@@ -164,7 +164,7 @@ void std026_unkMenuSequence26(void)
     }
 
     if ((s32)*(&lbl_8047A3FC + 1) != 0) {
-        fn_800FF660();
+        floorBattleEndTerminateScripts();
         floorSetFadeScript(0, 0);
     }
 }

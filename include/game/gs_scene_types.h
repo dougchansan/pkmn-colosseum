@@ -33,8 +33,8 @@ extern void  GSmtxMakeXRotation(void* out, f32 angle);
 extern void  GSmtxMakeYRotation(void* out, f32 angle);         /* angle to vector */
 extern void  fn_800E0108(void* dst, void* lhs, void* rhs);
 extern void  fn_800E0238(void* dst, void* src);
-extern void  fn_800E02E8(void* matrix, f32 angle);
-extern void  fn_800E032C(void* matrix, f32 angle);
+extern void  GSmtxRotateZ(void* matrix, f32 angle);
+extern void  GSmtxRotateY(void* matrix, f32 angle);
 extern void  GSvecAdd(void* out, void* a, void* b);  /* cross product */
 extern void  GSvecTransform(void* out, void* a, void* b);  /* vector subtract */
 extern void  GScameraSetPosition(void* obj, void* mtx);         /* set model matrix */
@@ -48,12 +48,12 @@ extern void  fn_800E24B0(u16 handle);                  /* GSmemLock */
 extern void  GSvecCopy(void* dst, void* src);
 extern u32  menuIsCheck(u32 a);
 extern void menuOpenCustom(u32 a, u32 b, u32 c, u32 d, u32 e, u32 f, ...);
-extern void fn_800D13C8(void* a, void* b);
+extern void GScameraRestoreState(void* a, void* b);
 extern void fn_800D258C(void* a);
-extern void fn_800D1674(void* a, void* b);
+extern void GScameraSaveState(void* a, void* b);
 extern void _threadSwitch(void);
 extern void* GSresGetResource(u32 a, u32 b);
-extern void* fn_800F92D4(u32 a);
+extern void* GSresFindById(u32 a);
 extern void GScameraStopAnimation(void* a);
 extern void GSmodelGetPosition(void* a, void* b);
 

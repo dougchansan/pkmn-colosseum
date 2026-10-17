@@ -153,7 +153,7 @@ GSpart* GSmodelGetPart(GSmodel* model, s32 index);
 void GSpartGetTransform(GSpart* part, GSvec* position, GSvec* rotation,
                         GSvec* scale);
 void GSpartFree(GSpart* part);
-void fn_800E06EC(GSquat* quaternion, GSvec* rotation);
+void GSquatFromEuler(GSquat* quaternion, GSvec* rotation);
 void GSvecTransformQuat(GSvec* dst, GSquat* quaternion, GSvec* src);
 void GSvecAdd(GSvec* dst, GSvec* lhs, GSvec* rhs);
 void fn_800E0108(GSvec* dst, GSvec* lhs, GSvec* rhs);
@@ -245,7 +245,7 @@ void modelUpdateAttachments__FP8_GSmodel(GSmodel* model)
         GSpartGetTransform(part, &position, &rotation, &scale);
         GSpartFree(part);
 
-        fn_800E06EC(&quaternion, &rotation);
+        GSquatFromEuler(&quaternion, &rotation);
         GSvecTransformQuat(&transformed_position, &quaternion,
                            &model->attachment_position);
         GSvecAdd(&position, &position, &transformed_position);
@@ -564,7 +564,7 @@ void _modelGetEndFrame(HSD_AObj* aobj, f32* end_frame)
         *end_frame = aobj->end_frame;
     }
 }
-s32 fn_800EE0E8(GSmodel* model)
+s32 GSmodelWalkJObjs(GSmodel* model)
 {
     lbl_8047ABB0 = 0;
     lbl_8047ABAC = -1;

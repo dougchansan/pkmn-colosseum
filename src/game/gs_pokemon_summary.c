@@ -87,7 +87,7 @@ extern u16   itemDataBiosGetPrice(void);               /* Get display field coun
 /* Text rendering */
 extern void  msgctrlSetValue(s32 paramId, s32 value);
 extern u32   GSmsgGetRect(s32 resourceId);
-extern void  fn_800FB680(s32 x, s32 y, s32 flags, u32 color);
+extern void  GSmsgPrintColor(s32 x, s32 y, s32 flags, u32 color);
 
 /* Math/rendering helpers */
 extern f64   sin(f64);
@@ -130,7 +130,7 @@ asm void fn_8001501C(void) {
 }
 #else
 s32 fn_8001501C(void) {
-    fn_800FB680(0, 0, -1, lbl_8047A2DC);
+    GSmsgPrintColor(0, 0, -1, lbl_8047A2DC);
     return 0;
 }
 #endif
@@ -460,15 +460,15 @@ s32 fn_800150E4(s32 x, s32 pageIndex, u16* packedRange) {
                 textX += (u16)(GSmsgGetRect(0xCA) >> 16);
             }
             msgctrlSetValue(0x34, itemIndex + 1);
-            fn_800FB680(textX, y, -1, 0xCA);
+            GSmsgPrintColor(textX, y, -1, 0xCA);
             textX += (u16)(GSmsgGetRect(0xCA) >> 16);
             itemDataBiosGetPtr((u16)SummaryPageItemId(pageIndex, itemIndex));
-            fn_800FB680(textX + 10, y, -1, itemDataBiosGetName());
+            GSmsgPrintColor(textX + 10, y, -1, itemDataBiosGetName());
         }
     }
 
     if (visibleIndex < 8) {
-        fn_800FB680(x, visibleIndex * 0x1F - scroll, -1, 0x2AFE);
+        GSmsgPrintColor(x, visibleIndex * 0x1F - scroll, -1, 0x2AFE);
     }
     return 0;
 }
@@ -519,13 +519,13 @@ s32 menuPocketDrawNameList(s32 x, s32 pageIndex, u16* packedRange) {
             itemDataBiosGetPtr((u16)SummaryPageItemId(pageIndex, itemIndex));
             name = itemDataBiosGetName();
             if (name != 0) {
-                fn_800FB680(x, y, -1, name);
+                GSmsgPrintColor(x, y, -1, name);
             }
         }
     }
 
     if (visibleIndex < lineLimit) {
-        fn_800FB680(x, visibleIndex * 0x1F - scroll, -1, 0x2AFE);
+        GSmsgPrintColor(x, visibleIndex * 0x1F - scroll, -1, 0x2AFE);
     }
     return 0;
 }
@@ -576,34 +576,34 @@ s32 fn_800155B0(s32 x, s32 pageIndex, u16* packedRange) {
          displayLine++, visibleIndex++, itemIndex++) {
         if (itemIndex >= 0) {
             y = displayLine * 0x1F - scroll;
-            fn_800FB680(x, y, -1, 0x2AFF);
+            GSmsgPrintColor(x, y, -1, 0x2AFF);
             textX = x + (u16)(GSmsgGetRect(0x2AFF) >> 16);
 
             itemId = SummaryPageItemId(pageIndex, itemIndex);
             berryNo = itemDataBiosGetKinomiNo(itemId) + 1;
             if (berryNo < 10) {
                 msgctrlSetValue(0x34, 0);
-                fn_800FB680(textX, y, -1, 0xCA);
+                GSmsgPrintColor(textX, y, -1, 0xCA);
                 textX += (u16)(GSmsgGetRect(0xCA) >> 16);
             }
             msgctrlSetValue(0x34, berryNo);
-            fn_800FB680(textX, y, -1, 0xCA);
+            GSmsgPrintColor(textX, y, -1, 0xCA);
             textX += (u16)(GSmsgGetRect(0xCA) >> 16);
             itemDataBiosGetPtr((u16)itemId);
-            fn_800FB680(textX + 9, y, -1, itemDataBiosGetName());
+            GSmsgPrintColor(textX + 9, y, -1, itemDataBiosGetName());
 
             msgctrlSetValue(0x34, SummaryPagePocketTotal(pageIndex));
             width = (s16)(GSmsgGetRect(0xCA) >> 16);
             width += (s16)(GSmsgGetRect(0x12E) >> 16);
-            fn_800FB680(x + 0x11A - width, y, -1, 0x12E);
+            GSmsgPrintColor(x + 0x11A - width, y, -1, 0x12E);
 
             msgctrlSetValue(0x34, SummaryPageItemNum(pageIndex, itemIndex));
-            fn_800FB680(x + 0x11A - (s16)(GSmsgGetRect(0xCA) >> 16), y, -1, 0xCA);
+            GSmsgPrintColor(x + 0x11A - (s16)(GSmsgGetRect(0xCA) >> 16), y, -1, 0xCA);
         }
     }
 
     if (visibleIndex < 8) {
-        fn_800FB680(x, visibleIndex * 0x1F - scroll, -1, 0x2AFE);
+        GSmsgPrintColor(x, visibleIndex * 0x1F - scroll, -1, 0x2AFE);
     }
     return 0;
 }
@@ -668,37 +668,37 @@ s32 bagDrawTMList(s32 x, s32 pageIndex, u16* packedRange) {
             } else {
                 labelId = 0x2AFF;
             }
-            fn_800FB680(x, y, -1, labelId);
+            GSmsgPrintColor(x, y, -1, labelId);
             textX = x + (u16)(GSmsgGetRect(labelId) >> 16);
             if ((u8)hidenNo != 0xFF) {
                 msgctrlSetValue(0x34, hmNo);
-                fn_800FB680(textX, y, -1, 0xCA);
+                GSmsgPrintColor(textX, y, -1, 0xCA);
                 textX += (u16)(GSmsgGetRect(0xCA) >> 16);
             } else {
                 if (tmNo < 10) {
                     msgctrlSetValue(0x34, 0);
-                    fn_800FB680(textX, y, -1, 0xCA);
+                    GSmsgPrintColor(textX, y, -1, 0xCA);
                     textX += (u16)(GSmsgGetRect(0xCA) >> 16);
                 }
                 msgctrlSetValue(0x34, tmNo);
-                fn_800FB680(textX, y, -1, 0xCA);
+                GSmsgPrintColor(textX, y, -1, 0xCA);
                 textX += (u16)(GSmsgGetRect(0xCA) >> 16);
             }
-            fn_800FB680(textX + 9, y, -1,
+            GSmsgPrintColor(textX + 9, y, -1,
                         wazaDataBiosGetName(wazaDataBiosGetPtr(itemDataBiosGetWazaIDByWazaMachineNo(machineNo))));
 
             msgctrlSetValue(0x34, SummaryPagePocketTotal(pageIndex));
             width = (s16)(GSmsgGetRect(0xCA) >> 16);
             width += (s16)(GSmsgGetRect(0x12E) >> 16);
-            fn_800FB680(x + 0x11A - width, y, -1, 0x12E);
+            GSmsgPrintColor(x + 0x11A - width, y, -1, 0x12E);
 
             msgctrlSetValue(0x34, SummaryPageItemNum(pageIndex, itemIndex));
-            fn_800FB680(x + 0x11A - (s16)(GSmsgGetRect(0xCA) >> 16), y, -1, 0xCA);
+            GSmsgPrintColor(x + 0x11A - (s16)(GSmsgGetRect(0xCA) >> 16), y, -1, 0xCA);
         }
     }
 
     if (visibleIndex < 8) {
-        fn_800FB680(x, visibleIndex * 0x1F - scroll, -1, 0x2AFE);
+        GSmsgPrintColor(x, visibleIndex * 0x1F - scroll, -1, 0x2AFE);
     }
     return 0;
 }
@@ -750,21 +750,21 @@ s32 menuPocketDrawItemList(s32 x, s32 pageIndex, u16* packedRange) {
             itemDataBiosGetPtr((u16)SummaryPageItemId(pageIndex, itemIndex));
             name = itemDataBiosGetName();
             if (name != 0) {
-                fn_800FB680(x, y, -1, name);
+                GSmsgPrintColor(x, y, -1, name);
             }
 
             msgctrlSetValue(0x34, SummaryPagePocketTotal(pageIndex));
             width = (s16)(GSmsgGetRect(0xCA) >> 16);
             width += (s16)(GSmsgGetRect(0x12E) >> 16);
-            fn_800FB680(x + 0x11A - width, y, -1, 0x12E);
+            GSmsgPrintColor(x + 0x11A - width, y, -1, 0x12E);
 
             msgctrlSetValue(0x34, SummaryPageItemNum(pageIndex, itemIndex));
-            fn_800FB680(x + 0x11A - (s16)(GSmsgGetRect(0xCA) >> 16), y, -1, 0xCA);
+            GSmsgPrintColor(x + 0x11A - (s16)(GSmsgGetRect(0xCA) >> 16), y, -1, 0xCA);
         }
     }
 
     if (visibleIndex < lineLimit) {
-        fn_800FB680(x, visibleIndex * 0x1F - scroll, -1, 0x2AFE);
+        GSmsgPrintColor(x, visibleIndex * 0x1F - scroll, -1, 0x2AFE);
     }
     return 0;
 }
@@ -875,7 +875,7 @@ s32 fn_80016348(SummaryPageContext* ctx, u8* item) {
     halfWidth = *(s16*)(item + 0x54) / 2;
     titleId = SummaryGetPage(ctx->pageIndex)->titleId;
     halfText = (s16)(GSmsgGetRect(titleId) >> 16) / 2;
-    fn_800FB680((s32)SUMMARY_F32(lbl_8047A2D4) + (halfWidth - halfText), 0, -1, titleId);
+    GSmsgPrintColor((s32)SUMMARY_F32(lbl_8047A2D4) + (halfWidth - halfText), 0, -1, titleId);
 
     if (lbl_8047B748 != SUMMARY_F32(lbl_8047A2D4)) {
         if (SUMMARY_F32(lbl_8047A2D4) > lbl_8047B748) {
@@ -894,7 +894,7 @@ s32 fn_80016348(SummaryPageContext* ctx, u8* item) {
 
         titleId = SummaryGetPage(neighborIndex)->titleId;
         halfText = (s16)(GSmsgGetRect(titleId) >> 16) / 2;
-        fn_800FB680((s32)neighborX + (halfWidth - halfText), 0, -1, titleId);
+        GSmsgPrintColor((s32)neighborX + (halfWidth - halfText), 0, -1, titleId);
     }
 
     fn_800FE35C();
@@ -1443,7 +1443,7 @@ s32 fn_80017868(u32 unused, u8* ctx) {
     r = heroGetStatus((u32)lbl_8047A2F8, 0xC, 0);
     if ((s32)lbl_8047A2E0 != 3) return 0;
     msgctrlSetValue(0x50, (s32)r);
-    fn_800FB680((s32)*(s16*)(ctx + 0x54) - (s32)(s16)(GSmsgGetRect(0x151) >> 16), 0, -1, 0x151);
+    GSmsgPrintColor((s32)*(s16*)(ctx + 0x54) - (s32)(s16)(GSmsgGetRect(0x151) >> 16), 0, -1, 0x151);
     return 0;
 }
 #endif

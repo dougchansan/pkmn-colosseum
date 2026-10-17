@@ -15,7 +15,7 @@
  * Built with GC/1.3.2, -O4,p and -opt nopeephole. GC/1.3.2 is what keeps
  * fn_8001EC08's pooled .bss offsets out of its store displacements; the rest
  * of the TU is the same under GC/1.3. The GX wrappers are declared once for
- * the whole file. fn_800D61E4 takes s16 coordinates, so menuDrawRectOutline's int
+ * the whole file. gfxVtxPos2s16 takes s16 coordinates, so menuDrawRectOutline's int
  * corners are narrowed at the call.
  */
 #include "dolphin/types.h"
@@ -27,14 +27,14 @@ extern void gfxClearFlags(u32 mode);
 extern void gfxSetPrimitive(s32 primitive);
 extern void gfxSetVtxDesc(void* desc);
 extern void gfxBegin(s32 count);
-extern void fn_800D61E4(s16 x, s16 y);
-extern void fn_800D5CB8(s32 index, u8 r, u8 g, u8 b, u8 a);
+extern void gfxVtxPos2s16(s16 x, s16 y);
+extern void gfxVtxColor4u8(s32 index, u8 r, u8 g, u8 b, u8 a);
 extern void gfxVtxTexCoord(s32 index, f32 s, f32 t);
 extern void gfxEnd(void);
-extern void fn_800D5BA0(s32 index, u32 color);
-extern void fn_800D5648(f32 width);
+extern void gfxVtxColor1u32(s32 index, u32 color);
+extern void gfxSetLineWidth(f32 width);
 extern void gfxLoadTexture(s32 map, void* texture);
-extern void fn_800D848C(s32 id, s32 type, s32 src, void* mtx);
+extern void gfxLoadTexMatrix(s32 id, s32 type, s32 src, void* mtx);
 extern void fn_800DC1D4(s32 count);
 extern void gfxSetTevStage(s32 stage, s32 coord, s32 map, s32 color, s32 a);
 extern void fn_800DC14C(s32 stage, s32 a, s32 b, s32 c, s32 d, s32 e);
@@ -56,7 +56,7 @@ void fn_8001D718(f32 target) {
 }
 
 /* 0x8001D7E4 | 0x50 */
-extern u32 fn_800F7AF0(s32);
+extern u32 GSinputButtonsChanged(s32);
 extern u32 fn_800F7BC4(s32);
 u32 menuSubKeyWait(void) {
     u32 a;
@@ -66,7 +66,7 @@ u32 menuSubKeyWait(void) {
     do {
         _threadSwitch();
     _test:
-        a = fn_800F7AF0(1);
+        a = GSinputButtonsChanged(1);
         b = fn_800F7BC4(1);
         m = (b & a) & 0x300;
     } while (m == 0);
@@ -184,7 +184,7 @@ typedef struct MenuSubSprite {
  * offset by `shift`. */
 s32 fn_8001DACC(void* context, MenuSubSprite* sprite, f32 shift) {
     extern void* lbl_8047AD00;
-    extern void* fn_800F92D4(u32 id);
+    extern void* GSresFindById(u32 id);
     extern u16 GStextureGetXsize(void* texture);
     extern u16 GStextureGetYsize(void* texture);
     extern void GStextureSetWrap(void* texture, s32 s, s32 t);
@@ -196,8 +196,8 @@ s32 fn_8001DACC(void* context, MenuSubSprite* sprite, f32 shift) {
     f32 v0;
     f32 v1;
 
-    texture = fn_800F92D4(sprite->textureId);
-    pattern = fn_800F92D4(0xEF1200);
+    texture = GSresFindById(sprite->textureId);
+    pattern = GSresFindById(0xEF1200);
     if (texture != NULL && pattern != NULL) {
         u0 = (f32)sprite->cropX / (f32)GStextureGetXsize(texture);
         u1 = (f32)(sprite->cropX + sprite->cropWidth) / (f32)GStextureGetXsize(texture);
@@ -207,9 +207,9 @@ s32 fn_8001DACC(void* context, MenuSubSprite* sprite, f32 shift) {
         gfxSetFlags(0x80000003);
         gfxClearFlags(4);
         GStextureSetWrap(pattern, 1, 1);
-        fn_800D848C(0, 0, 4, mtx);
-        fn_800D848C(1, 0, 5, mtx);
-        fn_800D848C(2, 0, 6, mtx);
+        gfxLoadTexMatrix(0, 0, 4, mtx);
+        gfxLoadTexMatrix(1, 0, 5, mtx);
+        gfxLoadTexMatrix(2, 0, 6, mtx);
         fn_800DC1D4(3);
 
         gfxLoadTexture(0, texture);
@@ -236,13 +236,13 @@ s32 fn_8001DACC(void* context, MenuSubSprite* sprite, f32 shift) {
         gfxSetVtxDesc(lbl_8047AD00);
         gfxSetPrimitive(7);
         gfxBegin(2);
-        fn_800D61E4(0, 0);
-        fn_800D5CB8(0, 0xFF, 0x40, 0x40, 0xFF);
+        gfxVtxPos2s16(0, 0);
+        gfxVtxColor4u8(0, 0xFF, 0x40, 0x40, 0xFF);
         gfxVtxTexCoord(0, u0, v0);
         gfxVtxTexCoord(1, shift + u0, shift + v0);
         gfxVtxTexCoord(2, (1.0f - shift) + u0, shift + v0);
-        fn_800D61E4(sprite->width, sprite->height);
-        fn_800D5CB8(0, 0xFF, 0x40, 0x40, 0xFF);
+        gfxVtxPos2s16(sprite->width, sprite->height);
+        gfxVtxColor4u8(0, 0xFF, 0x40, 0x40, 0xFF);
         gfxVtxTexCoord(0, u1, v1);
         gfxVtxTexCoord(1, shift + u1, shift + v1);
         gfxVtxTexCoord(2, (1.0f - shift) + u1, shift + v1);
@@ -422,12 +422,12 @@ void menuDrawRect(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f) {
     gfxSetPrimitive(0x3);
     gfxSetVtxDesc(lbl_80314E08);
     gfxBegin(0x3);
-    fn_800D61E4((s16)a, (s16)b);
-    fn_800D5CB8(0x0, 0xff, 0xff, 0xff, 0xff);
-    fn_800D61E4((s16)c, (s16)d);
-    fn_800D5CB8(0x0, 0xff, 0xff, 0xff, 0xff);
-    fn_800D61E4((s16)e, (s16)f);
-    fn_800D5CB8(0x0, 0xff, 0xff, 0xff, 0xff);
+    gfxVtxPos2s16((s16)a, (s16)b);
+    gfxVtxColor4u8(0x0, 0xff, 0xff, 0xff, 0xff);
+    gfxVtxPos2s16((s16)c, (s16)d);
+    gfxVtxColor4u8(0x0, 0xff, 0xff, 0xff, 0xff);
+    gfxVtxPos2s16((s16)e, (s16)f);
+    gfxVtxColor4u8(0x0, 0xff, 0xff, 0xff, 0xff);
     gfxEnd();
 }
 
@@ -440,10 +440,10 @@ void menuDrawRectOutline(s32 x, s32 y, s32 width, s32 height, u8* color) {
     width += x;
     height += y;
     gfxBegin(2);
-    fn_800D61E4(x, y);
-    fn_800D5CB8(0, color[0], color[1], color[2], color[3]);
-    fn_800D61E4(width, height);
-    fn_800D5CB8(0, color[0], color[1], color[2], color[3]);
+    gfxVtxPos2s16(x, y);
+    gfxVtxColor4u8(0, color[0], color[1], color[2], color[3]);
+    gfxVtxPos2s16(width, height);
+    gfxVtxColor4u8(0, color[0], color[1], color[2], color[3]);
     gfxEnd();
 }
 
@@ -501,28 +501,28 @@ void fn_8001E644(s32 x, s32 y, s32 width, s32 height, u8 alpha) {
     left = x - 10;
     top = y - 10;
     gfxBegin(4);
-    fn_800D61E4(left, top);
-    fn_800D5BA0(0, colors[0]);
+    gfxVtxPos2s16(left, top);
+    gfxVtxColor1u32(0, colors[0]);
     right = left + (s16)(width + 20);
-    fn_800D61E4(right, top);
-    fn_800D5BA0(0, colors[0]);
+    gfxVtxPos2s16(right, top);
+    gfxVtxColor1u32(0, colors[0]);
     boxHeight = height + 20;
     bottom = top + boxHeight;
-    fn_800D61E4(right, bottom);
-    fn_800D5BA0(0, colors[1]);
-    fn_800D61E4(left, bottom);
-    fn_800D5BA0(0, colors[1]);
+    gfxVtxPos2s16(right, bottom);
+    gfxVtxColor1u32(0, colors[1]);
+    gfxVtxPos2s16(left, bottom);
+    gfxVtxColor1u32(0, colors[1]);
     gfxEnd();
 
     gfxSetPrimitive(1);
     gfxSetVtxDesc(lbl_80314E08);
-    fn_800D5648(1.0f);
+    gfxSetLineWidth(1.0f);
     for (i = 0; i < boxHeight; i += 4) {
         gfxBegin(2);
-        fn_800D61E4(left, top + i);
-        fn_800D5BA0(0, colors[2]);
-        fn_800D61E4(right, top + i);
-        fn_800D5BA0(0, colors[2]);
+        gfxVtxPos2s16(left, top + i);
+        gfxVtxColor1u32(0, colors[2]);
+        gfxVtxPos2s16(right, top + i);
+        gfxVtxColor1u32(0, colors[2]);
         gfxEnd();
     }
 
@@ -571,27 +571,27 @@ void windowDrawPanel(s32 x, s32 y, s32 width, s32 height) {
     gfxSetPrimitive(7);
     gfxSetVtxDesc(lbl_80314E08);
     gfxBegin(2);
-    fn_800D61E4(x - 10, y - 10);
-    fn_800D5BA0(0, 0xC0);
+    gfxVtxPos2s16(x - 10, y - 10);
+    gfxVtxColor1u32(0, 0xC0);
     right = x + width + 10;
     bottom = y + height + 10;
-    fn_800D61E4(right, bottom);
-    fn_800D5BA0(0, 0xC0);
+    gfxVtxPos2s16(right, bottom);
+    gfxVtxColor1u32(0, 0xC0);
     gfxEnd();
 
-    fn_800D5648(1.0f);
+    gfxSetLineWidth(1.0f);
     gfxSetPrimitive(2);
     gfxBegin(5);
-    fn_800D61E4(x - 10, y - 10);
-    fn_800D5BA0(0, -1);
-    fn_800D61E4(right, y - 10);
-    fn_800D5BA0(0, -1);
-    fn_800D61E4(right, bottom);
-    fn_800D5BA0(0, -1);
-    fn_800D61E4(x - 10, bottom);
-    fn_800D5BA0(0, -1);
-    fn_800D61E4(x - 10, y - 10);
-    fn_800D5BA0(0, -1);
+    gfxVtxPos2s16(x - 10, y - 10);
+    gfxVtxColor1u32(0, -1);
+    gfxVtxPos2s16(right, y - 10);
+    gfxVtxColor1u32(0, -1);
+    gfxVtxPos2s16(right, bottom);
+    gfxVtxColor1u32(0, -1);
+    gfxVtxPos2s16(x - 10, bottom);
+    gfxVtxColor1u32(0, -1);
+    gfxVtxPos2s16(x - 10, y - 10);
+    gfxVtxColor1u32(0, -1);
     gfxEnd();
 }
 
@@ -660,26 +660,26 @@ void msgWinDrawBackground(s32 x, s32 y, s32 width, s32 height, u8 color, u8 dimC
     gfxSetVtxDesc(lbl_80314E08);
     gfxBegin(0x42);
     for (i = 0; i < 32; i++) {
-        fn_800D61E4(sOuter[i].x, sOuter[i].y);
-        fn_800D5BA0(0, sOuter[i].color);
-        fn_800D61E4(sInner[i].x, sInner[i].y);
-        fn_800D5BA0(0, sInner[i].color);
+        gfxVtxPos2s16(sOuter[i].x, sOuter[i].y);
+        gfxVtxColor1u32(0, sOuter[i].color);
+        gfxVtxPos2s16(sInner[i].x, sInner[i].y);
+        gfxVtxColor1u32(0, sInner[i].color);
     }
-    fn_800D61E4(sOuter[0].x, sOuter[0].y);
-    fn_800D5BA0(0, sOuter[0].color);
-    fn_800D61E4(sInner[0].x, sInner[0].y);
-    fn_800D5BA0(0, sInner[0].color);
+    gfxVtxPos2s16(sOuter[0].x, sOuter[0].y);
+    gfxVtxColor1u32(0, sOuter[0].color);
+    gfxVtxPos2s16(sInner[0].x, sInner[0].y);
+    gfxVtxColor1u32(0, sInner[0].color);
     gfxEnd();
 
     gfxSetPrimitive(5);
     gfxBegin(0x22);
-    fn_800D61E4(sCorners[4].x, sCorners[4].y);
-    fn_800D5BA0(0, sCorners[4].color);
+    gfxVtxPos2s16(sCorners[4].x, sCorners[4].y);
+    gfxVtxColor1u32(0, sCorners[4].color);
     for (i = 0; i < 32; i++) {
-        fn_800D61E4(sInner[i].x, sInner[i].y);
-        fn_800D5BA0(0, sInner[i].color);
+        gfxVtxPos2s16(sInner[i].x, sInner[i].y);
+        gfxVtxColor1u32(0, sInner[i].color);
     }
-    fn_800D61E4(sInner[0].x, sInner[0].y);
-    fn_800D5BA0(0, sInner[0].color);
+    gfxVtxPos2s16(sInner[0].x, sInner[0].y);
+    gfxVtxColor1u32(0, sInner[0].color);
     gfxEnd();
 }

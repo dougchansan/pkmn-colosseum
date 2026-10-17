@@ -3,7 +3,7 @@
 #include "game/gs_mem.h"
 
 /* Retail symbols for the canonical GSmem API declared by gs_mem.h. */
-extern u16 fn_800E202C(void* ptr); /* GSmemFindHandle */
+extern u16 GSmemGetHandleByPtr(void* ptr); /* GSmemFindHandle */
 extern void* fn_800E24B0(u16 handle); /* GSmemLock */
 extern void fn_800E209C(u16 handle); /* GSmemFree */
 
@@ -40,7 +40,7 @@ void fn_801E16F0(void)
             if (lbl_8047B441 != 0) {
                 fn_801E3F54();
                 fn_801E4724();
-                handle = fn_800E202C(lbl_8047B450);
+                handle = GSmemGetHandleByPtr(lbl_8047B450);
                 if (handle != 0) {
                     fn_800E24B0(handle);
                     fn_800E209C(handle);
@@ -87,7 +87,7 @@ void GSmovieClose(void)
     if (lbl_8047B441 != 0) {
         fn_801E3F54();
         fn_801E4724();
-        handle = fn_800E202C(lbl_8047B450);
+        handle = GSmemGetHandleByPtr(lbl_8047B450);
         if (handle != 0) {
             fn_800E24B0(handle);
             fn_800E209C(handle);

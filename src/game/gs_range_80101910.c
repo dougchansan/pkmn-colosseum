@@ -164,9 +164,9 @@ void fn_801019F8(void) {
 
 /* 0x80101A28 | 0x24 */
 s32 fn_80101A28(void) {
-    extern void fn_800D2738(void);
+    extern void GScameraFree(void);
 
-    fn_800D2738();
+    GScameraFree();
     return 1;
 }
 

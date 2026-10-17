@@ -12,7 +12,7 @@
 extern void* menuSubCalcColor(void*, void*);
 extern void windowDrawSprite();
 extern u32 GSmsgGetRect();
-extern void fn_800FB680();
+extern void GSmsgPrintColor();
 extern void msgctrlSetValue();
 
 /* Fight-menu window work: the four move slots shown by DrawPP/DrawType. */
@@ -57,7 +57,7 @@ void menuFightDrawPP(u8* ctx, u8* npc) {
     cursor.raw = windowGetCursor(*(u32*)(ctx + 4)) >> 16;
     x = *(s16*)(npc + 0x54) - (s16)(GSmsgGetRect(0x197) >> 16);
     x = (s16)(x / 2);
-    fn_800FB680(x, 0, color, 0x197);
+    GSmsgPrintColor(x, 0, color, 0x197);
 
     if (cursor.pos.y >= 0 && cursor.pos.y < 4) {
         if (entries->slots[cursor.pos.y].valid != 0) {

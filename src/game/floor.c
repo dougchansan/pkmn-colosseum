@@ -106,7 +106,7 @@ extern FloorData* floorDataBiosGetCurrentPtr(void);
 extern u32 floorDataBiosGetGroupID(FloorData* floor);
 extern u8 floorDataBiosGetFloorKind(FloorData* floor);
 extern void set__5GSvecFfff(void* vec, f32 x, f32 y, f32 z);
-extern void fn_800FF0A0(void* callback);
+extern void floorTerminateTasks(void* callback);
 
 /* Group ID of the current floor; expanded three times in fn_801129CC. */
 static inline u32 floorGetCurrentGroupID(void) {
@@ -282,7 +282,7 @@ void fn_80112844(void) {
     callback = (void*)state->transitionPollCallback;
     if (callback != NULL) {
         cmsRunSync(callback, 0);
-        fn_800FF0A0(fn_80112844);
+        floorTerminateTasks(fn_80112844);
     }
 }
 
@@ -648,7 +648,7 @@ void fn_80112F8C(FloorData* floor) {
     if (obj != NULL) {
         GSthreadCreate(1, floorGetCurrentContext(), 0x4000, 1, 1, obj);
     }
-    fn_800FF0A0(fn_80112F8C);
+    floorTerminateTasks(fn_80112F8C);
 }
 
 /* 0x80112FEC | 0x25C */
@@ -1091,7 +1091,7 @@ void _floorUpdate__FUi14FloorEnterMode(u32 floorId, s32 enterMode) {
     extern void cameraUpdate(void);
     extern void fn_8010D8D4(s32);
     extern void fn_800D9ED8(s32);
-    extern void fn_800FAEF8(s32, s32, u32, const char*, ...);
+    extern void GSmsgPrintf(s32, s32, u32, const char*, ...);
     extern s8 lbl_8047AD60;
     extern FloorEventLog lbl_8035B818[10];
     u8* debug;
@@ -1114,13 +1114,13 @@ void _floorUpdate__FUi14FloorEnterMode(u32 floorId, s32 enterMode) {
                 entry = &lbl_8035B818[(lbl_8047AD60 + i) % 10];
                 switch (entry->type) {
                 case 1:
-                    fn_800FAEF8(0x1E, y, 0x8080FFFF, "PASS EVENT = %d", entry->value);
+                    GSmsgPrintf(0x1E, y, 0x8080FFFF, "PASS EVENT = %d", entry->value);
                     break;
                 case 2:
-                    fn_800FAEF8(0x1E, y, 0x8080FFFF, "TOUCH EVENT = %d", entry->value);
+                    GSmsgPrintf(0x1E, y, 0x8080FFFF, "TOUCH EVENT = %d", entry->value);
                     break;
                 case 3:
-                    fn_800FAEF8(0x1E, y, 0x8080FFFF, "CHECK EVENT = %d", entry->value);
+                    GSmsgPrintf(0x1E, y, 0x8080FFFF, "CHECK EVENT = %d", entry->value);
                     break;
                 }
                 y += 12;
@@ -1193,8 +1193,8 @@ void _floorInitialize__FUi14FloorEnterMode(FloorData* floor, s32 enterMode) {
     extern void cameraSetTarget(s32, s32);
     extern void GSscene_SetCameraViewVector(FloorViewVec*);
     extern void cameraUpdate(void);
-    extern void fn_800F7D38(s32, s32, s32);
-    extern void fn_800F7C8C(s32, s32, s32);
+    extern void GSinputResetLeftSmoothing(s32, s32, s32);
+    extern void GSinputResetRightSmoothing(s32, s32, s32);
     heroMoveInit(lbl_80408378 + 0x10, lbl_80408378 + 0x1C);
     if (fn_800FF548() == 0) {
         _floorInitCharacters__FP11GSfloor_dd_(floor);
@@ -1210,8 +1210,8 @@ void _floorInitialize__FUi14FloorEnterMode(FloorData* floor, s32 enterMode) {
         GSscene_SetCameraViewVector(&view);
     }
     cameraUpdate();
-    fn_800F7D38(1, 0, 0);
-    fn_800F7C8C(1, 0, 0);
+    GSinputResetLeftSmoothing(1, 0, 0);
+    GSinputResetRightSmoothing(1, 0, 0);
 }
 
 /* 0x80113D10 | 0x24 */
@@ -1230,7 +1230,7 @@ void floorOpenModel(u32 unused, u32 modelIndex) {
 /* 0x80113D58 | 0x1F0 */
 void* floorOpenObject(u32 modelIndex) {
     extern const char lbl_8035B868[];
-    extern void* fn_800F92D4(u32);
+    extern void* GSresFindById(u32);
     extern void* HSD_ArchiveGetPublicAddress(void*, const char*);
     extern void* GSmodelLoad(void*);
     extern void GSmodelSetVisibility(void*, u32);
@@ -1266,7 +1266,7 @@ void* floorOpenObject(u32 modelIndex) {
         return NULL;
     }
 
-    archive = fn_800F92D4(modelIndex);
+    archive = GSresFindById(modelIndex);
     if (special != 0) {
         if (archive == NULL) {
             GSlogWrite("%s: got NULL pointer archive\n", lbl_8035B868);

@@ -10,7 +10,7 @@ extern const char lbl_802712B8[];
 
 /* Unlink `script` from the pool's script list, then mark every context
  * running it for termination (state 3). */
-s32 fn_800F760C(GSVMScript* script) {
+s32 cms_UnregisterScript(GSVMScript* script) {
     GSVMPool* pool = lbl_80478B00;
     GSVMScript* prev;
     GSVMScript* cur;

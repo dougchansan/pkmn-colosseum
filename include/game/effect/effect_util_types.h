@@ -467,7 +467,7 @@ extern void gfxBegin(u32);
 
 extern void gfxVtxPos(f32, f32, f32);
 
-extern void fn_800D5CB8(u32, u32, u32, u32, u32);
+extern void gfxVtxColor4u8(u32, u32, u32, u32, u32);
 
 extern void gfxEnd(void);
 
@@ -493,7 +493,7 @@ extern void GSlogWrite(const char* fmt, ...);
 
 extern const char lbl_80272AB8[];
 
-extern u8 fn_800E0E14(u32 a, u32 b);
+extern u8 GSmemDumpMap(u32 a, u32 b);
 
 extern const char lbl_80272AE0[];
 
@@ -543,7 +543,7 @@ extern void pokemonInit(void);
 
 extern void pokemonAllKaihuku(void);
 
-extern void fn_800F96E4(void);
+extern void GSmsgGetText(void);
 
 extern void pokemonInitAry(void);
 

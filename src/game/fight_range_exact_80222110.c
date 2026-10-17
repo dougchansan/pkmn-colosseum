@@ -161,7 +161,7 @@ void fn_80222370(void)
 
 void WS_ALERTEND(void) { lbl_8047B614 = 2; }
 
-void fn_802223E0(void) {
+void wsCmd43(void) {
     if (fightFloorGetFightOutPokemonPtrAryPokemonTokuseiDataIdFirst(0, lbl_8047B610[1], 0, 0, 0) != NULL) {
         lbl_8047B610 = *(u8**)(lbl_8047B610 + 2);
     } else {

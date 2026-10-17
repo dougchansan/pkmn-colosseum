@@ -216,7 +216,7 @@ extern void* memset(void* dst, s32 value, u32 size);
 extern char* strcpy(char*, const char*);
 extern s32 strcmp(const char* lhs, const char* rhs);
 
-extern void* fn_800E202C(void* ptr);
+extern void* GSmemGetHandleByPtr(void* ptr);
 extern void fn_800E24B0(void);
 extern s32 fn_800E209C(void* ptr);
 extern void fn_800E2C04(s32 size, s32 align);
@@ -1676,7 +1676,7 @@ void fn_801D036C(void)
 
 void* fn_801D0314(void* ptr)
 {
-    void* aligned = fn_800E202C(ptr);
+    void* aligned = GSmemGetHandleByPtr(ptr);
 
     fn_800E24B0();
     if (fn_800E209C(aligned) == 0) {

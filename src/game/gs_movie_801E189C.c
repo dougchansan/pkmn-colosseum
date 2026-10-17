@@ -65,7 +65,7 @@ extern void* fn_800E27B0(u16 handle);
 extern void fn_801E449C(void);
 extern u32 OSGetTick(void);
 extern BOOL fn_801E40F8(u32, u32, u32);
-extern u16 fn_800E202C(void* pointer);
+extern u16 GSmemGetHandleByPtr(void* pointer);
 extern void fn_800E24B0(u16 handle);
 extern void fn_800E209C(u16 handle);
 extern void fn_801E3858(u32* first, u32* second);
@@ -136,7 +136,7 @@ void* fn_801E1924(void* param)
     }
     if (!fn_801E40F8(0, 0, remainder)) {
         GSlogWrite("ERROR(GSmovie): Fail to prepare\n");
-        handle = fn_800E202C(lbl_8047B450);
+        handle = GSmemGetHandleByPtr(lbl_8047B450);
         if (handle != 0) {
             fn_800E24B0(handle);
             fn_800E209C(handle);

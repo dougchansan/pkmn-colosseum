@@ -460,11 +460,11 @@ static inline s32 battleStartMessageWidth(u32 messageId)
 static inline void battleStartDrawMessage(MenuCBBattleStartMessageContext* context,
                                    s32 x, u32 messageId)
 {
-    extern void fn_800FB680(s32 x, s32 y, s32 color, u32 messageId);
+    extern void GSmsgPrintColor(s32 x, s32 y, s32 color, u32 messageId);
     s32 color;
 
     color = context->alpha | 0xFFFFFF00;
-    fn_800FB680(x, 0, color, messageId);
+    GSmsgPrintColor(x, 0, color, messageId);
 }
 #endif
 
@@ -504,7 +504,7 @@ void fn_80060434(MenuCBBattleStartMessageContext* context, UICmdMsg* message)
     extern s32 fn_8025DAD0(void);
     extern void msgctrlSetValue(s32 index, s32 value);
     extern u32 GSmsgGetRect(u32 messageId);
-    extern void fn_800FB680(s32 x, s32 y, s32 color, u32 messageId);
+    extern void GSmsgPrintColor(s32 x, s32 y, s32 color, u32 messageId);
     extern u8 lbl_802EF0A8[];
     extern u32 lbl_802ED9A0[];
     s32 displayMode;
@@ -527,24 +527,24 @@ void fn_80060434(MenuCBBattleStartMessageContext* context, UICmdMsg* message)
         case 0:
             if (battleId <= 5) {
                 msgctrlSetValue(0x2F, battleId + 1);
-                fn_800FB680((*screenWidth - (s32)(GSmsgGetRect(0x3F39) >> 16)) / 2, 0,
+                GSmsgPrintColor((*screenWidth - (s32)(GSmsgGetRect(0x3F39) >> 16)) / 2, 0,
                             context->alpha | -0x100, 0x3F39);
             } else if (battleId == 6) {
-                fn_800FB680((*screenWidth - (s32)(GSmsgGetRect(0x3F3A) >> 16)) / 2, 0,
+                GSmsgPrintColor((*screenWidth - (s32)(GSmsgGetRect(0x3F3A) >> 16)) / 2, 0,
                             context->alpha | -0x100, 0x3F3A);
             } else if (battleId == 7) {
-                fn_800FB680((*screenWidth - (s32)(GSmsgGetRect(0x3F3B) >> 16)) / 2, 0,
+                GSmsgPrintColor((*screenWidth - (s32)(GSmsgGetRect(0x3F3B) >> 16)) / 2, 0,
                             context->alpha | -0x100, 0x3F3B);
             }
             break;
         case 1:
             msgctrlSetValue(0x2F, battleId + 1);
-            fn_800FB680((*screenWidth - (s32)(GSmsgGetRect(0x3F3C) >> 16)) / 2, 0,
+            GSmsgPrintColor((*screenWidth - (s32)(GSmsgGetRect(0x3F3C) >> 16)) / 2, 0,
                         context->alpha | -0x100, 0x3F3C);
             break;
         case 2:
             x = (*screenWidth - (s32)(GSmsgGetRect(lbl_802ED9A0[variant]) >> 16)) / 2;
-            fn_800FB680(x, 0, context->alpha | -0x100, lbl_802ED9A0[variant]);
+            GSmsgPrintColor(x, 0, context->alpha | -0x100, lbl_802ED9A0[variant]);
             break;
         case 3:
             break;
@@ -557,33 +557,33 @@ void fn_80060434(MenuCBBattleStartMessageContext* context, UICmdMsg* message)
                 msgctrlSetValue(0x2F, battleId + 1);
                 firstWidth = (s32)(GSmsgGetRect(0x3F39) >> 16) + 11;
                 x = (*screenWidth - (firstWidth + (s32)(GSmsgGetRect(0x3F3D) >> 16))) / 2;
-                fn_800FB680(x, 0, context->alpha | -0x100, 0x3F39);
-                fn_800FB680(x + firstWidth, 0, context->alpha | -0x100, 0x3F3D);
+                GSmsgPrintColor(x, 0, context->alpha | -0x100, 0x3F39);
+                GSmsgPrintColor(x + firstWidth, 0, context->alpha | -0x100, 0x3F3D);
             } else if (battleId == 6) {
                 firstWidth = (s32)(GSmsgGetRect(0x3F3A) >> 16) + 9;
                 x = (*screenWidth - (firstWidth + (s32)(GSmsgGetRect(0x3F3D) >> 16))) / 2;
-                fn_800FB680(x, 0, context->alpha | -0x100, 0x3F3A);
-                fn_800FB680(x + firstWidth, 0, context->alpha | -0x100, 0x3F3D);
+                GSmsgPrintColor(x, 0, context->alpha | -0x100, 0x3F3A);
+                GSmsgPrintColor(x + firstWidth, 0, context->alpha | -0x100, 0x3F3D);
             } else if (battleId == 7) {
                 firstWidth = (s32)(GSmsgGetRect(0x3F3B) >> 16) + 9;
                 x = (*screenWidth - (firstWidth + (s32)(GSmsgGetRect(0x3F3D) >> 16))) / 2;
-                fn_800FB680(x, 0, context->alpha | -0x100, 0x3F3B);
-                fn_800FB680(firstWidth + x, 0, context->alpha | -0x100, 0x3F3D);
+                GSmsgPrintColor(x, 0, context->alpha | -0x100, 0x3F3B);
+                GSmsgPrintColor(firstWidth + x, 0, context->alpha | -0x100, 0x3F3D);
             }
             break;
         case 1:
             firstWidth = (s32)(GSmsgGetRect(0x3F3C) >> 16) + 11;
             x = (*screenWidth - (firstWidth + (s32)(GSmsgGetRect(0x3F3D) >> 16))) / 2;
             msgctrlSetValue(0x2F, battleId + 1);
-            fn_800FB680(x, 0, context->alpha | -0x100, 0x3F3C);
-            fn_800FB680(firstWidth + x, 0, context->alpha | -0x100, 0x3F3D);
+            GSmsgPrintColor(x, 0, context->alpha | -0x100, 0x3F3C);
+            GSmsgPrintColor(firstWidth + x, 0, context->alpha | -0x100, 0x3F3D);
             break;
         case 2:
             firstWidth = (s32)(GSmsgGetRect(lbl_802ED9A0[variant]) >> 16) + 11;
             x = (*screenWidth - (firstWidth + (s32)(GSmsgGetRect(0x3F3D) >> 16))) / 2;
             msgctrlSetValue(0x2F, battleId);
-            fn_800FB680(x, 0, context->alpha | -0x100, lbl_802ED9A0[variant]);
-            fn_800FB680(firstWidth + x, 0, context->alpha | -0x100, 0x3F3D);
+            GSmsgPrintColor(x, 0, context->alpha | -0x100, lbl_802ED9A0[variant]);
+            GSmsgPrintColor(firstWidth + x, 0, context->alpha | -0x100, 0x3F3D);
             break;
         case 3:
             break;
@@ -608,8 +608,8 @@ void fn_800608C4(void* context, MenuCBBattleStartDrawParams* params) {
     extern void gfxSetVtxDesc(void* format);
     extern void gfxLoadTexture(s32 index, void* model);
     extern void gfxBegin(s32 count);
-    extern void fn_800D61E4(s32 x, s32 y);
-    extern void fn_800D5CB8(s32 index, s32 red, s32 green, s32 blue, s32 alpha);
+    extern void gfxVtxPos2s16(s32 x, s32 y);
+    extern void gfxVtxColor4u8(s32 index, s32 red, s32 green, s32 blue, s32 alpha);
     extern void gfxVtxTexCoord(s32 index, f32 x, f32 y);
     extern void gfxEnd(void);
     extern u8 lbl_80314F98[];
@@ -625,11 +625,11 @@ void fn_800608C4(void* context, MenuCBBattleStartDrawParams* params) {
         gfxSetVtxDesc(lbl_80314F98);
         gfxLoadTexture(0, model);
         gfxBegin(2);
-        fn_800D61E4(0, 0);
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+        gfxVtxPos2s16(0, 0);
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
         gfxVtxTexCoord(0, lbl_8047BF60, lbl_8047BF60);
-        fn_800D61E4(params->x, params->y);
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+        gfxVtxPos2s16(params->x, params->y);
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
         gfxVtxTexCoord(0, lbl_8047BF90, lbl_8047BF90);
         gfxEnd();
     }
@@ -1891,7 +1891,7 @@ extern u16 std103_battleGetResult(void);
 extern void* heroBiosGetNamePtr(u16);
 extern void* GSmsgGetGSchar(s32);
 extern void msgctrlSetValue();
-extern void fn_800FB680();
+extern void GSmsgPrintColor();
 extern void fn_800FBB34();
 extern void fn_800FE6D0(s32, s32);
 extern void spriteSetEnv(void);
@@ -1902,9 +1902,9 @@ extern void gfxSetPrimitive(s32);
 extern void gfxSetVtxDesc(void*);
 extern void gfxLoadTexture(s32, void*);
 extern void gfxBegin(s32);
-extern void fn_800D61E4(s32, s32);
-extern void fn_800D5CB8(s32, s32, s32, s32, s32);
-extern void fn_800D5BA0(s32, u32);
+extern void gfxVtxPos2s16(s32, s32);
+extern void gfxVtxColor4u8(s32, s32, s32, s32, s32);
+extern void gfxVtxColor1u32(s32, u32);
 extern void gfxVtxTexCoord(s32, f32, f32);
 extern void gfxEnd(void);
 extern void fn_801FCCC4(u16);
@@ -2125,15 +2125,15 @@ static inline void menuCBBattleStartDrawGauge(
     f32 end;
 
     color = ((u8)(r - 2) << 24) | ((u8)(g - 2) << 16) | ((u8)(b - 2) << 8) | a;
-    fn_800D5BA0(0, color);
-    fn_800D61E4(end = lbl_8047891C * (msg->field54 - lbl_80478918) + lbl_80478918,
+    gfxVtxColor1u32(0, color);
+    gfxVtxPos2s16(end = lbl_8047891C * (msg->field54 - lbl_80478918) + lbl_80478918,
                 lbl_8047891A);
-    fn_800D5BA0(0, color);
-    fn_800D61E4(lbl_80478918, (s16)(msg->field56 - lbl_8047891A));
+    gfxVtxColor1u32(0, color);
+    gfxVtxPos2s16(lbl_80478918, (s16)(msg->field56 - lbl_8047891A));
     color = (r << 24) | (g << 16) | (b << 8) | a;
-    fn_800D5BA0(0, color);
-    fn_800D61E4(end, (s16)(msg->field56 - lbl_8047891A));
-    fn_800D5BA0(0, color);
+    gfxVtxColor1u32(0, color);
+    gfxVtxPos2s16(end, (s16)(msg->field56 - lbl_8047891A));
+    gfxVtxColor1u32(0, color);
 }
 
 #if !defined(MENUCB_BATTLESTART_SPLIT_UNIT) || defined(MENUCB_BATTLESTART_8006106C_ONLY)
@@ -2170,7 +2170,7 @@ void fn_80061240(void* context, UICmdMsg* msg, s32 player, s32 slot, s32 kind)
         gfxSetVtxDesc(lbl_80314E08);
         gfxSetPrimitive(4);
         gfxBegin(4);
-        fn_800D61E4(lbl_80478918, lbl_8047891A);
+        gfxVtxPos2s16(lbl_80478918, lbl_8047891A);
         menuCBBattleStartDrawGauge(msg, red, green, blue, gaugeAlpha);
         gfxEnd();
     }
@@ -2206,11 +2206,11 @@ void fn_80061454(void* context, UICmdMsg* msg, s32 player, s32 kind)
         gfxSetVtxDesc(lbl_80314F98);
         gfxLoadTexture(0, image);
         gfxBegin(2);
-        fn_800D61E4(0, 0);
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, alpha);
+        gfxVtxPos2s16(0, 0);
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, alpha);
         gfxVtxTexCoord(0, lbl_8047BF60, lbl_8047BF60);
-        fn_800D61E4(msg->field54, msg->field56);
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, alpha);
+        gfxVtxPos2s16(msg->field54, msg->field56);
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, alpha);
         gfxVtxTexCoord(0, lbl_8047BF90, lbl_8047BF90);
         gfxEnd();
     }
@@ -2250,7 +2250,7 @@ void fn_800615F4(void* context, UICmdMsg* msg, s32 player, s32 kind)
                 fn_800FBB34(0, 0, msg->field54, msg->field56,
                     0xFFFFFF00 | *((u8*)context + 0x8B), 0x30E9);
             } else {
-                fn_800FB680(0, 0,
+                GSmsgPrintColor(0, 0,
                     0xFFFFFF00 | *((u8*)context + 0x8B), 0x30E5);
             }
         }
@@ -2268,7 +2268,7 @@ void fn_800615F4(void* context, UICmdMsg* msg, s32 player, s32 kind)
     msgctrlSetValue(0x37, text);
     msgctrlSetValue(0x4D, text);
     if (kind == 0 && player != 0) {
-        fn_800FB680(0, 0,
+        GSmsgPrintColor(0, 0,
             0xFFFFFF00 | *((u8*)context + 0x8B), 0xCF);
     }
 }
@@ -2313,7 +2313,7 @@ void fn_800617E0(void* context, UICmdMsg* msg, s32 player, s32 kind)
             fn_800FBB34(0, 0, msg->field54, msg->field56,
                 0xFFFFFF00 | *((u8*)context + 0x8B), 0x30E2);
         } else {
-            fn_800FB680(0, 0,
+            GSmsgPrintColor(0, 0,
                 0xFFFFFF00 | *((u8*)context + 0x8B), 0xCE);
         }
     } else {
@@ -2324,7 +2324,7 @@ void fn_800617E0(void* context, UICmdMsg* msg, s32 player, s32 kind)
             fn_800FBB34(0, 0x16, msg->field54, msg->field56,
                 0xFFFFFF00 | *((u8*)context + 0x8B), 0x30E8);
         } else {
-            fn_800FB680(0, 0,
+            GSmsgPrintColor(0, 0,
                 0xFFFFFF00 | *((u8*)context + 0x8B), 0x30E7);
         }
     }
@@ -2494,7 +2494,7 @@ typedef struct MenuCBBattleStartTrainerTextureState {
 extern s32 toolentryTaisenGetBattleType(void);
 extern u32 toolentryGetTrainerBicFaceResID(s32, s32);
 extern u32 toolentryGetTrainerSamllFaceResID(s32, s32);
-extern void* fn_800F92D4(u32);
+extern void* GSresFindById(u32);
 extern void fn_8017B000(
     u32, u32, void (*)(s32, MenuCBBattleStartTrainerTexture*),
     MenuCBBattleStartTrainerTexture*, u32);
@@ -2514,7 +2514,7 @@ void _menuCBBattleStartDispTrainerTexCallBack__FlPvl(
 
     keepLoading = 1;
     if (completed != 0) {
-        completed->texture = fn_800F92D4(completed->resource);
+        completed->texture = GSresFindById(completed->resource);
     }
 
     state = (MenuCBBattleStartTrainerTextureState*)&lbl_803A9A60;
@@ -2544,7 +2544,7 @@ void _menuCBBattleStartDispTrainerTexCallBack__FlPvl(
             entry = &((MenuCBBattleStartTrainerTextureState*)&lbl_803A9A60)
                          ->entries[state->current];
             entry->resource = resource;
-            entry->texture = fn_800F92D4(entry->resource);
+            entry->texture = GSresFindById(entry->resource);
             if (entry->texture != 0) {
                 state->current++;
             } else {

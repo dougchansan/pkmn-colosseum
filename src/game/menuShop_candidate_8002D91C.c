@@ -34,7 +34,7 @@ extern u32 _toolentryAlloc__FUl(u32 size);
 extern void* fn_800E27B0(u32 handle);
 extern void fn_800E24B0(u32 handle);
 extern void fn_800E209C(u32 handle);
-extern void fn_800FF660(void);
+extern void floorBattleEndTerminateScripts(void);
 extern void floorSetFadeScript(s32 mode, u32 value);
 extern void mailMainReceiveTerminate(void);
 extern u32 fn_800D37CC(void);
@@ -179,7 +179,7 @@ void fn_8002D91C(u32 location_index)
     }
 
     if ((s32)state->active != 0) {
-        fn_800FF660();
+        floorBattleEndTerminateScripts();
         floorSetFadeScript(0, 0);
     }
 }

@@ -25,8 +25,8 @@ extern void menuCloseCustom(s32, s32, s32);
 extern s32 toolentryTaisenGetHomePlace(s32);
 extern void msgctrlSetValue(s32, s32);
 extern void winMsgOpen(s32, s32, s32, s32);
-extern u8 fn_800F7EF8(s32);
-extern s32 fn_800F7C28(s32);
+extern u8 GSinputIsConnected(s32);
+extern s32 GSinputGetSubType(s32);
 extern void _threadSwitch(void);
 extern void winMsgClose(s32);
 extern void menuCBBattleStartTrainerFaceFree(void);
@@ -103,8 +103,8 @@ static inline u16 menuCBIsHomeBattle(void)
 
 static inline u8 menuCBDecided(void)
 {
-    if (fn_800F7EF8(1)) {
-        if (fn_800F7C28(1) == 0) {
+    if (GSinputIsConnected(1)) {
+        if (GSinputGetSubType(1) == 0) {
             return 1;
         } else {
             return 0;

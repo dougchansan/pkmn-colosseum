@@ -99,7 +99,7 @@ u8 fn_80239154(void *ctx, u32 param) {
   return 0;
 }
 
-u8 fn_802391E0(void *ctx, u32 param) {
+u8 fightAiGetWazaPp(void *ctx, u32 param) {
   extern u32 fightTrainerGetStatus();
   extern u32 wazaGetStatus();
   fightTrainerGetStatus(0, fightTrainerGetStatus(ctx, 0, 0x43, 0) & 0xFFFF, 0x2,

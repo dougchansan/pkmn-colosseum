@@ -1051,7 +1051,7 @@ extern MenuPokemonSummaryPage lbl_80266918[];
 s32 bagGiveItemCheck(s32 mode, u32 ptr, u32 r5, u32 r6, u16* out);
 #endif
 extern u16 itemBiosGetItemDataId();
-extern void fn_800FF660(void);
+extern void floorBattleEndTerminateScripts(void);
 extern void floorSetFadeScript();
 extern u32 lbl_80478860;
 extern u8 lbl_802E4DB0[];
@@ -1266,7 +1266,7 @@ u16 bagMenuRun(void) {
 
     menuCloseCustom(0x59, 0, 1);
     if ((s32)lbl_8047A2E4 != 0) {
-        fn_800FF660();
+        floorBattleEndTerminateScripts();
         floorSetFadeScript(0, 0);
     }
     return selectedSpecies;
@@ -1542,7 +1542,7 @@ s32 fn_80019204(u8* a, u8* b) {
 #if !defined(MENU_POKEMON_CARVE_ONLY)
 /* fn_800192A8 - 0x800192A8 | size: 0x228 */
 extern u32 itemDataBiosGetName(u32 a);
-extern void fn_800FB680();
+extern void GSmsgPrintColor();
 extern u32 itemDataBiosGetKind(u32 a);
 extern u32 GSmsgGetRect(u32 a);
 extern void fn_80142CF4(void);
@@ -1593,13 +1593,13 @@ s32 fn_800192A8(u8* a, u8* b) {
     } else {
         name = itemDataBiosGetName(itemDataBiosGetPtr(*(u16*)(data + 4 + i * 2)));
     }
-    fn_800FB680(0, 0, -1, name);
+    GSmsgPrintColor(0, 0, -1, name);
     if (*(u16*)(data + 4 + i * 2) != 0) {
         heroItemGetItemKindToItemAryPtr(0, itemDataBiosGetKind(itemDataBiosGetPtr(*(u16*)(data + 4 + i * 2))), 0, &count, 0, 0);
         msgctrlSetValue(0x34, count);
         width = (s16)(GSmsgGetRect(0xCA) >> 16);
         width += (s16)(GSmsgGetRect(0x12E) >> 16);
-        fn_800FB680(0xC3 - width, 0, -1, 0x12E);
+        GSmsgPrintColor(0xC3 - width, 0, -1, 0x12E);
 
         item = *(u16*)(data + 4 + i * 2);
         sum = 0;
@@ -1610,7 +1610,7 @@ s32 fn_800192A8(u8* a, u8* b) {
             }
         }
         msgctrlSetValue(0x34, sum);
-        fn_800FB680(0xC3 - (s16)(GSmsgGetRect(0xCA) >> 16), 0, -1, 0xCA);
+        GSmsgPrintColor(0xC3 - (s16)(GSmsgGetRect(0xCA) >> 16), 0, -1, 0xCA);
     }
     return 0;
 }
@@ -1874,7 +1874,7 @@ asm void fn_80019938(void) {
 #pragma optimization_level 4
 void fn_80019938(u8* a, u8* b) {
     extern void msgctrlSetValue(s32, u32);
-    extern void fn_800FB680(s32, s32, s32, u32);
+    extern void GSmsgPrintColor(s32, s32, s32, u32);
     u8* base;
     s16 r0;
     u32 r4;
@@ -1900,7 +1900,7 @@ void fn_80019938(u8* a, u8* b) {
     r4v = *(u32*)(base + 0x4);
     if (r4v == 0) return;
     msgctrlSetValue(0x37, r4v);
-    fn_800FB680(0x0, 0x0, (s32)*(u8*)(a + 0x8b) | (s32)(-0x100), 0xe7);
+    GSmsgPrintColor(0x0, 0x0, (s32)*(u8*)(a + 0x8b) | (s32)(-0x100), 0xe7);
 }
 #endif
 
@@ -2079,7 +2079,7 @@ extern u8 lbl_803A1C20[];
 extern s32 menuGetCursorItemID();
 extern u8 lbl_802E4E58[];
 extern void winSpriteSetDisp();
-extern void fn_800FB680();
+extern void GSmsgPrintColor();
 extern u32 itemDataBiosGetKind(u32 a);
 extern u32 GSmsgGetRect(u32 a);
 extern u8* windowGetKeyInfo();
@@ -2205,7 +2205,7 @@ void menuPokemonDrawItem(u8* ctx, u8* pane) {
                 } else {
                     msg = 0x2B64;
                 }
-                fn_800FB680(0, -4, color, msg);
+                GSmsgPrintColor(0, -4, color, msg);
             case 0x3BE:
             case 0x12A2:
                 winSpriteSetDisp(pane, 0);
@@ -2259,14 +2259,14 @@ void menuPokemonDrawItem(u8* ctx, u8* pane) {
         }
         break;
     case 0x3BF:
-        fn_800FB680(0x2E, 0, color, 0x2BD4);
+        GSmsgPrintColor(0x2E, 0, color, 0x2BD4);
         msgctrlSetValue(0x34, *(s16*)(entry + 0x1A));
         fn_800FBB34(0, 0, 0x2C, *(s16*)(pane + 0x56), color, 0xDE);
         msgctrlSetValue(0x34, *(s16*)(entry + 0x18));
         fn_800FBB34(0, 0, (s16)(*(s16*)(pane + 0x54) - 2), *(s16*)(pane + 0x56), color, 0xDE);
         break;
     case 0x545:
-        fn_800FB680(0x1B, 0, color, 0x195);
+        GSmsgPrintColor(0x1B, 0, color, 0x195);
         msgctrlSetValue(0x34, *(s16*)(entry + 0x1A));
         fn_800FBB34(0, 0, 0x1B, *(s16*)(pane + 0x56), color, 0xDF);
         msgctrlSetValue(0x34, *(s16*)(entry + 0x18));
@@ -2280,7 +2280,7 @@ void menuPokemonDrawItem(u8* ctx, u8* pane) {
     case 0x3C1:
     case 0x547:
         msgctrlSetValue(0x37, entry);
-        fn_800FB680(0, 0, color, 0xE7);
+        GSmsgPrintColor(0, 0, color, 0xE7);
         x = (s16)(GSmsgGetRect(0xE7) >> 16);
         switch (entry[0x28]) {
         case 0:
@@ -2295,7 +2295,7 @@ void menuPokemonDrawItem(u8* ctx, u8* pane) {
         }
         if (msgId != 0) {
             msgctrlSetValue(0x37, GSmsgGetGSchar(msgId));
-            fn_800FB680(x - 2, 0, color, 0xCF);
+            GSmsgPrintColor(x - 2, 0, color, 0xCF);
         }
         break;
     case 0x3C4:
@@ -2391,7 +2391,7 @@ void menuPokemonDrawHelp(u8* a) {
     extern u8 lbl_803A1C20[];
     extern u32 itemDataBiosGetPtr();
     extern void msgctrlSetValue();
-    extern void fn_800FB680();
+    extern void GSmsgPrintColor();
     u32 msg;
 
     msg = 0;
@@ -2430,7 +2430,7 @@ void menuPokemonDrawHelp(u8* a) {
         break;
     }
     if (msg != 0) {
-        fn_800FB680(0, 0, *(u8*)(a + 0x8b) | -0x100, msg);
+        GSmsgPrintColor(0, 0, *(u8*)(a + 0x8b) | -0x100, msg);
     }
 }
 #endif
@@ -2695,12 +2695,12 @@ asm void menuPokemonClose(void) {
 void menuPokemonClose(void) {
     extern u8 lbl_803A1D40[];
     extern void menuCloseCustom();
-    extern void fn_800FF660();
+    extern void floorBattleEndTerminateScripts();
     extern void floorSetFadeScript();
     extern void _threadSwitch();
     menuCloseCustom(0x63, 0x0, 0x1);
     if (*(u8*)(lbl_803A1D40 + 0x2) != 0) {
-        fn_800FF660();
+        floorBattleEndTerminateScripts();
         if (*(u8*)(lbl_803A1D40 + 0x3) != 0x1) floorSetFadeScript(0x0, 0x0);
         _threadSwitch();
     }
@@ -3131,7 +3131,7 @@ s32 menuPokemonMain(void) {
     extern u8 lbl_803A1D40[];
     extern void menuPokemonSub();
     extern void menuCloseCustom();
-    extern void fn_800FF660();
+    extern void floorBattleEndTerminateScripts();
     extern void floorSetFadeScript();
     extern void _threadSwitch();
     u8 r3;
@@ -3143,7 +3143,7 @@ s32 menuPokemonMain(void) {
     menuPokemonSub((u32)r3, (u32)r4, r5);
     menuCloseCustom(0x63, 0x0, 0x1);
     if (*(u8*)(lbl_803A1D40 + 0x2) != 0) {
-        fn_800FF660();
+        floorBattleEndTerminateScripts();
         if (*(u8*)(lbl_803A1D40 + 0x3) != 0x1) floorSetFadeScript(0x0, 0x0);
         _threadSwitch();
     }

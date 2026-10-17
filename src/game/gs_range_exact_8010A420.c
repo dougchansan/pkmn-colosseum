@@ -35,7 +35,7 @@ s32 fn_8010A420(void* obj)
     extern void fn_801DB100(u32 handle);
     extern void GSmodelFree(void* a);
     extern void GSlightFree(void* a);
-    extern void fn_800D2738(void* camera);
+    extern void GScameraFree(void* camera);
     extern void GStextureFree(void* a);
     extern int wazaSequenceSysRelease(void);
 
@@ -86,7 +86,7 @@ s32 fn_8010A420(void* obj)
     }
 
     if (o->camera != NULL) {
-        fn_800D2738(o->camera);
+        GScameraFree(o->camera);
         o->camera = NULL;
     }
 

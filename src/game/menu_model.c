@@ -53,7 +53,7 @@ extern u8  lbl_80315690[]; /* resource table, 8-byte entries */
 
 /* Additional externs used by various functions */
 extern void  GSmodelFree(u32);     /* GSmem release/unref */
-extern void  fn_800D2738(void);
+extern void  GScameraFree(void);
 extern void* menuDataBiosGetPtr(void);    /* linked list head */
 extern void* menuItemBiosGetPtr(s16 idx); /* node by index */
 extern void* menuSeBiosGetPtr(s32);
@@ -131,7 +131,7 @@ extern void gfxSetPrimitive(s32);
 extern void gfxSetVtxDesc(s32);
 extern void gfxBegin(s32);
 extern void gfxVtxPos(f32);
-extern void fn_800D5CB8(s32, s32, s32, s32, s32);
+extern void gfxVtxColor4u8(s32, s32, s32, s32, s32);
 extern void gfxEnd(void);
 extern u32 fn_801DAC3C(u32 sequence);
 extern void fn_800EC134(u32 model);
@@ -147,15 +147,15 @@ extern void fn_800D9AF0(u16* left, u16* top, u16* right, u16* bottom);
 extern void fn_800D258C(u32 camera);
 extern u32 GStextureGetXsize(u32 texture);
 extern u32 GStextureGetYsize(u32 texture);
-extern void fn_800D9D68(u16 left, u16 top, u16 right, u16 bottom);
-extern void fn_800D9C24(u16 left, u16 top, u16 right, u16 bottom);
+extern void gfxSetScissor(u16 left, u16 top, u16 right, u16 bottom);
+extern void gfxSetViewport(u16 left, u16 top, u16 right, u16 bottom);
 extern void _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID(void);
-extern void fn_800D3410(u32 texture, u32 slot);
+extern void GSgfxRenderLayer(u32 texture, u32 slot);
 extern void fn_801DA4E8(u32 sequence, u32 active);
 extern void fn_801DA448(u32 sequence, u32 active);
 extern void fn_801DB088(void);
 extern void fn_801DAAAC(u32 sequence);
-extern void fn_800D3190(void);
+extern void GSgfxRenderEnd(void);
 extern u8 lbl_8035B468[];
 
 /* Forward declarations for functions defined later in this TU */
@@ -387,10 +387,10 @@ u32 menuModelRender(u8* work) {
     fn_800D258C(*(u32*)(work + 0x38));
     width = (u16)(GStextureGetXsize(*(u32*)(work + 0x34)) - 1);
     height = (u16)(GStextureGetYsize(*(u32*)(work + 0x34)) - 1);
-    fn_800D9D68(0, 0, width, height);
-    fn_800D9C24(0, 0, width, height);
+    gfxSetScissor(0, 0, width, height);
+    gfxSetViewport(0, 0, width, height);
     _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
-    fn_800D3410(*(u32*)(work + 0x34), 0);
+    GSgfxRenderLayer(*(u32*)(work + 0x34), 0);
     if (work[0x14] != 0) {
         fn_801DA4E8(*(u32*)(work + 0x24), 1);
         fn_801DA448(*(u32*)(work + 0x24), 1);
@@ -401,11 +401,11 @@ u32 menuModelRender(u8* work) {
     } else {
         GSmodelDrawModel(*(u32*)(work + 0x24), 0x3010);
     }
-    fn_800D3190();
+    GSgfxRenderEnd();
     fn_800D377C(1);
     fn_800D258C(previousCamera);
-    fn_800D9D68(viewLeft, viewTop, viewRight, viewBottom);
-    fn_800D9C24(scissorLeft, scissorTop, scissorRight, scissorBottom);
+    gfxSetScissor(viewLeft, viewTop, viewRight, viewBottom);
+    gfxSetViewport(scissorLeft, scissorTop, scissorRight, scissorBottom);
     _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
     fn_800D4604(1);
     {

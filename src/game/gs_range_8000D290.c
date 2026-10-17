@@ -19,7 +19,7 @@ extern u8* menuItemBiosGetPtr(s16);
 extern void windowDrawSprite(s32, s32, void*, u16, s32);
 extern s32 menuGetCursorItemID(void*);
 extern u32 GSmsgGetRect(void*);
-extern void fn_800FB680(s16, s16, u32, void*);
+extern void GSmsgPrintColor(s16, s16, u32, void*);
 
 void fn_8000D298(u8* menu, u8* item)
 {
@@ -44,7 +44,7 @@ void fn_8000D298(u8* menu, u8* item)
              (s16)(GSmsgGetRect(*(void**)(item + 0x4C)) >> 16)) / 2;
         y = (*(s16*)(item + 0x56) -
              (s16)(u16)GSmsgGetRect(*(void**)(item + 0x4C))) / 2 - 2;
-        fn_800FB680(x, y, color | menu[0x8B], *(void**)(item + 0x4C));
+        GSmsgPrintColor(x, y, color | menu[0x8B], *(void**)(item + 0x4C));
     }
 }
 

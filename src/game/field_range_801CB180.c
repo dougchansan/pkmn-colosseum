@@ -116,8 +116,8 @@ extern const u8 lbl_8047E160[];
 extern const u8 lbl_8047E164[];
 
 extern u32 fn_800F7BC4(s32 pad);
-extern s32 fn_800F7A7C(s32 pad, s32 axis);
-extern s32 fn_800F7A08(s32 pad, s32 axis);
+extern s32 GSinputGetLeftStickXData(s32 pad, s32 axis);
+extern s32 GSinputGetLeftStickYData(s32 pad, s32 axis);
 extern void fn_800F7068(s32 id, s32 value);
 extern void floorTerminateScriptThreads(s32 id);
 extern void* GSthreadGetCurrentThread(void);
@@ -162,7 +162,7 @@ extern s32 floorRequestChange(s32 msg_id);
 extern void winMsgOpen(s32 id, s32 msg_id, s32 arg2, s32 arg3);
 extern s32 std011_dialogDisplayYesNoMenu(void);
 extern s32 menuSaveLoadSaveGame(s32 arg);
-extern void* fn_800E202C(void* ptr);
+extern void* GSmemGetHandleByPtr(void* ptr);
 extern void fn_800E24B0(void);
 extern s32 fn_800E209C(void* ptr);
 extern void fn_800E2C04(s32 size, s32 align);
@@ -250,21 +250,21 @@ s32 fn_801CB1C4(void)
         pushed = 1;
     }
 
-    axis = (s8)fn_800F7A7C(1, 0);
+    axis = (s8)GSinputGetLeftStickXData(1, 0);
     if (axis > 0) {
-        axis = (s8)fn_800F7A7C(1, 0);
+        axis = (s8)GSinputGetLeftStickXData(1, 0);
     } else {
-        axis = -(s8)fn_800F7A7C(1, 0);
+        axis = -(s8)GSinputGetLeftStickXData(1, 0);
     }
     if (axis > 2) {
         pushed = 1;
     }
 
-    axis = (s8)fn_800F7A08(1, 0);
+    axis = (s8)GSinputGetLeftStickYData(1, 0);
     if (axis > 0) {
-        axis = (s8)fn_800F7A08(1, 0);
+        axis = (s8)GSinputGetLeftStickYData(1, 0);
     } else {
-        axis = -(s8)fn_800F7A08(1, 0);
+        axis = -(s8)GSinputGetLeftStickYData(1, 0);
     }
     if (axis > 2) {
         pushed = 1;
@@ -286,21 +286,21 @@ s32 scriptIsMoveButtonPush(void)
         pushed = 1;
     }
 
-    axis = (s8)fn_800F7A7C(1, 0);
+    axis = (s8)GSinputGetLeftStickXData(1, 0);
     if (axis > 0) {
-        axis = (s8)fn_800F7A7C(1, 0);
+        axis = (s8)GSinputGetLeftStickXData(1, 0);
     } else {
-        axis = -(s8)fn_800F7A7C(1, 0);
+        axis = -(s8)GSinputGetLeftStickXData(1, 0);
     }
     if (axis > 2) {
         pushed = 1;
     }
 
-    axis = (s8)fn_800F7A08(1, 0);
+    axis = (s8)GSinputGetLeftStickYData(1, 0);
     if (axis > 0) {
-        axis = (s8)fn_800F7A08(1, 0);
+        axis = (s8)GSinputGetLeftStickYData(1, 0);
     } else {
-        axis = -(s8)fn_800F7A08(1, 0);
+        axis = -(s8)GSinputGetLeftStickYData(1, 0);
     }
     if (axis > 2) {
         pushed = 1;

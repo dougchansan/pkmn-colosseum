@@ -120,9 +120,9 @@
  *   fn_800D88DC, fn_800D888C -- GX blend/alpha mode
  *   fn_800D7820 -- GX draw begin
  *   fn_800E05C0, fn_800E048C -- matrix position/rotation
- *   fn_800D7F14 -- GX load matrix
+ *   gfxPushMultMatrix -- GX load matrix
  *   fn_800D6A00 -- GX cull mode
- *   fn_800D67BC, fn_800D6680, fn_800D5CB8 -- GX position/color/texcoord
+ *   fn_800D67BC, fn_800D6680, gfxVtxColor4u8 -- GX position/color/texcoord
  *   fn_800B9404 -- fog setup
  *   GXDrawDone, fn_800B856C -- GX begin/end frame
  *   GStextureFree -- model release
@@ -194,11 +194,11 @@ extern void  gfxClearFlags(u32 a);
 extern void  gfxSetVtxDesc(void* model);
 extern void  fn_800E05C0(void* dst, f32 x, f32 y, f32 z);
 extern void  fn_800E048C(void* mtx, f32 x, f32 y, f32 z);
-extern void  fn_800D7F14(void* mtx);
+extern void  gfxPushMultMatrix(void* mtx);
 extern void  gfxSetPrimitive(u32 mode);
 extern void  gfxBegin(u16 index);
 extern void  gfxVtxPos(f32 x, f32 y, f32 z);
-extern void  fn_800D5CB8(u32 a, u8 r, u8 g, u8 b, u32 alpha);
+extern void  gfxVtxColor4u8(u32 a, u8 r, u8 g, u8 b, u32 alpha);
 extern void  fn_800B9404(u32 index, u32 param);
 extern void  GXDrawDone(void);
 extern void  fn_800B856C(void);
@@ -363,7 +363,7 @@ extern void gfxEnd(void);
 extern void gfxLoadTexture(u32 a, void* b);
 extern f32 fn_800E0BA0(void);
 extern void gfxVtxTexCoord(u32 a, f32 b, f32 c);
-extern void fn_800D7E5C(void);
+extern void gfxPopMatrix(void);
 extern void set__5GSvecFfff(void* dst, f32 x, f32 y, f32 z);
 /* Forward declarations for self-referencing asm blocks */
 extern u32 _lightningRenderMain(void* ptr);
@@ -534,9 +534,9 @@ u32 _lightningRenderMain(void* ptr) {
         gfxClearFlags(6);
         gfxSetVtxDesc(*(void**)(p + 0x14));
         fn_800E05C0(matrix, modelPos[0], modelPos[1], modelPos[2]);
-        fn_800D7F14(matrix);
+        gfxPushMultMatrix(matrix);
         fn_800E048C(matrix, *(f32*)(p + 0x28), *(f32*)(p + 0x2C), *(f32*)(p + 0x30));
-        fn_800D7F14(matrix);
+        gfxPushMultMatrix(matrix);
         gfxSetPrimitive(2);
 
         entry = *(u8**)(p + 0x4);
@@ -544,12 +544,12 @@ u32 _lightningRenderMain(void* ptr) {
             if (*(u32*)(entry + 0x978) != 0) {
                 gfxBegin((u16)(*(u32*)(entry + 0x978) + 1));
                 gfxVtxPos(*(f32*)(entry + 0x960), *(f32*)(entry + 0x964), *(f32*)(entry + 0x968));
-                fn_800D5CB8(0, p[0x20], p[0x21], p[0x22], p[0x23]);
+                gfxVtxColor4u8(0, p[0x20], p[0x21], p[0x22], p[0x23]);
                 segments = *(u32*)(entry + 0x978);
                 point = entry;
                 for (j = 0; j < segments; j++, point += 0x18) {
                     gfxVtxPos(*(f32*)(point + 0), *(f32*)(point + 4), *(f32*)(point + 8));
-                    fn_800D5CB8(0, p[0x20], p[0x21], p[0x22], p[0x23]);
+                    gfxVtxColor4u8(0, p[0x20], p[0x21], p[0x22], p[0x23]);
                 }
                 gfxEnd();
             }
@@ -570,43 +570,43 @@ u32 _lightningRenderMain(void* ptr) {
                 width = *(f32*)(p + 0x6C) * fn_800E0BA0() + *(f32*)(p + 0x68);
             gfxVtxPos(*(f32*)(entry + 0x960) - width, *(f32*)(entry + 0x964),
                         *(f32*)(entry + 0x968) - width);
-            fn_800D5CB8(0, p[0x24], p[0x25], p[0x26], p[0x27]);
+            gfxVtxColor4u8(0, p[0x24], p[0x25], p[0x26], p[0x27]);
             gfxVtxTexCoord(0, *(f32*)&lbl_8047D154, *(f32*)&lbl_8047D154);
             gfxVtxPos(*(f32*)(entry + 0x960) + width, *(f32*)(entry + 0x964),
                         *(f32*)(entry + 0x968) - width);
-            fn_800D5CB8(0, p[0x24], p[0x25], p[0x26], p[0x27]);
+            gfxVtxColor4u8(0, p[0x24], p[0x25], p[0x26], p[0x27]);
             gfxVtxTexCoord(0, *(f32*)&lbl_8047D154, *(f32*)&lbl_8047D158);
             gfxVtxPos(*(f32*)(entry + 0x960) + width, *(f32*)(entry + 0x964),
                         *(f32*)(entry + 0x968) + width);
-            fn_800D5CB8(0, p[0x24], p[0x25], p[0x26], p[0x27]);
+            gfxVtxColor4u8(0, p[0x24], p[0x25], p[0x26], p[0x27]);
             gfxVtxTexCoord(0, *(f32*)&lbl_8047D158, *(f32*)&lbl_8047D158);
             gfxVtxPos(*(f32*)(entry + 0x960) - width, *(f32*)(entry + 0x964),
                         *(f32*)(entry + 0x968) + width);
-            fn_800D5CB8(0, p[0x24], p[0x25], p[0x26], p[0x27]);
+            gfxVtxColor4u8(0, p[0x24], p[0x25], p[0x26], p[0x27]);
             gfxVtxTexCoord(0, *(f32*)&lbl_8047D158, *(f32*)&lbl_8047D154);
 
                 outer = width * grow;
             gfxVtxPos(*(f32*)(entry + 0x96C) - outer, *(f32*)(entry + 0x970),
                         *(f32*)(entry + 0x974) - outer);
-            fn_800D5CB8(0, p[0x24], p[0x25], p[0x26], p[0x27]);
+            gfxVtxColor4u8(0, p[0x24], p[0x25], p[0x26], p[0x27]);
             gfxVtxTexCoord(0, *(f32*)&lbl_8047D154, *(f32*)&lbl_8047D154);
             gfxVtxPos(*(f32*)(entry + 0x96C) + outer, *(f32*)(entry + 0x970),
                         *(f32*)(entry + 0x974) - outer);
-            fn_800D5CB8(0, p[0x24], p[0x25], p[0x26], p[0x27]);
+            gfxVtxColor4u8(0, p[0x24], p[0x25], p[0x26], p[0x27]);
             gfxVtxTexCoord(0, *(f32*)&lbl_8047D154, *(f32*)&lbl_8047D158);
             gfxVtxPos(*(f32*)(entry + 0x96C) + outer, *(f32*)(entry + 0x970),
                         *(f32*)(entry + 0x974) + outer);
-            fn_800D5CB8(0, p[0x24], p[0x25], p[0x26], p[0x27]);
+            gfxVtxColor4u8(0, p[0x24], p[0x25], p[0x26], p[0x27]);
             gfxVtxTexCoord(0, *(f32*)&lbl_8047D158, *(f32*)&lbl_8047D158);
             gfxVtxPos(*(f32*)(entry + 0x96C) - outer, *(f32*)(entry + 0x970),
                         *(f32*)(entry + 0x974) + outer);
-            fn_800D5CB8(0, p[0x24], p[0x25], p[0x26], p[0x27]);
+            gfxVtxColor4u8(0, p[0x24], p[0x25], p[0x26], p[0x27]);
             gfxVtxTexCoord(0, *(f32*)&lbl_8047D158, *(f32*)&lbl_8047D154);
             }
             gfxEnd();
         }
-        fn_800D7E5C();
-        fn_800D7E5C();
+        gfxPopMatrix();
+        gfxPopMatrix();
         return 1;
     }
     return 0;
@@ -743,7 +743,7 @@ fail:
 #endif
 
 #if !defined(EFFECT_VISUAL_BANK_ACTIVE) || defined(EFFECT_VISUAL_EXACT_80138838)
-extern f32 fn_800E0BE4(void);
+extern f32 GSrandf(void);
 extern void fn_800CDBE0(void);
 extern void fn_800CE148(void);
 extern void set__5GSvecFfff(void* dst, f32 x, f32 y, f32 z);
@@ -784,7 +784,7 @@ void fn_80138838(void* ptr, u32 b) {
             f32 radius;
 
             radius = *(f32*)(p + 0x58) * fn_800E0BA0() + *(f32*)(p + 0x54);
-            angle = 6.2831855f * fn_800E0BE4();
+            angle = 6.2831855f * GSrandf();
             *(f32*)(entry + 0x960) = radius * (f32)cos(angle);
             *(f32*)(entry + 0x964) = 0.0f;
             *(f32*)(entry + 0x968) = radius * (f32)sin(angle);
@@ -885,10 +885,10 @@ u32 fn_80138B74(void* ptr) {
     defined(EFFECT_VISUAL_EXACT_80138BBC_80138DE4)
 extern void GSmodelSetVisibility(void* a, u32 b);
 extern void GSmodelFree(void* entry);
-extern u32 fn_800EE0E8(void* entry);
+extern u32 GSmodelWalkJObjs(void* entry);
 extern s32 GSpartGetMaterialCount(void* outerP);
 extern void GSmaterialSetAlpha(void* obj, f32 val);
-extern void fn_800DF608(void* handle);
+extern void GSmaterialRemoveExtraTObj(void* handle);
 extern void GSpartFree(void* handle);
 extern u32 lbl_8047D160;
 #if 0
@@ -924,7 +924,7 @@ u32 fn_80138BBC(void* ptr) {
         }
 
         model = *(void**)(p + 0x8);
-        modelCount = fn_800EE0E8(model);
+        modelCount = GSmodelWalkJObjs(model);
         for (k = 0; k < modelCount; k++) {
             part = GSmodelGetPart(model, k);
             if (part != NULL) {
@@ -933,7 +933,7 @@ u32 fn_80138BBC(void* ptr) {
                     obj = GSpartGetMaterial(part, j);
                     if (obj != NULL) {
                         GSmaterialSetAlpha(obj, *(f32*)&lbl_8047D160);
-                        fn_800DF608(obj);
+                        GSmaterialRemoveExtraTObj(obj);
                     }
                 }
                 GSpartFree(part);
@@ -1007,8 +1007,8 @@ allocation_error:
 
 #if !defined(EFFECT_VISUAL_BANK_ACTIVE) || \
     defined(EFFECT_VISUAL_EXACT_80138DE4)
-extern void fn_800E06B8();
-extern void fn_800E040C();
+extern void GSquatSlerp();
+extern void GSmtxFromQuat();
 extern void fn_800E02C4(void* matrix, f32 x, f32 y, f32 z);
 extern void fn_800E03B4();
 extern void GSmodelSetMatrix();
@@ -1061,7 +1061,7 @@ u32 fn_80138DE4(void* ptr, u32 delta) {
             } else {
                 model = GSresGetResource(*(u16*)(p + 0x40), *(u16*)(p + 0x44));
                 alpha = 1.0f - ((f32)(next - fadeStart) / (f32)(fadeEnd - fadeStart));
-                modelCount = fn_800EE0E8(model);
+                modelCount = GSmodelWalkJObjs(model);
                 for (i = 0; i < modelCount; i++) {
                     part = GSmodelGetPart(model, i);
                     if (part != NULL) {
@@ -1070,7 +1070,7 @@ u32 fn_80138DE4(void* ptr, u32 delta) {
                             obj = GSpartGetMaterial(part, j);
                             if (obj != NULL) {
                                 GSmaterialSetAlpha(obj, alpha);
-                                fn_800DF608(obj);
+                                GSmaterialRemoveExtraTObj(obj);
                             }
                         }
                         GSpartFree(part);
@@ -1093,8 +1093,8 @@ u32 fn_80138DE4(void* ptr, u32 delta) {
                     } else {
                         leafModel = *(void**)(entry + 0x58);
                         scale = *(f32*)(entry + 0x50);
-                        fn_800E06B8(rotation, entry + 0x30, entry + 0x40, *(f32*)(entry + 0x54));
-                        fn_800E040C(matrix, rotation);
+                        GSquatSlerp(rotation, entry + 0x30, entry + 0x40, *(f32*)(entry + 0x54));
+                        GSmtxFromQuat(matrix, rotation);
                         fn_800E02C4(matrix, scale, scale, scale);
                         fn_800E03B4(matrix, position);
                         GSmodelSetMatrix(leafModel, matrix);
@@ -1111,11 +1111,11 @@ u32 fn_80138DE4(void* ptr, u32 delta) {
 
 #if !defined(EFFECT_VISUAL_BANK_ACTIVE) || \
     defined(EFFECT_VISUAL_EXACT_80139074_80139820)
-extern f32 fn_800E0BE4(void);
+extern f32 GSrandf(void);
 extern void GSvecCopy(void* dst, const void* src);
 extern void fn_800E0718(void*, void*, f32);
 extern void GSvecAdd(void* dst, void* srcA, void* srcB);
-extern void fn_800E040C();
+extern void GSmtxFromQuat();
 extern void fn_800E02C4(void* matrix, f32 x, f32 y, f32 z);
 extern void fn_800E03B4();
 extern void GSmodelSetMatrix();
@@ -1170,15 +1170,15 @@ void fn_80139074(void* entry, u8* leaf) {
     *(f32*)(leaf + 0x54) -= 1.0f;
     fn_800E076C(leaf + 0x30, leaf + 0x40);
 
-    yaw0 = *(f32*)&lbl_8047D180 * fn_800E0BE4();
-    pitch0 = *(f32*)&lbl_8047D184 * fn_800E0BE4();
+    yaw0 = *(f32*)&lbl_8047D180 * GSrandf();
+    pitch0 = *(f32*)&lbl_8047D184 * GSrandf();
     sinPitch0 = sin(pitch0);
     sinYaw0 = sin(yaw0);
     cosPitch0 = cos(pitch0);
     cosYaw0 = cos(yaw0);
     set__5GSvecFfff(direction, sinPitch0 * cosYaw0, cosPitch0, sinPitch0 * sinYaw0);
     fn_800E0718(leaf + 0x40, direction,
-                *(f32*)&lbl_8047D180 * fn_800E0BE4());
+                *(f32*)&lbl_8047D180 * GSrandf());
 
     GSvecCopy(leaf, leaf + 0xC);
     vec = (f32*)(leaf + 0x18);
@@ -1191,8 +1191,8 @@ void fn_80139074(void* entry, u8* leaf) {
     GSvecAdd(vec, vec, leaf);
 
     vec = (f32*)(leaf + 0xC);
-    yaw1 = *(f32*)&lbl_8047D180 * fn_800E0BE4();
-    pitch1 = *(f32*)&lbl_8047D184 * fn_800E0BE4();
+    yaw1 = *(f32*)&lbl_8047D180 * GSrandf();
+    pitch1 = *(f32*)&lbl_8047D184 * GSrandf();
     sinPitch1 = sin(pitch1);
     distance1 = nearRange * fn_800E0BA0() + nearBase;
     distance1 *= *(f32*)(leaf + 0x50);
@@ -1205,8 +1205,8 @@ void fn_80139074(void* entry, u8* leaf) {
     GSvecAdd(vec, vec, leaf);
 
     vec = (f32*)(leaf + 0x24);
-    yaw2 = *(f32*)&lbl_8047D180 * fn_800E0BE4();
-    pitch2 = *(f32*)&lbl_8047D184 * fn_800E0BE4();
+    yaw2 = *(f32*)&lbl_8047D180 * GSrandf();
+    pitch2 = *(f32*)&lbl_8047D184 * GSrandf();
     sinPitch2 = sin(pitch2);
     distance2 = farRange * fn_800E0BA0() + farBase;
     distance2 *= *(f32*)(leaf + 0x50);
@@ -1318,34 +1318,34 @@ u8 _leaffxGenerateLeafData(void* ptr, void* entry) {
     *(f32*)(e + 0x50) *= *(f32*)(p + 0x0C);
     *(f32*)(e + 0x54) = lbl_8047D168;
 
-    yaw0 = *(f32*)&lbl_8047D180 * fn_800E0BE4();
-    pitch0 = *(f32*)&lbl_8047D184 * fn_800E0BE4();
+    yaw0 = *(f32*)&lbl_8047D180 * GSrandf();
+    pitch0 = *(f32*)&lbl_8047D184 * GSrandf();
     sinPitch0 = sin(pitch0);
     sinYaw0 = sin(yaw0);
     cosPitch0 = cos(pitch0);
     cosYaw0 = cos(yaw0);
     set__5GSvecFfff(vecA, sinPitch0 * cosYaw0, cosPitch0, sinPitch0 * sinYaw0);
     /* RULE-EXCEPTION(user-approved): codegen-only cast; it keeps this e + 0x30
-       from being merged with the one in the final fn_800E040C call — see
+       from being merged with the one in the final GSmtxFromQuat call — see
        docs/RULE_EXCEPTIONS.md */
-    fn_800E0718((f32*)(e + 0x30), vecA, *(f32*)&lbl_8047D180 * fn_800E0BE4());
+    fn_800E0718((f32*)(e + 0x30), vecA, *(f32*)&lbl_8047D180 * GSrandf());
 
-    yaw1 = *(f32*)&lbl_8047D180 * fn_800E0BE4();
-    pitch1 = *(f32*)&lbl_8047D184 * fn_800E0BE4();
+    yaw1 = *(f32*)&lbl_8047D180 * GSrandf();
+    pitch1 = *(f32*)&lbl_8047D184 * GSrandf();
     sinPitch1 = sin(pitch1);
     sinYaw1 = sin(yaw1);
     cosPitch1 = cos(pitch1);
     cosYaw1 = cos(yaw1);
     set__5GSvecFfff(vecB, sinPitch1 * cosYaw1, cosPitch1, sinPitch1 * sinYaw1);
-    fn_800E0718((u8*)e + 0x40, vecB, *(f32*)&lbl_8047D180 * fn_800E0BE4());
+    fn_800E0718((u8*)e + 0x40, vecB, *(f32*)&lbl_8047D180 * GSrandf());
 
     GSvecCopy(e, position);
 
     vec = (f32*)(e + 0x18);
     radius2 = radiusRange * fn_800E0BA0() + radiusBase;
     radius2 *= *(f32*)(e + 0x50);
-    yaw2 = *(f32*)&lbl_8047D180 * fn_800E0BE4();
-    pitch2 = *(f32*)&lbl_8047D184 * fn_800E0BE4();
+    yaw2 = *(f32*)&lbl_8047D180 * GSrandf();
+    pitch2 = *(f32*)&lbl_8047D184 * GSrandf();
     sinPitch2 = sin(pitch2);
     sinYaw2 = sin(yaw2);
     cosPitch2 = cos(pitch2);
@@ -1355,8 +1355,8 @@ u8 _leaffxGenerateLeafData(void* ptr, void* entry) {
     GSvecAdd(vec, vec, position);
 
     vec = (f32*)(e + 0x0C);
-    yaw3 = *(f32*)&lbl_8047D180 * fn_800E0BE4();
-    pitch3 = *(f32*)&lbl_8047D188 * fn_800E0BE4();
+    yaw3 = *(f32*)&lbl_8047D180 * GSrandf();
+    pitch3 = *(f32*)&lbl_8047D188 * GSrandf();
     sinPitch3 = sin(pitch3);
     radius3 = heightRange * fn_800E0BA0() + heightBase;
     radius3 *= *(f32*)(p + 0x34) * fn_800E0BA0() + *(f32*)(p + 0x30);
@@ -1369,8 +1369,8 @@ u8 _leaffxGenerateLeafData(void* ptr, void* entry) {
     GSvecAdd(vec, vec, position);
 
     vec = (f32*)(e + 0x24);
-    yaw4 = *(f32*)&lbl_8047D180 * fn_800E0BE4();
-    pitch4 = *(f32*)&lbl_8047D184 * fn_800E0BE4();
+    yaw4 = *(f32*)&lbl_8047D180 * GSrandf();
+    pitch4 = *(f32*)&lbl_8047D184 * GSrandf();
     sinPitch4 = sin(pitch4);
     radius4 = radiusRange * fn_800E0BA0() + radiusBase;
     radius4 *= *(f32*)(e + 0x50);
@@ -1381,7 +1381,7 @@ u8 _leaffxGenerateLeafData(void* ptr, void* entry) {
     vecScale(vec, vec, radius4);
     GSvecAdd(vec, vec, e + 0x0C);
 
-    fn_800E040C(matrix, (u8*)e + 0x30);
+    GSmtxFromQuat(matrix, (u8*)e + 0x30);
     fn_800E02C4(matrix, *(f32*)(e + 0x50), *(f32*)(e + 0x50), *(f32*)(e + 0x50));
     fn_800E03B4(matrix, position);
     GSmodelSetMatrix(*(void**)(e + 0x58), matrix);
@@ -1662,8 +1662,8 @@ asm void fn_80139E80(void* entry, void* parent, void* cameraPos, void* modelPos)
 }
 #else
 void fn_80139E80(u8* e, u8* p, void* cameraPos, void* modelPos) {
-    extern void fn_800D7E5C(void);
-    extern void fn_800D7F14(void*);
+    extern void gfxPopMatrix(void);
+    extern void gfxPushMultMatrix(void*);
     extern void fn_800DFFCC(void*, void*, void*);
     extern void fn_800E0060(f32*, f32*);
     extern f32 vecMag(f32*);
@@ -1711,9 +1711,9 @@ void fn_80139E80(u8* e, u8* p, void* cameraPos, void* modelPos) {
     }
 
     fn_800E0560(matrix, interpolated);
-    fn_800D7F14(matrix);
+    gfxPushMultMatrix(matrix);
     fn_800E042C(matrix, (f32*)(p + 0x20));
-    fn_800D7F14(matrix);
+    gfxPushMultMatrix(matrix);
     gfxBegin((visible * 4) & 0xFFFC);
 
     count = *(u16*)(e + 0x12E2);
@@ -1735,34 +1735,34 @@ void fn_80139E80(u8* e, u8* p, void* cameraPos, void* modelPos) {
                     0.5f * *(f32*)(pointEntry + 0x10));
         GSvecAdd(vertex, *(u8**)(pointEntry + 0xC), direction);
         gfxVtxPos(vertex[0], vertex[1], vertex[2]);
-        fn_800D5CB8(0, e[0x12D8], e[0x12D9], e[0x12DA], e[0x12DB]);
+        gfxVtxColor4u8(0, e[0x12D8], e[0x12D9], e[0x12DA], e[0x12DB]);
         gfxVtxTexCoord(0, 0.0f, 0.0f);
         GSvecSub(vertex, *(u8**)(pointEntry + 0xC), direction);
         gfxVtxPos(vertex[0], vertex[1], vertex[2]);
-        fn_800D5CB8(0, e[0x12D8], e[0x12D9], e[0x12DA], e[0x12DB]);
+        gfxVtxColor4u8(0, e[0x12D8], e[0x12D9], e[0x12DA], e[0x12DB]);
         gfxVtxTexCoord(0, 1.0f, 0.0f);
 
         vecScale(direction, normal,
                     0.5f * *(f32*)(pointEntry + 0x14));
         GSvecSub(vertex, pointEntry, direction);
         gfxVtxPos(vertex[0], vertex[1], vertex[2]);
-        fn_800D5CB8(0, e[0x12D8], e[0x12D9], e[0x12DA], e[0x12DB]);
+        gfxVtxColor4u8(0, e[0x12D8], e[0x12D9], e[0x12DA], e[0x12DB]);
         gfxVtxTexCoord(0, 1.0f, 1.0f);
         GSvecAdd(vertex, pointEntry, direction);
         gfxVtxPos(vertex[0], vertex[1], vertex[2]);
-        fn_800D5CB8(0, e[0x12D8], e[0x12D9], e[0x12DA], e[0x12DB]);
+        gfxVtxColor4u8(0, e[0x12D8], e[0x12D9], e[0x12DA], e[0x12DB]);
         gfxVtxTexCoord(0, 0.0f, 1.0f);
         }
     }
     gfxEnd();
-    fn_800D7E5C();
-    fn_800D7E5C();
+    gfxPopMatrix();
+    gfxPopMatrix();
 }
 #endif
 #endif
 #if !defined(EFFECT_VISUAL_BANK_ACTIVE) || defined(EFFECT_VISUAL_EXACT_8013A1D4)
 #if defined(EFFECT_VISUAL_EXACT_8013A1D4)
-extern f32 fn_800E0BE4(void);
+extern f32 GSrandf(void);
 extern void GSvecCopy(void* dst, const void* src);
 extern void GSvecAdd(void* dst, void* srcA, void* srcB);
 #endif
@@ -1820,7 +1820,7 @@ void fn_8013A1D4(u8* entry, u8* parent, ElectronPoint* origin, u32 depth, f32 we
         GSvecAdd(current, current, point);
 
         (*(u16*)(entry + 0x12E2))++;
-        if (current->y < stopHeight || spawnChance < fn_800E0BE4()) {
+        if (current->y < stopHeight || spawnChance < GSrandf()) {
             if (depth == 0) {
                 GSvecCopy(entry + 0x12CC, current);
             }
@@ -1845,7 +1845,7 @@ void fn_8013A1D4(u8* entry, u8* parent, ElectronPoint* origin, u32 depth, f32 we
     for (j = startCount; j < count; j++, first++) {
         first->startWeight = weight;
         weight = first->endWeight = weight - branchDecay;
-        if (branchChance > fn_800E0BE4()) {
+        if (branchChance > GSrandf()) {
             fn_8013A1D4(entry, parent, first->prev, depth + 1,
                         0.5f * weight);
         }
@@ -1904,7 +1904,7 @@ u32 fn_8013A49C(void* ptr) {
 
 #if !defined(EFFECT_VISUAL_BANK_ACTIVE) || defined(EFFECT_VISUAL_EXACT_8013A520)
 #if defined(EFFECT_VISUAL_EXACT_8013A520)
-extern f32 fn_800E0BE4(void);
+extern f32 GSrandf(void);
 extern void GSvecCopy(void* dst, const void* src);
 extern void GSvecAdd(void* dst, void* srcA, void* srcB);
 extern u32 fn_800EE7E0(void* obj);
@@ -1924,7 +1924,7 @@ asm void fn_8013A520(void) {
 }
 #else
 u32 fn_8013A520(void* ptr) {
-    extern u32 fn_800EE0E8(void*);
+    extern u32 GSmodelWalkJObjs(void*);
     extern f64 sin(f64);
     extern f64 cos(f64);
     u32 segment;
@@ -1985,7 +1985,7 @@ u32 fn_8013A520(void* ptr) {
         return 0;
     }
 
-    count = fn_800EE0E8(resource);
+    count = GSmodelWalkJObjs(resource);
     GSmodelGetPosition(resource, center);
     _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
     camera = GScameraGetActiveCamera();
@@ -2021,7 +2021,7 @@ u32 fn_8013A520(void* ptr) {
                     if (second == NULL) {
                         continue;
                     }
-                    if ((u8)fn_800EE7E0(second) != 0 && chance > fn_800E0BE4()) {
+                    if ((u8)fn_800EE7E0(second) != 0 && chance > GSrandf()) {
                         GSpartGetTransform(second, secondPos, 0, 0);
                         if (GSvecDistance(firstPos, center) > 0.1f) {
                             GSvecCopy(ctrl[0], firstPos);
@@ -2030,10 +2030,10 @@ u32 fn_8013A520(void* ptr) {
                                      GSvecDistance(firstPos, secondPos);
 
                             {
-                                yawB1 = 6.2831855f * fn_800E0BE4();
-                                pitchB1 = 3.1415927f * fn_800E0BE4();
+                                yawB1 = 6.2831855f * GSrandf();
+                                pitchB1 = 3.1415927f * GSrandf();
                                 sinPitchB1 = sin(pitchB1);
-                                lengthB1 = radius * fn_800E0BE4();
+                                lengthB1 = radius * GSrandf();
                                 sinYawB1 = sin(yawB1);
                                 cosPitchB1 = cos(pitchB1);
                                 cosYawB1 = cos(yawB1);
@@ -2044,10 +2044,10 @@ u32 fn_8013A520(void* ptr) {
                             GSvecAdd(ctrl[2], firstPos, offset);
 
                             {
-                                yawB2 = 6.2831855f * fn_800E0BE4();
-                                pitchB2 = 3.1415927f * fn_800E0BE4();
+                                yawB2 = 6.2831855f * GSrandf();
+                                pitchB2 = 3.1415927f * GSrandf();
                                 sinPitchB2 = sin(pitchB2);
-                                lengthB2 = radius * fn_800E0BE4();
+                                lengthB2 = radius * GSrandf();
                                 sinYawB2 = sin(yawB2);
                                 cosPitchB2 = cos(pitchB2);
                                 cosYawB2 = cos(yawB2);
@@ -2063,13 +2063,13 @@ u32 fn_8013A520(void* ptr) {
                             step = 1.0f / (f32)segments;
                             gfxBegin((u16)(segments + 1));
                             gfxVtxPos(ctrl[0][0], ctrl[0][1], ctrl[0][2]);
-                            fn_800D5CB8(0, p[0], p[1], p[2], p[3]);
+                            gfxVtxColor4u8(0, p[0], p[1], p[2], p[3]);
                             t = step;
                             for (segment = 1; segment < segments; segment++) {
                                 GSbezierCalculateVector(point, ctrl, t);
                                 {
-                                    yawB3 = 6.2831855f * fn_800E0BE4();
-                                    pitchB3 = 3.1415927f * fn_800E0BE4();
+                                    yawB3 = 6.2831855f * GSrandf();
+                                    pitchB3 = 3.1415927f * GSrandf();
                                     sinPitchB3 = sin(pitchB3);
                                     lengthB3 = *(f32*)(p + 0x14) * *(f32*)(p + 0x10) *
                                              fn_800E0BA0();
@@ -2082,11 +2082,11 @@ u32 fn_8013A520(void* ptr) {
                                 }
                                 GSvecAdd(point, point, jitter);
                                 gfxVtxPos(point[0], point[1], point[2]);
-                                fn_800D5CB8(0, p[0], p[1], p[2], p[3]);
+                                gfxVtxColor4u8(0, p[0], p[1], p[2], p[3]);
                                 t += step;
                             }
                             gfxVtxPos(ctrl[1][0], ctrl[1][1], ctrl[1][2]);
-                            fn_800D5CB8(0, p[0], p[1], p[2], p[3]);
+                            gfxVtxColor4u8(0, p[0], p[1], p[2], p[3]);
                             gfxEnd();
                         }
                     }
@@ -2611,7 +2611,7 @@ u32 fn_8013B558(void* ptr) {
 #if !defined(EFFECT_VISUAL_BANK_ACTIVE) || \
     defined(EFFECT_VISUAL_EXACT_8013B5E4)
 #if defined(EFFECT_VISUAL_BANK_ACTIVE)
-extern f32 fn_800E0BE4(void);
+extern f32 GSrandf(void);
 extern void set__5GSvecFfff(void* dst, f32 x, f32 y, f32 z);
 extern void GSvecCopy(void* dst, const void* src);
 extern void fn_800DFFCC(void* dst, void* src, const void* value);
@@ -2623,7 +2623,7 @@ extern void vecScale(void* dst, void* src, f32 scale);
 extern void GSvecAdd(void* dst, void* srcA, void* srcB);
 #endif
 extern u16 fn_800E2C04(u32 size, u32 alignment);
-extern u8 fn_800E0E14();
+extern u8 GSmemDumpMap();
 extern void GSmodelSetRotation(void* model, void* rotation);
 extern u8 GSmodelCanTexAnimate(void* model);
 extern void GSmodelSetTexAnimIndex(void* model, u16 value);
@@ -2673,7 +2673,7 @@ static inline u8 surfAllocMesh(u8* p, void* model) {
         *(u8**)(p + 0x10) = cursor;
         cursor += colorSize;
         *(u8**)(p + 0xC) = cursor;
-        fn_800E0E14(0, 0);
+        GSmemDumpMap(0, 0);
         return TRUE;
     }
     return FALSE;
@@ -2982,7 +2982,7 @@ void fn_8013BE04(void* ptr, void* mtx, u8* color, f32 x, f32 z, f32 scale) {
         GSvecAdd(&current, &current, &rowStep);
         current[2] = base[2];
     }
-    fn_800E0E14(0, 0);
+    GSmemDumpMap(0, 0);
 }
 #endif
 extern void* fn_8019FF48(void* model);
@@ -2992,7 +2992,7 @@ extern void HSD_MObjCompileTev(void* mobj);
 
 #if !defined(EFFECT_VISUAL_BANK_ACTIVE) || defined(EFFECT_VISUAL_EXACT_8013C074)
 #if defined(EFFECT_VISUAL_EXACT_8013C074)
-extern u8 fn_800E0E14();
+extern u8 GSmemDumpMap();
 extern void* fn_8019FF48(void* model);
 extern void HSD_MObjSetFlags(void* mobj, u32 flags);
 extern void HSD_MObjCompileTev(void* mobj);
@@ -3191,7 +3191,7 @@ u32 fn_8013C074(void* ptr, void* arg) {
 
     surfBuildStrips(state);
 
-    fn_800E0E14(0, 0);
+    GSmemDumpMap(0, 0);
     pobj->display = state->display;
     pobj->display_count = state->display_size >> 5;
     return 1;
@@ -3287,7 +3287,7 @@ u32 fn_8013C670(void* arg) {
     defined(EFFECT_VISUAL_EXACT_8013C718)
 #if defined(EFFECT_VISUAL_BANK_ACTIVE)
 extern u16 fn_800E2C04(u32 size, u32 alignment);
-extern u8 fn_800E0E14();
+extern u8 GSmemDumpMap();
 extern void GSmodelSetRotation(void* model, void* rotation);
 extern u8 GSmodelCanTexAnimate(void* model);
 extern void GSmodelSetTexAnimIndex(void* model, u16 value);
@@ -3295,7 +3295,7 @@ extern void GSmodelSetTexAnimRate(void* model, f32 value);
 extern void GSmodelSetTexAnimFrame(void* model, f32 value);
 extern void GSmodelSetTexAnimType(void* model, u32 value);
 extern void GSmodelStartTexAnimation(void* model);
-extern f32 fn_800E0BE4(void);
+extern f32 GSrandf(void);
 extern void set__5GSvecFfff(void* dst, f32 x, f32 y, f32 z);
 extern void GSvecCopy(void* dst, const void* src);
 extern void GSvecAdd(void* dst, void* srcA, void* srcB);
@@ -3376,10 +3376,10 @@ static inline u8 seaAllocRandomTable(u8* p) {
         *(f32**)(p + 0x88) = randomAngle;
         for (i = 0; i < rowCount; randomX++, i++, randomZ++, randomAngle++) {
             low = *(f32*)(p + 0x90);
-            *randomX = low + (*(f32*)(p + 0x94) - low) * fn_800E0BE4();
+            *randomX = low + (*(f32*)(p + 0x94) - low) * GSrandf();
             low = *(f32*)(p + 0x98);
-            *randomZ = low + (*(f32*)(p + 0x9C) - low) * fn_800E0BE4();
-            *randomAngle = *(f32*)&lbl_8047D230 * fn_800E0BE4();
+            *randomZ = low + (*(f32*)(p + 0x9C) - low) * GSrandf();
+            *randomAngle = *(f32*)&lbl_8047D230 * GSrandf();
         }
         return TRUE;
     }
@@ -4121,10 +4121,10 @@ log:
     defined(EFFECT_VISUAL_EXACT_8013D984)
 extern s32 fn_800E3B3C(void);
 extern void fn_800D377C(u32 a);
-extern void fn_800D3410(void* texture, u32 a);
+extern void GSgfxRenderLayer(void* texture, u32 a);
 extern u8 fn_800E3C64(void* model);
 extern void GSmodelDrawModel(void* obj, u32 flags);
-extern void fn_800D3190(void);
+extern void GSgfxRenderEnd(void);
 extern u8 GSmodelIsEnvMapEnabled(void* model);
 extern void GSmodelSetEnvMapBlendValue(void* model, f32 value);
 extern u32 lbl_8047AEE0;
@@ -4173,7 +4173,7 @@ u32 fn_8013D984(void* ptr, u32 delta) {
                     fn_800D4604(2);
                     _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
                     fn_800D377C(1);
-                    fn_800D3410((void*)lbl_8047AEE0, 0);
+                    GSgfxRenderLayer((void*)lbl_8047AEE0, 0);
                     for (i = 0; i < modelCount; i++) {
                         otherModel = fn_800E3B08(i);
                         if (otherModel != NULL && otherModel != model &&
@@ -4181,7 +4181,7 @@ u32 fn_8013D984(void* ptr, u32 delta) {
                             GSmodelDrawModel(otherModel, 0x3010);
                         }
                     }
-                    fn_800D3190();
+                    GSgfxRenderEnd();
                     fn_800D4604(1);
                 }
             }
@@ -4319,7 +4319,7 @@ u32 fn_8013DD7C(void* ptr) {
 }
 #endif
 extern void GSgfxBeginBackFBCapture(void* handle, void* callback, void* ctx);
-extern void* fn_800E584C(void* a, void* b);
+extern void* GSmodelBlurCreateWork(void* a, void* b);
 extern u8 lbl_80272F70[];
 #if 0
 asm u16 blurEffectStart(void) {
@@ -4337,7 +4337,7 @@ u32 blurEffectStart(void* ptr) {
             }
         } else {
             if (*(void**)ptr != NULL) {
-                *(void**)((u8*)ptr + 0x4) = fn_800E584C(*(void**)ptr, (u8*)ptr + 0x8);
+                *(void**)((u8*)ptr + 0x4) = GSmodelBlurCreateWork(*(void**)ptr, (u8*)ptr + 0x8);
                 return 1;
             }
         }
@@ -4541,19 +4541,19 @@ u32 fn_8013E258(void* model, void* unused, void* state) {
     gfxSetPrimitive(4);
     gfxBegin(4);
     gfxVtxPos(0.0f, 0.0f, 0.0f);
-    fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, alpha);
+    gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, alpha);
     gfxVtxTexCoord(0, 0.0f, 0.0f);
     gfxVtxPos(*(f32*)&lbl_8047D29C, 0.0f,
                 0.0f);
-    fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, alpha);
+    gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, alpha);
     gfxVtxTexCoord(0, 1.0f, 0.0f);
     gfxVtxPos(0.0f, *(f32*)&lbl_8047D2A0,
                 0.0f);
-    fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, alpha);
+    gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, alpha);
     gfxVtxTexCoord(0, 0.0f, 1.0f);
     gfxVtxPos(*(f32*)&lbl_8047D29C, *(f32*)&lbl_8047D2A0,
                 0.0f);
-    fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, alpha);
+    gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, alpha);
     gfxVtxTexCoord(0, 1.0f, 1.0f);
     gfxEnd();
     fn_800D9ED8(0);
@@ -4721,19 +4721,19 @@ u32 fn_8013E6C4(u8* ptr)
         gfxBegin(4);
         gfxVtxPos(*(f32*)&lbl_8047D2AC, *(f32*)&lbl_8047D2AC,
                     *(f32*)&lbl_8047D2AC);
-        fn_800D5CB8(0, ptr[8], ptr[9], ptr[0xA], ptr[0xB]);
+        gfxVtxColor4u8(0, ptr[8], ptr[9], ptr[0xA], ptr[0xB]);
         gfxVtxTexCoord(0, *(f32*)&lbl_8047D2AC, *(f32*)&lbl_8047D2AC);
         gfxVtxPos(*(f32*)&lbl_8047D2B0, *(f32*)&lbl_8047D2AC,
                     *(f32*)&lbl_8047D2AC);
-        fn_800D5CB8(0, ptr[8], ptr[9], ptr[0xA], ptr[0xB]);
+        gfxVtxColor4u8(0, ptr[8], ptr[9], ptr[0xA], ptr[0xB]);
         gfxVtxTexCoord(0, *(f32*)&lbl_8047D2A8, *(f32*)&lbl_8047D2AC);
         gfxVtxPos(*(f32*)&lbl_8047D2AC, *(f32*)&lbl_8047D2B4,
                     *(f32*)&lbl_8047D2AC);
-        fn_800D5CB8(0, ptr[8], ptr[9], ptr[0xA], ptr[0xB]);
+        gfxVtxColor4u8(0, ptr[8], ptr[9], ptr[0xA], ptr[0xB]);
         gfxVtxTexCoord(0, *(f32*)&lbl_8047D2AC, *(f32*)&lbl_8047D2A8);
         gfxVtxPos(*(f32*)&lbl_8047D2B0, *(f32*)&lbl_8047D2B4,
                     *(f32*)&lbl_8047D2AC);
-        fn_800D5CB8(0, ptr[8], ptr[9], ptr[0xA], ptr[0xB]);
+        gfxVtxColor4u8(0, ptr[8], ptr[9], ptr[0xA], ptr[0xB]);
         gfxVtxTexCoord(0, *(f32*)&lbl_8047D2A8, *(f32*)&lbl_8047D2A8);
         gfxEnd();
         return 1;
@@ -4956,7 +4956,7 @@ void fn_8013EA44(void* ptr) {
     fn_800D377C(2);
     fn_800D4604(2);
     _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
-    fn_800D3410(texture, 0);
+    GSgfxRenderLayer(texture, 0);
 
     alpha = *(f32*)(p + 0x28);
     layerAlphaStep = lbl_8047D2A8 / (f32)count;
@@ -4997,7 +4997,7 @@ void fn_8013EA44(void* ptr) {
     GSmodelResetMaterialAlpha(model);
     GSmodelResetRenderFlags(model);
     GSmodelResetMaterialAlpha(model);
-    fn_800D3190();
+    GSgfxRenderEnd();
     fn_800D4604(1);
     fn_800D377C(1);
     GSmodelResetPEdescr(model);
@@ -5028,7 +5028,7 @@ u32 fn_8013F000(void* callbacks) {
     return effectId;
 }
 #endif
-extern void fn_800D75F4(void* a);
+extern void gfxVtxDescFree(void* a);
 extern u32 lbl_8047AEE8;
 extern u32 lbl_8047AEEC;
 #if 0
@@ -5045,7 +5045,7 @@ u32 fn_8013F078(void* ptr) {
             *(u32*)((u8*)ptr + 0x4) = 0;
         }
         if (*(void**)ptr != NULL) {
-            fn_800D75F4(*(void**)ptr);
+            gfxVtxDescFree(*(void**)ptr);
             *(u32*)ptr = 0;
         }
         if (lbl_8047AEE8 != 0) {
@@ -5060,8 +5060,8 @@ u32 fn_8013F078(void* ptr) {
     return 1;
 }
 #endif
-extern void* fn_800D7894(void);
-extern void fn_800D7868(void* handle, u32 a, u32 b, u32 c, u32 d, u32 e, u32 f, u32 g);
+extern void* gfxVtxDescAlloc(void);
+extern void gfxVtxDescSetAttr(void* handle, u32 a, u32 b, u32 c, u32 d, u32 e, u32 f, u32 g);
 extern u32 lbl_8047AEE8;
 extern u32 lbl_8047AEEC;
 #if 1
@@ -5085,7 +5085,7 @@ u32 fn_8013F114(void* ptr) {
                         *(u32*)(p + 0x4) = 0;
                     }
                     if (*(void**)p != NULL) {
-                        fn_800D75F4(*(void**)p);
+                        gfxVtxDescFree(*(void**)p);
                         *(u32*)p = 0;
                     }
                     if (lbl_8047AEE8 != 0) {
@@ -5101,7 +5101,7 @@ u32 fn_8013F114(void* ptr) {
             }
         }
         *(u16*)&lbl_8047AEEC = *(u16*)&lbl_8047AEEC + 1;
-        *(void**)p = fn_800D7894();
+        *(void**)p = gfxVtxDescAlloc();
         if (*(void**)p == NULL) {
             if (p != NULL) {
                 GXDrawDone();
@@ -5111,7 +5111,7 @@ u32 fn_8013F114(void* ptr) {
                     *(u32*)(p + 0x4) = 0;
                 }
                 if (*(void**)p != NULL) {
-                    fn_800D75F4(*(void**)p);
+                    gfxVtxDescFree(*(void**)p);
                     *(u32*)p = 0;
                 }
                 if (lbl_8047AEE8 != 0) {
@@ -5125,10 +5125,10 @@ u32 fn_8013F114(void* ptr) {
             }
             return 0;
         }
-        fn_800D7868(*(void**)p, 1, 0, 1, 4, 0, 0, 0);
-        fn_800D7868(*(void**)p, 4, 0, 5, 6, 0, 0, 0);
-        fn_800D7868(*(void**)p, 6, 0, 8, 4, 0, 0, 0);
-        fn_800D7868(*(void**)p, 7, 0, 8, 4, 0, 0, 0);
+        gfxVtxDescSetAttr(*(void**)p, 1, 0, 1, 4, 0, 0, 0);
+        gfxVtxDescSetAttr(*(void**)p, 4, 0, 5, 6, 0, 0, 0);
+        gfxVtxDescSetAttr(*(void**)p, 6, 0, 8, 4, 0, 0, 0);
+        gfxVtxDescSetAttr(*(void**)p, 7, 0, 8, 4, 0, 0, 0);
         return 1;
     }
     return 0;
@@ -5203,7 +5203,7 @@ u16 distortionEffectStart(void* ptr) {
     defined(EFFECT_VISUAL_EXACT_8013F410_8013F80C)
 extern u8 GSmodelGetVisibility(void* obj);
 extern void gsParticleDraw(u32 a, u32 b);
-extern void fn_800D848C(u32 a, u32 b, u32 c, void* d);
+extern void gfxLoadTexMatrix(u32 a, u32 b, u32 c, void* d);
 extern void fn_800E064C(void* dst);
 extern void fn_800DC1D4(u32 a);
 extern void fn_800DBA54(u32 a);
@@ -5244,7 +5244,7 @@ u32 fn_8013F410(void* ptr) {
                 fn_800D4604(2);
                 _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
                 fn_800D377C(1);
-                fn_800D3410((void*)lbl_8047AEE8, 0);
+                GSgfxRenderLayer((void*)lbl_8047AEE8, 0);
                 for (i = 0; i < count; i++) {
                     obj = fn_800E3B08(i);
                     if (obj != NULL && GSmodelGetVisibility(obj) != 0) {
@@ -5255,7 +5255,7 @@ u32 fn_8013F410(void* ptr) {
                     gsParticleDraw(0x2000, 0);
                     gsParticleDraw(0x2000, 1);
                 }
-                fn_800D3190();
+                GSgfxRenderEnd();
                 fn_800D4604(1);
             }
         }
@@ -5268,9 +5268,9 @@ u32 fn_8013F410(void* ptr) {
         gfxSetUpdates(1, 1, 0);
         gfxLoadTexture(0, (void*)lbl_8047AEE8);
         gfxLoadTexture(1, *(void**)(p + 0x4));
-        fn_800D848C(0, 2, 4, p + 0x68);
+        gfxLoadTexMatrix(0, 2, 4, p + 0x68);
         fn_800E064C(mtx);
-        fn_800D848C(1, 2, 5, mtx);
+        gfxLoadTexMatrix(1, 2, 5, mtx);
         fn_800DC1D4(1);
         fn_800DBA54(1);
         fn_800DB9F0(0, 1, 1);
@@ -5284,7 +5284,7 @@ u32 fn_8013F410(void* ptr) {
         fn_800DBFD4(0, 7, 7, 7, 4);
         gfxSetVtxDesc(*(void**)p);
         gfxSetPrimitive(6);
-        fn_800D7F14(p + 0x38);
+        gfxPushMultMatrix(p + 0x38);
         gfxBegin(4);
 
         gfxVtxPos(*(f32*)&lbl_8047D304, *(f32*)&lbl_8047D304, *(f32*)&lbl_8047D300);
@@ -5308,8 +5308,8 @@ u32 fn_8013F410(void* ptr) {
         gfxVtxTexCoord(1, *(f32*)&lbl_8047D300, *(f32*)&lbl_8047D308);
 
         gfxEnd();
-        fn_800D7E5C();
-        fn_800D848C(0, 2, 4, mtx);
+        gfxPopMatrix();
+        gfxLoadTexMatrix(0, 2, 4, mtx);
         fn_800DBE5C(0);
         fn_800DBA54(0);
         gfxClearFlags(0x80000002);
@@ -5397,7 +5397,7 @@ extern void GScameraGetLookAt(void* mtx, void* lookAt, void* eye);
 extern void fn_800E0628(void* dst, void* src);
 extern void fn_800E0238(void* dst, void* src);
 extern void set__5GSvecFfff(void* vec, f32 x, f32 y, f32 z);
-extern s32 fn_800D2DE8(void* input, void* output, s32 count);
+extern s32 gfxProjectPoint(void* input, void* output, s32 count);
 extern void GSlogWrite(const char* fmt, ...);
 extern u16 GStextureGetXsize(void* texture);
 extern u16 GStextureGetYsize(void* texture);
@@ -5454,7 +5454,7 @@ void _distortionEffectUpdateMatrices(void* ptr) {
     set__5GSvecFfff(corners[1], lbl_8047D308, lbl_8047D308,
                     lbl_8047D300);
     GSvecTransform(corners[1], matrix, corners[1]);
-    if (fn_800D2DE8(corners, projected, 2) != 2) {
+    if (gfxProjectPoint(corners, projected, 2) != 2) {
         GSlogWrite((const char*)lbl_8027301C);
         return;
     }
@@ -5729,9 +5729,9 @@ asm void Unload__13ModelSequenceFPUc(void) {
 }
 #else
 void Unload__13ModelSequenceFPUc(u8* ptr) {
-    extern void fn_800DF608(void* handle);
+    extern void GSmaterialRemoveExtraTObj(void* handle);
     if (*(u32*)(ptr) != 0) {
-        fn_800DF608(*(void**)(ptr));
+        GSmaterialRemoveExtraTObj(*(void**)(ptr));
         *(u32*)(ptr) = 0;
     }
     if (*(u32*)(ptr + 0x4) != 0) {
@@ -5786,7 +5786,7 @@ u32 fn_80140190(void** out, void* model, u32 arg) {
             out[1] = NULL;
         }
         if (out[0] != NULL) {
-            fn_800DF608(out[0]);
+            GSmaterialRemoveExtraTObj(out[0]);
             out[0] = NULL;
         }
     }

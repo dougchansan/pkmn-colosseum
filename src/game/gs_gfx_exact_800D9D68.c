@@ -9,7 +9,7 @@ extern u32 lbl_8047AA80;
 extern void gfxRecordCommand(u32, ...);
 extern u32 GScameraGetActiveCamera(void);
 extern void fn_800BD7A0(u32, u32, u32, u32);
-extern void fn_800D2150(u32, u16, u16, u16, u16);
+extern void GScameraSetScissor(u32, u16, u16, u16, u16);
 extern void HSD_FogSet(u32);
 extern u32 lbl_8047AA8C;
 extern void GXSetCoPlanar(u32);
@@ -34,7 +34,7 @@ extern u32 lbl_803145A8[];
 /* Retail marks every function in this physical island active. */
 #pragma force_active on
 
-void fn_800D9D68(u16 x1, u16 y1, u16 x2, u16 y2) {
+void gfxSetScissor(u16 x1, u16 y1, u16 x2, u16 y2) {
     u32 state = lbl_8047AA80;
     if (*(s32*)state == 1) {
         gfxRecordCommand(0x37, 4, (u32)x1, (u32)y1, (u32)x2, (u32)y2);
@@ -47,7 +47,7 @@ void fn_800D9D68(u16 x1, u16 y1, u16 x2, u16 y2) {
         {
             u32 result = GScameraGetActiveCamera();
             if (result) {
-                fn_800D2150(result, x1, y1, x2, y2);
+                GScameraSetScissor(result, x1, y1, x2, y2);
             }
         }
     }
@@ -77,7 +77,7 @@ void fn_800D9ED8(s32 val) {
     else if (val == 0) { *(u8*)(lbl_8047AA80 + 0x1a) = 0; }
 }
 
-void fn_800D9F40(s32 val) {
+void gfxSetCoPlanar(s32 val) {
     u32 state = lbl_8047AA80;
     if (*(s32*)state == 1) { gfxRecordCommand(0x34, 1, val); }
     else {
@@ -87,7 +87,7 @@ void fn_800D9F40(s32 val) {
     }
 }
 
-void fn_800D9FB4(s32 val) {
+void gfxSetClipMode(s32 val) {
     u32 state = lbl_8047AA80;
     if (*(s32*)state == 1) { gfxRecordCommand(0x33, 1, val); }
     else {
@@ -105,7 +105,7 @@ void gfxSetCullMode(u32 idx) {
     }
 }
 
-void fn_800DA08C(s32 val) {
+void gfxSetDither(s32 val) {
     u32 state = lbl_8047AA80;
     if (*(s32*)state == 1) { gfxRecordCommand(0x31, 1, val); }
     else {
@@ -115,7 +115,7 @@ void fn_800DA08C(s32 val) {
     }
 }
 
-void fn_800DA100(s32 enable, s32 comp0, u8 ref0, s32 op, s32 comp1, u8 ref1) {
+void gfxSetAlphaCompare(s32 enable, s32 comp0, u8 ref0, s32 op, s32 comp1, u8 ref1) {
     u32 state = lbl_8047AA80;
     if (*(s32*)state == 1) {
         gfxRecordCommand(0x30, 6, enable, comp0, (u32)ref0, op, comp1, (u32)ref1);
@@ -184,7 +184,7 @@ void gfxSetUpdates(s32 zCompare, s32 zBeforeTexture, s32 zFunc) {
     }
 }
 
-void fn_800DA3B0(s32 val, u8 b) {
+void gfxSetDstAlpha(s32 val, u8 b) {
     u32 state = lbl_8047AA80;
     if (*(s32*)state == 1) { gfxRecordCommand(0x2d, 2, val, (u32)b); }
     else {
@@ -194,7 +194,7 @@ void fn_800DA3B0(s32 val, u8 b) {
     }
 }
 
-void fn_800DA428(s32 val) {
+void gfxSetBlendModeRaw(s32 val) {
     u32 state = lbl_8047AA80;
     if (*(s32*)state == 1) {
         gfxRecordCommand(0x2c, 1, val);

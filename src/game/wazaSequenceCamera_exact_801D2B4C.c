@@ -25,7 +25,7 @@ typedef struct WazaCameraPattern {
     u8 data[0x48];
 } WazaCameraPattern;
 
-extern f32 fn_800E0BE4(void);
+extern f32 GSrandf(void);
 extern u32 _fadeEffectGetRandom__FUl(u32);
 extern WazaCameraPattern lbl_80371F60[];
 extern WazaCameraPattern lbl_803721C0[];
@@ -35,7 +35,7 @@ void* wazaSequenceCameraGetPattern__Fbi(u8 shortTable, s32 flags)
     WazaCameraPattern* table;
     s32 count;
     s32 i;
-    f32 frame = fn_800E0BE4();
+    f32 frame = GSrandf();
     f32 end = 0.0f;
 
     if (shortTable != 0) {

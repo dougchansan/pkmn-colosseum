@@ -18,7 +18,7 @@ typedef struct WorldMapOverlay {
 } WorldMapOverlay;
 
 extern WorldMapOverlay lbl_803A20DC[];
-extern f32 fn_800E0BE4(void);
+extern f32 GSrandf(void);
 extern f32 lbl_8047B930;
 extern f32 lbl_8047B934;
 extern f32 lbl_8047B954;
@@ -51,7 +51,7 @@ static inline void menuNameEntryBackPrime(void)
     i = 0;
     threshold = lbl_8047B958;
     do {
-        if (!(fn_800E0BE4() > threshold)) {
+        if (!(GSrandf() > threshold)) {
             for (slot = 0, ov = base; slot < 30; ov++, slot++) {
                 if (ov->active == 0) {
                     break;
@@ -60,14 +60,14 @@ static inline void menuNameEntryBackPrime(void)
             if (slot < 30) {
                 lbl_803A20DC[slot].active = 1;
                 ov = &lbl_803A20DC[slot];
-                ov->x = lbl_8047B95C * fn_800E0BE4();
-                ov->y = lbl_8047B960 * fn_800E0BE4();
+                ov->x = lbl_8047B95C * GSrandf();
+                ov->y = lbl_8047B960 * GSrandf();
                 ov->scale = lbl_8047B964;
-                ov->unused10 = lbl_8047B968 * fn_800E0BE4() + lbl_8047B964;
+                ov->unused10 = lbl_8047B968 * GSrandf() + lbl_8047B964;
                 ov->color = -0x100;
                 ov->alpha = 0x80;
                 ov->timer = lbl_8047B930;
-                ov->lifetime = lbl_8047B970 * fn_800E0BE4() + lbl_8047B96C;
+                ov->lifetime = lbl_8047B970 * GSrandf() + lbl_8047B96C;
             }
         }
         for (slot2 = 0, ov2 = base; slot2 < 30; ov2++, slot2++) {
@@ -90,7 +90,7 @@ static inline void menuNameEntryBackStep(void)
     f32 ratio;
     WorldMapOverlay* ov;
 
-    if (!(fn_800E0BE4() > lbl_8047B958)) {
+    if (!(GSrandf() > lbl_8047B958)) {
         for (slot = 0, ov = lbl_803A20DC; slot < 30; ov++, slot++) {
             if (ov->active == 0) {
                 break;
@@ -98,14 +98,14 @@ static inline void menuNameEntryBackStep(void)
         }
         if (slot < 30) {
             lbl_803A20DC[slot].active = 1;
-            lbl_803A20DC[slot].x = lbl_8047B95C * fn_800E0BE4();
-            lbl_803A20DC[slot].y = lbl_8047B960 * fn_800E0BE4();
+            lbl_803A20DC[slot].x = lbl_8047B95C * GSrandf();
+            lbl_803A20DC[slot].y = lbl_8047B960 * GSrandf();
             lbl_803A20DC[slot].scale = lbl_8047B964;
-            lbl_803A20DC[slot].unused10 = lbl_8047B968 * fn_800E0BE4() + lbl_8047B964;
+            lbl_803A20DC[slot].unused10 = lbl_8047B968 * GSrandf() + lbl_8047B964;
             lbl_803A20DC[slot].color = -0x100;
             lbl_803A20DC[slot].alpha = 0x80;
             lbl_803A20DC[slot].timer = lbl_8047B930;
-            lbl_803A20DC[slot].lifetime = lbl_8047B970 * fn_800E0BE4() + lbl_8047B96C;
+            lbl_803A20DC[slot].lifetime = lbl_8047B970 * GSrandf() + lbl_8047B96C;
         }
     }
     for (slot = 0, ov = lbl_803A20DC; slot < 30; ov++, slot++) {
@@ -123,7 +123,7 @@ static inline void menuNameEntryBackStep(void)
 
 s32 menuNameEntryBackCtrl(void* r3)
 {
-    extern f32 fn_800E0BE4(void);            /* random f32 source (-> f1) */
+    extern f32 GSrandf(void);            /* random f32 source (-> f1) */
     extern f32 lbl_8047B958;                 /* spawn threshold           */
     extern f32 lbl_8047B95C;                 /* x scale                   */
     extern f32 lbl_8047B960;                 /* y scale                   */

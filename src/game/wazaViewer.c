@@ -645,7 +645,7 @@ void fn_801D603C(void) {
     extern u8 dbgMenuIsOpen(void);
     extern s32 fn_801E11E0(void);
     extern void fn_800FE6A0(f32 width, f32 height);
-    extern void fn_800FAEF8(s32 x, s32 y, u32 color, const char* fmt, ...);
+    extern void GSmsgPrintf(s32 x, s32 y, u32 color, const char* fmt, ...);
 
     void** models;
     void* sequence;
@@ -688,16 +688,16 @@ void fn_801D603C(void) {
                     fn_800FE6A0(lbl_8047E2F0, lbl_8047E2F0);
                     switch (state) {
                     case 3:
-                        fn_800FAEF8(0xC8, 0x10, 0xFF0000A0, &lbl_8047E2F4);
+                        GSmsgPrintf(0xC8, 0x10, 0xFF0000A0, &lbl_8047E2F4);
                         break;
                     case 4:
-                        fn_800FAEF8(0xC8, 0x10, 0xFF0000A0, (const char*)lbl_80279470);
+                        GSmsgPrintf(0xC8, 0x10, 0xFF0000A0, (const char*)lbl_80279470);
                         break;
                     case 1:
-                        fn_800FAEF8(0xC8, 0x10, 0xFF0000A0, &lbl_8047E2FC);
+                        GSmsgPrintf(0xC8, 0x10, 0xFF0000A0, &lbl_8047E2FC);
                         break;
                     case 2:
-                        fn_800FAEF8(0xC8, 0x10, 0xFF0000A0, &lbl_8047E304);
+                        GSmsgPrintf(0xC8, 0x10, 0xFF0000A0, &lbl_8047E304);
                         break;
                     }
                     fn_800FE6A0(lbl_8047E30C, lbl_8047E30C);
@@ -956,7 +956,7 @@ void wazaViewerUpdatePlayMode(void) {
     extern u8 dbgMenuIsOpen(void);
     extern s32 fn_801E11E0(void);
     extern void fn_800FE6A0(f32 width, f32 height);
-    extern void fn_800FAEF8(s32 x, s32 y, u32 color, const char* fmt, ...);
+    extern void GSmsgPrintf(s32 x, s32 y, u32 color, const char* fmt, ...);
 
     const char* messages;
     void** models;
@@ -1009,16 +1009,16 @@ void wazaViewerUpdatePlayMode(void) {
                 fn_800FE6A0(lbl_8047E2F0, lbl_8047E2F0);
                 switch (state) {
                 case 3:
-                    fn_800FAEF8(0xC8, 0x10, 0xFF0000A0, &lbl_8047E2F4);
+                    GSmsgPrintf(0xC8, 0x10, 0xFF0000A0, &lbl_8047E2F4);
                     break;
                 case 4:
-                    fn_800FAEF8(0xC8, 0x10, 0xFF0000A0, messages + 0x138);
+                    GSmsgPrintf(0xC8, 0x10, 0xFF0000A0, messages + 0x138);
                     break;
                 case 1:
-                    fn_800FAEF8(0xC8, 0x10, 0xFF0000A0, &lbl_8047E2FC);
+                    GSmsgPrintf(0xC8, 0x10, 0xFF0000A0, &lbl_8047E2FC);
                     break;
                 case 2:
-                    fn_800FAEF8(0xC8, 0x10, 0xFF0000A0, &lbl_8047E304);
+                    GSmsgPrintf(0xC8, 0x10, 0xFF0000A0, &lbl_8047E304);
                     break;
                 }
                 fn_800FE6A0(lbl_8047E30C, lbl_8047E30C);
@@ -1182,7 +1182,7 @@ void fn_801D7230(void) {
     extern f32 lbl_8047E2F0;
     extern f32 lbl_8047E30C;
     extern void fn_800FE6A0(f32 width, f32 height);
-    extern void fn_800FAEF8(s32 x, s32 y, u32 color, const char* fmt, ...);
+    extern void GSmsgPrintf(s32 x, s32 y, u32 color, const char* fmt, ...);
 
     const char* messages;
     s32 flags;
@@ -1194,47 +1194,47 @@ void fn_801D7230(void) {
     if (flags != 0) {
         fn_800FE6A0(lbl_8047E2F0, lbl_8047E2F0);
         if (flags & 0x001) {
-            fn_800FAEF8(0xA, 0x10 + line * 0xD, -1, messages + 0x150);
+            GSmsgPrintf(0xA, 0x10 + line * 0xD, -1, messages + 0x150);
             line++;
         }
         if (flags & 0x002) {
-            fn_800FAEF8(0xA, 0x10 + line * 0xD, -1, messages + 0x150);
+            GSmsgPrintf(0xA, 0x10 + line * 0xD, -1, messages + 0x150);
             line++;
         }
         if (flags & 0x004) {
-            fn_800FAEF8(0xA, 0x10 + line * 0xD, -1, messages + 0x16C);
+            GSmsgPrintf(0xA, 0x10 + line * 0xD, -1, messages + 0x16C);
             line++;
         }
         if (flags & 0x008) {
-            fn_800FAEF8(0xA, 0x10 + line * 0xD, -1, messages + 0x184);
+            GSmsgPrintf(0xA, 0x10 + line * 0xD, -1, messages + 0x184);
             line++;
         }
         if (flags & 0x010) {
-            fn_800FAEF8(0xA, 0x10 + line * 0xD, -1, messages + 0x19C);
+            GSmsgPrintf(0xA, 0x10 + line * 0xD, -1, messages + 0x19C);
             line++;
         }
         if (flags & 0x020) {
-            fn_800FAEF8(0xA, 0x10 + line * 0xD, -1, messages + 0x1B0);
+            GSmsgPrintf(0xA, 0x10 + line * 0xD, -1, messages + 0x1B0);
             line++;
         }
         if (flags & 0x040) {
-            fn_800FAEF8(0xA, 0x10 + line * 0xD, -1, messages + 0x1C8);
+            GSmsgPrintf(0xA, 0x10 + line * 0xD, -1, messages + 0x1C8);
             line++;
         }
         if (flags & 0x080) {
-            fn_800FAEF8(0xA, 0x10 + line * 0xD, -1, messages + 0x1DC);
+            GSmsgPrintf(0xA, 0x10 + line * 0xD, -1, messages + 0x1DC);
             line++;
         }
         if (flags & 0x100) {
-            fn_800FAEF8(0xA, 0x10 + line * 0xD, -1, messages + 0x1F4);
+            GSmsgPrintf(0xA, 0x10 + line * 0xD, -1, messages + 0x1F4);
             line++;
         }
         if (flags & 0x200) {
-            fn_800FAEF8(0xA, 0x10 + line * 0xD, -1, messages + 0x208);
+            GSmsgPrintf(0xA, 0x10 + line * 0xD, -1, messages + 0x208);
             line++;
         }
         if (flags & 0x400) {
-            fn_800FAEF8(0xA, 0x10 + line * 0xD, -1, messages + 0x228);
+            GSmsgPrintf(0xA, 0x10 + line * 0xD, -1, messages + 0x228);
             line++;
         }
         fn_800FE6A0(lbl_8047E30C, lbl_8047E30C);
@@ -1297,13 +1297,13 @@ void fn_801D7464(void) {
     extern void GSvecAdd(WazaViewerVec* dst, const WazaViewerVec* a,
                          const WazaViewerVec* b);
     extern void set__5GSvecFfff(f32* vec, f32 x, f32 y, f32 z);
-    extern u32 fn_800F7AF0(s32 pad);
+    extern u32 GSinputButtonsChanged(s32 pad);
     extern u32 msgGetCharsPerFrame(void);
     extern u32 fn_800F7BC4(s32 pad);
-    extern s8 fn_800F7A7C(s32 pad, s32 mode);
-    extern s8 fn_800F7A08(s32 pad, s32 mode);
-    extern s8 fn_800F7994(s32 pad, s32 mode);
-    extern s8 fn_800F7920(s32 pad, s32 mode);
+    extern s8 GSinputGetLeftStickXData(s32 pad, s32 mode);
+    extern s8 GSinputGetLeftStickYData(s32 pad, s32 mode);
+    extern s8 GSinputGetRightStickXData(s32 pad, s32 mode);
+    extern s8 GSinputGetRightStickYData(s32 pad, s32 mode);
     extern u32 fn_800F7B5C(s32 pad);
     extern void* GScameraGetActiveCamera(void);
     extern void GScameraSetPosition(void* cam, WazaViewerVec* pos);
@@ -1368,49 +1368,49 @@ void fn_801D7464(void) {
             fn_800DFFCC(&forward, &target, &axisX);
             fn_800E0060(&forward, &forward);
 
-            stickX = fn_800F7A7C(1, 1);
-            stickY = fn_800F7A08(1, 1);
-            substickX = fn_800F7994(1, 1);
-            substickY = fn_800F7920(1, 1);
+            stickX = GSinputGetLeftStickXData(1, 1);
+            stickY = GSinputGetLeftStickYData(1, 1);
+            substickX = GSinputGetRightStickXData(1, 1);
+            substickY = GSinputGetRightStickYData(1, 1);
 
-            if ((fn_800F7BC4(1) & fn_800F7AF0(1) & 0x08) != 0) {
+            if ((fn_800F7BC4(1) & GSinputButtonsChanged(1) & 0x08) != 0) {
                 lbl_8047B3FC = 1;
             }
-            if ((fn_800F7BC4(1) & fn_800F7AF0(1) & 0x04) != 0) {
+            if ((fn_800F7BC4(1) & GSinputButtonsChanged(1) & 0x04) != 0) {
                 lbl_8047B3FD = 1;
             }
-            if ((fn_800F7BC4(1) & fn_800F7AF0(1) & 0x01) != 0) {
+            if ((fn_800F7BC4(1) & GSinputButtonsChanged(1) & 0x01) != 0) {
                 lbl_8047B3FE = 1;
             }
-            if ((fn_800F7BC4(1) & fn_800F7AF0(1) & 0x02) != 0) {
+            if ((fn_800F7BC4(1) & GSinputButtonsChanged(1) & 0x02) != 0) {
                 lbl_8047B3FF = 1;
             }
 
             if (lbl_8047B3FC != 0) {
                 vecScale(&step, &forward, angleStep);
                 GSvecAdd(&view, &view, &forward);
-                if ((fn_800F7B5C(1) & fn_800F7AF0(1) & 0x08) != 0) {
+                if ((fn_800F7B5C(1) & GSinputButtonsChanged(1) & 0x08) != 0) {
                     lbl_8047B3FC = 0;
                 }
             }
             if (lbl_8047B3FD != 0) {
                 vecScale(&step, &forward, angleStep);
                 GSvecSub(&view, &view, &step);
-                if ((fn_800F7B5C(1) & fn_800F7AF0(1) & 0x04) != 0) {
+                if ((fn_800F7B5C(1) & GSinputButtonsChanged(1) & 0x04) != 0) {
                     lbl_8047B3FD = 0;
                 }
             }
             if (lbl_8047B3FE != 0) {
                 vecScale(&step, &axisX, angleStep);
                 GSvecAdd(&view, &view, &step);
-                if ((fn_800F7B5C(1) & fn_800F7AF0(1) & 0x01) != 0) {
+                if ((fn_800F7B5C(1) & GSinputButtonsChanged(1) & 0x01) != 0) {
                     lbl_8047B3FE = 0;
                 }
             }
             if (lbl_8047B3FF != 0) {
                 vecScale(&step, &axisX, angleStep);
                 GSvecSub(&view, &view, &step);
-                if ((fn_800F7B5C(1) & fn_800F7AF0(1) & 0x02) != 0) {
+                if ((fn_800F7B5C(1) & GSinputButtonsChanged(1) & 0x02) != 0) {
                     lbl_8047B3FF = 0;
                 }
             }
@@ -1455,10 +1455,10 @@ void fn_801D7464(void) {
         }
 
         if (*(s32*)(lbl_804673F8 + 0x4) == 1 && *(void**)((u8*)effect + 0x68) == NULL) {
-            if ((fn_800F7BC4(1) & fn_800F7AF0(1) & 0x40) != 0) {
+            if ((fn_800F7BC4(1) & GSinputButtonsChanged(1) & 0x40) != 0) {
                 (*(u16*)((u8*)effect + 0x32))--;
             }
-            if ((fn_800F7BC4(1) & fn_800F7AF0(1) & 0x20) != 0) {
+            if ((fn_800F7BC4(1) & GSinputButtonsChanged(1) & 0x20) != 0) {
                 (*(u16*)((u8*)effect + 0x32))++;
                 if (*(u16*)((u8*)effect + 0x32) > *(u16*)((u8*)effect + 0x14) - 1) {
                     *(u16*)((u8*)effect + 0x32) = 0;
@@ -1467,20 +1467,20 @@ void fn_801D7464(void) {
         }
 
         if (((WazaViewerCtrl*)(lbl_804673F8 + 0x08))->advance &&
-            (fn_800F7BC4(1) & fn_800F7AF0(1) & 0x800) != 0) {
+            (fn_800F7BC4(1) & GSinputButtonsChanged(1) & 0x800) != 0) {
             (*(s32*)(lbl_804673F8 + 0x18))++;
             if (*(s32*)(lbl_804673F8 + 0x18) >= 0x10) {
                 *(s32*)(lbl_804673F8 + 0x18) = -1;
             }
         }
 
-        if ((fn_800F7BC4(1) & fn_800F7AF0(1) & 0x100) != 0 &&
+        if ((fn_800F7BC4(1) & GSinputButtonsChanged(1) & 0x100) != 0 &&
             *(s32*)(lbl_804673F8 + 0x4) == 1 && *(void**)((u8*)effect + 0x68) == NULL) {
             wazaSequencePokemonMotionStart(effect, 0);
         }
     }
 
-    if ((fn_800F7BC4(1) & fn_800F7AF0(1) & 0x100) != 0) {
+    if ((fn_800F7BC4(1) & GSinputButtonsChanged(1) & 0x100) != 0) {
         if (*(s32*)lbl_804673F8 == 1 && *(s32*)(lbl_804673F8 + 0x63C) != 0) {
             fn_801DF070(effect, *(s32*)(lbl_804673F8 + 0x638), 0);
         } else if ((u8)fn_801DA94C(effect, motionA, motionB) == 0) {
@@ -1529,7 +1529,7 @@ void fn_801D7B94(void* effect) {
         GSpart*, WazaViewerVec*, void*, void*);
     extern void clear__5GSvecFv(WazaViewerVec*);
     extern void gfxVtxPos(f32, f32, f32);
-    extern void fn_800D5CB8(s32, s32, s32, s32, s32);
+    extern void gfxVtxColor4u8(s32, s32, s32, s32, s32);
     extern void gfxEnd(void);
     u8* data;
     u8* entry;
@@ -1603,7 +1603,7 @@ void fn_801D7B94(void* effect) {
                 *(u32*)(lbl_804673F8 + 0x0C) |= 2;
             }
             gfxVtxPos(transform.x, transform.y, transform.z);
-            fn_800D5CB8(0, 0xFF, 0, 0, 0xDC);
+            gfxVtxColor4u8(0, 0xFF, 0, 0, 0xDC);
         }
         gfxEnd();
     } else {
@@ -1618,7 +1618,7 @@ void fn_801D7B94(void* effect) {
             *(u32*)(lbl_804673F8 + 0x0C) |= 2;
         }
         gfxVtxPos(transform.x, transform.y, transform.z);
-        fn_800D5CB8(0, 0xFF, 0, 0, 0xDC);
+        gfxVtxColor4u8(0, 0xFF, 0, 0, 0xDC);
         gfxEnd();
     }
 }

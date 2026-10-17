@@ -94,7 +94,7 @@ extern void  gfxLoadTexture(s32 a, void* p);
 extern void  gfxSetPrimitive(s32 a);
 extern void  gfxBegin(s32 a);
 extern void  gfxVtxPos(f32 x, f32 y, f32 z);
-extern void  fn_800D5CB8(s32 a, u8 r, u8 g, u8 b, u8 al);
+extern void  gfxVtxColor4u8(s32 a, u8 r, u8 g, u8 b, u8 al);
 extern void  gfxVtxTexCoord(s32 a, f32 s, f32 t);
 extern void  gfxEnd(void);
 
@@ -1009,10 +1009,10 @@ int fn_80137F58(u8* w) {
     weight = *(u8**)(w + 0x08) + (*(u16*)(w + 0x22) - count2) * 16;
     for (i = 0; (u16)i < count2; i++) {
         gfxVtxPos(*(f32*)(node + 0x00), *(f32*)(node + 0x04), *(f32*)(node + 0x08));
-        fn_800D5CB8(0, w[0x18], w[0x19], w[0x1A], w[0x1B]);
+        gfxVtxColor4u8(0, w[0x18], w[0x19], w[0x1A], w[0x1B]);
         gfxVtxTexCoord(0, *(f32*)(weight + 0x00), *(f32*)(weight + 0x04));
         gfxVtxPos(*(f32*)(node + 0x0C), *(f32*)(node + 0x10), *(f32*)(node + 0x14));
-        fn_800D5CB8(0, w[0x18], w[0x19], w[0x1A], w[0x1B]);
+        gfxVtxColor4u8(0, w[0x18], w[0x19], w[0x1A], w[0x1B]);
         gfxVtxTexCoord(0, *(f32*)(weight + 0x08), *(f32*)(weight + 0x0C));
         node = *(u8**)(node + 0x1C);
         weight += 0x10;

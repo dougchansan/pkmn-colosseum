@@ -49,7 +49,7 @@ extern u8  lbl_80315690[]; /* resource table, 8-byte entries */
 
 /* Additional externs used by various functions */
 extern void  GSmodelFree(u32);     /* GSmem release/unref */
-extern void  fn_800D2738(void);
+extern void  GScameraFree(void);
 extern void* menuDataBiosGetPtr(void);    /* linked list head */
 extern void* menuItemBiosGetPtr(s16 idx); /* node by index */
 extern void* menuSeBiosGetPtr(s32);
@@ -127,7 +127,7 @@ extern void gfxSetPrimitive(s32);
 extern void gfxSetVtxDesc(s32);
 extern void gfxBegin(s32);
 extern void gfxVtxPos(f32);
-extern void fn_800D5CB8(s32, s32, s32, s32, s32);
+extern void gfxVtxColor4u8(s32, s32, s32, s32, s32);
 extern void gfxEnd(void);
 
 /* Forward declarations for functions defined later in this TU */

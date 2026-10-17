@@ -3,7 +3,7 @@
  * @brief GSgfx -- Genius Sonority graphics subsystem.
  *
  * Only the fn_-named leaf functions below (fn_800D3094, fn_800D30A0,
- * fn_800D30AC, fn_800D3190, fn_800D3410, fn_800D36B4, fn_800D377C) are
+ * fn_800D30AC, GSgfxRenderEnd, GSgfxRenderLayer, fn_800D36B4, fn_800D377C) are
  * real members of this unit; several are already byte-matched.
  *
  * This file previously also carried a second, parallel implementation of
@@ -119,7 +119,7 @@ asm void fn_800D3190(void) {
 #include "src/game/gs_gfx_fn_800D3190.inc"
 }
 #else
-void fn_800D3190(void) {
+void GSgfxRenderEnd(void) {
     u32* state;
     u32 sc;
     u32 startTick;
@@ -245,7 +245,7 @@ asm void fn_800D3410(void) {
 #include "src/game/gs_gfx_fn_800D3410.inc"
 }
 #else
-void fn_800D3410(void* arg0, u8 arg1) {
+void GSgfxRenderLayer(void* arg0, u8 arg1) {
     u32* state;
     u32 sc;
     u8 r30;
@@ -343,7 +343,7 @@ void fn_800D3410(void* arg0, u8 arg1) {
 #endif
 
 extern void VIWaitForRetrace(void);
-void fn_800D361C(u8 mode) {
+void GSgfxWaitRetrace(u8 mode) {
     u32 diff;
 
     VIWaitForRetrace();

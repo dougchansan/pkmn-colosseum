@@ -8807,9 +8807,9 @@ config.libs = [
             # and .sdata2 pool. It needs GC/1.3.2: the TU's buffers are pooled
             # file statics, GC/1.3 folds their object offsets into store
             # displacements, and GC/1.3.2 keeps them out as retail does
-            # (fn_800FAEF8's fill pointer; the rest of the TU is identical under
-            # the two versions). fn_800F96E4 links by itself, as do fn_800F9AEC
-            # and fn_800F9C04 together.
+            # (GSmsgPrintf's fill pointer; the rest of the TU is identical under
+            # the two versions). GSmsgGetText links by itself, as do GScharToGBA
+            # and GScharFromGBA together.
             Object(
                 Matching,
                 "game/gs_msg_exact_800F96E4.c",
@@ -9165,7 +9165,7 @@ config.libs = [
                 progress_category="game",
             ),
             # One retail unit, 0x800F7758-0x800F915C. GC/1.3.2 because retail
-            # keeps the pooled .bss `base + 0` add in fn_800F8138/fn_800F8428
+            # keeps the pooled .bss `base + 0` add in GSinputInit/inputUpdateMotors
             # (GC/1.3 folds it into a register copy); -inline deferred because
             # retail's pooled .bss layout (slots, timers, commands) is reverse
             # definition order, not first-reference order. Every function of
@@ -9296,9 +9296,9 @@ config.libs = [
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
-            # fn_800D3FA4 is its own TU (its .sdata2 literal pool
+            # GSgfxDrawScene is its own TU (its .sdata2 literal pool
             # 0x8047CA20-0x8047CA30 sits between the 0x800D2DE8-0x800D3E4C
-            # pool and fn_800D55D0's), built without copy propagation:
+            # pool and gfxSetPointSize's), built without copy propagation:
             # retail re-tests bit 0 of the second-pass flags after masking it.
             # The possible TU neighbours gs_gfx_core, 45F8 and 4F98 are
             # byte-identical under this flag.
@@ -9333,7 +9333,7 @@ config.libs = [
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8", "-rostr"],
                 progress_category="game",
             ),  # GC/1.3.2 + -rostr: pooled .rodata request-buffer messages
-            # fn_800D55D0/fn_800D5648 own their literal pool (.sdata2
+            # gfxSetPointSize/gfxSetLineWidth own their literal pool (.sdata2
             # 0x8047CA30-0x8047CA40: 0.0f, 42.5f, 6.0f).
             Object(
                 Matching,
@@ -9365,7 +9365,7 @@ config.libs = [
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
-            # fn_800D6B00: GC/1.3.2 with its pooled save-slot .bss defined
+            # gfxFlushPendingVertex: GC/1.3.2 with its pooled save-slot .bss defined
             # in the unit (retail passes the first slot as "addi r3,r31,0x0");
             # -inline deferred gives retail's .bss order (reverse definition
             # order, as in pslist.c). See the source header.
@@ -9405,7 +9405,7 @@ config.libs = [
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
-            # Function-boundary carve of fn_800D923C (compare-tree switch, no
+            # Function-boundary carve of _gfxFlushTevState (compare-tree switch, no
             # jump tables or pooled constants; data extern), plain gs_gfx flags.
             Object(
                 Matching,
@@ -9638,7 +9638,7 @@ config.libs = [
                 progress_category="game",
             ),
             # TEMPORARY constant_import
-            # fn_800E0E14's GSmem check messages are pooled .rodata literals
+            # GSmemDumpMap's GSmem check messages are pooled .rodata literals
             # addressed off one base: GC/1.3.2 + -rostr. Retail shares that
             # pool as lbl_80270658 (0x55F bytes + 1 pad; gs_mem.c also
             # addresses it) and the 100.0f / unsigned-int bias as

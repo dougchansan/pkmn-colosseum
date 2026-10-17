@@ -52,7 +52,7 @@ extern u8  lbl_80315690[]; /* resource table, 8-byte entries */
 
 /* Additional externs used by various functions */
 extern void  GSmodelFree(u32);     /* GSmem release/unref */
-extern void  fn_800D2738(void);
+extern void  GScameraFree(void);
 extern void* menuDataBiosGetPtr(void* key);
 extern void* menuItemBiosGetPtr(s16 idx); /* node by index */
 extern void* menuSeBiosGetPtr(s32);
@@ -143,11 +143,11 @@ extern void gfxSetPrimitive(s32);
 extern void gfxSetVtxDesc(s32);
 extern void gfxBegin(s32);
 extern void gfxVtxPos(f32);
-extern void fn_800D5CB8(s32, s32, s32, s32, s32);
+extern void gfxVtxColor4u8(s32, s32, s32, s32, s32);
 extern void gfxEnd(void);
-extern void fn_800D61E4(s16 x, s16 y);
-extern void fn_800D5BA0(s32 index, u32 color);
-extern void fn_800D5648(f32 value);
+extern void gfxVtxPos2s16(s16 x, s16 y);
+extern void gfxVtxColor1u32(s32 index, u32 color);
+extern void gfxSetLineWidth(f32 value);
 extern void fn_800FE38C(s16 x, s16 y, s16 width, s16 height);
 extern void fn_800FE35C(void);
 extern f64 fmod(f64 value, f64 modulus);
@@ -395,14 +395,14 @@ s32 fn_80105634(u8* window, u8* sprite) {
         gfxSetPrimitive(6);
         gfxSetVtxDesc((s32)lbl_80314E08);
         gfxBegin(4);
-        fn_800D61E4(0, 0);
-        fn_800D5BA0(0, colors[0]);
-        fn_800D61E4(*(s16*)(sprite + 0x54), 0);
-        fn_800D5BA0(0, colors[0]);
-        fn_800D61E4(*(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56));
-        fn_800D5BA0(0, colors[1]);
-        fn_800D61E4(0, *(s16*)(sprite + 0x56));
-        fn_800D5BA0(0, colors[1]);
+        gfxVtxPos2s16(0, 0);
+        gfxVtxColor1u32(0, colors[0]);
+        gfxVtxPos2s16(*(s16*)(sprite + 0x54), 0);
+        gfxVtxColor1u32(0, colors[0]);
+        gfxVtxPos2s16(*(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56));
+        gfxVtxColor1u32(0, colors[1]);
+        gfxVtxPos2s16(0, *(s16*)(sprite + 0x56));
+        gfxVtxColor1u32(0, colors[1]);
         gfxEnd();
         fn_800FE38C(0, 0, *(s16*)(sprite + 0x54),
                     *(s16*)(sprite + 0x56));
@@ -414,7 +414,7 @@ s32 fn_80105634(u8* window, u8* sprite) {
 
         gfxSetFlags(1);
         gfxClearFlags(6);
-        fn_800D5648(lbl_8047CDF8);
+        gfxSetLineWidth(lbl_8047CDF8);
         gfxSetPrimitive(1);
         gfxSetVtxDesc((s32)lbl_80314E08);
         ((u8*)colors)[0] = 0xFF;
@@ -423,10 +423,10 @@ s32 fn_80105634(u8* window, u8* sprite) {
         ((u8*)colors)[3] = (u8)(lbl_8047CDFC * alpha);
         for (y = 0; y < *(s16*)(sprite + 0x56); y += 4) {
             gfxBegin(2);
-            fn_800D61E4(0, y);
-            fn_800D5BA0(0, colors[0]);
-            fn_800D61E4(*(s16*)(sprite + 0x54), y);
-            fn_800D5BA0(0, colors[0]);
+            gfxVtxPos2s16(0, y);
+            gfxVtxColor1u32(0, colors[0]);
+            gfxVtxPos2s16(*(s16*)(sprite + 0x54), y);
+            gfxVtxColor1u32(0, colors[0]);
             gfxEnd();
         }
         fn_800FE35C();

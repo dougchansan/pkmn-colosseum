@@ -22,9 +22,9 @@ void fn_801E0FB4(s32 flags, u32 setupCamera, u32 resetQueue)
     extern void GSgappBlock(u32 taskId);
     extern void GSgappUnblock(u32 taskId);
     extern void GSthreadExecuteGroup(u32 group);
-    extern void fn_800D3410(s32 mode, s32 enabled);
-    extern void fn_800D3FA4(s32 flags, u32 setupCamera, u32 resetQueue);
-    extern void fn_800D3190(void);
+    extern void GSgfxRenderLayer(s32 mode, s32 enabled);
+    extern void GSgfxDrawScene(s32 flags, u32 setupCamera, u32 resetQueue);
+    extern void GSgfxRenderEnd(void);
     s32 enabled;
 
     if (lbl_8047B420 == 0) {
@@ -89,7 +89,7 @@ void fn_801E0FB4(s32 flags, u32 setupCamera, u32 resetQueue)
     if (lbl_8047B43C != 0) {
         enabled = 0;
     }
-    fn_800D3410(0, enabled);
-    fn_800D3FA4(flags, setupCamera, resetQueue);
-    fn_800D3190();
+    GSgfxRenderLayer(0, enabled);
+    GSgfxDrawScene(flags, setupCamera, resetQueue);
+    GSgfxRenderEnd();
 }

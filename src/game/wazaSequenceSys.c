@@ -156,7 +156,7 @@ void fn_801DA070(void* effect) {
 
     entry = (u8*)fx->table + fx->index * sizeof(WazaEffectTblEntry);
     if ((u8)GSmodelCenterNull(fx->model) != 0) {
-        n = fn_800EE0E8(fx->model) - 1;
+        n = GSmodelWalkJObjs(fx->model) - 1;
     } else {
         n = *(s32*)((u8*)entry + 0x54);
     }

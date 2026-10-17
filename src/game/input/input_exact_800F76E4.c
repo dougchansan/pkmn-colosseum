@@ -6,7 +6,7 @@
 
 extern u8* lbl_80478B00;
 
-void fn_800F76E4(u8* arg) {
+void cms_RegisterScript(u8* arg) {
     u8* head;
     u32 off;
     u32* tbl;

@@ -162,7 +162,7 @@ void gbaReceiveHero(u8* hero, u8* source) {
     extern void heroBiosSetNamePtr(u8*, void*);
     extern void* heroBiosGetPokemonPtr(u8*, u16);
     extern u32 gamedataGetStatus(s32, s32);
-    extern u32 fn_800F9C04(void*, u8*, u32, u32);
+    extern u32 GScharFromGBA(void*, u8*, u32, u32);
     extern void pokemonBiosSetFightTrainerPokemonDataId(void*, u16);
     extern void exribbonSetNo(s32, u8);
     u16 name[8];
@@ -171,7 +171,7 @@ void gbaReceiveHero(u8* hero, u8* source) {
     void* pokemon;
 
     heroBiosSetHomePlace(hero, (source[0] & 4) ? 2 : 1);
-    fn_800F9C04(name, source + 4, 7, gamedataGetStatus(0, 5));
+    GScharFromGBA(name, source + 4, 7, gamedataGetStatus(0, 5));
     heroBiosSetNamePtr(hero, name);
     heroBiosSetSexDataId(hero, source[0xC]);
     value = *(u32*)(source + 0x10);

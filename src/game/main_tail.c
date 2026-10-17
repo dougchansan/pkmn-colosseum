@@ -14,10 +14,10 @@ extern void OSEnableScheduler(void);
 extern void GSthreadExecuteAll(void);
 extern u8 fn_8000DAA8(void);
 extern void peopleMain(u32 a, u32 b);
-extern u8 fn_800F7EF8(u32 padIdx);
+extern u8 GSinputIsConnected(u32 padIdx);
 extern void fn_8008AC34(u32 padIdx);
 extern u8 fn_8008ABA0(u32 padIdx);
-extern void fn_800F7F64(u32 padIdx);
+extern void GSinputRead(u32 padIdx);
 extern void* fn_801664F0(void* color);
 extern void GSresRegisterResource(void* work, u32 time, u32 numFrames, u32 arg);
 extern void OSProtectRange(u32 region, u32 addr, u32 size, u32 perm);
@@ -85,7 +85,7 @@ void mainLogicTask(u32 a, u32 b)
  *  Address: 0x80005FFC, Size: 0x50
  *
  *  Controller polling task. Iterates pads 1-4:
- *  if a pad is NOT responding to fn_800F7EF8 (connection check),
+ *  if a pad is NOT responding to GSinputIsConnected (connection check),
  *  it calls fn_8008AC34 to recalibrate that pad.
  * =========================================================================
  */
@@ -93,7 +93,7 @@ void fn_80005FFC(void) {
     s32 i;
 
     for (i = 1; i <= 4; i++) {
-        if (fn_800F7EF8(i) == 0) {
+        if (GSinputIsConnected(i) == 0) {
             fn_8008AC34(i);
         }
     }
@@ -105,7 +105,7 @@ void fn_80005FFC(void) {
  *
  *  Controller rumble update task. Iterates pads 1-4:
  *  if a pad is NOT responding to fn_8008ABA0 (motor check),
- *  it calls fn_800F7F64 to reset that pad's rumble state.
+ *  it calls GSinputRead to reset that pad's rumble state.
  * =========================================================================
  */
 void fn_8000604C(void) {
@@ -113,7 +113,7 @@ void fn_8000604C(void) {
 
     for (i = 1; i <= 4; i++) {
         if (fn_8008ABA0(i) == 0) {
-            fn_800F7F64(i);
+            GSinputRead(i);
         }
     }
 }

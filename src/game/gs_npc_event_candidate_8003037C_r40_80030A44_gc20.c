@@ -12,7 +12,7 @@
 
 extern s32 heroGetStatus(void* partyData, s32 slot, s32 p3);
 extern void msgctrlSetValue(s32 paramId, s32 value);
-extern void fn_800FB680(s32, s32, u32, u16);
+extern void GSmsgPrintColor(s32, s32, u32, u16);
 extern u32 GSmsgGetRect(u32 msg);
 extern s32 GSmsgGetGSchar(u32 msg);
 extern void* pokemonBiosGetNicknamePtr(void* pokemon);
@@ -68,7 +68,7 @@ void fn_80030A44(u8* r3, u8* r4)
     if (pokemon != NULL) {
         name = pokemonBiosGetNicknamePtr(pokemon);
         msgctrlSetValue(0x37, (s32)name);
-        fn_800FB680(0, 0, combined, 0xE7);
+        GSmsgPrintColor(0, 0, combined, 0xE7);
         winSpriteSetDisp(r4, 1);
         if (pokemonCheckValid(pokemon) != 0 && menuCBRule_CheckPokemonEventFlag(pokemon) == 1) {
             switch (menuSubGetPokemonSexForDisp(pokemon)) {
@@ -86,7 +86,7 @@ void fn_80030A44(u8* r3, u8* r4)
             if (msg != 0) {
                 width = (s16)(GSmsgGetRect(0xE7) >> 16);
                 msgctrlSetValue(0x37, GSmsgGetGSchar(msg));
-                fn_800FB680(width + 2, 0, combined, 0xCF);
+                GSmsgPrintColor(width + 2, 0, combined, 0xCF);
             }
         }
     } else {

@@ -21,7 +21,7 @@ extern void* wazaDataBiosGetPtr(u16 id);
 extern u32 wazaDataBiosGetDoc(void* waza);
 extern const u16* GSmsgGetGSchar(u32 msg);
 extern u32 gamedataGetStatus(s32, s32);
-extern u32 fn_800F9AEC(u8* destination, const u16* text, u32 font);
+extern u32 GScharToGBA(u8* destination, const u16* text, u32 font);
 
 /* Copy one 0x0000/0xFFFF-terminated line (at most 0x50 characters) and
  * encode it at *destination, advancing both pointers. */
@@ -38,7 +38,7 @@ static inline void CardEPutLine(u8** destination, const u16** text)
         (*text)++;
     }
     buffer[count] = 0;
-    *destination += fn_800F9AEC(*destination, buffer, gamedataGetStatus(0, 5));
+    *destination += GScharToGBA(*destination, buffer, gamedataGetStatus(0, 5));
 }
 
 /* Encode one move's description (two lines split at 0xFFFF). */

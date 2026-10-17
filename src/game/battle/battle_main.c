@@ -636,7 +636,7 @@ void fn_801EFA08(void) {
     extern f32 lbl_8047E508;
     extern void fadeSet(s32 mode, f32 time);
     extern u32 dbgMenuFightGetMsgSpeedToFrame(u32 frames);
-    extern void fn_800FF660(void);
+    extern void floorBattleEndTerminateScripts(void);
     extern void floorSetFadeScript(s32 a, s32 b);
     extern void std138_soundPlayEffectEx(s32 a, s32 b, s32 c, s32 d);
     extern void fn_801EF2D4(void);
@@ -751,7 +751,7 @@ void fn_801EFA08(void) {
     fadeCheck(1);
     fightActionCreateAndFlowFifo(lbl_8046D760, 0, 0, 0x10, 0, lbl_80375D80);
     fightActionCreateAndFlowFifo(lbl_8046D760, 0, 0, 0x11, 0, lbl_80375D80);
-    fn_800FF660();
+    floorBattleEndTerminateScripts();
     floorSetFadeScript(0, 0);
 }
 #endif

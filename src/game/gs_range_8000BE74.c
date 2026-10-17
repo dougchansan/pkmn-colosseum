@@ -36,7 +36,7 @@ extern void floorLink(u32 floorId, u32 arg);
 
 extern u8 fn_800FF52C(void);
 extern void soundStartSE(u32 id);
-extern void fn_800FAEF8(u32 x, u32 y, s32 color, ...);
+extern void GSmsgPrintf(u32 x, u32 y, s32 color, ...);
 extern void _threadSwitch(void);
 
 extern u8 menuIsCheck(s32 menuId);
@@ -140,7 +140,7 @@ s32 dbgMenuWarpSelect(void) {
         soundStartSE(0x26);
         i = 0;
         do {
-            fn_800FAEF8(0xC8, 0xF0, -1, lbl_802666B0);
+            GSmsgPrintf(0xC8, 0xF0, -1, lbl_802666B0);
             _threadSwitch();
             i++;
         } while (i < 0xF);

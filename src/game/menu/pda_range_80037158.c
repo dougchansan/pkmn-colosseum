@@ -156,7 +156,7 @@ extern void pdaReadPadInput(void* scene);
 extern void GSscene_SetMode(s32 mode);
 extern void menuButtonNormal(void* button);
 extern void winSpriteSetDisp(void* sprite, s32 disp);
-extern void fn_800FB680(s32 arg0, s32 arg1, s32 arg2, void* data);
+extern void GSmsgPrintColor(s32 arg0, s32 arg1, s32 arg2, void* data);
 
 #if !defined(PDA_RANGE_EXACT_80037174_ONLY)
 void fn_80037158(void)
@@ -186,8 +186,8 @@ void fn_80037174(void)
 void pcMenuDrawPurifiedCount(u32 unused, u8* p)
 {
     extern u32 gfxVtxTexCoord();
-    extern u32 fn_800D5CB8();
-    extern u32 fn_800D61E4();
+    extern u32 gfxVtxColor4u8();
+    extern u32 gfxVtxPos2s16();
     extern u32 gfxEnd();
     extern u32 gfxBegin();
     extern u32 gfxSetPrimitive();
@@ -217,11 +217,11 @@ void pcMenuDrawPurifiedCount(u32 unused, u8* p)
             gfxSetVtxDesc(lbl_80314F98);
             gfxLoadTexture(0, result);
             gfxBegin(2);
-            fn_800D61E4(0, 0);
-            fn_800D5CB8(0, 0xff, 0xff, 0xff, 0xff);
+            gfxVtxPos2s16(0, 0);
+            gfxVtxColor4u8(0, 0xff, 0xff, 0xff, 0xff);
             gfxVtxTexCoord(0, lbl_8047BA58, lbl_8047BA58);
-            fn_800D61E4(*(s16*)(p + 0x54), *(s16*)(p + 0x56));
-            fn_800D5CB8(0, 0xff, 0xff, 0xff, 0xff);
+            gfxVtxPos2s16(*(s16*)(p + 0x54), *(s16*)(p + 0x56));
+            gfxVtxColor4u8(0, 0xff, 0xff, 0xff, 0xff);
             gfxVtxTexCoord(0, lbl_8047BA5C, lbl_8047BA5C);
             gfxEnd();
         }
@@ -256,8 +256,8 @@ void fn_800372FC(void)
 void fn_80037300(void* window, PdaSprite* sprite)
 {
     extern u8 lbl_80314E08[];
-    extern void fn_800D5BA0(s32 index, u32 color);
-    extern void fn_800D61E4(s32 x, s32 y);
+    extern void gfxVtxColor1u32(s32 index, u32 color);
+    extern void gfxVtxPos2s16(s32 x, s32 y);
     extern void gfxEnd(void);
     extern void gfxBegin(s32 count);
     extern void gfxSetPrimitive(s32 primitive);
@@ -271,14 +271,14 @@ void fn_80037300(void* window, PdaSprite* sprite)
     gfxSetVtxDesc(lbl_80314E08);
     gfxSetPrimitive(6);
     gfxBegin(4);
-    fn_800D61E4(0, 0);
-    fn_800D5BA0(0, 0x003B6DFF);
-    fn_800D61E4(sprite->x, 0);
-    fn_800D5BA0(0, 0x489DECFF);
-    fn_800D61E4(sprite->x, sprite->y);
-    fn_800D5BA0(0, 0x489DECFF);
-    fn_800D61E4(0, sprite->y);
-    fn_800D5BA0(0, 0x003B6DFF);
+    gfxVtxPos2s16(0, 0);
+    gfxVtxColor1u32(0, 0x003B6DFF);
+    gfxVtxPos2s16(sprite->x, 0);
+    gfxVtxColor1u32(0, 0x489DECFF);
+    gfxVtxPos2s16(sprite->x, sprite->y);
+    gfxVtxColor1u32(0, 0x489DECFF);
+    gfxVtxPos2s16(0, sprite->y);
+    gfxVtxColor1u32(0, 0x003B6DFF);
     gfxEnd();
 }
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (peephole reset; peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
@@ -408,7 +408,7 @@ void fn_80037648(void)
         messageId = 0x1b59;
         break;
     }
-    fn_800FB680(-4, 0, -1, (void*)messageId);
+    GSmsgPrintColor(-4, 0, -1, (void*)messageId);
 }
 
 #if !defined(PDA_RANGE_EXACT_80037174_ONLY)
@@ -425,7 +425,7 @@ void fn_800376C8(void)
 {
     void* data = lbl_8047A480;
 
-    fn_800FB680(0, 0, -1, data);
+    GSmsgPrintColor(0, 0, -1, data);
 }
 #pragma opt_propagation reset
 #pragma scheduling reset
@@ -932,7 +932,7 @@ void std024_dialogDisplayPCBoxMenu(void)
     extern s32 menuOpen(s32 menu, s32 mode);
     extern void soundDuck(s32 a, s32 b, s32 c, s32 d);
     extern void soundUnduck(s32 a, s32 b, s32 c);
-    extern void fn_800FF660(void);
+    extern void floorBattleEndTerminateScripts(void);
     extern void pcBoxStorageMain(void);
     extern void itemStorageRun(void);
     extern s32 pcMenuSave(void);
@@ -1029,7 +1029,7 @@ void std024_dialogDisplayPCBoxMenu(void)
         }
     } while (running);
     soundUnduck(0x3e8, 1, 1);
-    fn_800FF660();
+    floorBattleEndTerminateScripts();
 }
 #pragma peephole reset
 
@@ -1298,7 +1298,7 @@ s32 fn_80039970(void* window, PdaSprite* sprite)
 #pragma peephole off
 s32 fn_80039A50(PdaSprite* sprite)
 {
-    fn_800FB680(0, 0, *(s32*)((u8*)sprite + 0x88), (void*)lbl_8047A4B4);
+    GSmsgPrintColor(0, 0, *(s32*)((u8*)sprite + 0x88), (void*)lbl_8047A4B4);
     return 0;
 }
 #pragma pop
@@ -1880,7 +1880,7 @@ void pdaSnagListDrawCount(PdaSprite* sprite)
     } else {
         msgctrlSetValue(0x31, value);
     }
-    fn_800FB680(0, 0, (u32)sprite->alphaByte | -0x100LL, message);
+    GSmsgPrintColor(0, 0, (u32)sprite->alphaByte | -0x100LL, message);
 }
 
 #pragma scheduling off
@@ -2317,8 +2317,8 @@ extern f32 lbl_8047BDAC;
 extern f32 lbl_8047BDF0;
 
 extern u32 gfxVtxTexCoord();
-extern u32 fn_800D5CB8();
-extern u32 fn_800D61E4();
+extern u32 gfxVtxColor4u8();
+extern u32 gfxVtxPos2s16();
 extern u32 gfxEnd();
 extern u32 gfxBegin();
 extern u32 gfxSetPrimitive();
@@ -2326,7 +2326,7 @@ extern u32 gfxSetVtxDesc();
 extern u32 gfxLoadTexture();
 extern u32 gfxClearFlags();
 extern u32 gfxSetFlags();
-extern u32 fn_800E202C();
+extern u32 GSmemGetHandleByPtr();
 extern u32 fn_800E209C();
 extern u32 fn_800E24B0();
 extern u32 fn_800E27B0();
@@ -2379,11 +2379,11 @@ static inline void pdaDrawModelTexture(PdaSprite* sprite, u8* model)
         gfxSetVtxDesc(lbl_80314F98);
         gfxLoadTexture(0, texture);
         gfxBegin(2);
-        fn_800D61E4(0, 0);
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+        gfxVtxPos2s16(0, 0);
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
         gfxVtxTexCoord(0, lbl_8047BAC4, lbl_8047BAC4);
-        fn_800D61E4(sprite->x, sprite->y);
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+        gfxVtxPos2s16(sprite->x, sprite->y);
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
         gfxVtxTexCoord(0, lbl_8047BAC8, lbl_8047BAC8);
         gfxEnd();
     }
@@ -2458,7 +2458,7 @@ void fn_8003AFDC(u8* context, PdaSprite* sprite)
         } else {
             messageId = 0x36E8;
         }
-        fn_800FB680(0, 0, context[0x8B] | -0x100, (void*)messageId);
+        GSmsgPrintColor(0, 0, context[0x8B] | -0x100, (void*)messageId);
         break;
     }
 }
@@ -2514,12 +2514,12 @@ void fn_800492CC(u8* context, PdaSprite* sprite)
         gfxSetVtxDesc(lbl_80314F98);
         gfxLoadTexture(0, firstTexture);
         gfxBegin(2);
-        fn_800D61E4(lbl_804788C8[0], lbl_804788C8[1]);
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, alpha);
+        gfxVtxPos2s16(lbl_804788C8[0], lbl_804788C8[1]);
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, alpha);
         gfxVtxTexCoord(0, lbl_8047BC94, lbl_8047BC94);
-        fn_800D61E4((s16)(lbl_804788C8[0] + (s16)sprite->x),
+        gfxVtxPos2s16((s16)(lbl_804788C8[0] + (s16)sprite->x),
                      (s16)(lbl_804788C8[1] + (s16)sprite->y));
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, alpha);
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, alpha);
         gfxVtxTexCoord(0, lbl_8047BCBC, lbl_8047BCBC);
         gfxEnd();
     }
@@ -2530,12 +2530,12 @@ void fn_800492CC(u8* context, PdaSprite* sprite)
         gfxSetVtxDesc(lbl_80314F98);
         gfxLoadTexture(0, secondTexture);
         gfxBegin(2);
-        fn_800D61E4(lbl_804788C8[0], lbl_804788C8[1]);
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, alpha);
+        gfxVtxPos2s16(lbl_804788C8[0], lbl_804788C8[1]);
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, alpha);
         gfxVtxTexCoord(0, lbl_8047BC94, lbl_8047BC94);
-        fn_800D61E4((s16)(lbl_804788C8[0] + (s16)sprite->x),
+        gfxVtxPos2s16((s16)(lbl_804788C8[0] + (s16)sprite->x),
                      (s16)(lbl_804788C8[1] + (s16)sprite->y));
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, alpha);
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, alpha);
         gfxVtxTexCoord(0, lbl_8047BCBC, lbl_8047BCBC);
         gfxEnd();
     }
@@ -2738,7 +2738,7 @@ static inline void pdaDrawNameRows(u8* context, s32 first, f32 y)
                 name = GSmsgGetGSchar(1);
             }
             msgctrlSetValue(0x37, name);
-            fn_800FB680(0, (s32)y - 2, (u32)context[0x8B] | -0x100LL,
+            GSmsgPrintColor(0, (s32)y - 2, (u32)context[0x8B] | -0x100LL,
                         (void*)0xE7);
         }
         y += lbl_8047BCF4;
@@ -2894,7 +2894,7 @@ void pdaSnagListCreatePokemon(u8* context)
         u32 alpha = context[0x8B];
         s32 color = alpha | -0x100LL;
 
-        fn_800FB680(0, 0, color, (void*)0xCF);
+        GSmsgPrintColor(0, 0, color, (void*)0xCF);
     }
 }
 #pragma peephole reset
@@ -3053,7 +3053,7 @@ void fn_8003CF38(void)
             ((PdaListEntry*)(sortEntries + i * 8 + 4))->battleId;
     }
 
-    handle = fn_800E202C(lbl_8047A4D8);
+    handle = GSmemGetHandleByPtr(lbl_8047A4D8);
     if ((u16)handle != 0) {
         fn_800E24B0(handle);
         fn_800E209C(handle);
@@ -3248,9 +3248,9 @@ void pdaSnagListDrawEntry(u8* context)
         caption = GSmsgGetGSchar(1);
     }
     msgctrlSetValue(0x37, caption);
-    fn_800FB680(0, 0, context[0x8B] | -0x100, (void*)0xE7);
+    GSmsgPrintColor(0, 0, context[0x8B] | -0x100, (void*)0xE7);
     msgctrlSetValue(0x37, owner);
-    fn_800FB680(0xB4, 0, context[0x8B] | -0x100, (void*)0xE7);
+    GSmsgPrintColor(0xB4, 0, context[0x8B] | -0x100, (void*)0xE7);
 }
 #pragma peephole reset
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
@@ -3393,7 +3393,7 @@ void fn_8003B6D0(u8* ctx)
         msg = GSmsgGetGSchar(1);
     }
     msgctrlSetValue(0x37, msg);
-    fn_800FB680(0, 0, ctx[0x8b] | -0x100, (void*)0xcf);
+    GSmsgPrintColor(0, 0, ctx[0x8b] | -0x100, (void*)0xcf);
 }
 
 #pragma peephole off
@@ -3459,7 +3459,7 @@ void fn_8003F040(void) {
             allocation = 0;
         }
         p = base + ii * 0x1a;
-        fn_800F96E4(p + 2, 0x18, (u8*)allocation);
+        GSmsgGetText(p + 2, 0x18, (u8*)allocation);
         *(u16*)p = i;
     }
 
@@ -3489,14 +3489,14 @@ void fn_8003F040(void) {
     }
 
     if (base != 0) {
-        handle = fn_800E202C((u32)base);
+        handle = GSmemGetHandleByPtr((u32)base);
         if ((u16)handle != 0) {
             fn_800E24B0(handle);
             fn_800E209C(handle);
         }
     }
     if (idx != 0) {
-        handle = fn_800E202C((u32)idx);
+        handle = GSmemGetHandleByPtr((u32)idx);
         if ((u16)handle != 0) {
             fn_800E24B0(handle);
             fn_800E209C(handle);
@@ -3594,7 +3594,7 @@ void pdaStrategyMemoRun(void) {
     extern void  cameraPlayAnime(u32 a, u32 id, u32 c, u32 d);
     extern void  fn_8010A420(void* subobj);
     extern void  menuOffScreenSetDisp(s32 a);
-    extern u32   fn_800E202C(u32 flag);
+    extern u32   GSmemGetHandleByPtr(u32 flag);
     extern void  fn_800E24B0(void);
     extern void  fn_800E209C(u32 h);
     extern void  GScameraGetPosition(void* cam, void* outVec3);
@@ -4755,7 +4755,7 @@ void pdaStrategyMemoRun(void) {
     std113_mapObjectUnk_8018db68(h);
 
     if (lbl_8047A4E0 != 0) {
-        h = (void*)fn_800E202C(lbl_8047A4E0);
+        h = (void*)GSmemGetHandleByPtr(lbl_8047A4E0);
         if ((u16)(u32)h != 0) {
             fn_800E24B0();
             fn_800E209C((u32)h);
@@ -4767,7 +4767,7 @@ void pdaStrategyMemoRun(void) {
         fn_8010A420((u8*)&lbl_803A6818 + 0x7c);
         fn_8010A420((u8*)&lbl_803A6818 + 0xc4);
 
-        h = (void*)fn_800E202C((u32)lbl_8047A4E4);
+        h = (void*)GSmemGetHandleByPtr((u32)lbl_8047A4E4);
     if ((u16)(u32)h != 0) {
         fn_800E24B0();
         fn_800E209C((u32)h);
@@ -5139,7 +5139,7 @@ void fn_8003D8CC(void)
     for (i = 0; i < lbl_8047A4E8; i++) {
         u16 id = lbl_8047A4E4[i];
         pdaLoadPokemonId(id);
-        if ((u32)fn_800F96E4((u8*)nameBuf, 0x100, (u8*)pdaGetPokemonName(id)) !=
+        if ((u32)GSmsgGetText((u8*)nameBuf, 0x100, (u8*)pdaGetPokemonName(id)) !=
             0) {
             for (j = 0; j < count; j++) {
                 if (nameBuf[0] == tbl[j].text[0]) {
@@ -5174,8 +5174,8 @@ static inline f32 pdaFabs(f32 v)
 #pragma peephole off
 void pdaReadPadInput(void* scene)
 {
-    extern s8 fn_800F7A08(s32 chan, s32 index);
-    extern s8 fn_800F7A7C(s32 chan, s32 index);
+    extern s8 GSinputGetLeftStickYData(s32 chan, s32 index);
+    extern s8 GSinputGetLeftStickXData(s32 chan, s32 index);
     extern u32 fn_800F7BC4(s32 chan);
     extern s8 msgGetCharsPerFrame(void);
     extern f64 atan2(f64 y, f64 x);
@@ -5191,8 +5191,8 @@ void pdaReadPadInput(void* scene)
 
     buttons = 0;
     *(u16*)(work + 2) = *(u16*)work;
-    x = fn_800F7A08(1, 0);
-    y = fn_800F7A7C(1, 0);
+    x = GSinputGetLeftStickYData(1, 0);
+    y = GSinputGetLeftStickXData(1, 0);
     if ((y < 0 ? -y : y) > 0x20 || (x < 0 ? -x : x) > 0x20) {
         ang = atan2((f64)y, (f64)x);
         if (pdaFabs(ang) < lbl_8047BCFC) {
@@ -5342,7 +5342,7 @@ void fn_80043FA8(PdaSprite* alphaSprite, PdaSprite* sprite)
         } else {
             tint = 0x4a0000;
         }
-        fn_800FB680((s16)((sprite->x - (s16)(GSmsgGetRect(0x3717) >> 16)) / 2), 0,
+        GSmsgPrintColor((s16)((sprite->x - (s16)(GSmsgGetRect(0x3717) >> 16)) / 2), 0,
                     tint | alphaSprite->alphaByte, (void*)0x3717);
         break;
     case 0x10c8:
@@ -5351,7 +5351,7 @@ void fn_80043FA8(PdaSprite* alphaSprite, PdaSprite* sprite)
         } else {
             tint = 0x4a0000;
         }
-        fn_800FB680((s16)((sprite->x - (s16)(GSmsgGetRect(0x3718) >> 16)) / 2), 0,
+        GSmsgPrintColor((s16)((sprite->x - (s16)(GSmsgGetRect(0x3718) >> 16)) / 2), 0,
                     tint | alphaSprite->alphaByte, (void*)0x3718);
         break;
     case 0x10c9:
@@ -5360,7 +5360,7 @@ void fn_80043FA8(PdaSprite* alphaSprite, PdaSprite* sprite)
         } else {
             tint = 0x4a0000;
         }
-        fn_800FB680((s16)((sprite->x - (s16)(GSmsgGetRect(0x3719) >> 16)) / 2), 0,
+        GSmsgPrintColor((s16)((sprite->x - (s16)(GSmsgGetRect(0x3719) >> 16)) / 2), 0,
                     tint | alphaSprite->alphaByte, (void*)0x3719);
         break;
     case 0xfbf:
@@ -5531,11 +5531,11 @@ extern void memoGetScaleAngle(u16 id, f32* scale, f32* angle);
 extern u8 menuModelCheck(void* work, s32 index);
 extern void GSmodelCenterNull(void* model);
 extern void modelRemoveCenterNull(void* model);
-extern s32 fn_800EE0E8(void* model);
+extern s32 GSmodelWalkJObjs(void* model);
 extern void* GSmodelGetPart(void* model, s32 index);
 extern void GSpartGetTransform(void* part, void* out, s32 a, s32 b);
 extern void GSpartFree(void* part);
-extern void fn_800E032C(f32* mtx, f32 angle);
+extern void GSmtxRotateY(f32* mtx, f32 angle);
 
 /* MSL math.h inlines: float classification and the frsqrte-based sqrtf. */
 static inline s32 pdaFpClassifyF(f32 value)
@@ -5691,10 +5691,10 @@ u8 fn_80047CC0(u8* work)
     target.y = lbl_8047BC94;
     fn_800E064C(mtx);
     fn_800E03B4(mtx, &target);
-    fn_800E032C(mtx, angle);
+    GSmtxRotateY(mtx, angle);
     GSmodelSetMatrix(model, mtx);
     GSmodelCenterNull(model);
-    part = GSmodelGetPart(model, fn_800EE0E8(model) - 1);
+    part = GSmodelGetPart(model, GSmodelWalkJObjs(model) - 1);
     if (part != NULL) {
         GSpartGetTransform(part, &xform, 0, 0);
         GSpartFree(part);
@@ -5748,8 +5748,8 @@ extern void GSsplineFree(void* spline);
 void fn_800473E0(PdaOrbitPoint* point)
 {
     extern u8 lbl_80314E08[];
-    extern void fn_800D5648(f32 width);
-    extern void fn_800D5BA0(s32 index, u32 color);
+    extern void gfxSetLineWidth(f32 width);
+    extern void gfxVtxColor1u32(s32 index, u32 color);
     u8* p = (u8*)point;
     u8* data;
     void* spline;
@@ -5839,16 +5839,16 @@ void fn_800473E0(PdaOrbitPoint* point)
         gfxClearFlags(6);
         gfxSetVtxDesc(lbl_80314E08);
         gfxSetPrimitive(1);
-        fn_800D5648(lbl_8047BCA8);
+        gfxSetLineWidth(lbl_8047BCA8);
         gfxBegin(2);
-        fn_800D61E4((s32)(lbl_8047BD24 + v0.x),
+        gfxVtxPos2s16((s32)(lbl_8047BD24 + v0.x),
                     (s32)(lbl_8047BD2C * v0.y + lbl_8047BD28));
-        fn_800D5BA0(0, (u8)(s32)v0.z | 0x361e0500);
-        fn_800D61E4((s32)(lbl_8047BD24 + v1.x),
+        gfxVtxColor1u32(0, (u8)(s32)v0.z | 0x361e0500);
+        gfxVtxPos2s16((s32)(lbl_8047BD24 + v1.x),
                     (s32)(lbl_8047BD2C * v1.y + lbl_8047BD28));
-        fn_800D5BA0(0, (u8)(s32)v1.z | 0x361e0500);
+        gfxVtxColor1u32(0, (u8)(s32)v1.z | 0x361e0500);
         gfxEnd();
-        fn_800D5648(lbl_8047BCBC);
+        gfxSetLineWidth(lbl_8047BCBC);
         off += 0xc;
     }
     GSsplineFree(spline);
@@ -6082,7 +6082,7 @@ static inline void pdaFree(void* p)
     u32 h;
 
     if (p != NULL) {
-        h = fn_800E202C(p);
+        h = GSmemGetHandleByPtr(p);
         if ((u16)h != 0) {
             fn_800E24B0();
             fn_800E209C(h);
@@ -6353,7 +6353,7 @@ void fn_8003F464(PdaSprite* alphaSprite, PdaSprite* sprite)
             for (i = 0; i < *(s8*)(S + 0x160); i++) {
                 if (i >= *(s8*)(S + 0x1c8) - 1 &&
                     i <= *(s8*)(S + 0x1c9) + 1) {
-                    fn_800FB680(0, (s32)pos,
+                    GSmsgPrintColor(0, (s32)pos,
                                 (alphaSprite->alphaByte | -0x100LL),
                                 (void*)*(u32*)((u8*)*(u32**)(T + 0x24c +
                                                              *(s8*)(S + 0x15d) *
@@ -6367,47 +6367,47 @@ void fn_8003F464(PdaSprite* alphaSprite, PdaSprite* sprite)
         fn_800FE35C();
         break;
     case 0xd79:
-        fn_800FB680((s16)((sprite->x - (s16)(GSmsgGetRect(0x36ed) >> 16)) / 2), -2,
+        GSmsgPrintColor((s16)((sprite->x - (s16)(GSmsgGetRect(0x36ed) >> 16)) / 2), -2,
                     (alphaSprite->alphaByte | -0x100LL), (void*)0x36ed);
         break;
     case 0xd7a:
-        fn_800FB680((s16)((sprite->x - (s16)(GSmsgGetRect(0x36ec) >> 16)) / 2), -2,
+        GSmsgPrintColor((s16)((sprite->x - (s16)(GSmsgGetRect(0x36ec) >> 16)) / 2), -2,
                     (alphaSprite->alphaByte | -0x100LL), (void*)0x36ec);
         break;
     case 0xd7b:
-        fn_800FB680((s16)((sprite->x - (s16)(GSmsgGetRect(0x36eb) >> 16)) / 2), -2,
+        GSmsgPrintColor((s16)((sprite->x - (s16)(GSmsgGetRect(0x36eb) >> 16)) / 2), -2,
                     (alphaSprite->alphaByte | -0x100LL), (void*)0x36eb);
         break;
     case 0xd7c:
-        fn_800FB680((s16)((sprite->x - (s16)(GSmsgGetRect(0x36ea) >> 16)) / 2), -2,
+        GSmsgPrintColor((s16)((sprite->x - (s16)(GSmsgGetRect(0x36ea) >> 16)) / 2), -2,
                     (alphaSprite->alphaByte | -0x100LL), (void*)0x36ea);
         break;
     case 0xd7d:
-        fn_800FB680((s16)((sprite->x - (s16)(GSmsgGetRect(0x36e9) >> 16)) / 2), -2,
+        GSmsgPrintColor((s16)((sprite->x - (s16)(GSmsgGetRect(0x36e9) >> 16)) / 2), -2,
                     (alphaSprite->alphaByte | -0x100LL), (void*)0x36e9);
         break;
     case 0xd74:
-        fn_800FB680(0, 0, (alphaSprite->alphaByte | -0x100LL),
+        GSmsgPrintColor(0, 0, (alphaSprite->alphaByte | -0x100LL),
                     (void*)(*(u32**)(T + 0x258))[*(s8*)(S + 0x15c)]);
         break;
     case 0xd75:
         msgctrlSetValue(
             0x37,
             GSmsgGetGSchar((*(u32**)(T + 0x254))[*(s8*)(S + 0x15b)]));
-        fn_800FB680(0, 0, (alphaSprite->alphaByte | -0x100LL), (void*)0xe7);
+        GSmsgPrintColor(0, 0, (alphaSprite->alphaByte | -0x100LL), (void*)0xe7);
         break;
     case 0xd76:
         msgctrlSetValue(
             0x37,
             GSmsgGetGSchar((*(u32**)(T + 0x254))[*(s8*)(S + 0x15a)]));
-        fn_800FB680(0, 0, (alphaSprite->alphaByte | -0x100LL), (void*)0xe7);
+        GSmsgPrintColor(0, 0, (alphaSprite->alphaByte | -0x100LL), (void*)0xe7);
         break;
     case 0xd77:
-        fn_800FB680(0, 0, (alphaSprite->alphaByte | -0x100LL),
+        GSmsgPrintColor(0, 0, (alphaSprite->alphaByte | -0x100LL),
                     (void*)(*(u32**)(T + 0x250))[*(s8*)(S + 0x159)]);
         break;
     case 0xd78:
-        fn_800FB680(0, 0, (alphaSprite->alphaByte | -0x100LL),
+        GSmsgPrintColor(0, 0, (alphaSprite->alphaByte | -0x100LL),
                     (void*)(*(u32**)(T + 0x24c))[*(s8*)(S + 0x158)]);
         break;
     case 0xd54:
@@ -6462,11 +6462,11 @@ void fn_8003F464(PdaSprite* alphaSprite, PdaSprite* sprite)
             } else {
                 msg = ((u32*)(T + 0x270))[*(s8*)(S + 0x15d)];
             }
-            fn_800FB680(0, 0, (alphaSprite->alphaByte | -0x100LL), (void*)msg);
+            GSmsgPrintColor(0, 0, (alphaSprite->alphaByte | -0x100LL), (void*)msg);
             break;
         case 1:
             if (*(s8*)(S + 0x15d) == 3) {
-                fn_800FB680(0, 0, (alphaSprite->alphaByte | -0x100LL),
+                GSmsgPrintColor(0, 0, (alphaSprite->alphaByte | -0x100LL),
                             (void*)((u32*)(T + 0x25c))[*(s8*)(S + 0x15f)]);
             }
             break;
@@ -6638,7 +6638,7 @@ void fn_800411FC(PdaSprite* alphaSprite, PdaEvent* event)
         name = GSmsgGetGSchar(1);
     }
     msgctrlSetValue(0x37, name);
-    fn_800FB680(0, 0, alphaSprite->alphaByte | -0x100, (void*)0xce);
+    GSmsgPrintColor(0, 0, alphaSprite->alphaByte | -0x100, (void*)0xce);
     layout = lbl_802EF0A8;
 
     if (pdaEntrySeen() != 0) {
@@ -6646,11 +6646,11 @@ void fn_800411FC(PdaSprite* alphaSprite, PdaEvent* event)
         msg = GSmsgGetGSchar((u32)pokemonTokuseiDataBiosGetName(
             pokemonTokuseiDataBiosGetPtr(tokusei0)));
         msgctrlSetValue(0x37, msg);
-        fn_800FB680(*(s16*)(layout + 0x5a5a) - sprite->field_50 + 4,
+        GSmsgPrintColor(*(s16*)(layout + 0x5a5a) - sprite->field_50 + 4,
                     *(s16*)(layout + 0x5a5c) - sprite->field_52,
                     alphaSprite->alphaByte | -0x100, (void*)0xe7);
     } else {
-        fn_800FB680(*(s16*)(layout + 0x5a5a) - sprite->field_50 + 4,
+        GSmsgPrintColor(*(s16*)(layout + 0x5a5a) - sprite->field_50 + 4,
                     *(s16*)(layout + 0x5a5c) - sprite->field_52,
                     alphaSprite->alphaByte | -0x100, (void*)0x3721);
     }
@@ -6662,12 +6662,12 @@ void fn_800411FC(PdaSprite* alphaSprite, PdaEvent* event)
             msgctrlSetValue(0x37,
                             GSmsgGetGSchar((u32)pokemonTokuseiDataBiosGetName(
                                 pokemonTokuseiDataBiosGetPtr(tokusei1))));
-            fn_800FB680(pos[0] - sprite->field_50 + 4,
+            GSmsgPrintColor(pos[0] - sprite->field_50 + 4,
                         pos[1] - sprite->field_52,
                         alphaSprite->alphaByte | -0x100, (void*)0xe7);
         }
     } else {
-        fn_800FB680(*(s16*)(layout + 0x5a5a) - sprite->field_50 + 4,
+        GSmsgPrintColor(*(s16*)(layout + 0x5a5a) - sprite->field_50 + 4,
                     *(s16*)(layout + 0x5a5c) - sprite->field_52,
                     alphaSprite->alphaByte | -0x100, (void*)0x3721);
     }
@@ -6971,8 +6971,8 @@ extern f32 lbl_8047BCE4;
 extern f32 lbl_8047BCE8;
 extern f32 lbl_8047BCEC;
 extern f32 lbl_8047BCF0;
-extern s8 fn_800F7994(s32 chan, s32 index);
-extern s8 fn_800F7920(s32 chan, s32 index);
+extern s8 GSinputGetRightStickXData(s32 chan, s32 index);
+extern s8 GSinputGetRightStickYData(s32 chan, s32 index);
 extern void GSvecAdd(void* dst, void* a, void* b);
 extern u8 fn_8010A210(void* work, u32 pokemon);
 extern void menuModelFree(void* work);
@@ -7148,8 +7148,8 @@ s32 pdaModelViewerControl(void* work, s32 mode)
         }
         GSmodelGetBound(model);
         rot = (f32*)((u8*)&lbl_803A6818 + 0x6c);
-        stickY = fn_800F7994(1, 1);
-        stickX = fn_800F7920(1, 1);
+        stickY = GSinputGetRightStickXData(1, 1);
+        stickX = GSinputGetRightStickYData(1, 1);
         spin.x = *(f32*)((u8*)&lbl_803A6818 + 0x3c) *
                  (lbl_8047BCA4 * (f32)stickX * lbl_8047BCE0);
         spin.y = *(f32*)((u8*)&lbl_803A6818 + 0x3c) *
@@ -7805,7 +7805,7 @@ extern f32 lbl_8047BD1C;
 extern u16 pokemonDataBiosGetVoice(void* data);
 extern void* pokemonNakigoeDataBiosGetDataAddress(void* data);
 extern s32 GSsndGetStatus(u32 voice);
-extern u32 fn_800F7AF0(s32 chan);
+extern u32 GSinputButtonsChanged(s32 chan);
 extern s32 menuOpen(s32 id, s32 flag);
 
 /* Cry voice of the highlighted entry, 0xffff when it cannot be resolved. */
@@ -7878,8 +7878,8 @@ void fn_80046168(void)
     /* Retail converts the stick values to single precision (fsubs) for this
      * call, so this caller saw atan2 declared with float parameters. */
     extern f64 atan2(f32 y, f32 x);
-    extern s8 fn_800F7A08(s32 chan, s32 index);
-    extern s8 fn_800F7A7C(s32 chan, s32 index);
+    extern s8 GSinputGetLeftStickYData(s32 chan, s32 index);
+    extern s8 GSinputGetLeftStickXData(s32 chan, s32 index);
     u8* S;
     PdaCryTrail* t;
     s32 running;
@@ -7943,13 +7943,13 @@ void fn_80046168(void)
                 t++;
             }
             if ((u8)playing != 0) {
-                if ((fn_800F7BC4(1) & fn_800F7AF0(1) & 0x8) != 0) {
+                if ((fn_800F7BC4(1) & GSinputButtonsChanged(1) & 0x8) != 0) {
                     cancel = 1;
-                } else if ((fn_800F7BC4(1) & fn_800F7AF0(1) & 0x4) != 0) {
+                } else if ((fn_800F7BC4(1) & GSinputButtonsChanged(1) & 0x4) != 0) {
                     cancel = 1;
                 } else {
-                    x = fn_800F7A08(1, 0);
-                    y = fn_800F7A7C(1, 0);
+                    x = GSinputGetLeftStickYData(1, 0);
+                    y = GSinputGetLeftStickXData(1, 0);
                     if ((y < 0 ? -y : y) > 0x20 || (x < 0 ? -x : x) > 0x20) {
                         ang = atan2(y, x);
                         if (pdaFabs(ang) < lbl_8047BCFC) {
@@ -7970,12 +7970,12 @@ void fn_80046168(void)
                 menuCloseCustom(0x3e, 0, 1);
                 *(s32*)(S + 0x20) = 0;
             } else {
-                if ((fn_800F7BC4(1) & fn_800F7AF0(1) & 0x100) != 0) {
+                if ((fn_800F7BC4(1) & GSinputButtonsChanged(1) & 0x100) != 0) {
                     voice = pdaCurrentVoice();
                     soundStartRaw(voice, 0, 0);
                     pdaPushCry(pdaCurrentCry(), voice);
                 }
-                if ((fn_800F7BC4(1) & fn_800F7AF0(1) & 0x200) != 0) {
+                if ((fn_800F7BC4(1) & GSinputButtonsChanged(1) & 0x200) != 0) {
                     if (*(s32*)(S + 0x1c) == 2) {
                         *(s32*)(S + 0x1c) = 8;
                         menuCloseCustom(0x3e, 0, 1);
@@ -8011,9 +8011,9 @@ extern f32 lbl_8047BDB8;
 s32 fn_800495C8(void* work, PdaSprite* sprite)
 {
     extern u8 lbl_80314E08[];
-    extern void fn_800D5648(f32 width);
-    extern void fn_800D5BA0(s32 index, u32 color);
-    extern void fn_800D61E4(s16 x, s16 y);
+    extern void gfxSetLineWidth(f32 width);
+    extern void gfxVtxColor1u32(s32 index, u32 color);
+    extern void gfxVtxPos2s16(s16 x, s16 y);
     u8* G = lbl_803A6A60;
     u8* data;
     f32 kOne;
@@ -8071,15 +8071,15 @@ s32 fn_800495C8(void* work, PdaSprite* sprite)
     gfxSetPrimitive(4);
     gfxBegin(4);
     alpha = (s32)(lbl_8047BDB0 * *(f32*)(G + 0x28));
-    fn_800D61E4(0, 0);
+    gfxVtxPos2s16(0, 0);
     color = (u8)alpha | 0x03140e00;
-    fn_800D5BA0(0, color);
-    fn_800D61E4(sprite->x, 0);
-    fn_800D5BA0(0, color);
-    fn_800D61E4(0, sprite->y);
-    fn_800D5BA0(0, color);
-    fn_800D61E4(sprite->x, sprite->y);
-    fn_800D5BA0(0, color);
+    gfxVtxColor1u32(0, color);
+    gfxVtxPos2s16(sprite->x, 0);
+    gfxVtxColor1u32(0, color);
+    gfxVtxPos2s16(0, sprite->y);
+    gfxVtxColor1u32(0, color);
+    gfxVtxPos2s16(sprite->x, sprite->y);
+    gfxVtxColor1u32(0, color);
     gfxEnd();
 
     for (i = 0; i < 0x1e0; i += 4) {
@@ -8087,12 +8087,12 @@ s32 fn_800495C8(void* work, PdaSprite* sprite)
         gfxClearFlags(6);
         gfxSetVtxDesc(lbl_80314E08);
         gfxSetPrimitive(1);
-        fn_800D5648(lbl_8047BDA0);
+        gfxSetLineWidth(lbl_8047BDA0);
         gfxBegin(2);
-        fn_800D61E4(0, i);
-        fn_800D5BA0(0, 0x00800080);
-        fn_800D61E4(sprite->x, i);
-        fn_800D5BA0(0, 0x00800080);
+        gfxVtxPos2s16(0, i);
+        gfxVtxColor1u32(0, 0x00800080);
+        gfxVtxPos2s16(sprite->x, i);
+        gfxVtxColor1u32(0, 0x00800080);
         gfxEnd();
     }
 
@@ -8114,13 +8114,13 @@ s32 fn_800495C8(void* work, PdaSprite* sprite)
         gfxClearFlags(6);
         gfxSetVtxDesc(lbl_80314E08);
         gfxSetPrimitive(1);
-        fn_800D5648(lbl_8047BDA0);
+        gfxSetLineWidth(lbl_8047BDA0);
         gfxBegin(2);
-        fn_800D61E4(0, row);
+        gfxVtxPos2s16(0, row);
         color = (u8)alpha | 0x00800000;
-        fn_800D5BA0(0, color);
-        fn_800D61E4(sprite->x, row);
-        fn_800D5BA0(0, color);
+        gfxVtxColor1u32(0, color);
+        gfxVtxPos2s16(sprite->x, row);
+        gfxVtxColor1u32(0, color);
         gfxEnd();
     }
     return 0;
@@ -8512,7 +8512,7 @@ s32 pdaTrainerDataDraw(void* work, PdaSprite* sprite)
             idx -= 0xd;
             msgctrlSetValue(0x34, value % 10);
             value = value / 10;
-            fn_800FB680(idx + 0x24, 0, sprite->alpha | -0x100LL, (void*)0xca);
+            GSmsgPrintColor(idx + 0x24, 0, sprite->alpha | -0x100LL, (void*)0xca);
         }
         break;
     case 0x777:
@@ -8533,7 +8533,7 @@ s32 pdaTrainerDataDraw(void* work, PdaSprite* sprite)
             msg = 1;
             break;
         }
-        fn_800FB680(-0x50, -4, sprite->alpha | -0x100, (void*)msg);
+        GSmsgPrintColor(-0x50, -4, sprite->alpha | -0x100, (void*)msg);
         break;
     case 0x6e3:
     case 0x6e4:
@@ -9449,7 +9449,7 @@ void pdaSnagListRun(void)
     }
     fn_8010A420(model);
     if (lbl_8047A4D0 != 0) {
-        handle = fn_800E202C(lbl_8047A4D0);
+        handle = GSmemGetHandleByPtr(lbl_8047A4D0);
         if ((u16)handle != 0) {
             fn_800E24B0();
             fn_800E209C(handle);
@@ -9457,7 +9457,7 @@ void pdaSnagListRun(void)
         lbl_8047A4D0 = 0;
     }
     if (lbl_8047A4D4 != NULL) {
-        handle = fn_800E202C(lbl_8047A4D4);
+        handle = GSmemGetHandleByPtr(lbl_8047A4D4);
         if ((u16)handle != 0) {
             fn_800E24B0();
             fn_800E209C(handle);
@@ -9617,11 +9617,11 @@ void pdaSnagListDrawDetail(PdaSprite* alphaSprite, PdaEvent* event)
             }
             msgctrlSetValue(0x37, msg);
             y = (s32)rowY;
-            fn_800FB680(0, y, tint | alphaSprite->alphaByte, (void*)0xe7);
+            GSmsgPrintColor(0, y, tint | alphaSprite->alphaByte, (void*)0xe7);
             msgctrlSetValue(0x37, owner);
-            fn_800FB680(0x89, y, tint | alphaSprite->alphaByte, (void*)0xe7);
+            GSmsgPrintColor(0x89, y, tint | alphaSprite->alphaByte, (void*)0xe7);
             msgctrlSetValue(0x37, caption);
-            fn_800FB680(0x13d, y, tint | alphaSprite->alphaByte, (void*)0xe7);
+            GSmsgPrintColor(0x13d, y, tint | alphaSprite->alphaByte, (void*)0xe7);
         }
         rowY = rowY + stride;
         off += 4;
@@ -9739,19 +9739,19 @@ s32 fn_80039644(void* work, PdaSprite* sprite)
         itemId = pdaBoxItemId(index);
         name = itemDataBiosGetName(itemDataBiosGetPtr(itemId));
         if (name != NULL) {
-            fn_800FB680(0, y, (s32)sprite, name);
+            GSmsgPrintColor(0, y, (s32)sprite, name);
         }
         if (itemDataBiosGetKind(itemDataBiosGetPtr(itemId)) == 5) {
             continue;
         }
-        fn_800FB680(nameX, y, (s32)sprite, (void*)0x12e);
+        GSmsgPrintColor(nameX, y, (s32)sprite, (void*)0x12e);
         count = pdaBoxItemNum(index);
         msgctrlSetValue(0x34, count);
-        fn_800FB680(0x11a - (s16)(GSmsgGetRect(0xca) >> 16), y, (s32)sprite,
+        GSmsgPrintColor(0x11a - (s16)(GSmsgGetRect(0xca) >> 16), y, (s32)sprite,
                     (void*)0xca);
     }
     if (i < rows) {
-        fn_800FB680(0, i * 0x1f - yAdj, (s32)sprite, (void*)0x1b67);
+        GSmsgPrintColor(0, i * 0x1f - yAdj, (s32)sprite, (void*)0x1b67);
     }
     return 0;
 }

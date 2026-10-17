@@ -41,22 +41,22 @@ extern void GSlogWrite(const char* format, ...);
 extern void* memset(void* dest, int value, u32 length);
 extern void DCFlushRange(void* address, u32 length);
 
-u16 fn_800E2DB0(u8* allocation, u32 size);
+u16 GSmemShrink(u8* allocation, u32 size);
 
 /*
  * Inline helpers.  Each is recovered from the target, not invented:
  * - GSmemEntryFromHandle: expanded in fn_800E209C, fn_800E24B0,
  *   fn_800E27B0, fn_800E2B00 and fn_800E2C04; the free/lock/unlock copies
  *   re-test the handle on a stale condition register ("bne; bne").
- * - GSmemEntryHandle: fn_800E2DB0 re-tests the entry for NULL after it has
+ * - GSmemEntryHandle: GSmemShrink re-tests the entry for NULL after it has
  *   already returned on NULL (the helper's own guard).
  * - GSmemGuardsAreValid (3 sites), GSmemClearGuards (4 sites) and
  *   GSmemChecksum (5 sites) are repeated expansions; the guard test returns
  *   a byte (clrlwi. on the result).
- * - GSmemFindEntryByData: fn_800E202C and fn_800E2DB0, both with the
+ * - GSmemFindEntryByData: GSmemGetHandleByPtr and GSmemShrink, both with the
  *   return-in-loop shape ("bne next; b found") and a NULL result that is
  *   tested again by the caller.
- * - GSmemGetFreeEntry and GSmemFindPreviousData (fn_800E2DB0 only): the
+ * - GSmemGetFreeEntry and GSmemFindPreviousData (GSmemShrink only): the
  *   same return-in-loop shape, a dead branch after the returned NULL, and
  *   the found->data result routed through a register and re-tested.
  */
@@ -222,7 +222,7 @@ static inline GSmemEntry* GSmemFindEntryByData(void* ptr)
     return NULL;
 }
 
-u16 fn_800E202C(void* ptr)
+u16 GSmemGetHandleByPtr(void* ptr)
 {
     GSmemEntry* entry;
 
@@ -472,7 +472,7 @@ u16 fn_800E2B00(u32 size, u16 alignment)
         return 0;
     }
 
-    handle = fn_800E2DB0(address, size);
+    handle = GSmemShrink(address, size);
     GSmemEntryFromHandle(handle)->align = alignment;
     return handle;
 }
@@ -546,12 +546,12 @@ u16 fn_800E2C04(u32 size, u16 alignment)
         lbl_8047AB3C = 2;
         return 0;
     }
-    handle = fn_800E2DB0(address, size);
+    handle = GSmemShrink(address, size);
     GSmemEntryFromHandle(handle)->align = alignment;
     return handle;
 }
 
-u16 fn_800E2DB0(u8* allocation, u32 size)
+u16 GSmemShrink(u8* allocation, u32 size)
 {
     GSmemBlock* block = lbl_8047AB30;
     GSmemBlock* suffix;

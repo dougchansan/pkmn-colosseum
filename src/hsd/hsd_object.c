@@ -55,7 +55,7 @@ extern void gfxSetVtxDesc(void* handle);
 extern void gfxSetPrimitive(s32 prim_type);
 extern void gfxBegin(s32 count);
 extern void gfxVtxPos(f32 x, f32 y, f32 z);
-extern void fn_800D5CB8(s32 idx, s32 r, s32 g, s32 b, s32 a);
+extern void gfxVtxColor4u8(s32 idx, s32 r, s32 g, s32 b, s32 a);
 extern void gfxEnd(void);
 extern u8 lbl_80314638[];
 void fn_80190E60(HSD_ObjectTransformData* data) {
@@ -90,25 +90,25 @@ void fn_80190E60(HSD_ObjectTransformData* data) {
     gfxBegin(10);
 
     gfxVtxPos(corner0[0], corner0[1], corner0[2]);
-    fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0x80);
+    gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0x80);
     gfxVtxPos(corner0[0], corner1[1], corner0[2]);
-    fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0x80);
+    gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0x80);
     gfxVtxPos(corner1[0], corner0[1], corner0[2]);
-    fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0x80);
+    gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0x80);
     gfxVtxPos(corner1[0], corner1[1], corner0[2]);
-    fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0x80);
+    gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0x80);
     gfxVtxPos(corner1[0], corner0[1], corner1[2]);
-    fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0x80);
+    gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0x80);
     gfxVtxPos(corner1[0], corner1[1], corner1[2]);
-    fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0x80);
+    gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0x80);
     gfxVtxPos(corner0[0], corner0[1], corner1[2]);
-    fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0x80);
+    gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0x80);
     gfxVtxPos(corner0[0], corner1[1], corner1[2]);
-    fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0x80);
+    gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0x80);
     gfxVtxPos(corner0[0], corner0[1], corner0[2]);
-    fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0x80);
+    gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0x80);
     gfxVtxPos(corner0[0], corner1[1], corner0[2]);
-    fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0x80);
+    gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0x80);
     gfxEnd();
 }
 

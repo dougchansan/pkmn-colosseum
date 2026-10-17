@@ -30,10 +30,10 @@ extern void gbaCommStartTransferFile();
 extern void gbaCommIsBusy();
 extern void fn_80093610();
 extern void gbaCommEnd();
-extern void fn_800D0F44();
+extern void SIProbe();
 extern void msgGetCharsPerFrame();
 extern void fn_800D37CC();
-extern void fn_800E202C();
+extern void GSmemGetHandleByPtr();
 extern void fn_800E209C();
 extern void fn_800E24B0();
 extern void fn_800E27B0();
@@ -45,11 +45,11 @@ extern void GSmodelSetAnimFrame();
 extern void GSmodelSetAnimType();
 extern void GSmodelSetAnimIndex();
 extern void _threadSwitch();
-extern void fn_800F92D4();
-extern void fn_800F9AEC();
+extern void GSresFindById();
+extern void GScharToGBA();
 extern void GSmsgGetGSchar();
 extern void std092_getCurrentRoomID();
-extern void fn_800FF660();
+extern void floorBattleEndTerminateScripts();
 extern void std098_mapWarpToMenuRoom();
 extern void menuClose();
 extern void menuCloseCustom();
@@ -384,7 +384,7 @@ void fn_80083D30(void) {
                 r5 = r3;
                 r3 = r28;
                 r4 = (u32)sp + 0xac;
-                ((void(*)(void))fn_800F9AEC)();
+                ((void(*)(void))GScharToGBA)();
                 tmp = *(u16*)((u8*)r26 + 0x0);
                 r25 = r28 + r3;
                 if (tmp == 0xffff) {
@@ -419,7 +419,7 @@ void fn_80083D30(void) {
                     r5 = r3;
                     r3 = r25;
                     r4 = (u32)sp + 0x8;
-                    ((void(*)(void))fn_800F9AEC)();
+                    ((void(*)(void))GScharToGBA)();
                     r25 = r25 + r3;
                 }
                 tmp = 0xff;
@@ -487,7 +487,7 @@ void fn_80083ECC(void) {
     r5 = r3;
     r3 = r31;
     r4 = (u32)sp + 0xac;
-    ((void(*)(void))fn_800F9AEC)();
+    ((void(*)(void))GScharToGBA)();
     tmp = *(u16*)((u8*)r30 + 0x0);
     r31 = r31 + r3;
     if (tmp == 0xffff) {
@@ -522,7 +522,7 @@ void fn_80083ECC(void) {
         r5 = r3;
         r3 = r31;
         r4 = (u32)sp + 0x8;
-        ((void(*)(void))fn_800F9AEC)();
+        ((void(*)(void))GScharToGBA)();
         r31 = r31 + r3;
     }
     tmp = 0xff;
@@ -809,7 +809,7 @@ void fn_80084038(void) {
         goto L_80084458;
             }
     r3 = r26;
-    ((void(*)(void))fn_800E202C)();
+    ((void(*)(void))GSmemGetHandleByPtr)();
     r26 = r3;
     tmp = r26 & 0xFFFF;
     if (tmp == 0) {
@@ -4390,7 +4390,7 @@ void fn_80087AE8(void) {
     tmp = *(u8*)((u8*)r30 + 0x21);
     r3 = (s8)tmp;
     if ((s32)r3 >= 0) {
-        ((void(*)(void))fn_800D0F44)();
+        ((void(*)(void))SIProbe)();
         /* subis tmp, r3, 0x4 */;
         if (tmp == 0) {
             r31 = 0x0;
@@ -4449,7 +4449,7 @@ L_80087B3C:
     if ((s32)r26 != 0) {
         r3 = *(u8*)((u8*)r30 + 0x21);
         r3 = (s8)r3;
-        ((void(*)(void))fn_800D0F44)();
+        ((void(*)(void))SIProbe)();
         if (r3 != 0x80) {
             tmp = r31 & 0xFF;
             if (tmp != 0) {
@@ -4575,7 +4575,7 @@ void fn_80087C64(void) {
                             r4 = r3 + r4;
                             r19 = *(s16*)((u8*)r4 + 0x4);
                             r3 = *(u32*)((u8*)r4 + 0x0);
-                            ((void(*)(void))fn_800F92D4)();
+                            ((void(*)(void))GSresFindById)();
                             r21 = r3;
                             if (r21 != 0) {
                                 if (r21 != 0) {
@@ -4615,7 +4615,7 @@ void fn_80087C64(void) {
                         r3 = 0x107E0000;
                         r19 = *(s16*)(r4 + tmp);
                         r3 = r3 + 0x100b;
-                        ((void(*)(void))fn_800F92D4)();
+                        ((void(*)(void))GSresFindById)();
                         r20 = r3;
                         if (r20 != 0) {
                             if (r20 != 0) {
@@ -4729,7 +4729,7 @@ void fn_80087C64(void) {
                                                 if ((s32)r24 < 3) {
                                                     r19 = *(s16*)((u8*)r22 + 0x6);
                                                     r3 = *(u32*)((u8*)r22 + 0x0);
-                                                    ((void(*)(void))fn_800F92D4)();
+                                                    ((void(*)(void))GSresFindById)();
                                                     r18 = r3;
                                                     if (r18 != 0) {
                                                         if (r18 != 0) {
@@ -4767,7 +4767,7 @@ void fn_80087C64(void) {
                         r26 = 0x0;
                         *(u32*)(sp + 0x14) = tmp;
                         r20 = *(s16*)((u8*)(u32)sp + 0x10);
-                        ((void(*)(void))fn_800F92D4)();
+                        ((void(*)(void))GSresFindById)();
                         r19 = r3;
                         if (r19 != 0 && r19 != 0) {
 
@@ -4835,7 +4835,7 @@ void fn_80087C64(void) {
                             r4 = r3 + r4;
                             r21 = *(s16*)((u8*)r4 + 0x6);
                             r3 = *(u32*)((u8*)r4 + 0x0);
-                            ((void(*)(void))fn_800F92D4)();
+                            ((void(*)(void))GSresFindById)();
                             r19 = r3;
                             if (r19 != 0) {
                                 if (r19 != 0) {
@@ -4865,7 +4865,7 @@ void fn_80087C64(void) {
                     r3 = 0x107E0000;
                     r21 = *(s16*)(r4 + tmp);
                     r3 = r3 + 0x100b;
-                    ((void(*)(void))fn_800F92D4)();
+                    ((void(*)(void))GSresFindById)();
                     r19 = r3;
                     if (r19 != 0) {
                         if (r19 != 0) {
@@ -4937,7 +4937,7 @@ void fn_80087C64(void) {
                     tmp = r5 + tmp;
                     r3 = r3 + 0x1009;
                     r20 = *(s16*)(r4 + tmp);
-                    ((void(*)(void))fn_800F92D4)();
+                    ((void(*)(void))GSresFindById)();
                     r18 = r3;
                     if (r18 != 0) {
                         if (r18 != 0) {
@@ -5093,7 +5093,7 @@ void fn_80088428(void) {
     extern void soundStartSE(s32);
     extern void cameraWaitSyncAnime(s32);
     extern void cameraPlayAnime(s32, s32, s32, s32);
-    extern void fn_800FF660(void);
+    extern void floorBattleEndTerminateScripts(void);
     GbaConvChannelState* state = (GbaConvChannelState*)&lbl_803FB2F8;
     u32 r31;
 
@@ -5104,7 +5104,7 @@ void fn_80088428(void) {
     soundStartSE(0x28);
     cameraPlayAnime(0x62d, 0x107D1800, 0, 0);
     cameraWaitSyncAnime(1);
-    fn_800FF660();
+    floorBattleEndTerminateScripts();
     state->result = r31;
 }
 

@@ -458,7 +458,7 @@ extern u32 menuDataBiosGetType(u32);
 extern void windowDrawPanel(s32, s32, s32, s32);
 extern void menuDrawRect(s32, s32, s32, s32, s32, s32);
 extern s32 sprintf(char*, const char*, ...);
-extern s32 fn_800FAEF8(s32, s32, s32, ...);
+extern s32 GSmsgPrintf(s32, s32, s32, ...);
 extern u32 std082_flagGetValue(u32);
 extern u32 lbl_80478F98;
 extern u8 lbl_80478838[8];
@@ -557,12 +557,12 @@ void fn_80008868(u8* window)
 
         sprintf((char*)lbl_803A19C8, (const char*)lbl_80266688, flagIndex,
                 (u16)flagId);
-        fn_800FAEF8(30, rowY, color, lbl_803A19C8);
+        GSmsgPrintf(30, rowY, color, lbl_803A19C8);
 
         flagIndex = row + *(s16*)lbl_80478838;
         flagId = gsTaskFlagGetId(flagIndex);
 
-        fn_800FAEF8(right + 30, rowY, color, lbl_8047B6C8,
+        GSmsgPrintf(right + 30, rowY, color, lbl_8047B6C8,
                     std082_flagGetValue((u16)flagId));
         rowY += 13;
         row++;
@@ -917,7 +917,7 @@ s32 fn_80006908(u16 id)
 
 #if !defined(GS_TASK_RANGE_SPLIT) || defined(GS_TASK_RANGE_EXACT_80006FAC)
 /* fn_80006FAC - 0x80006FAC | size: 0xdc */
-extern u32 fn_800F7AF0(s32 port);
+extern u32 GSinputButtonsChanged(s32 port);
 extern u32 fn_800F7BC4(s32 port);
 #if 1
 #if !defined(GS_TASK_RANGE_EXACT_80006FAC)
@@ -928,21 +928,21 @@ void menuFightButtonNormal(u8* ctx) {
 
     if (ctx == 0) return;
 
-    buttons = fn_800F7AF0(1);
+    buttons = GSinputButtonsChanged(1);
     held = fn_800F7BC4(1);
     if ((held & buttons) & 0x100) {
         *(u8*)(ctx + 0x98) = 1;
         *(u32*)(ctx + 0x80) = menuGetCursorItemID(*(u32*)(ctx + 0x4));
     }
 
-    buttons = fn_800F7AF0(1);
+    buttons = GSinputButtonsChanged(1);
     held = fn_800F7BC4(1);
     if ((held & buttons) & 0x1000) {
         *(u8*)(ctx + 0x98) = 1;
         *(s32*)(ctx + 0x80) = -2;
     }
 
-    buttons = fn_800F7AF0(1);
+    buttons = GSinputButtonsChanged(1);
     held = fn_800F7BC4(1);
     if ((held & buttons) & 0x200) {
         *(u8*)(ctx + 0x98) = 1;
@@ -1773,7 +1773,7 @@ u32 dbgMenuFightGetMsgSpeedToFrame(u32 value) {
         if (lbl_8047A270 == 1) {
             value = 0;
             for (;;) {
-                buttons = fn_800F7AF0(1);
+                buttons = GSinputButtonsChanged(1);
                 held = fn_800F7BC4(1);
                 if ((held & buttons) & 0x100) {
                     break;

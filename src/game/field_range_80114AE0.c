@@ -27,9 +27,9 @@ extern void  fn_800E209C(u16 handle);                   /* GSmemFree */
 extern void  PSMTXMultVec(void* mtx, void* vec, void* out); /* MTXMultVec3 */
 extern void  PSVECSubtract(void* out, void* in, f32 s);     /* VEC normalize */
 /* GSgfx renderer */
-extern void  fn_800D7868(void* handle, u32 a, u32 b, u32 c,
+extern void  gfxVtxDescSetAttr(void* handle, u32 a, u32 b, u32 c,
                           u32 d, u32 e, u32 f, u32 g);     /* GSgfx draw setup */
-extern void* fn_800D7894(void);                             /* GSgfx create render obj */
+extern void* gfxVtxDescAlloc(void);                             /* GSgfx create render obj */
 /* Real named labels referenced by remaining inline-asm wrappers in this TU. */
 extern void _modelSetRotateEulerToQuatAll__FP9_HSD_JObj();
 extern void cos();
@@ -303,15 +303,15 @@ extern u32 lbl_8047AD84;
 extern void fn_800EC134(u32);
 extern void fn_800D4604();
 extern void fn_800D377C();
-extern void fn_800D3410();
+extern void GSgfxRenderLayer();
 extern void fn_800D9B24();
 extern void fn_800D9AF0();
 extern void fn_800D258C();
-extern void fn_800D9D68();
-extern void fn_800D9C24();
+extern void gfxSetScissor();
+extern void gfxSetViewport();
 extern void _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID(void);
 extern void GSmodelDrawModel();
-extern void fn_800D3190(void);
+extern void GSgfxRenderEnd(void);
 extern void fn_800FF4D4(void);
 extern u32 lbl_802727C8[];
 extern void psSetBillboardCamera();
@@ -324,7 +324,7 @@ extern void psKillGenerator();
 extern u32 lbl_8047AD9C;
 extern u32 lbl_8047ADA0;
 void fn_801181B0(void);
-extern void fn_800E06EC(void);
+extern void GSquatFromEuler(void);
 extern void GSvecTransformQuat(void);
 extern void fn_800E0108(void);
 extern void psInterpretParticles(void);
@@ -539,8 +539,8 @@ extern void fn_800CE148(void);
 extern void fn_800CDBE0(void);
 extern void GScolsys2CheckGetEventID(void);
 extern void peopleStopTurn(void);
-extern void fn_800F7D38(void);
-extern void fn_800F7C8C(void);
+extern void GSinputResetLeftSmoothing(void);
+extern void GSinputResetRightSmoothing(void);
 extern void fn_8018BA04(void);
 extern void peopleTurnToPoint(void);
 extern void fn_8018D7D0(void);
@@ -572,8 +572,8 @@ void partnerGetTarget(void);
 extern void fn_800E3C64(void);
 extern f32 lbl_8047D0B0;
 void partnerMove(void);
-extern void fn_800F7A7C(void);
-extern void fn_800F7A08(void);
+extern void GSinputGetLeftStickXData(void);
+extern void GSinputGetLeftStickYData(void);
 extern void fn_800F7BC4(void);
 extern void peopleSetSpeedFromAmount(void);
 extern void fn_80166458(void);
@@ -584,7 +584,7 @@ extern f32 lbl_8047D0BC;
 extern f32 lbl_8047D0C0;
 extern f32 lbl_8047D0C4;
 void heroReadStick(void);
-extern void fn_800F7AF0(void);
+extern void GSinputButtonsChanged(void);
 extern void peopleAmountFromMove(void);
 extern void PSVECDistance(void);
 extern f32 lbl_8047D0D0;
@@ -621,12 +621,12 @@ void heroMoveSyncWithHero(void);
 void fn_8013024C(void);
 extern void gamedataGetStatus(void);
 extern void gamedataAttestCreate(void);
-extern void fn_800F76E4();
+extern void cms_RegisterScript();
 extern void fn_80112700(void);
 extern void GSmsgFontOpen();
 extern void GSmsgOpen();
 extern u8 fn_800FF554(void);
-extern void fn_800F760C();
+extern void cms_UnregisterScript();
 extern void fn_800FC2A8();
 extern void GSmsgClose();
 extern u8 lbl_8035BA98[];
@@ -1461,7 +1461,7 @@ extern void* HSD_ArchiveGetPublicAddress(void* archive, const char* name);
 extern void* GSresRegisterResource(void* resource, u32 owner, u32 id,
                                    void* unload);
 extern void* GSlightLoad(void* light);
-extern void* fn_800D27FC(void* camera);
+extern void* GScameraCreateFromDesc(void* camera);
 extern void floorInitMap(u32 owner, u32 param);
 extern u8 lbl_80272200[];
 
@@ -1537,7 +1537,7 @@ void* floorReadMapPostFunc(u32 owner, u32 param, u32 size)
     if (public == NULL) {
         GSlogWrite(strings + 0x1CC);
     } else {
-        resource = fn_800D27FC(public->camera);
+        resource = GScameraCreateFromDesc(public->camera);
         if (resource == NULL) {
             GSlogWrite(strings + 0x200);
         } else {

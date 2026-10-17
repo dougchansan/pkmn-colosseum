@@ -94,7 +94,7 @@ extern BOOL OSDisableInterrupts(void);
 extern BOOL OSRestoreInterrupts(BOOL level);
 extern u32 fn_800E2C04(u32 size, u32 align);
 extern void* fn_800E27B0(u32 handle);
-extern u32 fn_800E202C(void);
+extern u32 GSmemGetHandleByPtr(void);
 extern void fn_800E24B0(u32 handle);
 extern void fn_800E209C(u32 handle);
 extern s32 DVDGetCommandBlockStatus(const void* block);
@@ -611,7 +611,7 @@ void _sndInitParms(GSsndEntry* entry, GSsndWork* work)
 
 void fn_80167B70(void)
 {
-    u32 handle = fn_800E202C();
+    u32 handle = GSmemGetHandleByPtr();
 
     if ((u16)handle != 0) {
         fn_800E24B0(handle);

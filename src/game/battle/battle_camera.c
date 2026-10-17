@@ -227,7 +227,7 @@ void battleCameraStartRandom(void) {
     extern void* fn_801D2C6C(void);
     extern void fn_801D2C74(void* owner);
     extern s32 msgGetCharsPerFrame(void);
-    extern f32 fn_800E0BE4(void);
+    extern f32 GSrandf(void);
     extern u32 _fadeEffectGetRandom__FUl(u32 range);
 
     u16 groupCount;
@@ -252,7 +252,7 @@ void battleCameraStartRandom(void) {
         return;
     }
     if (groupCount + *(u16*)((u8*)lbl_80466DE8 + 0x42) != 0) {
-        if (fn_800E0BE4() > lbl_8047DF58) {
+        if (GSrandf() > lbl_8047DF58) {
             lbl_80478CA8 = 200;
             return;
         }

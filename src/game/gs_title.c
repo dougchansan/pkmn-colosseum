@@ -437,7 +437,7 @@ void std018_nop18(void) { }
 /* fn_80023E60 - 0x80023E60 | size: 0x300 */
 extern void windowGetCursorToItem(void);
 extern void fn_800E0060(void);
-extern void fn_800E0000(void);
+extern void GSvecDot(void);
 extern u32 lbl_8047A370;
 extern u32 lbl_8047A368;
 extern u32 lbl_8047A36C;
@@ -454,7 +454,7 @@ s32 wmapMenuUpdate(u8* arg0) {
     extern u8* menuDataBiosGetPtr(u32);
     extern u8* menuItemBiosGetPtr(s32);
     extern void fn_800E0060(f32*, f32*);
-    extern f32 fn_800E0000(f32*, f32*);
+    extern f32 GSvecDot(f32*, f32*);
     extern void std104_soundSetBackgroundMusic(s32, s32, s32);
     u8* da18;
     u8* r104318;
@@ -512,7 +512,7 @@ s32 wmapMenuUpdate(u8* arg0) {
                 sp14[0] = 1.0f;
                 sp14[1] = 0.0f;
                 sp14[2] = 0.0f;
-                if (fn_800E0000(sp14, sp08) < 0.0f) {
+                if (GSvecDot(sp14, sp08) < 0.0f) {
                     lbl_8047A380 = 1;
                 } else {
                     lbl_8047A380 = 0;
@@ -1775,7 +1775,7 @@ extern void gfxSetOrtho(void);
 extern void gfxSetBlendMode(void);
 extern void gfxSetUpdates(void);
 extern void gfxSetZMode(void);
-extern void fn_800DA100(void);
+extern void gfxSetAlphaCompare(void);
 extern void gfxSetCullMode(void);
 extern void fn_800D9ED8(void);
 extern f32 lbl_8047A3A0;
@@ -1834,7 +1834,7 @@ s32 wmapRideOverlay(s32 param_1) {
     extern void gfxSetOrtho(f32, f32, f32, f32);
     extern void fn_800D9ED8(s32);
     extern void gfxSetCullMode(s32);
-    extern void fn_800DA100(s32, s32, s32, s32, s32, s32);
+    extern void gfxSetAlphaCompare(s32, s32, s32, s32, s32, s32);
     extern void gfxSetZMode(s32, s32, s32);
     extern void gfxSetUpdates(s32, s32, s32);
     extern void gfxSetBlendMode(s32, s32, s32);
@@ -1844,7 +1844,7 @@ s32 wmapRideOverlay(s32 param_1) {
     gfxSetBlendMode(1, 6, 7);
     gfxSetUpdates(1, 1, 0);
     gfxSetZMode(0, 1, 1);
-    fn_800DA100(0, 7, 0, 1, 7, 0);
+    gfxSetAlphaCompare(0, 7, 0, 1, 7, 0);
     gfxSetCullMode(0);
     fn_800D9ED8(1);
 
@@ -1889,7 +1889,7 @@ s32 wmapRideOverlay(s32 param_1) {
  *   6. Emit 4 vertices forming a textured quad. Each vertex:
  *        GSvecTransform(vert_out, result_2, uv_corner)  -- compute position
  *        fn_800D6680(vert.x, vert.y, vert.z)         -- write pos
- *        fn_800D5CB8(0, 0xff, 0xff, 0xff, scaled)    -- RGBA color
+ *        gfxVtxColor4u8(0, 0xff, 0xff, 0xff, scaled)    -- RGBA color
  *        fn_800D59B8(0, u, v)                        -- UV
  *      4 UV corners: (0,0) (1,0) (0,1) (1,1) via lbl_8047B8AC/B8B0.
  *   7. fn_800D6728() to flush the primitive.
@@ -1909,7 +1909,7 @@ extern void gfxLoadTexture(void);
 extern void gfxBegin(void);
 extern void GSvecTransform(void);
 extern void gfxVtxPos(void);
-extern void fn_800D5CB8(void);
+extern void gfxVtxColor4u8(void);
 extern void gfxVtxTexCoord(void);
 extern void gfxEnd(void);
 extern u8 lbl_80314AE8[];
@@ -1917,7 +1917,7 @@ void wmapDrawCaptureQuad(s32 arg_r3, f32 arg_f1, f32 arg_f2, f32 arg_f3,
                  s32 arg_r4, s32 arg_r5, f32 *arg_r6) {
     extern u8 lbl_80314AE8[];
     extern void gfxVtxTexCoord(s32, f32, f32);
-    extern void fn_800D5CB8(s32, s32, s32, s32, u8);
+    extern void gfxVtxColor4u8(s32, s32, s32, s32, u8);
     extern void gfxVtxPos(f32, f32, f32);
     extern void gfxEnd(void);
     extern void gfxBegin(s32);
@@ -1975,25 +1975,25 @@ void wmapDrawCaptureQuad(s32 arg_r3, f32 arg_f1, f32 arg_f2, f32 arg_f3,
     vec_b[0] = (-320.0f); vec_b[1] = (-240.0f); vec_b[2] = 0.0f;
     GSvecTransform(vec_a, mtx, vec_b);
     gfxVtxPos(vec_a[0], vec_a[1], vec_a[2]);
-    fn_800D5CB8(0, 0xff, 0xff, 0xff, scaled);
+    gfxVtxColor4u8(0, 0xff, 0xff, 0xff, scaled);
     gfxVtxTexCoord(0, 0.0f, 0.0f);
 
     vec_b[0] = 320.0f; vec_b[1] = (-240.0f); vec_b[2] = 0.0f;
     GSvecTransform(vec_a, mtx, vec_b);
     gfxVtxPos(vec_a[0], vec_a[1], vec_a[2]);
-    fn_800D5CB8(0, 0xff, 0xff, 0xff, scaled);
+    gfxVtxColor4u8(0, 0xff, 0xff, 0xff, scaled);
     gfxVtxTexCoord(0, 1.0f, 0.0f);
 
     vec_b[0] = (-320.0f); vec_b[1] = 240.0f; vec_b[2] = 0.0f;
     GSvecTransform(vec_a, mtx, vec_b);
     gfxVtxPos(vec_a[0], vec_a[1], vec_a[2]);
-    fn_800D5CB8(0, 0xff, 0xff, 0xff, scaled);
+    gfxVtxColor4u8(0, 0xff, 0xff, 0xff, scaled);
     gfxVtxTexCoord(0, 0.0f, 1.0f);
 
     vec_b[0] = 320.0f; vec_b[1] = 240.0f; vec_b[2] = 0.0f;
     GSvecTransform(vec_a, mtx, vec_b);
     gfxVtxPos(vec_a[0], vec_a[1], vec_a[2]);
-    fn_800D5CB8(0, 0xff, 0xff, 0xff, scaled);
+    gfxVtxColor4u8(0, 0xff, 0xff, 0xff, scaled);
     gfxVtxTexCoord(0, 1.0f, 1.0f);
 
     gfxEnd();
@@ -2238,14 +2238,14 @@ void fn_8002058C(void) {
 #endif
 
 /* fn_800205C8 - 0x800205C8 | size: 0x44 */
-extern void fn_800FB680(u32 a, u32 b, s32 c, u32 d);
+extern void GSmsgPrintColor(u32 a, u32 b, s32 c, u32 d);
 extern u32 lbl_8047A350;
 extern u32 lbl_80478880;
 #if !defined(GS_TITLE_SPLIT) || defined(GS_TITLE_RANGE_800205C8)
 void fn_800205C8(u8* obj) {
     s32 mask = (s32)-0x100;
     u32 b = obj[0x8b];
-    fn_800FB680(0, 0, b | mask, (&lbl_80478880)[lbl_8047A350]);
+    GSmsgPrintColor(0, 0, b | mask, (&lbl_80478880)[lbl_8047A350]);
 }
 #endif
 
@@ -2261,7 +2261,7 @@ void fn_8002060C(void) {
 extern void* windowGetKeyInfo(void);
 extern s32 gamedatasaveGetStatus(s32, s32);
 extern void fn_80166CC0(u32);
-extern void fn_800F78A4(s32, s32, s32, s32, s32);
+extern void GSinputMotorStart(s32, s32, s32, s32, s32);
 extern void gamedatasaveSetStatus(s32, s32, s32);
 extern u32 lbl_8047B878;
 extern u8 lbl_803A1FC8[];
@@ -2352,7 +2352,7 @@ s32 fn_80020618(void) {
         case 1:
             if (*(u16*)(keyInfo + 6) & 4) {
                 if (gamedatasaveGetStatus(0, 9) != 0) {
-                    fn_800F78A4(1, 0, 0xFF, 0x1E, 0);
+                    GSinputMotorStart(1, 0, 0xFF, 0x1E, 0);
                 }
                 gamedatasaveSetStatus(0, 9, 0);
                 ((TitleOptionState*)lbl_803A1FC8)->counter = 1;
@@ -2563,11 +2563,11 @@ void titleDrawOptionHelp(u8* r3, u8* r4) {
     r31 = r3;
     if ((s32)(&lbl_8047A360)[1] == 4) {
         if (titleGetState() >= 0) {
-            fn_800FB680(0, -8, r31[0x8b] | (s32)-0x100, lbl_802E4EF0[titleGetState()]);
+            GSmsgPrintColor(0, -8, r31[0x8b] | (s32)-0x100, lbl_802E4EF0[titleGetState()]);
         }
     } else if ((s32)(&lbl_8047A360)[1] != 5) {
         if ((s32)lbl_8047A360 >= 0) {
-            fn_800FB680(0, -8, r31[0x8b] | (s32)-0x100,
+            GSmsgPrintColor(0, -8, r31[0x8b] | (s32)-0x100,
                         lbl_802E4ED8[(s32)lbl_8047A360]);
         }
     }
@@ -2576,7 +2576,7 @@ void titleDrawOptionHelp(u8* r3, u8* r4) {
 
 /* titleDrawContinueInfo - 0x80020F54 | size: 0x19c */
 extern void* menuModelRender(void*);
-extern void fn_800D61E4(void);
+extern void gfxVtxPos2s16(void);
 extern s32 fn_801EF214(void);
 extern void fn_801021F8(u32, u32);
 extern u8 lbl_803A1FF8[];
@@ -2589,8 +2589,8 @@ void titleDrawContinueInfo(u8* arg0, u8* arg1) {
     extern void gfxSetVtxDesc(u8*);
     extern void gfxLoadTexture(s32, void*);
     extern void gfxBegin(s32);
-    extern void fn_800D61E4(s32, s32);
-    extern void fn_800D5CB8(s32, s32, s32, s32, s32);
+    extern void gfxVtxPos2s16(s32, s32);
+    extern void gfxVtxColor4u8(s32, s32, s32, s32, s32);
     extern void gfxVtxTexCoord(s32, f32, f32);
     extern void gfxEnd(void);
 
@@ -2613,11 +2613,11 @@ void titleDrawContinueInfo(u8* arg0, u8* arg1) {
             gfxSetVtxDesc(lbl_80314F98);
             gfxLoadTexture(0, model);
             gfxBegin(2);
-            fn_800D61E4(0, 0);
-            fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+            gfxVtxPos2s16(0, 0);
+            gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
             gfxVtxTexCoord(0, 0.0f, 0.0f);
-            fn_800D61E4(*(s16*)(arg1 + 0x54), *(s16*)(arg1 + 0x56));
-            fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+            gfxVtxPos2s16(*(s16*)(arg1 + 0x54), *(s16*)(arg1 + 0x56));
+            gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
             gfxVtxTexCoord(0, 1.0f, 1.0f);
             gfxEnd();
         }
@@ -2934,7 +2934,7 @@ void titleIntroStart(void) {
 #endif
 
 /* itemUseFormatMessage - 0x800216E8 | size: 0x1d4 */
-extern void fn_800F96E4(void*, s32, void*);
+extern void GSmsgGetText(void*, s32, void*);
 extern void* pokemonBiosGetNicknamePtr(s32);
 extern u8 lbl_80266C7C[];
 #if !defined(GS_TITLE_SPLIT) || defined(GS_TITLE_RANGE_800216E8)
@@ -2965,7 +2965,7 @@ void itemUseFormatMessage(void* arg0, s32 arg1, u8* arg2, s16 arg3, s32 arg4) {
     table = *(struct TitleNameTable*)lbl_80266C7C;
 
     if (arg3 <= 0) {
-        fn_800F96E4(arg0, arg1 + 1, (void*)0x4261);
+        GSmsgGetText(arg0, arg1 + 1, (void*)0x4261);
         return;
     }
 
@@ -2984,7 +2984,7 @@ void itemUseFormatMessage(void* arg0, s32 arg1, u8* arg2, s16 arg3, s32 arg4) {
     }
 
     if (i >= 21) {
-        fn_800F96E4(arg0, arg1 + 1, (void*)0x4261);
+        GSmsgGetText(arg0, arg1 + 1, (void*)0x4261);
         return;
     }
 
@@ -3019,7 +3019,7 @@ void itemUseFormatMessage(void* arg0, s32 arg1, u8* arg2, s16 arg3, s32 arg4) {
     msgctrlSetValue(0x32, name);
     msgctrlSetValue(0x2F, (void*)(s32)x);
     msgctrlSetValue(0x30, (void*)(s32)y);
-    fn_800F96E4(arg0, arg1 + 1, (void*)msg);
+    GSmsgGetText(arg0, arg1 + 1, (void*)msg);
 }
 
 #if !defined(GS_TITLE_800216E8_ONLY)
@@ -3223,7 +3223,7 @@ s32 itemFieldUseRecover(u32 arg0, u32* arg1) {
         owner = pokemon;
         special = *(TitleSpecialTable*)lbl_80266D78;
         if ((s16)effectCount <= 0) {
-            fn_800F96E4(message, 0x41, (void*)0x4261);
+            GSmsgGetText(message, 0x41, (void*)0x4261);
         } else {
             entry = special.entries;
             for (specialIndex = 0; specialIndex < 7; entry++, specialIndex++) {
@@ -3240,7 +3240,7 @@ s32 itemFieldUseRecover(u32 arg0, u32* arg1) {
             }
 
             if (specialIndex >= 7) {
-                fn_800F96E4(message, 0x41, (void*)0x4261);
+                GSmsgGetText(message, 0x41, (void*)0x4261);
             } else {
                 text = special.entries[specialIndex].message;
                 x = effects[effectIndex].x;
@@ -3248,7 +3248,7 @@ s32 itemFieldUseRecover(u32 arg0, u32* arg1) {
                 msgctrlSetValue(0x32, (void*)pokemonBiosGetNicknamePtr(owner));
                 msgctrlSetValue(0x2F, (void*)x);
                 msgctrlSetValue(0x30, (void*)y);
-                fn_800F96E4(message, 0x41, (void*)text);
+                GSmsgGetText(message, 0x41, (void*)text);
             }
         }
 
@@ -3453,7 +3453,7 @@ s32 fn_8002217C(u32 wazaDataId, u32* result) {
     owner = pokemon;
     special = *(TitleSpecialTable*)lbl_80266D78;
     if (effectCount <= 0) {
-        fn_800F96E4(message, 0x41, (void*)0x4261);
+        GSmsgGetText(message, 0x41, (void*)0x4261);
     } else {
         entry = special.entries;
         for (specialIndex = 0; specialIndex < 7; entry++, specialIndex++) {
@@ -3470,7 +3470,7 @@ s32 fn_8002217C(u32 wazaDataId, u32* result) {
         }
 
         if (specialIndex >= 7) {
-            fn_800F96E4(message, 0x41, (void*)0x4261);
+            GSmsgGetText(message, 0x41, (void*)0x4261);
         } else {
             text = special.entries[specialIndex].message;
             x = effects[effectIndex].x;
@@ -3478,7 +3478,7 @@ s32 fn_8002217C(u32 wazaDataId, u32* result) {
             msgctrlSetValue(0x32, (void*)pokemonBiosGetNicknamePtr(owner));
             msgctrlSetValue(0x2F, (void*)x);
             msgctrlSetValue(0x30, (void*)y);
-            fn_800F96E4(message, 0x41, (void*)text);
+            GSmsgGetText(message, 0x41, (void*)text);
         }
     }
 
@@ -3822,12 +3822,12 @@ s32 std163_useCologne(s32 arg0, s32 arg1) {
 
     if (gamedatasaveGetStatus(0, 9) == 0) {
         for (j = 0; j < 2; j++) {
-            fn_800F78A4(1, 0, 0xFF, 0x15, 0);
+            GSinputMotorStart(1, 0, 0xFF, 0x15, 0);
             for (wait = 0; wait < 0x3C; wait += msgGetCharsPerFrame()) {
                 _threadSwitch();
             }
         }
-        fn_800F78A4(1, 0, 0xFF, 0x30, 0);
+        GSinputMotorStart(1, 0, 0xFF, 0x30, 0);
         for (wait = 0; wait < 0x60; wait += msgGetCharsPerFrame()) {
             _threadSwitch();
         }

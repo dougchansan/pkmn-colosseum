@@ -79,13 +79,13 @@ extern void GSmodelGetPosition(void* model, void* out);
 extern void GSmodelSetMatrix(void* model, void* mtx);
 extern void GSmodelCenterNull(void* model);
 extern void modelRemoveCenterNull(void* model);
-extern s32 fn_800EE0E8(void* model);
+extern s32 GSmodelWalkJObjs(void* model);
 extern void* GSmodelGetPart(void* model, s32 index);
 extern void GSpartGetTransform(void* part, void* out, s32 a, s32 b);
 extern void GSpartFree(void* part);
 extern void fn_800E064C(f32* mtx);
 extern void fn_800E03B4(f32* mtx, void* vec);
-extern void fn_800E032C(f32* mtx, f32 angle);
+extern void GSmtxRotateY(f32* mtx, f32 angle);
 
 extern void GScameraGetPerspective(void* cam, f32* a, f32* b, f32* c, f32* d);
 extern void GScameraSetPerspective(void* cam, f32 a, f32 b, f32 c, f32 d);
@@ -264,10 +264,10 @@ u8 fn_80047CC0(u8* work)
     target.y = lbl_8047BC94;
     fn_800E064C(mtx);
     fn_800E03B4(mtx, &target);
-    fn_800E032C(mtx, angle);
+    GSmtxRotateY(mtx, angle);
     GSmodelSetMatrix(model, mtx);
     GSmodelCenterNull(model);
-    part = GSmodelGetPart(model, fn_800EE0E8(model) - 1);
+    part = GSmodelGetPart(model, GSmodelWalkJObjs(model) - 1);
     if (part != NULL) {
         GSpartGetTransform(part, &xform, 0, 0);
         GSpartFree(part);

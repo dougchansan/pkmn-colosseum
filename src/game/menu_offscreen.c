@@ -58,7 +58,7 @@ extern u8  lbl_80315690[]; /* resource table, 8-byte entries */
 
 /* Additional externs used by various functions */
 extern void  GSmodelFree(u32);     /* GSmem release/unref */
-extern void  fn_800D2738(void);
+extern void  GScameraFree(void);
 extern void* menuDataBiosGetPtr(void);    /* linked list head */
 extern void* menuItemBiosGetPtr(s16 idx); /* node by index */
 extern void* menuSeBiosGetPtr(s32);
@@ -137,7 +137,7 @@ extern void gfxSetPrimitive(s32);
 extern void gfxSetVtxDesc(s32);
 extern void gfxBegin(s32);
 extern void gfxVtxPos(f32, f32, f32);
-extern void fn_800D5CB8(s32, s32, s32, s32, s32);
+extern void gfxVtxColor4u8(s32, s32, s32, s32, s32);
 extern void gfxEnd(void);
 
 /* Forward declarations for functions defined later in this TU */
@@ -284,12 +284,12 @@ extern s32 menuModelCheck(void* obj, u8 wait);
 extern s32 menuModelFree(void* p);
 
 extern u8 lbl_80314AE8[];
-extern void fn_800D5CB8(s32, s32, s32, s32, s32);
+extern void gfxVtxColor4u8(s32, s32, s32, s32, s32);
 extern void gfxEnd(void);
 extern void gfxLoadTexture(s32, void*);
 extern void gfxVtxTexCoord(s32, f32, f32);
 extern s32 fn_800D37CC(void);
-extern void fn_800D9F40(s32);
+extern void gfxSetCoPlanar(s32);
 extern u32 msgGetCharsPerFrame(void);
 
 /* 0x801093C8 | 0x29C */
@@ -332,19 +332,19 @@ void fn_801093C8(void) {
     gfxBegin(4);
 
     gfxVtxPos(0.0f, 0.0f, 0.0f);
-    fn_800D5CB8(0, alpha, alpha, alpha, 0xFF);
+    gfxVtxColor4u8(0, alpha, alpha, alpha, 0xFF);
     gfxVtxTexCoord(0, 0.0f, 0.0f);
     gfxVtxPos(640.0f, 0.0f, 0.0f);
-    fn_800D5CB8(0, alpha, alpha, alpha, 0xFF);
+    gfxVtxColor4u8(0, alpha, alpha, alpha, 0xFF);
     gfxVtxTexCoord(0, 1.0f, 0.0f);
     gfxVtxPos(0.0f, 480.0f, 0.0f);
-    fn_800D5CB8(0, alpha, alpha, alpha, 0xFF);
+    gfxVtxColor4u8(0, alpha, alpha, alpha, 0xFF);
     gfxVtxTexCoord(0, 0.0f, 1.0f);
     gfxVtxPos(640.0f, 480.0f, 0.0f);
-    fn_800D5CB8(0, alpha, alpha, alpha, 0xFF);
+    gfxVtxColor4u8(0, alpha, alpha, alpha, 0xFF);
     gfxVtxTexCoord(0, 1.0f, 1.0f);
     gfxEnd();
-    if (lbl_8047AD23 == 0) fn_800D9F40(0);
+    if (lbl_8047AD23 == 0) gfxSetCoPlanar(0);
 }
 
 /* 0x80109664 | 0x48 */

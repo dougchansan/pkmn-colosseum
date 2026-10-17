@@ -29,7 +29,7 @@ extern void* memset(void* dst, int val, u32 size);
 /* External functions referenced from asm wrappers */
 extern void DCFlushRange(void* addr, u32 size);
 extern u64 OSGetTime(void);
-extern void fn_800D3EC4(s32, f32, f32, f32, f32, f32, f32);
+extern void GSgfxSetViewportJitter(s32, f32, f32, f32, f32, f32, f32);
 extern void gfxRecordCommand(u32, ...);
 extern void gfxBegin(u16);
 extern void gfxSetupChannelsTev(u32);
@@ -65,53 +65,53 @@ extern u8 lbl_80400B28[];  /* light/material command buffer */
 /* No-op functions (1) */
 /* Address: 0x800DC874 | Size: 0x4 */
 /* Forward declarations for self-referencing asm blocks */
-extern void fn_800D6B00(void);
-extern void fn_800D724C(u32 idx);
-extern void fn_800D7268(u32 idx);
-extern void fn_800D72A4(u32 idx);
-extern void fn_800D72C4(u32 idx);
-extern void fn_800D72E4(u32 idx);
-extern void fn_800D7304(u32 idx);
-extern void fn_800D7328(u32 idx);
-extern void fn_800D7344(u32 idx);
-extern void fn_800D7360(u32 idx);
-extern void fn_800D737C(u32 idx);
-extern void fn_800D7398(u32 idx);
-extern void fn_800D73C4(u32 idx);
-extern void fn_800D73F8(void);
-extern void fn_800D740C(void);
-extern void fn_800D7420(void);
-extern void fn_800D7444(void);
-extern void fn_800D7468(void);
-extern void fn_800D748C(void);
-extern void fn_800D74A0(void);
-extern void fn_800D74B4(void);
-extern void fn_800D74D0(void);
-extern void fn_800D74EC(void);
-extern void fn_800D7508(void);
-extern void fn_800D7524(void);
-extern void fn_800D7540(void);
-extern void fn_800D7564(void);
-extern void fn_800D7588(void);
-extern void fn_800D75AC(void);
-extern void fn_800D7650(u8*);
-extern void fn_800D7868(u8*, u32, u32, u32, u32, u8, u32, u8);
+extern void gfxFlushPendingVertex(void);
+extern void _gfxEmitTexCoord1x8(u32 idx);
+extern void _gfxEmitTexCoord1x16(u32 idx);
+extern void _gfxEmitTexCoord2u8(u32 idx);
+extern void _gfxEmitTexCoord2s16(u32 idx);
+extern void _gfxEmitTexCoord2u16(u32 idx);
+extern void _gfxEmitTexCoord2f32(u32 idx);
+extern void _gfxEmitColor1x8(u32 idx);
+extern void _gfxEmitColor1x16(u32 idx);
+extern void _gfxEmitColor1u16(u32 idx);
+extern void _gfxEmitColor1u32(u32 idx);
+extern void _gfxEmitColor3u8(u32 idx);
+extern void _gfxEmitColor4u8(u32 idx);
+extern void _gfxEmitNormal1x8(void);
+extern void _gfxEmitNormal1x16(void);
+extern void _gfxEmitNormal3s8(void);
+extern void _gfxEmitNormal3s16(void);
+extern void _gfxEmitNormal3f32(void);
+extern void _gfxEmitPos1x8(void);
+extern void _gfxEmitPos1x16(void);
+extern void _gfxEmitPos2s8(void);
+extern void _gfxEmitPos2u8(void);
+extern void _gfxEmitPos2s16(void);
+extern void _gfxEmitPos2u16(void);
+extern void _gfxEmitPos2f32(void);
+extern void _gfxEmitPos3s8(void);
+extern void _gfxEmitPos3u8(void);
+extern void _gfxEmitPos3s16(void);
+extern void _gfxEmitPos3u16(void);
+extern void gfxVtxDescClear(u8*);
+extern void gfxVtxDescSetAttr(u8*, u32, u32, u32, u32, u8, u32, u8);
 extern void fn_800D7940(u32, u16);
 extern void gfxLoadVtxDesc(u32);
 extern void fn_800DB098(void);
 extern void fn_800DB758(u16);
 extern void lightGetFrameCount__FP9_HSD_AObj(u8*);
-extern void fn_800DE09C(void);
-extern void fn_800DE128(void);
+extern void GSlogVPrintf(void);
+extern void GSlogFormat(void);
 extern void fn_800E09E8(void*, void*, u32);
-extern u8 fn_800E0E14(u32, u32);
+extern u8 GSmemDumpMap(u32, u32);
 extern u32 _matGSmatObjMakeTExp(void*, void*, void*, void*, void*);
 extern void _matGSmatEnableEnvMapExt(u8*);
 extern s32 _matGSmatObjLoad(u8*);
 extern void fn_800E0290(void*, void*, void*);
 extern void fn_800E02C4(void*);
-extern void fn_800E02E8(void*, f32);
-extern void fn_800E032C(void*, f32);
+extern void GSmtxRotateZ(void*, f32);
+extern void GSmtxRotateY(void*, f32);
 extern void fn_800E0370(void*, f32);
 extern void fn_800E03E8(void*, f32, f32, f32);
 extern void fn_800E0628(void*, void*);
@@ -133,8 +133,8 @@ extern f32 lbl_8047CA30;
 extern f32 lbl_8047CA34;
 extern f32 lbl_8047CA38;
 extern void fn_800B9404(u32, u32);
-extern void fn_800D7230(void);
-extern void fn_800D75D0(void);
+extern void _gfxEmitMtxIdx(void);
+extern void _gfxEmitPos3f32(void);
 extern void fn_800B928C(u32, u32, u16);
 extern u8 lbl_80314350[];
 extern u8 lbl_804001F0[];
@@ -214,7 +214,7 @@ extern u32 lbl_8047CA60;
 extern u32 lbl_8047CA68;
 extern u32 lbl_8047CA58;
 extern void fn_800BD7A0(u32, u32, u32, u32);
-extern void fn_800D2150(u32, u16, u16, u16, u16);
+extern void GScameraSetScissor(u32, u16, u16, u16, u16);
 extern void HSD_FogSet(u32);
 extern u32 lbl_8047AA8C;
 extern void GXSetClipMode(u32);
@@ -489,7 +489,7 @@ asm void fn_800E0000(void) {
 #include "src/game/gs_render_fn_800E0000.inc"
 }
 #else
-void fn_800E0000(void) { PSVECDotProduct(); }
+void GSvecDot(void) { PSVECDotProduct(); }
 #endif
 
 #if 0

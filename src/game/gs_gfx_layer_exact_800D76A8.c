@@ -18,7 +18,7 @@ extern void fn_800B84E0(u32, u32, u8);
 
 /*
  * Body of fn_800D7A70 (out-of-line at 0x800D7A70; source in
- * gs_gfx_layer_state.c). Retail also expands it in place in fn_800D76A8, so
+ * gs_gfx_layer_state.c). Retail also expands it in place in gfxSetVtxDescRaw, so
  * the vertex-descriptor load is expanded here as the same body.
  */
 static inline void GSgfxLoadVtxDesc(u32 obj) {
@@ -52,7 +52,7 @@ static inline void GSgfxLoadVtxDesc(u32 obj) {
     *(u32*)(lbl_804001F0 + 0x14) += 1;
 }
 
-void fn_800D76A8(u32 obj, u16 vertCount) {
+void gfxSetVtxDescRaw(u32 obj, u16 vertCount) {
     u32 oldObj;
 
     if (*(u8*)(lbl_8047AA80 + 0x47e) == 1) {

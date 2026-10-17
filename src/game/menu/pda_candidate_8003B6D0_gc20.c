@@ -149,7 +149,7 @@ extern void pdaReadPadInput(void* scene);
 extern void GSscene_SetMode(s32 mode);
 extern void menuButtonNormal(void* button);
 extern void winSpriteSetDisp(void* sprite, s32 disp);
-extern void fn_800FB680(s32 arg0, s32 arg1, s32 arg2, void* data);
+extern void GSmsgPrintColor(s32 arg0, s32 arg1, s32 arg2, void* data);
 
 #if !defined(PDA_RANGE_EXACT_80037174_ONLY)
 
@@ -413,8 +413,8 @@ extern f32 lbl_8047BDAC;
 extern f32 lbl_8047BDF0;
 
 extern u32 gfxVtxTexCoord();
-extern u32 fn_800D5CB8();
-extern u32 fn_800D61E4();
+extern u32 gfxVtxColor4u8();
+extern u32 gfxVtxPos2s16();
 extern u32 gfxEnd();
 extern u32 gfxBegin();
 extern u32 gfxSetPrimitive();
@@ -422,7 +422,7 @@ extern u32 gfxSetVtxDesc();
 extern u32 gfxLoadTexture();
 extern u32 gfxClearFlags();
 extern u32 gfxSetFlags();
-extern u32 fn_800E202C();
+extern u32 GSmemGetHandleByPtr();
 extern u32 fn_800E209C();
 extern u32 fn_800E24B0();
 extern u32 fn_800E27B0();
@@ -475,11 +475,11 @@ static inline void pdaDrawModelTexture(PdaSprite* sprite, u8* model)
         gfxSetVtxDesc(lbl_80314F98);
         gfxLoadTexture(0, texture);
         gfxBegin(2);
-        fn_800D61E4(0, 0);
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+        gfxVtxPos2s16(0, 0);
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
         gfxVtxTexCoord(0, lbl_8047BAC4, lbl_8047BAC4);
-        fn_800D61E4(sprite->x, sprite->y);
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+        gfxVtxPos2s16(sprite->x, sprite->y);
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
         gfxVtxTexCoord(0, lbl_8047BAC8, lbl_8047BAC8);
         gfxEnd();
     }
@@ -552,7 +552,7 @@ static inline void pdaDrawNameRows(u8* context, s32 first, f32 y)
                 name = GSmsgGetGSchar(1);
             }
             msgctrlSetValue(0x37, name);
-            fn_800FB680(0, (s32)y - 2, (u32)context[0x8B] | -0x100LL,
+            GSmsgPrintColor(0, (s32)y - 2, (u32)context[0x8B] | -0x100LL,
                         (void*)0xE7);
         }
         y += lbl_8047BCF4;
@@ -631,7 +631,7 @@ void fn_8003B6D0(u8* ctx)
         msg = GSmsgGetGSchar(1);
     }
     msgctrlSetValue(0x37, msg);
-    fn_800FB680(0, 0, ctx[0x8b] | -0x100, (void*)0xcf);
+    GSmsgPrintColor(0, 0, ctx[0x8b] | -0x100, (void*)0xcf);
 }
 #pragma pop
 #pragma peephole reset

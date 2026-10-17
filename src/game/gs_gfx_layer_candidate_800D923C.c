@@ -3,7 +3,7 @@
  * @brief GSgfx layer: flush dirty channel / texgen / TEV state to GX,
  * 0x800D923C - 0x800D963C.
  *
- * Function-boundary carve of fn_800D923C. The switch on the indirect
+ * Function-boundary carve of _gfxFlushTevState. The switch on the indirect
  * stage type compiles to a compare tree (no jump table), there is no
  * pooled constant, and the GSgfx state (lbl_8047AA80) and the draw
  * statistics (lbl_804001F0) stay extern.
@@ -46,7 +46,7 @@ extern void GXSetTevSwapModeTable(u32 table, u32 r, u32 g, u32 b, u32 a);
  * locals taken once after the TEV stage count is set; the K colour
  * selectors are indexed through the global.
  */
-void fn_800D923C(void) {
+void _gfxFlushTevState(void) {
     s32 i;
 
     if (lbl_8047AA80->dirty & 1) {

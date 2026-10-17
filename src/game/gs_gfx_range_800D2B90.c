@@ -4,8 +4,8 @@
  *        .sdata2 literal pool 0x8047C9F0 - 0x8047CA10.
  *
  * One object for the fog setter fn_800D2B90, the camera screen projections
- * fn_800D2DE8/fn_800D2F34, the render-state accessors fn_800D305C/
- * fn_800D3068, the GSgfx frame functions fn_800D3074-fn_800D361C and the
+ * gfxProjectPoint/fn_800D2F34, the render-state accessors fn_800D305C/
+ * fn_800D3068, the GSgfx frame functions fn_800D3074-GSgfxWaitRetrace and the
  * fog-colour setter fn_800D36B4. The pool entries 255.0f, the unsigned
  * int-to-float bias, 0.0f, 640.0f, 480.0f and 1.0f are used only by these
  * functions, so they are written as literals and the object owns them.
@@ -124,7 +124,7 @@ void gfxSetFog(void* arg1) {
 }
 
 /* 0x800D2DE8 | 0x14C */
-s32 fn_800D2DE8(f32* points, f32* screen, u32 count)
+s32 gfxProjectPoint(f32* points, f32* screen, u32 count)
 {
     f32 projection[7];
     f32 viewport[6];
@@ -282,7 +282,7 @@ void fn_800D30F0(u32 flag)
     }
 }
 
-void fn_800D3190(void)
+void GSgfxRenderEnd(void)
 {
     u32 start;
     u32 end;
@@ -376,7 +376,7 @@ void fn_800D3190(void)
     }
 }
 
-void fn_800D3410(void* arg0, u8 arg1) {
+void GSgfxRenderLayer(void* arg0, u8 arg1) {
     u32* state;
     u32 sc;
     u8 r30;
@@ -469,7 +469,7 @@ void fn_800D3410(void* arg0, u8 arg1) {
     }
 }
 
-void fn_800D361C(u8 mode) {
+void GSgfxWaitRetrace(u8 mode) {
     VIWaitForRetrace();
     lbl_8047AA80->frameDelta = lbl_8047AA80->xfbCount - lbl_8047AA80->xfbAddr0;
 

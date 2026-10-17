@@ -174,7 +174,7 @@ void mailMainReceiveTerminate(void) {
  * Address: 0x801D2404 | Size: 0x288
  */
 void fn_801D2404(void) {
-    extern void* fn_800F92D4(u32);
+    extern void* GSresFindById(u32);
     extern s32 GStextureGetXsize(void*);
     extern s32 GStextureGetYsize(void*);
     extern void fn_800FE6D0(s32, s32);
@@ -187,12 +187,12 @@ void fn_801D2404(void) {
     extern void gfxLoadTexture(s32, void*);
     extern void gfxSetPrimitive(s32);
     extern void gfxBegin(s32);
-    extern void fn_800D61E4(s16, s16);
-    extern void fn_800D5CB8(s32, u8, u8, u8, u8);
+    extern void gfxVtxPos2s16(s16, s16);
+    extern void gfxVtxColor4u8(s32, u8, u8, u8, u8);
     extern void gfxVtxTexCoord(s32, f32, f32);
     extern void gfxEnd(void);
     extern s32 gamedatasaveGetStatus(s32, s32);
-    extern void fn_800F78A4(s32, s32, s32, s32, s32);
+    extern void GSinputMotorStart(s32, s32, s32, s32, s32);
     extern s32 msgGetCharsPerFrame(void);
     extern s32 GSsndGetStatus(u32);
     extern void fn_800F9210(s32, s32);
@@ -216,7 +216,7 @@ void fn_801D2404(void) {
         visible = 1;
     }
     if (visible) {
-        texture = fn_800F92D4(0x0C881200);
+        texture = GSresFindById(0x0C881200);
         width = GStextureGetXsize(texture);
         height = GStextureGetYsize(texture);
         fn_800FE6D0(0, 0);
@@ -229,17 +229,17 @@ void fn_801D2404(void) {
         gfxLoadTexture(0, texture);
         gfxSetPrimitive(7);
         gfxBegin(2);
-        fn_800D61E4(0x15, 0x25);
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+        gfxVtxPos2s16(0x15, 0x25);
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
         gfxVtxTexCoord(0, 0.0f, 0.0f);
-        fn_800D61E4((s16)(width + 0x15), (s16)(height + 0x25));
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+        gfxVtxPos2s16((s16)(width + 0x15), (s16)(height + 0x25));
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
         gfxVtxTexCoord(0, 1.0f, 1.0f);
         gfxEnd();
         fn_800D9ED8(0);
         if (gamedatasaveGetStatus(0, 9) == 0 &&
             (f32)lbl_80467390[1] < 180.0f) {
-            fn_800F78A4(1, 0, 0xFF, 0x1E, 0);
+            GSinputMotorStart(1, 0, 0xFF, 0x1E, 0);
         }
     }
 
@@ -410,13 +410,13 @@ s32 chkMailSend(s32 seqHandle, f32 step) {
  * Address: 0x801D29D8 | Size: 0x130
  */
 void cbStep(s32 moveID, s32 hitCount) {
-    extern f32 fn_800E0BE4(void);
+    extern f32 GSrandf(void);
     f32 step;
     s32 count;
     s32 i;
     s32 sent;
 
-    step = fn_800E0BE4();
+    step = GSrandf();
     count = mailGetNbMailData();
     sent = 0;
     for (i = 0; i < count; i++) {

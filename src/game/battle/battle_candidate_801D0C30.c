@@ -127,7 +127,7 @@ extern BattleIntroVec lbl_80279320;
 extern BattleIntroVec lbl_8027932C;
 
 extern s32 std093_getCurrentGroupID(void);
-extern void* fn_800F92D4(u32 id);
+extern void* GSresFindById(u32 id);
 extern void* peopleIsInGroup(s32 group, s32 id);
 extern void* peopleSearchID(void* id);
 extern BattleIntroVec* peopleGetPosition(void* person);
@@ -204,7 +204,7 @@ void fn_801D0DB0(s32 peopleGroup, s32 peopleId)
         switch (state) {
         case 0:
             i = 0;
-            model = fn_800F92D4(battleIntroFindModel(std093_getCurrentGroupID(), battleIntroModels));
+            model = GSresFindById(battleIntroFindModel(std093_getCurrentGroupID(), battleIntroModels));
             count = fn_801D0AFC(0);
             for (j = 0; j < 6; j++) {
                 lbl_80467378[j] = NULL;

@@ -826,7 +826,7 @@ void GSmaterialSetDistanceThreshold(f32 dist);
 /**
  * GSmaterialConfigureScissor -- Set GX scissor for material rendering.
  *
- * Corresponds to fn_800EE0E8. Size: 0x68.
+ * Corresponds to GSmodelWalkJObjs. Size: 0x68.
  */
 
 /**

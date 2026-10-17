@@ -32,7 +32,7 @@
  * one C++ file, every static a function-local static and no extra flags,
  * MWCC reproduces the whole retail .bss block (GSlogWritef's and
  * GSlogWrite's timestamp/message buffers, then fraction/field/spec for each
- * formatter, including fn_800DE128's fraction buffer at 0x80401158, which
+ * formatter, including GSlogFormat's fraction buffer at 0x80401158, which
  * it declares but never uses), the .rodata pool, .sdata, .sbss, .sdata2 and
  * both switch tables at their retail offsets. The C front end instead
  * orders statics by first reference and the .sbss state in reverse. The
@@ -74,8 +74,8 @@ u32 GSlogGetLineCount(void);
 void GSlogWritef(const char* fmt, ...);
 void GSlogWrite(const char* fmt, ...);
 u32 GSlogInit(u32 size, u8 timestamps);
-void fn_800DE09C(char* dst, u32 size, const char* format, ...);
-void fn_800DE128(char* output, u32 capacity, const char* format, va_list args);
+void GSlogVPrintf(char* dst, u32 size, const char* format, ...);
+void GSlogFormat(char* output, u32 capacity, const char* format, va_list args);
 void logVsnprintf_float(char* output, u32 capacity, const char* format, va_list args);
 char* strchr(const char* s, int c);
 }
@@ -204,7 +204,7 @@ void GSlogWritef(const char* fmt, ...) {
     va_start(args, fmt);
     if (lbl_8047AB11 != 0) {
         OSTicksToCalendarTime(OSGetTime(), &time);
-        fn_800DE09C(lbl_80400F30, 0x14, "[%d/%02d %d:%02d:%02d] ", time.mon + 1,
+        GSlogVPrintf(lbl_80400F30, 0x14, "[%d/%02d %d:%02d:%02d] ", time.mon + 1,
                     time.mday, time.hour, time.min, time.sec);
     }
 
@@ -254,11 +254,11 @@ void GSlogWrite(const char* fmt, ...) {
     va_start(args, fmt);
     if (lbl_8047AB11 != 0) {
         OSTicksToCalendarTime(OSGetTime(), &time);
-        fn_800DE09C(lbl_80401044, 0x14, "[%d/%02d %d:%02d:%02d] ", time.mon + 1,
+        GSlogVPrintf(lbl_80401044, 0x14, "[%d/%02d %d:%02d:%02d] ", time.mon + 1,
                     time.mday, time.hour, time.min, time.sec);
     }
 
-    fn_800DE128(lbl_80401058, 0xFF, fmt, args);
+    GSlogFormat(lbl_80401058, 0xFF, fmt, args);
     lbl_80401058[0xFF] = 0;
 
     if (lbl_8047AAFC != NULL) {
@@ -336,15 +336,15 @@ u32 GSlogInit(u32 size, u8 timestamps) {
     return 1;
 }
 
-void fn_800DE09C(char* dst, u32 size, const char* format, ...)
+void GSlogVPrintf(char* dst, u32 size, const char* format, ...)
 {
     va_list args;
 
     va_start(args, format);
-    fn_800DE128(dst, size, format, args);
+    GSlogFormat(dst, size, format, args);
 }
 
-void fn_800DE128(char* output, u32 capacity, const char* format, va_list args)
+void GSlogFormat(char* output, u32 capacity, const char* format, va_list args)
 {
     /* The same three buffers as logVsnprintf_float; this formatter has no
      * %f conversion, so it never uses its fraction buffer. */

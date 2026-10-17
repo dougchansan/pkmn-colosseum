@@ -15,7 +15,7 @@
 extern FSYSManager lbl_80453FEC;
 extern FSYSSlot* lbl_8047B1B4; /* slot array */
 
-extern u16 fn_800E202C(void* ptr);      /* handle owning a heap pointer */
+extern u16 GSmemGetHandleByPtr(void* ptr);      /* handle owning a heap pointer */
 extern void fn_800E24B0(u16 handle);
 extern void fn_800E209C(u16 handle);
 extern FSYSSlot* fn_8017D410(u32 fileHandle, s32 mode);
@@ -46,7 +46,7 @@ static inline void fsysFree(void* ptr)
 {
     u16 handle;
 
-    handle = fn_800E202C(ptr);
+    handle = GSmemGetHandleByPtr(ptr);
     if (handle != 0) {
         fn_800E24B0(handle);
         fn_800E209C(handle);

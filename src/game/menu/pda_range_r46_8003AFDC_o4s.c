@@ -148,7 +148,7 @@ extern void pdaReadPadInput(void* scene);
 extern void GSscene_SetMode(s32 mode);
 extern void menuButtonNormal(void* button);
 extern void winSpriteSetDisp(void* sprite, s32 disp);
-extern void fn_800FB680(s32 arg0, s32 arg1, s32 arg2, void* data);
+extern void GSmsgPrintColor(s32 arg0, s32 arg1, s32 arg2, void* data);
 
 #if !defined(PDA_RANGE_EXACT_80037174_ONLY)
 
@@ -412,8 +412,8 @@ extern f32 lbl_8047BDAC;
 extern f32 lbl_8047BDF0;
 
 extern u32 gfxVtxTexCoord();
-extern u32 fn_800D5CB8();
-extern u32 fn_800D61E4();
+extern u32 gfxVtxColor4u8();
+extern u32 gfxVtxPos2s16();
 extern u32 gfxEnd();
 extern u32 gfxBegin();
 extern u32 gfxSetPrimitive();
@@ -421,7 +421,7 @@ extern u32 gfxSetVtxDesc();
 extern u32 gfxLoadTexture();
 extern u32 gfxClearFlags();
 extern u32 gfxSetFlags();
-extern u32 fn_800E202C();
+extern u32 GSmemGetHandleByPtr();
 extern u32 fn_800E209C();
 extern u32 fn_800E24B0();
 extern u32 fn_800E27B0();
@@ -474,11 +474,11 @@ static inline void pdaDrawModelTexture(PdaSprite* sprite, u8* model)
         gfxSetVtxDesc(lbl_80314F98);
         gfxLoadTexture(0, texture);
         gfxBegin(2);
-        fn_800D61E4(0, 0);
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+        gfxVtxPos2s16(0, 0);
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
         gfxVtxTexCoord(0, lbl_8047BAC4, lbl_8047BAC4);
-        fn_800D61E4(sprite->x, sprite->y);
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+        gfxVtxPos2s16(sprite->x, sprite->y);
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
         gfxVtxTexCoord(0, lbl_8047BAC8, lbl_8047BAC8);
         gfxEnd();
     }
@@ -555,7 +555,7 @@ void fn_8003AFDC(u8* context, PdaSprite* sprite)
         } else {
             messageId = 0x36E8;
         }
-        fn_800FB680(0, 0, context[0x8B] | -0x100, (void*)messageId);
+        GSmsgPrintColor(0, 0, context[0x8B] | -0x100, (void*)messageId);
         break;
     }
 }

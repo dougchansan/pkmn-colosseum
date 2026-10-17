@@ -71,7 +71,7 @@ extern void gfxSetPrimitive(u32 arg0);
 extern void gfxSetVtxDesc(u32 arg0);
 extern void gfxBegin(u32 arg0);
 extern void gfxVtxPos(f32 x, f32 y, f32 z);
-extern void fn_800D5CB8(u32 arg0, u8 r, u8 g, u8 b, u8 a);
+extern void gfxVtxColor4u8(u32 arg0, u8 r, u8 g, u8 b, u8 a);
 extern void gfxEnd(void);
 
 FadeHook fadeSetEX(u16 type, void (*init)(void), u8 snapshot, f32 duration, f32 hookDuration);
@@ -291,9 +291,9 @@ void fadeDaemon(void) {
         gfxSetVtxDesc(0);
         gfxBegin(2);
         gfxVtxPos(0.0f, 0.0f, 0.0f);
-        fn_800D5CB8(0, color.r, color.g, color.b, alpha);
+        gfxVtxColor4u8(0, color.r, color.g, color.b, alpha);
         gfxVtxPos(640.0f, 480.0f, 0.0f);
-        fn_800D5CB8(0, color.r, color.g, color.b, alpha);
+        gfxVtxColor4u8(0, color.r, color.g, color.b, alpha);
         gfxEnd();
         fn_800D9ED8(0);
         break;

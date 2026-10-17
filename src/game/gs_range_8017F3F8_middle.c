@@ -30,7 +30,7 @@ extern void* GSresAllocResourceAlign(u32 size, u32 alignment, u32 group,
 extern void fn_800F9210(u32 group, u32 handle);
 extern u16 fn_800E2B00(u32 size, u32 alignment);
 extern void* fn_800E27B0(u16 handle);
-extern u16 fn_800E202C(void* ptr);
+extern u16 GSmemGetHandleByPtr(void* ptr);
 extern void fn_800E24B0(u16 handle);
 extern void fn_800E209C(u16 handle);
 extern BOOL fn_8009ED4C(OSModuleInfo* module, void* bss);
@@ -132,7 +132,7 @@ void* fn_8017F484(u32 group, u32 handle, u32 size)
         ((void (*)(void))module->prolog)();
     }
     if (image) {
-        imageHandle = fn_800E202C(image);
+        imageHandle = GSmemGetHandleByPtr(image);
         if (imageHandle) {
             fn_800E24B0(imageHandle);
             fn_800E209C(imageHandle);

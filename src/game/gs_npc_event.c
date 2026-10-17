@@ -43,8 +43,8 @@
  *     - fn_800D7820: Load model resource
  *     - fn_800D85D4: Bind model to slot 0
  *     - fn_800D67BC: Set blend mode 2
- *     - fn_800D61E4: Set position (x, y)
- *     - fn_800D5CB8: Set color RGBA (255, 255, 255, 255)
+ *     - gfxVtxPos2s16: Set position (x, y)
+ *     - gfxVtxColor4u8: Set color RGBA (255, 255, 255, 255)
  *     - fn_800D59B8: Set scale (1.0, 1.0)
  *     - fn_800D6728: Commit render state
  *
@@ -54,7 +54,7 @@
  *     0x0FBD: Special NPC battle trigger
  *   For battle triggers, looks up the trainer data from lbl_803A2688,
  *   sets the battle parameter via msgctrlSetValue (param 0x4D), then
- *   initiates a trainer model render via fn_800FB680.
+ *   initiates a trainer model render via GSmsgPrintColor.
  *
  * fn_80030388 (GSnpcEvt_ProcessMirorB):
  *   Same structure as fn_800302D0 but for Miror B. encounters:
@@ -89,8 +89,8 @@ extern void  gfxSetPrimitive(s32 mode);               /* Set render mode */
 extern void  gfxSetVtxDesc(void* resource);          /* Load model resource */
 extern void  gfxLoadTexture(s32 slot, void* model);  /* Bind model to slot */
 extern void  gfxBegin(s32 blendMode);           /* Set blend mode */
-extern void  fn_800D61E4(s32 x, s32 y);           /* Set position */
-extern void  fn_800D5CB8(s32 slot, s32 r, s32 g, s32 b, s32 a); /* Set color */
+extern void  gfxVtxPos2s16(s32 x, s32 y);           /* Set position */
+extern void  gfxVtxColor4u8(s32 slot, s32 r, s32 g, s32 b, s32 a); /* Set color */
 extern void  gfxVtxTexCoord(s32 slot, f32 scaleX, f32 scaleY);     /* Set scale */
 extern void  gfxEnd(void);                    /* Commit render state */
 
@@ -98,7 +98,7 @@ extern void  gfxEnd(void);                    /* Commit render state */
 extern void* menuModelRender(void* data);              /* Get model from data */
 extern s32   heroGetStatus(void* partyData, s32 slot, s32 p3);
 extern void  msgctrlSetValue(s32 paramId, s32 value);
-extern void  fn_800FB680(s32, s32, u32, u16);
+extern void  GSmsgPrintColor(s32, s32, u32, u16);
 
 /* Event queue */
 /* The event queue is a simple array-based queue where fn_80030170 pops
@@ -152,13 +152,13 @@ void fn_80031188(u8* r3, u8* r4) {
     u32 combined = (flags & 0xa1400000) | *(u8*)(r3 + 0x8b);
     switch (evtype) {
     case 0xF6B:
-        fn_800FB680(0, 0, combined, 0x4412);
+        GSmsgPrintColor(0, 0, combined, 0x4412);
         break;
     case 0xF6A:
         {
             s32 val = heroGetStatus((void*)lbl_803A2688, 1, 0);
             msgctrlSetValue(0x4D, val);
-            fn_800FB680(0, 0, combined, 0x4413);
+            GSmsgPrintColor(0, 0, combined, 0x4413);
         }
         break;
     }
@@ -273,7 +273,7 @@ void fn_80031404(u8* arg0, u8* arg1) {
         }
         if (msg != 0) {
             msgctrlSetValue(0x37, ((s32 (*)(s32))GSmsgGetGSchar)(msg));
-            fn_800FB680(2, 0, combined, 0xCF);
+            GSmsgPrintColor(2, 0, combined, 0xCF);
             winSpriteSetDisp(arg1, 1);
         } else {
             winSpriteSetDisp(arg1, 0);
@@ -341,7 +341,7 @@ grp_done:
 
     width = (s16)(((u32 (*)(s32))GSmsgGetRect)(0xE7) >> 16);
     x = (*(s16*)(arg1 + 0x54) / 2) - (width / 2);
-    fn_800FB680((s16)x, 0, -1, 0xE7);
+    GSmsgPrintColor((s16)x, 0, -1, 0xE7);
     winSpriteSetDisp(arg1, 1);
 }
 #endif
@@ -513,7 +513,7 @@ extern void fn_8001E074(void);
 extern void fn_801D0314(void);
 extern void fn_801024E8(void);
 extern void fn_800FF52C(void);
-extern void fn_800FF660(void);
+extern void floorBattleEndTerminateScripts(void);
 extern void floorGetPrevFloorID(void);
 extern void floorLink(void);
 extern void jumptable_802E4F90();
@@ -612,7 +612,7 @@ void gbaTradeRun(void) {
     extern void fn_80097CD0(s32, s32, s32);
     extern void GSmodelSetVisibility(u32, s32);
     extern u8 fn_800FF52C();
-    extern void fn_800FF660();
+    extern void floorBattleEndTerminateScripts();
     extern s32 menuGetLastError();
     extern void fn_801021F8(s32, s32);
     extern void menuSetDisp(s32, s32);
@@ -874,7 +874,7 @@ void gbaTradeRun(void) {
         }
         fn_801024E8(1);
         if (fn_800FF52C()) {
-            fn_800FF660();
+            floorBattleEndTerminateScripts();
         } else {
             floorLink(floorGetPrevFloorID(), 0);
         }
@@ -1696,13 +1696,13 @@ void fn_80030388(u8* r3, u8* r4) {
     u32 combined = (flags & 0xa1400000) | *(u8*)(r3 + 0x8b);
     switch (evtype) {
     case 0x10CB:
-        fn_800FB680(0, 0, combined, 0x4412);
+        GSmsgPrintColor(0, 0, combined, 0x4412);
         break;
     case 0x10CA:
         {
             s32 val = heroGetStatus((void*)lbl_803A2688, 1, 0);
             msgctrlSetValue(0x4D, val);
-            fn_800FB680(0, 0, combined, 0x4413);
+            GSmsgPrintColor(0, 0, combined, 0x4413);
         }
         break;
     }
@@ -1757,7 +1757,7 @@ void fn_8003042C(u8* arg0, u8* arg1) {
             itemDataBiosGetPtr();
             itemDataBiosGetName();
             msgctrlSetValue(0x37, ((s32 (*)(void))GSmsgGetGSchar)());
-            fn_800FB680(0, 0, combined, 0xE7);
+            GSmsgPrintColor(0, 0, combined, 0xE7);
             *(u32*)(arg1 + 0x4C) = 0;
             winSpriteSetDisp(arg1, 1);
         } else {
@@ -1956,9 +1956,9 @@ void fn_800308D4(u8* arg0, u8* arg1) {
 
     if (obj != 0) {
         hi = (s16)((u32)GSmsgGetRect(0x2BD4) >> 16);
-        fn_800FB680(0, 0, combined, 0x2BD4);
+        GSmsgPrintColor(0, 0, combined, 0x2BD4);
         msgctrlSetValue(0x37, GSmsgGetGSchar(pokemonDataBiosGetName(pokemonDataBiosGetPtr(pokemonGetStatus(obj, 0, 0x6E, 0)))));
-        fn_800FB680(hi, 0, combined, 0xE7);
+        GSmsgPrintColor(hi, 0, combined, 0xE7);
         *(u32*)(arg1 + 0x4C) = 0;
         winSpriteSetDisp(arg1, 1);
     } else {
@@ -2014,7 +2014,7 @@ grp_done:
     }
 
     msgctrlSetValue(0x37, ((s32 (*)(void*))pokemonBiosGetNicknamePtr)(obj));
-    fn_800FB680(0, 0, combined, 0xE7);
+    GSmsgPrintColor(0, 0, combined, 0xE7);
     winSpriteSetDisp(arg1, 1);
 
     if (((u8 (*)(void*))pokemonCheckValid)(obj) != 0 &&
@@ -2034,7 +2034,7 @@ grp_done:
         if (msg != 0) {
             x = (s16)(((u32 (*)(s32))GSmsgGetRect)(0xE7) >> 16);
             msgctrlSetValue(0x37, ((s32 (*)(s32))GSmsgGetGSchar)(msg));
-            fn_800FB680((u16)x + 2, 0, combined, 0xCF);
+            GSmsgPrintColor((u16)x + 2, 0, combined, 0xCF);
         }
     }
     return;
@@ -2074,11 +2074,11 @@ void fn_80030C14(void* r3, u8* r4) {
         gfxSetVtxDesc(lbl_80314F98);
         gfxLoadTexture(0, model);
         gfxBegin(2);
-        fn_800D61E4(0, 0);
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+        gfxVtxPos2s16(0, 0);
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
         gfxVtxTexCoord(0, lbl_8047B9D4, lbl_8047B9D4);
-        fn_800D61E4(*(s16*)(r4 + 0x54), *(s16*)(r4 + 0x56));
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+        gfxVtxPos2s16(*(s16*)(r4 + 0x54), *(s16*)(r4 + 0x56));
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
         gfxVtxTexCoord(0, lbl_8047B9F0, lbl_8047B9F0);
         gfxEnd();
     }
@@ -2259,7 +2259,7 @@ void fn_80034DC0(u8* arg0, u8* arg1) {
     byte = *(u8*)(arg0 + 0x8B);
     mask = -0x100;
     combined = byte | mask;
-    fn_800FB680(0, 0, combined, 0x3CC8);
+    GSmsgPrintColor(0, 0, combined, 0x3CC8);
     msgctrlSetValue(0x34, lbl_8047A44C);
     fn_800FBB34(0, 0, *(s16*)(arg1 + 0x54), *(s16*)(arg1 + 0x56), combined, 0x3CC9);
 }
@@ -2299,11 +2299,11 @@ void fn_800301B0(void* r3, u8* r4) {
         gfxSetVtxDesc(lbl_80314F98);
         gfxLoadTexture(0, model);
         gfxBegin(2);
-        fn_800D61E4(0, 0);
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+        gfxVtxPos2s16(0, 0);
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
         gfxVtxTexCoord(0, lbl_8047B9D4, lbl_8047B9D4);
-        fn_800D61E4(*(s16*)(r4 + 0x54), *(s16*)(r4 + 0x56));
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+        gfxVtxPos2s16(*(s16*)(r4 + 0x54), *(s16*)(r4 + 0x56));
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
         gfxVtxTexCoord(0, lbl_8047B9F0, lbl_8047B9F0);
         gfxEnd();
     }
@@ -2319,13 +2319,13 @@ void fn_800302D0(u8* r3, u8* r4) {
     u32 combined = (flags & 0xa1400000) | *(u8*)(r3 + 0x8b);
     switch (evtype) {
     case 0xFBD:
-        fn_800FB680(0, 0, combined, 0x4412);
+        GSmsgPrintColor(0, 0, combined, 0x4412);
         break;
     case 0xFBC:
         {
             s32 val = heroGetStatus((void*)lbl_803A2688, 1, 0);
             msgctrlSetValue(0x4D, val);
-            fn_800FB680(0, 0, combined, 0x4413);
+            GSmsgPrintColor(0, 0, combined, 0x4413);
         }
         break;
     }

@@ -21,7 +21,7 @@ extern NameEntryModeEntry lbl_80266E18[];
 
 extern void msgctrlSetValue(s32, void*);
 extern u32 GSmsgGetRect(u32);
-extern void fn_800FB680(s32, s32, s32, u32);
+extern void GSmsgPrintColor(s32, s32, s32, u32);
 extern s32 GSmsgGetLength(void*);
 extern void* GSmsgGetGSchar(u32);
 
@@ -68,7 +68,7 @@ s32 menuNameEntryDraw50Text(void* window) {
             bufp[0] = letter;
             bufp[1] = 0;
             msgctrlSetValue(0x37, bufp);
-            fn_800FB680(index * 0x1b + (0x1b - (s16)(GSmsgGetRect(0xce) >> 16)) / 2, column * 0x23, color, 0xce);
+            GSmsgPrintColor(index * 0x1b + (0x1b - (s16)(GSmsgGetRect(0xce) >> 16)) / 2, column * 0x23, color, 0xce);
             index++;
         }
     }

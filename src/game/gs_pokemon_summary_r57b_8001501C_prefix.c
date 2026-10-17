@@ -28,12 +28,12 @@ typedef struct SummaryPageEntry {
 
 extern SummaryPageEntry lbl_80266918[6];
 extern u32 lbl_8047A2DC;
-extern void fn_800FB680(s32 x, s32 y, s32 flags, u32 color);
+extern void GSmsgPrintColor(s32 x, s32 y, s32 flags, u32 color);
 extern u32 cursorBiosGetPos(u32 id);
 
 s32 fn_8001501C(void)
 {
-    fn_800FB680(0, 0, -1, lbl_8047A2DC);
+    GSmsgPrintColor(0, 0, -1, lbl_8047A2DC);
     return 0;
 }
 

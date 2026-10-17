@@ -212,7 +212,7 @@ extern void  fn_80118DE0(u8* particleNode, f32* scale, u32 applyToGenerator,
                          u32 angleRadiusScale);
 extern void  GSpartFree(GSpart* part);
 extern u8    GSmodelCenterNull(struct GSmodel* model);
-extern s32   fn_800EE0E8(struct GSmodel* model);
+extern s32   GSmodelWalkJObjs(struct GSmodel* model);
 extern void  fn_80118CAC(void* particleNode, u8 enabled);
 
 /* Additional externs (other TUs) referenced from scattered file-scope

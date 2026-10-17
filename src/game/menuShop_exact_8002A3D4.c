@@ -6,7 +6,7 @@
 
 extern u32 GSmsgGetRect(u32 id);
 extern void msgctrlSetValue(u32 id, s32 value);
-extern void fn_800FB680(s32, s32, s32, s32);
+extern void GSmsgPrintColor(s32, s32, s32, s32);
 extern void fn_800FB8C8(s32, s32, s16, s16, s32, s32);
 extern u8 lbl_80266E58[];
 
@@ -40,7 +40,7 @@ s32 fn_8002A400(void* owner, u8* draw)
         id = 0x151;
     }
     bounds = GSmsgGetRect(id);
-    fn_800FB680((s32)*(s16*)(savedDraw + 0x54) - (s32)(bounds >> 16), 0,
+    GSmsgPrintColor((s32)*(s16*)(savedDraw + 0x54) - (s32)(bounds >> 16), 0,
                  -1, id);
     return 0;
 }

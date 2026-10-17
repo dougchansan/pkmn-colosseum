@@ -16,7 +16,7 @@
 #include "game/fsys/fsys_entry.h"
 #include "game/gs_range_8017FA5C_shared.h"
 
-extern u16 fn_800E202C(void* ptr);
+extern u16 GSmemGetHandleByPtr(void* ptr);
 extern void fn_800E24B0(u16 handle);
 extern void fn_800E209C(u16 handle);
 extern void* GSresGetResource(u32 fileHandle, u32 nameHash);
@@ -26,7 +26,7 @@ static inline void fsysFree(void* ptr)
 {
     u16 handle;
 
-    handle = fn_800E202C(ptr);
+    handle = GSmemGetHandleByPtr(ptr);
     if (handle != 0) {
         fn_800E24B0(handle);
         fn_800E209C(handle);

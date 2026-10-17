@@ -17,7 +17,7 @@ extern void memoDataSetMemoFlag(u32);
 extern void memoInitDebug(u32);
 extern void std078_flagSetFalse(u32);
 extern void dnaKeyCodeCheck(u32, u32, u32);
-extern void fn_800FF660(void);
+extern void floorBattleEndTerminateScripts(void);
 extern u32 floorGetCurrentContext(void);
 extern u32 GSthreadCreate(s32, u32, s32, s32, s32, u32);
 extern u32 savedataGetStatus(s32, s32);
@@ -342,7 +342,7 @@ u32 dbgMenuMenuTestNameEntryMenu(u32 arg) {
 s32 dbgMenuWazaDebugStop(void) {
     s32 v = ((BattleAnimState*)lbl_804673F8)->activeFlag;
     if (v != 0) {
-        fn_800FF660();
+        floorBattleEndTerminateScripts();
     }
     return 0;
 }

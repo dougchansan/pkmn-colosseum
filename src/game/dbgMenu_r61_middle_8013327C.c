@@ -9,7 +9,7 @@
  */
 #include "dolphin/types.h"
 
-extern u32 fn_800E0E14(u32, u32);
+extern u32 GSmemDumpMap(u32, u32);
 extern void GSlogWrite(const char* format, ...);
 extern void fn_800D3074(u32 rate);
 extern void mailMainSendAllMail(void);
@@ -17,7 +17,7 @@ extern void mailMainReceiveStart(void);
 
 u32 dbgMenuGSmemCheck(void)
 {
-    if ((u8)fn_800E0E14(1, 0) == 1) {
+    if ((u8)GSmemDumpMap(1, 0) == 1) {
         GSlogWrite("GSmem state OK\n");
     } else {
         GSlogWrite("GSmem state broken!\n");

@@ -774,8 +774,8 @@ void fn_80222438(void);
 /* body moved to fight_range_exact_80222110.c: fn_80222438 */
 #undef fn_80207AE0
 #undef fn_801F025C
-void fn_802223E0(void);
-/* body moved to fight_range_exact_80222110.c: fn_802223E0 */
+void wsCmd43(void);
+/* body moved to fight_range_exact_80222110.c: wsCmd43 */
 
 /* Classify (a,b) into an item/effect code; b selects a flag-resolved code pair. */
 u8 fn_80222110(u8 a, u8 b);
@@ -1645,7 +1645,7 @@ u16 fn_80236B98(void* ctx, u32 param) {
 }
 
 /* Address: 0x802391E0 | Size: 0x64 */
-u8 fn_802391E0(void* ctx, u32 param) {
+u8 fightAiGetWazaPp(void* ctx, u32 param) {
     extern u32 fn_801FB1C0();
     extern u32 fn_8011BEB4();
     fn_801FB1C0(0, fn_801FB1C0(ctx, 0, 0x43, 0) & 0xFFFF, 0x2, 0);

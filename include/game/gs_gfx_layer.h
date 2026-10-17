@@ -1,10 +1,10 @@
 /**
  * @file gs_gfx_layer.h
  * @brief GSgfx layer state: the channel / texgen / TEV block that the
- * GSgfx layer setters fill and fn_800D923C flushes to GX.
+ * GSgfx layer setters fill and _gfxFlushTevState flushes to GX.
  *
  * Partial view of the state behind lbl_8047AA80. Every offset is taken
- * from the target's loads and stores (fn_800D923C, fn_800D963C,
+ * from the target's loads and stores (_gfxFlushTevState, fn_800D963C,
  * fn_800D892C); fields no carve touches are left as padding. It is a
  * separate view from gs_gfx.h's older GSgfxState, whose layout in this
  * range is still unverified.
@@ -111,7 +111,7 @@ typedef struct GSTevStageSrc {
     u8 mode;
 } GSTevStageSrc;
 
-/* One vertex attribute of a GSgfx vertex descriptor (see fn_800D7868). */
+/* One vertex attribute of a GSgfx vertex descriptor (see gfxVtxDescSetAttr). */
 typedef struct GSVtxAttr {
     u8 enabled;
     u32 type;

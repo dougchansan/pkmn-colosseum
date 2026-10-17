@@ -1387,7 +1387,7 @@ void fn_80034B5C(u8* valid, s8* selectionOut, u8* valueOut)
 #pragma peephole off
 void fn_80034DC0(u8* arg0, u8* arg1) {
     extern u32 lbl_8047A44C;
-    extern void fn_800FB680(s32, s32, u32, u16);
+    extern void GSmsgPrintColor(s32, s32, u32, u16);
     extern void msgctrlSetValue(s32, s32);
     extern void fn_800FBB34(s32, s32, s32, s32, u32, u16);
     u8 byte;
@@ -1397,7 +1397,7 @@ void fn_80034DC0(u8* arg0, u8* arg1) {
     byte = arg0[0x8B];
     mask = -0x100;
     combined = byte | mask;
-    fn_800FB680(0, 0, combined, 0x3CC8);
+    GSmsgPrintColor(0, 0, combined, 0x3CC8);
     msgctrlSetValue(0x34, lbl_8047A44C);
     fn_800FBB34(0, 0, *(s16*)(arg1 + 0x54), *(s16*)(arg1 + 0x56), combined, 0x3CC9);
 }
@@ -1409,7 +1409,7 @@ void fn_80034DC0(u8* arg0, u8* arg1) {
 void fn_80034E38(u8* arg0, u8* arg1) {
     extern u32 lbl_8047A44C;
     extern u32 lbl_8047A450;
-    extern void fn_800FB680(s32, s32, u32, u16);
+    extern void GSmsgPrintColor(s32, s32, u32, u16);
     extern void msgctrlSetValue(s32, u32);
     extern void fn_800FBB34(s32, s32, s32, s32, u32, u16);
     u32 count;
@@ -1424,7 +1424,7 @@ void fn_80034E38(u8* arg0, u8* arg1) {
         value = arg0[0x8B];
         value = value | (mask & 0xFFFFFFFFFFFFFFFFu);
     }
-    fn_800FB680(0, 0, value, 0x3CC7);
+    GSmsgPrintColor(0, 0, value, 0x3CC7);
     if (lbl_8047A450 <= 0x98967F) {
         msgctrlSetValue(0x34, lbl_8047A450);
     } else {
@@ -1439,7 +1439,7 @@ void fn_80034E38(u8* arg0, u8* arg1) {
 #pragma peephole off
 #pragma optimization_level 1
 void fn_80034EF0(u8* arg0, u8* arg1) {
-    extern void fn_800FB680(s32, s32, u32, u16);
+    extern void GSmsgPrintColor(s32, s32, u32, u16);
     extern s32 heroGetStatus(s32, s32, s32);
     extern void msgctrlSetValue(s32, s32);
     extern void fn_800FBB34(s32, s32, s16, s16, u32, u16);
@@ -1452,7 +1452,7 @@ void fn_80034EF0(u8* arg0, u8* arg1) {
     byte = arg0[0x8B];
     mask = -0x100;
     value = byte | mask;
-    fn_800FB680(0, 0, value, 0x3CC6);
+    GSmsgPrintColor(0, 0, value, 0x3CC6);
     status = heroGetStatus(0, 0xD, 0);
     msgctrlSetValue(0x34, status);
     /* RULE-EXCEPTION(user-approved): dead store of the x position; at this
@@ -1507,7 +1507,7 @@ void cardeBattleRun(void)
     extern void* cardeSaveGetCard(void*, s8, u8, u8);
     extern void* fn_800836AC(void*, void*, s32);
     extern u8 fn_800FF52C(void);
-    extern void fn_800FF660(void);
+    extern void floorBattleEndTerminateScripts(void);
     extern s32 menuOpen(s32, s32);
     extern void menuClose(s32);
     extern u8 menuIsCheck(s32);
@@ -1966,7 +1966,7 @@ void cardeBattleRun(void)
     }
 
     if (fn_800FF52C() != 0) {
-        fn_800FF660();
+        floorBattleEndTerminateScripts();
     } else {
         floorLink(0x80, 0);
     }

@@ -44,7 +44,7 @@ extern u16  fn_800E2B00(u32 size, u32 alignment);
 extern void* fn_800E27B0(u16 handle);
 extern void  fn_800E24B0(u16 handle);
 extern void  fn_800E209C(u16 handle);
-extern u16   fn_800E202C(void* ptr);
+extern u16   GSmemGetHandleByPtr(void* ptr);
 
 /* DVD / file operations */
 extern void  strcpy(void* dst, const void* src);
@@ -267,7 +267,7 @@ s32 fn_8017E30C(FSYSSlot* slot) {
         DCFlushRange(subEntry->buffer, gLZSSContext.decompSize);
 
         {
-            u16 tmpHandle = fn_800E202C(compBuf);
+            u16 tmpHandle = GSmemGetHandleByPtr(compBuf);
             if (tmpHandle != 0) {
                 fn_800E24B0(tmpHandle);
                 fn_800E209C(tmpHandle);
@@ -575,7 +575,7 @@ done:
     if ((s32)--found->refCount > 0) {
         return;
     }
-    handle = fn_800E202C(found->archiveData);
+    handle = GSmemGetHandleByPtr(found->archiveData);
     if (handle != 0) {
         fn_800E24B0(handle);
         fn_800E209C(handle);
@@ -777,7 +777,7 @@ static void* FSYSAllocHandle2C04(u32 size) {
 static void FSYSFreeByPointer(void* ptr) {
     u16 handle;
 
-    handle = fn_800E202C(ptr);
+    handle = GSmemGetHandleByPtr(ptr);
     if (handle != 0) {
         fn_800E24B0(handle);
         fn_800E209C(handle);

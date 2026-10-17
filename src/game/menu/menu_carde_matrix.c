@@ -116,7 +116,7 @@ extern void GScharLenCpy(void*, const void*, u32);
 extern void qsort(void*, u32, u32, s32 (*)(u32, u32));
 extern u16 fn_800E2C04(u32, u32);
 extern void* fn_800E27B0(u16);
-extern u16 fn_800E202C(void*);
+extern u16 GSmemGetHandleByPtr(void*);
 extern void fn_800E24B0(u16);
 extern void fn_800E209C(u16);
 extern void* windowSearchItemID(void*, s32);
@@ -166,7 +166,7 @@ static inline void* menuCardE_Alloc(u32 size) {
 static inline void menuCardE_Free(void* buf) {
     u16 handle;
 
-    handle = fn_800E202C(buf);
+    handle = GSmemGetHandleByPtr(buf);
     if (handle == 0) {
         __assert(CARDE_MATRIX_FILE, 0x1AB, &lbl_8047C140);
     }
@@ -496,7 +496,7 @@ void fn_8007C7EC(void) {
     extern s32 menuCardE_CompareEntryPtrs(const void* a, const void* b);
     extern u16 fn_800E2C04(u32 size, u32 align);
     extern void* fn_800E27B0(u16 handle);
-    extern u16 fn_800E202C(void* ptr);
+    extern u16 GSmemGetHandleByPtr(void* ptr);
     extern void fn_800E24B0(u16 handle);
     extern void fn_800E209C(u16 handle);
     MenuCardEMatrixContext* context;
@@ -529,7 +529,7 @@ void fn_8007C7EC(void) {
     }
 #else
     if (context->entries != NULL) {
-        handle = fn_800E202C(context->entries);
+        handle = GSmemGetHandleByPtr(context->entries);
         if (handle == 0) {
             __assert(CARDE_MATRIX_FILE, 0x1AB, &lbl_8047C140);
         }
@@ -1084,12 +1084,12 @@ static inline MenuCardEEntry* menuCardEWorkEntry(MenuCardEMatrixWork* work, s32 
 }
 
 static inline void menuCardEFreeHandle(void* buf) {
-    extern u16 fn_800E202C(void* ptr);
+    extern u16 GSmemGetHandleByPtr(void* ptr);
     extern void fn_800E24B0(u16 handle);
     extern void fn_800E209C(u16 handle);
     u16 handle;
 
-    handle = fn_800E202C(buf);
+    handle = GSmemGetHandleByPtr(buf);
     if (handle == 0) {
         __assert(CARDE_MATRIX_FILE, 0x1AB, &lbl_8047C140);
     }

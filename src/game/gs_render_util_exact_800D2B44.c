@@ -9,7 +9,7 @@ extern const char lbl_8047C9E4[] __attribute__((section(".sdata2")));
 extern f32 lbl_8047AA78;
 extern f32 lbl_8047C990;
 
-void fn_800D2B44(HSD_AObj* aobj)
+void _GScameraAnimCallback(HSD_AObj* aobj)
 {
     if (aobj == NULL) {
         __assert(lbl_8047C9DC, 0xAB, lbl_8047C9E4);

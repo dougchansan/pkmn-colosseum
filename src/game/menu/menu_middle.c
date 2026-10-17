@@ -78,9 +78,9 @@ extern void menuCBRule_ConstantRule();
 extern void menuSaveLoadStorePosition();
 extern void sprintf();
 extern void fmod();
-extern void fn_800D5648();
-extern void fn_800D5BA0();
-extern void fn_800D61E4();
+extern void gfxSetLineWidth();
+extern void gfxVtxColor1u32();
+extern void gfxVtxPos2s16();
 extern void gfxEnd();
 extern void gfxBegin();
 extern void gfxSetPrimitive();
@@ -92,7 +92,7 @@ extern void _threadSwitch();
 extern void GScharMakeFromSJIS();
 extern u32 GSmsgGetGSchar();
 extern void GSmsgGetRect();
-extern void fn_800FB680();
+extern void GSmsgPrintColor();
 extern void fn_800FE35C();
 extern void fn_800FE38C();
 extern void std098_mapWarpToMenuRoom();
@@ -2206,10 +2206,10 @@ void fn_8006C5D8(void* window, void* sprite) {
     extern void gfxSetPrimitive(s32 a);
     extern void gfxSetVtxDesc(void* a);
     extern void gfxBegin(s32 a);
-    extern void fn_800D61E4(s16 x, s16 y);
-    extern void fn_800D5BA0(s32 a, u32 color);
+    extern void gfxVtxPos2s16(s16 x, s16 y);
+    extern void gfxVtxColor1u32(s32 a, u32 color);
     extern void gfxEnd(void);
-    extern void fn_800D5648(f32 a);
+    extern void gfxSetLineWidth(f32 a);
     extern void fn_800FE35C(void);
     MenuMiddleColors colors;
     s16 y;
@@ -2223,16 +2223,16 @@ void fn_8006C5D8(void* window, void* sprite) {
     gfxSetPrimitive(6);
     gfxSetVtxDesc(lbl_80314E08);
     gfxBegin(4);
-    fn_800D61E4(0, 0);
-    fn_800D5BA0(0, *(u32*)&colors.c[1]);
-    fn_800D61E4(MENU_MIDDLE_S16_0054(sprite)->unk_0054, 0);
-    fn_800D5BA0(0, *(u32*)&colors.c[1]);
-    fn_800D61E4(MENU_MIDDLE_S16_0054(sprite)->unk_0054, MENU_MIDDLE_S16_0056(sprite)->unk_0056);
-    fn_800D5BA0(0, *(u32*)&colors.c[2]);
-    fn_800D61E4(0, MENU_MIDDLE_S16_0056(sprite)->unk_0056);
-    fn_800D5BA0(0, *(u32*)&colors.c[2]);
+    gfxVtxPos2s16(0, 0);
+    gfxVtxColor1u32(0, *(u32*)&colors.c[1]);
+    gfxVtxPos2s16(MENU_MIDDLE_S16_0054(sprite)->unk_0054, 0);
+    gfxVtxColor1u32(0, *(u32*)&colors.c[1]);
+    gfxVtxPos2s16(MENU_MIDDLE_S16_0054(sprite)->unk_0054, MENU_MIDDLE_S16_0056(sprite)->unk_0056);
+    gfxVtxColor1u32(0, *(u32*)&colors.c[2]);
+    gfxVtxPos2s16(0, MENU_MIDDLE_S16_0056(sprite)->unk_0056);
+    gfxVtxColor1u32(0, *(u32*)&colors.c[2]);
     gfxEnd();
-    fn_800D5648(*(f32*)&lbl_8047C060);
+    gfxSetLineWidth(*(f32*)&lbl_8047C060);
     gfxSetPrimitive(1);
     gfxSetVtxDesc(lbl_80314E08);
     colors.c[0].r = 0xFF;
@@ -2241,10 +2241,10 @@ void fn_8006C5D8(void* window, void* sprite) {
     colors.c[0].a = MENU_MIDDLE_U8_0067(sprite)->unk_0067 * 0x38 / 255;
     for (y = 0; y < MENU_MIDDLE_S16_0056(sprite)->unk_0056; y += 4) {
         gfxBegin(2);
-        fn_800D61E4(0, y);
-        fn_800D5BA0(0, *(u32*)&colors.c[0]);
-        fn_800D61E4(MENU_MIDDLE_S16_0054(sprite)->unk_0054, y);
-        fn_800D5BA0(0, *(u32*)&colors.c[0]);
+        gfxVtxPos2s16(0, y);
+        gfxVtxColor1u32(0, *(u32*)&colors.c[0]);
+        gfxVtxPos2s16(MENU_MIDDLE_S16_0054(sprite)->unk_0054, y);
+        gfxVtxColor1u32(0, *(u32*)&colors.c[0]);
         gfxEnd();
     }
     fn_800FE35C();
@@ -2310,7 +2310,7 @@ void menuTaisenDrawTrainerCard(void* arg0, void* item) {
     extern void msgctrlSetValue(s32 id, void* value);
     extern void* menuSpriteBiosGetPtr(u32 spriteId);
     extern void fn_80071318(void* widget, void* sprite);
-    extern void fn_800FB680(s32 a, s32 b, u32 window, s32 c);
+    extern void GSmsgPrintColor(s32 a, s32 b, u32 window, s32 c);
     extern s32 sprintf(char* buffer, const char* format, ...);
     extern void GScharMakeFromSJIS(u16* dst, const char* src);
     u8 digits[5];
@@ -2480,7 +2480,7 @@ void menuTaisenDrawTrainerCard(void* arg0, void* item) {
     case 1:
         window = *(u32*)((u8*)item + 0x64);
         msgctrlSetValue(0x37, heroBiosGetNamePtr(fn_8006C7D4_GetHero(index)));
-        fn_800FB680(0, 0, window, 0xD0);
+        GSmsgPrintColor(0, 0, window, 0xD0);
         break;
     case 2:
         spriteId = 0;
@@ -2521,7 +2521,7 @@ void menuTaisenDrawTrainerCard(void* arg0, void* item) {
         sprintf(text, (const char*)lbl_802686D0, digits[4], digits[3], digits[2], digits[1], digits[0]);
         GScharMakeFromSJIS(message, text);
         msgctrlSetValue(0x37, message);
-        fn_800FB680(0, 0, window, 0xD0);
+        GSmsgPrintColor(0, 0, window, 0xD0);
         break;
     }
 }
@@ -2557,7 +2557,7 @@ void menuTaisenDrawPartyList(void* window, MenuMiddleSprite_8006CCC0* sprite) {
     extern void* windowSearchItemID(void* menu, s32 itemId);
     extern u32 GSmsgGetRect(u32 msg);
     extern void msgctrlSetValue(s32 slot, u32 value);
-    extern void fn_800FB680(s16 x, s16 y, u32 color, u32 msg);
+    extern void GSmsgPrintColor(s16 x, s16 y, u32 color, u32 msg);
     extern u16* heroBiosGetNamePtr(void* hero);
     extern u8* heroBiosGetPokemonPtr(void* hero, u16 index);
     extern u8 fn_80077A5C(void);
@@ -2839,10 +2839,10 @@ void menuTaisenDrawPartyList(void* window, MenuMiddleSprite_8006CCC0* sprite) {
                     msg = 0x3DA2;
                     break;
                 }
-                fn_800FB680(0, 0, sprite->color, msg);
+                GSmsgPrintColor(0, 0, sprite->color, msg);
                 x = (GSmsgGetRect(msg) >> 16) + 0x24;
                 msgctrlSetValue(0x2F, battle->wins);
-                fn_800FB680(x, 0, sprite->color, 0x3DA4);
+                GSmsgPrintColor(x, 0, sprite->color, 0x3DA4);
             }
             break;
         }
@@ -2867,14 +2867,14 @@ void menuTaisenDrawPartyList(void* window, MenuMiddleSprite_8006CCC0* sprite) {
                 break;
             case 2:
                 if (invalid) {
-                    fn_800FB680(0, 0, sprite->color, 0x56C);
+                    GSmsgPrintColor(0, 0, sprite->color, 0x56C);
                 } else if (isEgg) {
-                    fn_800FB680(0, 0, sprite->color, 0x56B);
+                    GSmsgPrintColor(0, 0, sprite->color, 0x56B);
                 } else if (pokemon != NULL) {
                     nickname = pokemonBiosGetNicknamePtr(pokemon);
                     if (nickname != NULL && *nickname != 0) {
                         msgctrlSetValue(0x37, (u32)nickname);
-                        fn_800FB680(0, 0, sprite->color, 0xE7);
+                        GSmsgPrintColor(0, 0, sprite->color, 0xE7);
                     }
                     switch (menuSubGetPokemonSexForDisp(pokemon)) {
                     case 0:
@@ -2889,7 +2889,7 @@ void menuTaisenDrawPartyList(void* window, MenuMiddleSprite_8006CCC0* sprite) {
                         break;
                     }
                     if (msg != 0 && ((u8*)&sprite->color)[3] == 0xFF) {
-                        fn_800FB680(0x5C, 0, sprite->color, msg);
+                        GSmsgPrintColor(0x5C, 0, sprite->color, msg);
                     }
                 }
                 break;
@@ -2903,13 +2903,13 @@ void menuTaisenDrawPartyList(void* window, MenuMiddleSprite_8006CCC0* sprite) {
                         color |= 0xFF000000;
                         color &= 0xFF0000FF;
                     }
-                    fn_800FB680(0, 0, color, 0x41FA);
+                    GSmsgPrintColor(0, 0, color, 0x41FA);
                 }
                 break;
             case 4:
                 if (name != NULL) {
                     msgctrlSetValue(0x37, (u32)name);
-                    fn_800FB680(0, 0, sprite->color, 0xCF);
+                    GSmsgPrintColor(0, 0, sprite->color, 0xCF);
                 }
                 break;
             }
@@ -2973,7 +2973,7 @@ void menuTaisenDrawPlayerCard(void* window, MenuMiddleSprite_8006CCC0* sprite) {
     extern u16* heroBiosGetNamePtr(void* hero);
     extern u16 heroBiosGetRnd(void* hero);
     extern void msgctrlSetValue(s32 slot, u32 value);
-    extern void fn_800FB680(s16 x, s16 y, u32 color, u32 msg);
+    extern void GSmsgPrintColor(s16 x, s16 y, u32 color, u32 msg);
     extern int sprintf(char* buf, const char* fmt, ...);
     extern void GScharMakeFromSJIS(u16* dst, char* src);
     extern void* menuSpriteBiosGetPtr(u32 spriteId);
@@ -3063,7 +3063,7 @@ void menuTaisenDrawPlayerCard(void* window, MenuMiddleSprite_8006CCC0* sprite) {
     case 1:
         color = sprite->color;
         msgctrlSetValue(0x37, (u32)heroBiosGetNamePtr(trainer->hero));
-        fn_800FB680(0, 0, color, 0xCF);
+        GSmsgPrintColor(0, 0, color, 0xCF);
         break;
     case 2:
         color = sprite->color;
@@ -3077,7 +3077,7 @@ void menuTaisenDrawPlayerCard(void* window, MenuMiddleSprite_8006CCC0* sprite) {
         sprintf(text, (char*)lbl_802686D0, digits[4], digits[3], digits[2], digits[1], digits[0]);
         GScharMakeFromSJIS(message, text);
         msgctrlSetValue(0x37, (u32)message);
-        fn_800FB680(0, 0, color, 0xCF);
+        GSmsgPrintColor(0, 0, color, 0xCF);
         break;
     case 3:
         spriteId = 0;
@@ -3746,7 +3746,7 @@ static inline void fn_8006E9A4_ShowNumber(u32 window, s32 value) {
     extern void sprintf(char* buffer, const char* format, ...);
     extern void GScharMakeFromSJIS(u16* dst, const char* src);
     extern void msgctrlSetValue(s32 id, u32 value);
-    extern void fn_800FB680(s32 x, s32 y, u32 window, s32 message);
+    extern void GSmsgPrintColor(s32 x, s32 y, u32 window, s32 message);
     char text[0x80];
     u16 message[0x80];
 
@@ -3757,13 +3757,13 @@ static inline void fn_8006E9A4_ShowNumber(u32 window, s32 value) {
     }
     GScharMakeFromSJIS(message, text);
     msgctrlSetValue(0x37, (u32)message);
-    fn_800FB680(10, 0, window, 0xCF);
+    GSmsgPrintColor(10, 0, window, 0xCF);
 }
 
 void fn_8006E9A4(void* window, void* sprite) {
     extern u8 winSpriteGetDisp(void* sprite);
     extern void msgctrlSetValue(s32 id, u32 value);
-    extern void fn_800FB680(s32 x, s32 y, u32 window, s32 message);
+    extern void GSmsgPrintColor(s32 x, s32 y, u32 window, s32 message);
     MenuMiddleRecord_8006E9A4* record;
     u32 value;
     u32 messageWindow;
@@ -3844,7 +3844,7 @@ void fn_8006E9A4(void* window, void* sprite) {
         return;
     }
     msgctrlSetValue(0x34, value % 10);
-    fn_800FB680(0, 0, *(u32*)((u8*)sprite + 0x64), 0xC9);
+    GSmsgPrintColor(0, 0, *(u32*)((u8*)sprite + 0x64), 0xC9);
 }
 #endif
 
@@ -4748,7 +4748,7 @@ void fn_80070428(void* arg0, void* menu) {
     if (message != 0) {
         value = GSmsgGetGSchar(message);
         msgctrlSetValue(0x37, value);
-        fn_800FB680(0, 0, MENU_MIDDLE_U32_0064(context)->unk_0064, 0xE7);
+        GSmsgPrintColor(0, 0, MENU_MIDDLE_U32_0064(context)->unk_0064, 0xE7);
         MENU_MIDDLE_U32_004C(context)->unk_004C = 0;
     }
 }

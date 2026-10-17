@@ -34,7 +34,7 @@ extern f32 lbl_8047C208;
 extern f32 lbl_8047C230;
 
 extern void winSpriteSetDisp();
-extern void fn_800FB680();
+extern void GSmsgPrintColor();
 extern void fn_800FBB34();
 extern void* pokemonDataBiosGetPtr(u32 id);
 extern u8 pokemonBiosGetCatchBallId(void* pokemon);
@@ -51,8 +51,8 @@ extern void gfxSetPrimitive(u32 arg);
 extern void gfxSetVtxDesc(void* arg);
 extern void gfxLoadTexture(u32 arg0, void* arg1);
 extern void gfxBegin(u32 arg);
-extern void fn_800D61E4(s32 x, s32 y);
-extern void fn_800D5CB8(u32 arg0, u32 r, u32 g, u32 b, u32 a);
+extern void gfxVtxPos2s16(s32 x, s32 y);
+extern void gfxVtxColor4u8(u32 arg0, u32 r, u32 g, u32 b, u32 a);
 extern void gfxVtxTexCoord(u32 arg0, f32 s, f32 t);
 extern void gfxEnd(void);
 extern u32 menuPokemonGetStatusSprite(void* pokemon, u32 arg);
@@ -94,11 +94,11 @@ void fn_800965C8(void* window, u8* sprite) {
         gfxSetVtxDesc(lbl_80314F98);
         gfxLoadTexture(0, texture);
         gfxBegin(2);
-        fn_800D61E4(0, 0);
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+        gfxVtxPos2s16(0, 0);
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
         gfxVtxTexCoord(0, lbl_8047C230, lbl_8047C230);
-        fn_800D61E4(*(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56));
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+        gfxVtxPos2s16(*(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56));
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
         gfxVtxTexCoord(0, lbl_8047C208, lbl_8047C208);
         gfxEnd();
         break;
@@ -177,10 +177,10 @@ void fn_800965C8(void* window, u8* sprite) {
          * its x position - see docs/RULE_EXCEPTIONS.md */
         ball = pokemonDataBiosGetName(bios);
         msg = (s16)(GSmsgGetRect(0x2BD4) >> 16);
-        fn_800FB680(0, 0, color, 0x2BD4);
+        GSmsgPrintColor(0, 0, color, 0x2BD4);
         if (ball != 0) {
             msgctrlSetValue(0x37, GSmsgGetGSchar(ball));
-            fn_800FB680(msg, 0, color, 0xE7);
+            GSmsgPrintColor(msg, 0, color, 0xE7);
         }
         break;
     case 0x555: {
@@ -203,7 +203,7 @@ void fn_800965C8(void* window, u8* sprite) {
         }
         if (sexMsg != 0) {
             msgctrlSetValue(0x37, GSmsgGetGSchar(sexMsg));
-            fn_800FB680(value, 0, color, 0xCF);
+            GSmsgPrintColor(value, 0, color, 0xCF);
         }
         break;
     }
@@ -274,7 +274,7 @@ void fn_800965C8(void* window, u8* sprite) {
             break;
         }
         if (msg != 0) {
-            fn_800FB680(0, 0, color, msg);
+            GSmsgPrintColor(0, 0, color, msg);
         }
         break;
     default:

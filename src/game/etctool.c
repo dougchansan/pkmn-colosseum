@@ -29,7 +29,7 @@ extern void GSmodelSetPosition(void*, const void*);
 extern void GSmodelSetScale(void*, const void*);
 extern void GSmodelSetVisibility(void*, s32);
 extern void GSmodelFree(void*);
-extern void* fn_800F92D4(u32);
+extern void* GSresFindById(u32);
 extern void* std092_getCurrentRoomID(void);
 extern void floorEventCtrlDoor(void*, u32, u32);
 extern void* floorOpenObject(u32);
@@ -1027,7 +1027,7 @@ void fn_801E09E0(s32 unused)
         case 0:
             std172_characterGetPosition(0x4D, 1, &savedPosition);
             std076_characterEventFlagsClear(0x4D, 1);
-            part = GSmodelGetPart(fn_800F92D4(0x01DA1002), 0);
+            part = GSmodelGetPart(GSresFindById(0x01DA1002), 0);
             GSpartGetTransform(part, &position, 0, 0);
             GSpartFree(part);
             GSvecCopy(&position, &etcDoorPosition);
