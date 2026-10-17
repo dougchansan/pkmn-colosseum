@@ -52,6 +52,9 @@ game/gs_task_residual_80006908.c:
 game/data/data_802E28F0.c:
 	.data       start:0x802E28F0 end:0x802E4B78
 
+game/data/data_802E4B78.c:
+	.data       start:0x802E4B78 end:0x802E4B96
+
 game/data/data_802E4B98.c:
 	.data       start:0x802E4B98 end:0x802E4C80
 
@@ -682,6 +685,9 @@ game/data/bss_803D6E40.c:
 
 game/data/bss_803F6E40.c:
 	.bss        start:0x803F6E40 end:0x803FB380
+
+game/data/bss_803FB380.c:
+	.bss        start:0x803FB380 end:0x803FB4A0
 
 game/data/data_802E51C8.c:
 	.data       start:0x802E51C8 end:0x802E6270
@@ -1665,6 +1671,9 @@ dolphin/os/OSAlarm.c:
 	.text       start:0x8009A27C end:0x8009A92C
 	.sbss       start:0x8047A6E0 end:0x8047A6E8
 
+game/data/sbss_8047A6E8.c:
+	.sbss       start:0x8047A6E8 end:0x8047A710
+
 dolphin/sdk_exact_8009A92C.c:
 	.text       start:0x8009A92C end:0x8009A9D8
 
@@ -1701,6 +1710,12 @@ dolphin/os/OSError.c:
 	.data       start:0x803109B8 end:0x80310CD8
 	.bss        start:0x803FB4F0 end:0x803FB538
 	.sdata      start:0x80478990 end:0x80478998
+
+game/data/sdata_80478998.c:
+	.sdata      start:0x80478998 end:0x804789A8
+
+game/data/bss_803FB538.c:
+	.bss        start:0x803FB538 end:0x803FB840
 
 game/data/data_80310CD8.c:
 	.data       start:0x80310CD8 end:0x80311818
@@ -1751,6 +1766,9 @@ dolphin/sdk_candidate_8009ED70.c:
 game/data/data_80311868.c:
 	.data       start:0x80311868 end:0x803119B8
 
+game/data/data_803119B8.c:
+	.data       start:0x803119B8 end:0x803119EF
+
 game/data/data_803119F0.c:
 	.data       start:0x803119F0 end:0x80311A24
 
@@ -1799,6 +1817,9 @@ dolphin/os/OSThread.c:
 	.bss        start:0x803FB898 end:0x803FC290
 	.sdata      start:0x804789A8 end:0x804789AC
 	.sbss       start:0x8047A760 end:0x8047A76C
+
+game/data/sdata_804789B0.c:
+	.sdata      start:0x804789B0 end:0x804789B8
 
 dolphin/os/OSTime_range_800A2778.c:
 	.text       start:0x800A2778 end:0x800A27FC
@@ -1870,15 +1891,27 @@ crt/__start.c:
 	.init       start:0x80003100 end:0x80003458
 	.sbss       start:0x8047A770 end:0x8047A778
 
+game/data/sbss_8047A778.c:
+	.sbss       start:0x8047A778 end:0x8047A780
+
 dolphin/dvd/DVDLow.c:
 	.text       start:0x800A3EB0 end:0x800A4CF0
 	.bss        start:0x803FC290 end:0x803FC360
 	.sdata      start:0x804789B8 end:0x804789BC
 	.sbss       start:0x8047A780 end:0x8047A7C8
 
+game/data/sdata_804789C0.c:
+	.sdata      start:0x804789C0 end:0x804789E8
+
+game/data/bss_803FC360.c:
+	.bss        start:0x803FC360 end:0x803FC3F8
+
 dolphin/dvd/DVDFs.c:
 	.text       start:0x800A4CF0 end:0x800A4D28
 	.sbss       start:0x8047A7C8 end:0x8047A7D8
+
+game/data/sbss_8047A7D8.c:
+	.sbss       start:0x8047A7D8 end:0x8047A838
 
 dolphin/dvd/dvdfs_range_800A4D28.c:
 	.text       start:0x800A4D28 end:0x800A5624
@@ -1967,6 +2000,9 @@ dolphin/dvd/DVD_range_800A7880.c:
 game/data/data_80311C00.c:
 	.data       start:0x80311C00 end:0x80311CB8
 
+game/data/data_80311CB8.c:
+	.data       start:0x80311CB8 end:0x80311D36
+
 game/data/data_80311D38.c:
 	.data       start:0x80311D38 end:0x80311DB8
 
@@ -2002,6 +2038,12 @@ dolphin/vi/vi.c:
 	.bss        start:0x803FC488 end:0x803FC5D0
 	.sdata      start:0x804789F8 end:0x80478A08
 	.sbss       start:0x8047A848 end:0x8047A8A0
+
+game/data/sbss_8047A8A0.c:
+	.sbss       start:0x8047A8A0 end:0x8047A978
+
+game/data/sdata_80478A08.c:
+	.sdata      start:0x80478A08 end:0x80478AB8
 
 game/data/data_80312500.c:
 	.data       start:0x80312500 end:0x80312554
@@ -2047,6 +2089,9 @@ dolphin/dsp_task.c:
 	.text       start:0x800AE9FC end:0x800AF280
 	.data       start:0x80312668 end:0x803127A8
 
+game/data/data_803127A8.c:
+	.data       start:0x803127A8 end:0x803127EE
+
 game/data/data_803127F0_prefix.c:
 	.data       start:0x803127F0 end:0x80312AE0
 
@@ -2062,6 +2107,9 @@ dolphin/card_exact_800AF474.c:
 dolphin/sdk_range_800AF8A0.c:
 	.text       start:0x800AF8A0 end:0x800B016C
 	.bss        start:0x803FC620 end:0x803FC840
+
+game/data/bss_803FC840.c:
+	.bss        start:0x803FC840 end:0x803FC860
 
 dolphin/sdk_exact_800B016C.c:
 	.text       start:0x800B016C end:0x800B0174
@@ -2134,6 +2182,9 @@ dolphin/sdk_candidate_800B5C5C.c:
 	.bss        start:0x803FC860 end:0x803FCDD8
 	.sbss       start:0x8047A978 end:0x8047A9A0
 	.sdata2     start:0x8047C2E0 end:0x8047C308
+
+game/data/bss_803FCDD8.c:
+	.bss        start:0x803FCDD8 end:0x803FED60
 
 dolphin/sdk_exact_800B6FE0.c:
 	.text       start:0x800B6FE0 end:0x800B71F0
@@ -2532,6 +2583,9 @@ crt/global_destructor_chain_exact_800C4668.c:
 	.text       start:0x800C4668 end:0x800C46B0
 	.sbss       start:0x8047A9F0 end:0x8047A9F4
 
+game/data/sbss_8047A9F8.c:
+	.sbss       start:0x8047A9F8 end:0x8047AA1C
+
 crt/runtime.c:
 	.text       start:0x800C46B0 end:0x800C4D8C
 	.rodata     start:0x8026FE58 end:0x8026FE70
@@ -2593,6 +2647,9 @@ crt/printf_residual_800C8864.c:
 
 game/data/sdata2_8047C418.c:
 	.sdata2     start:0x8047C418 end:0x8047C4A0
+
+game/data/sdata_80478AC0.c:
+	.sdata      start:0x80478AC0 end:0x80478AD8
 
 crt/string_range_800CA78C.c:
 	.text       start:0x800CA78C end:0x800CA7FC
@@ -2723,6 +2780,12 @@ dolphin/si/SI_range_800CF764.c:
 	.sdata      start:0x80478AD8 end:0x80478ADC
 	.sbss       start:0x8047AA50 end:0x8047AA60
 
+game/data/sdata_80478AE0.c:
+	.sdata      start:0x80478AE0 end:0x80478AE8
+
+game/data/bss_804001B0.c:
+	.bss        start:0x804001B0 end:0x804007E8
+
 game/data/data_80313F48.c:
 	.data       start:0x80313FB0 end:0x80314060
 
@@ -2844,6 +2907,9 @@ game/gs_gfx_layer_candidate_800D6B00.c:
 	.text       start:0x800D6B00 end:0x800D7230
 	.bss        start:0x804007E8 end:0x80400948
 
+game/data/bss_80400948.c:
+	.bss        start:0x80400948 end:0x80400F30
+
 game/gs_gfx_layer_exact_800D7230.c:
 	.text       start:0x800D7230 end:0x800D76A8
 
@@ -2943,6 +3009,9 @@ game/gs_log.cpp:
 
 game/data/sdata2_8047CAC8.c:
 	.sdata2     start:0x8047CAC8 end:0x8047CAF8
+
+game/data/bss_804011B8.c:
+	.bss        start:0x804011B8 end:0x80401C10
 
 game/data/data_80315490.c:
 	.data       start:0x80315490 end:0x803155B0
@@ -3048,6 +3117,9 @@ game/gs_range_800E0DDC_r40_800E1544_gc125n.c:
 game/gs_mem.c:
 	.text       start:0x800E202C end:0x800E3604
 	.sdata      start:0x80478AF0 end:0x80478AF8
+
+game/data/sdata_80478AF8.c:
+	.sdata      start:0x80478AF8 end:0x80478B00
 
 game/gs_model_main.c:
 	.text       start:0x800E3604 end:0x800E3928
@@ -3353,6 +3425,9 @@ game/gs_vm.c:
 	.sdata2     start:0x8047CCB8 end:0x8047CCC8
 	.sbss2      start:0x8047E710 end:0x8047E718
 
+game/data/sdata_80478B08.c:
+	.sdata      start:0x80478B08 end:0x80478BF8
+
 game/data/rodata_80271300.c:
 	.rodata     start:0x80271300 end:0x80271E00
 
@@ -3535,6 +3610,9 @@ game/win_msg_exact_80105A3C.c:
 	.text       start:0x80105A3C end:0x80106F98
 	.data       start:0x8035B0F8 end:0x8035B3F0
 
+game/data/data_8035B3F0.c:
+	.data       start:0x8035B3F0 end:0x8035B3FE
+
 game/win_sequence.c:
 	.text       start:0x80106F98 end:0x801070F4
 
@@ -3556,6 +3634,9 @@ game/data/bss_80408400_prefix.c:
 game/data/data_8035B430.c:
 	.data       start:0x8035B430 end:0x8035B448
 
+game/data/data_8035B448.c:
+	.data       start:0x8035B448 end:0x8035B466
+
 game/data/data_8035B468.c:
 	.data       start:0x8035B468 end:0x8035B4FC
 
@@ -3567,6 +3648,9 @@ game/data/data_8035B8A0.c:
 
 game/data/data_8035B904.c:
 	.data       start:0x8035B904 end:0x8035B950
+
+game/data/data_8035B950.c:
+	.data       start:0x8035B950 end:0x8035B96B
 
 game/data/data_8035B96C.c:
 	.data       start:0x8035B96C end:0x8035B988
@@ -4406,6 +4490,9 @@ musyx/runtime/synth.c:
 game/data/sdata2_8047D3B0.c:
 	.sdata2     start:0x8047D3B0 end:0x8047D3B8
 
+game/data/sbss_8047AF60.c:
+	.sbss       start:0x8047AF60 end:0x8047AF66
+
 game/data/bss_80435FF8.c:
 	.bss        start:0x80435FF8 end:0x80445F30
 
@@ -4437,6 +4524,9 @@ musyx/runtime/synthvoice.c:
 	.text       start:0x80157280 end:0x80158BB4
 	.bss        start:0x80445F50 end:0x80446F10
 	.sbss       start:0x8047AFD0 end:0x8047AFE8
+
+game/data/sbss_8047AFE8.c:
+	.sbss       start:0x8047AFE8 end:0x8047B030
 
 game/data/bss_80446F10.c:
 	.bss        start:0x80446F10 end:0x80448440
@@ -4524,6 +4614,9 @@ musyx/runtime/hardware.c:
 	.rodata     start:0x80273448 end:0x80273548
 	.sdata      start:0x80478BF8 end:0x80478C08
 	.sdata2     start:0x8047D4D8 end:0x8047D4F0
+
+game/data/sdata_80478C08.c:
+	.sdata      start:0x80478C08 end:0x80478C38
 
 game/data/rodata_80273548.c:
 	.rodata     start:0x80273548 end:0x802737B8
@@ -4664,6 +4757,12 @@ game/generator.c:
 	.sdata      start:0x80478C38 end:0x80478C40
 	.sbss       start:0x8047B180 end:0x8047B1A0
 	.sdata2     start:0x8047D6B0 end:0x8047D720
+
+game/data/sbss_8047B1A0.c:
+	.sbss       start:0x8047B1A0 end:0x8047B1F0
+
+game/data/sdata_80478C40.c:
+	.sdata      start:0x80478C40 end:0x80478C50
 
 game/data/rodata_80273A00.c:
 	.rodata     start:0x80273A00 end:0x80273D98
@@ -4872,6 +4971,9 @@ game/people/people.c:
 game/data/sdata2_8047D8A8.c:
 	.sdata2     start:0x8047D8A8 end:0x8047D908
 
+game/data/sbss_8047B1F8.c:
+	.sbss       start:0x8047B1F8 end:0x8047B220
+
 game/data/rodata_802741F8.c:
 	.rodata     start:0x802741F8 end:0x802744F0
 
@@ -4974,6 +5076,9 @@ hsd/displayfunc.c:
 
 hsd/hsd_sdata2_8047DA18.c:
 	.sdata2     start:0x8047DA18 end:0x8047DA30
+
+game/data/sbss_8047B260.c:
+	.sbss       start:0x8047B260 end:0x8047B268
 
 game/data/bss_80465378.c:
 	.bss        start:0x80465378 end:0x804653A8
@@ -5152,6 +5257,9 @@ hsd/texpdag.c:
 	.sdata2     start:0x8047DEA8 end:0x8047DEB0
 	.sbss2      start:0x8047E730 end:0x8047E738
 
+game/data/sdata_80478CA8.c:
+	.sdata      start:0x80478CA8 end:0x80478D00
+
 hsd/tobj.c:
 	.text       start:0x801BBAC8 end:0x801BF098
 	.rodata     start:0x80275638 end:0x802756F8
@@ -5187,6 +5295,9 @@ game/battle_sdata2_8047DF90.c:
 
 game/data/bss_80466DE8.c:
 	.bss        start:0x80466DE8 end:0x804670E8
+
+game/data/data_8036DCA8.c:
+	.data       start:0x8036DCA8 end:0x8036DCB7
 
 game/data/rodata_802757F0.c:
 	.rodata     start:0x802757F0 end:0x802758E8
@@ -6412,6 +6523,9 @@ game/fight_trainer_ai_waza_value_candidate_80245FC4.c:
 game/data/data_8039A648.c:
 	.data       start:0x8039A648 end:0x8039A690
 
+game/data/data_8039A690.c:
+	.data       start:0x8039A690 end:0x8039A6A6
+
 game/data/data_8039A6A8.c:
 	.data       start:0x8039A6A8 end:0x8039A6B8
 
@@ -6553,8 +6667,17 @@ game/gba/GBA.c:
 	.bss        start:0x804782E0 end:0x804787E0
 	.sbss       start:0x8047B670 end:0x8047B678
 
+game/data/sbss_8047B678.c:
+	.sbss       start:0x8047B678 end:0x8047B684
+
 game/data/bss_804787E0.c:
 	.bss        start:0x804787E0 end:0x80478800
+
+game/data/bss_80478800.c:
+	.bss        start:0x80478800 end:0x80478820
+
+game/data/data_8039A6C8.c:
+	.data       start:0x8039A6C8 end:0x8039A6DB
 
 game/gba/GBARead.c:
 	.text       start:0x8025F524 end:0x8025F618
