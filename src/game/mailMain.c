@@ -194,7 +194,7 @@ void fn_801D2404(void) {
     extern s32 gamedatasaveGetStatus(s32, s32);
     extern void fn_800F78A4(s32, s32, s32, s32, s32);
     extern s32 msgGetCharsPerFrame(void);
-    extern s32 soundGetStatus(u32);
+    extern s32 GSsndGetStatus(u32);
     extern void fn_800F9210(s32, s32);
     extern void soundKill(u32);
     extern void soundResumeSong(u32, s32, s32);
@@ -245,7 +245,7 @@ void fn_801D2404(void) {
 
     lbl_80467390[1] += msgGetCharsPerFrame();
     sound = lbl_80467390[2];
-    if (sound != 0 && soundGetStatus(sound) != 2) {
+    if (sound != 0 && GSsndGetStatus(sound) != 2) {
         fn_800F9210(0, 0x408);
         soundKill(sound);
         work = lbl_80467390[3];

@@ -190,8 +190,8 @@ u8 wazaSequenceEntryStop(void* entry, BOOL immediate) {
 /* RULE-EXCEPTION(title-path): single-use sound-status inline helper;
  * see docs/RULE_EXCEPTIONS.md. */
 static inline u8 wazaEntrySoundRunning(u32 id) {
-    extern s32 soundGetStatus(u32 id);
-    s32 status = soundGetStatus(id);
+    extern s32 GSsndGetStatus(u32 id);
+    s32 status = GSsndGetStatus(id);
     return status == 2 || status == 3;
 }
 

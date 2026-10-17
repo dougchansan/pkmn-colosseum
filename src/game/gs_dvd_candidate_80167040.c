@@ -5,7 +5,7 @@
  * Standalone owner for the linked .text range, with its functions in retail
  * address order. The same bodies remain in gs_dvd.c for the neighbouring
  * candidate score units that still include it. The two switch jump tables
- * (_gsdvdErrorTask_801879AC, _errorTask_State_None_80187B24) are this
+ * (_gsdvdErrorTask, _errorTask_State_None) are this
  * unit's .data at 0x8036BF20 - 0x8036BF80.
  */
 #include "dolphin/types.h"
@@ -87,7 +87,7 @@ typedef struct GSsndStartParams {
 extern void GSlogWrite(const char* fmt, ...);
 extern void* GSresGetResource(void* ptr, u32 param);
 extern void soundStopRaw(u32 a, u32 b, u32 c);
-extern void soundGetStatus(u32 index);
+extern void GSsndGetStatus(u32 index);
 extern u32 soundAttachWork(u32 id, u32 arg1, u32 arg2);
 extern void soundApplyReverb(u32 reverb);
 extern BOOL OSDisableInterrupts(void);
@@ -276,7 +276,7 @@ void _sndCheckSndWorkALL(void)
 
     GSlogWrite(lbl_80273748);
     for (i = 0; i < lbl_8047B0E8; i++) {
-        soundGetStatus(i);
+        GSsndGetStatus(i);
     }
     GSlogWrite(lbl_80273764);
 }
@@ -629,15 +629,15 @@ void* fn_80167BB0(u32 size)
     return 0;
 }
 
-void _gsdvdErrorTask_801879AC(void)
+void _gsdvdErrorTask(void)
 {
-    extern void _errorTask_State_None_80187B24(s32 state);
+    extern void _errorTask_State_None(s32 state);
     extern void _gsdvdError_MsgOpen(u32 message);
     s32 driveState = fn_80167E34();
 
     switch (lbl_8047B0F0) {
     case 0:
-        _errorTask_State_None_80187B24(driveState);
+        _errorTask_State_None(driveState);
         break;
     case 1:
         _gsdvdError_MsgOpen(lbl_80478C10);
@@ -698,7 +698,7 @@ void _gsdvdError_MsgOpen(u32 message)
     }
 }
 
-void _errorTask_State_None_80187B24(s32 state)
+void _errorTask_State_None(s32 state)
 {
     switch (state) {
     case -1:

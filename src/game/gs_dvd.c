@@ -8,7 +8,7 @@
  * 0x80167040 - 0x80168C64. Functions with real (symbols.txt) names -
  * e.g. _sndSetSampleDataUploadCallbackFunction, _sndCheckSndWorkALL,
  * _sndSetVolumeWork, _sndStopSE, _sndStopBGM, _sndInitStack,
- * _sndSetReverbParm, _sndInitParms, _gsdvdErrorTask_801879AC,
+ * _sndSetReverbParm, _sndInitParms, _gsdvdErrorTask,
  * _gsdvdError_MsgOpen, GSfilterCreate - confirm this is MusyX audio
  * runtime, matching the "people_field" precedent from a prior
  * campaign note (port from reference, don't brute-force). The many
@@ -128,7 +128,7 @@ void fn_80167FA4(void);
  *   lbl_80273764: "_sndCheckSndWorkALL:End"
  * ================================================================== */
 extern u32 lbl_8047B0E8;
-extern void soundGetStatus(u32 index);
+extern void GSsndGetStatus(u32 index);
 
 void _sndCheckSndWorkALL(void)
 {
@@ -136,7 +136,7 @@ void _sndCheckSndWorkALL(void)
 
     GSlogWrite(lbl_80273748);
     for (i = 0; i < lbl_8047B0E8; i++) {
-        soundGetStatus(i);
+        GSsndGetStatus(i);
     }
     GSlogWrite(lbl_80273764);
 }
@@ -490,7 +490,7 @@ s32 fn_80167ED0(GSDVDWork* work, void* addr, s32 length, s32 offset);
 GSDVDWork* fn_8016819C(void);
 void fn_8016821C(void);
 void* fn_8016824C(u32 size);
-void _gsdvdErrorTask_801879AC(void);
+void _gsdvdErrorTask(void);
 void fn_80167B70(void);
 void* fn_80167BB0(u32 size);
 void fn_80167E64(u8* file);
@@ -789,7 +789,7 @@ u32 fn_80167FA8(u32 workCount)
         destination[7] = 0;
     }
     DVDSetAutoFatalMessaging(TRUE);
-    GSgappCreate(1, 0x13, 0, _gsdvdErrorTask_801879AC);
+    GSgappCreate(1, 0x13, 0, _gsdvdErrorTask);
     return 1;
 }
 
@@ -1212,7 +1212,7 @@ void _sndInitParms(GSsndEntry* entry, GSsndWork* work)
 
 extern s32 lbl_8047B0F0;
 
-void _errorTask_State_None_80187B24(s32 state)
+void _errorTask_State_None(s32 state)
 {
     switch (state) {
     case -1:
@@ -1233,15 +1233,15 @@ void _errorTask_State_None_80187B24(s32 state)
     }
 }
 
-void _gsdvdErrorTask_801879AC(void)
+void _gsdvdErrorTask(void)
 {
-    extern void _errorTask_State_None_80187B24(s32 state);
+    extern void _errorTask_State_None(s32 state);
     extern void _gsdvdError_MsgOpen(u32 message);
     s32 driveState = fn_80167E34();
 
     switch (lbl_8047B0F0) {
     case 0:
-        _errorTask_State_None_80187B24(driveState);
+        _errorTask_State_None(driveState);
         break;
     case 1:
         _gsdvdError_MsgOpen(lbl_80478C10);

@@ -731,7 +731,7 @@ void GSmaterialInit(u32 count) {
 }
 
 extern u8 lbl_8036CB30[];
-void _GSmaterialObjInit_800EF33C(void) {
+void _GSmaterialObjInit(void) {
     hsdInitClassInfo(lbl_80315490, lbl_8036CB30, (void*)lbl_802705C0,
                      (void*)lbl_802705C0, 0x54, 0x24);
     *(void**)&lbl_80315490[0x40] = (void*)_matGSmatObjLoad;

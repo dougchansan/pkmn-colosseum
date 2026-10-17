@@ -222,7 +222,7 @@ void fn_8005DFC8(void* arg)
     extern u8 fn_80069048(void);
     extern u32 msgGetCharsPerFrame(void);
     extern s32 fn_800D37CC(void);
-    extern s32 soundGetStatus(u32);
+    extern s32 GSsndGetStatus(u32);
     extern s32 toolentryTaisenGetBattleType(void);
     extern u8 menuCBPokemonEntryGetReadFlag(void);
     extern void fn_80060A28(void);
@@ -322,7 +322,7 @@ void fn_8005DFC8(void* arg)
         break;
 
     case 0xA:
-        if (soundGetStatus(STATE_U32(0x3BC)) == 0) {
+        if (GSsndGetStatus(STATE_U32(0x3BC)) == 0) {
             STATE_U32(0x38) = 0xB;
         }
         break;

@@ -1,36 +1,36 @@
 /**
  * @file gs_pokemon_summary.c
- * @brief GSpokeSummary -- Pokemon summary screen and status display.
+ * @brief Bag (item pocket) menu: pocket pages, item lists and cursor marquee.
  *
  * Address range: 0x80015000 - 0x800181C4 (~30 functions)
  *
- * This module implements the Pokemon summary/status screen that displays
- * detailed information about a single Pokemon. It handles:
- *   - Multi-page summary display (Info, Moves, Stats, Ribbons, etc.)
- *   - Move detail popup with type/power/accuracy
- *   - Contest stat visualization
- *   - Ribbon collection display
- *   - Shadow Pokemon purification gauge
+ * Despite the file name, this is the bag menu, not a Pokemon summary screen:
+ * the 6-entry page table lbl_80266918 has one entry per pocket (data source,
+ * colours, drawPage callback, cursor/title message ids), the list pages read
+ * the player's items through heroHizukiItemGetItemAryPtr, and the selected
+ * row gets the same 45-dot chasing marquee as the shop menu
+ * (menuPocketDrawMarqueeFrame / menuPocketDrawMarqueeDot). menuPocket2NumCtrl
+ * follows this range.
  *
- * The summary screen operates as a sub-state of the party menu. When
- * the player selects "Summary" on a party Pokemon, this module takes
- * over rendering and input handling.
+ * NOTE: the per-function roles in the list below were early guesses and are
+ * mostly wrong (e.g. the "Summary" page names); prefer the names in
+ * config/GC6E01/symbols.txt.
  *
  * Key functions:
  *   fn_8001501C  GSpokeSummary_DrawLabel      -- 0x34 bytes, render text label
  *   fn_80015050  GSpokeSummary_DrawHandler     -- 0x94 bytes, invoke page draw handler
  *   fn_800150E4  GSpokeSummary_DrawPage        -- 0x290 bytes, main page renderer
- *   fn_80015374  GSpokeSummary_DrawMovePage     -- 0x23C bytes, move list page
+ *   menuPocketDrawNameList                    -- 0x23C bytes, names-only item-list page (pocket 1)
  *   fn_800155B0  GSpokeSummary_DrawStatsPage    -- 0x40C bytes, stat hexagon page
  *   fn_800159BC  GSpokeSummary_DrawRibbonPage   -- 0x480 bytes, ribbon collection
- *   fn_80015E3C  GSpokeSummary_ProcessInput     -- 0x374 bytes, input handler
+ *   menuPocketDrawItemList                    -- 0x374 bytes, item-list page draw (pockets 4/5)
  *   fn_800161B0  GSpokeSummary_PageTransition   -- 0x198 bytes, page flip animation
  *   fn_80016348  GSpokeSummary_UpdateCursor     -- 0x188 bytes, cursor movement
  *   fn_800164D0  GSpokeSummary_MoveDetail       -- 0x148 bytes, move detail popup
  *   fn_80016618  GSpokeSummary_GetPageCount     -- 0xA4 bytes, count available pages
  *   fn_800166BC  GSpokeSummary_SetupPage        -- 0x114 bytes, initialize page data
- *   fn_800167D0  GSpokeSummary_DrawTypeIcon     -- 0x2EC bytes, draw Pokemon type icon
- *   fn_80016ABC  GSpokeSummary_DrawStatBar      -- 0x458 bytes, draw stat bar graphic
+ *   menuPocketDrawMarqueeDot                  -- 0x2EC bytes, one dot of the cursor marquee
+ *   menuPocketDrawMarqueeFrame                -- 0x458 bytes, cursor placement + 45-dot marquee
  *   fn_80016F14  GSpokeSummary_DrawExpBar       -- 0x114 bytes, draw EXP bar
  *   fn_80017028  GSpokeSummary_DrawHPBar        -- 0x73C bytes, draw HP bar with color
  *   fn_80017764  GSpokeSummary_GetBarColor      -- 0x2C bytes, HP color threshold
@@ -475,7 +475,7 @@ s32 fn_800150E4(s32 x, s32 pageIndex, u16* packedRange) {
 #pragma pop
 #endif
 
-/* fn_80015374 - 0x80015374 | size: 0x23c */
+/* menuPocketDrawNameList - 0x80015374 | size: 0x23c */
 extern void* lbl_8047A2F8;
 extern const f32 lbl_8047B748;
 extern u32 lbl_8047A2D0;
@@ -487,7 +487,7 @@ asm void fn_80015374(void) {
 #else
 #pragma push
 #pragma peephole off
-s32 fn_80015374(s32 x, s32 pageIndex, u16* packedRange) {
+s32 menuPocketDrawNameList(s32 x, s32 pageIndex, u16* packedRange) {
     s32 validCount;
     s32 itemIndex;
     s32 displayLine;
@@ -705,7 +705,7 @@ s32 fn_800159BC(s32 x, s32 pageIndex, u16* packedRange) {
 #pragma pop
 #endif
 
-/* fn_80015E3C - 0x80015E3C | size: 0x374 */
+/* menuPocketDrawItemList - 0x80015E3C | size: 0x374 */
 extern void* lbl_8047A2F8;
 extern const f32 lbl_8047B748;
 extern u32 lbl_8047A2D0;
@@ -717,7 +717,7 @@ asm void fn_80015E3C(void) {
 #else
 #pragma push
 #pragma peephole off
-s32 fn_80015E3C(s32 x, s32 pageIndex, u16* packedRange) {
+s32 menuPocketDrawItemList(s32 x, s32 pageIndex, u16* packedRange) {
     s32 validCount;
     s32 itemIndex;
     s32 displayLine;
@@ -1010,7 +1010,7 @@ s32 fn_800166BC(SummaryPageContext* ctx, u8* item) {
 #endif /* 0x800166BC - 0x800167D0 */
 
 #if !defined(GS_POKEMON_SUMMARY_ISLAND)
-/* fn_800167D0 - 0x800167D0 | size: 0x2ec */
+/* menuPocketDrawMarqueeDot - 0x800167D0 | size: 0x2ec */
 extern void fn_800CDBE0(void);
 extern void fn_800CE148(void);
 extern const f32 lbl_8047B748;
@@ -1027,7 +1027,7 @@ asm void fn_800167D0(void) {
 #else
 #pragma push
 #pragma peephole off
-void fn_800167D0(u8* owner, u8* item, f32 phase, u16 iconId, u8 alpha) {
+void menuPocketDrawMarqueeDot(u8* owner, u8* item, f32 phase, u16 iconId, u8 alpha) {
     f32 stops[5];
     f32 width;
     f32 height;
@@ -1084,8 +1084,8 @@ void fn_800167D0(u8* owner, u8* item, f32 phase, u16 iconId, u8 alpha) {
 
 #if !defined(GS_POKEMON_SUMMARY_ISLAND) || defined(GS_POKEMON_SUMMARY_80016ABC_ONLY)
 /* Defined in the preceding region, which the 80016ABC carve leaves out. */
-void fn_800167D0(u8* owner, u8* item, f32 phase, u16 iconId, u8 alpha);
-/* fn_80016ABC - 0x80016ABC | size: 0x458 */
+void menuPocketDrawMarqueeDot(u8* owner, u8* item, f32 phase, u16 iconId, u8 alpha);
+/* menuPocketDrawMarqueeFrame - 0x80016ABC | size: 0x458 */
 extern u32 lbl_8047A2D8;
 extern u32 lbl_8047A2E8;
 extern u32 lbl_8047A2C8;
@@ -1143,7 +1143,7 @@ static inline void SummaryDrawGaugeRing(SummaryPageContext* ctx, u8* item, f32 p
     s32 i;
 
     for (i = 0; i < 0x2D; i++) {
-        fn_800167D0((u8*)ctx, item, phase, 0xD1, 255.0f * ((f32)i / 45.0f));
+        menuPocketDrawMarqueeDot((u8*)ctx, item, phase, 0xD1, 255.0f * ((f32)i / 45.0f));
         phase += step;
         if (phase >= 1.0f) {
             phase -= 1.0f;
@@ -1152,7 +1152,7 @@ static inline void SummaryDrawGaugeRing(SummaryPageContext* ctx, u8* item, f32 p
 }
 
 /* Built with -opt nopeephole and -fp_contract off for the whole carve (configure.py). */
-s32 fn_80016ABC(SummaryPageContext* ctx, u8* item) {
+s32 menuPocketDrawMarqueeFrame(SummaryPageContext* ctx, u8* item) {
     f32 step;
 
     if ((s32)lbl_8047A2D8 != -1) {

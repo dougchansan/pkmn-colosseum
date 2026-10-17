@@ -43,10 +43,10 @@
  *   fn_800216E8  GStitle_NameEntry            -- 0x1D4 bytes, player name input screen
  *   fn_800218BC  GStitle_NameEntryInput       -- 0x1E0 bytes, keyboard input handler
  *   fn_80021A9C  GStitle_NameEntryConfirm     -- 0x78 bytes, confirm name
- *   fn_80021B14  GStitle_NameEntryDraw        -- 0x53C bytes, render keyboard UI
+ *   fn_80021B14  (item-use handler)           -- 0x53C bytes, field item use on a party Pokemon (see note at definition)
  *   fn_80022050  GStitle_DrawKeyboard         -- 0x12C bytes, keyboard grid
  *   fn_8002217C  GStitle_DrawNamePreview      -- 0x2FC bytes, live name preview
- *   fn_80022478  GStitle_DrawCaseSwitch       -- 0x2A8 bytes, upper/lower case switch
+ *   fn_80022478  (item-use handler)           -- 0x2A8 bytes, field item use dispatch (see note at definition)
  *   fn_80022720  GStitle_CameraFlythrough     -- 0x114 bytes, title camera movement
  *   fn_80022834  GStitle_CameraInterpolate    -- 0x308 bytes, camera spline interp
  *   fn_80022B3C  GStitle_ParticleEffects      -- 0x318 bytes, title particle system
@@ -3125,7 +3125,23 @@ s32 fn_80021A9C(u32 r3, u32* r4) {
 }
 #endif
 
-/* fn_80021B14 - 0x80021B14 | size: 0x53c */
+/* fn_80021B14 - 0x80021B14 | size: 0x53c
+ *
+ * Field item-use handler: dispatches on itemParamGetRecoverType() of the
+ * current item, applies it to the chosen party Pokemon and reports through
+ * the message window; returns 0 when the item was used (and sets *arg1).
+ *
+ * STATUS (99.82%, one instruction): the 0/1 `result` of the 3..11 case.
+ * Retail builds it in r0 at a join and returns it with `mr r3,r0`; a u8
+ * result gives `clrlwi r3,r0,24` and any 32-bit result is coalesced into r3.
+ * Ruled out: every result/return type, declaration position, if/else /
+ * goto / ternary / shared-return forms, whole-case and tail inline helpers,
+ * C++, peephole and compiler version. The only other function with this
+ * join is fn_8010A210, where it comes from a u8 result fed by two
+ * expansions of a multi-return inline (faceKeyEqual), so the original
+ * probably used a shared inline helper here too (fn_80022478 ends the same
+ * way). Details: Working/refs/upstream-matches-leftovers.tsv.
+ */
 extern void fn_80142EF8(void);
 extern void fn_801431AC(void);
 extern s32 fn_80014110(void);
@@ -3476,7 +3492,11 @@ s32 fn_8002217C(u32 wazaDataId, u32* result) {
     return 1;
 }
 
-/* fn_80022478 - 0x80022478 | size: 0x2a8 */
+/* fn_80022478 - 0x80022478 | size: 0x2a8
+ *
+ * Field item-use handler with the same 0/1 result tail as fn_80021B14
+ * (retail `mr r3,r0`, ours `clrlwi`); see the STATUS note there.
+ */
 extern void jumptable_802E4F00();
 extern u8 lbl_80478888[8];
 extern s32 fn_80023068(u32, u32*);
@@ -3750,7 +3770,7 @@ s32 fn_80022834(u32 arg0, u32* arg1) {
 /* fn_80022B3C - 0x80022B3C | size: 0x318 */
 extern u16 pokemonDataBiosGetVoice(void);
 extern void soundStartSE(s32);
-extern s32 soundGetStatus(s32);
+extern s32 GSsndGetStatus(s32);
 extern void fn_80121B4C(s32, s32);
 extern void pokemonAddDpFormPokemonDpFilterId(s32, s32, s32);
 extern u8 lbl_80266C30[];
@@ -3828,7 +3848,7 @@ s32 std163_useCologne(s32 arg0, s32 arg1) {
         voice = pokemonDataBiosGetVoice(bios);
         soundStartSE(voice);
     }
-    while (soundGetStatus(voice) == 2) {
+    while (GSsndGetStatus(voice) == 2) {
         _threadSwitch();
     }
 

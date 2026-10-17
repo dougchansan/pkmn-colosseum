@@ -563,8 +563,8 @@ u8 fn_801DD5E8(void* effect, u8* resource) {
     extern void DCFlushRange(void* addr, s32 len);
     extern int wazaSequenceSysGetResID(void);
     extern void loadParticle(void* resource, u32 size, u32 group, u32 handle);
-    extern void fn_801013A0(u32 model, u32 group, u32 resource, u32 handle);
-    extern void fn_8010147C(void* resource, u32 size, u32 group, u32 handle);
+    extern void loadModel(u32 model, u32 group, u32 resource, u32 handle);
+    extern void loadArchivePtr(void* resource, u32 size, u32 group, u32 handle);
     extern void* GSresGetResource(u32 group, u32 resource);
     extern const f32 lbl_8047E3B8;
 
@@ -639,9 +639,9 @@ u8 fn_801DD5E8(void* effect, u8* resource) {
         workBase = fn_800E27B0(*(u16*)(sequence + 0x7C));
         memcpy(workBase, resource, (header->mainSize + 0x1F) & ~0x1F);
         DCFlushRange(workBase, (header->mainSize + 0x1F) & ~0x1F);
-        fn_8010147C(workBase, header->mainSize, 0x4E20, modelResId);
+        loadArchivePtr(workBase, header->mainSize, 0x4E20, modelResId);
     } else {
-        fn_8010147C(resource, header->mainSize, 0x4E20, modelResId);
+        loadArchivePtr(resource, header->mainSize, 0x4E20, modelResId);
     }
 
     if (GSresGetResource(0x4E20, modelResId) == NULL) {
@@ -649,7 +649,7 @@ u8 fn_801DD5E8(void* effect, u8* resource) {
     }
     *(u32*)(sequence + 0x8) = modelResId;
 
-    fn_801013A0((u32)GSresGetResource(0x4E20, modelResId), 0x4E20, 0,
+    loadModel((u32)GSresGetResource(0x4E20, modelResId), 0x4E20, 0,
                 animResId);
     if (GSresGetResource(0x4E20, animResId) == NULL) {
         return FALSE;

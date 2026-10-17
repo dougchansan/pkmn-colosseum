@@ -87,7 +87,7 @@ extern void fn_800EC990(void*);
 extern void fn_800ECB74(void*, u32);
 extern u8 fn_800EC960(void*);
 extern void soundStartSE();
-extern s32 soundGetStatus();
+extern s32 GSsndGetStatus();
 
 extern void GScharLenCpy(void*, const void*, u32);
 extern u16 fn_800E2C04(u32, u32);
@@ -164,7 +164,6 @@ s32 menuCardE_CompareEntryPtrs(u32 r3, u32 r4) {
 #endif
 
 extern void GScharCpy(void* dst, const void* src);
-extern const u8 lbl_80268DC0[];
 extern const u8 lbl_80478948[8];
 extern u8 fn_8008102C(void** object_ref, const u32* descriptor, s32 index,
                       s32 value, const char* text, s32 subindex);
@@ -1833,7 +1832,7 @@ u8 fn_8008102C(void** object_ref, const u32* descriptor, s32 index,
 #define card (*(CardERecordData**)object_ref)
     u32 field = descriptor[0];
 #if !defined(CARDESAVEDATA_DECODE_TU)
-    const u8* table = lbl_80268DC0;
+    const u8* table = (const u8*)sCardEHeaderFields;
 #endif
 
     s32 i;
@@ -4097,7 +4096,7 @@ u32 fn_80087C64(const u16* expected)
                 if (count >= 3) {
                     if (cardGridCountMatches(data->tiles, occupied, expected) < 3) {
                         soundStartSE(0x26);
-                        while (soundGetStatus(0x26) == 2) {
+                        while (GSsndGetStatus(0x26) == 2) {
                             _threadSwitch();
                         }
                         cardGridResetAll(data, occupied);
@@ -4105,7 +4104,7 @@ u32 fn_80087C64(const u16* expected)
                         cardGridShowCount(count);
                     } else {
                         soundStartSE(0x4A1);
-                        while (soundGetStatus(0x4A1) == 2) {
+                        while (GSsndGetStatus(0x4A1) == 2) {
                             _threadSwitch();
                         }
                     }

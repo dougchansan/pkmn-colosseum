@@ -1558,7 +1558,7 @@ u32 fn_8004CDD8(u8* context, u8* object)
 extern u8* windowGetKeyInfo(void);
 extern void soundStart(s32 id, s32 a, s32 b, s32 c);
 extern u32 fn_801D1650(u8 index);
-extern void soundGetStatus(u32 id);
+extern void GSsndGetStatus(u32 id);
 extern void soundKill(u32 id);
 extern void fn_801654E0(u32 id, u32 buffer, u32 size);
 extern void soundAttachWork(u32 id, u32 arg1, u32 arg2);
@@ -1581,7 +1581,7 @@ u32 fn_8004DDC0(u8* context)
     if (lbl_8047A520 != 0) {
         soundId = fn_801D1650(lbl_8047A524);
         if (soundId != 0) {
-            soundGetStatus(soundId);
+            GSsndGetStatus(soundId);
         }
         soundId = fn_801D1650(lbl_8047A524);
         if (soundId != 0) {
@@ -1668,7 +1668,7 @@ u8 fn_8004DFCC(u8 initialSelection)
     }
     soundId = fn_801D1650(lbl_8047A524);
     if (soundId != 0) {
-        soundGetStatus(soundId);
+        GSsndGetStatus(soundId);
     }
     soundId = fn_801D1650(lbl_8047A524);
     if (soundId != 0) {

@@ -169,6 +169,21 @@ config.sjiswrap_path = args.sjiswrap
 config.config_path = Path("config") / config.version / "config.yml"
 config.check_sha_path = Path("config") / config.version / "build.sha1"
 config.force_active_symbols["main"] = [
+    # game/data/{bss,sdata,sbss}_*.c: retail variables that nothing in
+    # main.dol references; compiled from source they would be dead-stripped
+    # and the rest of the section would move.
+    "lbl_803FC3D0",
+    "lbl_803FCE04",
+    "lbl_8047899C",
+    "lbl_80478A64",
+    "lbl_8047A6FC",
+    "lbl_8047A834",
+    "lbl_8047A8E4",
+    "lbl_8047A8EC",
+    "lbl_8047A8F4",
+    "lbl_8047A8FC",
+    "lbl_8047A904",
+    "lbl_8047B1A1",
     # game/gba/gba_conv_candidate_80088F58.c: debug-tool callbacks with no
     # reference in main.dol; compiled from source they would be dead-stripped.
     "fn_80088F58",
@@ -2485,6 +2500,8 @@ config.libs = [
                         in {
                             "game/wazaViewer_candidate_801D5464.c",
                             "game/wazaViewer_candidate_801D56B0.c",
+                            "game/wazaViewer_exact_801D5A94.c",
+                            "game/wazaViewer_candidate_801D5DA0.c",
                         }
                         else "GC/1.3"
                     ),
@@ -2497,6 +2514,8 @@ config.libs = [
                     (Matching, "game/wazaViewer_exact_801D53D8.c"),
                     (Matching, "game/wazaViewer_candidate_801D5464.c"),
                     (CodeCandidate, "game/wazaViewer_candidate_801D56B0.c"),
+                    (Matching, "game/wazaViewer_exact_801D5A94.c"),
+                    (CodeCandidate, "game/wazaViewer_candidate_801D5DA0.c"),
                     (Matching, "game/wazaViewer_exact_801D744C.c"),
                     (CodeCandidate, "game/wazaViewer_candidate_801D7464.c"),
                 ]
@@ -7890,9 +7909,11 @@ config.libs = [
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
+            # TEMPORARY constant_import
             Object(
-                CodeCandidate,
-                "game/menuShop_r40_8002B880_gc125n.c",
+                Matching,
+                "game/menuShop_island_8002B880.c",
+                constant_import=[{"symbol": "lbl_8047B998", "offset": 0, "expected": "4330000080000000"}],
                 mw_version="GC/1.3",
                 extra_cflags=[
                     "-use_lmw_stmw on",
@@ -9931,6 +9952,15 @@ config.libs = [
                     (CodeCandidate, "game/menuShop_candidate_8002B1A0.c"),
                 ]
             ],
+            # TEMPORARY constant_import
+            Object(
+                Matching,
+                "game/menuShop_island_8002B594.c",
+                constant_import=[{"symbol": "lbl_8047B998", "offset": 0, "expected": "4330000080000000"}],
+                mw_version="GC/1.3",
+                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                progress_category="game",
+            ),
             Object(
                 Matching,
                 "game/menuPokemonChange_r51_8002DD24_o4s.c",
@@ -11382,6 +11412,230 @@ config.libs = [
                 progress_category="game",
             ),
             Object(
+                Matching,
+                "game/data/data_802E4B78.c",
+                extra_cflags=["-sdata 0", "-sdata2 0"],
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/data_803119B8.c",
+                extra_cflags=["-sdata 0", "-sdata2 0"],
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/data_80311CB8.c",
+                extra_cflags=["-sdata 0", "-sdata2 0"],
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/data_803127A8.c",
+                extra_cflags=["-sdata 0", "-sdata2 0"],
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/data_8035B3F0.c",
+                extra_cflags=["-sdata 0", "-sdata2 0"],
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/data_8035B448.c",
+                extra_cflags=["-sdata 0", "-sdata2 0"],
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/data_8035B950.c",
+                extra_cflags=["-sdata 0", "-sdata2 0"],
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/data_8036DCA8.c",
+                extra_cflags=["-sdata 0", "-sdata2 0"],
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/data_8039A690.c",
+                extra_cflags=["-sdata 0", "-sdata2 0"],
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/data_8039A6C8.c",
+                extra_cflags=["-sdata 0", "-sdata2 0"],
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/bss_803FB380.c",
+                extra_cflags=["-sdata 0", "-sdata2 0"],
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/bss_803FB538.c",
+                extra_cflags=["-sdata 0", "-sdata2 0"],
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/bss_803FC360.c",
+                extra_cflags=["-sdata 0", "-sdata2 0"],
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/bss_803FC840.c",
+                extra_cflags=["-sdata 0", "-sdata2 0"],
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/bss_803FCDD8.c",
+                extra_cflags=["-sdata 0", "-sdata2 0"],
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/bss_804001B0.c",
+                extra_cflags=["-sdata 0", "-sdata2 0"],
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/bss_80400948.c",
+                extra_cflags=["-sdata 0", "-sdata2 0"],
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/bss_804011B8.c",
+                extra_cflags=["-sdata 0", "-sdata2 0"],
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/bss_80478800.c",
+                extra_cflags=["-sdata 0", "-sdata2 0"],
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sdata_80478998.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sdata_804789B0.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sdata_804789C0.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sdata_80478A08.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sdata_80478AC0.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sdata_80478AE0.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sdata_80478AF8.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sdata_80478B08.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sdata_80478C08.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sdata_80478C40.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sdata_80478CA8.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sbss_8047A6E8.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sbss_8047A778.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sbss_8047A7D8.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sbss_8047A8A0.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sbss_8047A9F8.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sbss_8047AF60.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sbss_8047AFE8.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sbss_8047B1A0.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sbss_8047B1F8.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sbss_8047B260.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sbss_8047B678.c",
+                progress_category="game",
+            ),
+            Object(
                 DataCandidate,
                 "game/data/bss_803A6498.c",
                 progress_category="game",
@@ -12374,8 +12628,21 @@ config.libs = [
         "common_rel",
         [
             Object(Matching, "rel/common_rel/common_rel.c"),
+            Object(Matching, "rel/common_rel/const_data.c"),
+            Object(Matching, "rel/common_rel/msg_face_data.c"),
+            Object(Matching, "rel/common_rel/table_res_data.c"),
+            Object(Matching, "rel/common_rel/floor_fight_data.c"),
+            Object(Matching, "rel/common_rel/fight_trainer_data.c"),
             Object(Matching, "rel/common_rel/snd_song_table.c"),
+            Object(Matching, "rel/common_rel/gs_task_data.c"),
+            Object(Matching, "rel/common_rel/fight_ai_data.c"),
+            Object(Matching, "rel/common_rel/treasure_data.c"),
+            Object(Matching, "rel/common_rel/waza_data.c"),
+            Object(Matching, "rel/common_rel/pokemon_data.c"),
+            Object(Matching, "rel/common_rel/people_data.c"),
+            Object(Matching, "rel/common_rel/snd_volume_data.c"),
             Object(Matching, "rel/common_rel/snd_sample_table.c"),
+            Object(Matching, "rel/common_rel/misc_data.c"),
         ],
     ),
     # REL 1 (mail, common.fsys member 1)

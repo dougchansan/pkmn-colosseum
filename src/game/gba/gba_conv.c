@@ -4475,7 +4475,7 @@ L_80087B3C:
 
 /* 0x80087C64 | size: 0x7C4 */
 void fn_80087C64(void) {
-    extern void soundGetStatus();
+    extern void GSsndGetStatus();
     extern void soundStartSE();
     u8 sp[0x1C0];
     u32 tmp = 0;
@@ -4697,7 +4697,7 @@ void fn_80087C64(void) {
                         soundStartSE();
                         while (1) {
                             r3 = 0x26;
-                            soundGetStatus();
+                            GSsndGetStatus();
                             if ((s32)r3 != 2) break;
                             ((void(*)(void))_threadSwitch)();
 
@@ -4789,7 +4789,7 @@ void fn_80087C64(void) {
                 soundStartSE();
                 while (1) {
                     r3 = 0x4a1;
-                    soundGetStatus();
+                    GSsndGetStatus();
                     if ((s32)r3 != 2) break;
                     ((void(*)(void))_threadSwitch)();
 

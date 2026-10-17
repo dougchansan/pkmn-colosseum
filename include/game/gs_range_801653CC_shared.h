@@ -184,7 +184,7 @@ u32 fn_801664F0(const GSvec* position);
 u32 fn_80166578(const GSvec* position, const GSvec* arg1, const GSvec* arg2, const GSvec* arg3, f32 arg4, f32 arg5,
                 f32 arg6, u32 arg7);
 u32 soundSetVolume(u32 id, u32 volume, u32 arg2);
-s32 soundGetStatus(u32 id);
+s32 GSsndGetStatus(u32 id);
 u32 soundResumeSong(u32 id, u32 volume, u32 arg2);
 u32 soundPauseSong(u32 id, u32 volume, u32 arg2);
 void soundStopRaw(u32 id, u32 arg1, u32 arg2);

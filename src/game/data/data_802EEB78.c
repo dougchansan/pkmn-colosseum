@@ -53,7 +53,7 @@ extern u8 fn_80092664[];
 extern u8 fn_800929BC[];
 extern u8 fn_80092B2C[];
 extern u8 fn_800937F4[];
-extern u8 fn_8009567C[];
+extern u8 menuStatusDrawPokemonInfo[];
 extern u8 fn_80096D54[];
 extern u8 fn_80096FA0[];
 
@@ -271,12 +271,12 @@ u8 lbl_802EF000[28] = {
 };
 
 void* jumptable_802EF01C[7] = {
-    (void*)((u8*)fn_8009567C + 0x834),
-    (void*)((u8*)fn_8009567C + 0x83C),
-    (void*)((u8*)fn_8009567C + 0x844),
-    (void*)((u8*)fn_8009567C + 0x84C),
-    (void*)((u8*)fn_8009567C + 0x854),
-    (void*)((u8*)fn_8009567C + 0x85C),
-    (void*)((u8*)fn_8009567C + 0x864),
+    (void*)((u8*)menuStatusDrawPokemonInfo + 0x834),
+    (void*)((u8*)menuStatusDrawPokemonInfo + 0x83C),
+    (void*)((u8*)menuStatusDrawPokemonInfo + 0x844),
+    (void*)((u8*)menuStatusDrawPokemonInfo + 0x84C),
+    (void*)((u8*)menuStatusDrawPokemonInfo + 0x854),
+    (void*)((u8*)menuStatusDrawPokemonInfo + 0x85C),
+    (void*)((u8*)menuStatusDrawPokemonInfo + 0x864),
 };
 

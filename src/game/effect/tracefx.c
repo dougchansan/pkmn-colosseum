@@ -69,9 +69,9 @@ extern void* fn_800E27B0(u16 handle);                   /* GSmemGetPtr */
 extern void  fn_800E24B0(u16 handle);                   /* GSmemLock/free step */
 extern void  fn_800E209C(u16 handle);                   /* GSmemFree */
 extern u32   wazaSequenceSysGetResID(void);                          /* Random seed generator */
-extern void  fn_8010147C(u32 memOffset, u32 resId,
+extern void  loadArchivePtr(u32 memOffset, u32 resId,
                           u32 size, u32 handle);         /* GSfloor load resource */
-extern void  fn_801013A0(u32 memOffset, u32 size,
+extern void  loadModel(u32 memOffset, u32 size,
                           u32 data, u32 handle);         /* GSfloor load data */
 extern void  memset(void* dst, u32 val, u32 size);
 extern void  GXDrawDone(void);
@@ -275,9 +275,9 @@ u8* fn_801364A8(u8* work, u8* params) {
         {
             void* model;
 
-            fn_8010147C((u32)cursor, *(s32*)(params + 0x34), 0x4E20, *(u16*)(work + 0x4A));
+            loadArchivePtr((u32)cursor, *(s32*)(params + 0x34), 0x4E20, *(u16*)(work + 0x4A));
             model = GSresGetResource(0x4E20, *(u16*)(work + 0x4A));
-            fn_801013A0((u32)model, 0x4E20, 0, *(u16*)(work + 0x4C));
+            loadModel((u32)model, 0x4E20, 0, *(u16*)(work + 0x4C));
             model = GSresGetResource(0x4E20, *(u16*)(work + 0x4C));
             if (model != 0) {
                 GSmodelSetVisibility(model, 0);
@@ -320,9 +320,9 @@ u8* fn_801364A8(u8* work, u8* params) {
         {
             void* model;
 
-            fn_8010147C((u32)aligned, *(s32*)(params + 0x2C), 0x4E20, *(u32*)(work + 0x60));
+            loadArchivePtr((u32)aligned, *(s32*)(params + 0x2C), 0x4E20, *(u32*)(work + 0x60));
             model = GSresGetResource(0x4E20, *(u32*)(work + 0x60));
-            fn_801013A0((u32)model, 0x4E20, 0, *(u32*)(work + 0x5C));
+            loadModel((u32)model, 0x4E20, 0, *(u32*)(work + 0x5C));
             model = GSresGetResource(0x4E20, *(u32*)(work + 0x5C));
             if (model != 0) {
                 GSmodelSetVisibility(model, 0);
@@ -423,9 +423,9 @@ u8* fn_801364A8(u8* work, u8* params) {
 
             *(u32*)(work + 0x0C) = wazaSequenceSysGetResID();
             *(u32*)(work + 0x10) = wazaSequenceSysGetResID();
-            fn_8010147C((u32)cursor, *(s32*)(params + 0x00), 0x4E20, *(u32*)(work + 0x0C));
+            loadArchivePtr((u32)cursor, *(s32*)(params + 0x00), 0x4E20, *(u32*)(work + 0x0C));
             model = GSresGetResource(0x4E20, *(u32*)(work + 0x0C));
-            fn_801013A0((u32)model, 0x4E20, 0, *(u32*)(work + 0x10));
+            loadModel((u32)model, 0x4E20, 0, *(u32*)(work + 0x10));
             model = GSresGetResource(0x4E20, *(u32*)(work + 0x10));
             if (model != 0) {
                 GSmodelSetVisibility(model, 0);
@@ -595,9 +595,9 @@ u8* fn_8013735C(u8* work, void* params, s32 frames) {
     *(u32*)(work + 0x7c) = wazaSequenceSysGetResID();
     *(u32*)(work + 0x78) = wazaSequenceSysGetResID();
 
-    fn_8010147C((u32)params, *(u32*)(p + 0x38), 0x4e20, *(u32*)(work + 0x7c));
+    loadArchivePtr((u32)params, *(u32*)(p + 0x38), 0x4e20, *(u32*)(work + 0x7c));
     model = GSresGetResource(0x4e20, *(u32*)(work + 0x7c));
-    fn_801013A0((u32)model, 0x4e20, 0, *(u32*)(work + 0x78));
+    loadModel((u32)model, 0x4e20, 0, *(u32*)(work + 0x78));
     model = GSresGetResource(0x4e20, *(u32*)(work + 0x78));
     if (model != NULL) {
         GSmodelSetVisibility(model, 0);

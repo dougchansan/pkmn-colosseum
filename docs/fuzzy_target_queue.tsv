@@ -177,7 +177,7 @@ headroom_bytes	size	fuzzy_pct	function	unit	source_path	pp_value
 1192.0	1192	0.0	fn_801AE008	main/hsd/hsd_robj_range_801AE008		0.04777
 1180.0	1184	0.34	fn_801DF790	main/game/field_range_801DF790	src/game/field_range_801DF790.c	0.04729
 1176.0	1176	0.0	fn_8003842C	main/game/menu/pda_range_80037158	src/game/menu/pda_range_80037158.c	0.04713
-1168.0	1172	0.34	fn_8010147C	main/game/gs_floor	src/game/gs_floor.c	0.04681
+1168.0	1172	0.34	loadArchivePtr	main/game/gs_floor	src/game/gs_floor.c	0.04681
 1168.0	1168	0.0	fn_80060434	main/game/menu/menuCB_BattleStart	src/game/menu/menuCB_BattleStart.c	0.04681
 1162.1	2916	60.15	fn_8007B6D8	main/game/menu/menu_range_8007109C	src/game/menu/menu_range_8007109C.c	0.04658
 1140.0	1140	0.0	fn_800484A4	main/game/menu/pda_range_80037158	src/game/menu/pda_range_80037158.c	0.04569
@@ -1002,7 +1002,7 @@ headroom_bytes	size	fuzzy_pct	function	unit	source_path	pp_value
 328.0	328	0.0	fn_800B4C7C	main/dolphin/sdk_candidate_800B4644	src/dolphin/sdk_candidate_800B4644.c	0.01315
 328.0	328	0.0	fn_800753D0	main/game/menu/menu_range_8007109C	src/game/menu/menu_range_8007109C.c	0.01315
 328.0	328	0.0	fn_80061A2C	main/game/menu/menuCB_BattleStart	src/game/menu/menuCB_BattleStart.c	0.01315
-328.0	328	0.0	_gsdvdErrorTask_801879AC	main/game/gs_dvd_candidate_80167040	src/game/gs_dvd_candidate_80167040.c	0.01315
+328.0	328	0.0	_gsdvdErrorTask	main/game/gs_dvd_candidate_80167040	src/game/gs_dvd_candidate_80167040.c	0.01315
 326.1	1324	75.37	fn_8010D8D4	main/game/gs_range_8010CBD0	src/game/gs_range_8010CBD0.c	0.01307
 326.1	540	39.61	menuFightOpenTarget	main/game/menuFight	src/game/menuFight.c	0.01307
 325.5	416	21.75	fn_8013E8A4	main/game/effect/effect_visual_candidate_8013E8A4	src/game/effect/effect_visual_candidate_8013E8A4.c	0.01305
@@ -1285,7 +1285,7 @@ headroom_bytes	size	fuzzy_pct	function	unit	source_path	pp_value
 218.6	564	61.25	fn_80030574	main/game/gs_npc_event_candidate_8003037C	src/game/gs_npc_event_candidate_8003037C.c	0.00876
 218.1	556	60.77	fn_800F8428	main/game/gs_thread_hi_range_800F8268	src/game/gs_thread_hi_range_800F8268.c	0.00874
 217.6	484	55.05	fn_8008AC34	main/game/gba/gba_misc_candidate_8008ABE4	src/game/gba/gba_misc_candidate_8008ABE4.c	0.00872
-216.0	220	1.82	fn_801013A0	main/game/gs_floor	src/game/gs_floor.c	0.00866
+216.0	220	1.82	loadModel	main/game/gs_floor	src/game/gs_floor.c	0.00866
 216.0	216	0.0	OSLoadContext	main/dolphin/os/OSContext		0.00866
 214.8	1232	82.56	MObjUpdateFunc	main/hsd/hsd_mobj_candidate_801A7E84	src/hsd/hsd_mobj_candidate_801A7E84.c	0.00861
 214.7	228	5.84	DVDChangeDisk	main/dolphin/dvd/DVD_range_800A60D4	src/dolphin/dvd/DVD_range_800A60D4.c	0.0086
@@ -1335,7 +1335,7 @@ headroom_bytes	size	fuzzy_pct	function	unit	source_path	pp_value
 184.0	188	2.13	fn_801DE598	main/game/sequence_candidate_801DE190	src/game/sequence_candidate_801DE190.c	0.00737
 182.1	300	39.29	fn_8006A990	main/game/menu/menu_middle_range_8006A990	src/game/menu/menu_middle_range_8006A990.c	0.0073
 181.1	932	80.57	menuNameEntryCursor	main/game/menuNameEntry	src/game/menuNameEntry.c	0.00726
-180.0	184	2.17	fn_801012E8	main/game/gs_floor	src/game/gs_floor.c	0.00721
+180.0	184	2.17	loadCamera	main/game/gs_floor	src/game/gs_floor.c	0.00721
 178.1	400	55.48	fn_8002717C	main/game/menuNameEntry	src/game/menuNameEntry.c	0.00714
 177.9	296	39.91	fightTrainerAiWazaHit192	main/game/fight_trainer_ai_waza_hit_candidate_802546E8	src/game/fight_trainer_ai_waza_hit_candidate_802546E8.c	0.00713
 177.4	568	68.77	fn_8007D564	main/game/menu/menu_carde_matrix	src/game/menu/menu_carde_matrix.c	0.00711
@@ -1555,7 +1555,7 @@ headroom_bytes	size	fuzzy_pct	function	unit	source_path	pp_value
 96.0	100	4.0	fadeSetEX	main/game/effect/fade	src/game/effect/fade.c	0.00385
 96.0	96	0.0	fn_801BFCB0	main/hsd/hsd_video	src/hsd/hsd_video.c	0.00385
 96.0	96	0.0	fn_801AFFE0	main/hsd/hsd_robj_range_801AEBE4		0.00385
-96.0	96	0.0	_errorTask_State_None_80187B24	main/game/gs_dvd_candidate_80167040	src/game/gs_dvd_candidate_80167040.c	0.00385
+96.0	96	0.0	_errorTask_State_None	main/game/gs_dvd_candidate_80167040	src/game/gs_dvd_candidate_80167040.c	0.00385
 95.4	1336	92.86	fightFloorCmpfightOutPokemonNimbleness	main/game/fight_floor_candidate_801F3BB4	src/game/fight_floor_candidate_801F3BB4.c	0.00382
 94.5	1204	92.15	fn_8015DEC0	main/musyx/musyx_candidate_8015D678	src/musyx/musyx_candidate_8015D678.c	0.00379
 94.5	420	77.5	_fightActionFlowAllFightOutPokemonDoFightActionOneLoop__FP11FIGHT_FLOORUc	main/game/fight_action_candidate_8020B058	src/game/fight_action_candidate_8020B058.c	0.00379

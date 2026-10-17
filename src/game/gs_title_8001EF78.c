@@ -64,7 +64,7 @@ extern u8 lbl_8047A34C;
 
 extern s32 fn_800D37CC(void);
 extern u32 msgGetCharsPerFrame(void);
-extern s32 soundGetStatus(s32 id);
+extern s32 GSsndGetStatus(s32 id);
 extern u32 fn_800F7AF0(s32 pad);
 extern u32 fn_800F7BC4(s32 pad);
 extern u8* windowGetKeyInfo(void);
@@ -173,7 +173,7 @@ void fn_8001EF78(void)
         return;
     }
     lbl_8047A334 += lbl_8047A344;
-    if (soundGetStatus(0x46A) == 0) {
+    if (GSsndGetStatus(0x46A) == 0) {
         lbl_8047A334 = 0.0f;
         if (lbl_8047A31C != 0x3E8) {
             lbl_8047A31C = 0x28;

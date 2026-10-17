@@ -6,7 +6,7 @@
  * list data, skinning (rigid, envelope, shape animation), and
  * rendering dispatch.
  *
- * Colosseum address range: 0x801AA608 (HSD_PObjInit)
+ * Colosseum address range: 0x801AA608 (PObjInfoInit)
  * Adapted from the Melee decompilation (doldecomp/melee).
  */
 #ifndef HSD_POBJ_H

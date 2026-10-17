@@ -65,14 +65,17 @@ void exribbonInit(u8* data)
 #endif
 
 #if !defined(GS_RANGE_80265EC4_SPLIT) || defined(GS_RANGE_80265F94_SUFFIX)
-/* Address: 0x80265F94 | Size: 0x2BC | Ghidra import */
-void fn_80265F94(int r3)
+/* Address: 0x80265F94 | Size: 0x2BC | Ghidra import
+ * d2present gift scene: effect on the gift Pokemon, fade in, its cry,
+ * message 0x44BA then a mode-dependent message (0x44BC/0x44BB/0x44B9),
+ * fade out; run by fn_80266250 after d2presentOpen stores the mode. */
+void d2presentPlayGiftScene(int r3)
 
 {
     extern s8 winMsgCheck();
     extern u16 pokemonDataBiosGetVoice();
     extern void* pokemonDataBiosGetPtr();
-    extern int soundGetStatus();
+    extern int GSsndGetStatus();
     extern int soundStartSE();
     extern u16 lbl_8047E6F8;
     extern f32 lbl_8047E6FC;
@@ -116,7 +119,7 @@ void fn_80265F94(int r3)
     uVar8 = pokemonDataBiosGetVoice();
     soundStartSE(uVar8);
   }
-  while (iVar4 = soundGetStatus(uVar8), iVar4 == 2) {
+  while (iVar4 = GSsndGetStatus(uVar8), iVar4 == 2) {
     fn_801DB088();
     effectStatus = fn_801DA94C(uVar3,uVar1,4);
     if (effectStatus == '\0') {
@@ -185,7 +188,7 @@ void fn_80266250(void)
     extern u32 std105_soundPlayEffect(u32 id, u32 volume, u32 priority);
     extern void fn_801DADC0();
     extern void wazaSequenceSysRelease();
-    extern void fn_80265F94();
+    extern void d2presentPlayGiftScene();
     u32 uVar5;
     u8 uVar4;
     u8 uVar3;
@@ -208,7 +211,7 @@ void fn_80266250(void)
         uVar4 = 0;
     }
     fn_801DADC0(1);
-    fn_80265F94(uVar5);
+    d2presentPlayGiftScene(uVar5);
     wazaSequenceSysRelease();
     if (iVar1 != 0) {
         std104_soundSetBackgroundMusic(iVar1, 0x32, uVar3);
