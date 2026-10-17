@@ -1468,7 +1468,7 @@ config.libs = [
                 progress_category="game",
             ),
             # TEMPORARY constant_import
-            # fn_80138DE4's 2.0f, 1.0f, 0.0f and int-to-float biases are
+            # _leaffxUpdate's 2.0f, 1.0f, 0.0f and int-to-float biases are
             # literals; retail shares them as lbl_8047D160..lbl_8047D178
             # (effect_visual_sdata2_8047D160.c).
             Object(

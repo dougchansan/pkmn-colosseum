@@ -60,9 +60,9 @@ extern u8 lbl_8047AF18;                     /* sndActive */
 extern GSTACK lbl_80447860[128];            /* gs */
 extern s16 lbl_8047AFE8;                    /* sp */
 
-extern void* fn_80162FAC(void* samples);    /* hwTransAddr */
-extern void fn_80163188(void);              /* hwSyncSampleMem */
-extern void fn_801630E4(void* (*callback)(u32, u32), u32 chunckSize); /* hwSetSaveSampleCallback */
+extern void* hwTransAddr(void* samples);    /* hwTransAddr */
+extern void hwSyncSampleMem(void);              /* hwSyncSampleMem */
+extern void hwSetSaveSampleCallback(void* (*callback)(u32, u32), u32 chunckSize); /* hwSetSaveSampleCallback */
 extern u32 dataInsertSDir(void* sdir, void* samples);
 extern void dataInsertFX(u16 gid, void* fx, u16 num);
 extern void hwDisableIrq(void);
@@ -208,7 +208,7 @@ static void InsertLayers(u16* ref, void* pool)
 
 static void InsertSamples(u16* ref, void* samples, void* sdir)
 {
-    samples = fn_80162FAC(samples);
+    samples = hwTransAddr(samples);
     if (dataInsertSDir(sdir, samples)) {
         ScanIDList(ref, sdir, 1, 0);
     }
@@ -221,7 +221,7 @@ static void InsertFXTab(u16 gid, FX_DATA* fd)
 
 void sndSetSampleDataUploadCallback(void* (*callback)(u32, u32), u32 chunckSize) /* sndSetSampleDataUploadCallback */
 {
-    fn_801630E4(callback, chunckSize);
+    hwSetSaveSampleCallback(callback, chunckSize);
 }
 
 u32 sndPushGroup(void* prj_data, u16 gid, void* samples, void* sdir, void* pool) /* sndPushGroup */
@@ -244,7 +244,7 @@ u32 sndPushGroup(void* prj_data, u16 gid, void* samples, void* sdir, void* pool)
                 if (g->type == 1) {
                     InsertFXTab(gid, (FX_DATA*)((u8*)prj_data + g->data.song.normpageOff));
                 }
-                fn_80163188();
+                hwSyncSampleMem();
                 ++lbl_8047AFE8;
                 return TRUE;
             }

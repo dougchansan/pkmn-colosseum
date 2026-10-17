@@ -71,10 +71,10 @@ extern void hwDisableIrq(void);
 extern void hwEnableIrq(void);
 extern void hwSetAUXProcessingCallbacks(u8 studio, void* auxA, void* userA, void* auxB, void* userB);
 extern void streamOutputModeChanged(void);
-extern void fn_801631C0(void); /* hwDisableHRTF */
-extern void fn_80162D6C(u8 studio, u32 isMaster, u32 type); /* hwActivateStudio */
-extern void fn_80162D18(u32 index);                         /* hwOff */
-extern void fn_80162D8C(u8 studio);                         /* hwDeactivateStudio */
+extern void hwDisableHRTF(void); /* hwDisableHRTF */
+extern void hwActivateStudio(u8 studio, u32 isMaster, u32 type); /* hwActivateStudio */
+extern void hwOff(u32 index);                         /* hwOff */
+extern void hwDeactivateStudio(u8 studio);                         /* hwDeactivateStudio */
 extern void hwAddInput(u8 studio, u32 arg1);
 extern void hwRemoveInput(u8 studio, u32 arg1);
 
@@ -131,17 +131,17 @@ void sndOutputMode(u32 output) {
   case 0: /* SND_OUTPUTMODE_MONO */
     lbl_8047AF44 |= 1;
     lbl_8047AF44 &= ~2;
-    fn_801631C0();
+    hwDisableHRTF();
     break;
   case 1: /* SND_OUTPUTMODE_STEREO */
     lbl_8047AF44 &= ~1;
     lbl_8047AF44 &= ~2;
-    fn_801631C0();
+    hwDisableHRTF();
     break;
   case 2: /* SND_OUTPUTMODE_SURROUND */
     lbl_8047AF44 &= ~1;
     lbl_8047AF44 |= 2;
-    fn_801631C0();
+    hwDisableHRTF();
     break;
   default:
     break;
@@ -199,7 +199,7 @@ void synthActivateStudio(u8 studio, u32 isMaster, u32 type) {
   lbl_8047AF24[studio] = 0xFF;
   lbl_804356A4[studio * 2 + 1] = 0;
   lbl_804356A4[studio * 2] = 0;
-  fn_80162D6C(studio, isMaster, type);
+  hwActivateStudio(studio, isMaster, type);
   hwEnableIrq();
 }
 
@@ -212,7 +212,7 @@ void synthDeactivateStudio(u8 studio) {
       if (lbl_8047AF48[i].id != 0xFFFFFFFF) {
         voiceKillSound(lbl_8047AF48[i].vidList->vid);
       } else if (hwIsActive(i)) {
-        fn_80162D18(i);
+        hwOff(i);
       }
     }
   }
@@ -226,7 +226,7 @@ void synthDeactivateStudio(u8 studio) {
 
   hwEnableIrq();
 
-  fn_80162D8C(studio);
+  hwDeactivateStudio(studio);
 }
 
 void synthAddStudioInput(u8 studio, u32 arg1) { hwAddInput(studio, arg1); }

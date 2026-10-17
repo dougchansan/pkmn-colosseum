@@ -180,9 +180,9 @@ u8 lbl_8047AF24[8];                          /* lbl_8047AF24 */
 u8 lbl_8047AF1C[8];                          /* lbl_8047AF1C */
 
 extern void* memset(void* dst, int val, u32 size);
-extern void fn_80157360(SYNTH_VOICE* svoice);            /* fn_80157360 */
-extern u32 fn_801576C4(SYNTH_VOICE* svoice, u32 isMaster); /* fn_801576C4 */
-extern u32 fn_801576B0(SYNTH_VOICE* svoice);             /* fn_801576B0 */
+extern void vidRemoveVoiceReferences(SYNTH_VOICE* svoice);            /* vidRemoveVoiceReferences */
+extern u32 vidMakeNew(SYNTH_VOICE* svoice, u32 isMaster); /* vidMakeNew */
+extern u32 vidMakeRoot(SYNTH_VOICE* svoice);             /* vidMakeRoot */
 extern u32 vidGetInternalId(u32 vid);
 extern void vidInit(void);
 extern void voiceSetLastStarted(SYNTH_VOICE* svoice);
@@ -207,7 +207,7 @@ extern u16 inpGetPreAuxB(SYNTH_VOICE* svoice);
 extern u16 inpGetPostAuxB(SYNTH_VOICE* svoice);
 extern u16 inpGetTremolo(SYNTH_VOICE* svoice);
 extern u16 inpGetAuxA(u8 studio, u8 index, u8 midi, u8 midiSet); /* inpGetAuxA */
-extern u16 fn_801619E8(u8 studio, u8 index, u8 midi, u8 midiSet); /* fn_801619E8 */
+extern u16 inpGetAuxB(u8 studio, u8 index, u8 midi, u8 midiSet); /* inpGetAuxB */
 extern void inpInit(SYNTH_VOICE* svoice);            /* inpInit */
 extern LAYER* dataGetLayer(u16 cid, u16* n);
 extern KEYMAP* dataGetKeymap(u16 cid);
@@ -223,21 +223,21 @@ extern void macSetPedalState(SYNTH_VOICE* svoice, u32 state);
 extern u32 sndGetPitch(u8 key, u32 sInfo);
 extern s32 sndPitchUpOne(u16 note);
 extern s16 sndSin(u16 angle);
-extern void fn_801621BC(u32* ms);                         /* fn_801621BC */
+extern void sndConvertMs(u32* ms);                         /* sndConvertMs */
 extern u32 adsrHandleLowPrecision(ADSR_VARS* adsr, u16* adsr_start, u16* adsr_delta);
 extern u32 adsrRelease(ADSR_VARS* adsr);
 extern u32 hwIsActive(u32 v);                            /* hwIsActive */
 extern u8 hwGetTimeOffset(void);                              /* hwGetTimeOffset */
-extern void fn_80162494(u32 v, u32 prio);                 /* fn_80162494 */
-extern void fn_8016248C(u32 (*callback)(u32, u32));       /* fn_8016248C */
+extern void hwSetPriority(u32 v, u32 prio);                 /* hwSetPriority */
+extern void hwSetMesgCallback(u32 (*callback)(u32, u32));       /* hwSetMesgCallback */
 extern void hwFrameDone(void);                            /* hwFrameDone */
 extern void hwKeyOff(u32 v);
 extern void hwSetPitch(u32 v, u16 speed);
 extern void hwSetVolume(u32 v, u8 table, f32 vol, u32 pan, u32 span, f32 auxa, f32 auxb);
 extern void hwStart(u32 v, u8 studio);
 extern u32 hwGetVirtualSampleID(u32 v);
-extern void* fn_801643D8(u32 size);                       /* fn_801643D8 */
-extern void fn_80164400(void* ptr);                       /* fn_80164400 */
+extern void* salMalloc(u32 size);                       /* salMalloc */
+extern void salFree(void* ptr);                       /* salFree */
 extern void vsSampleEndNotify(u32 pubID);
 extern u32 vsSampleStartNotify(u8 voice);                         /* vsSampleStartNotify */
 extern void seqStop(u32 seqId);
@@ -328,17 +328,17 @@ static u32 do_voice_portamento(u8 key, u8 midi, u8 midiSet, u32 isMaster, u32* r
         sv->curDetune = 0;
         sv->portTime = 0;
         sv->cFlags |= 0x20000;
-        fn_80157360(&lbl_8047AF48[i]);
+        vidRemoveVoiceReferences(&lbl_8047AF48[i]);
         if (vid == SND_ID_ERROR) {
           sv->child = SND_ID_ERROR;
           sv->parent = SND_ID_ERROR;
-          vid = fn_801576C4(&lbl_8047AF48[i], isMaster);
+          vid = vidMakeNew(&lbl_8047AF48[i], isMaster);
           id = sv->id;
         } else {
           lbl_8047AF48[id & 0xff].child = sv->id;
           sv->parent = id;
           id = sv->id;
-          fn_801576C4(&lbl_8047AF48[i], FALSE);
+          vidMakeNew(&lbl_8047AF48[i], FALSE);
         }
       }
     }
@@ -445,7 +445,7 @@ static u32 StartLayer(u16 layerID, s16 prio, u8 maxVoices,
     apply_new_id:
       if (vid == SND_ID_ERROR) {
         if (vidFlag != 0) {
-          vid = fn_801576B0(&lbl_8047AF48[new_id & 0xff]);
+          vid = vidMakeRoot(&lbl_8047AF48[new_id & 0xff]);
         } else {
           vid = new_id;
         }
@@ -863,7 +863,7 @@ static void ZeroOffsetHandler(u32 i) {
     if ((s32)(sv->age -= sv->ageSpeed * lowDeltaTime) < 0) {
       sv->age = 0;
     }
-    fn_80162494(i, sv->prio << 24 | sv->age >> 15);
+    hwSetPriority(i, sv->prio << 24 | sv->age >> 15);
   }
 
   synthAddJob(sv, SYNTH_JOBTYPE_ZERO, (5 - hwGetTimeOffset()) * 256);
@@ -1083,7 +1083,7 @@ void synthHandle(u32 deltaTime) {
         SND_AUX_INFO info; // r1+0xC
         for (i = 0; i < SND_AUX_NUMPARAMETERS; ++i) {
           info.data.parameterUpdate.para[i] =
-              fn_801619E8(s, i, lbl_8047AF24[s], lbl_8047AF1C[s]);
+              inpGetAuxB(s, i, lbl_8047AF24[s], lbl_8047AF1C[s]);
         }
         lbl_80435684[s](SND_AUX_REASON_PARAMETERUPDATE, &info, lbl_80435664[s]);
       }
@@ -1273,7 +1273,7 @@ void synthVolume(u8 volume, u16 time, u8 vGroup, u8 seqMode, u32 seqId) {
   SYNTHMasterFader* smf; // r31
 
   if ((ltime = time) != 0) {
-    fn_801621BC(&ltime);
+    sndConvertMs(&ltime);
   }
 
   switch (vGroup) {
@@ -1345,7 +1345,7 @@ void synthPauseVolume(u8 volume, u16 time, u8 vGroup) {
     ++time;
   }
   ltime = time & 0xffff;
-  fn_801621BC(&ltime);
+  sndConvertMs(&ltime);
 
   switch (vGroup) {
   case SND_ALL_VOLGROUPS:
@@ -1462,7 +1462,7 @@ void synthInit(u32 mixFrq, u32 numVoices) {
   lbl_8047AF44 = 0;
   lbl_8047AF4C = NULL;
 
-  lbl_8047AF48 = fn_801643D8(numVoices * sizeof(SYNTH_VOICE));
+  lbl_8047AF48 = salMalloc(numVoices * sizeof(SYNTH_VOICE));
   if (lbl_8047AF48 == NULL) {
   }
   memset(lbl_8047AF48, 0, numVoices * sizeof(SYNTH_VOICE));
@@ -1541,7 +1541,7 @@ void synthInit(u32 mixFrq, u32 numVoices) {
 
   voiceInitLastStarted();
   synthInitJobQueue();
-  fn_8016248C(synthHWMessageHandler);
+  hwSetMesgCallback(synthHWMessageHandler);
 }
 
-void synthExit() { fn_80164400(lbl_8047AF48); }
+void synthExit() { salFree(lbl_8047AF48); }

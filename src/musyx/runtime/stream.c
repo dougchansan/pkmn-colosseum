@@ -40,21 +40,21 @@ extern void voiceUnblock(u32 voice);
 /* Not yet named in symbols.txt (still fn_XXXXXXXX); addresses/roles derived
  * from direct disassembly of this TU's call sites (register setup at each
  * `bl` matches the reference's argument list exactly):
- *   fn_80158328 = voiceBlock(u8 prio) -> voice index or -1
- *   fn_801628B4 = hwSetStreamLoopPS(u32 voice, u8 ps)
- *   fn_80162E14 = hwGetPos(u32 voice) -> current DSP playback position
- *   fn_80162F48 = hwInitStream(u32 len) -> u8 hwStreamHandle (0xFF = fail)
- *   fn_80162F68 = hwExitStream(u8 hwStreamHandle)
- *   fn_80162F88 = hwGetStreamPlayBuffer(u8 hwStreamHandle) -> void*
+ *   voiceBlock = voiceBlock(u8 prio) -> voice index or -1
+ *   hwSetStreamLoopPS = hwSetStreamLoopPS(u32 voice, u8 ps)
+ *   hwGetPos = hwGetPos(u32 voice) -> current DSP playback position
+ *   hwInitStream = hwInitStream(u32 len) -> u8 hwStreamHandle (0xFF = fail)
+ *   hwExitStream = hwExitStream(u8 hwStreamHandle)
+ *   hwGetStreamPlayBuffer = hwGetStreamPlayBuffer(u8 hwStreamHandle) -> void*
  *   hwInitSamplePlayback: signature pinned from the 8-register call at
  *     0x8014E03C (v, -1 as u16 pitch, &newsmp, 1, -1, synthVoice[v].id, 1, 1).
  */
-extern u32 fn_80158328(u8 prio);
-extern void fn_801628B4(u32 voice, u8 ps);
-extern u32 fn_80162E14(u32 voice);
-extern u8 fn_80162F48(u32 len);
-extern void fn_80162F68(u8 hwStreamHandle);
-extern void* fn_80162F88(u8 hwStreamHandle);
+extern u32 voiceBlock(u8 prio);
+extern void hwSetStreamLoopPS(u32 voice, u8 ps);
+extern u32 hwGetPos(u32 voice);
+extern u8 hwInitStream(u32 len);
+extern void hwExitStream(u8 hwStreamHandle);
+extern void* hwGetStreamPlayBuffer(u8 hwStreamHandle);
 extern void hwInitSamplePlayback(u32 voice, u16 pitch, void* smp, u32 resetState, u32 unk1C,
                                   u32 unk18, u32 initFlags, u32 setupFlag);
 
@@ -193,7 +193,7 @@ void streamHandle(void) {
     switch (si->state) {
     case 1:
       newsmp.info = si->frq | 0x40000000;
-      newsmp.addr = fn_80162F88(si->hwStreamHandle);
+      newsmp.addr = hwGetStreamPlayBuffer(si->hwStreamHandle);
       newsmp.offset = 0;
       newsmp.length = si->size;
       newsmp.loop = 0;
@@ -207,7 +207,7 @@ void streamHandle(void) {
         newsmp.extraData = &si->adpcmInfo;
         newsmp.compType = 4;
 
-        fn_801628B4(si->voice, si->lastPSFromBuffer);
+        hwSetStreamLoopPS(si->voice, si->lastPSFromBuffer);
         si->adpcmInfo.loopPS = si->adpcmInfo.initialPS = si->lastPSFromBuffer;
         break;
       }
@@ -226,7 +226,7 @@ void streamHandle(void) {
       }
       break;
     case 2: {
-      cpos = fn_80162E14(si->voice);
+      cpos = hwGetPos(si->voice);
 
       if (si->type == 1) {
         cpos = (cpos / 14) * 14;
@@ -360,7 +360,7 @@ void streamHandle(void) {
         }
 
         if (si->state == 2 && !(si->flags & 0x20000) && si->type == 1) {
-          fn_801628B4(si->voice,
+          hwSetStreamLoopPS(si->voice,
                       (si->lastPSFromBuffer = *(u32*)((u8*)si->buffer + 0x40000000) >> 24));
         }
       }
@@ -451,7 +451,7 @@ void sndStreamARAMUpdate(u32 stid, u32 off1, u32 len1, u32 off2, u32 len2) {
       streamInfo[i].lastPSFromBuffer =
           (*(u32*)((u8*)streamInfo[i].buffer + 0x40000000)) >> 24;
       if (streamInfo[i].voice != (u32)-1) {
-        fn_801628B4(streamInfo[i].voice, streamInfo[i].lastPSFromBuffer);
+        hwSetStreamLoopPS(streamInfo[i].voice, streamInfo[i].lastPSFromBuffer);
       }
     }
   }
@@ -543,7 +543,7 @@ u32 sndStreamAllocEx(u8 prio, void* buffer, u32 samples, u32 frq, u8 vol, u8 pan
     streamInfo[i].user = user;
     streamInfo[i].nextStreamHandle = (u32)-1;
     streamInfo[i].state = 3;
-    if ((streamInfo[i].hwStreamHandle = fn_80162F48(bytes)) != 0xFF) {
+    if ((streamInfo[i].hwStreamHandle = hwInitStream(bytes)) != 0xFF) {
       if (!(flags & 0x10000) && !sndStreamActivate(stid)) {
         stid = (u32)-1;
       }
@@ -597,7 +597,7 @@ void sndStreamFree(SND_STREAMID stid) {
   i = GetPrivateIndex(carrier);
   if (i != -1) {
     sndStreamDeactivate(carrier);
-    fn_80162F68(streamInfo[i].hwStreamHandle);
+    hwExitStream(streamInfo[i].hwStreamHandle);
     if (streamInfo[i].nextStreamHandle != 0xffffffff) {
       sndStreamFree(streamInfo[i].nextStreamHandle);
     }
@@ -616,7 +616,7 @@ MusyBool sndStreamActivate(SND_STREAMID stid) {
   i = GetPrivateIndex(stid);
   if (i != -1) {
     if (streamInfo[i].state == 3) {
-      if ((streamInfo[i].voice = fn_80158328(streamInfo[i].prio)) == -1) {
+      if ((streamInfo[i].voice = voiceBlock(streamInfo[i].prio)) == -1) {
         hwEnableIrq();
         return 0;
       }

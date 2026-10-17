@@ -625,7 +625,7 @@ u16 inpGetAuxA(u8 studio, u8 index, u8 midi, u8 midiSet) {
   return GetGlobalInputValue(&lbl_80435B74[studio][index], dirtyMask[index], midi, midiSet);
 }
 
-u16 fn_801619E8(u8 studio, u8 index, u8 midi, u8 midiSet) {
+u16 inpGetAuxB(u8 studio, u8 index, u8 midi, u8 midiSet) {
   static u32 dirtyMask[4] = {0x80000010, 0x80000020, 0x80000040, 0x80000080};
 
   return GetGlobalInputValue(&lbl_804356F4[studio][index], dirtyMask[index], midi, midiSet);

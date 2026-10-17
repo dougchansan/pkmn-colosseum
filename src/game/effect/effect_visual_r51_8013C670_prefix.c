@@ -1,4 +1,4 @@
-/* Standalone carve of fn_8013C670 (_envMapStart), 0x8013C670 - 0x8013C718. */
+/* Standalone carve of _seaStop (_envMapStart), 0x8013C670 - 0x8013C718. */
 #include "dolphin/types.h"
 
 extern void GSmodelStopTexAnimation(void* model);
@@ -12,7 +12,7 @@ extern void GSmemFree(u32 handle);
 /* RULE-EXCEPTION(user-approved): local optimizer control -- see docs/RULE_EXCEPTIONS.md. */
 #pragma push
 #pragma global_optimizer off
-u32 fn_8013C670(void* arg) {
+u32 _seaStop(void* arg) {
     void* ptr;
     void* inner;
 

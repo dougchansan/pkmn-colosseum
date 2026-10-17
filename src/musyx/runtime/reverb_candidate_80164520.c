@@ -50,8 +50,8 @@ typedef struct SND_AUX_REVERBHI {
 #include "crt/math_ppc.h"
 
 extern void* memset(void* dst, int c, u32 n);
-extern void* fn_801643D8(u32 len);
-extern void fn_80164400(void* addr);
+extern void* salMalloc(u32 len);
+extern void salFree(void* addr);
 
 static void DLsetdelay(_SND_REVHI_DELAYLINE* delayline, s32 len) {
   delayline->outPoint = delayline->inPoint - (len * sizeof(f32));
@@ -62,7 +62,7 @@ static void DLsetdelay(_SND_REVHI_DELAYLINE* delayline, s32 len) {
 
 static void DLcreate(_SND_REVHI_DELAYLINE* delayline, s32 length) {
   delayline->length = (s32)length * sizeof(f32);
-  delayline->inputs = (f32*)fn_801643D8(length * sizeof(f32));
+  delayline->inputs = (f32*)salMalloc(length * sizeof(f32));
   memset(delayline->inputs, 0, length * sizeof(length));
   delayline->lastOutput = 0.f;
   DLsetdelay(delayline, length >> 1);
@@ -70,7 +70,7 @@ static void DLcreate(_SND_REVHI_DELAYLINE* delayline, s32 length) {
   delayline->outPoint = 0;
 }
 
-static void DLdelete(_SND_REVHI_DELAYLINE* delayline) { fn_80164400(delayline->inputs); }
+static void DLdelete(_SND_REVHI_DELAYLINE* delayline) { salFree(delayline->inputs); }
 u32 ReverbHICreate(_SND_REVHI_WORK* rev, f32 coloration, f32 time, f32 mix, f32 damping,
                     f32 preDelay, f32 crosstalk) {
   static int lens[] = {1789, 1999, 2333, 433, 149, 47, 73, 67};
@@ -112,7 +112,7 @@ u32 ReverbHICreate(_SND_REVHI_WORK* rev, f32 coloration, f32 time, f32 mix, f32 
   if (preDelay != 0.f) {
     rev->preDelayTime = preDelay * 32000.f;
     for (i = 0; i < 3; ++i) {
-      rev->preDelayLine[i] = (f32*)fn_801643D8(rev->preDelayTime * sizeof(f32));
+      rev->preDelayLine[i] = (f32*)salMalloc(rev->preDelayTime * sizeof(f32));
       memset(rev->preDelayLine[i], 0, rev->preDelayTime * sizeof(f32));
       rev->preDelayPtr[i] = rev->preDelayLine[i];
     }
@@ -157,7 +157,7 @@ u32 ReverbHIModify(struct _SND_REVHI_WORK* rv, float coloration, float time, flo
 
   if (rv->preDelayTime != 0) {
     for (i = 0; i < 3; ++i) {
-      fn_80164400(rv->preDelayLine[i]);
+      salFree(rv->preDelayLine[i]);
     }
   }
 

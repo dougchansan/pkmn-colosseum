@@ -13,8 +13,8 @@
 typedef u32 SND_STUDIO_TYPE;
 
 extern u32 lbl_8047AFF0;      /* dspARAMZeroBuffer */
-extern void* fn_801643D8(u32 size);   /* salMalloc */
-extern u32 fn_80163798(void);         /* aramGetZeroBuffer */
+extern void* salMalloc(u32 size);   /* salMalloc */
+extern u32 aramGetZeroBuffer(void);         /* aramGetZeroBuffer */
 extern void DCFlushRange(void* addr, u32 size);
 extern void DCInvalidateRange(void* addr, u32 size);
 extern void DCStoreRangeNoSync(void* addr, u32 size);
@@ -30,13 +30,13 @@ u32 salInitDspCtrl(u8 numVoices, u8 numStudios, u32 defaultStudioDPL2)
     lbl_8047B05D = numVoices;
     lbl_8047B05C = numStudios;
 
-    lbl_8047AFF0 = fn_80163798();
-    if ((lbl_8047B010 = fn_801643D8(1024 * sizeof(u16)))) {
-        if ((lbl_8047B01C = fn_801643D8(160 * sizeof(s32)))) {
+    lbl_8047AFF0 = aramGetZeroBuffer();
+    if ((lbl_8047B010 = salMalloc(1024 * sizeof(u16)))) {
+        if ((lbl_8047B01C = salMalloc(160 * sizeof(s32)))) {
             memset(lbl_8047B01C, 0, 160 * sizeof(s32));
             DCFlushRange(lbl_8047B01C, 160 * sizeof(s32));
-            if ((lbl_8047B024 = fn_801643D8(lbl_8047B05D * sizeof(DSPvoice)))) {
-                if ((lbl_8047B020 = fn_801643D8(lbl_8047B05D * 64))) {
+            if ((lbl_8047B024 = salMalloc(lbl_8047B05D * sizeof(DSPvoice)))) {
+                if ((lbl_8047B020 = salMalloc(lbl_8047B05D * 64))) {
                     DCInvalidateRange(lbl_8047B020, lbl_8047B05D * 64);
                     itdPtr = (u32)lbl_8047B020;
                     for (i = 0; i < lbl_8047B05D; ++i) {
@@ -47,9 +47,9 @@ u32 salInitDspCtrl(u8 numVoices, u8 numStudios, u32 defaultStudioDPL2)
                         lbl_8047B024[i].lastUpdate.vol = 0xFF;
                         lbl_8047B024[i].lastUpdate.volA = 0xFF;
                         lbl_8047B024[i].lastUpdate.volB = 0xFF;
-                        lbl_8047B024[i].pb = fn_801643D8(sizeof(_PB));
+                        lbl_8047B024[i].pb = salMalloc(sizeof(_PB));
                         memset(lbl_8047B024[i].pb, 0, sizeof(_PB));
-                        lbl_8047B024[i].patchData = fn_801643D8(0x80);
+                        lbl_8047B024[i].patchData = salMalloc(0x80);
                         lbl_8047B024[i].pb->currHi = ((u32)lbl_8047B024[i].pb >> 16);
                         lbl_8047B024[i].pb->currLo = (u16)(u32)lbl_8047B024[i].pb;
                         lbl_8047B024[i].pb->update.dataHi = ((u32)lbl_8047B024[i].patchData >> 16);
@@ -67,11 +67,11 @@ u32 salInitDspCtrl(u8 numVoices, u8 numStudios, u32 defaultStudioDPL2)
 
                     for (i = 0; i < lbl_8047B05C; ++i) {
                         lbl_80447E60[i].state = 0;
-                        if (!(lbl_80447E60[i].spb = fn_801643D8(0x36 /* sizeof(_SPB) */))) {
+                        if (!(lbl_80447E60[i].spb = salMalloc(0x36 /* sizeof(_SPB) */))) {
                             return FALSE;
                         }
 
-                        if (!(lbl_80447E60[i].main[0] = fn_801643D8(0x3C00))) {
+                        if (!(lbl_80447E60[i].main[0] = salMalloc(0x3C00))) {
                             return FALSE;
                         }
 
@@ -94,7 +94,7 @@ u32 salInitDspCtrl(u8 numVoices, u8 numStudios, u32 defaultStudioDPL2)
                         DCFlushRangeNoSync(lbl_80447E60[i].spb, 0x36);
                     }
                     salActivateStudio(0, 1, defaultStudioDPL2 != FALSE ? 1 : 0);
-                    if (!(lbl_8047B018 = fn_801643D8(0x100))) {
+                    if (!(lbl_8047B018 = salMalloc(0x100))) {
                         return FALSE;
                     }
 

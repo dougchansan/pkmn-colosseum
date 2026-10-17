@@ -96,8 +96,8 @@ extern u32 fn_800AE794(void);                /* DSPCheckMailToDSP */
 extern void DSPHalt(void);               /* DSPHalt */
 extern u32 DSPGetDMAStatus(void);                /* DSPGetDMAStatus */
 extern void DSPReset(void);               /* DSPReset */
-extern void* fn_801643D8(u32 size);          /* salMalloc */
-extern void fn_80164400(void* ptr);          /* salFree */
+extern void* salMalloc(u32 size);          /* salMalloc */
+extern void salFree(void* ptr);          /* salFree */
 extern void salBuildCommandList(u16* dest, u32 nsDelay); /* salBuildCommandList */
 
 u32 salGetStartDelay(void);
@@ -146,7 +146,7 @@ void dspResumeCallback(void)
 
 u32 salInitAi(SND_SOME_CALLBACK callback, u32 unk, u32* outFreq)
 {
-    if ((lbl_8047B09C = fn_801643D8(DMA_BUFFER_LEN * 4)) != NULL) {
+    if ((lbl_8047B09C = salMalloc(DMA_BUFFER_LEN * 4)) != NULL) {
         memset(lbl_8047B09C, 0, DMA_BUFFER_LEN * 4);
         DCFlushRange(lbl_8047B09C, DMA_BUFFER_LEN * 4);
         lbl_8047B0A0 = TRUE;
@@ -165,7 +165,7 @@ u32 salInitAi(SND_SOME_CALLBACK callback, u32 unk, u32* outFreq)
     return FALSE;
 }
 
-void fn_801640C4(void) /* salStartAi */
+void salStartAi(void) /* salStartAi */
 {
     AIStartDMA();
 }
@@ -174,7 +174,7 @@ u32 salExitAi(void)
 {
     AIRegisterDMACallback(NULL);
     AIStopDMA();
-    fn_80164400(lbl_8047B09C);
+    salFree(lbl_8047B09C);
     return TRUE;
 }
 
@@ -186,7 +186,7 @@ void* salAiGetDest(void)
     return (void*)((u8*)lbl_8047B09C + index * DMA_BUFFER_LEN);
 }
 
-u32 fn_80164148(void) /* salInitDsp */
+u32 salInitDsp(void) /* salInitDsp */
 {
     lbl_804504A0.iram_mmem_addr = (u16*)lbl_8036A520;
     lbl_804504A0.iram_length = lbl_80478C08;
@@ -250,7 +250,7 @@ void hwInitIrq(void)
     lbl_8047B084 = 1;
 }
 
-void fn_80164324(void) /* hwExitIrq */
+void hwExitIrq(void) /* hwExitIrq */
 {
 }
 
@@ -268,12 +268,12 @@ void hwDisableIrq(void)
     }
 }
 
-u32 fn_80164398(void) /* hwIRQEnterCritical */
+u32 hwIRQEnterCritical(void) /* hwIRQEnterCritical */
 {
     return OSDisableInterrupts();
 }
 
-u32 fn_801643B8(void) /* hwIRQLeaveCritical */
+u32 hwIRQLeaveCritical(void) /* hwIRQLeaveCritical */
 {
     return OSEnableInterrupts();
 }
