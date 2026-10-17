@@ -146,8 +146,8 @@ extern void gsParticlePtclHook();
 extern u8 joutaiDataBiosGetKaisuuId(u16 idx);
 extern u8 joutaiDataBiosGetMaxStack(u16 idx);
 extern u16 fn_80119E10(u16 idx);
-extern u8 fn_80119E50(u16 idx);
-extern u8 fn_80119E90(u16 idx);
+extern u8 joutaiDataBiosGetWriteMode(u16 idx);
+extern u8 joutaiDataBiosGetSlot(u16 idx);
 extern u16 joutaiDataBiosGetStatusKind(u16 idx);
 extern u8 joutaiDataBiosGetObjectKind(u16 idx);
 extern u32 fn_80119F50(u16 idx);
@@ -235,7 +235,7 @@ extern void GSmodelIsAnimating(void);
 extern void* GSmodelGetPart(void* model, s32 partIndex);
 extern void GSpartGetTransform(void* part, void* transform, void* arg2, void* arg3);
 extern void GSpartFree();
-extern void fn_8018AACC(void);
+extern void peopleWalkTo(void);
 extern void peopleMoveCheck(u32 groupId, u32 index, u8 waitFlag);
 extern void peopleStartTurn(void);
 extern void std168_characterDetachFromCharacter(void);
@@ -545,11 +545,11 @@ extern s32 GScolsys2CheckGetEventID();
 extern void peopleStopTurn(void);
 extern void GSinputResetLeftSmoothing(void);
 extern void GSinputResetRightSmoothing(void);
-extern void fn_8018BA04(void);
+extern void peopleGetHeadGroundPos(void);
 extern void peopleTurnToPoint(void);
-extern u8 fn_8018D7D0();
+extern u8 peopleIsTreasure();
 extern void fn_80183730(void);
-extern u32 fn_8018397C();
+extern u32 peopleGetTalkScript();
 extern void peopleTalkPause(void);
 extern void std055_characterEndSpeech(void);
 extern void fn_80183688(void);
@@ -568,7 +568,7 @@ extern void GSinputGetLeftStickXData(void);
 extern void GSinputGetLeftStickYData(void);
 extern void fn_800F7BC4(void);
 extern void peopleSetSpeedFromAmount(void);
-extern void fn_80166458(void);
+extern void soundUpdateListener(void);
 void heroReadStick(s32, f32*);
 extern void GSinputButtonsChanged(void);
 extern void peopleAmountFromMove(void);
@@ -576,7 +576,7 @@ extern void PSVECDistance(void);
 f32 moveLeader__F15HEROMOVE_MEMBER();
 extern u8 dbgMenuIsOpen(void);
 extern u8 menuIsCheck(u32);
-extern u8 fn_8018C424(u32, u32, u32);
+extern u8 peopleTestFlagsByID(u32, u32, u32);
 extern void heroMoveRunEvent(u32);
 extern u8 lbl_80272A38[];
 u32 heroMoveMain(void);
@@ -595,7 +595,7 @@ extern u8 lbl_80272A10[];
 u32 heroMoveGetKenObjID(void);
 extern void peopleOpen(u32, u32, u32);
 extern void GSmodelEnableAnimBlend(void*);
-extern void fn_8018CB5C(u32, u32);
+extern void peopleRegisterHumanCollision(u32, u32);
 extern void fn_80189328(u32, u32, u32);
 extern void peopleSetRotation(u32, u32, void*);
 s32 heroMoveInit(void*, void*);
@@ -1007,7 +1007,7 @@ extern void heroBiosSetRnd(u8* ptr, u32 val);
 extern u32 heroBiosGetRnd(u8* ptr);
 extern u32 GSeffectGetUpdateGapp(void);
 extern u16 pokemonBiosGetPokemonDataId(u8* ptr);
-extern u32 fn_80128E24(void);
+extern u32 savedataGetWorkPtr(void);
 extern void* floorReadMapPreFunc(void* owner, u32 param, u32 alloc_size);
 extern void* floorReadScriptPreFunc(void* owner, u32 param, u32 alloc_size);
 extern void* floorReadFontPreFunc(void* owner, u32 param, u32 alloc_size);
@@ -1277,7 +1277,7 @@ extern u32 pokemonGetJoutaiMenuSpriteId(u8* ptr);
 extern u32 pokemonGetJoutaiDataId(u8* ptr);
 extern void fn_80121484(void* obj, u32 arg2, u32 arg3);
 extern void pokemonSetJoutai08(void* obj, u32 arg2, u32 arg3);
-extern void fn_801215E4(void* obj, u32 arg2, u32 arg3);
+extern void pokemonSetJoutai0C(void* obj, u32 arg2, u32 arg3);
 extern void pokemonSetJoutaiKaisuu(void* obj, u32 arg2, u32 arg3);
 extern void fn_801217B4(void* obj, u32 arg2, u32 arg3);
 extern void fn_8012190C(void* obj, u32 arg2, u32 arg3);
@@ -1818,7 +1818,7 @@ static inline void heroMoveInitEventChat(void)
 /* 0x8012E7B8 | 0x41C */
 extern u8 dbgMenuIsOpen(void);
 extern u8 menuIsCheck(u32);
-extern u8 fn_8018C424(u32, u32, u32);
+extern u8 peopleTestFlagsByID(u32, u32, u32);
 extern void heroMoveRunEvent(u32);
 extern u8 lbl_80272A38[];
 /*
@@ -2261,8 +2261,8 @@ s32 heroMoveInit(void* position, void* rotation)
         GSmodelEnableAnimBlend(models[i]);
     }
 
-    fn_8018CB5C(0, 100);
-    fn_8018CB5C(0, 101);
+    peopleRegisterHumanCollision(0, 100);
+    peopleRegisterHumanCollision(0, 101);
 
     if (fn_800FF548() == 0) {
         fn_8018C8F4(0, 100, 0x40000F00);
@@ -2523,7 +2523,7 @@ u32 heroMoveMain(void)
         return 0;
     }
     getResID(&group, &id, lbl_80426BD0.leader);
-    if (fn_8018C424(group, id, 0x80000000)) {
+    if (peopleTestFlagsByID(group, id, 0x80000000)) {
         return 0;
     }
 
@@ -2649,7 +2649,7 @@ void heroReadStick(s32 member, f32* speed)
     extern void peopleStartTurn(u32, u32, f32, f32);
     extern void peopleSetSpeedFromAmount(u32, u32, f32);
     extern void peopleStopTurn(u32, u32);
-    extern void fn_80166458(void*, void*);
+    extern void soundUpdateListener(void*, void*);
 
     s8 x;
     s8 y;
@@ -2734,7 +2734,7 @@ void heroReadStick(s32 member, f32* speed)
             peopleStartTurn(group, id, cameraGetRotY() + angle, *speed);
         }
         peopleSetSpeedFromAmount(group, id, *speed);
-        fn_80166458(GSresGetResource(0, 2000), work);
+        soundUpdateListener(GSresGetResource(0, 2000), work);
     } else {
         *speed = 0.0f;
         peopleStopTurn(group, id);
@@ -3299,7 +3299,7 @@ u8 updateChat__F15HEROMOVE_MEMBER(s32 member)
     extern void peopleStopTurn(u32, u32);
     extern void GSinputResetLeftSmoothing(u32, u32, u32);
     extern void GSinputResetRightSmoothing(u32, u32, u32);
-    extern void fn_8018BA04(u32, u32, HeroMoveVec*);
+    extern void peopleGetHeadGroundPos(u32, u32, HeroMoveVec*);
     extern void peopleTurnToPoint(u32, u32, f32, f32, f32, f32);
     extern void floorEventCtrlTresure(u32, u32, u32);
     extern void fn_80183730(u32);
@@ -3331,13 +3331,13 @@ u8 updateChat__F15HEROMOVE_MEMBER(s32 member)
     GSinputResetRightSmoothing(1, 0, 0);
     heroMoveInitEventChat();
 
-    fn_8018BA04(target->group, target->id, &talkPos);
+    peopleGetHeadGroundPos(target->group, target->id, &talkPos);
     peopleTurnToPoint(group, id, talkPos.x, talkPos.y, talkPos.z, 1.0f);
-    if (fn_8018D7D0(target->group, target->id)) {
+    if (peopleIsTreasure(target->group, target->id)) {
         floorEventCtrlTresure(target->group, target->id, 2);
     } else {
         fn_80183730(peopleIsInGroup(target->group, target->id));
-        person = fn_8018397C(target->group, target->id);
+        person = peopleGetTalkScript(target->group, target->id);
         if (person != 0) {
             peopleTalkPause(target->group, target->id, 1);
             cmsRunSync((void*)person, 4, target->group, target->id, 0, 0);

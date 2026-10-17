@@ -1,7 +1,7 @@
 #include "dolphin/types.h"
 #include "game/fsys/fsys.h"
 
-u32 fn_8017D3A0(FSYSSlot* slot)
+u32 fsysStatus3(FSYSSlot* slot)
 {
     switch (slot->padding054) {
     case 4:

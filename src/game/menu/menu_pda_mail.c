@@ -410,8 +410,8 @@ typedef struct PdaMailWindowB {
 extern u32 mailGetAttachFileGroup(s32 index);
 extern s32 fn_8017B2CC(u32 fileHandle);
 extern s32 fn_8017B448(u32 fileHandle);
-extern u32 fn_8017B4BC(u32 fileHandle, u32 index);
-extern u32 fn_8017B5A4();
+extern u32 fsysFindLoadedArchive(u32 fileHandle, u32 index);
+extern u32 fsysEntryGetType();
 
 /* RULE-EXCEPTION(user-approved): single-function inline helper (fn_8004E440) — see docs/RULE_EXCEPTIONS.md */
 static inline s32 pdaMailIsAttachReady(s32 index)
@@ -440,8 +440,8 @@ static inline s32 pdaMailCountAttachItems(s32* state)
     total = fn_8017B448(object);
     count = 0;
     for (i = 0; i < total; i++) {
-        fn_8017B4BC(object, i);
-        if (fn_8017B5A4() == 9) {
+        fsysFindLoadedArchive(object, i);
+        if (fsysEntryGetType() == 9) {
             count++;
         }
     }
@@ -1288,7 +1288,7 @@ void fn_8004E9C0(s32 mailId)
     extern f32 lbl_8047A53C;
     extern f32 lbl_8047BE48;
     extern void fn_800F915C(u32 group);
-    extern void fn_8017B1CC(u32 group);
+    extern void GSresReleaseById(u32 group);
     extern s32 fn_8017B2CC(u32 group);
     extern void fn_8017B3E4(u32 group);
     extern u32 mailGetAttachFileGroup(s32 mailId);
@@ -1321,7 +1321,7 @@ void fn_8004E9C0(s32 mailId)
     }
     menuClose(0x77);
     menuCloseSync(0x77, 1);
-    fn_8017B1CC(file);
+    GSresReleaseById(file);
     fn_800F915C(group);
 }
 #pragma peephole reset
@@ -1683,8 +1683,8 @@ u8 pdaMailPickerRun(u8 initialSelection)
 extern u32 mailGetAttachFileGroup(s32 index);
 extern s32 fn_8017B2CC(u32 fileHandle);
 extern s32 fn_8017B448(u32 fileHandle);
-extern u32 fn_8017B4BC(u32 fileHandle, u32 index);
-extern u32 fn_8017B5A4(void);
+extern u32 fsysFindLoadedArchive(u32 fileHandle, u32 index);
+extern u32 fsysEntryGetType(void);
 extern u32 GSmsgGetRect(s32 messageId);
 extern const f32 lbl_8047BE38;
 extern const f32 lbl_8047BE3C;
@@ -1701,8 +1701,8 @@ static inline s32 pdaMailCountAttachmentEntries(u32 fileHandle)
     total = fn_8017B448(fileHandle);
     count = 0;
     for (index = 0; index < total; index++) {
-        fn_8017B4BC(fileHandle, index);
-        if (fn_8017B5A4() == 9) {
+        fsysFindLoadedArchive(fileHandle, index);
+        if (fsysEntryGetType() == 9) {
             count++;
         }
     }
@@ -1773,7 +1773,7 @@ s32 fn_8004E2E0(u8* context, u8* object)
 }
 #pragma peephole reset
 
-extern u8 fn_8017B07C(u32 fileHandle, u32 entry);
+extern u8 fsysIsEntryLoaded(u32 fileHandle, u32 entry);
 extern void gfxSetFlags(u32 mask);
 extern void gfxClearFlags(u32 value);
 extern void gfxLoadTexture(u32 slot, void* texture);
@@ -1805,8 +1805,8 @@ static inline u32 pdaMailGetAttachEntry(s32* state, s32 selected)
     fileHandle = mailGetAttachFileGroup(index);
     found = 0;
     for (i = 0; i < count; i++) {
-        entry = fn_8017B4BC(fileHandle, i);
-        if (fn_8017B5A4() == 9) {
+        entry = fsysFindLoadedArchive(fileHandle, i);
+        if (fsysEntryGetType() == 9) {
             if (found >= selected) {
                 break;
             }
@@ -1840,7 +1840,7 @@ s32 fn_8004E510(u8* context, u8* object)
     if (fileHandle == 0) {
         return 0;
     }
-    if (fn_8017B07C(fileHandle, entry) == 0) {
+    if (fsysIsEntryLoaded(fileHandle, entry) == 0) {
         return 0;
     }
 

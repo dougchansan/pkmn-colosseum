@@ -1265,7 +1265,7 @@ u16 menuFaceRequestPokemon(u16 key, void* (*callback)(u32), u32 arg)
 {
     extern void* _menuFaceBiosGetPtr__FUs(u16 key);
     extern void fn_8010BD6C(u16 key, void* (*cb)(u32), u32 a);
-    extern void fn_8017B1CC(u32 group);
+    extern void GSresReleaseById(u32 group);
     extern s32 fn_8017B000(u32 fileHandle, u32 requestID, u32 callbackA,
                             u32 callbackB, u32 callbackC);
     extern void _menuFaceLoad(void* unused1, u32 unused2, u32 arg);
@@ -1295,7 +1295,7 @@ u16 menuFaceRequestPokemon(u16 key, void* (*callback)(u32), u32 arg)
                 }
             }
             if (i == count) {
-                fn_8017B1CC(0x5C0);
+                GSresReleaseById(0x5C0);
                 return 0;
             }
         } else {

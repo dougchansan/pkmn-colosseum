@@ -180,7 +180,7 @@ void fn_80266250(void)
 {
     extern int floorBattleEndTerminateScripts();
     extern u32 lbl_8047B680;
-    extern int fn_801653BC();
+    extern int soundGetCurrentSubSound();
     extern int std228_soundGetCurrentBackgroundMusic();
     extern u32 fn_801656D8(u32 id);
     extern u32 std104_soundSetBackgroundMusic(u32 id, u32 volume, u32 priority);
@@ -203,7 +203,7 @@ void fn_80266250(void)
     } else {
         uVar3 = 0;
     }
-    iVar2 = fn_801653BC();
+    iVar2 = soundGetCurrentSubSound();
     if (iVar2 != 0) {
         uVar4 = fn_801656D8(iVar2) & 0xFFFFFFFFFFFFFFFFu;
         scriptSoundStop(0x32);

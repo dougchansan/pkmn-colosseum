@@ -44,7 +44,7 @@ extern void GSmtxMakeYRotation(void* dst, f32 angle);
 extern void GSmtxMakeZRotation(void* dst, f32 angle);
 extern void fn_800E048C(void* dst, f32 x, f32 y, f32 z);
 extern void fn_800E0560(void* dst, f32* src);
-extern void fn_800E0290(void* dst, void* lhs, void* rhs);
+extern void GSmtxConcat(void* dst, void* lhs, void* rhs);
 extern void GSvecTransform(void* dst, void* mtx, void* vec);
 extern void _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID(void);
 extern void gfxSetFlags(s32 mode);
@@ -73,10 +73,10 @@ void fn_80190E60(HSD_ObjectTransformData* data) {
     fn_800E048C(mtx_translate, data->translate[0], data->translate[1],
                 data->translate[2]);
     fn_800E0560(mtx_scale, data->scale);
-    fn_800E0290(mtx, mtx_y, mtx);
-    fn_800E0290(mtx, mtx_z, mtx);
-    fn_800E0290(mtx, mtx_translate, mtx);
-    fn_800E0290(mtx, mtx_scale, mtx);
+    GSmtxConcat(mtx, mtx_y, mtx);
+    GSmtxConcat(mtx, mtx_z, mtx);
+    GSmtxConcat(mtx, mtx_translate, mtx);
+    GSmtxConcat(mtx, mtx_scale, mtx);
     GSvecTransform(corner0, mtx, data->corner0);
     GSvecTransform(corner1, mtx, data->corner1);
 
@@ -148,10 +148,10 @@ s32 fn_80191118(HSD_ObjectTransformData* data) {
     fn_800E048C(mtx_translate, data->translate[0], data->translate[1],
                 data->translate[2]);
     fn_800E0560(mtx_scale, data->scale);
-    fn_800E0290(mtx, mtx_y, mtx);
-    fn_800E0290(mtx, mtx_z, mtx);
-    fn_800E0290(mtx, mtx_translate, mtx);
-    fn_800E0290(mtx, mtx_scale, mtx);
+    GSmtxConcat(mtx, mtx_y, mtx);
+    GSmtxConcat(mtx, mtx_z, mtx);
+    GSmtxConcat(mtx, mtx_translate, mtx);
+    GSmtxConcat(mtx, mtx_scale, mtx);
     GSvecTransform(corner0, mtx, data->corner0);
     GSvecTransform(corner1, mtx, data->corner1);
 

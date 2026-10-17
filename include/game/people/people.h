@@ -393,7 +393,7 @@ void peopleSetShadowAnim(PeopleEntry* entry, u8 animId);
 /** Historical name; returns the model rotation-vector pointer. fn_8018FC50 */
 struct GSvec* peopleGetPosition(PeopleEntry* entry);
 
-/** Get scale data from model. fn_8018FC74 */
+/** Get scale data from model. peopleApplyPosition */
 void peopleGetScale(PeopleEntry* entry);
 
 /** Set position on model. fn_8018FC98 */
@@ -402,7 +402,7 @@ void peopleSetPosition(PeopleEntry* entry, void* pos);
 /** Get model position (world coords). fn_8018FCBC */
 void* peopleGetModelPosition(PeopleEntry* entry);
 
-/** Get model rotation. fn_8018FC08 */
+/** Get model rotation. peopleApplyRotation */
 void peopleGetModelRotation(PeopleEntry* entry);
 
 /** Query script ref from a people entry's model. peopleInfoBiosGetPtr */

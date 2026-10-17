@@ -26,10 +26,10 @@ extern s32 fn_8017A624(FSYSSlot* slot);
  */
 extern s64 OSDisableInterrupts(void);
 extern void OSRestoreInterrupts(u32 level);
-extern void fn_80167E64(void* file);
+extern void GSdvdClose(void* file);
 
 /* Address: 0x8017C414 | size: 0x154 */
-s32 fn_8017C414(FSYSSlot* request)
+s32 fsysSlotStatusFinishRead(FSYSSlot* request)
 {
     FSYSSlot* slot;
     u32 enabled;
@@ -52,7 +52,7 @@ s32 fn_8017C414(FSYSSlot* request)
         default: slot->status = 0x3E8; slot->archiveHandle = 1; break;
         }
         if (slot->tocBuffer) {
-            fn_80167E64(slot->tocBuffer);
+            GSdvdClose(slot->tocBuffer);
             slot->tocBuffer = NULL;
         }
         OSRestoreInterrupts(enabled);

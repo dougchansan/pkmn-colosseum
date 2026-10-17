@@ -113,7 +113,7 @@ void fn_802019BC(void* ctx, void* src, void* typeObj) {
 u16 fn_80201B2C(void* ctx, void* typeObj, u32 param) {
     extern u16 joutaiDataBiosGetStatusKind();
     extern u16 statusSetJoutai0C();
-    extern u16 fn_801215E4();
+    extern u16 pokemonSetJoutai0C();
     void* resolved;
     if (joutaiDataBiosGetStatusKind(typeObj) == 0x7C || joutaiDataBiosGetStatusKind(typeObj) == 0xC8 || joutaiDataBiosGetStatusKind(typeObj) == 0xCD) {
         resolved = getPartyStatus(ctx);
@@ -123,7 +123,7 @@ u16 fn_80201B2C(void* ctx, void* typeObj, u32 param) {
             } else {
                 resolved = pokemonGetStatus(resolved, 0, 0xCC, 0);
             }
-            return fn_801215E4(resolved, typeObj, param);
+            return pokemonSetJoutai0C(resolved, typeObj, param);
         } else if (joutaiDataBiosGetStatusKind(typeObj) == 0xCD) {
             return statusSetJoutai0C(resolved, typeObj, param);
         }

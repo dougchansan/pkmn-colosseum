@@ -487,7 +487,7 @@ extern f32 lbl_8047D100;
 
 extern f32 lbl_8047D104;
 
-extern u32  fn_800E1544(void);
+extern u32  GSmemOptimize(void);
 
 extern void GSlogWrite(const char* fmt, ...);
 

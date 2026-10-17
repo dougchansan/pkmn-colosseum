@@ -129,8 +129,8 @@ extern void gsParticlePtclHook();
 extern u8 joutaiDataBiosGetKaisuuId(u16 idx);
 extern u8 joutaiDataBiosGetMaxStack(u16 idx);
 extern u16 fn_80119E10(u16 idx);
-extern u8 fn_80119E50(u16 idx);
-extern u8 fn_80119E90(u16 idx);
+extern u8 joutaiDataBiosGetWriteMode(u16 idx);
+extern u8 joutaiDataBiosGetSlot(u16 idx);
 extern u16 joutaiDataBiosGetStatusKind(u16 idx);
 extern u8 joutaiDataBiosGetObjectKind(u16 idx);
 extern u32 fn_80119F50(u16 idx);
@@ -218,7 +218,7 @@ extern void GSmodelIsAnimating(void);
 extern void GSmodelGetPart(void);
 extern void GSpartGetTransform(void);
 extern void GSpartFree();
-extern void fn_8018AACC(void);
+extern void peopleWalkTo(void);
 extern void peopleMoveCheck(u32 groupId, u32 index, u8 waitFlag);
 extern void peopleStartTurn(void);
 extern void std168_characterDetachFromCharacter(void);
@@ -538,11 +538,11 @@ extern void GScolsys2CheckGetEventID(void);
 extern void peopleStopTurn(void);
 extern void GSinputResetLeftSmoothing(void);
 extern void GSinputResetRightSmoothing(void);
-extern void fn_8018BA04(void);
+extern void peopleGetHeadGroundPos(void);
 extern void peopleTurnToPoint(void);
-extern void fn_8018D7D0(void);
+extern void peopleIsTreasure(void);
 extern void fn_80183730(void);
-extern void fn_8018397C(void);
+extern void peopleGetTalkScript(void);
 extern void peopleTalkPause(void);
 extern void std055_characterEndSpeech(void);
 extern void fn_80183688(void);
@@ -573,7 +573,7 @@ extern void GSinputGetLeftStickXData(void);
 extern void GSinputGetLeftStickYData(void);
 extern void fn_800F7BC4(void);
 extern void peopleSetSpeedFromAmount(void);
-extern void fn_80166458(void);
+extern void soundUpdateListener(void);
 extern f64 lbl_8047D0C8;
 extern f32 lbl_8047D0B4;
 extern f32 lbl_8047D0B8;
@@ -589,7 +589,7 @@ extern f32 lbl_8047D0D4;
 void moveLeader__F15HEROMOVE_MEMBER(void);
 extern void dbgMenuIsOpen(void);
 extern void menuIsCheck(void);
-extern void fn_8018C424(void);
+extern void peopleTestFlagsByID(void);
 extern void heroMoveRunEvent(void);
 extern u8 lbl_80272A38[];
 extern f32 lbl_8047D064;
@@ -610,7 +610,7 @@ extern u8 lbl_80272A10[];
 void heroMoveGetKenObjID(void);
 extern void peopleOpen(void);
 extern void GSmodelEnableAnimBlend(void);
-extern void fn_8018CB5C(void);
+extern void peopleRegisterHumanCollision(void);
 extern void fn_80189328(void);
 extern void peopleSetRotation(void);
 void heroMoveInit(void);
@@ -1027,7 +1027,7 @@ extern void heroBiosSetRnd(u8* ptr, u32 val);
 extern u32 heroBiosGetRnd(u8* ptr);
 extern u32 GSeffectGetUpdateGapp(void);
 extern u16 pokemonBiosGetPokemonDataId(u8* ptr);
-extern u32 fn_80128E24(void);
+extern u32 savedataGetWorkPtr(void);
 extern void* floorReadMapPreFunc(void* owner, u32 param, u32 alloc_size);
 extern void* floorReadScriptPreFunc(void* owner, u32 param, u32 alloc_size);
 extern void* floorReadFontPreFunc(void* owner, u32 param, u32 alloc_size);
@@ -1297,7 +1297,7 @@ extern u32 pokemonGetJoutaiMenuSpriteId(u8* ptr);
 extern u32 pokemonGetJoutaiDataId(u8* ptr);
 extern void fn_80121484(void* obj, u32 arg2, u32 arg3);
 extern void pokemonSetJoutai08(void* obj, u32 arg2, u32 arg3);
-extern void fn_801215E4(void* obj, u32 arg2, u32 arg3);
+extern void pokemonSetJoutai0C(void* obj, u32 arg2, u32 arg3);
 extern void pokemonSetJoutaiKaisuu(void* obj, u32 arg2, u32 arg3);
 extern void fn_801217B4(void* obj, u32 arg2, u32 arg3);
 extern void fn_8012190C(void* obj, u32 arg2, u32 arg3);
@@ -1436,7 +1436,7 @@ u8 pokemonCheckValid(u8* ptr);
 #ifndef POKEMON_SET_STATUS_EXACT
 #ifndef POKEMON_RANGE_SPLIT
 /* Address: 0x80128E24 | Size: 0x8 | Pattern: sda_getter */
-u32 fn_80128E24(void) {
+u32 savedataGetWorkPtr(void) {
     return lbl_8047ADB8;
 }
 /* 0x8011F634 | 0xA4 */
@@ -1495,7 +1495,7 @@ extern u8 lbl_8027296C[];
 /* 0x801211F8 | 0x218 */
 /* 0x78 | fn_80121484 | status_guarded_call */
 /* 0x78 | pokemonSetJoutai08 | status_guarded_call */
-/* 0x78 | fn_801215E4 | status_guarded_call */
+/* 0x78 | pokemonSetJoutai0C | status_guarded_call */
 /* 0x78 | pokemonSetJoutaiKaisuu | status_guarded_call */
 /* 0x78 | fn_801217B4 | status_guarded_call */
 /* 0x78 | fn_8012190C | status_guarded_call */
@@ -2633,7 +2633,7 @@ s32 pokemonGetJoutai08(void* a, u16 b) {
     return (s32)statusGetJoutai08(a, b);
 }
 
-void fn_801215E4(void* obj, u32 arg2, u32 arg3) {
+void pokemonSetJoutai0C(void* obj, u32 arg2, u32 arg3) {
     extern u16 joutaiDataBiosGetStatusKind();
     extern void statusSetJoutai0C();
     if ((u16)joutaiDataBiosGetStatusKind(arg2) == 0x7C ||

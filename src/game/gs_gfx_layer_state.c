@@ -103,11 +103,11 @@ extern u8 GSmemDumpMap(u32, u32);
 extern u32 _matGSmatObjMakeTExp(void*, void*, void*, void*, void*);
 extern void _matGSmatEnableEnvMapExt(u8*);
 extern s32 _matGSmatObjLoad(u8*);
-extern void fn_800E0290(void*, void*, void*);
+extern void GSmtxConcat(void*, void*, void*);
 extern void fn_800E02C4(void*);
 extern void GSmtxRotateZ(void*, f32);
 extern void GSmtxRotateY(void*, f32);
-extern void fn_800E0370(void*, f32);
+extern void GSmtxRotateX(void*, f32);
 extern void fn_800E03E8(void*, f32, f32, f32);
 extern void fn_800E0628(void*, void*);
 extern void fn_800E064C(void*);
@@ -1260,7 +1260,7 @@ void gfxPushMultMatrix(void* src) {
         GSlogWrite(lbl_80270480);
     } else {
         lbl_8047AAC0 = lbl_8047AAC0 - 0x30;
-        fn_800E0290((void*)lbl_8047AAC0, (void*)(lbl_8047AAC0 + 0x30), src);
+        GSmtxConcat((void*)lbl_8047AAC0, (void*)(lbl_8047AAC0 + 0x30), src);
         mtx = *(u32*)(lbl_80314610 + 0x24);
         GXLoadPosMtxImm(lbl_8047AAC0, mtx);
         GXLoadNrmMtxImm(lbl_8047AAC0, mtx);
@@ -1284,7 +1284,7 @@ void gfxMultMatrix(void* param) {
     if (*(s32*)state == 1) {
         gfxRecordCommand(0x40, 0x10, param);
     } else {
-        fn_800E0290((void*)lbl_8047AAC0, (void*)lbl_8047AAC0, param);
+        GSmtxConcat((void*)lbl_8047AAC0, (void*)lbl_8047AAC0, param);
         mtx = *(u32*)(lbl_80314610 + 0x24);
         GXLoadPosMtxImm(lbl_8047AAC0, mtx);
         GXLoadNrmMtxImm(lbl_8047AAC0, mtx);
@@ -1387,7 +1387,7 @@ void gfxRotateXYZ(f32 a, f32 b, f32 c) {
     if (*(s32*)lbl_8047AA80 == 1) {
         gfxRecordCommand(0x3c, 0xd, a, y, z);
     } else {
-        fn_800E0370((void*)lbl_8047AAC0, a);
+        GSmtxRotateX((void*)lbl_8047AAC0, a);
         GSmtxRotateY((void*)lbl_8047AAC0, y);
         GSmtxRotateZ((void*)lbl_8047AAC0, z);
         matrixIndex = *(u32*)(lbl_80314610 + 0x24);

@@ -17,7 +17,7 @@
 extern void fn_80180C78(FSYSSlot* slot, FSYSSubEntry* sub, u32 arg);
 
 /* Address: 0x8017C008 | size: 0x6C */
-s32 fn_8017C008(FSYSSlot* slot)
+s32 fsysAllocLZSSJob(FSYSSlot* slot)
 {
     FSYSSubEntry* sub;
     u32* data;

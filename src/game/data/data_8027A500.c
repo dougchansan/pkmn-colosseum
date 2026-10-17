@@ -161,7 +161,7 @@ extern u8 std055_characterEndSpeech[];
 extern u8 std054_characterTalk[];
 extern u8 std068_characterTurnToAngle[];
 extern u8 std177_characterMoveToCharacter[];
-extern u8 fn_8018B220[];
+extern u8 peopleStopAnimation[];
 extern u8 std154_characterPlayAnimation[];
 extern u8 fn_8018B558[];
 extern u8 std051_characterSetAnimation[];
@@ -171,7 +171,7 @@ extern u8 peopleSetVisible[];
 extern u8 peopleClearFlagsByIndex[];
 extern u8 peopleSetFlagsByIndex[];
 extern u8 std151_characterFaceDirection[];
-extern u8 fn_8018DB68[];
+extern u8 peopleCloseByID[];
 extern u8 peopleOpen[];
 extern u8 std081_flagCheckTrue[];
 extern u8 std079_flagSetTrue[];
@@ -93950,7 +93950,7 @@ void* lbl_802E1CF0[742] = {
     (void*)((u8*)std051_characterSetAnimation),
     (void*)0x01010101,
     (void*)0x01000000,
-    (void*)((u8*)fn_8018B220),
+    (void*)((u8*)peopleStopAnimation),
     (void*)0x01010000,
     (void*)0x00000000,
     (void*)((u8*)peopleWaitSyncMotion),
@@ -93965,7 +93965,7 @@ void* lbl_802E1CF0[742] = {
     (void*)((u8*)peopleOpen),
     (void*)0x01010000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8018DB68),
+    (void*)((u8*)peopleCloseByID),
     (void*)0x01010000,
     (void*)0x00000000,
     (void*)((u8*)std058_characterCheckWithinBounds),

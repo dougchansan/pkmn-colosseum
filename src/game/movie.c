@@ -51,7 +51,7 @@ extern void std138_soundPlayEffectEx(u32, u32, u32, u32);
 extern void soundStartSE(u32 soundId);
 extern void fn_80165F40(void);
 extern void fn_80165F84(void);
-extern void fn_801655D4(u32 index);
+extern void soundOpenWaveArchive(u32 index);
 extern void soundInit(u32 a, u32 b, u32 c, u32 d, u32 e);
 extern void fadeSet(u32 mode, f32 speed);
 extern void fadeCheck(u32 enable);
@@ -84,7 +84,7 @@ extern void fn_800A0FC8(u32 mode);                     /* OSSetProgressiveMode *
 extern void fn_800D37D4(u32 a, u32 b, u32 c, u32 d, u32 e, u16 size);
 extern s32  _fsysInitTOC(u32 numSlots, u32 param2, u32 param3, u32 param4);
 extern u32  GSgappCreate(s32 state, u8 priority, void* param, void* func);
-extern void fn_8017AAA4(void);
+extern void fsysUpdateTask(void);
 extern void GSlogWrite(const char* fmt, ...);
 extern u32  windowGetActiveID(void);
 extern s32  menuOpenCustom(void* menuId, u32 parentId, s32* cursorOut,
@@ -225,16 +225,16 @@ void* _menuSoundReadWaveThread__FPv(void* param)
     u32* request = param;
 
     if (request[0] != 0) {
-        fn_801655D4(request[0]);
+        soundOpenWaveArchive(request[0]);
     }
     if (request[1] != 0) {
-        fn_801655D4(request[1]);
+        soundOpenWaveArchive(request[1]);
     }
     if (request[2] != 0) {
-        fn_801655D4(request[2]);
+        soundOpenWaveArchive(request[2]);
     }
     if (request[3] != 0) {
-        fn_801655D4(request[3]);
+        soundOpenWaveArchive(request[3]);
     }
     lbl_8047A460--;
     return NULL;
@@ -244,7 +244,7 @@ void* _menuSoundReadWaveThread__FPv(void* param)
 void* fn_8003708C(void* param)
 {
     _fsysInitTOC(0x40, 0, 0, 0);
-    GSgappCreate(1, 0x14, 0, fn_8017AAA4);
+    GSgappCreate(1, 0x14, 0, fsysUpdateTask);
     lbl_8047A464 = 1;
     return NULL;
 }

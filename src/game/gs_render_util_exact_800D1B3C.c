@@ -3,7 +3,7 @@
 #include "game/gs_render_util.h"
 #include "game/gs_camera_build_matrix.h"
 
-extern void fn_800E0264(void* dst, void* src);
+extern void GSmtxInverse(void* dst, void* src);
 
 /* XD: GScameraGetInvMatrixPtr. */
 void* fn_800D1B3C(void* obj) {
@@ -12,7 +12,7 @@ void* fn_800D1B3C(void* obj) {
     if (c->dirty != 0) {
         cameraBuildMatrix(c);
     }
-    fn_800E0264(c->projectionMtx, c->viewMtx);
+    GSmtxInverse(c->projectionMtx, c->viewMtx);
     return c->projectionMtx;
 }
 

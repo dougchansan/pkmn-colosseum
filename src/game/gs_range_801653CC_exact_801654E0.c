@@ -43,7 +43,7 @@ u32 soundPauseMusic(void)
 }
 #pragma dont_inline reset
 
-void fn_801655D4(u32 index)
+void soundOpenWaveArchive(u32 index)
 {
     GSsndDvdWave* wave;
 
@@ -88,7 +88,7 @@ u32 std108_soundIsAnyPlaying(void)
     u32 result;
 
     set__5GSvecFfff(&position, lbl_8047D540, lbl_8047D540, lbl_8047D540);
-    result = fn_801664F0(&position);
+    result = soundSetListener(&position);
     return (result | -result) >> 31;
 }
 
@@ -232,7 +232,7 @@ u32 soundPlay(u32 id, u32 volume, u32 priority, s32 kind)
             } else {
                 wave = lbl_80478E34[waveIndex].archive;
                 if (wave != 0) {
-                    fn_80165DEC(wave, GSresGetResource(0, resourceId), resourceSize);
+                    soundReadStreamFile(wave, GSresGetResource(0, resourceId), resourceSize);
                 } else {
                     GSlogWrite(lbl_802735F8, id);
                     return 0;

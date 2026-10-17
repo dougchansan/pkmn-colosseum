@@ -29,7 +29,7 @@ extern char lbl_802757F0[];
 extern char lbl_802757FC[];
 
 extern void cameraMoveStop(void);
-extern s32 fn_80176C04(void*, u32);
+extern s32 cameraGetResAnimFrame(void*, u32);
 extern void cameraPlayOffsetAnime(void*, u32, s32, u32);
 extern void cameraSetOffsetPosition(f32*);
 extern void cameraSetOffsetRotation(f32*);
@@ -96,7 +96,7 @@ void fn_801C2F00(void* arg0, u32 arg1)
 
     offset = *(BattleCameraVec*)lbl_802757F0;
     cameraMoveStop();
-    anim = fn_80176C04(arg0, arg1);
+    anim = cameraGetResAnimFrame(arg0, arg1);
     cameraPlayOffsetAnime(arg0, arg1, anim, 1);
     cameraSetOffsetPosition(&offset.x);
     cameraSetOffsetRotation(&offset.x);

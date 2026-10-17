@@ -1306,7 +1306,7 @@ static inline void s3dAddListenerToRoom(SndRoom* room) {
     }
 }
 
-u32 fn_8015ED00(SndListener* listener, SndVec3* position,
+u32 s3dUpdateListener(SndListener* listener, SndVec3* position,
                 SndVec3* direction, SndVec3* heading, SndVec3* up,
                 u8 volume, SndRoom* room) { /* sndUpdateListener */
     if (lbl_8047AF18 != 0) {
@@ -1333,7 +1333,7 @@ u32 fn_8015ED00(SndListener* listener, SndVec3* position,
     return 0;
 }
 
-u32 fn_8015EF04(SndListener* listener, SndVec3* position,
+u32 s3dSetListener(SndListener* listener, SndVec3* position,
                 SndVec3* direction, SndVec3* heading, SndVec3* up,
                 f32 surroundFront, f32 surroundBack, f32 soundSpeed,
                 u32 flags, u8 volume, SndRoom* room) { /* sndAddListener */
@@ -2419,7 +2419,7 @@ extern u8 lbl_8047B035;
 extern void dataInit(u32 smpBase, u32 smpLength);
 extern void dataExit(void);
 extern void synthExit(void);
-extern void fn_8015AAA0(u32 studio);
+extern void salDeactivateStudio(u32 studio);
 extern void salActivateVoice(u8* ptr, u8 unused2);
 typedef union HwVolumeStudio {
     struct {
@@ -2438,8 +2438,8 @@ typedef union HwVolumeStudio {
 } HwVolumeStudio;
 extern HwVolumeStudio lbl_80447E60[];
 extern void fn_8015D7D0(void);
-extern void fn_801629A4(u32 index, u8 value);
-extern void fn_801629D0(u32 index, u8 value);
+extern void hwSetSRCType(u32 index, u8 value);
+extern void hwSetPolyPhaseFilter(u32 index, u8 value);
 extern void hwSetITDMode(u32 index, u8 flag);
 extern void fn_801632B4(u8* dst, u8* src, u32 size, u32 priority, u32 callbackArg0, u32 callbackArg1);
 extern void fn_80163490(void);
@@ -2510,7 +2510,7 @@ extern u32 fn_801643B8(void);
 extern u8* salAiGetDest(void);
 extern void salCtrlDsp(u32 arg);
 extern void salHandleAuxProcessing(void);
-extern void fn_8016245C(u8 offset);
+extern void hwSetTimeOffset(u8 offset);
 extern void fn_801496A0(u32 ticks);
 extern void synthHandle(u32 ticks);
 extern void fn_8015F620(void);
@@ -2556,14 +2556,14 @@ void snd_handle_irq(void) {
 
     for (frame = 0; frame < 5; frame++) {
         fn_80164398();
-        fn_8016245C(frame);
+        hwSetTimeOffset(frame);
         fn_801496A0(0x100);
         synthHandle(0x100);
         fn_801643B8();
     }
 
     fn_80164398();
-    fn_8016245C(0);
+    hwSetTimeOffset(0);
     fn_8015F620();
     fn_801643B8();
     fn_80164398();
@@ -2660,7 +2660,7 @@ asm void fn_8016245C(void) {
 #include "src/game/people/people_field_fn_8016245C.inc"
 }
 #else
-void fn_8016245C(u8 val) { lbl_8047B050 = val; }
+void hwSetTimeOffset(u8 val) { lbl_8047B050 = val; }
 #endif
 #pragma pop
 #pragma push
@@ -2671,7 +2671,7 @@ asm void fn_80162464(void) {
 #include "src/game/people/people_field_fn_80162464.inc"
 }
 #else
-u8 fn_80162464(void) { return lbl_8047B050; }
+u8 hwGetTimeOffset(void) { return lbl_8047B050; }
 #endif
 #pragma pop
 extern u32 lbl_8047B024;
@@ -2779,8 +2779,8 @@ void hwInitSamplePlayback(u32 index, u16 value70, void* words74, u32 resetState,
     HW_PLAYBACK_VOICES[index].bytes_E4[3] = 0xFF;
 
     if (initFlags != 0) {
-        fn_801629A4(index, 0);
-        fn_801629D0(index, 1);
+        hwSetSRCType(index, 0);
+        hwSetPolyPhaseFilter(index, 1);
     }
 
     hwSetITDMode(index, setupFlag);
@@ -3050,7 +3050,7 @@ asm void fn_801629A4(void) {
 #include "src/game/people/people_field_fn_801629A4.inc"
 }
 #else
-void fn_801629A4(u32 index, u8 value) {
+void hwSetSRCType(u32 index, u8 value) {
     extern u16 lbl_80478BF8;
     PeopleFieldMoveSlot* entries = (*(PeopleFieldMoveSlot* volatile*)&lbl_8047B024);
 
@@ -3067,7 +3067,7 @@ asm void fn_801629D0(void) {
 #include "src/game/people/people_field_fn_801629D0.inc"
 }
 #else
-void fn_801629D0(u32 index, u8 value) {
+void hwSetPolyPhaseFilter(u32 index, u8 value) {
     extern u16 lbl_80478C00;
     PeopleFieldMoveSlot* entries = (*(PeopleFieldMoveSlot* volatile*)&lbl_8047B024);
 
@@ -3085,7 +3085,7 @@ asm void hwSetITDMode(void) {
 }
 #else
 /* peopleFieldMemSetup: flag==0 marks NPC slot active (set hi bit of +0xF0, +0xD0/+0xD2=0x10);
- * else clears the hi bit. Base array lbl_8047B024 (stride 0xF4, same as fn_801629A4/D0) is
+ * else clears the hi bit. Base array lbl_8047B024 (stride 0xF4, same as hwSetSRCType/D0) is
  * re-read per access (volatile reinterpret) to match the target. byte-match verified 22/22. */
 void hwSetITDMode(u32 index, u8 flag) {
     extern u32 lbl_8047B024;
@@ -3295,7 +3295,7 @@ asm void fn_80162D8C(void) {
 #include "src/game/people/people_field_fn_80162D8C.inc"
 }
 #else
-void fn_80162D8C(u32 studio) { fn_8015AAA0(studio); }
+void fn_80162D8C(u32 studio) { salDeactivateStudio(studio); }
 #endif
 #pragma pop
 #pragma push
@@ -3306,10 +3306,10 @@ asm void fn_80162DAC(void) {
 #include "src/game/people/people_field_fn_80162DAC.inc"
 }
 #else
-void fn_80162DAC(u8 index, u32 arg1) {
-    extern u32 fn_8015D54C(void*, void*);
+void hwAddInput(u8 index, u32 arg1) {
+    extern u32 salAddStudioInput(void*, void*);
     PeopleStudioState* entries = (PeopleStudioState*)lbl_80447E60;
-    fn_8015D54C((u8*)&entries[(u8)index], (void*)arg1);
+    salAddStudioInput((u8*)&entries[(u8)index], (void*)arg1);
 }
 #endif
 #pragma pop
@@ -3321,10 +3321,10 @@ asm void fn_80162DE0(void) {
 #include "src/game/people/people_field_fn_80162DE0.inc"
 }
 #else
-void fn_80162DE0(u8 index, u32 arg1) {
-    extern u32 fn_8015D5F4(void*, void*);
+void hwRemoveInput(u8 index, u32 arg1) {
+    extern u32 salRemoveStudioInput(void*, void*);
     PeopleStudioState* entries = (PeopleStudioState*)lbl_80447E60;
-    fn_8015D5F4((u8*)&entries[(u8)index], (void*)arg1);
+    salRemoveStudioInput((u8*)&entries[(u8)index], (void*)arg1);
 }
 #endif
 #pragma pop
@@ -3491,7 +3491,7 @@ asm void fn_8016300C(void) {
 #include "src/game/people/people_field_fn_8016300C.inc"
 }
 #else
-void fn_8016300C(u32 a, u32 b) {
+void hwInitSampleMem(u32 a, u32 b) {
     extern void fn_801634A8(u32 x);
     fn_801634A8(b);
 }
@@ -3505,7 +3505,7 @@ asm void fn_80163030(void) {
 #include "src/game/people/people_field_fn_80163030.inc"
 }
 #else
-void fn_80163030(void) { fn_80163794(); }
+void hwExitSampleMem(void) { fn_80163794(); }
 #endif
 #pragma pop
 #pragma push
@@ -3521,7 +3521,7 @@ typedef struct PeopleFieldMoveCommand {
     u32 packedSizeWord;    /* 0x04: high byte type, low 24-bit payload */
 } PeopleFieldMoveCommand;
 
-void fn_80163050(u32** src, u32* out) {
+void hwSaveSample(u32** src, u32* out) {
     extern u32 fn_80163810(void* a, u32 b);
     PeopleFieldMoveCommand* command = (PeopleFieldMoveCommand*)*src;
     u32 val = command->packedSizeWord;
@@ -3558,7 +3558,7 @@ asm void fn_80163104(void) {
 #include "src/game/people/people_field_fn_80163104.inc"
 }
 #else
-void fn_80163104(u8* src, u8* dest) {
+void hwRemoveSample(u8* src, u8* dest) {
     extern void fn_80163BCC(u8* a, u32 b);
     PeopleFieldMoveCommand* command = (PeopleFieldMoveCommand*)src;
     u32 val = command->packedSizeWord;
@@ -3595,7 +3595,7 @@ asm void fn_801631A8(void) {
 #include "src/game/people/people_field_fn_801631A8.inc"
 }
 #else
-void fn_801631A8(void) {}
+void hwFrameDone(void) {}
 #endif
 #pragma pop
 extern u32 lbl_8047B054;
@@ -6811,7 +6811,7 @@ void salHandleAuxProcessing(void) {
     }
 }
 
-void fn_8015AAA0(u32 studio) {
+void salDeactivateStudio(u32 studio) {
     lbl_80447E60[(u8)studio].named.state = 0;
 }
 
@@ -6916,7 +6916,7 @@ void salDeactivateVoice(void* voice) {
     dsp_vptr->state = 0;
 }
 
-u32 fn_8015D54C(void* studio, void* data) {
+u32 salAddStudioInput(void* studio, void* data) {
     DSPstudioinfo* stp = studio;
     u8* input = data;
 
@@ -6932,7 +6932,7 @@ u32 fn_8015D54C(void* studio, void* data) {
     return 0;
 }
 
-u32 fn_8015D5F4(DSPstudioinfo* stp, void* input) {
+u32 salRemoveStudioInput(DSPstudioinfo* stp, void* input) {
     long i;
 
     for (i = 0; i < stp->numInputs; i++) {

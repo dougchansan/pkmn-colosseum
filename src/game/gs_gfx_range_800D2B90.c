@@ -68,7 +68,7 @@ extern u32 OSGetTick(void);
 extern void fn_8019C6FC(void);
 extern void fn_800D1070(u32 frames);
 extern void GSlightUpdate(u32 frames);
-extern void fn_800E3884(u32 frames, s32 mode);
+extern void GSmodelAdvanceAll(u32 frames, s32 mode);
 extern void gsParticleUpdateAll(s32 frames);
 extern void fn_800D13C4(void* a);
 extern void fn_800DC874(void* a);
@@ -357,7 +357,7 @@ void GSgfxRenderEnd(void)
     lbl_804001F0[12] += end - start;
 
     start = OSGetTick();
-    fn_800E3884(lbl_8047AA80->frameDelta, 0);
+    GSmodelAdvanceAll(lbl_8047AA80->frameDelta, 0);
     end = OSGetTick();
     lbl_804001F0[13] += end - start;
 
@@ -365,7 +365,7 @@ void GSgfxRenderEnd(void)
     lbl_804001F0[14] = 0;
     while (count-- != 0) {
         start = OSGetTick();
-        fn_800E3884(1, 1);
+        GSmodelAdvanceAll(1, 1);
         end = OSGetTick();
         lbl_804001F0[13] += end - start;
 
@@ -429,7 +429,7 @@ void GSgfxRenderLayer(void* arg0, u8 arg1) {
             ((u32*)&lbl_804001F0)[0x30 / 4] = tick - startTick;
 
             startTick = OSGetTick();
-            fn_800E3928((void*)*(u32*)((u8*)lbl_8047AA80 + 0x54));
+            GSmodelApplyAll((void*)*(u32*)((u8*)lbl_8047AA80 + 0x54));
             tick = OSGetTick();
             ((u32*)&lbl_804001F0)[0x34 / 4] = tick - startTick;
 

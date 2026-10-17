@@ -447,7 +447,7 @@ void fn_801EF644(s32 result) {
     extern u8 lbl_803727C8[];
     extern u8 lbl_803752A0[];
     extern u16 lbl_80478D10;
-    extern u8 fn_8017D56C(s32 id);
+    extern u8 fsysPreloadArchive(s32 id);
     extern s32 fn_8017B2CC(s32 id);
     extern void _threadSwitch(void);
     s32 id;
@@ -459,7 +459,7 @@ void fn_801EF644(s32 result) {
     for (i = 0; i < lbl_80478D10; i += 2) {
         if (((s8)result < 0) || (wanted == *(u16*)(lbl_803752A0 + ((u16)i * 2) + 2))) {
             id = *(s32*)(lbl_803727C8 + (*(u16*)(lbl_803752A0 + ((u16)i * 2)) * 0xc));
-            if (fn_8017D56C(id) != 0) {
+            if (fsysPreloadArchive(id) != 0) {
                 while (1) {
                     wait = fn_8017B2CC(id);
                     if (wait == 0 || wait < 0) {

@@ -133,10 +133,10 @@ extern void GSmodelSetGSparticleLinkAttachMode(void* model, s32 mode);
 extern void* peopleIsInGroup(u32 group, u32 resource);
 extern void std168_characterDetachFromCharacter(u32 group, u32 resource);
 extern void std070_characterAttachToCharacter(u32 group, u32 resource, u32 part_group, u32 part_resource, s32 part);
-extern void fn_8018B220(u32 group, u32 resource);
+extern void peopleStopAnimation(u32 group, u32 resource);
 extern void std154_characterPlayAnimation(u32 group, u32 resource, u32 anim_index, s32 frame, u8 loop);
 extern void GSmodelStopAnimation(void* model);
-extern void fn_8018DB68(u32 group, u32 resource);
+extern void peopleCloseByID(u32 group, u32 resource);
 extern void peopleSetVisible(u32 group, u32 resource, u8 visible);
 extern void GSmodelSetVisibility(void* model, u8 visible);
 extern void GSmodelDetachFromGSpart(void* model, s32 arg);
@@ -450,7 +450,7 @@ void std116_mapObjectStopAnimation(u32 resource)
     void* model;
 
     if (peopleIsInGroup(group, resource) != NULL) {
-        fn_8018B220(group, resource);
+        peopleStopAnimation(group, resource);
     } else {
         model = GSresGetResource(group, resource);
         if (model != NULL) {
@@ -510,7 +510,7 @@ void std114_mapObjectSetVisibility(u32 resource, s32 visible)
 #if defined(FIELD_801CB180_RANGE_801CB9D8)
 void std113_mapObjectUnk_8018db68(u32 resource)
 {
-    fn_8018DB68(std093_getCurrentGroupID(), resource);
+    peopleCloseByID(std093_getCurrentGroupID(), resource);
 }
 #endif
 

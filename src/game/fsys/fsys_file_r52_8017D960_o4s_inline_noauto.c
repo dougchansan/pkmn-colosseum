@@ -6,7 +6,7 @@
  * loading records the entry it was asked for (load mode 3: the entry whose
  * name hash is slot->requestID; otherwise the last entry) and drops to load
  * mode 2. Then the slot's open disc file is closed, the manager's active
- * slot cleared and the next pending load started (fn_8017D800), and the
+ * slot cleared and the next pending load started (fsysStartPendingLoad), and the
  * slot's completion callback is told the load mode.
  *
  * Built at optimisation level 0 with peephole and scheduling on, like the
@@ -33,8 +33,8 @@
 
 extern FSYSManager lbl_80453FEC;
 
-extern s32 fn_80167E64(u32 fileInfo);
-extern void fn_8017D800(void);
+extern s32 GSdvdClose(u32 fileInfo);
+extern void fsysStartPendingLoad(void);
 
 /* Address: 0x8017D960 | size: 0x158 */
 void fn_8017D960(FSYSSlot* slot)
@@ -66,10 +66,10 @@ void fn_8017D960(FSYSSlot* slot)
         slot->loadMode = 2;
     }
     if (slot->fileInfo0) {
-        fn_80167E64(slot->fileInfo0);
+        GSdvdClose(slot->fileInfo0);
         slot->fileInfo0 = 0;
         lbl_80453FEC.activeSlot = NULL;
-        fn_8017D800();
+        fsysStartPendingLoad();
     }
     if (slot->callbackA) {
         callback = (void (*)(s32, u32, u32))slot->callbackA;

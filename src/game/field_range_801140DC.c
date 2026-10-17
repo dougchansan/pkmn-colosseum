@@ -20,12 +20,12 @@ extern u8 lbl_80408378[];
 
 /* 0x801140DC | 0x90 */
 void std246_saveSetStatus578(u32 material, u32 palette, u8 slot) {
-    extern u32 fn_80128E24(void);
+    extern u32 savedataGetWorkPtr(void);
     extern void* fn_80128E04(void);
     extern void gamedatasaveSetStatus(void*, u32, u32);
     void* obj;
 
-    if (fn_80128E24() != 0) {
+    if (savedataGetWorkPtr() != 0) {
         obj = fn_80128E04();
         if (obj != 0) {
             gamedatasaveSetStatus(obj, 5, material);

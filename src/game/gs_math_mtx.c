@@ -109,11 +109,11 @@ extern u8 GSmemDumpMap(u32, u32);
 extern u32 _matGSmatObjMakeTExp(void*, void*, void*, void*, void*);
 extern void _matGSmatEnableEnvMapExt(u8*);
 extern s32 _matGSmatObjLoad(u8*);
-extern void fn_800E0290(void*, void*, void*);
+extern void GSmtxConcat(void*, void*, void*);
 extern void fn_800E02C4(void*);
 extern void GSmtxRotateZ(void*, f32);
 extern void GSmtxRotateY(void*, f32);
-extern void fn_800E0370(void*, f32);
+extern void GSmtxRotateX(void*, f32);
 extern void fn_800E03E8(void*, f32, f32, f32);
 extern void fn_800E0628(void*, void*);
 extern void fn_800E064C(void*);
@@ -421,7 +421,7 @@ asm void fn_800E0218(void) {
 #include "src/game/gs_render_fn_800E0218.inc"
 }
 #else
-void fn_800E0218(void)
+void GSmtxLookAt(void)
 {
     C_MTXLookAt();
 }
@@ -432,7 +432,7 @@ asm void fn_800E0238(void) {
 #include "src/game/gs_render_fn_800E0238.inc"
 }
 #else
-void fn_800E0238(void* a, void* b) { PSMTXTranspose(b, a); }
+void GSmtxTranspose(void* a, void* b) { PSMTXTranspose(b, a); }
 #endif
 
 #if 0
@@ -440,7 +440,7 @@ asm void fn_800E0264(void) {
 #include "src/game/gs_render_fn_800E0264.inc"
 }
 #else
-void fn_800E0264(void* a, void* b)
+void GSmtxInverse(void* a, void* b)
 {
     PSMTXInverse(b, a);
 }
@@ -451,7 +451,7 @@ asm void fn_800E0290(void* a, void* b, void* c) {
 #include "src/game/gs_render_fn_800E0290.inc"
 }
 #else
-void fn_800E0290(void* a, void* b, void* c)
+void GSmtxConcat(void* a, void* b, void* c)
 {
     PSMTXConcat(b, c, a);
 }
@@ -496,7 +496,7 @@ asm void fn_800E0370(void* obj) {
 #include "src/game/gs_render_fn_800E0370.inc"
 }
 #else
-void fn_800E0370(void* obj, f32 angle)
+void GSmtxRotateX(void* obj, f32 angle)
 {
     u8 tmp[0x30];
     PSMTXRotRad(tmp, 0x58);

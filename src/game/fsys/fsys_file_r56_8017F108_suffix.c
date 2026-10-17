@@ -2,12 +2,12 @@
  * @file fsys_file_r56_8017F108_suffix.c
  * @brief FSYS DVD/ARQ completion callbacks (0x8017F108 - 0x8017F2C4).
  *
- * fn_8017F108 is the DVD read completion callback the fsys loaders pass
- * (fn_8017DEA4.., fn_8017DB74, the entry readers after 0x8017B4BC): under
+ * fsysDVDReadCallback is the DVD read completion callback the fsys loaders pass
+ * (fsysStartLoadMode1.., fsysSlotReadNextEntry, the entry readers after 0x8017B4BC): under
  * disabled interrupts it moves the active slot to the status that follows
  * the one it was waiting in (or marks a failed read with archiveHandle -1)
- * and closes the slot's open file. fn_8017F25C is the ARQ completion
- * callback fn_8017B6B8 and fn_8017C5B8 pass to fn_80180584 (userData is
+ * and closes the slot's open file. fsysARQCallback is the ARQ completion
+ * callback fsysLoadEntry and fsysSlotStatusStartEntries pass to fn_80180584 (userData is
  * the slot): status 162 on success, 152 otherwise.
  *
  * Built at optimisation level 0 with peephole and scheduling on, like the
@@ -22,10 +22,10 @@ extern FSYSManager lbl_80453FEC;
 
 extern BOOL OSDisableInterrupts(void);
 extern BOOL OSRestoreInterrupts(BOOL level);
-extern void fn_80167E64(void* file);
+extern void GSdvdClose(void* file);
 
 /* Address: 0x8017F108 | size: 0x154 */
-void fn_8017F108(s32 result)
+void fsysDVDReadCallback(s32 result)
 {
     FSYSSlot* slot;
     BOOL enabled;
@@ -67,7 +67,7 @@ void fn_8017F108(s32 result)
             break;
         }
         if (slot->tocBuffer) {
-            fn_80167E64(slot->tocBuffer);
+            GSdvdClose(slot->tocBuffer);
             slot->tocBuffer = NULL;
         }
     }
@@ -75,7 +75,7 @@ void fn_8017F108(s32 result)
 }
 
 /* Address: 0x8017F25C | size: 0x68 */
-void fn_8017F25C(s32 result, void* userData)
+void fsysARQCallback(s32 result, void* userData)
 {
     FSYSSlot* slot;
     BOOL enabled;

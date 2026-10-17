@@ -86,7 +86,7 @@ GSDVDWork* fn_8016819C(void);
 void fn_8016821C(void);
 void* fn_8016824C(u32 size);
 
-u32 fn_80167FA8(u32 workCount)
+u32 GSdvdInit(u32 workCount)
 {
     u8* destination;
 
@@ -242,7 +242,7 @@ void fn_80168284(void)
     }
 }
 
-void fn_80168408(GSFilter* filter, const u8* color)
+void GSfilterSetColor(GSFilter* filter, const u8* color)
 {
     u8* destination;
 

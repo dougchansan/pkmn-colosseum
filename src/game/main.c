@@ -118,7 +118,7 @@ extern void GSmsgSetCtrlFunc(void* sndTable);                 /* GSfloor sound t
 extern void GSmsgFontOpen(void* relData);                  /* GSfloor register REL data */
 extern void GSmsgOpen(void* relData);                  /* GSfloor register REL data (alt) */
 extern void cms_RegisterScript(void* relData);                  /* GSfloor register REL data (floor) */
-extern void fn_80167DC0(u32 a, u32 b, u32 c, u32 d, u32 e); /* set the five DVD error message IDs */
+extern void soundSetInitParams(u32 a, u32 b, u32 c, u32 d, u32 e); /* set the five DVD error message IDs */
 extern void fn_801E1300(void);                           /* Save/card system init */
 extern void flareCreateTask(void);                           /* GBA communication init */
 extern void fn_801E1B2C(void);                           /* Save data init */
@@ -182,7 +182,7 @@ extern void fn_800366A8(void);    /* Scene/floor update tick */
 extern u32  fn_800FF81C(void* a, u32 b); /* GSthread set frame counter */
 extern void* GSresAllocResource(u32 a, u32 b, u32 c, u32 d); /* GSthread alloc work area */
 
-extern u32  fn_80128E24(void);    /* SoundSystemIsReady */
+extern u32  savedataGetWorkPtr(void);    /* SoundSystemIsReady */
 extern void* fn_80128E04(void);   /* SoundSystemGetContext */
 extern void* gamedatasaveBiosGetPtr(void);   /* SoundGetMixer */
 extern void gamedatasaveBiosSetPlaytime(void* mixer, f32 volume); /* SoundSetMasterVolume */
@@ -198,19 +198,19 @@ extern void GSvtrLoadTexture(void);    /* Card system tick */
 extern void fn_8010C220(void);    /* Effect system tick */
 extern void cameraInit(void);    /* World/map system init */
 extern void fn_8013024C(void);    /* 3D model system init */
-extern void fn_8018E920(u32 a);   /* Pokemon data/model init */
+extern void peopleSystemInit(u32 a);   /* Pokemon data/model init */
 extern void fn_801ED388(void);    /* GBA link init */
 extern void fn_801D0A30(void);    /* Menu/UI system init */
 extern void fn_801128A0(void);    /* Colosseum mode init */
 extern void* tableResBiosGetResPtr(u32 id);  /* Load relocatable module (REL) by ID */
 
-extern void* fn_801664F0(void* color); /* Set clear/background color */
+extern void* soundSetListener(void* color); /* Set clear/background color */
 extern void GSresRegisterResource(void* work, u32 time, u32 numFrames, u32 arg); /* Thread wait/schedule */
 
 extern u32  fn_800A03B4(void);    /* OSGetResetButtonState */
 extern int  OSGetResetButtonState(void); /* real symtab name (signed return -> cmpwi) */
 extern void VIFlush(void);               /* real symtab name for fn_800AA068 call site */
-extern void fn_80166E44(void);    /* Screen fade to black */
+extern void soundShutdown(void);    /* Screen fade to black */
 extern void fn_800AAE34(u32 mask);/* VISetBlack / video blank */
 extern void VISetBlack(u32 flag);/* VIFlush */
 extern void fn_800AA068(void);    /* VIWaitForRetrace */
@@ -466,7 +466,7 @@ void gamedataSetPlaytime(f32 volume) {
     void* mixer;
 
     /* Check if sound system is ready */
-    if (fn_80128E24() != 0 && fn_80128E04() != 0) {
+    if (savedataGetWorkPtr() != 0 && fn_80128E04() != 0) {
         mixer = gamedatasaveBiosGetPtr();
     } else {
         mixer = NULL;
@@ -489,7 +489,7 @@ f32 fn_80005748(void) {
     void* mixer;
     f32 volume;
 
-    if (fn_80128E24() != 0 && fn_80128E04() != 0) {
+    if (savedataGetWorkPtr() != 0 && fn_80128E04() != 0) {
         mixer = gamedatasaveBiosGetPtr();
     } else {
         mixer = NULL;
@@ -635,7 +635,7 @@ void fn_800057B0(void) {
     GSmsgOpen(lbl_802CF810); /* Scene data #4 (alt registration) */
 
     /* Set the DVD error message IDs: cover open, no disk, wrong disk, retry, fatal */
-    fn_80167DC0(0x3BE8, 0x3BEA, 0x3BED, 0x3BEF, 0x3BF2);
+    soundSetInitParams(0x3BE8, 0x3BEA, 0x3BED, 0x3BEF, 0x3BF2);
 
     /* Initialize GSvtr texture-display state and create its display task */
     fn_801E1300();
@@ -748,7 +748,7 @@ void mainGameThread(void) {
     lbl_80478DD0 = 0;
 
     /* If sound system is ready, reset master volume to 0.0 */
-    if (fn_80128E24() != 0 && fn_80128E04() != 0) {
+    if (savedataGetWorkPtr() != 0 && fn_80128E04() != 0) {
         mixer = gamedatasaveBiosGetPtr();
     } else {
         mixer = NULL;
@@ -796,7 +796,7 @@ void mainGameThread(void) {
     fn_8013024C();
 
     /* Initialize Pokemon model/data system (48 slots) */
-    fn_8018E920(0x30);
+    peopleSystemInit(0x30);
 
     /* Initialize GBA link subsystem */
     fn_801ED388();
@@ -832,7 +832,7 @@ void mainCheckResetButton(void) {
         if (OSGetResetButtonState() == 0) {
             /* Released. Only reset if init is complete. */
             if (lbl_80478DC9 == 1) {
-                fn_80166E44();           /* Fade screen to black */
+                soundShutdown();           /* Fade screen to black */
                 fn_800AAE34(0xF0000000); /* VISetBlack */
                 VISetBlack(1);          /* VIFlush */
                 VIFlush();               /* real symtab: VIFlush (was fn_800AA068) */
@@ -970,7 +970,7 @@ void mainRetraceLogic(void) {
     menuDaemon();
     GSmsgDaemon();
 
-    if (fn_80128E24() != 0 && fn_80128E04() != 0) {
+    if (savedataGetWorkPtr() != 0 && fn_80128E04() != 0) {
         mixer = gamedatasaveBiosGetPtr();
     } else {
         mixer = NULL;

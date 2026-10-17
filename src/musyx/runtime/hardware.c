@@ -116,9 +116,9 @@ extern void fn_80164324(void);               /* fn_80164324 */
 extern void salActivateVoice(DSPvoice* dsp_vptr, u8 studio);
 extern void salDeactivateVoice(DSPvoice* dsp_vptr);
 extern void salActivateStudio(u8 studio, u32 isMaster, SND_STUDIO_TYPE type);
-extern void fn_8015AAA0(u8 studio);          /* fn_8015AAA0 */
-extern u32 fn_8015D54C(DSPstudioinfo* stp, SND_STUDIO_INPUT* desc); /* fn_8015D54C */
-extern u32 fn_8015D5F4(DSPstudioinfo* stp, SND_STUDIO_INPUT* desc); /* fn_8015D5F4 */
+extern void salDeactivateStudio(u8 studio);          /* salDeactivateStudio */
+extern u32 salAddStudioInput(DSPstudioinfo* stp, SND_STUDIO_INPUT* desc); /* salAddStudioInput */
+extern u32 salRemoveStudioInput(DSPstudioinfo* stp, SND_STUDIO_INPUT* desc); /* salRemoveStudioInput */
 extern void salCalcVolume(u8 voltab_index, SAL_VOLINFO* vi, f32 vol, u32 pan, u32 span, f32 auxa,
                           f32 auxb, u32 itd, u32 dpl2);
 extern u32 adsrConvertTimeCents(s32 tc);
@@ -136,9 +136,9 @@ extern void fn_80163BCC(void* aram, u32 len); /* fn_80163BCC */
 extern void fn_80163490(void);               /* fn_80163490 */
 extern void salInitHRTFBuffer(void);
 
-void fn_8016245C(u8 offset);
-void fn_801629A4(u32 v, u8 salSRCType);
-void fn_801629D0(u32 v, u8 salCoefSel);
+void hwSetTimeOffset(u8 offset);
+void hwSetSRCType(u32 v, u8 salSRCType);
+void hwSetPolyPhaseFilter(u32 v, u8 salCoefSel);
 void hwSetITDMode(u32 v, u8 mode);
 
 static volatile const u16 itdOffTab[128] = {
@@ -189,7 +189,7 @@ void snd_handle_irq(void) {
   fn_801643B8();
   for (r = 0; r < 5; ++r) {
     fn_80164398();
-    fn_8016245C(r);
+    hwSetTimeOffset(r);
     // sndProfStartPMC(&prof.sequencer);
     fn_801496A0(256);
     // sndProfPausePMC(&prof.sequencer);
@@ -202,7 +202,7 @@ void snd_handle_irq(void) {
   // sndProfStopPMC(&prof.sequencer);
   // sndProfStopPMC(&prof.synthesizer);
   fn_80164398();
-  fn_8016245C(0);
+  hwSetTimeOffset(0);
   // sndProfStartPMC(&prof.emitters);
   fn_8015F620();
   // sndProfStopPMC(&prof.emitters);
@@ -250,9 +250,9 @@ void hwExit() {
   fn_80164324();
 }
 
-void fn_8016245C(u8 offset) { lbl_8047B050 = offset; }
+void hwSetTimeOffset(u8 offset) { lbl_8047B050 = offset; }
 
-u8 fn_80162464() { return lbl_8047B050; }
+u8 hwGetTimeOffset() { return lbl_8047B050; }
 
 u32 fn_8016246C(u32 v) { return lbl_8047B024[v].state != 0; }
 
@@ -291,8 +291,8 @@ void hwInitSamplePlayback(u32 v, u16 smpID, void* newsmp, u32 set_defadsr, u32 p
   lbl_8047B024[v].lastUpdate.volB = 0xff;
 
   if (setSRC != 0) {
-    fn_801629A4(v, 0);
-    fn_801629D0(v, 1);
+    hwSetSRCType(v, 0);
+    hwSetPolyPhaseFilter(v, 1);
   }
 
   hwSetITDMode(v, itdMode);
@@ -388,14 +388,14 @@ void hwSetPitch(u32 v, u16 speed) {
   dsp_vptr->lastUpdate.pitch = lbl_8047B050;
 }
 
-void fn_801629A4(u32 v, u8 salSRCType) {
+void hwSetSRCType(u32 v, u8 salSRCType) {
   static u16 dspSRCType[3] = {0, 1, 2};
   struct DSPvoice* dsp_vptr = &lbl_8047B024[v];
   dsp_vptr->srcTypeSelect = dspSRCType[salSRCType];
   dsp_vptr->changed[0] |= 0x100;
 }
 
-void fn_801629D0(u32 v, u8 salCoefSel) {
+void hwSetPolyPhaseFilter(u32 v, u8 salCoefSel) {
   static u16 dspCoefSel[3] = {0, 1, 2};
   DSPvoice* dsp_vptr = &lbl_8047B024[v];
   dsp_vptr->srcCoefSelect = dspCoefSel[salCoefSel];
@@ -500,18 +500,18 @@ void fn_80162D6C(u8 studio, u32 isMaster, SND_STUDIO_TYPE type) {
   salActivateStudio(studio, isMaster, type);
 }
 
-void fn_80162D8C(u8 studio) { fn_8015AAA0(studio); }
+void fn_80162D8C(u8 studio) { salDeactivateStudio(studio); }
 
 void hwChangeStudioMix(u8 studio, u32 isMaster) { lbl_80447E60[studio].isMaster = isMaster; }
 
 u32 hwIsStudioActive(u8 studio) { return lbl_80447E60[studio].state == 1; }
 
-u32 fn_80162DAC(u8 studio, SND_STUDIO_INPUT* in_desc) {
-  return fn_8015D54C(&lbl_80447E60[studio], in_desc);
+u32 hwAddInput(u8 studio, SND_STUDIO_INPUT* in_desc) {
+  return salAddStudioInput(&lbl_80447E60[studio], in_desc);
 }
 
-u32 fn_80162DE0(u8 studio, SND_STUDIO_INPUT* in_desc) {
-  return fn_8015D5F4(&lbl_80447E60[studio], in_desc);
+u32 hwRemoveInput(u8 studio, SND_STUDIO_INPUT* in_desc) {
+  return salRemoveStudioInput(&lbl_80447E60[studio], in_desc);
 }
 
 void hwChangeStudio(u32 v, u8 studio) { salReconnectVoice(&lbl_8047B024[v], studio); }
@@ -581,12 +581,12 @@ void* fn_80162FAC(void* samples) { return samples; }
 
 u32 hwFrq2Pitch(u32 frq) { return (frq * 4096.f) / lbl_80434C50.mixFrq; }
 
-void fn_8016300C(u32 baseAddr, u32 length) {
+void hwInitSampleMem(u32 baseAddr, u32 length) {
   // TODO: Platform specific audio memory handling
   fn_801634A8(length);
 }
 
-void fn_80163030() { fn_80163794(); }
+void hwExitSampleMem() { fn_80163794(); }
 
 static u32 convert_length(u32 len, u8 type) {
   switch (type) {
@@ -604,7 +604,7 @@ static u32 convert_length(u32 len, u8 type) {
 }
 
 // TODO: Platform specific audio memory handling
-void fn_80163050(void* header, void* data
+void hwSaveSample(void* header, void* data
 ) {
   u32 len = ((u32*)*((u32*)header))[1] & 0xFFFFFF;
   u8 type = ((u32*)*((u32*)header))[1] >> 0x18;
@@ -621,7 +621,7 @@ void fn_801630E4(ARAMUploadCallback callback, unsigned long chunckSize) {
 }
 
 // TODO: Platform specific audio memory handling
-void fn_80163104(void* header, void* data
+void hwRemoveSample(void* header, void* data
 ) {
   u8 type = (((u32*)header))[1] >> 0x18;
   u32 len = convert_length((((u32*)header))[1] & 0xFFFFFF, type);
@@ -631,7 +631,7 @@ void fn_80163104(void* header, void* data
 // TODO: Platform specific audio memory handling
 void fn_80163188() { fn_80163490(); }
 
-void fn_801631A8() {}
+void hwFrameDone() {}
 
 void fn_801631AC(SND_HOOKS* hooks) {
   lbl_8047B054 = *hooks;

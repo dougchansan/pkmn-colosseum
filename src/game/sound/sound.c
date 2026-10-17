@@ -6,7 +6,7 @@
  * squeezed between musyx_range_801652DC.c (0x801652DC-0x801653BC) and
  * gs_range_801653CC.c (0x801653CC-0x80167040) per splits.txt. It contains
  * only two trivial SDA getters, both matched at 100%:
- *   - fn_801653BC: returns lbl_8047B0A8
+ *   - soundGetCurrentSubSound: returns lbl_8047B0A8
  *   - fn_801653C4: returns lbl_8047B0AC
  *
  * A prior campaign-generation transplant (from
@@ -35,7 +35,7 @@ extern u32 lbl_8047B0A8;
 extern u32 lbl_8047B0AC;
 
 /* 0x801653BC | 0x8 | sda_getter */
-u32 fn_801653BC(void) {
+u32 soundGetCurrentSubSound(void) {
     return lbl_8047B0A8;
 }
 

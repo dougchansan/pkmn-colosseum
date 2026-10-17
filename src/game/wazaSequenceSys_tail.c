@@ -300,7 +300,7 @@ void wazaSequenceSysFreeSequenceResource(void* obj) {
             }
 
             fn_800F915C(id);
-            fn_8017B1CC(id);
+            GSresReleaseById(id);
         }
 
         *(u16*)((u8*)obj + 0x72) = 0;
@@ -346,7 +346,7 @@ void wazaSequenceSysFreeWazaResource(void* seqData) {
                 _threadSwitch();
             }
             fn_800F915C(resourceId);
-            fn_8017B1CC(resourceId);
+            GSresReleaseById(resourceId);
         }
         *(u16*)((u8*)seqData + 0x30) = 0;
     }

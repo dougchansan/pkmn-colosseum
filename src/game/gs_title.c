@@ -436,7 +436,7 @@ void std018_nop18(void) { }
 
 /* fn_80023E60 - 0x80023E60 | size: 0x300 */
 extern void windowGetCursorToItem(void);
-extern void fn_800E0060(void);
+extern void GSvecNormalize(void);
 extern void GSvecDot(void);
 extern u32 lbl_8047A370;
 extern u32 lbl_8047A368;
@@ -453,7 +453,7 @@ s32 wmapMenuUpdate(u8* arg0) {
     extern u16* windowGetKeyInfo(void);
     extern u8* menuDataBiosGetPtr(u32);
     extern u8* menuItemBiosGetPtr(s32);
-    extern void fn_800E0060(f32*, f32*);
+    extern void GSvecNormalize(f32*, f32*);
     extern f32 GSvecDot(f32*, f32*);
     extern void std104_soundSetBackgroundMusic(s32, s32, s32);
     u8* da18;
@@ -508,7 +508,7 @@ s32 wmapMenuUpdate(u8* arg0) {
             sp14[1] = *(f32*)(lbl_803A204C + 4) - (f32)(s32)(*(s16*)(cursor + 4));
             sp14[2] = 0.0f;
             if (0.0f != sp14[0] || 0.0f != sp14[1]) {
-                fn_800E0060(sp08, sp14);
+                GSvecNormalize(sp08, sp14);
                 sp14[0] = 1.0f;
                 sp14[1] = 0.0f;
                 sp14[2] = 0.0f;
@@ -2260,7 +2260,7 @@ void fn_8002060C(void) {
 /* fn_80020618 - 0x80020618 | size: 0x304 */
 extern void* windowGetKeyInfo(void);
 extern s32 gamedatasaveGetStatus(s32, s32);
-extern void fn_80166CC0(u32);
+extern void soundSetOutputMode(u32);
 extern void GSinputMotorStart(s32, s32, s32, s32, s32);
 extern void gamedatasaveSetStatus(s32, s32, s32);
 extern u32 lbl_8047B878;
@@ -2343,10 +2343,10 @@ s32 fn_80020618(void) {
         switch (((TitleOptionState*)lbl_803A1FC8)->selection) {
         case 0:
             if (*(u16*)(keyInfo + 6) & 4) {
-                fn_80166CC0(1);
+                soundSetOutputMode(1);
             }
             if (*(u16*)(keyInfo + 6) & 8) {
-                fn_80166CC0(0);
+                soundSetOutputMode(0);
             }
             break;
         case 1:
@@ -2481,7 +2481,7 @@ void titleNewContinueSelect(void) {
     extern u32 GSsndGetOutputMode(void);
     extern s32 gamedatasaveGetStatus(s32, s32);
     extern s32 menuOpen(s32, s32);
-    extern void fn_80166CC0(u32);
+    extern void soundSetOutputMode(u32);
     extern void gamedatasaveSetStatus(s32, s32, s32);
     extern u8 fn_801D04E8(void);
     extern void winMsgOpen(s32, s32, s32, s32);
@@ -2526,7 +2526,7 @@ void titleNewContinueSelect(void) {
             sp = (s32*)&lbl_803A1FC8;
             do {
                 if (menuOpen(0x7B, 1) < 0) {
-                    fn_80166CC0(region);
+                    soundSetOutputMode(region);
                     gamedatasaveSetStatus(0, 9, fmt);
                     break;
                 }

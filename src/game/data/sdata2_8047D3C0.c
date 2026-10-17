@@ -11,8 +11,8 @@ typedef void (*Sdata2FuncPtr)(void);
 #define SDATA2_8047D3C0_AFTER_SNDMATH
 #endif
 
-extern void fn_80167B70(void);
-extern void fn_80167BB0(void);
+extern void _soundMemFree(void);
+extern void _soundMemAlloc(void);
 
 /*
  * Mixed audio/DVD .sdata2 constants. Target relocations tie the run to JAudio

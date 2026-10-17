@@ -1,11 +1,11 @@
 #include "dolphin/types.h"
 
-u32 fn_8017CEC8(void)
+u32 fsysStatus1000(void)
 {
     return 1;
 }
 
-u32 fn_8017CED0(void)
+u32 fsysStatus5(void)
 {
     return 1;
 }

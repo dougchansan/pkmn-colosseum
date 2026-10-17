@@ -43,7 +43,7 @@ extern void fn_80055B98(s32);
 extern void fn_800F915C(s32);
 extern void fn_8017B3E4(s32);
 extern s32 fn_8017B2CC(s32);
-extern void fn_8017B1CC(s32);
+extern void GSresReleaseById(s32);
 extern void std078_flagSetFalse(s32);
 
 extern void* lbl_8047A590;
@@ -191,7 +191,7 @@ void pcBoxStorageMain(void) {
 
     connectedState = colosseumBattleGetConnectState();
     if (connectedState == 2) {
-        fn_8017B1CC(0x48A);
+        GSresReleaseById(0x48A);
         fn_800F915C(0x48A);
         shouldSkipWait = 1;
     } else {
@@ -213,7 +213,7 @@ void pcBoxStorageMain(void) {
         fn_800E209C(handle);
     }
 
-    fn_8017B1CC(0x70B);
+    GSresReleaseById(0x70B);
     fn_800F915C(0x70B);
     if (scriptCheckTemochiPokemon(0) != 0) {
         std078_flagSetFalse(0xDDE);

@@ -18,7 +18,7 @@ extern u8 GSinputIsConnected(u32 padIdx);
 extern void fn_8008AC34(u32 padIdx);
 extern u8 fn_8008ABA0(u32 padIdx);
 extern void GSinputRead(u32 padIdx);
-extern void* fn_801664F0(void* color);
+extern void* soundSetListener(void* color);
 extern void GSresRegisterResource(void* work, u32 time, u32 numFrames, u32 arg);
 extern void OSProtectRange(u32 region, u32 addr, u32 size, u32 perm);
 extern s32 DBIsDebuggerPresent(void);
@@ -130,7 +130,7 @@ void fn_8000604C(void) {
 void fn_8000609C(void) {
     struct BgColor12 { u32 c[3]; } buf;
     buf = *(struct BgColor12*)lbl_80266438;
-    GSresRegisterResource(fn_801664F0(&buf), 0, 0x7D0, 0);
+    GSresRegisterResource(soundSetListener(&buf), 0, 0x7D0, 0);
 }
 
 /* fn_800060F0 - 0x800060F0 | size: 0x160 */

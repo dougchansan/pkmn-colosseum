@@ -3,15 +3,15 @@
  * @brief GSgapp job pool: request entry and tasks (0x80180C78 - 0x801812C4).
  *
  * fn_80180C78 queues a job for an archive entry (fsys calls it from
- * fn_8017C008 for "LZSS" images, mode 0): take a free job record (pool
+ * fsysAllocLZSSJob for "LZSS" images, mode 0): take a free job record (pool
  * exhausted -> fn_80179F4C(1)), fill it in, and either append it to the
  * running job's chain or start it at once. Mode 0 jobs decode the entry
- * (fn_8017C074 sets them up, task fn_8018114C); mode 1 jobs run the
+ * (fsysLZSSJobSetup sets them up, task fn_8018114C); mode 1 jobs run the
  * entry's group callback (task fn_80181094).
  *
  * The tasks: fn_80181094 runs an archive entry's group callback through
- * fn_8017BB80, fn_8018114C decodes an entry's LZSS image through
- * fn_8017BC90, and fn_80181224 reads "s1_out.fsys" (lbl_80273F80) into the
+ * fsysFlushLoadedEntry, fn_8018114C decodes an entry's LZSS image through
+ * fsysLZSSDecodeJob, and fn_80181224 reads "s1_out.fsys" (lbl_80273F80) into the
  * pool's file buffer 30 times. Each marks the current job (lbl_8047B1E4)
  * done and ends its task.
  *
@@ -31,15 +31,15 @@
 extern const char lbl_80273F80[]; /* "s1_out.fsys" */
 
 extern void GSgappTerminate(void* app);
-extern u32 fn_80167F28(const char* path);   /* DVDOpen wrapper */
-extern u32 fn_80167E5C(u32 file);           /* file length */
-extern s32 fn_80167E64(u32 file);           /* DVDClose wrapper */
-extern void fn_80167ED0(u32 file, void* dst, u32 size, u32 offset);
-extern s32 fn_8017BB80(GsRangeSlotInfo* slot, FSYSFileEntry* entry);
-extern void* fn_8017BC90(GsRangeSlotInfo* slot, u32 nameHash,
+extern u32 GSdvdOpen(const char* path);   /* DVDOpen wrapper */
+extern u32 GSdvdGetLength(u32 file);           /* file length */
+extern s32 GSdvdClose(u32 file);           /* DVDClose wrapper */
+extern void GSdvdRead(u32 file, void* dst, u32 size, u32 offset);
+extern s32 fsysFlushLoadedEntry(GsRangeSlotInfo* slot, FSYSFileEntry* entry);
+extern void* fsysLZSSDecodeJob(GsRangeSlotInfo* slot, u32 nameHash,
                          void* compressed, FSYSSubEntry* sub);
 extern void fn_80179F4C(s32 error);
-extern void fn_8017C074(GsRangeSlotInfo* slot, FSYSSubEntry* sub, u32 index,
+extern void fsysLZSSJobSetup(GsRangeSlotInfo* slot, FSYSSubEntry* sub, u32 index,
                         GsRangePoolElem* job);
 extern s32 fn_8017AC30(void);
 extern void* GSgappCreate(s32 a, s32 b, void* param, void (*task)(void));
@@ -56,12 +56,12 @@ void fn_80181224(void)
     void* buffer;
 
     buffer = lbl_8047B1E0;
-    file = fn_80167F28(lbl_80273F80);
-    size = fn_80167E5C(file);
+    file = GSdvdOpen(lbl_80273F80);
+    size = GSdvdGetLength(file);
     for (i = 0; i < 30; i++) {
-        fn_80167ED0(file, buffer, size, 0);
+        GSdvdRead(file, buffer, size, 0);
     }
-    fn_80167E64(file);
+    GSdvdClose(file);
     lbl_8047B1E4->state = 0;
     GSgappTerminate(lbl_8047B1E4->app);
 }
@@ -79,7 +79,7 @@ void fn_8018114C(void)
     offsets = (u32*)((u8*)lbl_8047B1E4->slot->archiveData + tables[0]);
     entry = (FSYSFileEntry*)((u8*)lbl_8047B1E4->slot->archiveData +
                              offsets[lbl_8047B1E4->index]);
-    fn_8017BC90(lbl_8047B1E4->slot, entry->nameHash, lbl_8047B1E4->compressed,
+    fsysLZSSDecodeJob(lbl_8047B1E4->slot, entry->nameHash, lbl_8047B1E4->compressed,
                 lbl_8047B1E4->subEntry);
     lbl_8047B1E4->subEntry->state = 0;
     lbl_8047B1E4->state = 2;
@@ -99,7 +99,7 @@ void fn_80181094(void)
     offsets = (u32*)((u8*)lbl_8047B1E4->slot->archiveData + tables[0]);
     entry = (FSYSFileEntry*)((u8*)lbl_8047B1E4->slot->archiveData +
                              offsets[lbl_8047B1E4->index]);
-    fn_8017BB80(lbl_8047B1E4->slot, entry);
+    fsysFlushLoadedEntry(lbl_8047B1E4->slot, entry);
     lbl_8047B1E4->state = 2;
     GSgappTerminate(lbl_8047B1E4->app);
 }
@@ -164,7 +164,7 @@ static inline GsRangePoolElem* jobFindTail(void)
 static inline void jobStartDecode(GsRangePoolElem* job)
 {
     lbl_8047B1E4 = job;
-    fn_8017C074(lbl_8047B1E4->slot, lbl_8047B1E4->subEntry, lbl_8047B1E4->index,
+    fsysLZSSJobSetup(lbl_8047B1E4->slot, lbl_8047B1E4->subEntry, lbl_8047B1E4->index,
                 lbl_8047B1E4);
     job->app = GSgappCreate(fn_8017AC30(), 0xC8, job->slot->taskParam, fn_8018114C);
     if (job->app) {

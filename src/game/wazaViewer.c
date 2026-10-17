@@ -90,10 +90,10 @@ void _wazaViewerUpdate(void) {
 extern u8 lbl_80279338[];
 
 /* Host-file (DVD) wrappers: open returns the file object, 0 on failure. */
-extern void* fn_80167F28(const char* path);
-extern u32 fn_80167E5C(void* file);
-extern void fn_80167E64(void* file);
-extern s32 fn_80167ED0(void* file, void* buf, u32 size, s32 offset);
+extern void* GSdvdOpen(const char* path);
+extern u32 GSdvdGetLength(void* file);
+extern void GSdvdClose(void* file);
+extern s32 GSdvdRead(void* file, void* buf, u32 size, s32 offset);
 extern s32 fn_80167E54(void* file, void* buf, u32 size, s32 offset);
 
 /**
@@ -105,13 +105,13 @@ static inline u32 wazaViewerGetFilesize(const char* messages, const char* path) 
     u32 size;
     void* file;
 
-    file = fn_80167F28(path);
+    file = GSdvdOpen(path);
     if (file == NULL) {
         GSlogWrite(messages + 0x6C, path);
         return 0;
     }
-    size = fn_80167E5C(file);
-    fn_80167E64(file);
+    size = GSdvdGetLength(file);
+    GSdvdClose(file);
     return size;
 }
 
@@ -125,13 +125,13 @@ static inline void wazaViewerLoadFile(const char* messages, const char* path, vo
                                       u32 size, int writing) {
     void* file;
 
-    file = fn_80167F28(path);
+    file = GSdvdOpen(path);
     if (writing) {
         if (file != NULL) {
             if (fn_80167E54(file, buf, size, 0) < 0) {
                 GSlogWrite(messages + 0xF8, path);
             }
-            fn_80167E64(file);
+            GSdvdClose(file);
         } else {
             GSlogWrite(messages + 0x9C, path);
         }
@@ -141,12 +141,12 @@ static inline void wazaViewerLoadFile(const char* messages, const char* path, vo
         GSlogWrite(messages + 0x9C, path);
         return;
     }
-    if (fn_80167ED0(file, buf, (size + 0x1F) & ~0x1F, 0) < 0) {
+    if (GSdvdRead(file, buf, (size + 0x1F) & ~0x1F, 0) < 0) {
         GSlogWrite(messages + 0xC8, path);
-        fn_80167E64(file);
+        GSdvdClose(file);
         return;
     }
-    fn_80167E64(file);
+    GSdvdClose(file);
 }
 
 /**
@@ -171,27 +171,27 @@ static inline void wazaViewerPollCommand(const char* messages) {
 
     if (*(s32*)(lbl_804673F8 + 0x870) <= 0) {
         path = (char*)(lbl_804673F8 + 0x670);
-        sizeFile = fn_80167F28(path);
+        sizeFile = GSdvdOpen(path);
         if (sizeFile == NULL) {
             GSlogWrite(messages + 0x6C, path);
             size = 0;
         } else {
-            size = fn_80167E5C(sizeFile);
-            fn_80167E64(sizeFile);
+            size = GSdvdGetLength(sizeFile);
+            GSdvdClose(sizeFile);
         }
         if (size != 0) {
             block = fn_800E2C04((size + 0x1F) & ~0x1F, 0x20);
             if (block != 0) {
                 record = fn_800E27B0(block);
-                readFile = fn_80167F28(path);
+                readFile = GSdvdOpen(path);
                 if (readFile == NULL) {
                     GSlogWrite(messages + 0x9C, path);
                 } else {
-                    if (fn_80167ED0(readFile, record, (size + 0x1F) & ~0x1F, 0) < 0) {
+                    if (GSdvdRead(readFile, record, (size + 0x1F) & ~0x1F, 0) < 0) {
                         GSlogWrite(messages + 0xC8, path);
-                        fn_80167E64(readFile);
+                        GSdvdClose(readFile);
                     } else {
-                        fn_80167E64(readFile);
+                        GSdvdClose(readFile);
                     }
                 }
                 if (((s32*)record)[0] == 1) {
@@ -202,12 +202,12 @@ static inline void wazaViewerPollCommand(const char* messages) {
                     ((s32*)record)[1] = 0;
                     ((s32*)record)[0] = 0;
                     fn_801D56B0();
-                    writeFile = fn_80167F28(path);
+                    writeFile = GSdvdOpen(path);
                     if (writeFile != NULL) {
                         if (fn_80167E54(writeFile, record, size, 0) < 0) {
                             GSlogWrite(messages + 0xF8, path);
                         }
-                        fn_80167E64(writeFile);
+                        GSdvdClose(writeFile);
                     } else {
                         GSlogWrite(messages + 0x9C, path);
                     }
@@ -641,7 +641,7 @@ void fn_801D603C(void) {
     extern const char lbl_8047E2FC;  /* "PAUSED" */
     extern const char lbl_8047E304;  /* "PLAYING" */
     extern f32 lbl_8047E30C;
-    extern void fn_80168408(void* filter, u8* color);
+    extern void GSfilterSetColor(void* filter, u8* color);
     extern u8 dbgMenuIsOpen(void);
     extern s32 fn_801E11E0(void);
     extern void fn_800FE6A0(f32 width, f32 height);
@@ -663,7 +663,7 @@ void fn_801D603C(void) {
         color[2] = 0;
         color[1] = 0;
         color[0] = 0;
-        fn_80168408(*(void**)(lbl_804673F8 + 0x10), color);
+        GSfilterSetColor(*(void**)(lbl_804673F8 + 0x10), color);
         if (sequence != NULL) {
             if (((WazaViewerCtrl*)(lbl_804673F8 + 0x08))->advance) {
                 fn_801D7B94(sequence);
@@ -952,7 +952,7 @@ void wazaViewerUpdatePlayMode(void) {
     extern const char lbl_8047E2FC;  /* "PAUSED" */
     extern const char lbl_8047E304;  /* "PLAYING" */
     extern f32 lbl_8047E30C;
-    extern void fn_80168408(void* filter, u8* color);
+    extern void GSfilterSetColor(void* filter, u8* color);
     extern u8 dbgMenuIsOpen(void);
     extern s32 fn_801E11E0(void);
     extern void fn_800FE6A0(f32 width, f32 height);
@@ -975,7 +975,7 @@ void wazaViewerUpdatePlayMode(void) {
     color[2] = 0;
     color[1] = 0;
     color[0] = 0;
-    fn_80168408(*(void**)(lbl_804673F8 + 0x10), color);
+    GSfilterSetColor(*(void**)(lbl_804673F8 + 0x10), color);
     if (effect != NULL) {
         if (((WazaViewerCtrl*)(lbl_804673F8 + 0x08))->advance) {
             fn_801D7B94(effect);
@@ -1054,7 +1054,7 @@ void fn_801D6E58(void* effect) {
     extern void GSvecSub(WazaViewerVec* dst, const WazaViewerVec* a, const WazaViewerVec* b);
     extern void ObjInfoInit(void* bound, WazaViewerVec* extent);
     extern f32 vecMag(const WazaViewerVec* v);
-    extern void fn_800E0060(WazaViewerVec* dst, const WazaViewerVec* src);
+    extern void GSvecNormalize(WazaViewerVec* dst, const WazaViewerVec* src);
     extern void vecScale(WazaViewerVec* dst, const WazaViewerVec* src, f32 scale);
     extern void GSvecAdd(WazaViewerVec* dst, const WazaViewerVec* a, const WazaViewerVec* b);
     extern void fn_800DFFCC(WazaViewerVec* dst, const WazaViewerVec* a, const WazaViewerVec* b);
@@ -1138,12 +1138,12 @@ void fn_801D6E58(void* effect) {
         f32 length = vecMag(&extent);
         extentLength = length + extentLength;
     }
-    fn_800E0060(&axisX, &axisX);
+    GSvecNormalize(&axisX, &axisX);
     vecScale(&centre, &axisX, extentLength);
     GSvecAdd(&centre, &centre, &at);
-    fn_800E0060(&forward, &forward);
+    GSvecNormalize(&forward, &forward);
     fn_800DFFCC(&axisY, &axisX, &forward);
-    fn_800E0060(&axisY, &axisY);
+    GSvecNormalize(&axisY, &axisY);
     fn_800DFFCC(&forward, &axisY, &axisX);
     vecScale(&axisY, &axisY, lbl_8047E2F0 * extentLength);
     vecScale(&forward, &forward, extentLength);
@@ -1287,7 +1287,7 @@ void fn_801D7464(void) {
     extern void GSvecSub(WazaViewerVec* dst, const WazaViewerVec* a,
                             const WazaViewerVec* b);
     extern f32 vecMag(const WazaViewerVec* v);
-    extern void fn_800E0060(WazaViewerVec* dst, const WazaViewerVec* src);
+    extern void GSvecNormalize(WazaViewerVec* dst, const WazaViewerVec* src);
     extern void fn_800DFFCC(WazaViewerVec* dst, const WazaViewerVec* a,
                             const WazaViewerVec* b);
     extern void vecScale(WazaViewerVec* dst, const WazaViewerVec* src,
@@ -1362,11 +1362,11 @@ void fn_801D7464(void) {
             GSscene_GetCameraViewVector(&view);
             GSvecAdd(&target, &position, &view);
             GSvecSub(&target, &target, &direction);
-            fn_800E0060(&target, &target);
+            GSvecNormalize(&target, &target);
             fn_800DFFCC(&axisX, &forward, &target);
-            fn_800E0060(&axisX, &axisX);
+            GSvecNormalize(&axisX, &axisX);
             fn_800DFFCC(&forward, &target, &axisX);
-            fn_800E0060(&forward, &forward);
+            GSvecNormalize(&forward, &forward);
 
             stickX = GSinputGetLeftStickXData(1, 1);
             stickY = GSinputGetLeftStickYData(1, 1);
@@ -1425,17 +1425,17 @@ void fn_801D7464(void) {
                 }
                 if (stickY != 0) {
                     set__5GSvecFfff((f32*)&axis, lbl_8047E2E4, lbl_8047E30C, lbl_8047E2E4);
-                    fn_800E0060(&dirNorm, &direction);
+                    GSvecNormalize(&dirNorm, &direction);
                     fn_800DFFCC(&axis, &axis, &dirNorm);
                     if (stickY > 0 || vecMag(&axis) > lbl_8047E320) {
-                        fn_800E0060(&axis, &axis);
+                        GSvecNormalize(&axis, &axis);
                         fn_800E0718(rotation, &axis, lbl_8047E31C * (stickY > 0 ? angleStep : -angleStep));
                         GSvecTransformQuat(&direction, rotation, &direction);
                     }
                 }
                 if (substickY != 0) {
                     GSvecCopy(&zoom, &direction);
-                    fn_800E0060(&zoom, &zoom);
+                    GSvecNormalize(&zoom, &zoom);
                     vecScale(&zoom, &zoom, substickY > 0 ? angleStep : -angleStep);
                     GSvecAdd(&direction, &direction, &zoom);
                 }

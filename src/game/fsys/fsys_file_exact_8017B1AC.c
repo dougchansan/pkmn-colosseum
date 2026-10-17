@@ -1,8 +1,8 @@
 #include "dolphin/types.h"
 
-extern void fn_80167E34(void);
+extern void GSdvdGetDriveStatus(void);
 
 void fn_8017B1AC(void)
 {
-    fn_80167E34();
+    GSdvdGetDriveStatus();
 }

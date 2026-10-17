@@ -98,7 +98,7 @@ void fn_8025DCBC(int *param)
 #pragma optimize_for_size off
 void fn_8025DD14(int *r3)
 {
-    extern int fn_801653BC();
+    extern int soundGetCurrentSubSound();
     extern int std228_soundGetCurrentBackgroundMusic();
     extern int fn_801656D8();
     extern void std104_soundSetBackgroundMusic();
@@ -114,7 +114,7 @@ void fn_8025DD14(int *r3)
     } else {
         iVar2 = 0;
     }
-    iVar3 = fn_801653BC();
+    iVar3 = soundGetCurrentSubSound();
     if (iVar3 != 0) {
         iVar4 = fn_801656D8();
     } else {

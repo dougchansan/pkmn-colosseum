@@ -3406,7 +3406,7 @@ extern s32 fn_80087AE8();
 #define CardE_step(work, flags) \
     ((u8 (*)(CardEStatusWork*, s32))fn_80087AE8)(work, flags)
 extern void* fn_80128E04(void);
-extern u32 fn_80128E24(void);
+extern u32 savedataGetWorkPtr(void);
 extern u8 gamedataAttestBiosGetLangareaId(void*);
 extern u32 gamedataBiosGetGamedataAtttestPtr(void*);
 
@@ -3537,7 +3537,7 @@ static inline u8 CardEIsLangArea(u8 lang)
     void* bios;
     u32 attest;
 
-    if (fn_80128E24() != 0 && (bios = fn_80128E04()) != NULL &&
+    if (savedataGetWorkPtr() != 0 && (bios = fn_80128E04()) != NULL &&
         (attest = gamedataBiosGetGamedataAtttestPtr(bios)) != 0 &&
         gamedataAttestBiosGetLangareaId((void*)attest) == lang) {
         return 1;

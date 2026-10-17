@@ -102,11 +102,11 @@ extern u8 GSmemDumpMap(u8, u8);
 extern u32 _matGSmatObjMakeTExp(void*, void*, void*, void*, void*);
 extern void _matGSmatEnableEnvMapExt(u8*);
 extern s32 _matGSmatObjLoad(u8*);
-extern void fn_800E0290(void*, void*, void*);
+extern void GSmtxConcat(void*, void*, void*);
 extern void fn_800E02C4(void*);
 extern void GSmtxRotateZ(void*, f32);
 extern void GSmtxRotateY(void*, f32);
-extern void fn_800E0370(void*, f32);
+extern void GSmtxRotateX(void*, f32);
 extern void fn_800E03E8(void*, f32, f32, f32);
 extern void fn_800E0628(void*, void*);
 extern void fn_800E064C(void*);
@@ -625,7 +625,7 @@ static inline u16 gsMemChecksum(GSMemHandle* handle) {
 
 #if !defined(GS_RANGE_800E0E14_ONLY)
 /* Compact the movable allocations in the GS scratch heap. */
-u32 fn_800E1544(void)
+u32 GSmemOptimize(void)
 {
     extern const char lbl_80270BB8[];
     GSFreeBlock* block;

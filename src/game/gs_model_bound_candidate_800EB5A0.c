@@ -33,7 +33,7 @@ extern void GSmtxMakeXRotation(GSmtx, f32);
 extern void GSmtxMakeYRotation(GSmtx, f32);
 extern void GSmtxMakeZRotation(GSmtx, f32);
 extern void fn_800E042C(GSmtx, const GSvec*);
-extern void fn_800E0290(GSmtx, GSmtx, GSmtx);
+extern void GSmtxConcat(GSmtx, GSmtx, GSmtx);
 
 typedef struct ModelQuat {
     f32 x;
@@ -319,10 +319,10 @@ void modelCalculateBlendModel__FP8_GSmodelf(GSmodel* model, f32 unused)
     GSmtxMakeYRotation(rotate_y, model->rotation.y);
     GSmtxMakeZRotation(rotate_z, model->rotation.z);
     fn_800E042C(scale, &model->scale);
-    fn_800E0290(*matrix, *matrix, scale);
-    fn_800E0290(*matrix, *matrix, translation);
-    fn_800E0290(*matrix, *matrix, rotate_x);
-    fn_800E0290(*matrix, *matrix, rotate_y);
-    fn_800E0290(*matrix, *matrix, rotate_z);
+    GSmtxConcat(*matrix, *matrix, scale);
+    GSmtxConcat(*matrix, *matrix, translation);
+    GSmtxConcat(*matrix, *matrix, rotate_x);
+    GSmtxConcat(*matrix, *matrix, rotate_y);
+    GSmtxConcat(*matrix, *matrix, rotate_z);
 }
 #endif /* GS_MODEL_BOUND_EMIT_BLEND_MODEL */

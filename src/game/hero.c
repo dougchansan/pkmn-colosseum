@@ -44,7 +44,7 @@ extern void* fn_80128D68(void* save);
 extern void* fn_80128DD4(void* save);
 extern void* fn_80128DEC(void* save);
 extern void* fn_80128E04(void* save);
-extern void* fn_80128E24(void);
+extern void* savedataGetWorkPtr(void);
 
 void savedataInit(SaveData* save);
 
@@ -52,7 +52,7 @@ void savedataInit(SaveData* save);
 static inline void* savedataResolve(void* save)
 {
     if (save == NULL) {
-        save = fn_80128E24();
+        save = savedataGetWorkPtr();
         if (save == NULL) {
             return NULL;
         }
@@ -65,7 +65,7 @@ static inline void* savedataResolve(void* save)
 static inline void* savedataGetPart(void* save, void* (*get)(void*))
 {
     if (save == NULL) {
-        save = fn_80128E24();
+        save = savedataGetWorkPtr();
         if (save == NULL) {
             return NULL;
         }

@@ -27,8 +27,8 @@
  * change any other function or the rest of this file's speculative
  * GSDVD_* naming table below, which remains unverified.
  *
- * 2026-07-03: re-tried porting the archive bodies for fn_80167040
- * ("GSDVD_CheckAndClose", 48 bytes) and fn_80167070
+ * 2026-07-03: re-tried porting the archive bodies for _soundReleaseFinishedVoice
+ * ("GSDVD_CheckAndClose", 48 bytes) and _soundSlotRelease
  * ("GSDVD_CloseHandle", 168 bytes) under their correct current
  * fn_ names -- both compile but land at 66.7% / 76.2% fuzzy match
  * (not 100%), confirming the archive content for this file is
@@ -103,7 +103,7 @@ extern GSsndEntry* lbl_80478FAC;
 
 /* Forward declarations for converted functions */
 s32 fn_80167E54(void);
-u32 fn_80167E5C(u8* obj);
+u32 GSdvdGetLength(u8* obj);
 void fn_80167FA4(void);
 
 
@@ -173,7 +173,7 @@ void fn_80167FA4(void) {
 s32 fn_80167E54(void) { return -1; }
 
 /* Address: 0x80167E5C | Size: 0x8 | Pattern: simple_getter */
-u32 fn_80167E5C(u8* obj) {
+u32 GSdvdGetLength(u8* obj) {
     return *(u32*)((u8*)obj + 0x38);
 }
 
@@ -181,8 +181,8 @@ u32 fn_80167E5C(u8* obj) {
  * unreliable archive bodies noted above). */
 extern BOOL OSDisableInterrupts(void);
 extern BOOL OSRestoreInterrupts(BOOL level);
-extern u32 fn_80167720(u32 handle);
-extern u8 fn_80167070(u32 entry, u32 flag);
+extern u32 _soundFindSlotByVoice(u32 handle);
+extern u8 _soundSlotRelease(u32 entry, u32 flag);
 extern u8 *lbl_8047B0C4;
 extern u32 lbl_8047B0C8;
 extern u8 *lbl_8047B0CC;
@@ -191,13 +191,13 @@ extern u8 *lbl_8047B0DC;
 extern u32 lbl_8047B0E0;
 extern void winMsgOpenError(u32 message, u32 mode, u32 wait);
 
-void fn_80167040(u32 handle)
+void _soundReleaseFinishedVoice(u32 handle)
 {
     u32 entry;
 
-    entry = fn_80167720(handle);
+    entry = _soundFindSlotByVoice(handle);
     if (entry != 0) {
-        fn_80167070(entry, 0);
+        _soundSlotRelease(entry, 0);
     }
 }
 
@@ -231,7 +231,7 @@ void fn_8016782C(u8 *flag)
     OSRestoreInterrupts(enabled);
 }
 
-u8 *fn_80167864(void)
+u8 *_soundPool0Alloc(void)
 {
     BOOL enabled;
     u8 *entry;
@@ -281,7 +281,7 @@ u8 *fn_801678E4(void)
     return result;
 }
 
-u8 *fn_80167964(void)
+u8 *_soundPool2Alloc(void)
 {
     BOOL enabled;
     u8 *entry;
@@ -486,15 +486,15 @@ extern void* memset(void*, int, u32);
 extern GSFilter* lbl_8047B100;
 
 void _sndInitParms(GSsndEntry* entry, GSsndWork* work);
-s32 fn_80167ED0(GSDVDWork* work, void* addr, s32 length, s32 offset);
+s32 GSdvdRead(GSDVDWork* work, void* addr, s32 length, s32 offset);
 GSDVDWork* fn_8016819C(void);
 void fn_8016821C(void);
 void* fn_8016824C(u32 size);
 void _gsdvdErrorTask(void);
-void fn_80167B70(void);
-void* fn_80167BB0(u32 size);
-void fn_80167E64(u8* file);
-GSDVDWork* fn_80167F28(const char* path);
+void _soundMemFree(void);
+void* _soundMemAlloc(u32 size);
+void GSdvdClose(u8* file);
+GSDVDWork* GSdvdOpen(const char* path);
 void* _sndSetSampleDataUploadCallbackFunction(u32 offset, u32 length);
 
 GSDVDWork* _info2work(void* fileInfo);
@@ -524,7 +524,7 @@ GSDVDWork* _info2work(void* fileInfo)
     return NULL;
 }
 
-void fn_80167B70(void)
+void _soundMemFree(void)
 {
     u32 handle = GSmemGetHandleByPtr();
 
@@ -534,7 +534,7 @@ void fn_80167B70(void)
     }
 }
 
-u8 fn_80167070(u32 index, u32 stop)
+u8 _soundSlotRelease(u32 index, u32 stop)
 {
     extern void fn_8016782C(u8* flag);
     GSsndEntry* entry = &lbl_80478FAC[index];
@@ -561,7 +561,7 @@ u8 soundPushWave(u32 slot, u32 stream, const char* path, u32 offset,
                void* resourceOwner, u32 resourceId3, u32 resourceId1,
                u32 resourceId2)
 {
-    extern void fn_80167B70();
+    extern void _soundMemFree();
     GSsndOpenState* state = &lbl_80478FB4[slot];
     void* resource1;
     void* sampleData;
@@ -587,14 +587,14 @@ u8 soundPushWave(u32 slot, u32 stream, const char* path, u32 offset,
         sampleData = NULL;
         fn_80159ED0((u8*)_sndSetSampleDataUploadCallbackFunction,
                     ARQGetChunkSize());
-        lbl_8047B0BC = fn_80167F28(path);
+        lbl_8047B0BC = GSdvdOpen(path);
         if (lbl_8047B0BC == NULL) {
             return 0;
         }
         lbl_8047B0B8 = offset;
-        lbl_8047B0C0 = fn_80167BB0(ARQGetChunkSize());
+        lbl_8047B0C0 = _soundMemAlloc(ARQGetChunkSize());
         if (lbl_8047B0C0 == NULL) {
-            fn_80167E64((u8*)lbl_8047B0BC);
+            GSdvdClose((u8*)lbl_8047B0BC);
             return 0;
         }
     } else {
@@ -604,13 +604,13 @@ u8 soundPushWave(u32 slot, u32 stream, const char* path, u32 offset,
     if (!fn_80159EF0(resource1, state->soundId, sampleData, resource2,
                      resource3)) {
         if (stream == 1) {
-            fn_80167E64((u8*)lbl_8047B0BC);
+            GSdvdClose((u8*)lbl_8047B0BC);
         }
         return 0;
     }
     if (stream == 1) {
-        fn_80167B70(lbl_8047B0C0);
-        fn_80167E64((u8*)lbl_8047B0BC);
+        _soundMemFree(lbl_8047B0C0);
+        GSdvdClose((u8*)lbl_8047B0BC);
     }
     state->active = 1;
     return 1;
@@ -623,7 +623,7 @@ void* _sndSetSampleDataUploadCallbackFunction(u32 offset, u32 length)
     while (ARGetDMAStatus() != 0) {
     }
     for (;;) {
-        result = fn_80167ED0(lbl_8047B0BC, lbl_8047B0C0, length,
+        result = GSdvdRead(lbl_8047B0BC, lbl_8047B0C0, length,
                             offset + lbl_8047B0B8);
         switch (result) {
         case -3:
@@ -652,7 +652,7 @@ u32 soundStartFX(GSsndEntry* entry, u32 id)
     return 0;
 }
 
-u32 fn_8016761C(GSsndEntry* entry, u16 value)
+u32 _soundSlotStartStream(GSsndEntry* entry, u16 value)
 {
     GSsndStartParams params;
     void* resource;
@@ -687,7 +687,7 @@ u32 fn_8016761C(GSsndEntry* entry, u16 value)
     return 1;
 }
 
-void* fn_80167BB0(u32 size)
+void* _soundMemAlloc(u32 size)
 {
     u32 handle = fn_800E2C04(size, 0x20);
 
@@ -702,12 +702,12 @@ s32 fn_80167E10(u8* handle)
     return DVDGetCommandBlockStatus(handle + 4);
 }
 
-s32 fn_80167E34(void)
+s32 GSdvdGetDriveStatus(void)
 {
     return DVDGetDriveStatus();
 }
 
-void fn_80167E64(u8* file)
+void GSdvdClose(u8* file)
 {
     fn_80168164(file);
     DVDClose(file + 4);
@@ -718,7 +718,7 @@ u32 fn_80167EF8(const char* path)
     return DVDConvertPathToEntrynum(path) != -1;
 }
 
-GSDVDWork* fn_80167F28(const char* path)
+GSDVDWork* GSdvdOpen(const char* path)
 {
     GSDVDWork* work = fn_8016819C();
 
@@ -733,7 +733,7 @@ GSDVDWork* fn_80167F28(const char* path)
     return work;
 }
 
-u8 fn_80167E98(GSDVDWork* work, void* addr, s32 length, s32 offset,
+u8 GSdvdReadAsync(GSDVDWork* work, void* addr, s32 length, s32 offset,
                 void (*callback)(s32 result, GSDVDWork* work))
 {
     work->callback = callback;
@@ -741,7 +741,7 @@ u8 fn_80167E98(GSDVDWork* work, void* addr, s32 length, s32 offset,
                         2);
 }
 
-s32 fn_80167ED0(GSDVDWork* work, void* addr, s32 length, s32 offset)
+s32 GSdvdRead(GSDVDWork* work, void* addr, s32 length, s32 offset)
 {
     return DVDRead(work->fileInfo, addr, length, offset, 2);
 }
@@ -755,7 +755,7 @@ void fn_80168164(u8* flag)
     OSRestoreInterrupts(enabled);
 }
 
-u32 fn_80167FA8(u32 workCount)
+u32 GSdvdInit(u32 workCount)
 {
     u8* destination;
 
@@ -891,7 +891,7 @@ void fn_801684F0(GSDVDWork* work)
     }
 }
 
-void fn_80168408(GSFilter* filter, const u8* color)
+void GSfilterSetColor(GSFilter* filter, const u8* color)
 {
     u8* destination;
 
@@ -1056,7 +1056,7 @@ void fn_80168638(u8 capacity)
     GSgappCreate(1, 0xFC, 0, fn_80168284);
 }
 
-u32 fn_8016737C(GSsndEntry* entry, u32 volume, u32 limit)
+u32 _soundSlotSetVolume(GSsndEntry* entry, u32 volume, u32 limit)
 {
     GSsndWork* work = entry->work;
 
@@ -1134,7 +1134,7 @@ u32 _sndStopBGM(GSsndEntry* entry, u32 fade, u32 arg2)
     return 1;
 }
 
-u32 fn_80167720(u32 handle)
+u32 _soundFindSlotByVoice(u32 handle)
 {
     int i;
 
@@ -1237,7 +1237,7 @@ void _gsdvdErrorTask(void)
 {
     extern void _errorTask_State_None(s32 state);
     extern void _gsdvdError_MsgOpen(u32 message);
-    s32 driveState = fn_80167E34();
+    s32 driveState = GSdvdGetDriveStatus();
 
     switch (lbl_8047B0F0) {
     case 0:
@@ -1295,7 +1295,7 @@ void _gsdvdErrorTask(void)
     }
 }
 
-void fn_80167DC0(u32 arg0, u32 arg1, u32 arg2, u32 arg3, u32 arg4)
+void soundSetInitParams(u32 arg0, u32 arg1, u32 arg2, u32 arg3, u32 arg4)
 {
     lbl_80478C10 = arg0;
     lbl_80478C14 = arg1;
@@ -1304,7 +1304,7 @@ void fn_80167DC0(u32 arg0, u32 arg1, u32 arg2, u32 arg3, u32 arg4)
     lbl_80478C20 = arg4;
 }
 
-u8 fn_80167DD8(GSDVDWork* work, s32 offset,
+u8 GSdvdSeekAsync(GSDVDWork* work, s32 offset,
                void (*callback)(s32 result, GSDVDWork* work))
 {
     work->callback = callback;

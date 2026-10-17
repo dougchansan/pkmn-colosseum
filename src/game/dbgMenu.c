@@ -269,10 +269,10 @@ u32 fn_801330C8(void) {
 #endif
 
 
-/* 0x80133218 | 0x38 -- fn_800E1544() then print result, return 0 */
-/* 0x80133218 | 0x38 -- fn_800E1544() then print result, return 0 */
+/* 0x80133218 | 0x38 -- GSmemOptimize() then print result, return 0 */
+/* 0x80133218 | 0x38 -- GSmemOptimize() then print result, return 0 */
 u32 dbgMenuGSmemOptimize(void) {
-    u32 val = fn_800E1544();
+    u32 val = GSmemOptimize();
     GSlogWrite(lbl_80272AB8, val);
     return 0;
 }

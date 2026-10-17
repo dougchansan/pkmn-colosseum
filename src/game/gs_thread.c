@@ -129,7 +129,7 @@ extern void gfxSetZMode(s32 a, s32 b, s32 c);
 extern void gfxSetUpdates(s32 a, s32 b, s32 c);
 extern void gfxSetBlendMode(s32 a, s32 b, s32 c);
 extern void set__5GSvecFfff(void* dst, f32 x, f32 y, f32 z);
-extern void fn_800E0218(void* dst, void* a, void* b, void* c);
+extern void GSmtxLookAt(void* dst, void* a, void* b, void* c);
 extern void* memset(void* dest, int val, u32 n);
 extern void* memcpy(void* dst, const void* src, u32 n);
 
@@ -3654,7 +3654,7 @@ void spriteSetEnv(void) {
                 y - (f32)(s32)*(s16*)&lbl_8047AC72,
                 lbl_8047CD68);
     set__5GSvecFfff(v2, lbl_8047CD68, lbl_8047CD6C, lbl_8047CD68);
-    fn_800E0218(mtx, v0, v2, v1);
+    GSmtxLookAt(mtx, v0, v2, v1);
 
     gfxSetPerspective(lbl_8047CD70, -(sx / sy), lbl_8047CD74, lbl_8047CD78);
     gfxLoadIdentity();

@@ -226,7 +226,7 @@ extern s32   GSgetVersionMinor(void);
 extern void  _threadSwitch(void);
 extern s32   fn_8017B2CC(s32 id);
 extern void  fn_800F915C(s32 id);
-extern void  fn_8017B1CC(s32 id);
+extern void  GSresReleaseById(s32 id);
 extern u32   GSmodelIsRootNullAdded(struct GSmodel* model);
 extern void  GSmodelGetRootPosition(struct GSmodel* model, GSvec* position);
 extern void  GSmodelAddNull(struct GSmodel* model, const GSvec* position,

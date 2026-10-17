@@ -78,7 +78,7 @@ static inline s32 fsysCompleteSlot(FSYSSlot* slot)
 }
 
 /* Address: 0x8017C6E0 | size: 0x1AC */
-s32 fn_8017C6E0(FSYSSlot* slot)
+s32 fsysStatus102(FSYSSlot* slot)
 {
     return fsysCompleteSlot(slot);
 }

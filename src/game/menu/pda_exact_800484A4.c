@@ -272,7 +272,7 @@ extern u32 pokemonGetSex();
 extern u32 fn_801240C4();
 extern u32 fn_80132A38();
 extern u32 soundStartRaw(u32, u32, u32);
-extern u32 fn_8017B1CC();
+extern u32 GSresReleaseById();
 extern s32 fn_8017B2CC();
 extern u32 fn_8017B3E4();
 extern u32 fn_801EE0BC();
@@ -387,7 +387,7 @@ extern void GSsplineFree(void* spline);
 extern u8 lbl_802E53F4[];
 extern u8 lbl_802E5400[];
 extern void GSmtxMakeYRotation(f32* mtx, f32 angle);
-extern void fn_800E0370(f32* mtx, f32 angle);
+extern void GSmtxRotateX(f32* mtx, f32 angle);
 extern void fn_800E0560(f32* mtx, void* vec);
 extern void GSvecTransform(void* dst, f32* mtx, void* src);
 extern u16 pokemonDataBiosGetWeight(void* data);
@@ -627,7 +627,7 @@ u8 pdaModelOrbitCamera(u8* work)
     set__5GSvecFfff(&camPos, lbl_8047BC94, lbl_8047BC94,
                     dist * *(f32*)((u8*)&lbl_803A6818 + 0x64));
     GSmtxMakeYRotation(mtx1, -*(f32*)((u8*)&lbl_803A6818 + 0x70));
-    fn_800E0370(mtx1, -*(f32*)((u8*)&lbl_803A6818 + 0x6c));
+    GSmtxRotateX(mtx1, -*(f32*)((u8*)&lbl_803A6818 + 0x6c));
     GSvecTransform(&camPos, mtx1, &camPos);
     GScameraSetPosition(*(void**)(work + 0x38), &camPos);
     GScameraSetPerspective(*(void**)(work + 0x38), persp0, persp1, persp2,

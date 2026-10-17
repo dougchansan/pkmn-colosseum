@@ -20,10 +20,10 @@ extern u8 lbl_804673F8[];
 extern u8 lbl_80279338[];
 
 /* Host-file (DVD) wrappers: open returns the file object, 0 on failure. */
-extern void* fn_80167F28(const char* path);
-extern u32 fn_80167E5C(void* file);
-extern void fn_80167E64(void* file);
-extern s32 fn_80167ED0(void* file, void* buf, u32 size, s32 offset);
+extern void* GSdvdOpen(const char* path);
+extern u32 GSdvdGetLength(void* file);
+extern void GSdvdClose(void* file);
+extern s32 GSdvdRead(void* file, void* buf, u32 size, s32 offset);
 extern s32 fn_80167E54(void* file, void* buf, u32 size, s32 offset);
 
 /**
@@ -35,13 +35,13 @@ static inline u32 wazaViewerGetFilesize(const char* messages, const char* path) 
     u32 size;
     void* file;
 
-    file = fn_80167F28(path);
+    file = GSdvdOpen(path);
     if (file == NULL) {
         GSlogWrite(messages + 0x6C, path);
         return 0;
     }
-    size = fn_80167E5C(file);
-    fn_80167E64(file);
+    size = GSdvdGetLength(file);
+    GSdvdClose(file);
     return size;
 }
 
@@ -55,13 +55,13 @@ static inline void wazaViewerLoadFile(const char* messages, const char* path, vo
                                       u32 size, int writing) {
     void* file;
 
-    file = fn_80167F28(path);
+    file = GSdvdOpen(path);
     if (writing) {
         if (file != NULL) {
             if (fn_80167E54(file, buf, size, 0) < 0) {
                 GSlogWrite(messages + 0xF8, path);
             }
-            fn_80167E64(file);
+            GSdvdClose(file);
         } else {
             GSlogWrite(messages + 0x9C, path);
         }
@@ -71,12 +71,12 @@ static inline void wazaViewerLoadFile(const char* messages, const char* path, vo
         GSlogWrite(messages + 0x9C, path);
         return;
     }
-    if (fn_80167ED0(file, buf, (size + 0x1F) & ~0x1F, 0) < 0) {
+    if (GSdvdRead(file, buf, (size + 0x1F) & ~0x1F, 0) < 0) {
         GSlogWrite(messages + 0xC8, path);
-        fn_80167E64(file);
+        GSdvdClose(file);
         return;
     }
-    fn_80167E64(file);
+    GSdvdClose(file);
 }
 
 void wazaViewerLoadSequenceFiles(s32 slot) {

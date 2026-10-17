@@ -13,7 +13,7 @@
 #include "game/fsys/fsys_entry.h"
 
 /* Address: 0x8017C39C | size: 0x78 */
-s32 fn_8017C39C(FSYSSlot* slot)
+s32 fsysStatus304(FSYSSlot* slot)
 {
     FSYSFileEntry* entry;
     FSYSSubEntry* sub;

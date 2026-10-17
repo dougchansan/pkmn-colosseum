@@ -231,7 +231,7 @@ extern u32 GSthreadCreate(u32, u32, u32, u32, u32, void*);
 extern void fn_80057E70(void);
 extern void fn_8017B3E4(s32);
 extern s32 fn_8017B2CC(s32);
-extern void fn_8017B1CC(s32);
+extern void GSresReleaseById(s32);
 extern void fn_800F915C(s32);
 extern void fn_80055B98(s32);
 extern void std078_flagSetFalse(s32);

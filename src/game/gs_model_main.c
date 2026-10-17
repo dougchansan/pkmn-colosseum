@@ -2,7 +2,7 @@
  * @file gs_model_main.c
  * @brief GSmodel update prefix
  *
- * Target range 0x800E3604-0x800E3928; source owns fn_800E3884.
+ * Target range 0x800E3604-0x800E3928; source owns GSmodelAdvanceAll.
  */
 #include "dolphin/types.h"
 #include "game/data/sdata2_8047CAA0.h"
@@ -330,7 +330,7 @@ void GSmodelDrawModel(GSmodel* model, u32 flags)
 
 
 
-void fn_800E3884(u32 frames, u8 phase)
+void GSmodelAdvanceAll(u32 frames, u8 phase)
 {
     u32 i;
 

@@ -44,7 +44,7 @@ extern s16 lbl_8047AC72; /* sprite origin y */
 
 extern f64 tan(f64 x);
 extern void set__5GSvecFfff(f32* v, f32 x, f32 y, f32 z);
-extern void fn_800E0218(f32* mtx, f32* eye, f32* up, f32* target);
+extern void GSmtxLookAt(f32* mtx, f32* eye, f32* up, f32* target);
 extern void gfxSetPerspective(f32 fovy, f32 aspect, f32 nearZ, f32 farZ);
 extern void gfxLoadIdentity(void);
 extern void gfxMultMatrix(f32* mtx);
@@ -110,7 +110,7 @@ void spriteSetEnv(void) {
     set__5GSvecFfff(eye, cx - lbl_8047AC70, cy - lbl_8047AC72, z);
     set__5GSvecFfff(target, cx - lbl_8047AC70, cy - lbl_8047AC72, 0.0f);
     set__5GSvecFfff(up, 0.0f, -1.0f, 0.0f);
-    fn_800E0218(mtx, eye, up, target);
+    GSmtxLookAt(mtx, eye, up, target);
 
     gfxSetPerspective(30.0f, -(width / height), 0.1f, 30000.0f);
     gfxLoadIdentity();

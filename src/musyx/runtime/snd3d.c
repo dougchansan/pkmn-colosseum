@@ -688,7 +688,7 @@ static void MakeListenerMatrix(SND_LISTENER* li)
     salInvertMatrix(&li->mat, &mat);
 }
 
-u32 fn_8015ED00(SND_LISTENER* li, SND_FVECTOR* pos, SND_FVECTOR* dir, SND_FVECTOR* heading,
+u32 s3dUpdateListener(SND_LISTENER* li, SND_FVECTOR* pos, SND_FVECTOR* dir, SND_FVECTOR* heading,
                 SND_FVECTOR* up, u8 vol, SND_ROOM* room) /* sndUpdateListener */
 {
     if (lbl_8047AF18) {
@@ -753,7 +753,7 @@ u32 sndAddListenerEx(SND_LISTENER* li, SND_FVECTOR* pos, SND_FVECTOR* dir, SND_F
     return FALSE;
 }
 
-u32 fn_8015EF04(SND_LISTENER* li, SND_FVECTOR* pos, SND_FVECTOR* dir, SND_FVECTOR* heading,
+u32 s3dSetListener(SND_LISTENER* li, SND_FVECTOR* pos, SND_FVECTOR* dir, SND_FVECTOR* heading,
                 SND_FVECTOR* up, f32 front_sur, f32 back_sur, f32 soundSpeed, u32 flags, u8 vol,
                 SND_ROOM* room) /* sndAddListener */
 {

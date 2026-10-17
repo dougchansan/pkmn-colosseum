@@ -101,11 +101,11 @@ extern u8 GSmemDumpMap(u32, u32);
 extern u32 _matGSmatObjMakeTExp(void*, void*, void*, void*, void*);
 extern void _matGSmatEnableEnvMapExt(u8*);
 extern s32 _matGSmatObjLoad(u8*);
-extern void fn_800E0290(void*, void*, void*);
+extern void GSmtxConcat(void*, void*, void*);
 extern void fn_800E02C4(void*);
 extern void GSmtxRotateZ(void*, f32);
 extern void GSmtxRotateY(void*, f32);
-extern void fn_800E0370(void*, f32);
+extern void GSmtxRotateX(void*, f32);
 extern void fn_800E03E8(void*, f32, f32, f32);
 extern void fn_800E0628(void*, void*);
 extern void fn_800E064C(void*);
@@ -440,7 +440,7 @@ asm void fn_800E0738(void) {
 #include "src/game/gs_render_fn_800E0738.inc"
 }
 #else
-void fn_800E0738(void* a, void* b, void* c) { PSQUATMultiply(b, c, a); }
+void GSquatMultiply(void* a, void* b, void* c) { PSQUATMultiply(b, c, a); }
 #endif
 
 #if 0

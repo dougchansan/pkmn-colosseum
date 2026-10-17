@@ -196,7 +196,7 @@ typedef struct FSYSManager {
     /* 0x00 */ u32  maxSlots;          /* number of pre-allocated FSYSSlots */
     /* 0x04 */ u32  field_04;
     /* 0x08 */ u32  field_08;
-    /* 0x0C */ s32  driveStatus;       /* last fn_80167E34 (DVDGetDriveStatus) result */
+    /* 0x0C */ s32  driveStatus;       /* last GSdvdGetDriveStatus (DVDGetDriveStatus) result */
     /* 0x10 */ FSYSErrorCallback errorCallback; /* called on fatal/cover/retry drive states */
     /* 0x14 */ u32  errorArg0;
     /* 0x18 */ u32  errorArg1;
@@ -301,7 +301,7 @@ extern FSYSDecompContext gLZSSContext;
 s32 FSYSInit(u32 numSlots, u32 param2, u32 param3, u32 param4);
 
 /*
- * fn_8017D410: FSYSFindSlot
+ * fsysFindSlotByHandle: FSYSFindSlot
  * Searches the slot array for a slot matching the given file handle.
  * If no matching active slot is found, returns the first free slot.
  *
@@ -336,7 +336,7 @@ s32 FSYSLoadArchiveEx(u32 fileHandle, u32 requestID,
                       u32 callbackA, u32 callbackB, u32 callbackC);
 
 /*
- * fn_801800F8: FSYSInitLoadManager
+ * fsysCacheInit: FSYSInitLoadManager
  * Initializes the load manager: allocates DVD pool, decompression pool,
  * and request queue structures.
  *
@@ -353,7 +353,7 @@ void FSYSInitLoadManager(u32 maxRequests, u32 alignment, u32 poolSize);
  *   - FSYSCheckFileLoaded, FSYSRequestFile, FSYSProcessEntry: already
  *     dead - src/game/fsys/fsys_file.c no longer defines anything under
  *     these names (a prior pass already renamed the real bodies to
- *     fn_8017B07C, fn_8017B13C, fn_8017E30C respectively; these
+ *     fsysIsEntryLoaded, fsysRequestEntry, fsysLoadEntrySync respectively; these
  *     prototypes were stale leftovers with no matching definition).
  *   - FSYSBeginLoad: its definition in fsys_file.c was renamed to
  *     _fsysGetFilename (real name, confirmed by matching address/size

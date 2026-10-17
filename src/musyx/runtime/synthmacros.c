@@ -608,8 +608,8 @@ extern u8 inpGetMidiLastNote(u8 midi, u8 midiSet);
 extern void voiceSetLastStarted(SYNTH_VOICE* svoice);
 extern u8* fn_80160EA0(u8 midi, u8 midiSet); /* inpGetChannelDefaults; only pbRange (offset 0) used here */
 extern u32 inpGetModulation(SYNTH_VOICE* sv);
-extern void fn_801629A4(u32 index, u8 value);
-extern void fn_801629D0(u32 index, u8 value);
+extern void hwSetSRCType(u32 index, u8 value);
+extern void hwSetPolyPhaseFilter(u32 index, u8 value);
 extern u32 hwFrq2Pitch(u32 value);
 
 /* Reference-shaped static helpers for macHandleActive's inlined cases.
@@ -1991,8 +1991,8 @@ void macHandleActive(SYNTH_VOICE* svoice) { /* macHandleActive */
             mcmdSetKeyGroup(svoice, &cstep);
             break;
         case 0x5a:
-            fn_801629A4(svoice->id & 0xFF, (u8)(cstep.para[0] >> 8));
-            fn_801629D0(svoice->id & 0xFF, (u8)(cstep.para[0] >> 16));
+            hwSetSRCType(svoice->id & 0xFF, (u8)(cstep.para[0] >> 8));
+            hwSetPolyPhaseFilter(svoice->id & 0xFF, (u8)(cstep.para[0] >> 16));
             svoice->cFlags |= 0x80000000000ULL;
             break;
         case 0x60:

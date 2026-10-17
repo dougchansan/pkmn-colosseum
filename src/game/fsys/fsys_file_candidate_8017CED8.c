@@ -5,7 +5,7 @@
  * Once an archive's TOC is in memory: cache it in ARAM unless it is cached
  * already (making room first), make room in the ARAM cache for the whole
  * archive, move the archive's handle to the most recently used end of the
- * handle table (fn_8017D68C), reset every entry's runtime trailer, and set
+ * handle table (fsysSlotRefreshHandle), reset every entry's runtime trailer, and set
  * the slot to status 100.
  *
  * The ARAM cache eviction helpers are those of
@@ -36,7 +36,7 @@ extern void fn_8017F800(s32 handleID);
 extern u32 fn_8017FA5C(void);
 extern u32 fn_8017F928(u32 size, u32 fileHandle, u32 key1, u32 key2);
 extern void fn_80180450(void* main, void* aram, u32 size);
-extern FSYSFileHandle* fn_8017D68C(FSYSSlot* slot);
+extern FSYSFileHandle* fsysSlotRefreshHandle(FSYSSlot* slot);
 
 /* The slot's archive handle if the handle table holds it, else -1. */
 static inline s32 fsysCacheFindHandle(FSYSSlot* slot)
@@ -188,7 +188,7 @@ static inline void fsysResetEntryTrailers(FSYSSlot* slot)
 }
 
 /* Address: 0x8017CED8 | size: 0x4C8 */
-s32 fn_8017CED8(FSYSSlot* slot)
+s32 fsysStatus4(FSYSSlot* slot)
 {
     u32 tocSize;
     u32 cached;
@@ -204,7 +204,7 @@ s32 fn_8017CED8(FSYSSlot* slot)
         }
     }
     fsysCacheMakeRoomTotal(slot);
-    fn_8017D68C(slot);
+    fsysSlotRefreshHandle(slot);
     fsysResetEntryTrailers(slot);
     slot->padding05C = 1;
     slot->status = 100;

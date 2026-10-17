@@ -279,7 +279,7 @@ typedef struct GSmaterialEntry {
  * @param entry   Pointer to a GSmaterialEntry.
  * @param stage   Texture stage / blend factor.
  *
- * Corresponds to fn_800E3884. Size: 0xA4.
+ * Corresponds to GSmodelAdvanceAll. Size: 0xA4.
  */
 
 /**
@@ -289,7 +289,7 @@ typedef struct GSmaterialEntry {
  * particle-linked models, then refreshes attachments and bound centers.
  * The caller-supplied argument is unused.
  *
- * Corresponds to fn_800E3928. Size: 0x1E0.
+ * Corresponds to GSmodelApplyAll. Size: 0x1E0.
  */
 
 /**

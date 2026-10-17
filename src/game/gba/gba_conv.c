@@ -1231,7 +1231,7 @@ void fn_800849B4(void) {
 void cardeGbaTransfer(void) {
     extern void fn_80087AE8();
     extern void fn_80128E04();
-    extern void fn_80128E24();
+    extern void savedataGetWorkPtr();
     extern void savedataGetStatus();
     extern void heroInit();
     extern void heroBiosCopy();
@@ -2484,7 +2484,7 @@ void cardeGbaTransfer(void) {
         tmp = 0x0;
         goto L_80085E1C;
         }
-        fn_80128E24();
+        savedataGetWorkPtr();
         if (r3 != 0) {
             fn_80128E04();
             if (r3 != 0) {
@@ -5029,7 +5029,7 @@ static inline s32 gbaConvRunLinkMode(void) {
     extern u8 fn_8006A76C(void);
     extern void* menuCommonAlloc(u32 size);
     extern void menuCommonFree(void* p);
-    extern void* fn_80128E24(void);
+    extern void* savedataGetWorkPtr(void);
     extern u8* savedataGetStatus(s32 side, s32 slotType);
     extern void _flagSet(s32 id, s32 value);
     extern s32 fn_801D0748(s32 a, s32 b, s32 c);
@@ -5040,12 +5040,12 @@ static inline s32 gbaConvRunLinkMode(void) {
         return 0;
     }
     buf = menuCommonAlloc(0x1DFD0);
-    memcpy(buf, fn_80128E24(), 0x1DFD0);
+    memcpy(buf, savedataGetWorkPtr(), 0x1DFD0);
     gbaConvResetSlotIds();
     savedataGetStatus(0, 0xE)[0x1C] = 0;
     _flagSet(0x8AE, 0);
     result = fn_801D0748(6, 2, 0);
-    memcpy(fn_80128E24(), buf, 0x1DFD0);
+    memcpy(savedataGetWorkPtr(), buf, 0x1DFD0);
     menuCommonFree(buf);
     if (result == 4) {
         return 0;
@@ -5143,7 +5143,7 @@ s32 menuSaveLoadReceiveGift(void) {
     extern u8 std081_flagCheckTrue(s32 id);
     extern void* menuCommonAlloc(u32 size);
     extern void menuCommonFree(void* p);
-    extern void* fn_80128E24(void);
+    extern void* savedataGetWorkPtr(void);
     extern s16 std217_playerReceiveGiftPokemon(s32 kind);
     extern void d2presentOpen(s32 mode);
     extern s32 savedataBattleGetCouponRun(void);
@@ -5176,7 +5176,7 @@ s32 menuSaveLoadReceiveGift(void) {
         return 0;
     }
     buf = menuCommonAlloc(0x1DFD0);
-    memcpy(buf, fn_80128E24(), 0x1DFD0);
+    memcpy(buf, savedataGetWorkPtr(), 0x1DFD0);
     switch (std217_playerReceiveGiftPokemon(4)) {
     case -1:
         mode = 1;
@@ -5190,7 +5190,7 @@ s32 menuSaveLoadReceiveGift(void) {
     }
     d2presentOpen(mode);
     if (mode == 2) {
-        memcpy(fn_80128E24(), buf, 0x1DFD0);
+        memcpy(savedataGetWorkPtr(), buf, 0x1DFD0);
         menuCommonFree(buf);
         return 0;
     }
@@ -5211,7 +5211,7 @@ s32 menuSaveLoadReceiveGift(void) {
         }
         winMsgOpen(2, 0x3C0F, 1, 0);
         if (menuSubOpenYesNo(0, -1, -1, 1) == 0) {
-            memcpy(fn_80128E24(), buf, 0x1DFD0);
+            memcpy(savedataGetWorkPtr(), buf, 0x1DFD0);
             savedataBattleSetCouponRun(0);
             menuCommonFree(buf);
             return 0;
@@ -5298,7 +5298,7 @@ s32 menuSaveLoadCommitA(void) {
     extern u8 fn_8006A76C(void);
     extern void* menuCommonAlloc(u32 size);
     extern void menuCommonFree(void* p);
-    extern void* fn_80128E24(void);
+    extern void* savedataGetWorkPtr(void);
     extern u8* savedataGetStatus(s32 side, s32 slotType);
     extern void _flagSet(s32 id, s32 value);
     extern s32 fn_801D0748(s32 a, s32 b, s32 c);
@@ -5309,12 +5309,12 @@ s32 menuSaveLoadCommitA(void) {
         return 0;
     }
     buf = menuCommonAlloc(0x1DFD0);
-    memcpy(buf, fn_80128E24(), 0x1DFD0);
+    memcpy(buf, savedataGetWorkPtr(), 0x1DFD0);
     gbaConvResetSlotIds();
     savedataGetStatus(0, 0xE)[0x1C] = 0;
     _flagSet(0x8AE, 0);
     result = fn_801D0748(6, 2, 0);
-    memcpy(fn_80128E24(), buf, 0x1DFD0);
+    memcpy(savedataGetWorkPtr(), buf, 0x1DFD0);
     menuCommonFree(buf);
     if (result == 4) {
         return 0;

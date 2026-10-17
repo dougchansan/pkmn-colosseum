@@ -27,7 +27,7 @@ static inline void wazaSequenceReleaseResources(void)
     do {
         if (*resource != 0) {
             fn_800F915C(*resource);
-            fn_8017B1CC(*resource);
+            GSresReleaseById(*resource);
             *resource = 0;
         }
         i++;
@@ -55,6 +55,6 @@ void wazaSequenceSysRelease(void)
     lbl_8047B418 = 0;
     if (lbl_80467CC0[6] == 0) {
         fn_800F915C(0x6F7);
-        fn_8017B1CC(0x6F7);
+        GSresReleaseById(0x6F7);
     }
 }

@@ -111,7 +111,7 @@ extern void fn_801DD23C(void* obj);
 extern void _threadSwitch(void);
 extern s32 fn_8017B2CC(s32 id);
 extern void fn_800F915C(s32 id);
-extern void fn_8017B1CC(s32 id);
+extern void GSresReleaseById(s32 id);
 #ifndef WAZA_CAMERA_FILE_ONLY
 void* fn_801D2C6C(void) {
     return lbl_8047B3EC;

@@ -10,7 +10,7 @@
  *   peopleStartTurn      fn_8018805C      start turning toward a yaw
  *   peopleCalcRange      fn_801887D8      proximity ratio of a displacement
  *   peopleSetMotion      fn_8018B76C      (re)start a body/texture motion
- *   peopleSetMotionIndex fn_8018F08C      play a person's motion slot
+ *   peopleSetMotionIndex peopleSetMotionSlot      play a person's motion slot
  *
  * Standalone units that carve functions out of the TU use these static
  * inline copies so the object emits no extra symbols.

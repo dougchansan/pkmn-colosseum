@@ -397,7 +397,7 @@ static inline BOOL evolutionRun(EvoWork *work, u32 r5, u32 before, u32 after,
   else {
     bgmVolume = 0;
   }
-  se = fn_801653BC();
+  se = soundGetCurrentSubSound();
   if (se != 0) {
     seVolume = fn_801656D8();
     scriptSoundStop(0x32);

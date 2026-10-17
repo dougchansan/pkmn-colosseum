@@ -4,7 +4,7 @@
  *
  * Called by the GSgapp job pool (fn_8018094C) once the background LZSS
  * decode of an entry has finished: free the compressed image the job kept
- * (fn_8017C074 moved it there), then either mark the entry failed (state 7)
+ * (fsysLZSSJobSetup moved it there), then either mark the entry failed (state 7)
  * when no output buffer was allocated, or mark it done (state 6), flush the
  * resource and report it to the entry's group callback.
  *
@@ -68,7 +68,7 @@ static inline void fsysEntryDone(FSYSSlot* slot, FSYSFileEntry* entry)
 }
 
 /* Address: 0x8017C1D8 | size: 0x1BC */
-void fn_8017C1D8(FSYSSlot* slot, FSYSSubEntry* sub, u32 index, GsRangePoolElem* job)
+void fsysLZSSJobFinish(FSYSSlot* slot, FSYSSubEntry* sub, u32 index, GsRangePoolElem* job)
 {
     FSYSFileEntry* entry;
 

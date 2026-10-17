@@ -267,7 +267,7 @@ extern s8 GSinputGetRightStickYData(s32 pad, s32 mode);
 extern void menuClose(u32 id);
 extern void menuSetPosition(u32 id, s32 x, s32 y);
 extern void fn_800E0718(void* out, const void* axis, f32 angle);
-extern void fn_800E0738(void* out, const void* a, const void* b);
+extern void GSquatMultiply(void* out, const void* a, const void* b);
 extern void GSvecTransformQuat(void* out, const void* quat, const void* vec);
 extern void _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID(void);
 extern u32 _toolentryAlloc__FUl(u32 size);
@@ -605,8 +605,8 @@ void _cameraPadMoveUpdate__FP9_GScamera(void* camera) {
                  ((CameraPadState*)lbl_80478C40)->rotation.y);
     fn_800E0718(quatZ, &lbl_80315558,
                  ((CameraPadState*)lbl_80478C40)->rotation.z);
-    fn_800E0738(quat, quatX, quatZ);
-    fn_800E0738(quat, quatY, quat);
+    GSquatMultiply(quat, quatX, quatZ);
+    GSquatMultiply(quat, quatY, quat);
 
     moveX = GSinputGetLeftStickXData(1, 0) * frameDelta;
     moveZ = GSinputGetLeftStickYData(1, 0) * frameDelta;
@@ -753,7 +753,7 @@ void _cameraOffsetAnimeUpdate__FP9_GScamera(GSRenderCamera* camera) {
                  ((CameraPadState*)lbl_80478C40)->offsetRotation.z);
     GSvecTransform(&eye, rotation, &eye);
     GSvecTransform(&interest, rotation, &interest);
-    fn_800E0238(rotation, rotation);
+    GSmtxTranspose(rotation, rotation);
     GSvecTransform(&up, rotation, &up);
 
     if ((((CameraPadState*)lbl_80478C40)->flags[2] & 1) != 0) {
@@ -1449,7 +1449,7 @@ void cameraPlayOffsetAnime(u32 groupId, u32 animationId, s32 frame, u8 loop)
     fn_800D258C(camera);
 }
 
-s32 fn_80176C04(u32 group, u32 id)
+s32 cameraGetResAnimFrame(u32 group, u32 id)
 {
     GSRenderCamera* animation;
 

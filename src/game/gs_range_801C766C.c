@@ -183,7 +183,7 @@ extern f32 GSvecDistance();
 extern void GSvecAdd();
 extern void vecScale();
 extern void GSvecSub(Vec3*, const Vec3*, const Vec3*);
-extern void fn_800E0060(Vec3*, const Vec3*);
+extern void GSvecNormalize(Vec3*, const Vec3*);
 extern void fn_800DFFCC(Vec3*, const Vec3*, const Vec3*);
 extern s32 GScolsys2UtilGetCpPlaneLine(
     Vec3*, f32*, const Vec3*, const Vec3*, const Vec3*, const Vec3*);
@@ -224,9 +224,9 @@ static inline u8 fieldPlaneCrossed(const Vec3* fromPtr, const Vec3* toPtr,
 
     flatTo.y = lbl_8047E100;
     GSvecSub(&fullDirection, &from, &to);
-    fn_800E0060(&fullDirection, &fullDirection);
+    GSvecNormalize(&fullDirection, &fullDirection);
     GSvecSub(&flatDirection, &from, &flatTo);
-    fn_800E0060(&flatDirection, &flatDirection);
+    GSvecNormalize(&flatDirection, &flatDirection);
     fn_800DFFCC(&planeNormal, &fullDirection, &flatDirection);
     if (GScolsys2UtilGetCpPlaneLine(&planeHit, &planeT, &planeNormal, &from,
                                     lineStart, lineEnd) == 0) {
@@ -306,8 +306,8 @@ s32 std232_characterApproachPlayer(s32 side, s32 slot)
     extern void* peopleInfoBiosGetPtr();
     extern f32 fn_8018F5E4();
     extern void std076_characterEventFlagsClear();
-    extern void fn_8018AACC();
-    extern void fn_8018BA04();
+    extern void peopleWalkTo();
+    extern void peopleGetHeadGroundPos();
     extern void peopleTurnToPoint();
     extern void std077_characterEventFlagsSet();
 
@@ -368,7 +368,7 @@ s32 std232_characterApproachPlayer(s32 side, s32 slot)
         }
 
         std076_characterEventFlagsClear(floorId, resId);
-        fn_8018AACC(floorId, resId, 1, &entries[i].pos);
+        peopleWalkTo(floorId, resId, 1, &entries[i].pos);
         done = fieldWaitPartnerMove();
         if (done == 0 && (entries[i].index & 1) != 0) {
             wanted = -1;
@@ -388,12 +388,12 @@ s32 std232_characterApproachPlayer(s32 side, s32 slot)
             if (entry->blocked == 0 &&
                 fieldSegmentBlocked(&partner, &requested, &entry->pos,
                                     lbl_8047E118) == 0) {
-                fn_8018AACC(floorId, resId, 1, &entry->pos);
+                peopleWalkTo(floorId, resId, 1, &entry->pos);
                 done = fieldWaitPartnerMove();
             }
         }
         if (done == 0) {
-            fn_8018BA04(floorId, resId, &saved);
+            peopleGetHeadGroundPos(floorId, resId, &saved);
             peopleTurnToPoint(floorId, resId, saved.x, saved.y, saved.z,
                         lbl_8047E100);
             fieldWaitPartnerMove();
@@ -421,9 +421,9 @@ s32 std232_characterApproachPlayer(s32 side, s32 slot)
         }
 
         std076_characterEventFlagsClear(floorId, resId);
-        fn_8018AACC(floorId, resId, 1, &entries[i].pos);
+        peopleWalkTo(floorId, resId, 1, &entries[i].pos);
         if (fieldWaitPartnerMove() == 0) {
-            fn_8018BA04(floorId, resId, &saved);
+            peopleGetHeadGroundPos(floorId, resId, &saved);
             peopleTurnToPoint(floorId, resId, saved.x, saved.y, saved.z,
                         lbl_8047E100);
             fieldWaitPartnerMove();
@@ -823,7 +823,7 @@ s32 fn_801C8E14(s32 floorDataId, u32 actorIndex, u16 mode, u8 direction)
     extern void std168_characterDetachFromCharacter();
     extern void std065_characterLookAtPlayer();
     extern void peopleStartTurn();
-    extern void fn_8018AACC();
+    extern void peopleWalkTo();
     extern void peopleSetPositionByIndex();
     extern void soundStartSE();
     extern void soundStopSE();
@@ -914,7 +914,7 @@ s32 fn_801C8E14(s32 floorDataId, u32 actorIndex, u16 mode, u8 direction)
         if ((mode & 1) != 0) {
             std067_characterStopLookAt(0, 0x65);
             transform.z -= lbl_8047E130;
-            fn_8018AACC(0, 0x64, 1, &transform);
+            peopleWalkTo(0, 0x64, 1, &transform);
             firstPos.x = transform.x;
             firstPos.y = transform.y;
             firstPos.z = lbl_8047E138 + transform.z;
@@ -922,7 +922,7 @@ s32 fn_801C8E14(s32 floorDataId, u32 actorIndex, u16 mode, u8 direction)
 
             if (lbl_8047B3C0 != 0) {
                 for (i = 0; i < lbl_8047B3C0; i++) {
-                    fn_8018AACC(0, 0x65, 1, &lbl_80467090[i]);
+                    peopleWalkTo(0, 0x65, 1, &lbl_80467090[i]);
                     timedOut = fieldWaitPartnerMove();
                     if (timedOut != 0) {
                         break;
@@ -930,7 +930,7 @@ s32 fn_801C8E14(s32 floorDataId, u32 actorIndex, u16 mode, u8 direction)
                 }
             }
             if (timedOut == 0) {
-                fn_8018AACC(0, 0x65, 1, &firstPos);
+                peopleWalkTo(0, 0x65, 1, &firstPos);
             }
             peopleMoveCheck(0, 0x64, 1);
             if (timedOut == 0) {
@@ -962,9 +962,9 @@ s32 fn_801C8E14(s32 floorDataId, u32 actorIndex, u16 mode, u8 direction)
             peopleSetPositionByIndex(0, 0x65, &firstPos);
             secondPos.z += lbl_8047E140;
             firstPos.z += lbl_8047E140;
-            fn_8018AACC(0, 0x64, 1, &secondPos);
+            peopleWalkTo(0, 0x64, 1, &secondPos);
             fieldWaitSeconds(lbl_8047E13C);
-            fn_8018AACC(0, 0x65, 1, &firstPos);
+            peopleWalkTo(0, 0x65, 1, &firstPos);
             peopleMoveCheck(0, 0x64, 1);
             peopleMoveCheck(0, 0x65, 1);
             lbl_8047B3C4 = 0;

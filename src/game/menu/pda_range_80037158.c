@@ -2346,7 +2346,7 @@ extern u32 pokemonGetSex();
 extern u32 fn_801240C4();
 extern u32 fn_80132A38();
 extern u32 soundStartRaw(u32, u32, u32);
-extern u32 fn_8017B1CC();
+extern u32 GSresReleaseById();
 extern s32 fn_8017B2CC();
 extern u32 fn_8017B3E4();
 extern u32 fn_801EE0BC();
@@ -3173,7 +3173,7 @@ void itemStorageRun(void)
                 _threadSwitch();
             }
             fn_80018F54(4, 0, 0);
-            fn_8017B1CC(0x66F);
+            GSresReleaseById(0x66F);
             fn_800F915C(0x66F);
             menuOpen(0x1A, 0);
             menuOpen(0x1B, 0);
@@ -5858,7 +5858,7 @@ void fn_800473E0(PdaOrbitPoint* point)
 extern u8 lbl_802E53F4[];
 extern u8 lbl_802E5400[];
 extern void GSmtxMakeYRotation(f32* mtx, f32 angle);
-extern void fn_800E0370(f32* mtx, f32 angle);
+extern void GSmtxRotateX(f32* mtx, f32 angle);
 extern void fn_800E0560(f32* mtx, void* vec);
 extern void GSvecTransform(void* dst, f32* mtx, void* src);
 
@@ -5961,7 +5961,7 @@ u8 pdaModelOrbitCamera(u8* work)
     set__5GSvecFfff(&camPos, lbl_8047BC94, lbl_8047BC94,
                     dist * *(f32*)((u8*)&lbl_803A6818 + 0x64));
     GSmtxMakeYRotation(mtx1, -*(f32*)((u8*)&lbl_803A6818 + 0x70));
-    fn_800E0370(mtx1, -*(f32*)((u8*)&lbl_803A6818 + 0x6c));
+    GSmtxRotateX(mtx1, -*(f32*)((u8*)&lbl_803A6818 + 0x6c));
     GSvecTransform(&camPos, mtx1, &camPos);
     GScameraSetPosition(*(void**)(work + 0x38), &camPos);
     GScameraSetPerspective(*(void**)(work + 0x38), persp0, persp1, persp2,

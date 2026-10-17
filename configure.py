@@ -5389,7 +5389,7 @@ config.libs = [
             # starts at 0x801812C4); its exact
             # functions are carved into their own objects so they can link,
             # the rest stay candidates. All share `-opt level=0` and
-            # `-inline deferred`. Evidence for deferred inlining: fn_801800F8
+            # `-inline deferred`. Evidence for deferred inlining: fsysCacheInit
             # addresses the unit's pooled .bss (queue +0, cache +0x20, arena
             # +0x1030). Normal inlining orders pooled .bss by first reference,
             # which puts the cache first (its pre-call store is the first
@@ -10166,7 +10166,7 @@ config.libs = [
             ),
             # fn_80179F4C: level-0 code (parameter homed on the stack), exact
             # with the unit-wide `-opt level=0` and no local pragmas; carved
-            # from the fn_80179FA4 candidate below.
+            # from the fsysInitTOC candidate below.
             Object(
                 Matching,
                 "game/gs_range_80179F4C_exact_80179F4C.c",
@@ -10174,7 +10174,7 @@ config.libs = [
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8", "-opt level=0"],
                 progress_category="game",
             ),
-            # fn_80179FA4: level-0 like the rest of fsys, and built with GC/2.0
+            # fsysInitTOC: level-0 like the rest of fsys, and built with GC/2.0
             # like the fsys read units after it (gs_range_8017A5FC_prefix
             # onward): GC/1.3 colours its DMA-setup temporaries differently,
             # while GC/1.3.2 through 2.7 all emit the retail bytes.
@@ -10249,7 +10249,7 @@ config.libs = [
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8", "-opt level=0"],
                 progress_category="game",
             ),
-            # fn_8017C8FC: level-0 code like the rest of fsys (it was scored
+            # fsysStatus100: level-0 code like the rest of fsys (it was scored
             # at -O4,s from a candidate include; exact at level 0).
             Object(
                 Matching,
@@ -10316,7 +10316,7 @@ config.libs = [
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8", "-opt level=0"],
                 progress_category="game",
             ),
-            # fn_8017E30C: exact on the fsys level-0 flags. Its
+            # fsysLoadEntrySync: exact on the fsys level-0 flags. Its
             # `compressed = NULL` after the free is the unit's free-then-clear
             # idiom (see the file header for the evidence).
             Object(

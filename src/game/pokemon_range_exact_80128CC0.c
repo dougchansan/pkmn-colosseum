@@ -77,7 +77,7 @@ void fn_80128E14(void* ptr) {
     lbl_8047ADB8 = (u32)ptr;
 }
 
-u32 fn_80128E24(void) {
+u32 savedataGetWorkPtr(void) {
     return lbl_8047ADB8;
 }
 

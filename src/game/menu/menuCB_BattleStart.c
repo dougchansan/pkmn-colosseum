@@ -2498,7 +2498,7 @@ extern void* GSresFindById(u32);
 extern void fn_8017B000(
     u32, u32, void (*)(s32, MenuCBBattleStartTrainerTexture*),
     MenuCBBattleStartTrainerTexture*, u32);
-extern void fn_8017B1CC(u32);
+extern void GSresReleaseById(u32);
 extern void fn_800F915C(u32);
 extern void fn_800F9210(u32, u32);
 
@@ -2579,7 +2579,7 @@ void menuCBBattleStartTrainerFaceFree(void)
     } else {
         imageId = 0x5C4;
     }
-    fn_8017B1CC(imageId);
+    GSresReleaseById(imageId);
     fn_800F915C(imageId);
 
     entries = ((MenuCBBattleStartTrainerTextureState*)&lbl_803A9A60)->entries;

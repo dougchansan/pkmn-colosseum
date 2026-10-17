@@ -97,7 +97,7 @@ extern u32   floorDataBiosGetFileGroupID(void* entry);
 extern u32   floorDataBiosGetGroupID(void* entry);
 extern void  fn_8017B3E4(u32 fileGroupId);
 extern s32   fn_8017B2CC(u32 fileGroupId);
-extern void  fn_8017B1CC(u32 fileGroupId);
+extern void  GSresReleaseById(u32 fileGroupId);
 extern u8    fn_80100B24(GSFloorContext* ctx);
 extern void  floorTerminateScriptThreads(u16 handle);
 extern u8    floorCheckFightKind(s32 floorIndex);
@@ -264,7 +264,7 @@ static inline void floorUnloadData(void* entry, s32 release) {
     }
     menuCloseFloor();
     gfxSetFog(0);
-    fn_8017B1CC(floorDataBiosGetFileGroupID(entry));
+    GSresReleaseById(floorDataBiosGetFileGroupID(entry));
     fn_800F915C(floorDataBiosGetGroupID(entry));
 }
 

@@ -55,7 +55,7 @@
 /** 0x80177984 */ void   GSscene_SetCameraViewVector(GSSceneVec3* src);
 /** 0x80177A38 */ u32    GSscene_GetMode(void);
 /** 0x80177A44 */ u32    GSscene_SetMode(u32 mode);
-/** unnamed scaffold */ void   fn_80179FA4(void);
+/** unnamed scaffold */ void   fsysInitTOC(void);
 /** 0x801766A8 */ void   cameraSetFov(f32 fov);
 /** 0x80176758 */ void   cameraSetRotY(f32 angle);
 /** 0x801767E0 */ void   cameraSetDistance(f32 distance);

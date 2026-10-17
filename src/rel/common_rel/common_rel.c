@@ -328,7 +328,7 @@ void _prolog(void)
     /* _sndSetReverbParm */
     lbl_80478FA4 = lbl_125_data_1437F8;
     lbl_80478FA0 = &lbl_125_data_14A6F0;
-    /* fn_801655D4 */
+    /* soundOpenWaveArchive */
     lbl_80478FB4 = lbl_125_data_143918;
     lbl_80478FB0 = &lbl_125_data_14A6F4;
     /* dbgMenuPokemonEdit */

@@ -3,7 +3,7 @@
  * @brief FSYS slot release once every entry has settled
  *        (0x8017DAB8 - 0x8017DB74).
  *
- * fn_8017CE7C (status 2000) calls this for every load mode but 3: walk the
+ * fsysSlotStatus2000 (status 2000) calls this for every load mode but 3: walk the
  * archive's entries (recording the one being looked at in
  * slot->entryIndex) and hand the slot to fn_8017D960 only when no entry's
  * trailer is still in flight, i.e. every state is 4, 6 or 7.
@@ -19,7 +19,7 @@
 extern void fn_8017D960(FSYSSlot* slot);
 
 /* Address: 0x8017DAB8 | size: 0xBC */
-void fn_8017DAB8(FSYSSlot* slot)
+void fsysSlotCheckEntries(FSYSSlot* slot)
 {
     FSYSSubEntry* sub;
     u32 i;

@@ -135,7 +135,7 @@ s32 floorCheckFightKind(u32 id) {
  */
 extern s32 fn_8017B2CC(s32 id);
 extern void fn_800F915C(s32 id);
-extern void fn_8017B1CC(s32 id);
+extern void GSresReleaseById(s32 id);
 extern void _threadSwitch(void);
 
 /* Wait out a pending load (status 1), then commit a loaded archive. */
@@ -147,7 +147,7 @@ static inline void floorSyncResident(s32 id) {
         }
     case 0:
         fn_800F915C(id);
-        fn_8017B1CC(id);
+        GSresReleaseById(id);
         break;
     case -1:
         break;
@@ -173,7 +173,7 @@ static inline void floorWaitResident(s32 id) {
 void fn_801123D4(FloorData* floor) {
     extern void GSscene_SetMode(s32);
     extern void fn_800D36B4(FloorColor color);
-    extern void fn_8017B13C(s32, u32);
+    extern void fsysRequestEntry(s32, u32);
     extern void fn_8017B3E4(s32);
     extern u32 heroMoveGetKenObjID(void);
     FloorColor color = sFloorFadeColor;
@@ -192,7 +192,7 @@ void fn_801123D4(FloorData* floor) {
         floorSyncResident(0x0C);
         objectId = heroMoveGetKenObjID();
         if (objectId != 0x00F70400 && fn_8017B2CC(0x9A) != 0) {
-            fn_8017B13C(0x9A, objectId);
+            fsysRequestEntry(0x9A, objectId);
             floorWaitResident(0x9A);
         }
         if (fn_8017B2CC(0x0B) != 0) {
@@ -673,14 +673,14 @@ void floorInitPeople(FloorData* floor)
     extern void set__5GSvecFfff(void*, f32, f32, f32);
     extern void peopleSetPositionByIndex(u32, u32, void*);
     extern void peopleSetRotation(u32, u32, void*);
-    extern void fn_8018CB5C(u32, u32);
+    extern void peopleRegisterHumanCollision(u32, u32);
     extern void peopleSetFlagsByIndex(u32, u32, s32);
     extern void peopleSetVisible(u32, u32, s32);
     extern void* GSresGetResource(u32, u32);
     extern void GSmodelClearShadowFlags(void*, u32);
     extern u8 std081_flagCheckTrue(u16);
     extern void floorEventCtrlTresure(u32, u32, u32);
-    extern void fn_801837D8(u32, u32, s32, u32, s32);
+    extern void peopleStartScript(u32, u32, s32, u32, s32);
     extern u32* lbl_80478EB8;
     extern FloorObjectEntry* lbl_80478EBC;
     FloorObjectEntry* entry;
@@ -729,7 +729,7 @@ void floorInitPeople(FloorData* floor)
         peopleSetPositionByIndex(group, resourceId, position);
         set__5GSvecFfff(rotation, 0.0f, 0.017453292f * entry->rotation, 0.0f);
         peopleSetRotation(group, resourceId, rotation);
-        fn_8018CB5C(group, resourceId);
+        peopleRegisterHumanCollision(group, resourceId);
         peopleSetFlagsByIndex(group, resourceId, 4);
         peopleSetVisible(group, resourceId, 1);
 
@@ -748,7 +748,7 @@ void floorInitPeople(FloorData* floor)
                     if (!std081_flagCheckTrue(entry->hideFlag)) {
                         peopleSetVisible(group, resourceId, 0);
                     }
-                    fn_801837D8(group, resourceId, 0x0596000A,
+                    peopleStartScript(group, resourceId, 0x0596000A,
                                 entry->eventFlag, entry->hideFlag);
                 }
             }
@@ -766,19 +766,19 @@ void _floorInitCharacters__FP11GSfloor_dd_(FloorData* floor) {
     extern u32 peopleOpen(u32 model, u32 i, s32 x);
     extern u32 peopleIsInGroup(u32 model, u32 i);
     extern s32 fn_80183958(u32 model, u32 i);
-    extern void fn_801837D8(u32 model, u32 i, s32 a, u32 b, s32 c);
+    extern void peopleStartScript(u32 model, u32 i, s32 a, u32 b, s32 c);
     extern void peopleSetFlagsByIndex(u32 model, u32 i, s32 flag);
     extern void floorCharacterBiosGetPos(u8* obj, void* out);
     extern void peopleSetPositionByIndex(u32 model, u32 i, void* p);
     extern void floorCharacterBiosGetRot(u8* obj, void* out);
     extern void peopleSetRotation(u32 model, u32 i, void* p);
-    extern void fn_8018CB5C(u32 model, u32 i);
+    extern void peopleRegisterHumanCollision(u32 model, u32 i);
     extern s32 floorCharacterBiosGetVisibility(u8* obj);
     extern void peopleSetVisible(u32 model, u32 i, s32 x);
     extern s32 floorCharacterBiosGetLoadInit(u8* obj);
     extern void std151_characterFaceDirection(u32 model, u32 i, s32 x);
     extern u8 floorCharacterBiosGetMoveType(u8* obj);
-    extern void fn_80183B44(u32 model, u32 i, f32 x);
+    extern void peopleStartWander(u32 model, u32 i, f32 x);
     extern void fn_801839A0(u32 model, u32 i, f32 x, f32 y);
     extern u8 floorCharacterBiosGetTalkStartType(u8* obj);
     extern u8 floorCharacterBiosGetTalkEndType(u8* obj);
@@ -810,7 +810,7 @@ void _floorInitCharacters__FP11GSfloor_dd_(FloorData* floor) {
                 s32 emitId;
 
                 emitId = fn_80183958(model, i);
-                fn_801837D8(model, i, emitId, result, 0);
+                peopleStartScript(model, i, emitId, result, 0);
             }
             peopleSetFlagsByIndex(model, i, 4);
             peopleSetFlagsByIndex(model, i, 8);
@@ -818,7 +818,7 @@ void _floorInitCharacters__FP11GSfloor_dd_(FloorData* floor) {
             peopleSetPositionByIndex(model, i, v14);
             floorCharacterBiosGetRot(obj, v8);
             peopleSetRotation(model, i, v8);
-            fn_8018CB5C(model, i);
+            peopleRegisterHumanCollision(model, i);
             peopleSetVisible(model, i, floorCharacterBiosGetVisibility(obj));
             std151_characterFaceDirection(model, i, floorCharacterBiosGetLoadInit(obj));
             switch (floorCharacterBiosGetMoveType(obj)) {
@@ -826,7 +826,7 @@ void _floorInitCharacters__FP11GSfloor_dd_(FloorData* floor) {
             case 1:
                 break;
             case 2:
-                fn_80183B44(model, i, 15.0f);
+                peopleStartWander(model, i, 15.0f);
                 break;
             case 3:
                 fn_801839A0(model, i, 5.0f, 3.0f);

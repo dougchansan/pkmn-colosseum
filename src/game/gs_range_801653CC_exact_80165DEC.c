@@ -4,11 +4,11 @@
  */
 #include "game/gs_range_801653CC_shared.h"
 
-void fn_80165DEC(const char* path, void* buffer, u32 capacity)
+void soundReadStreamFile(const char* path, void* buffer, u32 capacity)
 {
     const char* messages = lbl_80273548;
     u32 alignedSize;
-    void* file = fn_80167F28(path);
+    void* file = GSdvdOpen(path);
     u32 size;
 
     if (file == 0) {
@@ -16,7 +16,7 @@ void fn_80165DEC(const char* path, void* buffer, u32 capacity)
         return;
     }
 
-    size = fn_80167E5C(file);
+    size = GSdvdGetLength(file);
     if (size == 0) {
         GSlogWrite(messages + 0xFC, path);
     } else {
@@ -26,7 +26,7 @@ void fn_80165DEC(const char* path, void* buffer, u32 capacity)
                 GSlogWrite(messages + 0x11C);
             } else {
                 memset(buffer, 0xE0, alignedSize);
-                if (fn_80167ED0(file, buffer, alignedSize, 0) <= 0) {
+                if (GSdvdRead(file, buffer, alignedSize, 0) <= 0) {
                     GSlogWrite(messages + 0x140, path);
                 }
             }
@@ -35,7 +35,7 @@ void fn_80165DEC(const char* path, void* buffer, u32 capacity)
         }
     }
 
-    fn_80167E64(file);
+    GSdvdClose(file);
 }
 
 void fn_80165EE0(void* wave, void* buffer, u32 size)

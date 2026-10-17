@@ -254,7 +254,7 @@ static inline void modelUpdateBoundCenter(GSmodel* model)
     }
 }
 
-void fn_800E3928(void* unused)
+void GSmodelApplyAll(void* unused)
 {
     u32 i;
     GSmodel* model;

@@ -110,6 +110,6 @@ void GSlerpGetLinearInterpolationVector(struct GSvec* out,
  * Public API -- Draw
  * =================================================================== */
 
-/** fn_800E1544 */ void GSgfx_DrawDispatch(void* drawList);
+/** GSmemOptimize */ void GSgfx_DrawDispatch(void* drawList);
 
 #endif /* GS_RENDER_H */

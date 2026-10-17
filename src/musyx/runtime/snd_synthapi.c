@@ -75,8 +75,8 @@ extern void fn_801631C0(void); /* hwDisableHRTF */
 extern void fn_80162D6C(u8 studio, u32 isMaster, u32 type); /* hwActivateStudio */
 extern void fn_80162D18(u32 index);                         /* hwOff */
 extern void fn_80162D8C(u8 studio);                         /* hwDeactivateStudio */
-extern void fn_80162DAC(u8 studio, u32 arg1);
-extern void fn_80162DE0(u8 studio, u32 arg1);
+extern void hwAddInput(u8 studio, u32 arg1);
+extern void hwRemoveInput(u8 studio, u32 arg1);
 
 u32 sndFXCtrl(u32 vid, u8 ctrl, u8 value) {
   u32 ret;
@@ -229,6 +229,6 @@ void fn_8014DCA8(u8 studio) {
   fn_80162D8C(studio);
 }
 
-void fn_8014DD98(u8 studio, u32 arg1) { fn_80162DAC(studio, arg1); }
+void fn_8014DD98(u8 studio, u32 arg1) { hwAddInput(studio, arg1); }
 
-void fn_8014DDB8(u8 studio, u32 arg1) { fn_80162DE0(studio, arg1); }
+void fn_8014DDB8(u8 studio, u32 arg1) { hwRemoveInput(studio, arg1); }

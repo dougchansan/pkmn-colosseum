@@ -42,7 +42,7 @@
  *     Struct size: 0x78 bytes
  *     Callbacks: start=fn_801398E0, stop=_boltSubdivide,
  *                update=_boltRender, render=_boltUpdate
- *     Core logic: boltStartEffect (0x170 bytes), fn_80139E80 (0x354 bytes)
+ *     Core logic: boltStartEffect (0x170 bytes), _boltDrawStrip (0x354 bytes)
  *
  *   filterStart             (electronEffectCreate)  -- Full-screen colour filter
  *     "filterStart: Could not start filter effect - invalid filter!"
@@ -81,7 +81,7 @@
  *   auraEffectStart         (blurEffectCreate)  -- Aura glow (Shadow Pokemon)
  *     "auraEffectStart: Could not start aura effect!"
  *     Struct size: 0x20 bytes
- *     Callbacks: start=blurEffectStart, stop=fn_8013E258,
+ *     Callbacks: start=blurEffectStart, stop=_blurDrawCapture,
  *                update=fn_8013DC94, render=fn_8013DE6C
  *     Core logic: fn_8013DE6C (0x3EC bytes -- aura rendering)
  *
@@ -178,7 +178,7 @@ extern void  GScameraGetPosition(void* mtx, void* vec);
 extern void  GScameraGetPerspective(void* mtx, void* rx, void* ry, void* rz, void* scale);
 extern f32   GSvecDistance(void* vecA, void* vecB);
 extern void  GSvecSub(void* dst, void* srcA, void* srcB);
-extern void  fn_800E0060(void* dst, void* src);
+extern void  GSvecNormalize(void* dst, void* src);
 extern void  vecScale(void* dst, void* src, f32 scale);
 extern void  fn_800E019C(void* dst, void* a, void* b);
 extern void  fn_800E01D0(void* dst, void* src);
@@ -267,7 +267,7 @@ extern void  DCFlushRange(void* ptr, u32 size);
 /* _boltRender: _electronUpdate callback (0x190 bytes) */
 /* _boltUpdate: _electronRender callback (0x24C bytes) */
 /* boltStartEffect: _electronCalcArc (0x170 bytes) */
-/* fn_80139E80: _electronRenderArc (0x354 bytes) */
+/* _boltDrawStrip: _electronRenderArc (0x354 bytes) */
 /* _boltSubdivide: _electronStop callback (0x258 bytes) */
 
 /* ---- Filter effect ---- */
@@ -325,7 +325,7 @@ extern void  DCFlushRange(void* ptr, u32 size);
 /* fn_8013DD7C: _auraHelper2 */
 /* blurEffectStart: _auraStart callback */
 /* fn_8013DE6C: _auraRender callback (0x3EC bytes) */
-/* fn_8013E258: _auraStop callback (0x218 bytes) */
+/* _blurDrawCapture: _auraStop callback (0x218 bytes) */
 
 /* ---- Distortion / heat-haze effect ---- */
 /* fn_8013E470: _distortionHelper */
@@ -383,7 +383,7 @@ extern u32 fn_801398E0(void* ptr);
 extern u32 _boltRender(void* ptr);
 extern BOOL _boltUpdate(void* ptr, u32 tick);
 extern u32 boltStartEffect(void* ptr);
-extern void fn_80139E80(u8* e, u8* p, void* cameraPos, void* modelPos);
+extern void _boltDrawStrip(u8* e, u8* p, void* cameraPos, void* modelPos);
 struct ElectronPoint;
 extern void _boltSubdivide(u8* entry, u8* parent, struct ElectronPoint* origin, u32 depth, f32 weight);
 extern u32 fn_8013A49C(void* ptr);
@@ -421,7 +421,7 @@ extern u32 fn_8013DD10(void* ptr);
 extern u32 fn_8013DD7C(void* ptr);
 extern u32 blurEffectStart(void* ptr);
 extern u32 fn_8013DE6C(void* ptr);
-extern u32 fn_8013E258(void* model, void* unused, void* state);
+extern u32 _blurDrawCapture(void* model, void* unused, void* state);
 extern u32 fn_8013E470(void* ptr, u32 delta);
 extern u32 fn_8013E54C(void* ptr);
 extern u32  fn_8013E5AC(u8* p);
@@ -790,9 +790,9 @@ void _lightningGenerate(void* ptr, u32 b) {
             *(f32*)(entry + 0x968) = radius * (f32)sin(angle);
         }
 
-        fn_800E0060(base, entry + 0x960);
+        GSvecNormalize(base, entry + 0x960);
         set__5GSvecFfff(direction, base[0], 1.0f, base[2]);
-        fn_800E0060(direction, direction);
+        GSvecNormalize(direction, direction);
         *(u32*)(entry + 0x978) = 0;
         current = entry;
         previous = entry + 0x960;
@@ -800,9 +800,9 @@ void _lightningGenerate(void* ptr, u32 b) {
         for (j = 0; j < 100; j++, current += 0x18) {
             GSvecCopy(tangent, direction);
             tangent[1] = 0.0f;
-            fn_800E0060(tangent, tangent);
+            GSvecNormalize(tangent, tangent);
             fn_800DFFCC(tangent, direction, tangent);
-            fn_800E0060(tangent, tangent);
+            GSvecNormalize(tangent, tangent);
 
             fn_800E0718(step, tangent, *(f32*)(p + 0x4C) * fn_800E0BA0());
             GSvecTransformQuat(direction, step, direction);
@@ -816,7 +816,7 @@ void _lightningGenerate(void* ptr, u32 b) {
                             1.0f - *(f32*)(p + 0x64));
                 vecScale(direction, direction, *(f32*)(p + 0x64));
                 GSvecAdd(current + 0xC, direction, current + 0xC);
-                fn_800E0060(current + 0xC, current + 0xC);
+                GSvecNormalize(current + 0xC, current + 0xC);
             }
 
             vecScale(direction, current + 0xC,
@@ -1184,7 +1184,7 @@ void _leaffxMoveLeaf(void* entry, u8* leaf) {
     vec = (f32*)(leaf + 0x18);
     GSvecCopy(vec, leaf + 0x24);
     GSvecSub(vec, vec, leaf + 0xC);
-    fn_800E0060(vec, vec);
+    GSvecNormalize(vec, vec);
     distance0 = farRange * fn_800E0BA0() + farBase;
     distance0 *= *(f32*)(leaf + 0x50);
     vecScale(vec, vec, -distance0);
@@ -1499,7 +1499,7 @@ u32 _boltRender(void* ptr) {
         i = 0;
         while (i < count) {
             if (*(u16*)(entry + 0x12e0) != 0) {
-                fn_80139E80(entry, p, cameraPos, pos);
+                _boltDrawStrip(entry, p, cameraPos, pos);
             }
             i++;
             entry += 0x12e4;
@@ -1661,11 +1661,11 @@ asm void fn_80139E80(void* entry, void* parent, void* cameraPos, void* modelPos)
 #include "src/game/effect/effect_visual_fn_80139E80.inc"
 }
 #else
-void fn_80139E80(u8* e, u8* p, void* cameraPos, void* modelPos) {
+void _boltDrawStrip(u8* e, u8* p, void* cameraPos, void* modelPos) {
     extern void gfxPopMatrix(void);
     extern void gfxPushMultMatrix(void*);
     extern void fn_800DFFCC(void*, void*, void*);
-    extern void fn_800E0060(f32*, f32*);
+    extern void GSvecNormalize(f32*, f32*);
     extern f32 vecMag(f32*);
     extern void fn_800E0108(f32*, f32*, f32*, u32, u32);
     extern void fn_800E0560(f32 (*)[4], f32*);
@@ -1721,11 +1721,11 @@ void fn_80139E80(u8* e, u8* p, void* cameraPos, void* modelPos) {
     for (i = 0; i < count; i++, pointEntry += 0x18) {
         if (*(f32*)(*(u8**)(pointEntry + 0xC) + 4) > threshold) {
         GSvecSub(direction, pointEntry, *(u8**)(pointEntry + 0xC));
-        fn_800E0060(direction, direction);
+        GSvecNormalize(direction, direction);
         GSvecAdd(cameraVector, pointEntry, *(u8**)(pointEntry + 0xC));
         vecScale(cameraVector, cameraVector, 0.5f);
         GSvecSub(cameraVector, cameraPos, cameraVector);
-        fn_800E0060(cameraVector, cameraVector);
+        GSvecNormalize(cameraVector, cameraVector);
         fn_800DFFCC(normal, cameraVector, direction);
         if (vecMag(normal) > 0.001f) {
             vecNormalize(normal, normal);
@@ -2255,7 +2255,7 @@ u32 _filterNextKey(void* ptr) {
 
 #if !defined(EFFECT_VISUAL_BANK_ACTIVE) || \
     defined(EFFECT_VISUAL_EXACT_8013AD9C)
-extern void fn_80168408(void* filter, u8* color);
+extern void GSfilterSetColor(void* filter, u8* color);
 extern u32 lbl_8047D1E8;
 extern const f32 lbl_8047D1F0;
 extern const f32 lbl_8047D1F4;
@@ -2293,7 +2293,7 @@ u32 fn_8013AD9C(void* ptr, u32 delta) {
             } else {
                 filter = *(void**)p;
                 if (filter != NULL) {
-                    fn_80168408(filter, previous + 4);
+                    GSfilterSetColor(filter, previous + 4);
                 }
             }
             return 0;
@@ -2330,7 +2330,7 @@ u32 fn_8013AD9C(void* ptr, u32 delta) {
     } else {
         filter = *(void**)p;
         if (filter != NULL) {
-            fn_80168408(filter, color);
+            GSfilterSetColor(filter, color);
         } else {
             return 0;
         }
@@ -2857,7 +2857,7 @@ void _surfCalcNormals(void* ptr) {
         fn_800DFFCC(nextDelta, nextDelta, lbl_80315540);
         GSvecAdd(vectors, nextDelta, previousDelta);
         vecScale(vectors, vectors, 0.5f);
-        fn_800E0060(vectors, vectors);
+        GSvecNormalize(vectors, vectors);
         for (row = 0; row < depth; row++) {
             GSvecCopy(vectors + row * width * 0xC, vectors);
         }
@@ -4332,7 +4332,7 @@ u32 blurEffectStart(void* ptr) {
         *(u32*)((u8*)ptr + 0x1c) = 0;
         if (*(s32*)((u8*)ptr + 0x10) != 0) {
             if (*(void**)((u8*)ptr + 0xc) != NULL) {
-                GSgfxBeginBackFBCapture(*(void**)((u8*)ptr + 0xc), (void*)fn_8013E258, ptr);
+                GSgfxBeginBackFBCapture(*(void**)((u8*)ptr + 0xc), (void*)_blurDrawCapture, ptr);
                 return 1;
             }
         } else {
@@ -4508,7 +4508,7 @@ asm u32 fn_8013E258(void* model, void* unused, void* state) {
 #include "src/game/effect/effect_visual_fn_8013E258.inc"
 }
 #else
-u32 fn_8013E258(void* model, void* unused, void* state) {
+u32 _blurDrawCapture(void* model, void* unused, void* state) {
     struct EffectVisualState {
         f32 start;
         f32 end;
@@ -5395,7 +5395,7 @@ u32 fn_8013F80C(void* ptr, u32 delta) {
 extern void* gfxGetCameraMatrix(u32 index);
 extern void GScameraGetLookAt(void* mtx, void* lookAt, void* eye);
 extern void fn_800E0628(void* dst, void* src);
-extern void fn_800E0238(void* dst, void* src);
+extern void GSmtxTranspose(void* dst, void* src);
 extern void set__5GSvecFfff(void* vec, f32 x, f32 y, f32 z);
 extern s32 gfxProjectPoint(void* input, void* output, s32 count);
 extern void GSlogWrite(const char* fmt, ...);
@@ -5441,7 +5441,7 @@ void _distortionEffectUpdateMatrices(void* ptr) {
         viewMatrix[11] = lbl_8047D300;
         viewMatrix[7] = lbl_8047D300;
         viewMatrix[3] = lbl_8047D300;
-        fn_800E0238(matrix, viewMatrix);
+        GSmtxTranspose(matrix, viewMatrix);
     }
     fn_800E02C4(matrix, *(f32*)((u8*)ptr + 0x10),
                 *(f32*)((u8*)ptr + 0x10), *(f32*)((u8*)ptr + 0x10));
@@ -5687,7 +5687,7 @@ u32 fn_8013FF0C(void* ptr) {
             GScameraGetPosition(camera, &position);
             GScameraGetLookAt(camera, up, interest);
             GSvecSub(up, interest, &position);
-            fn_800E0060(up, up);
+            GSvecNormalize(up, up);
             GScameraGetPerspective(camera, &fov, &aspect, &nearPlane, &farPlane);
             nearPlane *= *(f32*)&lbl_8047D330;
             fov = *(f32*)&lbl_8047D334 * fov;

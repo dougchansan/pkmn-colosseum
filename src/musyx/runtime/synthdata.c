@@ -329,7 +329,7 @@ s32 dataInsertSDir(SdirDataT* sdir, void* smp_data) {
 
 s32 dataAddSampleReference(u16 sid) {
     extern u8 lbl_8043CCF8[];
-    extern void fn_80163050(void* header, void* addr);
+    extern void hwSaveSample(void* header, void* addr);
 #define tab ((SdirTabT*)lbl_8043CCF8)
     SdirTabT* new_var;
     u32 i;
@@ -351,7 +351,7 @@ done:
         new_var = tab;
         sdir->addr = (void*)((u32)new_var[i].base + sdir->offset);
         header = &sdir->header;
-        fn_80163050(&header, &sdir->addr);
+        hwSaveSample(&header, &sdir->addr);
     }
     ++sdir->refCount;
     return 1;
@@ -360,7 +360,7 @@ done:
 
 s32 dataRemoveSampleReference(u16 sid) {
     extern u8 lbl_8043CCF8[];
-    extern void fn_80163104(void* header, void* addr);
+    extern void hwRemoveSample(void* header, void* addr);
     SdirTabT* tab = (SdirTabT*)lbl_8043CCF8;
     u32 i;
     SdirDataT* sdir;
@@ -370,7 +370,7 @@ s32 dataRemoveSampleReference(u16 sid) {
             if (sdir->id == sid && sdir->refCount != 0xFFFF) {
                 --sdir->refCount;
                 if (sdir->refCount == 0) {
-                    fn_80163104(&sdir->header, sdir->addr);
+                    hwRemoveSample(&sdir->header, sdir->addr);
                 }
                 return 1;
             }
@@ -644,7 +644,7 @@ u32 dataGetFX(u16 key) {
 typedef struct { u16 num; u16 subTabIndex; } DataMacMainEntry;
 
 void dataInit(u32 smpBase, u32 smpLength) {
-    extern void fn_8016300C(u32 a, u32 b);
+    extern void hwInitSampleMem(u32 a, u32 b);
     s32 i;
 
     dataSmpSDirNum = 0;
@@ -657,12 +657,12 @@ void dataInit(u32 smpBase, u32 smpLength) {
         ((DataMacMainEntry*)lbl_8043D6F8)[i].num = 0;
         ((DataMacMainEntry*)lbl_8043D6F8)[i].subTabIndex = 0;
     }
-    fn_8016300C(smpBase, smpLength);
+    hwInitSampleMem(smpBase, smpLength);
 }
 
 #undef fn_80162118
 
 void dataExit(void) {
-    extern void fn_80163030(void);
-    fn_80163030();
+    extern void hwExitSampleMem(void);
+    hwExitSampleMem();
 }

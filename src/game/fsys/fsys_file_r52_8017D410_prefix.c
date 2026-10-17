@@ -3,14 +3,14 @@
  * @brief FSYS slot lookup, handle-cache LRU and pending-load dispatch
  *        (0x8017D410 - 0x8017D960).
  *
- * fn_8017D410 finds the slot that owns a file handle (taking a reference
+ * fsysFindSlotByHandle finds the slot that owns a file handle (taking a reference
  * according to the request mode) or claims the first free slot;
- * fn_8017D56C (re)starts a load-mode-7 request for an archive through
- * fn_8017DF4C unless it is already loaded in mode 2 or 7;
- * fn_8017D624 flushes every cached handle; fn_8017D68C moves a slot's
+ * fsysPreloadArchive (re)starts a load-mode-7 request for an archive through
+ * fsysStartLoadMode7 unless it is already loaded in mode 2 or 7;
+ * fsysFlushCachedHandles flushes every cached handle; fsysSlotRefreshHandle moves a slot's
  * archive key to the most-recently-used end of the 100-entry handle table;
- * fn_8017D800 starts the first pending (status 500) slot with the loader
- * for its load mode; fn_8017D8F8 / fn_8017D92C finish a slot and free it.
+ * fsysStartPendingLoad starts the first pending (status 500) slot with the loader
+ * for its load mode; fsysSlotFinishA / fsysSlotFinishB finish a slot and free it.
  *
  * Built at optimisation level 0 with peephole and scheduling on, like the
  * rest of the fsys code (see configure.py): every function in this range
@@ -27,17 +27,17 @@ extern s32 lbl_8047B1BC;             /* handle table fill count */
 extern void* memcpy(void* dst, const void* src, u32 size);
 extern void fn_8017F800(s32 handleID);
 extern void fn_8017D960(FSYSSlot* slot);
-extern void fn_8017DEA4(FSYSSlot* slot, u32 fileHandle, u32 callbackA,
+extern void fsysStartLoadMode1(FSYSSlot* slot, u32 fileHandle, u32 callbackA,
                         u32 callbackB, u32 callbackC);
-extern void fn_8017DF4C(FSYSSlot* slot, u32 fileHandle, u32 callbackA,
+extern void fsysStartLoadMode7(FSYSSlot* slot, u32 fileHandle, u32 callbackA,
                         u32 callbackB, u32 callbackC);
-extern void fn_8017DFF4(FSYSSlot* slot, u32 fileHandle, u32 callbackA,
+extern void fsysStartLoadMode2(FSYSSlot* slot, u32 fileHandle, u32 callbackA,
                         u32 callbackB, u32 callbackC);
-extern void fn_8017E09C(FSYSSlot* slot, u32 fileHandle, u32 callbackA,
+extern void fsysStartLoadMode0(FSYSSlot* slot, u32 fileHandle, u32 callbackA,
                         u32 callbackB, u32 callbackC);
 
 /* Address: 0x8017D410 | size: 0x15C */
-FSYSSlot* fn_8017D410(u32 fileHandle, s32 mode)
+FSYSSlot* fsysFindSlotByHandle(u32 fileHandle, s32 mode)
 {
     u32 i;
     FSYSSlot* slot;
@@ -87,28 +87,28 @@ FSYSSlot* fn_8017D410(u32 fileHandle, s32 mode)
 }
 
 /* Address: 0x8017D56C | size: 0xB8 */
-s32 fn_8017D56C(u32 fileHandle)
+s32 fsysPreloadArchive(u32 fileHandle)
 {
     FSYSSlot* slot;
 
-    slot = fn_8017D410(fileHandle, 7);
+    slot = fsysFindSlotByHandle(fileHandle, 7);
     if (slot) {
         if (slot->status == FSYS_STATUS_LOADED) {
             if ((s32)slot->loadMode == 2 || (s32)slot->loadMode == 7) {
                 return 0;
             }
             slot->status = FSYS_STATUS_FREE;
-            fn_8017DF4C(slot, fileHandle, 0, 0, 0);
+            fsysStartLoadMode7(slot, fileHandle, 0, 0, 0);
             return 1;
         }
-        fn_8017DF4C(slot, fileHandle, 0, 0, 0);
+        fsysStartLoadMode7(slot, fileHandle, 0, 0, 0);
         return 1;
     }
     return 0;
 }
 
 /* Address: 0x8017D624 | size: 0x68 */
-void fn_8017D624(void)
+void fsysFlushCachedHandles(void)
 {
     FSYSFileHandle* table;
     s32 i;
@@ -122,7 +122,7 @@ void fn_8017D624(void)
 }
 
 /* Address: 0x8017D68C | size: 0x174 */
-FSYSFileHandle* fn_8017D68C(FSYSSlot* slot)
+FSYSFileHandle* fsysSlotRefreshHandle(FSYSSlot* slot)
 {
     FSYSFileHandle* table;
     FSYSFileHandle saved;
@@ -170,7 +170,7 @@ FSYSFileHandle* fn_8017D68C(FSYSSlot* slot)
 }
 
 /* Address: 0x8017D800 | size: 0xF8 */
-void fn_8017D800(void)
+void fsysStartPendingLoad(void)
 {
     u32 i;
     FSYSSlot* slot;
@@ -180,19 +180,19 @@ void fn_8017D800(void)
         if (slot->status == FSYS_STATUS_PENDING) {
             switch (slot->loadMode) {
             case 0:
-                fn_8017E09C(slot, slot->fileHandle, slot->callbackA,
+                fsysStartLoadMode0(slot, slot->fileHandle, slot->callbackA,
                             slot->callbackB, slot->callbackC);
                 return;
             case 1:
-                fn_8017DEA4(slot, slot->fileHandle, slot->callbackA,
+                fsysStartLoadMode1(slot, slot->fileHandle, slot->callbackA,
                             slot->callbackB, slot->callbackC);
                 return;
             case 2:
-                fn_8017DFF4(slot, slot->fileHandle, slot->callbackA,
+                fsysStartLoadMode2(slot, slot->fileHandle, slot->callbackA,
                             slot->callbackB, slot->callbackC);
                 break;
             case 7:
-                fn_8017DF4C(slot, slot->fileHandle, slot->callbackA,
+                fsysStartLoadMode7(slot, slot->fileHandle, slot->callbackA,
                             slot->callbackB, slot->callbackC);
                 break;
             }
@@ -203,14 +203,14 @@ void fn_8017D800(void)
 }
 
 /* Address: 0x8017D8F8 | size: 0x34 */
-void fn_8017D8F8(FSYSSlot* slot)
+void fsysSlotFinishA(FSYSSlot* slot)
 {
     fn_8017D960(slot);
     slot->status = FSYS_STATUS_FREE;
 }
 
 /* Address: 0x8017D92C | size: 0x34 */
-void fn_8017D92C(FSYSSlot* slot)
+void fsysSlotFinishB(FSYSSlot* slot)
 {
     fn_8017D960(slot);
     slot->status = FSYS_STATUS_FREE;
