@@ -3419,22 +3419,22 @@ void __GXInitGX(void) {
     extern void fn_800B5C5C();
     extern void GXSetCopyClear(GXColor, u32);
     extern void GXSetTexCoordGen2();
-    extern void fn_800B884C();
-    extern void fn_800B7D3C();
+    extern void GXSetNumTexGens();
+    extern void GXClearVtxDesc();
     extern void GXInvalidateVtxCache();
-    extern void fn_800B84E0();
+    extern void GXSetArray();
     extern void GXSetVtxAttrFmtv();
-    extern void fn_800B9404();
-    extern void fn_800B944C();
-    extern void fn_800B9494();
+    extern void GXSetLineWidth();
+    extern void GXSetPointSize();
+    extern void GXEnableTexOffsets();
     extern void GXLoadPosMtxImm();
     extern void GXLoadNrmMtxImm();
-    extern void fn_800BD554();
+    extern void GXSetCurrentMtx();
     extern void GXLoadTexMtxImm();
-    extern void fn_800BD744(f32, f32, f32, f32, f32, f32);
+    extern void GXSetViewport(f32, f32, f32, f32, f32, f32);
     extern void fn_800BD394();
     extern void GXSetCoPlanar();
-    extern void fn_800B94F0();
+    extern void GXSetCullMode();
     extern void GXSetClipMode();
     extern void GXSetScissor();
     extern void GXSetScissorBoxOffset();
@@ -3446,9 +3446,9 @@ void __GXInitGX(void) {
     extern void GXSetTexRegionCallback();
     extern void GXSetTlutRegionCallback();
     extern void GXSetTevOrder();
-    extern void fn_800BC8C8();
+    extern void GXSetNumTevStages();
     extern void GXSetTevOp();
-    extern void fn_800BC618();
+    extern void GXSetAlphaCompare();
     extern void GXSetZTexture();
     extern void GXSetTevKColorSel();
     extern void GXSetTevKAlphaSel();
@@ -3463,7 +3463,7 @@ void __GXInitGX(void) {
     extern void GXSetColorUpdate();
     extern void GXSetAlphaUpdate();
     extern void GXSetZMode();
-    extern void fn_800BCEBC();
+    extern void GXSetZCompLoc();
     extern void GXSetDither();
     extern void GXSetDstAlpha();
     extern void GXSetPixelFmt();
@@ -3522,25 +3522,25 @@ void __GXInitGX(void) {
     GXSetTexCoordGen2(5, 1, 9, 0x3C, 0, 0x7D);
     GXSetTexCoordGen2(6, 1, 10, 0x3C, 0, 0x7D);
     GXSetTexCoordGen2(7, 1, 11, 0x3C, 0, 0x7D);
-    fn_800B884C(1);
-    fn_800B7D3C();
+    GXSetNumTexGens(1);
+    GXClearVtxDesc();
     GXInvalidateVtxCache();
     for (i = 9; i <= 24; i++) {
-        fn_800B84E0(i, gx, 0);
+        GXSetArray(i, gx, 0);
     }
     for (i = 0; i < 8; i++) {
         GXSetVtxAttrFmtv(i, lbl_803129E4);
     }
-    fn_800B9404(6, 0);
-    fn_800B944C(6, 0);
-    fn_800B9494(0, 0, 0);
-    fn_800B9494(1, 0, 0);
-    fn_800B9494(2, 0, 0);
-    fn_800B9494(3, 0, 0);
-    fn_800B9494(4, 0, 0);
-    fn_800B9494(5, 0, 0);
-    fn_800B9494(6, 0, 0);
-    fn_800B9494(7, 0, 0);
+    GXSetLineWidth(6, 0);
+    GXSetPointSize(6, 0);
+    GXEnableTexOffsets(0, 0, 0);
+    GXEnableTexOffsets(1, 0, 0);
+    GXEnableTexOffsets(2, 0, 0);
+    GXEnableTexOffsets(3, 0, 0);
+    GXEnableTexOffsets(4, 0, 0);
+    GXEnableTexOffsets(5, 0, 0);
+    GXEnableTexOffsets(6, 0, 0);
+    GXEnableTexOffsets(7, 0, 0);
 
     identity[0][0] = 1.0f;
     identity[0][1] = 0.0f;
@@ -3556,15 +3556,15 @@ void __GXInitGX(void) {
     identity[2][3] = 0.0f;
     GXLoadPosMtxImm(identity, 0);
     GXLoadNrmMtxImm(identity, 0);
-    fn_800BD554(0);
+    GXSetCurrentMtx(0);
     GXLoadTexMtxImm(identity, 0x3C, 0);
     GXLoadTexMtxImm(identity, 0x7D, 0);
 
-    fn_800BD744(0.0f, 0.0f, (f32)rmode->fbWidth,
+    GXSetViewport(0.0f, 0.0f, (f32)rmode->fbWidth,
                 (f32)rmode->xfbHeight, 0.0f, 1.0f);
     fn_800BD394(lbl_80312AB4);
     GXSetCoPlanar(0);
-    fn_800B94F0(2);
+    GXSetCullMode(2);
     GXSetClipMode(0);
     GXSetScissor(0, 0, rmode->fbWidth, rmode->efbHeight);
     GXSetScissorBoxOffset(0, 0);
@@ -3601,9 +3601,9 @@ void __GXInitGX(void) {
     GXSetTevOrder(13, 0xFF, 0xFF, 0xFF);
     GXSetTevOrder(14, 0xFF, 0xFF, 0xFF);
     GXSetTevOrder(15, 0xFF, 0xFF, 0xFF);
-    fn_800BC8C8(1);
+    GXSetNumTevStages(1);
     GXSetTevOp(0, 3);
-    fn_800BC618(7, 0, 0, 7, 0);
+    GXSetAlphaCompare(7, 0, 0, 7, 0);
     GXSetZTexture(0, 0x11, 0);
     for (i = 0; i < 16; i++) {
         GXSetTevKColorSel(i, 6);
@@ -3629,7 +3629,7 @@ void __GXInitGX(void) {
     GXSetColorUpdate(1);
     GXSetAlphaUpdate(1);
     GXSetZMode(1, 3, 1);
-    fn_800BCEBC(1);
+    GXSetZCompLoc(1);
     GXSetDither(1);
     GXSetDstAlpha(0, 0);
     GXSetPixelFmt(0, 0);

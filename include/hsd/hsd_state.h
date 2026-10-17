@@ -65,17 +65,17 @@ extern HSD_MaterialState lbl_80465710;           /* matstate */
 extern HSD_StateInvalidateEntry lbl_8036CFA8[];  /* invalidate_funcs */
 
 /* Functions still carrying address names in symbols.txt:
- *   fn_801B25C4 HSD_StateInvalidate
+ *   HSD_StateInvalidate HSD_StateInvalidate
  *   _HSD_StateInvalidateRenderMode _HSD_StateInvalidateRenderMode
  *   _HSD_StateInvalidateVtxAttr _HSD_StateInvalidateVtxAttr
  *   _HSD_StateInvalidatePrimitive _HSD_StateInvalidatePrimitive
  *   HSD_StateSetAlphaUpdate HSD_StateSetAlphaUpdate  HSD_StateSetColorUpdate HSD_StateSetColorUpdate
  *   HSD_StateSetZMode HSD_StateSetZMode        HSD_StateSetCullMode HSD_StateSetCullMode
- *   fn_801B28B8 HSD_SetMaterialShininess fn_801B28C8 HSD_SetMaterialColor
+ *   HSD_SetMaterialShininess HSD_SetMaterialShininess fn_801B28C8 HSD_SetMaterialColor
  *   fn_801B294C HSD_SetupRenderModeWithCustomPE
  *   fn_801B29E4 HSD_SetupPEMode          fn_801B2F1C HSD_SetupChannelMode
  */
-void fn_801B25C4(int mask);
+void HSD_StateInvalidate(int mask);
 void _HSD_StateInvalidateRenderMode(void);
 void _HSD_StateInvalidateVtxAttr(void);
 void _HSD_StateInvalidatePrimitive(void);
@@ -83,7 +83,7 @@ void HSD_StateSetAlphaUpdate(int enable);
 void HSD_StateSetColorUpdate(int enable);
 void HSD_StateSetZMode(int enable, int func, int update);
 void HSD_StateSetCullMode(int mode);
-void fn_801B28B8(f32 shininess);
+void HSD_SetMaterialShininess(f32 shininess);
 void HSD_SetMaterialColor(GXColor ambient, GXColor diffuse, GXColor specular,
                  f32 alpha);
 

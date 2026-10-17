@@ -68,10 +68,10 @@ extern u8 lbl_80452FC8[];           /* LZSS sliding window */
 extern void* memcpy(void* dst, const void* src, u32 n);
 extern void DCFlushRange(void* addr, u32 nBytes);
 extern u16 fn_800E2B00(u32 size, u32 align);
-extern void* fn_800E27B0(u16 handle);
+extern void* GSmemLock(u16 handle);
 extern u16 GSmemGetHandleByPtr(void* ptr);
 extern void fn_800E24B0(u16 handle);
-extern void fn_800E209C(u16 handle);
+extern void GSmemFree(u16 handle);
 extern void* GSresAllocResourceAlign(u32 size, u32 align, u32 group, u32 id, u32 param);
 extern void* GSresGetResource(u32 fileHandle, u32 nameHash);
 extern u8 fn_80167EF8(const char* path);
@@ -91,7 +91,7 @@ static inline void* fsysAllocTemp(u32 size)
     alignedSize = (size + 0x1F) & ~0x1F;
     handle = fn_800E2B00(alignedSize, 0x20);
     if (handle != 0) {
-        return fn_800E27B0(handle);
+        return GSmemLock(handle);
     }
     return NULL;
 }
@@ -104,7 +104,7 @@ static inline void fsysFree(void* ptr)
     handle = GSmemGetHandleByPtr(ptr);
     if (handle != 0) {
         fn_800E24B0(handle);
-        fn_800E209C(handle);
+        GSmemFree(handle);
     }
 }
 

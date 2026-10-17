@@ -17,7 +17,7 @@ extern FSYSSlot* lbl_8047B1B4; /* slot array */
 
 extern u16 GSmemGetHandleByPtr(void* ptr);      /* handle owning a heap pointer */
 extern void fn_800E24B0(u16 handle);
-extern void fn_800E209C(u16 handle);
+extern void GSmemFree(u16 handle);
 extern FSYSSlot* fsysFindSlotByHandle(u32 fileHandle, s32 mode);
 extern void fsysStartLoadMode0(FSYSSlot* slot, u32 fileHandle, u32 callbackA,
                         u32 callbackB, u32 callbackC);
@@ -49,7 +49,7 @@ static inline void fsysFree(void* ptr)
     handle = GSmemGetHandleByPtr(ptr);
     if (handle != 0) {
         fn_800E24B0(handle);
-        fn_800E209C(handle);
+        GSmemFree(handle);
     }
 }
 

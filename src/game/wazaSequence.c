@@ -237,9 +237,9 @@ void wazaSequenceFree(void* obj) {
     handle = *(u16*)(sequence + 0x2A);
     if (handle != 0) {
         extern void fn_800E24B0(u16 handle);
-        extern void fn_800E209C(u16 handle);
+        extern void GSmemFree(u16 handle);
         fn_800E24B0(handle);
-        fn_800E209C(handle);
+        GSmemFree(handle);
     }
 }
 
@@ -253,14 +253,14 @@ void wazaSequenceFree(void* obj) {
  */
 WazaSequence* wazaSequenceAllocNode(void) {
     extern u16 _toolentryAlloc__FUl(u32 size);
-    extern void* fn_800E27B0(u16 handle);
+    extern void* GSmemLock(u16 handle);
 
     u16 handle;
     WazaSequence* obj;
 
     handle = _toolentryAlloc__FUl(0x40);
     if (handle != 0) {
-        obj = fn_800E27B0(handle);
+        obj = GSmemLock(handle);
         memset(obj, 0, 0x40);
         obj->handle = handle;
         return obj;
@@ -291,9 +291,9 @@ static inline u8* wazaSequenceLoadParticle(u8* seq, u8* entry, u8* parsed) {
 
 u8 wazaSequenceLoadData(void* sequence, void* resource) {
     extern u16 _toolentryAlloc__FUl(u32);
-    extern void* fn_800E27B0(u16);
+    extern void* GSmemLock(u16);
     extern void fn_800E24B0(u16);
-    extern void fn_800E209C(u16);
+    extern void GSmemFree(u16);
     extern u32 fn_800D37CC(void);
     extern void GSlogWrite(const char*, ...);
     extern const char lbl_8027997C[];
@@ -326,7 +326,7 @@ u8 wazaSequenceLoadData(void* sequence, void* resource) {
         handle = _toolentryAlloc__FUl(count * 0xB4);
         if (handle != 0) {
             *(void**)(seq + 0x24) = NULL;
-            entry = fn_800E27B0(handle);
+            entry = GSmemLock(handle);
             *(s32*)(seq + 4) = count;
             *(s32*)(seq + 0) = 0;
             *(u16*)(seq + 0x28) = handle;
@@ -392,7 +392,7 @@ u8 wazaSequenceLoadData(void* sequence, void* resource) {
                 default:
                     GSlogWrite(lbl_8027997C);
                     fn_800E24B0(handle);
-                    fn_800E209C(handle);
+                    GSmemFree(handle);
                     return FALSE;
                 }
                 wazaSequenceEntryLink(seq, entry);

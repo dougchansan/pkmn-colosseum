@@ -48,7 +48,7 @@
 
 extern u16 GSmemGetHandleByPtr(void* ptr);
 extern void fn_800E24B0(u16 handle);
-extern void fn_800E209C(u16 handle);
+extern void GSmemFree(u16 handle);
 extern void fsysLZSSJobFinish(void*, void*, u32, void*);
 extern void fsysLZSSJobSetup(void*, void*, u32, void*);
 extern s32 fn_8017AC30(void);
@@ -63,9 +63,9 @@ extern const char lbl_80273F80[];
 static inline void* memAllocAligned(u32 size)
 {
     u32 alignedSize = (size + 0x1F) & ~0x1F;
-    u16 h = fn_800E2C04(alignedSize, 0x20);
+    u16 h = GSmemAlloc(alignedSize, 0x20);
     if (h) {
-        return fn_800E27B0(h);
+        return GSmemLock(h);
     }
     return NULL;
 }
@@ -82,7 +82,7 @@ static inline void memFree(void* ptr)
     h = GSmemGetHandleByPtr(ptr);
     if (h) {
         fn_800E24B0(h);
-        fn_800E209C(h);
+        GSmemFree(h);
     }
 }
 

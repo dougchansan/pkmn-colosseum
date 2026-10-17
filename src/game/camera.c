@@ -271,7 +271,7 @@ extern void GSquatMultiply(void* out, const void* a, const void* b);
 extern void GSvecTransformQuat(void* out, const void* quat, const void* vec);
 extern void _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID(void);
 extern u32 _toolentryAlloc__FUl(u32 size);
-extern void* fn_800E27B0(u16 handle);
+extern void* GSmemLock(u16 handle);
 extern void* GScameraCreate(void);
 extern void GSresRegisterResource(void* resource, u32 group, u32 id, u32 flags);
 extern void fn_800FF4D4(void* data, u8 typeId);
@@ -447,7 +447,7 @@ void cameraInit(void) {
     handle = _toolentryAlloc__FUl(*(u32*)lbl_80478FB8 *
                                   sizeof(CameraFloorEntry));
     lbl_8047B1AC = handle;
-    lbl_8047B1A8 = fn_800E27B0(handle);
+    lbl_8047B1A8 = GSmemLock(handle);
     memset(lbl_8047B1A8, 0, *(u32*)lbl_80478FB8 * sizeof(CameraFloorEntry));
     for (i = 0; i < *(u32*)lbl_80478FB8; i++) {
         ((CameraFloorEntry*)lbl_8047B1A8)[i].initialized = 0;

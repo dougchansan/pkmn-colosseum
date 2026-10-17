@@ -114,11 +114,11 @@ static const s32 sCardEMatrixEndSprites[8] = {
 
 extern void GScharLenCpy(void*, const void*, u32);
 extern void qsort(void*, u32, u32, s32 (*)(u32, u32));
-extern u16 fn_800E2C04(u32, u32);
-extern void* fn_800E27B0(u16);
+extern u16 GSmemAlloc(u32, u32);
+extern void* GSmemLock(u16);
 extern u16 GSmemGetHandleByPtr(void*);
 extern void fn_800E24B0(u16);
-extern void fn_800E209C(u16);
+extern void GSmemFree(u16);
 extern void* windowSearchItemID(void*, s32);
 extern s32 fn_80083BF8(void* arena);
 extern struct MenuCardEEntry* fn_80083AF4(void* arena, s32 index);
@@ -154,11 +154,11 @@ static inline void* menuCardE_Alloc(u32 size) {
     void* buf;
     u16 handle;
 
-    handle = fn_800E2C04((size + 0x1F) & ~0x1F, 0x20);
+    handle = GSmemAlloc((size + 0x1F) & ~0x1F, 0x20);
     if (handle == 0) {
         __assert(CARDE_MATRIX_FILE, 0x1A2, &lbl_8047C140);
     }
-    buf = fn_800E27B0(handle);
+    buf = GSmemLock(handle);
     memset(buf, 0, size);
     return buf;
 }
@@ -171,7 +171,7 @@ static inline void menuCardE_Free(void* buf) {
         __assert(CARDE_MATRIX_FILE, 0x1AB, &lbl_8047C140);
     }
     fn_800E24B0(handle);
-    fn_800E209C(handle);
+    GSmemFree(handle);
 }
 
 /* Allocate, fill and sort the entry-pointer array at +0xB0. */
@@ -460,19 +460,19 @@ static inline void menuCardEMatrixFillEntries(MenuCardEMatrixContext* context,
     extern MenuCardEEntry* fn_80083AF4(void* arena, s32 index);
     extern void qsort(void* base, u32 count, u32 size, s32 (*compare)(const void*, const void*));
     extern s32 menuCardE_CompareEntryPtrs(const void* a, const void* b);
-    extern u16 fn_800E2C04(u32 size, u32 align);
-    extern void* fn_800E27B0(u16 handle);
+    extern u16 GSmemAlloc(u32 size, u32 align);
+    extern void* GSmemLock(u16 handle);
     MenuCardEEntry** entries;
     u32 size;
     u16 handle;
     s32 k;
 
     size = count * 4;
-    handle = fn_800E2C04((size + 0x1F) & ~0x1F, 0x20);
+    handle = GSmemAlloc((size + 0x1F) & ~0x1F, 0x20);
     if (handle == 0) {
         __assert(CARDE_MATRIX_FILE, 0x1A2, &lbl_8047C140);
     }
-    entries = fn_800E27B0(handle);
+    entries = GSmemLock(handle);
     memset(entries, 0, size);
     context->entries = entries;
     for (k = 0; k < count; k++) {
@@ -494,11 +494,11 @@ void fn_8007C7EC(void) {
     extern u8 cardeSaveLevelHasCard(MenuCardEEntry* entry, u8 subIndex);
     extern void qsort(void* base, u32 count, u32 size, s32 (*compare)(const void*, const void*));
     extern s32 menuCardE_CompareEntryPtrs(const void* a, const void* b);
-    extern u16 fn_800E2C04(u32 size, u32 align);
-    extern void* fn_800E27B0(u16 handle);
+    extern u16 GSmemAlloc(u32 size, u32 align);
+    extern void* GSmemLock(u16 handle);
     extern u16 GSmemGetHandleByPtr(void* ptr);
     extern void fn_800E24B0(u16 handle);
-    extern void fn_800E209C(u16 handle);
+    extern void GSmemFree(u16 handle);
     MenuCardEMatrixContext* context;
     s32 savedIndex;
     u8 subIndex;
@@ -534,7 +534,7 @@ void fn_8007C7EC(void) {
             __assert(CARDE_MATRIX_FILE, 0x1AB, &lbl_8047C140);
         }
         fn_800E24B0(handle);
-        fn_800E209C(handle);
+        GSmemFree(handle);
         context->entries = NULL;
     }
 
@@ -1086,7 +1086,7 @@ static inline MenuCardEEntry* menuCardEWorkEntry(MenuCardEMatrixWork* work, s32 
 static inline void menuCardEFreeHandle(void* buf) {
     extern u16 GSmemGetHandleByPtr(void* ptr);
     extern void fn_800E24B0(u16 handle);
-    extern void fn_800E209C(u16 handle);
+    extern void GSmemFree(u16 handle);
     u16 handle;
 
     handle = GSmemGetHandleByPtr(buf);
@@ -1094,7 +1094,7 @@ static inline void menuCardEFreeHandle(void* buf) {
         __assert(CARDE_MATRIX_FILE, 0x1AB, &lbl_8047C140);
     }
     fn_800E24B0(handle);
-    fn_800E209C(handle);
+    GSmemFree(handle);
 }
 
 /* 0x8007D978 | size: 0x23EC

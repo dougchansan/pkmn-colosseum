@@ -45,10 +45,10 @@ typedef u8 M2C_UNK;
 /* ===== External SDK / engine functions ===== */
 extern void  GSlogWrite(const void* fmt, ...);          /* OSReport */
 extern u16   GSmemAllocRaw(u32 size);                    /* _toolentryAlloc__FUl */
-extern void* GSmemGetPtr(u16 handle);                    /* fn_800E27B0 */
+extern void* GSmemGetPtr(u16 handle);                    /* GSmemLock */
 extern void* GSmemLock(u16 handle);                      /* fn_800E24B0 */
-extern void  GSmemFree(u16 handle);                      /* fn_800E209C */
-extern u16   GSmemAlloc(u32 alignment, u32 size);        /* fn_800E2C04 */
+extern void  GSmemFree(u16 handle);                      /* GSmemFree */
+extern u16   GSmemAlloc(u32 alignment, u32 size);        /* GSmemAlloc */
 extern void  OSSetIdleFunction(void* func, void* arg,
                           void* stackTop, u32 stackSize); /* OSCreateFiber-like */
 extern void  OSDisableInterrupts(void);
@@ -66,13 +66,13 @@ extern const char lbl_80271008[]; /* "GSthreadCreate. Warning: 'usesFPU==FALE' O
 /* ===== Forward declarations for internal functions ===== */
 extern void gappVSyncCallback(void);            /* GStaskSwapCallback */
 extern void fn_800F0F4C(u32 arg);          /* GSthread trampoline / entry wrapper */
-extern void fn_800AB150(void* buf);
+extern void PADRead(void* buf);
 extern u32 SIProbe(u32 buttonIdx);
 extern void fn_800AB4FC(void*);
-extern void fn_800E209C(u16 handle);
+extern void GSmemFree(u16 handle);
 extern void* fn_800E24B0(u16 handle);
-extern void* fn_800E27B0(u16 handle);
-extern u16 fn_800E2C04(u32 alignment, u32 size);
+extern void* GSmemLock(u16 handle);
+extern u16 GSmemAlloc(u32 alignment, u32 size);
 extern u16 _toolentryAlloc__FUl(u32 size);
 extern u32 SJIStoGSchar(u16* destination, const u8* source);
 extern void fn_800DBEB4(u32 index, GXColor color);
@@ -1610,14 +1610,14 @@ s32 GSmsgInit(u16 taskCount, u16 fontCount) {
         GSlogWrite((const char*)lbl_802717B4);
         return -1;
     }
-    lbl_80478B08->tasks = fn_800E27B0(lbl_80478B08->taskHandle);
+    lbl_80478B08->tasks = GSmemLock(lbl_80478B08->taskHandle);
 
     lbl_80478B08->fontHandle = _toolentryAlloc__FUl(fontCount * sizeof(struct FontSlot));
     if (lbl_80478B08->fontHandle == 0) {
         GSlogWrite((const char*)lbl_802717B4);
         return -1;
     }
-    lbl_80478B08->fonts = fn_800E27B0(lbl_80478B08->fontHandle);
+    lbl_80478B08->fonts = GSmemLock(lbl_80478B08->fontHandle);
 
     for (index = 0; index < taskCount; index++) {
         work = lbl_80478B08->tasks + index * 0x68;

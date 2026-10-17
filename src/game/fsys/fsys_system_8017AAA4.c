@@ -40,8 +40,8 @@ extern const char lbl_80273F70[];    /* "gsfsys.toc" */
 extern void* memset(void* dst, int value, u32 size);
 extern char* strcpy(char* dst, const char* src);
 extern void* DVDGetCurrentDiskID(void); /* DVDGetCurrentDiskID */
-extern void* fn_800E27B0(u16 handle);
-extern u16 fn_800E2C04(u32 size, u32 alignment);
+extern void* GSmemLock(u16 handle);
+extern u16 GSmemAlloc(u32 size, u32 alignment);
 extern s32 fn_80167E10(u32 fileInfo); /* DVDGetCommandBlockStatus wrapper */
 extern s32 GSdvdGetDriveStatus(void);         /* DVDGetDriveStatus wrapper */
 extern u32 GSdvdGetLength(u32 file);
@@ -131,9 +131,9 @@ static inline void* fsysAlloc(u32 size)
     u16 handle;
 
     alignedSize = (size + 0x1F) & ~0x1F;
-    handle = fn_800E2C04(alignedSize, 0x20);
+    handle = GSmemAlloc(alignedSize, 0x20);
     if (handle != 0) {
-        return fn_800E27B0(handle);
+        return GSmemLock(handle);
     }
     return NULL;
 }

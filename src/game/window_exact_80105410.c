@@ -27,7 +27,7 @@ extern char lbl_80271EC4[]; /* "windowInit" + "initialisation failed\n" (SJIS) *
 extern void* memset(void* dst, int value, u32 size);
 extern void GSlogWrite(const char* fmt, ...);
 extern u16 _toolentryAlloc__FUl(u32 size); /* GSmemAllocRaw */
-extern void* fn_800E27B0(u16 handle);      /* GSmemGetPtr */
+extern void* GSmemLock(u16 handle);      /* GSmemGetPtr */
 extern void winSpriteInit(void);
 
 /* 0x80105410 | 0xA8 */
@@ -41,7 +41,7 @@ void windowInit(u16 count)
     if (lbl_80404ACC.tableHandle == 0) {
         GSlogWrite(lbl_80271EC4);
     } else {
-        lbl_80404ACC.table = fn_800E27B0(lbl_80404ACC.tableHandle);
+        lbl_80404ACC.table = GSmemLock(lbl_80404ACC.tableHandle);
         lbl_80404ACC.count = count;
         memset(lbl_80404ACC.table, 0, size);
         winSpriteInit();

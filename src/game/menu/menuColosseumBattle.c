@@ -128,9 +128,9 @@ void fn_800576A4(s32);
 void fn_80057830(s32, s32, s32);
 extern u8 menuColosseumBattleGetFlag(void);
 extern u32 GSmemGetHandleByPtr(void*);
-extern void fn_800E209C(u32);
+extern void GSmemFree(u32);
 extern void fn_800E24B0(u32);
-extern void* fn_800E27B0(u32);
+extern void* GSmemLock(u32);
 extern void GSmsgGetText(void*, s32, void*);
 extern void fn_8002D91C();
 extern void menuTaisenRun(void);
@@ -1757,7 +1757,7 @@ void menuColosseumBattleExit(void) {
         __assert(lbl_802678D8, 0x252, &lbl_8047BF28);
     }
     fn_800E24B0(handle);
-    fn_800E209C(handle);
+    GSmemFree(handle);
     lbl_8047A5A0 = NULL;
 }
 #pragma pop
@@ -1771,7 +1771,7 @@ void menuColosseumBattleExit(void) {
 void menuColosseumBattleInit(void)
 {
     extern void std104_soundSetBackgroundMusic(s32, s32, s32);
-    extern u32 fn_800E2C04(u32 size, u32 alignment);
+    extern u32 GSmemAlloc(u32 size, u32 alignment);
     extern void* std093_getCurrentGroupID(void);
     extern void* std112_modelGetResourceID(u32 size);
     extern void GSresGetResource(void* archive, void* destination);
@@ -1792,11 +1792,11 @@ void menuColosseumBattleInit(void)
         __assert(strings + 0x98, 0x20F, strings + 0x21C);
     }
 
-    heap = fn_800E2C04(0x10F60, 0x20);
+    heap = GSmemAlloc(0x10F60, 0x20);
     if ((u16)heap == 0) {
         __assert(strings + 0x98, 0x212, &lbl_8047BF28);
     }
-    lbl_8047A5A0 = fn_800E27B0(heap);
+    lbl_8047A5A0 = GSmemLock(heap);
     if (lbl_8047A5A0 == NULL) {
         __assert(strings + 0x98, 0x213, strings + 0x22C);
     }

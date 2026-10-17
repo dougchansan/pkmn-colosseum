@@ -74,7 +74,7 @@ extern void fn_800D13C4(void* a);
 extern void fn_800DC874(void* a);
 extern void gsParticleUpdate(void* a);
 extern void modelShadowRender__FP10GSgfxLayer(void);
-extern void fn_8019C708(s32 a);
+extern void HSD_StartRender(s32 a);
 extern void HSD_SetEraseColor(u8 a, u8 b, u8 c, u8 d);
 extern void HSD_EraseRect(s32 a, s32 b, s32 c, f32 d, f32 e, f32 f, f32 g, f32 h);
 extern void VIWaitForRetrace(void);
@@ -445,7 +445,7 @@ void GSgfxRenderLayer(void* arg0, u8 arg1) {
             tick = OSGetTick();
             ((u32*)&lbl_804001F0)[0x3C / 4] = tick - startTick;
 
-            fn_8019C708(0);
+            HSD_StartRender(0);
 
             if (((u8*)lbl_8047AA80)[0x19] != 0) {
                 HSD_SetEraseColor(
@@ -464,7 +464,7 @@ void GSgfxRenderLayer(void* arg0, u8 arg1) {
 
             ((u8*)lbl_8047AA80)[0x49D] = 0;
         } else {
-            fn_8019C708(3);
+            HSD_StartRender(3);
         }
     }
 }

@@ -2980,9 +2980,9 @@ static inline u32 shopMemoryAlloc(void)
  *   menuClose               : (s32 menuId)
  *   menuCloseSync             : (s32 menuId, s32 flag)
  *   _toolentryAlloc__FUl / GSmemAllocRaw : (u32 size) -> u16 handle
- *   fn_800E27B0 / GSmemGetPtr   : (u16 handle) -> void*
+ *   GSmemLock / GSmemGetPtr   : (u16 handle) -> void*
  *   fn_800E24B0 / GSmemLock     : (u16 handle)
- *   fn_800E209C / GSmemFree     : (u16 handle)
+ *   GSmemFree / GSmemFree     : (u16 handle)
  */
 void std026_unkMenuSequence26(void)
 {
@@ -3034,7 +3034,7 @@ void std026_unkMenuSequence26(void)
 
         done = 0;
         memory = shopMemoryAlloc();
-        lbl_8047A3DC = fn_800E27B0(memory);
+        lbl_8047A3DC = GSmemLock(memory);
         message = fn_80029FAC(&text0, location, 0, -1);
         winMsgOpenWithSE(2, message, 1, 0, text0);
         while ((menu_result = shopNormalizeMenu83(shopQueryMenu(0x83))) != 3) {
@@ -3066,7 +3066,7 @@ void std026_unkMenuSequence26(void)
             winMsgClose(1);
         }
         fn_800E24B0(memory);
-        fn_800E209C(memory);
+        GSmemFree(memory);
         break;
     }
     }
@@ -3142,7 +3142,7 @@ void fn_8002D91C(u32 arg0)
 
         done = 0;
         memory = shopMemoryAlloc();
-        lbl_8047A3DC = fn_800E27B0(memory);
+        lbl_8047A3DC = GSmemLock(memory);
         message = fn_80029FAC(&text0, location, 0, -1);
         winMsgOpenWithSE(2, message, 1, 0, text0);
         while ((menu_result = shopNormalizeMenu83(shopQueryMenu(0x83))) != 3) {
@@ -3174,7 +3174,7 @@ void fn_8002D91C(u32 arg0)
             winMsgClose(1);
         }
         fn_800E24B0(memory);
-        fn_800E209C(memory);
+        GSmemFree(memory);
         break;
     }
     }

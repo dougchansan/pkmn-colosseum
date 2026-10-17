@@ -111,7 +111,7 @@ extern f32 HSD_CObjGetEyeDistance(void* cobj);
 extern void HSD_CObjGetEyePosition(void* cobj, GSshadowVec* out);
 extern void HSD_CObjGetUpVector(void* cobj, GSshadowVec* out);
 extern void fn_8019C6FC(void);
-extern void fn_8019C708(u32 arg);
+extern void HSD_StartRender(u32 arg);
 extern void __assert(const char*, s32, const char*);
 extern GSshadowSlot*
 _modelShadowFindValidReceiveModel__FP8_GSmodelP8_GSmodelP7GSlightP7GSbound(
@@ -349,7 +349,7 @@ void modelShadowRender__FP10GSgfxLayer(void* layer)
         HSD_ShadowSetIntensity(slot->obj, 0xFF - lbl_8047AB94);
         HSD_ShadowSetSize(slot->obj, lbl_8047AB90, lbl_8047AB8C);
         slot->flag = 1;
-        fn_8019C708(3);
+        HSD_StartRender(3);
         HSD_ShadowInit(slot->obj);
         HSD_ShadowStartRender(slot->obj);
         HSD_ShadowEndRender(slot->obj);

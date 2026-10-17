@@ -1,6 +1,6 @@
 #include "dolphin/gx/GXInternal.h"
 
-void fn_800BD554(u32 index)
+void GXSetCurrentMtx(u32 index)
 {
     GXData* data = gx;
 

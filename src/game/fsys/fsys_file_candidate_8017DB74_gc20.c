@@ -38,8 +38,8 @@ extern s32 lbl_8047B1BC;             /* handle table fill count */
 
 extern void* memcpy(void* dst, const void* src, u32 size);
 extern void DCFlushRange(void* addr, u32 nBytes);
-extern u16 fn_800E2C04(u32 size, u32 align);
-extern void* fn_800E27B0(u16 handle);
+extern u16 GSmemAlloc(u32 size, u32 align);
+extern void* GSmemLock(u16 handle);
 extern void GSdvdReadAsync(u32 fileInfo, void* dst, u32 length, u32 offset,
                         void (*callback)(s32 result));
 extern u32 fn_8017F794(u32 fileHandle, u32 key1, u32 key2);
@@ -61,9 +61,9 @@ static inline void* fsysAlloc(u32 size)
     u16 handle;
 
     alignedSize = (size + 0x1F) & ~0x1F;
-    handle = fn_800E2C04(alignedSize, 0x20);
+    handle = GSmemAlloc(alignedSize, 0x20);
     if (handle != 0) {
-        return fn_800E27B0(handle);
+        return GSmemLock(handle);
     }
     return NULL;
 }

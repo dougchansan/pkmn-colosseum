@@ -3,7 +3,7 @@
 
 extern u16 lbl_80467CD4[16];
 extern void fn_800E24B0(u16 handle);
-extern void fn_800E209C(u16 handle);
+extern void GSmemFree(u16 handle);
 extern void fn_801D2F94(void);
 
 /* Retail expands wazaSequenceOwnerFree's 0x54-byte entry-clear body in this loop. */
@@ -47,7 +47,7 @@ void wazaSequenceSysRelease(void)
         wazaSequenceClearEntry(entry);
     }
     fn_800E24B0(handle);
-    fn_800E209C(handle);
+    GSmemFree(handle);
     memset(lbl_80467CC0, 0, 0x14);
     wazaSequenceReleaseResources();
     fn_801D2F94();

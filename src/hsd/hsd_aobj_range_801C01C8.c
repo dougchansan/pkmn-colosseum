@@ -53,8 +53,8 @@ extern HSD_SList* lbl_8047B388;
 
 /* HSD_JObjUnref's tail helper. The target calls the raw symbol at
  * 0x801A05EC, NOT src/hsd/hsd_jobj.c's HSD_JObjUnref, so it must be spelled
- * as fn_801A05EC here to keep the relocation identical. */
-extern void fn_801A05EC(void* obj);
+ * as HSD_JObjUnref here to keep the relocation identical. */
+extern void HSD_JObjUnref(void* obj);
 extern f64 fmod(f64 x, f64 y);
 extern void* memset(void* dst, int val, u32 size);
 
@@ -529,7 +529,7 @@ void HSD_AObjRemove(HSD_AObj* aobj) {
 
     if (aobj) {
         if (aobj->hsd_obj != NULL) {
-            fn_801A05EC(aobj->hsd_obj);
+            HSD_JObjUnref(aobj->hsd_obj);
         }
         aobj->hsd_obj = NULL;
     }
@@ -606,7 +606,7 @@ HSD_AObj* HSD_AObjLoadDesc(HSD_AObjDesc* aobjdesc) {
             }
             if (aobj != NULL) {
                 if (aobj->hsd_obj != NULL) {
-                    fn_801A05EC(aobj->hsd_obj);
+                    HSD_JObjUnref(aobj->hsd_obj);
                 }
                 aobj->hsd_obj = phi_r30;
             }

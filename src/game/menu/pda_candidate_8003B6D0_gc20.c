@@ -423,10 +423,10 @@ extern u32 gfxLoadTexture();
 extern u32 gfxClearFlags();
 extern u32 gfxSetFlags();
 extern u32 GSmemGetHandleByPtr();
-extern u32 fn_800E209C();
+extern u32 GSmemFree();
 extern u32 fn_800E24B0();
-extern u32 fn_800E27B0();
-extern u32 fn_800E2C04();
+extern u32 GSmemLock();
+extern u32 GSmemAlloc();
 extern u32 fn_800FA280();
 extern void* menuDataBiosGetPtr(s32);
 extern u32 fn_80102510();
@@ -564,10 +564,10 @@ static inline void pdaDrawNameRows(u8* context, s32 first, f32 y)
 
 static inline void* pdaAlloc(s32 size, s32 align)
 {
-    u32 h = fn_800E2C04(size, align);
+    u32 h = GSmemAlloc(size, align);
 
     if ((u16)h != 0) {
-        return (void*)fn_800E27B0(h);
+        return (void*)GSmemLock(h);
     }
     return NULL;
 }

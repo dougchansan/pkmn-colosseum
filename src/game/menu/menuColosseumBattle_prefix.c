@@ -19,9 +19,9 @@ typedef struct ColosseumUnownMenuIds {
 
 extern void _threadSwitch(void);
 extern u32 _toolentryAlloc__FUl(u32);
-extern void* fn_800E27B0(u32);
+extern void* GSmemLock(u32);
 extern void fn_800E24B0(u32);
-extern void fn_800E209C(u32);
+extern void GSmemFree(u32);
 extern void* getPokemon__5PCBOXFScSc(void*, s8, s8);
 extern u32 GSthreadCreate(u32, u32, u32, u32, u32, void*);
 extern void* heroGetStatus(void*, s32, u16);
@@ -145,7 +145,7 @@ void pcBoxStorageMain(void) {
     listCount = colosseumBattleCountPokemon() + 1;
     if (listCount > 0) {
         handle = _toolentryAlloc__FUl((u32)listCount * sizeof(u32));
-        list = fn_800E27B0(handle);
+        list = GSmemLock(handle);
         lbl_8047A590 = list;
         out = list;
 
@@ -210,7 +210,7 @@ void pcBoxStorageMain(void) {
 
     if (listCount > 0) {
         fn_800E24B0(handle);
-        fn_800E209C(handle);
+        GSmemFree(handle);
     }
 
     GSresReleaseById(0x70B);

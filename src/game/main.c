@@ -211,7 +211,7 @@ extern u32  fn_800A03B4(void);    /* OSGetResetButtonState */
 extern int  OSGetResetButtonState(void); /* real symtab name (signed return -> cmpwi) */
 extern void VIFlush(void);               /* real symtab name for fn_800AA068 call site */
 extern void soundShutdown(void);    /* Screen fade to black */
-extern void fn_800AAE34(u32 mask);/* VISetBlack / video blank */
+extern void PADRecalibrate(u32 mask);/* VISetBlack / video blank */
 extern void VISetBlack(u32 flag);/* VIFlush */
 extern void fn_800AA068(void);    /* VIWaitForRetrace */
 extern void OSSetIdleFunction(u32 a, u32 b, u32 c, u32 d); /* OSClearStack or thread cleanup */
@@ -833,11 +833,11 @@ void mainCheckResetButton(void) {
             /* Released. Only reset if init is complete. */
             if (lbl_80478DC9 == 1) {
                 soundShutdown();           /* Fade screen to black */
-                fn_800AAE34(0xF0000000); /* VISetBlack */
+                PADRecalibrate(0xF0000000); /* VISetBlack */
                 VISetBlack(1);          /* VIFlush */
                 VIFlush();               /* real symtab: VIFlush (was fn_800AA068) */
-                fn_800A880C(NULL);        /* Clear pre-retrace callback */
-                fn_800A8850(NULL);        /* Clear post-retrace callback */
+                VISetPreRetraceCallback(NULL);        /* Clear pre-retrace callback */
+                VISetPostRetraceCallback(NULL);        /* Clear post-retrace callback */
                 OSSetIdleFunction(0, 0, 0, 0); /* Clean up threads */
                 VIWaitForRetrace();           /* Reset audio */
                 OSResetSystem(0, 0, 1);  /* Reset to system menu */

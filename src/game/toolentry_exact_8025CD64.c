@@ -3,7 +3,7 @@
 
 extern u32 lbl_8047B650;
 extern u32 GSmemGetHandleByPtr();
-extern void fn_800E209C();
+extern void GSmemFree();
 extern void fn_800E24B0();
 
 void toolentryTaisenFreePokemonData(void* ctx, u32 slot, u32 param)
@@ -16,7 +16,7 @@ void toolentryTaisenFreePokemonData(void* ctx, u32 slot, u32 param)
         result = GSmemGetHandleByPtr(handle);
         if ((result & 0xFFFF) != 0) {
             fn_800E24B0(result);
-            fn_800E209C(result);
+            GSmemFree(result);
         }
         lbl_8047B650 = 0;
     }

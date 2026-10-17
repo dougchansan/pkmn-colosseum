@@ -14,9 +14,9 @@ typedef struct WindowWork {
 } WindowWork;
 
 extern u16 _toolentryAlloc__FUl(u32 size);
-extern void* fn_800E27B0(u16 handle);
+extern void* GSmemLock(u16 handle);
 extern void* fn_800E24B0(u16 handle);
-extern void fn_800E209C(u16 handle);
+extern void GSmemFree(u16 handle);
 
 /* 0x80103FFC | 0xA4: free the window's memory block, then allocate size
  * bytes (none when size <= 0). */
@@ -27,7 +27,7 @@ void* windowAllocMemory(WindowWork* window, s32 size)
     }
     if (window->memoryHandle != 0) {
         fn_800E24B0(window->memoryHandle);
-        fn_800E209C(window->memoryHandle);
+        GSmemFree(window->memoryHandle);
         window->memory = NULL;
     }
     if (size <= 0) {
@@ -35,7 +35,7 @@ void* windowAllocMemory(WindowWork* window, s32 size)
     }
     window->memoryHandle = _toolentryAlloc__FUl(size);
     if (window->memoryHandle != 0) {
-        window->memory = fn_800E27B0(window->memoryHandle);
+        window->memory = GSmemLock(window->memoryHandle);
     } else {
         return NULL;
     }

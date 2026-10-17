@@ -106,7 +106,7 @@ void fn_80132C6C(u32 count, u32 maxPerSlot, u32 arg2, u32 arg3)
     if (lbl_8047AEB8 == 0) {
         return;
     }
-    lbl_8047AEB0 = fn_800E27B0(lbl_8047AEB8);
+    lbl_8047AEB0 = GSmemLock(lbl_8047AEB8);
 
     for (i = 0; i < lbl_8047AEB4; i++) {
         slot = &((DbgMenuSlot*)lbl_8047AEB0)[i];
@@ -124,7 +124,7 @@ void fn_80132C6C(u32 count, u32 maxPerSlot, u32 arg2, u32 arg3)
     if (lbl_8047AEC4 == 0) {
         return;
     }
-    lbl_8047AEBC = fn_800E27B0(lbl_8047AEC4);
+    lbl_8047AEBC = GSmemLock(lbl_8047AEC4);
 
     for (i = 0; i < total; i++) {
         DbgMenuItem* const& item = &((DbgMenuItem*)lbl_8047AEBC)[i];

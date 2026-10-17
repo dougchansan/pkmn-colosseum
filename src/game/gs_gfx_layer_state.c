@@ -29,12 +29,12 @@ extern void gfxSetupChannelsTev(u32);
 
 /* GSmem */
 extern u16   _toolentryAlloc__FUl(u32 size);                    /* GSmemAllocRaw */
-extern void* fn_800E27B0(u16 handle);                  /* GSmemGetPtr */
+extern void* GSmemLock(u16 handle);                  /* GSmemGetPtr */
 
 /* SDK GX functions */
 extern void  VIGetNextField(void);                        /* GXSetViewport */
 extern void  GXSetViewportJitter(void);                        /* GXSetProjection */
-extern void  fn_800BD744(void);                        /* GXLoadPosMtxImm */
+extern void  GXSetViewport(void);                        /* GXLoadPosMtxImm */
 extern void  GXInvalidateTexAll(void);                        /* GXInvalidateTexAll */
 
 /* ===== String constants (rodata) ===== */
@@ -123,22 +123,22 @@ extern void GSmathInitCosTable(void);
  * the callee's real definition ended up in). ===== */
 extern u8 lbl_8047AA91;
 extern u32 lbl_8047AA80;
-extern void fn_800B944C(u32, u32);
+extern void GXSetPointSize(u32, u32);
 extern f32 lbl_8047CA30;
 extern f32 lbl_8047CA34;
 extern f32 lbl_8047CA38;
-extern void fn_800B9404(u32, u32);
+extern void GXSetLineWidth(u32, u32);
 extern void _gfxEmitMtxIdx(void);
 extern void _gfxEmitPos3f32(void);
-extern void fn_800B928C(u32, u32, u16);
+extern void GXBegin(u32, u32, u16);
 extern u8 lbl_80314350[];
 extern u8 lbl_804001F0[];
 extern void fn_800D6A80(u16, s32, u32*, u32*);
 extern u8 lbl_804007E8[];
-extern void fn_800B7D74(u32, u32, u32, u32, u8);
-extern void fn_800B7D3C(void);
-extern void fn_800B7874(u32, u32);
-extern void fn_800B84E0(u32, u32, u8);
+extern void GXSetVtxAttrFmt(u32, u32, u32, u32, u8);
+extern void GXClearVtxDesc(void);
+extern void GXSetVtxDesc(u32, u32);
+extern void GXSetArray(u32, u32, u8);
 extern u8 lbl_80314370[];
 extern u8 lbl_803143B4[];
 extern u8 lbl_803143D8[];
@@ -154,7 +154,7 @@ extern u32 GScameraGetInvMatrixPtr(void);
 extern u32 GScameraGetProjMatrixPtr(void);
 extern void GXLoadPosMtxImm(u32, u32);
 extern void GXLoadNrmMtxImm(u32, u32);
-extern void fn_800BD554(u32);
+extern void GXSetCurrentMtx(u32);
 extern u8 lbl_8047AAC8;
 extern u8 lbl_80314610[];
 extern u32 lbl_8047AAC0;
@@ -169,8 +169,8 @@ extern u8 lbl_80314454[];
 extern u8 lbl_803144A8[];
 extern u8 lbl_80314424[];
 extern void GXInitTexObjWrapMode();
-extern void fn_800BACA0();
-extern void fn_800BB098();
+extern void GXInitTexObjLOD();
+extern void GXLoadTlut();
 extern void GXLoadTexObj();
 extern u8 lbl_80314530[];
 extern u32 lbl_8047CA40;
@@ -182,8 +182,8 @@ extern void GXSetTevDirect(u32);
 extern void GXSetNumIndStages(u32);
 extern void GXSetNumChans();
 extern void GXSetChanCtrl();
-extern void fn_800B884C();
-extern void fn_800BC8C8();
+extern void GXSetNumTexGens();
+extern void GXSetNumTevStages();
 extern void GXSetIndTexOrder();
 extern void GXSetIndTexCoordScale();
 extern void GXSetIndTexMtx();
@@ -202,7 +202,7 @@ extern void fn_800BBF98();
 extern void fn_800BBFDC();
 extern void GXSetTevKColor();
 extern void GXSetTevSwapModeTable();
-extern void fn_800BD2E0(void*, u32);
+extern void GXSetProjection(void*, u32);
 extern f32 lbl_8047CA50;
 extern f32 lbl_8047CA54;
 extern void GScameraSetViewport(void*, u16, u16, u16, u16);
@@ -214,14 +214,14 @@ extern void GScameraSetScissor(u32, u16, u16, u16, u16);
 extern void HSD_FogSet(u32);
 extern u32 lbl_8047AA8C;
 extern void GXSetClipMode(u32);
-extern void fn_800B94F0(u32);
+extern void GXSetCullMode(u32);
 extern u8 lbl_8031453C[];
 extern void GXSetDither(u32);
-extern void fn_800BC618(u32, u8, u32, u32, u8);
+extern void GXSetAlphaCompare(u32, u8, u32, u32, u8);
 extern u8 lbl_8031457C[];
 extern u8 lbl_8031456C[];
 extern void GXSetZMode(u32, u32, u32);
-extern void fn_800BCEBC(u32);
+extern void GXSetZCompLoc(u32);
 extern u8 lbl_8031454C[];
 extern void GXSetDstAlpha(u32);
 extern void GXSetBlendMode(u32, u32, u32, u32);
@@ -232,10 +232,10 @@ extern void jumptable_803152B8();
 extern void jumptable_80315340();
 extern void jumptable_80315320();
 extern void fn_800E24B0(u16);
-extern void fn_800E209C(u16);
+extern void GSmemFree(u16);
 extern void GXCallDisplayList(u32, u32);
 extern void fn_800E2AF8(u16);
-extern u16 fn_800E2C04(u32, u32);
+extern u16 GSmemAlloc(u32, u32);
 extern u32 lbl_8047AAD8;
 extern u32 lbl_8047AAD4;
 extern void jumptable_80315364();
@@ -1088,21 +1088,21 @@ void gfxLoadVtxDesc(u32 obj) {
         entry = (u8*)(obj + i * 0x1c);
         if (entry[0x8] != 0 && (s32)i != 0) {
             attr = ((u32*)lbl_80314370)[i];
-            fn_800B7D74(*(u32*)(obj + 0x4), attr,
+            GXSetVtxAttrFmt(*(u32*)(obj + 0x4), attr,
                         ((u32*)lbl_803143B4)[*(u32*)(entry + 0x10)],
                         ((u32*)lbl_803143D8)[*(u32*)(entry + 0x14)],
                         entry[0x18]);
         }
     }
 
-    fn_800B7D3C();
+    GXClearVtxDesc();
 
     for (i = 0; (s32)i < 14; i++) {
         entry = (u8*)(obj + i * 0x1c);
         if (entry[0x8] != 0) {
-            fn_800B7874(((u32*)lbl_80314370)[i], ((u32*)lbl_803143A8)[*(u32*)(entry + 0xc)]);
+            GXSetVtxDesc(((u32*)lbl_80314370)[i], ((u32*)lbl_803143A8)[*(u32*)(entry + 0xc)]);
             if (*(u32*)(entry + 0x1c) != 0) {
-                fn_800B84E0(((u32*)lbl_80314370)[i], *(u32*)(entry + 0x1c), entry[0x20]);
+                GXSetArray(((u32*)lbl_80314370)[i], *(u32*)(entry + 0x1c), entry[0x20]);
             }
         }
     }
@@ -1129,7 +1129,7 @@ void gfxVtxDescPoolInit(u32 count) {
     handle = off;
     lbl_8047AAA8 = handle;
     if (handle != 0) {
-        lbl_8047AAAC = (u32)fn_800E27B0(handle);
+        lbl_8047AAAC = (u32)GSmemLock(handle);
         for (off = 0, i = 0; i < lbl_8047AAB0; i++, off += 0x190) {
             *(u8*)(lbl_8047AAAC + off) = 0;
         }
@@ -1172,7 +1172,7 @@ void gfxFlushMatrix(void) {
         mtx = *(u32*)(lbl_80314610 + 0x24);
         GXLoadPosMtxImm(lbl_8047AAC0, mtx);
         GXLoadNrmMtxImm(lbl_8047AAC0, mtx);
-        fn_800BD554(mtx);
+        GXSetCurrentMtx(mtx);
         fn_800E0628((void*)(lbl_80400948 + 0x1b0), (void*)lbl_8047AAC0);
         lbl_8047AAC8 = 0;
     }
@@ -1236,7 +1236,7 @@ void gfxPopMatrix(void) {
         mtx = *(u32*)(lbl_80314610 + 0x24);
         GXLoadPosMtxImm(lbl_8047AAC0, mtx);
         GXLoadNrmMtxImm(lbl_8047AAC0, mtx);
-        fn_800BD554(mtx);
+        GXSetCurrentMtx(mtx);
         fn_800E0628((void*)(lbl_80400948 + 0x1b0), (void*)lbl_8047AAC0);
         lbl_8047AAC8 = 0;
     }
@@ -1264,7 +1264,7 @@ void gfxPushMultMatrix(void* src) {
         mtx = *(u32*)(lbl_80314610 + 0x24);
         GXLoadPosMtxImm(lbl_8047AAC0, mtx);
         GXLoadNrmMtxImm(lbl_8047AAC0, mtx);
-        fn_800BD554(mtx);
+        GXSetCurrentMtx(mtx);
         fn_800E0628((void*)(lbl_80400948 + 0x1b0), (void*)lbl_8047AAC0);
         lbl_8047AAC8 = 0;
     }
@@ -1288,7 +1288,7 @@ void gfxMultMatrix(void* param) {
         mtx = *(u32*)(lbl_80314610 + 0x24);
         GXLoadPosMtxImm(lbl_8047AAC0, mtx);
         GXLoadNrmMtxImm(lbl_8047AAC0, mtx);
-        fn_800BD554(mtx);
+        GXSetCurrentMtx(mtx);
         fn_800E0628((void*)(lbl_80400948 + 0x1b0), (void*)lbl_8047AAC0);
         lbl_8047AAC8 = 0;
     }
@@ -1316,7 +1316,7 @@ void gfxPushLoadMatrix(void* src) {
         mtx = *(u32*)(lbl_80314610 + 0x24);
         GXLoadPosMtxImm(lbl_8047AAC0, mtx);
         GXLoadNrmMtxImm(lbl_8047AAC0, mtx);
-        fn_800BD554(mtx);
+        GXSetCurrentMtx(mtx);
         fn_800E0628((void*)(lbl_80400948 + 0x1b0), (void*)lbl_8047AAC0);
         lbl_8047AAC8 = 0;
     }
@@ -1340,7 +1340,7 @@ void gfxScaleMatrix(f32 a, f32 b, f32 c) {
         mtx = *(u32*)(lbl_80314610 + 0x24);
         GXLoadPosMtxImm(lbl_8047AAC0, mtx);
         GXLoadNrmMtxImm(lbl_8047AAC0, mtx);
-        fn_800BD554(mtx);
+        GXSetCurrentMtx(mtx);
         fn_800E0628((void*)(lbl_80400948 + 0x1b0), (void*)lbl_8047AAC0);
         lbl_8047AAC8 = 0;
     }
@@ -1364,7 +1364,7 @@ void gfxTranslateMatrix(f32 a, f32 b, f32 c) {
         mtx = *(u32*)(lbl_80314610 + 0x24);
         GXLoadPosMtxImm(lbl_8047AAC0, mtx);
         GXLoadNrmMtxImm(lbl_8047AAC0, mtx);
-        fn_800BD554(mtx);
+        GXSetCurrentMtx(mtx);
         fn_800E0628((void*)(lbl_80400948 + 0x1b0), (void*)lbl_8047AAC0);
         lbl_8047AAC8 = 0;
     }
@@ -1393,7 +1393,7 @@ void gfxRotateXYZ(f32 a, f32 b, f32 c) {
         matrixIndex = *(u32*)(lbl_80314610 + 0x24);
         GXLoadPosMtxImm(lbl_8047AAC0, matrixIndex);
         GXLoadNrmMtxImm(lbl_8047AAC0, matrixIndex);
-        fn_800BD554(matrixIndex);
+        GXSetCurrentMtx(matrixIndex);
         fn_800E0628((void*)(lbl_80400948 + 0x1b0), (void*)lbl_8047AAC0);
         lbl_8047AAC8 = 0;
     }
@@ -1417,7 +1417,7 @@ void gfxLoadIdentity(void) {
         mtx = *(u32*)(lbl_80314610 + 0x24);
         GXLoadPosMtxImm(lbl_8047AAC0, mtx);
         GXLoadNrmMtxImm(lbl_8047AAC0, mtx);
-        fn_800BD554(mtx);
+        GXSetCurrentMtx(mtx);
         fn_800E0628((void*)(lbl_80400948 + 0x1b0), (void*)lbl_8047AAC0);
         lbl_8047AAC8 = 0;
     }
@@ -1443,7 +1443,7 @@ void gfxMatrixStackInit(u32 count) {
     val = (u16)handle;
     lbl_8047AAB8 = handle;
     if (val != 0) {
-        ptr = (u32)fn_800E27B0((u16)val);
+        ptr = (u32)GSmemLock((u16)val);
         lbl_8047AABC = ptr;
         ptr = ptr + (count - 1) * 0x30;
         lbl_8047AAC4 = ptr;
@@ -1452,7 +1452,7 @@ void gfxMatrixStackInit(u32 count) {
         mtx = *(u32*)(lbl_80314610 + 0x24);
         GXLoadPosMtxImm(lbl_8047AAC0, mtx);
         GXLoadNrmMtxImm(lbl_8047AAC0, mtx);
-        fn_800BD554(mtx);
+        GXSetCurrentMtx(mtx);
         fn_800E0628((void*)(lbl_80400948 + 0x1b0), (void*)lbl_8047AAC0);
         lbl_8047AAC8 = 0;
     }
@@ -1531,7 +1531,7 @@ void gfxLoadTexture(s32 slot, void* model) {
             mode = (*(s32*)(obj + 0x18) == 2) + 4;
             break;
         }
-        fn_800BACA0(obj + 0x54, mode, (*(u32*)(obj + 0x1c) == 2),
+        GXInitTexObjLOD(obj + 0x54, mode, (*(u32*)(obj + 0x1c) == 2),
                     *(f32*)&lbl_8047CA40, (f32)(obj[0x5] - 1),
                     *(f32*)&lbl_8047CA48, 0, 0, 0);
         obj[0x7] = 0;
@@ -1539,7 +1539,7 @@ void gfxLoadTexture(s32 slot, void* model) {
 
     *(void**)(state + 0x28 + slot * 4) = model;
     if (*(u32*)(obj + 0x48) != 0) {
-        fn_800BB098(obj + 0x74, ((u32*)lbl_80314510)[slot]);
+        GXLoadTlut(obj + 0x74, ((u32*)lbl_80314510)[slot]);
     }
     GXLoadTexObj(obj + 0x54, ((u32*)lbl_803144F0)[slot]);
     *(u32*)(lbl_804001F0 + 0x24) += 1;

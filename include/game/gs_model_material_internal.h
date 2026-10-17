@@ -42,7 +42,7 @@ static inline s32 modelInitMaterialList(GSmodel* model)
     }
     handle = _toolentryAlloc__FUl(count * sizeof(void*));
     if ((u16)handle != 0) {
-        dst = (void**)(model->materialList = (GSmodelMaterialList*)fn_800E27B0(handle));
+        dst = (void**)(model->materialList = (GSmodelMaterialList*)GSmemLock(handle));
         model->materialListHandle = handle;
         model->materialCount = count;
         for (partIndex = 0; partIndex < partCount; partIndex++) {

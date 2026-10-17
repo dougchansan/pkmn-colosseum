@@ -55,7 +55,7 @@ extern BOOL THPInit(void);
 extern u32 VIGetTvFormat(void);
 
 typedef void (*VIRetraceCallback)(u32 retraceCount);
-extern VIRetraceCallback fn_800A8850(VIRetraceCallback callback); /* VISetPostRetraceCallback */
+extern VIRetraceCallback VISetPostRetraceCallback(VIRetraceCallback callback); /* VISetPostRetraceCallback */
 extern u32 VIGetNextField(void);                                     /* VIGetNextField */
 
 /* MusyX streaming (src/musyx/runtime/stream.c) */
@@ -431,7 +431,7 @@ BOOL THPPlayerPrepare(s32 frame, u8 flag, s32 audioTrack)
             movieStreamCreate();
         }
 
-        lbl_8047B46C = fn_800A8850(PlayControl);
+        lbl_8047B46C = VISetPostRetraceCallback(PlayControl);
         return TRUE;
     }
     return FALSE;
@@ -457,7 +457,7 @@ void THPPlayerStop(void)
     if (lbl_8046AC60.open && lbl_8046AC60.state != 0) {
         lbl_8046AC60.internalState = 0;
         lbl_8046AC60.state = 0;
-        fn_800A8850(lbl_8047B46C);
+        VISetPostRetraceCallback(lbl_8047B46C);
         if (lbl_8046AC60.onMemory == FALSE) {
             DVDCancel(&lbl_8046AC60.fileInfo.cb);
             ReadThreadCancel();

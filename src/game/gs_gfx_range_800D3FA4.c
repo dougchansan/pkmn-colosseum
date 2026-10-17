@@ -29,12 +29,12 @@ extern void gfxBegin(u16);
 extern void gfxSetupChannelsTev(u32);
 extern u32 OSGetTick(void);
 extern void fn_801E17A8(void);
-extern void fn_801B25C4(u32);
+extern void HSD_StateInvalidate(u32);
 extern s32 HSD_CObjSetCurrent(void*);
 extern void GSlightSetupLights(void*);
 extern void GSmodelDrawAll(u32, u32);
 extern void gsParticleDraw(u32, u32);
-extern void fn_80195A48(void);
+extern void HSD_CObjEndCurrent(void);
 extern void _gfxSetFlagsImm(s32);
 extern u32* gfxPlayCommands(u32*);
 extern void gfxSetUpdates(u32, u32, u32);
@@ -53,12 +53,12 @@ extern void gfxEnd(void);
 
 /* GSmem */
 extern u16   _toolentryAlloc__FUl(u32 size);                    /* GSmemAllocRaw */
-extern void* fn_800E27B0(u16 handle);                  /* GSmemGetPtr */
+extern void* GSmemLock(u16 handle);                  /* GSmemGetPtr */
 
 /* SDK GX functions */
 extern void  VIGetNextField(void);                        /* GXSetViewport */
 extern void  GXSetViewportJitter(void);                        /* GXSetProjection */
-extern void  fn_800BD744(void);                        /* GXLoadPosMtxImm */
+extern void  GXSetViewport(void);                        /* GXLoadPosMtxImm */
 extern void  GXInvalidateTexAll(void);                        /* GXInvalidateTexAll */
 
 typedef struct GSgfxState {
@@ -161,22 +161,22 @@ extern void GSmathInitCosTable(void);
  * the callee's real definition ended up in). ===== */
 extern u8 lbl_8047AA91;
 extern u32 lbl_8047AA80;
-extern void fn_800B944C(u32, u32);
+extern void GXSetPointSize(u32, u32);
 extern f32 lbl_8047CA30;
 extern f32 lbl_8047CA34;
 extern f32 lbl_8047CA38;
-extern void fn_800B9404(u32, u32);
+extern void GXSetLineWidth(u32, u32);
 extern void _gfxEmitMtxIdx(void);
 extern void _gfxEmitPos3f32(void);
-extern void fn_800B928C(u32, u32, u16);
+extern void GXBegin(u32, u32, u16);
 extern u8 lbl_80314350[];
 extern u8 lbl_804001F0[];
 extern void fn_800D6A80(u16, s32, u32*, u32*);
 extern u8 lbl_804007E8[];
-extern void fn_800B7D74(u32, u32, u32, u32, u8);
-extern void fn_800B7D3C(void);
-extern void fn_800B7874(u32, u32);
-extern void fn_800B84E0(u32, u32, u8);
+extern void GXSetVtxAttrFmt(u32, u32, u32, u32, u8);
+extern void GXClearVtxDesc(void);
+extern void GXSetVtxDesc(u32, u32);
+extern void GXSetArray(u32, u32, u8);
 extern u8 lbl_80314370[];
 extern u8 lbl_803143B4[];
 extern u8 lbl_803143D8[];
@@ -192,7 +192,7 @@ extern u32 GScameraGetInvMatrixPtr(void);
 extern u32 GScameraGetProjMatrixPtr(void);
 extern void GXLoadPosMtxImm(u32, u32);
 extern void GXLoadNrmMtxImm(u32, u32);
-extern void fn_800BD554(u32);
+extern void GXSetCurrentMtx(u32);
 extern u8 lbl_8047AAC8;
 extern u8 lbl_80314610[];
 extern u32 lbl_8047AAC0;
@@ -207,8 +207,8 @@ extern u8 lbl_80314454[];
 extern u8 lbl_803144A8[];
 extern u8 lbl_80314424[];
 extern void GXInitTexObjWrapMode();
-extern void fn_800BACA0();
-extern void fn_800BB098();
+extern void GXInitTexObjLOD();
+extern void GXLoadTlut();
 extern void GXLoadTexObj();
 extern u8 lbl_80314530[];
 extern u32 lbl_8047CA40;
@@ -219,8 +219,8 @@ extern void GXSetTevDirect(u32);
 extern void GXSetNumIndStages(u32);
 extern void GXSetNumChans();
 extern void GXSetChanCtrl();
-extern void fn_800B884C();
-extern void fn_800BC8C8();
+extern void GXSetNumTexGens();
+extern void GXSetNumTevStages();
 extern void GXSetIndTexOrder();
 extern void GXSetIndTexCoordScale();
 extern void GXSetIndTexMtx();
@@ -239,7 +239,7 @@ extern void fn_800BBF98();
 extern void fn_800BBFDC();
 extern void GXSetTevKColor();
 extern void GXSetTevSwapModeTable();
-extern void fn_800BD2E0(void*, u32);
+extern void GXSetProjection(void*, u32);
 extern f32 lbl_8047CA50;
 extern f32 lbl_8047CA54;
 extern void GScameraSetViewport(void*, u16, u16, u16, u16);
@@ -251,14 +251,14 @@ extern void GScameraSetScissor(u32, u16, u16, u16, u16);
 extern void HSD_FogSet(u32);
 extern u32 lbl_8047AA8C;
 extern void GXSetClipMode(u32);
-extern void fn_800B94F0(u32);
+extern void GXSetCullMode(u32);
 extern u8 lbl_8031453C[];
 extern void GXSetDither(u32);
-extern void fn_800BC618(u32, u8, u32, u32, u8);
+extern void GXSetAlphaCompare(u32, u8, u32, u32, u8);
 extern u8 lbl_8031457C[];
 extern u8 lbl_8031456C[];
 extern void GXSetZMode(u32, u32, u32);
-extern void fn_800BCEBC(u32);
+extern void GXSetZCompLoc(u32);
 extern u8 lbl_8031454C[];
 extern void GXSetDstAlpha(u32);
 extern void GXSetBlendMode(u32, u32, u32, u32);
@@ -269,10 +269,10 @@ extern void jumptable_803152B8();
 extern void jumptable_80315340();
 extern void jumptable_80315320();
 extern void fn_800E24B0(u16);
-extern void fn_800E209C(u16);
+extern void GSmemFree(u16);
 extern void GXCallDisplayList(u32, u32);
 extern void fn_800E2AF8(u16);
-extern u16 fn_800E2C04(u32, u32);
+extern u16 GSmemAlloc(u32, u32);
 extern u32 lbl_8047AAD8;
 extern u32 lbl_8047AAD4;
 extern void jumptable_80315364();
@@ -471,13 +471,13 @@ static inline void gfxSetupLayerCamera(u32 layer, u8 pass) {
     u32 camera = GScameraGetActiveCamera();
 
     if (camera != 0) {
-        fn_801B25C4(0x7F);
+        HSD_StateInvalidate(0x7F);
         if (HSD_CObjSetCurrent(*(void**)(camera + 0x0C)) != 0) {
             GSlightSetupLights(*(void**)(camera + 0x0C));
             GSmodelDrawAll(layer, pass);
             gsParticleDraw(layer, pass);
             HSD_FogSet(lbl_8047AA8C);
-            fn_80195A48();
+            HSD_CObjEndCurrent();
         }
         _gfxSetFlagsImm(-1);
     }
@@ -1036,7 +1036,7 @@ void gfxSetPointSize(f32 val) {
     else {
         u32 tmp;
         tmp = (u32)(s32)(6.0f * val);
-        fn_800B944C(tmp, 0);
+        GXSetPointSize(tmp, 0);
     }
 }
 #endif
@@ -1052,7 +1052,7 @@ void gfxSetLineWidth(f32 val) {
     else {
         u32 tmp;
         tmp = (u32)(s32)(6.0f * val);
-        fn_800B9404(tmp, 0);
+        GXSetLineWidth(tmp, 0);
     }
 }
 #endif
@@ -1682,7 +1682,7 @@ void gfxBegin(u16 vertCount) {
 
     gfxLoadVtxDesc(*(u32*)(lbl_8047AA80 + 0x24));
     gfxSetupChannelsTev(*(u32*)(lbl_8047AA80 + 0x24));
-    fn_800B928C(lbl_80314350[*(u32*)(lbl_8047AA80 + 0x14)],
+    GXBegin(lbl_80314350[*(u32*)(lbl_8047AA80 + 0x14)],
                 *(u32*)(*(u32*)(lbl_8047AA80 + 0x24) + 0x4), vertCount);
     fn_800D6A80(vertCount, *(s32*)(lbl_8047AA80 + 0x14),
                 (u32*)(lbl_804001F0 + 0xc), (u32*)(lbl_804001F0 + 0x4));

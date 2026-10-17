@@ -121,8 +121,8 @@ extern void* lbl_8047B1E0;                /* job pool file buffer */
 extern GsRangePoolElem* lbl_8047B1E4;     /* current job */
 
 extern void DCFlushRange(void* addr, u32 nBytes);
-extern u16 fn_800E2C04(u32 size, u32 align);
-extern void* fn_800E27B0(u16 handle);
+extern u16 GSmemAlloc(u32 size, u32 align);
+extern void* GSmemLock(u16 handle);
 extern void fsysFlushCachedHandles(void);
 
 u32 fn_8017FA5C(void);
@@ -133,9 +133,9 @@ void fn_801808E4(GsRangeARQEntry* entry);
 /* Expanded three times: twice in fsysCacheInit, once in fn_80180B94. */
 static inline void* memAlloc(u32 size)
 {
-    u16 h = fn_800E2C04(size, 0x20);
+    u16 h = GSmemAlloc(size, 0x20);
     if (h) {
-        return fn_800E27B0(h);
+        return GSmemLock(h);
     }
     return NULL;
 }

@@ -17,8 +17,8 @@
 
 extern void GXSetNumChans(u8 num);
 extern void GXSetChanCtrl(u32 chan, u8 enable, u8 ambSrc, u8 matSrc, u8 lightMask, u8 diffFn, u8 attnFn);
-extern void fn_800B884C(u8 num);
-extern void fn_800BC8C8(u8 num);
+extern void GXSetNumTexGens(u8 num);
+extern void GXSetNumTevStages(u8 num);
 extern void GXSetNumIndStages(u8 num);
 extern void GXSetIndTexOrder(u32 stage, u8 coord, u8 map);
 extern void GXSetIndTexCoordScale(u32 stage, u8 scaleS, u8 scaleT);
@@ -62,7 +62,7 @@ void _gfxFlushTevState(void) {
     }
 
     if (lbl_8047AA80->dirty & 2) {
-        fn_800B884C(lbl_8047AA80->tev.numTexGens);
+        GXSetNumTexGens(lbl_8047AA80->tev.numTexGens);
         lbl_804001F0.texGenUpdates++;
     }
 
@@ -76,7 +76,7 @@ void _gfxFlushTevState(void) {
         u8 numInd;
         GSTevInd* ind;
 
-        fn_800BC8C8(lbl_8047AA80->tev.numTevStages);
+        GXSetNumTevStages(lbl_8047AA80->tev.numTevStages);
         numInd = lbl_8047AA80->tev.numIndStages;
         order = lbl_8047AA80->tev.tevOrder;
         colorOp = lbl_8047AA80->tev.colorOp;

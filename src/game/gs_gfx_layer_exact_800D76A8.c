@@ -11,10 +11,10 @@ extern u8 lbl_803143D8[];
 extern void gfxRecordCommand(u32, ...);
 extern void fn_800D7940(u8*, u16);
 extern void gfxSetupChannelsTev(u32);
-extern void fn_800B7D74(u32, u32, u32, u32, u8);
-extern void fn_800B7D3C(void);
-extern void fn_800B7874(u32, u32);
-extern void fn_800B84E0(u32, u32, u8);
+extern void GXSetVtxAttrFmt(u32, u32, u32, u32, u8);
+extern void GXClearVtxDesc(void);
+extern void GXSetVtxDesc(u32, u32);
+extern void GXSetArray(u32, u32, u8);
 
 /*
  * Body of fn_800D7A70 (out-of-line at 0x800D7A70; source in
@@ -30,21 +30,21 @@ static inline void GSgfxLoadVtxDesc(u32 obj) {
         entry = (u8*)(obj + i * 0x1c);
         if (entry[0x8] != 0 && (s32)i != 0) {
             attr = ((u32*)lbl_80314370)[i];
-            fn_800B7D74(*(u32*)(obj + 0x4), attr,
+            GXSetVtxAttrFmt(*(u32*)(obj + 0x4), attr,
                         ((u32*)lbl_803143B4)[*(u32*)(entry + 0x10)],
                         ((u32*)lbl_803143D8)[*(u32*)(entry + 0x14)],
                         entry[0x18]);
         }
     }
 
-    fn_800B7D3C();
+    GXClearVtxDesc();
 
     for (i = 0; (s32)i < 14; i++) {
         entry = (u8*)(obj + i * 0x1c);
         if (entry[0x8] != 0) {
-            fn_800B7874(((u32*)lbl_80314370)[i], ((u32*)lbl_803143A8)[*(u32*)(entry + 0xc)]);
+            GXSetVtxDesc(((u32*)lbl_80314370)[i], ((u32*)lbl_803143A8)[*(u32*)(entry + 0xc)]);
             if (*(u32*)(entry + 0x1c) != 0) {
-                fn_800B84E0(((u32*)lbl_80314370)[i], *(u32*)(entry + 0x1c), entry[0x20]);
+                GXSetArray(((u32*)lbl_80314370)[i], *(u32*)(entry + 0x1c), entry[0x20]);
             }
         }
     }

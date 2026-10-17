@@ -84,7 +84,7 @@ extern f32 lbl_8047C990;     /* SDA float: animation step increment */
 extern char lbl_8047C9DC[] __attribute__((section(".sdata2")));  /* SDA2 string: assert filename */
 extern char lbl_8047C9E4[] __attribute__((section(".sdata2")));  /* SDA2 string: assert condition */
 extern u32 _toolentryAlloc__FUl(u32 size);   /* memory allocate, returns ptr as u32 */
-extern u32 fn_800E27B0(u32 handle); /* map handle to object ptr */
+extern u32 GSmemLock(u32 handle); /* map handle to object ptr */
 extern u16 lbl_8047AA68;  /* render obj array low16 tag */
 extern u32 lbl_8047AA6C;  /* render obj array base pointer */
 extern f32 lbl_8047C994;  /* SDA float constant */
@@ -133,10 +133,10 @@ void _GScameraAnimCallback(void* obj);
 #if defined(GS_RENDER_UTIL_LEGACY_PREFIX_800D104C)
 
 /* ==================================================================
- * fn_800D104C - GS render: set sampling rate
+ * SIRefreshSamplingRate - GS render: set sampling rate
  * Address: 0x800D104C, Size: 0x24
  * ================================================================== */
-void fn_800D104C(void) {
+void SIRefreshSamplingRate(void) {
     SISetSamplingRate(lbl_8047AA60);
 }
 
@@ -1049,7 +1049,7 @@ void fn_800D2AD4(u32 count) {
         u32 zero;
         u32 off;
         u32 i;
-        lbl_8047AA6C = fn_800E27B0(masked);
+        lbl_8047AA6C = GSmemLock(masked);
         off = 0;
         zero = off;
         i = 0;

@@ -79,7 +79,7 @@ void _modelParseJObjDispSub__FP9_HSD_JObjP5GSmtxP5GSmtx12HSD_TrspMaskbPFP9_HSD_P
     u8 is_visible, GSModelPObjDisp disp, void* arg);
 extern f32 lbl_804016D0[24];
 
-extern void fn_8019F024(HSD_JObj* jobj);
+extern void HSD_JObjSetCurrent(HSD_JObj* jobj);
 extern void HSD_PObjClearMtxMark(u32 first, u32 second);
 extern void HSD_DObjSetCurrent(HSD_DObj* dobj);
 extern HSD_JObj* HSD_JObjGetCurrent(void);
@@ -193,7 +193,7 @@ void _modelParseJObjDispSub__FP9_HSD_JObjP5GSmtxP5GSmtx12HSD_TrspMaskbPFP9_HSD_P
     HSD_DObj* dobj;
     u32 pass_mask;
 
-    fn_8019F024(jobj);
+    HSD_JObjSetCurrent(jobj);
     pass_mask = (u32)pass << 1;
     HSD_PObjClearMtxMark(0, 0);
     for (dobj = *(HSD_DObj**)((u8*)jobj + 0x18); dobj != NULL; dobj = dobj->next) {
@@ -203,7 +203,7 @@ void _modelParseJObjDispSub__FP9_HSD_JObjP5GSmtxP5GSmtx12HSD_TrspMaskbPFP9_HSD_P
         }
     }
     HSD_DObjSetCurrent(NULL);
-    fn_8019F024(NULL);
+    HSD_JObjSetCurrent(NULL);
 }
 
 void _modelParseJObjDispDObj__FP9_HSD_JObjP5GSmtx12HSD_TrspMaskbPFP9_HSD_PObjP5GSmtxP5GSmtxP5GSmtxPv_vPv(

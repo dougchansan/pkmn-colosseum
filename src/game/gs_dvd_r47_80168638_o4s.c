@@ -38,9 +38,9 @@ typedef struct GSFilterState {
 
 extern void* memset(void* dst, int value, u32 size);
 extern u16 _toolentryAlloc__FUl(u32 size);
-extern void* fn_800E27B0(u32 handle);
+extern void* GSmemLock(u32 handle);
 extern void fn_800E24B0(u32 handle);
-extern void fn_800E209C(u32 handle);
+extern void GSmemFree(u32 handle);
 extern void* gfxVtxDescAlloc(void);
 extern void gfxVtxDescSetAttr(void*, u32, u32, u32, u32, u8, void*, u8);
 extern void gfxVtxDescFree(void*);
@@ -90,12 +90,12 @@ static inline void GSfilterRelease(void)
     handle = lbl_804526E0.filterHandle;
     if (handle != 0) {
         fn_800E24B0(handle);
-        fn_800E209C(handle);
+        GSmemFree(handle);
     }
     handle = lbl_804526E0.colorHandle;
     if (handle != 0) {
         fn_800E24B0(handle);
-        fn_800E209C(handle);
+        GSmemFree(handle);
     }
     if (lbl_804526E0.renderState != 0) {
         gfxVtxDescFree((void*)lbl_804526E0.renderState);
@@ -140,7 +140,7 @@ void fn_80168638(u8 capacity)
         return;
     }
     lbl_804526E0.filterHandle = handle;
-    lbl_804526E0.filters = fn_800E27B0(lbl_804526E0.filterHandle);
+    lbl_804526E0.filters = GSmemLock(lbl_804526E0.filterHandle);
     memset(lbl_804526E0.filters, 0, size);
 
     handle = _toolentryAlloc__FUl(size);
@@ -149,7 +149,7 @@ void fn_80168638(u8 capacity)
         return;
     }
     lbl_804526E0.colorHandle = handle;
-    lbl_804526E0.colors = fn_800E27B0(lbl_804526E0.colorHandle);
+    lbl_804526E0.colors = GSmemLock(lbl_804526E0.colorHandle);
     memset(lbl_804526E0.colors, 0, size);
 
     /* Retail allocates a third block and only checks it for failure. */

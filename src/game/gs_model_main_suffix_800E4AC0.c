@@ -183,7 +183,7 @@ extern u16 lbl_8047AB70;
 extern void GSvecCopy(GSvec* dst, const GSvec* src);
 extern void GSmodelSetAnimFrame(GSmodel* model, f32 frame);
 extern u32 _toolentryAlloc__FUl(u32 size);
-extern void* fn_800E27B0(u32 handle);
+extern void* GSmemLock(u32 handle);
 extern void modelShadowInit__Fv(void);
 extern void fn_800EC134(GSmodel* model);
 extern void gsParticleKill(void* bank, u32 destroyChildren);
@@ -201,12 +201,12 @@ extern void GSmaterialResetAlpha(void* material);
 extern void GSmaterialResetFlags(void* material);
 extern void GSmaterialRemoveExtraTObj(void* material);
 extern void fn_800E24B0(u32 handle);
-extern void fn_800E209C(u32 handle);
+extern void GSmemFree(u32 handle);
 extern void modelShadowFreeModelList__FP8_GSmodel(GSmodel* model);
 extern void GSmodelRemoveNull(GSmodel* model);
 extern void modelRemoveCenterNull(GSmodel* model);
 extern HSDJObj* fn_801A02B0(HSDJObj* jobj);
-extern void fn_801A05EC(void* object);
+extern void HSD_JObjUnref(void* object);
 extern void* memset(void* dst, int value, u32 size);
 extern void* memcpy(void* dst, const void* src, u32 size);
 extern void HSD_JObjSetupMatrixSub(HSDJObj* jobj);
@@ -230,10 +230,10 @@ extern void fn_8019D620(HSDJObj* jobj);
 extern GSpart* GSmodelGetPart(GSmodel* model, s32 index);
 extern void GSpartGetTransform(GSpart* part, GSvec* position, GSvec* rotation, GSvec* scale);
 extern void GSpartFree(GSpart* part);
-extern HSDJObj* fn_8019F718(void);
+extern HSDJObj* HSD_JObjAlloc(void);
 extern void HSD_JObjAddChild(HSDJObj* parent, HSDJObj* child);
 extern u32 HSD_JObjGetFlags(HSDJObj* jobj);
-extern void fn_8019FE8C(HSDJObj* jobj, u32 flags);
+extern void HSD_JObjSetFlags(HSDJObj* jobj, u32 flags);
 extern void GSmodelSetAnimIndex(GSmodel* model, u32 index);
 extern void GSmodelSetAnimType(GSmodel* model, u32 type);
 extern void GSmodelStartAnimation(GSmodel* model);
@@ -462,7 +462,7 @@ void GSmodelInit(u32 count)
     if (handle != 0) {
         u32 i;
 
-        lbl_8047AB74 = fn_800E27B0(handle);
+        lbl_8047AB74 = GSmemLock(handle);
 
         i = 0;
         while (i < lbl_8047AB78) {
@@ -487,12 +487,12 @@ void GSmodelFree(GSmodel* model)
         modelRemoveCenterNull(model);
     }
 
-    fn_801A05EC(model->renderJObj);
+    HSD_JObjUnref(model->renderJObj);
 
     if (model->renderJObjAlt != NULL) {
-        fn_801A05EC(model->renderJObjAlt);
-        fn_801A05EC(model->jobj10);
-        fn_801A05EC(model->jobj14);
+        HSD_JObjUnref(model->renderJObjAlt);
+        HSD_JObjUnref(model->jobj10);
+        HSD_JObjUnref(model->jobj14);
     }
 
     if (model->linkedGSparticleBank != NULL) {
@@ -977,7 +977,7 @@ void GSmodelResetTextureChange(GSmodel* model)
             handle = model->materialListHandle;
             if (handle != 0) {
                 fn_800E24B0(handle);
-                fn_800E209C(handle);
+                GSmemFree(handle);
             }
 
             model->materialListHandle = 0;
@@ -1022,7 +1022,7 @@ void fn_800E5790(GSmodel* model)
             handle = model->materialListHandle;
             if (handle != 0) {
                 fn_800E24B0(handle);
-                fn_800E209C(handle);
+                GSmemFree(handle);
             }
 
             model->materialListHandle = 0;
@@ -1072,7 +1072,7 @@ void GSmodelDisableModulation(GSmodel* model)
             handle = model->materialListHandle;
             if (handle != 0) {
                 fn_800E24B0(handle);
-                fn_800E209C(handle);
+                GSmemFree(handle);
             }
 
             model->materialListHandle = 0;
@@ -1137,7 +1137,7 @@ void GSmodelDisableColorSwap(GSmodel* model)
             handle = model->materialListHandle;
             if (handle != 0) {
                 fn_800E24B0(handle);
-                fn_800E209C(handle);
+                GSmemFree(handle);
             }
 
             model->materialListHandle = 0;
@@ -1202,7 +1202,7 @@ void GSmodelDisableEnvMap(GSmodel* model)
             handle = model->materialListHandle;
             if (handle != 0) {
                 fn_800E24B0(handle);
-                fn_800E209C(handle);
+                GSmemFree(handle);
             }
 
             model->materialListHandle = 0;
@@ -1277,7 +1277,7 @@ void GSmodelResetPEdescr(GSmodel* model)
             handle = model->materialListHandle;
             if (handle != 0) {
                 fn_800E24B0(handle);
-                fn_800E209C(handle);
+                GSmemFree(handle);
             }
 
             model->materialListHandle = 0;
@@ -1337,7 +1337,7 @@ void GSmodelResetMaterialAlpha(GSmodel* model)
             handle = model->materialListHandle;
             if (handle != 0) {
                 fn_800E24B0(handle);
-                fn_800E209C(handle);
+                GSmemFree(handle);
             }
 
             model->materialListHandle = 0;
@@ -1424,7 +1424,7 @@ void GSmodelResetRenderFlags(GSmodel* model)
             handle = model->materialListHandle;
             if (handle != 0) {
                 fn_800E24B0(handle);
-                fn_800E209C(handle);
+                GSmemFree(handle);
             }
 
             model->materialListHandle = 0;
@@ -1578,7 +1578,7 @@ void GSmodelAddNull(GSmodel* model, const GSvec* position,
         f32 oldRotY;
         f32 oldRotZ;
 
-        null = fn_8019F718();
+        null = HSD_JObjAlloc();
         if (null == NULL) {
             return;
         }
@@ -1641,7 +1641,7 @@ void GSmodelAddNull(GSmodel* model, const GSvec* position,
         HSD_JObjAddChild(null, model->renderJObj);
         model->flags.raw |= GSMODEL_FLAG_ROOT_NULL_ADDED;
         model->renderJObj = null;
-        fn_8019FE8C(null, HSD_JObjGetFlags(root));
+        HSD_JObjSetFlags(null, HSD_JObjGetFlags(root));
 
         GSMODEL_JOBJ_SET_POSITION(null, &oldPosition);
         GSMODEL_JOBJ_SET_ROTATION_COMPONENT(null, x, oldRotX, 0x2A4, 0x2A5);
@@ -1729,7 +1729,7 @@ void fn_800E85E8(GSmodel* model)
     handle = model->materialListHandle;
     if (handle != 0) {
         fn_800E24B0(handle);
-        fn_800E209C(handle);
+        GSmemFree(handle);
     }
 
     model->materialListHandle = 0;
@@ -1778,7 +1778,7 @@ u8 GSmodelCenterNull(GSmodel* model)
 
     if (model->centerNullState == 0) {
         jobj = model->renderJObj;
-        null = fn_8019F718();
+        null = HSD_JObjAlloc();
         if (null == NULL) {
             return 0;
         }
@@ -1797,7 +1797,7 @@ u8 GSmodelCenterNull(GSmodel* model)
             HSD_JObjAddNext(jobj, null);
         }
 
-        fn_8019FE8C(null, HSD_JObjGetFlags(jobj));
+        HSD_JObjSetFlags(null, HSD_JObjGetFlags(jobj));
         GSlerpGetLinearInterpolationVector(&position, &model->bound.centerStart,
                                            &model->bound.centerEnd,
                                            lbl_8047CB98);

@@ -54,7 +54,7 @@
 /* ===== External SDK / engine functions ===== */
 extern void  GSlogWrite(const char* fmt, ...);          /* OSReport / GSlog */
 extern void  fn_800E24B0(u16 handle);                    /* GSmemLock (raw) */
-extern void  fn_800E209C(u16 handle);                    /* GSmemFree (raw) */
+extern void  GSmemFree(u16 handle);                    /* GSmemFree (raw) */
 extern u32   msgGetCharsPerFrame(void);                          /* GSgfxGetTickCount */
 extern s32   GSvtrRegisterGSgapp(u32 taskId);            /* battle VFX registration */
 extern void  memset(void* dst, u32 val, u32 size);
@@ -102,14 +102,14 @@ void GSeffectInit(u16 maxEffects) {
     GSEffectInstance* entry;
     u16 cnt;
     extern u16 _toolentryAlloc__FUl(u32);
-    extern void* fn_800E27B0(u16);
+    extern void* GSmemLock(u16);
     extern u32 GSgappCreate(s32 state, u8 priority, void* param, void* func);
 
     memHandle = _toolentryAlloc__FUl(maxEffects * sizeof(GSEffectInstance));
     gsEffectGlobals.memHandle = memHandle;
 
     if (memHandle != 0) {
-        table = (GSEffectInstance*)fn_800E27B0(memHandle);
+        table = (GSEffectInstance*)GSmemLock(memHandle);
         gsEffectGlobals.instanceTable = table;
         memset(table, 0, maxEffects * sizeof(GSEffectInstance));
         gsEffectGlobals.freeListHead = table;
@@ -433,7 +433,7 @@ _got_inst:
     }
 
     fn_800E24B0(inst->memHandle);
-    fn_800E209C(inst->memHandle);
+    GSmemFree(inst->memHandle);
 }
 
 /* =======================================================================
@@ -487,7 +487,7 @@ u16 GSeffectCreate(void* callbacks, u16 dataSize) {
     u16 memHandle;
     GSEffectGlobals* ga;
     extern u16 _toolentryAlloc__FUl(u32 size);
-    extern void* fn_800E27B0(u16 handle);
+    extern void* GSmemLock(u16 handle);
 
     globals = (GSEffectGlobals*)(void*)lbl_803635C0;
     cbArg = callbacks;
@@ -503,7 +503,7 @@ u16 GSeffectCreate(void* callbacks, u16 dataSize) {
         return 0;
     }
 
-    userData = fn_800E27B0(memHandle);
+    userData = GSmemLock(memHandle);
 
     globals->freeListHead = slot->next;
     if (slot->next != NULL) {

@@ -120,7 +120,7 @@ extern u32 lbl_8047B07C;
 
 /* GSmem allocator */
 extern u16   _toolentryAlloc__FUl(u32 size);
-extern void* fn_800E27B0(u16 handle);
+extern void* GSmemLock(u16 handle);
 
 /* External functions referenced from asm wrappers */
 extern u32 sndAuxCallbackUpdateSettingsReverbHI(u8* ptr);
@@ -267,7 +267,7 @@ void HandleReverb(s32* samples, ReverbWork* work, u32 channel)
 extern void  GSmodelGetPart(void* model, u32 param);
 extern void  GSpartFree(void* model, u32 param);
 extern void  fn_800E24B0(void* model, u32 param);
-extern void  fn_800E209C(void* model, u32 param);
+extern void  GSmemFree(void* model, u32 param);
 extern void  set__5GSvecFfff(void* dst, void* src);
 extern void  GSvecCopy(void* dst, void* src);
 extern void  GSvecAdd(void* model, void* param);
@@ -2511,7 +2511,7 @@ extern u8* salAiGetDest(void);
 extern void salCtrlDsp(u32 arg);
 extern void salHandleAuxProcessing(void);
 extern void hwSetTimeOffset(u8 offset);
-extern void fn_801496A0(u32 ticks);
+extern void seqHandle(u32 ticks);
 extern void synthHandle(u32 ticks);
 extern void s3dHandle(void);
 extern void streamHandle(void);
@@ -2557,7 +2557,7 @@ void snd_handle_irq(void) {
     for (frame = 0; frame < 5; frame++) {
         fn_80164398();
         hwSetTimeOffset(frame);
-        fn_801496A0(0x100);
+        seqHandle(0x100);
         synthHandle(0x100);
         fn_801643B8();
     }

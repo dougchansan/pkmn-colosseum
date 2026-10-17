@@ -123,7 +123,7 @@
  *   gfxPushMultMatrix -- GX load matrix
  *   fn_800D6A00 -- GX cull mode
  *   fn_800D67BC, fn_800D6680, gfxVtxColor4u8 -- GX position/color/texcoord
- *   fn_800B9404 -- fog setup
+ *   GXSetLineWidth -- fog setup
  *   GXDrawDone, GXInvalidateVtxCache -- GX begin/end frame
  *   GStextureFree -- model release
  *   cameraGetActive -- camera matrix helper
@@ -153,7 +153,7 @@ extern double cos(double);
 
 /* GSmem allocator */
 extern u16   _toolentryAlloc__FUl(u32 size);
-extern void* fn_800E27B0(u16 handle);
+extern void* GSmemLock(u16 handle);
 
 /* Effect system core */
 extern u32   GSeffectCreate(void* callbacks, u16 dataSize);  /* GSEffectAllocSlot */
@@ -199,7 +199,7 @@ extern void  gfxSetPrimitive(u32 mode);
 extern void  gfxBegin(u16 index);
 extern void  gfxVtxPos(f32 x, f32 y, f32 z);
 extern void  gfxVtxColor4u8(u32 a, u8 r, u8 g, u8 b, u32 alpha);
-extern void  fn_800B9404(u32 index, u32 param);
+extern void  GXSetLineWidth(u32 index, u32 param);
 extern void  GXDrawDone(void);
 extern void  GXInvalidateVtxCache(void);
 extern void  GStextureFree(void* model);
@@ -212,7 +212,7 @@ extern void* GSpartGetMaterial(void* handle, u32 idx);
 extern void* GStextureCreate(u32 a, u32 b, u32 size, u32 d, u32 e);
 extern void* fn_800E3B08(u32 index);
 extern void  fn_800E24B0(u16 handle);
-extern void  fn_800E209C(u16 handle);
+extern void  GSmemFree(u16 handle);
 extern void  fn_800F9210(u32 group, u32 resource);
 extern void  GSmodelSetVisibility(void* model, u32 visible);
 extern u8    GSmodelCanTexAnimate(void* model);
@@ -529,7 +529,7 @@ u32 _lightningRenderMain(void* ptr) {
         if (scale > *(f32*)&lbl_8047D14C) {
             scale = *(f32*)&lbl_8047D14C;
         }
-        fn_800B9404((s32)(*(f32*)&lbl_8047D150 * scale), 5);
+        GXSetLineWidth((s32)(*(f32*)&lbl_8047D150 * scale), 5);
         gfxSetFlags(1);
         gfxClearFlags(6);
         gfxSetVtxDesc(*(void**)(p + 0x14));
@@ -647,7 +647,7 @@ u32 fn_80138630(void* ptr) {
 }
 #endif
 extern void fn_800E24B0(u16 a);
-extern void fn_800E209C(u16 a);
+extern void GSmemFree(u16 a);
 #if 0
 asm void fn_80138680(void* ptr) {
 #include "src/game/effect/effect_visual_fn_80138680.inc"
@@ -662,7 +662,7 @@ u32 fn_80138680(void* ptr) {
         GXInvalidateVtxCache();
         if (val) {
             fn_800E24B0(val);
-            fn_800E209C(val);
+            GSmemFree(val);
         }
         ret = 1;
     } else {
@@ -700,7 +700,7 @@ u32 fn_801386DC(void* ptr) {
             return 0;
         }
 
-        *(void**)(p + 4) = fn_800E27B0(handle);
+        *(void**)(p + 4) = GSmemLock(handle);
         memset(*(void**)(p + 4), 0, *(u16*)(p + 0x8) * 0x97C);
         _lightningGenerate(p, 1);
         *(u16*)(p + 0x10) = 0;
@@ -942,7 +942,7 @@ u32 fn_80138BBC(void* ptr) {
 
         if (handle != 0) {
             fn_800E24B0(handle);
-            fn_800E209C(handle);
+            GSmemFree(handle);
         }
     }
     return 1;
@@ -986,7 +986,7 @@ u32 fn_80138CCC(void* ptr) {
         goto allocation_error;
     }
 
-    entry = *(u8**)p = fn_800E27B0(handle);
+    entry = *(u8**)p = GSmemLock(handle);
     memset(*(void**)p, 0, size);
     *(u16*)(p + 0x3C) = 0;
     for (i = 0; i < count; i++, entry += 0x5C) {
@@ -1442,7 +1442,7 @@ u32 fn_801398E0(void* ptr) {
             GXDrawDone();
             GXInvalidateVtxCache();
             fn_800E24B0(val);
-            fn_800E209C(val);
+            GSmemFree(val);
         }
     }
     return 1;
@@ -1623,7 +1623,7 @@ u32 boltStartEffect(void* ptr) {
         }
 
         *(u16*)(p + 0x4) = handle;
-        entry = *(u8**)p = fn_800E27B0(handle);
+        entry = *(u8**)p = GSmemLock(handle);
         memset(entry, 0, size);
         for (i = 0; i < count; i++, entry += 0x12E4) {
             *(u16*)(entry + 0x12E2) = 0;
@@ -2001,7 +2001,7 @@ u32 fn_8013A520(void* ptr) {
     if (scale > 1.0f) {
         scale = 1.0f;
     }
-    fn_800B9404((s32)(255.0f * scale), 5);
+    GXSetLineWidth((s32)(255.0f * scale), 5);
     gfxSetFlags(1);
     gfxClearFlags(6);
     gfxSetVtxDesc(*(void**)(p + 4));
@@ -2185,7 +2185,7 @@ u32 filterAddKey(void* ptr, u8* src, u8* dst, u32 alpha) {
     p = ptr;
     handle = _toolentryAlloc__FUl(0x14);
     if (handle != 0) {
-        node = fn_800E27B0(handle);
+        node = GSmemLock(handle);
         *(u16*)(node + 0xC) = handle;
         if (alpha == 0xFFFFFFFF) {
             start = src[0];
@@ -2360,7 +2360,7 @@ u32 fn_8013B034(void* ptr) {
             val = *(u16*)((u8*)ptr + 0xc);
             next = *(void**)((u8*)ptr + 0x10);
             fn_800E24B0(val);
-            fn_800E209C(val);
+            GSmemFree(val);
             ptr = next;
         }
         ret = 1;
@@ -2372,7 +2372,7 @@ u32 fn_8013B034(void* ptr) {
 #endif
 extern void GSmodelDisableModulation(void* texture);
 extern void GSmodelResetPEdescr(void* texture);
-extern void fn_801684F0(void* texture);
+extern void GSfilterRelease(void* texture);
 #if 0
 asm void fn_8013B0A0(void) {
 #include "src/game/effect/effect_visual_fn_8013B0A0.inc"
@@ -2409,7 +2409,7 @@ u32 fn_8013B0A0(void* ptr) {
     } else {
         void* tex = *(void**)ptr;
         if (tex != NULL) {
-            fn_801684F0(tex);
+            GSfilterRelease(tex);
         }
     }
     return 1;
@@ -2595,12 +2595,12 @@ u32 fn_8013B558(void* ptr) {
         val = *(u16*)((u8*)ptr + 0x20);
         if (val) {
             fn_800E24B0(val);
-            fn_800E209C(val);
+            GSmemFree(val);
         }
         val = *(u16*)((u8*)ptr + 0xc0);
         if (val) {
             fn_800E24B0(val);
-            fn_800E209C(val);
+            GSmemFree(val);
         }
     }
     return 1;
@@ -2622,7 +2622,7 @@ extern void GSvecTransform(void* dst, void* matrix, void* vec);
 extern void vecScale(void* dst, void* src, f32 scale);
 extern void GSvecAdd(void* dst, void* srcA, void* srcB);
 #endif
-extern u16 fn_800E2C04(u32 size, u32 alignment);
+extern u16 GSmemAlloc(u32 size, u32 alignment);
 extern u8 GSmemDumpMap();
 extern void GSmodelSetRotation(void* model, void* rotation);
 extern u8 GSmodelCanTexAnimate(void* model);
@@ -2659,9 +2659,9 @@ static inline u8 surfAllocMesh(u8* p, void* model) {
     *(u32*)(p + 0x18) = (columns * (*(u16*)(p + 0x1C) * 0x10 + 3) + 0x1F) & ~0x1F;
     totalSize = vectorSize + vectorSize + colorSize + texcoordSize + *(u32*)(p + 0x18);
 
-    handle = fn_800E2C04(totalSize, 0x20);
+    handle = GSmemAlloc(totalSize, 0x20);
     if (handle != 0) {
-        data = fn_800E27B0(handle);
+        data = GSmemLock(handle);
         *(u16*)(p + 0x20) = handle;
         memset(data, 0, totalSize);
         *(u8**)(p + 0x14) = data;
@@ -2686,7 +2686,7 @@ static inline u8 surfAllocColumn(u8* p) {
     handle = _toolentryAlloc__FUl((*(u16*)(p + 0x4E) + 1) * 0xC);
     if (handle != 0) {
         *(u16*)(p + 0xC0) = handle;
-        *(void**)(p + 0xBC) = fn_800E27B0(handle);
+        *(void**)(p + 0xBC) = GSmemLock(handle);
         return TRUE;
     }
     return FALSE;
@@ -2742,12 +2742,12 @@ cleanup:
     handle = *(u16*)(p + 0x20);
     *(u16*)(p + 0x20) = 0;
     fn_800E24B0(handle);
-    fn_800E209C(handle);
+    GSmemFree(handle);
     handle = *(u16*)(p + 0xC0);
     *(u16*)(p + 0xC0) = 0;
     if (handle != 0) {
         fn_800E24B0(handle);
-        fn_800E209C(handle);
+        GSmemFree(handle);
     }
 fail:
     GSlogWrite((const char*)lbl_80272EA0);
@@ -3268,14 +3268,14 @@ u32 fn_8013C670(void* arg) {
             val = *(u16*)((u8*)ptr + 0x1c);
             if (val != 0) {
                 fn_800E24B0(val);
-                fn_800E209C(val);
+                GSmemFree(val);
             }
         }
 
         ptr = (void*)(u32)*(u16*)((u8*)ptr + 0x8c);
         if (ptr != 0) {
             fn_800E24B0((u32)ptr);
-            fn_800E209C((u32)ptr);
+            GSmemFree((u32)ptr);
         }
     }
     return 1;
@@ -3286,7 +3286,7 @@ u32 fn_8013C670(void* arg) {
 #if !defined(EFFECT_VISUAL_BANK_ACTIVE) || \
     defined(EFFECT_VISUAL_EXACT_8013C718)
 #if defined(EFFECT_VISUAL_BANK_ACTIVE)
-extern u16 fn_800E2C04(u32 size, u32 alignment);
+extern u16 GSmemAlloc(u32 size, u32 alignment);
 extern u8 GSmemDumpMap();
 extern void GSmodelSetRotation(void* model, void* rotation);
 extern u8 GSmodelCanTexAnimate(void* model);
@@ -3338,9 +3338,9 @@ static inline u8 seaAllocMesh(u8* p, void* model) {
        docs/RULE_EXCEPTIONS.md */
     pointCount = vectorSize + colorSize + texcoordSize + *(u32*)(p + 0x14);
 
-    handle = fn_800E2C04(pointCount, 0x20);
+    handle = GSmemAlloc(pointCount, 0x20);
     if (handle != 0) {
-        data = fn_800E27B0(handle);
+        data = GSmemLock(handle);
         *(u16*)(p + 0x1C) = handle;
         memset(data, 0, pointCount);
         *(u8**)(p + 0x10) = data;
@@ -3369,7 +3369,7 @@ static inline u8 seaAllocRandomTable(u8* p) {
     handle = _toolentryAlloc__FUl(rowCount * 3 * sizeof(f32));
     if (handle != 0) {
         *(u16*)(p + 0x8C) = handle;
-        randomX = *(f32**)(p + 0x80) = fn_800E27B0(handle);
+        randomX = *(f32**)(p + 0x80) = GSmemLock(handle);
         randomZ = randomX + rowCount;
         randomAngle = randomZ + rowCount;
         *(f32**)(p + 0x84) = randomZ;
@@ -3441,13 +3441,13 @@ cleanup:
     *(u16*)(p + 0x1C) = 0;
     if (handle != 0) {
         fn_800E24B0(handle);
-        fn_800E209C(handle);
+        GSmemFree(handle);
     }
     handle = *(u16*)(p + 0x8C);
     *(u16*)(p + 0x8C) = 0;
     if (handle != 0) {
         fn_800E24B0(handle);
-        fn_800E209C(handle);
+        GSmemFree(handle);
     }
 fail:
     GSlogWrite((const char*)lbl_80272ED0);
@@ -3955,7 +3955,7 @@ u32 envMapAddKey(void* ptr, u32 val, f32 f1, f32 f2) {
     void* cur;
     handle = _toolentryAlloc__FUl(0x14);
     if (handle) {
-        node = fn_800E27B0(handle);
+        node = GSmemLock(handle);
         *(u16*)((u8*)node + 0xc) = handle;
         *(f32*)((u8*)node + 0x0) = f1;
         *(f32*)((u8*)node + 0x4) = f2;
@@ -4020,7 +4020,7 @@ u32 fn_8013D730(void* ptr) {
             val = *(u16*)((u8*)next + 0xc);
             next = *(void**)((u8*)next + 0x10);
             fn_800E24B0(val);
-            fn_800E209C(val);
+            GSmemFree(val);
         }
         ret = 1;
     } else {
@@ -4077,7 +4077,7 @@ u32 envMapEffectInit(void* ptr) {
                         val = *(u16*)((u8*)ptr + 0xc);
                         ptr = *(void**)((u8*)ptr + 0x10);
                         fn_800E24B0(val);
-                        fn_800E209C(val);
+                        GSmemFree(val);
                     }
                 }
                 return 0;
@@ -4214,7 +4214,7 @@ u32 blurAddKey(void* ptr, u32 val, f32 f1, f32 f2) {
     void* cur;
     handle = _toolentryAlloc__FUl(0x14);
     if (handle) {
-        node = fn_800E27B0(handle);
+        node = GSmemLock(handle);
         *(u16*)((u8*)node + 0xc) = handle;
         *(f32*)((u8*)node + 0x0) = f1;
         *(f32*)((u8*)node + 0x4) = f2;
@@ -4273,7 +4273,7 @@ u32 fn_8013DC94(void* ptr) {
             val = *(u16*)((u8*)node + 0xc);
             node = *(void**)((u8*)node + 0x10);
             fn_800E24B0(val);
-            fn_800E209C(val);
+            GSmemFree(val);
         }
     }
     return 1;

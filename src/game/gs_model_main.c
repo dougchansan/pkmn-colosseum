@@ -179,7 +179,7 @@ extern u16 lbl_8047AB70;
 extern void GSvecCopy(GSvec* dst, const GSvec* src);
 extern void GSmodelSetAnimFrame(GSmodel* model, f32 frame);
 extern u32 _toolentryAlloc__FUl(u32 size);
-extern void* fn_800E27B0(u32 handle);
+extern void* GSmemLock(u32 handle);
 extern void modelShadowInit__Fv(void);
 extern void fn_800EC134(GSmodel* model);
 extern void gsParticleKill(void* bank, u32 destroyChildren);
@@ -197,12 +197,12 @@ extern void GSmaterialResetAlpha(void* material);
 extern void GSmaterialResetFlags(void* material);
 extern void GSmaterialRemoveExtraTObj(void* material);
 extern void fn_800E24B0(u32 handle);
-extern void fn_800E209C(u32 handle);
+extern void GSmemFree(u32 handle);
 extern void modelShadowFreeModelList__FP8_GSmodel(GSmodel* model);
 extern void GSmodelRemoveNull(GSmodel* model);
 extern void modelRemoveCenterNull(GSmodel* model);
 extern HSDJObj* fn_801A02B0(HSDJObj* jobj);
-extern void fn_801A05EC(void* object);
+extern void HSD_JObjUnref(void* object);
 extern void* memset(void* dst, int value, u32 size);
 extern void* memcpy(void* dst, const void* src, u32 size);
 extern void HSD_JObjSetupMatrixSub(HSDJObj* jobj);
@@ -226,31 +226,31 @@ extern void fn_8019D620(HSDJObj* jobj);
 extern GSpart* GSmodelGetPart(GSmodel* model, s32 index);
 extern void GSpartGetTransform(GSpart* part, GSvec* position, GSvec* rotation, GSvec* scale);
 extern void GSpartFree(GSpart* part);
-extern HSDJObj* fn_8019F718(void);
+extern HSDJObj* HSD_JObjAlloc(void);
 extern void HSD_JObjAddChild(HSDJObj* parent, HSDJObj* child);
 extern u32 HSD_JObjGetFlags(HSDJObj* jobj);
-extern void fn_8019FE8C(HSDJObj* jobj, u32 flags);
+extern void HSD_JObjSetFlags(HSDJObj* jobj, u32 flags);
 extern void GSmodelSetAnimIndex(GSmodel* model, u32 index);
 extern void GSmodelSetAnimType(GSmodel* model, u32 type);
 extern void GSmodelStartAnimation(GSmodel* model);
 
 void fn_800E85E8(GSmodel* model);
 
-extern void fn_801B25C4(u32 mask);
+extern void HSD_StateInvalidate(u32 mask);
 extern void* GScameraGetActiveCamera(void);
 extern s32 HSD_CObjSetCurrent(void* camera);
 extern void GSlightSetupLights(void* camera);
 extern void modelShadowPrepare__FP8_GSmodelb(GSmodel* model, s32 active);
-extern void fn_801A13CC(HSDJObj* jobj, s32 arg1, s32 flags, s32 arg3);
+extern void HSD_JObjDispAll(HSDJObj* jobj, s32 arg1, s32 flags, s32 arg3);
 extern void gfxAddDrawStats(s32 vertexCount, s32 polygonCount);
-extern void fn_80195A48(void);
+extern void HSD_CObjEndCurrent(void);
 extern void _gfxSetFlagsImm(s32 mode);
 
 void GSmodelDrawAll(s32 flags, u8 slot)
 {
     void* camera;
 
-    fn_801B25C4(0x7F);
+    HSD_StateInvalidate(0x7F);
     camera = GScameraGetActiveCamera();
     if (camera != NULL && HSD_CObjSetCurrent(*(void**)((u8*)camera + 0xC)) != 0) {
         u32 i;
@@ -269,19 +269,19 @@ void GSmodelDrawAll(s32 flags, u8 slot)
                 jobj = (model->flags.raw & 0x80) ? model->renderJObjAlt
                                                  : model->renderJObj;
                 if ((flags & 0x10) != 0) {
-                    fn_801A13CC(jobj, 0, 1, 0);
+                    HSD_JObjDispAll(jobj, 0, 1, 0);
                     gfxAddDrawStats(model->vertexCount, model->polygonCount);
                 }
                 if ((flags & 0x1000) != 0) {
-                    fn_801A13CC(jobj, 0, 4, 0);
+                    HSD_JObjDispAll(jobj, 0, 4, 0);
                 }
                 if ((flags & 0x2000) != 0) {
-                    fn_801A13CC(jobj, 0, 2, 0);
+                    HSD_JObjDispAll(jobj, 0, 2, 0);
                 }
                 modelShadowPrepare__FP8_GSmodelb(model, 0);
             }
         }
-        fn_80195A48();
+        HSD_CObjEndCurrent();
     }
     _gfxSetFlagsImm(-1);
 }
@@ -294,7 +294,7 @@ void GSmodelDrawModel(GSmodel* model, u32 flags)
         return;
     }
 
-    fn_801B25C4(0x7F);
+    HSD_StateInvalidate(0x7F);
     camera = GScameraGetActiveCamera();
     if (camera != NULL) {
         if (HSD_CObjSetCurrent(*(void**)((u8*)camera + 0xC)) != 0) {
@@ -305,17 +305,17 @@ void GSmodelDrawModel(GSmodel* model, u32 flags)
             jobj = (model->flags.raw & 0x80) ? model->renderJObjAlt
                                              : model->renderJObj;
             if ((flags & 0x10) != 0) {
-                fn_801A13CC(jobj, 0, 1, 0);
+                HSD_JObjDispAll(jobj, 0, 1, 0);
                 gfxAddDrawStats(model->vertexCount, model->polygonCount);
             }
             if ((flags & 0x1000) != 0) {
-                fn_801A13CC(jobj, 0, 4, 0);
+                HSD_JObjDispAll(jobj, 0, 4, 0);
             }
             if ((flags & 0x2000) != 0) {
-                fn_801A13CC(jobj, 0, 2, 0);
+                HSD_JObjDispAll(jobj, 0, 2, 0);
             }
             modelShadowPrepare__FP8_GSmodelb(model, 0);
-            fn_80195A48();
+            HSD_CObjEndCurrent();
         }
         if ((model->flags.raw & 0x200000) != 0) {
             fn_80190E60(&model->bound);

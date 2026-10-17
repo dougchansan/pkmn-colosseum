@@ -61,8 +61,8 @@
 #define M_PI_2 1.57079632679489661923
 
 extern f32 HSD_Randf(void);          /* HSD_Randf */
-extern HSD_JObj* fn_8019F718(void);    /* HSD_JObjAlloc */
-extern void fn_801A05EC(HSD_JObj* jobj); /* HSD_JObjUnref */
+extern HSD_JObj* HSD_JObjAlloc(void);    /* HSD_JObjAlloc */
+extern void HSD_JObjUnref(HSD_JObj* jobj); /* HSD_JObjUnref */
 extern void HSD_MtxSRT(Mtx m, Vec* scale, Vec* rot, Vec* trans, Vec* scale2);
 extern void PSMTXIdentity(Mtx m);
 extern void PSMTXScale(Mtx m, f32 x, f32 y, f32 z);
@@ -1677,11 +1677,11 @@ HSD_Particle* psInterpretParticle0(HSD_Particle* pp, HSD_Particle* prev)
         u32 no = (pp->kind >> 12) & 7;
 
         if (psPointJObj[no] == NULL) {
-            HSD_JObj* jobj = fn_8019F718();
+            HSD_JObj* jobj = HSD_JObjAlloc();
 
             if (jobj != NULL) {
                 psSetPointJObj(no + 1, jobj);
-                fn_801A05EC(jobj);
+                HSD_JObjUnref(jobj);
             }
         }
         if (psPointJObj[no] != NULL) {

@@ -24,9 +24,9 @@ extern void* memcpy(void* dst, const void* src, u32 n);
 extern void* memset(void* dst, int val, u32 size);
 /* GSmem */
 extern u16   _toolentryAlloc__FUl(u32 size);                     /* GSmemAllocRaw */
-extern void* fn_800E27B0(u16 handle);                   /* GSmemGetPtr */
+extern void* GSmemLock(u16 handle);                   /* GSmemGetPtr */
 extern void* fn_800E24B0(u16 handle);                   /* GSmemLock */
-extern void  fn_800E209C(u16 handle);                   /* GSmemFree */
+extern void  GSmemFree(u16 handle);                   /* GSmemFree */
 /* Matrix / vector */
 extern void  PSMTXMultVec(void* mtx, void* vec, void* out); /* MTXMultVec3 */
 extern void  PSVECSubtract(void* out, void* in, f32 s);     /* VEC normalize */
@@ -2399,7 +2399,7 @@ void gsParticleInit(u32 count1, u32 count2) {
     extern u32 lbl_8047ADA8;
     extern u32 lbl_8047ADAC;
     extern u16 _toolentryAlloc__FUl(u32 size);
-    extern void* fn_800E27B0(u16 handle);
+    extern void* GSmemLock(u16 handle);
     extern void psInitParticle(s32 a);
     extern void psInitGenerator(s32 a);
     extern void psInitAppSRT(s32 a, s32 b);
@@ -2413,7 +2413,7 @@ void gsParticleInit(u32 count1, u32 count2) {
     h = _toolentryAlloc__FUl(count1 * 0x108);
     lbl_8047AD98 = (u16)h;
     if ((u16)h == 0) { return; }
-    lbl_8047AD9C = fn_800E27B0((u16)h);
+    lbl_8047AD9C = GSmemLock((u16)h);
     for (i = 0; i < lbl_8047ADA0; i++) {
         lbl_8047AD9C[i].active = 0;
     }
@@ -2421,7 +2421,7 @@ void gsParticleInit(u32 count1, u32 count2) {
     h = _toolentryAlloc__FUl(count2 * 0x74);
     lbl_8047ADA4 = (u16)h;
     if ((u16)h == 0) { return; }
-    lbl_8047ADA8 = (u32)fn_800E27B0((u16)h);
+    lbl_8047ADA8 = (u32)GSmemLock((u16)h);
     for (i = 0; i < lbl_8047ADAC; i++) {
         *(u8*)(lbl_8047ADA8 + i * 0x74) = 0;
     }

@@ -577,7 +577,7 @@ void HSD_DObjReqAnimAllByFlags(HSD_DObj* dobj, f32 val, void* arg) {
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
-extern void fn_801AD738(HSD_PObj* pobj, void* arg);
+extern void HSD_PObjAddAnimAll(HSD_PObj* pobj, void* arg);
 #if 0
 asm void HSD_DObjAddAnimAll(void) {
 #include "src/hsd/hsd_dobj_HSD_DObjAddAnimAll.inc"
@@ -604,7 +604,7 @@ void HSD_DObjAddAnimAll(HSD_DObj* dobj, void* matanim, void* shapeanim) {
             } else {
                 shapeargl = NULL;
             }
-            fn_801AD738(pobj, shapeargl);
+            HSD_PObjAddAnimAll(pobj, shapeargl);
             HSD_MObjAddAnim(d->mobj, ma);
         }
         d = d->next;

@@ -89,7 +89,7 @@ inline static BOOL DBGEXIDeselect(void) {
 
 #if defined(SDK_RANGE_800CEB64_800CED58)
 
-s32 fn_800CECAC(u32* data) {
+s32 DBGReadStatus(u32* data) {
     extern s32 DBGEXIImm(void* buffer, s32 length, s32 write);
     BOOL total = FALSE;
     u32 value;

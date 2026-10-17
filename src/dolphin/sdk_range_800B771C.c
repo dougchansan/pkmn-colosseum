@@ -125,7 +125,7 @@ void __GXXfVtxSpecs(void)
     *(volatile u16*)((u8*)gx + 2) = 1;
 }
 
-void fn_800B7874(s32 attr, s32 type)
+void GXSetVtxDesc(s32 attr, s32 type)
 {
     SetVcdAttr(attr, type);
     if (gx->hasNrms || gx->hasBiNrms) {

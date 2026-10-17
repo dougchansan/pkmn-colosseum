@@ -1,6 +1,6 @@
 #include "dolphin/gx/GXInternal.h"
 
-void fn_800BCEBC(u32 value)
+void GXSetZCompLoc(u32 value)
 {
     GXData* data = gx;
 

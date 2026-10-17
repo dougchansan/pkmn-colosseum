@@ -19,9 +19,9 @@ extern u32   GSmsgGetRect(void* message);
 
 /* GSmem */
 extern u16   _toolentryAlloc__FUl(u32 size);                     /* GSmemAllocRaw */
-extern void* fn_800E27B0(u16 handle);                   /* GSmemGetPtr */
+extern void* GSmemLock(u16 handle);                   /* GSmemGetPtr */
 extern void* fn_800E24B0(u16 handle);                   /* GSmemLock */
-extern void  fn_800E209C(u16 handle);                   /* GSmemFree */
+extern void  GSmemFree(u16 handle);                   /* GSmemFree */
 
 /* GSgfx state */
 extern u8 lbl_8047AA80[];  /* GSgfx state pointer (via sda21) */

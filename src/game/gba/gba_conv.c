@@ -34,10 +34,10 @@ extern void SIProbe();
 extern void msgGetCharsPerFrame();
 extern void fn_800D37CC();
 extern void GSmemGetHandleByPtr();
-extern void fn_800E209C();
+extern void GSmemFree();
 extern void fn_800E24B0();
-extern void fn_800E27B0();
-extern void fn_800E2C04();
+extern void GSmemLock();
+extern void GSmemAlloc();
 extern void GSmodelIsAnimating();
 extern void GSmodelStartAnimation();
 extern void GSmodelSetAnimRate();
@@ -587,7 +587,7 @@ void fn_80084038(void) {
             if ((s32)tmp == 0) {
                 r3 = 0xe0;
                 r4 = 0x20;
-                ((void(*)(void))fn_800E2C04)();
+                ((void(*)(void))GSmemAlloc)();
                 r26 = r3;
                 tmp = r26 & 0xFFFF;
                 if (tmp == 0) {
@@ -597,7 +597,7 @@ void fn_80084038(void) {
                     __assert();
                 }
                 r3 = r26;
-                ((void(*)(void))fn_800E27B0)();
+                ((void(*)(void))GSmemLock)();
                 r4 = 0x0;
                 r26 = r3;
                 r5 = 0xcc;
@@ -821,7 +821,7 @@ void fn_80084038(void) {
     r3 = r26;
     ((void(*)(void))fn_800E24B0)();
     r3 = r26;
-    ((void(*)(void))fn_800E209C)();
+    ((void(*)(void))GSmemFree)();
     return;
 L_80084458:
     tmp = *(u8*)((u8*)r29 + 0x1);

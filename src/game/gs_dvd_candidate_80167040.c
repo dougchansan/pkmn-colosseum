@@ -92,11 +92,11 @@ extern u32 soundAttachWork(u32 id, u32 arg1, u32 arg2);
 extern void soundApplyReverb(u32 reverb);
 extern BOOL OSDisableInterrupts(void);
 extern BOOL OSRestoreInterrupts(BOOL level);
-extern u32 fn_800E2C04(u32 size, u32 align);
-extern void* fn_800E27B0(u32 handle);
+extern u32 GSmemAlloc(u32 size, u32 align);
+extern void* GSmemLock(u32 handle);
 extern u32 GSmemGetHandleByPtr(void);
 extern void fn_800E24B0(u32 handle);
-extern void fn_800E209C(u32 handle);
+extern void GSmemFree(u32 handle);
 extern s32 DVDGetCommandBlockStatus(const void* block);
 extern s32 DVDGetDriveStatus(void);
 extern BOOL DVDSeekAsyncPrio(void* fileInfo, s32 offset,
@@ -615,16 +615,16 @@ void _soundMemFree(void)
 
     if ((u16)handle != 0) {
         fn_800E24B0(handle);
-        fn_800E209C(handle);
+        GSmemFree(handle);
     }
 }
 
 void* _soundMemAlloc(u32 size)
 {
-    u32 handle = fn_800E2C04(size, 0x20);
+    u32 handle = GSmemAlloc(size, 0x20);
 
     if ((u16)handle != 0) {
-        return fn_800E27B0(handle);
+        return GSmemLock(handle);
     }
     return 0;
 }

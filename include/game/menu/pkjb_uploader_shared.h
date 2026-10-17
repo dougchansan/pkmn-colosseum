@@ -66,7 +66,7 @@ extern u32 lbl_8047A60C;
 extern void _threadSwitch(void);
 extern void gbaCommandSetKeyState(s32 mode, s32 flag);
 extern u32 SIProbe(s32 chan);
-extern OSThread* fn_800A13F8(void);
+extern OSThread* OSGetCurrentThread(void);
 
 void fn_80072684(OSAlarm* alarm, OSContext* context);
 s32 fn_80073C38(s32 chan);
@@ -194,7 +194,7 @@ static inline s32 pkjbWaitZeroResponse(s32 chan)
     BOOL enabled;
     s32 result;
 
-    lbl_8047A600 = fn_800A13F8();
+    lbl_8047A600 = OSGetCurrentThread();
     OSCreateAlarm(&lbl_803B6DE0);
     enabled = OSDisableInterrupts();
     OSSetAlarm(&lbl_803B6DE0, OSMillisecondsToTicks(1), fn_80072684);

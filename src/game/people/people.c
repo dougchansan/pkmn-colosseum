@@ -289,9 +289,9 @@ extern GSvec lbl_8031554C; /* the Y axis */
 
 /* Memory */
 extern u16 _toolentryAlloc__FUl(u32 size);
-extern void* fn_800E27B0(u32 handle);
+extern void* GSmemLock(u32 handle);
 extern void fn_800E24B0(u32 handle);
-extern void fn_800E209C(u32 handle);
+extern void GSmemFree(u32 handle);
 
 /* Models and parts */
 extern void* GSresGetResource(u32 group, u32 id);
@@ -1052,7 +1052,7 @@ static inline s32 peopleFreeWalkList(u32 groupId, u32 index)
     }
     if (entry->walkListHandle != 0) {
         fn_800E24B0(entry->walkListHandle);
-        fn_800E209C(entry->walkListHandle);
+        GSmemFree(entry->walkListHandle);
         entry->walkList = NULL;
         entry->walkListHandle = 0;
         entry->state = 0;
@@ -3701,7 +3701,7 @@ u8 peopleReserveWalkList(u32 groupId, u32 index, u16 count)
     if (entry->walkListHandle == 0) {
         return FALSE;
     }
-    entry->walkList = fn_800E27B0(entry->walkListHandle);
+    entry->walkList = GSmemLock(entry->walkListHandle);
     if (entry->walkList == NULL) {
         return FALSE;
     }
@@ -3763,7 +3763,7 @@ s32 std075_characterAllocPathAlt(u32 groupId, u32 index) {
 
     if (entry->walkListHandle != 0) {
         fn_800E24B0(entry->walkListHandle);
-        fn_800E209C(entry->walkListHandle);
+        GSmemFree(entry->walkListHandle);
         entry->walkList = NULL;
         entry->walkListHandle = 0;
         entry->state = 0;

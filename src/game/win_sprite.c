@@ -69,7 +69,7 @@ typedef struct WinSpriteVec3 {
 
 extern void GSlogWrite(const char* fmt, ...);
 extern u16 _toolentryAlloc__FUl(u32 size);
-extern void* fn_800E27B0(u16 handle);
+extern void* GSmemLock(u16 handle);
 extern void gfxSetFlags(s32);
 extern void gfxClearFlags(s32);
 extern void gfxSetBlendMode(s32, s32, s32);
@@ -110,7 +110,7 @@ void winSpriteInit(void) {
     if ((u16)h == 0) {
         GSlogWrite((const char*)lbl_80271F18, (const char*)lbl_8035B3F0);
     } else {
-        void* ptr = fn_800E27B0((u16)h);
+        void* ptr = GSmemLock((u16)h);
         lbl_8047AD1C = (tagSPRITE_WORK*)ptr;
         memset(ptr, 0, 0x10000 - 0x5740);
     }

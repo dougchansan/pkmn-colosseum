@@ -37,9 +37,9 @@
  *    costs an fmr in the first column);
  *  - HSD_MtxInverseConcat (fn_801A9DF0) returns FALSE for a singular
  *    matrix instead of copying src, and tests det == 0;
- *  - HSD_MtxGetRotation (fn_801A98CC) tests against FLT_MIN and answers
+ *  - HSD_MtxGetRotation (HSD_MtxGetRotation) tests against FLT_MIN and answers
  *    x == 0 with +-pi/2 before atan2 (calcVal);
- *  - fn_801A958C (HSD_MtxGetRotationMtx) is new: the orthonormal rotation
+ *  - HSD_MtxGetRotationMtx (HSD_MtxGetRotationMtx) is new: the orthonormal rotation
  *    of m built from axis `a` first and axis `b` second;
  *  - assert line numbers are those of Colosseum's longer file.
  *
@@ -224,7 +224,7 @@ static inline f32 calcVal(f32 x, f32 y)
 }
 
 /* HSD_MtxGetRotation */
-void fn_801A98CC(Mtx m, Vec3* vec)
+void HSD_MtxGetRotation(Mtx m, Vec3* vec)
 {
     f32 length0;
     f32 length1;
@@ -276,7 +276,7 @@ void fn_801A98CC(Mtx m, Vec3* vec)
 
 /* HSD_MtxGetRotationMtx: the pure rotation of m, orthonormalised starting
  * from axis `a`, with axis `b` as the secondary one. */
-void fn_801A958C(Mtx m, Mtx dst, char a, char b)
+void HSD_MtxGetRotationMtx(Mtx m, Mtx dst, char a, char b)
 {
     Vec3 x;
     Vec3 y;

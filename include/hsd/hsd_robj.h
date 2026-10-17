@@ -124,7 +124,7 @@ void HSD_RObjAnimAll(HSD_RObj* robj);
 void HSD_RObjRemoveAnimAll(HSD_RObj* robj);
 void HSD_RObjReqAnimAll(HSD_RObj* robj, f32 startframe);
 void HSD_RObjAddAnimAll(HSD_RObj* robj, HSD_RObjAnimJoint* anim);
-void fn_801AFE68(HSD_RObj* robj, HSD_RObjAnimJoint* anim);
+void HSD_RObjAddAnimAll(HSD_RObj* robj, HSD_RObjAnimJoint* anim);
 void HSD_RObjRemove(HSD_RObj* robj);
 void HSD_RObjRemoveAll(HSD_RObj* robj);
 void HSD_RObjResolveRefs(HSD_RObj* robj, HSD_RObjDesc* desc);

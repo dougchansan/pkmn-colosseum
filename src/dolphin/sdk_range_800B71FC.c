@@ -112,12 +112,12 @@ void* GXSetBreakPtCallback(void* callback) {
 void __GXFifoInit(void) {
     extern void* lbl_8047A9A8;
     extern u32 lbl_8047A9B0;
-    extern OSThread* fn_800A13F8(void);
+    extern OSThread* OSGetCurrentThread(void);
     extern void GXCPInterruptHandler(__OSInterrupt interrupt, OSContext* context);
 
     __OSSetInterruptHandler(0x11, GXCPInterruptHandler);
     __OSUnmaskInterrupts(0x4000);
-    lbl_8047A9A8 = fn_800A13F8();
+    lbl_8047A9A8 = OSGetCurrentThread();
     lbl_8047A9B0 = 0;
     lbl_8047A9A0 = NULL;
     lbl_8047A9A4 = NULL;

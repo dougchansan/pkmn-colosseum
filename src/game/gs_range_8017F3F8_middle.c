@@ -29,10 +29,10 @@ extern void* GSresAllocResourceAlign(u32 size, u32 alignment, u32 group,
                                       u32 handle, void* releaseCallback);
 extern void fn_800F9210(u32 group, u32 handle);
 extern u16 fn_800E2B00(u32 size, u32 alignment);
-extern void* fn_800E27B0(u16 handle);
+extern void* GSmemLock(u16 handle);
 extern u16 GSmemGetHandleByPtr(void* ptr);
 extern void fn_800E24B0(u16 handle);
-extern void fn_800E209C(u16 handle);
+extern void GSmemFree(u16 handle);
 extern BOOL fn_8009ED4C(OSModuleInfo* module, void* bss);
 extern BOOL fn_8009EFE4(OSModuleInfo* module);
 extern void fn_8017FB08(void* allocation);
@@ -66,7 +66,7 @@ static inline void* memAllocTail(u32 size)
     u16 handle = fn_800E2B00(alignedSize, 0x20);
 
     if (handle) {
-        return fn_800E27B0(handle);
+        return GSmemLock(handle);
     }
     return NULL;
 }
@@ -135,7 +135,7 @@ void* fn_8017F484(u32 group, u32 handle, u32 size)
         imageHandle = GSmemGetHandleByPtr(image);
         if (imageHandle) {
             fn_800E24B0(imageHandle);
-            fn_800E209C(imageHandle);
+            GSmemFree(imageHandle);
         }
     }
     return resource;

@@ -65,9 +65,9 @@ extern void  GSlerpGetLinearInterpolationVector(void* dst, void* srcA,
                           void* srcB, f32 t);            /* Vec3 lerp */
 extern void  GSmodelSetVisibility(void* model, u32 flag);        /* GSpart set visibility */
 extern u16   _toolentryAlloc__FUl(u32 size);                     /* GSmemAllocRaw */
-extern void* fn_800E27B0(u16 handle);                   /* GSmemGetPtr */
+extern void* GSmemLock(u16 handle);                   /* GSmemGetPtr */
 extern void  fn_800E24B0(u16 handle);                   /* GSmemLock/free step */
-extern void  fn_800E209C(u16 handle);                   /* GSmemFree */
+extern void  GSmemFree(u16 handle);                   /* GSmemFree */
 extern u32   wazaSequenceSysGetResID(void);                          /* Random seed generator */
 extern void  loadArchivePtr(u32 memOffset, u32 resId,
                           u32 size, u32 handle);         /* GSfloor load resource */
@@ -133,7 +133,7 @@ u8* fn_801364A8(u8* work, u8* params) {
     extern u8 lbl_80314638[];
     extern u8 lbl_80314AE8[];
     extern s32 fn_800D37CC(void);
-    extern u16 fn_800E2C04(u32, u32);
+    extern u16 GSmemAlloc(u32, u32);
     extern void* GStextureLoad(void*);
     extern void fn_800EFD14(void*, u16);
     extern void GStextureSetWrap(void*, s32, s32);
@@ -185,9 +185,9 @@ u8* fn_801364A8(u8* work, u8* params) {
         GSvecCopy(work + 0x28, params + 0x18);
 
         aligned = TRACEFX_ALIGN32(params + 0x54);
-        handle = fn_800E2C04(TRACEFX_ALIGN32_SIZE(*(s32*)(params + 0x4C)), 0x20);
+        handle = GSmemAlloc(TRACEFX_ALIGN32_SIZE(*(s32*)(params + 0x4C)), 0x20);
         if (handle != 0) {
-            copy = fn_800E27B0(handle);
+            copy = GSmemLock(handle);
             memcpy(copy, aligned, TRACEFX_ALIGN32_SIZE(*(s32*)(params + 0x4C)));
             *(u32*)(work + 0x60) = (u32)GStextureLoad(copy);
             fn_800EFD14(*(void**)(work + 0x60), handle);
@@ -231,9 +231,9 @@ u8* fn_801364A8(u8* work, u8* params) {
         *(u16*)(work + 0x32) = *(s32*)(params + 0x0C);
 
         aligned = TRACEFX_ALIGN32(params + 0x18);
-        handle = fn_800E2C04(TRACEFX_ALIGN32_SIZE(*(s32*)(params + 0x10)), 0x20);
+        handle = GSmemAlloc(TRACEFX_ALIGN32_SIZE(*(s32*)(params + 0x10)), 0x20);
         if (handle != 0) {
-            copy = fn_800E27B0(handle);
+            copy = GSmemLock(handle);
             memcpy(copy, aligned, TRACEFX_ALIGN32_SIZE(*(s32*)(params + 0x10)));
             *(u32*)(work + 0x1C) = (u32)GStextureLoad(copy);
             fn_800EFD14(*(void**)(work + 0x1C), handle);
@@ -461,9 +461,9 @@ u8* fn_801364A8(u8* work, u8* params) {
 
         aligned = (u8*)(offset + (u32)params);
         aligned = TRACEFX_ALIGN32(aligned + 0x1C);
-        handle = fn_800E2C04(TRACEFX_ALIGN32_SIZE(*(s32*)(params + 0x10)), 0x20);
+        handle = GSmemAlloc(TRACEFX_ALIGN32_SIZE(*(s32*)(params + 0x10)), 0x20);
         if (handle != 0) {
-            copy = fn_800E27B0(handle);
+            copy = GSmemLock(handle);
             memcpy(copy, aligned, TRACEFX_ALIGN32_SIZE(*(s32*)(params + 0x10)));
             *(u32*)(work + 0x0C) = (u32)GStextureLoad(copy);
             fn_800EFD14(*(void**)(work + 0x0C), handle);
@@ -609,7 +609,7 @@ u8* fn_8013735C(u8* work, void* params, s32 frames) {
 
 /* 0x8013757C | 0x204 */
 u8* fn_8013757C(u8* work, void* params, s32 frames) {
-    extern u16 fn_800E2C04(u32, u32);
+    extern u16 GSmemAlloc(u32, u32);
     extern void* GStextureLoad(void*);
     extern void fn_800EFD14(void*, u16);
     extern void GStextureSetWrap(void*, s32, s32);
@@ -646,9 +646,9 @@ u8* fn_8013757C(u8* work, void* params, s32 frames) {
     *(u16*)(work + 0x0E) = *(u32*)(p + 0x48);
 
     params = TRACEFX_ALIGN32((u8*)params + 0x54);
-    handle = fn_800E2C04(TRACEFX_ALIGN32_SIZE(*(u32*)(p + 0x4C)), 0x20);
+    handle = GSmemAlloc(TRACEFX_ALIGN32_SIZE(*(u32*)(p + 0x4C)), 0x20);
     if (handle != 0) {
-        void* copy = fn_800E27B0(handle);
+        void* copy = GSmemLock(handle);
         memcpy(copy, params, TRACEFX_ALIGN32_SIZE(*(u32*)(p + 0x4C)));
         *(void**)(work + 0x1C) = GStextureLoad(copy);
         fn_800EFD14(*(void**)(work + 0x1C), handle);
@@ -781,12 +781,12 @@ BOOL fn_80137A2C(u8* w) {
         handle = *(u16*)(w + 0x0C);
         if (handle != 0) {
             fn_800E24B0(handle);
-            fn_800E209C(handle);
+            GSmemFree(handle);
         }
         handle = *(u16*)(w + 0x0E);
         if (handle != 0) {
             fn_800E24B0(handle);
-            fn_800E209C(handle);
+            GSmemFree(handle);
         }
     }
     return TRUE;
@@ -855,7 +855,7 @@ BOOL tracefxStartEffect(u8* w) {
     }
 
     *(u16*)(w + 0x0C) = handle;
-    nodes = (TraceNode*)fn_800E27B0(handle);
+    nodes = (TraceNode*)GSmemLock(handle);
     *(TraceNode**)(w + 0x04) = nodes;
     *(TraceNode**)(w + 0x00) = nodes;
     memset(nodes, 0, node_bytes);
@@ -877,12 +877,12 @@ BOOL tracefxStartEffect(u8* w) {
     handle = _toolentryAlloc__FUl(count32 << 4);
     if (handle == 0) {
         fn_800E24B0(*(u16*)(w + 0x0C));
-        fn_800E209C(*(u16*)(w + 0x0C));
+        GSmemFree(*(u16*)(w + 0x0C));
         return FALSE;
     }
 
     *(u16*)(w + 0x0E) = handle;
-    *(u8**)(w + 0x08) = (u8*)fn_800E27B0(handle);
+    *(u8**)(w + 0x08) = (u8*)GSmemLock(handle);
     *(u16*)(w + 0x1C) = 0;
     *(u16*)(w + 0x1E) = 0;
 

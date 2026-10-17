@@ -535,7 +535,7 @@ typedef struct GXFogAdjTable_800BCCDC {
 } GXFogAdjTable_800BCCDC;
 
 #if defined(SDK_800BB30C_PREFIX_ACTIVE) && !defined(SDK_800BB30C_PREFIX_ONLY)
-void fn_800BC2F8(u32 id, GXColor_800BC2F8 color) {
+void GXSetTevColor(u32 id, GXColor_800BC2F8 color) {
     u32 reg0;
     u32 reg1;
 
@@ -659,7 +659,7 @@ void GXSetTevSwapModeTable(u32 table, u32 red, u32 green, u32 blue, u32 alpha) {
 #if defined(SDK_800BC618_SUFFIX_ACTIVE) || defined(SDK_800BD2E0_ONLY)
 #if !defined(SDK_800BE348_ONLY) && !defined(SDK_800BCFDC_ONLY) && !defined(SDK_800BD58C_ONLY)
 #if !defined(SDK_800BD2E0_ONLY)
-void fn_800BC618(u32 comp0, u8 ref0, u32 op, u32 comp1, u8 ref1) {
+void GXSetAlphaCompare(u32 comp0, u8 ref0, u32 op, u32 comp1, u8 ref1) {
     u32 reg = ref0;
 
     reg |= 0xF3000000U;
@@ -712,7 +712,7 @@ void GXSetZTexture(int op, int format, u32 bias) {
 }
 
 #if !defined(SDK_800BC618_ONLY)
-void fn_800BC8C8(u32 nStages) {
+void GXSetNumTevStages(u32 nStages) {
     GXData_800BB30C* p = gx;
 
     p->genMode = (p->genMode & ~0x3C00U) | (((nStages & 0xFF) - 1) << 10);
@@ -742,7 +742,7 @@ void GXSetFogRangeAdj(u8 enable, u16 center, GXFogAdjTable_800BCCDC* table) {
     p->field_002 = 0;
 }
 
-void fn_800BCEBC(u32 value) {
+void GXSetZCompLoc(u32 value) {
     GXData_800BB30C* p = gx;
 
     p->field_1DC = (p->field_1DC & ~0x40U) | ((value & 0xFF) << 6);
@@ -769,7 +769,7 @@ void GXCallDisplayList(void* list, u32 nbytes) {
 #endif
 
 #if !defined(SDK_800BC618_ONLY)
-void fn_800BD2E0(f32* projection, s32 type) {
+void GXSetProjection(f32* projection, s32 type) {
     GXData_800BB30C* p = gx;
 
     p->field_420 = type;
@@ -828,7 +828,7 @@ void fn_800BD394(f32* projection) {
     p->field_002 = 1;
 }
 
-void fn_800BD454(f32* projection) {
+void GXGetProjectionv(f32* projection) {
     GXData_800BB30C* p = gx;
 
     projection[0] = p->field_420;
@@ -872,7 +872,7 @@ void GXLoadNrmMtxImm(f32 mtx[3][4], u32 id) {
     GX_FIFO_F32 = mtx[2][2];
 }
 
-void fn_800BD554(u32 index) {
+void GXSetCurrentMtx(u32 index) {
     GXData_800BB30C* p = gx;
 
     p->mtxIdx0 = (p->mtxIdx0 & ~0x3FU) | index;
@@ -998,7 +998,7 @@ void GXSetViewportJitter(f32 left, f32 top, f32 wd, f32 ht, f32 nearz, f32 farz,
 #if !defined(SDK_800BD58C_ONLY)
 
 
-void fn_800BD744(void) {
+void GXSetViewport(void) {
     GXSetViewportJitter(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1);
 }
 

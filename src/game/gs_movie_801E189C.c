@@ -61,13 +61,13 @@ extern void THPPlayerGetVideoInfo(GsVtrOrigin* origin);
 extern void THPPlayerGetAudioInfo(u32* state);
 extern u32 THPPlayerCalcNeedMemory(void);
 extern u16 fn_800E2B00(u32 size, u32 alignment);
-extern void* fn_800E27B0(u16 handle);
+extern void* GSmemLock(u16 handle);
 extern void THPPlayerSetBuffer(void);
 extern u32 OSGetTick(void);
 extern BOOL THPPlayerPrepare(u32, u32, u32);
 extern u16 GSmemGetHandleByPtr(void* pointer);
 extern void fn_800E24B0(u16 handle);
-extern void fn_800E209C(u16 handle);
+extern void GSmemFree(u16 handle);
 extern void movieGetStreamIds(u32* first, u32* second);
 extern void sndStreamMixParameterEx(s32 id, u32, u32, u32, u32, u32);
 extern void THPPlayerPlay(void);
@@ -117,7 +117,7 @@ void* fn_801E1924(void* param)
 
     handle = fn_800E2B00(THPPlayerCalcNeedMemory(), 0x20);
     if (handle != 0) {
-        lbl_8047B450 = fn_800E27B0(handle);
+        lbl_8047B450 = GSmemLock(handle);
     } else {
         lbl_8047B450 = NULL;
     }
@@ -139,7 +139,7 @@ void* fn_801E1924(void* param)
         handle = GSmemGetHandleByPtr(lbl_8047B450);
         if (handle != 0) {
             fn_800E24B0(handle);
-            fn_800E209C(handle);
+            GSmemFree(handle);
         }
         GSscratchSetValid();
         lbl_8047B444 = 1;

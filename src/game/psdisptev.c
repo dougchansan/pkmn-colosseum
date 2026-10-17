@@ -67,8 +67,8 @@ enum {
     GX_CA_ZERO = 7
 };
 
-extern void fn_800B884C(u8 num);                                    /* GXSetNumTexGens */
-extern void fn_800BC8C8(u8 num);                                    /* GXSetNumTevStages */
+extern void GXSetNumTexGens(u8 num);                                    /* GXSetNumTexGens */
+extern void GXSetNumTevStages(u8 num);                                    /* GXSetNumTevStages */
 extern void GXSetTevOrder(u32 stage, u32 coord, u32 map, u32 color);  /* GXSetTevOrder */
 extern void GXSetTevOp(u32 stage, u32 mode);
 extern void GXSetTevSwapMode(u32 stage, u32 ras_sel, u32 tex_sel);       /* GXSetTevSwapMode */
@@ -79,8 +79,8 @@ extern void GXSetTevAlphaOp(u32 stage, u32 op, u32 bias, u32 scale, u8 clamp,
 extern void GXSetTevColorIn(u32 stage, u32 a, u32 b, u32 c, u32 d);     /* GXSetTevColorIn */
 extern void GXSetTevAlphaIn(u32 stage, u32 a, u32 b, u32 c, u32 d);     /* GXSetTevAlphaIn */
 
-#define GXSetNumTexGens fn_800B884C
-#define GXSetNumTevStages fn_800BC8C8
+#define GXSetNumTexGens GXSetNumTexGens
+#define GXSetNumTevStages GXSetNumTevStages
 
 u32 lbl_8047B170; /* prevTev: the last TEV configuration set up */
 

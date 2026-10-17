@@ -25,7 +25,7 @@
 #include "hsd/hsd_pobj.h"
 
 /* HSD_PObjAddAnimAll */
-extern void fn_801AD738(HSD_PObj* pobj, HSD_ShapeAnim* shapeanim);
+extern void HSD_PObjAddAnimAll(HSD_PObj* pobj, HSD_ShapeAnim* shapeanim);
 extern void HSD_PObjReqAnimAllByFlags(HSD_PObj* pobj, f32 startframe,
                                       void* flags);
 extern void HSD_MObjReqAnimByFlags(HSD_MObj* mobj, f32 startframe,
@@ -46,7 +46,7 @@ static inline void HSD_DObjAddAnim(HSD_DObj* dobj, HSD_MatAnim* mat_anim,
         return;
     }
 
-    fn_801AD738(dobj->pobj, sh_anim != NULL ? sh_anim->shapeanim : NULL);
+    HSD_PObjAddAnimAll(dobj->pobj, sh_anim != NULL ? sh_anim->shapeanim : NULL);
     HSD_MObjAddAnim(dobj->mobj, mat_anim);
 }
 

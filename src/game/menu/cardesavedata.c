@@ -90,11 +90,11 @@ extern void soundStartSE();
 extern s32 GSsndGetStatus();
 
 extern void GScharLenCpy(void*, const void*, u32);
-extern u16 fn_800E2C04(u32, u32);
-extern void* fn_800E27B0(u16);
+extern u16 GSmemAlloc(u32, u32);
+extern void* GSmemLock(u16);
 extern u16 GSmemGetHandleByPtr(void*);
 extern void fn_800E24B0(u16);
-extern void fn_800E209C(u16);
+extern void GSmemFree(u16);
 extern s32 fn_80083BF8(void*);
 extern void* fn_80083AF4(void*, s32);
 extern void* windowSearchItemID(void*, s32);
@@ -2937,11 +2937,11 @@ static inline void* menuCardE_Alloc(u32 size, char* pool) {
     void* buf;
     u16 handle;
 
-    handle = fn_800E2C04((size + 0x1F) & ~0x1F, 0x20);
+    handle = GSmemAlloc((size + 0x1F) & ~0x1F, 0x20);
     if (handle == 0) {
         __assert(pool + 0x1F0, 0x1A2, lbl_8047C140);
     }
-    buf = fn_800E27B0(handle);
+    buf = GSmemLock(handle);
     memset(buf, 0, size);
     return buf;
 }
@@ -2954,7 +2954,7 @@ static inline void menuCardE_Free(void* buf, char* pool) {
         __assert(pool + 0x1F0, 0x1AB, lbl_8047C140);
     }
     fn_800E24B0(handle);
-    fn_800E209C(handle);
+    GSmemFree(handle);
 }
 
 static inline void menuCardE_FillEntries(u8* ctx, s32 count, char* table) {
@@ -3175,11 +3175,11 @@ void fn_80084038(u8* window)
         if ((s8)window[2] != 0) {
             break;
         }
-        handle = ((u16 (*)(u32, u32))fn_800E2C04)(0xE0, 0x20);
+        handle = ((u16 (*)(u32, u32))GSmemAlloc)(0xE0, 0x20);
         if (handle == 0) {
             __assert((const char*)data + 0x184, 0xEA, lbl_8047C198);
         }
-        status = ((CardEStatusWork* (*)(u16))fn_800E27B0)(handle);
+        status = ((CardEStatusWork* (*)(u16))GSmemLock)(handle);
         memset(status, 0, sizeof(CardEStatusWork));
         work = status;
         *(CardEStatusWork**)(((void* (*)(u8*))windowGetFreeWork)(window)) = status;
@@ -3257,7 +3257,7 @@ void fn_80084038(u8* window)
             __assert((const char*)data + 0x184, 0xF3, lbl_8047C198);
         }
         fn_800E24B0(handle);
-        fn_800E209C(handle);
+        GSmemFree(handle);
         return;
     }
 

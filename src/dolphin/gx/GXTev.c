@@ -330,7 +330,7 @@ typedef struct GXFogAdjTable_800BCCDC {
 } GXFogAdjTable_800BCCDC;
 
 
-void fn_800BC2F8(u32 id, GXColor_800BC2F8 color) {
+void GXSetTevColor(u32 id, GXColor_800BC2F8 color) {
     u32 reg0;
     u32 reg1;
 
@@ -448,7 +448,7 @@ void GXSetTevSwapModeTable(u32 table, u32 red, u32 green, u32 blue, u32 alpha) {
     p->field_002 = 0;
 }
 
-void fn_800BC618(u32 comp0, u8 ref0, u32 op, u32 comp1, u8 ref1) {
+void GXSetAlphaCompare(u32 comp0, u8 ref0, u32 op, u32 comp1, u8 ref1) {
     u32 reg = ref0;
 
     reg |= 0xF3000000U;
@@ -544,7 +544,7 @@ void GXSetTevOrder(int stage, int coord, int map, int color)
     gx->dirtyState |= 1;
 }
 
-void fn_800BC8C8(u32 nStages) {
+void GXSetNumTevStages(u32 nStages) {
     GXData_800BB30C* data = gx;
 
     data->genMode = (data->genMode & ~0x3C00U) |

@@ -6,10 +6,10 @@
 
 void* fn_8016604C(u32 size)
 {
-    u32 handle = fn_800E2C04(size, 0x20);
+    u32 handle = GSmemAlloc(size, 0x20);
 
     if ((u16)handle != 0) {
-        return fn_800E27B0(handle);
+        return GSmemLock(handle);
     }
     return 0;
 }

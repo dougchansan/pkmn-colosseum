@@ -97,7 +97,7 @@ extern u32 fn_801643B8(void);                /* fn_801643B8 */
 extern void salCtrlDsp(void* dest);
 extern void* salAiGetDest(void);
 extern void salHandleAuxProcessing(void);
-extern void fn_801496A0(u32 deltaTime);      /* fn_801496A0 */
+extern void seqHandle(u32 deltaTime);      /* seqHandle */
 extern void synthHandle(u32 deltaTime);
 extern void s3dHandle(void);               /* s3dHandle */
 extern void streamHandle(void);               /* streamHandle */
@@ -191,7 +191,7 @@ void snd_handle_irq(void) {
     fn_80164398();
     hwSetTimeOffset(r);
     // sndProfStartPMC(&prof.sequencer);
-    fn_801496A0(256);
+    seqHandle(256);
     // sndProfPausePMC(&prof.sequencer);
     // sndProfStartPMC(&prof.synthesizer);
     synthHandle(256);

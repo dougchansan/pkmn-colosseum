@@ -40,9 +40,9 @@ extern s32 lbl_802EEFC4[5];
  * declared with a full prototype at the point of use. */
 extern void _threadSwitch(void);
 extern void* windowSearchID(u32 id);
-extern void fn_8009F7B4(void *p);
-extern void fn_8009F890(void *p);
-extern void fn_800A257C(void *p, u32 b);
+extern void OSLockMutex(void *p);
+extern void OSUnlockMutex(void *p);
+extern void OSSetThreadPriority(void *p, u32 b);
 extern void fn_800716E8(u32 port, u32 val);
 extern void OSSignalCond(void *p);
 extern void fn_800A1E54(void *p, u32 v);
@@ -50,8 +50,8 @@ extern void fn_800716C8(u32 port, void *a, void *b);
 extern u32 GSmemGetHandleByPtr(void *p);
 extern void __assert(const u8 *file, u32 line, const u8 *msg);
 extern void fn_800E24B0(u32 status);
-extern void fn_800E209C(u32 status);
-extern u32 fn_800A13F8(void);
+extern void GSmemFree(u32 status);
+extern u32 OSGetCurrentThread(void);
 extern void OSYieldThread(void);
 extern void std098_mapWarpToMenuRoom(u32 id);
 extern void floorSetFadeScript(u32 a, u32 b);
@@ -1216,9 +1216,9 @@ void menuStatusDrawPokemonInfo(u8* context, u8* sprite)
 #endif
 s32 gbaCommStartTransferB(s32 channel, void* requestValue, void* requestContext)
 {
-    extern u32 fn_800E2C04(u32 size, u32 align);
-    extern void* fn_800E27B0(u32 handle);
-    extern void fn_8009F77C(void* work);
+    extern u32 GSmemAlloc(u32 size, u32 align);
+    extern void* GSmemLock(u32 handle);
+    extern void OSInitMutex(void* work);
     extern void OSInitCond(void* callback);
     extern s32 _gbaCommThread(void* arg);
     extern void fn_80093B04(u32 a, u32 b);
@@ -1243,11 +1243,11 @@ s32 gbaCommStartTransferB(s32 channel, void* requestValue, void* requestContext)
         if (*(u8**)(lbl_803FB328 + slot) != NULL) {
             started = 1;
         } else {
-            handle = fn_800E2C04(0x44A0, 0x20);
+            handle = GSmemAlloc(0x44A0, 0x20);
             if ((handle & 0xFFFF) == 0) {
                 __assert(lbl_8026F5A8, 0x1DD, &lbl_8047C1E8);
             }
-            allocated = fn_800E27B0(handle);
+            allocated = GSmemLock(handle);
             memset(allocated, 0, 0x4490);
             *(u8**)(lbl_803FB328 + slot) = allocated;
 
@@ -1255,7 +1255,7 @@ s32 gbaCommStartTransferB(s32 channel, void* requestValue, void* requestContext)
             *(u32*)(work + GBA_STATE_PHASE) = 0;
             *(s32*)(work + GBA_STATE_PORT) = channel;
             fn_800716C8(channel, work + GBA_DATA_OFFSET, fn_80093B04);
-            fn_8009F77C(work);
+            OSInitMutex(work);
             OSInitCond(work + 0x18);
             OSCreateThread(work + GBA_DATA_OFFSET, _gbaCommThread, work,
                            work + GBA_STATE_PORT, 0x4000,
@@ -1271,7 +1271,7 @@ s32 gbaCommStartTransferB(s32 channel, void* requestValue, void* requestContext)
 
     requestWork = *(u8**)(lbl_803FB328 + ((u32)channel << 2));
     requestStarted = 0;
-    fn_8009F7B4(requestWork);
+    OSLockMutex(requestWork);
     if (*(s32*)(requestWork + GBA_STATE_PHASE) == 0) {
         *(s32*)(requestWork + GBA_STATE_PHASE) = 4;
         *(u32*)(requestWork + GBA_STATE_TIMEOUT) = 0x30004;
@@ -1279,8 +1279,8 @@ s32 gbaCommStartTransferB(s32 channel, void* requestValue, void* requestContext)
         *(void**)(requestWork + 0x4344) = requestValue;
         *(void**)(requestWork + 0x4348) = requestContext;
     }
-    fn_8009F890(requestWork);
-    fn_800A257C(requestWork + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
+    OSUnlockMutex(requestWork);
+    OSSetThreadPriority(requestWork + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
     if (requestStarted != 0) {
         OSSignalCond(requestWork + 0x18);
     }
@@ -1296,9 +1296,9 @@ s32 gbaCommStartTransferB(s32 channel, void* requestValue, void* requestContext)
 #endif
 s32 gbaCommStartTransferC(s32 channel, void* requestValue)
 {
-    extern u32 fn_800E2C04(u32 size, u32 align);
-    extern void* fn_800E27B0(u32 handle);
-    extern void fn_8009F77C(void* work);
+    extern u32 GSmemAlloc(u32 size, u32 align);
+    extern void* GSmemLock(u32 handle);
+    extern void OSInitMutex(void* work);
     extern void OSInitCond(void* callback);
     extern s32 _gbaCommThread(void* arg);
     extern void fn_80093B04(u32 a, u32 b);
@@ -1323,11 +1323,11 @@ s32 gbaCommStartTransferC(s32 channel, void* requestValue)
         if (*(u8**)(lbl_803FB328 + slot) != NULL) {
             started = 1;
         } else {
-            handle = fn_800E2C04(0x44A0, 0x20);
+            handle = GSmemAlloc(0x44A0, 0x20);
             if ((handle & 0xFFFF) == 0) {
                 __assert(lbl_8026F5A8, 0x1DD, &lbl_8047C1E8);
             }
-            allocated = fn_800E27B0(handle);
+            allocated = GSmemLock(handle);
             memset(allocated, 0, 0x4490);
             *(u8**)(lbl_803FB328 + slot) = allocated;
 
@@ -1335,7 +1335,7 @@ s32 gbaCommStartTransferC(s32 channel, void* requestValue)
             *(u32*)(work + GBA_STATE_PHASE) = 0;
             *(s32*)(work + GBA_STATE_PORT) = channel;
             fn_800716C8(channel, work + GBA_DATA_OFFSET, fn_80093B04);
-            fn_8009F77C(work);
+            OSInitMutex(work);
             OSInitCond(work + 0x18);
             OSCreateThread(work + GBA_DATA_OFFSET, _gbaCommThread, work,
                            work + GBA_STATE_PORT, 0x4000,
@@ -1351,15 +1351,15 @@ s32 gbaCommStartTransferC(s32 channel, void* requestValue)
 
     requestWork = *(u8**)(lbl_803FB328 + ((u32)channel << 2));
     requestStarted = 0;
-    fn_8009F7B4(requestWork);
+    OSLockMutex(requestWork);
     if (*(s32*)(requestWork + GBA_STATE_PHASE) == 0) {
         *(s32*)(requestWork + GBA_STATE_PHASE) = 2;
         *(u32*)(requestWork + GBA_STATE_TIMEOUT) = 0x30002;
         requestStarted = 1;
         *(void**)(requestWork + 0x4344) = requestValue;
     }
-    fn_8009F890(requestWork);
-    fn_800A257C(requestWork + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
+    OSUnlockMutex(requestWork);
+    OSSetThreadPriority(requestWork + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
     if (requestStarted != 0) {
         OSSignalCond(requestWork + 0x18);
     }
@@ -1375,9 +1375,9 @@ s32 gbaCommStartTransferC(s32 channel, void* requestValue)
 #endif
 s32 gbaCommStartTransferFile(s32 channel, const char* primary, const char* secondary)
 {
-    extern u32 fn_800E2C04(u32 size, u32 align);
-    extern void* fn_800E27B0(u32 handle);
-    extern void fn_8009F77C(void* work);
+    extern u32 GSmemAlloc(u32 size, u32 align);
+    extern void* GSmemLock(u32 handle);
+    extern void OSInitMutex(void* work);
     extern void OSInitCond(void* callback);
     extern s32 _gbaCommThread(void* arg);
     extern void fn_80093B04(u32 a, u32 b);
@@ -1406,11 +1406,11 @@ s32 gbaCommStartTransferFile(s32 channel, const char* primary, const char* secon
         if (*(u8**)(lbl_803FB328 + slot) != NULL) {
             started = 1;
         } else {
-            handle = fn_800E2C04(0x44A0, 0x20);
+            handle = GSmemAlloc(0x44A0, 0x20);
             if ((handle & 0xFFFF) == 0) {
                 __assert(lbl_8026F5A8, 0x1DD, &lbl_8047C1E8);
             }
-            allocated = fn_800E27B0(handle);
+            allocated = GSmemLock(handle);
             memset(allocated, 0, 0x4490);
             *(u8**)(lbl_803FB328 + slot) = allocated;
 
@@ -1418,7 +1418,7 @@ s32 gbaCommStartTransferFile(s32 channel, const char* primary, const char* secon
             *(u32*)(work + GBA_STATE_PHASE) = 0;
             *(s32*)(work + GBA_STATE_PORT) = channel;
             fn_800716C8(channel, work + GBA_DATA_OFFSET, fn_80093B04);
-            fn_8009F77C(work);
+            OSInitMutex(work);
             OSInitCond(work + 0x18);
             OSCreateThread(work + GBA_DATA_OFFSET, _gbaCommThread, work,
                            work + GBA_STATE_PORT, 0x4000,
@@ -1446,7 +1446,7 @@ s32 gbaCommStartTransferFile(s32 channel, const char* primary, const char* secon
         goto done;
     }
 
-    fn_8009F7B4(commandWork);
+    OSLockMutex(commandWork);
     if (*(s32*)(commandWork + GBA_STATE_PHASE) == 0) {
         commandStarted++;
         *(s32*)(commandWork + GBA_STATE_PHASE) = commandStarted;
@@ -1458,8 +1458,8 @@ s32 gbaCommStartTransferFile(s32 channel, const char* primary, const char* secon
             commandWork[0x43C4] = 0;
         }
     }
-    fn_8009F890(commandWork);
-    fn_800A257C(commandWork + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
+    OSUnlockMutex(commandWork);
+    OSSetThreadPriority(commandWork + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
     if (commandStarted != 0) {
         OSSignalCond(commandWork + 0x18);
     }
@@ -1486,10 +1486,10 @@ s32 gbaCommIsBusy(s32 channel)
     slot = (u32)channel << 2;
     work = *(u8**)((u8*)lbl_803FB328 + slot);
     if (work != NULL) {
-        fn_8009F7B4(work);
+        OSLockMutex(work);
         idle = (*(u32*)(work + GBA_STATE_PHASE) == 0);
-        fn_8009F890(work);
-        fn_800A257C(work + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
+        OSUnlockMutex(work);
+        OSSetThreadPriority(work + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
     } else {
         idle = 1;
     }
@@ -1517,10 +1517,10 @@ u32 fn_80093574(s32 channel)
     }
 
     while (1) {
-        fn_8009F7B4(work);
+        OSLockMutex(work);
         status = *(u32*)(work + GBA_STATE_TIMEOUT);
-        fn_8009F890(work);
-        fn_800A257C(work + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
+        OSUnlockMutex(work);
+        OSSetThreadPriority(work + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
         if ((s32)(status >> 16) == 3) {
             _threadSwitch();
         } else {
@@ -1548,10 +1548,10 @@ u32 fn_80093610(s32 channel)
         return 0;
     }
 
-    fn_8009F7B4(work);
+    OSLockMutex(work);
     status = *(u32*)(work + GBA_STATE_TIMEOUT);
-    fn_8009F890(work);
-    fn_800A257C(work + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
+    OSUnlockMutex(work);
+    OSSetThreadPriority(work + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
 
     return status;
 }
@@ -1577,10 +1577,10 @@ s32 gbaCommEnd(s32 channel)
 
     fn_800716E8(*(s32*)(work + GBA_STATE_PORT), 1);
     while (1) {
-        fn_8009F7B4(work);
+        OSLockMutex(work);
         status = *(u32*)(work + GBA_STATE_TIMEOUT);
-        fn_8009F890(work);
-        fn_800A257C(work + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
+        OSUnlockMutex(work);
+        OSSetThreadPriority(work + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
         if ((s32)(status >> 16) == 3) {
             _threadSwitch();
         } else {
@@ -1588,11 +1588,11 @@ s32 gbaCommEnd(s32 channel)
         }
     }
 
-    fn_8009F7B4(work);
+    OSLockMutex(work);
     *(u32*)(work + GBA_STATE_PHASE) = 0xD;
     *(u32*)(work + GBA_STATE_TIMEOUT) = 0x3000D;
-    fn_8009F890(work);
-    fn_800A257C(work + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
+    OSUnlockMutex(work);
+    OSSetThreadPriority(work + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
     OSSignalCond(work + 0x18);
     fn_800A1E54(work + GBA_DATA_OFFSET, 0);
     fn_800716C8(*(s32*)(work + GBA_STATE_PORT), NULL, NULL);
@@ -1603,7 +1603,7 @@ s32 gbaCommEnd(s32 channel)
         __assert(lbl_8026F5A8, 0x1E6, &lbl_8047C1E8);
     }
     fn_800E24B0(status);
-    fn_800E209C(status);
+    GSmemFree(status);
     *(u8**)((u8*)lbl_803FB328 + slot) = NULL;
 
     return 1;
@@ -1647,7 +1647,7 @@ s32 _gbaCommThread(void* arg0)
     p = arg0;
     result = 0;
     for (;;) {
-        fn_8009F7B4(p);
+        OSLockMutex(p);
         if (*(s32*)(p + GBA_STATE_PHASE) != 0xD) {
             *(s32*)(p + GBA_STATE_TIMEOUT) = result;
             *(s32*)(p + GBA_STATE_PHASE) = 0;
@@ -1657,7 +1657,7 @@ s32 _gbaCommThread(void* arg0)
         }
 
         state = *(s32*)(p + GBA_STATE_PHASE);
-        fn_8009F890(p);
+        OSUnlockMutex(p);
         status = 0;
 
         switch (state) {
@@ -1673,7 +1673,7 @@ s32 _gbaCommThread(void* arg0)
             status = pkjbPrepare(p + 0x4344, arg);
             if (status == 0) {
                 while (fn_80073E84() == 0) {
-                    fn_800A257C((void*)fn_800A13F8(), 0x10);
+                    OSSetThreadPriority((void*)OSGetCurrentThread(), 0x10);
                     OSYieldThread();
                 }
                 result = 1;
@@ -1697,7 +1697,7 @@ s32 _gbaCommThread(void* arg0)
                     result = 0x20002;
                     goto case2Done;
                 }
-                fn_800A257C((void*)fn_800A13F8(), 0x10);
+                OSSetThreadPriority((void*)OSGetCurrentThread(), 0x10);
                 OSYieldThread();
             }
             status = fn_800745B4(*(s32*)(p + GBA_STATE_PORT),
@@ -1754,7 +1754,7 @@ s32 _gbaCommThread(void* arg0)
                     if (status >= 0) {
                         break;
                     }
-                    fn_800A257C((void*)fn_800A13F8(), 0x10);
+                    OSSetThreadPriority((void*)OSGetCurrentThread(), 0x10);
                     OSYieldThread();
                 }
                 if (status == 0) {
@@ -1778,11 +1778,11 @@ void fn_80093B04(u32 a, u32 b) {
     u32 r31;
     u32 result;
     r31 = b;
-    result = fn_800A13F8();
+    result = OSGetCurrentThread();
     if (r31 != 0) {
         if (r31 != result) return;
     }
-    fn_800A257C((void*)result, 0x10);
+    OSSetThreadPriority((void*)result, 0x10);
     OSYieldThread();
     return;
 }

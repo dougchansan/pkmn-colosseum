@@ -120,9 +120,9 @@ extern void  GSmodelFreeAllShadowTextures(void);
 extern void  fn_80112780(void);
 extern void  fn_801127BC(void);
 extern u16   _toolentryAlloc__FUl(u32 size);
-extern void* fn_800E27B0(u16 handle);
+extern void* GSmemLock(u16 handle);
 extern void  fn_800E24B0(u16 handle);
-extern void  fn_800E209C(u16 handle);
+extern void  GSmemFree(u16 handle);
 extern u32   _vmThreadCreate(u32 task, void* callback, u32 stackSize, u32 arg3,
                          u32 arg4, u32 arg5, ...);
 extern void* fn_800F7108(u16 handle);
@@ -346,7 +346,7 @@ static inline u16 floorSaveResourceState(void) {
     if (handle == 0) {
         return 0;
     }
-    buf = fn_800E27B0(handle);
+    buf = GSmemLock(handle);
     if (buf == NULL) {
         return 0;
     }
@@ -383,7 +383,7 @@ static inline void floorLoadResourceState(void) {
 
     handle = lbl_8047ACC8->resMemHandle;
     resType = ((GSFloorTableEntry*)lbl_8047ACC8->floorDataEntry)->resType;
-    buf = fn_800E27B0(handle);
+    buf = GSmemLock(handle);
     if (buf == NULL) {
         return;
     }
@@ -397,7 +397,7 @@ static inline void floorLoadResourceState(void) {
         }
     }
     fn_800E24B0(handle);
-    fn_800E209C(handle);
+    GSmemFree(handle);
 }
 
 /**
@@ -586,7 +586,7 @@ void fn_800FF828(u32 contextCount, u32 baseCount, u32 extCount1,
 
     lbl_8047ACA0 = _toolentryAlloc__FUl(contextCount * sizeof(GSFloorContext));
     if (lbl_8047ACA0 != 0) {
-        lbl_8047ACA4 = fn_800E27B0(lbl_8047ACA0);
+        lbl_8047ACA4 = GSmemLock(lbl_8047ACA0);
 
         resourceCount = baseCount + extCount1 + extCount2;
         lbl_8047ACB4 = baseCount;
@@ -596,7 +596,7 @@ void fn_800FF828(u32 contextCount, u32 baseCount, u32 extCount1,
 
         lbl_8047ACAC = _toolentryAlloc__FUl(resourceCount * sizeof(GSFloorResource));
         if (lbl_8047ACAC != 0) {
-            lbl_8047ACB0 = fn_800E27B0(lbl_8047ACAC);
+            lbl_8047ACB0 = GSmemLock(lbl_8047ACAC);
             for (i = 0; i < lbl_8047ACC0; i++) {
                 lbl_8047ACB0[i].active = 0;
             }

@@ -408,7 +408,7 @@ extern char lbl_8047C090;
 void menuCommonFree(void) {
     extern u16 GSmemGetHandleByPtr(void);
     extern void fn_800E24B0(u16 handle);
-    extern void fn_800E209C(u16 handle);
+    extern void GSmemFree(u16 handle);
     u16 handle;
 
     handle = GSmemGetHandleByPtr();
@@ -417,19 +417,19 @@ void menuCommonFree(void) {
     }
     if (handle != 0) {
         fn_800E24B0(handle);
-        fn_800E209C(handle);
+        GSmemFree(handle);
     }
 }
 
 /* menuCommonAlloc (0x80071104): allocate a 32-byte-aligned handle and lock it. */
 s32 menuCommonAlloc(s32 size) {
-    extern u16 fn_800E2C04(s32 size, s32 align);
-    extern s32 fn_800E27B0(u16 handle);
+    extern u16 GSmemAlloc(s32 size, s32 align);
+    extern s32 GSmemLock(u16 handle);
     u16 handle;
 
-    handle = fn_800E2C04((size + 0x1F) & ~0x1F, 0x20);
+    handle = GSmemAlloc((size + 0x1F) & ~0x1F, 0x20);
     if (handle != 0) {
-        return fn_800E27B0(handle);
+        return GSmemLock(handle);
     }
     if (!(handle != 0)) {
         __assert((const char*)lbl_80268708, 0xD5, (const char*)&lbl_8047C090);
@@ -467,7 +467,7 @@ extern s32 fn_80073A44(s32, u16*);
 extern s32 windowGetActiveID(void);
 extern void* windowSearchID(s32);
 extern void menuCloseCustom(s32, s32, s32);
-extern u32 fn_800A13F8(void);
+extern u32 OSGetCurrentThread(void);
 extern u8 lbl_803B6DE0[];
 extern int SIProbe();
 extern f64 sin(f64);
@@ -4183,8 +4183,8 @@ void fn_80075518(u8* context, u8* message)
 }
 
 extern u32 std092_getCurrentRoomID(void);
-extern u16 fn_800E2C04(s32, s32);
-extern void* fn_800E27B0(u16);
+extern u16 GSmemAlloc(s32, s32);
+extern void* GSmemLock(u16);
 extern void* gamedataGetStatus(s32, s32);
 extern u8 lbl_802EF0A8[];
 extern void pokemonCreate(void*, s32, s32, void*);
@@ -4201,7 +4201,7 @@ void fn_8007565C(void) {
     extern void menuCloseCustom(s32, s32, s32);
     extern u16 GSmemGetHandleByPtr(u32);
     extern void fn_800E24B0(void);
-    extern void fn_800E209C(u16);
+    extern void GSmemFree(u16);
     u16 handle;
 
     menuModelTerm(*(u32*)&lbl_8047A610 + 0x144);
@@ -4209,7 +4209,7 @@ void fn_8007565C(void) {
     handle = GSmemGetHandleByPtr(*(u32*)&lbl_8047A610);
     if (handle != 0) {
         fn_800E24B0();
-        fn_800E209C(handle);
+        GSmemFree(handle);
     }
     *(u32*)&lbl_8047A610 = 0;
 }
@@ -4223,9 +4223,9 @@ void exShrineModelOpen(s32 pokemonId)
     if (std092_getCurrentRoomID() != 0x43) {
         return;
     }
-    handle = fn_800E2C04(0x1A0, 0x20);
+    handle = GSmemAlloc(0x1A0, 0x20);
     if (handle != 0) {
-        work = fn_800E27B0(handle);
+        work = GSmemLock(handle);
     } else {
         work = 0;
     }

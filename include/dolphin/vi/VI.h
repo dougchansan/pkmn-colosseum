@@ -15,7 +15,7 @@ typedef void (*VIRetraceCallback)(u32 retraceCount);
 
 u32 VIGetTvFormat(void);
 u32 VIGetCurrentLine(void);
-VIRetraceCallback fn_800A880C(VIRetraceCallback callback);
-VIRetraceCallback fn_800A8850(VIRetraceCallback callback);
+VIRetraceCallback VISetPreRetraceCallback(VIRetraceCallback callback);
+VIRetraceCallback VISetPostRetraceCallback(VIRetraceCallback callback);
 
 #endif /* DOLPHIN_VI_VI_H */

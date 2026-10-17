@@ -218,9 +218,9 @@ extern s32 strcmp(const char* lhs, const char* rhs);
 
 extern void* GSmemGetHandleByPtr(void* ptr);
 extern void fn_800E24B0(void);
-extern s32 fn_800E209C(void* ptr);
-extern void fn_800E2C04(s32 size, s32 align);
-extern void* fn_800E27B0(void);
+extern s32 GSmemFree(void* ptr);
+extern void GSmemAlloc(s32 size, s32 align);
+extern void* GSmemLock(void);
 extern void winMsgClose(s32 id);
 extern void GSgappTerminate(void* app);
 extern void* GSgappCreate(s32 state, u8 priority, void* param, void* callback);
@@ -1610,10 +1610,10 @@ void fn_801D055C(s32 task_kind, s32 card_work_size, s32 card_channel)
     lbl_8047B3D4->error_code = 0;
     lbl_8047B3D4->dialog_result = 0;
 
-    fn_800E2C04(0x1E600, 0x20);
-    lbl_8047B3D4->work_buffer = fn_800E27B0();
-    fn_800E2C04(0xA000, 0x20);
-    lbl_8047B3D4->card_work_area = fn_800E27B0();
+    GSmemAlloc(0x1E600, 0x20);
+    lbl_8047B3D4->work_buffer = GSmemLock();
+    GSmemAlloc(0xA000, 0x20);
+    lbl_8047B3D4->card_work_area = GSmemLock();
     lbl_8047B3D4->gapp = GSgappCreate(1, 0x17, NULL, memcardTaskMain);
     lbl_8047B3D4->savedata_status = savedataGetStatus(0, 0);
 }
@@ -1670,8 +1670,8 @@ void fn_801D039C(void)
 
 void memcardAllocBuffer(void)
 {
-    fn_800E2C04(0x1DFD0, 0x20);
-    fn_800E27B0();
+    GSmemAlloc(0x1DFD0, 0x20);
+    GSmemLock();
 }
 
 void* memcardFreeBuffer(void* ptr)
@@ -1679,7 +1679,7 @@ void* memcardFreeBuffer(void* ptr)
     void* aligned = GSmemGetHandleByPtr(ptr);
 
     fn_800E24B0();
-    if (fn_800E209C(aligned) == 0) {
+    if (GSmemFree(aligned) == 0) {
         return NULL;
     }
     return ptr;

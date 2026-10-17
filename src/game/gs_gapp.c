@@ -44,7 +44,7 @@ extern BOOL OSRestoreInterrupts(BOOL level);
 extern void* OSSetIdleFunction(void (*idleFunction)(void*), void* param,
                                void* stack, u32 stackSize);
 extern u32 _toolentryAlloc__FUl(u32 size); /* GSmemAllocRaw; u16 handle in r3 */
-extern void* fn_800E27B0(u16 handle);      /* GSmemGetPtr */
+extern void* GSmemLock(u16 handle);      /* GSmemGetPtr */
 extern void fn_800D30A0(void (*callback)(void)); /* GSgfx VSync callback */
 
 /* ===== sbss state ===== */
@@ -216,13 +216,13 @@ void GSgappInit(u32 numTasks, u32 numQueues) {
     if (handle == 0) {
         return;
     }
-    lbl_8047AC7C = fn_800E27B0(handle);
+    lbl_8047AC7C = GSmemLock(handle);
     for (i = 0; i < lbl_8047AC88; i++) {
         lbl_8047AC7C[i].state = GAPP_STATE_FREE;
     }
     handle = _toolentryAlloc__FUl(0x2000);
     lbl_8047AC8C = handle;
-    lbl_8047AC90 = fn_800E27B0(handle);
+    lbl_8047AC90 = GSmemLock(handle);
     OSSetIdleFunction((void (*)(void*))gappBackgroundCallback, NULL,
                       lbl_8047AC90 + 0x1FFC, 0x1FFC);
     fn_800D30A0(gappVSyncCallback);

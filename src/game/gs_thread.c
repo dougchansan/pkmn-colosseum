@@ -58,10 +58,10 @@ typedef u8 M2C_UNK;
 /* ===== External SDK / engine functions ===== */
 extern void  GSlogWrite(const void* fmt, ...);          /* OSReport */
 extern u16   GSmemAllocRaw(u32 size);                    /* _toolentryAlloc__FUl */
-extern void* GSmemGetPtr(u16 handle);                    /* fn_800E27B0 */
+extern void* GSmemGetPtr(u16 handle);                    /* GSmemLock */
 extern void* GSmemLock(u16 handle);                      /* fn_800E24B0 */
-extern void  GSmemFree(u16 handle);                      /* fn_800E209C */
-extern u16   GSmemAlloc(u32 alignment, u32 size);        /* fn_800E2C04 */
+extern void  GSmemFree(u16 handle);                      /* GSmemFree */
+extern u16   GSmemAlloc(u32 alignment, u32 size);        /* GSmemAlloc */
 extern void  OSSetIdleFunction(void* func, void* arg,
                           void* stackTop, u32 stackSize); /* OSCreateFiber-like */
 extern void  OSDisableInterrupts(void);
@@ -80,13 +80,13 @@ extern const char lbl_80271038[]; /* "GSthread: Init OK, maximum of %d threads\n
 /* ===== Forward declarations for internal functions ===== */
 extern void gappVSyncCallback(void);            /* GStaskSwapCallback */
 extern void fn_800F0F4C(u32 arg);          /* GSthread trampoline / entry wrapper */
-extern void fn_800AB150(void* buf);
+extern void PADRead(void* buf);
 extern u32 SIProbe(u32 buttonIdx);
 extern void fn_800AB4FC(void*);
-extern void fn_800E209C(u16 handle);
+extern void GSmemFree(u16 handle);
 extern void* fn_800E24B0(u16 handle);
-extern void* fn_800E27B0(u16 handle);
-extern u16 fn_800E2C04(u32 alignment, u32 size);
+extern void* GSmemLock(u16 handle);
+extern u16 GSmemAlloc(u32 alignment, u32 size);
 extern u16 _toolentryAlloc__FUl(u32 size);
 extern void SJIStoGSchar(void);
 extern void fn_800DBEB4(u32 a, void* b);
@@ -476,7 +476,7 @@ void inputPadCallback(void) {
     u32 btnState;
     s8 ax;
 
-    fn_800AB150(pad);
+    PADRead(pad);
     r31 = (u8*)&lbl_80401C10;
     r30 = pad;
     for (r29 = 0; r29 < 4; r29++) {

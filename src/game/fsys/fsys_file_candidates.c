@@ -39,11 +39,11 @@ extern void* memset(void* dst, int val, u32 size);
 extern void* memcpy(void* dst, const void* src, u32 size);
 
 /* Memory allocation */
-extern u16  fn_800E2C04(u32 size, u32 alignment);
+extern u16  GSmemAlloc(u32 size, u32 alignment);
 extern u16  fn_800E2B00(u32 size, u32 alignment);
-extern void* fn_800E27B0(u16 handle);
+extern void* GSmemLock(u16 handle);
 extern void  fn_800E24B0(u16 handle);
-extern void  fn_800E209C(u16 handle);
+extern void  GSmemFree(u16 handle);
 extern u16   GSmemGetHandleByPtr(void* ptr);
 
 /* DVD / file operations */
@@ -205,7 +205,7 @@ s32 fsysLoadEntrySync(FSYSSlot* slot) {
         allocSize = (decompSize + 0x1F) & ~0x1F;
         handle = fn_800E2B00(allocSize, 0x20);
         if (handle != 0) {
-            compBuf = fn_800E27B0(handle);
+            compBuf = GSmemLock(handle);
         } else {
             compBuf = NULL;
         }
@@ -270,7 +270,7 @@ s32 fsysLoadEntrySync(FSYSSlot* slot) {
             u16 tmpHandle = GSmemGetHandleByPtr(compBuf);
             if (tmpHandle != 0) {
                 fn_800E24B0(tmpHandle);
-                fn_800E209C(tmpHandle);
+                GSmemFree(tmpHandle);
             }
         }
 
@@ -578,7 +578,7 @@ done:
     handle = GSmemGetHandleByPtr(found->archiveData);
     if (handle != 0) {
         fn_800E24B0(handle);
-        fn_800E209C(handle);
+        GSmemFree(handle);
     }
     found->archiveData = NULL;
     found->status     = 0;
@@ -759,7 +759,7 @@ static void* FSYSAllocHandle2B00(u32 size) {
 
     handle = fn_800E2B00(FSYSAlign32(size), 0x20);
     if (handle != 0) {
-        return fn_800E27B0(handle);
+        return GSmemLock(handle);
     }
     return NULL;
 }
@@ -767,9 +767,9 @@ static void* FSYSAllocHandle2B00(u32 size) {
 static void* FSYSAllocHandle2C04(u32 size) {
     u16 handle;
 
-    handle = fn_800E2C04(FSYSAlign32(size), 0x20);
+    handle = GSmemAlloc(FSYSAlign32(size), 0x20);
     if (handle != 0) {
-        return fn_800E27B0(handle);
+        return GSmemLock(handle);
     }
     return NULL;
 }
@@ -780,7 +780,7 @@ static void FSYSFreeByPointer(void* ptr) {
     handle = GSmemGetHandleByPtr(ptr);
     if (handle != 0) {
         fn_800E24B0(handle);
-        fn_800E209C(handle);
+        GSmemFree(handle);
     }
 }
 
@@ -1141,7 +1141,7 @@ void fsysLoadEntryCompressed(FSYSSlot* slot, FSYSFileEntry* entry, u32 index) {
         sizeC = (sizeB + 0x1F) & ~0x1Fu;
         handle = fn_800E2B00(sizeC, 0x20);
         if (handle != 0) {
-            ptr = fn_800E27B0(handle);
+            ptr = GSmemLock(handle);
         } else {
             ptr = NULL;
         }

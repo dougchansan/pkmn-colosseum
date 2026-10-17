@@ -538,9 +538,9 @@ void demoScene00(u32 ctx) {
 /* 0x80092C90 | size: 0x1A8 */
 s32 gbaCommStartSendPokemon(s32 channel, void* arg1, void* arg2)
 {
-    extern u32 fn_800E2C04(u32 size, u32 align);
-    extern void* fn_800E27B0(u32 handle);
-    extern void fn_8009F77C(void* work);
+    extern u32 GSmemAlloc(u32 size, u32 align);
+    extern void* GSmemLock(u32 handle);
+    extern void OSInitMutex(void* work);
     extern void OSInitCond(void* callback);
     extern s32 _gbaCommThread(void* arg);
     extern void fn_80093B04(u32 a, u32 b);
@@ -566,11 +566,11 @@ s32 gbaCommStartSendPokemon(s32 channel, void* arg1, void* arg2)
         if (*(u8**)(lbl_803FB328 + slot) != NULL) {
             started = 1;
         } else {
-            handle = fn_800E2C04(0x44A0, 0x20);
+            handle = GSmemAlloc(0x44A0, 0x20);
             if ((handle & 0xFFFF) == 0) {
                 __assert(lbl_8026F5A8, 0x1DD, &lbl_8047C1E8);
             }
-            allocated = fn_800E27B0(handle);
+            allocated = GSmemLock(handle);
             memset(allocated, 0, 0x4490);
             *(u8**)(lbl_803FB328 + slot) = allocated;
 
@@ -578,7 +578,7 @@ s32 gbaCommStartSendPokemon(s32 channel, void* arg1, void* arg2)
             *(u32*)(work + GBA_STATE_PHASE) = 0;
             *(s32*)(work + GBA_STATE_PORT) = channel;
             fn_800716C8(channel, work + GBA_DATA_OFFSET, fn_80093B04);
-            fn_8009F77C(work);
+            OSInitMutex(work);
             OSInitCond(work + 0x18);
             OSCreateThread(work + GBA_DATA_OFFSET, _gbaCommThread, work,
                            work + GBA_STATE_PORT, 0x4000,
@@ -594,7 +594,7 @@ s32 gbaCommStartSendPokemon(s32 channel, void* arg1, void* arg2)
 
     requestWork = *(u8**)(lbl_803FB328 + ((u32)channel << 2));
     requestStarted = 0;
-    fn_8009F7B4(requestWork);
+    OSLockMutex(requestWork);
     if (*(s32*)(requestWork + GBA_STATE_PHASE) == 0) {
         requestStarted = fn_80089048(requestWork + 0x4344, arg1, arg2);
         if (requestStarted != 0) {
@@ -602,8 +602,8 @@ s32 gbaCommStartSendPokemon(s32 channel, void* arg1, void* arg2)
             *(u32*)(requestWork + GBA_STATE_TIMEOUT) = 0x3000C;
         }
     }
-    fn_8009F890(requestWork);
-    fn_800A257C(requestWork + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
+    OSUnlockMutex(requestWork);
+    OSSetThreadPriority(requestWork + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
     if (requestStarted != 0) {
         OSSignalCond(requestWork + 0x18);
     }
@@ -613,9 +613,9 @@ s32 gbaCommStartSendPokemon(s32 channel, void* arg1, void* arg2)
 /* 0x80092E38 | size: 0x190 */
 s32 gbaCommStartTransferA(s32 channel, void* requestValue)
 {
-    extern u32 fn_800E2C04(u32 size, u32 align);
-    extern void* fn_800E27B0(u32 handle);
-    extern void fn_8009F77C(void* work);
+    extern u32 GSmemAlloc(u32 size, u32 align);
+    extern void* GSmemLock(u32 handle);
+    extern void OSInitMutex(void* work);
     extern void OSInitCond(void* callback);
     extern s32 _gbaCommThread(void* arg);
     extern void fn_80093B04(u32 a, u32 b);
@@ -640,11 +640,11 @@ s32 gbaCommStartTransferA(s32 channel, void* requestValue)
         if (*(u8**)(lbl_803FB328 + slot) != NULL) {
             started = 1;
         } else {
-            handle = fn_800E2C04(0x44A0, 0x20);
+            handle = GSmemAlloc(0x44A0, 0x20);
             if ((handle & 0xFFFF) == 0) {
                 __assert(lbl_8026F5A8, 0x1DD, &lbl_8047C1E8);
             }
-            allocated = fn_800E27B0(handle);
+            allocated = GSmemLock(handle);
             memset(allocated, 0, 0x4490);
             *(u8**)(lbl_803FB328 + slot) = allocated;
 
@@ -652,7 +652,7 @@ s32 gbaCommStartTransferA(s32 channel, void* requestValue)
             *(u32*)(work + GBA_STATE_PHASE) = 0;
             *(s32*)(work + GBA_STATE_PORT) = channel;
             fn_800716C8(channel, work + GBA_DATA_OFFSET, fn_80093B04);
-            fn_8009F77C(work);
+            OSInitMutex(work);
             OSInitCond(work + 0x18);
             OSCreateThread(work + GBA_DATA_OFFSET, _gbaCommThread, work,
                            work + GBA_STATE_PORT, 0x4000,
@@ -668,15 +668,15 @@ s32 gbaCommStartTransferA(s32 channel, void* requestValue)
 
     requestWork = *(u8**)(lbl_803FB328 + ((u32)channel << 2));
     requestStarted = 0;
-    fn_8009F7B4(requestWork);
+    OSLockMutex(requestWork);
     if (*(s32*)(requestWork + GBA_STATE_PHASE) == 0) {
         *(s32*)(requestWork + GBA_STATE_PHASE) = 11;
         *(u32*)(requestWork + GBA_STATE_TIMEOUT) = 0x3000B;
         requestStarted = 1;
         *(void**)(requestWork + 0x4344) = requestValue;
     }
-    fn_8009F890(requestWork);
-    fn_800A257C(requestWork + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
+    OSUnlockMutex(requestWork);
+    OSSetThreadPriority(requestWork + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
     if (requestStarted != 0) {
         OSSignalCond(requestWork + 0x18);
     }

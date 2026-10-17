@@ -41,8 +41,8 @@
  *
  * Dolphin PAD calls that have no symbol name yet, identified by their order
  * in the SDK's Pad.c and by their arguments here:
- *   fn_800AAD34 PADReset(mask)            fn_800AAE34 PADRecalibrate(mask)
- *   fn_800AAF38 PADInit()                 fn_800AB4FC PADControlAllMotors(cmds)
+ *   fn_800AAD34 PADReset(mask)            PADRecalibrate PADRecalibrate(mask)
+ *   PADInit PADInit()                 fn_800AB4FC PADControlAllMotors(cmds)
  */
 
 #include "game/input/input.h"
@@ -53,14 +53,14 @@ extern void* memset(void* dst, int val, u32 size);
 extern void* memcpy(void* dst, const void* src, u32 n);
 extern void GSlogWritef(const char* fmt, ...);
 extern u16 _toolentryAlloc__FUl(u32 size);   /* GSmemAllocRaw */
-extern void* fn_800E27B0(u16 handle);         /* GSmemGetPtr */
+extern void* GSmemLock(u16 handle);         /* GSmemGetPtr */
 extern u32 fn_800D3094(void);
 extern void fn_800AAD34(u32 mask);            /* PADReset */
-extern BOOL fn_800AAE34(u32 mask);            /* PADRecalibrate */
-extern BOOL fn_800AAF38(void);                /* PADInit */
+extern BOOL PADRecalibrate(u32 mask);            /* PADRecalibrate */
+extern BOOL PADInit(void);                /* PADInit */
 extern void fn_800AB4FC(const u32* commands); /* PADControlAllMotors */
 extern void PADSetAnalogMode(u32 mode);
-extern u32 fn_800AB150(PADStatus* status);    /* PADRead */
+extern u32 PADRead(PADStatus* status);    /* PADRead */
 extern u32 SIProbe(s32 chan);             /* SI type/status probe */
 extern f64 __frsqrte(f64 value);
 extern const f32 lbl_80478AC0[];              /* NaN */
@@ -324,7 +324,7 @@ void inputPadCallback(void) {
     int chan;
     u32 type;
 
-    fn_800AB150(status);
+    PADRead(status);
     s = status;
     for (chan = 0; chan < PAD_MAX_CONTROLLERS; chan++, s++) {
         pad = InputFindPad(chan + 1);
@@ -403,9 +403,9 @@ void GSinputInit(void) {
     }
 
     PADSetAnalogMode(0);
-    fn_800AAF38();
+    PADInit();
     fn_800AB4FC((u32*)lbl_80401DD0);
-    fn_800AAE34(lbl_8047AC4C);
+    PADRecalibrate(lbl_8047AC4C);
     SISetSamplingRate(11);
     PADSetSamplingCallback(inputPadCallback);
 }
@@ -636,7 +636,7 @@ s32 cms_InitThreadPool(u16 count) {
         return -1;
     }
 
-    lbl_80478B00->contexts = fn_800E27B0(lbl_80478B00->handle);
+    lbl_80478B00->contexts = GSmemLock(lbl_80478B00->handle);
     ctx = lbl_80478B00->contexts;
     for (i = 0; i < count; i++) {
         ctx->script = NULL;

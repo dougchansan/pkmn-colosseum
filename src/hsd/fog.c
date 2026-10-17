@@ -44,7 +44,7 @@ void GXInitFogAdjTable(GXFogAdjTable* table, u16 width, const f32 projmtx[4][4])
 /* GXSetFogRangeAdj */
 void GXSetFogRangeAdj(u8 enable, u16 center, GXFogAdjTable* table);
 /* GXGetProjectionv */
-void fn_800BD454(f32* p);
+void GXGetProjectionv(f32* p);
 /* GXGetViewportv */
 void GXGetViewportv(f32* vp);
 /* hsdNew */
@@ -127,7 +127,7 @@ void HSD_FogSet(HSD_Fog* fog)
         } else {
             mtx = m;
             memset(m, 0, sizeof(f32[4][4]));
-            fn_800BD454((f32*) &proj);
+            GXGetProjectionv((f32*) &proj);
             switch ((s32) proj.x0) {
             case GX_PERSPECTIVE:
                 m[0][0] = proj.v[0];

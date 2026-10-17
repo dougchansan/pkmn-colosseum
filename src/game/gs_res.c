@@ -37,9 +37,9 @@ typedef struct GSresEntry {
  * word: GSresInit re-extends the result (clrlwi) and passes the extended
  * value on to GSmemGetPtr, which a u16-returning prototype does not produce. */
 extern u32 _toolentryAlloc__FUl(u32 size);      /* GSmemAllocRaw */
-extern u32 fn_800E2C04(u32 size, u32 align);    /* GSmemAlloc */
-extern void* fn_800E27B0(u16 handle);           /* GSmemGetPtr */
-extern void fn_800E209C(u16 handle);            /* GSmemFree */
+extern u32 GSmemAlloc(u32 size, u32 align);    /* GSmemAlloc */
+extern void* GSmemLock(u16 handle);           /* GSmemGetPtr */
+extern void GSmemFree(u16 handle);            /* GSmemFree */
 extern void* fn_800E24B0(u16 handle);           /* GSmemLock */
 
 /* Registry state (.sbss, owned outside this split) */
@@ -91,7 +91,7 @@ void fn_800F915C(u32 group) {
         }
         if (entry->memHandle != 0) {
             fn_800E24B0(entry->memHandle);
-            fn_800E209C(entry->memHandle);
+            GSmemFree(entry->memHandle);
             entry->memHandle = 0;
         }
         entry->data = NULL;
@@ -111,7 +111,7 @@ void fn_800F9210(u32 group, u32 id) {
     }
     if (entry->memHandle != 0) {
         fn_800E24B0(entry->memHandle);
-        fn_800E209C(entry->memHandle);
+        GSmemFree(entry->memHandle);
         entry->memHandle = 0;
     }
     entry->data = NULL;
@@ -172,13 +172,13 @@ void* GSresAllocResourceAlign(u32 size, u32 align, u32 group, u32 id,
     if (entry == NULL) {
         return NULL;
     }
-    entry->memHandle = fn_800E2C04(size, align);
+    entry->memHandle = GSmemAlloc(size, align);
     if (entry->memHandle == 0) {
         return NULL;
     }
-    entry->data = fn_800E27B0(entry->memHandle);
+    entry->data = GSmemLock(entry->memHandle);
     if (entry->data == NULL) {
-        fn_800E209C(entry->memHandle);
+        GSmemFree(entry->memHandle);
         return NULL;
     }
     entry->group = group;
@@ -203,9 +203,9 @@ void* GSresAllocResource(u32 size, u32 group, u32 id,
     if (entry->memHandle == 0) {
         return NULL;
     }
-    entry->data = fn_800E27B0(entry->memHandle);
+    entry->data = GSmemLock(entry->memHandle);
     if (entry->data == NULL) {
-        fn_800E209C(entry->memHandle);
+        GSmemFree(entry->memHandle);
         return NULL;
     }
     entry->group = group;
@@ -225,7 +225,7 @@ void GSresInit(u32 count) {
     if (handle == 0) {
         return;
     }
-    lbl_8047AC5C = fn_800E27B0(handle);
+    lbl_8047AC5C = GSmemLock(handle);
     for (i = 0; i < lbl_8047AC60; i++) {
         lbl_8047AC5C[i].data = NULL;
     }

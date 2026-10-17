@@ -323,7 +323,7 @@ void GXSetTexCoordGen2(GXTexCoordID_800B857C dst_coord,
 #endif
 
 #if !defined(GX_EXACT_800B857C_800B884C)
-void fn_800B884C(u8 count) {
+void GXSetNumTexGens(u8 count) {
     u32 n = count;
     GXData_800B857C* p = gx;
 
@@ -655,7 +655,7 @@ void __GXSetDirtyState(void) {
     gx->dirtyState = 0;
 }
 
-void fn_800B928C(u32 primitive, u32 vertexFormat, u16 vertexCount) {
+void GXBegin(u32 primitive, u32 vertexFormat, u16 vertexCount) {
     if (gx->dirtyState != 0) {
         __GXSetDirtyState();
     }
@@ -685,7 +685,7 @@ void __GXSendFlushPrim(void) {
     gx->field_002 = 1;
 }
 
-void fn_800B9404(u32 left, u32 top) {
+void GXSetLineWidth(u32 left, u32 top) {
     GXData_800B857C* p = gx;
 
     p->field_07C = (p->field_07C & ~0xFFU) | (left & 0xFF);
@@ -694,7 +694,7 @@ void fn_800B9404(u32 left, u32 top) {
     p->field_002 = 0;
 }
 
-void fn_800B944C(u32 right, u32 bottom) {
+void GXSetPointSize(u32 right, u32 bottom) {
     GXData_800B857C* p = gx;
 
     p->field_07C = (p->field_07C & ~0xFF00U) | ((right & 0xFF) << 8);
@@ -703,14 +703,14 @@ void fn_800B944C(u32 right, u32 bottom) {
     p->field_002 = 0;
 }
 
-void fn_800B9494(u32 chan, u32 enable0, u32 enable1) {
+void GXEnableTexOffsets(u32 chan, u32 enable0, u32 enable1) {
     gx->field_0B8[chan] = (gx->field_0B8[chan] & ~0x40000U) | ((enable0 & 0xFF) << 18);
     gx->field_0B8[chan] = (gx->field_0B8[chan] & ~0x80000U) | ((enable1 & 0xFF) << 19);
     GX_BP_REG(gx->field_0B8[chan]);
     gx->field_002 = 0;
 }
 
-void fn_800B94F0(s32 value) {
+void GXSetCullMode(s32 value) {
     switch (value) {
     case 1:
         value = 2;

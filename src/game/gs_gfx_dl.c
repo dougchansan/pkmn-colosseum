@@ -44,10 +44,10 @@ extern void fn_800D6A80(u16 vertCount, s32 type, u32* totalVerts, u32* totalPrim
 extern void gfxLoadVtxDesc(GSVtxDesc* desc);
 extern void gfxSetupChannelsTev(GSVtxDesc* desc);
 extern void fn_800E24B0(u16 handle);
-extern void fn_800E209C(u16 handle);
-extern void* fn_800E27B0(u16 handle);
+extern void GSmemFree(u16 handle);
+extern void* GSmemLock(u16 handle);
 extern void fn_800E2AF8(u16 handle, u32 size);
-extern u16 fn_800E2C04(u32 size, u32 align);
+extern u16 GSmemAlloc(u32 size, u32 align);
 
 extern GSgfxDLCapture* lbl_8047AAD4;
 extern u32 lbl_8047AAD8;
@@ -486,7 +486,7 @@ u8* _dlParseVertex__FP16_HSD_VtxDescListPUcP22GSgfxParseCallbackListPv_802B1720(
 void GSgfxDLFree(GSgfxDLCapture* capture) {
     if (lbl_8047AA80->captureDL != capture) {
         fn_800E24B0(capture->handle);
-        fn_800E209C(capture->handle);
+        GSmemFree(capture->handle);
         capture->active = 0;
     }
 }
@@ -516,7 +516,7 @@ GSgfxDLCapture* GSgfxDLEnd(void) {
     end = (u8*)(((u32)lbl_8047AA80->captureCursor + 0x1F) & ~0x1F);
     if ((u32)end > (u32)capture->data + capture->size || capture->overflow != 0) {
         fn_800E24B0(capture->handle);
-        fn_800E209C(capture->handle);
+        GSmemFree(capture->handle);
         return NULL;
     }
     for (pad = end - lbl_8047AA80->captureCursor; pad != 0; pad--) {
@@ -561,14 +561,14 @@ u32 GSgfxDLBegin(GSVtxDesc* desc, u32 size) {
     capture->overflow = 0;
     capture->totalVerts = 0;
     capture->totalPrims = 0;
-    capture->handle = fn_800E2C04(size, 0x20);
+    capture->handle = GSmemAlloc(size, 0x20);
     if (capture->handle == 0) {
         return 0;
     }
     capture->size = size;
-    capture->data = fn_800E27B0(capture->handle);
+    capture->data = GSmemLock(capture->handle);
     if (capture->data == NULL) {
-        fn_800E209C(capture->handle);
+        GSmemFree(capture->handle);
         return 0;
     }
     capture->desc = desc;

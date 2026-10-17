@@ -30,11 +30,11 @@ extern void HSD_Panic(const char* file, int line, const char* msg);
 
 /* GX */
 extern void GXPixModeSync(void);                        /* GXPixModeSync */
-extern void fn_800BC2F8(GXTevRegID id, GXColor color); /* GXSetTevColor */
+extern void GXSetTevColor(GXTevRegID id, GXColor color); /* GXSetTevColor */
 extern void GXSetTevKColor(GXTevKColorID id, GXColor color); /* GXSetTevKColor */
 
 /* state.c / tev.c */
-extern void fn_801B25C4(u32 state);                   /* HSD_StateInvalidate */
+extern void HSD_StateInvalidate(u32 state);                   /* HSD_StateInvalidate */
 extern int HSD_StateAssignTev(void);
 extern void HSD_SetupTevStage(HSD_TevDesc* desc);           /* HSD_SetupTevStage */
 extern u32 HSD_Index2TevStage(u32 idx);
@@ -134,7 +134,7 @@ void HSD_TExpUnref(HSD_TExp* texp, u8 sel)
 }
 
 /* HSD_TExpFreeList */
-HSD_TExp* fn_801B7178(HSD_TExp* texp_list, HSD_TExpType type, s32 all)
+HSD_TExp* HSD_TExpFreeList(HSD_TExp* texp_list, HSD_TExpType type, s32 all)
 {
     HSD_TExp** handle;
     HSD_TExp* ptr;
@@ -1189,10 +1189,10 @@ void HSD_TExpSetReg(HSD_TExp* texp)
         }
         for (i = 4; i < 7; i++) {
             if (changed & (1 << i)) {
-                fn_800BC2F8(id2[i - 4], reg[i]);
+                GXSetTevColor(id2[i - 4], reg[i]);
             }
         }
-        fn_801B25C4(0x10);
+        HSD_StateInvalidate(0x10);
         GXPixModeSync();
     }
 }
@@ -1252,8 +1252,8 @@ int HSD_TExpCompile(HSD_TExp* texp, HSD_TExpTevDesc** tevdesc,
         *tevdesc = tdesc;
     }
 
-    *texp_list = fn_801B7178(*texp_list, HSD_TE_TEV, 1);
-    *texp_list = fn_801B7178(*texp_list, HSD_TE_CNST, 0);
+    *texp_list = HSD_TExpFreeList(*texp_list, HSD_TE_TEV, 1);
+    *texp_list = HSD_TExpFreeList(*texp_list, HSD_TE_CNST, 0);
     return num;
 }
 

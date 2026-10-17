@@ -2,7 +2,7 @@
 
 extern void* memset(void* destination, int value, u32 size);
 extern u16 _toolentryAlloc__FUl(u32 size);
-extern void* fn_800E27B0(u32 handle);
+extern void* GSmemLock(u32 handle);
 extern s32 lbl_8047B1F8;
 extern u16 lbl_8047B1FC;
 extern PeopleEntry* lbl_8047B200;
@@ -32,7 +32,7 @@ PeopleEntry* peopleInit(u32 maxPeople)
     u32 totalSize;
 
     totalSize = maxPeople * PEOPLE_ENTRY_SIZE;
-    lbl_8047B200 = (PeopleEntry*)fn_800E27B0(
+    lbl_8047B200 = (PeopleEntry*)GSmemLock(
         lbl_8047B1FC = _toolentryAlloc__FUl(totalSize));
     memset(lbl_8047B200, 0, totalSize);
     lbl_8047B1F8 = (s32)maxPeople;

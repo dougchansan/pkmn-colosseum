@@ -24,8 +24,8 @@ extern void* memset(void* dst, int val, u32 size);
 /* GSmem */
 /* _toolentryAlloc__FUl (GSmemAllocRaw) is declared per-TU: retail codegen
  * depends on whether the caller sees the u16 handle or the raw u32 return. */
-/* fn_800E27B0 (GSmemGetPtr) is likewise declared per-TU. */
-extern void  fn_800E209C(u16 handle);                   /* GSmemFree */
+/* GSmemLock (GSmemGetPtr) is likewise declared per-TU. */
+extern void  GSmemFree(u16 handle);                   /* GSmemFree */
 
 /* GSgfx math/render */
 extern void  set__5GSvecFfff(void* out, f32 angle, f32 a, f32 b); /* rotation matrix */

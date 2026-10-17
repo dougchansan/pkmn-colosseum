@@ -379,8 +379,8 @@ extern void GXSetAlphaUpdate(u8 enable);
 extern void GXSetDstAlpha(u8 enable, u8 alpha);
 extern void GXSetBlendMode(s32 type, s32 src, s32 dst, s32 op);
 extern void GXSetZMode(u8 enable, s32 func, u8 update);
-extern void fn_800BCEBC(u8 beforeTex);
-extern void fn_800BC618(s32 comp0, u8 ref0, s32 op, s32 comp1, u8 ref1);
+extern void GXSetZCompLoc(u8 beforeTex);
+extern void GXSetAlphaCompare(s32 comp0, u8 ref0, s32 op, s32 comp1, u8 ref1);
 extern void GXSetDither(u8 enable);
 
 static inline void TExpStateSetColorUpdate(s32 enable)
@@ -440,7 +440,7 @@ static inline void TExpStateSetZCompLoc(s32 beforeTex)
 {
     beforeTex = beforeTex != 0;
     if (lbl_8047B319 != beforeTex) {
-        fn_800BCEBC(beforeTex);
+        GXSetZCompLoc(beforeTex);
         lbl_8047B319 = beforeTex;
     }
 }
@@ -451,7 +451,7 @@ static inline void TExpStateSetAlphaCompare(s32 comp0, u8 ref0, s32 op,
     if (lbl_8047B32C != comp0 || lbl_8047B328 != ref0 ||
         lbl_8047B324 != op || lbl_8047B320 != comp1 ||
         lbl_8047B31E != ref1) {
-        fn_800BC618(comp0, ref0, op, comp1, ref1);
+        GXSetAlphaCompare(comp0, ref0, op, comp1, ref1);
         lbl_8047B32C = comp0;
         lbl_8047B328 = ref0;
         lbl_8047B324 = op;
@@ -844,9 +844,9 @@ void HSD_SetupChannel(HSD_Chan* ch)
     }
 }
 extern void HSD_ClearVtxDesc(void);
-extern void fn_800B94F0(u32 value);
-extern void fn_800BC8C8(u32 value);
-extern void fn_800B884C(u32 value);
+extern void GXSetCullMode(u32 value);
+extern void GXSetNumTevStages(u32 value);
+extern void GXSetNumTexGens(u32 value);
 
 extern u8 lbl_80465588[];
 extern u8 lbl_804655B4[];
@@ -1118,7 +1118,7 @@ void HSD_SetupTevStageAll(HSD_TevDesc* desc)
         HSD_SetupTevStage(td);
     }
     lbl_8047B370 = num;
-    fn_800BC8C8((u8)lbl_8047B370);
+    GXSetNumTevStages((u8)lbl_8047B370);
     lbl_8047B370 = 0;
 }
 
@@ -1326,8 +1326,8 @@ extern s32 lbl_8036D2D8[4][4];
 
 extern void GXPixModeSync(void);
 extern void GXSetTevKColor(u32 id, GXColor color);
-extern void fn_800BC2F8(u32 id, GXColor color);
-extern void fn_801B25C4(u32 flags);
+extern void GXSetTevColor(u32 id, GXColor color);
+extern void HSD_StateInvalidate(u32 flags);
 
 void HSD_TExpSetReg(HSD_TExp* texp);
 
@@ -1471,10 +1471,10 @@ void HSD_TExpSetReg(HSD_TExp* texp)
         }
         for (i = 4; i < 7; i++) {
             if (changed & (1 << i)) {
-                fn_800BC2F8(id2[i - 4], reg[i]);
+                GXSetTevColor(id2[i - 4], reg[i]);
             }
         }
-        fn_801B25C4(0x10);
+        HSD_StateInvalidate(0x10);
         GXPixModeSync();
     }
 }
@@ -2423,7 +2423,7 @@ static inline void ColTExpFree(ColTExpNode* texp)
 }
 
 /* HSD_TExpFreeList */
-ColTExpNode* fn_801B7178(ColTExpNode* list, s32 type, s32 all) {
+ColTExpNode* HSD_TExpFreeList(ColTExpNode* list, s32 type, s32 all) {
     ColTExpNode** handle;
     ColTExpNode* current;
     ColTExpNode* next;
@@ -4508,7 +4508,7 @@ extern HSD_TevStateCallback lbl_8036CFA8[];
 /* 0x801B25C4 | 0x90 */
 #pragma push
 #pragma optimization_level 1
-void fn_801B25C4(u32 flags) {
+void HSD_StateInvalidate(u32 flags) {
     s32 i;
 
     for (i = 0; lbl_8036CFA8[i].mask != 0; i++) {
@@ -4607,14 +4607,14 @@ void HSD_StateSetZMode(u32 enable, s32 func, u32 update) {
 #pragma optimization_level 1
 void HSD_StateSetCullMode(s32 value) {
     if (lbl_8047B34C != value) {
-        fn_800B94F0(value);
+        GXSetCullMode(value);
         lbl_8047B34C = value;
     }
 }
 #pragma pop
 
 /* 0x801B28B8 | 0x10 */
-void fn_801B28B8(f32 value) {
+void HSD_SetMaterialShininess(f32 value) {
     lbl_80465710.shininess = value;
 }
 
@@ -4666,7 +4666,7 @@ void _HSD_StateInvalidateColorChannel(void)
 
 /* 0x801B3770 | 0x30 */
 void HSD_StateSetNumTevStages(void) {
-    fn_800BC8C8((u32)(u8)lbl_8047B370);
+    GXSetNumTevStages((u32)(u8)lbl_8047B370);
     lbl_8047B370 = 0;
 }
 
@@ -4703,13 +4703,13 @@ s32 HSD_StateGetNumTevStages(void) {
 }
 
 /* 0x801B3884 | 0xC */
-void fn_801B3884(void) {
+void HSD_StateInitTev(void) {
     lbl_8047B370 = 0;
 }
 
 /* 0x801B3890 | 0x30 */
 void HSD_StateSetNumTexGens(void) {
-    fn_800B884C((u32)(u8)lbl_8047B358);
+    GXSetNumTexGens((u32)(u8)lbl_8047B358);
     lbl_8047B358 = 0;
 }
 

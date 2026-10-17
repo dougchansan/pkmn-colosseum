@@ -127,9 +127,9 @@ extern void GSgfxEndBackFBCapture(void* texture);
 extern u32 _fadeEffectGetRandom__FUl(u32 range);
 extern u32 GSmemGetHandleByPtr(void* ptr);
 extern void fn_800E24B0(u32 handle);
-extern void fn_800E209C(u32 handle);
-extern u32 fn_800E2C04(u32 size, u32 align);
-extern void* fn_800E27B0(u32 handle);
+extern void GSmemFree(u32 handle);
+extern u32 GSmemAlloc(u32 size, u32 align);
+extern void* GSmemLock(u32 handle);
 
 extern u8 lbl_80467030[0x20];
 extern u8 lbl_80467050[0x40];
@@ -1327,16 +1327,16 @@ void fn_801C75EC(void* ptr) {
 
     if (masked != 0) {
         fn_800E24B0(handle);
-        fn_800E209C(handle);
+        GSmemFree(handle);
     }
 }
 
 void* fn_801C7630(u32 size) {
-    u32 handle = fn_800E2C04(size, 0x20);
+    u32 handle = GSmemAlloc(size, 0x20);
     u32 masked = handle & 0xFFFF;
 
     if (masked != 0) {
-        return fn_800E27B0(handle);
+        return GSmemLock(handle);
     }
     return NULL;
 }

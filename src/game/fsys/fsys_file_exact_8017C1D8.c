@@ -18,7 +18,7 @@
 
 extern u16 GSmemGetHandleByPtr(void* ptr);
 extern void fn_800E24B0(u16 handle);
-extern void fn_800E209C(u16 handle);
+extern void GSmemFree(u16 handle);
 extern void* GSresGetResource(u32 fileHandle, u32 nameHash);
 
 /* Same expansion as fsysFree in fsys_slot_8017B1CC.c. */
@@ -29,7 +29,7 @@ static inline void fsysFree(void* ptr)
     handle = GSmemGetHandleByPtr(ptr);
     if (handle != 0) {
         fn_800E24B0(handle);
-        fn_800E209C(handle);
+        GSmemFree(handle);
     }
 }
 

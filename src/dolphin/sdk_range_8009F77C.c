@@ -24,7 +24,7 @@ extern void OSInitThreadQueue(OSThreadQueue* queue);
 extern void OSWakeupThread(void* queue);
 
 #if defined(SDK_8009F77C_PREFIX_ACTIVE)
-void fn_8009F77C(fn_8009F77C_Worker* arg) {
+void OSInitMutex(fn_8009F77C_Worker* arg) {
     OSInitThreadQueue(&arg->queue);
     arg->unk_08 = 0;
     arg->unk_0C = 0;
@@ -71,17 +71,17 @@ extern s32 OSDisableScheduler(void);
 extern s32 OSEnableScheduler(void);
 extern void OSSleepThread(OSThreadQueue* queue);
 extern s32 __OSGetEffectivePriority(OSCurThread* thread);
-extern OSCurThread* fn_800A13F8(void);
-extern void fn_800A16E8(OSCurThread* thread, s32 priority);
+extern OSCurThread* OSGetCurrentThread(void);
+extern void __OSPromoteThread(OSCurThread* thread, s32 priority);
 
 #if defined(SDK_8009F77C_PREFIX_ACTIVE)
-void fn_8009F7B4(OSMutex* mutex) {
+void OSLockMutex(OSMutex* mutex) {
     BOOL enabled;
     OSCurThread* current;
     OSCurThread* owner;
 
     enabled = OSDisableInterrupts();
-    current = fn_800A13F8();
+    current = OSGetCurrentThread();
 
     for (;;) {
         OSMutex* tail;
@@ -106,7 +106,7 @@ void fn_8009F7B4(OSMutex* mutex) {
             break;
         } else {
             current->mutex = mutex;
-            fn_800A16E8(mutex->thread, current->priority);
+            __OSPromoteThread(mutex->thread, current->priority);
             OSSleepThread(&mutex->queue);
             current->mutex = NULL;
         }
@@ -115,12 +115,12 @@ void fn_8009F7B4(OSMutex* mutex) {
     OSRestoreInterrupts(enabled);
 }
 
-void fn_8009F890(OSMutex* mutex) {
+void OSUnlockMutex(OSMutex* mutex) {
     BOOL enabled;
     OSCurThread* current;
 
     enabled = OSDisableInterrupts();
-    current = fn_800A13F8();
+    current = OSGetCurrentThread();
 
     if (mutex->thread == current && --mutex->count == 0) {
         OSMutex* next = mutex->next;
@@ -179,7 +179,7 @@ void OSWaitCond(OSThreadQueue* queue, OSMutex* mutex) {
     s32 count;
 
     enabled = OSDisableInterrupts();
-    current = fn_800A13F8();
+    current = OSGetCurrentThread();
 
     if (mutex->thread == current) {
         OSMutex* next;
@@ -213,7 +213,7 @@ void OSWaitCond(OSThreadQueue* queue, OSMutex* mutex) {
         OSEnableScheduler();
 
         OSSleepThread(queue);
-        fn_8009F7B4(mutex);
+        OSLockMutex(mutex);
         mutex->count = count;
     }
 

@@ -635,7 +635,7 @@ void fn_801DAAAC(void* effectPtr) {
     extern void* GScameraGetActiveCamera(void);
     extern s32 HSD_CObjSetCurrent(void* cobj);
     extern void gsParticleDraw(u32 drawFlags, u8 modelID);
-    extern void fn_80195A48(void);
+    extern void HSD_CObjEndCurrent(void);
     WazaEffect* effect = effectPtr;
     u8* effectBytes = effectPtr;
     u32 flags;
@@ -673,7 +673,7 @@ void fn_801DAAAC(void* effectPtr) {
                 camera = GScameraGetActiveCamera();
                 if (camera != NULL && HSD_CObjSetCurrent(*(void**)((u8*)camera + 0xC))) {
                     gsParticleDraw(flags, modelID);
-                    fn_80195A48();
+                    HSD_CObjEndCurrent();
                 }
             }
         }

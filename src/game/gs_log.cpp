@@ -65,9 +65,9 @@ u64 OSGetTime(void);
 void OSTicksToCalendarTime(u64 ticks, GSCalendarTime* td);
 void* memcpy(void* dst, const void* src, u32 n);
 
-void fn_800E209C(u16 handle);  /* GSmem: free handle */
+void GSmemFree(u16 handle);  /* GSmem: free handle */
 void fn_800E24B0(u16 handle);  /* GSmem: unlock handle */
-void* fn_800E27B0(u16 handle); /* GSmem: lock handle, return pointer */
+void* GSmemLock(u16 handle); /* GSmem: lock handle, return pointer */
 
 u32 GSlogGetLine(u32 count);
 u32 GSlogGetLineCount(void);
@@ -107,7 +107,7 @@ u32 GSlogGetLine(u32 count) {
         return 0;
     }
 
-    entries = (u16*)fn_800E27B0(lbl_8047AAFA);
+    entries = (u16*)GSmemLock(lbl_8047AAFA);
     sum = 0;
     for (i = 0; i < count; i++) {
         sum += entries[i];
@@ -310,24 +310,24 @@ u32 GSlogInit(u32 size, u8 timestamps) {
     lbl_8047AB0C = size >> 7;
     lbl_8047AAFA = _toolentryAlloc((size >> 6) & ~1);
     if (lbl_8047AAFA == 0) {
-        fn_800E209C(lbl_8047AAF8);
+        GSmemFree(lbl_8047AAF8);
         GSlogWrite("GSlog: Init FAILED\n");
         return 0;
     }
 
-    lbl_8047AAFC = (u8*)fn_800E27B0(lbl_8047AAF8);
+    lbl_8047AAFC = (u8*)GSmemLock(lbl_8047AAF8);
     if (lbl_8047AAFC == NULL) {
-        fn_800E209C(lbl_8047AAF8);
-        fn_800E209C(lbl_8047AAFA);
+        GSmemFree(lbl_8047AAF8);
+        GSmemFree(lbl_8047AAFA);
         GSlogWrite("GSlog: Init FAILED\n");
         return 0;
     }
 
-    lbl_8047AB00 = (u16*)fn_800E27B0(lbl_8047AAFA);
+    lbl_8047AB00 = (u16*)GSmemLock(lbl_8047AAFA);
     if (lbl_8047AB00 == NULL) {
         fn_800E24B0(lbl_8047AAF8);
-        fn_800E209C(lbl_8047AAF8);
-        fn_800E209C(lbl_8047AAFA);
+        GSmemFree(lbl_8047AAF8);
+        GSmemFree(lbl_8047AAFA);
         GSlogWrite("GSlog: Init FAILED\n");
         return 0;
     }

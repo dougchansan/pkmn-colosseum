@@ -105,7 +105,7 @@ void GXSetFieldMode(u8 field_mode, u8 half_aspect_ratio);   /* GXSetFieldMode */
 
 void _HSD_MemSetCallbacks(__mem_cb* cb, u32 size);
 u32 HSD_Index2LightID(u32 index);
-void fn_801B25C4(u32 flags);                             /* HSD_StateInvalidate */
+void HSD_StateInvalidate(u32 flags);                             /* HSD_StateInvalidate */
 void HSD_IDSetup(void);
 
 void HSD_ListInitAllocData(void);                                  /* HSD_ListInitAllocData */
@@ -270,7 +270,7 @@ static void HSD_GXInit(void)
     for (i = 0; i < 8; i++) {
         GXLoadLightObjImm(&lightobj, HSD_Index2LightID(i));
     }
-    fn_801B25C4(-1);
+    HSD_StateInvalidate(-1);
 }
 
 /*
@@ -426,7 +426,7 @@ HSD_RenderPass HSD_GetCurrentRenderPass(void)
 }
 
 /* HAL: HSD_StartRender */
-void fn_8019C708(HSD_RenderPass pass)
+void HSD_StartRender(HSD_RenderPass pass)
 {
     GXRenderModeObj* rmode = HSD_VIGetRenderMode();
 
@@ -519,7 +519,7 @@ void HSD_ObjDumpStat(void)
 }
 
 /* HAL: HSD_SetInitParameter */
-BOOL fn_8019C3C4(HSD_InitParam param, ...)
+BOOL HSD_SetInitParameter(HSD_InitParam param, ...)
 {
     va_list ap;
     BOOL ok = FALSE;

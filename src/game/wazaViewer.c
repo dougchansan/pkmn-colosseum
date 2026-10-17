@@ -50,14 +50,14 @@ typedef struct WazaViewerCtrl {
 void _wazaViewerFinalize(u8 r, u8 g, u8 b, f32 duration) {
     extern u32 lbl_8047B3F8;
     extern void fn_801024E8(s32);
-    extern void fn_801684F0(u32);
+    extern void GSfilterRelease(u32);
     extern void vtrDeactivate(void);
 
     GSthreadTerminateGroup(0x58);
     *(u32*)(lbl_804673F8 + 0x66C) = 0;
     fn_801024E8(0);
     *(u32*)(lbl_804673F8 + 0x0C) = 0;
-    fn_801684F0(*(u32*)(lbl_804673F8 + 0x10));
+    GSfilterRelease(*(u32*)(lbl_804673F8 + 0x10));
     if (*(void**)(lbl_804673F8 + 0x878) != NULL) {
         GStextureFree(*(void**)(lbl_804673F8 + 0x878));
     }
@@ -156,10 +156,10 @@ static inline void wazaViewerLoadFile(const char* messages, const char* path, vo
  * The same expansion appears in wazaViewerThread and wazaViewerUpdatePlayMode.
  */
 static inline void wazaViewerPollCommand(const char* messages) {
-    extern u16 fn_800E2C04(u32 size, u32 align);
-    extern void* fn_800E27B0(u16 block);
+    extern u16 GSmemAlloc(u32 size, u32 align);
+    extern void* GSmemLock(u16 block);
     extern void fn_800E24B0(u16 block);
-    extern void fn_800E209C(u16 block);
+    extern void GSmemFree(u16 block);
 
     u32 size;
     char* path;
@@ -180,9 +180,9 @@ static inline void wazaViewerPollCommand(const char* messages) {
             GSdvdClose(sizeFile);
         }
         if (size != 0) {
-            block = fn_800E2C04((size + 0x1F) & ~0x1F, 0x20);
+            block = GSmemAlloc((size + 0x1F) & ~0x1F, 0x20);
             if (block != 0) {
-                record = fn_800E27B0(block);
+                record = GSmemLock(block);
                 readFile = GSdvdOpen(path);
                 if (readFile == NULL) {
                     GSlogWrite(messages + 0x9C, path);
@@ -213,7 +213,7 @@ static inline void wazaViewerPollCommand(const char* messages) {
                     }
                 }
                 fn_800E24B0(block);
-                fn_800E209C(block);
+                GSmemFree(block);
             }
         }
         *(s32*)(lbl_804673F8 + 0x870) = 0x3C;
@@ -301,7 +301,7 @@ void fn_801D56B0(void) {
     extern void DVDInit(void);
     extern void wazaSequenceOwnerFree(void* sequence);
     extern void fn_800E24B0(u16 handle);
-    extern void fn_800E209C(u16 handle);
+    extern void GSmemFree(u16 handle);
     extern u32 strlen(const char* s);
 
     const WazaViewerCamPreset* presets;
@@ -345,11 +345,11 @@ void fn_801D56B0(void) {
         wazaSequenceOwnerFree(*(void**)(lbl_804673F8 + 0x61C));
         if (*(u16*)(lbl_804673F8 + 0x660) != 0) {
             fn_800E24B0(*(u16*)(lbl_804673F8 + 0x660));
-            fn_800E209C(*(u16*)(lbl_804673F8 + 0x660));
+            GSmemFree(*(u16*)(lbl_804673F8 + 0x660));
             *(u16*)(lbl_804673F8 + 0x660) = 0;
             if (*(u16*)(lbl_804673F8 + 0x668) != 0) {
                 fn_800E24B0(*(u16*)(lbl_804673F8 + 0x668));
-                fn_800E209C(*(u16*)(lbl_804673F8 + 0x668));
+                GSmemFree(*(u16*)(lbl_804673F8 + 0x668));
                 *(u16*)(lbl_804673F8 + 0x668) = 0;
             }
         }
@@ -444,8 +444,8 @@ void fn_801D58E4(void) {
  */
 void wazaViewerLoadSequenceFiles(s32 slot) {
     extern u32 strlen(const char* s);
-    extern u16 fn_800E2C04(u32 size, u32 align);
-    extern void* fn_800E27B0(u16 block);
+    extern u16 GSmemAlloc(u32 size, u32 align);
+    extern void* GSmemLock(u16 block);
     extern void GSmodelSetRotation(void* model, WazaViewerVec* rotation);
     extern void GSmodelSetPosition(void* model, WazaViewerVec* position);
 
@@ -481,12 +481,12 @@ void wazaViewerLoadSequenceFiles(s32 slot) {
     if (modelSize == 0) {
         return;
     }
-    block = fn_800E2C04((modelSize + 0x1F) & ~0x1F, 0x20);
+    block = GSmemAlloc((modelSize + 0x1F) & ~0x1F, 0x20);
     if (block == 0) {
         return;
     }
     *(u16*)(lbl_804673F8 + 0x660) = block;
-    modelBuf = fn_800E27B0(block);
+    modelBuf = GSmemLock(block);
     buf = *(void**)(lbl_804673F8 + 0x65C) = modelBuf;
     wazaViewerLoadFile((const char*)viewerData, modelPath, buf, modelSize, FALSE);
     sequenceLoad(effect, *(void**)(lbl_804673F8 + 0x65C));
@@ -499,10 +499,10 @@ void wazaViewerLoadSequenceFiles(s32 slot) {
     GSmodelSetPosition(*(void**)((u8*)effect + 0x24), &position);
     *(s8*)((u8*)effect + 0x76) = -1;
     if (animSize != 0) {
-        block = fn_800E2C04((animSize + 0x1F) & ~0x1F, 0x20);
+        block = GSmemAlloc((animSize + 0x1F) & ~0x1F, 0x20);
         if (block != 0) {
             *(u16*)(lbl_804673F8 + 0x668) = block;
-            animBuf = *(void**)(lbl_804673F8 + 0x664) = fn_800E27B0(block);
+            animBuf = *(void**)(lbl_804673F8 + 0x664) = GSmemLock(block);
             buf = animBuf;
             animPath = (char*)(lbl_804673F8 + 0x41C);
             wazaViewerLoadFile((const char*)viewerData, animPath, buf, animSize, FALSE);
@@ -521,10 +521,10 @@ void wazaViewerLoadSequenceFiles(s32 slot) {
  * Address: 0x801D5DA0 | Size: 0x29C
  */
 void fn_801D5DA0(void) {
-    extern u16 fn_800E2C04(u32 size, u32 align);
-    extern void* fn_800E27B0(u16 block);
+    extern u16 GSmemAlloc(u32 size, u32 align);
+    extern void* GSmemLock(u16 block);
     extern void fn_800E24B0(u16 block);
-    extern void fn_800E209C(u16 block);
+    extern void GSmemFree(u16 block);
     extern void GSmodelEnableColorSwap(void* model, s32 a, s32 b, s32 c, s32 d);
     extern void GSmodelEnableModulation(void* model, u8* color);
 
@@ -556,11 +556,11 @@ void fn_801D5DA0(void) {
         return;
     }
 
-    block = fn_800E2C04((size + 0x1F) & ~0x1F, 0x20);
+    block = GSmemAlloc((size + 0x1F) & ~0x1F, 0x20);
     if (block == 0) {
         return;
     }
-    record = (s32*)fn_800E27B0(block);
+    record = (s32*)GSmemLock(block);
     wazaViewerLoadFile(messages, path, record, size, FALSE);
 
     switch (record[0]) {
@@ -621,7 +621,7 @@ void fn_801D5DA0(void) {
     }
     value = record[4];
     fn_800E24B0(block);
-    fn_800E209C(block);
+    GSmemFree(block);
     color[3] = value >> 24;
     color[2] = (value >> 16) & 0xFF;
     color[1] = (value >> 8) & 0xFF;
@@ -1519,7 +1519,7 @@ void fn_801D7B94(void* effect) {
     extern void gfxSetZMode(s32, s32, s32);
     extern void gfxSetCullMode(s32);
     extern f32 vecMag(WazaViewerVec*);
-    extern void fn_800B944C(s32, s32);
+    extern void GXSetPointSize(s32, s32);
     extern void gfxSetFlags(s32);
     extern void gfxClearFlags(s32);
     extern void gfxSetVtxDesc(void*);
@@ -1583,7 +1583,7 @@ void fn_801D7B94(void* effect) {
     if (scale > lbl_8047E30C) {
         scale = lbl_8047E30C;
     }
-    fn_800B944C((s32)(lbl_8047E344 * scale), 5);
+    GXSetPointSize((s32)(lbl_8047E344 * scale), 5);
     gfxSetFlags(1);
     gfxClearFlags(6);
     gfxSetVtxDesc(lbl_80314638);

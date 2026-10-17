@@ -26,8 +26,8 @@ extern void GXSetChanCtrl(GXChannelID chan, u8 enable, GXColorSrc amb_src,
                         GXColorSrc mat_src, int light_mask,
                         GXDiffuseFn diff_fn, GXAttnFn attn_fn); /* GXSetChanCtrl */
 extern void GXSetNumChans(u8 num); /* GXSetNumChans */
-extern void fn_800B884C(u8 num); /* GXSetNumTexGens */
-extern void fn_800BC8C8(u8 num); /* GXSetNumTevStages */
+extern void GXSetNumTexGens(u8 num); /* GXSetNumTexGens */
+extern void GXSetNumTevStages(u8 num); /* GXSetNumTevStages */
 extern void GXSetTevOrder(u32 stage, u32 coord, u32 map, u32 color); /* GXSetTevOrder */
 extern void GXSetTevOp(u32 stage, u32 mode);
 extern void GXSetTevSwapMode(u32 stage, GXTevSwapSel ras_sel,
@@ -287,12 +287,12 @@ void HSD_StateRegisterTexGen(int coord)
 /* HSD_StateSetNumTexGens */
 void HSD_StateSetNumTexGens(void)
 {
-    fn_800B884C(num_tex_gens);
+    GXSetNumTexGens(num_tex_gens);
     num_tex_gens = 0;
 }
 
 /* HSD_StateInitTev */
-void fn_801B3884(void)
+void HSD_StateInitTev(void)
 {
     current_tev = 0;
 }
@@ -311,7 +311,7 @@ int HSD_StateAssignTev(void)
 /* HSD_StateSetNumTevStages */
 void HSD_StateSetNumTevStages(void)
 {
-    fn_800BC8C8(current_tev);
+    GXSetNumTevStages(current_tev);
     current_tev = 0;
 }
 

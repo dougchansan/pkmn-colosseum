@@ -40,8 +40,8 @@ typedef struct GSFilterState {
 
 extern BOOL OSDisableInterrupts(void);
 extern BOOL OSRestoreInterrupts(BOOL level);
-extern u32 fn_800E2C04(u32 size, u32 align);
-extern void* fn_800E27B0(u32 handle);
+extern u32 GSmemAlloc(u32 size, u32 align);
+extern void* GSmemLock(u32 handle);
 extern void GXDrawDone(void);
 extern void GXInvalidateVtxCache(void);
 extern void DCFlushRange(void* address, u32 size);
@@ -193,10 +193,10 @@ void fn_8016821C(void)
 
 void* fn_8016824C(u32 size)
 {
-    u32 handle = fn_800E2C04(size, 0x20);
+    u32 handle = GSmemAlloc(size, 0x20);
 
     if ((u16)handle != 0) {
-        return fn_800E27B0(handle);
+        return GSmemLock(handle);
     }
     return 0;
 }
@@ -268,7 +268,7 @@ void GSfilterSetColor(GSFilter* filter, const u8* color)
     }
 }
 
-void fn_801684F0(GSDVDWork* work)
+void GSfilterRelease(GSDVDWork* work)
 {
     if (work->started != 0) {
         work->started = 0;

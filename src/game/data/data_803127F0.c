@@ -50,8 +50,8 @@ extern void* jumptable_80313348[];
 extern u8 GXInitLightSpot[];
 extern u8 OnReset_800C0734[];
 extern u8 __GXShutdown_800C6260[];
-extern u8 fn_800B7874[];
-extern u8 fn_800B7D74[];
+extern u8 GXSetVtxDesc[];
+extern u8 GXSetVtxAttrFmt[];
 extern u8 GXSetVtxAttrFmtv[];
 extern u8 GXSetTexCoordGen2[];
 
@@ -153,35 +153,35 @@ void* GXResetFuncInfo_80312AD0[4] = {
     (void*)0x00000000,
 };
 
-/* fn_800B7874 switch table, owned by dolphin/sdk_range_800B771C.c. */
+/* GXSetVtxDesc switch table, owned by dolphin/sdk_range_800B771C.c. */
 #if !defined(DATA_803127F0_PREFIX)
 void* jumptable_80312AE0[26] = {
-    (void*)((u8*)fn_800B7874 + 0x20),
-    (void*)((u8*)fn_800B7874 + 0x38),
-    (void*)((u8*)fn_800B7874 + 0x58),
-    (void*)((u8*)fn_800B7874 + 0x78),
-    (void*)((u8*)fn_800B7874 + 0x98),
-    (void*)((u8*)fn_800B7874 + 0xB8),
-    (void*)((u8*)fn_800B7874 + 0xD8),
-    (void*)((u8*)fn_800B7874 + 0xF8),
-    (void*)((u8*)fn_800B7874 + 0x118),
-    (void*)((u8*)fn_800B7874 + 0x138),
-    (void*)((u8*)fn_800B7874 + 0x158),
-    (void*)((u8*)fn_800B7874 + 0x1C0),
-    (void*)((u8*)fn_800B7874 + 0x1E0),
-    (void*)((u8*)fn_800B7874 + 0x200),
-    (void*)((u8*)fn_800B7874 + 0x218),
-    (void*)((u8*)fn_800B7874 + 0x238),
-    (void*)((u8*)fn_800B7874 + 0x258),
-    (void*)((u8*)fn_800B7874 + 0x278),
-    (void*)((u8*)fn_800B7874 + 0x298),
-    (void*)((u8*)fn_800B7874 + 0x2B8),
-    (void*)((u8*)fn_800B7874 + 0x2D8),
-    (void*)((u8*)fn_800B7874 + 0x2F4),
-    (void*)((u8*)fn_800B7874 + 0x2F4),
-    (void*)((u8*)fn_800B7874 + 0x2F4),
-    (void*)((u8*)fn_800B7874 + 0x2F4),
-    (void*)((u8*)fn_800B7874 + 0x18C),
+    (void*)((u8*)GXSetVtxDesc + 0x20),
+    (void*)((u8*)GXSetVtxDesc + 0x38),
+    (void*)((u8*)GXSetVtxDesc + 0x58),
+    (void*)((u8*)GXSetVtxDesc + 0x78),
+    (void*)((u8*)GXSetVtxDesc + 0x98),
+    (void*)((u8*)GXSetVtxDesc + 0xB8),
+    (void*)((u8*)GXSetVtxDesc + 0xD8),
+    (void*)((u8*)GXSetVtxDesc + 0xF8),
+    (void*)((u8*)GXSetVtxDesc + 0x118),
+    (void*)((u8*)GXSetVtxDesc + 0x138),
+    (void*)((u8*)GXSetVtxDesc + 0x158),
+    (void*)((u8*)GXSetVtxDesc + 0x1C0),
+    (void*)((u8*)GXSetVtxDesc + 0x1E0),
+    (void*)((u8*)GXSetVtxDesc + 0x200),
+    (void*)((u8*)GXSetVtxDesc + 0x218),
+    (void*)((u8*)GXSetVtxDesc + 0x238),
+    (void*)((u8*)GXSetVtxDesc + 0x258),
+    (void*)((u8*)GXSetVtxDesc + 0x278),
+    (void*)((u8*)GXSetVtxDesc + 0x298),
+    (void*)((u8*)GXSetVtxDesc + 0x2B8),
+    (void*)((u8*)GXSetVtxDesc + 0x2D8),
+    (void*)((u8*)GXSetVtxDesc + 0x2F4),
+    (void*)((u8*)GXSetVtxDesc + 0x2F4),
+    (void*)((u8*)GXSetVtxDesc + 0x2F4),
+    (void*)((u8*)GXSetVtxDesc + 0x2F4),
+    (void*)((u8*)GXSetVtxDesc + 0x18C),
 };
 #endif
 
@@ -189,23 +189,23 @@ void* jumptable_80312AE0[26] = {
  * dolphin/sdk_range_800B771C_r40_800B7D3C.c. */
 #if !defined(DATA_803127F0_PREFIX)
 void* jumptable_80312B48[17] = {
-    (void*)((u8*)fn_800B7D74 + 0x3C),
-    (void*)((u8*)fn_800B7D74 + 0x78),
-    (void*)((u8*)fn_800B7D74 + 0xDC),
-    (void*)((u8*)fn_800B7D74 + 0x108),
-    (void*)((u8*)fn_800B7D74 + 0x134),
-    (void*)((u8*)fn_800B7D74 + 0x174),
-    (void*)((u8*)fn_800B7D74 + 0x1B0),
-    (void*)((u8*)fn_800B7D74 + 0x1F0),
-    (void*)((u8*)fn_800B7D74 + 0x230),
-    (void*)((u8*)fn_800B7D74 + 0x270),
-    (void*)((u8*)fn_800B7D74 + 0x2B0),
-    (void*)((u8*)fn_800B7D74 + 0x2F0),
-    (void*)((u8*)fn_800B7D74 + 0x328),
-    (void*)((u8*)fn_800B7D74 + 0x328),
-    (void*)((u8*)fn_800B7D74 + 0x328),
-    (void*)((u8*)fn_800B7D74 + 0x328),
-    (void*)((u8*)fn_800B7D74 + 0x78),
+    (void*)((u8*)GXSetVtxAttrFmt + 0x3C),
+    (void*)((u8*)GXSetVtxAttrFmt + 0x78),
+    (void*)((u8*)GXSetVtxAttrFmt + 0xDC),
+    (void*)((u8*)GXSetVtxAttrFmt + 0x108),
+    (void*)((u8*)GXSetVtxAttrFmt + 0x134),
+    (void*)((u8*)GXSetVtxAttrFmt + 0x174),
+    (void*)((u8*)GXSetVtxAttrFmt + 0x1B0),
+    (void*)((u8*)GXSetVtxAttrFmt + 0x1F0),
+    (void*)((u8*)GXSetVtxAttrFmt + 0x230),
+    (void*)((u8*)GXSetVtxAttrFmt + 0x270),
+    (void*)((u8*)GXSetVtxAttrFmt + 0x2B0),
+    (void*)((u8*)GXSetVtxAttrFmt + 0x2F0),
+    (void*)((u8*)GXSetVtxAttrFmt + 0x328),
+    (void*)((u8*)GXSetVtxAttrFmt + 0x328),
+    (void*)((u8*)GXSetVtxAttrFmt + 0x328),
+    (void*)((u8*)GXSetVtxAttrFmt + 0x328),
+    (void*)((u8*)GXSetVtxAttrFmt + 0x78),
 };
 
 void* jumptable_80312B8C[17] = {

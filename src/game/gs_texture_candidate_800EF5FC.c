@@ -26,9 +26,9 @@
 #include "game/gs_texture.h"
 
 extern void GSlogWrite(const char* format, ...);
-extern u16 fn_800E2C04(u32 size, u32 alignment);   /* GSmemAlloc */
-extern void* fn_800E27B0(u16 handle);              /* GSmemGetPtr */
-extern void fn_800E209C(u16 handle);               /* GSmemFree */
+extern u16 GSmemAlloc(u32 size, u32 alignment);   /* GSmemAlloc */
+extern void* GSmemLock(u16 handle);              /* GSmemGetPtr */
+extern void GSmemFree(u16 handle);               /* GSmemFree */
 
 extern const char lbl_80270F98[]; /* "GStexture: invalid texture format" */
 extern const char lbl_80270FBC[]; /* "GStexture: warning -- texture size adjusted from [%d,%d] to [%d,%d]" */
@@ -185,13 +185,13 @@ GStextureHandle* GStextureCreate(s32 width, s32 height, s32 format, s32 tlutForm
         }
     }
 
-    tex->memHandle = fn_800E2C04(tex->totalSize, 0x20);
+    tex->memHandle = GSmemAlloc(tex->totalSize, 0x20);
     if (tex->memHandle == 0) {
         return NULL;
     }
-    tex->mipData[0] = fn_800E27B0(tex->memHandle);
+    tex->mipData[0] = GSmemLock(tex->memHandle);
     if (tex->mipData[0] == NULL) {
-        fn_800E209C(tex->memHandle);
+        GSmemFree(tex->memHandle);
         return NULL;
     }
 

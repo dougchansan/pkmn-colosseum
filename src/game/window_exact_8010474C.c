@@ -18,7 +18,7 @@ extern u8 lbl_80404ACC[];
 extern u8* menuDataBiosGetPtr(void* key);
 extern void winSpriteRelease(void* head);
 extern void* fn_800E24B0(u16 handle); /* GSmemLock */
-extern void fn_800E209C(u16 handle);  /* GSmemFree */
+extern void GSmemFree(u16 handle);  /* GSmemFree */
 
 typedef void (*WindowCallback)(u8* window);
 
@@ -47,7 +47,7 @@ void windowCloseMain(u8* window)
         winSpriteRelease(window + 0x20);
         if (*(u16*)(window + 0xAC) != 0) {
             fn_800E24B0(*(u16*)(window + 0xAC));
-            fn_800E209C(*(u16*)(window + 0xAC));
+            GSmemFree(*(u16*)(window + 0xAC));
             *(u32*)(window + 0xB0) = 0;
             *(u16*)(window + 0xAC) = 0;
         }

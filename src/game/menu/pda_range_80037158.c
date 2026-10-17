@@ -2327,10 +2327,10 @@ extern u32 gfxLoadTexture();
 extern u32 gfxClearFlags();
 extern u32 gfxSetFlags();
 extern u32 GSmemGetHandleByPtr();
-extern u32 fn_800E209C();
+extern u32 GSmemFree();
 extern u32 fn_800E24B0();
-extern u32 fn_800E27B0();
-extern u32 fn_800E2C04();
+extern u32 GSmemLock();
+extern u32 GSmemAlloc();
 extern u32 fn_800FA280();
 extern void* menuDataBiosGetPtr(s32);
 extern u32 fn_80102510();
@@ -2980,10 +2980,10 @@ void fn_8004B598(s32 unused, PdaSprite* sprite, s32 messageId)
 
 static inline void* pdaAlloc(s32 size, s32 align)
 {
-    u32 h = fn_800E2C04(size, align);
+    u32 h = GSmemAlloc(size, align);
 
     if ((u16)h != 0) {
-        return (void*)fn_800E27B0(h);
+        return (void*)GSmemLock(h);
     }
     return NULL;
 }
@@ -3056,7 +3056,7 @@ void fn_8003CF38(void)
     handle = GSmemGetHandleByPtr(lbl_8047A4D8);
     if ((u16)handle != 0) {
         fn_800E24B0(handle);
-        fn_800E209C(handle);
+        GSmemFree(handle);
     }
     lbl_8047A4D8 = 0;
 }
@@ -3415,17 +3415,17 @@ void fn_8003F040(void) {
     u8* q;
     u32 handle;
 
-    allocation = fn_800E2C04(0x28a0, 0x20);
+    allocation = GSmemAlloc(0x28a0, 0x20);
     if ((u16)allocation != 0) {
-        allocation = fn_800E27B0();
+        allocation = GSmemLock();
     } else {
         allocation = 0;
     }
     base = (u8*)allocation;
 
-    allocation = fn_800E2C04(0x320, 0x20);
+    allocation = GSmemAlloc(0x320, 0x20);
     if ((u16)allocation != 0) {
-        allocation = fn_800E27B0();
+        allocation = GSmemLock();
     } else {
         allocation = 0;
     }
@@ -3492,14 +3492,14 @@ void fn_8003F040(void) {
         handle = GSmemGetHandleByPtr((u32)base);
         if ((u16)handle != 0) {
             fn_800E24B0(handle);
-            fn_800E209C(handle);
+            GSmemFree(handle);
         }
     }
     if (idx != 0) {
         handle = GSmemGetHandleByPtr((u32)idx);
         if ((u16)handle != 0) {
             fn_800E24B0(handle);
-            fn_800E209C(handle);
+            GSmemFree(handle);
         }
     }
 }
@@ -3596,7 +3596,7 @@ void pdaStrategyMemoRun(void) {
     extern void  menuOffScreenSetDisp(s32 a);
     extern u32   GSmemGetHandleByPtr(u32 flag);
     extern void  fn_800E24B0(void);
-    extern void  fn_800E209C(u32 h);
+    extern void  GSmemFree(u32 h);
     extern void  GScameraGetPosition(void* cam, void* outVec3);
     extern void  GScameraGetRotation(void* cam, void* outVec3);
     extern void  GScameraGetPerspective(void* cam, f32* a, f32* b, f32* c, f32* d);
@@ -4758,7 +4758,7 @@ void pdaStrategyMemoRun(void) {
         h = (void*)GSmemGetHandleByPtr(lbl_8047A4E0);
         if ((u16)(u32)h != 0) {
             fn_800E24B0();
-            fn_800E209C((u32)h);
+            GSmemFree((u32)h);
         }
         lbl_8047A4E0 = 0;
     }
@@ -4770,7 +4770,7 @@ void pdaStrategyMemoRun(void) {
         h = (void*)GSmemGetHandleByPtr((u32)lbl_8047A4E4);
     if ((u16)(u32)h != 0) {
         fn_800E24B0();
-        fn_800E209C((u32)h);
+        GSmemFree((u32)h);
     }
     lbl_8047A4E4 = 0;
 }
@@ -6085,7 +6085,7 @@ static inline void pdaFree(void* p)
         h = GSmemGetHandleByPtr(p);
         if ((u16)h != 0) {
             fn_800E24B0();
-            fn_800E209C(h);
+            GSmemFree(h);
         }
     }
 }
@@ -9452,7 +9452,7 @@ void pdaSnagListRun(void)
         handle = GSmemGetHandleByPtr(lbl_8047A4D0);
         if ((u16)handle != 0) {
             fn_800E24B0();
-            fn_800E209C(handle);
+            GSmemFree(handle);
         }
         lbl_8047A4D0 = 0;
     }
@@ -9460,7 +9460,7 @@ void pdaSnagListRun(void)
         handle = GSmemGetHandleByPtr(lbl_8047A4D4);
         if ((u16)handle != 0) {
             fn_800E24B0();
-            fn_800E209C(handle);
+            GSmemFree(handle);
         }
         lbl_8047A4D4 = NULL;
     }

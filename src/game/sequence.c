@@ -326,7 +326,7 @@ void fn_801DD158(void* obj) {
  */
 void wazaSequenceOwnerRelease(void* obj) {
     extern void fn_800E24B0(u16);
-    extern void fn_800E209C(u16);
+    extern void GSmemFree(u16);
     extern void GSmodelDisableColorSwap(u32);
     extern void GSmodelDisableModulation(u32);
     extern void GSmodelSetAnimEndedCallback();
@@ -348,7 +348,7 @@ void wazaSequenceOwnerRelease(void* obj) {
         id = *(u16*)(data + 0x30);
         if (id != 0) {
             fn_800E24B0(id);
-            fn_800E209C(id);
+            GSmemFree(id);
         }
 
         if (data == NULL) {
@@ -395,7 +395,7 @@ void wazaSequenceOwnerRelease(void* obj) {
             id = *(u16*)(data + 0x7C);
             if (id != 0) {
                 fn_800E24B0(id);
-                fn_800E209C(id);
+                GSmemFree(id);
             }
         }
 
@@ -557,9 +557,9 @@ u8 fn_801DD5E8(void* effect, u8* resource) {
         u32 value20;       /* 0x20 */
     } SequenceLoadResourceHeader;
 
-    extern u16 fn_800E2C04(u32 size, u32 alignment);
+    extern u16 GSmemAlloc(u32 size, u32 alignment);
     extern u16 _toolentryAlloc__FUl(u32 size);
-    extern void* fn_800E27B0(u16 handle);
+    extern void* GSmemLock(u16 handle);
     extern void DCFlushRange(void* addr, s32 len);
     extern int wazaSequenceSysGetResID(void);
     extern void loadParticle(void* resource, u32 size, u32 group, u32 handle);
@@ -632,11 +632,11 @@ u8 fn_801DD5E8(void* effect, u8* resource) {
         (*(u16*)(sequence + 0x70) == 0x4A) ||
         (*(u16*)(sequence + 0x70) == 0x134)) {
         *(u16*)(sequence + 0x7C) =
-            fn_800E2C04((header->mainSize + 0x1F) & ~0x1F, 0x20);
+            GSmemAlloc((header->mainSize + 0x1F) & ~0x1F, 0x20);
         if (*(u16*)(sequence + 0x7C) == 0) {
             return FALSE;
         }
-        workBase = fn_800E27B0(*(u16*)(sequence + 0x7C));
+        workBase = GSmemLock(*(u16*)(sequence + 0x7C));
         memcpy(workBase, resource, (header->mainSize + 0x1F) & ~0x1F);
         DCFlushRange(workBase, (header->mainSize + 0x1F) & ~0x1F);
         loadArchivePtr(workBase, header->mainSize, 0x4E20, modelResId);
@@ -672,7 +672,7 @@ u8 fn_801DD5E8(void* effect, u8* resource) {
     *(u16*)(sequence + 0x30) = handle;
     if (handle != 0) {
         src = (SequenceEntrySrc*)resource;
-        dst = (SequenceEntryDst*)(*(u8**)(sequence + 0x2C) = fn_800E27B0(handle));
+        dst = (SequenceEntryDst*)(*(u8**)(sequence + 0x2C) = GSmemLock(handle));
         for (i = 0; i < count; i++) {
             n = sequenceCopyValueCount(dst, src);
             for (j = 0; j < n; j++) {

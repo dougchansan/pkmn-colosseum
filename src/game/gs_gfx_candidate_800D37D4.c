@@ -74,9 +74,9 @@ extern void GSmathInit(void);
 extern void _gfxScratchNotify__F15GSscratchNotifyPvUc(void);
 extern void* GSscratchAlloc(u32, void*);
 extern u16 _toolentryAlloc__FUl(u32);
-extern void* fn_800E27B0(u16);
+extern void* GSmemLock(u16);
 extern void GSlogWrite(const char*, ...);
-extern void fn_8019C3C4(s32, ...);
+extern void HSD_SetInitParameter(s32, ...);
 extern void HSD_InitComponent(void);
 extern void fn_8019C690(u32, u32);
 extern void HSD_VISetUserPostRetraceCallback(void*);
@@ -255,7 +255,7 @@ void GSgfxInit__FP15_GSgfxInitParms(u32 heapSize, u32 matrixSize,
             GSlogWrite(lbl_80270360);
             return;
         }
-        state = fn_800E27B0(handle);
+        state = GSmemLock(handle);
     }
 
     lbl_8047AA80 = (GSgfxState*)state;
@@ -332,8 +332,8 @@ void GSgfxInit__FP15_GSgfxInitParms(u32 heapSize, u32 matrixSize,
         lbl_8047AA9C = 0;
     }
 
-    fn_8019C3C4(1, 2);
-    fn_8019C3C4(4, renderMode);
+    HSD_SetInitParameter(1, 2);
+    HSD_SetInitParameter(4, renderMode);
     HSD_InitComponent();
     fn_800D37D4(videoMode, 2, 0, 2, 0, 0);
     HSD_VISetBlack(1);

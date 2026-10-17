@@ -35,8 +35,8 @@ extern s32 OSDisableScheduler(void);
 extern s32 OSEnableScheduler(void);
 extern void OSSleepThread(OSThreadQueue* queue);
 extern s32 __OSGetEffectivePriority(OSCurThread* thread);
-extern OSCurThread* fn_800A13F8(void);
-extern void fn_8009F7B4(OSMutex* mutex);
+extern OSCurThread* OSGetCurrentThread(void);
+extern void OSLockMutex(OSMutex* mutex);
 
 void OSInitCond(void* queue)
 {
@@ -50,7 +50,7 @@ void OSWaitCond(OSThreadQueue* queue, OSMutex* mutex)
     s32 count;
 
     enabled = OSDisableInterrupts();
-    current = fn_800A13F8();
+    current = OSGetCurrentThread();
 
     if (mutex->thread == current) {
         OSMutex* next;
@@ -84,7 +84,7 @@ void OSWaitCond(OSThreadQueue* queue, OSMutex* mutex)
         OSEnableScheduler();
 
         OSSleepThread(queue);
-        fn_8009F7B4(mutex);
+        OSLockMutex(mutex);
         mutex->count = count;
     }
 

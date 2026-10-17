@@ -253,7 +253,7 @@ extern void GSthreadTerminate(GSThread* thread);
 extern u32 floorGetCurrentContext(void);
 extern void GSthreadSetArgs(void* thread, s32 count, ...);
 extern u16 _toolentryAlloc__FUl(u32 size);   /* GSmemAllocRaw */
-extern void* fn_800E27B0(u16 handle);         /* GSmemGetPtr */
+extern void* GSmemLock(u16 handle);         /* GSmemGetPtr */
 
 #ifdef GS_VM_WHOLE_UNIT
 u8 lbl_80401A78[0x40];          /* print: one conversion spec */
@@ -1601,7 +1601,7 @@ s32 cms_InitThreadPool(u16 count)
         return -1;
     }
 
-    lbl_80478B00->contexts = (GSVMCtx*)fn_800E27B0(lbl_80478B00->handle);
+    lbl_80478B00->contexts = (GSVMCtx*)GSmemLock(lbl_80478B00->handle);
     ctx = lbl_80478B00->contexts;
     for (i = 0; i < count; i++) {
         ctx->script = NULL;

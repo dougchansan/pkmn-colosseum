@@ -425,7 +425,7 @@ extern u16 lbl_8047AEA4;
 
 extern u32 _toolentryAlloc__FUl(u32 size);
 
-extern u32 fn_800E27B0(u32 handle);
+extern u32 GSmemLock(u32 handle);
 
 extern u32 lbl_8047AEB4;
 
@@ -599,7 +599,7 @@ extern u8* fn_80137780(u8* work, u8* params);
 
 extern void GSvecCopy(void);
 
-extern void fn_800E2C04(void);
+extern void GSmemAlloc(void);
 
 extern void GStextureLoad(void);
 

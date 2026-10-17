@@ -14,7 +14,7 @@
 
 void HSD_MtxGetScale(MtxPtr m, Vec3* scale);
 /* HSD_MtxGetRotation */
-void fn_801A98CC(MtxPtr m, Vec3* rotate);
+void HSD_MtxGetRotation(MtxPtr m, Vec3* rotate);
 
 static inline void HSD_MtxColVec(MtxPtr mtx, int col, Vec3* vec)
 {

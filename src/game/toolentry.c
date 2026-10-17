@@ -136,7 +136,7 @@ static inline
 void toolentryTaisenFreePokemonData(void* ctx, u32 slot, u32 param) {
     extern u32 lbl_8047B650;
     extern u32 GSmemGetHandleByPtr();
-    extern void fn_800E209C();
+    extern void GSmemFree();
     extern void fn_800E24B0();
     u32 handle;
     u32 result;
@@ -145,7 +145,7 @@ void toolentryTaisenFreePokemonData(void* ctx, u32 slot, u32 param) {
         result = GSmemGetHandleByPtr(handle);
         if ((result & 0xFFFF) != 0) {
             fn_800E24B0(result);
-            fn_800E209C(result);
+            GSmemFree(result);
         }
         lbl_8047B650 = 0;
     }
@@ -195,10 +195,10 @@ void toolentryDebugPokemonCreate(void) {
     extern void* gamedataGetStatus(u32, u32);
     extern void* memcpy(void*, const void*, u32);
     extern u32 GSmemGetHandleByPtr(void*);
-    extern void fn_800E209C(u32);
+    extern void GSmemFree(u32);
     extern void fn_800E24B0(u32);
-    extern u32 fn_800E2C04(u32, u32);
-    extern void* fn_800E27B0(u32);
+    extern u32 GSmemAlloc(u32, u32);
+    extern void* GSmemLock(u32);
     s32 i;
     s32 j;
     u32 handle;
@@ -209,9 +209,9 @@ void toolentryDebugPokemonCreate(void) {
     s32 k;
 
     lbl_8047B654 = 0;
-    handle = fn_800E2C04((lbl_80478D98 * 0x138 + 0x1f) & ~0x1f, 0x20);
+    handle = GSmemAlloc((lbl_80478D98 * 0x138 + 0x1f) & ~0x1f, 0x20);
     if ((u16)handle != 0) {
-        buffer = fn_800E27B0(handle);
+        buffer = GSmemLock(handle);
     } else {
         buffer = 0;
     }
@@ -219,9 +219,9 @@ void toolentryDebugPokemonCreate(void) {
     toolentryCreateDebugPokemonList(buffer);
 
     toolentryTaisenFreePokemonData(0, 0, 0);
-    handle = fn_800E2C04(0x80, 0x20);
+    handle = GSmemAlloc(0x80, 0x20);
     if ((u16)handle != 0) {
-        buffer = fn_800E27B0(handle);
+        buffer = GSmemLock(handle);
     } else {
         buffer = 0;
     }
@@ -264,7 +264,7 @@ void toolentryDebugPokemonCreate(void) {
         handle = GSmemGetHandleByPtr(lbl_8047B654);
         if ((u16)handle != 0) {
             fn_800E24B0(handle);
-            fn_800E209C(handle);
+            GSmemFree(handle);
         }
         lbl_8047B654 = 0;
     }

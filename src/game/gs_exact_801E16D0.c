@@ -5,7 +5,7 @@
 /* Retail symbols for the canonical GSmem API declared by gs_mem.h. */
 extern u16 GSmemGetHandleByPtr(void* ptr); /* GSmemFindHandle */
 extern void* fn_800E24B0(u16 handle); /* GSmemLock */
-extern void fn_800E209C(u16 handle); /* GSmemFree */
+extern void GSmemFree(u16 handle); /* GSmemFree */
 
 s32 GSmovieGetFrame(void)
 {
@@ -43,7 +43,7 @@ void fn_801E16F0(void)
                 handle = GSmemGetHandleByPtr(lbl_8047B450);
                 if (handle != 0) {
                     fn_800E24B0(handle);
-                    fn_800E209C(handle);
+                    GSmemFree(handle);
                 }
                 lbl_8047B441 = 0;
                 GSscratchSetValid();
@@ -90,7 +90,7 @@ void GSmovieClose(void)
         handle = GSmemGetHandleByPtr(lbl_8047B450);
         if (handle != 0) {
             fn_800E24B0(handle);
-            fn_800E209C(handle);
+            GSmemFree(handle);
         }
         lbl_8047B441 = 0;
         GSscratchSetValid();

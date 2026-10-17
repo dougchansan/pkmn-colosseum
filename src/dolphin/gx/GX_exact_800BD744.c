@@ -1,6 +1,6 @@
 #include "dolphin/gx/GXInternal.h"
 
-void fn_800BD744(f32 left, f32 top, f32 width, f32 height, f32 nearz, f32 farz)
+void GXSetViewport(f32 left, f32 top, f32 width, f32 height, f32 nearz, f32 farz)
 {
     GXSetViewportJitter(left, top, width, height, nearz, farz, 1);
 }

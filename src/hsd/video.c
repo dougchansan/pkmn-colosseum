@@ -41,8 +41,8 @@ void VIFlush(void);
 void VISetNextFrameBuffer(void* fb);
 void VISetBlack(BOOL black);
 u32 VIGetTvFormat(void);
-HSD_VIRetraceCallback fn_800A880C(HSD_VIRetraceCallback cb); /* VISetPreRetraceCallback */
-HSD_VIRetraceCallback fn_800A8850(HSD_VIRetraceCallback cb); /* VISetPostRetraceCallback */
+HSD_VIRetraceCallback VISetPreRetraceCallback(HSD_VIRetraceCallback cb); /* VISetPreRetraceCallback */
+HSD_VIRetraceCallback VISetPostRetraceCallback(HSD_VIRetraceCallback cb); /* VISetPostRetraceCallback */
 
 void GXWaitDrawDone(void);                         /* GXWaitDrawDone */
 void GXDrawDone(void);                          /* GXSetDrawDone */
@@ -516,8 +516,8 @@ void HSD_VIInit(HSD_VIStatus* vi, void* xfb0, void* xfb1, void* xfb2)
     _p->efb.status = HSD_VI_EFB_FREE;
     _p->efb.vi_all = _p->current;
 
-    fn_800A880C(HSD_VIPreRetraceCB);
-    fn_800A8850(HSD_VIPostRetraceCB);
+    VISetPreRetraceCallback(HSD_VIPreRetraceCB);
+    VISetPostRetraceCallback(HSD_VIPostRetraceCB);
 
     _p->pre_cb = NULL;
     _p->post_cb = NULL;

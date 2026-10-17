@@ -29,8 +29,8 @@ extern void HSD_MulColor(GXColor* a, GXColor* b, GXColor* result);
 extern void GXSetDstAlpha(u8 enable, u8 alpha);
 extern void GXSetBlendMode(int type, int src_factor, int dst_factor, int op);
 extern void GXSetZMode(u32 compareEnable, u32 func, u32 updateEnable);
-extern void fn_800BCEBC(u8 before_tex);   /* GXSetZCompLoc */
-extern void fn_800BC618(int comp0, u8 ref0, int op, int comp1,
+extern void GXSetZCompLoc(u8 before_tex);   /* GXSetZCompLoc */
+extern void GXSetAlphaCompare(int comp0, u8 ref0, int op, int comp1,
                         u8 ref1);         /* GXSetAlphaCompare */
 extern void GXSetDither(u8 enable);       /* GXSetDither */
 
@@ -228,7 +228,7 @@ void HSD_SetupRenderModeWithCustomPE(u32 rendermode, HSD_PEDesc* pe)
 }
 
 /* 0x801B2878 - 0x801B294C */
-extern void fn_800B94F0(int mode); /* GXSetCullMode */
+extern void GXSetCullMode(int mode); /* GXSetCullMode */
 
 /* HSD_SetMaterialColor */
 void HSD_SetMaterialColor(GXColor ambient, GXColor diffuse, GXColor specular, f32 alpha)
@@ -245,7 +245,7 @@ void HSD_SetMaterialColor(GXColor ambient, GXColor diffuse, GXColor specular, f3
 }
 
 /* HSD_SetMaterialShininess */
-void fn_801B28B8(f32 shininess)
+void HSD_SetMaterialShininess(f32 shininess)
 {
     lbl_80465710.shininess = shininess;
 }
@@ -254,7 +254,7 @@ void fn_801B28B8(f32 shininess)
 void HSD_StateSetCullMode(int mode)
 {
     if (lbl_8047B34C != mode) {
-        fn_800B94F0(mode);
+        GXSetCullMode(mode);
         lbl_8047B34C = mode;
     }
 }
@@ -318,7 +318,7 @@ static inline void HSD_StateSetAlphaCompare(int comp0, u8 ref0, int op,
         lbl_8047B324 != op || lbl_8047B320 != comp1 ||
         lbl_8047B31E != ref1)
     {
-        fn_800BC618(comp0, ref0, op, comp1, ref1);
+        GXSetAlphaCompare(comp0, ref0, op, comp1, ref1);
         lbl_8047B32C = comp0;
         lbl_8047B328 = ref0;
         lbl_8047B324 = op;
@@ -343,7 +343,7 @@ static inline void HSD_StateSetZCompLoc(int before_tex)
     GXBool before = before_tex != 0;
 
     if (lbl_8047B319 != before) {
-        fn_800BCEBC(before);
+        GXSetZCompLoc(before);
         lbl_8047B319 = before;
     }
 }
@@ -428,7 +428,7 @@ void _HSD_StateInvalidateRenderMode(void)
 }
 
 /* HSD_StateInvalidate */
-void fn_801B25C4(int mask)
+void HSD_StateInvalidate(int mask)
 {
     int i;
 

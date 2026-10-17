@@ -24,7 +24,7 @@
  */
 void wazaSequenceSysRelease(void) {
     extern void fn_800E24B0(u16 handle);
-    extern void fn_800E209C(u16 handle);
+    extern void GSmemFree(u16 handle);
     u8* entry = *(u8**)lbl_80467CC0;
     u16 count = *(u16*)(lbl_80467CC0 + 4);
     u16 handle = *(u16*)(lbl_80467CC0 + 0x10);
@@ -40,7 +40,7 @@ void wazaSequenceSysRelease(void) {
         }
     }
     fn_800E24B0(handle);
-    fn_800E209C(handle);
+    GSmemFree(handle);
     memset(lbl_80467CC0, 0, 0x14);
 }
 
@@ -71,7 +71,7 @@ void fn_801DADC0(void* context) {
     extern void* GSresGetResource(u32, u32);
     extern void wazaSequenceSysClearWork(void);
     extern u16 _toolentryAlloc__FUl(u32);
-    extern void* fn_800E27B0(u16);
+    extern void* GSmemLock(u16);
     u8* base = lbl_80467C80;
     WazaSystemState* state = (WazaSystemState*)lbl_80467C80;
     u32 groupId;
@@ -113,7 +113,7 @@ void fn_801DADC0(void* context) {
 
             pool->handle = handle;
             pool->count = count;
-            pool->entries = fn_800E27B0(handle);
+            pool->entries = GSmemLock(handle);
             memset(pool->entries, 0, receiverCount);
             battleCameraWazaInit();
             pool->resourceA = NULL;
@@ -139,7 +139,7 @@ void wazaSequenceSysInit(s32 count) {
     extern void* GSresGetResource(u32, u32);
     extern void wazaSequenceSysClearWork(void);
     extern u16 _toolentryAlloc__FUl(u32);
-    extern void* fn_800E27B0(u16);
+    extern void* GSmemLock(u16);
     void* floor;
     void* resource;
     u32 groupId;
@@ -175,7 +175,7 @@ void wazaSequenceSysInit(s32 count) {
         if (handle != 0) {
             *(u16*)(lbl_80467CC0 + 0x10) = handle;
             *(u16*)(lbl_80467CC0 + 4) = count;
-            *(void**)lbl_80467CC0 = fn_800E27B0(handle);
+            *(void**)lbl_80467CC0 = GSmemLock(handle);
             memset(*(void**)lbl_80467CC0, 0, size);
             battleCameraWazaInit();
             fn_801DE598(0x6F7, 0);

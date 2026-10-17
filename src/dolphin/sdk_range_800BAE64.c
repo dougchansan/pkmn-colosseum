@@ -118,7 +118,7 @@ void GXLoadTexObj(GXTexObj_800BAFFC* obj, u32 mapID) {
     GXLoadTexObjPreLoaded(obj, region, mapID);
 }
 
-void fn_800BB050(GXTlutObj_800BB050* obj, void* data, u32 format,
+void GXInitTlutObj(GXTlutObj_800BB050* obj, void* data, u32 format,
                  u16 numEntries) {
     obj->format = 0;
     obj->format = (obj->format & ~0xC00) | (format << 10);
@@ -128,7 +128,7 @@ void fn_800BB050(GXTlutObj_800BB050* obj, void* data, u32 format,
     obj->numEntries = numEntries;
 }
 
-void fn_800BB098(GXTlutObj_800BB050* obj, u32 tlutName) {
+void GXLoadTlut(GXTlutObj_800BB050* obj, u32 tlutName) {
     extern void __GXFlushTextureState(void);
     GXTlutRegion_800BB098* region = gx->tlutRegionCallback(tlutName);
     u32 tmemOffset;

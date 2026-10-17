@@ -1,7 +1,7 @@
 #include "game/gs_texture.h"
 
 extern void fn_800E24B0(u16 handle);
-extern void fn_800E209C(u16 handle);
+extern void GSmemFree(u16 handle);
 
 void GStextureFree(GStextureHandle* texture)
 {
@@ -13,5 +13,5 @@ void GStextureFree(GStextureHandle* texture)
     }
     texture->inUse = 0;
     fn_800E24B0(texture->memHandle);
-    fn_800E209C(texture->memHandle);
+    GSmemFree(texture->memHandle);
 }

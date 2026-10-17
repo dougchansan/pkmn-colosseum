@@ -453,7 +453,7 @@ void _hsdClassAmnesia(HSD_ClassInfo* info) {
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
-extern void fn_801A6960(void* cls);
+extern void HSD_Free(void* cls);
 #if 0
 asm void _hsdClassDestroy(void) {
 #include "src/hsd/hsd_class_fn_80193A58.inc"
@@ -463,7 +463,7 @@ asm void _hsdClassDestroy(void) {
 void _hsdClassDestroy(HSD_Class* cls) {
     HSD_ClassInfo* info = cls->class_info;
     info->head.nb_exist -= 1;
-    fn_801A6960(cls);
+    HSD_Free(cls);
 }
 #endif
 #pragma pop
@@ -500,7 +500,7 @@ int _hsdClassInit(HSD_Class* cls) { return 0; }
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
-extern void* fn_801A6928(s32 size);
+extern void* HSD_MemAlloc(s32 size);
 #if 0
 asm void _hsdClassAlloc(void) {
 #include "src/hsd/hsd_class_fn_80193A94.inc"
@@ -508,7 +508,7 @@ asm void _hsdClassAlloc(void) {
 #else
 #pragma optimization_level 4
 HSD_Class* _hsdClassAlloc(HSD_ClassInfo* info) {
-    HSD_Class* result = (HSD_Class*) fn_801A6928((s32) info->head.obj_size);
+    HSD_Class* result = (HSD_Class*) HSD_MemAlloc((s32) info->head.obj_size);
     if (result != NULL) {
         info->head.nb_exist += 1;
         if (info->head.nb_exist > info->head.nb_peak) {
@@ -531,7 +531,7 @@ asm void fn_80193AF0(void) {
 #else
 #pragma optimization_level 4
 void fn_80193AF0(void* cls) {
-    fn_801A6960(cls);
+    HSD_Free(cls);
 }
 #endif
 #pragma pop
@@ -547,7 +547,7 @@ asm void fn_80193B10(void) {
 #else
 #pragma optimization_level 4
 void fn_80193B10(HSD_ClassInfo* info) {
-    fn_801A6928((s32)(u32)info);
+    HSD_MemAlloc((s32)(u32)info);
 }
 #endif
 #pragma pop

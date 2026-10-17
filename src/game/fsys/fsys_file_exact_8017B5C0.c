@@ -9,7 +9,7 @@
 #include "game/fsys/fsys.h"
 
 extern u16 fn_800E2B00(u32 size, u32 alignment);
-extern void* fn_800E27B0(u16 handle);
+extern void* GSmemLock(u16 handle);
 extern u32 fn_8017F794(u32 fileHandle, u32 groupID, u32 nameHash);
 extern u32 fn_8017F728(u32 fileHandle, u32 groupID, u32 nameHash);
 extern void fn_80180584(void* dst, void* src, u32 size, void (*callback)(void), void* userData);
@@ -24,7 +24,7 @@ static inline void* fsysAllocTemp(u32 size)
     alignedSize = (size + 0x1F) & ~0x1F;
     handle = fn_800E2B00(alignedSize, 0x20);
     if (handle != 0) {
-        return fn_800E27B0(handle);
+        return GSmemLock(handle);
     }
     return NULL;
 }

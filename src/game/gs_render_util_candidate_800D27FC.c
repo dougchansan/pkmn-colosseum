@@ -14,7 +14,7 @@
 extern void GSvecCopy(void* dst, const void* src);
 extern void HSD_ForeachAnim(void* obj, u32 type, u32 mask, void (*cb)(void*), ...);
 extern u32 _toolentryAlloc__FUl(u32 size);
-extern void* fn_800E27B0(u32 handle);
+extern void* GSmemLock(u32 handle);
 extern void _GScameraAnimCallback(void* aobj);
 
 extern u16 lbl_8047AA68;             /* camera pool GSmem handle */
@@ -147,7 +147,7 @@ void fn_800D2AD4(u32 count)
     lbl_8047AA70 = count;
     lbl_8047AA68 = _toolentryAlloc__FUl(count * sizeof(GSRenderCamera));
     if (lbl_8047AA68 != 0) {
-        lbl_8047AA6C = fn_800E27B0(lbl_8047AA68);
+        lbl_8047AA6C = GSmemLock(lbl_8047AA68);
         for (i = 0; i < lbl_8047AA70; i++) {
             lbl_8047AA6C[i].active = 0;
         }

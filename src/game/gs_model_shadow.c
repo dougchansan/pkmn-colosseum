@@ -225,15 +225,15 @@ void GSmodelSetShadowLight(GSmodel* model, GSlight* light)
 void GSmodelSetShadowSurface(GSmodel* model, s32 count, void* data)
 {
     extern void fn_800E24B0(u16 handle);
-    extern void fn_800E209C(u16 handle);
+    extern void GSmemFree(u16 handle);
     extern u16 _toolentryAlloc__FUl(u32 size);
-    extern void* fn_800E27B0(u16 handle);
+    extern void* GSmemLock(u16 handle);
     extern void* memcpy(void* dst, const void* src, u32 n);
 
     if (count != model->shadowVtxCount) {
         if (model->shadowVtxHandle != 0) {
             fn_800E24B0(model->shadowVtxHandle);
-            fn_800E209C(model->shadowVtxHandle);
+            GSmemFree(model->shadowVtxHandle);
             model->shadowVtxHandle = 0;
             model->shadowVtxCount = 0;
             model->shadowVtxBuffer = NULL;
@@ -243,7 +243,7 @@ void GSmodelSetShadowSurface(GSmodel* model, s32 count, void* data)
         }
         model->shadowVtxCount = count;
         model->shadowVtxHandle = _toolentryAlloc__FUl(model->shadowVtxCount * 4);
-        model->shadowVtxBuffer = fn_800E27B0(model->shadowVtxHandle);
+        model->shadowVtxBuffer = GSmemLock(model->shadowVtxHandle);
     }
     memcpy(model->shadowVtxBuffer, data, model->shadowVtxCount * 4);
 }
@@ -285,11 +285,11 @@ void GSmodelSetShadowFlags(GSmodel* model, u32 flags)
 void modelShadowFreeModelList__FP8_GSmodel(GSmodel* model)
 {
     extern void fn_800E24B0(u16 handle);
-    extern void fn_800E209C(u16 handle);
+    extern void GSmemFree(u16 handle);
 
     if (model->shadowVtxHandle != 0) {
         fn_800E24B0(model->shadowVtxHandle);
-        fn_800E209C(model->shadowVtxHandle);
+        GSmemFree(model->shadowVtxHandle);
         model->shadowVtxHandle = 0;
         model->shadowVtxCount = 0;
         model->shadowVtxBuffer = NULL;

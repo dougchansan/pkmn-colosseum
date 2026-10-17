@@ -117,7 +117,7 @@ extern u32 CancelLastError_8047A814;
 extern volatile u32 CurrCommand_8047A804;
 extern BOOL lbl_8047A7FC;
 extern void (*lbl_8047A82C)(DVDCommandBlock* block);
-extern void fn_800A59CC(u32 intType);
+extern void cbForStateGettingError(u32 intType);
 extern void cbForStateReadingFST(u32 intType);
 extern void cbForUnrecoveredError(u32 intType);
 extern void cbForUnrecoveredErrorRetry(u32 intType);
@@ -203,7 +203,7 @@ void cbForStateReadingFST(u32 intType)
     defined(DVD_EXACT_800A58F0_800A5918)
 void stateGettingError(void)
 {
-    DVDLowRequestError(fn_800A59CC);
+    DVDLowRequestError(cbForStateGettingError);
 }
 #endif
 
@@ -277,7 +277,7 @@ void cbForStateCheckID3(u32 intType)
         return;
     }
 
-    DVDLowRequestError(fn_800A59CC);
+    DVDLowRequestError(cbForStateGettingError);
 }
 #endif
 
@@ -299,7 +299,7 @@ void cbForStateCoverClosed(u32 intType)
         return;
     }
 
-    DVDLowRequestError(fn_800A59CC);
+    DVDLowRequestError(cbForStateGettingError);
 }
 #endif
 
@@ -981,7 +981,7 @@ void cbForStateBusy(u32 intType)
             return;
         }
 
-        DVDLowRequestError(fn_800A59CC);
+        DVDLowRequestError(cbForStateGettingError);
     }
 }
 #endif
@@ -1064,7 +1064,7 @@ static inline BOOL dvdCheckCancelForGettingError(u32 resume)
 }
 
 /* 0x800A59CC | size: 0x294 */
-void fn_800A59CC(u32 intType)
+void cbForStateGettingError(u32 intType)
 {
     u32 error;
     u32 status;
@@ -1464,7 +1464,7 @@ static void cbForStateGoToRetry(u32 intType) {
 }
 #endif
 
-DVD_SPLIT_CALLBACK_SCOPE void fn_800A5D88(u32 intType);
+DVD_SPLIT_CALLBACK_SCOPE void cbForStateGoToRetry(u32 intType);
 
 /*
  * stateGoToRetry - 0x800A5D60 | size: 0x28
@@ -1473,19 +1473,19 @@ DVD_SPLIT_CALLBACK_SCOPE void fn_800A5D88(u32 intType);
 #if !defined(DVD_BANK_EXACT_ACTIVE) || \
     defined(DVD_EXACT_800A5D60_800A5D88)
 void stateGoToRetry(void) {
-    DVDLowStopMotor((DVDLowCallback)fn_800A5D88);
+    DVDLowStopMotor((DVDLowCallback)cbForStateGoToRetry);
 }
 #endif
 
 /*
- * fn_800A5D88 - 0x800A5D88 | size: 0x158
+ * cbForStateGoToRetry - 0x800A5D88 | size: 0x158
  * Decode and handle a cover interrupt event from the DVD hardware.
  * Determines if the cover was opened or closed and transitions
  * the DVD state machine accordingly.
  */
 #if !defined(DVD_BANK_EXACT_ACTIVE) || \
     defined(DVD_EXACT_800A5D88_800A5EE0)
-DVD_SPLIT_CALLBACK_SCOPE void fn_800A5D88(u32 intType) {
+DVD_SPLIT_CALLBACK_SCOPE void cbForStateGoToRetry(u32 intType) {
     extern void DVDReset(void);
     extern void stateMotorStopped(void);
 
@@ -1596,7 +1596,7 @@ void cbForStateCheckID2a(u32 intType)
         return;
     }
 
-    DVDLowRequestError(fn_800A59CC);
+    DVDLowRequestError(cbForStateGettingError);
 }
 
 /*
@@ -1687,7 +1687,7 @@ void DVDChangeDisk(u32 intType) {
         return;
     }
 
-    DVDLowRequestError(fn_800A59CC);
+    DVDLowRequestError(cbForStateGettingError);
 }
 #endif
 
@@ -1743,7 +1743,7 @@ static void __DVDInterruptHandlerMain(u32 intType) {
 
     /* Handle cover open */
     if (intType & 0x4) {
-        fn_800A5D88(intType);
+        cbForStateGoToRetry(intType);
         return;
     }
 

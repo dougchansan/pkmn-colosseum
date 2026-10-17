@@ -22,7 +22,7 @@ extern void gfxVtxDescClear(u8*);
 extern void gfxVtxDescSetAttr(u8*, u32, u32, u32, u32, u8, u32, u8);
 extern void gfxLoadVtxDesc(u32);
 extern void gfxSetupChannelsTev(u32);
-extern void fn_800B928C(u32, u32, u16);
+extern void GXBegin(u32, u32, u16);
 
 extern u32 lbl_8047AA80;
 extern u32 lbl_80314350[];
@@ -76,7 +76,7 @@ void gfxBegin(u16 vertCount) {
 
     gfxLoadVtxDesc(*(u32*)(lbl_8047AA80 + 0x24));
     gfxSetupChannelsTev(*(u32*)(lbl_8047AA80 + 0x24));
-    fn_800B928C(lbl_80314350[*(u32*)(lbl_8047AA80 + 0x14)],
+    GXBegin(lbl_80314350[*(u32*)(lbl_8047AA80 + 0x14)],
                 *(u32*)(*(u32*)(lbl_8047AA80 + 0x24) + 0x4), vertCount);
     fn_800D6A80(vertCount, *(s32*)(lbl_8047AA80 + 0x14),
                 (u32*)(lbl_804001F0 + 0xc), (u32*)(lbl_804001F0 + 0x4));

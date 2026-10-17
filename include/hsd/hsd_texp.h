@@ -330,7 +330,7 @@ HSD_TExp* HSD_TExpCnst(void* val, HSD_TEInput comp, HSD_TEType type,
  *   fn_801B707C HSD_TExpTev       fn_801B5E40 HSD_TExpOrder
  *   fn_801B6E74 HSD_TExpColorOp   fn_801B64EC HSD_TExpColorIn
  *   fn_801B6CD8 HSD_TExpAlphaOp   fn_801B5F08 HSD_TExpAlphaIn
- *   fn_801B7178 HSD_TExpFreeList  fn_801B45A4 HSD_TExpSetupTev
+ *   HSD_TExpFreeList HSD_TExpFreeList  fn_801B45A4 HSD_TExpSetupTev
  *   HSD_TExpRef HSD_TExpRef       HSD_TExpUnref HSD_TExpUnref
  *   fn_801B6DC0 (swap-table setter, no Melee counterpart)
  */
@@ -349,7 +349,7 @@ void HSD_TExpAlphaIn(HSD_TExp* texp, HSD_TEInput sel_a, HSD_TExp* exp_a,
                  HSD_TEInput sel_b, HSD_TExp* exp_b, HSD_TEInput sel_c,
                  HSD_TExp* exp_c, HSD_TEInput sel_d, HSD_TExp* exp_d);
 void HSD_TExpFreeTevDesc(HSD_TExpTevDesc* tdesc);
-HSD_TExp* fn_801B7178(HSD_TExp* texp_list, HSD_TExpType type, s32 all);
+HSD_TExp* HSD_TExpFreeList(HSD_TExp* texp_list, HSD_TExpType type, s32 all);
 int HSD_TExpCompile(HSD_TExp* texp, HSD_TExpTevDesc** tevdesc,
                     HSD_TExp** texp_list);
 void HSD_TExpSetupTev(HSD_TExpTevDesc* tevdesc, HSD_TExp* texp);

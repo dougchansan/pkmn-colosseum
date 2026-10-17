@@ -323,7 +323,7 @@ void HSD_WObjAddAnim(HSD_WObj* wobj, HSD_WObjAnim* desc) {
         HSD_AObjRemove(wobj->aobj);
     }
     wobj->aobj = HSD_AObjLoadDesc(desc->aobjdesc);
-    fn_801AFE68(wobj->robj, desc->robjanim);
+    HSD_RObjAddAnimAll(wobj->robj, desc->robjanim);
 }
 
 /* 0x80191E38 | 0x50 */

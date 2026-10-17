@@ -63,7 +63,7 @@ extern u32 lbl_8047B07C;
 
 /* GSmem allocator */
 extern u16   _toolentryAlloc__FUl(u32 size);
-extern void* fn_800E27B0(u16 handle);
+extern void* GSmemLock(u16 handle);
 
 /* External functions referenced from asm wrappers */
 extern u32 sndAuxCallbackUpdateSettingsReverbHI(u8* ptr);
@@ -72,7 +72,7 @@ extern u32 sndAuxCallbackUpdateSettingsReverbHI(u8* ptr);
 extern void  GSmodelGetPart(void* model, u32 param);
 extern void  GSpartFree(void* model, u32 param);
 extern void  fn_800E24B0(void* model, u32 param);
-extern void  fn_800E209C(void* model, u32 param);
+extern void  GSmemFree(void* model, u32 param);
 extern void  set__5GSvecFfff(void* dst, void* src);
 extern void  GSvecCopy(void* dst, void* src);
 extern void  GSvecAdd(void* model, void* param);
@@ -937,7 +937,7 @@ static void HandleKeyOffNotes(void) {
     lbl_8047AF08->keyOffCheck = (lbl_8047AF08->keyOffCheck + 1) % 5;
 }
 
-void fn_801496A0(u32 deltaTime) {
+void seqHandle(u32 deltaTime) {
     u32 i;
     u32 j;
     u32 x;

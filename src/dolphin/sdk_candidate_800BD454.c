@@ -1,12 +1,12 @@
 /**
  * @file sdk_candidate_800BD454.c
- * @brief GXTransform.c run 0x800BD454 - 0x800BD554: fn_800BD454 (the
+ * @brief GXTransform.c run 0x800BD454 - 0x800BD554: GXGetProjectionv (the
  *        projection read-back, GXGetProjectionv), GXLoadPosMtxImm and
  *        GXLoadNrmMtxImm.
  */
 #include "dolphin/gx/GXInternal.h"
 
-void fn_800BD454(f32* projection)
+void GXGetProjectionv(f32* projection)
 {
     GXData* data = gx;
 

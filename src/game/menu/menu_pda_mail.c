@@ -1872,9 +1872,9 @@ s32 fn_8004E510(u8* context, u8* object)
 void fn_8004C120(void)
 {
     extern u16 _toolentryAlloc__FUl(u32);
-    extern void* fn_800E27B0(u16);
+    extern void* GSmemLock(u16);
     extern void fn_800E24B0(u16);
-    extern void fn_800E209C(u16);
+    extern void GSmemFree(u16);
     extern s32 fn_8004D34C(s32);
     extern s32 fn_8004D9C0(s32);
     s32 ascIndex;
@@ -1895,7 +1895,7 @@ void fn_8004C120(void)
     count = mailGetNbMailInMailbox();
     if (count > 0) {
         allocation = _toolentryAlloc__FUl(count * sizeof(u16));
-        lbl_8047A500 = fn_800E27B0(allocation);
+        lbl_8047A500 = GSmemLock(allocation);
         output = lbl_8047A500;
 
         switch (mailGetSortMode()) {
@@ -1943,7 +1943,7 @@ void fn_8004C120(void)
 
     if (count > 0) {
         fn_800E24B0(allocation);
-        fn_800E209C(allocation);
+        GSmemFree(allocation);
     }
 }
 #pragma peephole reset

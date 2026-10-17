@@ -87,7 +87,7 @@ int __SITransfer(s32 chan, void* output, u32 outputBytes, void* input,
 BOOL SIGetResponseRaw(s32 chan);
 static void GetTypeCallback(s32 chan, u32 error, OSContext* context);
 
-BOOL fn_800CF708(void) {
+BOOL SIBusy(void) {
     if (Si_80313F8C.chan != -1) {
         return TRUE;
     }
@@ -435,11 +435,11 @@ u32 SIGetStatus(s32 chan) {
 }
 #pragma dont_inline reset
 
-void fn_800D0338(s32 chan, u32 command) {
+void SISetCommand(s32 chan, u32 command) {
     __SIChannelRegs[chan].reg = command;
 }
 
-void fn_800D034C(void) {
+void SITransferCommands(void) {
     volatile u32* commandRegister;
     u32 command;
 

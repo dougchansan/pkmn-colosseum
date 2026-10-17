@@ -81,8 +81,8 @@ static inline void wazaViewerLoadFile(const char* messages, const char* path, vo
 
 void wazaViewerLoadSequenceFiles(s32 slot) {
     extern u32 strlen(const char* s);
-    extern u16 fn_800E2C04(u32 size, u32 align);
-    extern void* fn_800E27B0(u16 block);
+    extern u16 GSmemAlloc(u32 size, u32 align);
+    extern void* GSmemLock(u16 block);
     extern void GSmodelSetRotation(void* model, WazaViewerVec* rotation);
     extern void GSmodelSetPosition(void* model, WazaViewerVec* position);
 
@@ -118,12 +118,12 @@ void wazaViewerLoadSequenceFiles(s32 slot) {
     if (modelSize == 0) {
         return;
     }
-    block = fn_800E2C04((modelSize + 0x1F) & ~0x1F, 0x20);
+    block = GSmemAlloc((modelSize + 0x1F) & ~0x1F, 0x20);
     if (block == 0) {
         return;
     }
     *(u16*)(lbl_804673F8 + 0x660) = block;
-    modelBuf = fn_800E27B0(block);
+    modelBuf = GSmemLock(block);
     buf = *(void**)(lbl_804673F8 + 0x65C) = modelBuf;
     wazaViewerLoadFile((const char*)viewerData, modelPath, buf, modelSize, FALSE);
     sequenceLoad(effect, *(void**)(lbl_804673F8 + 0x65C));
@@ -136,10 +136,10 @@ void wazaViewerLoadSequenceFiles(s32 slot) {
     GSmodelSetPosition(*(void**)((u8*)effect + 0x24), &position);
     *(s8*)((u8*)effect + 0x76) = -1;
     if (animSize != 0) {
-        block = fn_800E2C04((animSize + 0x1F) & ~0x1F, 0x20);
+        block = GSmemAlloc((animSize + 0x1F) & ~0x1F, 0x20);
         if (block != 0) {
             *(u16*)(lbl_804673F8 + 0x668) = block;
-            animBuf = *(void**)(lbl_804673F8 + 0x664) = fn_800E27B0(block);
+            animBuf = *(void**)(lbl_804673F8 + 0x664) = GSmemLock(block);
             buf = animBuf;
             animPath = (char*)(lbl_804673F8 + 0x41C);
             wazaViewerLoadFile((const char*)viewerData, animPath, buf, animSize, FALSE);

@@ -49,8 +49,8 @@ typedef struct PSSortBucket {
     ((((flags) >> 25) & 7) + (((flags) & 8) ? 0 : 1) * 8)
 
 extern void* memset(void* dst, int val, u32 size);
-extern void* fn_801A6928(u32 size); /* HSD_MemAlloc */
-extern void fn_801A6960(void* p);   /* HSD_Free */
+extern void* HSD_MemAlloc(u32 size); /* HSD_MemAlloc */
+extern void HSD_Free(void* p);   /* HSD_Free */
 
 extern PSParticle* lbl_8047B108; /* particle free list */
 extern u16 lbl_8047B114;         /* peak live particles */
@@ -75,7 +75,7 @@ s32 _psLinkInit(s32 count)
 
     lbl_8047B108 = NULL;
     for (i = count - 1; i >= 0; i--) {
-        PSParticle* pp = fn_801A6928(sizeof(PSParticle));
+        PSParticle* pp = HSD_MemAlloc(sizeof(PSParticle));
 
         memset(pp, 0, sizeof(PSParticle));
         if (pp == NULL) {
@@ -96,7 +96,7 @@ void _psListClear(void)
     pp = lbl_8047B108;
     while (pp != NULL) {
         next = pp->next;
-        fn_801A6960(pp);
+        HSD_Free(pp);
         pp = next;
     }
     lbl_8047B108 = NULL;
@@ -105,7 +105,7 @@ void _psListClear(void)
         pp = activeParticle[i];
         while (pp != NULL) {
             next = pp->next;
-            fn_801A6960(pp);
+            HSD_Free(pp);
             pp = next;
         }
         activeParticle[i] = NULL;
@@ -119,7 +119,7 @@ PSParticle* _psListNew(PSParticle* parent, u32 linkNo)
     PSParticle* pp;
 
     if (lbl_8047B108 == NULL) {
-        lbl_8047B108 = fn_801A6928(sizeof(PSParticle));
+        lbl_8047B108 = HSD_MemAlloc(sizeof(PSParticle));
         memset(lbl_8047B108, 0, sizeof(PSParticle));
     }
 

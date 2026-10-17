@@ -21,9 +21,9 @@ extern void* memcpy(void* dst, const void* src, u32 n);
 extern void* memset(void* dst, int val, u32 size);
 /* GSmem */
 extern u16   _toolentryAlloc__FUl(u32 size);                     /* GSmemAllocRaw */
-extern void* fn_800E27B0(u16 handle);                   /* GSmemGetPtr */
+extern void* GSmemLock(u16 handle);                   /* GSmemGetPtr */
 extern void* fn_800E24B0(u16 handle);                   /* GSmemLock */
-extern void  fn_800E209C(u16 handle);                   /* GSmemFree */
+extern void  GSmemFree(u16 handle);                   /* GSmemFree */
 /* Matrix / vector */
 extern void  PSMTXMultVec(void* mtx, void* vec, void* out); /* MTXMultVec3 */
 extern void  PSVECSubtract(void* out, void* in, f32 s);     /* VEC normalize */
@@ -1749,12 +1749,12 @@ static inline void fieldWorldResourceRelease(void)
     handle = gFieldWorld.cameraHandle;
     if (handle != 0) {
         fn_800E24B0(handle);
-        fn_800E209C(handle);
+        GSmemFree(handle);
     }
     handle = gFieldWorld.workHandle;
     if (handle != 0) {
         fn_800E24B0(handle);
-        fn_800E209C(handle);
+        GSmemFree(handle);
     }
     memset(&gFieldWorld, 0, 0x20);
 }
@@ -1782,7 +1782,7 @@ void fn_801176C8(u32 floorId)
     if (handle == 0) {
         goto cleanup;
     }
-    gFieldWorld.work = fn_800E27B0(handle);
+    gFieldWorld.work = GSmemLock(handle);
     gFieldWorld.workHandle = handle;
     list = floorDataBiosGetFieldCameraListPtr(floor);
     gFieldWorld.floorId = floorId;
@@ -1802,7 +1802,7 @@ void fn_801176C8(u32 floorId)
     }
     gFieldWorld.cameraHandle = handle;
     gFieldWorld.cameraCount = count;
-    gFieldWorld.work->cameras = fn_800E27B0(handle);
+    gFieldWorld.work->cameras = GSmemLock(handle);
     memcpy(gFieldWorld.work->cameras, list[1], count * 0x18);
     return;
 
