@@ -58,7 +58,7 @@ s32 fn_801ED0CC(u8* arg0, u8* pokemon)
     extern u8* savedataGetStatus(u8* data, u16 index);
     extern u8 pokemonBiosGetLevel(u8* pokemon);
     extern u8 fn_80121ADC(u8* pokemon, u32 value);
-    extern void fn_80121B4C(u8* pokemon, u32 value);
+    extern void pokemonInitPersistentJoutai(u8* pokemon, u32 value);
     extern u8 pokemonBiosGetDarkFlag(u8* pokemon);
     extern u32 pokemonBiosGetDp(u8* pokemon);
     extern void pokemonInit(u8* pokemon);
@@ -94,7 +94,7 @@ s32 fn_801ED0CC(u8* arg0, u8* pokemon)
     }
 
     if (fn_80121ADC(pokemon, 0x3E) != 0) {
-        fn_80121B4C(pokemon, 0x3E);
+        pokemonInitPersistentJoutai(pokemon, 0x3E);
     }
     *(PokemonCopy*)dest = *(PokemonCopy*)pokemon;
     if (pokemonBiosGetDarkFlag(pokemon) != 0) {

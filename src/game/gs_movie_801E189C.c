@@ -69,7 +69,7 @@ extern u16 GSmemGetHandleByPtr(void* pointer);
 extern void fn_800E24B0(u16 handle);
 extern void fn_800E209C(u16 handle);
 extern void fn_801E3858(u32* first, u32* second);
-extern void fn_8014F2DC(s32 id, u32, u32, u32, u32, u32);
+extern void sndStreamMixParameterEx(s32 id, u32, u32, u32, u32, u32);
 extern void fn_801E4058(void);
 extern BOOL fn_801E4A6C(void);
 
@@ -148,10 +148,10 @@ void* fn_801E1924(void* param)
 
     fn_801E3858(&first, &second);
     if (first != (u32)-1) {
-        fn_8014F2DC(first, 0, 0, 0, 0x7F, 0);
+        sndStreamMixParameterEx(first, 0, 0, 0, 0x7F, 0);
     }
     if (second != (u32)-1) {
-        fn_8014F2DC(second, 0, 0x7F, 0, 0x7F, 0);
+        sndStreamMixParameterEx(second, 0, 0x7F, 0, 0x7F, 0);
     }
     fn_801E4058();
     lbl_8047B441 = 1;

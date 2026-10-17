@@ -4189,7 +4189,7 @@ extern void* gamedataGetStatus(s32, s32);
 extern u8 lbl_802EF0A8[];
 extern void pokemonCreate(void*, s32, s32, void*);
 extern void menuModelInit(void*, s32, s32);
-extern void fn_80109C88(void*, void*);
+extern void menuPokemonModelRequest(void*, void*);
 extern s32 menuOpenCustom(s32, ...);
 
 /* exShrineModelIsOpen (0x80075638): tail-call wrapper. */
@@ -4197,14 +4197,14 @@ s32 exShrineModelIsOpen(void) { return menuIsCheck(0xd8); }
 
 /* fn_8007565C (0x8007565C): close and release the active menu resource. */
 void fn_8007565C(void) {
-    extern void fn_8010A420(u32);
+    extern void menuModelTerm(u32);
     extern void menuCloseCustom(s32, s32, s32);
     extern u16 GSmemGetHandleByPtr(u32);
     extern void fn_800E24B0(void);
     extern void fn_800E209C(u16);
     u16 handle;
 
-    fn_8010A420(*(u32*)&lbl_8047A610 + 0x144);
+    menuModelTerm(*(u32*)&lbl_8047A610 + 0x144);
     menuCloseCustom(0xD8, 0, 1);
     handle = GSmemGetHandleByPtr(*(u32*)&lbl_8047A610);
     if (handle != 0) {
@@ -4243,7 +4243,7 @@ void exShrineModelOpen(s32 pokemonId)
     menuModelInit((u8*)lbl_8047A610 + 0x144,
                   ((s16*)(lbl_802EF0A8 + 0x17296))[0],
                   ((s16*)(lbl_802EF0A8 + 0x17296))[1]);
-    fn_80109C88((u8*)lbl_8047A610 + 0x144, (u8*)lbl_8047A610 + 0xC);
+    menuPokemonModelRequest((u8*)lbl_8047A610 + 0x144, (u8*)lbl_8047A610 + 0xC);
     menuOpenCustom(0xD8, 0, 0, 0, 0, 0);
 }
 

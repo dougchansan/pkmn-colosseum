@@ -205,7 +205,7 @@ extern u8*   gsParticleCreate(u8* texture, u32 selector, u32 subid);
 extern void  fn_80118C88(void* particleNode, u32 visible);
 extern GSpart* GSmodelGetPart(struct GSmodel* model, s32 partIndex);
 void  set__5GSvecFfff(f32* vec, f32 x, f32 y, f32 z);
-extern void  fn_80118FB0(u8* particleNode, GSpart* part, u32 state,
+extern void  gsParticleLinkToJObj(u8* particleNode, GSpart* part, u32 state,
                          u8 byte5, u32 initFromZero, u8 attachModel);
 extern void  fn_80118D18(void* particleNode, u8 enabled);
 extern void  fn_80118DE0(u8* particleNode, f32* scale, u32 applyToGenerator,
@@ -239,7 +239,7 @@ extern u32   fn_800E3CBC(struct GSmodel* model);
 extern void  GSmodelDrawModel(struct GSmodel* model, u32 flags);
 extern void  GSmodelLinkToGSparticleBank(struct GSmodel* model, void* bank);
 extern void  fn_800E3CC8(struct GSmodel* model, u8 enable);
-extern void  fn_80118874(u8* resource, u32 notify);
+extern void  gsParticleKill(u8* resource, u32 notify);
 
 /* Data symbols (lbl_*, in .sdata/.sdata2/.bss of neighboring TUs) referenced
  * from scattered file-scope declarations in the original battle_waza.c. */

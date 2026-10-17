@@ -629,7 +629,7 @@ void pdaSnagListDrawCount(PdaSprite* sprite)
     extern void fn_801EED88(u16 id);
     extern void* fn_801EE544(u16 id, u8* variant);
     extern s32 fn_801EEF40(u16 id);
-    extern s32 fn_8011396C(s32 floor);
+    extern s32 floorGetPlaceName(s32 floor);
     extern void msgctrlSetValue(s32 id, s32 value);
     u16 id;
     void* message;
@@ -639,7 +639,7 @@ void pdaSnagListDrawCount(PdaSprite* sprite)
     id = lbl_8047A4D4[*(u32*)&lbl_803A6748].battleId;
     sprite->alphaByte = lbl_8047BAC0 * lbl_803A6748.alphaScale;
     message = fn_801EE544(id, (u8*)&lbl_803A6748 + 0x94);
-    value = fn_8011396C(fn_801EEF40(id));
+    value = floorGetPlaceName(fn_801EEF40(id));
     if (value == 0) {
         msgctrlSetValue(0x31, 0x18d3);
     } else {

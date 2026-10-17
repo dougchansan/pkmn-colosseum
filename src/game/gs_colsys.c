@@ -5,7 +5,7 @@
  *
  * Real matched functions (100%, byte-identical -- do not touch):
  *   fn_8010C364  -- returns 1 after a GStexture-invalidation trigger call
- *   fn_8010C46C, fn_8010C4A0, fn_8010C4D4, fn_8010C508
+ *   fn_8010C46C, zokuseiDataBiosGetCategory, fn_8010C4D4, zokuseiDataBiosGetAisyou
  *                -- surface-type table (lbl_8035B500) field readers /
  *                   type-vs-type interaction lookup
  *   GScolsy2UtilGetSidePlanePoint -- 3-component dot product (now its own
@@ -15,8 +15,8 @@
  *   fn_8010CBC0  -- returns the first word of lbl_80404C68
  *
  * Still unmatched (honest TODO stubs, no evidence for real names):
- *   fn_8010C388, _menuFaceBiosGetPtr__FUs, fn_8010C54C, fn_8010C650,
- *   zokuseiGetWazaJoutai, fn_8010C8D0, fn_8010CA30
+ *   fn_8010C388, _menuFaceBiosGetPtr__FUs, zokuseiGetAisyouScore, zokuseiGetAisyouDualType,
+ *   zokuseiGetWazaJoutai, colsysMakeRotMatrix, colsysMakeSRTMatrix
  *
  * A prior campaign-generation transplant had attached a ~1600-line
  * "GScolsys2_*" fiction block to this file: hand-written bodies for a
@@ -96,7 +96,7 @@ void fn_8010C220(void) {
 }
 
 /* 0x8010C224 | 0x140 */
-void fn_8010C224(void) {
+void menuFaceInit(void) {
     /* TODO: match -- 320 bytes at 0x8010C224 */
 }
 
@@ -165,7 +165,7 @@ u16 fn_8010C46C(u16 typeIndex) {
 }
 
 /* 0x8010C4A0 | 0x34 */
-u8 fn_8010C4A0(u16 typeIndex) {
+u8 zokuseiDataBiosGetCategory(u16 typeIndex) {
     if (typeIndex >= lbl_80478B38) {
         return 0;
     }
@@ -181,7 +181,7 @@ u32 fn_8010C4D4(u16 typeIndex) {
 }
 
 /* 0x8010C508 | 0x44 */
-u16 fn_8010C508(u32 typeA, u32 typeB) {
+u16 zokuseiDataBiosGetAisyou(u32 typeA, u32 typeB) {
     if (typeA >= lbl_80478B38) {
         return 0;
     }
@@ -192,7 +192,7 @@ u16 fn_8010C508(u32 typeA, u32 typeB) {
 }
 
 /* 0x8010C54C | 0x104 */
-s32 fn_8010C54C(u16 param1, u8 mode) {
+s32 zokuseiGetAisyouScore(u16 param1, u8 mode) {
     u16 i;
     u16 code1;
     u16 code2;
@@ -204,7 +204,7 @@ s32 fn_8010C54C(u16 param1, u8 mode) {
             continue;
         }
         if (mode == 1) {
-            code1 = fn_8010C508((u32)param1, (u32)i);
+            code1 = zokuseiDataBiosGetAisyou((u32)param1, (u32)i);
             result = code1;
             if (result == 0x43) {
                 score -= 10;
@@ -219,7 +219,7 @@ s32 fn_8010C54C(u16 param1, u8 mode) {
                 continue;
             }
         } else {
-            code2 = fn_8010C508((u32)i, (u32)param1);
+            code2 = zokuseiDataBiosGetAisyou((u32)i, (u32)param1);
             result = code2;
             if (result == 0x43) {
                 score += 10;
@@ -239,7 +239,7 @@ s32 fn_8010C54C(u16 param1, u8 mode) {
 }
 
 /* 0x8010C650 | 0xFC */
-u16 fn_8010C650(u16 typeA, u16* arr, u16 count) {
+u16 zokuseiGetAisyouDualType(u16 typeA, u16* arr, u16 count) {
     u16 i;
     u16 countA = 0;
     u16 countB = 0;
@@ -252,7 +252,7 @@ u16 fn_8010C650(u16 typeA, u16* arr, u16 count) {
             continue;
         }
         e = arr[i];
-        code = fn_8010C508((u32)typeA, (u32)e);
+        code = zokuseiDataBiosGetAisyou((u32)typeA, (u32)e);
         result = code;
         if (result == 0x43) {
             return 0x43;
@@ -279,7 +279,7 @@ u16 fn_8010C650(u16 typeA, u16* arr, u16 count) {
 
 /* 0x8010C74C | 0x30 */
 u16 zokuseiGetWazaJoutai(u16 typeA, u16 typeB) {
-    return fn_8010C508(typeA, typeB);
+    return zokuseiDataBiosGetAisyou(typeA, typeB);
 }
 
 #endif
@@ -352,7 +352,7 @@ s32 GScolsys2SetObjEnable(s32 triIndex, s32 visible) {
 }
 
 /* 0x8010C8D0 | 0x160 */
-s32 fn_8010C8D0(Mtx out, u32 triIndex) {
+s32 colsysMakeRotMatrix(Mtx out, u32 triIndex) {
     typedef struct ColAxes {
         Vec axis[3];
     } ColAxes;
@@ -396,7 +396,7 @@ s32 fn_8010C8D0(Mtx out, u32 triIndex) {
 }
 
 /* 0x8010CA30 | 0x190 */
-s32 fn_8010CA30(Mtx out, u32 triIndex) {
+s32 colsysMakeSRTMatrix(Mtx out, u32 triIndex) {
     typedef struct ColAxes {
         Vec axis[3];
     } ColAxes;
@@ -507,7 +507,7 @@ void fn_8010D170(void) {
 }
 
 /* 0x8010D20C | 0x1BC */
-void fn_8010D20C(void) {
+void colsysDrawWalkMdl(void) {
     /* TODO: match -- 444 bytes at 0x8010D20C */
 }
 

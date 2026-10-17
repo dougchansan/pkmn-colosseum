@@ -40,7 +40,7 @@ extern MenuKeyInfo* windowGetPortKeyInfo(u8 ports);
 extern void windowInit(u16 count);
 extern void cursorBiosInit(void);
 extern void menuOffScreenInit(void);
-extern void fn_8010C224(u32 count);
+extern void menuFaceInit(u32 count);
 extern u32 gfxVtxDescAlloc(void);
 extern void gfxVtxDescSetAttr(u32, u32, u32, u32, u32, u32, u32, u32);
 extern void* GStextureLoad(void* data);
@@ -86,7 +86,7 @@ void menuInit(u16 windowCount) {
     windowInit(windowCount);
     cursorBiosInit();
     menuOffScreenInit();
-    fn_8010C224(0x18);
+    menuFaceInit(0x18);
     lbl_80404ACC.enablePort = 1;
     for (port = 0; port < 4; port++) {
         lbl_8047AD04[port] = 0;

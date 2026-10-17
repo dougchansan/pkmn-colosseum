@@ -2671,7 +2671,7 @@ extern void menuColosseumBattle(void);
 extern void floorRequestChange(void);
 extern void fn_8006A718(void);
 extern void std113_mapObjectUnk_8018db68(u32);
-extern void fn_8010A420(void*);
+extern void menuModelTerm(void*);
 extern void menuNameEntryOpen(void);
 extern void menuNameEntryGetLastName(void);
 extern void savedataCreate(void);
@@ -2679,12 +2679,12 @@ extern void fn_800056E4(void);
 extern void gamedataSetPlaytime(void);
 extern void heroMoveSyncWithHero(void);
 extern void menuModelInit(void);
-extern void fn_8010A010(void);
+extern void menuPokemonModelRequestById(void);
 extern void peopleInfoBiosGetPtr(void);
 extern void fn_8018F4C8(void);
 extern void fn_80005748(void);
 extern void fn_801EF274(void);
-extern void fn_80113FE8(void);
+extern void floorReturnToSavedRoom(void);
 extern u32 lbl_8047A35C;
 extern u32 lbl_8047A358;
 #if !defined(GS_TITLE_SPLIT) || defined(GS_TITLE_RANGE_800210F0)
@@ -2705,7 +2705,7 @@ s32 titleMenuMain(void)
     extern s32 floorRequestChange(s32);
     extern void menuModelInit(void*, s16, s16);
     extern s32 menuModelSetMotion(void*, u32);
-    extern void fn_8010A010(void*, u32);
+    extern void menuPokemonModelRequestById(void*, u32);
     extern void* peopleInfoBiosGetPtr(u32);
     extern void fn_8018F4C8(void*, s32, s32*, void*);
     extern s32 menuNameEntryOpen(s32, s32);
@@ -2793,7 +2793,7 @@ s32 titleMenuMain(void)
                 menuCloseCustom(0x7A, 0, 1);
                 menuCloseCustom(0x7F, 0, 1);
                 std113_mapObjectUnk_8018db68(lbl_8047A35C);
-                fn_8010A420(lbl_803A1FF8);
+                menuModelTerm(lbl_803A1FF8);
                 std104_soundSetBackgroundMusic(1, 0x3E8, 0xFF);
                 menuNameEntryOpen(0, 0);
                 menuNameEntryGetLastName(nameBuf);
@@ -2829,7 +2829,7 @@ s32 titleMenuMain(void)
             menuModelInit(lbl_803A1FF8,
                           *(s16*)(lbl_802EF0A8 + 0x4EFE),
                           *(s16*)(lbl_802EF0A8 + 0x4F00));
-            fn_8010A010(lbl_803A1FF8, 0xF70400);
+            menuPokemonModelRequestById(lbl_803A1FF8, 0xF70400);
             fn_8018F4C8(peopleInfoBiosGetPtr(0xF70400), 1, &workA, &workB);
             menuModelSetMotion(lbl_803A1FF8, workA);
             msgVals[0] = fn_80005748();
@@ -2843,7 +2843,7 @@ s32 titleMenuMain(void)
             answer = (s8)menuSubOpenYesNo(0, 0x3C, 0xD6, 1);
             if (answer == 0) {
                 heroMoveSyncWithHero();
-                fn_80113FE8();
+                floorReturnToSavedRoom();
                 state = 0x64;
                 fn_800056E4(1);
             } else if (answer == 1) {
@@ -2855,7 +2855,7 @@ s32 titleMenuMain(void)
             }
             menuCloseCustom(0x16, 0, 1);
             winMsgClose(1);
-            fn_8010A420(lbl_803A1FF8);
+            menuModelTerm(lbl_803A1FF8);
             break;
 
         case 4:
@@ -2895,7 +2895,7 @@ void fn_800215C4(void) {
     menuCloseCustom(0x7a, 0, 1);
     menuCloseCustom(0x7f, 0, 1);
     std113_mapObjectUnk_8018db68(lbl_8047A35C);
-    fn_8010A420(lbl_803A1FF8);
+    menuModelTerm(lbl_803A1FF8);
 }
 #endif
 
@@ -3137,7 +3137,7 @@ s32 fn_80021A9C(u32 r3, u32* r4) {
  * Ruled out: every result/return type, declaration position, if/else /
  * goto / ternary / shared-return forms, whole-case and tail inline helpers,
  * C++, peephole and compiler version. The only other function with this
- * join is fn_8010A210, where it comes from a u8 result fed by two
+ * join is menuPokemonModelIsLoaded, where it comes from a u8 result fed by two
  * expansions of a multi-return inline (faceKeyEqual), so the original
  * probably used a shared inline helper here too (itemFieldUseParamItem ends the same
  * way). Details: Working/refs/upstream-matches-leftovers.tsv.
@@ -3771,7 +3771,7 @@ s32 itemFieldUseTM(u32 arg0, u32* arg1) {
 extern u16 pokemonDataBiosGetVoice(void);
 extern void soundStartSE(s32);
 extern s32 GSsndGetStatus(s32);
-extern void fn_80121B4C(s32, s32);
+extern void pokemonInitPersistentJoutai(s32, s32);
 extern void pokemonAddDpFormPokemonDpFilterId(s32, s32, s32);
 extern u8 lbl_80266C30[];
 extern u32 lbl_8047B8A0;
@@ -3856,7 +3856,7 @@ s32 std163_useCologne(s32 arg0, s32 arg1) {
     winMsgOpen(2, 0x3AF7, 1, 0);
     winMsgClose(1);
     if ((u8)fn_80121ADC(pokemon, 0x3E) != 0) {
-        fn_80121B4C(pokemon, 0x3E);
+        pokemonInitPersistentJoutai(pokemon, 0x3E);
         winMsgOpen(2, 0x4277, 1, 0);
         winMsgClose(1);
     }

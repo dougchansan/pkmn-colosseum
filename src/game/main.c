@@ -136,7 +136,7 @@ extern void GSthreadCreate(u32 affinity, u32 priority,      /* GSthread create m
 extern s32 GSvtrRegisterGSgapp(u32 taskId);              /* Save task registration */
 extern void fadeInit(void);                           /* Script engine init */
 extern void fn_80168638(u32 numSlots);                   /* Floor/scene loader init */
-extern void fn_80130CE0(u32 maxEffects);                 /* 3D model/effect loader */
+extern void GSeffectInit(u32 maxEffects);                 /* 3D model/effect loader */
 extern u32  GSmemGetFreeTotal(void);                           /* OSGetFreeMemSize-like */
 extern void GSlogWrite(const char* fmt, ...);           /* OSReport / debug printf */
 extern f32 __cvt_fp2unsigned(f32 volume);                     /* volume clamp/process */
@@ -693,7 +693,7 @@ void fn_800057B0(void) {
     fn_80168638(0x8);
 
     /* Initialize model/effect loader: 32 max */
-    fn_80130CE0(0x20);
+    GSeffectInit(0x20);
 
     /* Print available memory to debug console */
     {

@@ -45,7 +45,7 @@ extern void fn_801D0AFC(s32);
 extern void* heroBiosGetPokemonPtr(void* status, u16 index);
 extern u8 pokemonCheckValid(void* pokemon);
 extern u8 fn_80121ADC(void* pokemon, s32 ribbon);
-extern void fn_80121B4C(void* pokemon, s32 ribbon);
+extern void pokemonInitPersistentJoutai(void* pokemon, s32 ribbon);
 extern s32 menuGetCursorFromItemID(s32 menu, s32 itemId);
 extern void cursorBiosSetPos(s32 cursor, const CursorPos* pos);
 extern void heroMoveRunEvent(s32);
@@ -472,10 +472,10 @@ void std216_partyStatusUpdate_8ae(s32 mode)
                 pokemon = heroBiosGetPokemonPtr(status, i);
                 if (pokemonCheckValid(pokemon) != 0) {
                     if (fn_80121ADC(pokemon, 3) != 0) {
-                        fn_80121B4C(pokemon, 3);
+                        pokemonInitPersistentJoutai(pokemon, 3);
                     }
                     if (fn_80121ADC(pokemon, 4) != 0) {
-                        fn_80121B4C(pokemon, 4);
+                        pokemonInitPersistentJoutai(pokemon, 4);
                     }
                 }
                 i++;
@@ -1414,7 +1414,7 @@ void std157_sleep(f32 frames)
 
 u16 fieldStartEncount(u32 arg0, u8 arg1, s32 arg2)
 {
-    extern void fn_80112700(void);
+    extern void floorStartSoundScript(void);
     extern void std079_flagSetTrue(u32 flagId);
     extern void* fightEncountDataBiosGetPtr(u32 index);
     extern u16 menuCBBattleReturnToMenuRoom(void);
@@ -1439,7 +1439,7 @@ u16 fieldStartEncount(u32 arg0, u8 arg1, s32 arg2)
         result = menuCBBattleReturnToMenuRoom();
 
         if (std082_flagGetValue(0x8AE)) {
-            fn_80112700();
+            floorStartSoundScript();
         } else {
             std229_mapLoad395(0);
             floorSetFadeScript(0, 0x5960008);

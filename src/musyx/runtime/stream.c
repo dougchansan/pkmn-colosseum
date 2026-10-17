@@ -174,7 +174,7 @@ void SetHWMix(const STREAM_INFO* si) {
               lbl_8047D3B0 * si->auxa, lbl_8047D3B0 * si->auxb);
 }
 
-void fn_8014DF20(void) {
+void streamHandle(void) {
   u32 i;              // r28
   u32 cpos;           // r30 / r3
   u32 len;            // r3 (updateFunction result)
@@ -369,7 +369,7 @@ void fn_8014DF20(void) {
   }
 }
 
-void fn_8014E7CC(void) {}
+void streamCorrectLoops(void) {}
 
 void fn_8014E7D0(u32 voice) {
   STREAM_INFO* si;
@@ -467,7 +467,7 @@ void CheckOutputMode(u8* pan, u8* span) {
   }
 }
 
-void fn_8014ECCC(STREAM_INFO* si, u8 vol, u8 pan, u8 span, u8 auxa, u8 auxb) {
+void SetupVolumeAndPan(STREAM_INFO* si, u8 vol, u8 pan, u8 span, u8 auxa, u8 auxb) {
   si->orgPan = pan;
   si->orgSPan = span;
   CheckOutputMode(&pan, &span);
@@ -539,7 +539,7 @@ u32 fn_8014EE40(u8 prio, void* buffer, u32 samples, u32 frq, u8 vol, u8 pan, u8 
     streamInfo[i].frq = frq;
     streamInfo[i].studio = studio;
     streamInfo[i].prio = prio;
-    fn_8014ECCC(&streamInfo[i], vol, pan, span, auxa, auxb);
+    SetupVolumeAndPan(&streamInfo[i], vol, pan, span, auxa, auxb);
     streamInfo[i].user = user;
     streamInfo[i].nextStreamHandle = (u32)-1;
     streamInfo[i].state = 3;
@@ -570,18 +570,18 @@ u32 sndStreamAllocLength(u32 num, u32 flags) {
   return (num * 2 + 31) & ~31;
 }
 
-void fn_8014F2DC(u32 stid, u8 vol, u8 pan, u8 span, u8 auxa, u8 auxb) {
+void sndStreamMixParameterEx(u32 stid, u8 vol, u8 pan, u8 span, u8 auxa, u8 auxb) {
   u32 i;
   hwDisableIrq();
   i = GetPrivateIndex(stid);
   if (i != (u32)-1) {
-    fn_8014ECCC(&streamInfo[i], vol, pan, span, auxa, auxb);
+    SetupVolumeAndPan(&streamInfo[i], vol, pan, span, auxa, auxb);
     if (streamInfo[i].state == 2) {
       SetHWMix(&streamInfo[i]);
     }
 
     if (streamInfo[i].nextStreamHandle != (u32)-1) {
-      fn_8014F2DC(streamInfo[i].nextStreamHandle, vol, pan, span, auxa, auxb);
+      sndStreamMixParameterEx(streamInfo[i].nextStreamHandle, vol, pan, span, auxa, auxb);
     }
   }
 

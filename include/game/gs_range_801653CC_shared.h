@@ -127,7 +127,7 @@ extern u8 fn_8015E890(void*);
 extern u8 fn_8015ED00(void*, const GSvec*, const GSvec*, const GSvec*, const GSvec*, u32, u32);
 extern u8 fn_8015EF04(void*, const GSvec*, const GSvec*, const GSvec*, const GSvec*, u32, u32, u32, f32, f32, f32);
 extern u32 fn_8014D598(u32);
-extern void fn_8014D5C8(u32);
+extern void sndSeqStop(u32);
 extern void fn_8014D648(u32);
 extern s32 fn_8017B2CC(u32);
 extern void* fn_80167F28(const char*);

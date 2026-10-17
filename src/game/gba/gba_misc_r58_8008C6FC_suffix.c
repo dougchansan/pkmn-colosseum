@@ -194,7 +194,7 @@ extern void GScharFromGBA();
 extern void floorRequestChange();
 extern void floorSetFadeScript();
 extern void std093_getCurrentGroupID();
-extern void fn_80118874();
+extern void gsParticleKill();
 extern void pokemonBiosSetEventGetFlag();
 extern void pokemonBiosSetFightTrainerPokemonDataId();
 extern void pokemonBiosSetPara1Amari();

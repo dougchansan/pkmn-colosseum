@@ -36,7 +36,7 @@ extern void fn_801EF128(void* data);
  * current save record. */
 extern void* fn_80128CC0(void* save);
 extern void* fn_80128CDC(void* save);
-extern void* fn_80128CF8(void* save);
+extern void* savedataBiosGetE3E8Ptr(void* save);
 extern void* fn_80128D14(void* save);
 extern void* fn_80128D30(void* save);
 extern void* fn_80128D4C(void* save);
@@ -140,7 +140,7 @@ void savedataInit(SaveData* save)
 
     mailInitMailbox(savedataGetPart(save, fn_80128D68));
     sodateyaInit(savedataGetPart(save, fn_80128D4C));
-    savedataBattleInit(savedataGetPart(save, fn_80128CF8));
+    savedataBattleInit(savedataGetPart(save, savedataBiosGetE3E8Ptr));
     memoInit(savedataGetPart(save, fn_80128D30));
     fn_80083CBC(savedataGetPart(save, fn_80128D14));
     fn_801EF128(savedataGetPart(save, fn_80128CDC));

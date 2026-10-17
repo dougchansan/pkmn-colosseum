@@ -27,7 +27,7 @@ extern u32 fightFloorGetStatus();
 extern u8 fightTrainerIsAllyFightTargetPtr(u32, u32, u16);
 extern u16 fightOutPokemonGetZokuseiDataId(u32, u8);
 extern u16 fightOutPokemonGetTokuseiDataId(u32);
-extern u32 fn_8010C650(u16, u16*, u16);
+extern u32 zokuseiGetAisyouDualType(u16, u16*, u16);
 extern int fn_802026E4();
 
 u32 fn_8023753C(u32 r3, u32 r4)
@@ -174,7 +174,7 @@ u32 fn_8023793C(u32 ctx, u32 poke, u16 waza, s32 val) {
         return 0x3f;
     }
 
-    result = fn_8010C650(waza, types, typeCount.value);
+    result = zokuseiGetAisyouDualType(waza, types, typeCount.value);
     if (waza == 0 || waza == 1) {
         tmp = (u16)fightTrainerGetStatus(ctx, 0, 0x43, 0);
         tmp = (u16)fightTrainerGetStatus(0, tmp, 2, 0);

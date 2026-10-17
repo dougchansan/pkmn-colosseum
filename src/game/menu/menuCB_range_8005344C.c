@@ -151,11 +151,11 @@ extern s8 pcboxGetNbPokemonBox(void);
 extern s8 getPokemonBoxNbUsedSlot__5PCBOXFSc(void* pcbox, s8 box);
 extern void winSpriteSetDisp(MenuCBPane* pane, u8 enable);
 extern MenuKeyInfo* windowGetKeyInfo(void);
-extern void fn_8010A420(MenuModelWork* work);
+extern void menuModelTerm(MenuModelWork* work);
 extern s32 menuModelCheck(MenuModelWork* work, u8 wait);
-extern s32 fn_8010A210(MenuModelWork* work, void* pokemon);
+extern s32 menuPokemonModelIsLoaded(MenuModelWork* work, void* pokemon);
 extern void* menuModelRender(MenuModelWork* work);
-extern void fn_80109C88(MenuModelWork* work, void* pokemon);
+extern void menuPokemonModelRequest(MenuModelWork* work, void* pokemon);
 s32 fn_80057694(void);
 void fn_800576A4(u32 value);
 u32 fn_800567AC(void);
@@ -337,10 +337,10 @@ u32 fn_80053778(u32 unused, u8* pane) {
     }
 
     if ((u8)menuModelCheck(&lbl_803A9720, 0) == 0) {
-        if ((u8)fn_8010A210(&lbl_803A9720, pokemon) != 0) {
+        if ((u8)menuPokemonModelIsLoaded(&lbl_803A9720, pokemon) != 0) {
             texture = (u32)menuModelRender(&lbl_803A9720);
         } else {
-            fn_80109C88(&lbl_803A9720, pokemon);
+            menuPokemonModelRequest(&lbl_803A9720, pokemon);
             lbl_803A95E8 = *pokemon;
         }
     }
@@ -816,7 +816,7 @@ void fn_800546F0(s32 forward) {
 void fn_8005471C(void) {
     menuCloseCustom(0x8f, 2, 0);
     menuCloseSync(0x8f, 1);
-    fn_8010A420(&lbl_803A9720);
+    menuModelTerm(&lbl_803A9720);
 }
 
 /* Refresh the 17 layout rows' y from the resource layout table. */

@@ -79,7 +79,7 @@ extern void GXInvalidateTexAll(void);
 extern void fn_800D1070(void* a);
 extern void GSlightUpdate(void* a);
 extern void fn_800E3884(void* a, s32 b);
-extern void fn_801181B0(s32 a);
+extern void gsParticleUpdateAll(s32 a);
 extern u32 OSGetTick(void);
 extern u8 lbl_8047AA91;
 extern u8 lbl_8047AA90;
@@ -223,7 +223,7 @@ void GSgfxRenderEnd(void) {
         ((u32*)&lbl_804001F0)[0x34 / 4] += tick - startTick;
 
         startTick = OSGetTick();
-        fn_801181B0(1);
+        gsParticleUpdateAll(1);
         tick = OSGetTick();
         ((u32*)&lbl_804001F0)[0x38 / 4] += tick - startTick;
     }

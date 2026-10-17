@@ -186,8 +186,8 @@ extern u32 _toolentryAlloc__FUl(u32 size);
 extern void* fn_800E27B0(u32 handle);
 extern void modelShadowInit__Fv(void);
 extern void fn_800EC134(GSmodel* model);
-extern void fn_80118874(void* bank, u32 destroyChildren);
-extern void fn_80118C20(void* bank, u32 visible);
+extern void gsParticleKill(void* bank, u32 destroyChildren);
+extern void GSmodelSetParticleVisibility(void* bank, u32 visible);
 extern u32 fn_80191118(GSbound* bound);
 extern u32 GSmaterialGetEnabledExtensions(void* material);
 extern void GSmaterialGetModulate(void* material, GScolor* color);
@@ -496,7 +496,7 @@ void GSmodelFree(GSmodel* model)
     }
 
     if (model->linkedGSparticleBank != NULL) {
-        fn_80118874(model->linkedGSparticleBank, 1);
+        gsParticleKill(model->linkedGSparticleBank, 1);
     }
 
     memset(model, 0, sizeof(GSmodel));

@@ -49,10 +49,10 @@ extern u8 pokemonSeikakuRateDataBiosGetKake(u8* data);
 extern u8 pokemonSeikakuRateDataBiosGetWaru(u8* data);
 extern u16 fn_801EEEB8(u16 dark_id);
 extern void fn_8011B950(u8* base, u16 count);
-extern u16 fn_80119ED0(u16 idx);
+extern u16 joutaiDataBiosGetStatusKind(u16 idx);
 extern u8 fn_8011B67C(u8* obj, u16 id);
 extern void fn_8011B788(u8* obj, u16 id);
-extern u16 fn_8010BBB8(u8* pokemon);
+extern u16 pokemonGetFaceSpriteId(u8* pokemon);
 extern u8 menuSubGetPokemonSexForFightDisp(u8* pokemon);
 extern void* pokemonGrowDataBiosGetPtr(u8 idx);
 extern u32 pokemonGrowDataBiosGetExp(void* ptr, u8 idx);
@@ -98,7 +98,7 @@ static inline u32 pokemonGetLevelToExp(u8* pokemon, u8 level)
 
 static inline u8 pokemonGetJoutai(u8* pokemon, u16 id)
 {
-    if (fn_80119ED0(id) != 0x7C && fn_80119ED0(id) != 0xC8) {
+    if (joutaiDataBiosGetStatusKind(id) != 0x7C && joutaiDataBiosGetStatusKind(id) != 0xC8) {
         return 0;
     }
     return fn_8011B67C(pokemon, id);
@@ -194,7 +194,7 @@ static inline u16 pokemonGetTokusei(u8* pokemon)
 
 static inline void pokemonClearJoutai(u8* pokemon, u16 id)
 {
-    if (fn_80119ED0(id) == 0x7C || fn_80119ED0(id) == 0xC8) {
+    if (joutaiDataBiosGetStatusKind(id) == 0x7C || joutaiDataBiosGetStatusKind(id) == 0xC8) {
         fn_8011B788(pokemon, id);
     }
 }
@@ -314,7 +314,7 @@ void pokemonToMenuPokemonStatus(u8* pokemon, MenuPokemonStatus* menu)
     pokemonToMenuPokemonStatusSubBar(pokemon, menu);
 
     menu->conditionIcon = pokemonGetJoutaiIcon(pokemon);
-    menu->displayValue = fn_8010BBB8(pokemon);
+    menu->displayValue = pokemonGetFaceSpriteId(pokemon);
     menu->sex = menuSubGetPokemonSexForFightDisp(pokemon);
 
     if ((u8)pokemonGetStatus(pokemon, 0, 0xC2, 0) == 0) {

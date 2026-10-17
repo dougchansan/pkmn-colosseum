@@ -322,7 +322,7 @@ void fn_80226914(void)
 {
     extern void menuFightStatusStartAnimHP();
     extern u32 menuIsCheck(u32);
-    extern int fn_8010C4A0();
+    extern int zokuseiDataBiosGetCategory();
     extern void wazaSetStatus();
     extern s32 wazaGetStatus();
     extern void fightMainWaitFrame();
@@ -436,7 +436,7 @@ void fn_80226914(void)
                     pokemonSetStatus((void*)target, 0, 0x11b, 0, effectDamage);
                 }
 
-                mode = fn_8010C4A0(category);
+                mode = zokuseiDataBiosGetCategory(category);
                 switch (mode) {
                 case 1:
                     if (((lbl_8047B618 & 0x100000) == 0) &&

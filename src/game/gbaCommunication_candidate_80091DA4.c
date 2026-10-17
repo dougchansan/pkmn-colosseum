@@ -31,7 +31,7 @@ void demoScene06(u32 ctx) {
     extern void cameraWaitSyncAnime(s32 sync);
     extern void floorRequestChange(u32 id);
     extern void floorSetFadeScript(u32 a, u32 b);
-    extern void fn_80118874(void *texture, u32 flag);
+    extern void gsParticleKill(void *texture, u32 flag);
     extern u32 std093_getCurrentGroupID(void);
 
     u32 elapsed;
@@ -115,7 +115,7 @@ void demoScene05(u32 ctx) {
     extern void cameraWaitSyncAnime(s32 sync);
     extern void floorRequestChange(u32 id);
     extern void floorSetFadeScript(u32 a, u32 b);
-    extern void fn_80118874(void *texture, u32 flag);
+    extern void gsParticleKill(void *texture, u32 flag);
     extern u32 std093_getCurrentGroupID(void);
 
     u32 elapsed;
@@ -267,7 +267,7 @@ void demoScene03(u32 ctx) {
     extern void cameraWaitSyncAnime(s32 sync);
     extern void floorRequestChange(u32 id);
     extern void floorSetFadeScript(u32 a, u32 b);
-    extern void fn_80118874(void *texture, u32 flag);
+    extern void gsParticleKill(void *texture, u32 flag);
     extern u32 std093_getCurrentGroupID(void);
 
     u32 elapsed;
@@ -295,7 +295,7 @@ void demoScene03(u32 ctx) {
     std116_mapObjectStopAnimation(0x0B631000);
 
     material = (GSmaterialEntry *)GSresGetResource(ctx, 0x0B631000);
-    fn_80118874(material->texture, 1);
+    gsParticleKill(material->texture, 1);
     material->texture = NULL;
 
     GSmodelLinkToGSparticleBank(GSresGetResource(ctx, 0x0B631000),
@@ -423,7 +423,7 @@ void demoScene01(u32 ctx) {
     extern void cameraWaitSyncAnime(s32 sync);
     extern void floorRequestChange(u32 id);
     extern void floorSetFadeScript(u32 a, u32 b);
-    extern void fn_80118874(void *texture, u32 flag);
+    extern void gsParticleKill(void *texture, u32 flag);
     extern u32 std093_getCurrentGroupID(void);
 
     u32 elapsed;
@@ -451,7 +451,7 @@ void demoScene01(u32 ctx) {
     std116_mapObjectStopAnimation(0x0B631000);
 
     material = (GSmaterialEntry *)GSresGetResource(ctx, 0x0B631000);
-    fn_80118874(material->texture, 1);
+    gsParticleKill(material->texture, 1);
     material->texture = NULL;
 
     cameraPlayAnime(std093_getCurrentGroupID(), 0x0B661800, 0, 0);
@@ -493,7 +493,7 @@ void demoScene00(u32 ctx) {
     extern void cameraWaitSyncAnime(s32 sync);
     extern void floorRequestChange(u32 id);
     extern void floorSetFadeScript(u32 a, u32 b);
-    extern void fn_80118874(void *texture, u32 flag);
+    extern void gsParticleKill(void *texture, u32 flag);
     extern u32 std093_getCurrentGroupID(void);
 
     u32 elapsed;

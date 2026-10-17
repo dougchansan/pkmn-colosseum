@@ -36,7 +36,7 @@ u8 wazaSequenceEntryStop(void* entry, BOOL immediate) {
     extern void GSlerpGetLinearInterpolationVector(void* dst, void* src,
                                                    void* target, f32 t);
     extern void modelRemoveCenterNull(void* model);
-    extern void* fn_8013151C(u32 arg);
+    extern void* GSeffectGetData(u32 arg);
     /* RULE-EXCEPTION(title-path): shared log/vector/scalar pool stand-ins;
      * see docs/RULE_EXCEPTIONS.md. */
     extern const char lbl_80279588[];
@@ -131,7 +131,7 @@ u8 wazaSequenceEntryStop(void* entry, BOOL immediate) {
         if (*(s32*)(node + 0x78) != 0) {
             switch (*(s32*)(node + 0x88)) {
             case 6: {
-                u8* effect = fn_8013151C(*(u32*)(node + 0x78));
+                u8* effect = GSeffectGetData(*(u32*)(node + 0x78));
 
                 if (*(s32*)(effect + 0xA8) != 0) {
                     f32 position[3];
@@ -143,7 +143,7 @@ u8 wazaSequenceEntryStop(void* entry, BOOL immediate) {
                 break;
             }
             case 0: {
-                u8* effect = fn_8013151C(*(u32*)(node + 0x78));
+                u8* effect = GSeffectGetData(*(u32*)(node + 0x78));
 
                 if (*(u8*)(effect + 0x4D) != 0) {
                     GSmodelSetModulationColor(ownerModel, effect + 0x44);
@@ -152,7 +152,7 @@ u8 wazaSequenceEntryStop(void* entry, BOOL immediate) {
             }
             }
         }
-        fn_80131010(*(u32*)(node + 0x78));
+        GSeffectStop(*(u32*)(node + 0x78));
         break;
 
     case 5:
@@ -206,9 +206,9 @@ u8 wazaSequenceEntryUpdate(void* entry, s32 elapsed) {
     extern s32 fn_80118DA8(void* ptr);
     extern u32 fn_80118D84(void* obj);
     extern u8 GSthreadIsRunning(u32 task);
-    extern BOOL fn_801310A8(u32 effectId);
-    extern void* fn_8013151C(u32 arg);
-    extern u32 fn_8013AB34(void* ptr);
+    extern BOOL GSeffectIsRunning(u32 effectId);
+    extern void* GSeffectGetData(u32 arg);
+    extern u32 filterIsHolding(void* ptr);
     /* RULE-EXCEPTION(title-path): shared log-pool stand-in, nodeadstore
      * compilation, and kind reused for texture comparison allocation;
      * see docs/RULE_EXCEPTIONS.md. */
@@ -294,12 +294,12 @@ u8 wazaSequenceEntryUpdate(void* entry, s32 elapsed) {
         } else {
             u32 effectId = *(u32*)(node + 0x78);
 
-            if ((u8)fn_801310A8(effectId)) {
+            if ((u8)GSeffectIsRunning(effectId)) {
                 switch (*(s32*)(node + 0x88)) {
                 default:
                     break;
                 case 0:
-                    if ((u8)fn_8013AB34(fn_8013151C(effectId))) {
+                    if ((u8)filterIsHolding(GSeffectGetData(effectId))) {
                         *(s32*)(node + 0x6C) = 3;
                     }
                     break;
@@ -527,7 +527,7 @@ failed:
 u8 _wazaSequenceEffectEntryStart(void* entry) {
     extern const char lbl_8027964C[];
     extern BOOL GSeffect(u32 effectId);
-    extern void* fn_8013151C(u32 arg);
+    extern void* GSeffectGetData(u32 arg);
     extern void* GSresGetResource(u32 group, u32 resource);
     extern u32 std093_getCurrentGroupID(void);
     extern void* floorDataBiosGetCurrentPtr(void);
@@ -565,7 +565,7 @@ u8 _wazaSequenceEffectEntryStart(void* entry) {
     table = (WazaEffectTblEntry*)*(void**)(owner + 0x2C) + *(u16*)(owner + 0x32);
 
     if (effectId != 0) {
-        effect = fn_8013151C((u32)effectId);
+        effect = GSeffectGetData((u32)effectId);
         if (effect == NULL) {
             if (GSgetVersionMinor() == 2) {
                 fn_801D744C(0x80);
@@ -829,7 +829,7 @@ u8 _wazaSequenceParticleEntryStart(WazaSequenceNode* node) {
 
     if ((s32)(node->flags & 4) == 4) {
         clear__5GSvecFv(offset);
-        fn_80118F04(*(void**)((u8*) node + 0x8C), offset);
+        gsParticleSetVecB(*(void**)((u8*) node + 0x8C), offset);
         fn_80118E8C(*(void**)((u8*) node + 0x8C), offset);
 
         if ((s32)(node->flags & 8) == 8) {
@@ -847,7 +847,7 @@ u8 _wazaSequenceParticleEntryStart(WazaSequenceNode* node) {
     part = fn_801D97F0(node);
     if (part != NULL) {
         if (selector != 0) {
-            fn_80118FB0(*(void**)((u8*) node + 0x8C), part, selector,
+            gsParticleLinkToJObj(*(void**)((u8*) node + 0x8C), part, selector,
                         (node->flags >> 1) & 1, 1,
                         ((u32) node->animationMode >> 1) & 1);
             *(u32*)((u8*) node + 0x90) = 1;
@@ -860,13 +860,13 @@ u8 _wazaSequenceParticleEntryStart(WazaSequenceNode* node) {
                 offset[0] *= temp[0] - 1.0f;
                 offset[1] *= temp[1] - 1.0f;
                 offset[2] *= temp[2] - 1.0f;
-                fn_80118F04(*(void**)((u8*) node + 0x8C), offset);
+                gsParticleSetVecB(*(void**)((u8*) node + 0x8C), offset);
                 break;
             case 4:
                 offset[0] *= scale[0] - 1.0f;
                 offset[1] *= scale[1] - 1.0f;
                 offset[2] *= scale[2] - 1.0f;
-                fn_80118F04(*(void**)((u8*) node + 0x8C), offset);
+                gsParticleSetVecB(*(void**)((u8*) node + 0x8C), offset);
                 fn_80118DE0(*(void**)((u8*) node + 0x8C), scale,
                             applyToGenerator, angleRadiusScale);
                 break;
@@ -874,7 +874,7 @@ u8 _wazaSequenceParticleEntryStart(WazaSequenceNode* node) {
                 offset[0] *= scale[0] - 1.0f;
                 offset[1] *= scale[1] - 1.0f;
                 offset[2] *= scale[2] - 1.0f;
-                fn_80118F04(*(void**)((u8*) node + 0x8C), offset);
+                gsParticleSetVecB(*(void**)((u8*) node + 0x8C), offset);
                 fn_80118DE0(*(void**)((u8*) node + 0x8C), scale,
                             applyToGenerator, angleRadiusScale);
                 fn_80118E8C(*(void**)((u8*) node + 0x8C), rotation);
@@ -884,14 +884,14 @@ u8 _wazaSequenceParticleEntryStart(WazaSequenceNode* node) {
                 offset[1] *= temp[1] - 1.0f;
                 offset[2] *= temp[2] - 1.0f;
                 GSvecAdd(offset, offset, position);
-                fn_80118F04(*(void**)((u8*) node + 0x8C), offset);
+                gsParticleSetVecB(*(void**)((u8*) node + 0x8C), offset);
                 break;
             case 2:
                 offset[0] *= scale[0] - 1.0f;
                 offset[1] *= scale[1] - 1.0f;
                 offset[2] *= scale[2] - 1.0f;
                 GSvecAdd(offset, offset, position);
-                fn_80118F04(*(void**)((u8*) node + 0x8C), offset);
+                gsParticleSetVecB(*(void**)((u8*) node + 0x8C), offset);
                 fn_80118DE0(*(void**)((u8*) node + 0x8C), scale,
                             applyToGenerator, angleRadiusScale);
                 break;
@@ -899,7 +899,7 @@ u8 _wazaSequenceParticleEntryStart(WazaSequenceNode* node) {
                 offset[0] *= temp[0] - 1.0f;
                 offset[1] *= temp[1] - 1.0f;
                 offset[2] *= temp[2] - 1.0f;
-                fn_80118F04(*(void**)((u8*) node + 0x8C), offset);
+                gsParticleSetVecB(*(void**)((u8*) node + 0x8C), offset);
                 fn_80118E8C(*(void**)((u8*) node + 0x8C), rotation);
                 break;
             case 3:
@@ -907,7 +907,7 @@ u8 _wazaSequenceParticleEntryStart(WazaSequenceNode* node) {
                 offset[1] *= temp[1] - 1.0f;
                 offset[2] *= temp[2] - 1.0f;
                 GSvecAdd(offset, offset, position);
-                fn_80118F04(*(void**)((u8*) node + 0x8C), offset);
+                gsParticleSetVecB(*(void**)((u8*) node + 0x8C), offset);
                 fn_80118E8C(*(void**)((u8*) node + 0x8C), rotation);
                 break;
             default:
@@ -922,7 +922,7 @@ u8 _wazaSequenceParticleEntryStart(WazaSequenceNode* node) {
             offset[1] *= scale[1] - 1.0f;
             offset[2] *= scale[2] - 1.0f;
             GSvecAdd(offset, position, offset);
-            fn_80118F04(*(void**)((u8*) node + 0x8C), offset);
+            gsParticleSetVecB(*(void**)((u8*) node + 0x8C), offset);
             fn_80118E8C(*(void**)((u8*) node + 0x8C), rotation);
             fn_80118DE0(*(void**)((u8*) node + 0x8C), scale,
                         applyToGenerator, angleRadiusScale);

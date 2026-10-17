@@ -194,7 +194,7 @@ void fn_801093C8(void);
 void fn_80106F98(u32 id);
 s32 winSeqCheckMove(u32 id);
 void winSeqMoveMenu(MenuWindow* window);
-void fn_8010C224(u32 count);
+void menuFaceInit(u32 count);
 
 /* menu.h */
 s32 menuGetLastError(void);
@@ -1262,7 +1262,7 @@ void menuInit(u16 windowCount) {
     windowInit(windowCount);
     cursorBiosInit();
     menuOffScreenInit();
-    fn_8010C224(0x18);
+    menuFaceInit(0x18);
     lbl_80404ACC.enablePort = 1;
     for (port = 0; port < 4; port++) {
         lbl_8047AD04[port] = 0;

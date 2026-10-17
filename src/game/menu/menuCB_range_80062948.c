@@ -29,7 +29,7 @@ extern void fn_800688C4();
 extern void fn_800689FC();
 extern void fn_80068BB0();
 extern void fn_80068DBC();
-extern void fn_8010B01C();
+extern void menuFaceRequestPokemonFace();
 #if defined(MENUCB_RANGE_RESIDUAL_800697F4_ONLY)
 extern void* _menuCBPokemonEntryLoadCallBack__FPv(void*);
 #else
@@ -2373,7 +2373,7 @@ s32 menuCBPokemonEntryGetReadFlag(void)
 #pragma peephole off
 void menuCBPokemonEntryLoadTex(void)
 {
-    fn_8010B01C(0, _menuCBPokemonEntryLoadCallBack__FPv, 0);
+    menuFaceRequestPokemonFace(0, _menuCBPokemonEntryLoadCallBack__FPv, 0);
 }
 #pragma pop
 #endif

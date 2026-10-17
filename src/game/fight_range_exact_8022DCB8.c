@@ -186,7 +186,7 @@ extern u16  lbl_80279FD0[8];
 extern u8   lbl_80379B06[];
 extern u32 fn_80232FE4();
 extern void fn_8020A2B8();
-extern u8   fn_80119DD0();
+extern u8   joutaiDataBiosGetMaxStack();
 extern u16  fightFloorGetValidFightOutPokemonCount(u32, u8, u32, u8);
 extern u8   fn_802016A4();
 extern u8   lbl_8037984D[27];
@@ -211,7 +211,7 @@ extern U16Pair lbl_8047E62C;
 extern u8  fightTrainerIsAllyFightTargetPtr(u32 ctx, u32 poke, u16 floorVal);
 extern u16 fightOutPokemonGetZokuseiDataId(u32 poke, u8 idx);
 extern u16 fightOutPokemonGetTokuseiDataId(u32 poke);
-extern u32 fn_8010C650(u16 waza, u16* types, u16 typeCount);
+extern u32 zokuseiGetAisyouDualType(u16 waza, u16* types, u16 typeCount);
 extern int fn_802026E4();
 extern u8 fn_80235714();
 extern u32 fn_802367CC();
@@ -998,7 +998,7 @@ u32 fn_8022EDEC(u32 r3, u8 r4)
 
 {
     extern u32 GSrand();
-    extern u32 fn_8011F6D8();
+    extern u32 pokemonGetHyperModeRate();
     extern u8 fn_8011FC74();
     extern void fn_801F4C14();
     extern u32 fn_801F54A4();
@@ -1063,7 +1063,7 @@ u32 fn_8022EDEC(u32 r3, u8 r4)
                 return 0;
               }
               fn_80205B8C(r3);
-              uVar2 = fn_8011F6D8();
+              uVar2 = pokemonGetHyperModeRate();
               sVar5 = fn_80205184((void*)r3);
               uVar3 = GSrand();
               if (((int)((uVar3 & 0xffff) % 100) < (int)(uVar2 & 0xff)) &&

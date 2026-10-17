@@ -594,7 +594,7 @@ u32 fightTrainerAiWazaDamage164(void) { return 0; }
 
 /* Address: 0x802514EC | Size: 0x98 */
 s32 fightTrainerAiWazaDamage162(void* ctx, u32 param1, u32 param2) {
-    extern u8 fn_80119DD0(u32);
+    extern u8 joutaiDataBiosGetMaxStack(u32);
     extern s16 fn_80202360(u32, u32);
     extern u8 fn_80236BFC(void*, u32, u32);
     extern u32 fn_80237664(void*, u32);
@@ -605,7 +605,7 @@ s32 fightTrainerAiWazaDamage162(void* ctx, u32 param1, u32 param2) {
     if (fn_80236BFC(ctx, param1, 0x2d) == 1) {
         shift = fn_80202360(param1, 0x2d);
     }
-    shift = fn_80119DD0(0x2d) - shift;
+    shift = joutaiDataBiosGetMaxStack(0x2d) - shift;
     if (shift < 0) {
         shift = 0;
     }

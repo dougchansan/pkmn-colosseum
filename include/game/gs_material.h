@@ -331,7 +331,7 @@ GSmaterialEntry* GSmaterialFindByMObj(void* mobj);
  *
  * @param entry   Pointer to a GSmaterialEntry.
  *
- * Loads entry->texture (+0x144), and if non-NULL calls fn_80118874
+ * Loads entry->texture (+0x144), and if non-NULL calls gsParticleKill
  * with parameter 1.
  *
  * Corresponds to GSmodelDestroyLinkedParticles. Size: 0x30.

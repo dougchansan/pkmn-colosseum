@@ -969,7 +969,7 @@ void fn_8021F458(void) {
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (optimize_for_size on) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma optimize_for_size on
 void fn_8021F664(void) {
-    extern void fn_8010AE2C();
+    extern void fightPokemonGetFaceSpriteId();
     extern u32 fn_80232D28();
     extern u32 pokemonCreateSequence();
     extern void msgctrlSetValue();
@@ -1022,7 +1022,7 @@ void fn_8021F664(void) {
     }
     gridPokemon = fightTrainerGetEntryIdToFightPokemonPtr(trainer, entryId);
     fn_80204970(gridPokemon, pokemon);
-    fn_8010AE2C(pokemon, 0, 0);
+    fightPokemonGetFaceSpriteId(pokemon, 0, 0);
     fightPokemonGetPokemonPtr(pokemon);
     sequence = pokemonCreateSequence();
     fightOutPokemonCreate(context, pokemon, sequence);

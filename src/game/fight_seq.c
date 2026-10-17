@@ -47,7 +47,7 @@ extern void* pokemonGetStatus();
 extern u32   pokemonSetStatus();
 extern void  pokemonGrowBasisStatus();
 extern u32   itemGetStatus();
-extern void  fn_80119ED0(void);
+extern void  joutaiDataBiosGetStatusKind(void);
 extern void  fn_80121ADC(void);
 extern void  fn_8011B67C(void);
 extern void  pokemonGetSoubiItemDataId(void);

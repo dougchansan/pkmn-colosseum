@@ -37,16 +37,16 @@ s32 dbgMenuPokemonEdit(u32 arg0, u8 arg1, u8* arg2, u8* arg3, u8* arg4, u8* arg5
     extern u16 fightTrainerGetStatus();
     extern void fightTrainerSetStatus(s32, u32, s32, u16, u32);
     extern u8 fn_8001E224();
-    extern u8 fn_80119DD0();
-    extern void fn_8012173C(u32, u16, s8);
+    extern u8 joutaiDataBiosGetMaxStack();
+    extern void pokemonSetJoutaiKaisuu(u32, u16, s8);
     extern void fn_801217B4(u32, u16, s8);
     extern s8 fn_8012182C();
-    extern s8 fn_8012189C();
+    extern s8 pokemonGetJoutaiKaisuu();
     extern void fn_8012190C(u32, u16, s16);
-    extern s16 fn_80121984();
-    extern void fn_801219F4(u32, u16, s32);
-    extern u8 fn_80121A6C(u32, u16);
-    extern void fn_80121B4C();
+    extern s16 pokemonGetJoutaiStack();
+    extern void pokemonWriteJoutaiDataId(u32, u16, s32);
+    extern u8 pokemonCheckWriteJoutaiDataId(u32, u16);
+    extern void pokemonInitPersistentJoutai();
     extern u8 fn_80142984(u16);
     extern s32 gamedataGetStatus();
     extern void menuCloseCustom();
@@ -870,8 +870,8 @@ s32 dbgMenuPokemonEdit(u32 arg0, u8 arg1, u8* arg2, u8* arg3, u8* arg4, u8* arg5
                 value = 8;
             }
             pokemonInitJoutai(arg0);
-            if (value != 0 && fn_80121A6C(arg0, value) == 2) {
-                fn_801219F4(arg0, value, 0);
+            if (value != 0 && pokemonCheckWriteJoutaiDataId(arg0, value) == 2) {
+                pokemonWriteJoutaiDataId(arg0, value, 0);
             }
             if (arg3 != NULL) {
                 *arg3 = 1;
@@ -882,7 +882,7 @@ s32 dbgMenuPokemonEdit(u32 arg0, u8 arg1, u8* arg2, u8* arg3, u8* arg4, u8* arg5
             if (value == 0) {
                 break;
             }
-            i = fn_8012189C(arg0, value);
+            i = pokemonGetJoutaiKaisuu(arg0, value);
             if (value != 4) {
                 if (i < 0) {
                     break;
@@ -894,18 +894,18 @@ s32 dbgMenuPokemonEdit(u32 arg0, u8 arg1, u8* arg2, u8* arg3, u8* arg4, u8* arg5
                 if (i > 0x10) {
                     i = 0x10;
                 }
-                fn_8012173C(arg0, value, i);
+                pokemonSetJoutaiKaisuu(arg0, value, i);
                 if (fn_8012182C(arg0, value) > i) {
                     fn_801217B4(arg0, value, i);
                 }
             } else {
-                i = fn_80121984(arg0, value);
+                i = pokemonGetJoutaiStack(arg0, value);
                 i += delta;
                 if (i < 0) {
                     i = 0;
                 }
-                if (i > fn_80119DD0(value)) {
-                    i = fn_80119DD0(value);
+                if (i > joutaiDataBiosGetMaxStack(value)) {
+                    i = joutaiDataBiosGetMaxStack(value);
                 }
                 fn_8012190C(arg0, value, i);
             }
@@ -920,7 +920,7 @@ s32 dbgMenuPokemonEdit(u32 arg0, u8 arg1, u8* arg2, u8* arg3, u8* arg4, u8* arg5
             if (value == 0) {
                 break;
             }
-            max = fn_8012189C(arg0, value);
+            max = pokemonGetJoutaiKaisuu(arg0, value);
             if (value == 4 || max < 0) {
                 break;
             }
@@ -929,8 +929,8 @@ s32 dbgMenuPokemonEdit(u32 arg0, u8 arg1, u8* arg2, u8* arg3, u8* arg4, u8* arg5
             if (i < 0) {
                 i = 0;
             }
-            if (i > fn_8012189C(arg0, value)) {
-                i = fn_8012189C(arg0, value);
+            if (i > pokemonGetJoutaiKaisuu(arg0, value)) {
+                i = pokemonGetJoutaiKaisuu(arg0, value);
             }
             fn_801217B4(arg0, value, i);
             if (arg3 != NULL) {
@@ -989,9 +989,9 @@ s32 dbgMenuPokemonEdit(u32 arg0, u8 arg1, u8* arg2, u8* arg3, u8* arg4, u8* arg5
                 break;
             }
             if (delta > 0) {
-                fn_801219F4(arg0, 0x3E, 0);
+                pokemonWriteJoutaiDataId(arg0, 0x3E, 0);
             } else {
-                fn_80121B4C(arg0, 0x3E);
+                pokemonInitPersistentJoutai(arg0, 0x3E);
             }
             if (arg3 != NULL) {
                 *arg3 = 1;

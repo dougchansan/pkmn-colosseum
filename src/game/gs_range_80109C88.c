@@ -51,7 +51,7 @@ extern u32 GSthreadCreate(s32 priority, void* stack, u32 stackSize,
 extern void GSthreadSetArgs(u32 task, u32 count, ...);
 extern u8 GSthreadIsRunning(u32 task);
 extern void GSthreadClose(u32 task);
-extern s32 fn_8010A88C(FaceModel* m);
+extern s32 _menuPokemonModelLoadThread(FaceModel* m);
 extern u8 fn_80121ADC(void* pokemon, u32 slot);
 
 static inline u8 faceKeyEqual(FaceKey* a, FaceKey* b)
@@ -130,7 +130,7 @@ static inline u8 faceModelIsPokemon(FaceModel* m, void* pokemon)
     !defined(GS_FN_8010BBB8) && !defined(GS_FN_8010BCE4) && \
     !defined(GS_FN_8010BD6C)
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
-s32 fn_80109C88(FaceModel* m, void* pokemon)
+s32 menuPokemonModelRequest(FaceModel* m, void* pokemon)
 {
     if (m == NULL) {
         return 0;
@@ -158,7 +158,7 @@ s32 fn_80109C88(FaceModel* m, void* pokemon)
         GSthreadClose(m->thread);
     }
     m->thread = GSthreadCreate(1, (void*)floorGetCurrentContext(), 0x4000, 1, 1,
-                               (void*)fn_8010A88C);
+                               (void*)_menuPokemonModelLoadThread);
     if (m->thread != 0) {
         GSthreadSetArgs(m->thread, 1, m);
     }
@@ -166,7 +166,7 @@ s32 fn_80109C88(FaceModel* m, void* pokemon)
 }
 
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
-s32 fn_8010A010(FaceModel* m, u32 id)
+s32 menuPokemonModelRequestById(FaceModel* m, u32 id)
 {
     if (m == NULL) {
         return 0;
@@ -195,7 +195,7 @@ s32 fn_8010A010(FaceModel* m, u32 id)
         GSthreadClose(m->thread);
     }
     m->thread = GSthreadCreate(1, (void*)floorGetCurrentContext(), 0x4000, 1, 1,
-                               (void*)fn_8010A88C);
+                               (void*)_menuPokemonModelLoadThread);
     if (m->thread != 0) {
         GSthreadSetArgs(m->thread, 1, m);
     }
@@ -203,7 +203,7 @@ s32 fn_8010A010(FaceModel* m, u32 id)
 }
 
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
-u8 fn_8010A210(FaceModel* m, void* pokemon)
+u8 menuPokemonModelIsLoaded(FaceModel* m, void* pokemon)
 {
     FaceKey k;
     u8 result;
@@ -222,7 +222,7 @@ u8 fn_8010A210(FaceModel* m, void* pokemon)
 #endif
 
 /* The unit built from this file directly is 0x80109C88 - 0x8010A420
- * (fn_80109C88, fn_8010A010, fn_8010A210). The rest of the range is
+ * (menuPokemonModelRequest, menuPokemonModelRequestById, menuPokemonModelIsLoaded). The rest of the range is
  * compiled through gs_range_8010A88C_suffix.c, which defines
  * GS_RANGE_80109C88_ALL. */
 #if defined(GS_RANGE_80109C88_ALL) || defined(GS_FN_8010A88C) || \
@@ -416,7 +416,7 @@ static inline s32 faceDraw(u8* context, void* srcNode, u16 key)
 }
 
 #if defined(GS_RANGE_80109C88_ALL) || defined(GS_FN_8010BBB8)
-u16 fn_8010BBB8(void* pokemon)
+u16 pokemonGetFaceSpriteId(void* pokemon)
 {
     return pokemonFaceKey(pokemon);
 }
@@ -439,7 +439,7 @@ u8 fn_8010B560(void) {
 
 #if defined(GS_RANGE_80109C88_ALL) || defined(GS_FN_8010BCE4)
 /* RULE-EXCEPTION(user-approved): repeats faceSlotIsReady's lookup in place — see docs/RULE_EXCEPTIONS.md */
-s8 fn_8010BCE4(u16 key) {
+s8 menuFaceIsReady(u16 key) {
     extern void* _menuFaceBiosGetPtr__FUs(u16 key);
     s32 i;
 
@@ -518,7 +518,7 @@ s32 fn_8010BD6C(u16 key, void* (*callback)(u32), u32 arg)
 void fn_8010C220(void) {
 }
 
-void fn_8010C224(s32 count)
+void menuFaceInit(s32 count)
 {
     typedef struct Entry2 {
         u8 padding[2];
@@ -561,11 +561,11 @@ void fn_8010C224(s32 count)
 #endif
 
 #if defined(GS_RANGE_80109C88_ALL) || defined(GS_FN_8010B01C)
-u16 fn_8010B01C(void* pokemon, void* (*callback)(u32), u32 arg)
+u16 menuFaceRequestPokemonFace(void* pokemon, void* (*callback)(u32), u32 arg)
 {
-    extern u16 fn_8010B16C(u16 key, void* (*callback)(u32), u32 arg);
+    extern u16 menuFaceRequestPokemon(u16 key, void* (*callback)(u32), u32 arg);
 
-    return fn_8010B16C(pokemonFaceKey(pokemon), callback, arg);
+    return menuFaceRequestPokemon(pokemonFaceKey(pokemon), callback, arg);
 }
 
 #endif
@@ -581,12 +581,12 @@ u16 fn_8010B01C(void* pokemon, void* (*callback)(u32), u32 arg)
 static inline s32 loadPokemonFace(void* pokemon, void* (*callback)(u32), u32 arg)
 {
     extern u32 pokemonGetStatus(void* pokemon, u32 index, u32 field, u32 rare);
-    extern u16 fn_8010B16C(u16 key, void* (*callback)(u32), u32 arg);
+    extern u16 menuFaceRequestPokemon(u16 key, void* (*callback)(u32), u32 arg);
     extern void _threadSwitch(void);
     u16 key;
 
     key = pokemonFaceKey((void*)pokemonGetStatus(pokemon, 0, 0xCC, 0));
-    fn_8010B16C(key, callback, arg);
+    menuFaceRequestPokemon(key, callback, arg);
     for (;;) {
         if (faceSlotIsReady(key) != 0) {
             break;
@@ -596,7 +596,7 @@ static inline s32 loadPokemonFace(void* pokemon, void* (*callback)(u32), u32 arg
     return 1;
 }
 
-s32 fn_8010AE2C(void* pokemon, void* (*callback)(u32), u32 arg)
+s32 fightPokemonGetFaceSpriteId(void* pokemon, void* (*callback)(u32), u32 arg)
 {
     return loadPokemonFace(pokemon, callback, arg);
 }
@@ -613,7 +613,7 @@ static inline u32 getFaceResource(u16 key)
     return (u32)_menuFaceBiosGetPtr__FUs(key);
 }
 
-void fn_8010B5C4(void* unused1, u32 unused2, u32 arg)
+void _menuFaceLoad(void* unused1, u32 unused2, u32 arg)
 {
     typedef struct Entry2 {
         u8 padding[2];
@@ -631,7 +631,7 @@ void fn_8010B5C4(void* unused1, u32 unused2, u32 arg)
     extern void DCFlushRange(void* addr, u32 length);
     extern void GXInvalidateTexAll(void);
     extern s32 fn_8010C364(void);
-    extern u16 fn_8010B16C(u16 key, void* (*callback)(u32), u32 arg);
+    extern u16 menuFaceRequestPokemon(u16 key, void* (*callback)(u32), u32 arg);
 
     u32 found1;
     u16 key = arg;
@@ -666,7 +666,7 @@ void fn_8010B5C4(void* unused1, u32 unused2, u32 arg)
     GXInvalidateTexAll();
 
     entry->state = 2;
-    fn_8010B16C(0, entry->callback, entry->arg);
+    menuFaceRequestPokemon(0, entry->callback, entry->arg);
 }
 #endif
 
@@ -677,7 +677,7 @@ void fn_8010B5C4(void* unused1, u32 unused2, u32 arg)
  * fuses each into a record form). The lights are cleared through the array,
  * which is what walks the object pointer at +0x3c, and `o` is declared after
  * the counters so it keeps retail's r31. */
-s32 fn_8010A420(void* obj)
+s32 menuModelTerm(void* obj)
 {
     typedef struct Obj {
         u8 state;
@@ -833,7 +833,7 @@ static inline s32 faceDrawPokemon(u8* context, void* srcNode, void* pokemon)
     return 1;
 }
 
-s32 fn_8010B718(u8* context, void* srcNode, void* pokemon)
+s32 menuFaceDrawPokemon(u8* context, void* srcNode, void* pokemon)
 {
     return faceDrawPokemon(context, srcNode, pokemon);
 }
@@ -867,7 +867,7 @@ typedef struct MenuModel {
  * retail has the object in r28 with w and h in r29/r30. The table pointer is
  * a local too, so its address stays in r31 for the five vector copies and the
  * three log strings instead of being rebuilt at each call. GSlogWrite takes
- * the unit's name string as its second argument, as fn_8010A420's call does.
+ * the unit's name string as its second argument, as menuModelTerm's call does.
  * `i` is declared before `light`, which is what gives them retail's r24/r25. */
 s32 menuModelInit(MenuModel* obj, s32 w, s32 h)
 {
@@ -990,7 +990,7 @@ s32 menuModelInit(MenuModel* obj, s32 w, s32 h)
 #pragma push
 #pragma optimization_level 3
 #pragma peephole off
-s32 fn_8010A88C(FaceModel* m)
+s32 _menuPokemonModelLoadThread(FaceModel* m)
 {
     extern s32 lbl_8047AD40;
     extern u8 lbl_8047AD44;
@@ -1013,7 +1013,7 @@ s32 fn_8010A88C(FaceModel* m)
     extern void GSmodelSetAnimType(u32 model, u32 type);
     extern void set__5GSvecFfff(void* out, f32 x, f32 y, f32 z);
     extern void GSmodelSetRotation(u32 model, void* rot);
-    extern void fn_8010AB00(FaceModel* m);
+    extern void _menuPokemonModelSetupView(FaceModel* m);
     extern f32 lbl_8047CE70;
     extern f32 lbl_8047CE78;
     extern f32 lbl_8047CE7C;
@@ -1095,7 +1095,7 @@ s32 fn_8010A88C(FaceModel* m)
         GSmodelSetAnimType(model, 1);
         set__5GSvecFfff(&rotVec, lbl_8047CE78, lbl_8047CE7C, lbl_8047CE80);
         GSmodelSetRotation(model, &rotVec);
-        fn_8010AB00(m);
+        _menuPokemonModelSetupView(m);
 
         m->state = 2;
     } while (m->useCur == 1);
@@ -1110,7 +1110,7 @@ s32 fn_8010A88C(FaceModel* m)
 #pragma push
 #pragma optimization_level 3
 #pragma peephole off
-s32 fn_8010AB00(void* objPtr)
+s32 _menuPokemonModelSetupView(void* objPtr)
 {
     typedef struct Vec3 {
         f32 x, y, z;
@@ -1261,14 +1261,14 @@ static inline void* faceBiosPtrPassThrough(void* ptr) {
     return ptr;
 }
 
-u16 fn_8010B16C(u16 key, void* (*callback)(u32), u32 arg)
+u16 menuFaceRequestPokemon(u16 key, void* (*callback)(u32), u32 arg)
 {
     extern void* _menuFaceBiosGetPtr__FUs(u16 key);
     extern void fn_8010BD6C(u16 key, void* (*cb)(u32), u32 a);
     extern void fn_8017B1CC(u32 group);
     extern s32 fn_8017B000(u32 fileHandle, u32 requestID, u32 callbackA,
                             u32 callbackB, u32 callbackC);
-    extern void fn_8010B5C4(void* unused1, u32 unused2, u32 arg);
+    extern void _menuFaceLoad(void* unused1, u32 unused2, u32 arg);
     void* ptr;
     s32 count;
     s32 i;
@@ -1318,7 +1318,7 @@ u16 fn_8010B16C(u16 key, void* (*callback)(u32), u32 arg)
         return 1;
     }
     lbl_8047AD4C[faceSlotFind(lbl_8047AD4C, _menuFaceBiosGetPtr__FUs(key))].state = 1;
-    fn_8017B000(0x5C0, (u32)ptr, (u32)fn_8010B5C4, 0, key);
+    fn_8017B000(0x5C0, (u32)ptr, (u32)_menuFaceLoad, 0, key);
     return 1;
 }
 #endif

@@ -17,7 +17,7 @@ void* fn_80128CDC(void* ptr) {
     return (u8*)ptr + 0x1B014;
 }
 
-void* fn_80128CF8(void* ptr) {
+void* savedataBiosGetE3E8Ptr(void* ptr) {
     if (ptr == NULL) { return NULL; }
     return (u8*)ptr + 0xE3E8;
 }

@@ -56,7 +56,7 @@ u32 savedataGetStatus(u8* arg1, u16 arg2) {
     extern u32 fn_80128D4C(u8* ptr);
     extern u32 fn_80128D30(u8* ptr);
     extern u32 fn_80128D14(u8* ptr);
-    extern u32 fn_80128CF8(u8* ptr);
+    extern u32 savedataBiosGetE3E8Ptr(u8* ptr);
     extern u32 fn_80128CDC(u8* ptr);
     extern u32 fn_80128CC0(u8* ptr);
 
@@ -95,7 +95,7 @@ u32 savedataGetStatus(u8* arg1, u16 arg2) {
     case 13:
         return fn_80128D14(arg1);
     case 14:
-        return fn_80128CF8(arg1);
+        return savedataBiosGetE3E8Ptr(arg1);
     case 15:
         return fn_80128CDC(arg1);
     case 16:

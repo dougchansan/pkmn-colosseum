@@ -69,7 +69,7 @@ extern void fn_8019C6FC(void);
 extern void fn_800D1070(u32 frames);
 extern void GSlightUpdate(u32 frames);
 extern void fn_800E3884(u32 frames, s32 mode);
-extern void fn_801181B0(s32 frames);
+extern void gsParticleUpdateAll(s32 frames);
 extern void fn_800D13C4(void* a);
 extern void fn_800DC874(void* a);
 extern void gsParticleUpdate(void* a);
@@ -370,7 +370,7 @@ void GSgfxRenderEnd(void)
         lbl_804001F0[13] += end - start;
 
         start = OSGetTick();
-        fn_801181B0(1);
+        gsParticleUpdateAll(1);
         end = OSGetTick();
         lbl_804001F0[14] += end - start;
     }

@@ -36,7 +36,7 @@
 extern void  GSlogWrite(const char* fmt, ...);         /* GSlog / OSReport */
 extern void* GSresAllocResourceAlign(u32 size, u32 alignment, u32 loadParam,
                                       u32 loadParam2, void* callback);
-extern void  fn_80101910(void* resource);
+extern void  floorModelRefDec(void* resource);
 extern void  memcpy(void* dst, const void* src, u32 n);
 
 /* ===== String constants (rodata references) ===== */
@@ -869,7 +869,7 @@ void loadModel(void* archive, u32 resourceArg, u32 modelIndex,
                  u32 callbackArg) {
     extern void* GSmodelLoad(void*);
     extern void GSresRegisterResource(void*, u32, u32, void*);
-    extern void fn_80101A4C(void);
+    extern void floorModelFreeCB(void);
     const char* messages = lbl_802717F0;
     void*** publicData;
     void** models;
@@ -893,7 +893,7 @@ void loadModel(void* archive, u32 resourceArg, u32 modelIndex,
                 GSlogWrite(messages + 0x448, index);
             }
             GSresRegisterResource(model, resourceArg, callbackArg,
-                                  (void*)fn_80101A4C);
+                                  (void*)floorModelFreeCB);
             return;
         }
     }
@@ -917,7 +917,7 @@ void loadArchivePtr(u8* data, u32 size, u32 loadParam, u32 callbackArg) {
     archive = floorFindCachedArchive(data);
     if (archive == NULL) {
         archive = GSresAllocResourceAlign(0x60, 0x20, loadParam,
-                                          callbackArg, fn_80101910);
+                                          callbackArg, floorModelRefDec);
         if (archive == NULL) {
             GSlogWrite(messages + 0x540, sizeof(HSD_Archive));
             return;
@@ -926,7 +926,7 @@ void loadArchivePtr(u8* data, u32 size, u32 loadParam, u32 callbackArg) {
         floorCacheArchive(archive);
     } else {
         copy = GSresAllocResourceAlign(0x60, 0x20, loadParam,
-                                       callbackArg, fn_80101910);
+                                       callbackArg, floorModelRefDec);
         if (copy == NULL) {
             GSlogWrite(messages + 0x540, sizeof(HSD_Archive));
             return;

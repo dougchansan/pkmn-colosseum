@@ -98,8 +98,8 @@ static inline s32 chkCrossObj(GSFieldVec3f* start, GSFieldVec3f* end) {
         if (enable != 0) {
             mdl = region->boundaryTriangles;
             if (mdl != NULL) {
-                fn_8010CA30(inv, i);
-                fn_8010C8D0(fwd, i);
+                colsysMakeSRTMatrix(inv, i);
+                colsysMakeRotMatrix(fwd, i);
                 if (chkCrossMdl(start, end, &dir, mdl, inv, fwd)) {
                     return 1;
                 }

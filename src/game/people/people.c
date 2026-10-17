@@ -365,7 +365,7 @@ extern u8 heroMoveIsMember(s32 member);
 extern u32 heroMoveGetResID(u32* group, u32* index, s32 member);
 extern void heroMoveSetEventList(u8 kind, void* events, s32 count);
 extern void heroMoveSetLockFrame(s32 frames);
-extern u8* fn_801170A4(u32 groupId, u32 index);
+extern u8* floorCharacterGetInfo(u32 groupId, u32 index);
 extern u32 floorCharacterBiosGetNameID(u8* character);
 extern u8 floorCharacterBiosGetTalkStartType(u8* character);
 extern u8 floorCharacterBiosGetTalkWallThrough(u8* character);
@@ -1584,7 +1584,7 @@ u8 peopleOpenSub(PeopleEntry* entry, u32 groupId, u32 index, s32 objectId)
         GSmodelSetBoundCheck(model, fn_8018F490(info));
     }
 
-    character = fn_801170A4(groupId, index);
+    character = floorCharacterGetInfo(groupId, index);
     if (character != NULL && (((u32)character[0] >> 3) & 1) == 1) {
         GSmodelEnableAnimBlend(entry->modelHandle);
     }
@@ -1864,7 +1864,7 @@ PeopleEntry* peopleFindTalkTarget(u32 groupId, u32 index, f32 range, f32 fov)
         if (peopleTestFlags(candidate, 1)) {
             continue;
         }
-        character = fn_801170A4(candidate->groupId, candidate->index);
+        character = floorCharacterGetInfo(candidate->groupId, candidate->index);
         if (character != NULL && floorCharacterBiosGetTalkStartType(character) == 3) {
             continue;
         }
@@ -2486,7 +2486,7 @@ void std054_characterTalk(u32 groupId, u32 index, s32 messageId)
             messageValue = characterModelGetTalkSE(info);
         }
         nameMessageId = 0xFA3;
-        character = fn_801170A4(entry->groupId, entry->index);
+        character = floorCharacterGetInfo(entry->groupId, entry->index);
         if (character != NULL) {
             nameId = floorCharacterBiosGetNameID(character);
             hearFlag = charNameBiosGetHearFlag(nameId);
@@ -3814,13 +3814,13 @@ s32 fn_801839A0(u32 groupId, u32 index, f32 field88, f32 field8C) {
 /* The talk script of a person's floor-character record. */
 u32 fn_8018397C(u32 groupId, u32 index)
 {
-    return floorCharacterBiosGetTalkSctID(fn_801170A4(groupId, index));
+    return floorCharacterBiosGetTalkSctID(floorCharacterGetInfo(groupId, index));
 }
 
 /* The move script of a person's floor-character record. */
 u32 fn_80183958(u32 groupId, u32 index)
 {
-    return floorCharacterBiosGetMoveSctID(fn_801170A4(groupId, index));
+    return floorCharacterBiosGetMoveSctID(floorCharacterGetInfo(groupId, index));
 }
 
 s32 fn_801837D8(u32 groupId, u32 index, u32 flagId, u32 param1, u32 param2) {

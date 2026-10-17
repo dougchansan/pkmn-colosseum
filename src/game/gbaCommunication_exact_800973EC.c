@@ -125,7 +125,7 @@ s32 fn_800973EC(u8* menu)
 /* 0x8009769C | size: 0x350 */
 u32 menuPokemonStatusOpen(u8 flags, u32 arg1, s32 pokemon, u16 arg3, u32 arg4, u32 arg5) {
     extern void menuModelInit(void* model, s32 width, s32 height);
-    extern void fn_80109C88(void* model, u32 pokemon);
+    extern void menuPokemonModelRequest(void* model, u32 pokemon);
     extern void fadeCheck(s32 wait);
     extern void fadeSet(s32 mode, f32 value);
     extern s32 menuOpenCustom(s32 menu, ...);
@@ -137,7 +137,7 @@ u32 menuPokemonStatusOpen(u8 flags, u32 arg1, s32 pokemon, u16 arg3, u32 arg4, u
     extern s32 menuIsCheck(s32 menu);
     extern void menuCloseCustom(s32 menu, s32 mode, s32 wait);
     extern void floorBattleEndTerminateScripts(void);
-    extern void fn_8010A420(void* model);
+    extern void menuModelTerm(void* model);
 
     u32 cursor;
     s32 result;
@@ -147,7 +147,7 @@ u32 menuPokemonStatusOpen(u8 flags, u32 arg1, s32 pokemon, u16 arg3, u32 arg4, u
     u8* state;
 
     menuModelInit(lbl_803FB338, 0xC8, 0xB4);
-    fn_80109C88(lbl_803FB338, pokemon);
+    menuPokemonModelRequest(lbl_803FB338, pokemon);
 
     if (lbl_803FB380[0] & 8) {
         fadeCheck(1);
@@ -231,7 +231,7 @@ u32 menuPokemonStatusOpen(u8 flags, u32 arg1, s32 pokemon, u16 arg3, u32 arg4, u
         }
     }
 
-    fn_8010A420(lbl_803FB338);
+    menuModelTerm(lbl_803FB338);
     _threadSwitch();
     return *(u32*)(state + 4);
 }

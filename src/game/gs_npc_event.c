@@ -167,7 +167,7 @@ void fn_80031188(u8* r3, u8* r4) {
 
 /* 0x80031228 | 0x1DC */
 extern void pokemonBiosGetFuseiFlag(void);
-extern void fn_8010B718(void);
+extern void menuFaceDrawPokemon(void);
 extern void winSpriteSetDisp(void*, s32);
 extern void pokemonCheckValid(void);
 extern void menuCBRule_CheckPokemonEventFlag(void);
@@ -203,10 +203,10 @@ void fn_80031228(u8* arg0, u8* arg1) {
     }
 
     if (((u8 (*)(void*))pokemonBiosGetFuseiFlag)(obj) != 0) {
-        ((void (*)(u8*, u8*, void*))fn_8010B718)(arg0, arg1, obj);
+        ((void (*)(u8*, u8*, void*))menuFaceDrawPokemon)(arg0, arg1, obj);
         winSpriteSetDisp(arg1, 1);
     } else if (((u8 (*)(void*))pokemonCheckValid)(obj) != 0 && ((u8 (*)(void))menuCBRule_CheckPokemonEventFlag)() == 1) {
-        ((void (*)(u8*, u8*, void*))fn_8010B718)(arg0, arg1, obj);
+        ((void (*)(u8*, u8*, void*))menuFaceDrawPokemon)(arg0, arg1, obj);
         winSpriteSetDisp(arg1, 1);
     } else {
         winSpriteSetDisp(arg1, 0);
@@ -501,10 +501,10 @@ extern void gbaTradeCheckImportItems(void);
 extern void fn_8002E460(void);
 extern void menuOpen(void);
 extern void menuModelInit(void);
-extern void fn_80109C88(void);
+extern void menuPokemonModelRequest(void);
 extern void winMsgClose(s32);
 extern void stateFunctionExChangeMain(void);
-extern void fn_8010A420(void);
+extern void menuModelTerm(void);
 extern void pokemonBiosSetFriend(void);
 extern void fn_8025FF9C(void);
 extern void stateFunctionEvolution(void);
@@ -630,8 +630,8 @@ void gbaTradeRun(void) {
     extern void winMsgClose();
     extern void winMsgOpen();
     extern void winSpriteSetDisp(void*, s32);
-    extern void fn_80109C88(void*, s32);
-    extern void fn_8010A420(void*);
+    extern void menuPokemonModelRequest(void*, s32);
+    extern void menuModelTerm(void*);
     extern void menuModelInit(void*, s32, s32);
     extern void floorLink();
     extern s32 floorGetPrevFloorID();
@@ -775,8 +775,8 @@ void gbaTradeRun(void) {
                 menuOpen(0xDE, 0);
                 menuModelInit(base + 0xD18, 0xE8, 0x11C);
                 menuModelInit(base + 0xCD0, 0xE8, 0x11C);
-                fn_80109C88(base + 0xD18, work2);
-                fn_80109C88(base + 0xCD0, work3);
+                menuPokemonModelRequest(base + 0xD18, work2);
+                menuPokemonModelRequest(base + 0xCD0, work3);
                 work2 = pokemonBiosGetNicknamePtr(work2);
                 work3 = pokemonBiosGetNicknamePtr(work3);
                 msgctrlSetValue(0x4D, work0);
@@ -798,8 +798,8 @@ void gbaTradeRun(void) {
             case 15:
                 winMsgOpen(2, 0x43DC, 1, 0);
                 menuClose(0xDE);
-                fn_8010A420(base + 0xD18);
-                fn_8010A420(base + 0xCD0);
+                menuModelTerm(base + 0xD18);
+                menuModelTerm(base + 0xCD0);
                 lbl_8047A42C = 0;
                 break;
             case 16: {
@@ -838,21 +838,21 @@ void gbaTradeRun(void) {
                     lbl_8047A428 = -1;
                     lbl_8047A424 = -1;
                     lbl_8047A420 = -1;
-                    fn_8010A420(base + 0xD18);
-                    fn_8010A420(base + 0xCD0);
+                    menuModelTerm(base + 0xD18);
+                    menuModelTerm(base + 0xCD0);
                     lbl_8047A410 = 1;
                     lbl_8047A42C = 2;
                     break;
                 case 1:
                     menuClose(0xDE);
-                    fn_8010A420(base + 0xD18);
-                    fn_8010A420(base + 0xCD0);
+                    menuModelTerm(base + 0xD18);
+                    menuModelTerm(base + 0xCD0);
                     lbl_8047A42C = 0;
                     break;
                 case -1:
                     menuClose(0xDE);
-                    fn_8010A420(base + 0xD18);
-                    fn_8010A420(base + 0xCD0);
+                    menuModelTerm(base + 0xD18);
+                    menuModelTerm(base + 0xCD0);
                     lbl_8047A42C = 0;
                     break;
                 }

@@ -189,7 +189,7 @@ extern u8 lbl_804083D0[0x30];
 extern u32 lbl_8047AD68;
 extern u32 lbl_8047AD6C;
 extern void flareRelease(void);
-void fn_801193BC(FieldParticleBank* bank);
+void gsParticleKillAll(FieldParticleBank* bank);
 extern s32 pokemonWazaGetMaxPP(u8* ptr, u16 idx);
 extern void wazaGetStatus(void);
 extern void pokemonBiosGetPokemonWazaPtr(void);
@@ -224,13 +224,13 @@ extern void* floorDataBiosGetPtr(u32 key);
 extern void fn_8011791C(void);
 void gsParticleKillOldest(FieldParticleInstanceList* list);
 extern void gsParticlePtclHook();
-extern u8 fn_80119D90(u16 idx);
-extern u8 fn_80119DD0(u16 idx);
+extern u8 joutaiDataBiosGetKaisuuId(u16 idx);
+extern u8 joutaiDataBiosGetMaxStack(u16 idx);
 extern u16 fn_80119E10(u16 idx);
 extern u8 fn_80119E50(u16 idx);
 extern u8 fn_80119E90(u16 idx);
-extern u16 fn_80119ED0(u16 idx);
-extern u8 fn_80119F10(u16 idx);
+extern u16 joutaiDataBiosGetStatusKind(u16 idx);
+extern u8 joutaiDataBiosGetObjectKind(u16 idx);
 extern u32 fn_80119F50(u16 idx);
 extern void wazaDataBiosSetFightWazaWzxVariationFuncPtr(u8* ptr, u32 val);
 extern void wazaDataBiosSetFightWazaWzxTypeFuncPtr(u8* ptr, u32 val);
@@ -415,7 +415,7 @@ extern void GSmodelSet60fpsAnimFlag();
 extern void psKillGenerator();
 extern FieldParticleBank* lbl_8047AD9C;
 extern u32 lbl_8047ADA0;
-void fn_801181B0(void);
+void gsParticleUpdateAll(void);
 extern void GSquatFromEuler(void*, void*);
 extern void GSvecTransformQuat(void);
 extern void fn_800E0108(void*, void*, void*);
@@ -425,7 +425,7 @@ extern s32 GSgetVersionMajor(void);
 extern void jumptable_8035BB88();
 extern u8 lbl_8047ADB0;
 void gsParticleUpdate(u32 particleCount);
-void fn_80118874(u8* list, u32 notify);
+void gsParticleKill(u8* list, u32 notify);
 extern void psSetGeneratorAngleRadiusScale(void);
 extern const f32 lbl_8047CFE8; /* 0.0f */
 extern const f32 lbl_8047CFEC; /* 1.0f */
@@ -523,7 +523,7 @@ void pokemonAddDpFormPokemonDpFilterId(void);
 extern void* fn_801EEEB8();
 void pokemonSetDarkPokemonStatus(void);
 extern void GScharCpy(void);
-extern void fn_8010BBB8(void);
+extern void pokemonGetFaceSpriteId(void);
 extern void fn_8001D994(void);
 void pokemonToMenuPokemonStatus(void);
 extern void GSmsgGetGSchar(void);
@@ -596,7 +596,7 @@ extern void std151_characterFaceDirection(void);
 extern void winMsgOpenField(void);
 extern void winMsgCloseField(void);
 extern void fn_801D0AFC(void);
-extern void fn_80113FE8(void);
+extern void floorReturnToSavedRoom(void);
 extern f32 lbl_8047D030;
 extern f32 lbl_8047D034;
 extern f32 lbl_8047D038;
@@ -711,7 +711,7 @@ void fn_8013024C(void);
 extern void gamedataGetStatus(void);
 extern void gamedataAttestCreate(void);
 extern void cms_RegisterScript();
-extern void fn_80112700(void);
+extern void floorStartSoundScript(void);
 extern void GSmsgFontOpen();
 extern void GSmsgOpen();
 extern u8 fn_800FF554(void);
@@ -919,10 +919,10 @@ extern void fn_80119FC0(u8* ptr, u8 val);
 extern void fn_80119FD0(u8* ptr, u8 val);
 extern void fn_80119FE0(u8* ptr, u16 val);
 extern void fn_80119FF0(u8* ptr, u16 val);
-extern u16 fn_8011A000(u8* ptr);
-extern u32 fn_8011A018(u8* ptr);
+extern u16 joutaiSlotGet0C(u8* ptr);
+extern u32 joutaiSlotGet08(u8* ptr);
 extern u8 fn_8011A030(u8* ptr);
-extern u8 fn_8011A048(u8* ptr);
+extern u8 joutaiSlotGet05(u8* ptr);
 extern u8 fn_8011A060(u8* ptr);
 extern u16 fn_8011A078(u8* ptr);
 extern u16 fn_8011A090(u8* ptr);
@@ -1117,7 +1117,7 @@ extern u8 heroBiosGetSexDataId(u8* ptr);
 extern void heroBiosSetSexDataId(u8* ptr, u8 val);
 extern void heroBiosSetRnd(u8* ptr, u32 val);
 extern u32 heroBiosGetRnd(u8* ptr);
-extern u32 fn_80130CD8(void);
+extern u32 GSeffectGetUpdateGapp(void);
 extern u16 pokemonBiosGetPokemonDataId(u8* ptr);
 extern u32 fn_80128E24(void);
 extern void* floorReadMapPreFunc(void* owner, u32 param, u32 alloc_size);
@@ -1138,7 +1138,7 @@ extern u32 floorDataBiosGetShadowReciveNum(void* ptr);
 extern void* floorDataBiosGetShadowReciveID(void* ptr, u32 idx);
 extern void* floorDataBiosGetShadowLightID(void* ptr);
 extern void* floorDataBiosGetSunResID(void* ptr);
-extern void fn_8011553C(void* obj, u32 val);
+extern void floorDataBiosSetMainSctID(void* obj, u32 val);
 extern void floorDataBiosSetMapResID(void* obj, u32 val);
 extern u32 floorDataBiosGetFileGroupID(u8* entry);
 extern void* floorDataBiosGetCurrentPtr(void);
@@ -1159,7 +1159,7 @@ extern u32 floorCharacterBiosGetVisibility(u8* ptr);
 extern void* floorCharacterBiosGetPeopleInfoPtr(u8* ptr);
 extern void floorCharacterBiosGetByIndex(u32 arg);
 extern void fn_80117154(void);
-extern void fn_80117164(void);
+extern void fieldCameraLoadList(void);
 extern void fn_801171C8(void);
 extern void fn_80117330(f32 arg);
 extern u32 fn_801174C4(void);
@@ -1174,8 +1174,8 @@ extern void fn_80118020(void);
 extern void tvRelease2(void);
 extern void fn_80118100(void);
 extern void gsParticleDraw(u32 a, u8 b);
-extern void fn_80118A68(u8* obj, u32 notify);
-extern void fn_80118C20(void* bank, u32 visible);
+extern void gsParticleKillOwned(u8* obj, u32 notify);
+extern void GSmodelSetParticleVisibility(void* bank, u32 visible);
 extern void fn_80118C88(void* obj, u32 visible);
 extern void fn_80118CAC(void* obj, u8 enabled);
 extern void fn_80118CD0(void* obj, u8 enabled);
@@ -1187,24 +1187,24 @@ extern u32 fn_80118D84(void* obj);
 extern s32 fn_80118DA8(u8* ptr);
 extern void fn_80118DE0(u8* arg1, f32* arg2, u32 arg3, u32 arg4);
 extern void fn_80118E8C(u8* arg1, f32* arg2, u32 arg3, u32 arg4, u32 arg5);
-extern void fn_80118F04(u8* arg1, f32* arg2, u32 arg3, u32 arg4, u32 arg5);
+extern void gsParticleSetVecB(u8* arg1, f32* arg2, u32 arg3, u32 arg4, u32 arg5);
 extern void fn_80118F7C(u8* obj, f32* arg);
-extern void fn_80118FB0(u8* obj, GSpart* part, u32 state, u32 byte5,
+extern void gsParticleLinkToJObj(u8* obj, GSpart* part, u32 state, u32 byte5,
                         u32 init_from_zero, u32 attach_model);
 extern void gsParticleInit(u32 count1, u32 count2);
-extern void fn_8011A280(u8* arg1, u16 arg2, u32 arg3);
-extern s32 fn_8011A3E4(void* obj, u16 val);
-extern void fn_8011A570(u8* arg1, u16 arg2, u32 arg3);
-extern s32 fn_8011A6D4(void* obj, u16 val);
-extern s32 fn_8011A860(void* obj, u16 val);
-extern void fn_8011A9EC(u8* arg1, u16 arg2, u32 arg3);
+extern void statusSetJoutai08(u8* arg1, u16 arg2, u32 arg3);
+extern s32 statusGetJoutai08(void* obj, u16 val);
+extern void statusSetJoutai0C(u8* arg1, u16 arg2, u32 arg3);
+extern s32 statusGetJoutai0C(void* obj, u16 val);
+extern s32 statusGetJoutaiParam(void* obj, u16 val);
+extern void statusSetJoutaiKaisuu(u8* arg1, u16 arg2, u32 arg3);
 extern void fn_8011AB50(u8* arg1, u16 arg2, u32 arg3);
-extern s32 fn_8011ACB4(void* obj, u16 val);
+extern s32 statusGetJoutai05(void* obj, u16 val);
 extern s32 fn_8011AE40(void* obj, u16 val);
-extern void fn_8011AFCC(u8* arg1, u16 arg2, u32 arg3);
+extern void statusSetJoutaiStack(u8* arg1, u16 arg2, u32 arg3);
 extern s32 fn_8011B130(void* obj, u16 val);
-extern void fn_8011B2C0(void* obj, u16 id, u16 arg3);
-extern s32 fn_8011B444(void* obj, u16 val);
+extern void statusWriteJoutaiDataId(void* obj, u16 id, u16 arg3);
+extern s32 statusCheckWriteJoutaiDataId(void* obj, u16 val);
 extern s32 fn_8011B67C(void* obj, u16 val);
 extern void fn_8011B788(u8* obj, u16 id);
 extern void fn_8011B950(u8* base, u16 count);
@@ -1217,8 +1217,8 @@ extern s8 pokemonFriendFilterDataBiosGetValue(u8* ptr, u8 idx);
 extern void* pokemonFriendFilterDataBiosGetPtr(u16 idx);
 extern void* pokemonTokuseiDataBiosGetPtr(u16 idx);
 extern void* pokemonSeikakuRateDataBiosGetPtr(u8 idx);
-extern u8 fn_8011CBF4(u8* ptr, u8 idx);
-extern u8 fn_8011CC24(u8* ptr, u8 idx);
+extern u8 pokemonSeikakuDataBiosGetCallRate(u8* ptr, u8 idx);
+extern u8 pokemonSeikakuDataBiosGetHyperRate(u8* ptr, u8 idx);
 extern void* pokemonSeikakuDataBiosGetPtr(u8 idx);
 extern u32 pokemonGrowDataBiosGetExp(u8* ptr, u8 idx);
 extern void* pokemonGrowDataBiosGetPtr(u8 idx);
@@ -1347,7 +1347,7 @@ extern u8 pokemonBiosGetClever(void* ptr);
 extern u8 pokemonBiosGetCute(void* ptr);
 extern u8 pokemonBiosGetBeautiful(void* ptr);
 extern u8 pokemonBiosGetStyle(void* ptr);
-extern void* fn_8011EDC4(u8* ptr, u16 idx);
+extern void* pokemonBiosGetDarkJoutaiPtr(u8* ptr, u16 idx);
 extern u16 pokemonBiosGetNimblenessRnd(void* ptr);
 extern u16 pokemonBiosGetSpeDefRnd(void* ptr);
 extern u16 pokemonBiosGetSpeAtkRnd(void* ptr);
@@ -1369,15 +1369,15 @@ extern u16 pokemonBiosGetMaxHp(void* ptr);
 extern u8 pokemonBiosGetPokemonWazaPpCount(void* ctx, u32 p1);
 extern u8 pokemonBiosGetPokemonWazaPp(void* ctx, u32 p1);
 extern u16 pokemonBiosGetPokemonWazaDataId(void* ctx, u32 p1);
-extern void* fn_8011F474(u8* ptr, u16 idx);
+extern void* pokemonBiosGetJoutaiPtr(u8* ptr, u16 idx);
 extern void* pokemonBiosGetNicknameOrgPtr(void* ptr);
 extern void* pokemonBiosGetNicknamePtr(void* ptr);
 extern void* pokemonBiosGetCatchTrainerNamePtr(void* ptr);
 extern void* pokemonBiosGetAttest(void* ptr);
 extern void pokemonWazaBiosCopy(u32* dst, u32* src);
 extern void pokemonBiosCopy(u32* dst, u32* src);
-extern u32 fn_8011F634(u8* ptr);
-extern u32 fn_8011F6D8(u8* ptr);
+extern u32 pokemonGetCallRate(u8* ptr);
+extern u32 pokemonGetHyperModeRate(u8* ptr);
 extern void pokemonSetDp(u8* ptr, f32 f1);
 extern f32 pokemonGetDp(u8* ptr);
 extern u8 pokemonIsDarkPokemon(u32 arg);
@@ -1389,13 +1389,13 @@ extern u32 pokemonGetJoutaiMsgId(u8* ptr);
 extern u32 pokemonGetJoutaiMenuSpriteId(u8* ptr);
 extern u32 pokemonGetJoutaiDataId(u8* ptr);
 extern void fn_80121484(void* obj, u32 arg2, u32 arg3);
-extern void fn_801214FC(void* obj, u32 arg2, u32 arg3);
+extern void pokemonSetJoutai08(void* obj, u32 arg2, u32 arg3);
 extern void fn_801215E4(void* obj, u32 arg2, u32 arg3);
-extern void fn_8012173C(void* obj, u32 arg2, u32 arg3);
+extern void pokemonSetJoutaiKaisuu(void* obj, u32 arg2, u32 arg3);
 extern void fn_801217B4(void* obj, u32 arg2, u32 arg3);
 extern void fn_8012190C(void* obj, u32 arg2, u32 arg3);
-extern void fn_801219F4(void* obj, u32 arg2, u32 arg3);
-extern void fn_80121B4C(void* obj, u32 arg2);
+extern void pokemonWriteJoutaiDataId(void* obj, u32 arg2, u32 arg3);
+extern void pokemonInitPersistentJoutai(void* obj, u32 arg2);
 extern void pokemonReplace(u32* arg1, u32* arg2);
 extern void* pokemonCreateSequence(void* arg);
 extern void pokemonSetSequenceStatus(u8* ptr, void* obj);
@@ -1425,7 +1425,7 @@ extern u32 pokemonCheckRare(void* ctx);
 extern void pokemonGrowBasisStatus(void* ptr, u32 arg2);
 extern void* fn_80128CC0(void* ptr);
 extern void* fn_80128CDC(void* ptr);
-extern void* fn_80128CF8(void* ptr);
+extern void* savedataBiosGetE3E8Ptr(void* ptr);
 extern void* fn_80128D14(void* ptr);
 extern void* fn_80128D30(void* ptr);
 extern void* fn_80128D4C(void* ptr);
@@ -1478,12 +1478,12 @@ extern u32 floorDataBiosGetCharNum(u8* ptr);
 extern u32 floorDataBiosGetPostFunc(u8* ptr);
 extern u32 floorDataBiosGetMainFunc(u8* ptr);
 extern u32 floorDataBiosGetPreFunc(u8* ptr);
-extern u32 fn_80115840(u8* ptr);
-extern u32 fn_80115888(u8* ptr);
-extern u32 fn_801158D0(u8* ptr);
-extern u32 fn_80115918(u8* ptr);
-extern u32 fn_80115960(u8* ptr);
-extern u32 fn_801159A8(u8* ptr);
+extern u32 floorDataBiosGetPlaceName(u8* ptr);
+extern u32 floorDataBiosGetPostSctID(u8* ptr);
+extern u32 floorDataBiosGetMainSctID(u8* ptr);
+extern u32 floorDataBiosGetPreSctID(u8* ptr);
+extern u32 floorDataBiosGetModifySctID(u8* ptr);
+extern u32 floorDataBiosGetSoundSctID(u8* ptr);
 extern u32 floorDataBiosGetFloorID(u8* ptr);
 extern u8 floorDataBiosGetFloorKind(u8* ptr);
 extern u32 floorDataBiosGetMapResID(u8* ptr);
@@ -1491,7 +1491,7 @@ extern u8 floorDataBiosGetArea(u8* ptr);
 extern s32 floorEventChangeTresure(u32 index, u16 val, u8 byte);
 extern s32 floorCharacterBiosGetRot(void* a, void* b);
 extern u32 floorCharacterBiosGetPos(u8* ptr, void* obj);
-extern u32 fn_801170A4(u8* arg1, u32 arg2);
+extern u32 floorCharacterGetInfo(u8* arg1, u32 arg2);
 extern u8 pokemonDataBiosGetColor(u8* ptr, s32 idx);
 extern u16 pokemonDataBiosGetStatusFaceMenuSpriteId(u8* ptr, s32 idx);
 extern u32 pokemonDataBiosGetPokebodyId(u8* ptr, s32 idx);
@@ -1503,13 +1503,13 @@ extern void* pokemonBiosGetInitDp(u8* ptr);
 extern u32 pokemonBiosGetDarkFlag(u8* ptr);
 extern s32 pokemonGetTasteLike(u8* ptr, void* arg2);
 extern s32 pokemonIsHpMantan(u8* ptr);
-extern s32 fn_80121574(void* a, u16 b);
-extern s32 fn_8012165C(void* a, u16 b);
-extern s32 fn_801216CC(void* a, u16 b);
+extern s32 pokemonGetJoutai08(void* a, u16 b);
+extern s32 pokemonGetJoutai0C(void* a, u16 b);
+extern s32 pokemonGetJoutaiParam(void* a, u16 b);
 extern s32 fn_8012182C(void* a, u16 b);
-extern s32 fn_8012189C(void* a, u16 b);
-extern s32 fn_80121984(void* a, u16 b);
-extern s32 fn_80121A6C(void* a, u16 b);
+extern s32 pokemonGetJoutaiKaisuu(void* a, u16 b);
+extern s32 pokemonGetJoutaiStack(void* a, u16 b);
+extern s32 pokemonCheckWriteJoutaiDataId(void* a, u16 b);
 extern u8 pokemonGetAnnonKatati(u32 val);
 extern u32 pokemonGetLevelToExp(u8* ptr, u8 idx);
 extern s32 pokemonGetNowHpPercentage(u8* ptr);
@@ -1748,7 +1748,7 @@ void gsParticleDraw(u32 a, u8 b) {
 /* 0x801181B0 | 0x23C */
 extern FieldParticleBank* lbl_8047AD9C;
 extern u32 lbl_8047ADA0;
-void fn_801181B0(void) {
+void gsParticleUpdateAll(void) {
     FieldParticleBankCursor slot_cursor;
     u32 outer_index;
     u32 inner_index;
@@ -1964,7 +1964,7 @@ void gsParticleUpdate(u32 particleCount) {
 #if !defined(FIELD_BANK_ACTIVE) || defined(FIELD_EXACT_80118874_801195AC)
 /* 0x80118A68 | 0x1B8 */
 /* 0x80118874 | 0x1F4 */
-void fn_80118874(u8* list, u32 notify) {
+void gsParticleKill(u8* list, u32 notify) {
     u8* entry = list;
     u8* obj;
     u32 i = 0;
@@ -1978,11 +1978,11 @@ void fn_80118874(u8* list, u32 notify) {
         entry += 4;
     } while (i < 0x40);
 }
-void fn_80118A68(u8* obj, u32 notify) {
+void gsParticleKillOwned(u8* obj, u32 notify) {
     destroyFieldParticleInstance(obj, notify);
 }
-/* 0x68 | fn_80118C20 | guarded_call */
-void fn_80118C20(void* bank, u32 visible) {
+/* 0x68 | GSmodelSetParticleVisibility | guarded_call */
+void GSmodelSetParticleVisibility(void* bank, u32 visible) {
     u8* scan = bank;
     u32 i = 0;
     for (i = 0; i < 0x40; i++, scan += 4) {
@@ -2063,8 +2063,8 @@ void fn_80118E8C(u8* arg1, f32* arg2, u32 arg3, u32 arg4, u32 arg5) {
         GSvecCopy(arg1 + 0x5c);
     }
 }
-/* 0x78 | fn_80118F04 | two_call_arg_check */
-void fn_80118F04(u8* arg1, f32* arg2, u32 arg3, u32 arg4, u32 arg5) {
+/* 0x78 | gsParticleSetVecB | two_call_arg_check */
+void gsParticleSetVecB(u8* arg1, f32* arg2, u32 arg3, u32 arg4, u32 arg5) {
     if ((s32)*(u32*)(arg1 + 0x44) == 0) {
         GSvecCopy(arg1 + 0x14);
         *(f32*)(*(u8**)(arg1 + 0x10) + 0x20) = arg2[0];
@@ -2084,7 +2084,7 @@ void fn_80118F7C(u8* obj, f32* arg) {
 /* 0x80118FB0 | 0x12C */
 extern const f32 lbl_8047CFE8; /* 0.0f */
 extern const f32 lbl_8047CFEC; /* 1.0f */
-void fn_80118FB0(u8* obj, GSpart* part, u32 state, u32 byte5,
+void gsParticleLinkToJObj(u8* obj, GSpart* part, u32 state, u32 byte5,
                  u32 init_from_zero, u32 attach_model) {
     extern void GSvecCopy(void* dst, void* src);
     u8* desc = (u8*)part;
@@ -2205,7 +2205,7 @@ u8* gsParticleCreate(u8* texture, u32 selector, u32 subid) {
     return node;
 }
 /* 0x801193BC | 0x1F0 */
-void fn_801193BC(FieldParticleBank* bank) {
+void gsParticleKillAll(FieldParticleBank* bank) {
     struct FieldParticleBankIteration {
         u32 index;
         FieldParticleBankCursor cursor;
@@ -2531,14 +2531,14 @@ void gsParticlePtclHook(u32 arg1, u32 arg2, u32 arg5, u8* arg6) {
 /* 0x8011A0A8 | 0x1D8 */
 static inline u8* fieldStatusEntryGet(u8* obj, u16 id) {
     extern u8 fn_80119E90(u16 idx);
-    extern u32 fn_80119ED0(u16 idx);
-    extern u8* fn_80119F10(u16 idx);
+    extern u32 joutaiDataBiosGetStatusKind(u16 idx);
+    extern u8* joutaiDataBiosGetObjectKind(u16 idx);
     extern u8* statusGetStatus(u8* a, void* b, u32 c, u32 d, u32 e);
     u16 idx;
     u8* base;
     idx = fn_80119E90(id);
-    base = fn_80119F10(id);
-    base = statusGetStatus(base, obj, 0, fn_80119ED0(id), 0);
+    base = joutaiDataBiosGetObjectKind(id);
+    base = statusGetStatus(base, obj, 0, joutaiDataBiosGetStatusKind(id), 0);
     if (base == NULL) {
         return NULL;
     }
@@ -2596,10 +2596,10 @@ void fn_8011A0A8(u8* dst, u8* src, u16 type)
 
 #if !defined(FIELD_BANK_ACTIVE) || defined(FIELD_EXACT_8011A280_8011B2C0)
 /* 0x8011A280 | 0x164 */
-void fn_8011A280(u8* arg1, u16 arg2, u32 arg3) {
+void statusSetJoutai08(u8* arg1, u16 arg2, u32 arg3) {
     extern u8 fn_80119E90(u16 val);
-    extern u8* fn_80119F10(u16 val);
-    extern u32 fn_80119ED0(u16 val);
+    extern u8* joutaiDataBiosGetObjectKind(u16 val);
+    extern u32 joutaiDataBiosGetStatusKind(u16 val);
     extern u8* statusGetStatus(u8* a, u8* b, u32 c, u32 d, u32 e);
     extern u16 fn_8011A090(u8* ptr);
     extern void fn_80119FA0(u8* ptr, u32 val);
@@ -2612,8 +2612,8 @@ void fn_8011A280(u8* arg1, u16 arg2, u32 arg3) {
     flag = 0; goto flag_check;
 body_start:
     idx = (u8)fn_80119E90(arg2);
-    base = (0, fn_80119F10(arg2));
-    base = statusGetStatus(base, arg1, 0, fn_80119ED0(arg2), 0);
+    base = (0, joutaiDataBiosGetObjectKind(arg2));
+    base = statusGetStatus(base, arg1, 0, joutaiDataBiosGetStatusKind(arg2), 0);
     if (base != NULL) { goto offset_calc; }
     base = NULL;
     goto check_base;
@@ -2642,8 +2642,8 @@ flag_check:
 
     /* Phase 2 */
     idx = fn_80119E90(arg2);
-    base = fn_80119F10(arg2);
-    base = statusGetStatus(base, arg1, 0, fn_80119ED0(arg2), 0);
+    base = joutaiDataBiosGetObjectKind(arg2);
+    base = statusGetStatus(base, arg1, 0, joutaiDataBiosGetStatusKind(arg2), 0);
     if (base != NULL) { goto p2_offset; }
     base = NULL;
     goto p2_check;
@@ -2658,13 +2658,13 @@ exit:
     return;
 }
 /* 0x8011A3E4 | 0x18C */
-s32 fn_8011A3E4(void* obj, u16 val) {
+s32 statusGetJoutai08(void* obj, u16 val) {
     extern u8 fn_80119E90(u16 val);
-    extern u8* fn_80119F10(u16 val);
-    extern u32 fn_80119ED0(u16 val);
+    extern u8* joutaiDataBiosGetObjectKind(u16 val);
+    extern u32 joutaiDataBiosGetStatusKind(u16 val);
     extern u8* statusGetStatus(u8* a, void* b, u32 c, u32 d, u32 e);
     extern u16 fn_8011A090(u8* ptr);
-    extern s32 fn_8011A018(u8* ptr);
+    extern s32 joutaiSlotGet08(u8* ptr);
     u8* base;
     u16 idx;
     u8 flag;
@@ -2674,8 +2674,8 @@ s32 fn_8011A3E4(void* obj, u16 val) {
     flag = 0; goto flag_check;
 body_start:
     idx = (u8)fn_80119E90(val);
-    base = (0, fn_80119F10(val));
-    base = statusGetStatus(base, obj, 0, fn_80119ED0(val), 0);
+    base = (0, joutaiDataBiosGetObjectKind(val));
+    base = statusGetStatus(base, obj, 0, joutaiDataBiosGetStatusKind(val), 0);
     if (base != NULL) { goto offset_calc; }
     base = NULL;
     goto check_base;
@@ -2703,8 +2703,8 @@ flag_check:
     if ((u8)flag == 0) { return 0; }
 
     idx = fn_80119E90(val);
-    base = fn_80119F10(val);
-    base = statusGetStatus(base, obj, 0, fn_80119ED0(val), 0);
+    base = joutaiDataBiosGetObjectKind(val);
+    base = statusGetStatus(base, obj, 0, joutaiDataBiosGetStatusKind(val), 0);
     if (base != NULL) { goto p2_offset; }
     base = NULL;
     goto p2_check;
@@ -2712,13 +2712,13 @@ p2_offset:
     base = base + idx * 16;
 p2_check:
     if (base == NULL) { return 0; }
-    return fn_8011A018(base);
+    return joutaiSlotGet08(base);
 }
 /* 0x8011A570 | 0x164 */
-void fn_8011A570(u8* arg1, u16 arg2, u32 arg3) {
+void statusSetJoutai0C(u8* arg1, u16 arg2, u32 arg3) {
     extern u8 fn_80119E90(u16 val);
-    extern u8* fn_80119F10(u16 val);
-    extern u32 fn_80119ED0(u16 val);
+    extern u8* joutaiDataBiosGetObjectKind(u16 val);
+    extern u32 joutaiDataBiosGetStatusKind(u16 val);
     extern u8* statusGetStatus(u8* a, u8* b, u32 c, u32 d, u32 e);
     extern u16 fn_8011A090(u8* ptr);
     extern void fn_80119F90(u8* ptr, u32 val);
@@ -2731,8 +2731,8 @@ void fn_8011A570(u8* arg1, u16 arg2, u32 arg3) {
     flag = 0; goto flag_check;
 body_start:
     idx = (u8)fn_80119E90(arg2);
-    base = (0, fn_80119F10(arg2));
-    base = statusGetStatus(base, arg1, 0, fn_80119ED0(arg2), 0);
+    base = (0, joutaiDataBiosGetObjectKind(arg2));
+    base = statusGetStatus(base, arg1, 0, joutaiDataBiosGetStatusKind(arg2), 0);
     if (base != NULL) { goto offset_calc; }
     base = NULL;
     goto check_base;
@@ -2761,8 +2761,8 @@ flag_check:
 
     /* Phase 2 */
     idx = fn_80119E90(arg2);
-    base = fn_80119F10(arg2);
-    base = statusGetStatus(base, arg1, 0, fn_80119ED0(arg2), 0);
+    base = joutaiDataBiosGetObjectKind(arg2);
+    base = statusGetStatus(base, arg1, 0, joutaiDataBiosGetStatusKind(arg2), 0);
     if (base != NULL) { goto p2_offset; }
     base = NULL;
     goto p2_check;
@@ -2777,13 +2777,13 @@ exit:
     return;
 }
 /* 0x8011A6D4 | 0x18C */
-s32 fn_8011A6D4(void* obj, u16 val) {
+s32 statusGetJoutai0C(void* obj, u16 val) {
     extern u8 fn_80119E90(u16 val);
-    extern u8* fn_80119F10(u16 val);
-    extern u32 fn_80119ED0(u16 val);
+    extern u8* joutaiDataBiosGetObjectKind(u16 val);
+    extern u32 joutaiDataBiosGetStatusKind(u16 val);
     extern u8* statusGetStatus(u8* a, void* b, u32 c, u32 d, u32 e);
     extern u16 fn_8011A090(u8* ptr);
-    extern s32 fn_8011A000(u8* ptr);
+    extern s32 joutaiSlotGet0C(u8* ptr);
     u8* base;
     u16 idx;
     u8 flag;
@@ -2793,8 +2793,8 @@ s32 fn_8011A6D4(void* obj, u16 val) {
     flag = 0; goto flag_check;
 body_start:
     idx = (u8)fn_80119E90(val);
-    base = (0, fn_80119F10(val));
-    base = statusGetStatus(base, obj, 0, fn_80119ED0(val), 0);
+    base = (0, joutaiDataBiosGetObjectKind(val));
+    base = statusGetStatus(base, obj, 0, joutaiDataBiosGetStatusKind(val), 0);
     if (base != NULL) { goto offset_calc; }
     base = NULL;
     goto check_base;
@@ -2822,8 +2822,8 @@ flag_check:
     if ((u8)flag == 0) { return 0; }
 
     idx = fn_80119E90(val);
-    base = fn_80119F10(val);
-    base = statusGetStatus(base, obj, 0, fn_80119ED0(val), 0);
+    base = joutaiDataBiosGetObjectKind(val);
+    base = statusGetStatus(base, obj, 0, joutaiDataBiosGetStatusKind(val), 0);
     if (base != NULL) { goto p2_offset; }
     base = NULL;
     goto p2_check;
@@ -2833,13 +2833,13 @@ p2_check:
     if (base != NULL) { goto p2_return; }
     return 0;
 p2_return:
-    return fn_8011A000(base);
+    return joutaiSlotGet0C(base);
 }
 /* 0x8011A860 | 0x18C */
-s32 fn_8011A860(void* obj, u16 val) {
+s32 statusGetJoutaiParam(void* obj, u16 val) {
     extern u8 fn_80119E90(u16 val);
-    extern u8* fn_80119F10(u16 val);
-    extern u32 fn_80119ED0(u16 val);
+    extern u8* joutaiDataBiosGetObjectKind(u16 val);
+    extern u32 joutaiDataBiosGetStatusKind(u16 val);
     extern u8* statusGetStatus(u8* a, void* b, u32 c, u32 d, u32 e);
     extern u16 fn_8011A090(u8* ptr);
     extern s32 fn_8011A078(u8* ptr);
@@ -2852,8 +2852,8 @@ s32 fn_8011A860(void* obj, u16 val) {
     flag = 0; goto flag_check;
 body_start:
     idx = (u8)fn_80119E90(val);
-    base = (0, fn_80119F10(val));
-    base = statusGetStatus(base, obj, 0, fn_80119ED0(val), 0);
+    base = (0, joutaiDataBiosGetObjectKind(val));
+    base = statusGetStatus(base, obj, 0, joutaiDataBiosGetStatusKind(val), 0);
     if (base != NULL) { goto offset_calc; }
     base = NULL;
     goto check_base;
@@ -2881,8 +2881,8 @@ flag_check:
     if ((u8)flag == 0) { return 0; }
 
     idx = fn_80119E90(val);
-    base = fn_80119F10(val);
-    base = statusGetStatus(base, obj, 0, fn_80119ED0(val), 0);
+    base = joutaiDataBiosGetObjectKind(val);
+    base = statusGetStatus(base, obj, 0, joutaiDataBiosGetStatusKind(val), 0);
     if (base != NULL) { goto p2_offset; }
     base = NULL;
     goto p2_check;
@@ -2895,10 +2895,10 @@ p2_return:
     return fn_8011A078(base);
 }
 /* 0x8011A9EC | 0x164 */
-void fn_8011A9EC(u8* arg1, u16 arg2, u32 arg3) {
+void statusSetJoutaiKaisuu(u8* arg1, u16 arg2, u32 arg3) {
     extern u8 fn_80119E90(u16 val);
-    extern u8* fn_80119F10(u16 val);
-    extern u32 fn_80119ED0(u16 val);
+    extern u8* joutaiDataBiosGetObjectKind(u16 val);
+    extern u32 joutaiDataBiosGetStatusKind(u16 val);
     extern u8* statusGetStatus(u8* a, u8* b, u32 c, u32 d, u32 e);
     extern u16 fn_8011A090(u8* ptr);
     extern void fn_80119FD0(u8* ptr, u32 val);
@@ -2911,8 +2911,8 @@ void fn_8011A9EC(u8* arg1, u16 arg2, u32 arg3) {
     flag = 0; goto flag_check;
 body_start:
     idx = (u8)fn_80119E90(arg2);
-    base = (0, fn_80119F10(arg2));
-    base = statusGetStatus(base, arg1, 0, fn_80119ED0(arg2), 0);
+    base = (0, joutaiDataBiosGetObjectKind(arg2));
+    base = statusGetStatus(base, arg1, 0, joutaiDataBiosGetStatusKind(arg2), 0);
     if (base != NULL) { goto offset_calc; }
     base = NULL;
     goto check_base;
@@ -2941,8 +2941,8 @@ flag_check:
 
     /* Phase 2 */
     idx = fn_80119E90(arg2);
-    base = fn_80119F10(arg2);
-    base = statusGetStatus(base, arg1, 0, fn_80119ED0(arg2), 0);
+    base = joutaiDataBiosGetObjectKind(arg2);
+    base = statusGetStatus(base, arg1, 0, joutaiDataBiosGetStatusKind(arg2), 0);
     if (base != NULL) { goto p2_offset; }
     base = NULL;
     goto p2_check;
@@ -2959,8 +2959,8 @@ exit:
 /* 0x8011AB50 | 0x164 */
 void fn_8011AB50(u8* arg1, u16 arg2, u32 arg3) {
     extern u8 fn_80119E90(u16 val);
-    extern u8* fn_80119F10(u16 val);
-    extern u32 fn_80119ED0(u16 val);
+    extern u8* joutaiDataBiosGetObjectKind(u16 val);
+    extern u32 joutaiDataBiosGetStatusKind(u16 val);
     extern u8* statusGetStatus(u8* a, u8* b, u32 c, u32 d, u32 e);
     extern u16 fn_8011A090(u8* ptr);
     extern void fn_80119FC0(u8* ptr, u32 val);
@@ -2973,8 +2973,8 @@ void fn_8011AB50(u8* arg1, u16 arg2, u32 arg3) {
     flag = 0; goto flag_check;
 body_start:
     idx = (u8)fn_80119E90(arg2);
-    base = (0, fn_80119F10(arg2));
-    base = statusGetStatus(base, arg1, 0, fn_80119ED0(arg2), 0);
+    base = (0, joutaiDataBiosGetObjectKind(arg2));
+    base = statusGetStatus(base, arg1, 0, joutaiDataBiosGetStatusKind(arg2), 0);
     if (base != NULL) { goto offset_calc; }
     base = NULL;
     goto check_base;
@@ -3003,8 +3003,8 @@ flag_check:
 
     /* Phase 2 */
     idx = fn_80119E90(arg2);
-    base = fn_80119F10(arg2);
-    base = statusGetStatus(base, arg1, 0, fn_80119ED0(arg2), 0);
+    base = joutaiDataBiosGetObjectKind(arg2);
+    base = statusGetStatus(base, arg1, 0, joutaiDataBiosGetStatusKind(arg2), 0);
     if (base != NULL) { goto p2_offset; }
     base = NULL;
     goto p2_check;
@@ -3019,13 +3019,13 @@ exit:
     return;
 }
 /* 0x8011ACB4 | 0x18C */
-s32 fn_8011ACB4(void* obj, u16 val) {
+s32 statusGetJoutai05(void* obj, u16 val) {
     extern u8 fn_80119E90(u16 val);
-    extern u8* fn_80119F10(u16 val);
-    extern u32 fn_80119ED0(u16 val);
+    extern u8* joutaiDataBiosGetObjectKind(u16 val);
+    extern u32 joutaiDataBiosGetStatusKind(u16 val);
     extern u8* statusGetStatus(u8* a, void* b, u32 c, u32 d, u32 e);
     extern u16 fn_8011A090(u8* ptr);
-    extern s32 fn_8011A048(u8* ptr);
+    extern s32 joutaiSlotGet05(u8* ptr);
     u8* base;
     u16 idx;
     u8 flag;
@@ -3035,8 +3035,8 @@ s32 fn_8011ACB4(void* obj, u16 val) {
     flag = 0; goto flag_check;
 body_start:
     idx = (u8)fn_80119E90(val);
-    base = (0, fn_80119F10(val));
-    base = statusGetStatus(base, obj, 0, fn_80119ED0(val), 0);
+    base = (0, joutaiDataBiosGetObjectKind(val));
+    base = statusGetStatus(base, obj, 0, joutaiDataBiosGetStatusKind(val), 0);
     if (base != NULL) { goto offset_calc; }
     base = NULL;
     goto check_base;
@@ -3064,8 +3064,8 @@ flag_check:
     if ((u8)flag == 0) { return -1; }
 
     idx = fn_80119E90(val);
-    base = fn_80119F10(val);
-    base = statusGetStatus(base, obj, 0, fn_80119ED0(val), 0);
+    base = joutaiDataBiosGetObjectKind(val);
+    base = statusGetStatus(base, obj, 0, joutaiDataBiosGetStatusKind(val), 0);
     if (base != NULL) { goto p2_offset; }
     base = NULL;
     goto p2_check;
@@ -3075,13 +3075,13 @@ p2_check:
     if (base != NULL) { goto p2_return; }
     return -1;
 p2_return:
-    return fn_8011A048(base);
+    return joutaiSlotGet05(base);
 }
 /* 0x8011AE40 | 0x18C */
 s32 fn_8011AE40(void* obj, u16 val) {
     extern u8 fn_80119E90(u16 val);
-    extern u8* fn_80119F10(u16 val);
-    extern u32 fn_80119ED0(u16 val);
+    extern u8* joutaiDataBiosGetObjectKind(u16 val);
+    extern u32 joutaiDataBiosGetStatusKind(u16 val);
     extern u8* statusGetStatus(u8* a, void* b, u32 c, u32 d, u32 e);
     extern u16 fn_8011A090(u8* ptr);
     extern s32 fn_8011A060(u8* ptr);
@@ -3094,8 +3094,8 @@ s32 fn_8011AE40(void* obj, u16 val) {
     flag = 0; goto flag_check;
 body_start:
     idx = (u8)fn_80119E90(val);
-    base = (0, fn_80119F10(val));
-    base = statusGetStatus(base, obj, 0, fn_80119ED0(val), 0);
+    base = (0, joutaiDataBiosGetObjectKind(val));
+    base = statusGetStatus(base, obj, 0, joutaiDataBiosGetStatusKind(val), 0);
     if (base != NULL) { goto offset_calc; }
     base = NULL;
     goto check_base;
@@ -3123,8 +3123,8 @@ flag_check:
     if ((u8)flag == 0) { return -1; }
 
     idx = fn_80119E90(val);
-    base = fn_80119F10(val);
-    base = statusGetStatus(base, obj, 0, fn_80119ED0(val), 0);
+    base = joutaiDataBiosGetObjectKind(val);
+    base = statusGetStatus(base, obj, 0, joutaiDataBiosGetStatusKind(val), 0);
     if (base != NULL) { goto p2_offset; }
     base = NULL;
     goto p2_check;
@@ -3137,10 +3137,10 @@ p2_return:
     return fn_8011A060(base);
 }
 /* 0x8011AFCC | 0x164 */
-void fn_8011AFCC(u8* arg1, u16 arg2, u32 arg3) {
+void statusSetJoutaiStack(u8* arg1, u16 arg2, u32 arg3) {
     extern u8 fn_80119E90(u16 val);
-    extern u8* fn_80119F10(u16 val);
-    extern u32 fn_80119ED0(u16 val);
+    extern u8* joutaiDataBiosGetObjectKind(u16 val);
+    extern u32 joutaiDataBiosGetStatusKind(u16 val);
     extern u8* statusGetStatus(u8* a, u8* b, u32 c, u32 d, u32 e);
     extern u16 fn_8011A090(u8* ptr);
     extern void fn_80119FB0(u8* ptr, u8 val);
@@ -3153,8 +3153,8 @@ void fn_8011AFCC(u8* arg1, u16 arg2, u32 arg3) {
     flag = 0; goto flag_check;
 body_start:
     idx = (u8)fn_80119E90(arg2);
-    base = (0, fn_80119F10(arg2));
-    base = statusGetStatus(base, arg1, 0, fn_80119ED0(arg2), 0);
+    base = (0, joutaiDataBiosGetObjectKind(arg2));
+    base = statusGetStatus(base, arg1, 0, joutaiDataBiosGetStatusKind(arg2), 0);
     if (base != NULL) { goto offset_calc; }
     base = NULL;
     goto check_base;
@@ -3183,8 +3183,8 @@ flag_check:
 
     /* Phase 2 */
     idx = fn_80119E90(arg2);
-    base = fn_80119F10(arg2);
-    base = statusGetStatus(base, arg1, 0, fn_80119ED0(arg2), 0);
+    base = joutaiDataBiosGetObjectKind(arg2);
+    base = statusGetStatus(base, arg1, 0, joutaiDataBiosGetStatusKind(arg2), 0);
     if (base != NULL) { goto p2_offset; }
     base = NULL;
     goto p2_check;
@@ -3201,8 +3201,8 @@ exit:
 /* 0x8011B130 | 0x190 */
 s32 fn_8011B130(void* obj, u16 val) {
     extern u8 fn_80119E90(u16 val);
-    extern u8* fn_80119F10(u16 val);
-    extern u32 fn_80119ED0(u16 val);
+    extern u8* joutaiDataBiosGetObjectKind(u16 val);
+    extern u32 joutaiDataBiosGetStatusKind(u16 val);
     extern u8* statusGetStatus(u8* a, void* b, u32 c, u32 d, u32 e);
     extern u16 fn_8011A090(u8* ptr);
     extern u8 fn_8011A030(u8* ptr);
@@ -3215,8 +3215,8 @@ s32 fn_8011B130(void* obj, u16 val) {
     flag = 0; goto flag_check;
 body_start:
     idx = (u8)fn_80119E90(val);
-    base = (0, fn_80119F10(val));
-    base = statusGetStatus(base, obj, 0, fn_80119ED0(val), 0);
+    base = (0, joutaiDataBiosGetObjectKind(val));
+    base = statusGetStatus(base, obj, 0, joutaiDataBiosGetStatusKind(val), 0);
     if (base != NULL) { goto offset_calc; }
     base = NULL;
     goto check_base;
@@ -3244,8 +3244,8 @@ flag_check:
     if ((u8)flag == 0) { return -1; }
 
     idx = fn_80119E90(val);
-    base = fn_80119F10(val);
-    base = statusGetStatus(base, obj, 0, fn_80119ED0(val), 0);
+    base = joutaiDataBiosGetObjectKind(val);
+    base = statusGetStatus(base, obj, 0, joutaiDataBiosGetStatusKind(val), 0);
     if (base != NULL) { goto p2_offset; }
     base = NULL;
     goto p2_check;
@@ -3259,34 +3259,34 @@ p2_check:
 
 #if !defined(FIELD_BANK_ACTIVE) || defined(FIELD_CANDIDATE_8011B2C0_8011B444)
 /* 0x8011B2C0 | 0x184 */
-/* Status-entry lookup: the entry table from fn_80119F10/statusGetStatus,
- * indexed by fn_80119E90 in 16-byte records. fn_8011B444 expands the same
+/* Status-entry lookup: the entry table from joutaiDataBiosGetObjectKind/statusGetStatus,
+ * indexed by fn_80119E90 in 16-byte records. statusCheckWriteJoutaiDataId expands the same
  * sequence twice in place; as an inline, the table result feeds the offset
  * without the extra register copy a flat local produces. The block-scope
  * prototypes follow the widths retail's callers assume (no masks after
- * fn_80119F10/fn_80119ED0/fn_80119DD0). */
+ * joutaiDataBiosGetObjectKind/joutaiDataBiosGetStatusKind/joutaiDataBiosGetMaxStack). */
 static inline u8* fieldEntryGet(void* obj, u16 id) {
     extern u8 fn_80119E90(u16 idx);
-    extern u32 fn_80119ED0(u16 idx);
-    extern u8* fn_80119F10(u16 idx);
+    extern u32 joutaiDataBiosGetStatusKind(u16 idx);
+    extern u8* joutaiDataBiosGetObjectKind(u16 idx);
     extern u8* statusGetStatus(u8* a, void* b, u32 c, u32 d, u32 e);
     u16 idx;
     u8* base;
     idx = fn_80119E90(id);
-    base = fn_80119F10(id);
-    base = statusGetStatus(base, obj, 0, fn_80119ED0(id), 0);
+    base = joutaiDataBiosGetObjectKind(id);
+    base = statusGetStatus(base, obj, 0, joutaiDataBiosGetStatusKind(id), 0);
     if (base == NULL) {
         return NULL;
     }
     return base + idx * 16;
 }
-void fn_8011B2C0(void* obj, u16 id, u16 arg3) {
-    extern u8 fn_80119D90(u16 idx);
-    extern u32 fn_80119DD0(u16 idx);
+void statusWriteJoutaiDataId(void* obj, u16 id, u16 arg3) {
+    extern u8 joutaiDataBiosGetKaisuuId(u16 idx);
+    extern u32 joutaiDataBiosGetMaxStack(u16 idx);
     extern u8 fn_80119E50(u16 idx);
     extern u8 fn_80119E90(u16 idx);
-    extern u32 fn_80119ED0(u16 idx);
-    extern u8* fn_80119F10(u16 idx);
+    extern u32 joutaiDataBiosGetStatusKind(u16 idx);
+    extern u8* joutaiDataBiosGetObjectKind(u16 idx);
     extern void fn_80119F90(u8* ptr, u16 val);
     extern void fn_80119FA0(u8* ptr, u32 val);
     extern void fn_80119FB0(u8* ptr, u32 val);
@@ -3322,10 +3322,10 @@ void fn_8011B2C0(void* obj, u16 id, u16 arg3) {
     }
     fn_80119FF0(elem, id);
     fn_80119FE0(elem, arg3);
-    fn_80119FD0(elem, (s8)kaisuuGetKaisuu(fn_80119D90(id)));
+    fn_80119FD0(elem, (s8)kaisuuGetKaisuu(joutaiDataBiosGetKaisuuId(id)));
     if (type == 4) {
         u32 count = old_count + 1;
-        u32 limit = fn_80119DD0(id);
+        u32 limit = joutaiDataBiosGetMaxStack(id);
         if ((u8)limit < (u8)count) {
             count = limit;
         }
@@ -3336,10 +3336,10 @@ void fn_8011B2C0(void* obj, u16 id, u16 arg3) {
 
 #if !defined(FIELD_BANK_ACTIVE) || defined(FIELD_EXACT_8011B444_8011BA0C)
 /* 0x8011B444 | 0x238 */
-s32 fn_8011B444(void* obj, u16 val) {
+s32 statusCheckWriteJoutaiDataId(void* obj, u16 val) {
     extern u8 fn_80119E90(u16 val);
-    extern u8* fn_80119F10(u16 val);
-    extern u32 fn_80119ED0(u16 val);
+    extern u8* joutaiDataBiosGetObjectKind(u16 val);
+    extern u32 joutaiDataBiosGetStatusKind(u16 val);
     extern u8* statusGetStatus(u8* a, void* b, u32 c, u32 d, u32 e);
     extern u32 fn_8011A090(u8* ptr);
     extern u8 fn_80119E50(u16 val);
@@ -3352,8 +3352,8 @@ s32 fn_8011B444(void* obj, u16 val) {
 
     if (val == 0) { return 1; }
     idx = fn_80119E90(val);
-    base = (0, fn_80119F10(val));
-    base = statusGetStatus(base, obj, 0, fn_80119ED0(val), 0);
+    base = (0, joutaiDataBiosGetObjectKind(val));
+    base = statusGetStatus(base, obj, 0, joutaiDataBiosGetStatusKind(val), 0);
     if (base != NULL) { goto offset_calc; }
     base = NULL;
     goto check_base;
@@ -3426,8 +3426,8 @@ default_case:
 /* 0x8011B67C | 0x10C */
 s32 fn_8011B67C(void* obj, u16 val) {
     extern u8 fn_80119E90(u16 val);
-    extern u8* fn_80119F10(u16 val);
-    extern u32 fn_80119ED0(u16 val);
+    extern u8* joutaiDataBiosGetObjectKind(u16 val);
+    extern u32 joutaiDataBiosGetStatusKind(u16 val);
     extern u8* statusGetStatus(u8* a, void* b, u32 c, u32 d, u32 e);
     extern u16 fn_8011A090(u8* ptr);
     u8* base;
@@ -3436,8 +3436,8 @@ s32 fn_8011B67C(void* obj, u16 val) {
 
     if (val == 0) { return 0; }
     idx = fn_80119E90(val);
-    base = (0, fn_80119F10(val));
-    base = statusGetStatus(base, obj, 0, fn_80119ED0(val), 0);
+    base = (0, joutaiDataBiosGetObjectKind(val));
+    base = statusGetStatus(base, obj, 0, joutaiDataBiosGetStatusKind(val), 0);
     if (base != NULL) { goto offset_calc; }
     base = NULL;
     goto check_base;
@@ -3461,8 +3461,8 @@ flag_done:
 /* 0x8011B788 | 0x1C8 */
 void fn_8011B788(u8* obj, u16 id) {
     extern u8 fn_80119E90(u16 val);
-    extern u8* fn_80119F10(u16 val);
-    extern u32 fn_80119ED0(u16 val);
+    extern u8* joutaiDataBiosGetObjectKind(u16 val);
+    extern u32 joutaiDataBiosGetStatusKind(u16 val);
     extern u8* statusGetStatus(u8* a, void* b, u32 c, u32 d, u32 e);
     extern u16 fn_8011A090(u8* ptr);
     extern void fn_80119FF0(u8* ptr, u32 val);
@@ -3481,8 +3481,8 @@ void fn_8011B788(u8* obj, u16 id) {
     flag = 0; goto flag_check;
 body_start:
     idx = (u8)fn_80119E90(id);
-    base = (0, fn_80119F10(id));
-    base = statusGetStatus(base, obj, 0, fn_80119ED0(id), 0);
+    base = (0, joutaiDataBiosGetObjectKind(id));
+    base = statusGetStatus(base, obj, 0, joutaiDataBiosGetStatusKind(id), 0);
     if (base != NULL) { goto offset_calc; }
     base = NULL;
     goto check_base;
@@ -3510,8 +3510,8 @@ flag_check:
     if ((u8)flag == 0) { goto exit; }
 
     idx = fn_80119E90(id);
-    base = fn_80119F10(id);
-    obj = statusGetStatus(base, obj, 0, fn_80119ED0(id), 0);
+    base = joutaiDataBiosGetObjectKind(id);
+    obj = statusGetStatus(base, obj, 0, joutaiDataBiosGetStatusKind(id), 0);
     if (obj != NULL) { goto p2_offset; }
     obj = NULL;
     goto p2_check;
@@ -3565,14 +3565,14 @@ extern f32 lbl_8047CFDC;
 extern f32 lbl_8047CFE0;
 u8 floorUpdateFieldCamera(void);
 extern u32 lbl_80478B48;  /* NPC count (SDA) */
-u8 fn_80119D90(u16 idx) {
+u8 joutaiDataBiosGetKaisuuId(u16 idx) {
     u8* entry;
     if ((u32)idx >= lbl_80478B48) { entry = NULL; } else { entry = lbl_8035BBA8 + (u32)idx * 0x14; }
     if (entry == NULL) { return 0; }
     return entry[0x4];
 }
 extern u32 lbl_80478B48;  /* NPC count (SDA) */
-u8 fn_80119DD0(u16 idx) {
+u8 joutaiDataBiosGetMaxStack(u16 idx) {
     u8* entry;
     if ((u32)idx >= lbl_80478B48) { entry = NULL; } else { entry = lbl_8035BBA8 + (u32)idx * 0x14; }
     if (entry == NULL) { return 0; }
@@ -3600,14 +3600,14 @@ u8 fn_80119E90(u16 idx) {
     return entry[0x1];
 }
 extern u32 lbl_80478B48;  /* NPC count (SDA) */
-u16 fn_80119ED0(u16 idx) {
+u16 joutaiDataBiosGetStatusKind(u16 idx) {
     u8* entry;
     if ((u32)idx >= lbl_80478B48) { entry = NULL; } else { entry = lbl_8035BBA8 + (u32)idx * 0x14; }
     if (entry == NULL) { return 0; }
     return *(u16*)(entry + 0x8);
 }
 extern u32 lbl_80478B48;  /* NPC count (SDA) */
-u8 fn_80119F10(u16 idx) {
+u8 joutaiDataBiosGetObjectKind(u16 idx) {
     u8* entry;
     if ((u32)idx >= lbl_80478B48) { entry = NULL; } else { entry = lbl_8035BBA8 + (u32)idx * 0x14; }
     if (entry == NULL) { return 0; }
@@ -3663,13 +3663,13 @@ void fn_80119FF0(u8* ptr, u16 val) {
     entry->id = val;
 }
 /* Address: 0x8011A000 | Size: 0x18 | Pattern: nullcheck_getter */
-u16 fn_8011A000(u8* ptr) {
+u16 joutaiSlotGet0C(u8* ptr) {
     FieldStatusEntry* entry = (FieldStatusEntry*)ptr;
     if (entry == NULL) { return 0; }
     return entry->half_c;
 }
 /* Address: 0x8011A018 | Size: 0x18 | Pattern: nullcheck_getter */
-u32 fn_8011A018(u8* ptr) {
+u32 joutaiSlotGet08(u8* ptr) {
     FieldStatusEntry* entry = (FieldStatusEntry*)ptr;
     if (entry == NULL) { return 0; }
     return entry->value;
@@ -3681,7 +3681,7 @@ u8 fn_8011A030(u8* ptr) {
     return entry->count;
 }
 /* Address: 0x8011A048 | Size: 0x18 | Pattern: nullcheck_getter */
-u8 fn_8011A048(u8* ptr) {
+u8 joutaiSlotGet05(u8* ptr) {
     FieldStatusEntry* entry = (FieldStatusEntry*)ptr;
     if (entry == NULL) { return 0; }
     return entry->byte5;

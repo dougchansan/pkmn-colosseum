@@ -55,42 +55,42 @@ void fightSideRegistFightSideEnemyPokemonFightAll(u32 param_1, u32 param_2, u32 
 
 /* 0x801F6C4C | size: 0x54 | small */
 u32 fightSideGetJoutaiUserFightTargetId(u32 param_1, u32 param_2) {
-    extern u32 fn_80119ED0(u32);
-    extern u32 fn_8011A860(u32, u32);
+    extern u32 joutaiDataBiosGetStatusKind(u32);
+    extern u32 statusGetJoutaiParam(u32, u32);
 
-    if ((u16)fn_80119ED0(param_2) != 6) {
+    if ((u16)joutaiDataBiosGetStatusKind(param_2) != 6) {
         return 0;
     }
-    return fn_8011A860(param_1, param_2);
+    return statusGetJoutaiParam(param_1, param_2);
 }
 
 /* 0x801F6CA0 | size: 0x54 | small */
 void fightSideSetNowKaisuuJoutaiDataId(u32 param_1, u32 param_2, u32 param_3) {
-    extern u32 fn_80119ED0(u32);
+    extern u32 joutaiDataBiosGetStatusKind(u32);
     extern void fn_8011AB50(u32, u32, u32);
 
-    if ((u16)fn_80119ED0(param_2) == 6) {
+    if ((u16)joutaiDataBiosGetStatusKind(param_2) == 6) {
         fn_8011AB50(param_1, param_2, param_3);
     }
 }
 
 /* 0x801F6CF4 | size: 0x54 | small */
 u32 fightSideGetNowKaisuuJoutaiDataId(u32 param_1, u32 param_2) {
-    extern u32 fn_80119ED0(u32);
-    extern u32 fn_8011ACB4(u32, u32);
+    extern u32 joutaiDataBiosGetStatusKind(u32);
+    extern u32 statusGetJoutai05(u32, u32);
 
-    if ((u16)fn_80119ED0(param_2) != 6) {
+    if ((u16)joutaiDataBiosGetStatusKind(param_2) != 6) {
         return 0xFFFFFFFF;
     }
-    return fn_8011ACB4(param_1, param_2);
+    return statusGetJoutai05(param_1, param_2);
 }
 
 /* 0x801F6D48 | size: 0x54 | small */
 u32 fightSideGetKaisuuJoutaiDataId(u32 param_1, u32 param_2) {
-    extern u32 fn_80119ED0(u32);
+    extern u32 joutaiDataBiosGetStatusKind(u32);
     extern u32 fn_8011AE40(u32, u32);
 
-    if ((u16)fn_80119ED0(param_2) != 6) {
+    if ((u16)joutaiDataBiosGetStatusKind(param_2) != 6) {
         return 0xFFFFFFFF;
     }
     return fn_8011AE40(param_1, param_2);
@@ -98,10 +98,10 @@ u32 fightSideGetKaisuuJoutaiDataId(u32 param_1, u32 param_2) {
 
 /* 0x801F6D9C | size: 0x54 | small */
 u32 fightSideGetCountAsJoutaiDataId(u32 param_1, u32 param_2) {
-    extern u32 fn_80119ED0(u32);
+    extern u32 joutaiDataBiosGetStatusKind(u32);
     extern u32 fn_8011B130(u32, u32);
 
-    if ((u16)fn_80119ED0(param_2) != 6) {
+    if ((u16)joutaiDataBiosGetStatusKind(param_2) != 6) {
         return 0xFFFFFFFF;
     }
     return fn_8011B130(param_1, param_2);
@@ -109,31 +109,31 @@ u32 fightSideGetCountAsJoutaiDataId(u32 param_1, u32 param_2) {
 
 /* 0x801F6DF0 | size: 0x54 | small */
 void fightSideWriteJoutaiDataId(u32 param_1, u32 param_2, u32 param_3) {
-    extern u32 fn_80119ED0(u32);
-    extern void fn_8011B2C0(u32, u32, u32);
+    extern u32 joutaiDataBiosGetStatusKind(u32);
+    extern void statusWriteJoutaiDataId(u32, u32, u32);
 
-    if ((u16)fn_80119ED0(param_2) == 6) {
-        fn_8011B2C0(param_1, param_2, param_3);
+    if ((u16)joutaiDataBiosGetStatusKind(param_2) == 6) {
+        statusWriteJoutaiDataId(param_1, param_2, param_3);
     }
 }
 
 /* 0x801F6E44 | size: 0x54 | small */
 u32 fightSideCheckWriteJoutaiDataId(u32 param_1, u32 param_2) {
-    extern u32 fn_80119ED0(u32);
-    extern u32 fn_8011B444(u32, u32);
+    extern u32 joutaiDataBiosGetStatusKind(u32);
+    extern u32 statusCheckWriteJoutaiDataId(u32, u32);
 
-    if ((u16)fn_80119ED0(param_2) != 6) {
+    if ((u16)joutaiDataBiosGetStatusKind(param_2) != 6) {
         return 0;
     }
-    return fn_8011B444(param_1, param_2);
+    return statusCheckWriteJoutaiDataId(param_1, param_2);
 }
 
 /* 0x801F6E98 | size: 0x54 | small */
 u32 fightSideIsJoutaiDataId(u32 param_1, u32 param_2) {
-    extern u32 fn_80119ED0(u32);
+    extern u32 joutaiDataBiosGetStatusKind(u32);
     extern u32 fn_8011B67C(u32, u32);
 
-    if ((u16)fn_80119ED0(param_2) != 6) {
+    if ((u16)joutaiDataBiosGetStatusKind(param_2) != 6) {
         return 0;
     }
     return fn_8011B67C(param_1, param_2);
@@ -141,10 +141,10 @@ u32 fightSideIsJoutaiDataId(u32 param_1, u32 param_2) {
 
 /* 0x801F6EEC | size: 0x4C | small */
 void fightSideInitJoutaiDataId(u32 param_1, u32 param_2) {
-    extern u32 fn_80119ED0(u32);
+    extern u32 joutaiDataBiosGetStatusKind(u32);
     extern void fn_8011B788(u32, u32);
 
-    if ((u16)fn_80119ED0(param_2) == 6) {
+    if ((u16)joutaiDataBiosGetStatusKind(param_2) == 6) {
         fn_8011B788(param_1, param_2);
     }
 }

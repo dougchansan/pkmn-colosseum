@@ -23,13 +23,13 @@ extern u8 fn_800FF548(void); /* the current floor's fade-out flag */
 extern u8 fn_800FF554(void); /* the current floor's fade-in flag */
 extern void cms_RegisterScript(void* script);
 extern s32 cms_UnregisterScript(void* script);
-extern void fn_80112700(void);
+extern void floorStartSoundScript(void);
 extern void* GSmsgFontOpen(void* font);
 extern s32 GSmsgFontClose(void* font);
 extern void GSmsgOpen(void* msg);
 extern s32 GSmsgClose(void* msg);
 extern void flareRelease(void);
-extern void fn_801193BC(void* bank);
+extern void gsParticleKillAll(void* bank);
 extern void GScameraFree(void* camera);
 extern void GSlightFree(void* light);
 extern s32 GScolsys2UnloadCCD(void);
@@ -62,7 +62,7 @@ void* floorReadScriptPostFunc(u32 group, u32 id) {
 
     if (fn_800FF548() == 0 && script != NULL) {
         cms_RegisterScript(script);
-        fn_80112700();
+        floorStartSoundScript();
     }
     return script;
 }
@@ -151,7 +151,7 @@ u32 _unloadFlare__FPvUlUl(void* data, u32 group, u32 id) {
 }
 
 u32 _unloadParticles__FPvUlUl(void* data, u32 group, u32 id) {
-    fn_801193BC(data);
+    gsParticleKillAll(data);
     return 1;
 }
 

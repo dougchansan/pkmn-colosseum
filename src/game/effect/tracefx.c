@@ -8,18 +8,18 @@
  *   fn_8013735C (tracefxInit)            -- Initialise a TraceFXWork structure
  *   fn_8013757C (tracefxStartEffectImpl) -- Internal start implementation
  *   fn_80137780 (tracefxStopEffectImpl)  -- Internal stop / cleanup
- *   fn_8013796C (tracefxStartUpdate)     -- Begin trail update cycle
+ *   tracefxEffectCreate (tracefxStartUpdate)     -- Begin trail update cycle
  *   fn_801379E4 (tracefxSetTrailParam)   -- Set a trail parameter
  *   fn_80137A2C (tracefxSetTrailColor)   -- Set trail RGBA colour
  *   tracefxStartEffect (tracefxStartEffect)     -- Public start API
- *   fn_80137D14 (tracefxAddSegment)      -- Add segments to a running trail
- *   fn_80137F58 (tracefxUpdate)          -- Per-frame trail logic update
+ *   _tracefxUpdate (tracefxAddSegment)      -- Add segments to a running trail
+ *   _tracefxRender (tracefxUpdate)          -- Per-frame trail logic update
  *
  * A prior campaign transplant had left invented duplicate definitions
  * named tracefxInit, tracefxAddSegment, and tracefxUpdate that reimplement
- * fn_8013735C, fn_80137D14, and fn_80137F58 under friendly names; none had
+ * fn_8013735C, _tracefxUpdate, and _tracefxRender under friendly names; none had
  * any callers anywhere in the tree (the real fn_ names are what get called
- * -- see fn_8013796C below), so they have been removed, along with the
+ * -- see tracefxEffectCreate below), so they have been removed, along with the
  * tracefxStartEffect_Draft helper that only existed to call the fictional
  * tracefxInit and was itself unreferenced.
  *
@@ -77,9 +77,9 @@ extern void  memset(void* dst, u32 val, u32 size);
 extern void  GXDrawDone(void);
 extern void  fn_800B856C(void);
 extern void  GStextureFree(void* p);
-extern void* fn_80131428(void* owner, u32 size);
-extern void  fn_80131200();
-extern void  fn_8013139C(void* obj, u32 flag);
+extern void* GSeffectCreate(void* owner, u32 size);
+extern void  GSeffectSetCallbacks();
+extern void  GSeffectSetup(void* obj, u32 flag);
 
 /* ===== GS immediate-mode render API (used by tracefxUpdate) ===== */
 extern void  _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID(void);
@@ -105,8 +105,8 @@ u8*   fn_8013757C(u8* work, void* params, s32 frames);
 u8*   fn_80137780();
 BOOL  fn_801379E4(u8* w);
 BOOL  fn_80137A2C(u8* w);
-BOOL  fn_80137D14(u8* work, u32 steps);
-int   fn_80137F58(u8* w);
+BOOL  _tracefxUpdate(u8* work, u32 steps);
+int   _tracefxRender(u8* w);
 BOOL  tracefxStartEffect(u8* w);
 
 /* ===== String constants (rodata) ===== */
@@ -138,7 +138,7 @@ u8* fn_801364A8(u8* work, u8* params) {
     extern void fn_800EFD14(void*, u16);
     extern void GStextureSetWrap(void*, s32, s32);
     extern void* memcpy(void*, const void*, u32);
-    extern void fn_8013D604(u8*, s32, f32, f32);
+    extern void envMapAddKey(u8*, s32, f32, f32);
 
     u8* data;
     u8* aligned;
@@ -345,7 +345,7 @@ u8* fn_801364A8(u8* work, u8* params) {
         case 2:
             data = params + 0x10;
             for (i = 0; i < (s32)count; i++, data += 0x10) {
-                fn_8013D604(work + 8,
+                envMapAddKey(work + 8,
                             (s32)(((f32)(s32)fn_800D37CC() * (f32)*(s32*)(data + 0x08)) / 60.0f),
                             *(f32*)(data + 0x00),
                             *(f32*)(data + 0x04));
@@ -357,9 +357,9 @@ u8* fn_801364A8(u8* work, u8* params) {
             s32 duration = ((f32)(s32)fn_800D37CC() * (f32)frames) / 60.0f;
             s32 third = duration / 3;
 
-            fn_8013D604(work + 8, third, 0.0f, value);
-            fn_8013D604(work + 8, third, value, value);
-            fn_8013D604(work + 8, third, 0.0f, 0.0f);
+            envMapAddKey(work + 8, third, 0.0f, value);
+            envMapAddKey(work + 8, third, value, value);
+            envMapAddKey(work + 8, third, 0.0f, 0.0f);
             break;
         }
         }
@@ -491,7 +491,7 @@ u8* fn_801364A8(u8* work, u8* params) {
 
 /* 0x80137114 | 0x248 */
 u8* fn_80137114(u8* work, u8* params, s32 frames) {
-    extern void fn_8013DB64(u8*, s32, f32, f32);
+    extern void blurAddKey(u8*, s32, f32, f32);
     s32 i;
     s32 duration;
     s32 count;
@@ -507,7 +507,7 @@ u8* fn_80137114(u8* work, u8* params, s32 frames) {
         data = params + 0x0C;
         for (i = 0; i < count; i++, data += 0x10) {
             duration = ((f32)*(s32*)(data + 8) * (f32)(s32)fn_800D37CC()) / 60.0f;
-            fn_8013DB64(work, duration, *(f32*)data, *(f32*)(data + 4));
+            blurAddKey(work, duration, *(f32*)data, *(f32*)(data + 4));
         }
         break;
     case 2:
@@ -515,7 +515,7 @@ u8* fn_80137114(u8* work, u8* params, s32 frames) {
         data = params + 8;
         for (i = 0; i < count; i++, data += 0x10) {
             duration = ((f32)*(s32*)(data + 8) * (f32)(s32)fn_800D37CC()) / 60.0f;
-            fn_8013DB64(work, duration, *(f32*)data, *(f32*)(data + 4));
+            blurAddKey(work, duration, *(f32*)data, *(f32*)(data + 4));
         }
         break;
     case 1:
@@ -527,9 +527,9 @@ u8* fn_80137114(u8* work, u8* params, s32 frames) {
         frames = ((f32)frames * (f32)(s32)fn_800D37CC()) / 60.0f;
         duration = frames;
         duration = duration / 3;
-        fn_8013DB64(work, duration, 0.0f, value);
-        fn_8013DB64(work, duration, value, value);
-        fn_8013DB64(work, duration, 0.0f, 0.0f);
+        blurAddKey(work, duration, 0.0f, value);
+        blurAddKey(work, duration, value, value);
+        blurAddKey(work, duration, 0.0f, 0.0f);
         break;
     }
     return data;
@@ -674,7 +674,7 @@ u8* fn_80137780(u8* work, u8* params) {
         u8 b;
         u8 a;
     } TraceColor;
-    extern void fn_8013AB60(u8*, TraceColor*, TraceColor*, s32);
+    extern void filterAddKey(u8*, TraceColor*, TraceColor*, s32);
     s32 i;
     TraceColor first;
     s32 count;
@@ -734,9 +734,9 @@ u8* fn_80137780(u8* work, u8* params) {
             second.a = 0xFF;
         }
         if (*(s32*)(data + 8) < 0) {
-            fn_8013AB60(work, &first, &second, -1);
+            filterAddKey(work, &first, &second, -1);
         } else {
-            fn_8013AB60(work, &first, &second,
+            filterAddKey(work, &first, &second,
                         ((f32)*(s32*)(data + 8) * (f32)(s32)fn_800D37CC()) / 60.0f);
         }
     }
@@ -750,12 +750,12 @@ u8* fn_80137780(u8* work, u8* params) {
 #if !defined(TRACEFX_801364A8_ONLY)
 
 /* 0x8013796C | 0x78 */
-void* fn_8013796C(void* owner) {
-    void* obj = fn_80131428(owner, 0x2C);
+void* tracefxEffectCreate(void* owner) {
+    void* obj = GSeffectCreate(owner, 0x2C);
     if (obj != (void*)0) {
-        fn_80131200(obj, 0, fn_801379E4, tracefxStartEffect, fn_80137A2C, 0,
-                    fn_80137D14, fn_80137F58);
-        fn_8013139C(obj, 0);
+        GSeffectSetCallbacks(obj, 0, fn_801379E4, tracefxStartEffect, fn_80137A2C, 0,
+                    _tracefxUpdate, _tracefxRender);
+        GSeffectSetup(obj, 0);
     }
     return obj;
 }
@@ -906,7 +906,7 @@ fail:
 }
 
 /* 0x80137D14 | 0x244 */
-BOOL fn_80137D14(u8* work, u32 steps) {
+BOOL _tracefxUpdate(u8* work, u32 steps) {
     u8* node;
     void* model;
     u32 i;
@@ -978,7 +978,7 @@ BOOL fn_80137D14(u8* work, u32 steps) {
 }
 
 /* 0x80137F58 | 0x17C */
-int fn_80137F58(u8* w) {
+int _tracefxRender(u8* w) {
     u16 count1;
     u16 count2;
     u8* node;

@@ -130,7 +130,7 @@ void demoScene14(u32 ctx) {
     extern void cameraWaitSyncAnime(s32 sync);
     extern void floorRequestChange(u32 id);
     extern void floorSetFadeScript(u32 a, u32 b);
-    extern void fn_80118874(void *texture, u32 flag);
+    extern void gsParticleKill(void *texture, u32 flag);
     extern void GSmodelSetAnimIndex(u32 handle, u32 val);
     extern void GSmodelGetFrameCount(u32 handle, f32 *out, u32 flag);
     extern void GSmodelSetAnimFrame(u32 handle, f32 val);
@@ -177,7 +177,7 @@ void demoScene14(u32 ctx) {
     std116_mapObjectStopAnimation(0x0CE61000);
 
     material = (GSmaterialEntry *)GSresGetResource(ctx, 0x0CE61000);
-    fn_80118874(material->texture, 1);
+    gsParticleKill(material->texture, 1);
     material->texture = NULL;
 
     iconHandle = std112_modelGetResourceID(0x06BC0400);
@@ -344,7 +344,7 @@ void demoScene12(u32 ctx) {
     extern void std070_characterAttachToCharacter(u32 ctx, u32 modelHandle, u32 ctx2, u32 handle, u32 flags);
     extern void cameraWaitSyncAnime(s32 sync);
     extern void floorRequestChange(u32 id);
-    extern void fn_80118874(void *texture, u32 flag);
+    extern void gsParticleKill(void *texture, u32 flag);
     extern void GSmodelSetAnimIndex(u32 handle, u32 val);
     extern void GSmodelGetFrameCount(u32 handle, f32 *out, u32 flag);
     extern void GSmodelSetAnimFrame(u32 handle, f32 val);
@@ -392,7 +392,7 @@ void demoScene12(u32 ctx) {
     std116_mapObjectStopAnimation(0x0CE61000);
 
     material = (GSmaterialEntry *)GSresGetResource(ctx, 0x0CE61000);
-    fn_80118874(material->texture, 1);
+    gsParticleKill(material->texture, 1);
     material->texture = NULL;
 
     iconHandle = std112_modelGetResourceID(0x06BD0400);

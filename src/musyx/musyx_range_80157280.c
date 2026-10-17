@@ -2504,7 +2504,7 @@ extern u8 lbl_8047B05D;
 extern u8 lbl_8047B05E;
 extern u8 lbl_8047B05F;
 extern u32 lbl_8047B024;
-extern void fn_8014E7CC(void);
+extern void streamCorrectLoops(void);
 extern u32 fn_80164398(void);
 extern u32 fn_801643B8(void);
 extern u8* salAiGetDest(void);
@@ -2514,7 +2514,7 @@ extern void fn_8016245C(u8 offset);
 extern void fn_801496A0(u32 ticks);
 extern void synthHandle(u32 ticks);
 extern void fn_8015F620(void);
-extern void fn_8014DF20(void);
+extern void streamHandle(void);
 extern void vsSampleUpdates(void);
 
 typedef struct HwIrqVoice {
@@ -2536,7 +2536,7 @@ void snd_handle_irq(void) {
         return;
     }
 
-    fn_8014E7CC();
+    streamCorrectLoops();
     fn_80164398();
     salCtrlDsp((u32)salAiGetDest());
     fn_801643B8();
@@ -2567,7 +2567,7 @@ void snd_handle_irq(void) {
     fn_8015F620();
     fn_801643B8();
     fn_80164398();
-    fn_8014DF20();
+    streamHandle();
     fn_801643B8();
     fn_80164398();
     vsSampleUpdates();

@@ -127,7 +127,7 @@ extern s32 fn_800F7318(s32 task, void* callback, s32 stack_size, s32 arg3, s32 a
 extern void cmsRunSync(void* callback, s32 arg, ...);
 extern u32 std093_getCurrentGroupID(void);
 extern void* GSresGetResource(u32 group, u32 resource);
-extern void fn_80118874(void* resource, u32 arg);
+extern void gsParticleKill(void* resource, u32 arg);
 extern void GSmodelLinkToGSparticleBank(void* model, void* particle_bank);
 extern void GSmodelSetGSparticleLinkAttachMode(void* model, s32 mode);
 extern void* peopleIsInGroup(u32 group, u32 resource);
@@ -353,7 +353,7 @@ void fn_801CB4E8(u32 resource, u32 arg)
 {
     void* object = GSresGetResource(std093_getCurrentGroupID(), resource);
 
-    fn_80118874(object, arg);
+    gsParticleKill(object, arg);
 }
 
 void std221_mapObjectLinkParticles(u32 model_id, u32 particle_bank_id)

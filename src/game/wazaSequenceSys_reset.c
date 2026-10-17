@@ -29,7 +29,7 @@ void fn_801DADC0(void* context) {
     extern void* floorDataBiosGetShadowReciveID(void*, u32);
     extern void* floorDataBiosGetShadowLightID(void*);
     extern void* GSresGetResource(u32, u32);
-    extern void fn_801019F8(void);
+    extern void wazaSequenceSysClearWork(void);
     extern u16 _toolentryAlloc__FUl(u32);
     extern void* fn_800E27B0(u16);
     u32 groupId;
@@ -57,7 +57,7 @@ void fn_801DADC0(void* context) {
         lbl_8047B418 = (s32)GSresGetResource(groupId, (u32)resource);
     }
     if (count != 0) {
-        fn_801019F8();
+        wazaSequenceSysClearWork();
         receiverCount = count * 0x8C;
         handle = _toolentryAlloc__FUl(receiverCount);
         if (handle != 0) {
@@ -80,7 +80,7 @@ void fn_801DAEF8(s32 count) {
     extern void* floorDataBiosGetShadowReciveID(void*, u32);
     extern void* floorDataBiosGetShadowLightID(void*);
     extern void* GSresGetResource(u32, u32);
-    extern void fn_801019F8(void);
+    extern void wazaSequenceSysClearWork(void);
     extern u16 _toolentryAlloc__FUl(u32);
     extern void* fn_800E27B0(u16);
     u32 groupId;
@@ -107,7 +107,7 @@ void fn_801DAEF8(s32 count) {
         lbl_8047B418 = (s32)GSresGetResource(groupId, (u32)resource);
     }
     if (count != 0) {
-        fn_801019F8();
+        wazaSequenceSysClearWork();
         receiverCount = count * 0x8C;
         handle = _toolentryAlloc__FUl(receiverCount);
         if (handle != 0) {

@@ -187,7 +187,7 @@ u16 fn_80238980(void *ctx, void *param) {
 }
 
 int fn_802389D4(u32 r3, u32 r4) {
-  extern int fn_8010C54C();
+  extern int zokuseiGetAisyouScore();
   extern u32 pokemonGetStatus(u32, u32, u32, u8);
   extern u32 fightFloorGetStatus();
   extern u8 fightTrainerIsAllyFightTargetPtr();
@@ -221,7 +221,7 @@ int fn_802389D4(u32 r3, u32 r4) {
       sVar6 = 9;
     }
     if ((u16)sVar6 != 9) {
-      iVar2 = fn_8010C54C(sVar6, 0);
+      iVar2 = zokuseiGetAisyouScore(sVar6, 0);
       iVar8 = iVar8 + iVar2;
     }
   }

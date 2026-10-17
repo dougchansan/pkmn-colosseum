@@ -6,16 +6,16 @@
  * The tail of the GScolsys2 core TU. It matches XD's GScolsys2Draw.o
  * (NXXJ01.map: drawHitMdl 0x134, drawWalkMdl 0x1E8, makeDisplayListFixedObj,
  * GScolsys2Draw; drawSunMdl / drawCheckMdl / drawThruMdl UNUSED 0xCC each;
- * StarsMmd/Colo-XD-PBR-symbol-maps). fn_8010D20C is drawWalkMdl.
+ * StarsMmd/Colo-XD-PBR-symbol-maps). colsysDrawWalkMdl is drawWalkMdl.
  * GScolsys2Draw here records the fixed objects' display list (XD
  * makeDisplayListFixedObj), and fn_8010D8D4 draws the rest and replays it
  * (XD GScolsys2Draw). The edge and face helpers take XD's names; each has
  * its own colour. GC6E01.map lists the four colours as the TU's first pool
- * entries (@1966, @1988, @2002, @2016); declared before fn_8010D20C, they
+ * entries (@1966, @1988, @2002, @2016); declared before colsysDrawWalkMdl, they
  * come out ahead of its float literals.
  *
  * What the match depends on:
- * - fn_8010D20C reads the triangle's surface, attr and layer bitfields into
+ * - colsysDrawWalkMdl reads the triangle's surface, attr and layer bitfields into
  *   locals declared between the index and the triangle pointer. That
  *   numbering gives the index a low enough colouring degree that it is
  *   coloured after the vertex cursor (r26), as in retail.
@@ -88,8 +88,8 @@ extern void gfxClearFlags(s32);
 extern void gfxSetBlendMode(s32, s32, s32);
 extern void gfxSetZMode(s32, s32, s32);
 extern void fn_800D9ED8(s32);
-extern void fn_8010CA30(ColMtx out, u32 index);
-extern void fn_8010C8D0(ColMtx out, u32 index);
+extern void colsysMakeSRTMatrix(ColMtx out, u32 index);
+extern void colsysMakeRotMatrix(ColMtx out, u32 index);
 extern void PSMTXMultVec(ColMtx, const f32*, f32*);
 extern void gfxSetPrimitive(s32);
 extern void gfxBegin(s32);
@@ -107,7 +107,7 @@ static const GXColor lbl_8047CEBC = {0xFF, 0x00, 0xFF, 0xC0};
 static const GXColor lbl_8047CEC0 = {0xFF, 0xFF, 0x00, 0xC0};
 static const GXColor lbl_8047CEC4 = {0x00, 0xFF, 0xFF, 0xC0};
 
-void fn_8010D20C(ColTriGroup* group, ColMtx matrix, ColMtx normalMatrix)
+void colsysDrawWalkMdl(ColTriGroup* group, ColMtx matrix, ColMtx normalMatrix)
 {
     u32 i;
     s32 surface;
@@ -289,10 +289,10 @@ void* GScolsys2Draw(void)
             continue;
         }
 
-        fn_8010CA30(matrix, i);
-        fn_8010C8D0(normalMatrix, i);
+        colsysMakeSRTMatrix(matrix, i);
+        colsysMakeRotMatrix(normalMatrix, i);
         if (object->model != NULL) {
-            fn_8010D20C(object->model, matrix, normalMatrix);
+            colsysDrawWalkMdl(object->model, matrix, normalMatrix);
         }
 
         if (object->edgeGroup0 != NULL) {
@@ -343,10 +343,10 @@ void fn_8010D8D4(void)
         if ((floorObj->flags & 1) != 0 || (object->flags & 1) == 0) {
             continue;
         }
-        fn_8010CA30(matrix, i);
-        fn_8010C8D0(normalMatrix, i);
+        colsysMakeSRTMatrix(matrix, i);
+        colsysMakeRotMatrix(normalMatrix, i);
         if (object->model != NULL) {
-            fn_8010D20C(object->model, matrix, normalMatrix);
+            colsysDrawWalkMdl(object->model, matrix, normalMatrix);
         }
 
         if (object->edgeGroup0 != NULL) {

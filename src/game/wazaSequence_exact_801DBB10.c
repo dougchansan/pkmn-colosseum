@@ -31,7 +31,7 @@ void wazaSequenceApplyStop(void* obj)
             node = sequence->firstNode;
             while (node != NULL) {
                 if (node->kind == 3 && node->state == 0 && node->resource != NULL) {
-                    fn_80118874(node->resource, 1);
+                    gsParticleKill(node->resource, 1);
                 }
                 node = node->next;
             }

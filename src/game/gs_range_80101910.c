@@ -9,9 +9,9 @@
  *
  * Extended by the gs_model.c splitter-bucket physical split
  * (2026-07-07) to absorb its cut-off tail (0x801019F8 - 0x80101A70,
- * 3 fns, 1 with a real C body): fn_801019F8 memsets the 0x2400 bss
+ * 3 fns, 1 with a real C body): wazaSequenceSysClearWork memsets the 0x2400 bss
  * buffer lbl_80402518, otherwise referenced only by this unit's and
- * gs_floor.c's tail functions; fn_80101A28/fn_80101A4C (asm-only) are
+ * gs_floor.c's tail functions; fn_80101A28/floorModelFreeCB (asm-only) are
  * taken by address as registered module callbacks in gs_floor.c.
  */
 #include "dolphin/types.h"
@@ -21,7 +21,7 @@ extern u8 lbl_80402518[];  /* model resource table -- 0x2400 bytes */
 
 /* Cross-segment prototypes for menu/window-engine functions defined in
  * sibling segment files split from the gs_model.c splitter bucket. */
-extern void fn_801019F8(void);
+extern void wazaSequenceSysClearWork(void);
 extern void* kaisuuBiosGetMax(u32 index);
 extern void* kaisuuBiosGetMin(u32 index);
 extern u32 kaisuuGetKaisuu(u32 param);
@@ -141,7 +141,7 @@ extern s32 menuModelCheck(void* obj, u8 wait);
 extern s32 menuModelFree(void* p);
 
 /* 0x80101910 | 0xE8 */
-s32 fn_80101910(void* obj) {
+s32 floorModelRefDec(void* obj) {
     s32 count;
     u8* entry = lbl_80402518;
     s32 i;
@@ -158,7 +158,7 @@ s32 fn_80101910(void* obj) {
 }
 
 /* 0x801019F8 | 0x30 */
-void fn_801019F8(void) {
+void wazaSequenceSysClearWork(void) {
     memset(lbl_80402518, 0, 0x2400);
 }
 
@@ -171,7 +171,7 @@ s32 fn_80101A28(void) {
 }
 
 /* 0x80101A4C | 0x24 */
-s32 fn_80101A4C(void) {
+s32 floorModelFreeCB(void) {
     extern void GSmodelFree(void);
 
     GSmodelFree();

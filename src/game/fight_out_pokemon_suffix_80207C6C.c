@@ -48,7 +48,7 @@ extern void* pokemonGetStatus();
 extern u32   pokemonSetStatus();
 extern void  pokemonGrowBasisStatus();
 extern u32   itemGetStatus();
-extern void  fn_80119ED0(void);
+extern void  joutaiDataBiosGetStatusKind(void);
 extern void  fn_80121ADC(void);
 extern void  fn_8011B67C(void);
 extern void  pokemonGetSoubiItemDataId(void);
@@ -91,14 +91,14 @@ static inline void* fightOutPokemonGetPokemonPtrInline(void* fo)
 
 static inline u8 fightPokemonCheckJoutaiInline(void* fp, u16 id)
 {
-    extern u16 fn_80119ED0();
+    extern u16 joutaiDataBiosGetStatusKind();
     extern u8 fn_80121ADC();
     extern u8 fn_8011B67C();
 
-    if (fn_80119ED0(id) == 0x7C || fn_80119ED0(id) == 0xC8) {
+    if (joutaiDataBiosGetStatusKind(id) == 0x7C || joutaiDataBiosGetStatusKind(id) == 0xC8) {
         return fn_80121ADC(fightPokemonGetPokemonPtrInline(fp), id);
     }
-    if (fn_80119ED0(id) != 0xCD) {
+    if (joutaiDataBiosGetStatusKind(id) != 0xCD) {
         return 0;
     }
     return fn_8011B67C(fp, id);
@@ -106,13 +106,13 @@ static inline u8 fightPokemonCheckJoutaiInline(void* fp, u16 id)
 
 static inline u8 fightOutPokemonCheckJoutaiInline(void* fo, u16 id)
 {
-    extern u16 fn_80119ED0();
+    extern u16 joutaiDataBiosGetStatusKind();
     extern u8 fn_8011B67C();
 
-    if (fn_80119ED0(id) == 0x7C || fn_80119ED0(id) == 0xC8 || fn_80119ED0(id) == 0xCD) {
+    if (joutaiDataBiosGetStatusKind(id) == 0x7C || joutaiDataBiosGetStatusKind(id) == 0xC8 || joutaiDataBiosGetStatusKind(id) == 0xCD) {
         return fightPokemonCheckJoutaiInline(pokemonGetStatus(fo, 0, 0xD6, 0), id);
     }
-    if (fn_80119ED0(id) != 0xD8) {
+    if (joutaiDataBiosGetStatusKind(id) != 0xD8) {
         return 0;
     }
     return fn_8011B67C(fo, id);
@@ -1020,7 +1020,7 @@ void fightWazaDoEffectFunc(u32 p1, u32 p2, u32 p3, u32 p4)
 u8 fightWazaIsMix(u32 ctx)
 {
     extern StatusIdTable7 lbl_80279D08;
-    extern u16 fn_80119ED0();
+    extern u16 joutaiDataBiosGetStatusKind();
     extern u8 fn_8011B67C();
     u16 i;
     u16 statusId;
@@ -1033,7 +1033,7 @@ u8 fightWazaIsMix(u32 ctx)
     statusIds = lbl_80279D08;
     for (i = 0; i < 7; i++) {
         statusId = statusIds.id[i];
-        statusType = fn_80119ED0(statusId);
+        statusType = joutaiDataBiosGetStatusKind(statusId);
         if (statusType != 0x2A) {
             isMix = 0;
         } else {

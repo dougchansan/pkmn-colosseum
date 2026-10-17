@@ -299,8 +299,8 @@ s32 colsysPassGetEventID(GScolsys2Vec3* start, GScolsys2Vec3* end,
             continue;
         }
         if ((region->flags & 1) != 0) {
-            fn_8010CA30(mtxInv, i);
-            fn_8010C8D0(mtxFwd, i);
+            colsysMakeSRTMatrix(mtxInv, i);
+            colsysMakeRotMatrix(mtxFwd, i);
             tempCount = getMdlEventListPass(start, end, list, mtxInv, mtxFwd, temp);
         } else {
             tempCount = getFixedMdlEventListPass(start, end, list, temp);
@@ -633,8 +633,8 @@ s32 GScolsys2ThruGetEventList(
             continue;
         }
         if ((*(u16*)((u8*)region + 0x3C) & 1) != 0) {
-            fn_8010CA30(mtxInv, regionIndex);
-            fn_8010C8D0(mtxFwd, regionIndex);
+            colsysMakeSRTMatrix(mtxInv, regionIndex);
+            colsysMakeRotMatrix(mtxFwd, regionIndex);
             temporaryCount = GScolsys2ThruGetMdlEventList(
                 point, dirVec, radius, list, mtxInv, mtxFwd, temporary);
         } else {

@@ -15,10 +15,10 @@ u32 fightStartEncount(u32 p1) {
     extern void _threadSwitch();
     extern u32 std092_getCurrentRoomID();
     extern void std098_mapWarpToMenuRoom();
-    extern void fn_80112700();
+    extern void floorStartSoundScript();
     extern void floorSetFadeScript();
     extern void floorSetPrevFloorID();
-    extern void fn_80113FE8();
+    extern void floorReturnToSavedRoom();
     extern void std162_fieldClearPending();
     extern void heroDecPokedoru();
     extern u32 heroGetStatus();
@@ -125,7 +125,7 @@ u32 fightStartEncount(u32 p1) {
                 heroDecPokedoru(0, (s32)uVar6 / 2);
                 fn_801D0AFC(1);
                 fn_8018DA88();
-                fn_80113FE8();
+                floorReturnToSavedRoom();
                 floorSetFadeScript(0, 0x5960008);
                 _threadSwitch();
                 uVar1 = std103_battleGetResult();
@@ -133,7 +133,7 @@ u32 fightStartEncount(u32 p1) {
             }
         }
         std078_flagSetFalse(0x9b0);
-        fn_80112700();
+        floorStartSoundScript();
         std162_fieldClearPending();
         cVar10 = std081_flagCheckTrue(0xe05);
         if (cVar10 == 0) {

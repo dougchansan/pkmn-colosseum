@@ -139,7 +139,7 @@ u32 fightTrainerAiWazaHit113(u32 r3, u32 r4, u32 r5, u32 r6)
 }
 
 u32 fightTrainerAiWazaHit112(void* ctx, u32 slot, u32 param) {
-    extern u8 fn_80119DD0(u32);
+    extern u8 joutaiDataBiosGetMaxStack(u32);
     extern u32 fightTargetGetPtrAsNowFightType(u32);
     extern u32 fightSideGetCountAsJoutaiDataId(u32, u32);
     extern u8 fightSideIsJoutaiDataId(u32, u32);
@@ -151,7 +151,7 @@ u32 fightTrainerAiWazaHit112(void* ctx, u32 slot, u32 param) {
     if (fightSideIsJoutaiDataId(target, 0x4a) == 1) {
         count = fightSideGetCountAsJoutaiDataId(target, 0x4a);
     }
-    if ((s16)count >= (s32)fn_80119DD0(0x4a)) {
+    if ((s16)count >= (s32)joutaiDataBiosGetMaxStack(0x4a)) {
         return 0;
     }
     return 1;

@@ -560,7 +560,7 @@ s32 fightTrainerAiWazaHit161(void* ctx, u32 param1, u32 param2, u32 param3) {
 u32 fightTrainerAiWazaHit160(void* ctx, u32 slot, u32 param) {
     extern u8 fn_80236BFC(void* ctx, u32 slot, u32 param);
     extern u32 fn_80202360(u32 slot, u32 param);
-    extern u8 fn_80119DD0(u32 param);
+    extern u8 joutaiDataBiosGetMaxStack(u32 param);
     u32 result;
 
     result = slot;
@@ -569,7 +569,7 @@ u32 fightTrainerAiWazaHit160(void* ctx, u32 slot, u32 param) {
     } else {
         result = fn_80202360(result, 0x2d);
     }
-    if ((s16)result >= (s32)fn_80119DD0(0x2d)) {
+    if ((s16)result >= (s32)joutaiDataBiosGetMaxStack(0x2d)) {
         return 0;
     }
     return 1;

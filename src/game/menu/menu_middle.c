@@ -2563,7 +2563,7 @@ void menuTaisenDrawPartyList(void* window, MenuMiddleSprite_8006CCC0* sprite) {
     extern u8 fn_80077A5C(void);
     extern u8 pokemonCheckValid(u8* pokemon);
     extern u8 pokemonBiosGetTamagoFlag(u8* pokemon);
-    extern void fn_8010B718(void* window, void* sprite, u8* pokemon);
+    extern void menuFaceDrawPokemon(void* window, void* sprite, u8* pokemon);
     extern u16* pokemonBiosGetNicknamePtr(u8* pokemon);
     extern u8 menuSubGetPokemonSexForDisp(u8* pokemon);
     extern u32 pokemonGetStatus(u8* pokemon, s32 a, s32 b, s32 c);
@@ -2862,7 +2862,7 @@ void menuTaisenDrawPartyList(void* window, MenuMiddleSprite_8006CCC0* sprite) {
             switch (kind) {
             case 1:
                 if (pokemon != NULL) {
-                    fn_8010B718(window, sprite, pokemon);
+                    menuFaceDrawPokemon(window, sprite, pokemon);
                 }
                 break;
             case 2:
@@ -3270,7 +3270,7 @@ static inline void menuMiddleCollectPokemon(void* hero) {
 void menuTaisenPartyCheckSeq(void* menu) {
     extern void menuTaisenSetSequence(void* menu, s32 a, s32 b);
     extern void winSpriteSetDisp(void* widget, u8 flag);
-    extern void fn_8010B01C(s32 kind, u32 (*compare)(u8*));
+    extern void menuFaceRequestPokemonFace(s32 kind, u32 (*compare)(u8*));
     extern s32 pokemonBiosGetItemDataId(void* pokemon);
     extern u8 pokemonIsDarkPokemon(void* pokemon);
     extern u8 pokemonCheckValid(void* pokemon);
@@ -3308,7 +3308,7 @@ void menuTaisenPartyCheckSeq(void* menu) {
         u16 (*itemIds)[4];
 
         menuMiddleCollectPokemon(hero);
-        fn_8010B01C(0, fn_8006E128);
+        menuFaceRequestPokemonFace(0, fn_8006E128);
 
         itemIds = (u16 (*)[4])lbl_8026858C;
         for (i = 0; (u32)i < 12; i++) {
@@ -3411,15 +3411,15 @@ void menuTaisenPartyCheckSeq(void* menu) {
 
 /* 0x8006E0CC | size: 0x5C */
 void menuWaitFaceSprites(void) {
-    extern void fn_8010BBB8(void* ptr);
-    extern s8 fn_8010BCE4(void);
+    extern void pokemonGetFaceSpriteId(void* ptr);
+    extern s8 menuFaceIsReady(void);
     extern void _threadSwitch(void);
     void** list = (void**)&lbl_803B6D68;
     s32 i = 0;
 
     while (list[i] != NULL) {
-        fn_8010BBB8(list[i]);
-        if (fn_8010BCE4() == 0) {
+        pokemonGetFaceSpriteId(list[i]);
+        if (menuFaceIsReady() == 0) {
             _threadSwitch();
         } else {
             i++;

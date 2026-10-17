@@ -1107,10 +1107,10 @@ extern void fightOutPokemonGetTokuseiDataId(void* ptr);
 extern void fightOutPokemonGetZokuseiDataId(void* ptr, s32 a);
 extern s32  dbgMenuPokemonEdit(void* ptr, s32 a, u8* b, u8* c, u8* d, u8* e);
 extern u32  pokemonGetStatus(void* ptr, u16 b, s32 c, s32 d);
-extern void fn_8010B01C(void* ptr, s32 a, s32 b);
+extern void menuFaceRequestPokemonFace(void* ptr, s32 a, s32 b);
 extern void _threadSwitch(void);
-extern void fn_8010BBB8(void* ptr);
-extern s8   fn_8010BCE4(void);
+extern void pokemonGetFaceSpriteId(void* ptr);
+extern s8   menuFaceIsReady(void);
 extern void* pokemonCreateSequence(void* ptr);
 extern void battleGridReplacePokemon(void* ptr, void* src);
 extern void battleGridUpdate(void);
@@ -1181,8 +1181,8 @@ s32 menuFightPokemonSelectSub(u32 ctx) {
                 if (subItem != 0) {
                     void* animPtr;
 
-                    fn_8010B01C(scene, 0, 0);
-                    while ((fn_8010BBB8(scene), fn_8010BCE4()) == 0) {
+                    menuFaceRequestPokemonFace(scene, 0, 0);
+                    while ((pokemonGetFaceSpriteId(scene), menuFaceIsReady()) == 0) {
                         _threadSwitch();
                     }
                     animPtr = pokemonCreateSequence(scene);

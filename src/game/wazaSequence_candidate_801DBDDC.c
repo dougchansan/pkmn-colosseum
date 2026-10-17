@@ -55,8 +55,8 @@ void wazaSequenceFree(void* obj)
     extern void fn_800E24B0(u16 handle);
     extern void fn_800E209C(u16 handle);
     extern void fn_800F9210(u32, u32);
-    extern void fn_801193BC(void*);
-    extern void fn_80131268(u32);
+    extern void gsParticleKillAll(void*);
+    extern void GSeffectFree(u32);
     extern void GSlogWrite(const char*, ...);
     /* RULE-EXCEPTION(title-path): shared log-pool stand-in;
      * see docs/RULE_EXCEPTIONS.md. */
@@ -103,7 +103,7 @@ void wazaSequenceFree(void* obj)
                     node->resource = NULL;
                 } else {
                     if (node->resource != NULL) {
-                        fn_801193BC(node->resource);
+                        gsParticleKillAll(node->resource);
                         fn_800F9210(node->resourceGroup, node->resourceA);
                     }
                 }
@@ -111,7 +111,7 @@ void wazaSequenceFree(void* obj)
                 node->resource = NULL;
                 break;
             case 4:
-                fn_80131268(node->resourceGroup);
+                GSeffectFree(node->resourceGroup);
                 break;
             case 0:
             case 1:

@@ -39,7 +39,7 @@ typedef struct CCD_FILEHEAD {
 } CCD_FILEHEAD;
 
 /* 0x8010C8D0 | 0x160 */
-s32 fn_8010C8D0(Mtx out, u32 index)
+s32 colsysMakeRotMatrix(Mtx out, u32 index)
 {
     Mtx result;
     ColAxes axes;
@@ -81,7 +81,7 @@ s32 fn_8010C8D0(Mtx out, u32 index)
 }
 
 /* 0x8010CA30 | 0x190 */
-s32 fn_8010CA30(Mtx out, u32 index)
+s32 colsysMakeSRTMatrix(Mtx out, u32 index)
 {
     Mtx result;
     ColAxes axes;

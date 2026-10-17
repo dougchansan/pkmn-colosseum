@@ -193,7 +193,7 @@ typedef WindowVaList WindowVaListArray[1];
 
 /* Cross-segment prototypes for menu/window-engine functions defined in
  * sibling segment files split from the gs_model.c splitter bucket. */
-extern void fn_801019F8(void);
+extern void wazaSequenceSysClearWork(void);
 extern void* kaisuuBiosGetMax(u32 index);
 extern void* kaisuuBiosGetMin(u32 index);
 extern u32 kaisuuGetKaisuu(u32 param);

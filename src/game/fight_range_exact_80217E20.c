@@ -186,7 +186,7 @@ extern u16  lbl_80279FD0[8];
 extern u8   lbl_80379B06[];
 extern u32 fn_80232FE4();
 extern void fn_8020A2B8();
-extern u8   fn_80119DD0();
+extern u8   joutaiDataBiosGetMaxStack();
 extern u16  fightFloorGetValidFightOutPokemonCount(u32, u8, u32, u8);
 extern u8   fn_802016A4();
 extern u8   lbl_8037984D[27];
@@ -211,7 +211,7 @@ extern U16Pair lbl_8047E62C;
 extern u8  fightTrainerIsAllyFightTargetPtr(u32 ctx, u32 poke, u16 floorVal);
 extern u16 fightOutPokemonGetZokuseiDataId(u32 poke, u8 idx);
 extern u16 fightOutPokemonGetTokuseiDataId(u32 poke);
-extern u32 fn_8010C650(u16 waza, u16* types, u16 typeCount);
+extern u32 zokuseiGetAisyouDualType(u16 waza, u16* types, u16 typeCount);
 extern int fn_802026E4();
 extern u8 fn_80235714();
 extern u32 fn_802367CC();
@@ -239,7 +239,7 @@ extern s32 fightTrainerAiWazaValueNull();
 void fn_80217E20(void)
 
 {
-    extern u32 fn_80119DD0();
+    extern u32 joutaiDataBiosGetMaxStack();
     extern void fn_8011BBD8();
     extern short fn_8011BEB4();
     extern u32 fn_801F025C();
@@ -284,7 +284,7 @@ void fn_80217E20(void)
     uVar6 = 1;
     cVar8 = fn_802026E4(uVar1,0x2f);
     if (cVar8 == 1) {
-      uVar5 = fn_80119DD0(0x2f);
+      uVar5 = joutaiDataBiosGetMaxStack(0x2f);
       uVar6 = fn_80202360(uVar1,0x2f);
       if ((short)uVar6 == uVar5) {
         fn_80202810(uVar1,0x2f);
@@ -470,7 +470,7 @@ void fn_802182D4(void) {
     } else {
         val = 0;
     }
-    if (val != fn_80119DD0(0x4a)) {
+    if (val != joutaiDataBiosGetMaxStack(0x4a)) {
         goto notmatched;
     }
 matched:

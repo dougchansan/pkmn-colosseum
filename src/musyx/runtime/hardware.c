@@ -91,7 +91,7 @@ extern u8 lbl_8047B050;                      /* lbl_8047B050 */
 extern SND_HOOKS lbl_8047B054;               /* lbl_8047B054 */
 extern u8 lbl_8036944C[];                    /* lbl_8036944C */
 
-extern void fn_8014E7CC(void);               /* fn_8014E7CC */
+extern void streamCorrectLoops(void);               /* streamCorrectLoops */
 extern u32 fn_80164398(void);                /* fn_80164398 */
 extern u32 fn_801643B8(void);                /* fn_801643B8 */
 extern void salCtrlDsp(void* dest);
@@ -100,7 +100,7 @@ extern void salHandleAuxProcessing(void);
 extern void fn_801496A0(u32 deltaTime);      /* fn_801496A0 */
 extern void synthHandle(u32 deltaTime);
 extern void fn_8015F620(void);               /* fn_8015F620 */
-extern void fn_8014DF20(void);               /* fn_8014DF20 */
+extern void streamHandle(void);               /* streamHandle */
 extern void vsSampleUpdates(void);
 extern void hwInitIrq(void);
 extern u32 salInitAi(void (*callback)(void), u32 unk, u32* outFreq);
@@ -161,7 +161,7 @@ void snd_handle_irq(void) {
     return;
   }
 
-  fn_8014E7CC();
+  streamCorrectLoops();
   fn_80164398();
   // sndProfStartPCM(&prof.dspCtrl);
   salCtrlDsp(salAiGetDest());
@@ -209,7 +209,7 @@ void snd_handle_irq(void) {
   fn_801643B8();
   fn_80164398();
   // sndProfStartPMC(&prof.streaming);
-  fn_8014DF20();
+  streamHandle();
   // sndProfStopPMC(&prof.streaming);
   fn_801643B8();
   fn_80164398();

@@ -29,7 +29,7 @@ extern void hwEnableIrq(void);
 
 u32 fn_8014D598(u32 seqId) { return seqGetPrivateId(seqId) != -1; }
 
-void fn_8014D5C8(u32 seqId) {
+void sndSeqStop(u32 seqId) {
   hwDisableIrq();
   seqPause(seqId);
   hwEnableIrq();

@@ -64,7 +64,7 @@ extern u8 fightOutPokemonCheckWriteJoutaiDataId(void* fightPokemon, s32 statusId
 extern void fightOutPokemonWriteJoutaiDataId(void* fightOutPokemon, s32 statusId);
 extern u8 fn_802026E4(void* fightOutPokemon, s32 statusId);
 extern u8 fn_80121ADC(void* pokemon, s32 statusId);
-extern void fn_80121B4C(void* pokemon, s32 statusId);
+extern void pokemonInitPersistentJoutai(void* pokemon, s32 statusId);
 extern void* fightTargetGetPtrAsNowFightType(s32 type, void* fightPokemon);
 extern u8 fightSideCheckWriteJoutaiDataId(void* side, s32 statusId);
 extern void fightSideWriteJoutaiDataId(void* side, s32 statusId, u32 value);
@@ -386,7 +386,7 @@ static inline void itemUseCureSleep(
     void* fightOut;
 
     if (fn_80121ADC(pokemon, 8)) {
-        fn_80121B4C(pokemon, 8);
+        pokemonInitPersistentJoutai(pokemon, 8);
         fightOut = itemUseGetFightOut(fightPokemon);
         if (fightOut != NULL) {
             fightOutPokemonWriteJoutaiDataId(fightOut, 0x17);
@@ -407,11 +407,11 @@ static inline void itemUseCurePoison(
     u8 badPoisonCleared = 0;
 
     if (fn_80121ADC(pokemon, 3)) {
-        fn_80121B4C(pokemon, 3);
+        pokemonInitPersistentJoutai(pokemon, 3);
         poisonCleared = 1;
     }
     if (fn_80121ADC(pokemon, 4)) {
-        fn_80121B4C(pokemon, 4);
+        pokemonInitPersistentJoutai(pokemon, 4);
         badPoisonCleared = 1;
     }
     itemUseNotify(fightPokemon, 0x7C);
@@ -581,17 +581,17 @@ s16 fn_80144574(
     }
 
     if (itemParamGetBurnFlag(itemParam) && fn_80121ADC(pokemon, 6)) {
-        fn_80121B4C(pokemon, 6);
+        pokemonInitPersistentJoutai(pokemon, 6);
         itemUseNotify(fightPokemon, 0x7C);
         itemUseAddLog(log, &logCount, 0xE, 0, 0);
     }
     if (itemParamGetFreezeFlag(itemParam) && fn_80121ADC(pokemon, 7)) {
-        fn_80121B4C(pokemon, 7);
+        pokemonInitPersistentJoutai(pokemon, 7);
         itemUseNotify(fightPokemon, 0x7C);
         itemUseAddLog(log, &logCount, 0xF, 0, 0);
     }
     if (itemParamGetParalyzeFlag(itemParam) && fn_80121ADC(pokemon, 5)) {
-        fn_80121B4C(pokemon, 5);
+        pokemonInitPersistentJoutai(pokemon, 5);
         itemUseNotify(fightPokemon, 0x7C);
         itemUseAddLog(log, &logCount, 0x10, 0, 0);
     }

@@ -1,7 +1,7 @@
 /**
  * @file fight_range_80238B0C.c
  * @brief fn_80238B0C, 0x80238B0C - 0x80238E30: the AI's type-effectiveness
- *        lookup for a move type against a pokemon (fn_8010C650), with the
+ *        lookup for a move type against a pokemon (zokuseiGetAisyouDualType), with the
  *        tokusei 0x1A / 0x19 overrides (0x43).
  *
  * Exact: written with the fight AI accessor inlines. The per-slot type getter
@@ -17,7 +17,7 @@ extern u32 fightTrainerGetStatus();
 extern u32 fightPokemonGetPokemonPtr();
 extern u32 pokemonGetTokuseiDataId();
 extern u8 fightTrainerIsAllyFightTargetPtr();
-extern u32 fn_8010C650();
+extern u32 zokuseiGetAisyouDualType();
 
 static inline u32 aiGetTokusei(u32 ctx, u32 pokemon)
 {
@@ -99,7 +99,7 @@ u32 fn_80238B0C(u32 ctx, u32 pokemon, u32 moveType, s16 power)
     if ((u16)count == 0) {
         return 0x3F;
     }
-    result = fn_8010C650(moveType, types, count);
+    result = zokuseiGetAisyouDualType(moveType, types, count);
     if (aiIsTokusei(ctx, pokemon, 0x19) == 1 && (u16)result != 0x41 && power > 0) {
         return 0x43;
     }

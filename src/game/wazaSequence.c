@@ -117,7 +117,7 @@ void wazaSequenceApplyStop(void* obj) {
             node = effect->firstNode;
             while (node != NULL) {
                 if (node->kind == 3 && node->state == 0 && node->resource != NULL) {
-                    fn_80118874(node->resource, 1);
+                    gsParticleKill(node->resource, 1);
                 }
                 node = node->next;
             }
@@ -667,19 +667,19 @@ void* _wazaSequenceEffectEntryLoad(void* entryPtr, void* dataPtr)
 {
     extern s32 fn_800D37CC(void);
     extern u8* fn_801364A8(u8* work, u8* desc);
-    extern u32 fn_8013AABC(void* callbacks);
+    extern u32 filterEffectCreate(void* callbacks);
     extern u32 electronStartEffect(void* callbacks);
-    extern u32 fn_8013A42C(void* callbacks);
+    extern u32 electronEffectCreate(void* callbacks);
     extern u32 fn_801380D4(void* callbacks);
-    extern u32 fn_8013796C(void* callbacks);
+    extern u32 tracefxEffectCreate(void* callbacks);
     extern u32 leaffxStartEffect(void* callbacks);
     extern u32 fn_8013C5A0(void* callbacks);
     extern u32 fn_8013B490(void* callbacks);
-    extern u32 fn_8013D6B8(void* callbacks);
-    extern u32 fn_8013DC18(void* callbacks);
+    extern u32 envMapEffectCreate(void* callbacks);
+    extern u32 blurEffectCreate(void* callbacks);
     extern u32 fn_8013E4D4(void* callbacks);
     extern u32 patchiruTextureStart(void* callbacks);
-    extern u32 fn_8013F000(void* callbacks);
+    extern u32 distortionEffectCreate(void* callbacks);
     extern const f32 lbl_8047E3A0;
     u8 parsed[0xD8];
     u32 type;
@@ -701,7 +701,7 @@ void* _wazaSequenceEffectEntryLoad(void* entryPtr, void* dataPtr)
     switch (type) {
     case 0:
         list = *(const WazaEffectLoadList**)(parsed + 0x58);
-        entry->resourceId = fn_8013AABC(parsed + 8);
+        entry->resourceId = filterEffectCreate(parsed + 8);
         while (list != NULL) {
             handle += list->size;
             list = list->next;
@@ -713,7 +713,7 @@ void* _wazaSequenceEffectEntryLoad(void* entryPtr, void* dataPtr)
         handle = *(u16*)(parsed + 0x52);
         break;
     case 2:
-        entry->resourceId = fn_8013A42C(parsed + 8);
+        entry->resourceId = electronEffectCreate(parsed + 8);
         handle = *(u16*)(parsed + 0x12);
         break;
     case 3:
@@ -724,7 +724,7 @@ void* _wazaSequenceEffectEntryLoad(void* entryPtr, void* dataPtr)
     case 4:
         entry->field_80 = *(u16*)(parsed + 0x30);
         entry->animationMode = *(u16*)(parsed + 0x32);
-        entry->resourceId = fn_8013796C(parsed + 8);
+        entry->resourceId = tracefxEffectCreate(parsed + 8);
         handle = *(u16*)(parsed + 0x28);
         break;
     case 5:
@@ -741,7 +741,7 @@ void* _wazaSequenceEffectEntryLoad(void* entryPtr, void* dataPtr)
         handle = *(u16*)(parsed + 0xD6);
         break;
     case 8:
-        entry->resourceId = fn_8013D6B8(parsed + 8);
+        entry->resourceId = envMapEffectCreate(parsed + 8);
         handle = 0;
         node = *(const WazaEffectLoadList**)(parsed + 0x14);
         while (node != NULL) {
@@ -750,7 +750,7 @@ void* _wazaSequenceEffectEntryLoad(void* entryPtr, void* dataPtr)
         }
         break;
     case 9:
-        entry->resourceId = fn_8013DC18(parsed + 8);
+        entry->resourceId = blurEffectCreate(parsed + 8);
         handle = 0;
         node = *(const WazaEffectLoadList**)(parsed + 0x1C);
         while (node != NULL) {
@@ -768,7 +768,7 @@ void* _wazaSequenceEffectEntryLoad(void* entryPtr, void* dataPtr)
         handle = 0;
         break;
     case 12:
-        entry->resourceId = fn_8013F000(parsed + 8);
+        entry->resourceId = distortionEffectCreate(parsed + 8);
         handle = *(u16*)(parsed + 0xBA);
         break;
     }

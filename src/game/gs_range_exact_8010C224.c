@@ -1,6 +1,6 @@
 /**
  * @file gs_range_exact_8010C224.c
- * @brief fn_8010C224, 0x8010C224 - 0x8010C364: allocates and clears the two
+ * @brief menuFaceInit, 0x8010C224 - 0x8010C364: allocates and clears the two
  *        per-slot tables (16- and 8-byte entries) and each slot's 0x6EC0
  *        buffer; menuInit calls it with 0x18.
  *
@@ -39,7 +39,7 @@ extern SlotBuffer* lbl_8047AD54;
 extern u16 lbl_8047AD58;
 
 /* 0x8010C224 | 0x140 */
-void fn_8010C224(s32 count)
+void menuFaceInit(s32 count)
 {
     s32 i;
 

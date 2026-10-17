@@ -142,7 +142,7 @@ extern s8 pcboxGetNbPokemonBox(void);
 extern s8 getPokemonBoxNbUsedSlot__5PCBOXFSc(void* pcbox, s8 box);
 extern void winSpriteSetDisp(MenuCBPane* pane, u8 enable);
 extern MenuKeyInfo* windowGetKeyInfo(void);
-extern void fn_8010A420(MenuModelWork* work);
+extern void menuModelTerm(MenuModelWork* work);
 s32 fn_80057694(void);
 void fn_800576A4(u32 value);
 u32 fn_800567AC(void);

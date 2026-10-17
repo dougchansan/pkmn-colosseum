@@ -334,7 +334,7 @@ u32 soundPauseSong(u32 id, u32 volume, u32 arg2)
     }
 
     sndSeqVolume(0, volume, handle, 0);
-    fn_8014D5C8(work->handle);
+    sndSeqStop(work->handle);
 
     ((GSsndFlagBits*)&entry->flags)->paused = 1;
     return 1;

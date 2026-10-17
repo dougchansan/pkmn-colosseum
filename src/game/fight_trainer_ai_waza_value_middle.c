@@ -286,7 +286,7 @@ static inline u16 lowHalf(u32 value) {
 }
 /* Address: 0x80244514 | Size: 0x18C (396 bytes) */
 u32 fightTrainerAiWazaValueMiraakooto(void* ctx, u32 param1, u32 param2, u32 param3) {
-    extern u32 fn_8010C4A0(u32);
+    extern u32 zokuseiDataBiosGetCategory(u32);
     extern u32 fightFloorGetFightTrainerFightOutPokemonPtrAry(u32, void*, u32*, u32, u32);
     extern u32 fightOutPokemonGetPokemonPtr(u32);
     extern u32 fn_80236520(void*, u32);
@@ -321,7 +321,7 @@ u32 fightTrainerAiWazaValueMiraakooto(void* ctx, u32 param1, u32 param2, u32 par
         index++;
     }
     if (lowHalf(move) != 0 && lowHalf(move) != 0xffff && lowHalf(move) != 0x165 && lowHalf(move) != 0x163) {
-        if ((u8)fn_8010C4A0(fn_802395C8(ctx, move, param3)) == 2) {
+        if ((u8)zokuseiDataBiosGetCategory(fn_802395C8(ctx, move, param3)) == 2) {
             handle = fn_80239984(handle, ctx, 0x165);
             fn_80239EE8(0xec64, ctx, fightOutPokemonGetPokemonPtr(param1), 0, 0, param2, 0, 0x165);
         }
@@ -330,7 +330,7 @@ u32 fightTrainerAiWazaValueMiraakooto(void* ctx, u32 param1, u32 param2, u32 par
 }
 /* Address: 0x802446A0 | Size: 0x18C (396 bytes) */
 u32 fightTrainerAiWazaValueKauntaa(void* ctx, u32 param1, u32 param2, u32 param3) {
-    extern u32 fn_8010C4A0(u32);
+    extern u32 zokuseiDataBiosGetCategory(u32);
     extern u32 fightFloorGetFightTrainerFightOutPokemonPtrAry(u32, void*, u32*, u32, u32);
     extern u32 fightOutPokemonGetPokemonPtr(u32);
     extern u32 fn_80236520(void*, u32);
@@ -365,7 +365,7 @@ u32 fightTrainerAiWazaValueKauntaa(void* ctx, u32 param1, u32 param2, u32 param3
         index++;
     }
     if (lowHalf(move) != 0 && lowHalf(move) != 0xffff && lowHalf(move) != 0x165 && lowHalf(move) != 0x163) {
-        if ((u8)fn_8010C4A0(fn_802395C8(ctx, move, param3)) == 1) {
+        if ((u8)zokuseiDataBiosGetCategory(fn_802395C8(ctx, move, param3)) == 1) {
             handle = fn_80239984(handle, ctx, 0x163);
             fn_80239EE8(0xec64, ctx, fightOutPokemonGetPokemonPtr(param1), 0, 0, param2, 0, 0x163);
         }

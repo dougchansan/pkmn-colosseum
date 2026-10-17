@@ -47,7 +47,7 @@ extern void* pokemonGetStatus();
 extern u32   pokemonSetStatus();
 extern void  pokemonGrowBasisStatus();
 extern u32   itemGetStatus();
-extern void  fn_80119ED0(void);
+extern void  joutaiDataBiosGetStatusKind(void);
 extern void  fn_80121ADC(void);
 extern void  fn_8011B67C(void);
 extern void  pokemonGetSoubiItemDataId(void);
@@ -1138,7 +1138,7 @@ void fightActionFlowKaisiPreSubLoad(void)
 u32 fightActionFlowKaisiNyuujouPokemon(void* action)
 
 {
-    extern void fn_8010AE2C();
+    extern void fightPokemonGetFaceSpriteId();
     extern u32 pokemonCreateSequence();
     extern void msgctrlSetValue();
     extern void battleGridUpdate();
@@ -1213,7 +1213,7 @@ u32 fightActionFlowKaisiNyuujouPokemon(void* action)
             if ((u8)fightPokemonCheckFightOut(pokemon) == 0) {
                 continue;
             }
-            fn_8010AE2C(pokemon, 0, 0);
+            fightPokemonGetFaceSpriteId(pokemon, 0, 0);
             sequence = pokemonCreateSequence(fightPokemonGetPokemonPtr(pokemon));
             fop = (void*)fightTrainerGetStatus(trainer, 0, 0x46, j);
             fightOutPokemonCreate(fop, pokemon, sequence);

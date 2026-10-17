@@ -49,7 +49,7 @@ extern void* pokemonGetStatus();
 extern u32   pokemonSetStatus();
 extern void  pokemonGrowBasisStatus();
 extern u32   itemGetStatus();
-extern void  fn_80119ED0(void);
+extern void  joutaiDataBiosGetStatusKind(void);
 extern void  fn_80121ADC(void);
 extern void  fn_8011B67C(void);
 extern void  pokemonGetSoubiItemDataId(void);
@@ -80,14 +80,14 @@ static inline void* fightPokemonGetPokemonPtrInline(void* fp)
 
 static inline u8 fightPokemonCheckJoutaiInline(void* fp, u16 id)
 {
-    extern u16 fn_80119ED0();
+    extern u16 joutaiDataBiosGetStatusKind();
     extern u8 fn_80121ADC();
     extern u8 fn_8011B67C();
 
-    if (fn_80119ED0(id) == 0x7C || fn_80119ED0(id) == 0xC8) {
+    if (joutaiDataBiosGetStatusKind(id) == 0x7C || joutaiDataBiosGetStatusKind(id) == 0xC8) {
         return fn_80121ADC(fightPokemonGetPokemonPtrInline(fp), id);
     }
-    if (fn_80119ED0(id) != 0xCD) {
+    if (joutaiDataBiosGetStatusKind(id) != 0xCD) {
         return 0;
     }
     return fn_8011B67C(fp, id);
@@ -200,7 +200,7 @@ static inline u8 fightOutPokemonCheckFightOutInline(void* fo)
 
 /* 0x80203EDC | size: 0x108 */
 u16 figthOutPokemonGetSoubiItemBuff(void* ctx) {
-    extern u16 fn_80119ED0();
+    extern u16 joutaiDataBiosGetStatusKind();
     extern u8 fn_8011B67C();
     extern u8 fn_80121ADC();
     extern u32 pokemonGetSoubiItemBuff();
@@ -216,7 +216,7 @@ u16 figthOutPokemonGetSoubiItemBuff(void* ctx) {
         ccData = tmp;
     }
     if (ccData == NULL) { return 0; }
-    if (fn_80119ED0(0x3D) == 0x7C || fn_80119ED0(0x3D) == 0xC8) {
+    if (joutaiDataBiosGetStatusKind(0x3D) == 0x7C || joutaiDataBiosGetStatusKind(0x3D) == 0xC8) {
         void* data;
 
         if (d6Data == NULL) {
@@ -226,7 +226,7 @@ u16 figthOutPokemonGetSoubiItemBuff(void* ctx) {
         }
         result = fn_80121ADC(data, 0x3D);
     } else {
-        if (fn_80119ED0(0x3D) != 0xCD) {
+        if (joutaiDataBiosGetStatusKind(0x3D) != 0xCD) {
             result = 0;
         } else {
             result = fn_8011B67C(d6Data, 0x3D);
@@ -238,7 +238,7 @@ u16 figthOutPokemonGetSoubiItemBuff(void* ctx) {
 
 /* 0x80203FE4 | size: 0x104 */
 u32 fightOutPokemonGetSoubiItemSoubiDataId(void* ctx) {
-    extern u16 fn_80119ED0();
+    extern u16 joutaiDataBiosGetStatusKind();
     extern u8 fn_8011B67C();
     extern u8 fn_80121ADC();
     extern u32 pokemonGetSoubiItemSoubiDataId();
@@ -254,7 +254,7 @@ u8 result;
         ccData = tmp;
     }
     if (ccData == NULL) { return 0; }
-    if (fn_80119ED0(0x3D) == 0x7C || fn_80119ED0(0x3D) == 0xC8) {
+    if (joutaiDataBiosGetStatusKind(0x3D) == 0x7C || joutaiDataBiosGetStatusKind(0x3D) == 0xC8) {
         void* data;
 
         if (d6Data == NULL) {
@@ -263,7 +263,7 @@ u8 result;
             data = pokemonGetStatus(d6Data, 0, 0xCC, 0);
         }
         result = fn_80121ADC(data, 0x3D);
-    } else if (fn_80119ED0(0x3D) != 0xCD) {
+    } else if (joutaiDataBiosGetStatusKind(0x3D) != 0xCD) {
         result = 0;
     } else {
         result = fn_8011B67C(d6Data, 0x3D);
@@ -275,7 +275,7 @@ u8 result;
 
 
 u32 fightOutPokemonGetSoubiItemDataId(void* ctx) {
-    extern u16 fn_80119ED0();
+    extern u16 joutaiDataBiosGetStatusKind();
     extern u8 fn_8011B67C();
     extern u8 fn_80121ADC();
     extern u32 pokemonGetSoubiItemDataId();
@@ -291,7 +291,7 @@ u32 fightOutPokemonGetSoubiItemDataId(void* ctx) {
         ccData = tmp;
     }
     if (ccData == NULL) { return 0; }
-    if (fn_80119ED0(0x3D) == 0x7C || fn_80119ED0(0x3D) == 0xC8) {
+    if (joutaiDataBiosGetStatusKind(0x3D) == 0x7C || joutaiDataBiosGetStatusKind(0x3D) == 0xC8) {
         void* data;
 
         if (d6Data == NULL) {
@@ -300,7 +300,7 @@ u32 fightOutPokemonGetSoubiItemDataId(void* ctx) {
             data = pokemonGetStatus(d6Data, 0, 0xCC, 0);
         }
         result = fn_80121ADC(data, 0x3D);
-    } else if (fn_80119ED0(0x3D) != 0xCD) {
+    } else if (joutaiDataBiosGetStatusKind(0x3D) != 0xCD) {
         result = 0;
     } else {
         result = fn_8011B67C(d6Data, 0x3D);
@@ -354,7 +354,7 @@ u32 fightPokemonGetSoubiItemDataId(void* param_1) {
 /* fightOutPokemonGetPokemonPtr (0x80205BAC) and the status check of a
  * fightOutPokemon, expanded by the callers before them. */
 static inline u32 figthOutPokemonGetSoubiItemBuffInline(void* ctx) {
-    extern u16 fn_80119ED0();
+    extern u16 joutaiDataBiosGetStatusKind();
     extern u8 fn_8011B67C();
     extern u8 fn_80121ADC();
     extern u32 pokemonGetSoubiItemBuff();
@@ -370,7 +370,7 @@ static inline u32 figthOutPokemonGetSoubiItemBuffInline(void* ctx) {
         ccData = tmp;
     }
     if (ccData == NULL) { return 0; }
-    if (fn_80119ED0(0x3D) == 0x7C || fn_80119ED0(0x3D) == 0xC8) {
+    if (joutaiDataBiosGetStatusKind(0x3D) == 0x7C || joutaiDataBiosGetStatusKind(0x3D) == 0xC8) {
         void* data;
 
         if (d6Data == NULL) {
@@ -380,7 +380,7 @@ static inline u32 figthOutPokemonGetSoubiItemBuffInline(void* ctx) {
         }
         result = fn_80121ADC(data, 0x3D);
     } else {
-        if (fn_80119ED0(0x3D) != 0xCD) {
+        if (joutaiDataBiosGetStatusKind(0x3D) != 0xCD) {
             result = 0;
         } else {
             result = fn_8011B67C(d6Data, 0x3D);
@@ -391,7 +391,7 @@ static inline u32 figthOutPokemonGetSoubiItemBuffInline(void* ctx) {
 }
 
 static inline u32 fightOutPokemonGetSoubiItemSoubiDataIdInline(void* ctx) {
-    extern u16 fn_80119ED0();
+    extern u16 joutaiDataBiosGetStatusKind();
     extern u8 fn_8011B67C();
     extern u8 fn_80121ADC();
     extern u32 pokemonGetSoubiItemSoubiDataId();
@@ -407,7 +407,7 @@ u8 result;
         ccData = tmp;
     }
     if (ccData == NULL) { return 0; }
-    if (fn_80119ED0(0x3D) == 0x7C || fn_80119ED0(0x3D) == 0xC8) {
+    if (joutaiDataBiosGetStatusKind(0x3D) == 0x7C || joutaiDataBiosGetStatusKind(0x3D) == 0xC8) {
         void* data;
 
         if (d6Data == NULL) {
@@ -416,7 +416,7 @@ u8 result;
             data = pokemonGetStatus(d6Data, 0, 0xCC, 0);
         }
         result = fn_80121ADC(data, 0x3D);
-    } else if (fn_80119ED0(0x3D) != 0xCD) {
+    } else if (joutaiDataBiosGetStatusKind(0x3D) != 0xCD) {
         result = 0;
     } else {
         result = fn_8011B67C(d6Data, 0x3D);
@@ -440,13 +440,13 @@ static inline void* fightOutPokemonGetPokemonPtrInline(void* fo)
 
 static inline u8 fightOutPokemonCheckJoutaiInline(void* fo, u16 id)
 {
-    extern u16 fn_80119ED0();
+    extern u16 joutaiDataBiosGetStatusKind();
     extern u8 fn_8011B67C();
 
-    if (fn_80119ED0(id) == 0x7C || fn_80119ED0(id) == 0xC8 || fn_80119ED0(id) == 0xCD) {
+    if (joutaiDataBiosGetStatusKind(id) == 0x7C || joutaiDataBiosGetStatusKind(id) == 0xC8 || joutaiDataBiosGetStatusKind(id) == 0xCD) {
         return fightPokemonCheckJoutaiInline(pokemonGetStatus(fo, 0, 0xD6, 0), id);
     }
-    if (fn_80119ED0(id) != 0xD8) {
+    if (joutaiDataBiosGetStatusKind(id) != 0xD8) {
         return 0;
     }
     return fn_8011B67C(fo, id);

@@ -875,7 +875,7 @@ void menuStatusDrawPokemonInfo(u8* context, u8* sprite)
     extern u32 pokemonTokuseiDataBiosGetName(void* data);
     extern u8 pokemonIsDarkPokemon(u8* pokemon);
     extern f32 pokemonGetDp(u8* pokemon);
-    extern u32 fn_8011396C(u32 id);
+    extern u32 floorGetPlaceName(u32 id);
     extern void GSmsgPrintColor();
     extern void fn_800FBB34();
     extern void winSpriteSetDisp(u8* sprite, u8 disp);
@@ -973,7 +973,7 @@ void menuStatusDrawPokemonInfo(u8* context, u8* sprite)
     case 0x599:
         message = 0x2BE6;
         value = pokemonGetStatus(pokemon, 0, 0x71, 0);
-        name = fn_8011396C(value);
+        name = floorGetPlaceName(value);
         if (menuStatusIsOriginalTrainer(pokemon)) {
             switch ((u16)pokemonGetStatus(pokemon, 0, 0x6E, 0)) {
             case 0xC4:
@@ -2249,7 +2249,7 @@ void fn_80096D54(u8* menu)
 
 /* Handle input for the linked-Pokemon status submenus. */
 extern void menuPlaySe(s32 menu, s32 se);
-extern void fn_80109C88(void*, u32);
+extern void menuPokemonModelRequest(void*, u32);
 extern u8 pokemonWazaCheckValid(u32 pokemon, s32 waza);
 
 /* Whether move slot `move` of the shown Pokemon can be selected. */
@@ -2440,7 +2440,7 @@ void fn_80096FA0(u8* menu)
                 if (*(u32*)(lbl_803FB380 + 0x0C) != result) {
                     if (result != 0) {
                         menuPlaySe(*(s32*)(menu + 4), 1);
-                        fn_80109C88(lbl_803FB338, result);
+                        menuPokemonModelRequest(lbl_803FB338, result);
                     }
                     *(u32*)(lbl_803FB380 + 0x0C) = result;
                 }
@@ -2591,7 +2591,7 @@ s32 fn_80097BBC(u8 chan) {
 /* 0x8009769C | size: 0x350 */
 u32 menuPokemonStatusOpen(u8 flags, u32 arg1, s32 pokemon, u16 arg3, u32 arg4, u32 arg5) {
     extern void menuModelInit(void* model, s32 width, s32 height);
-    extern void fn_80109C88(void* model, u32 pokemon);
+    extern void menuPokemonModelRequest(void* model, u32 pokemon);
     extern void fadeCheck(s32 wait);
     extern void fadeSet(s32 mode, f32 value);
     extern s32 menuOpenCustom(s32 menu, ...);
@@ -2603,7 +2603,7 @@ u32 menuPokemonStatusOpen(u8 flags, u32 arg1, s32 pokemon, u16 arg3, u32 arg4, u
     extern s32 menuIsCheck(s32 menu);
     extern void menuCloseCustom(s32 menu, s32 mode, s32 wait);
     extern void floorBattleEndTerminateScripts(void);
-    extern void fn_8010A420(void* model);
+    extern void menuModelTerm(void* model);
 
     u32 cursor;
     s32 result;
@@ -2613,7 +2613,7 @@ u32 menuPokemonStatusOpen(u8 flags, u32 arg1, s32 pokemon, u16 arg3, u32 arg4, u
     u8* state;
 
     menuModelInit(lbl_803FB338, 0xC8, 0xB4);
-    fn_80109C88(lbl_803FB338, pokemon);
+    menuPokemonModelRequest(lbl_803FB338, pokemon);
 
     if (lbl_803FB380[0] & 8) {
         fadeCheck(1);
@@ -2697,7 +2697,7 @@ u32 menuPokemonStatusOpen(u8 flags, u32 arg1, s32 pokemon, u16 arg3, u32 arg4, u
         }
     }
 
-    fn_8010A420(lbl_803FB338);
+    menuModelTerm(lbl_803FB338);
     _threadSwitch();
     return *(u32*)(state + 4);
 }

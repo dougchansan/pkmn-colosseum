@@ -30,7 +30,7 @@ void fn_80117154(void)
     lbl_8047AD6C = 0;
 }
 
-void fn_80117164(void)
+void fieldCameraLoadList(void)
 {
     FieldCameraList* list;
 

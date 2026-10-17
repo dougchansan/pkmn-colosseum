@@ -391,8 +391,8 @@ void _preReliveDisplayHokoraParticleThreadFunc__Fv(void)
     extern u32 lbl_8027A478[];
     extern u32 GSresGetResource();
     extern u32 std093_getCurrentGroupID();
-    extern int fn_80118A68();
-    extern int fn_80118F04();
+    extern int gsParticleKillOwned();
+    extern int gsParticleSetVecB();
     extern u32 gsParticleCreate();
     extern int waitTime__Ff();
     extern u32 lbl_8047B660;
@@ -409,7 +409,7 @@ void _preReliveDisplayHokoraParticleThreadFunc__Fv(void)
     state = lbl_8047B664;
     if ((s32)state != 1) goto skip_cleanup;
     if ((s32)state != 1) goto skip_cleanup;
-    fn_80118A68(lbl_8047B660, 1);
+    gsParticleKillOwned(lbl_8047B660, 1);
     lbl_8047B660 = 0;
     lbl_8047B664 = 0;
 skip_cleanup:
@@ -417,12 +417,12 @@ skip_cleanup:
     uVar2 = GSresGetResource(uVar2, 0x108a1400);
     uVar2 = gsParticleCreate(uVar2, 0, 0);
     lbl_8047B660 = uVar2;
-    fn_80118F04(uVar2, local_buf);
+    gsParticleSetVecB(uVar2, local_buf);
     fVar1 = lbl_8047E684;
     lbl_8047B664 = 1;
     waitTime__Ff(fVar1);
     if ((s32)lbl_8047B664 == 1) {
-        fn_80118A68(lbl_8047B660, 1);
+        gsParticleKillOwned(lbl_8047B660, 1);
         lbl_8047B660 = 0;
         lbl_8047B664 = 0;
     }
@@ -590,7 +590,7 @@ void preReliveMain(void)
     extern u8 pokemonCheckValid(void*);
     extern int pokemonIsDarkPokemon(void*);
     extern u32 scriptGetDarkPointZeroPokemonNum(void);
-    extern void fn_80118A68(u32, s32);
+    extern void gsParticleKillOwned(u32, s32);
     extern void std130_soundUnk_801653cc(s32, s32, s32);
     extern void _threadSwitch(void);
     extern u32 lbl_8047B660;
@@ -673,7 +673,7 @@ void preReliveMain(void)
         fn_8025DCBC((int*)work);
     } else if (action == 4) {
         if ((s32)lbl_8047B664 == 1) {
-            fn_80118A68(lbl_8047B660, 1);
+            gsParticleKillOwned(lbl_8047B660, 1);
             lbl_8047B660 = 0;
             lbl_8047B664 = 0;
         }
@@ -812,7 +812,7 @@ void reliveCeremonyAll(u32 r3)
     extern u32 pokemonBiosGetNicknamePtr();
     extern int pokemonSetDp();
     extern u8 fn_80121ADC();
-    extern int fn_80121B4C();
+    extern int pokemonInitPersistentJoutai();
     extern int pokemonEvolutionAll();
     extern u32 pokemonEvolutionCheck();
     extern u8 pokemonCheckValid();
@@ -848,7 +848,7 @@ void reliveCeremonyAll(u32 r3)
     fn_801EECD8(uVar2,1);
     uVar8 = fn_80121ADC(uVar1,0x3e);
     if (uVar8 != 0) {
-      fn_80121B4C(uVar1,0x3e);
+      pokemonInitPersistentJoutai(uVar1,0x3e);
     }
     pokemonSetDp((double)lbl_8047E688,uVar1);
     std130_soundUnk_801653cc(0x3f7,0,0xff);

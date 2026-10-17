@@ -5,7 +5,7 @@
  *
  * This is XD's GScolsys2Hit.o (NXXJ01.map, StarsMmd/Colo-XD-PBR-symbol-
  * maps). fn_8010E53C is checkHitFixedMdl (0x5EC in both games) and
- * fn_8010EB28 is checkHitMdl (0x4BC in both). They run three passes (face,
+ * colsysCheckHitMdl is checkHitMdl (0x4BC in both). They run three passes (face,
  * flagged edges, flagged corners) through XD's stripped getCpPointPoly /
  * getCpPointLine / getCpPointPoint inlines. fn_8010EFE4 is checkHitCollision
  * (XD 0x1AC), and fn_8010F188 / fn_8010F320 are GScolsys2HitNpcCollision /
@@ -287,7 +287,7 @@ s32 colsysWallSphere(Vec3f* point, void* data, f32 radius, Vec3f* result) {
 }
 
 /* 0x8010EB28 | 0x4BC: XD checkHitMdl__FP5GSvecfP15CCD_HITMDL_HEADP5GSmtxP5GSmtxP5GSvec. */
-s32 fn_8010EB28(Vec3f* point, void* data, ColMtx inverse,
+s32 colsysCheckHitMdl(Vec3f* point, void* data, ColMtx inverse,
                 ColMtx forward, f32 radius, Vec3f* result) {
     GScolsys2TriangleList* list = (GScolsys2TriangleList*)data;
     Vec3f verts[3];
@@ -378,8 +378,8 @@ typedef struct ColDrawScene {
 
 extern ColDrawScene* fn_8010CBC0(void);
 extern s32 GScolsys2GetObjEnable(s32 index, s32* enabled);
-extern s32 fn_8010CA30(ColMtx out, u32 index);
-extern s32 fn_8010C8D0(ColMtx out, u32 index);
+extern s32 colsysMakeSRTMatrix(ColMtx out, u32 index);
+extern s32 colsysMakeRotMatrix(ColMtx out, u32 index);
 
 /* 0x8010EFE4 | 0x1A4 */
 s32 colsysWallAll(Vec3f* segStart, Vec3f* segEnd, f32 radius,
@@ -423,9 +423,9 @@ s32 colsysWallAll(Vec3f* segStart, Vec3f* segEnd, f32 radius,
                 }
             }
             if ((object->flags & 1) != 0) {
-                fn_8010CA30(inverse, index);
-                fn_8010C8D0(forward, index);
-                collided = fn_8010EB28(&current, group, inverse, forward,
+                colsysMakeSRTMatrix(inverse, index);
+                colsysMakeRotMatrix(forward, index);
+                collided = colsysCheckHitMdl(&current, group, inverse, forward,
                                        radius, hitPointPtr);
             } else {
                 collided = colsysWallSphere(&current, group, radius, hitPointPtr);

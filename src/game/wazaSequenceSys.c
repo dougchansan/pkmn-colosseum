@@ -26,11 +26,11 @@ u8 fn_801D9E1C(void* obj) {
  * Address: 0x801D9E34 | Size: 0x58
  */
 void fn_801D9E34(void* obj) {
-    extern void fn_80118A68(u8* resource, u32 notify);
+    extern void gsParticleKillOwned(u8* resource, u32 notify);
     WazaEffect* effect = obj;
 
     if (*(u32*)(lbl_80467CC0 + 0xC) != 0 && effect->effect_handle != NULL) {
-        fn_80118A68(effect->effect_handle, 1);
+        gsParticleKillOwned(effect->effect_handle, 1);
         effect->effect_handle = NULL;
     }
 }
@@ -105,7 +105,7 @@ void fn_801D9E8C(void* effect) {
 
     set__5GSvecFfff(scale, val, val, val);
 
-    fn_80118FB0(fx->effect_handle, target, 4, 0, 1, 0);
+    gsParticleLinkToJObj(fx->effect_handle, target, 4, 0, 1, 0);
     fn_80118D18(fx->effect_handle, 1);
     fn_80118DE0(fx->effect_handle, scale, 1, 0);
     GSpartFree(target);
@@ -117,11 +117,11 @@ void fn_801D9E8C(void* effect) {
  * Address: 0x801DA014 | Size: 0x5C
  */
 void fn_801DA014(void* effect) {
-    extern void fn_80118A68(u8* resource, u32 notify);
+    extern void gsParticleKillOwned(u8* resource, u32 notify);
     WazaEffect* fx = effect;
 
     if (fx != NULL && *(u32*)(lbl_80467CC0 + 0x8) != 0 && fx->field_80 != NULL) {
-        fn_80118A68(fx->field_80, 1);
+        gsParticleKillOwned(fx->field_80, 1);
         fx->field_80 = NULL;
     }
 }
@@ -186,7 +186,7 @@ void fn_801DA070(void* effect) {
 
     set__5GSvecFfff(scale, val, val, val);
 
-    fn_80118FB0(fx->field_80, target, 4, 0, 1, 0);
+    gsParticleLinkToJObj(fx->field_80, target, 4, 0, 1, 0);
     fn_80118D18(fx->field_80, 1);
     fn_80118CAC(fx->field_80, 1);
     fn_80118DE0(fx->field_80, scale, 1, 0);
@@ -317,7 +317,7 @@ u32 fn_801DA42C(void* effect) {
  * Address: 0x801DA448 | Size: 0xA0
  */
 void fn_801DA448(void* effect, u32 visible) {
-    extern void fn_80118C20(void* bank, u32 visible);
+    extern void GSmodelSetParticleVisibility(void* bank, u32 visible);
     u8* sequence;
     u8* model;
 
@@ -329,7 +329,7 @@ void fn_801DA448(void* effect, u32 visible) {
                 while (model != NULL) {
                     if (*(s32*)(model + 4) == 3 && *(s32*)(model + 0x18) == 0 &&
                         *(void**)(model + 0x88) != NULL) {
-                        fn_80118C20(*(void**)(model + 0x88), visible);
+                        GSmodelSetParticleVisibility(*(void**)(model + 0x88), visible);
                     }
                     model = *(u8**)(model + 0xA8);
                 }

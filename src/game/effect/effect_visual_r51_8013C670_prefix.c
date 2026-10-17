@@ -5,7 +5,7 @@ extern void GSmodelStopTexAnimation(void* model);
 extern void GSmodelSetVisibility(void* model, u32 visible);
 extern void GXDrawDone(void);
 extern void fn_800B856C(void);
-extern u32 fn_8013CE58(void* model, void* work);
+extern u32 _seaResetMaterial(void* model, void* work);
 extern void* fn_800E24B0(u32 handle);
 extern void fn_800E209C(u32 handle);
 
@@ -25,7 +25,7 @@ u32 fn_8013C670(void* arg) {
         }
         GXDrawDone();
         fn_800B856C();
-        fn_8013CE58(inner, ptr);
+        _seaResetMaterial(inner, ptr);
 
         {
             u16 val;

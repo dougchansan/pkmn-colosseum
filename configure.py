@@ -1455,7 +1455,7 @@ config.libs = [
                 progress_category="game",
             ),
             # TEMPORARY constant_import
-            # fn_80139074's 1.0f (the leaf's slerp-time decrement) is a literal;
+            # _leaffxMoveLeaf's 1.0f (the leaf's slerp-time decrement) is a literal;
             # retail shares it as lbl_8047D160 (effect_visual_sdata2_8047D160.c).
             Object(
                 Matching,
@@ -2917,7 +2917,7 @@ config.libs = [
                 progress_category="game",
             ),
             # fn_801176C8 / fn_8011791C: the field camera TU's flags
-            # (-opt nopeephole), plus -inline noauto so fn_80117164 stays a
+            # (-opt nopeephole), plus -inline noauto so fieldCameraLoadList stays a
             # call as in retail. Each wrapper sets a FIELD_CAMERA_<addr>_ONLY
             # guard so it compiles just its own function.
             *[
@@ -5120,7 +5120,7 @@ config.libs = [
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8", "-O3,p", "-opt nopeephole"],
                 progress_category="game",
             ),
-            # fn_8010C224: same compiler, peephole off (see the file header).
+            # menuFaceInit: same compiler, peephole off (see the file header).
             Object(
                 Matching,
                 "game/gs_range_exact_8010C224.c",

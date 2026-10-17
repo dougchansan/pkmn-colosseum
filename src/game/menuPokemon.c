@@ -2728,7 +2728,7 @@ extern void winMsgClose(s32);
 extern s32 fn_8001C7B8(s8);
 extern s32 fn_8001C064(s8, u8, u16, u16*);
 #endif
-extern void fn_8010B01C();
+extern void menuFaceRequestPokemonFace();
 extern u32 menuPokemonCheckPokemonChange();
 extern void fn_80097E58();
 extern f32 pokemonGetDp();
@@ -2838,7 +2838,7 @@ s32 menuPokemonSub() {
     }
 
     lbl_8047A30A = 0;
-    fn_8010B01C(0, fn_8001BEBC, &lbl_8047A30A);
+    menuFaceRequestPokemonFace(0, fn_8001BEBC, &lbl_8047A30A);
 
     while (1) {
         lbl_803A1D40[0x14] = 0;

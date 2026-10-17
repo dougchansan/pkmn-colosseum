@@ -53,8 +53,8 @@ u8   fightOutPokemonIsUseHensinBuff(void* trainer);
 void fightOutPokemonSetHensinFightPokemonStatusId(void* trainer, u16 eventId, u32 param);
 
 /* Item/Pokemon field access helpers used by battle item flow. */
-u8 fn_80121574(void* obj, s32 arg);
-u8 fn_8011A3E4(void* obj, s32 arg);
+u8 pokemonGetJoutai08(void* obj, s32 arg);
+u8 statusGetJoutai08(void* obj, s32 arg);
 
 /* SDA table pointers for trainer data arrays */
 extern u32* lbl_80478F08;  /* Party config header */
