@@ -77,7 +77,7 @@ extern u32   GSmodelCanAnimate(u32);
 extern void  GSmodelSetAnimIndex(u32, u32);
 extern void  GSmodelSetAnimRate(u32, f32);
 extern void  GSmodelStartAnimation(u32);
-extern void  fn_801DB100(u32);
+extern void  wazaSequenceOwnerFree(u32);
 extern u32   OSGetTick(void);
 
 extern u32 lbl_8047ACF0;

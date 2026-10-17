@@ -110,7 +110,7 @@ void fn_802317E4(void) {
         }
     }
 
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
     for (i = 0, flags = lbl_80478D78; i < 2; i++) {
         side = fightFloorGetValidFightSidePtr(0, i);
         if (side != 0) {
@@ -134,7 +134,7 @@ void fn_802317E4(void) {
         }
     }
 
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
     for (i = 0; i < 2; i++) {
         side = fightFloorGetValidFightSidePtr(0, i);
         if (side != 0) {
@@ -157,7 +157,7 @@ void fn_802317E4(void) {
         }
     }
 
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
     for (i = 0; i < 2; i++) {
         side = fightFloorGetValidFightSidePtr(0, i);
         if (side != 0) {
@@ -179,9 +179,9 @@ void fn_802317E4(void) {
         }
     }
 
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
     fightFloorLoopValidFightOutPokemon(0, fn_80232024, 0, 1);
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
 
     if (weather == 2) {
         fightFloorSetStatus(0, 0, 0x36, 0, selected);
@@ -201,7 +201,7 @@ void fn_802317E4(void) {
         fn_80211B94(lbl_8047B62C, lbl_80378A5F, 0);
     }
 
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
     if (std103_battleGetResult() != 0) {
         return;
     }
@@ -227,7 +227,7 @@ void fn_802317E4(void) {
         fn_80211B94(lbl_8047B62C, msg, 0);
     }
 
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
     if (std103_battleGetResult() != 0) {
         return;
     }
@@ -250,7 +250,7 @@ void fn_802317E4(void) {
         fn_80211B94(lbl_8047B62C, msg, 0);
     }
 
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
     if (std103_battleGetResult() != 0) {
         return;
     }
@@ -272,7 +272,7 @@ void fn_802317E4(void) {
         fn_80211B94(lbl_8047B62C, msg, 0);
     }
 
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
     if (std103_battleGetResult() != 0) {
         return;
     }

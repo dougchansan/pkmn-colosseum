@@ -11,7 +11,7 @@
  * compatible with Dolphin emulator). The game stores save data on a
  * standard GameCube Memory Card via the Dolphin SDK CARD API.
  *
- * Save data integrity is verified using a SHA-1 hash (fn_801CC380).
+ * Save data integrity is verified using a SHA-1 hash (sha1Transform).
  *
  * The save system is initialized at boot from main.c:
  *   fn_801E1300 - Card system init
@@ -251,7 +251,7 @@ u32 save_CardGetState(void);
  * ========================================================================= */
 
 /**
- * fn_801CC380: SHA-1 hash computation.
+ * sha1Transform: SHA-1 hash computation.
  * Confirmed by 0x5A827999 constants in disassembly.
  * Size: 0x1784 bytes (heavily unrolled).
  *

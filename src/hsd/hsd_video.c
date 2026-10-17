@@ -175,7 +175,7 @@ static inline int HSD_VIWaitXFBFlushSub(void)
 }
 
 /* Finalize the active XFB draw and advance its state. */
-void fn_801BF6AC(void)
+void HSD_VIFinishDrawXFB(void)
 {
     BOOL intr;
     BOOL inner;

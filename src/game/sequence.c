@@ -63,10 +63,10 @@ static inline void sequenceWaitResource(u32 group, u32 resource) {
 #if defined(SEQUENCE_801DCDA8_801DCF00)
 
 /**
- * fn_801DCDA8 - Waza field effect get type.
+ * wazaSequenceOwnerFindEntry - Waza field effect get type.
  * Address: 0x801DCDA8 | Size: 0x24
  */
-void* fn_801DCDA8(void* obj, s32 fieldEffect) {
+void* wazaSequenceOwnerFindEntry(void* obj, s32 fieldEffect) {
     void* cur = *(void**)((u8*)obj + 0x24);
 
     while (cur != NULL) {
@@ -80,10 +80,10 @@ void* fn_801DCDA8(void* obj, s32 fieldEffect) {
 }
 
 /**
- * fn_801DCDCC - Waza field effect set type.
+ * wazaSequenceOwnerGetColorSwapActive - Waza field effect set type.
  * Address: 0x801DCDCC | Size: 0x40
  */
-s32 fn_801DCDCC(void* obj) {
+s32 wazaSequenceOwnerGetColorSwapActive(void* obj) {
     if (obj == NULL) {
         return 0;
     }
@@ -127,7 +127,7 @@ void fn_801DCE0C(void* obj) {
  * fn_801DCEA8 - Waza field effect clear.
  * Address: 0x801DCEA8 | Size: 0x58
  */
-extern void fn_801DEF0C(void* obj, s32 arg1, s32 arg2);
+extern void wazaSequenceOwnerPlayIdle(void* obj, s32 arg1, s32 arg2);
 void fn_801DCEA8(void* obj) {
     WazaEffect* effect = obj;
     u8 flags = effect->flags;
@@ -135,7 +135,7 @@ void fn_801DCEA8(void* obj) {
     if ((flags & 2) == 2) {
         effect->flags = flags ^ 2;
         GSmodelRemoveNull(effect->model);
-        fn_801DEF0C(effect, 1, 0);
+        wazaSequenceOwnerPlayIdle(effect, 1, 0);
     }
 }
 
@@ -144,14 +144,14 @@ void fn_801DCEA8(void* obj) {
 #if defined(SEQUENCE_801DCF00_801DCF84)
 
 /**
- * fn_801DCF00 - Waza lighting override set.
+ * wazaSequenceOwnerSetNull - Waza lighting override set.
  * Address: 0x801DCF00 | Size: 0x84
  */
-void fn_801DCF00(u32 color, f32 intensity) {
+void wazaSequenceOwnerSetNull(u32 color, f32 intensity) {
     extern u8 GSmodelIsRootNullAdded(s32);
     extern void GSmodelGetRootPosition(s32, void*);
     extern void GSmodelAddNull(s32, void*, s32, s32);
-    extern void fn_801DEF0C(void*, s32, s32);
+    extern void wazaSequenceOwnerPlayIdle(void*, s32, s32);
 
     void* obj;
     u8 flags;
@@ -165,7 +165,7 @@ void fn_801DCF00(u32 color, f32 intensity) {
         } else {
             GSmodelAddNull(*(s32*)((u8*)obj + 0x24), (u8*)obj + 0x5C, 0, 0);
         }
-        fn_801DEF0C(obj, 1, 0);
+        wazaSequenceOwnerPlayIdle(obj, 1, 0);
     }
 }
 
@@ -174,15 +174,15 @@ void fn_801DCF00(u32 color, f32 intensity) {
 #if defined(SEQUENCE_801DCF84_801DD158)
 
 /**
- * fn_801DCF84 - Waza lighting override clear.
+ * wazaSequenceOwnerClearStop - Waza lighting override clear.
  * Address: 0x801DCF84 | Size: 0x54
  */
-void fn_801DCF84(void* obj) {
+void wazaSequenceOwnerClearStop(void* obj) {
     u8 flags = *(u8*)((u8*)obj + 0x18);
 
     if ((flags & 8) == 8) {
         *(u8*)((u8*)obj + 0x18) = flags ^ 8;
-        fn_801DEF0C(obj, 1, 1);
+        wazaSequenceOwnerPlayIdle(obj, 1, 1);
         fn_801DA014(obj);
     }
 }
@@ -203,30 +203,30 @@ void fn_801DCFD8(void* obj) {
 }
 
 /**
- * fn_801DD028 - Waza lighting ambient set.
+ * wazaSequenceOwnerClearAura - Waza lighting ambient set.
  * Address: 0x801DD028 | Size: 0x50
  */
-extern void fn_801DF33C(void* obj);
-void fn_801DD028(void* obj) {
+extern void wazaSequenceOwnerTexAnimOff(void* obj);
+void wazaSequenceOwnerClearAura(void* obj) {
     u8 flags = *(u8*)((u8*)obj + 0x18);
 
     if ((flags & 4) == 4) {
-        fn_801DF33C(obj);
+        wazaSequenceOwnerTexAnimOff(obj);
         *(u8*)((u8*)obj + 0x18) = *(u8*)((u8*)obj + 0x18) ^ 4;
         fn_801D9E34(obj);
     }
 }
 
 /**
- * fn_801DD078 - Waza lighting ambient get.
+ * wazaSequenceOwnerSetAura - Waza lighting ambient get.
  * Address: 0x801DD078 | Size: 0x50
  */
-extern void fn_801DF3D4(void* obj);
-void fn_801DD078(void* obj) {
+extern void wazaSequenceOwnerTexAnimOn(void* obj);
+void wazaSequenceOwnerSetAura(void* obj) {
     u8 flags = *(u8*)((u8*)obj + 0x18);
 
     if ((flags & 4) != 4) {
-        fn_801DF3D4(obj);
+        wazaSequenceOwnerTexAnimOn(obj);
         *(u8*)((u8*)obj + 0x18) = *(u8*)((u8*)obj + 0x18) | 4;
         fn_801D9E8C(obj);
     }
@@ -252,11 +252,11 @@ void* GetWaza__12NullSequenceCFUsUs(void* obj, u16 search_key1, u16 search_key2)
 }
 
 /**
- * fn_801DD100 - 0x801DD100 | Size: 0x58
+ * wazaSequenceOwnerSetAnim - 0x801DD100 | Size: 0x58
  * Two-arg (owner, obj) per the caller in wazaSequence.c; the prior
  * (u32 filterColor) signature was a placeholder.
  */
-void fn_801DD100(WazaSequenceOwner* owner, WazaSequence* sequence) {
+void wazaSequenceOwnerSetAnim(WazaSequenceOwner* owner, WazaSequence* sequence) {
     if (owner == NULL) return;
     if (sequence == NULL) {
         owner->index = 0;
@@ -321,16 +321,16 @@ void fn_801DD158(void* obj) {
 #if defined(SEQUENCE_801DD23C_801DD45C)
 
 /**
- * fn_801DD23C - Waza color filter transition.
+ * wazaSequenceOwnerRelease - Waza color filter transition.
  * Address: 0x801DD23C | Size: 0x1A8
  */
-void fn_801DD23C(void* obj) {
+void wazaSequenceOwnerRelease(void* obj) {
     extern void fn_800E24B0(u16);
     extern void fn_800E209C(u16);
     extern void GSmodelDisableColorSwap(u32);
     extern void GSmodelDisableModulation(u32);
     extern void GSmodelSetAnimEndedCallback();
-    extern void fn_801DA4E8();
+    extern void wazaSequenceOwnerSetVisibility();
     extern void gsParticleKillAll(s32);
     extern void fn_800F9210();
     extern void Unload__13ModelSequenceFPUc(void*);
@@ -376,7 +376,7 @@ void fn_801DD23C(void* obj) {
             GSmodelSetAnimEndedCallback(*(u32*)(data + 0x24), 0, 0);
         }
 
-        fn_801DA4E8(data, 0);
+        wazaSequenceOwnerSetVisibility(data, 0);
 
         if (*(u32*)(data + 0x0C) != 0) {
             gsParticleKillAll(*(s32*)(data + 0x28));
@@ -441,15 +441,15 @@ void fn_801DD3E4(void* obj) {
  */
 BOOL sequenceLoad(void* effect, void* data) {
     extern void* GSresGetResource(u32, u32);
-    extern u32 fn_801DF160(void*);
+    extern u32 wazaSequenceOwnerFindAnim(void*);
     extern void fn_800EB268(void*, u32);
     extern void* gsParticleBankLoad(void*);
     extern void GSmodelLinkToGSparticleBank(void*, void*);
     extern void GSmodelLinkTexAnimToAnim(void*, s32);
     extern void GSmodelSetAnimEndedCallback(void*, void*, void*);
     extern void sequenceAnimEndCallback(void);
-    extern void fn_801DEF0C(void*, s32, s32);
-    extern void fn_801DA4E8(void*, s32);
+    extern void wazaSequenceOwnerPlayIdle(void*, s32, s32);
+    extern void wazaSequenceOwnerSetVisibility(void*, s32);
     extern void GSmodelSetPosition(void*, void*);
     extern void GSmodelSetRotation(void*, void*);
     extern void GSmodelSetScale(void*, void*);
@@ -474,7 +474,7 @@ BOOL sequenceLoad(void* effect, void* data) {
     if (fn_801DD5E8(sequence, data)) {
         model = *(void**)(sequence + 0x24) =
             GSresGetResource(*(u32*)(sequence + 0), *(u32*)(sequence + 4));
-        fn_800EB268(model, fn_801DF160(sequence));
+        fn_800EB268(model, wazaSequenceOwnerFindAnim(sequence));
         if (*(u32*)(sequence + 0xC) != 0) {
             *(void**)(sequence + 0x28) =
                 gsParticleBankLoad(GSresGetResource(
@@ -483,8 +483,8 @@ BOOL sequenceLoad(void* effect, void* data) {
         }
         GSmodelLinkTexAnimToAnim(model, 1);
         GSmodelSetAnimEndedCallback(model, sequenceAnimEndCallback, sequence);
-        fn_801DEF0C(sequence, 1, 1);
-        fn_801DA4E8(sequence, 0);
+        wazaSequenceOwnerPlayIdle(sequence, 1, 1);
+        wazaSequenceOwnerSetVisibility(sequence, 0);
         GSmodelSetPosition(model, lbl_803727B0);
         GSmodelSetRotation(model, lbl_803727B0);
         GSmodelSetScale(model, lbl_803727BC);
@@ -756,7 +756,7 @@ BOOL fn_801DDB4C(void* owner, void* resource) {
     if (resource == NULL) {
         return FALSE;
     }
-    sequence = (u8*)fn_801DBFB0();
+    sequence = (u8*)wazaSequenceAllocNode();
     if (sequence == NULL) {
         return FALSE;
     }
@@ -780,10 +780,10 @@ BOOL fn_801DDB4C(void* owner, void* resource) {
 }
 
 /**
- * fn_801DDC10 - Waza transition effect helper B.
+ * wazaSequenceCheckResExists - Waza transition effect helper B.
  * Address: 0x801DDC10 | Size: 0x118
  */
-s32 fn_801DDC10(u16 index, u16 type) {
+s32 wazaSequenceCheckResExists(u16 index, u16 type) {
     extern u32 lbl_80478CE0;
     extern u32 lbl_80478CC0;
     extern u32 lbl_80478CE8;
@@ -864,7 +864,7 @@ BOOL fn_801DDD28(void* owner, u16 group, u16 index, u8 variant) {
     if (resource == NULL) {
         return FALSE;
     }
-    sequence = (u8*)fn_801DBFB0();
+    sequence = (u8*)wazaSequenceAllocNode();
     if (sequence == NULL) {
         return FALSE;
     }
@@ -914,7 +914,7 @@ void fn_801DDEE4(void* owner, u16 group, u16 type, u8 variant,
         u16 last;
 
         if (variant != 0 && type != 4 && type != 2 &&
-            variant < fn_801DDC10(group, type)) {
+            variant < wazaSequenceCheckResExists(group, type)) {
             first = 0x162;
             last = 0x16E;
         } else {
@@ -991,10 +991,10 @@ void fn_801DDEE4(void* owner, u16 group, u16 type, u8 variant,
 #if defined(SEQUENCE_801DE164_801DE190)
 
 /**
- * fn_801DE164 - Waza hit flash get active.
+ * wazaSequenceOwnerGet78 - Waza hit flash get active.
  * Address: 0x801DE164 | Size: 0x2C
  */
-BOOL fn_801DE164(s32 slot) {
+BOOL wazaSequenceOwnerGet78(s32 slot) {
     void* obj;
 
     obj = (void*)slot;
@@ -1032,7 +1032,7 @@ void* fn_801DE190(u16 index, void* model, u8 variant) {
     extern u8 pokemonGetAnnonKatati(void* model);
     extern void* GSresGetResource(u32 group, u32 resource);
     extern void* fn_801DB154(void);
-    extern void fn_801DB100(void* sequence);
+    extern void wazaSequenceOwnerFree(void* sequence);
     extern void fn_801DCE0C(void* sequence);
     extern u8 sequenceLoad(void* sequence, void* resource);
     extern void pachiruEffectSetupModel(void* dst, u32 arg1, void* model);
@@ -1097,7 +1097,7 @@ void* fn_801DE190(u16 index, void* model, u8 variant) {
     *(void**)(sequence + 0x78) = model;
     sequence[0x77] = variant;
     if (sequenceLoad(sequence, resourcePtr) == 0) {
-        fn_801DB100(sequence);
+        wazaSequenceOwnerFree(sequence);
         return NULL;
     }
     if (variant != 0 && overridden == 0) {
@@ -1114,15 +1114,15 @@ void* fn_801DE190(u16 index, void* model, u8 variant) {
 #if !defined(SEQUENCE_CANDIDATE_801DE598_ONLY) && \
     !defined(SEQUENCE_CANDIDATE_801DE190_ONLY)
 /**
- * fn_801DE418 - Waza HP drain effect.
+ * wazaSequenceTrainerCreate - Waza HP drain effect.
  * Address: 0x801DE418 | Size: 0x180
  */
-void* fn_801DE418(u16 index) {
+void* wazaSequenceTrainerCreate(u16 index) {
     extern u32 lbl_80478CC8;
     extern SequenceResourcePair lbl_80370840[];
     extern void* GSresGetResource(u32 group, u32 resource);
     extern void* fn_801DB154(void);
-    extern void fn_801DB100(void* sequence);
+    extern void wazaSequenceOwnerFree(void* sequence);
     extern u8 sequenceLoad(void* sequence, void* resource);
     u8* sequence;
     u32 group;
@@ -1157,7 +1157,7 @@ void* fn_801DE418(u16 index) {
     *(u16*)(sequence + 0x72) = group;
     sequence[0x75] = 0;
     if (sequenceLoad(sequence, resource) == 0) {
-        fn_801DB100(sequence);
+        wazaSequenceOwnerFree(sequence);
         return NULL;
     }
     return sequence;

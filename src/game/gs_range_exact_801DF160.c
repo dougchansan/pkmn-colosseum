@@ -1,6 +1,6 @@
 /**
  * @file gs_range_exact_801DF160.c
- * @brief fn_801DF160, 0x801DF160 - 0x801DF1D0.
+ * @brief wazaSequenceOwnerFindAnim, 0x801DF160 - 0x801DF1D0.
  *
  * Function-boundary carve of gs_range_801DE698.c: no jump table, no pooled
  * constant, no data. GC/1.3 -O4,p like the range, no pragmas.
@@ -10,7 +10,7 @@
 /* The first free-slot value in the model's active animation table: the
  * alternate table at +0xD40 when flag 2 is set with more than 16 frames,
  * unless that table is marked 1. */
-s32 fn_801DF160(u8* obj) {
+s32 wazaSequenceOwnerFindAnim(u8* obj) {
     u8* base;
     u8* table;
     s32* entry;

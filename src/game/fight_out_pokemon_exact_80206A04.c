@@ -429,9 +429,9 @@ u16 fightOutPokemonGetTokuseiDataId(void* context) {
 
 /* 0x80207C24 | size: 0x48 | small */
 void fightOutPokemonSetWazaEffectDownFlag(void* ctx, u32 param) {
-    extern void fn_801DA5AC();
+    extern void wazaSequenceSetDownFlag();
     void* obj = pokemonGetStatus(ctx, 0, 0xee, 0);
     if (obj != 0) {
-        fn_801DA5AC(obj, param);
+        wazaSequenceSetDownFlag(obj, param);
     }
 }

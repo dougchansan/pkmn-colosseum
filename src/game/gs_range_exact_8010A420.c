@@ -32,7 +32,7 @@ s32 menuModelTerm(void* obj)
     extern u8 GSthreadIsRunning(u32 task);
     extern void GSthreadClose(u32 task);
     extern void _threadSwitch(void);
-    extern void fn_801DB100(u32 handle);
+    extern void wazaSequenceOwnerFree(u32 handle);
     extern void GSmodelFree(void* a);
     extern void GSlightFree(void* a);
     extern void GScameraFree(void* camera);
@@ -68,7 +68,7 @@ s32 menuModelTerm(void* obj)
         o->flag1 = 0;
         if (o->flag14) {
             if (o->handle24 != 0) {
-                fn_801DB100(o->handle24);
+                wazaSequenceOwnerFree(o->handle24);
                 o->handle24 = 0;
             }
         } else if (o->handle24 != 0) {

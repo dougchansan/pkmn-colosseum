@@ -72,7 +72,7 @@ extern void fn_8019C6FC(void);
 extern void GSgfxBackFBDoFrame(void);
 extern void fn_801BF8A0(s32 a);
 extern void fn_801E16F0(void);
-extern void fn_801BF6AC(void);
+extern void HSD_VIFinishDrawXFB(void);
 extern void GStextureConvertFromHW(void* a, s32 b);
 extern void fn_800B8E74(void);
 extern void GXInvalidateTexAll(void);
@@ -96,7 +96,7 @@ void fn_800D30F0(u32 flag)
         GSgfxBackFBDoFrame();
         fn_801BF8A0(0);
         fn_801E16F0();
-        fn_801BF6AC();
+        HSD_VIFinishDrawXFB();
     } else {
         if (sc != 0) {
             GStextureConvertFromHW((void*)sc, 1);
@@ -168,7 +168,7 @@ void GSgfxRenderEnd(void) {
                 GSgfxBackFBDoFrame();
                 fn_801BF8A0(0);
                 fn_801E16F0();
-                fn_801BF6AC();
+                HSD_VIFinishDrawXFB();
             } else {
                 if (sc != 0) {
                     GStextureConvertFromHW((void*)sc, 1);
@@ -268,7 +268,7 @@ void GSgfxRenderLayer(void* arg0, u8 arg1) {
                     GSgfxBackFBDoFrame();
                     fn_801BF8A0(0);
                     fn_801E16F0();
-                    fn_801BF6AC();
+                    HSD_VIFinishDrawXFB();
                 } else {
                     if (sc != 0) {
                         GStextureConvertFromHW((void*)sc, 1);

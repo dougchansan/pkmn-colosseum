@@ -3,7 +3,7 @@
 extern u16 _toolentryAlloc__FUl(u32 size);
 extern void* fn_800E27B0(u16 handle);
 
-WazaSequence* fn_801DBFB0(void)
+WazaSequence* wazaSequenceAllocNode(void)
 {
     u16 handle;
     WazaSequence* sequence;

@@ -100,8 +100,8 @@ void std207_gbaUnk_80075638(void);
 s32 std205_getDNASampleSepcies(u16 arg0);
 s32 std200_gbaConnectEvent(s32 arg0, s32 arg1);
 void std199_menuDisplayCustomMenu(s32 a, s32 b, s32 c, s32 d, s32 e);
-u8 fn_801C9910(void);
-void fn_801C9B6C(s32 arg0, s32 arg1, u16 arg2, u8 arg3);
+u8 floorElevatorIsHeroInside(void);
+void floorEventElevatorMain(s32 arg0, s32 arg1, u16 arg2, u8 arg3);
 void fn_801C9C9C(void);
 u8 std193_lightWaitForAnimation(s32 lightId, s32 wait);
 void scriptLightStopMotion(s32 lightId);
@@ -119,7 +119,7 @@ s32 fn_801CA728(s32 count);
 void fn_801CA7AC(s32 value);
 s32 std236_playerGetCouponsEarnedOnCurrentRun(void);
 s32 std232_characterApproachPlayer(s32 side, s32 slot);
-s32 fn_801C8E14(s32 floorDataId, u32 actorIndex, u16 mode, u8 direction);
+s32 floorElevatorSetupCharacters(s32 floorDataId, u32 actorIndex, u16 mode, u8 direction);
 
 extern u8 peopleMoveCheck();
 extern void GSmodelSetAnimIndex();
@@ -779,15 +779,15 @@ void std199_menuDisplayCustomMenu(s32 a, s32 b, s32 c, s32 d, s32 e)
     menuSubOpenSelect(1, a, b, c, d, e);
 }
 
-extern s32 fn_801C8E14(s32 floorDataId, u32 actorIndex, u16 mode,
+extern s32 floorElevatorSetupCharacters(s32 floorDataId, u32 actorIndex, u16 mode,
                        u8 direction);
-extern u8 fn_801C9910(void);
+extern u8 floorElevatorIsHeroInside(void);
 extern void floorEventCtrlElevator(s32 arg0, s32 arg1, u16 arg2,
                                    u8 arg3, s32 speed);
 extern u8 lbl_8047B3C4;
 
 /* Drive one scripted field actor animation and its paired movement actors. */
-s32 fn_801C8E14(s32 floorDataId, u32 actorIndex, u16 mode, u8 direction)
+s32 floorElevatorSetupCharacters(s32 floorDataId, u32 actorIndex, u16 mode, u8 direction)
 {
     typedef struct FieldAnimActor {
         s8 enterAnim;
@@ -1023,7 +1023,7 @@ s32 fn_801C8E14(s32 floorDataId, u32 actorIndex, u16 mode, u8 direction)
         }
         fieldModelStartAnim(model, animIndex, frame);
         if ((mode & 0x40) != 0) {
-            fn_801C8E14(floorDataId, actorIndex, 0xC0, direction);
+            floorElevatorSetupCharacters(floorDataId, actorIndex, 0xC0, direction);
         } else if ((mode & 0x80) != 0) {
             soundStartSE(0x45);
         }
@@ -1036,7 +1036,7 @@ s32 fn_801C8E14(s32 floorDataId, u32 actorIndex, u16 mode, u8 direction)
 }
 
 
-u8 fn_801C9910(void)
+u8 floorElevatorIsHeroInside(void)
 {
     extern u8 fn_8012B19C(s32 member, Vec3* start, Vec3* target,
                           f32 extraRadius);
@@ -1116,20 +1116,20 @@ u8 fn_801C9910(void)
     return 0;
 }
 
-void fn_801C9B6C(s32 arg0, s32 arg1, u16 arg2, u8 arg3)
+void floorEventElevatorMain(s32 arg0, s32 arg1, u16 arg2, u8 arg3)
 {
     s32 floorId;
     s32 resId;
     u8 found;
 
     if (arg3 >= 2 && arg3 <= 5) {
-        fn_801C8E14(arg0, arg1, arg2, arg3);
+        floorElevatorSetupCharacters(arg0, arg1, arg2, arg3);
         return;
     }
 
     if (arg2 & 1) {
         found = heroMoveGetResID(&floorId, &resId, 1);
-        if (!found || (arg3 == 0 && !fn_801C9910())) {
+        if (!found || (arg3 == 0 && !floorElevatorIsHeroInside())) {
             lbl_8047B3C4 = 0;
         } else {
             lbl_8047B3C4 = 1;
@@ -1141,7 +1141,7 @@ void fn_801C9B6C(s32 arg0, s32 arg1, u16 arg2, u8 arg3)
     }
 
     if (lbl_8047B3C4) {
-        fn_801C8E14(arg0, arg1, arg2, arg3);
+        floorElevatorSetupCharacters(arg0, arg1, arg2, arg3);
     } else {
         floorEventCtrlElevator(arg0, arg1, arg2, 0, 100);
     }

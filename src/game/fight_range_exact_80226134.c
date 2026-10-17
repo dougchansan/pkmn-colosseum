@@ -302,7 +302,7 @@ void fn_802267E8(void) {
     }
     if ((u8)fn_802026E4(ctx, 0x14) == 1 && fn_801FEF74(ctx) <= 0) {
         do {
-            if ((u8)fn_801DA5C4(6) == 1) {
+            if ((u8)wazaSequenceSysIsAllEnd(6) == 1) {
                 break;
             }
             _threadSwitch();
@@ -504,7 +504,7 @@ void fn_80226914(void)
 void fn_80226F0C(void) {
     extern u32 lbl_8047B618;
     extern void _threadSwitch();
-    extern u8 fn_801DA5C4();
+    extern u8 wazaSequenceSysIsAllEnd();
     extern u32 fightTargetGetPtrAsNowFightType();
     extern u32 fightOutPokemonGetUseWazaDataId();
     extern u32 pokemonGetStatus();
@@ -523,7 +523,7 @@ void fn_80226F0C(void) {
         (u16)vars.move == 0xa4) {
         vars.index = lbl_8047B610[1];
         do {
-            if (fn_801DA5C4(vars.index) == 1) {
+            if (wazaSequenceSysIsAllEnd(vars.index) == 1) {
                 break;
             }
             _threadSwitch();
@@ -541,7 +541,7 @@ void fn_80226F0C(void) {
 void fn_80226FD4(void)
 
 {
-    extern void fn_801DA9E8();
+    extern void wazaSequenceSysStartWaza();
     extern u8 fn_801DDD28();
     extern u32 fightTargetGetPtrAsNowFightType();
     extern u32 fightFloorGetStatus();
@@ -584,7 +584,7 @@ void fn_80226FD4(void)
         floorMove = (u16)fightFloorGetStatus(0, 0, 0x14, 0);
         effectAttacker = pokemonGetStatus(target, 0, 0xee, 0);
         if (effectAttacker != 0 && fn_801DDD28(effectAttacker, 0x57, 4, 0) != 0) {
-            fn_801DA9E8(effectAttacker, 0x57, 4);
+            wazaSequenceSysStartWaza(effectAttacker, 0x57, 4);
             fn_80265598(target, floorMove, 1);
         }
         lbl_8047B610++;

@@ -348,8 +348,8 @@ extern f32 lbl_8047BD30;
 extern f32 lbl_8047BD34;
 extern u8 lbl_802E5424[];
 extern u8 lbl_802E5430[];
-extern void* fn_801DAC3C(void* h);
-extern s32 fn_801DAC24(void* h);
+extern void* wazaSequenceOwnerGetModel(void* h);
+extern s32 wazaSequenceOwnerGetSizeClass(void* h);
 extern void GSmodelGetPosition(void* model, void* out);
 extern void GSmodelSetPosition(void* model, void* pos);
 extern void GSmodelSetMatrix(void* model, void* mtx);
@@ -575,8 +575,8 @@ u8 pdaModelOrbitCamera(u8* work)
         return 0;
     }
     if (work[0x14] != 0) {
-        model = fn_801DAC3C(*(void**)(work + 0x24));
-        switch (fn_801DAC24(*(void**)(work + 0x24))) {
+        model = wazaSequenceOwnerGetModel(*(void**)(work + 0x24));
+        switch (wazaSequenceOwnerGetSizeClass(*(void**)(work + 0x24))) {
         case -2:
             spread = lbl_8047BD3C;
             break;

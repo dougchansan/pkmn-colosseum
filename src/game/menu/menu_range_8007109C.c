@@ -2310,8 +2310,8 @@ void menuExDiscShrineRun(void)
     typedef struct MenuSaveSnapshot {
         u8 bytes[0x1DFD0];
     } MenuSaveSnapshot;
-    extern void* fn_801D036C(void);
-    extern void fn_801D0314(void*);
+    extern void* memcardAllocBuffer(void);
+    extern void memcardFreeBuffer(void*);
     extern void* savedataGetStatus(u32, u32);
     extern void exShrineIncCounter(void);
     extern s32 fn_801D0748(u32, u32, u32);
@@ -2340,7 +2340,7 @@ void menuExDiscShrineRun(void)
     u32 resource = 0x104F1000;
 
     name = heroBiosGetNamePtr(lbl_803F6F18);
-    backup = fn_801D036C();
+    backup = memcardAllocBuffer();
     *(MenuSaveSnapshot*)backup =
         *(MenuSaveSnapshot*)savedataGetStatus(0, 0);
     exShrineIncCounter();
@@ -2431,7 +2431,7 @@ void menuExDiscShrineRun(void)
         }
     }
 
-    fn_801D0314(backup);
+    memcardFreeBuffer(backup);
     lbl_8047A620 = 0;
 }
 void exDiscCelebiTransfer(void)
@@ -2675,8 +2675,8 @@ s32 fn_80078D38(void) {
 /* Drive the e-Reader/ex-disc scene state machine to completion. */
 void fn_80078D5C(void)
 {
-    extern void* fn_801D036C();
-    extern void fn_801D0314();
+    extern void* memcardAllocBuffer();
+    extern void memcardFreeBuffer();
     extern void* std093_getCurrentGroupID();
     extern void cameraPlayAnime();
     extern u8 fn_80075C44();
@@ -2709,7 +2709,7 @@ void fn_80078D5C(void)
     f32 elapsed;
     MenuExDiscLoadData loadData;
 
-    context = fn_801D036C();
+    context = memcardAllocBuffer();
     while ((s32)lbl_8047A620 > 0) {
         switch (lbl_8047A620) {
         case 1:
@@ -2848,7 +2848,7 @@ void fn_80078D5C(void)
         }
     }
 
-    fn_801D0314(context);
+    memcardFreeBuffer(context);
     floorLink(0x321, 0);
 }
 
@@ -3494,11 +3494,11 @@ s32 fn_8007A82C(void) {
  * external double (a union spelling yields fsub+frsp). */
 void fn_8007A850(void)
 {
-    extern void* fn_801D036C(void);
-    extern void fn_801D0314(void*);
+    extern void* memcardAllocBuffer(void);
+    extern void memcardFreeBuffer(void*);
     void* backup;
 
-    backup = fn_801D036C();
+    backup = memcardAllocBuffer();
     fadeCheck(1);
     while ((s32)lbl_8047A638 > 0) {
         switch (lbl_8047A638) {
@@ -3559,7 +3559,7 @@ void fn_8007A850(void)
         }
     }
 
-    fn_801D0314(backup);
+    memcardFreeBuffer(backup);
     floorLink(0x321, 0);
 }
 
@@ -4060,7 +4060,7 @@ extern const f32 lbl_8047C0C0;
 extern const f32 lbl_8047C0C4;
 extern u8 menuModelCheck(void*, s32);
 extern void* menuModelRender(void*);
-extern void* fn_801DAC3C(void*);
+extern void* wazaSequenceOwnerGetModel(void*);
 extern void fn_800E3DC4(void*, f32*);
 extern void gfxSetFlags(s32);
 extern void gfxClearFlags(s32);
@@ -4088,7 +4088,7 @@ extern u32 msgGetCharsPerFrame(void);
 extern u32 lbl_8047A610;
 extern u8 menuModelCheck(void*, s32);
 extern void* menuModelRender(void*);
-extern void* fn_801DAC3C(void*);
+extern void* wazaSequenceOwnerGetModel(void*);
 extern void fn_800E3DC4(void*, f32*);
 extern void gfxSetFlags(s32);
 extern void gfxClearFlags(s32);
@@ -4133,7 +4133,7 @@ void fn_800753D0(void)
     }
 
     if (menuModelCheck((void*)(lbl_8047A610 + 0x144), 0) == 0) {
-        object = fn_801DAC3C(*(void**)(lbl_8047A610 + 0x168));
+        object = wazaSequenceOwnerGetModel(*(void**)(lbl_8047A610 + 0x168));
         if (object != 0) {
             delta = 0.12566371f * *(f32*)lbl_8047A610;
             *(f32*)(lbl_8047A610 + 8) += delta;

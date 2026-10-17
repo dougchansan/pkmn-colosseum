@@ -106,8 +106,8 @@ typedef struct SavedataBody {
     u8 data[0x1DFD0];
 } SavedataBody;
 
-extern SavedataBody* fn_801D036C(void);    /* allocate a save-data backup */
-extern void* fn_801D0314(void* ptr);       /* free it */
+extern SavedataBody* memcardAllocBuffer(void);    /* allocate a save-data backup */
+extern void* memcardFreeBuffer(void* ptr);       /* free it */
 
 /* Cross-thread flags. Volatile: the wave reader decrements lbl_8047A460
  * and the loader thread sets lbl_8047A464 while this thread yields, and
@@ -613,7 +613,7 @@ void fn_80035F64(void)
         gamedatasaveSetStatus(status, 7, 1);
         gamedatasaveSetStatus(status, 8, 1);
         heroSetStatus(0, 0x18, 1);
-        backup = fn_801D036C();
+        backup = memcardAllocBuffer();
         *backup = *(SavedataBody*)savedataGetStatus(NULL, 0);
         do {
             winMsgOpen(2, 0x444C, 1, 0);
@@ -632,7 +632,7 @@ void fn_80035F64(void)
             *(SavedataBody*)savedataGetStatus(NULL, 0) = *backup;
         } while (answer != 0 || fn_801D0748(4, 2, 0) != 4);
         winMsgClose(1);
-        fn_801D0314(backup);
+        memcardFreeBuffer(backup);
     }
     floorLink(2, 1);
     floorSetFadeScript(0, 0x5960008);

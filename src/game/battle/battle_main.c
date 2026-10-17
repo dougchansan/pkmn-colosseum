@@ -85,15 +85,15 @@ extern void dbgMenuMain(s32 mode);                  /* force VSync */
 extern u8   battleCameraIsSimple(void);                    /* battle grid tick 1 */
 extern void battleCameraDoSimple(void);                      /* battle grid tick 2 */
 extern void battleCameraStartRandom(void);                      /* battle grid cleanup */
-extern void fn_801C2F00(void* data, u32 size);      /* battle grid load data */
-extern void fn_801C31EC(void);                      /* battle grid release */
+extern void battleCameraStartOffsetAnime(void* data, u32 size);      /* battle grid load data */
+extern void battleGridInit(void);                      /* battle grid release */
 extern void fadeCheck(s32 flag);                  /* battle grid set flag */
 extern void fadeSet(s32 mode);                  /* battle camera init */
 
 /* Battle scene */
 extern void wazaSequenceSysRelease(void);                      /* waza system cleanup */
-extern void fn_801DAEF8(s32 count);                 /* waza system init */
-extern void fn_801DB088(void);                      /* waza system reset */
+extern void wazaSequenceSysInit(s32 count);                 /* waza system init */
+extern void wazaSequenceSysUpdate(void);                      /* waza system reset */
 
 /* Battle init / render */
 extern void fightActionCreateAndFlowFifo(void* sceneCtx, s32 arg1, s32 arg2,
@@ -116,7 +116,7 @@ extern s32 fightFloorGetStatus(s32 a, s32 b, s32 c, s32 d); /* check/setup sound
 extern void* fightFloorGetValidFightSidePtr(s32 a, u16 b);                    /* get battle slot ptr */
 extern void* fightSideGetValidFightTrainerPtr(void* a, u16 b);                  /* get slot member ptr */
 extern void* fightTrainerGetStatus(void* a, s32 b, s32 c, s32 d);   /* get checked handle */
-extern void  fn_801DA4E8(void* a, void* b);                /* dispatch event */
+extern void  wazaSequenceOwnerSetVisibility(void* a, void* b);                /* dispatch event */
 extern void* fightTrainerGetValidFightOutPokemonPtr(void* a, u16 b);                  /* get item ptr */
 extern void* pokemonGetStatus(void* a, s32 b, s32 c, s32 d);   /* check item handle */
 
@@ -172,7 +172,7 @@ void _fightInitialize__FUi14FloorEnterMode(u32 unused, s32 enterMode)
     dbgMenuClose();
     dbgMenuSetEnable(0);
     fightActionFifoInit();
-    fn_801DAEF8(10);
+    wazaSequenceSysInit(10);
     lbl_8047B5D4 = GSscene_GetMode();
     fightActionCreateAndFlowFifo(lbl_8046D730, 0, 0, 1, 0, lbl_80375CC8);
     fightActionCreateAndFlowFifo(lbl_8046D730, 0, 0, 3, 5, lbl_80375CC8);
@@ -372,7 +372,7 @@ void _fightFinalize__FUi14FloorEnterMode(u32 floor, u32 enterMode) {
     }
 
     GSscene_SetMode(lbl_8047B5D4);
-    fn_801C31EC();
+    battleGridInit();
     wazaSequenceSysRelease();
 
     soundID = fightFloorGetStatus(0, 0, 0x12, 0);
@@ -389,7 +389,7 @@ void _fightFinalize__FUi14FloorEnterMode(u32 floor, u32 enterMode) {
 void fn_801EF488(void) {
     cameraUpdate();
     battleCameraStartRandom();
-    fn_801DB088();
+    wazaSequenceSysUpdate();
 }
 
 #endif
@@ -543,14 +543,14 @@ void fn_801EF7C4(void* arg) {
 
             _h = fightTrainerGetStatus(r25, 0, 0x4c, 0);
             if (_h == 0) continue;
-            fn_801DA4E8(_h, arg);
+            wazaSequenceOwnerSetVisibility(_h, arg);
 
             for (r29 = 0; (u16)r29 < r26; r29++) {
                 _h = fightTrainerGetValidFightOutPokemonPtr(r25, r29);
                 if (_h == 0) continue;
                 _h = pokemonGetStatus(_h, 0, 0xee, 0);
                 if (_h == 0) continue;
-                fn_801DA4E8(_h, arg);
+                wazaSequenceOwnerSetVisibility(_h, arg);
             }
         }
     }
@@ -583,7 +583,7 @@ BATTLE_MAIN_HELPER u8 fn_801EF8F4(u8 useSimpleCamera) {
     std092_getCurrentRoomID();
     data = fn_80113FB4();
     if (data != NULL) {
-        fn_801C2F00(data, 0x7B1800);
+        battleCameraStartOffsetAnime(data, 0x7B1800);
     }
     return previousMode;
 }

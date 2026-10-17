@@ -136,7 +136,7 @@ void fightWazaWzxTypeFuncMigawari(void* battleCtx, void* ctx) {
     extern void wazaGetStatus();
     extern void battleGridUpdate();
     extern void battleGridReplacePokemon();
-    extern void fn_801DB100();
+    extern void wazaSequenceOwnerFree();
     extern u8 fightFloorGetNowTenkouDataId();
     extern void fn_801FCEC4();
     extern void* fightOutPokemonCreateSequence();
@@ -160,7 +160,7 @@ void fightWazaWzxTypeFuncMigawari(void* battleCtx, void* ctx) {
     battleGridUpdate();
     pokemonSetStatus(ctx, 0, 0xEE, 0, (u32)resolved);
     fightOutPokemonWazaEffect(ctx, battleCtx, 3, 0, 0);
-    fn_801DB100(eeData);
+    wazaSequenceOwnerFree(eeData);
 }
 
 /* Address: 0x8020F230 | Size: 0x8 | Pattern: return_constant */
@@ -171,7 +171,7 @@ void fightWazaWzxTypeFuncHensin(void* battleCtx, void* ctx) {
     extern void wazaGetStatus();
     extern void battleGridUpdate();
     extern void battleGridReplacePokemon();
-    extern void fn_801DB100();
+    extern void wazaSequenceOwnerFree();
     extern u8 fightFloorGetNowTenkouDataId();
     extern void fn_801FCEC4();
     extern void* fightOutPokemonCreateSequence();
@@ -195,7 +195,7 @@ void fightWazaWzxTypeFuncHensin(void* battleCtx, void* ctx) {
     battleGridUpdate();
     pokemonSetStatus(ctx, 0, 0xEE, 0, (u32)resolved);
     fightOutPokemonWazaEffect(ctx, battleCtx, 3, 0, 0);
-    fn_801DB100(eeData);
+    wazaSequenceOwnerFree(eeData);
 }
 
 /* Address: 0x8020F360 | Size: 0x8 | Pattern: return_constant */

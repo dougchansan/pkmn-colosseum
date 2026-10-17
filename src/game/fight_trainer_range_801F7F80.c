@@ -683,16 +683,16 @@ void* fightTrainerGetEntryIdToFightPokemonPtr(void* context, s16 speciesId) {
 
 /* 0x801F8FD8 | size: 0x5C */
 void* fightTrainerCreateSequence(void* arg0) {
-    extern void* fn_801DA4E8(void*, u32);
-    extern void* fn_801DE418(u32);
+    extern void* wazaSequenceOwnerSetVisibility(void*, u32);
+    extern void* wazaSequenceTrainerCreate(u32);
     extern void* fightTrainerGetStatus(void*, void*, u32, u32);
     void* result;
 
-    result = fn_801DE418((u16)(u32)fightTrainerGetStatus(0, arg0, 9, 0));
+    result = wazaSequenceTrainerCreate((u16)(u32)fightTrainerGetStatus(0, arg0, 9, 0));
     if (result == NULL) {
         return NULL;
     }
-    fn_801DA4E8(result, 0);
+    wazaSequenceOwnerSetVisibility(result, 0);
     return result;
 }
 
@@ -2548,9 +2548,9 @@ u8 fightTrainerIsGcHero(void* arg0) {
 /* 0x801FB974 | size: 0xB0 */
 void fn_801FB974(void* context, u8 mode) {
     extern void _threadSwitch(void);
-    extern void fn_801DA8C4(void* ptr, u32 field, u32 size);
-    extern u8 fn_801DA94C(void* ptr, u32 field, u32 size);
-    extern void fn_801DA9E8(void* ptr, u32 field, u32 size);
+    extern void wazaSequenceSysStopWaza(void* ptr, u32 field, u32 size);
+    extern u8 wazaSequenceSysIsPlayingWaza(void* ptr, u32 field, u32 size);
+    extern void wazaSequenceSysStartWaza(void* ptr, u32 field, u32 size);
     extern void fn_801DDD28(void* ptr, u32 field, u32 size, u32 flags);
     extern void* fightTrainerGetStatus(void* ctx, u32 slot, u32 field, u32 idx);
     void* data;
@@ -2561,25 +2561,25 @@ void fn_801FB974(void* context, u8 mode) {
     if (mode == 0) {
         fn_801DDD28(data, 0x57, 4, 0);
     } else if (mode == 1) {
-        fn_801DA9E8(data, 0x57, 4);
+        wazaSequenceSysStartWaza(data, 0x57, 4);
     } else if (mode == 2) {
         do {
-            if ((u8)fn_801DA94C(data, 0x57, 4) == 0) {
+            if ((u8)wazaSequenceSysIsPlayingWaza(data, 0x57, 4) == 0) {
                 return;
             }
             _threadSwitch();
         } while (1);
     } else if (mode == 3) {
-        fn_801DA8C4(data, 0x57, 4);
+        wazaSequenceSysStopWaza(data, 0x57, 4);
     }
 }
 
 /* 0x801FBA24 | size: 0xB0 */
 void fn_801FBA24(void* context, u8 mode) {
     extern void _threadSwitch(void);
-    extern void fn_801DA8C4(void* ptr, u32 field, u32 size);
-    extern u8 fn_801DA94C(void* ptr, u32 field, u32 size);
-    extern void fn_801DA9E8(void* ptr, u32 field, u32 size);
+    extern void wazaSequenceSysStopWaza(void* ptr, u32 field, u32 size);
+    extern u8 wazaSequenceSysIsPlayingWaza(void* ptr, u32 field, u32 size);
+    extern void wazaSequenceSysStartWaza(void* ptr, u32 field, u32 size);
     extern void fn_801DDD28(void* ptr, u32 field, u32 size, u32 flags);
     extern void* fightTrainerGetStatus(void* ctx, u32 slot, u32 field, u32 idx);
     void* data;
@@ -2590,16 +2590,16 @@ void fn_801FBA24(void* context, u8 mode) {
     if (mode == 0) {
         fn_801DDD28(data, 0x74, 4, 0);
     } else if (mode == 1) {
-        fn_801DA9E8(data, 0x74, 4);
+        wazaSequenceSysStartWaza(data, 0x74, 4);
     } else if (mode == 2) {
         do {
-            if ((u8)fn_801DA94C(data, 0x74, 4) == 0) {
+            if ((u8)wazaSequenceSysIsPlayingWaza(data, 0x74, 4) == 0) {
                 return;
             }
             _threadSwitch();
         } while (1);
     } else if (mode == 3) {
-        fn_801DA8C4(data, 0x74, 4);
+        wazaSequenceSysStopWaza(data, 0x74, 4);
     }
 }
 
@@ -2609,9 +2609,9 @@ void fn_801FBA24(void* context, u8 mode) {
 /* 0x801FBAD4 | size: 0x14C */
 void fightTrainerHokakuThrowEffect(void* context, u32 param, u8 mode) {
     extern void _threadSwitch(void);
-    extern void fn_801DA8C4(void* ptr, u16 field, u32 size);
-    extern u8 fn_801DA94C(void* ptr, u16 field, u32 size);
-    extern void fn_801DA9E8(void* ptr, u16 field, u32 size);
+    extern void wazaSequenceSysStopWaza(void* ptr, u16 field, u32 size);
+    extern u8 wazaSequenceSysIsPlayingWaza(void* ptr, u16 field, u32 size);
+    extern void wazaSequenceSysStartWaza(void* ptr, u16 field, u32 size);
     extern void fn_801DDD28(void* ptr, u16 field, u32 size, u32 flags);
     extern void* fightTrainerGetStatus(void* ctx, u32 slot, u32 field, u32 idx);
     void* data;
@@ -2624,37 +2624,37 @@ void fightTrainerHokakuThrowEffect(void* context, u32 param, u8 mode) {
     if (mode == 0) {
         fn_801DDD28(data, animId, 4, 0);
     } else if (mode == 1) {
-        fn_801DA9E8(data, animId, 4);
+        wazaSequenceSysStartWaza(data, animId, 4);
         do {
-            if ((u8)fn_801DA94C(data, animId, 4) == 0) {
+            if ((u8)wazaSequenceSysIsPlayingWaza(data, animId, 4) == 0) {
                 return;
             }
             _threadSwitch();
         } while (1);
     } else if (mode == 2) {
-        fn_801DA8C4(data, animId, 4);
+        wazaSequenceSysStopWaza(data, animId, 4);
     } else if (mode == 3) {
         fn_801DDD28(data, 0x57, 4, 0);
     } else if (mode == 4) {
-        fn_801DA9E8(data, 0x57, 4);
+        wazaSequenceSysStartWaza(data, 0x57, 4);
     } else if (mode == 5) {
         do {
-            if ((u8)fn_801DA94C(data, 0x57, 4) == 0) {
+            if ((u8)wazaSequenceSysIsPlayingWaza(data, 0x57, 4) == 0) {
                 return;
             }
             _threadSwitch();
         } while (1);
     } else if (mode == 6) {
-        fn_801DA8C4(data, 0x57, 4);
+        wazaSequenceSysStopWaza(data, 0x57, 4);
     }
 }
 
 /* 0x801FBC20 | size: 0xF0 */
 void fightTrainerBallThrowEffect(void* context, void* trainerCtx, u8 mode) {
     extern void _threadSwitch(void);
-    extern void fn_801DA8C4(void* ptr, u16 field, u32 size);
-    extern u8 fn_801DA94C(void* ptr, u16 field, u32 size);
-    extern void fn_801DA9E8(void* ptr, u16 field, u32 size);
+    extern void wazaSequenceSysStopWaza(void* ptr, u16 field, u32 size);
+    extern u8 wazaSequenceSysIsPlayingWaza(void* ptr, u16 field, u32 size);
+    extern void wazaSequenceSysStartWaza(void* ptr, u16 field, u32 size);
     extern void fn_801DDD28(void* ptr, u16 field, u32 size, u32 flags);
     extern void* fightTrainerGetStatus(void* ctx, u32 slot, u32 field, u32 idx);
     extern void* fightOutPokemonGetPokemonPtr(void* ctx);
@@ -2670,16 +2670,16 @@ void fightTrainerBallThrowEffect(void* context, void* trainerCtx, u8 mode) {
     if (mode == 0) {
         fn_801DDD28(data, animId, 4, 0);
     } else if (mode == 1) {
-        fn_801DA9E8(data, animId, 4);
+        wazaSequenceSysStartWaza(data, animId, 4);
     } else if (mode == 2) {
         do {
-            if ((u8)fn_801DA94C(data, animId, 4) == 0) {
+            if ((u8)wazaSequenceSysIsPlayingWaza(data, animId, 4) == 0) {
                 return;
             }
             _threadSwitch();
         } while (1);
     } else if (mode == 3) {
-        fn_801DA8C4(data, animId, 4);
+        wazaSequenceSysStopWaza(data, animId, 4);
     }
 }
 #endif

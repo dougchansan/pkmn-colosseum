@@ -6,13 +6,13 @@ extern void fn_800E24B0(u16 handle);
 extern void fn_800E209C(u16 handle);
 extern void fn_801D2F94(void);
 
-/* Retail expands fn_801DB100's 0x54-byte entry-clear body in this loop. */
+/* Retail expands wazaSequenceOwnerFree's 0x54-byte entry-clear body in this loop. */
 static inline void wazaSequenceClearEntry(WazaEffect* entry)
 {
     if (entry != NULL) {
         if (entry->active != 0) {
             fn_801DD3E4(entry);
-            fn_801DD23C(entry);
+            wazaSequenceOwnerRelease(entry);
         }
         memset(entry, 0, sizeof(*entry));
     }

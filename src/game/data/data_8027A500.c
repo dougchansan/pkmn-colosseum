@@ -186,7 +186,7 @@ extern u8 std207_gbaUnk_80075638[];
 extern u8 std205_getDNASampleSepcies[];
 extern u8 std200_gbaConnectEvent[];
 extern u8 std199_menuDisplayCustomMenu[];
-extern u8 fn_801C9B6C[];
+extern u8 floorEventElevatorMain[];
 extern u8 fn_801C9C9C[];
 extern u8 std193_lightWaitForAnimation[];
 extern u8 std191_mapTransformElement[];
@@ -204,14 +204,14 @@ extern u8 fn_801CA858[];
 extern u8 fn_801CA884[];
 extern u8 fn_801CADA0[];
 extern u8 std217_playerReceiveGiftPokemon[];
-extern u8 fn_801CB1C4[];
+extern u8 scriptIsAnyInput[];
 extern u8 std005_threadIsRunning[];
 extern u8 std006_threadWaitForCompletion[];
 extern u8 fn_801CB3DC[];
 extern u8 std209_threadRunScriptMode4[];
 extern u8 fn_801CB4E8[];
 extern u8 std221_mapObjectLinkParticles[];
-extern u8 fn_801CB59C[];
+extern u8 scriptCharacterDetach[];
 extern u8 std166_mapObjectAttachToObject[];
 extern u8 std116_mapObjectStopAnimation[];
 extern u8 std115_mapObjectPlayAnimation[];
@@ -94124,7 +94124,7 @@ void* lbl_802E1CF0[742] = {
     (void*)((u8*)std109_soundPlayEffectVariant),
     (void*)0x01010000,
     (void*)0x00000000,
-    (void*)((u8*)fn_801CB1C4),
+    (void*)((u8*)scriptIsAnyInput),
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)((u8*)scriptIsMoveButtonPush),
@@ -94295,7 +94295,7 @@ void* lbl_802E1CF0[742] = {
     (void*)((u8*)std166_mapObjectAttachToObject),
     (void*)0x01010100,
     (void*)0x00000000,
-    (void*)((u8*)fn_801CB59C),
+    (void*)((u8*)scriptCharacterDetach),
     (void*)0x01000000,
     (void*)0x00000000,
     (void*)((u8*)std168_characterDetachFromCharacter),
@@ -94385,7 +94385,7 @@ void* lbl_802E1CF0[742] = {
     (void*)((u8*)fn_801C9C9C),
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_801C9B6C),
+    (void*)((u8*)floorEventElevatorMain),
     (void*)0x01010101,
     (void*)0x00000000,
     (void*)((u8*)std198_menuEnterTradingMenu),

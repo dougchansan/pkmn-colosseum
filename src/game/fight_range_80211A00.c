@@ -82,7 +82,7 @@ extern void fn_801EF8F4();
 #if defined(FIGHT_RANGE_80230568_ONLY)
 /* What fn_80230568 takes from the shared body: the prototypes of the functions
    defined before it, and the fn_8022BE2C block's name macros. */
-extern void fn_801DA7AC();
+extern void wazaSequenceSysFreeAll();
 extern void fn_8020248C();
 extern u8  fn_802025B8();
 extern u8 lbl_80379F58[];
@@ -689,7 +689,7 @@ s32 fn_8023CDCC(void* ctx, u32 param1, u32 param2, u32 param3) {
  */
 extern u32 fn_80211A78();
 u8 fn_8022FE20(void* ctx);
-extern void fn_801DA7AC();
+extern void wazaSequenceSysFreeAll();
 extern u8   lbl_8047B625;
 /* TODO(0x80211A00): 76%. All instructions present and store order correct; the
  * target schedules the lbl_80379F58 base setup (lis/addi/addis) before the
@@ -703,7 +703,7 @@ void fn_80211A00(void) {
     lbl_80478D78[4] = 0;
     lbl_80379F58[0x16002] = 0;
     lbl_80379F58[0x160A1] = 0;
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
 }
 #undef fn_801F37B0
 #endif
@@ -2727,7 +2727,7 @@ void fn_80213158(u32 param1) {
     }
 
     fn_80211B94(param1, lbl_8037889D, 1);
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
     fightMenuAllFightTrainerCloseStatusMenu(0);
     fightMenuAllFightOutPokemonCloseStatusMenu(0);
     fn_8026246C();
@@ -2761,7 +2761,7 @@ extern u16  lbl_8047B61C;
 extern s32  fn_801FEF74();
 extern void fn_802086B0();
 extern void fn_8020F108();
-extern s8   fn_801DA5C4();
+extern s8   wazaSequenceSysIsAllEnd();
 
 /* fn_8021E6CC/DC/EC/fn_8021E744: PC-advance-by-2, return pre-advance PC. */
 u8* fn_8021E6CC(void) { u8* pc = lbl_8047B610; lbl_8047B610 = pc + 2; return pc; }
@@ -3021,7 +3021,7 @@ void fn_8021F998(void) {
             fn_802086B0(ctx);
             fn_8020F108(0xa4, ctx, ctx, 0, 0);
             for (;;) {
-                if ((u8)fn_801DA5C4(6) == 1) {
+                if ((u8)wazaSequenceSysIsAllEnd(6) == 1) {
                     break;
                 }
                 _threadSwitch();
@@ -3136,7 +3136,7 @@ void fn_80223E40(void) {
  * fn_80224060 (0x80224060)
  *
  * Wait-for-input handler: opens a message/menu on the slot-derived ctx
- * (event flag 0x14 + fn_801FEF74 gate) then polls fn_801DA5C4(6) in a
+ * (event flag 0x14 + fn_801FEF74 gate) then polls wazaSequenceSysIsAllEnd(6) in a
  * do/while with _threadSwitch() until input resolves; always closes
  * out via fn_802086B0/fn_8020912C x2/fn_80265598(ctx,count,1) and
  * advances PC by 2.
@@ -3203,7 +3203,7 @@ void fn_80223F1C(void);
  * Registers a slot ctx via fn_802656AC(ctx,count,1); fires
  * fn_80102620/fn_80011C78 and fn_802038A4/fn_80207C24 side-effect
  * pairs; then if event flag 0x14 is set and fn_801FEF74 hasn't already
- * resolved, polls fn_801DA5C4(6) (do/while + _threadSwitch) before
+ * resolved, polls wazaSequenceSysIsAllEnd(6) (do/while + _threadSwitch) before
  * closing out with fn_80202810/fn_80211B94/fn_8020248C/fn_80201764.
  * PC always advances by 2.
  */
@@ -4221,11 +4221,11 @@ u32 fn_8023D158(void* ctx, u32 param1, u32 param2, u32 param3) {
  * and a u32 mode operand at PC+3, expected to be 7. If flag bit 0x80 of
  * lbl_8047B618 is clear and the mode is 7, resolves a switch-in
  * candidate (fn_801F54A4) and the slot ctx's field 0xee; if that field
- * is set and fn_801DDD28 accepts it, applies fn_801DA9E8 and
+ * is set and fn_801DDD28 accepts it, applies wazaSequenceSysStartWaza and
  * fn_80265598. PC always advances by 7 (no script-embedded jump).
  */
 extern u8  fn_801DDD28();
-extern void fn_801DA9E8();
+extern void wazaSequenceSysStartWaza();
 #pragma optimize_for_size on
 #define fn_801F025C fightTargetGetPtrAsNowFightType
 #define fn_801F54A4 fightFloorGetStatus
@@ -4254,7 +4254,7 @@ void fn_8021DF80(void) {
     if (fn_801DDD28(fieldEE, 0x34, 4, 0) == 0) {
         goto skip;
     }
-    fn_801DA9E8(fieldEE, 0x34, 4);
+    wazaSequenceSysStartWaza(fieldEE, 0x34, 4);
     fn_80265598(ctx, cand, 1);
 skip:
     lbl_8047B610 = lbl_8047B610 + 7;
@@ -4632,7 +4632,7 @@ void fn_8021F458(void) {
         fn_8026246C();
         fn_8020F108(0xa4, ctx1, ctx1, 0, 0);
         for (;;) {
-            if ((u8)fn_801DA5C4(6) == 1) {
+            if ((u8)wazaSequenceSysIsAllEnd(6) == 1) {
                 break;
             }
             _threadSwitch();
@@ -5124,7 +5124,7 @@ void fn_8021E288(void) {
     extern void* fn_8012640C(void* context, u32 slot, u16 tableId, u32 flags);
     extern u8 fn_802026E4(void* ctx, void* typeObj);
     extern u8 fn_801DDD28(void* ptr, u32 field, u32 size, u32 flags);
-    extern void fn_801DA9E8(void* ptr, u32 field, u32 size);
+    extern void wazaSequenceSysStartWaza(void* ptr, u32 field, u32 size);
     extern void fn_80265598();
 
     void* ctx;
@@ -5140,7 +5140,7 @@ void fn_8021E288(void) {
             void* poke = fn_8012640C(ctx, 0, 0xee, 0);
             if (poke != 0) {
                 if (fn_801DDD28(poke, 0x2e, 4, 0) != 0) {
-                    fn_801DA9E8(poke, 0x2e, 4);
+                    wazaSequenceSysStartWaza(poke, 0x2e, 4);
                     fn_80265598(ctx, val, 1);
                 }
             }
@@ -5150,7 +5150,7 @@ void fn_8021E288(void) {
             void* poke = fn_8012640C(ctx, 0, 0xee, 0);
             if (poke != 0) {
                 if (fn_801DDD28(poke, 0x2f, 4, 0) != 0) {
-                    fn_801DA9E8(poke, 0x2f, 4);
+                    wazaSequenceSysStartWaza(poke, 0x2f, 4);
                     fn_80265598(ctx, val, 1);
                 }
             }
@@ -5160,7 +5160,7 @@ void fn_8021E288(void) {
             void* poke = fn_8012640C(ctx, 0, 0xee, 0);
             if (poke != 0) {
                 if (fn_801DDD28(poke, 0x30, 4, 0) != 0) {
-                    fn_801DA9E8(poke, 0x30, 4);
+                    wazaSequenceSysStartWaza(poke, 0x30, 4);
                     fn_80265598(ctx, val, 1);
                 }
             }
@@ -5170,7 +5170,7 @@ void fn_8021E288(void) {
             void* poke = fn_8012640C(ctx, 0, 0xee, 0);
             if (poke != 0) {
                 if (fn_801DDD28(poke, 0x31, 4, 0) != 0) {
-                    fn_801DA9E8(poke, 0x31, 4);
+                    wazaSequenceSysStartWaza(poke, 0x31, 4);
                     fn_80265598(ctx, val, 1);
                 }
             }
@@ -5180,7 +5180,7 @@ void fn_8021E288(void) {
             void* poke = fn_8012640C(ctx, 0, 0xee, 0);
             if (poke != 0) {
                 if (fn_801DDD28(poke, 0x32, 4, 0) != 0) {
-                    fn_801DA9E8(poke, 0x32, 4);
+                    wazaSequenceSysStartWaza(poke, 0x32, 4);
                     fn_80265598(ctx, val, 1);
                 }
             }
@@ -5190,7 +5190,7 @@ void fn_8021E288(void) {
             void* poke = fn_8012640C(ctx, 0, 0xee, 0);
             if (poke != 0) {
                 if (fn_801DDD28(poke, 0x33, 4, 0) != 0) {
-                    fn_801DA9E8(poke, 0x33, 4);
+                    wazaSequenceSysStartWaza(poke, 0x33, 4);
                     fn_80265598(ctx, val, 1);
                 }
             }
@@ -6972,7 +6972,7 @@ u32 fn_8022BE2C(u32 ctx, u8 mode) {
  * End-of-turn residual-effects sequencer for one fighter: runs ~20 field
  * checks (leech seed 0x25, statuses, counters 0xb/0xd/0xe/0x29/0x2a etc.)
  * in a fixed order. Each step is bracketed by lbl_8047B618 flag bits
- * 0x01000020 and followed by fn_801DA7AC() plus a liveness re-check
+ * 0x01000020 and followed by wazaSequenceSysFreeAll() plus a liveness re-check
  * (fn_802062FC) that aborts the whole sequence with 1.
  */
 #endif
@@ -7059,7 +7059,7 @@ static inline u32 fn_80230568_check(u32 statusId, u32 target)
 u8 fn_80230568(s32 ctxArg, u32 side) {
     extern u16  std103_battleGetResult();
     extern u8   fn_802062FC();
-    extern void fn_801DA7AC();
+    extern void wazaSequenceSysFreeAll();
     extern u8   fn_80201704();
     extern s32  fn_80202360();
     extern void fn_8022DF08();
@@ -7138,7 +7138,7 @@ u8 fn_80230568(s32 ctxArg, u32 side) {
         fn_80211B94(lbl_8047B62C, (void*)lbl_803790AB, 0);
     }
     lbl_8047B618 &= ~0x01000020;
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
     if ((u8)fn_802062FC(ctx) == 0) {
         return 1;
     }
@@ -7146,7 +7146,7 @@ u8 fn_80230568(s32 ctxArg, u32 side) {
     lbl_8047B618 = (lbl_8047B618 | 0x1000000) | 0x20;
     fn_8022DF08(ctx);
     lbl_8047B618 &= ~0x01000020;
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
     if ((u8)fn_802062FC(ctx) == 0) {
         return 1;
     }
@@ -7154,7 +7154,7 @@ u8 fn_80230568(s32 ctxArg, u32 side) {
     lbl_8047B618 = (lbl_8047B618 | 0x1000000) | 0x20;
     fn_8022BE2C(ctx, 0);
     lbl_8047B618 &= ~0x01000020;
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
     if ((u8)fn_802062FC(ctx) == 0) {
         return 1;
     }
@@ -7162,7 +7162,7 @@ u8 fn_80230568(s32 ctxArg, u32 side) {
     lbl_8047B618 = (lbl_8047B618 | 0x1000000) | 0x20;
     fn_8022BE2C(ctx, 1);
     lbl_8047B618 &= ~0x01000020;
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
     if ((u8)fn_802062FC(ctx) == 0) {
         return 1;
     }
@@ -7185,7 +7185,7 @@ u8 fn_80230568(s32 ctxArg, u32 side) {
         }
     }
     lbl_8047B618 &= ~0x01000020;
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
     if ((u8)fn_802062FC(ctx) == 0) {
         return 1;
     }
@@ -7197,7 +7197,7 @@ u8 fn_80230568(s32 ctxArg, u32 side) {
         fn_80211B94(lbl_8047B62C, (void*)lbl_8037925F, 0);
     }
     lbl_8047B618 &= ~0x01000020;
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
     if ((u8)fn_802062FC(ctx) == 0) {
         return 1;
     }
@@ -7218,7 +7218,7 @@ u8 fn_80230568(s32 ctxArg, u32 side) {
         fn_80211B94(lbl_8047B62C, (void*)lbl_8037925F, 0);
     }
     lbl_8047B618 &= ~0x01000020;
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
     if ((u8)fn_802062FC(ctx) == 0) {
         return 1;
     }
@@ -7230,7 +7230,7 @@ u8 fn_80230568(s32 ctxArg, u32 side) {
         fn_80211B94(lbl_8047B62C, (void*)lbl_80379287, 0);
     }
     lbl_8047B618 &= ~0x01000020;
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
     if ((u8)fn_802062FC(ctx) == 0) {
         return 1;
     }
@@ -7246,7 +7246,7 @@ u8 fn_80230568(s32 ctxArg, u32 side) {
         }
     }
     lbl_8047B618 &= ~0x01000020;
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
     if ((u8)fn_802062FC(ctx) == 0) {
         return 1;
     }
@@ -7258,7 +7258,7 @@ u8 fn_80230568(s32 ctxArg, u32 side) {
         fn_80211B94(lbl_8047B62C, (void*)lbl_8037941F, 0);
     }
     lbl_8047B618 &= ~0x01000020;
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
     if ((u8)fn_802062FC(ctx) == 0) {
         return 1;
     }
@@ -7285,7 +7285,7 @@ u8 fn_80230568(s32 ctxArg, u32 side) {
         fn_80211B94(lbl_8047B62C, (void*)msg, 0);
     }
     lbl_8047B618 &= ~0x01000020;
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
     if ((u8)fn_802062FC(ctx) == 0) {
         return 1;
     }
@@ -7318,7 +7318,7 @@ u8 fn_80230568(s32 ctxArg, u32 side) {
         fn_80211B94(lbl_8047B62C, (void*)lbl_8037930A, 0);
     }
     lbl_8047B618 &= ~0x01000020;
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
     if ((u8)fn_802062FC(ctx) == 0) {
         return 1;
     }
@@ -7359,7 +7359,7 @@ u8 fn_80230568(s32 ctxArg, u32 side) {
         }
     }
     lbl_8047B618 &= ~0x01000020;
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
     if ((u8)fn_802062FC(ctx) == 0) {
         return 1;
     }
@@ -7380,7 +7380,7 @@ u8 fn_80230568(s32 ctxArg, u32 side) {
         }
     }
     lbl_8047B618 &= ~0x01000020;
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
     if ((u8)fn_802062FC(ctx) == 0) {
         return 1;
     }
@@ -7404,7 +7404,7 @@ u8 fn_80230568(s32 ctxArg, u32 side) {
         }
     }
     lbl_8047B618 &= ~0x01000020;
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
     if ((u8)fn_802062FC(ctx) == 0) {
         return 1;
     }
@@ -7424,7 +7424,7 @@ u8 fn_80230568(s32 ctxArg, u32 side) {
         }
     }
     lbl_8047B618 &= ~0x01000020;
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
     if ((u8)fn_802062FC(ctx) == 0) {
         return 1;
     }
@@ -7444,7 +7444,7 @@ u8 fn_80230568(s32 ctxArg, u32 side) {
         }
     }
     lbl_8047B618 &= ~0x01000020;
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
     if ((u8)fn_802062FC(ctx) == 0) {
         return 1;
     }
@@ -7464,7 +7464,7 @@ u8 fn_80230568(s32 ctxArg, u32 side) {
         }
     }
     lbl_8047B618 &= ~0x01000020;
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
     if ((u8)fn_802062FC(ctx) == 0) {
         return 1;
     }
@@ -7504,7 +7504,7 @@ u8 fn_80230568(s32 ctxArg, u32 side) {
         }
     }
     lbl_8047B618 &= ~0x01000020;
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
     if ((u8)fn_802062FC(ctx) == 0) {
         return 1;
     }
@@ -7512,7 +7512,7 @@ u8 fn_80230568(s32 ctxArg, u32 side) {
     lbl_8047B618 = (lbl_8047B618 | 0x1000000) | 0x20;
     fn_8022EDEC(ctx, 1);
     lbl_8047B618 &= ~0x01000020;
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
     return 1;
 }
 #undef fn_800FA280
@@ -7582,9 +7582,9 @@ void fn_80221104(u32 a, u32 code) {
     extern u32 fn_801F025C();
     extern u32 fn_8012640C();
     extern u8 fn_801DDD28();
-    extern void fn_801DA9E8();
-    extern u8 fn_801DA94C();
-    extern void fn_801DA8C4();
+    extern void wazaSequenceSysStartWaza();
+    extern u8 wazaSequenceSysIsPlayingWaza();
+    extern void wazaSequenceSysStopWaza();
     extern void fn_80265598();
     extern void fn_80208750();
     extern void fn_801F0234();
@@ -7597,7 +7597,7 @@ void fn_80221104(u32 a, u32 code) {
     extern void battleGridReplacePokemon();
     extern void fn_801C3430(void);
     extern u32 fn_801254B4();
-    extern void fn_801DB100();
+    extern void wazaSequenceOwnerFree();
     extern void _threadSwitch(void);
     extern u32 fn_80222110();
     extern u8 lbl_80378964[];
@@ -7679,7 +7679,7 @@ void fn_80221104(u32 a, u32 code) {
             status = fn_8012640C(ctx, 0, 0xEE, 0);
             if (status != 0) {
                 if (fn_801DDD28(status, t26, 4, 0) != 0) {
-                    fn_801DA9E8(status, t26, 4);
+                    wazaSequenceSysStartWaza(status, t26, 4);
                     fn_80265598(ctx, t27, 1);
                 }
             }
@@ -7690,7 +7690,7 @@ void fn_80221104(u32 a, u32 code) {
             t29 = fn_8012640C(ctx, 0, 0xEE, 0);
             if (t29 != 0) {
                 if (fn_801DDD28(t29, 0x2D, 4, 0) != 0) {
-                    fn_801DA9E8(t29, 0x2D, 4);
+                    wazaSequenceSysStartWaza(t29, 0x2D, 4);
                     fn_80265598(ctx, t27, 1);
                 }
             }
@@ -7750,7 +7750,7 @@ void fn_80221104(u32 a, u32 code) {
                 t27 = fn_8012640C(ctx, 0, 0xEE, 0);
                 if (t27 != 0) {
                     if (fn_801DDD28(t27, 0x80, 4, 0) != 0) {
-                        fn_801DA9E8(t27, 0x80, 4);
+                        wazaSequenceSysStartWaza(t27, 0x80, 4);
                     }
                 }
             } else if ((u8)fn_801F453C(0, 0) == 1) {
@@ -7758,7 +7758,7 @@ void fn_80221104(u32 a, u32 code) {
                 t27 = fn_8012640C(ctx, 0, 0xEE, 0);
                 if (t27 != 0) {
                     if (fn_801DDD28(t27, 0x7F, 4, 0) != 0) {
-                        fn_801DA9E8(t27, 0x7F, 4);
+                        wazaSequenceSysStartWaza(t27, 0x7F, 4);
                     }
                 }
             } else if ((u8)fn_801F453C(0, 0) == 3) {
@@ -7766,7 +7766,7 @@ void fn_80221104(u32 a, u32 code) {
                 t27 = fn_8012640C(ctx, 0, 0xEE, 0);
                 if (t27 != 0) {
                     if (fn_801DDD28(t27, 0x7E, 4, 0) != 0) {
-                        fn_801DA9E8(t27, 0x7E, 4);
+                        wazaSequenceSysStartWaza(t27, 0x7E, 4);
                     }
                 }
             } else if ((u8)fn_801F453C(0, 0) == 4) {
@@ -7774,7 +7774,7 @@ void fn_80221104(u32 a, u32 code) {
                 t27 = fn_8012640C(ctx, 0, 0xEE, 0);
                 if (t27 != 0) {
                     if (fn_801DDD28(t27, 0x7D, 4, 0) != 0) {
-                        fn_801DA9E8(t27, 0x7D, 4);
+                        wazaSequenceSysStartWaza(t27, 0x7D, 4);
                     }
                 }
             } else {
@@ -7782,7 +7782,7 @@ void fn_80221104(u32 a, u32 code) {
                 t27 = fn_8012640C(ctx, 0, 0xEE, 0);
                 if (t27 != 0) {
                     if (fn_801DDD28(t27, 0x9D, 4, 0) != 0) {
-                        fn_801DA9E8(t27, 0x9D, 4);
+                        wazaSequenceSysStartWaza(t27, 0x9D, 4);
                     }
                 }
             }
@@ -7794,7 +7794,7 @@ void fn_80221104(u32 a, u32 code) {
             t26 = fn_8012640C(ctx, 0, 0xEE, 0);
             if (t26 != 0) {
                 if (fn_801DDD28(t26, 0x57, 4, 0) != 0) {
-                    fn_801DA9E8(t26, 0x57, 4);
+                    wazaSequenceSysStartWaza(t26, 0x57, 4);
                     fn_80265598(ctx, t28, 1);
                 }
             }
@@ -7804,7 +7804,7 @@ void fn_80221104(u32 a, u32 code) {
             postStatus = fn_8012640C(ctx, 0, 0xEE, 0);
             if (postStatus != 0) {
                 if (fn_801DDD28(postStatus, 0x9D, 4, 0) != 0) {
-                    fn_801DA9E8(postStatus, 0x9D, 4);
+                    wazaSequenceSysStartWaza(postStatus, 0x9D, 4);
                 }
             }
         }
@@ -7814,7 +7814,7 @@ void fn_80221104(u32 a, u32 code) {
             t28 = fn_8012640C(ctx, 0, 0xEE, 0);
             if (t28 != 0) {
                 if (fn_801DDD28(t28, 0x58, 4, 0) != 0) {
-                    fn_801DA9E8(t28, 0x58, 4);
+                    wazaSequenceSysStartWaza(t28, 0x58, 4);
                     fn_80265598(ctx, eventFloor, 1);
                 }
             }
@@ -7825,7 +7825,7 @@ void fn_80221104(u32 a, u32 code) {
             t28 = fn_8012640C(ctx, 0, 0xEE, 0);
             if (t28 != 0) {
                 if (fn_801DDD28(t28, 0xA3, 4, 0) != 0) {
-                    fn_801DA9E8(t28, 0xA3, 4);
+                    wazaSequenceSysStartWaza(t28, 0xA3, 4);
                     fn_80265598(ctx, eventFloor, 1);
                 }
             }
@@ -7836,7 +7836,7 @@ void fn_80221104(u32 a, u32 code) {
             t28 = fn_8012640C(ctx, 0, 0xEE, 0);
             if (t28 != 0) {
                 if (fn_801DDD28(t28, 0xD8, 4, 0) != 0) {
-                    fn_801DA9E8(t28, 0xD8, 4);
+                    wazaSequenceSysStartWaza(t28, 0xD8, 4);
                     fn_80265598(ctx, eventFloor, 1);
                 }
             }
@@ -7852,7 +7852,7 @@ void fn_80221104(u32 a, u32 code) {
             t28 = fn_8012640C(ctx, 0, 0xEE, 0);
             if (t28 != 0) {
                 if (fn_801DDD28(t28, 0x38, 4, 0) != 0) {
-                    fn_801DA9E8(t28, 0x38, 4);
+                    wazaSequenceSysStartWaza(t28, 0x38, 4);
                     fn_80265598(ctx, eventFloor, 1);
                 }
             }
@@ -7877,7 +7877,7 @@ void fn_80221104(u32 a, u32 code) {
             t27 = fn_8012640C(ctx, 0, 0xEE, 0);
             if (t27 != 0) {
                 if (fn_801DDD28(t27, 0x3B, 4, 0) != 0) {
-                    fn_801DA9E8(t27, 0x3B, 4);
+                    wazaSequenceSysStartWaza(t27, 0x3B, 4);
                     fn_80265598(ctx, eventFloor, 1);
                 }
             }
@@ -7887,7 +7887,7 @@ void fn_80221104(u32 a, u32 code) {
             t27 = fn_8012640C(ctx, 0, 0xEE, 0);
             if (t27 != 0) {
                 if (fn_801DDD28(t27, 0x39, 4, 0) != 0) {
-                    fn_801DA9E8(t27, 0x39, 4);
+                    wazaSequenceSysStartWaza(t27, 0x39, 4);
                     fn_80265598(ctx, eventFloor, 1);
                 }
             }
@@ -7897,7 +7897,7 @@ void fn_80221104(u32 a, u32 code) {
             t27 = fn_8012640C(ctx, 0, 0xEE, 0);
             if (t27 != 0) {
                 if (fn_801DDD28(t27, 0x32, 4, 0) != 0) {
-                    fn_801DA9E8(t27, 0x32, 4);
+                    wazaSequenceSysStartWaza(t27, 0x32, 4);
                     fn_80265598(ctx, eventFloor, 1);
                 }
             }
@@ -7917,7 +7917,7 @@ void fn_80221104(u32 a, u32 code) {
             t27 = fn_8012640C(ctx, 0, 0xEE, 0);
             if (t27 != 0) {
                 if (fn_801DDD28(t27, 0x86, 4, 0) != 0) {
-                    fn_801DA9E8(t27, 0x86, 4);
+                    wazaSequenceSysStartWaza(t27, 0x86, 4);
                     fn_80265598(ctx, eventFloor, 1);
                 }
             }
@@ -7966,14 +7966,14 @@ void fn_80221104(u32 a, u32 code) {
             postStatus = fn_8012640C(ctx, 0, 0xEE, 0);
             if (postStatus != 0) {
                 if (fn_801DDD28(postStatus, 0x81, 4, 0) != 0) {
-                    fn_801DA9E8(postStatus, 0x81, 4);
+                    wazaSequenceSysStartWaza(postStatus, 0x81, 4);
                     while (1) {
-                        if (fn_801DA94C(postStatus, 0x81, 4) == 0) {
+                        if (wazaSequenceSysIsPlayingWaza(postStatus, 0x81, 4) == 0) {
                             break;
                         }
                         _threadSwitch();
                     }
-                    fn_801DA8C4(postStatus, 0x81, 4);
+                    wazaSequenceSysStopWaza(postStatus, 0x81, 4);
                 }
             }
             battleGridReplacePokemon(oldStatus, created);
@@ -7983,10 +7983,10 @@ void fn_80221104(u32 a, u32 code) {
             postStatus = fn_8012640C(ctx, 0, 0xEE, 0);
             if (postStatus != 0) {
                 if (fn_801DDD28(postStatus, replacementEffect, 4, 0) != 0) {
-                    fn_801DA9E8(postStatus, replacementEffect, 4);
+                    wazaSequenceSysStartWaza(postStatus, replacementEffect, 4);
                 }
             }
-            fn_801DB100(oldStatus);
+            wazaSequenceOwnerFree(oldStatus);
         }
         if (code == 0x14) {
             fn_80208750(ctx, 0x75, 3, 0);
@@ -8247,9 +8247,9 @@ s32 _fightSeqTurnCheckSubFightOutPokemon__FPvUsPv(void* ctx, u16 param2, void* p
  *
  * FightSeq party-index lock helper: resolves field 0xee off ctx b; if the
  * object exists and fn_801DDD28(obj, a, 4, 0) reports nonzero, notifies
- * fn_801DA9E8. When d==1, calls fn_80265598(b, partyCount, 1). When c==1,
- * spins on fn_801DA94C(obj, (u16)a, 4) via _threadSwitch() until it
- * returns 0, then releases via fn_801DA8C4, and if d==1 also calls
+ * wazaSequenceSysStartWaza. When d==1, calls fn_80265598(b, partyCount, 1). When c==1,
+ * spins on wazaSequenceSysIsPlayingWaza(obj, (u16)a, 4) via _threadSwitch() until it
+ * returns 0, then releases via wazaSequenceSysStopWaza, and if d==1 also calls
  * fn_8026532C(b, partyCount, 0).
  */
 #define fn_801F54A4 fightFloorGetStatus
@@ -9715,7 +9715,7 @@ void fn_80211E18(u32 r3,u32 itemId)
     extern u32 itemParamGetPtr();
     extern void itemDataBiosGetItemEffectParam();
     extern void itemDataBiosGetPtr();
-    extern void fn_801DA7AC();
+    extern void wazaSequenceSysFreeAll();
     extern void fn_801EF8F4();
     extern u32 fightTargetGetPtrAsNowFightType();
     extern u32 fightFloorGetFightOutPokemonPtrToFightTrainerPtr();
@@ -9941,7 +9941,7 @@ item_status_done:
     }
     lbl_80379F58[0x1601E] = bVar1;
     lbl_80379F58[0x160A4] = cVar2;
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
     fightMenuAllFightTrainerCloseStatusMenu(0);
     fightMenuAllFightOutPokemonCloseStatusMenu(0);
     fightMenuCloseMsg();
@@ -10066,7 +10066,7 @@ void fn_802128D0(u32 r3, u32 r4)
     extern u32 GSmsgGetGSchar();
     extern u32 wazaGetStatus();
     extern void msgctrlSetValue();
-    extern void fn_801DA7AC();
+    extern void wazaSequenceSysFreeAll();
     extern u32 fightTargetGetTragetPtrToRelativeHostSideFightTargetId();
     extern u32 fightTargetGetPtrAsNowFightType();
     extern u8 fightActionCheckValid();
@@ -10201,7 +10201,7 @@ LAB_0020fce0:
   uVar2 = GSmsgGetGSchar();
   msgctrlSetValue(0x28,uVar2);
   fn_80211B94(r3,lbl_80379BFF[uVar6 & 0xffff],1);
-  fn_801DA7AC();
+  wazaSequenceSysFreeAll();
   fightMenuAllFightTrainerCloseStatusMenu(0);
   fightMenuAllFightOutPokemonCloseStatusMenu(0);
   fightMenuCloseMsg();
@@ -10219,7 +10219,7 @@ void fn_80212D6C(void)
     extern void pokemonAddDpFormPokemonDpFilterId();
     extern u8 pokemonIsDarkPokemon();
     extern void msgctrlSetValue();
-    extern void fn_801DA7AC();
+    extern void wazaSequenceSysFreeAll();
     extern void fightMainWaitFrame();
     extern u32 fightFloorGetFightOutPokemonPtrToFightTrainerPtr();
     extern u32 fightFloorGetStatus();
@@ -10354,7 +10354,7 @@ void fn_80212D6C(void)
   fn_8026532C(uVar1,uVar6,0);
   fn_801FB974(uVar2,3);
   fn_802080A8(uVar1,iVar9,iVar8,0,3);
-  fn_801DA7AC();
+  wazaSequenceSysFreeAll();
   fightMenuAllFightTrainerCloseStatusMenu(0);
   fightMenuAllFightOutPokemonCloseStatusMenu(0);
   fightMenuCloseMsg();
@@ -10370,7 +10370,7 @@ void fn_80213270(void)
 
 {
     extern u32 GSrand();
-    extern void fn_801DA7AC();
+    extern void wazaSequenceSysFreeAll();
     extern u16 std103_battleGetResult();
     extern void fightFloorInitFightOutPokemonPtrAryFightWazaJoutai();
     extern void fightFloorLoopValidFightOutPokemon();
@@ -10419,9 +10419,9 @@ void fn_80213270(void)
   fightFloorLoopValidFightOutPokemon(0,fn_80230568,0,1);
   fn_8022FE80();
   fightFloorLoopValidFightOutPokemon(0,fn_80230318,0,0);
-  fn_801DA7AC();
+  wazaSequenceSysFreeAll();
   fightFloorLoopValidFightOutPokemon(0,fn_802301A8,0,1);
-  fn_801DA7AC();
+  wazaSequenceSysFreeAll();
   local_18 = 0;
   fightFloorLoopValidFightOutPokemon(0,fn_80213558,&local_18,0);
   for (uVar6 = 0; (uVar6 & 0xffff) < 2; uVar6 = uVar6 + 1) {
@@ -10454,7 +10454,7 @@ void fn_80213270(void)
     fightFloorSetStatus(0,0,0xc,0,sVar2);
     uVar4 = GSrand();
     fightFloorSetStatus(0,0,0x5b,0,uVar4);
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
     fightMenuAllFightTrainerCloseStatusMenu(0);
     fightMenuAllFightOutPokemonCloseStatusMenu(0);
     fightMenuCloseMsg();
@@ -14280,7 +14280,7 @@ void WS_SCA_END_SET(void)
 void fn_8021E04C(void)
 
 {
-    extern void fn_801DA9E8();
+    extern void wazaSequenceSysStartWaza();
     extern s8 fn_801DDD28();
     extern u32 fn_8012640C();
     extern u32 fn_801F025C();
@@ -14303,7 +14303,7 @@ void fn_8021E04C(void)
       uVar6 = fn_801F54A4(0,0,0x14,0);
       iVar7 = (int)fn_8012640C(uVar1,0,0xee,0);
       if ((iVar7 != 0) && (cVar4 = fn_801DDD28(iVar7,0x34,4,0), cVar4 != 0)) {
-        fn_801DA9E8(iVar7,0x34,4);
+        wazaSequenceSysStartWaza(iVar7,0x34,4);
         fn_80265598(uVar1,uVar6,1);
       }
     }
@@ -14311,7 +14311,7 @@ void fn_8021E04C(void)
       uVar3 = fn_801F54A4(0,0,0x14,0);
       iVar2 = (int)fn_8012640C(uVar1,0,0xee,0);
       if ((iVar2 != 0) && (cVar4 = fn_801DDD28(iVar2,0x35,4,0), cVar4 != 0)) {
-        fn_801DA9E8(iVar2,0x35,4);
+        wazaSequenceSysStartWaza(iVar2,0x35,4);
         fn_80265598(uVar1,uVar3,1);
       }
     }
@@ -14319,7 +14319,7 @@ void fn_8021E04C(void)
       uVar3 = fn_801F54A4(0,0,0x14,0);
       iVar2 = (int)fn_8012640C(uVar1,0,0xee,0);
       if ((iVar2 != 0) && (cVar4 = fn_801DDD28(iVar2,0x36,4,0), cVar4 != 0)) {
-        fn_801DA9E8(iVar2,0x36,4);
+        wazaSequenceSysStartWaza(iVar2,0x36,4);
         fn_80265598(uVar1,uVar3,1);
       }
     }
@@ -14327,7 +14327,7 @@ void fn_8021E04C(void)
       uVar3 = fn_801F54A4(0,0,0x14,0);
       iVar5 = (int)fn_8012640C(uVar1,0,0xee,0);
       if ((iVar5 != 0) && (cVar4 = fn_801DDD28(iVar5,0x37,4,0), cVar4 != 0)) {
-        fn_801DA9E8(iVar5,0x37,4);
+        wazaSequenceSysStartWaza(iVar5,0x37,4);
         fn_80265598(uVar1,uVar3,1);
       }
     }
@@ -15038,7 +15038,7 @@ done:
 void fn_80220B8C(u32 r3)
 
 {
-    extern void fn_801DA9E8();
+    extern void wazaSequenceSysStartWaza();
     extern u8 fn_801DDD28();
     extern u32 fn_801F025C();
     extern u32 fn_801F54A4();
@@ -15054,14 +15054,14 @@ void fn_80220B8C(u32 r3)
         floorStatus = fn_801F54A4(0, 0, 0x14, 0) & 0xFFFF;
         statusPtr = fn_8012640C(ctx, 0, 0xee, 0);
         if ((statusPtr != 0) && (fn_801DDD28(statusPtr, 0x2c, 4, 0) != 0)) {
-            fn_801DA9E8(statusPtr, 0x2c, 4);
+            wazaSequenceSysStartWaza(statusPtr, 0x2c, 4);
             fn_80265598(ctx, floorStatus, 1);
         }
     } else if ((command == 0x39) || (command == 0x3a)) {
         statusPtr = (u16)fn_801F54A4(0, 0, 0x14, 0);
         floorStatus = fn_8012640C(ctx, 0, 0xee, 0);
         if ((floorStatus != 0) && (fn_801DDD28(floorStatus, 0x3c, 4, 0) != 0)) {
-            fn_801DA9E8(floorStatus, 0x3c, 4);
+            wazaSequenceSysStartWaza(floorStatus, 0x3c, 4);
             fn_80265598(ctx, statusPtr, 1);
         }
     } else {
@@ -15069,7 +15069,7 @@ void fn_80220B8C(u32 r3)
         statusPtr = (u16)fn_801F54A4(0, 0, 0x14, 0); \
         floorStatus = fn_8012640C(ctx, 0, 0xee, 0); \
         if ((floorStatus != 0) && (fn_801DDD28(floorStatus, statusId, 4, 0) != 0)) { \
-            fn_801DA9E8(floorStatus, statusId, 4); \
+            wazaSequenceSysStartWaza(floorStatus, statusId, 4); \
             fn_80265598(ctx, statusPtr, 1); \
         }
         switch (command) {
@@ -16157,18 +16157,18 @@ void fn_802282D8(void)
     extern u8 fightMenuWazaOutMsg();
     extern void fightOutPokemonGetNicknamePtr();
     extern void _threadSwitch();
-    extern u8 fn_801DA94C();
+    extern u8 wazaSequenceSysIsPlayingWaza();
     extern void fightTrainerGetStatus();
     extern u32 fightTargetGetPtrAsNowFightType();
     extern u32 fightFloorGetStatus();
     extern void fn_8026532C();
     extern u32 fightOutPokemonGetUseWazaDataId();
     extern u8 fn_801DDD28();
-    extern void fn_801DA8C4();
+    extern void wazaSequenceSysStopWaza();
     extern void fightMenuCloseMsg();
     extern u32 pokemonGetStatus();
     extern void fn_80265598();
-    extern void fn_801DA9E8();
+    extern void wazaSequenceSysStartWaza();
     extern u8 lbl_80378964[];
     extern u32 fightFloorGetFightOutPokemonPtrToFightTrainerPtr();
     u16 uVar7;
@@ -16192,18 +16192,18 @@ void fn_802282D8(void)
         uVar7 = fightFloorGetStatus(0,0,0x14,0);
         iVar5 = pokemonGetStatus(uVar1,0,0xee,0);
         if ((iVar5 != 0) && (cVar10 = fn_801DDD28(iVar5,0x9e,4,0), cVar10 != 0)) {
-            fn_801DA9E8(iVar5,0x9e,4);
+            wazaSequenceSysStartWaza(iVar5,0x9e,4);
             fn_80265598(uVar1,uVar7,1);
         }
         fn_80265598(uVar1,uVar6,1);
         cVar8 = fightMenuWazaOutMsg(uVar1,uVar3);
         if (iVar4 != 0) {
             while (1) {
-                cVar9 = fn_801DA94C(iVar4,0x9e,4);
+                cVar9 = wazaSequenceSysIsPlayingWaza(iVar4,0x9e,4);
                 if (cVar9 == 0) break;
                 _threadSwitch();
             }
-            fn_801DA8C4(iVar4,0x9e,4);
+            wazaSequenceSysStopWaza(iVar4,0x9e,4);
         }
         else {
             fn_80211B94(lbl_8047B62C,lbl_80378964,0);

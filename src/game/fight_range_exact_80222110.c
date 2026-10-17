@@ -61,11 +61,11 @@ void fn_802221EC(u32 a, u32 b, u32 c, u32 d) {
     extern u16 fn_801F54A4();
     extern u32 fn_8012640C();
     extern u8  fn_801DDD28(u32, u32, u32, u32);
-    extern void fn_801DA9E8(u32, u32, u32);
+    extern void wazaSequenceSysStartWaza(u32, u32, u32);
     extern void fn_80265598(u32, u16, u32);
-    extern u32 fn_801DA94C(u32, u16, u32);
+    extern u32 wazaSequenceSysIsPlayingWaza(u32, u16, u32);
     extern void _threadSwitch();
-    extern void fn_801DA8C4(u32, u16, u32);
+    extern void wazaSequenceSysStopWaza(u32, u16, u32);
     extern void fn_8026532C(u32, u16, u32);
     u32 obj;
     u16 partyCount;
@@ -79,7 +79,7 @@ void fn_802221EC(u32 a, u32 b, u32 c, u32 d) {
     if ((u8)fn_801DDD28(obj, a, 4, 0) == 0) {
         return;
     }
-    fn_801DA9E8(obj, a, 4);
+    wazaSequenceSysStartWaza(obj, a, 4);
 
     if ((u8)d == 1) {
         fn_80265598(b, partyCount, 1);
@@ -90,12 +90,12 @@ void fn_802221EC(u32 a, u32 b, u32 c, u32 d) {
 
     c = (u16)a;
     for (;;) {
-        if ((u8)fn_801DA94C(obj, c, 4) == 0) {
+        if ((u8)wazaSequenceSysIsPlayingWaza(obj, c, 4) == 0) {
             break;
         }
         _threadSwitch();
     }
-    fn_801DA8C4(obj, c, 4);
+    wazaSequenceSysStopWaza(obj, c, 4);
 
     if ((u8)d == 1) {
         fn_8026532C(b, partyCount, 0);

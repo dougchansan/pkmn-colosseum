@@ -8,7 +8,7 @@
  * HSD_VICopyXFBAsync (fn_801BF8A0) calls HSD_VIGetDrawDoneWaitingFlag out
  * of line; Melee reproduces that only with a local dont_inline pragma,
  * which campaign policy forbids, so video.c cannot link as one unit.
- * fn_801BF6AC (exact in the full TU) stays with it: its asserts address
+ * HSD_VIFinishDrawXFB (exact in the full TU) stays with it: its asserts address
  * the TU's string pool through one hoisted base, which a carved unit
  * cannot reproduce without owning the pool that the tail's
  * HSD_VIPreRetraceCB also uses. The exact ranges on either side are linked

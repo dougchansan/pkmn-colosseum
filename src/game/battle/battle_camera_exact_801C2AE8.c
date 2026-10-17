@@ -29,7 +29,7 @@ void battleGridResetModelVisibilityFlags(void)
 {
     extern u8 lbl_8047B39A;
     extern u8 lbl_8047B39C[12] __attribute__((section(".sdata")));
-    extern void fn_801DA4E8(void*, u32);
+    extern void wazaSequenceOwnerSetVisibility(void*, u32);
     BattleGridGroupEntry* group;
     u16 i;
     u16 j;
@@ -39,9 +39,9 @@ void battleGridResetModelVisibilityFlags(void)
     visibilityIndex = 0;
     if (lbl_8047B39A != 0) {
         for (i = 0; i < 4; i++, group++) {
-            fn_801DA4E8(group->slot, lbl_8047B39C[visibilityIndex++]);
+            wazaSequenceOwnerSetVisibility(group->slot, lbl_8047B39C[visibilityIndex++]);
             for (j = 0; j < 2; j++) {
-                fn_801DA4E8(group->pokemon[j],
+                wazaSequenceOwnerSetVisibility(group->pokemon[j],
                             lbl_8047B39C[visibilityIndex++]);
             }
         }

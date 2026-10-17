@@ -352,7 +352,7 @@ u8 wazaSequenceEntryUpdate(void* entry, s32 elapsed) {
     case 0:
     default:
         if (GSgetVersionMinor() == 2) {
-            fn_801D744C(1);
+            wazaViewerSetErrorFlag(1);
         }
         GSlogWrite(lbl_802795B4);
         return FALSE;
@@ -440,7 +440,7 @@ u8 wazaSequenceEntryStart(void* entry) {
         }
         if (!(u8)started) {
             if (GSgetVersionMinor() == 2) {
-                fn_801D744C(0x100);
+                wazaViewerSetErrorFlag(0x100);
             }
             goto failed;
         }
@@ -452,22 +452,22 @@ u8 wazaSequenceEntryStart(void* entry) {
 
         switch (node->resourceId) {
         case 0:
-            fn_801DD078(owner);
+            wazaSequenceOwnerSetAura(owner);
             break;
         case 1:
-            fn_801DD028(owner);
+            wazaSequenceOwnerClearAura(owner);
             break;
         case 2:
-            fn_801DA4E8(owner, 0);
+            wazaSequenceOwnerSetVisibility(owner, 0);
             break;
         case 3:
-            fn_801DA4E8(owner, 1);
+            wazaSequenceOwnerSetVisibility(owner, 1);
             break;
         case 4:
             GSmodelRemoveNull(owner->model);
             break;
         case 5:
-            fn_801DCF00(owner);
+            wazaSequenceOwnerSetNull(owner);
             break;
         case 6:
             fn_801DCEA8(owner);
@@ -476,7 +476,7 @@ u8 wazaSequenceEntryStart(void* entry) {
             fn_801DCFD8(owner);
             break;
         case 9:
-            fn_801DCF84(owner);
+            wazaSequenceOwnerClearStop(owner);
             break;
         case 8:
             if (node->sequence == owner->currentSequence) {
@@ -497,7 +497,7 @@ control_checked:
     default:
         GSlogWrite(lbl_802795E4);
         if (GSgetVersionMinor() == 2) {
-            fn_801D744C(1);
+            wazaViewerSetErrorFlag(1);
         }
         goto failed;
     }
@@ -568,7 +568,7 @@ u8 _wazaSequenceEffectEntryStart(void* entry) {
         effect = GSeffectGetData((u32)effectId);
         if (effect == NULL) {
             if (GSgetVersionMinor() == 2) {
-                fn_801D744C(0x80);
+                wazaViewerSetErrorFlag(0x80);
             }
             return FALSE;
         }
@@ -615,7 +615,7 @@ u8 _wazaSequenceEffectEntryStart(void* entry) {
             case 2:
                 *(void**)(effect + 0x04) = *(void**)(owner + 0x24);
                 *(u32*)(effect + 0x48) = 1;
-                if ((u8)fn_801DCDCC(owner) && GSmodelIsModulationEnabled(*(void**)(owner + 0x24))) {
+                if ((u8)wazaSequenceOwnerGetColorSwapActive(owner) && GSmodelIsModulationEnabled(*(void**)(owner + 0x24))) {
                     *(u8*)(effect + 0x4D) = 1;
                     *(u8*)(effect + 0x4F) = 1;
                     GSmodelGetModulationColor(*(void**)(owner + 0x24), effect + 0x44);
@@ -699,7 +699,7 @@ u8 _wazaSequenceEffectEntryStart(void* entry) {
         case -1:
         default:
             if (GSgetVersionMinor() == 2) {
-                fn_801D744C(0x80);
+                wazaViewerSetErrorFlag(0x80);
             }
             return FALSE;
         }
@@ -707,7 +707,7 @@ u8 _wazaSequenceEffectEntryStart(void* entry) {
         GSeffect((u32)effectId);
     } else {
         if (GSgetVersionMinor() == 2) {
-            fn_801D744C(0x80);
+            wazaViewerSetErrorFlag(0x80);
         }
         return FALSE;
     }
@@ -769,7 +769,7 @@ u8 _wazaSequenceParticleEntryStart(WazaSequenceNode* node) {
     model = *(void**)((u8*)owner + 0x24);
 
     if ((s32)(node->flags & 1) == 1 && node->linkedEntryKey > 0) {
-        linked = fn_801DCDA8(node->sequence, node->linkedEntryKey);
+        linked = wazaSequenceOwnerFindEntry(node->sequence, node->linkedEntryKey);
         if (linked->startTime <= node->startTime &&
             linked->kind == 2 && linked->model != NULL)
         {
@@ -784,7 +784,7 @@ u8 _wazaSequenceParticleEntryStart(WazaSequenceNode* node) {
 
     if (resource == NULL) {
         if (GSgetVersionMinor() == 2) {
-            fn_801D744C(0x20);
+            wazaViewerSetErrorFlag(0x20);
         }
         return FALSE;
     }
@@ -796,7 +796,7 @@ u8 _wazaSequenceParticleEntryStart(WazaSequenceNode* node) {
 
     if (*(void**)((u8*) node + 0x8C) == NULL) {
         if (GSgetVersionMinor() == 2) {
-            fn_801D744C(0x20);
+            wazaViewerSetErrorFlag(0x20);
         }
         return FALSE;
     }
@@ -912,7 +912,7 @@ u8 _wazaSequenceParticleEntryStart(WazaSequenceNode* node) {
                 break;
             default:
                 if (GSgetVersionMinor() == 2) {
-                    fn_801D744C(1);
+                    wazaViewerSetErrorFlag(1);
                 }
                 GSlogWrite(lbl_80279658);
                 break;
@@ -1014,7 +1014,7 @@ u8 _wazaSequenceModelEntryStart(WazaSequenceNode* node) {
 
     sourceModel = ownerModel;
     if ((s32)(node->flags & 1) == 1 && node->linkedEntryKey > 0) {
-        linked = fn_801DCDA8(node->sequence, node->linkedEntryKey);
+        linked = wazaSequenceOwnerFindEntry(node->sequence, node->linkedEntryKey);
         if (linked->startTime <= node->startTime &&
             linked->kind == 2 && linked->model != NULL)
         {
@@ -1091,7 +1091,7 @@ u8 _wazaSequenceModelEntryStart(WazaSequenceNode* node) {
                 break;
             default:
                 if (GSgetVersionMinor() == 2) {
-                    fn_801D744C(1);
+                    wazaViewerSetErrorFlag(1);
                 }
                 GSlogWrite(lbl_80279694);
                 break;
@@ -1132,7 +1132,7 @@ u8 _wazaSequenceModelEntryStart(WazaSequenceNode* node) {
                 break;
             default:
                 if (GSgetVersionMinor() == 2) {
-                    fn_801D744C(1);
+                    wazaViewerSetErrorFlag(1);
                 }
                 GSlogWrite(lbl_802796CC);
                 break;
@@ -1155,7 +1155,7 @@ u8 _wazaSequenceModelEntryStart(WazaSequenceNode* node) {
             GSmodelStartAnimation(model);
         } else {
             if (GSgetVersionMinor() == 2) {
-                fn_801D744C(0x200);
+                wazaViewerSetErrorFlag(0x200);
             }
             *(s32*)((u8*)node + 0x88) = -1;
         }
@@ -1173,7 +1173,7 @@ u8 _wazaSequenceModelEntryStart(WazaSequenceNode* node) {
             GSmodelStartTexAnimation(model);
         } else {
             if (GSgetVersionMinor() == 2) {
-                fn_801D744C(0x400);
+                wazaViewerSetErrorFlag(0x400);
             }
             *(s32*)((u8*)node + 0x90) = -1;
         }
@@ -1226,7 +1226,7 @@ void* fn_801D97F0(void* entry) {
         if (linkedKey <= 0) {
             goto failed;
         }
-        linked = fn_801DCDA8(node->sequence, linkedKey);
+        linked = wazaSequenceOwnerFindEntry(node->sequence, linkedKey);
         if (linked->startTime > node->startTime) {
             GSlogWrite(lbl_80279700);
         }
@@ -1234,7 +1234,7 @@ void* fn_801D97F0(void* entry) {
             if (linked->model != NULL) {
                 part = GSmodelGetPart(linked->model, node->partIndex);
                 if (GSgetVersionMinor() == 2 && part == NULL) {
-                    fn_801D744C(2);
+                    wazaViewerSetErrorFlag(2);
                 }
                 return part;
             }
@@ -1260,7 +1260,7 @@ void* fn_801D97F0(void* entry) {
         part = GSmodelGetPart(*(void**)(owner + 0x24), partIndex);
     }
     if (GSgetVersionMinor() == 2 && part == NULL) {
-        fn_801D744C(2);
+        wazaViewerSetErrorFlag(2);
     }
 
 failed:
@@ -1405,8 +1405,8 @@ u8 wazaSequencePokemonMotionStart(void* ownerPtr, BOOL enabled) {
                                      f32* texFrameCount);
     extern void GSmodelSetAnimFrame(void* model, f32 frame);
     extern void GSmodelStartAnimation(void* model);
-    extern void fn_801DEE14(void* owner);
-    extern void fn_801DF070(void* owner, s32 arg1, s32 arg2);
+    extern void wazaSequenceOwnerStartMotion(void* owner);
+    extern void wazaSequenceOwnerPlayMotion(void* owner, s32 arg1, s32 arg2);
     extern const char lbl_80279740[];
     extern f32 lbl_8047E348;
     extern f64 lbl_8047E380;
@@ -1434,20 +1434,20 @@ u8 wazaSequencePokemonMotionStart(void* ownerPtr, BOOL enabled) {
         duration = *(s32*)(table + 0x04);
         if (duration == 0) {
             if (*(u16*)(owner + 0x32) == 10) {
-                fn_801DEE14(owner);
+                wazaSequenceOwnerStartMotion(owner);
                 return TRUE;
             }
             *(u16*)(owner + 0x34) = 1;
             if (*(s32*)(table + 0x08) == 0) {
-                fn_801DF070(owner, *(s32*)(table + 0x0C), 0);
+                wazaSequenceOwnerPlayMotion(owner, *(s32*)(table + 0x0C), 0);
             } else {
-                fn_801DEF0C(owner, 0, 0);
+                wazaSequenceOwnerPlayIdle(owner, 0, 0);
             }
             goto done;
         }
 
         *(u16*)(owner + 0x34) = 0;
-        animIndex = fn_801DF160(owner);
+        animIndex = wazaSequenceOwnerFindAnim(owner);
         if ((*(u8*)(owner + 0x18) & 4) != 4) {
             *(u8*)(owner + 0x19) = 0;
             GSmodelLinkTexAnimToAnim(model, 1);
@@ -1472,7 +1472,7 @@ done:
         return TRUE;
     }
     if (GSgetVersionMinor() == 2) {
-        fn_801D744C(4);
+        wazaViewerSetErrorFlag(4);
     }
     GSlogWrite(lbl_80279740);
     return FALSE;

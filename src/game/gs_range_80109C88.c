@@ -699,7 +699,7 @@ s32 menuModelTerm(void* obj)
     extern void GSlogWrite(const char* fmt, ...);
     extern u8 GSthreadIsRunning(u32 task);
     extern void GSthreadClose(u32 task);
-    extern void fn_801DB100(u32 handle);
+    extern void wazaSequenceOwnerFree(u32 handle);
     extern void GSmodelFree(void* a);
     extern void GSlightFree(void* a);
     extern void GScameraFree(void* camera);
@@ -735,7 +735,7 @@ s32 menuModelTerm(void* obj)
         o->flag1 = 0;
         if (o->flag14) {
             if (o->handle24 != 0) {
-                fn_801DB100(o->handle24);
+                wazaSequenceOwnerFree(o->handle24);
                 o->handle24 = 0;
             }
         } else if (o->handle24 != 0) {
@@ -997,14 +997,14 @@ s32 _menuPokemonModelLoadThread(FaceModel* m)
     extern u8 fn_8010B560(void);
     extern void _threadSwitch(void);
     extern void fn_801DADC0(u32 arg);
-    extern void fn_801DB100(u32 handle);
+    extern void wazaSequenceOwnerFree(u32 handle);
     extern void GSmodelFree(u32 model);
     extern u32 fn_801DE190(u16 hi, u32 key, u8 rare);
-    extern u32 fn_801DAC3C(u32 object);
+    extern u32 wazaSequenceOwnerGetModel(u32 object);
     extern void GSmodelSetVisibility(u32 model, u32 visible);
     extern u8 fn_801DDD28(u32 model, u16 a, u32 b, u32 c);
-    extern void fn_801DA914(u32 model, u16 a, u32 b);
-    extern void fn_801DA9E8(u32 model, u16 a, u32 b);
+    extern void wazaSequenceClearFlag16(u32 model, u16 a, u32 b);
+    extern void wazaSequenceSysStartWaza(u32 model, u16 a, u32 b);
     extern u32 floorOpenObject(u32 key);
     extern u8 GSmodelCanAnimate(u32 model);
     extern void GSmodelSetAnimIndex(u32 model, u32 index);
@@ -1046,7 +1046,7 @@ s32 _menuPokemonModelLoadThread(FaceModel* m)
             m->useCur = 0;
             if (m->next.type != 0) {
                 if (m->handle24 != 0) {
-                    fn_801DB100(m->handle24);
+                    wazaSequenceOwnerFree(m->handle24);
                     m->handle24 = 0;
                 }
             } else if (m->handle24 != 0) {
@@ -1066,7 +1066,7 @@ s32 _menuPokemonModelLoadThread(FaceModel* m)
                 m->state = 0;
                 return 0;
             }
-            model = fn_801DAC3C(m->handle24);
+            model = wazaSequenceOwnerGetModel(m->handle24);
             if (model == 0) {
                 m->state = 0;
                 return 0;
@@ -1074,8 +1074,8 @@ s32 _menuPokemonModelLoadThread(FaceModel* m)
             GSmodelSetVisibility(model, 0);
             if (m->next.u.s.lo != 0) {
                 if (fn_801DDD28(m->handle24, m->next.u.s.lo, 4, 0)) {
-                    fn_801DA914(m->handle24, m->next.u.s.lo, 4);
-                    fn_801DA9E8(m->handle24, m->next.u.s.lo, 4);
+                    wazaSequenceClearFlag16(m->handle24, m->next.u.s.lo, 4);
+                    wazaSequenceSysStartWaza(m->handle24, m->next.u.s.lo, 4);
                 }
             }
         } else {
@@ -1115,8 +1115,8 @@ s32 _menuPokemonModelSetupView(void* objPtr)
     typedef struct Vec3 {
         f32 x, y, z;
     } Vec3;
-    extern u32 fn_801DAC3C(u32 object);
-    extern s32 fn_801DAC24(u32 object);
+    extern u32 wazaSequenceOwnerGetModel(u32 object);
+    extern s32 wazaSequenceOwnerGetSizeClass(u32 object);
     extern void memoGetScaleAngle(u16 key, f32* scale, f32* angle);
     extern void GSmodelCenterNull(u32 model);
     extern s32 GSmodelWalkJObjs(u32 model);
@@ -1175,8 +1175,8 @@ s32 _menuPokemonModelSetupView(void* objPtr)
     }
 
     if (obj[0x14] != 0) {
-        model = fn_801DAC3C(*(u32*)(obj + 0x24));
-        switch (fn_801DAC24(*(u32*)(obj + 0x24))) {
+        model = wazaSequenceOwnerGetModel(*(u32*)(obj + 0x24));
+        switch (wazaSequenceOwnerGetSizeClass(*(u32*)(obj + 0x24))) {
         case -2:
             fovScale = lbl_8047CE84;
             break;

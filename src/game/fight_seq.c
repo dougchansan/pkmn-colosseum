@@ -379,7 +379,7 @@ void fn_80211A00(void)
 {
     extern u32 DAT_8038ff5a;
     extern u32 DAT_8038fff9;
-    extern void fn_801DA7AC();
+    extern void wazaSequenceSysFreeAll();
     extern void fightFloorLoopValidFightOutPokemon();
     extern u8 lbl_80478D7B;
     extern u8 lbl_80478D7C;
@@ -394,7 +394,7 @@ void fn_80211A00(void)
   lbl_80478D7C = 0;
   DAT_8038ff5a = 0;
   DAT_8038fff9 = 0;
-  fn_801DA7AC();
+  wazaSequenceSysFreeAll();
   return;
 }
 /* 0x80211A78 | size: 0x11C */
@@ -559,7 +559,7 @@ void fn_80211E18(u32 r3,u32 r4)
     extern u32 itemParamGetPtr();
     extern void itemDataBiosGetItemEffectParam();
     extern void itemDataBiosGetPtr();
-    extern void fn_801DA7AC();
+    extern void wazaSequenceSysFreeAll();
     extern void fn_801EF8F4();
     extern u32 fightTargetGetPtrAsNowFightType();
     extern u32 fightFloorGetFightOutPokemonPtrToFightTrainerPtr();
@@ -849,7 +849,7 @@ void fn_80211E18(u32 r3,u32 r4)
     }
     DAT_8038ff76 = bVar1;
     DAT_8038fffc = cVar2;
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
     fightMenuAllFightTrainerCloseStatusMenu(0);
     fightMenuAllFightOutPokemonCloseStatusMenu(0);
     fightMenuCloseMsg();

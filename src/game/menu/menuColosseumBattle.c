@@ -453,7 +453,7 @@ static inline s32 menuCBEditRules(s32 cmd)
     extern s32 menuGetCursorItemID(s32);
     extern s32 fn_80088964(void);
     extern s32 fn_80077EA4(void*, void*);
-    extern s32 fn_801D04E8(void);
+    extern s32 memcardGetFlag41(void);
     extern s8 menuSubOpenYesNo(s32, s32, s32, s32);
 
     s32 r = menuOpenCustom(fn_8007162C(), 0, NULL, 0x10, 1, 1, lbl_8047A5A0 + 0x42C0);
@@ -478,7 +478,7 @@ static inline s32 menuCBEditRules(s32 cmd)
         if ((u8)fn_80077EA4(lbl_8047A5A0 + 0x42C0, savedataBattleGetRulePtr()) == 0) {
             fn_80077E80(&((ColosseumBattleRules*)((u8*)savedataGetStatus(0, 0xE)))->rules[*(s32*)(((u8*)savedataGetStatus(0, 0xE)) + 8) * 0x54], lbl_8047A5A0 + 0x42C0);
             for (;;) {
-                if ((u8)fn_801D04E8() == 0) {
+                if ((u8)memcardGetFlag41() == 0) {
                     break;
                 }
                 winMsgOpen(2, 0x44B1, 1, 0);
@@ -549,7 +549,7 @@ void menuColosseumBattleMain(void) {
     extern s32 fn_800889A4(void);
     extern s32 menuRuleCheckPartyAndRule(void*);
     extern s32 fn_80077EA4(void*, void*);
-    extern s32 fn_801D04E8(void);
+    extern s32 memcardGetFlag41(void);
     extern s8 menuSubOpenYesNo(s32, s32, s32, s32);
     extern void floorChangePos(u32, s32, f32, f32, f32);
     typedef struct SaveImage { u32 data[0x330B]; } SaveImage;
@@ -800,7 +800,7 @@ void menuColosseumBattleMain(void) {
         case 0xB0:
             switch (fn_80071344()) {
             case 0:
-                if ((u8)fn_801D04E8() == 0) {
+                if ((u8)memcardGetFlag41() == 0) {
                     winMsgOpen(2, 0x44EB, 1, 0);
                     winMsgClose(1);
                     break;
@@ -932,7 +932,7 @@ void menuColosseumBattleMain(void) {
                 }
                 memcpy(lbl_8047A5A0 + 0x4318, savedataGetStatus(0, 0xE), 0xCC2C);
                 savedataBattleSetSavedHero(savedataGetStatus(0, 0xE), lbl_8047A5A0);
-                if ((u8)fn_801D04E8() == 0) {
+                if ((u8)memcardGetFlag41() == 0) {
                     soundStartSE(0x26);
                     winMsgOpen(2, 0x3C60, 1, 0);
                     if (fn_8006A7E8(lbl_8047A5A0) != 0) {
@@ -1153,7 +1153,7 @@ void menuColosseumBattleMain(void) {
                 e = (s8*)&menuCBRosterRows[v];
                 st = (s32*)(e + 8);
                 if (*st == 0) {
-                    if ((u8)fn_801D04E8() == 0) {
+                    if ((u8)memcardGetFlag41() == 0) {
                         winMsgOpen(2, 0x44EA, 1, 0);
                         winMsgClose(1);
                         break;
@@ -1521,7 +1521,7 @@ void menuColosseumBattleMain(void) {
             menuCloseCustom(0xBE, 0, 1);
             switch (r) {
             case 0:
-                if ((u8)fn_801D04E8() == 0) {
+                if ((u8)memcardGetFlag41() == 0) {
                     winMsgOpen(2, 0x44EA, 1, 0);
                     winMsgClose(1);
                     break;

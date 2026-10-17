@@ -1,7 +1,7 @@
 /**
  * @file mail_exact_801D1B10.c
  * @brief mail TU, 0x801D1B10 - 0x801D1E50: the mailbox selection byte, the
- *        per-mail received flags and the mailbox append (fn_801D1B10,
+ *        per-mail received flags and the mailbox append (mailSetFlag442,
  *        mailGetSortMode, fn_801D1B78, fn_801D1C20, mailChkReceiveMail,
  *        mailAddMailbox).
  *
@@ -14,11 +14,11 @@
 
 
 /**
- * fn_801D1B10 - Waza set byte in battle party by handle.
+ * mailSetFlag442 - Waza set byte in battle party by handle.
  * Address: 0x801D1B10 | Size: 0x3C
  * Calls savedataGetStatus(0, 0xA), stores (handle & 0xFF) to result+0x442.
  */
-void fn_801D1B10(s32 handle) {
+void mailSetFlag442(s32 handle) {
     WazaPartyScratch* party = (WazaPartyScratch*)savedataGetStatus(0, 0x0A);
     party->selectedHandle = (u8)handle;
 }

@@ -23,7 +23,7 @@ extern void GSmodelSetAnimRate(void*, f32);
 extern void GSmodelSetAnimFrame(void*, f32);
 extern void GSmodelStartAnimation(void*);
 extern void GSmodelSetAnimEndedCallback(void*, void*, void*);
-extern void fn_801DD100(void*, u32);
+extern void wazaSequenceOwnerSetAnim(void*, u32);
 extern f32 lbl_8047E3C8;
 extern f32 lbl_8047E3CC;
 
@@ -185,7 +185,7 @@ void fn_801DE698(u32 model, u8* callback) {
         phase = *(u16*)(owner + 0x32);
         if (phase >= 0xB || phase < 9) {
             wazaPlayIdle(owner, 1, 0);
-            fn_801DD100(owner, 0);
+            wazaSequenceOwnerSetAnim(owner, 0);
         }
         return;
     }
@@ -287,10 +287,10 @@ void _eyeTexAnimEnded(void* model, u8* callback) {
 /* RULE-EXCEPTION(title-path): shared named pool literals in this linked carve;
  * see docs/RULE_EXCEPTIONS.md. */
 /**
- * fn_801DEE14 - Waza status effect visual.
+ * wazaSequenceOwnerStartMotion - Waza status effect visual.
  * Address: 0x801DEE14 | Size: 0xF8
  */
-void fn_801DEE14(u8* obj) {
+void wazaSequenceOwnerStartMotion(u8* obj) {
     extern void GSmodelLinkTexAnimToAnim(void* model, u32 enable);
     extern void GSmodelSetAnimIndex(void* model, u32 index);
     extern void GSmodelSetAnimType(void* model, u32 type);
@@ -342,7 +342,7 @@ found:
     }
 }
 
-/* Retail expands the fn_801DF160 lookup here. */
+/* Retail expands the wazaSequenceOwnerFindAnim lookup here. */
 static inline s32 wazaDefaultAnimIndex(u8* obj) {
     u8* base = *(u8**)(obj + 0x2C);
     u8* table = base;
@@ -367,10 +367,10 @@ static inline s32 wazaDefaultAnimIndex(u8* obj) {
 }
 
 /**
- * fn_801DEF0C - Waza status effect update.
+ * wazaSequenceOwnerPlayIdle - Waza status effect update.
  * Address: 0x801DEF0C | Size: 0x164
  */
-void fn_801DEF0C(void* obj, s32 arg1, s32 arg2) {
+void wazaSequenceOwnerPlayIdle(void* obj, s32 arg1, s32 arg2) {
     extern void GSmodelLinkTexAnimToAnim(void*, u32);
     extern void GSmodelGetAnimIndex(void*, u32*, u32*);
     extern void GSmodelSetAnimType(void*, u32);
@@ -414,10 +414,10 @@ void fn_801DEF0C(void* obj, s32 arg1, s32 arg2) {
 }
 
 /**
- * fn_801DF070 - Waza weather effect setup.
+ * wazaSequenceOwnerPlayMotion - Waza weather effect setup.
  * Address: 0x801DF070 | Size: 0xF0
  */
-void fn_801DF070(u8* obj, u32 animIndex, u32 animType) {
+void wazaSequenceOwnerPlayMotion(u8* obj, u32 animIndex, u32 animType) {
     extern void GSmodelLinkTexAnimToAnim(void* model, u32 enable);
     extern void GSmodelSetAnimIndex(void* model, u32 index);
     extern void GSmodelSetAnimType(void* model, u32 type);
@@ -467,11 +467,11 @@ void fn_801DF070(u8* obj, u32 animIndex, u32 animType) {
 
 #if defined(GS_RANGE_801DE698_WHOLE_RANGE)
 /**
- * fn_801DF160 - Waza weather effect update.
+ * wazaSequenceOwnerFindAnim - Waza weather effect update.
  * Address: 0x801DF160 | Size: 0x70
  * Linked from gs_range_exact_801DF160.c; kept here for the candidate.
  */
-s32 fn_801DF160(u8* obj) {
+s32 wazaSequenceOwnerFindAnim(u8* obj) {
     u8* base;
     u8* table;
     s32* entry;
@@ -498,11 +498,11 @@ s32 fn_801DF160(u8* obj) {
 }
 
 /**
- * fn_801DF1D0 - Waza weather effect render.
+ * wazaSequenceOwnerUpdateBlink - Waza weather effect render.
  * Address: 0x801DF1D0 | Size: 0x16C
  */
-void fn_801DF1D0(void* obj) {
-    extern u8 fn_801DAC54(void*);
+void wazaSequenceOwnerUpdateBlink(void* obj) {
+    extern u8 wazaSequenceOwnerIsPlaying(void*);
     extern u32 msgGetCharsPerFrame(void);
     extern f32 GSrandf(void);
     extern void GSmodelLinkTexAnimToAnim(void*, u32);
@@ -522,7 +522,7 @@ void fn_801DF1D0(void* obj) {
     u16 timer;
     f32 threshold;
 
-    if (fn_801DAC54(effect) != 0) {
+    if (wazaSequenceOwnerIsPlaying(effect) != 0) {
         return;
     }
     if ((effect[0x18] & 8) == 0) {
@@ -565,10 +565,10 @@ void fn_801DF1D0(void* obj) {
 }
 
 /**
- * fn_801DF33C - Waza weather effect clear.
+ * wazaSequenceOwnerTexAnimOff - Waza weather effect clear.
  * Address: 0x801DF33C | Size: 0x98
  */
-void fn_801DF33C(u8* obj) {
+void wazaSequenceOwnerTexAnimOff(u8* obj) {
     extern void GSmodelLinkTexAnimToAnim(void* model, u32 enable);
     extern void GSmodelSetTexAnimIndex(void* model, u32 index);
     extern void GSmodelSetTexAnimRate(void* model, f32 rate);
@@ -589,10 +589,10 @@ void fn_801DF33C(u8* obj) {
 }
 
 /**
- * fn_801DF3D4 - Waza weather get type.
+ * wazaSequenceOwnerTexAnimOn - Waza weather get type.
  * Address: 0x801DF3D4 | Size: 0xA0
  */
-void fn_801DF3D4(u8* obj) {
+void wazaSequenceOwnerTexAnimOn(u8* obj) {
     extern void GSmodelLinkTexAnimToAnim(void* model, u32 enable);
     extern void GSmodelSetTexAnimIndex(void* model, u32 index);
     extern void GSmodelSetTexAnimRate(void* model, f32 rate);

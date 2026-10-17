@@ -1067,8 +1067,8 @@ s32 pcMenuSave(void)
     extern s8 menuSubOpenYesNo(s32 a, s32 b, s32 c, s32 d);
     extern u32 fn_80005748(void);
     extern void gamedataSetPlaytime(f32 seconds);
-    extern void* fn_801D036C(void);
-    extern void fn_801D0314(void* buffer);
+    extern void* memcardAllocBuffer(void);
+    extern void memcardFreeBuffer(void* buffer);
     extern s32 fn_801D0748(s32 a, s32 b, s32 c);
     extern void* savedataGetStatus(void* buffer, s32 kind);
     extern u32 gamedatasaveGetStatus(void* buffer, s32 kind);
@@ -1124,7 +1124,7 @@ s32 pcMenuSave(void)
             break;
         case 2:
             saved = 1;
-            backup = fn_801D036C();
+            backup = memcardAllocBuffer();
             *(PdaSaveImage*)backup = *(PdaSaveImage*)savedataGetStatus(0, 0);
             if (fn_801D0748(3, 2, 0) == 3 &&
                 gamedatasaveGetStatus(0, 4) != 0) {
@@ -1146,7 +1146,7 @@ s32 pcMenuSave(void)
             *(PdaSaveImage*)savedataGetStatus(0, 0) = *(PdaSaveImage*)backup;
             gamedataSetPlaytime((f32)(lbl_8047A498 + fn_80005748()));
             lbl_8047A498 = 0;
-            fn_801D0314(backup);
+            memcardFreeBuffer(backup);
             if (saved) {
                 state = 4;
                 result = 1;
@@ -3590,7 +3590,7 @@ void pdaStrategyMemoRun(void) {
     extern void  GSmodelSet60fpsAnimFlag(void* h, s32 b);
     extern void  GSmodelSetBoundCheck(void* h, s32 b);
     extern void  GSmodelDestroyLinkedParticles(void);
-    extern void* fn_801DAC3C(void* h);
+    extern void* wazaSequenceOwnerGetModel(void* h);
     extern void  cameraPlayAnime(u32 a, u32 id, u32 c, u32 d);
     extern void  menuModelTerm(void* subobj);
     extern void  menuOffScreenSetDisp(s32 a);
@@ -3866,7 +3866,7 @@ void pdaStrategyMemoRun(void) {
                         *(s32*)(S + 0x1C) = 0xD;
                         *(s32*)(S + 0x24) = 4;
                         *(f32*)(S + 0x60) = lbl_8047BC94;
-                        if (fn_801DAC3C(*(void**)(S + 0xA0)) != 0)
+                        if (wazaSequenceOwnerGetModel(*(void**)(S + 0xA0)) != 0)
                             GSmodelDestroyLinkedParticles();
                         *(f32*)(S + 0x64) = lbl_8047BCA8;
                         break;
@@ -3874,14 +3874,14 @@ void pdaStrategyMemoRun(void) {
                         *(s32*)(S + 0x1C) = 0xD;
                         *(s32*)(S + 0x24) = 5;
                         *(f32*)(S + 0x60) = lbl_8047BC94;
-                        if (fn_801DAC3C(*(void**)(S + 0xA0)) != 0)
+                        if (wazaSequenceOwnerGetModel(*(void**)(S + 0xA0)) != 0)
                             GSmodelDestroyLinkedParticles();
                         break;
                     case 0:
                         *(s32*)(S + 0x1C) = 0xD;
                         *(s32*)(S + 0x24) = 2;
                         *(f32*)(S + 0x60) = lbl_8047BC94;
-                        if (fn_801DAC3C(*(void**)(S + 0xA0)) != 0)
+                        if (wazaSequenceOwnerGetModel(*(void**)(S + 0xA0)) != 0)
                             GSmodelDestroyLinkedParticles();
                         break;
                     default:
@@ -5376,8 +5376,8 @@ extern f32 lbl_8047BD30;
 extern f32 lbl_8047BD34;
 extern u8 lbl_802E5424[];
 extern u8 lbl_802E5430[];
-extern void* fn_801DAC3C(void* h);
-extern s32 fn_801DAC24(void* h);
+extern void* wazaSequenceOwnerGetModel(void* h);
+extern s32 wazaSequenceOwnerGetSizeClass(void* h);
 extern void GSmodelGetPosition(void* model, void* out);
 extern void GSmodelSetPosition(void* model, void* pos);
 extern void GSmodelSetMatrix(void* model, void* mtx);
@@ -5420,11 +5420,11 @@ u8 pdaModelFrameCamera(void* work, void* sub)
         return 0;
     }
     if (*(u8*)((u8*)work + 0x14) != 0) {
-        model0 = fn_801DAC3C(*(void**)((u8*)work + 0x24));
+        model0 = wazaSequenceOwnerGetModel(*(void**)((u8*)work + 0x24));
         if (model0 == NULL) {
             return 0;
         }
-        fn_801DAC24(*(void**)((u8*)work + 0x24));
+        wazaSequenceOwnerGetSizeClass(*(void**)((u8*)work + 0x24));
     } else {
         model0 = *(void**)((u8*)work + 0x24);
     }
@@ -5630,11 +5630,11 @@ u8 fn_80047CC0(u8* work)
         return 0;
     }
     if (work[0x14] != 0) {
-        model = fn_801DAC3C(*(void**)(work + 0x24));
+        model = wazaSequenceOwnerGetModel(*(void**)(work + 0x24));
         if (model == NULL) {
             return 0;
         }
-        switch (fn_801DAC24(*(void**)(work + 0x24))) {
+        switch (wazaSequenceOwnerGetSizeClass(*(void**)(work + 0x24))) {
         case -2:
             spread = lbl_8047BD3C;
             break;
@@ -5909,8 +5909,8 @@ u8 pdaModelOrbitCamera(u8* work)
         return 0;
     }
     if (work[0x14] != 0) {
-        model = fn_801DAC3C(*(void**)(work + 0x24));
-        switch (fn_801DAC24(*(void**)(work + 0x24))) {
+        model = wazaSequenceOwnerGetModel(*(void**)(work + 0x24));
+        switch (wazaSequenceOwnerGetSizeClass(*(void**)(work + 0x24))) {
         case -2:
             spread = lbl_8047BD3C;
             break;
@@ -6993,7 +6993,7 @@ static inline void pdaPopLevel(u8* S)
         *(s32*)(S + 0x1c) = 0xd;
         *(s32*)(S + 0x24) = 2;
         *(f32*)(S + 0x60) = lbl_8047BC94;
-        model = fn_801DAC3C(*(void**)(S + 0xa0));
+        model = wazaSequenceOwnerGetModel(*(void**)(S + 0xa0));
         if (model != NULL) {
             GSmodelDestroyLinkedParticles(model);
         }
@@ -7002,7 +7002,7 @@ static inline void pdaPopLevel(u8* S)
         *(s32*)(S + 0x1c) = 0xd;
         *(s32*)(S + 0x24) = 4;
         *(f32*)(S + 0x60) = lbl_8047BC94;
-        model = fn_801DAC3C(*(void**)(S + 0xa0));
+        model = wazaSequenceOwnerGetModel(*(void**)(S + 0xa0));
         if (model != NULL) {
             GSmodelDestroyLinkedParticles(model);
         }
@@ -7012,7 +7012,7 @@ static inline void pdaPopLevel(u8* S)
         *(s32*)(S + 0x1c) = 0xd;
         *(s32*)(S + 0x24) = 5;
         *(f32*)(S + 0x60) = lbl_8047BC94;
-        model = fn_801DAC3C(*(void**)(S + 0xa0));
+        model = wazaSequenceOwnerGetModel(*(void**)(S + 0xa0));
         if (model != NULL) {
             GSmodelDestroyLinkedParticles(model);
         }
@@ -7142,7 +7142,7 @@ s32 pdaModelViewerControl(void* work, s32 mode)
         spin.x = lbl_8047BC94;
         spin.y = lbl_8047BC94;
         spin.z = lbl_8047BC94;
-        model = fn_801DAC3C(*(void**)((u8*)&lbl_803A6818 + 0x7c + 0x24));
+        model = wazaSequenceOwnerGetModel(*(void**)((u8*)&lbl_803A6818 + 0x7c + 0x24));
         if (model == NULL) {
             break;
         }

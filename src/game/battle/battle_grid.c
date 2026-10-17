@@ -103,7 +103,7 @@ extern BattleGridGroupTable lbl_80466DE8;
 static inline void battleGridResetModelVisibilityFlags(void) {
     extern u8 lbl_8047B39A;
     extern u8 lbl_8047B39C[12] __attribute__((section(".sdata")));
-    extern void fn_801DA4E8(void*, u32);
+    extern void wazaSequenceOwnerSetVisibility(void*, u32);
     BattleGridGroupEntry* group;
     u16 i;
     u16 j;
@@ -114,9 +114,9 @@ static inline void battleGridResetModelVisibilityFlags(void) {
 
     if (lbl_8047B39A != 0) {
         for (i = 0; i < 4; i++, group++) {
-            fn_801DA4E8(group->slot, lbl_8047B39C[visibilityIndex++]);
+            wazaSequenceOwnerSetVisibility(group->slot, lbl_8047B39C[visibilityIndex++]);
             for (j = 0; j < 2; j++) {
-                fn_801DA4E8(group->pokemon[j],
+                wazaSequenceOwnerSetVisibility(group->pokemon[j],
                             lbl_8047B39C[visibilityIndex++]);
             }
         }
@@ -125,12 +125,12 @@ static inline void battleGridResetModelVisibilityFlags(void) {
 }
 
 /**
- * fn_801C3114 / battleGrid_Init - Initialize the battle grid.
+ * battleGridReset / battleGrid_Init - Initialize the battle grid.
  * Address: 0x801C3114 | Size: 0xD8
  * Clears all grid slots, initializes the camera state,
  * sets up the 4-position double battle layout.
  */
-void fn_801C3114(void) {
+void battleGridReset(void) {
     extern s32 lbl_80478CA8;
     extern s32 lbl_80478CAC;
     extern u8 lbl_8047B399;
@@ -163,7 +163,7 @@ void fn_801C3114(void) {
  * battleGrid_Setup -- two independent confirmations of the same order.
  */
 static inline s32 battleGridGetMaxPokemonField(void) {
-    extern s32 fn_801DAC24(void*);
+    extern s32 wazaSequenceOwnerGetSizeClass(void*);
     u16 i;
     u16 j;
     BattleGridGroupEntry* group = lbl_80466DE8.entries;
@@ -178,7 +178,7 @@ static inline s32 battleGridGetMaxPokemonField(void) {
             pokemon = group->pokemon;
             for (j = 0; j < 2; j++, pokemon++) {
                 if (*pokemon != NULL) {
-                    s32 field = fn_801DAC24(*pokemon);
+                    s32 field = wazaSequenceOwnerGetSizeClass(*pokemon);
                     if (field > maxField) {
                         maxField = field;
                     }
@@ -300,11 +300,11 @@ static inline void battleGridApplyFloorScale(void) {
 }
 
 /**
- * fn_801C31EC / battleGrid_Setup - Full grid setup with model loading.
+ * battleGridInit / battleGrid_Setup - Full grid setup with model loading.
  * Address: 0x801C31EC | Size: 0x244
  * Referenced by battle_main.c (battle_FightEnd calls this for cleanup).
  */
-void fn_801C31EC(void) {
+void battleGridInit(void) {
     extern s32 lbl_80478CA8;
     extern s32 lbl_80478CAC;
     extern u8 lbl_8047B399;
@@ -324,14 +324,14 @@ void fn_801C31EC(void) {
  */
 static inline void battleGridPlaceModel(u8* obj, f32* pos, f32* rot,
                                         u8 mirrored) {
-    extern void* fn_801DAC3C(void*);
+    extern void* wazaSequenceOwnerGetModel(void*);
     extern void GSmodelSetPosition(void*, f32*);
     extern void GSmodelSetRotation(void*, f32*);
     void* model;
     s8 facing;
 
     if (obj != NULL) {
-        model = fn_801DAC3C(obj);
+        model = wazaSequenceOwnerGetModel(obj);
         if (model != NULL) {
             GSmodelSetPosition(model, pos);
             GSmodelSetRotation(model, rot);
@@ -367,7 +367,7 @@ void battleGridUpdate(void) {
     extern const f32 lbl_8047DF90;
     extern void clear__5GSvecFv(f32*);
     extern void GSvecCopy(f32*, f32*);
-    extern void fn_801DA4E8(void*, u32);
+    extern void wazaSequenceOwnerSetVisibility(void*, u32);
     BattleGridGroupTable* table;
     BattleGridGroupEntry* group;
     f32 distance;
@@ -459,7 +459,7 @@ void battleGridUpdate(void) {
             }
 
             battleGridPlaceModel(group->slot, slotPos, rot, group->arg1);
-            fn_801DA4E8(group->slot, 1);
+            wazaSequenceOwnerSetVisibility(group->slot, 1);
         }
     }
 }
@@ -569,7 +569,7 @@ void battleGridGetNormalisedScale(f32* scale) {
  */
 void battleGridRemovePokemon(u8* pokemon) {
     extern BattleGridGroupTable lbl_80466DE8;
-    extern void fn_801DA4E8(void*, u32);
+    extern void wazaSequenceOwnerSetVisibility(void*, u32);
     BattleGridGroupEntry* group = lbl_80466DE8.entries;
     u16 i;
     u16 j;
@@ -581,7 +581,7 @@ void battleGridRemovePokemon(u8* pokemon) {
                     group->pokemon[j] = NULL;
                     group->memberCount--;
                     lbl_80466DE8.pokemonCount--;
-                    fn_801DA4E8(pokemon, 0);
+                    wazaSequenceOwnerSetVisibility(pokemon, 0);
                     pokemon[0x76] = 0;
                     return;
                 }
@@ -600,7 +600,7 @@ void battleGridReplacePokemon(u8* pokemon, u8* replacement) {
     extern BattleGridGroupTable lbl_80466DE8;
     extern char lbl_80275808[];
     extern void GSlogWrite(const char*, ...);
-    extern void fn_801DA4E8(void*, u32);
+    extern void wazaSequenceOwnerSetVisibility(void*, u32);
     BattleGridGroupEntry* group = lbl_80466DE8.entries;
     u16 i;
     u16 j;
@@ -614,7 +614,7 @@ void battleGridReplacePokemon(u8* pokemon, u8* replacement) {
         for (j = 0; j < 2; j++) {
             if (group->pokemon[j] == pokemon) {
                 group->pokemon[j] = replacement;
-                fn_801DA4E8(pokemon, 0);
+                wazaSequenceOwnerSetVisibility(pokemon, 0);
                 replacement[0x76] = pokemon[0x76];
                 pokemon[0x76] = 0;
                 return;
@@ -677,7 +677,7 @@ void battleGridReplaceTrainer(u8* trainer, u8* replacement) {
     extern BattleGridGroupTable lbl_80466DE8;
     extern char lbl_80275830[];
     extern void GSlogWrite(const char*, ...);
-    extern void fn_801DA4E8(void*, u32);
+    extern void wazaSequenceOwnerSetVisibility(void*, u32);
     BattleGridGroupEntry* group = lbl_80466DE8.entries;
     u16 i;
 
@@ -689,7 +689,7 @@ void battleGridReplaceTrainer(u8* trainer, u8* replacement) {
     for (i = 0; i < 4; i++, group++) {
         if (group->slot == trainer) {
             group->slot = replacement;
-            fn_801DA4E8(trainer, 0);
+            wazaSequenceOwnerSetVisibility(trainer, 0);
             replacement[0x76] = trainer[0x76];
             trainer[0x76] = 0;
             return;

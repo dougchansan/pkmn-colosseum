@@ -94,7 +94,7 @@ void* wazaSequenceCameraGetPattern__Fbi(u8 shortTable, s32 flags) {
 #endif
 
 /**
- * fn_801D2C6C - Waza get global state from SDA.
+ * battleCameraWazaGetOwner - Waza get global state from SDA.
  * Address: 0x801D2C6C | Size: 0x8
  */
 extern void* lbl_8047B3EC;
@@ -105,15 +105,15 @@ extern f32 lbl_80478CDC;
 
 extern u8 lbl_80467CC0[];
 extern void fn_801DD158(void* obj);
-extern void fn_801DF1D0(void* obj);
+extern void wazaSequenceOwnerUpdateBlink(void* obj);
 extern void fn_801DD3E4(void* obj);
-extern void fn_801DD23C(void* obj);
+extern void wazaSequenceOwnerRelease(void* obj);
 extern void _threadSwitch(void);
 extern s32 fn_8017B2CC(s32 id);
 extern void fn_800F915C(s32 id);
 extern void GSresReleaseById(s32 id);
 #ifndef WAZA_CAMERA_FILE_ONLY
-void* fn_801D2C6C(void) {
+void* battleCameraWazaGetOwner(void) {
     return lbl_8047B3EC;
 }
 #endif
@@ -297,11 +297,11 @@ void fn_801D2F94(void) {
 }
 
 /**
- * fn_801D301C - Waza animation reset: set lbl_8047B3F4=1, lbl_8047B3EC=0, lbl_8047B3F0=0.
+ * battleCameraWazaInit - Waza animation reset: set lbl_8047B3F4=1, lbl_8047B3EC=0, lbl_8047B3F0=0.
  * Address: 0x801D301C | Size: 0x18
  */
 extern u8  lbl_8047B3F4;
-void fn_801D301C(void) {
+void battleCameraWazaInit(void) {
     lbl_8047B3F4 = 1;
     lbl_8047B3EC = NULL;
     lbl_8047B3F0 = NULL;

@@ -200,7 +200,7 @@ extern void cameraInit(void);    /* World/map system init */
 extern void fn_8013024C(void);    /* 3D model system init */
 extern void peopleSystemInit(u32 a);   /* Pokemon data/model init */
 extern void fn_801ED388(void);    /* GBA link init */
-extern void fn_801D0A30(void);    /* Menu/UI system init */
+extern void memcardInit(void);    /* Menu/UI system init */
 extern void fn_801128A0(void);    /* Colosseum mode init */
 extern void* tableResBiosGetResPtr(u32 id);  /* Load relocatable module (REL) by ID */
 
@@ -802,7 +802,7 @@ void mainGameThread(void) {
     fn_801ED388();
 
     /* Initialize menu/UI system */
-    fn_801D0A30();
+    memcardInit();
 
     /* Initialize Colosseum battle mode */
     fn_801128A0();

@@ -221,8 +221,8 @@ extern const char lbl_802792E8[];
 extern u32 lbl_8047E168;
 extern u16 lbl_8047E170;
 extern u32 lbl_8047E174;
-extern void fn_801D0080(void);
-extern s32 fn_801CF320(void);
+extern void memcardRequestCancel(void);
+extern s32 memcardSaveSetup(void);
 extern s32 fn_801CF568(void);
 extern s32 fn_801CF7E4(void);
 extern s32 fn_801CF9C8(void);
@@ -241,7 +241,7 @@ s32 scriptIsTrigerPush(void)
     return pushed;
 }
 
-s32 fn_801CB1C4(void)
+s32 scriptIsAnyInput(void)
 {
     s32 pushed = 0;
     s32 axis;
@@ -368,7 +368,7 @@ void std221_mapObjectLinkParticles(u32 model_id, u32 particle_bank_id)
 #endif
 
 #if defined(FIELD_801CB180_RANGE_801CB59C)
-s32 fn_801CB59C(u32 resource)
+s32 scriptCharacterDetach(u32 resource)
 {
     u32 group = std093_getCurrentGroupID();
     void* model;
@@ -593,14 +593,14 @@ s32 std223_askYesNoThenWarp395(void)
 #endif
 
 /*
- * Save-data SHA-1 (0x801CBBAC - 0x801CDB04). fn_801CBBAC, fn_801CBE44 and
+ * Save-data SHA-1 (0x801CBBAC - 0x801CDB04). sha1Calc, fn_801CBE44 and
  * fn_801CBF64 (SHA1Final) are linked from field_exact_801CBBAC.c,
- * field_exact_801CBE44.c and field_exact_801CBF64.c; fn_801CC380
+ * field_exact_801CBE44.c and field_exact_801CBF64.c; sha1Transform
  * (SHA1Transform) from field_exact_801CC380.c.
  */
 #include "game/save/savedata_sha1.h"
 
-/* fn_801CBCDC: see src/game/memcard.c (whole memory-card TU candidate). */
+/* savedataDecryptCheck: see src/game/memcard.c (whole memory-card TU candidate). */
 
 
 
@@ -637,7 +637,7 @@ typedef union SHA1Block {
     w = SHA1_ROTL(w, 30)
 
 #if defined(FIELD_801CBA90_RANGE_801CC380)
-void fn_801CC380(u32 state[5], const u8 input[64])
+void sha1Transform(u32 state[5], const u8 input[64])
 {
     u32 a;
     u32 b;
@@ -761,7 +761,7 @@ void fn_801CC380(u32 state[5], const u8 input[64])
 #define task lbl_8047B3D4
 #define raw ((u8*)lbl_8047B3D4)
 #define file_info ((void*)((u8*)lbl_8047B3D4 + 0x8C))
-/* fn_801CDB04: see src/game/memcard.c (whole memory-card TU candidate). */
+/* memcardTaskMain: see src/game/memcard.c (whole memory-card TU candidate). */
 #undef file_info
 #undef raw
 #undef task
@@ -802,7 +802,7 @@ static inline void memcardFillRandom(u8* random, s32 count)
 }
 
 #if defined(FIELD_801CBA90_RANGE_801CF320)
-s32 fn_801CF320(void)
+s32 memcardSaveSetup(void)
 {
     u32 serial[2];
     MemcardSaveBuffer* save;
@@ -1052,7 +1052,7 @@ scan_done:
 #endif
 
 #if defined(FIELD_801CBA90_RANGE_801D0080)
-void fn_801D0080(void)
+void memcardRequestCancel(void)
 {
     lbl_8047B3D4->callback_finished = 1;
 }

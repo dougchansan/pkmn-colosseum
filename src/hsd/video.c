@@ -8,7 +8,7 @@
  * and checked against Colosseum's retail
  * code, which is the newer sysdolphin: a full-screen copy that yields fewer
  * XFB lines than the XFB holds fills the rest with black, and the library
- * gained a "finish the XFB being drawn" entry point (fn_801BF6AC) that
+ * gained a "finish the XFB being drawn" entry point (HSD_VIFinishDrawXFB) that
  * marks it waiting and then drawn under one interrupt lock.
  *
  * The library is built with deferred inlining, so functions are listed in
@@ -436,7 +436,7 @@ void HSD_VIWaitXFBFlushNoYield(void)
 
 /* Finishes the XFB being drawn: marks it waiting, then drawn (newer
  * sysdolphin; no Melee counterpart). */
-void fn_801BF6AC(void)
+void HSD_VIFinishDrawXFB(void)
 {
     BOOL intr;
     int idx;

@@ -2473,7 +2473,7 @@ config.libs = [
                 progress_category="game",
             ),
             # Waza camera TU: wazaSequenceCameraGetPattern (with its one pooled
-            # 0.0f) and fn_801D2C6C/fn_801D2C74 link as carves; the rest of
+            # 0.0f) and battleCameraWazaGetOwner/fn_801D2C74 link as carves; the rest of
             # wazaSequenceCamera.c, 0x801D2D28-0x801D5328, links whole with its
             # .sdata2 pool 0x8047E1E0-0x8047E2E0.
             *[
@@ -6500,7 +6500,7 @@ config.libs = [
                 Matching,
                 "game/battle/battle_candidate_801D0C30.c",
                 mw_version="GC/1.3.2",
-                # fn_801D0DB0 calls fn_801D0AA0 out of line in retail.
+                # pokemonCenterBallMachineSequence calls heroGetPokemonBallId out of line in retail.
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8", "-inline noauto"],
                 progress_category="game",
             ),

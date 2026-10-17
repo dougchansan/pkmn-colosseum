@@ -95,7 +95,7 @@ extern void  fightMenuSubMenuLvupStatus(void* a, void* b, void* c);
 extern void  fightMenuOpenLevelUpStatusMenu(void* a, u32 flag);
 extern void  fn_802622E4(void);
 extern u32 fn_80211A78();
-extern void fn_801DA7AC();
+extern void wazaSequenceSysFreeAll();
 extern u8   lbl_8047B625;
 extern void fn_8020248C();
 extern void* lbl_8047B62C;
@@ -164,7 +164,7 @@ extern u16  lbl_8047B61C;
 extern s32  fn_801FEF74();
 extern void fn_802086B0();
 extern void fn_8020F108();
-extern s8   fn_801DA5C4();
+extern s8   wazaSequenceSysIsAllEnd();
 extern u8   lbl_80379A22[0x14];
 extern u32  fn_8020912C();
 extern int  fn_802656AC();
@@ -194,7 +194,7 @@ extern u8   lbl_80375FDF[9];
 extern void heroAddPokedoru(u32, s32);
 extern u8   lbl_8037939C[9];
 extern u8  fn_801DDD28();
-extern void fn_801DA9E8();
+extern void wazaSequenceSysStartWaza();
 extern u16 lbl_8047B60C;
 extern int fn_80215008();
 extern u32 fn_8022B2CC();
@@ -690,13 +690,13 @@ void fightCheckRuiShadowSense(u32 r3, u8 r4)
     extern int std082_flagGetValue();
     extern void fn_801C3430();
     extern void battleGridReplaceTrainer();
-    extern void fn_801DA4E8();
-    extern void fn_801DA8C4();
-    extern u8 fn_801DA94C();
-    extern void fn_801DA9E8();
-    extern void fn_801DB100();
+    extern void wazaSequenceOwnerSetVisibility();
+    extern void wazaSequenceSysStopWaza();
+    extern u8 wazaSequenceSysIsPlayingWaza();
+    extern void wazaSequenceSysStartWaza();
+    extern void wazaSequenceOwnerFree();
     extern void fn_801DDD28();
-    extern u32 fn_801DE418();
+    extern u32 wazaSequenceTrainerCreate();
     extern void fn_801EF7C4();
     extern void fn_801F000C();
     extern u32 fn_801F2A7C();
@@ -776,23 +776,23 @@ void fightCheckRuiShadowSense(u32 r3, u8 r4)
             }
             uVar4 = fn_801F54A4(0,0,0x36,0);
             fn_801F4C14(0,0,0x36,0,r3);
-            uVar5 = fn_801DE418(0x32);
+            uVar5 = wazaSequenceTrainerCreate(0x32);
             fn_801DDD28(uVar5,0xa0,4,0);
             fn_80208404(r3,0,uVar10,0);
             battleGridReplaceTrainer(uVar3,uVar5);
             fn_801C3430();
-            fn_801DA9E8(uVar5,0xa0,4);
+            wazaSequenceSysStartWaza(uVar5,0xa0,4);
             fn_801EF7C4(0);
-            fn_801DA4E8(uVar5,1);
+            wazaSequenceOwnerSetVisibility(uVar5,1);
             while (1) {
-              cVar9 = fn_801DA94C(uVar5,0xa0,4);
+              cVar9 = wazaSequenceSysIsPlayingWaza(uVar5,0xa0,4);
               if (cVar9 == 0) break;
               _threadSwitch();
             }
             battleGridReplaceTrainer(uVar5,uVar3);
             fn_801C3430();
             fn_801EF7C4(1);
-            fn_801DA4E8(uVar5,0);
+            wazaSequenceOwnerSetVisibility(uVar5,0);
             fn_80208404(r3,0,uVar10,1);
             if (sVar7 == 0x11) {
               fn_802624CC(0x7729);
@@ -834,8 +834,8 @@ void fightCheckRuiShadowSense(u32 r3, u8 r4)
               fn_802086E8(r3,1,1);
               fn_801FBA24(uVar2,3);
             }
-            fn_801DA8C4(uVar5,0xa0,4);
-            fn_801DB100(uVar5);
+            wazaSequenceSysStopWaza(uVar5,0xa0,4);
+            wazaSequenceOwnerFree(uVar5);
           }
         }
       }

@@ -128,7 +128,7 @@ void wazaViewerLoadSequenceFiles(s32 slot) {
     wazaViewerLoadFile((const char*)viewerData, modelPath, buf, modelSize, FALSE);
     sequenceLoad(effect, *(void**)(lbl_804673F8 + 0x65C));
     *(s32*)(lbl_804673F8 + 0x04) = 1;
-    fn_801DA4E8(effect, 1);
+    wazaSequenceOwnerSetVisibility(effect, 1);
     rotation = *(WazaViewerVec*)(viewerData + 0x0C);
     position = *(WazaViewerVec*)(viewerData + 0x18);
     position.x = battleGridGetDistance(0);
@@ -146,7 +146,7 @@ void wazaViewerLoadSequenceFiles(s32 slot) {
             if ((u8)fn_801DDB4C(effect, *(void**)(lbl_804673F8 + 0x664))) {
                 *(s32*)(lbl_804673F8 + 0x04) = 2;
             } else {
-                fn_801DA8C4(effect, 0, 0);
+                wazaSequenceSysStopWaza(effect, 0, 0);
             }
         }
     }

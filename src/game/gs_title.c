@@ -2468,7 +2468,7 @@ void menuOptionDrawSoundMode(void* arg0, u8* arg1) {
 
 /* titleNewContinueSelect - 0x80020C9C | size: 0x200 */
 extern void winSeqCheckMove(void);
-extern void fn_801D04E8(void);
+extern void memcardGetFlag41(void);
 extern void winMsgOpen(s32, s32, s32, s32);
 extern void fn_8001E074(void);
 extern void fn_801D0748(void);
@@ -2483,7 +2483,7 @@ void titleNewContinueSelect(void) {
     extern s32 menuOpen(s32, s32);
     extern void soundSetOutputMode(u32);
     extern void gamedatasaveSetStatus(s32, s32, s32);
-    extern u8 fn_801D04E8(void);
+    extern u8 memcardGetFlag41(void);
     extern void winMsgOpen(s32, s32, s32, s32);
     extern u8 fn_8001E074(s32, s32, s32, s32);
     extern void fn_801D0748(s32, s32, s32);
@@ -2536,7 +2536,7 @@ void titleNewContinueSelect(void) {
         case 0x64:
             *(s32*)&lbl_803A1FC8 = -1;
             if (gamedatasaveGetStatus(0, 9) != fmt) {
-                if (fn_801D04E8() != 0) {
+                if (memcardGetFlag41() != 0) {
                     winMsgOpen(1, 0x3D82, 1, 0);
                     if ((s8)menuSubOpenYesNo(0, 0x3C, 0xAA, 1) == 0) {
                         fn_801D0748(7, 2, 0);
@@ -2701,7 +2701,7 @@ s32 titleMenuMain(void)
     extern void fn_800205B8(u32);
     extern u32 gamedatasaveGetStatus(s32, s32);
     extern u16 fn_8006A718(s32);
-    extern u8 fn_801D04E8(void);
+    extern u8 memcardGetFlag41(void);
     extern s32 floorRequestChange(s32);
     extern void menuModelInit(void*, s16, s16);
     extern s32 menuModelSetMotion(void*, u32);
@@ -2814,7 +2814,7 @@ s32 titleMenuMain(void)
                 state = 3;
                 break;
             }
-            if ((u8)fn_801D04E8() == 0) {
+            if ((u8)memcardGetFlag41() == 0) {
                 winMsgOpen(2, 0x44EA, 1, 0);
             } else {
                 winMsgOpen(2, 0x444B, 1, 0);

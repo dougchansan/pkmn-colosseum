@@ -22,7 +22,7 @@ extern BattleGridGroupTable lbl_80466DE8;
 extern const char lbl_80275830[];
 
 extern void GSlogWrite(const char*, ...);
-extern void fn_801DA4E8(void*, u32);
+extern void wazaSequenceOwnerSetVisibility(void*, u32);
 extern void* memset(void*, int, u32);
 
 void battleGridReplaceTrainer(u8* trainer, u8* replacement)
@@ -38,7 +38,7 @@ void battleGridReplaceTrainer(u8* trainer, u8* replacement)
     for (i = 0; i < 4; i++, group++) {
         if (group->slot == trainer) {
             group->slot = replacement;
-            fn_801DA4E8(trainer, 0);
+            wazaSequenceOwnerSetVisibility(trainer, 0);
             replacement[0x76] = trainer[0x76];
             trainer[0x76] = 0;
             return;

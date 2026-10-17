@@ -92,7 +92,7 @@ extern void  fightMenuSubMenuLvupStatus(void* a, void* b, void* c);
 extern void  fightMenuOpenLevelUpStatusMenu(void* a, u32 flag);
 extern void  fn_802622E4(void);
 extern u32 fn_80211A78();
-extern void fn_801DA7AC();
+extern void wazaSequenceSysFreeAll();
 extern u8   lbl_8047B625;
 extern void fn_8020248C();
 extern void* lbl_8047B62C;
@@ -161,7 +161,7 @@ extern u16  lbl_8047B61C;
 extern s32  fn_801FEF74();
 extern void fn_802086B0();
 extern void fn_8020F108();
-extern s8   fn_801DA5C4();
+extern s8   wazaSequenceSysIsAllEnd();
 extern u8   lbl_80379A22[0x14];
 extern u32  fn_8020912C();
 extern int  fn_802656AC();
@@ -191,7 +191,7 @@ extern u8   lbl_80375FDF[9];
 extern void heroAddPokedoru(u32, s32);
 extern u8   lbl_8037939C[9];
 extern u8  fn_801DDD28();
-extern void fn_801DA9E8();
+extern void wazaSequenceSysStartWaza();
 extern u16 lbl_8047B60C;
 extern int fn_80215008();
 extern u32 fn_8022B2CC();
@@ -621,7 +621,7 @@ void fn_80224060(void) {
         fn_802086B0(ctx);
         fn_8020F108(0xa4, ctx, ctx, 0, 0);
         do {
-            if ((u8)fn_801DA5C4(6) == 1) {
+            if ((u8)wazaSequenceSysIsAllEnd(6) == 1) {
                 break;
             }
             _threadSwitch();

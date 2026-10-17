@@ -15,7 +15,7 @@ void fn_80213270(void)
 
 {
     extern u32 GSrand();
-    extern void fn_801DA7AC();
+    extern void wazaSequenceSysFreeAll();
     extern u16 std103_battleGetResult();
     extern void fightFloorInitFightOutPokemonPtrAryFightWazaJoutai();
     extern void fightFloorLoopValidFightOutPokemon();
@@ -63,9 +63,9 @@ void fn_80213270(void)
   fightFloorLoopValidFightOutPokemon(0,fn_80230568,0,1);
   fn_8022FE80();
   fightFloorLoopValidFightOutPokemon(0,fn_80230318,0,0);
-  fn_801DA7AC();
+  wazaSequenceSysFreeAll();
   fightFloorLoopValidFightOutPokemon(0,fn_802301A8,0,1);
-  fn_801DA7AC();
+  wazaSequenceSysFreeAll();
   local_18 = 0;
   fightFloorLoopValidFightOutPokemon(0,fn_80213558,&local_18,0);
   for (uVar6 = 0; (uVar6 & 0xffff) < 2; uVar6 = uVar6 + 1) {
@@ -93,7 +93,7 @@ void fn_80213270(void)
     fightFloorSetStatus(0,0,0xc,0,sVar2);
     uVar4 = GSrand();
     fightFloorSetStatus(0,0,0x5b,0,uVar4);
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
     fightMenuAllFightTrainerCloseStatusMenu(0);
     fightMenuAllFightOutPokemonCloseStatusMenu(0);
     fightMenuCloseMsg();

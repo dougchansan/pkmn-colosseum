@@ -1115,8 +1115,8 @@ extern void* pokemonCreateSequence(void* ptr);
 extern void battleGridReplacePokemon(void* ptr, void* src);
 extern void battleGridUpdate(void);
 extern void pokemonSetStatus(void* ptr, s32 a, s32 b, s32 c, s32 d);
-extern void fn_801DB100(void* ptr);
-extern void fn_801DA4E8(void* ptr, s32 a);
+extern void wazaSequenceOwnerFree(void* ptr);
+extern void wazaSequenceOwnerSetVisibility(void* ptr, s32 a);
 extern void fightOutPokemonWriteJoutaiDataId(void* ptr, s32 a);
 extern void fightMenuFightOutPokemonRenewStatusMenu(void* ptr, u16 a, s32 b);
 extern void pokemonSetSequenceStatus(void* a, u32 b);
@@ -1189,8 +1189,8 @@ s32 menuFightPokemonSelectSub(u32 ctx) {
                     battleGridReplacePokemon((void*)(u32)subItem, animPtr);
                     battleGridUpdate();
                     pokemonSetStatus(encounter, 0, 0xee, 0, (s32)animPtr);
-                    fn_801DB100((void*)(u32)subItem);
-                    fn_801DA4E8(animPtr, 1);
+                    wazaSequenceOwnerFree((void*)(u32)subItem);
+                    wazaSequenceOwnerSetVisibility(animPtr, 1);
                     fightOutPokemonWriteJoutaiDataId(encounter, 0x14);
                 }
                 {

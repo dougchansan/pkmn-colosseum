@@ -131,11 +131,11 @@ void fn_8025DD14(int *r3)
 void fn_8025DDAC(u32 *r3,u32 r4)
 {
     extern u32 GSmodelSetRotation();
-    extern u32 fn_801DAC3C(u32);
+    extern u32 wazaSequenceOwnerGetModel(u32);
   u32 iVar1;
   r3 = (u32*)*r3;
   if (r3 == 0) return;
-  iVar1 = fn_801DAC3C((u32)r3);
+  iVar1 = wazaSequenceOwnerGetModel((u32)r3);
   if (iVar1 == 0) return;
   GSmodelSetRotation(iVar1,r4);
 }
@@ -155,11 +155,11 @@ void fn_8025DDF4(u32 *r3)
 void fn_8025DE0C(u32 *r3,u32 r4)
 {
     extern u32 GSmodelSetPosition();
-    extern u32 fn_801DAC3C(u32);
+    extern u32 wazaSequenceOwnerGetModel(u32);
   u32 iVar1;
   r3 = (u32*)*r3;
   if (r3 == 0) return;
-  iVar1 = fn_801DAC3C((u32)r3);
+  iVar1 = wazaSequenceOwnerGetModel((u32)r3);
   if (iVar1 == 0) return;
   GSmodelSetPosition(iVar1,r4);
 }
@@ -171,12 +171,12 @@ void fn_8025DE54(u32 *r3,u16 *r4,int r5,int r6,int r7,
 {
     extern int _threadSwitch();
     extern int fadeSet();
-    extern int fn_801DA4E8();
-    extern int fn_801DA8C4();
-    extern int fn_801DA914();
-    extern u8 fn_801DA94C();
-    extern int fn_801DA9E8();
-    extern int fn_801DB088();
+    extern int wazaSequenceOwnerSetVisibility();
+    extern int wazaSequenceSysStopWaza();
+    extern int wazaSequenceClearFlag16();
+    extern u8 wazaSequenceSysIsPlayingWaza();
+    extern int wazaSequenceSysStartWaza();
+    extern int wazaSequenceSysUpdate();
     extern f32 lbl_8047E670;
 
   u16 *p;
@@ -185,21 +185,21 @@ void fn_8025DE54(u32 *r3,u16 *r4,int r5,int r6,int r7,
   if (r7 == 1) {
     fadeSet((double)lbl_8047E670,2);
   }
-  fn_801DA4E8(*r3,1);
+  wazaSequenceOwnerSetVisibility(*r3,1);
   p = r4;
   for (iVar2 = 0; iVar2 < r5; iVar2 = iVar2 + 1) {
     if (r6 == 0) {
-      fn_801DA914(*r3,*p,p[1]);
+      wazaSequenceClearFlag16(*r3,*p,p[1]);
     }
-    fn_801DA9E8(*r3,*p,p[1]);
-    while (fn_801DA94C(*r3,*p,p[1]) != 0) {
-      fn_801DB088();
+    wazaSequenceSysStartWaza(*r3,*p,p[1]);
+    while (wazaSequenceSysIsPlayingWaza(*r3,*p,p[1]) != 0) {
+      wazaSequenceSysUpdate();
       _threadSwitch();
     }
     if (r8 == 1) {
-      fn_801DA4E8(*r3,0);
+      wazaSequenceOwnerSetVisibility(*r3,0);
     }
-    fn_801DA8C4(*r3,*p,p[1]);
+    wazaSequenceSysStopWaza(*r3,*p,p[1]);
     p = p + 2;
   }
   return;
@@ -222,7 +222,7 @@ u32 fn_8025DF38(u32* r3, u32 r4, u16* r5, int r6)
     extern u32 fn_8018F470(u32 index);
     extern u8 fn_801DDD28(u32 handle, u16 a, u16 b, s32 c);
     extern u32 fn_801DE190(u32 id, u32 random, s32 flags);
-    extern void* fn_801DAC3C(u32 handle);
+    extern void* wazaSequenceOwnerGetModel(u32 handle);
     s32 n;
     void* floor;
     u32 i;
@@ -247,7 +247,7 @@ u32 fn_8025DF38(u32* r3, u32 r4, u16* r5, int r6)
         }
         pair += 2;
     }
-    if (r3 != NULL && *r3 != 0 && (model = fn_801DAC3C(*r3)) != NULL) {
+    if (r3 != NULL && *r3 != 0 && (model = wazaSequenceOwnerGetModel(*r3)) != NULL) {
         GSmodelClearShadowFlags(model, 1);
         floor = floorDataBiosGetCurrentPtr();
         if (floor != NULL) {

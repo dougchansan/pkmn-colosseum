@@ -97,7 +97,7 @@ static inline void menuPokemonChangeAlert(u32 msgId) {
 /* stateFunctionSaveReport - 0x8002DD24 | size: 0x1ec */
 extern void fn_80089E20(void);
 extern void fn_801D055C(void);
-extern u8 fn_801D04D0(void);
+extern u8 memcardIsRetrying(void);
 extern void fn_80089D98(void);
 extern void fn_801D046C(void);
 extern s32 memcardGetTaskResult(void);
@@ -130,7 +130,7 @@ void stateFunctionSaveReport(void* src) {
     extern s32 fn_80089E20(s32 mode, void* pkm, u32 slotB, u32 flags);
     extern s32 fn_80089D98(s32 slot);
     extern void fn_801D055C(s32 a, s32 b, s32 c);
-    extern u8 fn_801D04D0(void);
+    extern u8 memcardIsRetrying(void);
     extern void fn_801D046C(s32 flag);
     extern s32 memcardGetTaskResult(void);
     extern void fn_801D039C(void);
@@ -158,7 +158,7 @@ void stateFunctionSaveReport(void* src) {
     if (fn_80089E20(2, pokemon, lbl_8047A420, lbl_8047A40C) == 0) {
         fn_801D055C(8, 2, 0);
         do {
-            if (sent == 0 && fn_801D04D0() != 0) {
+            if (sent == 0 && memcardIsRetrying() != 0) {
                 state = fn_80089D98(2);
                 if (state >= 0) {
                     if (state != 0) {

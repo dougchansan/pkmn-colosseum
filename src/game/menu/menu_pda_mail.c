@@ -806,9 +806,9 @@ s32 fn_8004D34C(s32 index)
     extern s32 fn_8004DC18(s32 mode);
     extern void fn_8004BFB0(void);
     extern u8 pdaMailPickerRun(u8 initialSelection);
-    extern u8 fn_801D16C4(void);
+    extern u8 mailGetCurrentIndex(void);
     extern void fn_801D167C(u8 handle);
-    extern void fn_801D1B10(s32 handle);
+    extern void mailSetFlag442(s32 handle);
     extern s32 lbl_804788E0;
     extern s32 lbl_8047A508;
     extern s32 lbl_8047A50C;
@@ -869,7 +869,7 @@ s32 fn_8004D34C(s32 index)
         case 10:
             sortMode = fn_8004DC18(mailGetSortMode());
             if (sortMode >= 0) {
-                fn_801D1B10(sortMode);
+                mailSetFlag442(sortMode);
                 fn_8004BFB0();
                 row = 0;
                 remaining = mailGetNbMailInMailbox();
@@ -888,7 +888,7 @@ s32 fn_8004D34C(s32 index)
             }
             break;
         case 11:
-            handle = pdaMailPickerRun(fn_801D16C4());
+            handle = pdaMailPickerRun(mailGetCurrentIndex());
             if (handle != 0xff) {
                 fn_801D167C(handle);
             }
@@ -1211,7 +1211,7 @@ typedef struct PdaMailOutC {
     u32 field_0x4c;
 } PdaMailOutC;
 
-extern u32 fn_801D1620(u32 idx);
+extern u32 mailGetEntryField4(u32 idx);
 
 /* lbl_802672F0 (rodata_80267250.c): shared message-id table; this call
  * site takes a mutable stack COPY of the first 11 (of 12) entries. */
@@ -1557,12 +1557,12 @@ u32 fn_8004CDD8(u8* context, u8* object)
 #if !defined(MENU_PDA_MAIL_PARTIAL) || defined(MENU_PDA_MAIL_PICKER_ONLY)
 extern u8* windowGetKeyInfo(void);
 extern void soundStart(s32 id, s32 a, s32 b, s32 c);
-extern u32 fn_801D1650(u8 index);
+extern u32 mailGetEntryField0(u8 index);
 extern void GSsndGetStatus(u32 id);
 extern void soundKill(u32 id);
 extern void fn_801654E0(u32 id, u32 buffer, u32 size);
 extern void soundAttachWork(u32 id, u32 arg1, u32 arg2);
-extern s32 fn_801D1618(void);
+extern s32 mailGetMailCount(void);
 extern void soundStopRaw(u32 id, u32 arg1, u32 arg2);
 extern s32 lbl_8047A520;
 extern u8 lbl_8047A524;
@@ -1579,16 +1579,16 @@ u32 fn_8004DDC0(u8* context)
 
     input = windowGetKeyInfo();
     if (lbl_8047A520 != 0) {
-        soundId = fn_801D1650(lbl_8047A524);
+        soundId = mailGetEntryField0(lbl_8047A524);
         if (soundId != 0) {
             GSsndGetStatus(soundId);
         }
-        soundId = fn_801D1650(lbl_8047A524);
+        soundId = mailGetEntryField0(lbl_8047A524);
         if (soundId != 0) {
             soundKill(soundId);
         }
         lbl_8047A524 = *(s8*)(context + 0x95);
-        soundId = fn_801D1650(lbl_8047A524);
+        soundId = mailGetEntryField0(lbl_8047A524);
         if (soundId != 0) {
             fn_801654E0(soundId, lbl_8047A52C, 0x10000);
             soundAttachWork(soundId, 0, 0x408);
@@ -1599,7 +1599,7 @@ u32 fn_8004DDC0(u8* context)
     }
 
     if ((*(u16*)(input + 4) & 2) != 0) {
-        limit = fn_801D1618() + 1;
+        limit = mailGetMailCount() + 1;
         if (++*(s8*)(context + 0x95) >= limit) {
             *(s8*)(context + 0x95) = limit - 1;
         }
@@ -1610,7 +1610,7 @@ u32 fn_8004DDC0(u8* context)
         }
     }
     if (lbl_8047A524 != (s8)context[0x95]) {
-        soundId = fn_801D1650(lbl_8047A524);
+        soundId = mailGetEntryField0(lbl_8047A524);
         if (soundId != 0) {
             soundStopRaw(soundId, 0, 0);
         }
@@ -1645,7 +1645,7 @@ u8 pdaMailPickerRun(u8 initialSelection)
     lbl_8047A52C = GSresAllocResourceAlign(0x10000, 0x20, 0, 0x408, 0);
     GSresRegisterResource(lbl_8047A52C, 0, 0x408, 0);
     lbl_8047A524 = initialSelection;
-    soundId = fn_801D1650(initialSelection);
+    soundId = mailGetEntryField0(initialSelection);
     if (soundId != 0) {
         fn_801654E0(soundId, lbl_8047A52C, 0x10000);
         soundAttachWork(soundId, 0, 0x408);
@@ -1654,7 +1654,7 @@ u8 pdaMailPickerRun(u8 initialSelection)
     }
 
     choice = menuOpenCustom(0x76, windowGetActiveID(), &selection, 0, 1, 0);
-    if (choice < 0 || choice >= fn_801D1618()) {
+    if (choice < 0 || choice >= mailGetMailCount()) {
         result = 0xFF;
     } else {
         result = choice;
@@ -1662,15 +1662,15 @@ u8 pdaMailPickerRun(u8 initialSelection)
     menuClose(0x76);
     menuCloseSync(0x76, 1);
 
-    soundId = fn_801D1650(lbl_8047A524);
+    soundId = mailGetEntryField0(lbl_8047A524);
     if (soundId != 0) {
         soundStopRaw(soundId, 0, 0);
     }
-    soundId = fn_801D1650(lbl_8047A524);
+    soundId = mailGetEntryField0(lbl_8047A524);
     if (soundId != 0) {
         GSsndGetStatus(soundId);
     }
-    soundId = fn_801D1650(lbl_8047A524);
+    soundId = mailGetEntryField0(lbl_8047A524);
     if (soundId != 0) {
         soundKill(soundId);
     }

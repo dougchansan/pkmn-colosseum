@@ -801,8 +801,8 @@ u16 fn_8006A718(s32 idx) {
 
 /* 0x8006A76C | size: 0x30 */
 u8 fn_8006A76C(void) {
-    extern u8 fn_801D04E8(void);
-    return (u8)((fn_801D04E8() & 0xFF) == 0);
+    extern u8 memcardGetFlag41(void);
+    return (u8)((memcardGetFlag41() & 0xFF) == 0);
 }
 
 /* 0x8006A79C | size: 0x10 */

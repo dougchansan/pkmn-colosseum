@@ -1,6 +1,6 @@
 #include "game/battle/battle_waza_types.h"
 
-u32 fn_801D13E4(s32 idx)
+u32 mailDataBiosGet04(s32 idx)
 {
     WazaEntry* entry;
 

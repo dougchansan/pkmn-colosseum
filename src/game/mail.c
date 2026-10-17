@@ -6,7 +6,7 @@
  * Split from the former game/battle/battle_waza.c CodeCandidate bucket
  * (0x801D1470-0x801DE698); see config/GC6E01/splits.txt for the exact
  * address range of this translation unit (this TU was extended down to
- * 0x801D1338 to absorb fn_801D1338..fn_801D142C, which previously lived,
+ * 0x801D1338 to absorb mailBiosGetCounter..mailDataBiosGet01, which previously lived,
  * misattributed, in battle_waza.c -- see config/GC6E01/splits.txt for the
  * corresponding shrink of game/battle/battle_range_801D0AA0.c). Shared
  * typedefs and cross-TU forward declarations live in
@@ -22,12 +22,12 @@
  * ========================================================================= */
 
 /**
- * fn_801D1338 - Waza get sequence count.
+ * mailBiosGetCounter - Waza get sequence count.
  * Address: 0x801D1338 | Size: 0x2C
  */
 #if (!defined(PR409_MAIL_SPLIT) || defined(PR409_MAIL_1338_1470)) && \
     (!defined(PR424_MAIL_SPLIT_1338_1470) || defined(PR424_MAIL_1338_13E4))
-u16 fn_801D1338(void) {
+u16 mailBiosGetCounter(void) {
     return *(u16*)((u8*)savedataGetStatus(0, 10) + 0x444);
 }
 #endif
@@ -55,10 +55,10 @@ void* fn_801D1364(u16 handle, s32 idx) {
 }
 
 /**
- * fn_801D139C - Waza get entry type.
+ * mailDataBiosGet08 - Waza get entry type.
  * Address: 0x801D139C | Size: 0x48
  */
-u32 fn_801D139C(s32 idx) {
+u32 mailDataBiosGet08(s32 idx) {
     WazaEntry* sequenceEntry;
 
     if (idx < 0 || (u32)idx >= *lbl_80478E98) {
@@ -74,10 +74,10 @@ u32 fn_801D139C(s32 idx) {
 
 #if !defined(PR424_MAIL_SPLIT_1338_1470)
 /**
- * fn_801D13E4 - Waza get entry field at +0x04 (u16), by index.
+ * mailDataBiosGet04 - Waza get entry field at +0x04 (u16), by index.
  * Address: 0x801D13E4 | Size: 0x48
  */
-u32 fn_801D13E4(s32 idx) {
+u32 mailDataBiosGet04(s32 idx) {
     WazaEntry* sequenceEntry;
 
     if (idx < 0 || (u32)idx >= *lbl_80478E98) {
@@ -94,10 +94,10 @@ u32 fn_801D13E4(s32 idx) {
 #if !defined(PR424_MAIL_SPLIT_1338_1470) || \
     defined(PR424_MAIL_142C_1470)
 /**
- * fn_801D142C - Waza get entry duration.
+ * mailDataBiosGet01 - Waza get entry duration.
  * Address: 0x801D142C | Size: 0x44
  */
-u32 fn_801D142C(s32 idx) {
+u32 mailDataBiosGet01(s32 idx) {
     WazaEntry* sequenceEntry;
 
     if (idx < 0 || (u32)idx >= *lbl_80478E98) {
@@ -124,10 +124,10 @@ u32 mailGetNbMailData(void) {
 }
 
 /**
- * fn_801D147C - Waza get entry resource ID.
+ * mailDataBiosGet28 - Waza get entry resource ID.
  * Address: 0x801D147C | Size: 0x44
  */
-s32 fn_801D147C(s32 idx) {
+s32 mailDataBiosGet28(s32 idx) {
     WazaEntry* sequenceEntry;
 
     if (idx < 0 || (u32)idx >= *lbl_80478E98) {
@@ -141,12 +141,12 @@ s32 fn_801D147C(s32 idx) {
 }
 
 /**
- * fn_801D14C0 - Waza get entry field 0x24 by index.
+ * mailDataBiosGet24 - Waza get entry field 0x24 by index.
  * Address: 0x801D14C0 | Size: 0x44
  * Bounds-checks idx against lbl_80478E98->count, then
  * returns entry[idx*0x2C + 0x24] from lbl_80478E9C.
  */
-s32 fn_801D14C0(s32 idx) {
+s32 mailDataBiosGet24(s32 idx) {
     WazaEntry* entry;
     if (idx < 0 || (u32)idx >= *lbl_80478E98) {
         entry = NULL;
@@ -159,10 +159,10 @@ s32 fn_801D14C0(s32 idx) {
 }
 
 /**
- * fn_801D1504 - Waza get entry field at +0x20 (s32), by index.
+ * mailDataBiosGet20 - Waza get entry field at +0x20 (s32), by index.
  * Address: 0x801D1504 | Size: 0x44
  */
-s32 fn_801D1504(s32 idx) {
+s32 mailDataBiosGet20(s32 idx) {
     WazaEntry* sequenceEntry;
 
     if (idx < 0 || (u32)idx >= *lbl_80478E98) {
@@ -227,19 +227,19 @@ u32 mailGetSendRate(s32 idx) {
 }
 
 /**
- * fn_801D1618 - Waza get entry active flag.
+ * mailGetMailCount - Waza get entry active flag.
  * Address: 0x801D1618 | Size: 0x8
  */
 extern s32 lbl_80478CB8;
-u32 fn_801D1618(void) {
+u32 mailGetMailCount(void) {
     return lbl_80478CB8;
 }
 
 /**
- * fn_801D1620 - Waza handle table lookup (second word of pair).
+ * mailGetEntryField4 - Waza handle table lookup (second word of pair).
  * Address: 0x801D1620 | Size: 0x30
  */
-u32 fn_801D1620(u32 idx) {
+u32 mailGetEntryField4(u32 idx) {
     s32 slot = idx & 0xFF;
     if (slot >= lbl_80478CB8) {
         return 0;
@@ -248,10 +248,10 @@ u32 fn_801D1620(u32 idx) {
 }
 
 /**
- * fn_801D1650 - Waza handle table lookup.
+ * mailGetEntryField0 - Waza handle table lookup.
  * Address: 0x801D1650 | Size: 0x2C
  */
-u32 fn_801D1650(u32 idx) {
+u32 mailGetEntryField0(u32 idx) {
     s32 slot = idx & 0xFF;
     if (slot >= lbl_80478CB8) {
         return 0;
@@ -278,10 +278,10 @@ void fn_801D167C(u8 handle) {
 }
 
 /**
- * fn_801D16C4 - Waza get current handle.
+ * mailGetCurrentIndex - Waza get current handle.
  * Address: 0x801D16C4 | Size: 0x2C
  */
-u8 fn_801D16C4(void) {
+u8 mailGetCurrentIndex(void) {
     WazaPartyScratch* party = (WazaPartyScratch*)savedataGetStatus(0, 0x0A);
     return party->currentHandle;
 }
@@ -316,7 +316,7 @@ extern u32* lbl_80478EA0;
 extern u16* lbl_80478EA4;
 
 /* RULE-EXCEPTION(user-approved): inline copy of fn_801D19A4 (with break instead of an
- * early return) so fn_801D1734/fn_801D1864 expand it as retail does — see
+ * early return) so shadowGroupGetEntryByte/shadowGroupGetEntryId expand it as retail does — see
  * docs/RULE_EXCEPTIONS.md */
 static inline u32 mailGetSequenceLength(s32 idx) {
     WazaEntry* entry;
@@ -352,10 +352,10 @@ static inline u32 mailGetSequenceLength(s32 idx) {
 }
 
 /**
- * fn_801D1734 - Waza animation play with target tracking.
+ * shadowGroupGetEntryByte - Waza animation play with target tracking.
  * Address: 0x801D1734 | Size: 0x130
  */
-u8 fn_801D1734(s32 sequence, s32 index) {
+u8 shadowGroupGetEntryByte(s32 sequence, s32 index) {
     WazaEntry* entry;
     u16 current;
     u16 count;
@@ -386,10 +386,10 @@ u8 fn_801D1734(s32 sequence, s32 index) {
 }
 
 /**
- * fn_801D1864 - Waza animation play with camera.
+ * shadowGroupGetEntryId - Waza animation play with camera.
  * Address: 0x801D1864 | Size: 0x140
  */
-u16 fn_801D1864(s32 sequence, s32 index) {
+u16 shadowGroupGetEntryId(s32 sequence, s32 index) {
     WazaEntry* entry;
     u16 current;
     u16 count;
@@ -514,11 +514,11 @@ u32 mailGetSubject(s32 idx) {
 #if !defined(PR409_MAIL_SPLIT) || defined(PR409_MAIL_1B10_2080)
 
 /**
- * fn_801D1B10 - Waza set byte in battle party by handle.
+ * mailSetFlag442 - Waza set byte in battle party by handle.
  * Address: 0x801D1B10 | Size: 0x3C
  * Calls savedataGetStatus(0, 0xA), stores (handle & 0xFF) to result+0x442.
  */
-void fn_801D1B10(s32 handle) {
+void mailSetFlag442(s32 handle) {
     WazaPartyScratch* party = (WazaPartyScratch*)savedataGetStatus(0, 0x0A);
     party->selectedHandle = (u8)handle;
 }

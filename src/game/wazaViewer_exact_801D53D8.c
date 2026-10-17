@@ -18,7 +18,7 @@ extern s32 GSgetVersionMinor(void);
 void _wazaViewerInitialize(void) {
     struct GSmodel* model;
 
-    fn_801DAEF8(8);
+    wazaSequenceSysInit(8);
     fn_801D58E4();
     model = GSresGetResource(0, 0x64);
     if (model != 0) {

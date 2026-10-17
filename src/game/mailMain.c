@@ -12,24 +12,24 @@
  * compile against (u8 handle index, u16 mode/count returns, the raw u32
  * object id); battle_waza_types.h keeps older prototypes for its other
  * users, so they are renamed out of the way while it is included. */
-#define fn_801D1650 fn_801D1650_hdr
+#define mailGetEntryField0 fn_801D1650_hdr
 #define fn_801D1364 fn_801D1364_hdr
-#define fn_801D139C fn_801D139C_hdr
-#define fn_801D1864 fn_801D1864_hdr
-#define fn_801D1734 fn_801D1734_hdr
+#define mailDataBiosGet08 fn_801D139C_hdr
+#define shadowGroupGetEntryId fn_801D1864_hdr
+#define shadowGroupGetEntryByte fn_801D1734_hdr
 #define fn_801D19A4 fn_801D19A4_hdr
 #include "game/battle/battle_waza_types.h"
-#undef fn_801D1650
+#undef mailGetEntryField0
 #undef fn_801D1364
-#undef fn_801D139C
-#undef fn_801D1864
-#undef fn_801D1734
+#undef mailDataBiosGet08
+#undef shadowGroupGetEntryId
+#undef shadowGroupGetEntryByte
 #undef fn_801D19A4
-extern u32 fn_801D1650(u8 idx);
+extern u32 mailGetEntryField0(u8 idx);
 extern void fn_801D1364(u16 mode);
-extern u16 fn_801D139C(s32 idx);
-extern u32 fn_801D1864(s32 sequence, s32 index);
-extern u8 fn_801D1734(s32 sequence, s32 index);
+extern u16 mailDataBiosGet08(s32 idx);
+extern u32 shadowGroupGetEntryId(s32 sequence, s32 index);
+extern u8 shadowGroupGetEntryByte(s32 sequence, s32 index);
 extern u16 fn_801D19A4(s32 idx);
 
 
@@ -46,7 +46,7 @@ static inline void mailMainStartSe(void) {
     u32 workId;
     u32 soundId;
 
-    soundId = fn_801D1650(fn_801D16C4());
+    soundId = mailGetEntryField0(mailGetCurrentIndex());
     if (soundId != 0) {
         workId = soundPauseMusic();
         fn_801654E0(soundId,
@@ -122,12 +122,12 @@ void fn_801D228C(s32 seqHandle) {
 
     handle = seqHandle;
 
-    object = fn_801D1504(handle);
+    object = mailDataBiosGet20(handle);
     if (object != -1 && object != 0) {
         std078_flagSetFalse(object);
     }
 
-    mode = fn_801D139C(handle);
+    mode = mailDataBiosGet08(handle);
     if (mode != 0xFFFF) {
         fn_801D1364(mode);
     }
@@ -135,21 +135,21 @@ void fn_801D228C(s32 seqHandle) {
     count = fn_801D19A4(handle);
     if (count != 0xFFFF) {
         for (i = 0; i < count; i++) {
-            object = fn_801D1864(handle, i);
+            object = shadowGroupGetEntryId(handle, i);
             fn_801EED30(object, 1);
-            limit = fn_801D1734(handle, i);
+            limit = shadowGroupGetEntryByte(handle, i);
             if (fn_801EE614(object) < limit) {
                 std243_shadowPokemonSetState(object, limit);
             }
         }
     }
 
-    object = fn_801D14C0(handle);
+    object = mailDataBiosGet24(handle);
     if (object != -1 && object != 0) {
         cmsRunSync(object, 0);
     }
 
-    object = fn_801D147C(handle);
+    object = mailDataBiosGet28(handle);
     if (object != -1 && object != 0) {
         heroMoveAddAutoEvent(object, seqHandle, 0, 0, 0);
     }
@@ -279,7 +279,7 @@ void mailMainReceiveStart(s32 seqHandle, s32 slot, s32 boneIdx) {
             return;
         }
     }
-    soundId = fn_801D1650(fn_801D16C4());
+    soundId = mailGetEntryField0(mailGetCurrentIndex());
     if (soundId != 0) {
         workId = soundPauseMusic();
         buffer = GSresAllocResourceAlign(0x10000, 0x20, 0, 0x408, 0);
@@ -304,9 +304,9 @@ void mailMainReceiveStart(s32 seqHandle, s32 slot, s32 boneIdx) {
  */
 s32 chkMailSend(s32 seqHandle, f32 step) {
     extern u16 mailGetSendRate(s32);
-    extern u32 fn_801D142C(s32);
-    extern u32 fn_801D13E4(s32);
-    extern u16 fn_801D1338(void);
+    extern u32 mailDataBiosGet01(s32);
+    extern u32 mailDataBiosGet04(s32);
+    extern u16 mailBiosGetCounter(void);
     extern u8 mailGetSendCondType(s32);
     extern u32 mailGetSendCondition(s32);
     extern void* std082_flagGetValue(u32);
@@ -330,15 +330,15 @@ s32 chkMailSend(s32 seqHandle, f32 step) {
         return FALSE;
     }
 
-    comparison = fn_801D142C(seqHandle);
+    comparison = mailDataBiosGet01(seqHandle);
     if ((u8)comparison == 0xFF) {
         return FALSE;
     }
-    expected = fn_801D13E4(seqHandle);
+    expected = mailDataBiosGet04(seqHandle);
     if ((u16)expected == 0xFFFF) {
         return FALSE;
     }
-    actual = fn_801D1338();
+    actual = mailBiosGetCounter();
     eligible = FALSE;
     switch ((u8)comparison) {
     case 0:

@@ -474,7 +474,7 @@ void fn_80031B10(void) {
 #endif
 
 /* 0x80031B4C | 0x954 */
-extern void fn_801D036C(void);
+extern void memcardAllocBuffer(void);
 extern void fn_800849B4(void);
 extern void fn_8002FC58(void);
 extern void fn_801021F8(void);
@@ -510,7 +510,7 @@ extern void fn_8025FF9C(void);
 extern void stateFunctionEvolution(void);
 extern void stateFunctionSaveReport(void);
 extern void fn_8001E074(void);
-extern void fn_801D0314(void);
+extern void memcardFreeBuffer(void);
 extern void fn_801024E8(void);
 extern void fn_800FF52C(void);
 extern void floorBattleEndTerminateScripts(void);
@@ -641,8 +641,8 @@ void gbaTradeRun(void) {
     extern s8 menuSubOpenYesNo(s32, s32, s32, s32);
     extern void fadeCheck(s32);
     extern void fadeSet(s32, f32);
-    extern void fn_801D0314(s32);
-    extern s32 fn_801D036C(void);
+    extern void memcardFreeBuffer(s32);
+    extern s32 memcardAllocBuffer(void);
     u8* base;
     s32 handle;
     s32 work0;
@@ -653,7 +653,7 @@ void gbaTradeRun(void) {
     base = lbl_803A2518;
     lbl_804788B0 = 1;
     if (lbl_8047A409 != 1) {
-        handle = fn_801D036C();
+        handle = memcardAllocBuffer();
         while ((s32)lbl_8047A42C > 0) {
             switch ((s32)lbl_8047A42C) {
             case 1: {
@@ -860,7 +860,7 @@ void gbaTradeRun(void) {
             }
             }
         }
-        fn_801D0314(handle);
+        memcardFreeBuffer(handle);
         if (lbl_8047A40A != 0) {
             if (lbl_804788B0 != 0) {
                 winMsgOpen(2, 0x44D0, 1, 0);

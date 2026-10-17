@@ -1,16 +1,16 @@
 /**
  * @file gs_range_candidate_801DF1D0.c
  * @brief gs_range_801DE698.c carve, 0x801DF1D0 - 0x801DF474: the waza
- *        weather effect update, clear and start (fn_801DF1D0, fn_801DF33C,
- *        fn_801DF3D4).
+ *        weather effect update, clear and start (wazaSequenceOwnerUpdateBlink, wazaSequenceOwnerTexAnimOff,
+ *        wazaSequenceOwnerTexAnimOn).
  *
  * Owns .sdata2 0x8047E3D8 - 0x8047E3F0 (1.0f, 1/60, 50.0f, 2.0f and the
- * int-to-float bias), which only fn_801DF1D0 reads; MWCC emits them in
+ * int-to-float bias), which only wazaSequenceOwnerUpdateBlink reads; MWCC emits them in
  * that order. fn_801DF474 is scored from gs_range_candidate_801DF474.c.
  */
 #include "dolphin/types.h"
 
-extern u8 fn_801DAC54(void* effect);
+extern u8 wazaSequenceOwnerIsPlaying(void* effect);
 extern u32 msgGetCharsPerFrame(void);
 extern f32 GSrandf(void);
 extern void GSmodelLinkTexAnimToAnim(void* model, u32 enable);
@@ -28,13 +28,13 @@ extern const f32 lbl_8047E3C8; /* 0.5f */
 extern const f32 lbl_8047E3CC; /* 0.0f */
 
 /* Waza weather effect: start the texture animation after a random delay. */
-void fn_801DF1D0(void* obj) {
+void wazaSequenceOwnerUpdateBlink(void* obj) {
     u8* effect = obj;
     void* model;
     u16 timer;
     f32 threshold;
 
-    if (fn_801DAC54(effect) != 0) {
+    if (wazaSequenceOwnerIsPlaying(effect) != 0) {
         return;
     }
     if ((effect[0x18] & 8) == 8) {
@@ -78,7 +78,7 @@ void fn_801DF1D0(void* obj) {
     }
 }
 
-void fn_801DF33C(u8* obj) {
+void wazaSequenceOwnerTexAnimOff(u8* obj) {
     void* model = *(void**)(obj + 0x24);
 
     if (*(s16*)(obj + 0x1E) >= 0 && obj[0x19] == 6) {
@@ -92,7 +92,7 @@ void fn_801DF33C(u8* obj) {
     }
 }
 
-void fn_801DF3D4(u8* obj) {
+void wazaSequenceOwnerTexAnimOn(u8* obj) {
     void* model = *(void**)(obj + 0x24);
 
     if (*(s16*)(obj + 0x1A) >= 0 && obj[0x19] != 6 && obj[0x19] != 1) {

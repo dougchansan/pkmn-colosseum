@@ -72,7 +72,7 @@ extern u32   GSmodelCanAnimate(u32);
 extern void  GSmodelSetAnimIndex(u32, u32);
 extern void  GSmodelSetAnimRate(u32, f32);
 extern void  GSmodelStartAnimation(u32);
-extern void  fn_801DB100(u32);
+extern void  wazaSequenceOwnerFree(u32);
 extern u32   OSGetTick(void);
 
 extern u32 lbl_8047ACF0;
@@ -133,7 +133,7 @@ extern void gfxBegin(s32);
 extern void gfxVtxPos(f32);
 extern void gfxVtxColor4u8(s32, s32, s32, s32, s32);
 extern void gfxEnd(void);
-extern u32 fn_801DAC3C(u32 sequence);
+extern u32 wazaSequenceOwnerGetModel(u32 sequence);
 extern void fn_800EC134(u32 model);
 extern void GSmodelSetPEdescr(u32 model, void* descriptor);
 extern void GSmodelResetPEdescr(u32 model);
@@ -151,9 +151,9 @@ extern void gfxSetScissor(u16 left, u16 top, u16 right, u16 bottom);
 extern void gfxSetViewport(u16 left, u16 top, u16 right, u16 bottom);
 extern void _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID(void);
 extern void GSgfxRenderLayer(u32 texture, u32 slot);
-extern void fn_801DA4E8(u32 sequence, u32 active);
+extern void wazaSequenceOwnerSetVisibility(u32 sequence, u32 active);
 extern void fn_801DA448(u32 sequence, u32 active);
-extern void fn_801DB088(void);
+extern void wazaSequenceSysUpdate(void);
 extern void fn_801DAAAC(u32 sequence);
 extern void GSgfxRenderEnd(void);
 extern u8 lbl_8035B468[];
@@ -365,7 +365,7 @@ u32 menuModelRender(u8* work) {
     if (work[0] != 2) {
         return 0;
     }
-    renderModel = work[0x14] != 0 ? fn_801DAC3C(*(u32*)(work + 0x24)) : *(u32*)(work + 0x24);
+    renderModel = work[0x14] != 0 ? wazaSequenceOwnerGetModel(*(u32*)(work + 0x24)) : *(u32*)(work + 0x24);
     resetModel = renderModel;
     if (resetModel == 0) return 0;
 
@@ -392,11 +392,11 @@ u32 menuModelRender(u8* work) {
     _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
     GSgfxRenderLayer(*(u32*)(work + 0x34), 0);
     if (work[0x14] != 0) {
-        fn_801DA4E8(*(u32*)(work + 0x24), 1);
+        wazaSequenceOwnerSetVisibility(*(u32*)(work + 0x24), 1);
         fn_801DA448(*(u32*)(work + 0x24), 1);
-        fn_801DB088();
+        wazaSequenceSysUpdate();
         fn_801DAAAC(*(u32*)(work + 0x24));
-        fn_801DA4E8(*(u32*)(work + 0x24), 0);
+        wazaSequenceOwnerSetVisibility(*(u32*)(work + 0x24), 0);
         fn_801DA448(*(u32*)(work + 0x24), 0);
     } else {
         GSmodelDrawModel(*(u32*)(work + 0x24), 0x3010);
@@ -458,7 +458,7 @@ s32 menuModelFree(void* p) {
     if (*(u8*)((u8*)r31 + 0x14) != 0) {
         /* has some kind */
         if (*(void**)((u8*)r31 + 0x24) != (void*)0) {
-            fn_801DB100(*(u32*)((u8*)r31 + 0x24));
+            wazaSequenceOwnerFree(*(u32*)((u8*)r31 + 0x24));
             *(u32*)((u8*)r31 + 0x24) = 0;
         }
     } else {

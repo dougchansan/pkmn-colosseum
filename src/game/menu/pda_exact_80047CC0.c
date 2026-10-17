@@ -70,8 +70,8 @@ extern u32 pokemonBiosGetPokemonDataId(u32 work);
 extern void memoGetScaleAngle(u32 id, f32* scale, f32* angle);
 
 extern u8 menuModelCheck(void* work, s32 index);
-extern void* fn_801DAC3C(void* h);
-extern s32 fn_801DAC24(void* h);
+extern void* wazaSequenceOwnerGetModel(void* h);
+extern s32 wazaSequenceOwnerGetSizeClass(void* h);
 extern void GSscene_SetMode(s32 mode);
 extern void* GSmodelGetBound(void* model);
 extern void ObjInfoInit(void* bound, void* out);
@@ -203,11 +203,11 @@ u8 fn_80047CC0(u8* work)
         return 0;
     }
     if (work[0x14] != 0) {
-        model = fn_801DAC3C(*(void**)(work + 0x24));
+        model = wazaSequenceOwnerGetModel(*(void**)(work + 0x24));
         if (model == NULL) {
             return 0;
         }
-        switch (fn_801DAC24(*(void**)(work + 0x24))) {
+        switch (wazaSequenceOwnerGetSizeClass(*(void**)(work + 0x24))) {
         case -2:
             spread = lbl_8047BD3C;
             break;
