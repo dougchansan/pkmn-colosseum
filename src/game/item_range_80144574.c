@@ -58,7 +58,7 @@ extern s8 itemParamGetFriend3Up(u8* p);
 extern void* fightFloorGetFightPokemonPtrToFightTrainerPtr(s32, void*);
 extern void* fightTrainerCheckFightPokemonFightOut(void*, void*);
 extern void fn_802331A4(void* fightOutPokemon, s32 id);
-extern void fn_8020248C(void*, s32, u32);
+extern void fightOutPokemonWritePokemonJoutaiDataId(void*, s32, u32);
 extern u8 fn_802025B8(void*, s32);
 extern u8 fightOutPokemonCheckWriteJoutaiDataId(void* fightPokemon, s32 statusId);
 extern void fightOutPokemonWriteJoutaiDataId(void* fightOutPokemon, s32 statusId);
@@ -541,7 +541,7 @@ s16 fn_80144574(
     if (itemParamGetCriticalFlag(itemParam)) {
         fightOut = itemUseGetFightOut(fightPokemon);
         if (fightOut != NULL && fn_802025B8(fightOut, 0xF) == 2) {
-            fn_8020248C(fightOut, 0xF, 0);
+            fightOutPokemonWritePokemonJoutaiDataId(fightOut, 0xF, 0);
             itemUseNotify(fightPokemon, 0x7C);
             itemUseNotify(fightPokemon, 0x99);
             itemUseAddLog(log, &logCount, 1, 0, 0);

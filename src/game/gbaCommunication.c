@@ -340,11 +340,11 @@ void menuStatusDrawMoveDetail(u8* context, u8* sprite)
     extern u32 wazaGetStatus(u32, u16, u32, u32);
     extern u16 fn_8010C46C(u16 type);
     extern u8 pokemonWazaGetMaxPP(u32 pokemon, u16 slot);
-    extern u16 fn_801EE07C(u16 id);
-    extern u32 fn_801EE034(u16 id);
-    extern u8 fn_801EE04C(u16 id);
-    extern u8 fn_801EE064(u16 id);
-    extern u16 fn_801EE0A8(u8 kind);
+    extern u16 darkPokemonGetTableEntry(u16 id);
+    extern u32 darkPokemonEntryGet4(u16 id);
+    extern u8 darkPokemonEntryGet1(u16 id);
+    extern u8 darkPokemonEntryGet0(u16 id);
+    extern u16 darkPokemonGetIdByIndex(u8 kind);
     extern void menuDrawRectOutline(s32 x, s32 y, s32 w, s32 h, MenuStatusColor color);
     extern void fn_800FB8C8();
     extern void windowDrawSprite(s32 x, s32 y, void* win, u16 sprite, u32 data);
@@ -613,7 +613,7 @@ void menuStatusDrawMoveDetail(u8* context, u8* sprite)
             icon = 0x5D;
             break;
         default:
-            icon = fn_801EE0A8(wazaGetStatus(0, move, 0x24, 0));
+            icon = darkPokemonGetIdByIndex(wazaGetStatus(0, move, 0x24, 0));
             break;
         }
         if (icon != 0) {
@@ -624,7 +624,7 @@ void menuStatusDrawMoveDetail(u8* context, u8* sprite)
     case 0x1D3:
         move = menuStatusGetMove(pokemon, (s8)lbl_803FB380[2]);
         fn_800FBB34(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color,
-                    fn_801EE034(fn_801EE07C(wazaGetStatus(0, move, 0x23, 0))));
+                    darkPokemonEntryGet4(darkPokemonGetTableEntry(wazaGetStatus(0, move, 0x23, 0))));
         break;
     case 0x18C:
     case 0x1D4:
@@ -722,7 +722,7 @@ void menuStatusDrawMoveDetail(u8* context, u8* sprite)
         }
         move = menuStatusGetMove(pokemon, (s8)lbl_803FB380[2]);
         if (move != 0) {
-            level = fn_801EE064(fn_801EE07C(wazaGetStatus(0, move, 0x23, 0)));
+            level = darkPokemonEntryGet0(darkPokemonGetTableEntry(wazaGetStatus(0, move, 0x23, 0)));
         } else {
             level = 0;
         }
@@ -796,7 +796,7 @@ void menuStatusDrawMoveDetail(u8* context, u8* sprite)
         }
         move = menuStatusGetMove(pokemon, (s8)lbl_803FB380[2]);
         if (move != 0) {
-            level = fn_801EE04C(fn_801EE07C(wazaGetStatus(0, move, 0x23, 0)));
+            level = darkPokemonEntryGet1(darkPokemonGetTableEntry(wazaGetStatus(0, move, 0x23, 0)));
         } else {
             level = 0;
         }

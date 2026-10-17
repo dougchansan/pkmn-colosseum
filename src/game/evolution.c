@@ -24,7 +24,7 @@ extern void* pokemonGetStatus();
 extern u32   pokemonSetStatus();
 
 /* Battle system functions */
-extern void fn_801EF8F4();
+extern void battleCameraSelect();
 extern u32 fn_801DE190(u16 index, u32 rnd, u32 variant);
 extern void wazaSequenceSysStartWaza(u32 sequence, u16 moveID, s32 variant);
 extern u8 wazaSequenceSysIsPlayingWaza(u32 sequence, u16 moveID, s32 variant);

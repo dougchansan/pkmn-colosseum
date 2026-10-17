@@ -1353,13 +1353,13 @@ u32 fightTrainerAiWazaValueMamoru(u32 ctx, u32 poke, u32 msgArg,
 #define fn_80205B8C fightOutPokemonGetPokemonPtr
 u32 fightTrainerAiWazaValueTakuwaeru(void* ctx, u32 param1, u32 param2)
 {
-    extern s16 fn_80202360(u32, u32);
+    extern s16 fightOutPokemonGetPokemonJoutaiStack(u32, u32);
     extern u8 fn_80236BFC(void*, u32, u32);
     s16 val;
     u32 handle = 0;
 
     if (fn_80236BFC(ctx, param1, 0x2d) == 1) {
-        val = fn_80202360(param1, 0x2d);
+        val = fightOutPokemonGetPokemonJoutaiStack(param1, 0x2d);
     } else {
         val = 0;
     }

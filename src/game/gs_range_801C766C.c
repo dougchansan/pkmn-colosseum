@@ -1248,7 +1248,7 @@ u8 std182_tvNewsEvent(void)
     extern void heroMoveTermEvent(void);
     extern s32 winMsgOpenFieldWithSE(u32 message, u32 wait, u8 pause, u8 sound);
     extern void winMsgCloseField(u32 wait);
-    extern u8 fn_801EEAD0(u16 id);
+    extern u8 darkPokemonCheckFlag12(u16 id);
     extern const f32 lbl_8047E11C;
 
     f32 elapsed;
@@ -1256,7 +1256,7 @@ u8 std182_tvNewsEvent(void)
 
     heroMoveInitEvent();
 
-    if (fn_801EEAD0(0x43)) {
+    if (darkPokemonCheckFlag12(0x43)) {
         mode = 4;
     } else if (std081_flagCheckTrue(0xADA)) {
         std078_flagSetFalse(0xA0F);

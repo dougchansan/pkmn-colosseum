@@ -97,7 +97,7 @@ extern void  fn_802622E4(void);
 extern u32 fn_80211A78();
 extern void wazaSequenceSysFreeAll();
 extern u8   lbl_8047B625;
-extern void fn_8020248C();
+extern void fightOutPokemonWritePokemonJoutaiDataId();
 extern void* lbl_8047B62C;
 extern void  fn_80211B94(void* a, void* b, u8 c);
 extern u8    fn_80207AE0(void* obj, u8 v);
@@ -142,7 +142,7 @@ extern void fn_801252E0();
 extern void fn_80202998();
 extern u8   fn_80204A10();
 extern void* fn_802037DC(void* ctx);
-extern void fn_801EF8F4();
+extern void battleCameraSelect();
 extern void fightMenuAllFightTrainerCloseStatusMenu();
 extern void fightMenuAllFightOutPokemonCloseStatusMenu();
 extern u8   lbl_8037889D[0x23];
@@ -154,9 +154,9 @@ extern u32  fn_80262308(void);
 extern u8   lbl_8047B642;
 extern u32  fn_802036D4();
 extern u32  fn_801F4354();
-extern void fn_801FCEC4();
+extern void fightOutPokemonBiosCopy();
 extern u8   fn_801F2020();
-extern u32  fn_801F8A18();
+extern u32  fightTrainerGetIrekaeFightPokemon();
 extern void _threadSwitch(void);
 extern u32  fn_800FA280();
 extern u32  fn_80203848();
@@ -172,7 +172,7 @@ extern s32  fn_80102620();
 extern u32  fn_80011C78();
 extern u8   fn_802038A4();
 extern void fn_80207C24();
-extern void fn_80201764();
+extern void fightOutPokemonSetPokemonJoutai08();
 extern s32  fn_80232110();
 extern u32 fn_8022E34C();
 extern u8   fn_801F453C();
@@ -237,7 +237,7 @@ void fn_8021A6CC(void) {
         fn_801F4C14(0, 0, 0x3b, 0, 0x45);
         lbl_80478D78[5] = 1;
     } else {
-        fn_8020248C(ctx, 0xf, 0);
+        fightOutPokemonWritePokemonJoutaiDataId(ctx, 0xf, 0);
         lbl_80478D78[5] = 0;
     }
     lbl_8047B610++;
@@ -335,7 +335,7 @@ takeJump:
     lbl_8047B610 = *(u8**)(lbl_8047B610 + 1);
     return;
 doCall:
-    fn_8020248C(ctx2, 0xa, newPoke);
+    fightOutPokemonWritePokemonJoutaiDataId(ctx2, 0xa, newPoke);
     lbl_8047B610 = lbl_8047B610 + 5;
 }
 #undef fn_80207BF4
@@ -489,7 +489,7 @@ void fightCheckOneHitKO(void)
     extern u32 fightTargetGetPtrAsNowFightType();
     extern void fightFloorSetStatus();
     extern u32 fightFloorGetStatus();
-    extern u32 fn_80201D84();
+    extern u32 fightOutPokemonGetJoutaiParam();
     extern u8 fn_802026E4();
     extern u32 figthOutPokemonGetLevel();
     extern int figthOutPokemonGetSoubiItemBuff();
@@ -550,7 +550,7 @@ void fightCheckOneHitKO(void)
   }
   condition = fn_802026E4(attacker,0x1d);
   if ((condition == 1) &&
-      ((u16)relativeTarget == (u16)fn_80201D84(attacker,0x1d))) {
+      ((u16)relativeTarget == (u16)fightOutPokemonGetJoutaiParam(attacker,0x1d))) {
     if ((u8)attackerLevel >= (u8)defenderLevel) {
       canSteal = 1;
     }
@@ -855,7 +855,7 @@ void fn_8021B484(void)
     extern u32 fightTargetGetPtrAsNowFightType();
     extern u32 fightFloorGetFightOutPokemonPtrToFightTrainerPtr();
     extern void fightFloorSetStatus();
-    extern u32 fn_801F87CC();
+    extern u32 fightTrainerGetIrekaeFightPokemonAry();
     extern u32 figthOutPokemonGetLevel();
     extern u32 pokemonGetStatus();
     extern void pokemonSetStatus();
@@ -875,7 +875,7 @@ void fn_8021B484(void)
     attacker = fightTargetGetPtrAsNowFightType(0x11, 0);
     defender = fightTargetGetPtrAsNowFightType(0x12, 0);
     trainer = fightFloorGetFightOutPokemonPtrToFightTrainerPtr(0, defender);
-    count = fn_801F87CC(trainer, choices);
+    count = fightTrainerGetIrekaeFightPokemonAry(trainer, choices);
     if ((u16)count != 0) {
         goto have_choices;
     }
@@ -1001,8 +1001,8 @@ void fn_8021B760(void) {
     u32 fieldF8 = fn_8012640C(ctx1, 0, 0xF8, 0);
 
     if (fn_802025B8(ctx1, 0xc) == 2) {
-        fn_8020248C(ctx1, 0xc, 0);
-        fn_8020248C(ctx1, 0x22, 0);
+        fightOutPokemonWritePokemonJoutaiDataId(ctx1, 0xc, 0);
+        fightOutPokemonWritePokemonJoutaiDataId(ctx1, 0x22, 0);
     }
     fn_8020A2B8(fieldF8, fieldD9);
     fn_801254B4(ctx1, 0, 0xf5, 0, 0);

@@ -15,9 +15,9 @@ void fn_8021A054(void)
     extern u32 wazaGetStatus();
     extern u8 fightOutPokemonIsUseHensinBuff();
     extern u8 fightOutPokemonUseHensinBuff();
-    extern void fn_80201764();
-    extern u32 fn_80201890();
-    extern void fn_8020248C();
+    extern void fightOutPokemonSetPokemonJoutai08();
+    extern u32 fightOutPokemonGetPokemonJoutai08();
+    extern void fightOutPokemonWritePokemonJoutaiDataId();
     extern void pokemonWazaCreate();
     extern void pokemonSetStatus();
     extern u32 GSmsgGetGSchar();
@@ -84,7 +84,7 @@ advance_alt:
     }
 
     if (fn_802026E4(attacker, 0x31) == 0) {
-        fn_8020248C(attacker, 0x31, 0);
+        fightOutPokemonWritePokemonJoutaiDataId(attacker, 0x31, 0);
     }
 
     pokemon = fightOutPokemonGetPokemonPtr(attacker);
@@ -96,9 +96,9 @@ advance_alt:
     pokemonSetStatus(pokemon, 0, 0x80, slot, pp);
     wazaGetStatus(0, move, 1, 0);
     msgctrlSetValue(0xd, GSmsgGetGSchar());
-    flags = fn_80201890(attacker, 0x31);
+    flags = fightOutPokemonGetPokemonJoutai08(attacker, 0x31);
     flags |= 1 << slot;
-    fn_80201764(attacker, 0x31, flags);
+    fightOutPokemonSetPokemonJoutai08(attacker, 0x31, flags);
     lbl_8047B610 += 5;
 }
 #pragma optimize_for_size reset

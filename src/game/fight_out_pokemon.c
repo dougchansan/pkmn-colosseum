@@ -536,7 +536,7 @@ u8 fightPokemonCheckMotoFightPokemon(u32 expected, void* ctx) {
 }
 
 /* 0x80204970 | size: 0xA0 */
-void fn_80204970(void* first, void* second)
+void fightPokemonBiosSwap(void* first, void* second)
 {
     typedef struct FightPokemonCopy {
         u8 data[0x154];

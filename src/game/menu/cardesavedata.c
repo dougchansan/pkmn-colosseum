@@ -2576,8 +2576,8 @@ void cardeGridSetShadowPokemon(u8* arena, u8* cardData, s8 layer)
     } CardEObjectData;
     extern void* savedataGetStatus(u32, u32);
     extern void fn_800CAA3C(void*, const void*);
-    extern void fn_801EE1E0(u8 type, u16 id);
-    extern void fn_801EE2B4(u8 type, void* data);
+    extern void darkPokemonSaveSet4A0(u8 type, u16 id);
+    extern void darkPokemonSaveSetName(u8 type, void* data);
     extern void fn_801EE10C(u8 type, u8 key);
     CardEPageLayout* layerData;
     CardEObjectData* object;
@@ -2645,7 +2645,7 @@ void cardeGridSetShadowPokemon(u8* arena, u8* cardData, s8 layer)
             pending[0x1E2] = object->bytes[0x28];
             pending[0x1E1] = object->bytes[2];
             *(u16*)(layerData->summary + 0x64) = *(u16*)object;
-            fn_801EE1E0(pending[0x1E1], *(u16*)object);
+            darkPokemonSaveSet4A0(pending[0x1E1], *(u16*)object);
         }
     }
 
@@ -2653,7 +2653,7 @@ void cardeGridSetShadowPokemon(u8* arena, u8* cardData, s8 layer)
     layerData->summary[0x60] = pending[0x125];
     layerData->summary[0x61] = 0;
     layerData->summary[0x62] = pending[0x1E1];
-    fn_801EE2B4(pending[0x1E1], pending + 0x118);
+    darkPokemonSaveSetName(pending[0x1E1], pending + 0x118);
     fn_801EE10C(pending[0x1E1], pending[0x125]);
 }
 

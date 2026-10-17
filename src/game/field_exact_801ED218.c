@@ -3,7 +3,7 @@
 
 extern u8* savedataGetStatus(u8* arg0, u16 arg1);
 
-u8 fn_801ED218(void* arg0)
+u8 daycareGetState(void* arg0)
 {
     u8* status;
     u8 result;
@@ -18,7 +18,7 @@ u8 fn_801ED218(void* arg0)
     return result;
 }
 
-s32 fn_801ED24C(void* arg0)
+s32 daycareGetValue4(void* arg0)
 {
     u8* status;
 
@@ -34,7 +34,7 @@ s32 fn_801ED24C(void* arg0)
     return -1;
 }
 
-u8 fn_801ED294(void* arg0)
+u8 daycareGetValue1(void* arg0)
 {
     u8* status;
 

@@ -9,7 +9,7 @@ extern u32 lbl_8047B618;
 
 extern u32 fightTargetGetPtrAsNowFightType(u32, u32);
 extern u8 fn_802026E4();
-extern void fn_8020248C();
+extern void fightOutPokemonWritePokemonJoutaiDataId();
 extern s8 fn_802025B8();
 extern int fn_80229934();
 extern u32 fightOutPokemonGetUseWazaDataId();
@@ -51,7 +51,7 @@ void WS_MICHIDURE(void) {
     } else {
         result = fn_802025B8(context, 0x15);
         if (result == 2) {
-            fn_8020248C(context, 0x15, 0);
+            fightOutPokemonWritePokemonJoutaiDataId(context, 0x15, 0);
         }
         lbl_8047B610 = lbl_8047B610 + 5;
     }

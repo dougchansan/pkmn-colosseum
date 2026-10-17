@@ -620,7 +620,7 @@ void fightItemInit(void* r3)
 }
 
 /* 0x8020A500 | size: 0x40 */
-u32 fn_8020A500(u16 idx) {
+u32 joukenDataGet4(u16 idx) {
     ColosseumEventRow6* entry;
     idx = idx;
     if (idx >= lbl_80478D38) {
@@ -633,7 +633,7 @@ u32 fn_8020A500(u16 idx) {
 }
 
 /* 0x8020A540 | size: 0x40 */
-u32 fn_8020A540(u16 idx) {
+u32 joukenDataGet2(u16 idx) {
     ColosseumEventRow6* entry;
     idx = idx;
     if (idx >= lbl_80478D38) {
@@ -646,7 +646,7 @@ u32 fn_8020A540(u16 idx) {
 }
 
 /* 0x8020A580 | size: 0x40 */
-u32 fn_8020A580(u16 idx) {
+u32 joukenDataGet0(u16 idx) {
     ColosseumEventRow6* entry;
     idx = idx;
     if (idx >= lbl_80478D38) {
@@ -804,8 +804,8 @@ u16 fn_8020A860(u16 index) {
     return entry->firstLinkIndex;
 }
 
-/* fn_8020A8A0 | Size: 0x40 | Look up u8 field at offset 0 in 0x18-byte table */
-u8 fn_8020A8A0(u16 index) {
+/* fightJoukenDataBiosGetType | Size: 0x40 | Look up u8 field at offset 0 in 0x18-byte table */
+u8 fightJoukenDataBiosGetType(u16 index) {
     ColosseumEventPairRow* entry;
     if (index >= lbl_80478D28) {
         entry = NULL;

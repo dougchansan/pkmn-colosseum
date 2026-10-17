@@ -24,7 +24,7 @@ extern void* pokemonGetStatus();
 extern u32   pokemonSetStatus();
 
 /* Battle system functions */
-extern void fn_801EF8F4();
+extern void battleCameraSelect();
 
 /* Sound functions */
 extern void soundStop();     /* Stop sound */
@@ -134,11 +134,11 @@ s32 fightTrainerAiSelectIrekaeDasuFightPokemon(void* ctx, u32 param1, u32 param2
     extern u32 lbl_80478B38;
     extern s32 fightTrainerGetStatus(u32, u32, u32, u16);
     extern u8 fn_80235B04(void* ctx, u32 zero, u32 one);
-    extern void fn_801FCEC4();
+    extern void fightOutPokemonBiosCopy();
     extern s32 fightTrainerAiGetFightPokemonIrekaeDasuTokuseiAddsubDataId();
     extern u8 fightOutPokemonCheckFightOut(u32 pokemon);
     extern u8 fightOutPokemonIsFightActionAttackWazaOut(u32 pokemon, u32 move, u32 zero);
-    extern u16 fn_801F87CC(void* ctx, u32* pokemon);
+    extern u16 fightTrainerGetIrekaeFightPokemonAry(void* ctx, u32* pokemon);
     extern u16 fightFloorGetFightTrainerFightOutPokemonPtrAry(u32, void*, u32*, u32, u32);
     extern u16 fightFloorGetFightTrainerFightPokemonPtrAry(u32, void*, u32*, u32, u32);
     extern void fn_8023A118(u32, u32, u32, void*, u32, u32, u32, u32, u32, u32, s32);
@@ -215,12 +215,12 @@ s32 fightTrainerAiSelectIrekaeDasuFightPokemon(void* ctx, u32 param1, u32 param2
     for (i = 0; i < 6; i++) {
         values[i] = 0;
     }
-    fn_801FCEC4(work, param3);
+    fightOutPokemonBiosCopy(work, param3);
     if (fightOutPokemonCheckFightOut(param3) == 1 &&
         fightOutPokemonIsFightActionAttackWazaOut(param3, 0xE2, 0) == 1) {
         attacked = 1;
     }
-    count = fn_801F87CC(ctx, pokemon);
+    count = fightTrainerGetIrekaeFightPokemonAry(ctx, pokemon);
     outCount = fightFloorGetFightTrainerFightOutPokemonPtrAry(0, ctx, outPokemon, 0, 1);
     fightCount = fightFloorGetFightTrainerFightPokemonPtrAry(0, ctx, fightPokemon, 1, 1);
     if (count == 0) {
@@ -338,7 +338,7 @@ s32 fightTrainerAiSelectIrekaeDasuFightPokemon(void* ctx, u32 param1, u32 param2
                 break;
             }
         }
-        fn_801FCEC4(param3, work);
+        fightOutPokemonBiosCopy(param3, work);
         moveCount2 = fn_802369B8(ctx, p, moves, 0, 1);
         fn_8023A118(0xEC63, 0xEC04, 0xEC1D, trainer, fightPokemonGetPokemonPtr(p),
                     0, 0, 0, 0, 0x227, values[i]);

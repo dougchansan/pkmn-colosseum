@@ -15,13 +15,13 @@
  *
  * The save system is initialized at boot from main.c:
  *   fn_801E1300 - Card system init
- *   fn_801E1B2C - Save data init
+ *   GSmovieInit - Save data init
  *   GSvtrRegisterGSgapp - Save system post-init
  *
  * Per-frame updates via:
  *   fn_801E0FB4 - Save/card per-frame update
  *   GSvtrLoadTexture - Card system tick
- *   fn_801E11E8 - Card system check pending
+ *   vtrIsActive - Card system check pending
  *
  * Related source files:
  *   cardesavedata.c  - Card e-Reader save data (0x80082650 - 0x80083AF4)
@@ -203,7 +203,7 @@ typedef struct CardEMatrixEntry {
 void save_CardSystemInit(void);
 
 /**
- * fn_801E1B2C: Initialize save data structures.
+ * GSmovieInit: Initialize save data structures.
  * Called from GameInit() after card system init.
  * Allocates and zeroes save data buffers.
  */
@@ -235,13 +235,13 @@ void save_CardUpdate(s32 mode, u32 param1, u32 param2);
 void save_CardTick(void);
 
 /**
- * fn_801E11E8: Check if card operations are pending.
+ * vtrIsActive: Check if card operations are pending.
  * @return Non-zero if operations are in progress
  */
 u32 save_CardCheckPending(void);
 
 /**
- * fn_801E11E0: Get current card system state.
+ * vtrGetMode: Get current card system state.
  * @return State code
  */
 u32 save_CardGetState(void);

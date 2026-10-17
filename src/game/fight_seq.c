@@ -66,7 +66,7 @@ extern void wazaSetStatus();
 extern void* fightTargetGetPtrAsNowFightType();
 extern void fightFloorSetStatus();
 extern u32 fightFloorGetStatus();
-extern void fn_801FCEC4();
+extern void fightOutPokemonBiosCopy();
 extern u8 fn_802026E4();
 extern u16 figthOutPokemonGetPokemonDataId();
 extern u16 fightOutPokemonGetSoubiItemSoubiDataId();
@@ -202,8 +202,8 @@ fightSeqGetNromalWazaDamage(u32 r3, u32 r4, u32 r5, u32 r6, u8 r7, u8 r8, void *
     for (i = 0; i < 8; i++) {
         savedFlags[i] = lbl_80478D78[i];
     }
-    fn_801FCEC4(savedAtk, r5);
-    fn_801FCEC4(savedDef, r6);
+    fightOutPokemonBiosCopy(savedAtk, r5);
+    fightOutPokemonBiosCopy(savedDef, r6);
     fightFloorSetStatus(0, 0, 0x36, 0, r5);
     fightFloorSetStatus(0, 0, 0x42, 0, r6);
     waza = pokemonGetStatus(r5, 0, 0xd9, 0);
@@ -242,8 +242,8 @@ fightSeqGetNromalWazaDamage(u32 r3, u32 r4, u32 r5, u32 r6, u8 r7, u8 r8, void *
     for (i = 0; i < 8; i++) {
         lbl_80478D78[i] = savedFlags[i];
     }
-    fn_801FCEC4(r5, savedAtk);
-    fn_801FCEC4(r6, savedDef);
+    fightOutPokemonBiosCopy(r5, savedAtk);
+    fightOutPokemonBiosCopy(r6, savedDef);
     return result;
 }
 #endif
@@ -560,12 +560,12 @@ void fn_80211E18(u32 r3,u32 r4)
     extern void itemDataBiosGetItemEffectParam();
     extern void itemDataBiosGetPtr();
     extern void wazaSequenceSysFreeAll();
-    extern void fn_801EF8F4();
+    extern void battleCameraSelect();
     extern u32 fightTargetGetPtrAsNowFightType();
     extern u32 fightFloorGetFightOutPokemonPtrToFightTrainerPtr();
     extern void fightFloorSetStatus();
     extern u32 fightFloorGetStatus();
-    extern u32 fn_801F8000();
+    extern u32 fightTrainerGetKindPrefixName();
     extern u32 fightTrainerGetNamePtr();
     extern u32 fightTrainerGetStatus();
     extern int fn_802026E4();
@@ -830,7 +830,7 @@ void fn_80211E18(u32 r3,u32 r4)
       }
     }
     lbl_8047B614 = 0;
-    uVar3 = fn_801F8000(uVar5);
+    uVar3 = fightTrainerGetKindPrefixName(uVar5);
     msgctrlSetValue(0x22,uVar3);
     uVar3 = fightTrainerGetNamePtr(uVar5);
     msgctrlSetValue(0x23,uVar3);
@@ -839,7 +839,7 @@ void fn_80211E18(u32 r3,u32 r4)
     itemGetStatus(0,r4 & 0xffff,1,0);
     uVar3 = GSmsgGetGSchar();
     msgctrlSetValue(0x29,uVar3);
-    fn_801EF8F4(1);
+    battleCameraSelect(1);
     if (cVar12 == 0) {
       fn_80265598(uVar4,uVar9,1);
     }

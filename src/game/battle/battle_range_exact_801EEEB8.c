@@ -24,11 +24,11 @@ typedef struct BattleRangeDef {
 } BattleRangeDef;
 
 extern BattleRangeDef* lbl_80478F6C;
-extern u8* fn_801EF1E4(u32 data);
+extern u8* darkPokemonSaveGetPtr(u32 data);
 
-u16 fn_801EEEB8(u16 id)
+u16 darkPokemonSaveGet4A6(u16 id)
 {
-    u8* data = fn_801EF1E4(0);
+    u8* data = darkPokemonSaveGetPtr(0);
 
     if (data != NULL) {
         return *(u16*)(data + id * 0x18 + 0x4A6);
@@ -36,7 +36,7 @@ u16 fn_801EEEB8(u16 id)
     return 0;
 }
 
-u16 fn_801EEF08(u16 id)
+u16 darkPokemonGet8(u16 id)
 {
     BattleRangeDef* def = &lbl_80478F6C[id];
 
@@ -49,7 +49,7 @@ u16 fn_801EEF08(u16 id)
     return 0;
 }
 
-u32 fn_801EEF40(u16 id)
+u32 darkPokemonSaveGetC(u16 id)
 {
     BattleRangeDef* def = &lbl_80478F6C[id];
     u16 slot;
@@ -60,7 +60,7 @@ u32 fn_801EEF40(u16 id)
     }
     if (def != NULL) {
         slot = def->runtimeSlot;
-        data = fn_801EF1E4(0);
+        data = darkPokemonSaveGetPtr(0);
         return *(u32*)(data + slot * 0xC + 0xC);
     }
     return 0;
@@ -82,7 +82,7 @@ u16 fn_801EEFAC(u16 id, s32 side)
     return 0;
 }
 
-u16 fn_801EEFF4(u16 id)
+u16 darkPokemonGet2(u16 id)
 {
     BattleRangeDef* def = &lbl_80478F6C[id];
 

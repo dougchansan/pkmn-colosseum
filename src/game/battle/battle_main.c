@@ -153,7 +153,7 @@ void _fightInitialize__FUi14FloorEnterMode(u32 unused, s32 enterMode)
 {
     extern u8 fn_800FF548(void);
     extern void* floorGetCurrentContext(void);
-    extern void fn_801EFA08(void);
+    extern void fightMainThread(void);
     extern void* GSthreadCreate(s32 priority, void* userData, u32 stackSize,
                                 s32 arg3, s32 arg4, void (*entry)(void));
     extern u8 lbl_8046D730[];
@@ -179,7 +179,7 @@ void _fightInitialize__FUi14FloorEnterMode(u32 unused, s32 enterMode)
     fightActionCreateAndFlowFifo(lbl_8046D730, 0, 0, 3, 4, lbl_80375CC8);
     fightActionDispFifoAll();
     lbl_8047B5D0 = (u32)GSthreadCreate(0x14, floorGetCurrentContext(), 0x4000, 1, 0,
-                                      fn_801EFA08);
+                                      fightMainThread);
 }
 
 #endif
@@ -189,12 +189,12 @@ void _fightInitialize__FUi14FloorEnterMode(u32 unused, s32 enterMode)
  *
  * battle_FightEnd (_fightFinalize__FUi14FloorEnterMode, 0x801EF374) is
  * recovered below. battle_FightStart (_fightInitialize__FUi14FloorEnterMode,
- * 0x801EF4B0) and battle_MainLoop (fn_801EFA08's outline) remain incomplete;
+ * 0x801EF4B0) and battle_MainLoop (fightMainThread's outline) remain incomplete;
  * see the file header for why the fictional bodies previously here were removed.
  * ========================================================================= */
 
 /* Forward declarations for converted functions */
-void fn_801EFA08(void);
+void fightMainThread(void);
 
 /* #######################################################################
  * Shared battle core / fight flow source (0x801EF02C - 0x801F0058).
@@ -203,23 +203,23 @@ void fn_801EFA08(void);
 #if defined(BATTLE_MAIN_ALL) || defined(BATTLE_MAIN_EXACT_801EF02C_ONLY)
 
 /* 0x801EF02C | size: 0x54 | small */
-void fn_801EF02C(void) {
+void darkPokemonSetAllFlag14(void) {
     extern void* fn_801EE440(u16 idx);
-    extern u16 fn_801EE468(void);
-    extern void fn_801EECD8(void* a, u32 b);
-    u16 count = fn_801EE468();
+    extern u16 darkPokemonListCount(void);
+    extern void darkPokemonSetFlag14(void* a, u32 b);
+    u16 count = darkPokemonListCount();
     u16 i;
     for (i = 0; i < count; i++) {
-        fn_801EECD8(fn_801EE440(i), 1);
+        darkPokemonSetFlag14(fn_801EE440(i), 1);
     }
 }
 
 /* 0x801EF080 | size: 0x54 | small */
-void fn_801EF080(void) {
+void darkPokemonSetAllFlag12(void) {
     extern void* fn_801EE440(u16 idx);
-    extern u16 fn_801EE468(void);
+    extern u16 darkPokemonListCount(void);
     extern void fn_801EEB34(void* a, u32 b);
-    u16 count = fn_801EE468();
+    u16 count = darkPokemonListCount();
     u16 i;
     for (i = 0; i < count; i++) {
         fn_801EEB34(fn_801EE440(i), 1);
@@ -227,11 +227,11 @@ void fn_801EF080(void) {
 }
 
 /* 0x801EF0D4 | size: 0x54 | small */
-void fn_801EF0D4(void) {
+void darkPokemonSetAllFlag16(void) {
     extern void* fn_801EE440(u16 idx);
-    extern u16 fn_801EE468(void);
+    extern u16 darkPokemonListCount(void);
     extern void fn_801EE958(void* a, u32 b);
-    u16 count = fn_801EE468();
+    u16 count = darkPokemonListCount();
     u16 i;
     for (i = 0; i < count; i++) {
         fn_801EE958(fn_801EE440(i), 1);
@@ -265,8 +265,8 @@ void fn_801EF128(void* partyData) {
         BattlePartyMeta metadata[97];
     } BattlePartyData;
     extern void* savedataGetStatus(u32, u32);
-    extern u16 fn_801EEF08(u16);
-    extern u16 fn_801EEFF4(u16);
+    extern u16 darkPokemonGet8(u16);
+    extern u16 darkPokemonGet2(u16);
     BattlePartyData* data = partyData;
     s32 i;
 
@@ -285,16 +285,16 @@ void fn_801EF128(void* partyData) {
         meta->active = 0;
         meta->id = 0;
         meta->field14 = -1;
-        meta->field16 = fn_801EEF08((u16)i);
+        meta->field16 = darkPokemonGet8((u16)i);
         meta->flag = 0;
-        meta->field10 = fn_801EEFF4((u16)i);
+        meta->field10 = darkPokemonGet2((u16)i);
         meta->index = i;
     }
 }
 
 /* 0x801EF1E4 | size: 0x30 | small */
 /* Ensure battle data pointer is valid; if NULL, get default via savedataGetStatus. */
-void* fn_801EF1E4(void* data) {
+void* darkPokemonSaveGetPtr(void* data) {
     extern void* savedataGetStatus(u32 a, u32 b);
     if (data == NULL) {
         data = savedataGetStatus(0, 0xF);
@@ -303,13 +303,13 @@ void* fn_801EF1E4(void* data) {
 }
 
 /* 0x801EF214 | size: 0x60 | small */
-u32 fn_801EF214(void) {
+u32 darkPokemonCountFlag14(void) {
     extern u32 lbl_80478F68;
-    extern u8 fn_801EEC74(u16 idx);
+    extern u8 darkPokemonCheckFlag14(u16 idx);
     u16 i;
     u32 count = 0;
     for (i = 1; i < *(u32*)((u8*)lbl_80478F68 + 0x0); i++) {
-        if (fn_801EEC74(i) != 0) {
+        if (darkPokemonCheckFlag14(i) != 0) {
             count++;
         }
     }
@@ -317,13 +317,13 @@ u32 fn_801EF214(void) {
 }
 
 /* 0x801EF274 | size: 0x60 | small */
-u32 fn_801EF274(void) {
+u32 darkPokemonCountFlag12(void) {
     extern u32 lbl_80478F68;
-    extern u8 fn_801EEAD0(u16 idx);
+    extern u8 darkPokemonCheckFlag12(u16 idx);
     u16 i;
     u32 count = 0;
     for (i = 1; i < *(u32*)((u8*)lbl_80478F68 + 0x0); i++) {
-        if (fn_801EEAD0(i) != 0) {
+        if (darkPokemonCheckFlag12(i) != 0) {
             count++;
         }
     }
@@ -331,7 +331,7 @@ u32 fn_801EF274(void) {
 }
 
 /* 0x801EF2D4 | size: 0xA0 | medium */
-void fn_801EF2D4(void) {
+void fightCloseAllMenus(void) {
     extern u8 menuIsCheck(s32 objID);
     extern void menuCloseCustom(s32 objID, s32 arg1, s32 arg2);
     typedef struct BattleSceneIdList {
@@ -423,12 +423,12 @@ void fightSetEncountId(u16 val) {
 }
 
 /* Address: 0x801EF624 | Size: 0x8 | Pattern: sda_getter */
-u16 fn_801EF624(void) {
+u16 fightGetFloorKind(void) {
     return lbl_8047B5D6;
 }
 
 /* Address: 0x801EF62C | Size: 0x8 | Pattern: sda_setter */
-void fn_801EF62C(u16 val) {
+void battleSetResult(u16 val) {
     lbl_8047B5D8 = val;
 }
 
@@ -443,7 +443,7 @@ u8 fightIsBattleActive(void) {
 }
 
 /* 0x801EF644 | size: 0xB8 | medium */
-void fn_801EF644(s32 result) {
+void fightPreloadResources(s32 result) {
     extern u8 lbl_803727C8[];
     extern u8 lbl_803752A0[];
     extern u16 lbl_80478D10;
@@ -473,9 +473,9 @@ void fn_801EF644(s32 result) {
 }
 
 /* 0x801EF6FC | size: 0x5C | small */
-void fn_801EF6FC(u8 a) {
+void fightStartEnvSound(u8 a) {
     extern u8 lbl_8047B5E1;
-    extern u16 fn_801EF624(void);
+    extern u16 fightGetFloorKind(void);
     extern u32 fightEncountGetEnvSndDataId(u16 encountDataIndex);
     extern void std105_soundPlayEffect(u32 r3, u32 r4, u32 r5);
     u16 encountDataIndex;
@@ -483,7 +483,7 @@ void fn_801EF6FC(u8 a) {
 
     if (lbl_8047B5E1 == 1) return;
     if (a == 0) return;
-    encountDataIndex = fn_801EF624();
+    encountDataIndex = fightGetFloorKind();
     if (encountDataIndex == 0) return;
     r3 = fightEncountGetEnvSndDataId(encountDataIndex);
     if (r3 != 0) {
@@ -494,9 +494,9 @@ void fn_801EF6FC(u8 a) {
 }
 
 /* 0x801EF758 | size: 0x5C | small */
-void fn_801EF758(u8 a) {
+void fightStartBgm(u8 a) {
     extern u8 lbl_8047B5E0;
-    extern u16 fn_801EF624(void);
+    extern u16 fightGetFloorKind(void);
     extern u32 fightEncountGetBgmSndDataId(u16 encountDataIndex);
     extern void std104_soundSetBackgroundMusic(u32 r3, u32 r4, u32 r5);
     u16 encountDataIndex;
@@ -504,7 +504,7 @@ void fn_801EF758(u8 a) {
 
     if (lbl_8047B5E0 == 1) return;
     if (a == 0) return;
-    encountDataIndex = fn_801EF624();
+    encountDataIndex = fightGetFloorKind();
     if (encountDataIndex == 0) return;
     r3 = fightEncountGetBgmSndDataId(encountDataIndex);
     if (r3 != 0) {
@@ -515,7 +515,7 @@ void fn_801EF758(u8 a) {
 }
 
 /* 0x801EF7B4 | size: 0x10 | tiny */
-void fn_801EF7B4(void) {
+void fightResetSoundFlags(void) {
     extern u8 lbl_8047B5E0;
     extern u8 lbl_8047B5E1;
     lbl_8047B5E0 = 0;
@@ -558,9 +558,9 @@ void fn_801EF7C4(void* arg) {
 
 #endif
 
-/* fn_801EF8F4 and fn_801EF95C are auto-inlined into fn_801EFA08 (the next
+/* battleCameraSelect and fightDbgMenuCheck are auto-inlined into fightMainThread (the next
  * residual island); its wrapper compiles them as static inline so that
- * unit's object holds fn_801EFA08 only. */
+ * unit's object holds fightMainThread only. */
 #if defined(BATTLE_MAIN_ALL) || defined(BATTLE_MAIN_EXACT_801EF5C0_ONLY) || \
     defined(BATTLE_MAIN_RESIDUAL_801EFA08_ONLY)
 #if defined(BATTLE_MAIN_RESIDUAL_801EFA08_ONLY)
@@ -570,7 +570,7 @@ void fn_801EF7C4(void* arg) {
 #endif
 
 /* 0x801EF8F4 | size: 0x68 | small */
-BATTLE_MAIN_HELPER u8 fn_801EF8F4(u8 useSimpleCamera) {
+BATTLE_MAIN_HELPER u8 battleCameraSelect(u8 useSimpleCamera) {
     u8 previousMode;
     void* data;
 
@@ -589,7 +589,7 @@ BATTLE_MAIN_HELPER u8 fn_801EF8F4(u8 useSimpleCamera) {
 }
 
 /* 0x801EF95C | size: 0xAC | medium */
-BATTLE_MAIN_HELPER void fn_801EF95C(void) {
+BATTLE_MAIN_HELPER void fightDbgMenuCheck(void) {
     extern u8 dbgMenuGetEnable(void);
     extern void dbgMenuSetEnable(u8 mode);
     extern u8 fn_8000816C(void);
@@ -628,7 +628,7 @@ BATTLE_MAIN_HELPER void fn_801EF95C(void) {
 #if defined(BATTLE_MAIN_ALL) || defined(BATTLE_MAIN_RESIDUAL_801EFA08_ONLY)
 
 /* 0x801EFA08 | size: 0x5BC | battle main loop (the battle thread entry). */
-void fn_801EFA08(void) {
+void fightMainThread(void) {
     extern u8 lbl_80375CC8[];
     extern u8 lbl_80375D30[];
     extern u8 lbl_80375D80[];
@@ -639,7 +639,7 @@ void fn_801EFA08(void) {
     extern void floorBattleEndTerminateScripts(void);
     extern void floorSetFadeScript(s32 a, s32 b);
     extern void std138_soundPlayEffectEx(s32 a, s32 b, s32 c, s32 d);
-    extern void fn_801EF2D4(void);
+    extern void fightCloseAllMenus(void);
     extern u16 std103_battleGetResult(void);
     extern void fightFloorSetTimeOutAllFightResult(s32 arg);
     extern u8 fightFloorIsUseFightTimerCommand(s32 arg);
@@ -664,16 +664,16 @@ void fn_801EFA08(void) {
     fightActionFlowKaisiPreSubLoad();
     fadeSet(8, lbl_8047E508);
     fightActionCreateAndFlowFifo(lbl_8046D760, 0, 0, 2, 0, lbl_80375CC8);
-    fn_801EF8F4(1);
+    battleCameraSelect(1);
     fadeCheck(1);
-    fn_801EF95C();
+    fightDbgMenuCheck();
 
     if (std103_battleGetResult() == 0) {
-        fn_801EF8F4(1);
+        battleCameraSelect(1);
         fightActionCreateAndFlowFifo(lbl_8046D760, 0, 0, 4, 5, lbl_80375CC8);
-        fn_801EF8F4(1);
+        battleCameraSelect(1);
         fightActionCreateAndFlowFifo(lbl_8046D760, 0, 0, 4, 4, lbl_80375CC8);
-        fn_801EF8F4(1);
+        battleCameraSelect(1);
         fightActionCreateAndFlowFifo(lbl_8046D760, 0, 0, 5, 0, lbl_80375CC8);
         fightActionDispFifoAll();
         if (fightFloorIsUseFightTimerAll(0) == 1) {
@@ -682,12 +682,12 @@ void fn_801EFA08(void) {
         }
 
         while (std103_battleGetResult() == 0) {
-            fn_801EF95C();
+            fightDbgMenuCheck();
             if (std103_battleGetResult() != 0) {
                 break;
             }
             if (fightFloorIsUseFightTimerAll(0) == 1 && fightTimerAllIsOver() == 1) {
-                fn_801EF8F4(1);
+                battleCameraSelect(1);
                 fightMenuOpenInfoMenu(0);
                 fightFloorSetTimeOutAllFightResult(0);
                 frames = dbgMenuFightGetMsgSpeedToFrame(0xB4);
@@ -704,7 +704,7 @@ void fn_801EFA08(void) {
                 fightTimerCommandInit();
                 fightTimerCommandStart();
             }
-            fn_801EF8F4(0);
+            battleCameraSelect(0);
             fightMenuOpenInfoMenu(-1);
             fightActionDispFifoAll();
             fightActionCreateAndFlowFifo(lbl_8046D760, 0, 0, 7, 0, lbl_80375D30);
@@ -730,8 +730,8 @@ void fn_801EFA08(void) {
         fightActionDispFifoAll();
     }
 
-    fn_801EF8F4(1);
-    fn_801EF2D4();
+    battleCameraSelect(1);
+    fightCloseAllMenus();
     if (fightFloorIsUseFightTimerAll(0) == 1) {
         fightTimerAllBlock();
         fightTimerAllTerminate();
@@ -759,7 +759,7 @@ void fn_801EFA08(void) {
 #if defined(BATTLE_MAIN_ALL) || defined(BATTLE_MAIN_EXACT_801EFFC4_ONLY)
 
 /* 0x801EFFC4 | size: 0x48 | small */
-void fn_801EFFC4(u32 count) {
+void fightWaitFrames(u32 count) {
     extern u32 msgGetCharsPerFrame(void);
     u32 i;
     if (count != 0) {

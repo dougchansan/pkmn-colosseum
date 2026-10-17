@@ -76,7 +76,7 @@ u32 fn_8022BE2C(u32 ctx, u8 mode) {
     extern u8  pokemonWazaGetMaxPP();
     extern u32 pokemonSetStatus();
     extern u8  fn_802026E4();
-    extern u32 fn_80201890();
+    extern u32 fightOutPokemonGetPokemonJoutai08();
     extern u8  fightOutPokemonIsUseHensinBuff();
     extern void fightOutPokemonSetHensinPokemonStatusId(u32, u32, u8, u32);
     extern s32 wazaGetStatus();
@@ -87,7 +87,7 @@ u32 fn_8022BE2C(u32 ctx, u8 mode) {
     extern u16 fightOutPokemonMaxHpWaruValue(u32, u16);
     extern u32 fightOutPokemonGetTasteLike();
     extern u8  fn_802025B8();
-    extern void fn_8020248C();
+    extern void fightOutPokemonWritePokemonJoutaiDataId();
     extern u16 GSrand(void);
     extern void fightOutPokemonWriteJoutaiDataId();
     extern u8  fightOutPokemonIsJoutaiNormal();
@@ -176,7 +176,7 @@ u32 fn_8022BE2C(u32 ctx, u8 mode) {
             }
             pokemonSetStatus(t1, 0, 0x80, i, npp);
             if (fn_802026E4(ctx, 0x10) == 0 && fn_802026E4(ctx, 0x31) == 1 &&
-                !isBitSet(fn_80201890(ctx, 0x31), i) &&
+                !isBitSet(fightOutPokemonGetPokemonJoutai08(ctx, 0x31), i) &&
                 fightOutPokemonIsUseHensinBuff(ctx) == 1) {
                 fightOutPokemonSetHensinPokemonStatusId(ctx, 0x80, i & 0xFF, 1);
             }
@@ -438,7 +438,7 @@ u32 fn_8022BE2C(u32 ctx, u8 mode) {
             if (fn_802025B8(ctx, 0xF) != 2) {
                 break;
             }
-            fn_8020248C(ctx, 0xF, 0);
+            fightOutPokemonWritePokemonJoutaiDataId(ctx, 0xF, 0);
             result = 2;
             msg = lbl_80379BD1;
         }

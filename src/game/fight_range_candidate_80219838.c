@@ -32,8 +32,8 @@ extern u32 fightOutPokemonGetPokemonPtr();
 extern u8 fightOutPokemonIsAlly();
 extern u8 fightOutPokemonCheckFightOut();
 extern u8 figthOutPokemonGetLevel();
-extern void fn_80201B2C();
-extern void fn_8020248C();
+extern void fightOutPokemonSetPokemonJoutai0C();
+extern void fightOutPokemonWritePokemonJoutaiDataId();
 extern u8 fn_802025B8();
 
 void fn_80219838(void)
@@ -58,8 +58,8 @@ void fn_80219838(void)
         move = pokemonGetStatus(pokemon, 0, 0x7f, slot);
         wazaGetStatus(0, move, 1, 0);
         msgctrlSetValue(0xd, GSmsgGetGSchar());
-        fn_8020248C(target, 0x29, 0);
-        fn_80201B2C(target, 0x29, move);
+        fightOutPokemonWritePokemonJoutaiDataId(target, 0x29, 0);
+        fightOutPokemonSetPokemonJoutai0C(target, 0x29, move);
         lbl_8047B610 += 5;
         return;
     }

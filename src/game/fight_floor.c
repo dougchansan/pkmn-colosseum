@@ -1016,7 +1016,7 @@ void fightFloorCreateFightPokemonEnemyAryEnemySideAll(u32 param_1) {
     extern u32 fightSideCheckValid(void*);
     extern void *fightTrainerGetValidFightOutPokemonPtr(void*, u32);
     extern void *fightTargetGetPtr(u32, void*, u32);
-    extern void fn_80202C1C(void*, void*);
+    extern void _fightFloorCreateFightPokemonEnemyArySub(void*, void*);
     extern u32 fightOutPokemonCheckFightOut(void*);
     u32 count;
     u32 cols;
@@ -1049,7 +1049,7 @@ void fightFloorCreateFightPokemonEnemyAryEnemySideAll(u32 param_1) {
                         if (cell != NULL) {
                             if (fightOutPokemonCheckFightOut(cell) & 0xFF) {
                                 void *slot = fightTargetGetPtr(3, cell, count);
-                                fn_80202C1C(cell, slot);
+                                _fightFloorCreateFightPokemonEnemyArySub(cell, slot);
                             }
                         }
                         k++;
@@ -1181,7 +1181,7 @@ u8 fightFloorIsIrekaeFightOutPokemon(u32 param_1) {
 u32 _fightFloorIsIrekaeFightOutPokemonSub__FPvUsPv(void *param_1, u32 r4_unused, u8 *out_buf) {
     void *trainer;
     extern u32 fightTrainerCheckValid(void*);
-    extern void *fn_801F8A18(void*, u16*);
+    extern void *fightTrainerGetIrekaeFightPokemon(void*, u16*);
     extern u32 fightFloorGetStatus(void*, u32, u32, u32);
     extern void *fightTrainerGetStatus(void*, u32, u32, u32);
     extern u32 fightOutPokemonCheckFightOut(void*);
@@ -1196,7 +1196,7 @@ u32 _fightFloorIsIrekaeFightOutPokemonSub__FPvUsPv(void *param_1, u32 r4_unused,
     if (!(fightTrainerCheckValid(trainer) & 0xFF))
         return 1;
     tmp = 0;
-    if (!fn_801F8A18(pkmn, &tmp))
+    if (!fightTrainerGetIrekaeFightPokemon(pkmn, &tmp))
         return 1;
     count = fightFloorGetStatus(0, 0, 0x18, 0) & 0xFFFF;
     outptr = out_buf;
@@ -1477,7 +1477,7 @@ end:
 /* 0x801F3984 | size: 0x1A0 | medium */
 u8 fightFloorSetFightResultId(void* floor, u16 id) {
     extern u16 std103_battleGetResult(void);
-    extern void fn_801EF62C(u16);
+    extern void battleSetResult(u16);
     extern u32 fightFloorGetStatus(void*, u32, u32, u16);
     u16 now;
     u8 kind;
@@ -1491,7 +1491,7 @@ u8 fightFloorSetFightResultId(void* floor, u16 id) {
         return 1;
     }
     if (id == 0 || id == 1) {
-        fn_801EF62C(id);
+        battleSetResult(id);
         return 1;
     }
     if (kind == 0) {
@@ -1499,11 +1499,11 @@ u8 fightFloorSetFightResultId(void* floor, u16 id) {
             return 0;
         }
         if (id == 7) {
-            fn_801EF62C(3);
+            battleSetResult(3);
             return 1;
         }
         if (id == 6) {
-            fn_801EF62C(5);
+            battleSetResult(5);
             return 1;
         }
     } else {
@@ -1511,23 +1511,23 @@ u8 fightFloorSetFightResultId(void* floor, u16 id) {
             return 0;
         }
         if (now == 3 && id == 2) {
-            fn_801EF62C(7);
+            battleSetResult(7);
             return 1;
         }
         if (now == 2 && id == 3) {
-            fn_801EF62C(7);
+            battleSetResult(7);
             return 1;
         }
         if (now == 4 && id == 5) {
-            fn_801EF62C(6);
+            battleSetResult(6);
             return 1;
         }
         if (now == 5 && id == 4) {
-            fn_801EF62C(6);
+            battleSetResult(6);
             return 1;
         }
     }
-    fn_801EF62C(id);
+    battleSetResult(id);
     return 1;
 }
 

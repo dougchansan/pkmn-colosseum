@@ -137,9 +137,9 @@ void fn_80216D9C(void)
     extern u32 fn_801F0134();
     extern u32 fn_801F025C();
     extern u32 fn_801F54A4();
-    extern void fn_80201764();
-    extern void fn_80201B2C();
-    extern void fn_8020248C();
+    extern void fightOutPokemonSetPokemonJoutai08();
+    extern void fightOutPokemonSetPokemonJoutai0C();
+    extern void fightOutPokemonWritePokemonJoutaiDataId();
     extern u8 fn_802025B8();
     extern u8 fn_802026E4();
     extern u32 fn_80205184();
@@ -170,14 +170,14 @@ void fn_80216D9C(void)
     lbl_8047B610 = (u8*)*(u32 *)(lbl_8047B610 + 1);
     return;
   }
-  fn_8020248C(uVar3,0x34,uVar2);
-  fn_80201B2C(uVar3,0x34,uVar4);
+  fightOutPokemonWritePokemonJoutaiDataId(uVar3,0x34,uVar2);
+  fightOutPokemonSetPokemonJoutai0C(uVar3,0x34,uVar4);
   iVar6 = fn_80232110(uVar1,uVar3,uVar5,uVar4,uVar10,uVar8);
   cVar9 = fn_802026E4(uVar1,0x32);
   if (cVar9 == 1) {
     iVar6 = iVar6 * 15 / 10;
   }
-  fn_80201764(uVar3,0x34,iVar6);
+  fightOutPokemonSetPokemonJoutai08(uVar3,0x34,iVar6);
   if ((uVar4 & 0xffff) == 0x161) {
     lbl_80478D78[5] = 1;
   }

@@ -8,7 +8,7 @@ extern u8* lbl_8047B610;
 extern u8 lbl_80478D78[1];
 extern u8 fn_801DDD28();
 extern void wazaSequenceSysStartWaza();
-extern u32 fn_801F8A18();
+extern u32 fightTrainerGetIrekaeFightPokemon();
 extern void* lbl_8047B64C;
 extern u8 lbl_80478278[0x10];
 extern u32 lbl_8047B618;
@@ -22,7 +22,7 @@ void fn_8021D9C0(void) {
     extern void* fightFloorGetFightOutPokemonPtrToFightTrainerPtr();
     extern u8 fightOutPokemonIsGcHeroFightOutPokemon();
     extern u8 fn_801F18DC();
-    extern u32 fn_801F8000();
+    extern u32 fightTrainerGetKindPrefixName();
     extern void* fightOutPokemonGetNicknamePtr();
     extern void msgctrlSetValue(s32, s32);
     extern void* fightTrainerGetNamePtr();
@@ -32,12 +32,12 @@ void fn_8021D9C0(void) {
     u32 slotActive = ((u8)fightOutPokemonIsGcHeroFightOutPokemon(ctx1) == 1);
     u32 canTrigger = ((u8)fn_801F18DC(0) == 1);
     s32 ret8;
-    if ((u32)fn_801F8000(obj1) == 0 && (u8)slotActive == 0) {
+    if ((u32)fightTrainerGetKindPrefixName(obj1) == 0 && (u8)slotActive == 0) {
         canTrigger = 1;
     }
     msgctrlSetValue(0x16, (s32)fightOutPokemonGetNicknamePtr(ctx1));
     msgctrlSetValue(0xd, (s32)fightOutPokemonGetNicknamePtr(ctx1));
-    msgctrlSetValue(0x22, (s32)fn_801F8000(obj1));
+    msgctrlSetValue(0x22, (s32)fightTrainerGetKindPrefixName(obj1));
     msgctrlSetValue(0x23, (s32)fightTrainerGetNamePtr(obj1));
     msgctrlSetValue(0x25, (s32)fightTrainerGetNamePtr(obj1));
     if ((u8)canTrigger == 1) {
@@ -69,7 +69,7 @@ void fn_8021DB78(void) {
     extern void* fightFloorGetFightOutPokemonPtrToFightTrainerPtr();
     extern u8 fightOutPokemonIsGcHeroFightOutPokemon();
     extern u8 fn_801F18DC();
-    extern u32 fn_801F8000();
+    extern u32 fightTrainerGetKindPrefixName();
     extern void* fightOutPokemonGetNicknamePtr();
     extern void msgctrlSetValue(s32, s32);
     extern void* fightTrainerGetNamePtr();
@@ -79,12 +79,12 @@ void fn_8021DB78(void) {
     u32 slotActive = ((u8)fightOutPokemonIsGcHeroFightOutPokemon(ctx1) == 1);
     u32 canTrigger = ((u8)fn_801F18DC(0) == 1);
     s32 ret8;
-    if ((u32)fn_801F8000(obj1) == 0 && (u8)slotActive == 0) {
+    if ((u32)fightTrainerGetKindPrefixName(obj1) == 0 && (u8)slotActive == 0) {
         canTrigger = 1;
     }
     msgctrlSetValue(0x16, (s32)fightOutPokemonGetNicknamePtr(ctx1));
     msgctrlSetValue(0xd, (s32)fightOutPokemonGetNicknamePtr(ctx1));
-    msgctrlSetValue(0x22, (s32)fn_801F8000(obj1));
+    msgctrlSetValue(0x22, (s32)fightTrainerGetKindPrefixName(obj1));
     msgctrlSetValue(0x23, (s32)fightTrainerGetNamePtr(obj1));
     msgctrlSetValue(0x25, (s32)fightTrainerGetNamePtr(obj1));
     if ((u8)canTrigger == 1) {
@@ -842,7 +842,7 @@ void fn_8021F24C(void) {
     extern u32 fightFloorGetFightOutPokemonPtrToFightTrainerPtr();
     extern void fightFloorSetStatus();
     extern u32 fightFloorGetStatus();
-    extern int fn_801F8A18();
+    extern int fightTrainerGetIrekaeFightPokemon();
     extern short fightTrainerSelectIrekaeFightPokemon();
     u32 uVar2;
     u32 uVar7;
@@ -863,7 +863,7 @@ void fn_8021F24C(void) {
         lbl_8047B610 = lbl_8047B610 + 6;
     } else {
         local_18[0] = 0;
-        iVar3 = fn_801F8A18(uVar2, local_18);
+        iVar3 = fightTrainerGetIrekaeFightPokemon(uVar2, local_18);
         if (iVar3 == 0) {
             lbl_8047B610 = (u8*)uVar7;
         } else {
@@ -900,7 +900,7 @@ void fn_8021F39C(void) {
         return;
     }
     buf = 0;
-    if (fn_801F8A18(result, &buf) == 0) {
+    if (fightTrainerGetIrekaeFightPokemon(result, &buf) == 0) {
         lbl_8047B610 = *(u8**)(lbl_8047B610 + 2);
     } else {
         lbl_8047B610 = lbl_8047B610 + 7;
@@ -983,12 +983,12 @@ void fn_8021F664(void) {
     extern void fightTrainerBallThrowEffect();
     extern u32 pokemonGetStatus();
     extern void fightOutPokemonCopyAllAbiCnt();
-    extern void fn_802019BC();
+    extern void fightOutPokemonCopyPokemonJoutai();
     extern u8 fn_802026E4();
     extern void fightPokemonWriteJoutaiDataId();
     extern u8 fightPokemonCheckWriteJoutaiDataId();
     extern u32 fightOutPokemonGetNicknamePtr();
-    extern void fn_80204970();
+    extern void fightPokemonBiosSwap();
     extern u32 fightPokemonGetPokemonPtr();
     extern void fightOutPokemonCreate();
     extern void fightOutPokemonRegWzxLoad();
@@ -1021,7 +1021,7 @@ void fn_8021F664(void) {
         fightPokemonWriteJoutaiDataId(pokemon, 4, 1);
     }
     gridPokemon = fightTrainerGetEntryIdToFightPokemonPtr(trainer, entryId);
-    fn_80204970(gridPokemon, pokemon);
+    fightPokemonBiosSwap(gridPokemon, pokemon);
     fightPokemonGetFaceSpriteId(pokemon, 0, 0);
     fightPokemonGetPokemonPtr(pokemon);
     sequence = pokemonCreateSequence();
@@ -1054,7 +1054,7 @@ void fn_8021F664(void) {
                 ability = abilities.values[i];
                 hasAbility = fn_802026E4(trainerPokemon, ability);
                 if (hasAbility == 1) {
-                    fn_802019BC(context, trainerPokemon, ability);
+                    fightOutPokemonCopyPokemonJoutai(context, trainerPokemon, ability);
                 }
             }
         }
@@ -1063,10 +1063,10 @@ void fn_8021F664(void) {
     callbackData[1] = copyMode;
     fightFloorLoopValidFightOutPokemon(0, fn_80232D28, callbackData, 0);
     if (fn_802026E4(trainerPokemon, 0x34) == 1) {
-        fn_802019BC(context, trainerPokemon, 0x34);
+        fightOutPokemonCopyPokemonJoutai(context, trainerPokemon, 0x34);
     }
     if (fn_802026E4(trainerPokemon, 0x35) == 1) {
-        fn_802019BC(context, trainerPokemon, 0x35);
+        fightOutPokemonCopyPokemonJoutai(context, trainerPokemon, 0x35);
     }
     msgctrlSetValue(0xD, fightOutPokemonGetNicknamePtr(context));
     {
@@ -1095,7 +1095,7 @@ void fn_8021F92C(void) {
     extern u32 fightFloorGetFightOutPokemonPtrToFightTrainerPtr();
     extern u32 fightTrainerGetStatus();
     u32 ctx = fightTargetGetPtrAsNowFightType(*(u8*)(lbl_8047B610 + 1), 0);
-    fn_801FCEC4(
+    fightOutPokemonBiosCopy(
         fightTrainerGetStatus(fightFloorGetFightOutPokemonPtrToFightTrainerPtr(0, ctx), 0, 0x47, 0),
         ctx);
     lbl_8047B610 = lbl_8047B610 + 2;

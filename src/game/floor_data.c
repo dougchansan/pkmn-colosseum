@@ -429,7 +429,7 @@ extern void itemDataBiosGetKind(void);
 extern void itemDataBiosGetBuff(void);
 extern f32 lbl_8047D018;
 void pokemonAddDpFormPokemonDpFilterId(void);
-extern void* fn_801EEEB8();
+extern void* darkPokemonSaveGet4A6();
 void pokemonSetDarkPokemonStatus(void);
 extern void GScharCpy(void);
 extern void pokemonGetFaceSpriteId(void);
@@ -642,7 +642,7 @@ extern u8 lbl_8035B96C[];
 extern u8 lbl_8035B950[];
 extern u8 lbl_8035B938[];
 extern u8 lbl_8035B904[];
-extern u16 fn_801EF624();
+extern u16 fightGetFloorKind();
 extern u8 lbl_8035B8E8[];
 extern const char lbl_802726AC[];
 extern const char lbl_8035B8CC[];
@@ -1822,7 +1822,7 @@ u8 floorDataBiosGetFloorKind(u8* ptr) {
     }
     val = (ptr[0] >> 5) & 7;
     if (val == 2) {
-        if ((u16)fn_801EF624(ptr) == 0) {
+        if ((u16)fightGetFloorKind(ptr) == 0) {
             return 1;
         }
     }

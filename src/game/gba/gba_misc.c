@@ -463,13 +463,13 @@ s32 std215_battleStartTrainerWithPrompt(void* work, void* arg) {
     extern void peopleSetVisible(void* work, u8 kind, s32 flag);
     extern void fadeCheck(s32 mode);
     extern s32 fieldStartEncount(s32 id, s32 a, s32 b);
-    extern u8 fn_801EEAD0(u8 id);
+    extern u8 darkPokemonCheckFlag12(u8 id);
     extern void fightTrainerPokemonDataBiosSetPokemonDataId(u8* pokemon, s32 id);
     extern u8* fightTrainerPokemonDataBiosGetPtr(void);
-    extern void fn_801FCAFC(void* trainer, u8 value);
-    extern void fn_801FCB40(void* trainer, u8 slot, u16 value);
-    extern void fn_801FCB84(void* trainer, u16 value);
-    extern void fn_801FCB94(void* trainer, u8 value);
+    extern void fightTrainerSet10(void* trainer, u8 value);
+    extern void fightTrainerSetU16Arr14(void* trainer, u8 slot, u16 value);
+    extern void fightTrainerSet06(void* trainer, u16 value);
+    extern void fightTrainerSet00(void* trainer, u8 value);
     extern void fn_801FCC3C(void* trainer);
     extern void fightTrainerDataBiosSetKindDataId(void* trainer, u8 value);
     extern void* fightTrainerDataBiosGetPtr(s32 id);
@@ -507,13 +507,13 @@ s32 std215_battleStartTrainerWithPrompt(void* work, void* arg) {
     ctx[0x4000] = 2;
     fightEncountDataBiosGetPtr(0x231);
     pokemon = fightTrainerDataBiosGetPtr(9);
-    fn_801FCB94(pokemon, ctx[0x4124]);
+    fightTrainerSet00(pokemon, ctx[0x4124]);
     fightTrainerDataBiosSetKindDataId(pokemon, ctx[0x4125]);
-    fn_801FCB84(pokemon, *(u16*)(ctx + 0x4134));
-    fn_801FCAFC(pokemon, ctx[0x4136]);
+    fightTrainerSet06(pokemon, *(u16*)(ctx + 0x4134));
+    fightTrainerSet10(pokemon, ctx[0x4136]);
     p = ctx;
     for (count = 0; count < 4; count++) {
-        fn_801FCB40(pokemon, count, *(u16*)(p + 0x4126));
+        fightTrainerSetU16Arr14(pokemon, count, *(u16*)(p + 0x4126));
         p += 2;
     }
     fn_801FCC3C(pokemon);
@@ -535,7 +535,7 @@ s32 std215_battleStartTrainerWithPrompt(void* work, void* arg) {
     *(u8**)&lbl_8047A674 = ctx + 0x40BC;
     result = fieldStartEncount(0x231, 1, 0);
     if (result == 2) {
-        if (ctx[0x41E1] != 0 && fn_801EEAD0(ctx[0x41E1]) == 1) {
+        if (ctx[0x41E1] != 0 && darkPokemonCheckFlag12(ctx[0x41E1]) == 1) {
             ok = 1;
         } else {
             ok = 0;
@@ -570,8 +570,8 @@ s32 std215_battleStartTrainerWithPrompt(void* work, void* arg) {
 
 /* 0x80089978 | size: 0x214 */
 u8 gbaBuildTrainerPokemon(u8* pokemon, u8* entry) {
-    extern u8 fn_801EEAD0(u8 id);
-    extern void fn_801EEE6C(u8 id, u8 value);
+    extern u8 darkPokemonCheckFlag12(u8 id);
+    extern void darkPokemonSaveSet4A6(u8 id, u8 value);
     extern void fightTrainerPokemonDataBiosSetPokemonDataId(u8* pokemon, u16 id);
     extern void fightTrainerPokemonDataBiosSetNickname(u8* pokemon, void* name);
     extern void fightTrainerPokemonDataBiosSetDarkPokemonFlag(u8* pokemon, u8 flag);
@@ -589,7 +589,7 @@ u8 gbaBuildTrainerPokemon(u8* pokemon, u8* entry) {
     s32 i;
     u8 skip;
 
-    if (entry[2] != 0 && fn_801EEAD0(entry[2]) == 1) {
+    if (entry[2] != 0 && darkPokemonCheckFlag12(entry[2]) == 1) {
         skip = 1;
     } else {
         skip = 0;
@@ -603,7 +603,7 @@ u8 gbaBuildTrainerPokemon(u8* pokemon, u8* entry) {
     fightTrainerPokemonDataBiosSetNickname(pokemon, NULL);
     fightTrainerPokemonDataBiosSetDarkPokemonFlag(pokemon, entry[2]);
     if (entry[2] != 0) {
-        fn_801EEE6C(entry[2], entry[0x28]);
+        darkPokemonSaveSet4A6(entry[2], entry[0x28]);
     }
     fightTrainerPokemonDataBiosSetLevel(pokemon, entry[3]);
     for (i = 0; i < 4; i++) {

@@ -8,7 +8,7 @@
  * creates the array base before the modulo operands, which gives retail's
  * volatile registers (random r4, count r3, base r5).
  *
- * fn_802196A8 needs fn_80201764's third parameter prototyped as a full
+ * fn_802196A8 needs fightOutPokemonSetPokemonJoutai08's third parameter prototyped as a full
  * word (s32): the slot is then sign-extended again at that call instead
  * of reusing the extension made for pokemonGetStatus.
  */
@@ -16,7 +16,7 @@
 
 extern u8* lbl_8047B610;
 extern u8 fn_802025B8();
-extern void fn_8020248C();
+extern void fightOutPokemonWritePokemonJoutaiDataId();
 
 void fn_802192B4(void)
 {
@@ -33,7 +33,7 @@ void fn_802192B4(void)
     targetId = fightTargetGetTragetPtrToRelativeHostSideFightTargetId(attacker, floor);
     target = (void*)fightTargetGetPtrAsNowFightType(0x12, 0);
     if (fn_802025B8(target, 0x1d) == 2) {
-        fn_8020248C(target, 0x1d, targetId);
+        fightOutPokemonWritePokemonJoutaiDataId(target, 0x1d, targetId);
     }
     lbl_8047B610++;
 }
@@ -155,8 +155,8 @@ void fn_802196A8(void)
 {
     extern s8 pokemonSearchWazaDataId();
     extern u32 fightTargetGetPtrAsNowFightType();
-    extern u16 fn_80201764(u32, u32, s32);
-    extern void fn_80201B2C();
+    extern u16 fightOutPokemonSetPokemonJoutai08(u32, u32, s32);
+    extern void fightOutPokemonSetPokemonJoutai0C();
     extern u32 fightOutPokemonGetPokemonPtr();
     extern u32 pokemonGetStatus();
     u8 blocked;
@@ -186,10 +186,10 @@ void fn_802196A8(void)
         slot = -1;
     }
     if (fn_802025B8(target, 0x2a) == 2 && slot >= 0 && pp != 0) {
-        fn_8020248C(target, 0x2a, 0);
+        fightOutPokemonWritePokemonJoutaiDataId(target, 0x2a, 0);
         move = pokemonGetStatus(pokemon, 0, 0x7f, slot);
-        fn_80201B2C(target, 0x2a, move);
-        fn_80201764(target, 0x2a, slot);
+        fightOutPokemonSetPokemonJoutai0C(target, 0x2a, move);
+        fightOutPokemonSetPokemonJoutai08(target, 0x2a, slot);
         lbl_8047B610 += 5;
         return;
     }

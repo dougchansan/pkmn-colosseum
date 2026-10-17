@@ -8,8 +8,8 @@
 
 /* 0x80089978 | size: 0x214 */
 u8 gbaBuildTrainerPokemon(u8* pokemon, u8* entry) {
-    extern u8 fn_801EEAD0(u8 id);
-    extern void fn_801EEE6C(u8 id, u8 value);
+    extern u8 darkPokemonCheckFlag12(u8 id);
+    extern void darkPokemonSaveSet4A6(u8 id, u8 value);
     extern void fightTrainerPokemonDataBiosSetPokemonDataId(u8* pokemon, u16 id);
     extern void fightTrainerPokemonDataBiosSetNickname(u8* pokemon, void* name);
     extern void fightTrainerPokemonDataBiosSetDarkPokemonFlag(u8* pokemon, u8 flag);
@@ -27,7 +27,7 @@ u8 gbaBuildTrainerPokemon(u8* pokemon, u8* entry) {
     s32 i;
     u8 skip;
 
-    if (entry[2] != 0 && fn_801EEAD0(entry[2]) == 1) {
+    if (entry[2] != 0 && darkPokemonCheckFlag12(entry[2]) == 1) {
         skip = 1;
     } else {
         skip = 0;
@@ -41,7 +41,7 @@ u8 gbaBuildTrainerPokemon(u8* pokemon, u8* entry) {
     fightTrainerPokemonDataBiosSetNickname(pokemon, NULL);
     fightTrainerPokemonDataBiosSetDarkPokemonFlag(pokemon, entry[2]);
     if (entry[2] != 0) {
-        fn_801EEE6C(entry[2], entry[0x28]);
+        darkPokemonSaveSet4A6(entry[2], entry[0x28]);
     }
     fightTrainerPokemonDataBiosSetLevel(pokemon, entry[3]);
     for (i = 0; i < 4; i++) {

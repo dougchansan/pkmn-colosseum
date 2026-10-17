@@ -108,8 +108,8 @@ void mailMainSendAllMail(s32 seqHandle, f32 targetScale, f32 speed) {
  */
 void fn_801D228C(s32 seqHandle) {
     extern void std078_flagSetFalse(s32);
-    extern void fn_801EED30(u32, s32);
-    extern u16 fn_801EE614(u32);
+    extern void darkPokemonSetFlag0E(u32, s32);
+    extern u16 darkPokemonGetFlag1C(u32);
     extern void std243_shadowPokemonSetState(u32, u32);
     extern void cmsRunSync(s32, s32, ...);
     extern void heroMoveAddAutoEvent(s32, u16, s32, s32, s32);
@@ -136,9 +136,9 @@ void fn_801D228C(s32 seqHandle) {
     if (count != 0xFFFF) {
         for (i = 0; i < count; i++) {
             object = shadowGroupGetEntryId(handle, i);
-            fn_801EED30(object, 1);
+            darkPokemonSetFlag0E(object, 1);
             limit = shadowGroupGetEntryByte(handle, i);
-            if (fn_801EE614(object) < limit) {
+            if (darkPokemonGetFlag1C(object) < limit) {
                 std243_shadowPokemonSetState(object, limit);
             }
         }

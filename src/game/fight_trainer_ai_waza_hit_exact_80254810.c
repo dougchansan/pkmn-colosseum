@@ -559,7 +559,7 @@ s32 fightTrainerAiWazaHit161(void* ctx, u32 param1, u32 param2, u32 param3) {
 
 u32 fightTrainerAiWazaHit160(void* ctx, u32 slot, u32 param) {
     extern u8 fn_80236BFC(void* ctx, u32 slot, u32 param);
-    extern u32 fn_80202360(u32 slot, u32 param);
+    extern u32 fightOutPokemonGetPokemonJoutaiStack(u32 slot, u32 param);
     extern u8 joutaiDataBiosGetMaxStack(u32 param);
     u32 result;
 
@@ -567,7 +567,7 @@ u32 fightTrainerAiWazaHit160(void* ctx, u32 slot, u32 param) {
     if (fn_80236BFC(ctx, slot, 0x2d) == 0) {
         result = 0;
     } else {
-        result = fn_80202360(result, 0x2d);
+        result = fightOutPokemonGetPokemonJoutaiStack(result, 0x2d);
     }
     if ((s16)result >= (s32)joutaiDataBiosGetMaxStack(0x2d)) {
         return 0;
@@ -950,13 +950,13 @@ u32 fightTrainerAiWazaHit128(void* ctx, u32 a, u32 b, u32 c) {
 
 u32 fightTrainerAiWazaHit127(void)
 {
-    extern int fn_801F8A18();
+    extern int fightTrainerGetIrekaeFightPokemon();
   u32 r3;
   int iVar1;
   u16 local_8[4];
 
   local_8[0] = 0;
-  iVar1 = fn_801F8A18(r3, local_8);
+  iVar1 = fightTrainerGetIrekaeFightPokemon(r3, local_8);
   return (-iVar1 != 0) ? 1 : 0;
 }
 

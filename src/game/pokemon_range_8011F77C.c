@@ -47,7 +47,7 @@ extern s32 pokemonSeikakuDataBiosGetReliveNadenade(u8* data);
 extern u8* pokemonSeikakuRateDataBiosGetPtr(u8 index);
 extern u8 pokemonSeikakuRateDataBiosGetKake(u8* data);
 extern u8 pokemonSeikakuRateDataBiosGetWaru(u8* data);
-extern u16 fn_801EEEB8(u16 dark_id);
+extern u16 darkPokemonSaveGet4A6(u16 dark_id);
 extern void fn_8011B950(u8* base, u16 count);
 extern u16 joutaiDataBiosGetStatusKind(u16 idx);
 extern u8 fn_8011B67C(u8* obj, u16 id);
@@ -298,7 +298,7 @@ void pokemonToMenuPokemonStatusSubBar(u8* pokemon, MenuPokemonStatus* menu)
         menu->progressMax.integer = pokemonGetLevelToExp(pokemon, level + 1) - baseExp;
         menu->progress.integer = pokemonGetStatus(pokemon, 0, 0x79, 0) - baseExp;
     } else {
-        menu->progressMax.real = fn_801EEEB8((u16)pokemonGetStatus(pokemon, 0, 0xC3, 0));
+        menu->progressMax.real = darkPokemonSaveGet4A6((u16)pokemonGetStatus(pokemon, 0, 0xC3, 0));
         menu->progress.real = pokemonGetDp(pokemon);
     }
 }
@@ -338,7 +338,7 @@ void pokemonSetDarkPokemonStatus(u8* pokemon, u16 dark_id)
     pokemonSetStatus(pokemon, 0, 0xC7, 0, 0);
     fn_8011B950((u8*)pokemonGetStatus(pokemon, 0, 0xC8, 0), 1);
     pokemonSetStatus(pokemon, 0, 0xC3, 0, dark_id);
-    pokemonSetDp(pokemon, fn_801EEEB8(dark_id));
+    pokemonSetDp(pokemon, darkPokemonSaveGet4A6(dark_id));
 }
 
 u8 pokemonIsDarkPokemon(u8* pokemon)

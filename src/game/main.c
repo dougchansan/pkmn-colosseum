@@ -121,7 +121,7 @@ extern void cms_RegisterScript(void* relData);                  /* GSfloor regis
 extern void soundSetInitParams(u32 a, u32 b, u32 c, u32 d, u32 e); /* set the five DVD error message IDs */
 extern void fn_801E1300(void);                           /* Save/card system init */
 extern void flareCreateTask(void);                           /* GBA communication init */
-extern void fn_801E1B2C(void);                           /* Save data init */
+extern void GSmovieInit(void);                           /* Save data init */
 extern void menuInit(u32 param);                      /* Effect system init */
 extern void fn_80101FB8(u32 param);                      /* GS load meter draw-sync hook init */
 extern void fn_800D3074(u32 flag);                       /* GSgfx enable rendering */
@@ -235,11 +235,11 @@ extern void GSgfxCaptureUpdate(void);       /* World/scene render tick */
 
 extern void fn_801E0FB4(s32 unk, u32 a, u32 b); /* Save/card per-frame update */
 
-extern u8   fn_801E11E8(void);   /* Card system check pending */
-extern s32  fn_801E11E0(void);   /* Card system get state */
-extern void fn_801E11B0(void);   /* Card system process state 2 */
-extern void fn_801E119C(void);   /* Card system process other */
-extern void fn_801E118C(void);   /* Card system finalize */
+extern u8   vtrIsActive(void);   /* Card system check pending */
+extern s32  vtrGetMode(void);   /* Card system get state */
+extern void vtrSetMode1(void);   /* Card system process state 2 */
+extern void vtrSetMode2(void);   /* Card system process other */
+extern void vtrSetMode3(void);   /* Card system finalize */
 
 extern void menuDaemon(void);   /* Particle system update */
 extern void GSmsgDaemon(void);   /* GSthread sync / process tasks */
@@ -644,7 +644,7 @@ void fn_800057B0(void) {
     flareCreateTask();
 
     /* Initialize the THP movie runtime */
-    fn_801E1B2C();
+    GSmovieInit();
 
     /* Initialize 3D effect system: 24 max effects */
     menuInit(0x18);
@@ -950,20 +950,20 @@ void mainRetraceLogic(void) {
         dbgMovieCaptureUpdate();
     }
 
-    if (fn_801E11E8()) {
+    if (vtrIsActive()) {
         pressed = GSinputButtonsChanged(1);
         held = fn_800F7BC4(1);
         if (held & pressed & 0x40) {
-            if (fn_801E11E0() == 2) {
-                fn_801E11B0();
+            if (vtrGetMode() == 2) {
+                vtrSetMode1();
             } else {
-                fn_801E119C();
+                vtrSetMode2();
             }
         }
         pressed = GSinputButtonsChanged(1);
         held = fn_800F7BC4(1);
         if (held & pressed & 0x20) {
-            fn_801E118C();
+            vtrSetMode3();
         }
     }
 

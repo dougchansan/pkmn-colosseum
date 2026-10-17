@@ -208,7 +208,7 @@ extern void  menuCloseCustom(s32 menuId, s32 mode, s32 force);
 extern void  winMsgClose(s32 wait);
 
 /* Input */
-extern void  fn_801EF644(s32 result);
+extern void  fightPreloadResources(s32 result);
 
 /* Math */
 extern f32   GSmodelGetAnimFrame(void* model);        /* Get distance */
@@ -2229,7 +2229,7 @@ extern u8 lbl_8047A32C;
 #if !defined(GS_TITLE_SPLIT) || defined(GS_TITLE_RANGE_8002058C)
 void fn_8002058C(void) {
     lbl_8047A32C = 0;
-    fn_801EF644(-1);
+    fightPreloadResources(-1);
     lbl_8047A32C = 1;
     for (;;) {
         _threadSwitch();
@@ -2577,7 +2577,7 @@ void titleDrawOptionHelp(u8* r3, u8* r4) {
 /* titleDrawContinueInfo - 0x80020F54 | size: 0x19c */
 extern void* menuModelRender(void*);
 extern void gfxVtxPos2s16(void);
-extern s32 fn_801EF214(void);
+extern s32 darkPokemonCountFlag14(void);
 extern void fn_801021F8(u32, u32);
 extern u8 lbl_803A1FF8[];
 extern u8 lbl_80314F98[];
@@ -2624,7 +2624,7 @@ void titleDrawContinueInfo(u8* arg0, u8* arg1) {
         /* FALL THROUGH */
     case 0x2CD:
     case 0x2D1:
-        if (fn_801EF214() == 0) {
+        if (darkPokemonCountFlag14() == 0) {
             ((s8*)arg1)[4] &= ~2;
         }
         break;
@@ -2683,7 +2683,7 @@ extern void menuPokemonModelRequestById(void);
 extern void peopleInfoBiosGetPtr(void);
 extern void fn_8018F4C8(void);
 extern void fn_80005748(void);
-extern void fn_801EF274(void);
+extern void darkPokemonCountFlag12(void);
 extern void floorReturnToSavedRoom(void);
 extern u32 lbl_8047A35C;
 extern u32 lbl_8047A358;
@@ -2716,8 +2716,8 @@ s32 titleMenuMain(void)
     extern void gamedataSetPlaytime(f32);
     extern void floorLink(s32, s32);
     extern s32 fn_80005748(void);
-    extern s32 fn_801EF214(void);
-    extern s32 fn_801EF274(void);
+    extern s32 darkPokemonCountFlag14(void);
+    extern s32 darkPokemonCountFlag12(void);
     s32 state;
     s32 loop;
     s32 result;
@@ -2833,8 +2833,8 @@ s32 titleMenuMain(void)
             fn_8018F4C8(peopleInfoBiosGetPtr(0xF70400), 1, &workA, &workB);
             menuModelSetMotion(lbl_803A1FF8, workA);
             msgVals[0] = fn_80005748();
-            msgVals[1] = fn_801EF214();
-            msgVals[2] = fn_801EF274();
+            msgVals[1] = darkPokemonCountFlag14();
+            msgVals[2] = darkPokemonCountFlag12();
             msgctrlSetValue(0x4C, (void*)msgVals[0]);
             msgctrlSetValue(0x2F, (void*)msgVals[2]);
             msgctrlSetValue(0x30, (void*)msgVals[1]);

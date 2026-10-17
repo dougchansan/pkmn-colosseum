@@ -159,7 +159,7 @@ void WS_HITCHECK(void)
     extern void fightOutPokemonSetHensinPokemonStatusId();
     extern u8 fightOutPokemonIsUseHensinBuff();
     extern void fightOutPokemonInitJoutaiKeep();
-    extern u32 fn_80201890();
+    extern u32 fightOutPokemonGetPokemonJoutai08();
     extern u8 fn_802026E4();
     extern void fightOutPokemonWriteJoutaiDataId();
     extern u32 fightOutPokemonGetPokemonPtr();
@@ -296,7 +296,7 @@ void WS_HITCHECK(void)
                   if (fn_802026E4(iVar4,0x31) != 1) {
                     goto after_hensin_update;
                   }
-                  uVar8 = fn_80201890(iVar4,0x31);
+                  uVar8 = fightOutPokemonGetPokemonJoutai08(iVar4,0x31);
                   if ((uVar8 & 1 << moveSlot) != 0) {
                     goto after_hensin_update;
                   }

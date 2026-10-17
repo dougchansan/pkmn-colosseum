@@ -1750,7 +1750,7 @@ s32 fightTrainerAiWazaHit028(void* ctx, u32 param1, u32 param2, u32 param3) {
     extern u8 fn_80237F74(void* ctx, u32 a, u32 type);
     extern u8 fn_80236BFC(void* ctx, u32 a, u32 type);
     extern s32 _fightTrainerAiWazaHitCheck(void* ctx, u32 param1, u32 param2, u32 param3, u32 zero);
-    extern u16 fn_801F87CC(u32 v, void* buf);
+    extern u16 fightTrainerGetIrekaeFightPokemonAry(u32 v, void* buf);
     u8 buf[0x14];
     u32 prev = fightFloorGetFightOutPokemonPtrToFightTrainerPtr(0, param3);
     s32 gate;
@@ -1762,7 +1762,7 @@ s32 fightTrainerAiWazaHit028(void* ctx, u32 param1, u32 param2, u32 param3) {
         return 0;
     }
     gate = _fightTrainerAiWazaHitCheck(ctx, param1, param2, param3, 0);
-    if (fn_801F87CC(prev, buf) == 0) {
+    if (fightTrainerGetIrekaeFightPokemonAry(prev, buf) == 0) {
         gate = 0;
     }
     if (gate == 0) {

@@ -10,7 +10,7 @@
  *
  * Linked: every function and every data section is exact (21/21,
  * .text/.bss/.sbss/.sdata/.sdata2 at 100%), and the unit is Matching with
- * main.dol and common_rel.rel SHA1 OK. The stream resync routine fn_801E2CA8
+ * main.dol and common_rel.rel SHA1 OK. The stream resync routine movieStreamFill
  * names the source pointer of its ring-rotation copies (`src`, see the
  * comment there). That local is admitted by the "named computed values" rule
  * in docs/CAMPAIGN_OPERATIONS.md (user decision, 2026-09-28). Without it the
@@ -40,7 +40,7 @@
  * every function's code unchanged, so it is not used; the names are not
  * applied (map names alone do not meet the sister-title clause).
  *
- * The unit builds with -inline noauto,deferred: under auto, fn_801E34F0 is
+ * The unit builds with -inline noauto,deferred: under auto, movieStreamCreate is
  * inlined into THPPlayerPrepare (fn_801E40F8), which retail did not do.
  */
 #include "dolphin/thp/THPPlayer.h"
@@ -98,14 +98,14 @@ BOOL lbl_8047B468;                     /* Initialized */
 u32 lbl_80478D00 = 0xFFFFFFFF; /* left stream id */
 u32 lbl_80478D04 = 0xFFFFFFFF; /* right stream id */
 
-static void fn_801E3A50(u32 retraceCount);
+static void PlayControl(u32 retraceCount);
 static inline OSMessage PopUsedTextureSet(void);
 static inline void PushUsedTextureSet(OSMessage msg);
 static inline BOOL ProperTimingForStart(void);
 static inline BOOL ProperTimingForGettingNextFrame(void);
 static inline void FillStreamBuffer(s16* left, s16* right, u32 sample);
-BOOL fn_801E34F0(void);
-void fn_801E2CA8(void);
+BOOL movieStreamCreate(void);
+void movieStreamFill(void);
 u32 fn_801E2B74(s16* left, s16* right, u32 sample, s32* status);
 u32 fn_801E260C(void* buffer1, u32 len1, void* buffer2, u32 len2, u32 user);
 
@@ -236,7 +236,7 @@ u32 fn_801E4650(void)
     return 0;
 }
 
-BOOL fn_801E449C(u8* buffer)
+BOOL THPPlayerSetBuffer(u8* buffer)
 {
     u32 i;
     u8* ptr;
@@ -428,10 +428,10 @@ BOOL fn_801E40F8(s32 frame, u8 flag, s32 audioTrack)
         lbl_8046AC60.curAudioNumber = 0;
 
         if (lbl_8046AC60.audioExist) {
-            fn_801E34F0();
+            movieStreamCreate();
         }
 
-        lbl_8047B46C = fn_800A8850(fn_801E3A50);
+        lbl_8047B46C = fn_800A8850(PlayControl);
         return TRUE;
     }
     return FALSE;
@@ -441,7 +441,7 @@ BOOL fn_801E4058(void)
 {
     if (lbl_8046AC60.open && (lbl_8046AC60.state == 1 || lbl_8046AC60.state == 4)) {
         if (lbl_8046AC60.state == 4 && lbl_8046AC60.audioExist) {
-            fn_801E2CA8();
+            movieStreamFill();
         }
         lbl_8046AC60.state = 2;
         lbl_8046AC60.prevCount = 0;
@@ -452,7 +452,7 @@ BOOL fn_801E4058(void)
     return FALSE;
 }
 
-void fn_801E3F54(void)
+void THPPlayerStop(void)
 {
     if (lbl_8046AC60.open && lbl_8046AC60.state != 0) {
         lbl_8046AC60.internalState = 0;
@@ -498,7 +498,7 @@ static inline BOOL ActivateStreams(void)
     return FALSE;
 }
 
-static void fn_801E3A50(u32 retraceCount)
+static void PlayControl(u32 retraceCount)
 {
     THPTextureSet* decodedTexture;
 
@@ -663,7 +663,7 @@ BOOL fn_801E3930(THPVideoInfo* videoInfo)
     return FALSE;
 }
 
-BOOL fn_801E38E8(THPAudioInfo* audioInfo)
+BOOL THPPlayerGetAudioInfo(THPAudioInfo* audioInfo)
 {
     if (lbl_8046AC60.open) {
         memcpy(audioInfo, &lbl_8046AC60.audioInfo, sizeof(THPAudioInfo));
@@ -677,7 +677,7 @@ u8 fn_801E38D8(void)
     return lbl_8046AC60.state;
 }
 
-void fn_801E386C(void)
+void THPPlayerDrawDone(void)
 {
     OSMessage tex;
 
@@ -718,14 +718,14 @@ void fn_801E3858(u32* left, u32* right)
  * stream ring, recording the end of each consumed THP audio frame in the
  * marker ring. Reconstructed helper: the same call/marker/memset sequence is
  * expanded twelve times in retail (four times in fn_801E260C, six in
- * fn_801E2CA8, twice in fn_801E34F0) and has no copy of its own.
+ * movieStreamFill, twice in movieStreamCreate) and has no copy of its own.
  *
  * It replaces the SDK sample's MixAudio and keeps that routine's shape:
  * MixAudio copies its arguments into working cursors before its loop
  * (`requestSample = sample; dst = destination;`, as in the matched copies in
  * doldecomp/sms and doldecomp/mkdd), and the loop then advances the cursors.
  * The saved-register order of every expansion follows from that form: the
- * cursors come after the position and request count (retail fn_801E34F0:
+ * cursors come after the position and request count (retail movieStreamCreate:
  * position r25:r24, requestSample r26, dstL r27, dstR r28), and Pokemon XD's
  * build of the same routine (0x801E08A4) has the identical order. Advancing
  * the parameters in place instead mirrors the order on every MWCC from
@@ -772,7 +772,7 @@ static inline void FillStreamBuffer(s16* left, s16* right, u32 sample)
     lbl_8046A440.decodedPosition += sample;
 }
 
-BOOL fn_801E34F0(void)
+BOOL movieStreamCreate(void)
 {
     u32 sample = lbl_8046AC60.audioInfo.sndFrequency * 40 / 1000;
 
@@ -842,7 +842,7 @@ BOOL fn_801E34F0(void)
  * setting `src` after the size gives 99.62%, `src` only on the left channel
  * 99.63%. Semantics are unchanged.
  */
-void fn_801E2CA8(void)
+void movieStreamFill(void)
 {
     u32 sample = lbl_8046AC60.audioInfo.sndFrequency * 40 / 1000;
     u32 requestOffset;

@@ -334,7 +334,7 @@ static inline void fightOutPokemonCreateEnemyInline(void* fo, void* target)
     }
 }
 
-void fn_80202C1C(void* fo, void* side)
+void _fightFloorCreateFightPokemonEnemyArySub(void* fo, void* side)
 {
     extern u32 fightFloorGetStatus();
     extern void* fightSideGetStatus(void*, u32, u32, u16);
@@ -395,7 +395,7 @@ static inline u8 fn_80203198_countOumu(void* ctx) {
     return count;
 }
 
-void fn_80203198(void* ctx, u32 param) {
+void fightOutPokemonEnemyClearOumu(void* ctx, u32 param) {
     void* entry;
     u16 species;
 

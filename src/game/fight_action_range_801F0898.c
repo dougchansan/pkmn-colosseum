@@ -174,7 +174,7 @@ extern u32 lbl_8047B5EC;
 extern void* fightActionKindDataBiosGetPtr(u32);
 extern FightActionFunc fightActionKindDataBiosGetFlowFuncPtr(void*);
 extern FightActionFunc fightActionKindDataBiosGetDispFuncPtr(void*);
-extern void fn_8020D968(void*, void*);
+extern void fightActionBiosCopy(void*, void*);
 
 
 static inline u8 fightActionFifoPop(void* action) {
@@ -266,7 +266,7 @@ static inline u32 fightActionFlowEntry(void* action, FightActionFifoEntry* entry
     if ((u8)result != 1) {
         fightActionFifoDrop();
     } else {
-        fn_8020D968(entry, action);
+        fightActionBiosCopy(entry, action);
     }
     return result;
 }
@@ -325,7 +325,7 @@ check:
     if ((u8)result != 1) {
         fightActionFifoDrop();
     } else {
-        fn_8020D968(entry, action);
+        fightActionBiosCopy(entry, action);
     }
     return result;
 }

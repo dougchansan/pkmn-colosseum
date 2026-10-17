@@ -97,7 +97,7 @@ extern void  fn_802622E4(void);
 extern u32 fn_80211A78();
 extern void wazaSequenceSysFreeAll();
 extern u8   lbl_8047B625;
-extern void fn_8020248C();
+extern void fightOutPokemonWritePokemonJoutaiDataId();
 extern void* lbl_8047B62C;
 extern void  fn_80211B94(void* a, void* b, u8 c);
 extern u8    fn_80207AE0(void* obj, u8 v);
@@ -142,7 +142,7 @@ extern void fn_801252E0();
 extern void fn_80202998();
 extern u8   fn_80204A10();
 extern void* fn_802037DC(void* ctx);
-extern void fn_801EF8F4();
+extern void battleCameraSelect();
 extern void fightMenuAllFightTrainerCloseStatusMenu();
 extern void fightMenuAllFightOutPokemonCloseStatusMenu();
 extern u8   lbl_8037889D[0x23];
@@ -154,9 +154,9 @@ extern u32  fn_80262308(void);
 extern u8   lbl_8047B642;
 extern u32  fn_802036D4();
 extern u32  fn_801F4354();
-extern void fn_801FCEC4();
+extern void fightOutPokemonBiosCopy();
 extern u8   fn_801F2020();
-extern u32  fn_801F8A18();
+extern u32  fightTrainerGetIrekaeFightPokemon();
 extern void _threadSwitch(void);
 extern u32  fn_800FA280();
 extern u32  fn_80203848();
@@ -172,7 +172,7 @@ extern s32  fn_80102620();
 extern u32  fn_80011C78();
 extern u8   fn_802038A4();
 extern void fn_80207C24();
-extern void fn_80201764();
+extern void fightOutPokemonSetPokemonJoutai08();
 extern s32  fn_80232110();
 extern u32 fn_8022E34C();
 extern u8   fn_801F453C();
@@ -316,7 +316,7 @@ void WS_MARUKUNARU(void)
 
 {
     extern u32 fn_801F025C();
-    extern void fn_8020248C();
+    extern void fightOutPokemonWritePokemonJoutaiDataId();
     extern s8 fn_802025B8();
   u32 uVar1;
   u8 cVar2;
@@ -324,7 +324,7 @@ void WS_MARUKUNARU(void)
   uVar1 = fn_801F025C(0x11,0);
   cVar2 = fn_802025B8(uVar1,0x1a);
   if (cVar2 == 2) {
-    fn_8020248C(uVar1,0x1a,0);
+    fightOutPokemonWritePokemonJoutaiDataId(uVar1,0x1a,0);
   }
   lbl_8047B610 = lbl_8047B610 + 1;
   return;
@@ -350,9 +350,9 @@ void fn_80217220(void) {
     extern s32 fn_8011BEB4();
     extern u8  fn_801F6E98();
     extern void fn_80202810();
-    extern u32 fn_80201D84();
+    extern u32 fightOutPokemonGetJoutaiParam();
     extern u32 fightTargetGetRelativeHostSideFightTargetIdToTragetPtr();
-    extern u32 fn_80201C58();
+    extern u32 fightOutPokemonGetPokemonJoutai0C();
     extern u32 fn_800FA280();
     extern void fn_80132A38();
     extern void fn_80211B94();
@@ -369,14 +369,14 @@ void fn_80217220(void) {
     u16 tmpNarrow;
 
     if (fn_802026E4(ctx1, 0xe) == 1) {
-        tmp = fn_80201D84(ctx1, 0xe);
+        tmp = fightOutPokemonGetJoutaiParam(ctx1, 0xe);
         tmpNarrow = (u16)tmp;
         if (tmpNarrow != 0) {
             target = fightTargetGetRelativeHostSideFightTargetIdToTragetPtr(tmp, val);
             if (target != 0) {
                 fn_801F4C14(0, 0, 0x42, 0, target);
                 {
-                    u32 t = fn_80201C58(ctx1, 0xe);
+                    u32 t = fightOutPokemonGetPokemonJoutai0C(ctx1, 0xe);
                     fn_80132A38(0xd, fn_800FA280(fn_8011BEB4(0, t, 1, 0)));
                 }
                 fn_80202810(ctx1, 0xe);
@@ -758,7 +758,7 @@ void fn_80217C04(void) {
     extern u32 fn_801F025C();
     extern u32 fn_8012640C();
     extern u8 fn_802026E4();
-    extern s16 fn_80202360();
+    extern s16 fightOutPokemonGetPokemonJoutaiStack();
     extern u8 fn_802096E8();
     extern s32 fn_8011BEB4();
     u32 ctx1 = fn_801F025C(0x11, 0);
@@ -778,9 +778,9 @@ void fn_80217C04(void) {
         return;
     }
     if (fn_802025B8(ctx1, 0x2e) == 2) {
-        fn_8020248C(ctx1, 0x2e, 0);
+        fightOutPokemonWritePokemonJoutaiDataId(ctx1, 0x2e, 0);
     }
-    field2e = fn_80202360(ctx1, 0x2e);
+    field2e = fightOutPokemonGetPokemonJoutaiStack(ctx1, 0x2e);
     n = fn_8011BEB4(0, poke1, 7, 0);
     result = n;
     for (i = 1; i < field2e; i++) {

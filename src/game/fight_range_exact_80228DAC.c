@@ -25,7 +25,7 @@ u32 fn_80228DAC(u32 r3, u32 r4, u32 r5)
     extern u32 fn_801F025C();
     extern void fn_801F4C14();
     extern u32 fn_801F54A4();
-    extern u16 fn_80201D84();
+    extern u16 fightOutPokemonGetJoutaiParam();
     extern u8 fn_802026E4();
     extern u8 fn_802096E8();
     extern int fn_8022DCB8();
@@ -51,7 +51,7 @@ u32 fn_80228DAC(u32 r3, u32 r4, u32 r5)
   if (cVar11 != 1) {
     goto first_check_done;
   }
-  sVar10 = fn_80201D84(r4,0x1d);
+  sVar10 = fightOutPokemonGetJoutaiParam(r4,0x1d);
   if (sVar10 == sVar9) {
     void* savedAttacker;
     savedAttacker = (void*)fn_801F025C(0x11,0);

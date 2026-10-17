@@ -228,8 +228,8 @@ extern u8 std085_sequenceJump85[];
 extern u8 std084_sequenceJump84[];
 extern u8 std243_shadowPokemonSetState[];
 extern u8 std103_battleGetResult[];
-extern u8 fn_801EF6FC[];
-extern u8 fn_801EF758[];
+extern u8 fightStartEnvSound[];
+extern u8 fightStartBgm[];
 extern u8 fightStartEncount[];
 extern u8 std244_spawnEffectAtPosition[];
 extern u8 preReliveDisplayHokoraParticle[];
@@ -94229,10 +94229,10 @@ void* lbl_802E1CF0[742] = {
     (void*)((u8*)floorSetFadeScript),
     (void*)0x01010000,
     (void*)0x00000000,
-    (void*)((u8*)fn_801EF758),
+    (void*)((u8*)fightStartBgm),
     (void*)0x01000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_801EF6FC),
+    (void*)((u8*)fightStartEnvSound),
     (void*)0x01000000,
     (void*)0x00000000,
     (void*)((u8*)cameraSetHeight),

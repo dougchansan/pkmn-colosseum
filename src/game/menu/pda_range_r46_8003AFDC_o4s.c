@@ -287,8 +287,8 @@ static inline void pdaResetPeopleTables(u8* base, u8* tbl)
 static inline void pdaFillSavePrompt(void)
 {
     extern u32 fn_80005748(void);
-    extern u32 fn_801EF214(void);
-    extern u32 fn_801EF274(void);
+    extern u32 darkPokemonCountFlag14(void);
+    extern u32 darkPokemonCountFlag12(void);
     extern void msgctrlSetValue(s32 id, u32 value);
     u32 playTime;
 
@@ -296,11 +296,11 @@ static inline void pdaFillSavePrompt(void)
     if (lbl_8047A498 != 0) {
         playTime = lbl_8047A498;
     }
-    lbl_8047A49C = fn_801EF214();
-    lbl_8047A4A0 = fn_801EF274();
+    lbl_8047A49C = darkPokemonCountFlag14();
+    lbl_8047A4A0 = darkPokemonCountFlag12();
     msgctrlSetValue(0x4c, playTime);
-    msgctrlSetValue(0x2f, fn_801EF274());
-    msgctrlSetValue(0x30, fn_801EF214());
+    msgctrlSetValue(0x2f, darkPokemonCountFlag12());
+    msgctrlSetValue(0x30, darkPokemonCountFlag14());
 }
 
 typedef struct PdaSaveImage {
@@ -445,14 +445,14 @@ extern u32 GSresReleaseById();
 extern s32 fn_8017B2CC();
 extern u32 fn_8017B3E4();
 extern u32 fn_801EE0BC();
-extern u16 fn_801EE248();
-extern u32 fn_801EE328();
-extern u16 fn_801EE614();
-extern u32 fn_801EE750();
-extern u8 fn_801EE8F4();
-extern u8 fn_801EEAD0();
-extern u8 fn_801EEC74();
-extern u8 fn_801EED88(u16);
+extern u16 darkPokemonSaveGet4A0();
+extern u32 darkPokemonSaveGetName();
+extern u16 darkPokemonGetFlag1C();
+extern u32 darkPokemonSaveGet8();
+extern u8 darkPokemonCheckFlag16();
+extern u8 darkPokemonCheckFlag12();
+extern u8 darkPokemonCheckFlag14();
+extern u8 darkPokemonCheckFlag0C(u16);
 extern u16 fn_801EEFAC();
 extern u32 fn_801FCC7C();
 extern u32 fightTrainerDataBiosGetPtr();
@@ -505,20 +505,20 @@ void fn_8003AFDC(u8* context, PdaSprite* sprite)
     case 0x30B:
         break;
     case 0xD98:
-        if (fn_801EE8F4(lbl_8047A4D4[*(u32*)&lbl_803A6748].battleId) != 0 &&
+        if (darkPokemonCheckFlag16(lbl_8047A4D4[*(u32*)&lbl_803A6748].battleId) != 0 &&
             menuModelCheck(model = (u8*)&lbl_803A6748 + 0x4C, 0) == 0) {
             pdaDrawModelTexture(sprite, model);
         }
         break;
     default:
         battleId = lbl_8047A4D4[*(u32*)&lbl_803A6748].battleId;
-        fn_801EED88(lbl_8047A4D4[(u16)*(u32*)&lbl_803A6748].battleId);
+        darkPokemonCheckFlag0C(lbl_8047A4D4[(u16)*(u32*)&lbl_803A6748].battleId);
         layout = lbl_802EF0A8;
         entryId = lbl_8047A4D4[(u16)*(u32*)&lbl_803A6748].battleId;
-        fn_801EE614(entryId);
-        fn_801EE8F4(entryId);
-        registered = fn_801EEAD0(entryId);
-        cleared = fn_801EEC74(entryId);
+        darkPokemonGetFlag1C(entryId);
+        darkPokemonCheckFlag16(entryId);
+        registered = darkPokemonCheckFlag12(entryId);
+        cleared = darkPokemonCheckFlag14(entryId);
         if (registered != 0) {
             if (cleared != 0) {
                 state = 1;
@@ -544,8 +544,8 @@ void fn_8003AFDC(u8* context, PdaSprite* sprite)
         case 2:
             break;
         }
-        registered = fn_801EE8F4(battleId);
-        cleared = fn_801EEC74(battleId);
+        registered = darkPokemonCheckFlag16(battleId);
+        cleared = darkPokemonCheckFlag14(battleId);
         if (registered != 0) {
             if (cleared != 0) {
                 messageId = 0x36E7;

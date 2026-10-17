@@ -974,7 +974,7 @@ s32 dbgMenuFightStopTimeOut(void) {
 #endif
 
 /* dbgMenuFightStopHostLose - 0x800070CC | size: 0x44 */
-extern void fn_801EF62C(s32 mode);
+extern void battleSetResult(s32 mode);
 #if 1
 #if !defined(GS_TASK_RANGE_EXACT_80006FAC)
 #endif
@@ -982,7 +982,7 @@ s32 dbgMenuFightStopHostLose(void) {
     if (fightIsBattleActive() == 0) {
         return -1;
     }
-    fn_801EF62C(3);
+    battleSetResult(3);
     dbgMenuClose();
     return 0;
 }
@@ -998,7 +998,7 @@ s32 dbgMenuFightStopHostWin(void) {
     if (fightIsBattleActive() == 0) {
         return -1;
     }
-    fn_801EF62C(2);
+    battleSetResult(2);
     dbgMenuClose();
     return 0;
 }

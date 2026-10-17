@@ -29,7 +29,7 @@ void fn_8021CA00(void)
     extern u32 pokemonGetStatus();
     extern u8 fightWazaIsHit();
     extern u8 fightOutPokemonIsZokuseiDataId();
-    extern void fn_8020248C();
+    extern void fightOutPokemonWritePokemonJoutaiDataId();
     extern u8 fn_802025B8();
     u32 fightTarget;
     u32 move;
@@ -51,7 +51,7 @@ void fn_8021CA00(void)
         lbl_80478D78[5] = 2;
         lbl_8047B610++;
     } else {
-        fn_8020248C(fightTarget, 0x1c, relativeTarget);
+        fightOutPokemonWritePokemonJoutaiDataId(fightTarget, 0x1c, relativeTarget);
         lbl_80478D78[5] = 0;
         lbl_8047B610++;
     }

@@ -205,11 +205,11 @@ void pcMenuDrawPurifiedCount(u32 unused, u8* p)
         if (lbl_8047A498 != 0) {
             result = lbl_8047A498;
         }
-        lbl_8047A49C = fn_801EF214();
-        lbl_8047A4A0 = fn_801EF274();
+        lbl_8047A49C = darkPokemonCountFlag14();
+        lbl_8047A4A0 = darkPokemonCountFlag12();
         fn_80132A38(0x4c, result);
-        fn_80132A38(0x2f, fn_801EF274());
-        fn_80132A38(0x30, fn_801EF214());
+        fn_80132A38(0x2f, darkPokemonCountFlag12());
+        fn_80132A38(0x30, darkPokemonCountFlag14());
         if ((result = menuModelRender(lbl_803A6498)) != 0) {
             gfxSetFlags(3);
             gfxClearFlags(4);
@@ -1038,8 +1038,8 @@ void std024_dialogDisplayPCBoxMenu(void)
 static inline void pdaFillSavePrompt(void)
 {
     extern u32 fn_80005748(void);
-    extern u32 fn_801EF214(void);
-    extern u32 fn_801EF274(void);
+    extern u32 darkPokemonCountFlag14(void);
+    extern u32 darkPokemonCountFlag12(void);
     extern void msgctrlSetValue(s32 id, u32 value);
     u32 playTime;
 
@@ -1047,11 +1047,11 @@ static inline void pdaFillSavePrompt(void)
     if (lbl_8047A498 != 0) {
         playTime = lbl_8047A498;
     }
-    lbl_8047A49C = fn_801EF214();
-    lbl_8047A4A0 = fn_801EF274();
+    lbl_8047A49C = darkPokemonCountFlag14();
+    lbl_8047A4A0 = darkPokemonCountFlag12();
     msgctrlSetValue(0x4c, playTime);
-    msgctrlSetValue(0x2f, fn_801EF274());
-    msgctrlSetValue(0x30, fn_801EF214());
+    msgctrlSetValue(0x2f, darkPokemonCountFlag12());
+    msgctrlSetValue(0x30, darkPokemonCountFlag14());
 }
 
 typedef struct PdaSaveImage {
@@ -1861,20 +1861,20 @@ s32 fn_8003AE84(void)
 void pdaSnagListDrawCount(PdaSprite* sprite)
 {
     extern PdaListEntry* lbl_8047A4D4;
-    extern void fn_801EED88(u16 id);
-    extern void* fn_801EE544(u16 id, u8* variant);
-    extern s32 fn_801EEF40(u16 id);
+    extern void darkPokemonCheckFlag0C(u16 id);
+    extern void* darkPokemonGetFlagListValue(u16 id, u8* variant);
+    extern s32 darkPokemonSaveGetC(u16 id);
     extern s32 floorGetPlaceName(s32 floor);
     extern void msgctrlSetValue(s32 id, s32 value);
     u16 id;
     void* message;
     u32 value;
 
-    fn_801EED88(lbl_8047A4D4[(u16)*(u32*)&lbl_803A6748].battleId);
+    darkPokemonCheckFlag0C(lbl_8047A4D4[(u16)*(u32*)&lbl_803A6748].battleId);
     id = lbl_8047A4D4[*(u32*)&lbl_803A6748].battleId;
     sprite->alphaByte = lbl_8047BAC0 * lbl_803A6748.alphaScale;
-    message = fn_801EE544(id, (u8*)&lbl_803A6748 + 0x94);
-    value = floorGetPlaceName(fn_801EEF40(id));
+    message = darkPokemonGetFlagListValue(id, (u8*)&lbl_803A6748 + 0x94);
+    value = floorGetPlaceName(darkPokemonSaveGetC(id));
     if (value == 0) {
         msgctrlSetValue(0x31, 0x18d3);
     } else {
@@ -2038,9 +2038,9 @@ s32 pdaSnagListGetTrainerName(s32 index)
     extern u16 fightTrainerDataBiosGetKindDataId(void* trainer);
     extern u32 fightTrainerKindDataBiosGetPrefixName(void* kind);
     extern void* fightTrainerKindDataBiosGetPtr(u16 kind);
-    extern u8 fn_801EE174(u16 id);
-    extern s32 fn_801EE544(u16 id, s8* variant);
-    extern u32 fn_801EEF40(u16 id);
+    extern u8 darkPokemonSaveGet49C(u16 id);
+    extern s32 darkPokemonGetFlagListValue(u16 id, s8* variant);
+    extern u32 darkPokemonSaveGetC(u16 id);
     extern u16 fn_801EEFAC(u16 id, s32 side);
     u16 battleId;
     void* kindData;
@@ -2052,7 +2052,7 @@ s32 pdaSnagListGetTrainerName(s32 index)
     if (lbl_8047A4D0 != 0) {
         battleId = lbl_8047A4D4[index].battleId;
         variant = &lbl_803A6748.variant;
-        message = fn_801EE544(battleId, variant);
+        message = darkPokemonGetFlagListValue(battleId, variant);
         switch ((u8)*variant) {
         case 0:
         case 1:
@@ -2061,10 +2061,10 @@ s32 pdaSnagListGetTrainerName(s32 index)
         case 2:
             kind = fn_801EEFAC(battleId, 0);
             if (kind == 9) {
-                kindData = fightTrainerKindDataBiosGetPtr(fn_801EE174(battleId));
+                kindData = fightTrainerKindDataBiosGetPtr(darkPokemonSaveGet49C(battleId));
             } else {
                 alternate = fn_801EEFAC(battleId, 1);
-                if (alternate != 0 && fn_801EEF40(battleId) != 3) {
+                if (alternate != 0 && darkPokemonSaveGetC(battleId) != 3) {
                     kind = alternate;
                 }
                 trainer = fightTrainerDataBiosGetPtr(kind);
@@ -2350,14 +2350,14 @@ extern u32 GSresReleaseById();
 extern s32 fn_8017B2CC();
 extern u32 fn_8017B3E4();
 extern u32 fn_801EE0BC();
-extern u16 fn_801EE248();
-extern u32 fn_801EE328();
-extern u16 fn_801EE614();
-extern u32 fn_801EE750();
-extern u8 fn_801EE8F4();
-extern u8 fn_801EEAD0();
-extern u8 fn_801EEC74();
-extern u8 fn_801EED88(u16);
+extern u16 darkPokemonSaveGet4A0();
+extern u32 darkPokemonSaveGetName();
+extern u16 darkPokemonGetFlag1C();
+extern u32 darkPokemonSaveGet8();
+extern u8 darkPokemonCheckFlag16();
+extern u8 darkPokemonCheckFlag12();
+extern u8 darkPokemonCheckFlag14();
+extern u8 darkPokemonCheckFlag0C(u16);
 extern u16 fn_801EEFAC();
 extern u32 fn_801FCC7C();
 extern u32 fightTrainerDataBiosGetPtr();
@@ -2408,20 +2408,20 @@ void fn_8003AFDC(u8* context, PdaSprite* sprite)
     case 0x30B:
         break;
     case 0xD98:
-        if (fn_801EE8F4(lbl_8047A4D4[*(u32*)&lbl_803A6748].battleId) != 0 &&
+        if (darkPokemonCheckFlag16(lbl_8047A4D4[*(u32*)&lbl_803A6748].battleId) != 0 &&
             menuModelCheck(model = (u8*)&lbl_803A6748 + 0x4C, 0) == 0) {
             pdaDrawModelTexture(sprite, model);
         }
         break;
     default:
         battleId = lbl_8047A4D4[*(u32*)&lbl_803A6748].battleId;
-        fn_801EED88(lbl_8047A4D4[(u16)*(u32*)&lbl_803A6748].battleId);
+        darkPokemonCheckFlag0C(lbl_8047A4D4[(u16)*(u32*)&lbl_803A6748].battleId);
         layout = lbl_802EF0A8;
         entryId = lbl_8047A4D4[(u16)*(u32*)&lbl_803A6748].battleId;
-        fn_801EE614(entryId);
-        fn_801EE8F4(entryId);
-        registered = fn_801EEAD0(entryId);
-        cleared = fn_801EEC74(entryId);
+        darkPokemonGetFlag1C(entryId);
+        darkPokemonCheckFlag16(entryId);
+        registered = darkPokemonCheckFlag12(entryId);
+        cleared = darkPokemonCheckFlag14(entryId);
         if (registered != 0) {
             if (cleared != 0) {
                 state = 1;
@@ -2447,8 +2447,8 @@ void fn_8003AFDC(u8* context, PdaSprite* sprite)
         case 2:
             break;
         }
-        registered = fn_801EE8F4(battleId);
-        cleared = fn_801EEC74(battleId);
+        registered = darkPokemonCheckFlag16(battleId);
+        cleared = darkPokemonCheckFlag14(battleId);
         if (registered != 0) {
             if (cleared != 0) {
                 messageId = 0x36E7;
@@ -2825,10 +2825,10 @@ void pdaSnagListCreatePokemon(u8* context)
     battleId = lbl_8047A4D4[index].battleId;
     curBattleId = lbl_8047A4D4[(u16)index].battleId;
     model = lbl_8047A4D0;
-    fn_801EE614(curBattleId);
-    fn_801EE8F4(curBattleId);
-    seen = fn_801EEAD0(curBattleId);
-    caught = fn_801EEC74(curBattleId);
+    darkPokemonGetFlag1C(curBattleId);
+    darkPokemonCheckFlag16(curBattleId);
+    seen = darkPokemonCheckFlag12(curBattleId);
+    caught = darkPokemonCheckFlag14(curBattleId);
     if (seen != 0) {
         if (caught != 0) {
             battleState = 1;
@@ -2841,7 +2841,7 @@ void pdaSnagListCreatePokemon(u8* context)
 
     pokemonCreate(model, species, 0xA, gamedataGetStatus(0, 1));
     rnd = *(u32*)((u8*)&lbl_803A6748 + 0x98);
-    fn_801EE750(battleId);
+    darkPokemonSaveGet8(battleId);
     pokemonBiosSetRnd(model, rnd);
     switch (battleState) {
     case 0:
@@ -2857,8 +2857,8 @@ void pdaSnagListCreatePokemon(u8* context)
 
     if ((liveModel = lbl_8047A4D0) != 0) {
         if ((u16)battleId != 0) {
-            if (fn_801EE8F4(battleId) != 0) {
-                pokemonBiosSetRnd(liveModel, fn_801EE750(battleId));
+            if (darkPokemonCheckFlag16(battleId) != 0) {
+                pokemonBiosSetRnd(liveModel, darkPokemonSaveGet8(battleId));
                 message = pokemonGetSex(liveModel);
                 pokemonBiosSetRnd(liveModel, *(u32*)((u8*)&lbl_803A6748 + 0x98));
             } else {
@@ -3013,10 +3013,10 @@ void fn_8003CF38(void)
     for (i = 0; i < (s32)lbl_8047A4DC; i++) {
         u16 value;
 
-        value = fn_801EE248((u16)(i + 1));
+        value = darkPokemonSaveGet4A0((u16)(i + 1));
         if (value != 0 &&
-            (fn_801EE8F4((u16)(i + 1)) != 0 ||
-             fn_801EE614((u16)(i + 1)) != 0)) {
+            (darkPokemonCheckFlag16((u16)(i + 1)) != 0 ||
+             darkPokemonGetFlag1C((u16)(i + 1)) != 0)) {
             lbl_8047A4D4[count].field_00 = value;
             lbl_8047A4D4[count].battleId = (u16)(i + 1);
             *(u32*)((u8*)lbl_8047A4D8 + count * 8) =
@@ -3199,7 +3199,7 @@ extern void msgctrlSetValue(s32 id, u32 value);
 #pragma peephole off
 void pdaSnagListDrawEntry(u8* context)
 {
-    extern s32 fn_801EE544(u16, s8*);
+    extern s32 darkPokemonGetFlagListValue(u16, s8*);
     u8* slot;
     u16 kind;
     u32 text;
@@ -3216,7 +3216,7 @@ void pdaSnagListDrawEntry(u8* context)
     if (lbl_8047A4D0 != 0) {
         slot = (u8*)&lbl_803A6748 + 0x94;
         kind = lbl_8047A4D4[index].battleId;
-        text = fn_801EE544(kind, (s8*)slot);
+        text = darkPokemonGetFlagListValue(kind, (s8*)slot);
         switch (*slot) {
         case 0:
             text = 0x371F;
@@ -3226,7 +3226,7 @@ void pdaSnagListDrawEntry(u8* context)
             if (kind == 0x43) {
                 text = 0x12B0;
             } else if ((trainerId = fn_801EEFAC(kind, 0)) == 9) {
-                ownerText = fn_801EE328(kind);
+                ownerText = darkPokemonSaveGetName(kind);
                 special = 1;
             } else {
                 text = fn_801FCC7C(fightTrainerDataBiosGetPtr(trainerId));
@@ -3358,7 +3358,7 @@ static inline u32 pdaBattleCaption(u16 id)
 
     trainerId = fn_801EEFAC(id, 0);
     if (trainerId == 9) {
-        entry = pokemonDataBiosGetPtr(fn_801EE248(id));
+        entry = pokemonDataBiosGetPtr(darkPokemonSaveGet4A0(id));
         if (entry != NULL) {
             name = GSmsgGetGSchar((u32)pokemonDataBiosGetName(entry));
         }
@@ -8987,7 +8987,7 @@ extern f32 lbl_8047BAD4;
 extern f32 lbl_8047BAD8;
 extern u32 lbl_8047A4D0;
 extern u32 lbl_8047A4DC;
-extern void fn_801EEDEC(u16 id, s32 flag);
+extern void darkPokemonSetFlag0C(u16 id, s32 flag);
 extern void pokemonBiosSetDarkpokemonDataId(u32 work, s32 id);
 extern void pokemonBiosSetDp(u32 work, s32 dp);
 
@@ -9130,7 +9130,7 @@ s32 pdaSnagListDetailKey(void* window, s32 enabled)
         if (lbl_8047A4DC != 0) {
             if (*(s32*)&lbl_803A6748 < (s32)lbl_8047A4DC - 1) {
                 if (enabled != 0) {
-                    fn_801EEDEC(lbl_8047A4D4[*(s32*)&lbl_803A6748].battleId, 0);
+                    darkPokemonSetFlag0C(lbl_8047A4D4[*(s32*)&lbl_803A6748].battleId, 0);
                 }
                 *(s32*)&lbl_803A6748 = *(s32*)&lbl_803A6748 + 1;
                 soundStartRaw(0x23, 0, 0);
@@ -9145,7 +9145,7 @@ s32 pdaSnagListDetailKey(void* window, s32 enabled)
     if ((code & 1) != 0) {
         if (*(s32*)&lbl_803A6748 > 0) {
             if (enabled != 0) {
-                fn_801EEDEC(lbl_8047A4D4[*(s32*)&lbl_803A6748].battleId, 0);
+                darkPokemonSetFlag0C(lbl_8047A4D4[*(s32*)&lbl_803A6748].battleId, 0);
             }
             *(s32*)&lbl_803A6748 = *(s32*)&lbl_803A6748 - 1;
             soundStartRaw(0x23, 0, 0);
@@ -9171,15 +9171,15 @@ s32 pdaSnagListDetailKey(void* window, s32 enabled)
 
     if (enabled != 0) {
         if (prevIndex != *(s32*)&lbl_803A6748) {
-            if (fn_801EE8F4(lbl_8047A4D4[*(s32*)&lbl_803A6748].battleId) != 0) {
+            if (darkPokemonCheckFlag16(lbl_8047A4D4[*(s32*)&lbl_803A6748].battleId) != 0) {
                 idx = *(s32*)&lbl_803A6748;
                 species = lbl_8047A4D4[idx].field_00;
                 entry = lbl_8047A4D4[(u16)idx].battleId;
                 rndId = lbl_8047A4D4[idx].battleId;
-                fn_801EE614(entry);
-                fn_801EE8F4(entry);
-                if (fn_801EEAD0(entry) != 0) {
-                    if (fn_801EEC74(entry) != 0) {
+                darkPokemonGetFlag1C(entry);
+                darkPokemonCheckFlag16(entry);
+                if (darkPokemonCheckFlag12(entry) != 0) {
+                    if (darkPokemonCheckFlag14(entry) != 0) {
                         mode = 1;
                     } else {
                         mode = 0;
@@ -9190,7 +9190,7 @@ s32 pdaSnagListDetailKey(void* window, s32 enabled)
                 pokemonCreate(lbl_8047A4D0, species, 10,
                               gamedataGetStatus(0, 1));
                 rnd = *(u32*)((u8*)&lbl_803A6748 + 0x98);
-                fn_801EE750(rndId);
+                darkPokemonSaveGet8(rndId);
                 pokemonBiosSetRnd(lbl_8047A4D0, rnd);
                 switch (mode) {
                 case 0:
@@ -9300,10 +9300,10 @@ void pdaSnagListRun(void)
                     entry = lbl_8047A4D4[(u16)idx].battleId;
                     species = lbl_8047A4D4[idx].field_00;
                     rndId = lbl_8047A4D4[idx].battleId;
-                    fn_801EE614(entry);
-                    fn_801EE8F4(entry);
-                    if (fn_801EEAD0(entry) != 0) {
-                        if (fn_801EEC74(entry) != 0) {
+                    darkPokemonGetFlag1C(entry);
+                    darkPokemonCheckFlag16(entry);
+                    if (darkPokemonCheckFlag12(entry) != 0) {
+                        if (darkPokemonCheckFlag14(entry) != 0) {
                             mode = 1;
                         } else {
                             mode = 0;
@@ -9313,7 +9313,7 @@ void pdaSnagListRun(void)
                     }
                     pokemonCreate(work, species, 10, gamedataGetStatus(0, 1));
                     rnd = *(u32*)((u8*)&lbl_803A6748 + 0x98);
-                    fn_801EE750(rndId);
+                    darkPokemonSaveGet8(rndId);
                     pokemonBiosSetRnd(work, rnd);
                     switch (mode) {
                     case 0:
@@ -9396,7 +9396,7 @@ void pdaSnagListRun(void)
             if (*(f32*)((u8*)&lbl_803A6748 + 0x48) ==
                 *(f32*)((u8*)&lbl_803A6748 + 0x44)) {
                 menuCloseCustom(0x33, 0, 1);
-                fn_801EEDEC(lbl_8047A4D4[*(s32*)&lbl_803A6748].battleId, 0);
+                darkPokemonSetFlag0C(lbl_8047A4D4[*(s32*)&lbl_803A6748].battleId, 0);
                 *(f32*)((u8*)&lbl_803A6748 + 0x48) = lbl_8047BAC8;
                 state = 0;
             } else {
@@ -9524,7 +9524,7 @@ void pdaSnagListDrawDetail(PdaSprite* alphaSprite, PdaEvent* event)
             id = *(u16*)((u8*)lbl_8047A4D4 + off + 2);
             trainerId = fn_801EEFAC(id, 0);
             if (trainerId == 9) {
-                entry = pokemonDataBiosGetPtr(fn_801EE248(id));
+                entry = pokemonDataBiosGetPtr(darkPokemonSaveGet4A0(id));
                 if (entry != NULL) {
                     name = GSmsgGetGSchar(
                         (u32)pokemonDataBiosGetName(entry));
@@ -9553,7 +9553,7 @@ void pdaSnagListDrawDetail(PdaSprite* alphaSprite, PdaEvent* event)
             ownerText = 0;
             if (lbl_8047A4D0 != 0) {
                 kind = *(u16*)((u8*)lbl_8047A4D4 + off + 2);
-                caption = fn_801EE544(kind, slot);
+                caption = darkPokemonGetFlagListValue(kind, slot);
                 switch (*slot) {
                 case 0:
                     caption = 0x371f;
@@ -9563,7 +9563,7 @@ void pdaSnagListDrawDetail(PdaSprite* alphaSprite, PdaEvent* event)
                     if (kind == 0x43) {
                         caption = 0x12b0;
                     } else if ((trainerId = fn_801EEFAC(kind, 0)) == 9) {
-                        text = fn_801EE328(kind);
+                        text = darkPokemonSaveGetName(kind);
                         special = 1;
                     } else {
                         caption = fn_801FCC7C(fightTrainerDataBiosGetPtr(trainerId));
@@ -9586,10 +9586,10 @@ void pdaSnagListDrawDetail(PdaSprite* alphaSprite, PdaEvent* event)
                 caption = GSmsgGetGSchar(1);
             }
             id = lbl_8047A4D4[(u16)i].battleId;
-            fn_801EE614(id);
-            fn_801EE8F4(id);
-            registered = fn_801EEAD0(id);
-            cleared = fn_801EEC74(id);
+            darkPokemonGetFlag1C(id);
+            darkPokemonCheckFlag16(id);
+            registered = darkPokemonCheckFlag12(id);
+            cleared = darkPokemonCheckFlag14(id);
             if (registered != 0) {
                 if (cleared != 0) {
                     mode = 1;
@@ -9610,7 +9610,7 @@ void pdaSnagListDrawDetail(PdaSprite* alphaSprite, PdaEvent* event)
             case 2:
                 break;
             }
-            if (fn_801EED88(*(u16*)((u8*)lbl_8047A4D4 + off + 2)) != 0) {
+            if (darkPokemonCheckFlag0C(*(u16*)((u8*)lbl_8047A4D4 + off + 2)) != 0) {
                 tint = 0xe0e01800;
             } else {
                 tint = -0x100;

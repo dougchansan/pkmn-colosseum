@@ -18,7 +18,7 @@ extern void* pokemonGetStatus();
 extern u32   pokemonSetStatus();
 
 /* Battle system functions */
-extern void fn_801EF8F4();
+extern void battleCameraSelect();
 
 /* Sound functions */
 extern void soundStop();     /* Stop sound */
@@ -260,7 +260,7 @@ u32 fightTrainerAiWazaValueKituke(void* ctx, u32 param1, u32 param2, u32 param3)
 /* Address: 0x802459B0 | Size: 0x44C (1100 bytes) */
 u32 fightTrainerAiWazaValueOiuti(void* ctx, u32 param1, u32 param2, u32 param3) {
     extern u32 fightFloorGetFightOutPokemonPtrToFightTrainerPtr(u32, u32);
-    extern u32 fn_801F8A18(u32, u16*);
+    extern u32 fightTrainerGetIrekaeFightPokemon(u32, u16*);
     extern u32 fightOutPokemonGetPokemonPtr(u32);
     extern u32 fn_80235BE4(void*, u32, u32, u32);
     extern u32 fn_80236BFC(void*, u32, u32);
@@ -276,7 +276,7 @@ u32 fightTrainerAiWazaValueOiuti(void* ctx, u32 param1, u32 param2, u32 param3) 
     status = fn_80235BE4(ctx, 0, param3, 0);
     pokemon = fightFloorGetFightOutPokemonPtrToFightTrainerPtr(0, param3);
     tmp = 0;
-    found = fn_801F8A18(pokemon, &tmp);
+    found = fightTrainerGetIrekaeFightPokemon(pokemon, &tmp);
     if (found == 0) {
         status = 1;
     }

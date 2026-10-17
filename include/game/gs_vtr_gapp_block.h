@@ -5,7 +5,7 @@
 /*
  * Blocks or unblocks every registered GSgapp handle. Retail expands the
  * same loop three times: twice in fn_801E0FB4 (XD _vtrUpdateFunc; block and
- * unblock) and once in fn_801E11F0 (XD GSvtrDisable; unblock), the unblock
+ * unblock) and once in vtrDeactivate (XD GSvtrDisable; unblock), the unblock
  * copies instruction for instruction. XD names the helper
  * _vtrGappSetBlock__Fb (0x80 bytes; dead-stripped from the NXXJ01 demo map
  * because every use is inlined), and XD's _vtrUpdateFunc has the same two

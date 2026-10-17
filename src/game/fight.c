@@ -141,7 +141,7 @@ extern u32* lbl_80478F40;
 extern FightKindData* lbl_80478F44;
 
 /* 0x8020D968 | size: 0x38 | small */
-void fn_8020D968(FightCopyBlock* dst, FightCopyBlock* src) {
+void fightActionBiosCopy(FightCopyBlock* dst, FightCopyBlock* src) {
     if (dst == 0) return;
     if (src == 0) return;
     *dst = *src;
@@ -246,9 +246,9 @@ u32 fightStartEncount(u32 p1) {
     extern void fn_801D0AFC();
     extern void mailMainReceiveTerminate();
     extern void fightSetEncountId();
-    extern void fn_801EF62C();
+    extern void battleSetResult();
     extern u32 std103_battleGetResult();
-    extern void fn_801EF7B4();
+    extern void fightResetSoundFlags();
     extern u8 fightFloorIsGcHeroWin();
     extern void fightFloorSetStatus();
     extern u32 fightFloorGetStatus();
@@ -289,7 +289,7 @@ u32 fightStartEncount(u32 p1) {
         uVar1 = 0;
     } else {
         uVar1 = fightEncountDataBiosGetPtr();
-        fn_801EF62C(0);
+        battleSetResult(0);
         std079_flagSetTrue(0x9b0);
         fightSetEncountId(p1);
         uVar2 = std092_getCurrentRoomID();
@@ -321,7 +321,7 @@ u32 fightStartEncount(u32 p1) {
         if (sVar8 != 0) {
             soundStartRaw(sVar8, 0, 0);
         }
-        fn_801EF7B4();
+        fightResetSoundFlags();
         std098_mapWarpToMenuRoom(uVar7);
         floorSetFadeScript(0, 0);
         _threadSwitch();

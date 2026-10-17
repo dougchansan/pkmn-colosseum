@@ -334,7 +334,7 @@ void _prolog(void)
     /* dbgMenuPokemonEdit */
     lbl_80478F6C = lbl_125_data_1439D8;
     lbl_80478F68 = &lbl_125_data_14A6F8;
-    /* fn_801EE544 */
+    /* darkPokemonGetFlagListValue */
     lbl_80478F64 = lbl_125_data_144F10;
     lbl_80478F60 = &lbl_125_data_14A6FC;
     lbl_80478F5C = lbl_125_data_145ED8;
@@ -342,10 +342,10 @@ void _prolog(void)
     /* fn_80116D30 */
     lbl_80478EC4 = lbl_125_data_146364;
     lbl_80478EC0 = &lbl_125_data_14A704;
-    /* fn_801EE07C */
+    /* darkPokemonGetTableEntry */
     lbl_80478F7C = lbl_125_data_14A45C;
     lbl_80478F78 = &lbl_125_data_14A708;
-    /* fn_801EE0A8 */
+    /* darkPokemonGetIdByIndex */
     lbl_80478F74 = lbl_125_data_14A5F4;
     lbl_80478F70 = &lbl_125_data_14A70C;
     /* menuSeBiosGetPtr */

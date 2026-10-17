@@ -93,7 +93,7 @@ extern void _flagSet(u16 flag, s32 value);
 
 #if defined(BATTLE_RANGE_EXACT_801EE034)
 
-u32 fn_801EE034(BattleRangeIndexedEntry* entry)
+u32 darkPokemonEntryGet4(BattleRangeIndexedEntry* entry)
 {
     if (entry == NULL) {
         return 0;
@@ -101,7 +101,7 @@ u32 fn_801EE034(BattleRangeIndexedEntry* entry)
     return entry->value;
 }
 
-u8 fn_801EE04C(BattleRangeIndexedEntry* entry)
+u8 darkPokemonEntryGet1(BattleRangeIndexedEntry* entry)
 {
     if (entry == NULL) {
         return 0;
@@ -109,7 +109,7 @@ u8 fn_801EE04C(BattleRangeIndexedEntry* entry)
     return entry->variant;
 }
 
-u8 fn_801EE064(BattleRangeIndexedEntry* entry)
+u8 darkPokemonEntryGet0(BattleRangeIndexedEntry* entry)
 {
     if (entry == NULL) {
         return 0;
@@ -117,7 +117,7 @@ u8 fn_801EE064(BattleRangeIndexedEntry* entry)
     return entry->type;
 }
 
-BattleRangeIndexedEntry* fn_801EE07C(u32 index)
+BattleRangeIndexedEntry* darkPokemonGetTableEntry(u32 index)
 {
     u32 id = index & 0xFFFF;
     BattleRangeIndexedHeader* header = lbl_80478F78;
@@ -128,7 +128,7 @@ BattleRangeIndexedEntry* fn_801EE07C(u32 index)
     return &lbl_80478F7C[id];
 }
 
-u16 fn_801EE0A8(u32 idx)
+u16 darkPokemonGetIdByIndex(u32 idx)
 {
     extern u16* lbl_80478F74;
     u8 i;
@@ -143,8 +143,8 @@ u16 fn_801EE0A8(u32 idx)
 
 s32 fn_801EE0BC(u16 id)
 {
-    extern void* fn_801EF1E4(void* data);
-    void* data = fn_801EF1E4(NULL);
+    extern void* darkPokemonSaveGetPtr(void* data);
+    void* data = darkPokemonSaveGetPtr(NULL);
 
     if (data != NULL) {
         return *(s16*)((u8*)data + id * 0x18 + 0x4A4);
@@ -154,7 +154,7 @@ s32 fn_801EE0BC(u16 id)
 
 void fn_801EE10C(u16 id, u8 value)
 {
-    extern u8* fn_801EF1E4(u32 data);
+    extern u8* darkPokemonSaveGetPtr(u32 data);
     u8* entry = (u8*)lbl_80478F6C + id * 0x38;
     u16 slot;
     u8* data;
@@ -164,14 +164,14 @@ void fn_801EE10C(u16 id, u8 value)
     }
     if (entry != NULL) {
         slot = *(u16*)(entry + 0xA);
-        data = fn_801EF1E4(0);
+        data = darkPokemonSaveGetPtr(0);
         *(u8*)(data + slot * 0x18 + 0x49C) = value;
     }
 }
 
-u8 fn_801EE174(u16 id)
+u8 darkPokemonSaveGet49C(u16 id)
 {
-    extern u8* fn_801EF1E4(u32 data);
+    extern u8* darkPokemonSaveGetPtr(u32 data);
     u8* entry = (u8*)lbl_80478F6C + id * 0x38;
     u16 slot;
     u8* data;
@@ -181,15 +181,15 @@ u8 fn_801EE174(u16 id)
     }
     if (entry != NULL) {
         slot = *(u16*)(entry + 0xA);
-        data = fn_801EF1E4(0);
+        data = darkPokemonSaveGetPtr(0);
         return *(u8*)(data + slot * 0x18 + 0x49C);
     }
     return 0;
 }
 
-void fn_801EE1E0(u16 id, u16 value)
+void darkPokemonSaveSet4A0(u16 id, u16 value)
 {
-    extern u8* fn_801EF1E4(u32 data);
+    extern u8* darkPokemonSaveGetPtr(u32 data);
     u8* entry = (u8*)lbl_80478F6C + id * 0x38;
     u16 slot;
     u8* data;
@@ -199,14 +199,14 @@ void fn_801EE1E0(u16 id, u16 value)
     }
     if (entry != NULL) {
         slot = *(u16*)(entry + 0xA);
-        data = fn_801EF1E4(0);
+        data = darkPokemonSaveGetPtr(0);
         *(u16*)(data + slot * 0x18 + 0x4A0) = value;
     }
 }
 
-u16 fn_801EE248(u16 id)
+u16 darkPokemonSaveGet4A0(u16 id)
 {
-    extern u8* fn_801EF1E4(u32 data);
+    extern u8* darkPokemonSaveGetPtr(u32 data);
     u8* entry = (u8*)lbl_80478F6C + id * 0x38;
     u16 slot;
     u8* data;
@@ -216,15 +216,15 @@ u16 fn_801EE248(u16 id)
     }
     if (entry != NULL) {
         slot = *(u16*)(entry + 0xA);
-        data = fn_801EF1E4(0);
+        data = darkPokemonSaveGetPtr(0);
         return *(u16*)(data + slot * 0x18 + 0x4A0);
     }
     return 0;
 }
 
-void fn_801EE2B4(u16 id, u8* value)
+void darkPokemonSaveSetName(u16 id, u8* value)
 {
-    extern u8* fn_801EF1E4(u32 data);
+    extern u8* darkPokemonSaveGetPtr(u32 data);
     extern u8* GScharCpy(u8* dst, u8* src);
     u8* entry = (u8*)lbl_80478F6C + id * 0x38;
     u16 slot;
@@ -235,14 +235,14 @@ void fn_801EE2B4(u16 id, u8* value)
     }
     if (entry != NULL) {
         slot = *(u16*)(entry + 0xA);
-        data = fn_801EF1E4(0);
+        data = darkPokemonSaveGetPtr(0);
         GScharCpy(data + slot * 0x18 + 0x490, value);
     }
 }
 
-u8* fn_801EE328(u16 id)
+u8* darkPokemonSaveGetName(u16 id)
 {
-    extern u8* fn_801EF1E4(u32 data);
+    extern u8* darkPokemonSaveGetPtr(u32 data);
     u8* entry = (u8*)lbl_80478F6C + id * 0x38;
     u16 slot;
     u8* data;
@@ -252,7 +252,7 @@ u8* fn_801EE328(u16 id)
     }
     if (entry != NULL) {
         slot = *(u16*)(entry + 0xA);
-        data = fn_801EF1E4(0);
+        data = darkPokemonSaveGetPtr(0);
         return data + slot * 0x18 + 0x490;
     }
     return NULL;
@@ -294,14 +294,14 @@ u16 fn_801EE440(u16 index)
     return lbl_80375240[index];
 }
 
-u16 fn_801EE468(void)
+u16 darkPokemonListCount(void)
 {
     return 0x30;
 }
 
 u16 fn_801EE470(u16 id)
 {
-    extern u8* fn_801EF1E4(u32 data);
+    extern u8* darkPokemonSaveGetPtr(u32 data);
     u8* entry = (u8*)lbl_80478F6C + id * 0x38;
     u16 slot;
     u8* data;
@@ -311,15 +311,15 @@ u16 fn_801EE470(u16 id)
     }
     if (entry != NULL) {
         slot = *(u16*)(entry + 0xA);
-        data = fn_801EF1E4(0);
+        data = darkPokemonSaveGetPtr(0);
         return *(u16*)(data + slot * 0xC + 6);
     }
     return 0;
 }
 
-void fn_801EE4DC(u16 id, u16 value)
+void darkPokemonSaveSetDp(u16 id, u16 value)
 {
-    extern u8* fn_801EF1E4(u32 data);
+    extern u8* darkPokemonSaveGetPtr(u32 data);
     u8* entry = (u8*)lbl_80478F6C + id * 0x38;
     u16 slot;
     u8* data;
@@ -329,12 +329,12 @@ void fn_801EE4DC(u16 id, u16 value)
     }
     if (entry != NULL) {
         slot = *(u16*)(entry + 0xA);
-        data = fn_801EF1E4(0);
+        data = darkPokemonSaveGetPtr(0);
         *(u16*)(data + slot * 0xC + 6) = value;
     }
 }
 
-u32 fn_801EE544(u16 id, u8* variant)
+u32 darkPokemonGetFlagListValue(u16 id, u8* variant)
 {
     BattleRangeDef* def = &lbl_80478F6C[id];
     u32 result = 0;
@@ -371,7 +371,7 @@ u32 fn_801EE544(u16 id, u8* variant)
     return 0;
 }
 
-s32 fn_801EE614(u16 id)
+s32 darkPokemonGetFlag1C(u16 id)
 {
     BattleRangeDef* def = &lbl_80478F6C[id];
 
@@ -389,7 +389,7 @@ s32 fn_801EE614(u16 id)
 
 void std243_shadowPokemonSetState(u32 id, u32 value)
 {
-    extern u8* fn_801EF1E4(u32 data);
+    extern u8* darkPokemonSaveGetPtr(u32 data);
     BattleRangeDef* def;
     u16 index;
     u32 defOffset;
@@ -406,7 +406,7 @@ void std243_shadowPokemonSetState(u32 id, u32 value)
         def = NULL;
     }
     if (def != NULL) {
-        data = fn_801EF1E4(0);
+        data = darkPokemonSaveGetPtr(0);
         if (data != NULL) {
             slot = (s16*)(data + index * 0x18 + 0x4A4);
             if (*slot < 0) {
@@ -429,9 +429,9 @@ void std243_shadowPokemonSetState(u32 id, u32 value)
     }
 }
 
-u32 fn_801EE750(u16 id)
+u32 darkPokemonSaveGet8(u16 id)
 {
-    extern u8* fn_801EF1E4(u32 data);
+    extern u8* darkPokemonSaveGetPtr(u32 data);
     BattleRangeDef* def = &lbl_80478F6C[id];
     u16 slot;
     u8* data;
@@ -441,15 +441,15 @@ u32 fn_801EE750(u16 id)
     }
     if (def != NULL) {
         slot = def->runtimeSlot;
-        data = fn_801EF1E4(0);
+        data = darkPokemonSaveGetPtr(0);
         return *(u32*)(data + slot * 0xC + 8);
     }
     return 0;
 }
 
-void fn_801EE7BC(u16 id, u32 value)
+void darkPokemonSaveSet8(u16 id, u32 value)
 {
-    extern u8* fn_801EF1E4(u32 data);
+    extern u8* darkPokemonSaveGetPtr(u32 data);
     BattleRangeDef* def = &lbl_80478F6C[id];
     u16 slot;
     u8* data;
@@ -459,7 +459,7 @@ void fn_801EE7BC(u16 id, u32 value)
     }
     if (def != NULL) {
         slot = def->runtimeSlot;
-        data = fn_801EF1E4(0);
+        data = darkPokemonSaveGetPtr(0);
         *(u32*)(data + slot * 0xC + 8) = value;
     }
 }
@@ -482,7 +482,7 @@ s32 fn_801EE824(u16 id, u16 index)
     return 0;
 }
 
-void fn_801EE894(u16 id, u16 index, s8 value)
+void darkPokemonSetFlag24(u16 id, u16 index, s8 value)
 {
     BattleRangeDef* def = &lbl_80478F6C[id];
 
@@ -498,7 +498,7 @@ void fn_801EE894(u16 id, u16 index, s8 value)
     }
 }
 
-u8 fn_801EE8F4(u16 id)
+u8 darkPokemonCheckFlag16(u16 id)
 {
     BattleRangeDef* def = &lbl_80478F6C[id];
 
@@ -528,7 +528,7 @@ static inline BattleRangeDef* battleRangeGetDefInline(u16 id)
     return def;
 }
 
-/* fn_801EE8F4 */
+/* darkPokemonCheckFlag16 */
 static inline u8 battleRangeCheckFlag16Inline(u16 id)
 {
     BattleRangeDef* def = battleRangeGetDefInline(id);
@@ -555,12 +555,12 @@ static inline void battleRangeSetFlag0CInline(u16 id)
 
 static inline void battleRangeSetRuntimeStatusInline(u16 id, u32 status)
 {
-    extern u8* fn_801EF1E4(void* data);
+    extern u8* darkPokemonSaveGetPtr(void* data);
     BattleRangeDef* def = battleRangeGetDefInline(id);
 
     if (def != NULL) {
         u16 slot = def->runtimeSlot;
-        u8* data = fn_801EF1E4(NULL);
+        u8* data = darkPokemonSaveGetPtr(NULL);
 
         *(u32*)(data + slot * 0xC + 0xC) = status;
     }
@@ -569,7 +569,7 @@ static inline void battleRangeSetRuntimeStatusInline(u16 id, u32 status)
 #if !defined(BATTLE_RANGE_ONLY_801EEB34)
 void fn_801EE958(u32 id, u8 value)
 {
-    extern u8* fn_801EF1E4(void* data);
+    extern u8* darkPokemonSaveGetPtr(void* data);
     extern u32 fightFloorGetStatus(s32, s32, s32, s32);
     BattleRangeDef* def;
     u8* data;
@@ -592,7 +592,7 @@ void fn_801EE958(u32 id, u8 value)
         return;
     }
     if (battleRangeCheckFlag16Inline(id) == 0) {
-        data = fn_801EF1E4(NULL);
+        data = darkPokemonSaveGetPtr(NULL);
         if (data != NULL) {
             activeIndex = (s16*)(data + key * 0x18 + 0x4A4);
             if (*activeIndex < 0) {
@@ -608,7 +608,7 @@ void fn_801EE958(u32 id, u8 value)
     tmp = battleRangeGetDefInline(id);
     if (tmp != NULL) {
         slot = tmp->runtimeSlot;
-        data = fn_801EF1E4(NULL);
+        data = darkPokemonSaveGetPtr(NULL);
         *(u32*)(data + slot * 0xC + 0xC) = status;
     }
     if (flag != 0) {
@@ -621,7 +621,7 @@ void fn_801EE958(u32 id, u8 value)
 #if !defined(BATTLE_RANGE_ONLY_801EE958)
 void fn_801EEB34(u32 id, u8 value)
 {
-    extern u8* fn_801EF1E4(void* data);
+    extern u8* darkPokemonSaveGetPtr(void* data);
     extern u32 fightFloorGetStatus(s32, s32, s32, s32);
     /* RULE-EXCEPTION(user-approved): the two def pointers held in one two-element array, chosen for register allocation (permuter farm) — see docs/RULE_EXCEPTIONS.md */
     BattleRangeDef* defs[2]; /* [0] def, [1] lookup */
@@ -645,7 +645,7 @@ void fn_801EEB34(u32 id, u8 value)
     defs[1] = battleRangeGetDefInline(id);
     if (defs[1] != NULL) {
         slot = defs[1]->runtimeSlot;
-        data = fn_801EF1E4(NULL);
+        data = darkPokemonSaveGetPtr(NULL);
         *(u32*)(data + slot * 0xC + 0xC) = status;
     }
     if (defs[0]->flag12 != 0) {
@@ -656,7 +656,7 @@ void fn_801EEB34(u32 id, u8 value)
 #endif
 
 #if !defined(BATTLE_RANGE_ONLY_801EE958) && !defined(BATTLE_RANGE_ONLY_801EEB34)
-u8 fn_801EEAD0(u16 id)
+u8 darkPokemonCheckFlag12(u16 id)
 {
     BattleRangeDef* def = &lbl_80478F6C[id];
 
@@ -672,7 +672,7 @@ u8 fn_801EEAD0(u16 id)
     return 0;
 }
 
-u8 fn_801EEC74(u16 id)
+u8 darkPokemonCheckFlag14(u16 id)
 {
     BattleRangeDef* def = &lbl_80478F6C[id];
 
@@ -688,7 +688,7 @@ u8 fn_801EEC74(u16 id)
     return 0;
 }
 
-void fn_801EECD8(u16 id, u8 value)
+void darkPokemonSetFlag14(u16 id, u8 value)
 {
     BattleRangeDef* def = &lbl_80478F6C[id];
 
@@ -700,7 +700,7 @@ void fn_801EECD8(u16 id, u8 value)
     }
 }
 
-void fn_801EED30(u16 id, u8 value)
+void darkPokemonSetFlag0E(u16 id, u8 value)
 {
     BattleRangeDef* def = &lbl_80478F6C[id];
 
@@ -712,7 +712,7 @@ void fn_801EED30(u16 id, u8 value)
     }
 }
 
-u8 fn_801EED88(u16 id)
+u8 darkPokemonCheckFlag0C(u16 id)
 {
     BattleRangeDef* def = &lbl_80478F6C[id];
 
@@ -728,7 +728,7 @@ u8 fn_801EED88(u16 id)
     return 0;
 }
 
-void fn_801EEDEC(u16 id, u8 value)
+void darkPokemonSetFlag0C(u16 id, u8 value)
 {
     BattleRangeDef* def = &lbl_80478F6C[id];
 
@@ -750,20 +750,20 @@ u8 fn_801EEE44(u16 id)
     return def->type;
 }
 
-void fn_801EEE6C(u16 id, u16 value)
+void darkPokemonSaveSet4A6(u16 id, u16 value)
 {
-    extern u8* fn_801EF1E4(u32 data);
-    u8* data = fn_801EF1E4(0);
+    extern u8* darkPokemonSaveGetPtr(u32 data);
+    u8* data = darkPokemonSaveGetPtr(0);
 
     if (data != NULL) {
         *(u16*)(data + id * 0x18 + 0x4A6) = value;
     }
 }
 
-u16 fn_801EEEB8(u16 id)
+u16 darkPokemonSaveGet4A6(u16 id)
 {
-    extern u8* fn_801EF1E4(u32 data);
-    u8* data = fn_801EF1E4(0);
+    extern u8* darkPokemonSaveGetPtr(u32 data);
+    u8* data = darkPokemonSaveGetPtr(0);
 
     if (data != NULL) {
         return *(u16*)(data + id * 0x18 + 0x4A6);
@@ -771,7 +771,7 @@ u16 fn_801EEEB8(u16 id)
     return 0;
 }
 
-u16 fn_801EEF08(u16 id)
+u16 darkPokemonGet8(u16 id)
 {
     BattleRangeDef* def = &lbl_80478F6C[id];
 
@@ -784,9 +784,9 @@ u16 fn_801EEF08(u16 id)
     return 0;
 }
 
-u32 fn_801EEF40(u16 id)
+u32 darkPokemonSaveGetC(u16 id)
 {
-    extern u8* fn_801EF1E4(u32 data);
+    extern u8* darkPokemonSaveGetPtr(u32 data);
     BattleRangeDef* def = &lbl_80478F6C[id];
     u16 slot;
     u8* data;
@@ -796,7 +796,7 @@ u32 fn_801EEF40(u16 id)
     }
     if (def != NULL) {
         slot = def->runtimeSlot;
-        data = fn_801EF1E4(0);
+        data = darkPokemonSaveGetPtr(0);
         return *(u32*)(data + slot * 0xC + 0xC);
     }
     return 0;
@@ -818,7 +818,7 @@ u16 fn_801EEFAC(u16 id, s32 side)
     return 0;
 }
 
-u16 fn_801EEFF4(u16 id)
+u16 darkPokemonGet2(u16 id)
 {
     BattleRangeDef* def = &lbl_80478F6C[id];
 

@@ -18,7 +18,7 @@ extern void* pokemonGetStatus();
 extern u32   pokemonSetStatus();
 
 /* Battle system functions */
-extern void fn_801EF8F4();
+extern void battleCameraSelect();
 
 /* Sound functions */
 extern void soundStop();     /* Stop sound */
@@ -729,7 +729,7 @@ s32 fightTrainerAiWazaValueAkumu(void* ctx, u32 param1, u32 param2, u32 param3) 
 u32 fightTrainerAiWazaValueRokkuon(void* ctx, u32 param1, u32 param2, u32 param3) {
     extern u16 fightTargetGetTragetPtrToRelativeHostSideFightTargetId(u32, u16);
     extern u32 fightFloorGetStatus(u32, u32, u32, u32);
-    extern u16 fn_80201D84(u32, u32);
+    extern u16 fightOutPokemonGetJoutaiParam(u32, u32);
     extern u32 fightOutPokemonGetPokemonPtr(u32);
     extern u8 fn_80236BFC(void*, u32, u32);
     extern u32 fn_80239984(u32, void*, u32);
@@ -744,7 +744,7 @@ u32 fightTrainerAiWazaValueRokkuon(void* ctx, u32 param1, u32 param2, u32 param3
         fn_80239EE8(0xec64, ctx, fightOutPokemonGetPokemonPtr(param1), 0, 0, param2, 0, 0x179);
     }
     if (fn_80236BFC(ctx, param3, 0x1d) == 1) {
-        if (current == fn_80201D84(param3, 0x1d)) {
+        if (current == fightOutPokemonGetJoutaiParam(param3, 0x1d)) {
             setup = fn_80239984(setup, ctx, 0x17a);
             fn_80239EE8(0xec64, ctx, fightOutPokemonGetPokemonPtr(param1), 0, 0, param2, 0, 0x17a);
         }

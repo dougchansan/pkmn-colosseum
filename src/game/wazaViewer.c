@@ -51,7 +51,7 @@ void _wazaViewerFinalize(u8 r, u8 g, u8 b, f32 duration) {
     extern u32 lbl_8047B3F8;
     extern void fn_801024E8(s32);
     extern void fn_801684F0(u32);
-    extern void fn_801E11F0(void);
+    extern void vtrDeactivate(void);
 
     GSthreadTerminateGroup(0x58);
     *(u32*)(lbl_804673F8 + 0x66C) = 0;
@@ -63,7 +63,7 @@ void _wazaViewerFinalize(u8 r, u8 g, u8 b, f32 duration) {
     }
     memset(lbl_804673F8, 0, 0x884);
     if (lbl_804673F8[0x87D] == 0) {
-        fn_801E11F0();
+        vtrDeactivate();
     }
     GSgappTerminate((void*)lbl_8047B3F8);
     lbl_8047B3F8 = 0;
@@ -383,7 +383,7 @@ void fn_801D58E4(void) {
     extern void GSscene_SetMode(s32 mode);
     extern s32 GSgetVersionMinor(void);
     extern void* GSfilterCreate(u8* color);
-    extern u8 fn_801E11E8(void);
+    extern u8 vtrIsActive(void);
     extern void fn_801E1258(void);
     extern void battleGridInit(void);
     extern u32 GSgappCreate(s32 group, s32 priority, s32 flags, void* callback);
@@ -429,7 +429,7 @@ void fn_801D58E4(void) {
     *(s32*)(lbl_804673F8 + 0x880) = 0;
     *(s32*)(lbl_804673F8 + 0x878) = 0;
     *(s32*)(lbl_804673F8 + 0x874) = 1;
-    lbl_804673F8[0x87D] = fn_801E11E8();
+    lbl_804673F8[0x87D] = vtrIsActive();
     fn_801E1258();
     battleGridInit();
     lbl_8047B3F8 = GSgappCreate(1, 0x7F, 0, fn_801D603C);
@@ -643,7 +643,7 @@ void fn_801D603C(void) {
     extern f32 lbl_8047E30C;
     extern void GSfilterSetColor(void* filter, u8* color);
     extern u8 dbgMenuIsOpen(void);
-    extern s32 fn_801E11E0(void);
+    extern s32 vtrGetMode(void);
     extern void fn_800FE6A0(f32 width, f32 height);
     extern void GSmsgPrintf(s32 x, s32 y, u32 color, const char* fmt, ...);
 
@@ -674,7 +674,7 @@ void fn_801D603C(void) {
             }
         }
         fn_801D7230();
-        state = fn_801E11E0();
+        state = vtrGetMode();
         arg2 = arg1 = 0;
         if (((WazaViewerCtrl*)(lbl_804673F8 + 0x08))->overlay) {
             sequence = models[*(s32*)(lbl_804673F8 + 0x624)];
@@ -954,7 +954,7 @@ void wazaViewerUpdatePlayMode(void) {
     extern f32 lbl_8047E30C;
     extern void GSfilterSetColor(void* filter, u8* color);
     extern u8 dbgMenuIsOpen(void);
-    extern s32 fn_801E11E0(void);
+    extern s32 vtrGetMode(void);
     extern void fn_800FE6A0(f32 width, f32 height);
     extern void GSmsgPrintf(s32 x, s32 y, u32 color, const char* fmt, ...);
 
@@ -995,7 +995,7 @@ void wazaViewerUpdatePlayMode(void) {
         }
     }
     fn_801D7230();
-    state = fn_801E11E0();
+    state = vtrGetMode();
     arg2 = arg1 = 0;
     if (((WazaViewerCtrl*)(lbl_804673F8 + 0x08))->overlay) {
         effect = models[*(s32*)(lbl_804673F8 + 0x624)];
@@ -1025,7 +1025,7 @@ void wazaViewerUpdatePlayMode(void) {
             }
         }
     }
-    if (fn_801E11E0() == 1) {
+    if (vtrGetMode() == 1) {
         wazaViewerPollCommand(messages);
     }
 }

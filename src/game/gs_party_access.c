@@ -10,9 +10,9 @@ extern void menuClose(s32);
 extern void menuOpenCustom(s32, ...);
 extern void menuSetPosition(s32, s32, s32);
 extern void d2presentOpen(void);
-extern void fn_801EF02C(void);
-extern void fn_801EF080(void);
-extern void fn_801EF0D4(void);
+extern void darkPokemonSetAllFlag14(void);
+extern void darkPokemonSetAllFlag12(void);
+extern void darkPokemonSetAllFlag16(void);
 extern void memoDataSetMemoFlag(u32);
 extern void memoInitDebug(u32);
 extern void std078_flagSetFalse(u32);
@@ -154,19 +154,19 @@ u32 dbgMenuMenuTestD2Present(u32 arg) {
 
 /* 0x8000CC3C */
 s32 fn_8000CC3C(void) {
-    fn_801EF02C();
+    darkPokemonSetAllFlag14();
     return 1;
 }
 
 /* 0x8000CC60 */
 s32 fn_8000CC60(void) {
-    fn_801EF080();
+    darkPokemonSetAllFlag12();
     return 1;
 }
 
 /* 0x8000CC84 */
 s32 fn_8000CC84(void) {
-    fn_801EF0D4();
+    darkPokemonSetAllFlag16();
     return 1;
 }
 

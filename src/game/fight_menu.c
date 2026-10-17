@@ -24,7 +24,7 @@ extern void* pokemonGetStatus();
 extern u32   pokemonSetStatus();
 
 /* Battle system functions */
-extern void fn_801EF8F4();
+extern void battleCameraSelect();
 
 /* Sound functions */
 extern void soundStop();     /* Stop sound */
@@ -503,7 +503,7 @@ s32 fightMenuFightTrainerGcHeroSelectIrekaeFightPokemon(u32 ctx, u32 actor, u32 
     extern u8 menuIsCheck(u32);
     extern void menuCloseCustom(u32, u32, u32);
     extern s32 menuFightOpenPokemon(u32, u32, u32, u32, u8);
-    extern void fn_801EFFC4(u32);
+    extern void fightWaitFrames(u32);
     extern void menuFightStatusSetActive(u32, u32);
     extern s32 fightTrainerTimeOutSelectIrekaeFightPokemon(u32, u32, u32);
     extern u32 fightTrainerGetStatus(u32, u32, u32, u16);
@@ -527,7 +527,7 @@ s32 fightMenuFightTrainerGcHeroSelectIrekaeFightPokemon(u32 ctx, u32 actor, u32 
             fightMenuCloseInfoMenuInline(1);
         }
         choice = menuFightOpenPokemon(ctx, actor, param, retry, fn_801F18DC(0));
-        fn_801EFFC4(0xa);
+        fightWaitFrames(0xa);
         if (fn_801F18DC(0) == 0 && (u8)reopen == 1) {
             fightMenuOpenInfoMenuInline(-1);
             if (actor != 0 && fn_801F18DC(0) != 1) {
@@ -2022,7 +2022,7 @@ u32 _fightMenuFightTrainerGcHeroOpenMenuSubItem__FP13FIGHT_TRAINERP15FightOutPok
     extern void menuCreateOffScreen(f32);
     extern void menuReleaseOffScreen(f32);
     extern u32 fn_80018F88(u32, s32*, u32);
-    extern void fn_801EFFC4(u32);
+    extern void fightWaitFrames(u32);
     extern u32 fn_80019064(void);
     extern u8 itemGetStatus(u32, u32, u32, u32);
     extern void fn_801DA36C(u32, u32);
@@ -2073,7 +2073,7 @@ u32 _fightMenuFightTrainerGcHeroOpenMenuSubItem__FP13FIGHT_TRAINERP15FightOutPok
         fightMenuCloseInfoMenuInline(1);
         menuCreateOffScreen(lbl_8047E6CC / (f32)fn_800D37CC());
         item = fn_80018F88(1, &slot, trainer);
-        fn_801EFFC4(10);
+        fightWaitFrames(10);
         menuKind = fn_80019064();
         if ((u16)item != 0 && itemGetStatus(0, item, 2, 0) == 2) {
             for (i = 0; i < 2; i++) {
@@ -2094,7 +2094,7 @@ u32 _fightMenuFightTrainerGcHeroOpenMenuSubItem__FP13FIGHT_TRAINERP15FightOutPok
             menuFightStatusSetActive(fightMenuGcHeroStatusMenuIdDirect(outPokemon, side, 3), 1);
         }
         menuReleaseOffScreen(lbl_8047E6CC / (f32)fn_800D37CC());
-        fn_801EFFC4(10);
+        fightWaitFrames(10);
         if ((u16)item == 0) {
             return 0;
         }

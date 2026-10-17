@@ -8,11 +8,11 @@ u32 fn_80232FE4(u32 r3, u32 r4, u32 r5)
 {
     extern u32 fightTargetGetRelativeHostSideFightTargetIdToTragetPtr();
     extern void fightOutPokemonSetOumuWazaDataId();
-    extern u32 fn_80201D84();
+    extern u32 fightOutPokemonGetJoutaiParam();
     extern u8 fn_802026E4();
     extern void fightOutPokemonWriteJoutaiDataId();
     extern u8 fightOutPokemonIsAlly();
-    extern void fn_80203198();
+    extern void fightOutPokemonEnemyClearOumu();
     extern u8 fightOutPokemonCheckFightOut();
     u8 matched;
     u32 targetId;
@@ -37,7 +37,7 @@ u32 fn_80232FE4(u32 r3, u32 r4, u32 r5)
         return 1;
     }
     if (fn_802026E4(pokemon, 0x16) == 1 &&
-        (targetId = fn_80201D84(pokemon, 0x16), (targetId & 0xffff) != 0) &&
+        (targetId = fightOutPokemonGetJoutaiParam(pokemon, 0x16), (targetId & 0xffff) != 0) &&
         (relative = fightTargetGetRelativeHostSideFightTargetIdToTragetPtr(
              targetId, hostSide)) != 0 &&
         relative == other) {
@@ -49,7 +49,7 @@ u32 fn_80232FE4(u32 r3, u32 r4, u32 r5)
         fightOutPokemonWriteJoutaiDataId(pokemon, 0x16);
     }
     if (fn_802026E4(pokemon, 10) == 1 &&
-        (targetId = fn_80201D84(pokemon, 10), (targetId & 0xffff) != 0) &&
+        (targetId = fightOutPokemonGetJoutaiParam(pokemon, 10), (targetId & 0xffff) != 0) &&
         (relative = fightTargetGetRelativeHostSideFightTargetIdToTragetPtr(
              targetId, hostSide)) != 0 &&
         relative == other) {
@@ -61,7 +61,7 @@ u32 fn_80232FE4(u32 r3, u32 r4, u32 r5)
         fightOutPokemonWriteJoutaiDataId(pokemon, 10);
     }
     if (fn_802026E4(pokemon, 0xe) == 1 &&
-        (targetId = fn_80201D84(pokemon, 0xe), (targetId & 0xffff) != 0) &&
+        (targetId = fightOutPokemonGetJoutaiParam(pokemon, 0xe), (targetId & 0xffff) != 0) &&
         (relative = fightTargetGetRelativeHostSideFightTargetIdToTragetPtr(
              targetId, hostSide)) != 0 &&
         relative == other) {
@@ -74,7 +74,7 @@ u32 fn_80232FE4(u32 r3, u32 r4, u32 r5)
     }
     if (fightOutPokemonIsAlly(pokemon, other) == 0) {
         fightOutPokemonSetOumuWazaDataId(pokemon, other, 0);
-        fn_80203198(pokemon, other);
+        fightOutPokemonEnemyClearOumu(pokemon, other);
     }
     return 1;
 }

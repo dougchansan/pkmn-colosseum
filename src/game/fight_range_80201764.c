@@ -8,7 +8,7 @@
  * range name stays honest until internal TU structure is proven.
  *
  * Reconciliation (2026-07-02): the 14 definitions below were originally
- * written into src/game/trainer.c (fn_80201764) and
+ * written into src/game/trainer.c (fightOutPokemonSetPokemonJoutai08) and
  * src/game/colosseum_event.c (the other 13) -- the wrong translation
  * units for this address range per splits.txt. Moved here, in address
  * order, with no functional changes.
@@ -26,7 +26,7 @@ static inline void* getPokemonStatus(void* context) {
 }
 
 /* 0x80201764 | size: 0x12C */
-u16 fn_80201764(void* context, void* item, void* target) {
+u16 fightOutPokemonSetPokemonJoutai08(void* context, void* item, void* target) {
     extern u16 joutaiDataBiosGetStatusKind();
     extern u16 statusSetJoutai08();
     extern u16 pokemonSetJoutai08();
@@ -50,7 +50,7 @@ u16 fn_80201764(void* context, void* item, void* target) {
 }
 
 /* 0x80201890 | size: 0x12C */
-u16 fn_80201890(void* ctx, void* typeObj) {
+u16 fightOutPokemonGetPokemonJoutai08(void* ctx, void* typeObj) {
     extern u16 joutaiDataBiosGetStatusKind();
     extern u16 statusGetJoutai08();
     extern u16 pokemonGetJoutai08();
@@ -105,12 +105,12 @@ static inline void fightRangeDispatch(void* ctx, void* src, void* typeObj) {
         fn_8011A0A8(ctx, src, typeObj);
     }
 }
-void fn_802019BC(void* ctx, void* src, void* typeObj) {
+void fightOutPokemonCopyPokemonJoutai(void* ctx, void* src, void* typeObj) {
     fightRangeDispatch(ctx, src, typeObj);
 }
 
 /* 0x80201B2C | size: 0x12C */
-u16 fn_80201B2C(void* ctx, void* typeObj, u32 param) {
+u16 fightOutPokemonSetPokemonJoutai0C(void* ctx, void* typeObj, u32 param) {
     extern u16 joutaiDataBiosGetStatusKind();
     extern u16 statusSetJoutai0C();
     extern u16 pokemonSetJoutai0C();
@@ -133,7 +133,7 @@ u16 fn_80201B2C(void* ctx, void* typeObj, u32 param) {
 }
 
 /* 0x80201C58 | size: 0x12C */
-u16 fn_80201C58(void* ctx, void* typeObj) {
+u16 fightOutPokemonGetPokemonJoutai0C(void* ctx, void* typeObj) {
     extern u16 joutaiDataBiosGetStatusKind();
     extern u16 statusGetJoutai0C();
     extern u16 pokemonGetJoutai0C();
@@ -160,7 +160,7 @@ u16 fn_80201C58(void* ctx, void* typeObj) {
 }
 
 /* 0x80201D84 | size: 0x12C */
-u16 fn_80201D84(void* ctx, void* typeObj) {
+u16 fightOutPokemonGetJoutaiParam(void* ctx, void* typeObj) {
     extern u16 joutaiDataBiosGetStatusKind();
     extern u16 statusGetJoutaiParam();
     extern u16 pokemonGetJoutaiParam();
@@ -187,7 +187,7 @@ u16 fn_80201D84(void* ctx, void* typeObj) {
 }
 
 /* 0x80201EB0 | size: 0x12C */
-u16 fn_80201EB0(void* ctx, void* typeObj, u32 param) {
+u16 fightOutPokemonSetPokemonJoutaiKaisuu(void* ctx, void* typeObj, u32 param) {
     extern u16 joutaiDataBiosGetStatusKind();
     extern u16 statusSetJoutaiKaisuu();
     extern u16 pokemonSetJoutaiKaisuu();
@@ -291,7 +291,7 @@ s16 fn_80202234(void* ctx, void* typeObj) {
 }
 
 /* 0x80202360 | size: 0x12C */
-s16 fn_80202360(void* ctx, void* typeObj) {
+s16 fightOutPokemonGetPokemonJoutaiStack(void* ctx, void* typeObj) {
     extern u16 joutaiDataBiosGetStatusKind();
     extern s16 fn_8011B130();
     extern s16 pokemonGetJoutaiStack();
@@ -320,7 +320,7 @@ s16 fn_80202360(void* ctx, void* typeObj) {
 }
 
 /* 0x8020248C | size: 0x12C */
-s16 fn_8020248C(void* ctx, void* typeObj, void* inputParam) {
+s16 fightOutPokemonWritePokemonJoutaiDataId(void* ctx, void* typeObj, void* inputParam) {
     extern u16 joutaiDataBiosGetStatusKind();
     extern s16 statusWriteJoutaiDataId();
     extern s16 pokemonWriteJoutaiDataId();

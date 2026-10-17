@@ -33,7 +33,7 @@ u32 fn_8022D6BC(u32 attacker, u32 defender)
     extern void msgctrlSetValue();
     extern void fn_80211B94();
     extern u8 fn_802025B8();
-    extern void fn_8020248C();
+    extern void fightOutPokemonWritePokemonJoutaiDataId();
     extern u8 lbl_803798F3[];
     extern u8 lbl_80379907[];
     extern u8 lbl_8037992F[];
@@ -182,7 +182,7 @@ u32 fn_8022D6BC(u32 attacker, u32 defender)
                 (u16)attackerAbility != 0xC &&
                 attackerSex != defenderSex && fn_802025B8(attacker, 0xA) == 2 &&
                 attackerSex != 2 && defenderSex != 2) {
-                fn_8020248C(attacker, 0xA, target);
+                fightOutPokemonWritePokemonJoutaiDataId(attacker, 0xA, target);
                 fn_80211B94(lbl_8047B62C, lbl_80379932, 0);
                 result = 1;
             }

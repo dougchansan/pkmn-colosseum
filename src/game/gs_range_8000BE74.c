@@ -49,15 +49,15 @@ extern u8 fn_80175FFC(void);
 extern void GSgfxCaptureMovieStop(void);
 extern void GSgfxCaptureMovieStart(u32 mode);
 
-extern u8 fn_801E11CC(void);
-extern void fn_801E11D4(u8 index, u8 active);
+extern u8 vtrGetDisp(void);
+extern void vtrSetDisp(u8 index, u8 active);
 extern void fn_801E1170(void);
-extern void fn_801E118C(void);
-extern void fn_801E11B0(void);
-extern void fn_801E119C(void);
-extern u8 fn_801E11E8(void);
+extern void vtrSetMode3(void);
+extern void vtrSetMode1(void);
+extern void vtrSetMode2(void);
+extern u8 vtrIsActive(void);
 extern void fn_801E1258(void);
-extern void fn_801E11F0(void);
+extern void vtrDeactivate(void);
 
 extern void fn_801D0748(u32 a, u32 b, u32 c);
 extern void winMsgOpen(u32 a, u32 msgId, u32 c, u32 d);
@@ -196,7 +196,7 @@ s32 dbgMenuMovieCaptureToggle(void) {
         }
     }
 
-    fn_801E11D4(fn_801E11CC(), lbl_8047A298);
+    vtrSetDisp(vtrGetDisp(), lbl_8047A298);
     return 0;
 }
 
@@ -211,7 +211,7 @@ s32 fn_8000C1A8(void) {
         }
     }
 
-    fn_801E11D4(fn_801E11CC(), lbl_8047A298);
+    vtrSetDisp(vtrGetDisp(), lbl_8047A298);
     return 0;
 }
 
@@ -221,30 +221,30 @@ s32 dbgMenuVtrMode4(void) {
 }
 
 s32 dbgMenuVtrMode3(void) {
-    fn_801E118C();
+    vtrSetMode3();
     return 0;
 }
 
 s32 dbgMenuVtrMode1(void) {
-    fn_801E11B0();
+    vtrSetMode1();
     return 0;
 }
 
 s32 dbgMenuVtrMode2(void) {
-    fn_801E119C();
+    vtrSetMode2();
     return 0;
 }
 
 s32 dbgMenuGSvtrChangeDisp(void) {
-    fn_801E11D4((u8)((u8)fn_801E11CC() == 0), lbl_8047A298);
+    vtrSetDisp((u8)((u8)vtrGetDisp() == 0), lbl_8047A298);
     return 0;
 }
 
 s32 dbgMenuGSvtrChangeActive(void) {
-    if (fn_801E11E8() == 0) {
+    if (vtrIsActive() == 0) {
         fn_801E1258();
     } else {
-        fn_801E11F0();
+        vtrDeactivate();
     }
 
     return 0;

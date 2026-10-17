@@ -138,7 +138,7 @@ L_next:
 }
 
 /* 0x801F7B70 | size: 0xE4 | medium */
-s32 fn_801F7B70(u8* ptr) {
+s32 fightTrainerCheckItemKind(u8* ptr) {
     extern u8* fightTrainerGetStatus(u8*, u32, u16, u32);
     extern u8* heroItemGetItemKindToItemAryPtr(u8*, u32, u16*, u32, u32, u32);
     extern u8 fn_801429E8(u8*);

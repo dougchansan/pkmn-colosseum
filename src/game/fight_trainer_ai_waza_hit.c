@@ -22,7 +22,7 @@ s32 _fightTrainerAiWazaHitCheck(void* ai, void* self, u16 waza, void* target, u3
     extern u16 fightFloorGetFightOutPokemonPtrAry(u32, u32, u32, u32, void**);
     extern void fightFloorSortFightOutPokemonPtrArySub(u32, void**, u32, u32);
     extern u8 fn_80236BFC(void*, void*, u32);
-    extern u16 fn_80201D84(void*, u32);
+    extern u16 fightOutPokemonGetJoutaiParam(void*, u32);
     extern u8 fn_80237288(void*, void*);
     extern u8 fightTrainerAiCheckGuard(void*, void*, u16);
     extern u8 fn_80229934(u16, void*, void*);
@@ -65,7 +65,7 @@ s32 _fightTrainerAiWazaHitCheck(void* ai, void* self, u16 waza, void* target, u3
 
     if (kind == 0xFFFF || kind == 0xFFFE) {
         if (kind == 0xFFFF && fn_80236BFC(ai, target, 0x1D) == 1 &&
-            sideId == fn_80201D84(target, 0x1D)) {
+            sideId == fightOutPokemonGetJoutaiParam(target, 0x1D)) {
             return -1;
         }
         if (fn_80237288(ai, self) == 1 && behind == 1) {
@@ -83,7 +83,7 @@ s32 _fightTrainerAiWazaHitCheck(void* ai, void* self, u16 waza, void* target, u3
     if (fightTrainerAiCheckGuard(ai, target, waza) == 1) {
         return 0;
     }
-    if (fn_80236BFC(ai, target, 0x1D) == 1 && aiSideIdMatches(fn_80201D84(target, 0x1D), sideId)) {
+    if (fn_80236BFC(ai, target, 0x1D) == 1 && aiSideIdMatches(fightOutPokemonGetJoutaiParam(target, 0x1D), sideId)) {
         return -1;
     }
     if (behind == 1) {

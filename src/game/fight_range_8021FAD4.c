@@ -52,9 +52,9 @@ void fn_8021FAD4(void)
     extern u32 wazaGetStatus();
     extern u8 fn_802026E4();
     extern u8 fn_802025B8();
-    extern s32 fn_80201C58();
-    extern void fn_80201B2C();
-    extern void fn_8020248C();
+    extern s32 fightOutPokemonGetPokemonJoutai0C();
+    extern void fightOutPokemonSetPokemonJoutai0C();
+    extern void fightOutPokemonWritePokemonJoutaiDataId();
     extern void fn_8022D2CC();
     extern u8 fn_8022D6BC();
     extern void fn_8022D394();
@@ -201,11 +201,11 @@ void fn_8021FAD4(void)
                     lbl_8047B627++;
                     break;
                 }
-                fn_8020248C(attacker, 0x36, 0);
-                fn_80201B2C(attacker, 0x36, originalMove);
+                fightOutPokemonWritePokemonJoutaiDataId(attacker, 0x36, 0);
+                fightOutPokemonSetPokemonJoutai0C(attacker, 0x36, originalMove);
             }
             if (fn_802026E4(attacker, 0x36) == 1) {
-                other = fn_80201C58(attacker, 0x36);
+                other = fightOutPokemonGetPokemonJoutai0C(attacker, 0x36);
                 if (pokemonSearchWazaDataId(fightOutPokemonGetPokemonPtr(attacker), other) < 0) {
                     fightOutPokemonWriteJoutaiDataId(attacker, 0x36);
                 }

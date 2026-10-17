@@ -16,8 +16,8 @@ extern void peopleStartTurn(s32 groupId, s32 index, f32 yaw, f32 speed);
 extern BOOL peopleMoveCheck(u32 groupId, u32 index, u8 waitFlag);
 extern void msgctrlSetValue(s32 id, void* value);
 extern void* sodateyaGetPokemonPtr(s32 slot);
-void fn_801E075C(s32 partyIndex);
-void fn_801E09E0(s32 unused);
+void sendOutPokemonEvent(s32 partyIndex);
+void characterMoveEvent(s32 unused);
 extern u32 msgGetCharsPerFrame(void);
 extern s32 fn_800D37CC(void);
 extern void _threadSwitch(void);
@@ -208,7 +208,7 @@ extern void* heroBiosGetPokemonPtr(void* status, u16 slot);
 extern u8 heroIsMinePokemon(void* status, void* pokemon);
 extern u8 pokemonCheckValid(void* pokemon);
 extern u16 pokemonBiosGetDarkpokemonDataId(void* pokemon);
-extern u8 fn_801EEC74(u16 id);
+extern u8 darkPokemonCheckFlag14(u16 id);
 extern void* pokemonBiosGetNicknamePtr(void* pokemon);
 extern u8 pokemonWazaCheckValid(void* pokemon, u16 slot);
 extern s32 fn_80097BBC(u8 chan);
@@ -230,7 +230,7 @@ static inline u8 fieldWazaCanForget(u16 selection)
     }
     darkId = pokemonBiosGetDarkpokemonDataId(pokemon);
     if (darkId != 0) {
-        if (fn_801EEC74(darkId) != 0) {
+        if (darkPokemonCheckFlag14(darkId) != 0) {
             return 1;
         }
         return 0;
@@ -455,14 +455,14 @@ static inline u16 fieldCountValidPokemon(void)
 }
 
 extern u32 pokemonBiosGetDp(void*);
-extern u32 fn_801ED24C(s32);
+extern u32 daycareGetValue4(s32);
 
 extern u8 pokemonBiosGetLevel(void*);
-extern s32 fn_801ED294(s32);
+extern s32 daycareGetValue1(s32);
 
 static inline s32 sodateyaGetPokemonLevelUpValue(void)
 {
-    s32 storedLevel = fn_801ED294(0);
+    s32 storedLevel = daycareGetValue1(0);
     u8 level = pokemonBiosGetLevel(sodateyaGetPokemonPtr(0));
 
     return (s32)(level - (u8)storedLevel);
@@ -472,7 +472,7 @@ static inline s32 sodateyaGetPokemonDPValue(void)
 {
     void* pokemon = sodateyaGetPokemonPtr(0);
 
-    return (s32)(fn_801ED24C(0) - pokemonBiosGetDp(sodateyaGetPokemonPtr(0))) / 100;
+    return (s32)(daycareGetValue4(0) - pokemonBiosGetDp(sodateyaGetPokemonPtr(0))) / 100;
 }
 
 static inline s32 sodateyaCalcPrice(s32 levels)
@@ -480,7 +480,7 @@ static inline s32 sodateyaCalcPrice(s32 levels)
     s32 price;
     s32 value;
 
-    if (fn_801ED24C(0) != 0) {
+    if (daycareGetValue4(0) != 0) {
         value = sodateyaGetPokemonDPValue();
         if (value != 0) {
             price = value * 100 + 100;
@@ -556,8 +556,8 @@ static inline s32 fieldFindEmptySlot(void)
  * to drive a complete move execution's visual presentation.
  */
 void std085_sequenceJump85(void) {
-    extern u8 fn_801ED218(s32);
-    extern u8 fn_801ED0CC(s32, void*);
+    extern u8 daycareGetState(s32);
+    extern u8 daycareWithdraw(s32, void*);
     extern u32 heroGetStatus(s32, s32, s32);
     extern void heroDecPokedoru(void*, u32);
     extern void winMsgOpenField(u32, s32, s32);
@@ -565,7 +565,7 @@ void std085_sequenceJump85(void) {
     extern void peopleClearFlagsByIndex(u32, u32, u32);
     extern void std051_characterSetAnimation(u32, u32, u32, u32, u32);
     extern void std077_characterEventFlagsSet(u32, u32);
-    extern void fn_801ECFE0(s32, void*);
+    extern void daycareDeposit(s32, void*);
     extern s32 fn_800D37CC(void);
     extern u32 msgGetCharsPerFrame(void);
     extern void _threadSwitch(void);
@@ -589,7 +589,7 @@ void std085_sequenceJump85(void) {
     do {
         switch (state) {
         case 0:
-            if ((u8)fn_801ED218(0) != 0) {
+            if ((u8)daycareGetState(0) != 0) {
                 state = 9;
             } else {
                 state = 1;
@@ -632,7 +632,7 @@ void std085_sequenceJump85(void) {
             break;
         case 7: {
 
-            fn_801E075C(selection);
+            sendOutPokemonEvent(selection);
             msgctrlSetValue(0x32, pokemonBiosGetNicknamePtr(
                 heroBiosGetPokemonPtr(savedataGetStatus(0, 2), (u16)selection)));
             winMsgOpenFieldWithSE(0x3B19, 1, 0, 2);
@@ -641,7 +641,7 @@ void std085_sequenceJump85(void) {
             party = savedataGetStatus(0, 2);
             pokemon = heroBiosGetPokemonPtr(party, (u16)selection);
             lastValid = fieldCountValidPokemon();
-            if ((u8)fn_801ED0CC(0, pokemon) != 0 && selection < 6) {
+            if ((u8)daycareWithdraw(0, pokemon) != 0 && selection < 6) {
                 for (i = selection; i < lastValid - 1; i++) {
                     dst = heroBiosGetPokemonPtr(party, (u16)i);
                     pokemon = heroBiosGetPokemonPtr(party, (u16)(i + 1));
@@ -723,7 +723,7 @@ void std085_sequenceJump85(void) {
             break;
         case 17:
             winMsgClose(1);
-            fn_801E09E0(selection);
+            characterMoveEvent(selection);
             state = 19;
             break;
         case 18:
@@ -738,7 +738,7 @@ void std085_sequenceJump85(void) {
             msgctrlSetValue(0x32, pokemonBiosGetNicknamePtr(sodateyaGetPokemonPtr(0)));
             winMsgOpenField(0x3B1A, 1, 0);
             state = 8;
-            fn_801ECFE0(0, heroBiosGetPokemonPtr(savedataGetStatus(0, 2), (u16)fieldFindEmptySlot()));
+            daycareDeposit(0, heroBiosGetPokemonPtr(savedataGetStatus(0, 2), (u16)fieldFindEmptySlot()));
             std076_characterEventFlagsClear(0x4D, 1);
             peopleClearFlagsByIndex(0x4D, 1, 8);
             std051_characterSetAnimation(0x4D, 1, 5, 0, 1);
@@ -804,7 +804,7 @@ void std084_sequenceJump84(void) {
                 u16 darkID = pokemonBiosGetDarkpokemonDataId(pokemon);
 
                 if (darkID != 0) {
-                    if (fn_801EEC74(darkID) != 0) {
+                    if (darkPokemonCheckFlag14(darkID) != 0) {
                         canRename = 1;
                     } else {
                         canRename = 0;
@@ -899,8 +899,8 @@ typedef struct EtcToolSequenceData {
 extern const EtcToolSequenceData lbl_80279A00;
 
 /* RULE-EXCEPTION(user-approved): reconstructed linker-stripped function — see docs/RULE_EXCEPTIONS.md
- * Retail's pool has 1.0f (0x8047E410) before fn_801E075C's 1.5f, so a
- * function compiled between fn_801E03D4 and fn_801E075C used 1.0f first; it
+ * Retail's pool has 1.0f (0x8047E410) before sendOutPokemonEvent's 1.5f, so a
+ * function compiled between fn_801E03D4 and sendOutPokemonEvent used 1.0f first; it
  * has no code in retail. This stand-in reproduces the pool order and is
  * dead-stripped by the linker. */
 f32 etctoolStrippedUnitScale(void)
@@ -909,10 +909,10 @@ f32 etctoolStrippedUnitScale(void)
 }
 
 /**
- * fn_801E075C - Show the selected party Pokemon's ball model.
+ * sendOutPokemonEvent - Show the selected party Pokemon's ball model.
  * Address: 0x801E075C | Size: 0x284
  */
-void fn_801E075C(s32 partyIndex)
+void sendOutPokemonEvent(s32 partyIndex)
 {
     EtcToolVec position;
     EtcToolVec scale;
@@ -998,7 +998,7 @@ void fn_801E075C(s32 partyIndex)
         }                                                                  \
     } while (0)
 
-void fn_801E09E0(s32 unused)
+void characterMoveEvent(s32 unused)
 {
     EtcToolVec position;
     EtcToolVec savedPosition;

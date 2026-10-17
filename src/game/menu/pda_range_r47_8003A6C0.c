@@ -289,8 +289,8 @@ static inline void pdaResetPeopleTables(u8* base, u8* tbl)
 static inline void pdaFillSavePrompt(void)
 {
     extern u32 fn_80005748(void);
-    extern u32 fn_801EF214(void);
-    extern u32 fn_801EF274(void);
+    extern u32 darkPokemonCountFlag14(void);
+    extern u32 darkPokemonCountFlag12(void);
     extern void msgctrlSetValue(s32 id, u32 value);
     u32 playTime;
 
@@ -298,11 +298,11 @@ static inline void pdaFillSavePrompt(void)
     if (lbl_8047A498 != 0) {
         playTime = lbl_8047A498;
     }
-    lbl_8047A49C = fn_801EF214();
-    lbl_8047A4A0 = fn_801EF274();
+    lbl_8047A49C = darkPokemonCountFlag14();
+    lbl_8047A4A0 = darkPokemonCountFlag12();
     msgctrlSetValue(0x4c, playTime);
-    msgctrlSetValue(0x2f, fn_801EF274());
-    msgctrlSetValue(0x30, fn_801EF214());
+    msgctrlSetValue(0x2f, darkPokemonCountFlag12());
+    msgctrlSetValue(0x30, darkPokemonCountFlag14());
 }
 
 typedef struct PdaSaveImage {
@@ -626,20 +626,20 @@ s32 fn_8003AE84(void)
 void pdaSnagListDrawCount(PdaSprite* sprite)
 {
     extern PdaListEntry* lbl_8047A4D4;
-    extern void fn_801EED88(u16 id);
-    extern void* fn_801EE544(u16 id, u8* variant);
-    extern s32 fn_801EEF40(u16 id);
+    extern void darkPokemonCheckFlag0C(u16 id);
+    extern void* darkPokemonGetFlagListValue(u16 id, u8* variant);
+    extern s32 darkPokemonSaveGetC(u16 id);
     extern s32 floorGetPlaceName(s32 floor);
     extern void msgctrlSetValue(s32 id, s32 value);
     u16 id;
     void* message;
     u32 value;
 
-    fn_801EED88(lbl_8047A4D4[(u16)*(u32*)&lbl_803A6748].battleId);
+    darkPokemonCheckFlag0C(lbl_8047A4D4[(u16)*(u32*)&lbl_803A6748].battleId);
     id = lbl_8047A4D4[*(u32*)&lbl_803A6748].battleId;
     sprite->alphaByte = lbl_8047BAC0 * lbl_803A6748.alphaScale;
-    message = fn_801EE544(id, (u8*)&lbl_803A6748 + 0x94);
-    value = floorGetPlaceName(fn_801EEF40(id));
+    message = darkPokemonGetFlagListValue(id, (u8*)&lbl_803A6748 + 0x94);
+    value = floorGetPlaceName(darkPokemonSaveGetC(id));
     if (value == 0) {
         msgctrlSetValue(0x31, 0x18d3);
     } else {

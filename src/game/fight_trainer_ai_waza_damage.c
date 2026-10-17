@@ -24,7 +24,7 @@ extern void* pokemonGetStatus();
 extern u32   pokemonSetStatus();
 
 /* Battle system functions */
-extern void fn_801EF8F4();
+extern void battleCameraSelect();
 
 /* Sound functions */
 extern void soundStop();     /* Stop sound */
@@ -595,7 +595,7 @@ u32 fightTrainerAiWazaDamage164(void) { return 0; }
 /* Address: 0x802514EC | Size: 0x98 */
 s32 fightTrainerAiWazaDamage162(void* ctx, u32 param1, u32 param2) {
     extern u8 joutaiDataBiosGetMaxStack(u32);
-    extern s16 fn_80202360(u32, u32);
+    extern s16 fightOutPokemonGetPokemonJoutaiStack(u32, u32);
     extern u8 fn_80236BFC(void*, u32, u32);
     extern u32 fn_80237664(void*, u32);
     s16 shift;
@@ -603,7 +603,7 @@ s32 fightTrainerAiWazaDamage162(void* ctx, u32 param1, u32 param2) {
 
     shift = 1;
     if (fn_80236BFC(ctx, param1, 0x2d) == 1) {
-        shift = fn_80202360(param1, 0x2d);
+        shift = fightOutPokemonGetPokemonJoutaiStack(param1, 0x2d);
     }
     shift = joutaiDataBiosGetMaxStack(0x2d) - shift;
     if (shift < 0) {
@@ -616,14 +616,14 @@ s32 fightTrainerAiWazaDamage162(void* ctx, u32 param1, u32 param2) {
 
 /* Address: 0x80251584 | Size: 0x88 */
 s32 fightTrainerAiWazaDamage161(void* ctx, u32 param1, u32 param2, u32 param3) {
-    extern s16 fn_80202360(u32, u32);
+    extern s16 fightOutPokemonGetPokemonJoutaiStack(u32, u32);
     extern s32 fightSeqGetNromalWazaDamage(void*, u32, u32, u32, u32, u32, u32, u32);
     extern u8 fn_80236BFC(void*, u32, u32);
     s16 multiplier;
 
     multiplier = 1;
     if (fn_80236BFC(ctx, param1, 0x2d) == 1) {
-        multiplier = fn_80202360(param1, 0x2d);
+        multiplier = fightOutPokemonGetPokemonJoutaiStack(param1, 0x2d);
     }
     return multiplier * fightSeqGetNromalWazaDamage(ctx, param2, param1, param3, 0, 0, 0, 0);
 }

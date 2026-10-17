@@ -97,7 +97,7 @@ extern void  fn_802622E4(void);
 extern u32 fn_80211A78();
 extern void wazaSequenceSysFreeAll();
 extern u8   lbl_8047B625;
-extern void fn_8020248C();
+extern void fightOutPokemonWritePokemonJoutaiDataId();
 extern void* lbl_8047B62C;
 extern void  fn_80211B94(void* a, void* b, u8 c);
 extern u8    fn_80207AE0(void* obj, u8 v);
@@ -142,7 +142,7 @@ extern void fn_801252E0();
 extern void fn_80202998();
 extern u8   fn_80204A10();
 extern void* fn_802037DC(void* ctx);
-extern void fn_801EF8F4();
+extern void battleCameraSelect();
 extern void fightMenuAllFightTrainerCloseStatusMenu();
 extern void fightMenuAllFightOutPokemonCloseStatusMenu();
 extern u8   lbl_8037889D[0x23];
@@ -154,9 +154,9 @@ extern u32  fn_80262308(void);
 extern u8   lbl_8047B642;
 extern u32  fn_802036D4();
 extern u32  fn_801F4354();
-extern void fn_801FCEC4();
+extern void fightOutPokemonBiosCopy();
 extern u8   fn_801F2020();
-extern u32  fn_801F8A18();
+extern u32  fightTrainerGetIrekaeFightPokemon();
 extern void _threadSwitch(void);
 extern u32  fn_800FA280();
 extern u32  fn_80203848();
@@ -172,7 +172,7 @@ extern s32  fn_80102620();
 extern u32  fn_80011C78();
 extern u8   fn_802038A4();
 extern void fn_80207C24();
-extern void fn_80201764();
+extern void fightOutPokemonSetPokemonJoutai08();
 extern s32  fn_80232110();
 extern u32 fn_8022E34C();
 extern u8   fn_801F453C();
@@ -569,7 +569,7 @@ void fn_8021D224(void) {
     extern u32 fn_801254B4();
     extern u8  fn_801F221C();
     extern u8  fn_802025B8();
-    extern void fn_8020248C();
+    extern void fightOutPokemonWritePokemonJoutaiDataId();
     extern void fn_801F4C14();
     u8 canRoll = 1;
     u32 ctx1 = fn_801F025C(0x11, 0);
@@ -596,13 +596,13 @@ void fn_8021D224(void) {
     if (lbl_8047E5F8[fieldFC] > roll && canRoll != 0) {
         if (effectId == 0x6f) {
             if (fn_802025B8(ctx1, 0x2b) == 2) {
-                fn_8020248C(ctx1, 0x2b, 0);
+                fightOutPokemonWritePokemonJoutaiDataId(ctx1, 0x2b, 0);
             }
             lbl_80478D78[5] = 0;
         }
         if (effectId == 0x74) {
             if (fn_802025B8(ctx1, 0x2c) == 2) {
-                fn_8020248C(ctx1, 0x2c, 0);
+                fightOutPokemonWritePokemonJoutaiDataId(ctx1, 0x2c, 0);
             }
             lbl_80478D78[5] = 1;
         }

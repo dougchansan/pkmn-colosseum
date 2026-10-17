@@ -177,7 +177,7 @@ BOOL CheckEventFlag(void* context, u32 flagId);
 u32 GetEventState(void* context, u32 eventId);
 
 /**
- * fn_8020248C - SetEventState
+ * fightOutPokemonWritePokemonJoutaiDataId - SetEventState
  * Called 67 times. Sets the state value of an event.
  */
 void SetEventState(void* context, u32 eventId, u32 value);

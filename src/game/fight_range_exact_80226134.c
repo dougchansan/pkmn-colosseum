@@ -309,8 +309,8 @@ void fn_802267E8(void) {
         } while (1);
         fn_80202810(ctx, 0x14);
         fn_80211B94(lbl_8047B62C, (void*)&lbl_80379A22, 0);
-        fn_8020248C(ctx, 0x14, 0);
-        fn_80201764(ctx, 0x14, 0);
+        fightOutPokemonWritePokemonJoutaiDataId(ctx, 0x14, 0);
+        fightOutPokemonSetPokemonJoutai08(ctx, 0x14, 0);
     }
     lbl_8047B610 = lbl_8047B610 + 2;
 }

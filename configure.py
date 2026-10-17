@@ -6573,7 +6573,7 @@ config.libs = [
             # (THPGXYuv2RgbSetup). THPPlayer.c builds with noauto: with auto,
             # its stream-start routine (0x801E34F0) is inlined into
             # THPPlayerPrepare, which the retail build did not do. On noauto
-            # all 21 of its functions are exact except fn_801E2CA8 (98.7%).
+            # all 21 of its functions are exact except movieStreamFill (98.7%).
             *[
                 Object(
                     status,

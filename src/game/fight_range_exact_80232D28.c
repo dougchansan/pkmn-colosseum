@@ -11,12 +11,12 @@ u32 fn_80232D28(s32 pokemonArg, u32 hostSide, u32* data)
 {
     extern u32 fightTargetGetRelativeHostSideFightTargetIdToTragetPtr();
     extern void fightOutPokemonSetOumuWazaDataId();
-    extern u32 fn_80201D84();
+    extern u32 fightOutPokemonGetJoutaiParam();
     extern void fn_80201FDC();
     extern u8 fn_802026E4();
     extern void fightOutPokemonWriteJoutaiDataId();
     extern u8 fightOutPokemonIsAlly();
-    extern void fn_80203198();
+    extern void fightOutPokemonEnemyClearOumu();
     extern u8 fightOutPokemonCheckFightOut();
     u32 pokemon;
     u16 statusTarget;
@@ -38,7 +38,7 @@ u32 fn_80232D28(s32 pokemonArg, u32 hostSide, u32* data)
     if (statusTarget == 0x7f) {
         if (fightOutPokemonIsAlly(other, pokemon) == 0) {
             if (fn_802026E4(pokemon, 0x1d) == 1 &&
-                (targetId = fn_80201D84(pokemon, 0x1d), (targetId & 0xffff) != 0) &&
+                (targetId = fightOutPokemonGetJoutaiParam(pokemon, 0x1d), (targetId & 0xffff) != 0) &&
                 (relative = fightTargetGetRelativeHostSideFightTargetIdToTragetPtr(
                      targetId, hostSide)) != 0 &&
                 relative == other) {
@@ -52,7 +52,7 @@ u32 fn_80232D28(s32 pokemonArg, u32 hostSide, u32* data)
         }
     } else {
         if (fn_802026E4(pokemon, 0x16) == 1 &&
-            (targetId = fn_80201D84(pokemon, 0x16), (targetId & 0xffff) != 0) &&
+            (targetId = fightOutPokemonGetJoutaiParam(pokemon, 0x16), (targetId & 0xffff) != 0) &&
             (relative = fightTargetGetRelativeHostSideFightTargetIdToTragetPtr(
                  targetId, hostSide)) != 0 &&
             relative == other) {
@@ -64,7 +64,7 @@ u32 fn_80232D28(s32 pokemonArg, u32 hostSide, u32* data)
             fightOutPokemonWriteJoutaiDataId(pokemon, 0x16);
         }
         if (fn_802026E4(pokemon, 0x1d) == 1 &&
-            (targetId = fn_80201D84(pokemon, 0x1d), (targetId & 0xffff) != 0) &&
+            (targetId = fightOutPokemonGetJoutaiParam(pokemon, 0x1d), (targetId & 0xffff) != 0) &&
             (relative = fightTargetGetRelativeHostSideFightTargetIdToTragetPtr(
                  targetId, hostSide)) != 0 &&
             relative == other) {
@@ -77,7 +77,7 @@ u32 fn_80232D28(s32 pokemonArg, u32 hostSide, u32* data)
         }
     }
     if (fn_802026E4(pokemon, 10) == 1 &&
-        (targetId = fn_80201D84(pokemon, 10), (targetId & 0xffff) != 0) &&
+        (targetId = fightOutPokemonGetJoutaiParam(pokemon, 10), (targetId & 0xffff) != 0) &&
         (relative = fightTargetGetRelativeHostSideFightTargetIdToTragetPtr(
              targetId, hostSide)) != 0 &&
         relative == other) {
@@ -89,7 +89,7 @@ u32 fn_80232D28(s32 pokemonArg, u32 hostSide, u32* data)
         fightOutPokemonWriteJoutaiDataId(pokemon, 10);
     }
     if (fn_802026E4(pokemon, 0xe) == 1 &&
-        (targetId = fn_80201D84(pokemon, 0xe), (targetId & 0xffff) != 0) &&
+        (targetId = fightOutPokemonGetJoutaiParam(pokemon, 0xe), (targetId & 0xffff) != 0) &&
         (relative = fightTargetGetRelativeHostSideFightTargetIdToTragetPtr(
              targetId, hostSide)) != 0 &&
         relative == other) {
@@ -102,7 +102,7 @@ u32 fn_80232D28(s32 pokemonArg, u32 hostSide, u32* data)
     }
     if (fightOutPokemonIsAlly(pokemon, other) == 0) {
         fightOutPokemonSetOumuWazaDataId(pokemon, other, 0);
-        fn_80203198(pokemon, other);
+        fightOutPokemonEnemyClearOumu(pokemon, other);
     }
     return 1;
 }

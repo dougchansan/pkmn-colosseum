@@ -494,11 +494,11 @@ typedef struct GStexture GStexture;
  * Battle Core / Fight Flow (0x801EF02C - 0x801F000C)
  * ========================================================================= */
 
-/* fn_801EF02C */ void battle_InitSlots(void);
-/* fn_801EF080 */ void battle_ResetSlotAnimations(void);
-/* fn_801EF0D4 */ void battle_ResetSlotEffects(void);
+/* darkPokemonSetAllFlag14 */ void battle_InitSlots(void);
+/* darkPokemonSetAllFlag12 */ void battle_ResetSlotAnimations(void);
+/* darkPokemonSetAllFlag16 */ void battle_ResetSlotEffects(void);
 /* fn_801EF128 */ void battle_SetupParty(void* partyData);
-/* fn_801EFA08 */ void battle_MainLoop(void);   /* 0x5BC bytes - the main battle loop */
+/* fightMainThread */ void battle_MainLoop(void);   /* 0x5BC bytes - the main battle loop */
 
 /* =========================================================================
  * Battle State Machine (0x801E03D4 - 0x801EF02C)

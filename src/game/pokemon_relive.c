@@ -24,7 +24,7 @@ extern void* pokemonGetStatus();
 extern u32   pokemonSetStatus();
 
 /* Battle system functions */
-extern void fn_801EF8F4();
+extern void battleCameraSelect();
 
 /* Sound functions */
 extern void soundStop();     /* Stop sound */
@@ -585,7 +585,7 @@ void preReliveMain(void)
     extern u16 pokemonBiosGetDarkpokemonDataId(void*);
     extern int heroItemCheckHaveItemDataId(s32, s32);
     extern void* heroGetStatus(s32, s32, u16);
-    extern u8 fn_801EEC74(u16);
+    extern u8 darkPokemonCheckFlag14(u16);
     extern void* heroBiosGetPokemonPtr(void*, u16);
     extern u8 pokemonCheckValid(void*);
     extern int pokemonIsDarkPokemon(void*);
@@ -619,7 +619,7 @@ void preReliveMain(void)
     for (i = 0; (u16)i < 6; i++) {
         pokemon = heroBiosGetPokemonPtr(party, (u16)i);
         if (pokemonCheckValid(pokemon) && (s32)(u8)pokemonIsDarkPokemon(pokemon) == 1 &&
-            fn_801EEC74(pokemonBiosGetDarkpokemonDataId(pokemon)) == 0) {
+            darkPokemonCheckFlag14(pokemonBiosGetDarkpokemonDataId(pokemon)) == 0) {
             remaining++;
         }
     }
@@ -816,7 +816,7 @@ void reliveCeremonyAll(u32 r3)
     extern int pokemonEvolutionAll();
     extern u32 pokemonEvolutionCheck();
     extern u8 pokemonCheckValid();
-    extern int fn_801EECD8();
+    extern int darkPokemonSetFlag14();
     extern u32 lbl_80478DB0;
     extern f32 lbl_8047E680;
     extern f32 lbl_8047E688;
@@ -845,7 +845,7 @@ void reliveCeremonyAll(u32 r3)
   if (uVar8 == 1) {
     pokemonGetStatus(uVar1,0,0x6e,0);
     uVar2 = pokemonBiosGetDarkpokemonDataId(uVar1);
-    fn_801EECD8(uVar2,1);
+    darkPokemonSetFlag14(uVar2,1);
     uVar8 = fn_80121ADC(uVar1,0x3e);
     if (uVar8 != 0) {
       pokemonInitPersistentJoutai(uVar1,0x3e);
