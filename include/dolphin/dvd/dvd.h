@@ -63,10 +63,10 @@ BOOL __DVDPushWaitingQueue(s32 prio, DVDCommandBlock* block);
 DVDCommandBlock* __DVDPopWaitingQueue(void);
 BOOL __DVDCheckWaitingQueue(void);
 void stateTimeout(void);
-void fn_800A58F0(void);
-void fn_800A5FC0(DVDCommandBlock* block);
-void fn_800A5FF4(DVDCommandBlock* block);
-void fn_800A60D4(u32 intType);
+void stateGettingError(void);
+void stateCheckID3(DVDCommandBlock* block);
+void stateCheckID2a(DVDCommandBlock* block);
+void cbForStateCheckID1(u32 intType);
 
 /* DVDLow functions */
 void __DVDInitWA(void);

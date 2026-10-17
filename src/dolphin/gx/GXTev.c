@@ -157,7 +157,7 @@ extern GXData_800BB30C* const gx;
 extern volatile u16* __cpReg;
 extern u32 lbl_80313608[];
 
-extern void fn_800BB780(u32 dstCoord, u32 func, u32 srcParam, u32 mtx,
+extern void GXSetTevIndirect(u32 dstCoord, u32 func, u32 srcParam, u32 mtx,
                         u32 normalize, u32 postMtx, u32 normalizeColor,
                         u8 bias, u8 arg8, u32 arg9);
 extern void fn_800BD640(f32 left, f32 top, f32 width, f32 height, f32 nearz,

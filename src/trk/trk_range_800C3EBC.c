@@ -87,11 +87,11 @@ s32 ddh_cc_initialize(u8** comm, void (*callback)(s32)) {
     extern u8 lbl_803FED78[];
     extern CircleBuffer lbl_803FF578;
     extern void MWTRACE(s32 level, const char* format, ...);
-    extern void fn_800CE79C(u8** comm, void (*callback)(s32));
+    extern void EXI2_Init(u8** comm, void (*callback)(s32));
     extern void CircleBufferInitialize(CircleBuffer* circle, u8* buffer, u32 size);
 
     MWTRACE(1, lbl_8026FD4C);
-    fn_800CE79C(comm, callback);
+    EXI2_Init(comm, callback);
     MWTRACE(1, lbl_8026FD60);
     CircleBufferInitialize(&lbl_803FF578, lbl_803FED78, 0x800);
     return 0;

@@ -311,7 +311,7 @@ void __OSInitSystemCall(void) {
 }
 
 #if !defined(SDK_800A0D00_ONLY)
-void fn_800A128C(void) {
+void DefaultSwitchThreadCallback(void) {
 }
 
 void __OSThreadInit(void) {

@@ -270,7 +270,7 @@ extern s32 fn_800B4C7C(void* file_info, void* buffer, s32 length, s32 offset,
                        CARDCallback callback);
 extern s32 CARDWriteAsync(void* file_info, const void* buffer, s32 length, s32 offset,
                           CARDCallback callback);
-extern s32 fn_800B5530(s32 chan, s32 file_no, MemcardFileStatus* stat);
+extern s32 CARDGetStatus(s32 chan, s32 file_no, MemcardFileStatus* stat);
 extern s32 CARDSetStatusAsync(s32 chan, s32 file_no, MemcardFileStatus* stat,
                               CARDCallback callback);
 extern s32 CARDGetAttributes(s32 chan, s32 file_no, u8* attributes);
@@ -1862,7 +1862,7 @@ s32 fn_801CFD08(void)
     for (file_no = 0; file_no < 0x7F; file_no++) {
         result = fn_800B4488(channel, file_no, file_info);
         if (result == 0) {
-            result = fn_800B5530(channel, file_no, &status);
+            result = CARDGetStatus(channel, file_no, &status);
             if (result != 0) {
                 goto invalid_file;
             }
@@ -1925,7 +1925,7 @@ scan_done:
                        &lbl_8047B3D4->mounted_disk_id);
         }
 
-        error = fn_800B5530(lbl_8047B3D4->card_channel,
+        error = CARDGetStatus(lbl_8047B3D4->card_channel,
                            lbl_8047B3D4->file_info.file_no,
                            &opened_status);
         if (error != 0) {
@@ -2623,7 +2623,7 @@ void fn_801CDB04(void)
         case 23: {
             s32 i;
 
-            result = fn_800B5530(lbl_8047B3D4->card_channel, lbl_8047B3D4->file_info.file_no,
+            result = CARDGetStatus(lbl_8047B3D4->card_channel, lbl_8047B3D4->file_info.file_no,
                                  &lbl_8047B3D4->stat);
             if (result == CARD_RESULT_READY) {
                 CARDSetCommentAddress(&lbl_8047B3D4->stat, 0);

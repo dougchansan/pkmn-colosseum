@@ -199,7 +199,7 @@ extern s32 fn_800B01C4();
 extern void* fn_800B01AC(s32 channel);
 extern s32 fn_800B4488();
 extern s32 fn_800B4C7C();
-extern s32 fn_800B5530();
+extern s32 CARDGetStatus();
 extern s32 fn_800B5BE4();
 void* savedataGetStatus(void* data, s32 index);
 s32 gamedatasaveGetStatus(void* data, s32 index);
@@ -940,7 +940,7 @@ s32 fn_801CFD08(void)
     for (file_no = 0; file_no < 0x7F; file_no++) {
         result = fn_800B4488(channel, file_no, file_info);
         if (result == 0) {
-            result = fn_800B5530(channel, file_no, &status);
+            result = CARDGetStatus(channel, file_no, &status);
             if (result != 0) {
                 goto invalid_file;
             }
@@ -1003,7 +1003,7 @@ scan_done:
                        &lbl_8047B3D4->mounted_disk_id);
         }
 
-        error = fn_800B5530(lbl_8047B3D4->card_channel,
+        error = CARDGetStatus(lbl_8047B3D4->card_channel,
                            lbl_8047B3D4->file_info.file_no,
                            &opened_status);
         if (error != 0) {

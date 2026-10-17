@@ -12,7 +12,7 @@ void fn_800BD07C(u32 fieldMode, u32 halfAspectRatio)
     __GXFlushTextureState();
 }
 
-void fn_800BD0F8(void)
+void __GXSetRange(void)
 {
 }
 

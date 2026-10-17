@@ -316,8 +316,8 @@ extern const char lbl_80266448[]; /* "OS_ERROR_SYSTEM_RESET" (error name table b
 /* OSProtectRange = __OSInitMemoryProtection region setup */
 extern void OSProtectRange(u32 region, u32 addr, u32 size, u32 perm);
 
-/* fn_800A2C58 = __DBIsExceptionMarked or similar */
-extern s32  fn_800A2C58(void);
+/* DBIsDebuggerPresent = __DBIsExceptionMarked or similar */
+extern s32  DBIsDebuggerPresent(void);
 
 /* OSCreateThread = OSCreateThread */
 extern void OSCreateThread(void* thread, void* func, void* arg,

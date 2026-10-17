@@ -63,7 +63,7 @@ extern int   soundStartSE(u16);
 extern s32   GSthreadGetCurrentThread(void);    /* poll/yield -- 0 if pending */
 extern void  _threadSwitch(void);    /* yield */
 extern u32   fn_800BE31C(void);    /* rand or tick */
-extern u32   fn_800B8FD8(void*);   /* register fn, returns handle */
+extern u32   GXSetDrawSyncCallback(void*);   /* register fn, returns handle */
 extern void  fn_800BD91C(s32, s32);
 extern void  fn_800B8C58(s32);
 extern void  GSgfxBeginBackFBCapture(u32, void*, void*);

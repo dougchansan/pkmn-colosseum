@@ -422,7 +422,7 @@ void __CARDUnlockedHandler(s32 chan, OSContext* context);
 extern void OSRegisterVersion(const char* version);
 u16 __CARDGetFontEncode(void);
 s32 __CARDPutControlBlock(CARDControl* card, s32 result);
-s32 fn_800AFBDC(s32 chan, void* buf, void* callback);
+s32 __CARDStart(s32 chan, void* buf, void* callback);
 s32 fn_800AFFE0(s32 chan, u32 addr, void* callback);
 extern s32 __CARDGetControlBlock(s32 chan, CARDControl** pcard);
 extern void* __OSLockSram(void);
@@ -441,8 +441,8 @@ extern s32 __CARDUpdateDir(s32 chan, CARDCallback callback);
 extern s32 __CARDUpdateFatBlock(s32 chan, u16* fat, CARDCallback callback);
 extern void __CARDDefaultApiCallback(s32 chan, s32 result);
 extern BOOL __CARDCompareFileName(CARDDirEntry* entry, const char* fileName);
-extern s32 fn_800B4270(CARDControl* card, CARDDirEntry* entry);
-extern s32 fn_800B4308(CARDDirEntry* entry);
+extern s32 __CARDAccess(CARDControl* card, CARDDirEntry* entry);
+extern s32 __CARDIsWritable(CARDDirEntry* entry);
 extern s32 __CARDGetFileNo(CARDControl* card, const char* fileName, s32* pfileNo);
 extern void* __CARDGetDirBlock(CARDControl* card);
 extern u32 DummyLen(void);
@@ -516,7 +516,7 @@ void UpdateIconOffsets(CARDDirEntry* entry, CARDStat* stat)
     stat->offsetData = offset;
 }
 
-s32 fn_800B5530(s32 chan, s32 fileNo, CARDStat* stat)
+s32 CARDGetStatus(s32 chan, s32 fileNo, CARDStat* stat)
 {
     CARDControl* card;
     CARDDirEntry* dir;
@@ -534,9 +534,9 @@ s32 fn_800B5530(s32 chan, s32 fileNo, CARDStat* stat)
 
     dir = __CARDGetDirBlock(card);
     entry = &dir[fileNo];
-    result = fn_800B4270(card, entry);
+    result = __CARDAccess(card, entry);
     if (result == -10) {
-        result = fn_800B4308(entry);
+        result = __CARDIsWritable(entry);
     }
 
     if (result >= 0) {
@@ -578,7 +578,7 @@ s32 fn_800B588C(s32 chan, s32 fileNo, CARDDirEntry* input,
 
     dir = __CARDGetDirBlock(card);
     entry = &dir[fileNo];
-    result = fn_800B4270(card, entry);
+    result = __CARDAccess(card, entry);
     if (result < 0) {
         return __CARDPutControlBlock(card, result);
     }
@@ -1031,9 +1031,9 @@ s32 fn_800B4C7C(CARDFileInfo* fileInfo, void* buffer, s32 length, s32 offset,
 
     dir = __CARDGetDirBlock(card);
     entry = &dir[fileInfo->fileNo];
-    result = fn_800B4270(card, entry);
+    result = __CARDAccess(card, entry);
     if (result == -10) {
-        result = fn_800B4308(entry);
+        result = __CARDIsWritable(entry);
     }
     if (result < 0) {
         return __CARDPutControlBlock(card, result);
@@ -1133,7 +1133,7 @@ s32 CARDWriteAsync(CARDFileInfo* fileInfo, void* buffer, s32 length,
 
     dir = __CARDGetDirBlock(card);
     entry = &dir[fileInfo->fileNo];
-    result = fn_800B4270(card, entry);
+    result = __CARDAccess(card, entry);
     if (result < 0) {
         return __CARDPutControlBlock(card, result);
     }
@@ -2426,7 +2426,7 @@ BOOL __CARDCompareFileName(CARDDirEntry* entry, const char* fileName) {
     return FALSE;
 }
 
-s32 fn_800B4270(CARDControl* card, CARDDirEntry* entry) {
+s32 __CARDAccess(CARDControl* card, CARDDirEntry* entry) {
     if (entry->gameName[0] == 0xff) {
         return -4;
     }
@@ -2438,7 +2438,7 @@ s32 fn_800B4270(CARDControl* card, CARDDirEntry* entry) {
     return -10;
 }
 
-s32 fn_800B4308(CARDDirEntry* entry) {
+s32 __CARDIsWritable(CARDDirEntry* entry) {
     if (entry->gameName[0] == 0xff) {
         return -4;
     }
@@ -2461,7 +2461,7 @@ s32 __CARDGetFileNo(CARDControl* card, const char* fileName, s32* pfileNo) {
     dir = __CARDGetDirBlock(card);
     for (fileNo = 0; fileNo < 127; fileNo++) {
         entry = &dir[fileNo];
-        result = fn_800B4270(card, entry);
+        result = __CARDAccess(card, entry);
         if (result < 0) {
             continue;
         }
@@ -2595,17 +2595,17 @@ s32 __CARDRead(s32 chan, u32 addr, u32 length, void* buffer, CARDCallback callba
     return __CARDReadSegment(chan, BlockReadCallback);
 }
 
-void fn_800B18C8(s32 chan, s32 result) {
+void BlockWriteCallback(s32 chan, s32 result) {
     CARDControl* card = &lbl_803FC620[chan];
     CARDCallback callback;
-    extern s32 fn_800AFEC4(s32 chan, CARDCallback callback);
+    extern s32 __CARDWritePage(s32 chan, CARDCallback callback);
 
     if (result >= 0) {
         card->xferred += 0x80;
         card->addr += 0x80;
         card->buffer += 0x80;
         if (--card->repeat > 0) {
-            result = fn_800AFEC4(chan, fn_800B18C8);
+            result = __CARDWritePage(chan, BlockWriteCallback);
             if (result >= 0) {
                 return;
             }
@@ -2624,7 +2624,7 @@ void fn_800B18C8(s32 chan, s32 result) {
 #pragma dont_inline on
 s32 fn_800B19A4(s32 chan, u32 addr, u32 length, void* buffer, CARDCallback callback) {
     CARDControl* card = &lbl_803FC620[chan];
-    extern s32 fn_800AFEC4(s32 chan, CARDCallback callback);
+    extern s32 __CARDWritePage(s32 chan, CARDCallback callback);
 
     if (card->attached == 0) {
         return -3;
@@ -2633,7 +2633,7 @@ s32 fn_800B19A4(s32 chan, u32 addr, u32 length, void* buffer, CARDCallback callb
     card->repeat = length >> 7;
     card->addr = addr;
     card->buffer = buffer;
-    return fn_800AFEC4(chan, fn_800B18C8);
+    return __CARDWritePage(chan, BlockWriteCallback);
 }
 #pragma dont_inline off
 
@@ -3242,7 +3242,7 @@ s32 CARDSetStatusAsync(s32 chan, s32 fileNo, CARDStat* stat,
 
     dir = __CARDGetDirBlock(card);
     entry = &dir[fileNo];
-    result = fn_800B4270(card, entry);
+    result = __CARDAccess(card, entry);
     if (result < 0) {
         return __CARDPutControlBlock(card, result);
     }
@@ -3273,8 +3273,8 @@ s32 fn_800B57D0(s32 chan, s32 fileNo, CARDDirEntry* entry) {
     CARDDirEntry* dirEntry;
     extern s32 __CARDGetControlBlock(s32 chan, CARDControl** card);
     extern CARDDirEntry* __CARDGetDirBlock(CARDControl* card);
-    extern s32 fn_800B4270(CARDControl* card, CARDDirEntry* entry);
-    extern s32 fn_800B4308(CARDDirEntry* entry);
+    extern s32 __CARDAccess(CARDControl* card, CARDDirEntry* entry);
+    extern s32 __CARDIsWritable(CARDDirEntry* entry);
     extern void* memcpy(void* dst, const void* src, u32 length);
 
     if (fileNo < 0 || fileNo >= 127) {
@@ -3285,9 +3285,9 @@ s32 fn_800B57D0(s32 chan, s32 fileNo, CARDDirEntry* entry) {
         return result;
     }
     dirEntry = &__CARDGetDirBlock(card)[fileNo];
-    result = fn_800B4270(card, dirEntry);
+    result = __CARDAccess(card, dirEntry);
     if (result == -10) {
-        result = fn_800B4308(dirEntry);
+        result = __CARDIsWritable(dirEntry);
     }
     if (result >= 0) {
         memcpy(entry, dirEntry, sizeof(CARDDirEntry));
@@ -3327,7 +3327,7 @@ void* fn_800B5C5C(void* object) {
     }
 }
 
-s32 fn_800AFEC4(s32 chan, CARDCallback callback) {
+s32 __CARDWritePage(s32 chan, CARDCallback callback) {
     CARDControl* card;
     s32 result;
 
@@ -3341,7 +3341,7 @@ s32 fn_800AFEC4(s32 chan, CARDCallback callback) {
     card->field_A4 = 1;
     card->field_A8 = 3;
 
-    result = fn_800AFBDC(chan, NULL, callback);
+    result = __CARDStart(chan, NULL, callback);
     if (result == -1) {
         result = 0;
     } else if (result >= 0) {
@@ -3369,7 +3369,7 @@ s32 fn_800AFFE0(s32 chan, u32 addr, void* callback) {
     card->cmdLen = 3;
     card->field_A4 = -1;
     card->field_A8 = 3;
-    result = fn_800AFBDC(chan, NULL, callback);
+    result = __CARDStart(chan, NULL, callback);
     if (result == -1) {
         result = 0;
     } else if (result >= 0) {
@@ -3433,7 +3433,7 @@ void __GXInitGX(void) {
     extern void GXLoadTexMtxImm();
     extern void fn_800BD744(f32, f32, f32, f32, f32, f32);
     extern void fn_800BD394();
-    extern void fn_800B953C();
+    extern void GXSetCoPlanar();
     extern void fn_800B94F0();
     extern void GXSetClipMode();
     extern void fn_800BD7A0();
@@ -3443,8 +3443,8 @@ void __GXInitGX(void) {
     extern void GXSetChanAmbColor(u32, GXColor);
     extern void GXSetChanMatColor(u32, GXColor);
     extern void GXInvalidateTexAll();
-    extern void fn_800BB2E4();
-    extern void fn_800BB2F8();
+    extern void GXSetTexRegionCallback();
+    extern void GXSetTlutRegionCallback();
     extern void GXSetTevOrder();
     extern void fn_800BC8C8();
     extern void GXSetTevOp();
@@ -3456,7 +3456,7 @@ void __GXInitGX(void) {
     extern void GXSetTevSwapModeTable();
     extern void fn_800BBC34();
     extern void fn_800BBC0C();
-    extern void fn_800BB97C();
+    extern void GXSetIndTexCoordScale();
     extern void fn_800BC8F8(u32, f32, f32, f32, f32, GXColor);
     extern void fn_800BCCDC();
     extern void GXSetBlendMode();
@@ -3467,7 +3467,7 @@ void __GXInitGX(void) {
     extern void fn_800BCFDC();
     extern void GXSetDstAlpha();
     extern void fn_800BCEF4();
-    extern void fn_800BD044();
+    extern void GXSetFieldMask();
     extern void fn_800BD07C();
     extern void fn_800B959C();
     extern void fn_800B96BC();
@@ -3475,16 +3475,16 @@ void __GXInitGX(void) {
     extern void fn_800B9874();
     extern void fn_800B9C44();
     extern void fn_800B9E6C();
-    extern void fn_800B984C();
+    extern void GXSetDispCopyFrame2Field();
     extern void GXClearBoundingBox();
-    extern void fn_800B8F64();
-    extern void fn_800B8EC0();
-    extern void fn_800B8F94();
-    extern void fn_800B8EDC();
-    extern void fn_800B8E98();
-    extern void fn_800B8EAC();
-    extern void fn_800B8F80();
-    extern void fn_800B8FB0();
+    extern void GXPokeColorUpdate();
+    extern void GXPokeAlphaUpdate();
+    extern void GXPokeDither();
+    extern void GXPokeBlendMode();
+    extern void GXPokeAlphaMode();
+    extern void GXPokeAlphaRead();
+    extern void GXPokeDstAlpha();
+    extern void GXPokeZMode();
     extern void fn_800BD91C();
     extern void fn_800BE30C();
 
@@ -3563,7 +3563,7 @@ void __GXInitGX(void) {
     fn_800BD744(0.0f, 0.0f, (f32)rmode->fbWidth,
                 (f32)rmode->xfbHeight, 0.0f, 1.0f);
     fn_800BD394(lbl_80312AB4);
-    fn_800B953C(0);
+    GXSetCoPlanar(0);
     fn_800B94F0(2);
     GXSetClipMode(0);
     fn_800BD7A0(0, 0, rmode->fbWidth, rmode->efbHeight);
@@ -3582,8 +3582,8 @@ void __GXInitGX(void) {
         gxState->nextTexRgn = 0;
         gxState->nextTexRgnCI = 0;
     }
-    fn_800BB2E4(fn_800B5C5C);
-    fn_800BB2F8(__GXDefaultTlutRegionCallback);
+    GXSetTexRegionCallback(fn_800B5C5C);
+    GXSetTlutRegionCallback(__GXDefaultTlutRegionCallback);
 
     GXSetTevOrder(0, 0, 0, 4);
     GXSetTevOrder(1, 1, 1, 4);
@@ -3618,10 +3618,10 @@ void __GXInitGX(void) {
         fn_800BBC34(i);
     }
     fn_800BBC0C(0);
-    fn_800BB97C(0, 0, 0);
-    fn_800BB97C(1, 0, 0);
-    fn_800BB97C(2, 0, 0);
-    fn_800BB97C(3, 0, 0);
+    GXSetIndTexCoordScale(0, 0, 0);
+    GXSetIndTexCoordScale(1, 0, 0);
+    GXSetIndTexCoordScale(2, 0, 0);
+    GXSetIndTexCoordScale(3, 0, 0);
 
     fn_800BC8F8(0, 0.0f, 1.0f, 0.1f, 1.0f, black);
     fn_800BCCDC(0, 0, 0);
@@ -3633,7 +3633,7 @@ void __GXInitGX(void) {
     fn_800BCFDC(1);
     GXSetDstAlpha(0, 0);
     fn_800BCEF4(0, 0);
-    fn_800BD044(1, 1);
+    GXSetFieldMask(1, 1);
     fn_800BD07C(rmode->field_rendering,
                 rmode->viHeight == 2 * rmode->xfbHeight ? 1 : 0);
 
@@ -3643,17 +3643,17 @@ void __GXInitGX(void) {
     fn_800B9874(3);
     fn_800B9C44(rmode->aa, rmode->sample_pattern, 1, rmode->vfilter);
     fn_800B9E6C(0);
-    fn_800B984C(0);
+    GXSetDispCopyFrame2Field(0);
     GXClearBoundingBox();
 
-    fn_800B8F64(1);
-    fn_800B8EC0(1);
-    fn_800B8F94(0);
-    fn_800B8EDC(0, 0, 1, 15);
-    fn_800B8E98(7, 0);
-    fn_800B8EAC(1);
-    fn_800B8F80(0, 0);
-    fn_800B8FB0(1, 7, 1);
+    GXPokeColorUpdate(1);
+    GXPokeAlphaUpdate(1);
+    GXPokeDither(0);
+    GXPokeBlendMode(0, 0, 1, 15);
+    GXPokeAlphaMode(7, 0);
+    GXPokeAlphaRead(1);
+    GXPokeDstAlpha(0, 0);
+    GXPokeZMode(1, 7, 1);
     fn_800BD91C(0x23, 0x16);
     fn_800BE30C();
 }
@@ -3828,13 +3828,13 @@ void* GXInit(void* base, u32 size) {
 /* GXFifo.c head, 0x800B6FE0 - 0x800B71F0. */
 extern GXData* const gx;
 
-void fn_800B7594(u8 overflow, u8 underflow);
-void fn_800B75D0(u8 clearOverflow, u8 clearUnderflow);
+void __GXWriteFifoIntEnable(u8 overflow, u8 underflow);
+void __GXWriteFifoIntReset(u8 clearOverflow, u8 clearUnderflow);
 
 static void GXOverflowHandler(s16 interrupt, OSContext* context) {
     lbl_8047A9B8++;
-    fn_800B7594(0, 1);
-    fn_800B75D0(1, 0);
+    __GXWriteFifoIntEnable(0, 1);
+    __GXWriteFifoIntReset(1, 0);
     lbl_8047A9B0 = TRUE;
     OSSuspendThread(lbl_8047A9A8);
 }
@@ -3842,8 +3842,8 @@ static void GXOverflowHandler(s16 interrupt, OSContext* context) {
 static void GXUnderflowHandler(s16 interrupt, OSContext* context) {
     OSResumeThread(lbl_8047A9A8);
     lbl_8047A9B0 = FALSE;
-    fn_800B75D0(1, 1);
-    fn_800B7594(1, 0);
+    __GXWriteFifoIntReset(1, 1);
+    __GXWriteFifoIntEnable(1, 0);
 }
 
 static void GXBreakPointHandler(s16 interrupt, OSContext* context) {

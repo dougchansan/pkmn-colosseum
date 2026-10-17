@@ -21,7 +21,7 @@ extern void fn_800F7F64(u32 padIdx);
 extern void* fn_801664F0(void* color);
 extern void GSresRegisterResource(void* work, u32 time, u32 numFrames, u32 arg);
 extern void OSProtectRange(u32 region, u32 addr, u32 size, u32 perm);
-extern s32 fn_800A2C58(void);
+extern s32 DBIsDebuggerPresent(void);
 extern void OSCreateThread(void* thread, void* func, void* arg,
                            void* stackBase, u32 stackSize,
                            u32 priority, u32 detached);
@@ -168,7 +168,7 @@ void fn_800060F0(const char* file, s32 line, const char* fmt, ...) {
  *    14 = BREAKPOINT
  *    15 = SYSTEM_INTERRUPT
  *    16 = THERMAL_INTERRUPT
- *  If the debugger is not connected (fn_800A2C58 returns 0), also
+ *  If the debugger is not connected (DBIsDebuggerPresent returns 0), also
  *  installs handlers for:
  *    6  = PROGRAM
  *    10 = SYSTEM_CALL
@@ -200,7 +200,7 @@ void fn_80006250(void) {
     OSSetErrorHandler(16, fn_80006378);  /* THERMAL_INTERRUPT */
 
     /* If debugger is not attached, also handle program/trace/syscall */
-    if (fn_800A2C58() == 0) {
+    if (DBIsDebuggerPresent() == 0) {
         OSSetErrorHandler(6, fn_80006378);   /* PROGRAM */
         OSSetErrorHandler(10, fn_80006378);  /* SYSTEM_CALL */
         OSSetErrorHandler(12, fn_80006378);  /* TRACE */

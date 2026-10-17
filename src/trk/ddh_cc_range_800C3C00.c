@@ -1,33 +1,33 @@
 #include "dolphin/types.h"
 
 /* Low-level AMC hardware interface functions */
-extern void fn_800CE7A0(void); /* AMC_InitInterrupts */
-extern void fn_800CE7BC(void); /* AMC_PostStop */
-extern void fn_800CE7C0(void); /* AMC_PreContinue */
+extern void EXI2_EnableInterrupts(void); /* AMC_InitInterrupts */
+extern void EXI2_Reserve(void); /* AMC_PostStop */
+extern void EXI2_Unreserve(void); /* AMC_PreContinue */
 
 /* Source for the ddh_cc 0x800C3C00 communication helpers. */
 
 /* ddh_cc_initinterrupts - Enable AMC interrupts for async reception. */
 s32 ddh_cc_initinterrupts(void) {
-    fn_800CE7A0();
+    EXI2_EnableInterrupts();
     return 0;
 }
 
 /* ddh_cc_peek - Pull pending AMC data into the receive circle buffer. */
 s32 ddh_cc_peek(void) {
     typedef struct CircleBuffer CircleBuffer;
-    extern s32 fn_800CE7A4(void);
-    extern s32 fn_800CE7AC(void* buffer, s32 size);
+    extern s32 EXI2_Poll(void);
+    extern s32 EXI2_ReadN(void* buffer, s32 size);
     extern CircleBuffer lbl_803FF578;
     extern s32 CircleBufferWriteBytes(CircleBuffer* circle, u8* buffer, u32 size);
     u8 buffer[0x800];
     s32 size;
 
-    size = fn_800CE7A4();
+    size = EXI2_Poll();
     if (size <= 0) {
         return 0;
     }
-    if (fn_800CE7AC(buffer, size) == 0) {
+    if (EXI2_ReadN(buffer, size) == 0) {
         CircleBufferWriteBytes(&lbl_803FF578, buffer, size);
     } else {
         return -0x2719;
@@ -37,13 +37,13 @@ s32 ddh_cc_peek(void) {
 
 /* ddh_cc_post_stop - Called after the target stops. */
 s32 ddh_cc_post_stop(void) {
-    fn_800CE7BC();
+    EXI2_Reserve();
     return 0;
 }
 
 /* ddh_cc_pre_continue - Called before the target continues. */
 s32 ddh_cc_pre_continue(void) {
-    fn_800CE7C0();
+    EXI2_Unreserve();
     return 0;
 }
 
@@ -51,7 +51,7 @@ s32 ddh_cc_pre_continue(void) {
 s32 ddh_cc_write(void* data, s32 size) {
     extern s32 lbl_8047A9E0;
     extern void MWTRACE(s32 level, const char* format, ...);
-    extern s32 fn_800CE7B4(u8* buffer, s32 size);
+    extern s32 EXI2_WriteN(u8* buffer, s32 size);
     s32 remaining = size;
     u8* buffer = data;
     s32 written;
@@ -64,7 +64,7 @@ s32 ddh_cc_write(void* data, s32 size) {
     MWTRACE(8, "cc_write : Output data 0x%08x %ld bytes\n", data, size);
     while (remaining > 0) {
         MWTRACE(1, "cc_write sending %ld bytes\n", remaining);
-        written = fn_800CE7B4(buffer, remaining);
+        written = EXI2_WriteN(buffer, remaining);
         if (written == 0) {
             break;
         }
@@ -81,9 +81,9 @@ s32 ddh_cc_read(u8* buffer, s32 size) {
     extern s32 lbl_8047A9E0;
     extern CircleBuffer lbl_803FF578;
     extern void MWTRACE(s32 level, const char* format, ...);
-    extern s32 fn_800CE7A4(void);
-    extern s32 fn_800CE7AC(void* buffer, s32 size);
-    extern u32 fn_800C41A4(CircleBuffer* circle);
+    extern s32 EXI2_Poll(void);
+    extern s32 EXI2_ReadN(void* buffer, s32 size);
+    extern u32 CBGetBytesAvailableForRead(CircleBuffer* circle);
     extern s32 CircleBufferWriteBytes(CircleBuffer* circle, u8* buffer, u32 size);
     extern s32 CircleBufferReadBytes(CircleBuffer* circle, u8* buffer, u32 size);
     u8 readBuffer[0x800];
@@ -94,15 +94,15 @@ s32 ddh_cc_read(u8* buffer, s32 size) {
     }
 
     MWTRACE(1, "Expected packet size : 0x%08x (%ld)\n", size, size);
-    while (fn_800C41A4(&lbl_803FF578) < (u32)size) {
+    while (CBGetBytesAvailableForRead(&lbl_803FF578) < (u32)size) {
         s32 readSize;
 
         error = 0;
-        readSize = fn_800CE7A4();
+        readSize = EXI2_Poll();
         if (readSize == 0) {
             continue;
         }
-        error = fn_800CE7AC(readBuffer, readSize);
+        error = EXI2_ReadN(readBuffer, readSize);
         if (error != 0) {
             continue;
         }

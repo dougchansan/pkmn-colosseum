@@ -78,7 +78,7 @@ extern u8 lbl_80478AA8[8];
         GX_FIFO_U32 = (value); \
     } while (0)
 
-void fn_800BAE64(GXTexObj_800BAFFC* obj, GXTexRegion_800BAFFC* region,
+void GXLoadTexObjPreLoaded(GXTexObj_800BAFFC* obj, GXTexRegion_800BAFFC* region,
                  u32 mapID) {
     GXTlutRegion_800BB098* tlutRegion;
 
@@ -115,7 +115,7 @@ void fn_800BAE64(GXTexObj_800BAFFC* obj, GXTexRegion_800BAFFC* region,
 void GXLoadTexObj(GXTexObj_800BAFFC* obj, u32 mapID) {
     GXTexRegion_800BAFFC* region = gx->texRegionCallback(obj, mapID);
 
-    fn_800BAE64(obj, region, mapID);
+    GXLoadTexObjPreLoaded(obj, region, mapID);
 }
 
 void fn_800BB050(GXTlutObj_800BB050* obj, void* data, u32 format,

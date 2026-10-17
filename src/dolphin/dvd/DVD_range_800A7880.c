@@ -21,7 +21,7 @@ extern u32 ResumeFromHere_8047A810;
 extern DVDCommandBlock* executing_8047A7E8;
 extern DVDCommandBlock DummyCommandBlock_803FC3A0;
 extern void DVDLowBreak(void);
-extern DVDLowCallback fn_800A4C94(void);
+extern DVDLowCallback DVDLowClearCallback(void);
 extern u32 __DVDDequeueWaitingQueue(u8* node);
 extern void cbForStateMotorStopped_800A65A0(u32 interrupt);
 extern void stateReady_800A6684(void);
@@ -87,7 +87,7 @@ BOOL DVDCancelAsync(DVDCommandBlock* block, DVDCBCallback callback)
     case 6:
     case 7:
     case 11:
-        old = fn_800A4C94();
+        old = DVDLowClearCallback();
         if (old != cbForStateMotorStopped_800A65A0) {
             OSRestoreInterrupts(enabled);
             return FALSE;
@@ -125,12 +125,12 @@ BOOL DVDCancelAsync(DVDCommandBlock* block, DVDCBCallback callback)
 
 extern OSThreadQueue __DVDThreadQueue;
 
-static void fn_800A7BA8(s32 result, DVDCommandBlock* block);
+static void cbForCancelSync(s32 result, DVDCommandBlock* block);
 
 BOOL DVDCancel(DVDCommandBlock* block) {
     BOOL enabled;
 
-    if (!DVDCancelAsync(block, fn_800A7BA8)) {
+    if (!DVDCancelAsync(block, cbForCancelSync)) {
         return -1;
     }
 
@@ -154,7 +154,7 @@ BOOL DVDCancel(DVDCommandBlock* block) {
     return 0;
 }
 
-static void fn_800A7BA8(s32 result, DVDCommandBlock* block) {
+static void cbForCancelSync(s32 result, DVDCommandBlock* block) {
     OSWakeupThread(&__DVDThreadQueue);
 }
 

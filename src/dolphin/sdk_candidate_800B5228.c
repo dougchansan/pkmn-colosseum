@@ -23,8 +23,8 @@ typedef struct CARDStat {
 } CARDStat;
 
 extern void __CARDDefaultApiCallback(s32 chan, s32 result);
-extern s32 fn_800B4270(CARDControl* card, CARDDirEntry* entry);
-extern s32 fn_800B4308(CARDDirEntry* entry);
+extern s32 __CARDAccess(CARDControl* card, CARDDirEntry* entry);
+extern s32 __CARDIsWritable(CARDDirEntry* entry);
 extern void* __CARDGetDirBlock(CARDControl* card);
 extern s32 __CARDUpdateDir(s32 chan, CARDCallback callback);
 extern BOOL __CARDIsOpened(CARDControl* card, s32 fileNo);
@@ -124,7 +124,7 @@ void UpdateIconOffsets(CARDDirEntry* entry, CARDStat* stat)
     stat->offsetData = offset;
 }
 
-s32 fn_800B5530(s32 chan, s32 fileNo, CARDStat* stat)
+s32 CARDGetStatus(s32 chan, s32 fileNo, CARDStat* stat)
 {
     CARDControl* card;
     CARDDirEntry* dir;
@@ -142,9 +142,9 @@ s32 fn_800B5530(s32 chan, s32 fileNo, CARDStat* stat)
 
     dir = __CARDGetDirBlock(card);
     entry = &dir[fileNo];
-    result = fn_800B4270(card, entry);
+    result = __CARDAccess(card, entry);
     if (result == -10) {
-        result = fn_800B4308(entry);
+        result = __CARDIsWritable(entry);
     }
 
     if (result >= 0) {
@@ -186,7 +186,7 @@ s32 CARDSetStatusAsync(s32 chan, s32 fileNo, CARDStat* stat,
 
     dir = __CARDGetDirBlock(card);
     entry = &dir[fileNo];
-    result = fn_800B4270(card, entry);
+    result = __CARDAccess(card, entry);
     if (result < 0) {
         return __CARDPutControlBlock(card, result);
     }
@@ -224,9 +224,9 @@ s32 fn_800B57D0(s32 chan, s32 fileNo, CARDDirEntry* entry)
         return result;
     }
     dirEntry = &((CARDDirEntry*)__CARDGetDirBlock(card))[fileNo];
-    result = fn_800B4270(card, dirEntry);
+    result = __CARDAccess(card, dirEntry);
     if (result == -10) {
-        result = fn_800B4308(dirEntry);
+        result = __CARDIsWritable(dirEntry);
     }
     if (result >= 0) {
         memcpy(entry, dirEntry, sizeof(CARDDirEntry));
@@ -256,7 +256,7 @@ s32 fn_800B588C(s32 chan, s32 fileNo, CARDDirEntry* input,
 
     dir = __CARDGetDirBlock(card);
     entry = &dir[fileNo];
-    result = fn_800B4270(card, entry);
+    result = __CARDAccess(card, entry);
     if (result < 0) {
         return __CARDPutControlBlock(card, result);
     }

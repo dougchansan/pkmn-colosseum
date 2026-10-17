@@ -463,7 +463,7 @@ BOOL DVDLowBreak(void)
     return TRUE;
 }
 
-DVDLowCallback fn_800A4C94(void)
+DVDLowCallback DVDLowClearCallback(void)
 {
     DVDLowCallback old;
 

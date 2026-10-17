@@ -344,7 +344,7 @@ static int QueueLength(void) {
     return 16 - (int)((command >> 24) & 0xFF);
 }
 
-u32 fn_800CF4EC(const void* buffer, u32 length) {
+u32 WriteUARTN(const void* buffer, u32 length) {
     extern u32 lbl_8047AA40;
     extern u32 lbl_8047AA44;
     extern u32 lbl_8047AA48;

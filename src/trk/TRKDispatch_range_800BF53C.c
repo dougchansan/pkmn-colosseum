@@ -25,9 +25,9 @@ typedef struct TRKReply {
 extern s32 lbl_803FE7D0[3];
 
 extern void* memset(void* destination, s32 value, u32 size);
-extern s32 fn_800C3588(void* message, u32 length);
+extern s32 TRKWriteUARTN(void* message, u32 length);
 extern void MWTRACE(s32 level, const char* format, ...);
-extern s32 fn_800C1310(void);
+extern s32 TRKTargetStop(void);
 extern s32 TRKTargetStopped(void);
 extern s32 TRKTargetContinue(void);
 extern void TRKSetBufferPosition(TRKBuffer* buffer, u32 position);
@@ -65,7 +65,7 @@ static inline s32 TRKStandardACK(TRKBuffer* buffer, u8 error)
     reply.command = 0x80;
     reply.length = sizeof(reply);
     reply.error = error;
-    fn_800C3588(&reply, sizeof(reply));
+    TRKWriteUARTN(&reply, sizeof(reply));
     return 0;
 }
 
@@ -100,7 +100,7 @@ s32 TRKDoStop(TRKBuffer* buffer)
 {
     u8 error;
 
-    switch (fn_800C1310()) {
+    switch (TRKTargetStop()) {
     case 0:
         error = 0;
         break;
@@ -455,24 +455,24 @@ s32 TRKDoReadMemory(TRKBuffer* buffer)
     return TRKSendACK(buffer);
 }
 
-s32 fn_800C034C(TRKBuffer* buffer)
+s32 TRKDoSupportMask(TRKBuffer* buffer)
 {
     return 0;
 }
 
-s32 fn_800C0354(TRKBuffer* buffer)
+s32 TRKDoVersions(TRKBuffer* buffer)
 {
     return 0;
 }
 
-s32 fn_800C035C(TRKBuffer* buffer)
+s32 TRKDoOverride(TRKBuffer* buffer)
 {
     TRKStandardACK(buffer, 0);
     __TRK_copy_vectors();
     return 0;
 }
 
-s32 fn_800C03B4(TRKBuffer* buffer)
+s32 TRKDoReset(TRKBuffer* buffer)
 {
     TRKStandardACK(buffer, 0);
     fn_800053E0();

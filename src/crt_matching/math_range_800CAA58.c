@@ -36,7 +36,7 @@ typedef union DoubleShape {
 
 extern u32 OSGetConsoleType(void);
 extern s32 InitializeUART(u32 baud);
-extern s32 fn_800CF4EC(const void* data, u32 count);
+extern s32 WriteUARTN(const void* data, u32 count);
 extern u32 fn_800C3A40(u32 handle, const void* data, u32* count, void* ref);
 extern f64 sqrt(f64 x);
 
@@ -122,7 +122,7 @@ s32 __write_console(u32 handle, const void* data, u32* count, void* ref)
             return 1;
         }
 
-        if (fn_800CF4EC(data, *count) != 0) {
+        if (WriteUARTN(data, *count) != 0) {
             *count = 0;
             return 1;
         }

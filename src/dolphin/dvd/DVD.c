@@ -118,16 +118,16 @@ extern volatile u32 CurrCommand_8047A804;
 extern BOOL lbl_8047A7FC;
 extern void (*lbl_8047A82C)(DVDCommandBlock* block);
 extern void fn_800A59CC(u32 intType);
-extern void fn_800A5784(u32 intType);
-extern void fn_800A5C60(u32 intType);
-extern void fn_800A5CC8(u32 intType);
-extern void fn_800A5D60(void);
-extern void fn_800A6028(u32 intType);
-extern void fn_800A62CC(u32 intType);
-extern void fn_800A640C(void);
+extern void cbForStateReadingFST(u32 intType);
+extern void cbForUnrecoveredError(u32 intType);
+extern void cbForUnrecoveredErrorRetry(u32 intType);
+extern void stateGoToRetry(void);
+extern void cbForStateCheckID2a(u32 intType);
+extern void cbForStateCheckID3(u32 intType);
+extern void stateCoverClosed(void);
 extern void __DVDPrintFatalMessage(void);
-extern void fn_800A6508(u32 intType);
-extern void fn_800A6578(void);
+extern void cbForStateCoverClosed(u32 intType);
+extern void stateMotorStopped(void);
 extern void stateCoverClosed_CMD(DVDCommandBlock* command);
 extern void fn_800A48DC(void (*callback)(u32));
 extern void stateCheckID2(DVDCommandBlock* block);
@@ -172,7 +172,7 @@ extern DVDStaticData BB2_803FC360;
 /* 0x800A5784 | size: 0x8C */
 #if !defined(DVD_BANK_EXACT_ACTIVE) || \
     defined(DVD_EXACT_800A5784_800A5810)
-void fn_800A5784(u32 intType)
+void cbForStateReadingFST(u32 intType)
 {
     DVDCommandBlock* finished;
 
@@ -195,13 +195,13 @@ void fn_800A5784(u32 intType)
         return;
     }
 
-    fn_800A58F0();
+    stateGettingError();
 }
 #endif
 
 #if !defined(DVD_BANK_EXACT_ACTIVE) || \
     defined(DVD_EXACT_800A58F0_800A5918)
-void fn_800A58F0(void)
+void stateGettingError(void)
 {
     fn_800A48DC(fn_800A59CC);
 }
@@ -209,7 +209,7 @@ void fn_800A58F0(void)
 
 #if !defined(DVD_BANK_EXACT_ACTIVE) || \
     defined(DVD_EXACT_800A5CC8_800A5D60)
-void fn_800A5CC8(u32 intType)
+void cbForUnrecoveredErrorRetry(u32 intType)
 {
     volatile u32* di;
 
@@ -258,7 +258,7 @@ static inline BOOL dvdCheckCancelForStateCheckID3(u32 resume)
     return FALSE;
 }
 
-void fn_800A62CC(u32 intType)
+void cbForStateCheckID3(u32 intType)
 {
     if (intType == 0x10) {
         executing_8047A7E8->state = -1;
@@ -283,7 +283,7 @@ void fn_800A62CC(u32 intType)
 
 #if !defined(DVD_BANK_EXACT_ACTIVE) || \
     defined(DVD_EXACT_800A6508_800A6578)
-void fn_800A6508(u32 intType)
+void cbForStateCoverClosed(u32 intType)
 {
     if (intType == 0x10) {
         executing_8047A7E8->state = -1;
@@ -371,7 +371,7 @@ void stateReadingFST(void)
     }
     DVDLowRead((void*)bootInfo_8047A7F0[0x38 / sizeof(u32)],
                (BB2_803FC360.bb2.FSTLength + 0x1F) & ~0x1F,
-               BB2_803FC360.bb2.FSTPosition, fn_800A5784);
+               BB2_803FC360.bb2.FSTPosition, cbForStateReadingFST);
 }
 #endif
 
@@ -1113,13 +1113,13 @@ void fn_800A59CC(u32 intType)
 
     if (errorCategory == 2) {
         __DVDStoreErrorCode(error);
-        fn_800A5D60();
+        stateGoToRetry();
         return;
     }
 
     if (errorCategory == 3) {
         if ((error & 0x00FFFFFF) == 0x00031100) {
-            DVDLowSeek(executing_8047A7E8->offset, fn_800A5C60);
+            DVDLowSeek(executing_8047A7E8->offset, cbForUnrecoveredError);
         } else {
             lbl_8047A82C(executing_8047A7E8);
         }
@@ -1128,13 +1128,13 @@ void fn_800A59CC(u32 intType)
 
     if (status == 0x01000000) {
         executing_8047A7E8->state = 5;
-        fn_800A6578();
+        stateMotorStopped();
     } else if (status == 0x02000000) {
         executing_8047A7E8->state = 3;
-        fn_800A640C();
+        stateCoverClosed();
     } else if (status == 0x03000000) {
         executing_8047A7E8->state = 4;
-        fn_800A6578();
+        stateMotorStopped();
     } else {
         executing_8047A7E8->state = -1;
         __DVDStoreErrorCode(0x1234567);
@@ -1145,7 +1145,7 @@ void fn_800A59CC(u32 intType)
 
 #if !defined(DVD_BANK_EXACT_ACTIVE) || \
     defined(DVD_EXACT_800A6578_800A6684)
-void fn_800A6578(void)
+void stateMotorStopped(void)
 {
     DVDLowWaitCoverClose(cbForStateMotorStopped_800A65A0);
 }
@@ -1186,12 +1186,12 @@ DVD_MOTOR_CB_SCOPE void cbForStateMotorStopped_800A65A0(u32 intType) {
 #endif
 
 /*
- * fn_800A640C - Handle the command after the replacement disc ID is read.
+ * stateCoverClosed - Handle the command after the replacement disc ID is read.
  * 0x800A640C | size: 0xCC
  */
 #if !defined(DVD_BANK_EXACT_ACTIVE) || \
     defined(DVD_EXACT_800A640C_800A6508)
-void fn_800A640C(void)
+void stateCoverClosed(void)
 {
     DVDStaticData* staticData = &BB2_803FC360;
     DVDCommandBlock* finished;
@@ -1221,7 +1221,7 @@ void fn_800A640C(void)
 /* 0x800A64D8 | size: 0x30 */
 void stateCoverClosed_CMD(DVDCommandBlock* command)
 {
-    DVDLowReadDiskID(&lbl_803FC380, fn_800A6508);
+    DVDLowReadDiskID(&lbl_803FC380, cbForStateCoverClosed);
 }
 #endif
 
@@ -1421,7 +1421,7 @@ static void cbForStateCover(u32 intType) {
 /* 0x800A5C60 | size: 0x68 */
 #if !defined(DVD_BANK_EXACT_ACTIVE) || \
     defined(DVD_EXACT_800A5C60_800A5CC8)
-void fn_800A5C60(u32 intType)
+void cbForUnrecoveredError(u32 intType)
 {
     if (intType == 0x10) {
         executing_8047A7E8->state = -1;
@@ -1432,11 +1432,11 @@ void fn_800A5C60(u32 intType)
     }
 
     if (intType & 1) {
-        fn_800A5D60();
+        stateGoToRetry();
         return;
     }
 
-    fn_800A48DC(fn_800A5CC8);
+    fn_800A48DC(cbForUnrecoveredErrorRetry);
 }
 #endif
 
@@ -1467,12 +1467,12 @@ static void cbForStateGoToRetry(u32 intType) {
 DVD_SPLIT_CALLBACK_SCOPE void fn_800A5D88(u32 intType);
 
 /*
- * fn_800A5D60 - 0x800A5D60 | size: 0x28
+ * stateGoToRetry - 0x800A5D60 | size: 0x28
  * Stop the drive motor before retrying the current command.
  */
 #if !defined(DVD_BANK_EXACT_ACTIVE) || \
     defined(DVD_EXACT_800A5D60_800A5D88)
-void fn_800A5D60(void) {
+void stateGoToRetry(void) {
     DVDLowStopMotor((DVDLowCallback)fn_800A5D88);
 }
 #endif
@@ -1487,7 +1487,7 @@ void fn_800A5D60(void) {
     defined(DVD_EXACT_800A5D88_800A5EE0)
 DVD_SPLIT_CALLBACK_SCOPE void fn_800A5D88(u32 intType) {
     extern void DVDReset(void);
-    extern void fn_800A6578(void);
+    extern void stateMotorStopped(void);
 
     if (intType == 0x10) {
         executing_8047A7E8->state = -1;
@@ -1511,7 +1511,7 @@ DVD_SPLIT_CALLBACK_SCOPE void fn_800A5D88(u32 intType) {
     }
     if (dvdCheckCancel(2) == FALSE) {
         executing_8047A7E8->state = 11;
-        fn_800A6578();
+        stateMotorStopped();
     }
 }
 #endif
@@ -1535,19 +1535,19 @@ static inline void stateCheckID(void)
             executing_8047A7E8->state = 1;
             DCInvalidateRange(&staticData->bb2.bootFilePosition,
                               sizeof(DVDBB2));
-            lbl_8047A82C = fn_800A5FF4;
-            fn_800A5FF4(executing_8047A7E8);
+            lbl_8047A82C = stateCheckID2a;
+            stateCheckID2a(executing_8047A7E8);
         } else {
-            DVDLowStopMotor(fn_800A60D4);
+            DVDLowStopMotor(cbForStateCheckID1);
         }
         break;
     default:
         if (memcmp(&staticData->currentDiskID, IDShouldBe_8047A7EC,
                    sizeof(DVDDiskID)) != 0) {
-            DVDLowStopMotor(fn_800A60D4);
+            DVDLowStopMotor(cbForStateCheckID1);
         } else {
-            lbl_8047A82C = fn_800A5FC0;
-            fn_800A5FC0(executing_8047A7E8);
+            lbl_8047A82C = stateCheckID3;
+            stateCheckID3(executing_8047A7E8);
         }
         break;
     }
@@ -1559,17 +1559,17 @@ void stateCheckID_800B5D94(void)
 }
 
 /* 0x800A5FC0 | size: 0x34 */
-void fn_800A5FC0(DVDCommandBlock* block)
+void stateCheckID3(DVDCommandBlock* block)
 {
     DVDLowAudioBufferConfig(((DVDDiskID*)IDShouldBe_8047A7EC)->streaming, 10,
-                            fn_800A62CC);
+                            cbForStateCheckID3);
 }
 
 /* 0x800A5FF4 | size: 0x34 */
-void fn_800A5FF4(DVDCommandBlock* block)
+void stateCheckID2a(DVDCommandBlock* block)
 {
     DVDLowAudioBufferConfig(((DVDDiskID*)IDShouldBe_8047A7EC)->streaming, 10,
-                            fn_800A6028);
+                            cbForStateCheckID2a);
 }
 
 /*
@@ -1580,7 +1580,7 @@ void fn_800A5FF4(DVDCommandBlock* block)
  */
 
 /* 0x800A6028 | size: 0x74 */
-void fn_800A6028(u32 intType)
+void cbForStateCheckID2a(u32 intType)
 {
     if (intType == 0x10) {
         executing_8047A7E8->state = -1;
@@ -1611,7 +1611,7 @@ void stateCheckID2(DVDCommandBlock* block)
 #endif
 
 /*
- * fn_800A60D4 - 0x800A60D4 | size: 0x114
+ * cbForStateCheckID1 - 0x800A60D4 | size: 0x114
  * Validate the first disk-ID read after a cover close.
  */
 #if !defined(DVD_BANK_EXACT_ACTIVE) || \
@@ -1633,16 +1633,16 @@ static inline void dvdStateReadingFST(void)
     }
     DVDLowRead((void*)bootInfo_8047A7F0[0x38 / sizeof(u32)],
                (BB2_803FC360.bb2.FSTLength + 0x1F) & ~0x1F,
-               BB2_803FC360.bb2.FSTPosition, fn_800A5784);
+               BB2_803FC360.bb2.FSTPosition, cbForStateReadingFST);
 }
 #else
 #define dvdStateReadingFST stateReadingFST
 #endif
 
-void fn_800A60D4(u32 intType)
+void cbForStateCheckID1(u32 intType)
 {
     extern void DVDReset(void);
-    extern void fn_800A6578(void);
+    extern void stateMotorStopped(void);
 
     if (intType == 0x10) {
         executing_8047A7E8->state = -1;
@@ -1662,7 +1662,7 @@ void fn_800A60D4(u32 intType)
     lbl_8047A81C = 0;
     if (dvdCheckCancel(1) == FALSE) {
         executing_8047A7E8->state = 6;
-        fn_800A6578();
+        stateMotorStopped();
     }
 }
 

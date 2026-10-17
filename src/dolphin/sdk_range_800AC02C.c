@@ -378,7 +378,7 @@ void __CARDUnlockedHandler(s32 chan, OSContext* context);
 extern void OSRegisterVersion(const char* version);
 u16 __CARDGetFontEncode(void);
 s32 __CARDPutControlBlock(CARDControl* card, s32 result);
-s32 fn_800AFBDC(s32 chan, void* buf, void* callback);
+s32 __CARDStart(s32 chan, void* buf, void* callback);
 s32 fn_800AFFE0(s32 chan, u32 addr, void* callback);
 extern s32 __CARDGetControlBlock(s32 chan, CARDControl** pcard);
 extern void* __OSLockSram(void);
@@ -910,8 +910,8 @@ void UpdateIconOffsets(CARDDirEntry* entry, CARDStat* stat);
 
 extern GXData* const gx;
 
-void fn_800B7594(u8 overflow, u8 underflow);
-void fn_800B75D0(u8 clearOverflow, u8 clearUnderflow);
+void __GXWriteFifoIntEnable(u8 overflow, u8 underflow);
+void __GXWriteFifoIntReset(u8 clearOverflow, u8 clearUnderflow);
 
 void GXInitFifoPtrs(GXFifoObj* fifo, void* readPtr, void* writePtr);
 

@@ -20,9 +20,9 @@ extern void GXSetChanCtrl(u32 chan, u8 enable, u8 ambSrc, u8 matSrc, u8 lightMas
 extern void fn_800B884C(u8 num);
 extern void fn_800BC8C8(u8 num);
 extern void fn_800BBC0C(u8 num);
-extern void fn_800BBAF8(u32 stage, u8 coord, u8 map);
-extern void fn_800BB97C(u32 stage, u8 scaleS, u8 scaleT);
-extern void fn_800BB81C(u32 id, f32 (*mtx)[3], u8 scale);
+extern void GXSetIndTexOrder(u32 stage, u8 coord, u8 map);
+extern void GXSetIndTexCoordScale(u32 stage, u8 scaleS, u8 scaleT);
+extern void GXSetIndTexMtx(u32 id, f32 (*mtx)[3], u8 scale);
 extern void GXSetTevOrder(u32 stage, u8 coord, u8 map, u8 color);
 extern void GXSetTevColorOp(u32 stage, u8 op, u8 bias, u8 scale, u8 clamp, u8 out);
 extern void GXSetTevAlphaOp(u32 stage, u8 op, u8 bias, u8 scale, u8 clamp, u8 out);
@@ -30,7 +30,7 @@ extern void GXSetTevColorIn(u32 stage, u8 a, u8 b, u8 c, u8 d);
 extern void GXSetTevAlphaIn(u32 stage, u8 a, u8 b, u8 c, u8 d);
 extern void GXSetTevKColorSel(u32 stage, u32 sel);
 extern void GXSetTevKAlphaSel(u32 stage, u32 sel);
-extern void fn_800BB780(u32 stage, u8 indStage, u8 format, u8 biasSel, u8 mtxSel, u8 wrapS, u8 wrapT, u8 addPrev, u8 utcLod, u8 alphaSel);
+extern void GXSetTevIndirect(u32 stage, u8 indStage, u8 format, u8 biasSel, u8 mtxSel, u8 wrapS, u8 wrapT, u8 addPrev, u8 utcLod, u8 alphaSel);
 extern void fn_800BBC7C(u32 stage, u8 indStage, u8 signedOffsets, u8 replaceMode, u8 mtxSel);
 extern void fn_800BBCE0(u32 stage, u8 indStage, u16 sizeS, u16 sizeT, u16 spacingS, u16 spacingT, u8 format, u8 mtxSel, u8 biasSel, u8 alphaSel);
 extern void fn_800BBE8C(u32 stage, u8 indStage, u8 mtxSel);
@@ -91,11 +91,11 @@ void fn_800D923C(void) {
             GSIndMtx* indMtx = lbl_8047AA80->tev.indMtx;
 
             for (i = 0; i < numInd; indOrder++, i++) {
-                fn_800BBAF8(i, indOrder->coord, indOrder->map);
-                fn_800BB97C(i, indOrder->scaleS, indOrder->scaleT);
+                GXSetIndTexOrder(i, indOrder->coord, indOrder->map);
+                GXSetIndTexCoordScale(i, indOrder->scaleS, indOrder->scaleT);
             }
             for (i = 0; i < 3; i++, indMtx++) {
-                fn_800BB81C(i + 1, indMtx->mtx, indMtx->scale);
+                GXSetIndTexMtx(i + 1, indMtx->mtx, indMtx->scale);
             }
         }
 
@@ -110,7 +110,7 @@ void fn_800D923C(void) {
             if (*indEnable != 0 && numInd != 0) {
                 switch (ind->type) {
                 case 0:
-                    fn_800BB780(i, ind->indStage, ind->format, ind->biasSel, ind->mtxSel,
+                    GXSetTevIndirect(i, ind->indStage, ind->format, ind->biasSel, ind->mtxSel,
                                 ind->wrapS, ind->wrapT, ind->addPrev, ind->utcLod, ind->alphaSel);
                     break;
                 case 1:

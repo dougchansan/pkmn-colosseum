@@ -136,7 +136,7 @@ void fn_800B7874(s32 attr, s32 type)
     gx->dirtyState |= 8;
 }
 
-void fn_800B7BC4(void) {
+void __GXSetVCD(void) {
     GX_FIFO_U8 = 0x8;
     GX_FIFO_U8 = 0x50;
     GX_FIFO_U32 = gx->vcdLo;

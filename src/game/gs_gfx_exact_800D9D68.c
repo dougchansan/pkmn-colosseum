@@ -12,7 +12,7 @@ extern void fn_800BD7A0(u32, u32, u32, u32);
 extern void fn_800D2150(u32, u16, u16, u16, u16);
 extern void HSD_FogSet(u32);
 extern u32 lbl_8047AA8C;
-extern void fn_800B953C(u32);
+extern void GXSetCoPlanar(u32);
 extern void GXSetClipMode(u32);
 extern void fn_800B94F0(u32);
 extern u8 lbl_8031453C[];
@@ -83,7 +83,7 @@ void fn_800D9F40(s32 val) {
     else {
         if (val == 1) { *(u8*)(state + 0x42d) = 1; }
         else if (val == 0) { *(u8*)(state + 0x42d) = 0; }
-        fn_800B953C(*(u8*)(lbl_8047AA80 + 0x42d));
+        GXSetCoPlanar(*(u8*)(lbl_8047AA80 + 0x42d));
     }
 }
 

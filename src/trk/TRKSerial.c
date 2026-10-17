@@ -108,8 +108,8 @@ void TRKProcessInput(s32 bufIdx) {
  * 0x800BF33C | size: 0x88
  */
 s32 usr_puts_serial(u8* str) {
-    extern u32 fn_800C04F4(void);
-    extern void fn_800C04E8(u32 state);
+    extern u32 GetTRKConnected(void);
+    extern void SetTRKConnected(u32 state);
     extern void OSReport(const char* fmt);
     u8 buf[2];
     u8 zero;
@@ -120,12 +120,12 @@ s32 usr_puts_serial(u8* str) {
     zero = 0;
     result = 0;
     while ((result == 0) && ((ch = (s8)*str++) != 0)) {
-        state = fn_800C04F4();
+        state = GetTRKConnected();
         buf[0] = ch;
         buf[1] = zero;
-        fn_800C04E8(0);
+        SetTRKConnected(0);
         OSReport((const char*)buf);
-        fn_800C04E8(state);
+        SetTRKConnected(state);
         result = 0;
     }
     return result;

@@ -152,7 +152,7 @@ void fn_800B96F8(u16 width, u16 height, s32 format, u8 mipmap)
     GX_SET_REG_FIELD(gx->cpTex, 3, 4, peFormat);
 }
 
-void fn_800B984C(u32 value)
+void GXSetDispCopyFrame2Field(u32 value)
 {
     GX_SET_REG_FIELD(gx->cpDisp, 2, 12, value);
     GX_SET_REG_FIELD(gx->cpTex, 2, 12, 0);

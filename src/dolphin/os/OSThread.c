@@ -113,11 +113,11 @@ static OSThread* SelectThread(BOOL yield);
         RunQueueHint_8047A764 = TRUE;                                          \
     } while (0)
 
-s32 fn_800A128C(OSThread* from, OSThread* to)
+s32 DefaultSwitchThreadCallback(OSThread* from, OSThread* to)
 {
 }
 
-static OSSwitchThreadCallback SwitchThreadCallback = fn_800A128C;
+static OSSwitchThreadCallback SwitchThreadCallback = DefaultSwitchThreadCallback;
 
 void __OSThreadInit(void)
 {

@@ -1,27 +1,27 @@
 #include "dolphin/types.h"
 
-void fn_800CE79C(void* callback, void* pendingPtr) {
+void EXI2_Init(void* callback, void* pendingPtr) {
 }
 
-void fn_800CE7A0(void) {
+void EXI2_EnableInterrupts(void) {
 }
 
-s32 fn_800CE7A4(void) {
+s32 EXI2_Poll(void) {
     return 0;
 }
 
-s32 fn_800CE7AC(void* buf, s32 size) {
+s32 EXI2_ReadN(void* buf, s32 size) {
     return 0;
 }
 
-s32 fn_800CE7B4(void* buf, s32 size) {
+s32 EXI2_WriteN(void* buf, s32 size) {
     return 0;
 }
 
-void fn_800CE7BC(void) {
+void EXI2_Reserve(void) {
 }
 
-void fn_800CE7C0(void) {
+void EXI2_Unreserve(void) {
 }
 
 s32 AMC_IsStub(void) {

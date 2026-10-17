@@ -131,7 +131,7 @@ void UnlockedCallback(s32 chan, s32 result) {
     }
 }
 
-s32 fn_800AFBDC(s32 chan, void* txCallback, void* exiCallback)
+s32 __CARDStart(s32 chan, void* txCallback, void* exiCallback)
 {
     BOOL enabled;
     CARDControl* card;
@@ -183,7 +183,7 @@ s32 __CARDReadSegment(s32 chan, CARDCallback callback)
     card->field_A4 = 0;
     card->field_A8 = 0;
 
-    result = fn_800AFBDC(chan, callback, NULL);
+    result = __CARDStart(chan, callback, NULL);
     if (result == -1) {
         result = 0;
     } else if (result >= 0) {
@@ -204,7 +204,7 @@ s32 __CARDReadSegment(s32 chan, CARDCallback callback)
     return result;
 }
 
-s32 fn_800AFEC4(s32 chan, CARDCallback callback) {
+s32 __CARDWritePage(s32 chan, CARDCallback callback) {
     CARDControl* card;
     s32 result;
 
@@ -218,7 +218,7 @@ s32 fn_800AFEC4(s32 chan, CARDCallback callback) {
     card->field_A4 = 1;
     card->field_A8 = 3;
 
-    result = fn_800AFBDC(chan, NULL, callback);
+    result = __CARDStart(chan, NULL, callback);
     if (result == -1) {
         result = 0;
     } else if (result >= 0) {
@@ -246,7 +246,7 @@ s32 fn_800AFFE0(s32 chan, u32 addr, void* callback) {
     card->cmdLen = 3;
     card->field_A4 = -1;
     card->field_A8 = 3;
-    result = fn_800AFBDC(chan, NULL, callback);
+    result = __CARDStart(chan, NULL, callback);
     if (result == -1) {
         result = 0;
     } else if (result >= 0) {

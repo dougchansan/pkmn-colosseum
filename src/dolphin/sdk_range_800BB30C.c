@@ -157,7 +157,7 @@ extern GXData_800BB30C* const gx;
 extern volatile u16* __cpReg;
 extern u32 lbl_80313608[];
 
-extern void fn_800BB780(u32 dstCoord, u32 func, u32 srcParam, u32 mtx,
+extern void GXSetTevIndirect(u32 dstCoord, u32 func, u32 srcParam, u32 mtx,
                         u32 normalize, u32 postMtx, u32 normalizeColor,
                         u8 bias, u8 arg8, u32 arg9);
 extern void fn_800BD640(f32 left, f32 top, f32 width, f32 height, f32 nearz,
@@ -204,7 +204,7 @@ volatile PPCWGPipe_800BB30C GXWGFifo_800BB30C : 0xCC008000;
     GX_FIFO_U32 = (reg)
 
 #if defined(SDK_800BB30C_PREFIX_ACTIVE)
-void fn_800BB30C(u32 tmap, u32 tcoord) {
+void __SetSURegs(u32 tmap, u32 tcoord) {
     u32 w;
     u32 h;
     u8 s_bias;
@@ -224,7 +224,7 @@ void fn_800BB30C(u32 tmap, u32 tcoord) {
 
 
 void __GXSetSUTexRegs(void) {
-    extern void fn_800BB30C(u32 texMap, u32 texCoord);
+    extern void __SetSURegs(u32 texMap, u32 texCoord);
     u32 nStages;
     u32 nIndStages;
     u32 i;
@@ -256,7 +256,7 @@ void __GXSetSUTexRegs(void) {
                 break;
             }
             if (!(gx->tcsManEnab & (1 << texCoord))) {
-                fn_800BB30C(texMap, texCoord);
+                __SetSURegs(texMap, texCoord);
             }
         }
 
@@ -272,7 +272,7 @@ void __GXSetSUTexRegs(void) {
             if (texMap != 0xFF &&
                 !(gx->tcsManEnab & (1 << texCoord)) &&
                 (gx->tevTcEnab & (1 << i))) {
-                fn_800BB30C(texMap, texCoord);
+                __SetSURegs(texMap, texCoord);
             }
         }
     }
@@ -322,7 +322,7 @@ void __GXSetTmemConfig(u32 config) {
 
 
 #if !defined(SDK_800BB30C_PREFIX_ONLY)
-void fn_800BB780(u32 dstCoord, u32 func, u32 srcParam, u32 mtx,
+void GXSetTevIndirect(u32 dstCoord, u32 func, u32 srcParam, u32 mtx,
                  u32 normalize, u32 postMtx, u32 normalizeColor,
                  u8 bias, u8 arg8, u32 arg9) {
     GXData_800BB30C* p = gx;
@@ -353,24 +353,24 @@ void fn_800BBC0C(u32 nChans) {
 }
 
 void fn_800BBC34(u32 dstCoord) {
-    fn_800BB780(dstCoord, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    GXSetTevIndirect(dstCoord, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 }
 
 void fn_800BBC7C(u32 dstCoord, u32 func, u8 normalize, u8 color, u32 postMtx) {
     u32 colorSel = color != 0 ? 6 : 0;
 
-    fn_800BB780(dstCoord, func, 0, normalize != 0 ? 7 : 0, postMtx, colorSel, colorSel, 0, 0, 0);
+    GXSetTevIndirect(dstCoord, func, 0, normalize != 0 ? 7 : 0, postMtx, colorSel, colorSel, 0, 0, 0);
 }
 
 void fn_800BBF98(u32 dstCoord, u32 func, u32 normalize) {
-    fn_800BB780(dstCoord, func, 0, 7, normalize, 0, 0, 0, 0, 0);
+    GXSetTevIndirect(dstCoord, func, 0, 7, normalize, 0, 0, 0, 0, 0);
 }
 
 void fn_800BBFDC(u32 dstCoord) {
-    fn_800BB780(dstCoord, 0, 0, 0, 0, 6, 6, 1, 0, 0);
+    GXSetTevIndirect(dstCoord, 0, 0, 0, 0, 6, 6, 1, 0, 0);
 }
 
-void fn_800BC024(void) {
+void __GXUpdateBPMask(void) {
     u32 nIndStages;
     u32 i;
     u32 texMap;
@@ -750,7 +750,7 @@ void fn_800BCEBC(u32 value) {
     p->field_002 = 0;
 }
 
-void fn_800BD0F8(f32 nearz, f32 sideX) {}
+void __GXSetRange(f32 nearz, f32 sideX) {}
 
 void GXCallDisplayList(void* list, u32 nbytes) {
     if (gx->dirtyState != 0) {
@@ -982,7 +982,7 @@ void fn_800BD640(f32 left, f32 top, f32 wd, f32 ht, f32 nearz, f32 farz,
     gx->projection[5] = farz;
 
     if (gx->fgRange != 0) {
-        fn_800BD0F8(nearz, gx->fgSideX);
+        __GXSetRange(nearz, gx->fgSideX);
     }
 
     GX_FIFO_U8 = 0x10;
@@ -1468,7 +1468,7 @@ void GXSetClipMode(u32 clipMode) {
 #endif /* !SDK_800BE348_ONLY && !SDK_800BCFDC_ONLY */
 
 #if !defined(SDK_800BE348_ONLY) && !defined(SDK_800BD58C_ONLY)
-void fn_800BD044(u8 oddMask, u8 evenMask) {
+void GXSetFieldMask(u8 oddMask, u8 evenMask) {
     u32 reg = 0;
 
     reg = (reg & ~1U) | evenMask;
