@@ -40,21 +40,21 @@ void VIFlush(void);
 void VISetNextFrameBuffer(void* fb);
 void VISetBlack(BOOL black);
 
-void fn_800B8E74(void);                         /* GXPixModeSync */
-void fn_800B959C(u16 left, u16 top, u16 wd, u16 ht); /* GXSetDispCopySrc */
-void fn_800B96BC(u16 wd, u16 ht);               /* GXSetDispCopyDst */
-void fn_800B9874(u32 clamp);                    /* GXSetCopyClamp */
+void GXPixModeSync(void);                         /* GXPixModeSync */
+void GXSetDispCopySrc(u16 left, u16 top, u16 wd, u16 ht); /* GXSetDispCopySrc */
+void GXSetDispCopyDst(u16 wd, u16 ht);               /* GXSetDispCopyDst */
+void GXSetCopyClamp(u32 clamp);                    /* GXSetCopyClamp */
 f32 GXGetYScaleFactor(u16 efbHeight, u16 xfbHeight);
-u32 fn_800B9B14(f32 vscale);                    /* GXSetDispCopyYScale */
+u32 GXSetDispCopyYScale(f32 vscale);                    /* GXSetDispCopyYScale */
 void GXSetCopyClear(GXColor clear_clr, u32 clear_z); /* GXSetCopyClear */
-void fn_800B9C44(GXBool aa, u8 sample_pattern[12][2], GXBool vf,
+void GXSetCopyFilter(GXBool aa, u8 sample_pattern[12][2], GXBool vf,
                  u8 vfilter[7]);                /* GXSetCopyFilter */
-void fn_800B9E6C(s32 gamma);                    /* GXSetDispCopyGamma */
-void fn_800B9E88(void* dest, GXBool clear);     /* GXCopyDisp */
+void GXSetDispCopyGamma(s32 gamma);                    /* GXSetDispCopyGamma */
+void GXCopyDisp(void* dest, GXBool clear);     /* GXCopyDisp */
 
-void fn_801B273C(u8 enable);                    /* HSD_StateSetAlphaUpdate */
-void fn_801B278C(u8 enable);                    /* HSD_StateSetColorUpdate */
-void fn_801B27DC(u8 enable, s32 func, u8 update); /* HSD_StateSetZMode */
+void HSD_StateSetAlphaUpdate(u8 enable);                    /* HSD_StateSetAlphaUpdate */
+void HSD_StateSetColorUpdate(u8 enable);                    /* HSD_StateSetColorUpdate */
+void HSD_StateSetZMode(u8 enable, s32 func, u8 update); /* HSD_StateSetZMode */
 
 #define _p ((HSD_VIInfo*) &lbl_80466BC0)
 
@@ -71,7 +71,7 @@ static int HSD_VISearchXFBByStatus(HSD_VIXFBDrawDispStatus status)
 }
 
 /* HAL: HSD_VISetUserPostRetraceCallback */
-HSD_VIRetraceCallback fn_801C021C(HSD_VIRetraceCallback cb)
+HSD_VIRetraceCallback HSD_VISetUserPostRetraceCallback(HSD_VIRetraceCallback cb)
 {
     BOOL intr;
     HSD_VIRetraceCallback old = _p->post_cb;
@@ -84,7 +84,7 @@ HSD_VIRetraceCallback fn_801C021C(HSD_VIRetraceCallback cb)
 }
 
 /* HAL: HSD_VISetUserGXDrawDoneCallback */
-HSD_VIGXDrawDoneCallback fn_801C01C8(HSD_VIGXDrawDoneCallback cb)
+HSD_VIGXDrawDoneCallback HSD_VISetUserGXDrawDoneCallback(HSD_VIGXDrawDoneCallback cb)
 {
     BOOL intr;
     HSD_VIGXDrawDoneCallback old = _p->drawdone.cb;
@@ -97,7 +97,7 @@ HSD_VIGXDrawDoneCallback fn_801C01C8(HSD_VIGXDrawDoneCallback cb)
 }
 
 /* HAL: HSD_VIPreRetraceCB */
-void fn_801BFF18(u32 retraceCount)
+void HSD_VIPreRetraceCB(u32 retraceCount)
 {
     int idx;
     int flush = 0;
@@ -147,7 +147,7 @@ void fn_801BFF18(u32 retraceCount)
 }
 
 /* HAL: HSD_VIPostRetraceCB */
-void fn_801BFD10(u32 retraceCount)
+void HSD_VIPostRetraceCB(u32 retraceCount)
 {
     int idx;
     int next;
@@ -172,7 +172,7 @@ void fn_801BFD10(u32 retraceCount)
 }
 
 /* HAL: HSD_VIGXDrawDoneCB */
-void fn_801BFCB0(void)
+void HSD_VIGXDrawDoneCB(void)
 {
     _p->drawdone.waiting = 0;
 
@@ -182,7 +182,7 @@ void fn_801BFCB0(void)
 }
 
 /* HAL: HSD_VIGetDrawDoneWaitingFlag */
-int fn_801BFCA0(void)
+int HSD_VIGetDrawDoneWaitingFlag(void)
 {
     return _p->drawdone.waiting;
 }
@@ -191,9 +191,9 @@ static void HSD_VICopyEFB2XFBHiResoAA(GXRenderModeObj* rmode)
 {
     int n_xfb_lines;
 
-    fn_800B959C(0, 0, rmode->fbWidth, rmode->efbHeight - HSD_ANTIALIAS_OVERLAP);
-    n_xfb_lines = fn_800B9B14(lbl_8047DF38);
-    fn_800B96BC(rmode->fbWidth, n_xfb_lines);
+    GXSetDispCopySrc(0, 0, rmode->fbWidth, rmode->efbHeight - HSD_ANTIALIAS_OVERLAP);
+    n_xfb_lines = GXSetDispCopyYScale(lbl_8047DF38);
+    GXSetDispCopyDst(rmode->fbWidth, n_xfb_lines);
 }
 
 /* HAL: HSD_VICopyEFB2XFBPtr */
@@ -204,23 +204,23 @@ void HSD_VICopyEFB2XFB(HSD_VIStatus* vi, void* buffer, HSD_RenderPass rpass)
     u16 lines;
     u32 offset;
 
-    fn_800B9C44(rmode->aa, rmode->sample_pattern, vi->vf, rmode->vfilter);
-    fn_800B9E6C(vi->gamma);
+    GXSetCopyFilter(rmode->aa, rmode->sample_pattern, vi->vf, rmode->vfilter);
+    GXSetDispCopyGamma(vi->gamma);
 
-    fn_801B278C(vi->update_clr);
-    fn_801B273C(vi->update_alpha);
-    fn_801B27DC(vi->update_z, GX_LEQUAL, GX_TRUE);
+    HSD_StateSetColorUpdate(vi->update_clr);
+    HSD_StateSetAlphaUpdate(vi->update_alpha);
+    HSD_StateSetZMode(vi->update_z, GX_LEQUAL, GX_TRUE);
 
     GXSetCopyClear(vi->clear_clr, vi->clear_z);
 
     switch (rpass) {
     case HSD_RP_SCREEN:
-        fn_800B9874(GX_CLAMP_TOP | GX_CLAMP_BOTTOM);
-        fn_800B959C(0, 0, rmode->fbWidth, rmode->efbHeight);
-        n_xfb_lines = fn_800B9B14(
+        GXSetCopyClamp(GX_CLAMP_TOP | GX_CLAMP_BOTTOM);
+        GXSetDispCopySrc(0, 0, rmode->fbWidth, rmode->efbHeight);
+        n_xfb_lines = GXSetDispCopyYScale(
             GXGetYScaleFactor(rmode->efbHeight, rmode->xfbHeight));
-        fn_800B96BC(rmode->fbWidth, n_xfb_lines);
-        fn_800B9E88(buffer, GX_TRUE);
+        GXSetDispCopyDst(rmode->fbWidth, n_xfb_lines);
+        GXCopyDisp(buffer, GX_TRUE);
         {
             u32 rest = rmode->xfbHeight - n_xfb_lines;
 
@@ -242,29 +242,29 @@ void HSD_VICopyEFB2XFB(HSD_VIStatus* vi, void* buffer, HSD_RenderPass rpass)
 
     case HSD_RP_TOPHALF:
         HSD_VICopyEFB2XFBHiResoAA(rmode);
-        fn_800B9874(GX_CLAMP_TOP);
+        GXSetCopyClamp(GX_CLAMP_TOP);
         lines = rmode->efbHeight - HSD_ANTIALIAS_OVERLAP;
-        fn_800B959C(0, 0, rmode->fbWidth, lines);
-        fn_800B9E88(buffer, GX_TRUE);
-        fn_800B8E74();
+        GXSetDispCopySrc(0, 0, rmode->fbWidth, lines);
+        GXCopyDisp(buffer, GX_TRUE);
+        GXPixModeSync();
         return;
 
     case HSD_RP_BOTTOMHALF:
         HSD_VICopyEFB2XFBHiResoAA(rmode);
-        fn_800B9874(GX_CLAMP_BOTTOM);
+        GXSetCopyClamp(GX_CLAMP_BOTTOM);
         lines = rmode->efbHeight - HSD_ANTIALIAS_OVERLAP;
-        fn_800B959C(0, HSD_ANTIALIAS_OVERLAP, rmode->fbWidth, lines);
+        GXSetDispCopySrc(0, HSD_ANTIALIAS_OVERLAP, rmode->fbWidth, lines);
         offset = (VIPadFrameBufferWidth(rmode->fbWidth) * lines *
                   (u32) VI_DISPLAY_PIX_SZ);
-        fn_800B9E88((void*) ((u32) buffer + offset), GX_TRUE);
-        fn_800B959C(0, 0, rmode->fbWidth, HSD_ANTIALIAS_OVERLAP);
-        fn_800B9874(GX_CLAMP_TOP | GX_CLAMP_BOTTOM);
-        fn_800B9E88((void*) lbl_804657C0, GX_TRUE);
+        GXCopyDisp((void*) ((u32) buffer + offset), GX_TRUE);
+        GXSetDispCopySrc(0, 0, rmode->fbWidth, HSD_ANTIALIAS_OVERLAP);
+        GXSetCopyClamp(GX_CLAMP_TOP | GX_CLAMP_BOTTOM);
+        GXCopyDisp((void*) lbl_804657C0, GX_TRUE);
         break;
 
     default:
         HSD_Panic(lbl_8047DF30, 537, lbl_8027575C);
     }
 
-    fn_800B8E74();
+    GXPixModeSync();
 }

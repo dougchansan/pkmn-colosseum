@@ -110,59 +110,69 @@ typedef enum CommonRelIndex {
 /* ===================================================================
  * Pokemon Stats Structure (0x11C bytes)
  *
- * Located at common_rel offset 0x12336C.
+ * Module 125 .data 0x121A04 (src/rel/common_rel/pokemon_data.c). Field
+ * layout checked against the retail table (entry 1: catch rate 45,
+ * Grass/Poison, Overgrow, base stats 45/49/49/65/65/45, evolves at 16).
  * =================================================================== */
+
+typedef struct PokemonStatsEvolution {
+    /* 0x0 */ u8   method;
+    /* 0x1 */ u8   padding_1;
+    /* 0x2 */ u16  condition;
+    /* 0x4 */ u16  species;
+} PokemonStatsEvolution; /* size: 0x6 */
+
+typedef struct PokemonStatsLevelUpMove {
+    /* 0x0 */ u8   level;
+    /* 0x1 */ u8   padding_1;
+    /* 0x2 */ u16  move;
+} PokemonStatsLevelUpMove; /* size: 0x4 */
+
+typedef struct PokemonStatsFace {
+    /* 0x0 */ u8   unk0;
+    /* 0x1 */ u8   unk1;
+    /* 0x2 */ u16  species;
+    /* 0x4 */ u32  resourceId;
+} PokemonStatsFace; /* size: 0x8 */
 
 typedef struct PokemonStats {
     /* 0x00 */ u8   levelUpRate;
     /* 0x01 */ u8   catchRate;
     /* 0x02 */ u8   genderRatio;
-    /* 0x03 */ u8   padding_03[4];
-    /* 0x07 */ u8   baseExpReward;
-    /* 0x08 */ u8   padding_08;
-    /* 0x09 */ u8   baseHappiness;
-    /* 0x0A */ u8   heightFeet;
-    /* 0x0B */ u8   heightInches;
-    /* 0x0C */ u16  weightLbs10;      /* weight in lbs * 10 */
-    /* 0x0E */ u16  cryID;
-    /* 0x10 */ u8   padding_10[7];
-    /* 0x17 */ u8   eggCycles;
-    /* 0x18 */ u8   padding_18[2];
-    /* 0x1A */ u16  nameStringID;
-    /* 0x1C */ u8   padding_1C[2];
-    /* 0x1E */ u16  speciesNameID;
-    /* 0x20 */ u8   padding_20[0x0E];
-    /* 0x2E */ u16  modelID;
+    /* 0x03 */ u8   unk3;
+    /* 0x04 */ u8   unk4;
+    /* 0x05 */ u8   unk5;
+    /* 0x06 */ u16  baseExpReward;
+    /* 0x08 */ u16  baseHappiness;
+    /* 0x0A */ u16  unkA;
+    /* 0x0C */ u16  unkC;
+    /* 0x0E */ u16  unkE;
+    /* 0x10 */ u16  unk10;
+    /* 0x12 */ u16  unk12;
+    /* 0x14 */ u16  unk14;
+    /* 0x16 */ u16  eggCycles;
+    /* 0x18 */ u32  nameStringID;
+    /* 0x1C */ u32  unk1C;
+    /* 0x20 */ u32  unk20;
+    /* 0x24 */ u32  unk24;
+    /* 0x28 */ u32  unk28;
+    /* 0x2C */ u32  species;
     /* 0x30 */ u8   type1;
     /* 0x31 */ u8   type2;
     /* 0x32 */ u8   ability1;
     /* 0x33 */ u8   ability2;
-    /* 0x34 */ u8   tmCompatibility[0x3A]; /* TM/HM learnset bitfield */
+    /* 0x34 */ u8   tmCompatibility[0x3A]; /* 50 TMs + 8 HMs, one byte each */
     /* 0x6E */ u8   eggGroup1;
     /* 0x6F */ u8   eggGroup2;
-    /* 0x70 */ u8   wildItem1;
-    /* 0x71 */ u8   padding_71;
+    /* 0x70 */ u16  wildItem1;
     /* 0x72 */ u16  wildItem2;
-    /* 0x74 */ u8   padding_74[0x11];
-    /* 0x85 */ u8   baseHP;
-    /* 0x86 */ u8   padding_86;
-    /* 0x87 */ u8   baseAttack;
-    /* 0x88 */ u8   padding_88;
-    /* 0x89 */ u8   baseDefense;
-    /* 0x8A */ u8   padding_8A;
-    /* 0x8B */ u8   baseSpAttack;
-    /* 0x8C */ u8   padding_8C;
-    /* 0x8D */ u8   baseSpDefense;
-    /* 0x8E */ u8   padding_8E;
-    /* 0x8F */ u8   baseSpeed;
-    /* 0x90 */ u8   padding_90;
-    /* 0x91 */ u8   evYield[6];       /* EVs awarded: HP/Atk/Def/SpA/SpD/Spe */
-    /* 0x97 */ u8   padding_97[5];
-    /* 0x9C */ u8   evolution1[6];    /* Method(2) + Condition(2) + Species(2) */
-    /* 0xA2 */ u8   evolution2[6];    /* second evolution path */
-    /* 0xA8 */ u8   padding_A8[0x12];
-    /* 0xBA */ u8   levelUpMoves[80]; /* Up to 20 moves, 4 bytes each: Level(1)+pad(1)+MoveID(2) */
-    /* 0x10A*/ u8   padding_10A[0x12];
+    /* 0x74 */ u16  eggMoves[8];
+    /* 0x84 */ u16  baseStats[6];    /* HP/Atk/Def/SpA/SpD/Spe */
+    /* 0x90 */ u16  evYield[6];      /* HP/Atk/Def/SpA/SpD/Spe */
+    /* 0x9C */ PokemonStatsEvolution evolutions[5];
+    /* 0xBA */ PokemonStatsLevelUpMove levelUpMoves[20];
+    /* 0x10A*/ u16  unk10A;
+    /* 0x10C*/ PokemonStatsFace faces[2];
 } PokemonStats; /* size: 0x11C */
 
 /* ===================================================================
@@ -184,23 +194,23 @@ typedef struct CommonMoveData {
     /* 0x09 */ u8   snatchSteals;
     /* 0x0A */ u8   mirrorMoveCopies;
     /* 0x0B */ u8   kingsRockFlinch;
-    /* 0x0C */ u8   padding_0C[4];
+    /* 0x0C */ u8   unk0C[4];
     /* 0x10 */ u8   soundBased;
-    /* 0x11 */ u8   padding_11;
+    /* 0x11 */ u8   unk11;
     /* 0x12 */ u8   hmFlag;
     /* 0x13 */ u8   recoil;
-    /* 0x14 */ u8   padding_14[3];
+    /* 0x14 */ u8   unk14[3];
     /* 0x17 */ u8   basePower;
     /* 0x18 */ u8   padding_18[3];
     /* 0x1B */ u8   effect;
     /* 0x1C */ u16  effectID;
     /* 0x1E */ u8   padding_1E[4];
     /* 0x22 */ u16  nameStringID;
-    /* 0x24 */ u8   padding_24[0x0A];
+    /* 0x24 */ u8   unk24[0x0A];
     /* 0x2E */ u16  descriptionID;
     /* 0x30 */ u8   padding_30[2];
     /* 0x32 */ u16  animationID;
-    /* 0x34 */ u8   padding_34[4];
+    /* 0x34 */ u8   unk34[4];
 } CommonMoveData; /* size: 0x38 */
 
 /* ===================================================================
@@ -239,14 +249,14 @@ typedef struct CommonTrainerPokemon {
     /* 0x03 */ u8   shadowID;
     /* 0x04 */ u8   level;
     /* 0x05 */ u8   sendOutPriority;
-    /* 0x06 */ u8   padding_06[4];
+    /* 0x06 */ u8   unk06[4];
     /* 0x0A */ u16  species;
     /* 0x0C */ u16  pokeBall;
     /* 0x0E */ u8   padding_0E[2];
     /* 0x10 */ u16  itemFlag;
     /* 0x12 */ u16  heldItem;
     /* 0x14 */ u32  nicknameStringID;
-    /* 0x18 */ u8   padding_18[4];
+    /* 0x18 */ u8   unk18[4];
     /* 0x1C */ u8   ivHP;
     /* 0x1D */ u8   ivAtk;
     /* 0x1E */ u8   ivDef;
@@ -261,16 +271,16 @@ typedef struct CommonTrainerPokemon {
     /* 0x2C */ u16  evSpe;
     /* 0x2E */ u8   padding_2E[2];
     /* 0x30 */ u8   move1PPBonuses;
-    /* 0x31 */ u8   padding_31[5];
+    /* 0x31 */ u8   unk31[5];
     /* 0x36 */ u16  move1;
     /* 0x38 */ u8   move2PPBonuses;
-    /* 0x39 */ u8   padding_39[5];
+    /* 0x39 */ u8   unk39[5];
     /* 0x3E */ u16  move2;
     /* 0x40 */ u8   move3PPBonuses;
-    /* 0x41 */ u8   padding_41[5];
+    /* 0x41 */ u8   unk41[5];
     /* 0x46 */ u16  move3;
     /* 0x48 */ u8   move4PPBonuses;
-    /* 0x49 */ u8   padding_49[5];
+    /* 0x49 */ u8   unk49[5];
     /* 0x4E */ u16  move4;
 } CommonTrainerPokemon; /* size: 0x50 */
 
@@ -289,9 +299,9 @@ typedef struct CommonNatureData {
     /* 0x07 */ s8   spAttackMod;
     /* 0x08 */ s8   spDefenseMod;
     /* 0x09 */ s8   speedMod;
-    /* 0x0A */ u8   padding_0A[0x0C];
+    /* 0x0A */ u8   unk0A[0x0C];
     /* 0x16 */ u16  nameStringID;
-    /* 0x18 */ u8   padding_18[0x10];
+    /* 0x18 */ u8   unk18[0x10];
 } CommonNatureData; /* size: 0x28 */
 
 /* ===================================================================

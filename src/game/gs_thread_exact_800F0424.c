@@ -22,10 +22,10 @@
 #include "game/gs_thread.h"
 
 extern void GSlogWrite(const void* fmt, ...);
-extern void fn_800E209C(u16 handle);           /* GSmemFree */
+extern void GSmemFree(u16 handle);           /* GSmemFree */
 extern void* fn_800E24B0(u16 handle);          /* GSmemUnlock */
-extern void* fn_800E27B0(u16 handle);          /* GSmemGetPtr */
-extern u16 fn_800E2C04(u32 alignment, u32 size);
+extern void* GSmemLock(u16 handle);          /* GSmemGetPtr */
+extern u16 GSmemAlloc(u32 alignment, u32 size);
 extern u16 _toolentryAlloc__FUl(u32 size);
 extern void threadSaveGPRRegisters(void);
 extern void threadSaveFPRRegisters(void);
@@ -129,8 +129,8 @@ void GSthreadTerminateGroup(u32 priority) {
                 if ((GSThread*)lbl_8047AC08 == thr) {
                     lbl_8047AC08 = (u32)thr->next;
                 }
-                fn_800E209C(thr->stackHandle);
-                fn_800E209C(thr->ctxHandle);
+                GSmemFree(thr->stackHandle);
+                GSmemFree(thr->ctxHandle);
             }
         }
     }
@@ -148,7 +148,7 @@ void GSthreadTerminateGroup(u32 priority) {
  * Otherwise the thread is unlinked from the doubly-linked thread list,
  * the list head (lbl_8047AC08) is fixed up if it pointed at this thread,
  * and both the stack and context GSmem handles are released via
- * fn_800E209C (GSmemFree).
+ * GSmemFree (GSmemFree).
  *
  * Parameter kept as u32 (not GSThread*) to match the other GSthreadTerminate
  * extern declarations/call sites (fn_800F716C, fn_800F7274), which pass a
@@ -173,8 +173,8 @@ void GSthreadTerminate(u32 ctxArg) {
         if ((GSThread*)lbl_8047AC08 == thr) {
             lbl_8047AC08 = (u32)thr->next;
         }
-        fn_800E209C(thr->stackHandle);
-        fn_800E209C(thr->ctxHandle);
+        GSmemFree(thr->stackHandle);
+        GSmemFree(thr->ctxHandle);
     }
 }
 
@@ -208,8 +208,8 @@ void GSthreadSetArgs(void* threadPtr, s32 count, ...)
         return;
     }
 
-    stack = fn_800E27B0(thread->stackHandle);
-    context = fn_800E27B0(thread->ctxHandle);
+    stack = GSmemLock(thread->stackHandle);
+    context = GSmemLock(thread->ctxHandle);
     GS_THREAD_VA_START(args, count);
 
     /* The first eight arguments go in the saved r3-r10 slots... */
@@ -243,7 +243,7 @@ void GSthreadSetArgs(void* threadPtr, s32 count, ...)
  *  Address: 0x800F07A8, Size: 0x230
  *
  *  Creates a cooperative thread: claims a free slot, allocates its stack
- *  (fn_800E2C04, 32-byte aligned) and register context block
+ *  (GSmemAlloc, 32-byte aligned) and register context block
  *  (_toolentryAlloc__FUl; 0x88 bytes, or 0x188 with FPU state), seeds the
  *  context so the thread starts in fn_800F0F4C, and links it into the
  *  affinity-sorted thread list.
@@ -286,14 +286,14 @@ GSThread* GSthreadCreate(u32 affinity, u32 priority, u32 stackSize,
         return NULL;
     }
 
-    thread->stackHandle = fn_800E2C04(stackSize, 0x20);
+    thread->stackHandle = GSmemAlloc(stackSize, 0x20);
     if (thread->stackHandle == 0) {
         return NULL;
     }
 
     thread->ctxHandle = _toolentryAlloc__FUl(usesFPU ? 0x188 : 0x88);
     if (thread->ctxHandle == 0) {
-        fn_800E209C(thread->stackHandle);
+        GSmemFree(thread->stackHandle);
         return NULL;
     }
 
@@ -314,8 +314,8 @@ GSThread* GSthreadCreate(u32 affinity, u32 priority, u32 stackSize,
     /* Build the initial register context: the new thread starts in the
      * fn_800F0F4C trampoline with entryFunc in the saved LR slot and its
      * stack pointer 8 bytes below the top of its stack. */
-    ctx = fn_800E27B0(thread->ctxHandle);
-    stack = fn_800E27B0(thread->stackHandle);
+    ctx = GSmemLock(thread->ctxHandle);
+    stack = GSmemLock(thread->stackHandle);
 
     lbl_8047AC1C = (u32)ctx;
     threadSaveGPRRegisters();
@@ -380,7 +380,7 @@ s32 GSthread(u32 maxThreads) {
     if (handle == 0) {
         return 0;
     }
-    lbl_8047AC28 = fn_800E27B0(handle);
+    lbl_8047AC28 = GSmemLock(handle);
 
     for (i = 0; i < lbl_8047AC30; i++) {
         lbl_8047AC28[i].active = 0;
@@ -447,15 +447,15 @@ void fn_800F0A74(arg0, arg1)
         return;
     }
 
-    ctx = (GSThreadCtx *)fn_800E27B0(thread->ctxHandle);
-    stack = (u8 *)fn_800E27B0(thread->stackHandle);
+    ctx = (GSThreadCtx *)GSmemLock(thread->ctxHandle);
+    stack = (u8 *)GSmemLock(thread->stackHandle);
     scratchStack = stack;
 
     while (thread != NULL) {
         next = threadFindRunnable(thread, arg0, arg1);
         lbl_8047AC04 = (u32)next;
         if (next != NULL) {
-            nextStack = (u8 *)fn_800E27B0(next->stackHandle);
+            nextStack = (u8 *)GSmemLock(next->stackHandle);
         }
 
         lbl_8047AC00 = (u32)thread;
@@ -493,8 +493,8 @@ void fn_800F0A74(arg0, arg1)
                 if ((GSThread *)lbl_8047AC08 == thread) {
                     lbl_8047AC08 = (u32)thread->next;
                 }
-                fn_800E209C(thread->stackHandle);
-                fn_800E209C(thread->ctxHandle);
+                GSmemFree(thread->stackHandle);
+                GSmemFree(thread->ctxHandle);
             }
         } else {
             if (GSscratchIsPtr(scratchStack) != 0) {
@@ -513,7 +513,7 @@ void fn_800F0A74(arg0, arg1)
             if (next != NULL) {
                 scratchStack = nextStack;
                 stack = nextStack;
-                ctx = (GSThreadCtx *)fn_800E27B0(next->ctxHandle);
+                ctx = (GSThreadCtx *)GSmemLock(next->ctxHandle);
             }
         } else {
             if (GSscratchIsPtr(nextStack) != 0) {
@@ -542,16 +542,16 @@ void fn_800F0A74(arg0, arg1)
                         if ((GSThread *)lbl_8047AC08 == dead) {
                             lbl_8047AC08 = (u32)dead->next;
                         }
-                        fn_800E209C(dead->stackHandle);
-                        fn_800E209C(dead->ctxHandle);
+                        GSmemFree(dead->stackHandle);
+                        GSmemFree(dead->ctxHandle);
                     }
                 }
             }
             thread = threadFindRunnable(thread, arg0, arg1);
             lbl_8047AC04 = (u32)thread;
             if (thread != NULL) {
-                ctx = (GSThreadCtx *)fn_800E27B0(thread->ctxHandle);
-                stack = (u8 *)fn_800E27B0(thread->stackHandle);
+                ctx = (GSThreadCtx *)GSmemLock(thread->ctxHandle);
+                stack = (u8 *)GSmemLock(thread->stackHandle);
                 scratchStack = stack;
             }
         }
@@ -591,8 +591,8 @@ void fn_800F0F4C(u32 result) {
             if ((GSThread*)lbl_8047AC08 == thread) {
                 lbl_8047AC08 = (u32)thread->next;
             }
-            fn_800E209C(thread->stackHandle);
-            fn_800E209C(thread->ctxHandle);
+            GSmemFree(thread->stackHandle);
+            GSmemFree(thread->ctxHandle);
         }
     } else {
         thread->pad1 = 1;

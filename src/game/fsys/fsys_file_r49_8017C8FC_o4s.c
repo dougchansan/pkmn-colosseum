@@ -5,7 +5,7 @@
  * Picks the next archive entry to load and starts it: in load mode 3 the
  * entry whose name hash the slot requested, otherwise the first entry whose
  * runtime trailer is idle (state 0) or reloadable (state 4). Plain loads go
- * through fn_8017B6B8, cached reloads through fn_8017B5C0, and mode-2/7
+ * through fsysLoadEntry, cached reloads through fsysLoadEntryCompressed, and mode-2/7
  * scene reads through fsysStartSceneRead; with nothing started the slot
  * moves to status 2000.
  *
@@ -13,15 +13,15 @@
  * keeps its old -O4,s label). fsysStartSceneRead is expanded twice in
  * retail (the compressed and plain arms each have their own stack homes,
  * 0x20..0x34 and 0x8..0x1C); the `(s32)` state tests are the signed
- * compares fn_8017DAB8 also uses.
+ * compares fsysSlotCheckEntries also uses.
  */
 #include "dolphin/types.h"
 #include "game/fsys/fsys_entry.h"
 
 extern u32 fn_8017F794(u32 fileHandle, u32 groupID, u32 nameHash);
-extern void fn_8017B6B8(FSYSSlot* slot, FSYSFileEntry* entry, u32 index);
-extern void fn_8017B5C0(FSYSSlot* slot, FSYSFileEntry* entry, u32 index);
-extern void fn_80179FA4(FSYSSlot* slot, u32 offset, u32 length, void* callbackA,
+extern void fsysLoadEntry(FSYSSlot* slot, FSYSFileEntry* entry, u32 index);
+extern void fsysLoadEntryCompressed(FSYSSlot* slot, FSYSFileEntry* entry, u32 index);
+extern void fsysInitTOC(FSYSSlot* slot, u32 offset, u32 length, void* callbackA,
                         u32 callbackB, u32 callbackC, const char* externalPath,
                         FSYSFileEntry* entry);
 
@@ -53,13 +53,13 @@ static inline void fsysStartSceneRead(FSYSSlot* slot, FSYSFileEntry* entry, u32 
         sub->state = 3;
         slot->status = 0x12D;
         name = (char*)slot->archiveData + current->dataOffset;
-        fn_80179FA4(slot, current->padding04, entry->decompressedSize, NULL,
+        fsysInitTOC(slot, current->padding04, entry->decompressedSize, NULL,
                     (u32)slot, 0, name, current);
     }
 }
 
 /* Address: 0x8017C8FC | size: 0x580 */
-s32 fn_8017C8FC(FSYSSlot* slot)
+s32 fsysStatus100(FSYSSlot* slot)
 {
     u32 cached;
     u32 i;
@@ -80,26 +80,26 @@ s32 fn_8017C8FC(FSYSSlot* slot)
                 if ((s32)sub->state == 0) {
                     if (!requestCached) {
                         slot->currentSub = sub;
-                        fn_8017B6B8(slot, entry, i);
+                        fsysLoadEntry(slot, entry, i);
                     } else {
                         slot->currentSub = sub;
-                        fn_8017B6B8(slot, entry, i);
+                        fsysLoadEntry(slot, entry, i);
                     }
                 } else if ((s32)sub->state == 4 && slot->reloadFlag == 1) {
                     if (!requestCached) {
                         slot->currentSub = sub;
-                        fn_8017B6B8(slot, entry, i);
+                        fsysLoadEntry(slot, entry, i);
                     } else {
                         slot->currentSub = sub;
-                        fn_8017B5C0(slot, entry, i);
+                        fsysLoadEntryCompressed(slot, entry, i);
                     }
                 } else if ((s32)sub->state == 6 && slot->reloadFlag == 1) {
                     if (!requestCached) {
                         slot->currentSub = sub;
-                        fn_8017B6B8(slot, entry, i);
+                        fsysLoadEntry(slot, entry, i);
                     } else {
                         slot->currentSub = sub;
-                        fn_8017B5C0(slot, entry, i);
+                        fsysLoadEntryCompressed(slot, entry, i);
                     }
                 }
                 break;
@@ -129,7 +129,7 @@ s32 fn_8017C8FC(FSYSSlot* slot)
                     switch (slot->loadMode) {
                     case 0:
                         slot->currentSub = sub;
-                        fn_8017B6B8(slot, entry, i);
+                        fsysLoadEntry(slot, entry, i);
                         break;
                     case 2:
                     case 7:
@@ -154,10 +154,10 @@ s32 fn_8017C8FC(FSYSSlot* slot)
                 case 0:
                     if (!cached) {
                         slot->currentSub = sub;
-                        fn_8017B6B8(slot, entry, i);
+                        fsysLoadEntry(slot, entry, i);
                     } else {
                         slot->currentSub = sub;
-                        fn_8017B5C0(slot, entry, i);
+                        fsysLoadEntryCompressed(slot, entry, i);
                     }
                     break;
                 case 2:

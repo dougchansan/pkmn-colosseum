@@ -182,7 +182,7 @@ void __GetImageTileCount(GXTexFmt_800BA7C0 format, u16 width, u16 height,
             : 1;
 }
 
-void fn_800BA9E4(GXTexObj_800BA7C0* object, void* image, u16 width,
+void GXInitTexObj(GXTexObj_800BA7C0* object, void* image, u16 width,
                  u16 height, GXTexFmt_800BA7C0 format, u32 wrapS, u32 wrapT,
                  u8 mipmap) {
     u32 imageBase;
@@ -276,12 +276,12 @@ void GXInitTexObjCI(GXTexObj_800BA7C0* object, void* image, u16 width,
     GXTexObjInternal_800BA7C0* texture =
         (GXTexObjInternal_800BA7C0*)object;
 
-    fn_800BA9E4(object, image, width, height, format, wrapS, wrapT, mipmap);
+    GXInitTexObj(object, image, width, height, format, wrapS, wrapT, mipmap);
     texture->flags &= ~2;
     texture->tlutName = tlutName;
 }
 
-void fn_800BACA0(GXTexObj_800BA7C0* object, GXTexFilter_800BA7C0 minFilter,
+void GXInitTexObjLOD(GXTexObj_800BA7C0* object, GXTexFilter_800BA7C0 minFilter,
                  GXTexFilter_800BA7C0 magFilter, f32 minLod, f32 maxLod,
                  f32 lodBias, u8 biasClamp, u8 edgeLod,
                  GXAnisotropy_800BA7C0 maxAnisotropy) {
@@ -324,7 +324,7 @@ void fn_800BACA0(GXTexObj_800BA7C0* object, GXTexFilter_800BA7C0 minFilter,
     GX_SET_REG_FIELD(texture->mode1, 8, 8, encodedMaxLod);
 }
 
-void fn_800BAE34(u32* mode0, u32 wrapS, u32 wrapT) {
+void GXInitTexObjWrapMode(u32* mode0, u32 wrapS, u32 wrapT) {
     *mode0 = (*mode0 & 0xFFFFFFFC) | wrapS;
     *mode0 = (*mode0 & 0xFFFFFFF3) | (wrapT << 2);
 }

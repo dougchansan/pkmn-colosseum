@@ -17,7 +17,7 @@ typedef struct BattleGridGroupTable {
 static inline s32 battleGridGetMaxPokemonField(void)
 {
     extern BattleGridGroupTable lbl_80466DE8;
-    extern s32 fn_801DAC24(void*);
+    extern s32 wazaSequenceOwnerGetSizeClass(void*);
     u16 i;
     u16 j;
     BattleGridGroupEntry* group = lbl_80466DE8.entries;
@@ -32,7 +32,7 @@ static inline s32 battleGridGetMaxPokemonField(void)
             pokemon = group->pokemon;
             for (j = 0; j < 2; j++, pokemon++) {
                 if (*pokemon != NULL) {
-                    s32 field = fn_801DAC24(*pokemon);
+                    s32 field = wazaSequenceOwnerGetSizeClass(*pokemon);
                     if (field > maxField) {
                         maxField = field;
                     }

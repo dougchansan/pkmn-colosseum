@@ -137,8 +137,8 @@ f32   PSVECSquareDistance(void* a, void* b);
 /* GScolsys2 functions */
 extern void* fn_8010CBC0(void);                         /* GScolsys2_GetWZXData */
 extern s32   GScolsys2GetObjEnable(u32 triIdx, void* outFlag);    /* GScolsys2_QueryTriVisible */
-extern void  fn_8010CA30(void* mtxOut, u32 layerIdx);   /* GScolsys2_BuildInverseTransform */
-extern void  fn_8010C8D0(void* mtxOut, u32 layerIdx);   /* GScolsys2_BuildTransform */
+extern void  colsysMakeSRTMatrix(void* mtxOut, u32 layerIdx);   /* GScolsys2_BuildInverseTransform */
+extern void  colsysMakeRotMatrix(void* mtxOut, u32 layerIdx);   /* GScolsys2_BuildTransform */
 extern s32   fn_8010DEF0(void* result, void* origin,
                           void* verts, void* normal);    /* GScolsys2_TriangleBoundsCheck */
 f32   GScolsy2UtilGetSidePlanePoint(void* normal, void* p1, void* p2);

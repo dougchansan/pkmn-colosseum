@@ -39,15 +39,15 @@ typedef struct GSgfxParseCallbackList {
 extern void DCFlushRange(void* addr, u32 size);
 extern void GXCallDisplayList(void* list, u32 size);
 extern void gfxRecordCommand(u32, u32, ...);
-extern void fn_800D6A5C(u32 verts, u32 prims);
+extern void gfxAddDrawStats(u32 verts, u32 prims);
 extern void fn_800D6A80(u16 vertCount, s32 type, u32* totalVerts, u32* totalPrims);
 extern void gfxLoadVtxDesc(GSVtxDesc* desc);
 extern void gfxSetupChannelsTev(GSVtxDesc* desc);
 extern void fn_800E24B0(u16 handle);
-extern void fn_800E209C(u16 handle);
-extern void* fn_800E27B0(u16 handle);
+extern void GSmemFree(u16 handle);
+extern void* GSmemLock(u16 handle);
 extern void fn_800E2AF8(u16 handle, u32 size);
-extern u16 fn_800E2C04(u32 size, u32 align);
+extern u16 GSmemAlloc(u32 size, u32 align);
 
 extern GSgfxDLCapture* lbl_8047AAD4;
 extern u32 lbl_8047AAD8;
@@ -55,36 +55,36 @@ extern u32 lbl_8047AAD8;
 u8* _dlParseSurface__F13GSgfxPrimTypeP16_HSD_VtxDescListPUcUsP22GSgfxParseCallbackListPv_802B1590(s32 prim, GSgfxVtxDescList* desc, u8* ptr, u16 count, GSgfxParseCallbackList* callbacks, void* user);
 u8* _dlParseVertex__FP16_HSD_VtxDescListPUcP22GSgfxParseCallbackListPv_802B1720(GSgfxVtxDescList* desc, u8* ptr, GSgfxParseCallbackList* callbacks, void* user);
 
-extern void fn_800D724C(u32);
-extern void fn_800D7268(u32);
-extern void fn_800D7284(u32);
-extern void fn_800D72A4(u32);
-extern void fn_800D72C4(u32);
-extern void fn_800D72E4(u32);
-extern void fn_800D7304(u32);
-extern void fn_800D7328(u32);
-extern void fn_800D7344(u32);
-extern void fn_800D7360(u32);
-extern void fn_800D737C(u32);
-extern void fn_800D7398(u32);
-extern void fn_800D73C4(u32);
-extern void fn_800D73F8(u32);
-extern void fn_800D740C(u32);
-extern void fn_800D7420(u32);
-extern void fn_800D7444(u32);
-extern void fn_800D7468(u32);
-extern void fn_800D748C(u32);
-extern void fn_800D74A0(u32);
-extern void fn_800D74B4(u32);
-extern void fn_800D74D0(u32);
-extern void fn_800D74EC(u32);
-extern void fn_800D7508(u32);
-extern void fn_800D7524(u32);
-extern void fn_800D7540(u32);
-extern void fn_800D7564(u32);
-extern void fn_800D7588(u32);
-extern void fn_800D75AC(u32);
-extern void fn_800D75D0(u32);
+extern void _gfxEmitTexCoord1x8(u32);
+extern void _gfxEmitTexCoord1x16(u32);
+extern void _gfxEmitTexCoord2s8(u32);
+extern void _gfxEmitTexCoord2u8(u32);
+extern void _gfxEmitTexCoord2s16(u32);
+extern void _gfxEmitTexCoord2u16(u32);
+extern void _gfxEmitTexCoord2f32(u32);
+extern void _gfxEmitColor1x8(u32);
+extern void _gfxEmitColor1x16(u32);
+extern void _gfxEmitColor1u16(u32);
+extern void _gfxEmitColor1u32(u32);
+extern void _gfxEmitColor3u8(u32);
+extern void _gfxEmitColor4u8(u32);
+extern void _gfxEmitNormal1x8(u32);
+extern void _gfxEmitNormal1x16(u32);
+extern void _gfxEmitNormal3s8(u32);
+extern void _gfxEmitNormal3s16(u32);
+extern void _gfxEmitNormal3f32(u32);
+extern void _gfxEmitPos1x8(u32);
+extern void _gfxEmitPos1x16(u32);
+extern void _gfxEmitPos2s8(u32);
+extern void _gfxEmitPos2u8(u32);
+extern void _gfxEmitPos2s16(u32);
+extern void _gfxEmitPos2u16(u32);
+extern void _gfxEmitPos2f32(u32);
+extern void _gfxEmitPos3s8(u32);
+extern void _gfxEmitPos3u8(u32);
+extern void _gfxEmitPos3s16(u32);
+extern void _gfxEmitPos3u16(u32);
+extern void _gfxEmitPos3f32(u32);
 
 void GSgfxParseDisplayList(GSgfxVtxDescList* desc, u8* ptr, u32 size, GSgfxParseCallbackList* callbacks, void* user) {
     s32 prim;
@@ -486,7 +486,7 @@ u8* _dlParseVertex__FP16_HSD_VtxDescListPUcP22GSgfxParseCallbackListPv_802B1720(
 void GSgfxDLFree(GSgfxDLCapture* capture) {
     if (lbl_8047AA80->captureDL != capture) {
         fn_800E24B0(capture->handle);
-        fn_800E209C(capture->handle);
+        GSmemFree(capture->handle);
         capture->active = 0;
     }
 }
@@ -500,7 +500,7 @@ void GSgfxDLDraw(GSgfxDLCapture* capture) {
         gfxLoadVtxDesc(capture->desc);
         gfxSetupChannelsTev(capture->desc);
         GXCallDisplayList(capture->data, capture->size);
-        fn_800D6A5C(capture->totalVerts, capture->totalPrims);
+        gfxAddDrawStats(capture->totalVerts, capture->totalPrims);
     }
 }
 
@@ -516,7 +516,7 @@ GSgfxDLCapture* GSgfxDLEnd(void) {
     end = (u8*)(((u32)lbl_8047AA80->captureCursor + 0x1F) & ~0x1F);
     if ((u32)end > (u32)capture->data + capture->size || capture->overflow != 0) {
         fn_800E24B0(capture->handle);
-        fn_800E209C(capture->handle);
+        GSmemFree(capture->handle);
         return NULL;
     }
     for (pad = end - lbl_8047AA80->captureCursor; pad != 0; pad--) {
@@ -561,14 +561,14 @@ u32 GSgfxDLBegin(GSVtxDesc* desc, u32 size) {
     capture->overflow = 0;
     capture->totalVerts = 0;
     capture->totalPrims = 0;
-    capture->handle = fn_800E2C04(size, 0x20);
+    capture->handle = GSmemAlloc(size, 0x20);
     if (capture->handle == 0) {
         return 0;
     }
     capture->size = size;
-    capture->data = fn_800E27B0(capture->handle);
+    capture->data = GSmemLock(capture->handle);
     if (capture->data == NULL) {
-        fn_800E209C(capture->handle);
+        GSmemFree(capture->handle);
         return 0;
     }
     capture->desc = desc;
@@ -589,44 +589,44 @@ void fn_800DB098(void) {
     }
 
     emit = lbl_8047AA80->emitPos;
-    if (emit == fn_800D75D0) {
+    if (emit == _gfxEmitPos3f32) {
         u32* p = (u32*)lbl_8047AA80->captureCursor;
         *p++ = *(u32*)&lbl_8047AA80->pos.f[0];
         *p++ = *(u32*)&lbl_8047AA80->pos.f[1];
         *p++ = *(u32*)&lbl_8047AA80->pos.f[2];
         lbl_8047AA80->captureCursor = (u8*)p;
-    } else if (emit == fn_800D75AC || emit == fn_800D7588) {
+    } else if (emit == _gfxEmitPos3u16 || emit == _gfxEmitPos3s16) {
         u16* p = (u16*)lbl_8047AA80->captureCursor;
         *p++ = lbl_8047AA80->pos.s[0];
         *p++ = lbl_8047AA80->pos.s[1];
         *p++ = lbl_8047AA80->pos.s[2];
         lbl_8047AA80->captureCursor = (u8*)p;
-    } else if (emit == fn_800D7564 || emit == fn_800D7540) {
+    } else if (emit == _gfxEmitPos3u8 || emit == _gfxEmitPos3s8) {
         u8* p = (u8*)lbl_8047AA80->captureCursor;
         *p++ = lbl_8047AA80->pos.b[0];
         *p++ = lbl_8047AA80->pos.b[1];
         *p++ = lbl_8047AA80->pos.b[2];
         lbl_8047AA80->captureCursor = (u8*)p;
-    } else if (emit == fn_800D7524) {
+    } else if (emit == _gfxEmitPos2f32) {
         u32* p = (u32*)lbl_8047AA80->captureCursor;
         *p++ = *(u32*)&lbl_8047AA80->pos.f[0];
         *p++ = *(u32*)&lbl_8047AA80->pos.f[1];
         lbl_8047AA80->captureCursor = (u8*)p;
-    } else if (emit == fn_800D7508 || emit == fn_800D74EC) {
+    } else if (emit == _gfxEmitPos2u16 || emit == _gfxEmitPos2s16) {
         u16* p = (u16*)lbl_8047AA80->captureCursor;
         *p++ = lbl_8047AA80->pos.s[0];
         *p++ = lbl_8047AA80->pos.s[1];
         lbl_8047AA80->captureCursor = (u8*)p;
-    } else if (emit == fn_800D74D0 || emit == fn_800D74B4) {
+    } else if (emit == _gfxEmitPos2u8 || emit == _gfxEmitPos2s8) {
         u8* p = (u8*)lbl_8047AA80->captureCursor;
         *p++ = lbl_8047AA80->pos.b[0];
         *p++ = lbl_8047AA80->pos.b[1];
         lbl_8047AA80->captureCursor = (u8*)p;
-    } else if (emit == fn_800D74A0) {
+    } else if (emit == _gfxEmitPos1x16) {
         u16* p = (u16*)lbl_8047AA80->captureCursor;
         *p++ = lbl_8047AA80->pos.s[0];
         lbl_8047AA80->captureCursor = (u8*)p;
-    } else if (emit == fn_800D748C) {
+    } else if (emit == _gfxEmitPos1x8) {
         u8* p = (u8*)lbl_8047AA80->captureCursor;
         *p++ = lbl_8047AA80->pos.b[0];
         lbl_8047AA80->captureCursor = (u8*)p;
@@ -634,29 +634,29 @@ void fn_800DB098(void) {
 
     emit = lbl_8047AA80->emitNrm;
     if (lbl_8047AA80->captureDL->desc->attr[2].enabled == 1) {
-        if (emit == fn_800D7468) {
+        if (emit == _gfxEmitNormal3f32) {
             u32* p = (u32*)lbl_8047AA80->captureCursor;
             *p++ = *(u32*)&lbl_8047AA80->nrm.f[0];
             *p++ = *(u32*)&lbl_8047AA80->nrm.f[1];
             *p++ = *(u32*)&lbl_8047AA80->nrm.f[2];
             lbl_8047AA80->captureCursor = (u8*)p;
-        } else if (emit == fn_800D7444) {
+        } else if (emit == _gfxEmitNormal3s16) {
             u16* p = (u16*)lbl_8047AA80->captureCursor;
             *p++ = lbl_8047AA80->nrm.s[0];
             *p++ = lbl_8047AA80->nrm.s[1];
             *p++ = lbl_8047AA80->nrm.s[2];
             lbl_8047AA80->captureCursor = (u8*)p;
-        } else if (emit == fn_800D7420) {
+        } else if (emit == _gfxEmitNormal3s8) {
             u8* p = (u8*)lbl_8047AA80->captureCursor;
             *p++ = lbl_8047AA80->nrm.b[0];
             *p++ = lbl_8047AA80->nrm.b[1];
             *p++ = lbl_8047AA80->nrm.b[2];
             lbl_8047AA80->captureCursor = (u8*)p;
-        } else if (emit == fn_800D740C) {
+        } else if (emit == _gfxEmitNormal1x16) {
             u16* p = (u16*)lbl_8047AA80->captureCursor;
             *p++ = lbl_8047AA80->nrm.s[0];
             lbl_8047AA80->captureCursor = (u8*)p;
-        } else if (emit == fn_800D73F8) {
+        } else if (emit == _gfxEmitNormal1x8) {
             u8* p = (u8*)lbl_8047AA80->captureCursor;
             *p++ = lbl_8047AA80->nrm.b[0];
             lbl_8047AA80->captureCursor = (u8*)p;
@@ -667,32 +667,32 @@ void fn_800DB098(void) {
         n = i - 4;
         emit = lbl_8047AA80->emitClr[n];
         if (lbl_8047AA80->captureDL->desc->attr[i].enabled == 1) {
-            if (emit == fn_800D73C4) {
+            if (emit == _gfxEmitColor4u8) {
                 u8* p = (u8*)lbl_8047AA80->captureCursor;
                 *p++ = lbl_8047AA80->clr[n].b[0];
                 *p++ = lbl_8047AA80->clr[n].b[1];
                 *p++ = lbl_8047AA80->clr[n].b[2];
                 *p++ = lbl_8047AA80->clr[n].b[3];
                 lbl_8047AA80->captureCursor = (u8*)p;
-            } else if (emit == fn_800D7398) {
+            } else if (emit == _gfxEmitColor3u8) {
                 u8* p = (u8*)lbl_8047AA80->captureCursor;
                 *p++ = lbl_8047AA80->clr[n].b[0];
                 *p++ = lbl_8047AA80->clr[n].b[1];
                 *p++ = lbl_8047AA80->clr[n].b[2];
                 lbl_8047AA80->captureCursor = (u8*)p;
-            } else if (emit == fn_800D737C) {
+            } else if (emit == _gfxEmitColor1u32) {
                 u32* p = (u32*)lbl_8047AA80->captureCursor;
                 *p++ = lbl_8047AA80->clr[n].w;
                 lbl_8047AA80->captureCursor = (u8*)p;
-            } else if (emit == fn_800D7360) {
+            } else if (emit == _gfxEmitColor1u16) {
                 u16* p = (u16*)lbl_8047AA80->captureCursor;
                 *p++ = lbl_8047AA80->clr[n].s;
                 lbl_8047AA80->captureCursor = (u8*)p;
-            } else if (emit == fn_800D7344) {
+            } else if (emit == _gfxEmitColor1x16) {
                 u16* p = (u16*)lbl_8047AA80->captureCursor;
                 *p++ = lbl_8047AA80->clr[n].s;
                 lbl_8047AA80->captureCursor = (u8*)p;
-            } else if (emit == fn_800D7328) {
+            } else if (emit == _gfxEmitColor1x8) {
                 u8* p = (u8*)lbl_8047AA80->captureCursor;
                 *p++ = lbl_8047AA80->clr[n].b[0];
                 lbl_8047AA80->captureCursor = (u8*)p;
@@ -704,26 +704,26 @@ void fn_800DB098(void) {
         n = i - 6;
         emit = lbl_8047AA80->emitTex[n];
         if (lbl_8047AA80->captureDL->desc->attr[i].enabled == 1) {
-            if (emit == fn_800D7304) {
+            if (emit == _gfxEmitTexCoord2f32) {
                 u32* p = (u32*)lbl_8047AA80->captureCursor;
                 *p++ = *(u32*)&lbl_8047AA80->tex[n].f[0];
                 *p++ = *(u32*)&lbl_8047AA80->tex[n].f[1];
                 lbl_8047AA80->captureCursor = (u8*)p;
-            } else if (emit == fn_800D72E4 || emit == fn_800D72C4) {
+            } else if (emit == _gfxEmitTexCoord2u16 || emit == _gfxEmitTexCoord2s16) {
                 u16* p = (u16*)lbl_8047AA80->captureCursor;
                 *p++ = lbl_8047AA80->tex[n].s[0];
                 *p++ = lbl_8047AA80->tex[n].s[1];
                 lbl_8047AA80->captureCursor = (u8*)p;
-            } else if (emit == fn_800D72A4 || emit == fn_800D7284) {
+            } else if (emit == _gfxEmitTexCoord2u8 || emit == _gfxEmitTexCoord2s8) {
                 u8* p = (u8*)lbl_8047AA80->captureCursor;
                 *p++ = lbl_8047AA80->tex[n].b[0];
                 *p++ = lbl_8047AA80->tex[n].b[1];
                 lbl_8047AA80->captureCursor = (u8*)p;
-            } else if (emit == fn_800D7268) {
+            } else if (emit == _gfxEmitTexCoord1x16) {
                 u16* p = (u16*)lbl_8047AA80->captureCursor;
                 *p++ = lbl_8047AA80->tex[n].s[0];
                 lbl_8047AA80->captureCursor = (u8*)p;
-            } else if (emit == fn_800D724C) {
+            } else if (emit == _gfxEmitTexCoord1x8) {
                 u8* p = (u8*)lbl_8047AA80->captureCursor;
                 *p++ = lbl_8047AA80->tex[n].b[0];
                 lbl_8047AA80->captureCursor = (u8*)p;

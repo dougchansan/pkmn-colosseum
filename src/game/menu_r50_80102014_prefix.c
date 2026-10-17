@@ -126,7 +126,7 @@ extern void fadeDaemon(void);
 extern void fn_800FE6D0();
 extern void fn_800FE35C(void);
 extern void spriteSetEnv(void);
-extern u16 fn_8005D798(void*, s32);
+extern u16 menuSeTableLookup(void*, s32);
 extern void cmsRunSync(void*, u32, ...);
 extern int soundStartSE(u16);
 
@@ -156,7 +156,7 @@ extern void windowCreateCursorSprite(MenuWindow* window);
 extern void winSpriteSetDisp(MenuSprite* sprite, u32 enable);
 extern void winSpriteDraw(MenuWindow* window, MenuSprite* sprite);
 extern void _menuUpdateKeyInfo__FP15WINDOW_SYS_WORK(MenuSystem* system);
-extern void fn_801093C8(void);
+extern void menuOffScreenDraw(void);
 extern void fn_80106F98(u32 id);
 extern s32 winSeqCheckMove(u32 id);
 extern void winSeqMoveMenu(MenuWindow* window);
@@ -449,7 +449,7 @@ void menuSetPosition(u32 id, s16 x, s16 y) {
         void* sound = menuSeBiosGetPtr(                                     \
             menuDataBiosGetPtr((window)->id)->soundGroup & 7);              \
         if (sound != NULL) {                                                \
-            u32 se = fn_8005D798(sound, (event));                           \
+            u32 se = menuSeTableLookup(sound, (event));                           \
             if (se != 0) {                                                  \
                 soundStartSE(se);                                            \
             }                                                               \
@@ -471,7 +471,7 @@ void menuDaemon(void) {
     active = windowSearchID(windowGetActiveID());
     _menuUpdateKeyInfo__FP15WINDOW_SYS_WORK(&lbl_80404ACC);
     fn_800D9E4C(0);
-    fn_801093C8();
+    menuOffScreenDraw();
     fn_800D9ED8(1);
     system = &lbl_80404ACC;
 

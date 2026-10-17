@@ -8,7 +8,7 @@
  * address range of this translation unit (0x8002DD24-0x80030170). This
  * range was originally mislabeled as world-map code; it is actually the
  * head of the XD-era menuPokemonChange.cpp translation unit -- the
- * dispatcher fn_80031B4C and the remainder of that TU live in the next
+ * dispatcher gbaTradeRun and the remainder of that TU live in the next
  * unit, game/gs_npc_event.c (0x80030170-0x80033278).
  */
 
@@ -97,7 +97,7 @@ static inline void menuPokemonChangeAlert(u32 msgId) {
 /* stateFunctionSaveReport - 0x8002DD24 | size: 0x1ec */
 extern void fn_80089E20(void);
 extern void fn_801D055C(void);
-extern u8 fn_801D04D0(void);
+extern u8 memcardIsRetrying(void);
 extern void fn_80089D98(void);
 extern void fn_801D046C(void);
 extern s32 memcardGetTaskResult(void);
@@ -130,7 +130,7 @@ void stateFunctionSaveReport(void* src) {
     extern s32 fn_80089E20(s32 mode, void* pkm, u32 slotB, u32 flags);
     extern s32 fn_80089D98(s32 slot);
     extern void fn_801D055C(s32 a, s32 b, s32 c);
-    extern u8 fn_801D04D0(void);
+    extern u8 memcardIsRetrying(void);
     extern void fn_801D046C(s32 flag);
     extern s32 memcardGetTaskResult(void);
     extern void fn_801D039C(void);
@@ -139,7 +139,7 @@ void stateFunctionSaveReport(void* src) {
     extern void* savedataGetStatus(s32 side, s32 slotType);
     extern void menuSubKeyWait(void);
     extern void winMsgClose(s32 slot);
-    extern void fn_8010A420(u8* ptr);
+    extern void menuModelTerm(u8* ptr);
     extern u32 _fadeEffectGetRandom__FUl(s32 frames);
     void* pokemon;
     MenuWork* base;
@@ -158,7 +158,7 @@ void stateFunctionSaveReport(void* src) {
     if (fn_80089E20(2, pokemon, lbl_8047A420, lbl_8047A40C) == 0) {
         fn_801D055C(8, 2, 0);
         do {
-            if (sent == 0 && fn_801D04D0() != 0) {
+            if (sent == 0 && memcardIsRetrying() != 0) {
                 state = fn_80089D98(2);
                 if (state >= 0) {
                     if (state != 0) {
@@ -183,8 +183,8 @@ void stateFunctionSaveReport(void* src) {
         winMsgOpen(2, 0x44D6, 1, 0);
         menuSubKeyWait();
         winMsgClose(1);
-        fn_8010A420(base->modelA);
-        fn_8010A420(base->modelB);
+        menuModelTerm(base->modelA);
+        menuModelTerm(base->modelB);
         *(u8*)&lbl_804788B0 = 0;
         lbl_8047A42C = 0;
     } else {
@@ -230,13 +230,13 @@ void stateFunctionEvolution(void) {
     extern void fadeSet(f32 vol, s32 mode);
     extern void fadeCheck(s32 flag);
     extern void menuClose(s32 id);
-    extern void fn_8010A420(void* model);
+    extern void menuModelTerm(void* model);
     extern void std113_mapObjectUnk_8018db68(u32 handle);
     extern void floorSetMapVisibility(s32 flag);
     extern void _threadSwitch(void);
     extern s32 pokemonEvolutionAll(void* pokemon, u16 species, u16 arg, u32* type, void* team, s32 a5, s32 a6, s32 a7);
     extern void menuModelInit(void* model, s32 w, s32 h);
-    extern void fn_80109C88(void* model, void* pokemon);
+    extern void menuPokemonModelRequest(void* model, void* pokemon);
     extern void cameraPlayAnime(s32 id, u32 color, s32 a, s32 b);
     extern u32 std093_getCurrentGroupID(void);
     extern u32 std112_modelGetResourceID(u32 color);
@@ -276,8 +276,8 @@ void stateFunctionEvolution(void) {
         fadeSet(lbl_8047B9D0, 3);
         fadeCheck(1);
         menuClose(0xDE);
-        fn_8010A420(work->modelA);
-        fn_8010A420(work->modelB);
+        menuModelTerm(work->modelA);
+        menuModelTerm(work->modelB);
         std113_mapObjectUnk_8018db68(lbl_8047A418);
         floorSetMapVisibility(0);
         _threadSwitch();
@@ -305,8 +305,8 @@ void stateFunctionEvolution(void) {
         pokemonB = heroGetStatus(work->hero, 3, lbl_8047A420);
         menuModelInit(work->modelA, 0xE8, 0x11C);
         menuModelInit(work->modelB, 0xE8, 0x11C);
-        fn_80109C88(work->modelA, pokemonA);
-        fn_80109C88(work->modelB, pokemonB);
+        menuPokemonModelRequest(work->modelA, pokemonA);
+        menuPokemonModelRequest(work->modelB, pokemonB);
         cameraPlayAnime(0x37C, 0x0FFF1800, 0, 1);
         resource = std093_getCurrentGroupID();
         lbl_8047A418 = std112_modelGetResourceID(0x0FFE1000);
@@ -346,7 +346,7 @@ void stateFunctionExChangeMain(void) {
     extern void* heroGetStatus(void* hero, u32 selector, u16 index);
     extern void pokemonBiosCopy(u32* dst, u32* src);
     extern void menuClose(s32 id);
-    extern void fn_8010A420(void* model);
+    extern void menuModelTerm(void* model);
     extern void GSmodelSetVisibility(void* obj, s32 flag);
     extern void fadeSet(f32 vol, s32 mode);
     extern void fadeCheck(s32 flag);
@@ -359,7 +359,7 @@ void stateFunctionExChangeMain(void) {
     extern void std115_mapObjectPlayAnimation(u32 color, s32 a, s32 b, s32 c);
     extern void cameraWaitSyncAnime(s32 flag);
     extern void menuModelInit(void* model, s32 w, s32 h);
-    extern void fn_80109C88(void* model, void* pokemon);
+    extern void menuPokemonModelRequest(void* model, void* pokemon);
     extern s32 menuOpen(s32 id, s32 flag);
     MenuWork* work;
     void* pokemonA;
@@ -373,8 +373,8 @@ void stateFunctionExChangeMain(void) {
     pokemonBiosCopy(pokemonB, pokemonA);
     pokemonBiosCopy(pokemonA, work->bios);
     menuClose(0xDE);
-    fn_8010A420(work->modelA);
-    fn_8010A420(work->modelB);
+    menuModelTerm(work->modelA);
+    menuModelTerm(work->modelB);
     lbl_8047A41C = 0;
     GSmodelSetVisibility((void*)lbl_8047A414, 0);
     fadeSet(lbl_8047B9D0, 3);
@@ -393,8 +393,8 @@ void stateFunctionExChangeMain(void) {
     floorSetMapVisibility(0);
     menuModelInit(work->modelA, 0xE8, 0x11C);
     menuModelInit(work->modelB, 0xE8, 0x11C);
-    fn_80109C88(work->modelA, pokemonA);
-    fn_80109C88(work->modelB, pokemonB);
+    menuPokemonModelRequest(work->modelA, pokemonA);
+    menuPokemonModelRequest(work->modelB, pokemonB);
     cameraPlayAnime(0x37C, 0x0FFF1800, 0, 1);
     GSmodelSetVisibility((void*)lbl_8047A414, 1);
     menuOpen(0xDE, 1);
@@ -441,7 +441,7 @@ void fn_8002FC58(void) {
     extern u8 menuCBRule_CheckPokemonEventFlag(void* pokemon);
     extern void menuItemBiosSetSelectFlag(s32 itemId, s32 flag);
     extern void fn_80030170(void);
-    extern void fn_8010B01C(s32 a, void (*cb)(void));
+    extern void menuFaceRequestPokemonFace(s32 a, void (*cb)(void));
     extern s32 menuGetCursor(s32 id);
     extern s32 menuGetCursorFromItemID(s32 id, s32 itemId);
     extern void fn_801021F8(s32 id, s32 flag);
@@ -483,7 +483,7 @@ void fn_8002FC58(void) {
     }
     lbl_803A2650[count] = NULL;
     lbl_803A2650[13] = NULL;
-    fn_8010B01C(0, fn_80030170);
+    menuFaceRequestPokemonFace(0, fn_80030170);
     save = savedataGetStatus(0, 2);
     menuItemBiosSetSelectFlag(0x1005, menuPokemonChangeCanSelect(heroBiosGetPokemonPtr(save, 0)));
     menuItemBiosSetSelectFlag(0x1002, menuPokemonChangeCanSelect(heroBiosGetPokemonPtr(save, 1)));
@@ -567,8 +567,8 @@ void fn_8002E460(void* dst) {
     extern f32 lbl_8047B9D0;
     extern void* heroGetStatus(void* hero, u32 selector, u16 index);
     extern void menuModelInit(void* model, s32 w, s32 h);
-    extern void fn_80109C88(void* model, void* pokemon);
-    extern void fn_8010A420(void* model);
+    extern void menuPokemonModelRequest(void* model, void* pokemon);
+    extern void menuModelTerm(void* model);
     extern s32 menuOpen(s32 id, s32 flag);
     extern void* windowSearchID(s32 id);
     extern void* windowSearchItemID(void* window, s32 itemId);
@@ -598,8 +598,8 @@ void fn_8002E460(void* dst) {
     pokemonB = heroGetStatus(work->hero, 3, lbl_8047A420);
     menuModelInit(work->modelA, 0xE4, 0x8F);
     menuModelInit(work->modelB, 0xE4, 0x8F);
-    fn_80109C88(work->modelA, pokemonA);
-    fn_80109C88(work->modelB, pokemonB);
+    menuPokemonModelRequest(work->modelA, pokemonA);
+    menuPokemonModelRequest(work->modelB, pokemonB);
     menuOpen(0xDB, 0);
     MENU_POKEMON_CHANGE_SET_DISP(0x11A8, 0);
     MENU_POKEMON_CHANGE_SET_DISP(0xF9B, 1);
@@ -620,8 +620,8 @@ void fn_8002E460(void* dst) {
         if (fn_80073A44(1, &flags) != 0) {
             winMsgOpen(2, 0x4448, 1, 0);
             menuClose(0xDB);
-            fn_8010A420(work->modelA);
-            fn_8010A420(work->modelB);
+            menuModelTerm(work->modelA);
+            menuModelTerm(work->modelB);
             lbl_8047A42C = 0;
             return;
         }
@@ -686,13 +686,13 @@ void fn_8002E460(void* dst) {
         lbl_8047A428 = -1;
         lbl_8047A424 = -1;
         lbl_8047A420 = -1;
-        fn_8010A420(work->modelA);
-        fn_8010A420(work->modelB);
+        menuModelTerm(work->modelA);
+        menuModelTerm(work->modelB);
         lbl_8047A410 = 1;
         lbl_8047A42C = 2;
     } else {
-        fn_8010A420(work->modelA);
-        fn_8010A420(work->modelB);
+        menuModelTerm(work->modelA);
+        menuModelTerm(work->modelB);
         *(SaveDataImage*)dst = *(SaveDataImage*)savedataGetStatus(0, 0);
         lbl_8047A42C = 0xD;
         fadeSet(lbl_8047B9D0, 3);
@@ -745,7 +745,7 @@ static inline u8 menuPokemonChangeHasOther(void* hero, s32 exclude) {
 #pragma push
 #pragma peephole off
 #pragma opt_common_subs off
-void fn_8002EA5C(void) {
+void gbaTradeCheckImportItems(void) {
     extern u8 lbl_803A2688[];
     extern u32 lbl_8047A428;
     extern u32 lbl_8047A420;
@@ -1383,7 +1383,7 @@ void fn_8002F284(void)
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-void fn_8002F79C(void) {
+void gbaTradeCheckExportItems(void) {
     extern u32 lbl_8047A428;
     extern u32 lbl_8047A42C;
     extern u32 lbl_8047A410;

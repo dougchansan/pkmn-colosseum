@@ -17,7 +17,7 @@ extern u32 lbl_8047ACC8;
 extern u32 lbl_8047ACD8;
 extern u32 lbl_8047ACDC;
 
-void fn_800FF660(void)
+void floorBattleEndTerminateScripts(void)
 {
     GSFloorContext* currentFloor;
     GSFloorResource* resource;

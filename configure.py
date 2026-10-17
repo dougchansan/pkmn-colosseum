@@ -169,6 +169,21 @@ config.sjiswrap_path = args.sjiswrap
 config.config_path = Path("config") / config.version / "config.yml"
 config.check_sha_path = Path("config") / config.version / "build.sha1"
 config.force_active_symbols["main"] = [
+    # game/data/{bss,sdata,sbss}_*.c: retail variables that nothing in
+    # main.dol references; compiled from source they would be dead-stripped
+    # and the rest of the section would move.
+    "lbl_803FC3D0",
+    "lbl_803FCE04",
+    "lbl_8047899C",
+    "lbl_80478A64",
+    "lbl_8047A6FC",
+    "lbl_8047A834",
+    "lbl_8047A8E4",
+    "lbl_8047A8EC",
+    "lbl_8047A8F4",
+    "lbl_8047A8FC",
+    "lbl_8047A904",
+    "lbl_8047B1A1",
     # game/gba/gba_conv_candidate_80088F58.c: debug-tool callbacks with no
     # reference in main.dol; compiled from source they would be dead-stripped.
     "fn_80088F58",
@@ -237,7 +252,7 @@ config.force_active_symbols["main"] = [
     "movieOpeningStart",
     "fn_80035F34",
     "fn_80035F64",
-    "fn_800361C0",
+    "staffrollStart",
     "fn_80036210",
     "fn_80036240",
     "movieStartAttract",
@@ -256,14 +271,14 @@ config.force_active_symbols["main"] = [
     # game/gs_range_8000D290.c: fn_8000D290 has no reference in main.dol but
     # is present in retail; compiled from source it would be dead-stripped.
     "fn_8000D290",
-    # game/gs_range_800096B4.c: the ten functions after fn_800096B4 have no
+    # game/gs_range_800096B4.c: the ten functions after dbgMenuPokemonEdit have no
     # reference in main.dol but are present in retail; compiled from source
     # they would be dead-stripped.
     "fn_8000BA94",
     "fn_8000BAB8",
     "fn_8000BB00",
     "dbgMenuHeroPokemonAdd",
-    "fn_8000BBEC",
+    "dbgMenuPokemonEditSlot6",
     "fn_8000BC58",
     "fn_8000BCC4",
     "fn_8000BD30",
@@ -1440,7 +1455,7 @@ config.libs = [
                 progress_category="game",
             ),
             # TEMPORARY constant_import
-            # fn_80139074's 1.0f (the leaf's slerp-time decrement) is a literal;
+            # _leaffxMoveLeaf's 1.0f (the leaf's slerp-time decrement) is a literal;
             # retail shares it as lbl_8047D160 (effect_visual_sdata2_8047D160.c).
             Object(
                 Matching,
@@ -1453,7 +1468,7 @@ config.libs = [
                 progress_category="game",
             ),
             # TEMPORARY constant_import
-            # fn_80138DE4's 2.0f, 1.0f, 0.0f and int-to-float biases are
+            # _leaffxUpdate's 2.0f, 1.0f, 0.0f and int-to-float biases are
             # literals; retail shares them as lbl_8047D160..lbl_8047D178
             # (effect_visual_sdata2_8047D160.c).
             Object(
@@ -2458,7 +2473,7 @@ config.libs = [
                 progress_category="game",
             ),
             # Waza camera TU: wazaSequenceCameraGetPattern (with its one pooled
-            # 0.0f) and fn_801D2C6C/fn_801D2C74 link as carves; the rest of
+            # 0.0f) and battleCameraWazaGetOwner/fn_801D2C74 link as carves; the rest of
             # wazaSequenceCamera.c, 0x801D2D28-0x801D5328, links whole with its
             # .sdata2 pool 0x8047E1E0-0x8047E2E0.
             *[
@@ -2485,6 +2500,8 @@ config.libs = [
                         in {
                             "game/wazaViewer_candidate_801D5464.c",
                             "game/wazaViewer_candidate_801D56B0.c",
+                            "game/wazaViewer_exact_801D5A94.c",
+                            "game/wazaViewer_candidate_801D5DA0.c",
                         }
                         else "GC/1.3"
                     ),
@@ -2497,6 +2514,8 @@ config.libs = [
                     (Matching, "game/wazaViewer_exact_801D53D8.c"),
                     (Matching, "game/wazaViewer_candidate_801D5464.c"),
                     (CodeCandidate, "game/wazaViewer_candidate_801D56B0.c"),
+                    (Matching, "game/wazaViewer_exact_801D5A94.c"),
+                    (CodeCandidate, "game/wazaViewer_candidate_801D5DA0.c"),
                     (Matching, "game/wazaViewer_exact_801D744C.c"),
                     (CodeCandidate, "game/wazaViewer_candidate_801D7464.c"),
                 ]
@@ -2898,7 +2917,7 @@ config.libs = [
                 progress_category="game",
             ),
             # fn_801176C8 / fn_8011791C: the field camera TU's flags
-            # (-opt nopeephole), plus -inline noauto so fn_80117164 stays a
+            # (-opt nopeephole), plus -inline noauto so fieldCameraLoadList stays a
             # call as in retail. Each wrapper sets a FIELD_CAMERA_<addr>_ONLY
             # guard so it compiles just its own function.
             *[
@@ -3713,7 +3732,7 @@ config.libs = [
                 progress_category="game",
             ),
             # The cardedecode.c TU (0x80080310-0x80082650) with its .rodata
-            # pool and fn_8008102C's jump tables; GC/1.3.2 like the grid TU.
+            # pool and cardeSaveApplyField's jump tables; GC/1.3.2 like the grid TU.
             Object(
                 Matching,
                 "game/menu/cardesavedata_decode_80080310.c",
@@ -3724,7 +3743,7 @@ config.libs = [
             # The Card-e grid TU: fn_80082650 - fn_800836AC with its own
             # string pool (.rodata 0x8026F1C8, .sdata2 "series"/"lv").
             # Deferred inlining emits the functions in reverse source order
-            # and lets fn_80082738/fn_80082CF0 inline their later callees.
+            # and lets cardeSaveRemoveCard/cardeSaveSetCard inline their later callees.
             Object(
                 Matching,
                 "game/menu/cardesavedata_grid_80082650.c",
@@ -5101,7 +5120,7 @@ config.libs = [
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8", "-O3,p", "-opt nopeephole"],
                 progress_category="game",
             ),
-            # fn_8010C224: same compiler, peephole off (see the file header).
+            # menuFaceInit: same compiler, peephole off (see the file header).
             Object(
                 Matching,
                 "game/gs_range_exact_8010C224.c",
@@ -5370,7 +5389,7 @@ config.libs = [
             # starts at 0x801812C4); its exact
             # functions are carved into their own objects so they can link,
             # the rest stay candidates. All share `-opt level=0` and
-            # `-inline deferred`. Evidence for deferred inlining: fn_801800F8
+            # `-inline deferred`. Evidence for deferred inlining: fsysCacheInit
             # addresses the unit's pooled .bss (queue +0, cache +0x20, arena
             # +0x1030). Normal inlining orders pooled .bss by first reference,
             # which puts the cache first (its pre-call store is the first
@@ -6177,7 +6196,7 @@ config.libs = [
                     (CodeCandidate, "game/menu/menu_candidate_8007480C_gc125n.c"),
                 ]
             ],
-            # fn_80073E8C reports through real string literals; retail pools
+            # pkjbPrepare reports through real string literals; retail pools
             # the unit's read-only strings off one base register (-rostr).
             Object(
                 CodeCandidate,
@@ -6481,7 +6500,7 @@ config.libs = [
                 Matching,
                 "game/battle/battle_candidate_801D0C30.c",
                 mw_version="GC/1.3.2",
-                # fn_801D0DB0 calls fn_801D0AA0 out of line in retail.
+                # pokemonCenterBallMachineSequence calls heroGetPokemonBallId out of line in retail.
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8", "-inline noauto"],
                 progress_category="game",
             ),
@@ -6554,7 +6573,7 @@ config.libs = [
             # (THPGXYuv2RgbSetup). THPPlayer.c builds with noauto: with auto,
             # its stream-start routine (0x801E34F0) is inlined into
             # THPPlayerPrepare, which the retail build did not do. On noauto
-            # all 21 of its functions are exact except fn_801E2CA8 (98.7%).
+            # all 21 of its functions are exact except movieStreamFill (98.7%).
             *[
                 Object(
                     status,
@@ -7890,9 +7909,11 @@ config.libs = [
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
+            # TEMPORARY constant_import
             Object(
-                CodeCandidate,
-                "game/menuShop_r40_8002B880_gc125n.c",
+                Matching,
+                "game/menuShop_island_8002B880.c",
+                constant_import=[{"symbol": "lbl_8047B998", "offset": 0, "expected": "4330000080000000"}],
                 mw_version="GC/1.3",
                 extra_cflags=[
                     "-use_lmw_stmw on",
@@ -8120,7 +8141,7 @@ config.libs = [
                     extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8", *extra],
                     progress_category="game",
                 )
-                # fn_800889E4's assert strings are pooled in .rodata
+                # menuSaveLoadSaveGame's assert strings are pooled in .rodata
                 # (lbl_8026F4F8) and addressed as base+0: GC/1.3.2 + -rostr.
                 for status, path, version, opt, extra in [
                     (Matching, "game/gba/gba_conv_r59_800886D0_o1.c", "GC/1.3", None, ["-opt nopeephole"]),
@@ -8248,7 +8269,7 @@ config.libs = [
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
-            # Carve of fn_800D1B3C/fn_800D1D00 with the cameraBuildMatrix
+            # Carve of GScameraGetInvMatrixPtr/GScameraGetMatrixPtr with the cameraBuildMatrix
             # inline (repeated expansion; XD name); text only.
             Object(
                 Matching,
@@ -8786,9 +8807,9 @@ config.libs = [
             # and .sdata2 pool. It needs GC/1.3.2: the TU's buffers are pooled
             # file statics, GC/1.3 folds their object offsets into store
             # displacements, and GC/1.3.2 keeps them out as retail does
-            # (fn_800FAEF8's fill pointer; the rest of the TU is identical under
-            # the two versions). fn_800F96E4 links by itself, as do fn_800F9AEC
-            # and fn_800F9C04 together.
+            # (GSmsgPrintf's fill pointer; the rest of the TU is identical under
+            # the two versions). GSmsgGetText links by itself, as do GScharToGBA
+            # and GScharFromGBA together.
             Object(
                 Matching,
                 "game/gs_msg_exact_800F96E4.c",
@@ -9144,7 +9165,7 @@ config.libs = [
                 progress_category="game",
             ),
             # One retail unit, 0x800F7758-0x800F915C. GC/1.3.2 because retail
-            # keeps the pooled .bss `base + 0` add in fn_800F8138/fn_800F8428
+            # keeps the pooled .bss `base + 0` add in GSinputInit/inputUpdateMotors
             # (GC/1.3 folds it into a register copy); -inline deferred because
             # retail's pooled .bss layout (slots, timers, commands) is reverse
             # definition order, not first-reference order. Every function of
@@ -9275,9 +9296,9 @@ config.libs = [
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
-            # fn_800D3FA4 is its own TU (its .sdata2 literal pool
+            # GSgfxDrawScene is its own TU (its .sdata2 literal pool
             # 0x8047CA20-0x8047CA30 sits between the 0x800D2DE8-0x800D3E4C
-            # pool and fn_800D55D0's), built without copy propagation:
+            # pool and gfxSetPointSize's), built without copy propagation:
             # retail re-tests bit 0 of the second-pass flags after masking it.
             # The possible TU neighbours gs_gfx_core, 45F8 and 4F98 are
             # byte-identical under this flag.
@@ -9312,7 +9333,7 @@ config.libs = [
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8", "-rostr"],
                 progress_category="game",
             ),  # GC/1.3.2 + -rostr: pooled .rodata request-buffer messages
-            # fn_800D55D0/fn_800D5648 own their literal pool (.sdata2
+            # gfxSetPointSize/gfxSetLineWidth own their literal pool (.sdata2
             # 0x8047CA30-0x8047CA40: 0.0f, 42.5f, 6.0f).
             Object(
                 Matching,
@@ -9344,7 +9365,7 @@ config.libs = [
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
-            # fn_800D6B00: GC/1.3.2 with its pooled save-slot .bss defined
+            # gfxFlushPendingVertex: GC/1.3.2 with its pooled save-slot .bss defined
             # in the unit (retail passes the first slot as "addi r3,r31,0x0");
             # -inline deferred gives retail's .bss order (reverse definition
             # order, as in pslist.c). See the source header.
@@ -9384,7 +9405,7 @@ config.libs = [
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
-            # Function-boundary carve of fn_800D923C (compare-tree switch, no
+            # Function-boundary carve of _gfxFlushTevState (compare-tree switch, no
             # jump tables or pooled constants; data extern), plain gs_gfx flags.
             Object(
                 Matching,
@@ -9617,7 +9638,7 @@ config.libs = [
                 progress_category="game",
             ),
             # TEMPORARY constant_import
-            # fn_800E0E14's GSmem check messages are pooled .rodata literals
+            # GSmemDumpMap's GSmem check messages are pooled .rodata literals
             # addressed off one base: GC/1.3.2 + -rostr. Retail shares that
             # pool as lbl_80270658 (0x55F bytes + 1 pad; gs_mem.c also
             # addresses it) and the 100.0f / unsigned-int bias as
@@ -9931,6 +9952,15 @@ config.libs = [
                     (CodeCandidate, "game/menuShop_candidate_8002B1A0.c"),
                 ]
             ],
+            # TEMPORARY constant_import
+            Object(
+                Matching,
+                "game/menuShop_island_8002B594.c",
+                constant_import=[{"symbol": "lbl_8047B998", "offset": 0, "expected": "4330000080000000"}],
+                mw_version="GC/1.3",
+                extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
+                progress_category="game",
+            ),
             Object(
                 Matching,
                 "game/menuPokemonChange_r51_8002DD24_o4s.c",
@@ -10136,7 +10166,7 @@ config.libs = [
             ),
             # fn_80179F4C: level-0 code (parameter homed on the stack), exact
             # with the unit-wide `-opt level=0` and no local pragmas; carved
-            # from the fn_80179FA4 candidate below.
+            # from the fsysInitTOC candidate below.
             Object(
                 Matching,
                 "game/gs_range_80179F4C_exact_80179F4C.c",
@@ -10144,7 +10174,7 @@ config.libs = [
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8", "-opt level=0"],
                 progress_category="game",
             ),
-            # fn_80179FA4: level-0 like the rest of fsys, and built with GC/2.0
+            # fsysInitTOC: level-0 like the rest of fsys, and built with GC/2.0
             # like the fsys read units after it (gs_range_8017A5FC_prefix
             # onward): GC/1.3 colours its DMA-setup temporaries differently,
             # while GC/1.3.2 through 2.7 all emit the retail bytes.
@@ -10219,7 +10249,7 @@ config.libs = [
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8", "-opt level=0"],
                 progress_category="game",
             ),
-            # fn_8017C8FC: level-0 code like the rest of fsys (it was scored
+            # fsysStatus100: level-0 code like the rest of fsys (it was scored
             # at -O4,s from a candidate include; exact at level 0).
             Object(
                 Matching,
@@ -10286,7 +10316,7 @@ config.libs = [
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8", "-opt level=0"],
                 progress_category="game",
             ),
-            # fn_8017E30C: exact on the fsys level-0 flags. Its
+            # fsysLoadEntrySync: exact on the fsys level-0 flags. Its
             # `compressed = NULL` after the free is the unit's free-then-clear
             # idiom (see the file header for the evidence).
             Object(
@@ -11382,6 +11412,230 @@ config.libs = [
                 progress_category="game",
             ),
             Object(
+                Matching,
+                "game/data/data_802E4B78.c",
+                extra_cflags=["-sdata 0", "-sdata2 0"],
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/data_803119B8.c",
+                extra_cflags=["-sdata 0", "-sdata2 0"],
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/data_80311CB8.c",
+                extra_cflags=["-sdata 0", "-sdata2 0"],
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/data_803127A8.c",
+                extra_cflags=["-sdata 0", "-sdata2 0"],
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/data_8035B3F0.c",
+                extra_cflags=["-sdata 0", "-sdata2 0"],
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/data_8035B448.c",
+                extra_cflags=["-sdata 0", "-sdata2 0"],
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/data_8035B950.c",
+                extra_cflags=["-sdata 0", "-sdata2 0"],
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/data_8036DCA8.c",
+                extra_cflags=["-sdata 0", "-sdata2 0"],
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/data_8039A690.c",
+                extra_cflags=["-sdata 0", "-sdata2 0"],
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/data_8039A6C8.c",
+                extra_cflags=["-sdata 0", "-sdata2 0"],
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/bss_803FB380.c",
+                extra_cflags=["-sdata 0", "-sdata2 0"],
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/bss_803FB538.c",
+                extra_cflags=["-sdata 0", "-sdata2 0"],
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/bss_803FC360.c",
+                extra_cflags=["-sdata 0", "-sdata2 0"],
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/bss_803FC840.c",
+                extra_cflags=["-sdata 0", "-sdata2 0"],
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/bss_803FCDD8.c",
+                extra_cflags=["-sdata 0", "-sdata2 0"],
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/bss_804001B0.c",
+                extra_cflags=["-sdata 0", "-sdata2 0"],
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/bss_80400948.c",
+                extra_cflags=["-sdata 0", "-sdata2 0"],
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/bss_804011B8.c",
+                extra_cflags=["-sdata 0", "-sdata2 0"],
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/bss_80478800.c",
+                extra_cflags=["-sdata 0", "-sdata2 0"],
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sdata_80478998.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sdata_804789B0.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sdata_804789C0.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sdata_80478A08.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sdata_80478AC0.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sdata_80478AE0.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sdata_80478AF8.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sdata_80478B08.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sdata_80478C08.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sdata_80478C40.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sdata_80478CA8.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sbss_8047A6E8.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sbss_8047A778.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sbss_8047A7D8.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sbss_8047A8A0.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sbss_8047A9F8.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sbss_8047AF60.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sbss_8047AFE8.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sbss_8047B1A0.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sbss_8047B1F8.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sbss_8047B260.c",
+                progress_category="game",
+            ),
+            Object(
+                Matching,
+                "game/data/sbss_8047B678.c",
+                progress_category="game",
+            ),
+            Object(
                 DataCandidate,
                 "game/data/bss_803A6498.c",
                 progress_category="game",
@@ -12374,8 +12628,21 @@ config.libs = [
         "common_rel",
         [
             Object(Matching, "rel/common_rel/common_rel.c"),
+            Object(Matching, "rel/common_rel/const_data.c"),
+            Object(Matching, "rel/common_rel/msg_face_data.c"),
+            Object(Matching, "rel/common_rel/table_res_data.c"),
+            Object(Matching, "rel/common_rel/floor_fight_data.c"),
+            Object(Matching, "rel/common_rel/fight_trainer_data.c"),
             Object(Matching, "rel/common_rel/snd_song_table.c"),
+            Object(Matching, "rel/common_rel/gs_task_data.c"),
+            Object(Matching, "rel/common_rel/fight_ai_data.c"),
+            Object(Matching, "rel/common_rel/treasure_data.c"),
+            Object(Matching, "rel/common_rel/waza_data.c"),
+            Object(Matching, "rel/common_rel/pokemon_data.c"),
+            Object(Matching, "rel/common_rel/people_data.c"),
+            Object(Matching, "rel/common_rel/snd_volume_data.c"),
             Object(Matching, "rel/common_rel/snd_sample_table.c"),
+            Object(Matching, "rel/common_rel/misc_data.c"),
         ],
     ),
     # REL 1 (mail, common.fsys member 1)

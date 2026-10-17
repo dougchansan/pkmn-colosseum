@@ -16,10 +16,10 @@
  *   it on, fn_80073990/fn_80073A44/fn_80072C74/_AGB_EntryGetStatus and the
  *   others that used to need "#pragma peephole off" all lose;
  * - the uploader part moves toward the target too (old sources):
- *   fn_80073E8C 79.0 -> 82.4, fn_80074324 exact without its pragma,
- *   fn_80074360 96.0 -> 96.7, fn_800745B4 79.1 -> 80.8, fn_8007480C 70.2
+ *   pkjbPrepare 79.0 -> 82.4, fn_80074324 exact without its pragma,
+ *   pkjbProbe 96.0 -> 96.7, fn_800745B4 79.1 -> 80.8, pkjbValidateKey 70.2
  *   (GC/1.2.5n) -> 83.8;
- * - version: GC/1.3 is out (fn_80073E8C ORs its boot key constant with
+ * - version: GC/1.3 is out (pkjbPrepare ORs its boot key constant with
  *   oris/ori like the target only from GC/1.3.2 on; 1.3 emits lis/addi/or);
  *   GC/1.3.2 through GC/2.7 give identical output for the whole unit, and
  *   GC/2.0 matches the game's other GBA unit (gba_misc).
@@ -39,7 +39,7 @@ s32 fn_80073990(s32 chan)
     start = OSGetTick();
     while (OSGetTick() - start < delay) {
     }
-    if (fn_800D0F44(chan) != PKJB_SI_GBA) {
+    if (SIProbe(chan) != PKJB_SI_GBA) {
         return 1;
     }
     command = 0x11;
@@ -90,7 +90,7 @@ s32 fn_80073C38(s32 chan)
     u32 timeout;
     u32 start;
 
-    if (fn_800D0F44(chan) != PKJB_SI_GBA) {
+    if (SIProbe(chan) != PKJB_SI_GBA) {
         return 1;
     }
     if (GBAReset(chan, &status) != 0) {

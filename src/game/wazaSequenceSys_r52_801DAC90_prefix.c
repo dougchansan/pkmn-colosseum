@@ -3,16 +3,16 @@
 
 extern u16 lbl_80467CD4[16];
 extern void fn_800E24B0(u16 handle);
-extern void fn_800E209C(u16 handle);
+extern void GSmemFree(u16 handle);
 extern void fn_801D2F94(void);
 
-/* Retail expands fn_801DB100's 0x54-byte entry-clear body in this loop. */
+/* Retail expands wazaSequenceOwnerFree's 0x54-byte entry-clear body in this loop. */
 static inline void wazaSequenceClearEntry(WazaEffect* entry)
 {
     if (entry != NULL) {
         if (entry->active != 0) {
             fn_801DD3E4(entry);
-            fn_801DD23C(entry);
+            wazaSequenceOwnerRelease(entry);
         }
         memset(entry, 0, sizeof(*entry));
     }
@@ -27,7 +27,7 @@ static inline void wazaSequenceReleaseResources(void)
     do {
         if (*resource != 0) {
             fn_800F915C(*resource);
-            fn_8017B1CC(*resource);
+            GSresReleaseById(*resource);
             *resource = 0;
         }
         i++;
@@ -47,7 +47,7 @@ void wazaSequenceSysRelease(void)
         wazaSequenceClearEntry(entry);
     }
     fn_800E24B0(handle);
-    fn_800E209C(handle);
+    GSmemFree(handle);
     memset(lbl_80467CC0, 0, 0x14);
     wazaSequenceReleaseResources();
     fn_801D2F94();
@@ -55,6 +55,6 @@ void wazaSequenceSysRelease(void)
     lbl_8047B418 = 0;
     if (lbl_80467CC0[6] == 0) {
         fn_800F915C(0x6F7);
-        fn_8017B1CC(0x6F7);
+        GSresReleaseById(0x6F7);
     }
 }

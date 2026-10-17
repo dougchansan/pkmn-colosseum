@@ -36,7 +36,7 @@ static inline u32 fn_80219E10_checkMove(u16 move)
 
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (optimize_for_size on) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma optimize_for_size on
-void fn_80219E10(void)
+void wsCmd9E(void)
 {
     extern u32 fn_8000814C();
     extern u32 GSrand();
@@ -46,7 +46,7 @@ void fn_80219E10(void)
     extern u32 fightFloorGetStatus();
     extern u32 pokemonGetStatus();
     extern void fightWazaSetUseWazaStatus();
-    extern int fn_8022B2CC();
+    extern int fightSeqSelectTarget();
     extern u32 lbl_8047B618;
     extern u16 lbl_80279FA0[];
     extern u32 lbl_80379BFF[];
@@ -95,7 +95,7 @@ void fn_80219E10(void)
     fightWazaSetUseWazaStatus(status, selected);
     {
         u32 callResult =
-            fn_8022B2CC(attacker, selected, floorId, 0, 1, 1, (void*)0xffffffff);
+            fightSeqSelectTarget(attacker, selected, floorId, 0, 1, 1, (void*)0xffffffff);
         result = callResult;
     }
     fightFloorSetStatus(0, 0, 0x43, 0, result);

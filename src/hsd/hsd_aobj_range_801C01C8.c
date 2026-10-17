@@ -9,7 +9,7 @@
  * functions (0x801C0F20-0x801C2AE8), all of which are HSD sysdolphin
  * library code, not battle-grid code -- this is the direct continuation
  * of the same XD translation unit (aobj.cpp) as the functions above.
- * fn_801C021C is matched below; HSD_ForeachAnim remains a near match.
+ * HSD_VISetUserPostRetraceCallback is matched below; HSD_ForeachAnim remains a near match.
  */
 #include "dolphin/types.h"
 #include "dolphin/os/OSInterrupt.h"
@@ -53,15 +53,15 @@ extern HSD_SList* lbl_8047B388;
 
 /* HSD_JObjUnref's tail helper. The target calls the raw symbol at
  * 0x801A05EC, NOT src/hsd/hsd_jobj.c's HSD_JObjUnref, so it must be spelled
- * as fn_801A05EC here to keep the relocation identical. */
-extern void fn_801A05EC(void* obj);
+ * as HSD_JObjUnref here to keep the relocation identical. */
+extern void HSD_JObjUnref(void* obj);
 extern f64 fmod(f64 x, f64 y);
 extern void* memset(void* dst, int val, u32 size);
 
 /**
- * fn_801C01C8 - Address: 0x801C01C8 | Size: 0x54
+ * HSD_VISetUserGXDrawDoneCallback - Address: 0x801C01C8 | Size: 0x54
  */
-void* fn_801C01C8(void* callback)
+void* HSD_VISetUserGXDrawDoneCallback(void* callback)
 {
     void* previous = lbl_80466BC0[0x7A];
     BOOL enabled = OSDisableInterrupts();
@@ -72,9 +72,9 @@ void* fn_801C01C8(void* callback)
 }
 
 /**
- * fn_801C021C - Address: 0x801C021C | Size: 0x54
+ * HSD_VISetUserPostRetraceCallback - Address: 0x801C021C | Size: 0x54
  */
-void* fn_801C021C(void* callback)
+void* HSD_VISetUserPostRetraceCallback(void* callback)
 {
     void* previous = lbl_80466BC0[0x77];
     BOOL enabled = OSDisableInterrupts();
@@ -529,7 +529,7 @@ void HSD_AObjRemove(HSD_AObj* aobj) {
 
     if (aobj) {
         if (aobj->hsd_obj != NULL) {
-            fn_801A05EC(aobj->hsd_obj);
+            HSD_JObjUnref(aobj->hsd_obj);
         }
         aobj->hsd_obj = NULL;
     }
@@ -606,7 +606,7 @@ HSD_AObj* HSD_AObjLoadDesc(HSD_AObjDesc* aobjdesc) {
             }
             if (aobj != NULL) {
                 if (aobj->hsd_obj != NULL) {
-                    fn_801A05EC(aobj->hsd_obj);
+                    HSD_JObjUnref(aobj->hsd_obj);
                 }
                 aobj->hsd_obj = phi_r30;
             }

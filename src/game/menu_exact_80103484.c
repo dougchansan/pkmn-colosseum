@@ -17,7 +17,7 @@ typedef struct MenuData {
 
 extern const MenuData* menuDataBiosGetPtr(u32 id);
 extern void* menuSeBiosGetPtr(s32 group);
-extern u16 fn_8005D798(void*, s32);
+extern u16 menuSeTableLookup(void*, s32);
 extern int soundStartSE(u16);
 extern u8 fn_8008ABA0(s32);
 extern s32 fn_8008AB8C(s32);
@@ -27,7 +27,7 @@ void menuPlaySe(u32 id, s32 event) {
     void* sound = menuSeBiosGetPtr(menuDataBiosGetPtr(id)->soundGroup & 7);
 
     if (sound != NULL) {
-        u32 se = fn_8005D798(sound, event);
+        u32 se = menuSeTableLookup(sound, event);
         if (se != 0) {
             soundStartSE(se);
         }

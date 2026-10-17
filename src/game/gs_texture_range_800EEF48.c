@@ -20,9 +20,9 @@ typedef struct GStextureRange {
 } GStextureRange;
 
 extern u16 _toolentryAlloc__FUl(u32 size);
-extern void* fn_800E27B0(u16 handle);
+extern void* GSmemLock(u16 handle);
 extern void fn_800E24B0(u16 handle);
-extern void fn_800E209C(u16 handle);
+extern void GSmemFree(u16 handle);
 extern void* memcpy(void* dst, const void* src, u32 size);
 extern void DCFlushRange(void* address, u32 size);
 extern void GXInvalidateTexAll(void);
@@ -56,7 +56,7 @@ void GStextureConvertToHW(GStextureRange* texture)
         return;
     }
 
-    converted = fn_800E27B0(handle);
+    converted = GSmemLock(handle);
     blocksPerRow = width >> 2;
     for (i = 0; i < pixelCount; i++) {
         u16 block = i >> 4;
@@ -74,5 +74,5 @@ void GStextureConvertToHW(GStextureRange* texture)
     GXInvalidateTexAll();
     texture->convertCount--;
     fn_800E24B0(handle);
-    fn_800E209C(handle);
+    GSmemFree(handle);
 }

@@ -10,7 +10,7 @@
  * StarsMmd/Colo-XD-PBR-symbol-maps @ 6b51d3a) ends with GScolsys2Sun
  * (0x1D4, the same size as here), and floor.o follows it. In Colosseum
  * GScolsys2Sun follows GScolsys2CheckGetEventID directly and is followed by
- * floor code (fn_80111DF8 onwards reads floor.c's .rodata), so the retail
+ * floor code (_floorGetStateSize onwards reads floor.c's .rodata), so the retail
  * TU here is this one function; XD's live getCpSegPolyArray and
  * GScolsys2SunArray have no Colosseum copies.
  *
@@ -98,8 +98,8 @@ static inline s32 chkCrossObj(GSFieldVec3f* start, GSFieldVec3f* end) {
         if (enable != 0) {
             mdl = region->boundaryTriangles;
             if (mdl != NULL) {
-                fn_8010CA30(inv, i);
-                fn_8010C8D0(fwd, i);
+                colsysMakeSRTMatrix(inv, i);
+                colsysMakeRotMatrix(fwd, i);
                 if (chkCrossMdl(start, end, &dir, mdl, inv, fwd)) {
                     return 1;
                 }

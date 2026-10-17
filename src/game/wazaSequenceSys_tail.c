@@ -24,7 +24,7 @@
  */
 void wazaSequenceSysRelease(void) {
     extern void fn_800E24B0(u16 handle);
-    extern void fn_800E209C(u16 handle);
+    extern void GSmemFree(u16 handle);
     u8* entry = *(u8**)lbl_80467CC0;
     u16 count = *(u16*)(lbl_80467CC0 + 4);
     u16 handle = *(u16*)(lbl_80467CC0 + 0x10);
@@ -34,13 +34,13 @@ void wazaSequenceSysRelease(void) {
         if (entry != NULL) {
             if (entry[0x74] != 0) {
                 fn_801DD3E4(entry);
-                fn_801DD23C(entry);
+                wazaSequenceOwnerRelease(entry);
             }
             memset(entry, 0, 0x8C);
         }
     }
     fn_800E24B0(handle);
-    fn_800E209C(handle);
+    GSmemFree(handle);
     memset(lbl_80467CC0, 0, 0x14);
 }
 
@@ -69,9 +69,9 @@ void fn_801DADC0(void* context) {
     extern void* floorDataBiosGetShadowReciveID(void*, u32);
     extern void* floorDataBiosGetShadowLightID(void*);
     extern void* GSresGetResource(u32, u32);
-    extern void fn_801019F8(void);
+    extern void wazaSequenceSysClearWork(void);
     extern u16 _toolentryAlloc__FUl(u32);
-    extern void* fn_800E27B0(u16);
+    extern void* GSmemLock(u16);
     u8* base = lbl_80467C80;
     WazaSystemState* state = (WazaSystemState*)lbl_80467C80;
     u32 groupId;
@@ -105,7 +105,7 @@ void fn_801DADC0(void* context) {
     }
 
     if (count != 0) {
-        fn_801019F8();
+        wazaSequenceSysClearWork();
         receiverCount = count * 0x8C;
         handle = _toolentryAlloc__FUl(receiverCount);
         if (handle != 0) {
@@ -113,9 +113,9 @@ void fn_801DADC0(void* context) {
 
             pool->handle = handle;
             pool->count = count;
-            pool->entries = fn_800E27B0(handle);
+            pool->entries = GSmemLock(handle);
             memset(pool->entries, 0, receiverCount);
-            fn_801D301C();
+            battleCameraWazaInit();
             pool->resourceA = NULL;
             pool->resourceB = NULL;
             pool->active = 0;
@@ -124,12 +124,12 @@ void fn_801DADC0(void* context) {
 }
 
 /**
- * fn_801DAEF8 - Waza system initialization.
+ * wazaSequenceSysInit - Waza system initialization.
  * Address: 0x801DAEF8 | Size: 0x168
  * Referenced by battle_main.c (battle_FightStart).
  * Allocates waza context and prepares the system for move animations.
  */
-void fn_801DAEF8(s32 count) {
+void wazaSequenceSysInit(s32 count) {
     extern u8 lbl_80467CD4[];
     extern void* floorDataBiosGetCurrentPtr(void);
     extern u32 floorDataBiosGetGroupID(void*);
@@ -137,9 +137,9 @@ void fn_801DAEF8(s32 count) {
     extern void* floorDataBiosGetShadowReciveID(void*, u32);
     extern void* floorDataBiosGetShadowLightID(void*);
     extern void* GSresGetResource(u32, u32);
-    extern void fn_801019F8(void);
+    extern void wazaSequenceSysClearWork(void);
     extern u16 _toolentryAlloc__FUl(u32);
-    extern void* fn_800E27B0(u16);
+    extern void* GSmemLock(u16);
     void* floor;
     void* resource;
     u32 groupId;
@@ -169,15 +169,15 @@ void fn_801DAEF8(s32 count) {
     }
 
     if (count != 0) {
-        fn_801019F8();
+        wazaSequenceSysClearWork();
         size = count * 0x8C;
         handle = _toolentryAlloc__FUl(size);
         if (handle != 0) {
             *(u16*)(lbl_80467CC0 + 0x10) = handle;
             *(u16*)(lbl_80467CC0 + 4) = count;
-            *(void**)lbl_80467CC0 = fn_800E27B0(handle);
+            *(void**)lbl_80467CC0 = GSmemLock(handle);
             memset(*(void**)lbl_80467CC0, 0, size);
-            fn_801D301C();
+            battleCameraWazaInit();
             fn_801DE598(0x6F7, 0);
             *(void**)(lbl_80467CC0 + 8) =
                 GSresGetResource(0x6F7, 0x11EF2400);
@@ -206,11 +206,11 @@ int wazaSequenceSysGetResID(void) {
 }
 
 /**
- * fn_801DB088 - Waza system reset.
+ * wazaSequenceSysUpdate - Waza system reset.
  * Address: 0x801DB088 | Size: 0x78
  * Referenced by battle_main.c (battle_FightCleanup).
  */
-void fn_801DB088(void)
+void wazaSequenceSysUpdate(void)
 {
     u8* pool = lbl_80467CC0;
     WazaEffect* entry;
@@ -222,7 +222,7 @@ void fn_801DB088(void)
     for (; i < count; i++, entry++) {
         if (entry->active != 0) {
             fn_801DD158(entry);
-            fn_801DF1D0(entry);
+            wazaSequenceOwnerUpdateBlink(entry);
         }
     }
 
@@ -232,14 +232,14 @@ void fn_801DB088(void)
 }
 
 /**
- * fn_801DB100 - Waza system get context.
+ * wazaSequenceOwnerFree - Waza system get context.
  * Address: 0x801DB100 | Size: 0x54
  */
-void fn_801DB100(void* obj) {
+void wazaSequenceOwnerFree(void* obj) {
     if (obj != NULL) {
         if (*(u8*)((u8*)obj + 0x74) != 0) {
             fn_801DD3E4(obj);
-            fn_801DD23C(obj);
+            wazaSequenceOwnerRelease(obj);
         }
 
         memset(obj, 0, 0x8C);
@@ -300,7 +300,7 @@ void wazaSequenceSysFreeSequenceResource(void* obj) {
             }
 
             fn_800F915C(id);
-            fn_8017B1CC(id);
+            GSresReleaseById(id);
         }
 
         *(u16*)((u8*)obj + 0x72) = 0;
@@ -346,7 +346,7 @@ void wazaSequenceSysFreeWazaResource(void* seqData) {
                 _threadSwitch();
             }
             fn_800F915C(resourceId);
-            fn_8017B1CC(resourceId);
+            GSresReleaseById(resourceId);
         }
         *(u16*)((u8*)seqData + 0x30) = 0;
     }
@@ -626,16 +626,16 @@ void wazaSequenceSysResetAnimationExcept(void* except) {
     count = *(u16*)(pool + 4);
     for (; i < count; i++, effect++) {
         if (except != effect && effect->active != 0 && effect->model != NULL) {
-            fn_801DEF0C(effect, 1, 0);
+            wazaSequenceOwnerPlayIdle(effect, 1, 0);
         }
     }
 }
 
 /**
- * fn_801DB8FC - Draw matching models from a sequence entry.
+ * wazaSequenceOwnerDrawAttached - Draw matching models from a sequence entry.
  * Address: 0x801DB8FC | Size: 0x8C
  */
-void fn_801DB8FC(void* entry, u32 drawFlags, u8 modelID) {
+void wazaSequenceOwnerDrawAttached(void* entry, u32 drawFlags, u8 modelID) {
     u8* node;
 
     node = *(u8**)((u8*)entry + 0x24);

@@ -11,12 +11,12 @@ extern u8 lbl_80478D78[8];
 extern u32 lbl_8047B618;
 
 /*
- * fn_80222BD8 (0x80222BD8)
+ * wsCmd25 (0x80222BD8)
  * Sequence opcode: touch the current attacker's field 0xd9, reset the move
  * loop, clear the two sequence flag bytes and flag bits 0x40 / 0x4000, and
  * advance the sequence PC by one byte.
  */
-void fn_80222BD8(void)
+void wsCmd25(void)
 {
     extern u32 fightTargetGetPtrAsNowFightType();
     extern u32 pokemonGetStatus();

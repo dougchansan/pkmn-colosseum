@@ -19,8 +19,8 @@
  * HSD_SListAllocAndPrepend carries its expansion, assert 202).
  *
  * The symbols keep their address names: lbl_804655B4 is slist_alloc_data,
- * lbl_80465588 dlist_alloc_data, fn_801A3FBC HSD_ListInitAllocData,
- * fn_801A3F48 HSD_SListAlloc, fn_801A3E64 HSD_SListRemove, and
+ * lbl_80465588 dlist_alloc_data, HSD_ListInitAllocData HSD_ListInitAllocData,
+ * HSD_SListAlloc HSD_SListAlloc, HSD_SListRemove HSD_SListRemove, and
  * HSD_SListPrepend is HSD_SListAllocAndPrepend.
  */
 #include "dolphin/types.h"
@@ -44,7 +44,7 @@ HSD_ObjAllocData lbl_80465588;
 #define dlist_alloc_data lbl_80465588
 
 /* HSD_ListInitAllocData */
-void fn_801A3FBC(void)
+void HSD_ListInitAllocData(void)
 {
     HSD_ObjAllocInit(&slist_alloc_data, sizeof(HSD_SList), 4);
     HSD_ObjAllocInit(&dlist_alloc_data, sizeof(HSD_DList), 4);
@@ -61,7 +61,7 @@ HSD_ObjAllocData* HSD_DListGetAllocData(void)
 }
 
 /* HSD_SListAlloc */
-HSD_SList* fn_801A3F48(void)
+HSD_SList* HSD_SListAlloc(void)
 {
     HSD_SList* list;
 
@@ -79,7 +79,7 @@ HSD_SList* HSD_SListPrepend(HSD_SList* next, void* data)
 {
     HSD_SList* list;
 
-    list = fn_801A3F48();
+    list = HSD_SListAlloc();
     list->data = data;
 
     return HSD_SListPrependList(next, list);
@@ -93,7 +93,7 @@ HSD_SList* HSD_SListPrependList(HSD_SList* list, HSD_SList* prev)
 }
 
 /* HSD_SListRemove */
-HSD_SList* fn_801A3E64(HSD_SList* list)
+HSD_SList* HSD_SListRemove(HSD_SList* list)
 {
     HSD_SList* next;
 

@@ -57,14 +57,14 @@ extern s8 itemParamGetFriend2Up(u8* p);
 extern s8 itemParamGetFriend3Up(u8* p);
 extern void* fightFloorGetFightPokemonPtrToFightTrainerPtr(s32, void*);
 extern void* fightTrainerCheckFightPokemonFightOut(void*, void*);
-extern void fn_802331A4(void* fightOutPokemon, s32 id);
-extern void fn_8020248C(void*, s32, u32);
+extern void fightOutPokemonUpdateHensinStatus(void* fightOutPokemon, s32 id);
+extern void fightOutPokemonWritePokemonJoutaiDataId(void*, s32, u32);
 extern u8 fn_802025B8(void*, s32);
 extern u8 fightOutPokemonCheckWriteJoutaiDataId(void* fightPokemon, s32 statusId);
 extern void fightOutPokemonWriteJoutaiDataId(void* fightOutPokemon, s32 statusId);
-extern u8 fn_802026E4(void* fightOutPokemon, s32 statusId);
-extern u8 fn_80121ADC(void* pokemon, s32 statusId);
-extern void fn_80121B4C(void* pokemon, s32 statusId);
+extern u8 fightOutPokemonIsPokemonJoutaiDataId(void* fightOutPokemon, s32 statusId);
+extern u8 pokemonIsJoutaiDataId(void* pokemon, s32 statusId);
+extern void pokemonInitPersistentJoutai(void* pokemon, s32 statusId);
 extern void* fightTargetGetPtrAsNowFightType(s32 type, void* fightPokemon);
 extern u8 fightSideCheckWriteJoutaiDataId(void* side, s32 statusId);
 extern void fightSideWriteJoutaiDataId(void* side, s32 statusId, u32 value);
@@ -143,7 +143,7 @@ static inline void itemUseNotify(void* fightPokemon, s32 id) {
 
     fightOut = itemUseGetFightOut(fightPokemon);
     if (fightOut != NULL) {
-        fn_802331A4(fightOut, id);
+        fightOutPokemonUpdateHensinStatus(fightOut, id);
     }
 }
 
@@ -317,7 +317,7 @@ static inline void itemUsePPRecover(
         slot = 0xFF;
     }
     target = pokemon;
-    if (fn_80121ADC(pokemon, 0x10) || fn_80121ADC(pokemon, 0x31)) {
+    if (pokemonIsJoutaiDataId(pokemon, 0x10) || pokemonIsJoutaiDataId(pokemon, 0x31)) {
         target = fightPokemonBiosGetMotoPokemonPtr(fightPokemon);
     }
     if (slot != 0xFF) {
@@ -385,8 +385,8 @@ static inline void itemUseCureSleep(
     u8 wokeUp = 0;
     void* fightOut;
 
-    if (fn_80121ADC(pokemon, 8)) {
-        fn_80121B4C(pokemon, 8);
+    if (pokemonIsJoutaiDataId(pokemon, 8)) {
+        pokemonInitPersistentJoutai(pokemon, 8);
         fightOut = itemUseGetFightOut(fightPokemon);
         if (fightOut != NULL) {
             fightOutPokemonWriteJoutaiDataId(fightOut, 0x17);
@@ -406,12 +406,12 @@ static inline void itemUseCurePoison(
     u8 poisonCleared = 0;
     u8 badPoisonCleared = 0;
 
-    if (fn_80121ADC(pokemon, 3)) {
-        fn_80121B4C(pokemon, 3);
+    if (pokemonIsJoutaiDataId(pokemon, 3)) {
+        pokemonInitPersistentJoutai(pokemon, 3);
         poisonCleared = 1;
     }
-    if (fn_80121ADC(pokemon, 4)) {
-        fn_80121B4C(pokemon, 4);
+    if (pokemonIsJoutaiDataId(pokemon, 4)) {
+        pokemonInitPersistentJoutai(pokemon, 4);
         badPoisonCleared = 1;
     }
     itemUseNotify(fightPokemon, 0x7C);
@@ -531,7 +531,7 @@ s16 fn_80144574(
 
     if (itemParamGetMeromeroFlag(itemParam)) {
         fightOut = itemUseGetFightOut(fightPokemon);
-        if (fightOut != NULL && fn_802026E4(fightOut, 0xA)) {
+        if (fightOut != NULL && fightOutPokemonIsPokemonJoutaiDataId(fightOut, 0xA)) {
             fightOutPokemonWriteJoutaiDataId(fightOut, 0xA);
             itemUseNotify(fightPokemon, 0x7C);
             itemUseAddLog(log, &logCount, 0, 0, 0);
@@ -541,7 +541,7 @@ s16 fn_80144574(
     if (itemParamGetCriticalFlag(itemParam)) {
         fightOut = itemUseGetFightOut(fightPokemon);
         if (fightOut != NULL && fn_802025B8(fightOut, 0xF) == 2) {
-            fn_8020248C(fightOut, 0xF, 0);
+            fightOutPokemonWritePokemonJoutaiDataId(fightOut, 0xF, 0);
             itemUseNotify(fightPokemon, 0x7C);
             itemUseNotify(fightPokemon, 0x99);
             itemUseAddLog(log, &logCount, 1, 0, 0);
@@ -580,25 +580,25 @@ s16 fn_80144574(
         itemUseCurePoison(log, &logCount, pokemon, fightPokemon);
     }
 
-    if (itemParamGetBurnFlag(itemParam) && fn_80121ADC(pokemon, 6)) {
-        fn_80121B4C(pokemon, 6);
+    if (itemParamGetBurnFlag(itemParam) && pokemonIsJoutaiDataId(pokemon, 6)) {
+        pokemonInitPersistentJoutai(pokemon, 6);
         itemUseNotify(fightPokemon, 0x7C);
         itemUseAddLog(log, &logCount, 0xE, 0, 0);
     }
-    if (itemParamGetFreezeFlag(itemParam) && fn_80121ADC(pokemon, 7)) {
-        fn_80121B4C(pokemon, 7);
+    if (itemParamGetFreezeFlag(itemParam) && pokemonIsJoutaiDataId(pokemon, 7)) {
+        pokemonInitPersistentJoutai(pokemon, 7);
         itemUseNotify(fightPokemon, 0x7C);
         itemUseAddLog(log, &logCount, 0xF, 0, 0);
     }
-    if (itemParamGetParalyzeFlag(itemParam) && fn_80121ADC(pokemon, 5)) {
-        fn_80121B4C(pokemon, 5);
+    if (itemParamGetParalyzeFlag(itemParam) && pokemonIsJoutaiDataId(pokemon, 5)) {
+        pokemonInitPersistentJoutai(pokemon, 5);
         itemUseNotify(fightPokemon, 0x7C);
         itemUseAddLog(log, &logCount, 0x10, 0, 0);
     }
 
     if (itemParamGetConfuseFlag(itemParam)) {
         fightOut = itemUseGetFightOut(fightPokemon);
-        if (fightOut != NULL && fn_802026E4(fightOut, 9)) {
+        if (fightOut != NULL && fightOutPokemonIsPokemonJoutaiDataId(fightOut, 9)) {
             fightOutPokemonWriteJoutaiDataId(fightOut, 9);
             itemUseNotify(fightPokemon, 0x7C);
             itemUseAddLog(log, &logCount, 0x11, 0, 0);

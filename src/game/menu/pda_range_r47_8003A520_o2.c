@@ -3,16 +3,16 @@
 extern void _threadSwitch(void);
 extern void fn_80018F54(s32 arg0, s32 arg1, s32 arg2);
 extern s32 fn_80039498(s32 value);
-extern void fn_8003A10C(s32 mode);
+extern void itemStorageTransfer(s32 mode);
 extern void fn_800F915C(s32 id);
 extern void menuClose(s32 id);
 extern void menuCloseSync(s32 id, s32 sync);
 extern void menuOpen(s32 id, s32 flag);
-extern void fn_8017B1CC(s32 id);
+extern void GSresReleaseById(s32 id);
 extern s32 fn_8017B2CC(s32 id);
 extern void fn_8017B3E4(s32 id);
 
-void fn_8003A520(void)
+void itemStorageRun(void)
 {
     s32 result;
 
@@ -28,7 +28,7 @@ void fn_8003A520(void)
             menuClose(0x1B);
             menuCloseSync(0x19, 1);
             menuCloseSync(0x1B, 1);
-            fn_8003A10C(0);
+            itemStorageTransfer(0);
             menuOpen(0x1B, 0);
             menuOpen(0x19, 0);
             break;
@@ -44,7 +44,7 @@ void fn_8003A520(void)
                 _threadSwitch();
             }
             fn_80018F54(4, 0, 0);
-            fn_8017B1CC(0x66F);
+            GSresReleaseById(0x66F);
             fn_800F915C(0x66F);
             menuOpen(0x1A, 0);
             menuOpen(0x1B, 0);
@@ -55,7 +55,7 @@ void fn_8003A520(void)
             menuClose(0x1B);
             menuCloseSync(0x19, 1);
             menuCloseSync(0x1B, 1);
-            fn_8003A10C(1);
+            itemStorageTransfer(1);
             menuOpen(0x1B, 0);
             menuOpen(0x19, 0);
             break;

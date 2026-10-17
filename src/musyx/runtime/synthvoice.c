@@ -57,11 +57,11 @@ extern SYNTH_VOICE* lbl_8047AF48;            /* synthVoice */
 extern u8 lbl_8047AF18;                      /* sndActive */
 extern u8 lbl_8047AF50;                      /* synthIdleWaitActive */
 
-extern void fn_80162494(u32 voice, u32 prio);  /* hwSetPriority */
-extern u32 fn_8016246C(u32 voice);            /* hwIsActive */
+extern void hwSetPriority(u32 voice, u32 prio);  /* hwSetPriority */
+extern u32 hwIsActive(u32 voice);            /* hwIsActive */
 extern void hwBreak(u32 voice);
 extern void macMakeInactive(SYNTH_VOICE* svoice, s32 newState);
-extern void fn_8014E7D0(u32 voice);          /* streamKill */
+extern void streamKill(u32 voice);          /* streamKill */
 
 void voiceResetLastStarted(SYNTH_VOICE* svoice);
 
@@ -149,7 +149,7 @@ static void vidRemove(VID_LIST** vidList)
     *vidList = NULL;
 }
 
-void fn_80157360(SYNTH_VOICE* svoice) /* vidRemoveVoiceReferences */
+void vidRemoveVoiceReferences(SYNTH_VOICE* svoice) /* vidRemoveVoiceReferences */
 {
     if (svoice->id == 0xFFFFFFFF) {
         return;
@@ -181,13 +181,13 @@ void fn_80157360(SYNTH_VOICE* svoice) /* vidRemoveVoiceReferences */
     }
 }
 
-u32 fn_801576B0(SYNTH_VOICE* svoice) /* vidMakeRoot */
+u32 vidMakeRoot(SYNTH_VOICE* svoice) /* vidMakeRoot */
 {
     svoice->vidMasterList = svoice->vidList;
     return ((VID_LIST*)svoice->vidList)->vid;
 }
 
-u32 fn_801576C4(SYNTH_VOICE* svoice, u32 isMaster) /* vidMakeNew */
+u32 vidMakeNew(SYNTH_VOICE* svoice, u32 isMaster) /* vidMakeNew */
 {
     u32 vid;
     VID_LIST* nvl;
@@ -352,10 +352,10 @@ void voiceSetPriority(SYNTH_VOICE* svoice, u8 prio)
 
     voicePrioSortVoicesRoot[prio] = v;
     svoice->prio = prio;
-    fn_80162494(svoice->id & 0xFF, ((u32)prio << 24) | (svoice->age >> 15));
+    hwSetPriority(svoice->id & 0xFF, ((u32)prio << 24) | (svoice->age >> 15));
 }
 
-u32 fn_80157A64(u8 priority, u8 maxVoices, u16 allocId, u8 fxFlag) /* voiceAllocate */
+u32 voiceAllocate(u8 priority, u8 maxVoices, u16 allocId, u8 fxFlag) /* voiceAllocate */
 {
     s32 i;
     s32 num;
@@ -563,18 +563,18 @@ void synthInitAllocationAids(void)
     voiceMusicRunning = 0;
 }
 
-u32 fn_80158328(u8 prio) /* voiceBlock */
+u32 voiceBlock(u8 prio) /* voiceBlock */
 {
     u32 voice;
 
-    if ((voice = fn_80157A64(prio, 0xFF, 0xFFFF, 1)) != 0xFFFFFFFF) {
+    if ((voice = voiceAllocate(prio, 0xFF, 0xFFFF, 1)) != 0xFFFFFFFF) {
         lbl_8047AF48[voice].block = 1;
         lbl_8047AF48[voice].fxFlag = 1;
         lbl_8047AF48[voice].allocId = 0xFFFF;
-        fn_80157360(&lbl_8047AF48[voice]);
+        vidRemoveVoiceReferences(&lbl_8047AF48[voice]);
         lbl_8047AF48[voice].id = voice | 0xFFFFFF00;
 
-        if (fn_8016246C(voice)) {
+        if (hwIsActive(voice)) {
             hwBreak(voice);
         }
 
@@ -592,7 +592,7 @@ void voiceUnblock(u32 voice)
         return;
     }
 
-    if (fn_8016246C(voice)) {
+    if (hwIsActive(voice)) {
         hwBreak(voice);
     }
 
@@ -606,14 +606,14 @@ void voiceKill(u32 vi)
     SYNTH_VOICE* sv = &lbl_8047AF48[vi];
 
     if (sv->addr != NULL) {
-        fn_80157360(sv);
+        vidRemoveVoiceReferences(sv);
         sv->cFlags &= ~3;
         sv->age = 0;
         voiceFree(sv);
     }
 
     if (sv->block != 0) {
-        fn_8014E7D0(vi);
+        streamKill(vi);
     }
 
     hwBreak(vi);

@@ -136,7 +136,7 @@ extern char lbl_8047CC70[] __attribute__((section(".sdata2")));
 extern char lbl_80270EE8[];
 
 void HSD_ForeachAnim(void* obj, u32 type, u32 mask, void* func, u32 arg_type, ...);
-void fn_801A32A0(HSD_JObj* jobj, u32 flags, f32 frame);
+void HSD_JObjReqAnimAllByFlags(HSD_JObj* jobj, u32 flags, f32 frame);
 void fn_801A2B5C(HSD_JObj* jobj, void* anim, void* mat_anim,
                  void* shape_anim);
 void modelCalculateBlendModel__FP8_GSmodelf(GSmodel* model);
@@ -153,7 +153,7 @@ GSpart* GSmodelGetPart(GSmodel* model, s32 index);
 void GSpartGetTransform(GSpart* part, GSvec* position, GSvec* rotation,
                         GSvec* scale);
 void GSpartFree(GSpart* part);
-void fn_800E06EC(GSquat* quaternion, GSvec* rotation);
+void GSquatFromEuler(GSquat* quaternion, GSvec* rotation);
 void GSvecTransformQuat(GSvec* dst, GSquat* quaternion, GSvec* src);
 void GSvecAdd(GSvec* dst, GSvec* lhs, GSvec* rhs);
 void fn_800E0108(GSvec* dst, GSvec* lhs, GSvec* rhs);
@@ -161,7 +161,7 @@ void modelSetPos(GSmodel* model, GSvec* position);
 void modelSetRot(GSmodel* model, GSvec* rotation);
 void modelSetScl(GSmodel* model, GSvec* scale);
 void fn_8019D620(HSD_JObj* jobj);
-void fn_8019D9DC(HSD_JObj* jobj);
+void HSD_JObjSetupMatrixSub(HSD_JObj* jobj);
 
 typedef struct GSmodelAnimEndedInfo {
     u32 event_flags;
@@ -223,7 +223,7 @@ typedef struct GSmodelAnimEndedInfo {
 extern s32 lbl_8047ABAC;
 extern s32 lbl_8047ABB0;
 typedef void (*GSmodelAObjApplyFunc)(HSD_AObj* aobj, void* arg);
-void fn_801A3918(HSD_JObj* jobj, GSmodelAObjApplyFunc func, u32 arg);
+void HSD_JObjWalkTree(HSD_JObj* jobj, GSmodelAObjApplyFunc func, u32 arg);
 void fn_800EE20C(HSD_AObj* aobj, void* arg);
 
 #if !defined(GS_MODEL_ANIM_SUFFIX_SPLIT) || \
@@ -245,7 +245,7 @@ void modelUpdateAttachments__FP8_GSmodel(GSmodel* model)
         GSpartGetTransform(part, &position, &rotation, &scale);
         GSpartFree(part);
 
-        fn_800E06EC(&quaternion, &rotation);
+        GSquatFromEuler(&quaternion, &rotation);
         GSvecTransformQuat(&transformed_position, &quaternion,
                            &model->attachment_position);
         GSvecAdd(&position, &position, &transformed_position);
@@ -564,11 +564,11 @@ void _modelGetEndFrame(HSD_AObj* aobj, f32* end_frame)
         *end_frame = aobj->end_frame;
     }
 }
-s32 fn_800EE0E8(GSmodel* model)
+s32 GSmodelWalkJObjs(GSmodel* model)
 {
     lbl_8047ABB0 = 0;
     lbl_8047ABAC = -1;
-    fn_801A3918(model->jobj, fn_800EE20C, 0);
+    HSD_JObjWalkTree(model->jobj, fn_800EE20C, 0);
     if (model->flags & MODEL_FLAG_USE_JOBJ_CHILD) {
         lbl_8047ABB0 = lbl_8047ABB0 - 1;
     }

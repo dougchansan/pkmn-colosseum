@@ -14,14 +14,14 @@ extern void OSEnableScheduler(void);
 extern void GSthreadExecuteAll(void);
 extern u8 fn_8000DAA8(void);
 extern void peopleMain(u32 a, u32 b);
-extern u8 fn_800F7EF8(u32 padIdx);
+extern u8 GSinputIsConnected(u32 padIdx);
 extern void fn_8008AC34(u32 padIdx);
 extern u8 fn_8008ABA0(u32 padIdx);
-extern void fn_800F7F64(u32 padIdx);
-extern void* fn_801664F0(void* color);
+extern void GSinputRead(u32 padIdx);
+extern void* soundSetListener(void* color);
 extern void GSresRegisterResource(void* work, u32 time, u32 numFrames, u32 arg);
-extern void fn_8009F488(u32 region, u32 addr, u32 size, u32 perm);
-extern s32 fn_800A2C58(void);
+extern void OSProtectRange(u32 region, u32 addr, u32 size, u32 perm);
+extern s32 DBIsDebuggerPresent(void);
 extern void OSCreateThread(void* thread, void* func, void* arg,
                            void* stackBase, u32 stackSize,
                            u32 priority, u32 detached);
@@ -64,7 +64,7 @@ extern int vsprintf(char* buf, const char* fmt, va_list ap);
 extern int sprintf(char* buf, const char* fmt, ...);
 
 /* =========================================================================
- *  fn_80005FA8 / fn_80005FA8
+ *  mainLogicTask / mainLogicTask
  *  Address: 0x80005FA8, Size: 0x54
  *
  *  Audio retrace callback. Called with (error, context) from the task
@@ -72,7 +72,7 @@ extern int sprintf(char* buf, const char* fmt, ...);
  *  potentially trigger a reconnect handler.
  * =========================================================================
  */
-void fn_80005FA8(u32 a, u32 b)
+void mainLogicTask(u32 a, u32 b)
 {
     GSthreadExecuteAll();
     if (fn_8000DAA8() == 0) {
@@ -85,7 +85,7 @@ void fn_80005FA8(u32 a, u32 b)
  *  Address: 0x80005FFC, Size: 0x50
  *
  *  Controller polling task. Iterates pads 1-4:
- *  if a pad is NOT responding to fn_800F7EF8 (connection check),
+ *  if a pad is NOT responding to GSinputIsConnected (connection check),
  *  it calls fn_8008AC34 to recalibrate that pad.
  * =========================================================================
  */
@@ -93,7 +93,7 @@ void fn_80005FFC(void) {
     s32 i;
 
     for (i = 1; i <= 4; i++) {
-        if (fn_800F7EF8(i) == 0) {
+        if (GSinputIsConnected(i) == 0) {
             fn_8008AC34(i);
         }
     }
@@ -105,7 +105,7 @@ void fn_80005FFC(void) {
  *
  *  Controller rumble update task. Iterates pads 1-4:
  *  if a pad is NOT responding to fn_8008ABA0 (motor check),
- *  it calls fn_800F7F64 to reset that pad's rumble state.
+ *  it calls GSinputRead to reset that pad's rumble state.
  * =========================================================================
  */
 void fn_8000604C(void) {
@@ -113,7 +113,7 @@ void fn_8000604C(void) {
 
     for (i = 1; i <= 4; i++) {
         if (fn_8008ABA0(i) == 0) {
-            fn_800F7F64(i);
+            GSinputRead(i);
         }
     }
 }
@@ -130,7 +130,7 @@ void fn_8000604C(void) {
 void fn_8000609C(void) {
     struct BgColor12 { u32 c[3]; } buf;
     buf = *(struct BgColor12*)lbl_80266438;
-    GSresRegisterResource(fn_801664F0(&buf), 0, 0x7D0, 0);
+    GSresRegisterResource(soundSetListener(&buf), 0, 0x7D0, 0);
 }
 
 /* fn_800060F0 - 0x800060F0 | size: 0x160 */
@@ -168,7 +168,7 @@ void fn_800060F0(const char* file, s32 line, const char* fmt, ...) {
  *    14 = BREAKPOINT
  *    15 = SYSTEM_INTERRUPT
  *    16 = THERMAL_INTERRUPT
- *  If the debugger is not connected (fn_800A2C58 returns 0), also
+ *  If the debugger is not connected (DBIsDebuggerPresent returns 0), also
  *  installs handlers for:
  *    6  = PROGRAM
  *    10 = SYSTEM_CALL
@@ -181,8 +181,8 @@ void fn_800060F0(const char* file, s32 line, const char* fmt, ...) {
  */
 void fn_80006250(void) {
     /* Set up memory protection regions */
-    fn_8009F488(0, 0, 0x80000000, 3);
-    fn_8009F488(1, 0x81800000, 0x01800000, 3);
+    OSProtectRange(0, 0, 0x80000000, 3);
+    OSProtectRange(1, 0x81800000, 0x01800000, 3);
 
     /* Install custom error handler for standard exceptions */
     OSSetErrorHandler(0, fn_80006378);   /* SYSTEM_RESET */
@@ -200,7 +200,7 @@ void fn_80006250(void) {
     OSSetErrorHandler(16, fn_80006378);  /* THERMAL_INTERRUPT */
 
     /* If debugger is not attached, also handle program/trace/syscall */
-    if (fn_800A2C58() == 0) {
+    if (DBIsDebuggerPresent() == 0) {
         OSSetErrorHandler(6, fn_80006378);   /* PROGRAM */
         OSSetErrorHandler(10, fn_80006378);  /* SYSTEM_CALL */
         OSSetErrorHandler(12, fn_80006378);  /* TRACE */

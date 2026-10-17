@@ -1,6 +1,6 @@
 /**
  * @file menuPokemon_r50_8001D624_suffix.c
- * @brief fn_8001D624 (0x8001D624 - 0x8001D718): the status-icon ID for a
+ * @brief menuPokemonGetStatusSprite (0x8001D624 - 0x8001D718): the status-icon ID for a
  *        Pokemon in the menus.
  *
  * Function-boundary carve of menuPokemon.c, text only, GC/2.0 -O4,p with the
@@ -17,7 +17,7 @@ extern u16 pokemonGetJoutaiMenuSpriteId(void* pokemon);
 extern u16 lbl_802E4EB8[8];
 extern u16 lbl_802E4EC8[8];
 
-u16 fn_8001D624(void* pokemon, u8 alt)
+u16 menuPokemonGetStatusSprite(void* pokemon, u8 alt)
 {
     u16 kind;
 

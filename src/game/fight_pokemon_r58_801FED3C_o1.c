@@ -14,27 +14,27 @@ extern void* pokemonGetStatus(void* context, u32 slot, u16 tableId, u32 flags);
  * 0xD6 slot's data (0x7C/0xC8 through its 0xCC record), 0xD8 on the
  * Pokemon itself; any other kind is never set. */
 static inline u8 fightPokemonIsJoutai(void* pokemon, u16 id) {
-    extern u16 fn_80119ED0(u16 id);
+    extern u16 joutaiDataBiosGetStatusKind(u16 id);
     extern u8 fn_8011B67C(void* obj, u16 id);
-    extern u8 fn_80121ADC(void* obj, u16 id);
+    extern u8 pokemonIsJoutaiDataId(void* obj, u16 id);
     void* slot;
     void* data;
 
-    if (fn_80119ED0(id) == 0x7C || fn_80119ED0(id) == 0xC8 || fn_80119ED0(id) == 0xCD) {
+    if (joutaiDataBiosGetStatusKind(id) == 0x7C || joutaiDataBiosGetStatusKind(id) == 0xC8 || joutaiDataBiosGetStatusKind(id) == 0xCD) {
         slot = pokemonGetStatus(pokemon, 0, 0xD6, 0);
-        if (fn_80119ED0(id) == 0x7C || fn_80119ED0(id) == 0xC8) {
+        if (joutaiDataBiosGetStatusKind(id) == 0x7C || joutaiDataBiosGetStatusKind(id) == 0xC8) {
             if (slot == NULL) {
                 data = NULL;
             } else {
                 data = pokemonGetStatus(slot, 0, 0xCC, 0);
             }
-            return fn_80121ADC(data, id);
-        } else if (fn_80119ED0(id) != 0xCD) {
+            return pokemonIsJoutaiDataId(data, id);
+        } else if (joutaiDataBiosGetStatusKind(id) != 0xCD) {
             return 0;
         } else {
             return fn_8011B67C(slot, id);
         }
-    } else if (fn_80119ED0(id) != 0xD8) {
+    } else if (joutaiDataBiosGetStatusKind(id) != 0xD8) {
         return 0;
     } else {
         return fn_8011B67C(pokemon, id);
@@ -44,26 +44,26 @@ static inline u8 fightPokemonIsJoutai(void* pokemon, u16 id) {
 /* Stores `value` as the status word of the joutai `id`, where
  * fightPokemonIsJoutai looks for it. */
 static inline void fightPokemonSetJoutaiStatus(void* pokemon, u16 id, u32 value) {
-    extern u16 fn_80119ED0(u16 id);
-    extern void fn_801214FC(void* obj, u16 id, u32 value);
-    extern void fn_8011A280(void* obj, u16 id, u32 value);
+    extern u16 joutaiDataBiosGetStatusKind(u16 id);
+    extern void pokemonSetJoutai08(void* obj, u16 id, u32 value);
+    extern void statusSetJoutai08(void* obj, u16 id, u32 value);
     void* slot;
     void* data;
 
-    if (fn_80119ED0(id) == 0x7C || fn_80119ED0(id) == 0xC8 || fn_80119ED0(id) == 0xCD) {
+    if (joutaiDataBiosGetStatusKind(id) == 0x7C || joutaiDataBiosGetStatusKind(id) == 0xC8 || joutaiDataBiosGetStatusKind(id) == 0xCD) {
         slot = pokemonGetStatus(pokemon, 0, 0xD6, 0);
-        if (fn_80119ED0(id) == 0x7C || fn_80119ED0(id) == 0xC8) {
+        if (joutaiDataBiosGetStatusKind(id) == 0x7C || joutaiDataBiosGetStatusKind(id) == 0xC8) {
             if (slot == NULL) {
                 data = NULL;
             } else {
                 data = pokemonGetStatus(slot, 0, 0xCC, 0);
             }
-            fn_801214FC(data, id, value);
-        } else if (fn_80119ED0(id) == 0xCD) {
-            fn_8011A280(slot, id, value);
+            pokemonSetJoutai08(data, id, value);
+        } else if (joutaiDataBiosGetStatusKind(id) == 0xCD) {
+            statusSetJoutai08(slot, id, value);
         }
-    } else if (fn_80119ED0(id) == 0xD8) {
-        fn_8011A280(pokemon, id, value);
+    } else if (joutaiDataBiosGetStatusKind(id) == 0xD8) {
+        statusSetJoutai08(pokemon, id, value);
     }
 }
 

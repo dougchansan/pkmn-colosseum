@@ -8,8 +8,8 @@
  * unit's flags (GC/1.3 -O4,p). Text only; the display size comes from the
  * HSD video state through HAL's HSD_VIGetRenderMode inline.
  *
- * The texture-copy SDK calls (fn_800B962C source rectangle, fn_800B96F8
- * destination size/format/mipmap, fn_800B9FE4 copy) are declared with the
+ * The texture-copy SDK calls (GXSetTexCopySrc source rectangle, GXSetTexCopyDst
+ * destination size/format/mipmap, GXCopyTex copy) are declared with the
  * prototypes of their linked unit (src/dolphin/sdk_range_800B9578.c). The
  * mipmap flag is passed as GX_TRUE/GX_FALSE; a bare comparison gives the
  * same instructions but a different register allocation.
@@ -26,10 +26,10 @@
 #endif
 
 void GXInvalidateTexAll(void);
-extern void fn_800B962C(u16 left, u16 top, u16 width, u16 height);
-extern void fn_800B96F8(u16 width, u16 height, s32 format, u8 mipmap);
-extern void fn_800B9FE4(void* dest, u8 clear);
-extern void fn_800B8E74(void);
+extern void GXSetTexCopySrc(u16 left, u16 top, u16 width, u16 height);
+extern void GXSetTexCopyDst(u16 width, u16 height, s32 format, u8 mipmap);
+extern void GXCopyTex(void* dest, u8 clear);
+extern void GXPixModeSync(void);
 
 /* 0x800EF1E8 | 0x1F8 */
 u8 GStextureConvertFromHW(GStextureHandle* tex, u8 clear) {
@@ -78,11 +78,11 @@ u8 GStextureConvertFromHW(GStextureHandle* tex, u8 clear) {
     if ((s32)tex->width < width) width = tex->width;
     if ((s32)tex->height < height) height = tex->height;
 
-    fn_800B962C(0, 0, width, height);
-    fn_800B96F8(width, height, gxFormat, tex->mipLevels > 1 ? GX_TRUE : GX_FALSE);
+    GXSetTexCopySrc(0, 0, width, height);
+    GXSetTexCopyDst(width, height, gxFormat, tex->mipLevels > 1 ? GX_TRUE : GX_FALSE);
     GXSetZMode(1, 3, 1);
-    fn_800B9FE4(image, clear);
-    fn_800B8E74();
+    GXCopyTex(image, clear);
+    GXPixModeSync();
     GXInvalidateTexAll();
     DCFlushRange(tex->mipData[0], tex->totalSize);
     GXInvalidateTexAll();

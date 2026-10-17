@@ -53,8 +53,8 @@
  *
  * The symbols keep their address names: lbl_8036D3F0 is hsdTObj,
  * lbl_8047B378 default_class, lbl_8047B37C tobj_head, fn_801BEEDC
- * HSD_TObjAddAnimAll, fn_801BEE68 HSD_TObjReqAnimAllByFlags, fn_801BE85C
- * TObjUpdateFunc, fn_801BE800 HSD_TObjAnimAll, fn_801BDA58
+ * HSD_TObjAddAnimAll, HSD_TObjReqAnimAllByFlags HSD_TObjReqAnimAllByFlags, TObjUpdateFunc
+ * TObjUpdateFunc, HSD_TObjAnimAll HSD_TObjAnimAll, fn_801BDA58
  * HSD_TObjSetupTextureCoordGen, fn_801BD8D0 HSD_TObjSetupVolatileTev,
  * fn_801BBE3C HSD_TObjInsert, fn_801BBCE0 TObjInit.
  */
@@ -81,14 +81,14 @@ extern HSD_ClassInfo* fn_80193748(const char* name); /* hsdSearchClassInfo */
 extern void* fn_80193828(HSD_ClassInfo* info);       /* hsdNew */
 extern void* fn_80193B10(s32 size);                  /* hsdAllocMemPiece */
 extern void fn_80193AF0(void* mem, s32 size);        /* hsdFreeMemPiece */
-extern void* fn_801A6928(s32 size);                  /* HSD_MemAlloc */
-extern void fn_801A6960(void* mem);                  /* HSD_Free */
+extern void* HSD_MemAlloc(s32 size);                  /* HSD_MemAlloc */
+extern void HSD_Free(void* mem);                  /* HSD_Free */
 #define hsdSearchClassInfo fn_80193748
 #define hsdNew fn_80193828
 #define hsdAllocMemPiece fn_80193B10
 #define hsdFreeMemPiece fn_80193AF0
-#define HSD_MemAlloc fn_801A6928
-#define HSD_Free fn_801A6960
+#define HSD_MemAlloc HSD_MemAlloc
+#define HSD_Free HSD_Free
 
 /* state.c / tev.c */
 extern void fn_8019C6EC(u32 mask); /* HSD_StateInvalidate */
@@ -125,25 +125,25 @@ extern void C_MTXLightOrtho(Mtx m, f32 t, f32 b, f32 l, f32 r, f32 scaleS,
 /* Dolphin GX */
 extern void GXSetTexCoordGen2(u32 dst_coord, u32 func, u32 src_param, u32 mtx,
                         u8 normalize, u32 pt_texmtx); /* GXSetTexCoordGen2 */
-extern void fn_800BA9E4(GXTexObj* obj, void* image, u16 width, u16 height,
+extern void GXInitTexObj(GXTexObj* obj, void* image, u16 width, u16 height,
                         u32 format, u32 wrap_s, u32 wrap_t,
                         u8 mipmap); /* GXInitTexObj */
 extern void GXInitTexObjCI(GXTexObj* obj, void* image, u16 width, u16 height,
                            u32 format, u32 wrap_s, u32 wrap_t, u8 mipmap,
                            u32 tlut_name);
-extern void fn_800BACA0(GXTexObj* obj, u32 min_filt, u32 mag_filt,
+extern void GXInitTexObjLOD(GXTexObj* obj, u32 min_filt, u32 mag_filt,
                         f32 min_lod, f32 max_lod, f32 lod_bias,
                         u8 bias_clamp, u8 do_edge_lod,
                         u32 max_aniso); /* GXInitTexObjLOD */
 extern void GXLoadTexObj(GXTexObj* obj, u32 id);
-extern void fn_800BB050(GXTlutObj* tlut_obj, void* lut, u32 fmt,
+extern void GXInitTlutObj(GXTlutObj* tlut_obj, void* lut, u32 fmt,
                         u16 n_entries); /* GXInitTlutObj */
-extern void fn_800BB098(GXTlutObj* tlut_obj, u32 tlut_name); /* GXLoadTlut */
+extern void GXLoadTlut(GXTlutObj* tlut_obj, u32 tlut_name); /* GXLoadTlut */
 extern void GXLoadTexMtxImm(Mtx mtx, u32 id, u32 type);
-#define GXInitTexObj fn_800BA9E4
-#define GXInitTexObjLOD fn_800BACA0
-#define GXInitTlutObj fn_800BB050
-#define GXLoadTlut fn_800BB098
+#define GXInitTexObj GXInitTexObj
+#define GXInitTexObjLOD GXInitTexObjLOD
+#define GXInitTlutObj GXInitTlutObj
+#define GXLoadTlut GXLoadTlut
 
 #define GX_PNMTX0 0
 #define GX_TEXMTX1 33
@@ -281,7 +281,7 @@ void HSD_TObjReqAnimByFlags(HSD_TObj* tobj, f32 startframe, u32 flags)
 }
 
 /* HSD_TObjReqAnimAllByFlags */
-void fn_801BEE68(HSD_TObj* tobj, f32 startframe, u32 flags)
+void HSD_TObjReqAnimAllByFlags(HSD_TObj* tobj, f32 startframe, u32 flags)
 {
     HSD_TObj* tp;
 
@@ -307,7 +307,7 @@ static inline f32 TObjClamp01(f32 x)
 }
 
 /* TObjUpdateFunc */
-void fn_801BE85C(void* obj, u32 type, HSD_ObjData* val)
+void TObjUpdateFunc(void* obj, u32 type, HSD_ObjData* val)
 {
     HSD_TObj* tobj = obj;
 
@@ -437,7 +437,7 @@ void HSD_TObjAnim(HSD_TObj* tobj)
 }
 
 /* HSD_TObjAnimAll */
-void fn_801BE800(HSD_TObj* tobj)
+void HSD_TObjAnimAll(HSD_TObj* tobj)
 {
     HSD_TObj* i;
 
@@ -1767,5 +1767,5 @@ static void TObjInfoInit(void)
     HSD_TOBJ_INFO(&hsdTObj)->load = TObjLoad;
     HSD_TOBJ_INFO(&hsdTObj)->make_texp = TObjMakeTExp;
     hsdTObj.make_mtx = MakeTextureMtx;
-    hsdTObj.update = fn_801BE85C;
+    hsdTObj.update = TObjUpdateFunc;
 }

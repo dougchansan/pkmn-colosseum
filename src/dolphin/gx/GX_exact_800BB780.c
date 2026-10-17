@@ -1,6 +1,6 @@
 #include "dolphin/gx/GXInternal.h"
 
-void fn_800BB780(u32 dstCoord, u32 function, u32 sourceParam, u32 matrix,
+void GXSetTevIndirect(u32 dstCoord, u32 function, u32 sourceParam, u32 matrix,
                  u32 normalize, u32 postMatrix, u32 normalizeColor,
                  u8 bias, u8 arg8, u32 arg9)
 {

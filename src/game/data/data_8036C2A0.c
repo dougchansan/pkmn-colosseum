@@ -34,38 +34,38 @@ extern u8 floorReadTexPreFunc[];
 extern u8 floorReadWZXPreFunc[];
 extern u8 floorReadRelModulePostFunc[];
 extern u8 floorReadRelModulePreFunc[];
-extern u8 fn_8017BFE8[];
-extern u8 fn_8017BFF0[];
-extern u8 fn_8017BFF8[];
-extern u8 fn_8017C000[];
-extern u8 fn_8017C008[];
-extern u8 fn_8017C394[];
-extern u8 fn_8017C39C[];
-extern u8 fn_8017C414[];
-extern u8 fn_8017C568[];
-extern u8 fn_8017C570[];
-extern u8 fn_8017C578[];
-extern u8 fn_8017C580[];
-extern u8 fn_8017C590[];
-extern u8 fn_8017C598[];
-extern u8 fn_8017C5A0[];
-extern u8 fn_8017C5B0[];
-extern u8 fn_8017C5B8[];
-extern u8 fn_8017C6E0[];
-extern u8 fn_8017C88C[];
-extern u8 fn_8017C894[];
-extern u8 fn_8017C8C0[];
-extern u8 fn_8017C8C8[];
-extern u8 fn_8017C8F4[];
-extern u8 fn_8017C8FC[];
-extern u8 fn_8017CE7C[];
-extern u8 fn_8017CEC8[];
-extern u8 fn_8017CED0[];
-extern u8 fn_8017CED8[];
-extern u8 fn_8017D3A0[];
-extern u8 fn_8017D3D4[];
-extern u8 fn_8017D400[];
-extern u8 fn_8017D408[];
+extern u8 fsysStatus8000[];
+extern u8 fsysStatus9999[];
+extern u8 fsysStatus600[];
+extern u8 fsysStatus500[];
+extern u8 fsysAllocLZSSJob[];
+extern u8 fsysStatus305[];
+extern u8 fsysStatus304[];
+extern u8 fsysSlotStatusFinishRead[];
+extern u8 fsysStatus302[];
+extern u8 fsysStatus301[];
+extern u8 fsysStatus300[];
+extern u8 fsysStatus162[];
+extern u8 fsysStatus161[];
+extern u8 fsysStatus160[];
+extern u8 fsysStatus152[];
+extern u8 fsysStatus151[];
+extern u8 fsysSlotStatusStartEntries[];
+extern u8 fsysStatus102[];
+extern u8 fsysStatus101[];
+extern u8 fsysStatus401[];
+extern u8 fsysStatus400[];
+extern u8 fsysStatus201[];
+extern u8 fsysStatus200[];
+extern u8 fsysStatus100[];
+extern u8 fsysSlotStatus2000[];
+extern u8 fsysStatus1000[];
+extern u8 fsysStatus5[];
+extern u8 fsysStatus4[];
+extern u8 fsysStatus3[];
+extern u8 fsysStatus2[];
+extern u8 fsysStatus1[];
+extern u8 fsysStatus0[];
 extern u8 fn_8017F3F8[];
 extern u8 fn_8017F484[];
 
@@ -156,69 +156,69 @@ void* lbl_8036C2A0[80] = {
 
 void* lbl_8036C3E0[66] = {
     (void*)0x00000000,
-    (void*)((u8*)fn_8017D408),
+    (void*)((u8*)fsysStatus0),
     (void*)0x00000001,
-    (void*)((u8*)fn_8017D400),
+    (void*)((u8*)fsysStatus1),
     (void*)0x00000002,
-    (void*)((u8*)fn_8017D3D4),
+    (void*)((u8*)fsysStatus2),
     (void*)0x00000003,
-    (void*)((u8*)fn_8017D3A0),
+    (void*)((u8*)fsysStatus3),
     (void*)0x00000004,
-    (void*)((u8*)fn_8017CED8),
+    (void*)((u8*)fsysStatus4),
     (void*)0x00000005,
-    (void*)((u8*)fn_8017CED0),
+    (void*)((u8*)fsysStatus5),
     (void*)0x000003E8,
-    (void*)((u8*)fn_8017CEC8),
+    (void*)((u8*)fsysStatus1000),
     (void*)0x000007D0,
-    (void*)((u8*)fn_8017CE7C),
+    (void*)((u8*)fsysSlotStatus2000),
     (void*)0x00000064,
-    (void*)((u8*)fn_8017C8FC),
+    (void*)((u8*)fsysStatus100),
     (void*)0x00000065,
-    (void*)((u8*)fn_8017C88C),
+    (void*)((u8*)fsysStatus101),
     (void*)0x00000066,
-    (void*)((u8*)fn_8017C6E0),
+    (void*)((u8*)fsysStatus102),
     (void*)0x00000067,
-    (void*)((u8*)fn_8017C008),
+    (void*)((u8*)fsysAllocLZSSJob),
     (void*)0x00000096,
-    (void*)((u8*)fn_8017C5B8),
+    (void*)((u8*)fsysSlotStatusStartEntries),
     (void*)0x00000097,
-    (void*)((u8*)fn_8017C5B0),
+    (void*)((u8*)fsysStatus151),
     (void*)0x00000098,
-    (void*)((u8*)fn_8017C5A0),
+    (void*)((u8*)fsysStatus152),
     (void*)0x000000A0,
-    (void*)((u8*)fn_8017C598),
+    (void*)((u8*)fsysStatus160),
     (void*)0x000000A1,
-    (void*)((u8*)fn_8017C590),
+    (void*)((u8*)fsysStatus161),
     (void*)0x000000A2,
-    (void*)((u8*)fn_8017C580),
+    (void*)((u8*)fsysStatus162),
     (void*)0x0000012C,
-    (void*)((u8*)fn_8017C578),
+    (void*)((u8*)fsysStatus300),
     (void*)0x0000012D,
-    (void*)((u8*)fn_8017C570),
+    (void*)((u8*)fsysStatus301),
     (void*)0x0000012E,
-    (void*)((u8*)fn_8017C568),
+    (void*)((u8*)fsysStatus302),
     (void*)0x00000130,
-    (void*)((u8*)fn_8017C39C),
+    (void*)((u8*)fsysStatus304),
     (void*)0x00000131,
-    (void*)((u8*)fn_8017C394),
+    (void*)((u8*)fsysStatus305),
     (void*)0x0000012F,
-    (void*)((u8*)fn_8017C414),
+    (void*)((u8*)fsysSlotStatusFinishRead),
     (void*)0x000001F4,
-    (void*)((u8*)fn_8017C000),
+    (void*)((u8*)fsysStatus500),
     (void*)0x00000258,
-    (void*)((u8*)fn_8017BFF8),
+    (void*)((u8*)fsysStatus600),
     (void*)0x000000C8,
-    (void*)((u8*)fn_8017C8F4),
+    (void*)((u8*)fsysStatus200),
     (void*)0x000000C9,
-    (void*)((u8*)fn_8017C8C8),
+    (void*)((u8*)fsysStatus201),
     (void*)0x00000190,
-    (void*)((u8*)fn_8017C8C0),
+    (void*)((u8*)fsysStatus400),
     (void*)0x00000191,
-    (void*)((u8*)fn_8017C894),
+    (void*)((u8*)fsysStatus401),
     (void*)0x0000270F,
-    (void*)((u8*)fn_8017BFF0),
+    (void*)((u8*)fsysStatus9999),
     (void*)0x00001F40,
-    (void*)((u8*)fn_8017BFE8),
+    (void*)((u8*)fsysStatus8000),
     (void*)0xFFFFFFFF,
     (void*)0x00000000,
 };

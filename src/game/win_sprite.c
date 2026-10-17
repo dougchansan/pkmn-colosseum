@@ -29,7 +29,7 @@
  * windowSearchItemID, fn_801081F8 and fn_80107170 take u16 item ids and
  * winSetSequence a u16 id (windowSearchItemID and winSetSequence extend
  * their own argument; the callers pass the register through).
- * fn_800D5CB8 takes u8 colour components.
+ * gfxVtxColor4u8 takes u8 colour components.
  */
 #include "game/win_sequence.h"
 
@@ -69,21 +69,21 @@ typedef struct WinSpriteVec3 {
 
 extern void GSlogWrite(const char* fmt, ...);
 extern u16 _toolentryAlloc__FUl(u32 size);
-extern void* fn_800E27B0(u16 handle);
+extern void* GSmemLock(u16 handle);
 extern void gfxSetFlags(s32);
 extern void gfxClearFlags(s32);
 extern void gfxSetBlendMode(s32, s32, s32);
 extern void gfxSetPrimitive(s32);
 extern void gfxSetVtxDesc(s32);
 extern void gfxBegin(s32);
-extern void fn_800D5CB8(s32, u8, u8, u8, u8);
+extern void gfxVtxColor4u8(s32, u8, u8, u8, u8);
 extern void gfxEnd(void);
-extern void* fn_800F92D4(u32);
+extern void* GSresFindById(u32);
 extern void gfxLoadTexture(s32, void*);
 extern u16 GStextureGetXsize(void*);
 extern u16 GStextureGetYsize(void*);
 extern void gfxVtxTexCoord(s32, f32, f32);
-extern void fn_800D61E4(s32, s32);
+extern void gfxVtxPos2s16(s32, s32);
 extern void fn_800E0718(void*, const void*, f32);
 extern void set__5GSvecFfff(void*, f32, f32, f32);
 extern void GSvecTransformQuat(void*, void*, void*);
@@ -110,7 +110,7 @@ void winSpriteInit(void) {
     if ((u16)h == 0) {
         GSlogWrite((const char*)lbl_80271F18, (const char*)lbl_8035B3F0);
     } else {
-        void* ptr = fn_800E27B0((u16)h);
+        void* ptr = GSmemLock((u16)h);
         lbl_8047AD1C = (tagSPRITE_WORK*)ptr;
         memset(ptr, 0, 0x10000 - 0x5740);
     }
@@ -187,13 +187,13 @@ s32 winSpriteGetDisp(void* ptr) {
 
 void winSpriteDraw(u8* context, WinSpriteDrawNode* sprite)
 {
-    extern void fn_800DA100(s32, s32, s32, s32, s32, s32);
+    extern void gfxSetAlphaCompare(s32, s32, s32, s32, s32, s32);
     extern void fn_800FE6D0(s16, s16);
     extern void spriteSetEnv(void);
-    extern void fn_8001EA98(s16, s16, s16, s16);
+    extern void windowDrawPanel(s16, s16, s16, s16);
     extern void fn_8001E644(s16, s16, s16, s16, u8);
-    extern void fn_800D5648(f32);
-    extern void fn_800FBB34(s16, s16, s16, s16, u32, void*);
+    extern void gfxSetLineWidth(f32);
+    extern void GSmsgPrintRect(s16, s16, s16, s16, u32, void*);
     extern u8 lbl_80314E08[];
     u8 red;
     u8 red2;
@@ -212,7 +212,7 @@ void winSpriteDraw(u8* context, WinSpriteDrawNode* sprite)
         gfxSetBlendMode(1, 6, 7);
         break;
     case 1:
-        fn_800DA100(1, 6, 0, 1, 0, 0);
+        gfxSetAlphaCompare(1, 6, 0, 1, 0, 0);
         gfxSetBlendMode(1, 4, 0);
         break;
     case 2:
@@ -233,7 +233,7 @@ void winSpriteDraw(u8* context, WinSpriteDrawNode* sprite)
             gfxSetBlendMode(1, 6, 7);
             break;
         case 1:
-            fn_800DA100(1, 6, 0, 1, 0, 0);
+            gfxSetAlphaCompare(1, 6, 0, 1, 0, 0);
             gfxSetBlendMode(1, 4, 0);
             break;
         case 2:
@@ -280,18 +280,18 @@ void winSpriteDraw(u8* context, WinSpriteDrawNode* sprite)
             gfxSetPrimitive(3);
             gfxSetVtxDesc((s32)lbl_80314E08);
             gfxBegin(3);
-            fn_800D61E4(sprite->x, sprite->y);
-            fn_800D5CB8(0, red, green, blue, alpha);
-            fn_800D61E4((s16)(sprite->x + sprite->crop_x),
+            gfxVtxPos2s16(sprite->x, sprite->y);
+            gfxVtxColor4u8(0, red, green, blue, alpha);
+            gfxVtxPos2s16((s16)(sprite->x + sprite->crop_x),
                          (s16)(sprite->y + sprite->crop_y));
-            fn_800D5CB8(0, red, green, blue, alpha);
-            fn_800D61E4((s16)(sprite->x + sprite->width),
+            gfxVtxColor4u8(0, red, green, blue, alpha);
+            gfxVtxPos2s16((s16)(sprite->x + sprite->width),
                          (s16)(sprite->y + sprite->height));
-            fn_800D5CB8(0, red, green, blue, alpha);
+            gfxVtxColor4u8(0, red, green, blue, alpha);
             gfxEnd();
             break;
         case 0x10001:
-            fn_8001EA98(sprite->x, sprite->y, sprite->width, sprite->height);
+            windowDrawPanel(sprite->x, sprite->y, sprite->width, sprite->height);
             break;
         case 0x10004:
             fn_8001E644(sprite->x, sprite->y, sprite->width,
@@ -304,32 +304,32 @@ void winSpriteDraw(u8* context, WinSpriteDrawNode* sprite)
             gfxSetPrimitive(7);
             gfxSetVtxDesc((s32)lbl_80314E08);
             gfxBegin(2);
-            fn_800D61E4(sprite->x, sprite->y);
-            fn_800D5CB8(0, red2, green2, blue2, alpha);
-            fn_800D61E4((s16)(sprite->x + sprite->width),
+            gfxVtxPos2s16(sprite->x, sprite->y);
+            gfxVtxColor4u8(0, red2, green2, blue2, alpha);
+            gfxVtxPos2s16((s16)(sprite->x + sprite->width),
                          (s16)(sprite->y + sprite->height));
-            fn_800D5CB8(0, red2, green2, blue2, alpha);
+            gfxVtxColor4u8(0, red2, green2, blue2, alpha);
             gfxEnd();
             break;
         case 0x10003:
             red2 = (u8)(((u16)sprite->crop_x * red) / 255);
             green2 = (u8)(((u16)sprite->crop_y * green) / 255);
             blue2 = (u8)(((u16)sprite->crop_width * blue) / 255);
-            fn_800D5648(1.0f);
+            gfxSetLineWidth(1.0f);
             gfxSetPrimitive(1);
             gfxSetVtxDesc((s32)lbl_80314E08);
             gfxBegin(2);
-            fn_800D61E4(sprite->x, sprite->y);
-            fn_800D5CB8(0, red2, green2, blue2, alpha);
-            fn_800D61E4(sprite->width, sprite->height);
-            fn_800D5CB8(0, red2, green2, blue2, alpha);
+            gfxVtxPos2s16(sprite->x, sprite->y);
+            gfxVtxColor4u8(0, red2, green2, blue2, alpha);
+            gfxVtxPos2s16(sprite->width, sprite->height);
+            gfxVtxColor4u8(0, red2, green2, blue2, alpha);
             gfxEnd();
             break;
         }
     }
 
     if (sprite->drawArg != NULL) {
-        fn_800FBB34(sprite->x, sprite->y, sprite->width, sprite->height,
+        GSmsgPrintRect(sprite->x, sprite->y, sprite->width, sprite->height,
                     color, sprite->drawArg);
     }
 }
@@ -360,7 +360,7 @@ void winSpriteDrawTexture(u8* context, WinSpriteDrawNode* sprite)
 
     gfxSetFlags(3);
     gfxClearFlags(4);
-    texture = fn_800F92D4(sprite->texture_id);
+    texture = GSresFindById(sprite->texture_id);
     if (texture != 0) {
         gfxLoadTexture(0, texture);
         if (sprite->crop_width != WIN_ABS(sprite->width)) {
@@ -427,8 +427,8 @@ void winSpriteDrawTexture(u8* context, WinSpriteDrawNode* sprite)
     gfxSetVtxDesc((s32)lbl_80314F98);
     gfxBegin(4);
     for (i = 0; i < 4; i++) {
-        fn_800D61E4((s32)(center_x + sQuadX[i]), (s32)(center_y + sQuadY[i]));
-        fn_800D5CB8(0, red, green, blue, alpha);
+        gfxVtxPos2s16((s32)(center_x + sQuadX[i]), (s32)(center_y + sQuadY[i]));
+        gfxVtxColor4u8(0, red, green, blue, alpha);
         gfxVtxTexCoord(0, sQuadU[i], sQuadV[i]);
     }
     gfxEnd();

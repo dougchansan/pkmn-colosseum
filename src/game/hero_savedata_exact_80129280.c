@@ -45,7 +45,7 @@ typedef struct HeroSaveData {
 
 /* 0x80129280 | 0x104 */
 u32 savedataGetStatus(u8* arg1, u16 arg2) {
-    extern u8* fn_80128E24(u8* ptr);
+    extern u8* savedataGetWorkPtr(u8* ptr);
     extern u32 fn_80128E04(u8* ptr);
     extern u32 fn_80128DEC(u8* ptr);
     extern u32 fn_80128DD4(u8* ptr);
@@ -56,13 +56,13 @@ u32 savedataGetStatus(u8* arg1, u16 arg2) {
     extern u32 fn_80128D4C(u8* ptr);
     extern u32 fn_80128D30(u8* ptr);
     extern u32 fn_80128D14(u8* ptr);
-    extern u32 fn_80128CF8(u8* ptr);
+    extern u32 savedataBiosGetE3E8Ptr(u8* ptr);
     extern u32 fn_80128CDC(u8* ptr);
     extern u32 fn_80128CC0(u8* ptr);
 
     if ((u32)arg2 >= 0x11) { return 0; }
     if (arg1 == NULL) {
-        arg1 = fn_80128E24(arg1);
+        arg1 = savedataGetWorkPtr(arg1);
         if (arg1 == NULL) { return 0; }
     }
     switch (arg2) {
@@ -95,7 +95,7 @@ u32 savedataGetStatus(u8* arg1, u16 arg2) {
     case 13:
         return fn_80128D14(arg1);
     case 14:
-        return fn_80128CF8(arg1);
+        return savedataBiosGetE3E8Ptr(arg1);
     case 15:
         return fn_80128CDC(arg1);
     case 16:

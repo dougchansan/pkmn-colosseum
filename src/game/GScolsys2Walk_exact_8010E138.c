@@ -84,8 +84,8 @@ typedef struct ColWalkHit {
 
 extern ColScene* fn_8010CBC0(void);
 extern s32 GScolsys2GetObjEnable(s32 index, s32* enabled);
-extern void fn_8010CA30(ColMtx out, u32 index);
-extern void fn_8010C8D0(ColMtx out, u32 index);
+extern void colsysMakeSRTMatrix(ColMtx out, u32 index);
+extern void colsysMakeRotMatrix(ColMtx out, u32 index);
 extern void PSMTXMultVec(ColMtx m, const GSvec* src, GSvec* dst);
 s32 fn_8010E138(GSvec* point, ColWalkHit* out);
 s32 getCpPolyVec__FP5GSvecP5GSvecP5GSvecP5GSvec(GSvec* out, GSvec* point, GSvec* vertices, GSvec* normal);
@@ -225,8 +225,8 @@ s32 fn_8010E138(GSvec* point, ColWalkHit* out)
         }
 
         if (obj->flags & 1) {
-            fn_8010CA30(matrix, i);
-            fn_8010C8D0(normalMatrix, i);
+            colsysMakeSRTMatrix(matrix, i);
+            colsysMakeRotMatrix(normalMatrix, i);
             count = ColWalkCollectList(temp, point, walk, matrix,
                                        normalMatrix);
         } else {

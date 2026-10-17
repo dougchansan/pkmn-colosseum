@@ -5,11 +5,11 @@
 extern void ReverbHICallback(u32 left, u32 right, u32 surround, void* work);
 extern u32 lbl_8047B054;
 
-u32 fn_801643D8(u32 size) {
+u32 salMalloc(u32 size) {
     return ((u32 (*)(u32))lbl_8047B054)(size);
 }
 
-void fn_80164400(u32 allocation) {
+void salFree(u32 allocation) {
     u32* callbacks = &lbl_8047B054;
 
     ((void (*)(u32))callbacks[1])(allocation);

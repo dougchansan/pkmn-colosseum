@@ -24,7 +24,7 @@ extern void* pokemonGetStatus();
 extern u32   pokemonSetStatus();
 
 /* Battle system functions */
-extern void fn_801EF8F4();
+extern void battleCameraSelect();
 
 /* Sound functions */
 extern void soundStop();     /* Stop sound */
@@ -192,12 +192,12 @@ void fightTimerCommandStart(void)
 void fightTimerCommandInit(void)
 {
     extern ColosseumBattleTimerState lbl_80478800;
-    extern s32 fn_80077B84(void);
+    extern s32 menuCBRule_GetCommandTimeLimit(void);
     extern void GSthreadTerminate(u32);
     ColosseumBattleTimerState *state;
     f32 limit;
 
-    limit = (f32)fn_80077B84();
+    limit = (f32)menuCBRule_GetCommandTimeLimit();
     state = &lbl_80478800;
     if (state->thread != 0) {
         if (state->thread != 0) {

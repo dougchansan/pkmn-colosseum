@@ -6,7 +6,7 @@ extern u16 lbl_8047B116;
 extern u16 lbl_8047B110;
 extern const f32 lbl_8047D5C0;
 extern const f32 lbl_8047D5C4;
-extern void* fn_801A6928(s32 size);
+extern void* HSD_MemAlloc(s32 size);
 extern void* memset(void* destination, s32 value, u32 size);
 
 PSAppSRT* psAddGeneratorAppSRT(PSGeneratorState* generator, u8 type)
@@ -15,7 +15,7 @@ PSAppSRT* psAddGeneratorAppSRT(PSGeneratorState* generator, u8 type)
     u16 familyId = generator->familyId;
 
     if (lbl_8047B124 == NULL) {
-        lbl_8047B124 = fn_801A6928(lbl_8047B120);
+        lbl_8047B124 = HSD_MemAlloc(lbl_8047B120);
         if (lbl_8047B124 != NULL) {
             memset(lbl_8047B124, 0, lbl_8047B120);
         }

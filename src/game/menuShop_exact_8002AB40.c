@@ -90,7 +90,7 @@ s32 fn_8002ACB8(void* r3, u8* r4)
         text_id = 0x151;
         x = (s32)*(s16*)(r4 + 0x54) -
             (s32)(s16)(GSmsgGetRect(text_id) >> 16);
-        fn_800FB680(x, 0, -1, text_id);
+        GSmsgPrintColor(x, 0, -1, text_id);
         goto done;
     }
 
@@ -124,7 +124,7 @@ s32 fn_8002ACB8(void* r3, u8* r4)
     text_id = 0x153;
     x = (s32)*(s16*)(r4 + 0x54) -
         (s32)(s16)(GSmsgGetRect(text_id) >> 16);
-    fn_800FB680(x + 6, 0, -1, text_id);
+    GSmsgPrintColor(x + 6, 0, -1, text_id);
 done:
     return 0;
 }

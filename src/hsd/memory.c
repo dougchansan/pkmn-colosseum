@@ -44,13 +44,13 @@ BOOL fn_801A6990(void* ptr)
 }
 
 /* HAL: HSD_Free */
-void fn_801A6960(void* ptr)
+void HSD_Free(void* ptr)
 {
     lbl_80465608.free(ptr);
 }
 
 /* HAL: HSD_MemAlloc */
-void* fn_801A6928(u32 size)
+void* HSD_MemAlloc(u32 size)
 {
     return lbl_80465608.alloc(size, 32, 0);
 }

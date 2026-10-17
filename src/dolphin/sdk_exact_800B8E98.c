@@ -53,13 +53,13 @@ extern volatile u8 lbl_8047A9C8;
 extern OSThreadQueue lbl_8047A9CC;
 
 extern void __GXSetSUTexRegs(void);
-extern void fn_800BC024(void);
+extern void __GXUpdateBPMask(void);
 extern void __GXSetGenMode(void);
-extern void fn_800B7BC4(void);
-extern void fn_800B8444(void);
+extern void __GXSetVCD(void);
+extern void __GXSetVAT(void);
 extern void __GXCalculateVLim(void);
 
-void fn_800B91EC(void);
+void __GXSetDirtyState(void);
 void __GXSendFlushPrim(void);
 
 #define GX_FIFO_U8  (*(volatile u8*)0xCC008000)
@@ -72,23 +72,23 @@ void __GXSendFlushPrim(void);
         GX_FIFO_U32 = (reg); \
     } while (0)
 
-void fn_800B8E98(u32 token, u32 value)
+void GXPokeAlphaMode(u32 token, u32 value)
 {
     __peReg[3] = (u16) ((token << 8) | (value & 0xFF));
 }
 
-void fn_800B8EAC(u32 value)
+void GXPokeAlphaRead(u32 value)
 {
     __peReg[4] = (u16) ((value & ~4U) | 4);
 }
 
-void fn_800B8EC0(u32 enable)
+void GXPokeAlphaUpdate(u32 enable)
 {
     volatile u16* reg = &__peReg[1];
     *reg = (u16) ((*reg & ~0x10U) | ((enable & 0xFF) << 4));
 }
 
-void fn_800B8EDC(s32 type, u32 srcFactor, u32 dstFactor, u32 op)
+void GXPokeBlendMode(s32 type, u32 srcFactor, u32 dstFactor, u32 op)
 {
     volatile u16* regp = &__peReg[1];
     u32 reg = *regp;
@@ -106,13 +106,13 @@ void fn_800B8EDC(s32 type, u32 srcFactor, u32 dstFactor, u32 op)
     *regp = (u16) reg;
 }
 
-void fn_800B8F64(u32 enable)
+void GXPokeColorUpdate(u32 enable)
 {
     volatile u16* reg = &__peReg[1];
     *reg = (u16) ((*reg & ~0x8U) | ((enable & 0xFF) << 3));
 }
 
-void fn_800B8F80(u8 func, u32 threshold)
+void GXPokeDstAlpha(u8 func, u32 threshold)
 {
     u32 reg;
 
@@ -120,13 +120,13 @@ void fn_800B8F80(u8 func, u32 threshold)
     __peReg[2] = reg;
 }
 
-void fn_800B8F94(u32 enable)
+void GXPokeDither(u32 enable)
 {
     volatile u16* reg = &__peReg[1];
     *reg = (u16) ((*reg & ~0x4U) | ((enable & 0xFF) << 2));
 }
 
-void fn_800B8FB0(u32 arg0, u32 arg1, u32 arg2)
+void GXPokeZMode(u32 arg0, u32 arg1, u32 arg2)
 {
     u32 reg = arg0 & 0xFF;
 
@@ -135,7 +135,7 @@ void fn_800B8FB0(u32 arg0, u32 arg1, u32 arg2)
     __peReg[0] = (u16) reg;
 }
 
-GXBreakPtCallback fn_800B8FD8(GXBreakPtCallback callback)
+GXBreakPtCallback GXSetDrawSyncCallback(GXBreakPtCallback callback)
 {
     GXBreakPtCallback old = lbl_8047A9C0;
     BOOL enabled = OSDisableInterrupts();
@@ -145,7 +145,7 @@ GXBreakPtCallback fn_800B8FD8(GXBreakPtCallback callback)
     return old;
 }
 
-void fn_800B901C(__OSInterrupt interrupt, OSContext* context)
+void GXTokenInterruptHandler(__OSInterrupt interrupt, OSContext* context)
 {
     OSContext exceptionContext;
     u16 token = __peReg[7];
@@ -161,7 +161,7 @@ void fn_800B901C(__OSInterrupt interrupt, OSContext* context)
     __peReg[5] = (__peReg[5] & ~4U) | 4;
 }
 
-GXDrawDoneCallback fn_800B90A4(GXDrawDoneCallback callback)
+GXDrawDoneCallback GXSetDrawDoneCallback(GXDrawDoneCallback callback)
 {
     GXDrawDoneCallback old = lbl_8047A9C4;
     BOOL enabled = OSDisableInterrupts();
@@ -171,7 +171,7 @@ GXDrawDoneCallback fn_800B90A4(GXDrawDoneCallback callback)
     return old;
 }
 
-void fn_800B90E8(__OSInterrupt interrupt, OSContext* context)
+void GXFinishInterruptHandler(__OSInterrupt interrupt, OSContext* context)
 {
     OSContext exceptionContext;
 
@@ -194,8 +194,8 @@ void __GXPEInit(void)
     volatile u16* regp;
     u32 reg;
 
-    __OSSetInterruptHandler(0x12, fn_800B901C);
-    __OSSetInterruptHandler(0x13, fn_800B90E8);
+    __OSSetInterruptHandler(0x12, GXTokenInterruptHandler);
+    __OSSetInterruptHandler(0x13, GXFinishInterruptHandler);
     OSInitThreadQueue(&lbl_8047A9CC);
     __OSUnmaskInterrupts(0x2000);
     __OSUnmaskInterrupts(0x1000);
@@ -209,22 +209,22 @@ void __GXPEInit(void)
     *regp = (u16) reg;
 }
 
-void fn_800B91EC(void)
+void __GXSetDirtyState(void)
 {
     if (gx->dirtyState & 1) {
         __GXSetSUTexRegs();
     }
     if (gx->dirtyState & 2) {
-        fn_800BC024();
+        __GXUpdateBPMask();
     }
     if (gx->dirtyState & 4) {
         __GXSetGenMode();
     }
     if (gx->dirtyState & 8) {
-        fn_800B7BC4();
+        __GXSetVCD();
     }
     if (gx->dirtyState & 0x10) {
-        fn_800B8444();
+        __GXSetVAT();
     }
     if (gx->dirtyState & 0x18) {
         __GXCalculateVLim();
@@ -232,10 +232,10 @@ void fn_800B91EC(void)
     gx->dirtyState = 0;
 }
 
-void fn_800B928C(u32 primitive, u32 vertexFormat, u16 vertexCount)
+void GXBegin(u32 primitive, u32 vertexFormat, u16 vertexCount)
 {
     if (gx->dirtyState != 0) {
-        fn_800B91EC();
+        __GXSetDirtyState();
     }
 
     if (*(u32*) &gx->field_000 == 0) {
@@ -264,7 +264,7 @@ void __GXSendFlushPrim(void)
     gx->field_002 = 1;
 }
 
-void fn_800B9404(u32 left, u32 top)
+void GXSetLineWidth(u32 left, u32 top)
 {
     GXData_800B8E98* p = gx;
 
@@ -274,7 +274,7 @@ void fn_800B9404(u32 left, u32 top)
     p->field_002 = 0;
 }
 
-void fn_800B944C(u32 right, u32 bottom)
+void GXSetPointSize(u32 right, u32 bottom)
 {
     GXData_800B8E98* p = gx;
 
@@ -284,7 +284,7 @@ void fn_800B944C(u32 right, u32 bottom)
     p->field_002 = 0;
 }
 
-void fn_800B9494(u32 chan, u32 enable0, u32 enable1)
+void GXEnableTexOffsets(u32 chan, u32 enable0, u32 enable1)
 {
     gx->field_0B8[chan] =
         (gx->field_0B8[chan] & ~0x40000U) | ((enable0 & 0xFF) << 18);
@@ -294,7 +294,7 @@ void fn_800B9494(u32 chan, u32 enable0, u32 enable1)
     gx->field_002 = 0;
 }
 
-void fn_800B94F0(s32 value)
+void GXSetCullMode(s32 value)
 {
     switch (value) {
     case 1:
@@ -309,7 +309,7 @@ void fn_800B94F0(s32 value)
     gx->dirtyState |= 4;
 }
 
-void fn_800B953C(u32 value)
+void GXSetCoPlanar(u32 value)
 {
     GXData_800B8E98* p = gx;
 

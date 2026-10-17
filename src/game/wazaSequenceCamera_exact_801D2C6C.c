@@ -1,6 +1,6 @@
 /**
  * @file wazaSequenceCamera_exact_801D2C6C.c
- * @brief fn_801D2C6C / fn_801D2C74, 0x801D2C6C - 0x801D2D28.
+ * @brief battleCameraWazaGetOwner / fn_801D2C74, 0x801D2C6C - 0x801D2D28.
  *
  * Function-boundary carve of the waza camera TU (see wazaSequenceCamera.c):
  * no jump table, no pooled constant; its data is the .sbss camera state
@@ -13,7 +13,7 @@ extern u8 lbl_8047B3F4; /* waza camera enabled */
 extern void battleCameraStartWaza(void* owner, void* sequence);
 
 /* The active waza camera sequence. */
-void* fn_801D2C6C(void)
+void* battleCameraWazaGetOwner(void)
 {
     return lbl_8047B3EC;
 }

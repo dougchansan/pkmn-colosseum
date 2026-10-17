@@ -1,7 +1,7 @@
 /**
  * @file menu_exact_80076334.c
  * @brief Exact island 0x80076334 - 0x80076A8C (menuCBRule_CheckPokemonErrorAll,
- *        fn_80076398, fn_800767B8): standalone copies, in address order, of
+ *        menuRuleCheckPokemon, menuRuleCheckPartyByRule): standalone copies, in address order, of
  *        the bodies in menu_range_8007109C.c (candidate
  *        menu_candidate_80076054 keeps fn_80076054 and fn_80076A8C).
  */
@@ -166,7 +166,7 @@ extern u32 OSGetTick(void);
 extern void _threadSwitch(void);
 
 /* Retail inlines this wait loop into its callers rather than calling out to
- * it: framescan shows fn_80078390 and fn_800788BC each hold lbl_8047C0E0 /
+ * it: framescan shows exDiscCelebiTransfer and exDiscCelebiEvent each hold lbl_8047C0E0 /
  * lbl_8047C0E4 and the two int->float conversion biases in callee-saved FPRs
  * (f27-f31), which only happens when the loop is in the function body. Ours
  * emitted `bl MenuWaitMotionInterval` and saved no FPRs at all.
@@ -252,18 +252,18 @@ static inline u8 menuRuleEventPokemonAllowed(void* pokemon)
 /* menuCBRule_CheckPokemonErrorAll (0x80076334): require every party member to
  * pass the per-slot error check. */
 u8 menuCBRule_CheckPokemonErrorAll(void* pokemon) {
-    extern u8 fn_80076398(void* pokemon, s32 index);
+    extern u8 menuRuleCheckPokemon(void* pokemon, s32 index);
     s32 i;
 
     for (i = 0; i < 6; i++) {
-        if (fn_80076398(pokemon, i) == 0) {
+        if (menuRuleCheckPokemon(pokemon, i) == 0) {
             return 0;
         }
     }
     return 1;
 }
 
-u8 fn_80076398(void* pokemon, s32 check)
+u8 menuRuleCheckPokemon(void* pokemon, s32 check)
 {
     extern s32 pokemonGetStatus(void*, s32, s32, u16);
     extern void pokemonBiosCopy(void*, void*);
@@ -299,7 +299,7 @@ u8 fn_80076398(void* pokemon, s32 check)
 
     switch (check) {
     case 0:
-        if (fn_80076398(pokemon, 2) == 0) {
+        if (menuRuleCheckPokemon(pokemon, 2) == 0) {
             return 1;
         }
         if (menuRuleEventPokemonAllowed(pokemon) == 0) {
@@ -396,7 +396,7 @@ static inline u8 menuRuleCheckPresentPokemonMode(void* pokemon,
     extern u8 pokemonBiosGetLevel(void*);
     extern u16 pokemonBiosGetItemDataId(void*);
     extern u8 fn_80142984(u16);
-    extern u8* fn_8006B420(void);
+    extern u8* savedataBattleGetRulePtr(void);
     MenuRuleItemRestrictions* restrictions;
     u16 item;
     u32 i;
@@ -409,7 +409,7 @@ static inline u8 menuRuleCheckPresentPokemonMode(void* pokemon,
         return pokemonBiosGetLevel(pokemon) <= levels[1];
     case 2:
         item = pokemonBiosGetItemDataId(pokemon);
-        restrictions = (MenuRuleItemRestrictions*)fn_8006B420();
+        restrictions = (MenuRuleItemRestrictions*)savedataBattleGetRulePtr();
         switch (item) {
         case 0:
             valid = 1;
@@ -471,7 +471,7 @@ pokemon_present:
 }
 
 /* Validate every party member against the active battle rule. */
-u8 fn_800767B8(void* hero, const u8* rule)
+u8 menuRuleCheckPartyByRule(void* hero, const u8* rule)
 {
     extern void* heroBiosGetPokemonPtr(void* hero, u16 slot);
     extern u8 pokemonCheckValid(void* pokemon);

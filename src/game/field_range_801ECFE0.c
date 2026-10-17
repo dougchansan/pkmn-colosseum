@@ -11,7 +11,7 @@ typedef struct PokemonCopy {
     u32 words[0x4e];
 } PokemonCopy;
 
-s32 fn_801ECFE0(void* arg0, void* arg1) {
+s32 daycareDeposit(void* arg0, void* arg1) {
     extern u8* savedataGetStatus(u8* arg0, u16 arg1);
     extern u8 pokemonBiosGetDarkFlag(u8* pokemon);
     extern void pokemonBiosGetDp(u8* pokemon);
@@ -53,12 +53,12 @@ s32 fn_801ECFE0(void* arg0, void* arg1) {
     return 1;
 }
 
-s32 fn_801ED0CC(u8* arg0, u8* pokemon)
+s32 daycareWithdraw(u8* arg0, u8* pokemon)
 {
     extern u8* savedataGetStatus(u8* data, u16 index);
     extern u8 pokemonBiosGetLevel(u8* pokemon);
-    extern u8 fn_80121ADC(u8* pokemon, u32 value);
-    extern void fn_80121B4C(u8* pokemon, u32 value);
+    extern u8 pokemonIsJoutaiDataId(u8* pokemon, u32 value);
+    extern void pokemonInitPersistentJoutai(u8* pokemon, u32 value);
     extern u8 pokemonBiosGetDarkFlag(u8* pokemon);
     extern u32 pokemonBiosGetDp(u8* pokemon);
     extern void pokemonInit(u8* pokemon);
@@ -93,8 +93,8 @@ s32 fn_801ED0CC(u8* arg0, u8* pokemon)
         return 0;
     }
 
-    if (fn_80121ADC(pokemon, 0x3E) != 0) {
-        fn_80121B4C(pokemon, 0x3E);
+    if (pokemonIsJoutaiDataId(pokemon, 0x3E) != 0) {
+        pokemonInitPersistentJoutai(pokemon, 0x3E);
     }
     *(PokemonCopy*)dest = *(PokemonCopy*)pokemon;
     if (pokemonBiosGetDarkFlag(pokemon) != 0) {

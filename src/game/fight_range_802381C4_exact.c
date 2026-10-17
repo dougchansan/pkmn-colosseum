@@ -21,7 +21,7 @@ u8 fn_802381C4(void *ctx, void *param2, u32 param3) {
                               (u8)param3);
 }
 
-u16 fn_80238270(void *ctx, void *param2, u32 param3) {
+u16 fightAiGetWazaId(void *ctx, void *param2, u32 param3) {
   extern void *pokemonGetStatus();
   extern u32 fightFloorGetStatus();
   extern u32 fightTrainerGetStatus();
@@ -35,7 +35,7 @@ u16 fn_80238270(void *ctx, void *param2, u32 param3) {
                                (u8)param3);
 }
 
-u32 fn_8023831C(ctx, param) void *ctx;
+u32 fightTrainerAiGetSoubiItem(ctx, param) void *ctx;
 u32 param;
 {
   extern void *pokemonGetStatus();
@@ -49,7 +49,7 @@ u32 param;
   return fightPokemonGetSoubiItemSoubiDataId(resolved);
 }
 
-u32 fn_802383A4(void *ctx, u32 param) {
+u32 fightAiGetSoubiItemOf(void *ctx, u32 param) {
   extern void *pokemonGetStatus();
   extern u32 fightFloorGetStatus();
   extern u32 fightTrainerGetStatus();
@@ -82,7 +82,7 @@ u32 fn_802384B4(void *ctx, void *param2, void *param3) {
   return 0;
 }
 
-u8 fn_80238538(void *ctx, void *param2) {
+u8 fightAiCheckSwitchFlag33(void *ctx, void *param2) {
   extern u32 fightFloorGetStatus();
   extern u32 fightTrainerGetStatus();
   extern void *fightPokemonGetPokemonPtr(void *ctx);
@@ -98,7 +98,7 @@ u8 fn_80238538(void *ctx, void *param2) {
   return 1;
 }
 
-u8 fn_80238600(void *ctx, void *param2) {
+u8 fightTrainerAiGetPokemonPartData1C(void *ctx, void *param2) {
   extern u32 fightFloorGetStatus();
   extern u32 fightTrainerGetStatus();
   extern void *fightPokemonGetPokemonPtr(void *ctx);
@@ -125,7 +125,7 @@ u32 fn_802386C8(void *ctx, void *param) {
   return pokemonGetStatus(fightPokemonGetPokemonPtr(param), 0, 0x8C, 0);
 }
 
-u32 fn_80238748(void *ctx, void *param) {
+u32 fightAiIsJoutaiNormal(void *ctx, void *param) {
   extern u32 fightTrainerGetStatus();
   extern void *fightPokemonGetPokemonPtr(void *ctx);
   extern u32 pokemonIsJoutaiNormal(u8 * ptr);
@@ -137,7 +137,7 @@ u32 fn_80238748(void *ctx, void *param) {
   return 1;
 }
 
-u32 fn_802387C8(void *ctx, void *param) {
+u32 fightAiGetHpPercent(void *ctx, void *param) {
   extern u32 fightTrainerGetStatus();
   extern u32 fightOutPokemonGetNowHpPercentage(void *ctx);
   fightTrainerGetStatus(0, fightTrainerGetStatus(ctx, 0, 0x43, 0) & 0xFFFF, 0x2,
@@ -170,7 +170,7 @@ u32 fn_8023881C(u32 r3, u32 r4) {
   return bVar7;
 }
 
-u32 fn_8023892C(void *ctx, void *param) {
+u32 fightAiGetLevel2(void *ctx, void *param) {
   extern u32 fightTrainerGetStatus();
   extern u32 figthPokemonGetLevel(u32 ctx);
   fightTrainerGetStatus(0, fightTrainerGetStatus(ctx, 0, 0x43, 0) & 0xFFFF, 0x2,
@@ -178,7 +178,7 @@ u32 fn_8023892C(void *ctx, void *param) {
   return figthPokemonGetLevel((u32)param);
 }
 
-u16 fn_80238980(void *ctx, void *param) {
+u16 fightTrainerAiGetPokemonDataId2(void *ctx, void *param) {
   extern u32 fightTrainerGetStatus();
   extern u16 figthPokemonGetPokemonDataId(void *ctx);
   fightTrainerGetStatus(0, fightTrainerGetStatus(ctx, 0, 0x43, 0) & 0xFFFF, 0x2,
@@ -186,8 +186,8 @@ u16 fn_80238980(void *ctx, void *param) {
   return figthPokemonGetPokemonDataId(param);
 }
 
-int fn_802389D4(u32 r3, u32 r4) {
-  extern int fn_8010C54C();
+int fightTrainerAiGetPokemonAisyouScore(u32 r3, u32 r4) {
+  extern int zokuseiGetAisyouScore();
   extern u32 pokemonGetStatus(u32, u32, u32, u8);
   extern u32 fightFloorGetStatus();
   extern u8 fightTrainerIsAllyFightTargetPtr();
@@ -221,7 +221,7 @@ int fn_802389D4(u32 r3, u32 r4) {
       sVar6 = 9;
     }
     if ((u16)sVar6 != 9) {
-      iVar2 = fn_8010C54C(sVar6, 0);
+      iVar2 = zokuseiGetAisyouScore(sVar6, 0);
       iVar8 = iVar8 + iVar2;
     }
   }

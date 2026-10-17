@@ -62,7 +62,7 @@ typedef struct GSmatObj {
 
 extern void GSlogWrite(const char* format, ...);
 extern u16 _toolentryAlloc__FUl(u32 size);
-extern void* fn_800E27B0(u16 handle);
+extern void* GSmemLock(u16 handle);
 extern void GXDrawDone(void);
 extern void fn_801A6DA0(HSD_MObj* mobj, HSD_TObj* tobj); /* HSD_MObjAddTObj */
 extern s32 HSD_TExpGetType(HSD_TExp* texp);
@@ -100,7 +100,7 @@ int _matGSmatObjLoad(HSD_MObj* mobj, HSD_MObjDesc* desc);
 
 /*
  * The extension-disable body GSmaterialDisableExtension (0x800DF248) wraps.
- * The target expands it three times in this range: in fn_800DF608 with every
+ * The target expands it three times in this range: in GSmaterialRemoveExtraTObj with every
  * extension bit and twice in _matGSmatEnableEnvMapExt with the env-map bit.
  * The TObj unlink re-reads material->mobj rather than reusing the outer
  * local; the target reloads it there too.
@@ -206,7 +206,7 @@ void GSmaterialSetFlags(GSmaterial* material, u32 flags)
     HSD_MObjCompileTev(material->mobj);
 }
 
-void fn_800DF608(GSmaterial* material)
+void GSmaterialRemoveExtraTObj(GSmaterial* material)
 {
     HSD_PEDesc* pe = material->savedPEDesc;
 
@@ -273,7 +273,7 @@ void GSmaterialInit(u32 count)
     lbl_8047AB20 = count;
     lbl_8047AB18 = _toolentryAlloc__FUl(count * sizeof(GSmaterial));
     if (lbl_8047AB18 != 0) {
-        lbl_8047AB1C = fn_800E27B0(lbl_8047AB18);
+        lbl_8047AB1C = GSmemLock(lbl_8047AB18);
         for (i = 0; i < lbl_8047AB20; i++) {
             lbl_8047AB1C[i].inUse = 0;
         }
@@ -281,7 +281,7 @@ void GSmaterialInit(u32 count)
     }
 }
 
-void _GSmaterialObjInit_800EF33C(void)
+void _GSmaterialObjInit(void)
 {
     hsdInitClassInfo((HSD_ClassInfo*)&lbl_80315490, (HSD_ClassInfo*)&lbl_8036CB30,
                      lbl_802705C0, lbl_802705C0, sizeof(HSD_MObjInfo), sizeof(GSmatObj));

@@ -33,9 +33,9 @@ typedef struct OSMessageQueue {
 #define OS_MESSAGE_BLOCK   1
 
 /* OSInitMessageQueue / OSSendMessage / OSReceiveMessage (src/dolphin/os/OSMemory.c) */
-void fn_8009F1D0(OSMessageQueue* mq, OSMessage* msgArray, s32 msgCount);
-BOOL fn_8009F230(OSMessageQueue* mq, OSMessage msg, s32 flags);
-BOOL fn_8009F2F8(OSMessageQueue* mq, OSMessage* msg, s32 flags);
+void OSInitMessageQueue(OSMessageQueue* mq, OSMessage* msgArray, s32 msgCount);
+BOOL OSSendMessage(OSMessageQueue* mq, OSMessage msg, s32 flags);
+BOOL OSReceiveMessage(OSMessageQueue* mq, OSMessage* msg, s32 flags);
 
 typedef struct THPTextureSet {
     /* 0x0 */ u8* ytexture;
@@ -127,35 +127,35 @@ typedef struct THPPlayer {
 extern THPPlayer lbl_8046AC60;
 
 /* THPPlayer.c */
-void fn_801E446C(BOOL msg); /* PrepareReady */
+void PrepareReady(BOOL msg); /* PrepareReady */
 
 /* THPRead.c */
-BOOL fn_801E1D7C(s32 priority);    /* CreateReadThread */
-void fn_801E1D48(void);            /* ReadThreadStart */
-void fn_801E1D0C(void);            /* ReadThreadCancel */
+BOOL CreateReadThread(s32 priority);    /* CreateReadThread */
+void ReadThreadStart(void);            /* ReadThreadStart */
+void ReadThreadCancel(void);            /* ReadThreadCancel */
 void* fn_801E1BE8(void);           /* PopReadedBuffer */
-void fn_801E1BB8(void* buffer);    /* PushFreeReadBuffer */
+void PushFreeReadBuffer(void* buffer);    /* PushFreeReadBuffer */
 void* fn_801E1B84(void);           /* PopReadedBuffer2 */
 BOOL fn_801E1B54(void* buffer);    /* PushReadedBuffer2 */
 
 /* THPAudioDecode.c */
-BOOL fn_801E4E1C(s32 priority, void* arg); /* CreateAudioDecodeThread */
-void fn_801E4DE8(void);                    /* AudioDecodeThreadStart */
-void fn_801E4DAC(void);                    /* AudioDecodeThreadCancel */
-void* fn_801E4AC4(s32 flags);              /* PopDecodedAudioBuffer */
-void fn_801E4B08(void* buffer);            /* PushFreeAudioBuffer */
+BOOL CreateAudioDecodeThread(s32 priority, void* arg); /* CreateAudioDecodeThread */
+void AudioDecodeThreadStart(void);                    /* AudioDecodeThreadStart */
+void AudioDecodeThreadCancel(void);                    /* AudioDecodeThreadCancel */
+void* PopDecodedAudioBuffer(s32 flags);              /* PopDecodedAudioBuffer */
+void PushFreeAudioBuffer(void* buffer);            /* PushFreeAudioBuffer */
 
 /* THPVideoDecode.c */
-BOOL fn_801E5470(s32 priority, void* arg); /* CreateVideoDecodeThread */
-void fn_801E543C(void);                    /* VideoDecodeThreadStart */
-void fn_801E5400(void);                    /* VideoDecodeThreadCancel */
-void* fn_801E4EF0(s32 flags);              /* PopDecodedTextureSet */
-void fn_801E4F34(void* tex);               /* PushFreeTextureSet */
+BOOL CreateVideoDecodeThread(s32 priority, void* arg); /* CreateVideoDecodeThread */
+void VideoDecodeThreadStart(void);                    /* VideoDecodeThreadStart */
+void VideoDecodeThreadCancel(void);                    /* VideoDecodeThreadCancel */
+void* PopDecodedTextureSet(s32 flags);              /* PopDecodedTextureSet */
+void PushFreeTextureSet(void* tex);               /* PushFreeTextureSet */
 
 /* THPDraw.c */
-void fn_801E24B0(void); /* THPGXRestore */
-void fn_801E1FF8(void* rmode); /* THPGXYuv2RgbSetup */
-void fn_801E1E1C(u8* y_data, u8* u_data, u8* v_data, s16 x, s16 y,
+void THPGXRestore(void); /* THPGXRestore */
+void THPGXYuv2RgbSetup(void* rmode); /* THPGXYuv2RgbSetup */
+void THPGXYuv2RgbDraw(u8* y_data, u8* u_data, u8* v_data, s16 x, s16 y,
                  s16 textureWidth, s16 textureHeight, s16 polygonWidth,
                  s16 polygonHeight); /* THPGXYuv2RgbDraw */
 

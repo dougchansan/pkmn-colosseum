@@ -81,8 +81,8 @@ extern void gfxSetVtxDesc(void* resource);
 extern void gfxLoadTexture(s32 slot, void* texture);
 extern void gfxSetPrimitive(s32 mode);
 extern void gfxBegin(s32 mode);
-extern void fn_800D61E4(s16 x, s16 y);
-extern void fn_800D5CB8(s32, s32, s32, s32, s32);
+extern void gfxVtxPos2s16(s16 x, s16 y);
+extern void gfxVtxColor4u8(s32, s32, s32, s32, s32);
 extern void gfxVtxTexCoord(s32 slot, f32 xScale, f32 yScale);
 extern void gfxEnd(void);
 extern void gfxClearFlags(u32 flags);
@@ -198,12 +198,12 @@ static inline s32 fn_80055F88_find(s16 val, u32* ptr) {
 
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
 #pragma peephole off
-u32 fn_80055F88(u8* unused, u8* p) {
+u32 pcBoxDrawBoxName(u8* unused, u8* p) {
     extern u8 lbl_80267680[];
     extern void* pcboxGetPokemonBoxName(void* pcbox, s8 box);
     extern void msgctrlSetValue(u32 id, u32 value);
     extern u32 GSmsgGetRect(u32 val);
-    extern void fn_800FB680(s32, s32, s32, s32);
+    extern void GSmsgPrintColor(s32, s32, s32, s32);
     s32 idx;
     s16 val;
     void* obj;
@@ -224,7 +224,7 @@ u32 fn_80055F88(u8* unused, u8* p) {
     msgctrlSetValue(0x37, (u32)obj);
     width = (s16)(GSmsgGetRect(0xce) >> 16);
     half = *(s16*)(p + 0x54);
-    fn_800FB680((s16)(half / 2 - width / 2), 0, -1, 0xce);
+    GSmsgPrintColor((s16)(half / 2 - width / 2), 0, -1, 0xce);
     return 0;
 }
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (peephole on) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
@@ -342,11 +342,11 @@ s32 fn_80056084(MenuCBPane* pane, MenuCBPane* sprite) {
         gfxLoadTexture(0, texture);
         gfxSetPrimitive(7);
         gfxBegin(2);
-        fn_800D61E4(insetX, insetY);
-        fn_800D5CB8(0, 0x3c, 0xc, 0xff, alpha);
+        gfxVtxPos2s16(insetX, insetY);
+        gfxVtxColor4u8(0, 0x3c, 0xc, 0xff, alpha);
         gfxVtxTexCoord(0, scaleS0, scaleT0);
-        fn_800D61E4((s16)(insetX + width), (s16)(insetY + height));
-        fn_800D5CB8(0, 0x3c, 0xc, 0xff, alpha);
+        gfxVtxPos2s16((s16)(insetX + width), (s16)(insetY + height));
+        gfxVtxColor4u8(0, 0x3c, 0xc, 0xff, alpha);
         gfxVtxTexCoord(0, scaleS1, scaleT1);
         gfxEnd();
         gfxClearFlags(0x80000000);

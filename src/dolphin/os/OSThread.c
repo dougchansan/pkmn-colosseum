@@ -113,11 +113,11 @@ static OSThread* SelectThread(BOOL yield);
         RunQueueHint_8047A764 = TRUE;                                          \
     } while (0)
 
-s32 fn_800A128C(OSThread* from, OSThread* to)
+s32 DefaultSwitchThreadCallback(OSThread* from, OSThread* to)
 {
 }
 
-static OSSwitchThreadCallback SwitchThreadCallback = fn_800A128C;
+static OSSwitchThreadCallback SwitchThreadCallback = DefaultSwitchThreadCallback;
 
 void __OSThreadInit(void)
 {
@@ -159,7 +159,7 @@ void OSInitThreadQueue(OSThreadQueue* queue)
     queue->head = queue->tail = NULL;
 }
 
-OSThread* fn_800A13F8(void)
+OSThread* OSGetCurrentThread(void)
 {
     return __OSCurrentThread;
 }
@@ -244,7 +244,7 @@ static OSThread* SetEffectivePriority(OSThread* thread, s32 priority)
     return NULL;
 }
 
-void fn_800A16E8(OSThread* thread, s32 priority)
+void __OSPromoteThread(OSThread* thread, s32 priority)
 {
     do {
         if (thread->suspend > 0) {
@@ -294,7 +294,7 @@ static OSThread* SelectThread(BOOL yield)
     }
 
     currentContext = OSGetCurrentContext();
-    currentThread = fn_800A13F8();
+    currentThread = OSGetCurrentThread();
     if (currentContext != &currentThread->context) {
         return NULL;
     }
@@ -626,7 +626,7 @@ void OSWakeupThread(OSThreadQueue* queue)
     OSRestoreInterrupts(enabled);
 }
 
-BOOL fn_800A257C(OSThread* thread, s32 priority)
+BOOL OSSetThreadPriority(OSThread* thread, s32 priority)
 {
     BOOL enabled;
 

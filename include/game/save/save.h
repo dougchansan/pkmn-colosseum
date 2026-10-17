@@ -11,17 +11,17 @@
  * compatible with Dolphin emulator). The game stores save data on a
  * standard GameCube Memory Card via the Dolphin SDK CARD API.
  *
- * Save data integrity is verified using a SHA-1 hash (fn_801CC380).
+ * Save data integrity is verified using a SHA-1 hash (sha1Transform).
  *
  * The save system is initialized at boot from main.c:
- *   fn_801E1300 - Card system init
- *   fn_801E1B2C - Save data init
+ *   vtrInit - Card system init
+ *   GSmovieInit - Save data init
  *   GSvtrRegisterGSgapp - Save system post-init
  *
  * Per-frame updates via:
  *   fn_801E0FB4 - Save/card per-frame update
  *   GSvtrLoadTexture - Card system tick
- *   fn_801E11E8 - Card system check pending
+ *   vtrIsActive - Card system check pending
  *
  * Related source files:
  *   cardesavedata.c  - Card e-Reader save data (0x80082650 - 0x80083AF4)
@@ -196,14 +196,14 @@ typedef struct CardEMatrixEntry {
  * ========================================================================= */
 
 /**
- * fn_801E1300: Initialize the card/save system.
+ * vtrInit: Initialize the card/save system.
  * Called from GameInit() during boot.
  * Sets up memory card communication and file handles.
  */
 void save_CardSystemInit(void);
 
 /**
- * fn_801E1B2C: Initialize save data structures.
+ * GSmovieInit: Initialize save data structures.
  * Called from GameInit() after card system init.
  * Allocates and zeroes save data buffers.
  */
@@ -235,13 +235,13 @@ void save_CardUpdate(s32 mode, u32 param1, u32 param2);
 void save_CardTick(void);
 
 /**
- * fn_801E11E8: Check if card operations are pending.
+ * vtrIsActive: Check if card operations are pending.
  * @return Non-zero if operations are in progress
  */
 u32 save_CardCheckPending(void);
 
 /**
- * fn_801E11E0: Get current card system state.
+ * vtrGetMode: Get current card system state.
  * @return State code
  */
 u32 save_CardGetState(void);
@@ -251,7 +251,7 @@ u32 save_CardGetState(void);
  * ========================================================================= */
 
 /**
- * fn_801CC380: SHA-1 hash computation.
+ * sha1Transform: SHA-1 hash computation.
  * Confirmed by 0x5A827999 constants in disassembly.
  * Size: 0x1784 bytes (heavily unrolled).
  *
@@ -278,7 +278,7 @@ void save_SHA1Process(void* ctx);
 void cardesavedata_ValidateLevel(void* pCardE);
 
 /**
- * fn_80082738: Check and validate a card e-Reader series.
+ * cardeSaveRemoveCard: Check and validate a card e-Reader series.
  * Validates series number matches, level bounds, and grid dimensions.
  * If the caller passes a series index of 0 (first series with no cards
  * scanned), returns 1 indicating the series is "clear" (empty).
@@ -291,7 +291,7 @@ void cardesavedata_ValidateLevel(void* pCardE);
 s32 cardesavedata_CheckSeries(void* pCardE, CardESeries* pSeries, s8 seriesIdx);
 
 /**
- * fn_80082960 - fn_800836AC: Additional card e-Reader save functions.
+ * cardeSaveClearSummary - fn_800836AC: Additional card e-Reader save functions.
  * These handle reading/writing specific card data fields,
  * clearing entries, and serialization of card grid state.
  * Total: 9 functions (Func3 through Func11).

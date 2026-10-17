@@ -22,7 +22,7 @@ void GSmodelSetTexAnimIndex(struct GSmodel* model, u32 index);
 void GSmodelSetTexAnimRate(struct GSmodel* model, f32 rate);
 void GSmodelSetTexAnimType(struct GSmodel* model, u32 type);
 void GSmodelRecalculateBound(struct GSmodel* model);
-void fn_800E3928(void* unused);
+void GSmodelApplyAll(void* unused);
 
 /* Shadow state API. Partial model/light layouts remain private to the owner. */
 void GSmodelFreeAllShadowTextures(void);

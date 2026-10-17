@@ -2,7 +2,7 @@
  * @file DVD_range_800A7880.c
  * @brief Dolphin DVD cancellation and disk-state queries, 0x800A7880 -
  *        0x800A7CCC: DVDCancelAsync, DVDCancel, the cancel callback,
- *        fn_800A7BCC and DVDCheckDisk, with their switch tables
+ *        DVDGetCurrentDiskID and DVDCheckDisk, with their switch tables
  *        (.data 0x80311B98 - 0x80311C00).
  *
  * Merged (lane D18) from sdk_candidate_800A7880.c, sdk_exact_800A7AFC.c and
@@ -21,7 +21,7 @@ extern u32 ResumeFromHere_8047A810;
 extern DVDCommandBlock* executing_8047A7E8;
 extern DVDCommandBlock DummyCommandBlock_803FC3A0;
 extern void DVDLowBreak(void);
-extern DVDLowCallback fn_800A4C94(void);
+extern DVDLowCallback DVDLowClearCallback(void);
 extern u32 __DVDDequeueWaitingQueue(u8* node);
 extern void cbForStateMotorStopped_800A65A0(u32 interrupt);
 extern void stateReady_800A6684(void);
@@ -87,7 +87,7 @@ BOOL DVDCancelAsync(DVDCommandBlock* block, DVDCBCallback callback)
     case 6:
     case 7:
     case 11:
-        old = fn_800A4C94();
+        old = DVDLowClearCallback();
         if (old != cbForStateMotorStopped_800A65A0) {
             OSRestoreInterrupts(enabled);
             return FALSE;
@@ -125,12 +125,12 @@ BOOL DVDCancelAsync(DVDCommandBlock* block, DVDCBCallback callback)
 
 extern OSThreadQueue __DVDThreadQueue;
 
-static void fn_800A7BA8(s32 result, DVDCommandBlock* block);
+static void cbForCancelSync(s32 result, DVDCommandBlock* block);
 
 BOOL DVDCancel(DVDCommandBlock* block) {
     BOOL enabled;
 
-    if (!DVDCancelAsync(block, fn_800A7BA8)) {
+    if (!DVDCancelAsync(block, cbForCancelSync)) {
         return -1;
     }
 
@@ -154,11 +154,11 @@ BOOL DVDCancel(DVDCommandBlock* block) {
     return 0;
 }
 
-static void fn_800A7BA8(s32 result, DVDCommandBlock* block) {
+static void cbForCancelSync(s32 result, DVDCommandBlock* block) {
     OSWakeupThread(&__DVDThreadQueue);
 }
 
-void* fn_800A7BCC(void) {
+void* DVDGetCurrentDiskID(void) {
     return (void*)0x80000000;
 }
 

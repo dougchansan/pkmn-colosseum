@@ -1,6 +1,6 @@
 /**
  * @file fight_range_8021FAD4.c
- * @brief fn_8021FAD4 (move-script command), 0x8021FAD4 - 0x80220778, with its
+ * @brief wsCmd49 (move-script command), 0x8021FAD4 - 0x80220778, with its
  *        switch jump table (.data 0x8039A0A8 - 0x8039A0F0).
  *
  * Moved out of the shared fight_range_80211A00.c so the unit compiles only
@@ -12,10 +12,10 @@
 extern u8* lbl_8047B610;
 extern u32 lbl_8047B618;
 extern void* lbl_8047B62C;
-extern void fn_80211B94(void*, void*, u8);
+extern void wsRunScript(void*, void*, u8);
 extern u8 lbl_80478D78[8];
 
-void fn_8021FAD4(void)
+void wsCmd49(void)
 {
     extern u32 fightFloorGetStatus();
     extern void fightFloorLoopValidFightOutPokemon();
@@ -50,18 +50,18 @@ void fn_8021FAD4(void)
     extern void pokemonSetStatus(u32, int, int, int, u16);
     extern s8 pokemonSearchWazaDataId();
     extern u32 wazaGetStatus();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern u8 fn_802025B8();
-    extern s32 fn_80201C58();
-    extern void fn_80201B2C();
-    extern void fn_8020248C();
+    extern s32 fightOutPokemonGetPokemonJoutai0C();
+    extern void fightOutPokemonSetPokemonJoutai0C();
+    extern void fightOutPokemonWritePokemonJoutaiDataId();
     extern void fn_8022D2CC();
-    extern u8 fn_8022D6BC();
-    extern void fn_8022D394();
-    extern void fn_8022D20C();
-    extern u32 fn_8022BB84();
-    extern void fn_802207D4();
-    extern void fn_8022B5C8();
+    extern u8 _wsTokuseiAfterDamage();
+    extern void _fightTokuseiCureJoutaiSub();
+    extern void _wsCheckSynchronizeAttacker();
+    extern u32 _wsSoubiItemAfterDamage();
+    extern void _fightOutPokemonDoStockItemSub();
+    extern void _fightOutPokemonSoubiItemEffectSub();
     extern void _WsWkcActSubJoutaiMigawari__FPvUsPv();
     extern void fn_801DA3CC();
     extern u8 lbl_8047B627;
@@ -137,7 +137,7 @@ void fn_8021FAD4(void)
     do {
         switch (lbl_8047B627) {
         case 0:
-            if (fn_802026E4(defender, 0x13) == 1 &&
+            if (fightOutPokemonIsPokemonJoutaiDataId(defender, 0x13) == 1 &&
                 fightOutPokemonCheckFightOut(defender) == 1 &&
                 attacker != defender &&
                 fightOutPokemonIsAlly(attacker, defender) == 0 &&
@@ -147,7 +147,7 @@ void fn_8021FAD4(void)
                 count = pokemonGetStatus(defender, 0, 0xE6, 0);
                 if (count < 12) {
                     pokemonSetStatus(defender, 0, 0xE6, 0, (s8)(count + 1));
-                    fn_80211B94(lbl_8047B62C, lbl_80378D02, 0);
+                    wsRunScript(lbl_8047B62C, lbl_80378D02, 0);
                     stop = 1;
                 }
             }
@@ -155,7 +155,7 @@ void fn_8021FAD4(void)
             break;
 
         case 1:
-            if (fn_802026E4(defender, 7) == 1 &&
+            if (fightOutPokemonIsPokemonJoutaiDataId(defender, 7) == 1 &&
                 fightOutPokemonCheckFightOut(defender) == 1 &&
                 attacker != defender &&
                 pokemonGetStatus(defender, 0, 0x11E, 0) != 0 &&
@@ -165,7 +165,7 @@ void fn_8021FAD4(void)
                 if (fightOutPokemonIsUseHensinBuff(defender) == 1) {
                     fightOutPokemonSetHensinPokemonStatusId(defender, 0x7C, 0, 0);
                 }
-                fn_80211B94(lbl_8047B62C, lbl_803792C9, 0);
+                wsRunScript(lbl_8047B62C, lbl_803792C9, 0);
                 stop = 1;
             }
             lbl_8047B627++;
@@ -177,19 +177,19 @@ void fn_8021FAD4(void)
             break;
 
         case 3:
-            if (fn_8022D6BC(attacker, defender) != 0) {
+            if (_wsTokuseiAfterDamage(attacker, defender) != 0) {
                 stop = 1;
             }
             lbl_8047B627++;
             break;
 
         case 4:
-            fightFloorLoopValidFightOutPokemon(0, fn_8022D394, 0, 0);
+            fightFloorLoopValidFightOutPokemon(0, _fightTokuseiCureJoutaiSub, 0, 0);
             lbl_8047B627++;
             break;
 
         case 5:
-            fn_8022D20C(attacker, defender);
+            _wsCheckSynchronizeAttacker(attacker, defender);
             lbl_8047B627++;
             break;
 
@@ -201,11 +201,11 @@ void fn_8021FAD4(void)
                     lbl_8047B627++;
                     break;
                 }
-                fn_8020248C(attacker, 0x36, 0);
-                fn_80201B2C(attacker, 0x36, originalMove);
+                fightOutPokemonWritePokemonJoutaiDataId(attacker, 0x36, 0);
+                fightOutPokemonSetPokemonJoutai0C(attacker, 0x36, originalMove);
             }
-            if (fn_802026E4(attacker, 0x36) == 1) {
-                other = fn_80201C58(attacker, 0x36);
+            if (fightOutPokemonIsPokemonJoutaiDataId(attacker, 0x36) == 1) {
+                other = fightOutPokemonGetPokemonJoutai0C(attacker, 0x36);
                 if (pokemonSearchWazaDataId(fightOutPokemonGetPokemonPtr(attacker), other) < 0) {
                     fightOutPokemonWriteJoutaiDataId(attacker, 0x36);
                 }
@@ -214,17 +214,17 @@ void fn_8021FAD4(void)
             break;
 
         case 7:
-            fightFloorLoopValidFightOutPokemon(0, fn_802207D4, 0, 0);
+            fightFloorLoopValidFightOutPokemon(0, _fightOutPokemonDoStockItemSub, 0, 0);
             lbl_8047B627++;
             break;
 
         case 8:
-            fightFloorLoopValidFightOutPokemon(0, fn_8022B5C8, 0, 0);
+            fightFloorLoopValidFightOutPokemon(0, _fightOutPokemonSoubiItemEffectSub, 0, 0);
             lbl_8047B627++;
             break;
 
         case 9:
-            fn_8022BB84(attacker, defender);
+            _wsSoubiItemAfterDamage(attacker, defender);
             lbl_8047B627++;
             break;
 
@@ -376,7 +376,7 @@ void fn_8021FAD4(void)
                     lbl_80478D78[6] = 0;
                     lbl_8047B618 = flags2 | 0x200;
                     lbl_8047B627 = 0;
-                    fn_80211B94(lbl_8047B62C, lbl_80379BF4, 0);
+                    wsRunScript(lbl_8047B62C, lbl_80379BF4, 0);
                     lbl_8047B610 = (u8*)lbl_80379BFF[moveEffect];
                     return;
                     }

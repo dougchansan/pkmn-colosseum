@@ -136,9 +136,9 @@ OSRTC_HEAD_FN void* __OSLockSramEx(void) {
 }
 
 OSRTC_HEAD_FN void __OSUnlockSram(BOOL commit) {
-    extern void fn_800A09B0(BOOL commit, u32 arg);
+    extern void UnlockSram(BOOL commit, u32 arg);
 
-    fn_800A09B0(commit, 0);
+    UnlockSram(commit, 0);
 }
 
 BOOL __OSSyncSram(void) {
@@ -172,9 +172,9 @@ BOOL __OSReadROM(void* buffer, s32 length, s32 offset) {
 }
 
 OSRTC_HEAD_FN BOOL __OSUnlockSramEx(BOOL commit) {
-    extern BOOL fn_800A09B0(BOOL commit, u32 arg);
+    extern BOOL UnlockSram(BOOL commit, u32 arg);
 
-    return fn_800A09B0(commit, 0x14);
+    return UnlockSram(commit, 0x14);
 }
 
 s32 OSGetSoundMode(void) {
@@ -194,7 +194,7 @@ s32 OSGetSoundMode(void) {
     return mode;
 }
 
-void fn_800A0EB4(u32 mode) {
+void OSSetSoundMode(u32 mode) {
     u8* sram;
 
     mode = (mode & 1) << 2;
@@ -218,7 +218,7 @@ u32 OSGetProgressiveMode(void) {
     return mode;
 }
 
-void fn_800A0FC8(u32 mode) {
+void OSSetProgressiveMode(u32 mode) {
     u8* sram;
 
     mode = (mode & 1) << 7;
@@ -311,7 +311,7 @@ void __OSInitSystemCall(void) {
 }
 
 #if !defined(SDK_800A0D00_ONLY)
-void fn_800A128C(void) {
+void DefaultSwitchThreadCallback(void) {
 }
 
 void __OSThreadInit(void) {

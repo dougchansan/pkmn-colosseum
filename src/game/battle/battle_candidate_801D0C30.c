@@ -4,7 +4,7 @@
  */
 #include "dolphin/types.h"
 
-extern u8 fn_801D0AA0(u32 index);
+extern u8 heroGetPokemonBallId(u32 index);
 extern u16 fn_801D0AFC(s32 mode);
 
 typedef struct BattleIntroColor {
@@ -14,10 +14,10 @@ typedef struct BattleIntroColor {
     u8 a;
 } BattleIntroColor;
 
-/* Retail keeps this ahead of fn_801D0C30's pooled float at 0x8047E180. */
+/* Retail keeps this ahead of pokemonCenterHealSequence's pooled float at 0x8047E180. */
 static const BattleIntroColor battleIntroColor = {0x80, 0x80, 0x80, 0xFF};
 
-void fn_801D0C30(void)
+void pokemonCenterHealSequence(void)
 {
     extern void _threadSwitch(void);
     extern void fadeSet(f32 duration, s32 mode);
@@ -127,7 +127,7 @@ extern BattleIntroVec lbl_80279320;
 extern BattleIntroVec lbl_8027932C;
 
 extern s32 std093_getCurrentGroupID(void);
-extern void* fn_800F92D4(u32 id);
+extern void* GSresFindById(u32 id);
 extern void* peopleIsInGroup(s32 group, s32 id);
 extern void* peopleSearchID(void* id);
 extern BattleIntroVec* peopleGetPosition(void* person);
@@ -173,7 +173,7 @@ static inline u32 battleIntroFindModel(s32 fieldId, BattleIntroModelMap* map)
     return 0;
 }
 
-void fn_801D0DB0(s32 peopleGroup, s32 peopleId)
+void pokemonCenterBallMachineSequence(s32 peopleGroup, s32 peopleId)
 {
     s32 count;
     void* model;
@@ -204,7 +204,7 @@ void fn_801D0DB0(s32 peopleGroup, s32 peopleId)
         switch (state) {
         case 0:
             i = 0;
-            model = fn_800F92D4(battleIntroFindModel(std093_getCurrentGroupID(), battleIntroModels));
+            model = GSresFindById(battleIntroFindModel(std093_getCurrentGroupID(), battleIntroModels));
             count = fn_801D0AFC(0);
             for (j = 0; j < 6; j++) {
                 lbl_80467378[j] = NULL;
@@ -242,7 +242,7 @@ void fn_801D0DB0(s32 peopleGroup, s32 peopleId)
             part = GSmodelGetPart(model, battleIntroPartIds[i]);
             GSpartGetTransform(part, &pos, NULL, NULL);
             GSpartFree(part);
-            lbl_80467378[i] = floorOpenObject(battleIntroObjectIds[fn_801D0AA0((u16)i)]);
+            lbl_80467378[i] = floorOpenObject(battleIntroObjectIds[heroGetPokemonBallId((u16)i)]);
             GSmodelSetPosition(lbl_80467378[i], &pos);
             GSmodelSetScale(lbl_80467378[i], &scale);
             GSmodelEnableModulation(lbl_80467378[i], &color);

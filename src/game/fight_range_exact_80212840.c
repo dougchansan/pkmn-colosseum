@@ -4,18 +4,18 @@
  */
 #include "dolphin/types.h"
 
-extern u8 fn_802026E4(void*, u32);
+extern u8 fightOutPokemonIsPokemonJoutaiDataId(void*, u32);
 extern void fightOutPokemonWriteJoutaiDataId(void*, u32);
 
 void fightSeqSpecificationActionCounterInit(void* ctx)
 {
-    if (fn_802026E4(ctx, 0x2e) == 1) {
+    if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 0x2e) == 1) {
         fightOutPokemonWriteJoutaiDataId(ctx, 0x2e);
     }
-    if (fn_802026E4(ctx, 0x15) == 1) {
+    if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 0x15) == 1) {
         fightOutPokemonWriteJoutaiDataId(ctx, 0x15);
     }
-    if (fn_802026E4(ctx, 0x28) == 1) {
+    if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 0x28) == 1) {
         fightOutPokemonWriteJoutaiDataId(ctx, 0x28);
     }
 }

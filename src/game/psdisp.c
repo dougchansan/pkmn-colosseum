@@ -23,7 +23,7 @@
  * or trail per call instead of batching, passes the particle velocity to
  * psDispSubMakePolygon (which derives the trail's previous position), scales
  * billboards by the generator's scale block, clamps the texture-form trail
- * ratio at 1, and adds psSetFog/psRemoveFog (fn_8016EB30/fn_8016EA88).
+ * ratio at 1, and adds psSetFog/psRemoveFog (psSetFog/fn_8016EA88).
  * particleSort lives in pslist.c.
  *
  * Compiler: the particle library flags (pslist.c, particle.c, generator.c,
@@ -68,14 +68,14 @@ typedef enum GXAttnFn { GX_AF_SPEC = 0, GX_AF_SPOT = 1, GX_AF_NONE = 2 } GXAttnF
 
 extern void GXSetChanAmbColor(s32 chan, GXColor color); /* GXSetChanAmbColor */
 extern void GXSetChanMatColor(s32 chan, GXColor color); /* GXSetChanMatColor */
-extern void fn_800BC2F8(s32 reg, GXColor color);  /* GXSetTevColor */
+extern void GXSetTevColor(s32 reg, GXColor color);  /* GXSetTevColor */
 extern void HSD_MulColor(GXColor* a, GXColor* b, GXColor* dst);
-extern void fn_800B7D3C(void);                              /* GXClearVtxDesc */
-extern void fn_800B7874(s32 attr, s32 type);                /* GXSetVtxDesc */
-extern void fn_800B928C(s32 type, s32 vtxfmt, u16 nverts);  /* GXBegin */
-extern void fn_800B9404(u8 width, s32 texOffsets);          /* GXSetLineWidth */
-extern void fn_800BD554(u32 id);                            /* GXSetCurrentMtx */
-extern void fn_800B944C(u8 size, s32 texOffsets);           /* GXSetPointSize */
+extern void GXClearVtxDesc(void);                              /* GXClearVtxDesc */
+extern void GXSetVtxDesc(s32 attr, s32 type);                /* GXSetVtxDesc */
+extern void GXBegin(s32 type, s32 vtxfmt, u16 nverts);  /* GXBegin */
+extern void GXSetLineWidth(u8 width, s32 texOffsets);          /* GXSetLineWidth */
+extern void GXSetCurrentMtx(u32 id);                            /* GXSetCurrentMtx */
+extern void GXSetPointSize(u8 size, s32 texOffsets);           /* GXSetPointSize */
 extern void PSMTXCopy(const Mtx src, Mtx dst);
 extern void HSD_MtxSRT(Mtx m, Vec* scale, Vec* rot, Vec* trans, Vec* scale2);
 extern void PSMTXRotAxisRad(Mtx m, const Vec* axis, f32 rad);
@@ -108,54 +108,54 @@ extern void GXInitTexObjCI(GXTexObj* obj, void* image, u16 width, u16 height,
                            u32 format, u32 wrap_s, u32 wrap_t, u8 mipmap,
                            u32 tlut_name);
 extern void GXLoadTexObj(GXTexObj* obj, u32 id);
-extern void fn_800BD454(f32* prj);                           /* GXGetProjectionv */
-extern void fn_800B9494(u32 coord, u8 line, u8 point);       /* GXEnableTexOffsets */
-extern void fn_801A958C(Mtx src, Mtx dst, char axis0, char axis1); /* HSD_MtxGetRotationMtx */
-extern void fn_800B94F0(s32 mode);                           /* GXSetCullMode */
-extern void fn_800B84E0(s32 attr, void* base, u8 stride);    /* GXSetArray */
-extern void fn_800B7D74(s32 fmt, s32 attr, s32 cnt, s32 type, u8 frac); /* GXSetVtxAttrFmt */
-extern void fn_800BC618(s32 comp0, u8 ref0, s32 op, s32 comp1, u8 ref1); /* GXSetAlphaCompare */
+extern void GXGetProjectionv(f32* prj);                           /* GXGetProjectionv */
+extern void GXEnableTexOffsets(u32 coord, u8 line, u8 point);       /* GXEnableTexOffsets */
+extern void HSD_MtxGetRotationMtx(Mtx src, Mtx dst, char axis0, char axis1); /* HSD_MtxGetRotationMtx */
+extern void GXSetCullMode(s32 mode);                           /* GXSetCullMode */
+extern void GXSetArray(s32 attr, void* base, u8 stride);    /* GXSetArray */
+extern void GXSetVtxAttrFmt(s32 fmt, s32 attr, s32 cnt, s32 type, u8 frac); /* GXSetVtxAttrFmt */
+extern void GXSetAlphaCompare(s32 comp0, u8 ref0, s32 op, s32 comp1, u8 ref1); /* GXSetAlphaCompare */
 extern void GXSetNumChans(u8 num);                             /* GXSetNumChans */
 extern void GXSetChanCtrl(s32 chan, u8 enable, s32 amb_src, s32 mat_src,
                         u32 light_mask, s32 diff_fn, GXAttnFn attn_fn); /* GXSetChanCtrl */
-extern void fn_800BCEBC(u8 before_tex);                      /* GXSetZCompLoc */
+extern void GXSetZCompLoc(u8 before_tex);                      /* GXSetZCompLoc */
 extern void GXSetTexCoordGen2(u32 dst_coord, u32 func, u32 src_param, u32 mtx,
                         u8 normalize, u32 pt_texmtx);        /* GXSetTexCoordGen2 */
-extern void fn_800BA9E4(GXTexObj* obj, void* image, u16 width, u16 height,
+extern void GXInitTexObj(GXTexObj* obj, void* image, u16 width, u16 height,
                         u32 format, u32 wrap_s, u32 wrap_t, u8 mipmap); /* GXInitTexObj */
-extern void fn_800BACA0(GXTexObj* obj, u32 min_filt, u32 mag_filt,
+extern void GXInitTexObjLOD(GXTexObj* obj, u32 min_filt, u32 mag_filt,
                         f32 min_lod, f32 max_lod, f32 lod_bias, u8 bias_clamp,
                         u8 do_edge_lod, u32 max_aniso);      /* GXInitTexObjLOD */
-extern void fn_800BB050(GXTlutObj* tlut_obj, void* lut, u32 fmt,
+extern void GXInitTlutObj(GXTlutObj* tlut_obj, void* lut, u32 fmt,
                         u16 n_entries);                      /* GXInitTlutObj */
-extern void fn_800BB098(GXTlutObj* tlut_obj, u32 tlut_name); /* GXLoadTlut */
-extern void fn_801B25C4(u32 state);                          /* HSD_StateInvalidate */
+extern void GXLoadTlut(GXTlutObj* tlut_obj, u32 tlut_name); /* GXLoadTlut */
+extern void HSD_StateInvalidate(u32 state);                          /* HSD_StateInvalidate */
 
-#define GXGetProjectionv fn_800BD454
-#define GXEnableTexOffsets fn_800B9494
-#define HSD_MtxGetRotationMtx fn_801A958C
-#define GXSetCullMode fn_800B94F0
-#define GXSetArray fn_800B84E0
-#define GXSetVtxAttrFmt fn_800B7D74
-#define GXSetAlphaCompare fn_800BC618
-#define GXSetZCompLoc fn_800BCEBC
-#define GXInitTexObj fn_800BA9E4
-#define GXInitTexObjLOD fn_800BACA0
-#define GXInitTlutObj fn_800BB050
-#define GXLoadTlut fn_800BB098
-#define HSD_StateInvalidate fn_801B25C4
+#define GXGetProjectionv GXGetProjectionv
+#define GXEnableTexOffsets GXEnableTexOffsets
+#define HSD_MtxGetRotationMtx HSD_MtxGetRotationMtx
+#define GXSetCullMode GXSetCullMode
+#define GXSetArray GXSetArray
+#define GXSetVtxAttrFmt GXSetVtxAttrFmt
+#define GXSetAlphaCompare GXSetAlphaCompare
+#define GXSetZCompLoc GXSetZCompLoc
+#define GXInitTexObj GXInitTexObj
+#define GXInitTexObjLOD GXInitTexObjLOD
+#define GXInitTlutObj GXInitTlutObj
+#define GXLoadTlut GXLoadTlut
+#define HSD_StateInvalidate HSD_StateInvalidate
 
 extern HSD_PSFormGroup** lbl_804528C8[PS_NUM_BANK]; /* particle.c: form groups */
 extern HSD_PSTexGroup** lbl_804529C8[PS_NUM_BANK];  /* particle.c: texture groups */
 
-#define GXClearVtxDesc fn_800B7D3C
-#define GXSetVtxDesc fn_800B7874
-#define GXBegin fn_800B928C
-#define GXSetLineWidth fn_800B9404
-#define GXSetCurrentMtx fn_800BD554
-#define GXSetPointSize fn_800B944C
+#define GXClearVtxDesc GXClearVtxDesc
+#define GXSetVtxDesc GXSetVtxDesc
+#define GXBegin GXBegin
+#define GXSetLineWidth GXSetLineWidth
+#define GXSetCurrentMtx GXSetCurrentMtx
+#define GXSetPointSize GXSetPointSize
 
-#define GXSetTevColor fn_800BC2F8
+#define GXSetTevColor GXSetTevColor
 
 #define GX_COLOR0 0
 #define GX_TEVREG0 1
@@ -420,7 +420,7 @@ static inline void getClrTrail(HSD_Particle* pp, GXColor* color)
 }
 
 /* psSetFog */
-void fn_8016EB30(HSD_Fog* fog)
+void psSetFog(HSD_Fog* fog)
 {
     if (psFog != NULL) {
         HSD_FogUnref(psFog);

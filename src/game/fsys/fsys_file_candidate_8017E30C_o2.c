@@ -1,6 +1,6 @@
 /**
  * @file fsys_file_candidate_8017E30C_o2.c
- * @brief fn_8017E30C: load one entry of an already-loaded FSYS archive
+ * @brief fsysLoadEntrySync: load one entry of an already-loaded FSYS archive
  *        synchronously (0x8017E30C - 0x8017EB6C).
  *
  * Finds the entry whose name hash is slot->requestID, fetches its image from
@@ -16,16 +16,16 @@
  * rest of the fsys code; exact (536/536 instructions and relocations) on the
  * unit-wide `-opt level=0` flags with no pragmas.
  *
- * It is the synchronous form of the job pipeline in fn_8017C074 (move the
- * compressed image aside, allocate the decode buffer), fn_8017BC90 (LZSS
- * decode into sub->buffer) and fn_8017C1D8 (free the image, report the
+ * It is the synchronous form of the job pipeline in fsysLZSSJobSetup (move the
+ * compressed image aside, allocate the decode buffer), fsysLZSSDecodeJob (LZSS
+ * decode into sub->buffer) and fsysLZSSJobFinish (free the image, report the
  * entry), and shares their inline helpers:
  *   fsysGetEntry, fsysFindGroup      fsys_entry.h
  *   fsysEntryDone, fsysFree          as in fsys_file_exact_8017C1D8.c
- *   fsysAllocDecodeBuffer            also expanded in fn_8017C074
- *   gsResAlloc                       also in fn_8017BD34, fn_8017B6B8, fn_8017C074
- *   fsysAllocEntry, fsysUpdateTotalSize  also in fn_8017BD34, fn_8017B6B8
- *   fsysLZSSInit                     the same sequence as fn_8017BC90
+ *   fsysAllocDecodeBuffer            also expanded in fsysLZSSJobSetup
+ *   gsResAlloc                       also in fsysLoadEntryUncompressed, fsysLoadEntry, fsysLZSSJobSetup
+ *   fsysAllocEntry, fsysUpdateTotalSize  also in fsysLoadEntryUncompressed, fsysLoadEntry
+ *   fsysLZSSInit                     the same sequence as fsysLZSSDecodeJob
  * fsysDecodeLZSS's destination is homed on the stack (0x88) because its
  * argument is fsysDecodeEntry's local: the inline-parameter copy level-0
  * code only makes for another inline's local.
@@ -38,13 +38,13 @@
  * code clears a pointer right after freeing it:
  *   - every other fsysFree expansion in the level-0 fsys unit is followed
  *     by clearing the freed pointer, where the store is visible because the
- *     pointer lives in memory: fn_8017B1CC `slot->archiveData = NULL`
- *     (0x8017B288 li/stw 0x40(r31)), fn_8017C1D8 `job->compressed = 0`
+ *     pointer lives in memory: GSresReleaseById `slot->archiveData = NULL`
+ *     (0x8017B288 li/stw 0x40(r31)), fsysLZSSJobFinish `job->compressed = 0`
  *     (0x8017C25C li/stw 0x38(r22));
- *   - fn_8017C1D8 is this path's async twin: fn_8017C074 moves the image
+ *   - fsysLZSSJobFinish is this path's async twin: fsysLZSSJobSetup moves the image
  *     aside into job->compressed and clears sub->buffer (this function does
  *     `compressed = sub->buffer; sub->buffer = NULL;`, both stores kept),
- *     and fn_8017C1D8 frees job->compressed and clears it, the statement
+ *     and fsysLZSSJobFinish frees job->compressed and clears it, the statement
  *     this one mirrors with the local;
  *   - the ARAM-cache code next to fsys does the same with a global
  *     (0x80180A1C: free lbl_8047B1E0, then store 0 to it);
@@ -68,21 +68,21 @@ extern u8 lbl_80452FC8[];           /* LZSS sliding window */
 extern void* memcpy(void* dst, const void* src, u32 n);
 extern void DCFlushRange(void* addr, u32 nBytes);
 extern u16 fn_800E2B00(u32 size, u32 align);
-extern void* fn_800E27B0(u16 handle);
-extern u16 fn_800E202C(void* ptr);
+extern void* GSmemLock(u16 handle);
+extern u16 GSmemGetHandleByPtr(void* ptr);
 extern void fn_800E24B0(u16 handle);
-extern void fn_800E209C(u16 handle);
+extern void GSmemFree(u16 handle);
 extern void* GSresAllocResourceAlign(u32 size, u32 align, u32 group, u32 id, u32 param);
 extern void* GSresGetResource(u32 fileHandle, u32 nameHash);
 extern u8 fn_80167EF8(const char* path);
-extern u32 fn_80167F28(const char* path);
-extern u32 fn_80167E5C(u32 fileInfo);
-extern s32 fn_80167E64(u32 fileInfo);
+extern u32 GSdvdOpen(const char* path);
+extern u32 GSdvdGetLength(u32 fileInfo);
+extern s32 GSdvdClose(u32 fileInfo);
 extern void fn_8017F2C4(void* dst, const void* src, u32 size);
 extern u32 fn_8017F794(u32 fileHandle, u32 groupID, u32 nameHash);
 extern void fn_80180320(void* main, void* aram, u32 size);
 
-/* Temporary (non-resource) allocation; also expanded in fn_8017B6B8. */
+/* Temporary (non-resource) allocation; also expanded in fsysLoadEntry. */
 static inline void* fsysAllocTemp(u32 size)
 {
     u32 alignedSize;
@@ -91,7 +91,7 @@ static inline void* fsysAllocTemp(u32 size)
     alignedSize = (size + 0x1F) & ~0x1F;
     handle = fn_800E2B00(alignedSize, 0x20);
     if (handle != 0) {
-        return fn_800E27B0(handle);
+        return GSmemLock(handle);
     }
     return NULL;
 }
@@ -101,10 +101,10 @@ static inline void fsysFree(void* ptr)
 {
     u16 handle;
 
-    handle = fn_800E202C(ptr);
+    handle = GSmemGetHandleByPtr(ptr);
     if (handle != 0) {
         fn_800E24B0(handle);
-        fn_800E209C(handle);
+        GSmemFree(handle);
     }
 }
 
@@ -171,7 +171,7 @@ static inline void* fsysDecodeEntry(FSYSSubEntry* sub, void* src)
 /*
  * fsysEntryDone of fsys_file_exact_8017C1D8.c. The level-0 stack slots of
  * its two expansions here (size, unused, group, done, resource from the
- * bottom up) give its declaration order; fn_8017C1D8 is exact with this
+ * bottom up) give its declaration order; fsysLZSSJobFinish is exact with this
  * order as well.
  */
 static inline void fsysEntryDone(FSYSSlot* slot, FSYSFileEntry* entry)
@@ -246,15 +246,15 @@ static inline void* fsysAllocEntry(FSYSSlot* slot, FSYSFileEntry* entry)
         name = (char*)slot->archiveData + entry->dataOffset;
         slot->tocBuffer = NULL;
         if (fn_80167EF8(name)) {
-            slot->tocBuffer = (void*)fn_80167F28(name);
+            slot->tocBuffer = (void*)GSdvdOpen(name);
         }
         sub = (FSYSSubEntry*)entry->subEntry;
         if (slot->tocBuffer) {
-            fileSize = fn_80167E5C((u32)slot->tocBuffer);
+            fileSize = GSdvdGetLength((u32)slot->tocBuffer);
             entry->decompressedSize = fileSize;
             size = entry->decompressedSize;
             fsysUpdateTotalSize(slot);
-            fn_80167E64((u32)slot->tocBuffer);
+            GSdvdClose((u32)slot->tocBuffer);
             slot->tocBuffer = NULL;
             sub->ready = 1;
         }
@@ -269,7 +269,7 @@ static inline void* fsysAllocEntry(FSYSSlot* slot, FSYSFileEntry* entry)
 }
 
 /* Address: 0x8017E30C | size: 0x860 */
-s32 fn_8017E30C(FSYSSlot* slot)
+s32 fsysLoadEntrySync(FSYSSlot* slot)
 {
     u32 i;
     s32 found;

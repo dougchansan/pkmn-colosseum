@@ -38,12 +38,12 @@ typedef struct GSFilterState {
 
 extern void* memset(void* dst, int value, u32 size);
 extern u16 _toolentryAlloc__FUl(u32 size);
-extern void* fn_800E27B0(u32 handle);
+extern void* GSmemLock(u32 handle);
 extern void fn_800E24B0(u32 handle);
-extern void fn_800E209C(u32 handle);
-extern void* fn_800D7894(void);
-extern void fn_800D7868(void*, u32, u32, u32, u32, u8, void*, u8);
-extern void fn_800D75F4(void*);
+extern void GSmemFree(u32 handle);
+extern void* gfxVtxDescAlloc(void);
+extern void gfxVtxDescSetAttr(void*, u32, u32, u32, u32, u8, void*, u8);
+extern void gfxVtxDescFree(void*);
 extern u32 GSgappCreate(s32 state, u8 priority, u32 parameter,
                        void (*callback)(void));
 extern void fn_80168284(void);
@@ -90,15 +90,15 @@ static inline void GSfilterRelease(void)
     handle = lbl_804526E0.filterHandle;
     if (handle != 0) {
         fn_800E24B0(handle);
-        fn_800E209C(handle);
+        GSmemFree(handle);
     }
     handle = lbl_804526E0.colorHandle;
     if (handle != 0) {
         fn_800E24B0(handle);
-        fn_800E209C(handle);
+        GSmemFree(handle);
     }
     if (lbl_804526E0.renderState != 0) {
-        fn_800D75F4((void*)lbl_804526E0.renderState);
+        gfxVtxDescFree((void*)lbl_804526E0.renderState);
     }
     memset(&lbl_804526E0, 0, sizeof(GSFilterState));
 }
@@ -114,11 +114,11 @@ static inline void GSfilterRelease(void)
  */
 static inline void* GSfilterRenderStateCreate(void)
 {
-    void* renderState = fn_800D7894();
+    void* renderState = gfxVtxDescAlloc();
 
     if (renderState != NULL) {
-        fn_800D7868(renderState, 1, 1, 0, 2, 0, lbl_804526E0.viewport, 4);
-        fn_800D7868(renderState, 4, 1, 6, 10, 0, lbl_804526E0.colors, 4);
+        gfxVtxDescSetAttr(renderState, 1, 1, 0, 2, 0, lbl_804526E0.viewport, 4);
+        gfxVtxDescSetAttr(renderState, 4, 1, 6, 10, 0, lbl_804526E0.colors, 4);
         return renderState;
     }
     return NULL;
@@ -140,7 +140,7 @@ void fn_80168638(u8 capacity)
         return;
     }
     lbl_804526E0.filterHandle = handle;
-    lbl_804526E0.filters = fn_800E27B0(lbl_804526E0.filterHandle);
+    lbl_804526E0.filters = GSmemLock(lbl_804526E0.filterHandle);
     memset(lbl_804526E0.filters, 0, size);
 
     handle = _toolentryAlloc__FUl(size);
@@ -149,7 +149,7 @@ void fn_80168638(u8 capacity)
         return;
     }
     lbl_804526E0.colorHandle = handle;
-    lbl_804526E0.colors = fn_800E27B0(lbl_804526E0.colorHandle);
+    lbl_804526E0.colors = GSmemLock(lbl_804526E0.colorHandle);
     memset(lbl_804526E0.colors, 0, size);
 
     /* Retail allocates a third block and only checks it for failure. */

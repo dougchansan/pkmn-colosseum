@@ -14,7 +14,7 @@
  *
  * Globals other objects already link against keep their dtk names; the
  * comments give the HAL names. Colosseum's HSD_JObjUnref/SetupMatrixSub/
- * MakeMatrix, HSD_MemAlloc and HSD_MtxGetRotation are fn_801A05EC-style
+ * MakeMatrix, HSD_MemAlloc and HSD_MtxGetRotation are HSD_JObjUnref-style
  * symbols declared in the headers.
  */
 #include "dolphin/mtx.h"
@@ -44,7 +44,7 @@ void HSD_ObjAllocInit(HSD_ObjAllocData* data, u32 size, u32 align);
 void HSD_ObjFree(HSD_ObjAllocData* data, void* obj);
 void* HSD_IDGetDataFromTable(void* table, u32 id, s32* success);
 /* HSD_MemAlloc */
-void* fn_801A6928(u32 size);
+void* HSD_MemAlloc(u32 size);
 /* HSD_IsMemoryReleased: nonzero when the pointer lies in freed memory. */
 int fn_801A6990(void* ptr);
 u32 HSD_GetNbBits(u32 value);
@@ -69,7 +69,7 @@ static u32 lbl_8047B30C;
 static f32* lbl_8047B308;
 
 /* HSD_RObjInitAllocData */
-void fn_801B0158(void)
+void HSD_RObjInitAllocData(void)
 {
     HSD_ObjAllocInit(&lbl_804656B4, sizeof(HSD_RObj), 4);
     HSD_ObjAllocInit(&lbl_80465688, sizeof(HSD_Rvalue), 4);
@@ -207,7 +207,7 @@ void HSD_RObjReqAnimByFlags(HSD_RObj* robj, f32 startframe, u32 flags)
 }
 
 /* HSD_RObjReqAnimAllByFlags */
-void fn_801AFF64(HSD_RObj* robj, f32 startframe, u32 flags)
+void HSD_RObjReqAnimAllByFlags(HSD_RObj* robj, f32 startframe, u32 flags)
 {
     if (robj == NULL) {
         return;
@@ -221,7 +221,7 @@ void fn_801AFF64(HSD_RObj* robj, f32 startframe, u32 flags)
 /* HSD_RObjReqAnimAll */
 void fn_801AFEFC(HSD_RObj* robj, f32 startframe)
 {
-    fn_801AFF64(robj, startframe, 0x7FF);
+    HSD_RObjReqAnimAllByFlags(robj, startframe, 0x7FF);
 }
 
 void HSD_RObjAddAnim(HSD_RObj* robj, HSD_RObjAnimJoint* anim)
@@ -237,7 +237,7 @@ void HSD_RObjAddAnim(HSD_RObj* robj, HSD_RObjAnimJoint* anim)
 }
 
 /* HSD_RObjAddAnimAll */
-void fn_801AFE68(HSD_RObj* robj, HSD_RObjAnimJoint* anim)
+void HSD_RObjAddAnimAll(HSD_RObj* robj, HSD_RObjAnimJoint* anim)
 {
     HSD_RObj* i;
     HSD_RObjAnimJoint* j;
@@ -262,7 +262,7 @@ static u32 HSD_RObjGetConstraintType(HSD_RObj* robj)
 }
 
 /* HSD_RObjGetGlobalPosition */
-int fn_801AFCAC(HSD_RObj* robj, int type, Vec3* p)
+int HSD_RObjGetGlobalPosition(HSD_RObj* robj, int type, Vec3* p)
 {
     Vec3 v = { 0, 0, 0 };
     HSD_RObj* rp;
@@ -334,12 +334,12 @@ static void resolveCnsDirUp(HSD_RObj* robj, void* obj,
     Vec3 dir;
     f32 k;
 
-    if (fn_801AFCAC(robj, 2, &this_pos) != 0) {
+    if (HSD_RObjGetGlobalPosition(robj, 2, &this_pos) != 0) {
         dir.x = jobj->mtx[0][3];
         dir.y = jobj->mtx[1][3];
         dir.z = jobj->mtx[2][3];
         PSVECSubtract(&this_pos, &dir, &this_pos);
-        if (fn_801AFCAC(robj, 3, &up) != 0) {
+        if (HSD_RObjGetGlobalPosition(robj, 3, &up) != 0) {
             PSVECSubtract(&up, &dir, &up);
         } else {
             k = 1.0f - PSVECDotProduct(&this_pos, &up);
@@ -483,7 +483,7 @@ static void resolveLimits(HSD_RObj* robj, void* obj,
             }
         }
         if (update_mtx) {
-            fn_801A3600(jobj);
+            HSD_JObjMakeMatrix(jobj);
         }
     }
 }
@@ -492,14 +492,14 @@ static void expEvaluate(HSD_Exp* exp, u32 type, void* obj,
                         HSD_ObjUpdateFunc update_func);
 
 /* HSD_RObjUpdateAll */
-void fn_801AED88(HSD_RObj* robj, void* obj,
+void HSD_RObjUpdateAll(HSD_RObj* robj, void* obj,
                        HSD_ObjUpdateFunc update_func)
 {
     HSD_RObj* rp;
     Vec3 vec;
 
     if (robj != NULL) {
-        if (fn_801AFCAC(robj, 1, &vec) != 0) {
+        if (HSD_RObjGetGlobalPosition(robj, 1, &vec) != 0) {
             update_func(obj, 0x35, (HSD_ObjData*) &vec);
             update_func(obj, 0x38, NULL);
         }
@@ -549,14 +549,14 @@ void fn_801AEBE4(HSD_RObj* robj, HSD_RObjDesc* desc)
 static void bcexpLoadDesc(HSD_Exp* exp, HSD_ByteCodeExpDesc* desc);
 static void expLoadDesc(HSD_Exp* exp, HSD_ExpDesc* desc);
 /* HSD_RObjAlloc */
-HSD_RObj* fn_801AE4B0(void);
+HSD_RObj* HSD_RObjAlloc(void);
 
 HSD_RObj* HSD_RObjLoadDesc(HSD_RObjDesc* robjdesc)
 {
     HSD_RObj* robj;
 
     if (robjdesc != NULL) {
-        robj = fn_801AE4B0();
+        robj = HSD_RObjAlloc();
         robj->next = HSD_RObjLoadDesc(robjdesc->next);
         robj->flags = robjdesc->flags;
         switch (robj->flags & ROBJ_TYPE_MASK) {
@@ -639,7 +639,7 @@ static inline void fn_801AEBE0(HSD_ObjAllocData* data, char* name)
 }
 
 /* HSD_RObjAlloc */
-HSD_RObj* fn_801AE4B0(void)
+HSD_RObj* HSD_RObjAlloc(void)
 {
     HSD_RObj* new = HSD_ObjAlloc(&lbl_804656B4);
     fn_801AEBE0(&lbl_804656B4, "robj: alloc");
@@ -658,7 +658,7 @@ void HSD_RObjFree(HSD_RObj* robj)
  * (expEvaluate allocates lbl_8047B30C floats itself when none is set).
  * Nothing in the game calls it, so the linker strips it; its assert string
  * "(ptr && nitems) || !ptr" still sits in robj.c's .rodata pool between
- * expEvaluate's and fn_801AE4B0's strings (0x80275264).
+ * expEvaluate's and HSD_RObjAlloc's strings (0x80275264).
  */
 void HSD_RObjSetArgBuffer(f32* ptr, u32 nitems)
 {
@@ -694,7 +694,7 @@ static void expEvaluate(HSD_Exp* exp, u32 type, void* obj,
         if (lbl_8047B30C == 0) {
             lbl_8047B30C = 100;
         }
-        lbl_8047B308 = fn_801A6928(lbl_8047B30C * sizeof(f32));
+        lbl_8047B308 = HSD_MemAlloc(lbl_8047B30C * sizeof(f32));
     }
     if (lbl_8047B30C < exp->nb_args) {
         OSReport(
@@ -743,15 +743,15 @@ static void expEvaluate(HSD_Exp* exp, u32 type, void* obj,
             case 0x800:
                 break;
             case 0x10000:
-                fn_801A98CC(jobj->mtx, (Vec3*) &rotate);
+                HSD_MtxGetRotation(jobj->mtx, (Vec3*) &rotate);
                 *cur_arg++ = 57.29578F * rotate.x;
                 break;
             case 0x20000:
-                fn_801A98CC(jobj->mtx, (Vec3*) &rotate);
+                HSD_MtxGetRotation(jobj->mtx, (Vec3*) &rotate);
                 *cur_arg++ = 57.29578F * rotate.y;
                 break;
             case 0x40000:
-                fn_801A98CC(jobj->mtx, (Vec3*) &rotate);
+                HSD_MtxGetRotation(jobj->mtx, (Vec3*) &rotate);
                 *cur_arg++ = 57.29578F * rotate.z;
                 break;
             case 0x100000:

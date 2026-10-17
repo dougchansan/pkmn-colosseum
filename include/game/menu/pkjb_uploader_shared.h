@@ -5,10 +5,10 @@
  * Shared part of the pkjb_uploader.c translation unit (0x800716C8 -
  * 0x80075390): the GBA link command layer in front of the PKJB multiboot
  * uploader. The unit's rodata is the "pkjb_uploader.c" string block at
- * 0x80268780 (PKJB_Prepare, fn_80073E8C); the command functions share its
+ * 0x80268780 (PKJB_Prepare, pkjbPrepare); the command functions share its
  * statics (the idle callbacks at lbl_803B6E18 and cancel flags at
- * lbl_803B6E08, also used by fn_8007480C, and the boot key at lbl_8047A60C,
- * written by fn_80073E8C and checked by fn_80073C38), so they sit in the
+ * lbl_803B6E08, also used by pkjbValidateKey, and the boot key at lbl_8047A60C,
+ * written by pkjbPrepare and checked by fn_80073C38), so they sit in the
  * same unit. It has no .data or .sdata2.
  *
  * Unit flags: GC/2.0, -O4,p, "-opt nopeephole" (see pkjb_exact_80073990.c
@@ -60,13 +60,13 @@ extern volatile s32 lbl_803B6E08[4];
 extern PkjbIdleCallback lbl_803B6E18[4];
 /* Thread suspended by pkjbWaitZeroResponse. */
 extern OSThread* lbl_8047A600;
-/* Boot key expected back from the GBA after a reset (set by fn_80073E8C). */
+/* Boot key expected back from the GBA after a reset (set by pkjbPrepare). */
 extern u32 lbl_8047A60C;
 
 extern void _threadSwitch(void);
 extern void gbaCommandSetKeyState(s32 mode, s32 flag);
-extern u32 fn_800D0F44(s32 chan);
-extern OSThread* fn_800A13F8(void);
+extern u32 SIProbe(s32 chan);
+extern OSThread* OSGetCurrentThread(void);
 
 void fn_80072684(OSAlarm* alarm, OSContext* context);
 s32 fn_80073C38(s32 chan);
@@ -194,14 +194,14 @@ static inline s32 pkjbWaitZeroResponse(s32 chan)
     BOOL enabled;
     s32 result;
 
-    lbl_8047A600 = fn_800A13F8();
+    lbl_8047A600 = OSGetCurrentThread();
     OSCreateAlarm(&lbl_803B6DE0);
     enabled = OSDisableInterrupts();
     OSSetAlarm(&lbl_803B6DE0, OSMillisecondsToTicks(1), fn_80072684);
     OSSuspendThread(lbl_8047A600);
     OSRestoreInterrupts(enabled);
 
-    if (fn_800D0F44(chan) != PKJB_SI_GBA) {
+    if (SIProbe(chan) != PKJB_SI_GBA) {
         result = 1;
     } else if (GBAGetStatus(chan, &status) != 0) {
         result = 2;

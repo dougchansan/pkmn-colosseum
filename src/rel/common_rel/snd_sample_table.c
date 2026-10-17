@@ -4,7 +4,7 @@
  *
  * Module 125 .rodata 0xC54 - 0xD0C and .data 0x143918 - 0x1439D8. The
  * module's _prolog publishes the table through lbl_80478FB4 and its count
- * (8) through lbl_80478FB0. main.dol opens archive N with fn_801655D4:
+ * (8) through lbl_80478FB0. main.dol opens archive N with soundOpenWaveArchive:
  * GSsndOpenWaveDVD(N, path, 0, unk4, poolId, projId, sdirId).
  *
  * poolId/projId/sdirId are the member ids of the matching

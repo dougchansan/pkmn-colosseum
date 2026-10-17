@@ -4,7 +4,7 @@
  *
  * Entry of the slot status dispatch table lbl_8036C3E0 (status 2000):
  * load mode 3 slots are released through fn_8017D960, every other mode
- * through fn_8017DAB8.
+ * through fsysSlotCheckEntries.
  *
  * Built at optimisation level 0 with peephole and scheduling on, like the
  * rest of the fsys code (see configure.py).
@@ -13,15 +13,15 @@
 #include "game/fsys/fsys.h"
 
 extern void fn_8017D960(FSYSSlot* slot);
-extern void fn_8017DAB8(FSYSSlot* slot);
+extern void fsysSlotCheckEntries(FSYSSlot* slot);
 
 /* Address: 0x8017CE7C | size: 0x4C */
-s32 fn_8017CE7C(FSYSSlot* slot)
+s32 fsysSlotStatus2000(FSYSSlot* slot)
 {
     if ((s32)slot->loadMode == 3) {
         fn_8017D960(slot);
     } else {
-        fn_8017DAB8(slot);
+        fsysSlotCheckEntries(slot);
     }
     return 1;
 }

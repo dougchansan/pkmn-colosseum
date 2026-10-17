@@ -18,7 +18,7 @@ extern u8 fightFloorIsUseFightTimerCommand(s32 controller);
 extern u8 fightTimerCommandIsOver(void);
 extern u16 std103_battleGetResult(void);
 extern void _threadSwitch(void);
-extern u32 fn_800F7AF0(s32 slot);
+extern u32 GSinputButtonsChanged(s32 slot);
 extern u32 fn_800F7BC4(s32 slot);
 extern u32 menuIsCheck(u32 id);
 extern s32 menuOpenCustom(s32 id, ...);
@@ -74,7 +74,7 @@ s32 menuFightOpenWaza(u8* status, u32 arg1, u32 arg2) {
             menuCloseCustom(0xf7, 0, 1);
         }
         winMsgOpenFight(msg, 1, 1);
-        while ((fn_800F7BC4(1) & fn_800F7AF0(1) & 0x300) == 0) {
+        while ((fn_800F7BC4(1) & GSinputButtonsChanged(1) & 0x300) == 0) {
             if (menuFightIsTimeUp() != 0) {
                 break;
             }

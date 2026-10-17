@@ -24,19 +24,19 @@ extern void* memset(void* dst, int val, u32 size);
 /* External functions referenced from asm wrappers */
 extern void DCFlushRange(void* addr, u32 size);
 extern u64 OSGetTime(void);
-extern void fn_800D3EC4(s32, f32, f32, f32, f32, f32, f32);
+extern void GSgfxSetViewportJitter(s32, f32, f32, f32, f32, f32, f32);
 extern void gfxRecordCommand(u32, ...);
 extern void gfxBegin(u16);
 extern void gfxSetupChannelsTev(u32);
 
 /* GSmem */
 extern u16   _toolentryAlloc__FUl(u32 size);                    /* GSmemAllocRaw */
-extern void* fn_800E27B0(u16 handle);                  /* GSmemGetPtr */
+extern void* GSmemLock(u16 handle);                  /* GSmemGetPtr */
 
 /* SDK GX functions */
-extern void  fn_800AA2F0(void);                        /* GXSetViewport */
-extern void  fn_800BD640(void);                        /* GXSetProjection */
-extern void  fn_800BD744(void);                        /* GXLoadPosMtxImm */
+extern void  VIGetNextField(void);                        /* GXSetViewport */
+extern void  GXSetViewportJitter(void);                        /* GXSetProjection */
+extern void  GXSetViewport(void);                        /* GXLoadPosMtxImm */
 extern void  GXInvalidateTexAll(void);                        /* GXInvalidateTexAll */
 
 /* ===== String constants (rodata) ===== */
@@ -60,54 +60,54 @@ extern u8 lbl_80400B28[];  /* light/material command buffer */
 /* No-op functions (1) */
 /* Address: 0x800DC874 | Size: 0x4 */
 /* Forward declarations for self-referencing asm blocks */
-extern void fn_800D6B00(void);
-extern void fn_800D724C(u32 idx);
-extern void fn_800D7268(u32 idx);
-extern void fn_800D72A4(u32 idx);
-extern void fn_800D72C4(u32 idx);
-extern void fn_800D72E4(u32 idx);
-extern void fn_800D7304(u32 idx);
-extern void fn_800D7328(u32 idx);
-extern void fn_800D7344(u32 idx);
-extern void fn_800D7360(u32 idx);
-extern void fn_800D737C(u32 idx);
-extern void fn_800D7398(u32 idx);
-extern void fn_800D73C4(u32 idx);
-extern void fn_800D73F8(void);
-extern void fn_800D740C(void);
-extern void fn_800D7420(void);
-extern void fn_800D7444(void);
-extern void fn_800D7468(void);
-extern void fn_800D748C(void);
-extern void fn_800D74A0(void);
-extern void fn_800D74B4(void);
-extern void fn_800D74D0(void);
-extern void fn_800D74EC(void);
-extern void fn_800D7508(void);
-extern void fn_800D7524(void);
-extern void fn_800D7540(void);
-extern void fn_800D7564(void);
-extern void fn_800D7588(void);
-extern void fn_800D75AC(void);
-extern void fn_800D7650(u8*);
-extern void fn_800D7868(u8*, u32, u32, u32, u32, u8, u32, u8);
+extern void gfxFlushPendingVertex(void);
+extern void _gfxEmitTexCoord1x8(u32 idx);
+extern void _gfxEmitTexCoord1x16(u32 idx);
+extern void _gfxEmitTexCoord2u8(u32 idx);
+extern void _gfxEmitTexCoord2s16(u32 idx);
+extern void _gfxEmitTexCoord2u16(u32 idx);
+extern void _gfxEmitTexCoord2f32(u32 idx);
+extern void _gfxEmitColor1x8(u32 idx);
+extern void _gfxEmitColor1x16(u32 idx);
+extern void _gfxEmitColor1u16(u32 idx);
+extern void _gfxEmitColor1u32(u32 idx);
+extern void _gfxEmitColor3u8(u32 idx);
+extern void _gfxEmitColor4u8(u32 idx);
+extern void _gfxEmitNormal1x8(void);
+extern void _gfxEmitNormal1x16(void);
+extern void _gfxEmitNormal3s8(void);
+extern void _gfxEmitNormal3s16(void);
+extern void _gfxEmitNormal3f32(void);
+extern void _gfxEmitPos1x8(void);
+extern void _gfxEmitPos1x16(void);
+extern void _gfxEmitPos2s8(void);
+extern void _gfxEmitPos2u8(void);
+extern void _gfxEmitPos2s16(void);
+extern void _gfxEmitPos2u16(void);
+extern void _gfxEmitPos2f32(void);
+extern void _gfxEmitPos3s8(void);
+extern void _gfxEmitPos3u8(void);
+extern void _gfxEmitPos3s16(void);
+extern void _gfxEmitPos3u16(void);
+extern void gfxVtxDescClear(u8*);
+extern void gfxVtxDescSetAttr(u8*, u32, u32, u32, u32, u8, u32, u8);
 extern void fn_800D7940(u32, u16);
 extern void gfxLoadVtxDesc(u32);
 extern void fn_800DB098(void);
 extern void fn_800DB758(u16);
 extern void lightGetFrameCount__FP9_HSD_AObj(u8*);
-extern void fn_800DE09C(void);
-extern void fn_800DE128(void);
+extern void GSlogVPrintf(void);
+extern void GSlogFormat(void);
 extern void fn_800E09E8(void*, void*, u32);
-extern u8 fn_800E0E14(u32, u32);
+extern u8 GSmemDumpMap(u32, u32);
 extern u32 _matGSmatObjMakeTExp(void*, void*, void*, void*, void*);
 extern void _matGSmatEnableEnvMapExt(u8*);
 extern s32 _matGSmatObjLoad(u8*);
-extern void fn_800E0290(void*, void*, void*);
+extern void GSmtxConcat(void*, void*, void*);
 extern void fn_800E02C4(void*);
-extern void fn_800E02E8(void*, f32);
-extern void fn_800E032C(void*, f32);
-extern void fn_800E0370(void*, f32);
+extern void GSmtxRotateZ(void*, f32);
+extern void GSmtxRotateY(void*, f32);
+extern void GSmtxRotateX(void*, f32);
 extern void fn_800E03E8(void*, f32, f32, f32);
 extern void fn_800E0628(void*, void*);
 extern void fn_800E064C(void*);
@@ -123,22 +123,22 @@ extern void GSmathInitCosTable(void);
  * the callee's real definition ended up in). ===== */
 extern u8 lbl_8047AA91;
 extern u32 lbl_8047AA80;
-extern void fn_800B944C(u32, u32);
+extern void GXSetPointSize(u32, u32);
 extern f32 lbl_8047CA30;
 extern f32 lbl_8047CA34;
 extern f32 lbl_8047CA38;
-extern void fn_800B9404(u32, u32);
-extern void fn_800D7230(void);
-extern void fn_800D75D0(void);
-extern void fn_800B928C(u32, u32, u16);
+extern void GXSetLineWidth(u32, u32);
+extern void _gfxEmitMtxIdx(void);
+extern void _gfxEmitPos3f32(void);
+extern void GXBegin(u32, u32, u16);
 extern u8 lbl_80314350[];
 extern u8 lbl_804001F0[];
 extern void fn_800D6A80(u16, s32, u32*, u32*);
 extern u8 lbl_804007E8[];
-extern void fn_800B7D74(u32, u32, u32, u32, u8);
-extern void fn_800B7D3C(void);
-extern void fn_800B7874(u32, u32);
-extern void fn_800B84E0(u32, u32, u8);
+extern void GXSetVtxAttrFmt(u32, u32, u32, u32, u8);
+extern void GXClearVtxDesc(void);
+extern void GXSetVtxDesc(u32, u32);
+extern void GXSetArray(u32, u32, u8);
 extern u8 lbl_80314370[];
 extern u8 lbl_803143B4[];
 extern u8 lbl_803143D8[];
@@ -149,12 +149,12 @@ extern u8 lbl_803144D0[];
 extern u32 lbl_8047AAB4;
 extern u16 lbl_8047AAA8;
 extern u32 GScameraGetActiveCamera(void);
-extern u32 fn_800D1D00(void);
-extern u32 fn_800D1B3C(void);
+extern u32 GScameraGetMatrixPtr(void);
+extern u32 GScameraGetInvMatrixPtr(void);
 extern u32 GScameraGetProjMatrixPtr(void);
 extern void GXLoadPosMtxImm(u32, u32);
 extern void GXLoadNrmMtxImm(u32, u32);
-extern void fn_800BD554(u32);
+extern void GXSetCurrentMtx(u32);
 extern u8 lbl_8047AAC8;
 extern u8 lbl_80314610[];
 extern u32 lbl_8047AAC0;
@@ -168,24 +168,24 @@ extern u8 lbl_80314404[];
 extern u8 lbl_80314454[];
 extern u8 lbl_803144A8[];
 extern u8 lbl_80314424[];
-extern void fn_800BAE34();
-extern void fn_800BACA0();
-extern void fn_800BB098();
+extern void GXInitTexObjWrapMode();
+extern void GXInitTexObjLOD();
+extern void GXLoadTlut();
 extern void GXLoadTexObj();
 extern u8 lbl_80314530[];
 extern u32 lbl_8047CA40;
 extern u32 lbl_8047CA48;
 extern u8 lbl_80314510[];
 extern u8 lbl_803144F0[];
-extern void fn_800BBC34(u32);
-extern void fn_800BBC0C(u32);
+extern void GXSetTevDirect(u32);
+extern void GXSetNumIndStages(u32);
 extern void GXSetNumChans();
 extern void GXSetChanCtrl();
-extern void fn_800B884C();
-extern void fn_800BC8C8();
-extern void fn_800BBAF8();
-extern void fn_800BB97C();
-extern void fn_800BB81C();
+extern void GXSetNumTexGens();
+extern void GXSetNumTevStages();
+extern void GXSetIndTexOrder();
+extern void GXSetIndTexCoordScale();
+extern void GXSetIndTexMtx();
 extern void GXSetTevOrder();
 extern void GXSetTevColorOp();
 extern void GXSetTevAlphaOp();
@@ -193,33 +193,33 @@ extern void GXSetTevColorIn();
 extern void GXSetTevAlphaIn();
 extern void GXSetTevKColorSel();
 extern void GXSetTevKAlphaSel();
-extern void fn_800BB780();
+extern void GXSetTevIndirect();
 extern void fn_800BBC7C();
 extern void fn_800BBCE0();
 extern void fn_800BBE8C();
 extern void fn_800BBF98();
 extern void fn_800BBFDC();
-extern void fn_800BC3E0();
+extern void GXSetTevKColor();
 extern void GXSetTevSwapModeTable();
-extern void fn_800BD2E0(void*, u32);
+extern void GXSetProjection(void*, u32);
 extern f32 lbl_8047CA50;
 extern f32 lbl_8047CA54;
 extern void GScameraSetViewport(void*, u32, u32, u32, u32);
 extern u32 lbl_8047CA60;
 extern u32 lbl_8047CA68;
-extern void fn_800BD7A0(u32, u32, u32, u32);
-extern void fn_800D2150(u32, u16, u16, u16, u16);
+extern void GXSetScissor(u32, u32, u32, u32);
+extern void GScameraSetScissor(u32, u16, u16, u16, u16);
 extern void HSD_FogSet(u32);
 extern u32 lbl_8047AA8C;
 extern void GXSetClipMode(u32);
-extern void fn_800B94F0(u32);
+extern void GXSetCullMode(u32);
 extern u8 lbl_8031453C[];
-extern void fn_800BCFDC(u32);
-extern void fn_800BC618(u32, u8, u32, u32, u8);
+extern void GXSetDither(u32);
+extern void GXSetAlphaCompare(u32, u8, u32, u32, u8);
 extern u8 lbl_8031457C[];
 extern u8 lbl_8031456C[];
 extern void GXSetZMode(u32, u32, u32);
-extern void fn_800BCEBC(u32);
+extern void GXSetZCompLoc(u32);
 extern u8 lbl_8031454C[];
 extern void GXSetDstAlpha(u32);
 extern void GXSetBlendMode(u32, u32, u32, u32);
@@ -230,10 +230,10 @@ extern void jumptable_803152B8();
 extern void jumptable_80315340();
 extern void jumptable_80315320();
 extern void fn_800E24B0(u16);
-extern void fn_800E209C(u16);
+extern void GSmemFree(u16);
 extern void GXCallDisplayList(u32, u32);
 extern void fn_800E2AF8(u16);
-extern u16 fn_800E2C04(u32, u32);
+extern u16 GSmemAlloc(u32, u32);
 extern u32 lbl_8047AAD8;
 extern u32 lbl_8047AAD4;
 extern void jumptable_80315364();
@@ -362,7 +362,7 @@ extern u8 lbl_80315568[];
 extern void C_MTXPerspective(void);
 extern void C_MTXOrtho(void);
 extern void C_QUATSlerp(void*, void*, void*);
-extern void fn_801ADAAC(void*, void*);
+extern void EulerToQuat(void*, void*);
 extern void C_QUATRotAxisRad(void);
 extern void PSQUATMultiply(void*, void*, void*);
 extern u32 lbl_8047CAE4;
@@ -376,7 +376,7 @@ extern u32 lbl_8047CB08;
 extern u32 lbl_8047CAFC;
 extern f32 HSD_Randf(void);
 extern f32 lbl_8047CB10;
-extern u32 fn_801ADCD8(void);
+extern u32 HSD_Rand(void);
 extern u32 lbl_80478C94;
 extern f64 fmod(f64 x, f64 y);
 extern s32 __cvt_fp2unsigned(f32 x);
@@ -439,8 +439,8 @@ void gfxSetOrtho(f32 a, f32 b, f32 c, f32 d) {
     else {
         u8 tmp[0x48];
         GSmtx44Ortho(tmp, b, d, a, c, lbl_8047CA50, lbl_8047CA54);
-        fn_800BD2E0(tmp, 1);
-        fn_800D834C();
+        GXSetProjection(tmp, 1);
+        gfxLoadIdentity();
     }
 }
 #endif
@@ -450,9 +450,9 @@ asm void fn_800D9BD0(void) {
 #include "src/game/gs_render_fn_800D9BD0.inc"
 }
 #else
-void fn_800D9BD0(f32 a, f32 b, f32 c, f32 d) {
+void gfxSetPerspective(f32 a, f32 b, f32 c, f32 d) {
     if (*(s32*)lbl_8047AA80 == 1) { gfxRecordCommand(0x39, 0xe, a); }
-    else { u8 tmp[0x48]; GSmtx44Perspective(tmp); fn_800BD2E0(tmp, 0); }
+    else { u8 tmp[0x48]; GSmtx44Perspective(tmp); GXSetProjection(tmp, 0); }
 }
 #endif
 
@@ -463,7 +463,7 @@ asm void fn_800D9C24(void) {
 #include "src/game/gs_render_fn_800D9C24.inc"
 }
 #else
-void fn_800D9C24(u32 x0, u32 y0, u32 x1, u32 y1) {
+void gfxSetViewport(u32 x0, u32 y0, u32 x1, u32 y1) {
     u32 camera;
 
     if (*(s32*)lbl_8047AA80 == 1) {
@@ -471,7 +471,7 @@ void fn_800D9C24(u32 x0, u32 y0, u32 x1, u32 y1) {
         return;
     }
 
-    fn_800D3EC4(0, (f32)(u16)x0, (f32)(u16)y0,
+    GSgfxSetViewportJitter(0, (f32)(u16)x0, (f32)(u16)y0,
                 (f32)((u16)x1 - (u16)x0 + 1),
                 (f32)((u16)y1 - (u16)y0 + 1), lbl_8047CA50,
                 1.0f);

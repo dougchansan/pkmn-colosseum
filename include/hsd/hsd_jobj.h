@@ -196,7 +196,7 @@ void HSD_JObjSetFlagsAll(HSD_JObj* jobj, u32 flags);
 void HSD_JObjClearFlags(HSD_JObj* jobj, u32 flags);
 void HSD_JObjClearFlagsAll(HSD_JObj* jobj, u32 flags);
 void HSD_JObjReqAnimAll(HSD_JObj* jobj, f32 frame);
-void fn_8019D9DC(HSD_JObj* jobj);
+void HSD_JObjSetupMatrixSub(HSD_JObj* jobj);
 void fn_8019D620(HSD_JObj* jobj);
 void HSD_JObjRef(HSD_JObj* jobj);
 void HSD_JObjUnref(HSD_JObj* jobj);
@@ -207,7 +207,7 @@ HSD_JObj* HSD_JObjLoadJoint(HSD_Joint* joint);
 void HSD_JObjAddAnimAll(HSD_JObj* jobj, HSD_AnimJoint* animjoint,
                         HSD_MatAnimJoint* matanimjoint,
                         HSD_ShapeAnimJoint* shapeanimjoint);
-void fn_801A301C(HSD_JObj* jobj, HSD_AnimJoint* animjoint,
+void HSD_JObjAddAnim(HSD_JObj* jobj, HSD_AnimJoint* animjoint,
                  HSD_MatAnimJoint* matanimjoint,
                  HSD_ShapeAnimJoint* shapeanimjoint);
 void HSD_JObjAnimAll(HSD_JObj* jobj);
@@ -270,7 +270,7 @@ static inline void HSD_JObjSetupMatrix(HSD_JObj* jobj)
     if (!jobj || !HSD_JObjMtxIsDirty(jobj)) {
         return;
     }
-    fn_8019D9DC(jobj);
+    HSD_JObjSetupMatrixSub(jobj);
 }
 
 #define HSD_JObjSetMtxDirty(jobj) \

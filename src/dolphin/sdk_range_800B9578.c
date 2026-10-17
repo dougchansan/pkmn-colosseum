@@ -72,7 +72,7 @@ void __GXSetGenMode(void)
     gx->bpSentNot = 0;
 }
 
-void fn_800B959C(u16 left, u16 top, u16 width, u16 height)
+void GXSetDispCopySrc(u16 left, u16 top, u16 width, u16 height)
 {
     gx->cpDispSrc = 0;
     GX_SET_REG_FIELD(gx->cpDispSrc, 10, 0, left);
@@ -85,7 +85,7 @@ void fn_800B959C(u16 left, u16 top, u16 width, u16 height)
     GX_SET_REG_FIELD(gx->cpDispSize, 8, 24, 0x4A);
 }
 
-void fn_800B962C(u16 left, u16 top, u16 width, u16 height)
+void GXSetTexCopySrc(u16 left, u16 top, u16 width, u16 height)
 {
     gx->cpTexSrc = 0;
     GX_SET_REG_FIELD(gx->cpTexSrc, 10, 0, left);
@@ -98,7 +98,7 @@ void fn_800B962C(u16 left, u16 top, u16 width, u16 height)
     GX_SET_REG_FIELD(gx->cpTexSize, 8, 24, 0x4A);
 }
 
-void fn_800B96BC(u16 width, u16 height)
+void GXSetDispCopyDst(u16 width, u16 height)
 {
     u16 stride;
 
@@ -108,7 +108,7 @@ void fn_800B96BC(u16 width, u16 height)
     GX_SET_REG_FIELD(gx->cpDispStride, 8, 24, 0x4D);
 }
 
-void fn_800B96F8(u16 width, u16 height, s32 format, u8 mipmap)
+void GXSetTexCopyDst(u16 width, u16 height, s32 format, u8 mipmap)
 {
     u32 rowTiles;
     u32 columnTiles;
@@ -152,13 +152,13 @@ void fn_800B96F8(u16 width, u16 height, s32 format, u8 mipmap)
     GX_SET_REG_FIELD(gx->cpTex, 3, 4, peFormat);
 }
 
-void fn_800B984C(u32 value)
+void GXSetDispCopyFrame2Field(u32 value)
 {
     GX_SET_REG_FIELD(gx->cpDisp, 2, 12, value);
     GX_SET_REG_FIELD(gx->cpTex, 2, 12, 0);
 }
 
-void fn_800B9874(u32 value)
+void GXSetCopyClamp(u32 value)
 {
     u8 clampBottom;
     u8 clampTop;
@@ -230,7 +230,7 @@ f32 GXGetYScaleFactor(u16 efbHeight, u16 xfbHeight)
     return lastScale;
 }
 
-u32 fn_800B9B14(f32 scale)
+u32 GXSetDispCopyYScale(f32 scale)
 {
     u8 enable;
     u32 integerScale;
@@ -273,7 +273,7 @@ void GXSetCopyClear(GXColor_800B9BDC color, u32 clearZ)
     gx->bpSentNot = 0;
 }
 
-void fn_800B9C44(u8 antialias, const u8 samplePattern[12][2], u8 verticalFilter,
+void GXSetCopyFilter(u8 antialias, const u8 samplePattern[12][2], u8 verticalFilter,
                  const u8 filter[7])
 {
     u32 sampleLocations[4];
@@ -356,12 +356,12 @@ void fn_800B9C44(u8 antialias, const u8 samplePattern[12][2], u8 verticalFilter,
     gx->bpSentNot = 0;
 }
 
-void fn_800B9E6C(u32 value)
+void GXSetDispCopyGamma(u32 value)
 {
     GX_SET_REG_FIELD(gx->cpDisp, 2, 7, value);
 }
 
-void fn_800B9E88(void* destination, u8 clear)
+void GXCopyDisp(void* destination, u8 clear)
 {
     u32 reg;
     u32 temporaryPeControl;
@@ -414,7 +414,7 @@ void fn_800B9E88(void* destination, u8 clear)
     gx->bpSentNot = 0;
 }
 
-void fn_800B9FE4(void* destination, u8 clear)
+void GXCopyTex(void* destination, u8 clear)
 {
     u32 reg;
     u32 temporaryPeControl;

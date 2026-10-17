@@ -53,8 +53,8 @@ u8   fightOutPokemonIsUseHensinBuff(void* trainer);
 void fightOutPokemonSetHensinFightPokemonStatusId(void* trainer, u16 eventId, u32 param);
 
 /* Item/Pokemon field access helpers used by battle item flow. */
-u8 fn_80121574(void* obj, s32 arg);
-u8 fn_8011A3E4(void* obj, s32 arg);
+u8 pokemonGetJoutai08(void* obj, s32 arg);
+u8 statusGetJoutai08(void* obj, s32 arg);
 
 /* SDA table pointers for trainer data arrays */
 extern u32* lbl_80478F08;  /* Party config header */
@@ -107,7 +107,7 @@ void* fightTrainerSearchInvalidFightPokemonPtr(void* context, u16 count) {
 }
 
 /* 0x801F8000 | size: 0x100 */
-u32 fn_801F8000(void* context) {
+u32 fightTrainerGetKindPrefixName(void* context) {
     extern u16 std103_battleGetResult(void* ctx);
     extern u8 heroCheckValid(void* ptr);
     extern void* fightTrainerGetStatus(void* ctx, u32 slot, u32 field, u32 index);
@@ -475,7 +475,7 @@ s32 fightTrainerGetFightPokemonToTemotiBanme(void* context, void* target) {
 void fightTrainerBackFightPokemonToTemotiPokemon(void* context, u8 flag) {
     extern void pokemonBiosCopy(void* ptr, void* pokemon);
     extern void fn_8012190C(void* ptr, u32 field, u32 val);
-    extern u8 fn_80121ADC(void* ptr, u32 field);
+    extern u8 pokemonIsJoutaiDataId(void* ptr, u32 field);
     extern u16 pokemonGetSoubiItemDataId(void* pokemon);
     extern u8 fightPokemonCheckValid(void* ptr);
     extern void* fightTrainerGetStatus(void* ctx, u32 slot, u32 field, u16 idx);
@@ -498,7 +498,7 @@ void fightTrainerBackFightPokemonToTemotiPokemon(void* context, u8 flag) {
                 speciesId = pokemonGetSoubiItemDataId(pokemon);
                 if ((moveData = pokemonGetStatus(slot, 0, 0xCB, 0)) != NULL) {
                     pokemonBiosCopy(moveData, pokemon);
-                    if ((u8)fn_80121ADC(moveData, 4) == 1) {
+                    if ((u8)pokemonIsJoutaiDataId(moveData, 4) == 1) {
                         fn_8012190C(moveData, 4, 1);
                     }
                     if (flag == 1) {
@@ -515,7 +515,7 @@ void fightTrainerBackFightPokemonToTemotiPokemon(void* context, u8 flag) {
 #if !defined(FTR_BANK_EXACT_ACTIVE) || \
     defined(FTR_EXACT_801F87CC_801F8A18)
 /* 0x801F87CC | size: 0x24C | large */
-u16 fn_801F87CC(void* trainer, void** pokemonList) {
+u16 fightTrainerGetIrekaeFightPokemonAry(void* trainer, void** pokemonList) {
     void* pokemon;
     u16 index;
     u16 count;
@@ -542,7 +542,7 @@ u16 fn_801F87CC(void* trainer, void** pokemonList) {
 #if !defined(FTR_BANK_EXACT_ACTIVE) || \
     defined(FTR_EXACT_801F8A18_801F8D80)
 /* 0x801F8A18 | size: 0x1E8 | medium */
-void* fn_801F8A18(void* trainer, u16* index) {
+void* fightTrainerGetIrekaeFightPokemon(void* trainer, u16* index) {
     extern void* fightTrainerGetStatus(void* ctx, u32 slot, u32 field, u16 idx);
     void* pokemon;
 
@@ -683,16 +683,16 @@ void* fightTrainerGetEntryIdToFightPokemonPtr(void* context, s16 speciesId) {
 
 /* 0x801F8FD8 | size: 0x5C */
 void* fightTrainerCreateSequence(void* arg0) {
-    extern void* fn_801DA4E8(void*, u32);
-    extern void* fn_801DE418(u32);
+    extern void* wazaSequenceOwnerSetVisibility(void*, u32);
+    extern void* wazaSequenceTrainerCreate(u32);
     extern void* fightTrainerGetStatus(void*, void*, u32, u32);
     void* result;
 
-    result = fn_801DE418((u16)(u32)fightTrainerGetStatus(0, arg0, 9, 0));
+    result = wazaSequenceTrainerCreate((u16)(u32)fightTrainerGetStatus(0, arg0, 9, 0));
     if (result == NULL) {
         return NULL;
     }
-    fn_801DA4E8(result, 0);
+    wazaSequenceOwnerSetVisibility(result, 0);
     return result;
 }
 
@@ -751,7 +751,7 @@ void fightTrainerTimeOutSelectFightAction(void* unused, void* trainer, void* pok
     extern u8 fightOutPokemonCheckFightActionWazaSelect(void* trainer, u32 mode);
     extern u8 fightOutPokemonCheckCanOutOkWazaBanme(void* trainer, s32 slot, u32 field, u32 flags);
     extern void* fightOutPokemonGetPokemonPtr(void* trainer);
-    extern u32 fn_8022B2CC(void* trainer, u16 moveId, void* pokemon, u32 p3, u32 p4, u32 p5, s32 p6);
+    extern u32 fightSeqSelectTarget(void* trainer, u16 moveId, void* pokemon, u32 p3, u32 p4, u32 p5, s32 p6);
     extern void* fightOutPokemonCreateFightActionAttackWaza(
         void* ctx, void* motoAction, u32 kind, u32 buff,
         FightActionData* actionData, u32 moveId, u32 targetId, s8 slot, u8 mode);
@@ -773,7 +773,7 @@ void fightTrainerTimeOutSelectFightAction(void* unused, void* trainer, void* pok
     fightOutPokemonCreateFightActionAttackWaza(
         trainer, NULL, 0x13, 0, lbl_80375CA8, moveId,
         fightTargetGetTragetPtrToRelativeHostSideFightTargetId(
-            fn_8022B2CC(trainer, moveId, pokemon, 0, 1, 0, -1), pokemon),
+            fightSeqSelectTarget(trainer, moveId, pokemon, 0, 1, 0, -1), pokemon),
         i, 0);
 }
 
@@ -783,7 +783,7 @@ u32 fightTrainerSelectFightAction(void* context, void* param) {
     extern void fightActionInit(void* ptr);
     extern void* fightTrainerGetStatus(void* ctx, u32 slot, u32 field, u16 idx);
     extern void fightOutPokemonInitFightActionBuff(void* ptr);
-    extern void fn_802342CC(void* ctx, void* param);
+    extern void fightTrainerAiSelectFightAction(void* ctx, void* param);
     extern u8 fightMenuFightTrainerAgbHeroOpenMenu(void* ctx, void* param);
     extern void fightMenuFightTrainerGcHeroOpenMenu(void* ctx, void* param, u32 flags);
     void* result;
@@ -803,7 +803,7 @@ u32 fightTrainerSelectFightAction(void* context, void* param) {
     }
     slot = (u16)(u32)fightTrainerGetStatus(context, 0, 0x43, 0);
     if ((u16)(u32)fightTrainerGetStatus(0, slot, 0x2, 0) != 0) {
-        fn_802342CC(context, param);
+        fightTrainerAiSelectFightAction(context, param);
     } else if (fightTrainerGetHeroKindInline(slot) == 0) {
         fightMenuFightTrainerGcHeroOpenMenu(context, param, 0);
     } else if (fightTrainerGetHeroKindInline(slot) == 1) {
@@ -837,7 +837,7 @@ s16 fightTrainerTimeOutSelectIrekaeFightPokemon(void* trainer) {
     defined(FTR_EXACT_801F9600_801F9790)
 /* 0x801F9600 | size: 0x190 */
 s32 fightTrainerSelectIrekaeFightPokemon(void* context, void* p1, void* p2, void* p3) {
-    extern u8 fn_80008174(void);
+    extern u8 dbgMenuFightGetAllManual(void);
     extern void* fightTrainerGetStatus(void* ctx, u32 slot, u32 field, u16 idx);
     extern s32 fightTrainerAiSelectIrekaeDasuFightPokemon(void* ctx, void* p1, void* p2, void* p3);
     extern s32 fightMenuFightTrainerAgbHeroSelectIrekaeFightPokemon(void* ctx, void* p1, void* p2, void* p3);
@@ -849,7 +849,7 @@ s32 fightTrainerSelectIrekaeFightPokemon(void* context, void* p1, void* p2, void
     result = -1;
     slot = (u16)(u32)fightTrainerGetStatus(context, 0, 0x43, 0);
     species = (u16)(u32)fightTrainerGetStatus(0, slot, 0x2, 0);
-    if ((u8)fn_80008174() == 1) {
+    if ((u8)dbgMenuFightGetAllManual() == 1) {
         result = fightMenuFightTrainerGcHeroSelectIrekaeFightPokemon(context, 0, p1, p2, 0);
     } else if (species != 0) {
         result = fightTrainerAiSelectIrekaeDasuFightPokemon(context, p1, p2, p3);
@@ -959,7 +959,7 @@ void fightTrainerSortFightTrainerDataIdToHeroTemotiPokemon(
     extern void pokemonInit(void*);
     extern void* heroGetStatus(void*, s32, s32);
     extern void* fightTrainerGetStatus(void*, u32, u32, u32);
-    extern void fn_802331F4(void*, void*, void**, u16, u16);
+    extern void fightTrainerSortTemoti(void*, void*, void**, u16, u16);
     void* selected[6];
     FightTrainerPokemonCopy sortedPokemon[6];
     void* hero;
@@ -994,7 +994,7 @@ void fightTrainerSortFightTrainerDataIdToHeroTemotiPokemon(
     if (selectionCount > 6) {
         selectionCount = 6;
     }
-    fn_802331F4(trainer, hero, selected, selectionCount, selectionMode);
+    fightTrainerSortTemoti(trainer, hero, selected, selectionCount, selectionMode);
 
     validCount = 0;
     for (i = 0; i < selectionCount; i++) {
@@ -1155,11 +1155,11 @@ u8 fightTrainerCreateFightTrainerPokemonDataIdToPokemon(
     extern u32 pokemonCreateRndFit(void* pokemon, s8 sex, s8 seikaku, s8 flag, u32 trainerId);
     extern void pokemonSetTokuseiFlag(void* pokemon, u8 flag);
     extern void pokemonResetBasisStatus(void* pokemon);
-    extern u32 fn_801EE750(u16 darkId);
-    extern void fn_801EE7BC(u16 darkId, u32 value);
+    extern u32 darkPokemonSaveGet8(u16 darkId);
+    extern void darkPokemonSaveSet8(u16 darkId, u32 value);
     extern s8 fn_801EE824(u16 darkId, u16 index);
-    extern void fn_801EE894(u16 darkId, u16 index, s8 value);
-    extern u8 fn_801EE8F4(u16 darkId);
+    extern void darkPokemonSetFlag24(u16 darkId, u16 index, s8 value);
+    extern u8 darkPokemonCheckFlag16(u16 darkId);
     extern s32 fightTrainerGetStatus(void* ctx, u16 slot, u32 field, u16 idx);
     u8 wazaPoint[4];
     s8 individual[6];
@@ -1218,7 +1218,7 @@ u8 fightTrainerCreateFightTrainerPokemonDataIdToPokemon(
     }
     darkIndex = darkId;
     for (stat = 0; stat < 6; stat++) {
-        if (darkId != 0 && (u8)fn_801EE8F4((u8)darkId) == 1) {
+        if (darkId != 0 && (u8)darkPokemonCheckFlag16((u8)darkId) == 1) {
             pokemonSetStatus(pokemon, 0, individualIds.id[stat], 0,
                              (u16)fn_801EE824((u8)darkId, stat));
         } else if (individual[stat] >= 0) {
@@ -1254,19 +1254,19 @@ u8 fightTrainerCreateFightTrainerPokemonDataIdToPokemon(
     if (friend >= 0) {
         pokemonSetStatus(pokemon, 0, 0x99, 0, friend);
     }
-    if (darkId != 0 && fn_801EE8F4(darkIndex) == 1) {
-        pokemonSetStatus(pokemon, 0, 0x6F, 0, fn_801EE750(darkIndex));
+    if (darkId != 0 && darkPokemonCheckFlag16(darkIndex) == 1) {
+        pokemonSetStatus(pokemon, 0, 0x6F, 0, darkPokemonSaveGet8(darkIndex));
     } else {
         pokemonSetStatus(pokemon, 0, 0x6F, 0,
                          pokemonCreateRndFit(pokemon, sex, seikaku, 0, trainer));
     }
     if (darkId != 0) {
         pokemonSetDarkPokemonStatus(pokemon, darkIndex);
-        if (fn_801EE8F4(darkIndex) == 0) {
-            fn_801EE7BC(darkIndex, (u32)pokemonGetStatus(pokemon, 0, 0x6F, 0));
+        if (darkPokemonCheckFlag16(darkIndex) == 0) {
+            darkPokemonSaveSet8(darkIndex, (u32)pokemonGetStatus(pokemon, 0, 0x6F, 0));
             for (i = 0; i < 6; i++) {
                 u16 value = (u32)pokemonGetStatus(pokemon, 0, individualIds.id[i], 0);
-                fn_801EE894(darkIndex, i, value);
+                darkPokemonSetFlag24(darkIndex, i, value);
             }
         }
     }
@@ -1497,14 +1497,14 @@ void fightTrainerSetStatus(void) {
     extern void fightTrainerPokemonDataBiosSetNickname();
     extern void fightTrainerPokemonPartDataBiosSetWazaTypeRevise();
     extern void fightTrainerPokemonPartDataBiosSetName();
-    extern void fn_801FCAFC();
-    extern void fn_801FCB0C();
-    extern void fn_801FCB30();
-    extern void fn_801FCB40();
-    extern void fn_801FCB64();
-    extern void fn_801FCB74();
-    extern void fn_801FCB84();
-    extern void fn_801FCB94();
+    extern void fightTrainerSet10();
+    extern void fightTrainerSet24Arr();
+    extern void fightTrainerSet0C();
+    extern void fightTrainerSetU16Arr14();
+    extern void fightTrainerSet04();
+    extern void fightTrainerSet08();
+    extern void fightTrainerSet06();
+    extern void fightTrainerSet00();
     extern void fightTrainerDataBiosSetKindDataId();
     extern void fightTrainer_SetControllerId();
     extern void fightTrainer_SetNigeruCount();
@@ -1580,33 +1580,33 @@ void fightTrainerSetStatus(void) {
     ctr_fn = (void(*)(void))r0;
     /* indirect jump via ctr */;
     r4 = r31 & 0xFF;
-    fn_801FCB94();
+    fightTrainerSet00();
     return;
     r4 = r31 & 0xFFFF;
-    fn_801FCB84();
+    fightTrainerSet06();
     return;
     r4 = r31;
-    fn_801FCB74();
+    fightTrainerSet08();
     return;
     r4 = r31 & 0xFFFF;
     fightTrainerDataBiosSetKindDataId();
     return;
     r4 = r31 & 0xFFFF;
-    fn_801FCB64();
+    fightTrainerSet04();
     return;
     r4 = r29 & 0xFF;
     r5 = r31 & 0xFFFF;
-    fn_801FCB40();
+    fightTrainerSetU16Arr14();
     return;
     r4 = r31;
-    fn_801FCB30();
+    fightTrainerSet0C();
     return;
     r5 = r31;
     r4 = r29 & 0xFF;
-    fn_801FCB0C();
+    fightTrainerSet24Arr();
     return;
     r4 = r31;
-    fn_801FCAFC();
+    fightTrainerSet10();
     return;
     r4 = r31;
     fightTrainerPokemonPartDataBiosSetName();
@@ -1984,7 +1984,7 @@ void fightTrainerGetStatus(void) {
     extern void fightTrainerEnemyPokemonBiosGetNowhp1banhikuiFlag();
     extern void fightTrainerEnemyPokemonBiosGetStoreTokuseiData();
     extern void fightTrainerEnemyPokemonBiosGetTokuseiFlag();
-    extern void fn_801FBED0();
+    extern void fightTrainerGetU16Arr();
     extern void fightTrainerAiValueAddsubDataBiosGetPrefixName();
     extern void fightTrainerAiValueAddsubDataBiosGetKoudouName();
     extern void fightTrainerAiValueAddsubDataBiosGetName();
@@ -2367,7 +2367,7 @@ void fightTrainerGetStatus(void) {
         return;
     }
     r4 = r30 & 0xFF;
-    fn_801FBED0();
+    fightTrainerGetU16Arr();
     r3 = r3 & 0xFFFF;
     return;
     r31 = (s16)r29;
@@ -2546,11 +2546,11 @@ u8 fightTrainerIsGcHero(void* arg0) {
 }
 
 /* 0x801FB974 | size: 0xB0 */
-void fn_801FB974(void* context, u8 mode) {
+void fightTrainerWazaSeq57(void* context, u8 mode) {
     extern void _threadSwitch(void);
-    extern void fn_801DA8C4(void* ptr, u32 field, u32 size);
-    extern u8 fn_801DA94C(void* ptr, u32 field, u32 size);
-    extern void fn_801DA9E8(void* ptr, u32 field, u32 size);
+    extern void wazaSequenceSysStopWaza(void* ptr, u32 field, u32 size);
+    extern u8 wazaSequenceSysIsPlayingWaza(void* ptr, u32 field, u32 size);
+    extern void wazaSequenceSysStartWaza(void* ptr, u32 field, u32 size);
     extern void fn_801DDD28(void* ptr, u32 field, u32 size, u32 flags);
     extern void* fightTrainerGetStatus(void* ctx, u32 slot, u32 field, u32 idx);
     void* data;
@@ -2561,25 +2561,25 @@ void fn_801FB974(void* context, u8 mode) {
     if (mode == 0) {
         fn_801DDD28(data, 0x57, 4, 0);
     } else if (mode == 1) {
-        fn_801DA9E8(data, 0x57, 4);
+        wazaSequenceSysStartWaza(data, 0x57, 4);
     } else if (mode == 2) {
         do {
-            if ((u8)fn_801DA94C(data, 0x57, 4) == 0) {
+            if ((u8)wazaSequenceSysIsPlayingWaza(data, 0x57, 4) == 0) {
                 return;
             }
             _threadSwitch();
         } while (1);
     } else if (mode == 3) {
-        fn_801DA8C4(data, 0x57, 4);
+        wazaSequenceSysStopWaza(data, 0x57, 4);
     }
 }
 
 /* 0x801FBA24 | size: 0xB0 */
-void fn_801FBA24(void* context, u8 mode) {
+void fightTrainerWazaSeq74(void* context, u8 mode) {
     extern void _threadSwitch(void);
-    extern void fn_801DA8C4(void* ptr, u32 field, u32 size);
-    extern u8 fn_801DA94C(void* ptr, u32 field, u32 size);
-    extern void fn_801DA9E8(void* ptr, u32 field, u32 size);
+    extern void wazaSequenceSysStopWaza(void* ptr, u32 field, u32 size);
+    extern u8 wazaSequenceSysIsPlayingWaza(void* ptr, u32 field, u32 size);
+    extern void wazaSequenceSysStartWaza(void* ptr, u32 field, u32 size);
     extern void fn_801DDD28(void* ptr, u32 field, u32 size, u32 flags);
     extern void* fightTrainerGetStatus(void* ctx, u32 slot, u32 field, u32 idx);
     void* data;
@@ -2590,16 +2590,16 @@ void fn_801FBA24(void* context, u8 mode) {
     if (mode == 0) {
         fn_801DDD28(data, 0x74, 4, 0);
     } else if (mode == 1) {
-        fn_801DA9E8(data, 0x74, 4);
+        wazaSequenceSysStartWaza(data, 0x74, 4);
     } else if (mode == 2) {
         do {
-            if ((u8)fn_801DA94C(data, 0x74, 4) == 0) {
+            if ((u8)wazaSequenceSysIsPlayingWaza(data, 0x74, 4) == 0) {
                 return;
             }
             _threadSwitch();
         } while (1);
     } else if (mode == 3) {
-        fn_801DA8C4(data, 0x74, 4);
+        wazaSequenceSysStopWaza(data, 0x74, 4);
     }
 }
 
@@ -2609,9 +2609,9 @@ void fn_801FBA24(void* context, u8 mode) {
 /* 0x801FBAD4 | size: 0x14C */
 void fightTrainerHokakuThrowEffect(void* context, u32 param, u8 mode) {
     extern void _threadSwitch(void);
-    extern void fn_801DA8C4(void* ptr, u16 field, u32 size);
-    extern u8 fn_801DA94C(void* ptr, u16 field, u32 size);
-    extern void fn_801DA9E8(void* ptr, u16 field, u32 size);
+    extern void wazaSequenceSysStopWaza(void* ptr, u16 field, u32 size);
+    extern u8 wazaSequenceSysIsPlayingWaza(void* ptr, u16 field, u32 size);
+    extern void wazaSequenceSysStartWaza(void* ptr, u16 field, u32 size);
     extern void fn_801DDD28(void* ptr, u16 field, u32 size, u32 flags);
     extern void* fightTrainerGetStatus(void* ctx, u32 slot, u32 field, u32 idx);
     void* data;
@@ -2624,37 +2624,37 @@ void fightTrainerHokakuThrowEffect(void* context, u32 param, u8 mode) {
     if (mode == 0) {
         fn_801DDD28(data, animId, 4, 0);
     } else if (mode == 1) {
-        fn_801DA9E8(data, animId, 4);
+        wazaSequenceSysStartWaza(data, animId, 4);
         do {
-            if ((u8)fn_801DA94C(data, animId, 4) == 0) {
+            if ((u8)wazaSequenceSysIsPlayingWaza(data, animId, 4) == 0) {
                 return;
             }
             _threadSwitch();
         } while (1);
     } else if (mode == 2) {
-        fn_801DA8C4(data, animId, 4);
+        wazaSequenceSysStopWaza(data, animId, 4);
     } else if (mode == 3) {
         fn_801DDD28(data, 0x57, 4, 0);
     } else if (mode == 4) {
-        fn_801DA9E8(data, 0x57, 4);
+        wazaSequenceSysStartWaza(data, 0x57, 4);
     } else if (mode == 5) {
         do {
-            if ((u8)fn_801DA94C(data, 0x57, 4) == 0) {
+            if ((u8)wazaSequenceSysIsPlayingWaza(data, 0x57, 4) == 0) {
                 return;
             }
             _threadSwitch();
         } while (1);
     } else if (mode == 6) {
-        fn_801DA8C4(data, 0x57, 4);
+        wazaSequenceSysStopWaza(data, 0x57, 4);
     }
 }
 
 /* 0x801FBC20 | size: 0xF0 */
 void fightTrainerBallThrowEffect(void* context, void* trainerCtx, u8 mode) {
     extern void _threadSwitch(void);
-    extern void fn_801DA8C4(void* ptr, u16 field, u32 size);
-    extern u8 fn_801DA94C(void* ptr, u16 field, u32 size);
-    extern void fn_801DA9E8(void* ptr, u16 field, u32 size);
+    extern void wazaSequenceSysStopWaza(void* ptr, u16 field, u32 size);
+    extern u8 wazaSequenceSysIsPlayingWaza(void* ptr, u16 field, u32 size);
+    extern void wazaSequenceSysStartWaza(void* ptr, u16 field, u32 size);
     extern void fn_801DDD28(void* ptr, u16 field, u32 size, u32 flags);
     extern void* fightTrainerGetStatus(void* ctx, u32 slot, u32 field, u32 idx);
     extern void* fightOutPokemonGetPokemonPtr(void* ctx);
@@ -2670,16 +2670,16 @@ void fightTrainerBallThrowEffect(void* context, void* trainerCtx, u8 mode) {
     if (mode == 0) {
         fn_801DDD28(data, animId, 4, 0);
     } else if (mode == 1) {
-        fn_801DA9E8(data, animId, 4);
+        wazaSequenceSysStartWaza(data, animId, 4);
     } else if (mode == 2) {
         do {
-            if ((u8)fn_801DA94C(data, animId, 4) == 0) {
+            if ((u8)wazaSequenceSysIsPlayingWaza(data, animId, 4) == 0) {
                 return;
             }
             _threadSwitch();
         } while (1);
     } else if (mode == 3) {
-        fn_801DA8C4(data, animId, 4);
+        wazaSequenceSysStopWaza(data, animId, 4);
     }
 }
 #endif

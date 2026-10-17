@@ -59,13 +59,13 @@ extern GXDrawDoneCallback lbl_8047A9C4;
 extern volatile u8 lbl_8047A9C8;
 extern OSThreadQueue lbl_8047A9CC;
 
-extern u32 fn_800B7714(void);
+extern u32 GXGetGPFifo(void);
 extern void __GXCleanGPFifo(void);
 extern void __GXSetSUTexRegs(void);
-extern void fn_800BC024(void);
+extern void __GXUpdateBPMask(void);
 extern void __GXSetGenMode(void);
-extern void fn_800B7BC4(void);
-extern void fn_800B8444(void);
+extern void __GXSetVCD(void);
+extern void __GXSetVAT(void);
 extern void __GXCalculateVLim(void);
 extern u32 __cvt_fp2unsigned(f32 value);
 extern void __GetImageTileCount(s32 format, u16 width, u16 height,
@@ -323,7 +323,7 @@ void GXSetTexCoordGen2(GXTexCoordID_800B857C dst_coord,
 #endif
 
 #if !defined(GX_EXACT_800B857C_800B884C)
-void fn_800B884C(u8 count) {
+void GXSetNumTexGens(u8 count) {
     u32 n = count;
     GXData_800B857C* p = gx;
 
@@ -355,12 +355,12 @@ void GXSetMisc(s32 token, u32 value) {
     }
 }
 
-void fn_800B91EC(void);
+void __GXSetDirtyState(void);
 void __GXSendFlushPrim(void);
 
 void GXFlush(void) {
     if (gx->dirtyState != 0) {
-        fn_800B91EC();
+        __GXSetDirtyState();
     }
 
     GX_FIFO_U32 = 0;
@@ -419,7 +419,7 @@ GX_ABORT_STATIC void __GXAbortWaitPECopyDone(void) {
 }
 
 void __GXAbort(void) {
-    if (gx->field_4F2 && fn_800B7714() != 0) {
+    if (gx->field_4F2 && GXGetGPFifo() != 0) {
         __GXAbortWaitPECopyDone();
     }
 
@@ -434,8 +434,8 @@ void __GXAbort(void) {
 #if !defined(GX_EXACT_800B884C_800B8AE8)
 /* 0x800B8AE8 | size: 0x170 -- second GP abort entry point; identical to
    __GXAbort but also resets the GP FIFO afterwards. */
-void fn_800B8AE8(void) {
-    if (gx->field_4F2 && fn_800B7714() != 0) {
+void GXAbortFrame(void) {
+    if (gx->field_4F2 && GXGetGPFifo() != 0) {
         __GXAbortWaitPECopyDone();
     }
 
@@ -446,7 +446,7 @@ void fn_800B8AE8(void) {
     __GXCleanGPFifo();
 }
 
-void fn_800B8C58(u16 token) {
+void GXSetDrawSync(u16 token) {
     BOOL enabled;
     u32 reg;
 
@@ -473,7 +473,7 @@ void GXSetDrawDone(void) {
     OSRestoreInterrupts(enabled);
 }
 
-void fn_800B8DA8(void) {
+void GXWaitDrawDone(void) {
     BOOL enabled;
 
     enabled = OSDisableInterrupts();
@@ -501,7 +501,7 @@ void GXDrawDone(void) {
     OSRestoreInterrupts(enabled);
 }
 
-void fn_800B8E74(void) {
+void GXPixModeSync(void) {
     GXData_800B857C* p = gx;
 
     GX_FIFO_U8 = 0x61;
@@ -509,20 +509,20 @@ void fn_800B8E74(void) {
     p->field_002 = 0;
 }
 
-void fn_800B8E98(u32 token, u32 value) {
+void GXPokeAlphaMode(u32 token, u32 value) {
     __peReg[3] = (u16)((token << 8) | (value & 0xFF));
 }
 
-void fn_800B8EAC(u32 value) {
+void GXPokeAlphaRead(u32 value) {
     __peReg[4] = (u16)((value & ~4U) | 4);
 }
 
-void fn_800B8EC0(u32 enable) {
+void GXPokeAlphaUpdate(u32 enable) {
     volatile u16* reg = &__peReg[1];
     *reg = (u16)((*reg & ~0x10U) | ((enable & 0xFF) << 4));
 }
 
-void fn_800B8EDC(s32 type, u32 srcFactor, u32 dstFactor, u32 op) {
+void GXPokeBlendMode(s32 type, u32 srcFactor, u32 dstFactor, u32 op) {
     volatile u16* regp = &__peReg[1];
     u32 reg = *regp;
     u32 enable = (type == 1 || type == 3);
@@ -539,24 +539,24 @@ void fn_800B8EDC(s32 type, u32 srcFactor, u32 dstFactor, u32 op) {
     *regp = (u16)reg;
 }
 
-void fn_800B8F64(u32 enable) {
+void GXPokeColorUpdate(u32 enable) {
     volatile u16* reg = &__peReg[1];
     *reg = (u16)((*reg & ~0x8U) | ((enable & 0xFF) << 3));
 }
 
-void fn_800B8F80(u8 func, u32 threshold) {
+void GXPokeDstAlpha(u8 func, u32 threshold) {
     u32 reg;
 
     reg = (threshold & 0xFF) | (func << 8);
     __peReg[2] = reg;
 }
 
-void fn_800B8F94(u32 enable) {
+void GXPokeDither(u32 enable) {
     volatile u16* reg = &__peReg[1];
     *reg = (u16)((*reg & ~0x4U) | ((enable & 0xFF) << 2));
 }
 
-void fn_800B8FB0(u32 arg0, u32 arg1, u32 arg2) {
+void GXPokeZMode(u32 arg0, u32 arg1, u32 arg2) {
     u32 reg = arg0 & 0xFF;
 
     reg = (reg & ~0xEU) | (arg1 << 1);
@@ -564,7 +564,7 @@ void fn_800B8FB0(u32 arg0, u32 arg1, u32 arg2) {
     __peReg[0] = (u16)reg;
 }
 
-GXBreakPtCallback fn_800B8FD8(GXBreakPtCallback callback) {
+GXBreakPtCallback GXSetDrawSyncCallback(GXBreakPtCallback callback) {
     GXBreakPtCallback old = lbl_8047A9C0;
     BOOL enabled = OSDisableInterrupts();
 
@@ -573,7 +573,7 @@ GXBreakPtCallback fn_800B8FD8(GXBreakPtCallback callback) {
     return old;
 }
 
-void fn_800B901C(__OSInterrupt interrupt, OSContext* context) {
+void GXTokenInterruptHandler(__OSInterrupt interrupt, OSContext* context) {
     OSContext exceptionContext;
     u16 token = __peReg[7];
 
@@ -588,7 +588,7 @@ void fn_800B901C(__OSInterrupt interrupt, OSContext* context) {
     __peReg[5] = (__peReg[5] & ~4U) | 4;
 }
 
-GXDrawDoneCallback fn_800B90A4(GXDrawDoneCallback callback) {
+GXDrawDoneCallback GXSetDrawDoneCallback(GXDrawDoneCallback callback) {
     GXDrawDoneCallback old = lbl_8047A9C4;
     BOOL enabled = OSDisableInterrupts();
 
@@ -597,7 +597,7 @@ GXDrawDoneCallback fn_800B90A4(GXDrawDoneCallback callback) {
     return old;
 }
 
-void fn_800B90E8(__OSInterrupt interrupt, OSContext* context) {
+void GXFinishInterruptHandler(__OSInterrupt interrupt, OSContext* context) {
     OSContext exceptionContext;
 
     __peReg[5] = (__peReg[5] & ~8U) | 8;
@@ -618,8 +618,8 @@ void __GXPEInit(void) {
     volatile u16* regp;
     u32 reg;
 
-    __OSSetInterruptHandler(0x12, fn_800B901C);
-    __OSSetInterruptHandler(0x13, fn_800B90E8);
+    __OSSetInterruptHandler(0x12, GXTokenInterruptHandler);
+    __OSSetInterruptHandler(0x13, GXFinishInterruptHandler);
     OSInitThreadQueue(&lbl_8047A9CC);
     __OSUnmaskInterrupts(0x2000);
     __OSUnmaskInterrupts(0x1000);
@@ -633,21 +633,21 @@ void __GXPEInit(void) {
     *regp = (u16)reg;
 }
 
-void fn_800B91EC(void) {
+void __GXSetDirtyState(void) {
     if (gx->dirtyState & 1) {
         __GXSetSUTexRegs();
     }
     if (gx->dirtyState & 2) {
-        fn_800BC024();
+        __GXUpdateBPMask();
     }
     if (gx->dirtyState & 4) {
         __GXSetGenMode();
     }
     if (gx->dirtyState & 8) {
-        fn_800B7BC4();
+        __GXSetVCD();
     }
     if (gx->dirtyState & 0x10) {
-        fn_800B8444();
+        __GXSetVAT();
     }
     if (gx->dirtyState & 0x18) {
         __GXCalculateVLim();
@@ -655,9 +655,9 @@ void fn_800B91EC(void) {
     gx->dirtyState = 0;
 }
 
-void fn_800B928C(u32 primitive, u32 vertexFormat, u16 vertexCount) {
+void GXBegin(u32 primitive, u32 vertexFormat, u16 vertexCount) {
     if (gx->dirtyState != 0) {
-        fn_800B91EC();
+        __GXSetDirtyState();
     }
 
     if (*(u32*)&gx->field_000 == 0) {
@@ -685,7 +685,7 @@ void __GXSendFlushPrim(void) {
     gx->field_002 = 1;
 }
 
-void fn_800B9404(u32 left, u32 top) {
+void GXSetLineWidth(u32 left, u32 top) {
     GXData_800B857C* p = gx;
 
     p->field_07C = (p->field_07C & ~0xFFU) | (left & 0xFF);
@@ -694,7 +694,7 @@ void fn_800B9404(u32 left, u32 top) {
     p->field_002 = 0;
 }
 
-void fn_800B944C(u32 right, u32 bottom) {
+void GXSetPointSize(u32 right, u32 bottom) {
     GXData_800B857C* p = gx;
 
     p->field_07C = (p->field_07C & ~0xFF00U) | ((right & 0xFF) << 8);
@@ -703,14 +703,14 @@ void fn_800B944C(u32 right, u32 bottom) {
     p->field_002 = 0;
 }
 
-void fn_800B9494(u32 chan, u32 enable0, u32 enable1) {
+void GXEnableTexOffsets(u32 chan, u32 enable0, u32 enable1) {
     gx->field_0B8[chan] = (gx->field_0B8[chan] & ~0x40000U) | ((enable0 & 0xFF) << 18);
     gx->field_0B8[chan] = (gx->field_0B8[chan] & ~0x80000U) | ((enable1 & 0xFF) << 19);
     GX_BP_REG(gx->field_0B8[chan]);
     gx->field_002 = 0;
 }
 
-void fn_800B94F0(s32 value) {
+void GXSetCullMode(s32 value) {
     switch (value) {
     case 1:
         value = 2;
@@ -724,7 +724,7 @@ void fn_800B94F0(s32 value) {
     gx->dirtyState |= 4;
 }
 
-void fn_800B953C(u32 value) {
+void GXSetCoPlanar(u32 value) {
     GXData_800B857C* p = gx;
 
     p->field_204 = (p->field_204 & ~0x80000U) | ((value & 0xFF) << 19);
@@ -740,7 +740,7 @@ void __GXSetGenMode(void) {
     p->field_002 = 0;
 }
 
-void fn_800B959C(u16 left, u16 top, u16 width, u16 height) {
+void GXSetDispCopySrc(u16 left, u16 top, u16 width, u16 height) {
     gx->field_1E0 = 0;
     gx->field_1E0 = (gx->field_1E0 & ~0x3FFU) | left;
     gx->field_1E0 = (gx->field_1E0 & ~0xFFC00U) | (top << 10);
@@ -752,7 +752,7 @@ void fn_800B959C(u16 left, u16 top, u16 width, u16 height) {
     gx->field_1E4 = (gx->field_1E4 & 0xFFFFFFU) | 0x4A000000;
 }
 
-void fn_800B962C(u16 left, u16 top, u16 width, u16 height) {
+void GXSetTexCopySrc(u16 left, u16 top, u16 width, u16 height) {
     gx->field_1F0 = 0;
     gx->field_1F0 = (gx->field_1F0 & ~0x3FFU) | left;
     gx->field_1F0 = (gx->field_1F0 & ~0xFFC00U) | (top << 10);
@@ -764,7 +764,7 @@ void fn_800B962C(u16 left, u16 top, u16 width, u16 height) {
     gx->field_1F4 = (gx->field_1F4 & 0xFFFFFFU) | 0x4A000000;
 }
 
-void fn_800B96BC(u32 value) {
+void GXSetDispCopyDst(u32 value) {
     GXData_800B857C* p;
     u32* regp;
 
@@ -776,7 +776,7 @@ void fn_800B96BC(u32 value) {
     *regp = (*regp & 0xFFFFFFU) | 0x4D000000U;
 }
 
-void fn_800B96F8(u16 width, u16 height, s32 format, u8 mipmap) {
+void GXSetTexCopyDst(u16 width, u16 height, s32 format, u8 mipmap) {
     u32 rowTiles;
     u32 columnTiles;
     u32 planes;
@@ -818,12 +818,12 @@ void fn_800B96F8(u16 width, u16 height, s32 format, u8 mipmap) {
     gx->field_1FC = (gx->field_1FC & ~0x70U) | (peFormat << 4);
 }
 
-void fn_800B984C(u32 value) {
+void GXSetDispCopyFrame2Field(u32 value) {
     gx->field_1EC = (gx->field_1EC & ~0x3000U) | (value << 12);
     gx->field_1FC = gx->field_1FC & ~0x3000U;
 }
 
-void fn_800B9874(u32 value) {
+void GXSetCopyClamp(u32 value) {
     GXData_800B857C* p = gx;
     u32 bit0;
     u32 bit1;
@@ -921,7 +921,7 @@ static inline u32 gxGetNumXfbLines(u32 height, u32 scale) {
     return result;
 }
 
-u32 fn_800B9B14(f32 scale) {
+u32 GXSetDispCopyYScale(f32 scale) {
     u32 yScale;
     u8 nonUnityScale;
     u32 height;
@@ -970,7 +970,7 @@ void GXSetCopyClear(GXColor_800B9BDC color, u32 clearZ) {
     ((reg) = ((u32)(reg) & ~(((1 << (size)) - 1) << (shift))) |                   \
              ((u32)(value) << (shift)))
 
-void fn_800B9C44(u8 aa, const u8 samplePattern[12][2], u8 vf,
+void GXSetCopyFilter(u8 aa, const u8 samplePattern[12][2], u8 vf,
                  const u8 vfilter[7]) {
     u32 msLoc[4];
     u32 coeff0;
@@ -1056,13 +1056,13 @@ void fn_800B9C44(u8 aa, const u8 samplePattern[12][2], u8 vf,
     }
 }
 
-void fn_800B9E6C(u32 value) {
+void GXSetDispCopyGamma(u32 value) {
     GXData_800B857C* p = gx;
 
     p->field_1EC = (p->field_1EC & ~0x180U) | (value << 7);
 }
 
-void fn_800B9E88(void* dest, u8 clear) {
+void GXCopyDisp(void* dest, u8 clear) {
     u32 reg;
     u32 tempPeCtrl;
     u32 phyAddr;
@@ -1118,7 +1118,7 @@ void fn_800B9E88(void* dest, u8 clear) {
     gx->field_002 = 0;
 }
 
-void fn_800B9FE4(void* dest, u8 clear) {
+void GXCopyTex(void* dest, u8 clear) {
     u32 reg;
     u32 tempPeCtrl;
     u32 physicalAddress;

@@ -1,6 +1,6 @@
 /**
  * @file menu_middle_exact_8006B6B4.c
- * @brief fn_8006B6B4 (0x8006B6B4 - 0x8006B8E8): resets the rule save
+ * @brief savedataBattleInit (0x8006B6B4 - 0x8006B8E8): resets the rule save
  *        section (six fixed 0x54-byte rules copied from
  *        menuCBRule_ConstantRule, the player counts, and the seven
  *        per-player flag pairs).
@@ -23,7 +23,7 @@ typedef struct MenuRuleCopy {
 } MenuRuleCopy;
 
 /* 0x8006B6B4 | size: 0x234 */
-void fn_8006B6B4(void* saveSection)
+void savedataBattleInit(void* saveSection)
 {
     extern void* menuCBRule_ConstantRule(s32 index);
     u8* status = (u8*)saveSection;

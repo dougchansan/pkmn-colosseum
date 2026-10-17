@@ -3,9 +3,9 @@
  * @brief pkjb_uploader.c carve, 0x80074324 - 0x8007480C.
  *
  * The link-reset entry points of the uploader: fn_80074324 drops the key
- * state and resets the link, fn_80074360 resets the GBA and waits for the
+ * state and resets the link, pkjbProbe resets the GBA and waits for the
  * "AXVE" (Pokemon Ruby) boot key, and fn_800745B4 retries the 0xAA ping
- * for up to 2 s once fn_8007480C has booted the GBA.
+ * for up to 2 s once pkjbValidateKey has booted the GBA.
  *
  * Same unit flags as the rest of pkjb_uploader.c (GC/2.0, -O4,p,
  * "-opt nopeephole"; see pkjb_exact_80073990.c) and the same shared
@@ -13,18 +13,18 @@
  */
 #include "game/menu/pkjb_uploader_shared.h"
 
-s32 fn_80074360(s32 chan);
-s32 fn_8007480C(s32 chan);
+s32 pkjbProbe(s32 chan);
+s32 pkjbValidateKey(s32 chan);
 
 /* 0x80074324 | 0x3C: drop the key state, then reset the link. */
 s32 fn_80074324(s32 chan)
 {
     gbaCommandSetKeyState(chan + 1, 0);
-    return fn_80074360(chan);
+    return pkjbProbe(chan);
 }
 
 /* 0x80074360 | 0x254: reset the GBA and exchange the "AXVE" boot key. */
-s32 fn_80074360(s32 chan)
+s32 pkjbProbe(s32 chan)
 {
     u32 response;
     u32 timeout;
@@ -32,7 +32,7 @@ s32 fn_80074360(s32 chan)
     u8 status;
     s32 result;
 
-    if (fn_800D0F44(chan) != PKJB_SI_GBA) {
+    if (SIProbe(chan) != PKJB_SI_GBA) {
         return 1;
     }
     if (GBAReset(chan, &status) != 0) {
@@ -105,7 +105,7 @@ s32 fn_800745B4(s32 chan)
     u32 timeout;
     u32 start;
 
-    result = fn_8007480C(chan);
+    result = pkjbValidateKey(chan);
     if (result == 0) {
         timeout = OS_TIMER_CLOCK * 8;
         start = OSGetTick();

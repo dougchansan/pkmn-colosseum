@@ -1,9 +1,9 @@
 /**
  * @file fight_range_80211A00_suffix_80216A58.c
  * @brief Beat Up damage and neighbours, 0x80216A58 - 0x80217018
- *        (fn_80216A58, fn_80216CF8, fn_80216D9C, fn_80216F50).
+ *        (wsCmdC4, fn_80216CF8, wsCmdC3, wsCmdC2).
  *
- * Standalone source at GC/1.3 -O4,s with no pragmas. fn_80216A58 walks the
+ * Standalone source at GC/1.3 -O4,s with no pragmas. wsCmdC4 walks the
  * party with heroGetStatus(party, 3, index): the index is the third argument,
  * which is why retail loads the loop test into r5. Its locals follow the
  * declaration order found with the colouring simulator; the damage division is
@@ -12,7 +12,7 @@
 #include "dolphin/types.h"
 extern u8* lbl_8047B610;
 extern u8 lbl_80478D78[1];
-void fn_80216A58(void)
+void wsCmdC4(void)
 {
     extern u32 fightTargetGetPtrAsNowFightType();
     extern u32 pokemonGetStatus();
@@ -30,7 +30,7 @@ void fn_80216A58(void)
     extern u8 figthOutPokemonGetLevel();
     extern void msgctrlSetValue();
     extern u32 wazaGetStatus();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern void wazaSetStatus();
     s32 damage;
     u32 attacker;
@@ -89,7 +89,7 @@ void fn_80216A58(void)
         damage /= defense;
         damage = damage / 50 + 2;
         result = damage;
-        if (fn_802026E4(attacker, 0x32) == 1) {
+        if (fightOutPokemonIsPokemonJoutaiDataId(attacker, 0x32) == 1) {
             result = damage * 15 / 10;
         }
         wazaSetStatus(moveData, 0, 0x2d, 0, result);
@@ -130,20 +130,20 @@ u32 fn_80216CF8(u32 p1, u32 p2, u16 p3, u32 p4, u8 p5) {
 #define fn_8012640C pokemonGetStatus
 #define fn_80205184 fightOutPokemonGetUseWazaDataId
 #define fn_8011BEB4 wazaGetStatus
-void fn_80216D9C(void)
+void wsCmdC3(void)
 {
     extern u32 fn_8011BEB4();
     extern u32 fn_8012640C();
     extern u32 fn_801F0134();
     extern u32 fn_801F025C();
     extern u32 fn_801F54A4();
-    extern void fn_80201764();
-    extern void fn_80201B2C();
-    extern void fn_8020248C();
+    extern void fightOutPokemonSetPokemonJoutai08();
+    extern void fightOutPokemonSetPokemonJoutai0C();
+    extern void fightOutPokemonWritePokemonJoutaiDataId();
     extern u8 fn_802025B8();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern u32 fn_80205184();
-    extern int fn_80232110();
+    extern int fightSeqCalcDamage();
   u16 uVar7;
   u32 uVar1;
   u32 uVar11;
@@ -170,14 +170,14 @@ void fn_80216D9C(void)
     lbl_8047B610 = (u8*)*(u32 *)(lbl_8047B610 + 1);
     return;
   }
-  fn_8020248C(uVar3,0x34,uVar2);
-  fn_80201B2C(uVar3,0x34,uVar4);
-  iVar6 = fn_80232110(uVar1,uVar3,uVar5,uVar4,uVar10,uVar8);
-  cVar9 = fn_802026E4(uVar1,0x32);
+  fightOutPokemonWritePokemonJoutaiDataId(uVar3,0x34,uVar2);
+  fightOutPokemonSetPokemonJoutai0C(uVar3,0x34,uVar4);
+  iVar6 = fightSeqCalcDamage(uVar1,uVar3,uVar5,uVar4,uVar10,uVar8);
+  cVar9 = fightOutPokemonIsPokemonJoutaiDataId(uVar1,0x32);
   if (cVar9 == 1) {
     iVar6 = iVar6 * 15 / 10;
   }
-  fn_80201764(uVar3,0x34,iVar6);
+  fightOutPokemonSetPokemonJoutai08(uVar3,0x34,iVar6);
   if ((uVar4 & 0xffff) == 0x161) {
     lbl_80478D78[5] = 1;
   }
@@ -188,7 +188,7 @@ void fn_80216D9C(void)
   return;
 }
 
-void fn_80216F50(void)
+void wsCmdC2(void)
 {
     extern u32 fightTargetGetPtrAsNowFightType();
     extern void fightFloorSetStatus();

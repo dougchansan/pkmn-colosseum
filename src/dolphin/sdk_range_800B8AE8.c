@@ -1,6 +1,6 @@
 /**
  * @file sdk_range_800B8AE8.c
- * @brief GXMisc.c: GXAbortFrame (fn_800B8AE8), GXSetDrawSync (fn_800B8C58)
+ * @brief GXMisc.c: GXAbortFrame (GXAbortFrame), GXSetDrawSync (GXSetDrawSync)
  * and GXSetDrawDone, 0x800B8AE8 - 0x800B8DA8.
  *
  * GXFlush and __GXAbort are linked in gx/GX_exact_800B884C.c; retail inlines
@@ -27,9 +27,9 @@ extern GXData_800B8AE8* const gx;
 extern void* __memReg;
 extern volatile u8 lbl_8047A9C8; /* DrawDone */
 
-extern u32 fn_800B7714(void); /* GXGetGPFifo */
+extern u32 GXGetGPFifo(void); /* GXGetGPFifo */
 extern void __GXCleanGPFifo(void);
-extern void fn_800B91EC(void); /* __GXSetDirtyState */
+extern void __GXSetDirtyState(void); /* __GXSetDirtyState */
 
 typedef union GXWGPipe_800B8AE8 {
     u8 u8;
@@ -51,7 +51,7 @@ volatile u32 __PIRegs[12] : 0xCC003000;
 static inline void GXFlush(void)
 {
     if (gx->dirtyState) {
-        fn_800B91EC();
+        __GXSetDirtyState();
     }
 
     GX_WRITE_U32(0);
@@ -108,7 +108,7 @@ static inline void __GXAbortWaitPECopyDone(void)
 
 static inline void __GXAbort(void)
 {
-    if (gx->abtWaitPECopy && fn_800B7714() != 0) {
+    if (gx->abtWaitPECopy && GXGetGPFifo() != 0) {
         __GXAbortWaitPECopyDone();
     }
 
@@ -118,13 +118,13 @@ static inline void __GXAbort(void)
     __GXAbortWait(20);
 }
 
-void fn_800B8AE8(void)
+void GXAbortFrame(void)
 {
     __GXAbort();
     __GXCleanGPFifo();
 }
 
-void fn_800B8C58(u16 token)
+void GXSetDrawSync(u16 token)
 {
     BOOL enabled;
     u32 reg;

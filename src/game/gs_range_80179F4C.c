@@ -1,12 +1,12 @@
 /**
- * .text 0x80179FA4 - 0x8017A5FC: fn_80179FA4. fn_80179F4C (0x80179F4C -
+ * .text 0x80179FA4 - 0x8017A5FC: fsysInitTOC. fn_80179F4C (0x80179F4C -
  * 0x80179FA4), the other function between camera.c (which ends at
  * 0x80179F4C with _cameraRestoreStateData) and gs_range_8017A5FC_prefix.c,
  * is exact at level 0 and carved into gs_range_80179F4C_exact_80179F4C.c.
  *
  * They are not camera.c code: both are built without optimization (the
  * parameter goes through the stack), they share no data with camera.c and
- * fn_80179FA4 works on 0x80453FEC / 0x8047B1B8, which the fsys units after
+ * fsysInitTOC works on 0x80453FEC / 0x8047B1B8, which the fsys units after
  * it also use. The function sets up the archive's ARAM cache and asynchronous
  * DVD read, including the separate external-file path.
  *
@@ -30,9 +30,9 @@ extern u32 fn_8017FA5C(void);
 extern void fn_8017F800(s32 handleID);
 extern u32 fn_8017F928(u32 size, u32 fileHandle, u32 key1, u32 key2);
 extern u8 fn_80167EF8(const char* path);
-extern u32 fn_80167F28(const char* path);
-extern u32 fn_80167E5C(u32 fileInfo);
-extern u8 fn_80167E98(u32 fileInfo, void* dst, u32 length, u32 offset,
+extern u32 GSdvdOpen(const char* path);
+extern u32 GSdvdGetLength(u32 fileInfo);
+extern u8 GSdvdReadAsync(u32 fileInfo, void* dst, u32 length, u32 offset,
                       void (*callback)(s32 result));
 extern void fn_8017A5FC(s32 result);
 
@@ -148,7 +148,7 @@ static inline void fsysSetTotalSize(FSYSSlot* slot)
 }
 
 /* Address: 0x80179FA4 | size: 0x658. Archive cache and DVD read setup. */
-void fn_80179FA4(FSYSSlot* slot, u32 offset, u32 length, void* callbackA,
+void fsysInitTOC(FSYSSlot* slot, u32 offset, u32 length, void* callbackA,
                  u32 callbackB, u32 callbackC, const char* externalPath,
                  FSYSFileEntry* entry)
 {
@@ -193,13 +193,13 @@ void fn_80179FA4(FSYSSlot* slot, u32 offset, u32 length, void* callbackA,
     if (archive->flags & 1) {
         slot->tocBuffer = NULL;
         if (externalPath && fn_80167EF8(externalPath)) {
-            slot->tocBuffer = (void*)fn_80167F28(externalPath);
+            slot->tocBuffer = (void*)GSdvdOpen(externalPath);
         }
         if (!slot->tocBuffer) {
-            fn_80167E98(slot->fileInfo0, dvdBuffer, slot->dmaChunkSize,
+            GSdvdReadAsync(slot->fileInfo0, dvdBuffer, slot->dmaChunkSize,
                          offset, fn_8017A5FC);
         } else {
-            fileSize = fn_80167E5C((u32)slot->tocBuffer);
+            fileSize = GSdvdGetLength((u32)slot->tocBuffer);
             if (fileSize < 0x20000) {
                 slot->dmaChunkSize = (fileSize + 0x1F) & ~0x1F;
             } else {
@@ -209,11 +209,11 @@ void fn_80179FA4(FSYSSlot* slot, u32 offset, u32 length, void* callbackA,
             slot->dmaBytesRemaining = fileSize;
             slot->dmaDstOffset = 0;
             fsysSetTotalSize(slot);
-            fn_80167E98((u32)slot->tocBuffer, dvdBuffer, slot->dmaChunkSize,
+            GSdvdReadAsync((u32)slot->tocBuffer, dvdBuffer, slot->dmaChunkSize,
                          0, fn_8017A5FC);
         }
     } else {
-        fn_80167E98(slot->fileInfo0, dvdBuffer, slot->dmaChunkSize,
+        GSdvdReadAsync(slot->fileInfo0, dvdBuffer, slot->dmaChunkSize,
                      offset, fn_8017A5FC);
     }
 }

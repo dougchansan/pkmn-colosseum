@@ -3,7 +3,7 @@
  * @brief Sound -- placeholder header for game/sound/sound.c.
  *
  * sound.c's real unit is two trivial SDA-getter accessors at
- * 0x801653BC-0x801653CC (fn_801653BC, fn_801653C4); they need no
+ * 0x801653BC-0x801653CC (soundGetCurrentSubSound, fn_801653C4); they need no
  * declarations here and are defined directly in the .c file.
  *
  * This header previously declared a large invented JAudio2 sound-engine

@@ -27,7 +27,7 @@ extern BattleRangeDef* lbl_80478F6C;
 extern u8 std081_flagCheckTrue(u16 flag);
 extern void _flagSet(u16 flag, s32 value);
 
-u8 fn_801EEC74(u16 id)
+u8 darkPokemonCheckFlag14(u16 id)
 {
     BattleRangeDef* def = &lbl_80478F6C[id];
 
@@ -43,7 +43,7 @@ u8 fn_801EEC74(u16 id)
     return 0;
 }
 
-void fn_801EECD8(u16 id, u8 value)
+void darkPokemonSetFlag14(u16 id, u8 value)
 {
     BattleRangeDef* def = &lbl_80478F6C[id];
 
@@ -55,7 +55,7 @@ void fn_801EECD8(u16 id, u8 value)
     }
 }
 
-void fn_801EED30(u16 id, u8 value)
+void darkPokemonSetFlag0E(u16 id, u8 value)
 {
     BattleRangeDef* def = &lbl_80478F6C[id];
 
@@ -67,7 +67,7 @@ void fn_801EED30(u16 id, u8 value)
     }
 }
 
-u8 fn_801EED88(u16 id)
+u8 darkPokemonCheckFlag0C(u16 id)
 {
     BattleRangeDef* def = &lbl_80478F6C[id];
 
@@ -83,7 +83,7 @@ u8 fn_801EED88(u16 id)
     return 0;
 }
 
-void fn_801EEDEC(u16 id, u8 value)
+void darkPokemonSetFlag0C(u16 id, u8 value)
 {
     BattleRangeDef* def = &lbl_80478F6C[id];
 

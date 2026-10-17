@@ -12,21 +12,21 @@ typedef struct MenuCBEntryPort {
 
 extern void std104_soundSetBackgroundMusic(s32, s32, s32);
 extern void* memcpy(void*, const void*, u32);
-extern MenuCBEntryPort* fn_8006B09C(s32);
+extern MenuCBEntryPort* savedataBattleGetEntryPtr(s32);
 extern void* fn_8006A814(MenuCBEntryPort*);
-extern s32 fn_8006B0F8(s32);
+extern s32 savedataBattleGetTeamPtr(s32);
 extern void gbaCommandSendWazaText(void*, s32);
 extern void fn_8008AB20(void*, u16, s32);
 extern void toolentryTaisenInitPokemonOrder(s32);
-extern void* fn_8006ACCC(s32);
+extern void* savedataBattleFindEntryByPlayer(s32);
 extern s32 menuOpen(s32, s32);
 extern void menuSetEnablePort(s32);
 extern void menuCloseCustom(s32, s32, s32);
 extern s32 toolentryTaisenGetHomePlace(s32);
 extern void msgctrlSetValue(s32, s32);
 extern void winMsgOpen(s32, s32, s32, s32);
-extern u8 fn_800F7EF8(s32);
-extern s32 fn_800F7C28(s32);
+extern u8 GSinputIsConnected(s32);
+extern s32 GSinputGetSubType(s32);
 extern void _threadSwitch(void);
 extern void winMsgClose(s32);
 extern void menuCBBattleStartTrainerFaceFree(void);
@@ -103,8 +103,8 @@ static inline u16 menuCBIsHomeBattle(void)
 
 static inline u8 menuCBDecided(void)
 {
-    if (fn_800F7EF8(1)) {
-        if (fn_800F7C28(1) == 0) {
+    if (GSinputIsConnected(1)) {
+        if (GSinputGetSubType(1) == 0) {
             return 1;
         } else {
             return 0;
@@ -132,7 +132,7 @@ static inline void menuCBClearEntrySlots(MenuCBEntryWork* state)
     }
 }
 
-s32 fn_80063D14(void* work)
+s32 menuTaisenSetupBattle(void* work)
 {
     void* entries[4];
     s32 battleType;
@@ -165,9 +165,9 @@ s32 fn_80063D14(void* work)
     for (player = 0; player < playerCount; player++) {
         s32 wazaText;
 
-        port = fn_8006B09C(player);
+        port = savedataBattleGetEntryPtr(player);
         command = fn_8006A814(port);
-        wazaText = fn_8006B0F8(player);
+        wazaText = savedataBattleGetTeamPtr(player);
         MENUCB_WORK->ready[player] = 0;
         if (port->enabled != 0) {
             s32 mode;
@@ -185,7 +185,7 @@ s32 fn_80063D14(void* work)
     }
 
     for (player = 0; player < 4; player++) {
-        entries[player] = fn_8006ACCC(player);
+        entries[player] = savedataBattleFindEntryByPlayer(player);
         if (entries[player] != NULL) {
             MENUCB_WORK->order[player] = *(s32*)((u8*)entries[player] + 0x28);
         } else {
@@ -270,7 +270,7 @@ s32 fn_80063D14(void* work)
     }
 
     battleType = toolentryTaisenGetBattleType();
-    if (fn_8025D9CC() == 4) {
+    if (battleResultGet10() == 4) {
         switch (battleType) {
         case 0:
         case 1:

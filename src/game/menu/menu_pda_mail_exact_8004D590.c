@@ -18,7 +18,7 @@ extern s32 pdaMailGetMailID(s32 index);
 extern u32 mailGetAttachFileGroup(s32 id);
 extern void winSpriteSetDisp(void* field, s32 visible);
 
-s32 fn_8004D590(PdaMailWindow* window, PdaMailOutput* output)
+s32 pdaMailDrawPicture(PdaMailWindow* window, PdaMailOutput* output)
 {
     if (mailGetAttachFileGroup(pdaMailGetMailID(**window->field_0x60)) != 0) {
         output->field_0x4c = 0x36B9;

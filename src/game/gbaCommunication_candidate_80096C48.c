@@ -185,7 +185,7 @@ void fn_80096D54(u8* menu)
 
 /* Handle input for the linked-Pokemon status submenus. */
 extern void menuPlaySe(s32 menu, s32 se);
-extern void fn_80109C88(void*, u32);
+extern void menuPokemonModelRequest(void*, u32);
 extern u8 pokemonWazaCheckValid(u32 pokemon, s32 waza);
 
 /* Whether move slot `move` of the shown Pokemon can be selected. */
@@ -376,7 +376,7 @@ void fn_80096FA0(u8* menu)
                 if (*(u32*)(lbl_803FB380 + 0x0C) != result) {
                     if (result != 0) {
                         menuPlaySe(*(s32*)(menu + 4), 1);
-                        fn_80109C88(lbl_803FB338, result);
+                        menuPokemonModelRequest(lbl_803FB338, result);
                     }
                     *(u32*)(lbl_803FB380 + 0x0C) = result;
                 }

@@ -29,7 +29,7 @@ u32 soundPlayFanfare(u32 id, void* buffer, u32 size)
                 /* Retail emits fn_801666BC before _threadSwitch, i.e. the
                  * bottom-test rotation. */
                 for (;;) {
-                    if (soundGetStatus(id) != 2) {
+                    if (GSsndGetStatus(id) != 2) {
                         break;
                     }
                     _threadSwitch();

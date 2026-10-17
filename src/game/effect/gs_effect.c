@@ -4,16 +4,16 @@
  *
  * Implements the fn_ symbols in [0x80130CE0, 0x8013151C), all matched at
  * 100% against the retail binary:
- *   fn_80130CE0 (GSEffectInit)        -- System initialisation
- *   fn_80130F04 (effectUpdateTask)    -- Per-frame update callback
- *   fn_80130F68 (effectRenderTask)    -- Per-frame render callback
- *   fn_80131010 (GSEffectStop)        -- Stop an active effect
- *   fn_801310A8 (GSEffectIsActive)    -- Query effect active state
+ *   GSeffectInit (GSEffectInit)        -- System initialisation
+ *   _GSeffectDrawAll (effectUpdateTask)    -- Per-frame update callback
+ *   _GSeffectUpdateAll (effectRenderTask)    -- Per-frame render callback
+ *   GSeffectStop (GSEffectStop)        -- Stop an active effect
+ *   GSeffectIsRunning (GSEffectIsActive)    -- Query effect active state
  *   GSeffect (GSEffectTrigger)     -- Trigger an effect by ID (real symbol)
- *   fn_80131200 (GSEffectRegister)    -- Register callbacks for an effect
- *   fn_80131268 (GSEffectFree)        -- Destroy and free an effect slot
- *   fn_8013139C (GSEffectResetState)  -- Re-trigger an existing effect
- *   fn_80131428 (GSEffectAllocSlot)   -- Allocate a new effect slot
+ *   GSeffectSetCallbacks (GSEffectRegister)    -- Register callbacks for an effect
+ *   GSeffectFree (GSEffectFree)        -- Destroy and free an effect slot
+ *   GSeffectSetup (GSEffectResetState)  -- Re-trigger an existing effect
+ *   GSeffectCreate (GSEffectAllocSlot)   -- Allocate a new effect slot
  *
  * A prior campaign transplant had also left a full second, invented copy
  * of these ten functions under "GSEffectXxx"/effectUpdateTask/
@@ -36,10 +36,10 @@
  *
  * Per-frame execution is driven by two task callbacks registered with
  * GSgappCreate (GStaskRegister):
- *   - fn_80130F68 (effectRenderTask) at priority 0x7F (render pass)
- *   - fn_80130F04 (effectUpdateTask) at priority 0x80 (after rendering)
+ *   - _GSeffectUpdateAll (effectRenderTask) at priority 0x7F (render pass)
+ *   - _GSeffectDrawAll (effectUpdateTask) at priority 0x80 (after rendering)
  *
- * fn_8013151C (GSEffectGetUserData) was merged in from the former
+ * GSeffectGetData (GSEffectGetUserData) was merged in from the former
  * game/effect/effect_util.c CodeCandidate bucket: it is a boundary function
  * that operates on the same lbl_803635C0 state table as the rest of this
  * file and was misattributed to the neighboring TU.
@@ -54,7 +54,7 @@
 /* ===== External SDK / engine functions ===== */
 extern void  GSlogWrite(const char* fmt, ...);          /* OSReport / GSlog */
 extern void  fn_800E24B0(u16 handle);                    /* GSmemLock (raw) */
-extern void  fn_800E209C(u16 handle);                    /* GSmemFree (raw) */
+extern void  GSmemFree(u16 handle);                    /* GSmemFree (raw) */
 extern u32   msgGetCharsPerFrame(void);                          /* GSgfxGetTickCount */
 extern s32   GSvtrRegisterGSgapp(u32 taskId);            /* battle VFX registration */
 extern void  memset(void* dst, u32 val, u32 size);
@@ -68,23 +68,23 @@ extern u8 lbl_803635C0[];              /* master effect globals, 0x18 bytes */
 #define gsEffectGlobals (*(GSEffectGlobals*)(void*)lbl_803635C0)
 
 /* Forward declarations for converted functions */
-void fn_80130CE0(u16 maxEffects);
-void fn_80130F04(void);
-void fn_80130F68(void);
-void fn_80131010(u32 effectId);
-BOOL fn_801310A8(u32 effectId);
+void GSeffectInit(u16 maxEffects);
+void _GSeffectDrawAll(void);
+void _GSeffectUpdateAll(void);
+void GSeffectStop(u32 effectId);
+BOOL GSeffectIsRunning(u32 effectId);
 BOOL GSeffect(u32 effectId);
-void fn_80131200(u32 effectId, GSEffectStartFunc startFunc,
+void GSeffectSetCallbacks(u32 effectId, GSEffectStartFunc startFunc,
                  GSEffectStopFunc destroyFunc,
                  GSEffectStartFunc triggerFunc,
                  GSEffectStopFunc stopFunc,
                  void* extraParam,
                  GSEffectUpdateFunc updateFunc,
                  GSEffectRenderFunc renderFunc);
-void fn_80131268(u32 effectId);
-void fn_8013139C(u32 effectId, u32 param);
-u16 fn_80131428(void* callbacks, u16 dataSize);
-void* fn_8013151C(u32 arg);
+void GSeffectFree(u32 effectId);
+void GSeffectSetup(u32 effectId, u32 param);
+u16 GSeffectCreate(void* callbacks, u16 dataSize);
+void* GSeffectGetData(u32 arg);
 
 
 
@@ -92,24 +92,24 @@ void* fn_8013151C(u32 arg);
 extern u32 lbl_8047ADC0;
 
 /* =======================================================================
- * fn_80130CE0 / GSEffectInit
+ * GSeffectInit / GSEffectInit
  * Address: 0x80130CE0, Size: 0x224
  * ======================================================================= */
-void fn_80130CE0(u16 maxEffects) {
+void GSeffectInit(u16 maxEffects) {
     u32 memHandle;
     u32 taskId;
     GSEffectInstance* table;
     GSEffectInstance* entry;
     u16 cnt;
     extern u16 _toolentryAlloc__FUl(u32);
-    extern void* fn_800E27B0(u16);
+    extern void* GSmemLock(u16);
     extern u32 GSgappCreate(s32 state, u8 priority, void* param, void* func);
 
     memHandle = _toolentryAlloc__FUl(maxEffects * sizeof(GSEffectInstance));
     gsEffectGlobals.memHandle = memHandle;
 
     if (memHandle != 0) {
-        table = (GSEffectInstance*)fn_800E27B0(memHandle);
+        table = (GSEffectInstance*)GSmemLock(memHandle);
         gsEffectGlobals.instanceTable = table;
         memset(table, 0, maxEffects * sizeof(GSEffectInstance));
         gsEffectGlobals.freeListHead = table;
@@ -134,17 +134,17 @@ void fn_80130CE0(u16 maxEffects) {
         gsEffectGlobals.maxEffects = 0;
     }
     gsEffectGlobals.activeListHead = NULL;
-    taskId = GSgappCreate(1, 0x7F, 0, (void*)fn_80130F68);
+    taskId = GSgappCreate(1, 0x7F, 0, (void*)_GSeffectUpdateAll);
     lbl_8047ADC0 = taskId;
     GSvtrRegisterGSgapp(taskId);
-    GSgappCreate(1, 0x80, 0, (void*)fn_80130F04);
+    GSgappCreate(1, 0x80, 0, (void*)_GSeffectDrawAll);
 }
 
 /* =======================================================================
- * fn_80130F04 / effectUpdateTask
+ * _GSeffectDrawAll / effectUpdateTask
  * Address: 0x80130F04, Size: 0x64
  * ======================================================================= */
-void fn_80130F04(void) {
+void _GSeffectDrawAll(void) {
     GSEffectInstance* cur;
 
     cur = ((GSEffectGlobals*)(void*)lbl_803635C0)->activeListHead;
@@ -157,10 +157,10 @@ void fn_80130F04(void) {
 }
 
 /* =======================================================================
- * fn_80130F68 / effectRenderTask
+ * _GSeffectUpdateAll / effectRenderTask
  * Address: 0x80130F68, Size: 0xA8
  * ======================================================================= */
-void fn_80130F68(void) {
+void _GSeffectUpdateAll(void) {
     GSEffectInstance* cur;
     u32 tick;
 
@@ -181,10 +181,10 @@ void fn_80130F68(void) {
 }
 
 /* =======================================================================
- * fn_80131010 / GSEffectStop
+ * GSeffectStop / GSEffectStop
  * Address: 0x80131010, Size: 0x98
  * ======================================================================= */
-void fn_80131010(u32 effectId) {
+void GSeffectStop(u32 effectId) {
     GSEffectInstance* inst;
     GSEffectGlobals* g;
 
@@ -225,10 +225,10 @@ _got_inst:
 }
 
 /* =======================================================================
- * fn_801310A8 / GSEffectIsActive
+ * GSeffectIsRunning / GSEffectIsActive
  * Address: 0x801310A8, Size: 0x74
  * ======================================================================= */
-BOOL fn_801310A8(u32 effectId) {
+BOOL GSeffectIsRunning(u32 effectId) {
     GSEffectInstance* inst;
     GSEffectGlobals* g;
 
@@ -323,10 +323,10 @@ _final0:
 }
 
 /* =======================================================================
- * fn_80131200 / GSEffectRegister
+ * GSeffectSetCallbacks / GSEffectRegister
  * Address: 0x80131200, Size: 0x68
  * ======================================================================= */
-void fn_80131200(u32 effectId, GSEffectStartFunc startFunc,
+void GSeffectSetCallbacks(u32 effectId, GSEffectStartFunc startFunc,
                  GSEffectStopFunc destroyFunc,
                  GSEffectStartFunc triggerFunc,
                  GSEffectStopFunc stopFunc,
@@ -367,10 +367,10 @@ _got_inst:
 }
 
 /* =======================================================================
- * fn_80131268 / GSEffectFree
+ * GSeffectFree / GSEffectFree
  * Address: 0x80131268, Size: 0x134
  * ======================================================================= */
-void fn_80131268(u32 effectId) {
+void GSeffectFree(u32 effectId) {
     GSEffectInstance* inst;
     GSEffectInstance* prevInst;
     GSEffectInstance* nextInst;
@@ -433,14 +433,14 @@ _got_inst:
     }
 
     fn_800E24B0(inst->memHandle);
-    fn_800E209C(inst->memHandle);
+    GSmemFree(inst->memHandle);
 }
 
 /* =======================================================================
- * fn_8013139C / GSEffectResetState
+ * GSeffectSetup / GSEffectResetState
  * Address: 0x8013139C, Size: 0x8C
  * ======================================================================= */
-void fn_8013139C(u32 effectId, u32 param) {
+void GSeffectSetup(u32 effectId, u32 param) {
     GSEffectInstance* inst;
     GSEffectGlobals* g;
     GSEffectStartFunc startFunc;
@@ -474,10 +474,10 @@ _got_inst:
 }
 
 /* =======================================================================
- * fn_80131428 / GSEffectAllocSlot
+ * GSeffectCreate / GSEffectAllocSlot
  * Address: 0x80131428, Size: 0xF4
  * ======================================================================= */
-u16 fn_80131428(void* callbacks, u16 dataSize) {
+u16 GSeffectCreate(void* callbacks, u16 dataSize) {
     GSEffectGlobals* globals;
     void* cbArg;
     u16 cbSize;
@@ -487,7 +487,7 @@ u16 fn_80131428(void* callbacks, u16 dataSize) {
     u16 memHandle;
     GSEffectGlobals* ga;
     extern u16 _toolentryAlloc__FUl(u32 size);
-    extern void* fn_800E27B0(u16 handle);
+    extern void* GSmemLock(u16 handle);
 
     globals = (GSEffectGlobals*)(void*)lbl_803635C0;
     cbArg = callbacks;
@@ -503,7 +503,7 @@ u16 fn_80131428(void* callbacks, u16 dataSize) {
         return 0;
     }
 
-    userData = fn_800E27B0(memHandle);
+    userData = GSmemLock(memHandle);
 
     globals->freeListHead = slot->next;
     if (slot->next != NULL) {
@@ -533,14 +533,14 @@ _retNull:
 }
 
 /* =======================================================================
- * fn_8013151C / GSEffectGetUserData
+ * GSeffectGetData / GSEffectGetUserData
  * Address: 0x8013151C, Size: 0x58
  *
  * Merged in from the former game/effect/effect_util.c CodeCandidate
  * bucket (0x8013151C - 0x80137114): this boundary function operates on
  * the same lbl_803635C0 state table as the rest of this file.
  * ======================================================================= */
-void* fn_8013151C(u32 arg) {
+void* GSeffectGetData(u32 arg) {
     GSEffectInstance* entry;
     unsigned int new_var;
     GSEffectGlobals* globals;

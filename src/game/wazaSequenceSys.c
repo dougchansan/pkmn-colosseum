@@ -11,10 +11,10 @@
 
 
 /**
- * fn_801D9E1C - Pokemon motion get complete. Returns obj->0x77 or 0 if NULL.
+ * wazaSequenceOwnerGetFlag77 - Pokemon motion get complete. Returns obj->0x77 or 0 if NULL.
  * Address: 0x801D9E1C | Size: 0x18
  */
-u8 fn_801D9E1C(void* obj) {
+u8 wazaSequenceOwnerGetFlag77(void* obj) {
     if (obj != NULL) {
         return *(u8*)((u8*)obj + 0x77);
     }
@@ -26,11 +26,11 @@ u8 fn_801D9E1C(void* obj) {
  * Address: 0x801D9E34 | Size: 0x58
  */
 void fn_801D9E34(void* obj) {
-    extern void fn_80118A68(u8* resource, u32 notify);
+    extern void gsParticleKillOwned(u8* resource, u32 notify);
     WazaEffect* effect = obj;
 
     if (*(u32*)(lbl_80467CC0 + 0xC) != 0 && effect->effect_handle != NULL) {
-        fn_80118A68(effect->effect_handle, 1);
+        gsParticleKillOwned(effect->effect_handle, 1);
         effect->effect_handle = NULL;
     }
 }
@@ -105,7 +105,7 @@ void fn_801D9E8C(void* effect) {
 
     set__5GSvecFfff(scale, val, val, val);
 
-    fn_80118FB0(fx->effect_handle, target, 4, 0, 1, 0);
+    gsParticleLinkToJObj(fx->effect_handle, target, 4, 0, 1, 0);
     fn_80118D18(fx->effect_handle, 1);
     fn_80118DE0(fx->effect_handle, scale, 1, 0);
     GSpartFree(target);
@@ -117,11 +117,11 @@ void fn_801D9E8C(void* effect) {
  * Address: 0x801DA014 | Size: 0x5C
  */
 void fn_801DA014(void* effect) {
-    extern void fn_80118A68(u8* resource, u32 notify);
+    extern void gsParticleKillOwned(u8* resource, u32 notify);
     WazaEffect* fx = effect;
 
     if (fx != NULL && *(u32*)(lbl_80467CC0 + 0x8) != 0 && fx->field_80 != NULL) {
-        fn_80118A68(fx->field_80, 1);
+        gsParticleKillOwned(fx->field_80, 1);
         fx->field_80 = NULL;
     }
 }
@@ -156,7 +156,7 @@ void fn_801DA070(void* effect) {
 
     entry = (u8*)fx->table + fx->index * sizeof(WazaEffectTblEntry);
     if ((u8)GSmodelCenterNull(fx->model) != 0) {
-        n = fn_800EE0E8(fx->model) - 1;
+        n = GSmodelWalkJObjs(fx->model) - 1;
     } else {
         n = *(s32*)((u8*)entry + 0x54);
     }
@@ -186,7 +186,7 @@ void fn_801DA070(void* effect) {
 
     set__5GSvecFfff(scale, val, val, val);
 
-    fn_80118FB0(fx->field_80, target, 4, 0, 1, 0);
+    gsParticleLinkToJObj(fx->field_80, target, 4, 0, 1, 0);
     fn_80118D18(fx->field_80, 1);
     fn_80118CAC(fx->field_80, 1);
     fn_80118DE0(fx->field_80, scale, 1, 0);
@@ -203,19 +203,19 @@ void fn_801DA224(void* effect, s32 flags) {
         u8 value = flags;
 
         if ((flags & 4) == 4) {
-            fn_801DD078(effect);
+            wazaSequenceOwnerSetAura(effect);
         } else {
-            fn_801DD028(effect);
+            wazaSequenceOwnerClearAura(effect);
         }
 
         if ((value & 8) == 8) {
             fn_801DCFD8(effect);
         } else {
-            fn_801DCF84(effect);
+            wazaSequenceOwnerClearStop(effect);
         }
 
         if ((value & 2) == 2) {
-            fn_801DCF00(effect);
+            wazaSequenceOwnerSetNull(effect);
         } else {
             fn_801DCEA8(effect);
         }
@@ -233,8 +233,8 @@ void fn_801DA2C4(void* effect, f32 radius, f32 t) {
     struct GSmodel* model;
 
     if (fx != NULL) {
-        fn_801DD028(fx);
-        fn_801DCF84(fx);
+        wazaSequenceOwnerClearAura(fx);
+        wazaSequenceOwnerClearStop(fx);
         fn_801DCEA8(fx);
 
         if (fx != NULL && (model = fx->model) != NULL) {
@@ -251,10 +251,10 @@ void fn_801DA2C4(void* effect, f32 radius, f32 t) {
 }
 
 /**
- * fn_801DA354 - Waza effect get trajectory type. Returns effect->0x18 or 0 if NULL.
+ * wazaSequenceOwnerGetFlags - Waza effect get trajectory type. Returns effect->0x18 or 0 if NULL.
  * Address: 0x801DA354 | Size: 0x18
  */
-u8 fn_801DA354(void* effect) {
+u8 wazaSequenceOwnerGetFlags(void* effect) {
     if (effect != NULL) {
         return *(u8*)((u8*)effect + 0x18);
     }
@@ -269,10 +269,10 @@ void fn_801DA36C(void* effect, s32 trajType) {
     if (effect != NULL) {
         switch ((u8)trajType) {
         case 1:
-            fn_801DD028(effect);
+            wazaSequenceOwnerClearAura(effect);
             return;
         case 2:
-            fn_801DCF84(effect);
+            wazaSequenceOwnerClearStop(effect);
             return;
         case 3:
             fn_801DCEA8(effect);
@@ -289,23 +289,23 @@ void fn_801DA3CC(void* effect, s32 trajType) {
     if (effect != NULL) {
         switch ((u8)trajType) {
         case 1:
-            fn_801DD078(effect);
+            wazaSequenceOwnerSetAura(effect);
             return;
         case 2:
             fn_801DCFD8(effect);
             return;
         case 3:
-            fn_801DCF00(effect);
+            wazaSequenceOwnerSetNull(effect);
             return;
         }
     }
 }
 
 /**
- * fn_801DA42C - Waza effect get bit 0 of field 0x18.
+ * wazaSequenceOwnerIsVisible - Waza effect get bit 0 of field 0x18.
  * Address: 0x801DA42C | Size: 0x1C
  */
-u32 fn_801DA42C(void* effect) {
+u32 wazaSequenceOwnerIsVisible(void* effect) {
     if (effect != NULL) {
         return *(u8*)((u8*)effect + 0x18) & 1;
     }
@@ -317,7 +317,7 @@ u32 fn_801DA42C(void* effect) {
  * Address: 0x801DA448 | Size: 0xA0
  */
 void fn_801DA448(void* effect, u32 visible) {
-    extern void fn_80118C20(void* bank, u32 visible);
+    extern void GSmodelSetParticleVisibility(void* bank, u32 visible);
     u8* sequence;
     u8* model;
 
@@ -329,7 +329,7 @@ void fn_801DA448(void* effect, u32 visible) {
                 while (model != NULL) {
                     if (*(s32*)(model + 4) == 3 && *(s32*)(model + 0x18) == 0 &&
                         *(void**)(model + 0x88) != NULL) {
-                        fn_80118C20(*(void**)(model + 0x88), visible);
+                        GSmodelSetParticleVisibility(*(void**)(model + 0x88), visible);
                     }
                     model = *(u8**)(model + 0xA8);
                 }
@@ -340,10 +340,10 @@ void fn_801DA448(void* effect, u32 visible) {
 }
 
 /**
- * fn_801DA4E8 - Set visibility on a waza effect and its attached effects.
+ * wazaSequenceOwnerSetVisibility - Set visibility on a waza effect and its attached effects.
  * Address: 0x801DA4E8 | Size: 0xC4
  */
-void fn_801DA4E8(void* effect, u32 visible) {
+void wazaSequenceOwnerSetVisibility(void* effect, u32 visible) {
     WazaEffect* fx = effect;
     struct GSmodel* model;
 
@@ -375,20 +375,20 @@ void fn_801DA4E8(void* effect, u32 visible) {
 }
 
 /**
- * fn_801DA5AC - Waza effect set fields 0x16=0, 0x17=r4.
+ * wazaSequenceSetDownFlag - Waza effect set fields 0x16=0, 0x17=r4.
  * Address: 0x801DA5AC | Size: 0x18
  */
-void fn_801DA5AC(void* effect, u8 val) {
+void wazaSequenceSetDownFlag(void* effect, u8 val) {
     if (effect == NULL) return;
     *(u8*)((u8*)effect + 0x16) = 0;
     *(u8*)((u8*)effect + 0x17) = val;
 }
 
 /**
- * fn_801DA5C4 - Check whether every active effect sequence has finished.
+ * wazaSequenceSysIsAllEnd - Check whether every active effect sequence has finished.
  * Address: 0x801DA5C4 | Size: 0xD4
  */
-u8 fn_801DA5C4(s32 timeType) {
+u8 wazaSequenceSysIsAllEnd(s32 timeType) {
     u8* pool = lbl_80467CC0;
     WazaEffect* effect;
     s32 i = 0;
@@ -421,10 +421,10 @@ u8 fn_801DA5C4(s32 timeType) {
 }
 
 /**
- * fn_801DA698 - Waza effect tick lifetime.
+ * wazaSequenceSysIsWazaEnd - Waza effect tick lifetime.
  * Address: 0x801DA698 | Size: 0xB4
  */
-u8 fn_801DA698(void* sequence, s32 moveID, s32 variant, s32 timeType) {
+u8 wazaSequenceSysIsWazaEnd(void* sequence, s32 moveID, s32 variant, s32 timeType) {
     void* waza;
 
     if (sequence == NULL) {
@@ -465,10 +465,10 @@ s32 fn_801DA74C(void* sequence, s32 moveID, s32 variant, s32 timeType) {
 }
 
 /**
- * fn_801DA7AC - Clear child sequences from every active effect.
+ * wazaSequenceSysFreeAll - Clear child sequences from every active effect.
  * Address: 0x801DA7AC | Size: 0x90
  */
-void fn_801DA7AC(void) {
+void wazaSequenceSysFreeAll(void) {
     extern void wazaSequenceApplyStop(void* obj);
     extern void wazaSequenceFree(void* obj);
     u8* pool;
@@ -526,10 +526,10 @@ void fn_801DA83C(void* effect) {
 }
 
 /**
- * fn_801DA8C4 - Waza resolve/update helper.
+ * wazaSequenceSysStopWaza - Waza resolve/update helper.
  * Address: 0x801DA8C4 | Size: 0x50
  */
-void fn_801DA8C4(void* obj, s32 search_key1, s32 search_key2) {
+void wazaSequenceSysStopWaza(void* obj, s32 search_key1, s32 search_key2) {
     void* resolved;
     if (obj != NULL) {
         resolved = GetWaza__12NullSequenceCFUsUs(obj, search_key1, search_key2);
@@ -543,10 +543,10 @@ void fn_801DA8C4(void* obj, s32 search_key1, s32 search_key2) {
 }
 
 /**
- * fn_801DA914 - Waza effect pool get used count.
+ * wazaSequenceClearFlag16 - Waza effect pool get used count.
  * Address: 0x801DA914 | Size: 0x38
  */
-void fn_801DA914(void* obj, s32 search_key1, s32 search_key2) {
+void wazaSequenceClearFlag16(void* obj, s32 search_key1, s32 search_key2) {
     void* resolved;
     if (obj != NULL) {
         resolved = GetWaza__12NullSequenceCFUsUs(obj, search_key1, search_key2);
@@ -557,10 +557,10 @@ void fn_801DA914(void* obj, s32 search_key1, s32 search_key2) {
 }
 
 /**
- * fn_801DA94C - Waza resolved effect has active non-minus-one byte.
+ * wazaSequenceSysIsPlayingWaza - Waza resolved effect has active non-minus-one byte.
  * Address: 0x801DA94C | Size: 0x68
  */
-s32 fn_801DA94C(void* obj, s32 search_key1, s32 search_key2) {
+s32 wazaSequenceSysIsPlayingWaza(void* obj, s32 search_key1, s32 search_key2) {
     void* resolved;
     u8 result;
     if (obj == NULL) {
@@ -594,10 +594,10 @@ void fn_801DA9B4(void* obj, s32 search_key1, s32 search_key2) {
 }
 
 /**
- * fn_801DA9E8 - Waza sound effect play.
+ * wazaSequenceSysStartWaza - Waza sound effect play.
  * Address: 0x801DA9E8 | Size: 0xC4
  */
-void fn_801DA9E8(void* sequence, s32 moveID, s32 variant) {
+void wazaSequenceSysStartWaza(void* sequence, s32 moveID, s32 variant) {
     u8* pool = lbl_80467CC0;
     WazaEffect* entry;
     s32 i = 0;
@@ -635,7 +635,7 @@ void fn_801DAAAC(void* effectPtr) {
     extern void* GScameraGetActiveCamera(void);
     extern s32 HSD_CObjSetCurrent(void* cobj);
     extern void gsParticleDraw(u32 drawFlags, u8 modelID);
-    extern void fn_80195A48(void);
+    extern void HSD_CObjEndCurrent(void);
     WazaEffect* effect = effectPtr;
     u8* effectBytes = effectPtr;
     u32 flags;
@@ -665,7 +665,7 @@ void fn_801DAAAC(void* effectPtr) {
                 entry = *(u8**)(effectBytes + 0x68);
                 while (entry != NULL) {
                     if (*(u8*)(entry + 0x14) != 0) {
-                        fn_801DB8FC(entry, flags, modelID);
+                        wazaSequenceOwnerDrawAttached(entry, flags, modelID);
                     }
                     entry = *(u8**)(entry + 0x34);
                 }
@@ -673,7 +673,7 @@ void fn_801DAAAC(void* effectPtr) {
                 camera = GScameraGetActiveCamera();
                 if (camera != NULL && HSD_CObjSetCurrent(*(void**)((u8*)camera + 0xC))) {
                     gsParticleDraw(flags, modelID);
-                    fn_80195A48();
+                    HSD_CObjEndCurrent();
                 }
             }
         }
@@ -710,10 +710,10 @@ f32 fn_801DABAC(void* obj) {
 }
 
 /**
- * fn_801DAC24 - Waza get field 0x10.
+ * wazaSequenceOwnerGetSizeClass - Waza get field 0x10.
  * Address: 0x801DAC24 | Size: 0x18
  */
-u32 fn_801DAC24(void* obj) {
+u32 wazaSequenceOwnerGetSizeClass(void* obj) {
     if (obj != NULL) {
         return *(u32*)((u8*)obj + 0x10);
     }
@@ -721,10 +721,10 @@ u32 fn_801DAC24(void* obj) {
 }
 
 /**
- * fn_801DAC3C - Waza get field 0x24.
+ * wazaSequenceOwnerGetModel - Waza get field 0x24.
  * Address: 0x801DAC3C | Size: 0x18
  */
-u32 fn_801DAC3C(void* obj) {
+u32 wazaSequenceOwnerGetModel(void* obj) {
     if (obj != NULL) {
         return *(u32*)((u8*)obj + 0x24);
     }
@@ -732,10 +732,10 @@ u32 fn_801DAC3C(void* obj) {
 }
 
 /**
- * fn_801DAC54 - Waza check field 0x6C nonzero.
+ * wazaSequenceOwnerIsPlaying - Waza check field 0x6C nonzero.
  * Address: 0x801DAC54 | Size: 0x24
  */
-u32 fn_801DAC54(void* obj) {
+u32 wazaSequenceOwnerIsPlaying(void* obj) {
     if (obj == NULL) {
         return 0;
     }
@@ -743,10 +743,10 @@ u32 fn_801DAC54(void* obj) {
 }
 
 /**
- * fn_801DAC78 - Waza get field 0x70.
+ * wazaSequenceOwnerGetId - Waza get field 0x70.
  * Address: 0x801DAC78 | Size: 0x18
  */
-u16 fn_801DAC78(void* obj) {
+u16 wazaSequenceOwnerGetId(void* obj) {
     if (obj != NULL) {
         return *(u16*)((u8*)obj + 0x70);
     }

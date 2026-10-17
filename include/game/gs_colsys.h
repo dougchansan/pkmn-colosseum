@@ -56,7 +56,7 @@ typedef struct Vec3f {
  * Stored in the static table at lbl_8035B500. Contains surface
  * type attributes and a type-vs-type interaction matrix.
  *
- * Fields recovered from fn_8010C46C..fn_8010C508:
+ * Fields recovered from fn_8010C46C..zokuseiDataBiosGetAisyou:
  *   0x00: u8   surfaceFlags
  *   0x02: u16  surfaceId
  *   0x04: u32  surfaceParam
@@ -85,7 +85,7 @@ typedef struct GSColFloorObj {
 
 /**
  * Floor human-collision slot -- 0x14 bytes. fn_80110084 registers one,
- * GScolsys2HumanEnable toggles it and fn_8010FAF4 resolves the person
+ * GScolsys2HumanEnable toggles it and GScolsys2CheckCollision resolves the person
  * from keys 0/1 (fn_8018D998 -> peopleSearchID) and tests a cylinder of
  * the given radius and height. Flags: bit 0 in use, bit 1 disabled.
  */

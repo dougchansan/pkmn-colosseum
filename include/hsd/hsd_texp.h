@@ -330,8 +330,8 @@ HSD_TExp* HSD_TExpCnst(void* val, HSD_TEInput comp, HSD_TEType type,
  *   fn_801B707C HSD_TExpTev       fn_801B5E40 HSD_TExpOrder
  *   fn_801B6E74 HSD_TExpColorOp   fn_801B64EC HSD_TExpColorIn
  *   fn_801B6CD8 HSD_TExpAlphaOp   fn_801B5F08 HSD_TExpAlphaIn
- *   fn_801B7178 HSD_TExpFreeList  fn_801B45A4 HSD_TExpSetupTev
- *   fn_801B7BD4 HSD_TExpRef       fn_801B750C HSD_TExpUnref
+ *   HSD_TExpFreeList HSD_TExpFreeList  fn_801B45A4 HSD_TExpSetupTev
+ *   HSD_TExpRef HSD_TExpRef       HSD_TExpUnref HSD_TExpUnref
  *   fn_801B6DC0 (swap-table setter, no Melee counterpart)
  */
 HSD_TExp* HSD_TExpTev(HSD_TExp** list);
@@ -349,20 +349,20 @@ void HSD_TExpAlphaIn(HSD_TExp* texp, HSD_TEInput sel_a, HSD_TExp* exp_a,
                  HSD_TEInput sel_b, HSD_TExp* exp_b, HSD_TEInput sel_c,
                  HSD_TExp* exp_c, HSD_TEInput sel_d, HSD_TExp* exp_d);
 void HSD_TExpFreeTevDesc(HSD_TExpTevDesc* tdesc);
-HSD_TExp* fn_801B7178(HSD_TExp* texp_list, HSD_TExpType type, s32 all);
+HSD_TExp* HSD_TExpFreeList(HSD_TExp* texp_list, HSD_TExpType type, s32 all);
 int HSD_TExpCompile(HSD_TExp* texp, HSD_TExpTevDesc** tevdesc,
                     HSD_TExp** texp_list);
 void HSD_TExpSetupTev(HSD_TExpTevDesc* tevdesc, HSD_TExp* texp);
-void fn_801B7BD4(HSD_TExp* texp, u8 sel);
-void fn_801B750C(HSD_TExp* texp, u8 sel);
+void HSD_TExpRef(HSD_TExp* texp, u8 sel);
+void HSD_TExpUnref(HSD_TExp* texp, u8 sel);
 void HSD_TExpSetReg(HSD_TExp* texp);
 
-/* texpdag.c (fn_801B7CA0 HSD_TExpSchedule, fn_801B8D5C HSD_TExpSimplify2) */
+/* texpdag.c (HSD_TExpSchedule HSD_TExpSchedule, HSD_TExpSimplify2 HSD_TExpSimplify2) */
 int HSD_TExpMakeDag(HSD_TExp* root, HSD_TExpDag* list);
-void fn_801B7CA0(int num, HSD_TExpDag* list, HSD_TExp** result,
+void HSD_TExpSchedule(int num, HSD_TExpDag* list, HSD_TExp** result,
                  HSD_TExpRes* resource);
 int HSD_TExpSimplify(HSD_TExp* texp);
-int fn_801B8D5C(HSD_TExp* texp);
+int HSD_TExpSimplify2(HSD_TExp* texp);
 void fn_801B9048(HSD_TETev* tev);
 
 static inline BOOL IsThroughColor(HSD_TExp* texp)

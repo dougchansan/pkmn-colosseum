@@ -1,16 +1,16 @@
 /** Exact tool-entry trainer accessors, 0x8025D28C - 0x8025D364. */
 #include "dolphin/types.h"
 
-extern u8* fn_8006B09C(s32 index);
+extern u8* savedataBattleGetEntryPtr(s32 index);
 
 u16 toolentryTaisenGetTrainerDataID(s32 index)
 {
-    return *(u16*)fn_8006B09C(index);
+    return *(u16*)savedataBattleGetEntryPtr(index);
 }
 
 u32 toolentryTaisenGetControlerType(s32 index)
 {
-    return *(u32*)(fn_8006B09C(index) + 0x24);
+    return *(u32*)(savedataBattleGetEntryPtr(index) + 0x24);
 }
 
 u32 toolentryGetTrainerSamllFaceResID(s32 index, u32 param1, u32 param2)
@@ -25,7 +25,7 @@ u32 toolentryGetTrainerSamllFaceResID(s32 index, u32 param1, u32 param2)
     u32* entry;
     u32 ret;
 
-    id = *(u16*)fn_8006B09C(index);
+    id = *(u16*)savedataBattleGetEntryPtr(index);
     if (id == 0) {
         return 0;
     }

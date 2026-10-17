@@ -136,13 +136,13 @@ extern void* memcpy(void* dst, const void* src, u32 size);
 
 /* GSmem allocator */
 extern u16   _toolentryAlloc__FUl(u32 size);
-extern void* fn_800E27B0(u16 handle);
+extern void* GSmemLock(u16 handle);
 
 /* Model system */
 extern void  GSmodelGetPart(void* model, u32 param);
 extern void  GSpartFree(void* model, u32 param);
 extern void  fn_800E24B0(u16 handle);
-extern void  fn_800E209C(u16 handle);
+extern void  GSmemFree(u16 handle);
 extern void  set__5GSvecFfff(void* dst, void* src);
 extern void  GSvecCopy(void* dst, void* src);
 extern void  GSvecAdd(void* model, void* param);
@@ -3160,12 +3160,12 @@ s32 itemUse2PokemonSimulation(void* arg0, void* arg1, void* arg2, void* arg3, vo
     }
 
     memHandle = _toolentryAlloc__FUl(0xA4E8);
-    savedFightFloor = fn_800E27B0(memHandle);
+    savedFightFloor = GSmemLock(memHandle);
     memcpy(savedFightFloor, fightFloor, 0xA4E8);
     result = fn_80144574(arg0, arg1, arg2, arg3, arg4);
     memcpy(fightFloor, savedFightFloor, 0xA4E8);
     fn_800E24B0(memHandle);
-    fn_800E209C(memHandle);
+    GSmemFree(memHandle);
 
     return result;
 }
@@ -3192,7 +3192,7 @@ s32 friendXUp__FP7PokemonP12FightPokemonScUsUs(
     extern u8 pokemonBiosGetCatchBallId(void*);
     extern void* fightFloorGetFightPokemonPtrToFightTrainerPtr(s32, void*);
     extern void* fightTrainerCheckFightPokemonFightOut(void*, void*);
-    extern void fn_802331A4(void*, s32);
+    extern void fightOutPokemonUpdateHensinStatus(void*, s32);
     void* item;
     void* trainer;
     s32 oldFriend;
@@ -3250,7 +3250,7 @@ s32 friendXUp__FP7PokemonP12FightPokemonScUsUs(
                 fightPokemon);
         }
         if (trainer != NULL) {
-            fn_802331A4(trainer, 0xC7);
+            fightOutPokemonUpdateHensinStatus(trainer, 0xC7);
         }
     } else {
         pokemonBiosSetFriend(pokemon, newFriend);
@@ -3262,7 +3262,7 @@ s32 friendXUp__FP7PokemonP12FightPokemonScUsUs(
                 fightPokemon);
         }
         if (trainer != NULL) {
-            fn_802331A4(trainer, 0x99);
+            fightOutPokemonUpdateHensinStatus(trainer, 0x99);
         }
     }
     return (s16)(newFriend - oldFriend);
@@ -3298,7 +3298,7 @@ void hpRecover__FP20ITEMUSE2POKEMON_LOG1PsP7PokemonUcbUsP12FightPokemon(
     extern void pokemonBiosSetHp(void*, u16);
     extern void* fightFloorGetFightPokemonPtrToFightTrainerPtr(s32, void*);
     extern void* fightTrainerCheckFightPokemonFightOut(void*, void*);
-    extern void fn_802331A4(void*, s32);
+    extern void fightOutPokemonUpdateHensinStatus(void*, s32);
     u16 oldHp;
     u16 maxHp;
     u16 newHp;
@@ -3358,7 +3358,7 @@ void hpRecover__FP20ITEMUSE2POKEMON_LOG1PsP7PokemonUcbUsP12FightPokemon(
             fightPokemon);
     }
     if (trainer != NULL) {
-        fn_802331A4(trainer, 0x83);
+        fightOutPokemonUpdateHensinStatus(trainer, 0x83);
     }
 
     if (revived != 0) {

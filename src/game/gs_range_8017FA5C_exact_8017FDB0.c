@@ -6,7 +6,7 @@
  * the circular free list, splitting the tail off a larger block, and
  * growing from the lbl_80455048 bump arena (morecore) when the walk wraps.
  * When every descriptor is in use it flushes the handle cache
- * (fn_8017D624) and retries.
+ * (fsysFlushCachedHandles) and retries.
  *
  * Carved out of the 0x8017FA5C - 0x80180C78 retail unit so the exact
  * function can link on its own; built like the rest of it at
@@ -58,7 +58,7 @@ static inline GsRangeMemNode* memMoreCore(u32 size)
     }
     block = memNewBlock(cursor);
     if (!block) {
-        fn_8017D624();
+        fsysFlushCachedHandles();
         block = memNewBlock(cursor);
     }
     block->size = size;
@@ -94,7 +94,7 @@ void* fn_8017FDB0(u32 size)
                                       p->size / sizeof(GsRangeMemNode) * sizeof(GsRangeMemNode));
                 p = memNewBlock(p);
                 if (!p) {
-                    fn_8017D624();
+                    fsysFlushCachedHandles();
                     p = memNewBlock(p);
                 }
                 p->previous = orig;

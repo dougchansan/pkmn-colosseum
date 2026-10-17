@@ -67,7 +67,7 @@
 
 extern void* memset(void* dst, int val, u32 size);
 extern void fn_800060F0(const char* file, int line, const char* msg, ...); /* OSPanic */
-extern void fn_801A05EC(HSD_JObj* jobj);                                    /* HSD_JObjUnref */
+extern void HSD_JObjUnref(HSD_JObj* jobj);                                    /* HSD_JObjUnref */
 
 extern HSD_Particle* _psListNew(HSD_Particle* parent, u32 linkNo);
 extern void _psListDelete(HSD_Particle* pp, HSD_Particle* parent);
@@ -518,7 +518,7 @@ void psSetPointJObj(s32 no, HSD_JObj* jobj)
             return;
         }
         if (old != NULL) {
-            fn_801A05EC(old);
+            HSD_JObjUnref(old);
         }
         *p = jobj;
         ref_INC(jobj);
@@ -527,7 +527,7 @@ void psSetPointJObj(s32 no, HSD_JObj* jobj)
 
         for (i = 0; i < 8; i++) {
             if (psPointJObj[i] == jobj) {
-                fn_801A05EC(psPointJObj[i]);
+                HSD_JObjUnref(psPointJObj[i]);
                 psPointJObj[i] = NULL;
             }
         }
@@ -547,7 +547,7 @@ void psSetPointJObjNodup(HSD_JObj* jobj, s32 no)
     i = 0;
     do {
         if (psPointJObj[i] == jobj) {
-            fn_801A05EC(psPointJObj[i]);
+            HSD_JObjUnref(psPointJObj[i]);
             psPointJObj[i] = NULL;
         }
         i++;
@@ -558,7 +558,7 @@ void psSetPointJObjNodup(HSD_JObj* jobj, s32 no)
         p += no;
         old = *--p;
         if (old != NULL) {
-            fn_801A05EC(old);
+            HSD_JObjUnref(old);
         }
         *p = jobj;
         ref_INC(jobj);
@@ -571,7 +571,7 @@ void psClearPointJObj(void)
 
     for (i = 0; i < 8; i++) {
         if (psPointJObj[i] != NULL) {
-            fn_801A05EC(psPointJObj[i]);
+            HSD_JObjUnref(psPointJObj[i]);
             psPointJObj[i] = NULL;
         }
     }
@@ -583,7 +583,7 @@ void psDeletePntJObjwithParticle(HSD_Particle* pp)
         u32 no = (pp->kind >> 12) & 7;
 
         if (psPointJObj[no] != NULL) {
-            fn_801A05EC(psPointJObj[no]);
+            HSD_JObjUnref(psPointJObj[no]);
             psPointJObj[no] = NULL;
         }
     }

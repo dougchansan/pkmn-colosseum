@@ -4,7 +4,7 @@
  *        0x8010FFC4 - 0x801101B4.
  *
  * A function-boundary carve of the GScolsys2Human TU. That TU owns the
- * .sdata2 pool 0x8047CF20-0x8047CF48 (fn_8010FAF4 and
+ * .sdata2 pool 0x8047CF20-0x8047CF48 (GScolsys2CheckCollision and
  * GScolsys2HumanCollision, which live in GScolsys2Human_range_8010FAF4.c)
  * and manages the 48 human-collision slots of the current floor. Its last
  * function is fn_80110084, which registers a slot and uses the same

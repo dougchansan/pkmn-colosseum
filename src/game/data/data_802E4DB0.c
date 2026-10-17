@@ -58,20 +58,20 @@ extern void* jumptable_802ED9B8[];
 
 extern u8 __OSDoHotReset[];
 extern u8 _sysvarsProcessData__FP16sysvarsFuncEntryPc[];
-extern u8 fn_80022478[];
+extern u8 itemFieldUseParamItem[];
 extern u8 fn_8002FC58[];
-extern u8 fn_80031B4C[];
+extern u8 gbaTradeRun[];
 #ifndef DATA_802E4DB0_SUFFIX_ONLY
-extern u8 fn_8003258C[];
+extern u8 cardeAwardCoupons[];
 #endif
 extern u8 fn_80034280[];
-extern u8 fn_80034FB4[];
+extern u8 cardeBattleRun[];
 extern u8 fn_8003F464[];
-extern u8 fn_800552D4[];
+extern u8 pcBoxPokemonCommand[];
 extern u8 fn_80059034[];
 extern u8 menuColosseumBattleMain[];
-extern u8 fn_80063060[];
-extern u8 fn_8008FE94[];
+extern u8 menuTaisenAwardCoupons[];
+extern u8 demoScene16[];
 extern u8 lbl_8047BB08[];
 extern u8 lbl_8047BB0C[];
 extern u8 lbl_8047BB10[];
@@ -228,28 +228,28 @@ u8 lbl_802E4EF0[16] = {
 };
 
 void* jumptable_802E4F00[22] = {
-    (void*)((u8*)fn_80022478 + 0x268),
-    (void*)((u8*)fn_80022478 + 0x228),
-    (void*)((u8*)fn_80022478 + 0x238),
-    (void*)((u8*)fn_80022478 + 0x58),
-    (void*)((u8*)fn_80022478 + 0x58),
-    (void*)((u8*)fn_80022478 + 0x58),
-    (void*)((u8*)fn_80022478 + 0x58),
-    (void*)((u8*)fn_80022478 + 0x58),
-    (void*)((u8*)fn_80022478 + 0x268),
-    (void*)((u8*)fn_80022478 + 0x268),
-    (void*)((u8*)fn_80022478 + 0x58),
-    (void*)((u8*)fn_80022478 + 0x58),
-    (void*)((u8*)fn_80022478 + 0x58),
-    (void*)((u8*)fn_80022478 + 0x58),
-    (void*)((u8*)fn_80022478 + 0x58),
-    (void*)((u8*)fn_80022478 + 0x58),
-    (void*)((u8*)fn_80022478 + 0x58),
-    (void*)((u8*)fn_80022478 + 0x58),
-    (void*)((u8*)fn_80022478 + 0x268),
-    (void*)((u8*)fn_80022478 + 0x248),
-    (void*)((u8*)fn_80022478 + 0x248),
-    (void*)((u8*)fn_80022478 + 0x258),
+    (void*)((u8*)itemFieldUseParamItem + 0x268),
+    (void*)((u8*)itemFieldUseParamItem + 0x228),
+    (void*)((u8*)itemFieldUseParamItem + 0x238),
+    (void*)((u8*)itemFieldUseParamItem + 0x58),
+    (void*)((u8*)itemFieldUseParamItem + 0x58),
+    (void*)((u8*)itemFieldUseParamItem + 0x58),
+    (void*)((u8*)itemFieldUseParamItem + 0x58),
+    (void*)((u8*)itemFieldUseParamItem + 0x58),
+    (void*)((u8*)itemFieldUseParamItem + 0x268),
+    (void*)((u8*)itemFieldUseParamItem + 0x268),
+    (void*)((u8*)itemFieldUseParamItem + 0x58),
+    (void*)((u8*)itemFieldUseParamItem + 0x58),
+    (void*)((u8*)itemFieldUseParamItem + 0x58),
+    (void*)((u8*)itemFieldUseParamItem + 0x58),
+    (void*)((u8*)itemFieldUseParamItem + 0x58),
+    (void*)((u8*)itemFieldUseParamItem + 0x58),
+    (void*)((u8*)itemFieldUseParamItem + 0x58),
+    (void*)((u8*)itemFieldUseParamItem + 0x58),
+    (void*)((u8*)itemFieldUseParamItem + 0x268),
+    (void*)((u8*)itemFieldUseParamItem + 0x248),
+    (void*)((u8*)itemFieldUseParamItem + 0x248),
+    (void*)((u8*)itemFieldUseParamItem + 0x258),
 };
 
 u8 lbl_802E4F58[16] = {
@@ -265,26 +265,26 @@ u8 lbl_802E4F68[40] = {
 };
 
 void* jumptable_802E4F90[20] = {
-    (void*)((u8*)fn_80031B4C + 0x898),
-    (void*)((u8*)fn_80031B4C + 0x58),
-    (void*)((u8*)fn_80031B4C + 0xB8),
-    (void*)((u8*)fn_80031B4C + 0xC0),
-    (void*)((u8*)fn_80031B4C + 0x1E4),
-    (void*)((u8*)fn_80031B4C + 0x378),
-    (void*)((u8*)fn_80031B4C + 0x424),
-    (void*)((u8*)fn_80031B4C + 0x42C),
-    (void*)((u8*)fn_80031B4C + 0x434),
-    (void*)((u8*)fn_80031B4C + 0x43C),
-    (void*)((u8*)fn_80031B4C + 0x458),
-    (void*)((u8*)fn_80031B4C + 0x55C),
-    (void*)((u8*)fn_80031B4C + 0x564),
-    (void*)((u8*)fn_80031B4C + 0x570),
-    (void*)((u8*)fn_80031B4C + 0x69C),
-    (void*)((u8*)fn_80031B4C + 0x6A4),
-    (void*)((u8*)fn_80031B4C + 0x6DC),
-    (void*)((u8*)fn_80031B4C + 0x7A8),
-    (void*)((u8*)fn_80031B4C + 0x7B0),
-    (void*)((u8*)fn_80031B4C + 0x7BC),
+    (void*)((u8*)gbaTradeRun + 0x898),
+    (void*)((u8*)gbaTradeRun + 0x58),
+    (void*)((u8*)gbaTradeRun + 0xB8),
+    (void*)((u8*)gbaTradeRun + 0xC0),
+    (void*)((u8*)gbaTradeRun + 0x1E4),
+    (void*)((u8*)gbaTradeRun + 0x378),
+    (void*)((u8*)gbaTradeRun + 0x424),
+    (void*)((u8*)gbaTradeRun + 0x42C),
+    (void*)((u8*)gbaTradeRun + 0x434),
+    (void*)((u8*)gbaTradeRun + 0x43C),
+    (void*)((u8*)gbaTradeRun + 0x458),
+    (void*)((u8*)gbaTradeRun + 0x55C),
+    (void*)((u8*)gbaTradeRun + 0x564),
+    (void*)((u8*)gbaTradeRun + 0x570),
+    (void*)((u8*)gbaTradeRun + 0x69C),
+    (void*)((u8*)gbaTradeRun + 0x6A4),
+    (void*)((u8*)gbaTradeRun + 0x6DC),
+    (void*)((u8*)gbaTradeRun + 0x7A8),
+    (void*)((u8*)gbaTradeRun + 0x7B0),
+    (void*)((u8*)gbaTradeRun + 0x7BC),
 };
 #endif
 
@@ -326,20 +326,20 @@ void* jumptable_802E504C[22] = {
 };
 
 void* jumptable_802E50A4[15] = {
-    (void*)((u8*)fn_80034FB4 + 0xC20),
-    (void*)((u8*)fn_80034FB4 + 0x78),
-    (void*)((u8*)fn_80034FB4 + 0x164),
-    (void*)((u8*)fn_80034FB4 + 0x280),
-    (void*)((u8*)fn_80034FB4 + 0x354),
-    (void*)((u8*)fn_80034FB4 + 0x4D0),
-    (void*)((u8*)fn_80034FB4 + 0x6AC),
-    (void*)((u8*)fn_80034FB4 + 0x854),
-    (void*)((u8*)fn_80034FB4 + 0x8E0),
-    (void*)((u8*)fn_80034FB4 + 0x908),
-    (void*)((u8*)fn_80034FB4 + 0x930),
-    (void*)((u8*)fn_80034FB4 + 0x9C4),
-    (void*)((u8*)fn_80034FB4 + 0x9CC),
-    (void*)((u8*)fn_80034FB4 + 0xBC0),
-    (void*)((u8*)fn_80034FB4 + 0xBC8),
+    (void*)((u8*)cardeBattleRun + 0xC20),
+    (void*)((u8*)cardeBattleRun + 0x78),
+    (void*)((u8*)cardeBattleRun + 0x164),
+    (void*)((u8*)cardeBattleRun + 0x280),
+    (void*)((u8*)cardeBattleRun + 0x354),
+    (void*)((u8*)cardeBattleRun + 0x4D0),
+    (void*)((u8*)cardeBattleRun + 0x6AC),
+    (void*)((u8*)cardeBattleRun + 0x854),
+    (void*)((u8*)cardeBattleRun + 0x8E0),
+    (void*)((u8*)cardeBattleRun + 0x908),
+    (void*)((u8*)cardeBattleRun + 0x930),
+    (void*)((u8*)cardeBattleRun + 0x9C4),
+    (void*)((u8*)cardeBattleRun + 0x9CC),
+    (void*)((u8*)cardeBattleRun + 0xBC0),
+    (void*)((u8*)cardeBattleRun + 0xBC8),
 };
 #endif

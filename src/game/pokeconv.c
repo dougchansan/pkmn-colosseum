@@ -18,7 +18,7 @@ s32 fn_80089048(u8* destination, const u8* source, void* pokemon)
 {
     extern u8 pokemonCheckValid(void*);
     extern u16 pokemonBiosGetPokemonDataId(void*);
-    extern void fn_8008AE18(void*, void*);
+    extern void pokeconvPokemonToGBA(void*, void*);
     extern u8 exribbonGetNo(s32);
     extern void* memset(void*, s32, u32);
     extern const char lbl_8026F568[];
@@ -75,7 +75,7 @@ s32 fn_80089048(u8* destination, const u8* source, void* pokemon)
         output += 4;
     }
     if (pokemon != NULL) {
-        fn_8008AE18(pokemon, output);
+        pokeconvPokemonToGBA(pokemon, output);
         memset(output + 0x64, 0, 0xC);
         ribbons = output + 0x64;
         for (i = 0; i < 11; i++) {
@@ -153,16 +153,16 @@ s32 fn_80089380(u8* destination, const u8* source)
     return 1;
 }
 
-/* fn_800895A4 - 0x800895A4 | size: 0x114 */
-void fn_800895A4(u8* hero, u8* source) {
-    extern void fn_8008BBDC(void*, u8*);
+/* gbaReceiveHero - 0x800895A4 | size: 0x114 */
+void gbaReceiveHero(u8* hero, u8* source) {
+    extern void pokeconvPokemonFromGBA(void*, u8*);
     extern void heroBiosSetHomePlace(u8*, u8);
     extern void heroBiosSetSexDataId(u8*, u8);
     extern void heroBiosSetRnd(u8*, u32);
     extern void heroBiosSetNamePtr(u8*, void*);
     extern void* heroBiosGetPokemonPtr(u8*, u16);
     extern u32 gamedataGetStatus(s32, s32);
-    extern u32 fn_800F9C04(void*, u8*, u32, u32);
+    extern u32 GScharFromGBA(void*, u8*, u32, u32);
     extern void pokemonBiosSetFightTrainerPokemonDataId(void*, u16);
     extern void exribbonSetNo(s32, u8);
     u16 name[8];
@@ -171,7 +171,7 @@ void fn_800895A4(u8* hero, u8* source) {
     void* pokemon;
 
     heroBiosSetHomePlace(hero, (source[0] & 4) ? 2 : 1);
-    fn_800F9C04(name, source + 4, 7, gamedataGetStatus(0, 5));
+    GScharFromGBA(name, source + 4, 7, gamedataGetStatus(0, 5));
     heroBiosSetNamePtr(hero, name);
     heroBiosSetSexDataId(hero, source[0xC]);
     value = *(u32*)(source + 0x10);
@@ -179,7 +179,7 @@ void fn_800895A4(u8* hero, u8* source) {
                          | ((value & 0xFF0000) >> 8) | (value >> 24));
     for (i = 0; i < 6; i++) {
         pokemon = heroBiosGetPokemonPtr(hero, i);
-        fn_8008BBDC(pokemon, source + 0x14 + i * 0x64);
+        pokeconvPokemonFromGBA(pokemon, source + 0x14 + i * 0x64);
         pokemonBiosSetFightTrainerPokemonDataId(pokemon, i);
     }
     for (i = 0; i < 11; i++) {

@@ -2,14 +2,14 @@
  * @file mail_exact_801D1338.c
  * @brief Mail: sort mode and sequence-entry type, 0x801D1338 - 0x801D13E4.
  *
- * fn_801D1338 / fn_801D1364 read and store the u16 at +0x444 of the save
- * data's mailbox scratch; fn_801D139C returns a sequence entry's type
+ * mailBiosGetCounter / fn_801D1364 read and store the u16 at +0x444 of the save
+ * data's mailbox scratch; mailDataBiosGet08 returns a sequence entry's type
  * (0xFFFF when the index is out of range). Carved out of the mail.c range
  * at the function boundaries. Text-only: the entry table and its count
  * (.sdata) belong to auto-generated data units and stay extern.
  *
  * Built with the mail unit's flags, which include -opt nopeephole (see
- * configure.py); fn_801D1338 matches only with it (45% with the peephole
+ * configure.py); mailBiosGetCounter matches only with it (45% with the peephole
  * pass on).
  */
 #include "game/battle/battle_waza_types.h"
@@ -19,7 +19,7 @@ typedef struct MailPartyScratchExt {
     u16 sortMode; /* offset 0x444 */
 } MailPartyScratchExt;
 
-u16 fn_801D1338(void)
+u16 mailBiosGetCounter(void)
 {
     return ((MailPartyScratchExt*) savedataGetStatus(0, 0x0A))->sortMode;
 }
@@ -33,7 +33,7 @@ void* fn_801D1364(u16 mode, s32 idx)
     return party;
 }
 
-u32 fn_801D139C(s32 idx)
+u32 mailDataBiosGet08(s32 idx)
 {
     WazaEntry* entry;
 

@@ -62,25 +62,25 @@ extern void fn_80071318();
 extern s32 fn_8007162C(void);
 extern void menuCB_InitMenu();
 extern void menuCBRule_CheckPokemonErrorAll();
-extern void fn_80076398();
-extern void fn_800767B8();
+extern void menuRuleCheckPokemon();
+extern void menuRuleCheckPartyByRule();
 extern void fn_80076A8C();
 extern void fn_80076F2C();
-extern void fn_800772AC();
+extern void menuRuleCheckPokemonAllModes();
 extern void fn_800774D4();
 extern void fn_80077A5C();
 extern u8 fn_80077BD0(void);
 extern void menuCBRule_CheckValidItem();
 extern void fn_80077C68();
 extern void fn_80077D88();
-extern s32 fn_80077DB8();
+extern s32 savedataBattleGetEntryCount();
 extern void menuCBRule_ConstantRule();
-extern void fn_80088EA8();
+extern void menuSaveLoadStorePosition();
 extern void sprintf();
 extern void fmod();
-extern void fn_800D5648();
-extern void fn_800D5BA0();
-extern void fn_800D61E4();
+extern void gfxSetLineWidth();
+extern void gfxVtxColor1u32();
+extern void gfxVtxPos2s16();
 extern void gfxEnd();
 extern void gfxBegin();
 extern void gfxSetPrimitive();
@@ -92,7 +92,7 @@ extern void _threadSwitch();
 extern void GScharMakeFromSJIS();
 extern u32 GSmsgGetGSchar();
 extern void GSmsgGetRect();
-extern void fn_800FB680();
+extern void GSmsgPrintColor();
 extern void fn_800FE35C();
 extern void fn_800FE38C();
 extern void std098_mapWarpToMenuRoom();
@@ -181,13 +181,13 @@ extern u8 lbl_803B6D68[];
 
 /* ===== Forward declarations ===== */
 struct MenuCBBattle;
-s32 fn_80069C0C(struct MenuCBBattle* p);
-u16 fn_8006A65C(void);
+s32 menuCBBattleSetupFight(struct MenuCBBattle* p);
+u16 menuCBBattleReturnToMenuRoom(void);
 u16 fn_8006A718(s32 idx);
 u8 fn_8006A76C(void);
-void fn_8006A79C(u8* p);
-void fn_8006A7AC(u8* p);
-u8 fn_8006A7BC(u8* p);
+void savedataBattleClearFlagC98B(u8* p);
+void savedataBattleSetFlagC98B(u8* p);
+u8 savedataBattleGetFlagC98B(u8* p);
 u32 fn_8006A7C8(u32 r3);
 u16 fn_8006A7D0(u32 r3);
 u16 fn_8006A7D8(u32 r3);
@@ -196,38 +196,38 @@ u32 fn_8006A7E8(u32 r3);
 void fn_8006A7F0(void* dst, const void* src);
 u32 fn_8006A814(u32 r3);
 void fn_8006A81C(void* r3, u32 r4);
-void fn_8006A824(u32 r3, u32 r4);
-void fn_8006A990(void* destination, const void* heroSource, u16 trainerId);
-void fn_8006AABC(void* destination, u16 trainerId);
+void menuCBBiosInitHero(u32 r3, u32 r4);
+void menuCBBiosCopyHero(void* destination, const void* heroSource, u16 trainerId);
+void menuCBBiosCreateTrainerHero(void* destination, u16 trainerId);
 void menuCBBios_InitTrainer(void* p, u16 value);
 s32 fn_8006AC6C(u32 id);
-u8* fn_8006ACCC(s32 id);
-void fn_8006ADB4(s32 value);
-s32 fn_8006ADEC(void);
-s32 fn_8006AE18(void);
+u8* savedataBattleFindEntryByPlayer(s32 id);
+void savedataBattleSetCouponRun(s32 value);
+s32 savedataBattleGetCouponRun(void);
+s32 savedataBattleGetSavedHeroKind(void);
 u8* fn_8006AEEC(void);
-void fn_8006AF44(u8* base, void* src);
-u8* fn_8006AFC4(u8* p);
-u8* fn_8006AFE4(s32 id);
-u8* fn_8006B09C(s32 index);
-u8* fn_8006B0F8(s32 index);
+void savedataBattleSetSavedHero(u8* base, void* src);
+u8* savedataBattleGetSavedHero(u8* p);
+u8* savedataBattleGetEntryById(s32 id);
+u8* savedataBattleGetEntryPtr(s32 index);
+u8* savedataBattleGetTeamPtr(s32 index);
 s32 menuCBBios_ControlerIDtoPortID(s32 id);
-u32 fn_8006B1C0(s32 i);
+u32 savedataBattleGetEntryId(s32 i);
 void fn_8006B1D4(void);
-u32 fn_8006B1F4(s32 index, s32 slot);
-void fn_8006B2A4(s32 idx, s32 sub);
-void fn_8006B354(s32 index);
-u32 fn_8006B3C8(s32 index);
-void* fn_8006B420(void);
-void fn_8006B4AC(s32 value);
-u8* fn_8006B51C(s32 index);
+u32 savedataBattleGetCourseCleared(s32 index, s32 slot);
+void savedataBattleSetCourseCleared(s32 idx, s32 sub);
+void savedataBattleUnlockCourse(s32 index);
+u32 savedataBattleIsCourseUnlocked(s32 index);
+void* savedataBattleGetRulePtr(void);
+void menuSetRuleType(s32 value);
+u8* savedataBattleGetRuleSlotPtr(s32 index);
 s32 fn_8006B57C(void);
 s32 fn_8006B5A8(void);
-void fn_8006B5D0(MenuMiddleWork* work);
-void fn_8006B6B4(void* saveSection);
-u8 fn_8006B8E8(void);
-void fn_8006B8F0(void);
-void fn_8006B8FC(void);
+void menuColosseumBattleSetup(MenuMiddleWork* work);
+void savedataBattleInit(void* saveSection);
+u8 menuColosseumBattleGetFlag(void);
+void menuColosseumBattleClearFlag(void);
+void menuColosseumBattleSetFlag(void);
 void fn_8006B908(u32 r3);
 void fn_8006B930(void* menu);
 void fn_8006B9B8(void* menu);
@@ -236,14 +236,14 @@ void fn_8006C018(void* menu);
 void fn_8006C0DC(void* menu);
 void fn_8006C164(void* menu);
 void fn_8006C5D8(void* window, void* sprite);
-void fn_8006C7D4(void* arg0, void* item);
-void fn_8006CCC0(void* window, struct MenuMiddleSprite_8006CCC0* sprite);
-void fn_8006D550(void* window, struct MenuMiddleSprite_8006CCC0* sprite);
+void menuTaisenDrawTrainerCard(void* arg0, void* item);
+void menuTaisenDrawPartyList(void* window, struct MenuMiddleSprite_8006CCC0* sprite);
+void menuTaisenDrawPlayerCard(void* window, struct MenuMiddleSprite_8006CCC0* sprite);
 void fn_8006D940(void* menu);
 void fn_8006D98C(void* menu);
 void fn_8006DAE4(void* arg0);
-void fn_8006DC28(void* menu);
-void fn_8006E0CC(void);
+void menuTaisenPartyCheckSeq(void* menu);
+void menuWaitFaceSprites(void);
 u32 fn_8006E128(u8* p);
 void fn_8006E160(u32 r3);
 void fn_8006E188(void);
@@ -257,7 +257,7 @@ typedef struct KeyInfo_8006BB34 {
     u16 flags6;
     u8 padA[2];
 } KeyInfo_8006BB34;
-void fn_8006E798(void* menu);
+void menuBattleModeRefreshRules(void* menu);
 void fn_8006E9A4(void* window, void* sprite);
 void fn_8006EE7C(void* menu);
 void fn_8006EF24(void* menu);
@@ -318,7 +318,7 @@ typedef struct MenuMiddleMenu {
     MenuMiddleItem* windows;  /* 0x20 */
 } MenuMiddleMenu;
 
-s32 fn_80070D84(MenuMiddleMenu* mm, MenuMiddleEntry* list, u32 count);
+s32 menuTaisenSetSequence(MenuMiddleMenu* mm, MenuMiddleEntry* list, u32 count);
 
 /* ===== Function implementations ===== */
 
@@ -438,13 +438,13 @@ static inline u32 menuCB_GetMaxLevel(u8* hero) {
     return maxLevel;
 }
 
-/* RULE-EXCEPTION(user-approved): inline helper wrapping fn_8006B1C0(0), expanded at its three call sites; only with it does MWCC colour p/enc/base as retail does — see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): inline helper wrapping savedataBattleGetEntryId(0), expanded at its three call sites; only with it does MWCC colour p/enc/base as retail does — see docs/RULE_EXCEPTIONS.md */
 static inline u32 menuCB_Get8006B1C0Entry0(void) {
-    return fn_8006B1C0(0);
+    return savedataBattleGetEntryId(0);
 }
 
 /* 0x80069C0C | size: 0xA50 */
-s32 fn_80069C0C(MenuCBBattle* p) {
+s32 menuCBBattleSetupFight(MenuCBBattle* p) {
     extern void* fightEncountDataBiosGetPtr(u16 id);
     extern void fightEncountDataBiosSetBgmSndId(void* enc, s32 id);
     extern void fightEncountDataBiosSetFightFloorDataId(void* enc, s32 id);
@@ -603,7 +603,7 @@ s32 fn_80069C0C(MenuCBBattle* p) {
         break;
     }
 
-    nquant = fn_80077DB8();
+    nquant = savedataBattleGetEntryCount();
     if (nquant == 6) {
         switch (p->m_eBattleType) {
         case 1:
@@ -654,7 +654,7 @@ s32 fn_80069C0C(MenuCBBattle* p) {
         do {
             second = menuCB_GetColosseumBattleTrainerID(p->m_eBattleType, 6, cpu[GSrand() & 7] - 1);
         } while (first == second);
-        fn_8006AABC(&p->trainers[1], first);
+        menuCBBiosCreateTrainerHero(&p->trainers[1], first);
         fn_8006A81C(&p->trainers[1], 0);
         for (i = 0; i < 6; i++) {
             pokemonBiosSetItemDataId(heroBiosGetPokemonPtr(p->trainers[1].hero, i), 0);
@@ -673,15 +673,15 @@ s32 fn_80069C0C(MenuCBBattle* p) {
         for (i = 0; i < 6; i++) {
             pokemonBiosSetItemDataId(heroBiosGetPokemonPtr(hero, i), 0);
         }
-        fn_8006A990(&p->trainers[0], hero, 1);
+        menuCBBiosCopyHero(&p->trainers[0], hero, 1);
         fn_8006A81C(&p->trainers[0], menuCB_Get8006B1C0Entry0());
         fn_8006A7E0(&p->trainers[0], 0);
         break;
     case 0:
     case 1:
-        fn_8006AABC(&p->players[1],
+        menuCBBiosCreateTrainerHero(&p->players[1],
                     menuCB_GetColosseumBattleTrainerID(p->m_eBattleType, p->m_eColosseum, p->m_nBattleCount));
-        fn_8006A7F0(&p->players[0], fn_8006AFC4((u8*)p));
+        fn_8006A7F0(&p->players[0], savedataBattleGetSavedHero((u8*)p));
         if (p->m_eBattleMode == 1) {
             maxLevel = menuCB_GetMaxLevel(p->players[0].rental);
             rental = p->players[1].rental;
@@ -753,12 +753,12 @@ s32 fn_80069C0C(MenuCBBattle* p) {
 
 #if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_EXACT_8006A65C_ONLY)
 /* 0x8006A65C | size: 0xBC */
-u16 fn_8006A65C(void) {
+u16 menuCBBattleReturnToMenuRoom(void) {
     extern void* savedataGetStatus(int, int);
     extern void scriptSoundStop(int);
-    extern void fn_80088EA8(void*);
+    extern void menuSaveLoadStorePosition(void*);
     extern u32 std082_flagGetValue(int);
-    extern s32 fn_80069C0C(struct MenuCBBattle*);
+    extern s32 menuCBBattleSetupFight(struct MenuCBBattle*);
     extern void std098_mapWarpToMenuRoom(int);
     extern void _threadSwitch(void);
     void* menuPtr;
@@ -766,12 +766,12 @@ u16 fn_8006A65C(void) {
 
     menuPtr = (u8*)savedataGetStatus(0, 0xe) + 0xC9A8;
     scriptSoundStop(0x3e8);
-    fn_80088EA8(menuPtr);
+    menuSaveLoadStorePosition(menuPtr);
     x = std082_flagGetValue(0xb59);
     MENU_MIDDLE_U32_0014(savedataGetStatus(0, 0xe))->unk_0014 = x;
     MENU_MIDDLE_U32_000C(savedataGetStatus(0, 0xe))->unk_000C = 6;
     MENU_MIDDLE_U32_0000(savedataGetStatus(0, 0xe))->unk_0000 = 1;
-    fn_80069C0C(savedataGetStatus(0, 0xe));
+    menuCBBattleSetupFight(savedataGetStatus(0, 0xe));
     std098_mapWarpToMenuRoom(0x397);
     _threadSwitch();
     return (u16) * (u32*)((u8*)savedataGetStatus(0, 0xe) + 0x20);
@@ -801,22 +801,22 @@ u16 fn_8006A718(s32 idx) {
 
 /* 0x8006A76C | size: 0x30 */
 u8 fn_8006A76C(void) {
-    extern u8 fn_801D04E8(void);
-    return (u8)((fn_801D04E8() & 0xFF) == 0);
+    extern u8 memcardGetFlag41(void);
+    return (u8)((memcardGetFlag41() & 0xFF) == 0);
 }
 
 /* 0x8006A79C | size: 0x10 */
-void fn_8006A79C(u8* p) {
+void savedataBattleClearFlagC98B(u8* p) {
     p[0xC98B] = 0;
 }
 
 /* 0x8006A7AC | size: 0x10 */
-void fn_8006A7AC(u8* p) {
+void savedataBattleSetFlagC98B(u8* p) {
     p[0xC98B] = 1;
 }
 
 /* 0x8006A7BC | size: 0xC */
-u8 fn_8006A7BC(u8* p) {
+u8 savedataBattleGetFlagC98B(u8* p) {
     return p[0xC98B];
 }
 
@@ -863,8 +863,8 @@ void fn_8006A81C(void* r3, u32 r4) {
 
 #if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_EXACT_8006A824_ONLY)
 /* 0x8006A824 | size: 0x16C */
-void fn_8006A824(u32 r28, u32 r29) {
-    extern void fn_8006A990();
+void menuCBBiosInitHero(u32 r28, u32 r29) {
+    extern void menuCBBiosCopyHero();
     extern u8 heroBiosGetHomePlace(u32);
     extern u8 heroBiosGetSexDataId(u32);
     extern void __assert(u32, u32, u32);
@@ -909,7 +909,7 @@ void fn_8006A824(u32 r28, u32 r29) {
             __assert(r31 + 0x10, 0x299, r31 + 0x60);
             break;
     }
-    fn_8006A990(r28, r29, r30);
+    menuCBBiosCopyHero(r28, r29, r30);
     return;
 }
 #endif
@@ -940,7 +940,7 @@ static inline s32 menuMiddleTrainerKind(u16 id)
 }
 
 /* 0x8006A990 | size: 0x12C */
-void fn_8006A990(void* destination, const void* heroSource, u16 trainerId) {
+void menuCBBiosCopyHero(void* destination, const void* heroSource, u16 trainerId) {
     extern void pokemonAllKaihuku(void* pokemon);
     extern void heroBiosSetHizukiFlag(void* hero, s32 flag);
     extern void* heroBiosGetPokemonPtr(void* hero, u16 index);
@@ -972,7 +972,7 @@ void fn_8006A990(void* destination, const void* heroSource, u16 trainerId) {
 
 
 /* 0x8006AABC | size: 0x16C */
-void fn_8006AABC(void* destination, u16 trainerId) {
+void menuCBBiosCreateTrainerHero(void* destination, u16 trainerId) {
     extern void pokemonAllKaihuku(void* pokemon);
     extern u8 heroCheckValid(void* hero);
     extern void heroBiosSetHizukiFlag(void* hero, s32 flag);
@@ -1061,7 +1061,7 @@ ret0:
 
 #if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_RESIDUAL_8006ACCC_ONLY)
 /* 0x8006ACCC | size: 0xE8 */
-u8* fn_8006ACCC(s32 id) {
+u8* savedataBattleFindEntryByPlayer(s32 id) {
     extern u8* savedataGetStatus(s32 idx, s32 type);
     s32 ruleType;
     u32 offset;
@@ -1102,7 +1102,7 @@ ret0:
 
 #if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_EXACT_8006ADB4_ONLY)
 /* 0x8006ADB4 | size: 0x38 */
-void fn_8006ADB4(s32 value) {
+void savedataBattleSetCouponRun(s32 value) {
     extern u8* savedataGetStatus(s32 idx, s32 type);
 
     *(s32*)(savedataGetStatus(0, 0xe) + 0x59a4) = value;
@@ -1110,7 +1110,7 @@ void fn_8006ADB4(s32 value) {
 
 
 /* 0x8006ADEC | size: 0x2C */
-s32 fn_8006ADEC(void) {
+s32 savedataBattleGetCouponRun(void) {
     extern u8 *savedataGetStatus(s32 idx, s32 type);
     return *(s32*)(savedataGetStatus(0x0, 0xe) + 0x59a4);
 }
@@ -1118,7 +1118,7 @@ s32 fn_8006ADEC(void) {
 #endif
 #if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_RESIDUAL_8006AE18_ONLY)
 /* 0x8006AE18 | size: 0xD4 */
-s32 fn_8006AE18(void) {
+s32 savedataBattleGetSavedHeroKind(void) {
     extern u8* savedataGetStatus(s32 idx, s32 type);
     extern u32 std082_flagGetValue(u32 flag);
     extern void __assert(const char* file, s32 line, const char* expr);
@@ -1177,7 +1177,7 @@ u8* fn_8006AEEC(void) {
 
 #if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_RESIDUAL_8006AF44_ONLY)
 /* 0x8006AF44 | size: 0x80 */
-void fn_8006AF44(u8* base, void* src) {
+void savedataBattleSetSavedHero(u8* base, void* src) {
     if (src != 0) {
         memcpy(base + 0x10000 - 0x4cd8, src, 0x1660);
         MENU_MIDDLE_NEG_U32_B34C(base + 0x10000)->unk_B34C = MENU_MIDDLE_U32_0000(&lbl_80267DD8)->unk_0000;
@@ -1192,7 +1192,7 @@ void fn_8006AF44(u8* base, void* src) {
 
 #if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_EXACT_8006AFC4_ONLY)
 /* 0x8006AFC4 | size: 0x20 */
-u8* fn_8006AFC4(u8* p) {
+u8* savedataBattleGetSavedHero(u8* p) {
     p += 0x10000;
     if (*(u8*)(p - 0x3678) != 0) {
         return p - 0x4cd8;
@@ -1203,7 +1203,7 @@ u8* fn_8006AFC4(u8* p) {
 
 #if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_RESIDUAL_8006AFE4_ONLY)
 /* 0x8006AFE4 | size: 0xB8 */
-u8* fn_8006AFE4(s32 id) {
+u8* savedataBattleGetEntryById(s32 id) {
     extern u8* savedataGetStatus(s32 side, s32 type);
     s32 index;
     s32 i;
@@ -1231,7 +1231,7 @@ found:
 
 #if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_EXACT_8006B09C_ONLY)
 /* 0x8006B09C | size: 0x5C */
-u8* fn_8006B09C(s32 index) {
+u8* savedataBattleGetEntryPtr(s32 index) {
     extern u8* savedataGetStatus(s32 idx, s32 type);
 
     if (index < 0 || index >= 4) {
@@ -1243,7 +1243,7 @@ u8* fn_8006B09C(s32 index) {
 
 
 /* 0x8006B0F8 | size: 0x5C */
-u8* fn_8006B0F8(s32 index) {
+u8* savedataBattleGetTeamPtr(s32 index) {
     extern u8* savedataGetStatus(s32 idx, s32 type);
 
     if (index < 0 || (u32)index >= 4) {
@@ -1271,17 +1271,17 @@ s32 menuCBBios_ControlerIDtoPortID(s32 id) {
 
 #if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_EXACT_8006B1C0_ONLY)
 /* 0x8006B1C0 | size: 0x14 */
-u32 fn_8006B1C0(s32 i) {
+u32 savedataBattleGetEntryId(s32 i) {
     return ((u32*)lbl_80267DD8)[i];
 }
 
 /* 0x8006B1D4 | size: 0x20 */
 void fn_8006B1D4(void) {
-    fn_80077DB8();
+    savedataBattleGetEntryCount();
 }
 
 /* 0x8006B1F4 | size: 0xB0 */
-u32 fn_8006B1F4(s32 index, s32 slot) {
+u32 savedataBattleGetCourseCleared(s32 index, s32 slot) {
     extern u8* savedataGetStatus(s32 idx, s32 type);
     s32 r30;
     s32 r31;
@@ -1325,7 +1325,7 @@ valid_slot:
 
 #if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_RESIDUAL_8006B2A4_ONLY)
 /* 0x8006B2A4 | size: 0xB0 */
-void fn_8006B2A4(s32 idx, s32 sub) {
+void savedataBattleSetCourseCleared(s32 idx, s32 sub) {
     extern u8* savedataGetStatus(s32 side, s32 type);
     u8 flag;
 
@@ -1347,7 +1347,7 @@ void fn_8006B2A4(s32 idx, s32 sub) {
 
 #if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_EXACT_8006B354_ONLY)
 /* 0x8006B354 | size: 0x74 */
-void fn_8006B354(s32 index) {
+void savedataBattleUnlockCourse(s32 index) {
     extern u8* savedataGetStatus(s32 idx, s32 type);
     extern void __assert(char* file, s32 line, char* expr);
     s32 r30;
@@ -1368,7 +1368,7 @@ valid_index:
 
 
 /* 0x8006B3C8 | size: 0x58 */
-u32 fn_8006B3C8(s32 index) {
+u32 savedataBattleIsCourseUnlocked(s32 index) {
     extern u8* savedataGetStatus(s32 idx, s32 type);
     s32 r31;
 
@@ -1388,7 +1388,7 @@ valid_index:
 
 #if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_RESIDUAL_8006B420_ONLY)
 /* 0x8006B420 | size: 0x8C */
-void* fn_8006B420(void) {
+void* savedataBattleGetRulePtr(void) {
     extern u8* savedataGetStatus(s32 idx, s32 type);
     extern void* menuCBRule_ConstantRule(s32 index);
     s32 ruleId;
@@ -1414,7 +1414,7 @@ void* fn_8006B420(void) {
 
 #if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_EXACT_8006B4AC_ONLY)
 /* 0x8006B4AC | size: 0x70 */
-void fn_8006B4AC(s32 value) {
+void menuSetRuleType(s32 value) {
     extern u8* savedataGetStatus(s32 idx, s32 type);
     extern void __assert(const char* file, s32 line, const char* expr);
     s32 valid;
@@ -1431,7 +1431,7 @@ void fn_8006B4AC(s32 value) {
 
 
 /* 0x8006B51C | size: 0x60 */
-u8* fn_8006B51C(s32 index) {
+u8* savedataBattleGetRuleSlotPtr(s32 index) {
     extern u8* savedataGetStatus(s32 idx, s32 type);
 
     if (index < 0 || (u32)index >= 6) {
@@ -1457,8 +1457,8 @@ s32 fn_8006B5A8(void) {
 #endif
 #if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_RESIDUAL_8006B5D0_ONLY)
 /* 0x8006B5D0 | size: 0xE4 */
-void fn_8006B5D0(MenuMiddleWork* work) {
-    extern void fn_8006AABC();
+void menuColosseumBattleSetup(MenuMiddleWork* work) {
+    extern void menuCBBiosCreateTrainerHero();
     extern void* savedataGetStatus(s32 index, s32 kind);
     u16* trainerIds;
     u8* slot;
@@ -1475,7 +1475,7 @@ void fn_8006B5D0(MenuMiddleWork* work) {
             u32 trainerKind;
             u32 controllerId;
 
-            fn_8006AABC(slot + 0x24, *trainerIds);
+            menuCBBiosCreateTrainerHero(slot + 0x24, *trainerIds);
             trainerKind = *trainerKinds;
             controllerId = i & 0xFFFF;
             *(u32*)(slot + 0x48) = trainerKind;
@@ -1509,7 +1509,7 @@ typedef struct MenuRuleCopy {
 } MenuRuleCopy;
 
 /* 0x8006B6B4 | size: 0x234 */
-void fn_8006B6B4(void* saveSection)
+void savedataBattleInit(void* saveSection)
 {
     extern void* menuCBRule_ConstantRule(s32 index);
     u8* status = (u8*)saveSection;
@@ -1547,17 +1547,17 @@ void fn_8006B6B4(void* saveSection)
 
 #if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_EXACT_8006B8E8_ONLY)
 /* 0x8006B8E8 | size: 0x8 */
-u8 fn_8006B8E8(void) {
+u8 menuColosseumBattleGetFlag(void) {
     return lbl_8047A5E0;
 }
 
 /* 0x8006B8F0 | size: 0xC */
-void fn_8006B8F0(void) {
+void menuColosseumBattleClearFlag(void) {
     lbl_8047A5E0 = 0;
 }
 
 /* 0x8006B8FC | size: 0xC */
-void fn_8006B8FC(void) {
+void menuColosseumBattleSetFlag(void) {
     lbl_8047A5E0 = 1;
 }
 
@@ -1566,8 +1566,8 @@ void fn_8006B8FC(void) {
 #pragma push
 #pragma scheduling off
 void fn_8006B908(u32 r3) {
-    extern void fn_80070D84(u32 r3, u32 r4, u32 r5);
-    fn_80070D84(r3, 0x0, 0x0);
+    extern void menuTaisenSetSequence(u32 r3, u32 r4, u32 r5);
+    menuTaisenSetSequence(r3, 0x0, 0x0);
 }
 #pragma pop
 
@@ -2206,10 +2206,10 @@ void fn_8006C5D8(void* window, void* sprite) {
     extern void gfxSetPrimitive(s32 a);
     extern void gfxSetVtxDesc(void* a);
     extern void gfxBegin(s32 a);
-    extern void fn_800D61E4(s16 x, s16 y);
-    extern void fn_800D5BA0(s32 a, u32 color);
+    extern void gfxVtxPos2s16(s16 x, s16 y);
+    extern void gfxVtxColor1u32(s32 a, u32 color);
     extern void gfxEnd(void);
-    extern void fn_800D5648(f32 a);
+    extern void gfxSetLineWidth(f32 a);
     extern void fn_800FE35C(void);
     MenuMiddleColors colors;
     s16 y;
@@ -2223,16 +2223,16 @@ void fn_8006C5D8(void* window, void* sprite) {
     gfxSetPrimitive(6);
     gfxSetVtxDesc(lbl_80314E08);
     gfxBegin(4);
-    fn_800D61E4(0, 0);
-    fn_800D5BA0(0, *(u32*)&colors.c[1]);
-    fn_800D61E4(MENU_MIDDLE_S16_0054(sprite)->unk_0054, 0);
-    fn_800D5BA0(0, *(u32*)&colors.c[1]);
-    fn_800D61E4(MENU_MIDDLE_S16_0054(sprite)->unk_0054, MENU_MIDDLE_S16_0056(sprite)->unk_0056);
-    fn_800D5BA0(0, *(u32*)&colors.c[2]);
-    fn_800D61E4(0, MENU_MIDDLE_S16_0056(sprite)->unk_0056);
-    fn_800D5BA0(0, *(u32*)&colors.c[2]);
+    gfxVtxPos2s16(0, 0);
+    gfxVtxColor1u32(0, *(u32*)&colors.c[1]);
+    gfxVtxPos2s16(MENU_MIDDLE_S16_0054(sprite)->unk_0054, 0);
+    gfxVtxColor1u32(0, *(u32*)&colors.c[1]);
+    gfxVtxPos2s16(MENU_MIDDLE_S16_0054(sprite)->unk_0054, MENU_MIDDLE_S16_0056(sprite)->unk_0056);
+    gfxVtxColor1u32(0, *(u32*)&colors.c[2]);
+    gfxVtxPos2s16(0, MENU_MIDDLE_S16_0056(sprite)->unk_0056);
+    gfxVtxColor1u32(0, *(u32*)&colors.c[2]);
     gfxEnd();
-    fn_800D5648(*(f32*)&lbl_8047C060);
+    gfxSetLineWidth(*(f32*)&lbl_8047C060);
     gfxSetPrimitive(1);
     gfxSetVtxDesc(lbl_80314E08);
     colors.c[0].r = 0xFF;
@@ -2241,10 +2241,10 @@ void fn_8006C5D8(void* window, void* sprite) {
     colors.c[0].a = MENU_MIDDLE_U8_0067(sprite)->unk_0067 * 0x38 / 255;
     for (y = 0; y < MENU_MIDDLE_S16_0056(sprite)->unk_0056; y += 4) {
         gfxBegin(2);
-        fn_800D61E4(0, y);
-        fn_800D5BA0(0, *(u32*)&colors.c[0]);
-        fn_800D61E4(MENU_MIDDLE_S16_0054(sprite)->unk_0054, y);
-        fn_800D5BA0(0, *(u32*)&colors.c[0]);
+        gfxVtxPos2s16(0, y);
+        gfxVtxColor1u32(0, *(u32*)&colors.c[0]);
+        gfxVtxPos2s16(MENU_MIDDLE_S16_0054(sprite)->unk_0054, y);
+        gfxVtxColor1u32(0, *(u32*)&colors.c[0]);
         gfxEnd();
     }
     fn_800FE35C();
@@ -2303,14 +2303,14 @@ static inline s32 fn_8006C7D4_GetKind(MenuMiddleTrainer_8006C7D4* trainer) {
     return 1;
 }
 
-void fn_8006C7D4(void* arg0, void* item) {
+void menuTaisenDrawTrainerCard(void* arg0, void* item) {
     extern MenuMiddleStatus_8006C7D4* savedataGetStatus(s32 idx, s32 type);
     extern u16 heroBiosGetRnd(void* hero);
     extern void* heroBiosGetNamePtr(void* hero);
     extern void msgctrlSetValue(s32 id, void* value);
     extern void* menuSpriteBiosGetPtr(u32 spriteId);
     extern void fn_80071318(void* widget, void* sprite);
-    extern void fn_800FB680(s32 a, s32 b, u32 window, s32 c);
+    extern void GSmsgPrintColor(s32 a, s32 b, u32 window, s32 c);
     extern s32 sprintf(char* buffer, const char* format, ...);
     extern void GScharMakeFromSJIS(u16* dst, const char* src);
     u8 digits[5];
@@ -2480,7 +2480,7 @@ void fn_8006C7D4(void* arg0, void* item) {
     case 1:
         window = *(u32*)((u8*)item + 0x64);
         msgctrlSetValue(0x37, heroBiosGetNamePtr(fn_8006C7D4_GetHero(index)));
-        fn_800FB680(0, 0, window, 0xD0);
+        GSmsgPrintColor(0, 0, window, 0xD0);
         break;
     case 2:
         spriteId = 0;
@@ -2521,7 +2521,7 @@ void fn_8006C7D4(void* arg0, void* item) {
         sprintf(text, (const char*)lbl_802686D0, digits[4], digits[3], digits[2], digits[1], digits[0]);
         GScharMakeFromSJIS(message, text);
         msgctrlSetValue(0x37, message);
-        fn_800FB680(0, 0, window, 0xD0);
+        GSmsgPrintColor(0, 0, window, 0xD0);
         break;
     }
 }
@@ -2553,17 +2553,17 @@ typedef struct MenuMiddleBattleInfo_8006CCC0 {
     s32 wins;           /* 0x18 */
 } MenuMiddleBattleInfo_8006CCC0;
 
-void fn_8006CCC0(void* window, MenuMiddleSprite_8006CCC0* sprite) {
+void menuTaisenDrawPartyList(void* window, MenuMiddleSprite_8006CCC0* sprite) {
     extern void* windowSearchItemID(void* menu, s32 itemId);
     extern u32 GSmsgGetRect(u32 msg);
     extern void msgctrlSetValue(s32 slot, u32 value);
-    extern void fn_800FB680(s16 x, s16 y, u32 color, u32 msg);
+    extern void GSmsgPrintColor(s16 x, s16 y, u32 color, u32 msg);
     extern u16* heroBiosGetNamePtr(void* hero);
     extern u8* heroBiosGetPokemonPtr(void* hero, u16 index);
     extern u8 fn_80077A5C(void);
     extern u8 pokemonCheckValid(u8* pokemon);
     extern u8 pokemonBiosGetTamagoFlag(u8* pokemon);
-    extern void fn_8010B718(void* window, void* sprite, u8* pokemon);
+    extern void menuFaceDrawPokemon(void* window, void* sprite, u8* pokemon);
     extern u16* pokemonBiosGetNicknamePtr(u8* pokemon);
     extern u8 menuSubGetPokemonSexForDisp(u8* pokemon);
     extern u32 pokemonGetStatus(u8* pokemon, s32 a, s32 b, s32 c);
@@ -2839,10 +2839,10 @@ void fn_8006CCC0(void* window, MenuMiddleSprite_8006CCC0* sprite) {
                     msg = 0x3DA2;
                     break;
                 }
-                fn_800FB680(0, 0, sprite->color, msg);
+                GSmsgPrintColor(0, 0, sprite->color, msg);
                 x = (GSmsgGetRect(msg) >> 16) + 0x24;
                 msgctrlSetValue(0x2F, battle->wins);
-                fn_800FB680(x, 0, sprite->color, 0x3DA4);
+                GSmsgPrintColor(x, 0, sprite->color, 0x3DA4);
             }
             break;
         }
@@ -2862,19 +2862,19 @@ void fn_8006CCC0(void* window, MenuMiddleSprite_8006CCC0* sprite) {
             switch (kind) {
             case 1:
                 if (pokemon != NULL) {
-                    fn_8010B718(window, sprite, pokemon);
+                    menuFaceDrawPokemon(window, sprite, pokemon);
                 }
                 break;
             case 2:
                 if (invalid) {
-                    fn_800FB680(0, 0, sprite->color, 0x56C);
+                    GSmsgPrintColor(0, 0, sprite->color, 0x56C);
                 } else if (isEgg) {
-                    fn_800FB680(0, 0, sprite->color, 0x56B);
+                    GSmsgPrintColor(0, 0, sprite->color, 0x56B);
                 } else if (pokemon != NULL) {
                     nickname = pokemonBiosGetNicknamePtr(pokemon);
                     if (nickname != NULL && *nickname != 0) {
                         msgctrlSetValue(0x37, (u32)nickname);
-                        fn_800FB680(0, 0, sprite->color, 0xE7);
+                        GSmsgPrintColor(0, 0, sprite->color, 0xE7);
                     }
                     switch (menuSubGetPokemonSexForDisp(pokemon)) {
                     case 0:
@@ -2889,7 +2889,7 @@ void fn_8006CCC0(void* window, MenuMiddleSprite_8006CCC0* sprite) {
                         break;
                     }
                     if (msg != 0 && ((u8*)&sprite->color)[3] == 0xFF) {
-                        fn_800FB680(0x5C, 0, sprite->color, msg);
+                        GSmsgPrintColor(0x5C, 0, sprite->color, msg);
                     }
                 }
                 break;
@@ -2903,13 +2903,13 @@ void fn_8006CCC0(void* window, MenuMiddleSprite_8006CCC0* sprite) {
                         color |= 0xFF000000;
                         color &= 0xFF0000FF;
                     }
-                    fn_800FB680(0, 0, color, 0x41FA);
+                    GSmsgPrintColor(0, 0, color, 0x41FA);
                 }
                 break;
             case 4:
                 if (name != NULL) {
                     msgctrlSetValue(0x37, (u32)name);
-                    fn_800FB680(0, 0, sprite->color, 0xCF);
+                    GSmsgPrintColor(0, 0, sprite->color, 0xCF);
                 }
                 break;
             }
@@ -2958,7 +2958,7 @@ static inline s32 fn_8006D550_GetTrainerType(MenuMiddleTrainer_8006D550* trainer
     return 1;
 }
 
-void fn_8006D550(void* window, MenuMiddleSprite_8006CCC0* sprite) {
+void menuTaisenDrawPlayerCard(void* window, MenuMiddleSprite_8006CCC0* sprite) {
     typedef struct MenuMiddlePlayer_8006D550 {
         u8 pad0[0x24];
         s32 controllerId;   /* 0x24 */
@@ -2973,7 +2973,7 @@ void fn_8006D550(void* window, MenuMiddleSprite_8006CCC0* sprite) {
     extern u16* heroBiosGetNamePtr(void* hero);
     extern u16 heroBiosGetRnd(void* hero);
     extern void msgctrlSetValue(s32 slot, u32 value);
-    extern void fn_800FB680(s16 x, s16 y, u32 color, u32 msg);
+    extern void GSmsgPrintColor(s16 x, s16 y, u32 color, u32 msg);
     extern int sprintf(char* buf, const char* fmt, ...);
     extern void GScharMakeFromSJIS(u16* dst, char* src);
     extern void* menuSpriteBiosGetPtr(u32 spriteId);
@@ -3063,7 +3063,7 @@ void fn_8006D550(void* window, MenuMiddleSprite_8006CCC0* sprite) {
     case 1:
         color = sprite->color;
         msgctrlSetValue(0x37, (u32)heroBiosGetNamePtr(trainer->hero));
-        fn_800FB680(0, 0, color, 0xCF);
+        GSmsgPrintColor(0, 0, color, 0xCF);
         break;
     case 2:
         color = sprite->color;
@@ -3077,7 +3077,7 @@ void fn_8006D550(void* window, MenuMiddleSprite_8006CCC0* sprite) {
         sprintf(text, (char*)lbl_802686D0, digits[4], digits[3], digits[2], digits[1], digits[0]);
         GScharMakeFromSJIS(message, text);
         msgctrlSetValue(0x37, (u32)message);
-        fn_800FB680(0, 0, color, 0xCF);
+        GSmsgPrintColor(0, 0, color, 0xCF);
         break;
     case 3:
         spriteId = 0;
@@ -3136,7 +3136,7 @@ void fn_8006D98C(void* menu) {
     extern void* windowGetParam(void* menu, s32 index);
     extern void* windowSearchItemID(void* menu, s32 itemId);
     extern void fn_801081F8(void* menu, u16 itemId, u16 messageId);
-    extern void fn_80070D84(void* menu, void* table, s32 count);
+    extern void menuTaisenSetSequence(void* menu, void* table, s32 count);
     MenuDisplayEntry* entry;
     s32 messageIndex;
     void* node;
@@ -3176,7 +3176,7 @@ void fn_8006D98C(void* menu) {
         break;
     }
 
-    fn_80070D84(menu, NULL, 0);
+    menuTaisenSetSequence(menu, NULL, 0);
 }
 
 
@@ -3187,7 +3187,7 @@ void fn_8006DAE4(void* arg0) {
     extern void menuSetPosition(int, int, s16);
     extern u32 GSmsgGetRect(void*);
     extern void winSpriteSetDisp(void*, int);
-    extern void fn_80070D84(void*, void*, int);
+    extern void menuTaisenSetSequence(void*, void*, int);
 
     typedef struct {
         u8 unk0;
@@ -3239,7 +3239,7 @@ void fn_8006DAE4(void* arg0) {
         }
         }
     }
-    fn_80070D84(arg0, lbl_8026860C, 8);
+    menuTaisenSetSequence(arg0, lbl_8026860C, 8);
 }
 
 #endif
@@ -3267,10 +3267,10 @@ static inline void menuMiddleCollectPokemon(void* hero) {
 }
 
 /* 0x8006DC28 | size: 0x4A4 */
-void fn_8006DC28(void* menu) {
-    extern void fn_80070D84(void* menu, s32 a, s32 b);
+void menuTaisenPartyCheckSeq(void* menu) {
+    extern void menuTaisenSetSequence(void* menu, s32 a, s32 b);
     extern void winSpriteSetDisp(void* widget, u8 flag);
-    extern void fn_8010B01C(s32 kind, u32 (*compare)(u8*));
+    extern void menuFaceRequestPokemonFace(s32 kind, u32 (*compare)(u8*));
     extern s32 pokemonBiosGetItemDataId(void* pokemon);
     extern u8 pokemonIsDarkPokemon(void* pokemon);
     extern u8 pokemonCheckValid(void* pokemon);
@@ -3279,9 +3279,9 @@ void fn_8006DC28(void* menu) {
     extern void* windowSearchItemID(void* menu, s32 itemId);
     extern void* menuSpriteBiosGetPtr(s32 spriteId);
     extern void fn_80071318(void* widget, void* sprite);
-    extern u8 fn_80076398(void* pokemon, s32 kind);
+    extern u8 menuRuleCheckPokemon(void* pokemon, s32 kind);
     extern u8 menuCBRule_CheckPokemonErrorAll(void* pokemon);
-    extern u8 fn_800772AC(void* pokemon, void* rule);
+    extern u8 menuRuleCheckPokemonAllModes(void* pokemon, void* rule);
     extern u8 fn_80076A8C(void* hero, void* pokemon, void* rule, s32 kind);
     extern u8 menuCBRule_CheckValidItem(s32 itemId);
     extern u8 fn_80077C68(s32 itemId);
@@ -3308,16 +3308,16 @@ void fn_8006DC28(void* menu) {
         u16 (*itemIds)[4];
 
         menuMiddleCollectPokemon(hero);
-        fn_8010B01C(0, fn_8006E128);
+        menuFaceRequestPokemonFace(0, fn_8006E128);
 
         itemIds = (u16 (*)[4])lbl_8026858C;
         for (i = 0; (u32)i < 12; i++) {
             pokemon = heroBiosGetPokemonPtr(hero, i % 6);
-            empty = (fn_80076398(pokemon, 0) == 0);
+            empty = (menuRuleCheckPokemon(pokemon, 0) == 0);
             error = (empty != 0 || menuCBRule_CheckPokemonErrorAll(pokemon) == 0);
             if (rule != NULL) {
                 if (pokemon != NULL && pokemonCheckValid(pokemon) != 0) {
-                    error |= (fn_800772AC(pokemon, rule) == 0);
+                    error |= (menuRuleCheckPokemonAllModes(pokemon, rule) == 0);
                 }
                 error |= (fn_80076A8C(hero, pokemon, rule, 1) == 0);
                 error |= (fn_80076A8C(hero, pokemon, rule, 2) == 0);
@@ -3405,21 +3405,21 @@ void fn_8006DC28(void* menu) {
     }
     }
 
-    fn_80070D84(menu, 0, 0);
+    menuTaisenSetSequence(menu, 0, 0);
 }
 
 
 /* 0x8006E0CC | size: 0x5C */
-void fn_8006E0CC(void) {
-    extern void fn_8010BBB8(void* ptr);
-    extern s8 fn_8010BCE4(void);
+void menuWaitFaceSprites(void) {
+    extern void pokemonGetFaceSpriteId(void* ptr);
+    extern s8 menuFaceIsReady(void);
     extern void _threadSwitch(void);
     void** list = (void**)&lbl_803B6D68;
     s32 i = 0;
 
     while (list[i] != NULL) {
-        fn_8010BBB8(list[i]);
-        if (fn_8010BCE4() == 0) {
+        pokemonGetFaceSpriteId(list[i]);
+        if (menuFaceIsReady() == 0) {
             _threadSwitch();
         } else {
             i++;
@@ -3446,8 +3446,8 @@ u32 fn_8006E128(u8* p) {
 
 /* 0x8006E160 | size: 0x28 */
 void fn_8006E160(u32 r3) {
-    extern void fn_80070D84(u32 r3, u32 r4, u32 r5);
-    fn_80070D84(r3, 0x0, 0x0);
+    extern void menuTaisenSetSequence(u32 r3, u32 r4, u32 r5);
+    menuTaisenSetSequence(r3, 0x0, 0x0);
 }
 
 /* 0x8006E188 | size: 0x4 */
@@ -3456,7 +3456,7 @@ void fn_8006E188(void) {
 
 /* 0x8006E18C | size: 0xCC */
 void fn_8006E18C(void* menu) {
-    extern void fn_80070D84(void* menu, s32 arg1, s32 arg2);
+    extern void menuTaisenSetSequence(void* menu, s32 arg1, s32 arg2);
     extern void winSpriteSetDisp(void* widget, s32 flag);
     extern void* windowSearchItemID(void* menu, s32 itemId);
     extern s32 fn_80071160(void);
@@ -3499,7 +3499,7 @@ void fn_8006E18C(void* menu) {
         break;
     }
 
-    fn_80070D84(menu, 0, 0);
+    menuTaisenSetSequence(menu, 0, 0);
 }
 
 
@@ -3556,7 +3556,7 @@ static inline void fn_8006E338_Update(void* obj) {
     extern void* menuSpriteBiosGetPtr(s32 spriteId);
     extern void fn_80071318(void* widget, void* sprite);
     extern void winSpriteSetDisp(void* widget, u8 flag);
-    extern void fn_80070D84(void* menu, void* table, s32 count);
+    extern void menuTaisenSetSequence(void* menu, void* table, s32 count);
     extern void __assert(const char* file, s32 line, const char* expr);
     u8* data;
     u8 used[4] = {0, 0, 0, 0};
@@ -3657,7 +3657,7 @@ static inline void fn_8006E338_Update(void* obj) {
         winSpriteSetDisp(windowSearchItemID(obj, ((u16(*)[14])(data + 0x628))[0][6]), 1);
     }
 
-    fn_80070D84(obj, NULL, 0);
+    menuTaisenSetSequence(obj, NULL, 0);
     MENU_MIDDLE_U8_0098(obj)->unk_0098 = allReady;
 }
 
@@ -3667,12 +3667,12 @@ void fn_8006E338(void* obj) {
 
 
 /* 0x8006E798 | size: 0x20C */
-void fn_8006E798(void* menu) {
+void menuBattleModeRefreshRules(void* menu) {
     extern u8* savedataGetStatus(s32 index, s32 type);
     extern void* windowSearchItemID(void* menu, s32 itemId);
     extern void winSetSequence(void* sprite, u16 sequence);
     extern void winSpriteSetDisp(void* sprite, u8 visible);
-    extern void fn_80070D84(void* menu, void* table, s32 count);
+    extern void menuTaisenSetSequence(void* menu, void* table, s32 count);
     u8* data = lbl_80267EA8;
     void* sprite;
     void* node;
@@ -3724,7 +3724,7 @@ void fn_8006E798(void* menu) {
     MENU_MIDDLE_U32_004C(sprite)->unk_004C =
         *(u32*)(data + 0x61C +
                 *(u32*)(savedataGetStatus(0, 0xE) + 4) * 4);
-    fn_80070D84(menu, NULL, 0);
+    menuTaisenSetSequence(menu, NULL, 0);
 }
 
 
@@ -3746,7 +3746,7 @@ static inline void fn_8006E9A4_ShowNumber(u32 window, s32 value) {
     extern void sprintf(char* buffer, const char* format, ...);
     extern void GScharMakeFromSJIS(u16* dst, const char* src);
     extern void msgctrlSetValue(s32 id, u32 value);
-    extern void fn_800FB680(s32 x, s32 y, u32 window, s32 message);
+    extern void GSmsgPrintColor(s32 x, s32 y, u32 window, s32 message);
     char text[0x80];
     u16 message[0x80];
 
@@ -3757,13 +3757,13 @@ static inline void fn_8006E9A4_ShowNumber(u32 window, s32 value) {
     }
     GScharMakeFromSJIS(message, text);
     msgctrlSetValue(0x37, (u32)message);
-    fn_800FB680(10, 0, window, 0xCF);
+    GSmsgPrintColor(10, 0, window, 0xCF);
 }
 
 void fn_8006E9A4(void* window, void* sprite) {
     extern u8 winSpriteGetDisp(void* sprite);
     extern void msgctrlSetValue(s32 id, u32 value);
-    extern void fn_800FB680(s32 x, s32 y, u32 window, s32 message);
+    extern void GSmsgPrintColor(s32 x, s32 y, u32 window, s32 message);
     MenuMiddleRecord_8006E9A4* record;
     u32 value;
     u32 messageWindow;
@@ -3832,7 +3832,7 @@ void fn_8006E9A4(void* window, void* sprite) {
         return;
     case 0x966:
         messageWindow = *(u32*)((u8*)sprite + 0x64);
-        fn_8006E9A4_ShowNumber(messageWindow, (u8)fn_8006B3C8(3) ? 50 : -1);
+        fn_8006E9A4_ShowNumber(messageWindow, (u8)savedataBattleIsCourseUnlocked(3) ? 50 : -1);
         return;
     case 0x965:
         messageWindow = *(u32*)((u8*)sprite + 0x64);
@@ -3840,11 +3840,11 @@ void fn_8006E9A4(void* window, void* sprite) {
         return;
     case 0x964:
         messageWindow = *(u32*)((u8*)sprite + 0x64);
-        fn_8006E9A4_ShowNumber(messageWindow, (u8)fn_8006B3C8(5) ? 100 : -1);
+        fn_8006E9A4_ShowNumber(messageWindow, (u8)savedataBattleIsCourseUnlocked(5) ? 100 : -1);
         return;
     }
     msgctrlSetValue(0x34, value % 10);
-    fn_800FB680(0, 0, *(u32*)((u8*)sprite + 0x64), 0xC9);
+    GSmsgPrintColor(0, 0, *(u32*)((u8*)sprite + 0x64), 0xC9);
 }
 #endif
 
@@ -4181,7 +4181,7 @@ void fn_8006F284(void* menu) {
     winSpriteSetDisp(widget, locked != 0 && val16Valid != 0 &&
                                  menuGetCursorItemID(MENU_MIDDLE_U32_0004(menu)->unk_0004) == 0x9FB);
 
-    fn_80070D84(menu, (MenuMiddleEntry*)(data + 0x56C), 2);
+    menuTaisenSetSequence(menu, (MenuMiddleEntry*)(data + 0x56C), 2);
 }
 #pragma peephole reset
 
@@ -4356,7 +4356,7 @@ void fn_8006F720(void* menu) {
         break;
     }
 
-    fn_80070D84(menu, (MenuMiddleEntry*)data->menuEntries, 2);
+    menuTaisenSetSequence(menu, (MenuMiddleEntry*)data->menuEntries, 2);
 }
 
 #endif
@@ -4372,7 +4372,7 @@ void fn_8006FBFC(void* menu) {
     } MenuIconEntry;
     extern void* windowSearchItemID(void* menu, s32 itemId);
     extern u8* windowGetKeyInfo(void);
-    extern void fn_80070D84(void* menu, void* table, s32 count);
+    extern void menuTaisenSetSequence(void* menu, void* table, s32 count);
     MenuIconEntry* entry;
     void* widget;
     u32 i;
@@ -4399,7 +4399,7 @@ void fn_8006FBFC(void* menu) {
         break;
     }
 
-    fn_80070D84(menu, lbl_802681B4, 0x10);
+    menuTaisenSetSequence(menu, lbl_802681B4, 0x10);
 }
 #endif
 
@@ -4409,8 +4409,8 @@ void fn_8006FBFC(void* menu) {
 #pragma push
 #pragma peephole off
 void fn_8006FCF8(u32 r3) {
-    extern void fn_80070D84(u32 r3, u32 r4, u32 r5);
-    fn_80070D84(r3, (u32)lbl_80268184, 0x6);
+    extern void menuTaisenSetSequence(u32 r3, u32 r4, u32 r5);
+    menuTaisenSetSequence(r3, (u32)lbl_80268184, 0x6);
 }
 #pragma pop
 
@@ -4419,8 +4419,8 @@ void fn_8006FCF8(u32 r3) {
 #pragma push
 #pragma scheduling off
 void fn_8006FD24(u32 r3) {
-    extern void fn_80070D84(u32 r3, u32 r4, u32 r5);
-    fn_80070D84(r3, 0x0, 0x0);
+    extern void menuTaisenSetSequence(u32 r3, u32 r4, u32 r5);
+    menuTaisenSetSequence(r3, 0x0, 0x0);
 }
 #pragma pop
 
@@ -4429,8 +4429,8 @@ void fn_8006FD24(u32 r3) {
 #pragma push
 #pragma scheduling off
 void fn_8006FD4C(u32 r3) {
-    extern void fn_80070D84(u32 r3, u32 r4, u32 r5);
-    fn_80070D84(r3, 0x0, 0x0);
+    extern void menuTaisenSetSequence(u32 r3, u32 r4, u32 r5);
+    menuTaisenSetSequence(r3, 0x0, 0x0);
 }
 #pragma pop
 
@@ -4439,8 +4439,8 @@ void fn_8006FD4C(u32 r3) {
 #pragma push
 #pragma scheduling off
 void fn_8006FD74(u32 r3) {
-    extern void fn_80070D84(u32 r3, u32 r4, u32 r5);
-    fn_80070D84(r3, 0x0, 0x0);
+    extern void menuTaisenSetSequence(u32 r3, u32 r4, u32 r5);
+    menuTaisenSetSequence(r3, 0x0, 0x0);
 }
 #pragma pop
 
@@ -4449,8 +4449,8 @@ void fn_8006FD74(u32 r3) {
 #pragma push
 #pragma scheduling off
 void fn_8006FD9C(u32 r3) {
-    extern void fn_80070D84(u32 r3, u32 r4, u32 r5);
-    fn_80070D84(r3, 0x0, 0x0);
+    extern void menuTaisenSetSequence(u32 r3, u32 r4, u32 r5);
+    menuTaisenSetSequence(r3, 0x0, 0x0);
 }
 #pragma pop
 
@@ -4459,8 +4459,8 @@ void fn_8006FD9C(u32 r3) {
 #pragma push
 #pragma scheduling off
 void fn_8006FDC4(u32 r3) {
-    extern void fn_80070D84(u32 r3, u32 r4, u32 r5);
-    fn_80070D84(r3, 0x0, 0x0);
+    extern void menuTaisenSetSequence(u32 r3, u32 r4, u32 r5);
+    menuTaisenSetSequence(r3, 0x0, 0x0);
 }
 #pragma pop
 
@@ -4469,8 +4469,8 @@ void fn_8006FDC4(u32 r3) {
 #pragma push
 #pragma scheduling off
 void fn_8006FDEC(u32 r3) {
-    extern void fn_80070D84(u32 r3, u32 r4, u32 r5);
-    fn_80070D84(r3, 0x0, 0x0);
+    extern void menuTaisenSetSequence(u32 r3, u32 r4, u32 r5);
+    menuTaisenSetSequence(r3, 0x0, 0x0);
 }
 #pragma pop
 
@@ -4479,8 +4479,8 @@ void fn_8006FDEC(u32 r3) {
 #pragma push
 #pragma scheduling off
 void fn_8006FE14(u32 r3) {
-    extern void fn_80070D84(u32 r3, u32 r4, u32 r5);
-    fn_80070D84(r3, 0x0, 0x0);
+    extern void menuTaisenSetSequence(u32 r3, u32 r4, u32 r5);
+    menuTaisenSetSequence(r3, 0x0, 0x0);
 }
 #pragma pop
 
@@ -4489,8 +4489,8 @@ void fn_8006FE14(u32 r3) {
 #pragma push
 #pragma scheduling off
 void fn_8006FE3C(u32 r3) {
-    extern void fn_80070D84(u32 r3, u32 r4, u32 r5);
-    fn_80070D84(r3, 0x0, 0x0);
+    extern void menuTaisenSetSequence(u32 r3, u32 r4, u32 r5);
+    menuTaisenSetSequence(r3, 0x0, 0x0);
 }
 #pragma pop
 
@@ -4498,7 +4498,7 @@ void fn_8006FE3C(u32 r3) {
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma peephole off
 void fn_8006FE64(void* menu) {
-    extern u32 fn_8006B3C8(s32 index);
+    extern u32 savedataBattleIsCourseUnlocked(s32 index);
     extern void soundStartSE(s32 sndId);
     KeyInfo_8006BB34* keyInfo;
     s32 state;
@@ -4513,7 +4513,7 @@ void fn_8006FE64(void* menu) {
         keyInfo = windowGetKeyInfo();
         flag = keyInfo->flags4 & 0x10;
         if (flag != 0) {
-            value = fn_8006B3C8(stateIndex);
+            value = savedataBattleIsCourseUnlocked(stateIndex);
             if ((u8)value == 0) {
                 soundStartSE(0x26);
                 return;
@@ -4551,9 +4551,9 @@ void fn_8006FEE4(void* menu) {
     extern void* menuSpriteBiosGetPtr(u32 spriteId);
     extern void fn_80071318(void* sprite, void* data);
     extern void winSpriteSetDisp(void* sprite, u8 visible);
-    extern u8 fn_8006B1F4(s32 index, s32 slot);
+    extern u8 savedataBattleGetCourseCleared(s32 index, s32 slot);
     extern void winSetSequence(void* seq, u16 seqId);
-    extern void fn_80070D84(void* menu, void* table, s32 count);
+    extern void menuTaisenSetSequence(void* menu, void* table, s32 count);
     extern double fmod(double x, double y);
     EntryTable* table;
     SpriteEntry* entry;
@@ -4568,7 +4568,7 @@ void fn_8006FEE4(void* menu) {
     if (*(s8*)((u8*)menu + 0x95) < 6) {
         *(s32*)&lbl_8047A5FC = *(s8*)((u8*)menu + 0x95);
     }
-    ready = fn_8006B3C8(*(s32*)&lbl_8047A5FC);
+    ready = savedataBattleIsCourseUnlocked(*(s32*)&lbl_8047A5FC);
     window = windowSearchItemID(menu, 0x957);
     if (window != NULL) {
         void* sprite = menuSpriteBiosGetPtr(
@@ -4580,7 +4580,7 @@ void fn_8006FEE4(void* menu) {
     for (i = 0; i < 6; entry++, i++) {
         window = windowSearchItemID(menu, entry->itemId);
         MENU_MIDDLE_U32_004C(window)->unk_004C =
-            (u8)fn_8006B3C8(i) != 0 ? entry->spriteId : 0x3DAA;
+            (u8)savedataBattleIsCourseUnlocked(i) != 0 ? entry->spriteId : 0x3DAA;
     }
     for (entry = &table->sprites[i]; i < 10U; entry++, i++) {
         window = windowSearchItemID(menu, entry->itemId);
@@ -4618,11 +4618,11 @@ void fn_8006FEE4(void* menu) {
         break;
     }
 
-    fn_80070D84(menu, table->buttons, 11);
+    menuTaisenSetSequence(menu, table->buttons, 11);
 
     ids = table->rowIds[0];
     for (i = 0; i < 2U; ids += 3, i++) {
-        u8 shown = fn_8006B1F4(*(s32*)&lbl_8047A5FC, i == 0 ? 0 : 1);
+        u8 shown = savedataBattleGetCourseCleared(*(s32*)&lbl_8047A5FC, i == 0 ? 0 : 1);
 
         winSpriteSetDisp(windowSearchItemID(menu, ids[0]), shown);
         winSpriteSetDisp(windowSearchItemID(menu, ids[1]), shown);
@@ -4656,8 +4656,8 @@ void fn_8006FEE4(void* menu) {
 #pragma push
 #pragma scheduling off
 void fn_80070274(u32 r3) {
-    extern void fn_80070D84(u32 r3, u32 r4, u32 r5);
-    fn_80070D84(r3, 0x0, 0x0);
+    extern void menuTaisenSetSequence(u32 r3, u32 r4, u32 r5);
+    menuTaisenSetSequence(r3, 0x0, 0x0);
 }
 #pragma pop
 
@@ -4666,8 +4666,8 @@ void fn_80070274(u32 r3) {
 #pragma push
 #pragma peephole off
 void fn_8007029C(u32 r3) {
-    extern void fn_80070D84(u32 r3, u32 r4, u32 r5);
-    fn_80070D84(r3, (u32)lbl_80267FE8, 0x11);
+    extern void menuTaisenSetSequence(u32 r3, u32 r4, u32 r5);
+    menuTaisenSetSequence(r3, (u32)lbl_80267FE8, 0x11);
 }
 #pragma pop
 
@@ -4676,8 +4676,8 @@ void fn_8007029C(u32 r3) {
 #pragma push
 #pragma scheduling off
 void fn_800702C8(u32 r3) {
-    extern void fn_80070D84(u32 r3, u32 r4, u32 r5);
-    fn_80070D84(r3, 0x0, 0x0);
+    extern void menuTaisenSetSequence(u32 r3, u32 r4, u32 r5);
+    menuTaisenSetSequence(r3, 0x0, 0x0);
 }
 #pragma pop
 
@@ -4686,8 +4686,8 @@ void fn_800702C8(u32 r3) {
 #pragma push
 #pragma scheduling off
 void fn_800702F0(u32 r3) {
-    extern void fn_80070D84(u32 r3, u32 r4, u32 r5);
-    fn_80070D84(r3, 0x0, 0x0);
+    extern void menuTaisenSetSequence(u32 r3, u32 r4, u32 r5);
+    menuTaisenSetSequence(r3, 0x0, 0x0);
 }
 #pragma pop
 #endif
@@ -4748,7 +4748,7 @@ void fn_80070428(void* arg0, void* menu) {
     if (message != 0) {
         value = GSmsgGetGSchar(message);
         msgctrlSetValue(0x37, value);
-        fn_800FB680(0, 0, MENU_MIDDLE_U32_0064(context)->unk_0064, 0xE7);
+        GSmsgPrintColor(0, 0, MENU_MIDDLE_U32_0064(context)->unk_0064, 0xE7);
         MENU_MIDDLE_U32_004C(context)->unk_004C = 0;
     }
 }
@@ -4767,7 +4767,7 @@ void fn_800704A8(void) {
 #if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_RESIDUAL_800704AC_ONLY)
 /* 0x800704AC | size: 0x218 */
 void fn_800704AC(void* menu, void* sprite) {
-    extern u8 fn_8006B3C8(s32);
+    extern u8 savedataBattleIsCourseUnlocked(s32);
     extern void winSpriteSetDisp(void*, s32);
     u8* menuData = lbl_80267EA8;
     u32 i;
@@ -4792,7 +4792,7 @@ void fn_800704AC(void* menu, void* sprite) {
             break;
         case 0xAE:
             for (i = 0; i < 6; i++) {
-                ((u32*)lbl_802EDE58)[i] = fn_8006B3C8(i) ? ((u32*)(menuData + 0x78))[i] : 0x43FE;
+                ((u32*)lbl_802EDE58)[i] = savedataBattleIsCourseUnlocked(i) ? ((u32*)(menuData + 0x78))[i] : 0x43FE;
             }
             *(u8**)&lbl_8047A5F8 = lbl_802EDE58;
             break;
@@ -4852,13 +4852,13 @@ void fn_800704AC(void* menu, void* sprite) {
 
 /* 0x800706C4 | size: 0x3D8 */
 void fn_800706C4(void* menu, void* sprite) {
-    extern void* fn_8006B420(void);
-    extern u8* fn_8006AFC4(u8* p);
+    extern void* savedataBattleGetRulePtr(void);
+    extern u8* savedataBattleGetSavedHero(u8* p);
     extern void winSpriteSetDisp(void* sprite, u8 visible);
     extern u8* savedataGetStatus(s32 idx, s32 type);
     extern void* windowSearchItemID(void* menu, s32 itemId);
     extern u32 GSmsgGetRect(u32 messageId);
-    extern u8 fn_800767B8(void* heroCopy, void* data);
+    extern u8 menuRuleCheckPartyByRule(void* heroCopy, void* data);
     s16 width;
 
     switch ((s8)MENU_MIDDLE_U8_0001(menu)->unk_0001) {
@@ -4918,8 +4918,8 @@ void fn_800706C4(void* menu, void* sprite) {
         case 0xBC:
             break;
         case 0xB1:
-            if (fn_8006AFC4(savedataGetStatus(0, 0xE)) != NULL) {
-                if (fn_800767B8(fn_8006AFC4(savedataGetStatus(0, 0xE)) + 0xB44, fn_8006B420()) != 0) {
+            if (savedataBattleGetSavedHero(savedataGetStatus(0, 0xE)) != NULL) {
+                if (menuRuleCheckPartyByRule(savedataBattleGetSavedHero(savedataGetStatus(0, 0xE)) + 0xB44, savedataBattleGetRulePtr()) != 0) {
                     lbl_8047A5F4 = 0x3BFC;
                     lbl_8047A5F0 = 2;
                     break;
@@ -5112,7 +5112,7 @@ void fn_80070A9C(void* menu, void* sprite) {
 
 #if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_RESIDUAL_80070D84_ONLY)
 /* 0x80070D84 | size: 0x318 */
-s32 fn_80070D84(MenuMiddleMenu* mm, MenuMiddleEntry* list, u32 count)
+s32 menuTaisenSetSequence(MenuMiddleMenu* mm, MenuMiddleEntry* list, u32 count)
 {
     extern void fn_801081F8(MenuMiddleMenu* menu, u16 id, u16 sequence);
     extern void winSetSequence(u32* window, u16 sequence);

@@ -4,7 +4,7 @@
 
 extern GSRenderCamera* lbl_8047AA74;
 
-void fn_800D2738(GSRenderCamera* camera)
+void GScameraFree(GSRenderCamera* camera)
 {
     void* cobj;
 

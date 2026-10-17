@@ -31,10 +31,10 @@ extern void winMsgOpenWithSE(s32 kind, u32 message, s32 arg2, s32 arg3,
                              u8 format);
 extern void winMsgClose(s32 mode);
 extern u32 _toolentryAlloc__FUl(u32 size);
-extern void* fn_800E27B0(u32 handle);
+extern void* GSmemLock(u32 handle);
 extern void fn_800E24B0(u32 handle);
-extern void fn_800E209C(u32 handle);
-extern void fn_800FF660(void);
+extern void GSmemFree(u32 handle);
+extern void floorBattleEndTerminateScripts(void);
 extern void floorSetFadeScript(s32 mode, u32 value);
 
 static inline s32 shopQueryMenu(s32 menu)
@@ -126,7 +126,7 @@ void std026_unkMenuSequence26(void)
 
         done = 0;
         memory = shopMemoryAlloc();
-        lbl_8047A3DC = (u32)fn_800E27B0(memory);
+        lbl_8047A3DC = (u32)GSmemLock(memory);
         message = fn_80029FAC(&text0, location, 0, -1);
         winMsgOpenWithSE(2, message, 1, 0, text0);
         while ((menu_result = shopNormalizeMenu83(shopQueryMenu(0x83))) != 3) {
@@ -158,13 +158,13 @@ void std026_unkMenuSequence26(void)
             winMsgClose(1);
         }
         fn_800E24B0(memory);
-        fn_800E209C(memory);
+        GSmemFree(memory);
         break;
     }
     }
 
     if ((s32)*(&lbl_8047A3FC + 1) != 0) {
-        fn_800FF660();
+        floorBattleEndTerminateScripts();
         floorSetFadeScript(0, 0);
     }
 }

@@ -1,6 +1,6 @@
 /**
  * @file fight_range_exact_8022808C.c
- * @brief Exact island 0x8022808C - 0x802282D8 (fn_8022808C), moved out of
+ * @brief Exact island 0x8022808C - 0x802282D8 (wsCmd03), moved out of
  *        fight_range_80211A00.c.
  */
 #include "dolphin/types.h"
@@ -9,9 +9,9 @@ extern u8* lbl_8047B610;
 extern u8 lbl_80478D78[8];
 extern u32 lbl_8047B618;
 extern void* lbl_8047B62C;
-extern void fn_80211B94(void*, void*, u8);
+extern void wsRunScript(void*, void*, u8);
 
-void fn_8022808C(void)
+void wsCmd03(void)
 
 {
     extern u32 wazaGetStatus();
@@ -19,8 +19,8 @@ void fn_8022808C(void)
     extern u8 fightFloorCheckFightOutPokemonPtrAryPokemonTokuseiDataId();
     extern void fightOutPokemonSetHensinPokemonStatusId();
     extern u8 fightOutPokemonIsUseHensinBuff();
-    extern u32 fn_80201890();
-    extern u8 fn_802026E4();
+    extern u32 fightOutPokemonGetPokemonJoutai08();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern u32 fightOutPokemonGetPokemonPtr();
     extern u32 fightOutPokemonGetUseWazaDataId();
     extern u32 fightOutPokemonGetTokuseiDataId();
@@ -79,9 +79,9 @@ void fn_8022808C(void)
             }
             pokemonSetStatus((void*)pokemon, 0, 0x80, (s8)statusSlot, pp);
 
-            if (fn_802026E4(attacker, 0x10) == 0 &&
-                fn_802026E4(attacker, 0x31) == 1) {
-                usedFlags = fn_80201890(attacker, 0x31);
+            if (fightOutPokemonIsPokemonJoutaiDataId(attacker, 0x10) == 0 &&
+                fightOutPokemonIsPokemonJoutaiDataId(attacker, 0x31) == 1) {
+                usedFlags = fightOutPokemonGetPokemonJoutai08(attacker, 0x31);
                 if ((usedFlags & (1 << (u8)statusSlot)) == 0 &&
                     fightOutPokemonIsUseHensinBuff(attacker) == 1) {
                     fightOutPokemonSetHensinPokemonStatusId(

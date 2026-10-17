@@ -1,6 +1,6 @@
 /**
  * @file GScolsys2Human_range_8010FAF4.c
- * @brief GScolsys2Human (head): fn_8010FAF4 (XD checkCollision) and
+ * @brief GScolsys2Human (head): GScolsys2CheckCollision (XD checkCollision) and
  *        GScolsys2HumanCollision, .text 0x8010FAF4-0x8010FFC4 with the
  *        TU's .sdata2 pool 0x8047CF20-0x8047CF48.
  *
@@ -135,7 +135,7 @@ static inline s32 checkCollisionHeadToHead(GSColFloorEvent* self,
 }
 
 /* 0x8010FAF4 | 0x304: XD checkCollision__FP15GSCOLSYS2_HUMANiP5GSvecP5GSvecP5GSvec. */
-s32 fn_8010FAF4(GSColFloorEvent* self, s32 excludedIndex,
+s32 GScolsys2CheckCollision(GSColFloorEvent* self, s32 excludedIndex,
                 GScolsys2Vec3* start, GScolsys2Vec3* end,
                 GScolsys2Vec3* result)
 {
@@ -246,7 +246,7 @@ s32 GScolsys2HumanCollision(s32 index, GScolsys2Vec3* start,
         PSVECAdd(&segmentStart, start, &segmentStart);
         PSVECScale(&delta, &segmentEnd, next);
         PSVECAdd(&segmentEnd, start, &segmentEnd);
-        if (fn_8010FAF4(event, index, &segmentStart, &segmentEnd,
+        if (GScolsys2CheckCollision(event, index, &segmentStart, &segmentEnd,
                         result)) {
             return 6;
         }

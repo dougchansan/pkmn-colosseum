@@ -8,7 +8,7 @@
  * 480.0f, 685000.0f, 450.0f, 452.0f, the unsigned int-to-float bias,
  * 2740000.0f, 454.0f, 456.0f, 448.0f, 458.0f and the signed bias), which
  * the unit owns. The constants are literals: as extern variables MWCC
- * cannot schedule their loads the way retail does. fn_800D5CB8 takes u8
+ * cannot schedule their loads the way retail does. gfxVtxColor4u8 takes u8
  * colour components (it is the GSgfx 4u8 colour setter); with that
  * prototype and masked u8 components, MWCC extracts the colour into
  * scratch registers before fn_800D67BC(2) and copies them to their
@@ -23,7 +23,7 @@ extern u32 lbl_8047ACE8;
 extern u8 lbl_80478B28;
 
 extern u32 OSGetTick(void);
-extern void fn_800B8C58(s32);
+extern void GXSetDrawSync(s32);
 extern void fn_800BE30C(void);
 extern void fn_800D9ED8(s32);
 extern void gfxSetFlags(s32);
@@ -37,7 +37,7 @@ extern void gfxSetPrimitive(s32);
 extern void gfxSetVtxDesc(s32);
 extern void gfxBegin(s32);
 extern void gfxVtxPos(f32, f32, f32);
-extern void fn_800D5CB8(u32, u8, u8, u8, u8);
+extern void gfxVtxColor4u8(u32, u8, u8, u8, u8);
 extern void gfxEnd(void);
 
 void fn_80101B90(u32 color) {
@@ -66,11 +66,11 @@ void fn_80101B90(u32 color) {
         gfxVtxPos(640.0f * (((f32)(lbl_8047ACEC - lbl_8047ACE8) / (f32)lbl_80478B28) /
                                     685000.0f),
                     450.0f, 0.0f);
-        fn_800D5CB8(0, red, green, blue, 0xFF);
+        gfxVtxColor4u8(0, red, green, blue, 0xFF);
         gfxVtxPos(640.0f * (((f32)(tick - lbl_8047ACE8) / (f32)lbl_80478B28) /
                                     685000.0f),
                     452.0f, 0.0f);
-        fn_800D5CB8(0, red, green, blue, 0xFF);
+        gfxVtxColor4u8(0, red, green, blue, 0xFF);
         gfxEnd();
         lbl_8047ACEC = tick;
     }
@@ -78,7 +78,7 @@ void fn_80101B90(u32 color) {
 
 void fn_80101D5C(void) {
     if ((s32)lbl_8047ACF0 != 0) {
-        fn_800B8C58(3);
+        GXSetDrawSync(3);
     }
 }
 
@@ -106,9 +106,9 @@ void fn_80101D8C(void)
     gfxSetVtxDesc(0);
     gfxBegin(2);
     gfxVtxPos(0.0f, 454.0f, 0.0f);
-    fn_800D5CB8(0, 0, 0xFF, 0, 0xFF);
+    gfxVtxColor4u8(0, 0, 0xFF, 0, 0xFF);
     gfxVtxPos(x, 456.0f, 0.0f);
-    fn_800D5CB8(0, 0, 0xFF, 0, 0xFF);
+    gfxVtxColor4u8(0, 0, 0xFF, 0, 0xFF);
     gfxEnd();
 
     gfxSetPrimitive(1);
@@ -119,9 +119,9 @@ void fn_80101D8C(void)
         x = (f32)(offset / lbl_80478B28);
         gfxBegin(2);
         gfxVtxPos(x, 448.0f, 0.0f);
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
         gfxVtxPos(x, 458.0f, 0.0f);
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
         gfxEnd();
         offset += 0x280;
     }

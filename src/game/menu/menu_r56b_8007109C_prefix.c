@@ -1,5 +1,5 @@
 /*
- * Linked carve of the menu range bucket: fn_8007109C .. fn_80071344
+ * Linked carve of the menu range bucket: menuCommonFree .. fn_80071344
  * (0x8007109C-0x80071398), the heap-handle, save-slot and controller
  * helpers at the head of the menuCB_Common run. Text only.
  */

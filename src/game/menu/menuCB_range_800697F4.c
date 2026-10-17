@@ -29,7 +29,7 @@ void* _menuCBPokemonEntryLoadCallBack__FPv(void* callbackFlag)
     extern u16 toolentryTaisenGetEntryPokemonNum(s32);
     extern void* toolentryTaisenGetEntryPokemonPtr(s32, s32);
     extern u8 pokemonCheckValid(void*);
-    extern u16 fn_8010BBB8(void*);
+    extern u16 pokemonGetFaceSpriteId(void*);
     PokemonEntryLoadWork* work;
     u8* complete;
     PokemonEntryLoadTexture* texture;
@@ -67,7 +67,7 @@ void* _menuCBPokemonEntryLoadCallBack__FPv(void* callbackFlag)
             row = ((PokemonEntryLoadWork*)&lbl_803A9F08)->entries[player];
             texture = &row[slot];
             if (pokemonCheckValid(pokemon) != 0) {
-                u16 face = fn_8010BBB8(pokemon);
+                u16 face = pokemonGetFaceSpriteId(pokemon);
 
                 texture->active = 1;
                 loading = 0;

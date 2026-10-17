@@ -39,19 +39,19 @@ extern u16 __OSWirelessPadFixMode : 0x800030E0;
 extern u8 GameChoice : 0x800030E3;
 
 /* SI library helpers not yet recovered by name (unassigned SI unit). */
-extern void fn_800D0338(s32 chan, u32 command);       /* SISetCommand */
+extern void SISetCommand(s32 chan, u32 command);       /* SISetCommand */
 extern u32 SIEnablePolling(u32 poll);
 extern u32 SIDisablePolling(u32 poll);
 extern BOOL SIGetResponse(s32 chan, void *data);
 extern void SIGetTypeAsync(s32 chan, SITypeAndStatusCallback cb);
 extern BOOL SIIsChanBusy(s32 chan);
 extern u32 SIGetStatus(s32 chan);
-extern void fn_800D104C(void);                        /* SIRefreshSamplingRate */
+extern void SIRefreshSamplingRate(void);                        /* SIRefreshSamplingRate */
 extern void OSRegisterVersion(char *version);
 
 static void UpdateOrigin(s32 chan);
 static void PADOriginCallback(s32 chan, u32 error, OSContext *context);
-static void fn_800AA73C(s32 chan, u32 error, OSContext *context);
+static void PADOriginUpdateCallback(s32 chan, u32 error, OSContext *context);
 static void PADProbeCallback(s32 chan, u32 error, OSContext *context);
 static void PADTypeAndStatusCallback(s32 chan, u32 type);
 void PADSetSpec(s32 spec);
@@ -65,7 +65,7 @@ static void PADEnable(s32 chan) {
     lbl_8047A8A4 |= chanBit;
     SIGetResponse(chan, data);
     cmd = (0x40 << 16) | lbl_80478A14;
-    fn_800D0338(chan, cmd);
+    SISetCommand(chan, cmd);
     SIEnablePolling(lbl_8047A8A4);
 }
 
@@ -159,9 +159,9 @@ static void PADOriginCallback(s32 chan, u32 error, OSContext *context) {
 }
 
 /*
- * fn_800AA73C = PADOriginUpdateCallback
+ * PADOriginUpdateCallback = PADOriginUpdateCallback
  */
-static void fn_800AA73C(s32 chan, u32 error, OSContext *context) {
+static void PADOriginUpdateCallback(s32 chan, u32 error, OSContext *context) {
     if (!(lbl_8047A8A4 & (0x80000000u >> chan))) {
         return;
     }
@@ -245,9 +245,9 @@ static void PADTypeAndStatusCallback(s32 chan, u32 type) {
 }
 
 /*
- * fn_800AAC00 = PADReceiveCheckCallback
+ * PADReceiveCheckCallback = PADReceiveCheckCallback
  */
-static void fn_800AAC00(s32 chan, u32 type) {
+static void PADReceiveCheckCallback(s32 chan, u32 type) {
     u32 error;
     u32 chanBit;
 
@@ -262,7 +262,7 @@ static void fn_800AAC00(s32 chan, u32 type) {
         if (!(error & 0xF) && (type & 0x80000000) && (type & 0x00100000) &&
             (type & 0x40000000) && !(type & 0x04000000) && !(type & 0x00080000) &&
             !(type & 0x00040000)) {
-            SITransfer(chan, &lbl_80478A20, 1, &lbl_803FC5E0[chan], 10, fn_800AA73C, 0);
+            SITransfer(chan, &lbl_80478A20, 1, &lbl_803FC5E0[chan], 10, PADOriginUpdateCallback, 0);
         } else {
             PADDisable(chan);
         }
@@ -300,9 +300,9 @@ BOOL fn_800AAD34(u32 mask) {
 }
 
 /*
- * fn_800AAE34 = PADRecalibrate
+ * PADRecalibrate = PADRecalibrate
  */
-BOOL fn_800AAE34(u32 mask) {
+BOOL PADRecalibrate(u32 mask) {
     BOOL enabled;
     u32 disableBits;
 
@@ -330,9 +330,9 @@ BOOL fn_800AAE34(u32 mask) {
 }
 
 /*
- * fn_800AAF38 = PADInit
+ * PADInit = PADInit
  */
-BOOL fn_800AAF38(void) {
+BOOL PADInit(void) {
     s32 chan;
 
     if (lbl_8047A8A0) {
@@ -361,16 +361,16 @@ BOOL fn_800AAF38(void) {
             (0x4D << 24) | (chan << 22) | ((__OSWirelessPadFixMode & 0x3fffu) << 8);
     }
 
-    fn_800D104C();
+    SIRefreshSamplingRate();
     OSRegisterResetFunction(&lbl_80312500);
 
     return fn_800AAD34(0xF0000000);
 }
 
 /*
- * fn_800AB150 = PADRead
+ * PADRead = PADRead
  */
-u32 fn_800AB150(PADStatus *status) {
+u32 PADRead(PADStatus *status) {
     BOOL enabled;
     s32 chan;
     u32 data[2];
@@ -421,7 +421,7 @@ u32 fn_800AB150(PADStatus *status) {
 
                 if (!(lbl_8047A8B4 & chanBit)) {
                     lbl_8047A8B4 |= chanBit;
-                    SIGetTypeAsync(chan, fn_800AAC00);
+                    SIGetTypeAsync(chan, PADReceiveCheckCallback);
                 }
                 continue;
             }
@@ -454,7 +454,7 @@ u32 fn_800AB150(PADStatus *status) {
         if (status->button & 0x2000) {
             status->err = PAD_ERR_TRANSFER;
             memset(status, 0, 10);
-            SITransfer(chan, &lbl_80478A20, 1, &lbl_803FC5E0[chan], 10, fn_800AA73C, 0);
+            SITransfer(chan, &lbl_80478A20, 1, &lbl_803FC5E0[chan], 10, PADOriginUpdateCallback, 0);
             continue;
         }
 
@@ -480,8 +480,8 @@ extern u32 lbl_8047A8B0;
 extern u32 lbl_8047A8B4;
 extern u32 __PADSpec;
 
-extern void fn_800D0338(s32 chan, u32 command);
-extern void fn_800D034C(void);
+extern void SISetCommand(s32 chan, u32 command);
+extern void SITransferCommands(void);
 
 void SPEC0_MakeStatus(s32 chan, PADStatus *status, u32 data[2]);
 void SPEC1_MakeStatus(s32 chan, PADStatus *status, u32 data[2]);
@@ -505,13 +505,13 @@ void fn_800AB4FC(const u32 *commandArray) {
             u32 command = *commandArray;
             if (lbl_80478A18 < 2 && command == 2)
                 command = 0;
-            fn_800D0338(chan, (lbl_80478A14 | 0x400000) | (command & 3));
+            SISetCommand(chan, (lbl_80478A14 | 0x400000) | (command & 3));
             commit = TRUE;
         }
     }
 
     if (commit)
-        fn_800D034C();
+        SITransferCommands();
 
     OSRestoreInterrupts(enabled);
 }
@@ -688,16 +688,16 @@ extern BOOL lbl_8047A8C0;
 
 extern u32 SIDisablePolling(u32 poll);
 extern void SIGetTypeAsync(s32 chan, SITypeAndStatusCallback cb);
-extern BOOL fn_800CF708(void);
+extern BOOL SIBusy(void);
 
 /*
  * PADSync, as in the SDK's PAD.c. Nothing in the game calls it, so the
  * linker strips it; OnReset (fn_800ABD68) inlines it, as it does
- * PADRecalibrate (fn_800AAE34).
+ * PADRecalibrate (PADRecalibrate).
  */
 /* RULE-EXCEPTION(user-approved): reconstructed linker-stripped function — see docs/RULE_EXCEPTIONS.md */
 BOOL PADSync(void) {
-    return lbl_8047A8A8 == 0 && lbl_80478A0C == 0x20 && !fn_800CF708();
+    return lbl_8047A8A8 == 0 && lbl_80478A0C == 0x20 && !SIBusy();
 }
 
 
@@ -711,7 +711,7 @@ BOOL fn_800ABD68(BOOL final) {
     if (final == 0) {
         sync = PADSync();
         if (lbl_8047A8C0 == 0 && sync) {
-            lbl_8047A8C0 = fn_800AAE34(0xF0000000);
+            lbl_8047A8C0 = PADRecalibrate(0xF0000000);
             return FALSE;
         }
         return sync;

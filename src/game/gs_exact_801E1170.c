@@ -1,7 +1,7 @@
 /** Exact save/card-state accessors, 0x801E1170 - 0x801E11F0. */
 #include "dolphin/types.h"
 
-void fn_801E1170(void)
+void vtrSetMode4(void)
 {
     extern s32 lbl_8047B424;
     extern s32 lbl_8047B428;
@@ -12,7 +12,7 @@ void fn_801E1170(void)
     lbl_8047B430 = 0;
 }
 
-void fn_801E118C(void)
+void vtrSetMode3(void)
 {
     extern s32 lbl_8047B424;
     extern s32 lbl_8047B428;
@@ -21,7 +21,7 @@ void fn_801E118C(void)
     lbl_8047B428 = 3;
 }
 
-void fn_801E119C(void)
+void vtrSetMode2(void)
 {
     extern s32 lbl_8047B424;
     extern s32 lbl_8047B428;
@@ -30,7 +30,7 @@ void fn_801E119C(void)
     lbl_8047B428 = 3;
 }
 
-void fn_801E11B0(void)
+void vtrSetMode1(void)
 {
     extern s32 lbl_8047B424;
     extern s32 lbl_8047B428;
@@ -42,14 +42,14 @@ void fn_801E11B0(void)
     lbl_8047B428 = 1;
 }
 
-u8 fn_801E11CC(void)
+u8 vtrGetDisp(void)
 {
     extern u8 lbl_8047B434;
 
     return lbl_8047B434;
 }
 
-void fn_801E11D4(u8 index, u8 active)
+void vtrSetDisp(u8 index, u8 active)
 {
     extern u8 lbl_8047B434;
     extern u8 lbl_8047B435;
@@ -58,14 +58,14 @@ void fn_801E11D4(u8 index, u8 active)
     lbl_8047B435 = active;
 }
 
-s32 fn_801E11E0(void)
+s32 vtrGetMode(void)
 {
     extern s32 lbl_8047B424;
 
     return lbl_8047B424;
 }
 
-u8 fn_801E11E8(void)
+u8 vtrIsActive(void)
 {
     extern u8 lbl_8047B420;
 

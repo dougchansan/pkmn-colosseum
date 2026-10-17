@@ -8,7 +8,7 @@ extern u32 lbl_8047A2E0;
 extern u32 lbl_8047A2F4;
 extern u32 lbl_8047A2F8;
 
-void fn_80014118(s32 arg, s32* out1, s32* out2) {
+void itemUseGetTargetPokemon(s32 arg, s32* out1, s32* out2) {
     s32 val;
     s32 other;
 

@@ -4,7 +4,7 @@
  *
  * Boundary evidence-verified from asm (sdata clusters, callee families,
  * static linkage, call chains) - mixed-block split pass, 2026-07-01.
- * fn_800096B4 (0x800096B4, size 0x23E0) is the debug Pokemon editor; the
+ * dbgMenuPokemonEdit (0x800096B4, size 0x23E0) is the debug Pokemon editor; the
  * ten small debug-menu callback functions below call it.
  */
 #include "dolphin/types.h"
@@ -32,21 +32,21 @@ extern void* memcpy(void* dst, const void* src, u32 size);
 
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma peephole off
-s32 fn_800096B4(u32 arg0, u8 arg1, u8* arg2, u8* arg3, u8* arg4, u8* arg5) {
+s32 dbgMenuPokemonEdit(u32 arg0, u8 arg1, u8* arg2, u8* arg3, u8* arg4, u8* arg5) {
     extern s32 GSmsgGetGSchar();
     extern u16 fightTrainerGetStatus();
     extern void fightTrainerSetStatus(s32, u32, s32, u16, u32);
     extern u8 fn_8001E224();
-    extern u8 fn_80119DD0();
-    extern void fn_8012173C(u32, u16, s8);
+    extern u8 joutaiDataBiosGetMaxStack();
+    extern void pokemonSetJoutaiKaisuu(u32, u16, s8);
     extern void fn_801217B4(u32, u16, s8);
     extern s8 fn_8012182C();
-    extern s8 fn_8012189C();
+    extern s8 pokemonGetJoutaiKaisuu();
     extern void fn_8012190C(u32, u16, s16);
-    extern s16 fn_80121984();
-    extern void fn_801219F4(u32, u16, s32);
-    extern u8 fn_80121A6C(u32, u16);
-    extern void fn_80121B4C();
+    extern s16 pokemonGetJoutaiStack();
+    extern void pokemonWriteJoutaiDataId(u32, u16, s32);
+    extern u8 pokemonCheckWriteJoutaiDataId(u32, u16);
+    extern void pokemonInitPersistentJoutai();
     extern u8 fn_80142984(u16);
     extern s32 gamedataGetStatus();
     extern void menuCloseCustom();
@@ -870,8 +870,8 @@ s32 fn_800096B4(u32 arg0, u8 arg1, u8* arg2, u8* arg3, u8* arg4, u8* arg5) {
                 value = 8;
             }
             pokemonInitJoutai(arg0);
-            if (value != 0 && fn_80121A6C(arg0, value) == 2) {
-                fn_801219F4(arg0, value, 0);
+            if (value != 0 && pokemonCheckWriteJoutaiDataId(arg0, value) == 2) {
+                pokemonWriteJoutaiDataId(arg0, value, 0);
             }
             if (arg3 != NULL) {
                 *arg3 = 1;
@@ -882,7 +882,7 @@ s32 fn_800096B4(u32 arg0, u8 arg1, u8* arg2, u8* arg3, u8* arg4, u8* arg5) {
             if (value == 0) {
                 break;
             }
-            i = fn_8012189C(arg0, value);
+            i = pokemonGetJoutaiKaisuu(arg0, value);
             if (value != 4) {
                 if (i < 0) {
                     break;
@@ -894,18 +894,18 @@ s32 fn_800096B4(u32 arg0, u8 arg1, u8* arg2, u8* arg3, u8* arg4, u8* arg5) {
                 if (i > 0x10) {
                     i = 0x10;
                 }
-                fn_8012173C(arg0, value, i);
+                pokemonSetJoutaiKaisuu(arg0, value, i);
                 if (fn_8012182C(arg0, value) > i) {
                     fn_801217B4(arg0, value, i);
                 }
             } else {
-                i = fn_80121984(arg0, value);
+                i = pokemonGetJoutaiStack(arg0, value);
                 i += delta;
                 if (i < 0) {
                     i = 0;
                 }
-                if (i > fn_80119DD0(value)) {
-                    i = fn_80119DD0(value);
+                if (i > joutaiDataBiosGetMaxStack(value)) {
+                    i = joutaiDataBiosGetMaxStack(value);
                 }
                 fn_8012190C(arg0, value, i);
             }
@@ -920,7 +920,7 @@ s32 fn_800096B4(u32 arg0, u8 arg1, u8* arg2, u8* arg3, u8* arg4, u8* arg5) {
             if (value == 0) {
                 break;
             }
-            max = fn_8012189C(arg0, value);
+            max = pokemonGetJoutaiKaisuu(arg0, value);
             if (value == 4 || max < 0) {
                 break;
             }
@@ -929,8 +929,8 @@ s32 fn_800096B4(u32 arg0, u8 arg1, u8* arg2, u8* arg3, u8* arg4, u8* arg5) {
             if (i < 0) {
                 i = 0;
             }
-            if (i > fn_8012189C(arg0, value)) {
-                i = fn_8012189C(arg0, value);
+            if (i > pokemonGetJoutaiKaisuu(arg0, value)) {
+                i = pokemonGetJoutaiKaisuu(arg0, value);
             }
             fn_801217B4(arg0, value, i);
             if (arg3 != NULL) {
@@ -989,9 +989,9 @@ s32 fn_800096B4(u32 arg0, u8 arg1, u8* arg2, u8* arg3, u8* arg4, u8* arg5) {
                 break;
             }
             if (delta > 0) {
-                fn_801219F4(arg0, 0x3E, 0);
+                pokemonWriteJoutaiDataId(arg0, 0x3E, 0);
             } else {
-                fn_80121B4C(arg0, 0x3E);
+                pokemonInitPersistentJoutai(arg0, 0x3E);
             }
             if (arg3 != NULL) {
                 *arg3 = 1;
@@ -1158,18 +1158,18 @@ s32 dbgMenuHeroPokemonAdd(void) {
         pokemonInit(lbl_803A1A48);
         lbl_80478840 = 0;
     }
-    if (fn_800096B4((u32)lbl_803A1A48, 0, 0, 0, 0, 0) < 0) { return -1; }
+    if (dbgMenuPokemonEdit((u32)lbl_803A1A48, 0, 0, 0, 0, 0) < 0) { return -1; }
     heroCatchPokemon(0, lbl_803A1A48, 0, 4, 1);
     return -1;
 }
 
-/* fn_8000BBEC - 0x8000BBEC | size: 0x6C */
-s32 fn_8000BBEC(void) {
+/* dbgMenuPokemonEditSlot6 - 0x8000BBEC | size: 0x6C */
+s32 dbgMenuPokemonEditSlot6(void) {
     u32 val;
     if ((u8)fightIsBattleActive() == 1) { return -1; }
     val = heroGetStatus(NULL, 3, 5);
     if (val == 0) { return -1; }
-    return fn_800096B4(val, 0, 0, 0, 0, 0);
+    return dbgMenuPokemonEdit(val, 0, 0, 0, 0, 0);
 }
 
 /* fn_8000BC58 - 0x8000BC58 | size: 0x6C */
@@ -1178,7 +1178,7 @@ s32 fn_8000BC58(void) {
     if ((u8)fightIsBattleActive() == 1) { return -1; }
     val = heroGetStatus(NULL, 3, 4);
     if (val == 0) { return -1; }
-    return fn_800096B4(val, 0, 0, 0, 0, 0);
+    return dbgMenuPokemonEdit(val, 0, 0, 0, 0, 0);
 }
 
 /* fn_8000BCC4 - 0x8000BCC4 | size: 0x6C */
@@ -1187,7 +1187,7 @@ s32 fn_8000BCC4(void) {
     if ((u8)fightIsBattleActive() == 1) { return -1; }
     val = heroGetStatus(NULL, 3, 3);
     if (val == 0) { return -1; }
-    return fn_800096B4(val, 0, 0, 0, 0, 0);
+    return dbgMenuPokemonEdit(val, 0, 0, 0, 0, 0);
 }
 
 /* fn_8000BD30 - 0x8000BD30 | size: 0x6C */
@@ -1196,7 +1196,7 @@ s32 fn_8000BD30(void) {
     if ((u8)fightIsBattleActive() == 1) { return -1; }
     val = heroGetStatus(NULL, 3, 2);
     if (val == 0) { return -1; }
-    return fn_800096B4(val, 0, 0, 0, 0, 0);
+    return dbgMenuPokemonEdit(val, 0, 0, 0, 0, 0);
 }
 
 /* fn_8000BD9C - 0x8000BD9C | size: 0x6C */
@@ -1205,7 +1205,7 @@ s32 fn_8000BD9C(void) {
     if ((u8)fightIsBattleActive() == 1) { return -1; }
     val = heroGetStatus(NULL, 3, 1);
     if (val == 0) { return -1; }
-    return fn_800096B4(val, 0, 0, 0, 0, 0);
+    return dbgMenuPokemonEdit(val, 0, 0, 0, 0, 0);
 }
 
 /* fn_8000BE08 - 0x8000BE08 | size: 0x6C */
@@ -1214,5 +1214,5 @@ s32 fn_8000BE08(void) {
     if ((u8)fightIsBattleActive() == 1) { return -1; }
     val = heroGetStatus(NULL, 3, 0);
     if (val == 0) { return -1; }
-    return fn_800096B4(val, 0, 0, 0, 0, 0);
+    return dbgMenuPokemonEdit(val, 0, 0, 0, 0, 0);
 }

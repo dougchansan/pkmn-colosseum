@@ -14,8 +14,8 @@
 extern void GSvecCopy(void* dst, const void* src);
 extern void HSD_ForeachAnim(void* obj, u32 type, u32 mask, void (*cb)(void*), ...);
 extern u32 _toolentryAlloc__FUl(u32 size);
-extern void* fn_800E27B0(u32 handle);
-extern void fn_800D2B44(void* aobj);
+extern void* GSmemLock(u32 handle);
+extern void _GScameraAnimCallback(void* aobj);
 
 extern u16 lbl_8047AA68;             /* camera pool GSmem handle */
 extern GSRenderCamera* lbl_8047AA6C; /* camera pool */
@@ -43,7 +43,7 @@ static inline GSRenderCamera* cameraFindFree(void)
 
 /*
  * Same body as GScameraSetAnimIndex (0x800D1984), which the target expands
- * here and in fn_800D13C8; the unsigned index/count compare against the
+ * here and in GScameraRestoreState; the unsigned index/count compare against the
  * constant 0 survives in the expansion.
  */
 static inline void cameraSetAnimIndex(GSRenderCamera* camera, u32 animIndex)
@@ -55,13 +55,13 @@ static inline void cameraSetAnimIndex(GSRenderCamera* camera, u32 animIndex)
             HSD_CObjAddAnim(camera->cobj, camera->desc->animations[camera->animIndex]);
             HSD_CObjReqAnim(camera->cobj, lbl_8047C998);
             lbl_8047AA78 = lbl_8047C998;
-            HSD_ForeachAnim(camera->cobj, 2, 0xFFFF, fn_800D2B44, 0);
+            HSD_ForeachAnim(camera->cobj, 2, 0xFFFF, _GScameraAnimCallback, 0);
             camera->animEndFrame = lbl_8047AA78;
         }
     }
 }
 
-GSRenderCamera* fn_800D27FC(GSRenderCameraDesc* desc)
+GSRenderCamera* GScameraCreateFromDesc(GSRenderCameraDesc* desc)
 {
     GSRenderCamera* camera = cameraFindFree();
 
@@ -94,7 +94,7 @@ GSRenderCamera* fn_800D27FC(GSRenderCameraDesc* desc)
     return camera;
 }
 
-GSRenderCamera* fn_800D29A0(void)
+GSRenderCamera* GScameraCreate(void)
 {
     GSRenderCamera* camera = cameraFindFree();
 
@@ -147,7 +147,7 @@ void fn_800D2AD4(u32 count)
     lbl_8047AA70 = count;
     lbl_8047AA68 = _toolentryAlloc__FUl(count * sizeof(GSRenderCamera));
     if (lbl_8047AA68 != 0) {
-        lbl_8047AA6C = fn_800E27B0(lbl_8047AA68);
+        lbl_8047AA6C = GSmemLock(lbl_8047AA68);
         for (i = 0; i < lbl_8047AA70; i++) {
             lbl_8047AA6C[i].active = 0;
         }

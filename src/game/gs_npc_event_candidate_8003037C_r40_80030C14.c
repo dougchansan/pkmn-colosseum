@@ -13,8 +13,8 @@ extern void gfxSetPrimitive(s32 mode);
 extern void gfxSetVtxDesc(void* resource);
 extern void gfxLoadTexture(s32 slot, void* model);
 extern void gfxBegin(s32 blendMode);
-extern void fn_800D61E4(s32 x, s32 y);
-extern void fn_800D5CB8(s32 slot, s32 r, s32 g, s32 b, s32 a);
+extern void gfxVtxPos2s16(s32 x, s32 y);
+extern void gfxVtxColor4u8(s32 slot, s32 r, s32 g, s32 b, s32 a);
 extern void gfxVtxTexCoord(s32 slot, f32 scaleX, f32 scaleY);
 extern void gfxEnd(void);
 extern void* menuModelRender(void* data);
@@ -45,11 +45,11 @@ void fn_80030C14(void* r3, u8* r4)
         gfxSetVtxDesc(lbl_80314F98);
         gfxLoadTexture(0, model);
         gfxBegin(2);
-        fn_800D61E4(0, 0);
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+        gfxVtxPos2s16(0, 0);
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
         gfxVtxTexCoord(0, lbl_8047B9D4, lbl_8047B9D4);
-        fn_800D61E4(*(s16*)(r4 + 0x54), *(s16*)(r4 + 0x56));
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+        gfxVtxPos2s16(*(s16*)(r4 + 0x54), *(s16*)(r4 + 0x56));
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
         gfxVtxTexCoord(0, lbl_8047B9F0, lbl_8047B9F0);
         gfxEnd();
     }

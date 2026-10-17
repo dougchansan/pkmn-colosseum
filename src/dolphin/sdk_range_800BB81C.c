@@ -7,7 +7,7 @@
  *
  * Merged from three candidate chunks (sdk_candidate_800BB81C,
  * sdk_candidate_800BB97C_gc13, sdk_candidate_800BBC0C) so that one object
- * owns the pool: fn_800BB81C reads 1024.0f and fn_800BBCE0 the rest, and no
+ * owns the pool: GXSetIndTexMtx reads 1024.0f and fn_800BBCE0 the rest, and no
  * other code reads 0x8047C370 - 0x8047C388. The middle chunk was scored with
  * GC/1.3 (91-93%); under this range's GC/1.2.5n its two functions are exact.
  * Bodies copied, in address order, from sdk_range_800BB30C.c and the former
@@ -161,14 +161,14 @@ extern GXData_800BB30C* const gx;
 extern volatile u16* __cpReg;
 extern u32 lbl_80313608[];
 
-extern void fn_800BB780(u32 dstCoord, u32 func, u32 srcParam, u32 mtx,
+extern void GXSetTevIndirect(u32 dstCoord, u32 func, u32 srcParam, u32 mtx,
                         u32 normalize, u32 postMtx, u32 normalizeColor,
                         u8 bias, u8 arg8, u32 arg9);
-extern void fn_800BD640(f32 left, f32 top, f32 width, f32 height, f32 nearz,
+extern void GXSetViewportJitter(f32 left, f32 top, f32 width, f32 height, f32 nearz,
                         f32 farz, u32 field);
 extern void __GXSetMatrixIndex(s32 value);
 extern void fn_800BE164(u32* hi, u32* lo);
-extern void fn_800B91EC(void);
+extern void __GXSetDirtyState(void);
 extern void __GXSendFlushPrim(void);
 extern u32 __cvt_fp2unsigned(f32 value);
 extern s32 TRKReleaseBuffer(s32 bufferIndex);
@@ -208,7 +208,7 @@ volatile PPCWGPipe_800BB30C GXWGFifo_800BB30C : 0xCC008000;
     GX_FIFO_U32 = (reg)
 
 
-void fn_800BB81C(u32 mtx_id, const f32 offset[2][3], s8 scale_exp)
+void GXSetIndTexMtx(u32 mtx_id, const f32 offset[2][3], s8 scale_exp)
 {
     s32 mtx[6];
     u32 reg;
@@ -265,7 +265,7 @@ void fn_800BB81C(u32 mtx_id, const f32 offset[2][3], s8 scale_exp)
     gx->field_002 = 0;
 }
 
-void fn_800BB97C(u32 stage, u32 scale_s, u32 scale_t)
+void GXSetIndTexCoordScale(u32 stage, u32 scale_s, u32 scale_t)
 {
     switch (stage) {
     case 0:
@@ -308,7 +308,7 @@ void fn_800BB97C(u32 stage, u32 scale_s, u32 scale_t)
     gx->field_002 = 0;
 }
 
-void fn_800BBAF8(u32 stage, u32 tex_coord, u32 tex_map)
+void GXSetIndTexOrder(u32 stage, u32 tex_coord, u32 tex_map)
 {
     switch (stage) {
     case 0:
@@ -333,21 +333,21 @@ void fn_800BBAF8(u32 stage, u32 tex_coord, u32 tex_map)
     gx->field_002 = 0;
 }
 
-void fn_800BBC0C(u32 nChans) {
+void GXSetNumIndStages(u32 nChans) {
     GXData_800BB30C* p = gx;
 
     p->genMode = (p->genMode & ~0x70000U) | ((nChans & 0xFF) << 16);
     p->dirtyState |= 6;
 }
 
-void fn_800BBC34(u32 dstCoord) {
-    fn_800BB780(dstCoord, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+void GXSetTevDirect(u32 dstCoord) {
+    GXSetTevIndirect(dstCoord, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 }
 
 void fn_800BBC7C(u32 dstCoord, u32 func, u8 normalize, u8 color, u32 postMtx) {
     u32 colorSel = color != 0 ? 6 : 0;
 
-    fn_800BB780(dstCoord, func, 0, normalize != 0 ? 7 : 0, postMtx, colorSel, colorSel, 0, 0, 0);
+    GXSetTevIndirect(dstCoord, func, 0, normalize != 0 ? 7 : 0, postMtx, colorSel, colorSel, 0, 0, 0);
 }
 
 void fn_800BBCE0(u32 tev_stage, u32 ind_stage, u16 tilesize_s,
@@ -379,8 +379,8 @@ void fn_800BBCE0(u32 tev_stage, u32 ind_stage, u16 tilesize_s,
     mtx[0][1] = mtx[0][2] = 0.0f;
     mtx[1][1] = tilespacing_t / 1024.0f;
     mtx[1][0] = mtx[1][2] = 0.0f;
-    fn_800BB81C(matrix_sel, mtx, 10);
-    fn_800BB780(tev_stage, ind_stage, format, bias_sel, matrix_sel, wrap_s,
+    GXSetIndTexMtx(matrix_sel, mtx, 10);
+    GXSetTevIndirect(tev_stage, ind_stage, format, bias_sel, matrix_sel, wrap_s,
                 wrap_t, 0, 1, alpha_sel);
 }
 
@@ -404,20 +404,20 @@ void fn_800BBE8C(u32 tev_stage, u32 ind_stage, u32 matrix_sel)
         break;
     }
 
-    fn_800BB780(tev_stage, ind_stage, 0, 3, sm, 6, 6, 0, 0, 0);
-    fn_800BB780(tev_stage + 1, ind_stage, 0, 3, tm, 6, 6, 1, 0, 0);
-    fn_800BB780(tev_stage + 2, ind_stage, 0, 0, 0, 0, 0, 1, 0, 0);
+    GXSetTevIndirect(tev_stage, ind_stage, 0, 3, sm, 6, 6, 0, 0, 0);
+    GXSetTevIndirect(tev_stage + 1, ind_stage, 0, 3, tm, 6, 6, 1, 0, 0);
+    GXSetTevIndirect(tev_stage + 2, ind_stage, 0, 0, 0, 0, 0, 1, 0, 0);
 }
 
 void fn_800BBF98(u32 dstCoord, u32 func, u32 normalize) {
-    fn_800BB780(dstCoord, func, 0, 7, normalize, 0, 0, 0, 0, 0);
+    GXSetTevIndirect(dstCoord, func, 0, 7, normalize, 0, 0, 0, 0, 0);
 }
 
 void fn_800BBFDC(u32 dstCoord) {
-    fn_800BB780(dstCoord, 0, 0, 0, 0, 6, 6, 1, 0, 0);
+    GXSetTevIndirect(dstCoord, 0, 0, 0, 0, 6, 6, 1, 0, 0);
 }
 
-void fn_800BC024(void) {
+void __GXUpdateBPMask(void) {
     u32 nIndStages;
     u32 i;
     u32 texMap;

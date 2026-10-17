@@ -25,7 +25,7 @@
  * 0x6-0x7 is unobserved.
  */
 typedef struct GbaConvChannelState {
-    /* 0x00 */ u16 ids[3];    /* species ids checked by fn_800884BC */
+    /* 0x00 */ u16 ids[3];    /* species ids checked by dnaKeyCodeCheck */
     /* 0x06 */ u8  _pad06[2];
     /* 0x08 */ u32 result;   /* written by fn_80088428 from fn_80087C64()'s return value */
 } GbaConvChannelState;
@@ -33,7 +33,7 @@ typedef struct GbaConvChannelState {
 /**
  * Player state memo captured before a GBA link session (position,
  * rotation, previous floor, and a handful of flag values). Populated by
- * fn_80088EA8 via its `u8* p` output parameter.
+ * menuSaveLoadStorePosition via its `u8* p` output parameter.
  */
 typedef struct GbaConvPlayerMemo {
     /* 0x00 */ u8  valid;
@@ -54,7 +54,7 @@ typedef struct GbaConvPlayerMemo {
 
 /**
  * 0x1C-byte header block at the start of the live save status, copied
- * whole to status + 0xC98C by fn_800889E4. Only the first word is read.
+ * whole to status + 0xC98C by menuSaveLoadSaveGame. Only the first word is read.
  */
 typedef struct GbaConvSaveHeader {
     /* 0x00 */ s32 kind;

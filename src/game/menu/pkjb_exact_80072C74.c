@@ -18,7 +18,7 @@ s32 fn_80072C74(s32 chan, u32* response)
     u8 status;
     s32 result;
 
-    if (fn_800D0F44(chan) != PKJB_SI_GBA) {
+    if (SIProbe(chan) != PKJB_SI_GBA) {
         result = 1;
     } else if (GBAGetStatus(chan, &status) != 0) {
         result = 2;

@@ -24,7 +24,7 @@ extern void* pokemonGetStatus();
 extern u32   pokemonSetStatus();
 
 /* Battle system functions */
-extern void fn_801EF8F4();
+extern void battleCameraSelect();
 
 /* Sound functions */
 extern void soundStop();     /* Stop sound */
@@ -81,7 +81,7 @@ u32 fightTrainerAiWazaHit045(void* trainerCtx, u32 trainerSlot, u32 resultSlot, 
 u32 fightMenuFightTrainerGcHeroOpenMenu(void* ctx, u32 param1, u32 param2);
 
 /* Address: 0x8025DCBC | Size: 0x58 | Ghidra import */
-void fn_8025DCBC(int *param)
+void reliveRestoreSound(int *param)
 {
     u32 *r3 = (u32 *)param;
     if (*r3 != 0) {
@@ -96,9 +96,9 @@ void fn_8025DCBC(int *param)
 #pragma push
 #pragma use_lmw_stmw off
 #pragma optimize_for_size off
-void fn_8025DD14(int *r3)
+void reliveSaveSound(int *r3)
 {
-    extern int fn_801653BC();
+    extern int soundGetCurrentSubSound();
     extern int std228_soundGetCurrentBackgroundMusic();
     extern int fn_801656D8();
     extern void std104_soundSetBackgroundMusic();
@@ -114,7 +114,7 @@ void fn_8025DD14(int *r3)
     } else {
         iVar2 = 0;
     }
-    iVar3 = fn_801653BC();
+    iVar3 = soundGetCurrentSubSound();
     if (iVar3 != 0) {
         iVar4 = fn_801656D8();
     } else {
@@ -128,20 +128,20 @@ void fn_8025DD14(int *r3)
 #pragma pop
 
 /* Address: 0x8025DDAC | Size: 0x48 | Ghidra import */
-void fn_8025DDAC(u32 *r3,u32 r4)
+void effectSetRotation(u32 *r3,u32 r4)
 {
     extern u32 GSmodelSetRotation();
-    extern u32 fn_801DAC3C(u32);
+    extern u32 wazaSequenceOwnerGetModel(u32);
   u32 iVar1;
   r3 = (u32*)*r3;
   if (r3 == 0) return;
-  iVar1 = fn_801DAC3C((u32)r3);
+  iVar1 = wazaSequenceOwnerGetModel((u32)r3);
   if (iVar1 == 0) return;
   GSmodelSetRotation(iVar1,r4);
 }
 
 /* Address: 0x8025DDF4 | Size: 0x18 | Ghidra import */
-void fn_8025DDF4(u32 *r3)
+void effectClear(u32 *r3)
 
 {
   if (*r3 == 0) {
@@ -152,31 +152,31 @@ void fn_8025DDF4(u32 *r3)
 }
 
 /* Address: 0x8025DE0C | Size: 0x48 | Ghidra import */
-void fn_8025DE0C(u32 *r3,u32 r4)
+void effectSetPosition(u32 *r3,u32 r4)
 {
     extern u32 GSmodelSetPosition();
-    extern u32 fn_801DAC3C(u32);
+    extern u32 wazaSequenceOwnerGetModel(u32);
   u32 iVar1;
   r3 = (u32*)*r3;
   if (r3 == 0) return;
-  iVar1 = fn_801DAC3C((u32)r3);
+  iVar1 = wazaSequenceOwnerGetModel((u32)r3);
   if (iVar1 == 0) return;
   GSmodelSetPosition(iVar1,r4);
 }
 
 /* Address: 0x8025DE54 | Size: 0xE4 | Ghidra import */
-void fn_8025DE54(u32 *r3,u16 *r4,int r5,int r6,int r7,
+void effectPlayWaza(u32 *r3,u16 *r4,int r5,int r6,int r7,
                  int r8)
 
 {
     extern int _threadSwitch();
     extern int fadeSet();
-    extern int fn_801DA4E8();
-    extern int fn_801DA8C4();
-    extern int fn_801DA914();
-    extern u8 fn_801DA94C();
-    extern int fn_801DA9E8();
-    extern int fn_801DB088();
+    extern int wazaSequenceOwnerSetVisibility();
+    extern int wazaSequenceSysStopWaza();
+    extern int wazaSequenceClearFlag16();
+    extern u8 wazaSequenceSysIsPlayingWaza();
+    extern int wazaSequenceSysStartWaza();
+    extern int wazaSequenceSysUpdate();
     extern f32 lbl_8047E670;
 
   u16 *p;
@@ -185,28 +185,28 @@ void fn_8025DE54(u32 *r3,u16 *r4,int r5,int r6,int r7,
   if (r7 == 1) {
     fadeSet((double)lbl_8047E670,2);
   }
-  fn_801DA4E8(*r3,1);
+  wazaSequenceOwnerSetVisibility(*r3,1);
   p = r4;
   for (iVar2 = 0; iVar2 < r5; iVar2 = iVar2 + 1) {
     if (r6 == 0) {
-      fn_801DA914(*r3,*p,p[1]);
+      wazaSequenceClearFlag16(*r3,*p,p[1]);
     }
-    fn_801DA9E8(*r3,*p,p[1]);
-    while (fn_801DA94C(*r3,*p,p[1]) != 0) {
-      fn_801DB088();
+    wazaSequenceSysStartWaza(*r3,*p,p[1]);
+    while (wazaSequenceSysIsPlayingWaza(*r3,*p,p[1]) != 0) {
+      wazaSequenceSysUpdate();
       _threadSwitch();
     }
     if (r8 == 1) {
-      fn_801DA4E8(*r3,0);
+      wazaSequenceOwnerSetVisibility(*r3,0);
     }
-    fn_801DA8C4(*r3,*p,p[1]);
+    wazaSequenceSysStopWaza(*r3,*p,p[1]);
     p = p + 2;
   }
   return;
 }
 
 /* Address: 0x8025DF38 | Size: 0x178 | Ghidra import */
-u32 fn_8025DF38(u32* r3, u32 r4, u16* r5, int r6)
+u32 effectCreate(u32* r3, u32 r4, u16* r5, int r6)
 {
     extern u32 _fadeEffectGetRandom__FUl(u32);
     extern void GSmodelSetBoundCheck(void* model, s32 on);
@@ -222,7 +222,7 @@ u32 fn_8025DF38(u32* r3, u32 r4, u16* r5, int r6)
     extern u32 fn_8018F470(u32 index);
     extern u8 fn_801DDD28(u32 handle, u16 a, u16 b, s32 c);
     extern u32 fn_801DE190(u32 id, u32 random, s32 flags);
-    extern void* fn_801DAC3C(u32 handle);
+    extern void* wazaSequenceOwnerGetModel(u32 handle);
     s32 n;
     void* floor;
     u32 i;
@@ -247,7 +247,7 @@ u32 fn_8025DF38(u32* r3, u32 r4, u16* r5, int r6)
         }
         pair += 2;
     }
-    if (r3 != NULL && *r3 != 0 && (model = fn_801DAC3C(*r3)) != NULL) {
+    if (r3 != NULL && *r3 != 0 && (model = wazaSequenceOwnerGetModel(*r3)) != NULL) {
         GSmodelClearShadowFlags(model, 1);
         floor = floorDataBiosGetCurrentPtr();
         if (floor != NULL) {
@@ -341,11 +341,11 @@ void std244_spawnEffectAtPosition(float f1, float f2, float f3, float f4, float 
   extern u16 lbl_80478DA0;
   extern f32 lbl_8047E678;
   extern f32 lbl_8047E67C;
-  extern void fn_8025DDF4();
-  extern u8 fn_8025DF38();
-  extern void fn_8025DE0C();
-  extern void fn_8025DDAC();
-  extern void fn_8025DE54();
+  extern void effectClear();
+  extern u8 effectCreate();
+  extern void effectSetPosition();
+  extern void effectSetRotation();
+  extern void effectPlayWaza();
   extern void set__5GSvecFfff();
   u32 *r31;
   u32 *r30;
@@ -356,13 +356,13 @@ void std244_spawnEffectAtPosition(float f1, float f2, float f3, float f4, float 
   sv1 = f1; sv2 = f2; sv3 = f3;
   sv4 = f4; sv5 = f5; sv6 = f6;
   fn_801DADC0(1);
-  fn_8025DDF4(&lbl_8047B658);
-  if ((u8)(fn_8025DF38(&lbl_8047B658, 0x3f, &lbl_80478DA0, 1) == 1) == 1) {
+  effectClear(&lbl_8047B658);
+  if ((u8)(effectCreate(&lbl_8047B658, 0x3f, &lbl_80478DA0, 1) == 1) == 1) {
     r31 = validptr_8025E1BC(&lbl_8047B658);
     r30 = validptr_8025E1BC(&lbl_8047B658);
     if (r30 != (u32 *)0 && *r30 != 0) {
       set__5GSvecFfff(sv1, out_buf, sv2, sv3);
-      fn_8025DE0C(r30, (u32)out_buf);
+      effectSetPosition(r30, (u32)out_buf);
     }
     {
       u32 *r3;
@@ -372,11 +372,11 @@ void std244_spawnEffectAtPosition(float f1, float f2, float f3, float f4, float 
         scale_buf[0] = fscale * sv4;
         scale_buf[1] = fscale * sv5;
         scale_buf[2] = fscale * sv6;
-        fn_8025DDAC(r3, (u32)scale_buf);
+        effectSetRotation(r3, (u32)scale_buf);
       }
     }
     if (r31 != (u32 *)0 && *r31 != 0) {
-      fn_8025DE54(r31, &lbl_80478DA0, 1, 0, 0, 1);
+      effectPlayWaza(r31, &lbl_80478DA0, 1, 0, 0, 1);
       fadeSet(5, lbl_8047E67C);
       fadeCheck(1);
     }
@@ -391,8 +391,8 @@ void _preReliveDisplayHokoraParticleThreadFunc__Fv(void)
     extern u32 lbl_8027A478[];
     extern u32 GSresGetResource();
     extern u32 std093_getCurrentGroupID();
-    extern int fn_80118A68();
-    extern int fn_80118F04();
+    extern int gsParticleKillOwned();
+    extern int gsParticleSetVecB();
     extern u32 gsParticleCreate();
     extern int waitTime__Ff();
     extern u32 lbl_8047B660;
@@ -409,7 +409,7 @@ void _preReliveDisplayHokoraParticleThreadFunc__Fv(void)
     state = lbl_8047B664;
     if ((s32)state != 1) goto skip_cleanup;
     if ((s32)state != 1) goto skip_cleanup;
-    fn_80118A68(lbl_8047B660, 1);
+    gsParticleKillOwned(lbl_8047B660, 1);
     lbl_8047B660 = 0;
     lbl_8047B664 = 0;
 skip_cleanup:
@@ -417,12 +417,12 @@ skip_cleanup:
     uVar2 = GSresGetResource(uVar2, 0x108a1400);
     uVar2 = gsParticleCreate(uVar2, 0, 0);
     lbl_8047B660 = uVar2;
-    fn_80118F04(uVar2, local_buf);
+    gsParticleSetVecB(uVar2, local_buf);
     fVar1 = lbl_8047E684;
     lbl_8047B664 = 1;
     waitTime__Ff(fVar1);
     if ((s32)lbl_8047B664 == 1) {
-        fn_80118A68(lbl_8047B660, 1);
+        gsParticleKillOwned(lbl_8047B660, 1);
         lbl_8047B660 = 0;
         lbl_8047B664 = 0;
     }
@@ -576,7 +576,7 @@ typedef struct ReliveTarget {
 
 void preReliveMain(void)
 {
-    extern void fn_8025DCBC(int* param);
+    extern void reliveRestoreSound(int* param);
     extern s32 menuPokemonOpen(s32, s32, s32);
     extern void std098_mapWarpToMenuRoom(s32);
     extern void winMsgCloseField(s32);
@@ -585,12 +585,12 @@ void preReliveMain(void)
     extern u16 pokemonBiosGetDarkpokemonDataId(void*);
     extern int heroItemCheckHaveItemDataId(s32, s32);
     extern void* heroGetStatus(s32, s32, u16);
-    extern u8 fn_801EEC74(u16);
+    extern u8 darkPokemonCheckFlag14(u16);
     extern void* heroBiosGetPokemonPtr(void*, u16);
     extern u8 pokemonCheckValid(void*);
     extern int pokemonIsDarkPokemon(void*);
     extern u32 scriptGetDarkPointZeroPokemonNum(void);
-    extern void fn_80118A68(u32, s32);
+    extern void gsParticleKillOwned(u32, s32);
     extern void std130_soundUnk_801653cc(s32, s32, s32);
     extern void _threadSwitch(void);
     extern u32 lbl_8047B660;
@@ -619,7 +619,7 @@ void preReliveMain(void)
     for (i = 0; (u16)i < 6; i++) {
         pokemon = heroBiosGetPokemonPtr(party, (u16)i);
         if (pokemonCheckValid(pokemon) && (s32)(u8)pokemonIsDarkPokemon(pokemon) == 1 &&
-            fn_801EEC74(pokemonBiosGetDarkpokemonDataId(pokemon)) == 0) {
+            darkPokemonCheckFlag14(pokemonBiosGetDarkpokemonDataId(pokemon)) == 0) {
             remaining++;
         }
     }
@@ -656,7 +656,7 @@ void preReliveMain(void)
     }
 
     if (action == 2) {
-        fn_8025DD14((int*)work);
+        reliveSaveSound((int*)work);
         std130_soundUnk_801653cc(0x3C8, 0, 0xFF);
         selection = (ReliveSelection*)&lbl_8047B668;
         species = (s16)pokemonGetStatus(heroGetStatus(0, 3, selection->index), 0, 0x6E, 0);
@@ -670,10 +670,10 @@ void preReliveMain(void)
         _threadSwitch();
         fadeSet(2, lbl_8047E68C);
         fadeCheck(1);
-        fn_8025DCBC((int*)work);
+        reliveRestoreSound((int*)work);
     } else if (action == 4) {
         if ((s32)lbl_8047B664 == 1) {
-            fn_80118A68(lbl_8047B660, 1);
+            gsParticleKillOwned(lbl_8047B660, 1);
             lbl_8047B660 = 0;
             lbl_8047B664 = 0;
         }
@@ -691,13 +691,13 @@ void preReliveMain(void)
                 ((ReliveTarget*)lbl_804782BC)->index = picked;
                 fadeSet(3, lbl_8047E680);
                 fadeCheck(1);
-                fn_8025DD14((int*)work);
+                reliveSaveSound((int*)work);
                 std098_mapWarpToMenuRoom(0x385);
                 floorSetFadeScript(0, 0);
                 _threadSwitch();
                 fadeSet(2, lbl_8047E68C);
                 fadeCheck(1);
-                fn_8025DCBC((int*)work);
+                reliveRestoreSound((int*)work);
             }
         }
     } else {
@@ -781,7 +781,7 @@ int _cbWazaForget__FP7PokemonUsl(u32 r3,u32 r4)
   snapshot[11] = view[2];
   ((f32 *)snapshot)[12] = local_54;
   wazaSequenceSysRelease();
-  iVar2 = fn_80097A38(r3,r4);
+  iVar2 = menuPokemonStatusOpenWazaForget(r3,r4);
   if (iVar2 >= 4) {
     iVar2 = -1;
   }
@@ -790,7 +790,7 @@ int _cbWazaForget__FP7PokemonUsl(u32 r3,u32 r4)
   iVar3 = loadSequence((int*)auStack_58,r3,(u16*)&lbl_80478DB0,1);
   if (iVar3 == 1) {
     fadeSet((double)lbl_8047E680,2);
-    fn_8025DE54((u32*)auStack_58,(u16*)&lbl_80478DB0,1,1,1,0);
+    effectPlayWaza((u32*)auStack_58,(u16*)&lbl_80478DB0,1,1,1,0);
   }
   return (int)(signed char)iVar2;
 }
@@ -811,12 +811,12 @@ void reliveCeremonyAll(u32 r3)
     extern u16 pokemonBiosGetPokemonWazaDataId();
     extern u32 pokemonBiosGetNicknamePtr();
     extern int pokemonSetDp();
-    extern u8 fn_80121ADC();
-    extern int fn_80121B4C();
+    extern u8 pokemonIsJoutaiDataId();
+    extern int pokemonInitPersistentJoutai();
     extern int pokemonEvolutionAll();
     extern u32 pokemonEvolutionCheck();
     extern u8 pokemonCheckValid();
-    extern int fn_801EECD8();
+    extern int darkPokemonSetFlag14();
     extern u32 lbl_80478DB0;
     extern f32 lbl_8047E680;
     extern f32 lbl_8047E688;
@@ -845,10 +845,10 @@ void reliveCeremonyAll(u32 r3)
   if (uVar8 == 1) {
     pokemonGetStatus(uVar1,0,0x6e,0);
     uVar2 = pokemonBiosGetDarkpokemonDataId(uVar1);
-    fn_801EECD8(uVar2,1);
-    uVar8 = fn_80121ADC(uVar1,0x3e);
+    darkPokemonSetFlag14(uVar2,1);
+    uVar8 = pokemonIsJoutaiDataId(uVar1,0x3e);
     if (uVar8 != 0) {
-      fn_80121B4C(uVar1,0x3e);
+      pokemonInitPersistentJoutai(uVar1,0x3e);
     }
     pokemonSetDp((double)lbl_8047E688,uVar1);
     std130_soundUnk_801653cc(0x3f7,0,0xff);
@@ -880,7 +880,7 @@ void reliveCeremonyAll(u32 r3)
           iVar3 = loadSequence((int*)auStack_1c,uVar1,(u16*)&lbl_80478DB0,1);
           if (iVar3 == 1) {
             fadeSet((double)lbl_8047E680,2);
-            fn_8025DE54((u32*)auStack_1c,(u16*)&lbl_80478DB0,1,1,1,0);
+            effectPlayWaza((u32*)auStack_1c,(u16*)&lbl_80478DB0,1,1,1,0);
           }
           uVar2 = pokemonBiosGetNicknamePtr(uVar1);
           msgctrlSetValue(0x32,uVar2);
@@ -892,7 +892,7 @@ void reliveCeremonyAll(u32 r3)
           iVar3 = loadSequence((int*)auStack_20,uVar1,(u16*)&lbl_80478DB0,1);
           if (iVar3 == 1) {
             fadeSet((double)lbl_8047E680,2);
-            fn_8025DE54((u32*)auStack_20,(u16*)&lbl_80478DB0,1,1,1,0);
+            effectPlayWaza((u32*)auStack_20,(u16*)&lbl_80478DB0,1,1,1,0);
           }
         }
       }
@@ -915,7 +915,7 @@ void reliveCeremonyAll(u32 r3)
       iVar3 = loadSequence((int*)auStack_24,uVar1,(u16*)&lbl_80478DB0,1);
       if (iVar3 == 1) {
         fadeSet((double)lbl_8047E680,2);
-        fn_8025DE54((u32*)auStack_24,(u16*)&lbl_80478DB0,1,1,1,0);
+        effectPlayWaza((u32*)auStack_24,(u16*)&lbl_80478DB0,1,1,1,0);
       }
     }
   }
@@ -954,7 +954,7 @@ void reliveMain(void)
         pokemonGetStatus(uVar2,0,0x6e,0);
         iVar3 = loadSequence((int*)auStack_18,uVar2,(u16*)&lbl_80478DA8,2);
         if (iVar3 == 1) {
-          fn_8025DE54((u32*)auStack_18,(u16*)&lbl_80478DA8,2,1,1,0);
+          effectPlayWaza((u32*)auStack_18,(u16*)&lbl_80478DA8,2,1,1,0);
           bVar1 = 1;
         }
         else {
@@ -976,7 +976,7 @@ void reliveMain(void)
         pokemonGetStatus(uVar2,0,0x6e,0);
         iVar3 = loadSequence((int*)auStack_18,uVar2,(u16*)lbl_8039A6A8,4);
         if (iVar3 == 1) {
-          fn_8025DE54((u32*)auStack_18,(u16*)lbl_8039A6A8,4,1,1,0);
+          effectPlayWaza((u32*)auStack_18,(u16*)lbl_8039A6A8,4,1,1,0);
           bVar1 = 1;
         }
         else {
@@ -995,7 +995,7 @@ void reliveMain(void)
 						    lbl_8047B66C = 0xffffffff;
 				    *(u16 *)((u8 *)lbl_804782BC + 4) = 0;
     lbl_804782BC[2] = 0;
-    fn_800FF660();
+    floorBattleEndTerminateScripts();
     floorSetFadeScript(0,0);
     _threadSwitch();
   }

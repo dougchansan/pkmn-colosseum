@@ -154,8 +154,8 @@ s32 fn_80111864(GScolsys2Vec3* start, GScolsys2Vec3* end,
         if (list == NULL) {
             continue;
         }
-        fn_8010CA30(mtxInv, i);
-        fn_8010C8D0(mtxFwd, i);
+        colsysMakeSRTMatrix(mtxInv, i);
+        colsysMakeRotMatrix(mtxFwd, i);
         temporaryCarrier.value = temp;
         tempCount = getEventListPass(start, end, &dirVec, list,
                                      mtxInv, mtxFwd, temporaryCarrier.value,

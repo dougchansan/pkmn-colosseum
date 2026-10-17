@@ -30,11 +30,11 @@ extern u8 fadeSet[];
 extern u8 floorCharacterSetPos[];
 extern u8 floorEventChangeTresure[];
 extern u8 floorEventSetTresureDisp[];
-extern u8 fn_80005FA8[];
+extern u8 mainLogicTask[];
 extern u8 fn_80006908[];
 extern u8 dbgMenuFightStop[];
 extern u8 fn_80008C40[];
-extern u8 fn_800096B4[];
+extern u8 dbgMenuPokemonEdit[];
 extern u8 menuFightButtonSecretPokemonTop[];
 extern u8 menuFightButtonSecretMain[];
 extern u8 menuFightDrawBall[];
@@ -46,7 +46,7 @@ extern u8 menuPokemonMain[];
 extern u8 std158_menuOpenCustom43[];
 extern u8 std011_dialogDisplayYesNoMenu[];
 extern u8 std021_newGameIntroSequence[];
-extern u8 fn_80021B14[];
+extern u8 itemFieldUseRecover[];
 extern u8 std163_useCologne[];
 extern u8 std018_nop18[];
 extern u8 menuNameEntry[];
@@ -65,16 +65,16 @@ extern u8 std215_battleStartTrainerWithPrompt[];
 extern u8 std213_gbaGetLinkedGameId[];
 extern u8 std212_gbaIsLinkActive[];
 extern u8 std220_gbaUnk_80083bf8[];
-extern u8 fn_8008F91C[];
+extern u8 demoScene18[];
 extern u8 fn_80097BBC[];
-extern u8 fn_800AFFE0[];
+extern u8 __CARDEraseSector[];
 extern u8 GSmodelGetRotation[];
 extern u8 GSmodelSetRotation[];
 extern u8 std001_messageFormatLookup[];
 extern u8 fn_800FEE68[];
 extern u8 fn_800FEF8C[];
 extern u8 std092_getCurrentRoomID[];
-extern u8 fn_800FF660[];
+extern u8 floorBattleEndTerminateScripts[];
 extern u8 std098_mapWarpToMenuRoom[];
 extern u8 menuSetCursor[];
 extern u8 menuGetCursor[];
@@ -161,7 +161,7 @@ extern u8 std055_characterEndSpeech[];
 extern u8 std054_characterTalk[];
 extern u8 std068_characterTurnToAngle[];
 extern u8 std177_characterMoveToCharacter[];
-extern u8 fn_8018B220[];
+extern u8 peopleStopAnimation[];
 extern u8 std154_characterPlayAnimation[];
 extern u8 fn_8018B558[];
 extern u8 std051_characterSetAnimation[];
@@ -171,7 +171,7 @@ extern u8 peopleSetVisible[];
 extern u8 peopleClearFlagsByIndex[];
 extern u8 peopleSetFlagsByIndex[];
 extern u8 std151_characterFaceDirection[];
-extern u8 fn_8018DB68[];
+extern u8 peopleCloseByID[];
 extern u8 peopleOpen[];
 extern u8 std081_flagCheckTrue[];
 extern u8 std079_flagSetTrue[];
@@ -186,7 +186,7 @@ extern u8 std207_gbaUnk_80075638[];
 extern u8 std205_getDNASampleSepcies[];
 extern u8 std200_gbaConnectEvent[];
 extern u8 std199_menuDisplayCustomMenu[];
-extern u8 fn_801C9B6C[];
+extern u8 floorEventElevatorMain[];
 extern u8 fn_801C9C9C[];
 extern u8 std193_lightWaitForAnimation[];
 extern u8 std191_mapTransformElement[];
@@ -204,14 +204,14 @@ extern u8 fn_801CA858[];
 extern u8 fn_801CA884[];
 extern u8 fn_801CADA0[];
 extern u8 std217_playerReceiveGiftPokemon[];
-extern u8 fn_801CB1C4[];
+extern u8 scriptIsAnyInput[];
 extern u8 std005_threadIsRunning[];
 extern u8 std006_threadWaitForCompletion[];
 extern u8 fn_801CB3DC[];
 extern u8 std209_threadRunScriptMode4[];
 extern u8 fn_801CB4E8[];
 extern u8 std221_mapObjectLinkParticles[];
-extern u8 fn_801CB59C[];
+extern u8 scriptCharacterDetach[];
 extern u8 std166_mapObjectAttachToObject[];
 extern u8 std116_mapObjectStopAnimation[];
 extern u8 std115_mapObjectPlayAnimation[];
@@ -228,14 +228,14 @@ extern u8 std085_sequenceJump85[];
 extern u8 std084_sequenceJump84[];
 extern u8 std243_shadowPokemonSetState[];
 extern u8 std103_battleGetResult[];
-extern u8 fn_801EF6FC[];
-extern u8 fn_801EF758[];
+extern u8 fightStartEnvSound[];
+extern u8 fightStartBgm[];
 extern u8 fightStartEncount[];
 extern u8 std244_spawnEffectAtPosition[];
 extern u8 preReliveDisplayHokoraParticle[];
 extern u8 reliveMain[];
 extern u8 preReliveSetParameter[];
-extern u8 fn_80266250[];
+extern u8 evolutionSequenceEnd[];
 extern u8 lbl_80003FF0[];
 extern u8 lbl_80266448[];
 extern u8 lbl_80266460[];
@@ -8806,7 +8806,7 @@ void* lbl_8027A500[68440] = {
     (void*)0xFF805FFF,
     (void*)0xFFFFFFFF,
     (void*)0xFFFFFFFF,
-    (void*)((u8*)fn_80021B14 + 0x4EC),
+    (void*)((u8*)itemFieldUseRecover + 0x4EC),
     (void*)0x0000007F,
     (void*)0x70000000,
     (void*)0x00000000,
@@ -52393,7 +52393,7 @@ void* lbl_8027A500[68440] = {
     (void*)0x008FA00A,
     (void*)0xF800AF80,
     (void*)0x08FA00AF,
-    (void*)((u8*)fn_8008F91C + 0xE4),
+    (void*)((u8*)demoScene18 + 0xE4),
     (void*)0x8FA00AF8,
     (void*)0x002FB01C,
     (void*)0xF2002EF9,
@@ -52677,7 +52677,7 @@ void* lbl_8027A500[68440] = {
     (void*)0x00000000,
     (void*)0x00001000,
     (void*)0x1EFFFFFD,
-    (void*)((u8*)fn_80005FA8 + 0x30),
+    (void*)((u8*)mainLogicTask + 0x30),
     (void*)0x88AFF700,
     (void*)0x5F800008,
     (void*)0xF8005F80,
@@ -79972,7 +79972,7 @@ void* lbl_802C0CB0[15064] = {
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000009,
-    (void*)((u8*)fn_800096B4 + 0x34C),
+    (void*)((u8*)dbgMenuPokemonEdit + 0x34C),
     (void*)0x00000000,
     (void*)0x0FF006FF,
     (void*)0xFFFFD300,
@@ -85738,7 +85738,7 @@ void* lbl_802C0CB0[15064] = {
     (void*)0xFFFFFF80,
     (void*)0x0AFFDCFF,
     (void*)0xFFFFFFFF,
-    (void*)((u8*)fn_800AFFE0 + 0x10),
+    (void*)((u8*)__CARDEraseSector + 0x10),
     (void*)0x00000000,
     (void*)0x0000003F,
     (void*)0xF0AFFFFF,
@@ -93950,7 +93950,7 @@ void* lbl_802E1CF0[742] = {
     (void*)((u8*)std051_characterSetAnimation),
     (void*)0x01010101,
     (void*)0x01000000,
-    (void*)((u8*)fn_8018B220),
+    (void*)((u8*)peopleStopAnimation),
     (void*)0x01010000,
     (void*)0x00000000,
     (void*)((u8*)peopleWaitSyncMotion),
@@ -93965,7 +93965,7 @@ void* lbl_802E1CF0[742] = {
     (void*)((u8*)peopleOpen),
     (void*)0x01010000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8018DB68),
+    (void*)((u8*)peopleCloseByID),
     (void*)0x01010000,
     (void*)0x00000000,
     (void*)((u8*)std058_characterCheckWithinBounds),
@@ -94091,7 +94091,7 @@ void* lbl_802E1CF0[742] = {
     (void*)((u8*)std098_mapWarpToMenuRoom),
     (void*)0x01000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_800FF660),
+    (void*)((u8*)floorBattleEndTerminateScripts),
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)((u8*)scriptFloorCharSetDisp),
@@ -94124,7 +94124,7 @@ void* lbl_802E1CF0[742] = {
     (void*)((u8*)std109_soundPlayEffectVariant),
     (void*)0x01010000,
     (void*)0x00000000,
-    (void*)((u8*)fn_801CB1C4),
+    (void*)((u8*)scriptIsAnyInput),
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)((u8*)scriptIsMoveButtonPush),
@@ -94229,10 +94229,10 @@ void* lbl_802E1CF0[742] = {
     (void*)((u8*)floorSetFadeScript),
     (void*)0x01010000,
     (void*)0x00000000,
-    (void*)((u8*)fn_801EF758),
+    (void*)((u8*)fightStartBgm),
     (void*)0x01000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_801EF6FC),
+    (void*)((u8*)fightStartEnvSound),
     (void*)0x01000000,
     (void*)0x00000000,
     (void*)((u8*)cameraSetHeight),
@@ -94295,7 +94295,7 @@ void* lbl_802E1CF0[742] = {
     (void*)((u8*)std166_mapObjectAttachToObject),
     (void*)0x01010100,
     (void*)0x00000000,
-    (void*)((u8*)fn_801CB59C),
+    (void*)((u8*)scriptCharacterDetach),
     (void*)0x01000000,
     (void*)0x00000000,
     (void*)((u8*)std168_characterDetachFromCharacter),
@@ -94385,7 +94385,7 @@ void* lbl_802E1CF0[742] = {
     (void*)((u8*)fn_801C9C9C),
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_801C9B6C),
+    (void*)((u8*)floorEventElevatorMain),
     (void*)0x01010101,
     (void*)0x00000000,
     (void*)((u8*)std198_menuEnterTradingMenu),
@@ -94484,7 +94484,7 @@ void* lbl_802E1CF0[742] = {
     (void*)((u8*)std229_mapLoad395),
     (void*)0x01000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_80266250),
+    (void*)((u8*)evolutionSequenceEnd),
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)((u8*)std231_characterSetPathPaused),

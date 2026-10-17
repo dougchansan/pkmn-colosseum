@@ -7,7 +7,7 @@
  * fsys functions after it: the parameter is homed on the stack (stw r3,0x8)
  * and reloaded for the store. Exact (22/22 instructions and relocations)
  * with the unit-wide `-opt level=0` and no local pragmas; carved from
- * gs_range_80179F4C.c so it can link while fn_80179FA4 stays a candidate.
+ * gs_range_80179F4C.c so it can link while fsysInitTOC stays a candidate.
  * The (u8) cast is menuIsCheck's byte result (clrlwi. r0,r3,24), written the
  * way menuFight.c tests it.
  */

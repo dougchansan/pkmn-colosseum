@@ -13,7 +13,7 @@
  * Linked as one unit (2026-09-29): .text 0x801B25C4 - 0x801B3168, .data
  * 0x8036CE88 - 0x8036CFA8 (the channel set-ups), .sdata 0x80478C98
  * (dark_matter) and .sdata2 0x8047DE50 (0.0f, 1.0f, 255.0f). HSD_StateSetZMode
- * (fn_801B27DC) is exact only in a shaped form, a title-path rule exception
+ * (HSD_StateSetZMode) is exact only in a shaped form, a title-path rule exception
  * (see the function and docs/RULE_EXCEPTIONS.md). The state words, material
  * state and invalidate table stay in their data units under their address
  * names.
@@ -29,10 +29,10 @@ extern void HSD_MulColor(GXColor* a, GXColor* b, GXColor* result);
 extern void GXSetDstAlpha(u8 enable, u8 alpha);
 extern void GXSetBlendMode(int type, int src_factor, int dst_factor, int op);
 extern void GXSetZMode(u32 compareEnable, u32 func, u32 updateEnable);
-extern void fn_800BCEBC(u8 before_tex);   /* GXSetZCompLoc */
-extern void fn_800BC618(int comp0, u8 ref0, int op, int comp1,
+extern void GXSetZCompLoc(u8 before_tex);   /* GXSetZCompLoc */
+extern void GXSetAlphaCompare(int comp0, u8 ref0, int op, int comp1,
                         u8 ref1);         /* GXSetAlphaCompare */
-extern void fn_800BCFDC(u8 enable);       /* GXSetDither */
+extern void GXSetDither(u8 enable);       /* GXSetDither */
 
 #define GX_BM_NONE 0
 #define GX_BM_BLEND 1
@@ -95,7 +95,7 @@ void HSD_SetupChannelMode(u32 rendermode)
 
     if (rendermode & 8) {
         spec_chan.light_mask = HSD_LObjGetLightMaskSpecular();
-        fn_801B3D1C(&spec_chan);
+        HSD_SetupChannel(&spec_chan);
         specular = 1;
         max = HSD_LObjGetNbActive();
         for (i = 0; i < max; i++) {
@@ -115,12 +115,12 @@ void HSD_SetupChannelMode(u32 rendermode)
         }
         diffuse_chan.mat_src = (color_mode >> 1) & 1;
         diffuse_chan.light_mask = HSD_LObjGetLightMaskDiffuse();
-        fn_801B3D1C(&diffuse_chan);
+        HSD_SetupChannel(&diffuse_chan);
 
         if (alpha_mode & 0x4000) {
             alpha_chan.chan = GX_ALPHA1;
             vtx_alpha = 1;
-            fn_801B3D1C(&vtx_alpha_chan);
+            HSD_SetupChannel(&vtx_alpha_chan);
         } else {
             alpha_chan.chan = GX_ALPHA0;
         }
@@ -138,12 +138,12 @@ void HSD_SetupChannelMode(u32 rendermode)
             alpha_chan.enable = GX_DISABLE;
             alpha_chan.mat_color.a = alpha;
         }
-        fn_801B3D1C(&alpha_chan);
+        HSD_SetupChannel(&alpha_chan);
     } else {
         unlit_color_chan.mat_src = (color_mode >> 1) & 1;
-        fn_801B3D1C(&unlit_color_chan);
+        HSD_SetupChannel(&unlit_color_chan);
         unlit_alpha_chan.mat_src = (alpha_mode >> 14) & 1;
-        fn_801B3D1C(&unlit_alpha_chan);
+        HSD_SetupChannel(&unlit_alpha_chan);
     }
 
     if (specular) {
@@ -173,24 +173,24 @@ void HSD_SetupPEMode(u32 rendermode, HSD_PEDesc* pe)
 {
 
     if (pe != NULL) {
-        fn_801B278C(pe->flags & 1);
-        fn_801B273C(pe->flags & 2);
+        HSD_StateSetColorUpdate(pe->flags & 1);
+        HSD_StateSetAlphaUpdate(pe->flags & 2);
         HSD_StateSetDstAlpha(pe->flags & 4, pe->dst_alpha);
         HSD_StateSetBlendMode(pe->type, pe->src_factor, pe->dst_factor,
                               pe->logic_op);
-        fn_801B27DC(pe->flags & 0x10, pe->z_comp, pe->flags & 0x20);
+        HSD_StateSetZMode(pe->flags & 0x10, pe->z_comp, pe->flags & 0x20);
         HSD_StateSetZCompLoc(pe->flags & 8);
         HSD_StateSetAlphaCompare(pe->alpha_comp0, pe->ref0, pe->alpha_op,
                                  pe->alpha_comp1, pe->ref1);
         HSD_StateSetDither(pe->flags & 0x40);
         return;
     }
-    fn_801B278C(1);
-    fn_801B273C(0);
+    HSD_StateSetColorUpdate(1);
+    HSD_StateSetAlphaUpdate(0);
     HSD_StateSetDstAlpha(0, 0);
     HSD_StateSetBlendMode((rendermode & RENDER_XLU) ? GX_BM_BLEND : GX_BM_NONE,
                           GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
-    fn_801B27DC(1, (rendermode & RENDER_ZMODE_ALWAYS) ? GX_ALWAYS : GX_LEQUAL,
+    HSD_StateSetZMode(1, (rendermode & RENDER_ZMODE_ALWAYS) ? GX_ALWAYS : GX_LEQUAL,
                 (GXBool) ((rendermode & RENDER_NO_ZUPDATE) ? GX_FALSE : GX_TRUE));
     if (!(rendermode & RENDER_NO_ZUPDATE) && (rendermode & RENDER_XLU)) {
         HSD_StateSetZCompLoc(0);
@@ -204,7 +204,7 @@ void HSD_SetupPEMode(u32 rendermode, HSD_PEDesc* pe)
 
 static inline void setupTevMode_last(void)
 {
-    if (fn_801B387C() == 0) {
+    if (HSD_StateGetNumTevStages() == 0) {
         HSD_TevDesc tevdesc;
         tevdesc.flags = 0;
         tevdesc.stage = HSD_StateAssignTev();
@@ -221,14 +221,14 @@ void HSD_SetupRenderModeWithCustomPE(u32 rendermode, HSD_PEDesc* pe)
 {
     setupTevMode_last();
     HSD_SetupPEMode(rendermode, pe);
-    fn_801B3258();
-    fn_801B3770();
-    fn_801B3890();
+    HSD_SetTevRegAll();
+    HSD_StateSetNumTevStages();
+    HSD_StateSetNumTexGens();
     HSD_SetupChannelMode(rendermode);
 }
 
 /* 0x801B2878 - 0x801B294C */
-extern void fn_800B94F0(int mode); /* GXSetCullMode */
+extern void GXSetCullMode(int mode); /* GXSetCullMode */
 
 /* HSD_SetMaterialColor */
 void HSD_SetMaterialColor(GXColor ambient, GXColor diffuse, GXColor specular, f32 alpha)
@@ -245,16 +245,16 @@ void HSD_SetMaterialColor(GXColor ambient, GXColor diffuse, GXColor specular, f3
 }
 
 /* HSD_SetMaterialShininess */
-void fn_801B28B8(f32 shininess)
+void HSD_SetMaterialShininess(f32 shininess)
 {
     lbl_80465710.shininess = shininess;
 }
 
 /* HSD_StateSetCullMode */
-void fn_801B2878(int mode)
+void HSD_StateSetCullMode(int mode)
 {
     if (lbl_8047B34C != mode) {
-        fn_800B94F0(mode);
+        GXSetCullMode(mode);
         lbl_8047B34C = mode;
     }
 }
@@ -277,7 +277,7 @@ static inline void HSD_StateSetBlendMode(int type, int src_factor,
  * HSD_StateSetZMode
  *
  * Exact only in this shaped form (2026-09-29), a title-path rule exception
- * (fn_801B27DC is a native_functions entry of the recomp's gs-gfx-init row):
+ * (HSD_StateSetZMode is a native_functions entry of the recomp's gs-gfx-init row):
  * the normalised flags are int locals and the cache compares cast them back
  * to GXBool. Retail computes the update flag's `or` into r0 after the
  * z_enable compare; the natural GXBool locals compute it into r4 before the
@@ -295,7 +295,7 @@ static inline void HSD_StateSetBlendMode(int type, int src_factor,
  *   orders, early returns, store orders, deferred-inlining contexts (about
  *   1,000 generated variants).
  */
-void fn_801B27DC(int enable, int func, int update)
+void HSD_StateSetZMode(int enable, int func, int update)
 {
     int z_enable = enable != 0;
     int z_update = update != 0;
@@ -318,7 +318,7 @@ static inline void HSD_StateSetAlphaCompare(int comp0, u8 ref0, int op,
         lbl_8047B324 != op || lbl_8047B320 != comp1 ||
         lbl_8047B31E != ref1)
     {
-        fn_800BC618(comp0, ref0, op, comp1, ref1);
+        GXSetAlphaCompare(comp0, ref0, op, comp1, ref1);
         lbl_8047B32C = comp0;
         lbl_8047B328 = ref0;
         lbl_8047B324 = op;
@@ -343,7 +343,7 @@ static inline void HSD_StateSetZCompLoc(int before_tex)
     GXBool before = before_tex != 0;
 
     if (lbl_8047B319 != before) {
-        fn_800BCEBC(before);
+        GXSetZCompLoc(before);
         lbl_8047B319 = before;
     }
 }
@@ -353,7 +353,7 @@ static inline void HSD_StateSetDither(int enable)
     GXBool dither = enable != 0;
 
     if (lbl_8047B318 != dither) {
-        fn_800BCFDC(dither);
+        GXSetDither(dither);
         lbl_8047B318 = dither;
     }
 }
@@ -361,27 +361,27 @@ static inline void HSD_StateSetDither(int enable)
 /* 0x801B25C4 - 0x801B27DC */
 extern void HSD_ClearVtxDesc(void);
 
-extern void fn_800BCE30(u8 enable); /* GXSetColorUpdate */
-extern void fn_800BCE5C(u8 enable); /* GXSetAlphaUpdate */
+extern void GXSetColorUpdate(u8 enable); /* GXSetColorUpdate */
+extern void GXSetAlphaUpdate(u8 enable); /* GXSetAlphaUpdate */
 
 /* HSD_StateSetColorUpdate */
-void fn_801B278C(int enable)
+void HSD_StateSetColorUpdate(int enable)
 {
     GXBool update = enable != 0;
 
     if (lbl_8047B31D != update) {
-        fn_800BCE30(update);
+        GXSetColorUpdate(update);
         lbl_8047B31D = update;
     }
 }
 
 /* HSD_StateSetAlphaUpdate */
-void fn_801B273C(int enable)
+void HSD_StateSetAlphaUpdate(int enable)
 {
     GXBool update = enable != 0;
 
     if (lbl_8047B31C != update) {
-        fn_800BCE5C(update);
+        GXSetAlphaUpdate(update);
         lbl_8047B31C = update;
     }
 }
@@ -390,7 +390,7 @@ void fn_801B273C(int enable)
  * _HSD_StateInvalidatePrimitive. Retail stores the line width twice (0, then
  * 0xFF); nothing else reads these two bytes.
  */
-void fn_801B2718(void)
+void _HSD_StateInvalidatePrimitive(void)
 {
     lbl_8047B351 = 0;
     lbl_8047B350 = 0;
@@ -399,13 +399,13 @@ void fn_801B2718(void)
 }
 
 /* _HSD_StateInvalidateVtxAttr */
-void fn_801B26F8(void)
+void _HSD_StateInvalidateVtxAttr(void)
 {
     HSD_ClearVtxDesc();
 }
 
 /* _HSD_StateInvalidateRenderMode */
-void fn_801B2654(void)
+void _HSD_StateInvalidateRenderMode(void)
 {
     lbl_8047B348 = -1;
     lbl_8047B344 = -1;
@@ -428,7 +428,7 @@ void fn_801B2654(void)
 }
 
 /* HSD_StateInvalidate */
-void fn_801B25C4(int mask)
+void HSD_StateInvalidate(int mask)
 {
     int i;
 

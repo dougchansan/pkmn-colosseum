@@ -102,7 +102,7 @@ struct MenuCardEMatrixContext;
 struct MenuCardEMatrixWork;
 
 /* Shared battle-menu helpers implemented by the middle/common menu units. */
-u8* fn_8006B420(void);
+u8* savedataBattleGetRulePtr(void);
 s32 fn_80076054(void* hero, void* battleRules);
 
 /* =========================================================================
@@ -226,8 +226,8 @@ typedef struct MenuCardEWork {
 /* =========================================================================
  * Card-E matrix raw matching overlays
  *
- * These partial layouts are anchored by fn_8007C300, fn_8007C450,
- * fn_8007C7EC, fn_8007D978, menuCardE_CompareEntryPtrs, and fn_8007FDBC.
+ * These partial layouts are anchored by menuCardEMatrixSelectCard, menuCardEMatrixSetTarget,
+ * fn_8007C7EC, menuCardEMatrixWindowProc, menuCardE_CompareEntryPtrs, and fn_8007FDBC.
  * They intentionally stop at supported offsets and leave weak fields as
  * unk_XX. The older
  * MenuCardEMatrixWork below remains a high-level sketch used by exploratory
@@ -316,13 +316,13 @@ s32 menuOpenCustom(void* menuId, u32 parentId, s32* cursorOut,
  * ========================================================================= */
 
 /**
- * fn_8007109C: Validates that the menu stack depth is positive.
+ * menuCommonFree: Validates that the menu stack depth is positive.
  * Assert: "0 < _CBC.m_nMenuStackDepth" (file: "menuCB_Common.c")
  */
 void menuCB_Common_ValidateStackNotEmpty(void);
 
 /**
- * fn_80071104: Validates the current menu ID is valid.
+ * menuCommonAlloc: Validates the current menu ID is valid.
  * Assert: uses menuCB_Common.c source reference
  */
 void menuCB_Common_ValidateMenuID(void);
@@ -417,7 +417,7 @@ s32 menuCB_Common_GetCursorPos(void);
 void menuCB_Battle_ValidateEncounter(void);
 
 /**
- * fn_80069C0C: Main battle menu update handler.
+ * menuCBBattleSetupFight: Main battle menu update handler.
  * Size: 0xA50 (very large - likely contains switch/case state machine)
  */
 s32 menuCB_Battle_Update(void);
@@ -439,7 +439,7 @@ s32 menuCB_Battle_HandleInput(void);
  * ========================================================================= */
 
 /**
- * fn_8007581C: Tool battle menu with battle mode validation.
+ * menuToolBattleRun: Tool battle menu with battle mode validation.
  * Assert: "BATTLEMODE_BATTLEYAMA100 == _CB.m_eBattleMode"
  * File: "menuToolBattle.c"
  * Size: 0x218
@@ -451,14 +451,14 @@ void menuToolBattle_ValidateBattleMode(void);
  * ========================================================================= */
 
 /**
- * fn_800767B8: Rule menu handler 1 - initialization / first page.
+ * menuRuleCheckPartyByRule: Rule menu handler 1 - initialization / first page.
  * File: "menuCB_Rule.c"
  * Size: 0x2D4
  */
 void menuCB_Rule_Init(void);
 
 /**
- * fn_800772AC: Rule menu handler 2 - level rules.
+ * menuRuleCheckPokemonAllModes: Rule menu handler 2 - level rules.
  * Size: 0x228
  */
 void menuCB_Rule_HandleLevel(void);
@@ -470,7 +470,7 @@ void menuCB_Rule_HandleLevel(void);
 void menuCB_Rule_HandleItems(void);
 
 /**
- * fn_800776E4: Rule menu handler 4 - species rules / confirmation.
+ * menuRuleCheckPartyAndRule: Rule menu handler 4 - species rules / confirmation.
  * Size: 0x378
  */
 void menuCB_Rule_HandleSpecies(void);
@@ -480,7 +480,7 @@ void menuCB_Rule_HandleSpecies(void);
  * ========================================================================= */
 
 /**
- * fn_80077ED4: Mt. Battle exchange (shrine) menu main handler.
+ * menuExDiscShrineRun: Mt. Battle exchange (shrine) menu main handler.
  * File: "menuExDiscShrine.c"
  * Size: 0x4BC
  */
@@ -531,14 +531,14 @@ s32 menuCardE_Main(void);
  * ========================================================================= */
 
 /**
- * fn_8007C300: Sets the current/previous Card-E matrix selection by card id.
+ * menuCardEMatrixSelectCard: Sets the current/previous Card-E matrix selection by card id.
  * File: "menuCardE_Matrix.c"
  * Size: 0x114
  */
 void menuCardE_Matrix_Init(MenuCardEMatrixWork* cem);
 
 /**
- * fn_8007C450: Sets a target selection and starts transition state if needed.
+ * menuCardEMatrixSetTarget: Sets a target selection and starts transition state if needed.
  * Size: 0x1E4
  */
 void menuCardE_Matrix_ValidateSeries(MenuCardEMatrixWork* cem, s32 i);
@@ -550,7 +550,7 @@ void menuCardE_Matrix_ValidateSeries(MenuCardEMatrixWork* cem, s32 i);
 void menuCardE_Matrix_ValidateAnim(MenuCardEMatrixWork* cem);
 
 /**
- * fn_8007D978: Card e matrix main update loop.
+ * menuCardEMatrixWindowProc: Card e matrix main update loop.
  * Size: 0x23EC (9196 bytes - very large state machine)
  */
 s32 menuCardE_Matrix_Main(MenuCardEMatrixWork* cem);

@@ -165,7 +165,7 @@ void fn_80132C6C(u32 count, u32 maxPerSlot, u32 arg2, u32 arg3) {
 
     lbl_8047AEB8 = (u16)_toolentryAlloc__FUl(count * 0x18);
     if (lbl_8047AEB8 == 0) return;
-    lbl_8047AEB0 = fn_800E27B0(lbl_8047AEB8);
+    lbl_8047AEB0 = GSmemLock(lbl_8047AEB8);
 
     for (i = 0; i < lbl_8047AEB4; i++) {
         slot = &((DbgMenuSlot*)lbl_8047AEB0)[i];
@@ -181,7 +181,7 @@ void fn_80132C6C(u32 count, u32 maxPerSlot, u32 arg2, u32 arg3) {
     total = lbl_8047AEB4 * lbl_8047AEC0;
     lbl_8047AEC4 = (u16)_toolentryAlloc__FUl(total << 5);
     if (lbl_8047AEC4 == 0) return;
-    lbl_8047AEBC = fn_800E27B0(lbl_8047AEC4);
+    lbl_8047AEBC = GSmemLock(lbl_8047AEC4);
 
     dbgMenuInitItems(&lbl_8047AEBC, total);
 }
@@ -256,31 +256,31 @@ u32 fn_801330C8(void) {
     gfxSetVtxDesc(0);
     gfxBegin(3);
     gfxVtxPos(lbl_8047D0FC, -*(f32*)lbl_80478AC0, lbl_8047D0F0);
-    fn_800D5CB8(0, 0xFF, 0x80, 0x40, 0);
+    gfxVtxColor4u8(0, 0xFF, 0x80, 0x40, 0);
     gfxVtxPos(*(f32*)lbl_80478AC4, lbl_8047D100, lbl_8047D0F0);
-    fn_800D5CB8(0, 0x40, 0xFF, 0, 0);
+    gfxVtxColor4u8(0, 0x40, 0xFF, 0, 0);
     gfxVtxPos(lbl_8047D104, *(f32*)lbl_80478AC4, lbl_8047D0F0);
-    fn_800D5CB8(0, 0, 0x40, 0xFF, 0);
+    gfxVtxColor4u8(0, 0, 0x40, 0xFF, 0);
     gfxVtxPos(lbl_8047D0FC, -*(f32*)lbl_80478AC0, lbl_8047D0F0);
-    fn_800D5CB8(0, 0xFF, 0x80, 0x40, 0);
+    gfxVtxColor4u8(0, 0xFF, 0x80, 0x40, 0);
     gfxEnd();
     return 0;
 }
 #endif
 
 
-/* 0x80133218 | 0x38 -- fn_800E1544() then print result, return 0 */
-/* 0x80133218 | 0x38 -- fn_800E1544() then print result, return 0 */
+/* 0x80133218 | 0x38 -- GSmemOptimize() then print result, return 0 */
+/* 0x80133218 | 0x38 -- GSmemOptimize() then print result, return 0 */
 u32 dbgMenuGSmemOptimize(void) {
-    u32 val = fn_800E1544();
+    u32 val = GSmemOptimize();
     GSlogWrite(lbl_80272AB8, val);
     return 0;
 }
 
 
-/* 0x80133250 | 0x2C -- fn_800E0E14(1, 1), return 0 */
+/* 0x80133250 | 0x2C -- GSmemDumpMap(1, 1), return 0 */
 u32 dbgMenuGSmemDispMap(void) {
-    fn_800E0E14(1, 1);
+    GSmemDumpMap(1, 1);
     return 0;
 }
 
@@ -290,7 +290,7 @@ asm void dbgMenuGSmemCheck(void) {
 }
 #else
 u32 dbgMenuGSmemCheck(void) {
-    if ((u32)(fn_800E0E14(1, 0) & 0xFF) == 1) {
+    if ((u32)(GSmemDumpMap(1, 0) & 0xFF) == 1) {
         GSlogWrite(lbl_80272AE0);
     } else {
         GSlogWrite(lbl_80272AF0);
@@ -300,7 +300,7 @@ u32 dbgMenuGSmemCheck(void) {
 #endif
 
 
-/* 0x5C | dbgMenuGSmemCheck -- fn_800E0E14(1,0) check then print */
+/* 0x5C | dbgMenuGSmemCheck -- GSmemDumpMap(1,0) check then print */
 /* 0x801332D8 | 0x28 -- fn_800D3074(2), return 0 */
 u32 dbgMenuFrameRate20(void) {
     fn_800D3074(2);
@@ -637,8 +637,8 @@ s32 dbgMenuGetLink__Fl(s32 idx) {
 /* 0x80134274 | 0x44 */
 u32 dbgMenuGetRootMenu(void) {
     int new_var;
-    extern u32 fn_800057A8(void);
-    s32 val = (s32)fn_800057A8();
+    extern u32 GSgetVersionMinor(void);
+    s32 val = (s32)GSgetVersionMinor();
     if (val == 1) goto _ret2;
     if (val >= 1) goto _chk3;
     new_var = 2;

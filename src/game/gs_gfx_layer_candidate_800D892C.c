@@ -1,7 +1,7 @@
 /**
  * @file gs_gfx_layer_candidate_800D892C.c
  * @brief GSgfx: set up channels, texgens and TEV stages for a vertex
- * descriptor, then flush them (fn_800D923C). 0x800D892C - 0x800D923C.
+ * descriptor, then flush them (_gfxFlushTevState). 0x800D892C - 0x800D923C.
  *
  * Byte-exact (lane D6, 2026-09-29) and linked as Matching under the
  * byte-match-first policy, with the rule exceptions tagged below and listed
@@ -52,7 +52,7 @@ extern u32 lbl_803144F0[8];
 extern u32 lbl_80478AE0[2];
 
 extern void gfxSetTevOp(u32 stage, s32 mode);
-extern void fn_800D923C(void);
+extern void _gfxFlushTevState(void);
 
 static inline void gfxSetChanCtrlIdx(s32 chan, u8 enable, u8 ambSrc, u8 matSrc, u8 lightMask, u8 diffFn, u8 attnFn) {
     u8 both = FALSE;
@@ -242,6 +242,6 @@ void gfxSetupChannelsTev(GSVtxDesc* desc) {
         }
     }
 
-    fn_800D923C();
+    _gfxFlushTevState();
 }
 #pragma pop

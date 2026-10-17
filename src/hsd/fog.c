@@ -37,16 +37,16 @@ typedef struct _GXFogAdjTable {
 } GXFogAdjTable;
 
 /* GXSetFog */
-void fn_800BC8F8(u32 type, f32 startz, f32 endz, f32 nearz, f32 farz,
+void GXSetFog(u32 type, f32 startz, f32 endz, f32 nearz, f32 farz,
                  GXColor color);
 /* GXInitFogAdjTable */
-void fn_800BCB14(GXFogAdjTable* table, u16 width, const f32 projmtx[4][4]);
+void GXInitFogAdjTable(GXFogAdjTable* table, u16 width, const f32 projmtx[4][4]);
 /* GXSetFogRangeAdj */
-void fn_800BCCDC(u8 enable, u16 center, GXFogAdjTable* table);
+void GXSetFogRangeAdj(u8 enable, u16 center, GXFogAdjTable* table);
 /* GXGetProjectionv */
-void fn_800BD454(f32* p);
+void GXGetProjectionv(f32* p);
 /* GXGetViewportv */
-void fn_800BD768(f32* vp);
+void GXGetViewportv(f32* vp);
 /* hsdNew */
 void* fn_80193828(HSD_ClassInfo* info);
 
@@ -98,20 +98,20 @@ void HSD_FogSet(HSD_Fog* fog)
 
     if (fog == NULL) {
         GXColor color = HSD_Fog_804DE6F0;
-        fn_800BC8F8(GX_FOG_NONE, 0.0F, 0.0F, 0.0F, 0.0F, color);
+        GXSetFog(GX_FOG_NONE, 0.0F, 0.0F, 0.0F, 0.0F, color);
         return;
     }
     cobj = HSD_CObjGetCurrent();
     if (cobj == NULL) {
         HSD_Panic(__FILE__, 88, "You must specify CObj first.\n");
     }
-    fn_800BC8F8(fog->type, fog->start, fog->end, HSD_CObjGetNear(cobj),
+    GXSetFog(fog->type, fog->start, fog->end, HSD_CObjGetNear(cobj),
                 HSD_CObjGetFar(cobj), fog->color);
 
     adj = HSD_FogGetFogAdj(fog);
     flags = HSD_FogAdjGetFlags(adj);
     if (adj != NULL && (flags & FOGADJ_ALL)) {
-        fn_800BD768(v);
+        GXGetViewportv(v);
         if (flags & FOGADJ_CENTER) {
             range = v[0] + v[2] * (HSD_FogAdjGetCenter(adj) + 320) / 640.0F;
         } else {
@@ -127,7 +127,7 @@ void HSD_FogSet(HSD_Fog* fog)
         } else {
             mtx = m;
             memset(m, 0, sizeof(f32[4][4]));
-            fn_800BD454((f32*) &proj);
+            GXGetProjectionv((f32*) &proj);
             switch ((s32) proj.x0) {
             case GX_PERSPECTIVE:
                 m[0][0] = proj.v[0];
@@ -149,10 +149,10 @@ void HSD_FogSet(HSD_Fog* fog)
                 break;
             }
         }
-        fn_800BCB14(&tbl, width, mtx);
-        fn_800BCCDC(1, range, &tbl);
+        GXInitFogAdjTable(&tbl, width, mtx);
+        GXSetFogRangeAdj(1, range, &tbl);
     } else {
-        fn_800BCCDC(0, 0, NULL);
+        GXSetFogRangeAdj(0, 0, NULL);
     }
 }
 
@@ -187,7 +187,7 @@ void HSD_FogInit(HSD_Fog* fog, HSD_FogDesc* desc)
             fog->color = desc->color;
         } else {
             f32 v[6];
-            fn_800BD768(v);
+            GXGetViewportv(v);
             fog->type = GX_FOG_LIN;
             fog->start = v[4];
             fog->end = v[5];

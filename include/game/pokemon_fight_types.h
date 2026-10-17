@@ -69,8 +69,8 @@ extern s32 fightOutPokemonGetFightActionPri(struct Pokemon* pokemon);
 
 /* Forward declarations for fightFloorGetStatus asm wrapper */
 extern u32 jumptable_803754AC[];
-extern void fn_80119ED0(void);
-extern void fn_8011B444(void);
+extern void joutaiDataBiosGetStatusKind(void);
+extern void statusCheckWriteJoutaiDataId(void);
 extern void fn_8011B67C(void);
 extern void pokemonGetStatus(void);
 extern void std103_battleGetResult(void);

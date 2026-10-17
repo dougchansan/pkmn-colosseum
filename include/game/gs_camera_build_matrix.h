@@ -23,16 +23,16 @@ extern void HSD_CObjGetEyePosition(void* cobj, void* data);
 extern void HSD_CObjGetUpVector(void* cobj, void* data);
 extern void HSD_CObjGetInterest(void* cobj, void* data);
 extern void GSvecSub(void* dst, void* src1, void* src2);
-extern void fn_800E0218(void* mtx, void* eye, void* up, void* interest);
+extern void GSmtxLookAt(void* mtx, void* eye, void* up, void* interest);
 extern void GSmtxMakeXRotation(void* mtx, f32 angle);
 extern void GSmtxMakeYRotation(void* mtx, f32 angle);
 extern void GSmtxMakeZRotation(void* mtx, f32 angle);
 extern void fn_800E05C0(void* mtx, f32 x, f32 y, f32 z);
-extern void fn_800E0290(void* dst, void* lhs, void* rhs);
+extern void GSmtxConcat(void* dst, void* lhs, void* rhs);
 
 /*
  * Rebuilds the camera's view matrix. Retail expands this body identically in
- * fn_800D1B3C, fn_800D1D00, fn_800D258C, _cameraLoadCameraMatrix and
+ * GScameraGetInvMatrixPtr, GScameraGetMatrixPtr, fn_800D258C, _cameraLoadCameraMatrix and
  * fn_800D1070 (repeated expansion). In _cameraLoadCameraMatrix and
  * fn_800D1070 the expansion re-tests the isAnimating byte its caller already
  * tested and branched on, a stale-test inline fingerprint. Pokemon XD
@@ -68,7 +68,7 @@ static inline void cameraBuildMatrix(GSRenderCamera* c) {
                 }
             }
         }
-        fn_800E0218(c->viewMtx, &c->eye, &c->upVector, &c->interest);
+        GSmtxLookAt(c->viewMtx, &c->eye, &c->upVector, &c->interest);
     } else {
         f32 tmp3[3][4];
         f32 tmp1[3][4];
@@ -77,9 +77,9 @@ static inline void cameraBuildMatrix(GSRenderCamera* c) {
         GSmtxMakeYRotation(tmp1, -c->rotation.y);
         GSmtxMakeZRotation(tmp2, -c->rotation.z);
         fn_800E05C0(tmp3, -c->eye.x, -c->eye.y, -c->eye.z);
-        fn_800E0290(c->viewMtx, c->viewMtx, tmp1);
-        fn_800E0290(c->viewMtx, c->viewMtx, tmp2);
-        fn_800E0290(c->viewMtx, c->viewMtx, tmp3);
+        GSmtxConcat(c->viewMtx, c->viewMtx, tmp1);
+        GSmtxConcat(c->viewMtx, c->viewMtx, tmp2);
+        GSmtxConcat(c->viewMtx, c->viewMtx, tmp3);
     }
     c->dirty = 0;
 }

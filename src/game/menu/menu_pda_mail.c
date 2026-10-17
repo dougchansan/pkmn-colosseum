@@ -78,7 +78,7 @@ extern u32 windowGetActiveID(void);
 extern s32 menuOpenCustom(s32 menuId, ...);
 extern void menuClose(s32 menuId);
 extern void menuCloseSync(s32 menuId, s32 flag);
-extern void* fn_800F92D4(u32 resourceId);
+extern void* GSresFindById(u32 resourceId);
 extern void fn_800E3CC8(void* model, s32 value);
 extern void cameraPlayAnime(s32 camera, u32 resourceId, s32 startFrame, s32 flags);
 extern void GSmodelSetAnimIndex(void* model, s32 index);
@@ -97,16 +97,16 @@ extern void GSlightSetActive(void* light, s32 active);
 extern void soundStartRaw(s32 soundId, s32 arg1, s32 arg2);
 extern void cameraWaitSyncAnime(s32 camera);
 extern void fn_8004A47C(void);
-extern void fn_8003C7C0(void);
-extern void fn_80044630(void);
+extern void pdaSnagListRun(void);
+extern void pdaStrategyMemoRun(void);
 extern u8 std081_flagCheckTrue(s32 id);
 extern void fn_8004C120(void);
 extern void fadeSet(s32 type, f32 speed);
 extern s8 fadeCheck(s32 type);
-extern void fn_800FF660(void);
+extern void floorBattleEndTerminateScripts(void);
 extern void floorSetFadeScript(s32 a, u32 b);
 extern void _threadSwitch(void);
-extern void fn_800FB680(s32 x, s32 y, u32 color, s32 msgId);
+extern void GSmsgPrintColor(s32 x, s32 y, u32 color, s32 msgId);
 
 typedef struct PdaMailAttachmentConfig {
     f32* scroll;
@@ -149,8 +149,8 @@ void std027_unkMenuSequence27(void)
     state->exiting = 0;
 
     menuOffScreenSetPriority(0);
-    model = fn_800F92D4(0x0C541000);
-    light = fn_800F92D4(0x0C541601);
+    model = GSresFindById(0x0C541000);
+    light = GSresFindById(0x0C541601);
     fn_800E3CC8(model, 1);
     cameraPlayAnime(0x17, 0x0C541800, 0, 0);
     if (model != 0) {
@@ -173,10 +173,10 @@ void std027_unkMenuSequence27(void)
     GSmodelStopAnimation(model);
     cameraWaitSyncAnime(1);
     GSlightSetActive(light, 0);
-    GSlightSetActive(fn_800F92D4(0x0C541600), 0);
-    GSlightSetActive(fn_800F92D4(0x0C541602), 0);
-    fn_800F92D4(0x0C540200);
-    fn_800F92D4(0x0C541800);
+    GSlightSetActive(GSresFindById(0x0C541600), 0);
+    GSlightSetActive(GSresFindById(0x0C541602), 0);
+    GSresFindById(0x0C540200);
+    GSresFindById(0x0C541800);
     fn_8004A47C();
 
     config.message = &lbl_8047A4FC;
@@ -220,7 +220,7 @@ void std027_unkMenuSequence27(void)
             menuClose(0x97);
             menuCloseSync(0x97, 1);
             *config.message = 0x36B4;
-            fn_8003C7C0();
+            pdaSnagListRun();
             state->menuBusy = 0;
             *transitionTarget = lbl_8047BDAC;
             break;
@@ -237,7 +237,7 @@ void std027_unkMenuSequence27(void)
             menuClose(0x97);
             menuCloseSync(0x97, 1);
             *config.message = 0x36B5;
-            fn_80044630();
+            pdaStrategyMemoRun();
             state->menuBusy = 0;
             *transitionTarget = lbl_8047BDAC;
             break;
@@ -318,7 +318,7 @@ void std027_unkMenuSequence27(void)
             break;
         }
     }
-    fn_800FF660();
+    floorBattleEndTerminateScripts();
     floorSetFadeScript(0, 0);
 }
 #pragma peephole reset
@@ -410,8 +410,8 @@ typedef struct PdaMailWindowB {
 extern u32 mailGetAttachFileGroup(s32 index);
 extern s32 fn_8017B2CC(u32 fileHandle);
 extern s32 fn_8017B448(u32 fileHandle);
-extern u32 fn_8017B4BC(u32 fileHandle, u32 index);
-extern u32 fn_8017B5A4();
+extern u32 fsysFindLoadedArchive(u32 fileHandle, u32 index);
+extern u32 fsysEntryGetType();
 
 /* RULE-EXCEPTION(user-approved): single-function inline helper (fn_8004E440) — see docs/RULE_EXCEPTIONS.md */
 static inline s32 pdaMailIsAttachReady(s32 index)
@@ -422,7 +422,7 @@ static inline s32 pdaMailIsAttachReady(s32 index)
     return 1;
 }
 
-/* RULE-EXCEPTION(user-approved): reconstructed inline helper (fn_8004E440, fn_8004E180, fn_8004E2E0, fn_8004E510) — see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): reconstructed inline helper (fn_8004E440, pdaMailAttachDrawTitle, fn_8004E2E0, fn_8004E510) — see docs/RULE_EXCEPTIONS.md */
 static inline s32 pdaMailCountAttachItems(s32* state)
 {
     u32 object;
@@ -440,8 +440,8 @@ static inline s32 pdaMailCountAttachItems(s32* state)
     total = fn_8017B448(object);
     count = 0;
     for (i = 0; i < total; i++) {
-        fn_8017B4BC(object, i);
-        if (fn_8017B5A4() == 9) {
+        fsysFindLoadedArchive(object, i);
+        if (fsysEntryGetType() == 9) {
             count++;
         }
     }
@@ -492,7 +492,7 @@ extern const s32 lbl_802672D8[6];
 extern const s32 lbl_802671D0[12];
 
 #ifndef MENU_PDA_MAIL_PARTIAL
-s32 fn_8004C5B0(void* unused, PdaMailSpriteField* field)
+s32 pdaMailDrawCursor(void* unused, PdaMailSpriteField* field)
 {
     typedef union PdaMailCursorPosition {
         u32 storage;
@@ -611,7 +611,7 @@ asm s32 fn_8004D590(PdaMailWindowA* window, PdaMailOutA* out) {
 #include "src/game/menu/menu_pda_mail_fn_8004D590.inc"
 }
 #else
-s32 fn_8004D590(PdaMailWindowA* window, PdaMailOutA* out)
+s32 pdaMailDrawPicture(PdaMailWindowA* window, PdaMailOutA* out)
 {
     if (mailGetAttachFileGroup(pdaMailGetMailID(**window->field_0x60)) != 0) {
         out->field_0x4c = 0x36B9;
@@ -633,7 +633,7 @@ asm s32 fn_8004D6F0(PdaMailWindowA* window, PdaMailOutA* out) {
 #include "src/game/menu/menu_pda_mail_fn_8004D6F0.inc"
 }
 #else
-s32 fn_8004D6F0(PdaMailWindowA* window, PdaMailOutA* out)
+s32 pdaMailDrawSender(PdaMailWindowA* window, PdaMailOutA* out)
 {
     u32 val = mailGetSenderName(pdaMailGetMailID(**window->field_0x60));
     if (val != 0) {
@@ -655,7 +655,7 @@ asm s32 fn_8004D760(PdaMailWindowA* window, PdaMailOutA* out) {
 #include "src/game/menu/menu_pda_mail_fn_8004D760.inc"
 }
 #else
-s32 fn_8004D760(PdaMailWindowA* window, PdaMailOutA* out)
+s32 pdaMailDrawSubject(PdaMailWindowA* window, PdaMailOutA* out)
 {
     u32 val = mailGetSubject(pdaMailGetMailID(**window->field_0x60));
     if (val != 0) {
@@ -805,10 +805,10 @@ s32 fn_8004D34C(s32 index)
     extern s32 mailGetSortMode(void);
     extern s32 fn_8004DC18(s32 mode);
     extern void fn_8004BFB0(void);
-    extern u8 fn_8004DFCC(u8 initialSelection);
-    extern u8 fn_801D16C4(void);
+    extern u8 pdaMailPickerRun(u8 initialSelection);
+    extern u8 mailGetCurrentIndex(void);
     extern void fn_801D167C(u8 handle);
-    extern void fn_801D1B10(s32 handle);
+    extern void mailSetFlag442(s32 handle);
     extern s32 lbl_804788E0;
     extern s32 lbl_8047A508;
     extern s32 lbl_8047A50C;
@@ -869,7 +869,7 @@ s32 fn_8004D34C(s32 index)
         case 10:
             sortMode = fn_8004DC18(mailGetSortMode());
             if (sortMode >= 0) {
-                fn_801D1B10(sortMode);
+                mailSetFlag442(sortMode);
                 fn_8004BFB0();
                 row = 0;
                 remaining = mailGetNbMailInMailbox();
@@ -888,7 +888,7 @@ s32 fn_8004D34C(s32 index)
             }
             break;
         case 11:
-            handle = fn_8004DFCC(fn_801D16C4());
+            handle = pdaMailPickerRun(mailGetCurrentIndex());
             if (handle != 0xff) {
                 fn_801D167C(handle);
             }
@@ -912,7 +912,7 @@ extern s32 mailGetReceiveNumber(s32 mailId);
 /* GScharCmp (menuCB_Battle.c): compares two rendered-message buffers. */
 extern s32 GScharCmp(void* a, void* b);
 
-extern s32 fn_8004BE90(u16* a, u16* b);
+extern s32 pdaMailCompareSubject(u16* a, u16* b);
 extern s32 fn_8004BF20(u16* a, u16* b);
 
 #ifndef MENU_PDA_MAIL_PARTIAL
@@ -1042,7 +1042,7 @@ s32 fn_8004C3E4(PdaMailSortLabelWindow* window)
     } MailSortMessageIds;
     extern const u32 lbl_802672C8[];
     extern u32 GSmsgGetRect(u32 msgId);
-    extern void fn_800FB680(s32 x, s32 y, s32 color, u32 msgId);
+    extern void GSmsgPrintColor(s32 x, s32 y, s32 color, u32 msgId);
     MailSortMessageIds messageIds;
     s32 sortMode;
     u32 messageId;
@@ -1059,8 +1059,8 @@ s32 fn_8004C3E4(PdaMailSortLabelWindow* window)
         u32 alpha = window->color;
         s32 color = alpha | colorMask;
 
-        fn_800FB680(0, 0, color, messageId);
-        fn_800FB680(GSmsgGetRect(messageId) >> 16, 0,
+        GSmsgPrintColor(0, 0, color, messageId);
+        GSmsgPrintColor(GSmsgGetRect(messageId) >> 16, 0,
                      color, 0x36c1);
     }
     return 0;
@@ -1147,7 +1147,7 @@ void fn_8004BFB0(void)
             *alphaCursor++ = mailGetMailIDInMailbox(alphaIndex);
         }
         qsort(output, alphaCount, sizeof(u16),
-              (s32 (*)(const void*, const void*))fn_8004BE90);
+              (s32 (*)(const void*, const void*))pdaMailCompareSubject);
         break;
     case 0:
     default:
@@ -1211,7 +1211,7 @@ typedef struct PdaMailOutC {
     u32 field_0x4c;
 } PdaMailOutC;
 
-extern u32 fn_801D1620(u32 idx);
+extern u32 mailGetEntryField4(u32 idx);
 
 /* lbl_802672F0 (rodata_80267250.c): shared message-id table; this call
  * site takes a mutable stack COPY of the first 11 (of 12) entries. */
@@ -1232,7 +1232,7 @@ asm s32 fn_8004D7D0(PdaMailWindowA* window) {
 #include "src/game/menu/menu_pda_mail_fn_8004D7D0.inc"
 }
 #else
-s32 fn_8004D7D0(PdaMailWindowA* window)
+s32 pdaMailViewKey(PdaMailWindowA* window)
 {
     extern s32 mailGetNbMailInMailbox(void);
     s32** field = window->field_0x60;
@@ -1288,7 +1288,7 @@ void fn_8004E9C0(s32 mailId)
     extern f32 lbl_8047A53C;
     extern f32 lbl_8047BE48;
     extern void fn_800F915C(u32 group);
-    extern void fn_8017B1CC(u32 group);
+    extern void GSresReleaseById(u32 group);
     extern s32 fn_8017B2CC(u32 group);
     extern void fn_8017B3E4(u32 group);
     extern u32 mailGetAttachFileGroup(s32 mailId);
@@ -1321,7 +1321,7 @@ void fn_8004E9C0(s32 mailId)
     }
     menuClose(0x77);
     menuCloseSync(0x77, 1);
-    fn_8017B1CC(file);
+    GSresReleaseById(file);
     fn_800F915C(group);
 }
 #pragma peephole reset
@@ -1557,12 +1557,12 @@ u32 fn_8004CDD8(u8* context, u8* object)
 #if !defined(MENU_PDA_MAIL_PARTIAL) || defined(MENU_PDA_MAIL_PICKER_ONLY)
 extern u8* windowGetKeyInfo(void);
 extern void soundStart(s32 id, s32 a, s32 b, s32 c);
-extern u32 fn_801D1650(u8 index);
-extern void soundGetStatus(u32 id);
+extern u32 mailGetEntryField0(u8 index);
+extern void GSsndGetStatus(u32 id);
 extern void soundKill(u32 id);
 extern void fn_801654E0(u32 id, u32 buffer, u32 size);
 extern void soundAttachWork(u32 id, u32 arg1, u32 arg2);
-extern s32 fn_801D1618(void);
+extern s32 mailGetMailCount(void);
 extern void soundStopRaw(u32 id, u32 arg1, u32 arg2);
 extern s32 lbl_8047A520;
 extern u8 lbl_8047A524;
@@ -1579,16 +1579,16 @@ u32 fn_8004DDC0(u8* context)
 
     input = windowGetKeyInfo();
     if (lbl_8047A520 != 0) {
-        soundId = fn_801D1650(lbl_8047A524);
+        soundId = mailGetEntryField0(lbl_8047A524);
         if (soundId != 0) {
-            soundGetStatus(soundId);
+            GSsndGetStatus(soundId);
         }
-        soundId = fn_801D1650(lbl_8047A524);
+        soundId = mailGetEntryField0(lbl_8047A524);
         if (soundId != 0) {
             soundKill(soundId);
         }
         lbl_8047A524 = *(s8*)(context + 0x95);
-        soundId = fn_801D1650(lbl_8047A524);
+        soundId = mailGetEntryField0(lbl_8047A524);
         if (soundId != 0) {
             fn_801654E0(soundId, lbl_8047A52C, 0x10000);
             soundAttachWork(soundId, 0, 0x408);
@@ -1599,7 +1599,7 @@ u32 fn_8004DDC0(u8* context)
     }
 
     if ((*(u16*)(input + 4) & 2) != 0) {
-        limit = fn_801D1618() + 1;
+        limit = mailGetMailCount() + 1;
         if (++*(s8*)(context + 0x95) >= limit) {
             *(s8*)(context + 0x95) = limit - 1;
         }
@@ -1610,7 +1610,7 @@ u32 fn_8004DDC0(u8* context)
         }
     }
     if (lbl_8047A524 != (s8)context[0x95]) {
-        soundId = fn_801D1650(lbl_8047A524);
+        soundId = mailGetEntryField0(lbl_8047A524);
         if (soundId != 0) {
             soundStopRaw(soundId, 0, 0);
         }
@@ -1632,7 +1632,7 @@ extern s32 fn_801026A4(u32 menuId, ...);
 extern void fn_80102510(u32 menuId);
 
 #pragma peephole off
-u8 fn_8004DFCC(u8 initialSelection)
+u8 pdaMailPickerRun(u8 initialSelection)
 {
     s32 selection;
     u32 state;
@@ -1645,7 +1645,7 @@ u8 fn_8004DFCC(u8 initialSelection)
     lbl_8047A52C = GSresAllocResourceAlign(0x10000, 0x20, 0, 0x408, 0);
     GSresRegisterResource(lbl_8047A52C, 0, 0x408, 0);
     lbl_8047A524 = initialSelection;
-    soundId = fn_801D1650(initialSelection);
+    soundId = mailGetEntryField0(initialSelection);
     if (soundId != 0) {
         fn_801654E0(soundId, lbl_8047A52C, 0x10000);
         soundAttachWork(soundId, 0, 0x408);
@@ -1654,7 +1654,7 @@ u8 fn_8004DFCC(u8 initialSelection)
     }
 
     choice = menuOpenCustom(0x76, windowGetActiveID(), &selection, 0, 1, 0);
-    if (choice < 0 || choice >= fn_801D1618()) {
+    if (choice < 0 || choice >= mailGetMailCount()) {
         result = 0xFF;
     } else {
         result = choice;
@@ -1662,15 +1662,15 @@ u8 fn_8004DFCC(u8 initialSelection)
     menuClose(0x76);
     menuCloseSync(0x76, 1);
 
-    soundId = fn_801D1650(lbl_8047A524);
+    soundId = mailGetEntryField0(lbl_8047A524);
     if (soundId != 0) {
         soundStopRaw(soundId, 0, 0);
     }
-    soundId = fn_801D1650(lbl_8047A524);
+    soundId = mailGetEntryField0(lbl_8047A524);
     if (soundId != 0) {
-        soundGetStatus(soundId);
+        GSsndGetStatus(soundId);
     }
-    soundId = fn_801D1650(lbl_8047A524);
+    soundId = mailGetEntryField0(lbl_8047A524);
     if (soundId != 0) {
         soundKill(soundId);
     }
@@ -1683,8 +1683,8 @@ u8 fn_8004DFCC(u8 initialSelection)
 extern u32 mailGetAttachFileGroup(s32 index);
 extern s32 fn_8017B2CC(u32 fileHandle);
 extern s32 fn_8017B448(u32 fileHandle);
-extern u32 fn_8017B4BC(u32 fileHandle, u32 index);
-extern u32 fn_8017B5A4(void);
+extern u32 fsysFindLoadedArchive(u32 fileHandle, u32 index);
+extern u32 fsysEntryGetType(void);
 extern u32 GSmsgGetRect(s32 messageId);
 extern const f32 lbl_8047BE38;
 extern const f32 lbl_8047BE3C;
@@ -1701,8 +1701,8 @@ static inline s32 pdaMailCountAttachmentEntries(u32 fileHandle)
     total = fn_8017B448(fileHandle);
     count = 0;
     for (index = 0; index < total; index++) {
-        fn_8017B4BC(fileHandle, index);
-        if (fn_8017B5A4() == 9) {
+        fsysFindLoadedArchive(fileHandle, index);
+        if (fsysEntryGetType() == 9) {
             count++;
         }
     }
@@ -1710,7 +1710,7 @@ static inline s32 pdaMailCountAttachmentEntries(u32 fileHandle)
 }
 
 #pragma peephole off
-s32 fn_8004E180(u8* context, u8* object)
+s32 pdaMailAttachDrawTitle(u8* context, u8* object)
 {
     u8* attachmentState;
     u32 fileHandle;
@@ -1734,10 +1734,10 @@ s32 fn_8004E180(u8* context, u8* object)
         (selectedWidth + normalWidth * (count - 1)) / 2;
     for (index = 0; index < count; index++) {
         if (index == current) {
-            fn_800FB680(x, 0, 0xE6AA00FF, 0x36CE);
+            GSmsgPrintColor(x, 0, 0xE6AA00FF, 0x36CE);
             x += selectedWidth;
         } else {
-            fn_800FB680(x, 0, 0xAAAAAAFF, 0x36CF);
+            GSmsgPrintColor(x, 0, 0xAAAAAAFF, 0x36CF);
             x += normalWidth;
         }
     }
@@ -1773,14 +1773,14 @@ s32 fn_8004E2E0(u8* context, u8* object)
 }
 #pragma peephole reset
 
-extern u8 fn_8017B07C(u32 fileHandle, u32 entry);
+extern u8 fsysIsEntryLoaded(u32 fileHandle, u32 entry);
 extern void gfxSetFlags(u32 mask);
 extern void gfxClearFlags(u32 value);
 extern void gfxLoadTexture(u32 slot, void* texture);
 extern void gfxSetPrimitive(u32 mode);
 extern void gfxBegin(u32 count);
-extern void fn_800D61E4(s16 x, s16 y);
-extern void fn_800D5BA0(u32 slot, s32 value);
+extern void gfxVtxPos2s16(s16 x, s16 y);
+extern void gfxVtxColor1u32(u32 slot, s32 value);
 extern void gfxVtxTexCoord(u32 slot, f32 x, f32 y);
 extern void gfxEnd(void);
 extern f32 lbl_8047BE48;
@@ -1805,8 +1805,8 @@ static inline u32 pdaMailGetAttachEntry(s32* state, s32 selected)
     fileHandle = mailGetAttachFileGroup(index);
     found = 0;
     for (i = 0; i < count; i++) {
-        entry = fn_8017B4BC(fileHandle, i);
-        if (fn_8017B5A4() == 9) {
+        entry = fsysFindLoadedArchive(fileHandle, i);
+        if (fsysEntryGetType() == 9) {
             if (found >= selected) {
                 break;
             }
@@ -1840,11 +1840,11 @@ s32 fn_8004E510(u8* context, u8* object)
     if (fileHandle == 0) {
         return 0;
     }
-    if (fn_8017B07C(fileHandle, entry) == 0) {
+    if (fsysIsEntryLoaded(fileHandle, entry) == 0) {
         return 0;
     }
 
-    texture = (u32)fn_800F92D4(entry);
+    texture = (u32)GSresFindById(entry);
     if (texture == 0) {
         return 0;
     }
@@ -1853,11 +1853,11 @@ s32 fn_8004E510(u8* context, u8* object)
     gfxLoadTexture(0, (void*)texture);
     gfxSetPrimitive(7);
     gfxBegin(2);
-    fn_800D61E4(0, 0);
-    fn_800D5BA0(0, -1);
+    gfxVtxPos2s16(0, 0);
+    gfxVtxColor1u32(0, -1);
     gfxVtxTexCoord(0, lbl_8047BE48, lbl_8047BE48);
-    fn_800D61E4(*(s16*)(object + 0x54), *(s16*)(object + 0x56));
-    fn_800D5BA0(0, -1);
+    gfxVtxPos2s16(*(s16*)(object + 0x54), *(s16*)(object + 0x56));
+    gfxVtxColor1u32(0, -1);
     gfxVtxTexCoord(0, lbl_8047BE4C, lbl_8047BE4C);
     gfxEnd();
     return 0;
@@ -1872,9 +1872,9 @@ s32 fn_8004E510(u8* context, u8* object)
 void fn_8004C120(void)
 {
     extern u16 _toolentryAlloc__FUl(u32);
-    extern void* fn_800E27B0(u16);
+    extern void* GSmemLock(u16);
     extern void fn_800E24B0(u16);
-    extern void fn_800E209C(u16);
+    extern void GSmemFree(u16);
     extern s32 fn_8004D34C(s32);
     extern s32 fn_8004D9C0(s32);
     s32 ascIndex;
@@ -1895,7 +1895,7 @@ void fn_8004C120(void)
     count = mailGetNbMailInMailbox();
     if (count > 0) {
         allocation = _toolentryAlloc__FUl(count * sizeof(u16));
-        lbl_8047A500 = fn_800E27B0(allocation);
+        lbl_8047A500 = GSmemLock(allocation);
         output = lbl_8047A500;
 
         switch (mailGetSortMode()) {
@@ -1920,7 +1920,7 @@ void fn_8004C120(void)
                 *alphaCursor++ = mailGetMailIDInMailbox(alphaIndex);
             }
             qsort(output, alphaCount, sizeof(u16),
-                  (s32 (*)(const void*, const void*))fn_8004BE90);
+                  (s32 (*)(const void*, const void*))pdaMailCompareSubject);
             break;
         case 0:
         default:
@@ -1943,7 +1943,7 @@ void fn_8004C120(void)
 
     if (count > 0) {
         fn_800E24B0(allocation);
-        fn_800E209C(allocation);
+        GSmemFree(allocation);
     }
 }
 #pragma peephole reset

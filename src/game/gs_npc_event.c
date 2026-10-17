@@ -43,8 +43,8 @@
  *     - fn_800D7820: Load model resource
  *     - fn_800D85D4: Bind model to slot 0
  *     - fn_800D67BC: Set blend mode 2
- *     - fn_800D61E4: Set position (x, y)
- *     - fn_800D5CB8: Set color RGBA (255, 255, 255, 255)
+ *     - gfxVtxPos2s16: Set position (x, y)
+ *     - gfxVtxColor4u8: Set color RGBA (255, 255, 255, 255)
  *     - fn_800D59B8: Set scale (1.0, 1.0)
  *     - fn_800D6728: Commit render state
  *
@@ -54,7 +54,7 @@
  *     0x0FBD: Special NPC battle trigger
  *   For battle triggers, looks up the trainer data from lbl_803A2688,
  *   sets the battle parameter via msgctrlSetValue (param 0x4D), then
- *   initiates a trainer model render via fn_800FB680.
+ *   initiates a trainer model render via GSmsgPrintColor.
  *
  * fn_80030388 (GSnpcEvt_ProcessMirorB):
  *   Same structure as fn_800302D0 but for Miror B. encounters:
@@ -89,8 +89,8 @@ extern void  gfxSetPrimitive(s32 mode);               /* Set render mode */
 extern void  gfxSetVtxDesc(void* resource);          /* Load model resource */
 extern void  gfxLoadTexture(s32 slot, void* model);  /* Bind model to slot */
 extern void  gfxBegin(s32 blendMode);           /* Set blend mode */
-extern void  fn_800D61E4(s32 x, s32 y);           /* Set position */
-extern void  fn_800D5CB8(s32 slot, s32 r, s32 g, s32 b, s32 a); /* Set color */
+extern void  gfxVtxPos2s16(s32 x, s32 y);           /* Set position */
+extern void  gfxVtxColor4u8(s32 slot, s32 r, s32 g, s32 b, s32 a); /* Set color */
 extern void  gfxVtxTexCoord(s32 slot, f32 scaleX, f32 scaleY);     /* Set scale */
 extern void  gfxEnd(void);                    /* Commit render state */
 
@@ -98,7 +98,7 @@ extern void  gfxEnd(void);                    /* Commit render state */
 extern void* menuModelRender(void* data);              /* Get model from data */
 extern s32   heroGetStatus(void* partyData, s32 slot, s32 p3);
 extern void  msgctrlSetValue(s32 paramId, s32 value);
-extern void  fn_800FB680(s32, s32, u32, u16);
+extern void  GSmsgPrintColor(s32, s32, u32, u16);
 
 /* Event queue */
 /* The event queue is a simple array-based queue where fn_80030170 pops
@@ -152,13 +152,13 @@ void fn_80031188(u8* r3, u8* r4) {
     u32 combined = (flags & 0xa1400000) | *(u8*)(r3 + 0x8b);
     switch (evtype) {
     case 0xF6B:
-        fn_800FB680(0, 0, combined, 0x4412);
+        GSmsgPrintColor(0, 0, combined, 0x4412);
         break;
     case 0xF6A:
         {
             s32 val = heroGetStatus((void*)lbl_803A2688, 1, 0);
             msgctrlSetValue(0x4D, val);
-            fn_800FB680(0, 0, combined, 0x4413);
+            GSmsgPrintColor(0, 0, combined, 0x4413);
         }
         break;
     }
@@ -167,7 +167,7 @@ void fn_80031188(u8* r3, u8* r4) {
 
 /* 0x80031228 | 0x1DC */
 extern void pokemonBiosGetFuseiFlag(void);
-extern void fn_8010B718(void);
+extern void menuFaceDrawPokemon(void);
 extern void winSpriteSetDisp(void*, s32);
 extern void pokemonCheckValid(void);
 extern void menuCBRule_CheckPokemonEventFlag(void);
@@ -203,10 +203,10 @@ void fn_80031228(u8* arg0, u8* arg1) {
     }
 
     if (((u8 (*)(void*))pokemonBiosGetFuseiFlag)(obj) != 0) {
-        ((void (*)(u8*, u8*, void*))fn_8010B718)(arg0, arg1, obj);
+        ((void (*)(u8*, u8*, void*))menuFaceDrawPokemon)(arg0, arg1, obj);
         winSpriteSetDisp(arg1, 1);
     } else if (((u8 (*)(void*))pokemonCheckValid)(obj) != 0 && ((u8 (*)(void))menuCBRule_CheckPokemonEventFlag)() == 1) {
-        ((void (*)(u8*, u8*, void*))fn_8010B718)(arg0, arg1, obj);
+        ((void (*)(u8*, u8*, void*))menuFaceDrawPokemon)(arg0, arg1, obj);
         winSpriteSetDisp(arg1, 1);
     } else {
         winSpriteSetDisp(arg1, 0);
@@ -273,7 +273,7 @@ void fn_80031404(u8* arg0, u8* arg1) {
         }
         if (msg != 0) {
             msgctrlSetValue(0x37, ((s32 (*)(s32))GSmsgGetGSchar)(msg));
-            fn_800FB680(2, 0, combined, 0xCF);
+            GSmsgPrintColor(2, 0, combined, 0xCF);
             winSpriteSetDisp(arg1, 1);
         } else {
             winSpriteSetDisp(arg1, 0);
@@ -341,7 +341,7 @@ grp_done:
 
     width = (s16)(((u32 (*)(s32))GSmsgGetRect)(0xE7) >> 16);
     x = (*(s16*)(arg1 + 0x54) / 2) - (width / 2);
-    fn_800FB680((s16)x, 0, -1, 0xE7);
+    GSmsgPrintColor((s16)x, 0, -1, 0xE7);
     winSpriteSetDisp(arg1, 1);
 }
 #endif
@@ -474,7 +474,7 @@ void fn_80031B10(void) {
 #endif
 
 /* 0x80031B4C | 0x954 */
-extern void fn_801D036C(void);
+extern void memcardAllocBuffer(void);
 extern void fn_800849B4(void);
 extern void fn_8002FC58(void);
 extern void fn_801021F8(void);
@@ -491,29 +491,29 @@ extern void fadeCheck(void);
 extern void GSmodelSetVisibility(void);
 extern void menuSetDisp(void);
 extern void fn_80097CD0(void);
-extern void fn_8002F79C(void);
+extern void gbaTradeCheckExportItems(void);
 extern void fn_8002F284(void);
 extern void fn_8002EE74(void);
 extern void menuSetEnablePort(void);
 extern s32 menuGetLastError(void);
 extern void winMsgOpen(s32, s32, s32, s32);
-extern void fn_8002EA5C(void);
+extern void gbaTradeCheckImportItems(void);
 extern void fn_8002E460(void);
 extern void menuOpen(void);
 extern void menuModelInit(void);
-extern void fn_80109C88(void);
+extern void menuPokemonModelRequest(void);
 extern void winMsgClose(s32);
 extern void stateFunctionExChangeMain(void);
-extern void fn_8010A420(void);
+extern void menuModelTerm(void);
 extern void pokemonBiosSetFriend(void);
 extern void fn_8025FF9C(void);
 extern void stateFunctionEvolution(void);
 extern void stateFunctionSaveReport(void);
 extern void fn_8001E074(void);
-extern void fn_801D0314(void);
+extern void memcardFreeBuffer(void);
 extern void fn_801024E8(void);
 extern void fn_800FF52C(void);
-extern void fn_800FF660(void);
+extern void floorBattleEndTerminateScripts(void);
 extern void floorGetPrevFloorID(void);
 extern void floorLink(void);
 extern void jumptable_802E4F90();
@@ -597,22 +597,22 @@ static inline s32 NpcEventRunChoiceMenu(s32 yes_sprite, s32 no_sprite)
 
 #pragma push
 #pragma peephole off
-void fn_80031B4C(void) {
+void gbaTradeRun(void) {
     extern void fn_8001E074();
     extern void stateFunctionSaveReport(s32);
     extern void stateFunctionEvolution(void);
     extern void stateFunctionExChangeMain(void);
     extern void fn_8002E460(s32);
-    extern void fn_8002EA5C(void);
+    extern void gbaTradeCheckImportItems(void);
     extern void fn_8002EE74(void);
     extern void fn_8002F284(void);
-    extern void fn_8002F79C(void);
+    extern void gbaTradeCheckExportItems(void);
     extern void fn_8002FC58(void);
     extern s32 fn_800849B4(s32 mode, s32 command, void* input, void* output);
     extern void fn_80097CD0(s32, s32, s32);
     extern void GSmodelSetVisibility(u32, s32);
     extern u8 fn_800FF52C();
-    extern void fn_800FF660();
+    extern void floorBattleEndTerminateScripts();
     extern s32 menuGetLastError();
     extern void fn_801021F8(s32, s32);
     extern void menuSetDisp(s32, s32);
@@ -630,8 +630,8 @@ void fn_80031B4C(void) {
     extern void winMsgClose();
     extern void winMsgOpen();
     extern void winSpriteSetDisp(void*, s32);
-    extern void fn_80109C88(void*, s32);
-    extern void fn_8010A420(void*);
+    extern void menuPokemonModelRequest(void*, s32);
+    extern void menuModelTerm(void*);
     extern void menuModelInit(void*, s32, s32);
     extern void floorLink();
     extern s32 floorGetPrevFloorID();
@@ -641,8 +641,8 @@ void fn_80031B4C(void) {
     extern s8 menuSubOpenYesNo(s32, s32, s32, s32);
     extern void fadeCheck(s32);
     extern void fadeSet(s32, f32);
-    extern void fn_801D0314(s32);
-    extern s32 fn_801D036C(void);
+    extern void memcardFreeBuffer(s32);
+    extern s32 memcardAllocBuffer(void);
     u8* base;
     s32 handle;
     s32 work0;
@@ -653,7 +653,7 @@ void fn_80031B4C(void) {
     base = lbl_803A2518;
     lbl_804788B0 = 1;
     if (lbl_8047A409 != 1) {
-        handle = fn_801D036C();
+        handle = memcardAllocBuffer();
         while ((s32)lbl_8047A42C > 0) {
             switch ((s32)lbl_8047A42C) {
             case 1: {
@@ -720,7 +720,7 @@ void fn_80031B4C(void) {
                 lbl_8047A42C = 2;
                 break;
             case 6:
-                fn_8002F79C();
+                gbaTradeCheckExportItems();
                 break;
             case 7:
                 fn_8002F284();
@@ -762,7 +762,7 @@ void fn_80031B4C(void) {
                 break;
             }
             case 11:
-                fn_8002EA5C();
+                gbaTradeCheckImportItems();
                 break;
             case 12:
                 fn_8002E460(handle);
@@ -775,8 +775,8 @@ void fn_80031B4C(void) {
                 menuOpen(0xDE, 0);
                 menuModelInit(base + 0xD18, 0xE8, 0x11C);
                 menuModelInit(base + 0xCD0, 0xE8, 0x11C);
-                fn_80109C88(base + 0xD18, work2);
-                fn_80109C88(base + 0xCD0, work3);
+                menuPokemonModelRequest(base + 0xD18, work2);
+                menuPokemonModelRequest(base + 0xCD0, work3);
                 work2 = pokemonBiosGetNicknamePtr(work2);
                 work3 = pokemonBiosGetNicknamePtr(work3);
                 msgctrlSetValue(0x4D, work0);
@@ -798,8 +798,8 @@ void fn_80031B4C(void) {
             case 15:
                 winMsgOpen(2, 0x43DC, 1, 0);
                 menuClose(0xDE);
-                fn_8010A420(base + 0xD18);
-                fn_8010A420(base + 0xCD0);
+                menuModelTerm(base + 0xD18);
+                menuModelTerm(base + 0xCD0);
                 lbl_8047A42C = 0;
                 break;
             case 16: {
@@ -838,21 +838,21 @@ void fn_80031B4C(void) {
                     lbl_8047A428 = -1;
                     lbl_8047A424 = -1;
                     lbl_8047A420 = -1;
-                    fn_8010A420(base + 0xD18);
-                    fn_8010A420(base + 0xCD0);
+                    menuModelTerm(base + 0xD18);
+                    menuModelTerm(base + 0xCD0);
                     lbl_8047A410 = 1;
                     lbl_8047A42C = 2;
                     break;
                 case 1:
                     menuClose(0xDE);
-                    fn_8010A420(base + 0xD18);
-                    fn_8010A420(base + 0xCD0);
+                    menuModelTerm(base + 0xD18);
+                    menuModelTerm(base + 0xCD0);
                     lbl_8047A42C = 0;
                     break;
                 case -1:
                     menuClose(0xDE);
-                    fn_8010A420(base + 0xD18);
-                    fn_8010A420(base + 0xCD0);
+                    menuModelTerm(base + 0xD18);
+                    menuModelTerm(base + 0xCD0);
                     lbl_8047A42C = 0;
                     break;
                 }
@@ -860,7 +860,7 @@ void fn_80031B4C(void) {
             }
             }
         }
-        fn_801D0314(handle);
+        memcardFreeBuffer(handle);
         if (lbl_8047A40A != 0) {
             if (lbl_804788B0 != 0) {
                 winMsgOpen(2, 0x44D0, 1, 0);
@@ -874,7 +874,7 @@ void fn_80031B4C(void) {
         }
         fn_801024E8(1);
         if (fn_800FF52C()) {
-            fn_800FF660();
+            floorBattleEndTerminateScripts();
         } else {
             floorLink(floorGetPrevFloorID(), 0);
         }
@@ -978,7 +978,7 @@ asm void fn_8003258C(void) {
 #endif
 #if !defined(GS_NPC_EVENT_ONLY_800324A0)
 #endif
-void fn_8003258C(void) {
+void cardeAwardCoupons(void) {
     s32 ctr;
     s32 r31;
 
@@ -1071,7 +1071,7 @@ void fn_8003258C(void) {
 extern u32 _fadeEffectGetRandom__FUl(u32 range);
 extern void GScharCpy(void* dst, const void* src);
 extern u32 pokemonGetStatus(void*, u32, u32, u32);
-extern void fn_80082EA4(u32, s8, u8, u8);
+extern void cardeSaveGetCard(u32, s8, u8, u8);
 extern u32 menuIsCheck(u32);
 extern s32 fn_800D37CC(void);
 extern u32 msgGetCharsPerFrame(void);
@@ -1088,7 +1088,7 @@ extern f64 lbl_8047BA08;
 extern f64 lbl_8047BA10;
 extern f32 lbl_8047BA18;
 extern u32 lbl_8047A458;
-extern u8* fn_80032ED8(s32, s32, u8*);
+extern u8* cardeBuildTrainerEncounter(s32, s32, u8*);
 #if 0
 asm void fn_800327FC(void) {
 #include "src/game/gs_npc_event_fn_800327FC.inc"
@@ -1195,7 +1195,7 @@ static inline s8 NpcEventSelectCandidate(void)
          candidate++) {
         u8 enemy_level;
 
-        fn_80082EA4(lbl_8047A434, candidate, group, variant);
+        cardeSaveGetCard(lbl_8047A434, candidate, group, variant);
         enemy_level = NpcEventGetTeamLevel(
             NPC_EVENT_ENCOUNTER->candidate_slots[candidate]);
 
@@ -1216,11 +1216,11 @@ static inline s8 NpcEventSelectCandidate(void)
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-void fn_800327FC(void)
+void cardeBattleSelectCard(void)
 {
     extern u8 pokemonCheckValid(void*);
     extern void* heroGetStatus(void*, s32, u16);
-    extern void fn_80082EA4(u32, s8, u8, u8);
+    extern void cardeSaveGetCard(u32, s8, u8, u8);
     extern u8 menuIsCheck(s32);
     extern void menuClose(s32);
     extern void fadeSet(s32, f32);
@@ -1284,14 +1284,14 @@ void fn_800327FC(void)
         lbl_803A3278[12] = 0;
         lbl_803A3278[13] = 0;
         lbl_803A3278[14] = 0;
-        result = (s32)fn_80032ED8((s32)&display, 0x209, (u8*)&display + 0x28);
+        result = (s32)cardeBuildTrainerEncounter((s32)&display, 0x209, (u8*)&display + 0x28);
     } else {
         s8 selected = NpcEventSelectCandidate();
 
         lbl_8047A448 = selected;
         *(NpcEventSetupData*)&display = *(NpcEventSetupData*)(lbl_803A3334 +
             NPC_EVENT_ENCOUNTER->candidate_slots[selected] * 0x28 + 0x3AC);
-        result = (s32)fn_80032ED8((s32)&display, 0x209, NULL);
+        result = (s32)cardeBuildTrainerEncounter((s32)&display, 0x209, NULL);
     }
 
     if (menuIsCheck(0xA5)) {
@@ -1329,7 +1329,7 @@ void fn_800327FC(void)
 
 #endif
 
-/* fn_80032ED8 and fn_800330B8 also build alone for the linked
+/* cardeBuildTrainerEncounter and cardeBuildTrainerPokemon also build alone for the linked
  * gs_npc_event_candidate_80032ED8 unit. */
 #if !defined(GS_NPC_EVENT_ONLY_800324A0) && !defined(GS_NPC_EVENT_ONLY_800301B0)
 /* 0x80032ED8 | 0x1E0 */
@@ -1337,14 +1337,14 @@ extern u8*  fightEncountDataBiosGetPtr(s32);
 extern void fightEncountDataBiosSetTrainer(u8*, s32);
 extern void fightEncountDataBiosSetFightFloorDataId(u8*, u16);
 extern s32  fightTrainerDataBiosGetPtr(s32);
-extern void fn_801FCB94(s32, u8);
+extern void fightTrainerSet00(s32, u8);
 extern void fightTrainerDataBiosSetKindDataId(s32, s32);
-extern void fn_801FCB84(s32, u16);
-extern void fn_801FCAFC(s32, u8);
+extern void fightTrainerSet06(s32, u16);
+extern void fightTrainerSet10(s32, u8);
 extern void fn_800896E0(s32);
 extern void fn_800896D8(s32);
 extern void fn_800896D0(s32);
-extern void fn_801FCB40(s32, u8, u16);
+extern void fightTrainerSetU16Arr14(s32, u8, u16);
 extern void fn_801FCC3C(s32);
 extern u8*  fightTrainerPokemonDataBiosGetPtr(void);
 extern void fightTrainerPokemonDataBiosSetPokemonDataId(s32, u16);
@@ -1353,7 +1353,7 @@ extern u32  std228_soundGetCurrentBackgroundMusic(void);
 extern void std104_soundSetBackgroundMusic(s32, s32, s32);
 extern u32 lbl_8047A444;
 extern u8 lbl_8047A439;
-extern void fn_800330B8(s32, u8*);
+extern void cardeBuildTrainerPokemon(s32, u8*);
 #if 0
 asm void fn_80032ED8(void) {
 #include "src/game/gs_npc_event_fn_80032ED8.inc"
@@ -1362,7 +1362,7 @@ asm void fn_80032ED8(void) {
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-u8* fn_80032ED8(s32 arg0, s32 arg1, u8* arg2) {
+u8* cardeBuildTrainerEncounter(s32 arg0, s32 arg1, u8* arg2) {
     extern u8 lbl_803A3334[];
     u8* result;
     s32 i;
@@ -1381,26 +1381,26 @@ u8* fn_80032ED8(s32 arg0, s32 arg1, u8* arg2) {
     fightEncountDataBiosSetFightFloorDataId(node, (u16)lbl_8047A444);
 
     ctx = fightTrainerDataBiosGetPtr(9);
-    fn_801FCB94(ctx, *(u8*)(arg0 + 0xC));
+    fightTrainerSet00(ctx, *(u8*)(arg0 + 0xC));
     fightTrainerDataBiosSetKindDataId(ctx, 0x26);
-    fn_801FCB84(ctx, *(u16*)(arg0 + 0x20));
-    fn_801FCAFC(ctx, *(u8*)(arg0 + 0x24));
+    fightTrainerSet06(ctx, *(u16*)(arg0 + 0x20));
+    fightTrainerSet10(ctx, *(u8*)(arg0 + 0x24));
 
     fn_800896E0(arg0);
     fn_800896D8(0);
     fn_800896D0(9);
 
     for (i = 0; i < 4; i++) {
-        fn_801FCB40(ctx, (u8)i, *(u16*)(arg0 + i * 2 + 0x12));
+        fightTrainerSetU16Arr14(ctx, (u8)i, *(u16*)(arg0 + i * 2 + 0x12));
     }
     fn_801FCC3C(ctx);
 
     base = fightTrainerPokemonDataBiosGetPtr();
     for (j = 0; j < 4; j++) {
         if (arg2 != 0) {
-            fn_800330B8((s32)(base + j * 0x50), arg2 + j * 0x2A);
+            cardeBuildTrainerPokemon((s32)(base + j * 0x50), arg2 + j * 0x2A);
         } else {
-            fn_800330B8((s32)(base + j * 0x50), lbl_803A3334 + 0x514 + (s8)*(u8*)(arg0 + j + 0xD) * 0x2A);
+            cardeBuildTrainerPokemon((s32)(base + j * 0x50), lbl_803A3334 + 0x514 + (s8)*(u8*)(arg0 + j + 0xD) * 0x2A);
         }
     }
     for (; j < 6; j++) {
@@ -1459,16 +1459,16 @@ void fn_80032ED8_legacy_disabled(void) {
     fightTrainerDataBiosGetPtr();
     r4 = *(u8*)((u8*)r29 + 0xC);
     r27 = r3;
-    fn_801FCB94();
+    fightTrainerSet00();
     r3 = r27;
     r4 = 0x26;
     fightTrainerDataBiosSetKindDataId();
     r4 = *(u16*)((u8*)r29 + 0x20);
     r3 = r27;
-    fn_801FCB84();
+    fightTrainerSet06();
     r4 = *(u8*)((u8*)r29 + 0x24);
     r3 = r27;
-    fn_801FCAFC();
+    fightTrainerSet10();
     r3 = r29;
     fn_800896E0();
     r3 = 0x0;
@@ -1481,7 +1481,7 @@ void fn_80032ED8_legacy_disabled(void) {
         r5 = *(u16*)((u8*)r28 + 0x12);
         r3 = r27;
         r4 = r26 & 0xFF;
-        fn_801FCB40();
+        fightTrainerSetU16Arr14();
         r28 = r28 + 0x2;
         r26 = r26 + 0x1;
     } while ((s32)r26 < 4);
@@ -1498,7 +1498,7 @@ void fn_80032ED8_legacy_disabled(void) {
         if (r31 != 0) {
             r3 = r26;
             r4 = r27;
-            fn_800330B8();
+            cardeBuildTrainerPokemon();
         } else {
 
             tmp = r24 + 0xd;
@@ -1508,7 +1508,7 @@ void fn_80032ED8_legacy_disabled(void) {
             tmp = tmp * 0x2a;
             r4 = r28 + tmp;
             r4 = r4 + 0x514;
-            fn_800330B8();
+            cardeBuildTrainerPokemon();
         }
         r27 = r27 + 0x2a;
         r26 = r26 + 0x50;
@@ -1558,7 +1558,7 @@ void fn_80032ED8_legacy_disabled(void) {
 /* 0x800330B8 | 0x1C0 | WALL 98.2%: loop scheduling - mr r3 placement */
 extern void fightTrainerPokemonDataBiosSetNickname(s32, s32);
 extern void fightTrainerPokemonDataBiosSetDarkPokemonFlag(s32, u8);
-extern void fn_801EEE6C(u8, u8);
+extern void darkPokemonSaveSet4A6(u8, u8);
 extern void fightTrainerPokemonDataBiosSetLevel(s32, u8);
 extern void fightTrainerPokemonDataBiosSetWazaDataId(s32, u32, u16);
 extern void fightTrainerPokemonDataBiosSetItemDataId(s32, u16);
@@ -1579,7 +1579,7 @@ asm void fn_800330B8(void) {
 #pragma push
 #pragma optimization_level 4
 #pragma peephole off
-void fn_800330B8(s32 arg0, u8* arg1) {
+void cardeBuildTrainerPokemon(s32 arg0, u8* arg1) {
     u8* walk;
     s32 i;
 
@@ -1587,7 +1587,7 @@ void fn_800330B8(s32 arg0, u8* arg1) {
     fightTrainerPokemonDataBiosSetNickname(arg0, 0);
     fightTrainerPokemonDataBiosSetDarkPokemonFlag(arg0, *(u8*)(arg1 + 0x2));
     if (*(u8*)(arg1 + 0x2) != 0) {
-        fn_801EEE6C(*(u8*)(arg1 + 0x2), *(u8*)(arg1 + 0x28));
+        darkPokemonSaveSet4A6(*(u8*)(arg1 + 0x2), *(u8*)(arg1 + 0x28));
     }
     fightTrainerPokemonDataBiosSetLevel(arg0, *(u8*)(arg1 + 0x3));
     walk = arg1;
@@ -1696,13 +1696,13 @@ void fn_80030388(u8* r3, u8* r4) {
     u32 combined = (flags & 0xa1400000) | *(u8*)(r3 + 0x8b);
     switch (evtype) {
     case 0x10CB:
-        fn_800FB680(0, 0, combined, 0x4412);
+        GSmsgPrintColor(0, 0, combined, 0x4412);
         break;
     case 0x10CA:
         {
             s32 val = heroGetStatus((void*)lbl_803A2688, 1, 0);
             msgctrlSetValue(0x4D, val);
-            fn_800FB680(0, 0, combined, 0x4413);
+            GSmsgPrintColor(0, 0, combined, 0x4413);
         }
         break;
     }
@@ -1757,7 +1757,7 @@ void fn_8003042C(u8* arg0, u8* arg1) {
             itemDataBiosGetPtr();
             itemDataBiosGetName();
             msgctrlSetValue(0x37, ((s32 (*)(void))GSmsgGetGSchar)());
-            fn_800FB680(0, 0, combined, 0xE7);
+            GSmsgPrintColor(0, 0, combined, 0xE7);
             *(u32*)(arg1 + 0x4C) = 0;
             winSpriteSetDisp(arg1, 1);
         } else {
@@ -1772,7 +1772,7 @@ void fn_8003042C(u8* arg0, u8* arg1) {
 /* fn_80030574 - 0x80030574 | size: 0x234 */
 extern void pokemonWazaCheckValid(void);
 extern void wazaGetStatus(void);
-extern void fn_800FBB34(s32, s32, s32, s32, u32, u16);
+extern void GSmsgPrintRect(s32, s32, s32, s32, u32, u16);
 extern u32 lbl_8047A424;
 extern u32 lbl_8047A420;
 #if 0
@@ -1860,7 +1860,7 @@ grp_done:
 
     if (value != 0) {
         msgctrlSetValue(0x37, ((s32 (*)(u32))GSmsgGetGSchar)(value));
-        fn_800FBB34(0, 0, *(s16*)(arg1 + 0x54), *(s16*)(arg1 + 0x56), combined, 0xE7);
+        GSmsgPrintRect(0, 0, *(s16*)(arg1 + 0x54), *(s16*)(arg1 + 0x56), combined, 0xE7);
         winSpriteSetDisp(arg1, 1);
     } else {
         winSpriteSetDisp(arg1, 0);
@@ -1903,7 +1903,7 @@ void fn_800307A8(u8* arg0, u8* arg1) {
 
     if (obj != 0) {
         msgctrlSetValue(0x2F, ((u8 (*)(void*, s32, s32, s32))pokemonGetStatus)(obj, 0, 0x7A, 0));
-        fn_800FBB34(0, 0, *(s16*)(arg1 + 0x54), *(s16*)(arg1 + 0x56), combined, 0x4414);
+        GSmsgPrintRect(0, 0, *(s16*)(arg1 + 0x54), *(s16*)(arg1 + 0x56), combined, 0x4414);
         winSpriteSetDisp(arg1, 1);
     } else {
         winSpriteSetDisp(arg1, 0);
@@ -1956,9 +1956,9 @@ void fn_800308D4(u8* arg0, u8* arg1) {
 
     if (obj != 0) {
         hi = (s16)((u32)GSmsgGetRect(0x2BD4) >> 16);
-        fn_800FB680(0, 0, combined, 0x2BD4);
+        GSmsgPrintColor(0, 0, combined, 0x2BD4);
         msgctrlSetValue(0x37, GSmsgGetGSchar(pokemonDataBiosGetName(pokemonDataBiosGetPtr(pokemonGetStatus(obj, 0, 0x6E, 0)))));
-        fn_800FB680(hi, 0, combined, 0xE7);
+        GSmsgPrintColor(hi, 0, combined, 0xE7);
         *(u32*)(arg1 + 0x4C) = 0;
         winSpriteSetDisp(arg1, 1);
     } else {
@@ -2014,7 +2014,7 @@ grp_done:
     }
 
     msgctrlSetValue(0x37, ((s32 (*)(void*))pokemonBiosGetNicknamePtr)(obj));
-    fn_800FB680(0, 0, combined, 0xE7);
+    GSmsgPrintColor(0, 0, combined, 0xE7);
     winSpriteSetDisp(arg1, 1);
 
     if (((u8 (*)(void*))pokemonCheckValid)(obj) != 0 &&
@@ -2034,7 +2034,7 @@ grp_done:
         if (msg != 0) {
             x = (s16)(((u32 (*)(s32))GSmsgGetRect)(0xE7) >> 16);
             msgctrlSetValue(0x37, ((s32 (*)(s32))GSmsgGetGSchar)(msg));
-            fn_800FB680((u16)x + 2, 0, combined, 0xCF);
+            GSmsgPrintColor((u16)x + 2, 0, combined, 0xCF);
         }
     }
     return;
@@ -2074,11 +2074,11 @@ void fn_80030C14(void* r3, u8* r4) {
         gfxSetVtxDesc(lbl_80314F98);
         gfxLoadTexture(0, model);
         gfxBegin(2);
-        fn_800D61E4(0, 0);
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+        gfxVtxPos2s16(0, 0);
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
         gfxVtxTexCoord(0, lbl_8047B9D4, lbl_8047B9D4);
-        fn_800D61E4(*(s16*)(r4 + 0x54), *(s16*)(r4 + 0x56));
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+        gfxVtxPos2s16(*(s16*)(r4 + 0x54), *(s16*)(r4 + 0x56));
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
         gfxVtxTexCoord(0, lbl_8047B9F0, lbl_8047B9F0);
         gfxEnd();
     }
@@ -2259,9 +2259,9 @@ void fn_80034DC0(u8* arg0, u8* arg1) {
     byte = *(u8*)(arg0 + 0x8B);
     mask = -0x100;
     combined = byte | mask;
-    fn_800FB680(0, 0, combined, 0x3CC8);
+    GSmsgPrintColor(0, 0, combined, 0x3CC8);
     msgctrlSetValue(0x34, lbl_8047A44C);
-    fn_800FBB34(0, 0, *(s16*)(arg1 + 0x54), *(s16*)(arg1 + 0x56), combined, 0x3CC9);
+    GSmsgPrintRect(0, 0, *(s16*)(arg1 + 0x54), *(s16*)(arg1 + 0x56), combined, 0x3CC9);
 }
 #endif
 
@@ -2299,11 +2299,11 @@ void fn_800301B0(void* r3, u8* r4) {
         gfxSetVtxDesc(lbl_80314F98);
         gfxLoadTexture(0, model);
         gfxBegin(2);
-        fn_800D61E4(0, 0);
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+        gfxVtxPos2s16(0, 0);
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
         gfxVtxTexCoord(0, lbl_8047B9D4, lbl_8047B9D4);
-        fn_800D61E4(*(s16*)(r4 + 0x54), *(s16*)(r4 + 0x56));
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+        gfxVtxPos2s16(*(s16*)(r4 + 0x54), *(s16*)(r4 + 0x56));
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
         gfxVtxTexCoord(0, lbl_8047B9F0, lbl_8047B9F0);
         gfxEnd();
     }
@@ -2319,13 +2319,13 @@ void fn_800302D0(u8* r3, u8* r4) {
     u32 combined = (flags & 0xa1400000) | *(u8*)(r3 + 0x8b);
     switch (evtype) {
     case 0xFBD:
-        fn_800FB680(0, 0, combined, 0x4412);
+        GSmsgPrintColor(0, 0, combined, 0x4412);
         break;
     case 0xFBC:
         {
             s32 val = heroGetStatus((void*)lbl_803A2688, 1, 0);
             msgctrlSetValue(0x4D, val);
-            fn_800FB680(0, 0, combined, 0x4413);
+            GSmsgPrintColor(0, 0, combined, 0x4413);
         }
         break;
     }

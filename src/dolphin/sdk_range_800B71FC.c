@@ -20,11 +20,11 @@ extern GXFifoObj* lbl_8047A9A0;
 extern GXFifoObj* lbl_8047A9A4;
 extern u8 lbl_8047A9AC;
 
-void fn_800B7558(u8 arg0);
-void fn_800B7594(u8 arg0, u8 arg1);
-void fn_800B75D0(u8 arg0, u8 arg1);
-void fn_800B7514(void);
-void fn_800B7538(void);
+void __GXFifoLink(u8 arg0);
+void __GXWriteFifoIntEnable(u8 arg0, u8 arg1);
+void __GXWriteFifoIntReset(u8 arg0, u8 arg1);
+void __GXFifoReadEnable(void);
+void __GXFifoReadDisable(void);
 
 void GXSetCPUFifo(GXFifoObj* fifo) {
     BOOL enabled;
@@ -39,15 +39,15 @@ void GXSetCPUFifo(GXFifoObj* fifo) {
         reg &= 0xFBFFFFFF;
         __piReg[5] = reg;
         lbl_8047A9AC = TRUE;
-        fn_800B75D0(1, 1);
-        fn_800B7594(1, 0);
-        fn_800B7558(1);
+        __GXWriteFifoIntReset(1, 1);
+        __GXWriteFifoIntEnable(1, 0);
+        __GXFifoLink(1);
     } else {
         if (lbl_8047A9AC) {
-            fn_800B7558(0);
+            __GXFifoLink(0);
             lbl_8047A9AC = FALSE;
         }
-        fn_800B7594(0, 0);
+        __GXWriteFifoIntEnable(0, 0);
         __piReg[3] = (u32)fifo->base & 0x3FFFFFFF;
         __piReg[4] = (u32)fifo->top & 0x3FFFFFFF;
         reg = (u32)fifo->wrPtr & 0x3FFFFFE0;
@@ -62,8 +62,8 @@ void GXSetGPFifo(GXFifoObj* fifo) {
     BOOL enabled;
 
     enabled = OSDisableInterrupts();
-    fn_800B7538();
-    fn_800B7594(0, 0);
+    __GXFifoReadDisable();
+    __GXWriteFifoIntEnable(0, 0);
     lbl_8047A9A4 = fifo;
 
     __cpReg[16] = (u32)fifo->base & 0xFFFF;
@@ -85,15 +85,15 @@ void GXSetGPFifo(GXFifoObj* fifo) {
 
     if (lbl_8047A9A0 == lbl_8047A9A4) {
         lbl_8047A9AC = TRUE;
-        fn_800B7594(1, 0);
-        fn_800B7558(1);
+        __GXWriteFifoIntEnable(1, 0);
+        __GXFifoLink(1);
     } else {
         lbl_8047A9AC = FALSE;
-        fn_800B7594(0, 0);
-        fn_800B7558(0);
+        __GXWriteFifoIntEnable(0, 0);
+        __GXFifoLink(0);
     }
-    fn_800B75D0(1, 1);
-    fn_800B7514();
+    __GXWriteFifoIntReset(1, 1);
+    __GXFifoReadEnable();
     OSRestoreInterrupts(enabled);
 }
 
@@ -112,18 +112,18 @@ void* GXSetBreakPtCallback(void* callback) {
 void __GXFifoInit(void) {
     extern void* lbl_8047A9A8;
     extern u32 lbl_8047A9B0;
-    extern OSThread* fn_800A13F8(void);
+    extern OSThread* OSGetCurrentThread(void);
     extern void GXCPInterruptHandler(__OSInterrupt interrupt, OSContext* context);
 
     __OSSetInterruptHandler(0x11, GXCPInterruptHandler);
     __OSUnmaskInterrupts(0x4000);
-    lbl_8047A9A8 = fn_800A13F8();
+    lbl_8047A9A8 = OSGetCurrentThread();
     lbl_8047A9B0 = 0;
     lbl_8047A9A0 = NULL;
     lbl_8047A9A4 = NULL;
 }
 
-void fn_800B7514(void) {
+void __GXFifoReadEnable(void) {
     u32* gxStatus = (u32*)gx;
     u32 value;
 
@@ -132,14 +132,14 @@ void fn_800B7514(void) {
     __cpReg[1] = (u16)gxStatus[2];
 }
 
-void fn_800B7538(void) {
+void __GXFifoReadDisable(void) {
     u32* gxStatus = (u32*)gx;
 
     gxStatus[2] &= ~1U;
     __cpReg[1] = (u16)gxStatus[2];
 }
 
-void fn_800B7558(u8 arg0) {
+void __GXFifoLink(u8 arg0) {
     u32* gxStatus;
     u32 bit;
 
@@ -153,14 +153,14 @@ void fn_800B7558(u8 arg0) {
     __cpReg[1] = (u16)gxStatus[2];
 }
 
-void fn_800B7594(u8 arg0, u8 arg1) {
+void __GXWriteFifoIntEnable(u8 arg0, u8 arg1) {
     u32* gxStatus = (u32*)gx;
     gxStatus[2] = (gxStatus[2] & ~4U) | ((u32)(arg0 << 2));
     gxStatus[2] = (gxStatus[2] & ~8U) | ((u32)(arg1 << 3));
     __cpReg[1] = (u16)gxStatus[2];
 }
 
-void fn_800B75D0(u8 arg0, u8 arg1) {
+void __GXWriteFifoIntReset(u8 arg0, u8 arg1) {
     u32* gxStatus = (u32*)gx;
     gxStatus[4] = (gxStatus[4] & ~1U) | (u32)arg0;
     gxStatus[4] = (gxStatus[4] & ~2U) | ((u32)arg1 << 1);
@@ -186,17 +186,17 @@ static inline void GXResetFifoPtrs(GXFifoObj* fifo, void* readPtr, void* writePt
 }
 
 void __GXCleanGPFifo(void) {
-    extern GXFifoObjPrivate* fn_800B770C(void);
-    extern GXFifoObjPrivate* fn_800B7714(void);
+    extern GXFifoObjPrivate* GXGetCPUFifo(void);
+    extern GXFifoObjPrivate* GXGetGPFifo(void);
     GXFifoObjPrivate* gpFifo;
     GXFifoObjPrivate* cpuFifo;
     GXFifoObjPrivate cleanFifo;
     u32 _pad[3];
     void* base;
 
-    gpFifo = fn_800B7714();
+    gpFifo = GXGetGPFifo();
     if (gpFifo != NULL) {
-        cpuFifo = fn_800B770C();
+        cpuFifo = GXGetCPUFifo();
         base = gpFifo->fifo.base;
         (void)_pad;
         cleanFifo = *gpFifo;

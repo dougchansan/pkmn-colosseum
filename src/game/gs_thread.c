@@ -58,10 +58,10 @@ typedef u8 M2C_UNK;
 /* ===== External SDK / engine functions ===== */
 extern void  GSlogWrite(const void* fmt, ...);          /* OSReport */
 extern u16   GSmemAllocRaw(u32 size);                    /* _toolentryAlloc__FUl */
-extern void* GSmemGetPtr(u16 handle);                    /* fn_800E27B0 */
+extern void* GSmemGetPtr(u16 handle);                    /* GSmemLock */
 extern void* GSmemLock(u16 handle);                      /* fn_800E24B0 */
-extern void  GSmemFree(u16 handle);                      /* fn_800E209C */
-extern u16   GSmemAlloc(u32 alignment, u32 size);        /* fn_800E2C04 */
+extern void  GSmemFree(u16 handle);                      /* GSmemFree */
+extern u16   GSmemAlloc(u32 alignment, u32 size);        /* GSmemAlloc */
 extern void  OSSetIdleFunction(void* func, void* arg,
                           void* stackTop, u32 stackSize); /* OSCreateFiber-like */
 extern void  OSDisableInterrupts(void);
@@ -80,18 +80,18 @@ extern const char lbl_80271038[]; /* "GSthread: Init OK, maximum of %d threads\n
 /* ===== Forward declarations for internal functions ===== */
 extern void gappVSyncCallback(void);            /* GStaskSwapCallback */
 extern void fn_800F0F4C(u32 arg);          /* GSthread trampoline / entry wrapper */
-extern void fn_800AB150(void* buf);
-extern u32 fn_800D0F44(u32 buttonIdx);
+extern void PADRead(void* buf);
+extern u32 SIProbe(u32 buttonIdx);
 extern void fn_800AB4FC(void*);
-extern void fn_800E209C(u16 handle);
+extern void GSmemFree(u16 handle);
 extern void* fn_800E24B0(u16 handle);
-extern void* fn_800E27B0(u16 handle);
-extern u16 fn_800E2C04(u32 alignment, u32 size);
+extern void* GSmemLock(u16 handle);
+extern u16 GSmemAlloc(u32 alignment, u32 size);
 extern u16 _toolentryAlloc__FUl(u32 size);
-extern void fn_80080ED8(void);
+extern void SJIStoGSchar(void);
 extern void fn_800DBEB4(u32 a, void* b);
-extern void fn_800D5CB8(s32 a, s32 b, s32 c, s32 d, s32 e);
-extern void fn_800D61E4(s16 x, s16 y);
+extern void gfxVtxColor4u8(s32 a, s32 b, s32 c, s32 d, s32 e);
+extern void gfxVtxPos2s16(s16 x, s16 y);
 extern void gfxEnd(void);
 extern void gfxBegin(s32 a);
 extern void gfxSetPrimitive(s32 a);
@@ -117,19 +117,19 @@ extern void gfxSetTevStage(void);
 extern void windowDrawSprite(void);
 extern void soundStartSE(void);
 extern void gfxVtxTexCoord(void);
-extern void fn_800D5BA0(void);
-extern void fn_800D9D68(u16 a, u16 b, u16 c, u16 d);
+extern void gfxVtxColor1u32(void);
+extern void gfxSetScissor(u16 a, u16 b, u16 c, u16 d);
 extern f64 tan(void);
-extern void fn_800D7FE4(void* mtx);
-extern void fn_800D834C(void);
-extern void fn_800D9BD0(f32 a, f32 b, f32 c, f32 d);
+extern void gfxMultMatrix(void* mtx);
+extern void gfxLoadIdentity(void);
+extern void gfxSetPerspective(f32 a, f32 b, f32 c, f32 d);
 extern void gfxSetCullMode(s32 a);
-extern void fn_800DA100(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f);
+extern void gfxSetAlphaCompare(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f);
 extern void gfxSetZMode(s32 a, s32 b, s32 c);
 extern void gfxSetUpdates(s32 a, s32 b, s32 c);
 extern void gfxSetBlendMode(s32 a, s32 b, s32 c);
 extern void set__5GSvecFfff(void* dst, f32 x, f32 y, f32 z);
-extern void fn_800E0218(void* dst, void* a, void* b, void* c);
+extern void GSmtxLookAt(void* dst, void* a, void* b, void* c);
 extern void* memset(void* dest, int val, u32 n);
 extern void* memcpy(void* dst, const void* src, u32 n);
 
@@ -417,24 +417,24 @@ extern u32 lbl_8047AC24;
  * =================================================================== */
 
 /* Forward declarations for all asm-wrapped functions in this block */
-extern void fn_800F8268(void);
-extern void fn_800F8428();
-extern void fn_800F8654();
-extern void fn_800F8A54();
-extern u32 fn_800F92D4(u32 key);
+extern void inputPadCallback(void);
+extern void inputUpdateMotors();
+extern void inputSmoothStick();
+extern void inputClampSticks();
+extern u32 GSresFindById(u32 key);
 extern void GSresInit(u32 count);
-extern u8 * fn_800F96E4();
-extern u32 fn_800F9AEC(void* outbuf, u16* src, s32 mode);
+extern u8 * GSmsgGetText();
+extern u32 GScharToGBA(void* outbuf, u16* src, s32 mode);
 extern void GScharMakeFromSJIS(void);
 extern u8* GScharCpy(u8* dst, u8* src);
 extern void GSmsgSetColor(void* obj);
 extern s32 GSmsgGetRect();
 extern void GSmsgInitRuby();
-extern s32 fn_800FAEF8();
+extern s32 GSmsgPrintf();
 extern s32 std001_messageFormatLookup();
-extern s32 fn_800FB680();
-extern s32 fn_800FB8C8();
-extern s32 fn_800FBB34();
+extern s32 GSmsgPrintColor();
+extern s32 GSmsgPrintRight();
+extern s32 GSmsgPrintRect();
 extern void GSmsgDaemon(void);
 extern s32 GSmsgExec();
 extern void fn_800FC2A4(void);
@@ -443,8 +443,8 @@ extern void* GSmsgFontOpen();
 extern s32 GSmsgSetCtrlFunc(u32 val);
 extern s32 GSmsgInit();
 extern s32 msgTaskDraw();
-extern void fn_800FD348();
-extern void fn_800FD69C();
+extern void msgDrawRuby();
+extern void _msgMakeTexture();
 extern u16 * _msgGetCodeInfo__FP13MSG_TASK_WORKUsPP12tagFONT_INFO();
 extern s32 _msgGetLength__FPCUs(const void* str);
 extern s32 _msgGetSize__FPCUs();
@@ -467,7 +467,7 @@ extern void gappBackgroundCallback(void);
 #pragma optimization_level 2
 #pragma optimizewithasm off
 #pragma optimization_level 2
-void fn_800F8268(void) {
+void inputPadCallback(void) {
     u8 pad[0x50];
     u8* r31;
     u8* r30;
@@ -476,7 +476,7 @@ void fn_800F8268(void) {
     u32 btnState;
     s8 ax;
 
-    fn_800AB150(pad);
+    PADRead(pad);
     r31 = (u8*)&lbl_80401C10;
     r30 = pad;
     for (r29 = 0; r29 < 4; r29++) {
@@ -498,7 +498,7 @@ void fn_800F8268(void) {
         if (r28 == NULL) goto next;
         ax = (s8)r30[0xA];
         if (ax == -1) {
-            btnState = fn_800D0F44((u32)r29);
+            btnState = SIProbe((u32)r29);
             if (btnState == 8) {
                 *(u32*)(r28 + 0xC) = 3;
             } else if (btnState == 0x40) {
@@ -508,7 +508,7 @@ void fn_800F8268(void) {
             lbl_8047AC4C = lbl_8047AC4C | ((u32)0x80000000 >> (u32)r29);
         } else if (ax >= 0 && ax < 1) {
             if (*(u32*)(r28 + 0xC) == 3) {
-                btnState = fn_800D0F44((u32)r29);
+                btnState = SIProbe((u32)r29);
                 if (btnState == 0x00900000) {
                     *(u32*)(r28 + 0x4) = 0;
                 } else {
@@ -524,7 +524,7 @@ void fn_800F8268(void) {
 next:
         r30 += 0xC;
     }
-    fn_800F8428();
+    inputUpdateMotors();
     lbl_8047AC48++;
 }
 #pragma pop
@@ -533,7 +533,7 @@ next:
 #pragma push
 #pragma optimization_level 2
 #pragma optimizewithasm off
-void fn_800F8428(void) {
+void inputUpdateMotors(void) {
     M2C_UNK *var_r4;
     s32 *var_r6;
     s32 temp_r10;
@@ -644,7 +644,7 @@ void fn_800F8428(void) {
 #pragma push
 #pragma optimization_level 2
 #pragma optimizewithasm off
-void fn_800F8654(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg_sp8)
+void inputSmoothStick(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg_sp8)
     u8 *arg0;
     s8 arg1;
     s8 arg2;
@@ -748,7 +748,7 @@ void fn_800F8654(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg_sp8)
 #pragma push
 #pragma optimization_level 2
 #pragma optimizewithasm off
-void fn_800F8A54(arg0)
+void inputClampSticks(arg0)
     u8 *arg0;
 {
     s32 mode;
@@ -959,7 +959,7 @@ void fn_800F9210(u32 key1, u32 key2) {
 #pragma optimization_level 2
 #pragma optimizewithasm off
 #pragma optimization_level 2
-u32 fn_800F92D4(u32 key) {
+u32 GSresFindById(u32 key) {
     u8* entry;
     u32 i;
 
@@ -1130,7 +1130,7 @@ void GSresInit(u32 count) {
 #pragma push
 #pragma optimization_level 2
 #pragma optimizewithasm off
-u8 *fn_800F96E4(arg0, arg1, arg2)
+u8 *GSmsgGetText(arg0, arg1, arg2)
     u8 *arg0;
     s32 arg1;
     u32 arg2;
@@ -1346,7 +1346,7 @@ u8 *fn_800F96E4(arg0, arg1, arg2)
 #pragma optimization_level 2
 #pragma optimizewithasm off
 #pragma optimization_level 2
-u32 fn_800F9AEC(void* outbuf, u16* src, s32 mode) {
+u32 GScharToGBA(void* outbuf, u16* src, s32 mode) {
     u8* out;
     register u16* table;
     register s32 idx;
@@ -1440,7 +1440,7 @@ done_second:
 #pragma optimization_level 2
 #pragma optimizewithasm off
 #pragma optimization_level 2
-u32 fn_800F9C04(void* outbuf, u8* src, u32 count, u32 mode) {
+u32 GScharFromGBA(void* outbuf, u8* src, u32 count, u32 mode) {
     u16* out;
     u16* table;
     u32 total;
@@ -1492,7 +1492,7 @@ u32 fn_800F9C04(void* outbuf, u8* src, u32 count, u32 mode) {
 #pragma optimizewithasm off
 #pragma optimization_level 2
 void GScharMakeFromSJIS(void) {
-    fn_80080ED8();
+    SJIStoGSchar();
 }
 #pragma pop
 
@@ -2238,7 +2238,7 @@ void GSmsgInitRuby(arg0)
 #pragma push
 #pragma optimization_level 2
 #pragma optimizewithasm off
-s32 fn_800FAEF8(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, farg0, farg1, farg2, farg3, farg4, farg5, farg6, farg7, arg_sp8)
+s32 GSmsgPrintf(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, farg0, farg1, farg2, farg3, farg4, farg5, farg6, farg7, arg_sp8)
     s32 arg0;
     s32 arg1;
     s32 arg2;
@@ -2387,7 +2387,7 @@ loop_19:
 #pragma push
 #pragma optimization_level 2
 #pragma optimizewithasm off
-s32 fn_800FB680(arg0, arg1, arg2, arg3)
+s32 GSmsgPrintColor(arg0, arg1, arg2, arg3)
     s32 arg0;
     s32 arg1;
     s32 arg2;
@@ -2509,7 +2509,7 @@ loop_19:
 #pragma push
 #pragma optimization_level 2
 #pragma optimizewithasm off
-s32 fn_800FB8C8(arg0, arg1, arg2, arg3, arg4, arg5)
+s32 GSmsgPrintRight(arg0, arg1, arg2, arg3, arg4, arg5)
     s32 arg0;
     s32 arg1;
     s16 arg2;
@@ -2635,7 +2635,7 @@ loop_19:
 #pragma push
 #pragma optimization_level 2
 #pragma optimizewithasm off
-s32 fn_800FBB34(arg0, arg1, arg2, arg3, arg4, arg5)
+s32 GSmsgPrintRect(arg0, arg1, arg2, arg3, arg4, arg5)
     s32 arg0;
     s32 arg1;
     s16 arg2;
@@ -3223,7 +3223,7 @@ s32 msgTaskDraw(arg0, arg1, arg2, arg3)
 #pragma push
 #pragma optimization_level 2
 #pragma optimizewithasm off
-void fn_800FD348(arg0, farg1)
+void msgDrawRuby(arg0, farg1)
     u8 *arg0;
     f64 farg1;
 {
@@ -3286,10 +3286,10 @@ void fn_800FD348(arg0, farg1)
                 gfxSetPrimitive(7);
                 gfxSetVtxDesc(lbl_80314E08);
                 gfxBegin(2);
-                fn_800D61E4(x0, y0);
-                fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
-                fn_800D61E4(x1, y1);
-                fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+                gfxVtxPos2s16(x0, y0);
+                gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+                gfxVtxPos2s16(x1, y1);
+                gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
                 gfxEnd();
                 gfxSetFlags(0x80000002);
                 gfxSetVtxDesc(lbl_80314F98);
@@ -3300,7 +3300,7 @@ void fn_800FD348(arg0, farg1)
             } else {
                 glyphInfo = *(u32 *)((u8 *)fontInfo + 4);
                 glyphWidth = ((u8 *)fontInfo)[2];
-                fn_800FD69C(arg0, (u32)fontNode + (*(s32 *)((u8 *)fontNode + 4) + (glyphInfo & 0xFFFFFF)),
+                _msgMakeTexture(arg0, (u32)fontNode + (*(s32 *)((u8 *)fontNode + 4) + (glyphInfo & 0xFFFFFF)),
                             glyphWidth, ((u8 *)fontInfo)[3], (s8)(glyphInfo >> 0x18));
                 spaceBias = lbl_8047CD10;
                 *(f32 *)(arg0 + 0x14) = (f32)((s16)glyphWidth * *(f32 *)(arg0 + 0x60));
@@ -3326,7 +3326,7 @@ void fn_800FD348(arg0, farg1)
 #pragma push
 #pragma optimization_level 2
 #pragma optimizewithasm off
-void fn_800FD69C(arg0, arg1, arg2, arg3, arg4)
+void _msgMakeTexture(arg0, arg1, arg2, arg3, arg4)
     u8 *arg0;
     s32 arg1;
     s16 arg2;
@@ -3579,7 +3579,7 @@ s32 _msgGetSize__FPCUs(arg0)
 #pragma optimization_level 2
 #pragma scheduling off
 void fn_800FE35C(void) {
-    fn_800D9D68(0, 0, 0x27F, 0x1DF);
+    gfxSetScissor(0, 0, 0x27F, 0x1DF);
 }
 #pragma scheduling on
 #pragma pop
@@ -3616,7 +3616,7 @@ void fn_800FE38C(s32 x1, s32 y1, s32 x2, s32 y2) {
     if (cy1 < 0) cy1 = 0;
     if (cx2 < 0) cx2 = 0;
     if (cy2 < 0) cy2 = 0;
-    fn_800D9D68(cx1, cy1, cx2, cy2);
+    gfxSetScissor(cx1, cy1, cx2, cy2);
 }
 #pragma pop
 #pragma pop
@@ -3654,15 +3654,15 @@ void spriteSetEnv(void) {
                 y - (f32)(s32)*(s16*)&lbl_8047AC72,
                 lbl_8047CD68);
     set__5GSvecFfff(v2, lbl_8047CD68, lbl_8047CD6C, lbl_8047CD68);
-    fn_800E0218(mtx, v0, v2, v1);
+    GSmtxLookAt(mtx, v0, v2, v1);
 
-    fn_800D9BD0(lbl_8047CD70, -(sx / sy), lbl_8047CD74, lbl_8047CD78);
-    fn_800D834C();
-    fn_800D7FE4(mtx);
+    gfxSetPerspective(lbl_8047CD70, -(sx / sy), lbl_8047CD74, lbl_8047CD78);
+    gfxLoadIdentity();
+    gfxMultMatrix(mtx);
     gfxSetBlendMode(1, 6, 7);
     gfxClearFlags(0x80000000);
     gfxSetUpdates(2, 2, 1);
-    fn_800DA100(0, 7, 0, 1, 7, 0);
+    gfxSetAlphaCompare(0, 7, 0, 1, 7, 0);
     gfxSetZMode(0, 2, 0);
     gfxSetCullMode(0);
 }

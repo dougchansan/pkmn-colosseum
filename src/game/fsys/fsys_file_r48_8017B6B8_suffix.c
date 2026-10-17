@@ -3,12 +3,12 @@
  * @brief FSYS entry read start and group-done notification
  *        (0x8017B6B8 - 0x8017BC90).
  *
- * fn_8017B6B8 starts loading an archive entry: mark its trailer loading
+ * fsysLoadEntry starts loading an archive entry: mark its trailer loading
  * (state 1, slot status 0x65), allocate its destination (compressed entries
  * from the top of the handle heap, plain ones through fsysAllocEntry, as in
- * fn_8017BD34), then either transfer the slot's current entry from the ARAM
- * cache (status 0xA1, fn_8017F25C completes it) or read it from the disc or
- * its external file (fn_8017F108 completes it). fn_8017BB80 flushes a loaded
+ * fsysLoadEntryUncompressed), then either transfer the slot's current entry from the ARAM
+ * cache (status 0xA1, fsysARQCallback completes it) or read it from the disc or
+ * its external file (fsysDVDReadCallback completes it). fsysFlushLoadedEntry flushes a loaded
  * entry and tells its group's done callback.
  *
  * Level-0 code like the rest of fsys (see configure.py; this object used to
@@ -17,7 +17,7 @@
  * inline expansions breadth-first by depth (first-level helpers, then the
  * helpers they call). fsysReadCachedEntry is the first-level helper that
  * numbering shows for the cached branch. fsysAllocEntry, fsysUpdateTotalSize
- * and gsResAlloc are fn_8017BD34's helpers.
+ * and gsResAlloc are fsysLoadEntryUncompressed's helpers.
  */
 #include "dolphin/types.h"
 #include "game/fsys/fsys_entry.h"
@@ -26,19 +26,19 @@ extern void* GSresAllocResourceAlign(u32 size, u32 align, u32 group, u32 id, u32
 extern void* GSresGetResource(u32 fileHandle, u32 nameHash);
 extern void DCFlushRange(void* addr, u32 nBytes);
 extern u8 fn_80167EF8(const char* path);
-extern u32 fn_80167F28(const char* path);
-extern u32 fn_80167E5C(u32 fileInfo);
-extern s32 fn_80167E64(u32 fileInfo);
-extern u8 fn_80167E98(u32 fileInfo, void* dst, u32 length, u32 offset,
+extern u32 GSdvdOpen(const char* path);
+extern u32 GSdvdGetLength(u32 fileInfo);
+extern s32 GSdvdClose(u32 fileInfo);
+extern u8 GSdvdReadAsync(u32 fileInfo, void* dst, u32 length, u32 offset,
                       void (*callback)(s32 result));
 extern u32 fn_8017F794(u32 fileHandle, u32 groupID, u32 nameHash);
 extern void fn_80180584(void* dst, u32 src, u32 size, void (*callback)(void), void* userData);
 extern u16 fn_800E2B00(u32 size, u32 alignment);
-extern void* fn_800E27B0(u16 handle);
-extern void fn_8017F25C(void);
-extern void fn_8017F108(s32 result);
+extern void* GSmemLock(u16 handle);
+extern void fsysARQCallback(void);
+extern void fsysDVDReadCallback(s32 result);
 
-/* GSres allocation of an entry buffer, 32-byte aligned (as in fn_8017E30C). */
+/* GSres allocation of an entry buffer, 32-byte aligned (as in fsysLoadEntrySync). */
 static inline void* gsResAlloc(u32 size, u32 group, u32 id)
 {
     void* p;
@@ -48,7 +48,7 @@ static inline void* gsResAlloc(u32 size, u32 group, u32 id)
 }
 
 /* Recompute the archive's total size after an entry changed size (as in
- * fn_8017E30C). */
+ * fsysLoadEntrySync). */
 static inline void fsysUpdateTotalSize(FSYSSlot* slot)
 {
     u32 total;
@@ -67,7 +67,7 @@ static inline void fsysUpdateTotalSize(FSYSSlot* slot)
 }
 
 /*
- * Destination buffer of a plain entry (as in fn_8017E30C). Entries of
+ * Destination buffer of a plain entry (as in fsysLoadEntrySync). Entries of
  * archives flagged external (flags bit 0) take their size from the file on
  * disc first.
  */
@@ -92,15 +92,15 @@ static inline void* fsysAllocEntry(FSYSSlot* slot, FSYSFileEntry* entry)
         name = (char*)slot->archiveData + entry->dataOffset;
         slot->tocBuffer = NULL;
         if (fn_80167EF8(name)) {
-            slot->tocBuffer = (void*)fn_80167F28(name);
+            slot->tocBuffer = (void*)GSdvdOpen(name);
         }
         sub = (FSYSSubEntry*)entry->subEntry;
         if (slot->tocBuffer) {
-            fileSize = fn_80167E5C((u32)slot->tocBuffer);
+            fileSize = GSdvdGetLength((u32)slot->tocBuffer);
             entry->decompressedSize = fileSize;
             size = entry->decompressedSize;
             fsysUpdateTotalSize(slot);
-            fn_80167E64((u32)slot->tocBuffer);
+            GSdvdClose((u32)slot->tocBuffer);
             slot->tocBuffer = NULL;
             sub->ready = 1;
         }
@@ -123,7 +123,7 @@ static inline void* fsysAllocTop(u32 size)
     alignedSize = (size + 0x1F) & ~0x1F;
     handle = fn_800E2B00(alignedSize, 0x20);
     if (handle != 0) {
-        return fn_800E27B0(handle);
+        return GSmemLock(handle);
     }
     return NULL;
 }
@@ -142,11 +142,11 @@ static inline void fsysReadCachedEntry(FSYSSlot* slot)
     size = current->decompressedSize;
     cached = fn_8017F794(slot->fileHandle, current->groupID, current->nameHash);
     slot->status = 0xA1;
-    fn_80180584(sub->buffer, cached, size, fn_8017F25C, slot);
+    fn_80180584(sub->buffer, cached, size, fsysARQCallback, slot);
 }
 
 /* Address: 0x8017B6B8 | size: 0x4C8 */
-void fn_8017B6B8(FSYSSlot* slot, FSYSFileEntry* entry, u32 index)
+void fsysLoadEntry(FSYSSlot* slot, FSYSFileEntry* entry, u32 index)
 {
     u32* offsets;
     u32* tables;
@@ -190,20 +190,20 @@ void fn_8017B6B8(FSYSSlot* slot, FSYSFileEntry* entry, u32 index)
         name = (char*)slot->archiveData + current->dataOffset;
         slot->tocBuffer = NULL;
         if (fn_80167EF8(name)) {
-            slot->tocBuffer = (void*)fn_80167F28(name);
+            slot->tocBuffer = (void*)GSdvdOpen(name);
         }
         if (!slot->tocBuffer) {
-            fn_80167E98(slot->fileInfo0, sub->buffer, size, current->padding04, fn_8017F108);
+            GSdvdReadAsync(slot->fileInfo0, sub->buffer, size, current->padding04, fsysDVDReadCallback);
         } else {
-            fn_80167E98((u32)slot->tocBuffer, sub->buffer, size, 0, fn_8017F108);
+            GSdvdReadAsync((u32)slot->tocBuffer, sub->buffer, size, 0, fsysDVDReadCallback);
         }
     } else {
-        fn_80167E98(slot->fileInfo0, sub->buffer, size, current->padding04, fn_8017F108);
+        GSdvdReadAsync(slot->fileInfo0, sub->buffer, size, current->padding04, fsysDVDReadCallback);
     }
 }
 
 /* Address: 0x8017BB80 | size: 0x110 */
-s32 fn_8017BB80(FSYSSlot* slot, FSYSFileEntry* entry)
+s32 fsysFlushLoadedEntry(FSYSSlot* slot, FSYSFileEntry* entry)
 {
     u32 size;
     /* RULE-EXCEPTION(title-path): unused locals kept for retail's dead stack stores — see docs/RULE_EXCEPTIONS.md */

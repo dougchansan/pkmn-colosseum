@@ -18,7 +18,7 @@ extern void* pokemonGetStatus();
 extern u32   pokemonSetStatus();
 
 /* Battle system functions */
-extern void fn_801EF8F4();
+extern void battleCameraSelect();
 
 /* Sound functions */
 extern void soundStop();     /* Stop sound */
@@ -77,13 +77,13 @@ u8 fightFloorGetFightTrainerFightOutPokemonIsFightActionAttackWazaOut(u32, void*
 s32 fightTrainerGetStatus(u32, u32, u32, u32);
 u16 fightFloorGetFightTrainerFightPokemonPtrAry(u32, void*, void*, u32, u32);
 u32 fightOutPokemonGetPokemonPtr(u32);
-u8 fn_80237310(void*, u32);
+u8 fightTrainerAiIsJoutaiNormal(void*, u32);
 u8 fn_80237F74(void*, u32, u32);
 u8 fn_802384B4(void*, u32, u32);
 u8 fn_80239564(void*, u32);
-u8 fn_80235B04(void*, u32, u32);
-u16 fn_80238980(void*, u32);
-u8 fn_80238E30(void*, u32, u32);
+u8 fightTrainerAiGetNowTenkou(void*, u32, u32);
+u16 fightTrainerAiGetPokemonDataId2(void*, u32);
+u8 fightTrainerAiGetPokemonZokusei(void*, u32, u32);
 u8 fn_80239058(void*, u32, u32);
 u32 fn_80239984(u32, void*, u32);
 u32 fightTrainerAiAddValue(u32, s32);
@@ -106,13 +106,13 @@ void fn_80239EE8(u32, void*, u32, u32, u32, u32, u32, u32);
  * (colosseum_script.c) and the battle engine (battle_main.c).
  * ========================================================================= */
 int fightTrainerAiWazaValueKuroikiri(void* ctx, u32 param1, u32 param2, u32 param3) {
-    extern u8 fn_80235AA0(void* ctx, u32 elem);
-    extern u8 fn_80235A3C(void* ctx, u32 elem);
+    extern u8 fightTrainerAiGetAbicntPhyAtk(void* ctx, u32 elem);
+    extern u8 fightTrainerAiGetAbicntPhyDef(void* ctx, u32 elem);
     extern u8 fn_802359D8(void* ctx, u32 elem);
     extern u8 fn_80235974(void* ctx, u32 elem);
-    extern u8 fn_80235910(void* ctx, u32 elem);
-    extern u8 fn_802358AC(void* ctx, u32 elem);
-    extern u8 fn_802357CC(void* ctx, u32 elem);
+    extern u8 fightTrainerAiGetAbicntNimbleness(void* ctx, u32 elem);
+    extern u8 fightTrainerAiGetAbicntAverage(void* ctx, u32 elem);
+    extern u8 fightTrainerAiGetAbicntAvoid(void* ctx, u32 elem);
     extern u16 fightFloorGetFightTrainerFightOutPokemonPtrAry(int a, void* ctx, u32* buf, int b, int c);
     extern int fn_80239984(int handle, void* ctx, int seq);
     extern u32 fightOutPokemonGetPokemonPtr(u32 v);
@@ -143,13 +143,13 @@ int fightTrainerAiWazaValueKuroikiri(void* ctx, u32 param1, u32 param2, u32 para
         u8 matched;
         for (i = 0; i < count2; i++) {
             elem = array2[i];
-            bufA[0] = fn_80235AA0(ctx, elem);
-            bufA[1] = fn_80235A3C(ctx, elem);
+            bufA[0] = fightTrainerAiGetAbicntPhyAtk(ctx, elem);
+            bufA[1] = fightTrainerAiGetAbicntPhyDef(ctx, elem);
             bufA[2] = fn_802359D8(ctx, elem);
             bufA[3] = fn_80235974(ctx, elem);
-            bufA[4] = fn_80235910(ctx, elem);
-            bufA[5] = fn_802358AC(ctx, elem);
-            bufA[6] = fn_802357CC(ctx, elem);
+            bufA[4] = fightTrainerAiGetAbicntNimbleness(ctx, elem);
+            bufA[5] = fightTrainerAiGetAbicntAverage(ctx, elem);
+            bufA[6] = fightTrainerAiGetAbicntAvoid(ctx, elem);
             for (j = 0; j < 7; j++) {
                 if (bufA[j] >= 8 && bufA[j] <= 9) { matched = 1; goto M0; }
             }
@@ -170,13 +170,13 @@ int fightTrainerAiWazaValueKuroikiri(void* ctx, u32 param1, u32 param2, u32 para
         u8 matched;
         for (i = 0; i < count1; i++) {
             elem = array1[i];
-            bufB[0] = fn_80235AA0(ctx, elem);
-            bufB[1] = fn_80235A3C(ctx, elem);
+            bufB[0] = fightTrainerAiGetAbicntPhyAtk(ctx, elem);
+            bufB[1] = fightTrainerAiGetAbicntPhyDef(ctx, elem);
             bufB[2] = fn_802359D8(ctx, elem);
             bufB[3] = fn_80235974(ctx, elem);
-            bufB[4] = fn_80235910(ctx, elem);
-            bufB[5] = fn_802358AC(ctx, elem);
-            bufB[6] = fn_802357CC(ctx, elem);
+            bufB[4] = fightTrainerAiGetAbicntNimbleness(ctx, elem);
+            bufB[5] = fightTrainerAiGetAbicntAverage(ctx, elem);
+            bufB[6] = fightTrainerAiGetAbicntAvoid(ctx, elem);
             for (j = 0; j < 7; j++) {
                 if (bufB[j] >= 3 && bufB[j] <= 4) { matched = 1; goto M1; }
             }
@@ -197,13 +197,13 @@ int fightTrainerAiWazaValueKuroikiri(void* ctx, u32 param1, u32 param2, u32 para
         u8 matched;
         for (i = 0; i < count2; i++) {
             elem = array2[i];
-            bufC[0] = fn_80235AA0(ctx, elem);
-            bufC[1] = fn_80235A3C(ctx, elem);
+            bufC[0] = fightTrainerAiGetAbicntPhyAtk(ctx, elem);
+            bufC[1] = fightTrainerAiGetAbicntPhyDef(ctx, elem);
             bufC[2] = fn_802359D8(ctx, elem);
             bufC[3] = fn_80235974(ctx, elem);
-            bufC[4] = fn_80235910(ctx, elem);
-            bufC[5] = fn_802358AC(ctx, elem);
-            bufC[6] = fn_802357CC(ctx, elem);
+            bufC[4] = fightTrainerAiGetAbicntNimbleness(ctx, elem);
+            bufC[5] = fightTrainerAiGetAbicntAverage(ctx, elem);
+            bufC[6] = fightTrainerAiGetAbicntAvoid(ctx, elem);
             for (j = 0; j < 7; j++) {
                 if (bufC[j] >= 10 && bufC[j] <= 12) { matched = 1; goto M2; }
             }
@@ -224,13 +224,13 @@ int fightTrainerAiWazaValueKuroikiri(void* ctx, u32 param1, u32 param2, u32 para
         u8 matched;
         for (i = 0; i < count1; i++) {
             elem = array1[i];
-            bufD[0] = fn_80235AA0(ctx, elem);
-            bufD[1] = fn_80235A3C(ctx, elem);
+            bufD[0] = fightTrainerAiGetAbicntPhyAtk(ctx, elem);
+            bufD[1] = fightTrainerAiGetAbicntPhyDef(ctx, elem);
             bufD[2] = fn_802359D8(ctx, elem);
             bufD[3] = fn_80235974(ctx, elem);
-            bufD[4] = fn_80235910(ctx, elem);
-            bufD[5] = fn_802358AC(ctx, elem);
-            bufD[6] = fn_802357CC(ctx, elem);
+            bufD[4] = fightTrainerAiGetAbicntNimbleness(ctx, elem);
+            bufD[5] = fightTrainerAiGetAbicntAverage(ctx, elem);
+            bufD[6] = fightTrainerAiGetAbicntAvoid(ctx, elem);
             {
                 /* Preserve MWCC's unsigned lower-bound comparison. */
                 u32 min_status = param3 - param3;
@@ -259,13 +259,13 @@ int fightTrainerAiWazaValueKuroikiri(void* ctx, u32 param1, u32 param2, u32 para
         u8 matched;
         for (i = 0; i < count1; i++) {
             elem = array1[i];
-            bufE[0] = fn_80235AA0(ctx, elem);
-            bufE[1] = fn_80235A3C(ctx, elem);
+            bufE[0] = fightTrainerAiGetAbicntPhyAtk(ctx, elem);
+            bufE[1] = fightTrainerAiGetAbicntPhyDef(ctx, elem);
             bufE[2] = fn_802359D8(ctx, elem);
             bufE[3] = fn_80235974(ctx, elem);
-            bufE[4] = fn_80235910(ctx, elem);
-            bufE[5] = fn_802358AC(ctx, elem);
-            bufE[6] = fn_802357CC(ctx, elem);
+            bufE[4] = fightTrainerAiGetAbicntNimbleness(ctx, elem);
+            bufE[5] = fightTrainerAiGetAbicntAverage(ctx, elem);
+            bufE[6] = fightTrainerAiGetAbicntAvoid(ctx, elem);
             for (j = 0; j < 7; j++) {
                 if (bufE[j] >= 8 && bufE[j] <= 9) { matched = 1; goto M4; }
             }
@@ -286,13 +286,13 @@ int fightTrainerAiWazaValueKuroikiri(void* ctx, u32 param1, u32 param2, u32 para
         u8 matched;
         for (i = 0; i < count2; i++) {
             elem = array2[i];
-            bufF[0] = fn_80235AA0(ctx, elem);
-            bufF[1] = fn_80235A3C(ctx, elem);
+            bufF[0] = fightTrainerAiGetAbicntPhyAtk(ctx, elem);
+            bufF[1] = fightTrainerAiGetAbicntPhyDef(ctx, elem);
             bufF[2] = fn_802359D8(ctx, elem);
             bufF[3] = fn_80235974(ctx, elem);
-            bufF[4] = fn_80235910(ctx, elem);
-            bufF[5] = fn_802358AC(ctx, elem);
-            bufF[6] = fn_802357CC(ctx, elem);
+            bufF[4] = fightTrainerAiGetAbicntNimbleness(ctx, elem);
+            bufF[5] = fightTrainerAiGetAbicntAverage(ctx, elem);
+            bufF[6] = fightTrainerAiGetAbicntAvoid(ctx, elem);
             for (j = 0; j < 7; j++) {
                 if (bufF[j] >= 3 && bufF[j] <= 4) { matched = 1; goto M5; }
             }
@@ -314,13 +314,13 @@ int fightTrainerAiWazaValueKuroikiri(void* ctx, u32 param1, u32 param2, u32 para
         u32 block_elem;
         for (elem = 0; (u16)elem < count1; elem++) {
             block_elem = array1[(u16)elem];
-            bufG[0] = fn_80235AA0(ctx, block_elem);
-            bufG[1] = fn_80235A3C(ctx, block_elem);
+            bufG[0] = fightTrainerAiGetAbicntPhyAtk(ctx, block_elem);
+            bufG[1] = fightTrainerAiGetAbicntPhyDef(ctx, block_elem);
             bufG[2] = fn_802359D8(ctx, block_elem);
             bufG[3] = fn_80235974(ctx, block_elem);
-            bufG[4] = fn_80235910(ctx, block_elem);
-            bufG[5] = fn_802358AC(ctx, block_elem);
-            bufG[6] = fn_802357CC(ctx, block_elem);
+            bufG[4] = fightTrainerAiGetAbicntNimbleness(ctx, block_elem);
+            bufG[5] = fightTrainerAiGetAbicntAverage(ctx, block_elem);
+            bufG[6] = fightTrainerAiGetAbicntAvoid(ctx, block_elem);
             for (j = 0; j < 7; j++) {
                 if (bufG[j] >= 10 && bufG[j] <= 12) { matched = 1; goto M6; }
             }
@@ -343,13 +343,13 @@ int fightTrainerAiWazaValueKuroikiri(void* ctx, u32 param1, u32 param2, u32 para
         u16 block_i;
         for (block_i = 0; block_i < count2; block_i++) {
             block_elem = array2[block_i];
-            bufH[0] = fn_80235AA0(ctx, block_elem);
-            bufH[1] = fn_80235A3C(ctx, block_elem);
+            bufH[0] = fightTrainerAiGetAbicntPhyAtk(ctx, block_elem);
+            bufH[1] = fightTrainerAiGetAbicntPhyDef(ctx, block_elem);
             bufH[2] = fn_802359D8(ctx, block_elem);
             bufH[3] = fn_80235974(ctx, block_elem);
-            bufH[4] = fn_80235910(ctx, block_elem);
-            bufH[5] = fn_802358AC(ctx, block_elem);
-            bufH[6] = fn_802357CC(ctx, block_elem);
+            bufH[4] = fightTrainerAiGetAbicntNimbleness(ctx, block_elem);
+            bufH[5] = fightTrainerAiGetAbicntAverage(ctx, block_elem);
+            bufH[6] = fightTrainerAiGetAbicntAvoid(ctx, block_elem);
             {
                 /* Preserve MWCC's unsigned lower-bound comparison. */
                 u32 min_status = param3 - param3;

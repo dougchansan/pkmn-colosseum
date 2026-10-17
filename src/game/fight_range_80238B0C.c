@@ -1,12 +1,12 @@
 /**
  * @file fight_range_80238B0C.c
- * @brief fn_80238B0C, 0x80238B0C - 0x80238E30: the AI's type-effectiveness
- *        lookup for a move type against a pokemon (fn_8010C650), with the
+ * @brief fightTrainerAiGetPokemonAisyou, 0x80238B0C - 0x80238E30: the AI's type-effectiveness
+ *        lookup for a move type against a pokemon (zokuseiGetAisyouDualType), with the
  *        tokusei 0x1A / 0x19 overrides (0x43).
  *
  * Exact: written with the fight AI accessor inlines. The per-slot type getter
- * (aiGetType) is the body retail expands in fn_802389D4's loop and twice in
- * fn_80238E30; keeping it a nested inline under aiGetTypeList numbers the
+ * (aiGetType) is the body retail expands in fightTrainerAiGetPokemonAisyouScore's loop and twice in
+ * fightTrainerAiGetPokemonZokusei; keeping it a nested inline under aiGetTypeList numbers the
  * first tokusei check's trainer/pokemon webs between the list's count and
  * species, which gives retail's r26.
  */
@@ -17,7 +17,7 @@ extern u32 fightTrainerGetStatus();
 extern u32 fightPokemonGetPokemonPtr();
 extern u32 pokemonGetTokuseiDataId();
 extern u8 fightTrainerIsAllyFightTargetPtr();
-extern u32 fn_8010C650();
+extern u32 zokuseiGetAisyouDualType();
 
 static inline u32 aiGetTokusei(u32 ctx, u32 pokemon)
 {
@@ -40,7 +40,7 @@ static inline u8 aiIsTokusei(u32 ctx, u32 pokemon, u16 tokusei)
 }
 
 /* RULE-EXCEPTION(user-approved): single-use inline helper (one call here; the
- * same body is expanded in fn_802389D4 and twice in fn_80238E30), kept as a
+ * same body is expanded in fightTrainerAiGetPokemonAisyouScore and twice in fightTrainerAiGetPokemonZokusei), kept as a
  * nested inline for register numbering -- see docs/RULE_EXCEPTIONS.md. */
 static inline u16 aiGetType(u32 ctx, u32 pokemon, u32 i)
 {
@@ -83,7 +83,7 @@ static inline u32 aiGetTypeList(u32 ctx, u32 pokemon, u16* types)
     return count;
 }
 
-u32 fn_80238B0C(u32 ctx, u32 pokemon, u32 moveType, s16 power)
+u32 fightTrainerAiGetPokemonAisyou(u32 ctx, u32 pokemon, u32 moveType, s16 power)
 {
     u16 types[2];
     u32 count;
@@ -99,7 +99,7 @@ u32 fn_80238B0C(u32 ctx, u32 pokemon, u32 moveType, s16 power)
     if ((u16)count == 0) {
         return 0x3F;
     }
-    result = fn_8010C650(moveType, types, count);
+    result = zokuseiGetAisyouDualType(moveType, types, count);
     if (aiIsTokusei(ctx, pokemon, 0x19) == 1 && (u16)result != 0x41 && power > 0) {
         return 0x43;
     }

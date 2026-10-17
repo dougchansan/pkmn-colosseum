@@ -9,7 +9,7 @@ extern s32 DBRead(void* buffer, u32 size);
 extern s32 DBWrite(const void* buffer, s32 size);
 extern void fn_800CE7D8(void); /* GDEV_PostStop */
 extern void fn_800CE7D4(void); /* GDEV_PreContinue */
-extern u32 fn_800C41A4(CircleBuffer* circle);
+extern u32 CBGetBytesAvailableForRead(CircleBuffer* circle);
 
 extern s32 CircleBufferWriteBytes(CircleBuffer* circle, u8* buffer, u32 size);
 extern s32 CircleBufferReadBytes(CircleBuffer* circle, u8* buffer, u32 size);
@@ -100,7 +100,7 @@ s32 gdev_cc_read(u8* buffer, s32 size) {
     requestedSize = size;
     readSize = size;
     {
-        while (fn_800C41A4(&lbl_803FFA98) < readSize) {
+        while (CBGetBytesAvailableForRead(&lbl_803FFA98) < readSize) {
             error = 0;
             size = DBQueryData();
             if (size != 0) {

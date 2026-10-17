@@ -26,7 +26,7 @@ typedef struct GXData_800B771C {
 } GXData_800B771C;
 
 extern volatile GXData_800B771C* const gx;
-extern void fn_800B771C(void);
+extern void __GXXfVtxSpecs(void);
 /* __GXCalculateVLim's component-count tables (.sdata). */
 extern u8 lbl_80478A68[4];
 extern u8 lbl_80478A6C[4];
@@ -97,7 +97,7 @@ static inline void SetVcdAttr(s32 attr, s32 type)
 /* __GXXfVtxSpecs */
 #define GX_REG_FIELD_800B771C(reg, size, shift) (((reg) >> (shift)) & ((1 << (size)) - 1))
 
-void fn_800B771C(void)
+void __GXXfVtxSpecs(void)
 {
     GXData_800B771C* data = (GXData_800B771C*)gx;
     u32 nCols;
@@ -125,7 +125,7 @@ void fn_800B771C(void)
     *(volatile u16*)((u8*)gx + 2) = 1;
 }
 
-void fn_800B7874(s32 attr, s32 type)
+void GXSetVtxDesc(s32 attr, s32 type)
 {
     SetVcdAttr(attr, type);
     if (gx->hasNrms || gx->hasBiNrms) {
@@ -136,14 +136,14 @@ void fn_800B7874(s32 attr, s32 type)
     gx->dirtyState |= 8;
 }
 
-void fn_800B7BC4(void) {
+void __GXSetVCD(void) {
     GX_FIFO_U8 = 0x8;
     GX_FIFO_U8 = 0x50;
     GX_FIFO_U32 = gx->vcdLo;
     GX_FIFO_U8 = 0x8;
     GX_FIFO_U8 = 0x60;
     GX_FIFO_U32 = gx->vcdHi;
-    fn_800B771C();
+    __GXXfVtxSpecs();
 }
 #endif
 

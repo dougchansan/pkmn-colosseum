@@ -1,6 +1,6 @@
 #include "musyx/runtime/hw_dspctrl.h"
 
-void fn_8015AAA0(u32 studio)
+void salDeactivateStudio(u32 studio)
 {
     lbl_80447E60[(u8) studio].state = 0;
 }

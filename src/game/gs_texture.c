@@ -46,11 +46,11 @@
 #include "game/gs_scene_types.h"  /* memcpy, GSmem externs, GSlogWrite */
 
 /* ===== External SDK / engine functions ===== */
-u16   fn_800E2C04(u32 size, u32 alignment);     /* GSmemAlloc */
+u16   GSmemAlloc(u32 size, u32 alignment);     /* GSmemAlloc */
 void  GXInvalidateTexAll(void);
-extern void  fn_800BB050(void* gxTlutObj, void* data, u32 format,
+extern void  GXInitTlutObj(void* gxTlutObj, void* data, u32 format,
                          u32 entries); /* GXInitTlutObj */
-extern void  fn_800BA9E4(void* gxTexObj, void* data,
+extern void  GXInitTexObj(void* gxTexObj, void* data,
                           u16 width, u16 height, u32 gxFmt,
                           u32 wrapS, u32 wrapT, u32 hasMips); /* GXInitTexObj */
 
@@ -66,7 +66,7 @@ extern u8 lbl_80466BC0[];  /* current display descriptor */
 static u16 gsTexPoolHandle;
 
 extern u16 _toolentryAlloc__FUl(u32 size); /* GSmemAllocRaw */
-extern void* fn_800E27B0(u16 handle); /* GSmemGetPtr */
+extern void* GSmemLock(u16 handle); /* GSmemGetPtr */
 /* lbl_8047ABF8 : u32 -- max texture count */
 static u32 gsTexMaxCount;               /* @sda21 lbl_8047ABF8 */
 /* lbl_8047ABF4 : GStextureHandle* -- base pointer to texture pool */
@@ -106,7 +106,7 @@ void fn_800EF098(GStextureHandle* tex) {
         return;
     }
 
-    converted = fn_800E27B0(handle);
+    converted = GSmemLock(handle);
     blocksPerRow = width >> 2;
     for (i = 0; i < pixelCount; i++) {
         u16 block = i >> 4;
@@ -124,7 +124,7 @@ void fn_800EF098(GStextureHandle* tex) {
     GXInvalidateTexAll();
     tex->refCount--;
     fn_800E24B0(handle);
-    fn_800E209C(handle);
+    GSmemFree(handle);
 }
 
 /* =======================================================================
@@ -132,10 +132,10 @@ void fn_800EF098(GStextureHandle* tex) {
  *  Copies the embedded EFB region into a texture image.
  * ======================================================================= */
 u8 GStextureConvertFromHW(GStextureHandle* tex, u8 clear) {
-    extern void fn_800B962C(u16, u16, u16, u16);
-    extern void fn_800B96F8(u16, u16, s32, u8);
-    extern void fn_800B9FE4(void*, u8);
-    extern void fn_800B8E74(void);
+    extern void GXSetTexCopySrc(u16, u16, u16, u16);
+    extern void GXSetTexCopyDst(u16, u16, s32, u8);
+    extern void GXCopyTex(void*, u8);
+    extern void GXPixModeSync(void);
     extern void GXSetZMode(u8, u32, u8);
     s32 width;
     s32 height;
@@ -189,11 +189,11 @@ u8 GStextureConvertFromHW(GStextureHandle* tex, u8 clear) {
         height = tex->height;
     }
 
-    fn_800B962C(0, 0, width, height);
-    fn_800B96F8(width, height, gxFormat, tex->mipLevels > 1);
+    GXSetTexCopySrc(0, 0, width, height);
+    GXSetTexCopyDst(width, height, gxFormat, tex->mipLevels > 1);
     GXSetZMode(1, 3, 1);
-    fn_800B9FE4(image, clear);
-    fn_800B8E74();
+    GXCopyTex(image, clear);
+    GXPixModeSync();
     GXInvalidateTexAll();
     DCFlushRange(tex->mipData[0], tex->totalSize);
     GXInvalidateTexAll();
@@ -271,7 +271,7 @@ void GStextureFree(GStextureHandle* tex) {
 
     tex->inUse = 0;
     fn_800E24B0(tex->memHandle);
-    fn_800E209C(tex->memHandle);
+    GSmemFree(tex->memHandle);
 }
 
 /* =======================================================================
@@ -467,15 +467,15 @@ texture_slot_found:
     }
 
     /* Step 7: Allocate pixel data from GSmem */
-    tex->memHandle = fn_800E2C04(tex->totalSize, 0x20);
+    tex->memHandle = GSmemAlloc(tex->totalSize, 0x20);
 
     if (tex->memHandle == 0) {
         return NULL;
     }
 
-    tex->mipData[0] = fn_800E27B0(tex->memHandle);
+    tex->mipData[0] = GSmemLock(tex->memHandle);
     if (tex->mipData[0] == NULL) {
-        fn_800E209C(tex->memHandle);
+        GSmemFree(tex->memHandle);
         return NULL;
     }
 
@@ -565,12 +565,12 @@ texture_slot_found:
             default: break;
         }
 
-        fn_800BB050(tex->gxTlutObj, tex->tlutData, gxTlutFmt, tlutEntries);
+        GXInitTlutObj(tex->gxTlutObj, tex->tlutData, gxTlutFmt, tlutEntries);
     }
 
     /* Set up GXTexObj */
     hasMips = tex->mipLevels > 1;
-    fn_800BA9E4(tex->gxTexObj, tex->mipData[0], tex->width, tex->height,
+    GXInitTexObj(tex->gxTexObj, tex->mipData[0], tex->width, tex->height,
                 gxTexFmt, 0, 0, hasMips);
 
     tex->dirty = 1;
@@ -675,7 +675,7 @@ GStextureHandle* GStextureLoad(void* data) {
             break;
         }
 
-        fn_800BB050(tex->gxTlutObj, tex->tlutData, gxTlutFmt, tlutEntries);
+        GXInitTlutObj(tex->gxTlutObj, tex->tlutData, gxTlutFmt, tlutEntries);
     }
 
     if (tex->mipLevels > 1) {
@@ -683,7 +683,7 @@ GStextureHandle* GStextureLoad(void* data) {
     } else {
         hasMips = 0;
     }
-    fn_800BA9E4(tex->gxTexObj, tex->mipData[0], tex->width, tex->height,
+    GXInitTexObj(tex->gxTexObj, tex->mipData[0], tex->width, tex->height,
                 gxTexFmt, 0, 0, hasMips);
 
     tex->dirty = 1;
@@ -706,7 +706,7 @@ void GStextureInit(u32 count) {
         return;
     }
 
-    gsTexPool = fn_800E27B0(gsTexPoolHandle);
+    gsTexPool = GSmemLock(gsTexPoolHandle);
     for (i = 0; i < gsTexMaxCount; i++) {
         ((u8*)gsTexPool)[i * 0x80 + 6] = 0;
     }

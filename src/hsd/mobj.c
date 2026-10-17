@@ -97,7 +97,7 @@ extern void HSD_TExpAlphaIn(HSD_TExp* exp, u32 sel_a, HSD_TExp* a, u32 sel_b,
                         HSD_TExp* b, u32 sel_c, HSD_TExp* c, u32 sel_d,
                         HSD_TExp* d);
 /* HSD_TExpFreeList */
-extern void fn_801B7178(HSD_TExp* texp, u32 type, int flag);
+extern void HSD_TExpFreeList(HSD_TExp* texp, u32 type, int flag);
 /* HSD_TExpSetupTev */
 
 extern HSD_TExp* HSD_TExpCnst(void* ptr, u32 comp, u32 type, HSD_TExp** list);
@@ -106,7 +106,7 @@ extern void HSD_TExpCompile(HSD_TExp* texp, HSD_TExpTevDesc** tevdesc,
                             HSD_TExp** list);
 extern void HSD_TExpFreeTevDesc(HSD_TExpTevDesc* tevdesc);
 
-#define HSD_TExpFreeList(texp, type, flag) fn_801B7178(texp, type, flag)
+#define HSD_TExpFreeList(texp, type, flag) HSD_TExpFreeList(texp, type, flag)
 /* HSD_TExpSetupTev */
 extern void HSD_TExpSetupTev(HSD_TExpTevDesc* tevdesc, HSD_TExp* texp);
 
@@ -115,9 +115,9 @@ extern void HSD_TExpSetupTev(HSD_TExpTevDesc* tevdesc, HSD_TExp* texp);
 /* ========================================================================= */
 
 /* HSD_StateInitTev */
-extern void fn_801B3884(void);
+extern void HSD_StateInitTev(void);
 /* HSD_SetMaterialShininess */
-extern void fn_801B28B8(f32 shininess);
+extern void HSD_SetMaterialShininess(f32 shininess);
 /* HSD_SetMaterialColor */
 extern void HSD_SetMaterialColor(GXColor ambient, GXColor diffuse, GXColor specular,
                         f32 alpha);
@@ -126,8 +126,8 @@ extern void HSD_SetupRenderModeWithCustomPE(u32 rendermode, HSD_PEDesc* pe);
 /* HSD_TObjAddNext */
 extern void fn_801BBE3C(HSD_TObj* tobj, HSD_TObj* next);
 
-#define HSD_StateInitTev() fn_801B3884()
-#define HSD_SetMaterialShininess(s) fn_801B28B8(s)
+#define HSD_StateInitTev() HSD_StateInitTev()
+#define HSD_SetMaterialShininess(s) HSD_SetMaterialShininess(s)
 #define HSD_TObjAddNext(t, n) fn_801BBE3C(t, n)
 
 /* ========================================================================= */
@@ -137,14 +137,14 @@ extern void fn_801BBE3C(HSD_TObj* tobj, HSD_TObj* next);
 /* hsdSearchClassInfo */
 extern HSD_ClassInfo* fn_80193748(const char* class_name);
 /* hsdIsDescendantOf */
-extern BOOL fn_80193788(void* info, void* p);
+extern BOOL hsdIsDescendantOf(void* info, void* p);
 /* hsdNew */
 extern void* fn_80193828(HSD_ClassInfo* info);
 /* hsdAllocMemPiece */
 extern void* fn_80193B10(s32 size);
 
 #define hsdSearchClassInfo(n) fn_80193748(n)
-#define hsdIsDescendantOf(i, p) fn_80193788(i, p)
+#define hsdIsDescendantOf(i, p) hsdIsDescendantOf(i, p)
 #define hsdNew(i) fn_80193828(i)
 #define hsdAllocMemPiece(s) fn_80193B10(s)
 

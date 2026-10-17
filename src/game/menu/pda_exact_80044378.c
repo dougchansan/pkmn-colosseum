@@ -37,7 +37,7 @@ extern u16* lbl_8047A4E4;
 extern u16 lbl_8047A4E8;
 extern f32 lbl_8047BCA0;
 extern const f32 lbl_8047BCF4;
-extern void fn_800FB680(s32 arg0, s32 arg1, s32 arg2, void* data);
+extern void GSmsgPrintColor(s32 arg0, s32 arg1, s32 arg2, void* data);
 extern void fn_800FE38C(s32 x1, s32 y1, s32 x2, s32 y2);
 extern void fn_800FE35C(void);
 extern void fn_800492CC(u8* context, PdaSprite* sprite);
@@ -106,7 +106,7 @@ static inline void pdaDrawNameRows(u8* context, s32 first, f32 y)
                 name = GSmsgGetGSchar(1);
             }
             msgctrlSetValue(0x37, name);
-            fn_800FB680(0, (s32)y - 2, (u32)context[0x8B] | -0x100LL,
+            GSmsgPrintColor(0, (s32)y - 2, (u32)context[0x8B] | -0x100LL,
                         (void*)0xE7);
         }
         y += lbl_8047BCF4;

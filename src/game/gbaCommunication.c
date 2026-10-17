@@ -40,18 +40,18 @@ extern s32 lbl_802EEFC4[5];
  * declared with a full prototype at the point of use. */
 extern void _threadSwitch(void);
 extern void* windowSearchID(u32 id);
-extern void fn_8009F7B4(void *p);
-extern void fn_8009F890(void *p);
-extern void fn_800A257C(void *p, u32 b);
+extern void OSLockMutex(void *p);
+extern void OSUnlockMutex(void *p);
+extern void OSSetThreadPriority(void *p, u32 b);
 extern void fn_800716E8(u32 port, u32 val);
-extern void fn_8009FABC(void *p);
+extern void OSSignalCond(void *p);
 extern void fn_800A1E54(void *p, u32 v);
 extern void fn_800716C8(u32 port, void *a, void *b);
-extern u32 fn_800E202C(void *p);
+extern u32 GSmemGetHandleByPtr(void *p);
 extern void __assert(const u8 *file, u32 line, const u8 *msg);
 extern void fn_800E24B0(u32 status);
-extern void fn_800E209C(u32 status);
-extern u32 fn_800A13F8(void);
+extern void GSmemFree(u32 status);
+extern u32 OSGetCurrentThread(void);
 extern void OSYieldThread(void);
 extern void std098_mapWarpToMenuRoom(u32 id);
 extern void floorSetFadeScript(u32 a, u32 b);
@@ -73,13 +73,13 @@ extern f32 lbl_8047C234;
 extern f32 lbl_8047C238;
 extern void fn_801040F0();
 extern void winSpriteSetDisp();
-extern void fn_8001E58C();
+extern void menuDrawRectOutline();
 extern void fn_800FA280();
 extern void fn_800FA444();
-extern void fn_800FB680();
-extern void fn_800FB8C8();
-extern void fn_800FBB34();
-extern s32 fn_800FAEF8(s32 x, s32 y, u32 color, const void* format, ...);
+extern void GSmsgPrintColor();
+extern void GSmsgPrintRight();
+extern void GSmsgPrintRect();
+extern s32 GSmsgPrintf(s32 x, s32 y, u32 color, const void* format, ...);
 extern u8 exribbonGetNo(s32 ribbon);
 extern void* menuItemBiosGetPtr(u16 id);
 extern void* menuSpriteBiosGetPtr(u16 id);
@@ -101,11 +101,11 @@ extern void gfxSetPrimitive(u32 arg);
 extern void gfxSetVtxDesc(void* arg);
 extern void gfxLoadTexture(u32 arg0, void* arg1);
 extern void gfxBegin(u32 arg);
-extern void fn_800D61E4(s32 x, s32 y);
-extern void fn_800D5CB8(u32 arg0, u32 r, u32 g, u32 b, u32 a);
+extern void gfxVtxPos2s16(s32 x, s32 y);
+extern void gfxVtxColor4u8(u32 arg0, u32 r, u32 g, u32 b, u32 a);
 extern void gfxVtxTexCoord(u32 arg0, f32 s, f32 t);
 extern void gfxEnd(void);
-extern u32 fn_8001D624(void* pokemon, u32 arg);
+extern u32 menuPokemonGetStatusSprite(void* pokemon, u32 arg);
 extern u8 menuSubGetPokemonSexForDisp(void* pokemon);
 
 #if !defined(GBA_COMMUNICATION_DECLS_ONLY)
@@ -149,12 +149,12 @@ void fn_80093B4C(s32 context, void* widget)
     switch (*(s16*)((u8*)widget + 6)) {
     case 0x1F7:
         msgctrlSetValue(0x34, *(u32*)(lbl_803FB380 + 0x1C));
-        fn_800FBB34(0, 0, *(s16*)((u8*)widget + 0x54),
+        GSmsgPrintRect(0, 0, *(s16*)((u8*)widget + 0x54),
                     *(s16*)((u8*)widget + 0x56), color, 0xDD);
         break;
 
     case 0x1F6:
-        fn_800FAEF8(0x78, 0xC8, 0x80FFFF, lbl_8026F5E4,
+        GSmsgPrintf(0x78, 0xC8, 0x80FFFF, lbl_8026F5E4,
                     *(s8*)(lbl_803FB380 + 0x1A));
         if (lbl_803FB380[1] != 6) {
             break;
@@ -167,7 +167,7 @@ void fn_80093B4C(s32 context, void* widget)
             break;
         }
 
-        fn_800FAEF8(0x78, 0xC8, 0x80FFFF, lbl_8026F5E4, ribbon);
+        GSmsgPrintf(0x78, 0xC8, 0x80FFFF, lbl_8026F5E4, ribbon);
         switch (lbl_802EED44[ribbon].ribbon) {
         case 0:
         case 1:
@@ -187,7 +187,7 @@ void fn_80093B4C(s32 context, void* widget)
             resource = lbl_802EED44[ribbon].resource;
             break;
         }
-        fn_800FBB34(0, 0, *(s16*)((u8*)widget + 0x54),
+        GSmsgPrintRect(0, 0, *(s16*)((u8*)widget + 0x54),
                     *(s16*)((u8*)widget + 0x56), color, resource);
         break;
 
@@ -334,19 +334,19 @@ static inline u8 menuStatusMoveDetailVisible(u8* sprite)
     return visible;
 }
 
-void fn_80094650(u8* context, u8* sprite)
+void menuStatusDrawMoveDetail(u8* context, u8* sprite)
 {
     extern u32 pokemonGetStatus();
     extern u32 wazaGetStatus(u32, u16, u32, u32);
     extern u16 fn_8010C46C(u16 type);
     extern u8 pokemonWazaGetMaxPP(u32 pokemon, u16 slot);
-    extern u16 fn_801EE07C(u16 id);
-    extern u32 fn_801EE034(u16 id);
-    extern u8 fn_801EE04C(u16 id);
-    extern u8 fn_801EE064(u16 id);
-    extern u16 fn_801EE0A8(u8 kind);
-    extern void fn_8001E58C(s32 x, s32 y, s32 w, s32 h, MenuStatusColor color);
-    extern void fn_800FB8C8();
+    extern u16 darkPokemonGetTableEntry(u16 id);
+    extern u32 darkPokemonEntryGet4(u16 id);
+    extern u8 darkPokemonEntryGet1(u16 id);
+    extern u8 darkPokemonEntryGet0(u16 id);
+    extern u16 darkPokemonGetIdByIndex(u8 kind);
+    extern void menuDrawRectOutline(s32 x, s32 y, s32 w, s32 h, MenuStatusColor color);
+    extern void GSmsgPrintRight();
     extern void windowDrawSprite(s32 x, s32 y, void* win, u16 sprite, u32 data);
     s32 color;
     u16 slot;
@@ -412,16 +412,16 @@ void fn_80094650(u8* context, u8* sprite)
         switch (lbl_803FB380[1]) {
         case 4:
             if ((s8)lbl_803FB380[3] == (s8)slot) {
-                fn_8001E58C(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), learn);
+                menuDrawRectOutline(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), learn);
             }
             if ((s8)lbl_803FB380[2] == (s8)slot) {
-                fn_8001E58C(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), cursor);
+                menuDrawRectOutline(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), cursor);
             }
             break;
         case 3:
         case 7:
             if ((s8)lbl_803FB380[2] == (s8)slot) {
-                fn_8001E58C(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), cursor);
+                menuDrawRectOutline(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), cursor);
             }
             break;
         }
@@ -522,7 +522,7 @@ void fn_80094650(u8* context, u8* sprite)
         }
         move = menuStatusGetMove(pokemon, slot);
         if (move == 0) {
-            fn_800FBB34(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0x2BE0);
+            GSmsgPrintRect(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0x2BE0);
             break;
         }
         value = wazaGetStatus(0, move, 1, 0);
@@ -530,7 +530,7 @@ void fn_80094650(u8* context, u8* sprite)
             break;
         }
         msgctrlSetValue(0x37, GSmsgGetGSchar(value));
-        fn_800FBB34(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xE7);
+        GSmsgPrintRect(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xE7);
         break;
     case 0x196:
     case 0x197:
@@ -572,16 +572,16 @@ void fn_80094650(u8* context, u8* sprite)
         }
         move = menuStatusGetMove(pokemon, slot);
         x = (*(s16*)(sprite + 0x54) - (s16)(GSmsgGetRect(0x2BD4) >> 16)) / 2;
-        fn_800FB680(x, 0, color, 0x2BD4);
+        GSmsgPrintColor(x, 0, color, 0x2BD4);
         switch (move) {
         case 0:
         case 0x164:
-            fn_800FB8C8(0, 0, x, *(s16*)(sprite + 0x56), color, 0x2BE1);
-            fn_800FB8C8(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0x2BE1);
+            GSmsgPrintRight(0, 0, x, *(s16*)(sprite + 0x56), color, 0x2BE1);
+            GSmsgPrintRight(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0x2BE1);
             break;
         case 0x165:
-            fn_800FB8C8(0, 0, x, *(s16*)(sprite + 0x56), color, 0x2B6D);
-            fn_800FB8C8(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0x2B6D);
+            GSmsgPrintRight(0, 0, x, *(s16*)(sprite + 0x56), color, 0x2B6D);
+            GSmsgPrintRight(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0x2B6D);
             break;
         default:
             if (slot == 4) {
@@ -590,14 +590,14 @@ void fn_80094650(u8* context, u8* sprite)
                 value = pokemonGetStatus(pokemon, 0, 0x80, slot);
             }
             msgctrlSetValue(0x34, value);
-            fn_800FB8C8(0, 0, x, *(s16*)(sprite + 0x56), color, 0xD2);
+            GSmsgPrintRight(0, 0, x, *(s16*)(sprite + 0x56), color, 0xD2);
             if (slot == 4) {
                 value = wazaGetStatus(0, move, 2, 0);
             } else {
                 value = pokemonWazaGetMaxPP(pokemon, slot);
             }
             msgctrlSetValue(0x34, value);
-            fn_800FB8C8(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xD2);
+            GSmsgPrintRight(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xD2);
             break;
         }
         break;
@@ -613,7 +613,7 @@ void fn_80094650(u8* context, u8* sprite)
             icon = 0x5D;
             break;
         default:
-            icon = fn_801EE0A8(wazaGetStatus(0, move, 0x24, 0));
+            icon = darkPokemonGetIdByIndex(wazaGetStatus(0, move, 0x24, 0));
             break;
         }
         if (icon != 0) {
@@ -623,13 +623,13 @@ void fn_80094650(u8* context, u8* sprite)
     case 0x18B:
     case 0x1D3:
         move = menuStatusGetMove(pokemon, (s8)lbl_803FB380[2]);
-        fn_800FBB34(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color,
-                    fn_801EE034(fn_801EE07C(wazaGetStatus(0, move, 0x23, 0))));
+        GSmsgPrintRect(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color,
+                    darkPokemonEntryGet4(darkPokemonGetTableEntry(wazaGetStatus(0, move, 0x23, 0))));
         break;
     case 0x18C:
     case 0x1D4:
         move = menuStatusGetMove(pokemon, (s8)lbl_803FB380[2]);
-        fn_800FBB34(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color,
+        GSmsgPrintRect(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color,
                     wazaGetStatus(0, move, 0x22, 0));
         break;
     case 0x18D:
@@ -637,22 +637,22 @@ void fn_80094650(u8* context, u8* sprite)
         move = menuStatusGetMove(pokemon, (s8)lbl_803FB380[2]);
         value = wazaGetStatus(0, move, 6, 0);
         if (value <= 1) {
-            fn_800FB8C8(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0x2BE2);
+            GSmsgPrintRight(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0x2BE2);
             break;
         }
         msgctrlSetValue(0x34, value);
-        fn_800FB8C8(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xD2);
+        GSmsgPrintRight(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xD2);
         break;
     case 0x18F:
     case 0x1D7:
         move = menuStatusGetMove(pokemon, (s8)lbl_803FB380[2]);
         value = wazaGetStatus(0, move, 7, 0);
         if (value <= 1) {
-            fn_800FB8C8(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0x2BE2);
+            GSmsgPrintRight(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0x2BE2);
             break;
         }
         msgctrlSetValue(0x34, value);
-        fn_800FB8C8(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xD2);
+        GSmsgPrintRight(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xD2);
         break;
     case 0x179:
     case 0x17A:
@@ -722,7 +722,7 @@ void fn_80094650(u8* context, u8* sprite)
         }
         move = menuStatusGetMove(pokemon, (s8)lbl_803FB380[2]);
         if (move != 0) {
-            level = fn_801EE064(fn_801EE07C(wazaGetStatus(0, move, 0x23, 0)));
+            level = darkPokemonEntryGet0(darkPokemonGetTableEntry(wazaGetStatus(0, move, 0x23, 0)));
         } else {
             level = 0;
         }
@@ -796,7 +796,7 @@ void fn_80094650(u8* context, u8* sprite)
         }
         move = menuStatusGetMove(pokemon, (s8)lbl_803FB380[2]);
         if (move != 0) {
-            level = fn_801EE04C(fn_801EE07C(wazaGetStatus(0, move, 0x23, 0)));
+            level = darkPokemonEntryGet1(darkPokemonGetTableEntry(wazaGetStatus(0, move, 0x23, 0)));
         } else {
             level = 0;
         }
@@ -856,7 +856,7 @@ static inline u8 menuStatusIsOriginalTrainer(u8* pokemon)
 }
 
 /* Battle-status detail window renderer. */
-void fn_8009567C(u8* context, u8* sprite)
+void menuStatusDrawPokemonInfo(u8* context, u8* sprite)
 {
     extern u32 pokemonGetStatus();
     extern void* pokemonDataBiosGetPtr();
@@ -875,9 +875,9 @@ void fn_8009567C(u8* context, u8* sprite)
     extern u32 pokemonTokuseiDataBiosGetName(void* data);
     extern u8 pokemonIsDarkPokemon(u8* pokemon);
     extern f32 pokemonGetDp(u8* pokemon);
-    extern u32 fn_8011396C(u32 id);
-    extern void fn_800FB680();
-    extern void fn_800FBB34();
+    extern u32 floorGetPlaceName(u32 id);
+    extern void GSmsgPrintColor();
+    extern void GSmsgPrintRect();
     extern void winSpriteSetDisp(u8* sprite, u8 disp);
     s32 i;
     void* pokemon_data;
@@ -967,13 +967,13 @@ void fn_8009567C(u8* context, u8* sprite)
         } else {
             text = 0x2BCD;
         }
-        fn_800FBB34(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, text);
+        GSmsgPrintRect(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, text);
         break;
     case 0x54E:
     case 0x599:
         message = 0x2BE6;
         value = pokemonGetStatus(pokemon, 0, 0x71, 0);
-        name = fn_8011396C(value);
+        name = floorGetPlaceName(value);
         if (menuStatusIsOriginalTrainer(pokemon)) {
             switch ((u16)pokemonGetStatus(pokemon, 0, 0x6E, 0)) {
             case 0xC4:
@@ -1015,7 +1015,7 @@ void fn_8009567C(u8* context, u8* sprite)
                 break;
             }
         }
-        fn_800FBB34(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, message);
+        GSmsgPrintRect(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, message);
         break;
     case 0x582:
         switch (pokemonGetDarkPokemonLevel(pokemon)) {
@@ -1041,7 +1041,7 @@ void fn_8009567C(u8* context, u8* sprite)
             message = 0x2BDF;
             break;
         }
-        fn_800FB680(0, 0, color, message);
+        GSmsgPrintColor(0, 0, color, message);
         break;
     case 0x143:
         level = pokemonGetStatus(pokemon, 0, 0x7A, 0);
@@ -1052,62 +1052,62 @@ void fn_8009567C(u8* context, u8* sprite)
             value = next_exp - pokemonGetStatus(pokemon, 0, 0x79, 0);
         }
         msgctrlSetValue(0x34, value);
-        fn_800FBB34(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xDE);
+        GSmsgPrintRect(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xDE);
         break;
     case 0x144:
         msgctrlSetValue(0x34, pokemonGetStatus(pokemon, 0, 0x79, 0));
-        fn_800FBB34(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xDE);
+        GSmsgPrintRect(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xDE);
         break;
     case 0x147:
     case 0x583:
         msgctrlSetValue(0x34, (s16)pokemonGetStatus(pokemon, 0, 0x8C, 0));
-        fn_800FBB34(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xDE);
+        GSmsgPrintRect(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xDE);
         break;
     case 0x148:
     case 0x584:
         msgctrlSetValue(0x34, (s16)pokemonGetStatus(pokemon, 0, 0x8B, 0));
-        fn_800FBB34(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xDE);
+        GSmsgPrintRect(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xDE);
         break;
     case 0x149:
     case 0x585:
         msgctrlSetValue(0x34, (s16)pokemonGetStatus(pokemon, 0, 0x8A, 0));
-        fn_800FBB34(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xDE);
+        GSmsgPrintRect(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xDE);
         break;
     case 0x14A:
     case 0x586:
         msgctrlSetValue(0x34, (s16)pokemonGetStatus(pokemon, 0, 0x89, 0));
-        fn_800FBB34(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xDE);
+        GSmsgPrintRect(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xDE);
         break;
     case 0x14B:
     case 0x587:
         msgctrlSetValue(0x34, (s16)pokemonGetStatus(pokemon, 0, 0x88, 0));
-        fn_800FBB34(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xDE);
+        GSmsgPrintRect(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xDE);
         break;
     case 0x14C:
     case 0x588:
         msgctrlSetValue(0x34, (s16)pokemonGetStatus(pokemon, 0, 0x83, 0));
-        fn_800FBB34(0, 0, 0x37, *(s16*)(sprite + 0x56), color, 0xDE);
-        fn_800FB680(0x37, 0, color, 0x2BD4);
+        GSmsgPrintRect(0, 0, 0x37, *(s16*)(sprite + 0x56), color, 0xDE);
+        GSmsgPrintColor(0x37, 0, color, 0x2BD4);
         msgctrlSetValue(0x34, (s16)pokemonGetStatus(pokemon, 0, 0x87, 0));
-        fn_800FBB34(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xDE);
+        GSmsgPrintRect(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xDE);
         break;
     case 0x153:
     case 0x58F:
         msgctrlSetValue(0x37, GSmsgGetGSchar(pokemonTokuseiDataBiosGetDoc(
                                   pokemonTokuseiDataBiosGetPtr(pokemonGetTokuseiDataId(pokemon)))));
-        fn_800FBB34(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xCF);
+        GSmsgPrintRect(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xCF);
         break;
     case 0x54D:
     case 0x590:
         msgctrlSetValue(0x37, GSmsgGetGSchar(pokemonTokuseiDataBiosGetName(
                                   pokemonTokuseiDataBiosGetPtr(pokemonGetTokuseiDataId(pokemon)))));
-        fn_800FBB34(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xCF);
+        GSmsgPrintRect(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xCF);
         break;
     case 0x154:
     case 0x591:
         x = (s16)(GSmsgGetRect(*(u32*)(sprite + 0x4C)) >> 16);
         if (pokemonIsDarkPokemon(pokemon) == 1) {
-            fn_800FB680(x, 0, color, 0x2B70);
+            GSmsgPrintColor(x, 0, color, 0x2B70);
             break;
         }
         value = (u16)pokemonGetStatus(pokemon, 0, 0x75, 0);
@@ -1118,7 +1118,7 @@ void fn_8009567C(u8* context, u8* sprite)
             value %= divisor;
             divisor /= 10;
             msgctrlSetValue(0x34, next_exp);
-            fn_800FB680(pos, 0, color, 0xCA);
+            GSmsgPrintColor(pos, 0, color, 0xCA);
             pos += 13;
         }
         break;
@@ -1129,7 +1129,7 @@ void fn_8009567C(u8* context, u8* sprite)
         } else {
             msgctrlSetValue(0x37, pokemonGetStatus(pokemon, 0, 0x76, 0));
         }
-        fn_800FB680((s16)(GSmsgGetRect(*(u32*)(sprite + 0x4C)) >> 16), 0, color, 0xCF);
+        GSmsgPrintColor((s16)(GSmsgGetRect(*(u32*)(sprite + 0x4C)) >> 16), 0, color, 0xCF);
         break;
     case 0x158:
         level = pokemonGetStatus(pokemon, 0, 0x7A, 0);
@@ -1202,7 +1202,7 @@ void fn_8009567C(u8* context, u8* sprite)
 
 #pragma pop
 /* 0x80091DA4 - 0x80092C90: defined in gbaCommunication_candidate_80091DA4.c.
- * The peephole pass stayed off from fn_80092140 onward; keep that state for
+ * The peephole pass stayed off from demoScene04 onward; keep that state for
  * the code below. */
 
 #endif
@@ -1214,13 +1214,13 @@ void fn_8009567C(u8* context, u8* sprite)
 #endif
 #if !defined(GBA_COMMUNICATION_EXACT_80092FC8_ONLY)
 #endif
-s32 fn_80092FC8(s32 channel, void* requestValue, void* requestContext)
+s32 gbaCommStartTransferB(s32 channel, void* requestValue, void* requestContext)
 {
-    extern u32 fn_800E2C04(u32 size, u32 align);
-    extern void* fn_800E27B0(u32 handle);
-    extern void fn_8009F77C(void* work);
-    extern void fn_8009F9C8(void* callback);
-    extern s32 fn_800937F4(void* arg);
+    extern u32 GSmemAlloc(u32 size, u32 align);
+    extern void* GSmemLock(u32 handle);
+    extern void OSInitMutex(void* work);
+    extern void OSInitCond(void* callback);
+    extern s32 _gbaCommThread(void* arg);
     extern void fn_80093B04(u32 a, u32 b);
     extern void OSCreateThread(void* thread, void* entry, void* arg,
                                void* stack, u32 stackSize, s32 priority,
@@ -1243,11 +1243,11 @@ s32 fn_80092FC8(s32 channel, void* requestValue, void* requestContext)
         if (*(u8**)(lbl_803FB328 + slot) != NULL) {
             started = 1;
         } else {
-            handle = fn_800E2C04(0x44A0, 0x20);
+            handle = GSmemAlloc(0x44A0, 0x20);
             if ((handle & 0xFFFF) == 0) {
                 __assert(lbl_8026F5A8, 0x1DD, &lbl_8047C1E8);
             }
-            allocated = fn_800E27B0(handle);
+            allocated = GSmemLock(handle);
             memset(allocated, 0, 0x4490);
             *(u8**)(lbl_803FB328 + slot) = allocated;
 
@@ -1255,9 +1255,9 @@ s32 fn_80092FC8(s32 channel, void* requestValue, void* requestContext)
             *(u32*)(work + GBA_STATE_PHASE) = 0;
             *(s32*)(work + GBA_STATE_PORT) = channel;
             fn_800716C8(channel, work + GBA_DATA_OFFSET, fn_80093B04);
-            fn_8009F77C(work);
-            fn_8009F9C8(work + 0x18);
-            OSCreateThread(work + GBA_DATA_OFFSET, fn_800937F4, work,
+            OSInitMutex(work);
+            OSInitCond(work + 0x18);
+            OSCreateThread(work + GBA_DATA_OFFSET, _gbaCommThread, work,
                            work + GBA_STATE_PORT, 0x4000,
                            GBA_THREAD_PRIORITY, 0);
             OSResumeThread(work + GBA_DATA_OFFSET);
@@ -1271,7 +1271,7 @@ s32 fn_80092FC8(s32 channel, void* requestValue, void* requestContext)
 
     requestWork = *(u8**)(lbl_803FB328 + ((u32)channel << 2));
     requestStarted = 0;
-    fn_8009F7B4(requestWork);
+    OSLockMutex(requestWork);
     if (*(s32*)(requestWork + GBA_STATE_PHASE) == 0) {
         *(s32*)(requestWork + GBA_STATE_PHASE) = 4;
         *(u32*)(requestWork + GBA_STATE_TIMEOUT) = 0x30004;
@@ -1279,10 +1279,10 @@ s32 fn_80092FC8(s32 channel, void* requestValue, void* requestContext)
         *(void**)(requestWork + 0x4344) = requestValue;
         *(void**)(requestWork + 0x4348) = requestContext;
     }
-    fn_8009F890(requestWork);
-    fn_800A257C(requestWork + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
+    OSUnlockMutex(requestWork);
+    OSSetThreadPriority(requestWork + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
     if (requestStarted != 0) {
-        fn_8009FABC(requestWork + 0x18);
+        OSSignalCond(requestWork + 0x18);
     }
     return requestStarted;
 }
@@ -1294,13 +1294,13 @@ s32 fn_80092FC8(s32 channel, void* requestValue, void* requestContext)
 #endif
 #if !defined(GBA_COMMUNICATION_EXACT_80092FC8_ONLY)
 #endif
-s32 fn_80093160(s32 channel, void* requestValue)
+s32 gbaCommStartTransferC(s32 channel, void* requestValue)
 {
-    extern u32 fn_800E2C04(u32 size, u32 align);
-    extern void* fn_800E27B0(u32 handle);
-    extern void fn_8009F77C(void* work);
-    extern void fn_8009F9C8(void* callback);
-    extern s32 fn_800937F4(void* arg);
+    extern u32 GSmemAlloc(u32 size, u32 align);
+    extern void* GSmemLock(u32 handle);
+    extern void OSInitMutex(void* work);
+    extern void OSInitCond(void* callback);
+    extern s32 _gbaCommThread(void* arg);
     extern void fn_80093B04(u32 a, u32 b);
     extern void OSCreateThread(void* thread, void* entry, void* arg,
                                void* stack, u32 stackSize, s32 priority,
@@ -1323,11 +1323,11 @@ s32 fn_80093160(s32 channel, void* requestValue)
         if (*(u8**)(lbl_803FB328 + slot) != NULL) {
             started = 1;
         } else {
-            handle = fn_800E2C04(0x44A0, 0x20);
+            handle = GSmemAlloc(0x44A0, 0x20);
             if ((handle & 0xFFFF) == 0) {
                 __assert(lbl_8026F5A8, 0x1DD, &lbl_8047C1E8);
             }
-            allocated = fn_800E27B0(handle);
+            allocated = GSmemLock(handle);
             memset(allocated, 0, 0x4490);
             *(u8**)(lbl_803FB328 + slot) = allocated;
 
@@ -1335,9 +1335,9 @@ s32 fn_80093160(s32 channel, void* requestValue)
             *(u32*)(work + GBA_STATE_PHASE) = 0;
             *(s32*)(work + GBA_STATE_PORT) = channel;
             fn_800716C8(channel, work + GBA_DATA_OFFSET, fn_80093B04);
-            fn_8009F77C(work);
-            fn_8009F9C8(work + 0x18);
-            OSCreateThread(work + GBA_DATA_OFFSET, fn_800937F4, work,
+            OSInitMutex(work);
+            OSInitCond(work + 0x18);
+            OSCreateThread(work + GBA_DATA_OFFSET, _gbaCommThread, work,
                            work + GBA_STATE_PORT, 0x4000,
                            GBA_THREAD_PRIORITY, 0);
             OSResumeThread(work + GBA_DATA_OFFSET);
@@ -1351,17 +1351,17 @@ s32 fn_80093160(s32 channel, void* requestValue)
 
     requestWork = *(u8**)(lbl_803FB328 + ((u32)channel << 2));
     requestStarted = 0;
-    fn_8009F7B4(requestWork);
+    OSLockMutex(requestWork);
     if (*(s32*)(requestWork + GBA_STATE_PHASE) == 0) {
         *(s32*)(requestWork + GBA_STATE_PHASE) = 2;
         *(u32*)(requestWork + GBA_STATE_TIMEOUT) = 0x30002;
         requestStarted = 1;
         *(void**)(requestWork + 0x4344) = requestValue;
     }
-    fn_8009F890(requestWork);
-    fn_800A257C(requestWork + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
+    OSUnlockMutex(requestWork);
+    OSSetThreadPriority(requestWork + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
     if (requestStarted != 0) {
-        fn_8009FABC(requestWork + 0x18);
+        OSSignalCond(requestWork + 0x18);
     }
     return requestStarted;
 }
@@ -1373,13 +1373,13 @@ s32 fn_80093160(s32 channel, void* requestValue)
 #endif
 #if !defined(GBA_COMMUNICATION_EXACT_80092FC8_ONLY)
 #endif
-s32 fn_800932F0(s32 channel, const char* primary, const char* secondary)
+s32 gbaCommStartTransferFile(s32 channel, const char* primary, const char* secondary)
 {
-    extern u32 fn_800E2C04(u32 size, u32 align);
-    extern void* fn_800E27B0(u32 handle);
-    extern void fn_8009F77C(void* work);
-    extern void fn_8009F9C8(void* callback);
-    extern s32 fn_800937F4(void* arg);
+    extern u32 GSmemAlloc(u32 size, u32 align);
+    extern void* GSmemLock(u32 handle);
+    extern void OSInitMutex(void* work);
+    extern void OSInitCond(void* callback);
+    extern s32 _gbaCommThread(void* arg);
     extern void fn_80093B04(u32 a, u32 b);
     extern void OSCreateThread(void* thread, void* entry, void* arg,
                                void* stack, u32 stackSize, s32 priority,
@@ -1406,11 +1406,11 @@ s32 fn_800932F0(s32 channel, const char* primary, const char* secondary)
         if (*(u8**)(lbl_803FB328 + slot) != NULL) {
             started = 1;
         } else {
-            handle = fn_800E2C04(0x44A0, 0x20);
+            handle = GSmemAlloc(0x44A0, 0x20);
             if ((handle & 0xFFFF) == 0) {
                 __assert(lbl_8026F5A8, 0x1DD, &lbl_8047C1E8);
             }
-            allocated = fn_800E27B0(handle);
+            allocated = GSmemLock(handle);
             memset(allocated, 0, 0x4490);
             *(u8**)(lbl_803FB328 + slot) = allocated;
 
@@ -1418,9 +1418,9 @@ s32 fn_800932F0(s32 channel, const char* primary, const char* secondary)
             *(u32*)(work + GBA_STATE_PHASE) = 0;
             *(s32*)(work + GBA_STATE_PORT) = channel;
             fn_800716C8(channel, work + GBA_DATA_OFFSET, fn_80093B04);
-            fn_8009F77C(work);
-            fn_8009F9C8(work + 0x18);
-            OSCreateThread(work + GBA_DATA_OFFSET, fn_800937F4, work,
+            OSInitMutex(work);
+            OSInitCond(work + 0x18);
+            OSCreateThread(work + GBA_DATA_OFFSET, _gbaCommThread, work,
                            work + GBA_STATE_PORT, 0x4000,
                            GBA_THREAD_PRIORITY, 0);
             OSResumeThread(work + GBA_DATA_OFFSET);
@@ -1446,7 +1446,7 @@ s32 fn_800932F0(s32 channel, const char* primary, const char* secondary)
         goto done;
     }
 
-    fn_8009F7B4(commandWork);
+    OSLockMutex(commandWork);
     if (*(s32*)(commandWork + GBA_STATE_PHASE) == 0) {
         commandStarted++;
         *(s32*)(commandWork + GBA_STATE_PHASE) = commandStarted;
@@ -1458,10 +1458,10 @@ s32 fn_800932F0(s32 channel, const char* primary, const char* secondary)
             commandWork[0x43C4] = 0;
         }
     }
-    fn_8009F890(commandWork);
-    fn_800A257C(commandWork + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
+    OSUnlockMutex(commandWork);
+    OSSetThreadPriority(commandWork + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
     if (commandStarted != 0) {
-        fn_8009FABC(commandWork + 0x18);
+        OSSignalCond(commandWork + 0x18);
     }
 
 done:
@@ -1471,7 +1471,7 @@ done:
 #endif
 
 /* 0x800934E4 | size: 0x90 */
-s32 fn_800934E4(s32 channel)
+s32 gbaCommIsBusy(s32 channel)
 {
 #if !defined(GBA_COMMUNICATION_EXACT_80092FC8_ONLY)
 #endif
@@ -1486,10 +1486,10 @@ s32 fn_800934E4(s32 channel)
     slot = (u32)channel << 2;
     work = *(u8**)((u8*)lbl_803FB328 + slot);
     if (work != NULL) {
-        fn_8009F7B4(work);
+        OSLockMutex(work);
         idle = (*(u32*)(work + GBA_STATE_PHASE) == 0);
-        fn_8009F890(work);
-        fn_800A257C(work + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
+        OSUnlockMutex(work);
+        OSSetThreadPriority(work + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
     } else {
         idle = 1;
     }
@@ -1517,10 +1517,10 @@ u32 fn_80093574(s32 channel)
     }
 
     while (1) {
-        fn_8009F7B4(work);
+        OSLockMutex(work);
         status = *(u32*)(work + GBA_STATE_TIMEOUT);
-        fn_8009F890(work);
-        fn_800A257C(work + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
+        OSUnlockMutex(work);
+        OSSetThreadPriority(work + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
         if ((s32)(status >> 16) == 3) {
             _threadSwitch();
         } else {
@@ -1548,16 +1548,16 @@ u32 fn_80093610(s32 channel)
         return 0;
     }
 
-    fn_8009F7B4(work);
+    OSLockMutex(work);
     status = *(u32*)(work + GBA_STATE_TIMEOUT);
-    fn_8009F890(work);
-    fn_800A257C(work + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
+    OSUnlockMutex(work);
+    OSSetThreadPriority(work + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
 
     return status;
 }
 
 /* 0x80093698 | size: 0x15C */
-s32 fn_80093698(s32 channel)
+s32 gbaCommEnd(s32 channel)
 {
 #if !defined(GBA_COMMUNICATION_EXACT_80092FC8_ONLY)
 #endif
@@ -1577,10 +1577,10 @@ s32 fn_80093698(s32 channel)
 
     fn_800716E8(*(s32*)(work + GBA_STATE_PORT), 1);
     while (1) {
-        fn_8009F7B4(work);
+        OSLockMutex(work);
         status = *(u32*)(work + GBA_STATE_TIMEOUT);
-        fn_8009F890(work);
-        fn_800A257C(work + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
+        OSUnlockMutex(work);
+        OSSetThreadPriority(work + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
         if ((s32)(status >> 16) == 3) {
             _threadSwitch();
         } else {
@@ -1588,22 +1588,22 @@ s32 fn_80093698(s32 channel)
         }
     }
 
-    fn_8009F7B4(work);
+    OSLockMutex(work);
     *(u32*)(work + GBA_STATE_PHASE) = 0xD;
     *(u32*)(work + GBA_STATE_TIMEOUT) = 0x3000D;
-    fn_8009F890(work);
-    fn_800A257C(work + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
-    fn_8009FABC(work + 0x18);
+    OSUnlockMutex(work);
+    OSSetThreadPriority(work + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
+    OSSignalCond(work + 0x18);
     fn_800A1E54(work + GBA_DATA_OFFSET, 0);
     fn_800716C8(*(s32*)(work + GBA_STATE_PORT), NULL, NULL);
     fn_800716E8(*(s32*)(work + GBA_STATE_PORT), 0);
 
-    status = fn_800E202C(*(u8**)((u8*)lbl_803FB328 + slot));
+    status = GSmemGetHandleByPtr(*(u8**)((u8*)lbl_803FB328 + slot));
     if ((status & 0xFFFF) == 0) {
         __assert(lbl_8026F5A8, 0x1E6, &lbl_8047C1E8);
     }
     fn_800E24B0(status);
-    fn_800E209C(status);
+    GSmemFree(status);
     *(u8**)((u8*)lbl_803FB328 + slot) = NULL;
 
     return 1;
@@ -1616,15 +1616,15 @@ s32 fn_80093698(s32 channel)
 /* 0x800937F4 | size: 0x310 */
 #pragma push
 #pragma peephole off
-s32 fn_800937F4(void* arg0)
+s32 _gbaCommThread(void* arg0)
 {
-    extern void fn_8009F9E8();
-    extern s32 fn_80073E8C();
+    extern void OSWaitCond();
+    extern s32 pkjbPrepare();
     extern s32 fn_80073E84();
     extern s32 fn_80074324();
     extern s32 fn_800745B4();
     extern s32 fn_80073690();
-    extern void fn_800895A4();
+    extern void gbaReceiveHero();
     extern s32 fn_80071E34();
     extern void fn_80089380();
     extern s32 fn_80089D30();
@@ -1647,17 +1647,17 @@ s32 fn_800937F4(void* arg0)
     p = arg0;
     result = 0;
     for (;;) {
-        fn_8009F7B4(p);
+        OSLockMutex(p);
         if (*(s32*)(p + GBA_STATE_PHASE) != 0xD) {
             *(s32*)(p + GBA_STATE_TIMEOUT) = result;
             *(s32*)(p + GBA_STATE_PHASE) = 0;
             while (*(s32*)(p + GBA_STATE_PHASE) == 0) {
-                fn_8009F9E8(p + 0x18, p);
+                OSWaitCond(p + 0x18, p);
             }
         }
 
         state = *(s32*)(p + GBA_STATE_PHASE);
-        fn_8009F890(p);
+        OSUnlockMutex(p);
         status = 0;
 
         switch (state) {
@@ -1670,10 +1670,10 @@ s32 fn_800937F4(void* arg0)
             } else {
                 arg = NULL;
             }
-            status = fn_80073E8C(p + 0x4344, arg);
+            status = pkjbPrepare(p + 0x4344, arg);
             if (status == 0) {
                 while (fn_80073E84() == 0) {
-                    fn_800A257C((void*)fn_800A13F8(), 0x10);
+                    OSSetThreadPriority((void*)OSGetCurrentThread(), 0x10);
                     OSYieldThread();
                 }
                 result = 1;
@@ -1697,7 +1697,7 @@ s32 fn_800937F4(void* arg0)
                     result = 0x20002;
                     goto case2Done;
                 }
-                fn_800A257C((void*)fn_800A13F8(), 0x10);
+                OSSetThreadPriority((void*)OSGetCurrentThread(), 0x10);
                 OSYieldThread();
             }
             status = fn_800745B4(*(s32*)(p + GBA_STATE_PORT),
@@ -1710,7 +1710,7 @@ s32 fn_800937F4(void* arg0)
         case 4:
             status = fn_80073690(*(s32*)(p + GBA_STATE_PORT), statusBuffer);
             if (status == 0) {
-                fn_800895A4(*(s32*)(p + 0x4344), statusBuffer);
+                gbaReceiveHero(*(s32*)(p + 0x4344), statusBuffer);
                 result = 4;
                 **(u32**)(p + 0x4348) =
                     (statusBuffer[3] << 24) | (statusBuffer[2] << 16)
@@ -1754,7 +1754,7 @@ s32 fn_800937F4(void* arg0)
                     if (status >= 0) {
                         break;
                     }
-                    fn_800A257C((void*)fn_800A13F8(), 0x10);
+                    OSSetThreadPriority((void*)OSGetCurrentThread(), 0x10);
                     OSYieldThread();
                 }
                 if (status == 0) {
@@ -1778,11 +1778,11 @@ void fn_80093B04(u32 a, u32 b) {
     u32 r31;
     u32 result;
     r31 = b;
-    result = fn_800A13F8();
+    result = OSGetCurrentThread();
     if (r31 != 0) {
         if (r31 != result) return;
     }
-    fn_800A257C((void*)result, 0x10);
+    OSSetThreadPriority((void*)result, 0x10);
     OSYieldThread();
     return;
 }
@@ -1920,11 +1920,11 @@ void fn_800965C8(void* window, u8* sprite) {
         gfxSetVtxDesc(lbl_80314F98);
         gfxLoadTexture(0, texture);
         gfxBegin(2);
-        fn_800D61E4(0, 0);
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+        gfxVtxPos2s16(0, 0);
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
         gfxVtxTexCoord(0, lbl_8047C230, lbl_8047C230);
-        fn_800D61E4(*(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56));
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+        gfxVtxPos2s16(*(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56));
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
         gfxVtxTexCoord(0, lbl_8047C208, lbl_8047C208);
         gfxEnd();
         break;
@@ -1974,7 +1974,7 @@ void fn_800965C8(void* window, u8* sprite) {
         windowDrawSprite(0, 0, window, msg, 0);
         break;
     case 0x10D:
-        windowDrawSprite(0, 0, window, fn_8001D624(pokemon, 1), 0);
+        windowDrawSprite(0, 0, window, menuPokemonGetStatusSprite(pokemon, 1), 0);
         break;
     case 0x10E:
         value = pokemonGetSoubiItemDataId(pokemon);
@@ -1989,29 +1989,29 @@ void fn_800965C8(void* window, u8* sprite) {
         value = pokemonGetSoubiItemDataId(pokemon);
         if ((u16)value != 0) {
             msgctrlSetValue(0x2D, (u16)value);
-            fn_800FBB34(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0x2BD3);
+            GSmsgPrintRect(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0x2BD3);
         }
         break;
     case 0x552: {
         s32 x = (s16)(GSmsgGetRect(*(u32*)(sprite + 0x4C)) >> 16);
         msgctrlSetValue(0x34, (u8)pokemonGetStatus(pokemon, 0, 0x7A, 0));
-        fn_800FBB34(x, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xD2);
+        GSmsgPrintRect(x, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xD2);
         break;
     }
     case 0x554:
         ball = pokemonDataBiosGetName(bios);
         msg = (s16)(GSmsgGetRect(0x2BD4) >> 16);
-        fn_800FB680(0, 0, color, 0x2BD4);
+        GSmsgPrintColor(0, 0, color, 0x2BD4);
         if (ball != 0) {
             msgctrlSetValue(0x37, GSmsgGetGSchar(ball));
-            fn_800FB680(msg, 0, color, 0xE7);
+            GSmsgPrintColor(msg, 0, color, 0xE7);
         }
         break;
     case 0x555: {
         u32 sexMsg;
 
         msgctrlSetValue(0x37, pokemonGetStatus(pokemon, 0, 0x77, 0));
-        fn_800FBB34(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xE7);
+        GSmsgPrintRect(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xE7);
         value = (s16)(GSmsgGetRect(0xE7) >> 16);
         switch ((u8)menuSubGetPokemonSexForDisp(pokemon)) {
         case 0:
@@ -2027,7 +2027,7 @@ void fn_800965C8(void* window, u8* sprite) {
         }
         if (sexMsg != 0) {
             msgctrlSetValue(0x37, GSmsgGetGSchar(sexMsg));
-            fn_800FB680(value, 0, color, 0xCF);
+            GSmsgPrintColor(value, 0, color, 0xCF);
         }
         break;
     }
@@ -2098,7 +2098,7 @@ void fn_800965C8(void* window, u8* sprite) {
             break;
         }
         if (msg != 0) {
-            fn_800FB680(0, 0, color, msg);
+            GSmsgPrintColor(0, 0, color, msg);
         }
         break;
     default:
@@ -2249,7 +2249,7 @@ void fn_80096D54(u8* menu)
 
 /* Handle input for the linked-Pokemon status submenus. */
 extern void menuPlaySe(s32 menu, s32 se);
-extern void fn_80109C88(void*, u32);
+extern void menuPokemonModelRequest(void*, u32);
 extern u8 pokemonWazaCheckValid(u32 pokemon, s32 waza);
 
 /* Whether move slot `move` of the shown Pokemon can be selected. */
@@ -2440,7 +2440,7 @@ void fn_80096FA0(u8* menu)
                 if (*(u32*)(lbl_803FB380 + 0x0C) != result) {
                     if (result != 0) {
                         menuPlaySe(*(s32*)(menu + 4), 1);
-                        fn_80109C88(lbl_803FB338, result);
+                        menuPokemonModelRequest(lbl_803FB338, result);
                     }
                     *(u32*)(lbl_803FB380 + 0x0C) = result;
                 }
@@ -2589,9 +2589,9 @@ s32 fn_80097BBC(u8 chan) {
 }
 
 /* 0x8009769C | size: 0x350 */
-u32 fn_8009769C(u8 flags, u32 arg1, s32 pokemon, u16 arg3, u32 arg4, u32 arg5) {
+u32 menuPokemonStatusOpen(u8 flags, u32 arg1, s32 pokemon, u16 arg3, u32 arg4, u32 arg5) {
     extern void menuModelInit(void* model, s32 width, s32 height);
-    extern void fn_80109C88(void* model, u32 pokemon);
+    extern void menuPokemonModelRequest(void* model, u32 pokemon);
     extern void fadeCheck(s32 wait);
     extern void fadeSet(s32 mode, f32 value);
     extern s32 menuOpenCustom(s32 menu, ...);
@@ -2602,8 +2602,8 @@ u32 fn_8009769C(u8 flags, u32 arg1, s32 pokemon, u16 arg3, u32 arg4, u32 arg5) {
     extern void winMsgClose(s32 slot);
     extern s32 menuIsCheck(s32 menu);
     extern void menuCloseCustom(s32 menu, s32 mode, s32 wait);
-    extern void fn_800FF660(void);
-    extern void fn_8010A420(void* model);
+    extern void floorBattleEndTerminateScripts(void);
+    extern void menuModelTerm(void* model);
 
     u32 cursor;
     s32 result;
@@ -2613,7 +2613,7 @@ u32 fn_8009769C(u8 flags, u32 arg1, s32 pokemon, u16 arg3, u32 arg4, u32 arg5) {
     u8* state;
 
     menuModelInit(lbl_803FB338, 0xC8, 0xB4);
-    fn_80109C88(lbl_803FB338, pokemon);
+    menuPokemonModelRequest(lbl_803FB338, pokemon);
 
     if (lbl_803FB380[0] & 8) {
         fadeCheck(1);
@@ -2691,13 +2691,13 @@ u32 fn_8009769C(u8 flags, u32 arg1, s32 pokemon, u16 arg3, u32 arg4, u32 arg5) {
     menuCloseCustom(0x53, 0, 1);
 
     if (lbl_803FB380[0] & 1) {
-        fn_800FF660();
+        floorBattleEndTerminateScripts();
         if (lbl_803FB380[0] & 8) {
             floorSetFadeScript(0, 0);
         }
     }
 
-    fn_8010A420(lbl_803FB338);
+    menuModelTerm(lbl_803FB338);
     _threadSwitch();
     return *(u32*)(state + 4);
 }
@@ -2710,7 +2710,7 @@ u32 fn_8009769C(u8 flags, u32 arg1, s32 pokemon, u16 arg3, u32 arg4, u32 arg5) {
 #pragma scheduling off
 #pragma scheduling off
 void menuPokemonStatus(void) {
-    *(u32*)(lbl_803FB380 + 4) = fn_8009769C(
+    *(u32*)(lbl_803FB380 + 4) = menuPokemonStatusOpen(
         lbl_803FB380[0],
         *(u32*)(lbl_803FB380 + 8),
         *(u32*)(lbl_803FB380 + 0xC),
@@ -2740,7 +2740,7 @@ void fn_80097FF8(void) {
 }
 
 /* 0x80097A38 | size: 0xCC */
-s32 fn_80097A38(u32 arg0, u16 arg1) {
+s32 menuPokemonStatusOpenWazaForget(u32 arg0, u16 arg1) {
     extern int fn_8010B560();
 
     while ((u8)fn_8010B560() != 0) {
@@ -2777,7 +2777,7 @@ s32 fn_80097B04(u32 arg0, u16 arg1) {
     *(u32*)(lbl_803FB380 + 0x10) = 0;
     *(u32*)(lbl_803FB380 + 0x14) = 0;
     *(s32*)(lbl_803FB380 + 0x4) = -1;
-    fn_8009769C(lbl_803FB380[0], *(u32*)(lbl_803FB380 + 0x8), *(u32*)(lbl_803FB380 + 0xC),
+    menuPokemonStatusOpen(lbl_803FB380[0], *(u32*)(lbl_803FB380 + 0x8), *(u32*)(lbl_803FB380 + 0xC),
                 arg1, *(u32*)(lbl_803FB380 + 0x10), *(u32*)(lbl_803FB380 + 0x14));
     return *(s32*)(lbl_803FB380 + 0x4);
 }
@@ -2797,7 +2797,7 @@ s32 fn_80097CD0(u32 arg0, u32 arg1, u32 arg2) {
     *(u32*)(lbl_803FB380 + 0x10) = arg1;
     *(u32*)(lbl_803FB380 + 0x14) = arg2;
     *(s32*)(lbl_803FB380 + 0x4) = -1;
-    fn_8009769C(lbl_803FB380[0], *(u32*)(lbl_803FB380 + 0x8), *(u32*)(lbl_803FB380 + 0xC),
+    menuPokemonStatusOpen(lbl_803FB380[0], *(u32*)(lbl_803FB380 + 0x8), *(u32*)(lbl_803FB380 + 0xC),
                 *(u16*)(lbl_803FB380 + 0x18), *(u32*)(lbl_803FB380 + 0x10), *(u32*)(lbl_803FB380 + 0x14));
     return *(s32*)(lbl_803FB380 + 0x4);
 }
@@ -2817,7 +2817,7 @@ s32 fn_80097D94(u32 arg0, u32 arg1, u32 arg2) {
     *(u32*)(lbl_803FB380 + 0x10) = arg1;
     *(u32*)(lbl_803FB380 + 0x14) = arg2;
     *(s32*)(lbl_803FB380 + 0x4) = -1;
-    fn_8009769C(lbl_803FB380[0], *(u32*)(lbl_803FB380 + 0x8), *(u32*)(lbl_803FB380 + 0xC),
+    menuPokemonStatusOpen(lbl_803FB380[0], *(u32*)(lbl_803FB380 + 0x8), *(u32*)(lbl_803FB380 + 0xC),
                 *(u16*)(lbl_803FB380 + 0x18), *(u32*)(lbl_803FB380 + 0x10), *(u32*)(lbl_803FB380 + 0x14));
     return *(s32*)(lbl_803FB380 + 0x4);
 }
@@ -2837,7 +2837,7 @@ s32 fn_80097E58(u32 arg0, u32 arg1, u32 arg2, u32 arg3) {
     *(u32*)(lbl_803FB380 + 0x10) = arg2;
     *(u32*)(lbl_803FB380 + 0x14) = arg3;
     *(s32*)(lbl_803FB380 + 0x4) = -1;
-    fn_8009769C(lbl_803FB380[0], *(u32*)(lbl_803FB380 + 0x8), *(u32*)(lbl_803FB380 + 0xC),
+    menuPokemonStatusOpen(lbl_803FB380[0], *(u32*)(lbl_803FB380 + 0x8), *(u32*)(lbl_803FB380 + 0xC),
                 *(u16*)(lbl_803FB380 + 0x18), *(u32*)(lbl_803FB380 + 0x10), *(u32*)(lbl_803FB380 + 0x14));
     return *(s32*)(lbl_803FB380 + 0x4);
 }
@@ -2857,7 +2857,7 @@ s32 fn_80097F08(u32 arg0, u32 arg1, u32 arg2) {
     *(u32*)(lbl_803FB380 + 0x10) = arg1;
     *(u32*)(lbl_803FB380 + 0x14) = arg2;
     *(s32*)(lbl_803FB380 + 0x4) = -1;
-    fn_8009769C(lbl_803FB380[0], *(u32*)(lbl_803FB380 + 0x8), *(u32*)(lbl_803FB380 + 0xC),
+    menuPokemonStatusOpen(lbl_803FB380[0], *(u32*)(lbl_803FB380 + 0x8), *(u32*)(lbl_803FB380 + 0xC),
                 *(u16*)(lbl_803FB380 + 0x18), *(u32*)(lbl_803FB380 + 0x10), *(u32*)(lbl_803FB380 + 0x14));
     return *(s32*)(lbl_803FB380 + 0x4);
 }

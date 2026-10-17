@@ -9,8 +9,8 @@
 #include "dolphin/types.h"
 #include "game/gs_texture.h"
 
-extern void fn_800BB050(void* tlutObj, void* data, u32 format, u32 entries); /* GXInitTlutObj */
-extern void fn_800BA9E4(void* texObj, void* data, u16 width, u16 height, u32 format,
+extern void GXInitTlutObj(void* tlutObj, void* data, u32 format, u32 entries); /* GXInitTlutObj */
+extern void GXInitTexObj(void* texObj, void* data, u16 width, u16 height, u32 format,
                         u32 wrapS, u32 wrapT, u32 mipmap);                   /* GXInitTexObj */
 
 /*
@@ -100,10 +100,10 @@ static inline void textureInitGXObjects(GStextureHandle* tex)
             break;
         }
 
-        fn_800BB050(tex->gxTlutObj, tex->tlutData, tlutFormat, tlutEntries);
+        GXInitTlutObj(tex->gxTlutObj, tex->tlutData, tlutFormat, tlutEntries);
     }
 
-    fn_800BA9E4(tex->gxTexObj, tex->mipData[0], tex->width, tex->height, gxFormat, 0, 0,
+    GXInitTexObj(tex->gxTexObj, tex->mipData[0], tex->width, tex->height, gxFormat, 0, 0,
                 tex->mipLevels > 1);
     tex->dirty = 1;
 }

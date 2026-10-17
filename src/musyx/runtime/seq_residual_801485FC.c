@@ -63,7 +63,7 @@ extern u32 lbl_8047B07C;
 
 /* GSmem allocator */
 extern u16   _toolentryAlloc__FUl(u32 size);
-extern void* fn_800E27B0(u16 handle);
+extern void* GSmemLock(u16 handle);
 
 /* External functions referenced from asm wrappers */
 extern u32 sndAuxCallbackUpdateSettingsReverbHI(u8* ptr);
@@ -72,12 +72,12 @@ extern u32 sndAuxCallbackUpdateSettingsReverbHI(u8* ptr);
 extern void  GSmodelGetPart(void* model, u32 param);
 extern void  GSpartFree(void* model, u32 param);
 extern void  fn_800E24B0(void* model, u32 param);
-extern void  fn_800E209C(void* model, u32 param);
+extern void  GSmemFree(void* model, u32 param);
 extern void  set__5GSvecFfff(void* dst, void* src);
 extern void  GSvecCopy(void* dst, void* src);
 extern void  GSvecAdd(void* model, void* param);
 extern void  fn_800E0BA0(void* param);
-extern void  fn_800E0BE4(void* param);
+extern void  GSrandf(void* param);
 extern void  vecScale(void* param);
 extern u32   __cvt_fp2unsigned(f64 val);
 
@@ -94,7 +94,7 @@ extern void  fn_801429E8(void* entry);  /* peopleFieldGetEntry */
 extern void  fn_80142984(u32 id);       /* peopleFieldGetByID */
 
 /* Script system */
-extern void fn_801621BC(u32* ptr);  /* peopleFieldUtilDispatch - same-TU asm wrapper */
+extern void sndConvertMs(u32* ptr);  /* peopleFieldUtilDispatch - same-TU asm wrapper */
 
 /* ===================================================================
  * All functions in this module are listed above in the MODULE MAP.
@@ -314,7 +314,7 @@ extern u16 lbl_80434910[8][16]; /* seqMIDIPriority */
 
 extern void voiceKillSound(u32 id);
 extern void synthVolume(u8 volume, u16 time, u8 volGroup, u8 mode, u32 pubId);
-extern void fn_801603C0(u8 ctrl, u8 midi, u8 midiSet, u8 value);
+extern void inpSetMidiCtrl(u8 ctrl, u8 midi, u8 midiSet, u8 value);
 extern void inpSetMidiCtrl14(u8 ctrl, u8 midi, u8 midiSet, u16 value);
 extern void inpResetMidiCtrl(u8 midi, u8 midiSet, u32 coldReset);
 extern void seqCrossFade(SND_CROSSFADE* ci, u32* newSeqId, u8 irqCall);
@@ -324,7 +324,7 @@ extern u32 synthStartSound(u16 id, u8 priority, u8 maxVoices, u8 key,
                           s16 priorityOffset, u8 studio, u32 itd);
 extern u8 lbl_804356A4[16]; /* synthITDDefault: { music, sfx } */
 extern SEQ_EVENT* GenerateNextTrackEvent(u8 trackId);
-extern SEQ_EVENT* fn_801485FC(SEQ_EVENT* event, u8 secIndex, u32* loopFlag);
+extern SEQ_EVENT* HandleEvent(SEQ_EVENT* event, u8 secIndex, u32* loopFlag);
 
 #define SND_SEQ_ERROR_ID 0xFFFFFFFFU
 #define SND_SEQ_CROSSFADE_ID 0x80000000U
@@ -519,7 +519,7 @@ static inline u16 HandleStream(SEQ_STREAM* stream)
     return stream->value;
 }
 
-SEQ_EVENT* fn_801485FC(SEQ_EVENT* event, u8 secIndex, u32* loopFlag)
+SEQ_EVENT* HandleEvent(SEQ_EVENT* event, u8 secIndex, u32* loopFlag)
 {
     CPAT* pa;
     NOTE_DATA* pe;
@@ -556,7 +556,7 @@ SEQ_EVENT* fn_801485FC(SEQ_EVENT* event, u8 secIndex, u32* loopFlag)
             DoPrgChange(lbl_8047AF08, trackEntry->prgChange, pattern->midi);
         }
         if (trackEntry->velocity != 0xFF) {
-            fn_801603C0(7, pattern->midi, lbl_8047AF00,
+            inpSetMidiCtrl(7, pattern->midi, lbl_8047AF00,
                         trackEntry->velocity);
         }
         break;
@@ -573,7 +573,7 @@ SEQ_EVENT* fn_801485FC(SEQ_EVENT* event, u8 secIndex, u32* loopFlag)
                 DoPrgChange(lbl_8047AF08, key & 0x7F, midi);
                 break;
             case 1:
-                fn_801603C0(0x82, midi, lbl_8047AF00, key & 0x7F);
+                inpSetMidiCtrl(0x82, midi, lbl_8047AF00, key & 0x7F);
                 break;
             default:
                 if ((velocity & 0x80) != 0x80) {
@@ -601,7 +601,7 @@ SEQ_EVENT* fn_801485FC(SEQ_EVENT* event, u8 secIndex, u32* loopFlag)
                     KeyOffNotes();
                     break;
                 default:
-                    fn_801603C0(velocity & 0x7F, midi, lbl_8047AF00,
+                    inpSetMidiCtrl(velocity & 0x7F, midi, lbl_8047AF00,
                                 key & 0x7F);
                     break;
                 }
@@ -862,7 +862,7 @@ static u32 HandleTrackEvents(u8 secIndex, u32 deltaTime) {
             continue;
         }
 
-        if ((ev = fn_801485FC(ev, secIndex, &loopFlag)) != NULL) {
+        if ((ev = HandleEvent(ev, secIndex, &loopFlag)) != NULL) {
             InsertGlobalEvent(section, ev);
         }
     }
@@ -937,7 +937,7 @@ static void HandleKeyOffNotes(void) {
     lbl_8047AF08->keyOffCheck = (lbl_8047AF08->keyOffCheck + 1) % 5;
 }
 
-void fn_801496A0(u32 deltaTime) {
+void seqHandle(u32 deltaTime) {
     u32 i;
     u32 j;
     u32 x;

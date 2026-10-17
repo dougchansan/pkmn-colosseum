@@ -41,7 +41,7 @@ extern void* memset(void* dst, int c, u32 n);
 extern void HSD_ObjFree(HSD_ObjAllocData* data, void* obj);
 extern void HSD_ObjAllocInit(HSD_ObjAllocData* data, u32 size, u32 align);
 /* splGetHelmite */
-extern f32 fn_801B2560(f32 fterm_inv, f32 time, f32 p0, f32 p1, f32 d0,
+extern f32 splGetHelmite(f32 fterm_inv, f32 time, f32 p0, f32 p1, f32 d0,
                        f32 d1);
 
 extern HSD_ObjAllocData lbl_80465378; /* fobj_alloc_data */
@@ -416,7 +416,7 @@ static inline void FObjUpdateAnim(HSD_FObj* fobj, void* obj,
     case HSD_A_OP_SPL:
     case HSD_A_OP_SLP:
         if (fobj->fterm != 0) {
-            fobjdata.fv = fn_801B2560(1.0 / fobj->fterm, fobj->time, fobj->p0,
+            fobjdata.fv = splGetHelmite(1.0 / fobj->fterm, fobj->time, fobj->p0,
                                       fobj->p1, fobj->d0, fobj->d1);
         } else {
             fobjdata.fv = fobj->p1;

@@ -101,7 +101,7 @@ typedef struct GsRangePoolElem {
     struct FSYSSubEntry* subEntry;
     u8 _pad_2C[0x8];
     void* taskParam;
-    void* compressed; /* LZSS source buffer, set by fn_8017C074 */
+    void* compressed; /* LZSS source buffer, set by fsysLZSSJobSetup */
     u8 _pad_3C[0x4];
 } GsRangePoolElem;
 
@@ -121,21 +121,21 @@ extern void* lbl_8047B1E0;                /* job pool file buffer */
 extern GsRangePoolElem* lbl_8047B1E4;     /* current job */
 
 extern void DCFlushRange(void* addr, u32 nBytes);
-extern u16 fn_800E2C04(u32 size, u32 align);
-extern void* fn_800E27B0(u16 handle);
-extern void fn_8017D624(void);
+extern u16 GSmemAlloc(u32 size, u32 align);
+extern void* GSmemLock(u16 handle);
+extern void fsysFlushCachedHandles(void);
 
 u32 fn_8017FA5C(void);
 void fn_8017FB08(void* allocation);
 void* fn_8017FDB0(u32 size);
 void fn_801808E4(GsRangeARQEntry* entry);
 
-/* Expanded three times: twice in fn_801800F8, once in fn_80180B94. */
+/* Expanded three times: twice in fsysCacheInit, once in fn_80180B94. */
 static inline void* memAlloc(u32 size)
 {
-    u16 h = fn_800E2C04(size, 0x20);
+    u16 h = GSmemAlloc(size, 0x20);
     if (h) {
-        return fn_800E27B0(h);
+        return GSmemLock(h);
     }
     return NULL;
 }

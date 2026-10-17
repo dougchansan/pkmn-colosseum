@@ -8,8 +8,8 @@ extern u16 lbl_803A1B80[];
 void menuFightDrawTimer(u8* ctx, u8* npc) {
     extern s32 windowGetParam(u8* a, s32 b);
     extern void msgctrlSetValue(s32 a, s32 b);
-    extern void fn_800FB680();
-    extern void fn_800FBB34();
+    extern void GSmsgPrintColor();
+    extern void GSmsgPrintRect();
     s32 value;
     s32 hour;
     s32 minute;
@@ -26,14 +26,14 @@ void menuFightDrawTimer(u8* ctx, u8* npc) {
         lbl_803A1B80[3] = lbl_802E4B98[minute / 10];
         lbl_803A1B80[4] = lbl_802E4B98[minute % 10];
         msgctrlSetValue(0x37, (s32)lbl_803A1B80);
-        fn_800FB680(0, 0, (s32)menuSubCalcColor(ctx, npc), 0xCF);
+        GSmsgPrintColor(0, 0, (s32)menuSubCalcColor(ctx, npc), 0xCF);
         break;
     case 0x12AC:
     case 0x12AE:
         break;
     case 0x12AF:
         msgctrlSetValue(0x34, windowGetParam(ctx, 0));
-        fn_800FBB34(0, 0, *(s16*)(npc + 0x54), *(s16*)(npc + 0x56),
+        GSmsgPrintRect(0, 0, *(s16*)(npc + 0x54), *(s16*)(npc + 0x56),
                     (s32)menuSubCalcColor(ctx, npc), 0xDE);
         break;
     }

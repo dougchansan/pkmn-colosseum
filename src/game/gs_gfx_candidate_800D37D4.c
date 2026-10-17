@@ -3,7 +3,7 @@
  * @brief GSgfx video-mode selection and GSgfxInit, 0x800D37D4 - 0x800D3E4C.
  *
  * Part of the GSgfx translation unit.  Its .sbss (0x8047AA80 - 0x8047AAA8)
- * is shared by fn_800D3190 ... fn_800D3F50, and its .data starts with the
+ * is shared by GSgfxRenderEnd ... fn_800D3F50, and its .data starts with the
  * render-mode tables below (0x803140F8 - 0x80314188).
  *
  * The four per-TV-standard tables are file-scope statics.  MWCC pools like
@@ -68,40 +68,40 @@ extern f32 lbl_8047CA1C;  /* 30000.0f */
 
 extern void* memcpy(void*, const void*, u32);
 extern void VIWaitForRetrace(void);
-extern void fn_801BF4C4(u32 black);            /* HSD video: set black */
-extern void fn_801BF4E4(GXRenderModeObj* rmode); /* HSD video: configure */
+extern void HSD_VISetBlack(u32 black);            /* HSD video: set black */
+extern void HSD_VISetConfigure(GXRenderModeObj* rmode); /* HSD video: configure */
 extern void GSmathInit(void);
 extern void _gfxScratchNotify__F15GSscratchNotifyPvUc(void);
 extern void* GSscratchAlloc(u32, void*);
 extern u16 _toolentryAlloc__FUl(u32);
-extern void* fn_800E27B0(u16);
+extern void* GSmemLock(u16);
 extern void GSlogWrite(const char*, ...);
-extern void fn_8019C3C4(s32, ...);
+extern void HSD_SetInitParameter(s32, ...);
 extern void HSD_InitComponent(void);
 extern void fn_8019C690(u32, u32);
-extern void fn_801C021C(void*);
-extern void fn_801C01C8(void*);
+extern void HSD_VISetUserPostRetraceCallback(void*);
+extern void HSD_VISetUserGXDrawDoneCallback(void*);
 extern void fn_80196C3C(void*);
 extern void fn_800D3F5C(void);
 extern void fn_800D3F50(void);
-extern void fn_800D3EC4(void);
-extern void fn_800D5504(u32);
-extern void fn_800D83E4(u32);
-extern void fn_800D7B80(u32);
+extern void GSgfxSetViewportJitter(void);
+extern void gfxAllocRequestBuffer(u32);
+extern void gfxMatrixStackInit(u32);
+extern void gfxVtxDescPoolInit(u32);
 extern void fn_800DB890(u32);
-extern u32 fn_800D7894(void);
-extern void fn_800D9D68(u16, u16, u16, u16);
-extern void fn_800D9C24(u16, u16, u16, u16);
-extern void fn_800D87AC(s32);
+extern u32 gfxVtxDescAlloc(void);
+extern void gfxSetScissor(u16, u16, u16, u16);
+extern void gfxSetViewport(u16, u16, u16, u16);
+extern void _gfxSetFlagsImm(s32);
 extern void gfxSetUpdates(u32, u32, u32);
 extern void gfxSetZMode(u32, u32, u32);
-extern void fn_800DA100(u32, u32, u32, u32, u32, u32);
+extern void gfxSetAlphaCompare(u32, u32, u32, u32, u32, u32);
 extern void gfxSetCullMode(u32);
-extern void fn_800D9F40(u32);
-extern void fn_800DA08C(u32);
+extern void gfxSetCoPlanar(u32);
+extern void gfxSetDither(u32);
 extern void fn_800D9ED8(u32);
 extern void gfxSetTevStage(u32, u32, u32, u32, u32);
-extern void fn_800D9BD0(f32, f32, f32, f32);
+extern void gfxSetPerspective(f32, f32, f32, f32);
 extern void GSgfxBackFBInit__Fv(void);
 
 /*
@@ -224,12 +224,12 @@ s32 fn_800D37D4(s32 standard, s32 lines, u8 interlace, s32 filter,
     renderMode.viXOrigin = 30;
     renderMode.viWidth = 660;
 
-    fn_801BF4C4(1);
-    fn_801BF4E4(&renderMode);
+    HSD_VISetBlack(1);
+    HSD_VISetConfigure(&renderMode);
     for (i = 0; i < retraces; i++) {
         VIWaitForRetrace();
     }
-    fn_801BF4C4(0);
+    HSD_VISetBlack(0);
     return 1;
 }
 
@@ -255,7 +255,7 @@ void GSgfxInit__FP15_GSgfxInitParms(u32 heapSize, u32 matrixSize,
             GSlogWrite(lbl_80270360);
             return;
         }
-        state = fn_800E27B0(handle);
+        state = GSmemLock(handle);
     }
 
     lbl_8047AA80 = (GSgfxState*)state;
@@ -332,11 +332,11 @@ void GSgfxInit__FP15_GSgfxInitParms(u32 heapSize, u32 matrixSize,
         lbl_8047AA9C = 0;
     }
 
-    fn_8019C3C4(1, 2);
-    fn_8019C3C4(4, renderMode);
+    HSD_SetInitParameter(1, 2);
+    HSD_SetInitParameter(4, renderMode);
     HSD_InitComponent();
     fn_800D37D4(videoMode, 2, 0, 2, 0, 0);
-    fn_801BF4C4(1);
+    HSD_VISetBlack(1);
     fn_8019C690(0, 0);
 
     *(u32*)((u8*)lbl_8047AA80 + 0x048) = 0;
@@ -345,40 +345,40 @@ void GSgfxInit__FP15_GSgfxInitParms(u32 heapSize, u32 matrixSize,
     *(u32*)((u8*)lbl_8047AA80 + 0x054) = 0;
     *(u32*)((u8*)lbl_8047AA80 + 0x058) = 1;
     *(u8*)((u8*)lbl_8047AA80 + 0x05C) = 1;
-    fn_801C021C(fn_800D3F5C);
-    fn_801C01C8(fn_800D3F50);
-    fn_80196C3C(fn_800D3EC4);
+    HSD_VISetUserPostRetraceCallback(fn_800D3F5C);
+    HSD_VISetUserGXDrawDoneCallback(fn_800D3F50);
+    fn_80196C3C(GSgfxSetViewportJitter);
 
-    fn_800D5504(heapSize);
-    fn_800D83E4(matrixSize);
-    fn_800D7B80(projectionCount);
+    gfxAllocRequestBuffer(heapSize);
+    gfxMatrixStackInit(matrixSize);
+    gfxVtxDescPoolInit(projectionCount);
     fn_800DB890(lightCount);
-    *(u32*)((u8*)lbl_8047AA80 + 0x20) = fn_800D7894();
+    *(u32*)((u8*)lbl_8047AA80 + 0x20) = gfxVtxDescAlloc();
 
     display = &lbl_80466BC0;
     previousMode = *(u32*)((u8*)lbl_8047AA80 + 0x00);
     *(u32*)((u8*)lbl_8047AA80 + 0x00) = 2;
-    fn_800D9D68(0, 0, display->fbWidth - 1, display->efbHeight - 1);
-    fn_800D9C24(0, 0, display->fbWidth - 1, display->efbHeight - 1);
-    fn_800D87AC(-1);
+    gfxSetScissor(0, 0, display->fbWidth - 1, display->efbHeight - 1);
+    gfxSetViewport(0, 0, display->fbWidth - 1, display->efbHeight - 1);
+    _gfxSetFlagsImm(-1);
     gfxSetUpdates(1, 1, 1);
     gfxSetZMode(1, 2, 1);
-    fn_800DA100(0, 7, 0, 1, 7, 0);
+    gfxSetAlphaCompare(0, 7, 0, 1, 7, 0);
     gfxSetCullMode(2);
-    fn_800D9F40(0);
-    fn_800DA08C(1);
+    gfxSetCoPlanar(0);
+    gfxSetDither(1);
     fn_800D9ED8(0);
 
     for (i = 0; i < 0x10; i++) {
         gfxSetTevStage(i, 0, i, i, 0);
     }
-    fn_800D9BD0(lbl_8047CA10, lbl_8047CA14, lbl_8047CA18, lbl_8047CA1C);
+    gfxSetPerspective(lbl_8047CA10, lbl_8047CA14, lbl_8047CA18, lbl_8047CA1C);
     state = (u8*)lbl_8047AA80;
     *(u32*)(state + 0x00) = previousMode;
     lbl_8047AA8C = 0;
     *(u32*)((u8*)lbl_8047AA80 + 0x00) = 1;
     GSgfxBackFBInit__Fv();
-    fn_801BF4C4(0);
+    HSD_VISetBlack(0);
     lbl_8047AA84 = 1;
     lbl_8047AA85 = 0;
     GSlogWrite(lbl_80270388, lbl_8047AA80, 0x5A0);

@@ -69,7 +69,7 @@ u16 battleGridGetNumPokemonsForTrainer(u32 id) {
  * Address: 0x801C2B2C | Size: 0xB4
  */
 void battleGridResetModelVisibilityFlags(void) {
-    extern void fn_801DA4E8(void*, u32);
+    extern void wazaSequenceOwnerSetVisibility(void*, u32);
     BattleGridGroupEntry* group = lbl_80466DE8;
     u16 i;
     u16 j;
@@ -77,9 +77,9 @@ void battleGridResetModelVisibilityFlags(void) {
 
     if (lbl_8047B39A != 0) {
         for (i = 0; i < 4; i++, group++) {
-            fn_801DA4E8(group->slot, lbl_8047B39C[visibilityIndex++]);
+            wazaSequenceOwnerSetVisibility(group->slot, lbl_8047B39C[visibilityIndex++]);
             for (j = 0; j < 2; j++) {
-                fn_801DA4E8(group->pokemon[j],
+                wazaSequenceOwnerSetVisibility(group->pokemon[j],
                             lbl_8047B39C[visibilityIndex++]);
             }
         }
@@ -90,7 +90,7 @@ void battleGridResetModelVisibilityFlags(void) {
 #elif !defined(BATTLE_CAMERA_START_RANDOM_ONLY)
 /* RULE-EXCEPTION(user-approved): static inline copy of the real battleGridResetModelVisibilityFlags so its call is inlined as in retail; the real one stays linked in battle_camera_exact_801C2AE8 - see docs/RULE_EXCEPTIONS.md */
 static inline void battleGridResetModelVisibilityFlags(void) {
-    extern void fn_801DA4E8(void*, u32);
+    extern void wazaSequenceOwnerSetVisibility(void*, u32);
     BattleGridGroupEntry* group = lbl_80466DE8;
     u16 i;
     u16 j;
@@ -98,9 +98,9 @@ static inline void battleGridResetModelVisibilityFlags(void) {
 
     if (lbl_8047B39A != 0) {
         for (i = 0; i < 4; i++, group++) {
-            fn_801DA4E8(group->slot, lbl_8047B39C[visibilityIndex++]);
+            wazaSequenceOwnerSetVisibility(group->slot, lbl_8047B39C[visibilityIndex++]);
             for (j = 0; j < 2; j++) {
-                fn_801DA4E8(group->pokemon[j],
+                wazaSequenceOwnerSetVisibility(group->pokemon[j],
                             lbl_8047B39C[visibilityIndex++]);
             }
         }
@@ -119,8 +119,8 @@ static inline void battleGridResetModelVisibilityFlags(void) {
  */
 #if !defined(BATTLE_CAMERA_START_RANDOM_ONLY)
 void battleGridHideModelsExcept(void* ctx) {
-    extern u32 fn_801DA42C(void*);
-    extern void fn_801DA4E8(void*, u32);
+    extern u32 wazaSequenceOwnerIsVisible(void*);
+    extern void wazaSequenceOwnerSetVisibility(void*, u32);
     BattleGridGroupEntry* group;
     u16 visibilityIndex;
     u16 i;
@@ -135,21 +135,21 @@ void battleGridHideModelsExcept(void* ctx) {
     memset(lbl_8047B39C, 0, 8);
     for (i = 0; i < 4; i++, group++) {
         {
-            u8 visible = fn_801DA42C(group->slot);
+            u8 visible = wazaSequenceOwnerIsVisible(group->slot);
             void* model = group->slot;
 
             lbl_8047B39C[visibilityIndex++] = visible;
             if (model != ctx) {
-                fn_801DA4E8(model, 0);
+                wazaSequenceOwnerSetVisibility(model, 0);
             }
         }
         for (j = 0; j < 2; j++) {
-            u8 visible = fn_801DA42C(group->pokemon[j]);
+            u8 visible = wazaSequenceOwnerIsVisible(group->pokemon[j]);
             void* model = group->pokemon[j];
 
             lbl_8047B39C[visibilityIndex++] = visible;
             if (model != ctx) {
-                fn_801DA4E8(model, 0);
+                wazaSequenceOwnerSetVisibility(model, 0);
             }
         }
     }
@@ -224,10 +224,10 @@ void battleCameraStartRandom(void) {
     extern s32 lbl_80478CA8;
     extern u32 lbl_80478CAC;
     extern f32 lbl_8047DF58;
-    extern void* fn_801D2C6C(void);
+    extern void* battleCameraWazaGetOwner(void);
     extern void fn_801D2C74(void* owner);
     extern s32 msgGetCharsPerFrame(void);
-    extern f32 fn_800E0BE4(void);
+    extern f32 GSrandf(void);
     extern u32 _fadeEffectGetRandom__FUl(u32 range);
 
     u16 groupCount;
@@ -243,7 +243,7 @@ void battleCameraStartRandom(void) {
         lbl_80478CA8 = 200;
         return;
     }
-    if (fn_801D2C6C() != NULL) {
+    if (battleCameraWazaGetOwner() != NULL) {
         lbl_80478CA8 = 200;
         return;
     }
@@ -252,7 +252,7 @@ void battleCameraStartRandom(void) {
         return;
     }
     if (groupCount + *(u16*)((u8*)lbl_80466DE8 + 0x42) != 0) {
-        if (fn_800E0BE4() > lbl_8047DF58) {
+        if (GSrandf() > lbl_8047DF58) {
             lbl_80478CA8 = 200;
             return;
         }
@@ -294,12 +294,12 @@ void battleCameraStartRandom(void) {
 
 #if defined(BATTLE_CAMERA_FULL_TU)
 /**
- * fn_801C2F00 - Battle grid load data from buffer.
+ * battleCameraStartOffsetAnime - Battle grid load data from buffer.
  * Address: 0x801C2F00 | Size: 0x208
  * Referenced by battle_main.c as "battle grid load data".
  * Loads grid configuration from a data buffer.
  */
-void fn_801C2F00(void* data, u32 size) {
+void battleCameraStartOffsetAnime(void* data, u32 size) {
     if (data == NULL || size == 0) {
         return;
     }

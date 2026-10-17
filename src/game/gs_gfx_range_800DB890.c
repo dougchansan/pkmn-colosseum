@@ -8,7 +8,7 @@
 
 extern void* memcpy(void* dst, const void* src, u32 n);
 extern u32 _toolentryAlloc__FUl(u32 size);
-extern void* fn_800E27B0(u16 handle);
+extern void* GSmemLock(u16 handle);
 extern void gfxRecordCommand(u32, ...);
 extern u32 lbl_8047AA80;
 extern u8 lbl_80400B28[];
@@ -26,7 +26,7 @@ void fn_800DB890(u32 count)
     lbl_8047AAD8 = count;
     lbl_8047AAD0 = _toolentryAlloc__FUl(count * 0x18);
     if (lbl_8047AAD0 != 0) {
-        lbl_8047AAD4 = (u32)fn_800E27B0(lbl_8047AAD0);
+        lbl_8047AAD4 = (u32)GSmemLock(lbl_8047AAD0);
         for (i = 0; i < lbl_8047AAD8; i++) {
             ((u8*)lbl_8047AAD4)[i * 0x18] = 0;
         }

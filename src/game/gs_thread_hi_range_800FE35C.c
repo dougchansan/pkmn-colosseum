@@ -44,20 +44,20 @@ extern s16 lbl_8047AC72; /* sprite origin y */
 
 extern f64 tan(f64 x);
 extern void set__5GSvecFfff(f32* v, f32 x, f32 y, f32 z);
-extern void fn_800E0218(f32* mtx, f32* eye, f32* up, f32* target);
-extern void fn_800D9BD0(f32 fovy, f32 aspect, f32 nearZ, f32 farZ);
-extern void fn_800D834C(void);
-extern void fn_800D7FE4(f32* mtx);
+extern void GSmtxLookAt(f32* mtx, f32* eye, f32* up, f32* target);
+extern void gfxSetPerspective(f32 fovy, f32 aspect, f32 nearZ, f32 farZ);
+extern void gfxLoadIdentity(void);
+extern void gfxMultMatrix(f32* mtx);
 extern void gfxSetBlendMode(s32 a, s32 b, s32 c);
 extern void gfxClearFlags(u32 mask);
 extern void gfxSetUpdates(s32 a, s32 b, s32 c);
-extern void fn_800DA100(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f);
+extern void gfxSetAlphaCompare(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f);
 extern void gfxSetZMode(s32 a, s32 b, s32 c);
 extern void gfxSetCullMode(s32 a);
-extern void fn_800D9D68(u16 left, u16 top, u16 right, u16 bottom);
+extern void gfxSetScissor(u16 left, u16 top, u16 right, u16 bottom);
 
 void fn_800FE35C(void) {
-    fn_800D9D68(0, 0, 639, 479);
+    gfxSetScissor(0, 0, 639, 479);
 }
 
 /* RULE-EXCEPTION(title-path): local compiler control - see docs/RULE_EXCEPTIONS.md */
@@ -82,7 +82,7 @@ void fn_800FE38C(s32 x, s32 y, s32 w, s32 h) {
     if (top < 0) top = 0;
     if (right < 0) right = 0;
     if (bottom < 0) bottom = 0;
-    fn_800D9D68(left, top, right, bottom);
+    gfxSetScissor(left, top, right, bottom);
 }
 #pragma pop
 
@@ -110,15 +110,15 @@ void spriteSetEnv(void) {
     set__5GSvecFfff(eye, cx - lbl_8047AC70, cy - lbl_8047AC72, z);
     set__5GSvecFfff(target, cx - lbl_8047AC70, cy - lbl_8047AC72, 0.0f);
     set__5GSvecFfff(up, 0.0f, -1.0f, 0.0f);
-    fn_800E0218(mtx, eye, up, target);
+    GSmtxLookAt(mtx, eye, up, target);
 
-    fn_800D9BD0(30.0f, -(width / height), 0.1f, 30000.0f);
-    fn_800D834C();
-    fn_800D7FE4(mtx);
+    gfxSetPerspective(30.0f, -(width / height), 0.1f, 30000.0f);
+    gfxLoadIdentity();
+    gfxMultMatrix(mtx);
     gfxSetBlendMode(1, 6, 7);
     gfxClearFlags(0x80000000);
     gfxSetUpdates(2, 2, 1);
-    fn_800DA100(0, 7, 0, 1, 7, 0);
+    gfxSetAlphaCompare(0, 7, 0, 1, 7, 0);
     gfxSetZMode(0, 2, 0);
     gfxSetCullMode(0);
 }

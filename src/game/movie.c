@@ -18,7 +18,7 @@
  * out finish/play/start. Nothing in main.dol references them, so the link
  * keeps them with FORCEACTIVE (configure.py).
  *   openingdemo  fn_80035EE4 / fn_80035E04 / fn_80035DD4
- *   staffroll    fn_800361C0 / fn_80035F64 / fn_80035F34
+ *   staffroll    staffrollStart / fn_80035F64 / fn_80035F34
  *   autodemo01   fn_80036360 / fn_80036240 / fn_80036210
  *   (none)       fn_800363B8 / fn_800363B4 / fn_800363B0
  *   gs_logo      fn_800364C8 / fn_80036468 / fn_800363BC
@@ -51,7 +51,7 @@ extern void std138_soundPlayEffectEx(u32, u32, u32, u32);
 extern void soundStartSE(u32 soundId);
 extern void fn_80165F40(void);
 extern void fn_80165F84(void);
-extern void fn_801655D4(u32 index);
+extern void soundOpenWaveArchive(u32 index);
 extern void soundInit(u32 a, u32 b, u32 c, u32 d, u32 e);
 extern void fadeSet(u32 mode, f32 speed);
 extern void fadeCheck(u32 enable);
@@ -71,20 +71,20 @@ extern void winMsgClose(u32 id);
 extern s8   menuSubOpenYesNo(u8 menuType, s16 x, s16 y, s32 initialValue);
 extern s32  fn_801D0748(u32 a, u32 b, u32 c);
 extern s32  fn_8017B1AC(void);
-extern u32  fn_800F7AF0(u32);
+extern u32  GSinputButtonsChanged(u32);
 extern u32  fn_800F7BC4(u32);
-extern void fn_800F7F64(u32);
+extern void GSinputRead(u32);
 extern u32  menuOpen(u32 sceneId, u32 arg);
 extern void menuClose(u32 sceneId);
 extern void fn_8017B370(u32 arg);
 extern s32  fn_8017B2CC(u32 arg);
 extern u32  msgGetCharsPerFrame(void);                         /* frames since the last call */
 extern s32  fn_800D37CC(void);                         /* frames per second */
-extern void fn_800A0FC8(u32 mode);                     /* OSSetProgressiveMode */
+extern void OSSetProgressiveMode(u32 mode);                     /* OSSetProgressiveMode */
 extern void fn_800D37D4(u32 a, u32 b, u32 c, u32 d, u32 e, u16 size);
 extern s32  _fsysInitTOC(u32 numSlots, u32 param2, u32 param3, u32 param4);
 extern u32  GSgappCreate(s32 state, u8 priority, void* param, void* func);
-extern void fn_8017AAA4(void);
+extern void fsysUpdateTask(void);
 extern void GSlogWrite(const char* fmt, ...);
 extern u32  windowGetActiveID(void);
 extern s32  menuOpenCustom(void* menuId, u32 parentId, s32* cursorOut,
@@ -106,8 +106,8 @@ typedef struct SavedataBody {
     u8 data[0x1DFD0];
 } SavedataBody;
 
-extern SavedataBody* fn_801D036C(void);    /* allocate a save-data backup */
-extern void* fn_801D0314(void* ptr);       /* free it */
+extern SavedataBody* memcardAllocBuffer(void);    /* allocate a save-data backup */
+extern void* memcardFreeBuffer(void* ptr);       /* free it */
 
 /* Cross-thread flags. Volatile: the wave reader decrements lbl_8047A460
  * and the loader thread sets lbl_8047A464 while this thread yields, and
@@ -225,16 +225,16 @@ void* _menuSoundReadWaveThread__FPv(void* param)
     u32* request = param;
 
     if (request[0] != 0) {
-        fn_801655D4(request[0]);
+        soundOpenWaveArchive(request[0]);
     }
     if (request[1] != 0) {
-        fn_801655D4(request[1]);
+        soundOpenWaveArchive(request[1]);
     }
     if (request[2] != 0) {
-        fn_801655D4(request[2]);
+        soundOpenWaveArchive(request[2]);
     }
     if (request[3] != 0) {
-        fn_801655D4(request[3]);
+        soundOpenWaveArchive(request[3]);
     }
     lbl_8047A460--;
     return NULL;
@@ -244,7 +244,7 @@ void* _menuSoundReadWaveThread__FPv(void* param)
 void* fn_8003708C(void* param)
 {
     _fsysInitTOC(0x40, 0, 0, 0);
-    GSgappCreate(1, 0x14, 0, fn_8017AAA4);
+    GSgappCreate(1, 0x14, 0, fsysUpdateTask);
     lbl_8047A464 = 1;
     return NULL;
 }
@@ -261,7 +261,7 @@ void bootWaitLogo(void)
 
     if (!movieIsRestart()) {
         if (VIGetDTVStatus() == 1) {
-            fn_800F7F64(1);
+            GSinputRead(1);
             if (fn_800F7BC4(1) & 0x200) {
                 movieAskProgressive();
             } else if (OSGetProgressiveMode() == 1) {
@@ -273,7 +273,7 @@ void bootWaitLogo(void)
         } else {
             fadeCheck(1);
             movieWait();
-            fn_800A0FC8(0);
+            OSSetProgressiveMode(0);
         }
     } else {
         fadeCheck(1);
@@ -346,7 +346,7 @@ void fn_800366A8(void)
     if (lbl_804788B8 != -1) {
         /* Retail converts through __cvt_fp2unsigned before narrowing. */
         fadeFrames = (u32)(1.5f * (f32)fn_800D37CC());
-        fn_800A0FC8(lbl_804788B8); /* OSSetProgressiveMode */
+        OSSetProgressiveMode(lbl_804788B8); /* OSSetProgressiveMode */
         /* Retail tests the mode it just passed on as unsigned (cmplwi). */
         if ((u32)lbl_804788B8 == 1) {
             fn_800D37D4(1, 2, 0, 2, 1, fadeFrames);
@@ -557,9 +557,9 @@ void fn_80036240(void)
             _threadSwitch();
             continue;
         }
-        /* Retail calls fn_800F7AF0 first; MWCC evaluates the right-hand
+        /* Retail calls GSinputButtonsChanged first; MWCC evaluates the right-hand
          * call of an & first. */
-        if ((fn_800F7BC4(1) & fn_800F7AF0(1) & 0x1300) != 0) {
+        if ((fn_800F7BC4(1) & GSinputButtonsChanged(1) & 0x1300) != 0) {
             GSmovieClose();
             break;
         }
@@ -579,7 +579,7 @@ void fn_80036210(void)
 }
 
 /* staffroll: start */
-void fn_800361C0(void)
+void staffrollStart(void)
 {
     fadeSet(2, 0.0f);
     fadeCheck(1);
@@ -613,7 +613,7 @@ void fn_80035F64(void)
         gamedatasaveSetStatus(status, 7, 1);
         gamedatasaveSetStatus(status, 8, 1);
         heroSetStatus(0, 0x18, 1);
-        backup = fn_801D036C();
+        backup = memcardAllocBuffer();
         *backup = *(SavedataBody*)savedataGetStatus(NULL, 0);
         do {
             winMsgOpen(2, 0x444C, 1, 0);
@@ -632,7 +632,7 @@ void fn_80035F64(void)
             *(SavedataBody*)savedataGetStatus(NULL, 0) = *backup;
         } while (answer != 0 || fn_801D0748(4, 2, 0) != 4);
         winMsgClose(1);
-        fn_801D0314(backup);
+        memcardFreeBuffer(backup);
     }
     floorLink(2, 1);
     floorSetFadeScript(0, 0x5960008);

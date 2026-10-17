@@ -5,8 +5,8 @@
 
 /*
  * fsysGetEntry -- the archive entry index -> FSYSFileEntry lookup the fsys
- * code expands inline (fn_8017B4BC, fn_8017C074, fn_8017C1D8, fn_8017C39C,
- * fn_8017DAB8, ...): the archive's table-offset pair at +0x18 gives the
+ * code expands inline (fsysFindLoadedArchive, fsysLZSSJobSetup, fsysLZSSJobFinish, fsysStatus304,
+ * fsysSlotCheckEntries, ...): the archive's table-offset pair at +0x18 gives the
  * per-entry offset list, and entry `index` lives at base + offsets[index].
  *
  * Every expansion in the level-0 fsys code saves one non-volatile register
@@ -48,8 +48,8 @@ extern FSYSGroup lbl_8036C2A0[];
 extern s32 lbl_80478C48;
 
 /*
- * fsysFindGroup -- expanded inline in fn_8017B6B8, fn_8017BD34,
- * fn_8017C074 and fn_8017C1D8. At level 0 the count and the groupID
+ * fsysFindGroup -- expanded inline in fsysLoadEntry, fsysLoadEntryUncompressed,
+ * fsysLZSSJobSetup and fsysLZSSJobFinish. At level 0 the count and the groupID
  * parameter are single-use values homed on the stack.
  */
 static inline FSYSGroup* fsysFindGroup(u32 groupID)

@@ -36,7 +36,7 @@ void HSD_ObjAllocInit(HSD_ObjAllocData* data, u32 size, u32 align);
 void HSD_ObjFree(HSD_ObjAllocData* data, void* obj);
 void* HSD_IDGetDataFromTable(void* table, u32 id, s32* success);
 /* HSD_JObjUnref */
-void fn_801A05EC(HSD_JObj* jobj);
+void HSD_JObjUnref(HSD_JObj* jobj);
 
 /* aobj_alloc_data */
 HSD_ObjAllocData lbl_80466DB8;
@@ -216,7 +216,7 @@ HSD_AObj* HSD_AObjLoadDesc(HSD_AObjDesc* aobjdesc)
             }
             if (aobj != NULL) {
                 if (aobj->hsd_obj != NULL) {
-                    fn_801A05EC((HSD_JObj*) aobj->hsd_obj);
+                    HSD_JObjUnref((HSD_JObj*) aobj->hsd_obj);
                 }
                 aobj->hsd_obj = hsd_obj;
             }
@@ -243,7 +243,7 @@ void HSD_AObjRemove(HSD_AObj* aobj)
 
     if (aobj) {
         if (aobj->hsd_obj != NULL) {
-            fn_801A05EC((HSD_JObj*) aobj->hsd_obj);
+            HSD_JObjUnref((HSD_JObj*) aobj->hsd_obj);
         }
         aobj->hsd_obj = NULL;
     }

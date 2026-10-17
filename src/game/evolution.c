@@ -24,11 +24,11 @@ extern void* pokemonGetStatus();
 extern u32   pokemonSetStatus();
 
 /* Battle system functions */
-extern void fn_801EF8F4();
+extern void battleCameraSelect();
 extern u32 fn_801DE190(u16 index, u32 rnd, u32 variant);
-extern void fn_801DA9E8(u32 sequence, u16 moveID, s32 variant);
-extern u8 fn_801DA94C(u32 sequence, u16 moveID, s32 variant);
-extern void fn_801DA8C4(u32 sequence, u16 moveID, s32 variant);
+extern void wazaSequenceSysStartWaza(u32 sequence, u16 moveID, s32 variant);
+extern u8 wazaSequenceSysIsPlayingWaza(u32 sequence, u16 moveID, s32 variant);
+extern void wazaSequenceSysStopWaza(u32 sequence, u16 moveID, s32 variant);
 
 /* Sound functions */
 extern void soundStop();     /* Stop sound */
@@ -140,7 +140,7 @@ static inline u32 evolutionCreateModel(u32 pkm, int kind)
 int cbWazaForget(u32 r3,u32 r4,int r5)
 
 {
-    extern int fn_80097A38();
+    extern int menuPokemonStatusOpenWazaForget();
     extern int GScameraGetPerspective();
     extern u32 GScameraGetActiveCamera();
     extern int GSmodelSetAnimType();
@@ -202,7 +202,7 @@ int cbWazaForget(u32 r3,u32 r4,int r5)
   savedView[2] = view[2];
   ((volatile float *)savedView)[3] = local_98;
   wazaSequenceSysRelease();
-  iVar2 = fn_80097A38(r3,r4);
+  iVar2 = menuPokemonStatusOpenWazaForget(r3,r4);
   if (iVar2 >= 4) {
     iVar2 = -1;
   }
@@ -211,9 +211,9 @@ int cbWazaForget(u32 r3,u32 r4,int r5)
   if (iVar7 != 0) {
     *(int *)(r5 + 4) = iVar7;
   }
-  uVar1 = fn_801DAC3C(*(u32 *)(r5 + 4));
+  uVar1 = wazaSequenceOwnerGetModel(*(u32 *)(r5 + 4));
   GSmodelSetAnimType(uVar1,1);
-  fn_801DA4E8(*(u32 *)(r5 + 4),1);
+  wazaSequenceOwnerSetVisibility(*(u32 *)(r5 + 4),1);
   GSscene_SetMode(2);
   GSscene_SetCameraDirectionVector(savedDirection);
   GSscene_SetCameraRotationVector(savedRotationPtr);
@@ -230,7 +230,7 @@ int doWazaSequence(u32 *r3,int r4,int r5,u32 r6)
 
 {
     extern int msgGetCharsPerFrame();
-    extern u32 fn_800F7AF0();
+    extern u32 GSinputButtonsChanged();
     extern u32 fn_800F7BC4();
     extern const f32 lbl_8047E6C0;
   u32 *savedRotationPtr;
@@ -271,12 +271,12 @@ int doWazaSequence(u32 *r3,int r4,int r5,u32 r6)
     else {
       uVar9 = *r3;
     }
-    fn_801DA9E8(uVar9,uVar1,4);
+    wazaSequenceSysStartWaza(uVar9,uVar1,4);
     savedRotationPtr = savedRotation;
     savedPositionPtr = savedPosition;
     savedViewPtr = savedView;
     while (!bVar2) {
-      fn_801DB088();
+      wazaSequenceSysUpdate();
       if ((r6 & 10) != 0) {
         uVar6 = 4;
         if ((r6 & 2) != 0) {
@@ -285,7 +285,7 @@ int doWazaSequence(u32 *r3,int r4,int r5,u32 r6)
         fadeSet(lbl_8047E6C0,uVar6);
         r6 = r6 & 0xfffffff5;
       }
-      cVar7 = fn_801DA94C(uVar9,uVar1,4);
+      cVar7 = wazaSequenceSysIsPlayingWaza(uVar9,uVar1,4);
       if (cVar7 == '\0') break;
       _threadSwitch();
       GSscene_GetCameraDirectionVector(direction);
@@ -310,7 +310,7 @@ int doWazaSequence(u32 *r3,int r4,int r5,u32 r6)
       iVar3 = msgGetCharsPerFrame();
       iVar8 = iVar8 + iVar3;
       if (r5 != 0) {
-        uVar4 = fn_800F7AF0(1);
+        uVar4 = GSinputButtonsChanged(1);
         uVar5 = fn_800F7BC4(1);
         if ((uVar5 & uVar4 & 0x200) != 0) {
           bVar2 = 1;
@@ -331,7 +331,7 @@ int doWazaSequence(u32 *r3,int r4,int r5,u32 r6)
       fadeSet(lbl_8047E6C0,uVar6);
       fadeCheck(1);
     }
-    fn_801DA8C4(uVar9,uVar1,4);
+    wazaSequenceSysStopWaza(uVar9,uVar1,4);
     if (bVar2 != 0) {
       return iVar8;
     }
@@ -397,7 +397,7 @@ static inline BOOL evolutionRun(EvoWork *work, u32 r5, u32 before, u32 after,
   else {
     bgmVolume = 0;
   }
-  se = fn_801653BC();
+  se = soundGetCurrentSubSound();
   if (se != 0) {
     seVolume = fn_801656D8();
     scriptSoundStop(0x32);
@@ -488,11 +488,11 @@ void evolution(void)
 {
     extern u32 lbl_804787E0[];
     extern u32 evolutionStart();
-    extern void fn_800FF660();
+    extern void floorBattleEndTerminateScripts();
     extern void floorSetFadeScript();
     u32 *base = lbl_804787E0;
     base[6] = evolutionStart(base[0], base[1], base[2], (u16*)base[4], base[3], (u8*)base[5]);
-    fn_800FF660();
+    floorBattleEndTerminateScripts();
     floorSetFadeScript(0, 0);
 }
 
@@ -665,8 +665,8 @@ static inline void evolutionSeqStart(EvoWork *work, int seq)
   u16 id;
 
   id = lbl_8027A488[seq].id;
-  fn_801DA9E8(evolutionGetSeqModel(work,seq),id,4);
-  fn_801DB088();
+  wazaSequenceSysStartWaza(evolutionGetSeqModel(work,seq),id,4);
+  wazaSequenceSysUpdate();
   work->seq = seq;
 }
 
@@ -678,8 +678,8 @@ static inline BOOL evolutionSeqUpdate(EvoWork *work)
 
   model = evolutionGetSeqModel(work,work->seq);
   id = lbl_8027A488[work->seq].id;
-  fn_801DB088();
-  playing = fn_801DA94C(model,id,4);
+  wazaSequenceSysUpdate();
+  playing = wazaSequenceSysIsPlayingWaza(model,id,4);
   return (-playing | playing) >> 31;
 }
 
@@ -692,7 +692,7 @@ u32 evolutionDemo(EvoWork *work,int canSkip,u32 before,u32 after)
     extern const f32 lbl_8047E6C0;
     extern const f32 lbl_8047E6C4;
     extern int msgGetCharsPerFrame();
-    extern u32 fn_800F7AF0();
+    extern u32 GSinputButtonsChanged();
     extern u32 fn_800F7BC4();
   u32 voice;
   u32 nickname;
@@ -708,7 +708,7 @@ u32 evolutionDemo(EvoWork *work,int canSkip,u32 before,u32 after)
   int level;
   f32 t;
 
-  fn_801DA4E8(work->model[0],1);
+  wazaSequenceOwnerSetVisibility(work->model[0],1);
   nickname = pokemonBiosGetNicknamePtr(before);
   msgctrlSetValue(0x32,nickname);
   winMsgOpenField(0x4401,1,0);
@@ -720,7 +720,7 @@ u32 evolutionDemo(EvoWork *work,int canSkip,u32 before,u32 after)
   time = 0;
   while (time < 0x23a) {
     if (canSkip != 0 && time >= 0x78 && state >= 2) {
-      trigger = fn_800F7AF0(1);
+      trigger = GSinputButtonsChanged(1);
       held = fn_800F7BC4(1);
       if ((held & trigger & 0x200) != 0) {
         skipped = TRUE;
@@ -733,14 +733,14 @@ u32 evolutionDemo(EvoWork *work,int canSkip,u32 before,u32 after)
     }
     switch (state) {
     case 0:
-      if (soundGetStatus(voice) != 2) {
+      if (GSsndGetStatus(voice) != 2) {
         std104_soundSetBackgroundMusic(0x3d3,0,0xff);
         wait = 0;
         state = 1;
       }
       break;
     case 1:
-      if (soundGetStatus(0x3d3) != 2) {
+      if (GSsndGetStatus(0x3d3) != 2) {
         wait += msgGetCharsPerFrame();
         if (wait >= 0x1e) {
           std104_soundSetBackgroundMusic(0x3d4,0,0xff);
@@ -761,7 +761,7 @@ u32 evolutionDemo(EvoWork *work,int canSkip,u32 before,u32 after)
     evolutionSeqUpdate(work);
     _threadSwitch();
   }
-  fn_801DA8C4(evolutionGetSeqModel(work,work->seq),lbl_8027A488[work->seq].id,4);
+  wazaSequenceSysStopWaza(evolutionGetSeqModel(work,work->seq),lbl_8027A488[work->seq].id,4);
   t = lbl_8047E6B0;
   while (t < lbl_8047E6B4) {
     _threadSwitch();
@@ -779,7 +779,7 @@ u32 evolutionDemo(EvoWork *work,int canSkip,u32 before,u32 after)
     }
     doWazaSequence((u32 *)work,lbl_8027A4B0[level].seq,0,8);
     voice = evolutionPlayVoice(before);
-    while (soundGetStatus(voice) == 2) {
+    while (GSsndGetStatus(voice) == 2) {
       _threadSwitch();
     }
     msgctrlSetValue(0x32,pokemonBiosGetNicknamePtr(before));
@@ -789,13 +789,13 @@ u32 evolutionDemo(EvoWork *work,int canSkip,u32 before,u32 after)
     fadeCheck(1);
     return 0;
   }
-  fn_801DA4E8(work->model[0],0);
-  fn_801DA4E8(work->model[1],1);
+  wazaSequenceOwnerSetVisibility(work->model[0],0);
+  wazaSequenceOwnerSetVisibility(work->model[1],1);
   doWazaSequence((u32 *)work,1,0,8);
   winMsgCloseField(1);
   soundStop(0x3d4,0x32);
   voice = evolutionPlayVoice(after);
-  while (soundGetStatus(voice) == 2) {
+  while (GSsndGetStatus(voice) == 2) {
     _threadSwitch();
   }
   msgctrlSetValue(0x32,pokemonBiosGetNicknamePtr(before));

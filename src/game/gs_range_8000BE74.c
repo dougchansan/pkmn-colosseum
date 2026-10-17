@@ -31,12 +31,12 @@ extern u32* lbl_80478E28;
 extern u16* lbl_80478E2C;
 
 extern u32 fn_800F7BC4(u32 flags);
-extern u8 fn_8001E3E0(u32 index, u32* out);
+extern u8 menuSelectInput(u32 index, u32* out);
 extern void floorLink(u32 floorId, u32 arg);
 
 extern u8 fn_800FF52C(void);
 extern void soundStartSE(u32 id);
-extern void fn_800FAEF8(u32 x, u32 y, s32 color, ...);
+extern void GSmsgPrintf(u32 x, u32 y, s32 color, ...);
 extern void _threadSwitch(void);
 
 extern u8 menuIsCheck(s32 menuId);
@@ -49,15 +49,15 @@ extern u8 fn_80175FFC(void);
 extern void GSgfxCaptureMovieStop(void);
 extern void GSgfxCaptureMovieStart(u32 mode);
 
-extern u8 fn_801E11CC(void);
-extern void fn_801E11D4(u8 index, u8 active);
-extern void fn_801E1170(void);
-extern void fn_801E118C(void);
-extern void fn_801E11B0(void);
-extern void fn_801E119C(void);
-extern u8 fn_801E11E8(void);
-extern void fn_801E1258(void);
-extern void fn_801E11F0(void);
+extern u8 vtrGetDisp(void);
+extern void vtrSetDisp(u8 index, u8 active);
+extern void vtrSetMode4(void);
+extern void vtrSetMode3(void);
+extern void vtrSetMode1(void);
+extern void vtrSetMode2(void);
+extern u8 vtrIsActive(void);
+extern void vtrActivate(void);
+extern void vtrDeactivate(void);
 
 extern void fn_801D0748(u32 a, u32 b, u32 c);
 extern void winMsgOpen(u32 a, u32 msgId, u32 c, u32 d);
@@ -81,7 +81,7 @@ extern void std136_fieldClearFlag_8047ad71(void);
 extern void fn_800FECB8(u32 id);
 
 extern void fn_80166D18(u32 a, u32 b, u32 c, u32 d);
-extern s32 soundGetStatus(u16 entry);
+extern s32 GSsndGetStatus(u16 entry);
 extern void soundKill(u16 entry);
 extern void std105_soundPlayEffect(u16 entry, u32 a, u32 b);
 extern void std104_soundSetBackgroundMusic(u16 entry, u32 a, u32 b);
@@ -89,12 +89,12 @@ extern void std104_soundSetBackgroundMusic(u16 entry, u32 a, u32 b);
 /* Retail retains this otherwise-unreferenced debug-menu entry-point group. */
 #pragma force_active on
 
-s32 fn_8000BE74(s32 arg) {
+s32 dbgMenuWarpToRoom(s32 arg) {
     u32 linkArg = 0;
     s32 i;
 
     if ((fn_800F7BC4(1) & 0x20) != 0) {
-        if (fn_8001E3E0(0, &linkArg) == 0) {
+        if (menuSelectInput(0, &linkArg) == 0) {
             return -1;
         }
     }
@@ -132,7 +132,7 @@ s32 fn_8000BE74(s32 arg) {
     return 0;
 }
 
-s32 fn_8000BFA0(void) {
+s32 dbgMenuWarpSelect(void) {
     u32 floorId;
     s32 i;
 
@@ -140,7 +140,7 @@ s32 fn_8000BFA0(void) {
         soundStartSE(0x26);
         i = 0;
         do {
-            fn_800FAEF8(0xC8, 0xF0, -1, lbl_802666B0);
+            GSmsgPrintf(0xC8, 0xF0, -1, lbl_802666B0);
             _threadSwitch();
             i++;
         } while (i < 0xF);
@@ -149,7 +149,7 @@ s32 fn_8000BFA0(void) {
     }
 
     if ((fn_800F7BC4(1) & 0x20) != 0) {
-        if (fn_8001E3E0(0, &floorId) == 0) {
+        if (menuSelectInput(0, &floorId) == 0) {
             return -1;
         }
 
@@ -171,7 +171,7 @@ s32 fn_8000C06C(void) {
     return 0;
 }
 
-void fn_8000C0DC(void) {
+void dbgMovieCaptureUpdate(void) {
     if (lbl_8047A298 == 0) {
         return;
     }
@@ -185,7 +185,7 @@ void fn_8000C0DC(void) {
     }
 }
 
-s32 fn_8000C144(void) {
+s32 dbgMenuMovieCaptureToggle(void) {
     if (lbl_8047A298 == 0) {
         lbl_8047A299 = 1;
         lbl_8047A298 = 1;
@@ -196,7 +196,7 @@ s32 fn_8000C144(void) {
         }
     }
 
-    fn_801E11D4(fn_801E11CC(), lbl_8047A298);
+    vtrSetDisp(vtrGetDisp(), lbl_8047A298);
     return 0;
 }
 
@@ -211,40 +211,40 @@ s32 fn_8000C1A8(void) {
         }
     }
 
-    fn_801E11D4(fn_801E11CC(), lbl_8047A298);
+    vtrSetDisp(vtrGetDisp(), lbl_8047A298);
     return 0;
 }
 
-s32 fn_8000C210(void) {
-    fn_801E1170();
+s32 dbgMenuVtrMode4(void) {
+    vtrSetMode4();
     return 0;
 }
 
-s32 fn_8000C234(void) {
-    fn_801E118C();
+s32 dbgMenuVtrMode3(void) {
+    vtrSetMode3();
     return 0;
 }
 
-s32 fn_8000C258(void) {
-    fn_801E11B0();
+s32 dbgMenuVtrMode1(void) {
+    vtrSetMode1();
     return 0;
 }
 
-s32 fn_8000C27C(void) {
-    fn_801E119C();
+s32 dbgMenuVtrMode2(void) {
+    vtrSetMode2();
     return 0;
 }
 
 s32 dbgMenuGSvtrChangeDisp(void) {
-    fn_801E11D4((u8)((u8)fn_801E11CC() == 0), lbl_8047A298);
+    vtrSetDisp((u8)((u8)vtrGetDisp() == 0), lbl_8047A298);
     return 0;
 }
 
 s32 dbgMenuGSvtrChangeActive(void) {
-    if (fn_801E11E8() == 0) {
-        fn_801E1258();
+    if (vtrIsActive() == 0) {
+        vtrActivate();
     } else {
-        fn_801E11F0();
+        vtrDeactivate();
     }
 
     return 0;
@@ -263,7 +263,7 @@ s32 fn_8000C328(void) {
     return 0;
 }
 
-s32 fn_8000C358(void) {
+s32 dbgMenuMemcardTask2(void) {
     fn_801D0748(2, 2, 0);
     winMsgOpen(2, 0x17A7, 1, 1);
     winMsgClose(1);
@@ -309,7 +309,7 @@ s32 dbgMenuMsgCheck(void) {
     u32 msgId;
 
     if ((fn_800F7BC4(1) & 0x20) != 0) {
-        if (fn_8001E3E0(0, &msgId) == 0) {
+        if (menuSelectInput(0, &msgId) == 0) {
             return -1;
         }
 
@@ -354,7 +354,7 @@ s32 fn_8000C588(void) {
     return 0;
 }
 
-s32 fn_8000C624(s32 arg) {
+s32 dbgMenuSoundVolume(s32 arg) {
     switch (arg) {
     case 0xD3:
         fn_80166D18(0x7F, 0, 0, 1);
@@ -380,7 +380,7 @@ s32 fn_8000C688(s32 arg) {
     return 0;
 }
 
-s32 fn_8000C6EC(void) {
+s32 dbgMenuSoundTestSE(void) {
     s32 selected;
     u16 entry;
     s32 status;
@@ -392,7 +392,7 @@ loop_body:
     }
 
     entry = lbl_80478E1C[selected];
-    status = soundGetStatus(entry);
+    status = GSsndGetStatus(entry);
     if (status == 0) {
         goto use_default;
     }
@@ -417,7 +417,7 @@ loop_check:
     return -1;
 }
 
-s32 fn_8000C788(void) {
+s32 dbgMenuSoundTestSE2(void) {
     s32 selected;
     u16 entry;
     s32 status;
@@ -429,7 +429,7 @@ loop_body:
     }
 
     entry = lbl_80478E14[selected];
-    status = soundGetStatus(entry);
+    status = GSsndGetStatus(entry);
     if (status == 0) {
         goto use_default;
     }
@@ -454,7 +454,7 @@ loop_check:
     return -1;
 }
 
-s32 fn_8000C824(void) {
+s32 dbgMenuSoundTestSEExclusive(void) {
     s32 selected;
     u16 entry;
     s32 status;
@@ -474,7 +474,7 @@ inner_body:
     if (selected == (s32)i) {
         goto inner_next;
     }
-    status = soundGetStatus(*(u16*)((u8*)lbl_80478E24 + offset));
+    status = GSsndGetStatus(*(u16*)((u8*)lbl_80478E24 + offset));
     switch (status) {
     case 1:
     case 2:
@@ -494,7 +494,7 @@ inner_check:
     }
 
     entry = lbl_80478E24[selected];
-    status = soundGetStatus(entry);
+    status = GSsndGetStatus(entry);
     if (status == 0) {
         goto use_default;
     }
@@ -539,7 +539,7 @@ inner_body:
     if (selected == (s32)i) {
         goto inner_next;
     }
-    status = soundGetStatus(*(u16*)((u8*)lbl_80478E2C + offset));
+    status = GSsndGetStatus(*(u16*)((u8*)lbl_80478E2C + offset));
     switch (status) {
     case 1:
     case 2:
@@ -559,7 +559,7 @@ inner_check:
     }
 
     entry = lbl_80478E2C[selected];
-    status = soundGetStatus(entry);
+    status = GSsndGetStatus(entry);
     if (status == 0) {
         goto use_default;
     }

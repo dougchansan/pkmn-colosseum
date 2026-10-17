@@ -1,6 +1,6 @@
 #include "dolphin/types.h"
 
-/* Auto-carved .rodata unit 0x80267DD8..0x80268424 (split from game/data/rodata_80267398.c so 0x80267C18..0x80267DD8 can link with menuCB_Battle.c's fn_80069C0C). Non-relocated data emitted byte-exact as const u8[]. */
+/* Auto-carved .rodata unit 0x80267DD8..0x80268424 (split from game/data/rodata_80267398.c so 0x80267C18..0x80267DD8 can link with menuCB_Battle.c's menuCBBattleSetupFight). Non-relocated data emitted byte-exact as const u8[]. */
 
 const u8 lbl_80267DD8[16] = {
     0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x04,

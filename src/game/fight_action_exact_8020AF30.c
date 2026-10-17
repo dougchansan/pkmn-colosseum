@@ -10,7 +10,7 @@ extern s32 fightFloorGetNowTenkouDataId(void* floor, u32 index);
 extern u8 fightFloorSetStatus(u32 side, u16 index, u32 status,
                               u16 subIndex, u32 value);
 extern u32 fightKoukaDoFightKoukaJoukenAndKouka(void* floor, u16 mode);
-extern void fn_80211B94(void* context, void* buffData, u8 mode);
+extern void wsRunScript(void* context, void* buffData, u8 mode);
 extern void* pokemonGetStatus(void* pokemon, u32 group, u16 status, u32 index);
 
 u32 _fightActionFlowTenkouInitSubGetSeqFightOutPokemonPtr__FPvUsPv(
@@ -32,7 +32,7 @@ u32 fightActionFlowTenkouInit(void* context)
         fightFloorSetStatus(0, 0, 0x36, 0, (u32)selectedPokemon);
         messageId = tenkouDataBiosGetFightInitMsgId(weatherId);
         fightFloorSetStatus(0, 0, 0x50, 0, messageId);
-        fn_80211B94(context,
+        wsRunScript(context,
                     fightActionBiosGetBuffDataPtr((FightAction*)context), 0);
     }
     return 1;

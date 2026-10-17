@@ -17,7 +17,7 @@ extern const void* __OSStringTable : (0x800030D0);
 extern void DCFlushRange(void* address, u32 length);
 extern void ICInvalidateRange(void* address, u32 length);
 extern void OSReport(const char* format, ...);
-extern void fn_8009E7A8(OSModuleInfo* module);
+extern void OSNotifyLink(OSModuleInfo* module);
 extern void* memset(void* destination, s32 value, u32 size);
 
 #define SECTION_INFO(module) \
@@ -218,6 +218,6 @@ BOOL Link(OSModuleInfo* newModule, void* bss, BOOL fixed)
         }
     }
     memset(bss, 0, moduleHeader->bssSize);
-    fn_8009E7A8(newModule);
+    OSNotifyLink(newModule);
     return TRUE;
 }

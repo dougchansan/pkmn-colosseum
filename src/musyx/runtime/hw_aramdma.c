@@ -65,8 +65,8 @@ extern u32 ARQGetChunkSize(void);
 extern void ARQPostRequest(ARQRequest* request, u32 owner, u32 type, u32 priority,
                            u32 source, u32 dest, u32 length, void (*callback)(u32));
 extern void DCFlushRange(void* addr, u32 size);
-extern void* fn_801643D8(u32 size);                 /* salMalloc */
-extern void fn_80164400(void* ptr);                 /* salFree */
+extern void* salMalloc(u32 size);                 /* salMalloc */
+extern void salFree(void* ptr);                 /* salFree */
 
 void InitStreamBuffers(void);
 
@@ -135,20 +135,20 @@ void aramUploadData(void* mram, u32 aram, u32 len, u32 highPrio, void (*callback
     }
 }
 
-void fn_80163490(void) /* aramSyncTransferQueue */
+void aramSyncTransferQueue(void) /* aramSyncTransferQueue */
 {
     while (lbl_8044FB90.valid != 0) {
     }
 }
 
-void fn_801634A8(u32 length) /* aramInit */
+void aramInit(u32 length) /* aramInit */
 {
     s16* tmpMem;
     u32 i;
     u32 aramBase;
 
     aramBase = ARGetBaseAddress();
-    tmpMem = (s16*)fn_801643D8(sizeof(s16) * 640);
+    tmpMem = (s16*)salMalloc(sizeof(s16) * 640);
 
     for (i = 0; i < 640; ++i) {
         tmpMem[i] = 0;
@@ -157,8 +157,8 @@ void fn_801634A8(u32 length) /* aramInit */
     DCFlushRange(tmpMem, sizeof(s16) * 640);
     aramQueueInit();
     aramUploadData(tmpMem, aramBase, sizeof(s16) * 640, 0, NULL, 0);
-    fn_80163490();
-    fn_80164400(tmpMem);
+    aramSyncTransferQueue();
+    salFree(tmpMem);
     lbl_8047B07C = aramBase + length;
     if (lbl_8047B07C > ARGetSize()) {
         lbl_8047B07C = ARGetSize();
@@ -169,11 +169,11 @@ void fn_801634A8(u32 length) /* aramInit */
     InitStreamBuffers();
 }
 
-void fn_80163794(void) /* aramExit */
+void aramExit(void) /* aramExit */
 {
 }
 
-u32 fn_80163798(void) /* aramGetZeroBuffer */
+u32 aramGetZeroBuffer(void) /* aramGetZeroBuffer */
 {
     return ARGetBaseAddress();
 }
@@ -191,7 +191,7 @@ void aramSetUploadCallback(void* (*callback)(u32, u32), u32 chunckSize)
     lbl_8047B070 = callback;
 }
 
-void* fn_80163810(void* src, u32 len) /* aramStoreData */
+void* aramStoreData(void* src, u32 len) /* aramStoreData */
 {
     u32 addr;
     void* buffer;
@@ -219,7 +219,7 @@ void* fn_80163810(void* src, u32 len) /* aramStoreData */
     return (void*)addr;
 }
 
-void fn_80163BCC(void* aram, u32 len) /* aramRemoveData */
+void aramRemoveData(void* aram, u32 len) /* aramRemoveData */
 {
     len = (len + 31) & ~31;
     lbl_8047B078 -= len;
@@ -239,7 +239,7 @@ void InitStreamBuffers(void)
     lbl_8047B074 = lbl_8047B07C;
 }
 
-u8 fn_80163CA8(u32 len) /* aramAllocateStreamBuffer */
+u8 aramAllocateStreamBuffer(u32 len) /* aramAllocateStreamBuffer */
 {
     STREAM_BUFFER* sb;
     STREAM_BUFFER* oSb;

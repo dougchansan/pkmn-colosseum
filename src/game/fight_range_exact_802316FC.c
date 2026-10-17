@@ -1,15 +1,15 @@
 /**
  * @file fight_range_exact_802316FC.c
- * @brief Exact island 0x802316FC - 0x80232110 (fn_802316FC, fn_802317E4,
- *        fn_80231FC8, fn_80232024), moved out of fight_range_80211A00.c in
+ * @brief Exact island 0x802316FC - 0x80232110 (fn_802316FC, fightSeqTurnEndAll,
+ *        _fightFindFightOutPokemonWithSequenceSub, fn_80232024), moved out of fight_range_80211A00.c in
  *        address order.
  */
 #include "dolphin/types.h"
 
 extern u8 lbl_80478D78[8];
 extern void* lbl_8047B62C;
-extern void fn_80211B94(void*, void*, u8);
-s32 fn_80231FC8(void* param1, s32 param2, void** param3);
+extern void wsRunScript(void*, void*, u8);
+s32 _fightFindFightOutPokemonWithSequenceSub(void* param1, s32 param2, void** param3);
 extern u32 fn_80232024();
 extern u8 lbl_80378968[];
 extern u8 lbl_80378A4D[];
@@ -33,7 +33,7 @@ u8 fn_802316FC(void* ctx) {
     extern void fn_80202810();
     extern u8 fn_801F4C14();
     extern u16  fn_80207BF4(void*);
-    extern u8   fn_802026E4();
+    extern u8   fightOutPokemonIsPokemonJoutaiDataId();
     extern u8   fn_801FECD4();
     extern void fn_801FE7EC();
     u16 moveId = fn_80207BF4(ctx);
@@ -41,12 +41,12 @@ u8 fn_802316FC(void* ctx) {
     if ((u8)fn_802062FC(ctx) == 0) {
         return 1;
     }
-    if ((u8)fn_802026E4(ctx, 8) == 1 && moveId != 0x2b) {
+    if ((u8)fightOutPokemonIsPokemonJoutaiDataId(ctx, 8) == 1 && moveId != 0x2b) {
         fn_80202810(ctx, 8);
         fn_80202810(ctx, 0x17);
         lbl_80478D78[5] = 1;
         fn_801F4C14(0, 0, 0x36, 0, (u32)ctx);
-        fn_80211B94(lbl_8047B62C, (void*)lbl_80379249, 0);
+        wsRunScript(lbl_8047B62C, (void*)lbl_80379249, 0);
         if ((u8)fn_801FECD4(ctx) == 1) {
             fn_801FE7EC(ctx, 0x7c, 0, 0);
         }
@@ -60,9 +60,9 @@ u8 fn_802316FC(void* ctx) {
 #undef fn_801FECD4
 #undef fn_801FE7EC
 
-/* RULE-EXCEPTION(user-approved): opt_propagation off for fn_802317E4 only; the unit builds with -O4,s — see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): opt_propagation off for fightSeqTurnEndAll only; the unit builds with -O4,s — see docs/RULE_EXCEPTIONS.md */
 #pragma opt_propagation off
-void fn_802317E4(void) {
+void fightSeqTurnEndAll(void) {
     extern u16 std103_battleGetResult();
     extern u8 fightOutPokemonCheckFightOut();
     extern u8 fightSideIsJoutaiDataId();
@@ -86,7 +86,7 @@ void fn_802317E4(void) {
     fightFloorCreateFightOutPokemonPtrAry(0);
     fightFloorSortFightOutPokemonPtrAry(0, 0);
     selected = 0;
-    fightFloorLoopValidFightOutPokemon(0, fn_80231FC8, &selected, 0);
+    fightFloorLoopValidFightOutPokemon(0, _fightFindFightOutPokemonWithSequenceSub, &selected, 0);
 
     for (i = 0; i < 2; i++) {
         side = fightFloorGetValidFightSidePtr(0, i);
@@ -104,13 +104,13 @@ void fn_802317E4(void) {
                 } else {
                     fightSideInitJoutaiDataId(side, 0x48);
                     msgctrlSetValue(0xd, GSmsgGetGSchar(wazaGetStatus(0, 0x73, 1, 0)));
-                    fn_80211B94(lbl_8047B62C, lbl_80378B30, 0);
+                    wsRunScript(lbl_8047B62C, lbl_80378B30, 0);
                 }
             }
         }
     }
 
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
     for (i = 0, flags = lbl_80478D78; i < 2; i++) {
         side = fightFloorGetValidFightSidePtr(0, i);
         if (side != 0) {
@@ -128,13 +128,13 @@ void fn_802317E4(void) {
                     fightSideInitJoutaiDataId(side, 0x49);
                     msgctrlSetValue(0xd, GSmsgGetGSchar(wazaGetStatus(0, 0x71, 1, 0)));
                     flags[5] = i;
-                    fn_80211B94(lbl_8047B62C, lbl_80378B30, 0);
+                    wsRunScript(lbl_8047B62C, lbl_80378B30, 0);
                 }
             }
         }
     }
 
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
     for (i = 0; i < 2; i++) {
         side = fightFloorGetValidFightSidePtr(0, i);
         if (side != 0) {
@@ -151,13 +151,13 @@ void fn_802317E4(void) {
                 } else {
                     fightSideInitJoutaiDataId(side, 0x4c);
                     msgctrlSetValue(0xd, GSmsgGetGSchar(wazaGetStatus(0, 0x36, 1, 0)));
-                    fn_80211B94(lbl_8047B62C, lbl_80378B30, 0);
+                    wsRunScript(lbl_8047B62C, lbl_80378B30, 0);
                 }
             }
         }
     }
 
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
     for (i = 0; i < 2; i++) {
         side = fightFloorGetValidFightSidePtr(0, i);
         if (side != 0) {
@@ -173,15 +173,15 @@ void fn_802317E4(void) {
                     fightSideSetNowKaisuuJoutaiDataId(side, 0x4b, next);
                 } else {
                     fightSideInitJoutaiDataId(side, 0x4b);
-                    fn_80211B94(lbl_8047B62C, lbl_80378B5B, 0);
+                    wsRunScript(lbl_8047B62C, lbl_80378B5B, 0);
                 }
             }
         }
     }
 
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
     fightFloorLoopValidFightOutPokemon(0, fn_80232024, 0, 1);
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
 
     if (weather == 2) {
         fightFloorSetStatus(0, 0, 0x36, 0, selected);
@@ -198,10 +198,10 @@ void fn_802317E4(void) {
         } else {
             flags[5] = 0;
         }
-        fn_80211B94(lbl_8047B62C, lbl_80378A5F, 0);
+        wsRunScript(lbl_8047B62C, lbl_80378A5F, 0);
     }
 
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
     if (std103_battleGetResult() != 0) {
         return;
     }
@@ -224,10 +224,10 @@ void fn_802317E4(void) {
         weatherCode = 0xc;
         flags[5] = 0;
         lbl_80379F58[0x160A4] = weatherCode;
-        fn_80211B94(lbl_8047B62C, msg, 0);
+        wsRunScript(lbl_8047B62C, msg, 0);
     }
 
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
     if (std103_battleGetResult() != 0) {
         return;
     }
@@ -247,10 +247,10 @@ void fn_802317E4(void) {
                 msg = lbl_80378A8E;
             }
         }
-        fn_80211B94(lbl_8047B62C, msg, 0);
+        wsRunScript(lbl_8047B62C, msg, 0);
     }
 
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
     if (std103_battleGetResult() != 0) {
         return;
     }
@@ -269,10 +269,10 @@ void fn_802317E4(void) {
         weatherCode = 0xd;
         flags[5] = 1;
         lbl_80379F58[0x160A4] = weatherCode;
-        fn_80211B94(lbl_8047B62C, msg, 0);
+        wsRunScript(lbl_8047B62C, msg, 0);
     }
 
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
     if (std103_battleGetResult() != 0) {
         return;
     }
@@ -281,7 +281,7 @@ void fn_802317E4(void) {
 
 /* Report whether the 0xEE record is absent; stash the owner when present. */
 #define fn_8012640C pokemonGetStatus
-s32 fn_80231FC8(void* param1, s32 param2, void** param3) {
+s32 _fightFindFightOutPokemonWithSequenceSub(void* param1, s32 param2, void** param3) {
     extern void* fn_8012640C();
     if (fn_8012640C(param1, 0, 0xee, 0) != 0) {
         if (param3 != NULL) {
@@ -300,10 +300,10 @@ u32 fn_80232024(u32 r3)
     extern void fn_80201FDC();
     extern u32 fn_80202108();
     extern u32 fn_80202234();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern void fightOutPokemonWriteJoutaiDataId();
     extern u8 fightOutPokemonCheckFightOut();
-    extern void fn_80211B94();
+    extern void wsRunScript();
     extern void* lbl_8047B62C;
     extern u8 lbl_80379052[];
   u8 check;
@@ -317,7 +317,7 @@ u32 fn_80232024(u32 r3)
   if (check == 0) {
     return 1;
   }
-  check = fn_802026E4(r3,0x35);
+  check = fightOutPokemonIsPokemonJoutaiDataId(r3,0x35);
   if (check == 1) {
     count = fn_80202234(r3,0x35);
     current = fn_80202108(r3,0x35);
@@ -330,7 +330,7 @@ u32 fn_80232024(u32 r3)
     else {
       fightFloorSetStatus(0,0,0x36,0,r3);
       fightFloorSetStatus(0,0,0x43,0,r3);
-      fn_80211B94(lbl_8047B62C,lbl_80379052,0);
+      wsRunScript(lbl_8047B62C,lbl_80379052,0);
       fightOutPokemonWriteJoutaiDataId(r3,0x35);
     }
   }

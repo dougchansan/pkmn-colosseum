@@ -4,7 +4,7 @@
  *
  * Every function here resolves an archive by its file handle, either by
  * scanning the slot array itself (fsysFindSlot, expanded in both
- * fn_8017B1CC and fn_8017B2CC) or through fn_8017D410.
+ * GSresReleaseById and fn_8017B2CC) or through fsysFindSlotByHandle.
  *
  * Built at optimisation level 0 with peephole and scheduling on, like the
  * rest of the fsys code (see configure.py).
@@ -15,11 +15,11 @@
 extern FSYSManager lbl_80453FEC;
 extern FSYSSlot* lbl_8047B1B4; /* slot array */
 
-extern u16 fn_800E202C(void* ptr);      /* handle owning a heap pointer */
+extern u16 GSmemGetHandleByPtr(void* ptr);      /* handle owning a heap pointer */
 extern void fn_800E24B0(u16 handle);
-extern void fn_800E209C(u16 handle);
-extern FSYSSlot* fn_8017D410(u32 fileHandle, s32 mode);
-extern void fn_8017E09C(FSYSSlot* slot, u32 fileHandle, u32 callbackA,
+extern void GSmemFree(u16 handle);
+extern FSYSSlot* fsysFindSlotByHandle(u32 fileHandle, s32 mode);
+extern void fsysStartLoadMode0(FSYSSlot* slot, u32 fileHandle, u32 callbackA,
                         u32 callbackB, u32 callbackC);
 
 static inline FSYSSlot* fsysFindSlot(u32 fileHandle)
@@ -46,17 +46,17 @@ static inline void fsysFree(void* ptr)
 {
     u16 handle;
 
-    handle = fn_800E202C(ptr);
+    handle = GSmemGetHandleByPtr(ptr);
     if (handle != 0) {
         fn_800E24B0(handle);
-        fn_800E209C(handle);
+        GSmemFree(handle);
     }
 }
 
 /* Address: 0x8017B1CC | size: 0x100
  * Drop one reference to a loaded archive; the last release frees the
  * archive image and returns the slot to the free state. */
-void fn_8017B1CC(u32 fileHandle)
+void GSresReleaseById(u32 fileHandle)
 {
     FSYSSlot* slot;
 
@@ -104,10 +104,10 @@ s32 fn_8017B370(u32 fileHandle)
 {
     FSYSSlot* slot;
 
-    slot = fn_8017D410(fileHandle, 0);
+    slot = fsysFindSlotByHandle(fileHandle, 0);
     if (slot) {
         lbl_80453FEC.field_28 = 1;
-        fn_8017E09C(slot, fileHandle, 0, 0, 0);
+        fsysStartLoadMode0(slot, fileHandle, 0, 0, 0);
         return 1;
     }
     return 0;
@@ -118,9 +118,9 @@ s32 fn_8017B3E4(u32 fileHandle)
 {
     FSYSSlot* slot;
 
-    slot = fn_8017D410(fileHandle, 0);
+    slot = fsysFindSlotByHandle(fileHandle, 0);
     if (slot) {
-        fn_8017E09C(slot, fileHandle, 0, 0, 0);
+        fsysStartLoadMode0(slot, fileHandle, 0, 0, 0);
         return 1;
     }
     return 0;

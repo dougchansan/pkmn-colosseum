@@ -2,7 +2,7 @@
 
 extern u8 pokemonSetLevelBasisStatus[];
 extern u8 fn_80197C70[];
-extern u8 fn_80218018[];
+extern u8 wsCmdB2[];
 extern u8 lbl_80311D38[];
 extern u8 lbl_80311DB8[];
 extern u8 lbl_80311E54[];
@@ -13,7 +13,7 @@ extern u8 lbl_803381EA[];
 extern u8 lbl_803D80C6[];
 extern u8 lbl_803F803B[];
 
-/* Auto-carved .rodata 0x8026F568..0x8026F610, following fn_800889E4's
+/* Auto-carved .rodata 0x8026F568..0x8026F610, following menuSaveLoadSaveGame's
  * assert-string pool (see rodata_8026860C.c). Non-relocated data emitted byte-exact as const u8[]; pointer/jump tables as const void*[] for R_PPC_ADDR32 relocations. */
 
 const u8 lbl_8026F568[11] = {

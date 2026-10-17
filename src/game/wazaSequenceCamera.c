@@ -43,14 +43,14 @@ void* wazaSequenceCameraGetPattern__Fbi(u8 shortTable, s32 flags) {
         f32 duration;
         u8 data[0x48];
     } WazaCameraPattern;
-    extern f32 fn_800E0BE4(u8, s32);
+    extern f32 GSrandf(u8, s32);
     extern u32 _fadeEffectGetRandom__FUl(u32);
     extern WazaCameraPattern lbl_80371F60[];
     extern WazaCameraPattern lbl_803721C0[];
     WazaCameraPattern* table;
     s32 count;
     s32 i;
-    f32 frame = fn_800E0BE4(shortTable, flags);
+    f32 frame = GSrandf(shortTable, flags);
     f32 end = 0.0f;
 
     if (shortTable != 0) {
@@ -94,7 +94,7 @@ void* wazaSequenceCameraGetPattern__Fbi(u8 shortTable, s32 flags) {
 #endif
 
 /**
- * fn_801D2C6C - Waza get global state from SDA.
+ * battleCameraWazaGetOwner - Waza get global state from SDA.
  * Address: 0x801D2C6C | Size: 0x8
  */
 extern void* lbl_8047B3EC;
@@ -105,15 +105,15 @@ extern f32 lbl_80478CDC;
 
 extern u8 lbl_80467CC0[];
 extern void fn_801DD158(void* obj);
-extern void fn_801DF1D0(void* obj);
+extern void wazaSequenceOwnerUpdateBlink(void* obj);
 extern void fn_801DD3E4(void* obj);
-extern void fn_801DD23C(void* obj);
+extern void wazaSequenceOwnerRelease(void* obj);
 extern void _threadSwitch(void);
 extern s32 fn_8017B2CC(s32 id);
 extern void fn_800F915C(s32 id);
-extern void fn_8017B1CC(s32 id);
+extern void GSresReleaseById(s32 id);
 #ifndef WAZA_CAMERA_FILE_ONLY
-void* fn_801D2C6C(void) {
+void* battleCameraWazaGetOwner(void) {
     return lbl_8047B3EC;
 }
 #endif
@@ -134,7 +134,7 @@ void fn_801D2C74(void* owner) {
     extern void GSscene_SetMode(s32 arg);
     extern void cameraStopAnime(void* arg);
     extern void fn_801765F4(s32 arg);
-    extern s32  fn_800057A8(void);
+    extern s32  GSgetVersionMinor(void);
     extern u8   lbl_8047B3F4;
 
     void* obj;
@@ -153,7 +153,7 @@ void fn_801D2C74(void* owner) {
                 }
                 fn_801765F4(0);
                 lbl_8047B3EC = NULL;
-                if (fn_800057A8() == 2) {
+                if (GSgetVersionMinor() == 2) {
                     GSscene_SetMode(2);
                 }
             }
@@ -275,7 +275,7 @@ void fn_801D2D28(void)
 extern void GSscene_SetMode(s32 arg);
 extern void cameraStopAnime(void* arg);
 extern void fn_801765F4(s32 arg);
-extern s32  fn_800057A8(void);
+extern s32  GSgetVersionMinor(void);
 void fn_801D2F94(void) {
     void* obj;
     if (lbl_8047B3EC != NULL) {
@@ -290,18 +290,18 @@ void fn_801D2F94(void) {
         }
         fn_801765F4(0);
         lbl_8047B3EC = NULL;
-        if (fn_800057A8() == 2) {
+        if (GSgetVersionMinor() == 2) {
             GSscene_SetMode(2);
         }
     }
 }
 
 /**
- * fn_801D301C - Waza animation reset: set lbl_8047B3F4=1, lbl_8047B3EC=0, lbl_8047B3F0=0.
+ * battleCameraWazaInit - Waza animation reset: set lbl_8047B3F4=1, lbl_8047B3EC=0, lbl_8047B3F0=0.
  * Address: 0x801D301C | Size: 0x18
  */
 extern u8  lbl_8047B3F4;
-void fn_801D301C(void) {
+void battleCameraWazaInit(void) {
     lbl_8047B3F4 = 1;
     lbl_8047B3EC = NULL;
     lbl_8047B3F0 = NULL;
@@ -325,7 +325,7 @@ void fn_801D3034(void* state) {
         }
         fn_801765F4(0);
         lbl_8047B3EC = NULL;
-        if (fn_800057A8() == 2) {
+        if (GSgetVersionMinor() == 2) {
             GSscene_SetMode(2);
         }
     }
@@ -543,7 +543,7 @@ void _wazaSequenceCameraDoPosition__FP13ModelSequenceP24wazaSequenceCameraParams
         f32 out_mid;
         f32 out_far;
     } WazaSequenceCameraParamsLocal;
-    extern f32 fn_800E0BE4(void);
+    extern f32 GSrandf(void);
     extern s32 fn_800D37CC(void);
     extern void cameraSetDistance(f32);
     extern void cameraSetHeight(f32);
@@ -583,9 +583,9 @@ void _wazaSequenceCameraDoPosition__FP13ModelSequenceP24wazaSequenceCameraParams
         }
         duration <<= shift;
 
-        offset = 10.0f * fn_800E0BE4() + 25.0f;
-        height = 9.0f * fn_800E0BE4() + 1.0f;
-        distance = 30.0f * fn_800E0BE4() + 20.0f;
+        offset = 10.0f * GSrandf() + 25.0f;
+        height = 9.0f * GSrandf() + 1.0f;
+        distance = 30.0f * GSrandf() + 20.0f;
 
         cameraSetDistance(distance);
         cameraSetHeight(height);
@@ -629,22 +629,22 @@ void _wazaSequenceCameraDoPosition__FP13ModelSequenceP24wazaSequenceCameraParams
 
         /* RULE-EXCEPTION(user-approved): distance_min staged in the reused scalar length for retail's f28 - see docs/RULE_EXCEPTIONS.md */
         length = params->distance_min;
-        distance = length + (params->distance_max - length) * fn_800E0BE4();
+        distance = length + (params->distance_max - length) * GSrandf();
         height = params->height_min +
-            (params->height_max - params->height_min) * fn_800E0BE4();
+            (params->height_max - params->height_min) * GSrandf();
         if (reverse) {
             /* RULE-EXCEPTION(user-approved): rotation_min staged in rotA (reused scalar) for allocation - see docs/RULE_EXCEPTIONS.md */
             rotA = params->rotation_min;
             rotA = (params->rotation_base - rotA) -
-                   (params->rotation_max - rotA) * fn_800E0BE4();
+                   (params->rotation_max - rotA) * GSrandf();
             rotB = (params->rotation_base - params->rotation_min) -
-                   (params->rotation_max - params->rotation_min) * fn_800E0BE4();
+                   (params->rotation_max - params->rotation_min) * GSrandf();
         } else {
             /* RULE-EXCEPTION(user-approved): rotation_min staged in rotA (reused scalar) for allocation - see docs/RULE_EXCEPTIONS.md */
             rotA = params->rotation_min;
-            rotA = (params->rotation_max - rotA) * fn_800E0BE4() +
+            rotA = (params->rotation_max - rotA) * GSrandf() +
                    (params->rotation_base + rotA);
-            rotB = (params->rotation_max - params->rotation_min) * fn_800E0BE4() +
+            rotB = (params->rotation_max - params->rotation_min) * GSrandf() +
                    (params->rotation_base + params->rotation_min);
         }
         if (rotA > rotB) {
@@ -681,19 +681,19 @@ void _wazaSequenceCameraDoPosition__FP13ModelSequenceP24wazaSequenceCameraParams
 
         /* RULE-EXCEPTION(user-approved): distance_min staged in the reused scalar length for retail's f28 - see docs/RULE_EXCEPTIONS.md */
         length = params->distance_min;
-        distance = length + (params->distance_max - length) * fn_800E0BE4();
+        distance = length + (params->distance_max - length) * GSrandf();
         /* RULE-EXCEPTION(user-approved): the height is kept in the reused scalar length for retail's f28 - see docs/RULE_EXCEPTIONS.md */
         length = params->height_min +
-            (params->height_max - params->height_min) * fn_800E0BE4();
+            (params->height_max - params->height_min) * GSrandf();
         if (reverse) {
             /* RULE-EXCEPTION(user-approved): rotation_min staged in rotation (reused scalar) for allocation - see docs/RULE_EXCEPTIONS.md */
             rotation = params->rotation_min;
             rotation = (params->rotation_base - rotation) -
-                       (params->rotation_max - rotation) * fn_800E0BE4();
+                       (params->rotation_max - rotation) * GSrandf();
         } else {
             /* RULE-EXCEPTION(user-approved): rotation_min staged in rotation (reused scalar) for allocation - see docs/RULE_EXCEPTIONS.md */
             rotation = params->rotation_min;
-            rotation = (params->rotation_max - rotation) * fn_800E0BE4() +
+            rotation = (params->rotation_max - rotation) * GSrandf() +
                        (params->rotation_base + rotation);
         }
 
@@ -782,7 +782,7 @@ void _wazaSequenceCameraDoPosition__FP13ModelSequenceP24wazaSequenceCameraParams
         distance = 50.0f * scale;
         /* RULE-EXCEPTION(user-approved): height_min staged in the reused scalar rotation for allocation - see docs/RULE_EXCEPTIONS.md */
         rotation = params->height_min;
-        height = rotation + (params->height_max - rotation) * fn_800E0BE4();
+        height = rotation + (params->height_max - rotation) * GSrandf();
         if (reverse) {
             rotation = params->rotation_base - 0.7853982f;
         } else {
@@ -829,7 +829,7 @@ void _wazaSequenceCameraDoDollyPosition__FP21TemplateExpFileHeaderP24wazaSequenc
         f32 middleLength;
         f32 farLength;
     } WazaCameraParams;
-    extern f32 fn_800E0BE4();
+    extern f32 GSrandf();
     extern u32 _fadeEffectGetRandom__FUl(u32);
     extern void cameraSetDistance(f32);
     extern void cameraSetHeight(f32);
@@ -866,7 +866,7 @@ void _wazaSequenceCameraDoDollyPosition__FP21TemplateExpFileHeaderP24wazaSequenc
     }
     duration <<= shift;
 
-    if (fn_800E0BE4() <= 0.7f) {
+    if (GSrandf() <= 0.7f) {
         threshold0 = 0.3f;
         threshold1 = 0.65f;
         alternate = TRUE;
@@ -874,7 +874,7 @@ void _wazaSequenceCameraDoDollyPosition__FP21TemplateExpFileHeaderP24wazaSequenc
         alternate = FALSE;
     }
 
-    chance = fn_800E0BE4();
+    chance = GSrandf();
     if (chance < threshold0) {
         randomDelay = 0;
     } else if (chance < threshold1) {
@@ -894,10 +894,10 @@ void _wazaSequenceCameraDoDollyPosition__FP21TemplateExpFileHeaderP24wazaSequenc
     }
 
     distance0 = camera->distanceMin +
-        (camera->distanceMax - camera->distanceMin) * fn_800E0BE4();
+        (camera->distanceMax - camera->distanceMin) * GSrandf();
     nearDistance = distance0;
     distance1 = camera->distanceMin +
-        (camera->distanceMax - camera->distanceMin) * fn_800E0BE4();
+        (camera->distanceMax - camera->distanceMin) * GSrandf();
     farDistance = distance1;
     /* RULE-EXCEPTION(user-approved): the height is staged in distance1 (reused scalar) as retail's f0 temporary - see docs/RULE_EXCEPTIONS.md */
     if (alternate) {
@@ -906,7 +906,7 @@ void _wazaSequenceCameraDoDollyPosition__FP21TemplateExpFileHeaderP24wazaSequenc
             nearDistance = distance1;
         }
         distance1 = camera->heightMin +
-            (camera->heightMax - camera->heightMin) * fn_800E0BE4();
+            (camera->heightMax - camera->heightMin) * GSrandf();
         height = distance1;
     } else {
         if (distance0 > distance1) {
@@ -914,16 +914,16 @@ void _wazaSequenceCameraDoDollyPosition__FP21TemplateExpFileHeaderP24wazaSequenc
             nearDistance = distance1;
         }
         distance1 = camera->heightMin +
-            (camera->heightMax - camera->heightMin) * fn_800E0BE4();
+            (camera->heightMax - camera->heightMin) * GSrandf();
         height = distance1;
     }
 
     if (reverse) {
         rotation = (camera->rotationOffset - camera->rotationBase) -
-                   (camera->rotationRange - camera->rotationBase) * fn_800E0BE4();
+                   (camera->rotationRange - camera->rotationBase) * GSrandf();
     } else {
         rotation = (camera->rotationRange - camera->rotationBase) *
-                       fn_800E0BE4() +
+                       GSrandf() +
                    (camera->rotationOffset + camera->rotationBase);
     }
 
@@ -1030,7 +1030,7 @@ void _wazaSequenceCameraDoFOV__FP13ModelSequenceP24wazaSequenceCameraParamsif(
         s32 timingMode;
     } WazaSequenceCameraFovPattern;
     extern f64 atan2(f64, f64);
-    extern f32 fn_800E0BE4(void);
+    extern f32 GSrandf(void);
     extern void battleCameraDisable(void);
     extern void cameraSetFov(f32);
     extern CameraFovKey lbl_804673D4[];
@@ -1088,7 +1088,7 @@ void _wazaSequenceCameraDoFOV__FP13ModelSequenceP24wazaSequenceCameraParamsif(
             choice = 2;
         }
         _wazaSequenceCameraFovMix(choice, &mixStart, &mixEnd);
-        fov = mixStart + (mixEnd - mixStart) * fn_800E0BE4();
+        fov = mixStart + (mixEnd - mixStart) * GSrandf();
         fov = fov * (highFov - lowFov) + lowFov;
         lbl_804673D4[1].end = fov;
         lbl_804673D4[1].start = fov;
@@ -1108,7 +1108,7 @@ void _wazaSequenceCameraDoFOV__FP13ModelSequenceP24wazaSequenceCameraParamsif(
         sequenceId != 8 && sequenceId != 9, flags) + 4);
 
     _wazaSequenceCameraFovMix(pattern->initialFlags, &mixStart, &mixEnd);
-    fov = mixStart + (mixEnd - mixStart) * fn_800E0BE4();
+    fov = mixStart + (mixEnd - mixStart) * GSrandf();
     fov = fov * (highFov - lowFov) + lowFov;
     lbl_804673D4[1].end = fov;
     lbl_804673D4[1].start = fov;
@@ -1156,7 +1156,7 @@ void _wazaSequenceCameraDoFOV__FP13ModelSequenceP24wazaSequenceCameraParamsif(
                 highFov = 85.0f;
             }
             _wazaSequenceCameraFovMix(pattern->flags, &mixStart, &mixEnd);
-            fov = mixStart + (mixEnd - mixStart) * fn_800E0BE4();
+            fov = mixStart + (mixEnd - mixStart) * GSrandf();
             fov = fov * (highFov - lowFov) + lowFov;
             if (pattern->timingMode == 2) {
                 endFrame = nextFrame;
@@ -1194,7 +1194,7 @@ void _wazaSequenceCameraDoFOV__FP13ModelSequenceP24wazaSequenceCameraParamsif(
 s32 _wazaSequenceCameraSelectDuration__FUcPff(
     s32 mode, f32* thresholds, s32 duration)
 {
-    extern f32 fn_800E0BE4();
+    extern f32 GSrandf();
     f32 random;
 
     if (mode == 1) {
@@ -1210,43 +1210,43 @@ s32 _wazaSequenceCameraSelectDuration__FUcPff(
         return duration;
     }
     if (mode == 3) {
-        random = fn_800E0BE4();
+        random = GSrandf();
         return random < thresholds[0]
                    ? (duration < 12 ? duration : 12)
                    : (duration < 20 ? duration : 20);
     }
     if (mode == 5) {
-        random = fn_800E0BE4();
+        random = GSrandf();
         return random < thresholds[0]
                    ? (duration < 12 ? duration : 12)
                    : (duration < 45 ? duration : 45);
     }
     if (mode == 9) {
-        random = fn_800E0BE4();
+        random = GSrandf();
         return random < thresholds[0]
                    ? (duration < 12 ? duration : 12)
                    : duration;
     }
     if (mode == 6) {
-        random = fn_800E0BE4();
+        random = GSrandf();
         return random < thresholds[1]
                    ? (duration < 20 ? duration : 20)
                    : (duration < 45 ? duration : 45);
     }
     if (mode == 10) {
-        random = fn_800E0BE4();
+        random = GSrandf();
         return random < thresholds[1]
                    ? (duration < 20 ? duration : 20)
                    : duration;
     }
     if (mode == 12) {
-        random = fn_800E0BE4();
+        random = GSrandf();
         return random < thresholds[2]
                    ? (duration < 45 ? duration : 45)
                    : duration;
     }
     if (mode == 7) {
-        random = fn_800E0BE4();
+        random = GSrandf();
         if (random < thresholds[0]) {
             return duration < 12 ? duration : 12;
         }
@@ -1256,7 +1256,7 @@ s32 _wazaSequenceCameraSelectDuration__FUcPff(
         return duration < 45 ? duration : 45;
     }
     if (mode == 11) {
-        random = fn_800E0BE4();
+        random = GSrandf();
         if (random < thresholds[0]) {
             return duration < 12 ? duration : 12;
         }
@@ -1266,7 +1266,7 @@ s32 _wazaSequenceCameraSelectDuration__FUcPff(
         return duration;
     }
     if (mode == 13) {
-        random = fn_800E0BE4();
+        random = GSrandf();
         if (random < thresholds[0]) {
             return duration < 12 ? duration : 12;
         }
@@ -1276,7 +1276,7 @@ s32 _wazaSequenceCameraSelectDuration__FUcPff(
         return duration;
     }
     if (mode == 14) {
-        random = fn_800E0BE4();
+        random = GSrandf();
         if (random < thresholds[1]) {
             return duration < 12 ? duration : 12;
         }
@@ -1286,7 +1286,7 @@ s32 _wazaSequenceCameraSelectDuration__FUcPff(
         return duration;
     }
     if (mode == 15) {
-        random = fn_800E0BE4();
+        random = GSrandf();
         if (random < thresholds[0]) {
             return duration < 12 ? duration : 12;
         }
@@ -1308,7 +1308,7 @@ s32 _wazaSequenceCameraSelectDuration__FUcPff(
 void _wazaSequenceCameraSelectMotion__FP13ModelSequenceP12WazaSequenceP24wazaSequenceCameraParams(
     void* modelSequence, void* wazaSequence, void* cameraParams)
 {
-    extern f32 fn_800E0BE4(void);
+    extern f32 GSrandf(void);
     extern s32 lbl_80478CD8;
     u32 flags;
     u8 option0;
@@ -1377,7 +1377,7 @@ void _wazaSequenceCameraSelectMotion__FP13ModelSequenceP12WazaSequenceP24wazaSeq
         f32 random;
         f32 limit;
 
-        random = fn_800E0BE4();
+        random = GSrandf();
         limit = interval;
         if (option0) {
             if (limit > random) {

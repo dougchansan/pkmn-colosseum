@@ -6,11 +6,11 @@
 
 s32 fightTrainerAiWazaHit191(void* ctx, u32 param1, u32 param2, u32 param3) {
     extern s32 _fightTrainerAiWazaHitCheck(void* ctx, u32 param1, u32 param2, u32 param3, u32 one);
-    extern u8 fn_80229934(u32 param2, u32 param1, u32 param3);
+    extern u8 fightCheckAccuracyRules(u32 param2, u32 param1, u32 param3);
     extern u8 fn_80237F74(void* ctx, u32 a, u32 type);
     s32 gate = _fightTrainerAiWazaHitCheck(ctx, param1, param2, param3, 0xFFFF);
 
-    if (fn_80229934(param2, param1, param3) == 1) {
+    if (fightCheckAccuracyRules(param2, param1, param3) == 1) {
         return 0;
     }
     if (fn_80237F74(ctx, param1, 0x19) == 1) {
@@ -42,12 +42,12 @@ s32 fightTrainerAiWazaHit190(void* ctx, u32 param1, u32 param2, u32 param3) {
 }
 
 s32 fightTrainerAiWazaHit189(void* ctx, u32 param1, u32 param2, u32 param3) {
-    extern u32 fn_802395C8(void* ctx, u32 param2, u32 param1);
+    extern u32 fightTrainerAiGetWazaTenkouValue(void* ctx, u32 param2, u32 param1);
     extern u16 fn_802376EC(void* ctx, u32 elem);
     extern u32 fn_80239500(void* ctx, u32 param2);
-    extern u16 fn_8023793C(void* ctx, u32 param3, u32 v1, u32 v3);
+    extern u16 fightTrainerAiGetAisyou(void* ctx, u32 param3, u32 v1, u32 v3);
     extern s32 _fightTrainerAiWazaHitCheck(void* ctx, u32 param1, u32 param2, u32 param3, u32 zero);
-    u32 v1 = fn_802395C8(ctx, param2, param1);
+    u32 v1 = fightTrainerAiGetWazaTenkouValue(ctx, param2, param1);
     u16 a = fn_802376EC(ctx, param1);
     u16 b = fn_802376EC(ctx, param3);
     s32 gate;
@@ -56,7 +56,7 @@ s32 fightTrainerAiWazaHit189(void* ctx, u32 param1, u32 param2, u32 param3) {
         return 0;
     }
     gate = _fightTrainerAiWazaHitCheck(ctx, param1, param2, param3, 0);
-    if (fn_8023793C(ctx, param3, v1, fn_80239500(ctx, param2)) == 0x43) {
+    if (fightTrainerAiGetAisyou(ctx, param3, v1, fn_80239500(ctx, param2)) == 0x43) {
         gate = 0;
     }
     if (gate == 0) {
@@ -83,13 +83,13 @@ s32 fightTrainerAiWazaHit188(void* ctx, u32 param1, u32 param2, u32 param3) {
 
 s32 fightTrainerAiWazaHit187(void* ctx, u32 param1, u32 param2, u32 param3) {
     extern u8 fn_80237F74(void* ctx, u32 elem, u32 type);
-    extern u8 fn_80236BFC(void* ctx, u32 elem, u32 type);
+    extern u8 fightTrainerAiIsPokemonJoutai(void* ctx, u32 elem, u32 type);
     extern u32 fightTargetGetPtrAsNowFightType(u32 type, u32 elem);
     extern u8 fightSideIsJoutaiDataId(u32 a, u32 b);
     extern s32 _fightTrainerAiWazaHitCheck(void* ctx, u32 param1, u32 param2, u32 param3, u32 zero);
     extern u8 fightTrainerAiCheckSawagu(void* ctx, u32 a);
-    extern u8 fn_80237310(void* ctx, u32 a);
-    extern u8 fn_80229704(u32 type, u32 elem);
+    extern u8 fightTrainerAiIsJoutaiNormal(void* ctx, u32 a);
+    extern u8 fightAiCheckRule0E0F(u32 type, u32 elem);
     s32 gate;
 
     if (fn_80237F74(ctx, param3, 0x48) == 1) {
@@ -98,7 +98,7 @@ s32 fightTrainerAiWazaHit187(void* ctx, u32 param1, u32 param2, u32 param3) {
     if (fn_80237F74(ctx, param3, 0xf) == 1) {
         return 0;
     }
-    if (fn_80236BFC(ctx, param3, 0x14) == 1) {
+    if (fightTrainerAiIsPokemonJoutai(ctx, param3, 0x14) == 1) {
         return 0;
     }
     if (fightSideIsJoutaiDataId(fightTargetGetPtrAsNowFightType(2, param3), 0x4b) == 1) {
@@ -108,13 +108,13 @@ s32 fightTrainerAiWazaHit187(void* ctx, u32 param1, u32 param2, u32 param3) {
     if (fightTrainerAiCheckSawagu(ctx, param3) == 1) {
         return 0;
     }
-    if (fn_80236BFC(ctx, param3, 0x26) == 1) {
+    if (fightTrainerAiIsPokemonJoutai(ctx, param3, 0x26) == 1) {
         return 0;
     }
-    if (fn_80237310(ctx, param3) == 0) {
+    if (fightTrainerAiIsJoutaiNormal(ctx, param3) == 0) {
         return 0;
     }
-    if (fn_80229704(8, param3) != 1) {
+    if (fightAiCheckRule0E0F(8, param3) != 1) {
         return 0;
     }
     if (gate == 0) {
@@ -127,15 +127,15 @@ s32 fightTrainerAiWazaHit187(void* ctx, u32 param1, u32 param2, u32 param3) {
 }
 
 s32 fightTrainerAiWazaHit186(void* ctx, u32 param1, u32 param2, u32 param3) {
-    extern u32 fn_802395C8(void* ctx, u32 param2, u32 param1);
+    extern u32 fightTrainerAiGetWazaTenkouValue(void* ctx, u32 param2, u32 param1);
     extern u32 fn_80239500(void* ctx, u32 param2);
-    extern u16 fn_8023793C(void* ctx, u32 param3, u32 v1, u32 v3);
+    extern u16 fightTrainerAiGetAisyou(void* ctx, u32 param3, u32 v1, u32 v3);
     extern s32 _fightTrainerAiWazaHitCheck(void* ctx, u32 param1, u32 param2, u32 param3, u32 zero);
     s32 gate;
-    u32 v1 = fn_802395C8(ctx, param2, param1);
+    u32 v1 = fightTrainerAiGetWazaTenkouValue(ctx, param2, param1);
     gate = _fightTrainerAiWazaHitCheck(ctx, param1, param2, param3, 0);
 
-    if (fn_8023793C(ctx, param3, v1, fn_80239500(ctx, param2)) == 0x43) {
+    if (fightTrainerAiGetAisyou(ctx, param3, v1, fn_80239500(ctx, param2)) == 0x43) {
         gate = 0;
     }
     if (gate == 0) {
@@ -163,10 +163,10 @@ s32 fightTrainerAiWazaHit185(void* ctx, u32 param1, u32 param2, u32 param3) {
 u32 fightTrainerAiWazaHit184(void)
 
 {
-    extern u16 fn_80236B98();
+    extern u16 fightAiGetUsedItem();
   u16 sVar1;
 
-  sVar1 = fn_80236B98();
+  sVar1 = fightAiGetUsedItem();
   return sVar1 != 0;
 }
 
@@ -189,9 +189,9 @@ int fightTrainerAiWazaHit181(void)
 {
     u32 r3;
     u32 r4;
-    extern u32 fn_80236BFC();
+    extern u32 fightTrainerAiIsPokemonJoutai();
   u32 uVar1;
-  uVar1 = fn_80236BFC(r3, r4, 0x25);
+  uVar1 = fightTrainerAiIsPokemonJoutai(r3, r4, 0x25);
   return (uVar1 & 0xFF) != 1;
 }
 
@@ -208,9 +208,9 @@ int fightTrainerAiWazaHit179(void)
 {
     u32 r3;
     u32 r4;
-    extern u32 fn_80236BFC();
+    extern u32 fightTrainerAiIsPokemonJoutai();
   u32 uVar1;
-  uVar1 = fn_80236BFC(r3, r4, 0x35);
+  uVar1 = fightTrainerAiIsPokemonJoutai(r3, r4, 0x35);
   return (uVar1 & 0xFF) != 1;
 }
 
@@ -233,14 +233,14 @@ u32 fightTrainerAiWazaHit178(void* ctx, u32 slot, u32 param, u32 extra) {
 }
 
 s32 fightTrainerAiWazaHit177(void* ctx, u32 param1, u32 param2, u32 param3) {
-    extern u16 fn_802383A4(void* ctx, u32 elem);
-    extern u8 fn_80216048(u32 elem);
+    extern u16 fightAiGetSoubiItemOf(void* ctx, u32 elem);
+    extern u8 fightAiCanStealItem(u32 elem);
     extern u8 fn_80142984(u16 elem);
     extern u8 fn_80237F74(void* ctx, u32 a, u32 type);
-    u16 A = fn_802383A4(ctx, param1);
-    u16 B = fn_802383A4(ctx, param3);
+    u16 A = fightAiGetSoubiItemOf(ctx, param1);
+    u16 B = fightAiGetSoubiItemOf(ctx, param3);
 
-    if (fn_80216048(param1) == 0) {
+    if (fightAiCanStealItem(param1) == 0) {
         return 0;
     }
     if (A == 0 && B == 0) {
@@ -269,7 +269,7 @@ u32 fightTrainerAiWazaHit176(void* ctx, u32 slot, u32 param) {
     extern u32 fightTargetGetPtrAsNowFightType(u32);
     extern u32 fightFloorGetStatus(u32, u32, u32, u32);
     extern u8 fightOutPokemonCheckFightOut(u32);
-    extern u8 fn_80236BFC(void*, u32, u32);
+    extern u8 fightTrainerAiIsPokemonJoutai(void*, u32, u32);
     u32 target;
 
     target = fightTargetGetPtrAsNowFightType(0xe);
@@ -282,10 +282,10 @@ u32 fightTrainerAiWazaHit176(void* ctx, u32 slot, u32 param) {
     if (fightOutPokemonCheckFightOut(target) != 1) {
         goto fail;
     }
-    if (fn_80236BFC(ctx, slot, 0x32) != 0) {
+    if (fightTrainerAiIsPokemonJoutai(ctx, slot, 0x32) != 0) {
         goto fail;
     }
-    if (fn_80236BFC(ctx, target, 0x32) == 0) {
+    if (fightTrainerAiIsPokemonJoutai(ctx, target, 0x32) == 0) {
         goto success;
     }
 fail:
@@ -295,12 +295,12 @@ success:
 }
 
 u32 fightTrainerAiWazaHit175(void* ctx, u32 slot, u32 param, u32 param3) {
-    extern u32 fn_80236BFC(void*, u32, u32);
+    extern u32 fightTrainerAiIsPokemonJoutai(void*, u32, u32);
     extern u32 _fightTrainerAiWazaHitCheck(void*, u32, u32, u32, u32);
     u32 result;
 
     result = _fightTrainerAiWazaHitCheck(ctx, slot, param, param3, 0);
-    if ((fn_80236BFC(ctx, param3, 0x30) & 0xff) == 1) {
+    if ((fightTrainerAiIsPokemonJoutai(ctx, param3, 0x30) & 0xff) == 1) {
         return 0;
     }
     if ((s32)result == 0) {
@@ -318,7 +318,7 @@ u32 fightTrainerAiWazaHit173(void* ctx, u32 slot, u32 param, u32 extra) {
     extern u32 wazaGetStatus(u32, u32, u32, u32);
     extern u32 tikeiDataBiosGetWazaId(u32);
     extern u32 fightFloorGetStatus(u32, u32, u32, u32);
-    extern u32 fn_8023C530(void*, u32, u32, u32);
+    extern u32 fightTrainerAiGetWazaHitValue(void*, u32, u32, u32);
     u32 paramType;
     u32 other;
     u32 otherType;
@@ -328,7 +328,7 @@ u32 fightTrainerAiWazaHit173(void* ctx, u32 slot, u32 param, u32 extra) {
     param = other;
     otherType = wazaGetStatus(0, param, 9, 0) & 0xFFFF;
     if (otherType != paramType) {
-        return fn_8023C530(ctx, slot, param, extra);
+        return fightTrainerAiGetWazaHitValue(ctx, slot, param, extra);
     }
     return 1;
 }
@@ -375,12 +375,12 @@ s32 fightTrainerAiWazaHit169(void* ctx, u32 param1, u32 param2, u32 param3) {
 }
 
 s32 fightTrainerAiWazaHit168(void* ctx, u32 param1, u32 param2, u32 param3) {
-    extern u8 fn_80235AA0(void* ctx, u32 elem);
+    extern u8 fightTrainerAiGetAbicntPhyAtk(void* ctx, u32 elem);
     extern u8 fn_802359D8(void* ctx, u32 elem);
     extern u8 fightTrainerAiCheckGuard(void* ctx, u32 param3, u32 param2);
     extern u8 fightTrainerAiCheckAbiCnt(void*, u32, u32, u32, u32, u32, u32);
-    extern u8 fn_80236BFC(void* ctx, u32 param3, u32 flag);
-    u8 q1 = fn_80235AA0(ctx, param3);
+    extern u8 fightTrainerAiIsPokemonJoutai(void* ctx, u32 param3, u32 flag);
+    u8 q1 = fightTrainerAiGetAbicntPhyAtk(ctx, param3);
     u8 q2 = fn_802359D8(ctx, param3);
 
     if (fightTrainerAiCheckGuard(ctx, param3, param2) == 1) {
@@ -393,26 +393,26 @@ s32 fightTrainerAiWazaHit168(void* ctx, u32 param1, u32 param2, u32 param3) {
         fightTrainerAiCheckAbiCnt(ctx, param1, param3, param2, 0xa0, 4, 1) == 0) {
         return 0;
     }
-    if (fn_80236BFC(ctx, param3, 0x14) == 1) {
+    if (fightTrainerAiIsPokemonJoutai(ctx, param3, 0x14) == 1) {
         return 0;
     }
     return 1;
 }
 
 u32 fightTrainerAiWazaHit167(void* ctx, u32 param1, u32 param2, u32 param3) {
-    extern u8 fn_80236BFC();
-    extern u8 fn_80237DBC();
+    extern u8 fightTrainerAiIsPokemonJoutai();
+    extern u8 fightTrainerAiGetZokusei();
     extern u8 fn_80237F74();
-    extern u8 fn_80237310();
+    extern u8 fightTrainerAiIsJoutaiNormal();
     extern s32 _fightTrainerAiWazaHitCheck();
     extern s32 fightTargetGetPtrAsNowFightType();
     extern u8 fightSideIsJoutaiDataId();
     s32 handle;
     u8 flag;
 
-    if (fn_80236BFC(ctx, param3, 0x14) == 1) return 0;
-    if (fn_80236BFC(ctx, param3, 0x6) == 1) return 0;
-    if (fn_80237DBC(ctx, param3, 0xA) == 1) return 0;
+    if (fightTrainerAiIsPokemonJoutai(ctx, param3, 0x14) == 1) return 0;
+    if (fightTrainerAiIsPokemonJoutai(ctx, param3, 0x6) == 1) return 0;
+    if (fightTrainerAiGetZokusei(ctx, param3, 0xA) == 1) return 0;
     if (fn_80237F74(ctx, param3, 0x29) == 1) return 0;
 
     if (fn_80237F74(ctx, param3, 0x11) == 1) goto flag1;
@@ -432,7 +432,7 @@ flag1:
 check:
     if (flag == 0) return 0;
 
-    if (fn_80237310(ctx, param3) == 0) return 0;
+    if (fightTrainerAiIsJoutaiNormal(ctx, param3) == 0) return 0;
 
     handle = _fightTrainerAiWazaHitCheck(ctx, param1, param2, param3, 0);
     if (fightSideIsJoutaiDataId(fightTargetGetPtrAsNowFightType(2, param3), 0x4B) == 1) return 0;
@@ -444,17 +444,17 @@ check:
 s32 fightTrainerAiWazaHit166(void* ctx, u32 param1, u32 param2, u32 param3) {
     extern u32 fightTargetGetPtrAsNowFightType(u32 type, u32 elem);
     extern u8 fightSideIsJoutaiDataId(u32 a, u32 b);
-    extern u8 fn_80235910(void* ctx, u32 elem);
-    extern u8 fn_80236BFC(void* ctx, u32 elem, u32 type);
+    extern u8 fightTrainerAiGetAbicntNimbleness(void* ctx, u32 elem);
+    extern u8 fightTrainerAiIsPokemonJoutai(void* ctx, u32 elem, u32 type);
     extern u8 fn_80237F74(void* ctx, u32 elem, u32 type);
     extern s32 _fightTrainerAiWazaHitCheck(void* ctx, u32 param1, u32 param2, u32 param3, u32 zero);
     extern u8 fightTrainerAiCheckAbiCnt(void* ctx, u32 param1, u32 param3, u32 param2, u32 a, u32 b, u32 c);
     u32 side = fightTargetGetPtrAsNowFightType(2, param3);
-    u8 abiVal = fn_80235910(ctx, param3);
+    u8 abiVal = fightTrainerAiGetAbicntNimbleness(ctx, param3);
     s32 gate = _fightTrainerAiWazaHitCheck(ctx, param1, param2, param3, 0);
     u8 flag;
 
-    if (fn_80236BFC(ctx, param3, 0x9) == 1 && abiVal >= 0xc) {
+    if (fightTrainerAiIsPokemonJoutai(ctx, param3, 0x9) == 1 && abiVal >= 0xc) {
         if (fightTrainerAiCheckAbiCnt(ctx, param1, param3, param2, 0x10, 4, 1) == 0) {
             return 0;
         }
@@ -492,12 +492,12 @@ flagCheckDone:
 }
 
 u32 fightTrainerAiWazaHit165(void* ctx, u32 slot, u32 param, u32 param3) {
-    extern u32 fn_80236BFC(void*, u32, u32);
+    extern u32 fightTrainerAiIsPokemonJoutai(void*, u32, u32);
     extern u32 _fightTrainerAiWazaHitCheck(void*, u32, u32, u32, u32);
     u32 result;
 
     result = _fightTrainerAiWazaHitCheck(ctx, slot, param, param3, 0);
-    if ((fn_80236BFC(ctx, param3, 0x1b) & 0xff) == 1) {
+    if ((fightTrainerAiIsPokemonJoutai(ctx, param3, 0x1b) & 0xff) == 1) {
         return 0;
     }
     if ((s32)result == 0) {
@@ -514,38 +514,38 @@ int fightTrainerAiWazaHit164(void)
 {
     u32 r3;
 
-    extern u32 fn_80235B04();
+    extern u32 fightTrainerAiGetNowTenkou();
   u32 uVar1;
 
-  uVar1 = fn_80235B04(r3,0,0);
+  uVar1 = fightTrainerAiGetNowTenkou(r3,0,0);
   return (uVar1 & 0xff) != 4;
 }
 
 u32 fightTrainerAiWazaHit162(void* ctx, u32 slot, u32 param) {
     extern f32 lbl_8047E648;
-    extern u8 fn_80236BFC(void*, u32, u32);
-    extern u8 fn_802373B0(void*, u32, s32, f32);
+    extern u8 fightTrainerAiIsPokemonJoutai(void*, u32, u32);
+    extern u8 fightTrainerAiGetHpPercent(void*, u32, s32, f32);
 
-    if (fn_80236BFC(ctx, slot, 0x2d) == 0) {
+    if (fightTrainerAiIsPokemonJoutai(ctx, slot, 0x2d) == 0) {
         return 0;
     }
-    return fn_802373B0(ctx, slot, 0, lbl_8047E648) != 1;
+    return fightTrainerAiGetHpPercent(ctx, slot, 0, lbl_8047E648) != 1;
 }
 
 s32 fightTrainerAiWazaHit161(void* ctx, u32 param1, u32 param2, u32 param3) {
-    extern u32 fn_802395C8(void* ctx, u32 param2, u32 param1);
-    extern u8 fn_80236BFC(void* ctx, u32 param1, u32 flag);
+    extern u32 fightTrainerAiGetWazaTenkouValue(void* ctx, u32 param2, u32 param1);
+    extern u8 fightTrainerAiIsPokemonJoutai(void* ctx, u32 param1, u32 flag);
     extern u32 fn_80239500(void* ctx, u32 param2);
-    extern u16 fn_8023793C(void* ctx, u32 param3, u32 v1, u32 v3);
+    extern u16 fightTrainerAiGetAisyou(void* ctx, u32 param3, u32 v1, u32 v3);
     extern s32 _fightTrainerAiWazaHitCheck(void* ctx, u32 param1, u32 param2, u32 param3, u32 zero);
     s32 gate;
-    u32 v1 = fn_802395C8(ctx, param2, param1);
+    u32 v1 = fightTrainerAiGetWazaTenkouValue(ctx, param2, param1);
     gate = _fightTrainerAiWazaHitCheck(ctx, param1, param2, param3, 0);
 
-    if (fn_80236BFC(ctx, param1, 0x2d) == 0) {
+    if (fightTrainerAiIsPokemonJoutai(ctx, param1, 0x2d) == 0) {
         gate = 0;
     }
-    if (fn_8023793C(ctx, param3, v1, fn_80239500(ctx, param2)) == 0x43) {
+    if (fightTrainerAiGetAisyou(ctx, param3, v1, fn_80239500(ctx, param2)) == 0x43) {
         gate = 0;
     }
     if (gate == 0) {
@@ -558,33 +558,33 @@ s32 fightTrainerAiWazaHit161(void* ctx, u32 param1, u32 param2, u32 param3) {
 }
 
 u32 fightTrainerAiWazaHit160(void* ctx, u32 slot, u32 param) {
-    extern u8 fn_80236BFC(void* ctx, u32 slot, u32 param);
-    extern u32 fn_80202360(u32 slot, u32 param);
-    extern u8 fn_80119DD0(u32 param);
+    extern u8 fightTrainerAiIsPokemonJoutai(void* ctx, u32 slot, u32 param);
+    extern u32 fightOutPokemonGetPokemonJoutaiStack(u32 slot, u32 param);
+    extern u8 joutaiDataBiosGetMaxStack(u32 param);
     u32 result;
 
     result = slot;
-    if (fn_80236BFC(ctx, slot, 0x2d) == 0) {
+    if (fightTrainerAiIsPokemonJoutai(ctx, slot, 0x2d) == 0) {
         result = 0;
     } else {
-        result = fn_80202360(result, 0x2d);
+        result = fightOutPokemonGetPokemonJoutaiStack(result, 0x2d);
     }
-    if ((s16)result >= (s32)fn_80119DD0(0x2d)) {
+    if ((s16)result >= (s32)joutaiDataBiosGetMaxStack(0x2d)) {
         return 0;
     }
     return 1;
 }
 
 s32 fightTrainerAiWazaHit159(void* ctx, u32 param1, u32 param2, u32 param3) {
-    extern u32 fn_802395C8(void* ctx, u32 param2, u32 param1);
+    extern u32 fightTrainerAiGetWazaTenkouValue(void* ctx, u32 param2, u32 param1);
     extern u32 fn_80239500(void* ctx, u32 param2);
-    extern u16 fn_8023793C(void* ctx, u32 param3, u32 v1, u32 v3);
+    extern u16 fightTrainerAiGetAisyou(void* ctx, u32 param3, u32 v1, u32 v3);
     extern s32 _fightTrainerAiWazaHitCheck(void* ctx, u32 param1, u32 param2, u32 param3, u32 zero);
     s32 gate;
-    u32 v1 = fn_802395C8(ctx, param2, param1);
+    u32 v1 = fightTrainerAiGetWazaTenkouValue(ctx, param2, param1);
     gate = _fightTrainerAiWazaHitCheck(ctx, param1, param2, param3, 0);
 
-    if (fn_8023793C(ctx, param3, v1, fn_80239500(ctx, param2)) == 0x43) {
+    if (fightTrainerAiGetAisyou(ctx, param3, v1, fn_80239500(ctx, param2)) == 0x43) {
         gate = 0;
     }
     if (gate == 0) {
@@ -608,9 +608,9 @@ u32 fightTrainerAiWazaHit158(u32 r3_in, u32 r4)
 
 u32 fightTrainerAiWazaHit157(void* ctx, u32 slot, u32 param2, u32 param3) {
     extern const f32 lbl_8047E648;
-    extern u8 fn_802373B0(void*, u32, s32, f32);
+    extern u8 fightTrainerAiGetHpPercent(void*, u32, s32, f32);
 
-    return fn_802373B0(ctx, slot, 0, lbl_8047E648) != 1;
+    return fightTrainerAiGetHpPercent(ctx, slot, 0, lbl_8047E648) != 1;
 }
 
 u32 fightTrainerAiWazaHit156(void* ctx, u32 slot, u32 param, u32 arg3) {
@@ -620,15 +620,15 @@ u32 fightTrainerAiWazaHit156(void* ctx, u32 slot, u32 param, u32 arg3) {
 }
 
 s32 fightTrainerAiWazaHit155(void* ctx, u32 param1, u32 param2, u32 param3) {
-    extern u32 fn_802395C8(void* ctx, u32 param2, u32 param1);
+    extern u32 fightTrainerAiGetWazaTenkouValue(void* ctx, u32 param2, u32 param1);
     extern u32 fn_80239500(void* ctx, u32 param2);
-    extern u16 fn_8023793C(void* ctx, u32 param3, u32 v1, u32 v3);
+    extern u16 fightTrainerAiGetAisyou(void* ctx, u32 param3, u32 v1, u32 v3);
     extern s32 _fightTrainerAiWazaHitCheck(void* ctx, u32 param1, u32 param2, u32 param3, u32 zero);
     s32 gate;
-    u32 v1 = fn_802395C8(ctx, param2, param1);
+    u32 v1 = fightTrainerAiGetWazaTenkouValue(ctx, param2, param1);
     gate = _fightTrainerAiWazaHitCheck(ctx, param1, param2, param3, 0);
 
-    if (fn_8023793C(ctx, param3, v1, fn_80239500(ctx, param2)) == 0x43) {
+    if (fightTrainerAiGetAisyou(ctx, param3, v1, fn_80239500(ctx, param2)) == 0x43) {
         gate = 0;
     }
     if (gate == 0) {
@@ -711,10 +711,10 @@ s32 fightTrainerAiWazaHit149(void* ctx, u32 param1, u32 param2, u32 param3) {
 int fightTrainerAiWazaHit148(u32 r3, u32 r4, u32 r5, u32 r6)
 
 {
-  extern u32 fn_80236BFC();
+  extern u32 fightTrainerAiIsPokemonJoutai();
   u32 uVar1;
 
-  uVar1 = fn_80236BFC(r3,r6,0x34);
+  uVar1 = fightTrainerAiIsPokemonJoutai(r3,r6,0x34);
   return (uVar1 & 0xff) != 1;
 }
 
@@ -758,15 +758,15 @@ s32 fightTrainerAiWazaHit145(void* ctx, u32 param1, u32 param2, u32 param3) {
 }
 
 s32 fightTrainerAiWazaHit144(void* ctx, u32 param1, u32 param2, u32 param3) {
-    extern u32 fn_802395C8(void* ctx, u32 param2, u32 param1);
+    extern u32 fightTrainerAiGetWazaTenkouValue(void* ctx, u32 param2, u32 param1);
     extern u32 fn_80239500(void* ctx, u32 param2);
-    extern u16 fn_8023793C(void* ctx, u32 param3, u32 v1, u32 v3);
+    extern u16 fightTrainerAiGetAisyou(void* ctx, u32 param3, u32 v1, u32 v3);
     extern s32 _fightTrainerAiWazaHitCheck(void* ctx, u32 param1, u32 param2, u32 param3, u32 zero);
     s32 gate;
-    u32 v1 = fn_802395C8(ctx, param2, param1);
+    u32 v1 = fightTrainerAiGetWazaTenkouValue(ctx, param2, param1);
     gate = _fightTrainerAiWazaHitCheck(ctx, param1, param2, param3, 0);
 
-    if (fn_8023793C(ctx, param3, v1, fn_80239500(ctx, param2)) == 0x43) {
+    if (fightTrainerAiGetAisyou(ctx, param3, v1, fn_80239500(ctx, param2)) == 0x43) {
         gate = 0;
     }
     if (gate == 0) {
@@ -782,13 +782,13 @@ u32 fightTrainerAiWazaHit143(void) { return 1; }
 
 u32 fightTrainerAiWazaHit142(void* ctx, u32 slot, u32 param) {
     extern f32 lbl_8047E64C;
-    extern u32 fn_80235AA0(void);
-    extern u32 fn_802373B0(void*, u32, s32, f32);
+    extern u32 fightTrainerAiGetAbicntPhyAtk(void);
+    extern u32 fightTrainerAiGetHpPercent(void*, u32, s32, f32);
 
-    if ((fn_80235AA0() & 0xFF) >= 0xC) {
+    if ((fightTrainerAiGetAbicntPhyAtk() & 0xFF) >= 0xC) {
         goto ret0;
     }
-    if ((fn_802373B0(ctx, slot, -1, lbl_8047E64C) & 0xFF) == 0) {
+    if ((fightTrainerAiGetHpPercent(ctx, slot, -1, lbl_8047E64C) & 0xFF) == 0) {
         goto ret1;
     }
 ret0:
@@ -841,10 +841,10 @@ int fightTrainerAiWazaHit137(void)
 {
     u32 r3;
 
-    extern u32 fn_80235B04();
+    extern u32 fightTrainerAiGetNowTenkou();
   u32 uVar1;
 
-  uVar1 = fn_80235B04(r3,0,0);
+  uVar1 = fightTrainerAiGetNowTenkou(r3,0,0);
   return (uVar1 & 0xff) != 1;
 }
 
@@ -853,17 +853,17 @@ int fightTrainerAiWazaHit136(void)
 {
     u32 r3;
 
-    extern u32 fn_80235B04();
+    extern u32 fightTrainerAiGetNowTenkou();
   u32 uVar1;
 
-  uVar1 = fn_80235B04(r3,0,0);
+  uVar1 = fightTrainerAiGetNowTenkou(r3,0,0);
   return (uVar1 & 0xff) != 2;
 }
 
 s32 fightTrainerAiWazaHit135(void* ctx, u32 param1, u32 param2, u32 param3) {
     extern u32 fightOutPokemonGetPokemonPtr(u32 v);
     extern void pokemonGetMezamerupower(u32, void*, void*);
-    extern u16 fn_8023793C(void* ctx, u32 param3, u32 v1, s16 v3);
+    extern u16 fightTrainerAiGetAisyou(void* ctx, u32 param3, u32 v1, s16 v3);
     extern s32 _fightTrainerAiWazaHitCheck(void* ctx, u32 param1, u32 param2, u32 param3, u32 zero);
     u16 hi;
     u16 lo;
@@ -871,7 +871,7 @@ s32 fightTrainerAiWazaHit135(void* ctx, u32 param1, u32 param2, u32 param3) {
 
     pokemonGetMezamerupower(fightOutPokemonGetPokemonPtr(param1), &hi, &lo);
     gate = _fightTrainerAiWazaHitCheck(ctx, param1, param2, param3, 0);
-    if (fn_8023793C(ctx, param3, lo, (s16)hi) == 0x43) {
+    if (fightTrainerAiGetAisyou(ctx, param3, lo, (s16)hi) == 0x43) {
         gate = 0;
     }
     if (gate == 0) {
@@ -885,35 +885,35 @@ s32 fightTrainerAiWazaHit135(void* ctx, u32 param1, u32 param2, u32 param3) {
 
 u32 fightTrainerAiWazaHit134(void* ctx, u32 slot, u32 param2, u32 param3) {
     extern const f32 lbl_8047E648;
-    extern u8 fn_802373B0(void*, u32, s32, f32);
+    extern u8 fightTrainerAiGetHpPercent(void*, u32, s32, f32);
 
-    return fn_802373B0(ctx, slot, 0, lbl_8047E648) != 1;
+    return fightTrainerAiGetHpPercent(ctx, slot, 0, lbl_8047E648) != 1;
 }
 
 u32 fightTrainerAiWazaHit133(void* ctx, u32 slot, u32 param2, u32 param3) {
     extern const f32 lbl_8047E648;
-    extern u8 fn_802373B0(void*, u32, s32, f32);
+    extern u8 fightTrainerAiGetHpPercent(void*, u32, s32, f32);
 
-    return fn_802373B0(ctx, slot, 0, lbl_8047E648) != 1;
+    return fightTrainerAiGetHpPercent(ctx, slot, 0, lbl_8047E648) != 1;
 }
 
 u32 fightTrainerAiWazaHit132(void* ctx, u32 slot, u32 param2, u32 param3) {
     extern const f32 lbl_8047E648;
-    extern u8 fn_802373B0(void*, u32, s32, f32);
+    extern u8 fightTrainerAiGetHpPercent(void*, u32, s32, f32);
 
-    return fn_802373B0(ctx, slot, 0, lbl_8047E648) != 1;
+    return fightTrainerAiGetHpPercent(ctx, slot, 0, lbl_8047E648) != 1;
 }
 
 s32 fightTrainerAiWazaHit130(void* ctx, u32 param1, u32 param2, u32 param3) {
-    extern u32 fn_802395C8(void* ctx, u32 param2, u32 param1);
+    extern u32 fightTrainerAiGetWazaTenkouValue(void* ctx, u32 param2, u32 param1);
     extern u32 fn_80239500(void* ctx, u32 param2);
-    extern u16 fn_8023793C(void* ctx, u32 param3, u32 v1, u32 v3);
+    extern u16 fightTrainerAiGetAisyou(void* ctx, u32 param3, u32 v1, u32 v3);
     extern s32 _fightTrainerAiWazaHitCheck(void* ctx, u32 param1, u32 param2, u32 param3, u32 zero);
     s32 gate;
-    u32 v1 = fn_802395C8(ctx, param2, param1);
+    u32 v1 = fightTrainerAiGetWazaTenkouValue(ctx, param2, param1);
     gate = _fightTrainerAiWazaHitCheck(ctx, param1, param2, param3, 0);
 
-    if (fn_8023793C(ctx, param3, v1, fn_80239500(ctx, param2)) == 0x43) {
+    if (fightTrainerAiGetAisyou(ctx, param3, v1, fn_80239500(ctx, param2)) == 0x43) {
         gate = 0;
     }
     if (gate == 0) {
@@ -939,24 +939,24 @@ s32 fightTrainerAiWazaHit129(void* ctx, u32 param1, u32 param2, u32 param3) {
 }
 
 u32 fightTrainerAiWazaHit128(void* ctx, u32 a, u32 b, u32 c) {
-    extern s32 fn_802395C8();
+    extern s32 fightTrainerAiGetWazaTenkouValue();
     extern s32 fn_80239500();
-    extern s32 fn_8023793C();
+    extern s32 fightTrainerAiGetAisyou();
     s32 res1;
 
-    res1 = fn_802395C8(ctx, b, a);
-    return !((u16)fn_8023793C(ctx, c, res1, fn_80239500(ctx, b)) == 0x43);
+    res1 = fightTrainerAiGetWazaTenkouValue(ctx, b, a);
+    return !((u16)fightTrainerAiGetAisyou(ctx, c, res1, fn_80239500(ctx, b)) == 0x43);
 }
 
 u32 fightTrainerAiWazaHit127(void)
 {
-    extern int fn_801F8A18();
+    extern int fightTrainerGetIrekaeFightPokemon();
   u32 r3;
   int iVar1;
   u16 local_8[4];
 
   local_8[0] = 0;
-  iVar1 = fn_801F8A18(r3, local_8);
+  iVar1 = fightTrainerGetIrekaeFightPokemon(r3, local_8);
   return (-iVar1 != 0) ? 1 : 0;
 }
 
@@ -1014,15 +1014,15 @@ s32 fightTrainerAiWazaHit123(void* ctx, u32 param1, u32 param2, u32 param3) {
 }
 
 s32 fightTrainerAiWazaHit122(void* ctx, u32 param1, u32 param2, u32 param3) {
-    extern u32 fn_802395C8(void* ctx, u32 param2, u32 param1);
+    extern u32 fightTrainerAiGetWazaTenkouValue(void* ctx, u32 param2, u32 param1);
     extern u32 fn_80239500(void* ctx, u32 param2);
-    extern u16 fn_8023793C(void* ctx, u32 param3, u32 v1, u32 v3);
+    extern u16 fightTrainerAiGetAisyou(void* ctx, u32 param3, u32 v1, u32 v3);
     extern s32 _fightTrainerAiWazaHitCheck(void* ctx, u32 param1, u32 param2, u32 param3, u32 zero);
     s32 gate;
-    u32 v1 = fn_802395C8(ctx, param2, param1);
+    u32 v1 = fightTrainerAiGetWazaTenkouValue(ctx, param2, param1);
     gate = _fightTrainerAiWazaHitCheck(ctx, param1, param2, param3, 0);
 
-    if (fn_8023793C(ctx, param3, v1, fn_80239500(ctx, param2)) == 0x43) {
+    if (fightTrainerAiGetAisyou(ctx, param3, v1, fn_80239500(ctx, param2)) == 0x43) {
         gate = 0;
     }
     if (gate == 0) {
@@ -1035,15 +1035,15 @@ s32 fightTrainerAiWazaHit122(void* ctx, u32 param1, u32 param2, u32 param3) {
 }
 
 s32 fightTrainerAiWazaHit121(void* ctx, u32 param1, u32 param2, u32 param3) {
-    extern u32 fn_802395C8(void* ctx, u32 param2, u32 param1);
+    extern u32 fightTrainerAiGetWazaTenkouValue(void* ctx, u32 param2, u32 param1);
     extern u32 fn_80239500(void* ctx, u32 param2);
-    extern u16 fn_8023793C(void* ctx, u32 param3, u32 v1, u32 v3);
+    extern u16 fightTrainerAiGetAisyou(void* ctx, u32 param3, u32 v1, u32 v3);
     extern s32 _fightTrainerAiWazaHitCheck(void* ctx, u32 param1, u32 param2, u32 param3, u32 zero);
     s32 gate;
-    u32 v1 = fn_802395C8(ctx, param2, param1);
+    u32 v1 = fightTrainerAiGetWazaTenkouValue(ctx, param2, param1);
     gate = _fightTrainerAiWazaHitCheck(ctx, param1, param2, param3, 0);
 
-    if (fn_8023793C(ctx, param3, v1, fn_80239500(ctx, param2)) == 0x43) {
+    if (fightTrainerAiGetAisyou(ctx, param3, v1, fn_80239500(ctx, param2)) == 0x43) {
         gate = 0;
     }
     if (gate == 0) {

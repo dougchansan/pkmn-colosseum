@@ -1,21 +1,21 @@
 /**
  * @file fight_range_80213558.c
  * @brief Fight turn-end joutai countdown carve, 0x80213558 - 0x802136A4
- *        (fn_80213558), linked.
+ *        (_fightSeqTurnEndSubFightOutPokemon), linked.
  *
  * Standalone copy of the shared candidate body, built at -O4,s
  * (configure.py) in place of the shared file's optimize_for_size pragma.
  */
 #include "dolphin/types.h"
 
-u32 fn_80213558(u32 r3, u32 r4, char* r5)
+u32 _fightSeqTurnEndSubFightOutPokemon(u32 r3, u32 r4, char* r5)
 
 {
     extern int fightOutPokemonGetJoutaiMigawariHp();
     extern void fn_80201FDC();
     extern u32 fn_80202108();
     extern u32 fn_80202234();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern void fightOutPokemonWriteJoutaiDataId();
     extern void fightOutPokemonInitOneTurn();
     extern u32 pokemonGetStatus();
@@ -39,7 +39,7 @@ u32 fn_80213558(u32 r3, u32 r4, char* r5)
     if (status != 0) {
       pokemonSetStatus(r3,0,0xed,0,(u16)(status - 1));
     }
-    if (fn_802026E4(r3,0x12) == 1) {
+    if (fightOutPokemonIsPokemonJoutaiDataId(r3,0x12) == 1) {
       current = fn_80202108(r3,0x12);
       count = fn_80202234(r3,0x12);
       current = (s8)current;
@@ -53,7 +53,7 @@ u32 fn_80213558(u32 r3, u32 r4, char* r5)
       }
     }
   }
-  if ((fn_802026E4(r3,0x14) == 1) &&
+  if ((fightOutPokemonIsPokemonJoutaiDataId(r3,0x14) == 1) &&
       (iVar1 = fightOutPokemonGetJoutaiMigawariHp(r3), iVar1 <= 0)) {
     fightOutPokemonWriteJoutaiDataId(r3,0x14);
   }

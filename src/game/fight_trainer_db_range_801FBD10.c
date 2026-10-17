@@ -55,8 +55,8 @@ u8   fightOutPokemonIsUseHensinBuff(void* trainer);
 void fightOutPokemonSetHensinFightPokemonStatusId(void* trainer, u16 eventId, u32 param);
 
 /* Item/Pokemon field access helpers used by battle item flow. */
-u8 fn_80121574(void* obj, s32 arg);
-u8 fn_8011A3E4(void* obj, s32 arg);
+u8 pokemonGetJoutai08(void* obj, s32 arg);
+u8 statusGetJoutai08(void* obj, s32 arg);
 
 /* SDA table pointers for trainer data arrays */
 extern u32* lbl_80478F08;  /* Party config header */
@@ -203,7 +203,7 @@ u16 fightTrainerEnemyPokemonBiosGetTokuseiFlag(u8* ptr) {
 }
 
 /* 0x801FBED0 | size: 0x34 */
-u16 fn_801FBED0(u8* ptr, u8 idx) {
+u16 fightTrainerGetU16Arr(u8* ptr, u8 idx) {
     if (ptr == NULL) { return 0; }
     if (idx > 4) { return 0; }
     ptr += idx * 2;
@@ -1005,13 +1005,13 @@ void* fightTrainerPokemonPartDataBiosGetPtr(u16 slot) {
 }
 
 /* Address: 0x801FCAFC | Size: 0x10 | Pattern: nullcheck_setter */
-void fn_801FCAFC(u8* ptr, u32 val) {
+void fightTrainerSet10(u8* ptr, u32 val) {
     if (ptr == NULL) { return; }
     *(u32*)(&ptr[0x10]) = val;
 }
 
 /* 0x801FCB0C | size: 0x24 */
-void fn_801FCB0C(u8* ptr, u8 idx, u32 val) {
+void fightTrainerSet24Arr(u8* ptr, u8 idx, u32 val) {
     if (ptr == NULL) { return; }
     if (idx >= 4) { return; }
     ptr += idx * 4;
@@ -1019,13 +1019,13 @@ void fn_801FCB0C(u8* ptr, u8 idx, u32 val) {
 }
 
 /* Address: 0x801FCB30 | Size: 0x10 | Pattern: nullcheck_setter */
-void fn_801FCB30(u8* ptr, u32 val) {
+void fightTrainerSet0C(u8* ptr, u32 val) {
     if (ptr == NULL) { return; }
     *(u32*)(&ptr[0xC]) = val;
 }
 
 /* 0x801FCB40 | size: 0x24 */
-void fn_801FCB40(u8* ptr, u8 idx, u16 val) {
+void fightTrainerSetU16Arr14(u8* ptr, u8 idx, u16 val) {
     if (ptr == NULL) { return; }
     if (idx >= 8) { return; }
     ptr += idx * 2;
@@ -1033,25 +1033,25 @@ void fn_801FCB40(u8* ptr, u8 idx, u16 val) {
 }
 
 /* Address: 0x801FCB64 | Size: 0x10 | Pattern: nullcheck_setter */
-void fn_801FCB64(u8* ptr, u16 val) {
+void fightTrainerSet04(u8* ptr, u16 val) {
     if (ptr == NULL) { return; }
     *(u16*)(&ptr[0x4]) = val;
 }
 
 /* Address: 0x801FCB74 | Size: 0x10 | Pattern: nullcheck_setter */
-void fn_801FCB74(u8* ptr, u32 val) {
+void fightTrainerSet08(u8* ptr, u32 val) {
     if (ptr == NULL) { return; }
     *(u32*)(&ptr[0x8]) = val;
 }
 
 /* Address: 0x801FCB84 | Size: 0x10 | Pattern: nullcheck_setter */
-void fn_801FCB84(u8* ptr, u16 val) {
+void fightTrainerSet06(u8* ptr, u16 val) {
     if (ptr == NULL) { return; }
     *(u16*)(&ptr[0x6]) = val;
 }
 
 /* Address: 0x801FCB94 | Size: 0x10 | Pattern: nullcheck_setter */
-void fn_801FCB94(u8* ptr, u8 val) {
+void fightTrainerSet00(u8* ptr, u8 val) {
     if (ptr == NULL) { return; }
     *(u8*)(&ptr[0x0]) = val;
 }
@@ -1255,7 +1255,7 @@ u8* fightTrainer_GetHeroPtr(u8* ptr) {
 }
 
 /* FightOutPokemon: the per-slot "out" battle record copied wholesale by
- * fn_801FCEC4 below (0x6E0 bytes; matches the stride used throughout this
+ * fightOutPokemonBiosCopy below (0x6E0 bytes; matches the stride used throughout this
  * file, e.g. fightTrainer_GetFightoutPokemonPtr's idx * 0x6E0). Not yet
  * broken out field-by-field elsewhere in the codebase (still referenced
  * only via mangled names like _fightOutPokemonCheckFightActionSelectSub__
@@ -1266,7 +1266,7 @@ typedef struct FightOutPokemon {
 } FightOutPokemon;
 
 /* 0x801FCEC4 | size: 0x38 */
-void fn_801FCEC4(FightOutPokemon* dst, FightOutPokemon* src) {
+void fightOutPokemonBiosCopy(FightOutPokemon* dst, FightOutPokemon* src) {
     if (dst == NULL) { return; }
     if (src == NULL) { return; }
     *dst = *src;

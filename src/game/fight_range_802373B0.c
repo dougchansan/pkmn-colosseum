@@ -20,7 +20,7 @@ SDATA2 f32 lbl_8047E61C = 0.0f;
 #define fn_801FB1C0 fightTrainerGetStatus
 #define fn_8012640C pokemonGetStatus
 #define fn_80205BE8 fightPokemonGetPokemonPtr
-int fn_802373B0(u32 ctx, u32 fightOut, int direction, f32 ratio)
+int fightTrainerAiGetHpPercent(u32 ctx, u32 fightOut, int direction, f32 ratio)
 {
     extern u32 fn_801FB1C0();
     extern u32 fn_8012640C();

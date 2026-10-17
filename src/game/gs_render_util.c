@@ -47,13 +47,13 @@ extern void fn_80363CF4(void* jobj);   /* HSD_JObjRemoveAll */
 extern void GSvecCopy(void* dst, const void* src);
 extern void GSvecSub(void* dst, void* src1, void* src2);
 extern void fn_800E0628(void* dst, void* src);
-extern void fn_800E0218(void* a, void* b, void* c, void* d);
+extern void GSmtxLookAt(void* a, void* b, void* c, void* d);
 extern void GSmtxMakeXRotation(void* a, f32 b);
 extern void GSmtxMakeYRotation(void* a, f32 b);
 extern void GSmtxMakeZRotation(void* a, f32 b);
 extern void fn_800E05C0(void* a, f32 b, f32 c, f32 d);
-extern void fn_800E0290(void* a, void* b, void* c);
-extern void* fn_800E0264(void* dst, void* src);
+extern void GSmtxConcat(void* a, void* b, void* c);
+extern void* GSmtxInverse(void* dst, void* src);
 extern void GSmtx44Perspective(void* a, f32 b, f32 c, f32 d, f32 e);
 extern void GSmtx44Ortho(void* a, f32 b, f32 c, f32 d, f32 e, f32 f, f32 g);
 extern void HSD_CObjGetEyePosition(void* jobj, void* data);
@@ -84,7 +84,7 @@ extern f32 lbl_8047C990;     /* SDA float: animation step increment */
 extern char lbl_8047C9DC[] __attribute__((section(".sdata2")));  /* SDA2 string: assert filename */
 extern char lbl_8047C9E4[] __attribute__((section(".sdata2")));  /* SDA2 string: assert condition */
 extern u32 _toolentryAlloc__FUl(u32 size);   /* memory allocate, returns ptr as u32 */
-extern u32 fn_800E27B0(u32 handle); /* map handle to object ptr */
+extern u32 GSmemLock(u32 handle); /* map handle to object ptr */
 extern u16 lbl_8047AA68;  /* render obj array low16 tag */
 extern u32 lbl_8047AA6C;  /* render obj array base pointer */
 extern f32 lbl_8047C994;  /* SDA float constant */
@@ -96,9 +96,9 @@ extern double lbl_8047C9A0; /* double 1.0 constant, SDA2 */
 extern double lbl_8047C9A8; /* SDA2 double: 4503599627370496.0 (int-to-float bias, 0x4330000000000000) */
 extern u8 lbl_804001B0[0x40]; /* light state buffer (.bss) */
 extern s32  fn_800D37CC(void);
-extern void fn_800D7FE4(void* obj);
-extern void fn_800D834C(void);
-extern void fn_800D9BD0(f32 a, f32 b, f32 c, f32 d);
+extern void gfxMultMatrix(void* obj);
+extern void gfxLoadIdentity(void);
+extern void gfxSetPerspective(f32 a, f32 b, f32 c, f32 d);
 extern void gfxSetOrtho(f32 a, f32 b, f32 c, f32 d);
 extern void* HSD_CObjLoadDesc(void* modelSub);
 extern char lbl_8047C9C4[] __attribute__((section(".sdata2")));
@@ -125,18 +125,18 @@ extern void GXProject(void* sphere, void* center, void* radii, f32 x, f32 y, f32
 extern void* HSD_FogLoadDesc(void* ctx);
 extern void HSD_FogSet(u32 zero);
 extern void fn_8016EA88(void);
-extern void fn_8016EB30(void);
+extern void psSetFog(void);
 
 /* Forward declarations for functions defined later in this file */
-void fn_800D2B44(void* obj);
+void _GScameraAnimCallback(void* obj);
 
 #if defined(GS_RENDER_UTIL_LEGACY_PREFIX_800D104C)
 
 /* ==================================================================
- * fn_800D104C - GS render: set sampling rate
+ * SIRefreshSamplingRate - GS render: set sampling rate
  * Address: 0x800D104C, Size: 0x24
  * ================================================================== */
-void fn_800D104C(void) {
+void SIRefreshSamplingRate(void) {
     SISetSamplingRate(lbl_8047AA60);
 }
 
@@ -223,7 +223,7 @@ void fn_800D1070(u32 dtUnk) {
                         }
                     }
                 }
-                fn_800E0218((u8*)obj + 0x94, (u8*)obj + 0x70, (u8*)obj + 0xf4, (u8*)obj + 0x100);
+                GSmtxLookAt((u8*)obj + 0x94, (u8*)obj + 0x70, (u8*)obj + 0xf4, (u8*)obj + 0x100);
             } else {
                 f32 tmp1[3][4];
                 f32 tmp2[3][4];
@@ -232,9 +232,9 @@ void fn_800D1070(u32 dtUnk) {
                 GSmtxMakeYRotation(tmp1, -*(f32*)((u8*)obj + 0x8c));
                 GSmtxMakeZRotation(tmp2, -*(f32*)((u8*)obj + 0x90));
                 fn_800E05C0(tmp3, -*(f32*)((u8*)obj + 0x70), -*(f32*)((u8*)obj + 0x74), -*(f32*)((u8*)obj + 0x78));
-                fn_800E0290((u8*)obj + 0x94, (u8*)obj + 0x94, tmp1);
-                fn_800E0290((u8*)obj + 0x94, (u8*)obj + 0x94, tmp2);
-                fn_800E0290((u8*)obj + 0x94, (u8*)obj + 0x94, tmp3);
+                GSmtxConcat((u8*)obj + 0x94, (u8*)obj + 0x94, tmp1);
+                GSmtxConcat((u8*)obj + 0x94, (u8*)obj + 0x94, tmp2);
+                GSmtxConcat((u8*)obj + 0x94, (u8*)obj + 0x94, tmp3);
             }
             *(u8*)((u8*)obj + 0x2) = 0;
         }
@@ -255,11 +255,11 @@ void fn_800D13C4(void) {
 }
 
 /* ==================================================================
- * fn_800D13C8 - GS render: copy saved state into render object
+ * GScameraRestoreState - GS render: copy saved state into render object
  * Address: 0x800D13C8, Size: 0x2AC
  * Copies state from src (saved snapshot) into dst (render object).
  * ================================================================== */
-void fn_800D13C8(void* dst, void* src) {
+void GScameraRestoreState(void* dst, void* src) {
     GSRenderCamera* c = (GSRenderCamera*)dst;
     GSRenderCameraSnapshot* s = (GSRenderCameraSnapshot*)src;
     f32 fov;
@@ -286,7 +286,7 @@ void fn_800D13C8(void* dst, void* src) {
                 HSD_CObjAddAnim(c->cobj, c->desc->animations[c->animIndex]);
                 HSD_CObjReqAnim(c->cobj, lbl_8047C998);
                 lbl_8047AA78 = lbl_8047C998;
-                HSD_ForeachAnim(c->cobj, (u32)2, (u32)0xffff, fn_800D2B44, (u32)0);
+                HSD_ForeachAnim(c->cobj, (u32)2, (u32)0xffff, _GScameraAnimCallback, (u32)0);
                 c->animEndFrame = lbl_8047AA78;
             }
         }
@@ -329,10 +329,10 @@ done:
 }
 
 /* ==================================================================
- * fn_800D1674 - GS render: copy object data to dest struct
+ * GScameraSaveState - GS render: copy object data to dest struct
  * Address: 0x800D1674, Size: 0xB8
  * ================================================================== */
-void fn_800D1674(void* src, void* dst) {
+void GScameraSaveState(void* src, void* dst) {
     GSRenderCamera* c = (GSRenderCamera*)src;
     GSRenderCameraSnapshot* s = (GSRenderCameraSnapshot*)dst;
     s->isAnimating = c->isAnimating;
@@ -448,7 +448,7 @@ void GScameraSetAnimIndex(GSRenderCamera* camera, u32 animIndex) {
             HSD_CObjAddAnim(camera->cobj, camera->desc->animations[camera->animIndex]);
             HSD_CObjReqAnim(camera->cobj, lbl_8047C998);
             lbl_8047AA78 = lbl_8047C998;
-            HSD_ForeachAnim(camera->cobj, (u32)2, (u32)0xffff, fn_800D2B44, (u32)0);
+            HSD_ForeachAnim(camera->cobj, (u32)2, (u32)0xffff, _GScameraAnimCallback, (u32)0);
             camera->animEndFrame = lbl_8047AA78;
         }
     }
@@ -497,12 +497,12 @@ void* GScameraGetProjMatrixPtr(GSRenderCamera* camera) {
 #if defined(GS_RENDER_UTIL_SUFFIX_800D1B3C)
 
 /* ==================================================================
- * fn_800D1B3C - GS render: update transform and return matrix ptr
+ * GScameraGetInvMatrixPtr - GS render: update transform and return matrix ptr
  * Address: 0x800D1B3C, Size: 0x1C4
- * Updates transform (same 3-way logic as fn_800D1D00), then
- * calls fn_800E0264(obj+0xc4, obj+0x94). Returns obj+0xc4.
+ * Updates transform (same 3-way logic as GScameraGetMatrixPtr), then
+ * calls GSmtxInverse(obj+0xc4, obj+0x94). Returns obj+0xc4.
  * ================================================================== */
-void* fn_800D1B3C(void* obj) {
+void* GScameraGetInvMatrixPtr(void* obj) {
     GSRenderCamera* c = (GSRenderCamera*)obj;
     if (c->dirty != 0) {
         if (c->isAnimating != 0) {
@@ -529,7 +529,7 @@ void* fn_800D1B3C(void* obj) {
                     }
                 }
             }
-            fn_800E0218(c->viewMtx, &c->eye, &c->upVector, &c->interest);
+            GSmtxLookAt(c->viewMtx, &c->eye, &c->upVector, &c->interest);
         } else {
             f32 tmp1[3][4];
             f32 tmp2[3][4];
@@ -538,21 +538,21 @@ void* fn_800D1B3C(void* obj) {
             GSmtxMakeYRotation(tmp1, -c->rotation.y);
             GSmtxMakeZRotation(tmp2, -c->rotation.z);
             fn_800E05C0(tmp3, -c->eye.x, -c->eye.y, -c->eye.z);
-            fn_800E0290(c->viewMtx, c->viewMtx, tmp1);
-            fn_800E0290(c->viewMtx, c->viewMtx, tmp2);
-            fn_800E0290(c->viewMtx, c->viewMtx, tmp3);
+            GSmtxConcat(c->viewMtx, c->viewMtx, tmp1);
+            GSmtxConcat(c->viewMtx, c->viewMtx, tmp2);
+            GSmtxConcat(c->viewMtx, c->viewMtx, tmp3);
         }
         c->dirty = 0;
-        fn_800E0264(c->projectionMtx, c->viewMtx);
+        GSmtxInverse(c->projectionMtx, c->viewMtx);
     }
     return c->projectionMtx;
 }
 
 /* ==================================================================
- * fn_800D1D00 - GS render: update object transform from animation
+ * GScameraGetMatrixPtr - GS render: update object transform from animation
  * Address: 0x800D1D00, Size: 0x1B8
  * ================================================================== */
-void fn_800D1D00(void* obj) {
+void GScameraGetMatrixPtr(void* obj) {
     GSRenderCamera* c = (GSRenderCamera*)obj;
     if (c->dirty == 0) {
         return;
@@ -581,7 +581,7 @@ void fn_800D1D00(void* obj) {
                 }
             }
         }
-        fn_800E0218(c->viewMtx, &c->eye, &c->upVector, &c->interest);
+        GSmtxLookAt(c->viewMtx, &c->eye, &c->upVector, &c->interest);
     } else {
         f32 tmp1[3][4];
         f32 tmp2[3][4];
@@ -590,9 +590,9 @@ void fn_800D1D00(void* obj) {
         GSmtxMakeYRotation(tmp1, -c->rotation.y);
         GSmtxMakeZRotation(tmp2, -c->rotation.z);
         fn_800E05C0(tmp3, -c->eye.x, -c->eye.y, -c->eye.z);
-        fn_800E0290(c->viewMtx, c->viewMtx, tmp1);
-        fn_800E0290(c->viewMtx, c->viewMtx, tmp2);
-        fn_800E0290(c->viewMtx, c->viewMtx, tmp3);
+        GSmtxConcat(c->viewMtx, c->viewMtx, tmp1);
+        GSmtxConcat(c->viewMtx, c->viewMtx, tmp2);
+        GSmtxConcat(c->viewMtx, c->viewMtx, tmp3);
     }
     c->dirty = 0;
 }
@@ -682,10 +682,10 @@ void GScameraSetPerspective(GSRenderCamera* camera, f32 x, f32 y, f32 z, f32 w) 
 }
 
 /* ==================================================================
- * fn_800D2150 - GS render: set scissor rect (clamped)
+ * GScameraSetScissor - GS render: set scissor rect (clamped)
  * Address: 0x800D2150, Size: 0x78
  * ================================================================== */
-void fn_800D2150(GSRenderCamera* camera, u16 x0, u16 y0, u16 x1, u16 y1) {
+void GScameraSetScissor(GSRenderCamera* camera, u16 x0, u16 y0, u16 x1, u16 y1) {
     if (x0 > 0x27e) x0 = 0x27e;
     if (y0 > 0x1de) y0 = 0x1de;
     if (x1 > 0x27f) x1 = 0x27f;
@@ -732,10 +732,10 @@ void _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID(void) {
         HSD_CObjGetPerspective(c->cobj, &x, &z);
         w = HSD_CObjGetNear(c->cobj);
         h = HSD_CObjGetFar(c->cobj);
-        fn_800D9BD0(x, z, w, h);
+        gfxSetPerspective(x, z, w, h);
         fn_800E0628(c->viewMtx, HSD_CObjGetViewingMtxPtr(c->cobj));
-        fn_800D834C();
-        fn_800D7FE4(c->viewMtx);
+        gfxLoadIdentity();
+        gfxMultMatrix(c->viewMtx);
         HSD_CObjGetEyePosition(c->cobj, &c->eye);
         HSD_CObjGetUpVector(c->cobj, &c->upVector);
         HSD_CObjGetInterest(c->cobj, &c->interest);
@@ -768,7 +768,7 @@ void _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID(void) {
                     }
                 }
             }
-            fn_800E0218(c->viewMtx, &c->eye, &c->upVector, &c->interest);
+            GSmtxLookAt(c->viewMtx, &c->eye, &c->upVector, &c->interest);
         } else {
             f32 tmp1[3][4];
             f32 tmp2[3][4];
@@ -777,9 +777,9 @@ void _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID(void) {
             GSmtxMakeYRotation(tmp1, -c->rotation.y);
             GSmtxMakeZRotation(tmp2, -c->rotation.z);
             fn_800E05C0(tmp3, -c->eye.x, -c->eye.y, -c->eye.z);
-            fn_800E0290(c->viewMtx, c->viewMtx, tmp1);
-            fn_800E0290(c->viewMtx, c->viewMtx, tmp2);
-            fn_800E0290(c->viewMtx, c->viewMtx, tmp3);
+            GSmtxConcat(c->viewMtx, c->viewMtx, tmp1);
+            GSmtxConcat(c->viewMtx, c->viewMtx, tmp2);
+            GSmtxConcat(c->viewMtx, c->viewMtx, tmp3);
         }
         c->dirty = 0;
     }
@@ -793,9 +793,9 @@ void _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID(void) {
         HSD_CObjGetPerspective(c->cobj, &x, &z);
         w = HSD_CObjGetNear(c->cobj);
         h = HSD_CObjGetFar(c->cobj);
-        fn_800D9BD0(x, z, w, h);
-        fn_800D834C();
-        fn_800D7FE4(c->viewMtx);
+        gfxSetPerspective(x, z, w, h);
+        gfxLoadIdentity();
+        gfxMultMatrix(c->viewMtx);
     }
     return;
 
@@ -804,7 +804,7 @@ lab_ortho:
         f32 a, b, c2, d;
         HSD_CObjGetOrtho(jobj, &b, &d, &a, &c2);
         gfxSetOrtho(b, d, a, c2);
-        fn_800D834C();
+        gfxLoadIdentity();
     }
 }
 
@@ -819,7 +819,7 @@ u32 GScameraGetActiveCamera(void) {
 /* ==================================================================
  * fn_800D258C - GS render: set current render obj, update transform
  * Address: 0x800D258C, Size: 0x1AC
- * Sets lbl_8047AA74 to obj, then updates transform (same logic as fn_800D1D00).
+ * Sets lbl_8047AA74 to obj, then updates transform (same logic as GScameraGetMatrixPtr).
  * ================================================================== */
 void fn_800D258C(void* obj) {
     GSRenderCamera* c = (GSRenderCamera*)obj;
@@ -848,7 +848,7 @@ void fn_800D258C(void* obj) {
                 }
             }
         }
-        fn_800E0218(c->viewMtx, &c->eye, &c->upVector, &c->interest);
+        GSmtxLookAt(c->viewMtx, &c->eye, &c->upVector, &c->interest);
     } else {
         f32 tmp2[3][4];
         f32 tmp1[3][4];
@@ -857,18 +857,18 @@ void fn_800D258C(void* obj) {
         GSmtxMakeYRotation(tmp1, -c->rotation.y);
         GSmtxMakeZRotation(tmp2, -c->rotation.z);
         fn_800E05C0(tmp3, -c->eye.x, -c->eye.y, -c->eye.z);
-        fn_800E0290(c->viewMtx, c->viewMtx, tmp1);
-        fn_800E0290(c->viewMtx, c->viewMtx, tmp2);
-        fn_800E0290(c->viewMtx, c->viewMtx, tmp3);
+        GSmtxConcat(c->viewMtx, c->viewMtx, tmp1);
+        GSmtxConcat(c->viewMtx, c->viewMtx, tmp2);
+        GSmtxConcat(c->viewMtx, c->viewMtx, tmp3);
     }
     c->dirty = 0;
 }
 
 /* ==================================================================
- * fn_800D2738 - GS render: effect render cleanup
+ * GScameraFree - GS render: effect render cleanup
  * Address: 0x800D2738, Size: 0xC4
  * ================================================================== */
-void fn_800D2738(void* obj) {
+void GScameraFree(void* obj) {
     GSRenderCamera* c = (GSRenderCamera*)obj;
     void* jobj;
     if (obj == (void*)lbl_8047AA74) {
@@ -882,7 +882,7 @@ void fn_800D2738(void* obj) {
 }
 
 /* ==================================================================
- * fn_800D27FC - GS render: find free slot and init with model data
+ * GScameraCreateFromDesc - GS render: find free slot and init with model data
  * Address: 0x800D27FC, Size: 0x1A4
  * ================================================================== */
 static inline void GScameraIncrementAnimCount(GSRenderCamera* camera)
@@ -890,7 +890,7 @@ static inline void GScameraIncrementAnimCount(GSRenderCamera* camera)
     camera->animCount++;
 }
 
-void* fn_800D27FC(void* model) {
+void* GScameraCreateFromDesc(void* model) {
     u32 i;
     void* slot;
     GSRenderCamera* c;
@@ -930,7 +930,7 @@ found:
                 lbl_8047AA78 = lbl_8047C998;
                 {
                     lis_r3_fn_800D2B44:
-                    HSD_ForeachAnim(c->cobj, (u32)2, (u32)0xffff, fn_800D2B44, (u32)0);
+                    HSD_ForeachAnim(c->cobj, (u32)2, (u32)0xffff, _GScameraAnimCallback, (u32)0);
                 }
                 c->animEndFrame = lbl_8047AA78;
             }
@@ -946,10 +946,10 @@ found:
 }
 
 /* ==================================================================
- * fn_800D29A0 - GS render: find free slot and init with defaults
+ * GScameraCreate - GS render: find free slot and init with defaults
  * Address: 0x800D29A0, Size: 0x134
  * ================================================================== */
-void* fn_800D29A0(void) {
+void* GScameraCreate(void) {
     u32 count = lbl_8047AA70;
     void* slot = (void*)lbl_8047AA6C;
     GSRenderCamera* c;
@@ -1049,7 +1049,7 @@ void fn_800D2AD4(u32 count) {
         u32 zero;
         u32 off;
         u32 i;
-        lbl_8047AA6C = fn_800E27B0(masked);
+        lbl_8047AA6C = GSmemLock(masked);
         off = 0;
         zero = off;
         i = 0;
@@ -1062,12 +1062,12 @@ void fn_800D2AD4(u32 count) {
 }
 
 /* ==================================================================
- * fn_800D2B44 - GS render: animation step callback
+ * _GScameraAnimCallback - GS render: animation step callback
  * Address: 0x800D2B44, Size: 0x4C
  * Called by HSD_ForeachAnim as a callback with the JObj*.
  * Accumulates animation step into lbl_8047AA78.
  * ================================================================== */
-void fn_800D2B44(void* obj) {
+void _GScameraAnimCallback(void* obj) {
     if (!obj) {
         __assert(lbl_8047C9DC, 0xab, lbl_8047C9E4);
     }

@@ -1,14 +1,14 @@
 /**
  * @file fight_range_candidate_802192B4.c
- * @brief Fight sequence commands, 0x802192B4 - 0x80219804 (fn_802192B4,
- *        fn_80219354, fn_802195A0, fn_802196A8).
+ * @brief Fight sequence commands, 0x802192B4 - 0x80219804 (wsCmdA7,
+ *        wsCmdA6, wsCmdA5, wsCmdA4).
  *
- * fn_80219354 picks a random entry of its stack type array as
+ * wsCmdA6 picks a random entry of its stack type array as
  * `p = typeArray; p += index; *p`, written after the random call: that
  * creates the array base before the modulo operands, which gives retail's
  * volatile registers (random r4, count r3, base r5).
  *
- * fn_802196A8 needs fn_80201764's third parameter prototyped as a full
+ * wsCmdA4 needs fightOutPokemonSetPokemonJoutai08's third parameter prototyped as a full
  * word (s32): the slot is then sign-extended again at that call instead
  * of reusing the extension made for pokemonGetStatus.
  */
@@ -16,9 +16,9 @@
 
 extern u8* lbl_8047B610;
 extern u8 fn_802025B8();
-extern void fn_8020248C();
+extern void fightOutPokemonWritePokemonJoutaiDataId();
 
-void fn_802192B4(void)
+void wsCmdA7(void)
 {
     extern int fightTargetGetPtrAsNowFightType();
     extern int fightFloorGetStatus();
@@ -33,12 +33,12 @@ void fn_802192B4(void)
     targetId = fightTargetGetTragetPtrToRelativeHostSideFightTargetId(attacker, floor);
     target = (void*)fightTargetGetPtrAsNowFightType(0x12, 0);
     if (fn_802025B8(target, 0x1d) == 2) {
-        fn_8020248C(target, 0x1d, targetId);
+        fightOutPokemonWritePokemonJoutaiDataId(target, 0x1d, targetId);
     }
     lbl_8047B610++;
 }
 
-void fn_80219354(void)
+void wsCmdA6(void)
 {
     extern u32 GSrand();
     extern u32 GSmsgGetGSchar();
@@ -48,7 +48,7 @@ void fn_80219354(void)
     extern u32 fightTargetGetRelativeHostSideFightTargetIdToTragetPtr();
     extern u32 fightTargetGetPtrAsNowFightType();
     extern u32 fightFloorGetStatus();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern u32 fightOutPokemonGetTeikouZokuseiDataIdAry();
     extern u32 fightOutPokemonSetZokuseiDataId(u32, u8, u16);
     extern u32 pokemonGetStatus();
@@ -86,7 +86,7 @@ void fn_80219354(void)
             } else {
                 specialMove = 0;
             }
-            if (specialMove && fn_802026E4(target, 0x22) == 1) {
+            if (specialMove && fightOutPokemonIsPokemonJoutaiDataId(target, 0x22) == 1) {
                 lbl_8047B610 = (u8*)*(u32*)(lbl_8047B610 + 1);
                 return;
             }
@@ -114,12 +114,12 @@ void fn_80219354(void)
     }
 }
 
-void fn_802195A0(void)
+void wsCmdA5(void)
 {
     extern u32 fightTargetGetPtrAsNowFightType();
     extern u32 pokemonGetStatus();
     extern u32 fightOutPokemonGetPokemonPtr();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern void wazaSetStatus();
     extern void pokemonSetStatus();
     extern s32 lbl_8047B608;
@@ -140,7 +140,7 @@ void fn_802195A0(void)
     defenderPokemon = fightOutPokemonGetPokemonPtr(defender);
     defenderHp = (u16)pokemonGetStatus(defenderPokemon, 0, 0x83, 0);
 
-    if (fn_802026E4(defender, 0x14) == 0) {
+    if (fightOutPokemonIsPokemonJoutaiDataId(defender, 0x14) == 0) {
         average = (attackerHp + defenderHp) / 2;
         lbl_8047B608 = defenderHp - average;
         wazaSetStatus(move, 0, 0x2d, 0, attackerHp - average);
@@ -151,12 +151,12 @@ void fn_802195A0(void)
     }
 }
 
-void fn_802196A8(void)
+void wsCmdA4(void)
 {
     extern s8 pokemonSearchWazaDataId();
     extern u32 fightTargetGetPtrAsNowFightType();
-    extern u16 fn_80201764(u32, u32, s32);
-    extern void fn_80201B2C();
+    extern u16 fightOutPokemonSetPokemonJoutai08(u32, u32, s32);
+    extern void fightOutPokemonSetPokemonJoutai0C();
     extern u32 fightOutPokemonGetPokemonPtr();
     extern u32 pokemonGetStatus();
     u8 blocked;
@@ -186,10 +186,10 @@ void fn_802196A8(void)
         slot = -1;
     }
     if (fn_802025B8(target, 0x2a) == 2 && slot >= 0 && pp != 0) {
-        fn_8020248C(target, 0x2a, 0);
+        fightOutPokemonWritePokemonJoutaiDataId(target, 0x2a, 0);
         move = pokemonGetStatus(pokemon, 0, 0x7f, slot);
-        fn_80201B2C(target, 0x2a, move);
-        fn_80201764(target, 0x2a, slot);
+        fightOutPokemonSetPokemonJoutai0C(target, 0x2a, move);
+        fightOutPokemonSetPokemonJoutai08(target, 0x2a, slot);
         lbl_8047B610 += 5;
         return;
     }

@@ -54,39 +54,39 @@ struct HSD_Chan {
 };
 
 /* Functions still carrying address names in symbols.txt:
- *   fn_801B3168 _HSD_StateInvalidateTexCoordGen
- *   fn_801B3174 _HSD_StateInvalidateTevRegister
- *   fn_801B31A4 _HSD_StateInvalidateTevStage
- *   fn_801B31F4 _HSD_StateInvalidateColorChannel
- *   fn_801B3258 HSD_SetTevRegAll
- *   fn_801B3408 HSD_SetupTevStageAll    fn_801B3638 HSD_SetupTevStage
- *   fn_801B3770 HSD_StateSetNumTevStages
- *   fn_801B387C HSD_StateGetNumTevStages fn_801B3884 HSD_StateInitTev
- *   fn_801B3890 HSD_StateSetNumTexGens
- *   fn_801B3998 HSD_SetupChannelAll     fn_801B3D1C HSD_SetupChannel
+ *   _HSD_StateInvalidateTexCoordGen _HSD_StateInvalidateTexCoordGen
+ *   _HSD_StateInvalidateTevRegister _HSD_StateInvalidateTevRegister
+ *   _HSD_StateInvalidateTevStage _HSD_StateInvalidateTevStage
+ *   _HSD_StateInvalidateColorChannel _HSD_StateInvalidateColorChannel
+ *   HSD_SetTevRegAll HSD_SetTevRegAll
+ *   HSD_SetupTevStageAll HSD_SetupTevStageAll    fn_801B3638 HSD_SetupTevStage
+ *   HSD_StateSetNumTevStages HSD_StateSetNumTevStages
+ *   HSD_StateGetNumTevStages HSD_StateGetNumTevStages HSD_StateInitTev HSD_StateInitTev
+ *   HSD_StateSetNumTexGens HSD_StateSetNumTexGens
+ *   HSD_SetupChannelAll HSD_SetupChannelAll     HSD_SetupChannel HSD_SetupChannel
  *   fn_801B3AE8 (disables a channel's lighting; no Melee counterpart)
  */
 void HSD_RenderInitAllocData(void);
 HSD_ObjAllocData* HSD_RenderGetAllocData(void);
 HSD_ObjAllocData* HSD_TevRegGetAllocData(void);
 HSD_ObjAllocData* HSD_ChanGetAllocData(void);
-void fn_801B3D1C(HSD_Chan* ch);
+void HSD_SetupChannel(HSD_Chan* ch);
 void fn_801B3AE8(GXChannelID chan);
 void HSD_StateSetNumChans(int num);
-void fn_801B3998(HSD_Chan* ch);
+void HSD_SetupChannelAll(HSD_Chan* ch);
 void HSD_StateRegisterTexGen(int coord);
-void fn_801B3890(void);
-void fn_801B3884(void);
-int fn_801B387C(void);
+void HSD_StateSetNumTexGens(void);
+void HSD_StateInitTev(void);
+int HSD_StateGetNumTevStages(void);
 int HSD_StateAssignTev(void);
-void fn_801B3770(void);
+void HSD_StateSetNumTevStages(void);
 void HSD_SetupTevStage(HSD_TevDesc* desc);
-void fn_801B3408(HSD_TevDesc* desc);
+void HSD_SetupTevStageAll(HSD_TevDesc* desc);
 int HSD_Index2TevStage(int idx);
-void fn_801B3258(void);
-void fn_801B31F4(void);
-void fn_801B31A4(void);
-void fn_801B3174(void);
-void fn_801B3168(void);
+void HSD_SetTevRegAll(void);
+void _HSD_StateInvalidateColorChannel(void);
+void _HSD_StateInvalidateTevStage(void);
+void _HSD_StateInvalidateTevRegister(void);
+void _HSD_StateInvalidateTexCoordGen(void);
 
 #endif /* HSD_TEV_H */

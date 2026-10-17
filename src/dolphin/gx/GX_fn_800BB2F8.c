@@ -7,7 +7,7 @@ typedef struct GXData_800BB2F8 {
 
 extern GXData_800BB2F8* gx;
 
-u32 fn_800BB2F8(u32 value) {
+u32 GXSetTlutRegionCallback(u32 value) {
     u32 old = gx->field_414;
     gx->field_414 = value;
     return old;

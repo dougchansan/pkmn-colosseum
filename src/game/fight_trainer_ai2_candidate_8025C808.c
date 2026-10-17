@@ -10,7 +10,7 @@ extern u8 fightSideIsJoutaiDataId(void*, u32);
 extern u32 fightTrainerGetStatus(void*, u32, u32, u32);
 extern s8 fightSeqCondChgActParaIdToValue(u32);
 extern u32 fightSeqCondChgActTypeToPokemonStatusId(u32);
-extern u8 fn_80229C28(u32, u32);
+extern u8 fightIsWazaBlockedByMamoru(u32, u32);
 extern u8 fn_80237F74(void*, u32, u32);
 extern u32 pokemonGetStatus(u32, u32, u32, u32);
 
@@ -69,7 +69,7 @@ u32 fightTrainerAiCheckAbiCnt(
             value = fightTrainerGetStatus(trainer, 0, 0x43, 0) & 0xFFFF;
             value = fightTrainerGetStatus(0, value, 2, 0) & 0xFFFF;
             if ((u8)fightTrainerGetStatus(0, value, 0x24, 0) == 1 &&
-                fn_80229C28(secondPokemon, actionId) == 1) {
+                fightIsWazaBlockedByMamoru(secondPokemon, actionId) == 1) {
                 guarded = 1;
             } else {
                 guarded = 0;

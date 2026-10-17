@@ -8,12 +8,12 @@
 #include "dolphin/types.h"
 
 extern u64 OSGetTime(void);
-extern u32 fn_801ADCD8(void);
+extern u32 HSD_Rand(void);
 extern u32* lbl_80478C94;
 
 u16 GSrand(void)
 {
-    return fn_801ADCD8();
+    return HSD_Rand();
 }
 
 void fn_800E0C78(void)

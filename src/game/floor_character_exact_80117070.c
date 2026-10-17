@@ -2,13 +2,13 @@
  * @file floor_character_exact_80117070.c
  * @brief Floor-character BIOS lookups, 0x80117070 - 0x8011711C.
  *
- * floorCharacterBiosGetPeopleInfoPtr and fn_801170A4 (a floor character's
+ * floorCharacterBiosGetPeopleInfoPtr and floorCharacterGetInfo (a floor character's
  * info by group and index, on the current floor), the last two functions of
  * the floorCharacterBios unit, carved at their function boundaries;
  * field_camera starts at 0x8011711C. Text-only: neither reads data.
  *
  * Built with the unit's flags, which include -opt nopeephole (see
- * configure.py): fn_801170A4 copies both arguments and then compares the
+ * configure.py): floorCharacterGetInfo copies both arguments and then compares the
  * first (mr r29,r3; mr r30,r4; cmplwi r29,0) where the peephole pass would
  * fold the copy and the compare into mr., and
  * floorCharacterBiosGetPeopleInfoPtr stores the link register before its
@@ -30,7 +30,7 @@ void* floorCharacterBiosGetPeopleInfoPtr(u8* ptr)
     return NULL;
 }
 
-u32 fn_801170A4(u8* group, u32 index)
+u32 floorCharacterGetInfo(u8* group, u32 index)
 {
     void* floorData;
 

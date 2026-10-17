@@ -116,27 +116,27 @@ extern const u8 lbl_8047E160[];
 extern const u8 lbl_8047E164[];
 
 extern u32 fn_800F7BC4(s32 pad);
-extern s32 fn_800F7A7C(s32 pad, s32 axis);
-extern s32 fn_800F7A08(s32 pad, s32 axis);
+extern s32 GSinputGetLeftStickXData(s32 pad, s32 axis);
+extern s32 GSinputGetLeftStickYData(s32 pad, s32 axis);
 extern void fn_800F7068(s32 id, s32 value);
 extern void floorTerminateScriptThreads(s32 id);
 extern void* GSthreadGetCurrentThread(void);
 extern s32 fn_800F036C(void);
 extern void GSlogWrite(const void* format, const void* text, ...);
-extern s32 fn_800F7318(s32 task, void* callback, s32 stack_size, s32 arg3, s32 arg4, s32 arg5, ...);
+extern s32 _vmThreadCreate(s32 task, void* callback, s32 stack_size, s32 arg3, s32 arg4, s32 arg5, ...);
 extern void cmsRunSync(void* callback, s32 arg, ...);
 extern u32 std093_getCurrentGroupID(void);
 extern void* GSresGetResource(u32 group, u32 resource);
-extern void fn_80118874(void* resource, u32 arg);
+extern void gsParticleKill(void* resource, u32 arg);
 extern void GSmodelLinkToGSparticleBank(void* model, void* particle_bank);
 extern void GSmodelSetGSparticleLinkAttachMode(void* model, s32 mode);
 extern void* peopleIsInGroup(u32 group, u32 resource);
 extern void std168_characterDetachFromCharacter(u32 group, u32 resource);
 extern void std070_characterAttachToCharacter(u32 group, u32 resource, u32 part_group, u32 part_resource, s32 part);
-extern void fn_8018B220(u32 group, u32 resource);
+extern void peopleStopAnimation(u32 group, u32 resource);
 extern void std154_characterPlayAnimation(u32 group, u32 resource, u32 anim_index, s32 frame, u8 loop);
 extern void GSmodelStopAnimation(void* model);
-extern void fn_8018DB68(u32 group, u32 resource);
+extern void peopleCloseByID(u32 group, u32 resource);
 extern void peopleSetVisible(u32 group, u32 resource, u8 visible);
 extern void GSmodelSetVisibility(void* model, u8 visible);
 extern void GSmodelDetachFromGSpart(void* model, s32 arg);
@@ -161,12 +161,12 @@ extern void GSmodelSetBoundCheck(void* model, s32 enabled);
 extern s32 floorRequestChange(s32 msg_id);
 extern void winMsgOpen(s32 id, s32 msg_id, s32 arg2, s32 arg3);
 extern s32 std011_dialogDisplayYesNoMenu(void);
-extern s32 fn_800889E4(s32 arg);
-extern void* fn_800E202C(void* ptr);
+extern s32 menuSaveLoadSaveGame(s32 arg);
+extern void* GSmemGetHandleByPtr(void* ptr);
 extern void fn_800E24B0(void);
-extern s32 fn_800E209C(void* ptr);
-extern void fn_800E2C04(s32 size, s32 align);
-extern void* fn_800E27B0(void);
+extern s32 GSmemFree(void* ptr);
+extern void GSmemAlloc(s32 size, s32 align);
+extern void* GSmemLock(void);
 extern void winMsgClose(s32 id);
 extern void GSgappTerminate(void* app);
 extern void* GSgappCreate(s32 state, u8 priority, void* param, void* callback);
@@ -188,18 +188,18 @@ extern s32 CARDFreeBlocks();
 extern s32 CARDCancel();
 extern s32 CARDClose();
 extern s32 CARDUnmount();
-extern s32 fn_800056C4();
+extern s32 mainSetPauseFlag();
 extern s32 fn_800056D4();
-extern s32 fn_800057A8();
-extern s32 fn_800057A0(void);
+extern s32 GSgetVersionMinor();
+extern s32 GSgetVersionMajor(void);
 extern s32 fn_80072A00();
 extern s32 fn_80089D74();
 extern s32 fn_8008ABA0();
 extern s32 fn_800B01C4();
 extern void* fn_800B01AC(s32 channel);
-extern s32 fn_800B4488();
+extern s32 CARDOpen();
 extern s32 fn_800B4C7C();
-extern s32 fn_800B5530();
+extern s32 CARDGetStatus();
 extern s32 fn_800B5BE4();
 void* savedataGetStatus(void* data, s32 index);
 s32 gamedatasaveGetStatus(void* data, s32 index);
@@ -209,7 +209,7 @@ void* gamedatasaveBiosGetPtr(void* data);
 u64 gamedatasaveBiosGetMemcardID(u32* data);
 void gamedatasaveBiosSetMemcardID(void* data, u64 memcard_id);
 u16 fn_8006A718(void* data);
-void fn_8006AF44(void* data, void* value);
+void savedataBattleSetSavedHero(void* data, void* value);
 void fn_801CBE44(void* data, u32 size, void* hash, u32 offset);
 u16 GSrand(void);
 void* heroGetStatus(void* data, s32 status, s32 index);
@@ -221,8 +221,8 @@ extern const char lbl_802792E8[];
 extern u32 lbl_8047E168;
 extern u16 lbl_8047E170;
 extern u32 lbl_8047E174;
-extern void fn_801D0080(void);
-extern s32 fn_801CF320(void);
+extern void memcardRequestCancel(void);
+extern s32 memcardSaveSetup(void);
 extern s32 fn_801CF568(void);
 extern s32 fn_801CF7E4(void);
 extern s32 fn_801CF9C8(void);
@@ -241,7 +241,7 @@ s32 scriptIsTrigerPush(void)
     return pushed;
 }
 
-s32 fn_801CB1C4(void)
+s32 scriptIsAnyInput(void)
 {
     s32 pushed = 0;
     s32 axis;
@@ -250,21 +250,21 @@ s32 fn_801CB1C4(void)
         pushed = 1;
     }
 
-    axis = (s8)fn_800F7A7C(1, 0);
+    axis = (s8)GSinputGetLeftStickXData(1, 0);
     if (axis > 0) {
-        axis = (s8)fn_800F7A7C(1, 0);
+        axis = (s8)GSinputGetLeftStickXData(1, 0);
     } else {
-        axis = -(s8)fn_800F7A7C(1, 0);
+        axis = -(s8)GSinputGetLeftStickXData(1, 0);
     }
     if (axis > 2) {
         pushed = 1;
     }
 
-    axis = (s8)fn_800F7A08(1, 0);
+    axis = (s8)GSinputGetLeftStickYData(1, 0);
     if (axis > 0) {
-        axis = (s8)fn_800F7A08(1, 0);
+        axis = (s8)GSinputGetLeftStickYData(1, 0);
     } else {
-        axis = -(s8)fn_800F7A08(1, 0);
+        axis = -(s8)GSinputGetLeftStickYData(1, 0);
     }
     if (axis > 2) {
         pushed = 1;
@@ -286,21 +286,21 @@ s32 scriptIsMoveButtonPush(void)
         pushed = 1;
     }
 
-    axis = (s8)fn_800F7A7C(1, 0);
+    axis = (s8)GSinputGetLeftStickXData(1, 0);
     if (axis > 0) {
-        axis = (s8)fn_800F7A7C(1, 0);
+        axis = (s8)GSinputGetLeftStickXData(1, 0);
     } else {
-        axis = -(s8)fn_800F7A7C(1, 0);
+        axis = -(s8)GSinputGetLeftStickXData(1, 0);
     }
     if (axis > 2) {
         pushed = 1;
     }
 
-    axis = (s8)fn_800F7A08(1, 0);
+    axis = (s8)GSinputGetLeftStickYData(1, 0);
     if (axis > 0) {
-        axis = (s8)fn_800F7A08(1, 0);
+        axis = (s8)GSinputGetLeftStickYData(1, 0);
     } else {
-        axis = -(s8)fn_800F7A08(1, 0);
+        axis = -(s8)GSinputGetLeftStickYData(1, 0);
     }
     if (axis > 2) {
         pushed = 1;
@@ -341,7 +341,7 @@ s32 scriptExecTask(void* callback, u32 priority, u32 arg2, u32 arg3, u32 arg4, u
 
     task += priority;
 
-    return fn_800F7318(task, callback, 0x1000, 1, 0, 4, arg2, arg3, arg4, arg5);
+    return _vmThreadCreate(task, callback, 0x1000, 1, 0, 4, arg2, arg3, arg4, arg5);
 }
 
 void std209_threadRunScriptMode4(void* callback, s32 arg1, s32 arg2, s32 arg3, s32 arg4)
@@ -353,7 +353,7 @@ void fn_801CB4E8(u32 resource, u32 arg)
 {
     void* object = GSresGetResource(std093_getCurrentGroupID(), resource);
 
-    fn_80118874(object, arg);
+    gsParticleKill(object, arg);
 }
 
 void std221_mapObjectLinkParticles(u32 model_id, u32 particle_bank_id)
@@ -368,7 +368,7 @@ void std221_mapObjectLinkParticles(u32 model_id, u32 particle_bank_id)
 #endif
 
 #if defined(FIELD_801CB180_RANGE_801CB59C)
-s32 fn_801CB59C(u32 resource)
+s32 scriptCharacterDetach(u32 resource)
 {
     u32 group = std093_getCurrentGroupID();
     void* model;
@@ -450,7 +450,7 @@ void std116_mapObjectStopAnimation(u32 resource)
     void* model;
 
     if (peopleIsInGroup(group, resource) != NULL) {
-        fn_8018B220(group, resource);
+        peopleStopAnimation(group, resource);
     } else {
         model = GSresGetResource(group, resource);
         if (model != NULL) {
@@ -510,7 +510,7 @@ void std114_mapObjectSetVisibility(u32 resource, s32 visible)
 #if defined(FIELD_801CB180_RANGE_801CB9D8)
 void std113_mapObjectUnk_8018db68(u32 resource)
 {
-    fn_8018DB68(std093_getCurrentGroupID(), resource);
+    peopleCloseByID(std093_getCurrentGroupID(), resource);
 }
 #endif
 
@@ -571,7 +571,7 @@ s32 std223_askYesNoThenWarp395(void)
             }
             break;
         case 2:
-            if (fn_800889E4(1) == 0) {
+            if (menuSaveLoadSaveGame(1) == 0) {
                 state = 3;
                 result = 1;
             } else {
@@ -593,14 +593,14 @@ s32 std223_askYesNoThenWarp395(void)
 #endif
 
 /*
- * Save-data SHA-1 (0x801CBBAC - 0x801CDB04). fn_801CBBAC, fn_801CBE44 and
+ * Save-data SHA-1 (0x801CBBAC - 0x801CDB04). sha1Calc, fn_801CBE44 and
  * fn_801CBF64 (SHA1Final) are linked from field_exact_801CBBAC.c,
- * field_exact_801CBE44.c and field_exact_801CBF64.c; fn_801CC380
+ * field_exact_801CBE44.c and field_exact_801CBF64.c; sha1Transform
  * (SHA1Transform) from field_exact_801CC380.c.
  */
 #include "game/save/savedata_sha1.h"
 
-/* fn_801CBCDC: see src/game/memcard.c (whole memory-card TU candidate). */
+/* savedataDecryptCheck: see src/game/memcard.c (whole memory-card TU candidate). */
 
 
 
@@ -637,7 +637,7 @@ typedef union SHA1Block {
     w = SHA1_ROTL(w, 30)
 
 #if defined(FIELD_801CBA90_RANGE_801CC380)
-void fn_801CC380(u32 state[5], const u8 input[64])
+void sha1Transform(u32 state[5], const u8 input[64])
 {
     u32 a;
     u32 b;
@@ -761,7 +761,7 @@ void fn_801CC380(u32 state[5], const u8 input[64])
 #define task lbl_8047B3D4
 #define raw ((u8*)lbl_8047B3D4)
 #define file_info ((void*)((u8*)lbl_8047B3D4 + 0x8C))
-/* fn_801CDB04: see src/game/memcard.c (whole memory-card TU candidate). */
+/* memcardTaskMain: see src/game/memcard.c (whole memory-card TU candidate). */
 #undef file_info
 #undef raw
 #undef task
@@ -802,7 +802,7 @@ static inline void memcardFillRandom(u8* random, s32 count)
 }
 
 #if defined(FIELD_801CBA90_RANGE_801CF320)
-s32 fn_801CF320(void)
+s32 memcardSaveSetup(void)
 {
     u32 serial[2];
     MemcardSaveBuffer* save;
@@ -828,7 +828,7 @@ s32 fn_801CF320(void)
     case 9:
         data = savedataGetStatus(save->header.fields.savedata, 14);
         if (fn_8006A718(save->header.fields.savedata) == 1) {
-            fn_8006AF44(data, NULL);
+            savedataBattleSetSavedHero(data, NULL);
         }
         /* fallthrough */
     case 4:
@@ -893,7 +893,7 @@ s32 fn_801CF568(void)
         *lbl_8047B3D4->savedata_status = *savedata;
         break;
     case 5:
-        fn_8006AF44(status14, default_status14->field_B328);
+        savedataBattleSetSavedHero(status14, default_status14->field_B328);
         break;
     case 13:
         memcpy(status14->field_C9DC, default_status14->field_C9DC, 0x1F8);
@@ -938,13 +938,13 @@ s32 fn_801CFD08(void)
     channel = lbl_8047B3D4->card_channel;
     file_info = &lbl_8047B3D4->file_info;
     for (file_no = 0; file_no < 0x7F; file_no++) {
-        result = fn_800B4488(channel, file_no, file_info);
+        result = CARDOpen(channel, file_no, file_info);
         if (result == 0) {
-            result = fn_800B5530(channel, file_no, &status);
+            result = CARDGetStatus(channel, file_no, &status);
             if (result != 0) {
                 goto invalid_file;
             }
-            switch (fn_800057A0()) {
+            switch (GSgetVersionMajor()) {
                 case 0:
                     if (strcmp(status.file_name, lbl_802792E8) != 0 ||
                         status.game_code != lbl_8047E168 ||
@@ -994,7 +994,7 @@ scan_done:
     switch (error) {
     case 0:
         lbl_8047B3D4->dialog_result = 1;
-        if (fn_800057A8() == 4) {
+        if (GSgetVersionMinor() == 4) {
             lbl_8047B3D4->disk_id = fn_800B01AC(lbl_8047B3D4->card_channel);
             lbl_8047B3D4->mounted_disk_id = *lbl_8047B3D4->disk_id;
             lbl_8047B3D4->mounted_disk_id.game_code = lbl_8047E168;
@@ -1003,7 +1003,7 @@ scan_done:
                        &lbl_8047B3D4->mounted_disk_id);
         }
 
-        error = fn_800B5530(lbl_8047B3D4->card_channel,
+        error = CARDGetStatus(lbl_8047B3D4->card_channel,
                            lbl_8047B3D4->file_info.file_no,
                            &opened_status);
         if (error != 0) {
@@ -1052,7 +1052,7 @@ scan_done:
 #endif
 
 #if defined(FIELD_801CBA90_RANGE_801D0080)
-void fn_801D0080(void)
+void memcardRequestCancel(void)
 {
     lbl_8047B3D4->callback_finished = 1;
 }

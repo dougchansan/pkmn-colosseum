@@ -16,9 +16,9 @@
 #include "dolphin/types.h"
 
 double atan2(double y, double x);
-u8 fn_800F7EF8(s32 pad_id);
-u32 fn_800F7A08(s32 pad_id, s32 axis);
-u32 fn_800F7A7C(s32 pad_id, s32 axis);
+u8 GSinputIsConnected(s32 pad_id);
+u32 GSinputGetLeftStickYData(s32 pad_id, s32 axis);
+u32 GSinputGetLeftStickXData(s32 pad_id, s32 axis);
 u32 fn_800F7BC4(s32 pad_id);
 
 /* RULE-EXCEPTION(title-path): extern stand-in for the menu TU's pooled 0.0f - see docs/RULE_EXCEPTIONS.md */
@@ -40,12 +40,12 @@ u8 _menuGetGcKeyInfo__FlPUs(s32 port, u16* keys) {
     f32 angle;
 
     padId = padIds[port];
-    if (fn_800F7EF8(padId) == 0) {
+    if (GSinputIsConnected(padId) == 0) {
         return 0;
     }
 
-    stickX = fn_800F7A08(padId, 0);
-    stickY = fn_800F7A7C(padId, 0);
+    stickX = GSinputGetLeftStickYData(padId, 0);
+    stickY = GSinputGetLeftStickXData(padId, 0);
     if (((s8)stickY < 0 ? -(s8)stickY : (s8)stickY) > 0x20 ||
         ((s8)stickX < 0 ? -(s8)stickX : (s8)stickX) > 0x20) {
         angle = atan2((s8)stickY, (s8)stickX);

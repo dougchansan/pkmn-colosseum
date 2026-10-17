@@ -24,7 +24,7 @@ extern void* pokemonGetStatus();
 extern u32   pokemonSetStatus();
 
 /* Battle system functions */
-extern void fn_801EF8F4();
+extern void battleCameraSelect();
 
 /* Sound functions */
 extern void soundStop();     /* Stop sound */
@@ -503,7 +503,7 @@ s32 fightMenuFightTrainerGcHeroSelectIrekaeFightPokemon(u32 ctx, u32 actor, u32 
     extern u8 menuIsCheck(u32);
     extern void menuCloseCustom(u32, u32, u32);
     extern s32 menuFightOpenPokemon(u32, u32, u32, u32, u8);
-    extern void fn_801EFFC4(u32);
+    extern void fightWaitFrames(u32);
     extern void menuFightStatusSetActive(u32, u32);
     extern s32 fightTrainerTimeOutSelectIrekaeFightPokemon(u32, u32, u32);
     extern u32 fightTrainerGetStatus(u32, u32, u32, u16);
@@ -527,7 +527,7 @@ s32 fightMenuFightTrainerGcHeroSelectIrekaeFightPokemon(u32 ctx, u32 actor, u32 
             fightMenuCloseInfoMenuInline(1);
         }
         choice = menuFightOpenPokemon(ctx, actor, param, retry, fn_801F18DC(0));
-        fn_801EFFC4(0xa);
+        fightWaitFrames(0xa);
         if (fn_801F18DC(0) == 0 && (u8)reopen == 1) {
             fightMenuOpenInfoMenuInline(-1);
             if (actor != 0 && fn_801F18DC(0) != 1) {
@@ -602,7 +602,7 @@ void fightMenuAllFightTrainerCloseStatusMenu(u32 wait)
  * trainers, 3 for Pokemon), or 0 when the target, its host-side relative
  * ID or its buffer is missing. Retail expands these in every status-menu
  * helper of the unit (the three trainer subs and fightMenuFightTrainer-
- * RenewStatusMenu (twice) for kind 2; the three Pokemon subs, fn_8026532C
+ * RenewStatusMenu (twice) for kind 2; the three Pokemon subs, fightMenuStatusMenuClose
  * and fn_80265598 for kind 3), each copy the same call sequence with the
  * same constants. Pokemon XD keeps both as out-of-line functions with this
  * body: fightMenuGetFightTrainerPtrToStatusMenuId (0x8023943C) and
@@ -836,12 +836,12 @@ extern const f32 lbl_8047E6C8;
 
 s32 fightMenuWazaWasure(u32 r3, u32 r4)
 {
-    extern s32 fn_80097A38(u32, u32);
+    extern s32 menuPokemonStatusOpenWazaForget(u32, u32);
     s32 result;
 
     fadeSet(lbl_8047E6C8, 3);
     fadeCheck(1);
-    result = fn_80097A38(r3, r4);
+    result = menuPokemonStatusOpenWazaForget(r3, r4);
     if (result == 4) {
         result = -1;
     }
@@ -947,7 +947,7 @@ u32 fightMenuFightTrainerAgbHeroOpenMenu(u32 trainer, u32 side)
     extern u32 fn_80089F68(u32);
     extern u32 fightOutPokemonGetPokemonPtr(u32);
     extern u32 pokemonGetStatus(u32, u32, u32, u32);
-    extern u32 fn_8022B2CC(u32, u16, u32, void*, u32, u32, s32);
+    extern u32 fightSeqSelectTarget(u32, u16, u32, void*, u32, u32, s32);
     extern u32 _fightMenuFightTrainerAgbHeroSelectDefensePokemon__FP15FightOutPokemonUsUs();
     extern u32 fn_80089F60(u32);
     extern u32 fightFloorGetValidFightSidePtr(u32, u16);
@@ -1034,7 +1034,7 @@ u32 fightMenuFightTrainerAgbHeroOpenMenu(u32 trainer, u32 side)
                 goto select_action;
             }
             target = 0;
-            defense = fn_8022B2CC(pokemon, waza, side,
+            defense = fightSeqSelectTarget(pokemon, waza, side,
                 _fightMenuFightTrainerAgbHeroSelectDefensePokemon__FP15FightOutPokemonUsUs, 1, 0, -1);
             if (defense != 0) {
                 target = defense;
@@ -1591,7 +1591,7 @@ LAB_00262054:
 }
 
 /* Address: 0x8026532C | Size: 0xD0 | Ghidra import */
-void fn_8026532C(u32 r3, u32 r4, u32 r5)
+void fightMenuStatusMenuClose(u32 r3, u32 r4, u32 r5)
 {
   u32 iVar1;
   u16 uVar3;
@@ -1889,7 +1889,7 @@ u32 _fightMenuFightTrainerGcHeroOpenMenuSubWaza__FP13FIGHT_TRAINERP15FightOutPok
   extern void fightMainWaitFrame(u32);
   extern u32 wazaGetStatus(u32, u16, u32, u32);
   extern void winMsgCloseFight(u32);
-  extern u32 fn_8022B2CC(u32, u16, u32, void *, u32, u32, s32);
+  extern u32 fightSeqSelectTarget(u32, u16, u32, void *, u32, u32, s32);
   extern u32 _fightMenuFightTrainerGcHeroOpenMenuSubWazaSelectDefensePokemon__FP15FightOutPokemonUsUs(u32, u16, u32);
   extern u32 fightTargetGetTragetPtrToRelativeHostSideFightTargetId(u32, u32);
   extern void fightOutPokemonCreateFightActionAttackWaza(u32, u32, u32, u32, char *, u16, u32, s8, u32);
@@ -1981,7 +1981,7 @@ u32 _fightMenuFightTrainerGcHeroOpenMenuSubWaza__FP13FIGHT_TRAINERP15FightOutPok
     }
     lbl_8047B678 = 0;
     attacker = carrier;
-    result = fn_8022B2CC(attacker, waza, side, _fightMenuFightTrainerGcHeroOpenMenuSubWazaSelectDefensePokemon__FP15FightOutPokemonUsUs, 1, 0, -1);
+    result = fightSeqSelectTarget(attacker, waza, side, _fightMenuFightTrainerGcHeroOpenMenuSubWazaSelectDefensePokemon__FP15FightOutPokemonUsUs, 1, 0, -1);
     target = result;
     if (((fn_801F18DC(0) == 1) && (lbl_8047B678 == 0)) && (num >= 2))
     {
@@ -2014,7 +2014,7 @@ u32 _fightMenuFightTrainerGcHeroOpenMenuSubItem__FP13FIGHT_TRAINERP15FightOutPok
     extern u8 fightPokemonCheckFightOut(u32);
     /* RULE-EXCEPTION(user-approved): long copy of the selected item for its last two uses, chosen for register allocation (permuter farm) — see docs/RULE_EXCEPTIONS.md */
     long itemId;
-    extern u8 fn_802026E4(u32, u32);
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId(u32, u32);
     extern s16 fightTrainerGetFightPokemonToTemotiBanme(u32, u32);
     extern s32 pokemonGetStatus(u32, u32, u32, u32);
     extern s32 fn_800D37CC(void);
@@ -2022,7 +2022,7 @@ u32 _fightMenuFightTrainerGcHeroOpenMenuSubItem__FP13FIGHT_TRAINERP15FightOutPok
     extern void menuCreateOffScreen(f32);
     extern void menuReleaseOffScreen(f32);
     extern u32 fn_80018F88(u32, s32*, u32);
-    extern void fn_801EFFC4(u32);
+    extern void fightWaitFrames(u32);
     extern u32 fn_80019064(void);
     extern u8 itemGetStatus(u32, u32, u32, u32);
     extern void fn_801DA36C(u32, u32);
@@ -2030,7 +2030,7 @@ u32 _fightMenuFightTrainerGcHeroOpenMenuSubItem__FP13FIGHT_TRAINERP15FightOutPok
     extern void menuFightStatusSetActive(u32, u32);
     extern u8 fightTrainerIsSelectedItemBall(u32);
     extern u32 fightTargetGetTragetPtrToRelativeHostSideFightTargetId(u32, u32);
-    extern void fn_8022FF90(void);
+    extern void wsRunEndOfTurnScript2(void);
     extern u8 fightOutPokemonCheckFightOut(u32);
     extern void pokemonSetStatus(u32, u32, u32, u32, u32);
     extern void fightOutPokemonCreateFightActionUseItem(u32, u32, u32, u32, char*, u16, u32, u8, u32);
@@ -2060,8 +2060,8 @@ u32 _fightMenuFightTrainerGcHeroOpenMenuSubItem__FP13FIGHT_TRAINERP15FightOutPok
         if (pokemon != 0) {
             index = fightTrainerGetFightOutPokemonToTemotiBanme(trainer, pokemon);
             wasOut[i] = fightPokemonCheckFightOut(fightTrainerGetStatus(trainer, 0, 0x45, index));
-            hadFlag8[i] = fn_802026E4(pokemon, 8);
-            hadFlag7[i] = fn_802026E4(pokemon, 7);
+            hadFlag8[i] = fightOutPokemonIsPokemonJoutaiDataId(pokemon, 8);
+            hadFlag7[i] = fightOutPokemonIsPokemonJoutaiDataId(pokemon, 7);
         }
     }
     if (fightTrainerGetStatus(trainer, 0, 0x44, 0) == 0) {
@@ -2073,16 +2073,16 @@ u32 _fightMenuFightTrainerGcHeroOpenMenuSubItem__FP13FIGHT_TRAINERP15FightOutPok
         fightMenuCloseInfoMenuInline(1);
         menuCreateOffScreen(lbl_8047E6CC / (f32)fn_800D37CC());
         item = fn_80018F88(1, &slot, trainer);
-        fn_801EFFC4(10);
+        fightWaitFrames(10);
         menuKind = fn_80019064();
         if ((u16)item != 0 && itemGetStatus(0, item, 2, 0) == 2) {
             for (i = 0; i < 2; i++) {
                 pokemon = fightTrainerGetStatus(trainer, 0, 0x46, i);
                 if (pokemon != 0 && (effect = pokemonGetStatus(pokemon, 0, 0xee, 0)) != 0) {
-                    if (hadFlag8[i] == 1 && fn_802026E4(pokemon, 8) == 0) {
+                    if (hadFlag8[i] == 1 && fightOutPokemonIsPokemonJoutaiDataId(pokemon, 8) == 0) {
                         fn_801DA36C(effect, 1);
                     }
-                    if (hadFlag7[i] == 1 && fn_802026E4(pokemon, 7) == 0) {
+                    if (hadFlag7[i] == 1 && fightOutPokemonIsPokemonJoutaiDataId(pokemon, 7) == 0) {
                         fn_801DA36C(effect, 2);
                     }
                 }
@@ -2094,7 +2094,7 @@ u32 _fightMenuFightTrainerGcHeroOpenMenuSubItem__FP13FIGHT_TRAINERP15FightOutPok
             menuFightStatusSetActive(fightMenuGcHeroStatusMenuIdDirect(outPokemon, side, 3), 1);
         }
         menuReleaseOffScreen(lbl_8047E6CC / (f32)fn_800D37CC());
-        fn_801EFFC4(10);
+        fightWaitFrames(10);
         if ((u16)item == 0) {
             return 0;
         }
@@ -2111,7 +2111,7 @@ u32 _fightMenuFightTrainerGcHeroOpenMenuSubItem__FP13FIGHT_TRAINERP15FightOutPok
             useSlot = 0;
         } else {
             if (itemGetStatus(0, item, 2, 0) == 2) {
-                fn_8022FF90();
+                wsRunEndOfTurnScript2();
                 for (i = 0; i < 2; i++) {
                     pokemon = fightTrainerGetStatus(trainer, 0, 0x46, i);
                     if (pokemon != 0 && wasOut[i] == 0 && fightOutPokemonCheckFightOut(pokemon) == 1) {

@@ -3,9 +3,9 @@
  * @brief FSYS LZSS job start (0x8017C074 - 0x8017C1D8).
  *
  * Moves the compressed image of an entry aside into the job
- * (job->compressed, freed by fn_8017C1D8 when the decode finishes) and
+ * (job->compressed, freed by fsysLZSSJobFinish when the decode finishes) and
  * allocates the entry's output buffer: the group's allocator, else GSres.
- * It is the asynchronous form of the first half of fn_8017E30C's LZSS path
+ * It is the asynchronous form of the first half of fsysLoadEntrySync's LZSS path
  * (`compressed = sub->buffer; sub->buffer = NULL;` then
  * `sub->buffer = fsysAllocDecodeBuffer(...)`), and shares its helpers.
  *
@@ -23,7 +23,7 @@
  *
  * RULE-EXCEPTION(title-path), user directive 2026-09-28: that dead store
  * is applied although nothing in the target shows such a statement (no
- * free precedes it, unlike fn_8017E30C's free-then-clear); a clean fix
+ * free precedes it, unlike fsysLoadEntrySync's free-then-clear); a clean fix
  * needs the real statement that gives `job` its extra reference.
  */
 #include "dolphin/types.h"
@@ -32,7 +32,7 @@
 
 extern void* GSresAllocResourceAlign(u32 size, u32 align, u32 group, u32 id, u32 param);
 
-/* GSres allocation of an entry buffer, 32-byte aligned (as in fn_8017E30C). */
+/* GSres allocation of an entry buffer, 32-byte aligned (as in fsysLoadEntrySync). */
 static inline void* gsResAlloc(u32 size, u32 group, u32 id)
 {
     void* p;
@@ -42,7 +42,7 @@ static inline void* gsResAlloc(u32 size, u32 group, u32 id)
 }
 
 /* Output buffer of an LZSS entry: the group's allocator, else GSres (as in
- * fn_8017E30C). */
+ * fsysLoadEntrySync). */
 static inline void* fsysAllocDecodeBuffer(FSYSSlot* slot, FSYSFileEntry* entry, FSYSSubEntry* sub)
 {
     FSYSGroup* group;
@@ -61,7 +61,7 @@ static inline void* fsysAllocDecodeBuffer(FSYSSlot* slot, FSYSFileEntry* entry, 
 }
 
 /* Address: 0x8017C074 | size: 0x164 */
-void fn_8017C074(FSYSSlot* slot, FSYSSubEntry* sub, u32 index, GsRangePoolElem* job)
+void fsysLZSSJobSetup(FSYSSlot* slot, FSYSSubEntry* sub, u32 index, GsRangePoolElem* job)
 {
     FSYSFileEntry* entry;
 

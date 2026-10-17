@@ -123,9 +123,9 @@ s32 fn_800973EC(u8* menu)
 }
 
 /* 0x8009769C | size: 0x350 */
-u32 fn_8009769C(u8 flags, u32 arg1, s32 pokemon, u16 arg3, u32 arg4, u32 arg5) {
+u32 menuPokemonStatusOpen(u8 flags, u32 arg1, s32 pokemon, u16 arg3, u32 arg4, u32 arg5) {
     extern void menuModelInit(void* model, s32 width, s32 height);
-    extern void fn_80109C88(void* model, u32 pokemon);
+    extern void menuPokemonModelRequest(void* model, u32 pokemon);
     extern void fadeCheck(s32 wait);
     extern void fadeSet(s32 mode, f32 value);
     extern s32 menuOpenCustom(s32 menu, ...);
@@ -136,8 +136,8 @@ u32 fn_8009769C(u8 flags, u32 arg1, s32 pokemon, u16 arg3, u32 arg4, u32 arg5) {
     extern void winMsgClose(s32 slot);
     extern s32 menuIsCheck(s32 menu);
     extern void menuCloseCustom(s32 menu, s32 mode, s32 wait);
-    extern void fn_800FF660(void);
-    extern void fn_8010A420(void* model);
+    extern void floorBattleEndTerminateScripts(void);
+    extern void menuModelTerm(void* model);
 
     u32 cursor;
     s32 result;
@@ -147,7 +147,7 @@ u32 fn_8009769C(u8 flags, u32 arg1, s32 pokemon, u16 arg3, u32 arg4, u32 arg5) {
     u8* state;
 
     menuModelInit(lbl_803FB338, 0xC8, 0xB4);
-    fn_80109C88(lbl_803FB338, pokemon);
+    menuPokemonModelRequest(lbl_803FB338, pokemon);
 
     if (lbl_803FB380[0] & 8) {
         fadeCheck(1);
@@ -225,20 +225,20 @@ u32 fn_8009769C(u8 flags, u32 arg1, s32 pokemon, u16 arg3, u32 arg4, u32 arg5) {
     menuCloseCustom(0x53, 0, 1);
 
     if (lbl_803FB380[0] & 1) {
-        fn_800FF660();
+        floorBattleEndTerminateScripts();
         if (lbl_803FB380[0] & 8) {
             floorSetFadeScript(0, 0);
         }
     }
 
-    fn_8010A420(lbl_803FB338);
+    menuModelTerm(lbl_803FB338);
     _threadSwitch();
     return *(u32*)(state + 4);
 }
 
 /* 0x800979EC | size: 0x4C */
 void menuPokemonStatus(void) {
-    *(u32*)(lbl_803FB380 + 4) = fn_8009769C(
+    *(u32*)(lbl_803FB380 + 4) = menuPokemonStatusOpen(
         lbl_803FB380[0],
         *(u32*)(lbl_803FB380 + 8),
         *(u32*)(lbl_803FB380 + 0xC),
@@ -248,7 +248,7 @@ void menuPokemonStatus(void) {
 }
 
 /* 0x80097A38 | size: 0xCC */
-s32 fn_80097A38(u32 arg0, u16 arg1) {
+s32 menuPokemonStatusOpenWazaForget(u32 arg0, u16 arg1) {
     extern int fn_8010B560();
 
     while ((u8)fn_8010B560() != 0) {
@@ -285,7 +285,7 @@ s32 fn_80097B04(u32 arg0, u16 arg1) {
     *(u32*)(lbl_803FB380 + 0x10) = 0;
     *(u32*)(lbl_803FB380 + 0x14) = 0;
     *(s32*)(lbl_803FB380 + 0x4) = -1;
-    fn_8009769C(lbl_803FB380[0], *(u32*)(lbl_803FB380 + 0x8), *(u32*)(lbl_803FB380 + 0xC),
+    menuPokemonStatusOpen(lbl_803FB380[0], *(u32*)(lbl_803FB380 + 0x8), *(u32*)(lbl_803FB380 + 0xC),
                 arg1, *(u32*)(lbl_803FB380 + 0x10), *(u32*)(lbl_803FB380 + 0x14));
     return *(s32*)(lbl_803FB380 + 0x4);
 }
@@ -346,7 +346,7 @@ s32 fn_80097CD0(u32 arg0, u32 arg1, u32 arg2) {
     *(u32*)(lbl_803FB380 + 0x10) = arg1;
     *(u32*)(lbl_803FB380 + 0x14) = arg2;
     *(s32*)(lbl_803FB380 + 0x4) = -1;
-    fn_8009769C(lbl_803FB380[0], *(u32*)(lbl_803FB380 + 0x8), *(u32*)(lbl_803FB380 + 0xC),
+    menuPokemonStatusOpen(lbl_803FB380[0], *(u32*)(lbl_803FB380 + 0x8), *(u32*)(lbl_803FB380 + 0xC),
                 *(u16*)(lbl_803FB380 + 0x18), *(u32*)(lbl_803FB380 + 0x10), *(u32*)(lbl_803FB380 + 0x14));
     return *(s32*)(lbl_803FB380 + 0x4);
 }
@@ -366,7 +366,7 @@ s32 fn_80097D94(u32 arg0, u32 arg1, u32 arg2) {
     *(u32*)(lbl_803FB380 + 0x10) = arg1;
     *(u32*)(lbl_803FB380 + 0x14) = arg2;
     *(s32*)(lbl_803FB380 + 0x4) = -1;
-    fn_8009769C(lbl_803FB380[0], *(u32*)(lbl_803FB380 + 0x8), *(u32*)(lbl_803FB380 + 0xC),
+    menuPokemonStatusOpen(lbl_803FB380[0], *(u32*)(lbl_803FB380 + 0x8), *(u32*)(lbl_803FB380 + 0xC),
                 *(u16*)(lbl_803FB380 + 0x18), *(u32*)(lbl_803FB380 + 0x10), *(u32*)(lbl_803FB380 + 0x14));
     return *(s32*)(lbl_803FB380 + 0x4);
 }
@@ -386,7 +386,7 @@ s32 fn_80097E58(u32 arg0, u32 arg1, u32 arg2, u32 arg3) {
     *(u32*)(lbl_803FB380 + 0x10) = arg2;
     *(u32*)(lbl_803FB380 + 0x14) = arg3;
     *(s32*)(lbl_803FB380 + 0x4) = -1;
-    fn_8009769C(lbl_803FB380[0], *(u32*)(lbl_803FB380 + 0x8), *(u32*)(lbl_803FB380 + 0xC),
+    menuPokemonStatusOpen(lbl_803FB380[0], *(u32*)(lbl_803FB380 + 0x8), *(u32*)(lbl_803FB380 + 0xC),
                 *(u16*)(lbl_803FB380 + 0x18), *(u32*)(lbl_803FB380 + 0x10), *(u32*)(lbl_803FB380 + 0x14));
     return *(s32*)(lbl_803FB380 + 0x4);
 }
@@ -406,7 +406,7 @@ s32 fn_80097F08(u32 arg0, u32 arg1, u32 arg2) {
     *(u32*)(lbl_803FB380 + 0x10) = arg1;
     *(u32*)(lbl_803FB380 + 0x14) = arg2;
     *(s32*)(lbl_803FB380 + 0x4) = -1;
-    fn_8009769C(lbl_803FB380[0], *(u32*)(lbl_803FB380 + 0x8), *(u32*)(lbl_803FB380 + 0xC),
+    menuPokemonStatusOpen(lbl_803FB380[0], *(u32*)(lbl_803FB380 + 0x8), *(u32*)(lbl_803FB380 + 0xC),
                 *(u16*)(lbl_803FB380 + 0x18), *(u32*)(lbl_803FB380 + 0x10), *(u32*)(lbl_803FB380 + 0x14));
     return *(s32*)(lbl_803FB380 + 0x4);
 }

@@ -29,12 +29,12 @@ extern char lbl_802757F0[];
 extern char lbl_802757FC[];
 
 extern void cameraMoveStop(void);
-extern s32 fn_80176C04(void*, u32);
+extern s32 cameraGetResAnimFrame(void*, u32);
 extern void cameraPlayOffsetAnime(void*, u32, s32, u32);
 extern void cameraSetOffsetPosition(f32*);
 extern void cameraSetOffsetRotation(f32*);
 extern void cameraSetOffsetScale(f32*);
-extern s32 fn_801DAC24(void*);
+extern s32 wazaSequenceOwnerGetSizeClass(void*);
 extern FloorData* floorDataBiosGetCurrentPtr(void);
 extern void* std093_getCurrentGroupID(void);
 extern void set__5GSvecFfff(f32*, f32, f32, f32);
@@ -69,7 +69,7 @@ static inline s32 battleCameraMaxField(void)
             pokemon = group->pokemon;
             for (j = 0; j < 2; j++, pokemon++) {
                 if (*pokemon != NULL) {
-                    s32 field = fn_801DAC24(*pokemon);
+                    s32 field = wazaSequenceOwnerGetSizeClass(*pokemon);
                     if (field > maxField) {
                         maxField = field;
                     }
@@ -80,7 +80,7 @@ static inline s32 battleCameraMaxField(void)
     return maxField;
 }
 
-void fn_801C2F00(void* arg0, u32 arg1)
+void battleCameraStartOffsetAnime(void* arg0, u32 arg1)
 {
     ModelList* modelList;
     f32 scaleValue;
@@ -96,7 +96,7 @@ void fn_801C2F00(void* arg0, u32 arg1)
 
     offset = *(BattleCameraVec*)lbl_802757F0;
     cameraMoveStop();
-    anim = fn_80176C04(arg0, arg1);
+    anim = cameraGetResAnimFrame(arg0, arg1);
     cameraPlayOffsetAnime(arg0, arg1, anim, 1);
     cameraSetOffsetPosition(&offset.x);
     cameraSetOffsetRotation(&offset.x);

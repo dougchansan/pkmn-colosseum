@@ -49,7 +49,7 @@ s32 pdaMailGetMailID(s32 index)
     return lbl_8047A500[index];
 }
 
-s32 fn_8004BE90(u16* a, u16* b)
+s32 pdaMailCompareSubject(u16* a, u16* b)
 {
     s32 idA = *a;
     s32 idB = *b;

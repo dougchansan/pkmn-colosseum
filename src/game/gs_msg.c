@@ -21,12 +21,12 @@
  * GS_MSG_GETGSCHAR_ONLY (0x800FA280),
  * GS_MSG_GETLENGTH_ONLY (0x800FA314), GS_MSG_OPENCLOSE_ONLY (GSmsgClose
  * through GSmsgSetCtrlFunc, 0x800FC1D0-0x800FC528), GS_MSG_INIT_ONLY
- * (0x800FC528), GS_MSG_MAKESTR_ONLY (fn_800F96E4, 0x800F96E4-0x800F9AEC)
- * and GS_MSG_GBACONV_ONLY (fn_800F9AEC and fn_800F9C04, 0x800F9AEC-0x800F9D04).
+ * (0x800FC528), GS_MSG_MAKESTR_ONLY (GSmsgGetText, 0x800F96E4-0x800F9AEC)
+ * and GS_MSG_GBACONV_ONLY (GScharToGBA and GScharFromGBA, 0x800F9AEC-0x800F9D04).
  *
  * GS_MSG_POOL_OBJECT (GSmsg_800F9D04.c) builds the linked object for
- * 0x800F9D04-0x800FE35C: everything except fn_800F96E4, fn_800F9AEC and
- * fn_800F9C04, plus the TU's .bss (0x80401DE0-0x80402518) and its .sdata2
+ * 0x800F9D04-0x800FE35C: everything except GSmsgGetText, GScharToGBA and
+ * GScharFromGBA, plus the TU's .bss (0x80401DE0-0x80402518) and its .sdata2
  * literal pool (0x8047CD00-0x8047CD50). Any full (non-partial) compile
  * defines the .bss objects and the pool's named entries.
  */
@@ -45,10 +45,10 @@ typedef u8 M2C_UNK;
 /* ===== External SDK / engine functions ===== */
 extern void  GSlogWrite(const void* fmt, ...);          /* OSReport */
 extern u16   GSmemAllocRaw(u32 size);                    /* _toolentryAlloc__FUl */
-extern void* GSmemGetPtr(u16 handle);                    /* fn_800E27B0 */
+extern void* GSmemGetPtr(u16 handle);                    /* GSmemLock */
 extern void* GSmemLock(u16 handle);                      /* fn_800E24B0 */
-extern void  GSmemFree(u16 handle);                      /* fn_800E209C */
-extern u16   GSmemAlloc(u32 alignment, u32 size);        /* fn_800E2C04 */
+extern void  GSmemFree(u16 handle);                      /* GSmemFree */
+extern u16   GSmemAlloc(u32 alignment, u32 size);        /* GSmemAlloc */
 extern void  OSSetIdleFunction(void* func, void* arg,
                           void* stackTop, u32 stackSize); /* OSCreateFiber-like */
 extern void  OSDisableInterrupts(void);
@@ -66,18 +66,18 @@ extern const char lbl_80271008[]; /* "GSthreadCreate. Warning: 'usesFPU==FALE' O
 /* ===== Forward declarations for internal functions ===== */
 extern void gappVSyncCallback(void);            /* GStaskSwapCallback */
 extern void fn_800F0F4C(u32 arg);          /* GSthread trampoline / entry wrapper */
-extern void fn_800AB150(void* buf);
-extern u32 fn_800D0F44(u32 buttonIdx);
+extern void PADRead(void* buf);
+extern u32 SIProbe(u32 buttonIdx);
 extern void fn_800AB4FC(void*);
-extern void fn_800E209C(u16 handle);
+extern void GSmemFree(u16 handle);
 extern void* fn_800E24B0(u16 handle);
-extern void* fn_800E27B0(u16 handle);
-extern u16 fn_800E2C04(u32 alignment, u32 size);
+extern void* GSmemLock(u16 handle);
+extern u16 GSmemAlloc(u32 alignment, u32 size);
 extern u16 _toolentryAlloc__FUl(u32 size);
-extern u32 fn_80080ED8(u16* destination, const u8* source);
+extern u32 SJIStoGSchar(u16* destination, const u8* source);
 extern void fn_800DBEB4(u32 index, GXColor color);
-extern void fn_800D5CB8(s32 a, s32 b, s32 c, s32 d, s32 e);
-extern void fn_800D61E4(s16 x, s16 y);
+extern void gfxVtxColor4u8(s32 a, s32 b, s32 c, s32 d, s32 e);
+extern void gfxVtxPos2s16(s16 x, s16 y);
 extern void gfxEnd(void);
 extern void gfxBegin(s32 a);
 extern void gfxSetPrimitive(s32 a);
@@ -100,19 +100,19 @@ extern void gfxSetTevStage(void);
 extern void windowDrawSprite(s32 x, s32 y, s32 context, u32 key, u32 flags);
 extern void soundStartSE(void);
 extern void gfxVtxTexCoord(s32 slot, f32 xScale, f32 yScale);
-extern void fn_800D5BA0(s32 slot, u32 color);
-extern void fn_800D9D68(u16 a, u16 b, u16 c, u16 d);
+extern void gfxVtxColor1u32(s32 slot, u32 color);
+extern void gfxSetScissor(u16 a, u16 b, u16 c, u16 d);
 extern f64 tan(void);
-extern void fn_800D7FE4(void* mtx);
-extern void fn_800D834C(void);
-extern void fn_800D9BD0(f32 a, f32 b, f32 c, f32 d);
+extern void gfxMultMatrix(void* mtx);
+extern void gfxLoadIdentity(void);
+extern void gfxSetPerspective(f32 a, f32 b, f32 c, f32 d);
 extern void gfxSetCullMode(s32 a);
-extern void fn_800DA100(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f);
+extern void gfxSetAlphaCompare(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f);
 extern void gfxSetZMode(s32 a, s32 b, s32 c);
 extern void gfxSetUpdates(s32 a, s32 b, s32 c);
 extern void gfxSetBlendMode(s32 a, s32 b, s32 c);
 extern void set__5GSvecFfff(void* dst, f32 x, f32 y, f32 z);
-extern void fn_800E0218(void* dst, void* a, void* b, void* c);
+extern void GSmtxLookAt(void* dst, void* a, void* b, void* c);
 extern void* memset(void* dest, int val, u32 n);
 extern void* memcpy(void* dst, const void* src, u32 n);
 
@@ -124,18 +124,18 @@ extern u32 lbl_80401C10;
 /*
  * The TU's .bss, 0x80401DE0-0x80402518 (XD GSmsg.o's .bss is all anonymous
  * statics). MWCC addresses file statics off the pooled .bss base, which is
- * what fn_800FAEF8's `addi r31,base; addi r30,r31,0x5D0` shape comes from.
+ * what GSmsgPrintf's `addi r31,base; addi r30,r31,0x5D0` shape comes from.
  * GC/1.3.2 keeps those object offsets out of the store displacements (GC/1.3
- * folds them), so fn_800FAEF8's fill pointer stays a second addi until
+ * folds them), so GSmsgPrintf's fill pointer stays a second addi until
  * post-allocation CSE turns it into retail's `mr r7,r30`. lbl_80401DE0 and
- * lbl_804024E8 stay global: the fn_800F96E4 unit and the .sdata pointer
+ * lbl_804024E8 stay global: the GSmsgGetText unit and the .sdata pointer
  * lbl_80478B08 name them.
  */
 u8 lbl_80401DE0[0x68];
 static u8 lbl_80401E48[0x68];
-static u16 lbl_80401EB0[0x200]; /* fn_800FAEF8's GSchar print buffer */
-static char lbl_804022B0[0x100]; /* fn_800FAEF8's formatted string */
-static u8 lbl_804023B0[0x68]; /* fn_800FAEF8's print task */
+static u16 lbl_80401EB0[0x200]; /* GSmsgPrintf's GSchar print buffer */
+static char lbl_804022B0[0x100]; /* GSmsgPrintf's formatted string */
+static u8 lbl_804023B0[0x68]; /* GSmsgPrintf's print task */
 static u8 lbl_80402418[0x68];
 static u8 lbl_80402480[0x68];
 #else
@@ -172,12 +172,12 @@ extern f64 lbl_8047CCF8;  /* f64 */
 #if !defined(GS_MSG_PARTIAL)
 /*
  * The TU's .sdata2 pool, 0x8047CD00-0x8047CD50. The two whites and the
- * 1.0f come first: retail creates the 1.0f in fn_800F96E4, which is not in
+ * 1.0f come first: retail creates the 1.0f in GSmsgGetText, which is not in
  * the linked object, so the three are named here and the rest are
  * anonymous literals in creation order. RULE-EXCEPTION(title-path): the
  * 1.0f is a one-element const array so MWCC cannot fold it into a second,
  * anonymous 1.0f literal, and the whites are named statics - see
- * docs/RULE_EXCEPTIONS.md. The fn_800F96E4 unit names lbl_8047CD08.
+ * docs/RULE_EXCEPTIONS.md. The GSmsgGetText unit names lbl_8047CD08.
  */
 static const GXColor lbl_8047CD00 = { 255, 255, 255, 255 };
 static const GXColor lbl_8047CD04 = { 255, 255, 255, 255 };
@@ -228,7 +228,7 @@ struct MessageSystem lbl_804024E8;
  * pooled .bss order - see docs/RULE_EXCEPTIONS.md. MWCC lays the .bss out
  * in first-reference order. Retail has the print code buffer before the
  * print string buffer, and lbl_80402480 before lbl_804024E8, although
- * fn_800FAEF8 writes the string first and GSmsgInit (earlier than
+ * GSmsgPrintf writes the string first and GSmsgInit (earlier than
  * _msgGetSize) references lbl_804024E8 first. This static function is never
  * called and is dead-stripped at link time.
  */
@@ -291,32 +291,32 @@ extern u32 lbl_8047AC98;
 extern u32 lbl_8047AC9C;
 
 /* Forward declarations for all asm-wrapped functions in this block */
-extern void fn_800F8268(void);
-extern void fn_800F8428();
-extern void fn_800F8654();
-extern void fn_800F8A54();
-extern u32 fn_800F92D4(u32 key);
+extern void inputPadCallback(void);
+extern void inputUpdateMotors();
+extern void inputSmoothStick();
+extern void inputClampSticks();
+extern u32 GSresFindById(u32 key);
 extern void GSresInit(u32 count);
-extern u8* fn_800F96E4(u8* destination, s32 capacity, u32 key);
-extern u32 fn_800F9AEC(void* outbuf, const u16* src, s32 mode);
+extern u8* GSmsgGetText(u8* destination, s32 capacity, u32 key);
+extern u32 GScharToGBA(void* outbuf, const u16* src, s32 mode);
 extern void GScharMakeFromSJIS(u16* destination, const u8* source);
 extern u8* GScharCpy(u8* dst, const u8* src);
 extern void GSmsgSetColor(void* obj);
 extern s32 GSmsgGetRect();
 extern void GSmsgInitRuby();
-extern s32 fn_800FAEF8(s32, s32, u32, const char*, ...);
+extern s32 GSmsgPrintf(s32, s32, u32, const char*, ...);
 extern s32 std001_messageFormatLookup();
-extern s32 fn_800FB680();
-extern s32 fn_800FB8C8(s32 x, s32 y, s16 width, s16 height, s32 color, u32 key);
-extern s32 fn_800FBB34(s32 x, s32 y, s16 width, s16 height, s32 color, u32 key);
+extern s32 GSmsgPrintColor();
+extern s32 GSmsgPrintRight(s32 x, s32 y, s16 width, s16 height, s32 color, u32 key);
+extern s32 GSmsgPrintRect(s32 x, s32 y, s16 width, s16 height, s32 color, u32 key);
 extern void GSmsgDaemon(void);
 extern s32 GSmsgExec();
 extern u32 fn_800FC2A8(void* ptr);
 extern void* GSmsgFontOpen();
 extern s32 GSmsgInit(u16 taskCount, u16 fontCount);
 extern s32 msgTaskDraw(u8* arg0, u32 arg1, u32 arg2, u32 arg3);
-extern void fn_800FD348(u8* work);
-extern void fn_800FD69C(u8* work, const u8* pixels, s16 width, s16 height, s16 yOffset);
+extern void msgDrawRuby(u8* work);
+extern void _msgMakeTexture(u8* work, const u8* pixels, s16 width, s16 height, s16 yOffset);
 extern u16* _msgGetCodeInfo__FP13MSG_TASK_WORKUsPP12tagFONT_INFO(u8* work, u16 code, void** outBank);
 extern s32 _msgGetLength__FPCUs(const void* str);
 extern s32 _msgGetSize__FPCUs(const u16* text);
@@ -512,7 +512,7 @@ static inline u16 GSmsgReadCode(u8* work) {
 
 #if !defined(GS_MSG_POOL_OBJECT)
 /* 0x800F96E4 | 0x408 */
-u8* fn_800F96E4(u8* destination, s32 capacity, u32 key) {
+u8* GSmsgGetText(u8* destination, s32 capacity, u32 key) {
     struct MessageGroup* bank;
     u8* text;
     u8* work;
@@ -636,7 +636,7 @@ static inline u32 msgGBAFromGSchar(u8* out, const u16* src, const u16* table) {
  * self-assignment in case 7 survives the IR long enough to keep that label
  * distinct and is coalesced away by the backend; it emits no code.
  */
-u32 fn_800F9AEC(void* outbuf, const u16* src, s32 mode) {
+u32 GScharToGBA(void* outbuf, const u16* src, s32 mode) {
     switch (mode) {
     case 1:
         return msgGBAFromGSchar((u8*)outbuf, src, (const u16*)lbl_80271300);
@@ -668,8 +668,8 @@ static inline u32 msgGScharFromGBA(u16* out, const u8* src, s32 count, const u16
     return total;
 }
 
-/* Same dispatch shape as fn_800F9AEC (see the note there). */
-u32 fn_800F9C04(void* outbuf, const u8* src, s32 count, s32 mode) {
+/* Same dispatch shape as GScharToGBA (see the note there). */
+u32 GScharFromGBA(void* outbuf, const u8* src, s32 count, s32 mode) {
     switch (mode) {
     case 1:
         return msgGScharFromGBA((u16*)outbuf, src, count, (const u16*)lbl_80271300);
@@ -690,7 +690,7 @@ u32 fn_800F9C04(void* outbuf, const u8* src, s32 count, s32 mode) {
 
 /* 0x800F9D04 | 0x20 */
 void GScharMakeFromSJIS(u16* destination, const u8* source) {
-    fn_80080ED8(destination, source);
+    SJIStoGSchar(destination, source);
 }
 
 /* 0x800F9D24 | 0x14C */
@@ -1121,8 +1121,8 @@ static inline void msgSetChar(u8* work, u16 code) {
     extern void gfxLoadTexture(s32 index, void* texture);
     extern void gfxSetPrimitive(s32 mode);
     extern void gfxBegin(s32 mode);
-    extern void fn_800D61E4(s16 x, s16 y);
-    extern void fn_800D5CB8(s32 a, s32 b, s32 c, s32 d, u32 color);
+    extern void gfxVtxPos2s16(s16 x, s16 y);
+    extern void gfxVtxColor4u8(s32 a, s32 b, s32 c, s32 d, u32 color);
     extern void gfxEnd(void);
     extern void fn_800DC1D4(s32 arg);
     u8* glyph;
@@ -1148,10 +1148,10 @@ static inline void msgSetChar(u8* work, u16 code) {
         gfxSetPrimitive(7);
         gfxSetVtxDesc(lbl_80314E08);
         gfxBegin(2);
-        fn_800D61E4(drawX0, drawY0);
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
-        fn_800D61E4(drawX1, drawY1);
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+        gfxVtxPos2s16(drawX0, drawY0);
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+        gfxVtxPos2s16(drawX1, drawY1);
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
         gfxEnd();
         gfxSetFlags(0x80000002u);
         gfxSetVtxDesc(lbl_80314F98);
@@ -1160,13 +1160,13 @@ static inline void msgSetChar(u8* work, u16 code) {
         *(f32*)(work + 0x14) = 2.0f + advance;
     } else {
         glyphWidth = ((struct GlyphEntry*)glyph)->width;
-        fn_800FD69C(work, (u8*)outNode + ((struct FontBank*)outNode)->dataOffset + (((struct GlyphEntry*)glyph)->offset & 0xFFFFFF),
+        _msgMakeTexture(work, (u8*)outNode + ((struct FontBank*)outNode)->dataOffset + (((struct GlyphEntry*)glyph)->offset & 0xFFFFFF),
                     glyphWidth, ((struct GlyphEntry*)glyph)->height, (s8)(((struct GlyphEntry*)glyph)->offset >> 24));
         *(f32*)(work + 0x14) = (f32)glyphWidth * *(f32*)(work + 0x60);
     }
 }
 
-/* fn_800FAEF8's task fill: the rest of _msgInitTask (XD NXXJ01.map GSmsg.o,
+/* GSmsgPrintf's task fill: the rest of _msgInitTask (XD NXXJ01.map GSmsg.o,
  * UNUSED 0x6C) followed by the print fields. The caller clears the task
  * itself. Retail fills it through a second pointer (`mr r7,r30`): the task
  * is a pooled static, GC/1.3.2 keeps its offset out of the store
@@ -1187,7 +1187,7 @@ static inline void msgPrintRest(u8* t, u8* text, s32 x, s32 y, u32 color) {
 }
 
 /* 0x800FAEF8 | 0x544 */
-s32 fn_800FAEF8(s32 x, s32 y, u32 color, const char* fmt, ...) {
+s32 GSmsgPrintf(s32 x, s32 y, u32 color, const char* fmt, ...) {
     typedef struct GSVaList {
         u32 flags;
         void* inputArgArea;
@@ -1202,8 +1202,8 @@ s32 fn_800FAEF8(s32 x, s32 y, u32 color, const char* fmt, ...) {
     extern void gfxLoadTexture(s32 index, void* texture);
     extern void gfxSetPrimitive(s32 mode);
     extern void gfxBegin(s32 mode);
-    extern void fn_800D61E4(s16 x, s16 y);
-    extern void fn_800D5CB8(s32 a, s32 b, s32 c, s32 d, u32 color);
+    extern void gfxVtxPos2s16(s16 x, s16 y);
+    extern void gfxVtxColor4u8(s32 a, s32 b, s32 c, s32 d, u32 color);
     extern void gfxEnd(void);
     extern void fn_800DC1D4(s32 arg);
 
@@ -1216,7 +1216,7 @@ s32 fn_800FAEF8(s32 x, s32 y, u32 color, const char* fmt, ...) {
     logVsnprintf_float(lbl_804022B0, 0xFF, fmt, &args);
     str = (u8*)lbl_804022B0;
     str[0xFF] = 0;
-    fn_80080ED8(lbl_80401EB0, str);
+    SJIStoGSchar(lbl_80401EB0, str);
 
     /* Cleared through `work`, filled through the static itself (see
      * msgPrintRest). */
@@ -1255,7 +1255,7 @@ s32 fn_800FAEF8(s32 x, s32 y, u32 color, const char* fmt, ...) {
 /* GSmsgPrintRect's body. Retail inlines it into the three print wrappers
  * below (XD keeps them as calls: GSmsgPrint2 and GSmsgPrintRight call
  * GSmsgPrintRect, trevor403/xd-asm b1087f18 func_FUN_80108464.s and
- * func_FUN_80108494.s). Out of line, fn_800FBB34 copies the work address
+ * func_FUN_80108494.s). Out of line, GSmsgPrintRect copies the work address
  * through r0 (as XD's GSmsgPrintRect does); inlined, it is materialized
  * straight into r31, as in the three wrappers. */
 static inline s32 msgPrintRect(s32 x, s32 y, s16 width, s16 height, s32 color, u32 key) {
@@ -1296,12 +1296,12 @@ s32 std001_messageFormatLookup(s32 x, s32 y, u32 key) {
 }
 
 /* 0x800FB680 | 0x248 */
-s32 fn_800FB680(s32 x, s32 y, s32 color, u32 key) {
+s32 GSmsgPrintColor(s32 x, s32 y, s32 color, u32 key) {
     return msgPrintRect(x, y, 0, 0, color, key);
 }
 
 /* 0x800FB8C8 | 0x26C */
-s32 fn_800FB8C8(s32 x, s32 y, s16 width, s16 height, s32 color, u32 key) {
+s32 GSmsgPrintRight(s32 x, s32 y, s16 width, s16 height, s32 color, u32 key) {
     x += width - (s16)((u32)GSmsgGetRect(key) >> 16);
     return msgPrintRect(x, y, width, height, color, key);
 }
@@ -1309,7 +1309,7 @@ s32 fn_800FB8C8(s32 x, s32 y, s16 width, s16 height, s32 color, u32 key) {
 #pragma pop
 
 /* 0x800FBB34 | 0x254 */
-s32 fn_800FBB34(s32 x, s32 y, s16 width, s16 height, s32 color, u32 key) {
+s32 GSmsgPrintRect(s32 x, s32 y, s16 width, s16 height, s32 color, u32 key) {
     struct MessageGroup* group;
     void* text;
     u8* work;
@@ -1610,14 +1610,14 @@ s32 GSmsgInit(u16 taskCount, u16 fontCount) {
         GSlogWrite((const char*)lbl_802717B4);
         return -1;
     }
-    lbl_80478B08->tasks = fn_800E27B0(lbl_80478B08->taskHandle);
+    lbl_80478B08->tasks = GSmemLock(lbl_80478B08->taskHandle);
 
     lbl_80478B08->fontHandle = _toolentryAlloc__FUl(fontCount * sizeof(struct FontSlot));
     if (lbl_80478B08->fontHandle == 0) {
         GSlogWrite((const char*)lbl_802717B4);
         return -1;
     }
-    lbl_80478B08->fonts = fn_800E27B0(lbl_80478B08->fontHandle);
+    lbl_80478B08->fonts = GSmemLock(lbl_80478B08->fontHandle);
 
     for (index = 0; index < taskCount; index++) {
         work = lbl_80478B08->tasks + index * 0x68;
@@ -1801,7 +1801,7 @@ s32 msgTaskDraw(u8* arg0, u32 arg1, u32 arg2, u32 arg3)
                 }
             }
             if (arg0[0x4B] == 1) {
-                fn_800FD348(arg0);
+                msgDrawRuby(arg0);
             }
         }
     }
@@ -1850,7 +1850,7 @@ s32 msgTaskDraw(u8* arg0, u32 arg1, u32 arg2, u32 arg3)
 }
 
 /* 0x800FD348 | 0x354 */
-void fn_800FD348(u8* arg0)
+void msgDrawRuby(u8* arg0)
 {
     u8 targetCount;
     u8 drawCount;
@@ -1906,10 +1906,10 @@ void fn_800FD348(u8* arg0)
                 gfxSetPrimitive(7);
                 gfxSetVtxDesc(lbl_80314E08);
                 gfxBegin(2);
-                fn_800D61E4(x0, y0);
-                fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
-                fn_800D61E4(x1, y1);
-                fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+                gfxVtxPos2s16(x0, y0);
+                gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+                gfxVtxPos2s16(x1, y1);
+                gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
                 gfxEnd();
                 gfxSetFlags(0x80000002);
                 gfxSetVtxDesc(lbl_80314F98);
@@ -1919,7 +1919,7 @@ void fn_800FD348(u8* arg0)
                 *(f32 *)(arg0 + 0x14) = 2.0f + scaleX;
             } else {
                 glyphWidth = ((struct GlyphEntry *)fontInfo)->width;
-                fn_800FD69C(arg0,
+                _msgMakeTexture(arg0,
                             (u8 *)fontNode + ((struct FontBank *)fontNode)->dataOffset +
                                 (((struct GlyphEntry *)fontInfo)->offset & 0xFFFFFF),
                             glyphWidth, ((struct GlyphEntry *)fontInfo)->height,
@@ -1948,7 +1948,7 @@ void fn_800FD348(u8* arg0)
  * rest (add lo,lo,image; stbx v,hi,lo). "* 32" or buffer[...] reorders it.
  * The second loop reuses `row`, so its counter is a split web and the
  * zero is shared (li r3,0; mr r0,r3). */
-void fn_800FD69C(u8* arg0, const u8* arg1, s16 arg2, s16 arg3, s16 arg4)
+void _msgMakeTexture(u8* arg0, const u8* arg1, s16 arg2, s16 arg3, s16 arg4)
 {
     s32 xPos;
     s32 widthRounded;
@@ -2051,49 +2051,49 @@ void fn_800FD69C(u8* arg0, const u8* arg1, s16 arg2, s16 arg3, s16 arg4)
 
     case 1:
         gfxBegin(4);
-        fn_800D61E4(drawX0 + 1, drawY0 + 1);
-        fn_800D5CB8(0, 0, 0, 0, outlineAlpha);
+        gfxVtxPos2s16(drawX0 + 1, drawY0 + 1);
+        gfxVtxColor4u8(0, 0, 0, 0, outlineAlpha);
         gfxVtxTexCoord(0, u0, v0);
-        fn_800D61E4(drawX1 + 1, drawY1 + 1);
-        fn_800D5CB8(0, 0, 0, 0, outlineAlpha);
+        gfxVtxPos2s16(drawX1 + 1, drawY1 + 1);
+        gfxVtxColor4u8(0, 0, 0, 0, outlineAlpha);
         gfxVtxTexCoord(0, u1, v1);
         break;
 
     case 2:
         gfxBegin(0xA);
-        fn_800D61E4(drawX0 - 1, drawY0);
-        fn_800D5CB8(0, 0, 0, 0, outlineAlpha);
+        gfxVtxPos2s16(drawX0 - 1, drawY0);
+        gfxVtxColor4u8(0, 0, 0, 0, outlineAlpha);
         gfxVtxTexCoord(0, u0, v0);
-        fn_800D61E4(drawX1 - 1, drawY1);
-        fn_800D5CB8(0, 0, 0, 0, outlineAlpha);
+        gfxVtxPos2s16(drawX1 - 1, drawY1);
+        gfxVtxColor4u8(0, 0, 0, 0, outlineAlpha);
         gfxVtxTexCoord(0, u1, v1);
-        fn_800D61E4(drawX0 + 1, drawY0);
-        fn_800D5CB8(0, 0, 0, 0, outlineAlpha);
+        gfxVtxPos2s16(drawX0 + 1, drawY0);
+        gfxVtxColor4u8(0, 0, 0, 0, outlineAlpha);
         gfxVtxTexCoord(0, u0, v0);
-        fn_800D61E4(drawX1 + 1, drawY1);
-        fn_800D5CB8(0, 0, 0, 0, outlineAlpha);
+        gfxVtxPos2s16(drawX1 + 1, drawY1);
+        gfxVtxColor4u8(0, 0, 0, 0, outlineAlpha);
         gfxVtxTexCoord(0, u1, v1);
-        fn_800D61E4(drawX0, drawY0 - 1);
-        fn_800D5CB8(0, 0, 0, 0, outlineAlpha);
+        gfxVtxPos2s16(drawX0, drawY0 - 1);
+        gfxVtxColor4u8(0, 0, 0, 0, outlineAlpha);
         gfxVtxTexCoord(0, u0, v0);
-        fn_800D61E4(drawX1, drawY1 - 1);
-        fn_800D5CB8(0, 0, 0, 0, outlineAlpha);
+        gfxVtxPos2s16(drawX1, drawY1 - 1);
+        gfxVtxColor4u8(0, 0, 0, 0, outlineAlpha);
         gfxVtxTexCoord(0, u1, v1);
-        fn_800D61E4(drawX0, drawY0 + 1);
-        fn_800D5CB8(0, 0, 0, 0, outlineAlpha);
+        gfxVtxPos2s16(drawX0, drawY0 + 1);
+        gfxVtxColor4u8(0, 0, 0, 0, outlineAlpha);
         gfxVtxTexCoord(0, u0, v0);
-        fn_800D61E4(drawX1, drawY1 + 1);
-        fn_800D5CB8(0, 0, 0, 0, outlineAlpha);
+        gfxVtxPos2s16(drawX1, drawY1 + 1);
+        gfxVtxColor4u8(0, 0, 0, 0, outlineAlpha);
         gfxVtxTexCoord(0, u1, v1);
         break;
 
     }
 
-    fn_800D61E4(drawX0, drawY0);
-    fn_800D5BA0(0, *(u32*)(arg0 + 0x24));
+    gfxVtxPos2s16(drawX0, drawY0);
+    gfxVtxColor1u32(0, *(u32*)(arg0 + 0x24));
     gfxVtxTexCoord(0, u0, v0);
-    fn_800D61E4(drawX1, drawY1);
-    fn_800D5BA0(0, *(u32*)(arg0 + 0x24));
+    gfxVtxPos2s16(drawX1, drawY1);
+    gfxVtxColor1u32(0, *(u32*)(arg0 + 0x24));
     gfxVtxTexCoord(0, u1, v1);
     gfxEnd();
 

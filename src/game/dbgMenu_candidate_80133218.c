@@ -4,7 +4,7 @@
 
 u32 dbgMenuGSmemOptimize(void)
 {
-    u32 value = fn_800E1544();
+    u32 value = GSmemOptimize();
 
     GSlogWrite(lbl_80272AB8, value);
     return 0;

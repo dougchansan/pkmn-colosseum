@@ -48,8 +48,8 @@ extern void* pokemonGetStatus();
 extern u32   pokemonSetStatus();
 extern void  pokemonGrowBasisStatus();
 extern u32   itemGetStatus();
-extern void  fn_80119ED0(void);
-extern void  fn_80121ADC(void);
+extern void  joutaiDataBiosGetStatusKind(void);
+extern void  pokemonIsJoutaiDataId(void);
 extern void  fn_8011B67C(void);
 extern void  pokemonGetSoubiItemDataId(void);
 extern void* fightActionGetPri(void* p);
@@ -429,9 +429,9 @@ u16 fightOutPokemonGetTokuseiDataId(void* context) {
 
 /* 0x80207C24 | size: 0x48 | small */
 void fightOutPokemonSetWazaEffectDownFlag(void* ctx, u32 param) {
-    extern void fn_801DA5AC();
+    extern void wazaSequenceSetDownFlag();
     void* obj = pokemonGetStatus(ctx, 0, 0xee, 0);
     if (obj != 0) {
-        fn_801DA5AC(obj, param);
+        wazaSequenceSetDownFlag(obj, param);
     }
 }

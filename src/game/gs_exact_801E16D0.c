@@ -3,15 +3,15 @@
 #include "game/gs_mem.h"
 
 /* Retail symbols for the canonical GSmem API declared by gs_mem.h. */
-extern u16 fn_800E202C(void* ptr); /* GSmemFindHandle */
+extern u16 GSmemGetHandleByPtr(void* ptr); /* GSmemFindHandle */
 extern void* fn_800E24B0(u16 handle); /* GSmemLock */
-extern void fn_800E209C(u16 handle); /* GSmemFree */
+extern void GSmemFree(u16 handle); /* GSmemFree */
 
 s32 GSmovieGetFrame(void)
 {
-    extern s32 fn_801E25C8(void);
+    extern s32 THPPlayerGetFrame(void);
 
-    return fn_801E25C8();
+    return THPPlayerGetFrame();
 }
 
 void fn_801E16F0(void)
@@ -19,10 +19,10 @@ void fn_801E16F0(void)
     extern u8 lbl_8047B440;
     extern u8 lbl_8047B441;
     extern void* lbl_8047B450;
-    extern void fn_801E386C(void);
-    extern s32 fn_801E38D8(void);
-    extern void fn_801E3F54(void);
-    extern BOOL fn_801E4724(void);
+    extern void THPPlayerDrawDone(void);
+    extern s32 THPPlayerGetState(void);
+    extern void THPPlayerStop(void);
+    extern BOOL THPPlayerClose(void);
     extern void GSscratchSetValid(void);
     u16 handle;
     u8 active;
@@ -33,17 +33,17 @@ void fn_801E16F0(void)
         active = 1;
     }
     if (active != 0) {
-        fn_801E386C();
-        switch (fn_801E38D8()) {
+        THPPlayerDrawDone();
+        switch (THPPlayerGetState()) {
         case 3:
         case 5:
             if (lbl_8047B441 != 0) {
-                fn_801E3F54();
-                fn_801E4724();
-                handle = fn_800E202C(lbl_8047B450);
+                THPPlayerStop();
+                THPPlayerClose();
+                handle = GSmemGetHandleByPtr(lbl_8047B450);
                 if (handle != 0) {
                     fn_800E24B0(handle);
-                    fn_800E209C(handle);
+                    GSmemFree(handle);
                 }
                 lbl_8047B441 = 0;
                 GSscratchSetValid();
@@ -61,7 +61,7 @@ void fn_801E17A8(void)
     extern s32 lbl_8047B458;
     extern s32 lbl_8047B45C;
     extern s32 lbl_80469030[4];
-    extern s32 fn_801E3978(s32, s32, s32, s32, s32);
+    extern s32 THPPlayerDrawCurrentFrame(s32, s32, s32, s32, s32);
     u8 active;
 
     if (lbl_8047B440 == 0 || lbl_8047B441 == 0) {
@@ -70,7 +70,7 @@ void fn_801E17A8(void)
         active = 1;
     }
     if (active != 0) {
-        fn_801E3978(lbl_8047B45C, lbl_8047B458, lbl_8047B454,
+        THPPlayerDrawCurrentFrame(lbl_8047B45C, lbl_8047B458, lbl_8047B454,
                     lbl_80469030[0], lbl_80469030[1]);
     }
 }
@@ -79,18 +79,18 @@ void GSmovieClose(void)
 {
     extern u8 lbl_8047B441;
     extern void* lbl_8047B450;
-    extern void fn_801E3F54(void);
-    extern BOOL fn_801E4724(void);
+    extern void THPPlayerStop(void);
+    extern BOOL THPPlayerClose(void);
     extern void GSscratchSetValid(void);
     u16 handle;
 
     if (lbl_8047B441 != 0) {
-        fn_801E3F54();
-        fn_801E4724();
-        handle = fn_800E202C(lbl_8047B450);
+        THPPlayerStop();
+        THPPlayerClose();
+        handle = GSmemGetHandleByPtr(lbl_8047B450);
         if (handle != 0) {
             fn_800E24B0(handle);
-            fn_800E209C(handle);
+            GSmemFree(handle);
         }
         lbl_8047B441 = 0;
         GSscratchSetValid();

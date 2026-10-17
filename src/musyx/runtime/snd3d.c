@@ -127,10 +127,10 @@ typedef enum {
 extern u8 lbl_8047AF18; /* sndActive */
 
 extern void synthSendKeyOff(SND_VOICEID vid);
-extern void fn_8014DC00(u8 studio, u32 isMaster, SND_STUDIO_TYPE type); /* synthActivateStudio */
-extern void fn_8014DCA8(u8 studio);                                   /* synthDeactivateStudio */
-extern u32 fn_8014DD98(u8 studio, SND_STUDIO_INPUT* in_desc);        /* synthAddStudioInput */
-extern u32 fn_8014DDB8(u8 studio, SND_STUDIO_INPUT* in_desc);        /* synthRemoveStudioInput */
+extern void synthActivateStudio(u8 studio, u32 isMaster, SND_STUDIO_TYPE type); /* synthActivateStudio */
+extern void synthDeactivateStudio(u8 studio);                                   /* synthDeactivateStudio */
+extern u32 synthAddStudioInput(u8 studio, SND_STUDIO_INPUT* in_desc);        /* synthAddStudioInput */
+extern u32 synthRemoveStudioInput(u8 studio, SND_STUDIO_INPUT* in_desc);        /* synthRemoveStudioInput */
 extern SND_VOICEID synthFXStart(u16 fid, u8 vol, u8 pan, u8 studio, u32 itd);
 extern u32 synthFXSetCtrl(SND_VOICEID vid, u8 ctrl, u8 value);
 extern u32 synthFXSetCtrl14(SND_VOICEID vid, u8 ctrl, u16 value);
@@ -272,7 +272,7 @@ void fn_8015DEC0(void) /* CheckRoomStatus */
                             max_room->deActivateReverb(max_room->studio);
                         }
 
-                        fn_8014DCA8(max_room->studio);
+                        synthDeactivateStudio(max_room->studio);
                         room->studio = max_room->studio;
                         max_room->studio = 0xFF;
                         max_room->flags = 0;
@@ -284,9 +284,9 @@ void fn_8015DEC0(void) /* CheckRoomStatus */
                 room->curMVol = has_listener ? 0x7F0000 : 0;
 
                 if (room->curMVol * 1.2014794e-07f >= 0.5) {
-                    fn_8014DC00(room->studio, TRUE, SND_STUDIO_TYPE_STD);
+                    synthActivateStudio(room->studio, TRUE, SND_STUDIO_TYPE_STD);
                 } else {
-                    fn_8014DC00(room->studio, FALSE, SND_STUDIO_TYPE_STD);
+                    synthActivateStudio(room->studio, FALSE, SND_STUDIO_TYPE_STD);
                 }
 
                 if (room->activateReverb != NULL) {
@@ -301,9 +301,9 @@ void fn_8015DEC0(void) /* CheckRoomStatus */
                     }
 
                     if (room->curMVol * 1.2014794e-07f >= 0.5) {
-                        fn_8014DC00(room->studio, TRUE, SND_STUDIO_TYPE_STD);
+                        synthActivateStudio(room->studio, TRUE, SND_STUDIO_TYPE_STD);
                     } else {
-                        fn_8014DC00(room->studio, FALSE, SND_STUDIO_TYPE_STD);
+                        synthActivateStudio(room->studio, FALSE, SND_STUDIO_TYPE_STD);
                     }
                 }
 
@@ -314,9 +314,9 @@ void fn_8015DEC0(void) /* CheckRoomStatus */
                         room->flags &= ~0x40000000;
                     }
                     if (room->curMVol * 1.2014794e-07f >= 0.5) {
-                        fn_8014DC00(room->studio, TRUE, SND_STUDIO_TYPE_STD);
+                        synthActivateStudio(room->studio, TRUE, SND_STUDIO_TYPE_STD);
                     } else {
-                        fn_8014DC00(room->studio, FALSE, SND_STUDIO_TYPE_STD);
+                        synthActivateStudio(room->studio, FALSE, SND_STUDIO_TYPE_STD);
                     }
                 }
             }
@@ -377,10 +377,10 @@ static void CheckDoorStatus(void)
                     CalcDoorParameters(door);
                     if (door->flags & 1) {
                         door->input.srcStudio = door->b->studio;
-                        fn_8014DD98(door->a->studio, &door->input);
+                        synthAddStudioInput(door->a->studio, &door->input);
                     } else {
                         door->input.srcStudio = door->a->studio;
-                        fn_8014DD98(door->b->studio, &door->input);
+                        synthAddStudioInput(door->b->studio, &door->input);
                     }
 
                     door->flags |= 0x80000000;
@@ -389,7 +389,7 @@ static void CheckDoorStatus(void)
         } else if (door->a->studio == 0xFF || door->b->studio == 0xFF) {
             if ((door->a->studio != 0xFF && door->a->studio == door->destStudio) ||
                 (door->b->studio != 0xFF && door->b->studio == door->destStudio)) {
-                fn_8014DDB8(door->destStudio, &door->input);
+                synthRemoveStudioInput(door->destStudio, &door->input);
             }
 
             door->flags &= ~0x80000000;
@@ -688,7 +688,7 @@ static void MakeListenerMatrix(SND_LISTENER* li)
     salInvertMatrix(&li->mat, &mat);
 }
 
-u32 fn_8015ED00(SND_LISTENER* li, SND_FVECTOR* pos, SND_FVECTOR* dir, SND_FVECTOR* heading,
+u32 s3dUpdateListener(SND_LISTENER* li, SND_FVECTOR* pos, SND_FVECTOR* dir, SND_FVECTOR* heading,
                 SND_FVECTOR* up, u8 vol, SND_ROOM* room) /* sndUpdateListener */
 {
     if (lbl_8047AF18) {
@@ -753,7 +753,7 @@ u32 sndAddListenerEx(SND_LISTENER* li, SND_FVECTOR* pos, SND_FVECTOR* dir, SND_F
     return FALSE;
 }
 
-u32 fn_8015EF04(SND_LISTENER* li, SND_FVECTOR* pos, SND_FVECTOR* dir, SND_FVECTOR* heading,
+u32 s3dSetListener(SND_LISTENER* li, SND_FVECTOR* pos, SND_FVECTOR* dir, SND_FVECTOR* heading,
                 SND_FVECTOR* up, f32 front_sur, f32 back_sur, f32 soundSpeed, u32 flags, u8 vol,
                 SND_ROOM* room) /* sndAddListener */
 {
@@ -915,7 +915,7 @@ void fn_8015F270(void) /* StartContinousEmitters */
     }
 }
 
-void fn_8015F620(void) /* s3dHandle */
+void s3dHandle(void) /* s3dHandle */
 {
     SND_EMITTER* em;
     SND_EMITTER* nem;
@@ -1014,7 +1014,7 @@ void fn_8015F620(void) /* s3dHandle */
     CheckDoorStatus();
 }
 
-void fn_8015FE4C(u32 flags) /* s3dInit */
+void s3dInit(u32 flags) /* s3dInit */
 {
     s3dEmitterRoot = NULL;
     s3dListenerRoot = NULL;
@@ -1027,6 +1027,6 @@ void fn_8015FE4C(u32 flags) /* s3dInit */
     s3dUseMaxVoices = ((flags & 2) != 0);
 }
 
-void fn_8015FE84(void) /* s3dExit */
+void s3dExit(void) /* s3dExit */
 {
 }

@@ -12,7 +12,7 @@ typedef struct ToolentryBattleState {
 
 extern ToolentryBattleState* fn_8006B5A8(void);
 
-u32 fn_8025DBB0(void)
+u32 battleResultGet14(void)
 {
     return fn_8006B5A8()->count_14;
 }

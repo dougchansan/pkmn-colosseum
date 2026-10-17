@@ -98,8 +98,8 @@ extern u8 OSReboot_800030E2 AT_ADDRESS(0x800030E2);
 extern u32 __OSBusClock AT_ADDRESS(0x800000F8);
 extern s32 __OSIsGcam;
 
-extern s32 fn_800A7820(s32 enable);
-extern DVDDiskID* fn_800A7BCC(void);
+extern s32 DVDSetAutoInvalidation(s32 enable);
+extern DVDDiskID* DVDGetCurrentDiskID(void);
 extern void fn_8009FAEC(void);
 extern void fn_8009FADC(void* address);
 extern void DVDResume(void);
@@ -124,7 +124,7 @@ volatile u16 __VIRegs[59] AT_ADDRESS(0xCC002000);
 static inline int CallResetFunctions(int final);
 extern void Reset_8009FF50(u32 resetCode);
 #elif defined(OSRESET_PREFIX)
-s32 fn_8009FEBC(s32 final);
+s32 __OSCallResetFunctions(s32 final);
 #else
 static int CallResetFunctions(int final);
 #endif
@@ -133,7 +133,7 @@ static void CancelThreads(void);
 #define OS_ROUND_UP_32B(value) (((u32)(value) + 0x1F) & ~0x1F)
 
 static inline BOOL IsStreamEnabled(void) {
-    if (fn_800A7BCC()->streaming) {
+    if (DVDGetCurrentDiskID()->streaming) {
         return TRUE;
     }
     return FALSE;
@@ -163,7 +163,7 @@ void __OSReboot(u32 resetCode, u32 bootDol) {
     OSClearContext(&exceptionContext);
     OSSetCurrentContext(&exceptionContext);
     DVDInit();
-    fn_800A7820(TRUE);
+    DVDSetAutoInvalidation(TRUE);
     DVDResume();
 
     lbl_8047A730[0] = FALSE;
@@ -229,7 +229,7 @@ void OSRegisterResetFunction(OSResetFunctionInfo* info) {
 #if defined(OSRESET_SUFFIX)
 static inline int CallResetFunctions(int final) {
 #elif defined(OSRESET_PREFIX)
-s32 fn_8009FEBC(s32 final) {
+s32 __OSCallResetFunctions(s32 final) {
 #else
 static int CallResetFunctions(int final) {
 #endif
@@ -344,7 +344,7 @@ void OSResetSystem(BOOL reset, u32 resetCode, BOOL forceMenu) {
 #if defined(OSRESET_SUFFIX)
     do {} while (CallResetFunctions(0) == 0);
 #else
-    do {} while (fn_8009FEBC(0) == 0);
+    do {} while (__OSCallResetFunctions(0) == 0);
 #endif
 
     if (reset == 1 && forceMenu != 0) {
@@ -359,7 +359,7 @@ void OSResetSystem(BOOL reset, u32 resetCode, BOOL forceMenu) {
 #if defined(OSRESET_SUFFIX)
     CallResetFunctions(1);
 #else
-    fn_8009FEBC(1);
+    __OSCallResetFunctions(1);
 #endif
     LCDisable();
 
@@ -453,7 +453,7 @@ void __OSResetSWInterruptHandler(s16 interrupt, OSContext* context) {
  * 2 function(s)
  * =================================================================== */
 
-/* fn_8009FEBC - 0x8009FEBC | size: 0x94
+/* __OSCallResetFunctions - 0x8009FEBC | size: 0x94
  * CallResetFunctions variant - walks the reset function queue, calling
  * each function. Stops early if any function fails. Returns 1 on
  * success, 0 if any function (or SyncSram) failed.

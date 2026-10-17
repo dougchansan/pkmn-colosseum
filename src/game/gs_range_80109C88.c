@@ -51,8 +51,8 @@ extern u32 GSthreadCreate(s32 priority, void* stack, u32 stackSize,
 extern void GSthreadSetArgs(u32 task, u32 count, ...);
 extern u8 GSthreadIsRunning(u32 task);
 extern void GSthreadClose(u32 task);
-extern s32 fn_8010A88C(FaceModel* m);
-extern u8 fn_80121ADC(void* pokemon, u32 slot);
+extern s32 _menuPokemonModelLoadThread(FaceModel* m);
+extern u8 pokemonIsJoutaiDataId(void* pokemon, u32 slot);
 
 static inline u8 faceKeyEqual(FaceKey* a, FaceKey* b)
 {
@@ -96,7 +96,7 @@ static inline void faceKeyFromPokemon(FaceKey* k, void* pokemon)
     k->species = species;
     k->u.s.hi = pokemonGetStatus(NULL, species, 0x66, 0);
     if (pokemonGetStatus(pokemon, 0, 0xC2, 0) != 0) {
-        if (fn_80121ADC(pokemon, 0x3E) == 1) {
+        if (pokemonIsJoutaiDataId(pokemon, 0x3E) == 1) {
             k->u.s.lo = 0x87;
         } else {
             k->u.s.lo = 0x25;
@@ -130,7 +130,7 @@ static inline u8 faceModelIsPokemon(FaceModel* m, void* pokemon)
     !defined(GS_FN_8010BBB8) && !defined(GS_FN_8010BCE4) && \
     !defined(GS_FN_8010BD6C)
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
-s32 fn_80109C88(FaceModel* m, void* pokemon)
+s32 menuPokemonModelRequest(FaceModel* m, void* pokemon)
 {
     if (m == NULL) {
         return 0;
@@ -158,7 +158,7 @@ s32 fn_80109C88(FaceModel* m, void* pokemon)
         GSthreadClose(m->thread);
     }
     m->thread = GSthreadCreate(1, (void*)floorGetCurrentContext(), 0x4000, 1, 1,
-                               (void*)fn_8010A88C);
+                               (void*)_menuPokemonModelLoadThread);
     if (m->thread != 0) {
         GSthreadSetArgs(m->thread, 1, m);
     }
@@ -166,7 +166,7 @@ s32 fn_80109C88(FaceModel* m, void* pokemon)
 }
 
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
-s32 fn_8010A010(FaceModel* m, u32 id)
+s32 menuPokemonModelRequestById(FaceModel* m, u32 id)
 {
     if (m == NULL) {
         return 0;
@@ -195,7 +195,7 @@ s32 fn_8010A010(FaceModel* m, u32 id)
         GSthreadClose(m->thread);
     }
     m->thread = GSthreadCreate(1, (void*)floorGetCurrentContext(), 0x4000, 1, 1,
-                               (void*)fn_8010A88C);
+                               (void*)_menuPokemonModelLoadThread);
     if (m->thread != 0) {
         GSthreadSetArgs(m->thread, 1, m);
     }
@@ -203,7 +203,7 @@ s32 fn_8010A010(FaceModel* m, u32 id)
 }
 
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
-u8 fn_8010A210(FaceModel* m, void* pokemon)
+u8 menuPokemonModelIsLoaded(FaceModel* m, void* pokemon)
 {
     FaceKey k;
     u8 result;
@@ -222,7 +222,7 @@ u8 fn_8010A210(FaceModel* m, void* pokemon)
 #endif
 
 /* The unit built from this file directly is 0x80109C88 - 0x8010A420
- * (fn_80109C88, fn_8010A010, fn_8010A210). The rest of the range is
+ * (menuPokemonModelRequest, menuPokemonModelRequestById, menuPokemonModelIsLoaded). The rest of the range is
  * compiled through gs_range_8010A88C_suffix.c, which defines
  * GS_RANGE_80109C88_ALL. */
 #if defined(GS_RANGE_80109C88_ALL) || defined(GS_FN_8010A88C) || \
@@ -364,7 +364,7 @@ typedef struct WinSpriteDrawNode {
 static inline s32 faceDraw(u8* context, void* srcNode, u16 key)
 {
     extern void* _menuFaceBiosGetPtr__FUs(u16 key);
-    extern void* fn_800F92D4(u32 key);
+    extern void* GSresFindById(u32 key);
     extern u8 fn_8010C388(u16 idx);
     extern u16 GStextureGetXsize(void* tex);
     extern u16 GStextureGetYsize(void* tex);
@@ -383,7 +383,7 @@ static inline s32 faceDraw(u8* context, void* srcNode, u16 key)
         return 0;
     }
 
-    tex = fn_800F92D4((u32)texKey);
+    tex = GSresFindById((u32)texKey);
     if (tex == NULL) {
         return 0;
     }
@@ -416,7 +416,7 @@ static inline s32 faceDraw(u8* context, void* srcNode, u16 key)
 }
 
 #if defined(GS_RANGE_80109C88_ALL) || defined(GS_FN_8010BBB8)
-u16 fn_8010BBB8(void* pokemon)
+u16 pokemonGetFaceSpriteId(void* pokemon)
 {
     return pokemonFaceKey(pokemon);
 }
@@ -439,7 +439,7 @@ u8 fn_8010B560(void) {
 
 #if defined(GS_RANGE_80109C88_ALL) || defined(GS_FN_8010BCE4)
 /* RULE-EXCEPTION(user-approved): repeats faceSlotIsReady's lookup in place — see docs/RULE_EXCEPTIONS.md */
-s8 fn_8010BCE4(u16 key) {
+s8 menuFaceIsReady(u16 key) {
     extern void* _menuFaceBiosGetPtr__FUs(u16 key);
     s32 i;
 
@@ -518,7 +518,7 @@ s32 fn_8010BD6C(u16 key, void* (*callback)(u32), u32 arg)
 void fn_8010C220(void) {
 }
 
-void fn_8010C224(s32 count)
+void menuFaceInit(s32 count)
 {
     typedef struct Entry2 {
         u8 padding[2];
@@ -530,29 +530,29 @@ void fn_8010C224(s32 count)
     extern Entry2* lbl_8047AD54;
     extern u16 lbl_8047AD58;
     extern u16 _toolentryAlloc__FUl(u32 size);
-    extern void* fn_800E27B0(u16 handle);
-    extern u16 fn_800E2C04(u32 size, u32 alignment);
+    extern void* GSmemLock(u16 handle);
+    extern u16 GSmemAlloc(u32 size, u32 alignment);
 
     s32 i;
 
     lbl_8047AD48 = count;
     if (lbl_8047AD50 == 0) {
         lbl_8047AD50 = _toolentryAlloc__FUl(count * sizeof(FaceSlot));
-        lbl_8047AD4C = fn_800E27B0(lbl_8047AD50);
+        lbl_8047AD4C = GSmemLock(lbl_8047AD50);
     }
     memset(lbl_8047AD4C, 0, count * sizeof(FaceSlot));
 
     if (lbl_8047AD58 == 0) {
         lbl_8047AD58 = _toolentryAlloc__FUl(count * sizeof(Entry2));
-        lbl_8047AD54 = fn_800E27B0(lbl_8047AD58);
+        lbl_8047AD54 = GSmemLock(lbl_8047AD58);
     }
     memset(lbl_8047AD54, 0, count * sizeof(Entry2));
 
     for (i = 0; i < count; i++) {
         if (lbl_8047AD54[i].handle == 0) {
-            lbl_8047AD54[i].handle = fn_800E2C04(0x6ec0, 0x20);
+            lbl_8047AD54[i].handle = GSmemAlloc(0x6ec0, 0x20);
             lbl_8047AD54[i].data =
-                fn_800E27B0(lbl_8047AD54[i].handle);
+                GSmemLock(lbl_8047AD54[i].handle);
         }
         memset(lbl_8047AD54[i].data, 0, 0x6ec0);
         lbl_8047AD4C[i].slot = (s8)i;
@@ -561,11 +561,11 @@ void fn_8010C224(s32 count)
 #endif
 
 #if defined(GS_RANGE_80109C88_ALL) || defined(GS_FN_8010B01C)
-u16 fn_8010B01C(void* pokemon, void* (*callback)(u32), u32 arg)
+u16 menuFaceRequestPokemonFace(void* pokemon, void* (*callback)(u32), u32 arg)
 {
-    extern u16 fn_8010B16C(u16 key, void* (*callback)(u32), u32 arg);
+    extern u16 menuFaceRequestPokemon(u16 key, void* (*callback)(u32), u32 arg);
 
-    return fn_8010B16C(pokemonFaceKey(pokemon), callback, arg);
+    return menuFaceRequestPokemon(pokemonFaceKey(pokemon), callback, arg);
 }
 
 #endif
@@ -581,12 +581,12 @@ u16 fn_8010B01C(void* pokemon, void* (*callback)(u32), u32 arg)
 static inline s32 loadPokemonFace(void* pokemon, void* (*callback)(u32), u32 arg)
 {
     extern u32 pokemonGetStatus(void* pokemon, u32 index, u32 field, u32 rare);
-    extern u16 fn_8010B16C(u16 key, void* (*callback)(u32), u32 arg);
+    extern u16 menuFaceRequestPokemon(u16 key, void* (*callback)(u32), u32 arg);
     extern void _threadSwitch(void);
     u16 key;
 
     key = pokemonFaceKey((void*)pokemonGetStatus(pokemon, 0, 0xCC, 0));
-    fn_8010B16C(key, callback, arg);
+    menuFaceRequestPokemon(key, callback, arg);
     for (;;) {
         if (faceSlotIsReady(key) != 0) {
             break;
@@ -596,7 +596,7 @@ static inline s32 loadPokemonFace(void* pokemon, void* (*callback)(u32), u32 arg
     return 1;
 }
 
-s32 fn_8010AE2C(void* pokemon, void* (*callback)(u32), u32 arg)
+s32 fightPokemonGetFaceSpriteId(void* pokemon, void* (*callback)(u32), u32 arg)
 {
     return loadPokemonFace(pokemon, callback, arg);
 }
@@ -613,7 +613,7 @@ static inline u32 getFaceResource(u16 key)
     return (u32)_menuFaceBiosGetPtr__FUs(key);
 }
 
-void fn_8010B5C4(void* unused1, u32 unused2, u32 arg)
+void _menuFaceLoad(void* unused1, u32 unused2, u32 arg)
 {
     typedef struct Entry2 {
         u8 padding[2];
@@ -631,7 +631,7 @@ void fn_8010B5C4(void* unused1, u32 unused2, u32 arg)
     extern void DCFlushRange(void* addr, u32 length);
     extern void GXInvalidateTexAll(void);
     extern s32 fn_8010C364(void);
-    extern u16 fn_8010B16C(u16 key, void* (*callback)(u32), u32 arg);
+    extern u16 menuFaceRequestPokemon(u16 key, void* (*callback)(u32), u32 arg);
 
     u32 found1;
     u16 key = arg;
@@ -666,7 +666,7 @@ void fn_8010B5C4(void* unused1, u32 unused2, u32 arg)
     GXInvalidateTexAll();
 
     entry->state = 2;
-    fn_8010B16C(0, entry->callback, entry->arg);
+    menuFaceRequestPokemon(0, entry->callback, entry->arg);
 }
 #endif
 
@@ -677,7 +677,7 @@ void fn_8010B5C4(void* unused1, u32 unused2, u32 arg)
  * fuses each into a record form). The lights are cleared through the array,
  * which is what walks the object pointer at +0x3c, and `o` is declared after
  * the counters so it keeps retail's r31. */
-s32 fn_8010A420(void* obj)
+s32 menuModelTerm(void* obj)
 {
     typedef struct Obj {
         u8 state;
@@ -699,10 +699,10 @@ s32 fn_8010A420(void* obj)
     extern void GSlogWrite(const char* fmt, ...);
     extern u8 GSthreadIsRunning(u32 task);
     extern void GSthreadClose(u32 task);
-    extern void fn_801DB100(u32 handle);
+    extern void wazaSequenceOwnerFree(u32 handle);
     extern void GSmodelFree(void* a);
     extern void GSlightFree(void* a);
-    extern void fn_800D2738(void* camera);
+    extern void GScameraFree(void* camera);
     extern void GStextureFree(void* a);
     extern int wazaSequenceSysRelease();
 
@@ -735,7 +735,7 @@ s32 fn_8010A420(void* obj)
         o->flag1 = 0;
         if (o->flag14) {
             if (o->handle24 != 0) {
-                fn_801DB100(o->handle24);
+                wazaSequenceOwnerFree(o->handle24);
                 o->handle24 = 0;
             }
         } else if (o->handle24 != 0) {
@@ -753,7 +753,7 @@ s32 fn_8010A420(void* obj)
     }
 
     if (o->camera != NULL) {
-        fn_800D2738(o->camera);
+        GScameraFree(o->camera);
         o->camera = NULL;
     }
 
@@ -780,7 +780,7 @@ s32 fn_8010A420(void* obj)
 static inline s32 faceDrawPokemon(u8* context, void* srcNode, void* pokemon)
 {
     extern void* _menuFaceBiosGetPtr__FUs(u16 key);
-    extern void* fn_800F92D4(u32 key);
+    extern void* GSresFindById(u32 key);
     extern u8 fn_8010C388(u16 idx);
     extern u16 GStextureGetXsize(void* tex);
     extern u16 GStextureGetYsize(void* tex);
@@ -801,7 +801,7 @@ static inline s32 faceDrawPokemon(u8* context, void* srcNode, void* pokemon)
         return 0;
     }
 
-    tex = fn_800F92D4((u32)texKey);
+    tex = GSresFindById((u32)texKey);
     if (tex == NULL) {
         return 0;
     }
@@ -833,7 +833,7 @@ static inline s32 faceDrawPokemon(u8* context, void* srcNode, void* pokemon)
     return 1;
 }
 
-s32 fn_8010B718(u8* context, void* srcNode, void* pokemon)
+s32 menuFaceDrawPokemon(u8* context, void* srcNode, void* pokemon)
 {
     return faceDrawPokemon(context, srcNode, pokemon);
 }
@@ -867,7 +867,7 @@ typedef struct MenuModel {
  * retail has the object in r28 with w and h in r29/r30. The table pointer is
  * a local too, so its address stays in r31 for the five vector copies and the
  * three log strings instead of being rebuilt at each call. GSlogWrite takes
- * the unit's name string as its second argument, as fn_8010A420's call does.
+ * the unit's name string as its second argument, as menuModelTerm's call does.
  * `i` is declared before `light`, which is what gives them retail's r24/r25. */
 s32 menuModelInit(MenuModel* obj, s32 w, s32 h)
 {
@@ -882,7 +882,7 @@ s32 menuModelInit(MenuModel* obj, s32 w, s32 h)
     extern void GSlogWrite(const char* fmt, ...);
     extern void* GStextureCreate(u16 w, u16 h, u32 format, u32 a, u32 b);
     extern void GStextureSetFilter(void* tex, u32 min, u32 mag, u32 unk);
-    extern void* fn_800D29A0(void);
+    extern void* GScameraCreate(void);
     extern void GScameraSetPosition(void* camera, Vec3* pos);
     extern void GScameraSetRotation(void* camera, Vec3* rot);
     extern void* GSlightCreate(void);
@@ -942,7 +942,7 @@ s32 menuModelInit(MenuModel* obj, s32 w, s32 h)
 
     GStextureSetFilter(obj->texture, 2, 2, 0);
 
-    obj->camera = fn_800D29A0();
+    obj->camera = GScameraCreate();
     if (obj->camera == NULL) {
         GSlogWrite((const char*)(tbl + 0xac), lbl_8035B448);
         return 0;
@@ -990,21 +990,21 @@ s32 menuModelInit(MenuModel* obj, s32 w, s32 h)
 #pragma push
 #pragma optimization_level 3
 #pragma peephole off
-s32 fn_8010A88C(FaceModel* m)
+s32 _menuPokemonModelLoadThread(FaceModel* m)
 {
     extern s32 lbl_8047AD40;
     extern u8 lbl_8047AD44;
     extern u8 fn_8010B560(void);
     extern void _threadSwitch(void);
     extern void fn_801DADC0(u32 arg);
-    extern void fn_801DB100(u32 handle);
+    extern void wazaSequenceOwnerFree(u32 handle);
     extern void GSmodelFree(u32 model);
     extern u32 fn_801DE190(u16 hi, u32 key, u8 rare);
-    extern u32 fn_801DAC3C(u32 object);
+    extern u32 wazaSequenceOwnerGetModel(u32 object);
     extern void GSmodelSetVisibility(u32 model, u32 visible);
     extern u8 fn_801DDD28(u32 model, u16 a, u32 b, u32 c);
-    extern void fn_801DA914(u32 model, u16 a, u32 b);
-    extern void fn_801DA9E8(u32 model, u16 a, u32 b);
+    extern void wazaSequenceClearFlag16(u32 model, u16 a, u32 b);
+    extern void wazaSequenceSysStartWaza(u32 model, u16 a, u32 b);
     extern u32 floorOpenObject(u32 key);
     extern u8 GSmodelCanAnimate(u32 model);
     extern void GSmodelSetAnimIndex(u32 model, u32 index);
@@ -1013,7 +1013,7 @@ s32 fn_8010A88C(FaceModel* m)
     extern void GSmodelSetAnimType(u32 model, u32 type);
     extern void set__5GSvecFfff(void* out, f32 x, f32 y, f32 z);
     extern void GSmodelSetRotation(u32 model, void* rot);
-    extern void fn_8010AB00(FaceModel* m);
+    extern void _menuPokemonModelSetupView(FaceModel* m);
     extern f32 lbl_8047CE70;
     extern f32 lbl_8047CE78;
     extern f32 lbl_8047CE7C;
@@ -1046,7 +1046,7 @@ s32 fn_8010A88C(FaceModel* m)
             m->useCur = 0;
             if (m->next.type != 0) {
                 if (m->handle24 != 0) {
-                    fn_801DB100(m->handle24);
+                    wazaSequenceOwnerFree(m->handle24);
                     m->handle24 = 0;
                 }
             } else if (m->handle24 != 0) {
@@ -1066,7 +1066,7 @@ s32 fn_8010A88C(FaceModel* m)
                 m->state = 0;
                 return 0;
             }
-            model = fn_801DAC3C(m->handle24);
+            model = wazaSequenceOwnerGetModel(m->handle24);
             if (model == 0) {
                 m->state = 0;
                 return 0;
@@ -1074,8 +1074,8 @@ s32 fn_8010A88C(FaceModel* m)
             GSmodelSetVisibility(model, 0);
             if (m->next.u.s.lo != 0) {
                 if (fn_801DDD28(m->handle24, m->next.u.s.lo, 4, 0)) {
-                    fn_801DA914(m->handle24, m->next.u.s.lo, 4);
-                    fn_801DA9E8(m->handle24, m->next.u.s.lo, 4);
+                    wazaSequenceClearFlag16(m->handle24, m->next.u.s.lo, 4);
+                    wazaSequenceSysStartWaza(m->handle24, m->next.u.s.lo, 4);
                 }
             }
         } else {
@@ -1095,7 +1095,7 @@ s32 fn_8010A88C(FaceModel* m)
         GSmodelSetAnimType(model, 1);
         set__5GSvecFfff(&rotVec, lbl_8047CE78, lbl_8047CE7C, lbl_8047CE80);
         GSmodelSetRotation(model, &rotVec);
-        fn_8010AB00(m);
+        _menuPokemonModelSetupView(m);
 
         m->state = 2;
     } while (m->useCur == 1);
@@ -1110,16 +1110,16 @@ s32 fn_8010A88C(FaceModel* m)
 #pragma push
 #pragma optimization_level 3
 #pragma peephole off
-s32 fn_8010AB00(void* objPtr)
+s32 _menuPokemonModelSetupView(void* objPtr)
 {
     typedef struct Vec3 {
         f32 x, y, z;
     } Vec3;
-    extern u32 fn_801DAC3C(u32 object);
-    extern s32 fn_801DAC24(u32 object);
+    extern u32 wazaSequenceOwnerGetModel(u32 object);
+    extern s32 wazaSequenceOwnerGetSizeClass(u32 object);
     extern void memoGetScaleAngle(u16 key, f32* scale, f32* angle);
     extern void GSmodelCenterNull(u32 model);
-    extern s32 fn_800EE0E8(u32 model);
+    extern s32 GSmodelWalkJObjs(u32 model);
     extern void* GSmodelGetPart(u32 model, s32 index);
     extern void GSpartGetTransform(void* part, Vec3* out, u32 a, u32 b);
     extern void GSpartFree(void* part);
@@ -1175,8 +1175,8 @@ s32 fn_8010AB00(void* objPtr)
     }
 
     if (obj[0x14] != 0) {
-        model = fn_801DAC3C(*(u32*)(obj + 0x24));
-        switch (fn_801DAC24(*(u32*)(obj + 0x24))) {
+        model = wazaSequenceOwnerGetModel(*(u32*)(obj + 0x24));
+        switch (wazaSequenceOwnerGetSizeClass(*(u32*)(obj + 0x24))) {
         case -2:
             fovScale = lbl_8047CE84;
             break;
@@ -1211,7 +1211,7 @@ s32 fn_8010AB00(void* objPtr)
     }
 
     GSmodelCenterNull(model);
-    part = GSmodelGetPart(model, fn_800EE0E8(model) - 1);
+    part = GSmodelGetPart(model, GSmodelWalkJObjs(model) - 1);
     if (part != NULL) {
         GSpartGetTransform(part, &transform, 0, 0);
         GSpartFree(part);
@@ -1261,14 +1261,14 @@ static inline void* faceBiosPtrPassThrough(void* ptr) {
     return ptr;
 }
 
-u16 fn_8010B16C(u16 key, void* (*callback)(u32), u32 arg)
+u16 menuFaceRequestPokemon(u16 key, void* (*callback)(u32), u32 arg)
 {
     extern void* _menuFaceBiosGetPtr__FUs(u16 key);
     extern void fn_8010BD6C(u16 key, void* (*cb)(u32), u32 a);
-    extern void fn_8017B1CC(u32 group);
+    extern void GSresReleaseById(u32 group);
     extern s32 fn_8017B000(u32 fileHandle, u32 requestID, u32 callbackA,
                             u32 callbackB, u32 callbackC);
-    extern void fn_8010B5C4(void* unused1, u32 unused2, u32 arg);
+    extern void _menuFaceLoad(void* unused1, u32 unused2, u32 arg);
     void* ptr;
     s32 count;
     s32 i;
@@ -1295,7 +1295,7 @@ u16 fn_8010B16C(u16 key, void* (*callback)(u32), u32 arg)
                 }
             }
             if (i == count) {
-                fn_8017B1CC(0x5C0);
+                GSresReleaseById(0x5C0);
                 return 0;
             }
         } else {
@@ -1318,7 +1318,7 @@ u16 fn_8010B16C(u16 key, void* (*callback)(u32), u32 arg)
         return 1;
     }
     lbl_8047AD4C[faceSlotFind(lbl_8047AD4C, _menuFaceBiosGetPtr__FUs(key))].state = 1;
-    fn_8017B000(0x5C0, (u32)ptr, (u32)fn_8010B5C4, 0, key);
+    fn_8017B000(0x5C0, (u32)ptr, (u32)_menuFaceLoad, 0, key);
     return 1;
 }
 #endif

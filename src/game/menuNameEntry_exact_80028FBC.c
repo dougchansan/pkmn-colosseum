@@ -33,13 +33,13 @@ void menuNameEntry(void) {
     extern void GScharCpy(void* dst, u8* src);           /* copy/build name struct    */
     extern void* menuItemBiosGetPtr(s32 id);                      /* returns struct ptr        */
     extern void menuModelInit(void* handle, s16 a, s16 b);
-    extern void fn_8010A010(void* handle, s32 v);
+    extern void menuPokemonModelRequestById(void* handle, s32 v);
     extern void* peopleInfoBiosGetPtr(s32 v);
     extern void fn_8018F4C8(void* info, s32 a, s32* outA, s32* outB);
     extern void menuModelSetMotion(void* handle, s32 motion);
-    extern void fn_80109C88(void* handle, u32 v);
+    extern void menuPokemonModelRequest(void* handle, u32 v);
     extern void menuModelCheck(void* handle, s32 v);
-    extern void fn_8010A420(void* handle);
+    extern void menuModelTerm(void* handle);
     extern void fadeSet(s32 mode, f32 v);
     extern void fadeCheck(s32 v);
     extern u32  windowGetActiveID(void);                         /* returns context handle    */
@@ -56,7 +56,7 @@ void menuNameEntry(void) {
     extern void pokemonBiosSetNicknamePtr(u32 v, u8* ctx);
     extern void pcboxSetPokemonBoxName(s32 a, s32 name, u8* ctx);
     extern s32  GScharCmp(u8* ctx, void* nameBuf);
-    extern void fn_800FF660(void);
+    extern void floorBattleEndTerminateScripts(void);
     extern void floorSetFadeScript(s32 a, u32 b);
 
     u8* ctx;        /* lbl_803A2068 context block          */
@@ -152,18 +152,18 @@ void menuNameEntry(void) {
     case 0:
     case 1:
         sel = entryBuf[mode];
-        fn_8010A010(lbl_803A2094, sel);
+        menuPokemonModelRequestById(lbl_803A2094, sel);
         fn_8018F4C8(peopleInfoBiosGetPtr(sel), 1, &motOut, &motTmp);
         menuModelSetMotion(lbl_803A2094, motOut);
         break;
     case 2:
         sel = heroGetStatus(0, 3, (u16)subIndex);
         if ((pokemonCheckValid() & 0xff) != 0) {
-            fn_80109C88(lbl_803A2094, sel);
+            menuPokemonModelRequest(lbl_803A2094, sel);
         }
         break;
     case 3:
-        fn_8010A010(lbl_803A2094, entryBuf[mode]);
+        menuPokemonModelRequestById(lbl_803A2094, entryBuf[mode]);
         break;
     default:
         break;
@@ -250,7 +250,7 @@ void menuNameEntry(void) {
     /* --- Tear down the menu model and finalize the selection by mode. --- */
     fadeSet(3, lbl_8047B940);
     fadeCheck(1);
-    fn_8010A420(lbl_803A2094);
+    menuModelTerm(lbl_803A2094);
     menuClose(0x6f);
     menuCloseSync(0x6f, 1);
 
@@ -284,7 +284,7 @@ void menuNameEntry(void) {
 
     /* Async finalize: post the appropriate completion event. */
     if (*(s32*)(ctx2 + 0x28) != 0) {
-        fn_800FF660();
+        floorBattleEndTerminateScripts();
         if (*(s32*)(lbl_803A2068 + 0x24) != 0) {
             floorSetFadeScript(0, 0x05960008);
         } else {

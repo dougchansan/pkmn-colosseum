@@ -88,7 +88,7 @@ HSD_WObj* HSD_WObjAlloc(void)
 }
 
 /* 0x80191688 | 0x100 */
-extern void fn_8019D9DC(HSD_JObj* jobj);
+extern void HSD_JObjSetupMatrixSub(HSD_JObj* jobj);
 /* sdata2/rodata assert strings and float constants owned by other objects */
 extern u8 lbl_8027448C[];
 extern u8 lbl_80274498[];
@@ -127,7 +127,7 @@ static inline void WObjJObjSetupMatrix(HSD_JObj* jobj)
     if (jobj == NULL || !JObjMtxIsDirty(jobj)) {
         return;
     }
-    fn_8019D9DC(jobj);
+    HSD_JObjSetupMatrixSub(jobj);
 }
 
 /* Bake the animated position into pos and drop the "animated" flag, so that
@@ -141,7 +141,7 @@ static inline void WObjJObjSetupMatrix(HSD_JObj* jobj)
                     (jobj_) = (HSD_JObj*) (wobj_)->aobj->hsd_obj;              \
                     if ((jobj_) != NULL) {                                     \
                         if (JObjMtxIsDirty(jobj_)) {                           \
-                            fn_8019D9DC(jobj_);                                \
+                            HSD_JObjSetupMatrixSub(jobj_);                                \
                         }                                                      \
                     }                                                          \
                     PSMTXMultVec((jobj_)->mtx, &(wobj_)->pos, &(wobj_)->pos);  \
@@ -323,7 +323,7 @@ void HSD_WObjAddAnim(HSD_WObj* wobj, HSD_WObjAnim* desc) {
         HSD_AObjRemove(wobj->aobj);
     }
     wobj->aobj = HSD_AObjLoadDesc(desc->aobjdesc);
-    fn_801AFE68(wobj->robj, desc->robjanim);
+    HSD_RObjAddAnimAll(wobj->robj, desc->robjanim);
 }
 
 /* 0x80191E38 | 0x50 */

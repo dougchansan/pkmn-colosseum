@@ -2,7 +2,7 @@
 #include "dolphin/os/OSContext.h"
 #include "src/dolphin/card_dsp_private.h"
 
-extern EXICallback fn_8009870C(s32 chan, EXICallback callback);
+extern EXICallback EXISetExiCallback(s32 chan, EXICallback callback);
 
 void __CARDDefaultApiCallback(s32 chan, s32 result)
 {
@@ -15,7 +15,7 @@ void __CARDExtHandler(s32 chan, OSContext* context)
 
     if (card->attached != 0) {
         card->attached = 0;
-        fn_8009870C(chan, NULL);
+        EXISetExiCallback(chan, NULL);
         OSCancelAlarm(&card->alarm);
         callback = card->callback_CC;
         if (callback != NULL) {

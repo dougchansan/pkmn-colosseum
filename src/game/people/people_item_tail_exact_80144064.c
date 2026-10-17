@@ -51,11 +51,11 @@ extern PeopleFieldEntry lbl_80363CE8[];
 
 extern void* fightFloorGetNowPtr(void);
 extern u16 _toolentryAlloc__FUl(u32 size);
-extern void* fn_800E27B0(u16 handle);
+extern void* GSmemLock(u16 handle);
 extern void* memcpy(void* dst, const void* src, u32 size);
 extern s32 fn_80144574(void*, void*, void*, void*, void*);
 extern void fn_800E24B0(u16 handle);
-extern void fn_800E209C(u16 handle);
+extern void GSmemFree(u16 handle);
 
 s32 itemDataBiosCheckImportable(u8* p)
 {
@@ -103,11 +103,11 @@ s32 itemUse2PokemonSimulation(
     }
 
     memHandle = _toolentryAlloc__FUl(0xA4E8);
-    savedFightFloor = fn_800E27B0(memHandle);
+    savedFightFloor = GSmemLock(memHandle);
     memcpy(savedFightFloor, fightFloor, 0xA4E8);
     result = fn_80144574(arg0, arg1, arg2, arg3, arg4);
     memcpy(fightFloor, savedFightFloor, 0xA4E8);
     fn_800E24B0(memHandle);
-    fn_800E209C(memHandle);
+    GSmemFree(memHandle);
     return result;
 }

@@ -45,8 +45,8 @@ extern void* pokemonGetStatus();
 extern u32   pokemonSetStatus();
 extern void  pokemonGrowBasisStatus();
 extern u32   itemGetStatus();
-extern void  fn_80119ED0(void);
-extern void  fn_80121ADC(void);
+extern void  joutaiDataBiosGetStatusKind(void);
+extern void  pokemonIsJoutaiDataId(void);
 extern void  fn_8011B67C(void);
 extern void  pokemonGetSoubiItemDataId(void);
 extern void* fightActionGetPri(void* p);
@@ -136,9 +136,9 @@ void fightWazaWzxTypeFuncMigawari(void* battleCtx, void* ctx) {
     extern void wazaGetStatus();
     extern void battleGridUpdate();
     extern void battleGridReplacePokemon();
-    extern void fn_801DB100();
+    extern void wazaSequenceOwnerFree();
     extern u8 fightFloorGetNowTenkouDataId();
-    extern void fn_801FCEC4();
+    extern void fightOutPokemonBiosCopy();
     extern void* fightOutPokemonCreateSequence();
     extern void fightOutPokemonWazaEffect();
     extern void fightOutPokemonLoadWazaEffect();
@@ -151,7 +151,7 @@ void fightWazaWzxTypeFuncMigawari(void* battleCtx, void* ctx) {
     wazaGetStatus(0, battleCtx, 0x1F, 0);
     eeData = pokemonGetStatus(ctx, 0, 0xEE, 0);
     resolved = fightOutPokemonCreateSequence(ctx, partySlot);
-    fn_801FCEC4(localBuf, ctx);
+    fightOutPokemonBiosCopy(localBuf, ctx);
     pokemonSetStatus(localBuf, 0, 0xEE, 0, (u32)resolved);
     fightOutPokemonLoadWazaEffect(ctx, battleCtx, 1, 0);
     fightOutPokemonLoadWazaEffect(localBuf, battleCtx, 3, 0);
@@ -160,7 +160,7 @@ void fightWazaWzxTypeFuncMigawari(void* battleCtx, void* ctx) {
     battleGridUpdate();
     pokemonSetStatus(ctx, 0, 0xEE, 0, (u32)resolved);
     fightOutPokemonWazaEffect(ctx, battleCtx, 3, 0, 0);
-    fn_801DB100(eeData);
+    wazaSequenceOwnerFree(eeData);
 }
 
 /* Address: 0x8020F230 | Size: 0x8 | Pattern: return_constant */
@@ -171,9 +171,9 @@ void fightWazaWzxTypeFuncHensin(void* battleCtx, void* ctx) {
     extern void wazaGetStatus();
     extern void battleGridUpdate();
     extern void battleGridReplacePokemon();
-    extern void fn_801DB100();
+    extern void wazaSequenceOwnerFree();
     extern u8 fightFloorGetNowTenkouDataId();
-    extern void fn_801FCEC4();
+    extern void fightOutPokemonBiosCopy();
     extern void* fightOutPokemonCreateSequence();
     extern void fightOutPokemonWazaEffect();
     extern void fightOutPokemonLoadWazaEffect();
@@ -186,7 +186,7 @@ void fightWazaWzxTypeFuncHensin(void* battleCtx, void* ctx) {
     wazaGetStatus(0, battleCtx, 0x1F, 0);
     eeData = pokemonGetStatus(ctx, 0, 0xEE, 0);
     resolved = fightOutPokemonCreateSequence(ctx, partySlot);
-    fn_801FCEC4(localBuf, ctx);
+    fightOutPokemonBiosCopy(localBuf, ctx);
     pokemonSetStatus(localBuf, 0, 0xEE, 0, (u32)resolved);
     fightOutPokemonLoadWazaEffect(ctx, battleCtx, 3, 0);
     fightOutPokemonLoadWazaEffect(localBuf, battleCtx, 3, 1);
@@ -195,7 +195,7 @@ void fightWazaWzxTypeFuncHensin(void* battleCtx, void* ctx) {
     battleGridUpdate();
     pokemonSetStatus(ctx, 0, 0xEE, 0, (u32)resolved);
     fightOutPokemonWazaEffect(ctx, battleCtx, 3, 0, 0);
-    fn_801DB100(eeData);
+    wazaSequenceOwnerFree(eeData);
 }
 
 /* Address: 0x8020F360 | Size: 0x8 | Pattern: return_constant */
@@ -206,13 +206,13 @@ void fightWazaWzxTypeFuncMagiccort(void* ctx1, void* target1, void* sideCtx, u32
 {
     extern void* fightTargetDataBiosGetBuff();
     extern void* fightTargetDataBiosGetPtr();
-    extern int fn_802026E4();
+    extern int fightOutPokemonIsPokemonJoutaiDataId();
     extern void fightOutPokemonWazaEffect();
     extern void fightOutPokemonLoadWazaEffect();
   u8 cVar2;
 
   fightOutPokemonLoadWazaEffect(target1,ctx1,1,p7);
-  cVar2 = fn_802026E4(sideCtx,0x37);
+  cVar2 = fightOutPokemonIsPokemonJoutaiDataId(sideCtx,0x37);
   if (cVar2 == 1) {
     fightOutPokemonWazaEffect(target1,ctx1,1,0,fightTargetDataBiosGetBuff(fightTargetDataBiosGetPtr(0x11)));
   }
@@ -278,10 +278,10 @@ void fightWazaWzxTypeFuncIceball(void* ctx1, void* target1, void* target2, u32 u
 u32 fightWazaWzxVariationFuncIceball(u32 unused, void* typeObj)
 
 {
-    extern int fn_80202360();
+    extern int fightOutPokemonGetPokemonJoutaiStack();
   short sVar1;
 
-  sVar1 = fn_80202360(typeObj,0x2f);
+  sVar1 = fightOutPokemonGetPokemonJoutaiStack(typeObj,0x2f);
   switch (sVar1) {
   case 1:
     return 0;
@@ -662,9 +662,9 @@ void fightWazaWzxTypeFuncRenzokugiri(void* p1, void* p2, void* p3, u32 unused, v
 
 /* 0x80210234 | size: 0x84 */
 u32 fightWazaWzxVariationFuncRenzokugiri(u32 unused, void* typeObj) {
-    extern s16 fn_80202360();
+    extern s16 fightOutPokemonGetPokemonJoutaiStack();
     s16 val;
-    val = fn_80202360(typeObj, 0x2E);
+    val = fightOutPokemonGetPokemonJoutaiStack(typeObj, 0x2E);
     switch (val) {
         case 1: return 0;
         case 2: return 1;
@@ -693,10 +693,10 @@ void fightWazaWzxTypeFuncKorogaru(void* ctx1, void* target1, void* target2, u32 
 u32 fightWazaWzxVariationFuncKorogaru(u32 unused, void* typeObj)
 
 {
-    extern int fn_80202360();
+    extern int fightOutPokemonGetPokemonJoutaiStack();
   short sVar1;
 
-  sVar1 = fn_80202360(typeObj,0x2f);
+  sVar1 = fightOutPokemonGetPokemonJoutaiStack(typeObj,0x2f);
   switch (sVar1) {
   case 1:
     return 0;

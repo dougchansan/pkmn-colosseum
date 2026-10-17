@@ -1,7 +1,7 @@
 #ifndef GAME_GS_MODEL_MATERIAL_INTERNAL_H
 #define GAME_GS_MODEL_MATERIAL_INTERNAL_H
 
-s32 fn_800EE0E8(void* model);
+s32 GSmodelWalkJObjs(void* model);
 s32 GSpartGetMaterialCount(GSpart* part);
 void* GSpartGetMaterial(GSpart* part, s32 index);
 
@@ -14,7 +14,7 @@ void* GSpartGetMaterial(GSpart* part, s32 index);
  * Admitted as a reconstructed helper: the same sequence is expanded in
  * GSmodelSetTextureChange and its siblings (GSmodelSetPEdescr,
  * GSmodelEnableModulation, GSmodelEnableColorSwap, GSmodelEnableEnvMap,
- * GSmodelInitMaterialAlpha, GSmodelSetRenderFlags, fn_800E584C), and its
+ * GSmodelInitMaterialAlpha, GSmodelSetRenderFlags, GSmodelBlurCreateWork), and its
  * return value is routed through the helper's count and copied to the
  * caller's (mr r24,r26 in GSmodelSetTextureChange), which the in-place
  * forms do not emit.
@@ -31,7 +31,7 @@ static inline s32 modelInitMaterialList(GSmodel* model)
     s32 partMaterialCount;
 
     count = 0;
-    partCount = fn_800EE0E8(model);
+    partCount = GSmodelWalkJObjs(model);
     for (partIndex = 0; partIndex < partCount; partIndex++) {
         part = GSmodelGetPart(model, partIndex);
         count += GSpartGetMaterialCount(part);
@@ -42,7 +42,7 @@ static inline s32 modelInitMaterialList(GSmodel* model)
     }
     handle = _toolentryAlloc__FUl(count * sizeof(void*));
     if ((u16)handle != 0) {
-        dst = (void**)(model->materialList = (GSmodelMaterialList*)fn_800E27B0(handle));
+        dst = (void**)(model->materialList = (GSmodelMaterialList*)GSmemLock(handle));
         model->materialListHandle = handle;
         model->materialCount = count;
         for (partIndex = 0; partIndex < partCount; partIndex++) {

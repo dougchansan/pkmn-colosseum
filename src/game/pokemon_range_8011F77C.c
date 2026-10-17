@@ -47,12 +47,12 @@ extern s32 pokemonSeikakuDataBiosGetReliveNadenade(u8* data);
 extern u8* pokemonSeikakuRateDataBiosGetPtr(u8 index);
 extern u8 pokemonSeikakuRateDataBiosGetKake(u8* data);
 extern u8 pokemonSeikakuRateDataBiosGetWaru(u8* data);
-extern u16 fn_801EEEB8(u16 dark_id);
+extern u16 darkPokemonSaveGet4A6(u16 dark_id);
 extern void fn_8011B950(u8* base, u16 count);
-extern u16 fn_80119ED0(u16 idx);
+extern u16 joutaiDataBiosGetStatusKind(u16 idx);
 extern u8 fn_8011B67C(u8* obj, u16 id);
 extern void fn_8011B788(u8* obj, u16 id);
-extern u16 fn_8010BBB8(u8* pokemon);
+extern u16 pokemonGetFaceSpriteId(u8* pokemon);
 extern u8 menuSubGetPokemonSexForFightDisp(u8* pokemon);
 extern void* pokemonGrowDataBiosGetPtr(u8 idx);
 extern u32 pokemonGrowDataBiosGetExp(void* ptr, u8 idx);
@@ -98,7 +98,7 @@ static inline u32 pokemonGetLevelToExp(u8* pokemon, u8 level)
 
 static inline u8 pokemonGetJoutai(u8* pokemon, u16 id)
 {
-    if (fn_80119ED0(id) != 0x7C && fn_80119ED0(id) != 0xC8) {
+    if (joutaiDataBiosGetStatusKind(id) != 0x7C && joutaiDataBiosGetStatusKind(id) != 0xC8) {
         return 0;
     }
     return fn_8011B67C(pokemon, id);
@@ -194,7 +194,7 @@ static inline u16 pokemonGetTokusei(u8* pokemon)
 
 static inline void pokemonClearJoutai(u8* pokemon, u16 id)
 {
-    if (fn_80119ED0(id) == 0x7C || fn_80119ED0(id) == 0xC8) {
+    if (joutaiDataBiosGetStatusKind(id) == 0x7C || joutaiDataBiosGetStatusKind(id) == 0xC8) {
         fn_8011B788(pokemon, id);
     }
 }
@@ -298,7 +298,7 @@ void pokemonToMenuPokemonStatusSubBar(u8* pokemon, MenuPokemonStatus* menu)
         menu->progressMax.integer = pokemonGetLevelToExp(pokemon, level + 1) - baseExp;
         menu->progress.integer = pokemonGetStatus(pokemon, 0, 0x79, 0) - baseExp;
     } else {
-        menu->progressMax.real = fn_801EEEB8((u16)pokemonGetStatus(pokemon, 0, 0xC3, 0));
+        menu->progressMax.real = darkPokemonSaveGet4A6((u16)pokemonGetStatus(pokemon, 0, 0xC3, 0));
         menu->progress.real = pokemonGetDp(pokemon);
     }
 }
@@ -314,7 +314,7 @@ void pokemonToMenuPokemonStatus(u8* pokemon, MenuPokemonStatus* menu)
     pokemonToMenuPokemonStatusSubBar(pokemon, menu);
 
     menu->conditionIcon = pokemonGetJoutaiIcon(pokemon);
-    menu->displayValue = fn_8010BBB8(pokemon);
+    menu->displayValue = pokemonGetFaceSpriteId(pokemon);
     menu->sex = menuSubGetPokemonSexForFightDisp(pokemon);
 
     if ((u8)pokemonGetStatus(pokemon, 0, 0xC2, 0) == 0) {
@@ -338,7 +338,7 @@ void pokemonSetDarkPokemonStatus(u8* pokemon, u16 dark_id)
     pokemonSetStatus(pokemon, 0, 0xC7, 0, 0);
     fn_8011B950((u8*)pokemonGetStatus(pokemon, 0, 0xC8, 0), 1);
     pokemonSetStatus(pokemon, 0, 0xC3, 0, dark_id);
-    pokemonSetDp(pokemon, fn_801EEEB8(dark_id));
+    pokemonSetDp(pokemon, darkPokemonSaveGet4A6(dark_id));
 }
 
 u8 pokemonIsDarkPokemon(u8* pokemon)

@@ -64,24 +64,24 @@ void C_MTXPerspective(Mtx44 m, f32 fovY, f32 aspect, f32 n, f32 f);
 void C_MTXOrtho(Mtx44 m, f32 t, f32 b, f32 l, f32 r, f32 n, f32 f);
 
 /* GXSetViewportJitter */
-void fn_800BD640(f32 left, f32 top, f32 wd, f32 ht, f32 nearz, f32 farz,
+void GXSetViewportJitter(f32 left, f32 top, f32 wd, f32 ht, f32 nearz, f32 farz,
                  u32 field);
 /* GXSetViewport */
-void fn_800BD744(f32 left, f32 top, f32 wd, f32 ht, f32 nearz, f32 farz);
+void GXSetViewport(f32 left, f32 top, f32 wd, f32 ht, f32 nearz, f32 farz);
 /* GXSetScissor */
-void fn_800BD7A0(u32 left, u32 top, u32 wd, u32 ht);
+void GXSetScissor(u32 left, u32 top, u32 wd, u32 ht);
 /* GXSetProjection */
-void fn_800BD2E0(Mtx44 mtx, GXProjectionType type);
+void GXSetProjection(Mtx44 mtx, GXProjectionType type);
 /* VIGetNextField */
-u32 fn_800AA2F0(void);
+u32 VIGetNextField(void);
 
 HSD_RenderPass HSD_GetCurrentRenderPass(void);
 /* _HSD_ZListClear */
-void fn_80197400(void);
+void _HSD_ZListClear(void);
 /* _HSD_ZListSort */
-void fn_801975FC(void);
+void _HSD_ZListSort(void);
 /* _HSD_ZListDisp */
-void fn_801974A8(void);
+void _HSD_ZListDisp(void);
 
 /* hsdSearchClassInfo */
 HSD_ClassInfo* fn_80193748(const char* class_name);
@@ -163,9 +163,9 @@ void fn_80196C54(BOOL jitter, f32 left, f32 top, f32 width, f32 height,
                  f32 nearz, f32 farz)
 {
     if (jitter) {
-        fn_800BD640(left, top, width, height, nearz, farz, fn_800AA2F0());
+        GXSetViewportJitter(left, top, width, height, nearz, farz, VIGetNextField());
     } else {
-        fn_800BD744(left, top, width, height, nearz, farz);
+        GXSetViewport(left, top, width, height, nearz, farz);
     }
 }
 
@@ -341,10 +341,10 @@ static BOOL setupOffscreenCamera(HSD_CObj* cobj)
     lbl_80478C58(FALSE, cobj->viewport.xmin, cobj->viewport.ymin,
                  cobj->viewport.xmax - cobj->viewport.xmin,
                  cobj->viewport.ymax - cobj->viewport.ymin, 0.0F, 1.0F);
-    fn_800BD7A0(cobj->scissor.left, cobj->scissor.top,
+    GXSetScissor(cobj->scissor.left, cobj->scissor.top,
                 cobj->scissor.right - cobj->scissor.left,
                 cobj->scissor.bottom - cobj->scissor.top);
-    fn_800BD2E0(mtx, makeProjectionMtx(cobj, mtx));
+    GXSetProjection(mtx, makeProjectionMtx(cobj, mtx));
     return TRUE;
 }
 
@@ -389,10 +389,10 @@ static BOOL setupNormalCamera(HSD_CObj* cobj)
     bottom = cobj->scissor.bottom * y_scale;
     width = right - left;
     height = bottom - top;
-    fn_800BD7A0(left, top, width, height);
+    GXSetScissor(left, top, width, height);
 
     projection_type = makeProjectionMtx(cobj, p);
-    fn_800BD2E0(p, projection_type);
+    GXSetProjection(p, projection_type);
 
     return TRUE;
 }
@@ -427,7 +427,7 @@ static BOOL setupTopHalfCamera(HSD_CObj* cobj)
                                                      : rmode->efbHeight;
     height = bottom - top;
     width = right - left;
-    fn_800BD7A0(left, top, width, height);
+    GXSetScissor(left, top, width, height);
 
     left = cobj->viewport.xmin;
     right = cobj->viewport.xmax;
@@ -466,7 +466,7 @@ static BOOL setupTopHalfCamera(HSD_CObj* cobj)
         break;
     }
 
-    fn_800BD2E0(p, projection_type);
+    GXSetProjection(p, projection_type);
 
     return TRUE;
 }
@@ -498,7 +498,7 @@ static BOOL setupBottomHalfCamera(HSD_CObj* cobj)
     bottom = cobj->scissor.bottom - screen_top;
     width = right - left;
     height = bottom - top;
-    fn_800BD7A0(left, top, width, height);
+    GXSetScissor(left, top, width, height);
 
     left = cobj->viewport.xmin;
     right = cobj->viewport.xmax;
@@ -538,7 +538,7 @@ static BOOL setupBottomHalfCamera(HSD_CObj* cobj)
         break;
     }
 
-    fn_800BD2E0(p, projection_type);
+    GXSetProjection(p, projection_type);
 
     return TRUE;
 }
@@ -595,7 +595,7 @@ BOOL HSD_CObjSetCurrent(HSD_CObj* cobj)
         return FALSE;
     }
     render_pass = HSD_GetCurrentRenderPass();
-    fn_80197400();
+    _HSD_ZListClear();
     lbl_8047B234 = cobj;
     switch (render_pass) {
     case HSD_RP_OFFSCREEN:
@@ -623,10 +623,10 @@ BOOL HSD_CObjSetCurrent(HSD_CObj* cobj)
 }
 
 /* HSD_CObjEndCurrent */
-void fn_80195A48(void)
+void HSD_CObjEndCurrent(void)
 {
-    fn_801975FC();
-    fn_801974A8();
+    _HSD_ZListSort();
+    _HSD_ZListDisp();
 }
 
 HSD_WObj* HSD_CObjGetInterestWObj(HSD_CObj* cobj)

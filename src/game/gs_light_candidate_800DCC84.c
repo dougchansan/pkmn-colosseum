@@ -77,7 +77,7 @@ extern void HSD_LObjSetup(HSD_CObj* cobj);
 extern void HSD_ForeachAnim(void* obj, u32 type, u32 mask, void (*cb)(HSD_AObj*), ...);
 extern void __assert(const char* file, u32 line, const char* condition);
 extern u32 _toolentryAlloc__FUl(u32 size);
-extern void* fn_800E27B0(u32 handle);
+extern void* GSmemLock(u32 handle);
 
 extern u16 lbl_8047AAE8;       /* light pool GSmem handle */
 extern GSlight* lbl_8047AAEC;  /* light pool */
@@ -243,7 +243,7 @@ void GSlightInit(u32 count)
     lbl_8047AAF0 = count;
     lbl_8047AAE8 = _toolentryAlloc__FUl(count * sizeof(GSlight));
     if (lbl_8047AAE8 != 0) {
-        lbl_8047AAEC = fn_800E27B0(lbl_8047AAE8);
+        lbl_8047AAEC = GSmemLock(lbl_8047AAE8);
         for (i = 0; i < lbl_8047AAF0; i++) {
             lbl_8047AAEC[i].allocated = 0;
         }

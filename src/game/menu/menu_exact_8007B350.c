@@ -33,13 +33,13 @@ extern u8* lbl_8047A648;
 extern u32 lbl_8047A650;
 extern void* memcpy(void* dst, const void* src, u32 size);
 extern void* memset(void* dst, s32 value, u32 size);
-extern void fn_8009F1D0(void* queue, void* messages, u32 count);
-extern void fn_8007B6A4(u8* context);
+extern void OSInitMessageQueue(void* queue, void* messages, u32 count);
+extern void _gbaBootThread(u8* context);
 extern void OSCreateThread(void* thread, void* entry, void* arg, void* stack,
                            u32 stack_size, u32 priority, u32 attributes);
 extern void OSResumeThread(void* thread);
 
-void fn_8007B350(GbaBootContext* context, u32 channel, const u8* device_code,
+void gbaBootStartThread(GbaBootContext* context, u32 channel, const u8* device_code,
                  u32 region, const u8* name, u32 variant, u32 flags)
 {
     u8* upload_start;
@@ -106,8 +106,8 @@ void fn_8007B350(GbaBootContext* context, u32 channel, const u8* device_code,
     upload_start[2] = crc >> 16;
     upload_start[3] = crc >> 24;
 
-    fn_8009F1D0(context->pad_35C, context->pad_35C + 0x20, 1);
-    OSCreateThread(context->thread_and_work, (void*)fn_8007B6A4, context,
+    OSInitMessageQueue(context->pad_35C, context->pad_35C + 0x20, 1);
+    OSCreateThread(context->thread_and_work, (void*)_gbaBootThread, context,
                    context->reply, 0x2000, 8, 0);
     OSResumeThread(context->thread_and_work);
 }

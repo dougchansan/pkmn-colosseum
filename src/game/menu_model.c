@@ -20,9 +20,9 @@ extern void  GSlogWrite(const char* fmt, ...);         /* OSReport / GSlog */
 
 /* GSmem */
 extern u16   _toolentryAlloc__FUl(u32 size);                     /* GSmemAllocRaw */
-extern void* fn_800E27B0(u16 handle);                   /* GSmemGetPtr */
+extern void* GSmemLock(u16 handle);                   /* GSmemGetPtr */
 extern void* fn_800E24B0(u16 handle);                   /* GSmemLock */
-extern void  fn_800E209C(u16 handle);                   /* GSmemFree */
+extern void  GSmemFree(u16 handle);                   /* GSmemFree */
 
 /* GSgfx state */
 extern u8 lbl_8047AA80[];  /* GSgfx state pointer (via sda21) */
@@ -53,26 +53,26 @@ extern u8  lbl_80315690[]; /* resource table, 8-byte entries */
 
 /* Additional externs used by various functions */
 extern void  GSmodelFree(u32);     /* GSmem release/unref */
-extern void  fn_800D2738(void);
+extern void  GScameraFree(void);
 extern void* menuDataBiosGetPtr(void);    /* linked list head */
 extern void* menuItemBiosGetPtr(s16 idx); /* node by index */
 extern void* menuSeBiosGetPtr(s32);
-extern u16   fn_8005D798(void*, s32);
+extern u16   menuSeTableLookup(void*, s32);
 extern void* menuSpriteBiosGetPtr(s32);
 extern int   soundStartSE(u16);
 extern s32   GSthreadGetCurrentThread(void);    /* poll/yield -- 0 if pending */
 extern void  _threadSwitch(void);    /* yield */
 extern u32   fn_800BE31C(void);    /* rand or tick */
-extern u32   fn_800B8FD8(void*);   /* register fn, returns handle */
+extern u32   GXSetDrawSyncCallback(void*);   /* register fn, returns handle */
 extern void  fn_800BD91C(s32, s32);
-extern void  fn_800B8C58(s32);
+extern void  GXSetDrawSync(s32);
 extern void  GSgfxBeginBackFBCapture(u32, void*, void*);
 extern u32   GStextureCreate(s32, s32, s32, s32, s32);
 extern u32   GSmodelCanAnimate(u32);
 extern void  GSmodelSetAnimIndex(u32, u32);
 extern void  GSmodelSetAnimRate(u32, f32);
 extern void  GSmodelStartAnimation(u32);
-extern void  fn_801DB100(u32);
+extern void  wazaSequenceOwnerFree(u32);
 extern u32   OSGetTick(void);
 
 extern u32 lbl_8047ACF0;
@@ -131,9 +131,9 @@ extern void gfxSetPrimitive(s32);
 extern void gfxSetVtxDesc(s32);
 extern void gfxBegin(s32);
 extern void gfxVtxPos(f32);
-extern void fn_800D5CB8(s32, s32, s32, s32, s32);
+extern void gfxVtxColor4u8(s32, s32, s32, s32, s32);
 extern void gfxEnd(void);
-extern u32 fn_801DAC3C(u32 sequence);
+extern u32 wazaSequenceOwnerGetModel(u32 sequence);
 extern void fn_800EC134(u32 model);
 extern void GSmodelSetPEdescr(u32 model, void* descriptor);
 extern void GSmodelResetPEdescr(u32 model);
@@ -147,15 +147,15 @@ extern void fn_800D9AF0(u16* left, u16* top, u16* right, u16* bottom);
 extern void fn_800D258C(u32 camera);
 extern u32 GStextureGetXsize(u32 texture);
 extern u32 GStextureGetYsize(u32 texture);
-extern void fn_800D9D68(u16 left, u16 top, u16 right, u16 bottom);
-extern void fn_800D9C24(u16 left, u16 top, u16 right, u16 bottom);
+extern void gfxSetScissor(u16 left, u16 top, u16 right, u16 bottom);
+extern void gfxSetViewport(u16 left, u16 top, u16 right, u16 bottom);
 extern void _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID(void);
-extern void fn_800D3410(u32 texture, u32 slot);
-extern void fn_801DA4E8(u32 sequence, u32 active);
+extern void GSgfxRenderLayer(u32 texture, u32 slot);
+extern void wazaSequenceOwnerSetVisibility(u32 sequence, u32 active);
 extern void fn_801DA448(u32 sequence, u32 active);
-extern void fn_801DB088(void);
+extern void wazaSequenceSysUpdate(void);
 extern void fn_801DAAAC(u32 sequence);
-extern void fn_800D3190(void);
+extern void GSgfxRenderEnd(void);
 extern u8 lbl_8035B468[];
 
 /* Forward declarations for functions defined later in this TU */
@@ -185,7 +185,7 @@ extern u8    lbl_8047AD10;     /* resource request gate byte (sda21) - authorita
 
 /* Cross-segment prototypes for menu/window-engine functions defined in
  * sibling segment files split from the gs_model.c splitter bucket. */
-extern void fn_801019F8(void);
+extern void wazaSequenceSysClearWork(void);
 extern void* kaisuuBiosGetMax(u32 index);
 extern void* kaisuuBiosGetMin(u32 index);
 extern u32 kaisuuGetKaisuu(u32 param);
@@ -284,7 +284,7 @@ extern void winSpriteSetDisp(void* node, u32 enable);
 extern void winSpriteRelease(void* head);
 extern void* fn_80109290(void* root);
 extern void winSpriteInit(void);
-extern void fn_801093C8(void);
+extern void menuOffScreenDraw(void);
 extern u8 menuOffScreenFadeSync(u8 param);
 extern void menuOffScreenFadeSet(f32 f1, f32 f2);
 extern u8 menuOffScreenSetPriority(u8 val);
@@ -365,7 +365,7 @@ u32 menuModelRender(u8* work) {
     if (work[0] != 2) {
         return 0;
     }
-    renderModel = work[0x14] != 0 ? fn_801DAC3C(*(u32*)(work + 0x24)) : *(u32*)(work + 0x24);
+    renderModel = work[0x14] != 0 ? wazaSequenceOwnerGetModel(*(u32*)(work + 0x24)) : *(u32*)(work + 0x24);
     resetModel = renderModel;
     if (resetModel == 0) return 0;
 
@@ -387,25 +387,25 @@ u32 menuModelRender(u8* work) {
     fn_800D258C(*(u32*)(work + 0x38));
     width = (u16)(GStextureGetXsize(*(u32*)(work + 0x34)) - 1);
     height = (u16)(GStextureGetYsize(*(u32*)(work + 0x34)) - 1);
-    fn_800D9D68(0, 0, width, height);
-    fn_800D9C24(0, 0, width, height);
+    gfxSetScissor(0, 0, width, height);
+    gfxSetViewport(0, 0, width, height);
     _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
-    fn_800D3410(*(u32*)(work + 0x34), 0);
+    GSgfxRenderLayer(*(u32*)(work + 0x34), 0);
     if (work[0x14] != 0) {
-        fn_801DA4E8(*(u32*)(work + 0x24), 1);
+        wazaSequenceOwnerSetVisibility(*(u32*)(work + 0x24), 1);
         fn_801DA448(*(u32*)(work + 0x24), 1);
-        fn_801DB088();
+        wazaSequenceSysUpdate();
         fn_801DAAAC(*(u32*)(work + 0x24));
-        fn_801DA4E8(*(u32*)(work + 0x24), 0);
+        wazaSequenceOwnerSetVisibility(*(u32*)(work + 0x24), 0);
         fn_801DA448(*(u32*)(work + 0x24), 0);
     } else {
         GSmodelDrawModel(*(u32*)(work + 0x24), 0x3010);
     }
-    fn_800D3190();
+    GSgfxRenderEnd();
     fn_800D377C(1);
     fn_800D258C(previousCamera);
-    fn_800D9D68(viewLeft, viewTop, viewRight, viewBottom);
-    fn_800D9C24(scissorLeft, scissorTop, scissorRight, scissorBottom);
+    gfxSetScissor(viewLeft, viewTop, viewRight, viewBottom);
+    gfxSetViewport(scissorLeft, scissorTop, scissorRight, scissorBottom);
     _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
     fn_800D4604(1);
     {
@@ -458,7 +458,7 @@ s32 menuModelFree(void* p) {
     if (*(u8*)((u8*)r31 + 0x14) != 0) {
         /* has some kind */
         if (*(void**)((u8*)r31 + 0x24) != (void*)0) {
-            fn_801DB100(*(u32*)((u8*)r31 + 0x24));
+            wazaSequenceOwnerFree(*(u32*)((u8*)r31 + 0x24));
             *(u32*)((u8*)r31 + 0x24) = 0;
         }
     } else {

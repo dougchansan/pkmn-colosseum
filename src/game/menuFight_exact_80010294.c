@@ -12,7 +12,7 @@
 extern void* menuSubCalcColor(void*, void*);
 extern void windowDrawSprite();
 extern u32 GSmsgGetRect();
-extern void fn_800FB680();
+extern void GSmsgPrintColor();
 extern void msgctrlSetValue();
 
 /* Fight-menu window work: the four move slots shown by DrawPP/DrawType. */
@@ -38,7 +38,7 @@ void menuFightDrawPP(u8* ctx, u8* npc) {
     extern u32 windowGetCursor(u32 val);
     extern void* fightOutPokemonGetPokemonPtr(void* obj);
     extern u32 pokemonGetStatus(void* pokemon, s32 p2, s32 p3, s32 p4);
-    extern void fn_800FB8C8();
+    extern void GSmsgPrintRight();
     union {
         u16 raw;
         struct {
@@ -57,7 +57,7 @@ void menuFightDrawPP(u8* ctx, u8* npc) {
     cursor.raw = windowGetCursor(*(u32*)(ctx + 4)) >> 16;
     x = *(s16*)(npc + 0x54) - (s16)(GSmsgGetRect(0x197) >> 16);
     x = (s16)(x / 2);
-    fn_800FB680(x, 0, color, 0x197);
+    GSmsgPrintColor(x, 0, color, 0x197);
 
     if (cursor.pos.y >= 0 && cursor.pos.y < 4) {
         if (entries->slots[cursor.pos.y].valid != 0) {
@@ -70,18 +70,18 @@ void menuFightDrawPP(u8* ctx, u8* npc) {
             switch (status) {
             case 0x164:
             case 0:
-                fn_800FB8C8(0, 0, x, *(s16*)(npc + 0x56), color, 0x2BE1);
-                fn_800FB8C8(0, 0, *(s16*)(npc + 0x54), *(s16*)(npc + 0x56), color, 0x2BE1);
+                GSmsgPrintRight(0, 0, x, *(s16*)(npc + 0x56), color, 0x2BE1);
+                GSmsgPrintRight(0, 0, *(s16*)(npc + 0x54), *(s16*)(npc + 0x56), color, 0x2BE1);
                 break;
             case 0x165:
-                fn_800FB8C8(0, 0, x, *(s16*)(npc + 0x56), color, 0x2B6D);
-                fn_800FB8C8(0, 0, *(s16*)(npc + 0x54), *(s16*)(npc + 0x56), color, 0x2B6D);
+                GSmsgPrintRight(0, 0, x, *(s16*)(npc + 0x56), color, 0x2B6D);
+                GSmsgPrintRight(0, 0, *(s16*)(npc + 0x54), *(s16*)(npc + 0x56), color, 0x2B6D);
                 break;
             default:
                 msgctrlSetValue(0x34, entries->slots[cursor.pos.y].unk_0B);
-                fn_800FB8C8(0, 0, x, *(s16*)(npc + 0x56), color, 0xD2);
+                GSmsgPrintRight(0, 0, x, *(s16*)(npc + 0x56), color, 0xD2);
                 msgctrlSetValue(0x34, entries->slots[cursor.pos.y].unk_0A);
-                fn_800FB8C8(0, 0, *(s16*)(npc + 0x54), *(s16*)(npc + 0x56), color, 0xD2);
+                GSmsgPrintRight(0, 0, *(s16*)(npc + 0x54), *(s16*)(npc + 0x56), color, 0xD2);
                 break;
             }
         }

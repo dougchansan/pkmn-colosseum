@@ -26,8 +26,8 @@ extern void GXSetChanCtrl(GXChannelID chan, u8 enable, GXColorSrc amb_src,
                         GXColorSrc mat_src, int light_mask,
                         GXDiffuseFn diff_fn, GXAttnFn attn_fn); /* GXSetChanCtrl */
 extern void GXSetNumChans(u8 num); /* GXSetNumChans */
-extern void fn_800B884C(u8 num); /* GXSetNumTexGens */
-extern void fn_800BC8C8(u8 num); /* GXSetNumTevStages */
+extern void GXSetNumTexGens(u8 num); /* GXSetNumTexGens */
+extern void GXSetNumTevStages(u8 num); /* GXSetNumTevStages */
 extern void GXSetTevOrder(u32 stage, u32 coord, u32 map, u32 color); /* GXSetTevOrder */
 extern void GXSetTevOp(u32 stage, u32 mode);
 extern void GXSetTevSwapMode(u32 stage, GXTevSwapSel ras_sel,
@@ -47,9 +47,9 @@ extern void GXSetTevAlphaIn(u32 stage, GXTevAlphaArg a, GXTevAlphaArg b,
                         GXTevAlphaArg c, GXTevAlphaArg d); /* GXSetTevAlphaIn */
 extern void GXSetTevKColorSel(u32 stage, GXTevKColorSel sel); /* GXSetTevKColorSel */
 extern void GXSetTevKAlphaSel(u32 stage, GXTevKAlphaSel sel); /* GXSetTevKAlphaSel */
-extern void fn_800BC36C(GXTevRegID id, GXColorS10 color); /* GXSetTevColorS10 */
-extern void fn_800BBC34(u32 stage); /* GXSetTevDirect */
-extern void fn_800BBC0C(u8 num); /* GXSetNumIndStages */
+extern void GXSetTevColorS10(GXTevRegID id, GXColorS10 color); /* GXSetTevColorS10 */
+extern void GXSetTevDirect(u32 stage); /* GXSetTevDirect */
+extern void GXSetNumIndStages(u8 num); /* GXSetNumIndStages */
 
 static struct {
     GXColorS10 a;
@@ -121,7 +121,7 @@ static inline void CopyRGB(GXColor* dst, GXColor* src)
 }
 
 /* HSD_SetupChannel */
-void fn_801B3D1C(HSD_Chan* ch)
+void HSD_SetupChannel(HSD_Chan* ch)
 {
     int idx;
     GXChannelID chan;
@@ -259,7 +259,7 @@ void HSD_StateSetNumChans(int num)
 static inline int HSD_Channel2Num(int chan);
 
 /* HSD_SetupChannelAll */
-void fn_801B3998(HSD_Chan* ch)
+void HSD_SetupChannelAll(HSD_Chan* ch)
 {
     int num = 0;
 
@@ -268,7 +268,7 @@ void fn_801B3998(HSD_Chan* ch)
         if (n > num) {
             num = n;
         }
-        fn_801B3D1C(ch);
+        HSD_SetupChannel(ch);
         ch = ch->next;
     }
     HSD_StateSetNumChans((u8) num);
@@ -285,20 +285,20 @@ void HSD_StateRegisterTexGen(int coord)
 }
 
 /* HSD_StateSetNumTexGens */
-void fn_801B3890(void)
+void HSD_StateSetNumTexGens(void)
 {
-    fn_800B884C(num_tex_gens);
+    GXSetNumTexGens(num_tex_gens);
     num_tex_gens = 0;
 }
 
 /* HSD_StateInitTev */
-void fn_801B3884(void)
+void HSD_StateInitTev(void)
 {
     current_tev = 0;
 }
 
 /* HSD_StateGetNumTevStages */
-int fn_801B387C(void)
+int HSD_StateGetNumTevStages(void)
 {
     return current_tev;
 }
@@ -309,9 +309,9 @@ int HSD_StateAssignTev(void)
 }
 
 /* HSD_StateSetNumTevStages */
-void fn_801B3770(void)
+void HSD_StateSetNumTevStages(void)
 {
-    fn_800BC8C8(current_tev);
+    GXSetNumTevStages(current_tev);
     current_tev = 0;
 }
 
@@ -366,10 +366,10 @@ static inline int setupTevStages(HSD_TevDesc* desc)
 }
 
 /* HSD_SetupTevStageAll */
-void fn_801B3408(HSD_TevDesc* desc)
+void HSD_SetupTevStageAll(HSD_TevDesc* desc)
 {
     current_tev = setupTevStages(desc);
-    fn_801B3770();
+    HSD_StateSetNumTevStages();
 }
 
 static inline int HSD_Channel2Num(int chan)
@@ -499,13 +499,13 @@ static inline GXTevRegID TevRegIndex2ID(u32 idx)
 }
 
 /* HSD_SetTevRegAll */
-void fn_801B3258(void)
+void HSD_SetTevRegAll(void)
 {
     u32 i;
 
     for (i = 0; i < 4; i++) {
         if (TevReg[i].c != 0) {
-            fn_800BC36C(TevRegIndex2ID(i), TevReg[i].a);
+            GXSetTevColorS10(TevRegIndex2ID(i), TevReg[i].a);
             TevReg[i].c = 0;
         }
     }
@@ -550,7 +550,7 @@ static HSD_Chan invalid_prev_ch[4] = {
 };
 
 /* _HSD_StateInvalidateColorChannel */
-void fn_801B31F4(void)
+void _HSD_StateInvalidateColorChannel(void)
 {
     memcpy(&prev_ch, &invalid_prev_ch, sizeof(prev_ch));
     prev_amb_invalid[0] = 1;
@@ -561,19 +561,19 @@ void fn_801B31F4(void)
 }
 
 /* _HSD_StateInvalidateTevStage */
-void fn_801B31A4(void)
+void _HSD_StateInvalidateTevStage(void)
 {
     int i;
 
     for (i = 0; i < 16; i++) {
-        fn_800BBC34(i);
+        GXSetTevDirect(i);
     }
-    fn_800BBC0C(0);
+    GXSetNumIndStages(0);
     current_tev = 0;
 }
 
 /* _HSD_StateInvalidateTevRegister */
-void fn_801B3174(void)
+void _HSD_StateInvalidateTevRegister(void)
 {
     int i;
 
@@ -583,7 +583,7 @@ void fn_801B3174(void)
 }
 
 /* _HSD_StateInvalidateTexCoordGen */
-void fn_801B3168(void)
+void _HSD_StateInvalidateTexCoordGen(void)
 {
     num_tex_gens = 0;
 }

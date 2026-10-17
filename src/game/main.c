@@ -3,8 +3,8 @@
  * @brief Main entry point and top-level game initialization for Pokemon Colosseum.
  *
  * Contains main(), the game initialization sequence (fn_800057B0), the main
- * game loop thread (fn_80005AAC), the early reset/retrace callbacks, and the
- * per-retrace game logic (fn_80005E00).
+ * game loop thread (mainGameThread), the early reset/retrace callbacks, and the
+ * per-retrace game logic (mainRetraceLogic).
  *
  * Address range: 0x800055E0 - 0x80005FA8
  * Small data:    .sdata2 0x8047B6A0 - 0x8047B6B8 (the 0.0f and 359940.0f
@@ -62,7 +62,7 @@ extern void  GSmemInit(u32 heapId, void* start, void* end); /* GSmem heap init *
 extern void  fn_800E3560(u32 heapId);                          /* GSmem set default heap */
 
 /* --- Heap allocator (around 0x8009AB60) --- */
-extern void* fn_8009AB60(void* start, void* end, u32 numHeaps); /* OSInitAlloc / OSCreateHeap */
+extern void* OSInitAlloc(void* start, void* end, u32 numHeaps); /* OSInitAlloc / OSCreateHeap */
 
 /* --- DVD / file system init --- */
 extern void fn_800ACA80(void* dvdInfo, u32 priority);  /* DVDInit-related */
@@ -100,28 +100,28 @@ extern void fn_800D2AD4(u32 count);                     /* GSgfx light init */
 extern void GSlightInit(u32 count);                     /* GSgfx texture init */
 extern void gsParticleInit(u32 a, u32 b);                  /* GSmaterial init */
 extern void fn_80132C6C(u32 a, u32 b, u32 c, u32 d);  /* GStexture cache init */
-extern void fn_800F8138(void);                           /* GSgfx camera/viewport init */
+extern void GSinputInit(void);                           /* GSgfx camera/viewport init */
 
-extern void fn_800F80B0(u32 padIdx);                    /* PAD motor init per-controller */
-extern void fn_800F7E9C(u32 padIdx, u32 param);        /* PAD rumble config */
-extern void fn_800F7E40(u32 padIdx, u32 param);        /* PAD deadzone config */
-extern void fn_800F7DE4(u32 padIdx, u32 param);        /* PAD stick config */
+extern void GSinputOpen(u32 padIdx);                    /* PAD motor init per-controller */
+extern void GSinputSetClamping(u32 padIdx, u32 param);        /* PAD rumble config */
+extern void GSinputSetSmoothingRate(u32 padIdx, u32 param);        /* PAD deadzone config */
+extern void GSinputSetSmoothingFunc(u32 padIdx, u32 param);        /* PAD stick config */
 
 extern void GSgappInit(u32 numTasks, u32 numQueues);  /* GSthread init */
 extern void GSresInit(u32 maxSteps);                  /* GSthread step limit */
 extern void fn_800FF828(u32 a, u32 b, u32 c, u32 d);  /* GSthread pool config */
 extern void fn_8010D170(void);                           /* GSthread scheduler init */
-extern void fn_800F7758(u32 maxPads);                   /* PAD system init */
+extern void cms_InitThreadPool(u32 maxPads);                   /* PAD system init */
 extern void fn_800F75FC(void* padTable);                 /* PAD set mapping table */
 extern void GSmsgInit(u32 numFloors, u32 numLayers);  /* GSfloor system init */
 extern void GSmsgSetCtrlFunc(void* sndTable);                 /* GSfloor sound table */
 extern void GSmsgFontOpen(void* relData);                  /* GSfloor register REL data */
 extern void GSmsgOpen(void* relData);                  /* GSfloor register REL data (alt) */
-extern void fn_800F76E4(void* relData);                  /* GSfloor register REL data (floor) */
-extern void fn_80167DC0(u32 a, u32 b, u32 c, u32 d, u32 e); /* set the five DVD error message IDs */
-extern void fn_801E1300(void);                           /* Save/card system init */
+extern void cms_RegisterScript(void* relData);                  /* GSfloor register REL data (floor) */
+extern void soundSetInitParams(u32 a, u32 b, u32 c, u32 d, u32 e); /* set the five DVD error message IDs */
+extern void vtrInit(void);                           /* Save/card system init */
 extern void flareCreateTask(void);                           /* GBA communication init */
-extern void fn_801E1B2C(void);                           /* Save data init */
+extern void GSmovieInit(void);                           /* Save data init */
 extern void menuInit(u32 param);                      /* Effect system init */
 extern void fn_80101FB8(u32 param);                      /* GS load meter draw-sync hook init */
 extern void fn_800D3074(u32 flag);                       /* GSgfx enable rendering */
@@ -136,28 +136,28 @@ extern void GSthreadCreate(u32 affinity, u32 priority,      /* GSthread create m
 extern s32 GSvtrRegisterGSgapp(u32 taskId);              /* Save task registration */
 extern void fadeInit(void);                           /* Script engine init */
 extern void fn_80168638(u32 numSlots);                   /* Floor/scene loader init */
-extern void fn_80130CE0(u32 maxEffects);                 /* 3D model/effect loader */
-extern u32  fn_800E0DDC(void);                           /* OSGetFreeMemSize-like */
+extern void GSeffectInit(u32 maxEffects);                 /* 3D model/effect loader */
+extern u32  GSmemGetFreeTotal(void);                           /* OSGetFreeMemSize-like */
 extern void GSlogWrite(const char* fmt, ...);           /* OSReport / debug printf */
 extern f32 __cvt_fp2unsigned(f32 volume);                     /* volume clamp/process */
 
-/* --- Game main loop (fn_80005AAC) and its helpers --- */
-void fn_80005AAC(void);
+/* --- Game main loop (mainGameThread) and its helpers --- */
+void mainGameThread(void);
 void fn_8000609C(void); /* fn_8000609C - background color / render schedule init */
 
 /* --- Per-frame callback tasks registered by fn_800057B0 --- */
-void fn_80005D80(void);       /* fn_80005D80 - primary retrace handler */
+void mainRetraceDraw(void);       /* mainRetraceDraw - primary retrace handler */
 void fn_80005FFC(void);      /* fn_80005FFC - controller polling task */
 void fn_8000604C(void);    /* fn_8000604C - controller rumble task */
-void fn_80005FA8(u32 a, u32 b); /* fn_80005FA8 - audio retrace callback */
-void fn_80005CE4(void);    /* fn_80005CE4 - reset button countdown */
-void fn_80005E00(void);  /* fn_80005E00 - per-retrace game logic */
-void fn_80005C3C(void); /* fn_80005C3C - reset button handler */
+void mainLogicTask(u32 a, u32 b); /* mainLogicTask - audio retrace callback */
+void mainClearExceptionVectors(void);    /* mainClearExceptionVectors - reset button countdown */
+void mainRetraceLogic(void);  /* mainRetraceLogic - per-retrace game logic */
+void mainCheckResetButton(void); /* mainCheckResetButton - reset button handler */
 
 /* --- Small utility functions near main --- */
 
-/* fn_800056C4: fn_800056C4 - sets a byte flag; returns previous value */
-extern u8 fn_800056C4(u8 newVal);
+/* mainSetPauseFlag: mainSetPauseFlag - sets a byte flag; returns previous value */
+extern u8 mainSetPauseFlag(u8 newVal);
 
 /* fn_800056D4: fn_800056D4 - reads flag, clears it, returns old */
 extern u8 fn_800056D4(void);
@@ -165,24 +165,24 @@ extern u8 fn_800056D4(void);
 /* fn_800056E4: fn_800056E4 */
 extern void fn_800056E4(u8 val);
 
-/* fn_800056EC: fn_800056EC - if sound system present, set volume */
-extern void fn_800056EC(f32 volume);
+/* gamedataSetPlaytime: gamedataSetPlaytime - if sound system present, set volume */
+extern void gamedataSetPlaytime(f32 volume);
 
 /* fn_80005748: fn_80005748 - if sound system present, get volume */
 extern f32 fn_80005748(void);
 
-/* fn_800057A0: fn_800057A0 - returns 1 */
-extern u32 fn_800057A0(void);
+/* GSgetVersionMajor: GSgetVersionMajor - returns 1 */
+extern u32 GSgetVersionMajor(void);
 
-/* fn_800057A8: fn_800057A8 - returns 6 */
-extern u32 fn_800057A8(void);
+/* GSgetVersionMinor: GSgetVersionMinor - returns 6 */
+extern u32 GSgetVersionMinor(void);
 
 /* --- Miscellaneous engine functions --- */
 extern void fn_800366A8(void);    /* Scene/floor update tick */
 extern u32  fn_800FF81C(void* a, u32 b); /* GSthread set frame counter */
 extern void* GSresAllocResource(u32 a, u32 b, u32 c, u32 d); /* GSthread alloc work area */
 
-extern u32  fn_80128E24(void);    /* SoundSystemIsReady */
+extern u32  savedataGetWorkPtr(void);    /* SoundSystemIsReady */
 extern void* fn_80128E04(void);   /* SoundSystemGetContext */
 extern void* gamedatasaveBiosGetPtr(void);   /* SoundGetMixer */
 extern void gamedatasaveBiosSetPlaytime(void* mixer, f32 volume); /* SoundSetMasterVolume */
@@ -198,20 +198,20 @@ extern void GSvtrLoadTexture(void);    /* Card system tick */
 extern void fn_8010C220(void);    /* Effect system tick */
 extern void cameraInit(void);    /* World/map system init */
 extern void fn_8013024C(void);    /* 3D model system init */
-extern void fn_8018E920(u32 a);   /* Pokemon data/model init */
+extern void peopleSystemInit(u32 a);   /* Pokemon data/model init */
 extern void fn_801ED388(void);    /* GBA link init */
-extern void fn_801D0A30(void);    /* Menu/UI system init */
+extern void memcardInit(void);    /* Menu/UI system init */
 extern void fn_801128A0(void);    /* Colosseum mode init */
 extern void* tableResBiosGetResPtr(u32 id);  /* Load relocatable module (REL) by ID */
 
-extern void* fn_801664F0(void* color); /* Set clear/background color */
+extern void* soundSetListener(void* color); /* Set clear/background color */
 extern void GSresRegisterResource(void* work, u32 time, u32 numFrames, u32 arg); /* Thread wait/schedule */
 
 extern u32  fn_800A03B4(void);    /* OSGetResetButtonState */
 extern int  OSGetResetButtonState(void); /* real symtab name (signed return -> cmpwi) */
 extern void VIFlush(void);               /* real symtab name for fn_800AA068 call site */
-extern void fn_80166E44(void);    /* Screen fade to black */
-extern void fn_800AAE34(u32 mask);/* VISetBlack / video blank */
+extern void soundShutdown(void);    /* Screen fade to black */
+extern void PADRecalibrate(u32 mask);/* VISetBlack / video blank */
 extern void VISetBlack(u32 flag);/* VIFlush */
 extern void fn_800AA068(void);    /* VIWaitForRetrace */
 extern void OSSetIdleFunction(u32 a, u32 b, u32 c, u32 d); /* OSClearStack or thread cleanup */
@@ -222,24 +222,24 @@ extern u8   fn_8000DAA8(void);    /* IsLanguageJapanese or locale check */
 extern void peopleMain(u32 a, u32 b); /* Retry/reconnect handler */
 
 extern u8   fn_8008ABA0(u32 padIdx); /* PAD is connected check */
-extern void fn_800F7F64(u32 padIdx); /* PAD disconnect handler */
-extern u8 fn_800F7EF8(u32 padIdx); /* PAD connection check */
+extern void GSinputRead(u32 padIdx); /* PAD disconnect handler */
+extern u8 GSinputIsConnected(u32 padIdx); /* PAD connection check */
 extern void fn_8008AC34(u32 padIdx); /* PAD recalibrate */
 
 extern void fn_80101B90(u32 mask);   /* GXSetChanCtrl / GX render state */
 extern void fn_80101D8C(void);       /* GX render flush */
 extern void fn_80101D5C(void);       /* GX render end */
-extern void fn_800D361C(u8 mode);    /* GSgfx set draw mode */
-extern void fn_800D30F0(u32 flag);   /* GSgfx swap buffers */
+extern void GSgfxWaitRetrace(u8 mode);    /* GSgfx set draw mode */
+extern void GSgfxSwapBuffers(u32 flag);   /* GSgfx swap buffers */
 extern void GSgfxCaptureUpdate(void);       /* World/scene render tick */
 
 extern void fn_801E0FB4(s32 unk, u32 a, u32 b); /* Save/card per-frame update */
 
-extern u8   fn_801E11E8(void);   /* Card system check pending */
-extern s32  fn_801E11E0(void);   /* Card system get state */
-extern void fn_801E11B0(void);   /* Card system process state 2 */
-extern void fn_801E119C(void);   /* Card system process other */
-extern void fn_801E118C(void);   /* Card system finalize */
+extern u8   vtrIsActive(void);   /* Card system check pending */
+extern s32  vtrGetMode(void);   /* Card system get state */
+extern void vtrSetMode1(void);   /* Card system process state 2 */
+extern void vtrSetMode2(void);   /* Card system process other */
+extern void vtrSetMode3(void);   /* Card system finalize */
 
 extern void menuDaemon(void);   /* Particle system update */
 extern void GSmsgDaemon(void);   /* GSthread sync / process tasks */
@@ -248,9 +248,9 @@ extern u32  std082_flagGetValue(u32 evtId);  /* Event system check state */
 extern s32  fn_800D37CC(void);       /* GSgfx get frame counter */
 extern u32  msgGetCharsPerFrame(void);       /* GSgfx get tick counter */
 
-extern u32  fn_800F7AF0(u32 padIdx); /* PAD get buttons pressed */
+extern u32  GSinputButtonsChanged(u32 padIdx); /* PAD get buttons pressed */
 extern u32  fn_800F7BC4(u32 padIdx); /* PAD get buttons held */
-extern void fn_8000C0DC(void);       /* Debug menu toggle */
+extern void dbgMovieCaptureUpdate(void);       /* Debug menu toggle */
 
 /* --- SDA (small data area) globals used by this module --- */
 
@@ -313,11 +313,11 @@ extern u8 lbl_802E2888[];   /* Error name string table */
 extern const char lbl_80266420[]; /* "OS avail memory: %d\n" */
 extern const char lbl_80266448[]; /* "OS_ERROR_SYSTEM_RESET" (error name table base) */
 
-/* fn_8009F488 = __OSInitMemoryProtection region setup */
-extern void fn_8009F488(u32 region, u32 addr, u32 size, u32 perm);
+/* OSProtectRange = __OSInitMemoryProtection region setup */
+extern void OSProtectRange(u32 region, u32 addr, u32 size, u32 perm);
 
-/* fn_800A2C58 = __DBIsExceptionMarked or similar */
-extern s32  fn_800A2C58(void);
+/* DBIsDebuggerPresent = __DBIsExceptionMarked or similar */
+extern s32  DBIsDebuggerPresent(void);
 
 /* OSCreateThread = OSCreateThread */
 extern void OSCreateThread(void* thread, void* func, void* arg,
@@ -393,7 +393,7 @@ int main(int argc, char** argv) {
 
     /* Create OS heap from [heapStart, arenaHi) for system allocations,
      * then move arena low past our heaps */
-    OSSetArenaLo(fn_8009AB60(heapStart, OSGetArenaHi(), 1));
+    OSSetArenaLo(OSInitAlloc(heapStart, OSGetArenaHi(), 1));
 
     /* Initialize ARAM (audio RAM) */
     ARInit(&lbl_80478DC0, 2);
@@ -418,13 +418,13 @@ int main(int argc, char** argv) {
 }
 
 /* =========================================================================
- *  fn_800056C4 / fn_800056C4
+ *  mainSetPauseFlag / mainSetPauseFlag
  *  Address: 0x800056C4, Size: 0x10
  *
  *  Atomically sets the pause flag and returns the previous value.
  * =========================================================================
  */
-u8 fn_800056C4(u8 newVal) {
+u8 mainSetPauseFlag(u8 newVal) {
     u8 oldVal = lbl_80478DC9;
     lbl_80478DC9 = newVal;
     return oldVal;
@@ -455,18 +455,18 @@ void fn_800056E4(u8 val) {
 }
 
 /* =========================================================================
- *  fn_800056EC / fn_800056EC
+ *  gamedataSetPlaytime / gamedataSetPlaytime
  *  Address: 0x800056EC, Size: 0x5C
  *
  *  If the sound system is initialized, sets the master volume on the
  *  sound mixer. The volume parameter arrives in f1.
  * =========================================================================
  */
-void fn_800056EC(f32 volume) {
+void gamedataSetPlaytime(f32 volume) {
     void* mixer;
 
     /* Check if sound system is ready */
-    if (fn_80128E24() != 0 && fn_80128E04() != 0) {
+    if (savedataGetWorkPtr() != 0 && fn_80128E04() != 0) {
         mixer = gamedatasaveBiosGetPtr();
     } else {
         mixer = NULL;
@@ -489,7 +489,7 @@ f32 fn_80005748(void) {
     void* mixer;
     f32 volume;
 
-    if (fn_80128E24() != 0 && fn_80128E04() != 0) {
+    if (savedataGetWorkPtr() != 0 && fn_80128E04() != 0) {
         mixer = gamedatasaveBiosGetPtr();
     } else {
         mixer = NULL;
@@ -505,25 +505,25 @@ f32 fn_80005748(void) {
 }
 
 /* =========================================================================
- *  fn_800057A0 / fn_800057A0
+ *  GSgetVersionMajor / GSgetVersionMajor
  *  Address: 0x800057A0, Size: 0x8
  *
  *  Returns the major version number: 1
  * =========================================================================
  */
-u32 fn_800057A0(void) {
+u32 GSgetVersionMajor(void) {
     return 1;
 }
 
 /* =========================================================================
- *  fn_800057A8 / fn_800057A8
+ *  GSgetVersionMinor / GSgetVersionMinor
  *  Address: 0x800057A8, Size: 0x8
  *
  *  Returns the minor version number: 6
  *  (Pokemon Colosseum version 1.6)
  * =========================================================================
  */
-u32 fn_800057A8(void) {
+u32 GSgetVersionMinor(void) {
     return 6;
 }
 
@@ -594,14 +594,14 @@ void fn_800057B0(void) {
     fn_80132C6C(0x10, 0x40, 0x1, 0x2000);
 
     /* Initialize camera/viewport defaults */
-    fn_800F8138();
+    GSinputInit();
 
     /* Configure all 4 controller pads (indices 1-4) */
     for (i = 1; i <= 4; i++) {
-        fn_800F80B0(i);        /* Init motor for pad i */
-        fn_800F7E9C(i, 2);    /* Set rumble mode */
-        fn_800F7E40(i, 7);    /* Set analog deadzone */
-        fn_800F7DE4(i, 1);    /* Set stick mode */
+        GSinputOpen(i);        /* Init motor for pad i */
+        GSinputSetClamping(i, 2);    /* Set rumble mode */
+        GSinputSetSmoothingRate(i, 7);    /* Set analog deadzone */
+        GSinputSetSmoothingFunc(i, 1);    /* Set stick mode */
     }
 
     /* Initialize GSthread system: 16 tasks, 4 queues */
@@ -617,7 +617,7 @@ void fn_800057B0(void) {
     fn_8010D170();
 
     /* Allocate 16 script VM contexts (0x16C bytes each) */
-    fn_800F7758(0x10);
+    cms_InitThreadPool(0x10);
 
     /* Set the script VM native-call dispatch table (12-byte entries) */
     fn_800F75FC(lbl_802E1CF0);
@@ -635,16 +635,16 @@ void fn_800057B0(void) {
     GSmsgOpen(lbl_802CF810); /* Scene data #4 (alt registration) */
 
     /* Set the DVD error message IDs: cover open, no disk, wrong disk, retry, fatal */
-    fn_80167DC0(0x3BE8, 0x3BEA, 0x3BED, 0x3BEF, 0x3BF2);
+    soundSetInitParams(0x3BE8, 0x3BEA, 0x3BED, 0x3BEF, 0x3BF2);
 
     /* Initialize GSvtr texture-display state and create its display task */
-    fn_801E1300();
+    vtrInit();
 
     /* Initialize battle texture/resource state and create its render callback */
     flareCreateTask();
 
     /* Initialize the THP movie runtime */
-    fn_801E1B2C();
+    GSmovieInit();
 
     /* Initialize 3D effect system: 24 max effects */
     menuInit(0x18);
@@ -661,8 +661,8 @@ void fn_800057B0(void) {
      * ---------------------------------------------------------------
      */
 
-    /* Task 0xFF: Primary VBlank handler (fn_80005D80) */
-    GSgappCreate(1, 0xFF, 0, (void*)fn_80005D80);
+    /* Task 0xFF: Primary VBlank handler (mainRetraceDraw) */
+    GSgappCreate(1, 0xFF, 0, (void*)mainRetraceDraw);
 
     /* Task 0x00: Pad rumble update (fn_8000604C) */
     GSgappCreate(1, 0x00, 0, (void*)fn_8000604C);
@@ -670,18 +670,18 @@ void fn_800057B0(void) {
     /* Task 0x01: Pad read/polling (fn_80005FFC) */
     GSgappCreate(1, 0x01, 0, (void*)fn_80005FFC);
 
-    /* Task 0x0A: Audio retrace callback (fn_80005FA8) */
+    /* Task 0x0A: Audio retrace callback (mainLogicTask) */
     GSvtrRegisterGSgapp(
-        GSgappCreate(1, 0x0A, 0, (void*)fn_80005FA8));
+        GSgappCreate(1, 0x0A, 0, (void*)mainLogicTask));
 
-    /* Task 0xFD: Reset button countdown (fn_80005CE4) */
-    GSgappCreate(1, 0xFD, 0, (void*)fn_80005CE4);
+    /* Task 0xFD: Reset button countdown (mainClearExceptionVectors) */
+    GSgappCreate(1, 0xFD, 0, (void*)mainClearExceptionVectors);
 
-    /* Task 0xFE: Main retrace logic (fn_80005E00) */
-    GSgappCreate(1, 0xFE, 0, (void*)fn_80005E00);
+    /* Task 0xFE: Main retrace logic (mainRetraceLogic) */
+    GSgappCreate(1, 0xFE, 0, (void*)mainRetraceLogic);
 
-    /* Task 0xFF: Reset handler (fn_80005C3C) - overrides earlier 0xFF? */
-    GSgappCreate(1, 0xFF, 0, (void*)fn_80005C3C);
+    /* Task 0xFF: Reset handler (mainCheckResetButton) - overrides earlier 0xFF? */
+    GSgappCreate(1, 0xFF, 0, (void*)mainCheckResetButton);
 
     /* Mark initialization as complete */
     lbl_80478DC9 = 1;
@@ -693,18 +693,18 @@ void fn_800057B0(void) {
     fn_80168638(0x8);
 
     /* Initialize model/effect loader: 32 max */
-    fn_80130CE0(0x20);
+    GSeffectInit(0x20);
 
     /* Print available memory to debug console */
     {
-        u32 freeMem = (u32)fn_800E0DDC();
+        u32 freeMem = (u32)GSmemGetFreeTotal();
         GSlogWrite(lbl_80266420, freeMem); /* "OS avail memory: %d\n" */
     }
 
     /* Create and start the main game loop thread:
      *   affinity=0, priority=1000, stackSize=0x4000,
-     *   usesFPU=1, autoStart=1, entry=fn_80005AAC */
-    GSthreadCreate(0, 0x3E8, 0x4000, 1, 1, (void*)fn_80005AAC);
+     *   usesFPU=1, autoStart=1, entry=mainGameThread */
+    GSthreadCreate(0, 0x3E8, 0x4000, 1, 1, (void*)mainGameThread);
 
     /* Infinite yield loop - scheduler takes over from here */
     for (;;) {
@@ -713,7 +713,7 @@ void fn_800057B0(void) {
 }
 
 /* =========================================================================
- *  fn_80005AAC / fn_80005AAC
+ *  mainGameThread / mainGameThread
  *  Address: 0x80005AAC, Size: 0x190
  *
  *  The main game loop thread entry point. Runs once per frame:
@@ -724,7 +724,7 @@ void fn_800057B0(void) {
  *  5. Clears scratch memory
  * =========================================================================
  */
-void fn_80005AAC(void) {
+void mainGameThread(void) {
     void* mixer;
 
     /* Tick the scene/floor system */
@@ -748,7 +748,7 @@ void fn_80005AAC(void) {
     lbl_80478DD0 = 0;
 
     /* If sound system is ready, reset master volume to 0.0 */
-    if (fn_80128E24() != 0 && fn_80128E04() != 0) {
+    if (savedataGetWorkPtr() != 0 && fn_80128E04() != 0) {
         mixer = gamedatasaveBiosGetPtr();
     } else {
         mixer = NULL;
@@ -765,7 +765,7 @@ void fn_80005AAC(void) {
      * to its data, which is then registered with the floor system. */
     GSmsgFontOpen(tableResBiosGetResPtr(1));  /* REL 1 -> register scene data */
     GSmsgOpen(tableResBiosGetResPtr(4));  /* REL 4 -> register scene data (alt) */
-    fn_800F76E4(tableResBiosGetResPtr(7));  /* REL 7 -> register floor data */
+    cms_RegisterScript(tableResBiosGetResPtr(7));  /* REL 7 -> register floor data */
 
     /* Seed the RNG using the low bits of the OS tick counter.
      * OSGetTime returns u64 in r3:r4; we use r4 (low 32 bits).
@@ -796,13 +796,13 @@ void fn_80005AAC(void) {
     fn_8013024C();
 
     /* Initialize Pokemon model/data system (48 slots) */
-    fn_8018E920(0x30);
+    peopleSystemInit(0x30);
 
     /* Initialize GBA link subsystem */
     fn_801ED388();
 
     /* Initialize menu/UI system */
-    fn_801D0A30();
+    memcardInit();
 
     /* Initialize Colosseum battle mode */
     fn_801128A0();
@@ -813,7 +813,7 @@ void fn_80005AAC(void) {
 }
 
 /* =========================================================================
- *  fn_80005C3C / fn_80005C3C
+ *  mainCheckResetButton / mainCheckResetButton
  *  Address: 0x80005C3C, Size: 0xA8
  *
  *  Checks the reset button state. On first press, latches.
@@ -821,7 +821,7 @@ void fn_80005AAC(void) {
  *  hardware shutdown and calls OSResetSystem.
  * =========================================================================
  */
-void fn_80005C3C(void) {
+void mainCheckResetButton(void) {
     if (lbl_80478DCA == 0) {
         /* Button not yet latched - check if pressed */
         if (OSGetResetButtonState() == 1) {
@@ -832,12 +832,12 @@ void fn_80005C3C(void) {
         if (OSGetResetButtonState() == 0) {
             /* Released. Only reset if init is complete. */
             if (lbl_80478DC9 == 1) {
-                fn_80166E44();           /* Fade screen to black */
-                fn_800AAE34(0xF0000000); /* VISetBlack */
+                soundShutdown();           /* Fade screen to black */
+                PADRecalibrate(0xF0000000); /* VISetBlack */
                 VISetBlack(1);          /* VIFlush */
                 VIFlush();               /* real symtab: VIFlush (was fn_800AA068) */
-                fn_800A880C(NULL);        /* Clear pre-retrace callback */
-                fn_800A8850(NULL);        /* Clear post-retrace callback */
+                VISetPreRetraceCallback(NULL);        /* Clear pre-retrace callback */
+                VISetPostRetraceCallback(NULL);        /* Clear post-retrace callback */
                 OSSetIdleFunction(0, 0, 0, 0); /* Clean up threads */
                 VIWaitForRetrace();           /* Reset audio */
                 OSResetSystem(0, 0, 1);  /* Reset to system menu */
@@ -847,7 +847,7 @@ void fn_80005C3C(void) {
 }
 
 /* =========================================================================
- *  fn_80005CE4 / fn_80005CE4
+ *  mainClearExceptionVectors / mainClearExceptionVectors
  *  Address: 0x80005CE4, Size: 0x9C
  *
  *  On first call (lbl_80478DCC == 0), clears OS exception vectors by
@@ -856,7 +856,7 @@ void fn_80005C3C(void) {
  *  This provides a delay before the game is fully ready.
  * =========================================================================
  */
-void fn_80005CE4(void) {
+void mainClearExceptionVectors(void) {
     u32 i;
 
     if (lbl_80478DCC == 0) {
@@ -879,7 +879,7 @@ void fn_80005CE4(void) {
 }
 
 /* =========================================================================
- *  fn_80005D80 / fn_80005D80
+ *  mainRetraceDraw / mainRetraceDraw
  *  Address: 0x80005D80, Size: 0x80
  *
  *  Primary vertical blank handler. Runs each frame:
@@ -891,18 +891,18 @@ void fn_80005CE4(void) {
  *  6. Finalizes the GX render state
  * =========================================================================
  */
-void fn_80005D80(void) {
+void mainRetraceDraw(void) {
     /* Set render state mask (0xFF00 = enable all channels) */
     fn_80101B90(0xFF00);
 
     /* Apply the draw mode from the per-frame flag */
-    fn_800D361C(lbl_80478DD0);
+    GSgfxWaitRetrace(lbl_80478DD0);
 
     /* Flush GX render commands */
     fn_80101D8C();
 
     /* Clear swap flag */
-    fn_800D30F0(0);
+    GSgfxSwapBuffers(0);
 
     /* Tick world/scene renderer */
     GSgfxCaptureUpdate();
@@ -922,7 +922,7 @@ void fn_80005D80(void) {
 }
 
 /* =========================================================================
- *  fn_80005E00 / fn_80005E00
+ *  mainRetraceLogic / mainRetraceLogic
  *  Address: 0x80005E00, Size: 0x1A8
  *
  *  Per-retrace game logic handler. Checks controller buttons for
@@ -935,7 +935,7 @@ void fn_80005D80(void) {
  *  an extern reference instead changes the FPR allocation of the clamp.
  * =========================================================================
  */
-void fn_80005E00(void) {
+void mainRetraceLogic(void) {
     void* mixer;
     f32 vol;
     f32 v;
@@ -944,33 +944,33 @@ void fn_80005E00(void) {
 
     fn_80101B90(0xFF);
 
-    pressed = fn_800F7AF0(1);
+    pressed = GSinputButtonsChanged(1);
     held = fn_800F7BC4(1);
     if (held & pressed & 0x10) {
-        fn_8000C0DC();
+        dbgMovieCaptureUpdate();
     }
 
-    if (fn_801E11E8()) {
-        pressed = fn_800F7AF0(1);
+    if (vtrIsActive()) {
+        pressed = GSinputButtonsChanged(1);
         held = fn_800F7BC4(1);
         if (held & pressed & 0x40) {
-            if (fn_801E11E0() == 2) {
-                fn_801E11B0();
+            if (vtrGetMode() == 2) {
+                vtrSetMode1();
             } else {
-                fn_801E119C();
+                vtrSetMode2();
             }
         }
-        pressed = fn_800F7AF0(1);
+        pressed = GSinputButtonsChanged(1);
         held = fn_800F7BC4(1);
         if (held & pressed & 0x20) {
-            fn_801E118C();
+            vtrSetMode3();
         }
     }
 
     menuDaemon();
     GSmsgDaemon();
 
-    if (fn_80128E24() != 0 && fn_80128E04() != 0) {
+    if (savedataGetWorkPtr() != 0 && fn_80128E04() != 0) {
         mixer = gamedatasaveBiosGetPtr();
     } else {
         mixer = NULL;

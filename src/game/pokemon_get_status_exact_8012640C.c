@@ -92,7 +92,7 @@ extern u32  pokemonBiosGetNicknamePtr(u8* ptr);
 extern u32  pokemonBiosGetNicknameOrgPtr(u8* ptr);
 extern u32  pokemonBiosGetExp(u8* ptr);
 extern u8   pokemonBiosGetLevel(u8* ptr);
-extern u32  fn_8011F474(u8* ptr, u32 val);
+extern u32  pokemonBiosGetJoutaiPtr(u8* ptr, u32 val);
 extern u32  pokemonBiosGetConditionAmari(u8* ptr);
 extern u16  pokemonBiosGetPokemonWazaDataId(u8* ptr, u32 val);
 extern u8   pokemonBiosGetPokemonWazaPp(u8* ptr, u32 val);
@@ -158,7 +158,7 @@ extern u32  pokemonBiosGetDp(u8* ptr);
 extern u32  pokemonBiosGetPoolExp(u8* ptr);
 extern u16  pokemonBiosGetPoolFriend(u8* ptr);
 extern u8   pokemonBiosGetDarkFlag(u8* ptr);
-extern u32  fn_8011EDC4(u8* ptr, u32 val);
+extern u32  pokemonBiosGetDarkJoutaiPtr(u8* ptr, u32 val);
 extern void* pokemonGrowDataBiosGetPtr(u32 idx);
 extern u32  pokemonGrowDataBiosGetExp(void* tbl, u8 level);
 extern u8   sexGetPokemonSexRaitoKotei(u32 idx);
@@ -470,7 +470,7 @@ u32 pokemonGetStatus(u8* obj, u32 id, u32 selector, u32 d)
         return (u32)(u8)(hp == 0 ? 1 : 0);
     }
 
-    case 0x7C: return fn_8011F474(obj, d);
+    case 0x7C: return pokemonBiosGetJoutaiPtr(obj, d);
     case 0x7D: return pokemonBiosGetConditionAmari(obj);
     case 0x7F: return (u32)(u16)pokemonBiosGetPokemonWazaDataId(obj, d);
     case 0x80: return (u32)(u8)pokemonBiosGetPokemonWazaPp(obj, d);
@@ -551,7 +551,7 @@ u32 pokemonGetStatus(u8* obj, u32 id, u32 selector, u32 d)
     case 0xC6: return pokemonBiosGetPoolExp(obj);
     case 0xC7: return (u32)(u16)pokemonBiosGetPoolFriend(obj);
     case 0xC2: return (u32)(u8)pokemonBiosGetDarkFlag(obj);
-    case 0xC8: return fn_8011EDC4(obj, d);
+    case 0xC8: return pokemonBiosGetDarkJoutaiPtr(obj, d);
     case 0xCB: return fightPokemonBiosGetMotoPokemonPtr(obj);
     case 0xCC: return fightPokemonBiosGetPokemonBuffPtr(obj);
     case 0xCD: return fightPokemonBiosGetFightJoutaiPtr(obj, d);

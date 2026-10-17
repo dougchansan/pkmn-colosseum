@@ -119,8 +119,8 @@ u16* __peReg = NULL;
 u16* __memReg = NULL;
 extern OSTime OSGetTime(void);
 extern void GXSetBreakPtCallback(void* callback);
-extern void fn_800B8FD8(void* callback);
-extern void fn_800B90A4(void* callback);
+extern void GXSetDrawSyncCallback(void* callback);
+extern void GXSetDrawDoneCallback(void* callback);
 extern void __GXAbort(void);
 extern void __GXInitGX(void);
 
@@ -206,8 +206,8 @@ s32 __GXShutdown_800C6260(BOOL final)
         }
     } else {
         GXSetBreakPtCallback(NULL);
-        fn_800B8FD8(NULL);
-        fn_800B90A4(NULL);
+        GXSetDrawSyncCallback(NULL);
+        GXSetDrawDoneCallback(NULL);
 
         GX_WRITE_U32(0);
         GX_WRITE_U32(0);
@@ -417,72 +417,72 @@ void __GXInitGX(void) {
     extern u8 lbl_803129E4[];
     extern void GXSetCopyClear(GXColor, u32);
     extern void GXSetTexCoordGen2();
-    extern void fn_800B884C();
-    extern void fn_800B7D3C();
-    extern void fn_800B856C();
-    extern void fn_800B84E0();
-    extern void fn_800B80CC();
-    extern void fn_800B9404();
-    extern void fn_800B944C();
-    extern void fn_800B9494();
+    extern void GXSetNumTexGens();
+    extern void GXClearVtxDesc();
+    extern void GXInvalidateVtxCache();
+    extern void GXSetArray();
+    extern void GXSetVtxAttrFmtv();
+    extern void GXSetLineWidth();
+    extern void GXSetPointSize();
+    extern void GXEnableTexOffsets();
     extern void GXLoadPosMtxImm();
     extern void GXLoadNrmMtxImm();
-    extern void fn_800BD554();
+    extern void GXSetCurrentMtx();
     extern void GXLoadTexMtxImm();
-    extern void fn_800BD744(f32, f32, f32, f32, f32, f32);
+    extern void GXSetViewport(f32, f32, f32, f32, f32, f32);
     extern void fn_800BD394();
-    extern void fn_800B953C();
-    extern void fn_800B94F0();
+    extern void GXSetCoPlanar();
+    extern void GXSetCullMode();
     extern void GXSetClipMode();
-    extern void fn_800BD7A0();
-    extern void fn_800BD830();
+    extern void GXSetScissor();
+    extern void GXSetScissorBoxOffset();
     extern void GXSetNumChans();
     extern void GXSetChanCtrl();
     extern void GXSetChanAmbColor(u32, GXColor);
     extern void GXSetChanMatColor(u32, GXColor);
     extern void GXInvalidateTexAll();
-    extern void fn_800BB2E4();
-    extern void fn_800BB2F8();
+    extern void GXSetTexRegionCallback();
+    extern void GXSetTlutRegionCallback();
     extern void GXSetTevOrder();
-    extern void fn_800BC8C8();
+    extern void GXSetNumTevStages();
     extern void GXSetTevOp();
-    extern void fn_800BC618();
-    extern void fn_800BC66C();
+    extern void GXSetAlphaCompare();
+    extern void GXSetZTexture();
     extern void GXSetTevKColorSel();
     extern void GXSetTevKAlphaSel();
     extern void GXSetTevSwapMode();
     extern void GXSetTevSwapModeTable();
-    extern void fn_800BBC34();
-    extern void fn_800BBC0C();
-    extern void fn_800BB97C();
-    extern void fn_800BC8F8(u32, f32, f32, f32, f32, GXColor);
-    extern void fn_800BCCDC();
+    extern void GXSetTevDirect();
+    extern void GXSetNumIndStages();
+    extern void GXSetIndTexCoordScale();
+    extern void GXSetFog(u32, f32, f32, f32, f32, GXColor);
+    extern void GXSetFogRangeAdj();
     extern void GXSetBlendMode();
-    extern void fn_800BCE30();
-    extern void fn_800BCE5C();
+    extern void GXSetColorUpdate();
+    extern void GXSetAlphaUpdate();
     extern void GXSetZMode();
-    extern void fn_800BCEBC();
-    extern void fn_800BCFDC();
+    extern void GXSetZCompLoc();
+    extern void GXSetDither();
     extern void GXSetDstAlpha();
-    extern void fn_800BCEF4();
-    extern void fn_800BD044();
-    extern void fn_800BD07C();
-    extern void fn_800B959C();
-    extern void fn_800B96BC();
-    extern void fn_800B9B14(f32);
-    extern void fn_800B9874();
-    extern void fn_800B9C44();
-    extern void fn_800B9E6C();
-    extern void fn_800B984C();
+    extern void GXSetPixelFmt();
+    extern void GXSetFieldMask();
+    extern void GXSetFieldMode();
+    extern void GXSetDispCopySrc();
+    extern void GXSetDispCopyDst();
+    extern void GXSetDispCopyYScale(f32);
+    extern void GXSetCopyClamp();
+    extern void GXSetCopyFilter();
+    extern void GXSetDispCopyGamma();
+    extern void GXSetDispCopyFrame2Field();
     extern void GXClearBoundingBox();
-    extern void fn_800B8F64();
-    extern void fn_800B8EC0();
-    extern void fn_800B8F94();
-    extern void fn_800B8EDC();
-    extern void fn_800B8E98();
-    extern void fn_800B8EAC();
-    extern void fn_800B8F80();
-    extern void fn_800B8FB0();
+    extern void GXPokeColorUpdate();
+    extern void GXPokeAlphaUpdate();
+    extern void GXPokeDither();
+    extern void GXPokeBlendMode();
+    extern void GXPokeAlphaMode();
+    extern void GXPokeAlphaRead();
+    extern void GXPokeDstAlpha();
+    extern void GXPokeZMode();
     extern void fn_800BD91C();
     extern void fn_800BE30C();
 
@@ -520,25 +520,25 @@ void __GXInitGX(void) {
     GXSetTexCoordGen2(5, 1, 9, 0x3C, 0, 0x7D);
     GXSetTexCoordGen2(6, 1, 10, 0x3C, 0, 0x7D);
     GXSetTexCoordGen2(7, 1, 11, 0x3C, 0, 0x7D);
-    fn_800B884C(1);
-    fn_800B7D3C();
-    fn_800B856C();
+    GXSetNumTexGens(1);
+    GXClearVtxDesc();
+    GXInvalidateVtxCache();
     for (i = 9; i <= 24; i++) {
-        fn_800B84E0(i, gx, 0);
+        GXSetArray(i, gx, 0);
     }
     for (i = 0; i < 8; i++) {
-        fn_800B80CC(i, lbl_803129E4);
+        GXSetVtxAttrFmtv(i, lbl_803129E4);
     }
-    fn_800B9404(6, 0);
-    fn_800B944C(6, 0);
-    fn_800B9494(0, 0, 0);
-    fn_800B9494(1, 0, 0);
-    fn_800B9494(2, 0, 0);
-    fn_800B9494(3, 0, 0);
-    fn_800B9494(4, 0, 0);
-    fn_800B9494(5, 0, 0);
-    fn_800B9494(6, 0, 0);
-    fn_800B9494(7, 0, 0);
+    GXSetLineWidth(6, 0);
+    GXSetPointSize(6, 0);
+    GXEnableTexOffsets(0, 0, 0);
+    GXEnableTexOffsets(1, 0, 0);
+    GXEnableTexOffsets(2, 0, 0);
+    GXEnableTexOffsets(3, 0, 0);
+    GXEnableTexOffsets(4, 0, 0);
+    GXEnableTexOffsets(5, 0, 0);
+    GXEnableTexOffsets(6, 0, 0);
+    GXEnableTexOffsets(7, 0, 0);
 
     identity[0][0] = 1.0f;
     identity[0][1] = 0.0f;
@@ -554,18 +554,18 @@ void __GXInitGX(void) {
     identity[2][3] = 0.0f;
     GXLoadPosMtxImm(identity, 0);
     GXLoadNrmMtxImm(identity, 0);
-    fn_800BD554(0);
+    GXSetCurrentMtx(0);
     GXLoadTexMtxImm(identity, 0x3C, 0);
     GXLoadTexMtxImm(identity, 0x7D, 0);
 
-    fn_800BD744(0.0f, 0.0f, (f32)rmode->fbWidth,
+    GXSetViewport(0.0f, 0.0f, (f32)rmode->fbWidth,
                 (f32)rmode->xfbHeight, 0.0f, 1.0f);
     fn_800BD394(lbl_80312AB4);
-    fn_800B953C(0);
-    fn_800B94F0(2);
+    GXSetCoPlanar(0);
+    GXSetCullMode(2);
     GXSetClipMode(0);
-    fn_800BD7A0(0, 0, rmode->fbWidth, rmode->efbHeight);
-    fn_800BD830(0, 0);
+    GXSetScissor(0, 0, rmode->fbWidth, rmode->efbHeight);
+    GXSetScissorBoxOffset(0, 0);
     GXSetNumChans(0);
     GXSetChanCtrl(4, 0, 0, 1, 0, 0, 2);
     GXSetChanAmbColor(4, black);
@@ -580,8 +580,8 @@ void __GXInitGX(void) {
         gxState->nextTexRgn = 0;
         gxState->nextTexRgnCI = 0;
     }
-    fn_800BB2E4(fn_800B5C5C);
-    fn_800BB2F8(__GXDefaultTlutRegionCallback);
+    GXSetTexRegionCallback(fn_800B5C5C);
+    GXSetTlutRegionCallback(__GXDefaultTlutRegionCallback);
 
     GXSetTevOrder(0, 0, 0, 4);
     GXSetTevOrder(1, 1, 1, 4);
@@ -599,10 +599,10 @@ void __GXInitGX(void) {
     GXSetTevOrder(13, 0xFF, 0xFF, 0xFF);
     GXSetTevOrder(14, 0xFF, 0xFF, 0xFF);
     GXSetTevOrder(15, 0xFF, 0xFF, 0xFF);
-    fn_800BC8C8(1);
+    GXSetNumTevStages(1);
     GXSetTevOp(0, 3);
-    fn_800BC618(7, 0, 0, 7, 0);
-    fn_800BC66C(0, 0x11, 0);
+    GXSetAlphaCompare(7, 0, 0, 7, 0);
+    GXSetZTexture(0, 0x11, 0);
     for (i = 0; i < 16; i++) {
         GXSetTevKColorSel(i, 6);
         GXSetTevKAlphaSel(i, 0);
@@ -613,45 +613,45 @@ void __GXInitGX(void) {
     GXSetTevSwapModeTable(2, 1, 1, 1, 3);
     GXSetTevSwapModeTable(3, 2, 2, 2, 3);
     for (i = 0; i < 16; i++) {
-        fn_800BBC34(i);
+        GXSetTevDirect(i);
     }
-    fn_800BBC0C(0);
-    fn_800BB97C(0, 0, 0);
-    fn_800BB97C(1, 0, 0);
-    fn_800BB97C(2, 0, 0);
-    fn_800BB97C(3, 0, 0);
+    GXSetNumIndStages(0);
+    GXSetIndTexCoordScale(0, 0, 0);
+    GXSetIndTexCoordScale(1, 0, 0);
+    GXSetIndTexCoordScale(2, 0, 0);
+    GXSetIndTexCoordScale(3, 0, 0);
 
-    fn_800BC8F8(0, 0.0f, 1.0f, 0.1f, 1.0f, black);
-    fn_800BCCDC(0, 0, 0);
+    GXSetFog(0, 0.0f, 1.0f, 0.1f, 1.0f, black);
+    GXSetFogRangeAdj(0, 0, 0);
     GXSetBlendMode(0, 4, 5, 0);
-    fn_800BCE30(1);
-    fn_800BCE5C(1);
+    GXSetColorUpdate(1);
+    GXSetAlphaUpdate(1);
     GXSetZMode(1, 3, 1);
-    fn_800BCEBC(1);
-    fn_800BCFDC(1);
+    GXSetZCompLoc(1);
+    GXSetDither(1);
     GXSetDstAlpha(0, 0);
-    fn_800BCEF4(0, 0);
-    fn_800BD044(1, 1);
-    fn_800BD07C(rmode->field_rendering,
+    GXSetPixelFmt(0, 0);
+    GXSetFieldMask(1, 1);
+    GXSetFieldMode(rmode->field_rendering,
                 rmode->viHeight == 2 * rmode->xfbHeight ? 1 : 0);
 
-    fn_800B959C(0, 0, rmode->fbWidth, rmode->efbHeight);
-    fn_800B96BC(rmode->fbWidth, rmode->efbHeight);
-    fn_800B9B14((f32)rmode->xfbHeight / (f32)rmode->efbHeight);
-    fn_800B9874(3);
-    fn_800B9C44(rmode->aa, rmode->sample_pattern, 1, rmode->vfilter);
-    fn_800B9E6C(0);
-    fn_800B984C(0);
+    GXSetDispCopySrc(0, 0, rmode->fbWidth, rmode->efbHeight);
+    GXSetDispCopyDst(rmode->fbWidth, rmode->efbHeight);
+    GXSetDispCopyYScale((f32)rmode->xfbHeight / (f32)rmode->efbHeight);
+    GXSetCopyClamp(3);
+    GXSetCopyFilter(rmode->aa, rmode->sample_pattern, 1, rmode->vfilter);
+    GXSetDispCopyGamma(0);
+    GXSetDispCopyFrame2Field(0);
     GXClearBoundingBox();
 
-    fn_800B8F64(1);
-    fn_800B8EC0(1);
-    fn_800B8F94(0);
-    fn_800B8EDC(0, 0, 1, 15);
-    fn_800B8E98(7, 0);
-    fn_800B8EAC(1);
-    fn_800B8F80(0, 0);
-    fn_800B8FB0(1, 7, 1);
+    GXPokeColorUpdate(1);
+    GXPokeAlphaUpdate(1);
+    GXPokeDither(0);
+    GXPokeBlendMode(0, 0, 1, 15);
+    GXPokeAlphaMode(7, 0);
+    GXPokeAlphaRead(1);
+    GXPokeDstAlpha(0, 0);
+    GXPokeZMode(1, 7, 1);
     fn_800BD91C(0x23, 0x16);
     fn_800BE30C();
 }

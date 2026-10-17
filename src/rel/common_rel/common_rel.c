@@ -215,7 +215,7 @@ void _prolog(void)
     /* msgctrlPalette */
     lbl_80478E8C = lbl_125_data_0;
     lbl_80478E88 = &lbl_125_data_14A654;
-    /* fn_8025D0A8 */
+    /* heroCountPartyInList */
     lbl_80478EAC = lbl_125_data_18;
     lbl_80478EA8 = &lbl_125_data_14A658;
     /* _menuFaceBiosGetPtr__FUs */
@@ -265,13 +265,13 @@ void _prolog(void)
     /* fn_8000C92C */
     lbl_80478E2C = lbl_125_data_911AC;
     lbl_80478E28 = &lbl_125_data_14A698;
-    /* fn_8000C788 */
+    /* dbgMenuSoundTestSE2 */
     lbl_80478E14 = lbl_125_data_91246;
     lbl_80478E10 = &lbl_125_data_14A69C;
-    /* fn_8000C824 */
+    /* dbgMenuSoundTestSEExclusive */
     lbl_80478E24 = lbl_125_data_91334;
     lbl_80478E20 = &lbl_125_data_14A6A0;
-    /* fn_8000C6EC */
+    /* dbgMenuSoundTestSE */
     lbl_80478E1C = lbl_125_data_91346;
     lbl_80478E18 = &lbl_125_data_14A6A4;
     /* fightTypeDataBiosGetPtr */
@@ -307,13 +307,13 @@ void _prolog(void)
     /* _fightMenuFightTrainerGcHeroOpenMenuSubWaza__FP13FIGHT_TRAINERP15FightOutPokemonUs */
     lbl_80478DFC = lbl_125_data_11C7C4;
     lbl_80478DF8 = &lbl_125_data_14A6D4;
-    /* fn_800096B4 */
+    /* dbgMenuPokemonEdit */
     lbl_80478E64 = lbl_125_data_121614;
     lbl_80478E60 = &lbl_125_data_14A6D8;
     /* pokemonDpFilterDataBiosGetPtr */
     lbl_80478E6C = lbl_125_data_1219FC;
     lbl_80478E68 = &lbl_125_data_14A6DC;
-    /* fn_800096B4 */
+    /* dbgMenuPokemonEdit */
     lbl_80478F94 = lbl_125_data_121A04;
     lbl_80478F90 = &lbl_125_data_14A6E0;
     /* pokemonSeikakuRateDataBiosGetPtr */
@@ -328,13 +328,13 @@ void _prolog(void)
     /* _sndSetReverbParm */
     lbl_80478FA4 = lbl_125_data_1437F8;
     lbl_80478FA0 = &lbl_125_data_14A6F0;
-    /* fn_801655D4 */
+    /* soundOpenWaveArchive */
     lbl_80478FB4 = lbl_125_data_143918;
     lbl_80478FB0 = &lbl_125_data_14A6F4;
-    /* fn_800096B4 */
+    /* dbgMenuPokemonEdit */
     lbl_80478F6C = lbl_125_data_1439D8;
     lbl_80478F68 = &lbl_125_data_14A6F8;
-    /* fn_801EE544 */
+    /* darkPokemonGetFlagListValue */
     lbl_80478F64 = lbl_125_data_144F10;
     lbl_80478F60 = &lbl_125_data_14A6FC;
     lbl_80478F5C = lbl_125_data_145ED8;
@@ -342,10 +342,10 @@ void _prolog(void)
     /* fn_80116D30 */
     lbl_80478EC4 = lbl_125_data_146364;
     lbl_80478EC0 = &lbl_125_data_14A704;
-    /* fn_801EE07C */
+    /* darkPokemonGetTableEntry */
     lbl_80478F7C = lbl_125_data_14A45C;
     lbl_80478F78 = &lbl_125_data_14A708;
-    /* fn_801EE0A8 */
+    /* darkPokemonGetIdByIndex */
     lbl_80478F74 = lbl_125_data_14A5F4;
     lbl_80478F70 = &lbl_125_data_14A70C;
     /* menuSeBiosGetPtr */

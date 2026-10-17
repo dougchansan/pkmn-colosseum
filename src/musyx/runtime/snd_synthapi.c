@@ -5,8 +5,8 @@
  *
  * Split out of the misnamed people_field.c unit (2026-07-02). Reference:
  * AxioDL/musyx `musyx/runtime/snd_synthapi.c`. Boundary evidence:
- * fn_8014DCA8 is synthDeactivateStudio (simindex seq=1.0 vs the MP4
- * matched copy); the two 0x20 wrappers fn_8014DD98/fn_8014DDB8 are
+ * synthDeactivateStudio is synthDeactivateStudio (simindex seq=1.0 vs the MP4
+ * matched copy); the two 0x20 wrappers synthAddStudioInput/synthRemoveStudioInput are
  * snd_synthapi tail one-call wrappers (stream.c has no functions before
  * streamInit, which is confirmed at 0x8014DDD8 at seq=1.0).
  * All functions asm-only until matched.
@@ -45,7 +45,7 @@ extern u32 synthSendKeyOff(u32 id);
 extern u32 synthFXStart(u16 fid, u8 vol, u8 pan, u8 studio, u32 itd); /* synthFXStart */
 extern u32 vidGetInternalId(u32 id);
 extern void synthVolume(u8 volume, u16 time, u8 vGroup, u8 seqMode, u32 seqId);
-extern u32 fn_8016246C(u32 voice); /* hwIsActive */
+extern u32 hwIsActive(u32 voice); /* hwIsActive */
 extern void voiceKillSound(u32 id);
 
 /* ===== Cross-TU MusyX runtime globals (defined in synth.c) ===== */
@@ -71,12 +71,12 @@ extern void hwDisableIrq(void);
 extern void hwEnableIrq(void);
 extern void hwSetAUXProcessingCallbacks(u8 studio, void* auxA, void* userA, void* auxB, void* userB);
 extern void streamOutputModeChanged(void);
-extern void fn_801631C0(void); /* hwDisableHRTF */
-extern void fn_80162D6C(u8 studio, u32 isMaster, u32 type); /* hwActivateStudio */
-extern void fn_80162D18(u32 index);                         /* hwOff */
-extern void fn_80162D8C(u8 studio);                         /* hwDeactivateStudio */
-extern void fn_80162DAC(u8 studio, u32 arg1);
-extern void fn_80162DE0(u8 studio, u32 arg1);
+extern void hwDisableHRTF(void); /* hwDisableHRTF */
+extern void hwActivateStudio(u8 studio, u32 isMaster, u32 type); /* hwActivateStudio */
+extern void hwOff(u32 index);                         /* hwOff */
+extern void hwDeactivateStudio(u8 studio);                         /* hwDeactivateStudio */
+extern void hwAddInput(u8 studio, u32 arg1);
+extern void hwRemoveInput(u8 studio, u32 arg1);
 
 u32 sndFXCtrl(u32 vid, u8 ctrl, u8 value) {
   u32 ret;
@@ -131,17 +131,17 @@ void sndOutputMode(u32 output) {
   case 0: /* SND_OUTPUTMODE_MONO */
     lbl_8047AF44 |= 1;
     lbl_8047AF44 &= ~2;
-    fn_801631C0();
+    hwDisableHRTF();
     break;
   case 1: /* SND_OUTPUTMODE_STEREO */
     lbl_8047AF44 &= ~1;
     lbl_8047AF44 &= ~2;
-    fn_801631C0();
+    hwDisableHRTF();
     break;
   case 2: /* SND_OUTPUTMODE_SURROUND */
     lbl_8047AF44 &= ~1;
     lbl_8047AF44 |= 2;
-    fn_801631C0();
+    hwDisableHRTF();
     break;
   default:
     break;
@@ -191,7 +191,7 @@ void sndSetAuxProcessingCallbacks(u8 studio,
   hwEnableIrq();
 }
 
-void fn_8014DC00(u8 studio, u32 isMaster, u32 type) {
+void synthActivateStudio(u8 studio, u32 isMaster, u32 type) {
   hwDisableIrq();
   lbl_80435644[studio] = NULL;
   lbl_80435684[studio] = NULL;
@@ -199,11 +199,11 @@ void fn_8014DC00(u8 studio, u32 isMaster, u32 type) {
   lbl_8047AF24[studio] = 0xFF;
   lbl_804356A4[studio * 2 + 1] = 0;
   lbl_804356A4[studio * 2] = 0;
-  fn_80162D6C(studio, isMaster, type);
+  hwActivateStudio(studio, isMaster, type);
   hwEnableIrq();
 }
 
-void fn_8014DCA8(u8 studio) {
+void synthDeactivateStudio(u8 studio) {
   u32 i;
 
   for (i = 0; i < ((SynthInfo*)lbl_80434C50)->voiceNum; ++i) {
@@ -211,8 +211,8 @@ void fn_8014DCA8(u8 studio) {
     if (studio == lbl_8047AF48[i].studio) {
       if (lbl_8047AF48[i].id != 0xFFFFFFFF) {
         voiceKillSound(lbl_8047AF48[i].vidList->vid);
-      } else if (fn_8016246C(i)) {
-        fn_80162D18(i);
+      } else if (hwIsActive(i)) {
+        hwOff(i);
       }
     }
   }
@@ -226,9 +226,9 @@ void fn_8014DCA8(u8 studio) {
 
   hwEnableIrq();
 
-  fn_80162D8C(studio);
+  hwDeactivateStudio(studio);
 }
 
-void fn_8014DD98(u8 studio, u32 arg1) { fn_80162DAC(studio, arg1); }
+void synthAddStudioInput(u8 studio, u32 arg1) { hwAddInput(studio, arg1); }
 
-void fn_8014DDB8(u8 studio, u32 arg1) { fn_80162DE0(studio, arg1); }
+void synthRemoveStudioInput(u8 studio, u32 arg1) { hwRemoveInput(studio, arg1); }

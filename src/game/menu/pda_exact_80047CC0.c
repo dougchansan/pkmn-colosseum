@@ -70,8 +70,8 @@ extern u32 pokemonBiosGetPokemonDataId(u32 work);
 extern void memoGetScaleAngle(u32 id, f32* scale, f32* angle);
 
 extern u8 menuModelCheck(void* work, s32 index);
-extern void* fn_801DAC3C(void* h);
-extern s32 fn_801DAC24(void* h);
+extern void* wazaSequenceOwnerGetModel(void* h);
+extern s32 wazaSequenceOwnerGetSizeClass(void* h);
 extern void GSscene_SetMode(s32 mode);
 extern void* GSmodelGetBound(void* model);
 extern void ObjInfoInit(void* bound, void* out);
@@ -79,13 +79,13 @@ extern void GSmodelGetPosition(void* model, void* out);
 extern void GSmodelSetMatrix(void* model, void* mtx);
 extern void GSmodelCenterNull(void* model);
 extern void modelRemoveCenterNull(void* model);
-extern s32 fn_800EE0E8(void* model);
+extern s32 GSmodelWalkJObjs(void* model);
 extern void* GSmodelGetPart(void* model, s32 index);
 extern void GSpartGetTransform(void* part, void* out, s32 a, s32 b);
 extern void GSpartFree(void* part);
 extern void fn_800E064C(f32* mtx);
 extern void fn_800E03B4(f32* mtx, void* vec);
-extern void fn_800E032C(f32* mtx, f32 angle);
+extern void GSmtxRotateY(f32* mtx, f32 angle);
 
 extern void GScameraGetPerspective(void* cam, f32* a, f32* b, f32* c, f32* d);
 extern void GScameraSetPerspective(void* cam, f32 a, f32 b, f32 c, f32 d);
@@ -203,11 +203,11 @@ u8 fn_80047CC0(u8* work)
         return 0;
     }
     if (work[0x14] != 0) {
-        model = fn_801DAC3C(*(void**)(work + 0x24));
+        model = wazaSequenceOwnerGetModel(*(void**)(work + 0x24));
         if (model == NULL) {
             return 0;
         }
-        switch (fn_801DAC24(*(void**)(work + 0x24))) {
+        switch (wazaSequenceOwnerGetSizeClass(*(void**)(work + 0x24))) {
         case -2:
             spread = lbl_8047BD3C;
             break;
@@ -264,10 +264,10 @@ u8 fn_80047CC0(u8* work)
     target.y = lbl_8047BC94;
     fn_800E064C(mtx);
     fn_800E03B4(mtx, &target);
-    fn_800E032C(mtx, angle);
+    GSmtxRotateY(mtx, angle);
     GSmodelSetMatrix(model, mtx);
     GSmodelCenterNull(model);
-    part = GSmodelGetPart(model, fn_800EE0E8(model) - 1);
+    part = GSmodelGetPart(model, GSmodelWalkJObjs(model) - 1);
     if (part != NULL) {
         GSpartGetTransform(part, &xform, 0, 0);
         GSpartFree(part);

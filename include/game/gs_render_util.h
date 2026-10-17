@@ -8,7 +8,7 @@
  *
  * These describe the render-object ("camera") array element used by
  * gs_render_util.c (lbl_8047AA6C, stride 0x128), the compact snapshot
- * buffer used to save/restore camera state (fn_800D13C8/fn_800D1674),
+ * buffer used to save/restore camera state (GScameraRestoreState/GScameraSaveState),
  * and the small global render-state block pointed to by lbl_8047AA80.
  * =================================================================== */
 
@@ -85,8 +85,8 @@ typedef struct GSRenderCamera {
     /* 0x126 */ u8 pad_126[2];
 } GSRenderCamera; /* size 0x128 */
 
-/* Compact save/restore snapshot for a GSRenderCamera (see fn_800D13C8,
- * fn_800D1674). Same field semantics as GSRenderCamera but packed
+/* Compact save/restore snapshot for a GSRenderCamera (see GScameraRestoreState,
+ * GScameraSaveState). Same field semantics as GSRenderCamera but packed
  * without the leading state-flag bytes / cobj pointers. */
 typedef struct GSRenderCameraSnapshot {
     /* 0x00 */ u8 isAnimating;

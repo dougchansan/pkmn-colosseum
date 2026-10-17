@@ -6,7 +6,7 @@
  * Adapted from the Melee decompilation (doldecomp/melee, sysdolphin/baselib/
  * state.h).
  *
- * state.c is not linked as one unit yet (HSD_StateSetZMode, fn_801B27DC, is
+ * state.c is not linked as one unit yet (HSD_StateSetZMode, HSD_StateSetZMode, is
  * not exact), so its exact ranges are built as separate units and the state
  * words, material state and invalidate table stay in their data units under
  * their address names.
@@ -65,25 +65,25 @@ extern HSD_MaterialState lbl_80465710;           /* matstate */
 extern HSD_StateInvalidateEntry lbl_8036CFA8[];  /* invalidate_funcs */
 
 /* Functions still carrying address names in symbols.txt:
- *   fn_801B25C4 HSD_StateInvalidate
- *   fn_801B2654 _HSD_StateInvalidateRenderMode
- *   fn_801B26F8 _HSD_StateInvalidateVtxAttr
- *   fn_801B2718 _HSD_StateInvalidatePrimitive
- *   fn_801B273C HSD_StateSetAlphaUpdate  fn_801B278C HSD_StateSetColorUpdate
- *   fn_801B27DC HSD_StateSetZMode        fn_801B2878 HSD_StateSetCullMode
- *   fn_801B28B8 HSD_SetMaterialShininess fn_801B28C8 HSD_SetMaterialColor
+ *   HSD_StateInvalidate HSD_StateInvalidate
+ *   _HSD_StateInvalidateRenderMode _HSD_StateInvalidateRenderMode
+ *   _HSD_StateInvalidateVtxAttr _HSD_StateInvalidateVtxAttr
+ *   _HSD_StateInvalidatePrimitive _HSD_StateInvalidatePrimitive
+ *   HSD_StateSetAlphaUpdate HSD_StateSetAlphaUpdate  HSD_StateSetColorUpdate HSD_StateSetColorUpdate
+ *   HSD_StateSetZMode HSD_StateSetZMode        HSD_StateSetCullMode HSD_StateSetCullMode
+ *   HSD_SetMaterialShininess HSD_SetMaterialShininess fn_801B28C8 HSD_SetMaterialColor
  *   fn_801B294C HSD_SetupRenderModeWithCustomPE
  *   fn_801B29E4 HSD_SetupPEMode          fn_801B2F1C HSD_SetupChannelMode
  */
-void fn_801B25C4(int mask);
-void fn_801B2654(void);
-void fn_801B26F8(void);
-void fn_801B2718(void);
-void fn_801B273C(int enable);
-void fn_801B278C(int enable);
-void fn_801B27DC(int enable, int func, int update);
-void fn_801B2878(int mode);
-void fn_801B28B8(f32 shininess);
+void HSD_StateInvalidate(int mask);
+void _HSD_StateInvalidateRenderMode(void);
+void _HSD_StateInvalidateVtxAttr(void);
+void _HSD_StateInvalidatePrimitive(void);
+void HSD_StateSetAlphaUpdate(int enable);
+void HSD_StateSetColorUpdate(int enable);
+void HSD_StateSetZMode(int enable, int func, int update);
+void HSD_StateSetCullMode(int mode);
+void HSD_SetMaterialShininess(f32 shininess);
 void HSD_SetMaterialColor(GXColor ambient, GXColor diffuse, GXColor specular,
                  f32 alpha);
 

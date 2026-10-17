@@ -9,9 +9,9 @@
 #include "dolphin/types.h"
 #include "game/fsys/fsys.h"
 
-extern FSYSSlot* fn_8017D410(u32 fileHandle, s32 mode);
-extern u8 fn_8017E30C(FSYSSlot* slot);
-extern void fn_8017E1D8(FSYSSlot* slot, u32 fileHandle, u32 callbackA,
+extern FSYSSlot* fsysFindSlotByHandle(u32 fileHandle, s32 mode);
+extern u8 fsysLoadEntrySync(FSYSSlot* slot);
+extern void fsysStartLoadMode3(FSYSSlot* slot, u32 fileHandle, u32 callbackA,
                         u32 callbackB, u32 callbackC);
 
 /* Address: 0x8017AF6C | size: 0x94
@@ -22,18 +22,18 @@ extern void fn_8017E1D8(FSYSSlot* slot, u32 fileHandle, u32 callbackA,
  * follows the inner if, e.g. a debug report stripped from the release
  * build; with the if as the last statement, or an empty statement, empty
  * block or do-while(0) there, it is dropped. Same idiom as the stripped
- * test in fn_8017DEA4. */
+ * test in fsysStartLoadMode1. */
 s32 fn_8017AF6C(u32 fileHandle, u32 requestID)
 {
     FSYSSlot* slot;
 
-    slot = fn_8017D410(fileHandle, 3);
+    slot = fsysFindSlotByHandle(fileHandle, 3);
     if (slot->fileHandle == fileHandle) {
         slot->requestID = requestID;
         slot->callbackA = 0;
         slot->callbackB = 0;
         slot->callbackC = 0;
-        if (fn_8017E30C(slot)) {
+        if (fsysLoadEntrySync(slot)) {
             return 1;
         }
         (void)0;
@@ -49,10 +49,10 @@ s32 fn_8017B000(u32 fileHandle, u32 requestID, u32 callbackA, u32 callbackB,
 {
     FSYSSlot* slot;
 
-    slot = fn_8017D410(fileHandle, 3);
+    slot = fsysFindSlotByHandle(fileHandle, 3);
     if (slot) {
         slot->requestID = requestID;
-        fn_8017E1D8(slot, fileHandle, callbackA, callbackB, callbackC);
+        fsysStartLoadMode3(slot, fileHandle, callbackA, callbackB, callbackC);
         return 1;
     }
     return 0;

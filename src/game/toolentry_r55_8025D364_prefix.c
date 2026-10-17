@@ -4,7 +4,7 @@
  *        big-face resource ID of the entry's trainer.
  *
  * Function-boundary carve of toolentry.c, text only, GC/1.3 -O4,p. Retail
- * calls fn_8006B09C on both arms of the context test (the NULL arm passes
+ * calls savedataBattleGetEntryPtr on both arms of the context test (the NULL arm passes
  * the NULL context through), so the body keeps both calls. The same body is
  * in toolentry.c.
  */
@@ -12,7 +12,7 @@
 
 u32 toolentryGetTrainerBicFaceResID(void* ctx, u32 param1, u32 param2) {
     extern u32 lbl_80478E04;
-    extern void* fn_8006B09C(void*);
+    extern void* savedataBattleGetEntryPtr(void*);
     extern u32 fn_801FCBA4(void);
     extern void fightTrainerDataBiosGetPtr(u32);
     u16 id16;
@@ -23,9 +23,9 @@ u32 toolentryGetTrainerBicFaceResID(void* ctx, u32 param1, u32 param2) {
     u32 ret;
 
     if ((s32)ctx != 0) {
-        id16 = *(u16*)fn_8006B09C(ctx);
+        id16 = *(u16*)savedataBattleGetEntryPtr(ctx);
     } else {
-        id16 = *(u16*)fn_8006B09C(ctx);
+        id16 = *(u16*)savedataBattleGetEntryPtr(ctx);
     }
     id = id16;
     if (id == 0) {

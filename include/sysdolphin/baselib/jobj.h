@@ -177,10 +177,10 @@ typedef struct _HSD_JObjInfo {
 #define HSD_A_J_SETFLOAT9 39
 
 /* HSD_JObjSetupMatrixSub */
-void fn_8019D9DC(HSD_JObj* jobj);
+void HSD_JObjSetupMatrixSub(HSD_JObj* jobj);
 void HSD_JObjUnrefThis(HSD_JObj* jobj);
 /* HSD_JObjMakeMatrix */
-void fn_801A3600(HSD_JObj* jobj);
+void HSD_JObjMakeMatrix(HSD_JObj* jobj);
 
 static inline BOOL HSD_JObjMtxIsDirty(HSD_JObj* jobj)
 {
@@ -325,7 +325,7 @@ static inline void HSD_JObjSetupMatrix(HSD_JObj* jobj)
     if (!jobj || !HSD_JObjMtxIsDirty(jobj)) {
         return;
     }
-    fn_8019D9DC(jobj);
+    HSD_JObjSetupMatrixSub(jobj);
 }
 
 static inline MtxPtr HSD_JObjGetMtxPtr(HSD_JObj* jobj)

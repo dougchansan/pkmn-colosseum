@@ -8,7 +8,7 @@
  * HSD_VICopyXFBAsync (fn_801BF8A0) calls HSD_VIGetDrawDoneWaitingFlag out
  * of line; Melee reproduces that only with a local dont_inline pragma,
  * which campaign policy forbids, so video.c cannot link as one unit.
- * fn_801BF6AC (exact in the full TU) stays with it: its asserts address
+ * HSD_VIFinishDrawXFB (exact in the full TU) stays with it: its asserts address
  * the TU's string pool through one hoisted base, which a carved unit
  * cannot reproduce without owning the pool that the tail's
  * HSD_VIPreRetraceCB also uses. The exact ranges on either side are linked
@@ -27,13 +27,13 @@ void VIConfigure(GXRenderModeObj* rm);
 void VIFlush(void);
 void VISetBlack(BOOL black);
 u32 VIGetTvFormat(void);
-HSD_VIRetraceCallback fn_800A880C(HSD_VIRetraceCallback cb); /* VISetPreRetraceCallback */
-HSD_VIRetraceCallback fn_800A8850(HSD_VIRetraceCallback cb); /* VISetPostRetraceCallback */
-void fn_800B90A4(void (*cb)(void));             /* GXSetDrawDoneCallback */
+HSD_VIRetraceCallback VISetPreRetraceCallback(HSD_VIRetraceCallback cb); /* VISetPreRetraceCallback */
+HSD_VIRetraceCallback VISetPostRetraceCallback(HSD_VIRetraceCallback cb); /* VISetPostRetraceCallback */
+void GXSetDrawDoneCallback(void (*cb)(void));             /* GXSetDrawDoneCallback */
 
-void fn_801BFF18(u32 retraceCount);             /* HSD_VIPreRetraceCB */
-void fn_801BFD10(u32 retraceCount);             /* HSD_VIPostRetraceCB */
-void fn_801BFCB0(void);                         /* HSD_VIGXDrawDoneCB */
+void HSD_VIPreRetraceCB(u32 retraceCount);             /* HSD_VIPreRetraceCB */
+void HSD_VIPostRetraceCB(u32 retraceCount);             /* HSD_VIPostRetraceCB */
+void HSD_VIGXDrawDoneCB(void);                         /* HSD_VIGXDrawDoneCB */
 
 #define _p ((HSD_VIInfo*) &lbl_80466BC0)
 
@@ -50,7 +50,7 @@ static int HSD_VISearchXFBByStatus(HSD_VIXFBDrawDispStatus status)
 }
 
 /* HAL: HSD_VIGetXFBLastDrawDone */
-int fn_801BF574(void)
+int HSD_VIGetXFBLastDrawDone(void)
 {
     BOOL intr;
     int idx = -1;
@@ -71,14 +71,14 @@ int fn_801BF574(void)
 }
 
 /* HAL: HSD_VISetConfigure */
-void fn_801BF4E4(GXRenderModeObj* rmode)
+void HSD_VISetConfigure(GXRenderModeObj* rmode)
 {
     _p->current.vi.rmode = *rmode;
     _p->current.chg_flag = 1;
 }
 
 /* HAL: HSD_VISetBlack */
-void fn_801BF4C4(BOOL black)
+void HSD_VISetBlack(BOOL black)
 {
     _p->current.vi.black = black;
     _p->current.chg_flag = 1;
@@ -112,8 +112,8 @@ void HSD_VIInit(HSD_VIStatus* vi, void* xfb0, void* xfb1, void* xfb2)
     _p->efb.status = HSD_VI_EFB_FREE;
     _p->efb.vi_all = _p->current;
 
-    fn_800A880C(fn_801BFF18);
-    fn_800A8850(fn_801BFD10);
+    VISetPreRetraceCallback(HSD_VIPreRetraceCB);
+    VISetPostRetraceCallback(HSD_VIPostRetraceCB);
 
     _p->pre_cb = NULL;
     _p->post_cb = NULL;
@@ -121,7 +121,7 @@ void HSD_VIInit(HSD_VIStatus* vi, void* xfb0, void* xfb1, void* xfb2)
     _p->drawdone.waiting = 0;
     _p->drawdone.arg = 0;
 
-    fn_800B90A4(fn_801BFCB0);
+    GXSetDrawDoneCallback(HSD_VIGXDrawDoneCB);
     _p->drawdone.cb = NULL;
 
     _p->perf.frame_period = VIGetTvFormat() == 0 ? 60 : 50;

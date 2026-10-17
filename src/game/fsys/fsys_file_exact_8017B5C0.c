@@ -3,18 +3,18 @@
  * @brief Start an asynchronous read of one compressed FSYS entry.
  *
  * The compressed path expands the same temporary allocation helper used by
- * fn_8017E30C. The uncompressed path continues in fn_8017BD34.
+ * fsysLoadEntrySync. The uncompressed path continues in fsysLoadEntryUncompressed.
  */
 #include "dolphin/types.h"
 #include "game/fsys/fsys.h"
 
 extern u16 fn_800E2B00(u32 size, u32 alignment);
-extern void* fn_800E27B0(u16 handle);
+extern void* GSmemLock(u16 handle);
 extern u32 fn_8017F794(u32 fileHandle, u32 groupID, u32 nameHash);
 extern u32 fn_8017F728(u32 fileHandle, u32 groupID, u32 nameHash);
 extern void fn_80180584(void* dst, void* src, u32 size, void (*callback)(void), void* userData);
 extern void fn_8017A814(void);
-extern void fn_8017BD34();
+extern void fsysLoadEntryUncompressed();
 
 static inline void* fsysAllocTemp(u32 size)
 {
@@ -24,7 +24,7 @@ static inline void* fsysAllocTemp(u32 size)
     alignedSize = (size + 0x1F) & ~0x1F;
     handle = fn_800E2B00(alignedSize, 0x20);
     if (handle != 0) {
-        return fn_800E27B0(handle);
+        return GSmemLock(handle);
     }
     return NULL;
 }
@@ -50,11 +50,11 @@ static inline void fsysReadCompressed(FSYSSlot* slot, FSYSFileEntry* entry)
 }
 
 /* Address: 0x8017B5C0 | size: 0xF8 */
-void fn_8017B5C0(FSYSSlot* slot, FSYSFileEntry* entry, u32 index)
+void fsysLoadEntryCompressed(FSYSSlot* slot, FSYSFileEntry* entry, u32 index)
 {
     if (entry->flags & 0x80000000) {
         fsysReadCompressed(slot, entry);
     } else {
-        fn_8017BD34(slot, entry, index);
+        fsysLoadEntryUncompressed(slot, entry, index);
     }
 }

@@ -44,7 +44,7 @@ u16 leaffxStartEffect(u16 group, u16 model, u16 param);
 u16 electronStartEffect(u16 group, u16 model, u16 param);
 
 /* -----------------------------------------------------------------------
- * Full-screen filter effect (fn_8013A42C)
+ * Full-screen filter effect (electronEffectCreate)
  *
  * Applies colour tinting, fading, or overlay filters to the entire
  * screen. Used for screen transitions, weather overlays, and damage
@@ -53,7 +53,7 @@ u16 electronStartEffect(u16 group, u16 model, u16 param);
 u16 filterStart(void);
 
 /* -----------------------------------------------------------------------
- * Water surface wave effect (fn_8013AABC)
+ * Water surface wave effect (filterEffectCreate)
  *
  * Creates rippling water surface effects. Used in areas with water
  * features (Phenac City fountain, Pyrite caves). Allocates 0x28-byte
@@ -79,7 +79,7 @@ u16 seaEffectStart(void);
 u16 envMapEffectInit(void);
 
 /* -----------------------------------------------------------------------
- * Motion blur post-process effect (fn_8013D6B8)
+ * Motion blur post-process effect (envMapEffectCreate)
  *
  * Applies directional or radial blur to the screen. Used for speed
  * effects, impact effects, and dramatic moments. Allocates 0x24-byte
@@ -88,7 +88,7 @@ u16 envMapEffectInit(void);
 u16 blurEffectStart(void);
 
 /* -----------------------------------------------------------------------
- * Aura glow effect (fn_8013DC18)
+ * Aura glow effect (blurEffectCreate)
  *
  * Renders the dark aura around Shadow Pokemon. Used in battle and
  * overworld when a Shadow Pokemon is present. Allocates 0x20-byte
@@ -106,7 +106,7 @@ u16 auraEffectStart(void);
 u16 distortionEffectStart(void);
 
 /* -----------------------------------------------------------------------
- * Billboard sprite particle effect (fn_8013F000)
+ * Billboard sprite particle effect (distortionEffectCreate)
  *
  * Renders camera-facing sprite particles. Used for sparkles, dust,
  * and generic particle effects. Allocates 0xB4-byte work struct.

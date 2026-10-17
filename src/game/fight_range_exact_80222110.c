@@ -10,11 +10,11 @@ extern u8 lbl_80478D78[1];
 extern u32 lbl_8047B618;
 extern void* lbl_8047B62C;
 extern u8 lbl_80379F58[];
-extern void fn_80211B94(void*, void*, u8);
+extern void wsRunScript(void*, void*, u8);
 extern void* fightFloorGetFightOutPokemonPtrAryPokemonTokuseiDataIdFirst(
     u32, u8, u32, u32, u32);
 
-u8 fn_80222110(u8 a, u8 b) {
+u8 _wsPlayAnimationSelectId(u8 a, u8 b) {
     u8 flag;
     u8 r = a;
 
@@ -61,12 +61,12 @@ void fn_802221EC(u32 a, u32 b, u32 c, u32 d) {
     extern u16 fn_801F54A4();
     extern u32 fn_8012640C();
     extern u8  fn_801DDD28(u32, u32, u32, u32);
-    extern void fn_801DA9E8(u32, u32, u32);
+    extern void wazaSequenceSysStartWaza(u32, u32, u32);
     extern void fn_80265598(u32, u16, u32);
-    extern u32 fn_801DA94C(u32, u16, u32);
+    extern u32 wazaSequenceSysIsPlayingWaza(u32, u16, u32);
     extern void _threadSwitch();
-    extern void fn_801DA8C4(u32, u16, u32);
-    extern void fn_8026532C(u32, u16, u32);
+    extern void wazaSequenceSysStopWaza(u32, u16, u32);
+    extern void fightMenuStatusMenuClose(u32, u16, u32);
     u32 obj;
     u16 partyCount;
 
@@ -79,7 +79,7 @@ void fn_802221EC(u32 a, u32 b, u32 c, u32 d) {
     if ((u8)fn_801DDD28(obj, a, 4, 0) == 0) {
         return;
     }
-    fn_801DA9E8(obj, a, 4);
+    wazaSequenceSysStartWaza(obj, a, 4);
 
     if ((u8)d == 1) {
         fn_80265598(b, partyCount, 1);
@@ -90,24 +90,24 @@ void fn_802221EC(u32 a, u32 b, u32 c, u32 d) {
 
     c = (u16)a;
     for (;;) {
-        if ((u8)fn_801DA94C(obj, c, 4) == 0) {
+        if ((u8)wazaSequenceSysIsPlayingWaza(obj, c, 4) == 0) {
             break;
         }
         _threadSwitch();
     }
-    fn_801DA8C4(obj, c, 4);
+    wazaSequenceSysStopWaza(obj, c, 4);
 
     if ((u8)d == 1) {
-        fn_8026532C(b, partyCount, 0);
+        fightMenuStatusMenuClose(b, partyCount, 0);
     }
 }
 
 #define fn_801F025C fightTargetGetPtrAsNowFightType
-void fn_802222F4(void)
+void wsCmd46(void)
 
 {
     extern void fn_801F025C();
-    extern void fn_80221104();
+    extern void wsPlayAnimation();
   u8* pc;
   void* ptr1;
   u8 uVar1;
@@ -128,17 +128,17 @@ void fn_802222F4(void)
   else {
     uVar3 = 0;
   }
-  fn_80221104(*(u8 *)(pc + 1),uVar1,uVar3);
+  wsPlayAnimation(*(u8 *)(pc + 1),uVar1,uVar3);
   lbl_8047B610 += 10;
   return;
 }
 
 #define fn_801F025C fightTargetGetPtrAsNowFightType
-void fn_80222370(void)
+void wsCmd45(void)
 
 {
     extern void fn_801F025C();
-    extern void fn_80221104();
+    extern void wsPlayAnimation();
   u16 uVar1;
   volatile u8* pc;
   u16* value;
@@ -154,14 +154,14 @@ void fn_80222370(void)
     uVar1 = 0;
   }
   arg2 = pc[2];
-  fn_80221104(pc[1],arg2,uVar1);
+  wsPlayAnimation(pc[1],arg2,uVar1);
   lbl_8047B610 += 7;
   return;
 }
 
 void WS_ALERTEND(void) { lbl_8047B614 = 2; }
 
-void fn_802223E0(void) {
+void wsCmd43(void) {
     if (fightFloorGetFightOutPokemonPtrAryPokemonTokuseiDataIdFirst(0, lbl_8047B610[1], 0, 0, 0) != NULL) {
         lbl_8047B610 = *(u8**)(lbl_8047B610 + 2);
     } else {
@@ -171,7 +171,7 @@ void fn_802223E0(void) {
 
 #define fn_801F025C fightTargetGetPtrAsNowFightType
 #define fn_80207AE0 fightOutPokemonIsZokuseiDataId
-void fn_80222438(void) {
+void wsCmd42(void) {
     extern void* fn_801F025C();
     extern u8 fn_80207AE0();
     void* obj = (void*)fn_801F025C(lbl_8047B610[1], 0);
@@ -182,8 +182,8 @@ void fn_80222438(void) {
     }
 }
 
-void fn_80222494(void) {
-    fn_80211B94(lbl_8047B62C, *(void**)(lbl_8047B610 + 1), 0);
+void wsCmd41(void) {
+    wsRunScript(lbl_8047B62C, *(void**)(lbl_8047B610 + 1), 0);
     lbl_8047B610 += 5;
 }
 
@@ -195,24 +195,24 @@ void WS_WAZAEND(void) { lbl_8047B614 = 1; }
 
 void WS_SEQRET(void) { lbl_8047B614 = 2; }
 
-u8* fn_80222500(void) {
+u8* wsCmd3B(void) {
     u8* pc = lbl_8047B610;
     lbl_8047B610 = pc + 2;
     return pc;
 }
 
-u8* fn_80222510(void) { return lbl_8047B610++; }
+u8* wsCmd3A(void) { return lbl_8047B610++; }
 
 #define fn_801F000C fightMainWaitFrame
-void fn_80222520(void) {
+void wsCmd39(void) {
     extern void fn_801F000C();
     fn_801F000C(*(u16*)(lbl_8047B610 + 1));
     lbl_8047B610 += 3;
 }
 
-/* RULE-EXCEPTION(user-approved): local compiler-control pragma - fn_80222554 needs opt_propagation off for its own code while the rest of the unit does not (a unit-wide -opt nopropagation breaks fn_802222F4, fn_802226EC and fn_8022273C) - see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): local compiler-control pragma - wsCmd38 needs opt_propagation off for its own code while the rest of the unit does not (a unit-wide -opt nopropagation breaks wsCmd46, wsCmd30 and wsCmd2E) - see docs/RULE_EXCEPTIONS.md */
 #pragma opt_propagation off
-void fn_80222554(void)
+void wsCmd38(void)
 {
     u8* t = lbl_8047B610;
     u32 mask = 0xffffffff;
@@ -227,37 +227,37 @@ void fn_80222554(void)
 }
 
 #pragma opt_propagation reset
-void fn_80222584(void) {
+void wsCmd37(void) {
     u16* dst = *(u16**)(lbl_8047B610 + 1);
     *dst &= *(u16*)(lbl_8047B610 + 5) ^ 0xFFFF;
     lbl_8047B610 += 7;
 }
 
-void fn_802225B0(void) {
+void wsCmd36(void) {
     u8* dst = *(u8**)(lbl_8047B610 + 1);
     *dst &= *(u8*)(lbl_8047B610 + 5) ^ 0xFF;
     lbl_8047B610 += 6;
 }
 
-void fn_802225DC(void) {
+void wsCmd35(void) {
     u32* dst = *(u32**)(lbl_8047B610 + 1);
     *dst |= *(u32*)(lbl_8047B610 + 5);
     lbl_8047B610 += 9;
 }
 
-void fn_80222604(void) {
+void wsCmd34(void) {
     u16* dst = *(u16**)(lbl_8047B610 + 1);
     *dst |= *(u16*)(lbl_8047B610 + 5);
     lbl_8047B610 += 7;
 }
 
-void fn_8022262C(void) {
+void wsCmd33(void) {
     u8* dst = *(u8**)(lbl_8047B610 + 1);
     *dst |= *(u8*)(lbl_8047B610 + 5);
     lbl_8047B610 += 6;
 }
 
-void fn_80222654(void)
+void wsCmd32(void)
 {
     struct {
         u8* value;
@@ -278,9 +278,9 @@ void fn_80222654(void)
     lbl_8047B610 += 14;
 }
 
-/* RULE-EXCEPTION(user-approved): local compiler-control pragma - fn_802226A4 needs opt_propagation off for its own code while the rest of the unit does not (a unit-wide -opt nopropagation breaks fn_802222F4, fn_802226EC and fn_8022273C) - see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): local compiler-control pragma - wsCmd31 needs opt_propagation off for its own code while the rest of the unit does not (a unit-wide -opt nopropagation breaks wsCmd46, wsCmd30 and wsCmd2E) - see docs/RULE_EXCEPTIONS.md */
 #pragma opt_propagation off
-void fn_802226A4(void)
+void wsCmd31(void)
 {
     u8* pc = lbl_8047B610;
     int count;
@@ -305,27 +305,27 @@ void fn_802226A4(void)
 }
 
 #pragma opt_propagation reset
-void fn_802226EC(void) {
+void wsCmd30(void) {
     u8* dst = *(u8**)(lbl_8047B610 + 1);
     *dst -= *(u8*)(lbl_8047B610 + 5);
     lbl_8047B610 += 6;
 }
 
-void fn_80222714(void) {
+void wsCmd2F(void) {
     u8* dst = *(u8**)(lbl_8047B610 + 1);
     *dst += *(u8*)(lbl_8047B610 + 5);
     lbl_8047B610 += 6;
 }
 
-void fn_8022273C(void) {
+void wsCmd2E(void) {
     u8* dst = *(u8**)(lbl_8047B610 + 1);
     *dst = *(u8*)(lbl_8047B610 + 5);
     lbl_8047B610 += 6;
 }
 
-void fn_8022275C(void)
+void wsCmd2D(void)
 {
-/* RULE-EXCEPTION(user-approved): local compiler-control pragma - fn_8022275C needs optimization_level 3 for its own code (at the unit default it is 98%) - see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): local compiler-control pragma - wsCmd2D needs optimization_level 3 for its own code (at the unit default it is 98%) - see docs/RULE_EXCEPTIONS.md */
 #pragma optimization_level 3
     u8 count;
     u8* pc;
@@ -359,7 +359,7 @@ void fn_8022275C(void)
 }
 
 #pragma optimization_level reset
-void fn_802227D4(void)
+void wsCmd2C(void)
 {
     u8* pc = lbl_8047B610;
     u32 rawCount = pc[9];
@@ -384,7 +384,7 @@ void fn_802227D4(void)
     lbl_8047B610 = (u8*)next;
 }
 
-void fn_80222844(void* ctx, u32 param1, u32 param2, u32 param3) {
+void wsCmd2B(void* ctx, u32 param1, u32 param2, u32 param3) {
     int sel;
     u32 *base;
     u32 *pa;
@@ -426,9 +426,9 @@ void fn_80222844(void* ctx, u32 param1, u32 param2, u32 param3) {
     return;
 }
 
-/* RULE-EXCEPTION(user-approved): local compiler-control pragma - fn_8022290C needs opt_propagation off for its own code while the rest of the unit does not (a unit-wide -opt nopropagation breaks fn_802222F4, fn_802226EC and fn_8022273C) - see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): local compiler-control pragma - wsCmd2A needs opt_propagation off for its own code while the rest of the unit does not (a unit-wide -opt nopropagation breaks wsCmd46, wsCmd30 and wsCmd2E) - see docs/RULE_EXCEPTIONS.md */
 #pragma opt_propagation off
-void fn_8022290C(void) {
+void wsCmd2A(void) {
     int sel;
     u32 vb;
     u8* base;
@@ -470,7 +470,7 @@ void fn_8022290C(void) {
 }
 
 #pragma opt_propagation reset
-void fn_802229EC(void) {
+void wsCmd29(void) {
     int sel;
     u32 vb;
     u32 base;
@@ -511,9 +511,9 @@ void fn_802229EC(void) {
     }
 }
 
-void fn_80222ACC(void) { lbl_8047B610 = *(u8**)(lbl_8047B610 + 1); }
+void wsCmd28(void) { lbl_8047B610 = *(u8**)(lbl_8047B610 + 1); }
 
-void fn_80222ADC(void) {
+void wsCmd27(void) {
     extern u32 fightTargetGetPtrAsNowFightType();
     extern u32 pokemonGetStatus();
     extern s32 wazaGetStatus();
@@ -538,7 +538,7 @@ void fn_80222ADC(void) {
 #define fn_801F025C fightTargetGetPtrAsNowFightType
 #define fn_8012640C pokemonGetStatus
 #define fn_8011BBD8 wazaSetStatus
-void fn_80222B7C(void) {
+void wsCmd26(void) {
     extern u32 fn_801F025C();
     extern u32 fn_8012640C();
     extern void fn_8011BBD8();

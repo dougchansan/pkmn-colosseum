@@ -5,7 +5,7 @@ s32 fn_80167E54(void)
     return -1;
 }
 
-u32 fn_80167E5C(u8* object)
+u32 GSdvdGetLength(u8* object)
 {
     return *(u32*)(object + 0x38);
 }

@@ -7,10 +7,10 @@
 #define fn_801FEF74 fightOutPokemonGetJoutaiMigawariHp
 #define fn_80202810 fightOutPokemonWriteJoutaiDataId
 s32 _WsWkcActSubJoutaiMigawari__FPvUsPv(void* ctx, u16 param2, void* param3) {
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern s32 fn_801FEF74();
     extern void fn_80202810();
-    if (fn_802026E4(ctx, 0x14) == 1 && fn_801FEF74(ctx) <= 0) {
+    if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 0x14) == 1 && fn_801FEF74(ctx) <= 0) {
         fn_80202810(ctx, 0x14);
     }
     return 1;
@@ -23,7 +23,7 @@ s32 _WsWkcActSubJoutaiMigawari__FPvUsPv(void* ctx, u16 param2, void* param3) {
 #define fn_801254B4 pokemonSetStatus
 #define fn_801FECD4 fightOutPokemonIsUseHensinBuff
 #define fn_801FE7EC fightOutPokemonSetHensinPokemonStatusId
-s32 fn_802207D4(u32 ctx) {
+s32 _fightOutPokemonDoStockItemSub(u32 ctx) {
     extern u32 fn_8012640C();
     extern u16 fn_8020147C();
     extern u32 fn_801254B4();

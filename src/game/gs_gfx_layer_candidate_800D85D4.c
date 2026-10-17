@@ -17,10 +17,10 @@ extern u8 lbl_80314510[];
 extern u8 lbl_80314530[];
 
 extern void gfxRecordCommand(u32, ...);
-extern void fn_800BAE34(void* texObj, u32 wrapS, u32 wrapT);     /* GXInitTexObjWrapMode */
-extern void fn_800BACA0(void* texObj, u32 minFilt, u32 magFilt, f32 minLod, f32 maxLod,
+extern void GXInitTexObjWrapMode(void* texObj, u32 wrapS, u32 wrapT);     /* GXInitTexObjWrapMode */
+extern void GXInitTexObjLOD(void* texObj, u32 minFilt, u32 magFilt, f32 minLod, f32 maxLod,
                         f32 lodBias, u8 biasClamp, u8 edgeLod, u32 maxAniso); /* GXInitTexObjLOD */
-extern void fn_800BB098(void* tlutObj, u32 tlutName);           /* GXLoadTlut */
+extern void GXLoadTlut(void* tlutObj, u32 tlutName);           /* GXLoadTlut */
 extern void GXLoadTexObj(void* texObj, u32 id);
 
 void gfxLoadTexture(s32 slot, void* model) {
@@ -40,7 +40,7 @@ void gfxLoadTexture(s32 slot, void* model) {
 
     obj = (u8*)model;
     if (obj[0x7] != 0) {
-        fn_800BAE34(obj + 0x54, ((u32*)lbl_80314530)[*(u32*)(obj + 0x10)],
+        GXInitTexObjWrapMode(obj + 0x54, ((u32*)lbl_80314530)[*(u32*)(obj + 0x10)],
                     ((u32*)lbl_80314530)[*(u32*)(obj + 0x14)]);
         switch (*(s32*)(obj + 0x20)) {
         case 0:
@@ -65,14 +65,14 @@ void gfxLoadTexture(s32 slot, void* model) {
             }
             break;
         }
-        fn_800BACA0(obj + 0x54, minFilt, *(s32*)(obj + 0x1c) == 2, 0.0f,
+        GXInitTexObjLOD(obj + 0x54, minFilt, *(s32*)(obj + 0x1c) == 2, 0.0f,
                     (f32)(obj[0x5] - 1), 0.0f, 0, 0, 0);
         obj[0x7] = 0;
     }
 
     *(void**)(lbl_8047AA80 + 0x28 + slot * 4) = model;
     if (*(u32*)(obj + 0x48) != 0) {
-        fn_800BB098(obj + 0x74, ((u32*)lbl_80314510)[slot]);
+        GXLoadTlut(obj + 0x74, ((u32*)lbl_80314510)[slot]);
     }
     GXLoadTexObj(obj + 0x54, ((u32*)lbl_803144F0)[slot]);
     *(u32*)(lbl_804001F0 + 0x24) += 1;

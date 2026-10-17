@@ -3,7 +3,7 @@
  * @brief GSgfx -- Genius Sonority graphics subsystem.
  *
  * Only the fn_-named leaf functions below (fn_800D3094, fn_800D30A0,
- * fn_800D30AC, fn_800D3190, fn_800D3410, fn_800D36B4, fn_800D377C) are
+ * fn_800D30AC, GSgfxRenderEnd, GSgfxRenderLayer, fn_800D36B4, fn_800D377C) are
  * real members of this unit; several are already byte-matched.
  *
  * This file previously also carried a second, parallel implementation of
@@ -15,7 +15,7 @@
  * be compiled into any real target. None of the seven names appear in
  * config/GC6E01/symbols.txt, and their claimed sizes didn't consistently
  * match the real fn_ symbols living at those addresses (e.g. fn_800D3088
- * is really 0xC bytes, not the claimed 0x68; fn_800D30F0 is really 0xA0,
+ * is really 0xC bytes, not the claimed 0x68; GSgfxSwapBuffers is really 0xA0,
  * not the claimed 0xF0). It was fiction from the old campaign transplant
  * and has been deleted wholesale.
  *
@@ -72,19 +72,19 @@ extern void fn_8019C6FC(void);
 extern void GSgfxBackFBDoFrame(void);
 extern void fn_801BF8A0(s32 a);
 extern void fn_801E16F0(void);
-extern void fn_801BF6AC(void);
+extern void HSD_VIFinishDrawXFB(void);
 extern void GStextureConvertFromHW(void* a, s32 b);
-extern void fn_800B8E74(void);
+extern void GXPixModeSync(void);
 extern void GXInvalidateTexAll(void);
 extern void fn_800D1070(void* a);
 extern void GSlightUpdate(void* a);
-extern void fn_800E3884(void* a, s32 b);
-extern void fn_801181B0(s32 a);
+extern void GSmodelAdvanceAll(void* a, s32 b);
+extern void gsParticleUpdateAll(s32 a);
 extern u32 OSGetTick(void);
 extern u8 lbl_8047AA91;
 extern u8 lbl_8047AA90;
 
-void fn_800D30F0(u32 flag)
+void GSgfxSwapBuffers(u32 flag)
 {
     u32 sc = (u32)lbl_8047AA80->renderTarget;
 
@@ -96,7 +96,7 @@ void fn_800D30F0(u32 flag)
         GSgfxBackFBDoFrame();
         fn_801BF8A0(0);
         fn_801E16F0();
-        fn_801BF6AC();
+        HSD_VIFinishDrawXFB();
     } else {
         if (sc != 0) {
             GStextureConvertFromHW((void*)sc, 1);
@@ -107,7 +107,7 @@ void fn_800D30F0(u32 flag)
     lbl_8047AA80->progressiveFlag = 1;
 
     if ((u8)flag != 0) {
-        fn_800B8E74();
+        GXPixModeSync();
         if (lbl_8047AA80->renderTarget != NULL) {
             GXInvalidateTexAll();
         }
@@ -119,7 +119,7 @@ asm void fn_800D3190(void) {
 #include "src/game/gs_gfx_fn_800D3190.inc"
 }
 #else
-void fn_800D3190(void) {
+void GSgfxRenderEnd(void) {
     u32* state;
     u32 sc;
     u32 startTick;
@@ -168,7 +168,7 @@ void fn_800D3190(void) {
                 GSgfxBackFBDoFrame();
                 fn_801BF8A0(0);
                 fn_801E16F0();
-                fn_801BF6AC();
+                HSD_VIFinishDrawXFB();
             } else {
                 if (sc != 0) {
                     GStextureConvertFromHW((void*)sc, 1);
@@ -177,7 +177,7 @@ void fn_800D3190(void) {
             }
             ((u8*)lbl_8047AA80)[0x49D] = 1;
             if (r29b != 0) {
-                fn_800B8E74();
+                GXPixModeSync();
                 if (*(u32*)((u8*)lbl_8047AA80 + 0xC) != 0) {
                     GXInvalidateTexAll();
                 }
@@ -209,7 +209,7 @@ void fn_800D3190(void) {
     ((u32*)&lbl_804001F0)[0x30 / 4] += tick - startTick;
 
     startTick = OSGetTick();
-    fn_800E3884((void*)*(u32*)((u8*)lbl_8047AA80 + 0x54), 0);
+    GSmodelAdvanceAll((void*)*(u32*)((u8*)lbl_8047AA80 + 0x54), 0);
     tick = OSGetTick();
     ((u32*)&lbl_804001F0)[0x34 / 4] += tick - startTick;
 
@@ -218,12 +218,12 @@ void fn_800D3190(void) {
 
     while (r29count-- != 0) {
         startTick = OSGetTick();
-        fn_800E3884((void*)1, 1);
+        GSmodelAdvanceAll((void*)1, 1);
         tick = OSGetTick();
         ((u32*)&lbl_804001F0)[0x34 / 4] += tick - startTick;
 
         startTick = OSGetTick();
-        fn_801181B0(1);
+        gsParticleUpdateAll(1);
         tick = OSGetTick();
         ((u32*)&lbl_804001F0)[0x38 / 4] += tick - startTick;
     }
@@ -233,7 +233,7 @@ extern void fn_800D13C4(void* a);
 extern void fn_800DC874(void* a);
 extern void gsParticleUpdate(void* a);
 extern void modelShadowRender__FP10GSgfxLayer(void);
-extern void fn_8019C708(s32 a);
+extern void HSD_StartRender(s32 a);
 extern void HSD_SetEraseColor(u8 a, u8 b, u8 c, u8 d);
 extern void HSD_EraseRect(s32 a, s32 b, s32 c, f32 d, f32 e, f32 f, f32 g, f32 h);
 extern u8 lbl_8047AA90;
@@ -245,7 +245,7 @@ asm void fn_800D3410(void) {
 #include "src/game/gs_gfx_fn_800D3410.inc"
 }
 #else
-void fn_800D3410(void* arg0, u8 arg1) {
+void GSgfxRenderLayer(void* arg0, u8 arg1) {
     u32* state;
     u32 sc;
     u8 r30;
@@ -268,7 +268,7 @@ void fn_800D3410(void* arg0, u8 arg1) {
                     GSgfxBackFBDoFrame();
                     fn_801BF8A0(0);
                     fn_801E16F0();
-                    fn_801BF6AC();
+                    HSD_VIFinishDrawXFB();
                 } else {
                     if (sc != 0) {
                         GStextureConvertFromHW((void*)sc, 1);
@@ -277,7 +277,7 @@ void fn_800D3410(void* arg0, u8 arg1) {
                 }
                 ((u8*)lbl_8047AA80)[0x49D] = 1;
                 if (r30 != 0) {
-                    fn_800B8E74();
+                    GXPixModeSync();
                     if (*(u32*)((u8*)lbl_8047AA80 + 0xC) != 0) {
                         GXInvalidateTexAll();
                     }
@@ -301,7 +301,7 @@ void fn_800D3410(void* arg0, u8 arg1) {
         ((u32*)&lbl_804001F0)[0x30 / 4] = tick - startTick;
 
         startTick = OSGetTick();
-        fn_800E3928((void*)*(u32*)((u8*)lbl_8047AA80 + 0x54));
+        GSmodelApplyAll((void*)*(u32*)((u8*)lbl_8047AA80 + 0x54));
         tick = OSGetTick();
         ((u32*)&lbl_804001F0)[0x34 / 4] = tick - startTick;
 
@@ -317,7 +317,7 @@ void fn_800D3410(void* arg0, u8 arg1) {
         tick = OSGetTick();
         ((u32*)&lbl_804001F0)[0x3C / 4] = tick - startTick;
 
-        fn_8019C708(0);
+        HSD_StartRender(0);
 
         if (((u8*)lbl_8047AA80)[0x19] != 0) {
             HSD_SetEraseColor(
@@ -336,14 +336,14 @@ void fn_800D3410(void* arg0, u8 arg1) {
 
         ((u8*)lbl_8047AA80)[0x49D] = 0;
     } else {
-        fn_8019C708(3);
+        HSD_StartRender(3);
     }
     }
 }
 #endif
 
 extern void VIWaitForRetrace(void);
-void fn_800D361C(u8 mode) {
+void GSgfxWaitRetrace(u8 mode) {
     u32 diff;
 
     VIWaitForRetrace();

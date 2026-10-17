@@ -1,6 +1,6 @@
 #include "src/game/gs_model_anim.c"
 
-extern void fn_8019FE8C(HSD_JObj*, u32);
+extern void HSD_JObjSetFlags(HSD_JObj*, u32);
 
 void _modelSetRotateEulerToQuatAll__FP9_HSD_JObj(HSD_JObj* jobj)
 {
@@ -9,7 +9,7 @@ void _modelSetRotateEulerToQuatAll__FP9_HSD_JObj(HSD_JObj* jobj)
     if (jobj == NULL) {
         return;
     }
-    fn_8019FE8C(jobj, JOBJ_USE_QUATERNION);
+    HSD_JObjSetFlags(jobj, JOBJ_USE_QUATERNION);
     if (jobj->flags & JOBJ_INSTANCE) {
         return;
     }

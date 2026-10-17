@@ -26,7 +26,7 @@ typedef struct BattleRangeDef {
 extern BattleRangeDef* lbl_80478F6C;
 extern u8 std081_flagCheckTrue(u16 flag);
 
-u8 fn_801EEAD0(u16 id)
+u8 darkPokemonCheckFlag12(u16 id)
 {
     BattleRangeDef* def = &lbl_80478F6C[id];
 

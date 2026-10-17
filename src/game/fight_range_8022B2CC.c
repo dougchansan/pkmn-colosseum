@@ -1,15 +1,15 @@
 /**
  * @file fight_range_8022B2CC.c
- * @brief Fight target selection, 0x8022B2CC - 0x8022BB84 (fn_8022B2CC,
- *        fn_8022B5C8), with .data 0x8039A220 - 0x8039A388.
+ * @brief Fight target selection, 0x8022B2CC - 0x8022BB84 (fightSeqSelectTarget,
+ *        _fightOutPokemonSoubiItemEffectSub), with .data 0x8039A220 - 0x8039A388.
  *
- * The .data part is fn_802249B8's switch table (written out as data, see
- * below) followed by this unit's two switch tables. fn_8022B5C8's table
- * starts at 0x8039A314 and fn_8022B2CC's at 0x8039A2F4, both 4 mod 8, and
+ * The .data part is fightSeqSetTsuikaKouka's switch table (written out as data, see
+ * below) followed by this unit's two switch tables. _fightOutPokemonSoubiItemEffectSub's table
+ * starts at 0x8039A314 and fightSeqSelectTarget's at 0x8039A2F4, both 4 mod 8, and
  * MWCC aligns each .data section to 8, so the carve has to start its .data
  * at 0x8039A220.
  *
- * fn_8022B2CC's Follow Me redirect is the same inline as the one in
+ * fightSeqSelectTarget's Follow Me redirect is the same inline as the one in
  * fight_range_candidate_80219838.c; its locals, numbered in reverse
  * declaration order, give retail's side/floor registers.
  */
@@ -17,67 +17,67 @@
 
 extern u8 lbl_80478D78[8];
 extern void* lbl_8047B62C;
-extern void fn_80211B94(void*, void*, u8);
-extern void fn_802249B8();
+extern void wsRunScript(void*, void*, u8);
+extern void fightSeqSetTsuikaKouka();
 
 /* RULE-EXCEPTION(user-approved): another function's switch table written as a
  * data initializer so the carve can own 8-aligned .data -- see
  * docs/RULE_EXCEPTIONS.md */
 #if !defined(FIGHT_RANGE_802249B8_COMBINED)
 void* jumptable_8039A220[53] = {
-    (void*)((u8*)fn_802249B8 + 0xBC8),
-    (void*)((u8*)fn_802249B8 + 0xC50),
-    (void*)((u8*)fn_802249B8 + 0xE1C),
-    (void*)((u8*)fn_802249B8 + 0xD04),
-    (void*)((u8*)fn_802249B8 + 0xD88),
-    (void*)((u8*)fn_802249B8 + 0xE70),
-    (void*)((u8*)fn_802249B8 + 0xEB4),
-    (void*)((u8*)fn_802249B8 + 0xF70),
-    (void*)((u8*)fn_802249B8 + 0x1020),
-    (void*)((u8*)fn_802249B8 + 0x1020),
-    (void*)((u8*)fn_802249B8 + 0x1020),
-    (void*)((u8*)fn_802249B8 + 0x1020),
-    (void*)((u8*)fn_802249B8 + 0x1020),
-    (void*)((u8*)fn_802249B8 + 0x1020),
-    (void*)((u8*)fn_802249B8 + 0x1020),
-    (void*)((u8*)fn_802249B8 + 0x1094),
-    (void*)((u8*)fn_802249B8 + 0x1094),
-    (void*)((u8*)fn_802249B8 + 0x1094),
-    (void*)((u8*)fn_802249B8 + 0x1094),
-    (void*)((u8*)fn_802249B8 + 0x1094),
-    (void*)((u8*)fn_802249B8 + 0x1094),
-    (void*)((u8*)fn_802249B8 + 0x1094),
-    (void*)((u8*)fn_802249B8 + 0x11F0),
-    (void*)((u8*)fn_802249B8 + 0x1234),
-    (void*)((u8*)fn_802249B8 + 0x126C),
-    (void*)((u8*)fn_802249B8 + 0x1450),
-    (void*)((u8*)fn_802249B8 + 0x1494),
-    (void*)((u8*)fn_802249B8 + 0x14CC),
-    (void*)((u8*)fn_802249B8 + 0x14F0),
-    (void*)((u8*)fn_802249B8 + 0x1514),
-    (void*)((u8*)fn_802249B8 + 0x1584),
-    (void*)((u8*)fn_802249B8 + 0x15A8),
-    (void*)((u8*)fn_802249B8 + 0x1108),
-    (void*)((u8*)fn_802249B8 + 0x1108),
-    (void*)((u8*)fn_802249B8 + 0x1108),
-    (void*)((u8*)fn_802249B8 + 0x1108),
-    (void*)((u8*)fn_802249B8 + 0x1108),
-    (void*)((u8*)fn_802249B8 + 0x1108),
-    (void*)((u8*)fn_802249B8 + 0x1108),
-    (void*)((u8*)fn_802249B8 + 0x117C),
-    (void*)((u8*)fn_802249B8 + 0x117C),
-    (void*)((u8*)fn_802249B8 + 0x117C),
-    (void*)((u8*)fn_802249B8 + 0x117C),
-    (void*)((u8*)fn_802249B8 + 0x117C),
-    (void*)((u8*)fn_802249B8 + 0x117C),
-    (void*)((u8*)fn_802249B8 + 0x117C),
-    (void*)((u8*)fn_802249B8 + 0x1610),
-    (void*)((u8*)fn_802249B8 + 0x1668),
-    (void*)((u8*)fn_802249B8 + 0x175C),
-    (void*)((u8*)fn_802249B8 + 0x175C),
-    (void*)((u8*)fn_802249B8 + 0x175C),
-    (void*)((u8*)fn_802249B8 + 0x175C),
-    (void*)((u8*)fn_802249B8 + 0x1738),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0xBC8),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0xC50),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0xE1C),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0xD04),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0xD88),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0xE70),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0xEB4),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0xF70),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x1020),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x1020),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x1020),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x1020),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x1020),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x1020),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x1020),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x1094),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x1094),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x1094),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x1094),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x1094),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x1094),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x1094),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x11F0),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x1234),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x126C),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x1450),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x1494),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x14CC),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x14F0),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x1514),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x1584),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x15A8),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x1108),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x1108),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x1108),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x1108),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x1108),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x1108),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x1108),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x117C),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x117C),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x117C),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x117C),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x117C),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x117C),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x117C),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x1610),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x1668),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x175C),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x175C),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x175C),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x175C),
+    (void*)((u8*)fightSeqSetTsuikaKouka + 0x1738),
 };
 #endif
 
@@ -122,7 +122,7 @@ static inline u32 fightGetFollowMeTarget(u32 attacker)
     return redirected;
 }
 
-u32 fn_8022B2CC(u32 attacker, u32 move, u32 r5, u32 selector, u32 r7, u32 r8, s8 in_r9)
+u32 fightSeqSelectTarget(u32 attacker, u32 move, u32 r5, u32 selector, u32 r7, u32 r8, s8 in_r9)
 {
     u32 result;
     u32 count;
@@ -197,7 +197,7 @@ u32 fn_8022B2CC(u32 attacker, u32 move, u32 r5, u32 selector, u32 r7, u32 r8, s8
     return result;
 }
 
-u32 fn_8022B5C8(void* rawCtx)
+u32 _fightOutPokemonSoubiItemEffectSub(void* rawCtx)
 {
     extern u8 lbl_80379A3C[];
     extern u8 lbl_80379A5A[];
@@ -214,7 +214,7 @@ u32 fn_8022B5C8(void* rawCtx)
     extern void figthOutPokemonGetSoubiItemBuff();
     extern u8 fightOutPokemonCheckFightOut();
     extern void fightFloorSetStatus();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern void fightOutPokemonWriteJoutaiDataId();
     extern void fn_80119F50();
     extern u32 GSmsgGetGSchar();
@@ -250,7 +250,7 @@ u32 fn_8022B5C8(void* rawCtx)
     switch ((u16)itemType) {
     case 2: {
         next = 0;
-        if (fn_802026E4(ctx, 5) == 1) {
+        if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 5) == 1) {
             fightOutPokemonWriteJoutaiDataId(ctx, 5);
             next = lbl_80379A3C;
         }
@@ -262,7 +262,7 @@ u32 fn_8022B5C8(void* rawCtx)
     }
     case 4: {
         next = 0;
-        if (fn_802026E4(ctx, 3) == 1) {
+        if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 3) == 1) {
             fightOutPokemonWriteJoutaiDataId(ctx, 3);
             fightOutPokemonWriteJoutaiDataId(ctx, 4);
             next = lbl_80379A5A;
@@ -274,7 +274,7 @@ u32 fn_8022B5C8(void* rawCtx)
         }
 
         next = 0;
-        if (fn_802026E4(ctx, 4) == 1) {
+        if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 4) == 1) {
             fightOutPokemonWriteJoutaiDataId(ctx, 4);
             fightOutPokemonWriteJoutaiDataId(ctx, 3);
             next = lbl_80379A5A;
@@ -287,7 +287,7 @@ u32 fn_8022B5C8(void* rawCtx)
     }
     case 5: {
         next = 0;
-        if (fn_802026E4(ctx, 6) == 1) {
+        if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 6) == 1) {
             fightOutPokemonWriteJoutaiDataId(ctx, 6);
             next = lbl_80379A78;
         }
@@ -299,7 +299,7 @@ u32 fn_8022B5C8(void* rawCtx)
     }
     case 6: {
         next = 0;
-        if (fn_802026E4(ctx, 7) == 1) {
+        if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 7) == 1) {
             fightOutPokemonWriteJoutaiDataId(ctx, 7);
             next = lbl_80379A96;
         }
@@ -311,7 +311,7 @@ u32 fn_8022B5C8(void* rawCtx)
     }
     case 3: {
         next = 0;
-        if (fn_802026E4(ctx, 8) == 1) {
+        if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 8) == 1) {
             fightOutPokemonWriteJoutaiDataId(ctx, 8);
             fightOutPokemonWriteJoutaiDataId(ctx, 0x17);
             next = lbl_80379AB4;
@@ -324,7 +324,7 @@ u32 fn_8022B5C8(void* rawCtx)
     }
     case 8: {
         next = 0;
-        if (fn_802026E4(ctx, 9) == 1) {
+        if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 9) == 1) {
             fightOutPokemonWriteJoutaiDataId(ctx, 9);
             next = lbl_80379AD2;
         }
@@ -336,7 +336,7 @@ u32 fn_8022B5C8(void* rawCtx)
     }
     case 0x1C: {
         next = 0;
-        if (fn_802026E4(ctx, 0xA) == 1) {
+        if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 0xA) == 1) {
             fightOutPokemonWriteJoutaiDataId(ctx, 0xA);
             next = lbl_80379AEE;
         }
@@ -351,31 +351,31 @@ u32 fn_8022B5C8(void* rawCtx)
     }
     case 9:
         if (fightOutPokemonIsJoutaiNormal(ctx) == 0 ||
-            fn_802026E4(ctx, 9) == 1) {
+            fightOutPokemonIsPokemonJoutaiDataId(ctx, 9) == 1) {
             lbl_80478D78[5] = 0;
-            if (fn_802026E4(ctx, 3) == 1 ||
-                fn_802026E4(ctx, 4) == 1) {
+            if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 3) == 1 ||
+                fightOutPokemonIsPokemonJoutaiDataId(ctx, 4) == 1) {
                 fn_80119F50(3);
                 msgctrlSetValue(0xD, GSmsgGetGSchar());
             }
-            if (fn_802026E4(ctx, 8) == 1) {
+            if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 8) == 1) {
                 fightOutPokemonWriteJoutaiDataId(ctx, 0x17);
                 fn_80119F50(8);
                 msgctrlSetValue(0xD, GSmsgGetGSchar());
             }
-            if (fn_802026E4(ctx, 5) == 1) {
+            if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 5) == 1) {
                 fn_80119F50(5);
                 msgctrlSetValue(0xD, GSmsgGetGSchar());
             }
-            if (fn_802026E4(ctx, 6) == 1) {
+            if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 6) == 1) {
                 fn_80119F50(6);
                 msgctrlSetValue(0xD, GSmsgGetGSchar());
             }
-            if (fn_802026E4(ctx, 7) == 1) {
+            if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 7) == 1) {
                 fn_80119F50(7);
                 msgctrlSetValue(0xD, GSmsgGetGSchar());
             }
-            if (fn_802026E4(ctx, 9) == 1) {
+            if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 9) == 1) {
                 fn_80119F50(9);
                 msgctrlSetValue(0xD, GSmsgGetGSchar());
             }
@@ -406,7 +406,7 @@ u32 fn_8022B5C8(void* rawCtx)
             fightOutPokemonSetHensinPokemonStatusId(ctx, 0x7C, 0, 0);
         }
         if (msg != 0) {
-            fn_80211B94(lbl_8047B62C, msg, 0);
+            wsRunScript(lbl_8047B62C, msg, 0);
         }
     }
     return 1;

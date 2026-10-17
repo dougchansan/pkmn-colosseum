@@ -5,7 +5,7 @@
  *
  * Split out of the misnamed people_field.c unit (2026-07-02). Reference:
  * AxioDL/musyx `musyx/runtime/seq_api.c`. Boundary evidence: fn_8014D598
- * is sndSeqGetValid (calls seqGetPrivateId, returns id != -1); fn_8014D740
+ * is sndSeqGetValid (calls seqGetPrivateId, returns id != -1); seqGetMIDIPriority
  * is seqGetMIDIPriority (simindex seq=1.0 vs MP4/Prime matched copies),
  * ending at sndFXCtrl (0x8014D75C), snd_synthapi.c's territory.
  * All functions asm-only until matched.
@@ -29,7 +29,7 @@ extern void hwEnableIrq(void);
 
 u32 fn_8014D598(u32 seqId) { return seqGetPrivateId(seqId) != -1; }
 
-void fn_8014D5C8(u32 seqId) {
+void sndSeqStop(u32 seqId) {
   hwDisableIrq();
   seqPause(seqId);
   hwEnableIrq();
@@ -41,7 +41,7 @@ void sndSeqSpeed(u32 seqId, u16 speed) {
   hwEnableIrq();
 }
 
-void fn_8014D648(u32 seqId) {
+void sndSeqContinue(u32 seqId) {
   hwDisableIrq();
   seqContinue(seqId);
   hwEnableIrq();
@@ -59,4 +59,4 @@ void sndSeqVolume(u8 volume, u16 time, u32 seqId, u8 mode) {
   hwEnableIrq();
 }
 
-u16 fn_8014D740(u8 set, u8 channel) { return lbl_80434910[set][channel]; }
+u16 seqGetMIDIPriority(u8 set, u8 channel) { return lbl_80434910[set][channel]; }

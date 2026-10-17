@@ -1,6 +1,6 @@
 /**
  * @file fight_range_8022D6BC.c
- * @brief Ability after-hit carve, 0x8022D6BC - 0x8022DCB8 (fn_8022D6BC), with
+ * @brief Ability after-hit carve, 0x8022D6BC - 0x8022DCB8 (_wsTokuseiAfterDamage), with
  *        its switch table (.data 0x8039A478 - 0x8039A538), linked.
  *
  * Standalone copy of the shared candidate body, built with GC/1.3.2 at -O4,s
@@ -10,9 +10,9 @@
 
 extern u8 lbl_80478D78[1];
 extern u16 GSrand(void);
-extern void fn_80211B94(void*, void*, u8);
+extern void wsRunScript(void*, void*, u8);
 
-u32 fn_8022D6BC(u32 attacker, u32 defender)
+u32 _wsTokuseiAfterDamage(u32 attacker, u32 defender)
 {
     extern u32 pokemonGetStatus();
     extern u16 wazaGetStatus();
@@ -31,9 +31,9 @@ u32 fn_8022D6BC(u32 attacker, u32 defender)
     extern void fn_8010C4D4();
     extern u32 GSmsgGetGSchar();
     extern void msgctrlSetValue();
-    extern void fn_80211B94();
+    extern void wsRunScript();
     extern u8 fn_802025B8();
-    extern void fn_8020248C();
+    extern void fightOutPokemonWritePokemonJoutaiDataId();
     extern u8 lbl_803798F3[];
     extern u8 lbl_80379907[];
     extern u8 lbl_8037992F[];
@@ -74,7 +74,7 @@ u32 fn_8022D6BC(u32 attacker, u32 defender)
     /* RULE-EXCEPTION(user-approved): extern named stand-ins for the TU's own
      * {1, 2, 5} table - see docs/RULE_EXCEPTIONS.md. It stays in
      * sdata2_8047E538.c: MWCC aligns each .sdata2 section to 8, so a carve
-     * cannot own 0x8047E600 - 0x8047E604 while fn_8022BE2C's table follows
+     * cannot own 0x8047E600 - 0x8047E604 while fightOutPokemonDoSoubiItemCheck's table follows
      * at 0x8047E604. */
     *(u16*)values = lbl_8047E600;
     values[2] = lbl_8047E602;
@@ -96,7 +96,7 @@ u32 fn_8022D6BC(u32 attacker, u32 defender)
             }
             fn_8010C4D4(moveType);
             msgctrlSetValue(0xD, GSmsgGetGSchar());
-            fn_80211B94(lbl_8047B62C, lbl_803798F3, 0);
+            wsRunScript(lbl_8047B62C, lbl_803798F3, 0);
             result = 1;
         }
         break;
@@ -107,7 +107,7 @@ u32 fn_8022D6BC(u32 attacker, u32 defender)
             moveStatus13 != 0) {
             wazaSetStatus(moveStatus, 0, 0x2D, 0,
                           fightOutPokemonMaxHpWaruValue(attacker, 0x10));
-            fn_80211B94(lbl_8047B62C, lbl_80379907, 0);
+            wsRunScript(lbl_8047B62C, lbl_80379907, 0);
             result = 1;
         }
         break;
@@ -122,7 +122,7 @@ u32 fn_8022D6BC(u32 attacker, u32 defender)
                 lbl_80478D78[3] = values[(u8)(pick % pickDivisor)];
                 lbl_8047B618 |= 0x2000;
                 lbl_80478D78[3] += 0x40;
-                fn_80211B94(lbl_8047B62C, lbl_8037992F, 0);
+                wsRunScript(lbl_8047B62C, lbl_8037992F, 0);
                 result = 1;
             }
         }
@@ -137,7 +137,7 @@ u32 fn_8022D6BC(u32 attacker, u32 defender)
                 lbl_80478D78[3] = value;
                 lbl_8047B618 = lbl_8047B618 | 0x2000;
                 value = 0;
-                fn_80211B94(lbl_8047B62C, lbl_8037992F, value);
+                wsRunScript(lbl_8047B62C, lbl_8037992F, value);
                 result = 1;
             }
         }
@@ -152,7 +152,7 @@ u32 fn_8022D6BC(u32 attacker, u32 defender)
                 lbl_80478D78[3] = value;
                 lbl_8047B618 = lbl_8047B618 | 0x2000;
                 value = 0;
-                fn_80211B94(lbl_8047B62C, lbl_8037992F, value);
+                wsRunScript(lbl_8047B62C, lbl_8037992F, value);
                 result = 1;
             }
         }
@@ -167,7 +167,7 @@ u32 fn_8022D6BC(u32 attacker, u32 defender)
                 lbl_80478D78[3] = value;
                 lbl_8047B618 = lbl_8047B618 | 0x2000;
                 value = 0;
-                fn_80211B94(lbl_8047B62C, lbl_8037992F, value);
+                wsRunScript(lbl_8047B62C, lbl_8037992F, value);
                 result = 1;
             }
         }
@@ -182,8 +182,8 @@ u32 fn_8022D6BC(u32 attacker, u32 defender)
                 (u16)attackerAbility != 0xC &&
                 attackerSex != defenderSex && fn_802025B8(attacker, 0xA) == 2 &&
                 attackerSex != 2 && defenderSex != 2) {
-                fn_8020248C(attacker, 0xA, target);
-                fn_80211B94(lbl_8047B62C, lbl_80379932, 0);
+                fightOutPokemonWritePokemonJoutaiDataId(attacker, 0xA, target);
+                wsRunScript(lbl_8047B62C, lbl_80379932, 0);
                 result = 1;
             }
         }

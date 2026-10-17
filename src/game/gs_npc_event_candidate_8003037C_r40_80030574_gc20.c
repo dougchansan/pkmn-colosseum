@@ -11,7 +11,7 @@
 
 extern s32 heroGetStatus(void* partyData, s32 slot, s32 p3);
 extern void msgctrlSetValue(s32 paramId, s32 value);
-extern void fn_800FBB34(s32, s32, s16, s16, u32, u16);
+extern void GSmsgPrintRect(s32, s32, s16, s16, u32, u16);
 extern u32 pokemonGetStatus(void* pokemon, u32 slot, u16 tableId, u16 flags);
 extern u8 pokemonWazaCheckValid(void* pokemon, u16 slot);
 extern u32 wazaGetStatus(u32 context, u32 wazaId, u32 field, u32 flags);
@@ -87,7 +87,7 @@ void fn_80030574(u8* r3, u8* r4)
         }
         if (msg != 0) {
             msgctrlSetValue(0x37, GSmsgGetGSchar(msg));
-            fn_800FBB34(0, 0, *(s16*)(r4 + 0x54), *(s16*)(r4 + 0x56), combined, 0xE7);
+            GSmsgPrintRect(0, 0, *(s16*)(r4 + 0x54), *(s16*)(r4 + 0x56), combined, 0xE7);
             winSpriteSetDisp(r4, 1);
         } else {
             winSpriteSetDisp(r4, 0);

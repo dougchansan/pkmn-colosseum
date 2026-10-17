@@ -3,7 +3,7 @@
  * @brief GSgfx layer: flush dirty channel / texgen / TEV state to GX,
  * 0x800D923C - 0x800D963C.
  *
- * Function-boundary carve of fn_800D923C. The switch on the indirect
+ * Function-boundary carve of _gfxFlushTevState. The switch on the indirect
  * stage type compiles to a compare tree (no jump table), there is no
  * pooled constant, and the GSgfx state (lbl_8047AA80) and the draw
  * statistics (lbl_804001F0) stay extern.
@@ -17,12 +17,12 @@
 
 extern void GXSetNumChans(u8 num);
 extern void GXSetChanCtrl(u32 chan, u8 enable, u8 ambSrc, u8 matSrc, u8 lightMask, u8 diffFn, u8 attnFn);
-extern void fn_800B884C(u8 num);
-extern void fn_800BC8C8(u8 num);
-extern void fn_800BBC0C(u8 num);
-extern void fn_800BBAF8(u32 stage, u8 coord, u8 map);
-extern void fn_800BB97C(u32 stage, u8 scaleS, u8 scaleT);
-extern void fn_800BB81C(u32 id, f32 (*mtx)[3], u8 scale);
+extern void GXSetNumTexGens(u8 num);
+extern void GXSetNumTevStages(u8 num);
+extern void GXSetNumIndStages(u8 num);
+extern void GXSetIndTexOrder(u32 stage, u8 coord, u8 map);
+extern void GXSetIndTexCoordScale(u32 stage, u8 scaleS, u8 scaleT);
+extern void GXSetIndTexMtx(u32 id, f32 (*mtx)[3], u8 scale);
 extern void GXSetTevOrder(u32 stage, u8 coord, u8 map, u8 color);
 extern void GXSetTevColorOp(u32 stage, u8 op, u8 bias, u8 scale, u8 clamp, u8 out);
 extern void GXSetTevAlphaOp(u32 stage, u8 op, u8 bias, u8 scale, u8 clamp, u8 out);
@@ -30,14 +30,14 @@ extern void GXSetTevColorIn(u32 stage, u8 a, u8 b, u8 c, u8 d);
 extern void GXSetTevAlphaIn(u32 stage, u8 a, u8 b, u8 c, u8 d);
 extern void GXSetTevKColorSel(u32 stage, u32 sel);
 extern void GXSetTevKAlphaSel(u32 stage, u32 sel);
-extern void fn_800BB780(u32 stage, u8 indStage, u8 format, u8 biasSel, u8 mtxSel, u8 wrapS, u8 wrapT, u8 addPrev, u8 utcLod, u8 alphaSel);
+extern void GXSetTevIndirect(u32 stage, u8 indStage, u8 format, u8 biasSel, u8 mtxSel, u8 wrapS, u8 wrapT, u8 addPrev, u8 utcLod, u8 alphaSel);
 extern void fn_800BBC7C(u32 stage, u8 indStage, u8 signedOffsets, u8 replaceMode, u8 mtxSel);
 extern void fn_800BBCE0(u32 stage, u8 indStage, u16 sizeS, u16 sizeT, u16 spacingS, u16 spacingT, u8 format, u8 mtxSel, u8 biasSel, u8 alphaSel);
 extern void fn_800BBE8C(u32 stage, u8 indStage, u8 mtxSel);
 extern void fn_800BBF98(u32 stage, u8 indStage, u8 mtxSel);
 extern void fn_800BBFDC(u32 stage);
-extern void fn_800BBC34(u32 stage);
-extern void fn_800BC3E0(u32 id, GXColor color);
+extern void GXSetTevDirect(u32 stage);
+extern void GXSetTevKColor(u32 id, GXColor color);
 extern void GXSetTevSwapModeTable(u32 table, u32 r, u32 g, u32 b, u32 a);
 
 /*
@@ -46,7 +46,7 @@ extern void GXSetTevSwapModeTable(u32 table, u32 r, u32 g, u32 b, u32 a);
  * locals taken once after the TEV stage count is set; the K colour
  * selectors are indexed through the global.
  */
-void fn_800D923C(void) {
+void _gfxFlushTevState(void) {
     s32 i;
 
     if (lbl_8047AA80->dirty & 1) {
@@ -62,7 +62,7 @@ void fn_800D923C(void) {
     }
 
     if (lbl_8047AA80->dirty & 2) {
-        fn_800B884C(lbl_8047AA80->tev.numTexGens);
+        GXSetNumTexGens(lbl_8047AA80->tev.numTexGens);
         lbl_804001F0.texGenUpdates++;
     }
 
@@ -76,7 +76,7 @@ void fn_800D923C(void) {
         u8 numInd;
         GSTevInd* ind;
 
-        fn_800BC8C8(lbl_8047AA80->tev.numTevStages);
+        GXSetNumTevStages(lbl_8047AA80->tev.numTevStages);
         numInd = lbl_8047AA80->tev.numIndStages;
         order = lbl_8047AA80->tev.tevOrder;
         colorOp = lbl_8047AA80->tev.colorOp;
@@ -85,17 +85,17 @@ void fn_800D923C(void) {
         alphaIn = lbl_8047AA80->tev.alphaIn;
         indEnable = lbl_8047AA80->tev.indEnable;
         ind = lbl_8047AA80->tev.ind;
-        fn_800BBC0C(numInd);
+        GXSetNumIndStages(numInd);
         if (numInd != 0) {
             GSIndOrder* indOrder = lbl_8047AA80->tev.indOrder;
             GSIndMtx* indMtx = lbl_8047AA80->tev.indMtx;
 
             for (i = 0; i < numInd; indOrder++, i++) {
-                fn_800BBAF8(i, indOrder->coord, indOrder->map);
-                fn_800BB97C(i, indOrder->scaleS, indOrder->scaleT);
+                GXSetIndTexOrder(i, indOrder->coord, indOrder->map);
+                GXSetIndTexCoordScale(i, indOrder->scaleS, indOrder->scaleT);
             }
             for (i = 0; i < 3; i++, indMtx++) {
-                fn_800BB81C(i + 1, indMtx->mtx, indMtx->scale);
+                GXSetIndTexMtx(i + 1, indMtx->mtx, indMtx->scale);
             }
         }
 
@@ -110,7 +110,7 @@ void fn_800D923C(void) {
             if (*indEnable != 0 && numInd != 0) {
                 switch (ind->type) {
                 case 0:
-                    fn_800BB780(i, ind->indStage, ind->format, ind->biasSel, ind->mtxSel,
+                    GXSetTevIndirect(i, ind->indStage, ind->format, ind->biasSel, ind->mtxSel,
                                 ind->wrapS, ind->wrapT, ind->addPrev, ind->utcLod, ind->alphaSel);
                     break;
                 case 1:
@@ -131,12 +131,12 @@ void fn_800D923C(void) {
                     break;
                 }
             } else {
-                fn_800BBC34(i);
+                GXSetTevDirect(i);
             }
         }
 
         for (i = 0; i < 4; i++) {
-            fn_800BC3E0(i, lbl_8047AA80->tev.kcolor[i]);
+            GXSetTevKColor(i, lbl_8047AA80->tev.kcolor[i]);
         }
         GXSetTevSwapModeTable(0, 0, 1, 2, 3);
         lbl_804001F0.tevUpdates++;

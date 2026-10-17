@@ -54,49 +54,49 @@ void C_MTXLightOrtho(Mtx m, f32 t, f32 b, f32 l, f32 r, f32 scaleS,
                      f32 scaleT, f32 transS, f32 transT);
 
 /* GXSetVtxDesc */
-void fn_800B7874(int attr, int type);
+void GXSetVtxDesc(int attr, int type);
 /* GXSetVtxAttrFmt */
-void fn_800B7D74(int vtxfmt, int attr, int cnt, int type, u8 frac);
+void GXSetVtxAttrFmt(int vtxfmt, int attr, int cnt, int type, u8 frac);
 /* GXPixModeSync */
-void fn_800B8E74(void);
+void GXPixModeSync(void);
 /* GXBegin */
-void fn_800B928C(int type, int vtxfmt, u16 nverts);
+void GXBegin(int type, int vtxfmt, u16 nverts);
 /* GXSetTexCopySrc */
-void fn_800B962C(u16 left, u16 top, u16 wd, u16 ht);
+void GXSetTexCopySrc(u16 left, u16 top, u16 wd, u16 ht);
 /* GXSetTexCopyDst */
-void fn_800B96F8(u16 wd, u16 ht, int fmt, GXBool mipmap);
+void GXSetTexCopyDst(u16 wd, u16 ht, int fmt, GXBool mipmap);
 /* GXCopyTex */
-void fn_800B9FE4(void* dest, GXBool clear);
+void GXCopyTex(void* dest, GXBool clear);
 void GXInvalidateTexAll(void);
 u32 GXGetTexBufferSize(u16 width, u16 height, u32 format, GXBool mipmap,
                        u8 max_lod);
 void GXLoadPosMtxImm(Mtx mtx, u32 id);
 /* GXSetCurrentMtx */
-void fn_800BD554(u32 id);
+void GXSetCurrentMtx(u32 id);
 /* GXSetScissor */
-void fn_800BD7A0(u32 left, u32 top, u32 wd, u32 ht);
+void GXSetScissor(u32 left, u32 top, u32 wd, u32 ht);
 
 /* GSmemFindHandle */
-u16 fn_800E202C(void* ptr);
+u16 GSmemGetHandleByPtr(void* ptr);
 /* GSmemLock */
 void fn_800E24B0(u16 handle);
 /* GSmemFree */
-void fn_800E209C(u16 handle);
+void GSmemFree(u16 handle);
 /* GSmemGetPtr */
-void* fn_800E27B0(u16 handle);
+void* GSmemLock(u16 handle);
 /* GSmemAllocTail */
 u16 fn_800E2B00(u32 size, u32 alignment);
 
 /* HSD_JObjUnref */
-void fn_801A05EC(HSD_JObj* jobj);
+void HSD_JObjUnref(HSD_JObj* jobj);
 /* HSD_JObjDispAll */
-void fn_801A13CC(HSD_JObj* jobj, MtxPtr vmtx, u32 trsp_mask, u32 rendermode);
+void HSD_JObjDispAll(HSD_JObj* jobj, MtxPtr vmtx, u32 trsp_mask, u32 rendermode);
 /* HSD_SListRemove */
-HSD_SList* fn_801A3E64(HSD_SList* list);
+HSD_SList* HSD_SListRemove(HSD_SList* list);
 /* HSD_SListAllocAndPrepend */
 HSD_SList* HSD_SListPrepend(HSD_SList* list, void* data);
 /* HSD_CObjEndCurrent */
-void fn_80195A48(void);
+void HSD_CObjEndCurrent(void);
 f32 HSD_CObjGetTop(HSD_CObj* cobj);
 f32 HSD_CObjGetBottom(HSD_CObj* cobj);
 f32 HSD_CObjGetLeft(HSD_CObj* cobj);
@@ -104,17 +104,17 @@ f32 HSD_CObjGetRight(HSD_CObj* cobj);
 void HSD_MObjDeleteShadowTexture(HSD_TObj* tobj);
 void HSD_ClearVtxDesc(void);
 /* HSD_StateSetCullMode */
-void fn_801B2878(int mode);
+void HSD_StateSetCullMode(int mode);
 /* HSD_SetupPEMode */
 void HSD_SetupPEMode(u32 flags, HSD_PEDesc* pe);
 /* HSD_SetupTevStageAll */
-void fn_801B3408(void* tevdesc);
+void HSD_SetupTevStageAll(void* tevdesc);
 /* HSD_StateInitTev */
-void fn_801B3884(void);
+void HSD_StateInitTev(void);
 /* HSD_StateSetNumTexGens */
-void fn_801B3890(void);
+void HSD_StateSetNumTexGens(void);
 /* HSD_SetupChannelAll */
-void fn_801B3998(void* chan);
+void HSD_SetupChannelAll(void* chan);
 
 /* HSD_identityMtx */
 extern Mtx lbl_8036CBC0;
@@ -241,7 +241,7 @@ HSD_ObjAllocData* HSD_ShadowGetAllocData(void)
 }
 
 /* HSD_ShadowInitAllocData */
-void fn_801B1854(void)
+void HSD_ShadowInitAllocData(void)
 {
     HSD_ObjAllocInit(HSD_ShadowGetAllocData(), sizeof(HSD_Shadow), 4);
 }
@@ -259,7 +259,7 @@ static HSD_TObj* makeShadowTObj(void)
 }
 
 /* HSD_ShadowAlloc */
-HSD_Shadow* fn_801B1730(void)
+HSD_Shadow* HSD_ShadowAlloc(void)
 {
     HSD_Shadow* shadow;
 
@@ -291,12 +291,12 @@ void HSD_ShadowInit(HSD_Shadow* shadow)
 
     HSD_ASSERT(268, shadow);
     imagedesc = shadow->texture->imagedesc;
-    fn_800B962C(0, 0, imagedesc->width, imagedesc->height);
-    fn_800B96F8(imagedesc->width, imagedesc->height, 0x20, 0);
+    GXSetTexCopySrc(0, 0, imagedesc->width, imagedesc->height);
+    GXSetTexCopyDst(imagedesc->width, imagedesc->height, 0x20, 0);
 }
 
 /* HSD_ShadowSetSize */
-void fn_801B1524(HSD_Shadow* shadow, u16 width, u16 height)
+void HSD_ShadowSetSize(HSD_Shadow* shadow, u16 width, u16 height)
 {
     u32 size;
     HSD_ImageDesc* idesc;
@@ -314,7 +314,7 @@ void fn_801B1524(HSD_Shadow* shadow, u16 width, u16 height)
 
         size = GXGetTexBufferSize(width, height, 0, 0, 0);
         HSD_ASSERT(319, size > 0);
-        idesc->image_ptr = fn_800E27B0(fn_800E2B00(size, 0x20));
+        idesc->image_ptr = GSmemLock(fn_800E2B00(size, 0x20));
         idesc->width = width;
         idesc->height = height;
 
@@ -330,11 +330,11 @@ static void drawBackgroundRect(HSD_Shadow* shadow)
 
     GXLoadPosMtxImm(lbl_8036CBC0, 0);
     HSD_PerfCountMtxLoad();
-    fn_800BD554(0);
+    GXSetCurrentMtx(0);
     HSD_ClearVtxDesc();
-    fn_800B7874(9, 1);
-    fn_800B7D74(0, 9, 1, 4, 0);
-    fn_801B2878(2);
+    GXSetVtxDesc(9, 1);
+    GXSetVtxAttrFmt(0, 9, 1, 4, 0);
+    HSD_StateSetCullMode(2);
 
     top = HSD_CObjGetTop(cobj);
     bottom = HSD_CObjGetBottom(cobj);
@@ -348,7 +348,7 @@ static void drawBackgroundRect(HSD_Shadow* shadow)
     right *= 1.2F;
     near *= -1.1F;
 
-    fn_800B928C(0x80, 0, 4);
+    GXBegin(0x80, 0, 4);
     GXPosition3f32(left, top, near);
     GXPosition3f32(right, top, near);
     GXPosition3f32(right, bottom, near);
@@ -357,7 +357,7 @@ static void drawBackgroundRect(HSD_Shadow* shadow)
 }
 
 /* HSD_ShadowStartRender */
-void fn_801B0EB8(HSD_Shadow* shadow)
+void HSD_ShadowStartRender(HSD_Shadow* shadow)
 {
     HSD_CObj* cobj;
     HSD_ImageDesc* idesc;
@@ -389,10 +389,10 @@ void fn_801B0EB8(HSD_Shadow* shadow)
                 9, 0, 0, 0, 0, 4, 5, 0xF, 7, 7, 0, 7,
             };
 
-            fn_801B3884();
-            fn_801B3408(&tev);
+            HSD_StateInitTev();
+            HSD_SetupTevStageAll(&tev);
 
-            fn_801B3890();
+            HSD_StateSetNumTexGens();
 
             HSD_SetupPEMode(0, &pedesc);
 
@@ -400,8 +400,8 @@ void fn_801B0EB8(HSD_Shadow* shadow)
             chan.mat_color.g = 255;
             chan.mat_color.b = 255;
 
-            fn_801B3998(&chan);
-            fn_800BD7A0(0, 0, idesc->width, idesc->height);
+            HSD_SetupChannelAll(&chan);
+            GXSetScissor(0, 0, idesc->width, idesc->height);
 
             drawBackgroundRect(shadow);
 
@@ -410,8 +410,8 @@ void fn_801B0EB8(HSD_Shadow* shadow)
                 chan.mat_color.g = 0;
                 chan.mat_color.b = 0;
 
-                fn_801B3998(&chan);
-                fn_800BD7A0(2, 2, idesc->width - 4, idesc->height - 4);
+                HSD_SetupChannelAll(&chan);
+                GXSetScissor(2, 2, idesc->width - 4, idesc->height - 4);
 
                 drawBackgroundRect(shadow);
 
@@ -419,8 +419,8 @@ void fn_801B0EB8(HSD_Shadow* shadow)
                 chan.mat_color.g = 255;
                 chan.mat_color.b = 255;
 
-                fn_801B3998(&chan);
-                fn_800BD7A0(4, 4, idesc->width - 8, idesc->height - 8);
+                HSD_SetupChannelAll(&chan);
+                GXSetScissor(4, 4, idesc->width - 8, idesc->height - 8);
 
                 drawBackgroundRect(shadow);
             }
@@ -429,21 +429,21 @@ void fn_801B0EB8(HSD_Shadow* shadow)
             chan.mat_color.g = shadow->intensity;
             chan.mat_color.b = shadow->intensity;
 
-            fn_801B3998(&chan);
-            fn_800BD7A0(2, 2, idesc->width - 4, idesc->height - 4);
+            HSD_SetupChannelAll(&chan);
+            GXSetScissor(2, 2, idesc->width - 4, idesc->height - 4);
         }
 
         for (list = shadow->objects; list != NULL; list = list->next) {
-            fn_801A13CC(list->data, NULL, HSD_TRSP_OPA | HSD_TRSP_TEXEDGE,
+            HSD_JObjDispAll(list->data, NULL, HSD_TRSP_OPA | HSD_TRSP_TEXEDGE,
                         RENDER_SHADOW);
         }
 
-        fn_80195A48();
+        HSD_CObjEndCurrent();
     }
 }
 
 /* HSD_ShadowEndRender */
-void fn_801B0BD8(HSD_Shadow* shadow)
+void HSD_ShadowEndRender(HSD_Shadow* shadow)
 {
     HSD_ImageDesc* idesc;
 
@@ -451,11 +451,11 @@ void fn_801B0BD8(HSD_Shadow* shadow)
 
     idesc = shadow->texture->imagedesc;
     if (!idesc->image_ptr) {
-        fn_801B1524(shadow, idesc->width, idesc->height);
+        HSD_ShadowSetSize(shadow, idesc->width, idesc->height);
     }
 
-    fn_800B9FE4(idesc->image_ptr, 1);
-    fn_800B8E74();
+    GXCopyTex(idesc->image_ptr, 1);
+    GXPixModeSync();
 
     GXInvalidateTexAll();
 
@@ -463,7 +463,7 @@ void fn_801B0BD8(HSD_Shadow* shadow)
 }
 
 /* HSD_ShadowSetLight */
-void fn_801B0A98(HSD_Shadow* shadow, HSD_LObj* lobj, f32 distance)
+void HSD_ShadowSetLight(HSD_Shadow* shadow, HSD_LObj* lobj, f32 distance)
 {
     Vec3 eye;
     Vec3 interest;
@@ -492,7 +492,7 @@ void fn_801B0A98(HSD_Shadow* shadow, HSD_LObj* lobj, f32 distance)
 }
 
 /* HSD_ShadowSetActive */
-void fn_801B0880(HSD_Shadow* shadow, BOOL active)
+void HSD_ShadowSetActive(HSD_Shadow* shadow, BOOL active)
 {
     HSD_ImageDesc* idesc;
 
@@ -506,7 +506,7 @@ void fn_801B0880(HSD_Shadow* shadow, BOOL active)
     if (active) {
         idesc = shadow->texture->imagedesc;
         if (!idesc->image_ptr) {
-            fn_801B1524(shadow, idesc->width, idesc->height);
+            HSD_ShadowSetSize(shadow, idesc->width, idesc->height);
         }
 
         HSD_MObjAddShadowTexture(shadow->texture);
@@ -516,7 +516,7 @@ void fn_801B0880(HSD_Shadow* shadow, BOOL active)
 }
 
 /* HSD_ShadowAddObject */
-void fn_801B07D4(HSD_Shadow* shadow, HSD_JObj* jobj)
+void HSD_ShadowAddObject(HSD_Shadow* shadow, HSD_JObj* jobj)
 {
     HSD_SList* list;
 
@@ -534,7 +534,7 @@ void fn_801B07D4(HSD_Shadow* shadow, HSD_JObj* jobj)
 }
 
 /* HSD_ShadowDeleteObject */
-void fn_801B073C(HSD_Shadow* shadow, HSD_JObj* jobj)
+void HSD_ShadowDeleteObject(HSD_Shadow* shadow, HSD_JObj* jobj)
 {
     if (!shadow) {
         return;
@@ -544,15 +544,15 @@ void fn_801B073C(HSD_Shadow* shadow, HSD_JObj* jobj)
         HSD_SList** list = &(shadow->objects);
         for (; *list; list = &((*list)->next)) {
             if ((*list)->data == jobj) {
-                fn_801A05EC(jobj);
-                (*list) = fn_801A3E64(*list);
+                HSD_JObjUnref(jobj);
+                (*list) = HSD_SListRemove(*list);
                 return;
             }
         }
     } else {
         while (shadow->objects) {
-            fn_801A05EC(shadow->objects->data);
-            shadow->objects = fn_801A3E64(shadow->objects);
+            HSD_JObjUnref(shadow->objects->data);
+            shadow->objects = HSD_SListRemove(shadow->objects);
         }
     }
 }
@@ -564,9 +564,9 @@ void fn_801B06DC(HSD_Shadow* shadow)
     HSD_ImageDesc* idesc = shadow->texture->imagedesc;
 
     if (idesc->image_ptr) {
-        handle = fn_800E202C(idesc->image_ptr);
+        handle = GSmemGetHandleByPtr(idesc->image_ptr);
         fn_800E24B0(handle);
-        fn_800E209C(handle);
+        GSmemFree(handle);
         idesc->image_ptr = NULL;
     }
 }
@@ -616,7 +616,7 @@ static void makeMatrix(HSD_Shadow* shadow)
 }
 
 /* HSD_ShadowSetViewingRect */
-void fn_801B04E0(HSD_Shadow* shadow, f32 top, f32 bottom, f32 left, f32 right)
+void HSD_ShadowSetViewingRect(HSD_Shadow* shadow, f32 top, f32 bottom, f32 left, f32 right)
 {
     HSD_CObj* cobj;
     f32 distance;
@@ -662,7 +662,7 @@ void fn_801B04E0(HSD_Shadow* shadow, f32 top, f32 bottom, f32 left, f32 right)
 }
 
 /* HSD_ViewingRectInit */
-void fn_801B0408(HSD_ViewingRect* rect, Vec3* position, Vec3* interest,
+void HSD_ViewingRectInit(HSD_ViewingRect* rect, Vec3* position, Vec3* interest,
                  Vec3* upvector, int perspective)
 {
     Vec3 v;
@@ -687,7 +687,7 @@ int HSD_ViewingRectCheck(HSD_ViewingRect* rect)
     return rect->top > rect->bottom && rect->right > rect->left;
 }
 
-void fn_801B019C(HSD_ViewingRect* rect, Vec3* position, f32 top, f32 bottom,
+void HSD_ViewingRectAddRect(HSD_ViewingRect* rect, Vec3* position, f32 top, f32 bottom,
                  f32 left, f32 right);
 
 /*
@@ -710,7 +710,7 @@ void shadow_stripped_radius_assert(f32 radius)
 }
 
 /* HSD_ViewingRectAddRect */
-void fn_801B019C(HSD_ViewingRect* rect, Vec3* position, f32 top, f32 bottom,
+void HSD_ViewingRectAddRect(HSD_ViewingRect* rect, Vec3* position, f32 top, f32 bottom,
                  f32 left, f32 right)
 {
     f32 x, y, dot, scale;

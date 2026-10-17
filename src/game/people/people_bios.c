@@ -28,7 +28,7 @@ extern void GSvecCopy(void*, void*);
 extern void GSmodelSetPosition(void*, void*);
 extern void GSmodelSetRotation(void*, void*);
 extern int peopleOpenSub(void* entry, u32 groupId, u32 indexId, s32 objectId);
-extern void fn_8018F08C(void* entry, u32 motionIndex);
+extern void peopleSetMotionSlot(void* entry, u32 motionIndex);
 extern void fn_801848D0(void* model, s32 group, s32 id, s32 part);
 extern void std067_characterStopLookAt(u32 groupId, u32 index);
 extern void std181_characterTurnHeadTowardsCharacter(u32 groupId, u32 index, u32 targetGroupId, u32 targetIndex);
@@ -183,7 +183,7 @@ void peopleBiosPopData(u8* src, u32 size) {
                 GScolsys2HumanEnable(shadowId, shadowAnimId);
             }
         }
-        fn_8018F08C(entry, *(u32*)((u8*)entry + 0x90));
+        peopleSetMotionSlot(entry, *(u32*)((u8*)entry + 0x90));
         GSmodelPopState(model, saved + 0xEC);
 
         if (*(s32*)((u8*)entry + 0xC8) != -1 && *(s32*)((u8*)entry + 0xCC) != -1) {

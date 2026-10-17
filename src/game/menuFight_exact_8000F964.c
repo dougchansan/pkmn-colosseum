@@ -31,7 +31,7 @@ extern void  fn_801081F8(void* ctx, s32 msgId, s32 flags); /* Display message */
 
 /* Rendering */
 extern u32   GSmsgGetRect();                           /* Get model dimensions */
-extern void  fn_800FB680();
+extern void  GSmsgPrintColor();
 
 /* Map/warp */
 extern u8    fightFloorCheckFightActionFightOutPokemonIrekaeSelect(s32 p1, void* warpId, void* outDest);
@@ -45,7 +45,7 @@ extern u8    fightFloorIsUseFightTimerCommand(s32 controller);             /* Ch
 extern u8    fightTimerCommandIsOver(void);                       /* Check A button */
 extern u16   std103_battleGetResult(void);                       /* Get input state */
 extern void  _threadSwitch(void);                       /* Frame advance */
-extern u32   fn_800F7AF0(s32 slot);                   /* Get render flags */
+extern u32   GSinputButtonsChanged(s32 slot);                   /* Get render flags */
 extern u32   fn_800F7BC4(s32 slot);                   /* Get VSync flags */
 
 /* Battle bridge */
@@ -70,8 +70,8 @@ void menuFightButtonSecretWazaTop(u8* ctx) {
     extern u8* windowGetAllocPtr(u8* a);
     extern void menuSetDisp(u32, s32);
     extern u8 menuIsCheck(s32);
-    extern s8 fn_800F7920(s32, s32);
-    extern s8 fn_800F7994(s32, s32);
+    extern s8 GSinputGetRightStickYData(s32, s32);
+    extern s8 GSinputGetRightStickXData(s32, s32);
     extern s32 menuOpenCustom(s32, ...);
     u8* flags;
     MenuFightSecretWazaEntry* entries;
@@ -99,8 +99,8 @@ void menuFightButtonSecretWazaTop(u8* ctx) {
     }
 
     bits = 0;
-    sx = fn_800F7920(1, 0);
-    sy = fn_800F7994(1, 0);
+    sx = GSinputGetRightStickYData(1, 0);
+    sy = GSinputGetRightStickXData(1, 0);
     if ((sy < 0 ? -sy : sy) > 0x20 || (sx < 0 ? -sx : sx) > 0x20) {
         fy = sy;
         fx = sx;

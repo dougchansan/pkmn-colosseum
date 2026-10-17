@@ -11,15 +11,15 @@
  *
  * Retail symbols (behaviour recovered from src/game/gs_mem.c and the
  * "GSmem: ..." log strings):
- *   fn_800E202C          pointer -> handle lookup
- *   fn_800E209C          free a handle
+ *   GSmemGetHandleByPtr          pointer -> handle lookup
+ *   GSmemFree          free a handle
  *   fn_800E24B0          unlock (decrement the lock count)
- *   fn_800E27B0          lock (increment the lock count, return pointer)
+ *   GSmemLock          lock (increment the lock count, return pointer)
  *   fn_800E2AF8          always returns 1
  *   fn_800E2B00          aligned allocation from the top of a free block
- *   fn_800E2C04          aligned allocation (first/best/worst fit)
- *   fn_800E2DB0          place an allocation at a fixed address
- *   _toolentryAlloc__FUl 32-byte aligned allocation (fn_800E2C04)
+ *   GSmemAlloc          aligned allocation (first/best/worst fit)
+ *   GSmemShrink          place an allocation at a fixed address
+ *   _toolentryAlloc__FUl 32-byte aligned allocation (GSmemAlloc)
  *   fn_800E3560          select the fit strategy (GSMEM_FIT_*)
  *   GSmemInit            initialise the heap
  *
@@ -49,7 +49,7 @@ typedef struct GSmemEntry {
     /* 0x0E */ u16 checksum;  /* guard mode: checksum taken at last unlock */
 } GSmemEntry;
 
-/* Fit strategies for fn_800E2C04 (stored in lbl_8047AB2C). */
+/* Fit strategies for GSmemAlloc (stored in lbl_8047AB2C). */
 #define GSMEM_FIT_FIRST 0
 #define GSMEM_FIT_BEST  1
 #define GSMEM_FIT_WORST 2

@@ -160,9 +160,9 @@ typedef struct psGenerator {
 } psGenerator; /* 0xB4 */
 
 extern void* memset(void* dst, int val, u32 size);
-extern void* fn_801A6928(u32 size);             /* HSD_MemAlloc */
-extern void fn_801A6960(void* p);               /* HSD_Free */
-extern HSD_SList* fn_801A3E64(HSD_SList* list); /* HSD_SListRemove */
+extern void* HSD_MemAlloc(u32 size);             /* HSD_MemAlloc */
+extern void HSD_Free(void* p);               /* HSD_Free */
+extern HSD_SList* HSD_SListRemove(HSD_SList* list); /* HSD_SListRemove */
 extern f32 HSD_Randf(void);                   /* HSD_Randf */
 
 extern void PSMTXIdentity(Mtx m);
@@ -238,7 +238,7 @@ void psInitGenerator(s32 count)
     lbl_8047B188 = NULL;
     lbl_8047B18C = NULL;
     for (i = count - 1; i >= 0; i--) {
-        gen = fn_801A6928(sizeof(psGenerator));
+        gen = HSD_MemAlloc(sizeof(psGenerator));
         memset(gen, 0, sizeof(psGenerator));
         if (gen == NULL) {
             return;
@@ -304,7 +304,7 @@ void psRemoveGenerator(void)
     while (gen != NULL) {
         psGenerator* next = gen->next;
 
-        fn_801A6960(gen);
+        HSD_Free(gen);
         gen = next;
     }
     lbl_8047B18C = NULL;
@@ -365,7 +365,7 @@ void psKillAllGenerator(void)
         gen = next;
     }
     while (lbl_8047B180 != NULL) {
-        lbl_8047B180 = fn_801A3E64(lbl_8047B180);
+        lbl_8047B180 = HSD_SListRemove(lbl_8047B180);
     }
 }
 
@@ -941,7 +941,7 @@ void psExecGenerator(u32 mask)
     psGenerator* gen;
 
     while (lbl_8047B180 != NULL) {
-        lbl_8047B180 = fn_801A3E64(lbl_8047B180);
+        lbl_8047B180 = HSD_SListRemove(lbl_8047B180);
     }
 
     gen = lbl_8047B188;
@@ -990,7 +990,7 @@ psGenerator* psGeneratorAlloc(void)
     psGenerator* gen;
 
     if (lbl_8047B18C == NULL) {
-        lbl_8047B18C = fn_801A6928(sizeof(psGenerator));
+        lbl_8047B18C = HSD_MemAlloc(sizeof(psGenerator));
         memset(lbl_8047B18C, 0, sizeof(psGenerator));
     }
     gen = lbl_8047B18C;

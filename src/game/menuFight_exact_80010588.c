@@ -17,7 +17,7 @@ void menuFightDrawWaza(u8* arg1, u8* arg2)
     } NpcInteractEntry;
     extern NpcInteractEntry* windowGetAllocPtr(u8* a);
     extern void* windowGetFreeWork(u8* a);
-    extern void fn_800FB680(s32 a, s32 b, s32 c, u32 d);
+    extern void GSmsgPrintColor(s32 a, s32 b, s32 c, u32 d);
     NpcInteractEntry* participant;
     void* npc_data;
     s32 idx;
@@ -51,7 +51,7 @@ void menuFightDrawWaza(u8* arg1, u8* arg2)
     result = participant->value;
     if (result != 0) {
         msgctrlSetValue(0x37, result);
-        fn_800FB680(0, 0, (s32)menuSubCalcColor(arg1, arg2), 0xE7);
+        GSmsgPrintColor(0, 0, (s32)menuSubCalcColor(arg1, arg2), 0xE7);
     }
 }
 
@@ -61,7 +61,7 @@ void menuFightDrawCmdMsg(u8* arg1, u8* arg2)
     extern u32 windowGetFreeWork(u8* a);
     extern u32 windowGetParam(u8* a, s32 b);
     extern void msgctrlSetValue(s32 p1, s32 val);
-    extern void fn_800FB680(s32 a, s32 b, s32 c, u32 d);
+    extern void GSmsgPrintColor(s32 a, s32 b, s32 c, u32 d);
     extern void* fightOutPokemonGetNicknamePtr(void* a);
     void* participant;
     void* npc_data;
@@ -117,7 +117,7 @@ void menuFightDrawCmdMsg(u8* arg1, u8* arg2)
         break;
     }
     if (r30 != 0) {
-        fn_800FB680(0, -2, (s32)menuSubCalcColor(arg1, arg2), r30);
+        GSmsgPrintColor(0, -2, (s32)menuSubCalcColor(arg1, arg2), r30);
     }
 }
 

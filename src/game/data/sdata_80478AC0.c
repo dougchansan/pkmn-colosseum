@@ -1,0 +1,9 @@
+#include "dolphin/types.h"
+
+u32 lbl_80478AC0 = 0x7FFFFFFF;
+u32 lbl_80478AC4 = 0x7F800000;
+u32 lbl_80478AC8 = 0x00800000;
+u32 lbl_80478ACC = 0x34000000;
+u32 lbl_80478AD0[2] = {
+    0x80000000, 0x00000000,
+};

@@ -1,5 +1,5 @@
 /**
- * Linked gs_title unit 0x80023DA8 - 0x80026370 (fn_80023DA8 .. fn_80025F84)
+ * Linked gs_title unit 0x80023DA8 - 0x80026370 (itemFieldUseForbidden .. fn_80025F84)
  * with its .sdata2 pool 0x8047B8A8-0x8047B920, compiled from gs_title.c.
  * The pool starts with this range's own 90.0f and 0.0f after the 0.5f the
  * code before it uses, so it is this unit's alone.

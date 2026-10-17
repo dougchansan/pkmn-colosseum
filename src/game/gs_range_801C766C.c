@@ -44,25 +44,25 @@ extern u32 std082_flagGetValue(u32 flag);
 extern void fn_801D0AFC(s32);
 extern void* heroBiosGetPokemonPtr(void* status, u16 index);
 extern u8 pokemonCheckValid(void* pokemon);
-extern u8 fn_80121ADC(void* pokemon, s32 ribbon);
-extern void fn_80121B4C(void* pokemon, s32 ribbon);
+extern u8 pokemonIsJoutaiDataId(void* pokemon, s32 ribbon);
+extern void pokemonInitPersistentJoutai(void* pokemon, s32 ribbon);
 extern s32 menuGetCursorFromItemID(s32 menu, s32 itemId);
 extern void cursorBiosSetPos(s32 cursor, const CursorPos* pos);
-extern void fn_8000D710(s32);
-extern s32 fn_80075638(void);
+extern void heroMoveRunEvent(s32);
+extern s32 exShrineModelIsOpen(void);
 extern void fn_8007565C(void);
 extern void std054_characterTalk(s32, s32, s32);
 extern s8 std011_dialogDisplayYesNoMenu(void);
 extern void GBAInit(void);
 extern void gbaCommandSetKeyState(s32, s32);
-extern void fn_8007B090(s32);
-extern s32 fn_8007AB10(s32, s32*);
-extern s32 fn_8007AAA8(void);
+extern void gbaBootPrepare(s32);
+extern s32 gbaBootRun(s32, s32*);
+extern s32 gbaBootWaitThread(void);
 extern void std055_characterEndSpeech(s32, s32);
 extern void menuSubOpenSelect(s32, s32, s32, s32, s32, s32);
 extern u8 heroMoveGetResID(s32* floorId, s32* resId, s32 member);
 extern u32 heroMoveChkHinderClear(s32 member);
-extern void* fn_800F92D4(s32 lightId);
+extern void* GSresFindById(s32 lightId);
 extern void GSlogWrite(const char* fmt, ...);
 extern u8 GSlightHasAnimationEnded(void* light);
 extern void GSlightStopAnimation(void* light);
@@ -78,10 +78,10 @@ extern void heroMoveDismissMember(s32 member);
 extern u32 _fadeEffectGetRandom__FUl(u32 limit);
 extern s32 fn_800D37CC(void);
 extern u32 msgGetCharsPerFrame(void);
-extern void fn_8025D164(void);
-extern s32 fn_8006ADEC(void);
-extern f32 fn_8025D0A8(void* status);
-extern void fn_8006ADB4(s32 value);
+extern void couponCalcEarned(void);
+extern s32 savedataBattleGetCouponRun(void);
+extern f32 heroCountPartyInList(void* status);
+extern void savedataBattleSetCouponRun(s32 value);
 
 extern const char lbl_802758AC[];
 extern const f32 lbl_8047E100;
@@ -100,8 +100,8 @@ void std207_gbaUnk_80075638(void);
 s32 std205_getDNASampleSepcies(u16 arg0);
 s32 std200_gbaConnectEvent(s32 arg0, s32 arg1);
 void std199_menuDisplayCustomMenu(s32 a, s32 b, s32 c, s32 d, s32 e);
-u8 fn_801C9910(void);
-void fn_801C9B6C(s32 arg0, s32 arg1, u16 arg2, u8 arg3);
+u8 floorElevatorIsHeroInside(void);
+void floorEventElevatorMain(s32 arg0, s32 arg1, u16 arg2, u8 arg3);
 void fn_801C9C9C(void);
 u8 std193_lightWaitForAnimation(s32 lightId, s32 wait);
 void scriptLightStopMotion(s32 lightId);
@@ -119,7 +119,7 @@ s32 fn_801CA728(s32 count);
 void fn_801CA7AC(s32 value);
 s32 std236_playerGetCouponsEarnedOnCurrentRun(void);
 s32 std232_characterApproachPlayer(s32 side, s32 slot);
-s32 fn_801C8E14(s32 floorDataId, u32 actorIndex, u16 mode, u8 direction);
+s32 floorElevatorSetupCharacters(s32 floorDataId, u32 actorIndex, u16 mode, u8 direction);
 
 extern u8 peopleMoveCheck();
 extern void GSmodelSetAnimIndex();
@@ -183,7 +183,7 @@ extern f32 GSvecDistance();
 extern void GSvecAdd();
 extern void vecScale();
 extern void GSvecSub(Vec3*, const Vec3*, const Vec3*);
-extern void fn_800E0060(Vec3*, const Vec3*);
+extern void GSvecNormalize(Vec3*, const Vec3*);
 extern void fn_800DFFCC(Vec3*, const Vec3*, const Vec3*);
 extern s32 GScolsys2UtilGetCpPlaneLine(
     Vec3*, f32*, const Vec3*, const Vec3*, const Vec3*, const Vec3*);
@@ -224,9 +224,9 @@ static inline u8 fieldPlaneCrossed(const Vec3* fromPtr, const Vec3* toPtr,
 
     flatTo.y = lbl_8047E100;
     GSvecSub(&fullDirection, &from, &to);
-    fn_800E0060(&fullDirection, &fullDirection);
+    GSvecNormalize(&fullDirection, &fullDirection);
     GSvecSub(&flatDirection, &from, &flatTo);
-    fn_800E0060(&flatDirection, &flatDirection);
+    GSvecNormalize(&flatDirection, &flatDirection);
     fn_800DFFCC(&planeNormal, &fullDirection, &flatDirection);
     if (GScolsys2UtilGetCpPlaneLine(&planeHit, &planeT, &planeNormal, &from,
                                     lineStart, lineEnd) == 0) {
@@ -306,8 +306,8 @@ s32 std232_characterApproachPlayer(s32 side, s32 slot)
     extern void* peopleInfoBiosGetPtr();
     extern f32 fn_8018F5E4();
     extern void std076_characterEventFlagsClear();
-    extern void fn_8018AACC();
-    extern void fn_8018BA04();
+    extern void peopleWalkTo();
+    extern void peopleGetHeadGroundPos();
     extern void peopleTurnToPoint();
     extern void std077_characterEventFlagsSet();
 
@@ -368,7 +368,7 @@ s32 std232_characterApproachPlayer(s32 side, s32 slot)
         }
 
         std076_characterEventFlagsClear(floorId, resId);
-        fn_8018AACC(floorId, resId, 1, &entries[i].pos);
+        peopleWalkTo(floorId, resId, 1, &entries[i].pos);
         done = fieldWaitPartnerMove();
         if (done == 0 && (entries[i].index & 1) != 0) {
             wanted = -1;
@@ -388,12 +388,12 @@ s32 std232_characterApproachPlayer(s32 side, s32 slot)
             if (entry->blocked == 0 &&
                 fieldSegmentBlocked(&partner, &requested, &entry->pos,
                                     lbl_8047E118) == 0) {
-                fn_8018AACC(floorId, resId, 1, &entry->pos);
+                peopleWalkTo(floorId, resId, 1, &entry->pos);
                 done = fieldWaitPartnerMove();
             }
         }
         if (done == 0) {
-            fn_8018BA04(floorId, resId, &saved);
+            peopleGetHeadGroundPos(floorId, resId, &saved);
             peopleTurnToPoint(floorId, resId, saved.x, saved.y, saved.z,
                         lbl_8047E100);
             fieldWaitPartnerMove();
@@ -421,9 +421,9 @@ s32 std232_characterApproachPlayer(s32 side, s32 slot)
         }
 
         std076_characterEventFlagsClear(floorId, resId);
-        fn_8018AACC(floorId, resId, 1, &entries[i].pos);
+        peopleWalkTo(floorId, resId, 1, &entries[i].pos);
         if (fieldWaitPartnerMove() == 0) {
-            fn_8018BA04(floorId, resId, &saved);
+            peopleGetHeadGroundPos(floorId, resId, &saved);
             peopleTurnToPoint(floorId, resId, saved.x, saved.y, saved.z,
                         lbl_8047E100);
             fieldWaitPartnerMove();
@@ -471,11 +471,11 @@ void std216_partyStatusUpdate_8ae(s32 mode)
             while (i < 6) {
                 pokemon = heroBiosGetPokemonPtr(status, i);
                 if (pokemonCheckValid(pokemon) != 0) {
-                    if (fn_80121ADC(pokemon, 3) != 0) {
-                        fn_80121B4C(pokemon, 3);
+                    if (pokemonIsJoutaiDataId(pokemon, 3) != 0) {
+                        pokemonInitPersistentJoutai(pokemon, 3);
                     }
-                    if (fn_80121ADC(pokemon, 4) != 0) {
-                        fn_80121B4C(pokemon, 4);
+                    if (pokemonIsJoutaiDataId(pokemon, 4) != 0) {
+                        pokemonInitPersistentJoutai(pokemon, 4);
                     }
                 }
                 i++;
@@ -500,10 +500,10 @@ void std208_promptDNASampleSelection(void)
     initial.col = cursor;
     pos = initial;
     cursorBiosSetPos(2, &pos);
-    fn_8000D710(1);
+    heroMoveRunEvent(1);
 }
 
-extern u32 fn_800884BC(u32 arg0, u32 arg1, u32 arg2);
+extern u32 dnaKeyCodeCheck(u32 arg0, u32 arg1, u32 arg2);
 
 u8 std204_promptDNAKeyCode(u16 arg0, u16 arg1, u16 arg2)
 {
@@ -550,12 +550,12 @@ u8 std204_promptDNAKeyCode(u16 arg0, u16 arg1, u16 arg2)
     case 0x210: case 0x211: v2 = 0xf5; break;
     }
 
-    return fn_800884BC(v0, v1, v2) == 0;
+    return dnaKeyCodeCheck(v0, v1, v2) == 0;
 }
 
 void std207_gbaUnk_80075638(void)
 {
-    u32 ready = (u8)fn_80075638();
+    u32 ready = (u8)exShrineModelIsOpen();
 
     if (ready != 0) {
         fn_8007565C();
@@ -564,7 +564,7 @@ void std207_gbaUnk_80075638(void)
 
 #endif /* GS_801C84FC_ONLY */
 
-extern u32 fn_800756C8(s32 pokemonId);
+extern u32 exShrineModelOpen(s32 pokemonId);
 extern s32 heroItemAddItemDataId(u8* ptr, u32 itemId, u32 count, u32 arg4);
 extern s32 heroItemDecItemDataId(u8* ptr, u32 itemId, u32 count, u32 arg4);
 
@@ -610,7 +610,7 @@ s32 std205_getDNASampleSepcies(u16 arg0)
     if ((u16)pokemonId == 0) {
         return 0;
     }
-    fn_800756C8(pokemonId);
+    exShrineModelOpen(pokemonId);
 
     switch (arg0) {
     case 0x200: usedItem = 0x201; break;
@@ -649,14 +649,14 @@ s32 std200_gbaConnectEvent(s32 arg0, s32 arg1)
     if (std011_dialogDisplayYesNoMenu() == 0) {
         GBAInit();
         gbaCommandSetKeyState(2, 0);
-        fn_8007B090(1);
+        gbaBootPrepare(1);
         std054_characterTalk(arg0, arg1, 0x3B62);
 
         linkWork = 0;
         linkState = 1;
         repeat = 0;
         for (;;) {
-            result = fn_8007AB10(linkState, &linkWork);
+            result = gbaBootRun(linkState, &linkWork);
             if (repeat != 0 && result == 0) {
                 continue;
             }
@@ -698,7 +698,7 @@ s32 std200_gbaConnectEvent(s32 arg0, s32 arg1)
                 } else {
                     linkState = 8;
                 }
-                fn_8007AB10(7, &linkWork);
+                gbaBootRun(7, &linkWork);
                 break;
             case 9:
                 std054_characterTalk(arg0, arg1, 0x3B6C);
@@ -707,18 +707,18 @@ s32 std200_gbaConnectEvent(s32 arg0, s32 arg1)
                 } else {
                     linkState = 10;
                 }
-                fn_8007AB10(9, &linkWork);
+                gbaBootRun(9, &linkWork);
                 break;
             case 11:
                 std054_characterTalk(arg0, arg1, 0x3B82);
                 answer = (s8)std011_dialogDisplayYesNoMenu();
-                fn_8007AB10(9, &linkWork);
+                gbaBootRun(9, &linkWork);
                 if (answer != 0) {
                     linkState = 29;
                 } else {
                     linkState = 12;
                 }
-                fn_8007AB10(11, &linkWork);
+                gbaBootRun(11, &linkWork);
                 break;
             case 14:
                 std054_characterTalk(arg0, arg1, 0x3B6F);
@@ -730,7 +730,7 @@ s32 std200_gbaConnectEvent(s32 arg0, s32 arg1)
                 break;
             case 16:
                 if (linkWork != 0) {
-                    fn_8007AAA8();
+                    gbaBootWaitThread();
                 }
                 std054_characterTalk(arg0, arg1, 0x3B81);
                 std054_characterTalk(arg0, arg1, 0x3B6A);
@@ -752,7 +752,7 @@ s32 std200_gbaConnectEvent(s32 arg0, s32 arg1)
                 } else {
                     linkState = 1;
                 }
-                fn_8007AB10(19, &linkWork);
+                gbaBootRun(19, &linkWork);
                 break;
             }
 
@@ -762,7 +762,7 @@ s32 std200_gbaConnectEvent(s32 arg0, s32 arg1)
         }
 
         if (linkWork != 0) {
-            fn_8007AAA8();
+            gbaBootWaitThread();
         }
     }
 
@@ -779,15 +779,15 @@ void std199_menuDisplayCustomMenu(s32 a, s32 b, s32 c, s32 d, s32 e)
     menuSubOpenSelect(1, a, b, c, d, e);
 }
 
-extern s32 fn_801C8E14(s32 floorDataId, u32 actorIndex, u16 mode,
+extern s32 floorElevatorSetupCharacters(s32 floorDataId, u32 actorIndex, u16 mode,
                        u8 direction);
-extern u8 fn_801C9910(void);
+extern u8 floorElevatorIsHeroInside(void);
 extern void floorEventCtrlElevator(s32 arg0, s32 arg1, u16 arg2,
                                    u8 arg3, s32 speed);
 extern u8 lbl_8047B3C4;
 
 /* Drive one scripted field actor animation and its paired movement actors. */
-s32 fn_801C8E14(s32 floorDataId, u32 actorIndex, u16 mode, u8 direction)
+s32 floorElevatorSetupCharacters(s32 floorDataId, u32 actorIndex, u16 mode, u8 direction)
 {
     typedef struct FieldAnimActor {
         s8 enterAnim;
@@ -823,7 +823,7 @@ s32 fn_801C8E14(s32 floorDataId, u32 actorIndex, u16 mode, u8 direction)
     extern void std168_characterDetachFromCharacter();
     extern void std065_characterLookAtPlayer();
     extern void peopleStartTurn();
-    extern void fn_8018AACC();
+    extern void peopleWalkTo();
     extern void peopleSetPositionByIndex();
     extern void soundStartSE();
     extern void soundStopSE();
@@ -914,7 +914,7 @@ s32 fn_801C8E14(s32 floorDataId, u32 actorIndex, u16 mode, u8 direction)
         if ((mode & 1) != 0) {
             std067_characterStopLookAt(0, 0x65);
             transform.z -= lbl_8047E130;
-            fn_8018AACC(0, 0x64, 1, &transform);
+            peopleWalkTo(0, 0x64, 1, &transform);
             firstPos.x = transform.x;
             firstPos.y = transform.y;
             firstPos.z = lbl_8047E138 + transform.z;
@@ -922,7 +922,7 @@ s32 fn_801C8E14(s32 floorDataId, u32 actorIndex, u16 mode, u8 direction)
 
             if (lbl_8047B3C0 != 0) {
                 for (i = 0; i < lbl_8047B3C0; i++) {
-                    fn_8018AACC(0, 0x65, 1, &lbl_80467090[i]);
+                    peopleWalkTo(0, 0x65, 1, &lbl_80467090[i]);
                     timedOut = fieldWaitPartnerMove();
                     if (timedOut != 0) {
                         break;
@@ -930,7 +930,7 @@ s32 fn_801C8E14(s32 floorDataId, u32 actorIndex, u16 mode, u8 direction)
                 }
             }
             if (timedOut == 0) {
-                fn_8018AACC(0, 0x65, 1, &firstPos);
+                peopleWalkTo(0, 0x65, 1, &firstPos);
             }
             peopleMoveCheck(0, 0x64, 1);
             if (timedOut == 0) {
@@ -962,9 +962,9 @@ s32 fn_801C8E14(s32 floorDataId, u32 actorIndex, u16 mode, u8 direction)
             peopleSetPositionByIndex(0, 0x65, &firstPos);
             secondPos.z += lbl_8047E140;
             firstPos.z += lbl_8047E140;
-            fn_8018AACC(0, 0x64, 1, &secondPos);
+            peopleWalkTo(0, 0x64, 1, &secondPos);
             fieldWaitSeconds(lbl_8047E13C);
-            fn_8018AACC(0, 0x65, 1, &firstPos);
+            peopleWalkTo(0, 0x65, 1, &firstPos);
             peopleMoveCheck(0, 0x64, 1);
             peopleMoveCheck(0, 0x65, 1);
             lbl_8047B3C4 = 0;
@@ -1023,7 +1023,7 @@ s32 fn_801C8E14(s32 floorDataId, u32 actorIndex, u16 mode, u8 direction)
         }
         fieldModelStartAnim(model, animIndex, frame);
         if ((mode & 0x40) != 0) {
-            fn_801C8E14(floorDataId, actorIndex, 0xC0, direction);
+            floorElevatorSetupCharacters(floorDataId, actorIndex, 0xC0, direction);
         } else if ((mode & 0x80) != 0) {
             soundStartSE(0x45);
         }
@@ -1036,7 +1036,7 @@ s32 fn_801C8E14(s32 floorDataId, u32 actorIndex, u16 mode, u8 direction)
 }
 
 
-u8 fn_801C9910(void)
+u8 floorElevatorIsHeroInside(void)
 {
     extern u8 fn_8012B19C(s32 member, Vec3* start, Vec3* target,
                           f32 extraRadius);
@@ -1116,20 +1116,20 @@ u8 fn_801C9910(void)
     return 0;
 }
 
-void fn_801C9B6C(s32 arg0, s32 arg1, u16 arg2, u8 arg3)
+void floorEventElevatorMain(s32 arg0, s32 arg1, u16 arg2, u8 arg3)
 {
     s32 floorId;
     s32 resId;
     u8 found;
 
     if (arg3 >= 2 && arg3 <= 5) {
-        fn_801C8E14(arg0, arg1, arg2, arg3);
+        floorElevatorSetupCharacters(arg0, arg1, arg2, arg3);
         return;
     }
 
     if (arg2 & 1) {
         found = heroMoveGetResID(&floorId, &resId, 1);
-        if (!found || (arg3 == 0 && !fn_801C9910())) {
+        if (!found || (arg3 == 0 && !floorElevatorIsHeroInside())) {
             lbl_8047B3C4 = 0;
         } else {
             lbl_8047B3C4 = 1;
@@ -1141,7 +1141,7 @@ void fn_801C9B6C(s32 arg0, s32 arg1, u16 arg2, u8 arg3)
     }
 
     if (lbl_8047B3C4) {
-        fn_801C8E14(arg0, arg1, arg2, arg3);
+        floorElevatorSetupCharacters(arg0, arg1, arg2, arg3);
     } else {
         floorEventCtrlElevator(arg0, arg1, arg2, 0, 100);
     }
@@ -1161,7 +1161,7 @@ void fn_801C9C9C(void)
 
 u8 std193_lightWaitForAnimation(s32 lightId, s32 wait)
 {
-    void* light = fn_800F92D4(lightId);
+    void* light = GSresFindById(lightId);
 
     if (light == NULL) {
         GSlogWrite(lbl_802758AC, lightId);
@@ -1184,7 +1184,7 @@ u8 std193_lightWaitForAnimation(s32 lightId, s32 wait)
 
 void scriptLightStopMotion(s32 lightId)
 {
-    void* light = fn_800F92D4(lightId);
+    void* light = GSresFindById(lightId);
 
     if (light == NULL) {
         GSlogWrite(lbl_802758AC, lightId);
@@ -1195,7 +1195,7 @@ void scriptLightStopMotion(s32 lightId)
 
 void std191_mapTransformElement(s32 lightId, s32 animIndex, s32 frame, s32 loop)
 {
-    void* light = fn_800F92D4(lightId);
+    void* light = GSresFindById(lightId);
 
     if (light == NULL) {
         GSlogWrite(lbl_802758AC, lightId);
@@ -1213,7 +1213,7 @@ void std191_mapTransformElement(s32 lightId, s32 animIndex, s32 frame, s32 loop)
 
 void std190_lightSetActive(s32 lightId, s32 active)
 {
-    void* light = fn_800F92D4(lightId);
+    void* light = GSresFindById(lightId);
 
     if (light == NULL) {
         GSlogWrite(lbl_802758AC, lightId);
@@ -1248,7 +1248,7 @@ u8 std182_tvNewsEvent(void)
     extern void heroMoveTermEvent(void);
     extern s32 winMsgOpenFieldWithSE(u32 message, u32 wait, u8 pause, u8 sound);
     extern void winMsgCloseField(u32 wait);
-    extern u8 fn_801EEAD0(u16 id);
+    extern u8 darkPokemonCheckFlag12(u16 id);
     extern const f32 lbl_8047E11C;
 
     f32 elapsed;
@@ -1256,7 +1256,7 @@ u8 std182_tvNewsEvent(void)
 
     heroMoveInitEvent();
 
-    if (fn_801EEAD0(0x43)) {
+    if (darkPokemonCheckFlag12(0x43)) {
         mode = 4;
     } else if (std081_flagCheckTrue(0xADA)) {
         std078_flagSetFalse(0xA0F);
@@ -1414,10 +1414,10 @@ void std157_sleep(f32 frames)
 
 u16 fieldStartEncount(u32 arg0, u8 arg1, s32 arg2)
 {
-    extern void fn_80112700(void);
+    extern void floorStartSoundScript(void);
     extern void std079_flagSetTrue(u32 flagId);
     extern void* fightEncountDataBiosGetPtr(u32 index);
-    extern u16 fn_8006A65C(void);
+    extern u16 menuCBBattleReturnToMenuRoom(void);
     extern void std229_mapLoad395(s32 value);
     extern void floorSetFadeScript(s32 a, s32 b);
     extern u32 fightStartEncount(u32 arg0);
@@ -1436,10 +1436,10 @@ u16 fieldStartEncount(u32 arg0, u8 arg1, s32 arg2)
 
     if (std082_flagGetValue(0x8AE)) {
         std079_flagSetTrue(0xE05);
-        result = fn_8006A65C();
+        result = menuCBBattleReturnToMenuRoom();
 
         if (std082_flagGetValue(0x8AE)) {
-            fn_80112700();
+            floorStartSoundScript();
         } else {
             std229_mapLoad395(0);
             floorSetFadeScript(0, 0x5960008);
@@ -1471,7 +1471,7 @@ u16 fieldStartEncount(u32 arg0, u8 arg1, s32 arg2)
 
 void std239_playerGetCouponsEarnedInLastArea(void)
 {
-    fn_8025D164();
+    couponCalcEarned();
 }
 
 s32 fn_801CA728(s32 count)
@@ -1480,21 +1480,21 @@ s32 fn_801CA728(s32 count)
     s32 value;
     f32 multiplier;
 
-    base = fn_8006ADEC();
-    multiplier = fn_8025D0A8(savedataGetStatus(0, 2));
+    base = savedataBattleGetCouponRun();
+    multiplier = heroCountPartyInList(savedataGetStatus(0, 2));
     value = base + (s32)((f32)count * multiplier);
-    fn_8006ADB4(value);
+    savedataBattleSetCouponRun(value);
     return value;
 }
 
 void fn_801CA7AC(s32 value)
 {
-    fn_8006ADB4(value);
+    savedataBattleSetCouponRun(value);
 }
 
 s32 std236_playerGetCouponsEarnedOnCurrentRun(void)
 {
-    return fn_8006ADEC();
+    return savedataBattleGetCouponRun();
 }
 
 

@@ -47,7 +47,7 @@ void salDeactivateVoice(DSPvoice* voice)
     voice->state = 0;
 }
 
-u32 fn_8015D54C(DSPstudioinfo* studio, SND_STUDIO_INPUT* input)
+u32 salAddStudioInput(DSPstudioinfo* studio, SND_STUDIO_INPUT* input)
 {
     if (studio->numInputs < 7) {
         studio->in[studio->numInputs].studio = input->srcStudio;
@@ -64,7 +64,7 @@ u32 fn_8015D54C(DSPstudioinfo* studio, SND_STUDIO_INPUT* input)
     return 0;
 }
 
-u32 fn_8015D5F4(DSPstudioinfo* studio, SND_STUDIO_INPUT* input)
+u32 salRemoveStudioInput(DSPstudioinfo* studio, SND_STUDIO_INPUT* input)
 {
     long i;
 

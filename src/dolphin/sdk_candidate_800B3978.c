@@ -14,11 +14,11 @@
 #include "dolphin/os/OSInterrupt.h"
 #include "src/dolphin/card_dsp_private.h"
 
-extern EXICallback fn_8009870C(s32 chan, EXICallback callback);
-extern void fn_80098AE8(s32 chan);
+extern EXICallback EXISetExiCallback(s32 chan, EXICallback callback);
+extern void EXIDetach(s32 chan);
 extern void* memcpy(void* dst, const void* src, u32 n);
-extern s32 fn_800AFFE0(s32 chan, u32 addr, CARDCallback callback); /* __CARDEraseSector */
-extern s32 fn_800B19A4(s32 chan, u32 addr, s32 length, void* buffer,
+extern s32 __CARDEraseSector(s32 chan, u32 addr, CARDCallback callback); /* __CARDEraseSector */
+extern s32 __CARDWrite(s32 chan, u32 addr, s32 length, void* buffer,
                        CARDCallback callback); /* __CARDWrite */
 
 static inline void DoUnmount(s32 chan, s32 result)
@@ -29,8 +29,8 @@ static inline void DoUnmount(s32 chan, s32 result)
     card = &lbl_803FC620[chan];
     enabled = OSDisableInterrupts();
     if (card->attached) {
-        fn_8009870C(chan, NULL);
-        fn_80098AE8(chan);
+        EXISetExiCallback(chan, NULL);
+        EXIDetach(chan);
         OSCancelAlarm(&card->alarm);
         card->attached = FALSE;
         card->result = result;
@@ -64,14 +64,14 @@ void FormatCallback(s32 chan, s32 result)
 
     ++card->formatStep;
     if (card->formatStep < 5) {
-        result = fn_800AFFE0(chan, card->sectorSize * card->formatStep,
+        result = __CARDEraseSector(chan, card->sectorSize * card->formatStep,
                              FormatCallback);
         if (result >= 0) {
             return;
         }
     } else if (card->formatStep < 10) {
         int step = card->formatStep - 5;
-        result = fn_800B19A4(chan, card->sectorSize * step, 0x2000,
+        result = __CARDWrite(chan, card->sectorSize * step, 0x2000,
                              (u8*)card->workArea + 0x2000 * step,
                              FormatCallback);
         if (result >= 0) {

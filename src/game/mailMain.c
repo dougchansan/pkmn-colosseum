@@ -12,24 +12,24 @@
  * compile against (u8 handle index, u16 mode/count returns, the raw u32
  * object id); battle_waza_types.h keeps older prototypes for its other
  * users, so they are renamed out of the way while it is included. */
-#define fn_801D1650 fn_801D1650_hdr
+#define mailGetEntryField0 fn_801D1650_hdr
 #define fn_801D1364 fn_801D1364_hdr
-#define fn_801D139C fn_801D139C_hdr
-#define fn_801D1864 fn_801D1864_hdr
-#define fn_801D1734 fn_801D1734_hdr
+#define mailDataBiosGet08 fn_801D139C_hdr
+#define shadowGroupGetEntryId fn_801D1864_hdr
+#define shadowGroupGetEntryByte fn_801D1734_hdr
 #define fn_801D19A4 fn_801D19A4_hdr
 #include "game/battle/battle_waza_types.h"
-#undef fn_801D1650
+#undef mailGetEntryField0
 #undef fn_801D1364
-#undef fn_801D139C
-#undef fn_801D1864
-#undef fn_801D1734
+#undef mailDataBiosGet08
+#undef shadowGroupGetEntryId
+#undef shadowGroupGetEntryByte
 #undef fn_801D19A4
-extern u32 fn_801D1650(u8 idx);
+extern u32 mailGetEntryField0(u8 idx);
 extern void fn_801D1364(u16 mode);
-extern u16 fn_801D139C(s32 idx);
-extern u32 fn_801D1864(s32 sequence, s32 index);
-extern u8 fn_801D1734(s32 sequence, s32 index);
+extern u16 mailDataBiosGet08(s32 idx);
+extern u32 shadowGroupGetEntryId(s32 sequence, s32 index);
+extern u8 shadowGroupGetEntryByte(s32 sequence, s32 index);
 extern u16 fn_801D19A4(s32 idx);
 
 
@@ -46,7 +46,7 @@ static inline void mailMainStartSe(void) {
     u32 workId;
     u32 soundId;
 
-    soundId = fn_801D1650(fn_801D16C4());
+    soundId = mailGetEntryField0(mailGetCurrentIndex());
     if (soundId != 0) {
         workId = soundPauseMusic();
         fn_801654E0(soundId,
@@ -108,8 +108,8 @@ void mailMainSendAllMail(s32 seqHandle, f32 targetScale, f32 speed) {
  */
 void fn_801D228C(s32 seqHandle) {
     extern void std078_flagSetFalse(s32);
-    extern void fn_801EED30(u32, s32);
-    extern u16 fn_801EE614(u32);
+    extern void darkPokemonSetFlag0E(u32, s32);
+    extern u16 darkPokemonGetFlag1C(u32);
     extern void std243_shadowPokemonSetState(u32, u32);
     extern void cmsRunSync(s32, s32, ...);
     extern void heroMoveAddAutoEvent(s32, u16, s32, s32, s32);
@@ -122,12 +122,12 @@ void fn_801D228C(s32 seqHandle) {
 
     handle = seqHandle;
 
-    object = fn_801D1504(handle);
+    object = mailDataBiosGet20(handle);
     if (object != -1 && object != 0) {
         std078_flagSetFalse(object);
     }
 
-    mode = fn_801D139C(handle);
+    mode = mailDataBiosGet08(handle);
     if (mode != 0xFFFF) {
         fn_801D1364(mode);
     }
@@ -135,21 +135,21 @@ void fn_801D228C(s32 seqHandle) {
     count = fn_801D19A4(handle);
     if (count != 0xFFFF) {
         for (i = 0; i < count; i++) {
-            object = fn_801D1864(handle, i);
-            fn_801EED30(object, 1);
-            limit = fn_801D1734(handle, i);
-            if (fn_801EE614(object) < limit) {
+            object = shadowGroupGetEntryId(handle, i);
+            darkPokemonSetFlag0E(object, 1);
+            limit = shadowGroupGetEntryByte(handle, i);
+            if (darkPokemonGetFlag1C(object) < limit) {
                 std243_shadowPokemonSetState(object, limit);
             }
         }
     }
 
-    object = fn_801D14C0(handle);
+    object = mailDataBiosGet24(handle);
     if (object != -1 && object != 0) {
         cmsRunSync(object, 0);
     }
 
-    object = fn_801D147C(handle);
+    object = mailDataBiosGet28(handle);
     if (object != -1 && object != 0) {
         heroMoveAddAutoEvent(object, seqHandle, 0, 0, 0);
     }
@@ -174,7 +174,7 @@ void mailMainReceiveTerminate(void) {
  * Address: 0x801D2404 | Size: 0x288
  */
 void fn_801D2404(void) {
-    extern void* fn_800F92D4(u32);
+    extern void* GSresFindById(u32);
     extern s32 GStextureGetXsize(void*);
     extern s32 GStextureGetYsize(void*);
     extern void fn_800FE6D0(s32, s32);
@@ -187,14 +187,14 @@ void fn_801D2404(void) {
     extern void gfxLoadTexture(s32, void*);
     extern void gfxSetPrimitive(s32);
     extern void gfxBegin(s32);
-    extern void fn_800D61E4(s16, s16);
-    extern void fn_800D5CB8(s32, u8, u8, u8, u8);
+    extern void gfxVtxPos2s16(s16, s16);
+    extern void gfxVtxColor4u8(s32, u8, u8, u8, u8);
     extern void gfxVtxTexCoord(s32, f32, f32);
     extern void gfxEnd(void);
     extern s32 gamedatasaveGetStatus(s32, s32);
-    extern void fn_800F78A4(s32, s32, s32, s32, s32);
+    extern void GSinputMotorStart(s32, s32, s32, s32, s32);
     extern s32 msgGetCharsPerFrame(void);
-    extern s32 soundGetStatus(u32);
+    extern s32 GSsndGetStatus(u32);
     extern void fn_800F9210(s32, s32);
     extern void soundKill(u32);
     extern void soundResumeSong(u32, s32, s32);
@@ -216,7 +216,7 @@ void fn_801D2404(void) {
         visible = 1;
     }
     if (visible) {
-        texture = fn_800F92D4(0x0C881200);
+        texture = GSresFindById(0x0C881200);
         width = GStextureGetXsize(texture);
         height = GStextureGetYsize(texture);
         fn_800FE6D0(0, 0);
@@ -229,23 +229,23 @@ void fn_801D2404(void) {
         gfxLoadTexture(0, texture);
         gfxSetPrimitive(7);
         gfxBegin(2);
-        fn_800D61E4(0x15, 0x25);
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+        gfxVtxPos2s16(0x15, 0x25);
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
         gfxVtxTexCoord(0, 0.0f, 0.0f);
-        fn_800D61E4((s16)(width + 0x15), (s16)(height + 0x25));
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+        gfxVtxPos2s16((s16)(width + 0x15), (s16)(height + 0x25));
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
         gfxVtxTexCoord(0, 1.0f, 1.0f);
         gfxEnd();
         fn_800D9ED8(0);
         if (gamedatasaveGetStatus(0, 9) == 0 &&
             (f32)lbl_80467390[1] < 180.0f) {
-            fn_800F78A4(1, 0, 0xFF, 0x1E, 0);
+            GSinputMotorStart(1, 0, 0xFF, 0x1E, 0);
         }
     }
 
     lbl_80467390[1] += msgGetCharsPerFrame();
     sound = lbl_80467390[2];
-    if (sound != 0 && soundGetStatus(sound) != 2) {
+    if (sound != 0 && GSsndGetStatus(sound) != 2) {
         fn_800F9210(0, 0x408);
         soundKill(sound);
         work = lbl_80467390[3];
@@ -279,7 +279,7 @@ void mailMainReceiveStart(s32 seqHandle, s32 slot, s32 boneIdx) {
             return;
         }
     }
-    soundId = fn_801D1650(fn_801D16C4());
+    soundId = mailGetEntryField0(mailGetCurrentIndex());
     if (soundId != 0) {
         workId = soundPauseMusic();
         buffer = GSresAllocResourceAlign(0x10000, 0x20, 0, 0x408, 0);
@@ -304,9 +304,9 @@ void mailMainReceiveStart(s32 seqHandle, s32 slot, s32 boneIdx) {
  */
 s32 chkMailSend(s32 seqHandle, f32 step) {
     extern u16 mailGetSendRate(s32);
-    extern u32 fn_801D142C(s32);
-    extern u32 fn_801D13E4(s32);
-    extern u16 fn_801D1338(void);
+    extern u32 mailDataBiosGet01(s32);
+    extern u32 mailDataBiosGet04(s32);
+    extern u16 mailBiosGetCounter(void);
     extern u8 mailGetSendCondType(s32);
     extern u32 mailGetSendCondition(s32);
     extern void* std082_flagGetValue(u32);
@@ -330,15 +330,15 @@ s32 chkMailSend(s32 seqHandle, f32 step) {
         return FALSE;
     }
 
-    comparison = fn_801D142C(seqHandle);
+    comparison = mailDataBiosGet01(seqHandle);
     if ((u8)comparison == 0xFF) {
         return FALSE;
     }
-    expected = fn_801D13E4(seqHandle);
+    expected = mailDataBiosGet04(seqHandle);
     if ((u16)expected == 0xFFFF) {
         return FALSE;
     }
-    actual = fn_801D1338();
+    actual = mailBiosGetCounter();
     eligible = FALSE;
     switch ((u8)comparison) {
     case 0:
@@ -410,13 +410,13 @@ s32 chkMailSend(s32 seqHandle, f32 step) {
  * Address: 0x801D29D8 | Size: 0x130
  */
 void cbStep(s32 moveID, s32 hitCount) {
-    extern f32 fn_800E0BE4(void);
+    extern f32 GSrandf(void);
     f32 step;
     s32 count;
     s32 i;
     s32 sent;
 
-    step = fn_800E0BE4();
+    step = GSrandf();
     count = mailGetNbMailData();
     sent = 0;
     for (i = 0; i < count; i++) {

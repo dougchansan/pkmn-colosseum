@@ -4,7 +4,7 @@
  *
  * Called by the GSgapp job pool (fn_8018094C) once the background LZSS
  * decode of an entry has finished: free the compressed image the job kept
- * (fn_8017C074 moved it there), then either mark the entry failed (state 7)
+ * (fsysLZSSJobSetup moved it there), then either mark the entry failed (state 7)
  * when no output buffer was allocated, or mark it done (state 6), flush the
  * resource and report it to the entry's group callback.
  *
@@ -16,9 +16,9 @@
 #include "game/fsys/fsys_entry.h"
 #include "game/gs_range_8017FA5C_shared.h"
 
-extern u16 fn_800E202C(void* ptr);
+extern u16 GSmemGetHandleByPtr(void* ptr);
 extern void fn_800E24B0(u16 handle);
-extern void fn_800E209C(u16 handle);
+extern void GSmemFree(u16 handle);
 extern void* GSresGetResource(u32 fileHandle, u32 nameHash);
 
 /* Same expansion as fsysFree in fsys_slot_8017B1CC.c. */
@@ -26,10 +26,10 @@ static inline void fsysFree(void* ptr)
 {
     u16 handle;
 
-    handle = fn_800E202C(ptr);
+    handle = GSmemGetHandleByPtr(ptr);
     if (handle != 0) {
         fn_800E24B0(handle);
-        fn_800E209C(handle);
+        GSmemFree(handle);
     }
 }
 
@@ -68,7 +68,7 @@ static inline void fsysEntryDone(FSYSSlot* slot, FSYSFileEntry* entry)
 }
 
 /* Address: 0x8017C1D8 | size: 0x1BC */
-void fn_8017C1D8(FSYSSlot* slot, FSYSSubEntry* sub, u32 index, GsRangePoolElem* job)
+void fsysLZSSJobFinish(FSYSSlot* slot, FSYSSubEntry* sub, u32 index, GsRangePoolElem* job)
 {
     FSYSFileEntry* entry;
 

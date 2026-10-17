@@ -22,7 +22,7 @@ BOOL OSLinkFixed(OSModuleInfo* module, void* data) {
     return Link(module, data, 1);
 }
 
-extern void fn_8009E7AC(OSModuleInfo* module);
+extern void OSNotifyUnlink(OSModuleInfo* module);
 
 BOOL OSUnlink(OSModuleHeader* newModule, OSModuleHeader* module)
 {
@@ -145,7 +145,7 @@ BOOL fn_8009EFE4(OSModuleInfo* oldModule)
     {
         OSUnlink(moduleHeader, (OSModuleHeader*)moduleInfo);
     }
-    fn_8009E7AC(oldModule);
+    OSNotifyUnlink(oldModule);
     if (__OSStringTable != NULL) {
         oldModule->nameOffset -= (u32)__OSStringTable;
     }

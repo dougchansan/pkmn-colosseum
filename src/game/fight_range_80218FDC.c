@@ -8,7 +8,7 @@
  */
 #include "dolphin/types.h"
 extern u8* lbl_8047B610;
-void fn_8021908C(void)
+void wsCmdA8(void)
 {
     extern u32 GSmsgGetGSchar();
     extern void wazaSetStatus();
@@ -18,7 +18,7 @@ void fn_8021908C(void)
     extern void msgctrlSetValue();
     extern u32 fightTargetGetPtrAsNowFightType();
     extern u8 fightOutPokemonIsUseHensinBuff();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern u32 fightPokemonGetPokemonPtr();
     extern u32 pokemonGetStatus();
     u32 status;
@@ -38,7 +38,7 @@ void fn_8021908C(void)
     move = (u16)pokemonGetStatus(target, 0, 0xef, 0);
     wazaSetStatus(status, 0, 0x27, 0, 0xffff);
 
-    if (fn_802026E4(attacker, 0x10) == 1) {
+    if (fightOutPokemonIsPokemonJoutaiDataId(attacker, 0x10) == 1) {
         goto failed;
     }
 

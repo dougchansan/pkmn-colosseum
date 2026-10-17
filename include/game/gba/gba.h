@@ -156,7 +156,7 @@ typedef struct ConvertedPokemon {
  * in batches of 4 (unrolled loop), performing the same byte-swap
  * on each 32-bit word from the GBA source.
  *
- * When a save context (param 3) is provided, calls fn_8008AE18 to
+ * When a save context (param 3) is provided, calls pokeconvPokemonToGBA to
  * extract additional data, then fills 11 ribbon bytes via exribbonGetNo.
  *
  * @param pDst     Destination buffer (GCN format, at work+0x4344)
@@ -187,7 +187,7 @@ void pokeconv_ValidateItems(void* pDst, void* pSrc);
  * ========================================================================= */
 
 /**
- * fn_80092C90: Initialize GBA communication and send a Pokemon.
+ * gbaCommStartSendPokemon: Initialize GBA communication and send a Pokemon.
  * Opens a channel (0-3), allocates a 0x44A0-byte work buffer via
  * GSmem, clears it, creates an SI transfer thread, and converts
  * the source Pokemon data from GBA to GCN format using
@@ -203,7 +203,7 @@ void pokeconv_ValidateItems(void* pDst, void* pSrc);
 s32 gbaCommunication_Transfer1(s32 channel, void* pSrc, void* pSaveCtx);
 
 /**
- * fn_80092E38: Initialize GBA communication and receive a Pokemon.
+ * gbaCommStartTransferA: Initialize GBA communication and receive a Pokemon.
  * Same setup as Transfer1, but sets phase to GBA_PHASE_RECV_POKEMON (0x0B)
  * and stores the destination buffer pointer at state offset 0x4344.
  *
@@ -214,7 +214,7 @@ s32 gbaCommunication_Transfer1(s32 channel, void* pSrc, void* pSaveCtx);
 s32 gbaCommunication_Transfer2(s32 channel, void* pDst);
 
 /**
- * fn_80092FC8: Transfer Pokemon data with source and save context.
+ * gbaCommStartTransferB: Transfer Pokemon data with source and save context.
  * Similar to Transfer1, combines send operation with additional
  * save context handling.
  *
@@ -226,7 +226,7 @@ s32 gbaCommunication_Transfer2(s32 channel, void* pDst);
 s32 gbaCommunication_Transfer3(s32 channel, void* pSrc, void* pSaveCtx);
 
 /**
- * fn_80093160: Transfer Pokemon data with different phase setup.
+ * gbaCommStartTransferC: Transfer Pokemon data with different phase setup.
  * Variant transfer function for specific trade scenarios.
  *
  * @param channel  SI channel (0-3)
@@ -237,7 +237,7 @@ s32 gbaCommunication_Transfer3(s32 channel, void* pSrc, void* pSaveCtx);
 s32 gbaCommunication_Transfer4(s32 channel, void* pSrc, void* pSaveCtx);
 
 /**
- * fn_800932F0: Complex transfer with validation.
+ * gbaCommStartTransferFile: Complex transfer with validation.
  * Extended transfer function that performs additional data
  * validation and handles multi-block transfers.
  *
@@ -249,7 +249,7 @@ s32 gbaCommunication_Transfer4(s32 channel, void* pSrc, void* pSaveCtx);
 s32 gbaCommunication_Transfer5(s32 channel, void* pSrc, void* pSaveCtx);
 
 /**
- * fn_80093698: Finalize GBA transfer and print ribbon data.
+ * gbaCommEnd: Finalize GBA transfer and print ribbon data.
  * Completes the data transfer, logs ribbon indices using
  * OSReport("Ribbon Index: %d"), and cleans up the channel.
  *
@@ -267,7 +267,7 @@ s32 gbaCommunication_Transfer6(s32 channel, void* pDst);
 void gbaCommunication_SICallback(void);
 
 /**
- * fn_800937F4: GBA communication thread entry.
+ * _gbaCommThread: GBA communication thread entry.
  * The main processing thread for GBA link cable communication.
  * Runs the state machine that manages the data transfer protocol.
  * Created by OSCreateThread during channel initialization.
@@ -295,22 +295,22 @@ void gba_LinkInit(void);
  * ========================================================================= */
 
 /* GSmem allocator */
-/* fn_800E2C04 */ extern void* GSmem_Alloc(u32 size, u32 align);
-/* fn_800E27B0 */ extern void* GSmem_GetPtr(void* handle);
+/* GSmemAlloc */ extern void* GSmem_Alloc(u32 size, u32 align);
+/* GSmemLock */ extern void* GSmem_GetPtr(void* handle);
 
 /* SI / Thread functions */
 /* fn_800716C8 */ extern void  GSthread_Register(s32 channel, void* threadData);
-/* fn_8009F77C */ extern void  SI_Setup(void* ctx);
-/* fn_8009F9C8 */ extern void  SI_SetupCallback(void* callbackData);
+/* OSInitMutex */ extern void  SI_Setup(void* ctx);
+/* OSInitCond */ extern void  SI_SetupCallback(void* callbackData);
 /* OSCreateThread */ extern void  OSCreateThread(void* thread, void* func,
                                               void* arg, void* stackBase,
                                               u32 stackSize, u32 priority,
                                               u32 detached);
 /* OSResumeThread */ extern void  OSResumeThread(void* thread);
-/* fn_8009F7B4 */ extern void  SI_BeginTransfer(void* ctx);
-/* fn_8009F890 */ extern void  SI_EndTransfer(void* ctx);
-/* fn_800A257C */ extern void  SI_SetPriority(void* thread, u32 priority);
-/* fn_8009FABC */ extern void  SI_TriggerCallback(void* callbackData);
+/* OSLockMutex */ extern void  SI_BeginTransfer(void* ctx);
+/* OSUnlockMutex */ extern void  SI_EndTransfer(void* ctx);
+/* OSSetThreadPriority */ extern void  SI_SetPriority(void* thread, u32 priority);
+/* OSSignalCond */ extern void  SI_TriggerCallback(void* callbackData);
 
 /* Assert function */
 /* __assert */ extern void  GS_Assert(const char* file, u32 line, const char* msg);
@@ -320,7 +320,7 @@ void gba_LinkInit(void);
 /* pokemonBiosGetPokemonDataId */ extern u16   pokemon_GetSpecies(void* pSaveCtx);
 
 /* Data extraction */
-/* fn_8008AE18 */ extern void  pokemon_ExtractData(void* pSaveCtx, void* pDst);
+/* pokeconvPokemonToGBA */ extern void  pokemon_ExtractData(void* pSaveCtx, void* pDst);
 /* exribbonGetNo */ extern u8    ribbon_GetValue(s32 ribbonIdx);
 
 #endif /* GAME_GBA_H */

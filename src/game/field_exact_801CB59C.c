@@ -6,7 +6,7 @@ extern void std168_characterDetachFromCharacter(u32 group, u32 resource);
 extern void* GSresGetResource(u32 group, u32 resource);
 extern void GSmodelDetachFromGSpart(void* model, s32 arg);
 
-s32 fn_801CB59C(u32 resource)
+s32 scriptCharacterDetach(u32 resource)
 {
     u32 group = std093_getCurrentGroupID();
     void* model;

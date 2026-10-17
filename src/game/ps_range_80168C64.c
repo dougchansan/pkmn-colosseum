@@ -225,18 +225,18 @@ extern PSParticle* _psListNew(PSParticle* parent, u32 linkNo);
 extern f32 sinf(f32 x); /* sinf-family */
 extern f32 cosf(f32 x); /* cosf-family */
 extern f32 tanf(f32 x);
-extern void* fn_8019F718(void);
+extern void* HSD_JObjAlloc(void);
 extern void psSetPointJObj(s32 idx, void* renderObj);
-extern void fn_801A05EC(void* renderObj);
+extern void HSD_JObjUnref(void* renderObj);
 extern void HSD_JObjSetupMatrix(void* camSlot);
 extern void HSD_JObjAddTx(PSJObjTransform* jobj, f32 dx);
 extern void HSD_JObjAddTy(PSJObjTransform* jobj, f32 dy);
 extern void HSD_JObjAddTz(PSJObjTransform* jobj, f32 dz);
-extern void fn_8019D9DC(PSForceJObj* jobj);
+extern void HSD_JObjSetupMatrixSub(PSForceJObj* jobj);
 extern void HSD_MtxSRT(void* dst, void* scale, void* rot, void* trans, void* order);
-extern void fn_801A6960(void* ptr);
-extern void* fn_801A6928(s32 size);
-extern void* fn_801A3E64(void);
+extern void HSD_Free(void* ptr);
+extern void* HSD_MemAlloc(s32 size);
+extern void* HSD_SListRemove(void);
 extern void __assert(const char* file, u32 line, const char* msg);
 extern void* memset(void* dst, s32 value, u32 size);
 extern void PSMTXIdentity(Mtx m);
@@ -261,8 +261,8 @@ extern double sin(double x);
 extern double cos(double x);
 extern double atan2(double y, double x);
 extern void particleSort(s32 linkNo, PSParticle** first, PSParticle** second);
-extern void fn_800BC8C8(s32 count);
-extern void fn_800B884C(s32 count);
+extern void GXSetNumTevStages(s32 count);
+extern void GXSetNumTexGens(s32 count);
 extern void GXSetTevOrder(s32 stage, s32 map, s32 coord, s32 color);
 extern void GXSetTevColorIn(s32 stage, s32 a, s32 b, s32 c, s32 d);
 extern void GXSetTevAlphaIn(s32 stage, s32 a, s32 b, s32 c, s32 d);
@@ -286,25 +286,25 @@ extern f32 lbl_8047B158;
 extern f32 lbl_8047B15C;
 extern f32 lbl_8047B160;
 extern u8 lbl_80452DE8[];
-extern void fn_800BD554(s32 mode);
-extern void fn_800BCEBC(s32 mode);
+extern void GXSetCurrentMtx(s32 mode);
+extern void GXSetZCompLoc(s32 mode);
 extern void HSD_FogSet(void* fog);
-extern void fn_800B7D3C(void);
-extern void fn_800B7D74(u32 vtxfmt, u32 attr, u32 cnt, u32 type, u8 frac);
-extern void fn_800B7874(s32 attribute, s32 type);
-extern void fn_800B928C(s32 primitive, s32 format, s32 count);
-extern void fn_800B9404(s32 width, s32 offset);
-extern void fn_800B944C(s32 width, s32 offset);
-extern void fn_800B9494(u32 chan, u32 enable0, u32 enable1);
-extern void fn_800B94F0(u32 value);
-extern void fn_800B84E0(u32 attr, u32 value, u8 value2);
-extern void fn_801B25C4(s32 flags);
+extern void GXClearVtxDesc(void);
+extern void GXSetVtxAttrFmt(u32 vtxfmt, u32 attr, u32 cnt, u32 type, u8 frac);
+extern void GXSetVtxDesc(s32 attribute, s32 type);
+extern void GXBegin(s32 primitive, s32 format, s32 count);
+extern void GXSetLineWidth(s32 width, s32 offset);
+extern void GXSetPointSize(s32 width, s32 offset);
+extern void GXEnableTexOffsets(u32 chan, u32 enable0, u32 enable1);
+extern void GXSetCullMode(u32 value);
+extern void GXSetArray(u32 attr, u32 value, u8 value2);
+extern void HSD_StateInvalidate(s32 flags);
 extern f32 generateParticle_8017424C(PSGeneratorState* gen);
 extern void HSD_MulColor(GXColor* a, GXColor* b, GXColor* dest);
 extern void fn_800060F0(const char* file, s32 line, const char* message, ...);
 extern void PSMTXInverse(const Mtx source, Mtx destination);
-extern void fn_800BD454(f32* projection);
-extern void fn_801A958C(f32 src[3][4], f32 dst[3][4], char axis0, char axis1);
+extern void GXGetProjectionv(f32* projection);
+extern void HSD_MtxGetRotationMtx(f32 src[3][4], f32 dst[3][4], char axis0, char axis1);
 extern void (*lbl_8047B198)(PSGeneratorState*, Mtx);
 extern const u8 lbl_802738B8[176];
 extern u8 lbl_8036BFC0[];
@@ -380,7 +380,7 @@ void psSetGeneratorAngleRadiusScale(PSGeneratorState* gen, f32* scale,
 
 extern void GXSetChanAmbColor(s32 channel, PSColor color);
 extern void GXSetChanMatColor(s32 channel, PSColor color);
-extern void fn_800BC2F8(s32 reg, PSColor color);
+extern void GXSetTevColor(s32 reg, PSColor color);
 
 /* The particle link lists (_psListGetFirst, _psListDelete, _psListNew,
  * _psListClear, _psLinkInit) and particleSort are linked from pslist.c. */
@@ -540,7 +540,7 @@ void psKillGeneratorChild(PSGeneratorState* gen) {
                 void* camSlot = lbl_80452DC8[slotIdx];
 
                 if (camSlot != NULL) {
-                    fn_801A05EC(camSlot);
+                    HSD_JObjUnref(camSlot);
                     lbl_80452DC8[slotIdx] = NULL;
                 }
             }
@@ -574,7 +574,7 @@ void psKillFamily(s32 familyId, s32 linkNo) {
                 void* camSlot = lbl_80452DC8[slotIdx];
 
                 if (camSlot != NULL) {
-                    fn_801A05EC(camSlot);
+                    HSD_JObjUnref(camSlot);
                     lbl_80452DC8[slotIdx] = NULL;
                 }
             }
@@ -626,7 +626,7 @@ PSAppSRT* psAddGeneratorAppSRT(PSGeneratorState* gen, u8 type) {
     u16 familyId = gen->familyId;
 
     if (lbl_8047B124 == NULL) {
-        lbl_8047B124 = fn_801A6928(lbl_8047B120);
+        lbl_8047B124 = HSD_MemAlloc(lbl_8047B120);
         if (lbl_8047B124 != NULL) {
             memset(lbl_8047B124, 0, lbl_8047B120);
         }
@@ -743,7 +743,7 @@ void psRemoveParticle(void) {
                         u32 slot = (current->flags >> 12) & 7;
 
                         if (lbl_80452DC8[slot] != NULL) {
-                            fn_801A05EC(lbl_80452DC8[slot]);
+                            HSD_JObjUnref(lbl_80452DC8[slot]);
                             lbl_80452DC8[slot] = NULL;
                         }
                     }
@@ -773,7 +773,7 @@ void psRemoveParticle(void) {
 
     for (i = 0; i < 8; i++) {
         if (lbl_80452DC8[i] != NULL) {
-            fn_801A05EC(lbl_80452DC8[i]);
+            HSD_JObjUnref(lbl_80452DC8[i]);
             lbl_80452DC8[i] = NULL;
         }
     }
@@ -1020,7 +1020,7 @@ void psRemoveAppSRT(void) {
 
     while (appSRT != NULL) {
         PSAppSRT* next = appSRT->next;
-        fn_801A6960(appSRT);
+        HSD_Free(appSRT);
         appSRT = next;
     }
 
@@ -1036,7 +1036,7 @@ s32 psInitAppSRT(s32 count, s32 size) {
     lbl_8047B124 = NULL;
 
     while (i < count) {
-        PSAppSRT* appSRT = fn_801A6928(size);
+        PSAppSRT* appSRT = HSD_MemAlloc(size);
 
         if (appSRT == NULL) {
             return i;
@@ -1138,11 +1138,11 @@ void psDispMain(u32 linkMask, s32 mode) {
                     lbl_8047B130.g = 0xFF;
                     lbl_8047B130.b = 0xFF;
                     lbl_8047B130.a = 0xFF;
-                    fn_800BC2F8(1, lbl_8047B138);
-                    fn_800BC2F8(2, lbl_8047B134);
-                    fn_800BC2F8(3, lbl_8047B130);
+                    GXSetTevColor(1, lbl_8047B138);
+                    GXSetTevColor(2, lbl_8047B134);
+                    GXSetTevColor(3, lbl_8047B130);
                     lbl_8047B148 = -1;
-                    fn_800BCEBC(0);
+                    GXSetZCompLoc(0);
 
                     HSD_CObjGetViewingMtx(
                         HSD_CObjGetCurrent(),
@@ -1150,7 +1150,7 @@ void psDispMain(u32 linkMask, s32 mode) {
                     PSMTXInverse(
                         (const f32(*)[4])(lbl_80452DE8 + 0xAC),
                         (f32(*)[4])(lbl_80452DE8 + 0x7C));
-                    fn_800BD454((f32*)(lbl_80452DE8 + 0x60));
+                    GXGetProjectionv((f32*)(lbl_80452DE8 + 0x60));
 
                     if (projection[0] == lbl_8047D5C8) {
                         tmp[0] = projection[1] * view[0] + projection[2] * view[8];
@@ -1184,28 +1184,28 @@ void psDispMain(u32 linkMask, s32 mode) {
                     lbl_8047B12C = 3;
                     if (lbl_8047B12C != 0) {
                         lbl_8047B12C = 0;
-                        fn_800BD554(0);
+                        GXSetCurrentMtx(0);
                     }
-                    fn_800B9494(0, 1, 1);
-                    fn_801A958C(
+                    GXEnableTexOffsets(0, 1, 1);
+                    HSD_MtxGetRotationMtx(
                         (f32(*)[4])(lbl_80452DE8 + 0x7C),
                         (f32(*)[4])lbl_80452DE8,
                         0x7A, 0x78);
-                    fn_800B94F0(2);
-                    fn_800B84E0(0xD, (u32)lbl_8036BFC0, 2);
-                    fn_800B7D74(0, 9, 1, 4, 0);
-                    fn_800B7D74(0, 0xD, 1, 0, 0);
-                    fn_800B7D74(1, 9, 1, 4, 0);
-                    fn_800B7D74(2, 9, 1, 4, 0);
-                    fn_800B7D74(2, 0xB, 1, 5, 0);
-                    fn_800B7D74(2, 0xD, 1, 0, 0);
-                    fn_800B7D74(3, 9, 1, 4, 0);
-                    fn_800B7D74(3, 0xB, 1, 5, 0);
-                    fn_800B7D74(4, 9, 1, 4, 0);
-                    fn_800B7D74(4, 0xD, 1, 4, 0);
-                    fn_800B7D74(5, 9, 1, 4, 0);
-                    fn_800B7D74(5, 0xB, 1, 5, 0);
-                    fn_800B7D74(5, 0xD, 1, 4, 0);
+                    GXSetCullMode(2);
+                    GXSetArray(0xD, (u32)lbl_8036BFC0, 2);
+                    GXSetVtxAttrFmt(0, 9, 1, 4, 0);
+                    GXSetVtxAttrFmt(0, 0xD, 1, 0, 0);
+                    GXSetVtxAttrFmt(1, 9, 1, 4, 0);
+                    GXSetVtxAttrFmt(2, 9, 1, 4, 0);
+                    GXSetVtxAttrFmt(2, 0xB, 1, 5, 0);
+                    GXSetVtxAttrFmt(2, 0xD, 1, 0, 0);
+                    GXSetVtxAttrFmt(3, 9, 1, 4, 0);
+                    GXSetVtxAttrFmt(3, 0xB, 1, 5, 0);
+                    GXSetVtxAttrFmt(4, 9, 1, 4, 0);
+                    GXSetVtxAttrFmt(4, 0xD, 1, 4, 0);
+                    GXSetVtxAttrFmt(5, 9, 1, 4, 0);
+                    GXSetVtxAttrFmt(5, 0xB, 1, 5, 0);
+                    GXSetVtxAttrFmt(5, 0xD, 1, 4, 0);
                     needsInit = FALSE;
                 }
 
@@ -1259,7 +1259,7 @@ void psDispMain(u32 linkMask, s32 mode) {
                     cachedAlphaStart != pp->alphaStart ||
                     cachedAlphaEnd != pp->alphaEnd) {
                     cachedAlphaMode = pp->alphaMode;
-                    fn_800BC618((pp->alphaMode >> 5) & 7,
+                    GXSetAlphaCompare((pp->alphaMode >> 5) & 7,
                                 cachedAlphaStart,
                                 (pp->alphaMode >> 3) & 3,
                                 cachedAlphaEnd,
@@ -1337,7 +1337,7 @@ void psDispMain(u32 linkMask, s32 mode) {
 
                         if (lbl_8047B12C != 0) {
                             lbl_8047B12C = 0;
-                            fn_800BD554(0);
+                            GXSetCurrentMtx(0);
                         }
 
                         widthValue = pp->lerpValue > lbl_8047D5E0
@@ -1348,16 +1348,16 @@ void psDispMain(u32 linkMask, s32 mode) {
 
                         if (lbl_8047B168 != rasterWidth) {
                             lbl_8047B168 = rasterWidth;
-                            fn_800B944C(width, 5);
+                            GXSetPointSize(width, 5);
                         }
 
-                        fn_800B7D3C();
-                        fn_800B7874(9, 1);
+                        GXClearVtxDesc();
+                        GXSetVtxDesc(9, 1);
                         if (pp->flags & PS_FLAG_OBJ_REF) {
-                            fn_800B7874(0xD, 2);
-                            fn_800B928C(0xB8, 0, 1);
+                            GXSetVtxDesc(0xD, 2);
+                            GXBegin(0xB8, 0, 1);
                         } else {
-                            fn_800B928C(0xB8, 1, 1);
+                            GXBegin(0xB8, 1, 1);
                         }
 
                         GX_FIFO_F32 = pp->positionX;
@@ -1378,7 +1378,7 @@ void psDispMain(u32 linkMask, s32 mode) {
         }
     }
     if (!needsInit) {
-        fn_801B25C4(-1);
+        HSD_StateInvalidate(-1);
     }
 }
 
@@ -1395,7 +1395,7 @@ void psDeletePntJObjwithParticle(PSParticle* pp) {
         void* camSlot = lbl_80452DC8[slotIdx];
 
         if (camSlot != NULL) {
-            fn_801A05EC(camSlot);
+            HSD_JObjUnref(camSlot);
             lbl_80452DC8[slotIdx] = NULL;
         }
     }
@@ -1412,7 +1412,7 @@ void psSetPointJObjNodup(void* renderObj, s32 index) {
     i = 0;
     do {
         if (lbl_80452DC8[i] == renderObj) {
-            fn_801A05EC(lbl_80452DC8[i]);
+            HSD_JObjUnref(lbl_80452DC8[i]);
             lbl_80452DC8[i] = NULL;
         }
         i++;
@@ -1425,7 +1425,7 @@ void psSetPointJObjNodup(void* renderObj, s32 index) {
         slot += index;
         oldRenderObj = *--slot;
         if (oldRenderObj != NULL) {
-            fn_801A05EC(oldRenderObj);
+            HSD_JObjUnref(oldRenderObj);
         }
         *slot = renderObj;
 
@@ -1458,7 +1458,7 @@ void psSetPointJObj(s32 index, void* renderObj) {
             return;
         }
         if (oldRenderObj != NULL) {
-            fn_801A05EC(oldRenderObj);
+            HSD_JObjUnref(oldRenderObj);
         }
         *slot = renderObj;
 
@@ -1475,7 +1475,7 @@ void psSetPointJObj(s32 index, void* renderObj) {
         i = 0;
         while (i < 8) {
             if (*slot == renderObj) {
-                fn_801A05EC(*slot);
+                HSD_JObjUnref(*slot);
                 *slot = NULL;
             }
             i++;
@@ -1515,7 +1515,7 @@ void psKillAllParticle(void) {
                         void* camSlot = lbl_80452DC8[slotIdx];
 
                         if (camSlot != NULL) {
-                            fn_801A05EC(camSlot);
+                            HSD_JObjUnref(camSlot);
                             lbl_80452DC8[slotIdx] = NULL;
                         }
                     }
@@ -1725,7 +1725,7 @@ void fn_8016EA88(void) {
     }
 }
 
-void fn_8016EB30(HSD_Obj* obj) {
+void psSetFog(HSD_Obj* obj) {
     HSD_Obj* old_obj;
 
     if ((old_obj = lbl_8047B128) != NULL) {
@@ -1765,8 +1765,8 @@ void psSetupTev(PSParticle* pp) {
     }
 
     if (state == 0 || state == 0x80) {
-        fn_800BC8C8(1);
-        fn_800B884C(0);
+        GXSetNumTevStages(1);
+        GXSetNumTexGens(0);
         GXSetTevOrder(0, 0xFF, 0xFF, 4);
         GXSetTevColorIn(0, 2, 0xF, 0xF, 0xF);
         GXSetTevAlphaIn(0, 1, 7, 7, 7);
@@ -1777,22 +1777,22 @@ void psSetupTev(PSParticle* pp) {
             lbl_8047B170 &= ~0x180;
         }
 
-        fn_800BC8C8(2);
-        fn_800B884C(0);
+        GXSetNumTevStages(2);
+        GXSetNumTexGens(0);
         GXSetTevOrder(0, 0xFF, 0xFF, 4);
         GXSetTevColorIn(0, 0xF, 6, 0xA, 0xF);
         GXSetTevAlphaIn(0, 3, 7, 7, 7);
         GXSetTevColorIn(1, 0xF, 2, 0, 0xF);
         GXSetTevAlphaIn(1, 7, 1, 0, 7);
     } else if (state == 0x400 || state == 0x480) {
-        fn_800BC8C8(1);
-        fn_800B884C(1);
+        GXSetNumTevStages(1);
+        GXSetNumTexGens(1);
         GXSetTevOrder(0, 0, 0, 4);
         GXSetTevColorIn(0, 4, 2, 8, 0xF);
         GXSetTevAlphaIn(0, 2, 1, 4, 7);
     } else if (state == 0x100400) {
-        fn_800BC8C8(1);
-        fn_800B884C(1);
+        GXSetNumTevStages(1);
+        GXSetNumTexGens(1);
         GXSetTevOrder(0, 0, 0, 4);
         GXSetTevOp(0, 0);
     } else if (state == 0x100000 || state == 0x100080) {
@@ -1800,30 +1800,30 @@ void psSetupTev(PSParticle* pp) {
             pp->flags &= ~0x180;
             lbl_8047B170 &= ~0x180;
         }
-        fn_800BC8C8(1);
-        fn_800B884C(0);
+        GXSetNumTevStages(1);
+        GXSetNumTexGens(0);
         GXSetTevOrder(0, 0xFF, 0xFF, 4);
         GXSetTevColorIn(0, 0xA, 0xF, 0xF, 0xF);
         GXSetTevAlphaIn(0, 5, 7, 7, 7);
     } else if (state == 0x100480) {
-        fn_800BC8C8(2);
-        fn_800B884C(1);
+        GXSetNumTevStages(2);
+        GXSetNumTexGens(1);
         GXSetTevOrder(0, 0, 0, 4);
         GXSetTevColorIn(0, 4, 2, 8, 0xF);
         GXSetTevAlphaIn(0, 2, 1, 4, 7);
         GXSetTevColorIn(1, 0xF, 0, 0xF, 0xF);
         GXSetTevAlphaIn(1, 7, 5, 0, 7);
     } else if (state == (s32)0x80000400) {
-        fn_800BC8C8(2);
-        fn_800B884C(1);
+        GXSetNumTevStages(2);
+        GXSetNumTexGens(1);
         GXSetTevOrder(0, 0, 0, 4);
         GXSetTevColorIn(0, 0xF, 6, 0xA, 0xF);
         GXSetTevAlphaIn(0, 3, 7, 7, 7);
         GXSetTevColorIn(1, 0xF, 8, 0, 0xF);
         GXSetTevAlphaIn(1, 7, 4, 0, 7);
     } else if (state == (s32)0x80000480) {
-        fn_800BC8C8(3);
-        fn_800B884C(1);
+        GXSetNumTevStages(3);
+        GXSetNumTexGens(1);
         GXSetTevOrder(0, 0, 0, 4);
         GXSetTevColorIn(0, 4, 2, 8, 0xF);
         GXSetTevAlphaIn(0, 2, 1, 4, 7);
@@ -1832,16 +1832,16 @@ void psSetupTev(PSParticle* pp) {
         GXSetTevColorIn(2, 0xF, 0xA, 0, 0xF);
         GXSetTevAlphaIn(2, 0, 7, 7, 7);
     } else if (state == (s32)0x80100400) {
-        fn_800BC8C8(2);
-        fn_800B884C(1);
+        GXSetNumTevStages(2);
+        GXSetNumTexGens(1);
         GXSetTevOrder(0, 0, 0, 4);
         GXSetTevColorIn(0, 0xF, 6, 0xA, 0xF);
         GXSetTevAlphaIn(0, 7, 3, 5, 7);
         GXSetTevColorIn(1, 0xF, 8, 0, 0xF);
         GXSetTevAlphaIn(1, 7, 4, 0, 7);
     } else if (state == (s32)0x80100480) {
-        fn_800BC8C8(3);
-        fn_800B884C(1);
+        GXSetNumTevStages(3);
+        GXSetNumTexGens(1);
         GXSetTevOrder(0, 0, 0, 4);
         GXSetTevColorIn(0, 4, 2, 8, 0xF);
         GXSetTevAlphaIn(0, 2, 1, 4, 7);
@@ -1855,8 +1855,8 @@ void psSetupTev(PSParticle* pp) {
             pp->flags &= ~0x180;
             lbl_8047B170 &= ~0x180;
         }
-        fn_800BC8C8(2);
-        fn_800B884C(0);
+        GXSetNumTevStages(2);
+        GXSetNumTexGens(0);
         GXSetTevOrder(0, 0xFF, 0xFF, 4);
         GXSetTevColorIn(0, 0xF, 6, 0xA, 0xF);
         GXSetTevAlphaIn(0, 7, 3, 5, 7);
@@ -1903,7 +1903,7 @@ s32 applyForceJObj(PSParticle* pp, PSForceJObj* jobj,
     }
 
     if (!(jobj->flags & 0x800000) && (jobj->flags & 0x40)) {
-        fn_8019D9DC(jobj);
+        HSD_JObjSetupMatrixSub(jobj);
     }
 
     dx = jobj->worldX - pp->positionX;
@@ -2036,7 +2036,7 @@ void setVelToJObj(PSParticle* pp, PSForceJObj* jobj) {
     }
 
     if (!(jobj->flags & 0x800000) && (jobj->flags & 0x40)) {
-        fn_8019D9DC(jobj);
+        HSD_JObjSetupMatrixSub(jobj);
     }
 
     dx = jobj->worldX - pp->positionX;
@@ -3727,10 +3727,10 @@ PSParticle* psInterpretParticle0(PSParticle* pp, PSParticle* parentCtx) {
         void* camSlot = lbl_80452DC8[slotIdx];
 
         if (camSlot == NULL) {
-            void* renderObj = fn_8019F718();
+            void* renderObj = HSD_JObjAlloc();
             if (renderObj != NULL) {
                 psSetPointJObj((s32)slotIdx + 1, renderObj);
-                fn_801A05EC(renderObj);
+                HSD_JObjUnref(renderObj);
             }
         }
 
@@ -4387,7 +4387,7 @@ PSParticle* psDispSubPointTrail(PSParticle* pp) {
 
     if (lbl_8047B12C != 0) {
         lbl_8047B12C = 0;
-        fn_800BD554(0);
+        GXSetCurrentMtx(0);
     }
 
     if (pp->lerpValue > lbl_8047D5E0) {
@@ -4400,7 +4400,7 @@ PSParticle* psDispSubPointTrail(PSParticle* pp) {
     cachedWidth = (u8)width;
     if (lbl_8047B164 != cachedWidth) {
         lbl_8047B164 = cachedWidth;
-        fn_800B9404(width, 5);
+        GXSetLineWidth(width, 5);
     }
 
     if (pp->flags & 4) {
@@ -4452,14 +4452,14 @@ PSParticle* psDispSubPointTrail(PSParticle* pp) {
         return pp;
     }
 
-    fn_800B7D3C();
-    fn_800B7874(9, 1);
-    fn_800B7874(11, 1);
+    GXClearVtxDesc();
+    GXSetVtxDesc(9, 1);
+    GXSetVtxDesc(11, 1);
     if (pp->flags & 0x400) {
-        fn_800B7874(13, 2);
-        fn_800B928C(0xA8, 2, 2);
+        GXSetVtxDesc(13, 2);
+        GXBegin(0xA8, 2, 2);
     } else {
-        fn_800B928C(0xA8, 3, 2);
+        GXBegin(0xA8, 3, 2);
     }
 
     GX_FIFO_F32 = previous.x;
@@ -4502,7 +4502,7 @@ void psDispSubAPPSRTPoint(PSParticle* pp) {
 
     if (lbl_8047B12C != 0) {
         lbl_8047B12C = 0;
-        fn_800BD554(0);
+        GXSetCurrentMtx(0);
     }
 
     if (appSRT->flags != lbl_80478C30) {
@@ -4552,11 +4552,11 @@ void psDispSubAPPSRTPoint(PSParticle* pp) {
         if (pp->flags & 0x100000) {
             if (lbl_8047B164 != rasterWidth) {
                 lbl_8047B164 = rasterWidth;
-                fn_800B9404(width, 5);
+                GXSetLineWidth(width, 5);
             }
         } else if (lbl_8047B168 != rasterWidth) {
             lbl_8047B168 = rasterWidth;
-            fn_800B944C(width, 5);
+            GXSetPointSize(width, 5);
         }
     }
 
@@ -4623,14 +4623,14 @@ void psDispSubAPPSRTPoint(PSParticle* pp) {
             return;
         }
 
-        fn_800B7D3C();
-        fn_800B7874(9, 1);
-        fn_800B7874(11, 1);
+        GXClearVtxDesc();
+        GXSetVtxDesc(9, 1);
+        GXSetVtxDesc(11, 1);
         if (pp->flags & 0x400) {
-            fn_800B7874(13, 2);
-            fn_800B928C(0xA8, 2, 2);
+            GXSetVtxDesc(13, 2);
+            GXBegin(0xA8, 2, 2);
         } else {
-            fn_800B928C(0xA8, 3, 2);
+            GXBegin(0xA8, 3, 2);
         }
 
         GX_FIFO_F32 = previous.x;
@@ -4658,11 +4658,11 @@ void psDispSubAPPSRTPoint(PSParticle* pp) {
         if ((pp->flags & 0x400) == 0) {
             if (lbl_8047B168 != rasterWidth) {
                 lbl_8047B168 = rasterWidth;
-                fn_800B944C(width, 5);
+                GXSetPointSize(width, 5);
             }
-            fn_800B7D3C();
-            fn_800B7874(9, 1);
-            fn_800B928C(0xB8, 1, 1);
+            GXClearVtxDesc();
+            GXSetVtxDesc(9, 1);
+            GXBegin(0xB8, 1, 1);
             GX_FIFO_F32 = position.x;
             GX_FIFO_F32 = position.y;
             GX_FIFO_F32 = position.z;
@@ -4707,7 +4707,7 @@ PSGeneratorState* psCreateGeneratorID(s32 linkNo, s32 bankIdx, s32 scriptId) {
     }
 
     if (lbl_8047B18C == NULL) {
-        lbl_8047B18C = fn_801A6928(sizeof(PSGeneratorState));
+        lbl_8047B18C = HSD_MemAlloc(sizeof(PSGeneratorState));
         memset(lbl_8047B18C, 0, sizeof(PSGeneratorState));
     }
 
@@ -5033,21 +5033,21 @@ void setupTevReg(PSParticle* pp) {
         if (lbl_8047B138.r != reg1.r || lbl_8047B138.g != reg1.g ||
             lbl_8047B138.b != reg1.b || lbl_8047B138.a != reg1.a) {
             lbl_8047B138 = reg1;
-            fn_800BC2F8(1, reg1);
+            GXSetTevColor(1, reg1);
         }
 
         if (pp->flags & PS_FLAG_INVISIBLE) {
             if (lbl_8047B134.r != reg2.r || lbl_8047B134.g != reg2.g ||
                 lbl_8047B134.b != reg2.b || lbl_8047B134.a != reg2.a) {
                 lbl_8047B134 = reg2;
-                fn_800BC2F8(2, reg2);
+                GXSetTevColor(2, reg2);
             }
         } else if (lbl_8047B134.r != 0 || lbl_8047B134.g != 0 ||
                    lbl_8047B134.b != 0 || lbl_8047B134.a != 0) {
             lbl_8047B134.r = 0;
             lbl_8047B134.g = lbl_8047B134.b = 0;
             lbl_8047B134.a = 0;
-            fn_800BC2F8(2, lbl_8047B134);
+            GXSetTevColor(2, lbl_8047B134);
         }
     }
 
@@ -5069,14 +5069,14 @@ void setupTevReg(PSParticle* pp) {
             if (lbl_8047B130.r != reg3.r || lbl_8047B130.g != reg3.g ||
                 lbl_8047B130.b != reg3.b || lbl_8047B130.a != reg3.a) {
                 lbl_8047B130 = reg3;
-                fn_800BC2F8(3, reg3);
+                GXSetTevColor(3, reg3);
             }
         } else {
             reg3.a = (reg3.a * reg1.a) >> 8;
             if (lbl_8047B130.r != reg3.r || lbl_8047B130.g != reg3.g ||
                 lbl_8047B130.b != reg3.b || lbl_8047B130.a != reg3.a) {
                 lbl_8047B130 = reg3;
-                fn_800BC2F8(3, reg3);
+                GXSetTevColor(3, reg3);
             }
         }
     }
@@ -5100,7 +5100,7 @@ void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
 
     if (lbl_8047B12C != 0) {
         lbl_8047B12C = 0;
-        fn_800BD554(0);
+        GXSetCurrentMtx(0);
     }
 
     if (pp->flags & 0x100000) {
@@ -5187,16 +5187,16 @@ void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
 
         if (polygonData == NULL) {
             if (pp->flags & 0x400) {
-                fn_800B7D3C();
-                fn_800B7874(9, 1);
-                fn_800B7874(11, 1);
-                fn_800B7874(13, 2);
-                fn_800B928C(0x80, 2, 4);
+                GXClearVtxDesc();
+                GXSetVtxDesc(9, 1);
+                GXSetVtxDesc(11, 1);
+                GXSetVtxDesc(13, 2);
+                GXBegin(0x80, 2, 4);
             } else {
-                fn_800B7D3C();
-                fn_800B7874(9, 1);
-                fn_800B7874(11, 1);
-                fn_800B928C(0x80, 3, 4);
+                GXClearVtxDesc();
+                GXSetVtxDesc(9, 1);
+                GXSetVtxDesc(11, 1);
+                GXBegin(0x80, 3, 4);
             }
 
             GX_FIFO_F32 = velocityX - axisXX;
@@ -5281,16 +5281,16 @@ void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
 
                 stream += 4;
                 if (pp->flags & 0x400) {
-                    fn_800B7D3C();
-                    fn_800B7874(9, 1);
-                    fn_800B7874(11, 1);
-                    fn_800B7874(13, 1);
-                    fn_800B928C(primitive, 5, vertexCount);
+                    GXClearVtxDesc();
+                    GXSetVtxDesc(9, 1);
+                    GXSetVtxDesc(11, 1);
+                    GXSetVtxDesc(13, 1);
+                    GXBegin(primitive, 5, vertexCount);
                 } else {
-                    fn_800B7D3C();
-                    fn_800B7874(9, 1);
-                    fn_800B7874(11, 1);
-                    fn_800B928C(primitive, 3, vertexCount);
+                    GXClearVtxDesc();
+                    GXSetVtxDesc(9, 1);
+                    GXSetVtxDesc(11, 1);
+                    GXBegin(primitive, 3, vertexCount);
                 }
 
                 for (i = 0; i < vertexCount; i++) {
@@ -5339,14 +5339,14 @@ void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
             u32 textureIndex = (pp->flags >> 14) & 3;
 
             if (pp->flags & 0x400) {
-                fn_800B7D3C();
-                fn_800B7874(9, 1);
-                fn_800B7874(13, 2);
-                fn_800B928C(0x80, 0, 4);
+                GXClearVtxDesc();
+                GXSetVtxDesc(9, 1);
+                GXSetVtxDesc(13, 2);
+                GXBegin(0x80, 0, 4);
             } else {
-                fn_800B7D3C();
-                fn_800B7874(9, 1);
-                fn_800B928C(0x80, 1, 4);
+                GXClearVtxDesc();
+                GXSetVtxDesc(9, 1);
+                GXBegin(0x80, 1, 4);
             }
 
             GX_FIFO_F32 = centerX - axisXX;
@@ -5388,14 +5388,14 @@ void psDispSubMakePolygon(PSParticle* pp, void* polygonData,
 
                 stream += 4;
                 if (pp->flags & 0x400) {
-                    fn_800B7D3C();
-                    fn_800B7874(9, 1);
-                    fn_800B7874(13, 1);
-                    fn_800B928C(primitive, 4, vertexCount);
+                    GXClearVtxDesc();
+                    GXSetVtxDesc(9, 1);
+                    GXSetVtxDesc(13, 1);
+                    GXBegin(primitive, 4, vertexCount);
                 } else {
-                    fn_800B7D3C();
-                    fn_800B7874(9, 1);
-                    fn_800B928C(primitive, 1, vertexCount);
+                    GXClearVtxDesc();
+                    GXSetVtxDesc(9, 1);
+                    GXBegin(primitive, 1, vertexCount);
                 }
 
                 for (i = 0; i < vertexCount; i++) {
@@ -5431,7 +5431,7 @@ void psExecGenerator(u32 linkMask) {
     PSGeneratorState* gen;
 
     while (lbl_8047B180 != NULL) {
-        lbl_8047B180 = fn_801A3E64();
+        lbl_8047B180 = HSD_SListRemove();
     }
 
     lbl_8047B184 = NULL;
@@ -5457,7 +5457,7 @@ void psExecGenerator(u32 linkMask) {
             PSForceJObj* jobj = gen->linkedJObj;
 
             if (!(jobj->flags & 0x800000) && (jobj->flags & 0x40)) {
-                fn_8019D9DC(jobj);
+                HSD_JObjSetupMatrixSub(jobj);
             }
             gen->positionX = jobj->worldX;
             gen->positionY = jobj->worldY;
@@ -6070,13 +6070,13 @@ static inline s32 PSJObjMtxIsDirty(PSJObjTransform* jobj) {
 }
 
 void HSD_JObjSetupMatrix(void* camSlot) {
-    extern void fn_8019D9DC(void* jobj);
+    extern void HSD_JObjSetupMatrixSub(void* jobj);
     PSJObjTransform* jobj = camSlot;
 
     if (jobj == NULL || !PSJObjMtxIsDirty(jobj)) {
         return;
     }
-    fn_8019D9DC(jobj);
+    HSD_JObjSetupMatrixSub(jobj);
 }
 
 void HSD_JObjAddTz(PSJObjTransform* jobj, f32 dz) {

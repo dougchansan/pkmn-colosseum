@@ -109,7 +109,7 @@ static u32 inpResetGlobalMIDIDirtyFlag(u8 chan, u8 midiSet, u32 flag) {
   return ret;
 }
 
-void fn_8016039C(u8 chan, u8 midiSet, s32 flag) {
+void inpSetGlobalMIDIDirtyFlag(u8 chan, u8 midiSet, s32 flag) {
   inpGlobalMIDIDirtyFlags[midiSet][chan] |= flag;
 }
 
@@ -190,7 +190,7 @@ void inpSetRPNInc(u8 set, u8 channel) {
   }
 }
 
-void fn_801603C0(u8 ctrl, u8 channel, u8 set, u8 value) {
+void inpSetMidiCtrl(u8 ctrl, u8 channel, u8 set, u8 value) {
   u32 i;
   if (channel == 0xFF) {
     return;
@@ -254,16 +254,16 @@ void inpSetMidiCtrl14(u8 ctrl, u8 channel, u8 set, u16 value) {
   }
 
   if (ctrl < 64) {
-    fn_801603C0(ctrl & 31, channel, set, value >> 7);
-    fn_801603C0((ctrl & 31) + 32, channel, set, value & 0x7f);
+    inpSetMidiCtrl(ctrl & 31, channel, set, value >> 7);
+    inpSetMidiCtrl((ctrl & 31) + 32, channel, set, value & 0x7f);
   } else if (ctrl == 128 || ctrl == 129) {
-    fn_801603C0(ctrl & 254, channel, set, value >> 7);
-    fn_801603C0((ctrl & 254) + 1, channel, set, value & 0x7f);
+    inpSetMidiCtrl(ctrl & 254, channel, set, value >> 7);
+    inpSetMidiCtrl((ctrl & 254) + 1, channel, set, value & 0x7f);
   } else if (ctrl == 132 || ctrl == 133) {
-    fn_801603C0(ctrl & 254, channel, set, value >> 7);
-    fn_801603C0((ctrl & 254) + 1, channel, set, value & 0x7f);
+    inpSetMidiCtrl(ctrl & 254, channel, set, value >> 7);
+    inpSetMidiCtrl((ctrl & 254) + 1, channel, set, value & 0x7f);
   } else {
-    fn_801603C0(ctrl, channel, set, value >> 7);
+    inpSetMidiCtrl(ctrl, channel, set, value >> 7);
   }
 }
 
@@ -359,7 +359,7 @@ u16 inpGetMidiCtrl(u8 ctrl, u8 channel, u8 set) {
   return 0;
 }
 
-CHANNEL_DEFAULTS* fn_80160EA0(u8 midi, u8 midiSet) {
+CHANNEL_DEFAULTS* inpGetChannelDefaults(u8 midi, u8 midiSet) {
   if (midiSet == 0xFF) {
     return &inpFXChannelDefaults[midi];
   }
@@ -367,7 +367,7 @@ CHANNEL_DEFAULTS* fn_80160EA0(u8 midi, u8 midiSet) {
   return &inpChannelDefaults[midiSet][midi];
 }
 
-void fn_80160ED4(u8 midi, u8 midiSet) {
+void inpResetChannelDefaults(u8 midi, u8 midiSet) {
   CHANNEL_DEFAULTS* channelDefaults; // r31
   channelDefaults =
       midiSet != 0xFF ? &inpChannelDefaults[midiSet][midi] : &inpFXChannelDefaults[midi];
@@ -620,18 +620,18 @@ u16 inpGetTremolo(SYNTH_VOICE* svoice) {
 }
 
 
-u16 fn_80161934(u8 studio, u8 index, u8 midi, u8 midiSet) {
+u16 inpGetAuxA(u8 studio, u8 index, u8 midi, u8 midiSet) {
   static u32 dirtyMask[4] = {0x80000001, 0x80000002, 0x80000004, 0x80000008};
   return GetGlobalInputValue(&lbl_80435B74[studio][index], dirtyMask[index], midi, midiSet);
 }
 
-u16 fn_801619E8(u8 studio, u8 index, u8 midi, u8 midiSet) {
+u16 inpGetAuxB(u8 studio, u8 index, u8 midi, u8 midiSet) {
   static u32 dirtyMask[4] = {0x80000010, 0x80000020, 0x80000040, 0x80000080};
 
   return GetGlobalInputValue(&lbl_804356F4[studio][index], dirtyMask[index], midi, midiSet);
 }
 
-void fn_80161A9C(SYNTH_VOICE* svoice) {
+void inpInit(SYNTH_VOICE* svoice) {
   u32 i; // r30
   u32 s; // r29
 

@@ -62,7 +62,7 @@ extern const u8 lbl_8047CC00[7];
 extern const u8 lbl_8047CC08[5];
 extern void __assert(const char* file, u32 line, const char* condition);
 
-extern void fn_8019D9DC(HSD_JObj*);
+extern void HSD_JObjSetupMatrixSub(HSD_JObj*);
 BOOL HSD_JObjMtxIsDirty(HSD_JObj* jobj);
 void HSD_JObjSetupMatrix_800EA664(HSD_JObj* jobj);
 extern void PSMTXInverse(f32 src[3][4], f32 dst[3][4]);
@@ -79,12 +79,12 @@ void _modelParseJObjDispSub__FP9_HSD_JObjP5GSmtxP5GSmtx12HSD_TrspMaskbPFP9_HSD_P
     u8 is_visible, GSModelPObjDisp disp, void* arg);
 extern f32 lbl_804016D0[24];
 
-extern void fn_8019F024(HSD_JObj* jobj);
-extern void fn_801AB63C(u32 first, u32 second);
+extern void HSD_JObjSetCurrent(HSD_JObj* jobj);
+extern void HSD_PObjClearMtxMark(u32 first, u32 second);
 extern void HSD_DObjSetCurrent(HSD_DObj* dobj);
 extern HSD_JObj* HSD_JObjGetCurrent(void);
 extern void HSD_PObjGetMtxMark(s32 index, u32* object, u32* mark);
-extern void fn_801AB5F8(s32 index, void* object, s32 mark);
+extern void HSD_PObjSetMtxMark(s32 index, void* object, s32 mark);
 extern void PSMTXConcat(f32* left, f32* right, f32* out);
 extern void fn_800E0628(void* dst, void* src);
 void _modelParseLoadEnvelopeMatrix__FP9_HSD_PObjP5GSmtxP5GSmtxP5GSmtx(
@@ -99,7 +99,7 @@ static inline void modelParseLoadRigidMatrix(HSD_PObj* pobj, f32* vmtx, f32* pmt
     current = HSD_JObjGetCurrent();
     HSD_PObjGetMtxMark(0, &marked_object, &mark);
     if (marked_object != (u32)current || mark != 1) {
-        fn_801AB5F8(0, current, 1);
+        HSD_PObjSetMtxMark(0, current, 1);
         fn_800E0628(mtx, pmtx);
     }
 }
@@ -118,12 +118,12 @@ static inline void modelParseLoadSharedMatrix(HSD_PObj* pobj, f32* vmtx, f32* pm
     if (marked_object != (u32)current && mark != 1) {
         setup_current = TRUE;
     }
-    fn_801AB5F8(0, current, 1);
+    HSD_PObjSetMtxMark(0, current, 1);
     HSD_PObjGetMtxMark(1, &marked_object, &mark);
     if (marked_object != (u32)pobj->u.jobj && mark != 1) {
         setup_joint = TRUE;
     }
-    fn_801AB5F8(1, pobj->u.jobj, 1);
+    HSD_PObjSetMtxMark(1, pobj->u.jobj, 1);
     if (setup_current || setup_joint) {
         if (setup_current) {
             fn_800E0628(mtx, pmtx);
@@ -193,9 +193,9 @@ void _modelParseJObjDispSub__FP9_HSD_JObjP5GSmtxP5GSmtx12HSD_TrspMaskbPFP9_HSD_P
     HSD_DObj* dobj;
     u32 pass_mask;
 
-    fn_8019F024(jobj);
+    HSD_JObjSetCurrent(jobj);
     pass_mask = (u32)pass << 1;
-    fn_801AB63C(0, 0);
+    HSD_PObjClearMtxMark(0, 0);
     for (dobj = *(HSD_DObj**)((u8*)jobj + 0x18); dobj != NULL; dobj = dobj->next) {
         if ((dobj->flags & 1) == 0 && (dobj->flags & pass_mask) != 0) {
             HSD_DObjSetCurrent(dobj);
@@ -203,7 +203,7 @@ void _modelParseJObjDispSub__FP9_HSD_JObjP5GSmtxP5GSmtx12HSD_TrspMaskbPFP9_HSD_P
         }
     }
     HSD_DObjSetCurrent(NULL);
-    fn_8019F024(NULL);
+    HSD_JObjSetCurrent(NULL);
 }
 
 void _modelParseJObjDispDObj__FP9_HSD_JObjP5GSmtx12HSD_TrspMaskbPFP9_HSD_PObjP5GSmtxP5GSmtxP5GSmtxPv_vPv(
@@ -264,7 +264,7 @@ void HSD_JObjSetupMatrix_800EA664(HSD_JObj* jobj)
     if (jobj == NULL || !HSD_JObjMtxIsDirty(jobj)) {
         return;
     }
-    fn_8019D9DC(jobj);
+    HSD_JObjSetupMatrixSub(jobj);
 }
 
 BOOL HSD_JObjMtxIsDirty(HSD_JObj* jobj)

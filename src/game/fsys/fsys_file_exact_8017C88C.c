@@ -1,6 +1,6 @@
 #include "dolphin/types.h"
 
-u32 fn_8017C88C(void)
+u32 fsysStatus101(void)
 {
     return 1;
 }

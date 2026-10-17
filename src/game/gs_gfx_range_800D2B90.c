@@ -4,8 +4,8 @@
  *        .sdata2 literal pool 0x8047C9F0 - 0x8047CA10.
  *
  * One object for the fog setter fn_800D2B90, the camera screen projections
- * fn_800D2DE8/fn_800D2F34, the render-state accessors fn_800D305C/
- * fn_800D3068, the GSgfx frame functions fn_800D3074-fn_800D361C and the
+ * gfxProjectPoint/fn_800D2F34, the render-state accessors fn_800D305C/
+ * fn_800D3068, the GSgfx frame functions fn_800D3074-GSgfxWaitRetrace and the
  * fog-colour setter fn_800D36B4. The pool entries 255.0f, the unsigned
  * int-to-float bias, 0.0f, 640.0f, 480.0f and 1.0f are used only by these
  * functions, so they are written as literals and the object owns them.
@@ -45,7 +45,7 @@ extern GSRenderColor lbl_80270350;
 extern void* HSD_FogLoadDesc(void* desc);
 extern void HSD_FogSet(u32 fog);
 extern void fn_8016EA88(void);
-extern void fn_8016EB30(void);
+extern void psSetFog(void);
 extern void* gfxGetCameraMatrix(u32 index);
 extern void GSvecTransform(f32* out, GSMtx34 m, const f32* in);
 extern void GXProject(f32 x, f32 y, f32 z, GSMtx34 mtx, const f32* pm,
@@ -55,9 +55,9 @@ extern void GXFlush(void);
 extern void GSgfxBackFBDoFrame(void);
 extern void fn_801BF8A0(s32 value);
 extern void fn_801E16F0(void);
-extern void fn_801BF6AC(void);
+extern void HSD_VIFinishDrawXFB(void);
 extern void GStextureConvertFromHW(void* texture, s32 mode);
-extern void fn_800B8E74(void);
+extern void GXPixModeSync(void);
 extern void GXInvalidateTexAll(void);
 extern u32 lbl_804001F0[]; /* frame statistics block */
 extern u8 lbl_8047AA90;    /* profiling enabled */
@@ -68,13 +68,13 @@ extern u32 OSGetTick(void);
 extern void fn_8019C6FC(void);
 extern void fn_800D1070(u32 frames);
 extern void GSlightUpdate(u32 frames);
-extern void fn_800E3884(u32 frames, s32 mode);
-extern void fn_801181B0(s32 frames);
+extern void GSmodelAdvanceAll(u32 frames, s32 mode);
+extern void gsParticleUpdateAll(s32 frames);
 extern void fn_800D13C4(void* a);
 extern void fn_800DC874(void* a);
 extern void gsParticleUpdate(void* a);
 extern void modelShadowRender__FP10GSgfxLayer(void);
-extern void fn_8019C708(s32 a);
+extern void HSD_StartRender(s32 a);
 extern void HSD_SetEraseColor(u8 a, u8 b, u8 c, u8 d);
 extern void HSD_EraseRect(s32 a, s32 b, s32 c, f32 d, f32 e, f32 f, f32 g, f32 h);
 extern void VIWaitForRetrace(void);
@@ -115,7 +115,7 @@ void gfxSetFog(void* arg1) {
         return;
     }
     lbl_8047AA8C = (u32)HSD_FogLoadDesc(arg1);
-    fn_8016EB30();
+    psSetFog();
     color.r = *(u8*)((u8*)arg1 + 0x10) / 255.0f;
     color.g = *(u8*)((u8*)arg1 + 0x11) / 255.0f;
     color.b = *(u8*)((u8*)arg1 + 0x12) / 255.0f;
@@ -124,7 +124,7 @@ void gfxSetFog(void* arg1) {
 }
 
 /* 0x800D2DE8 | 0x14C */
-s32 fn_800D2DE8(f32* points, f32* screen, u32 count)
+s32 gfxProjectPoint(f32* points, f32* screen, u32 count)
 {
     f32 projection[7];
     f32 viewport[6];
@@ -254,7 +254,7 @@ void fn_800D30AC(void)
     }
 }
 
-void fn_800D30F0(u32 flag)
+void GSgfxSwapBuffers(u32 flag)
 {
     void* renderTarget = lbl_8047AA80->renderTarget;
 
@@ -266,7 +266,7 @@ void fn_800D30F0(u32 flag)
         GSgfxBackFBDoFrame();
         fn_801BF8A0(0);
         fn_801E16F0();
-        fn_801BF6AC();
+        HSD_VIFinishDrawXFB();
     } else if (renderTarget != NULL) {
         GStextureConvertFromHW(renderTarget, 1);
         flag = 0;
@@ -275,14 +275,14 @@ void fn_800D30F0(u32 flag)
     lbl_8047AA80->progressiveFlag = 1;
 
     if ((u8)flag != 0) {
-        fn_800B8E74();
+        GXPixModeSync();
         if (lbl_8047AA80->renderTarget != NULL) {
             GXInvalidateTexAll();
         }
     }
 }
 
-void fn_800D3190(void)
+void GSgfxRenderEnd(void)
 {
     u32 start;
     u32 end;
@@ -319,14 +319,14 @@ void fn_800D3190(void)
                 GSgfxBackFBDoFrame();
                 fn_801BF8A0(0);
                 fn_801E16F0();
-                fn_801BF6AC();
+                HSD_VIFinishDrawXFB();
             } else if (renderTarget != NULL) {
                 GStextureConvertFromHW(renderTarget, 1);
                 flag = 0;
             }
             lbl_8047AA80->progressiveFlag = 1;
             if (flag != 0) {
-                fn_800B8E74();
+                GXPixModeSync();
                 if (lbl_8047AA80->renderTarget != NULL) {
                     GXInvalidateTexAll();
                 }
@@ -357,7 +357,7 @@ void fn_800D3190(void)
     lbl_804001F0[12] += end - start;
 
     start = OSGetTick();
-    fn_800E3884(lbl_8047AA80->frameDelta, 0);
+    GSmodelAdvanceAll(lbl_8047AA80->frameDelta, 0);
     end = OSGetTick();
     lbl_804001F0[13] += end - start;
 
@@ -365,18 +365,18 @@ void fn_800D3190(void)
     lbl_804001F0[14] = 0;
     while (count-- != 0) {
         start = OSGetTick();
-        fn_800E3884(1, 1);
+        GSmodelAdvanceAll(1, 1);
         end = OSGetTick();
         lbl_804001F0[13] += end - start;
 
         start = OSGetTick();
-        fn_801181B0(1);
+        gsParticleUpdateAll(1);
         end = OSGetTick();
         lbl_804001F0[14] += end - start;
     }
 }
 
-void fn_800D3410(void* arg0, u8 arg1) {
+void GSgfxRenderLayer(void* arg0, u8 arg1) {
     u32* state;
     u32 sc;
     u8 r30;
@@ -398,7 +398,7 @@ void fn_800D3410(void* arg0, u8 arg1) {
                     GSgfxBackFBDoFrame();
                     fn_801BF8A0(0);
                     fn_801E16F0();
-                    fn_801BF6AC();
+                    HSD_VIFinishDrawXFB();
                 } else {
                     if (sc != 0) {
                         GStextureConvertFromHW((void*)sc, 1);
@@ -407,7 +407,7 @@ void fn_800D3410(void* arg0, u8 arg1) {
                 }
                 ((u8*)lbl_8047AA80)[0x49D] = 1;
                 if (r30 != 0) {
-                    fn_800B8E74();
+                    GXPixModeSync();
                     if (*(u32*)((u8*)lbl_8047AA80 + 0xC) != 0) {
                         GXInvalidateTexAll();
                     }
@@ -429,7 +429,7 @@ void fn_800D3410(void* arg0, u8 arg1) {
             ((u32*)&lbl_804001F0)[0x30 / 4] = tick - startTick;
 
             startTick = OSGetTick();
-            fn_800E3928((void*)*(u32*)((u8*)lbl_8047AA80 + 0x54));
+            GSmodelApplyAll((void*)*(u32*)((u8*)lbl_8047AA80 + 0x54));
             tick = OSGetTick();
             ((u32*)&lbl_804001F0)[0x34 / 4] = tick - startTick;
 
@@ -445,7 +445,7 @@ void fn_800D3410(void* arg0, u8 arg1) {
             tick = OSGetTick();
             ((u32*)&lbl_804001F0)[0x3C / 4] = tick - startTick;
 
-            fn_8019C708(0);
+            HSD_StartRender(0);
 
             if (((u8*)lbl_8047AA80)[0x19] != 0) {
                 HSD_SetEraseColor(
@@ -464,12 +464,12 @@ void fn_800D3410(void* arg0, u8 arg1) {
 
             ((u8*)lbl_8047AA80)[0x49D] = 0;
         } else {
-            fn_8019C708(3);
+            HSD_StartRender(3);
         }
     }
 }
 
-void fn_800D361C(u8 mode) {
+void GSgfxWaitRetrace(u8 mode) {
     VIWaitForRetrace();
     lbl_8047AA80->frameDelta = lbl_8047AA80->xfbCount - lbl_8047AA80->xfbAddr0;
 

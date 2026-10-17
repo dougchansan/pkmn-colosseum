@@ -48,8 +48,8 @@ extern void* pokemonGetStatus();
 extern u32   pokemonSetStatus();
 extern void  pokemonGrowBasisStatus();
 extern u32   itemGetStatus();
-extern void  fn_80119ED0(void);
-extern void  fn_80121ADC(void);
+extern void  joutaiDataBiosGetStatusKind(void);
+extern void  pokemonIsJoutaiDataId(void);
 extern void  fn_8011B67C(void);
 extern void  pokemonGetSoubiItemDataId(void);
 extern void* fightActionGetPri(void* p);
@@ -72,9 +72,9 @@ extern void* fightTargetGetPtr(u16 targetId, void* target, u16 floorStatus);
 extern u32 statusGetStatus(u32 statusId, void* ptr, u16 numerator,
                            u16 parameter, u16 denominator);
 extern u32 fightFloorGetStatus();
-extern u16 fn_8020A500(u16 idx);
-extern u32 fn_8020A540(u16 idx);
-extern u8 fn_8020A580();
+extern u16 joukenDataGet4(u16 idx);
+extern u32 joukenDataGet2(u16 idx);
+extern u8 joukenDataGet0();
 extern s16 fn_8020A5C0();
 extern s16 fn_8020A630();
 extern u8 fn_8020A6A0();
@@ -82,7 +82,7 @@ extern u16 fn_8020A710();
 extern u16 fn_8020A780();
 extern u8 fn_8020A7F0();
 extern u16 fn_8020A860();
-extern u8 fn_8020A8A0();
+extern u8 fightJoukenDataBiosGetType();
 
 /* RULE-EXCEPTION(user-approved): single-use inline helper - the per-slot value read is its own inline with an int slot parameter, which gives the two inlined fightJoukenCheck copies retail's conversion-web order - see docs/RULE_EXCEPTIONS.md */
 static inline s32 fightJoukenGetValue(u32 id, int slot, void* target)
@@ -149,7 +149,7 @@ static inline u8 fightJoukenCheck(u32 id, void* target)
     }
 
     result = 0;
-    switch (fn_8020A8A0(id)) {
+    switch (fightJoukenDataBiosGetType(id)) {
     case 0:
         result = 1;
         break;
@@ -200,9 +200,9 @@ u8 fn_8020A8E0(u32 conditionId, void* target)
         return result;
     }
     while (1) {
-        row = fn_8020A540(next);
+        row = joukenDataGet2(next);
         rowResult = fightJoukenCheck(row, target);
-        switch (fn_8020A580(row)) {
+        switch (joukenDataGet0(row)) {
         case 1:
             if (result || rowResult) {
                 result = 1;
@@ -218,7 +218,7 @@ u8 fn_8020A8E0(u32 conditionId, void* target)
             }
             break;
         }
-        next = fn_8020A500(next);
+        next = joukenDataGet4(next);
         if (next == 0) {
             return result;
         }

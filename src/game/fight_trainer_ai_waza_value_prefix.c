@@ -18,7 +18,7 @@ extern void* pokemonGetStatus();
 extern u32   pokemonSetStatus();
 
 /* Battle system functions */
-extern void fn_801EF8F4();
+extern void battleCameraSelect();
 
 /* Sound functions */
 extern void soundStop();     /* Stop sound */
@@ -77,13 +77,13 @@ u8 fightFloorGetFightTrainerFightOutPokemonIsFightActionAttackWazaOut(u32, void*
 s32 fightTrainerGetStatus(u32, u32, u32, u32);
 u16 fightFloorGetFightTrainerFightPokemonPtrAry(u32, void*, void*, u32, u32);
 u32 fightOutPokemonGetPokemonPtr(u32);
-u8 fn_80237310(void*, u32);
+u8 fightTrainerAiIsJoutaiNormal(void*, u32);
 u8 fn_80237F74(void*, u32, u32);
 u8 fn_802384B4(void*, u32, u32);
 u8 fn_80239564(void*, u32);
-u8 fn_80235B04(void*, u32, u32);
-u16 fn_80238980(void*, u32);
-u8 fn_80238E30(void*, u32, u32);
+u8 fightTrainerAiGetNowTenkou(void*, u32, u32);
+u16 fightTrainerAiGetPokemonDataId2(void*, u32);
+u8 fightTrainerAiGetPokemonZokusei(void*, u32, u32);
 u8 fn_80239058(void*, u32, u32);
 u32 fn_80239984(u32, void*, u32);
 u32 fightTrainerAiAddValue(u32, s32);
@@ -93,12 +93,12 @@ void fn_80239EE8(u32, void*, u32, u32, u32, u32, u32, u32);
 /* Address: 0x802405C0 | Size: 0x8C */
 u32 fightTrainerAiWazaValueRisaikuru(void* ctx, u32 param1, u32 param2) {
     extern u32 fightOutPokemonGetPokemonPtr(u32);
-    extern u16 fn_80236B98(void* ctx);
+    extern u16 fightAiGetUsedItem(void* ctx);
     extern u32 fn_80239984(u32, void*, u32);
     extern void fn_80239EE8(u32, void*, u32, u32, u32, u32, u32, u32);
     u32 handle = 0;
 
-    if (fn_80236B98(ctx) != 0) {
+    if (fightAiGetUsedItem(ctx) != 0) {
         u32 tmp = fn_80239984(0, ctx, 0x1c3);
         handle = tmp;
         fn_80239EE8(0xEC64, ctx, fightOutPokemonGetPokemonPtr(param1), 0, 0, param2, 0, 0x1c3);
@@ -144,23 +144,23 @@ u32 fightTrainerAiWazaValueSiroikiri(void* ctx, u32 param1, u32 param2, u32 para
 /* Address: 0x80240788 | Size: 0x448 (1096 bytes) */
 /* The target inlines this seven-status scan once for each scoring range. */
 static inline u8 jikoanjiStatusInRange(void* ctx, u32 target, u8 low, u8 high) {
-    u8 fn_802357CC(void*, u32);
-    u8 fn_802358AC(void*, u32);
-    u8 fn_80235910(void*, u32);
+    u8 fightTrainerAiGetAbicntAvoid(void*, u32);
+    u8 fightTrainerAiGetAbicntAverage(void*, u32);
+    u8 fightTrainerAiGetAbicntNimbleness(void*, u32);
     u8 fn_80235974(void*, u32);
     u8 fn_802359D8(void*, u32);
-    u8 fn_80235A3C(void*, u32);
-    u8 fn_80235AA0(void*, u32);
+    u8 fightTrainerAiGetAbicntPhyDef(void*, u32);
+    u8 fightTrainerAiGetAbicntPhyAtk(void*, u32);
     u8 status[7];
     u8 i;
 
-    status[0] = fn_80235AA0(ctx, target);
-    status[1] = fn_80235A3C(ctx, target);
+    status[0] = fightTrainerAiGetAbicntPhyAtk(ctx, target);
+    status[1] = fightTrainerAiGetAbicntPhyDef(ctx, target);
     status[2] = fn_802359D8(ctx, target);
     status[3] = fn_80235974(ctx, target);
-    status[4] = fn_80235910(ctx, target);
-    status[5] = fn_802358AC(ctx, target);
-    status[6] = fn_802357CC(ctx, target);
+    status[4] = fightTrainerAiGetAbicntNimbleness(ctx, target);
+    status[5] = fightTrainerAiGetAbicntAverage(ctx, target);
+    status[6] = fightTrainerAiGetAbicntAvoid(ctx, target);
 
     for (i = 0; i < 7; i++) {
         if (status[i] >= low && status[i] <= high) {

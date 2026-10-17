@@ -14,7 +14,7 @@ extern void* pokemonGetStatus();
 extern u32   pokemonSetStatus();
 
 /* Battle system functions */
-extern void fn_801EF8F4();
+extern void battleCameraSelect();
 
 /* Sound functions */
 extern void soundStop();     /* Stop sound */
@@ -74,16 +74,16 @@ u32 fightMenuFightTrainerGcHeroOpenMenu(void* ctx, u32 param1, u32 param2);
 /* Shared gate-check helper: inlined into the fightTrainerAiWazaHit 0xB4-byte
  * sibling wrappers (209/207/204/202/200/198/197/190/...). Not emitted. */
 static inline s32 wazaHitGateCheck(void* ctx, u32 param1, u32 param2, u32 param3) {
-    extern u32 fn_802395C8(void* ctx, u32 param2, u32 param1);
+    extern u32 fightTrainerAiGetWazaTenkouValue(void* ctx, u32 param2, u32 param1);
     extern u32 fn_80239500(void* ctx, u32 param2);
-    extern u16 fn_8023793C(void* ctx, u32 param3, u32 v1, u32 v3);
+    extern u16 fightTrainerAiGetAisyou(void* ctx, u32 param3, u32 v1, u32 v3);
     extern s32 _fightTrainerAiWazaHitCheck(void* ctx, u32 param1, u32 param2, u32 param3, u32 zero);
     s32 gate;
-    u32 v1 = fn_802395C8(ctx, param2, param1);
+    u32 v1 = fightTrainerAiGetWazaTenkouValue(ctx, param2, param1);
 
     gate = _fightTrainerAiWazaHitCheck(ctx, param1, param2, param3, 0);
 
-    if (fn_8023793C(ctx, param3, v1, fn_80239500(ctx, param2)) == 0x43) {
+    if (fightTrainerAiGetAisyou(ctx, param3, v1, fn_80239500(ctx, param2)) == 0x43) {
         gate = 0;
     }
     return gate;

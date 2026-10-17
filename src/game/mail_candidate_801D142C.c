@@ -1,7 +1,7 @@
 /** Exact standalone owner for 0x801D142C - 0x801D1470. */
 #include "game/battle/battle_waza_types.h"
 
-u32 fn_801D142C(s32 idx) {
+u32 mailDataBiosGet01(s32 idx) {
     WazaEntry* entry;
 
     if (idx < 0 || (u32)idx >= *lbl_80478E98) {

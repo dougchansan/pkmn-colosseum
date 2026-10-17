@@ -207,12 +207,12 @@ extern void GSmodelSetAnimType();
 extern void GSmodelSetAnimIndex();
 extern void _threadSwitch();
 extern void GSresGetResource();
-extern void fn_800F9AEC();
-extern void fn_800F9C04();
+extern void GScharToGBA();
+extern void GScharFromGBA();
 extern void floorRequestChange();
 extern void floorSetFadeScript();
 extern void std093_getCurrentGroupID();
-extern void fn_80118874();
+extern void gsParticleKill();
 extern void pokemonBiosSetEventGetFlag();
 extern void pokemonBiosSetFightTrainerPokemonDataId();
 extern void pokemonBiosSetPara1Amari();
@@ -260,7 +260,7 @@ extern s32 lbl_803FB308[];
 extern s32 lbl_803FB318[];
 
 /* ===== Forward declarations ===== */
-void fn_800895A4(void);
+void gbaReceiveHero(void);
 u32 fn_800896B8(void);
 u32 fn_800896C0(void);
 u32 fn_800896C8(void);
@@ -268,7 +268,7 @@ void fn_800896D0(u32 v);
 void fn_800896D8(u32 v);
 void fn_800896E0(u32 v);
 s32 std215_battleStartTrainerWithPrompt(void* work, void* arg);
-u8 fn_80089978(u8* pokemon, u8* entry);
+u8 gbaBuildTrainerPokemon(u8* pokemon, u8* entry);
 u8 GbaMisc_GetMappedContextByte(void);
 s32 GbaMisc_HasActiveContextState(void);
 s32 std220_gbaUnk_80083bf8(void);
@@ -292,43 +292,43 @@ s32 fn_8008AB8C(s32 r3);
 u8 fn_8008ABA0(s32 idx);
 s32 GbaMisc_SetEntryState(s32 idx, s32 value);
 void fn_8008AC34(void);
-void fn_8008AE18(void* src, void* dst);
-void fn_8008BBDC(void* gc, GbaPokemon* src);
+void pokeconvPokemonToGBA(void* src, void* dst);
+void pokeconvPokemonFromGBA(void* gc, GbaPokemon* src);
 u16 gbaPokemonConditonFromGC(void* pokemon);
 void fn_8008C6FC(void);
 void GbaMisc_RunFlagDispatch(void);
 s32 fn_8008C78C(void);
-void fn_8008C7B0(void);
-void fn_8008CACC(void);
-void fn_8008CDD8(void);
-void fn_8008D0A0(void);
-void fn_8008D348(void);
-void fn_8008D938(void);
-void fn_8008E320(void);
-void fn_8008E7D4(void);
-void fn_8008EC28(void);
-void fn_8008EED0(void);
-void fn_8008F190(void);
-void fn_8008F524(void);
-void fn_8008F91C(void);
-void fn_8008FBF4(void);
-void fn_8008FE94(void);
-void fn_80090100(void);
-void fn_80090720(void);
-void fn_800909E4(void);
-void fn_80090D34(void);
-void fn_8009100C(void);
-void fn_80091564(void);
-void fn_80091774(void);
-void fn_80091984(void);
-void fn_80091B94(void);
-void fn_80091DA4(void);
-void fn_80091F48(void);
-void fn_80092140(void);
-void fn_80092498(void);
-void fn_80092664(void);
-void fn_800929BC(void);
-void fn_80092B2C(void);
+void demoScene30(void);
+void demoScene29(void);
+void demoScene28(void);
+void demoScene27(void);
+void demoScene26(void);
+void demoScene25(void);
+void demoScene24(void);
+void demoScene23(void);
+void demoScene22(void);
+void demoScene21(void);
+void demoScene20(void);
+void demoScene19(void);
+void demoScene18(void);
+void demoScene17(void);
+void demoScene16(void);
+void demoScene15(void);
+void demoScene14(void);
+void demoScene13(void);
+void demoScene12(void);
+void demoScene11(void);
+void demoScene10(void);
+void demoScene09(void);
+void demoScene08(void);
+void demoScene07(void);
+void demoScene06(void);
+void demoScene05(void);
+void demoScene04(void);
+void demoScene03(void);
+void demoScene02(void);
+void demoScene01(void);
+void demoScene00(void);
 
 /* ===== Function implementations ===== */
 
@@ -337,8 +337,8 @@ void fn_80092B2C(void);
 #if !defined(GBA_MISC_80089B8C_ONLY)
 
 /* 0x800895A4 | size: 0x114 */
-void fn_800895A4(void) {
-    extern void fn_8008BBDC();
+void gbaReceiveHero(void) {
+    extern void pokeconvPokemonFromGBA();
     extern void heroBiosSetHomePlace();
     extern void heroBiosSetSexDataId();
     extern void heroBiosSetRnd();
@@ -381,7 +381,7 @@ void fn_800895A4(void) {
     r3 = (u32)sp + 0x8;
     r4 = r31 + 0x4;
     r5 = 0x7;
-    ((void(*)(void))fn_800F9C04)();
+    ((void(*)(void))GScharFromGBA)();
     r3 = r30;
     r4 = (u32)sp + 0x8;
     heroBiosSetNamePtr();
@@ -408,7 +408,7 @@ void fn_800895A4(void) {
         heroBiosGetPokemonPtr();
         r4 = r29 + 0x14;
         r27 = r3;
-        fn_8008BBDC();
+        pokeconvPokemonFromGBA();
         r3 = r27;
         r4 = r28 & 0xFFFF;
         ((void(*)(void))pokemonBiosSetFightTrainerPokemonDataId)();
@@ -463,13 +463,13 @@ s32 std215_battleStartTrainerWithPrompt(void* work, void* arg) {
     extern void peopleSetVisible(void* work, u8 kind, s32 flag);
     extern void fadeCheck(s32 mode);
     extern s32 fieldStartEncount(s32 id, s32 a, s32 b);
-    extern u8 fn_801EEAD0(u8 id);
+    extern u8 darkPokemonCheckFlag12(u8 id);
     extern void fightTrainerPokemonDataBiosSetPokemonDataId(u8* pokemon, s32 id);
     extern u8* fightTrainerPokemonDataBiosGetPtr(void);
-    extern void fn_801FCAFC(void* trainer, u8 value);
-    extern void fn_801FCB40(void* trainer, u8 slot, u16 value);
-    extern void fn_801FCB84(void* trainer, u16 value);
-    extern void fn_801FCB94(void* trainer, u8 value);
+    extern void fightTrainerSet10(void* trainer, u8 value);
+    extern void fightTrainerSetU16Arr14(void* trainer, u8 slot, u16 value);
+    extern void fightTrainerSet06(void* trainer, u16 value);
+    extern void fightTrainerSet00(void* trainer, u8 value);
     extern void fn_801FCC3C(void* trainer);
     extern void fightTrainerDataBiosSetKindDataId(void* trainer, u8 value);
     extern void* fightTrainerDataBiosGetPtr(s32 id);
@@ -507,20 +507,20 @@ s32 std215_battleStartTrainerWithPrompt(void* work, void* arg) {
     ctx[0x4000] = 2;
     fightEncountDataBiosGetPtr(0x231);
     pokemon = fightTrainerDataBiosGetPtr(9);
-    fn_801FCB94(pokemon, ctx[0x4124]);
+    fightTrainerSet00(pokemon, ctx[0x4124]);
     fightTrainerDataBiosSetKindDataId(pokemon, ctx[0x4125]);
-    fn_801FCB84(pokemon, *(u16*)(ctx + 0x4134));
-    fn_801FCAFC(pokemon, ctx[0x4136]);
+    fightTrainerSet06(pokemon, *(u16*)(ctx + 0x4134));
+    fightTrainerSet10(pokemon, ctx[0x4136]);
     p = ctx;
     for (count = 0; count < 4; count++) {
-        fn_801FCB40(pokemon, count, *(u16*)(p + 0x4126));
+        fightTrainerSetU16Arr14(pokemon, count, *(u16*)(p + 0x4126));
         p += 2;
     }
     fn_801FCC3C(pokemon);
 
     pokemon = fightTrainerPokemonDataBiosGetPtr();
     for (i = count = 0; i < 4; i++) {
-        if (fn_80089978(pokemon, &((u8(*)[0x2A])&((GbaMiscContext*)ctx)->state_4000)[i][0x138]) == 1) {
+        if (gbaBuildTrainerPokemon(pokemon, &((u8(*)[0x2A])&((GbaMiscContext*)ctx)->state_4000)[i][0x138]) == 1) {
             pokemon += 0x50;
             count++;
         }
@@ -535,7 +535,7 @@ s32 std215_battleStartTrainerWithPrompt(void* work, void* arg) {
     *(u8**)&lbl_8047A674 = ctx + 0x40BC;
     result = fieldStartEncount(0x231, 1, 0);
     if (result == 2) {
-        if (ctx[0x41E1] != 0 && fn_801EEAD0(ctx[0x41E1]) == 1) {
+        if (ctx[0x41E1] != 0 && darkPokemonCheckFlag12(ctx[0x41E1]) == 1) {
             ok = 1;
         } else {
             ok = 0;
@@ -569,9 +569,9 @@ s32 std215_battleStartTrainerWithPrompt(void* work, void* arg) {
 }
 
 /* 0x80089978 | size: 0x214 */
-u8 fn_80089978(u8* pokemon, u8* entry) {
-    extern u8 fn_801EEAD0(u8 id);
-    extern void fn_801EEE6C(u8 id, u8 value);
+u8 gbaBuildTrainerPokemon(u8* pokemon, u8* entry) {
+    extern u8 darkPokemonCheckFlag12(u8 id);
+    extern void darkPokemonSaveSet4A6(u8 id, u8 value);
     extern void fightTrainerPokemonDataBiosSetPokemonDataId(u8* pokemon, u16 id);
     extern void fightTrainerPokemonDataBiosSetNickname(u8* pokemon, void* name);
     extern void fightTrainerPokemonDataBiosSetDarkPokemonFlag(u8* pokemon, u8 flag);
@@ -589,7 +589,7 @@ u8 fn_80089978(u8* pokemon, u8* entry) {
     s32 i;
     u8 skip;
 
-    if (entry[2] != 0 && fn_801EEAD0(entry[2]) == 1) {
+    if (entry[2] != 0 && darkPokemonCheckFlag12(entry[2]) == 1) {
         skip = 1;
     } else {
         skip = 0;
@@ -603,7 +603,7 @@ u8 fn_80089978(u8* pokemon, u8* entry) {
     fightTrainerPokemonDataBiosSetNickname(pokemon, NULL);
     fightTrainerPokemonDataBiosSetDarkPokemonFlag(pokemon, entry[2]);
     if (entry[2] != 0) {
-        fn_801EEE6C(entry[2], entry[0x28]);
+        darkPokemonSaveSet4A6(entry[2], entry[0x28]);
     }
     fightTrainerPokemonDataBiosSetLevel(pokemon, entry[3]);
     for (i = 0; i < 4; i++) {
@@ -795,7 +795,7 @@ s32 fn_80089E20(s32 r30, void* r31, u32 r5, u32 r29) {
         r4 = tmp & 0xFF;
         pokemonBiosSetTokuseiFlag(r31, r4);
     }
-    fn_8008AE18(r31, (GbaPokemon*)(sp + 0x8));
+    pokeconvPokemonToGBA(r31, (GbaPokemon*)(sp + 0x8));
     r31 = sp + 0x6C;
     memset(r31, 0, 0xc);
     for (r29 = 0; (s32)r29 < 0xb; r31 = (u8*)r31 + 1, r29++) {
@@ -938,7 +938,7 @@ u32 fn_80089F78(u32 port, u32 trainer, u32 slot, s32 irekae) {
     extern u8 fightFloorIsUseFightTimerCommand(s32 arg);
     extern u8 fightTimerCommandIsOver(void);
     extern u16 std103_battleGetResult(void);
-    extern void fn_8022B2CC(void* out, s32 waza, u16 fightType, void* callback, s32 a, s32 b,
+    extern void fightSeqSelectTarget(void* out, s32 waza, u16 fightType, void* callback, s32 a, s32 b,
                             s32 c);
     GbaBattleSnapshot snap;
     void* targets[4];
@@ -1095,7 +1095,7 @@ u32 fn_80089F78(u32 port, u32 trainer, u32 slot, s32 irekae) {
         wazaId = pokemonBiosGetPokemonWazaDataId(outPokemon, j);
         snap.moves[j] = GbaSwap16(wazaId);
         snap.pp[j] = pokemonBiosGetPokemonWazaPp(outPokemon, j);
-        fn_8022B2CC(out, wazaId, fightType, fn_8008A99C, 1, 0, -1);
+        fightSeqSelectTarget(out, wazaId, fightType, fn_8008A99C, 1, 0, -1);
         if (lbl_8047A678 != 0) {
             moveFlags |= 8 << (j * 4);
         }
@@ -1121,7 +1121,7 @@ u32 fn_80089F78(u32 port, u32 trainer, u32 slot, s32 irekae) {
             foePokemon = fightOutPokemonGetPokemonPtr(targets[i]);
             attest = pokemonBiosGetAttest(foePokemon);
             lang = gamedataAttestBiosGetLangareaId(attest);
-            length = ((s32 (*)(u8*, void*, u8))fn_800F9AEC)(snap.foes[i].name,
+            length = ((s32 (*)(u8*, void*, u8))GScharToGBA)(snap.foes[i].name,
                                                           pokemonBiosGetNicknamePtr(foePokemon), lang);
             if (length < 10) {
                 snap.foes[i].name[length] = 0xFF;
@@ -1404,7 +1404,7 @@ void fn_8008AC34(void) {
 }
 
 /* 0x8008AE18 | size: 0xDC4 */
-void fn_8008AE18(void* src, void* dst_) {
+void pokeconvPokemonToGBA(void* src, void* dst_) {
     extern u8 pokemonBiosGetEventGetFlag(void* pokemon);
     extern u16 pokemonBiosGetPara1Amari(void* pokemon);
     extern u16 pokemonBiosGetAmari(void* pokemon);
@@ -1476,13 +1476,13 @@ void fn_8008AE18(void* src, void* dst_) {
     extern void* pokemonBiosGetAttest(void* pokemon);
     extern u32 pokemonBiosGetRnd(void* pokemon);
     extern u16 pokemonBiosGetPokemonDataId(void* pokemon);
-    extern s16 fn_80121984(void* pokemon, s32 kind);
-    extern s8 fn_8012189C(void* pokemon, s32 kind);
-    extern u8 fn_80121ADC(void* pokemon, s32 kind);
+    extern s16 pokemonGetJoutaiStack(void* pokemon, s32 kind);
+    extern s8 pokemonGetJoutaiKaisuu(void* pokemon, s32 kind);
+    extern u8 pokemonIsJoutaiDataId(void* pokemon, s32 kind);
     extern u8 pokemonCheckValid(void* pokemon);
     extern u8 gamedataAttestBiosGetLangareaId(void* attest);
     extern u8 gamedataAttestBiosGetVerId(void* attest);
-    extern s32 fn_800F9AEC(u8* out, void* name, s32 langId);
+    extern s32 GScharToGBA(u8* out, void* name, s32 langId);
     extern void* memmove(void* dst, const void* src, u32 size);
     GbaPokemon* dst;
     u8 tmp[12];
@@ -1537,13 +1537,13 @@ void fn_8008AE18(void* src, void* dst_) {
         dst->amariFlags = pokemonBiosGetFlagAmari(src);
         dst->isBadEgg = pokemonBiosGetFuseiFlag(src) != 0;
 
-        length = fn_800F9AEC(dst->nickname, pokemonBiosGetNicknameOrgPtr(src), gamedataAttestBiosGetLangareaId(attest));
+        length = GScharToGBA(dst->nickname, pokemonBiosGetNicknameOrgPtr(src), gamedataAttestBiosGetLangareaId(attest));
         if (length < 10) {
             dst->nickname[length] = 0xFF;
             memset(dst->nickname + 1 + length, 0, 9 - length);
         }
 
-        length = fn_800F9AEC(dst->otName, pokemonBiosGetCatchTrainerNamePtr(src), gamedataAttestBiosGetLangareaId(attest));
+        length = GScharToGBA(dst->otName, pokemonBiosGetCatchTrainerNamePtr(src), gamedataAttestBiosGetLangareaId(attest));
         if (length < 7) {
             dst->otName[length] = 0xFF;
             memset(dst->otName + 1 + length, 0, 6 - length);
@@ -1614,18 +1614,18 @@ void fn_8008AE18(void* src, void* dst_) {
     misc.ribbons.eventGet = pokemonBiosGetEventGetFlag(src);
 
     status = 0;
-    if (fn_80121ADC(src, 4) != 0) {
-        status = (fn_80121984(src, 4) << 8) | 0x80;
-    } else if (fn_80121ADC(src, 5) != 0) {
+    if (pokemonIsJoutaiDataId(src, 4) != 0) {
+        status = (pokemonGetJoutaiStack(src, 4) << 8) | 0x80;
+    } else if (pokemonIsJoutaiDataId(src, 5) != 0) {
         status |= 0x40;
-    } else if (fn_80121ADC(src, 7) != 0) {
+    } else if (pokemonIsJoutaiDataId(src, 7) != 0) {
         status |= 0x20;
-    } else if (fn_80121ADC(src, 6) != 0) {
+    } else if (pokemonIsJoutaiDataId(src, 6) != 0) {
         status |= 0x10;
-    } else if (fn_80121ADC(src, 3) != 0) {
+    } else if (pokemonIsJoutaiDataId(src, 3) != 0) {
         status |= 0x8;
-    } else if (fn_80121ADC(src, 8) != 0) {
-        status = (s16)fn_8012189C(src, 8);
+    } else if (pokemonIsJoutaiDataId(src, 8) != 0) {
+        status = (s16)pokemonGetJoutaiKaisuu(src, 8);
     }
     {
         /* RULE-EXCEPTION(user-approved): widening copy so the status register is truncated in place — see docs/RULE_EXCEPTIONS.md */
@@ -1682,12 +1682,12 @@ void fn_8008AE18(void* src, void* dst_) {
 }
 
 /* 0x8008BBDC | size: 0x9F4 */
-void fn_8008BBDC(void* gc, GbaPokemon* src) {
+void pokeconvPokemonFromGBA(void* gc, GbaPokemon* src) {
     extern void pokemonInit(void* pokemon);
     extern void* pokemonBiosGetAttest(void* pokemon);
     extern void* pokemonBiosGetCatchTrainerNamePtr(void* pokemon);
     extern void gamedataAttestCreate(void* attest, s32 verId, s32 kind, s32 region, s32 langId);
-    extern void fn_800F9C04(void* out, const u8* name, s32 count, u8 langId);
+    extern void GScharFromGBA(void* out, const u8* name, s32 count, u8 langId);
     extern void pokemonBiosSetRnd(void* pokemon, u32 value);
     extern void pokemonBiosSetCatchTrainerRnd(void* pokemon, u32 value);
     extern void pokemonBiosSetNicknamePtr(void* pokemon, void* name);
@@ -1757,9 +1757,9 @@ void fn_8008BBDC(void* gc, GbaPokemon* src) {
     extern void pokemonBiosSetNimbleness(void* pokemon, u16 value);
     extern void pokemonBiosSetSpeAtk(void* pokemon, u16 value);
     extern void pokemonBiosSetSpeDef(void* pokemon, u16 value);
-    extern void fn_8012173C(void* pokemon, s32 kind, s8 value);
+    extern void pokemonSetJoutaiKaisuu(void* pokemon, s32 kind, s8 value);
     extern void fn_8012190C(void* pokemon, s32 kind, s16 value);
-    extern void fn_801219F4(void* pokemon, s32 kind, s32 value);
+    extern void pokemonWriteJoutaiDataId(void* pokemon, s32 kind, s32 value);
     extern void* memmove(void* dst, const void* src, u32 size);
     u16 nickname[11]; /* 10 GBA characters and a terminator */
     u8 tmp[12];
@@ -1840,11 +1840,11 @@ void fn_8008BBDC(void* gc, GbaPokemon* src) {
     gamedataAttestCreate(pokemonBiosGetAttest(gc), verId, 3, region, langId);
 
     lang = langId;
-    fn_800F9C04(nickname, src->nickname, 10, lang);
+    GScharFromGBA(nickname, src->nickname, 10, lang);
     pokemonBiosSetNicknamePtr(gc, nickname);
     pokemonBiosSetFlagAmari(gc, src->amariFlags);
     pokemonBiosSetFuseiFlag(gc, src->isBadEgg);
-    fn_800F9C04(pokemonBiosGetCatchTrainerNamePtr(gc), src->otName, 7, lang);
+    GScharFromGBA(pokemonBiosGetCatchTrainerNamePtr(gc), src->otName, 7, lang);
 
     pokemonBiosSetPcboxMark(gc, src->markings);
     pokemonBiosSetAmari(gc, GbaSwap16(src->amari));
@@ -1910,19 +1910,19 @@ void fn_8008BBDC(void* gc, GbaPokemon* src) {
 
     status = GbaSwap32(src->status);
     if ((status & 0x80) != 0) {
-        fn_801219F4(gc, 4, 0);
+        pokemonWriteJoutaiDataId(gc, 4, 0);
         fn_8012190C(gc, 4, (status & 0xF00) >> 8);
     } else if ((status & 0x40) != 0) {
-        fn_801219F4(gc, 5, 0);
+        pokemonWriteJoutaiDataId(gc, 5, 0);
     } else if ((status & 0x20) != 0) {
-        fn_801219F4(gc, 7, 0);
+        pokemonWriteJoutaiDataId(gc, 7, 0);
     } else if ((status & 0x10) != 0) {
-        fn_801219F4(gc, 6, 0);
+        pokemonWriteJoutaiDataId(gc, 6, 0);
     } else if ((status & 0x8) != 0) {
-        fn_801219F4(gc, 3, 0);
+        pokemonWriteJoutaiDataId(gc, 3, 0);
     } else if ((status & 0x7) != 0) {
-        fn_801219F4(gc, 8, 0);
-        fn_8012173C(gc, 8, status & 0x7);
+        pokemonWriteJoutaiDataId(gc, 8, 0);
+        pokemonSetJoutaiKaisuu(gc, 8, status & 0x7);
     }
     pokemonBiosSetConditionAmari(gc, GbaSwap32(src->status) & 0xFFFFF000);
 
@@ -1939,23 +1939,23 @@ void fn_8008BBDC(void* gc, GbaPokemon* src) {
 
 /* 0x8008C5D4 | size: 0x128 */
 u16 gbaPokemonConditonFromGC(void* pokemon) {
-    extern s16 fn_80121984(void* pokemon, s32 kind);
-    extern s8 fn_8012189C(void* pokemon, s32 kind);
-    extern u8 fn_80121ADC(void* pokemon, s32 kind);
+    extern s16 pokemonGetJoutaiStack(void* pokemon, s32 kind);
+    extern s8 pokemonGetJoutaiKaisuu(void* pokemon, s32 kind);
+    extern u8 pokemonIsJoutaiDataId(void* pokemon, s32 kind);
     u16 status = 0;
 
-    if (fn_80121ADC(pokemon, 4) != 0) {
-        status = (fn_80121984(pokemon, 4) << 8) | 0x80;
-    } else if (fn_80121ADC(pokemon, 5) != 0) {
+    if (pokemonIsJoutaiDataId(pokemon, 4) != 0) {
+        status = (pokemonGetJoutaiStack(pokemon, 4) << 8) | 0x80;
+    } else if (pokemonIsJoutaiDataId(pokemon, 5) != 0) {
         status |= 0x40;
-    } else if (fn_80121ADC(pokemon, 7) != 0) {
+    } else if (pokemonIsJoutaiDataId(pokemon, 7) != 0) {
         status |= 0x20;
-    } else if (fn_80121ADC(pokemon, 6) != 0) {
+    } else if (pokemonIsJoutaiDataId(pokemon, 6) != 0) {
         status |= 0x10;
-    } else if (fn_80121ADC(pokemon, 3) != 0) {
+    } else if (pokemonIsJoutaiDataId(pokemon, 3) != 0) {
         status |= 0x08;
-    } else if (fn_80121ADC(pokemon, 8) != 0) {
-        status = (s16)fn_8012189C(pokemon, 8);
+    } else if (pokemonIsJoutaiDataId(pokemon, 8) != 0) {
+        status = (s16)pokemonGetJoutaiKaisuu(pokemon, 8);
     }
     return status;
 }
@@ -1997,7 +1997,7 @@ s32 fn_8008C78C(void) {
 }
 
 /* 0x8008C7B0 | size: 0x31C */
-void fn_8008C7B0(void) {
+void demoScene30(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -2067,7 +2067,7 @@ void fn_8008C7B0(void) {
     r30 = r3;
     r4 = 0x1;
     r3 = *(u32*)((u8*)r30 + 0x144);
-    ((void(*)(void))fn_80118874)();
+    ((void(*)(void))gsParticleKill)();
     tmp = 0x0;
     r4 = 0xCE60000;
     *(u32*)((u8*)r30 + 0x144) = tmp;
@@ -2216,7 +2216,7 @@ void fn_8008C7B0(void) {
 }
 
 /* 0x8008CACC | size: 0x30C */
-void fn_8008CACC(void) {
+void demoScene29(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -2284,7 +2284,7 @@ void fn_8008CACC(void) {
     r30 = r3;
     r4 = 0x1;
     r3 = *(u32*)((u8*)r30 + 0x144);
-    ((void(*)(void))fn_80118874)();
+    ((void(*)(void))gsParticleKill)();
     tmp = 0x0;
     r4 = 0xCE60000;
     *(u32*)((u8*)r30 + 0x144) = tmp;
@@ -2424,7 +2424,7 @@ void fn_8008CACC(void) {
 }
 
 /* 0x8008CDD8 | size: 0x2C8 */
-void fn_8008CDD8(void) {
+void demoScene28(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -2493,7 +2493,7 @@ void fn_8008CDD8(void) {
     r30 = r3;
     r4 = 0x1;
     r3 = *(u32*)((u8*)r30 + 0x144);
-    ((void(*)(void))fn_80118874)();
+    ((void(*)(void))gsParticleKill)();
     tmp = 0x0;
     r4 = 0xCE60000;
     *(u32*)((u8*)r30 + 0x144) = tmp;
@@ -2615,7 +2615,7 @@ void fn_8008CDD8(void) {
 }
 
 /* 0x8008D0A0 | size: 0x2A8 */
-void fn_8008D0A0(void) {
+void demoScene27(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -2683,7 +2683,7 @@ void fn_8008D0A0(void) {
     r30 = r3;
     r4 = 0x1;
     r3 = *(u32*)((u8*)r30 + 0x144);
-    ((void(*)(void))fn_80118874)();
+    ((void(*)(void))gsParticleKill)();
     tmp = 0x0;
     r4 = 0xCE60000;
     *(u32*)((u8*)r30 + 0x144) = tmp;
@@ -2797,7 +2797,7 @@ void fn_8008D0A0(void) {
 }
 
 /* 0x8008D348 | size: 0x5F0 */
-void fn_8008D348(void) {
+void demoScene26(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -2876,7 +2876,7 @@ void fn_8008D348(void) {
     r21 = r3;
     r4 = 0x1;
     r3 = *(u32*)((u8*)r21 + 0x144);
-    ((void(*)(void))fn_80118874)();
+    ((void(*)(void))gsParticleKill)();
     tmp = 0x0;
     r4 = 0xCE60000;
     *(u32*)((u8*)r21 + 0x144) = tmp;
@@ -3206,7 +3206,7 @@ void fn_8008D348(void) {
 }
 
 /* 0x8008D938 | size: 0x9E8 */
-void fn_8008D938(void) {
+void demoScene25(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -3289,7 +3289,7 @@ void fn_8008D938(void) {
     r14 = r3;
     r4 = 0x1;
     r3 = *(u32*)((u8*)r14 + 0x144);
-    ((void(*)(void))fn_80118874)();
+    ((void(*)(void))gsParticleKill)();
     tmp = 0x0;
     r4 = 0xCE60000;
     *(u32*)((u8*)r14 + 0x144) = tmp;
@@ -3872,7 +3872,7 @@ void fn_8008D938(void) {
 }
 
 /* 0x8008E320 | size: 0x4B4 */
-void fn_8008E320(void) {
+void demoScene24(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -3945,7 +3945,7 @@ void fn_8008E320(void) {
     r26 = r3;
     r4 = 0x1;
     r3 = *(u32*)((u8*)r26 + 0x144);
-    ((void(*)(void))fn_80118874)();
+    ((void(*)(void))gsParticleKill)();
     tmp = 0x0;
     r4 = 0xCE60000;
     *(u32*)((u8*)r26 + 0x144) = tmp;
@@ -4197,7 +4197,7 @@ void fn_8008E320(void) {
 }
 
 /* 0x8008E7D4 | size: 0x454 */
-void fn_8008E7D4(void) {
+void demoScene23(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -4269,7 +4269,7 @@ void fn_8008E7D4(void) {
     r27 = r3;
     r4 = 0x1;
     r3 = *(u32*)((u8*)r27 + 0x144);
-    ((void(*)(void))fn_80118874)();
+    ((void(*)(void))gsParticleKill)();
     tmp = 0x0;
     r4 = 0xCE60000;
     *(u32*)((u8*)r27 + 0x144) = tmp;
@@ -4497,7 +4497,7 @@ void fn_8008E7D4(void) {
 }
 
 /* 0x8008EC28 | size: 0x2A8 */
-void fn_8008EC28(void) {
+void demoScene22(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -4565,7 +4565,7 @@ void fn_8008EC28(void) {
     r30 = r3;
     r4 = 0x1;
     r3 = *(u32*)((u8*)r30 + 0x144);
-    ((void(*)(void))fn_80118874)();
+    ((void(*)(void))gsParticleKill)();
     tmp = 0x0;
     r4 = 0xCE60000;
     *(u32*)((u8*)r30 + 0x144) = tmp;
@@ -4679,7 +4679,7 @@ void fn_8008EC28(void) {
 }
 
 /* 0x8008EED0 | size: 0x2C0 */
-void fn_8008EED0(void) {
+void demoScene21(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -4748,7 +4748,7 @@ void fn_8008EED0(void) {
     r30 = r3;
     r4 = 0x1;
     r3 = *(u32*)((u8*)r30 + 0x144);
-    ((void(*)(void))fn_80118874)();
+    ((void(*)(void))gsParticleKill)();
     tmp = 0x0;
     r4 = 0xCE60000;
     *(u32*)((u8*)r30 + 0x144) = tmp;
@@ -4868,7 +4868,7 @@ void fn_8008EED0(void) {
 }
 
 /* 0x8008F190 | size: 0x394 */
-void fn_8008F190(void) {
+void demoScene20(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -4939,7 +4939,7 @@ void fn_8008F190(void) {
     r30 = r3;
     r4 = 0x1;
     r3 = *(u32*)((u8*)r30 + 0x144);
-    ((void(*)(void))fn_80118874)();
+    ((void(*)(void))gsParticleKill)();
     tmp = 0x0;
     r4 = 0xCE60000;
     *(u32*)((u8*)r30 + 0x144) = tmp;
@@ -5113,7 +5113,7 @@ void fn_8008F190(void) {
 }
 
 /* 0x8008F524 | size: 0x3F8 */
-void fn_8008F524(void) {
+void demoScene19(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -5185,7 +5185,7 @@ void fn_8008F524(void) {
     r29 = r3;
     r4 = 0x1;
     r3 = *(u32*)((u8*)r29 + 0x144);
-    ((void(*)(void))fn_80118874)();
+    ((void(*)(void))gsParticleKill)();
     tmp = 0x0;
     r4 = 0xCE60000;
     *(u32*)((u8*)r29 + 0x144) = tmp;
@@ -5390,7 +5390,7 @@ void fn_8008F524(void) {
 }
 
 /* 0x8008F91C | size: 0x2D8 */
-void fn_8008F91C(void) {
+void demoScene18(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -5460,7 +5460,7 @@ void fn_8008F91C(void) {
     r30 = r3;
     r4 = 0x1;
     r3 = *(u32*)((u8*)r30 + 0x144);
-    ((void(*)(void))fn_80118874)();
+    ((void(*)(void))gsParticleKill)();
     tmp = 0x0;
     r4 = 0xCE60000;
     *(u32*)((u8*)r30 + 0x144) = tmp;
@@ -5592,7 +5592,7 @@ void fn_8008F91C(void) {
 }
 
 /* 0x8008FBF4 | size: 0x2A0 */
-void fn_8008FBF4(void) {
+void demoScene17(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -5661,7 +5661,7 @@ void fn_8008FBF4(void) {
     r30 = r3;
     r4 = 0x1;
     r3 = *(u32*)((u8*)r30 + 0x144);
-    ((void(*)(void))fn_80118874)();
+    ((void(*)(void))gsParticleKill)();
     tmp = 0x0;
     r4 = 0xCE60000;
     *(u32*)((u8*)r30 + 0x144) = tmp;
@@ -5773,7 +5773,7 @@ void fn_8008FBF4(void) {
 }
 
 /* 0x8008FE94 | size: 0x26C */
-void fn_8008FE94(void) {
+void demoScene16(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -5842,7 +5842,7 @@ void fn_8008FE94(void) {
     r30 = r3;
     r4 = 0x1;
     r3 = *(u32*)((u8*)r30 + 0x144);
-    ((void(*)(void))fn_80118874)();
+    ((void(*)(void))gsParticleKill)();
     tmp = 0x0;
     r4 = 0xCE60000;
     *(u32*)((u8*)r30 + 0x144) = tmp;
@@ -5941,7 +5941,7 @@ void fn_8008FE94(void) {
 }
 
 /* 0x80090100 | size: 0x620 */
-void fn_80090100(void) {
+void demoScene15(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -6041,7 +6041,7 @@ void fn_80090100(void) {
     r17 = r3;
     r4 = 0x1;
     r3 = *(u32*)((u8*)r17 + 0x144);
-    ((void(*)(void))fn_80118874)();
+    ((void(*)(void))gsParticleKill)();
     tmp = 0x0;
     r4 = 0xCE60000;
     *(u32*)((u8*)r17 + 0x144) = tmp;
@@ -6366,7 +6366,7 @@ void fn_80090100(void) {
 }
 
 /* 0x80090720 | size: 0x2C4 */
-void fn_80090720(void) {
+void demoScene14(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -6464,7 +6464,7 @@ void fn_80090720(void) {
     r30 = r3;
     r4 = 0x1;
     r3 = *(u32*)((u8*)r30 + 0x144);
-    ((void(*)(void))fn_80118874)();
+    ((void(*)(void))gsParticleKill)();
     tmp = 0x0;
     r3 = 0x6BC0000;
     *(u32*)((u8*)r30 + 0x144) = tmp;
@@ -6557,7 +6557,7 @@ void fn_80090720(void) {
 }
 
 /* 0x800909E4 | size: 0x350 */
-void fn_800909E4(void) {
+void demoScene13(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -6789,7 +6789,7 @@ void fn_800909E4(void) {
 }
 
 /* 0x80090D34 | size: 0x2D8 */
-void fn_80090D34(void) {
+void demoScene12(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -6886,7 +6886,7 @@ void fn_80090D34(void) {
     r30 = r3;
     r4 = 0x1;
     r3 = *(u32*)((u8*)r30 + 0x144);
-    ((void(*)(void))fn_80118874)();
+    ((void(*)(void))gsParticleKill)();
     tmp = 0x0;
     r3 = 0x6BD0000;
     *(u32*)((u8*)r30 + 0x144) = tmp;
@@ -6990,7 +6990,7 @@ void fn_80090D34(void) {
 }
 
 /* 0x8009100C | size: 0x558 */
-void fn_8009100C(void) {
+void demoScene11(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -7359,7 +7359,7 @@ void fn_8009100C(void) {
 }
 
 /* 0x80091564 | size: 0x210 */
-void fn_80091564(void) {
+void demoScene10(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -7502,7 +7502,7 @@ void fn_80091564(void) {
 }
 
 /* 0x80091774 | size: 0x210 */
-void fn_80091774(void) {
+void demoScene09(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -7645,7 +7645,7 @@ void fn_80091774(void) {
 }
 
 /* 0x80091984 | size: 0x210 */
-void fn_80091984(void) {
+void demoScene08(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -7788,7 +7788,7 @@ void fn_80091984(void) {
 }
 
 /* 0x80091B94 | size: 0x210 */
-void fn_80091B94(void) {
+void demoScene07(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -7931,7 +7931,7 @@ void fn_80091B94(void) {
 }
 
 /* 0x80091DA4 | size: 0x1A4 */
-void fn_80091DA4(void) {
+void demoScene06(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std116_mapObjectStopAnimation();
@@ -8045,7 +8045,7 @@ void fn_80091DA4(void) {
 }
 
 /* 0x80091F48 | size: 0x1F8 */
-void fn_80091F48(void) {
+void demoScene05(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -8188,7 +8188,7 @@ void fn_80091F48(void) {
 }
 
 /* 0x80092140 | size: 0x358 */
-void fn_80092140(void) {
+void demoScene04(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -8424,7 +8424,7 @@ void fn_80092140(void) {
 }
 
 /* 0x80092498 | size: 0x1CC */
-void fn_80092498(void) {
+void demoScene03(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std116_mapObjectStopAnimation();
@@ -8487,7 +8487,7 @@ void fn_80092498(void) {
     r31 = r3;
     r4 = 0x1;
     r3 = *(u32*)((u8*)r31 + 0x144);
-    ((void(*)(void))fn_80118874)();
+    ((void(*)(void))gsParticleKill)();
     tmp = 0x0;
     r4 = 0x112B0000;
     *(u32*)((u8*)r31 + 0x144) = tmp;
@@ -8548,7 +8548,7 @@ void fn_80092498(void) {
 }
 
 /* 0x80092664 | size: 0x358 */
-void fn_80092664(void) {
+void demoScene02(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -8784,7 +8784,7 @@ void fn_80092664(void) {
 }
 
 /* 0x800929BC | size: 0x170 */
-void fn_800929BC(void) {
+void demoScene01(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std116_mapObjectStopAnimation();
@@ -8847,7 +8847,7 @@ void fn_800929BC(void) {
     r31 = r3;
     r4 = 0x1;
     r3 = *(u32*)((u8*)r31 + 0x144);
-    ((void(*)(void))fn_80118874)();
+    ((void(*)(void))gsParticleKill)();
     tmp = 0x0;
     *(u32*)((u8*)r31 + 0x144) = tmp;
     ((void(*)(void))std093_getCurrentGroupID)();
@@ -8885,7 +8885,7 @@ void fn_800929BC(void) {
 }
 
 /* 0x80092B2C | size: 0x164 */
-void fn_80092B2C(void) {
+void demoScene00(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();

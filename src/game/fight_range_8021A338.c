@@ -1,7 +1,7 @@
 /**
  * @file fight_range_8021A338.c
- * @brief Fight sequence carve, 0x8021A338 - 0x8021A6CC (fn_8021A338,
- *        fn_8021A478), linked.
+ * @brief Fight sequence carve, 0x8021A338 - 0x8021A6CC (wsCmd9C,
+ *        wsCmd9B), linked.
  *
  * Built with GC/1.3.2 at -O4,s (configure.py). Under GC/1.3 the scheduler
  * issues the flag-byte store ahead of the ori/addi that feeds the following
@@ -14,15 +14,15 @@ extern u8* lbl_8047B610;
 extern u8 lbl_80478D78[1];
 extern u32 lbl_8047B618;
 
-void fn_8021A338(void)
+void wsCmd9C(void)
 
 {
     extern void wazaSetStatus();
     extern u32 fightTargetGetPtrAsNowFightType();
-    extern void fn_80201764();
-    extern void fn_8020248C();
+    extern void fightOutPokemonSetPokemonJoutai08();
+    extern void fightOutPokemonWritePokemonJoutaiDataId();
     extern u8 fn_802025B8();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern void fightOutPokemonWriteJoutaiDataId();
     extern u32 fightOutPokemonMaxHpWaruValue();
     extern u32 fightOutPokemonGetPokemonPtr();
@@ -52,9 +52,9 @@ check_status:
     goto failed;
   }
   wazaSetStatus(move,0,0x2d,0,amount);
-  fn_8020248C(attacker,0x14,0);
-  fn_80201764(attacker,0x14,amount);
-  if (fn_802026E4(attacker,0xe) == 1) {
+  fightOutPokemonWritePokemonJoutaiDataId(attacker,0x14,0);
+  fightOutPokemonSetPokemonJoutai08(attacker,0x14,amount);
+  if (fightOutPokemonIsPokemonJoutaiDataId(attacker,0xe) == 1) {
     fightOutPokemonWriteJoutaiDataId(attacker,0xe);
   }
   lbl_80478D78[5] = 0;
@@ -64,7 +64,7 @@ done:
   return;
 }
 
-void fn_8021A478(void)
+void wsCmd9B(void)
 
 {
     extern void wazaSetStatus();
@@ -76,12 +76,12 @@ void fn_8021A478(void)
     extern u8 fightOutPokemonUseHensinBuff();
     extern u8 fightOutPokemonIsUseHensinBuff();
     extern u16 fightOutPokemonIsJoutaiKie();
-    extern void fn_80201764();
-    extern void fn_80201B2C(u32, u32, u16);
-    extern void fn_80201EB0();
+    extern void fightOutPokemonSetPokemonJoutai08();
+    extern void fightOutPokemonSetPokemonJoutai0C(u32, u32, u16);
+    extern void fightOutPokemonSetPokemonJoutaiKaisuu();
     extern void fn_80201FDC(u32, u32, s8);
-    extern void fn_8020248C();
-    extern u8 fn_802026E4();
+    extern void fightOutPokemonWritePokemonJoutaiDataId();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern void fightOutPokemonWriteJoutaiDataId();
     extern u32 fightOutPokemonGetNamePtr();
     extern u32 fightOutPokemonGetPokemonPtr();
@@ -104,7 +104,7 @@ void fn_8021A478(void)
   uVar5 = fightOutPokemonGetPokemonPtr(uVar3);
   uVar6 = pokemonGetStatus(uVar5,0,0x75,0);
   wazaSetStatus(uVar2,0,0x27,0,0xffff);
-  cVar9 = fn_802026E4(uVar3,0x10);
+  cVar9 = fightOutPokemonIsPokemonJoutaiDataId(uVar3,0x10);
   if (cVar9 == 1) {
     goto failed;
   }
@@ -135,20 +135,20 @@ check_hensin:
   }
 
 apply_hensin:
-  cVar9 = fn_802026E4(uVar1,0x10);
+  cVar9 = fightOutPokemonIsPokemonJoutaiDataId(uVar1,0x10);
   if (cVar9 == 0) {
-    fn_8020248C(uVar1,0x10,0);
+    fightOutPokemonWritePokemonJoutaiDataId(uVar1,0x10,0);
   }
-  fn_80201764(uVar1,0x10,uVar4);
+  fightOutPokemonSetPokemonJoutai08(uVar1,0x10,uVar4);
   lowByte = (u8)uVar6;
-  fn_80201EB0(uVar1,0x10,(s8)lowByte);
+  fightOutPokemonSetPokemonJoutaiKaisuu(uVar1,0x10,(s8)lowByte);
   fn_80201FDC(uVar1,0x10,(s8)(u8)(uVar6 >> 8));
-  fn_80201B2C(uVar1,0x10,uVar6 >> 0x10);
-  cVar9 = fn_802026E4(uVar1,0x29);
+  fightOutPokemonSetPokemonJoutai0C(uVar1,0x10,uVar6 >> 0x10);
+  cVar9 = fightOutPokemonIsPokemonJoutaiDataId(uVar1,0x29);
   if (cVar9 == 1) {
     fightOutPokemonWriteJoutaiDataId(uVar1,0x29);
   }
-  cVar9 = fn_802026E4(uVar1,0x31);
+  cVar9 = fightOutPokemonIsPokemonJoutaiDataId(uVar1,0x31);
   if (cVar9 == 1) {
     fightOutPokemonWriteJoutaiDataId(uVar1,0x31);
   }

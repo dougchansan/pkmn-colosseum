@@ -24,7 +24,7 @@ extern s32 fn_80075B2C(void);
 extern u8 fn_80075B50(void);
 extern u8 fn_80079EF4(s32, u32);
 extern s32 fn_801D0748(u32, u32, u32);
-extern u32 fn_80079C1C();
+extern u32 exDiscCouponGive();
 extern void* gamedatasaveGetStatus(u32, u32);
 extern void* savedataGetStatus(u32, u32);
 extern void* fn_80128DD4(void*);
@@ -40,7 +40,7 @@ extern void winMsgOpen(s32, s32, s32, s32);
 extern void winMsgClose(s32);
 extern s32 menuClose(s32);
 
-void fn_800798E8(void* backup)
+void exDiscCouponMenu(void* backup)
 {
     u32 canBag;
     void* pcbox;
@@ -98,7 +98,7 @@ party_capacity_done:
     pokemon = heroGetStatus(0, 1, 0);
     *(MenuSaveSnapshot*)backup =
         *(MenuSaveSnapshot*)savedataGetStatus(0, 0);
-    if ((u8)fn_80079C1C(1, canBag, canParty, pokemon) == 0) {
+    if ((u8)exDiscCouponGive(1, canBag, canParty, pokemon) == 0) {
         return;
     }
 

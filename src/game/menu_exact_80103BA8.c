@@ -40,9 +40,9 @@ extern MenuKeyInfo* windowGetPortKeyInfo(u8 ports);
 extern void windowInit(u16 count);
 extern void cursorBiosInit(void);
 extern void menuOffScreenInit(void);
-extern void fn_8010C224(u32 count);
-extern u32 fn_800D7894(void);
-extern void fn_800D7868(u32, u32, u32, u32, u32, u32, u32, u32);
+extern void menuFaceInit(u32 count);
+extern u32 gfxVtxDescAlloc(void);
+extern void gfxVtxDescSetAttr(u32, u32, u32, u32, u32, u32, u32, u32);
 extern void* GStextureLoad(void* data);
 extern void GSresRegisterResource(void* texture, u32, u32 resourceId, u32);
 
@@ -86,7 +86,7 @@ void menuInit(u16 windowCount) {
     windowInit(windowCount);
     cursorBiosInit();
     menuOffScreenInit();
-    fn_8010C224(0x18);
+    menuFaceInit(0x18);
     lbl_80404ACC.enablePort = 1;
     for (port = 0; port < 4; port++) {
         lbl_8047AD04[port] = 0;
@@ -94,12 +94,12 @@ void menuInit(u16 windowCount) {
     }
 
     if (lbl_8047AD00 == 0) {
-        lbl_8047AD00 = fn_800D7894();
-        fn_800D7868(lbl_8047AD00, 1, 0, 0, 3, 0, 0, 0);
-        fn_800D7868(lbl_8047AD00, 4, 0, 6, 10, 0, 0, 0);
-        fn_800D7868(lbl_8047AD00, 6, 0, 8, 4, 0, 0, 0);
-        fn_800D7868(lbl_8047AD00, 7, 0, 8, 4, 0, 0, 0);
-        fn_800D7868(lbl_8047AD00, 8, 0, 8, 4, 0, 0, 0);
+        lbl_8047AD00 = gfxVtxDescAlloc();
+        gfxVtxDescSetAttr(lbl_8047AD00, 1, 0, 0, 3, 0, 0, 0);
+        gfxVtxDescSetAttr(lbl_8047AD00, 4, 0, 6, 10, 0, 0, 0);
+        gfxVtxDescSetAttr(lbl_8047AD00, 6, 0, 8, 4, 0, 0, 0);
+        gfxVtxDescSetAttr(lbl_8047AD00, 7, 0, 8, 4, 0, 0, 0);
+        gfxVtxDescSetAttr(lbl_8047AD00, 8, 0, 8, 4, 0, 0, 0);
     }
 
     texture = GStextureLoad(lbl_803156E0);

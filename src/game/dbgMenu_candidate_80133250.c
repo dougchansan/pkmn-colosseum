@@ -4,6 +4,6 @@
 
 u32 dbgMenuGSmemDispMap(void)
 {
-    fn_800E0E14(1, 1);
+    GSmemDumpMap(1, 1);
     return 0;
 }

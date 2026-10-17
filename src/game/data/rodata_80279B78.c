@@ -46,213 +46,213 @@ extern u8 WS_WAZAEND[];
 extern u8 WS_WAZAKOUKA_CHECK[];
 extern u8 WS_WAZAOBOE_CHECK[];
 extern u8 WS_WEATHER_CHANGE[];
-extern u8 fn_80213A28[];
-extern u8 fn_80213A38[];
-extern u8 fn_80213A48[];
-extern u8 fn_80213A58[];
-extern u8 fn_80213A68[];
-extern u8 fn_80213A78[];
-extern u8 fn_80213E94[];
-extern u8 fn_80214450[];
-extern u8 fn_802145C8[];
-extern u8 fn_802146B4[];
-extern u8 fn_802146C4[];
-extern u8 fn_80214794[];
-extern u8 fn_80214864[];
-extern u8 fn_802149B8[];
-extern u8 fn_80214AB4[];
-extern u8 fn_80214AFC[];
-extern u8 fn_80214B58[];
-extern u8 fn_80214BB4[];
-extern u8 fn_80214C04[];
-extern u8 fn_80214CB0[];
-extern u8 fn_80214DB0[];
-extern u8 fn_80214E50[];
-extern u8 fn_80214F10[];
-extern u8 fn_802151C0[];
-extern u8 fn_80215374[];
-extern u8 fn_80215614[];
-extern u8 fn_80215720[];
-extern u8 fn_80215808[];
-extern u8 fn_80215954[];
-extern u8 fn_80215AEC[];
-extern u8 fn_80215CF0[];
-extern u8 fn_802160EC[];
-extern u8 fn_80216264[];
-extern u8 fn_80216364[];
-extern u8 fn_80216410[];
-extern u8 fn_802165B4[];
-extern u8 fn_80216650[];
-extern u8 fn_80216780[];
-extern u8 fn_80216A58[];
-extern u8 fn_80216D9C[];
-extern u8 fn_80216F50[];
-extern u8 fn_80217018[];
-extern u8 fn_802170B4[];
-extern u8 fn_80217220[];
-extern u8 fn_80217434[];
-extern u8 fn_80217524[];
-extern u8 fn_802175A8[];
-extern u8 fn_802177E4[];
-extern u8 fn_802178F4[];
-extern u8 fn_8021799C[];
-extern u8 fn_80217AE4[];
-extern u8 fn_80217C04[];
-extern u8 fn_80217D34[];
-extern u8 fn_80217E20[];
-extern u8 fn_80218018[];
-extern u8 fn_802182D4[];
-extern u8 fn_802183BC[];
-extern u8 fn_8021847C[];
-extern u8 fn_80218824[];
-extern u8 fn_80218A6C[];
-extern u8 fn_80218BD4[];
-extern u8 fn_80218D24[];
-extern u8 fn_8021908C[];
-extern u8 fn_802192B4[];
-extern u8 fn_80219354[];
-extern u8 fn_802195A0[];
-extern u8 fn_802196A8[];
-extern u8 fn_80219838[];
-extern u8 fn_80219964[];
-extern u8 fn_80219B2C[];
-extern u8 fn_80219CF4[];
-extern u8 fn_80219D98[];
-extern u8 fn_80219E10[];
-extern u8 fn_8021A054[];
-extern u8 fn_8021A338[];
-extern u8 fn_8021A478[];
-extern u8 fn_8021A6CC[];
-extern u8 fn_8021A764[];
-extern u8 fn_8021A80C[];
-extern u8 fn_8021A878[];
-extern u8 fn_8021A984[];
-extern u8 fn_8021AB9C[];
+extern u8 wsCmdF5[];
+extern u8 wsCmdF4[];
+extern u8 wsCmdF3[];
+extern u8 wsCmdF2[];
+extern u8 wsCmdF1[];
+extern u8 wsCmdF0[];
+extern u8 wsCmdEF[];
+extern u8 wsCmdEE[];
+extern u8 wsCmdED[];
+extern u8 wsCmdEC[];
+extern u8 wsCmdEB[];
+extern u8 wsCmdEA[];
+extern u8 wsCmdE9[];
+extern u8 wsCmdE8[];
+extern u8 wsCmdE7[];
+extern u8 wsCmdE6[];
+extern u8 wsCmdE5[];
+extern u8 wsCmdE3[];
+extern u8 wsCmdE2[];
+extern u8 wsCmdE1[];
+extern u8 wsCmdE0[];
+extern u8 wsCmdDF[];
+extern u8 wsCmdDE[];
+extern u8 wsCmdDD[];
+extern u8 wsCmdDB[];
+extern u8 wsCmdDA[];
+extern u8 wsCmdD9[];
+extern u8 wsCmdD8[];
+extern u8 wsCmdD6[];
+extern u8 wsCmdD4[];
+extern u8 wsCmdD2[];
+extern u8 wsCmdD1[];
+extern u8 wsCmdCF[];
+extern u8 wsCmdCD[];
+extern u8 wsCmdCC[];
+extern u8 wsCmdCA[];
+extern u8 wsCmdC9[];
+extern u8 wsCmdC8[];
+extern u8 wsCmdC4[];
+extern u8 wsCmdC3[];
+extern u8 wsCmdC2[];
+extern u8 wsCmdC1[];
+extern u8 wsCmdC0[];
+extern u8 wsCmdBE[];
+extern u8 wsCmdBC[];
+extern u8 wsCmdBB[];
+extern u8 wsCmdBA[];
+extern u8 wsCmdB9[];
+extern u8 wsCmdB8[];
+extern u8 wsCmdB7[];
+extern u8 wsCmdB6[];
+extern u8 wsCmdB5[];
+extern u8 wsCmdB4[];
+extern u8 wsCmdB3[];
+extern u8 wsCmdB2[];
+extern u8 wsCmdB0[];
+extern u8 wsCmdAF[];
+extern u8 wsCmdAE[];
+extern u8 wsCmdAD[];
+extern u8 wsCmdAC[];
+extern u8 wsCmdAB[];
+extern u8 wsCmdA9[];
+extern u8 wsCmdA8[];
+extern u8 wsCmdA7[];
+extern u8 wsCmdA6[];
+extern u8 wsCmdA5[];
+extern u8 wsCmdA4[];
+extern u8 wsCmdA3[];
+extern u8 wsCmdA2[];
+extern u8 wsCmdA1[];
+extern u8 wsCmdA0[];
+extern u8 wsCmd9F[];
+extern u8 wsCmd9E[];
+extern u8 wsCmd9D[];
+extern u8 wsCmd9C[];
+extern u8 wsCmd9B[];
+extern u8 wsCmd9A[];
+extern u8 wsCmd99[];
+extern u8 wsCmd98[];
+extern u8 wsCmd97[];
+extern u8 wsCmd96[];
+extern u8 wsCmd94[];
 extern u8 fightCheckOneHitKO[];
-extern u8 fn_8021AFAC[];
-extern u8 fn_8021B0B0[];
-extern u8 fn_8021B1A4[];
-extern u8 fn_8021B484[];
-extern u8 fn_8021B610[];
-extern u8 fn_8021B628[];
-extern u8 fn_8021B760[];
-extern u8 fn_8021B8B8[];
-extern u8 fn_8021C0F4[];
-extern u8 fn_8021C190[];
-extern u8 fn_8021C308[];
-extern u8 fn_8021C490[];
-extern u8 fn_8021C588[];
-extern u8 fn_8021C6F4[];
-extern u8 fn_8021C75C[];
-extern u8 fn_8021C900[];
-extern u8 fn_8021CA00[];
-extern u8 fn_8021CB58[];
-extern u8 fn_8021CC5C[];
-extern u8 fn_8021CCE0[];
-extern u8 fn_8021CE60[];
-extern u8 fn_8021CF3C[];
-extern u8 fn_8021D010[];
-extern u8 fn_8021D090[];
-extern u8 fn_8021D224[];
-extern u8 fn_8021D40C[];
-extern u8 fn_8021D688[];
-extern u8 fn_8021D9C0[];
-extern u8 fn_8021DB78[];
-extern u8 fn_8021DD24[];
-extern u8 fn_8021DD34[];
-extern u8 fn_8021DD44[];
-extern u8 fn_8021DDB8[];
-extern u8 fn_8021DDC8[];
-extern u8 fn_8021DDD8[];
-extern u8 fn_8021DE3C[];
-extern u8 fn_8021DE4C[];
-extern u8 fn_8021DF70[];
-extern u8 fn_8021DF80[];
-extern u8 fn_8021E04C[];
-extern u8 fn_8021E288[];
-extern u8 fn_8021E600[];
-extern u8 fn_8021E6CC[];
-extern u8 fn_8021E6DC[];
-extern u8 fn_8021E6EC[];
-extern u8 fn_8021E744[];
-extern u8 fn_8021E754[];
-extern u8 fn_8021E9F4[];
-extern u8 fn_8021EA94[];
-extern u8 fn_8021EAE8[];
-extern u8 fn_8021ECF8[];
-extern u8 fn_8021ED70[];
-extern u8 fn_8021EE38[];
-extern u8 fn_8021EE48[];
-extern u8 fn_8021EE98[];
-extern u8 fn_8021EED4[];
-extern u8 fn_8021EF14[];
-extern u8 fn_8021EF24[];
-extern u8 fn_8021F1CC[];
-extern u8 fn_8021F24C[];
-extern u8 fn_8021F39C[];
-extern u8 fn_8021F458[];
-extern u8 fn_8021F664[];
-extern u8 fn_8021F92C[];
-extern u8 fn_8021F998[];
-extern u8 fn_8021FAD4[];
-extern u8 fn_80220868[];
-extern u8 fn_8022106C[];
-extern u8 fn_802222F4[];
-extern u8 fn_80222370[];
-extern u8 fn_802223E0[];
-extern u8 fn_80222438[];
-extern u8 fn_80222494[];
-extern u8 fn_80222500[];
-extern u8 fn_80222510[];
-extern u8 fn_80222520[];
-extern u8 fn_80222554[];
-extern u8 fn_80222584[];
-extern u8 fn_802225B0[];
-extern u8 fn_802225DC[];
-extern u8 fn_80222604[];
-extern u8 fn_8022262C[];
-extern u8 fn_80222654[];
-extern u8 fn_802226A4[];
-extern u8 fn_802226EC[];
-extern u8 fn_80222714[];
-extern u8 fn_8022273C[];
-extern u8 fn_8022275C[];
-extern u8 fn_802227D4[];
-extern u8 fn_80222844[];
-extern u8 fn_8022290C[];
-extern u8 fn_802229EC[];
-extern u8 fn_80222ACC[];
-extern u8 fn_80222ADC[];
-extern u8 fn_80222B7C[];
-extern u8 fn_80222BD8[];
-extern u8 fn_80222C44[];
-extern u8 fn_802232F4[];
-extern u8 fn_80223AF4[];
-extern u8 fn_80223CE8[];
-extern u8 fn_80223D64[];
-extern u8 fn_80223F1C[];
-extern u8 fn_80224060[];
-extern u8 fn_80224158[];
-extern u8 fn_80224740[];
-extern u8 fn_80224820[];
-extern u8 fn_80226134[];
-extern u8 fn_802261B0[];
-extern u8 fn_8022622C[];
-extern u8 fn_80226284[];
-extern u8 fn_802262D0[];
-extern u8 fn_8022631C[];
-extern u8 fn_802266EC[];
-extern u8 fn_80226730[];
-extern u8 fn_802267E8[];
-extern u8 fn_80226914[];
-extern u8 fn_80226F0C[];
-extern u8 fn_80226FD4[];
-extern u8 fn_80227490[];
-extern u8 fn_80227C40[];
-extern u8 fn_8022808C[];
-extern u8 fn_802282D8[];
+extern u8 wsCmd92[];
+extern u8 wsCmd91[];
+extern u8 wsCmd90[];
+extern u8 wsCmd8F[];
+extern u8 wsCmd8E[];
+extern u8 wsCmd8D[];
+extern u8 wsCmd8B[];
+extern u8 wsCmd89[];
+extern u8 wsCmd88[];
+extern u8 wsCmd87[];
+extern u8 wsCmd86[];
+extern u8 wsCmd85[];
+extern u8 wsCmd84[];
+extern u8 wsCmd83[];
+extern u8 wsCmd81[];
+extern u8 wsCmd80[];
+extern u8 wsCmd7F[];
+extern u8 wsCmd7E[];
+extern u8 wsCmd7D[];
+extern u8 wsCmd7C[];
+extern u8 wsCmd7B[];
+extern u8 wsCmd7A[];
+extern u8 wsCmd79[];
+extern u8 wsCmd78[];
+extern u8 wsCmd77[];
+extern u8 wsCmd76[];
+extern u8 wsCmd75[];
+extern u8 wsCmd74[];
+extern u8 wsCmd73[];
+extern u8 wsCmd72[];
+extern u8 wsCmd70[];
+extern u8 wsCmd6F[];
+extern u8 wsCmd6E[];
+extern u8 wsCmd6D[];
+extern u8 wsCmd6C[];
+extern u8 wsCmd6B[];
+extern u8 wsCmd6A[];
+extern u8 wsCmd67[];
+extern u8 wsCmd66[];
+extern u8 wsCmd65[];
+extern u8 wsCmd64[];
+extern u8 wsCmd63[];
+extern u8 wsCmd62[];
+extern u8 wsCmd61[];
+extern u8 wsCmd60[];
+extern u8 wsCmd5E[];
+extern u8 wsCmd5D[];
+extern u8 wsCmd5C[];
+extern u8 wsCmd5B[];
+extern u8 wsCmd5A[];
+extern u8 wsCmd71[];
+extern u8 wsCmd58[];
+extern u8 wsCmd57[];
+extern u8 wsCmd56[];
+extern u8 wsCmd55[];
+extern u8 wsCmd54[];
+extern u8 wsCmd53[];
+extern u8 wsCmd52[];
+extern u8 wsCmd51[];
+extern u8 wsCmd50[];
+extern u8 wsCmd4F[];
+extern u8 wsCmd4E[];
+extern u8 wsCmd4D[];
+extern u8 wsCmd4C[];
+extern u8 wsCmd4B[];
+extern u8 wsCmd49[];
+extern u8 wsCmd48[];
+extern u8 wsCmd47[];
+extern u8 wsCmd46[];
+extern u8 wsCmd45[];
+extern u8 wsCmd43[];
+extern u8 wsCmd42[];
+extern u8 wsCmd41[];
+extern u8 wsCmd3B[];
+extern u8 wsCmd3A[];
+extern u8 wsCmd39[];
+extern u8 wsCmd38[];
+extern u8 wsCmd37[];
+extern u8 wsCmd36[];
+extern u8 wsCmd35[];
+extern u8 wsCmd34[];
+extern u8 wsCmd33[];
+extern u8 wsCmd32[];
+extern u8 wsCmd31[];
+extern u8 wsCmd30[];
+extern u8 wsCmd2F[];
+extern u8 wsCmd2E[];
+extern u8 wsCmd2D[];
+extern u8 wsCmd2C[];
+extern u8 wsCmd2B[];
+extern u8 wsCmd2A[];
+extern u8 wsCmd29[];
+extern u8 wsCmd28[];
+extern u8 wsCmd27[];
+extern u8 wsCmd26[];
+extern u8 wsCmd25[];
+extern u8 wsCmd24[];
+extern u8 wsCmd23[];
+extern u8 wsCmd20[];
+extern u8 wsCmd1E[];
+extern u8 wsCmd1D[];
+extern u8 wsCmd1B[];
+extern u8 wsCmd1A[];
+extern u8 wsCmd19[];
+extern u8 wsCmd18[];
+extern u8 wsCmd15[];
+extern u8 wsCmd14[];
+extern u8 wsCmd13[];
+extern u8 wsCmd12[];
+extern u8 wsCmd11[];
+extern u8 wsCmd10[];
+extern u8 wsCmd0F[];
+extern u8 wsCmd0E[];
+extern u8 wsCmd0D[];
+extern u8 wsCmd0C[];
+extern u8 wsCmd0B[];
+extern u8 wsCmd0A[];
+extern u8 wsCmd09[];
+extern u8 wsCmd4A[];
+extern u8 wsCmd05[];
+extern u8 wsCmd03[];
+extern u8 wsCmd02[];
 extern u8 fightCheckAccuracy[];
-extern u8 fn_80229C90[];
+extern u8 wsCmd40[];
 extern u8 fightGSfloorGetPushDataSize[];
 extern u8 fightGSfloorPushData[];
 extern u8 fightGSfloorPopData[];
@@ -480,250 +480,250 @@ const u8 lbl_80279FF8[20] = {
 const void* lbl_8027A00C[255] = {
     (void*)WS_HITCHECK,
     (void*)fightCheckAccuracy,
-    (void*)fn_802282D8,
-    (void*)fn_8022808C,
+    (void*)wsCmd02,
+    (void*)wsCmd03,
     (void*)WS_CRITICAL_CHECK,
-    (void*)fn_80227C40,
+    (void*)wsCmd05,
     (void*)WS_TYPE_CHECK,
     (void*)WS_DAMAGE_LOSS,
     (void*)WS_DAMAGE_LOSS_ONLY,
-    (void*)fn_80226FD4,
-    (void*)fn_80226F0C,
-    (void*)fn_80226914,
-    (void*)fn_802267E8,
-    (void*)fn_80226730,
-    (void*)fn_802266EC,
-    (void*)fn_8022631C,
-    (void*)fn_802262D0,
-    (void*)fn_80226284,
-    (void*)fn_8022622C,
-    (void*)fn_802261B0,
-    (void*)fn_80226134,
-    (void*)fn_80224820,
+    (void*)wsCmd09,
+    (void*)wsCmd0A,
+    (void*)wsCmd0B,
+    (void*)wsCmd0C,
+    (void*)wsCmd0D,
+    (void*)wsCmd0E,
+    (void*)wsCmd0F,
+    (void*)wsCmd10,
+    (void*)wsCmd11,
+    (void*)wsCmd12,
+    (void*)wsCmd13,
+    (void*)wsCmd14,
+    (void*)wsCmd15,
     (void*)WS_TSUIKA_DIRECT_ACT,
     (void*)WS_TSUIKA_INDIRECT_ACT,
-    (void*)fn_80224740,
-    (void*)fn_80224158,
-    (void*)fn_80224060,
-    (void*)fn_80223F1C,
+    (void*)wsCmd18,
+    (void*)wsCmd19,
+    (void*)wsCmd1A,
+    (void*)wsCmd1B,
     (void*)WS_CONDITION_CHECK,
-    (void*)fn_80223D64,
-    (void*)fn_80223CE8,
+    (void*)wsCmd1D,
+    (void*)wsCmd1E,
     (void*)WS_SIDECONDITION_CHECK,
-    (void*)fn_80223AF4,
+    (void*)wsCmd20,
     (void*)WS_WAZAKOUKA_CHECK,
     (void*)WS_CHECK_TYPE,
-    (void*)fn_802232F4,
-    (void*)fn_80222C44,
-    (void*)fn_80222BD8,
-    (void*)fn_80222B7C,
-    (void*)fn_80222ADC,
-    (void*)fn_80222ACC,
-    (void*)fn_802229EC,
-    (void*)fn_8022290C,
-    (void*)fn_80222844,
-    (void*)fn_802227D4,
-    (void*)fn_8022275C,
-    (void*)fn_8022273C,
-    (void*)fn_80222714,
-    (void*)fn_802226EC,
-    (void*)fn_802226A4,
-    (void*)fn_80222654,
-    (void*)fn_8022262C,
-    (void*)fn_80222604,
-    (void*)fn_802225DC,
-    (void*)fn_802225B0,
-    (void*)fn_80222584,
-    (void*)fn_80222554,
-    (void*)fn_80222520,
-    (void*)fn_80222510,
-    (void*)fn_80222500,
+    (void*)wsCmd23,
+    (void*)wsCmd24,
+    (void*)wsCmd25,
+    (void*)wsCmd26,
+    (void*)wsCmd27,
+    (void*)wsCmd28,
+    (void*)wsCmd29,
+    (void*)wsCmd2A,
+    (void*)wsCmd2B,
+    (void*)wsCmd2C,
+    (void*)wsCmd2D,
+    (void*)wsCmd2E,
+    (void*)wsCmd2F,
+    (void*)wsCmd30,
+    (void*)wsCmd31,
+    (void*)wsCmd32,
+    (void*)wsCmd33,
+    (void*)wsCmd34,
+    (void*)wsCmd35,
+    (void*)wsCmd36,
+    (void*)wsCmd37,
+    (void*)wsCmd38,
+    (void*)wsCmd39,
+    (void*)wsCmd3A,
+    (void*)wsCmd3B,
     (void*)WS_SEQRET,
     (void*)WS_WAZAEND,
     (void*)WS_SEQEND,
     (void*)WS_SPEABIEND,
-    (void*)fn_80229C90,
-    (void*)fn_80222494,
-    (void*)fn_80222438,
-    (void*)fn_802223E0,
+    (void*)wsCmd40,
+    (void*)wsCmd41,
+    (void*)wsCmd42,
+    (void*)wsCmd43,
     (void*)WS_ALERTEND,
-    (void*)fn_80222370,
-    (void*)fn_802222F4,
-    (void*)fn_8022106C,
-    (void*)fn_80220868,
-    (void*)fn_8021FAD4,
-    (void*)fn_80227490,
-    (void*)fn_8021F998,
-    (void*)fn_8021F92C,
-    (void*)fn_8021F664,
-    (void*)fn_8021F458,
-    (void*)fn_8021F39C,
-    (void*)fn_8021F24C,
-    (void*)fn_8021F1CC,
-    (void*)fn_8021EF24,
-    (void*)fn_8021EF14,
-    (void*)fn_8021EED4,
-    (void*)fn_8021EE98,
-    (void*)fn_8021EE48,
-    (void*)fn_8021EE38,
-    (void*)fn_8021ED70,
+    (void*)wsCmd45,
+    (void*)wsCmd46,
+    (void*)wsCmd47,
+    (void*)wsCmd48,
+    (void*)wsCmd49,
+    (void*)wsCmd4A,
+    (void*)wsCmd4B,
+    (void*)wsCmd4C,
+    (void*)wsCmd4D,
+    (void*)wsCmd4E,
+    (void*)wsCmd4F,
+    (void*)wsCmd50,
+    (void*)wsCmd51,
+    (void*)wsCmd52,
+    (void*)wsCmd53,
+    (void*)wsCmd54,
+    (void*)wsCmd55,
+    (void*)wsCmd56,
+    (void*)wsCmd57,
+    (void*)wsCmd58,
     (void*)WS_WAZAOBOE_CHECK,
-    (void*)fn_8021EAE8,
-    (void*)fn_8021EA94,
-    (void*)fn_8021E9F4,
-    (void*)fn_8021E754,
-    (void*)fn_8021E744,
+    (void*)wsCmd5A,
+    (void*)wsCmd5B,
+    (void*)wsCmd5C,
+    (void*)wsCmd5D,
+    (void*)wsCmd5E,
     (void*)WS_SWITCH_A_D,
-    (void*)fn_8021E6EC,
-    (void*)fn_8021E6DC,
-    (void*)fn_8021E6CC,
-    (void*)fn_8021E600,
-    (void*)fn_8021E288,
-    (void*)fn_8021E04C,
-    (void*)fn_8021DF80,
-    (void*)fn_8021DF70,
+    (void*)wsCmd60,
+    (void*)wsCmd61,
+    (void*)wsCmd62,
+    (void*)wsCmd63,
+    (void*)wsCmd64,
+    (void*)wsCmd65,
+    (void*)wsCmd66,
+    (void*)wsCmd67,
     (void*)WS_SCA_END_SET,
     (void*)WS_KORAERU_CHECK,
-    (void*)fn_8021DE4C,
-    (void*)fn_8021DE3C,
-    (void*)fn_8021DDD8,
-    (void*)fn_8021DDC8,
-    (void*)fn_8021DDB8,
-    (void*)fn_8021DD44,
-    (void*)fn_8021DD34,
-    (void*)fn_8021ECF8,
-    (void*)fn_8021DD24,
-    (void*)fn_8021DB78,
-    (void*)fn_8021D9C0,
-    (void*)fn_8021D688,
-    (void*)fn_8021D40C,
-    (void*)fn_8021D224,
-    (void*)fn_8021D090,
-    (void*)fn_8021D010,
-    (void*)fn_8021CF3C,
-    (void*)fn_8021CE60,
-    (void*)fn_8021CCE0,
-    (void*)fn_8021CC5C,
-    (void*)fn_8021CB58,
-    (void*)fn_8021CA00,
-    (void*)fn_8021C900,
-    (void*)fn_8021C75C,
+    (void*)wsCmd6A,
+    (void*)wsCmd6B,
+    (void*)wsCmd6C,
+    (void*)wsCmd6D,
+    (void*)wsCmd6E,
+    (void*)wsCmd6F,
+    (void*)wsCmd70,
+    (void*)wsCmd71,
+    (void*)wsCmd72,
+    (void*)wsCmd73,
+    (void*)wsCmd74,
+    (void*)wsCmd75,
+    (void*)wsCmd76,
+    (void*)wsCmd77,
+    (void*)wsCmd78,
+    (void*)wsCmd79,
+    (void*)wsCmd7A,
+    (void*)wsCmd7B,
+    (void*)wsCmd7C,
+    (void*)wsCmd7D,
+    (void*)wsCmd7E,
+    (void*)wsCmd7F,
+    (void*)wsCmd80,
+    (void*)wsCmd81,
     (void*)WS_NEKODAMASHI,
-    (void*)fn_8021C6F4,
-    (void*)fn_8021C588,
-    (void*)fn_8021C490,
-    (void*)fn_8021C308,
-    (void*)fn_8021C190,
-    (void*)fn_8021C0F4,
-    (void*)fn_8021B8B8,
+    (void*)wsCmd83,
+    (void*)wsCmd84,
+    (void*)wsCmd85,
+    (void*)wsCmd86,
+    (void*)wsCmd87,
+    (void*)wsCmd88,
+    (void*)wsCmd89,
     (void*)WS_KUROIKIRI,
-    (void*)fn_8021B760,
+    (void*)wsCmd8B,
     (void*)WS_ABARERU,
-    (void*)fn_8021B628,
-    (void*)fn_8021B610,
-    (void*)fn_8021B484,
-    (void*)fn_8021B1A4,
-    (void*)fn_8021B0B0,
-    (void*)fn_8021AFAC,
+    (void*)wsCmd8D,
+    (void*)wsCmd8E,
+    (void*)wsCmd8F,
+    (void*)wsCmd90,
+    (void*)wsCmd91,
+    (void*)wsCmd92,
     (void*)fightCheckOneHitKO,
-    (void*)fn_8021AB9C,
+    (void*)wsCmd94,
     (void*)WS_WEATHER_CHANGE,
-    (void*)fn_8021A984,
-    (void*)fn_8021A878,
-    (void*)fn_8021A80C,
-    (void*)fn_8021A764,
-    (void*)fn_8021A6CC,
-    (void*)fn_8021A478,
-    (void*)fn_8021A338,
-    (void*)fn_8021A054,
-    (void*)fn_80219E10,
-    (void*)fn_80219D98,
-    (void*)fn_80219CF4,
-    (void*)fn_80219B2C,
-    (void*)fn_80219964,
-    (void*)fn_80219838,
-    (void*)fn_802196A8,
-    (void*)fn_802195A0,
-    (void*)fn_80219354,
-    (void*)fn_802192B4,
-    (void*)fn_8021908C,
-    (void*)fn_80218D24,
+    (void*)wsCmd96,
+    (void*)wsCmd97,
+    (void*)wsCmd98,
+    (void*)wsCmd99,
+    (void*)wsCmd9A,
+    (void*)wsCmd9B,
+    (void*)wsCmd9C,
+    (void*)wsCmd9D,
+    (void*)wsCmd9E,
+    (void*)wsCmd9F,
+    (void*)wsCmdA0,
+    (void*)wsCmdA1,
+    (void*)wsCmdA2,
+    (void*)wsCmdA3,
+    (void*)wsCmdA4,
+    (void*)wsCmdA5,
+    (void*)wsCmdA6,
+    (void*)wsCmdA7,
+    (void*)wsCmdA8,
+    (void*)wsCmdA9,
     (void*)WS_MICHIDURE,
-    (void*)fn_80218BD4,
-    (void*)fn_80218A6C,
-    (void*)fn_80218824,
-    (void*)fn_8021847C,
-    (void*)fn_802183BC,
-    (void*)fn_802182D4,
+    (void*)wsCmdAB,
+    (void*)wsCmdAC,
+    (void*)wsCmdAD,
+    (void*)wsCmdAE,
+    (void*)wsCmdAF,
+    (void*)wsCmdB0,
     (void*)WS_MIYABURU,
-    (void*)fn_80218018,
-    (void*)fn_80217E20,
-    (void*)fn_80217D34,
-    (void*)fn_80217C04,
-    (void*)fn_80217AE4,
-    (void*)fn_8021799C,
-    (void*)fn_802178F4,
-    (void*)fn_802177E4,
-    (void*)fn_802175A8,
-    (void*)fn_80217524,
-    (void*)fn_80217434,
+    (void*)wsCmdB2,
+    (void*)wsCmdB3,
+    (void*)wsCmdB4,
+    (void*)wsCmdB5,
+    (void*)wsCmdB6,
+    (void*)wsCmdB7,
+    (void*)wsCmdB8,
+    (void*)wsCmdB9,
+    (void*)wsCmdBA,
+    (void*)wsCmdBB,
+    (void*)wsCmdBC,
     (void*)WS_JIKOANJI,
-    (void*)fn_80217220,
+    (void*)wsCmdBE,
     (void*)WS_MARUKUNARU,
-    (void*)fn_802170B4,
-    (void*)fn_80217018,
-    (void*)fn_80216F50,
-    (void*)fn_80216D9C,
-    (void*)fn_80216A58,
+    (void*)wsCmdC0,
+    (void*)wsCmdC1,
+    (void*)wsCmdC2,
+    (void*)wsCmdC3,
+    (void*)wsCmdC4,
     (void*)WS_KIERUTAME,
     (void*)WS_KIERUTAME_AFTAR,
     (void*)WS_CHIISAKUNARU,
-    (void*)fn_80216780,
-    (void*)fn_80216650,
-    (void*)fn_802165B4,
+    (void*)wsCmdC8,
+    (void*)wsCmdC9,
+    (void*)wsCmdCA,
     (void*)WS_JUUDEN,
-    (void*)fn_80216410,
-    (void*)fn_80216364,
+    (void*)wsCmdCC,
+    (void*)wsCmdCD,
     (void*)WS_ICHAMON,
-    (void*)fn_80216264,
+    (void*)wsCmdCF,
     (void*)WS_CHOUHATSU,
-    (void*)fn_802160EC,
-    (void*)fn_80215CF0,
+    (void*)wsCmdD1,
+    (void*)wsCmdD2,
     (void*)WS_NARIKIRI,
-    (void*)fn_80215AEC,
+    (void*)wsCmdD4,
     (void*)WS_NEWOHARU,
-    (void*)fn_80215954,
+    (void*)wsCmdD6,
     (void*)WS_AKUBI,
-    (void*)fn_80215808,
-    (void*)fn_80215720,
-    (void*)fn_80215614,
-    (void*)fn_80215374,
+    (void*)wsCmdD8,
+    (void*)wsCmdD9,
+    (void*)wsCmdDA,
+    (void*)wsCmdDB,
     (void*)WS_ONNEN,
-    (void*)fn_802151C0,
-    (void*)fn_80214F10,
-    (void*)fn_80214E50,
-    (void*)fn_80214DB0,
-    (void*)fn_80214CB0,
-    (void*)fn_80214C04,
-    (void*)fn_80214BB4,
+    (void*)wsCmdDD,
+    (void*)wsCmdDE,
+    (void*)wsCmdDF,
+    (void*)wsCmdE0,
+    (void*)wsCmdE1,
+    (void*)wsCmdE2,
+    (void*)wsCmdE3,
     (void*)WS_HIMITUNOTIKARA,
-    (void*)fn_80214B58,
-    (void*)fn_80214AFC,
-    (void*)fn_80214AB4,
-    (void*)fn_802149B8,
-    (void*)fn_80214864,
-    (void*)fn_80214794,
-    (void*)fn_802146C4,
-    (void*)fn_802146B4,
-    (void*)fn_802145C8,
-    (void*)fn_80214450,
-    (void*)fn_80213E94,
-    (void*)fn_80213A78,
-    (void*)fn_80213A68,
-    (void*)fn_80213A58,
-    (void*)fn_80213A48,
-    (void*)fn_80213A38,
-    (void*)fn_80213A28,
+    (void*)wsCmdE5,
+    (void*)wsCmdE6,
+    (void*)wsCmdE7,
+    (void*)wsCmdE8,
+    (void*)wsCmdE9,
+    (void*)wsCmdEA,
+    (void*)wsCmdEB,
+    (void*)wsCmdEC,
+    (void*)wsCmdED,
+    (void*)wsCmdEE,
+    (void*)wsCmdEF,
+    (void*)wsCmdF0,
+    (void*)wsCmdF1,
+    (void*)wsCmdF2,
+    (void*)wsCmdF3,
+    (void*)wsCmdF4,
+    (void*)wsCmdF5,
     (void*)WS_ITEMEND,
     (void*)WS_GETEND,
     (void*)WS_STATUS_GET8,

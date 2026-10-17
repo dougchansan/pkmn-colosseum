@@ -19,9 +19,9 @@ typedef struct ColosseumUnownMenuIds {
 
 extern void _threadSwitch(void);
 extern u32 _toolentryAlloc__FUl(u32);
-extern void* fn_800E27B0(u32);
+extern void* GSmemLock(u32);
 extern void fn_800E24B0(u32);
-extern void fn_800E209C(u32);
+extern void GSmemFree(u32);
 extern void* getPokemon__5PCBOXFScSc(void*, s8, s8);
 extern u32 GSthreadCreate(u32, u32, u32, u32, u32, void*);
 extern void* heroGetStatus(void*, s32, u16);
@@ -43,7 +43,7 @@ extern void fn_80055B98(s32);
 extern void fn_800F915C(s32);
 extern void fn_8017B3E4(s32);
 extern s32 fn_8017B2CC(s32);
-extern void fn_8017B1CC(s32);
+extern void GSresReleaseById(s32);
 extern void std078_flagSetFalse(s32);
 
 extern void* lbl_8047A590;
@@ -124,7 +124,7 @@ static inline s32 colosseumBattleCountPokemon(void) {
 }
 
 /* Address: 0x80058150 | Size: 0x604 */
-void fn_80058150(void) {
+void pcBoxStorageMain(void) {
     u32 handle;
     u32* list;
     u32* out;
@@ -145,7 +145,7 @@ void fn_80058150(void) {
     listCount = colosseumBattleCountPokemon() + 1;
     if (listCount > 0) {
         handle = _toolentryAlloc__FUl((u32)listCount * sizeof(u32));
-        list = fn_800E27B0(handle);
+        list = GSmemLock(handle);
         lbl_8047A590 = list;
         out = list;
 
@@ -191,7 +191,7 @@ void fn_80058150(void) {
 
     connectedState = colosseumBattleGetConnectState();
     if (connectedState == 2) {
-        fn_8017B1CC(0x48A);
+        GSresReleaseById(0x48A);
         fn_800F915C(0x48A);
         shouldSkipWait = 1;
     } else {
@@ -210,10 +210,10 @@ void fn_80058150(void) {
 
     if (listCount > 0) {
         fn_800E24B0(handle);
-        fn_800E209C(handle);
+        GSmemFree(handle);
     }
 
-    fn_8017B1CC(0x70B);
+    GSresReleaseById(0x70B);
     fn_800F915C(0x70B);
     if (scriptCheckTemochiPokemon(0) != 0) {
         std078_flagSetFalse(0xDDE);

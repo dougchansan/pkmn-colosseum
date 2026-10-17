@@ -1,6 +1,6 @@
 #include "game/battle/battle_waza_types.h"
 
-void fn_801D744C(u32 bits)
+void wazaViewerSetErrorFlag(u32 bits)
 {
     *(u32*)(lbl_804673F8 + 0x0C) |= bits;
 }

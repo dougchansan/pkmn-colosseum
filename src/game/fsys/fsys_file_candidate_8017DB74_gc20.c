@@ -6,11 +6,11 @@
  * header in ARAM (making room in the cache by evicting the least recently
  * used archives first), allocate the archive's TOC buffer, then either copy
  * the TOC from the ARAM cache (slot status 4) or read the rest of it from
- * the disc (status 3, fn_8017F108 completes it).
+ * the disc (status 3, fsysDVDReadCallback completes it).
  *
  * The ARAM cache eviction (fsysCacheMakeRoom and its handle-table helpers)
  * is expanded five times in the level-0 fsys code: here, twice in
- * fn_8017CED8 and twice in fn_80179FA4 (find_inline_expansions.py block
+ * fsysStatus4 and twice in fsysInitTOC (find_inline_expansions.py block
  * 0x8017DC88 0x8017DD50: the handle removal scores 0.86 at the four other
  * sites, the difference being register numbers and stack slots).
  *
@@ -38,9 +38,9 @@ extern s32 lbl_8047B1BC;             /* handle table fill count */
 
 extern void* memcpy(void* dst, const void* src, u32 size);
 extern void DCFlushRange(void* addr, u32 nBytes);
-extern u16 fn_800E2C04(u32 size, u32 align);
-extern void* fn_800E27B0(u16 handle);
-extern void fn_80167E98(u32 fileInfo, void* dst, u32 length, u32 offset,
+extern u16 GSmemAlloc(u32 size, u32 align);
+extern void* GSmemLock(u16 handle);
+extern void GSdvdReadAsync(u32 fileInfo, void* dst, u32 length, u32 offset,
                         void (*callback)(s32 result));
 extern u32 fn_8017F794(u32 fileHandle, u32 key1, u32 key2);
 extern void fn_8017F800(s32 handleID);
@@ -48,7 +48,7 @@ extern u32 fn_8017FA5C(void);
 extern u32 fn_8017F928(u32 size, u32 fileHandle, u32 key1, u32 key2);
 extern void fn_80180320(void* main, void* aram, u32 size);
 extern void fn_80180450(void* main, void* aram, u32 size);
-extern void fn_8017F108(s32 result);
+extern void fsysDVDReadCallback(s32 result);
 
 /* A release-build assert: the test survives, the handler is compiled out
  * (as in gs_range_8017FA5C_exact_80180320.c). */
@@ -61,9 +61,9 @@ static inline void* fsysAlloc(u32 size)
     u16 handle;
 
     alignedSize = (size + 0x1F) & ~0x1F;
-    handle = fn_800E2C04(alignedSize, 0x20);
+    handle = GSmemAlloc(alignedSize, 0x20);
     if (handle != 0) {
-        return fn_800E27B0(handle);
+        return GSmemLock(handle);
     }
     return NULL;
 }
@@ -142,7 +142,7 @@ static inline s32 fsysCacheRemoveHandle(s32 handleID)
  * Evict least recently used archives from the ARAM cache until `size`
  * bytes are free, unless the slot's own archive is cached already. `size`
  * is substituted into both tests, so an aligned size is recomputed at each
- * (fn_8017CED8 passes slot->totalDecompSize, which is reloaded instead).
+ * (fsysStatus4 passes slot->totalDecompSize, which is reloaded instead).
  */
 static inline void fsysCacheMakeRoom(FSYSSlot* slot, u32 size)
 {
@@ -170,7 +170,7 @@ static inline void fsysCacheMakeRoom(FSYSSlot* slot, u32 size)
 }
 
 /* Address: 0x8017DB74 | size: 0x330 */
-void fn_8017DB74(FSYSSlot* slot)
+void fsysSlotReadNextEntry(FSYSSlot* slot)
 {
     u8 loaded;
     u32 offset;
@@ -211,7 +211,7 @@ void fn_8017DB74(FSYSSlot* slot)
         slot->status = 3;
         memcpy(slot->archiveData, slot, 0x40);
         offset = 0x40;
-        fn_80167E98(slot->fileInfo0, (u8*)slot->archiveData + 0x40,
-                    (tocSize - 0x40 + 0x1F) & ~0x1F, offset, fn_8017F108);
+        GSdvdReadAsync(slot->fileInfo0, (u8*)slot->archiveData + 0x40,
+                    (tocSize - 0x40 + 0x1F) & ~0x1F, offset, fsysDVDReadCallback);
     }
 }

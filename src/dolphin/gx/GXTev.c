@@ -157,14 +157,14 @@ extern GXData_800BB30C* const gx;
 extern volatile u16* __cpReg;
 extern u32 lbl_80313608[];
 
-extern void fn_800BB780(u32 dstCoord, u32 func, u32 srcParam, u32 mtx,
+extern void GXSetTevIndirect(u32 dstCoord, u32 func, u32 srcParam, u32 mtx,
                         u32 normalize, u32 postMtx, u32 normalizeColor,
                         u8 bias, u8 arg8, u32 arg9);
-extern void fn_800BD640(f32 left, f32 top, f32 width, f32 height, f32 nearz,
+extern void GXSetViewportJitter(f32 left, f32 top, f32 width, f32 height, f32 nearz,
                         f32 farz, u32 field);
 extern void __GXSetMatrixIndex(s32 value);
 extern void fn_800BE164(u32* hi, u32* lo);
-extern void fn_800B91EC(void);
+extern void __GXSetDirtyState(void);
 extern void __GXSendFlushPrim(void);
 extern u32 __cvt_fp2unsigned(f32 value);
 extern s32 TRKReleaseBuffer(s32 bufferIndex);
@@ -330,7 +330,7 @@ typedef struct GXFogAdjTable_800BCCDC {
 } GXFogAdjTable_800BCCDC;
 
 
-void fn_800BC2F8(u32 id, GXColor_800BC2F8 color) {
+void GXSetTevColor(u32 id, GXColor_800BC2F8 color) {
     u32 reg0;
     u32 reg1;
 
@@ -351,7 +351,7 @@ void fn_800BC2F8(u32 id, GXColor_800BC2F8 color) {
     gx->field_002 = 0;
 }
 
-void fn_800BC36C(u32 id, GXColorS10_800BC36C color) {
+void GXSetTevColorS10(u32 id, GXColorS10_800BC36C color) {
     u32 reg0;
     u32 reg1;
 
@@ -372,7 +372,7 @@ void fn_800BC36C(u32 id, GXColorS10_800BC36C color) {
     gx->field_002 = 0;
 }
 
-void fn_800BC3E0(u32 id, GXColor_800BC2F8 color) {
+void GXSetTevKColor(u32 id, GXColor_800BC2F8 color) {
     u32 reg0;
     u32 reg1;
 
@@ -448,7 +448,7 @@ void GXSetTevSwapModeTable(u32 table, u32 red, u32 green, u32 blue, u32 alpha) {
     p->field_002 = 0;
 }
 
-void fn_800BC618(u32 comp0, u8 ref0, u32 op, u32 comp1, u8 ref1) {
+void GXSetAlphaCompare(u32 comp0, u8 ref0, u32 op, u32 comp1, u8 ref1) {
     u32 reg = ref0;
 
     reg |= 0xF3000000U;
@@ -465,7 +465,7 @@ void fn_800BC618(u32 comp0, u8 ref0, u32 op, u32 comp1, u8 ref1) {
               ((int)(value) << (31 - (pos) - (size) + 1))
 
 /* GXSetZTexture */
-void fn_800BC66C(int op, int format, u32 bias) {
+void GXSetZTexture(int op, int format, u32 bias) {
     u32 val1;
     u32 val2;
     u32 val3;
@@ -544,7 +544,7 @@ void GXSetTevOrder(int stage, int coord, int map, int color)
     gx->dirtyState |= 1;
 }
 
-void fn_800BC8C8(u32 nStages) {
+void GXSetNumTevStages(u32 nStages) {
     GXData_800BB30C* data = gx;
 
     data->genMode = (data->genMode & ~0x3C00U) |

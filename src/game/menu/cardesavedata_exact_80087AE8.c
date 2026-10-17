@@ -7,7 +7,7 @@
 
 s32 fn_80087AE8(u8* work, int flags)
 {
-    extern u32 fn_800D0F44(s32);
+    extern u32 SIProbe(s32);
     extern u8 menuIsCheck(s32);
     extern u8* windowGetKeyInfo(void);
     extern s8 winMsgCheck(void);
@@ -19,7 +19,7 @@ s32 fn_80087AE8(u8* work, int flags)
     *(u32*)(work + 0x28) = 0;
     initialized = 1;
     if ((s8)work[0x21] >= 0
-     && fn_800D0F44((s8)work[0x21]) == 0x40000) {
+     && SIProbe((s8)work[0x21]) == 0x40000) {
         initialized = 0;
     }
 
@@ -49,7 +49,7 @@ s32 fn_80087AE8(u8* work, int flags)
             }
         }
         if ((flags & 4) != 0) {
-            status = fn_800D0F44(((s8*)work)[0x21]);
+            status = SIProbe(((s8*)work)[0x21]);
             if (status != 0x80) {
                 if (initialized != 0) {
                     if (status == 0x40000) {

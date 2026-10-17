@@ -17,7 +17,7 @@ extern void memoDataSet(u32 index, void* pokemon);
 extern void* heroBiosGetPokemonPtr(u8* data, u32 index);
 extern void heroSetStatus(u8* data, u32 kind, u32 value);
 extern void heroItemAddItemDataId(u8* data, u32 item, u32 count, s32 slot);
-extern s32 fn_800057A0(void);
+extern s32 GSgetVersionMajor(void);
 extern const u8 lbl_8047D028[8];
 
 extern void GSflagClear(u32 flag);
@@ -28,7 +28,7 @@ extern void mailInitMailbox(void* data);
 extern void sodateyaInit(void* data);
 extern void memoInit(void* data);
 extern void exribbonInit(void* data);
-extern void fn_8006B6B4(void* data);
+extern void savedataBattleInit(void* data);
 extern void fn_80083CBC(void* data);
 extern void fn_801EF128(void* data);
 
@@ -36,7 +36,7 @@ extern void fn_801EF128(void* data);
  * current save record. */
 extern void* fn_80128CC0(void* save);
 extern void* fn_80128CDC(void* save);
-extern void* fn_80128CF8(void* save);
+extern void* savedataBiosGetE3E8Ptr(void* save);
 extern void* fn_80128D14(void* save);
 extern void* fn_80128D30(void* save);
 extern void* fn_80128D4C(void* save);
@@ -44,7 +44,7 @@ extern void* fn_80128D68(void* save);
 extern void* fn_80128DD4(void* save);
 extern void* fn_80128DEC(void* save);
 extern void* fn_80128E04(void* save);
-extern void* fn_80128E24(void);
+extern void* savedataGetWorkPtr(void);
 
 void savedataInit(SaveData* save);
 
@@ -52,7 +52,7 @@ void savedataInit(SaveData* save);
 static inline void* savedataResolve(void* save)
 {
     if (save == NULL) {
-        save = fn_80128E24();
+        save = savedataGetWorkPtr();
         if (save == NULL) {
             return NULL;
         }
@@ -65,7 +65,7 @@ static inline void* savedataResolve(void* save)
 static inline void* savedataGetPart(void* save, void* (*get)(void*))
 {
     if (save == NULL) {
-        save = fn_80128E24();
+        save = savedataGetWorkPtr();
         if (save == NULL) {
             return NULL;
         }
@@ -84,7 +84,7 @@ void savedataCreate(SaveData* save, const u16* name)
     savedataInit(save);
     gameData = savedataGetPart(save, fn_80128E04);
 
-    version = fn_800057A0();
+    version = GSgetVersionMajor();
     switch (version) {
     case 0:
         gamedataCreate(gameData, 0xB, 3, 1, 1);
@@ -140,7 +140,7 @@ void savedataInit(SaveData* save)
 
     mailInitMailbox(savedataGetPart(save, fn_80128D68));
     sodateyaInit(savedataGetPart(save, fn_80128D4C));
-    fn_8006B6B4(savedataGetPart(save, fn_80128CF8));
+    savedataBattleInit(savedataGetPart(save, savedataBiosGetE3E8Ptr));
     memoInit(savedataGetPart(save, fn_80128D30));
     fn_80083CBC(savedataGetPart(save, fn_80128D14));
     fn_801EF128(savedataGetPart(save, fn_80128CDC));

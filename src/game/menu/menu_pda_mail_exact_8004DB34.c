@@ -27,12 +27,12 @@ extern s32 menuOpenCustom(s32 menuId, ...);
 extern u32 windowGetActiveID(void);
 extern void menuClose(s32 menuId);
 extern void menuCloseSync(s32 menuId, s32 flag);
-extern u32 fn_801D1620(u32 idx);
+extern u32 mailGetEntryField4(u32 idx);
 extern const u32 lbl_802672F0[12];
 
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (scheduling off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma scheduling off
-s32 fn_8004DB34(PdaMailWindowB* window, void* fieldHandle)
+s32 pdaMailSortMenuDraw(PdaMailWindowB* window, void* fieldHandle)
 {
     if (*window->field_0x60 != 0) {
         winSpriteSetDisp(fieldHandle, 0);
@@ -112,7 +112,7 @@ s32 fn_8004DCC0(void* unused, PdaMailOutC* window)
         return 0;
     }
     {
-        u32 result = fn_801D1620((u8)i);
+        u32 result = mailGetEntryField4((u8)i);
         if (result != 0) {
             window->field_0x4c = result;
         } else {

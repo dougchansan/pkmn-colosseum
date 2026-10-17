@@ -8,7 +8,7 @@
  */
 #include "dolphin/types.h"
 
-u8 fn_801D0AA0(u32 index)
+u8 heroGetPokemonBallId(u32 index)
 {
     extern void* savedataGetStatus(u32, u32);
     extern void* heroBiosGetPokemonPtr(void*, u16);
@@ -59,26 +59,26 @@ u16 fn_801D0AFC(s32 mode)
 
 void std083_unk_801d0bd0(s32 arg0, s32 arg1, s32 mode)
 {
-    extern void fn_801D0C30(void);
-    extern void fn_801D0DB0(s32, s32);
+    extern void pokemonCenterHealSequence(void);
+    extern void pokemonCenterBallMachineSequence(s32, s32);
 
     switch (mode) {
     case 0:
-        fn_801D0DB0(arg0, arg1);
+        pokemonCenterBallMachineSequence(arg0, arg1);
         break;
     case 1:
-        fn_801D0C30();
+        pokemonCenterHealSequence();
         break;
     case 2:
-        fn_801D0C30();
+        pokemonCenterHealSequence();
         break;
     case 3:
-        fn_801D0C30();
+        pokemonCenterHealSequence();
         break;
     }
 }
 
-void fn_801D0C30(void)
+void pokemonCenterHealSequence(void)
 {
     extern f32 lbl_8047E184;
     extern void _threadSwitch(void);

@@ -362,16 +362,16 @@ extern void __DSP_insert_task(DSPTaskInfo* task);
 extern void __DSP_debug_printf(char* fmt, ...);
 extern void __DSP_exec_task(DSPTaskInfo* current, DSPTaskInfo* next);
 extern void __DSP_remove_task(DSPTaskInfo* task);
-extern void fn_8009870C();
-extern BOOL fn_80098944(s32 chan);
-extern void fn_80098AE8(s32 chan);
-s32 fn_800AF8A0(s32 chan);
+extern void EXISetExiCallback();
+extern BOOL EXIProbe(s32 chan);
+extern void EXIDetach(s32 chan);
+s32 Retry(s32 chan);
 void __CARDUnlockedHandler(s32 chan, OSContext* context);
 extern void OSRegisterVersion(const char* version);
 u16 __CARDGetFontEncode(void);
 s32 __CARDPutControlBlock(CARDControl* card, s32 result);
-s32 fn_800AFBDC(s32 chan, void* buf, void* callback);
-s32 fn_800AFFE0(s32 chan, u32 addr, void* callback);
+s32 __CARDStart(s32 chan, void* buf, void* callback);
+s32 __CARDEraseSector(s32 chan, u32 addr, void* callback);
 extern s32 __CARDGetControlBlock(s32 chan, CARDControl** pcard);
 extern void* __OSLockSram(void);
 extern void __OSUnlockSram(BOOL commit);
@@ -640,7 +640,7 @@ void UpdateIconOffsets(CARDDirEntry* entry, CARDStat* stat);
 
 extern GXData* const gx;
 
-void fn_800B7594(u8 overflow, u8 underflow);
-void fn_800B75D0(u8 clearOverflow, u8 clearUnderflow);
+void __GXWriteFifoIntEnable(u8 overflow, u8 underflow);
+void __GXWriteFifoIntReset(u8 clearOverflow, u8 clearUnderflow);
 
 void GXInitFifoPtrs(GXFifoObj* fifo, void* readPtr, void* writePtr);

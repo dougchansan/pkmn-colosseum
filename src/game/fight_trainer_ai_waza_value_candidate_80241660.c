@@ -18,7 +18,7 @@ extern void* pokemonGetStatus();
 extern u32   pokemonSetStatus();
 
 /* Battle system functions */
-extern void fn_801EF8F4();
+extern void battleCameraSelect();
 
 /* Sound functions */
 extern void soundStop();     /* Stop sound */
@@ -77,13 +77,13 @@ u8 fightFloorGetFightTrainerFightOutPokemonIsFightActionAttackWazaOut(u32, void*
 s32 fightTrainerGetStatus(u32, u32, u32, u32);
 u16 fightFloorGetFightTrainerFightPokemonPtrAry(u32, void*, void*, u32, u32);
 u32 fightOutPokemonGetPokemonPtr(u32);
-u8 fn_80237310(void*, u32);
+u8 fightTrainerAiIsJoutaiNormal(void*, u32);
 u8 fn_80237F74(void*, u32, u32);
 u8 fn_802384B4(void*, u32, u32);
 u8 fn_80239564(void*, u32);
-u8 fn_80235B04(void*, u32, u32);
-u16 fn_80238980(void*, u32);
-u8 fn_80238E30(void*, u32, u32);
+u8 fightTrainerAiGetNowTenkou(void*, u32, u32);
+u16 fightTrainerAiGetPokemonDataId2(void*, u32);
+u8 fightTrainerAiGetPokemonZokusei(void*, u32, u32);
 u8 fn_80239058(void*, u32, u32);
 u32 fn_80239984(u32, void*, u32);
 u32 fightTrainerAiAddValue(u32, s32);
@@ -101,8 +101,8 @@ u32 fightTrainerAiWazaValueTedasuke(void *ctx, u32 param1, u32 param2, u32 param
   extern u16 fightFloorGetFightTrainerFightOutPokemonPtrAry(u32, void *, u32 *, u32, u32);
   extern s32 fn_80202108(u32, u32);
   extern s32 fn_80202234(u32, u32);
-  extern u16 fn_802367CC(void *, u32, u16 *, u32, u32);
-  extern u8 fn_80236BFC(void *, u32, u32);
+  extern u16 fightTrainerAiGetFightPokemonWazaAry(void *, u32, u16 *, u32, u32);
+  extern u8 fightTrainerAiIsPokemonJoutai(void *, u32, u32);
   extern u8 fn_8023943C(void *, u32, u32);
   unsigned int new_var2;
   u32 enemy[6];
@@ -149,7 +149,7 @@ u32 fightTrainerAiWazaValueTedasuke(void *ctx, u32 param1, u32 param2, u32 param
     {
       continue;
     }
-    wazaCount = fn_802367CC(ctx, enemy[i], waza, 0, 1);
+    wazaCount = fightTrainerAiGetFightPokemonWazaAry(ctx, enemy[i], waza, 0, 1);
     if (wazaCount == 0)
     {
       continue;
@@ -206,7 +206,7 @@ u32 fightTrainerAiWazaValueTedasuke(void *ctx, u32 param1, u32 param2, u32 param
     {
       continue;
     }
-    if (fn_80236BFC(ctx, enemy[i], 0x12) != 1)
+    if (fightTrainerAiIsPokemonJoutai(ctx, enemy[i], 0x12) != 1)
     {
       continue;
     }
@@ -237,7 +237,7 @@ u32 fightTrainerAiWazaValueTedasuke(void *ctx, u32 param1, u32 param2, u32 param
     {
       continue;
     }
-    if (fn_80236BFC(ctx, pokemon, 8) == 0)
+    if (fightTrainerAiIsPokemonJoutai(ctx, pokemon, 8) == 0)
     {
       enough = -1;
     }

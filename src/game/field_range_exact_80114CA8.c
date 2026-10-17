@@ -21,16 +21,16 @@ extern void* GSresAllocResourceAlign(u32 size, u32 alignment, u32 group, u32 id,
 extern void* GSresGetResource(u32 group, u32 id);
 extern u8 fn_800FF548(void); /* the current floor's fade-out flag */
 extern u8 fn_800FF554(void); /* the current floor's fade-in flag */
-extern void fn_800F76E4(void* script);
-extern s32 fn_800F760C(void* script);
-extern void fn_80112700(void);
+extern void cms_RegisterScript(void* script);
+extern s32 cms_UnregisterScript(void* script);
+extern void floorStartSoundScript(void);
 extern void* GSmsgFontOpen(void* font);
 extern s32 GSmsgFontClose(void* font);
 extern void GSmsgOpen(void* msg);
 extern s32 GSmsgClose(void* msg);
 extern void flareRelease(void);
-extern void fn_801193BC(void* bank);
-extern void fn_800D2738(void* camera);
+extern void gsParticleKillAll(void* bank);
+extern void GScameraFree(void* camera);
 extern void GSlightFree(void* light);
 extern s32 GScolsys2UnloadCCD(void);
 extern void GStextureFree(void* texture);
@@ -61,8 +61,8 @@ void* floorReadScriptPostFunc(u32 group, u32 id) {
     void* script = GSresGetResource(group, id);
 
     if (fn_800FF548() == 0 && script != NULL) {
-        fn_800F76E4(script);
-        fn_80112700();
+        cms_RegisterScript(script);
+        floorStartSoundScript();
     }
     return script;
 }
@@ -151,12 +151,12 @@ u32 _unloadFlare__FPvUlUl(void* data, u32 group, u32 id) {
 }
 
 u32 _unloadParticles__FPvUlUl(void* data, u32 group, u32 id) {
-    fn_801193BC(data);
+    gsParticleKillAll(data);
     return 1;
 }
 
 u32 _unloadCamera__FPvUlUl(void* data, u32 group, u32 id) {
-    fn_800D2738(data);
+    GScameraFree(data);
     return 1;
 }
 
@@ -170,7 +170,7 @@ u32 _unloadScript__FPvUlUl(void* data, u32 group, u32 id) {
     if (fn_800FF554() != 0) {
         return 0;
     }
-    fn_800F760C(data);
+    cms_UnregisterScript(data);
     return 1;
 }
 

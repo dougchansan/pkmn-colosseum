@@ -13,7 +13,7 @@ s32 _AGB_EntryGetStatus__FlPUl(s32 chan, u32* response)
     u32 command;
     u8 status;
 
-    if (fn_800D0F44(chan) != PKJB_SI_GBA) {
+    if (SIProbe(chan) != PKJB_SI_GBA) {
         return 1;
     }
     if (GBAGetStatus(chan, &status) != 0) {

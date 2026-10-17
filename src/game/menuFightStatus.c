@@ -39,7 +39,7 @@ extern void  fn_801081F8(void* ctx, s32 msgId, s32 flags); /* Display message */
 
 /* Rendering */
 extern u32   GSmsgGetRect();                           /* Get model dimensions */
-extern void  fn_800FB680();
+extern void  GSmsgPrintColor();
 
 /* Map/warp */
 extern u8    fightFloorCheckFightActionFightOutPokemonIrekaeSelect(s32 p1, void* warpId, void* outDest);
@@ -53,7 +53,7 @@ extern u8    fightFloorIsUseFightTimerCommand(s32 controller);             /* Ch
 extern u8    fightTimerCommandIsOver(void);                       /* Check A button */
 extern u16   std103_battleGetResult(void);                       /* Get input state */
 extern void  _threadSwitch(void);                       /* Frame advance */
-extern u32   fn_800F7AF0(s32 slot);                   /* Get render flags */
+extern u32   GSinputButtonsChanged(s32 slot);                   /* Get render flags */
 extern u32   fn_800F7BC4(s32 slot);                   /* Get VSync flags */
 
 /* Battle bridge */

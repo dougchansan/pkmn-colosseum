@@ -1,7 +1,7 @@
 /**
  * PDA fn_8003B6D0 (.text 0x8003B6D0 - 0x8003B814): caption for the
  * highlighted battle. Carved from pda_range_80037158.c, which keeps the same
- * body for its other candidate partitions; here fn_801EE248 is declared with
+ * body for its other candidate partitions; here darkPokemonSaveGet4A0 is declared with
  * the u32 return retail's callers imply (no 16-bit mask on its result).
  */
 #include "dolphin/types.h"
@@ -141,15 +141,15 @@ extern PdaModelWindow lbl_803A6748;
 extern u8 lbl_803A67FC[];
 extern PdaSceneWork lbl_803A6818;
 
-extern s32 fn_8003B85C(void* window, s32 enabled);
-extern void fn_8003C2B8(PdaSprite* sprite, PdaEvent* event);
+extern s32 pdaSnagListDetailKey(void* window, s32 enabled);
+extern void pdaSnagListDrawDetail(PdaSprite* sprite, PdaEvent* event);
 extern s32 fn_80041E48(void* work, s32 mode);
-extern s32 fn_80042658(void* work, s32 mode);
-extern void fn_800439BC(void* scene);
+extern s32 pdaModelViewerControl(void* work, s32 mode);
+extern void pdaReadPadInput(void* scene);
 extern void GSscene_SetMode(s32 mode);
 extern void menuButtonNormal(void* button);
 extern void winSpriteSetDisp(void* sprite, s32 disp);
-extern void fn_800FB680(s32 arg0, s32 arg1, s32 arg2, void* data);
+extern void GSmsgPrintColor(s32 arg0, s32 arg1, s32 arg2, void* data);
 
 #if !defined(PDA_RANGE_EXACT_80037174_ONLY)
 
@@ -288,8 +288,8 @@ static inline void pdaResetPeopleTables(u8* base, u8* tbl)
 static inline void pdaFillSavePrompt(void)
 {
     extern u32 fn_80005748(void);
-    extern u32 fn_801EF214(void);
-    extern u32 fn_801EF274(void);
+    extern u32 darkPokemonCountFlag14(void);
+    extern u32 darkPokemonCountFlag12(void);
     extern void msgctrlSetValue(s32 id, u32 value);
     u32 playTime;
 
@@ -297,11 +297,11 @@ static inline void pdaFillSavePrompt(void)
     if (lbl_8047A498 != 0) {
         playTime = lbl_8047A498;
     }
-    lbl_8047A49C = fn_801EF214();
-    lbl_8047A4A0 = fn_801EF274();
+    lbl_8047A49C = darkPokemonCountFlag14();
+    lbl_8047A4A0 = darkPokemonCountFlag12();
     msgctrlSetValue(0x4c, playTime);
-    msgctrlSetValue(0x2f, fn_801EF274());
-    msgctrlSetValue(0x30, fn_801EF214());
+    msgctrlSetValue(0x2f, darkPokemonCountFlag12());
+    msgctrlSetValue(0x30, darkPokemonCountFlag14());
 }
 
 typedef struct PdaSaveImage {
@@ -413,8 +413,8 @@ extern f32 lbl_8047BDAC;
 extern f32 lbl_8047BDF0;
 
 extern u32 gfxVtxTexCoord();
-extern u32 fn_800D5CB8();
-extern u32 fn_800D61E4();
+extern u32 gfxVtxColor4u8();
+extern u32 gfxVtxPos2s16();
 extern u32 gfxEnd();
 extern u32 gfxBegin();
 extern u32 gfxSetPrimitive();
@@ -422,11 +422,11 @@ extern u32 gfxSetVtxDesc();
 extern u32 gfxLoadTexture();
 extern u32 gfxClearFlags();
 extern u32 gfxSetFlags();
-extern u32 fn_800E202C();
-extern u32 fn_800E209C();
+extern u32 GSmemGetHandleByPtr();
+extern u32 GSmemFree();
 extern u32 fn_800E24B0();
-extern u32 fn_800E27B0();
-extern u32 fn_800E2C04();
+extern u32 GSmemLock();
+extern u32 GSmemAlloc();
 extern u32 fn_800FA280();
 extern void* menuDataBiosGetPtr(s32);
 extern u32 fn_80102510();
@@ -442,18 +442,18 @@ extern u32 pokemonGetSex();
 extern u32 fn_801240C4();
 extern u32 fn_80132A38();
 extern u32 soundStartRaw(u32, u32, u32);
-extern u32 fn_8017B1CC();
+extern u32 GSresReleaseById();
 extern s32 fn_8017B2CC();
 extern u32 fn_8017B3E4();
 extern u32 fn_801EE0BC();
-extern u32 fn_801EE248();
-extern u32 fn_801EE328();
-extern u16 fn_801EE614();
-extern u32 fn_801EE750();
-extern u8 fn_801EE8F4();
-extern u8 fn_801EEAD0();
-extern u8 fn_801EEC74();
-extern u8 fn_801EED88(u16);
+extern u32 darkPokemonSaveGet4A0();
+extern u32 darkPokemonSaveGetName();
+extern u16 darkPokemonGetFlag1C();
+extern u32 darkPokemonSaveGet8();
+extern u8 darkPokemonCheckFlag16();
+extern u8 darkPokemonCheckFlag12();
+extern u8 darkPokemonCheckFlag14();
+extern u8 darkPokemonCheckFlag0C(u16);
 extern u16 fn_801EEFAC();
 extern u32 fn_801FCC7C();
 extern u32 fightTrainerDataBiosGetPtr();
@@ -475,11 +475,11 @@ static inline void pdaDrawModelTexture(PdaSprite* sprite, u8* model)
         gfxSetVtxDesc(lbl_80314F98);
         gfxLoadTexture(0, texture);
         gfxBegin(2);
-        fn_800D61E4(0, 0);
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+        gfxVtxPos2s16(0, 0);
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
         gfxVtxTexCoord(0, lbl_8047BAC4, lbl_8047BAC4);
-        fn_800D61E4(sprite->x, sprite->y);
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+        gfxVtxPos2s16(sprite->x, sprite->y);
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
         gfxVtxTexCoord(0, lbl_8047BAC8, lbl_8047BAC8);
         gfxEnd();
     }
@@ -552,7 +552,7 @@ static inline void pdaDrawNameRows(u8* context, s32 first, f32 y)
                 name = GSmsgGetGSchar(1);
             }
             msgctrlSetValue(0x37, name);
-            fn_800FB680(0, (s32)y - 2, (u32)context[0x8B] | -0x100LL,
+            GSmsgPrintColor(0, (s32)y - 2, (u32)context[0x8B] | -0x100LL,
                         (void*)0xE7);
         }
         y += lbl_8047BCF4;
@@ -564,10 +564,10 @@ static inline void pdaDrawNameRows(u8* context, s32 first, f32 y)
 
 static inline void* pdaAlloc(s32 size, s32 align)
 {
-    u32 h = fn_800E2C04(size, align);
+    u32 h = GSmemAlloc(size, align);
 
     if ((u16)h != 0) {
-        return (void*)fn_800E27B0(h);
+        return (void*)GSmemLock(h);
     }
     return NULL;
 }
@@ -591,7 +591,7 @@ static inline u32 pdaBattleCaption(u16 id)
 
     trainerId = fn_801EEFAC(id, 0);
     if (trainerId == 9) {
-        entry = pokemonDataBiosGetPtr(fn_801EE248(id));
+        entry = pokemonDataBiosGetPtr(darkPokemonSaveGet4A0(id));
         if (entry != NULL) {
             name = GSmsgGetGSchar((u32)pokemonDataBiosGetName(entry));
         }
@@ -631,7 +631,7 @@ void fn_8003B6D0(u8* ctx)
         msg = GSmsgGetGSchar(1);
     }
     msgctrlSetValue(0x37, msg);
-    fn_800FB680(0, 0, ctx[0x8b] | -0x100, (void*)0xcf);
+    GSmsgPrintColor(0, 0, ctx[0x8b] | -0x100, (void*)0xcf);
 }
 #pragma pop
 #pragma peephole reset

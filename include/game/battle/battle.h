@@ -300,8 +300,8 @@ typedef struct TypeMatchup {
  * game/effect/fade.c, and game/effect/fade_effect.c.
  * ========================================================================= */
 
-/* fn_801C01C8 */ void* fn_801C01C8(void* callback);
-/* fn_801C021C */ void* fn_801C021C(void* callback);
+/* HSD_VISetUserGXDrawDoneCallback */ void* HSD_VISetUserGXDrawDoneCallback(void* callback);
+/* HSD_VISetUserPostRetraceCallback */ void* HSD_VISetUserPostRetraceCallback(void* callback);
 /* fn_801C0270 */ s32  fn_801C0270(void);
 /* fn_801C027C */ void fn_801C027C(void* obj, f32 frame);
 /* fn_801C028C */ void fn_801C028C(void* ctx);                   /* 0xC94 pre-grid state machine */
@@ -329,7 +329,7 @@ typedef struct TypeMatchup {
 /* battleCameraDoSimple (was fn_801C2D68) */ void battleCameraDoSimple(void);                        /* grid tick 2 */
 /* battleCameraDisable (was fn_801C2D74) */ void battleCameraDisable(void);                        /* grid tick 3 */
 /* battleCameraStartRandom (was fn_801C2D80) */ void battleCameraStartRandom(void);                        /* grid cleanup 0x180 */
-/* fn_801C2F00 */ void fn_801C2F00(void* data, u32 size);        /* grid load data 0x208 */
+/* battleCameraStartOffsetAnime */ void battleCameraStartOffsetAnime(void* data, u32 size);        /* grid load data 0x208 */
 
 /* =========================================================================
  * Battle Grid Core (0x801C3108 - 0x801C53BC)
@@ -337,8 +337,8 @@ typedef struct TypeMatchup {
  * ========================================================================= */
 
 /* battleGridGetPtr (was fn_801C3108) */ void* battleGridGetPtr(void);                       /* battleGrid_GetState */
-/* fn_801C3114 */ void fn_801C3114(void);                        /* battleGrid_Init */
-/* fn_801C31EC */ void fn_801C31EC(void);                        /* battleGrid_Setup */
+/* battleGridReset */ void battleGridReset(void);                        /* battleGrid_Init */
+/* battleGridInit */ void battleGridInit(void);                        /* battleGrid_Setup */
 /* battleGridUpdate (was fn_801C3430) */ void battleGridUpdate(void);                        /* battleGridSetup 0x634 */
 /* battleGridGetDistance (was fn_801C3A64) */ f32 battleGridGetDistance(u8 side);
 /* battleGridGetNormalisedScale (was fn_801C3B80) */ void battleGridGetNormalisedScale(f32* scale);
@@ -427,11 +427,11 @@ typedef struct GStexture GStexture;
 /* fn_801C8834 */ void std205_getDNASampleSepcies(s32 slot);
 /* fn_801C89F8 */ void std200_gbaConnectEvent(s32 side, s32 slot);          /* EncounterSequence 0x3D8 */
 /* fn_801C8DD0 */ s32  std199_menuDisplayCustomMenu(s32 slot);
-/* fn_801C8E14 */ s32  fn_801C8E14(s32 pokemonID, s32 animIdx, u16 moveID, u8 animType);
+/* floorElevatorSetupCharacters */ s32  floorElevatorSetupCharacters(s32 pokemonID, s32 animIdx, u16 moveID, u8 animType);
 
 /* Scene state & effects */
-/* fn_801C9910 */ void fn_801C9910(void);
-/* fn_801C9B6C */ void fn_801C9B6C(s32 transitionType);
+/* floorElevatorIsHeroInside */ void floorElevatorIsHeroInside(void);
+/* floorEventElevatorMain */ void floorEventElevatorMain(s32 transitionType);
 /* fn_801C9C9C */ s32  fn_801C9C9C(void);
 /* fn_801C9F5C */ void std182_tvNewsEvent(void);
 /* fn_801CA358 */ u8   std211_tvSetChannelByStory(void);
@@ -439,26 +439,26 @@ typedef struct GStexture GStexture;
 
 /* Scene transitions & mega-functions */
 /* fn_801CBF64 */ void fn_801CBF64(void);                        /* complex anim controller 0x41C */
-/* fn_801CC380 */ void fn_801CC380(void);                        /* mega-function A 0x1784 */
-/* fn_801CDB04 */ void fn_801CDB04(void);                        /* mega-function B 0x181C */
+/* sha1Transform */ void sha1Transform(void);                        /* mega-function A 0x1784 */
+/* memcardTaskMain */ void memcardTaskMain(void);                        /* mega-function B 0x181C */
 /* fn_801CF9C8 */ void fn_801CF9C8(void);
 /* fn_801CFD08 */ void fn_801CFD08(void);                        /* transition controller 0x378 */
-/* fn_801D0DB0 */ void fn_801D0DB0(void);                        /* rendering main loop 0x588 */
+/* pokemonCenterBallMachineSequence */ void pokemonCenterBallMachineSequence(void);                        /* rendering main loop 0x588 */
 
 /* =========================================================================
  * Waza / Move Animation System (0x801D1338 - 0x801E03D4) [battle_waza.c]
  * ========================================================================= */
 
 /* Waza data access */
-/* fn_801D1338 */ u16  fn_801D1338(void);
+/* mailBiosGetCounter */ u16  mailBiosGetCounter(void);
 /* fn_801D1364 */ void* fn_801D1364(u16 handle, s32 idx);
-/* fn_801D139C */ u32  fn_801D139C(s32 idx);
-/* fn_801D13E4 */ u32  fn_801D13E4(s32 idx);
-/* fn_801D142C */ u32  fn_801D142C(s32 idx);
+/* mailDataBiosGet08 */ u32  mailDataBiosGet08(s32 idx);
+/* mailDataBiosGet04 */ u32  mailDataBiosGet04(s32 idx);
+/* mailDataBiosGet01 */ u32  mailDataBiosGet01(s32 idx);
 
 /* Waza animation controllers */
-/* fn_801D1734 */ u8 fn_801D1734(s32 sequence, s32 index);
-/* fn_801D1864 */ u16 fn_801D1864(s32 sequence, s32 index);
+/* shadowGroupGetEntryByte */ u8 shadowGroupGetEntryByte(s32 sequence, s32 index);
+/* shadowGroupGetEntryId */ u16 shadowGroupGetEntryId(s32 sequence, s32 index);
 /* fn_801D2D28 */ void fn_801D2D28(void);
 
 /* Waza animation state machines */
@@ -483,9 +483,9 @@ typedef struct GStexture GStexture;
 /* Waza system lifecycle */
 /* wazaSequenceSysRelease */ void wazaSequenceSysRelease(void);                        /* waza system cleanup */
 /* fn_801DADC0 */ void fn_801DADC0(void* context);                /* waza partial reset */
-/* fn_801DAEF8 */ void fn_801DAEF8(s32 count);                   /* waza system init */
+/* wazaSequenceSysInit */ void wazaSequenceSysInit(s32 count);                   /* waza system init */
 /* wazaSequenceSysGetResID */ BOOL wazaSequenceSysGetResID(void);                        /* waza get initialized */
-/* fn_801DB088 */ void fn_801DB088(void);                        /* waza system reset */
+/* wazaSequenceSysUpdate */ void wazaSequenceSysUpdate(void);                        /* waza system reset */
 
 /* Waza extended functions */
 /* fn_801DFC30 */ void std085_sequenceJump85(void);                        /* waza master controller 0x7A4 */
@@ -494,11 +494,11 @@ typedef struct GStexture GStexture;
  * Battle Core / Fight Flow (0x801EF02C - 0x801F000C)
  * ========================================================================= */
 
-/* fn_801EF02C */ void battle_InitSlots(void);
-/* fn_801EF080 */ void battle_ResetSlotAnimations(void);
-/* fn_801EF0D4 */ void battle_ResetSlotEffects(void);
+/* darkPokemonSetAllFlag14 */ void battle_InitSlots(void);
+/* darkPokemonSetAllFlag12 */ void battle_ResetSlotAnimations(void);
+/* darkPokemonSetAllFlag16 */ void battle_ResetSlotEffects(void);
 /* fn_801EF128 */ void battle_SetupParty(void* partyData);
-/* fn_801EFA08 */ void battle_MainLoop(void);   /* 0x5BC bytes - the main battle loop */
+/* fightMainThread */ void battle_MainLoop(void);   /* 0x5BC bytes - the main battle loop */
 
 /* =========================================================================
  * Battle State Machine (0x801E03D4 - 0x801EF02C)

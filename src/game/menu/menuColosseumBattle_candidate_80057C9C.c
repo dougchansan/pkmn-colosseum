@@ -13,7 +13,7 @@ typedef struct ColosseumConnectJob {
 
 extern ColosseumConnectJob lbl_803A9A08;
 extern void _threadSwitch(void);
-extern void fn_8017B1CC(s32);
+extern void GSresReleaseById(s32);
 extern s32 fn_8017B2CC(s32);
 extern void fn_8017B3E4(s32);
 extern void fn_800F915C(s32);
@@ -42,7 +42,7 @@ void fn_80057C9C(void* pokemon, void* callback, s32* navigation)
         }
     }
 
-    fn_8017B1CC(0x70B);
+    GSresReleaseById(0x70B);
     fn_800F915C(0x70B);
     fn_8017B3E4(0x66F);
     while (fn_8017B2CC(0x66F) == 1) {
@@ -50,7 +50,7 @@ void fn_80057C9C(void* pokemon, void* callback, s32* navigation)
     }
 
     fn_80097D94(pokemon, callback, navigation);
-    fn_8017B1CC(0x66F);
+    GSresReleaseById(0x66F);
     fn_800F915C(0x66F);
     fn_8017B3E4(0x70B);
     while (fn_8017B2CC(0x70B) == 1) {

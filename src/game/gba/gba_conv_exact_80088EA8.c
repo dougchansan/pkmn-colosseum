@@ -7,7 +7,7 @@ extern u32 std092_getCurrentRoomID(void);
 extern u32 floorGetPrevFloorID(void);
 extern u32 std082_flagGetValue(s32 flag);
 
-void fn_80088EA8(u8* output)
+void menuSaveLoadStorePosition(u8* output)
 {
     GbaConvPlayerMemo* memo = (GbaConvPlayerMemo*)output;
     f32 position[3];

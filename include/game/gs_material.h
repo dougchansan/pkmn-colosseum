@@ -49,7 +49,7 @@
  *
  * HSD integration (lbl_80315490):
  *   The GSmaterial class descriptor is registered with HSD's object system
- *   at lbl_80315490.  _GSmaterialObjInit_800EF33C installs the class info, render callback
+ *   at lbl_80315490.  _GSmaterialObjInit installs the class info, render callback
  *   (_matGSmatObjLoad), and setup callback (fn_800DF930) into this descriptor.
  */
 #ifndef GS_MATERIAL_H
@@ -221,7 +221,7 @@ typedef struct GSmaterialEntry {
  *   - Render callback _matGSmatObjLoad
  *   - Setup callback fn_800DF930
  *
- * Corresponds to _GSmaterialObjInit_800EF33C.
+ * Corresponds to _GSmaterialObjInit.
  */
 
 /**
@@ -279,7 +279,7 @@ typedef struct GSmaterialEntry {
  * @param entry   Pointer to a GSmaterialEntry.
  * @param stage   Texture stage / blend factor.
  *
- * Corresponds to fn_800E3884. Size: 0xA4.
+ * Corresponds to GSmodelAdvanceAll. Size: 0xA4.
  */
 
 /**
@@ -289,7 +289,7 @@ typedef struct GSmaterialEntry {
  * particle-linked models, then refreshes attachments and bound centers.
  * The caller-supplied argument is unused.
  *
- * Corresponds to fn_800E3928. Size: 0x1E0.
+ * Corresponds to GSmodelApplyAll. Size: 0x1E0.
  */
 
 /**
@@ -331,7 +331,7 @@ GSmaterialEntry* GSmaterialFindByMObj(void* mobj);
  *
  * @param entry   Pointer to a GSmaterialEntry.
  *
- * Loads entry->texture (+0x144), and if non-NULL calls fn_80118874
+ * Loads entry->texture (+0x144), and if non-NULL calls gsParticleKill
  * with parameter 1.
  *
  * Corresponds to GSmodelDestroyLinkedParticles. Size: 0x30.
@@ -826,7 +826,7 @@ void GSmaterialSetDistanceThreshold(f32 dist);
 /**
  * GSmaterialConfigureScissor -- Set GX scissor for material rendering.
  *
- * Corresponds to fn_800EE0E8. Size: 0x68.
+ * Corresponds to GSmodelWalkJObjs. Size: 0x68.
  */
 
 /**

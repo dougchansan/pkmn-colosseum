@@ -24,7 +24,7 @@ extern void* pokemonGetStatus();
 extern u32   pokemonSetStatus();
 
 /* Battle system functions */
-extern void fn_801EF8F4();
+extern void battleCameraSelect();
 
 /* Sound functions */
 extern void soundStop();     /* Stop sound */
@@ -156,8 +156,8 @@ void fightGSfloorPushData(void *rawOut)
     secondCount = scan.count;
     out->firstCount = firstCount;
     out->secondCount = secondCount;
-    fn_801EF8F4(1);
-    fn_801C3114();
+    battleCameraSelect(1);
+    battleGridReset();
     wazaSequenceSysRelease();
 }
 
@@ -193,8 +193,8 @@ void fightGSfloorPopData(BattleReplayHeader *header)
     extern void GSmodelPopState();
     extern int battleGridUpdate();
     BattleReplaySecondEntry *secondEntry;
-    extern int fn_801DAEF8(int);
-    extern u32 fn_801DE418(u16);
+    extern int wazaSequenceSysInit(int);
+    extern u32 wazaSequenceTrainerCreate(u16);
     u16 secondCount;
     extern int fightFloorSetShadow();
     u8 *entries;
@@ -204,15 +204,15 @@ void fightGSfloorPopData(BattleReplayHeader *header)
     u32 state;
 
     entries = header->entries;
-    fn_801DAEF8(10);
+    wazaSequenceSysInit(10);
     firstCount = header->firstCount;
     firstEntry = (BattleReplayFirstEntry *)(entries + 0x44);
     secondCount = header->secondCount;
     while (firstCount-- != 0) {
-        model = fn_801DE418(firstEntry->modelId);
+        model = wazaSequenceTrainerCreate(firstEntry->modelId);
         *(u32 *)(firstEntry->target + 0x27C0) = model;
         *firstEntry->modelOut = model;
-        state = fn_801DAC3C(model);
+        state = wazaSequenceOwnerGetModel(model);
         GSmodelPopState(state, firstEntry->state);
         fn_801DA224(model, firstEntry->attr);
         firstEntry++;
@@ -222,15 +222,15 @@ void fightGSfloorPopData(BattleReplayHeader *header)
         model = fn_801DE190(secondEntry->modelId, secondEntry->arg, secondEntry->variant);
         *(u32 *)(secondEntry->target + 0x600) = model;
         *secondEntry->modelOut = model;
-        state = fn_801DAC3C(model);
+        state = wazaSequenceOwnerGetModel(model);
         GSmodelPopState(state, secondEntry->state);
         fn_801DA224(model, secondEntry->attr);
         state = GSmodelGetVisibility(state);
-        fn_801DA4E8(model, state);
+        wazaSequenceOwnerSetVisibility(model, state);
         secondEntry++;
     }
     memcpy(battleGridGetPtr(), entries, 0x44);
-    fn_801EF8F4(1);
+    battleCameraSelect(1);
     battleGridUpdate();
     fightFloorSetShadow();
 }
@@ -291,11 +291,11 @@ static inline u32* fightGSfloorFindBGSeqPtr(FightGSfloorGridRow* grid, u32 seq, 
 u32 _fightGSfloorPokemonCB__FPvUsPv(u32 r3,u32 r4,char *r5)
 {
     extern int GSmodelPushState();
-    extern u8 fn_801D9E1C();
-    extern u8 fn_801DA354();
-    extern u16 fn_801DAC78();
-    extern int fn_801DB100();
-    extern u32 fn_801DE164();
+    extern u8 wazaSequenceOwnerGetFlag77();
+    extern u8 wazaSequenceOwnerGetFlags();
+    extern u16 wazaSequenceOwnerGetId();
+    extern int wazaSequenceOwnerFree();
+    extern u32 wazaSequenceOwnerGet78();
     u32 *entry;
     u32 seq;
     u16 id;
@@ -304,7 +304,7 @@ u32 _fightGSfloorPokemonCB__FPvUsPv(u32 r3,u32 r4,char *r5)
     if (seq == 0) {
         return 1;
     }
-    id = fn_801DAC78();
+    id = wazaSequenceOwnerGetId();
     if (id == 0) {
         return 1;
     }
@@ -312,15 +312,15 @@ u32 _fightGSfloorPokemonCB__FPvUsPv(u32 r3,u32 r4,char *r5)
         entry = *(u32 **)(r5 + 8);
         *entry = r3;
         *(short *)(entry + 1) = id;
-        *(u8 *)((int)entry + 6) = fn_801DA354(seq);
-        *(u8 *)((int)entry + 7) = fn_801D9E1C(seq);
-        entry[2] = fn_801DE164(seq);
+        *(u8 *)((int)entry + 6) = wazaSequenceOwnerGetFlags(seq);
+        *(u8 *)((int)entry + 7) = wazaSequenceOwnerGetFlag77(seq);
+        entry[2] = wazaSequenceOwnerGet78(seq);
         entry[3] = (u32)fightGSfloorFindBGSeqPtr(*(FightGSfloorGridRow **)(r5 + 4), seq, 0);
-        GSmodelPushState(fn_801DAC3C(seq), entry + 4);
+        GSmodelPushState(wazaSequenceOwnerGetModel(seq), entry + 4);
         *(int *)(r5 + 8) = *(int *)(r5 + 8) + 0x7c;
     }
     if (r5[1] != '\0') {
-        fn_801DB100(seq);
+        wazaSequenceOwnerFree(seq);
     }
     *(u16 *)(r5 + 2) = *(u16 *)(r5 + 2) + 1;
     return 1;
@@ -330,9 +330,9 @@ u32 _fightGSfloorPokemonCB__FPvUsPv(u32 r3,u32 r4,char *r5)
 u32 _fightGSfloorTrainerCB__FPvUsPv(u32 r3,u32 r4,char *r5)
 {
     extern int GSmodelPushState();
-    extern u8 fn_801DA354();
-    extern u16 fn_801DAC78();
-    extern int fn_801DB100();
+    extern u8 wazaSequenceOwnerGetFlags();
+    extern u16 wazaSequenceOwnerGetId();
+    extern int wazaSequenceOwnerFree();
     u32 *entry;
     u32 seq;
     u16 id;
@@ -341,7 +341,7 @@ u32 _fightGSfloorTrainerCB__FPvUsPv(u32 r3,u32 r4,char *r5)
     if (seq == 0) {
         return 1;
     }
-    id = fn_801DAC78();
+    id = wazaSequenceOwnerGetId();
     if (id == 0) {
         return 1;
     }
@@ -349,13 +349,13 @@ u32 _fightGSfloorTrainerCB__FPvUsPv(u32 r3,u32 r4,char *r5)
         entry = *(u32 **)(r5 + 8);
         *entry = r3;
         *(short *)(entry + 1) = id;
-        *(u8 *)((int)entry + 6) = fn_801DA354(seq);
+        *(u8 *)((int)entry + 6) = wazaSequenceOwnerGetFlags(seq);
         entry[2] = (u32)fightGSfloorFindBGSeqPtr(*(FightGSfloorGridRow **)(r5 + 4), seq, 1);
-        GSmodelPushState(fn_801DAC3C(seq), entry + 3);
+        GSmodelPushState(wazaSequenceOwnerGetModel(seq), entry + 3);
         *(int *)(r5 + 8) = *(int *)(r5 + 8) + 0x78;
     }
     if (r5[1] != '\0') {
-        fn_801DB100(seq);
+        wazaSequenceOwnerFree(seq);
     }
     *(u16 *)(r5 + 2) = *(u16 *)(r5 + 2) + 1;
     return 1;

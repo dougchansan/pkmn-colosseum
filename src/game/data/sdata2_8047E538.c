@@ -5,7 +5,7 @@
 
 /*
  * .sdata2 constants continuing directly after sdata2_8047E490 and ending
- * before the private pool paired with fn_802373B0. Contains several small
+ * before the private pool paired with fightTrainerAiGetHpPercent. Contains several small
  * u32 id/index tables (values in the 0x7500-0x76B5 range, likely message or
  * script ids) and a few byte/word constants. Values are reproduced verbatim
  * from the shipped binary; the exact producing structs are not yet identified.

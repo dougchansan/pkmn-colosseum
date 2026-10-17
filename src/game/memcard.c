@@ -5,7 +5,7 @@
  * Candidate reconstruction of the whole translation unit. Its sections are
  * .text 0x801CBBAC-0x801D0AA0, .rodata 0x802758E8-0x80279320 (banner, icon,
  * file-name strings), .data 0x8036DE70-0x8036E030 (the switch tables of
- * fn_801CDB04, fn_801CF9C8 and fn_801D0090), .bss 0x804670E8-0x80467378,
+ * memcardTaskMain, fn_801CF9C8 and fn_801D0090), .bss 0x804670E8-0x80467378,
  * .sdata2 0x8047E160-0x8047E180 and .sbss 0x8047B3D0-0x8047B3D8.
  *
  * Unit flags: GC/2.5 -O4,p, -str reuse,readonly, -inline deferred.
@@ -14,13 +14,13 @@
  * source is written in reverse address order and gives the retail text
  * order and the retail .bss layout (SHA1Transform's workspace at +0x00, the
  * saved digest at +0x40, the block digest at +0x54, the key at +0x68). With
- * it fn_801CBCDC reaches the digest buffers off the unit's .bss base while
+ * it savedataDecryptCheck reaches the digest buffers off the unit's .bss base while
  * fn_801CBE44 names them directly, as retail does, and fn_801D0748 inlines
  * fn_801D055C (defined after it in the file).
  *
- * The small per-state handlers of fn_801CDB04 are static inline functions
+ * The small per-state handlers of memcardTaskMain are static inline functions
  * returning the next state, like the five large ones that were not inlined
- * (fn_801CF320, fn_801CF568, fn_801CF7E4, fn_801CF9C8, fn_801CFD08). Their
+ * (memcardSaveSetup, fn_801CF568, fn_801CF7E4, fn_801CF9C8, fn_801CFD08). Their
  * returns give retail's shared "store next state" tails, and the handlers
  * whose early returns join (header read, write check, finish) cannot be
  * written as one flat case.
@@ -32,7 +32,7 @@
  *
  * Status: all 23 functions are exact and the whole TU links (lane D9). The
  * last two:
- * - fn_801CDB04: the last-write check polls through memcardPollResultInto,
+ * - memcardTaskMain: the last-write check polls through memcardPollResultInto,
  *   which keeps the polled result in the caller's register (r30) for the
  *   store (RULE-EXCEPTION, listed in docs/RULE_EXCEPTIONS.md).
  * - fn_801CF9C8: the slot-header loop reads through a `task` copy of the
@@ -216,11 +216,11 @@ extern void* memset(void* dst, s32 value, u32 size);
 extern char* strcpy(char*, const char*);
 extern s32 strcmp(const char* lhs, const char* rhs);
 
-extern void* fn_800E202C(void* ptr);
+extern void* GSmemGetHandleByPtr(void* ptr);
 extern void fn_800E24B0(void);
-extern s32 fn_800E209C(void* ptr);
-extern void fn_800E2C04(s32 size, s32 align);
-extern void* fn_800E27B0(void);
+extern s32 GSmemFree(void* ptr);
+extern void GSmemAlloc(s32 size, s32 align);
+extern void* GSmemLock(void);
 extern void winMsgClose(s32 id);
 extern void GSgappTerminate(void* app);
 extern void* GSgappCreate(s32 state, u8 priority, void* param, void* callback);
@@ -231,9 +231,9 @@ extern void savedataCreate(void* data, s32 index);
 extern void winMsgOpen(s32 window, u32 message, s32 arg2, s32 arg3);
 extern s8 menuSubOpenYesNo(s32 port, s32 x, s32 y, s32 initial);
 extern void msgctrlSetValue(u32 id, u32 value);
-extern s32 fn_800057A0(void);
-extern s32 fn_800057A8(void);
-extern u8 fn_800056C4(u8 value);
+extern s32 GSgetVersionMajor(void);
+extern s32 GSgetVersionMinor(void);
+extern u8 mainSetPauseFlag(u8 value);
 extern u8 fn_800056D4(void);
 extern void fn_80072A00(s32 port);
 extern s32 fn_80089D74(s32 port);
@@ -242,7 +242,7 @@ extern void* gamedatasaveBiosGetPtr(void* ptr);
 extern void gamedatasaveBiosSetMemcardID(void* ptr, u64 id);
 extern u64 gamedatasaveBiosGetMemcardID(void* ptr);
 extern u16 fn_8006A718(void* data);
-extern void fn_8006AF44(void* data, void* arg);
+extern void savedataBattleSetSavedHero(void* data, void* arg);
 extern u32 gamedatasaveGetStatus(void* data, s32 kind);
 extern void gamedatasaveSetStatus(void* data, s32 kind, s32 value);
 extern void* heroGetStatus(void* hero, s32 kind, s32 index);
@@ -263,14 +263,14 @@ extern s32 CARDFreeBlocks(s32 chan, s32* bytes_not_used, s32* files_not_used);
 extern s32 CARDDeleteAsync(s32 chan, const char* file_name, CARDCallback callback);
 extern s32 CARDCreateAsync(s32 chan, const char* file_name, u32 size, void* file_info,
                            CARDCallback callback);
-extern s32 fn_800B4488(s32 chan, s32 file_no, void* file_info);
+extern s32 CARDOpen(s32 chan, s32 file_no, void* file_info);
 extern s32 CARDClose(void* file_info);
 extern s32 CARDCancel(void* file_info);
 extern s32 fn_800B4C7C(void* file_info, void* buffer, s32 length, s32 offset,
                        CARDCallback callback);
 extern s32 CARDWriteAsync(void* file_info, const void* buffer, s32 length, s32 offset,
                           CARDCallback callback);
-extern s32 fn_800B5530(s32 chan, s32 file_no, MemcardFileStatus* stat);
+extern s32 CARDGetStatus(s32 chan, s32 file_no, MemcardFileStatus* stat);
 extern s32 CARDSetStatusAsync(s32 chan, s32 file_no, MemcardFileStatus* stat,
                               CARDCallback callback);
 extern s32 CARDGetAttributes(s32 chan, s32 file_no, u8* attributes);
@@ -279,19 +279,19 @@ extern s32 CARDGetSerialNo(s32 chan, u64* serial);
 extern MemcardDiskId* fn_800B01AC(s32 chan);
 extern s32 fn_800B01C4(s32 chan, MemcardDiskId* disk_id);
 
-void fn_801CDB04(void);
-s32 fn_801CF320(void);
+void memcardTaskMain(void);
+s32 memcardSaveSetup(void);
 s32 fn_801CF568(void);
 s32 fn_801CF7E4(void);
 s32 fn_801CF9C8(void);
 s32 fn_801CFD08(void);
-void fn_801D0080(s32 chan, s32 result);
+void memcardRequestCancel(s32 chan, s32 result);
 u8 fn_801D0090(s32 error);
-void* fn_801D0314(void* ptr);
+void* memcardFreeBuffer(void* ptr);
 void fn_801D039C(void);
 s32 memcardGetTaskResult(void);
 void fn_801D055C(s32 task_kind, s32 card_work_size, s32 card_channel);
-u8 fn_801CBCDC(u8* data, u32 size, u32* expected, u32 offset);
+u8 savedataDecryptCheck(u8* data, u32 size, u32* expected, u32 offset);
 void fn_801CBE44(u8* data, u32 size, u8* hash, u32 offset);
 
 /* Backing store for the task state, which sits at a random 8-byte-aligned
@@ -1353,7 +1353,7 @@ static inline s32 memcardEndAccess(void)
     u64 serial;
 
     if (lbl_8047B3D4->dialog_result != 0) {
-        if (fn_800057A8() == 4) {
+        if (GSgetVersionMinor() == 4) {
             fn_800B01C4(lbl_8047B3D4->card_channel, lbl_8047B3D4->disk_id);
         }
         CARDGetSerialNo(lbl_8047B3D4->card_channel, &serial);
@@ -1361,7 +1361,7 @@ static inline s32 memcardEndAccess(void)
         lbl_8047B3D4->dialog_result = 0;
     }
     CARDUnmount(lbl_8047B3D4->card_channel);
-    fn_800056C4(lbl_8047B3D4->initial_dialog_result);
+    mainSetPauseFlag(lbl_8047B3D4->initial_dialog_result);
     if (lbl_8047B3D4->callback_finished != 0) {
         return 0;
     }
@@ -1547,9 +1547,9 @@ static inline void SHA1Update(FieldSha1Context* context, const u8* data, u32 len
     context->count[1] += (len >> 29);
     if ((j + len) > 63) {
         memcpy(&context->buffer[j], data, (i = 64 - j));
-        fn_801CC380(context->state, context->buffer);
+        sha1Transform(context->state, context->buffer);
         for (; i + 63 < len; i += 64) {
-            fn_801CC380(context->state, &data[i]);
+            sha1Transform(context->state, &data[i]);
         }
         j = 0;
     } else {
@@ -1558,7 +1558,7 @@ static inline void SHA1Update(FieldSha1Context* context, const u8* data, u32 len
     memcpy(&context->buffer[j], &data[i], len - i);
 }
 
-void fn_801D0A30(void)
+void memcardInit(void)
 {
     u32 offset;
 
@@ -1610,11 +1610,11 @@ void fn_801D055C(s32 task_kind, s32 card_work_size, s32 card_channel)
     lbl_8047B3D4->error_code = 0;
     lbl_8047B3D4->dialog_result = 0;
 
-    fn_800E2C04(0x1E600, 0x20);
-    lbl_8047B3D4->work_buffer = fn_800E27B0();
-    fn_800E2C04(0xA000, 0x20);
-    lbl_8047B3D4->card_work_area = fn_800E27B0();
-    lbl_8047B3D4->gapp = GSgappCreate(1, 0x17, NULL, fn_801CDB04);
+    GSmemAlloc(0x1E600, 0x20);
+    lbl_8047B3D4->work_buffer = GSmemLock();
+    GSmemAlloc(0xA000, 0x20);
+    lbl_8047B3D4->card_work_area = GSmemLock();
+    lbl_8047B3D4->gapp = GSgappCreate(1, 0x17, NULL, memcardTaskMain);
     lbl_8047B3D4->savedata_status = savedataGetStatus(0, 0);
 }
 
@@ -1631,12 +1631,12 @@ s32 memcardGetTaskResult(void)
     return lbl_8047B3D4->task_result;
 }
 
-u8 fn_801D04E8(void)
+u8 memcardGetFlag41(void)
 {
     return lbl_8047B3D4->serial_check_enabled;
 }
 
-u8 fn_801D04D0(void)
+u8 memcardIsRetrying(void)
 {
     return lbl_8047B3D4->state == 0x31;
 }
@@ -1661,25 +1661,25 @@ void fn_801D039C(void)
 
         GSgappTerminate(lbl_8047B3D4->gapp);
 
-        lbl_8047B3D4->card_work_area = fn_801D0314(lbl_8047B3D4->card_work_area);
-        lbl_8047B3D4->work_buffer = fn_801D0314(lbl_8047B3D4->work_buffer);
+        lbl_8047B3D4->card_work_area = memcardFreeBuffer(lbl_8047B3D4->card_work_area);
+        lbl_8047B3D4->work_buffer = memcardFreeBuffer(lbl_8047B3D4->work_buffer);
     }
 
     lbl_8047B3D4->task_kind = 0;
 }
 
-void fn_801D036C(void)
+void memcardAllocBuffer(void)
 {
-    fn_800E2C04(0x1DFD0, 0x20);
-    fn_800E27B0();
+    GSmemAlloc(0x1DFD0, 0x20);
+    GSmemLock();
 }
 
-void* fn_801D0314(void* ptr)
+void* memcardFreeBuffer(void* ptr)
 {
-    void* aligned = fn_800E202C(ptr);
+    void* aligned = GSmemGetHandleByPtr(ptr);
 
     fn_800E24B0();
-    if (fn_800E209C(aligned) == 0) {
+    if (GSmemFree(aligned) == 0) {
         return NULL;
     }
     return ptr;
@@ -1836,7 +1836,7 @@ u8 fn_801D0090(s32 error)
     return ask;
 }
 
-void fn_801D0080(s32 chan, s32 result)
+void memcardRequestCancel(s32 chan, s32 result)
 {
     lbl_8047B3D4->callback_finished = 1;
 }
@@ -1860,13 +1860,13 @@ s32 fn_801CFD08(void)
     channel = lbl_8047B3D4->card_channel;
     file_info = &lbl_8047B3D4->file_info;
     for (file_no = 0; file_no < 0x7F; file_no++) {
-        result = fn_800B4488(channel, file_no, file_info);
+        result = CARDOpen(channel, file_no, file_info);
         if (result == 0) {
-            result = fn_800B5530(channel, file_no, &status);
+            result = CARDGetStatus(channel, file_no, &status);
             if (result != 0) {
                 goto invalid_file;
             }
-            switch (fn_800057A0()) {
+            switch (GSgetVersionMajor()) {
             case 0:
                 if (strcmp(status.file_name, "pokemon_colosseum") != 0 ||
                     status.game_code != *(u32*)"GC6J" ||
@@ -1916,7 +1916,7 @@ scan_done:
     switch (error) {
     case 0:
         lbl_8047B3D4->dialog_result = 1;
-        if (fn_800057A8() == 4) {
+        if (GSgetVersionMinor() == 4) {
             lbl_8047B3D4->disk_id = fn_800B01AC(lbl_8047B3D4->card_channel);
             lbl_8047B3D4->mounted_disk_id = *lbl_8047B3D4->disk_id;
             lbl_8047B3D4->mounted_disk_id.game_code = *(u32*)"GC6J";
@@ -1925,7 +1925,7 @@ scan_done:
                        &lbl_8047B3D4->mounted_disk_id);
         }
 
-        error = fn_800B5530(lbl_8047B3D4->card_channel,
+        error = CARDGetStatus(lbl_8047B3D4->card_channel,
                            lbl_8047B3D4->file_info.file_no,
                            &opened_status);
         if (error != 0) {
@@ -2125,7 +2125,7 @@ s32 fn_801CF7E4(void)
 
     save = (u8*)lbl_8047B3D4->work_buffer;
     ((u32*)save)[3] = 0;
-    if (fn_801CBCDC(save, 0x1DFD8, (u32*)(save + 0x1DFEC), 0x18)) {
+    if (savedataDecryptCheck(save, 0x1DFD8, (u32*)(save + 0x1DFEC), 0x18)) {
         if (lbl_8047B3D4->task_kind != 3) {
             lbl_8047B3D4->field_2c = ((s32*)save)[1];
             if ((s32)lbl_8047B3D4->serial_hi > lbl_8047B3D4->field_2c) {
@@ -2197,7 +2197,7 @@ s32 fn_801CF568(void)
         *lbl_8047B3D4->savedata_status = *savedata;
         break;
     case 5:
-        fn_8006AF44(status14, default_status14->field_B328);
+        savedataBattleSetSavedHero(status14, default_status14->field_B328);
         break;
     case 13:
         memcpy(status14->field_C9DC, default_status14->field_C9DC, 0x1F8);
@@ -2218,7 +2218,7 @@ s32 fn_801CF568(void)
     return 37;
 }
 
-s32 fn_801CF320(void)
+s32 memcardSaveSetup(void)
 {
     u64 serial;
     MemcardSaveBuffer* save;
@@ -2244,7 +2244,7 @@ s32 fn_801CF320(void)
     case 9:
         data = savedataGetStatus(save->header.fields.savedata, 14);
         if (fn_8006A718(save->header.fields.savedata) == 1) {
-            fn_8006AF44(data, NULL);
+            savedataBattleSetSavedHero(data, NULL);
         }
         /* fallthrough */
     case 4:
@@ -2285,7 +2285,7 @@ s32 fn_801CF320(void)
     return 38;
 }
 
-void fn_801CDB04(void)
+void memcardTaskMain(void)
 {
     s32 next;
     s32 result;
@@ -2299,7 +2299,7 @@ void fn_801CDB04(void)
             lbl_8047B3D4->format_requested = 0;
             lbl_8047B3D4->initial_dialog_result = fn_800056D4();
             lbl_8047B3D4->callback_finished = 0;
-            fn_800056C4(lbl_8047B3D4->initial_dialog_result);
+            mainSetPauseFlag(lbl_8047B3D4->initial_dialog_result);
             switch (lbl_8047B3D4->task_kind) {
             case 1:
             case 2:
@@ -2342,7 +2342,7 @@ void fn_801CDB04(void)
         case 2:
             memcardSetRequestResult(CARDMountAsync(lbl_8047B3D4->card_channel,
                                                    lbl_8047B3D4->card_work_area,
-                                                   fn_801D0080, NULL));
+                                                   memcardRequestCancel, NULL));
             lbl_8047B3D4->state = 3;
             break;
 
@@ -2411,7 +2411,7 @@ void fn_801CDB04(void)
                 next = 8;
                 break;
             case CARD_RESULT_READY:
-                fn_800056C4(lbl_8047B3D4->initial_dialog_result);
+                mainSetPauseFlag(lbl_8047B3D4->initial_dialog_result);
                 lbl_8047B3D4->next_state_after_delay = 0x32;
                 next = memcardAsk(9, 9);
                 break;
@@ -2623,7 +2623,7 @@ void fn_801CDB04(void)
         case 23: {
             s32 i;
 
-            result = fn_800B5530(lbl_8047B3D4->card_channel, lbl_8047B3D4->file_info.file_no,
+            result = CARDGetStatus(lbl_8047B3D4->card_channel, lbl_8047B3D4->file_info.file_no,
                                  &lbl_8047B3D4->stat);
             if (result == CARD_RESULT_READY) {
                 CARDSetCommentAddress(&lbl_8047B3D4->stat, 0);
@@ -2764,7 +2764,7 @@ void fn_801CDB04(void)
             break;
 
         case 37:
-            lbl_8047B3D4->state = fn_801CF320();
+            lbl_8047B3D4->state = memcardSaveSetup();
             break;
 
         case 38: {
@@ -2878,7 +2878,7 @@ typedef union SHA1Block {
     z += (w ^ x ^ y) + SHA1_BLK(i) + 0xCA62C1D6 + SHA1_ROTL(v, 5); \
     w = SHA1_ROTL(w, 30)
 
-void fn_801CC380(u32 state[5], const u8 input[64])
+void sha1Transform(u32 state[5], const u8 input[64])
 {
     u32 a;
     u32 b;
@@ -3013,7 +3013,7 @@ void fn_801CBF64(u8 digest[20], FieldSha1Context* context)
     memset(context->state, 0, 20);
     memset(context->count, 0, 8);
     memset(finalcount, 0, 8);
-    fn_801CC380(context->state, context->buffer);
+    sha1Transform(context->state, context->buffer);
 }
 
 void fn_801CBE44(u8* data, u32 size, u8* hash, u32 offset)
@@ -3024,7 +3024,7 @@ void fn_801CBE44(u8* data, u32 size, u8* hash, u32 offset)
     const u32* digest;
     s32 i;
 
-    fn_801CBBAC((u8*)sHash, data, size);
+    sha1Calc((u8*)sHash, data, size);
     digest = sHash;
     key = sKey;
     for (i = 5; i != 0; i--) {
@@ -3038,13 +3038,13 @@ void fn_801CBE44(u8* data, u32 size, u8* hash, u32 offset)
         for (i = 5; i != 0; i--) {
             *word++ ^= *key++;
         }
-        fn_801CBBAC((u8*)sKey, (u8*)block, 20);
+        sha1Calc((u8*)sKey, (u8*)block, 20);
         block += 5;
     }
     memcpy(hash, sHash, 20);
 }
 
-u8 fn_801CBCDC(u8* data, u32 size, u32* expected, u32 offset)
+u8 savedataDecryptCheck(u8* data, u32 size, u32* expected, u32 offset)
 {
     u32* block;
     u32* word;
@@ -3060,7 +3060,7 @@ u8 fn_801CBCDC(u8* data, u32 size, u32* expected, u32 offset)
     }
     block = (u32*)(data + offset);
     for (; offset < size; offset += 20) {
-        fn_801CBBAC((u8*)sDigest, (u8*)block, 20);
+        sha1Calc((u8*)sDigest, (u8*)block, 20);
         key = sKey;
         word = block;
         for (i = 5; i != 0; i--) {
@@ -3069,7 +3069,7 @@ u8 fn_801CBCDC(u8* data, u32 size, u32* expected, u32 offset)
         memcpy(sKey, sDigest, 20);
         block += 5;
     }
-    fn_801CBBAC((u8*)sKey, data, size);
+    sha1Calc((u8*)sKey, data, size);
     b = sHash;
     a = sKey;
     i = 5;
@@ -3082,7 +3082,7 @@ u8 fn_801CBCDC(u8* data, u32 size, u32* expected, u32 offset)
 }
 
 
-void fn_801CBBAC(u8 digest[20], const u8* input, u32 length)
+void sha1Calc(u8 digest[20], const u8* input, u32 length)
 {
     FieldSha1Context context;
     u32 index;
@@ -3107,10 +3107,10 @@ void fn_801CBBAC(u8 digest[20], const u8* input, u32 length)
     if (index + length > 63) {
         part_length = 64 - index;
         memcpy(&context.buffer[index], input, part_length);
-        fn_801CC380(context.state, context.buffer);
+        sha1Transform(context.state, context.buffer);
         current_input = &input[part_length];
         for (i = part_length; i + 63 < length; i += 64) {
-            fn_801CC380(context.state, current_input);
+            sha1Transform(context.state, current_input);
             current_input += 64;
         }
         index = 0;

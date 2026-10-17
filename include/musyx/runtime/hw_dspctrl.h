@@ -251,6 +251,6 @@ extern u8 lbl_8047B05E; /* salAuxFrame */
 
 void* memset(void* dst, int value, u32 size);
 void DCFlushRangeNoSync(void* addr, u32 size);
-void fn_80164400(void* ptr);
+void salFree(void* ptr);
 
 #endif /* MUSYX_RUNTIME_HW_DSPCTRL_H */

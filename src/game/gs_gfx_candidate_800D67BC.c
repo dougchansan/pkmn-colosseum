@@ -18,11 +18,11 @@
 
 extern void fn_800DB758(u16 vertCount);
 extern void gfxRecordCommand(u32, u32, ...);
-extern void fn_800D7650(u8*);
-extern void fn_800D7868(u8*, u32, u32, u32, u32, u8, u32, u8);
+extern void gfxVtxDescClear(u8*);
+extern void gfxVtxDescSetAttr(u8*, u32, u32, u32, u32, u8, u32, u8);
 extern void gfxLoadVtxDesc(u32);
 extern void gfxSetupChannelsTev(u32);
-extern void fn_800B928C(u32, u32, u16);
+extern void GXBegin(u32, u32, u16);
 
 extern u32 lbl_8047AA80;
 extern u32 lbl_80314350[];
@@ -56,16 +56,16 @@ void gfxBegin(u16 vertCount) {
     }
 
     if (*(u32*)(lbl_8047AA80 + 0x24) == 0) {
-        fn_800D7650((u8*)*(u32*)(lbl_8047AA80 + 0x20));
-        fn_800D7868((u8*)*(u32*)(lbl_8047AA80 + 0x20), 1, 0, 1, 4, 0, 0, 0);
+        gfxVtxDescClear((u8*)*(u32*)(lbl_8047AA80 + 0x20));
+        gfxVtxDescSetAttr((u8*)*(u32*)(lbl_8047AA80 + 0x20), 1, 0, 1, 4, 0, 0, 0);
         if (*(u32*)(lbl_8047AA80 + 0x10) & 4) {
-            fn_800D7868((u8*)*(u32*)(lbl_8047AA80 + 0x20), 2, 0, 2, 4, 0, 0, 0);
+            gfxVtxDescSetAttr((u8*)*(u32*)(lbl_8047AA80 + 0x20), 2, 0, 2, 4, 0, 0, 0);
         }
         if (*(u32*)(lbl_8047AA80 + 0x10) & 1) {
-            fn_800D7868((u8*)*(u32*)(lbl_8047AA80 + 0x20), 4, 0, 6, 10, 0, 0, 0);
+            gfxVtxDescSetAttr((u8*)*(u32*)(lbl_8047AA80 + 0x20), 4, 0, 6, 10, 0, 0, 0);
         }
         if (*(u32*)(lbl_8047AA80 + 0x10) & 2) {
-            fn_800D7868((u8*)*(u32*)(lbl_8047AA80 + 0x20), 6, 0, 8, 4, 0, 0, 0);
+            gfxVtxDescSetAttr((u8*)*(u32*)(lbl_8047AA80 + 0x20), 6, 0, 8, 4, 0, 0, 0);
         }
         *(u32*)(lbl_8047AA80 + 0x24) = *(u32*)(lbl_8047AA80 + 0x20);
     }
@@ -76,7 +76,7 @@ void gfxBegin(u16 vertCount) {
 
     gfxLoadVtxDesc(*(u32*)(lbl_8047AA80 + 0x24));
     gfxSetupChannelsTev(*(u32*)(lbl_8047AA80 + 0x24));
-    fn_800B928C(lbl_80314350[*(u32*)(lbl_8047AA80 + 0x14)],
+    GXBegin(lbl_80314350[*(u32*)(lbl_8047AA80 + 0x14)],
                 *(u32*)(*(u32*)(lbl_8047AA80 + 0x24) + 0x4), vertCount);
     fn_800D6A80(vertCount, *(s32*)(lbl_8047AA80 + 0x14),
                 (u32*)(lbl_804001F0 + 0xc), (u32*)(lbl_804001F0 + 0x4));

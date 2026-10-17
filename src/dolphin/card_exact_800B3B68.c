@@ -9,7 +9,7 @@
 /* The SDK's CARDIsValidBlockNo (a macro in card.h). */
 #define CARDIsValidBlockNoLocal(card, block) (5 <= (block) && (block) < (card)->cBlock)
 
-s32 fn_800B4488(s32 chan, s32 fileNo, CARDFileInfo* fileInfo)
+s32 CARDOpen(s32 chan, s32 fileNo, CARDFileInfo* fileInfo)
 {
     CARDControl* card;
     CARDDirEntry* dir;
@@ -28,9 +28,9 @@ s32 fn_800B4488(s32 chan, s32 fileNo, CARDFileInfo* fileInfo)
 
     dir = __CARDGetDirBlock(card);
     entry = &dir[fileNo];
-    result = fn_800B4270(card, entry);
+    result = __CARDAccess(card, entry);
     if (result == -10) {
-        result = fn_800B4308(entry);
+        result = __CARDIsWritable(entry);
     }
     if (result >= 0) {
         if (!CARDIsValidBlockNoLocal(card, entry->startBlock)) {

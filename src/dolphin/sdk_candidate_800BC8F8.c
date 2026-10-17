@@ -1,9 +1,9 @@
 /**
  * @file sdk_candidate_800BC8F8.c
  * @brief Dolphin SDK GXPixel.c, 0x800BC8F8 - 0x800BCEBC: GXSetFog
- *        (fn_800BC8F8), GXInitFogAdjTable (fn_800BCB14), GXSetFogRangeAdj
- *        (fn_800BCCDC), GXSetBlendMode, GXSetColorUpdate (fn_800BCE30),
- *        GXSetAlphaUpdate (fn_800BCE5C) and GXSetZMode. The rest of the file
+ *        (GXSetFog), GXInitFogAdjTable (GXInitFogAdjTable), GXSetFogRangeAdj
+ *        (GXSetFogRangeAdj), GXSetBlendMode, GXSetColorUpdate (GXSetColorUpdate),
+ *        GXSetAlphaUpdate (GXSetAlphaUpdate) and GXSetZMode. The rest of the file
  *        (GXSetZCompLoc onwards) is the linked GX_exact_800BCEBC.c.
  *
  * Bodies follow the SDK GXPixel.c (dolsdk2004 / Melee): the fog color is
@@ -81,7 +81,7 @@ static inline f32 sqrtf(f32 x)
     return x;
 }
 
-void fn_800BC8F8(u32 type, f32 startz, f32 endz, f32 nearz, f32 farz,
+void GXSetFog(u32 type, f32 startz, f32 endz, f32 nearz, f32 farz,
                  GXColor color)
 {
     u32 fogclr;
@@ -184,7 +184,7 @@ void fn_800BC8F8(u32 type, f32 startz, f32 endz, f32 nearz, f32 farz,
     gx->bpSentNot = 0;
 }
 
-void fn_800BCB14(GXFogAdjTable* table, u16 width, const f32 projmtx[4][4])
+void GXInitFogAdjTable(GXFogAdjTable* table, u16 width, const f32 projmtx[4][4])
 {
     f32 xi;
     f32 iw;
@@ -211,7 +211,7 @@ void fn_800BCB14(GXFogAdjTable* table, u16 width, const f32 projmtx[4][4])
     }
 }
 
-void fn_800BCCDC(GXBool enable, u16 center, const GXFogAdjTable* table)
+void GXSetFogRangeAdj(GXBool enable, u16 center, const GXFogAdjTable* table)
 {
     u32 i;
     u32 range_adj;
@@ -250,7 +250,7 @@ void GXSetBlendMode(u32 type, u32 src_factor, u32 dst_factor, u32 op)
     gx->bpSentNot = 0;
 }
 
-void fn_800BCE30(GXBool update_enable)
+void GXSetColorUpdate(GXBool update_enable)
 {
     u32 reg;
 
@@ -261,7 +261,7 @@ void fn_800BCE30(GXBool update_enable)
     gx->bpSentNot = 0;
 }
 
-void fn_800BCE5C(GXBool update_enable)
+void GXSetAlphaUpdate(GXBool update_enable)
 {
     u32 reg;
 

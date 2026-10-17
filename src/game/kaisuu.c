@@ -16,9 +16,9 @@ extern void  GSlogWrite(const char* fmt, ...);         /* OSReport / GSlog */
 
 /* GSmem */
 extern u16   _toolentryAlloc__FUl(u32 size);                     /* GSmemAllocRaw */
-extern void* fn_800E27B0(u16 handle);                   /* GSmemGetPtr */
+extern void* GSmemLock(u16 handle);                   /* GSmemGetPtr */
 extern void* fn_800E24B0(u16 handle);                   /* GSmemLock */
-extern void  fn_800E209C(u16 handle);                   /* GSmemFree */
+extern void  GSmemFree(u16 handle);                   /* GSmemFree */
 
 /* GSgfx state */
 extern u8 lbl_8047AA80[];  /* GSgfx state pointer (via sda21) */
@@ -49,26 +49,26 @@ extern u8  lbl_80315690[]; /* resource table, 8-byte entries */
 
 /* Additional externs used by various functions */
 extern void  GSmodelFree(u32);     /* GSmem release/unref */
-extern void  fn_800D2738(void);
+extern void  GScameraFree(void);
 extern void* menuDataBiosGetPtr(void);    /* linked list head */
 extern void* menuItemBiosGetPtr(s16 idx); /* node by index */
 extern void* menuSeBiosGetPtr(s32);
-extern u16   fn_8005D798(void*, s32);
+extern u16   menuSeTableLookup(void*, s32);
 extern void* menuSpriteBiosGetPtr(s32);
 extern int   soundStartSE(u16);
 extern s32   GSthreadGetCurrentThread(void);    /* poll/yield -- 0 if pending */
 extern void  _threadSwitch(void);    /* yield */
 extern u32   fn_800BE31C(void);    /* rand or tick */
-extern u32   fn_800B8FD8(void*);   /* register fn, returns handle */
+extern u32   GXSetDrawSyncCallback(void*);   /* register fn, returns handle */
 extern void  fn_800BD91C(s32, s32);
-extern void  fn_800B8C58(s32);
+extern void  GXSetDrawSync(s32);
 extern void  GSgfxBeginBackFBCapture(u32, void*, void*);
 extern u32   GStextureCreate(s32, s32, s32, s32, s32);
 extern u32   GSmodelCanAnimate(u32);
 extern void  GSmodelSetAnimIndex(u32, u32);
 extern void  GSmodelSetAnimRate(u32, f32);
 extern void  GSmodelStartAnimation(u32);
-extern void  fn_801DB100(u32);
+extern void  wazaSequenceOwnerFree(u32);
 extern u32   OSGetTick(void);
 
 extern u32 lbl_8047ACF0;
@@ -127,7 +127,7 @@ extern void gfxSetPrimitive(s32);
 extern void gfxSetVtxDesc(s32);
 extern void gfxBegin(s32);
 extern void gfxVtxPos(f32);
-extern void fn_800D5CB8(s32, s32, s32, s32, s32);
+extern void gfxVtxColor4u8(s32, s32, s32, s32, s32);
 extern void gfxEnd(void);
 
 /* Forward declarations for functions defined later in this TU */
@@ -157,7 +157,7 @@ extern u8    lbl_8047AD10;     /* resource request gate byte (sda21) - authorita
 
 /* Cross-segment prototypes for menu/window-engine functions defined in
  * sibling segment files split from the gs_model.c splitter bucket. */
-extern void fn_801019F8(void);
+extern void wazaSequenceSysClearWork(void);
 extern s32 kaisuuBiosGetMax(u32 index);
 extern s32 kaisuuBiosGetMin(u32 index);
 extern s32 kaisuuGetKaisuu(u32 param);
@@ -256,7 +256,7 @@ extern void winSpriteSetDisp(void* node, u32 enable);
 extern void winSpriteRelease(void* head);
 extern void* fn_80109290(void* root);
 extern void winSpriteInit(void);
-extern void fn_801093C8(void);
+extern void menuOffScreenDraw(void);
 extern u8 menuOffScreenFadeSync(u8 param);
 extern void menuOffScreenFadeSet(f32 f1, f32 f2);
 extern u8 menuOffScreenSetPriority(u8 val);

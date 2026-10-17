@@ -16,17 +16,17 @@
 #define CARDESAVEDATA_ALL
 #endif
 
-/* ===== External function declarations (fn_80084A8C only) ===== */
+/* ===== External function declarations (cardeGbaTransfer only) ===== */
 extern void fn_8005CF2C();
-extern void fn_800776E4();
+extern void menuRuleCheckPartyAndRule();
 extern void fn_8008ABA0();
-extern void fn_80092E38();
-extern void fn_80092FC8();
-extern void fn_80093160();
-extern void fn_800932F0();
-extern void fn_800934E4();
+extern void gbaCommStartTransferA();
+extern void gbaCommStartTransferB();
+extern void gbaCommStartTransferC();
+extern void gbaCommStartTransferFile();
+extern void gbaCommIsBusy();
 extern void fn_80093610();
-extern void fn_80093698();
+extern void gbaCommEnd();
 extern void msgGetCharsPerFrame();
 extern void fn_800D37CC();
 extern void menuCloseCustom();
@@ -41,7 +41,7 @@ extern void menuOpen();
 extern void windowSearchID();
 extern void _threadSwitch();
 
-/* ===== SDA globals (fn_80084A8C only) ===== */
+/* ===== SDA globals (cardeGbaTransfer only) ===== */
 extern u8 lbl_80478950[4];
 extern s8 lbl_80478954[4];
 extern char lbl_8047C1A0[] __attribute__((section(".sdata2")));
@@ -79,7 +79,7 @@ typedef struct CardESelection {
 } CardESelection;
 
 extern void* fn_801054B8();
-extern void* fn_800F92D4(u32);
+extern void* GSresFindById(u32);
 extern void fn_800ECCA8(void*, s16);
 extern void fn_800ECA78(void*, f32);
 extern void fn_800EC9DC(void*, f32);
@@ -87,14 +87,14 @@ extern void fn_800EC990(void*);
 extern void fn_800ECB74(void*, u32);
 extern u8 fn_800EC960(void*);
 extern void soundStartSE();
-extern s32 soundGetStatus();
+extern s32 GSsndGetStatus();
 
 extern void GScharLenCpy(void*, const void*, u32);
-extern u16 fn_800E2C04(u32, u32);
-extern void* fn_800E27B0(u16);
-extern u16 fn_800E202C(void*);
+extern u16 GSmemAlloc(u32, u32);
+extern void* GSmemLock(u16);
+extern u16 GSmemGetHandleByPtr(void*);
 extern void fn_800E24B0(u16);
-extern void fn_800E209C(u16);
+extern void GSmemFree(u16);
 extern s32 fn_80083BF8(void*);
 extern void* fn_80083AF4(void*, s32);
 extern void* windowSearchItemID(void*, s32);
@@ -164,9 +164,8 @@ s32 menuCardE_CompareEntryPtrs(u32 r3, u32 r4) {
 #endif
 
 extern void GScharCpy(void* dst, const void* src);
-extern const u8 lbl_80268DC0[];
 extern const u8 lbl_80478948[8];
-extern u8 fn_8008102C(void** object_ref, const u32* descriptor, s32 index,
+extern u8 cardeSaveApplyField(void** object_ref, const u32* descriptor, s32 index,
                       s32 value, const char* text, s32 subindex);
 
 /* One packed field: its decoder id, its bit width and its element count. */
@@ -184,7 +183,7 @@ typedef struct CardEFieldTable {
     /* 0x360 */ CardEFieldDesc extra[3];
 } CardEFieldTable;
 
-/* Bit reader handed to fn_8008102C; the decoded object comes first. */
+/* Bit reader handed to cardeSaveApplyField; the decoded object comes first. */
 typedef struct CardEReader {
     /* 0x0 */ void* object;
     /* 0x4 */ const u8* packed;
@@ -241,7 +240,7 @@ static inline u8 CardEReadField(CardEReader* reader,
 
     if (descs[n].width < 16) {
         for (i = 0; i < descs[n].count; i++) {
-            if (!fn_8008102C((void**)reader, (const u32*)&descs[n], index,
+            if (!cardeSaveApplyField((void**)reader, (const u32*)&descs[n], index,
                              CardEReadBits(reader, descs[n].width), NULL,
                              i)) {
                 ok = 0;
@@ -249,7 +248,7 @@ static inline u8 CardEReadField(CardEReader* reader,
         }
     } else {
         CardEReadText(reader, &descs[n], text);
-        if (!fn_8008102C((void**)reader, (const u32*)&descs[n], index, 0,
+        if (!cardeSaveApplyField((void**)reader, (const u32*)&descs[n], index, 0,
                          (const char*)text, -1)) {
             ok = 0;
         }
@@ -351,7 +350,7 @@ static const CardEFieldDesc sCardEExtraFields[3] = {
 #endif
 
 #if defined(CARDESAVEDATA_DECODE_TU)
-/* The rest of the descriptor block: the value domains fn_8008102C checks,
+/* The rest of the descriptor block: the value domains cardeSaveApplyField checks,
  * at 0x80268DC0 + 0x384 .. + 0xDA8, each its own pooled object. */
 static const u16 sCardEDomain384[329] = {
     0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, 0x0008, 0x0009, 0x000A, 0x000B,
@@ -1588,7 +1587,7 @@ static const u16 sCardESjisToGsE0[29][184] = {
 /* Decode and validate a packed card-e record. */
 #pragma push
 #if defined(CARDESAVEDATA_ALL) || defined(CARDESAVEDATA_DECODE_TU)
-u32 fn_80080310(void* output, const u8* packed, u32 size)
+u32 cardeDecode(void* output, const u8* packed, u32 size)
 {
     CardEReader reader;
     u32 i;
@@ -1648,7 +1647,7 @@ u32 fn_80080310(void* output, const u8* packed, u32 size)
 /* 0x80080ED8 | size: 0x154
  * Shift-JIS to GS characters (XD: SJIStoGSchar__FPUsPc); returns the
  * source length in bytes, and only measures when the destination is NULL. */
-u32 fn_80080ED8(u16* destination, u8* source)
+u32 SJIStoGSchar(u16* destination, u8* source)
 {
     u8 c;
     u32 length = 0;
@@ -1697,13 +1696,13 @@ u32 fn_80080ED8(u16* destination, u8* source)
 #pragma pop
 
 
-/* Range checks inlined into fn_8008102C; the result is materialised. */
+/* Range checks inlined into cardeSaveApplyField; the result is materialised. */
 static inline s32 CardEValueInRange(s32 value, s32 max)
 {
     return value >= 0 && value <= max;
 }
 
-/* Table lookups inlined into fn_8008102C; each result is materialised. */
+/* Table lookups inlined into cardeSaveApplyField; each result is materialised. */
 static inline u8 CardEFindHalf(const u16* entry, s32 count, u16 value)
 {
     s32 i;
@@ -1826,14 +1825,14 @@ static inline u8 CardEIsValidType(u8 type)
 
 /* Apply one decoded card-e field and reject values outside its domain. */
 #if defined(CARDESAVEDATA_ALL) || defined(CARDESAVEDATA_DECODE_TU)
-u8 fn_8008102C(void** object_ref, const u32* descriptor, s32 index,
+u8 cardeSaveApplyField(void** object_ref, const u32* descriptor, s32 index,
                s32 value, const char* text, s32 subindex)
 {
 #define object (*(u8**)object_ref)
 #define card (*(CardERecordData**)object_ref)
     u32 field = descriptor[0];
 #if !defined(CARDESAVEDATA_DECODE_TU)
-    const u8* table = lbl_80268DC0;
+    const u8* table = (const u8*)sCardEHeaderFields;
 #endif
 
     s32 i;
@@ -2508,16 +2507,16 @@ static inline u8* cardEGetCell(u8* card, s8 pageIndex, s8 row, s8 column)
     return page + 0x76 + index * 0x10;
 }
 
-/* fn_80080ED8 (0x80080ED8) is its own unit:
+/* SJIStoGSchar (0x80080ED8) is its own unit:
  * cardesavedata_candidate_80080ED8_gc125.c. */
 
 /* The grid functions, last to first: built with deferred inlining (see
  * cardesavedata_grid_80082650.c), MWCC emits them in reverse source order,
- * so fn_80082650 lands first at 0x80082650, and fn_80082738/fn_80082CF0
- * inline fn_80082A88/fn_80082EA4 although those come earlier in the file. */
+ * so fn_80082650 lands first at 0x80082650, and cardeSaveRemoveCard/cardeSaveSetCard
+ * inline cardeSaveLevelHasCard/cardeSaveGetCard although those come earlier in the file. */
 void* fn_800836AC(u8* arena, u8* descriptor, u8 create)
 {
-    extern void fn_800CAA3C(void*, const void*);
+    extern void wcscpy(void*, const void*);
     CardEGridEntry* series;
     int count;
     s32 i;
@@ -2540,20 +2539,20 @@ void* fn_800836AC(u8* arena, u8* descriptor, u8 create)
         series = CardEGridAppend(arena, ((s8*)descriptor)[0x58],
                                  ((s8*)descriptor)[0x59], ((s8*)descriptor)[0x5A]);
         if (series != NULL) {
-            fn_800CAA3C(series, descriptor + 0x0A);
+            wcscpy(series, descriptor + 0x0A);
             series->key = descriptor[8];
             series->layers = ((s8*)descriptor)[0x58];
             series->rows = ((s8*)descriptor)[0x59];
             series->columns = ((s8*)descriptor)[0x5A];
             for (i = 0; i < series->layers; i++) {
-                fn_800CAA3C(CardEGetLevel(series, i), descriptor + 0x28 + i * 0x10);
+                wcscpy(CardEGetLevel(series, i), descriptor + 0x28 + i * 0x10);
             }
         }
     }
     return series;
 }
 
-void fn_800832C8(u8* arena, u8* cardData, s8 layer)
+void cardeGridSetShadowPokemon(u8* arena, u8* cardData, s8 layer)
 {
     typedef struct CardEObjectRecord {
         u16 id;
@@ -2576,9 +2575,9 @@ void fn_800832C8(u8* arena, u8* cardData, s8 layer)
         u8 bytes[0x2A];
     } CardEObjectData;
     extern void* savedataGetStatus(u32, u32);
-    extern void fn_800CAA3C(void*, const void*);
-    extern void fn_801EE1E0(u8 type, u16 id);
-    extern void fn_801EE2B4(u8 type, void* data);
+    extern void wcscpy(void*, const void*);
+    extern void darkPokemonSaveSet4A0(u8 type, u16 id);
+    extern void darkPokemonSaveSetName(u8 type, void* data);
     extern void fn_801EE10C(u8 type, u8 key);
     CardEPageLayout* layerData;
     CardEObjectData* object;
@@ -2600,10 +2599,10 @@ void fn_800832C8(u8* arena, u8* cardData, s8 layer)
     pending[0] = 1;
     pending[1] = cardData[8];
     ((s8*)pending)[2] = layer;
-    fn_800CAA3C(pending + 4, cardData + layer * 0x5C + 0x6E);
-    fn_800CAA3C(pending + 0x60, cardData + layer * 0x5C + 0x182);
-    fn_800CAA3C(pending + 0xBC, cardData + layer * 0x5C + 0x296);
-    fn_800CAA3C(pending + 0x118, record);
+    wcscpy(pending + 4, cardData + layer * 0x5C + 0x6E);
+    wcscpy(pending + 0x60, cardData + layer * 0x5C + 0x182);
+    wcscpy(pending + 0xBC, cardData + layer * 0x5C + 0x296);
+    wcscpy(pending + 0x118, record);
     pending[0x124] = record->enabled;
     pending[0x125] = cardData[0x6A + layer];
     *(u16*)(pending + 0x126) = record->field12;
@@ -2646,15 +2645,15 @@ void fn_800832C8(u8* arena, u8* cardData, s8 layer)
             pending[0x1E2] = object->bytes[0x28];
             pending[0x1E1] = object->bytes[2];
             *(u16*)(layerData->summary + 0x64) = *(u16*)object;
-            fn_801EE1E0(pending[0x1E1], *(u16*)object);
+            darkPokemonSaveSet4A0(pending[0x1E1], *(u16*)object);
         }
     }
 
-    fn_800CAA3C(layerData->summary + 0x54, pending + 0x118);
+    wcscpy(layerData->summary + 0x54, pending + 0x118);
     layerData->summary[0x60] = pending[0x125];
     layerData->summary[0x61] = 0;
     layerData->summary[0x62] = pending[0x1E1];
-    fn_801EE2B4(pending[0x1E1], pending + 0x118);
+    darkPokemonSaveSetName(pending[0x1E1], pending + 0x118);
     fn_801EE10C(pending[0x1E1], pending[0x125]);
 }
 
@@ -2691,7 +2690,7 @@ void fn_800830A4(u8* arena)
 
 /* Return the start of one layer in a decoded card-e grid entry. */
 #pragma push
-void* fn_80082FE4(CardEGridEntry* entry, s8 layer)
+void* cardeSaveGetLevel(CardEGridEntry* entry, s8 layer)
 {
     u8* layerEntry;
 
@@ -2708,7 +2707,7 @@ void* fn_80082FE4(CardEGridEntry* entry, s8 layer)
 }
 #pragma pop
 
-u8* fn_80082EA4(u8* card, s8 pageIndex, s8 row, s8 column)
+u8* cardeSaveGetCard(u8* card, s8 pageIndex, s8 row, s8 column)
 {
     CardEGridEntry* series = (CardEGridEntry*)card;
     CardEPageLayout* lv = CardEGetLevel(series, pageIndex);
@@ -2725,27 +2724,27 @@ u8* fn_80082EA4(u8* card, s8 pageIndex, s8 row, s8 column)
     return lv->cells[row * series->columns + column];
 }
 
-u8* fn_80082CF0(u8* card, const u8* window, s8 pageIndex)
+u8* cardeSaveSetCard(u8* card, const u8* window, s8 pageIndex)
 {
-    extern void fn_800CAA3C(void*, const void*);
+    extern void wcscpy(void*, const void*);
     u8* cell;
     const u8* descriptor;
 
     if (card[0x1A] != window[8]) {
         __assert("cardesavedata.c", 0x1B0, "series->series_number == pCardE->series_number");
     }
-    cell = fn_80082EA4(card, pageIndex, ((s8*)window)[0x24], ((s8*)window)[0x26]);
+    cell = cardeSaveGetCard(card, pageIndex, ((s8*)window)[0x24], ((s8*)window)[0x26]);
     descriptor = window + 0x3AC + (s8)(window + 0x5B)[pageIndex] * 0x28;
-    fn_800CAA3C(cell, descriptor);
+    wcscpy(cell, descriptor);
     cell[0x0C] = 1;
     *(u16*)(cell + 0x0E) = *(const u16*)(descriptor + 0x22);
     card[0x1E + (s8)window[0x24]] = window[0x25];
     return cell;
 }
 
-u8* fn_80082BA4(u8* card, const u8* window, s8 pageIndex)
+u8* cardeSaveSetSummary(u8* card, const u8* window, s8 pageIndex)
 {
-    extern void fn_800CAA3C(void*, const void*);
+    extern void wcscpy(void*, const void*);
     CardEGridEntry* series = (CardEGridEntry*)card;
     CardEPageLayout* lv;
     u8* entry;
@@ -2758,12 +2757,12 @@ u8* fn_80082BA4(u8* card, const u8* window, s8 pageIndex)
         __assert("cardesavedata.c", 0x1D4, "lv");
     }
     entry = lv->summary + (s8)window[0x24] * 0x0E;
-    fn_800CAA3C(entry, window + 0x3AC + (s8)(window + 0x5E)[pageIndex] * 0x28);
+    wcscpy(entry, window + 0x3AC + (s8)(window + 0x5E)[pageIndex] * 0x28);
     entry[0x0C] = 1;
     return (u8*)lv;
 }
 
-u8 fn_80082A88(u8* card, s8 pageIndex)
+u8 cardeSaveLevelHasCard(u8* card, s8 pageIndex)
 {
     CardEGridEntry* series = (CardEGridEntry*)card;
     CardEPageLayout* lv = CardEGetLevel(series, pageIndex);
@@ -2782,7 +2781,7 @@ u8 fn_80082A88(u8* card, s8 pageIndex)
     return 0;
 }
 
-void fn_80082960(u8* card, const u8* window, s8 pageIndex)
+void cardeSaveClearSummary(u8* card, const u8* window, s8 pageIndex)
 {
     CardEGridEntry* series = (CardEGridEntry*)card;
     CardEPageLayout* lv;
@@ -2800,17 +2799,17 @@ void fn_80082960(u8* card, const u8* window, s8 pageIndex)
     entry[0x0C] = 0;
 }
 
-u32 fn_80082738(u8* card, const u8* window, s8 pageIndex)
+u32 cardeSaveRemoveCard(u8* card, const u8* window, s8 pageIndex)
 {
     u8* cell;
 
     if (card[0x1A] != window[8]) {
         __assert("cardesavedata.c", 0x225, "series->series_number == pCardE->series_number");
     }
-    cell = fn_80082EA4(card, pageIndex, ((s8*)window)[0x24], ((s8*)window)[0x26]);
+    cell = cardeSaveGetCard(card, pageIndex, ((s8*)window)[0x24], ((s8*)window)[0x26]);
     cell[0x0C] = 0;
     *(u16*)cell = 0;
-    if (pageIndex == 0 && !fn_80082A88(card, 0)) {
+    if (pageIndex == 0 && !cardeSaveLevelHasCard(card, 0)) {
         return 1;
     }
     return 0;
@@ -2938,11 +2937,11 @@ static inline void* menuCardE_Alloc(u32 size, char* pool) {
     void* buf;
     u16 handle;
 
-    handle = fn_800E2C04((size + 0x1F) & ~0x1F, 0x20);
+    handle = GSmemAlloc((size + 0x1F) & ~0x1F, 0x20);
     if (handle == 0) {
         __assert(pool + 0x1F0, 0x1A2, lbl_8047C140);
     }
-    buf = fn_800E27B0(handle);
+    buf = GSmemLock(handle);
     memset(buf, 0, size);
     return buf;
 }
@@ -2950,12 +2949,12 @@ static inline void* menuCardE_Alloc(u32 size, char* pool) {
 static inline void menuCardE_Free(void* buf, char* pool) {
     u16 handle;
 
-    handle = fn_800E202C(buf);
+    handle = GSmemGetHandleByPtr(buf);
     if (handle == 0) {
         __assert(pool + 0x1F0, 0x1AB, lbl_8047C140);
     }
     fn_800E24B0(handle);
-    fn_800E209C(handle);
+    GSmemFree(handle);
 }
 
 static inline void menuCardE_FillEntries(u8* ctx, s32 count, char* table) {
@@ -3176,11 +3175,11 @@ void fn_80084038(u8* window)
         if ((s8)window[2] != 0) {
             break;
         }
-        handle = ((u16 (*)(u32, u32))fn_800E2C04)(0xE0, 0x20);
+        handle = ((u16 (*)(u32, u32))GSmemAlloc)(0xE0, 0x20);
         if (handle == 0) {
             __assert((const char*)data + 0x184, 0xEA, lbl_8047C198);
         }
-        status = ((CardEStatusWork* (*)(u16))fn_800E27B0)(handle);
+        status = ((CardEStatusWork* (*)(u16))GSmemLock)(handle);
         memset(status, 0, sizeof(CardEStatusWork));
         work = status;
         *(CardEStatusWork**)(((void* (*)(u8*))windowGetFreeWork)(window)) = status;
@@ -3253,12 +3252,12 @@ void fn_80084038(u8* window)
         status->refreshMessages = 1;
         break;
     case 5:
-        handle = ((u16 (*)(void*))fn_800E202C)(status);
+        handle = ((u16 (*)(void*))GSmemGetHandleByPtr)(status);
         if (handle == 0) {
             __assert((const char*)data + 0x184, 0xF3, lbl_8047C198);
         }
         fn_800E24B0(handle);
-        fn_800E209C(handle);
+        GSmemFree(handle);
         return;
     }
 
@@ -3359,8 +3358,8 @@ void fn_80084038(u8* window)
 /* Run the Card-e transfer UI while temporarily reserving controller port 1. */
 s32 fn_800849B4(s32 mode, s32 command, void* input, void* output)
 {
-    extern void fn_80093698(s32);
-    extern u8 fn_80084A8C(s32, u32, void*, void*);
+    extern void gbaCommEnd(s32);
+    extern u8 cardeGbaTransfer(s32, u32, void*, void*);
     extern void menuCloseCustom(s32, s32, s32);
     extern u8 menuIsCheck(s32);
     extern u8 menuSetEnablePort(u8);
@@ -3370,14 +3369,14 @@ s32 fn_800849B4(s32 mode, s32 command, void* input, void* output)
     s32 port;
 
     previousPort = menuSetEnablePort(1);
-    succeeded = fn_80084A8C(mode, command, input, output);
+    succeeded = cardeGbaTransfer(mode, command, input, output);
     winMsgClose(0);
     if (menuIsCheck(0xE4) != 0) {
         menuCloseCustom(0xE4, 0, 1);
     }
     menuSetEnablePort(previousPort);
     for (port = 0; port < 3; port++) {
-        fn_80093698(port);
+        gbaCommEnd(port);
     }
 
     if (succeeded != 0) {
@@ -3396,9 +3395,9 @@ s32 fn_800849B4(s32 mode, s32 command, void* input, void* output)
 #define CardE_menuGetEnablePort() ((u32 (*)(void))menuGetEnablePort)()
 #define CardE_menuSetEnablePort(mask) ((u8 (*)(u8))menuSetEnablePort)(mask)
 #define CardE_portConnected(port) ((u8 (*)(s32))fn_8008ABA0)(port)
-#define CardE_portBusy(port) ((s32 (*)(s32))fn_800934E4)(port)
+#define CardE_portBusy(port) ((s32 (*)(s32))gbaCommIsBusy)(port)
 #define CardE_portResult(port) ((s32 (*)(s32))fn_80093610)(port)
-#define CardE_portClose(port) ((void (*)(s32))fn_80093698)(port)
+#define CardE_portClose(port) ((void (*)(s32))gbaCommEnd)(port)
 #define CardE_msgOpen(a, id, b, c) ((void (*)(s32, s32, s32, s32))winMsgOpen)(a, id, b, c)
 
 extern void msgctrlSetValue(s32 id, s32 value);
@@ -3407,7 +3406,7 @@ extern s32 fn_80087AE8();
 #define CardE_step(work, flags) \
     ((u8 (*)(CardEStatusWork*, s32))fn_80087AE8)(work, flags)
 extern void* fn_80128E04(void);
-extern u32 fn_80128E24(void);
+extern u32 savedataGetWorkPtr(void);
 extern u8 gamedataAttestBiosGetLangareaId(void*);
 extern u32 gamedataBiosGetGamedataAtttestPtr(void*);
 
@@ -3538,7 +3537,7 @@ static inline u8 CardEIsLangArea(u8 lang)
     void* bios;
     u32 attest;
 
-    if (fn_80128E24() != 0 && (bios = fn_80128E04()) != NULL &&
+    if (savedataGetWorkPtr() != 0 && (bios = fn_80128E04()) != NULL &&
         (attest = gamedataBiosGetGamedataAtttestPtr(bios)) != 0 &&
         gamedataAttestBiosGetLangareaId((void*)attest) == lang) {
         return 1;
@@ -3607,7 +3606,7 @@ static inline CardEStatusWork* CardEOpenStatus(const u8* data, s32 mode,
 
 /* 0x80084A8C | size: 0x305C
  * Run the Card-e GBA transfer for each port in turn. */
-u8 fn_80084A8C(s32 mode, u32 command, void* input, void* output)
+u8 cardeGbaTransfer(s32 mode, u32 command, void* input, void* output)
 {
     extern void* savedataGetStatus(u32, u32);
     extern void heroInit(void* hero);
@@ -3628,7 +3627,7 @@ u8 fn_80084A8C(s32 mode, u32 command, void* input, void* output)
     void* out;
 
     CardE_portClose(1);
-    while (!((s32 (*)(s32, const u8*, void*))fn_800932F0)(1, data + 0x190,
+    while (!((s32 (*)(s32, const u8*, void*))gbaCommStartTransferFile)(1, data + 0x190,
                                                           NULL)) {
         CardE_threadSwitch();
     }
@@ -3642,7 +3641,7 @@ u8 fn_80084A8C(s32 mode, u32 command, void* input, void* output)
             msgctrlSetValue(0x2F, 1);
             CardE_msgOpen(7, 0x3D88, 0, 0);
             CardEWaitSecond();
-            if (!((u8 (*)(void*))fn_800776E4)(status)) {
+            if (!((u8 (*)(void*))menuRuleCheckPartyAndRule)(status)) {
                 ((void (*)(s32, s32, s32))menuCloseCustom)(0xE4, 0, 1);
                 ((void (*)(void*, s32))fn_8005CF2C)(status, 0);
                 return 0;
@@ -3691,7 +3690,7 @@ u8 fn_80084A8C(s32 mode, u32 command, void* input, void* output)
             linked = 1;
         }
 
-        ((void (*)(s32, s32))fn_80093160)((s8)port, 0);
+        ((void (*)(s32, s32))gbaCommStartTransferC)((s8)port, 0);
         switch (CardEWaitResult(work)) {
         case 2:
             break;
@@ -3722,7 +3721,7 @@ u8 fn_80084A8C(s32 mode, u32 command, void* input, void* output)
         }
         heroInit(hero);
         flags = 0;
-        ((void (*)(s32, void*, u32*))fn_80092FC8)((s8)port, hero, &flags);
+        ((void (*)(s32, void*, u32*))gbaCommStartTransferB)((s8)port, hero, &flags);
         result = CardEWaitResult(work);
         switch (result) {
         case 0xE:
@@ -3775,7 +3774,7 @@ u8 fn_80084A8C(s32 mode, u32 command, void* input, void* output)
                 }
                 goto retry;
             }
-            if (!((u8 (*)(void*))fn_800776E4)(hero)) {
+            if (!((u8 (*)(void*))menuRuleCheckPartyAndRule)(hero)) {
                 ((void (*)(s32, s32, s32))menuCloseCustom)(0xE4, 0, 1);
                 ((void (*)(void*, s32))fn_8005CF2C)(hero, 1);
                 if ((command & 8) == 0) {
@@ -3787,7 +3786,7 @@ u8 fn_80084A8C(s32 mode, u32 command, void* input, void* output)
             }
         }
         if ((output != NULL && port == 1) || (command & 0x20)) {
-            ((void (*)(s32, void*))fn_80092E38)((s8)port, out);
+            ((void (*)(s32, void*))gbaCommStartTransferA)((s8)port, out);
             switch (CardEWaitResult(work)) {
             case 0xB:
                 break;
@@ -3865,7 +3864,7 @@ u8 fn_80084A8C(s32 mode, u32 command, void* input, void* output)
 #define CARDE_SHOW_MODEL(model_id, anim_id)                                      \
     do {                                                                         \
         void* model_;                                                            \
-        model_ = fn_800F92D4((model_id));                                        \
+        model_ = GSresFindById((model_id));                                        \
         if (model_ != 0) {                                                       \
             fn_800ECCA8(model_, (anim_id));                                      \
             fn_800ECA78(model_, lbl_8047C1CC);                                   \
@@ -3937,7 +3936,7 @@ static inline void cardGridSelectCell(CardGridCells cells, s32 x, s32 y)
         s32 anim;
 
         anim = cells.cell[y][x].selectAnim;
-        model = fn_800F92D4(cells.cell[y][x].modelId);
+        model = GSresFindById(cells.cell[y][x].modelId);
         if (model != 0) {
             cardGridAnimate(model, anim);
         }
@@ -3948,7 +3947,7 @@ static inline void cardGridResetCell(CardGridCells cells, s32 x, s32 y)
 {
     if (x >= 0 && x < 3 && y >= 0 && y < 3) {
         s32 anim = cells.cell[y][x].resetAnim;
-        void* model = fn_800F92D4(cells.cell[y][x].modelId);
+        void* model = GSresFindById(cells.cell[y][x].modelId);
         if (model != 0) {
             cardGridAnimate(model, anim);
         }
@@ -3979,7 +3978,7 @@ static inline void cardGridShowCount(s32 count)
     ((u32*)anims)[1] = lbl_8047C1C4;
     if (count >= 0 && count < 4) {
         s32 anim = anims[count];
-        void* model = fn_800F92D4(0x107E100B);
+        void* model = GSresFindById(0x107E100B);
         if (model != 0) {
             cardGridAnimate(model, anim);
         }
@@ -4035,7 +4034,7 @@ static inline void cardGridShowCursor(CardGridCursor cursor, s32 x, s32 y)
 {
     if (x >= 0 && x < 3 && y >= 0 && y < 3) {
         s32 anim = cursor.anim[y][x];
-        void* model = fn_800F92D4(0x107E1009);
+        void* model = GSresFindById(0x107E1009);
         if (model != 0) {
             cardGridAnimate(model, anim);
             GSmodelSetAnimType(model, 0);
@@ -4097,7 +4096,7 @@ u32 fn_80087C64(const u16* expected)
                 if (count >= 3) {
                     if (cardGridCountMatches(data->tiles, occupied, expected) < 3) {
                         soundStartSE(0x26);
-                        while (soundGetStatus(0x26) == 2) {
+                        while (GSsndGetStatus(0x26) == 2) {
                             _threadSwitch();
                         }
                         cardGridResetAll(data, occupied);
@@ -4105,7 +4104,7 @@ u32 fn_80087C64(const u16* expected)
                         cardGridShowCount(count);
                     } else {
                         soundStartSE(0x4A1);
-                        while (soundGetStatus(0x4A1) == 2) {
+                        while (GSsndGetStatus(0x4A1) == 2) {
                             _threadSwitch();
                         }
                     }

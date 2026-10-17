@@ -1,6 +1,6 @@
 /**
  * @file sdk_range_800AF8A0.c
- * @brief CARDBios.c middle, 0x800AF8A0 - 0x800B016C (fn_800AF8A0 .. CARDInit).
+ * @brief CARDBios.c middle, 0x800AF8A0 - 0x800B016C (Retry .. CARDInit).
  *
  * Standalone carve of sdk_range_800AE3F0.c: SDK_EXACT_800AF8A0_800B016C
  * hides the range file's bodies, so only these seven functions are emitted,
@@ -18,8 +18,8 @@ CARDControl lbl_803FC620[2];
 void TimeoutHandler(OSAlarm* alarm);
 void __CARDTxHandler(s32 chan);
 void UnlockedCallback(s32 chan, s32 result);
-BOOL fn_80098368(s32 chan, void* buf, s32 len, u32 mode);
-extern u16 fn_8009D820(void);
+BOOL EXIImmEx(s32 chan, void* buf, s32 len, u32 mode);
+extern u16 OSGetFontEncode(void);
 extern void OSRegisterResetFunction(void* info);
 extern void __CARDSetDiskID(void* diskId);
 
@@ -48,7 +48,7 @@ static inline void SetupTimeoutAlarm(CARDControl* card)
     }
 }
 
-s32 fn_800AF8A0(s32 chan)
+s32 Retry(s32 chan)
 {
     CARDControl* card;
     CARDControl* command;
@@ -61,14 +61,14 @@ s32 fn_800AF8A0(s32 chan)
 
     SetupTimeoutAlarm(card);
     command = card;
-    if (!fn_80098368(chan, command->cmd, command->cmdLen, 1)) {
+    if (!EXIImmEx(chan, command->cmd, command->cmdLen, 1)) {
         EXIDeselect(chan);
         EXIUnlock(chan);
         return -3;
     }
 
     if (card->cmd[0] == 0x52 &&
-        !fn_80098368(chan, (u8*) card->workArea + sizeof(CARDID),
+        !EXIImmEx(chan, (u8*) card->workArea + sizeof(CARDID),
                      *(u32*) ((u8*) command + 0x14), 1))
     {
         EXIDeselect(chan);
@@ -105,7 +105,7 @@ void UnlockedCallback(s32 chan, s32 result) {
             result = 0;
         } else {
             card->unlockCallback = NULL;
-            result = fn_800AF8A0(chan);
+            result = Retry(chan);
         }
     }
 
@@ -131,7 +131,7 @@ void UnlockedCallback(s32 chan, s32 result) {
     }
 }
 
-s32 fn_800AFBDC(s32 chan, void* txCallback, void* exiCallback)
+s32 __CARDStart(s32 chan, void* txCallback, void* exiCallback)
 {
     BOOL enabled;
     CARDControl* card;
@@ -183,12 +183,12 @@ s32 __CARDReadSegment(s32 chan, CARDCallback callback)
     card->field_A4 = 0;
     card->field_A8 = 0;
 
-    result = fn_800AFBDC(chan, callback, NULL);
+    result = __CARDStart(chan, callback, NULL);
     if (result == -1) {
         result = 0;
     } else if (result >= 0) {
-        if (!fn_80098368(chan, card->cmd, card->cmdLen, 1) ||
-            !fn_80098368(chan, (u8*) card->workArea + sizeof(CARDID),
+        if (!EXIImmEx(chan, card->cmd, card->cmdLen, 1) ||
+            !EXIImmEx(chan, (u8*) card->workArea + sizeof(CARDID),
                           *(u32*) ((u8*) card + 0x14), 1) ||
             !EXIDma(chan, card->buffer, 0x200, card->field_A4,
                     (EXICallback)__CARDTxHandler))
@@ -204,7 +204,7 @@ s32 __CARDReadSegment(s32 chan, CARDCallback callback)
     return result;
 }
 
-s32 fn_800AFEC4(s32 chan, CARDCallback callback) {
+s32 __CARDWritePage(s32 chan, CARDCallback callback) {
     CARDControl* card;
     s32 result;
 
@@ -218,11 +218,11 @@ s32 fn_800AFEC4(s32 chan, CARDCallback callback) {
     card->field_A4 = 1;
     card->field_A8 = 3;
 
-    result = fn_800AFBDC(chan, NULL, callback);
+    result = __CARDStart(chan, NULL, callback);
     if (result == -1) {
         result = 0;
     } else if (result >= 0) {
-        if (!fn_80098368(chan, card->cmd, card->cmdLen, 1) ||
+        if (!EXIImmEx(chan, card->cmd, card->cmdLen, 1) ||
             !EXIDma(chan, card->buffer, 0x80, card->field_A4,
                     (EXICallback)__CARDTxHandler)) {
             card->callback_CC = NULL;
@@ -236,7 +236,7 @@ s32 fn_800AFEC4(s32 chan, CARDCallback callback) {
     return result;
 }
 
-s32 fn_800AFFE0(s32 chan, u32 addr, void* callback) {
+s32 __CARDEraseSector(s32 chan, u32 addr, void* callback) {
     CARDControl* card = &lbl_803FC620[chan];
     s32 result;
 
@@ -246,11 +246,11 @@ s32 fn_800AFFE0(s32 chan, u32 addr, void* callback) {
     card->cmdLen = 3;
     card->field_A4 = -1;
     card->field_A8 = 3;
-    result = fn_800AFBDC(chan, NULL, callback);
+    result = __CARDStart(chan, NULL, callback);
     if (result == -1) {
         result = 0;
     } else if (result >= 0) {
-        if (fn_80098368(chan, card->cmd, card->cmdLen, 1) == 0) {
+        if (EXIImmEx(chan, card->cmd, card->cmdLen, 1) == 0) {
             card->callback_CC = NULL;
             result = -3;
         } else {
@@ -271,7 +271,7 @@ void CARDInit(void) {
         return;
     }
 
-    lbl_8047A970 = fn_8009D820();
+    lbl_8047A970 = OSGetFontEncode();
 
     OSRegisterVersion(lbl_80478A48);
 

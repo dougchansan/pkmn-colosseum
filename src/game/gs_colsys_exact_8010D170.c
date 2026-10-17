@@ -10,8 +10,8 @@
 
 extern GSColSysState lbl_80404C68;
 
-extern u8* fn_800D7894(void);
-extern void fn_800D7868(u8*, u32, u32, u32, u32, u8, u32, u8);
+extern u8* gfxVtxDescAlloc(void);
+extern void gfxVtxDescSetAttr(u8*, u32, u32, u32, u32, u8, u32, u8);
 
 void fn_8010D170(void)
 {
@@ -19,9 +19,9 @@ void fn_8010D170(void)
 
     lbl_80404C68.activeLayer = 0;
     lbl_80404C68.displayList = NULL;
-    handle = fn_800D7894();
+    handle = gfxVtxDescAlloc();
     lbl_80404C68.gfxRenderHandle = (u32)handle;
-    fn_800D7868(handle, 1, 0, 1, 4, 0, 0, 0);
-    fn_800D7868((u8*)lbl_80404C68.gfxRenderHandle, 4, 0, 6, 10, 0, 0, 0);
+    gfxVtxDescSetAttr(handle, 1, 0, 1, 4, 0, 0, 0);
+    gfxVtxDescSetAttr((u8*)lbl_80404C68.gfxRenderHandle, 4, 0, 6, 10, 0, 0, 0);
     lbl_80404C68.displayList = NULL;
 }

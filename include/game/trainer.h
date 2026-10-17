@@ -105,10 +105,10 @@ u32 TrainerDataSet(void* pokemon, u32 slot, u16 field, u32 extra, u32 value);
  */
 
 /**
- * fn_80236BFC - CheckTrainerPokemonFlag
+ * fightTrainerAiIsPokemonJoutai - CheckTrainerPokemonFlag
  * Query a boolean flag on a specific Pokemon owned by a trainer.
  * Calls TrainerDataGet three times to resolve trainer -> party -> Pokemon,
- * then checks a flag via fn_802026E4.
+ * then checks a flag via fightOutPokemonIsPokemonJoutaiDataId.
  * 272 call sites. Not yet decompiled (no definition in this TU); the
  * only prior "caller" was fictional and has been removed.
  */

@@ -41,7 +41,7 @@ extern u32 lbl_8047A7D8;
 extern u32 __DVDLongFileNameFlag;
 
 static u32 entryToPath(u32 entrynum, char* path, u32 maxlen);
-extern s32 fn_800C7558(s32 ch);
+extern s32 tolower(s32 ch);
 
 #define entryIsDir(i)                                                         \
     (((FstStart_8047A7CC[i].typeAndNameOffset & DVD_FST_TYPE_MASK) == 0)      \
@@ -54,7 +54,7 @@ extern s32 fn_800C7558(s32 ch);
 
 static BOOL isSame(const char* path, const char* string) {
     while (*string != '\0') {
-        if (fn_800C7558(*path++) != fn_800C7558(*string++)) {
+        if (tolower(*path++) != tolower(*string++)) {
             return FALSE;
         }
     }

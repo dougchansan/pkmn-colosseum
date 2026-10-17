@@ -8,7 +8,7 @@ extern u8 lbl_80375CA8[];
 extern u32 lbl_8047B618;
 extern u16 GSrand(void);
 
-u8 fn_80238E30(u32 ctx, void *param2, u16 target) {
+u8 fightTrainerAiGetPokemonZokusei(u32 ctx, void *param2, u16 target) {
   extern u32 fightTrainerGetStatus();
   extern u32 fightFloorGetStatus();
   extern u32 pokemonGetStatus();
@@ -99,7 +99,7 @@ u8 fn_80239154(void *ctx, u32 param) {
   return 0;
 }
 
-u8 fn_802391E0(void *ctx, u32 param) {
+u8 fightAiGetWazaPp(void *ctx, u32 param) {
   extern u32 fightTrainerGetStatus();
   extern u32 wazaGetStatus();
   fightTrainerGetStatus(0, fightTrainerGetStatus(ctx, 0, 0x43, 0) & 0xFFFF, 0x2,
@@ -115,10 +115,10 @@ u8 fn_80239244(void *ctx, u32 param) {
   return (u8)wazaGetStatus(0, param, 0x5, 0);
 }
 
-char fn_802392A8(u32 r3, u32 r4) {
+char fightTrainerAiGetWazaAvgAdjusted(u32 r3, u32 r4) {
   extern int wazaGetStatus();
   extern u32 fightTrainerGetStatus();
-  extern u32 fn_80229B70();
+  extern u32 fightIsWazaThunderInRain();
   extern s8 fn_80229BD8();
   u16 uVar2;
   u8 cVar3;
@@ -129,7 +129,7 @@ char fn_802392A8(u32 r3, u32 r4) {
   uVar1 = fightTrainerGetStatus(0, uVar2, 2, 0);
   uVar2 = fightTrainerGetStatus(r3, 0, 0x43, 0);
   fightTrainerGetStatus(0, uVar2, 2, 0);
-  cVar3 = fn_80229B70(r4);
+  cVar3 = fightIsWazaThunderInRain(r4);
   if (cVar3 == 1) {
     bVar4 = 100;
   } else {
@@ -147,12 +147,12 @@ char fn_802392A8(u32 r3, u32 r4) {
 
 u8 fn_802393A0(void *ctx, u32 param) {
   extern u32 fightTrainerGetStatus();
-  extern u8 fn_80229B70();
+  extern u8 fightIsWazaThunderInRain();
   extern u8 fn_80229BD8();
   extern u32 wazaGetStatus();
   fightTrainerGetStatus(0, fightTrainerGetStatus(ctx, 0, 0x43, 0) & 0xFFFF, 0x2,
                         0);
-  if (fn_80229B70(param) == 1) {
+  if (fightIsWazaThunderInRain(param) == 1) {
     return 100;
   }
   if (fn_80229BD8(param) == 1) {
@@ -193,7 +193,7 @@ u8 fn_80239564(void *ctx, u32 param) {
   return (u8)wazaGetStatus(0, param, 0xc, 0);
 }
 
-u32 fn_802395C8(u32 trainer, u32 move, u32 target) {
+u32 fightTrainerAiGetWazaTenkouValue(u32 trainer, u32 move, u32 target) {
   extern u32 fightTrainerGetStatus();
   extern u8 fightFloorGetNowTenkouDataId();
   extern void fightFloorLoopValidFightOutPokemon();
@@ -295,7 +295,7 @@ s32 fightTrainerAiGetValueAryMaxBanme(s32 *valueAry, u16 count, u8 useRandom) {
   return banmeAry[idx];
 }
 
-int fn_802398E4(int r3, int r4, u32 r5, u32 r6) {
+int fightTrainerAiAddValueScaled(int r3, int r4, u32 r5, u32 r6) {
   extern int fightTrainerGetStatus();
   int iVar1;
   int result;
@@ -376,7 +376,7 @@ s32 fightTrainerAiAddValue(s32 value, s32 delta) {
 /* RULE-EXCEPTION(user-approved): restores the unit settings after the tagged local block above — see docs/RULE_EXCEPTIONS.md */
 #pragma pop
 
-u32 fn_80239A40(u32 r3, u32 r4, u32 r5, u32 r6, u32 r7, u32 r8, u32 r9, u32 r10,
+u32 fightTrainerAiAddValueLog(u32 r3, u32 r4, u32 r5, u32 r6, u32 r7, u32 r8, u32 r9, u32 r10,
                 u8 param_9) {
   extern u8 fn_80008164();
   extern u32 GSmsgGetGSchar();
@@ -571,7 +571,7 @@ u8 fn_80239EE8(u32 ctx, u32 p2, u32 p3, u32 p4, u32 p5, u32 p6, u32 p7,
   return 0;
 }
 
-u8 fn_8023A118(u32 ctx, u32 p2, u32 p3, u32 p4, u32 p5, u32 p6, u32 p7, u32 p8,
+u8 fightTrainerAiLogText(u32 ctx, u32 p2, u32 p3, u32 p4, u32 p5, u32 p6, u32 p7, u32 p8,
                u16 p9, u16 p10, u32 p11) {
   extern u32 GSmsgGetGSchar();
   extern void msgctrlSetValue();

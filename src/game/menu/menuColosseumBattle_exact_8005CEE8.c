@@ -16,8 +16,8 @@ extern void fn_800347B8(void);
 extern void fn_800347C4(void);
 extern void fn_800347E8(s32);
 extern void fn_8003480C(s32);
-extern void fn_8006B8F0();
-extern void fn_8006E0CC();
+extern void menuColosseumBattleClearFlag();
+extern void menuWaitFaceSprites();
 extern void floorRequestChange(s32);
 extern void soundStartSE();
 extern void* savedataGetStatus();
@@ -38,7 +38,7 @@ extern char lbl_802678D8[];
 void menuColosseumBattle(s32 battleKind) {
     ColosseumSaveWork* work;
 
-    fn_8006B8F0();
+    menuColosseumBattleClearFlag();
     work = (ColosseumSaveWork*)savedataGetStatus(0, 0xE);
     work->battleKind = battleKind;
     floorRequestChange(0x395);
@@ -53,10 +53,10 @@ void fn_8005CF2C(void* hero, s32 result) {
 
     menuOpenCustom(MENU_ID(0xBE), 0, NULL, 0x10, NULL, 1, 0xF5);
     menuOpenCustom(MENU_ID(0xDA), 0, NULL, 0x10, NULL, 4,
-                   hero, result, fn_8006B420(), 0);
+                   hero, result, savedataBattleGetRulePtr(), 0);
     menuSetPosition(0xDA, 0, -0x28);
 
-    messageId = fn_80076054(hero, fn_8006B420());
+    messageId = fn_80076054(hero, savedataBattleGetRulePtr());
     if ((u16)messageId == 0) {
         __assert(lbl_802678D8, 0x1BB, lbl_80267A20);
     }
@@ -77,7 +77,7 @@ void fn_8005CF2C(void* hero, s32 result) {
     menuCloseCustom(0xDA, 0, 0);
     menuCloseCustom(0xBE, 0, 1);
     menuCloseCustom(0xDA, 0, 1);
-    fn_8006E0CC();
+    menuWaitFaceSprites();
 }
 #pragma pop
 

@@ -5,7 +5,7 @@
 
 /*
  * effect_visual .sdata2 constants shared by distortionEffectStart,
- * fn_8013F410 and the fn_8013F80C unit. Source references are in
+ * _distortionRender and the _distortionUpdate unit. Source references are in
  * src/game/effect/effect_visual.c.
  */
 SDATA2 const f32 lbl_8047D300 = 0.0f;

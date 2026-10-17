@@ -136,13 +136,13 @@ static u32 NextBufAddr;
 static u32 CurrBufAddr;
 static volatile u16 shdwRegs[59];
 
-#define getTiming fn_800A8894
-#define __VIInit fn_800A8934
-#define __VIRetraceHandler fn_800A85DC
-#define VISetPreRetraceCallback fn_800A880C
-#define VISetPostRetraceCallback fn_800A8850
+#define getTiming getTiming
+#define __VIInit __VIInit
+#define __VIRetraceHandler __VIRetraceHandler
+#define VISetPreRetraceCallback VISetPreRetraceCallback
+#define VISetPostRetraceCallback VISetPostRetraceCallback
 #define OSPanic fn_800060F0
-#define SIRefreshSamplingRate fn_800D104C
+#define SIRefreshSamplingRate SIRefreshSamplingRate
 
 volatile u16 __VIRegs[59] : 0xCC002000;
 #define MARK_CHANGED(index) (changed |= 1LL << (63 - (index)))
@@ -919,7 +919,7 @@ void VISetBlack(BOOL black) {
 }
 
 
-u32 fn_800AA280(void) {
+u32 VIGetRetraceCount(void) {
     return retraceCount;
 }
 
@@ -944,7 +944,7 @@ u32 getCurrentFieldEvenOdd(void) {
     return 0;
 }
 
-u32 fn_800AA2F0(void) {
+u32 VIGetNextField(void) {
     volatile u16* hregs;
     u32 vcount;
     u32 previous;

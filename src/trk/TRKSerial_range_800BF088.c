@@ -21,13 +21,13 @@ typedef struct TRKBuffer {
 
 extern void MWTRACE(s32 level, const char* format, ...);
 extern u8 lbl_803FE7B8[];
-extern void fn_800BE464(TRKEvent* event, s32 type);
+extern void TRKConstructEvent(TRKEvent* event, s32 type);
 extern TRKResult TRKPostEvent(TRKEvent* event);
 extern TRKBuffer* TRKGetBuffer(s32 bufferID);
 extern TRKResult TRKGetFreeBuffer(s32* bufferID, TRKBuffer** buffer);
 extern TRKResult TRKSetBufferPosition(TRKBuffer* buffer, u32 position);
-extern TRKResult fn_800C3600(void);
-extern TRKResult fn_800C35C4(void* data, u32 length);
+extern TRKResult TRKPollUART(void);
+extern TRKResult TRKReadUARTN(void* data, u32 length);
 extern TRKResult TRKAppendBuffer_ui8(TRKBuffer* buffer, u8* data, s32 length);
 extern void TRKReleaseBuffer(s32 bufferID);
 extern s32 TRKTestForPacket(void);
@@ -40,7 +40,7 @@ s32 TRKTestForPacket(void)
     TRKBuffer* buffer;
     s32 result;
 
-    if (fn_800C3600() <= 0) {
+    if (TRKPollUART() <= 0) {
         return -1;
     }
 
@@ -49,7 +49,7 @@ s32 TRKTestForPacket(void)
     MWTRACE(4, "TestForPacket : FreeBuffer is  %ld\n", result);
 
     TRKSetBufferPosition(buffer, 0);
-    if (fn_800C35C4(packet, 0x40) == kTRKSuccess) {
+    if (TRKReadUARTN(packet, 0x40) == kTRKSuccess) {
         s32 payloadSize;
 
         TRKAppendBuffer_ui8(buffer, packet, 0x40);
@@ -57,7 +57,7 @@ s32 TRKTestForPacket(void)
         result = bufferID;
         if (payloadSize > 0) {
             MWTRACE(1, "Reading payload %ld bytes\n", payloadSize);
-            if (fn_800C35C4(payload, ((u32*)packet)[0] - 0x40) == kTRKSuccess) {
+            if (TRKReadUARTN(payload, ((u32*)packet)[0] - 0x40) == kTRKSuccess) {
                 TRKAppendBuffer_ui8(buffer, payload, ((u32*)packet)[0]);
             } else {
                 MWTRACE(8, "TestForPacket : Invalid size of packet hdr.size\n");
@@ -83,7 +83,7 @@ void TRKGetInput(void)
         TRKEvent event;
 
         TRKGetBuffer(bufferID);
-        fn_800BE464(&event, kEventMessage);
+        TRKConstructEvent(&event, kEventMessage);
         event.bufferIndex = bufferID;
         ((s32*)lbl_803FE7B8)[0] = -1;
         TRKPostEvent(&event);
@@ -94,7 +94,7 @@ void TRKProcessInput(s32 bufferID)
 {
     TRKEvent event;
 
-    fn_800BE464(&event, kEventMessage);
+    TRKConstructEvent(&event, kEventMessage);
     event.bufferIndex = bufferID;
     ((s32*)lbl_803FE7B8)[0] = -1;
     TRKPostEvent(&event);

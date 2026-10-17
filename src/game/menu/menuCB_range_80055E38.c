@@ -99,12 +99,12 @@ static inline s32 fn_80055F88_find(s16 val, u32* ptr) {
     return -1;
 }
 
-u32 fn_80055F88(u8* unused, u8* p) {
+u32 pcBoxDrawBoxName(u8* unused, u8* p) {
     extern u8 lbl_80267680[];
     extern void* pcboxGetPokemonBoxName(void* pcbox, s8 box);
     extern void msgctrlSetValue(u32 id, u32 value);
     extern u32 GSmsgGetRect(u32 val);
-    extern void fn_800FB680(s32, s32, s32, s32);
+    extern void GSmsgPrintColor(s32, s32, s32, s32);
     s32 idx;
     s16 val;
     void* obj;
@@ -125,7 +125,7 @@ u32 fn_80055F88(u8* unused, u8* p) {
     msgctrlSetValue(0x37, (u32)obj);
     width = (s16)(GSmsgGetRect(0xce) >> 16);
     half = *(s16*)(p + 0x54);
-    fn_800FB680((s16)(half / 2 - width / 2), 0, -1, 0xce);
+    GSmsgPrintColor((s16)(half / 2 - width / 2), 0, -1, 0xce);
     return 0;
 }
 
@@ -410,8 +410,8 @@ void fn_80056C54(u8* a, u8* b, u32 c) {
     extern void gfxLoadTexture(s32, void*);
     extern void gfxSetPrimitive(s32);
     extern void gfxBegin(s32);
-    extern void fn_800D61E4(s16, s16);
-    extern void fn_800D5CB8(s32, s32, s32, s32, s32);
+    extern void gfxVtxPos2s16(s16, s16);
+    extern void gfxVtxColor4u8(s32, s32, s32, s32, s32);
     extern void gfxVtxTexCoord(s32, f32, f32);
     extern void gfxEnd(void);
     extern void gfxSetFlags(u32);
@@ -486,11 +486,11 @@ void fn_80056C54(u8* a, u8* b, u32 c) {
             gfxLoadTexture(0, texture);
             gfxSetPrimitive(7);
             gfxBegin(2);
-            fn_800D61E4(x, y);
-            fn_800D5CB8(0, 0x3c, 0xc, 0xff, alpha);
+            gfxVtxPos2s16(x, y);
+            gfxVtxColor4u8(0, 0x3c, 0xc, 0xff, alpha);
             gfxVtxTexCoord(0, s0, t0);
-            fn_800D61E4((s16)(x + width), (s16)(y + height));
-            fn_800D5CB8(0, 0x3c, 0xc, 0xff, alpha);
+            gfxVtxPos2s16((s16)(x + width), (s16)(y + height));
+            gfxVtxColor4u8(0, 0x3c, 0xc, 0xff, alpha);
             gfxVtxTexCoord(0, s1, t1);
             gfxEnd();
             gfxClearFlags(0x80000000);
@@ -570,11 +570,11 @@ u32 fn_80057144(u8* ctx, u8* p) {
     defined(MENUCB_EXACT_80057270_ONLY) || \
     defined(MENUCB_TU_80056C54_ONLY)
 
-/* RULE-EXCEPTION(user-approved): local peephole off / scheduling on for fn_80057270 — see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): local peephole off / scheduling on for pcBoxGetCursorPokemon — see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
 #pragma scheduling on
-void* fn_80057270(void) {
+void* pcBoxGetCursorPokemon(void) {
     extern s32 fn_80055194(u32*, s32);
     extern s32 fn_80058F08(u32*, s32);
     extern s32 fn_80056A78(void);

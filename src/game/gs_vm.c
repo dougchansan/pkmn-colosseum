@@ -2,9 +2,9 @@
  * @file gs_vm.c
  * @brief GSvm -- Genius Sonority script virtual machine (the whole unit).
  *
- * Address range: 0x800F10E8 - 0x800F78A4 (fn_800F10E8 .. fn_800F7758), with
+ * Address range: 0x800F10E8 - 0x800F78A4 (fn_800F10E8 .. cms_InitThreadPool), with
  * its data: the .rodata string pool 0x80271068-0x80271300, the opcode table
- * and fn_800F7318's name (.data 0x803155D0-0x80315678), the manager pointer
+ * and _vmThreadCreate's name (.data 0x803155D0-0x80315678), the manager pointer
  * (.sdata 0x80478B00), "\n", 0.0f and the int-to-float bias (.sdata2
  * 0x8047CCB8-0x8047CCC8), the GSVMValue zero initializer (.sbss2
  * 0x8047E710), the native-call registers (.sbss 0x8047AC38) and buffers
@@ -27,7 +27,7 @@
  * .text-only pieces are gs_vm_exact_800F10E8.c,
  * gs_vm_exact_800F13D0.c, gs_vm_exact_800F16C0.c,
  * input_exact_800F75FC.c, input_candidate_800F760C.c,
- * input_exact_800F76E4.c, and input.c's fn_800F7758.
+ * input_exact_800F76E4.c, and input.c's cms_InitThreadPool.
  * The pool strings those pieces print are defined here under
  * their symbol names (tagged RULE-EXCEPTION(title-path) below): a named
  * const array gives the same base-register code and pool layout as the
@@ -230,7 +230,7 @@
  * stand-ins for the TU's own literals) - see docs/RULE_EXCEPTIONS.md.
  * Retail passes these as literals of this TU's pool; the .text-only
  * pieces carved from the unit (fn_800F10E8, fn_800F13D0, fn_800F16C0,
- * fn_800F7318, fn_800F760C, input.c's fn_800F7758) link to them by
+ * _vmThreadCreate, cms_UnregisterScript, input.c's cms_InitThreadPool) link to them by
  * name. A named const array gives the same code (base-register
  * addressing) and the same pool layout as the literal. */
 const char lbl_80271068[] = "Stack overflow.\n";
@@ -253,7 +253,7 @@ extern void GSthreadTerminate(GSThread* thread);
 extern u32 floorGetCurrentContext(void);
 extern void GSthreadSetArgs(void* thread, s32 count, ...);
 extern u16 _toolentryAlloc__FUl(u32 size);   /* GSmemAllocRaw */
-extern void* fn_800E27B0(u16 handle);         /* GSmemGetPtr */
+extern void* GSmemLock(u16 handle);         /* GSmemGetPtr */
 
 #ifdef GS_VM_WHOLE_UNIT
 u8 lbl_80401A78[0x40];          /* print: one conversion spec */
@@ -1381,7 +1381,7 @@ GSVMCtx* cms_ScriptCreateThread(u32 scriptId, u32 argc, va_list args)
 
 /* RULE-EXCEPTION(title-path): pool literals given global names - see
  * docs/RULE_EXCEPTIONS.md. The last three strings of the pool are
- * printed by fn_800F7318, fn_800F760C and fn_800F7758, which lie
+ * printed by _vmThreadCreate, cms_UnregisterScript and cms_InitThreadPool, which lie
  * outside the linked range and link to them by name. */
 const char lbl_80271294[] = "[%s] スレッドのさくせいにしっぱい\n";
 const char lbl_802712B8[] = "スクリプトのアンマップに失敗しました:[%d]\n";
@@ -1462,7 +1462,7 @@ s32 floorTerminateScriptThreads(u16 key)
 /* RULE-EXCEPTION(title-path): named stand-in for this TU's function-name
  * string in retail .data; see docs/RULE_EXCEPTIONS.md. */
 extern const char lbl_80315668[];
-u16 fn_800F7318(u32 affinity, u32 script, u32 stackSize, u32 autoStart,
+u16 _vmThreadCreate(u32 affinity, u32 script, u32 stackSize, u32 autoStart,
                 void* done, u32 argc, ...)
 {
     va_list args;
@@ -1511,7 +1511,7 @@ s32 fn_800F75FC(void* natives)
 
 /* 0x800F760C | 0xD8: unlink `script` from the loaded-script list, then
  * mark every context running it for termination (state 3). */
-s32 fn_800F760C(GSVMScript* script)
+s32 cms_UnregisterScript(GSVMScript* script)
 {
     GSVMPool* pool = lbl_80478B00;
     GSVMScript* prev;
@@ -1557,7 +1557,7 @@ scan:
 }
 
 /* 0x800F76E4 | 0x74: link a loaded script into the list and relocate it. */
-void fn_800F76E4(GSVMScript* script)
+void cms_RegisterScript(GSVMScript* script)
 {
     GSVMScript* head;
     u32 off;
@@ -1588,7 +1588,7 @@ void fn_800F76E4(GSVMScript* script)
 
 /* 0x800F7758 | 0x14C: allocate `count` script VM contexts and reset the
  * manager. */
-s32 fn_800F7758(u16 count)
+s32 cms_InitThreadPool(u16 count)
 {
     GSVMCtx* ctx;
     s32 i;
@@ -1601,7 +1601,7 @@ s32 fn_800F7758(u16 count)
         return -1;
     }
 
-    lbl_80478B00->contexts = (GSVMCtx*)fn_800E27B0(lbl_80478B00->handle);
+    lbl_80478B00->contexts = (GSVMCtx*)GSmemLock(lbl_80478B00->handle);
     ctx = lbl_80478B00->contexts;
     for (i = 0; i < count; i++) {
         ctx->script = NULL;

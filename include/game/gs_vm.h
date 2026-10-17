@@ -5,7 +5,7 @@
  *
  * The GS VM translation unit, as far as the retail data shows:
  *   .text   0x800F106C-0x800F78A4: fn_800F106C (hand-written native-call
- *           trampoline) up to fn_800F7758, the VM initializer (it prints
+ *           trampoline) up to cms_InitThreadPool, the VM initializer (it prints
  *           the pool's last string, "GSvm ... failed", and fills
  *           lbl_80401BF8; its code is currently scored in input.c's unit).
  *   .rodata 0x80271068-0x80271300: one literal pool, "Stack overflow.\n",
@@ -14,7 +14,7 @@
  *           register (base+0x14, +0x28, +0x120, ...).
  *   .data   0x803155D0-0x80315678: the 0x26-entry opcode table (0 = fn_800F6BBC
  *           ... 0x25 = fn_800F10E8) and "_vmThreadCreate", the name
- *           fn_800F7318 prints.
+ *           _vmThreadCreate prints.
  *   .sdata  0x80478B00 (VM manager), .sdata2 0x8047CCB8-0x8047CCC8 ("\n",
  *           0.0f, the int-to-float bias), .sbss2 0x8047E710 (the zero
  *           initializer of a GSVMValue), .sbss 0x8047AC38-0x8047AC48 (the
@@ -33,7 +33,7 @@
  * 0x800F1A0C-0x800F75FC with the string pool it owns (the definitions
  * outside that range are under GS_VM_WHOLE_UNIT). Linked .text-only
  * pieces: fn_800F10E8, fn_800F13D0, fn_800F16C0, fn_800F75FC,
- * fn_800F760C, fn_800F76E4, and fn_800F7758 (inside input.c's unit).
+ * cms_UnregisterScript, cms_RegisterScript, and cms_InitThreadPool (inside input.c's unit).
  */
 #ifndef GS_VM_H
 #define GS_VM_H
@@ -42,7 +42,7 @@
 
 struct GSThread;
 
-/* One loaded GS script bank, linked into GSVMPool.scripts by fn_800F76E4. */
+/* One loaded GS script bank, linked into GSVMPool.scripts by cms_RegisterScript. */
 typedef struct GSVMScript {
     /* 0x00 */ u16   id;
     /* 0x02 */ u8    unk02[2];

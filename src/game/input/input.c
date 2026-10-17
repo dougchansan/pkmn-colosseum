@@ -5,26 +5,26 @@
  * Address range: 0x800F7758 - 0x800F915C, .sdata2 0x8047CCC8 - 0x8047CD00,
  * .bss 0x80401C10 - 0x80401DE0.
  *
- * fn_800F7758 allocates the script VM context pool (GSVMPool at lbl_80401BF8,
+ * cms_InitThreadPool allocates the script VM context pool (GSVMPool at lbl_80401BF8,
  * contexts of 0x16C bytes). The rest of the range is the pad manager: four
  * InputPad slots in lbl_80401C10, each bound to a PAD channel, read through
  * small accessors that look the slot up by id, the per-frame update
- * (fn_800F7F64), the one-time init (fn_800F8138), the PAD sampling callback
- * (fn_800F8268) with its rumble driver (fn_800F8428), and the stick filter
- * and output stage the update calls (fn_800F8654, fn_800F8A54).
+ * (GSinputRead), the one-time init (GSinputInit), the PAD sampling callback
+ * (inputPadCallback) with its rumble driver (inputUpdateMotors), and the stick filter
+ * and output stage the update calls (inputSmoothStick, inputClampSticks).
  *
- * Unit boundary: the functions up to fn_800F8138 use two .sdata2 literals,
- * the int-to-float bias (fn_800F7C8C/fn_800F7D38) and 0.0f (fn_800F8138).
+ * Unit boundary: the functions up to GSinputInit use two .sdata2 literals,
+ * the int-to-float bias (GSinputResetRightSmoothing/GSinputResetLeftSmoothing) and 0.0f (GSinputInit).
  * Retail has exactly that pair at 0x8047CCC8/0x8047CCD0, and the only other
  * code that references them is 0x800F8268-0x800F915C, whose own literals
  * follow at 0x8047CCD4-0x8047CCF8 in first-use order (0.25f, 0.5f, 1.0f and
- * the unsigned bias from fn_800F8654, then sqrtf's 0.5, 3.0 and 0.0 from
- * fn_800F8A54). Compiler literals cannot be shared between objects, so the
+ * the unsigned bias from inputSmoothStick, then sqrtf's 0.5, 3.0 and 0.0 from
+ * inputClampSticks). Compiler literals cannot be shared between objects, so the
  * two ranges are one translation unit. The three registry-release functions
  * that used to follow (0x800F915C-0x800F9318) belong to GSres (gs_res.c).
  *
  * The pad slots, the rumble timers and the motor commands are three objects
- * this unit defines. fn_800F8138 and fn_800F8428 address all three from one
+ * this unit defines. GSinputInit and inputUpdateMotors address all three from one
  * pooled .bss base (slots +0, timers +0x1B0, commands +0x1C0; the slots come
  * out as `addi rN,base,0`, which MWCC only emits for pooled unit data), so
  * they are defined here rather than extern.
@@ -33,7 +33,7 @@
  * - GC/1.3 turns the pooled `base + 0` into a register copy; GC/1.3.2 keeps
  *   the add, as retail does (same behaviour as the GSgfx string pool).
  * - With normal inlining MWCC orders pooled .bss by first reference, which
- *   puts the motor commands before the timers (fn_800F8138 references them
+ *   puts the motor commands before the timers (GSinputInit references them
  *   first). Deferred inlining lays the pool out in reverse definition order,
  *   which gives retail's layout from plain definitions. It also emits the
  *   functions in reverse definition order, so they are listed here from the
@@ -41,8 +41,8 @@
  *
  * Dolphin PAD calls that have no symbol name yet, identified by their order
  * in the SDK's Pad.c and by their arguments here:
- *   fn_800AAD34 PADReset(mask)            fn_800AAE34 PADRecalibrate(mask)
- *   fn_800AAF38 PADInit()                 fn_800AB4FC PADControlAllMotors(cmds)
+ *   fn_800AAD34 PADReset(mask)            PADRecalibrate PADRecalibrate(mask)
+ *   PADInit PADInit()                 fn_800AB4FC PADControlAllMotors(cmds)
  */
 
 #include "game/input/input.h"
@@ -53,15 +53,15 @@ extern void* memset(void* dst, int val, u32 size);
 extern void* memcpy(void* dst, const void* src, u32 n);
 extern void GSlogWritef(const char* fmt, ...);
 extern u16 _toolentryAlloc__FUl(u32 size);   /* GSmemAllocRaw */
-extern void* fn_800E27B0(u16 handle);         /* GSmemGetPtr */
+extern void* GSmemLock(u16 handle);         /* GSmemGetPtr */
 extern u32 fn_800D3094(void);
 extern void fn_800AAD34(u32 mask);            /* PADReset */
-extern BOOL fn_800AAE34(u32 mask);            /* PADRecalibrate */
-extern BOOL fn_800AAF38(void);                /* PADInit */
+extern BOOL PADRecalibrate(u32 mask);            /* PADRecalibrate */
+extern BOOL PADInit(void);                /* PADInit */
 extern void fn_800AB4FC(const u32* commands); /* PADControlAllMotors */
 extern void PADSetAnalogMode(u32 mode);
-extern u32 fn_800AB150(PADStatus* status);    /* PADRead */
-extern u32 fn_800D0F44(s32 chan);             /* SI type/status probe */
+extern u32 PADRead(PADStatus* status);    /* PADRead */
+extern u32 SIProbe(s32 chan);             /* SI type/status probe */
 extern f64 __frsqrte(f64 value);
 extern const f32 lbl_80478AC0[];              /* NaN */
 
@@ -69,19 +69,19 @@ extern GSVMPool lbl_80401BF8;
 extern GSVMPool* lbl_80478B00;
 extern const char lbl_802712E4[];
 
-/* Rumble state. The PAD sampling callback (fn_800F8268, run from the SI
- * interrupt) drives the motors from these through fn_800F8428, while the game
- * thread sets them up in fn_800F8138; retail treats them as volatile (the
- * timer and command accesses in fn_800F8428 are never cached or reordered
- * across each other, and fn_800F8138's command stores keep their order). */
+/* Rumble state. The PAD sampling callback (inputPadCallback, run from the SI
+ * interrupt) drives the motors from these through inputUpdateMotors, while the game
+ * thread sets them up in GSinputInit; retail treats them as volatile (the
+ * timer and command accesses in inputUpdateMotors are never cached or reordered
+ * across each other, and GSinputInit's command stores keep their order). */
 volatile u32 lbl_80401DD0[INPUT_PAD_COUNT]; /* PADControlAllMotors commands */
 volatile s32 lbl_80401DC0[INPUT_PAD_COUNT]; /* rumble pulse accumulators */
 InputPad lbl_80401C10[INPUT_PAD_COUNT];
 
 /* Sampling-callback frame counter. */
 extern u32 lbl_8047AC48;
-/* Channels waiting for PADReset. The PAD sampling callback (fn_800F8268)
- * sets and clears these bits, so fn_800F7F64 re-reads it on every use. */
+/* Channels waiting for PADReset. The PAD sampling callback (inputPadCallback)
+ * sets and clears these bits, so GSinputRead re-reads it on every use. */
 extern volatile u32 lbl_8047AC4C;
 /* fn_800D3094 value at the last PADReset. */
 extern u32 lbl_8047AC50;
@@ -98,7 +98,7 @@ static inline InputPad* InputFindPad(s32 id) {
     return NULL;
 }
 
-/* MSL <math.h> fpclassify/sqrtf, inlined four times into fn_800F8A54 (the
+/* MSL <math.h> fpclassify/sqrtf, inlined four times into inputClampSticks (the
  * same frsqrte + three Newton steps + NaN fallbacks each time). */
 static inline s32 InputFpClassify(f32 value) {
     switch (*(s32*)&value & 0x7F800000) {
@@ -132,7 +132,7 @@ static inline f32 InputSqrtf(f32 value) {
 }
 
 /* Apply the +-10 dead zone to one stick and limit it to a circle of
- * `radius`. fn_800F8A54 expands this four times: both axes are sign-extended
+ * `radius`. inputClampSticks expands this four times: both axes are sign-extended
  * up front (argument evaluation), then the same dead zone, squared-length
  * test, inlined sqrtf and rescale follow with radius 56 or 44. */
 static inline void InputClampStick(s8 inX, s8 inY, s8* outX, s8* outY, s32 radius) {
@@ -169,7 +169,7 @@ static inline void InputClampStick(s8 inX, s8 inY, s8* outX, s8* outY, s32 radiu
  * through; mode 2 applies the dead zone and circle limit to the raw sticks
  * in place and to the filtered sticks into the outputs (radius 56 for the
  * main stick, 44 for the C stick). */
-void fn_800F8A54(InputPad* pad) {
+void inputClampSticks(InputPad* pad) {
     switch (pad->outputMode) {
     case 0:
         pad->outStickX = pad->stickX;
@@ -193,7 +193,7 @@ void fn_800F8A54(InputPad* pad) {
 /* Stick smoothing filter for one stick: when the raw position moves by more
  * than 2, recompute the per-frame step towards it, then advance the filtered
  * position without overshooting. */
-void fn_800F8654(InputPad* pad, s8 x, s8 y, s8* lastX, s8* lastY,
+void inputSmoothStick(InputPad* pad, s8 x, s8 y, s8* lastX, s8* lastY,
                  f32* stepX, f32* stepY, f32* posX, f32* posY) {
     if (*lastX < x - 2 || *lastX > x + 2 || *lastY < y - 2 || *lastY > y + 2) {
         if (pad->smoothMode == 0) {
@@ -251,7 +251,7 @@ void fn_800F8654(InputPad* pad, s8 x, s8 y, s8* lastX, s8* lastY,
 }
 
 /* Drive the rumble motors from each connected slot's rumble request. */
-void fn_800F8428(void) {
+void inputUpdateMotors(void) {
     u8 changed = FALSE;
     int chan;
     InputPad* pad;
@@ -317,14 +317,14 @@ void fn_800F8428(void) {
 
 /* PAD sampling callback: read all four channels, latch each bound slot's
  * status, track connection changes, then update the rumble motors. */
-void fn_800F8268(void) {
+void inputPadCallback(void) {
     PADStatus status[PAD_MAX_CONTROLLERS];
     PADStatus* s;
     InputPad* pad;
     int chan;
     u32 type;
 
-    fn_800AB150(status);
+    PADRead(status);
     s = status;
     for (chan = 0; chan < PAD_MAX_CONTROLLERS; chan++, s++) {
         pad = InputFindPad(chan + 1);
@@ -334,7 +334,7 @@ void fn_800F8268(void) {
         switch (s->err) {
         case PAD_ERR_NONE:
             if (pad->status == 3) {
-                switch (fn_800D0F44(chan)) {
+                switch (SIProbe(chan)) {
                 case 0x09000000: /* SI_GC_CONTROLLER */
                     pad->type = 0;
                     break;
@@ -350,7 +350,7 @@ void fn_800F8268(void) {
             lbl_8047AC4C &= ~(PAD_CHAN0_BIT >> chan);
             break;
         case PAD_ERR_NO_CONTROLLER:
-            type = fn_800D0F44(chan);
+            type = SIProbe(chan);
             if (type == 8) { /* SI_ERROR_NO_RESPONSE */
                 pad->status = 3;
             } else if (type == 0x40) {
@@ -363,11 +363,11 @@ void fn_800F8268(void) {
             break;
         }
     }
-    fn_800F8428();
+    inputUpdateMotors();
     lbl_8047AC48++;
 }
 
-void fn_800F8138(void) {
+void GSinputInit(void) {
     InputPad* pad = lbl_80401C10;
     volatile u32* motor = lbl_80401DD0;
     volatile s32* timer = lbl_80401DC0;
@@ -403,15 +403,15 @@ void fn_800F8138(void) {
     }
 
     PADSetAnalogMode(0);
-    fn_800AAF38();
+    PADInit();
     fn_800AB4FC((u32*)lbl_80401DD0);
-    fn_800AAE34(lbl_8047AC4C);
+    PADRecalibrate(lbl_8047AC4C);
     SISetSamplingRate(11);
-    PADSetSamplingCallback(fn_800F8268);
+    PADSetSamplingCallback(inputPadCallback);
 }
 
 /* Bind a free slot to PAD channel `id` - 1. */
-s32 fn_800F80B0(s32 id) {
+s32 GSinputOpen(s32 id) {
     InputPad* pad = InputFindPad(0);
 
     if (pad == NULL) {
@@ -432,7 +432,7 @@ s32 fn_800F80B0(s32 id) {
 
 /* Per-frame update: latch the sampled status, service pending PAD resets,
  * and run the stick filter. Returns the pad's connection status. */
-u32 fn_800F7F64(s32 id) {
+u32 GSinputRead(s32 id) {
     InputPad* pad = InputFindPad(id);
     BOOL level;
     u32 now;
@@ -451,17 +451,17 @@ u32 fn_800F7F64(s32 id) {
     memcpy(&pad->current, &pad->latched, sizeof(PADStatus));
     OSRestoreInterrupts(level);
 
-    fn_800F8654(pad, pad->current.stickX, pad->current.stickY,
+    inputSmoothStick(pad, pad->current.stickX, pad->current.stickY,
                 &pad->lastStickX, &pad->lastStickY,
                 &pad->stickStepX, &pad->stickStepY, &pad->stickX, &pad->stickY);
-    fn_800F8654(pad, pad->current.substickX, pad->current.substickY,
+    inputSmoothStick(pad, pad->current.substickX, pad->current.substickY,
                 &pad->lastSubstickX, &pad->lastSubstickY,
                 &pad->substickStepX, &pad->substickStepY, &pad->substickX, &pad->substickY);
-    fn_800F8A54(pad);
+    inputClampSticks(pad);
     return pad->status;
 }
 
-u8 fn_800F7EF8(s32 id) {
+u8 GSinputIsConnected(s32 id) {
     InputPad* pad = InputFindPad(id);
 
     if (pad == NULL) {
@@ -470,7 +470,7 @@ u8 fn_800F7EF8(s32 id) {
     return pad->status == 0;
 }
 
-void fn_800F7E9C(s32 id, u32 value) {
+void GSinputSetClamping(s32 id, u32 value) {
     InputPad* pad = InputFindPad(id);
 
     if (pad == NULL) {
@@ -479,7 +479,7 @@ void fn_800F7E9C(s32 id, u32 value) {
     pad->outputMode = value;
 }
 
-void fn_800F7E40(s32 id, u8 frames) {
+void GSinputSetSmoothingRate(s32 id, u8 frames) {
     InputPad* pad = InputFindPad(id);
 
     if (pad == NULL) {
@@ -488,7 +488,7 @@ void fn_800F7E40(s32 id, u8 frames) {
     pad->smoothFrames = frames;
 }
 
-void fn_800F7DE4(s32 id, u32 mode) {
+void GSinputSetSmoothingFunc(s32 id, u32 mode) {
     InputPad* pad = InputFindPad(id);
 
     if (pad == NULL) {
@@ -498,7 +498,7 @@ void fn_800F7DE4(s32 id, u32 mode) {
 }
 
 /* Snap the filtered main stick to a position. */
-void fn_800F7D38(s32 id, s8 x, s8 y) {
+void GSinputResetLeftSmoothing(s32 id, s8 x, s8 y) {
     InputPad* pad = InputFindPad(id);
 
     if (pad == NULL) {
@@ -511,7 +511,7 @@ void fn_800F7D38(s32 id, s8 x, s8 y) {
 }
 
 /* Snap the filtered substick to a position. */
-void fn_800F7C8C(s32 id, s8 x, s8 y) {
+void GSinputResetRightSmoothing(s32 id, s8 x, s8 y) {
     InputPad* pad = InputFindPad(id);
 
     if (pad == NULL) {
@@ -523,7 +523,7 @@ void fn_800F7C8C(s32 id, s8 x, s8 y) {
     pad->substickY = y;
 }
 
-u32 fn_800F7C28(s32 id) {
+u32 GSinputGetSubType(s32 id) {
     InputPad* pad = InputFindPad(id);
 
     if (pad == NULL) {
@@ -551,7 +551,7 @@ u32 fn_800F7B5C(s32 id) {
 }
 
 /* Buttons whose state changed since the previous update. */
-u32 fn_800F7AF0(s32 id) {
+u32 GSinputButtonsChanged(s32 id) {
     InputPad* pad = InputFindPad(id);
 
     if (pad == NULL) {
@@ -560,7 +560,7 @@ u32 fn_800F7AF0(s32 id) {
     return pad->current.button ^ pad->prevButton;
 }
 
-s8 fn_800F7A7C(s32 id, s32 filtered) {
+s8 GSinputGetLeftStickXData(s32 id, s32 filtered) {
     InputPad* pad = InputFindPad(id);
 
     if (pad == NULL) {
@@ -572,7 +572,7 @@ s8 fn_800F7A7C(s32 id, s32 filtered) {
     return pad->current.stickX;
 }
 
-s8 fn_800F7A08(s32 id, s32 filtered) {
+s8 GSinputGetLeftStickYData(s32 id, s32 filtered) {
     InputPad* pad = InputFindPad(id);
 
     if (pad == NULL) {
@@ -584,7 +584,7 @@ s8 fn_800F7A08(s32 id, s32 filtered) {
     return pad->current.stickY;
 }
 
-s8 fn_800F7994(s32 id, s32 filtered) {
+s8 GSinputGetRightStickXData(s32 id, s32 filtered) {
     InputPad* pad = InputFindPad(id);
 
     if (pad == NULL) {
@@ -596,7 +596,7 @@ s8 fn_800F7994(s32 id, s32 filtered) {
     return pad->current.substickX;
 }
 
-s8 fn_800F7920(s32 id, s32 filtered) {
+s8 GSinputGetRightStickYData(s32 id, s32 filtered) {
     InputPad* pad = InputFindPad(id);
 
     if (pad == NULL) {
@@ -608,7 +608,7 @@ s8 fn_800F7920(s32 id, s32 filtered) {
     return pad->current.substickY;
 }
 
-void fn_800F78A4(s32 id, u8 motor, u8 strength, u32 frames, u8 decay) {
+void GSinputMotorStart(s32 id, u8 motor, u8 strength, u32 frames, u8 decay) {
     InputPad* pad = InputFindPad(id);
 
     if (pad == NULL) {
@@ -624,7 +624,7 @@ void fn_800F78A4(s32 id, u8 motor, u8 strength, u32 frames, u8 decay) {
 }
 
 /* Allocate `count` script VM contexts and reset the pool. */
-s32 fn_800F7758(u16 count) {
+s32 cms_InitThreadPool(u16 count) {
     GSVMContext* ctx;
     s32 i;
 
@@ -636,7 +636,7 @@ s32 fn_800F7758(u16 count) {
         return -1;
     }
 
-    lbl_80478B00->contexts = fn_800E27B0(lbl_80478B00->handle);
+    lbl_80478B00->contexts = GSmemLock(lbl_80478B00->handle);
     ctx = lbl_80478B00->contexts;
     for (i = 0; i < count; i++) {
         ctx->script = NULL;

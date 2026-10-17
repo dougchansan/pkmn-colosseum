@@ -18,7 +18,7 @@
  * parameter is only materialised as its own variable when the argument is
  * a local of another inline expansion; an argument that is a local of the
  * caller is substituted and gives no copy (compare memAlloc(cacheSize) in
- * fn_801800F8, which passes r18 straight to r3). So the length is the
+ * fsysCacheInit, which passes r18 straight to r3). So the length is the
  * result of an inline file-size helper whose value feeds memAllocAligned,
  * which fileGetSize reproduces with the same 147 instructions.
  *
@@ -46,26 +46,26 @@
  */
 #include "game/gs_range_8017FA5C_shared.h"
 
-extern u16 fn_800E202C(void* ptr);
+extern u16 GSmemGetHandleByPtr(void* ptr);
 extern void fn_800E24B0(u16 handle);
-extern void fn_800E209C(u16 handle);
-extern void fn_8017C1D8(void*, void*, u32, void*);
-extern void fn_8017C074(void*, void*, u32, void*);
+extern void GSmemFree(u16 handle);
+extern void fsysLZSSJobFinish(void*, void*, u32, void*);
+extern void fsysLZSSJobSetup(void*, void*, u32, void*);
 extern s32 fn_8017AC30(void);
 extern void* GSgappCreate(s32, s32, void*, void*);
 extern void fn_8018114C(void);
 extern void fn_80181224(void);
-extern void* fn_80167F28(const char*);
-extern s32 fn_80167E5C(void*);
-extern void fn_80167E64(void*);
+extern void* GSdvdOpen(const char*);
+extern s32 GSdvdGetLength(void*);
+extern void GSdvdClose(void*);
 extern const char lbl_80273F80[];
 
 static inline void* memAllocAligned(u32 size)
 {
     u32 alignedSize = (size + 0x1F) & ~0x1F;
-    u16 h = fn_800E2C04(alignedSize, 0x20);
+    u16 h = GSmemAlloc(alignedSize, 0x20);
     if (h) {
-        return fn_800E27B0(h);
+        return GSmemLock(h);
     }
     return NULL;
 }
@@ -79,10 +79,10 @@ static inline void memFree(void* ptr)
 {
     u16 h;
 
-    h = fn_800E202C(ptr);
+    h = GSmemGetHandleByPtr(ptr);
     if (h) {
         fn_800E24B0(h);
-        fn_800E209C(h);
+        GSmemFree(h);
     }
 }
 
@@ -100,9 +100,9 @@ static inline void jobStartLoad(GsRangePoolElem* job)
     if (job->app) {
         job->active = 1;
         job->state = 1;
-        file = fn_80167F28(lbl_80273F80);
-        length = fn_80167E5C(file);
-        fn_80167E64(file);
+        file = GSdvdOpen(lbl_80273F80);
+        length = GSdvdGetLength(file);
+        GSdvdClose(file);
         lbl_8047B1E0 = memAllocAligned(length);
         lbl_8047B1E4 = job;
     }
@@ -130,7 +130,7 @@ void fn_8018094C(void)
                 }
                 if (entry->state == 2) {
                     if (entry->type == 0) {
-                        fn_8017C1D8(entry->slot, entry->subEntry, entry->index, entry);
+                        fsysLZSSJobFinish(entry->slot, entry->subEntry, entry->index, entry);
                     }
                     entry->state = 0;
                     return;
@@ -147,7 +147,7 @@ void fn_8018094C(void)
                     switch (job->type) {
                     case 0:
                         lbl_8047B1E4 = job;
-                        fn_8017C074(lbl_8047B1E4->slot, lbl_8047B1E4->subEntry,
+                        fsysLZSSJobSetup(lbl_8047B1E4->slot, lbl_8047B1E4->subEntry,
                                     lbl_8047B1E4->index, lbl_8047B1E4);
                         job->app = GSgappCreate(fn_8017AC30(), 0xC8,
                                                 job->slot->taskParam, fn_8018114C);

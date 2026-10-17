@@ -47,8 +47,8 @@ extern void* pokemonGetStatus();
 extern u32   pokemonSetStatus();
 extern void  pokemonGrowBasisStatus();
 extern u32   itemGetStatus();
-extern void  fn_80119ED0(void);
-extern void  fn_80121ADC(void);
+extern void  joutaiDataBiosGetStatusKind(void);
+extern void  pokemonIsJoutaiDataId(void);
 extern void  fn_8011B67C(void);
 extern void  pokemonGetSoubiItemDataId(void);
 extern u32   wazaGetStatus(void* ptr, u16 dataId, u16 status, u32 index);
@@ -66,8 +66,8 @@ extern void wazaSetStatus();
 extern void* fightTargetGetPtrAsNowFightType();
 extern void fightFloorSetStatus();
 extern u32 fightFloorGetStatus();
-extern void fn_801FCEC4();
-extern u8 fn_802026E4();
+extern void fightOutPokemonBiosCopy();
+extern u8 fightOutPokemonIsPokemonJoutaiDataId();
 extern u16 figthOutPokemonGetPokemonDataId();
 extern u16 fightOutPokemonGetSoubiItemSoubiDataId();
 extern u16 fightOutPokemonGetUseWazaDataId();
@@ -79,8 +79,8 @@ extern u32 fightWazaCriticalDataBiosGetBunbo();
 extern u8* fightWazaCriticalDataBiosGetPtr(u16 index);
 extern void fightWazaBiosCopy();
 extern void fightApplyDamageVariance();
-extern void fn_802274F0();
-extern int fn_80232110(void* attacker, void* defender, void* side, u16 wazaId,
+extern void fightSeqWazaTypeCalc();
+extern int fightSeqCalcDamage(void* attacker, void* defender, void* side, u16 wazaId,
                        u16 power, u16 type);
 extern u32 lbl_80478D60;   /* critical-hit table length */
 extern u8 lbl_80478D78[8];
@@ -89,7 +89,7 @@ extern u32 lbl_8047B618;
 
 /*
  * The critical-hit check and the damage calculation below are the bodies of
- * the waza-sequence commands WS_CRITICAL_CHECK (0x80227DB8) and fn_80227C40
+ * the waza-sequence commands WS_CRITICAL_CHECK (0x80227DB8) and wsCmd05
  * (0x80227C40), which retail expands inline here; their locals get inline
  * numbering, which gives retail's register allocation.
  */
@@ -118,7 +118,7 @@ static inline void fightSeqCriticalCheck(void)
     /* Lucky Punch on Chansey, Stick on Farfetch'd. */
     lucky = item == 0x3f && species == 0x71;
     stick = item == 0x42 && species == 0x53;
-    crit = (fn_802026E4(atk, 0xf) == 1) * 2
+    crit = (fightOutPokemonIsPokemonJoutaiDataId(atk, 0xf) == 1) * 2
          + ((u16)wazaGetStatus(0, wazaId, 9, 0) == 0x2b)
          + ((u16)wazaGetStatus(0, wazaId, 9, 0) == 0x4b)
          + ((u16)wazaGetStatus(0, wazaId, 9, 0) == 200)
@@ -135,7 +135,7 @@ static inline void fightSeqCriticalCheck(void)
         (u8)fightFloorGetStatus(0, 0, 0x29, 0) == 1) {
         bunbo = fightWazaCriticalDataBiosGetBunbo(fightWazaCriticalDataBiosGetPtr(crit));
         if (GSrand() % bunbo == 0 ||
-            (fn_802026E4(atk, 0x3e) == 1 && wazaId == 0x164 &&
+            (fightOutPokemonIsPokemonJoutaiDataId(atk, 0x3e) == 1 && wazaId == 0x164 &&
              GSrand() % 100 < 90)) {
             wazaSetStatus(atkWaza, 0, 0x2b, 0, 2);
         } else {
@@ -147,7 +147,7 @@ static inline void fightSeqCriticalCheck(void)
     lbl_8047B610++;
 }
 
-/* RULE-EXCEPTION(user-approved): single-use inline helper (body of fn_80227C40) — see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): single-use inline helper (body of wsCmd05) — see docs/RULE_EXCEPTIONS.md */
 static inline void fightSeqDamageCalc(void)
 {
     void* atk;
@@ -166,13 +166,13 @@ static inline void fightSeqDamageCalc(void)
     atkWaza = pokemonGetStatus(atk, 0, 0xd9, 0);
     power = wazaGetStatus(atkWaza, 0, 0x2f, 0);
     type = wazaGetStatus(atkWaza, 0, 0x30, 0);
-    damage = fn_80232110(atk, def, side, wazaId, power, type);
+    damage = fightSeqCalcDamage(atk, def, side, wazaId, power, type);
     damage *= (u8)wazaGetStatus(atkWaza, 0, 0x2b, 0);
     damage *= (u8)wazaGetStatus(atkWaza, 0, 0x2c, 0);
-    if (fn_802026E4(atk, 0x24) == 1 && type == 0xd) {
+    if (fightOutPokemonIsPokemonJoutaiDataId(atk, 0x24) == 1 && type == 0xd) {
         damage *= 2;
     }
-    if (fn_802026E4(atk, 0x32) == 1) {
+    if (fightOutPokemonIsPokemonJoutaiDataId(atk, 0x32) == 1) {
         damage = damage * 15 / 10;
     }
     wazaSetStatus(atkWaza, 0, 0x2d, 0, damage);
@@ -202,8 +202,8 @@ fightSeqGetNromalWazaDamage(u32 r3, u32 r4, u32 r5, u32 r6, u8 r7, u8 r8, void *
     for (i = 0; i < 8; i++) {
         savedFlags[i] = lbl_80478D78[i];
     }
-    fn_801FCEC4(savedAtk, r5);
-    fn_801FCEC4(savedDef, r6);
+    fightOutPokemonBiosCopy(savedAtk, r5);
+    fightOutPokemonBiosCopy(savedDef, r6);
     fightFloorSetStatus(0, 0, 0x36, 0, r5);
     fightFloorSetStatus(0, 0, 0x42, 0, r6);
     waza = pokemonGetStatus(r5, 0, 0xd9, 0);
@@ -221,7 +221,7 @@ fightSeqGetNromalWazaDamage(u32 r3, u32 r4, u32 r5, u32 r6, u8 r7, u8 r8, void *
         fightSeqCriticalCheck();
     }
     fightSeqDamageCalc();
-    fn_802274F0(1, 1, 1, 0);
+    fightSeqWazaTypeCalc(1, 1, 1, 0);
     if (r8 == 1) {
         fightApplyDamageVariance(1, 1);
         lbl_8047B610++;
@@ -242,8 +242,8 @@ fightSeqGetNromalWazaDamage(u32 r3, u32 r4, u32 r5, u32 r6, u8 r7, u8 r8, void *
     for (i = 0; i < 8; i++) {
         lbl_80478D78[i] = savedFlags[i];
     }
-    fn_801FCEC4(r5, savedAtk);
-    fn_801FCEC4(r6, savedDef);
+    fightOutPokemonBiosCopy(r5, savedAtk);
+    fightOutPokemonBiosCopy(r6, savedDef);
     return result;
 }
 #endif
@@ -283,22 +283,22 @@ void fightSeqInit(void) {
     extern void* fightFloorGetValidFightSidePtr();
     extern void fightSideInitJoutaiDataId();
     extern s32 _fightSeqInitSubFightOutPokemon__FPvUsPv();
-    extern s32 fn_80213558();
-    extern s32 fn_802136A4();
+    extern s32 _fightSeqTurnEndSubFightOutPokemon();
+    extern s32 _fightOutPokemonInitOneSelfTurnSub();
     u8 localBuf[0x10];
     u32 i;
     s32 j;
     void* slotData;
 
     localBuf[0] = 0;
-    fightFloorLoopValidFightOutPokemon(0, (u32)fn_80213558, &localBuf[0], 0);
+    fightFloorLoopValidFightOutPokemon(0, (u32)_fightSeqTurnEndSubFightOutPokemon, &localBuf[0], 0);
     for (i = 0; (i & 0xFFFF) < 2; i++) {
         slotData = fightFloorGetValidFightSidePtr(0, i);
         if (slotData != NULL) {
             fightSideInitJoutaiDataId(slotData, 0x4D);
         }
     }
-    fightFloorLoopValidFightOutPokemon(0, (u32)fn_802136A4, 0, 0);
+    fightFloorLoopValidFightOutPokemon(0, (u32)_fightOutPokemonInitOneSelfTurnSub, 0, 0);
     for (j = 0; j < 8; j++) {
         lbl_80478D78[j] = 0;
     }
@@ -338,7 +338,7 @@ void fightSeqFightActionCreateAndFlowFifo(
                              actionData);
   /* RULE-EXCEPTION(user-approved): goto form with a zero-length __memcpy no-op on the
    * fall-through path keeps retail's "beq; b" layout for both tests (the same form
-   * fn_80211A78 uses) — see docs/RULE_EXCEPTIONS.md */
+   * _fightCheckKiaipanchiSub uses) — see docs/RULE_EXCEPTIONS.md */
   if ((u8)result == 1) {
     goto set_buff;
   } else {
@@ -363,46 +363,46 @@ done:
 #endif
 
 #if !defined(PR424_FIGHT_SEQ_SPLIT)
-/* fightSeqPost | Size: 0x2C | Clear bit 20 in flags and call fn_80213270 */
+/* fightSeqPost | Size: 0x2C | Clear bit 20 in flags and call fightSeqTurnEnd */
 void fightSeqPost(void) {
     extern u32 lbl_8047B618;
-    extern void fn_80213270(void);
+    extern void fightSeqTurnEnd(void);
     lbl_8047B618 &= ~0x00100000u;
-    fn_80213270();
+    fightSeqTurnEnd();
 }
 #endif
 
 #if !defined(PR424_FIGHT_SEQ_SPLIT)
 /* Address: 0x80211A00 | Size: 0x78 | Ghidra import */
-void fn_80211A00(void)
+void fightActionFlowAllFightOutPokemonDoFightActionPost(void)
 
 {
     extern u32 DAT_8038ff5a;
     extern u32 DAT_8038fff9;
-    extern void fn_801DA7AC();
+    extern void wazaSequenceSysFreeAll();
     extern void fightFloorLoopValidFightOutPokemon();
     extern u8 lbl_80478D7B;
     extern u8 lbl_80478D7C;
     extern u8 lbl_8047B625;
-    extern void fn_80211A78();
-    extern void fn_8022FE20();
+    extern void _fightCheckKiaipanchiSub();
+    extern void _fightClearRageSub();
 
-  fightFloorLoopValidFightOutPokemon(0,(u32)fn_80211A78,0,1);
-  fightFloorLoopValidFightOutPokemon(0,(u32)fn_8022FE20,0,1);
+  fightFloorLoopValidFightOutPokemon(0,(u32)_fightCheckKiaipanchiSub,0,1);
+  fightFloorLoopValidFightOutPokemon(0,(u32)_fightClearRageSub,0,1);
   lbl_80478D7B = 0;
   lbl_8047B625 = 0;
   lbl_80478D7C = 0;
   DAT_8038ff5a = 0;
   DAT_8038fff9 = 0;
-  fn_801DA7AC();
+  wazaSequenceSysFreeAll();
   return;
 }
 /* 0x80211A78 | size: 0x11C */
-u32 fn_80211A78(void* ctx) {
+u32 _fightCheckKiaipanchiSub(void* ctx) {
     extern u8 lbl_80375D30[];
     extern u8 lbl_803791FE[];
     extern void* lbl_8047B62C;
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern u16 fightOutPokemonGetMotoWazaDataId();
     extern u8 fightOutPokemonCheckFightOut();
     u8 localBuf[0x30];
@@ -415,7 +415,7 @@ u32 fn_80211A78(void* ctx) {
     if (feData == NULL) { return 1; }
     if ((u8)fightActionCheckValid(feData) == 0) { return 1; }
     if (fightOutPokemonGetMotoWazaDataId(ctx) != 0x108) { goto done; }
-    if ((u8)fn_802026E4(ctx, 8) != 0) { goto done; }
+    if ((u8)fightOutPokemonIsPokemonJoutaiDataId(ctx, 8) != 0) { goto done; }
     if ((u8)(u32)pokemonGetStatus(ctx, 0, 0xF9, 0) != 0) { goto done; }
     d920val = fightActionBiosGetFightActionDataPtr((FightAction*)lbl_8047B62C);
     result = fightActionCreate((FightAction*)localBuf, d920val, ctx, 0xC, 0,
@@ -432,7 +432,7 @@ done:
 }
 
 /* Address: 0x80211B94 | Size: 0x284 | Ghidra import */
-void fn_80211B94(void)
+void wsRunScript(void)
 
 {
     u32 r3;
@@ -526,7 +526,7 @@ LAB_0020eddc:
 }
 /* Address: 0x80211E18 | Size: 0x8ac | Ghidra import */
 
-void fn_80211E18(u32 r3,u32 r4)
+void fightActionUseItemMain(u32 r3,u32 r4)
 
 {
     extern u32 DAT_80375e24;
@@ -559,18 +559,18 @@ void fn_80211E18(u32 r3,u32 r4)
     extern u32 itemParamGetPtr();
     extern void itemDataBiosGetItemEffectParam();
     extern void itemDataBiosGetPtr();
-    extern void fn_801DA7AC();
-    extern void fn_801EF8F4();
+    extern void wazaSequenceSysFreeAll();
+    extern void battleCameraSelect();
     extern u32 fightTargetGetPtrAsNowFightType();
     extern u32 fightFloorGetFightOutPokemonPtrToFightTrainerPtr();
     extern void fightFloorSetStatus();
     extern u32 fightFloorGetStatus();
-    extern u32 fn_801F8000();
+    extern u32 fightTrainerGetKindPrefixName();
     extern u32 fightTrainerGetNamePtr();
     extern u32 fightTrainerGetStatus();
-    extern int fn_802026E4();
+    extern int fightOutPokemonIsPokemonJoutaiDataId();
     extern void fightOutPokemonWriteJoutaiDataId();
-    extern void fn_80211B94();
+    extern void wsRunScript();
     extern void fightMenuAllFightTrainerCloseStatusMenu();
     extern void fightMenuAllFightOutPokemonCloseStatusMenu();
     extern void fightMenuCloseMsg();
@@ -609,15 +609,15 @@ void fn_80211E18(u32 r3,u32 r4)
     uVar8 = itemParamGetPtr();
     cVar2 = DAT_8038fffc;
     bVar1 = DAT_8038ff76;
-    cVar13 = fn_802026E4(uVar3,0x2e);
+    cVar13 = fightOutPokemonIsPokemonJoutaiDataId(uVar3,0x2e);
     if (cVar13 == 1) {
       fightOutPokemonWriteJoutaiDataId(uVar3,0x2e);
     }
-    cVar13 = fn_802026E4(uVar3,0x15);
+    cVar13 = fightOutPokemonIsPokemonJoutaiDataId(uVar3,0x15);
     if (cVar13 == 1) {
       fightOutPokemonWriteJoutaiDataId(uVar3,0x15);
     }
-    cVar13 = fn_802026E4(uVar3,0x28);
+    cVar13 = fightOutPokemonIsPokemonJoutaiDataId(uVar3,0x28);
     if (cVar13 == 1) {
       fightOutPokemonWriteJoutaiDataId(uVar3,0x28);
     }
@@ -693,32 +693,32 @@ void fn_80211E18(u32 r3,u32 r4)
                     (cVar13 = itemParamGetBurnFlag(uVar8), cVar13 == 1)) &&
                    ((cVar13 = itemParamGetFreezeFlag(uVar8), cVar13 == 1 &&
                     (cVar13 = itemParamGetParalyzeFlag(uVar8), cVar13 == 1)))) {
-                  cVar13 = fn_802026E4(uVar3,8);
+                  cVar13 = fightOutPokemonIsPokemonJoutaiDataId(uVar3,8);
                   if (cVar13 == 1) {
                     lbl_80478D7D = 5;
                   }
                   else {
-                    cVar13 = fn_802026E4(uVar3,3);
+                    cVar13 = fightOutPokemonIsPokemonJoutaiDataId(uVar3,3);
                     if (cVar13 == 1) {
                       lbl_80478D7D = 4;
                     }
                     else {
-                      cVar13 = fn_802026E4(uVar3,4);
+                      cVar13 = fightOutPokemonIsPokemonJoutaiDataId(uVar3,4);
                       if (cVar13 == 1) {
                         lbl_80478D7D = 4;
                       }
                       else {
-                        cVar13 = fn_802026E4(uVar3,6);
+                        cVar13 = fightOutPokemonIsPokemonJoutaiDataId(uVar3,6);
                         if (cVar13 == 1) {
                           lbl_80478D7D = 3;
                         }
                         else {
-                          cVar13 = fn_802026E4(uVar3,7);
+                          cVar13 = fightOutPokemonIsPokemonJoutaiDataId(uVar3,7);
                           if (cVar13 == 1) {
                             lbl_80478D7D = 2;
                           }
                           else {
-                            cVar13 = fn_802026E4(uVar3,5);
+                            cVar13 = fightOutPokemonIsPokemonJoutaiDataId(uVar3,5);
                             if (cVar13 == 1) {
                               lbl_80478D7D = 1;
                             }
@@ -830,7 +830,7 @@ void fn_80211E18(u32 r3,u32 r4)
       }
     }
     lbl_8047B614 = 0;
-    uVar3 = fn_801F8000(uVar5);
+    uVar3 = fightTrainerGetKindPrefixName(uVar5);
     msgctrlSetValue(0x22,uVar3);
     uVar3 = fightTrainerGetNamePtr(uVar5);
     msgctrlSetValue(0x23,uVar3);
@@ -839,17 +839,17 @@ void fn_80211E18(u32 r3,u32 r4)
     itemGetStatus(0,r4 & 0xffff,1,0);
     uVar3 = GSmsgGetGSchar();
     msgctrlSetValue(0x29,uVar3);
-    fn_801EF8F4(1);
+    battleCameraSelect(1);
     if (cVar12 == 0) {
       fn_80265598(uVar4,uVar9,1);
     }
-    fn_80211B94(r3,uVar14,1);
+    wsRunScript(r3,uVar14,1);
     if (cVar12 == 0) {
       heroItemDecItemDataId(uVar6,r4,1,(int)sVar10);
     }
     DAT_8038ff76 = bVar1;
     DAT_8038fffc = cVar2;
-    fn_801DA7AC();
+    wazaSequenceSysFreeAll();
     fightMenuAllFightTrainerCloseStatusMenu(0);
     fightMenuAllFightOutPokemonCloseStatusMenu(0);
     fightMenuCloseMsg();

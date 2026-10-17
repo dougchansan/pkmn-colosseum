@@ -6,7 +6,7 @@
 #include "game/colosseum.h"
 
 extern u32 fightTrainerGetStatus(void*, u32, u32, u32);
-extern u8 fn_8021B364(u32, void*);
+extern u8 fightAiCollectWazaTypes(u32, void*);
 
 u32 fightTrainerAiCheckTextureZokusei(void* trainer, u32 pokemon, u32 unused)
 {
@@ -17,7 +17,7 @@ u32 fightTrainerAiCheckTextureZokusei(void* trainer, u32 pokemon, u32 unused)
     value = fightTrainerGetStatus(trainer, 0, 0x43, 0) & 0xFFFF;
     value = fightTrainerGetStatus(0, value, 2, 0) & 0xFFFF;
     if ((u8)fightTrainerGetStatus(0, value, 0x2A, 0) == 1) {
-        value = fn_8021B364(pokemon, attributes) & 0xFF;
+        value = fightAiCollectWazaTypes(pokemon, attributes) & 0xFF;
         result = value >= 1;
         return result & 0xFF;
     }

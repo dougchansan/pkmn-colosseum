@@ -89,19 +89,19 @@ extern void GSvecAdd(GSshadowVec* dst, GSshadowVec* a, GSshadowVec* b);
 extern void set__5GSvecFfff(GSshadowVec* dst, f32 x, f32 y, f32 z);
 extern void vecNormalize(GSshadowVec* dst, GSshadowVec* src, f32 scalar);
 extern int HSD_ViewingRectCheck(GSshadowRect* rect);
-extern void fn_801B019C(GSshadowRect* rect, GSshadowVec* position, f32 top,
+extern void HSD_ViewingRectAddRect(GSshadowRect* rect, GSshadowVec* position, f32 top,
                         f32 bottom, f32 left, f32 right);
-extern void fn_801B0408(GSshadowRect* rect, GSshadowVec* eye,
+extern void HSD_ViewingRectInit(GSshadowRect* rect, GSshadowVec* eye,
                         GSshadowVec* interest, GSshadowVec* up, int perspective);
-extern void fn_801B04E0(GSshadowObj* shadow, f32 top, f32 bottom, f32 left,
+extern void HSD_ShadowSetViewingRect(GSshadowObj* shadow, f32 top, f32 bottom, f32 left,
                         f32 right);
 extern void fn_801B06DC(GSshadowObj* shadow);
-extern void fn_801B073C(GSshadowObj* shadow, void* object);
-extern void fn_801B07D4(GSshadowObj* shadow, void* object);
-extern void fn_801B0A98(GSshadowObj* shadow, void* lightData, f32 value);
-extern void fn_801B0BD8(GSshadowObj* shadow);
-extern void fn_801B0EB8(GSshadowObj* shadow);
-extern void fn_801B1524(GSshadowObj* shadow, u16 width, u16 height);
+extern void HSD_ShadowDeleteObject(GSshadowObj* shadow, void* object);
+extern void HSD_ShadowAddObject(GSshadowObj* shadow, void* object);
+extern void HSD_ShadowSetLight(GSshadowObj* shadow, void* lightData, f32 value);
+extern void HSD_ShadowEndRender(GSshadowObj* shadow);
+extern void HSD_ShadowStartRender(GSshadowObj* shadow);
+extern void HSD_ShadowSetSize(GSshadowObj* shadow, u16 width, u16 height);
 extern void HSD_ShadowInit(GSshadowObj* shadow);
 extern void HSD_CObjSetProjectionType(void* cobj, s32 type);
 extern void HSD_CObjSetInterest(void* cobj, GSshadowVec* interest);
@@ -111,7 +111,7 @@ extern f32 HSD_CObjGetEyeDistance(void* cobj);
 extern void HSD_CObjGetEyePosition(void* cobj, GSshadowVec* out);
 extern void HSD_CObjGetUpVector(void* cobj, GSshadowVec* out);
 extern void fn_8019C6FC(void);
-extern void fn_8019C708(u32 arg);
+extern void HSD_StartRender(u32 arg);
 extern void __assert(const char*, s32, const char*);
 extern GSshadowSlot*
 _modelShadowFindValidReceiveModel__FP8_GSmodelP8_GSmodelP7GSlightP7GSbound(
@@ -272,7 +272,7 @@ void modelShadowRender__FP10GSgfxLayer(void* layer)
         for (k = 0; k < 16; k++) {
             receiver = slot->receivers[k];
             if (receiver != NULL && (*(u32*)receiver & 1)) {
-                fn_801B07D4(slot->obj, modelGetRenderJObj(receiver));
+                HSD_ShadowAddObject(slot->obj, modelGetRenderJObj(receiver));
                 fn_800E3D14(receiver, &pos);
                 GSvecAdd(&avg, &avg, &pos);
                 count++;
@@ -293,17 +293,17 @@ void modelShadowRender__FP10GSgfxLayer(void* layer)
         }
         vecNormalize(&avg, &avg, count);
         HSD_CObjSetInterest(((GSshadowObj*)slot->obj)->camera, &avg);
-        fn_801B0A98(slot->obj, slot->light->classObj, 30.0f);
+        HSD_ShadowSetLight(slot->obj, slot->light->classObj, 30.0f);
         HSD_CObjSetNear(((GSshadowObj*)slot->obj)->camera, 0.1f);
         HSD_CObjSetFar(((GSshadowObj*)slot->obj)->camera, 3000.0f);
         size = HSD_CObjGetEyeDistance(((GSshadowObj*)slot->obj)->camera);
         if (size == lbl_80478AC0[0] || size < 0.1f) {
-            fn_801B073C(slot->obj, NULL);
+            HSD_ShadowDeleteObject(slot->obj, NULL);
             return;
         }
         HSD_CObjGetEyePosition(((GSshadowObj*)slot->obj)->camera, &pos);
         HSD_CObjGetUpVector(((GSshadowObj*)slot->obj)->camera, &up);
-        fn_801B0408(&rect, &pos, &avg, &up,
+        HSD_ViewingRectInit(&rect, &pos, &avg, &up,
                     (slot->light->classObj->flags & 3) != 1);
         for (list = ((GSshadowObj*)slot->obj)->objects; list != NULL;
              list = list->next)
@@ -334,27 +334,27 @@ void modelShadowRender__FP10GSgfxLayer(void* layer)
             if (size < 0.1f) {
                 size = 0.1f;
             }
-            fn_801B019C(&rect, &pos, size, -size, -size, size);
+            HSD_ViewingRectAddRect(&rect, &pos, size, -size, -size, size);
         }
         if (HSD_ViewingRectCheck(&rect) != 0) {
-            fn_801B04E0(slot->obj, rect.top, rect.bottom, rect.left,
+            HSD_ShadowSetViewingRect(slot->obj, rect.top, rect.bottom, rect.left,
                         rect.right);
         } else {
             size = slot->maxSize + lbl_8047AB84;
             if (size < 0.1f) {
                 size = 0.1f;
             }
-            fn_801B04E0(slot->obj, size, -size, -size, size);
+            HSD_ShadowSetViewingRect(slot->obj, size, -size, -size, size);
         }
         HSD_ShadowSetIntensity(slot->obj, 0xFF - lbl_8047AB94);
-        fn_801B1524(slot->obj, lbl_8047AB90, lbl_8047AB8C);
+        HSD_ShadowSetSize(slot->obj, lbl_8047AB90, lbl_8047AB8C);
         slot->flag = 1;
-        fn_8019C708(3);
+        HSD_StartRender(3);
         HSD_ShadowInit(slot->obj);
-        fn_801B0EB8(slot->obj);
-        fn_801B0BD8(slot->obj);
+        HSD_ShadowStartRender(slot->obj);
+        HSD_ShadowEndRender(slot->obj);
         fn_8019C6FC();
-        fn_801B073C(slot->obj, NULL);
+        HSD_ShadowDeleteObject(slot->obj, NULL);
     }
 }
 #pragma pop

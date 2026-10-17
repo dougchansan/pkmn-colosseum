@@ -20,7 +20,7 @@
 #include "src/dolphin/sdk_range_800AE3F0.c"
 
 extern u32 bitrev(u32 data);
-extern s32 fn_80098368(s32 chan, void* buf, s32 len, u32 mode); /* EXIImmEx */
+extern s32 EXIImmEx(s32 chan, void* buf, s32 len, u32 mode); /* EXIImmEx */
 extern u32 fn_800AE794(void);                                   /* DSPCheckMailToDSP */
 extern void DSPSendMailToDSP(u32 mail);
 extern u32 OSGetTick(void);
@@ -96,10 +96,10 @@ s32 ReadArrayUnlock(s32 chan, u32 data, void* rbuf, s32 rlen, s32 mode)
     }
 
     err = FALSE;
-    err |= !fn_80098368(chan, cmd, sizeof(cmd), 1);
-    err |= !fn_80098368(chan, (u8*)card->workArea + sizeof(CARDID),
+    err |= !EXIImmEx(chan, cmd, sizeof(cmd), 1);
+    err |= !EXIImmEx(chan, (u8*)card->workArea + sizeof(CARDID),
                         *(u32*)((u8*)card + 0x14), 1);
-    err |= !fn_80098368(chan, rbuf, rlen, 0);
+    err |= !EXIImmEx(chan, rbuf, rlen, 0);
     err |= !EXIDeselect(chan);
     return err ? -3 : 0;
 }
@@ -361,7 +361,7 @@ void DoneCallback(void* _task)
     }
 
     result = __CARDReadStatus(chan, &unk);
-    if (!fn_80098944(chan)) {
+    if (!EXIProbe(chan)) {
         EXIUnlock(chan);
         __CARDMountCallback(chan, -3);
         return;

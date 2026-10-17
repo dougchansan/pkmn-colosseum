@@ -23,42 +23,42 @@ static OSMessage lbl_8046AE20[BUFFER_COUNT]; /* DecodedAudioBufferMessage */
 
 static BOOL lbl_8047B480; /* AudioDecodeThreadCreated */
 
-static void* fn_801E4B38(void* arg);
-static void* fn_801E4C80(void* arg);
+static void* AudioDecoderForOnMemory(void* arg);
+static void* AudioDecoder(void* arg);
 static inline void AudioDecode(THPReadBuffer* readBuffer);
 static inline void* PopFreeAudioBuffer(void);
 static inline void PushDecodedAudioBuffer(void* buffer);
 
-BOOL fn_801E4E1C(s32 priority, void* arg)
+BOOL CreateAudioDecodeThread(s32 priority, void* arg)
 {
     if (arg) {
-        if (OSCreateThread(&lbl_8046BE78, fn_801E4B38, arg,
+        if (OSCreateThread(&lbl_8046BE78, AudioDecoderForOnMemory, arg,
                            lbl_8046AE78 + STACK_SIZE, STACK_SIZE, priority,
                            1) == FALSE) {
             return FALSE;
         }
     } else {
-        if (OSCreateThread(&lbl_8046BE78, fn_801E4C80, NULL,
+        if (OSCreateThread(&lbl_8046BE78, AudioDecoder, NULL,
                            lbl_8046AE78 + STACK_SIZE, STACK_SIZE, priority,
                            1) == FALSE) {
             return FALSE;
         }
     }
 
-    fn_8009F1D0(&lbl_8046AE58, lbl_8046AE2C, BUFFER_COUNT);
-    fn_8009F1D0(&lbl_8046AE38, lbl_8046AE20, BUFFER_COUNT);
+    OSInitMessageQueue(&lbl_8046AE58, lbl_8046AE2C, BUFFER_COUNT);
+    OSInitMessageQueue(&lbl_8046AE38, lbl_8046AE20, BUFFER_COUNT);
     lbl_8047B480 = TRUE;
     return TRUE;
 }
 
-void fn_801E4DE8(void)
+void AudioDecodeThreadStart(void)
 {
     if (lbl_8047B480) {
         OSResumeThread(&lbl_8046BE78);
     }
 }
 
-void fn_801E4DAC(void)
+void AudioDecodeThreadCancel(void)
 {
     if (lbl_8047B480) {
         OSCancelThread(&lbl_8046BE78);
@@ -67,7 +67,7 @@ void fn_801E4DAC(void)
 }
 
 /* AudioDecoder */
-static void* fn_801E4C80(void* arg)
+static void* AudioDecoder(void* arg)
 {
     THPReadBuffer* readBuffer;
     u32 curFrame;
@@ -80,12 +80,12 @@ static void* fn_801E4C80(void* arg)
         if (frame < 2 && (lbl_8046AC60.playFlag & 1) == 0) {
             curFrame = readBuffer->frameNumber + lbl_8046AC60.initReadFrame;
             if (curFrame == lbl_8046AC60.header.numFrames - 1) {
-                fn_801E446C(TRUE);
+                PrepareReady(TRUE);
             }
         }
 
         if (frame == 2) {
-            fn_801E446C(TRUE);
+            PrepareReady(TRUE);
         }
 
         fn_801E1B54(readBuffer);
@@ -94,7 +94,7 @@ static void* fn_801E4C80(void* arg)
 }
 
 /* AudioDecoderForOnMemory */
-static void* fn_801E4B38(void* arg)
+static void* AudioDecoderForOnMemory(void* arg)
 {
     THPReadBuffer readBuffer;
     s32 readSize;
@@ -116,7 +116,7 @@ static void* fn_801E4B38(void* arg)
                 readBuffer.ptr = lbl_8046AC60.movieData;
             } else {
                 if (frame < 2) {
-                    fn_801E446C(TRUE);
+                    PrepareReady(TRUE);
                 }
                 OSSuspendThread(&lbl_8046BE78);
             }
@@ -127,7 +127,7 @@ static void* fn_801E4B38(void* arg)
         }
 
         if (frame == 2) {
-            fn_801E446C(TRUE);
+            PrepareReady(TRUE);
         }
         frame++;
     }
@@ -162,19 +162,19 @@ static inline void AudioDecode(THPReadBuffer* readBuffer)
 static inline void* PopFreeAudioBuffer(void)
 {
     OSMessage msg;
-    fn_8009F2F8(&lbl_8046AE58, &msg, OS_MESSAGE_BLOCK);
+    OSReceiveMessage(&lbl_8046AE58, &msg, OS_MESSAGE_BLOCK);
     return msg;
 }
 
-void fn_801E4B08(void* buffer)
+void PushFreeAudioBuffer(void* buffer)
 {
-    fn_8009F230(&lbl_8046AE58, buffer, OS_MESSAGE_NOBLOCK);
+    OSSendMessage(&lbl_8046AE58, buffer, OS_MESSAGE_NOBLOCK);
 }
 
-void* fn_801E4AC4(s32 flags)
+void* PopDecodedAudioBuffer(s32 flags)
 {
     OSMessage msg;
-    if (fn_8009F2F8(&lbl_8046AE38, &msg, flags) == TRUE) {
+    if (OSReceiveMessage(&lbl_8046AE38, &msg, flags) == TRUE) {
         return msg;
     }
     return NULL;
@@ -182,5 +182,5 @@ void* fn_801E4AC4(s32 flags)
 
 static inline void PushDecodedAudioBuffer(void* buffer)
 {
-    fn_8009F230(&lbl_8046AE38, buffer, OS_MESSAGE_BLOCK);
+    OSSendMessage(&lbl_8046AE38, buffer, OS_MESSAGE_BLOCK);
 }

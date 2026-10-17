@@ -102,21 +102,21 @@ extern const f32 lbl_8047DF38[2]; /* { 1.0f, 0.0f } */
 
 #define _p (&lbl_80466BC0)
 
-extern void fn_800B959C(u16 left, u16 top, u16 width, u16 height);
-extern void fn_800B96BC(u16 width, u16 height);
-extern void fn_800B9874(u32 clamp);
+extern void GXSetDispCopySrc(u16 left, u16 top, u16 width, u16 height);
+extern void GXSetDispCopyDst(u16 width, u16 height);
+extern void GXSetCopyClamp(u32 clamp);
 extern f32 GXGetYScaleFactor(u16 efbHeight, u16 xfbHeight);
-extern u32 fn_800B9B14(f32 scale);
+extern u32 GXSetDispCopyYScale(f32 scale);
 extern void GXSetCopyClear(GXColor color, u32 clear_z);
-extern void fn_800B9C44(BOOL aa, u8 sample_pattern[12][2], BOOL vf,
+extern void GXSetCopyFilter(BOOL aa, u8 sample_pattern[12][2], BOOL vf,
                         u8 vfilter[7]);
-extern void fn_800B9E6C(u32 gamma);
-extern void fn_800B9E88(void* buffer, BOOL clear);
-extern void fn_800B8E74(void);
-extern void fn_801B278C(BOOL enable);
-extern void fn_801B273C(BOOL enable);
-extern void fn_801B27DC(BOOL enable, u32 func, BOOL update);
-extern void fn_800B8DA8(void);
+extern void GXSetDispCopyGamma(u32 gamma);
+extern void GXCopyDisp(void* buffer, BOOL clear);
+extern void GXPixModeSync(void);
+extern void HSD_StateSetColorUpdate(BOOL enable);
+extern void HSD_StateSetAlphaUpdate(BOOL enable);
+extern void HSD_StateSetZMode(BOOL enable, u32 func, BOOL update);
+extern void GXWaitDrawDone(void);
 extern void GXDrawDone(void);
 extern void __assert(const char* file, u32 line, const char* expr);
 extern void HSD_Panic(const char* file, u32 line, const char* msg);
@@ -175,7 +175,7 @@ static inline int HSD_VIWaitXFBFlushSub(void)
 }
 
 /* Finalize the active XFB draw and advance its state. */
-void fn_801BF6AC(void)
+void HSD_VIFinishDrawXFB(void)
 {
     BOOL intr;
     BOOL inner;
@@ -225,8 +225,8 @@ void fn_801BF8A0(HSD_RenderPass rpass)
     idx = HSD_VIWaitXFBDrawEnable();
     HSD_VICopyEFB2XFB(&_p->current.vi, _p->xfb[idx].buffer, rpass);
 
-    while (fn_801BFCA0()) {
-        fn_800B8DA8();
+    while (HSD_VIGetDrawDoneWaitingFlag()) {
+        GXWaitDrawDone();
     }
     _p->drawdone.waiting = 1;
     _p->drawdone.arg = idx;
@@ -243,21 +243,21 @@ void HSD_VICopyEFB2XFB(HSD_VIStatus* vi, void* buffer, HSD_RenderPass rpass)
     u16 pitch;
     u32 offset;
 
-    fn_800B9C44(rmode->aa, rmode->sample_pattern, vi->vf, rmode->vfilter);
-    fn_800B9E6C(vi->gamma);
-    fn_801B278C(vi->update_clr);
-    fn_801B273C(vi->update_alpha);
-    fn_801B27DC(vi->update_z, 3, TRUE);
+    GXSetCopyFilter(rmode->aa, rmode->sample_pattern, vi->vf, rmode->vfilter);
+    GXSetDispCopyGamma(vi->gamma);
+    HSD_StateSetColorUpdate(vi->update_clr);
+    HSD_StateSetAlphaUpdate(vi->update_alpha);
+    HSD_StateSetZMode(vi->update_z, 3, TRUE);
     GXSetCopyClear(vi->clear_clr, vi->clear_z);
 
     switch (rpass) {
     case HSD_RP_SCREEN:
-        fn_800B9874(3);
-        fn_800B959C(0, 0, rmode->fbWidth, rmode->efbHeight);
+        GXSetCopyClamp(3);
+        GXSetDispCopySrc(0, 0, rmode->fbWidth, rmode->efbHeight);
         n_xfb_lines =
-            fn_800B9B14(GXGetYScaleFactor(rmode->efbHeight,
+            GXSetDispCopyYScale(GXGetYScaleFactor(rmode->efbHeight,
                                           rmode->xfbHeight));
-        fn_800B96BC(rmode->fbWidth, n_xfb_lines);
+        GXSetDispCopyDst(rmode->fbWidth, n_xfb_lines);
         {
             u8* ptr = buffer;
             u32 i = n_xfb_lines;
@@ -271,7 +271,7 @@ void HSD_VICopyEFB2XFB(HSD_VIStatus* vi, void* buffer, HSD_RenderPass rpass)
                 }
             }
         }
-        fn_800B9E88(buffer, TRUE);
+        GXCopyDisp(buffer, TRUE);
         rest = rmode->xfbHeight - n_xfb_lines;
         /*
          * rest cannot go negative: GXGetYScaleFactor walks its scale down
@@ -294,43 +294,43 @@ void HSD_VICopyEFB2XFB(HSD_VIStatus* vi, void* buffer, HSD_RenderPass rpass)
         }
         break;
     case HSD_RP_TOPHALF:
-        fn_800B959C(0, 0, rmode->fbWidth,
+        GXSetDispCopySrc(0, 0, rmode->fbWidth,
                     rmode->efbHeight - HSD_ANTIALIAS_OVERLAP);
-        n_xfb_lines = fn_800B9B14(1.0F);
-        fn_800B96BC(rmode->fbWidth, n_xfb_lines);
-        fn_800B9874(1);
+        n_xfb_lines = GXSetDispCopyYScale(1.0F);
+        GXSetDispCopyDst(rmode->fbWidth, n_xfb_lines);
+        GXSetCopyClamp(1);
         lines = rmode->efbHeight - HSD_ANTIALIAS_OVERLAP;
-        fn_800B959C(0, 0, rmode->fbWidth, lines);
-        fn_800B9E88(buffer, TRUE);
-        fn_800B8E74();
+        GXSetDispCopySrc(0, 0, rmode->fbWidth, lines);
+        GXCopyDisp(buffer, TRUE);
+        GXPixModeSync();
         return;
     case HSD_RP_BOTTOMHALF:
-        fn_800B959C(0, 0, rmode->fbWidth,
+        GXSetDispCopySrc(0, 0, rmode->fbWidth,
                     rmode->efbHeight - HSD_ANTIALIAS_OVERLAP);
-        n_xfb_lines = fn_800B9B14(1.0F);
-        fn_800B96BC(rmode->fbWidth, n_xfb_lines);
-        fn_800B9874(2);
+        n_xfb_lines = GXSetDispCopyYScale(1.0F);
+        GXSetDispCopyDst(rmode->fbWidth, n_xfb_lines);
+        GXSetCopyClamp(2);
         lines = rmode->efbHeight - HSD_ANTIALIAS_OVERLAP;
-        fn_800B959C(0, HSD_ANTIALIAS_OVERLAP, rmode->fbWidth, lines);
+        GXSetDispCopySrc(0, HSD_ANTIALIAS_OVERLAP, rmode->fbWidth, lines);
         pitch = (rmode->fbWidth + 15) & ~15;
         offset = pitch * lines * 2;
-        fn_800B9E88((u8*) buffer + offset, TRUE);
-        fn_800B959C(0, 0, rmode->fbWidth, HSD_ANTIALIAS_OVERLAP);
-        fn_800B9874(3);
-        fn_800B9E88(lbl_804657C0, TRUE);
+        GXCopyDisp((u8*) buffer + offset, TRUE);
+        GXSetDispCopySrc(0, 0, rmode->fbWidth, HSD_ANTIALIAS_OVERLAP);
+        GXSetCopyClamp(3);
+        GXCopyDisp(lbl_804657C0, TRUE);
         break;
     default:
         HSD_Panic(lbl_8047DF30, 0x219, lbl_8027575C);
     }
-    fn_800B8E74();
+    GXPixModeSync();
 }
 
-int fn_801BFCA0(void)
+int HSD_VIGetDrawDoneWaitingFlag(void)
 {
     return _p->drawdone.waiting;
 }
 
-void fn_801BFCB0(void)
+void HSD_VIGXDrawDoneCB(void)
 {
     _p->drawdone.waiting = 0;
     if (_p->drawdone.cb) {
@@ -338,7 +338,7 @@ void fn_801BFCB0(void)
     }
 }
 
-void fn_801BFD10(u32 retraceCount)
+void HSD_VIPostRetraceCB(u32 retraceCount)
 {
     int idx;
     int next;
@@ -361,7 +361,7 @@ void fn_801BFD10(u32 retraceCount)
     }
 }
 
-void fn_801BFF18(u32 retraceCount)
+void HSD_VIPreRetraceCB(u32 retraceCount)
 {
     int idx;
     int flush = 0;

@@ -89,7 +89,7 @@ inline static BOOL DBGEXIDeselect(void) {
 
 #if defined(SDK_RANGE_800CEB64_800CED58)
 
-s32 fn_800CECAC(u32* data) {
+s32 DBGReadStatus(u32* data) {
     extern s32 DBGEXIImm(void* buffer, s32 length, s32 write);
     BOOL total = FALSE;
     u32 value;
@@ -282,7 +282,7 @@ BOOL __EXIProbe(s32 chan) {
 
 s32 EXIProbeEx(s32 chan) {
     extern BOOL __EXIProbe(s32 chan);
-    extern BOOL fn_80099400(s32 chan, u32 dev, u32* id);
+    extern BOOL EXIGetID(s32 chan, u32 dev, u32* id);
     extern EXIProbeControl lbl_803FFEF0[];
     EXIProbeControl* exi = &lbl_803FFEF0[chan];
     u32 id;
@@ -290,7 +290,7 @@ s32 EXIProbeEx(s32 chan) {
 
     probe = __EXIProbe(chan);
     if (probe && exi->idTime == 0) {
-        probe = fn_80099400(chan, 0, &id) ? TRUE : FALSE;
+        probe = EXIGetID(chan, 0, &id) ? TRUE : FALSE;
     }
     if (probe) {
         return 1;
@@ -344,7 +344,7 @@ static int QueueLength(void) {
     return 16 - (int)((command >> 24) & 0xFF);
 }
 
-u32 fn_800CF4EC(const void* buffer, u32 length) {
+u32 WriteUARTN(const void* buffer, u32 length) {
     extern u32 lbl_8047AA40;
     extern u32 lbl_8047AA44;
     extern u32 lbl_8047AA48;

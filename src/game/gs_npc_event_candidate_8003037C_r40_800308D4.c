@@ -11,7 +11,7 @@
 
 extern s32 heroGetStatus(void* partyData, s32 slot, s32 p3);
 extern void msgctrlSetValue(s32 paramId, s32 value);
-extern void fn_800FB680(s32, s32, u32, u16);
+extern void GSmsgPrintColor(s32, s32, u32, u16);
 extern u32 GSmsgGetRect(u32 msg);
 extern u32 pokemonGetStatus(void* pokemon, u32 slot, u16 tableId, u16 flags);
 extern void* pokemonDataBiosGetPtr(u16 species);
@@ -69,10 +69,10 @@ void fn_800308D4(u8* r3, u8* r4)
     pokemon = npcEventGetPokemon(r4, 2);
     if (pokemon != NULL) {
         x = GSmsgGetRect(0x2BD4) >> 16;
-        fn_800FB680(0, 0, combined, 0x2BD4);
+        GSmsgPrintColor(0, 0, combined, 0x2BD4);
         msgctrlSetValue(0x37, GSmsgGetGSchar(pokemonDataBiosGetName(
                                   pokemonDataBiosGetPtr(pokemonGetStatus(pokemon, 0, 0x6E, 0)))));
-        fn_800FB680(x, 0, combined, 0xE7);
+        GSmsgPrintColor(x, 0, combined, 0xE7);
         *(u32*)(r4 + 0x4C) = 0;
         winSpriteSetDisp(r4, 1);
     } else {

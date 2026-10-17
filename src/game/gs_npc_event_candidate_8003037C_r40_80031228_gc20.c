@@ -4,7 +4,7 @@
  *
  * NPC event callback: look the event id up in the first column of the
  * twelve-entry table lbl_80266E90 and, for a Shadow (fusei) or valid
- * event Pokemon, hand it to fn_8010B718 and show the sprite.
+ * event Pokemon, hand it to menuFaceDrawPokemon and show the sprite.
  */
 #include "dolphin/types.h"
 #include "game/win_sprite.h"
@@ -13,7 +13,7 @@ extern s32 heroGetStatus(void* partyData, s32 slot, s32 p3);
 extern u8 pokemonBiosGetFuseiFlag(void* pokemon);
 extern u8 pokemonCheckValid(void* pokemon);
 extern u8 menuCBRule_CheckPokemonEventFlag(void* pokemon);
-extern void fn_8010B718(u8* r3, u8* r4, void* pokemon);
+extern void menuFaceDrawPokemon(u8* r3, u8* r4, void* pokemon);
 
 typedef struct {
     u8 kind;
@@ -51,10 +51,10 @@ void fn_80031228(u8* r3, u8* r4)
     }
 
     if (pokemonBiosGetFuseiFlag(pokemon) != 0) {
-        fn_8010B718(r3, r4, pokemon);
+        menuFaceDrawPokemon(r3, r4, pokemon);
         winSpriteSetDisp(r4, 1);
     } else if (pokemonCheckValid(pokemon) != 0 && menuCBRule_CheckPokemonEventFlag(pokemon) == 1) {
-        fn_8010B718(r3, r4, pokemon);
+        menuFaceDrawPokemon(r3, r4, pokemon);
         winSpriteSetDisp(r4, 1);
     } else {
         winSpriteSetDisp(r4, 0);

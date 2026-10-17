@@ -1,8 +1,8 @@
 #include "game/battle/battle_waza_types.h"
 
-extern void fn_801DEF0C(void* effect, s32 arg1, s32 arg2);
+extern void wazaSequenceOwnerPlayIdle(void* effect, s32 arg1, s32 arg2);
 
-void fn_801DCF00(WazaEffect* effect)
+void wazaSequenceOwnerSetNull(WazaEffect* effect)
 {
     u8 flags = effect->flags;
 
@@ -15,6 +15,6 @@ void fn_801DCF00(WazaEffect* effect)
             GSmodelAddNull(effect->model,
                            (GSvec*)((u8*)effect + 0x5c), NULL, NULL);
         }
-        fn_801DEF0C(effect, 1, 0);
+        wazaSequenceOwnerPlayIdle(effect, 1, 0);
     }
 }

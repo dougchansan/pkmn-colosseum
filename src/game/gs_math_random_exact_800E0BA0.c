@@ -18,7 +18,7 @@ f32 fn_800E0BA0(void)
     return b + a - lbl_8047CB10;
 }
 
-f32 fn_800E0BE4(void)
+f32 GSrandf(void)
 {
     return HSD_Randf();
 }

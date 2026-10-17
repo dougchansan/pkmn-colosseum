@@ -146,17 +146,17 @@ void fadeDaemon(void);
 void fn_800FE6D0(s32 x, s32 y);
 void fn_800FE35C(void);
 void spriteSetEnv(void);
-u16 fn_8005D798(void*, s32);
+u16 menuSeTableLookup(void*, s32);
 void cmsRunSync(void*, u32, ...);
 int soundStartSE(u16);
 u8 fn_8008ABA0(s32);
 s32 fn_8008AB8C(s32);
-u8 fn_800F7EF8(s32 pad_id);
-u32 fn_800F7A08(s32 pad_id, s32 axis);
-u32 fn_800F7A7C(s32 pad_id, s32 axis);
+u8 GSinputIsConnected(s32 pad_id);
+u32 GSinputGetLeftStickYData(s32 pad_id, s32 axis);
+u32 GSinputGetLeftStickXData(s32 pad_id, s32 axis);
 u32 fn_800F7BC4(s32 pad_id);
-u32 fn_800D7894(void);
-void fn_800D7868(u32, u32, u32, u32, u32, u32, u32, u32);
+u32 gfxVtxDescAlloc(void);
+void gfxVtxDescSetAttr(u32, u32, u32, u32, u32, u32, u32, u32);
 void* GStextureLoad(void* data);
 void GSresRegisterResource(void* texture, u32, u32 resourceId, u32);
 
@@ -190,11 +190,11 @@ s32 windowGetValue(u32 id);
 void windowCreateCursorSprite(MenuWindow* window);
 void winSpriteSetDisp(MenuSprite* sprite, u32 enable);
 void winSpriteDraw(MenuWindow* window, MenuSprite* sprite);
-void fn_801093C8(void);
+void menuOffScreenDraw(void);
 void fn_80106F98(u32 id);
 s32 winSeqCheckMove(u32 id);
 void winSeqMoveMenu(MenuWindow* window);
-void fn_8010C224(u32 count);
+void menuFaceInit(u32 count);
 
 /* menu.h */
 s32 menuGetLastError(void);
@@ -520,7 +520,7 @@ void menuSetPosition(u32 id, s16 x, s16 y) {
         void* sound = menuSeBiosGetPtr(                                     \
             menuDataBiosGetPtr((window)->id)->soundGroup & 7);              \
         if (sound != NULL) {                                                \
-            u32 se = fn_8005D798(sound, (event));                           \
+            u32 se = menuSeTableLookup(sound, (event));                           \
             if (se != 0) {                                                  \
                 soundStartSE(se);                                            \
             }                                                               \
@@ -542,7 +542,7 @@ void menuDaemon(void) {
     active = windowSearchID(windowGetActiveID());
     _menuUpdateKeyInfo__FP15WINDOW_SYS_WORK(&lbl_80404ACC);
     fn_800D9E4C(0);
-    fn_801093C8();
+    menuOffScreenDraw();
     fn_800D9ED8(1);
     system = &lbl_80404ACC;
 
@@ -1026,7 +1026,7 @@ void menuPlaySe(u32 id, s32 event) {
     void* sound = menuSeBiosGetPtr(menuDataBiosGetPtr(id)->soundGroup & 7);
 
     if (sound != NULL) {
-        u32 se = fn_8005D798(sound, event);
+        u32 se = menuSeTableLookup(sound, event);
         if (se != 0) {
             soundStartSE(se);
         }
@@ -1072,12 +1072,12 @@ u8 _menuGetGcKeyInfo__FlPUs(s32 port, u16* keys) {
     f32 angle;
 
     padId = padIds[port];
-    if (fn_800F7EF8(padId) == 0) {
+    if (GSinputIsConnected(padId) == 0) {
         return 0;
     }
 
-    stickX = fn_800F7A08(padId, 0);
-    stickY = fn_800F7A7C(padId, 0);
+    stickX = GSinputGetLeftStickYData(padId, 0);
+    stickY = GSinputGetLeftStickXData(padId, 0);
     if (((s8)stickY < 0 ? -(s8)stickY : (s8)stickY) > 0x20 ||
         ((s8)stickX < 0 ? -(s8)stickX : (s8)stickX) > 0x20) {
         angle = atan2((s8)stickY, (s8)stickX);
@@ -1262,7 +1262,7 @@ void menuInit(u16 windowCount) {
     windowInit(windowCount);
     cursorBiosInit();
     menuOffScreenInit();
-    fn_8010C224(0x18);
+    menuFaceInit(0x18);
     lbl_80404ACC.enablePort = 1;
     for (port = 0; port < 4; port++) {
         lbl_8047AD04[port] = 0;
@@ -1270,12 +1270,12 @@ void menuInit(u16 windowCount) {
     }
 
     if (lbl_8047AD00 == 0) {
-        lbl_8047AD00 = fn_800D7894();
-        fn_800D7868(lbl_8047AD00, 1, 0, 0, 3, 0, 0, 0);
-        fn_800D7868(lbl_8047AD00, 4, 0, 6, 10, 0, 0, 0);
-        fn_800D7868(lbl_8047AD00, 6, 0, 8, 4, 0, 0, 0);
-        fn_800D7868(lbl_8047AD00, 7, 0, 8, 4, 0, 0, 0);
-        fn_800D7868(lbl_8047AD00, 8, 0, 8, 4, 0, 0, 0);
+        lbl_8047AD00 = gfxVtxDescAlloc();
+        gfxVtxDescSetAttr(lbl_8047AD00, 1, 0, 0, 3, 0, 0, 0);
+        gfxVtxDescSetAttr(lbl_8047AD00, 4, 0, 6, 10, 0, 0, 0);
+        gfxVtxDescSetAttr(lbl_8047AD00, 6, 0, 8, 4, 0, 0, 0);
+        gfxVtxDescSetAttr(lbl_8047AD00, 7, 0, 8, 4, 0, 0, 0);
+        gfxVtxDescSetAttr(lbl_8047AD00, 8, 0, 8, 4, 0, 0, 0);
     }
 
     texture = GStextureLoad(lbl_803156E0);

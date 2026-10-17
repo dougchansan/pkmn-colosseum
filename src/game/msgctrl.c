@@ -28,7 +28,7 @@ u32 msgctrlSndWait(EffectUtilCommandObj* obj) {
         if (handle == 0) {
             return 0;
         }
-        if (soundGetStatus(handle) == 2) {
+        if (GSsndGetStatus(handle) == 2) {
             obj->stream = obj->stream - 3;
         }
     }

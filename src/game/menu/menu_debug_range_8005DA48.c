@@ -46,10 +46,10 @@ s32 dbgMenuLogDraw(void* window)
     extern s32 windowGetParam(void*, s32);
     extern void windowSetParam(void*, s32, s32);
     extern void gfxSetZMode(s32, s32, s32);
-    extern void fn_8001E58C(s32, s32, s32, s32, u32*);
+    extern void menuDrawRectOutline(s32, s32, s32, s32, u32*);
     extern s32 GSlogGetLineCount(void);
     extern char* GSlogGetLine(s32);
-    extern void fn_800FAEF8(s32, s32, u32, char*, ...);
+    extern void GSmsgPrintf(s32, s32, u32, char*, ...);
     extern u32 lbl_8047BF48;
     u32 color[2];
     s32 y;
@@ -91,12 +91,12 @@ s32 dbgMenuLogDraw(void* window)
 
         gfxSetZMode(0, 7, 2);
         color[0] = color[1];
-        fn_8001E58C(0xF, y - 5, 0x25D, width + 0x12, &color[0]);
+        menuDrawRectOutline(0xF, y - 5, 0x25D, width + 0x12, &color[0]);
     }
     for (i = 0; i < lines; i++) {
         line = i + GSlogGetLineCount() - lines;
         if (line >= 0) {
-            fn_800FAEF8(0x14, y, 0xC0C0C0FF, GSlogGetLine(line));
+            GSmsgPrintf(0x14, y, 0xC0C0C0FF, GSlogGetLine(line));
         }
         y += 13;
     }

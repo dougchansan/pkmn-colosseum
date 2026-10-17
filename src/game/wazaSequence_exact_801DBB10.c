@@ -14,7 +14,7 @@ void wazaSequenceApplyStop(void* obj)
                 fn_801D3034(owner);
             }
             if (owner->animationActive == 0) {
-                fn_801DEF0C(owner, 1, 0);
+                wazaSequenceOwnerPlayIdle(owner, 1, 0);
             }
             fn_800E3CC8(owner->model, 0);
             if ((sequence->flags & 0x08000000) != 0) {
@@ -31,7 +31,7 @@ void wazaSequenceApplyStop(void* obj)
             node = sequence->firstNode;
             while (node != NULL) {
                 if (node->kind == 3 && node->state == 0 && node->resource != NULL) {
-                    fn_80118874(node->resource, 1);
+                    gsParticleKill(node->resource, 1);
                 }
                 node = node->next;
             }
@@ -54,7 +54,7 @@ void fn_801DBC30(void* obj)
         if (sequence->active != 0 && owner->currentSequence == sequence) {
             kind = sequence->kind;
             if (kind >= 0xB || kind < 9) {
-                fn_801DEF0C(owner, 1, 0);
+                wazaSequenceOwnerPlayIdle(owner, 1, 0);
             }
             if (sequence->cameraActive != 0) {
                 fn_801D3034(owner);
@@ -90,7 +90,7 @@ void wazaSequenceStart(void* sequencePtr)
         if (owner->animationActive != 0 && sequence->animationMode == 2) {
             wazaSequenceSysResetAnimationExcept(owner);
         }
-        fn_801DD100(owner, sequence);
+        wazaSequenceOwnerSetAnim(owner, sequence);
         if ((sequence->flags & 0x08000000) != 0) {
             GSmodelLinkToGSparticleBank(model, NULL);
         }

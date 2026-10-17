@@ -15,7 +15,7 @@ extern void GXFlush(void);
 #define GX_FIFO_U8  (*(volatile u8*)0xCC008000)
 #define GX_FIFO_U32 (*(volatile u32*)0xCC008000)
 
-void fn_800B8DA8(void) {
+void GXWaitDrawDone(void) {
     BOOL enabled;
 
     enabled = OSDisableInterrupts();

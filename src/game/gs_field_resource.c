@@ -317,7 +317,7 @@ void* floorReadColPreFunc(u32 resId, u32 loadMode, u32 dataSize) {
 void* floorReadCameraPostFunc(u32 resId, u32 loadMode, u32 dataSize) {
     extern void HSD_ArchiveParse(void* archive, void* buf, u32 size);
     extern void* HSD_ArchiveGetPublicAddress(void* archive, const char* sym);
-    extern void* fn_800D27FC(void* model);
+    extern void* GScameraCreateFromDesc(void* model);
     extern void GSresRegisterResource(void* entry, u32 resId, u32 loadMode, void* callback);
     extern u32 _unloadCamera__FPvUlUl(void);
     const u8* strings;
@@ -334,7 +334,7 @@ void* floorReadCameraPostFunc(u32 resId, u32 loadMode, u32 dataSize) {
     if (pub == (void*)0) {
         GSlogWrite((const char*)(strings + 0x1CC));
     } else {
-        entry = fn_800D27FC(*(void**)((u8*)pub + 4));
+        entry = GScameraCreateFromDesc(*(void**)((u8*)pub + 4));
         if (entry == (void*)0) {
             GSlogWrite((const char*)(strings + 0x200));
         } else {

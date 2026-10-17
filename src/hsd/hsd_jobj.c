@@ -26,7 +26,7 @@
 #include "hsd/hsd_dobj.h"
 #include "hsd/hsd_robj.h"
 
-void fn_8019CE50(void);
+void JObjInfoInit(void);
 extern void HSD_JObjDispDObj(HSD_JObj* jobj, f32 vmtx[3][4], f32 pmtx[3][4],
                         HSD_TrspMask trsp_mask, u32 rendermode);
 extern void HSD_JObjMakePositionMtx(HSD_JObj* jobj, f32 mtx[3][4],
@@ -37,7 +37,7 @@ void JObjRelease(HSD_JObj* jobj);
 void JObjAmnesia(void* info);
 s32 JObjLoad(HSD_JObj* jobj, HSD_Joint* joint, HSD_JObj* parent);
 void HSD_JObjAnimCallback(void* obj, u32 type, HSD_ObjData* val);
-void fn_801A3600(HSD_JObj* jobj);
+void HSD_JObjMakeMatrix(HSD_JObj* jobj);
 void fn_801A1B7C(HSD_JObj* jobj);
 extern u8 lbl_8036C8E0[];
 extern char lbl_80274AD0[];
@@ -53,10 +53,10 @@ extern f32 PSVECDotProduct(Vec* a, Vec* b);
 extern void PSVECScale(Vec* src, Vec* dst, f32 scale);
 extern void PSVECAdd(Vec* a, Vec* b, Vec* dst);
 extern HSD_RObj* HSD_RObjGetByType(HSD_RObj* robj, u32 type, u32 subtype);
-extern void fn_801AED88(HSD_RObj* robj, HSD_JObj* jobj,
+extern void HSD_RObjUpdateAll(HSD_RObj* robj, HSD_JObj* jobj,
                         HSD_ObjUpdateFunc update_func);
 
-HSD_JObjInfo hsdJObj = { fn_8019CE50 };
+HSD_JObjInfo hsdJObj = { JObjInfoInit };
 
 static HSD_ClassInfo* default_class = NULL;
 static HSD_JObj* current_jobj = NULL;
@@ -146,7 +146,7 @@ void resolveIKJoint1(HSD_JObj* jobj);
 void resolveIKJoint2(HSD_JObj* jobj);
 static inline f32 JObjIKSqrtf(f32 value);
 
-void fn_8019D9DC(HSD_JObj* jobj)
+void HSD_JObjSetupMatrixSub(HSD_JObj* jobj)
 {
     HSD_JObj* parent;
     HSD_RObj* robj;
@@ -199,7 +199,7 @@ void fn_8019D9DC(HSD_JObj* jobj)
             break;
         default:
             if (jobj->robj != NULL) {
-                fn_801AED88(
+                HSD_RObjUpdateAll(
                     jobj->robj, jobj,
                     ((HSD_JObjInfoColosseum*) HSD_JOBJ_METHOD(jobj))->update);
                 if (HSD_JObjMtxIsDirty(jobj)) {
@@ -462,7 +462,7 @@ void HSD_JObjSetDefaultClass(HSD_ClassInfo* info)
 #pragma push
 #pragma optimization_level 1
 #pragma use_lmw_stmw on
-void fn_8019CE50(void)
+void JObjInfoInit(void)
 {
     hsdInitClassInfo(HSD_CLASS_INFO(lbl_8036C8E0),
                      HSD_CLASS_INFO(&hsdObj), lbl_80274AD0, lbl_80274AE8,
@@ -472,7 +472,7 @@ void fn_8019CE50(void)
         (void (*)(HSD_Class*)) JObjRelease;
     HSD_CLASS_INFO(lbl_8036C8E0)->amnesia =
         (void (*)(HSD_ClassInfo*)) JObjAmnesia;
-    HSD_JOBJ_INFO(lbl_8036C8E0)->make_mtx = fn_801A3600;
+    HSD_JOBJ_INFO(lbl_8036C8E0)->make_mtx = HSD_JObjMakeMatrix;
     HSD_JOBJ_INFO(lbl_8036C8E0)->make_pmtx = HSD_JObjMakePositionMtx;
     HSD_JOBJ_INFO(lbl_8036C8E0)->disp = HSD_JObjDispDObj;
     HSD_JOBJ_INFO(lbl_8036C8E0)->load = JObjLoad;
@@ -555,9 +555,9 @@ extern f64 acos(f64 x);
 extern void PSVECSubtract(Vec* a, Vec* b, Vec* dst);
 extern void PSVECCrossProduct(Vec* a, Vec* b, Vec* dst);
 extern void PSMTXRotAxisRad(f32 mtx[3][4], Vec* axis, f32 angle);
-extern void fn_801AED88(HSD_RObj* robj, HSD_JObj* jobj,
+extern void HSD_RObjUpdateAll(HSD_RObj* robj, HSD_JObj* jobj,
                         HSD_ObjUpdateFunc update_func);
-extern s32 fn_801AFCAC(HSD_RObj* robj, u32 type, Vec* out);
+extern s32 HSD_RObjGetGlobalPosition(HSD_RObj* robj, u32 type, Vec* out);
 extern void HSD_MtxGetTranslate(f32 mtx[3][4], Vec* out);
 
 static void Vec_Set(Vec* vec, f32 x, f32 y, f32 z)
@@ -682,7 +682,7 @@ static HSD_JObj* JObj_GetPrev(HSD_JObj* jobj)
     return NULL;
 }
 
-/* fn_8019D610 and fn_8019D618 (the particle-callback setters) are linked
+/* HSD_JObjSetDPtclCallback and fn_8019D618 (the particle-callback setters) are linked
  * from jobj_exact_8019D5A0.c. */
 
 static void JObj_RecalcParentRootBits(HSD_JObj* jobj)
@@ -1051,7 +1051,7 @@ void resolveIKJoint1(HSD_JObj* jobj) {
     {
         update_func =
             *(HSD_ObjUpdateFunc*) ((u8*) HSD_JOBJ_METHOD(jobj) + 0x50);
-        fn_801AED88(jobj->robj, jobj, update_func);
+        HSD_RObjUpdateAll(jobj->robj, jobj, update_func);
         if (HSD_JObjMtxIsDirty(jobj)) {
             HSD_JOBJ_METHOD(jobj)->make_mtx(jobj);
             jobj->flags &= ~JOBJ_MTX_DIRTY;
@@ -1063,7 +1063,7 @@ void resolveIKJoint1(HSD_JObj* jobj) {
         HSD_MtxGetTranslate(parent->mtx, &origin);
     }
 
-    fn_801AFCAC(effector->robj, 1, &target);
+    HSD_RObjGetGlobalPosition(effector->robj, 1, &target);
     effector->translate_x = target.x;
     effector->translate_y = target.y;
     effector->translate_z = target.z;
@@ -1076,7 +1076,7 @@ void resolveIKJoint1(HSD_JObj* jobj) {
 
     if (dist_sq > 1.0e-8f) {
         target = target_dir;
-        if (fn_801AFCAC(jobj->robj, 3, &pole_hint) != 0) {
+        if (HSD_RObjGetGlobalPosition(jobj->robj, 3, &pole_hint) != 0) {
             PSVECSubtract(&pole_hint, &origin, &pole_hint);
             if (rotate_x != 0.0f) {
                 PSMTXRotAxisRad(rot_mtx, &target, rotate_x);
@@ -1208,7 +1208,7 @@ static inline void current_jobj_unref(HSD_JObj* jobj)
     }
 }
 
-void fn_8019F024(HSD_JObj* jobj)
+void HSD_JObjSetCurrent(HSD_JObj* jobj)
 {
     current_jobj_ref(jobj);
     current_jobj_unref((HSD_JObj*) lbl_8047B2AC);
@@ -1270,18 +1270,18 @@ void fn_8019F1C4(HSD_JObj* jobj, s32* total_a, s32* total_b) {
 HSD_JObj* fn_80193828(HSD_ClassInfo*);
 extern void fn_8019D620(HSD_JObj*);
 BOOL fn_8019D980(HSD_JObj* jobj);
-void fn_8019F778(HSD_JObj* jobj);
-void fn_8019F7F0(HSD_JObj* jobj, u32 flags);
-void fn_8019FAEC(HSD_JObj* jobj, u32 flags);
-void fn_8019FB90(HSD_JObj* jobj, u32 flags);
-void fn_8019FE8C(HSD_JObj* jobj, u32 flags);
+void HSD_JObjSetMtxDirty(HSD_JObj* jobj);
+void HSD_JObjClearFlagsAll(HSD_JObj* jobj, u32 flags);
+void HSD_JObjClearFlags(HSD_JObj* jobj, u32 flags);
+void HSD_JObjSetFlagsAll(HSD_JObj* jobj, u32 flags);
+void HSD_JObjSetFlags(HSD_JObj* jobj, u32 flags);
 
 #if !defined(HSD_JOBJ_OMIT_EXACT_8019F718)
 
 /* 0x8019F718 | 0x60 */
 #pragma push
 #pragma optimization_level 1
-HSD_JObj* fn_8019F718(void)
+HSD_JObj* HSD_JObjAlloc(void)
 {
     HSD_JObj* jobj;
 
@@ -1355,7 +1355,7 @@ static inline void JObjClearFlagsUsingDirtyCall(HSD_JObj* jobj, u32 flags)
         return;
     }
     if ((jobj->flags ^ flags) & JOBJ_CLASSICAL_SCALE) {
-        fn_8019F778(jobj);
+        HSD_JObjSetMtxDirty(jobj);
     }
     jobj->flags &= ~flags;
 }
@@ -1367,10 +1367,10 @@ static inline void JObjClearFlagsAllLevel5(HSD_JObj* jobj, u32 flags)
     if (jobj == NULL) {
         return;
     }
-    fn_8019FAEC(jobj, flags);
+    HSD_JObjClearFlags(jobj, flags);
     if (!(jobj->flags & JOBJ_INSTANCE)) {
         for (child = jobj->child; child != NULL; child = child->next) {
-            fn_8019F7F0(child, flags);
+            HSD_JObjClearFlagsAll(child, flags);
         }
     }
 }
@@ -1435,7 +1435,7 @@ static inline void JObjClearFlagsAllLevel1(HSD_JObj* jobj, u32 flags)
     }
 }
 
-void fn_8019F7F0(HSD_JObj* jobj, u32 flags)
+void HSD_JObjClearFlagsAll(HSD_JObj* jobj, u32 flags)
 {
     HSD_JObj* child;
 
@@ -1455,7 +1455,7 @@ void fn_8019F7F0(HSD_JObj* jobj, u32 flags)
 #pragma push
 #pragma optimization_level 0
 #pragma optimization_level 1
-void fn_8019FAEC(HSD_JObj* jobj, u32 flags) {
+void HSD_JObjClearFlags(HSD_JObj* jobj, u32 flags) {
     s32 result;
     if (!jobj) return;
     if (((jobj->flags ^ flags) & 0x8) && jobj != NULL) {
@@ -1539,7 +1539,7 @@ static inline void JObjSetFlagsUsingDirtyCall(HSD_JObj* jobj, u32 flags)
         return;
     }
     if ((jobj->flags ^ flags) & JOBJ_CLASSICAL_SCALE) {
-        fn_8019F778(jobj);
+        HSD_JObjSetMtxDirty(jobj);
     }
     jobj->flags |= flags;
 }
@@ -1551,10 +1551,10 @@ static inline void JObjSetFlagsAllLevel5(HSD_JObj* jobj, u32 flags)
     if (jobj == NULL) {
         return;
     }
-    fn_8019FE8C(jobj, flags);
+    HSD_JObjSetFlags(jobj, flags);
     if (!(jobj->flags & JOBJ_INSTANCE)) {
         for (child = jobj->child; child != NULL; child = child->next) {
-            fn_8019FB90(child, flags);
+            HSD_JObjSetFlagsAll(child, flags);
         }
     }
 }
@@ -1619,7 +1619,7 @@ static inline void JObjSetFlagsAllLevel1(HSD_JObj* jobj, u32 flags)
     }
 }
 
-void fn_8019FB90(HSD_JObj* jobj, u32 flags)
+void HSD_JObjSetFlagsAll(HSD_JObj* jobj, u32 flags)
 {
     HSD_JObj* child;
 
@@ -1639,7 +1639,7 @@ void fn_8019FB90(HSD_JObj* jobj, u32 flags)
 #pragma push
 #pragma optimization_level 0
 #pragma optimization_level 1
-void fn_8019FE8C(HSD_JObj* jobj, u32 flags) {
+void HSD_JObjSetFlags(HSD_JObj* jobj, u32 flags) {
     s32 result;
     if (!jobj) return;
     if (((jobj->flags ^ flags) & 0x8) && jobj != NULL) {
@@ -1661,7 +1661,7 @@ void fn_8019FE8C(HSD_JObj* jobj, u32 flags) {
 /* 0x8019F778 | 0x78 */
 #pragma push
 #pragma optimization_level 1
-void fn_8019F778(HSD_JObj* jobj) {
+void HSD_JObjSetMtxDirty(HSD_JObj* jobj) {
     s32 result;
     if (!jobj) return;
     if (!jobj) __assert(&lbl_8047DB34, 0x25d, &lbl_8047DB3C);
@@ -2003,7 +2003,7 @@ extern void HSD_DObjResolveRefsAll(HSD_DObj* dobj, HSD_DObjDesc* desc);
 extern void fn_80196E10(void* file, u32 line, void* expr);
 extern void fn_801991F8(HSD_DObj* dobj, HSD_DObjDesc* desc);
 extern void* fn_8019C128(void* table, u32 key, u32* found);
-extern void fn_801A05EC(HSD_JObj* jobj);
+extern void HSD_JObjUnref(HSD_JObj* jobj);
 extern void HSD_JObjRef(HSD_JObj* jobj);
 extern void* HSD_IDGetData(u32 key, s32* found);
 extern void fn_801A0B9C(HSD_JObj* jobj);
@@ -2214,7 +2214,7 @@ static inline void jobj_Ref(HSD_JObj* jobj, u8* base)
     }
 }
 
-/* fn_801A05EC (HSD_JObjUnref) is linked from jobj_exact_801A05EC.c. */
+/* HSD_JObjUnref (HSD_JObjUnref) is linked from jobj_exact_801A05EC.c. */
 
 /* 0x801A0D94 | 0x228 */
 #pragma push
@@ -2502,11 +2502,11 @@ load_child:
 #pragma push
 #pragma optimization_level 4
 #pragma use_lmw_stmw on
-void fn_801A13CC(HSD_JObj* jobj, f32 vmtx[3][4], u32 flags, u32 rendermode);
+void HSD_JObjDispAll(HSD_JObj* jobj, f32 vmtx[3][4], u32 flags, u32 rendermode);
 
 static void JObjSetupIfDirty(HSD_JObj* jobj)
 {
-    extern void fn_8019D9DC(HSD_JObj*);
+    extern void HSD_JObjSetupMatrixSub(HSD_JObj*);
     extern char lbl_8047DB34;
     extern char lbl_8047DB3C;
     s32 dirty;
@@ -2520,20 +2520,20 @@ static void JObjSetupIfDirty(HSD_JObj* jobj)
             dirty = 1;
         }
         if (dirty != 0) {
-            fn_8019D9DC(jobj);
+            HSD_JObjSetupMatrixSub(jobj);
         }
     }
 }
 
-void fn_801A13CC(HSD_JObj* jobj, f32 vmtx[3][4], u32 flags, u32 rendermode)
+void HSD_JObjDispAll(HSD_JObj* jobj, f32 vmtx[3][4], u32 flags, u32 rendermode)
 {
     extern void PSMTXInverse(f32 src[3][4], f32 dst[3][4]);
     extern void PSMTXConcat(f32 a[3][4], f32 b[3][4], f32 dst[3][4]);
     extern void* HSD_CObjGetCurrent(void);
     extern f32* fn_801A1980(void*);
     extern void fn_801A1988(HSD_JObj*);
-    extern void fn_801A1A00(f32 src[3][4], HSD_JObj* jobj, f32 dst[3][4]);
-    extern void fn_80197344(HSD_JObj*, f32 mtx[3][4], u32 flags, u32 rendermode);
+    extern void JObjSetupInstanceMtx(f32 src[3][4], HSD_JObj* jobj, f32 dst[3][4]);
+    extern void HSD_JObjDisp(HSD_JObj*, f32 mtx[3][4], u32 flags, u32 rendermode);
     HSD_JObj* child;
     HSD_JObj* inst;
     HSD_JObj* grandchild;
@@ -2589,18 +2589,18 @@ void fn_801A13CC(HSD_JObj* jobj, f32 vmtx[3][4], u32 flags, u32 rendermode)
                 if (inst->flags & JOBJ_HIDDEN) {
                     return;
                 }
-                fn_801A1A00(mtx1, inst, mtx2);
-                fn_801A13CC(inst->child, mtx2, flags, rendermode);
+                JObjSetupInstanceMtx(mtx1, inst, mtx2);
+                HSD_JObjDispAll(inst->child, mtx2, flags, rendermode);
                 return;
             }
 
             if (inst->flags & (flags << 18)) {
-                fn_80197344(inst, mtx1, flags, rendermode);
+                HSD_JObjDisp(inst, mtx1, flags, rendermode);
             }
             if (inst->flags & (flags << 28)) {
                 grandchild = inst->child;
                 while (grandchild != NULL) {
-                    fn_801A13CC(grandchild, mtx1, flags, rendermode);
+                    HSD_JObjDispAll(grandchild, mtx1, flags, rendermode);
                     grandchild = grandchild->next;
                 }
             }
@@ -2608,7 +2608,7 @@ void fn_801A13CC(HSD_JObj* jobj, f32 vmtx[3][4], u32 flags, u32 rendermode)
         }
 
         if (child->flags & (flags << 18)) {
-            fn_80197344(child, mtx0, flags, rendermode);
+            HSD_JObjDisp(child, mtx0, flags, rendermode);
         }
         if (child->flags & (flags << 28)) {
             child = child->child;
@@ -2617,17 +2617,17 @@ void fn_801A13CC(HSD_JObj* jobj, f32 vmtx[3][4], u32 flags, u32 rendermode)
                 if (inst != NULL) {
                     if (inst->flags & JOBJ_INSTANCE) {
                         if (!(inst->flags & JOBJ_HIDDEN)) {
-                            fn_801A1A00(mtx0, inst, mtx2);
-                            fn_801A13CC(inst->child, mtx2, flags, rendermode);
+                            JObjSetupInstanceMtx(mtx0, inst, mtx2);
+                            HSD_JObjDispAll(inst->child, mtx2, flags, rendermode);
                         }
                     } else {
                         if (inst->flags & (flags << 18)) {
-                            fn_80197344(inst, mtx0, flags, rendermode);
+                            HSD_JObjDisp(inst, mtx0, flags, rendermode);
                         }
                         if (inst->flags & (flags << 28)) {
                             grandchild = inst->child;
                             while (grandchild != NULL) {
-                                fn_801A13CC(grandchild, mtx0, flags, rendermode);
+                                HSD_JObjDispAll(grandchild, mtx0, flags, rendermode);
                                 grandchild = grandchild->next;
                             }
                         }
@@ -2640,7 +2640,7 @@ void fn_801A13CC(HSD_JObj* jobj, f32 vmtx[3][4], u32 flags, u32 rendermode)
     }
 
     if (jobj->flags & (flags << 18)) {
-        fn_80197344(jobj, vmtx, flags, rendermode);
+        HSD_JObjDisp(jobj, vmtx, flags, rendermode);
     }
     if (!(jobj->flags & (flags << 28))) {
         return;
@@ -2669,17 +2669,17 @@ void fn_801A13CC(HSD_JObj* jobj, f32 vmtx[3][4], u32 flags, u32 rendermode)
                     if (grandchild != NULL) {
                         if (grandchild->flags & JOBJ_INSTANCE) {
                             if (!(grandchild->flags & JOBJ_HIDDEN)) {
-                                fn_801A1A00(mtx3, grandchild, mtx2);
-                                fn_801A13CC(grandchild->child, mtx2, flags, rendermode);
+                                JObjSetupInstanceMtx(mtx3, grandchild, mtx2);
+                                HSD_JObjDispAll(grandchild->child, mtx2, flags, rendermode);
                             }
                         } else {
                             if (grandchild->flags & (flags << 18)) {
-                                fn_80197344(grandchild, mtx3, flags, rendermode);
+                                HSD_JObjDisp(grandchild, mtx3, flags, rendermode);
                             }
                             if (grandchild->flags & (flags << 28)) {
                                 grandchild = grandchild->child;
                                 while (grandchild != NULL) {
-                                    fn_801A13CC(grandchild, mtx3, flags, rendermode);
+                                    HSD_JObjDispAll(grandchild, mtx3, flags, rendermode);
                                     grandchild = grandchild->next;
                                 }
                             }
@@ -2688,7 +2688,7 @@ void fn_801A13CC(HSD_JObj* jobj, f32 vmtx[3][4], u32 flags, u32 rendermode)
                 }
             } else {
                 if (inst->flags & (flags << 18)) {
-                    fn_80197344(inst, vmtx, flags, rendermode);
+                    HSD_JObjDisp(inst, vmtx, flags, rendermode);
                 }
                 if (inst->flags & (flags << 28)) {
                     grandchild = inst->child;
@@ -2697,17 +2697,17 @@ void fn_801A13CC(HSD_JObj* jobj, f32 vmtx[3][4], u32 flags, u32 rendermode)
                         if (inst != NULL) {
                             if (inst->flags & JOBJ_INSTANCE) {
                                 if (!(inst->flags & JOBJ_HIDDEN)) {
-                                    fn_801A1A00(vmtx, inst, mtx2);
-                                    fn_801A13CC(inst->child, mtx2, flags, rendermode);
+                                    JObjSetupInstanceMtx(vmtx, inst, mtx2);
+                                    HSD_JObjDispAll(inst->child, mtx2, flags, rendermode);
                                 }
                             } else {
                                 if (inst->flags & (flags << 18)) {
-                                    fn_80197344(inst, vmtx, flags, rendermode);
+                                    HSD_JObjDisp(inst, vmtx, flags, rendermode);
                                 }
                                 if (inst->flags & (flags << 28)) {
                                     HSD_JObj* scan = inst->child;
                                     while (scan != NULL) {
-                                        fn_801A13CC(scan, vmtx, flags, rendermode);
+                                        HSD_JObjDispAll(scan, vmtx, flags, rendermode);
                                         scan = scan->next;
                                     }
                                 }
@@ -2761,27 +2761,27 @@ static inline s32 JObjMtxIsDirtyForSetup(HSD_JObj* jobj)
 
 void fn_801A1988(HSD_JObj* jobj)
 {
-    extern void fn_8019D9DC(HSD_JObj*);
+    extern void HSD_JObjSetupMatrixSub(HSD_JObj*);
 
     if (jobj == NULL || !JObjMtxIsDirtyForSetup(jobj)) {
         return;
     }
-    fn_8019D9DC(jobj);
+    HSD_JObjSetupMatrixSub(jobj);
 }
 #pragma pop
 
-void fn_801A1A00(Mtx src, HSD_JObj* jobj, Mtx dst)
+void JObjSetupInstanceMtx(Mtx src, HSD_JObj* jobj, Mtx dst)
 {
     HSD_CObj* cobj;
     HSD_JObj* child;
 
     if (jobj != NULL && JObjMtxIsDirtyForSetup(jobj)) {
-        fn_8019D9DC(jobj);
+        HSD_JObjSetupMatrixSub(jobj);
     }
 
     child = jobj->child;
     if (child != NULL && JObjMtxIsDirtyForSetup(child)) {
-        fn_8019D9DC(child);
+        HSD_JObjSetupMatrixSub(child);
     }
 
     PSMTXInverse(child->mtx, dst);
@@ -2836,7 +2836,7 @@ BOOL fn_8019D980(HSD_JObj* jobj)
 #pragma pop
 
 void fn_801A3D04(HSD_JObj* jobj);
-void fn_801A1F2C(HSD_JObj* jobj);
+void HSD_JObjAnim(HSD_JObj* jobj);
 
 #pragma push
 #pragma optimization_level 1
@@ -2983,7 +2983,7 @@ void fn_801A1B7C(HSD_JObj* jobj)
 
                                     while (greatgrandchild != NULL) {
                                         if (greatgrandchild != NULL) {
-                                            fn_801A1F2C(greatgrandchild);
+                                            HSD_JObjAnim(greatgrandchild);
                                             if (!(greatgrandchild->flags &
                                                   JOBJ_INSTANCE))
                                             {
@@ -3014,7 +3014,7 @@ void fn_801A1B7C(HSD_JObj* jobj)
 /* 0x801A1F2C | 0x19C */
 #pragma push
 #pragma optimization_level 1
-void fn_801A1F2C(HSD_JObj* jobj)
+void HSD_JObjAnim(HSD_JObj* jobj)
 {
     HSD_JObj* parent;
     JObjAnimClassInfo* info;
@@ -3095,7 +3095,7 @@ void HSD_JObjAnimCallback(void* obj, u32 type, HSD_ObjData* val)
     extern void fn_801A9DF0();
     extern void PSMTXCopy();
     extern void HSD_MtxGetTranslate();
-    extern void fn_801A98CC();
+    extern void HSD_MtxGetRotation();
     extern void HSD_MtxGetScale();
     HSD_JObj* jobj = obj;
     HSD_SList* node;
@@ -3204,7 +3204,7 @@ void HSD_JObjAnimCallback(void* obj, u32 type, HSD_ObjData* val)
         if (type == 0x36 || type == 0x38)
             HSD_MtxGetTranslate(mtx, &jobj->translate_x);
         if (type == 0x36 || type == 0x37)
-            fn_801A98CC(mtx, &jobj->rotate_x);
+            HSD_MtxGetRotation(mtx, &jobj->rotate_x);
         if (type == 0x36 || type == 0x39)
             HSD_MtxGetScale(mtx, &jobj->scale_x);
         break;
@@ -3215,8 +3215,8 @@ void fn_801A2B5C(HSD_JObj* jobj, HSD_AnimJoint* animjoint,
                  HSD_MatAnimJoint* matanimjoint,
                  HSD_ShapeAnimJoint* shapeanimjoint)
 {
-    extern void fn_8019FE8C(HSD_JObj* jobj, u32 flags);
-    extern void fn_801A323C(HSD_AObj* aobj);
+    extern void HSD_JObjSetFlags(HSD_JObj* jobj, u32 flags);
+    extern void JObjSortAnim(HSD_AObj* aobj);
 
     if (jobj == NULL) {
         return;
@@ -3248,7 +3248,7 @@ void fn_801A2B5C(HSD_JObj* jobj, HSD_AnimJoint* animjoint,
                 }
             }
         }
-        fn_801AFE68(jobj->robj, animjoint->robj_anim);
+        HSD_RObjAddAnimAll(jobj->robj, animjoint->robj_anim);
 
         if (animjoint->flags & 1) {
             if (jobj != NULL) {
@@ -3321,12 +3321,12 @@ void fn_801A2B5C(HSD_JObj* jobj, HSD_AnimJoint* animjoint,
                         HSD_AObjRemove(child->aobj);
                     }
                     child->aobj = HSD_AObjLoadDesc(childAnim->aobjdesc);
-                    fn_801A323C(child->aobj);
-                    fn_801AFE68(child->robj, childAnim->robj_anim);
+                    JObjSortAnim(child->aobj);
+                    HSD_RObjAddAnimAll(child->robj, childAnim->robj_anim);
                     if (childAnim->flags & 1) {
-                        fn_8019FE8C(child, JOBJ_CLASSICAL_SCALE);
+                        HSD_JObjSetFlags(child, JOBJ_CLASSICAL_SCALE);
                     } else {
-                        fn_8019FAEC(child, JOBJ_CLASSICAL_SCALE);
+                        HSD_JObjClearFlags(child, JOBJ_CLASSICAL_SCALE);
                     }
                 }
 
@@ -3349,7 +3349,7 @@ void fn_801A2B5C(HSD_JObj* jobj, HSD_AnimJoint* animjoint,
 
                     while (grandchild != NULL) {
                         if (grandchild != NULL) {
-                            fn_801A301C(grandchild, grandAnim, grandMatAnim, grandShapeAnim);
+                            HSD_JObjAddAnim(grandchild, grandAnim, grandMatAnim, grandShapeAnim);
                             if (!(grandchild->flags & JOBJ_INSTANCE)) {
                                 HSD_JObj* scan;
                                 HSD_AnimJoint* scanAnim;

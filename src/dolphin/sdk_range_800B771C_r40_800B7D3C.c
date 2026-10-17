@@ -11,7 +11,7 @@
 #include "src/dolphin/sdk_range_800B771C.c"
 
 /* GXClearVtxDesc */
-void fn_800B7D3C(void) {
+void GXClearVtxDesc(void) {
     gx->vcdLo = 0;
     gx->vcdLo = (gx->vcdLo & ~0x600) | 0x200;
     gx->vcdHi = 0;
@@ -91,7 +91,7 @@ static inline void SetVat(u32* va, u32* vb, u32* vc, s32 attr, s32 cnt,
     }
 }
 
-void fn_800B7D74(s32 vtxfmt, s32 attr, s32 cnt, s32 type, u8 frac)
+void GXSetVtxAttrFmt(s32 vtxfmt, s32 attr, s32 cnt, s32 type, u8 frac)
 {
     u32* va = (u32*)((u8*)gx + 0x1C + vtxfmt * 4);
     u32* vb = (u32*)((u8*)gx + 0x3C + vtxfmt * 4);
@@ -102,7 +102,7 @@ void fn_800B7D74(s32 vtxfmt, s32 attr, s32 cnt, s32 type, u8 frac)
     *((u8*)gx + 0x4F3) |= (u8)(1 << (u8)vtxfmt);
 }
 
-void fn_800B80CC(s32 vtxfmt, const GXVtxAttrFmtList_800B771C* list)
+void GXSetVtxAttrFmtv(s32 vtxfmt, const GXVtxAttrFmtList_800B771C* list)
 {
     u32* va = (u32*)((u8*)gx + 0x1C + vtxfmt * 4);
     u32* vb = (u32*)((u8*)gx + 0x3C + vtxfmt * 4);
@@ -132,7 +132,7 @@ static inline void WriteVatRegs(s32 idx) {
 }
 
 /* __GXSetVAT: flush the dirty vertex attribute formats. */
-void fn_800B8444(void) {
+void __GXSetVAT(void) {
     u8 i;
 
     for (i = 0; i < 8; i++) {
@@ -143,7 +143,7 @@ void fn_800B8444(void) {
     ((u8*)gx)[0x4F3] = 0;
 }
 
-void fn_800B84E0(s32 attr, u32 value, u8 value2) {
+void GXSetArray(s32 attr, u32 value, u8 value2) {
     s32 idx;
     s32 j;
 

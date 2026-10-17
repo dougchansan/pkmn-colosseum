@@ -32,24 +32,24 @@ extern u8 lbl_8039A664[];
 
 extern u8 fightSeqCondChgActTypeToPokemonStatusId[];
 extern u8 fightTrainerAiWazaValueHimitunotikara[];
-extern u8 fn_80213E94[];
-extern u8 fn_80217D34[];
-extern u8 fn_8021B910[];
-extern u8 fn_8021D40C[];
-extern u8 fn_8021FAD4[];
-extern u8 fn_80220868[];
-extern u8 fn_80220B8C[];
-extern u8 fn_80221104[];
-extern u8 fn_80223AF4[];
-extern u8 fn_802249B8[];
-extern u8 fn_8022B2CC[];
-extern u8 fn_8022B5C8[];
-extern u8 fn_8022BE2C[];
-extern u8 fn_8022D6BC[];
-extern u8 fn_8022F2F8[];
+extern u8 wsCmdEF[];
+extern u8 wsCmdB4[];
+extern u8 wsStatBuffChange[];
+extern u8 wsCmd76[];
+extern u8 wsCmd49[];
+extern u8 wsCmd48[];
+extern u8 wsPlayStatChangeAnimation[];
+extern u8 wsPlayAnimation[];
+extern u8 wsCmd20[];
+extern u8 fightSeqSetTsuikaKouka[];
+extern u8 fightSeqSelectTarget[];
+extern u8 _fightOutPokemonSoubiItemEffectSub[];
+extern u8 fightOutPokemonDoSoubiItemCheck[];
+extern u8 _wsTokuseiAfterDamage[];
+extern u8 _wsHitCheckJoutaiSub[];
 extern u8 fn_8023B498[];
-extern u8 fn_8023C370[];
-extern u8 fn_8023C530[];
+extern u8 fightTrainerAiGetWazaDamageValue[];
+extern u8 fightTrainerAiGetWazaHitValue[];
 extern u8 lbl_80379452[];
 extern u8 lbl_80379478[];
 extern u8 lbl_8037948D[];
@@ -3510,17 +3510,17 @@ void* lbl_80399F58[39] = {
 };
 
 void* jumptable_80399FF4[13] = {
-    (void*)((u8*)fn_80213E94 + 0x2D0),
-    (void*)((u8*)fn_80213E94 + 0x2D0),
-    (void*)((u8*)fn_80213E94 + 0x184),
-    (void*)((u8*)fn_80213E94 + 0x18C),
-    (void*)((u8*)fn_80213E94 + 0x194),
-    (void*)((u8*)fn_80213E94 + 0x194),
-    (void*)((u8*)fn_80213E94 + 0x19C),
-    (void*)((u8*)fn_80213E94 + 0x1DC),
-    (void*)((u8*)fn_80213E94 + 0x204),
-    (void*)((u8*)fn_80213E94 + 0x22C),
-    (void*)((u8*)fn_80213E94 + 0x29C),
-    (void*)((u8*)fn_80213E94 + 0x2CC),
-    (void*)((u8*)fn_80213E94 + 0x2CC),
+    (void*)((u8*)wsCmdEF + 0x2D0),
+    (void*)((u8*)wsCmdEF + 0x2D0),
+    (void*)((u8*)wsCmdEF + 0x184),
+    (void*)((u8*)wsCmdEF + 0x18C),
+    (void*)((u8*)wsCmdEF + 0x194),
+    (void*)((u8*)wsCmdEF + 0x194),
+    (void*)((u8*)wsCmdEF + 0x19C),
+    (void*)((u8*)wsCmdEF + 0x1DC),
+    (void*)((u8*)wsCmdEF + 0x204),
+    (void*)((u8*)wsCmdEF + 0x22C),
+    (void*)((u8*)wsCmdEF + 0x29C),
+    (void*)((u8*)wsCmdEF + 0x2CC),
+    (void*)((u8*)wsCmdEF + 0x2CC),
 };

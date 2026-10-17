@@ -19,7 +19,7 @@ extern u8* menuItemBiosGetPtr(s16);
 extern void windowDrawSprite(s32, s32, void*, u16, s32);
 extern s32 menuGetCursorItemID(void*);
 extern u32 GSmsgGetRect(void*);
-extern void fn_800FB680(s16, s16, u32, void*);
+extern void GSmsgPrintColor(s16, s16, u32, void*);
 
 void fn_8000D298(u8* menu, u8* item)
 {
@@ -44,7 +44,7 @@ void fn_8000D298(u8* menu, u8* item)
              (s16)(GSmsgGetRect(*(void**)(item + 0x4C)) >> 16)) / 2;
         y = (*(s16*)(item + 0x56) -
              (s16)(u16)GSmsgGetRect(*(void**)(item + 0x4C))) / 2 - 2;
-        fn_800FB680(x, y, color | menu[0x8B], *(void**)(item + 0x4C));
+        GSmsgPrintColor(x, y, color | menu[0x8B], *(void**)(item + 0x4C));
     }
 }
 
@@ -173,7 +173,7 @@ typedef struct MenuPendingEvent {
     u8 pad32[2];
 } MenuPendingEvent;
 
-s32 fn_8000D710(u8 mode)
+s32 heroMoveRunEvent(u8 mode)
 {
     extern s32 heroMoveCheckEvent(MenuPendingEvent* events);
     extern void heroDispatchEvent(s8 kind, u32 eventId);
@@ -189,7 +189,7 @@ s32 fn_8000D710(u8 mode)
     extern void fn_800D3074(s32);
     extern u32 std082_flagGetValue(u32 flag);
     extern void* floorGetCurrentContext(void);
-    extern u32 fn_80130CD8(void);
+    extern u32 GSeffectGetUpdateGapp(void);
     extern void GSgappBlock(u32 task);
     extern void GSgappUnblock(u32 task);
     extern void GSthreadBlockGroup(void* stack);
@@ -252,13 +252,13 @@ s32 fn_8000D710(u8 mode)
                 fn_800D3074(1);
                 lbl_8047A2A4 = menuId;
                 lbl_8047A2A8 = floorGetCurrentContext();
-                GSgappBlock(fn_80130CD8());
+                GSgappBlock(GSeffectGetUpdateGapp());
                 GSthreadBlockGroup(lbl_8047A2A8);
                 lbl_8047A2AC = (u8*)lbl_8047A2A8 - 0x20;
                 GSthreadCreate(0xF, lbl_8047A2AC, 0x4000, 1, 1,
                                fn_8000DAB0);
                 _threadSwitch();
-                GSgappUnblock(fn_80130CD8());
+                GSgappUnblock(GSeffectGetUpdateGapp());
 
                 if (lbl_8047A2B0 == 0) {
                     menuClose(menuId);
@@ -292,13 +292,13 @@ s32 fn_8000D710(u8 mode)
                 fn_800D3074(1);
                 lbl_8047A2A4 = menuId;
                 lbl_8047A2A8 = floorGetCurrentContext();
-                GSgappBlock(fn_80130CD8());
+                GSgappBlock(GSeffectGetUpdateGapp());
                 GSthreadBlockGroup(lbl_8047A2A8);
                 lbl_8047A2AC = (u8*)lbl_8047A2A8 - 0x20;
                 GSthreadCreate(0xF, lbl_8047A2AC, 0x4000, 1, 1,
                                fn_8000DAB0);
                 _threadSwitch();
-                GSgappUnblock(fn_80130CD8());
+                GSgappUnblock(GSeffectGetUpdateGapp());
 
                 if (lbl_8047A2B0 == 0) {
                     menuClose(menuId);

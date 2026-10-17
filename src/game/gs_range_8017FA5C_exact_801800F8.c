@@ -1,6 +1,6 @@
 /**
  * @file gs_range_8017FA5C_exact_801800F8.c
- * @brief gs heap / handle-cache / ARQ-table initialisation fn_801800F8
+ * @brief gs heap / handle-cache / ARQ-table initialisation fsysCacheInit
  *        (0x801800F8 - 0x80180320) and the unit's pooled .bss
  *        (0x80454018 - 0x80455070).
  *
@@ -82,7 +82,7 @@ static inline void memBlocksClear(void)
     }
 }
 
-void fn_801800F8(u32 entryCount, u8* arena, u32 arenaSize)
+void fsysCacheInit(u32 entryCount, u8* arena, u32 arenaSize)
 {
     GsRangeARQEntry* entry;
     u32 j;

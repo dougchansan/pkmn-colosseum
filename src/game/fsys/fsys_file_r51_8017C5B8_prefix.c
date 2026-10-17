@@ -1,12 +1,12 @@
 /**
  * @file fsys_file_r51_8017C5B8_prefix.c
- * @brief FSYS slot status handler fn_8017C5B8 (0x8017C5B8 - 0x8017C6E0).
+ * @brief FSYS slot status handler fsysSlotStatusStartEntries (0x8017C5B8 - 0x8017C6E0).
  *
  * Puts the entry being loaded into the ARAM cache: when fn_8017F794 finds
  * no cached image of it, fn_8017F928 reserves one of the entry's size and
  * fn_80180694 copies the entry's buffer there (completion callback
- * fn_8017F25C, status 151); a failed lookup-and-reserve leaves status 152.
- * For load mode 3 the slot's handle is refreshed first (fn_8017D68C) and the
+ * fsysARQCallback, status 151); a failed lookup-and-reserve leaves status 152.
+ * For load mode 3 the slot's handle is refreshed first (fsysSlotRefreshHandle) and the
  * handle table is scanned for it; the scan's result is not used.
  *
  * Built at optimisation level 0 with peephole and scheduling on, like the
@@ -39,10 +39,10 @@ extern s32 lbl_8047B1BC;             /* handle table fill count */
 
 extern u32 fn_8017F794(u32 fileHandle, u32 groupID, u32 nameHash);
 extern u32 fn_8017F928(u32 size, u32 fileHandle, u32 groupID, u32 nameHash);
-extern FSYSFileHandle* fn_8017D68C(FSYSSlot* slot);
+extern FSYSFileHandle* fsysSlotRefreshHandle(FSYSSlot* slot);
 extern void fn_80180694(void* src, u32 aram, u32 size,
                         void (*callback)(s32 result, void* userData), FSYSSlot* slot);
-extern void fn_8017F25C(s32 result, void* userData);
+extern void fsysARQCallback(s32 result, void* userData);
 
 /* ARAM address of the slot's current entry, caching the entry if needed. */
 static inline u32 fsysCacheEntry(FSYSSlot* slot)
@@ -64,7 +64,7 @@ static inline u32 fsysCacheEntry(FSYSSlot* slot)
             slot->status = 0x98;
         } else {
             if (slot->loadMode == 3) {
-                fn_8017D68C(slot);
+                fsysSlotRefreshHandle(slot);
                 handle = lbl_8047B1B8;
                 for (i = 0; i < lbl_8047B1BC; i++) {
                     if (handle->handleID == (s32)slot->field_08) {
@@ -74,7 +74,7 @@ static inline u32 fsysCacheEntry(FSYSSlot* slot)
                 }
             }
             slot->status = 0x97;
-            fn_80180694(sub->buffer, cached, size, fn_8017F25C, slot);
+            fn_80180694(sub->buffer, cached, size, fsysARQCallback, slot);
         }
     } else {
         slot->status = 0x98;
@@ -83,7 +83,7 @@ static inline u32 fsysCacheEntry(FSYSSlot* slot)
 }
 
 /* Address: 0x8017C5B8 | size: 0x128 */
-s32 fn_8017C5B8(FSYSSlot* slot)
+s32 fsysSlotStatusStartEntries(FSYSSlot* slot)
 {
     u32 result;
 

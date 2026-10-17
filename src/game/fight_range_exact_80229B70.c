@@ -1,6 +1,6 @@
 #include "dolphin/types.h"
 
-u8 fn_80229B70(u32 move_id)
+u8 fightIsWazaThunderInRain(u32 move_id)
 {
     extern u32 wazaGetStatus(void*, u32, u16, u32);
     extern s32 fightFloorGetNowTenkouDataId(void*, u32);

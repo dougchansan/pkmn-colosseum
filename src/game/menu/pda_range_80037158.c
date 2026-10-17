@@ -148,15 +148,15 @@ extern PdaModelWindow lbl_803A6748;
 extern u8 lbl_803A67FC[];
 extern PdaSceneWork lbl_803A6818;
 
-extern s32 fn_8003B85C(void* window, s32 enabled);
-extern void fn_8003C2B8(PdaSprite* sprite, PdaEvent* event);
+extern s32 pdaSnagListDetailKey(void* window, s32 enabled);
+extern void pdaSnagListDrawDetail(PdaSprite* sprite, PdaEvent* event);
 extern s32 fn_80041E48(void* work, s32 mode);
-extern s32 fn_80042658(void* work, s32 mode);
-extern void fn_800439BC(void* scene);
+extern s32 pdaModelViewerControl(void* work, s32 mode);
+extern void pdaReadPadInput(void* scene);
 extern void GSscene_SetMode(s32 mode);
 extern void menuButtonNormal(void* button);
 extern void winSpriteSetDisp(void* sprite, s32 disp);
-extern void fn_800FB680(s32 arg0, s32 arg1, s32 arg2, void* data);
+extern void GSmsgPrintColor(s32 arg0, s32 arg1, s32 arg2, void* data);
 
 #if !defined(PDA_RANGE_EXACT_80037174_ONLY)
 void fn_80037158(void)
@@ -183,11 +183,11 @@ void fn_80037174(void)
 /* Retail places this callback immediately after fn_80037174. */
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma peephole off
-void fn_80037180(u32 unused, u8* p)
+void pcMenuDrawPurifiedCount(u32 unused, u8* p)
 {
     extern u32 gfxVtxTexCoord();
-    extern u32 fn_800D5CB8();
-    extern u32 fn_800D61E4();
+    extern u32 gfxVtxColor4u8();
+    extern u32 gfxVtxPos2s16();
     extern u32 gfxEnd();
     extern u32 gfxBegin();
     extern u32 gfxSetPrimitive();
@@ -205,11 +205,11 @@ void fn_80037180(u32 unused, u8* p)
         if (lbl_8047A498 != 0) {
             result = lbl_8047A498;
         }
-        lbl_8047A49C = fn_801EF214();
-        lbl_8047A4A0 = fn_801EF274();
+        lbl_8047A49C = darkPokemonCountFlag14();
+        lbl_8047A4A0 = darkPokemonCountFlag12();
         fn_80132A38(0x4c, result);
-        fn_80132A38(0x2f, fn_801EF274());
-        fn_80132A38(0x30, fn_801EF214());
+        fn_80132A38(0x2f, darkPokemonCountFlag12());
+        fn_80132A38(0x30, darkPokemonCountFlag14());
         if ((result = menuModelRender(lbl_803A6498)) != 0) {
             gfxSetFlags(3);
             gfxClearFlags(4);
@@ -217,11 +217,11 @@ void fn_80037180(u32 unused, u8* p)
             gfxSetVtxDesc(lbl_80314F98);
             gfxLoadTexture(0, result);
             gfxBegin(2);
-            fn_800D61E4(0, 0);
-            fn_800D5CB8(0, 0xff, 0xff, 0xff, 0xff);
+            gfxVtxPos2s16(0, 0);
+            gfxVtxColor4u8(0, 0xff, 0xff, 0xff, 0xff);
             gfxVtxTexCoord(0, lbl_8047BA58, lbl_8047BA58);
-            fn_800D61E4(*(s16*)(p + 0x54), *(s16*)(p + 0x56));
-            fn_800D5CB8(0, 0xff, 0xff, 0xff, 0xff);
+            gfxVtxPos2s16(*(s16*)(p + 0x54), *(s16*)(p + 0x56));
+            gfxVtxColor4u8(0, 0xff, 0xff, 0xff, 0xff);
             gfxVtxTexCoord(0, lbl_8047BA5C, lbl_8047BA5C);
             gfxEnd();
         }
@@ -256,8 +256,8 @@ void fn_800372FC(void)
 void fn_80037300(void* window, PdaSprite* sprite)
 {
     extern u8 lbl_80314E08[];
-    extern void fn_800D5BA0(s32 index, u32 color);
-    extern void fn_800D61E4(s32 x, s32 y);
+    extern void gfxVtxColor1u32(s32 index, u32 color);
+    extern void gfxVtxPos2s16(s32 x, s32 y);
     extern void gfxEnd(void);
     extern void gfxBegin(s32 count);
     extern void gfxSetPrimitive(s32 primitive);
@@ -271,14 +271,14 @@ void fn_80037300(void* window, PdaSprite* sprite)
     gfxSetVtxDesc(lbl_80314E08);
     gfxSetPrimitive(6);
     gfxBegin(4);
-    fn_800D61E4(0, 0);
-    fn_800D5BA0(0, 0x003B6DFF);
-    fn_800D61E4(sprite->x, 0);
-    fn_800D5BA0(0, 0x489DECFF);
-    fn_800D61E4(sprite->x, sprite->y);
-    fn_800D5BA0(0, 0x489DECFF);
-    fn_800D61E4(0, sprite->y);
-    fn_800D5BA0(0, 0x003B6DFF);
+    gfxVtxPos2s16(0, 0);
+    gfxVtxColor1u32(0, 0x003B6DFF);
+    gfxVtxPos2s16(sprite->x, 0);
+    gfxVtxColor1u32(0, 0x489DECFF);
+    gfxVtxPos2s16(sprite->x, sprite->y);
+    gfxVtxColor1u32(0, 0x489DECFF);
+    gfxVtxPos2s16(0, sprite->y);
+    gfxVtxColor1u32(0, 0x003B6DFF);
     gfxEnd();
 }
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (peephole reset; peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
@@ -408,7 +408,7 @@ void fn_80037648(void)
         messageId = 0x1b59;
         break;
     }
-    fn_800FB680(-4, 0, -1, (void*)messageId);
+    GSmsgPrintColor(-4, 0, -1, (void*)messageId);
 }
 
 #if !defined(PDA_RANGE_EXACT_80037174_ONLY)
@@ -425,7 +425,7 @@ void fn_800376C8(void)
 {
     void* data = lbl_8047A480;
 
-    fn_800FB680(0, 0, -1, data);
+    GSmsgPrintColor(0, 0, -1, data);
 }
 #pragma opt_propagation reset
 #pragma scheduling reset
@@ -932,14 +932,14 @@ void std024_dialogDisplayPCBoxMenu(void)
     extern s32 menuOpen(s32 menu, s32 mode);
     extern void soundDuck(s32 a, s32 b, s32 c, s32 d);
     extern void soundUnduck(s32 a, s32 b, s32 c);
-    extern void fn_800FF660(void);
-    extern void fn_80058150(void);
-    extern void fn_8003A520(void);
-    extern s32 fn_80038A0C(void);
+    extern void floorBattleEndTerminateScripts(void);
+    extern void pcBoxStorageMain(void);
+    extern void itemStorageRun(void);
+    extern s32 pcMenuSave(void);
     extern void menuModelInit(u8* model, s16 a, s16 b);
     extern void menuModelSetMotion(u8* model, s32 motion);
-    extern void fn_8010A010(u8* model, s32 id);
-    extern void fn_8010A420(u8* model);
+    extern void menuPokemonModelRequestById(u8* model, s32 id);
+    extern void menuModelTerm(u8* model);
     extern void* peopleInfoBiosGetPtr(s32 id);
     extern void fn_8018F4C8(void* info, s32 kind, s32* out0, s32* out1);
     u8* tbl;
@@ -1001,23 +1001,23 @@ void std024_dialogDisplayPCBoxMenu(void)
             }
             break;
         case 0xa:
-            fn_80058150();
+            pcBoxStorageMain();
             state = 1;
             break;
         case 0x14:
             lbl_8047A480 = (void*)0x1b61;
-            fn_8003A520();
+            itemStorageRun();
             lbl_8047A480 = (void*)0x1b5a;
             state = 1;
             break;
         case 0x1e:
             menuModelInit(base, (s16)(*(s16*)(lbl_802EF0A8 + 0x5fd6) + 0xa),
                           *(s16*)(lbl_802EF0A8 + 0x5fd8));
-            fn_8010A010(base, 0xf70400);
+            menuPokemonModelRequestById(base, 0xf70400);
             fn_8018F4C8(peopleInfoBiosGetPtr(0xf70400), 1, &motion, &scratch);
             menuModelSetMotion(base, motion);
-            state = fn_80038A0C();
-            fn_8010A420(base);
+            state = pcMenuSave();
+            menuModelTerm(base);
             break;
         case 0x28:
             state = 0x3e8;
@@ -1029,7 +1029,7 @@ void std024_dialogDisplayPCBoxMenu(void)
         }
     } while (running);
     soundUnduck(0x3e8, 1, 1);
-    fn_800FF660();
+    floorBattleEndTerminateScripts();
 }
 #pragma peephole reset
 
@@ -1038,8 +1038,8 @@ void std024_dialogDisplayPCBoxMenu(void)
 static inline void pdaFillSavePrompt(void)
 {
     extern u32 fn_80005748(void);
-    extern u32 fn_801EF214(void);
-    extern u32 fn_801EF274(void);
+    extern u32 darkPokemonCountFlag14(void);
+    extern u32 darkPokemonCountFlag12(void);
     extern void msgctrlSetValue(s32 id, u32 value);
     u32 playTime;
 
@@ -1047,11 +1047,11 @@ static inline void pdaFillSavePrompt(void)
     if (lbl_8047A498 != 0) {
         playTime = lbl_8047A498;
     }
-    lbl_8047A49C = fn_801EF214();
-    lbl_8047A4A0 = fn_801EF274();
+    lbl_8047A49C = darkPokemonCountFlag14();
+    lbl_8047A4A0 = darkPokemonCountFlag12();
     msgctrlSetValue(0x4c, playTime);
-    msgctrlSetValue(0x2f, fn_801EF274());
-    msgctrlSetValue(0x30, fn_801EF214());
+    msgctrlSetValue(0x2f, darkPokemonCountFlag12());
+    msgctrlSetValue(0x30, darkPokemonCountFlag14());
 }
 
 typedef struct PdaSaveImage {
@@ -1060,15 +1060,15 @@ typedef struct PdaSaveImage {
 
 /* Save-and-quit flow reached from the People screen's model preview. */
 #pragma peephole off
-s32 fn_80038A0C(void)
+s32 pcMenuSave(void)
 {
     extern u8 lbl_802E51C8[];
     extern s32 menuOpen(s32 menu, s32 mode);
     extern s8 menuSubOpenYesNo(s32 a, s32 b, s32 c, s32 d);
     extern u32 fn_80005748(void);
-    extern void fn_800056EC(f32 seconds);
-    extern void* fn_801D036C(void);
-    extern void fn_801D0314(void* buffer);
+    extern void gamedataSetPlaytime(f32 seconds);
+    extern void* memcardAllocBuffer(void);
+    extern void memcardFreeBuffer(void* buffer);
     extern s32 fn_801D0748(s32 a, s32 b, s32 c);
     extern void* savedataGetStatus(void* buffer, s32 kind);
     extern u32 gamedatasaveGetStatus(void* buffer, s32 kind);
@@ -1124,7 +1124,7 @@ s32 fn_80038A0C(void)
             break;
         case 2:
             saved = 1;
-            backup = fn_801D036C();
+            backup = memcardAllocBuffer();
             *(PdaSaveImage*)backup = *(PdaSaveImage*)savedataGetStatus(0, 0);
             if (fn_801D0748(3, 2, 0) == 3 &&
                 gamedatasaveGetStatus(0, 4) != 0) {
@@ -1144,9 +1144,9 @@ s32 fn_80038A0C(void)
                 }
             }
             *(PdaSaveImage*)savedataGetStatus(0, 0) = *(PdaSaveImage*)backup;
-            fn_800056EC((f32)(lbl_8047A498 + fn_80005748()));
+            gamedataSetPlaytime((f32)(lbl_8047A498 + fn_80005748()));
             lbl_8047A498 = 0;
-            fn_801D0314(backup);
+            memcardFreeBuffer(backup);
             if (saved) {
                 state = 4;
                 result = 1;
@@ -1298,7 +1298,7 @@ s32 fn_80039970(void* window, PdaSprite* sprite)
 #pragma peephole off
 s32 fn_80039A50(PdaSprite* sprite)
 {
-    fn_800FB680(0, 0, *(s32*)((u8*)sprite + 0x88), (void*)lbl_8047A4B4);
+    GSmsgPrintColor(0, 0, *(s32*)((u8*)sprite + 0x88), (void*)lbl_8047A4B4);
     return 0;
 }
 #pragma pop
@@ -1354,7 +1354,7 @@ static inline s32 pdaBoxItemNum(s32 target)
 
 /* PC item list: cursor/page input, item swapping, and caption refresh. */
 #pragma peephole off
-s32 fn_80039A84(void)
+s32 itemStorageListKey(void)
 {
     extern PdaKeyInfo* windowGetKeyInfo(void);
     extern u16 pcboxGetNbItemSlot(s32 box);
@@ -1510,7 +1510,7 @@ void fn_80039F44(void* button)
 /* PC item transfer loop: run the box list and move the highlighted stack
    between the bag (mode 0) and the PC (mode 1) until the list is closed. */
 #pragma peephole off
-void fn_8003A10C(s32 mode)
+void itemStorageTransfer(s32 mode)
 {
     extern s32 menuOpen(s32 menu, s32 mode);
     extern void menuClose(s32 menu);
@@ -1610,7 +1610,7 @@ s32 fn_8003A6C0(PdaDrawWork* work, PdaSprite* sprite)
 {
     extern const s32 lbl_80267130[3];
     extern s32 lbl_8047A4C8;
-    extern void fn_800FB8C8(s32, s32, s16, s16, void*, s32);
+    extern void GSmsgPrintRight(s32, s32, s16, s16, void*, s32);
     extern void msgctrlSetValue(s32 id, s32 value);
     s32 index;
     s32 i;
@@ -1637,7 +1637,7 @@ s32 fn_8003A6C0(PdaDrawWork* work, PdaSprite* sprite)
     digit = lbl_8047A4C8 / divisor;
     digit %= 10;
     msgctrlSetValue(0x34, digit);
-    fn_800FB8C8(0, 0, sprite->x, sprite->y, work->drawData, 0xC9);
+    GSmsgPrintRight(0, 0, sprite->x, sprite->y, work->drawData, 0xC9);
     return 0;
 }
 
@@ -1858,42 +1858,42 @@ s32 fn_8003AE84(void)
     return value;
 }
 
-void fn_8003AEF0(PdaSprite* sprite)
+void pdaSnagListDrawCount(PdaSprite* sprite)
 {
     extern PdaListEntry* lbl_8047A4D4;
-    extern void fn_801EED88(u16 id);
-    extern void* fn_801EE544(u16 id, u8* variant);
-    extern s32 fn_801EEF40(u16 id);
-    extern s32 fn_8011396C(s32 floor);
+    extern void darkPokemonCheckFlag0C(u16 id);
+    extern void* darkPokemonGetFlagListValue(u16 id, u8* variant);
+    extern s32 darkPokemonSaveGetC(u16 id);
+    extern s32 floorGetPlaceName(s32 floor);
     extern void msgctrlSetValue(s32 id, s32 value);
     u16 id;
     void* message;
     u32 value;
 
-    fn_801EED88(lbl_8047A4D4[(u16)*(u32*)&lbl_803A6748].battleId);
+    darkPokemonCheckFlag0C(lbl_8047A4D4[(u16)*(u32*)&lbl_803A6748].battleId);
     id = lbl_8047A4D4[*(u32*)&lbl_803A6748].battleId;
     sprite->alphaByte = lbl_8047BAC0 * lbl_803A6748.alphaScale;
-    message = fn_801EE544(id, (u8*)&lbl_803A6748 + 0x94);
-    value = fn_8011396C(fn_801EEF40(id));
+    message = darkPokemonGetFlagListValue(id, (u8*)&lbl_803A6748 + 0x94);
+    value = floorGetPlaceName(darkPokemonSaveGetC(id));
     if (value == 0) {
         msgctrlSetValue(0x31, 0x18d3);
     } else {
         msgctrlSetValue(0x31, value);
     }
-    fn_800FB680(0, 0, (u32)sprite->alphaByte | -0x100LL, message);
+    GSmsgPrintColor(0, 0, (u32)sprite->alphaByte | -0x100LL, message);
 }
 
 #pragma scheduling off
 void fn_8003B814(void* window)
 {
-    fn_8003B85C(window, 1);
+    pdaSnagListDetailKey(window, 1);
 }
 #pragma scheduling reset
 
 #pragma scheduling off
 void fn_8003B838(void* window)
 {
-    fn_8003B85C(window, 0);
+    pdaSnagListDetailKey(window, 0);
 }
 #pragma scheduling reset
 
@@ -2002,7 +2002,7 @@ void fn_8003C24C(PdaSprite* sprite, PdaEvent* event)
         sprite->alphaByte = lbl_8047BAC0 * lbl_803A6748.alphaScale;
         break;
     default:
-        fn_8003C2B8(sprite, event);
+        pdaSnagListDrawDetail(sprite, event);
         break;
     }
 }
@@ -2029,7 +2029,7 @@ void fn_8003C728(PdaSprite* alphaSprite, PdaSprite* sprite)
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-s32 fn_8003CE1C(s32 index)
+s32 pdaSnagListGetTrainerName(s32 index)
 {
     extern u32 lbl_8047A4D0;
     extern PdaListEntry* lbl_8047A4D4;
@@ -2038,9 +2038,9 @@ s32 fn_8003CE1C(s32 index)
     extern u16 fightTrainerDataBiosGetKindDataId(void* trainer);
     extern u32 fightTrainerKindDataBiosGetPrefixName(void* kind);
     extern void* fightTrainerKindDataBiosGetPtr(u16 kind);
-    extern u8 fn_801EE174(u16 id);
-    extern s32 fn_801EE544(u16 id, s8* variant);
-    extern u32 fn_801EEF40(u16 id);
+    extern u8 darkPokemonSaveGet49C(u16 id);
+    extern s32 darkPokemonGetFlagListValue(u16 id, s8* variant);
+    extern u32 darkPokemonSaveGetC(u16 id);
     extern u16 fn_801EEFAC(u16 id, s32 side);
     u16 battleId;
     void* kindData;
@@ -2052,7 +2052,7 @@ s32 fn_8003CE1C(s32 index)
     if (lbl_8047A4D0 != 0) {
         battleId = lbl_8047A4D4[index].battleId;
         variant = &lbl_803A6748.variant;
-        message = fn_801EE544(battleId, variant);
+        message = darkPokemonGetFlagListValue(battleId, variant);
         switch ((u8)*variant) {
         case 0:
         case 1:
@@ -2061,10 +2061,10 @@ s32 fn_8003CE1C(s32 index)
         case 2:
             kind = fn_801EEFAC(battleId, 0);
             if (kind == 9) {
-                kindData = fightTrainerKindDataBiosGetPtr(fn_801EE174(battleId));
+                kindData = fightTrainerKindDataBiosGetPtr(darkPokemonSaveGet49C(battleId));
             } else {
                 alternate = fn_801EEFAC(battleId, 1);
-                if (alternate != 0 && fn_801EEF40(battleId) != 3) {
+                if (alternate != 0 && darkPokemonSaveGetC(battleId) != 3) {
                     kind = alternate;
                 }
                 trainer = fightTrainerDataBiosGetPtr(kind);
@@ -2119,22 +2119,22 @@ void fn_8003D818(void)
 void fn_80041114(void* work)
 {
     GSscene_SetMode(4);
-    fn_800439BC(lbl_803A67FC);
+    pdaReadPadInput(lbl_803A67FC);
     fn_80041E48(work, 0);
 }
 
 void fn_8004115C(void* work)
 {
     GSscene_SetMode(4);
-    fn_800439BC(lbl_803A67FC);
-    fn_80042658(work, 1);
+    pdaReadPadInput(lbl_803A67FC);
+    pdaModelViewerControl(work, 1);
 }
 
 void fn_800411A4(void* work)
 {
     GSscene_SetMode(4);
-    fn_800439BC(lbl_803A67FC);
-    fn_80042658(work, 0);
+    pdaReadPadInput(lbl_803A67FC);
+    pdaModelViewerControl(work, 0);
 }
 
 s32 fn_800411EC(void)
@@ -2317,8 +2317,8 @@ extern f32 lbl_8047BDAC;
 extern f32 lbl_8047BDF0;
 
 extern u32 gfxVtxTexCoord();
-extern u32 fn_800D5CB8();
-extern u32 fn_800D61E4();
+extern u32 gfxVtxColor4u8();
+extern u32 gfxVtxPos2s16();
 extern u32 gfxEnd();
 extern u32 gfxBegin();
 extern u32 gfxSetPrimitive();
@@ -2326,11 +2326,11 @@ extern u32 gfxSetVtxDesc();
 extern u32 gfxLoadTexture();
 extern u32 gfxClearFlags();
 extern u32 gfxSetFlags();
-extern u32 fn_800E202C();
-extern u32 fn_800E209C();
+extern u32 GSmemGetHandleByPtr();
+extern u32 GSmemFree();
 extern u32 fn_800E24B0();
-extern u32 fn_800E27B0();
-extern u32 fn_800E2C04();
+extern u32 GSmemLock();
+extern u32 GSmemAlloc();
 extern u32 fn_800FA280();
 extern void* menuDataBiosGetPtr(s32);
 extern u32 fn_80102510();
@@ -2346,18 +2346,18 @@ extern u32 pokemonGetSex();
 extern u32 fn_801240C4();
 extern u32 fn_80132A38();
 extern u32 soundStartRaw(u32, u32, u32);
-extern u32 fn_8017B1CC();
+extern u32 GSresReleaseById();
 extern s32 fn_8017B2CC();
 extern u32 fn_8017B3E4();
 extern u32 fn_801EE0BC();
-extern u16 fn_801EE248();
-extern u32 fn_801EE328();
-extern u16 fn_801EE614();
-extern u32 fn_801EE750();
-extern u8 fn_801EE8F4();
-extern u8 fn_801EEAD0();
-extern u8 fn_801EEC74();
-extern u8 fn_801EED88(u16);
+extern u16 darkPokemonSaveGet4A0();
+extern u32 darkPokemonSaveGetName();
+extern u16 darkPokemonGetFlag1C();
+extern u32 darkPokemonSaveGet8();
+extern u8 darkPokemonCheckFlag16();
+extern u8 darkPokemonCheckFlag12();
+extern u8 darkPokemonCheckFlag14();
+extern u8 darkPokemonCheckFlag0C(u16);
 extern u16 fn_801EEFAC();
 extern u32 fn_801FCC7C();
 extern u32 fightTrainerDataBiosGetPtr();
@@ -2379,11 +2379,11 @@ static inline void pdaDrawModelTexture(PdaSprite* sprite, u8* model)
         gfxSetVtxDesc(lbl_80314F98);
         gfxLoadTexture(0, texture);
         gfxBegin(2);
-        fn_800D61E4(0, 0);
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+        gfxVtxPos2s16(0, 0);
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
         gfxVtxTexCoord(0, lbl_8047BAC4, lbl_8047BAC4);
-        fn_800D61E4(sprite->x, sprite->y);
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+        gfxVtxPos2s16(sprite->x, sprite->y);
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
         gfxVtxTexCoord(0, lbl_8047BAC8, lbl_8047BAC8);
         gfxEnd();
     }
@@ -2408,20 +2408,20 @@ void fn_8003AFDC(u8* context, PdaSprite* sprite)
     case 0x30B:
         break;
     case 0xD98:
-        if (fn_801EE8F4(lbl_8047A4D4[*(u32*)&lbl_803A6748].battleId) != 0 &&
+        if (darkPokemonCheckFlag16(lbl_8047A4D4[*(u32*)&lbl_803A6748].battleId) != 0 &&
             menuModelCheck(model = (u8*)&lbl_803A6748 + 0x4C, 0) == 0) {
             pdaDrawModelTexture(sprite, model);
         }
         break;
     default:
         battleId = lbl_8047A4D4[*(u32*)&lbl_803A6748].battleId;
-        fn_801EED88(lbl_8047A4D4[(u16)*(u32*)&lbl_803A6748].battleId);
+        darkPokemonCheckFlag0C(lbl_8047A4D4[(u16)*(u32*)&lbl_803A6748].battleId);
         layout = lbl_802EF0A8;
         entryId = lbl_8047A4D4[(u16)*(u32*)&lbl_803A6748].battleId;
-        fn_801EE614(entryId);
-        fn_801EE8F4(entryId);
-        registered = fn_801EEAD0(entryId);
-        cleared = fn_801EEC74(entryId);
+        darkPokemonGetFlag1C(entryId);
+        darkPokemonCheckFlag16(entryId);
+        registered = darkPokemonCheckFlag12(entryId);
+        cleared = darkPokemonCheckFlag14(entryId);
         if (registered != 0) {
             if (cleared != 0) {
                 state = 1;
@@ -2447,8 +2447,8 @@ void fn_8003AFDC(u8* context, PdaSprite* sprite)
         case 2:
             break;
         }
-        registered = fn_801EE8F4(battleId);
-        cleared = fn_801EEC74(battleId);
+        registered = darkPokemonCheckFlag16(battleId);
+        cleared = darkPokemonCheckFlag14(battleId);
         if (registered != 0) {
             if (cleared != 0) {
                 messageId = 0x36E7;
@@ -2458,7 +2458,7 @@ void fn_8003AFDC(u8* context, PdaSprite* sprite)
         } else {
             messageId = 0x36E8;
         }
-        fn_800FB680(0, 0, context[0x8B] | -0x100, (void*)messageId);
+        GSmsgPrintColor(0, 0, context[0x8B] | -0x100, (void*)messageId);
         break;
     }
 }
@@ -2514,12 +2514,12 @@ void fn_800492CC(u8* context, PdaSprite* sprite)
         gfxSetVtxDesc(lbl_80314F98);
         gfxLoadTexture(0, firstTexture);
         gfxBegin(2);
-        fn_800D61E4(lbl_804788C8[0], lbl_804788C8[1]);
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, alpha);
+        gfxVtxPos2s16(lbl_804788C8[0], lbl_804788C8[1]);
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, alpha);
         gfxVtxTexCoord(0, lbl_8047BC94, lbl_8047BC94);
-        fn_800D61E4((s16)(lbl_804788C8[0] + (s16)sprite->x),
+        gfxVtxPos2s16((s16)(lbl_804788C8[0] + (s16)sprite->x),
                      (s16)(lbl_804788C8[1] + (s16)sprite->y));
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, alpha);
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, alpha);
         gfxVtxTexCoord(0, lbl_8047BCBC, lbl_8047BCBC);
         gfxEnd();
     }
@@ -2530,12 +2530,12 @@ void fn_800492CC(u8* context, PdaSprite* sprite)
         gfxSetVtxDesc(lbl_80314F98);
         gfxLoadTexture(0, secondTexture);
         gfxBegin(2);
-        fn_800D61E4(lbl_804788C8[0], lbl_804788C8[1]);
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, alpha);
+        gfxVtxPos2s16(lbl_804788C8[0], lbl_804788C8[1]);
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, alpha);
         gfxVtxTexCoord(0, lbl_8047BC94, lbl_8047BC94);
-        fn_800D61E4((s16)(lbl_804788C8[0] + (s16)sprite->x),
+        gfxVtxPos2s16((s16)(lbl_804788C8[0] + (s16)sprite->x),
                      (s16)(lbl_804788C8[1] + (s16)sprite->y));
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, alpha);
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, alpha);
         gfxVtxTexCoord(0, lbl_8047BCBC, lbl_8047BCBC);
         gfxEnd();
     }
@@ -2546,7 +2546,7 @@ static inline f32 pdaAbsF(f32 x)
     return x > 0.0f ? x : -x;
 }
 
-/* RULE-EXCEPTION(user-approved): reconstructed inline helpers pdaAbsF/pdaApproach (fn_80040018, fn_80041E48, fn_80044630) — see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): reconstructed inline helpers pdaAbsF/pdaApproach (pdaUpdateFadeAndSelect, fn_80041E48, pdaStrategyMemoRun) — see docs/RULE_EXCEPTIONS.md */
 static inline void pdaApproach(f32* current, f32* target, f32 delta)
 {
     f32 step;
@@ -2571,7 +2571,7 @@ static inline void pdaApproach(f32* current, f32* target, f32 delta)
 #pragma peephole off
 #define G(off) (*(f32*)((u8*)&lbl_803A6818 + (off)))
 #define GI(off) (*(s32*)((u8*)&lbl_803A6818 + (off)))
-void fn_80040018(u8* menu)
+void pdaUpdateFadeAndSelect(u8* menu)
 {
     f32 target;
     f32 current;
@@ -2738,7 +2738,7 @@ static inline void pdaDrawNameRows(u8* context, s32 first, f32 y)
                 name = GSmsgGetGSchar(1);
             }
             msgctrlSetValue(0x37, name);
-            fn_800FB680(0, (s32)y - 2, (u32)context[0x8B] | -0x100LL,
+            GSmsgPrintColor(0, (s32)y - 2, (u32)context[0x8B] | -0x100LL,
                         (void*)0xE7);
         }
         y += lbl_8047BCF4;
@@ -2804,7 +2804,7 @@ extern u32 GSmsgGetGSchar(u32 msg);
 extern void msgctrlSetValue(s32 id, u32 value);
 
 #pragma peephole off
-void fn_8003B478(u8* context)
+void pdaSnagListCreatePokemon(u8* context)
 {
     u8 caught;
     u32 liveModel;
@@ -2825,10 +2825,10 @@ void fn_8003B478(u8* context)
     battleId = lbl_8047A4D4[index].battleId;
     curBattleId = lbl_8047A4D4[(u16)index].battleId;
     model = lbl_8047A4D0;
-    fn_801EE614(curBattleId);
-    fn_801EE8F4(curBattleId);
-    seen = fn_801EEAD0(curBattleId);
-    caught = fn_801EEC74(curBattleId);
+    darkPokemonGetFlag1C(curBattleId);
+    darkPokemonCheckFlag16(curBattleId);
+    seen = darkPokemonCheckFlag12(curBattleId);
+    caught = darkPokemonCheckFlag14(curBattleId);
     if (seen != 0) {
         if (caught != 0) {
             battleState = 1;
@@ -2841,7 +2841,7 @@ void fn_8003B478(u8* context)
 
     pokemonCreate(model, species, 0xA, gamedataGetStatus(0, 1));
     rnd = *(u32*)((u8*)&lbl_803A6748 + 0x98);
-    fn_801EE750(battleId);
+    darkPokemonSaveGet8(battleId);
     pokemonBiosSetRnd(model, rnd);
     switch (battleState) {
     case 0:
@@ -2857,8 +2857,8 @@ void fn_8003B478(u8* context)
 
     if ((liveModel = lbl_8047A4D0) != 0) {
         if ((u16)battleId != 0) {
-            if (fn_801EE8F4(battleId) != 0) {
-                pokemonBiosSetRnd(liveModel, fn_801EE750(battleId));
+            if (darkPokemonCheckFlag16(battleId) != 0) {
+                pokemonBiosSetRnd(liveModel, darkPokemonSaveGet8(battleId));
                 message = pokemonGetSex(liveModel);
                 pokemonBiosSetRnd(liveModel, *(u32*)((u8*)&lbl_803A6748 + 0x98));
             } else {
@@ -2894,7 +2894,7 @@ void fn_8003B478(u8* context)
         u32 alpha = context[0x8B];
         s32 color = alpha | -0x100LL;
 
-        fn_800FB680(0, 0, color, (void*)0xCF);
+        GSmsgPrintColor(0, 0, color, (void*)0xCF);
     }
 }
 #pragma peephole reset
@@ -2980,10 +2980,10 @@ void fn_8004B598(s32 unused, PdaSprite* sprite, s32 messageId)
 
 static inline void* pdaAlloc(s32 size, s32 align)
 {
-    u32 h = fn_800E2C04(size, align);
+    u32 h = GSmemAlloc(size, align);
 
     if ((u16)h != 0) {
-        return (void*)fn_800E27B0(h);
+        return (void*)GSmemLock(h);
     }
     return NULL;
 }
@@ -3013,10 +3013,10 @@ void fn_8003CF38(void)
     for (i = 0; i < (s32)lbl_8047A4DC; i++) {
         u16 value;
 
-        value = fn_801EE248((u16)(i + 1));
+        value = darkPokemonSaveGet4A0((u16)(i + 1));
         if (value != 0 &&
-            (fn_801EE8F4((u16)(i + 1)) != 0 ||
-             fn_801EE614((u16)(i + 1)) != 0)) {
+            (darkPokemonCheckFlag16((u16)(i + 1)) != 0 ||
+             darkPokemonGetFlag1C((u16)(i + 1)) != 0)) {
             lbl_8047A4D4[count].field_00 = value;
             lbl_8047A4D4[count].battleId = (u16)(i + 1);
             *(u32*)((u8*)lbl_8047A4D8 + count * 8) =
@@ -3053,10 +3053,10 @@ void fn_8003CF38(void)
             ((PdaListEntry*)(sortEntries + i * 8 + 4))->battleId;
     }
 
-    handle = fn_800E202C(lbl_8047A4D8);
+    handle = GSmemGetHandleByPtr(lbl_8047A4D8);
     if ((u16)handle != 0) {
         fn_800E24B0(handle);
-        fn_800E209C(handle);
+        GSmemFree(handle);
     }
     lbl_8047A4D8 = 0;
 }
@@ -3138,7 +3138,7 @@ u32 fn_80043728(u32 unused, s32 mode, u16 buttons)
 #pragma pop
 #pragma peephole reset
 
-void fn_8003A520(void)
+void itemStorageRun(void)
 {
     extern s32 fn_80039498(s32 value);
     extern void menuClose(s32 id);
@@ -3157,7 +3157,7 @@ void fn_8003A520(void)
             menuClose(0x1B);
             menuCloseSync(0x19, 1);
             menuCloseSync(0x1B, 1);
-            fn_8003A10C(0);
+            itemStorageTransfer(0);
             menuOpen(0x1B, 0);
             menuOpen(0x19, 0);
             break;
@@ -3173,7 +3173,7 @@ void fn_8003A520(void)
                 _threadSwitch();
             }
             fn_80018F54(4, 0, 0);
-            fn_8017B1CC(0x66F);
+            GSresReleaseById(0x66F);
             fn_800F915C(0x66F);
             menuOpen(0x1A, 0);
             menuOpen(0x1B, 0);
@@ -3184,7 +3184,7 @@ void fn_8003A520(void)
             menuClose(0x1B);
             menuCloseSync(0x19, 1);
             menuCloseSync(0x1B, 1);
-            fn_8003A10C(1);
+            itemStorageTransfer(1);
             menuOpen(0x1B, 0);
             menuOpen(0x19, 0);
             break;
@@ -3197,9 +3197,9 @@ extern u32 GSmsgGetGSchar(u32 msg);
 extern void msgctrlSetValue(s32 id, u32 value);
 
 #pragma peephole off
-void fn_8003B2D8(u8* context)
+void pdaSnagListDrawEntry(u8* context)
 {
-    extern s32 fn_801EE544(u16, s8*);
+    extern s32 darkPokemonGetFlagListValue(u16, s8*);
     u8* slot;
     u16 kind;
     u32 text;
@@ -3216,7 +3216,7 @@ void fn_8003B2D8(u8* context)
     if (lbl_8047A4D0 != 0) {
         slot = (u8*)&lbl_803A6748 + 0x94;
         kind = lbl_8047A4D4[index].battleId;
-        text = fn_801EE544(kind, (s8*)slot);
+        text = darkPokemonGetFlagListValue(kind, (s8*)slot);
         switch (*slot) {
         case 0:
             text = 0x371F;
@@ -3226,7 +3226,7 @@ void fn_8003B2D8(u8* context)
             if (kind == 0x43) {
                 text = 0x12B0;
             } else if ((trainerId = fn_801EEFAC(kind, 0)) == 9) {
-                ownerText = fn_801EE328(kind);
+                ownerText = darkPokemonSaveGetName(kind);
                 special = 1;
             } else {
                 text = fn_801FCC7C(fightTrainerDataBiosGetPtr(trainerId));
@@ -3243,20 +3243,20 @@ void fn_8003B2D8(u8* context)
     if (ownerText == 0) {
         owner = GSmsgGetGSchar(1);
     }
-    caption = fn_8003CE1C(*(u32*)&lbl_803A6748);
+    caption = pdaSnagListGetTrainerName(*(u32*)&lbl_803A6748);
     if (caption == 0) {
         caption = GSmsgGetGSchar(1);
     }
     msgctrlSetValue(0x37, caption);
-    fn_800FB680(0, 0, context[0x8B] | -0x100, (void*)0xE7);
+    GSmsgPrintColor(0, 0, context[0x8B] | -0x100, (void*)0xE7);
     msgctrlSetValue(0x37, owner);
-    fn_800FB680(0xB4, 0, context[0x8B] | -0x100, (void*)0xE7);
+    GSmsgPrintColor(0xB4, 0, context[0x8B] | -0x100, (void*)0xE7);
 }
 #pragma peephole reset
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-s32 fn_80039F70(u8* ctx)
+s32 itemStorageListSeq(u8* ctx)
 {
     extern void winSeqSetMenu(s32 sequence, s32 menu);
     extern u8 fn_801429E8(void* item);
@@ -3358,7 +3358,7 @@ static inline u32 pdaBattleCaption(u16 id)
 
     trainerId = fn_801EEFAC(id, 0);
     if (trainerId == 9) {
-        entry = pokemonDataBiosGetPtr(fn_801EE248(id));
+        entry = pokemonDataBiosGetPtr(darkPokemonSaveGet4A0(id));
         if (entry != NULL) {
             name = GSmsgGetGSchar((u32)pokemonDataBiosGetName(entry));
         }
@@ -3393,7 +3393,7 @@ void fn_8003B6D0(u8* ctx)
         msg = GSmsgGetGSchar(1);
     }
     msgctrlSetValue(0x37, msg);
-    fn_800FB680(0, 0, ctx[0x8b] | -0x100, (void*)0xcf);
+    GSmsgPrintColor(0, 0, ctx[0x8b] | -0x100, (void*)0xcf);
 }
 
 #pragma peephole off
@@ -3415,17 +3415,17 @@ void fn_8003F040(void) {
     u8* q;
     u32 handle;
 
-    allocation = fn_800E2C04(0x28a0, 0x20);
+    allocation = GSmemAlloc(0x28a0, 0x20);
     if ((u16)allocation != 0) {
-        allocation = fn_800E27B0();
+        allocation = GSmemLock();
     } else {
         allocation = 0;
     }
     base = (u8*)allocation;
 
-    allocation = fn_800E2C04(0x320, 0x20);
+    allocation = GSmemAlloc(0x320, 0x20);
     if ((u16)allocation != 0) {
-        allocation = fn_800E27B0();
+        allocation = GSmemLock();
     } else {
         allocation = 0;
     }
@@ -3459,7 +3459,7 @@ void fn_8003F040(void) {
             allocation = 0;
         }
         p = base + ii * 0x1a;
-        fn_800F96E4(p + 2, 0x18, (u8*)allocation);
+        GSmsgGetText(p + 2, 0x18, (u8*)allocation);
         *(u16*)p = i;
     }
 
@@ -3489,17 +3489,17 @@ void fn_8003F040(void) {
     }
 
     if (base != 0) {
-        handle = fn_800E202C((u32)base);
+        handle = GSmemGetHandleByPtr((u32)base);
         if ((u16)handle != 0) {
             fn_800E24B0(handle);
-            fn_800E209C(handle);
+            GSmemFree(handle);
         }
     }
     if (idx != 0) {
-        handle = fn_800E202C((u32)idx);
+        handle = GSmemGetHandleByPtr((u32)idx);
         if ((u16)handle != 0) {
             fn_800E24B0(handle);
-            fn_800E209C(handle);
+            GSmemFree(handle);
         }
     }
 }
@@ -3561,7 +3561,7 @@ void fn_8003F2DC(u8* arr, s32 count, s32 dir) {
 
 /* Main summary-screen state machine. */
 #pragma peephole off
-void fn_80044630(void) {
+void pdaStrategyMemoRun(void) {
     extern void  _threadSwitch(void);
     extern u32   menuCloseCustom(u32 a, u32 b, u32 c);
     extern s32   menuOpen(s32 menu, s32 mode);
@@ -3590,13 +3590,13 @@ void fn_80044630(void) {
     extern void  GSmodelSet60fpsAnimFlag(void* h, s32 b);
     extern void  GSmodelSetBoundCheck(void* h, s32 b);
     extern void  GSmodelDestroyLinkedParticles(void);
-    extern void* fn_801DAC3C(void* h);
+    extern void* wazaSequenceOwnerGetModel(void* h);
     extern void  cameraPlayAnime(u32 a, u32 id, u32 c, u32 d);
-    extern void  fn_8010A420(void* subobj);
+    extern void  menuModelTerm(void* subobj);
     extern void  menuOffScreenSetDisp(s32 a);
-    extern u32   fn_800E202C(u32 flag);
+    extern u32   GSmemGetHandleByPtr(u32 flag);
     extern void  fn_800E24B0(void);
-    extern void  fn_800E209C(u32 h);
+    extern void  GSmemFree(u32 h);
     extern void  GScameraGetPosition(void* cam, void* outVec3);
     extern void  GScameraGetRotation(void* cam, void* outVec3);
     extern void  GScameraGetPerspective(void* cam, f32* a, f32* b, f32* c, f32* d);
@@ -3866,7 +3866,7 @@ void fn_80044630(void) {
                         *(s32*)(S + 0x1C) = 0xD;
                         *(s32*)(S + 0x24) = 4;
                         *(f32*)(S + 0x60) = lbl_8047BC94;
-                        if (fn_801DAC3C(*(void**)(S + 0xA0)) != 0)
+                        if (wazaSequenceOwnerGetModel(*(void**)(S + 0xA0)) != 0)
                             GSmodelDestroyLinkedParticles();
                         *(f32*)(S + 0x64) = lbl_8047BCA8;
                         break;
@@ -3874,14 +3874,14 @@ void fn_80044630(void) {
                         *(s32*)(S + 0x1C) = 0xD;
                         *(s32*)(S + 0x24) = 5;
                         *(f32*)(S + 0x60) = lbl_8047BC94;
-                        if (fn_801DAC3C(*(void**)(S + 0xA0)) != 0)
+                        if (wazaSequenceOwnerGetModel(*(void**)(S + 0xA0)) != 0)
                             GSmodelDestroyLinkedParticles();
                         break;
                     case 0:
                         *(s32*)(S + 0x1C) = 0xD;
                         *(s32*)(S + 0x24) = 2;
                         *(f32*)(S + 0x60) = lbl_8047BC94;
-                        if (fn_801DAC3C(*(void**)(S + 0xA0)) != 0)
+                        if (wazaSequenceOwnerGetModel(*(void**)(S + 0xA0)) != 0)
                             GSmodelDestroyLinkedParticles();
                         break;
                     default:
@@ -4755,22 +4755,22 @@ void fn_80044630(void) {
     std113_mapObjectUnk_8018db68(h);
 
     if (lbl_8047A4E0 != 0) {
-        h = (void*)fn_800E202C(lbl_8047A4E0);
+        h = (void*)GSmemGetHandleByPtr(lbl_8047A4E0);
         if ((u16)(u32)h != 0) {
             fn_800E24B0();
-            fn_800E209C((u32)h);
+            GSmemFree((u32)h);
         }
         lbl_8047A4E0 = 0;
     }
 
     menuOffScreenSetDisp(1);
-        fn_8010A420((u8*)&lbl_803A6818 + 0x7c);
-        fn_8010A420((u8*)&lbl_803A6818 + 0xc4);
+        menuModelTerm((u8*)&lbl_803A6818 + 0x7c);
+        menuModelTerm((u8*)&lbl_803A6818 + 0xc4);
 
-        h = (void*)fn_800E202C((u32)lbl_8047A4E4);
+        h = (void*)GSmemGetHandleByPtr((u32)lbl_8047A4E4);
     if ((u16)(u32)h != 0) {
         fn_800E24B0();
-        fn_800E209C((u32)h);
+        GSmemFree((u32)h);
     }
     lbl_8047A4E4 = 0;
 }
@@ -4933,7 +4933,7 @@ extern u8 lbl_802E5448[];
 extern u8 lbl_80267180[];
 extern f32 lbl_8047BC9C;
 extern u8 fn_80047CC0(u8* work);
-extern u8 fn_800478B4(void* work, void* sub);
+extern u8 pdaModelFrameCamera(void* work, void* sub);
 
 
 /* Bring the PDA model/camera/light rig online for the summary screen. */
@@ -5013,7 +5013,7 @@ s32 fn_8003D1FC(void)
         break;
     case 5:
         *((u8*)&lbl_803A6818 + 0x214) =
-            fn_800478B4((u8*)&lbl_803A6818 + 0x7c, (u8*)&lbl_803A6818 + 0xc4);
+            pdaModelFrameCamera((u8*)&lbl_803A6818 + 0x7c, (u8*)&lbl_803A6818 + 0xc4);
         *((u8*)&lbl_803A6818 + 0x214) =
             fn_8003D1FC_setup((u8*)&lbl_803A6818 + 0xc4);
         break;
@@ -5025,7 +5025,7 @@ s32 fn_8003D1FC(void)
 
 /* Rebuild the memo index table, optionally filtered by the active color tab. */
 #pragma peephole off
-u16 fn_8003D4C8(void)
+u16 pdaMemoLoadPokemon(void)
 {
     extern u16 memoDataGetCount(s32 a);
     extern u16 memoDataGetPokemonID(s32 a, u16 index);
@@ -5139,7 +5139,7 @@ void fn_8003D8CC(void)
     for (i = 0; i < lbl_8047A4E8; i++) {
         u16 id = lbl_8047A4E4[i];
         pdaLoadPokemonId(id);
-        if ((u32)fn_800F96E4((u8*)nameBuf, 0x100, (u8*)pdaGetPokemonName(id)) !=
+        if ((u32)GSmsgGetText((u8*)nameBuf, 0x100, (u8*)pdaGetPokemonName(id)) !=
             0) {
             for (j = 0; j < count; j++) {
                 if (nameBuf[0] == tbl[j].text[0]) {
@@ -5172,10 +5172,10 @@ static inline f32 pdaFabs(f32 v)
 
 /* Sample the stick and buttons into the PDA's own key-repeat state. */
 #pragma peephole off
-void fn_800439BC(void* scene)
+void pdaReadPadInput(void* scene)
 {
-    extern s8 fn_800F7A08(s32 chan, s32 index);
-    extern s8 fn_800F7A7C(s32 chan, s32 index);
+    extern s8 GSinputGetLeftStickYData(s32 chan, s32 index);
+    extern s8 GSinputGetLeftStickXData(s32 chan, s32 index);
     extern u32 fn_800F7BC4(s32 chan);
     extern s8 msgGetCharsPerFrame(void);
     extern f64 atan2(f64 y, f64 x);
@@ -5191,8 +5191,8 @@ void fn_800439BC(void* scene)
 
     buttons = 0;
     *(u16*)(work + 2) = *(u16*)work;
-    x = fn_800F7A08(1, 0);
-    y = fn_800F7A7C(1, 0);
+    x = GSinputGetLeftStickYData(1, 0);
+    y = GSinputGetLeftStickXData(1, 0);
     if ((y < 0 ? -y : y) > 0x20 || (x < 0 ? -x : x) > 0x20) {
         ang = atan2((f64)y, (f64)x);
         if (pdaFabs(ang) < lbl_8047BCFC) {
@@ -5342,7 +5342,7 @@ void fn_80043FA8(PdaSprite* alphaSprite, PdaSprite* sprite)
         } else {
             tint = 0x4a0000;
         }
-        fn_800FB680((s16)((sprite->x - (s16)(GSmsgGetRect(0x3717) >> 16)) / 2), 0,
+        GSmsgPrintColor((s16)((sprite->x - (s16)(GSmsgGetRect(0x3717) >> 16)) / 2), 0,
                     tint | alphaSprite->alphaByte, (void*)0x3717);
         break;
     case 0x10c8:
@@ -5351,7 +5351,7 @@ void fn_80043FA8(PdaSprite* alphaSprite, PdaSprite* sprite)
         } else {
             tint = 0x4a0000;
         }
-        fn_800FB680((s16)((sprite->x - (s16)(GSmsgGetRect(0x3718) >> 16)) / 2), 0,
+        GSmsgPrintColor((s16)((sprite->x - (s16)(GSmsgGetRect(0x3718) >> 16)) / 2), 0,
                     tint | alphaSprite->alphaByte, (void*)0x3718);
         break;
     case 0x10c9:
@@ -5360,7 +5360,7 @@ void fn_80043FA8(PdaSprite* alphaSprite, PdaSprite* sprite)
         } else {
             tint = 0x4a0000;
         }
-        fn_800FB680((s16)((sprite->x - (s16)(GSmsgGetRect(0x3719) >> 16)) / 2), 0,
+        GSmsgPrintColor((s16)((sprite->x - (s16)(GSmsgGetRect(0x3719) >> 16)) / 2), 0,
                     tint | alphaSprite->alphaByte, (void*)0x3719);
         break;
     case 0xfbf:
@@ -5376,8 +5376,8 @@ extern f32 lbl_8047BD30;
 extern f32 lbl_8047BD34;
 extern u8 lbl_802E5424[];
 extern u8 lbl_802E5430[];
-extern void* fn_801DAC3C(void* h);
-extern s32 fn_801DAC24(void* h);
+extern void* wazaSequenceOwnerGetModel(void* h);
+extern s32 wazaSequenceOwnerGetSizeClass(void* h);
 extern void GSmodelGetPosition(void* model, void* out);
 extern void GSmodelSetPosition(void* model, void* pos);
 extern void GSmodelSetMatrix(void* model, void* mtx);
@@ -5386,7 +5386,7 @@ extern void fn_800E03B4(f32* mtx, void* vec);
 
 /* Frame the two compared models in the PDA's side-by-side camera. */
 #pragma peephole off
-u8 fn_800478B4(void* work, void* sub)
+u8 pdaModelFrameCamera(void* work, void* sub)
 {
     extern f64 tan(f64 x);
     f32 mtx0[12];
@@ -5420,11 +5420,11 @@ u8 fn_800478B4(void* work, void* sub)
         return 0;
     }
     if (*(u8*)((u8*)work + 0x14) != 0) {
-        model0 = fn_801DAC3C(*(void**)((u8*)work + 0x24));
+        model0 = wazaSequenceOwnerGetModel(*(void**)((u8*)work + 0x24));
         if (model0 == NULL) {
             return 0;
         }
-        fn_801DAC24(*(void**)((u8*)work + 0x24));
+        wazaSequenceOwnerGetSizeClass(*(void**)((u8*)work + 0x24));
     } else {
         model0 = *(void**)((u8*)work + 0x24);
     }
@@ -5531,11 +5531,11 @@ extern void memoGetScaleAngle(u16 id, f32* scale, f32* angle);
 extern u8 menuModelCheck(void* work, s32 index);
 extern void GSmodelCenterNull(void* model);
 extern void modelRemoveCenterNull(void* model);
-extern s32 fn_800EE0E8(void* model);
+extern s32 GSmodelWalkJObjs(void* model);
 extern void* GSmodelGetPart(void* model, s32 index);
 extern void GSpartGetTransform(void* part, void* out, s32 a, s32 b);
 extern void GSpartFree(void* part);
-extern void fn_800E032C(f32* mtx, f32 angle);
+extern void GSmtxRotateY(f32* mtx, f32 angle);
 
 /* MSL math.h inlines: float classification and the frsqrte-based sqrtf. */
 static inline s32 pdaFpClassifyF(f32 value)
@@ -5630,11 +5630,11 @@ u8 fn_80047CC0(u8* work)
         return 0;
     }
     if (work[0x14] != 0) {
-        model = fn_801DAC3C(*(void**)(work + 0x24));
+        model = wazaSequenceOwnerGetModel(*(void**)(work + 0x24));
         if (model == NULL) {
             return 0;
         }
-        switch (fn_801DAC24(*(void**)(work + 0x24))) {
+        switch (wazaSequenceOwnerGetSizeClass(*(void**)(work + 0x24))) {
         case -2:
             spread = lbl_8047BD3C;
             break;
@@ -5691,10 +5691,10 @@ u8 fn_80047CC0(u8* work)
     target.y = lbl_8047BC94;
     fn_800E064C(mtx);
     fn_800E03B4(mtx, &target);
-    fn_800E032C(mtx, angle);
+    GSmtxRotateY(mtx, angle);
     GSmodelSetMatrix(model, mtx);
     GSmodelCenterNull(model);
-    part = GSmodelGetPart(model, fn_800EE0E8(model) - 1);
+    part = GSmodelGetPart(model, GSmodelWalkJObjs(model) - 1);
     if (part != NULL) {
         GSpartGetTransform(part, &xform, 0, 0);
         GSpartFree(part);
@@ -5748,8 +5748,8 @@ extern void GSsplineFree(void* spline);
 void fn_800473E0(PdaOrbitPoint* point)
 {
     extern u8 lbl_80314E08[];
-    extern void fn_800D5648(f32 width);
-    extern void fn_800D5BA0(s32 index, u32 color);
+    extern void gfxSetLineWidth(f32 width);
+    extern void gfxVtxColor1u32(s32 index, u32 color);
     u8* p = (u8*)point;
     u8* data;
     void* spline;
@@ -5839,16 +5839,16 @@ void fn_800473E0(PdaOrbitPoint* point)
         gfxClearFlags(6);
         gfxSetVtxDesc(lbl_80314E08);
         gfxSetPrimitive(1);
-        fn_800D5648(lbl_8047BCA8);
+        gfxSetLineWidth(lbl_8047BCA8);
         gfxBegin(2);
-        fn_800D61E4((s32)(lbl_8047BD24 + v0.x),
+        gfxVtxPos2s16((s32)(lbl_8047BD24 + v0.x),
                     (s32)(lbl_8047BD2C * v0.y + lbl_8047BD28));
-        fn_800D5BA0(0, (u8)(s32)v0.z | 0x361e0500);
-        fn_800D61E4((s32)(lbl_8047BD24 + v1.x),
+        gfxVtxColor1u32(0, (u8)(s32)v0.z | 0x361e0500);
+        gfxVtxPos2s16((s32)(lbl_8047BD24 + v1.x),
                     (s32)(lbl_8047BD2C * v1.y + lbl_8047BD28));
-        fn_800D5BA0(0, (u8)(s32)v1.z | 0x361e0500);
+        gfxVtxColor1u32(0, (u8)(s32)v1.z | 0x361e0500);
         gfxEnd();
-        fn_800D5648(lbl_8047BCBC);
+        gfxSetLineWidth(lbl_8047BCBC);
         off += 0xc;
     }
     GSsplineFree(spline);
@@ -5858,12 +5858,12 @@ void fn_800473E0(PdaOrbitPoint* point)
 extern u8 lbl_802E53F4[];
 extern u8 lbl_802E5400[];
 extern void GSmtxMakeYRotation(f32* mtx, f32 angle);
-extern void fn_800E0370(f32* mtx, f32 angle);
+extern void GSmtxRotateX(f32* mtx, f32 angle);
 extern void fn_800E0560(f32* mtx, void* vec);
 extern void GSvecTransform(void* dst, f32* mtx, void* src);
 
 /* Orbit camera for the PDA's rotatable model page. */
-u8 fn_800484A4(u8* work)
+u8 pdaModelOrbitCamera(u8* work)
 {
     extern f64 tan(f64 x);
     f32 mtx1[12];
@@ -5909,8 +5909,8 @@ u8 fn_800484A4(u8* work)
         return 0;
     }
     if (work[0x14] != 0) {
-        model = fn_801DAC3C(*(void**)(work + 0x24));
-        switch (fn_801DAC24(*(void**)(work + 0x24))) {
+        model = wazaSequenceOwnerGetModel(*(void**)(work + 0x24));
+        switch (wazaSequenceOwnerGetSizeClass(*(void**)(work + 0x24))) {
         case -2:
             spread = lbl_8047BD3C;
             break;
@@ -5961,7 +5961,7 @@ u8 fn_800484A4(u8* work)
     set__5GSvecFfff(&camPos, lbl_8047BC94, lbl_8047BC94,
                     dist * *(f32*)((u8*)&lbl_803A6818 + 0x64));
     GSmtxMakeYRotation(mtx1, -*(f32*)((u8*)&lbl_803A6818 + 0x70));
-    fn_800E0370(mtx1, -*(f32*)((u8*)&lbl_803A6818 + 0x6c));
+    GSmtxRotateX(mtx1, -*(f32*)((u8*)&lbl_803A6818 + 0x6c));
     GSvecTransform(&camPos, mtx1, &camPos);
     GScameraSetPosition(*(void**)(work + 0x38), &camPos);
     GScameraSetPerspective(*(void**)(work + 0x38), persp0, persp1, persp2,
@@ -6082,10 +6082,10 @@ static inline void pdaFree(void* p)
     u32 h;
 
     if (p != NULL) {
-        h = fn_800E202C(p);
+        h = GSmemGetHandleByPtr(p);
         if ((u16)h != 0) {
             fn_800E24B0();
-            fn_800E209C(h);
+            GSmemFree(h);
         }
     }
 }
@@ -6353,7 +6353,7 @@ void fn_8003F464(PdaSprite* alphaSprite, PdaSprite* sprite)
             for (i = 0; i < *(s8*)(S + 0x160); i++) {
                 if (i >= *(s8*)(S + 0x1c8) - 1 &&
                     i <= *(s8*)(S + 0x1c9) + 1) {
-                    fn_800FB680(0, (s32)pos,
+                    GSmsgPrintColor(0, (s32)pos,
                                 (alphaSprite->alphaByte | -0x100LL),
                                 (void*)*(u32*)((u8*)*(u32**)(T + 0x24c +
                                                              *(s8*)(S + 0x15d) *
@@ -6367,47 +6367,47 @@ void fn_8003F464(PdaSprite* alphaSprite, PdaSprite* sprite)
         fn_800FE35C();
         break;
     case 0xd79:
-        fn_800FB680((s16)((sprite->x - (s16)(GSmsgGetRect(0x36ed) >> 16)) / 2), -2,
+        GSmsgPrintColor((s16)((sprite->x - (s16)(GSmsgGetRect(0x36ed) >> 16)) / 2), -2,
                     (alphaSprite->alphaByte | -0x100LL), (void*)0x36ed);
         break;
     case 0xd7a:
-        fn_800FB680((s16)((sprite->x - (s16)(GSmsgGetRect(0x36ec) >> 16)) / 2), -2,
+        GSmsgPrintColor((s16)((sprite->x - (s16)(GSmsgGetRect(0x36ec) >> 16)) / 2), -2,
                     (alphaSprite->alphaByte | -0x100LL), (void*)0x36ec);
         break;
     case 0xd7b:
-        fn_800FB680((s16)((sprite->x - (s16)(GSmsgGetRect(0x36eb) >> 16)) / 2), -2,
+        GSmsgPrintColor((s16)((sprite->x - (s16)(GSmsgGetRect(0x36eb) >> 16)) / 2), -2,
                     (alphaSprite->alphaByte | -0x100LL), (void*)0x36eb);
         break;
     case 0xd7c:
-        fn_800FB680((s16)((sprite->x - (s16)(GSmsgGetRect(0x36ea) >> 16)) / 2), -2,
+        GSmsgPrintColor((s16)((sprite->x - (s16)(GSmsgGetRect(0x36ea) >> 16)) / 2), -2,
                     (alphaSprite->alphaByte | -0x100LL), (void*)0x36ea);
         break;
     case 0xd7d:
-        fn_800FB680((s16)((sprite->x - (s16)(GSmsgGetRect(0x36e9) >> 16)) / 2), -2,
+        GSmsgPrintColor((s16)((sprite->x - (s16)(GSmsgGetRect(0x36e9) >> 16)) / 2), -2,
                     (alphaSprite->alphaByte | -0x100LL), (void*)0x36e9);
         break;
     case 0xd74:
-        fn_800FB680(0, 0, (alphaSprite->alphaByte | -0x100LL),
+        GSmsgPrintColor(0, 0, (alphaSprite->alphaByte | -0x100LL),
                     (void*)(*(u32**)(T + 0x258))[*(s8*)(S + 0x15c)]);
         break;
     case 0xd75:
         msgctrlSetValue(
             0x37,
             GSmsgGetGSchar((*(u32**)(T + 0x254))[*(s8*)(S + 0x15b)]));
-        fn_800FB680(0, 0, (alphaSprite->alphaByte | -0x100LL), (void*)0xe7);
+        GSmsgPrintColor(0, 0, (alphaSprite->alphaByte | -0x100LL), (void*)0xe7);
         break;
     case 0xd76:
         msgctrlSetValue(
             0x37,
             GSmsgGetGSchar((*(u32**)(T + 0x254))[*(s8*)(S + 0x15a)]));
-        fn_800FB680(0, 0, (alphaSprite->alphaByte | -0x100LL), (void*)0xe7);
+        GSmsgPrintColor(0, 0, (alphaSprite->alphaByte | -0x100LL), (void*)0xe7);
         break;
     case 0xd77:
-        fn_800FB680(0, 0, (alphaSprite->alphaByte | -0x100LL),
+        GSmsgPrintColor(0, 0, (alphaSprite->alphaByte | -0x100LL),
                     (void*)(*(u32**)(T + 0x250))[*(s8*)(S + 0x159)]);
         break;
     case 0xd78:
-        fn_800FB680(0, 0, (alphaSprite->alphaByte | -0x100LL),
+        GSmsgPrintColor(0, 0, (alphaSprite->alphaByte | -0x100LL),
                     (void*)(*(u32**)(T + 0x24c))[*(s8*)(S + 0x158)]);
         break;
     case 0xd54:
@@ -6462,11 +6462,11 @@ void fn_8003F464(PdaSprite* alphaSprite, PdaSprite* sprite)
             } else {
                 msg = ((u32*)(T + 0x270))[*(s8*)(S + 0x15d)];
             }
-            fn_800FB680(0, 0, (alphaSprite->alphaByte | -0x100LL), (void*)msg);
+            GSmsgPrintColor(0, 0, (alphaSprite->alphaByte | -0x100LL), (void*)msg);
             break;
         case 1:
             if (*(s8*)(S + 0x15d) == 3) {
-                fn_800FB680(0, 0, (alphaSprite->alphaByte | -0x100LL),
+                GSmsgPrintColor(0, 0, (alphaSprite->alphaByte | -0x100LL),
                             (void*)((u32*)(T + 0x25c))[*(s8*)(S + 0x15f)]);
             }
             break;
@@ -6618,8 +6618,8 @@ static inline u16 pdaCurrentWeight(void)
 #pragma peephole off
 void fn_800411FC(PdaSprite* alphaSprite, PdaEvent* event)
 {
-    extern void fn_800FB8C8(s32 x, s32 y, s16 w, s16 h, void* color, s32 msg);
-    extern void fn_800FBB34(s32 x, s32 y, s16 w, s16 h, void* color, s32 msg);
+    extern void GSmsgPrintRight(s32 x, s32 y, s16 w, s16 h, void* color, s32 msg);
+    extern void GSmsgPrintRect(s32 x, s32 y, s16 w, s16 h, void* color, s32 msg);
     PdaSprite* sprite = (PdaSprite*)event;
     u8* layout;
     u32 name;
@@ -6638,7 +6638,7 @@ void fn_800411FC(PdaSprite* alphaSprite, PdaEvent* event)
         name = GSmsgGetGSchar(1);
     }
     msgctrlSetValue(0x37, name);
-    fn_800FB680(0, 0, alphaSprite->alphaByte | -0x100, (void*)0xce);
+    GSmsgPrintColor(0, 0, alphaSprite->alphaByte | -0x100, (void*)0xce);
     layout = lbl_802EF0A8;
 
     if (pdaEntrySeen() != 0) {
@@ -6646,11 +6646,11 @@ void fn_800411FC(PdaSprite* alphaSprite, PdaEvent* event)
         msg = GSmsgGetGSchar((u32)pokemonTokuseiDataBiosGetName(
             pokemonTokuseiDataBiosGetPtr(tokusei0)));
         msgctrlSetValue(0x37, msg);
-        fn_800FB680(*(s16*)(layout + 0x5a5a) - sprite->field_50 + 4,
+        GSmsgPrintColor(*(s16*)(layout + 0x5a5a) - sprite->field_50 + 4,
                     *(s16*)(layout + 0x5a5c) - sprite->field_52,
                     alphaSprite->alphaByte | -0x100, (void*)0xe7);
     } else {
-        fn_800FB680(*(s16*)(layout + 0x5a5a) - sprite->field_50 + 4,
+        GSmsgPrintColor(*(s16*)(layout + 0x5a5a) - sprite->field_50 + 4,
                     *(s16*)(layout + 0x5a5c) - sprite->field_52,
                     alphaSprite->alphaByte | -0x100, (void*)0x3721);
     }
@@ -6662,12 +6662,12 @@ void fn_800411FC(PdaSprite* alphaSprite, PdaEvent* event)
             msgctrlSetValue(0x37,
                             GSmsgGetGSchar((u32)pokemonTokuseiDataBiosGetName(
                                 pokemonTokuseiDataBiosGetPtr(tokusei1))));
-            fn_800FB680(pos[0] - sprite->field_50 + 4,
+            GSmsgPrintColor(pos[0] - sprite->field_50 + 4,
                         pos[1] - sprite->field_52,
                         alphaSprite->alphaByte | -0x100, (void*)0xe7);
         }
     } else {
-        fn_800FB680(*(s16*)(layout + 0x5a5a) - sprite->field_50 + 4,
+        GSmsgPrintColor(*(s16*)(layout + 0x5a5a) - sprite->field_50 + 4,
                     *(s16*)(layout + 0x5a5c) - sprite->field_52,
                     alphaSprite->alphaByte | -0x100, (void*)0x3721);
     }
@@ -6696,14 +6696,14 @@ void fn_800411FC(PdaSprite* alphaSprite, PdaEvent* event)
             }
         }
         msgctrlSetValue(0x37, (u32)&lbl_803A67E8[i]);
-        fn_800FB8C8(lbl_8047A4F0 +
+        GSmsgPrintRight(lbl_8047A4F0 +
                         (*(s16*)(layout + 0x5a76) - sprite->field_50),
                     *(s16*)(layout + 0x5a78) - sprite->field_52,
                     *(s16*)(layout + 0x5a7a),
                     *(s16*)(layout + 0x5a7c),
                     (void*)(alphaSprite->alphaByte | -0x100), 0xcf);
     } else {
-        fn_800FBB34(lbl_8047A4F0 +
+        GSmsgPrintRect(lbl_8047A4F0 +
                         (*(s16*)(layout + 0x5a76) - sprite->field_50),
                     *(s16*)(layout + 0x5a78) - sprite->field_52,
                     *(s16*)(layout + 0x5a7a),
@@ -6716,14 +6716,14 @@ void fn_800411FC(PdaSprite* alphaSprite, PdaEvent* event)
         weight = pdaCurrentWeight();
         msgctrlSetValue(0x34, weight / 10);
         msgctrlSetValue(0x35, weight % 10);
-        fn_800FBB34(lbl_8047A4F0 +
+        GSmsgPrintRect(lbl_8047A4F0 +
                         (*(s16*)(layout + 0x5a92) - sprite->field_50),
                     *(s16*)(layout + 0x5a94) - sprite->field_52,
                     *(s16*)(layout + 0x5a96),
                     *(s16*)(layout + 0x5a98),
                     (void*)(alphaSprite->alphaByte | -0x100), 0x189c);
     } else {
-        fn_800FBB34(lbl_8047A4F0 +
+        GSmsgPrintRect(lbl_8047A4F0 +
                         (*(s16*)(layout + 0x5a92) - sprite->field_50),
                     *(s16*)(layout + 0x5a94) - sprite->field_52,
                     *(s16*)(layout + 0x5a96),
@@ -6734,7 +6734,7 @@ void fn_800411FC(PdaSprite* alphaSprite, PdaEvent* event)
     layout = lbl_802EF0A8;
     if (pdaEntrySeen() != 0) {
         msgctrlSetValue(0x31, pokemonDataBiosGetTypeName(pdaCurrentData()));
-        fn_800FBB34(lbl_8047A4F0 +
+        GSmsgPrintRect(lbl_8047A4F0 +
                         (*(s16*)(layout + 0x5a22) - sprite->field_50),
                     *(s16*)(layout + 0x5a24) - sprite->field_52,
                     *(s16*)(layout + 0x5a26),
@@ -6742,7 +6742,7 @@ void fn_800411FC(PdaSprite* alphaSprite, PdaEvent* event)
                     (void*)(alphaSprite->alphaByte | -0x100), 0x371e);
     } else {
         msgctrlSetValue(0x31, 0x371c);
-        fn_800FBB34(lbl_8047A4F0 +
+        GSmsgPrintRect(lbl_8047A4F0 +
                         (*(s16*)(layout + 0x5a22) - sprite->field_50),
                     *(s16*)(layout + 0x5a24) - sprite->field_52,
                     *(s16*)(layout + 0x5a26),
@@ -6971,12 +6971,12 @@ extern f32 lbl_8047BCE4;
 extern f32 lbl_8047BCE8;
 extern f32 lbl_8047BCEC;
 extern f32 lbl_8047BCF0;
-extern s8 fn_800F7994(s32 chan, s32 index);
-extern s8 fn_800F7920(s32 chan, s32 index);
+extern s8 GSinputGetRightStickXData(s32 chan, s32 index);
+extern s8 GSinputGetRightStickYData(s32 chan, s32 index);
 extern void GSvecAdd(void* dst, void* a, void* b);
-extern u8 fn_8010A210(void* work, u32 pokemon);
+extern u8 menuPokemonModelIsLoaded(void* work, u32 pokemon);
 extern void menuModelFree(void* work);
-extern void fn_80109C88(void* work, u32 pokemon);
+extern void menuPokemonModelRequest(void* work, u32 pokemon);
 extern void GSmodelDestroyLinkedParticles(void* model);
 
 /* Step the page down one level, tearing the current model's particles down. */
@@ -6993,7 +6993,7 @@ static inline void pdaPopLevel(u8* S)
         *(s32*)(S + 0x1c) = 0xd;
         *(s32*)(S + 0x24) = 2;
         *(f32*)(S + 0x60) = lbl_8047BC94;
-        model = fn_801DAC3C(*(void**)(S + 0xa0));
+        model = wazaSequenceOwnerGetModel(*(void**)(S + 0xa0));
         if (model != NULL) {
             GSmodelDestroyLinkedParticles(model);
         }
@@ -7002,7 +7002,7 @@ static inline void pdaPopLevel(u8* S)
         *(s32*)(S + 0x1c) = 0xd;
         *(s32*)(S + 0x24) = 4;
         *(f32*)(S + 0x60) = lbl_8047BC94;
-        model = fn_801DAC3C(*(void**)(S + 0xa0));
+        model = wazaSequenceOwnerGetModel(*(void**)(S + 0xa0));
         if (model != NULL) {
             GSmodelDestroyLinkedParticles(model);
         }
@@ -7012,7 +7012,7 @@ static inline void pdaPopLevel(u8* S)
         *(s32*)(S + 0x1c) = 0xd;
         *(s32*)(S + 0x24) = 5;
         *(f32*)(S + 0x60) = lbl_8047BC94;
-        model = fn_801DAC3C(*(void**)(S + 0xa0));
+        model = wazaSequenceOwnerGetModel(*(void**)(S + 0xa0));
         if (model != NULL) {
             GSmodelDestroyLinkedParticles(model);
         }
@@ -7044,7 +7044,7 @@ static inline void pdaCloseLevelWindows(u8* S)
 
 /* Per-frame scene update for the PDA's model page. */
 #pragma peephole off
-s32 fn_80042658(void* work, s32 mode)
+s32 pdaModelViewerControl(void* work, s32 mode)
 {
     extern u32 msgGetCharsPerFrame(void);
     extern s32 fn_800D37CC(void);
@@ -7138,18 +7138,18 @@ s32 fn_80042658(void* work, s32 mode)
         fn_80043728((u32)work, mode, keys);
         break;
     case 4:
-        ((u8*)&lbl_803A6818)[0x214] = fn_800484A4((u8*)&lbl_803A6818 + 0x7c);
+        ((u8*)&lbl_803A6818)[0x214] = pdaModelOrbitCamera((u8*)&lbl_803A6818 + 0x7c);
         spin.x = lbl_8047BC94;
         spin.y = lbl_8047BC94;
         spin.z = lbl_8047BC94;
-        model = fn_801DAC3C(*(void**)((u8*)&lbl_803A6818 + 0x7c + 0x24));
+        model = wazaSequenceOwnerGetModel(*(void**)((u8*)&lbl_803A6818 + 0x7c + 0x24));
         if (model == NULL) {
             break;
         }
         GSmodelGetBound(model);
         rot = (f32*)((u8*)&lbl_803A6818 + 0x6c);
-        stickY = fn_800F7994(1, 1);
-        stickX = fn_800F7920(1, 1);
+        stickY = GSinputGetRightStickXData(1, 1);
+        stickX = GSinputGetRightStickYData(1, 1);
         spin.x = *(f32*)((u8*)&lbl_803A6818 + 0x3c) *
                  (lbl_8047BCA4 * (f32)stickX * lbl_8047BCE0);
         spin.y = *(f32*)((u8*)&lbl_803A6818 + 0x3c) *
@@ -7175,7 +7175,7 @@ s32 fn_80042658(void* work, s32 mode)
         }
         break;
     case 5:
-        ((u8*)&lbl_803A6818)[0x214] = fn_800478B4((u8*)&lbl_803A6818 + 0x7c, (u8*)&lbl_803A6818 + 0xc4);
+        ((u8*)&lbl_803A6818)[0x214] = pdaModelFrameCamera((u8*)&lbl_803A6818 + 0x7c, (u8*)&lbl_803A6818 + 0xc4);
         ((u8*)&lbl_803A6818)[0x214] = fn_8003D1FC_setup((u8*)&lbl_803A6818 + 0xc4);
         break;
     default:
@@ -7227,9 +7227,9 @@ s32 fn_80042658(void* work, s32 mode)
 
     if (prevIndex != lbl_803A6818.currentIndex && lbl_804788C0 != 0) {
         pokemon = pdaLoadPokemon(lbl_803A6818.currentIndex);
-        if (fn_8010A210((u8*)&lbl_803A6818 + 0x7c, pokemon) == 0) {
+        if (menuPokemonModelIsLoaded((u8*)&lbl_803A6818 + 0x7c, pokemon) == 0) {
             menuModelFree((u8*)&lbl_803A6818 + 0x7c);
-            fn_80109C88((u8*)&lbl_803A6818 + 0x7c, pokemon);
+            menuPokemonModelRequest((u8*)&lbl_803A6818 + 0x7c, pokemon);
         }
         *((u8*)&lbl_803A6818 + 0x214) = 0;
         switch (*(s32*)((u8*)&lbl_803A6818 + 0x1c)) {
@@ -7246,7 +7246,7 @@ s32 fn_80042658(void* work, s32 mode)
                 fn_80047CC0((u8*)&lbl_803A6818 + 0x7c);
             break;
         case 5:
-            *((u8*)&lbl_803A6818 + 0x214) = fn_800478B4(
+            *((u8*)&lbl_803A6818 + 0x214) = pdaModelFrameCamera(
                 (u8*)&lbl_803A6818 + 0x7c, (u8*)&lbl_803A6818 + 0xc4);
             *((u8*)&lbl_803A6818 + 0x214) =
                 fn_8003D1FC_setup((u8*)&lbl_803A6818 + 0xc4);
@@ -7280,7 +7280,7 @@ extern void menuModelInit(void* work, s32 w, s32 h);
 extern void* peopleInfoBiosGetPtr(u32 id);
 extern void fn_8018F4C8(void* info, s32 index, s32* motion, s32* out);
 extern void menuModelSetMotion(void* work, s32 motion);
-extern void fn_8010A010(void* work, u32 id);
+extern void menuPokemonModelRequestById(void* work, u32 id);
 
 /* Build the PDA scene: camera rig, both model slots and the memo index. */
 #pragma peephole off
@@ -7407,12 +7407,12 @@ void fn_80048918(void)
     *(s8*)((u8*)&lbl_803A6818 + 0x1a0) = 0;
     *(s8*)((u8*)&lbl_803A6818 + 0x1b4) = 0;
     *(s32*)((u8*)&lbl_803A6818 + 0x1e4) = 0;
-    fn_8003D4C8();
+    pdaMemoLoadPokemon();
     if (lbl_804788C0 != 0) {
         pokemon = pdaLoadPokemon(lbl_803A6818.currentIndex);
-        if (fn_8010A210((u8*)&lbl_803A6818 + 0x7c, pokemon) == 0) {
+        if (menuPokemonModelIsLoaded((u8*)&lbl_803A6818 + 0x7c, pokemon) == 0) {
             menuModelFree((u8*)&lbl_803A6818 + 0x7c);
-            fn_80109C88((u8*)&lbl_803A6818 + 0x7c, pokemon);
+            menuPokemonModelRequest((u8*)&lbl_803A6818 + 0x7c, pokemon);
         }
         *((u8*)&lbl_803A6818 + 0x214) = 0;
         switch (*(s32*)((u8*)&lbl_803A6818 + 0x1c)) {
@@ -7428,14 +7428,14 @@ void fn_80048918(void)
             *((u8*)&lbl_803A6818 + 0x214) = fn_80047CC0((u8*)&lbl_803A6818 + 0x7c);
             break;
         case 5:
-            *((u8*)&lbl_803A6818 + 0x214) = fn_800478B4((u8*)&lbl_803A6818 + 0x7c, (u8*)&lbl_803A6818 + 0xc4);
+            *((u8*)&lbl_803A6818 + 0x214) = pdaModelFrameCamera((u8*)&lbl_803A6818 + 0x7c, (u8*)&lbl_803A6818 + 0xc4);
             *((u8*)&lbl_803A6818 + 0x214) = fn_8003D1FC_setup((u8*)&lbl_803A6818 + 0xc4);
             break;
         default:
             break;
         }
     }
-    fn_8010A010((u8*)&lbl_803A6818 + 0xc4, 0xf70400);
+    menuPokemonModelRequestById((u8*)&lbl_803A6818 + 0xc4, 0xf70400);
     switch (*(s32*)((u8*)&lbl_803A6818 + 0x1c)) {
     case 0:
     case 1:
@@ -7449,7 +7449,7 @@ void fn_80048918(void)
         *((u8*)&lbl_803A6818 + 0x214) = fn_80047CC0((u8*)&lbl_803A6818 + 0x7c);
         break;
     case 5:
-        *((u8*)&lbl_803A6818 + 0x214) = fn_800478B4((u8*)&lbl_803A6818 + 0x7c, (u8*)&lbl_803A6818 + 0xc4);
+        *((u8*)&lbl_803A6818 + 0x214) = pdaModelFrameCamera((u8*)&lbl_803A6818 + 0x7c, (u8*)&lbl_803A6818 + 0xc4);
         *((u8*)&lbl_803A6818 + 0x214) = fn_8003D1FC_setup((u8*)&lbl_803A6818 + 0xc4);
         break;
     default:
@@ -7582,7 +7582,7 @@ void fn_80040308(void* menu)
         if (page == 4) {
             switch (*(s32*)(L + 0x90)) {
             case 0:
-                if (fn_8003D4C8() != 0) {
+                if (pdaMemoLoadPokemon() != 0) {
                     total = lbl_8047A4E8;
                     *(s32*)(L + 0x90) = 1;
                     pdaResetCarousel(total);
@@ -7597,10 +7597,10 @@ void fn_80040308(void* menu)
                     {
                         u32 pokemon =
                             pdaLoadPokemon(lbl_803A6818.currentIndex);
-                        if (fn_8010A210((u8*)&lbl_803A6818 + 0x7c, pokemon) ==
+                        if (menuPokemonModelIsLoaded((u8*)&lbl_803A6818 + 0x7c, pokemon) ==
                             0) {
                             menuModelFree((u8*)&lbl_803A6818 + 0x7c);
-                            fn_80109C88((u8*)&lbl_803A6818 + 0x7c, pokemon);
+                            menuPokemonModelRequest((u8*)&lbl_803A6818 + 0x7c, pokemon);
                         }
                         *((u8*)&lbl_803A6818 + 0x214) = 0;
                         switch (*(s32*)((u8*)&lbl_803A6818 + 0x1c)) {
@@ -7618,7 +7618,7 @@ void fn_80040308(void* menu)
                             break;
                         case 5:
                             *((u8*)&lbl_803A6818 + 0x214) =
-                                fn_800478B4((u8*)&lbl_803A6818 + 0x7c,
+                                pdaModelFrameCamera((u8*)&lbl_803A6818 + 0x7c,
                                             (u8*)&lbl_803A6818 + 0xc4);
                             *((u8*)&lbl_803A6818 + 0x214) =
                                 fn_8003D1FC_setup((u8*)&lbl_803A6818 + 0xc4);
@@ -7735,10 +7735,10 @@ void fn_80040308(void* menu)
                         {
                         u32 pokemon =
                             pdaLoadPokemon(lbl_803A6818.currentIndex);
-                        if (fn_8010A210((u8*)&lbl_803A6818 + 0x7c, pokemon) ==
+                        if (menuPokemonModelIsLoaded((u8*)&lbl_803A6818 + 0x7c, pokemon) ==
                             0) {
                             menuModelFree((u8*)&lbl_803A6818 + 0x7c);
-                            fn_80109C88((u8*)&lbl_803A6818 + 0x7c, pokemon);
+                            menuPokemonModelRequest((u8*)&lbl_803A6818 + 0x7c, pokemon);
                         }
                         *((u8*)&lbl_803A6818 + 0x214) = 0;
                         switch (*(s32*)((u8*)&lbl_803A6818 + 0x1c)) {
@@ -7756,7 +7756,7 @@ void fn_80040308(void* menu)
                             break;
                         case 5:
                             *((u8*)&lbl_803A6818 + 0x214) =
-                                fn_800478B4((u8*)&lbl_803A6818 + 0x7c,
+                                pdaModelFrameCamera((u8*)&lbl_803A6818 + 0x7c,
                                             (u8*)&lbl_803A6818 + 0xc4);
                             *((u8*)&lbl_803A6818 + 0x214) =
                                 fn_8003D1FC_setup((u8*)&lbl_803A6818 + 0xc4);
@@ -7804,8 +7804,8 @@ extern u32 lbl_8047A4EC;
 extern f32 lbl_8047BD1C;
 extern u16 pokemonDataBiosGetVoice(void* data);
 extern void* pokemonNakigoeDataBiosGetDataAddress(void* data);
-extern s32 soundGetStatus(u32 voice);
-extern u32 fn_800F7AF0(s32 chan);
+extern s32 GSsndGetStatus(u32 voice);
+extern u32 GSinputButtonsChanged(s32 chan);
 extern s32 menuOpen(s32 id, s32 flag);
 
 /* Cry voice of the highlighted entry, 0xffff when it cannot be resolved. */
@@ -7878,8 +7878,8 @@ void fn_80046168(void)
     /* Retail converts the stick values to single precision (fsubs) for this
      * call, so this caller saw atan2 declared with float parameters. */
     extern f64 atan2(f32 y, f32 x);
-    extern s8 fn_800F7A08(s32 chan, s32 index);
-    extern s8 fn_800F7A7C(s32 chan, s32 index);
+    extern s8 GSinputGetLeftStickYData(s32 chan, s32 index);
+    extern s8 GSinputGetLeftStickXData(s32 chan, s32 index);
     u8* S;
     PdaCryTrail* t;
     s32 running;
@@ -7928,7 +7928,7 @@ void fn_80046168(void)
             playing = 0;
             for (i = 0; i < 8; i++) {
                 if (t->data != NULL) {
-                    switch (soundGetStatus(t->voice)) {
+                    switch (GSsndGetStatus(t->voice)) {
                     case 0:
                         break;
                     case 2:
@@ -7943,13 +7943,13 @@ void fn_80046168(void)
                 t++;
             }
             if ((u8)playing != 0) {
-                if ((fn_800F7BC4(1) & fn_800F7AF0(1) & 0x8) != 0) {
+                if ((fn_800F7BC4(1) & GSinputButtonsChanged(1) & 0x8) != 0) {
                     cancel = 1;
-                } else if ((fn_800F7BC4(1) & fn_800F7AF0(1) & 0x4) != 0) {
+                } else if ((fn_800F7BC4(1) & GSinputButtonsChanged(1) & 0x4) != 0) {
                     cancel = 1;
                 } else {
-                    x = fn_800F7A08(1, 0);
-                    y = fn_800F7A7C(1, 0);
+                    x = GSinputGetLeftStickYData(1, 0);
+                    y = GSinputGetLeftStickXData(1, 0);
                     if ((y < 0 ? -y : y) > 0x20 || (x < 0 ? -x : x) > 0x20) {
                         ang = atan2(y, x);
                         if (pdaFabs(ang) < lbl_8047BCFC) {
@@ -7970,12 +7970,12 @@ void fn_80046168(void)
                 menuCloseCustom(0x3e, 0, 1);
                 *(s32*)(S + 0x20) = 0;
             } else {
-                if ((fn_800F7BC4(1) & fn_800F7AF0(1) & 0x100) != 0) {
+                if ((fn_800F7BC4(1) & GSinputButtonsChanged(1) & 0x100) != 0) {
                     voice = pdaCurrentVoice();
                     soundStartRaw(voice, 0, 0);
                     pdaPushCry(pdaCurrentCry(), voice);
                 }
-                if ((fn_800F7BC4(1) & fn_800F7AF0(1) & 0x200) != 0) {
+                if ((fn_800F7BC4(1) & GSinputButtonsChanged(1) & 0x200) != 0) {
                     if (*(s32*)(S + 0x1c) == 2) {
                         *(s32*)(S + 0x1c) = 8;
                         menuCloseCustom(0x3e, 0, 1);
@@ -8011,9 +8011,9 @@ extern f32 lbl_8047BDB8;
 s32 fn_800495C8(void* work, PdaSprite* sprite)
 {
     extern u8 lbl_80314E08[];
-    extern void fn_800D5648(f32 width);
-    extern void fn_800D5BA0(s32 index, u32 color);
-    extern void fn_800D61E4(s16 x, s16 y);
+    extern void gfxSetLineWidth(f32 width);
+    extern void gfxVtxColor1u32(s32 index, u32 color);
+    extern void gfxVtxPos2s16(s16 x, s16 y);
     u8* G = lbl_803A6A60;
     u8* data;
     f32 kOne;
@@ -8071,15 +8071,15 @@ s32 fn_800495C8(void* work, PdaSprite* sprite)
     gfxSetPrimitive(4);
     gfxBegin(4);
     alpha = (s32)(lbl_8047BDB0 * *(f32*)(G + 0x28));
-    fn_800D61E4(0, 0);
+    gfxVtxPos2s16(0, 0);
     color = (u8)alpha | 0x03140e00;
-    fn_800D5BA0(0, color);
-    fn_800D61E4(sprite->x, 0);
-    fn_800D5BA0(0, color);
-    fn_800D61E4(0, sprite->y);
-    fn_800D5BA0(0, color);
-    fn_800D61E4(sprite->x, sprite->y);
-    fn_800D5BA0(0, color);
+    gfxVtxColor1u32(0, color);
+    gfxVtxPos2s16(sprite->x, 0);
+    gfxVtxColor1u32(0, color);
+    gfxVtxPos2s16(0, sprite->y);
+    gfxVtxColor1u32(0, color);
+    gfxVtxPos2s16(sprite->x, sprite->y);
+    gfxVtxColor1u32(0, color);
     gfxEnd();
 
     for (i = 0; i < 0x1e0; i += 4) {
@@ -8087,12 +8087,12 @@ s32 fn_800495C8(void* work, PdaSprite* sprite)
         gfxClearFlags(6);
         gfxSetVtxDesc(lbl_80314E08);
         gfxSetPrimitive(1);
-        fn_800D5648(lbl_8047BDA0);
+        gfxSetLineWidth(lbl_8047BDA0);
         gfxBegin(2);
-        fn_800D61E4(0, i);
-        fn_800D5BA0(0, 0x00800080);
-        fn_800D61E4(sprite->x, i);
-        fn_800D5BA0(0, 0x00800080);
+        gfxVtxPos2s16(0, i);
+        gfxVtxColor1u32(0, 0x00800080);
+        gfxVtxPos2s16(sprite->x, i);
+        gfxVtxColor1u32(0, 0x00800080);
         gfxEnd();
     }
 
@@ -8114,13 +8114,13 @@ s32 fn_800495C8(void* work, PdaSprite* sprite)
         gfxClearFlags(6);
         gfxSetVtxDesc(lbl_80314E08);
         gfxSetPrimitive(1);
-        fn_800D5648(lbl_8047BDA0);
+        gfxSetLineWidth(lbl_8047BDA0);
         gfxBegin(2);
-        fn_800D61E4(0, row);
+        gfxVtxPos2s16(0, row);
         color = (u8)alpha | 0x00800000;
-        fn_800D5BA0(0, color);
-        fn_800D61E4(sprite->x, row);
-        fn_800D5BA0(0, color);
+        gfxVtxColor1u32(0, color);
+        gfxVtxPos2s16(sprite->x, row);
+        gfxVtxColor1u32(0, color);
         gfxEnd();
     }
     return 0;
@@ -8352,7 +8352,7 @@ extern void fn_8004A7A8(void* work, PdaSprite* sprite);
 
 /* Per-widget update for the mail screen's sprites and captions. */
 #pragma peephole off
-s32 fn_800499BC(void* work, PdaSprite* sprite)
+s32 pdaTrainerDataDraw(void* work, PdaSprite* sprite)
 {
     extern f64 sin(f64 x);
     extern void windowDrawSprite2(s16 x, s16 y, s16 w, s16 h, u32 color,
@@ -8512,7 +8512,7 @@ s32 fn_800499BC(void* work, PdaSprite* sprite)
             idx -= 0xd;
             msgctrlSetValue(0x34, value % 10);
             value = value / 10;
-            fn_800FB680(idx + 0x24, 0, sprite->alpha | -0x100LL, (void*)0xca);
+            GSmsgPrintColor(idx + 0x24, 0, sprite->alpha | -0x100LL, (void*)0xca);
         }
         break;
     case 0x777:
@@ -8533,7 +8533,7 @@ s32 fn_800499BC(void* work, PdaSprite* sprite)
             msg = 1;
             break;
         }
-        fn_800FB680(-0x50, -4, sprite->alpha | -0x100, (void*)msg);
+        GSmsgPrintColor(-0x50, -4, sprite->alpha | -0x100, (void*)msg);
         break;
     case 0x6e3:
     case 0x6e4:
@@ -8987,13 +8987,13 @@ extern f32 lbl_8047BAD4;
 extern f32 lbl_8047BAD8;
 extern u32 lbl_8047A4D0;
 extern u32 lbl_8047A4DC;
-extern void fn_801EEDEC(u16 id, s32 flag);
+extern void darkPokemonSetFlag0C(u16 id, s32 flag);
 extern void pokemonBiosSetDarkpokemonDataId(u32 work, s32 id);
 extern void pokemonBiosSetDp(u32 work, s32 dp);
 
 /* Party-list scroll, cursor movement and the selected Pokemon preview. */
 #pragma peephole off
-s32 fn_8003B85C(void* window, s32 enabled)
+s32 pdaSnagListDetailKey(void* window, s32 enabled)
 {
     extern u32 msgGetCharsPerFrame(void);
     extern s32 fn_800D37CC(void);
@@ -9130,7 +9130,7 @@ s32 fn_8003B85C(void* window, s32 enabled)
         if (lbl_8047A4DC != 0) {
             if (*(s32*)&lbl_803A6748 < (s32)lbl_8047A4DC - 1) {
                 if (enabled != 0) {
-                    fn_801EEDEC(lbl_8047A4D4[*(s32*)&lbl_803A6748].battleId, 0);
+                    darkPokemonSetFlag0C(lbl_8047A4D4[*(s32*)&lbl_803A6748].battleId, 0);
                 }
                 *(s32*)&lbl_803A6748 = *(s32*)&lbl_803A6748 + 1;
                 soundStartRaw(0x23, 0, 0);
@@ -9145,7 +9145,7 @@ s32 fn_8003B85C(void* window, s32 enabled)
     if ((code & 1) != 0) {
         if (*(s32*)&lbl_803A6748 > 0) {
             if (enabled != 0) {
-                fn_801EEDEC(lbl_8047A4D4[*(s32*)&lbl_803A6748].battleId, 0);
+                darkPokemonSetFlag0C(lbl_8047A4D4[*(s32*)&lbl_803A6748].battleId, 0);
             }
             *(s32*)&lbl_803A6748 = *(s32*)&lbl_803A6748 - 1;
             soundStartRaw(0x23, 0, 0);
@@ -9171,15 +9171,15 @@ s32 fn_8003B85C(void* window, s32 enabled)
 
     if (enabled != 0) {
         if (prevIndex != *(s32*)&lbl_803A6748) {
-            if (fn_801EE8F4(lbl_8047A4D4[*(s32*)&lbl_803A6748].battleId) != 0) {
+            if (darkPokemonCheckFlag16(lbl_8047A4D4[*(s32*)&lbl_803A6748].battleId) != 0) {
                 idx = *(s32*)&lbl_803A6748;
                 species = lbl_8047A4D4[idx].field_00;
                 entry = lbl_8047A4D4[(u16)idx].battleId;
                 rndId = lbl_8047A4D4[idx].battleId;
-                fn_801EE614(entry);
-                fn_801EE8F4(entry);
-                if (fn_801EEAD0(entry) != 0) {
-                    if (fn_801EEC74(entry) != 0) {
+                darkPokemonGetFlag1C(entry);
+                darkPokemonCheckFlag16(entry);
+                if (darkPokemonCheckFlag12(entry) != 0) {
+                    if (darkPokemonCheckFlag14(entry) != 0) {
                         mode = 1;
                     } else {
                         mode = 0;
@@ -9190,7 +9190,7 @@ s32 fn_8003B85C(void* window, s32 enabled)
                 pokemonCreate(lbl_8047A4D0, species, 10,
                               gamedataGetStatus(0, 1));
                 rnd = *(u32*)((u8*)&lbl_803A6748 + 0x98);
-                fn_801EE750(rndId);
+                darkPokemonSaveGet8(rndId);
                 pokemonBiosSetRnd(lbl_8047A4D0, rnd);
                 switch (mode) {
                 case 0:
@@ -9205,7 +9205,7 @@ s32 fn_8003B85C(void* window, s32 enabled)
                 default:
                     break;
                 }
-                fn_80109C88((u8*)&lbl_803A6748 + 0x4c, lbl_8047A4D0);
+                menuPokemonModelRequest((u8*)&lbl_803A6748 + 0x4c, lbl_8047A4D0);
             }
         }
         *(f32*)((u8*)&lbl_803A6748 + 0x18) = *(f32*)((u8*)&lbl_803A6748 + 0x20);
@@ -9225,11 +9225,11 @@ s32 fn_8003B85C(void* window, s32 enabled)
 extern u8 lbl_803A6610[];
 extern u32 pokemonCreateRndFit(void* work, s32 a, s32 b, s32 c, s32 d);
 extern void winMsgClose(s32 id);
-extern void fn_8010A420(void* work);
+extern void menuModelTerm(void* work);
 
 /* Party-select scene: open the windows, drive the fade, tear it back down. */
 #pragma peephole off
-void fn_8003C7C0(void)
+void pdaSnagListRun(void)
 {
     extern void _threadSwitch(void);
     u8* model;
@@ -9300,10 +9300,10 @@ void fn_8003C7C0(void)
                     entry = lbl_8047A4D4[(u16)idx].battleId;
                     species = lbl_8047A4D4[idx].field_00;
                     rndId = lbl_8047A4D4[idx].battleId;
-                    fn_801EE614(entry);
-                    fn_801EE8F4(entry);
-                    if (fn_801EEAD0(entry) != 0) {
-                        if (fn_801EEC74(entry) != 0) {
+                    darkPokemonGetFlag1C(entry);
+                    darkPokemonCheckFlag16(entry);
+                    if (darkPokemonCheckFlag12(entry) != 0) {
+                        if (darkPokemonCheckFlag14(entry) != 0) {
                             mode = 1;
                         } else {
                             mode = 0;
@@ -9313,7 +9313,7 @@ void fn_8003C7C0(void)
                     }
                     pokemonCreate(work, species, 10, gamedataGetStatus(0, 1));
                     rnd = *(u32*)((u8*)&lbl_803A6748 + 0x98);
-                    fn_801EE750(rndId);
+                    darkPokemonSaveGet8(rndId);
                     pokemonBiosSetRnd(work, rnd);
                     switch (mode) {
                     case 0:
@@ -9328,7 +9328,7 @@ void fn_8003C7C0(void)
                     default:
                         break;
                     }
-                    fn_80109C88(model, lbl_8047A4D0);
+                    menuPokemonModelRequest(model, lbl_8047A4D0);
                     *(f32*)((u8*)&lbl_803A6748 + 0x48) = lbl_8047BAC4;
                 } else {
                     state = 1;
@@ -9396,7 +9396,7 @@ void fn_8003C7C0(void)
             if (*(f32*)((u8*)&lbl_803A6748 + 0x48) ==
                 *(f32*)((u8*)&lbl_803A6748 + 0x44)) {
                 menuCloseCustom(0x33, 0, 1);
-                fn_801EEDEC(lbl_8047A4D4[*(s32*)&lbl_803A6748].battleId, 0);
+                darkPokemonSetFlag0C(lbl_8047A4D4[*(s32*)&lbl_803A6748].battleId, 0);
                 *(f32*)((u8*)&lbl_803A6748 + 0x48) = lbl_8047BAC8;
                 state = 0;
             } else {
@@ -9447,20 +9447,20 @@ void fn_8003C7C0(void)
             break;
         }
     }
-    fn_8010A420(model);
+    menuModelTerm(model);
     if (lbl_8047A4D0 != 0) {
-        handle = fn_800E202C(lbl_8047A4D0);
+        handle = GSmemGetHandleByPtr(lbl_8047A4D0);
         if ((u16)handle != 0) {
             fn_800E24B0();
-            fn_800E209C(handle);
+            GSmemFree(handle);
         }
         lbl_8047A4D0 = 0;
     }
     if (lbl_8047A4D4 != NULL) {
-        handle = fn_800E202C(lbl_8047A4D4);
+        handle = GSmemGetHandleByPtr(lbl_8047A4D4);
         if ((u16)handle != 0) {
             fn_800E24B0();
-            fn_800E209C(handle);
+            GSmemFree(handle);
         }
         lbl_8047A4D4 = NULL;
     }
@@ -9476,7 +9476,7 @@ extern u8 fightTrainerPokemonDataBiosGetDarkPokemonFlag(void* entry);
 
 /* Draw one row per party entry: nickname, owner and battle caption. */
 #pragma peephole off
-void fn_8003C2B8(PdaSprite* alphaSprite, PdaEvent* event)
+void pdaSnagListDrawDetail(PdaSprite* alphaSprite, PdaEvent* event)
 {
     s32 y;
     void* entry;
@@ -9524,7 +9524,7 @@ void fn_8003C2B8(PdaSprite* alphaSprite, PdaEvent* event)
             id = *(u16*)((u8*)lbl_8047A4D4 + off + 2);
             trainerId = fn_801EEFAC(id, 0);
             if (trainerId == 9) {
-                entry = pokemonDataBiosGetPtr(fn_801EE248(id));
+                entry = pokemonDataBiosGetPtr(darkPokemonSaveGet4A0(id));
                 if (entry != NULL) {
                     name = GSmsgGetGSchar(
                         (u32)pokemonDataBiosGetName(entry));
@@ -9553,7 +9553,7 @@ void fn_8003C2B8(PdaSprite* alphaSprite, PdaEvent* event)
             ownerText = 0;
             if (lbl_8047A4D0 != 0) {
                 kind = *(u16*)((u8*)lbl_8047A4D4 + off + 2);
-                caption = fn_801EE544(kind, slot);
+                caption = darkPokemonGetFlagListValue(kind, slot);
                 switch (*slot) {
                 case 0:
                     caption = 0x371f;
@@ -9563,7 +9563,7 @@ void fn_8003C2B8(PdaSprite* alphaSprite, PdaEvent* event)
                     if (kind == 0x43) {
                         caption = 0x12b0;
                     } else if ((trainerId = fn_801EEFAC(kind, 0)) == 9) {
-                        text = fn_801EE328(kind);
+                        text = darkPokemonSaveGetName(kind);
                         special = 1;
                     } else {
                         caption = fn_801FCC7C(fightTrainerDataBiosGetPtr(trainerId));
@@ -9581,15 +9581,15 @@ void fn_8003C2B8(PdaSprite* alphaSprite, PdaEvent* event)
             if (ownerText == 0) {
                 owner = GSmsgGetGSchar(1);
             }
-            caption = fn_8003CE1C(i);
+            caption = pdaSnagListGetTrainerName(i);
             if (caption == 0) {
                 caption = GSmsgGetGSchar(1);
             }
             id = lbl_8047A4D4[(u16)i].battleId;
-            fn_801EE614(id);
-            fn_801EE8F4(id);
-            registered = fn_801EEAD0(id);
-            cleared = fn_801EEC74(id);
+            darkPokemonGetFlag1C(id);
+            darkPokemonCheckFlag16(id);
+            registered = darkPokemonCheckFlag12(id);
+            cleared = darkPokemonCheckFlag14(id);
             if (registered != 0) {
                 if (cleared != 0) {
                     mode = 1;
@@ -9610,18 +9610,18 @@ void fn_8003C2B8(PdaSprite* alphaSprite, PdaEvent* event)
             case 2:
                 break;
             }
-            if (fn_801EED88(*(u16*)((u8*)lbl_8047A4D4 + off + 2)) != 0) {
+            if (darkPokemonCheckFlag0C(*(u16*)((u8*)lbl_8047A4D4 + off + 2)) != 0) {
                 tint = 0xe0e01800;
             } else {
                 tint = -0x100;
             }
             msgctrlSetValue(0x37, msg);
             y = (s32)rowY;
-            fn_800FB680(0, y, tint | alphaSprite->alphaByte, (void*)0xe7);
+            GSmsgPrintColor(0, y, tint | alphaSprite->alphaByte, (void*)0xe7);
             msgctrlSetValue(0x37, owner);
-            fn_800FB680(0x89, y, tint | alphaSprite->alphaByte, (void*)0xe7);
+            GSmsgPrintColor(0x89, y, tint | alphaSprite->alphaByte, (void*)0xe7);
             msgctrlSetValue(0x37, caption);
-            fn_800FB680(0x13d, y, tint | alphaSprite->alphaByte, (void*)0xe7);
+            GSmsgPrintColor(0x13d, y, tint | alphaSprite->alphaByte, (void*)0xe7);
         }
         rowY = rowY + stride;
         off += 4;
@@ -9635,7 +9635,7 @@ extern u8 lbl_803A65B0[];
 
 /* Position and tint one of the PDA's eight main menu buttons. */
 #pragma peephole off
-s32 fn_80038E74(void* work, PdaSprite* sprite)
+s32 itemStorageMenuCB(void* work, PdaSprite* sprite)
 {
     s32 i;
     u8 enabled;
@@ -9739,19 +9739,19 @@ s32 fn_80039644(void* work, PdaSprite* sprite)
         itemId = pdaBoxItemId(index);
         name = itemDataBiosGetName(itemDataBiosGetPtr(itemId));
         if (name != NULL) {
-            fn_800FB680(0, y, (s32)sprite, name);
+            GSmsgPrintColor(0, y, (s32)sprite, name);
         }
         if (itemDataBiosGetKind(itemDataBiosGetPtr(itemId)) == 5) {
             continue;
         }
-        fn_800FB680(nameX, y, (s32)sprite, (void*)0x12e);
+        GSmsgPrintColor(nameX, y, (s32)sprite, (void*)0x12e);
         count = pdaBoxItemNum(index);
         msgctrlSetValue(0x34, count);
-        fn_800FB680(0x11a - (s16)(GSmsgGetRect(0xca) >> 16), y, (s32)sprite,
+        GSmsgPrintColor(0x11a - (s16)(GSmsgGetRect(0xca) >> 16), y, (s32)sprite,
                     (void*)0xca);
     }
     if (i < rows) {
-        fn_800FB680(0, i * 0x1f - yAdj, (s32)sprite, (void*)0x1b67);
+        GSmsgPrintColor(0, i * 0x1f - yAdj, (s32)sprite, (void*)0x1b67);
     }
     return 0;
 }

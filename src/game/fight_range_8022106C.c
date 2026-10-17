@@ -7,13 +7,13 @@
 extern u8* lbl_8047B610;
 
 /*
- * fn_8022106C (0x8022106C)
+ * wsCmd47 (0x8022106C)
  * Sequence opcode: maps the high nibble of the field byte at +0x1601e to a
  * base offset (0x10 -> 0xf, 0x20 -> 0x27, 0x90 -> 0x16, 0xa0 -> 0x2e), adds
  * the low nibble minus one into +0x160a4, clears +0x160a5 and advances the
  * sequence PC by one byte.
  */
-void fn_8022106C(void* ctx, u32 param1, u32 param2) {
+void wsCmd47(void* ctx, u32 param1, u32 param2) {
     extern u8 lbl_80379F58[];
     u8 code;
     u8 offset;

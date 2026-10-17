@@ -10,7 +10,7 @@ extern u8* lbl_8047B610;
 extern u8 lbl_80478D78[8];
 
 /*
- * fn_8021CA00 (0x8021CA00)
+ * wsCmd7F (0x8021CA00)
  * Sequence opcode: when the current move misses or the defender's state
  * 0x1c is not 2, sets floor status 0x3b to 0x40 and result 1; when the
  * defender has type 0xc, the same with result 2; otherwise records the
@@ -19,7 +19,7 @@ extern u8 lbl_80478D78[8];
  */
 /* RULE-EXCEPTION(user-approved): local optimize_for_size pragma — see docs/RULE_EXCEPTIONS.md */
 #pragma optimize_for_size on
-void fn_8021CA00(void)
+void wsCmd7F(void)
 
 {
     extern u32 fightTargetGetTragetPtrToRelativeHostSideFightTargetId();
@@ -29,7 +29,7 @@ void fn_8021CA00(void)
     extern u32 pokemonGetStatus();
     extern u8 fightWazaIsHit();
     extern u8 fightOutPokemonIsZokuseiDataId();
-    extern void fn_8020248C();
+    extern void fightOutPokemonWritePokemonJoutaiDataId();
     extern u8 fn_802025B8();
     u32 fightTarget;
     u32 move;
@@ -51,7 +51,7 @@ void fn_8021CA00(void)
         lbl_80478D78[5] = 2;
         lbl_8047B610++;
     } else {
-        fn_8020248C(fightTarget, 0x1c, relativeTarget);
+        fightOutPokemonWritePokemonJoutaiDataId(fightTarget, 0x1c, relativeTarget);
         lbl_80478D78[5] = 0;
         lbl_8047B610++;
     }

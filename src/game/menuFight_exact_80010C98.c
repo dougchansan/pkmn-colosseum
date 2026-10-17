@@ -10,7 +10,7 @@ extern u8 fightFloorIsUseFightTimerCommand(s32);
 extern u8 fightTimerCommandIsOver(void);
 extern u16 std103_battleGetResult(void);
 extern void _threadSwitch(void);
-extern u32 fn_800F7AF0(s32);
+extern u32 GSinputButtonsChanged(s32);
 extern u32 fn_800F7BC4(s32);
 extern void msgctrlSetValue();
 extern void fightFloorSetStatus();
@@ -48,7 +48,7 @@ haveLabel: \
     } \
     _threadSwitch(); \
 checkLabel: \
-    inputFlags = fn_800F7AF0(1); \
+    inputFlags = GSinputButtonsChanged(1); \
     maskedFlags = fn_800F7BC4(1); \
     maskedFlags &= inputFlags; \
     if ((maskedFlags & 0x300) == 0) { \

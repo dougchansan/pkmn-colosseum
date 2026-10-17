@@ -2,7 +2,7 @@
 
 extern void* __DBInterface;
 
-u32 fn_800A2C58(void) {
+u32 DBIsDebuggerPresent(void) {
     if (__DBInterface == NULL) {
         return 0;
     }

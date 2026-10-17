@@ -570,7 +570,7 @@ asm void pcboxInit(void) {
 #else
 void pcboxInit(void* base) {
     extern void msgctrlSetValue(u32, u32);
-    extern void fn_800F96E4(void*, u32, u32);
+    extern void GSmsgGetText(void*, u32, u32);
     extern void pokemonInitAry(void*, u32);
     extern void fn_80142A88(void*, u32);
     u8* status;
@@ -585,7 +585,7 @@ void pcboxInit(void* base) {
     cur = status;
     do {
         msgctrlSetValue(0x34, i + 1);
-        fn_800F96E4(cur, 9, 0x32c9);
+        GSmsgGetText(cur, 9, 0x32c9);
         pokemonInitAry(cur + 0x14, 0x1e);
         i++;
         cur += 0x24a4;

@@ -11,7 +11,7 @@
 #include "game/gs_texture.h"
 
 extern u16 _toolentryAlloc__FUl(u32 size); /* GSmemAllocRaw */
-extern void* fn_800E27B0(u16 handle);      /* GSmemGetPtr */
+extern void* GSmemLock(u16 handle);      /* GSmemGetPtr */
 
 extern u16 lbl_8047ABF0;              /* texture pool GSmem handle */
 extern GStextureHandle* lbl_8047ABF4; /* texture pool */
@@ -27,7 +27,7 @@ void GStextureInit(u32 count)
         return;
     }
 
-    lbl_8047ABF4 = fn_800E27B0(lbl_8047ABF0);
+    lbl_8047ABF4 = GSmemLock(lbl_8047ABF0);
     for (i = 0; i < lbl_8047ABF8; i++) {
         lbl_8047ABF4[i].inUse = 0;
     }

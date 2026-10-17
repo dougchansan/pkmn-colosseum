@@ -17,7 +17,7 @@ typedef struct FightCopyBlock {
 
 extern FightKoukaData lbl_80375CB8[];
 
-void fn_8020D968(FightCopyBlock* dst, FightCopyBlock* src)
+void fightActionBiosCopy(FightCopyBlock* dst, FightCopyBlock* src)
 {
     if (dst == 0) {
         return;

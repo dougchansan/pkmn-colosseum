@@ -4,17 +4,17 @@
  *        per-floor resource pools.
  *
  * Address range: 0x800FF788 - 0x80101910
- *   fn_800FF788   request a floor (idle worker only)
+ *   GSfloorOpen   request a floor (idle worker only)
  *   fn_800FF81C   install the floor table
  *   fn_800FF828   allocate the floor-context stack and the three resource
- *                 pools, then start fn_800FF970 as a GS thread
- *   fn_800FF970   the cooperative floor worker: a state machine over
+ *                 pools, then start _floorManagerThread as a GS thread
+ *   _floorManagerThread   the cooperative floor worker: a state machine over
  *                 lbl_8047ACD8 (idle / loading / running / unloading /
  *                 entering a nested floor / returning from one) that yields
  *                 through _threadSwitch
  *   fn_80100B24   the per-frame resource phase machine the worker runs while
  *                 a floor is up (GSFloorContext.isActive)
- *   loadParticle, fn_801012E8, fn_801013A0, fn_8010147C
+ *   loadParticle, loadCamera, loadModel, loadArchivePtr
  *                 resource registration helpers (particles, models, archives)
  *
  * The static inline helpers below are the ones the object proves: each is
@@ -36,7 +36,7 @@
 extern void  GSlogWrite(const char* fmt, ...);         /* GSlog / OSReport */
 extern void* GSresAllocResourceAlign(u32 size, u32 alignment, u32 loadParam,
                                       u32 loadParam2, void* callback);
-extern void  fn_80101910(void* resource);
+extern void  floorModelRefDec(void* resource);
 extern void  memcpy(void* dst, const void* src, u32 n);
 
 /* ===== String constants (rodata references) ===== */
@@ -97,7 +97,7 @@ extern u32   floorDataBiosGetFileGroupID(void* entry);
 extern u32   floorDataBiosGetGroupID(void* entry);
 extern void  fn_8017B3E4(u32 fileGroupId);
 extern s32   fn_8017B2CC(u32 fileGroupId);
-extern void  fn_8017B1CC(u32 fileGroupId);
+extern void  GSresReleaseById(u32 fileGroupId);
 extern u8    fn_80100B24(GSFloorContext* ctx);
 extern void  floorTerminateScriptThreads(u16 handle);
 extern u8    floorCheckFightKind(s32 floorIndex);
@@ -120,15 +120,15 @@ extern void  GSmodelFreeAllShadowTextures(void);
 extern void  fn_80112780(void);
 extern void  fn_801127BC(void);
 extern u16   _toolentryAlloc__FUl(u32 size);
-extern void* fn_800E27B0(u16 handle);
+extern void* GSmemLock(u16 handle);
 extern void  fn_800E24B0(u16 handle);
-extern void  fn_800E209C(u16 handle);
-extern u32   fn_800F7318(u32 task, void* callback, u32 stackSize, u32 arg3,
+extern void  GSmemFree(u16 handle);
+extern u32   _vmThreadCreate(u32 task, void* callback, u32 stackSize, u32 arg3,
                          u32 arg4, u32 arg5, ...);
 extern void* fn_800F7108(u16 handle);
 extern u8    GSthreadIsRunning(u32 task);
 extern void  GSthreadClose(u32 task);
-void fn_800FF970(void);
+void _floorManagerThread(void);
 
 /** Resource-handler callback shapes, reached through the table at lbl_80404918. */
 typedef u32  (*GSFloorResSizeFunc)(void);
@@ -137,7 +137,7 @@ typedef void (*GSFloorResInitFunc)(void* entry, u32 floorId);
 
 /**
  * Locate the floor table entry for a floor index, or NULL. Expanded in
- * fn_800FF788 and twice in the worker.
+ * GSfloorOpen and twice in the worker.
  */
 static inline void* floorFindDataEntry(u32 floorIndex) {
     GSFloorTableEntry* entry;
@@ -264,7 +264,7 @@ static inline void floorUnloadData(void* entry, s32 release) {
     }
     menuCloseFloor();
     gfxSetFog(0);
-    fn_8017B1CC(floorDataBiosGetFileGroupID(entry));
+    GSresReleaseById(floorDataBiosGetFileGroupID(entry));
     fn_800F915C(floorDataBiosGetGroupID(entry));
 }
 
@@ -346,7 +346,7 @@ static inline u16 floorSaveResourceState(void) {
     if (handle == 0) {
         return 0;
     }
-    buf = fn_800E27B0(handle);
+    buf = GSmemLock(handle);
     if (buf == NULL) {
         return 0;
     }
@@ -383,7 +383,7 @@ static inline void floorLoadResourceState(void) {
 
     handle = lbl_8047ACC8->resMemHandle;
     resType = ((GSFloorTableEntry*)lbl_8047ACC8->floorDataEntry)->resType;
-    buf = fn_800E27B0(handle);
+    buf = GSmemLock(handle);
     if (buf == NULL) {
         return;
     }
@@ -397,7 +397,7 @@ static inline void floorLoadResourceState(void) {
         }
     }
     fn_800E24B0(handle);
-    fn_800E209C(handle);
+    GSmemFree(handle);
 }
 
 /**
@@ -427,7 +427,7 @@ static inline void floorStartResources(GSFloorContext* ctx, s32 state) {
                 ((GSFloorResInitFunc)res->callback)(entry, res->floorId);
             }
             if (res->status == GSFLOOR_RES_LOADED) {
-                res->textureHandle = fn_800F7318(res->priority, res->callback, 0x4000, 0, 0, 4,
+                res->textureHandle = _vmThreadCreate(res->priority, res->callback, 0x4000, 0, 0, 4,
                                                  floorDataBiosGetGroupID(entry), 0, 0, 0);
                 res->modelHandle = fn_800F7108(res->textureHandle);
             }
@@ -549,7 +549,7 @@ static inline void floorCacheArchive(HSD_Archive* archive) {
 }
 
 /* 0x800FF788 | 0x94 */
-void fn_800FF788(u32 floorId) {
+void GSfloorOpen(u32 floorId) {
     GSFloorContext* ctx;
     void* entry;
 
@@ -586,7 +586,7 @@ void fn_800FF828(u32 contextCount, u32 baseCount, u32 extCount1,
 
     lbl_8047ACA0 = _toolentryAlloc__FUl(contextCount * sizeof(GSFloorContext));
     if (lbl_8047ACA0 != 0) {
-        lbl_8047ACA4 = fn_800E27B0(lbl_8047ACA0);
+        lbl_8047ACA4 = GSmemLock(lbl_8047ACA0);
 
         resourceCount = baseCount + extCount1 + extCount2;
         lbl_8047ACB4 = baseCount;
@@ -596,7 +596,7 @@ void fn_800FF828(u32 contextCount, u32 baseCount, u32 extCount1,
 
         lbl_8047ACAC = _toolentryAlloc__FUl(resourceCount * sizeof(GSFloorResource));
         if (lbl_8047ACAC != 0) {
-            lbl_8047ACB0 = fn_800E27B0(lbl_8047ACAC);
+            lbl_8047ACB0 = GSmemLock(lbl_8047ACAC);
             for (i = 0; i < lbl_8047ACC0; i++) {
                 lbl_8047ACB0[i].active = 0;
             }
@@ -612,7 +612,7 @@ void fn_800FF828(u32 contextCount, u32 baseCount, u32 extCount1,
             lbl_8047ACC8->isActive = 0;
             lbl_8047ACD8 = 0;
             lbl_80478B18 = -1;
-            GSthreadCreate(0, 0x7D0, 0x4000, 1, 1, fn_800FF970);
+            GSthreadCreate(0, 0x7D0, 0x4000, 1, 1, _floorManagerThread);
         }
     }
 }
@@ -636,7 +636,7 @@ void fn_800FF828(u32 contextCount, u32 baseCount, u32 extCount1,
  * across loops come last, in the order its first loop header assigned them.
  * A change in one state therefore shifts every later state.
  */
-void fn_800FF970(void) {
+void _floorManagerThread(void) {
 
     while (TRUE) {
         switch (lbl_8047ACD8) {
@@ -769,7 +769,7 @@ void fn_800FF970(void) {
  * a later expansion, which is what lets floorStopPoolThreads declare `n`
  * before `res` (phase 6's r28/r27) without disturbing phase 2.
  *
- * See the note on fn_800FF970 for the colouring order.
+ * See the note on _floorManagerThread for the colouring order.
  */
 u8 fn_80100B24(GSFloorContext* ctx) {
     switch (ctx->isActive) {
@@ -839,8 +839,8 @@ void loadParticle(void* dst, u32 size, void* callback, void* callbackArg) {
 }
 
 /* 0x801012E8 | 0xB8 */
-void fn_801012E8(void* archive, u32 resourceArg, u32 callbackArg) {
-    extern void* fn_800D27FC(void*);
+void loadCamera(void* archive, u32 resourceArg, u32 callbackArg) {
+    extern void* GScameraCreateFromDesc(void*);
     extern void GSresRegisterResource(void*, u32, u32, void*);
     extern void fn_80101A28(void);
     const char* messages = lbl_802717F0;
@@ -856,7 +856,7 @@ void fn_801012E8(void* archive, u32 resourceArg, u32 callbackArg) {
         GSlogWrite(messages + 0x328);
         return;
     }
-    resource = fn_800D27FC(publicData[1]);
+    resource = GScameraCreateFromDesc(publicData[1]);
     if (resource == NULL) {
         GSlogWrite(messages + 0x358);
     }
@@ -865,11 +865,11 @@ void fn_801012E8(void* archive, u32 resourceArg, u32 callbackArg) {
 }
 
 /* 0x801013A0 | 0xDC */
-void fn_801013A0(void* archive, u32 resourceArg, u32 modelIndex,
+void loadModel(void* archive, u32 resourceArg, u32 modelIndex,
                  u32 callbackArg) {
     extern void* GSmodelLoad(void*);
     extern void GSresRegisterResource(void*, u32, u32, void*);
-    extern void fn_80101A4C(void);
+    extern void floorModelFreeCB(void);
     const char* messages = lbl_802717F0;
     void*** publicData;
     void** models;
@@ -893,14 +893,14 @@ void fn_801013A0(void* archive, u32 resourceArg, u32 modelIndex,
                 GSlogWrite(messages + 0x448, index);
             }
             GSresRegisterResource(model, resourceArg, callbackArg,
-                                  (void*)fn_80101A4C);
+                                  (void*)floorModelFreeCB);
             return;
         }
     }
 }
 
 /* 0x8010147C | 0x494 */
-void fn_8010147C(u8* data, u32 size, u32 loadParam, u32 callbackArg) {
+void loadArchivePtr(u8* data, u32 size, u32 loadParam, u32 callbackArg) {
     const char* messages = lbl_802717F0;
     HSD_Archive* archive;
     HSD_Archive* copy;
@@ -917,7 +917,7 @@ void fn_8010147C(u8* data, u32 size, u32 loadParam, u32 callbackArg) {
     archive = floorFindCachedArchive(data);
     if (archive == NULL) {
         archive = GSresAllocResourceAlign(0x60, 0x20, loadParam,
-                                          callbackArg, fn_80101910);
+                                          callbackArg, floorModelRefDec);
         if (archive == NULL) {
             GSlogWrite(messages + 0x540, sizeof(HSD_Archive));
             return;
@@ -926,7 +926,7 @@ void fn_8010147C(u8* data, u32 size, u32 loadParam, u32 callbackArg) {
         floorCacheArchive(archive);
     } else {
         copy = GSresAllocResourceAlign(0x60, 0x20, loadParam,
-                                       callbackArg, fn_80101910);
+                                       callbackArg, floorModelRefDec);
         if (copy == NULL) {
             GSlogWrite(messages + 0x540, sizeof(HSD_Archive));
             return;

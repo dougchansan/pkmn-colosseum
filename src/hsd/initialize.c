@@ -82,17 +82,17 @@ void* OSGetArenaLo(void);
 void* OSGetArenaHi(void);
 void OSSetArenaLo(void* addr);
 void* OSAllocFromArenaLo(u32 size, u32 align);
-u32 fn_8009F3D4(void);                                   /* OSGetPhysicalMemSize */
-void* fn_8009A9D8(OSHeapHandle heap, u32 size);          /* OSAllocFromHeap */
-void fn_8009AAD4(OSHeapHandle heap, void* ptr);          /* OSFreeToHeap */
-OSHeapHandle fn_8009AB50(OSHeapHandle heap);             /* OSSetCurrentHeap */
-OSHeapHandle fn_8009ABD0(void* start, void* end);        /* OSCreateHeap */
-void fn_8009AC3C(OSHeapHandle heap);                     /* OSDestroyHeap */
-s32 fn_8009AC50(OSHeapHandle heap);                      /* OSCheckHeap */
+u32 OSGetConsoleSimulatedMemSize(void);                                   /* OSGetPhysicalMemSize */
+void* OSAllocFromHeap(OSHeapHandle heap, u32 size);          /* OSAllocFromHeap */
+void OSFreeToHeap(OSHeapHandle heap, void* ptr);          /* OSFreeToHeap */
+OSHeapHandle OSSetCurrentHeap(OSHeapHandle heap);             /* OSSetCurrentHeap */
+OSHeapHandle OSCreateHeap(void* start, void* end);        /* OSCreateHeap */
+void OSDestroyHeap(OSHeapHandle heap);                     /* OSDestroyHeap */
+s32 OSCheckHeap(OSHeapHandle heap);                      /* OSCheckHeap */
 void OSReport(const char* fmt, ...);
 void VIWaitForRetrace(void);
 
-void fn_800B856C(void);                                  /* GXInvalidateVtxCache */
+void GXInvalidateVtxCache(void);                                  /* GXInvalidateVtxCache */
 void GXInvalidateTexAll(void);
 void GXInitLightAttn(GXLightObj* lt, f32 a0, f32 a1, f32 a2, f32 k0, f32 k1,
                  f32 k2);                                /* GXInitLightAttn */
@@ -100,23 +100,23 @@ void GXInitLightPos(GXLightObj* lt, f32 x, f32 y, f32 z);   /* GXInitLightPos */
 void GXInitLightDir(GXLightObj* lt, f32 nx, f32 ny, f32 nz); /* GXInitLightDir */
 void GXInitLightColor(GXLightObj* lt, GXColor color);         /* GXInitLightColor */
 void GXLoadLightObjImm(GXLightObj* lt, u32 light);
-void fn_800BCEF4(u32 pix_fmt, u32 z_fmt);                /* GXSetPixelFmt */
-void fn_800BD07C(u8 field_mode, u8 half_aspect_ratio);   /* GXSetFieldMode */
+void GXSetPixelFmt(u32 pix_fmt, u32 z_fmt);                /* GXSetPixelFmt */
+void GXSetFieldMode(u8 field_mode, u8 half_aspect_ratio);   /* GXSetFieldMode */
 
 void _HSD_MemSetCallbacks(__mem_cb* cb, u32 size);
 u32 HSD_Index2LightID(u32 index);
-void fn_801B25C4(u32 flags);                             /* HSD_StateInvalidate */
+void HSD_StateInvalidate(u32 flags);                             /* HSD_StateInvalidate */
 void HSD_IDSetup(void);
 
-void fn_801A3FBC(void);                                  /* HSD_ListInitAllocData */
+void HSD_ListInitAllocData(void);                                  /* HSD_ListInitAllocData */
 void HSD_AObjInitAllocData(void);
 void HSD_FObjInitAllocData(void);
 void HSD_IDInitAllocData(void);
 void HSD_VecInitAllocData(void);
 void HSD_MtxInitAllocData(void);
-void fn_801B0158(void);                                  /* HSD_RObjInitAllocData */
+void HSD_RObjInitAllocData(void);                                  /* HSD_RObjInitAllocData */
 void HSD_RenderInitAllocData(void);
-void fn_801B1854(void);                                  /* HSD_ShadowInitAllocData */
+void HSD_ShadowInitAllocData(void);                                  /* HSD_ShadowInitAllocData */
 void HSD_ZListInitAllocData(void);
 
 HSD_ObjAllocData* HSD_AObjGetAllocData(void);
@@ -170,7 +170,7 @@ static GXColor HSD_Init_804D5E1C = { 0 };
 
 static void HSD_DVDInit(void);
 static void HSD_GXInit(void);
-static void fn_8019C978(void);
+static void HSD_OSInit(void);
 static void HSD_ObjInit(void);
 void* _HSD_MemAllocDefaultCB(u32 size, u32 align, u32 flags);
 void _HSD_MemFreeDefaultCB(void* ptr);
@@ -188,7 +188,7 @@ void HSD_InitComponent(void)
     HSD_AllocateXFB(iparam_xfb_max_num, rmode);
     HSD_GXSetFifoObj(GXInit(HSD_AllocateFifo(iparam_fifo_size),
                             iparam_fifo_size));
-    fn_8019C978();
+    HSD_OSInit();
     {
         HSD_VIStatus vi_status;
         GXColor black = { 0, 0, 0, 0 };
@@ -270,7 +270,7 @@ static void HSD_GXInit(void)
     for (i = 0; i < 8; i++) {
         GXLoadLightObjImm(&lightobj, HSD_Index2LightID(i));
     }
-    fn_801B25C4(-1);
+    HSD_StateInvalidate(-1);
 }
 
 /*
@@ -288,12 +288,12 @@ void initialize_stripped_missing_argument(void* arg)
 
 /* HAL: HSD_OSInit. The arena bounds it reads first are no longer used (Melee
  * passed them to OSInitAlloc); retail still makes both calls. */
-static void fn_8019C978(void)
+static void HSD_OSInit(void)
 {
     u32 old_arena_lo = (u32) OSGetArenaLo();
     u32 old_arena_hi = (u32) OSGetArenaHi();
 
-    memReport.total = fn_8009F3D4();
+    memReport.total = OSGetConsoleSimulatedMemSize();
     memReport.system = memReport.total - (u32) OSGetArenaHi() +
                        (u32) OSGetArenaLo() - memReport.xfb -
                        memReport.gxfifo;
@@ -313,8 +313,8 @@ static void fn_8019C978(void)
             hsd_heap_arena_hi = iparam_arena_hi;
             iparam_arena_lo = NULL;
             iparam_arena_hi = NULL;
-            current_heap = fn_8009ABD0(hsd_heap_arena_lo, hsd_heap_arena_hi);
-            fn_8009AB50(current_heap);
+            current_heap = OSCreateHeap(hsd_heap_arena_lo, hsd_heap_arena_hi);
+            OSSetCurrentHeap(current_heap);
             memReport.heap = (u32) hsd_heap_arena_hi - (u32) hsd_heap_arena_lo;
             HSD_ObjSetHeap(memReport.heap, NULL);
         } else {
@@ -331,8 +331,8 @@ static void fn_8019C978(void)
             } else {
                 hsd_heap_arena_hi = (void*) OSRoundDown32B(arena_hi);
             }
-            current_heap = fn_8009ABD0(hsd_heap_arena_lo, hsd_heap_arena_hi);
-            fn_8009AB50(current_heap);
+            current_heap = OSCreateHeap(hsd_heap_arena_lo, hsd_heap_arena_hi);
+            OSSetCurrentHeap(current_heap);
             memReport.heap = (u32) hsd_heap_arena_hi - (u32) hsd_heap_arena_lo;
             HSD_ObjSetHeap(memReport.heap, NULL);
             OSSetArenaLo(hsd_heap_arena_hi);
@@ -349,32 +349,32 @@ void* _HSD_MemAllocDefaultCB(u32 size, u32 align, u32 flags)
     if (size == 0) {
         return NULL;
     }
-    addr = fn_8009A9D8(HSD_GetHeap(), size);
+    addr = OSAllocFromHeap(HSD_GetHeap(), size);
     HSD_ASSERT(378, addr);
     return addr;
 }
 
 void _HSD_MemFreeDefaultCB(void* ptr)
 {
-    fn_8009AAD4(HSD_GetHeap(), ptr);
+    OSFreeToHeap(HSD_GetHeap(), ptr);
 }
 
 u32 _HSD_MemGetRemainDefaultCB(void)
 {
-    return fn_8009AC50(HSD_GetHeap());
+    return OSCheckHeap(HSD_GetHeap());
 }
 
 void _HSD_MemClearDefaultCB(void)
 {
-    fn_8009AC3C(current_heap);
+    OSDestroyHeap(current_heap);
     if (iparam_arena_lo != NULL && iparam_arena_hi != NULL) {
         hsd_heap_arena_lo = iparam_arena_lo;
         hsd_heap_arena_hi = iparam_arena_hi;
         iparam_arena_lo = NULL;
         iparam_arena_hi = NULL;
     }
-    current_heap = fn_8009ABD0(hsd_heap_arena_lo, hsd_heap_arena_hi);
-    fn_8009AB50(current_heap);
+    current_heap = OSCreateHeap(hsd_heap_arena_lo, hsd_heap_arena_hi);
+    OSSetCurrentHeap(current_heap);
 }
 
 BOOL _HSD_MemCheckOwnDefaultCB(void* ptr)
@@ -426,21 +426,21 @@ HSD_RenderPass HSD_GetCurrentRenderPass(void)
 }
 
 /* HAL: HSD_StartRender */
-void fn_8019C708(HSD_RenderPass pass)
+void HSD_StartRender(HSD_RenderPass pass)
 {
     GXRenderModeObj* rmode = HSD_VIGetRenderMode();
 
     current_render_pass = pass;
     if (rmode->aa) {
-        fn_800BCEF4(GX_PF_RGB565_Z16, current_z_fmt);
+        GXSetPixelFmt(GX_PF_RGB565_Z16, current_z_fmt);
     } else {
-        fn_800BCEF4(current_pix_fmt, GX_ZC_LINEAR);
+        GXSetPixelFmt(current_pix_fmt, GX_ZC_LINEAR);
     }
-    fn_800BD07C(rmode->field_rendering, rmode->xfbHeight < rmode->viHeight);
+    GXSetFieldMode(rmode->field_rendering, rmode->xfbHeight < rmode->viHeight);
 
     if (invalidate_flags) {
         if (invalidate_flags & 1) {
-            fn_800B856C();
+            GXInvalidateVtxCache();
         }
         if (invalidate_flags & 2) {
             GXInvalidateTexAll();
@@ -467,15 +467,15 @@ void fn_8019C6EC(s32 flags)
 
 static void HSD_ObjInit(void)
 {
-    fn_801A3FBC();
+    HSD_ListInitAllocData();
     HSD_AObjInitAllocData();
     HSD_FObjInitAllocData();
     HSD_IDInitAllocData();
     HSD_VecInitAllocData();
     HSD_MtxInitAllocData();
-    fn_801B0158();
+    HSD_RObjInitAllocData();
     HSD_RenderInitAllocData();
-    fn_801B1854();
+    HSD_ShadowInitAllocData();
     HSD_ZListInitAllocData();
 }
 
@@ -519,7 +519,7 @@ void HSD_ObjDumpStat(void)
 }
 
 /* HAL: HSD_SetInitParameter */
-BOOL fn_8019C3C4(HSD_InitParam param, ...)
+BOOL HSD_SetInitParameter(HSD_InitParam param, ...)
 {
     va_list ap;
     BOOL ok = FALSE;
@@ -553,7 +553,7 @@ BOOL fn_8019C3C4(HSD_InitParam param, ...)
 
     case HSD_INIT_HEAP_SIZE: {
         u32 heap_size = va_arg(ap, u32);
-        if (heap_size < fn_8009F3D4()) {
+        if (heap_size < OSGetConsoleSimulatedMemSize()) {
             iparam_heap_size = heap_size;
             ok = TRUE;
         }

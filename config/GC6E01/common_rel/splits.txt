@@ -3,13 +3,52 @@ Sections:
 	.rodata     type:rodata align:8
 	.data       type:data align:4
 
+rel/common_rel/msg_face_data.c:
+	.data       start:0x00000000 end:0x00002D2C
+
+rel/common_rel/table_res_data.c:
+	.data       start:0x00002D2C end:0x0008BCD4
+
+rel/common_rel/floor_fight_data.c:
+	.data       start:0x0008BCD4 end:0x00091684
+
+rel/common_rel/fight_trainer_data.c:
+	.data       start:0x00091684 end:0x00111B8C
+
+rel/common_rel/const_data.c:
+	.rodata     start:0x00000000 end:0x0000056C
+
 rel/common_rel/snd_song_table.c:
 	.rodata     start:0x0000056C end:0x00000C54
 	.data       start:0x00111B8C end:0x00111E04
 
+rel/common_rel/gs_task_data.c:
+	.data       start:0x00111E04 end:0x00118E4C
+
+rel/common_rel/fight_ai_data.c:
+	.data       start:0x00118E4C end:0x0011BFAC
+
+rel/common_rel/treasure_data.c:
+	.data       start:0x0011BFAC end:0x0011C7C4
+
+rel/common_rel/waza_data.c:
+	.data       start:0x0011C7C4 end:0x00121614
+
+rel/common_rel/pokemon_data.c:
+	.data       start:0x00121614 end:0x0013E440
+
+rel/common_rel/people_data.c:
+	.data       start:0x0013E440 end:0x0013FE08
+
+rel/common_rel/snd_volume_data.c:
+	.data       start:0x0013FE08 end:0x00143918
+
 rel/common_rel/snd_sample_table.c:
 	.rodata     start:0x00000C54 end:0x00000D0C
 	.data       start:0x00143918 end:0x001439D8
+
+rel/common_rel/misc_data.c:
+	.data       start:0x001439D8 end:0x0014A654
 
 rel/common_rel/common_rel.c:
 	.text       start:0x00000000 end:0x00000A9C

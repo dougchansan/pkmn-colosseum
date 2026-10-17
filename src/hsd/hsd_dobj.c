@@ -577,7 +577,7 @@ void HSD_DObjReqAnimAllByFlags(HSD_DObj* dobj, f32 val, void* arg) {
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
-extern void fn_801AD738(HSD_PObj* pobj, void* arg);
+extern void HSD_PObjAddAnimAll(HSD_PObj* pobj, void* arg);
 #if 0
 asm void HSD_DObjAddAnimAll(void) {
 #include "src/hsd/hsd_dobj_HSD_DObjAddAnimAll.inc"
@@ -604,7 +604,7 @@ void HSD_DObjAddAnimAll(HSD_DObj* dobj, void* matanim, void* shapeanim) {
             } else {
                 shapeargl = NULL;
             }
-            fn_801AD738(pobj, shapeargl);
+            HSD_PObjAddAnimAll(pobj, shapeargl);
             HSD_MObjAddAnim(d->mobj, ma);
         }
         d = d->next;
@@ -953,7 +953,7 @@ u32 FObjLoadData(HSD_FObj* fobj)
     }
 }
 
-extern f32 fn_801B2560(f32 inv_duration, f32 time, f32 p0, f32 p1,
+extern f32 splGetHelmite(f32 inv_duration, f32 time, f32 p0, f32 p1,
                        f32 d0, f32 d1);
 extern const f64 lbl_8047DA40;
 extern const f64 lbl_8047DA48;
@@ -1002,7 +1002,7 @@ static inline void FObjUpdateAnimInline(HSD_FObj* fobj, void* obj,
     case HSD_A_OP_SPL:
     case HSD_A_OP_SLP:
         if (*(volatile u16*)&fobj->fterm != 0) {
-            data.fv = fn_801B2560(lbl_8047DA48 /
+            data.fv = splGetHelmite(lbl_8047DA48 /
                                       *(volatile u16*)&fobj->fterm,
                                   fobj->time,
                                   fobj->p0, fobj->p1, fobj->d0, fobj->d1);

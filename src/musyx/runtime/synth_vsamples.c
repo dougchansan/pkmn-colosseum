@@ -57,10 +57,10 @@ extern u32 aramGetStreamBufferAddress(u8 id, u32* len);
 extern void fn_80162858(u32 voice, void* addr, u32 len); /* hwSetVirtualSampleLoopBuffer */
 extern u16 fn_801628A0(u32 voice);           /* hwGetSampleID */
 extern u8 fn_8016288C(u32 voice);            /* hwGetSampleType */
-extern u32 fn_80162878(u32 voice);           /* hwGetVirtualSampleState */
-extern u32 fn_80162E14(u32 voice);           /* hwGetPos */
+extern u32 hwGetVirtualSampleState(u32 voice);           /* hwGetVirtualSampleState */
+extern u32 hwGetPos(u32 voice);           /* hwGetPos */
 extern u32 hwGetVirtualSampleID(u32 voice);
-extern u32 fn_801631F4(u32 voice);           /* hwVoiceInStartup */
+extern u32 hwVoiceInStartup(u32 voice);           /* hwVoiceInStartup */
 extern void hwBreak(u32 voice);
 extern void macSampleEndNotify(SYNTH_VOICE* svoice);
 extern void voiceKill(u32 voice);
@@ -117,7 +117,7 @@ static void vsFreeBuffer(u8 bufferIndex)
     lbl_80446F10.voices[lbl_80446F10.streamBuffer[bufferIndex].voice] = 0xFF;
 }
 
-u32 fn_80159550(u8 voice) /* vsSampleStartNotify */
+u32 vsSampleStartNotify(u8 voice) /* vsSampleStartNotify */
 {
     u8 sb;
     u8 i;
@@ -167,7 +167,7 @@ void vsSampleEndNotify(u32 pubID)
     }
 }
 
-void fn_80159840(VS_BUFFER* sb, u32 cpos) /* vsUpdateBuffer */
+void vsUpdateBuffer(VS_BUFFER* sb, u32 cpos) /* vsUpdateBuffer */
 {
     u32 len;
 
@@ -235,9 +235,9 @@ void vsSampleUpdates(void)
     }
 
     for (i = 0; i < 64; ++i) {
-        if (lbl_80446F10.voices[i] != 0xFF && fn_80162878(i) != 0) {
+        if (lbl_80446F10.voices[i] != 0xFF && hwGetVirtualSampleState(i) != 0) {
             sb = &lbl_80446F10.streamBuffer[lbl_80446F10.voices[i]];
-            realCPos = fn_80162E14(i);
+            realCPos = hwGetPos(i);
             if (sb->smpType == 5) {
                 cpos = (realCPos / 14) * 14;
             } else {
@@ -246,12 +246,12 @@ void vsSampleUpdates(void)
 
             switch (sb->state) {
             case 1:
-                fn_80159840(sb, cpos);
+                vsUpdateBuffer(sb, cpos);
                 break;
             case 2:
             case 3:
                 if (((sb->info.instID << 8) | sb->voice) == hwGetVirtualSampleID(sb->voice)) {
-                    fn_80159840(sb, cpos);
+                    vsUpdateBuffer(sb, cpos);
 
                     if (realCPos >= sb->finalLast) {
                         sb->finalGoodSamples -= (realCPos - sb->finalLast);
@@ -262,7 +262,7 @@ void vsSampleUpdates(void)
                     sb->finalLast = realCPos;
                     nextSamples = (lbl_8047AF48[sb->voice].curPitch * 160 + 0xFFF) / 4096;
                     if ((s32)nextSamples > (s32)sb->finalGoodSamples) {
-                        if (!fn_801631F4(sb->voice)) {
+                        if (!hwVoiceInStartup(sb->voice)) {
                             if (sb->state == 2) {
                                 hwBreak(sb->voice);
                                 macSampleEndNotify(&lbl_8047AF48[sb->voice]);

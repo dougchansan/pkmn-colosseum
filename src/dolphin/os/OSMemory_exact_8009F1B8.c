@@ -58,7 +58,7 @@ void __OSModuleInit(void) {
 
 extern void OSInitThreadQueue();
 
-void fn_8009F1D0(u8* ptr, u32 val1, u32 val2) {
+void OSInitMessageQueue(u8* ptr, u32 val1, u32 val2) {
     OSInitThreadQueue(ptr);
     OSInitThreadQueue(ptr + 0x8);
     *(u32*)(ptr + 0x10) = val1;
@@ -67,7 +67,7 @@ void fn_8009F1D0(u8* ptr, u32 val1, u32 val2) {
     *(u32*)(ptr + 0x1C) = 0;
 }
 
-BOOL fn_8009F230(OSMessageQueue* mq, void* msg, s32 flags) {
+BOOL OSSendMessage(OSMessageQueue* mq, void* msg, s32 flags) {
     BOOL enabled;
     s32 lastIndex;
 
@@ -87,7 +87,7 @@ BOOL fn_8009F230(OSMessageQueue* mq, void* msg, s32 flags) {
     return TRUE;
 }
 
-BOOL fn_8009F2F8(OSMessageQueue* mq, void* msg, s32 flags) {
+BOOL OSReceiveMessage(OSMessageQueue* mq, void* msg, s32 flags) {
     BOOL enabled = OSDisableInterrupts();
 
     while (mq->usedCount == 0) {
@@ -108,7 +108,7 @@ BOOL fn_8009F2F8(OSMessageQueue* mq, void* msg, s32 flags) {
     return TRUE;
 }
 
-u32 fn_8009F3D4(void) {
+u32 OSGetConsoleSimulatedMemSize(void) {
     return *(volatile u32*)0x80000028;
 }
 
@@ -141,7 +141,7 @@ void MEMIntrruptHandler_8009F41C(s16 interrupt, OSContext* context) {
     __OSUnhandledException(OS_ERROR_PROTECTION, context, cause, addr);
 }
 
-void fn_8009F488(u32 chan, void* addr, u32 nBytes, u32 control) {
+void OSProtectRange(u32 chan, void* addr, u32 nBytes, u32 control) {
     BOOL enabled;
     u32 start;
     u32 end;

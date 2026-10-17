@@ -12,7 +12,7 @@
 
 extern s32 heroGetStatus(void* partyData, s32 slot, s32 p3);
 extern void msgctrlSetValue(s32 paramId, s32 value);
-extern void fn_800FB680(s32, s32, u32, u16);
+extern void GSmsgPrintColor(s32, s32, u32, u16);
 extern u32 GSmsgGetRect(u32 msg);
 extern s32 GSmsgGetGSchar(u32 msg);
 extern u8 pokemonBiosGetFuseiFlag(void* pokemon);
@@ -61,7 +61,7 @@ void fn_80031648(u8* r3, u8* r4)
     if (pokemonBiosGetFuseiFlag(pokemon) != 0) {
         msgctrlSetValue(0x37, GSmsgGetGSchar(0x56C));
         width = GSmsgGetRect(0xE7) >> 16;
-        fn_800FB680((s16)(*(s16*)(r4 + 0x54) / 2 - width / 2), 0, -1, 0xE7);
+        GSmsgPrintColor((s16)(*(s16*)(r4 + 0x54) / 2 - width / 2), 0, -1, 0xE7);
         winSpriteSetDisp(r4, 1);
     } else if (pokemonCheckValid(pokemon) != 0 && menuCBRule_CheckPokemonEventFlag(pokemon) == 1) {
         if (pokemonBiosGetTamagoFlag(pokemon) != 0) {
@@ -71,7 +71,7 @@ void fn_80031648(u8* r3, u8* r4)
             msgctrlSetValue(0x37, (s32)name);
         }
         width = GSmsgGetRect(0xE7) >> 16;
-        fn_800FB680((s16)(*(s16*)(r4 + 0x54) / 2 - width / 2), 0, -1, 0xE7);
+        GSmsgPrintColor((s16)(*(s16*)(r4 + 0x54) / 2 - width / 2), 0, -1, 0xE7);
         winSpriteSetDisp(r4, 1);
     } else {
         winSpriteSetDisp(r4, 0);

@@ -63,7 +63,7 @@ extern u32 lbl_8047B07C;
 
 /* GSmem allocator */
 extern u16   _toolentryAlloc__FUl(u32 size);
-extern void* fn_800E27B0(u16 handle);
+extern void* GSmemLock(u16 handle);
 
 /* External functions referenced from asm wrappers */
 extern u32 sndAuxCallbackUpdateSettingsReverbHI(u8* ptr);
@@ -72,12 +72,12 @@ extern u32 sndAuxCallbackUpdateSettingsReverbHI(u8* ptr);
 extern void  GSmodelGetPart(void* model, u32 param);
 extern void  GSpartFree(void* model, u32 param);
 extern void  fn_800E24B0(void* model, u32 param);
-extern void  fn_800E209C(void* model, u32 param);
+extern void  GSmemFree(void* model, u32 param);
 extern void  set__5GSvecFfff(void* dst, void* src);
 extern void  GSvecCopy(void* dst, void* src);
 extern void  GSvecAdd(void* model, void* param);
 extern void  fn_800E0BA0(void* param);
-extern void  fn_800E0BE4(void* param);
+extern void  GSrandf(void* param);
 extern void  vecScale(void* param);
 extern u32   __cvt_fp2unsigned(f64 val);
 
@@ -94,7 +94,7 @@ extern void  fn_801429E8(void* entry);  /* peopleFieldGetEntry */
 extern void  fn_80142984(u32 id);       /* peopleFieldGetByID */
 
 /* Script system */
-extern void fn_801621BC(u32* ptr);  /* peopleFieldUtilDispatch - same-TU asm wrapper */
+extern void sndConvertMs(u32* ptr);  /* peopleFieldUtilDispatch - same-TU asm wrapper */
 
 /* ===================================================================
  * All functions in this module are listed above in the MODULE MAP.
@@ -304,7 +304,7 @@ extern u32 lbl_8047AF00;             /* curSeqId */
 extern void synthSetBpm(u32 bpm, u8 seqId, u8 secIndex);
 extern f64 fmod(f64 a, f64 b); /* fmod (wraps __ieee754_fmod) */
 extern f64 floor(f64 x);
-extern SEQ_EVENT* fn_801485FC(SEQ_EVENT* event, u8 secIndex, u32* loopFlag); /* HandleEvent */
+extern SEQ_EVENT* HandleEvent(SEQ_EVENT* event, u8 secIndex, u32* loopFlag); /* HandleEvent */
 extern u32 synthSendKeyOff(u32 id);
 extern u32 synthIsFadeOutActive(u8 volGroup);
 extern u32 sndFXCheck(u32 id); /* sndFXCheck */
@@ -625,10 +625,10 @@ typedef struct {
 extern void sndSeqVolume(u8 volume, u16 time, u32 seqId, u8 mode);
 extern void sndSeqMute(u32 seqId, u32 mask1, u32 mask2);
 extern void sndSeqSpeed(u32 seqId, u16 speed);
-extern void fn_8014D648(u32 seqId); /* sndSeqContinue */
-extern u32 fn_8015A21C(u16 sgid, u16 sid, void* arrfile, SND_PLAYPARA* para, u32 irqCall,
+extern void sndSeqContinue(u32 seqId); /* sndSeqContinue */
+extern u32 seqPlaySong(u16 sgid, u16 sid, void* arrfile, SND_PLAYPARA* para, u32 irqCall,
                         u8 studio); /* seqPlaySong */
-extern u32 fn_8015A368(u16 sgid, u16 sid, void* arrfile, SND_PLAYPARA* para,
+extern u32 sndSeqPlayEx(u16 sgid, u16 sid, void* arrfile, SND_PLAYPARA* para,
                         u8 studio); /* sndSeqPlayEx */
 
 void seqCrossFade(SND_CROSSFADE* ci, u32* new_seqId, u8 irq_call) {
@@ -682,7 +682,7 @@ void seqCrossFade(SND_CROSSFADE* ci, u32* new_seqId, u8 irq_call) {
                     seqSpeed(ci->seqId2, ci->speed2);
                 }
             } else {
-                fn_8014D648(ci->seqId2);
+                sndSeqContinue(ci->seqId2);
                 sndSeqVolume(ci->vol2, ci->time2, ci->seqId2, SND_SEQVOL_CONTINUE);
                 if ((ci->flags & SND_CROSSFADE_TRACKMUTE) != 0) {
                     sndSeqMute(ci->seqId2, ci->trackMute2[0], ci->trackMute2[1]);
@@ -713,13 +713,13 @@ void seqCrossFade(SND_CROSSFADE* ci, u32* new_seqId, u8 irq_call) {
         pp.volTarget = ci->vol2;
         pp.numFaded = 0;
         if (irq_call != 0) {
-            if ((*new_seqId = fn_8015A21C(ci->gid2, ci->sid2, ci->arr2, &pp, TRUE, ci->studio2)) !=
+            if ((*new_seqId = seqPlaySong(ci->gid2, ci->sid2, ci->arr2, &pp, TRUE, ci->studio2)) !=
                     SND_SEQ_ERROR_ID &&
                 (ci->flags & SND_CROSSFADE_MUTENEW) != 0) {
                 seqMute(*new_seqId, 0, 0);
             }
         } else {
-            if ((*new_seqId = fn_8015A368(ci->gid2, ci->sid2, ci->arr2, &pp, ci->studio2)) !=
+            if ((*new_seqId = sndSeqPlayEx(ci->gid2, ci->sid2, ci->arr2, &pp, ci->studio2)) !=
                     SND_SEQ_ERROR_ID &&
                 (ci->flags & SND_CROSSFADE_MUTENEW) != 0) {
                 sndSeqMute(*new_seqId, 0, 0);

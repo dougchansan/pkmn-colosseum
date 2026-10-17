@@ -7,9 +7,9 @@ extern void* lbl_8047B62C;
 extern u8 lbl_80379945[];
 extern u8 lbl_8037994A[];
 
-extern void fn_80211B94(void* context, void* script, u8 preserveState);
+extern void wsRunScript(void* context, void* script, u8 preserveState);
 
-void fn_8022D20C(void* context) {
+void _wsCheckSynchronizeAttacker(void* context) {
     extern u16 fightOutPokemonGetTokuseiDataId();
     extern u32 fightOutPokemonCheckFightOut();
     extern void fightFloorSetStatus();
@@ -28,7 +28,7 @@ void fn_8022D20C(void* context) {
         lbl_80478D78[3] = lbl_8047B628;
         fightFloorSetStatus(0, 0, 0x4B, 0, (u32)context);
         lbl_8047B618 = lbl_8047B618 | 0x2000;
-        fn_80211B94(lbl_8047B62C, (void*)&lbl_80379945, 0);
+        wsRunScript(lbl_8047B62C, (void*)&lbl_80379945, 0);
     }
 }
 
@@ -51,15 +51,15 @@ void fn_8022D2CC(void* attacker, void* context) {
         lbl_80478D78[3] = lbl_8047B628 + 0x40;
         fightFloorSetStatus(0, 0, 0x4B, 0, (u32)context);
         lbl_8047B618 = lbl_8047B618 | 0x2000;
-        fn_80211B94(lbl_8047B62C, (void*)&lbl_80379945, 0);
+        wsRunScript(lbl_8047B62C, (void*)&lbl_80379945, 0);
     }
 }
 
-u32 fn_8022D394(u32 pokemon) {
+u32 _fightTokuseiCureJoutaiSub(u32 pokemon) {
     extern u8 fightOutPokemonCheckFightOut();
     extern u32 fightOutPokemonGetTokuseiDataId();
     extern u32 fightOutPokemonGetPokemonPtr();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern void fn_80119F50();
     extern u32 GSmsgGetGSchar();
     extern void msgctrlSetValue();
@@ -85,21 +85,21 @@ u32 fn_8022D394(u32 pokemon) {
 
         switch ((u16)pokemon) {
         case 0x11:
-            if (fn_802026E4(ability, 3) == 1 || fn_802026E4(ability, 4) == 1) {
+            if (fightOutPokemonIsPokemonJoutaiDataId(ability, 3) == 1 || fightOutPokemonIsPokemonJoutaiDataId(ability, 4) == 1) {
                 fn_80119F50(3);
                 msgctrlSetValue(0xD, GSmsgGetGSchar());
                 result = 1;
             }
             break;
         case 0x14:
-            if (fn_802026E4(ability, 9) == 1) {
+            if (fightOutPokemonIsPokemonJoutaiDataId(ability, 9) == 1) {
                 fn_80119F50(9);
                 msgctrlSetValue(0xD, GSmsgGetGSchar());
                 result = 2;
             }
             break;
         case 7:
-            if (fn_802026E4(ability, 5) == 1) {
+            if (fightOutPokemonIsPokemonJoutaiDataId(ability, 5) == 1) {
                 fn_80119F50(5);
                 msgctrlSetValue(0xD, GSmsgGetGSchar());
                 result = 1;
@@ -107,7 +107,7 @@ u32 fn_8022D394(u32 pokemon) {
             break;
         case 0xF:
         case 0x48:
-            if (fn_802026E4(ability, 8) == 1) {
+            if (fightOutPokemonIsPokemonJoutaiDataId(ability, 8) == 1) {
                 fightOutPokemonWriteJoutaiDataId(ability, 0x17);
                 fn_80119F50(8);
                 msgctrlSetValue(0xD, GSmsgGetGSchar());
@@ -115,21 +115,21 @@ u32 fn_8022D394(u32 pokemon) {
             }
             break;
         case 0x29:
-            if (fn_802026E4(ability, 6) == 1) {
+            if (fightOutPokemonIsPokemonJoutaiDataId(ability, 6) == 1) {
                 fn_80119F50(6);
                 msgctrlSetValue(0xD, GSmsgGetGSchar());
                 result = 1;
             }
             break;
         case 0x28:
-            if (fn_802026E4(ability, 7) == 1) {
+            if (fightOutPokemonIsPokemonJoutaiDataId(ability, 7) == 1) {
                 fn_80119F50(7);
                 msgctrlSetValue(0xD, GSmsgGetGSchar());
                 result = 1;
             }
             break;
         case 0xC:
-            if (fn_802026E4(ability, 10) == 1) {
+            if (fightOutPokemonIsPokemonJoutaiDataId(ability, 10) == 1) {
                 fn_80119F50(10);
                 msgctrlSetValue(0xD, GSmsgGetGSchar());
                 result = 3;
@@ -160,7 +160,7 @@ u32 fn_8022D394(u32 pokemon) {
             break;
         }
 
-        fn_80211B94(lbl_8047B62C, lbl_8037994A, 0);
+        wsRunScript(lbl_8047B62C, lbl_8037994A, 0);
     }
 
 return_one:

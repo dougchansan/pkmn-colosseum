@@ -8,7 +8,7 @@
  */
 
 extern void MWTRACE(s32 level, const char* fmt, ...);
-extern void fn_800BE464(void* event, s32 type);
+extern void TRKConstructEvent(void* event, s32 type);
 extern s32  fn_800BE47C(void* event);
 extern s32  fn_800BF1FC(void);  /* TRKProcessInput - returns buffer index or -1 */
 extern void* TRKGetBuffer(s32 index);
@@ -65,7 +65,7 @@ void TRKGetInput(void) {
 
         TRKGetBuffer(bufIdx);
 
-        fn_800BE464((void*)eventBuf, 2); /* construct message event */
+        TRKConstructEvent((void*)eventBuf, 2); /* construct message event */
 
         /* Store buffer index in event at offset 0x08 */
         ((s32*)eventBuf)[2] = bufIdx;
@@ -93,7 +93,7 @@ void TRKProcessInput(s32 bufIdx) {
     extern s32 TRKPostEvent(void* event);
     u8 eventBuf[0x10];
 
-    fn_800BE464((void*)eventBuf, 2);
+    TRKConstructEvent((void*)eventBuf, 2);
     ((s32*)lbl_803FE7B8)[0] = -1;
     *(s32*)(eventBuf + 0x8) = bufIdx;
     TRKPostEvent((void*)eventBuf);
@@ -108,8 +108,8 @@ void TRKProcessInput(s32 bufIdx) {
  * 0x800BF33C | size: 0x88
  */
 s32 usr_puts_serial(u8* str) {
-    extern u32 fn_800C04F4(void);
-    extern void fn_800C04E8(u32 state);
+    extern u32 GetTRKConnected(void);
+    extern void SetTRKConnected(u32 state);
     extern void OSReport(const char* fmt);
     u8 buf[2];
     u8 zero;
@@ -120,12 +120,12 @@ s32 usr_puts_serial(u8* str) {
     zero = 0;
     result = 0;
     while ((result == 0) && ((ch = (s8)*str++) != 0)) {
-        state = fn_800C04F4();
+        state = GetTRKConnected();
         buf[0] = ch;
         buf[1] = zero;
-        fn_800C04E8(0);
+        SetTRKConnected(0);
         OSReport((const char*)buf);
-        fn_800C04E8(state);
+        SetTRKConnected(state);
         result = 0;
     }
     return result;

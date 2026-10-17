@@ -63,7 +63,7 @@ extern u32 lbl_8047B07C;
 
 /* GSmem allocator */
 extern u16   _toolentryAlloc__FUl(u32 size);
-extern void* fn_800E27B0(u16 handle);
+extern void* GSmemLock(u16 handle);
 
 /* External functions referenced from asm wrappers */
 extern u32 sndAuxCallbackUpdateSettingsReverbHI(u8* ptr);
@@ -72,12 +72,12 @@ extern u32 sndAuxCallbackUpdateSettingsReverbHI(u8* ptr);
 extern void  GSmodelGetPart(void* model, u32 param);
 extern void  GSpartFree(void* model, u32 param);
 extern void  fn_800E24B0(void* model, u32 param);
-extern void  fn_800E209C(void* model, u32 param);
+extern void  GSmemFree(void* model, u32 param);
 extern void  set__5GSvecFfff(void* dst, void* src);
 extern void  GSvecCopy(void* dst, void* src);
 extern void  GSvecAdd(void* model, void* param);
 extern void  fn_800E0BA0(void* param);
-extern void  fn_800E0BE4(void* param);
+extern void  GSrandf(void* param);
 extern void  vecScale(void* param);
 extern u32   __cvt_fp2unsigned(f64 val);
 
@@ -94,7 +94,7 @@ extern void  fn_801429E8(void* entry);  /* peopleFieldGetEntry */
 extern void  fn_80142984(u32 id);       /* peopleFieldGetByID */
 
 /* Script system */
-extern void fn_801621BC(u32* ptr);  /* peopleFieldUtilDispatch - same-TU asm wrapper */
+extern void sndConvertMs(u32* ptr);  /* peopleFieldUtilDispatch - same-TU asm wrapper */
 
 /* ===================================================================
  * All functions in this module are listed above in the MODULE MAP.
@@ -304,7 +304,7 @@ extern u32 lbl_8047AF00;             /* curSeqId */
 extern void synthSetBpm(u32 bpm, u8 seqId, u8 secIndex);
 extern f64 fmod(f64 a, f64 b); /* fmod (wraps __ieee754_fmod) */
 extern f64 floor(f64 x);
-extern SEQ_EVENT* fn_801485FC(SEQ_EVENT* event, u8 secIndex, u32* loopFlag); /* HandleEvent */
+extern SEQ_EVENT* HandleEvent(SEQ_EVENT* event, u8 secIndex, u32* loopFlag); /* HandleEvent */
 extern u32 synthSendKeyOff(u32 id);
 extern u32 synthIsFadeOutActive(u8 volGroup);
 extern u32 sndFXCheck(u32 id); /* sndFXCheck */
@@ -371,9 +371,9 @@ typedef struct {
 
 extern u8 lbl_80435464[64]; /* synthTrackVolume */
 extern void synthSetMusicVolumeType(u8 volumeGroup, u8 type);
-extern void fn_801603C0(u8 ctrl, u8 midi, u8 midiSet, u8 value);
+extern void inpSetMidiCtrl(u8 ctrl, u8 midi, u8 midiSet, u8 value);
 extern void inpResetMidiCtrl(u8 midi, u8 midiSet, u32 coldReset);
-extern void fn_80160ED4(u8 midi, u8 midiSet);
+extern void inpResetChannelDefaults(u8 midi, u8 midiSet);
 extern void InitTrackEvents(void);
 
 void StartPause(SEQ_INSTANCE* si);
@@ -455,7 +455,7 @@ u32 seqGetPrivateId(u32 seqId) {
 }
 #endif
 
-u32 fn_801463C4(PAGE* normal, PAGE* drum, MIDISETUP* midiSetup, u32* song,
+u32 seqStartPlay(PAGE* normal, PAGE* drum, MIDISETUP* midiSetup, u32* song,
                 SND_PLAYPARA* para, u8 studio, u16 groupId)
 {
     ARR* arr;
@@ -581,15 +581,15 @@ u32 fn_801463C4(PAGE* normal, PAGE* drum, MIDISETUP* midiSetup, u32* song,
         seq->prgState[i].macId = 0xFFFF;
     }
     for (i = 0; i < 16; i++) {
-        fn_80160ED4(i, seqId);
+        inpResetChannelDefaults(i, seqId);
     }
     if (midiSetup != NULL) {
         for (i = 0; i < 16; i++) {
             DoPrgChange(seq, midiSetup->channel[i].program, i);
-            fn_801603C0(7, i, seqId, midiSetup->channel[i].volume);
-            fn_801603C0(10, i, seqId, midiSetup->channel[i].panning);
-            fn_801603C0(91, i, seqId, midiSetup->channel[i].reverb);
-            fn_801603C0(93, i, seqId, midiSetup->channel[i].chorus);
+            inpSetMidiCtrl(7, i, seqId, midiSetup->channel[i].volume);
+            inpSetMidiCtrl(10, i, seqId, midiSetup->channel[i].panning);
+            inpSetMidiCtrl(91, i, seqId, midiSetup->channel[i].reverb);
+            inpSetMidiCtrl(93, i, seqId, midiSetup->channel[i].chorus);
         }
     }
     for (i = 0; i < 16; i++) {

@@ -5,7 +5,7 @@ u32 mailGetNbMailData(void)
     return *lbl_80478E98;
 }
 
-s32 fn_801D147C(s32 idx)
+s32 mailDataBiosGet28(s32 idx)
 {
     WazaEntry* entry;
 
@@ -18,7 +18,7 @@ s32 fn_801D147C(s32 idx)
     return entry->resourceID;
 }
 
-s32 fn_801D14C0(s32 idx)
+s32 mailDataBiosGet24(s32 idx)
 {
     WazaEntry* entry;
     if (idx < 0 || (u32)idx >= *lbl_80478E98) {
@@ -30,7 +30,7 @@ s32 fn_801D14C0(s32 idx)
     return entry->field_24;
 }
 
-s32 fn_801D1504(s32 idx)
+s32 mailDataBiosGet20(s32 idx)
 {
     WazaEntry* entry;
     if (idx < 0 || (u32)idx >= *lbl_80478E98) {
@@ -78,12 +78,12 @@ u32 mailGetSendRate(s32 idx)
     return entry->sendRate;
 }
 
-u32 fn_801D1618(void)
+u32 mailGetMailCount(void)
 {
     return lbl_80478CB8;
 }
 
-u32 fn_801D1620(u32 idx)
+u32 mailGetEntryField4(u32 idx)
 {
     s32 slot = idx & 0xFF;
     if (slot >= lbl_80478CB8) {
@@ -92,7 +92,7 @@ u32 fn_801D1620(u32 idx)
     return lbl_8036E0E0[slot * 2 + 1];
 }
 
-u32 fn_801D1650(u32 idx)
+u32 mailGetEntryField0(u32 idx)
 {
     s32 slot = idx & 0xFF;
     if (slot >= lbl_80478CB8) {

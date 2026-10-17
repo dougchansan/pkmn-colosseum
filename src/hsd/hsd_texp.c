@@ -77,7 +77,7 @@ static inline HSD_TObj* makeShadowTObj(void)
     return shadowTObj;
 }
 
-HSD_Shadow* fn_801B1730(void)
+HSD_Shadow* HSD_ShadowAlloc(void)
 {
     HSD_Shadow* shadow;
 
@@ -217,7 +217,7 @@ struct HSD_Spline {
     f32 (*segPoly)[5];
 };
 
-f32 fn_801B2560(f32 a, f32 b, f32 c, f32 d, f32 e, f32 f)
+f32 splGetHelmite(f32 a, f32 b, f32 c, f32 d, f32 e, f32 f)
 {
     f32 b2 = b * b;
     f32 a2 = a * a;
@@ -301,7 +301,7 @@ static inline void ColSplGetBezierPoint(SplineVec3* p, SplineVec3* cp,
            (cp[2].z * bez2) + (cp[3].z * bez3);
 }
 
-void fn_801B2038(SplineVec3* p, HSD_Spline* spline, f32 u)
+void splGetSplinePoint(SplineVec3* p, HSD_Spline* spline, f32 u)
 {
     SplineVec3* cp;
     s16 idx;
@@ -374,20 +374,20 @@ extern s32 lbl_8047B340;
 extern s32 lbl_8047B344;
 extern s32 lbl_8047B348;
 
-extern void fn_800BCE30(u8 enable);
-extern void fn_800BCE5C(u8 enable);
+extern void GXSetColorUpdate(u8 enable);
+extern void GXSetAlphaUpdate(u8 enable);
 extern void GXSetDstAlpha(u8 enable, u8 alpha);
 extern void GXSetBlendMode(s32 type, s32 src, s32 dst, s32 op);
 extern void GXSetZMode(u8 enable, s32 func, u8 update);
-extern void fn_800BCEBC(u8 beforeTex);
-extern void fn_800BC618(s32 comp0, u8 ref0, s32 op, s32 comp1, u8 ref1);
-extern void fn_800BCFDC(u8 enable);
+extern void GXSetZCompLoc(u8 beforeTex);
+extern void GXSetAlphaCompare(s32 comp0, u8 ref0, s32 op, s32 comp1, u8 ref1);
+extern void GXSetDither(u8 enable);
 
 static inline void TExpStateSetColorUpdate(s32 enable)
 {
     enable = enable != 0;
     if (lbl_8047B31D != enable) {
-        fn_800BCE30(enable);
+        GXSetColorUpdate(enable);
         lbl_8047B31D = enable;
     }
 }
@@ -396,7 +396,7 @@ static inline void TExpStateSetAlphaUpdate(s32 enable)
 {
     enable = enable != 0;
     if (lbl_8047B31C != enable) {
-        fn_800BCE5C(enable);
+        GXSetAlphaUpdate(enable);
         lbl_8047B31C = enable;
     }
 }
@@ -440,7 +440,7 @@ static inline void TExpStateSetZCompLoc(s32 beforeTex)
 {
     beforeTex = beforeTex != 0;
     if (lbl_8047B319 != beforeTex) {
-        fn_800BCEBC(beforeTex);
+        GXSetZCompLoc(beforeTex);
         lbl_8047B319 = beforeTex;
     }
 }
@@ -451,7 +451,7 @@ static inline void TExpStateSetAlphaCompare(s32 comp0, u8 ref0, s32 op,
     if (lbl_8047B32C != comp0 || lbl_8047B328 != ref0 ||
         lbl_8047B324 != op || lbl_8047B320 != comp1 ||
         lbl_8047B31E != ref1) {
-        fn_800BC618(comp0, ref0, op, comp1, ref1);
+        GXSetAlphaCompare(comp0, ref0, op, comp1, ref1);
         lbl_8047B32C = comp0;
         lbl_8047B328 = ref0;
         lbl_8047B324 = op;
@@ -464,7 +464,7 @@ static inline void TExpStateSetDither(s32 enable)
 {
     enable = enable != 0;
     if (lbl_8047B318 != enable) {
-        fn_800BCFDC(enable);
+        GXSetDither(enable);
         lbl_8047B318 = enable;
     }
 }
@@ -508,12 +508,12 @@ struct HSD_TevDesc {
     /* 0x80 */ u32 ka;
 };
 
-s32 fn_801B387C(void);
+s32 HSD_StateGetNumTevStages(void);
 s32 HSD_StateAssignTev(void);
 void HSD_SetupTevStage(HSD_TevDesc* desc);
-void fn_801B3258(void);
-void fn_801B3770(void);
-void fn_801B3890(void);
+void HSD_SetTevRegAll(void);
+void HSD_StateSetNumTevStages(void);
+void HSD_StateSetNumTexGens(void);
 void HSD_SetupChannelMode(u32 flags);
 void HSD_SetupPEMode(u32 flags, HSD_PEDesc* pe);
 
@@ -521,7 +521,7 @@ void HSD_SetupPEMode(u32 flags, HSD_PEDesc* pe);
 #pragma optimization_level 1
 static void setupTevMode_last(void)
 {
-    if (fn_801B387C() == 0) {
+    if (HSD_StateGetNumTevStages() == 0) {
         HSD_TevDesc desc;
         desc.flag = 0;
         desc.stage = HSD_StateAssignTev();
@@ -537,9 +537,9 @@ void HSD_SetupRenderModeWithCustomPE(u32 flags, HSD_PEDesc* pe)
 {
     setupTevMode_last();
     HSD_SetupPEMode(flags, pe);
-    fn_801B3258();
-    fn_801B3770();
-    fn_801B3890();
+    HSD_SetTevRegAll();
+    HSD_StateSetNumTevStages();
+    HSD_StateSetNumTexGens();
     HSD_SetupChannelMode(flags);
 }
 #pragma pop
@@ -647,7 +647,7 @@ void HSD_SetMaterialColor(HsdChanColor* ambient, HsdChanColor* diffuse,
     lbl_80465710.alpha = lbl_8047DE58 * alpha;
 }
 
-void fn_801B3D1C(HSD_Chan* ch);
+void HSD_SetupChannel(HSD_Chan* ch);
 void fn_801B3AE8(s32 chan);
 void HSD_StateSetNumChans(s32 n);
 
@@ -676,7 +676,7 @@ void HSD_SetupChannelMode(u32 rendermode)
 
     if (rendermode & 8) {
         channels[0].light_mask = HSD_LObjGetLightMaskSpecular();
-        fn_801B3D1C(&channels[0]);
+        HSD_SetupChannel(&channels[0]);
         num_chans = 1;
         max = HSD_LObjGetNbActive();
         for (i = 0; i < max; i++) {
@@ -697,11 +697,11 @@ void HSD_SetupChannelMode(u32 rendermode)
         }
         channels[1].mat_src = (color_mode >> 1) & 1;
         channels[1].light_mask = HSD_LObjGetLightMaskDiffuse();
-        fn_801B3D1C(&channels[1]);
+        HSD_SetupChannel(&channels[1]);
 
         if (alpha_mode & 0x4000) {
             channels[2].chan = 3;
-            fn_801B3D1C(&channels[3]);
+            HSD_SetupChannel(&channels[3]);
             alpha_chan = 1;
         } else {
             channels[2].chan = 2;
@@ -720,12 +720,12 @@ void HSD_SetupChannelMode(u32 rendermode)
             channels[2].mat_color.a = alpha;
             channels[2].enable = 0;
         }
-        fn_801B3D1C(&channels[2]);
+        HSD_SetupChannel(&channels[2]);
     } else {
         channels[4].mat_src = (color_mode >> 1) & 1;
-        fn_801B3D1C(&channels[4]);
+        HSD_SetupChannel(&channels[4]);
         channels[5].mat_src = (alpha_mode >> 14) & 1;
-        fn_801B3D1C(&channels[5]);
+        HSD_SetupChannel(&channels[5]);
     }
 
     if (num_chans != 0) {
@@ -758,7 +758,7 @@ static inline void ColCopyRGB(HsdChanColor* dst, HsdChanColor* src)
     *(u32*)dst = (*(u32*)dst & 0xFF) | (*(u32*)src & 0xFFFFFF00);
 }
 
-void fn_801B3D1C(HSD_Chan* ch)
+void HSD_SetupChannel(HSD_Chan* ch)
 {
     s32 idx;
     s32 chan;
@@ -844,9 +844,9 @@ void fn_801B3D1C(HSD_Chan* ch)
     }
 }
 extern void HSD_ClearVtxDesc(void);
-extern void fn_800B94F0(u32 value);
-extern void fn_800BC8C8(u32 value);
-extern void fn_800B884C(u32 value);
+extern void GXSetCullMode(u32 value);
+extern void GXSetNumTevStages(u32 value);
+extern void GXSetNumTexGens(u32 value);
 
 extern u8 lbl_80465588[];
 extern u8 lbl_804655B4[];
@@ -1014,12 +1014,12 @@ typedef struct KColorEntry {
     /* 0x8 */ s32 dirty;
 } KColorEntry;
 extern KColorEntry lbl_8036CFE8[4];
-void fn_800BC36C(u32 id, void* color);
+void GXSetTevColorS10(u32 id, void* color);
 
 /* Address: 0x801B3258 | Size: 0xE0 */
 #pragma push
 #pragma optimization_level 1
-void fn_801B3258(void) {
+void HSD_SetTevRegAll(void) {
     u32 i;
     u32 tmp[2];
     for (i = 0; i < 4; i++) {
@@ -1035,7 +1035,7 @@ void fn_801B3258(void) {
             case 3: id = 0; break;
             default: id = 1; break;
             }
-            fn_800BC36C(id, &tmp);
+            GXSetTevColorS10(id, &tmp);
             lbl_8036CFE8[i].dirty = 0;
         }
     }
@@ -1105,7 +1105,7 @@ static inline s32 HSD_TevStage2Num(s32 stage)
  * HSD_SetupTevStageAll - 0x801B3408 | Size: 0x230
  * Configure every descriptor and publish the highest active TEV stage count.
  */
-void fn_801B3408(HSD_TevDesc* desc)
+void HSD_SetupTevStageAll(HSD_TevDesc* desc)
 {
     s32 num = 0;
     HSD_TevDesc* td;
@@ -1118,7 +1118,7 @@ void fn_801B3408(HSD_TevDesc* desc)
         HSD_SetupTevStage(td);
     }
     lbl_8047B370 = num;
-    fn_800BC8C8((u8)lbl_8047B370);
+    GXSetNumTevStages((u8)lbl_8047B370);
     lbl_8047B370 = 0;
 }
 
@@ -1160,7 +1160,7 @@ static inline s32 TExpChannel2Num(s32 chan)
 /* Address: 0x801B3998 | Size: 0x110 */
 #pragma push
 #pragma optimization_level 1
-void fn_801B3998(HSD_Chan* chan)
+void HSD_SetupChannelAll(HSD_Chan* chan)
 {
     s32 num_chans = 0;
 
@@ -1169,7 +1169,7 @@ void fn_801B3998(HSD_Chan* chan)
         if (chan_count > num_chans) {
             num_chans = chan_count;
         }
-        fn_801B3D1C(chan);
+        HSD_SetupChannel(chan);
         chan = chan->next;
     }
     HSD_StateSetNumChans((u8)num_chans);
@@ -1316,7 +1316,7 @@ typedef struct ColTExpRes {
     u8 a_use[4];
 } ColTExpRes;
 
-void fn_801B750C(ColTExpNode* texp, u8 sel);
+void HSD_TExpUnref(ColTExpNode* texp, u8 sel);
 extern s32 lbl_8036D278[4];
 extern s32 lbl_8036D288[4][4];
 extern s32 lbl_8036D2C8[4];
@@ -1324,10 +1324,10 @@ extern s32 lbl_8036D258[4];
 extern s32 lbl_8036D268[4];
 extern s32 lbl_8036D2D8[4][4];
 
-extern void fn_800B8E74(void);
-extern void fn_800BC3E0(u32 id, GXColor color);
-extern void fn_800BC2F8(u32 id, GXColor color);
-extern void fn_801B25C4(u32 flags);
+extern void GXPixModeSync(void);
+extern void GXSetTevKColor(u32 id, GXColor color);
+extern void GXSetTevColor(u32 id, GXColor color);
+extern void HSD_StateInvalidate(u32 flags);
 
 void HSD_TExpSetReg(HSD_TExp* texp);
 
@@ -1463,19 +1463,19 @@ void HSD_TExpSetReg(HSD_TExp* texp)
         clist = (ColTECnst*) clist->next;
     }
     if (changed != 0) {
-        fn_800B8E74();
+        GXPixModeSync();
         for (i = 0; i < 4; i++) {
             if (changed & (1 << i)) {
-                fn_800BC3E0(id1[i], reg[i]);
+                GXSetTevKColor(id1[i], reg[i]);
             }
         }
         for (i = 4; i < 7; i++) {
             if (changed & (1 << i)) {
-                fn_800BC2F8(id2[i - 4], reg[i]);
+                GXSetTevColor(id2[i - 4], reg[i]);
             }
         }
-        fn_801B25C4(0x10);
-        fn_800B8E74();
+        HSD_StateInvalidate(0x10);
+        GXPixModeSync();
     }
 }
 
@@ -1633,11 +1633,11 @@ static inline s32 IsThroughAlphaInline(ColTExpNode* tev)
            tev->a_in[1].sel == 7 && tev->a_bias == 0 && tev->a_scale == 0;
 }
 
-extern s32 fn_801B5850(ColTExpNode*, s32, ColTExpRes*);
-extern s32 fn_801B5A00(ColTExpNode*, s32, ColTExpRes*);
-extern s32 fn_801B5C94(ColTExpNode*, s32, ColTExpRes*);
+extern s32 AssignAlphaKonst(ColTExpNode*, s32, ColTExpRes*);
+extern s32 AssignColorKonst(ColTExpNode*, s32, ColTExpRes*);
+extern s32 AssignColorReg(ColTExpNode*, s32, ColTExpRes*);
 
-s32 fn_801B50C0(ColTExpNode* tev, ColTExpRes* res)
+s32 TExpAssignReg(ColTExpNode* tev, ColTExpRes* res)
 {
     s32 i;
     s32 result;
@@ -1646,7 +1646,7 @@ s32 fn_801B50C0(ColTExpNode* tev, ColTExpRes* res)
         if (tev->kcsel != 0xFF) {
             for (i = 0; i < 4; i++) {
                 if (tev->c_in[i].type == COL_TE_CNST) {
-                    result = fn_801B5C94(tev, i, res);
+                    result = AssignColorReg(tev, i, res);
                     if (result < 0) {
                         __assert(&lbl_8047DE70, 0x49C, lbl_802753B4);
                         return result;
@@ -1655,9 +1655,9 @@ s32 fn_801B50C0(ColTExpNode* tev, ColTExpRes* res)
             }
         } else if (IsThroughColorInline(tev) &&
                    tev->c_in[3].type == COL_TE_CNST) {
-            result = fn_801B5C94(tev, 3, res);
+            result = AssignColorReg(tev, 3, res);
             if (result < 0) {
-                result = fn_801B5A00(tev, 3, res);
+                result = AssignColorKonst(tev, 3, res);
                 if (result < 0) {
                     __assert(&lbl_8047DE70, 0x4A8, lbl_802753B4);
                     return result;
@@ -1666,9 +1666,9 @@ s32 fn_801B50C0(ColTExpNode* tev, ColTExpRes* res)
         } else {
             for (i = 0; i < 4; i++) {
                 if (tev->c_in[i].type == COL_TE_CNST) {
-                    result = fn_801B5A00(tev, i, res);
+                    result = AssignColorKonst(tev, i, res);
                     if (result < 0) {
-                        result = fn_801B5C94(tev, i, res);
+                        result = AssignColorReg(tev, i, res);
                         if (result < 0) {
                             __assert(&lbl_8047DE70, 0x4B5,
                                      lbl_802753B4);
@@ -1679,7 +1679,7 @@ s32 fn_801B50C0(ColTExpNode* tev, ColTExpRes* res)
             }
             for (; i < 4; i++) {
                 if (tev->c_in[i].type == COL_TE_CNST) {
-                    result = fn_801B5C94(tev, i, res);
+                    result = AssignColorReg(tev, i, res);
                     if (result < 0) {
                         __assert(&lbl_8047DE70, 0x4BE, lbl_802753B4);
                         return result;
@@ -1704,7 +1704,7 @@ s32 fn_801B50C0(ColTExpNode* tev, ColTExpRes* res)
                    tev->a_in[3].type == COL_TE_CNST) {
             result = AssignAlphaRegInline(tev, 3, res);
             if (result < 0) {
-                result = fn_801B5850(tev, 3, res);
+                result = AssignAlphaKonst(tev, 3, res);
                 if (result < 0) {
                     __assert(&lbl_8047DE70, 0x4DA, lbl_802753B4);
                     return result;
@@ -1713,7 +1713,7 @@ s32 fn_801B50C0(ColTExpNode* tev, ColTExpRes* res)
         } else {
             for (i = 0; i < 4; i++) {
                 if (tev->a_in[i].type == COL_TE_CNST) {
-                    result = fn_801B5850(tev, i, res);
+                    result = AssignAlphaKonst(tev, i, res);
                     if (result < 0) {
                         result = AssignAlphaRegInline(tev, i, res);
                         if (result < 0) {
@@ -1746,7 +1746,7 @@ s32 fn_801B50C0(ColTExpNode* tev, ColTExpRes* res)
  */
 #pragma push
 #pragma optimization_level 1
-s32 fn_801B5850(ColTExpNode* tev, s32 idx, ColTExpRes* res)
+s32 AssignAlphaKonst(ColTExpNode* tev, s32 idx, ColTExpRes* res)
 {
     ColTECnst* cnst = (ColTECnst*)tev->a_in[idx].exp;
     s32 i;
@@ -1793,7 +1793,7 @@ s32 fn_801B5850(ColTExpNode* tev, s32 idx, ColTExpRes* res)
  * Loads texture images to GX, configures texture objects,
  * and sets up the texture-to-TEV stage mapping.
  */
-s32 fn_801B5A00(ColTExpNode* tev, s32 idx, ColTExpRes* res)
+s32 AssignColorKonst(ColTExpNode* tev, s32 idx, ColTExpRes* res)
 {
     ColTECnst* cnst = (ColTECnst*) tev->c_in[idx].exp;
     s32 i;
@@ -1855,7 +1855,7 @@ s32 fn_801B5A00(ColTExpNode* tev, s32 idx, ColTExpRes* res)
  * Set up texture coordinate transformation matrices.
  * Computes and loads the texture matrix for each active TObj.
  */
-s32 fn_801B5C94(ColTExpNode* tev, s32 idx, ColTExpRes* res)
+s32 AssignColorReg(ColTExpNode* tev, s32 idx, ColTExpRes* res)
 {
     ColTECnst* cnst = (ColTECnst*) tev->c_in[idx].exp;
     s32 i;
@@ -1938,7 +1938,7 @@ type_done:
 }
 #pragma optimization_level 4
 
-void fn_801B600C(ColTExpNode* tev, u32 sel, ColTExpNode* exp, s32 idx);
+void HSD_TExpAlphaInSub(ColTExpNode* tev, u32 sel, ColTExpNode* exp, s32 idx);
 
 /* HSD_TExpAlphaIn */
 void HSD_TExpAlphaIn(ColTExpNode* texp, u32 sel_a, ColTExpNode* exp_a,
@@ -1950,14 +1950,14 @@ void HSD_TExpAlphaIn(ColTExpNode* texp, u32 sel_a, ColTExpNode* exp_a,
     if (ColTExpGetType(texp) != COL_TE_TEV) {
         __assert(&lbl_8047DE70, 0x357, lbl_802753DC);
     }
-    fn_801B600C(texp, sel_a, exp_a, 0);
-    fn_801B600C(texp, sel_b, exp_b, 1);
-    fn_801B600C(texp, sel_c, exp_c, 2);
-    fn_801B600C(texp, sel_d, exp_d, 3);
+    HSD_TExpAlphaInSub(texp, sel_a, exp_a, 0);
+    HSD_TExpAlphaInSub(texp, sel_b, exp_b, 1);
+    HSD_TExpAlphaInSub(texp, sel_c, exp_c, 2);
+    HSD_TExpAlphaInSub(texp, sel_d, exp_d, 3);
 }
 
 /* HSD_TExpAlphaInSub - 0x801B600C | Size: 0x4E0 */
-void fn_801B600C(ColTExpNode* tev, u32 sel, ColTExpNode* exp, s32 idx)
+void HSD_TExpAlphaInSub(ColTExpNode* tev, u32 sel, ColTExpNode* exp, s32 idx)
 {
     ColTEArg prev;
     u8 ksel;
@@ -2078,11 +2078,11 @@ void fn_801B600C(ColTExpNode* tev, u32 sel, ColTExpNode* exp, s32 idx)
         }
         break;
     }
-    fn_801B750C(prev.exp, prev.sel);
+    HSD_TExpUnref(prev.exp, prev.sel);
 }
 
 /* HSD_TExpColorIn */
-void fn_801B65F0(ColTExpNode* tev, u32 sel, ColTExpNode* exp, s32 idx);
+void HSD_TExpColorInSub(ColTExpNode* tev, u32 sel, ColTExpNode* exp, s32 idx);
 
 void HSD_TExpColorIn(ColTExpNode* texp, u32 sel_a, ColTExpNode* exp_a,
                  u32 sel_b, ColTExpNode* exp_b, u32 sel_c,
@@ -2093,10 +2093,10 @@ void HSD_TExpColorIn(ColTExpNode* texp, u32 sel_a, ColTExpNode* exp_a,
     if (ColTExpGetType(texp) != COL_TE_TEV) {
         __assert(&lbl_8047DE70, 0x2D5, lbl_802753DC);
     }
-    fn_801B65F0(texp, sel_a, exp_a, 0);
-    fn_801B65F0(texp, sel_b, exp_b, 1);
-    fn_801B65F0(texp, sel_c, exp_c, 2);
-    fn_801B65F0(texp, sel_d, exp_d, 3);
+    HSD_TExpColorInSub(texp, sel_a, exp_a, 0);
+    HSD_TExpColorInSub(texp, sel_b, exp_b, 1);
+    HSD_TExpColorInSub(texp, sel_c, exp_c, 2);
+    HSD_TExpColorInSub(texp, sel_d, exp_d, 3);
 }
 
 /*
@@ -2108,7 +2108,7 @@ void HSD_TExpColorIn(ColTExpNode* texp, u32 sel_a, ColTExpNode* exp_a,
  */
 #pragma push
 #pragma optimization_level 1
-void fn_801B65F0(ColTExpNode* tev, u32 sel, ColTExpNode* exp, s32 idx)
+void HSD_TExpColorInSub(ColTExpNode* tev, u32 sel, ColTExpNode* exp, s32 idx)
 {
     ColTEArg prev = tev->c_in[idx];
     u8 ksel = 0xFF;
@@ -2272,7 +2272,7 @@ void fn_801B65F0(ColTExpNode* tev, u32 sel, ColTExpNode* exp, s32 idx)
         }
         break;
     }
-    fn_801B750C(prev.exp, prev.sel);
+    HSD_TExpUnref(prev.exp, prev.sel);
 }
 
 #pragma pop
@@ -2423,7 +2423,7 @@ static inline void ColTExpFree(ColTExpNode* texp)
 }
 
 /* HSD_TExpFreeList */
-ColTExpNode* fn_801B7178(ColTExpNode* list, s32 type, s32 all) {
+ColTExpNode* HSD_TExpFreeList(ColTExpNode* list, s32 type, s32 all) {
     ColTExpNode** handle;
     ColTExpNode* current;
     ColTExpNode* next;
@@ -2451,8 +2451,8 @@ ColTExpNode* fn_801B7178(ColTExpNode* list, s32 type, s32 all) {
             for (current = list; current != NULL; current = current->next) {
                 if (current->type == COL_TE_TEV &&
                     current->c_ref == 0 && current->c_ref == 0) {
-                    fn_801B750C(current, COL_TE_RGB);
-                    fn_801B750C(current, COL_TE_A);
+                    HSD_TExpUnref(current, COL_TE_RGB);
+                    HSD_TExpUnref(current, COL_TE_A);
                 }
             }
         }
@@ -2493,7 +2493,7 @@ ColTExpNode* fn_801B7178(ColTExpNode* list, s32 type, s32 all) {
  * reference counts have reached zero the node's own inputs are released as
  * well, so a dead sub-graph unwinds in a single sweep.
  */
-void fn_801B750C(ColTExpNode* texp, u8 sel) {
+void HSD_TExpUnref(ColTExpNode* texp, u8 sel) {
     s32 i;
 
     switch (ColTExpGetType(texp)) {
@@ -2509,8 +2509,8 @@ void fn_801B750C(ColTExpNode* texp, u8 sel) {
         }
         if (texp->c_ref == 0 && texp->a_ref == 0) {
             for (i = 0; i < 4; i++) {
-                fn_801B750C(texp->c_in[i].exp, texp->c_in[i].sel);
-                fn_801B750C(texp->a_in[i].exp, texp->a_in[i].sel);
+                HSD_TExpUnref(texp->c_in[i].exp, texp->c_in[i].sel);
+                HSD_TExpUnref(texp->a_in[i].exp, texp->a_in[i].sel);
             }
         }
         break;
@@ -2531,7 +2531,7 @@ void fn_801B750C(ColTExpNode* texp, u8 sel) {
  */
 #pragma push
 #pragma optimization_level 1
-void fn_801B7BD4(ColTExpNode* exp, s32 sel) {
+void HSD_TExpRef(ColTExpNode* exp, s32 sel) {
     s32 type = ColTExpGetType(exp);
 
     switch (type) {
@@ -2588,16 +2588,16 @@ typedef struct HSD_TExpDag {
 extern u8 lbl_8036D380[];
 extern s32 HSD_TExpGetType(u8* texp);
 extern void CalcDistance(u8** nodes, s32* dist, u8* root, s32 num, s32 val);
-void fn_801B89BC(s32 num, u32* dep, u32* full_dep, HSD_TExpDag* list,
+void order_dag(s32 num, u32* dep, u32* full_dep, HSD_TExpDag* list,
                  s32 depth, s32 idx, u32 done_set, u32 ready_set, s32* order,
                  s32* min, s32* min_order);
-s32 fn_801B8B84(s32 num, u32* unused, HSD_TExpDag* list, s32* order);
+s32 assign_reg(s32 num, u32* unused, HSD_TExpDag* list, s32* order);
 
 /*
  * Order a TExp DAG and assign the temporary TEV register references.
  * 0x801B7CA0 | Size: 0x384
  */
-void fn_801B7CA0(s32 num, HSD_TExpDag* list, ColTExpNode** result,
+void HSD_TExpSchedule(s32 num, HSD_TExpDag* list, ColTExpNode** result,
                  ColTExpRes* resource)
 {
     u32 dep[32];
@@ -2632,7 +2632,7 @@ void fn_801B7CA0(s32 num, HSD_TExpDag* list, ColTExpNode** result,
         }
     } while (changed != 0);
 
-    fn_801B89BC(num, dep, full_dep, list, 0, 0, 0, 0, work_order, &min,
+    order_dag(num, dep, full_dep, list, 0, 0, 0, 0, work_order, &min,
                  min_order);
 
     for (i = 0; i < num; i++) {
@@ -2969,7 +2969,7 @@ level1_next:
 /*
  * Recursively enumerate dependency-respecting stage orders.
  */
-void fn_801B89BC(s32 num, u32* dep, u32* full_dep, HSD_TExpDag* list,
+void order_dag(s32 num, u32* dep, u32* full_dep, HSD_TExpDag* list,
                  s32 depth, s32 idx, u32 done_set, u32 ready_set, s32* order,
                  s32* min, s32* min_order)
 {
@@ -2988,7 +2988,7 @@ void fn_801B89BC(s32 num, u32* dep, u32* full_dep, HSD_TExpDag* list,
     order[depth++] = (u8) idx;
 
     if (depth == num) {
-        score = fn_801B8B84(num, dep, list, order);
+        score = assign_reg(num, dep, list, order);
         if (score < *min) {
             *min = score;
             for (i = 0; i < num; i++) {
@@ -3011,7 +3011,7 @@ void fn_801B89BC(s32 num, u32* dep, u32* full_dep, HSD_TExpDag* list,
             saved_order = order;
             saved_min = min;
             saved_min_order = min_order;
-            fn_801B89BC(num, dep, full_dep, list, depth,
+            order_dag(num, dep, full_dep, list, depth,
                         dag->depend[0]->idx, done_set, ready_set, saved_order,
                         saved_min, saved_min_order);
         } else {
@@ -3020,7 +3020,7 @@ void fn_801B89BC(s32 num, u32* dep, u32* full_dep, HSD_TExpDag* list,
                     saved_order = order;
                     saved_min = min;
                     saved_min_order = min_order;
-                    fn_801B89BC(num, dep, full_dep, list, depth, i, done_set,
+                    order_dag(num, dep, full_dep, list, depth, i, done_set,
                                 ready_set, saved_order, saved_min,
                                 saved_min_order);
                 }
@@ -3032,7 +3032,7 @@ void fn_801B89BC(s32 num, u32* dep, u32* full_dep, HSD_TExpDag* list,
 /*
  * Assign temporary TEV registers for one candidate stage order.
  */
-s32 fn_801B8B84(s32 num, u32* unused, HSD_TExpDag* list, s32* order)
+s32 assign_reg(s32 num, u32* unused, HSD_TExpDag* list, s32* order)
 {
     u8 color_refs[4] = { 0 };
     u8 alpha_refs[4] = { 0 };
@@ -3095,7 +3095,7 @@ s32 fn_801B8B84(s32 num, u32* unused, HSD_TExpDag* list, s32* order)
  * HSD_TExpSimplify2 - 0x801B8D5C | Size: 0x25C
  * Splice pass-through TEV inputs into their parent stage.
  */
-s32 fn_801B8D5C(ColTExpNode* texp)
+s32 HSD_TExpSimplify2(ColTExpNode* texp)
 {
     ColTExpNode* src;
     u8 sel;
@@ -3118,8 +3118,8 @@ s32 fn_801B8D5C(ColTExpNode* texp)
                 }
             case 5:
                 texp->c_in[i] = src->c_in[3];
-                fn_801B7BD4(texp->c_in[i].exp, texp->c_in[i].sel);
-                fn_801B750C(src, sel);
+                HSD_TExpRef(texp->c_in[i].exp, texp->c_in[i].sel);
+                HSD_TExpUnref(src, sel);
                 break;
             }
         }
@@ -3142,8 +3142,8 @@ s32 fn_801B8D5C(ColTExpNode* texp)
                 }
             case 5:
                 texp->a_in[i] = src->a_in[3];
-                fn_801B7BD4(texp->a_in[i].exp, texp->a_in[i].sel);
-                fn_801B750C(src, sel);
+                HSD_TExpRef(texp->a_in[i].exp, texp->a_in[i].sel);
+                HSD_TExpUnref(src, sel);
                 break;
             }
         }
@@ -3157,10 +3157,10 @@ s32 fn_801B8D5C(ColTExpNode* texp)
  */
 extern ColTEArg lbl_80478CA0;
 
-s32 fn_801B9320(ColTExpNode* tev);
+s32 SimplifyByMerge(ColTExpNode* tev);
 void fn_801B9048(ColTExpNode* texp);
-s32 fn_801BAC8C(ColTExpNode* tev);
-s32 fn_801BB4C4(ColTExpNode* tev);
+s32 SimplifyThis(ColTExpNode* tev);
+s32 SimplifySrc(ColTExpNode* tev);
 
 /*
  * HSD_TExpSimplify - 0x801B8FB8 | Size: 0x90
@@ -3173,13 +3173,13 @@ s32 HSD_TExpSimplify(ColTExpNode* texp) {
     if (((s32 (*)(ColTExpNode*)) HSD_TExpGetType)(texp) != COL_TE_TEV) {
         return 0;
     }
-    if (fn_801BB4C4(texp) != 0) {
+    if (SimplifySrc(texp) != 0) {
         res = 1;
     }
-    if (fn_801BAC8C(texp) != 0) {
+    if (SimplifyThis(texp) != 0) {
         res = 1;
     }
-    if (fn_801B9320(texp) != 0) {
+    if (SimplifyByMerge(texp) != 0) {
         res = 1;
     }
     return res;
@@ -3192,13 +3192,13 @@ static inline s32 HSD_TExpSimplifyChild(ColTExpNode* texp)
     if (((s32 (*)(ColTExpNode*)) HSD_TExpGetType)(texp) != COL_TE_TEV) {
         return 0;
     }
-    if (fn_801BB4C4(texp) != 0) {
+    if (SimplifySrc(texp) != 0) {
         res = 1;
     }
-    if (fn_801BAC8C(texp) != 0) {
+    if (SimplifyThis(texp) != 0) {
         res = 1;
     }
-    if (fn_801B9320(texp) != 0) {
+    if (SimplifyByMerge(texp) != 0) {
         res = 1;
     }
     fn_801B9048(texp);
@@ -3316,9 +3316,9 @@ alpha:
 /* Keep this as a real call: exposing the same-TU body perturbs the retail
  * register allocation in the large simplifier below. */
 #define TEXP_REF(exp, sel)                                                   \
-    ((void (*)(ColTExpNode*, s32)) fn_801B7BD4)((exp), (sel))
+    ((void (*)(ColTExpNode*, s32)) HSD_TExpRef)((exp), (sel))
 #define TEXP_UNREF(exp, sel)                                                 \
-    ((void (*)(ColTExpNode*, u8)) fn_801B750C)((exp), (sel))
+    ((void (*)(ColTExpNode*, u8)) HSD_TExpUnref)((exp), (sel))
 
 /*
  * SimplifyByMerge - 0x801B9320 | Size: 0x196C
@@ -3328,7 +3328,7 @@ alpha:
 #pragma push
 #pragma use_lmw_stmw on
 #pragma optimization_level 3
-s32 fn_801B9320(ColTExpNode* tev)
+s32 SimplifyByMerge(ColTExpNode* tev)
 {
     ColTExpNode* child;
     ColTExpNode* src;
@@ -3994,8 +3994,8 @@ s32 fn_801B9320(ColTExpNode* tev)
                 }
             case 5:
                 tev->c_in[i] = src->c_in[3];
-                fn_801B7BD4(tev->c_in[i].exp, tev->c_in[i].sel);
-                fn_801B750C(src, sel);
+                HSD_TExpRef(tev->c_in[i].exp, tev->c_in[i].sel);
+                HSD_TExpUnref(src, sel);
                 result = 1;
                 break;
             }
@@ -4019,8 +4019,8 @@ s32 fn_801B9320(ColTExpNode* tev)
                 }
             case 5:
                 tev->a_in[i] = src->a_in[3];
-                fn_801B7BD4(tev->a_in[i].exp, tev->a_in[i].sel);
-                fn_801B750C(src, sel);
+                HSD_TExpRef(tev->a_in[i].exp, tev->a_in[i].sel);
+                HSD_TExpUnref(src, sel);
                 result = 1;
                 break;
             }
@@ -4037,7 +4037,7 @@ s32 fn_801B9320(ColTExpNode* tev)
  * multiply/compare forms whose operands became constant, and re-run until the
  * node stops changing.
  */
-s32 fn_801BAC8C(ColTExpNode* tev)
+s32 SimplifyThis(ColTExpNode* tev)
 {
     s32 color_tex;
     s32 alpha_tex;
@@ -4293,7 +4293,7 @@ s32 fn_801BAC8C(ColTExpNode* tev)
  * Simplify every TEV-typed input of this node, then splice a pass-through
  * source directly into this node's input slot.
  */
-s32 fn_801BB4C4(ColTExpNode* tev)
+s32 SimplifySrc(ColTExpNode* tev)
 {
     ColTExpNode* src;
     u8 sel;
@@ -4433,7 +4433,7 @@ s32 fn_801BB4C4(ColTExpNode* tev)
 #undef TEXP_REF
 
 /* 0x801B1854 | 0x30 */
-void fn_801B1854(void) {
+void HSD_ShadowInitAllocData(void) {
     HSD_ObjAllocInit(&lbl_804656E0, 0x28, 4);
 }
 
@@ -4442,7 +4442,7 @@ void* HSD_ShadowGetAllocData(void) {
     return &lbl_804656E0;
 }
 
-f32 fn_801B18D8(HSD_Spline* spline, f32 distance)
+f32 splArcLengthGetParameter(HSD_Spline* spline, f32 distance)
 {
     s32 idx = 0;
     f32 start = 0.0F;
@@ -4493,7 +4493,7 @@ f32 fn_801B18D8(HSD_Spline* spline, f32 distance)
 }
 
 void splArcLengthPoint(SplineVec3* p, HSD_Spline* spline, f32 distance) {
-    fn_801B2038(p, spline, fn_801B18D8(spline, distance));
+    splGetSplinePoint(p, spline, splArcLengthGetParameter(spline, distance));
 }
 
 typedef void (*HSD_TevStateFn)(void);
@@ -4508,7 +4508,7 @@ extern HSD_TevStateCallback lbl_8036CFA8[];
 /* 0x801B25C4 | 0x90 */
 #pragma push
 #pragma optimization_level 1
-void fn_801B25C4(u32 flags) {
+void HSD_StateInvalidate(u32 flags) {
     s32 i;
 
     for (i = 0; lbl_8036CFA8[i].mask != 0; i++) {
@@ -4523,7 +4523,7 @@ void fn_801B25C4(u32 flags) {
 #pragma push
 #pragma optimization_level 1
 #pragma use_lmw_stmw on
-void fn_801B2654(void) {
+void _HSD_StateInvalidateRenderMode(void) {
     lbl_8047B348 = -1;
     lbl_8047B344 = -1;
     lbl_8047B340 = -1;
@@ -4546,14 +4546,14 @@ void fn_801B2654(void) {
 #pragma pop
 
 /* 0x801B26F8 | 0x20 */
-void fn_801B26F8(void) {
+void _HSD_StateInvalidateVtxAttr(void) {
     HSD_ClearVtxDesc();
 }
 
 /* 0x801B2718 | 0x24 */
 #pragma push
 #pragma optimization_level 1
-void fn_801B2718(void) {
+void _HSD_StateInvalidatePrimitive(void) {
     lbl_8047B351 = 0;
     lbl_8047B350 = 0;
     lbl_8047B34C = -1;
@@ -4564,11 +4564,11 @@ void fn_801B2718(void) {
 /* 0x801B273C | 0x50 */
 #pragma push
 #pragma optimization_level 1
-void fn_801B273C(s32 enable) {
+void HSD_StateSetAlphaUpdate(s32 enable) {
     u8 normalized = enable ? 1 : 0;
 
     if (lbl_8047B31C != normalized) {
-        fn_800BCE5C(normalized);
+        GXSetAlphaUpdate(normalized);
         lbl_8047B31C = normalized;
     }
 }
@@ -4577,18 +4577,18 @@ void fn_801B273C(s32 enable) {
 /* 0x801B278C | 0x50 */
 #pragma push
 #pragma optimization_level 1
-void fn_801B278C(s32 enable) {
+void HSD_StateSetColorUpdate(s32 enable) {
     u8 normalized = enable ? 1 : 0;
 
     if (lbl_8047B31D != normalized) {
-        fn_800BCE30(normalized);
+        GXSetColorUpdate(normalized);
         lbl_8047B31D = normalized;
     }
 }
 #pragma pop
 
 /* 0x801B27DC | 0x9C */
-void fn_801B27DC(u32 enable, s32 func, u32 update) {
+void HSD_StateSetZMode(u32 enable, s32 func, u32 update) {
     u32 enable_state = enable != 0;
     u32 update_state = update != 0;
 
@@ -4605,28 +4605,28 @@ void fn_801B27DC(u32 enable, s32 func, u32 update) {
 /* 0x801B2878 | 0x40 */
 #pragma push
 #pragma optimization_level 1
-void fn_801B2878(s32 value) {
+void HSD_StateSetCullMode(s32 value) {
     if (lbl_8047B34C != value) {
-        fn_800B94F0(value);
+        GXSetCullMode(value);
         lbl_8047B34C = value;
     }
 }
 #pragma pop
 
 /* 0x801B28B8 | 0x10 */
-void fn_801B28B8(f32 value) {
+void HSD_SetMaterialShininess(f32 value) {
     lbl_80465710.shininess = value;
 }
 
 /* 0x801B3168 | 0xC */
-void fn_801B3168(void) {
+void _HSD_StateInvalidateTexCoordGen(void) {
     lbl_8047B358 = 0;
 }
 
 /* 0x801B3174 | 0x30 */
 #pragma push
 #pragma optimization_level 1
-void fn_801B3174(void) {
+void _HSD_StateInvalidateTevRegister(void) {
     s32 i;
     for (i = 0; i < 4; i++) {
         lbl_8036CFE8[i].dirty = 0;
@@ -4637,15 +4637,15 @@ void fn_801B3174(void) {
 #pragma push
 #pragma optimization_level 1
 /* 0x801B31A4 | 0x50 */
-void fn_801B31A4(void) {
-    extern void fn_800BBC34(s32 stage);
-    extern void fn_800BBC0C(s32 count);
+void _HSD_StateInvalidateTevStage(void) {
+    extern void GXSetTevDirect(s32 stage);
+    extern void GXSetNumIndStages(s32 count);
     s32 i;
 
     for (i = 0; i < 16; i++) {
-        fn_800BBC34(i);
+        GXSetTevDirect(i);
     }
-    fn_800BBC0C(0);
+    GXSetNumIndStages(0);
     lbl_8047B370 = 0;
 }
 #pragma pop
@@ -4653,7 +4653,7 @@ void fn_801B31A4(void) {
 /* 0x801B31F4 | 0x64 */
 #pragma push
 #pragma optimization_level 1
-void fn_801B31F4(void)
+void _HSD_StateInvalidateColorChannel(void)
 {
     memcpy(&lbl_8036D018, &lbl_8036D0D8, sizeof(lbl_8036D018));
     lbl_8047B368[0] = 1;
@@ -4665,8 +4665,8 @@ void fn_801B31F4(void)
 #pragma pop
 
 /* 0x801B3770 | 0x30 */
-void fn_801B3770(void) {
-    fn_800BC8C8((u32)(u8)lbl_8047B370);
+void HSD_StateSetNumTevStages(void) {
+    GXSetNumTevStages((u32)(u8)lbl_8047B370);
     lbl_8047B370 = 0;
 }
 
@@ -4698,18 +4698,18 @@ s32 HSD_StateAssignTev(void) {
 }
 #pragma pop
 
-s32 fn_801B387C(void) {
+s32 HSD_StateGetNumTevStages(void) {
     return lbl_8047B370;
 }
 
 /* 0x801B3884 | 0xC */
-void fn_801B3884(void) {
+void HSD_StateInitTev(void) {
     lbl_8047B370 = 0;
 }
 
 /* 0x801B3890 | 0x30 */
-void fn_801B3890(void) {
-    fn_800B884C((u32)(u8)lbl_8047B358);
+void HSD_StateSetNumTexGens(void) {
+    GXSetNumTexGens((u32)(u8)lbl_8047B358);
     lbl_8047B358 = 0;
 }
 

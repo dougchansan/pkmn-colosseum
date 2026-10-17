@@ -258,21 +258,21 @@ extern void fn_80117330(f32 duration);
 extern s32 fn_800D37CC(void);
 extern s32 msgGetCharsPerFrame(void);
 extern u8 dbgMenuIsOpen(void);
-extern u32 fn_800F7AF0(s32 pad);
+extern u32 GSinputButtonsChanged(s32 pad);
 extern u32 fn_800F7BC4(s32 pad);
-extern s8 fn_800F7A7C(s32 pad, s32 mode);
-extern s8 fn_800F7A08(s32 pad, s32 mode);
-extern s8 fn_800F7994(s32 pad, s32 mode);
-extern s8 fn_800F7920(s32 pad, s32 mode);
+extern s8 GSinputGetLeftStickXData(s32 pad, s32 mode);
+extern s8 GSinputGetLeftStickYData(s32 pad, s32 mode);
+extern s8 GSinputGetRightStickXData(s32 pad, s32 mode);
+extern s8 GSinputGetRightStickYData(s32 pad, s32 mode);
 extern void menuClose(u32 id);
 extern void menuSetPosition(u32 id, s32 x, s32 y);
 extern void fn_800E0718(void* out, const void* axis, f32 angle);
-extern void fn_800E0738(void* out, const void* a, const void* b);
+extern void GSquatMultiply(void* out, const void* a, const void* b);
 extern void GSvecTransformQuat(void* out, const void* quat, const void* vec);
 extern void _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID(void);
 extern u32 _toolentryAlloc__FUl(u32 size);
-extern void* fn_800E27B0(u16 handle);
-extern void* fn_800D29A0(void);
+extern void* GSmemLock(u16 handle);
+extern void* GScameraCreate(void);
 extern void GSresRegisterResource(void* resource, u32 group, u32 id, u32 flags);
 extern void fn_800FF4D4(void* data, u8 typeId);
 extern const GSSceneVec3 lbl_80315540;
@@ -358,7 +358,7 @@ static inline GSRenderCamera* cameraGetCurrentAnimation(void)
         state->animationGroup, state->animationId);
 
     if (animation == NULL) {
-        animation = fn_800F92D4(state->animationId);
+        animation = GSresFindById(state->animationId);
     }
     return animation;
 }
@@ -401,7 +401,7 @@ void _cameraRestoreStateData(void* data)
         ((CameraPadState*)lbl_80478C40)->mode == 8) {
         camera = cameraGetCurrentAnimation();
     }
-    fn_800D13C8(camera, &save->camera);
+    GScameraRestoreState(camera, &save->camera);
     fn_800D258C(camera);
 }
 
@@ -415,7 +415,7 @@ void _cameraMakeStateData(void* data)
         camera = cameraGetCurrentAnimation();
     }
     memcpy(&save->state, lbl_80478C40, sizeof(CameraPadState));
-    fn_800D1674(camera, &save->camera);
+    GScameraSaveState(camera, &save->camera);
 }
 
 u32 _cameraGetStateSize(void)
@@ -437,7 +437,7 @@ void cameraInit(void) {
 
     memset(&lbl_80452EC8, 0, sizeof(CameraPadState));
     lbl_80478C40 = &lbl_80452EC8;
-    camera = fn_800D29A0();
+    camera = GScameraCreate();
     GSresRegisterResource(camera, 0, 0, 0);
 
     GSscene_SetMode(0);
@@ -447,7 +447,7 @@ void cameraInit(void) {
     handle = _toolentryAlloc__FUl(*(u32*)lbl_80478FB8 *
                                   sizeof(CameraFloorEntry));
     lbl_8047B1AC = handle;
-    lbl_8047B1A8 = fn_800E27B0(handle);
+    lbl_8047B1A8 = GSmemLock(handle);
     memset(lbl_8047B1A8, 0, *(u32*)lbl_80478FB8 * sizeof(CameraFloorEntry));
     for (i = 0; i < *(u32*)lbl_80478FB8; i++) {
         ((CameraFloorEntry*)lbl_8047B1A8)[i].initialized = 0;
@@ -590,7 +590,7 @@ void _cameraPadMoveUpdate__FP9_GScamera(void* camera) {
         return;
     }
 
-    if ((fn_800F7BC4(1) & fn_800F7AF0(1) & 0x400) != 0) {
+    if ((fn_800F7BC4(1) & GSinputButtonsChanged(1) & 0x400) != 0) {
         if ((u8)menuIsCheck(6)) {
             menuClose(6);
         } else {
@@ -605,13 +605,13 @@ void _cameraPadMoveUpdate__FP9_GScamera(void* camera) {
                  ((CameraPadState*)lbl_80478C40)->rotation.y);
     fn_800E0718(quatZ, &lbl_80315558,
                  ((CameraPadState*)lbl_80478C40)->rotation.z);
-    fn_800E0738(quat, quatX, quatZ);
-    fn_800E0738(quat, quatY, quat);
+    GSquatMultiply(quat, quatX, quatZ);
+    GSquatMultiply(quat, quatY, quat);
 
-    moveX = fn_800F7A7C(1, 0) * frameDelta;
-    moveZ = fn_800F7A08(1, 0) * frameDelta;
-    rotateX = fn_800F7994(1, 0) * frameDelta;
-    rotateY = fn_800F7920(1, 0) * frameDelta;
+    moveX = GSinputGetLeftStickXData(1, 0) * frameDelta;
+    moveZ = GSinputGetLeftStickYData(1, 0) * frameDelta;
+    rotateX = GSinputGetRightStickXData(1, 0) * frameDelta;
+    rotateY = GSinputGetRightStickYData(1, 0) * frameDelta;
 
     if ((fn_800F7BC4(1) & 0x40) != 0) {
         movementDivisor *= 4.0f;
@@ -660,8 +660,8 @@ void _cameraPadRotateUpdate__FP9_GScamera(void* camera) {
         return;
     }
 
-    rotateX = fn_800F7994(1, 1) * msgGetCharsPerFrame();
-    rotateY = fn_800F7920(1, 1) * msgGetCharsPerFrame();
+    rotateX = GSinputGetRightStickXData(1, 1) * msgGetCharsPerFrame();
+    rotateY = GSinputGetRightStickYData(1, 1) * msgGetCharsPerFrame();
 
     angle = atan2f(((CameraPadState*)lbl_80478C40)->height,
                    ((CameraPadState*)lbl_80478C40)->distance);
@@ -729,7 +729,7 @@ void _cameraOffsetAnimeUpdate__FP9_GScamera(GSRenderCamera* camera) {
     state = lbl_80478C40;
     animation = GSresGetResource(state->animationGroup, state->animationId);
     if (animation == 0) {
-        animation = fn_800F92D4(state->animationId);
+        animation = GSresFindById(state->animationId);
     }
     if (animation == 0 || animation == camera) {
         return;
@@ -747,13 +747,13 @@ void _cameraOffsetAnimeUpdate__FP9_GScamera(GSRenderCamera* camera) {
                 &((CameraPadState*)lbl_80478C40)->offsetScale);
     GSmtxMakeXRotation(
         rotation, ((CameraPadState*)lbl_80478C40)->offsetRotation.x);
-    fn_800E032C(rotation,
+    GSmtxRotateY(rotation,
                  ((CameraPadState*)lbl_80478C40)->offsetRotation.y);
-    fn_800E02E8(rotation,
+    GSmtxRotateZ(rotation,
                  ((CameraPadState*)lbl_80478C40)->offsetRotation.z);
     GSvecTransform(&eye, rotation, &eye);
     GSvecTransform(&interest, rotation, &interest);
-    fn_800E0238(rotation, rotation);
+    GSmtxTranspose(rotation, rotation);
     GSvecTransform(&up, rotation, &up);
 
     if ((((CameraPadState*)lbl_80478C40)->flags[2] & 1) != 0) {
@@ -1363,7 +1363,7 @@ void cameraPlayAnime(u32 groupId, u32 animationId, s32 frame, u8 loop)
     if (state->animationGroup != 0 || state->animationId != 0) {
         animation = GSresGetResource(state->animationGroup, state->animationId);
         if (animation == NULL) {
-            animation = fn_800F92D4(state->animationId);
+            animation = GSresFindById(state->animationId);
         }
         ((CameraPadState*)lbl_80478C40)->animationGroup = 0;
         ((CameraPadState*)lbl_80478C40)->animationId = 0;
@@ -1380,7 +1380,7 @@ void cameraPlayAnime(u32 groupId, u32 animationId, s32 frame, u8 loop)
     current = lbl_80478C40;
     animation = GSresGetResource(current->animationGroup, current->animationId);
     if (animation == NULL) {
-        animation = fn_800F92D4(current->animationId);
+        animation = GSresFindById(current->animationId);
     }
     if (animation == NULL) {
         return;
@@ -1409,7 +1409,7 @@ void cameraPlayOffsetAnime(u32 groupId, u32 animationId, s32 frame, u8 loop)
     if (state->animationGroup != 0 || state->animationId != 0) {
         animation = GSresGetResource(state->animationGroup, state->animationId);
         if (animation == NULL) {
-            animation = fn_800F92D4(state->animationId);
+            animation = GSresFindById(state->animationId);
         }
         ((CameraPadState*)lbl_80478C40)->animationGroup = 0;
         ((CameraPadState*)lbl_80478C40)->animationId = 0;
@@ -1427,7 +1427,7 @@ void cameraPlayOffsetAnime(u32 groupId, u32 animationId, s32 frame, u8 loop)
     current = lbl_80478C40;
     animation = GSresGetResource(current->animationGroup, current->animationId);
     if (animation == NULL) {
-        animation = fn_800F92D4(current->animationId);
+        animation = GSresFindById(current->animationId);
     }
     if (animation == NULL) {
         return;
@@ -1449,7 +1449,7 @@ void cameraPlayOffsetAnime(u32 groupId, u32 animationId, s32 frame, u8 loop)
     fn_800D258C(camera);
 }
 
-s32 fn_80176C04(u32 group, u32 id)
+s32 cameraGetResAnimFrame(u32 group, u32 id)
 {
     GSRenderCamera* animation;
 
@@ -1459,7 +1459,7 @@ s32 fn_80176C04(u32 group, u32 id)
 
     animation = (GSRenderCamera*) GSresGetResource(group, id);
     if (animation == NULL) {
-        animation = (GSRenderCamera*) fn_800F92D4(id);
+        animation = (GSRenderCamera*) GSresFindById(id);
     }
     if (animation == NULL) {
         return 0;

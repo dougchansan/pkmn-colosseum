@@ -155,12 +155,12 @@ static inline s32 modelShadowFindCastModel(GSshadowSlot* slot, GSmodel* model)
 void GSmodelFreeAllShadowTextures(void)
 {
     extern void fn_801B06DC(void* obj);
-    extern void fn_801B0880(void* obj, u32 flag);
+    extern void HSD_ShadowSetActive(void* obj, u32 flag);
     u32 i;
 
     for (i = 0; i < 6; i++) {
         fn_801B06DC(lbl_80401490[i].obj);
-        fn_801B0880(lbl_80401490[i].obj, 0);
+        HSD_ShadowSetActive(lbl_80401490[i].obj, 0);
         lbl_80401490[i].flag = 0;
     }
 }
@@ -225,15 +225,15 @@ void GSmodelSetShadowLight(GSmodel* model, GSlight* light)
 void GSmodelSetShadowSurface(GSmodel* model, s32 count, void* data)
 {
     extern void fn_800E24B0(u16 handle);
-    extern void fn_800E209C(u16 handle);
+    extern void GSmemFree(u16 handle);
     extern u16 _toolentryAlloc__FUl(u32 size);
-    extern void* fn_800E27B0(u16 handle);
+    extern void* GSmemLock(u16 handle);
     extern void* memcpy(void* dst, const void* src, u32 n);
 
     if (count != model->shadowVtxCount) {
         if (model->shadowVtxHandle != 0) {
             fn_800E24B0(model->shadowVtxHandle);
-            fn_800E209C(model->shadowVtxHandle);
+            GSmemFree(model->shadowVtxHandle);
             model->shadowVtxHandle = 0;
             model->shadowVtxCount = 0;
             model->shadowVtxBuffer = NULL;
@@ -243,7 +243,7 @@ void GSmodelSetShadowSurface(GSmodel* model, s32 count, void* data)
         }
         model->shadowVtxCount = count;
         model->shadowVtxHandle = _toolentryAlloc__FUl(model->shadowVtxCount * 4);
-        model->shadowVtxBuffer = fn_800E27B0(model->shadowVtxHandle);
+        model->shadowVtxBuffer = GSmemLock(model->shadowVtxHandle);
     }
     memcpy(model->shadowVtxBuffer, data, model->shadowVtxCount * 4);
 }
@@ -285,11 +285,11 @@ void GSmodelSetShadowFlags(GSmodel* model, u32 flags)
 void modelShadowFreeModelList__FP8_GSmodel(GSmodel* model)
 {
     extern void fn_800E24B0(u16 handle);
-    extern void fn_800E209C(u16 handle);
+    extern void GSmemFree(u16 handle);
 
     if (model->shadowVtxHandle != 0) {
         fn_800E24B0(model->shadowVtxHandle);
-        fn_800E209C(model->shadowVtxHandle);
+        GSmemFree(model->shadowVtxHandle);
         model->shadowVtxHandle = 0;
         model->shadowVtxCount = 0;
         model->shadowVtxBuffer = NULL;
@@ -308,8 +308,8 @@ void modelShadowInit__Fv(void)
     extern u8 lbl_8047AB94;
     extern u32 lbl_8047AB90;
     extern u32 lbl_8047AB8C;
-    extern void* fn_801B1730(void);
-    extern void fn_801B0880(void* obj, u32 flag);
+    extern void* HSD_ShadowAlloc(void);
+    extern void HSD_ShadowSetActive(void* obj, u32 flag);
     f32 dist;
     u32 i;
 
@@ -321,8 +321,8 @@ void modelShadowInit__Fv(void)
     lbl_8047AB84 = 0;
 
     for (i = 0; i < 6; i++) {
-        lbl_80401490[i].obj = fn_801B1730();
-        fn_801B0880(lbl_80401490[i].obj, 0);
+        lbl_80401490[i].obj = HSD_ShadowAlloc();
+        HSD_ShadowSetActive(lbl_80401490[i].obj, 0);
     }
 }
 

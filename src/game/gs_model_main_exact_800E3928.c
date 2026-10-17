@@ -179,11 +179,11 @@ extern u16 lbl_8047AB70;
 extern void GSvecCopy(GSvec* dst, const GSvec* src);
 extern void GSmodelSetAnimFrame(GSmodel* model, f32 frame);
 extern u32 _toolentryAlloc__FUl(u32 size);
-extern void* fn_800E27B0(u32 handle);
+extern void* GSmemLock(u32 handle);
 extern void modelShadowInit__Fv(void);
 extern void fn_800EC134(GSmodel* model);
-extern void fn_80118874(void* bank, u32 destroyChildren);
-extern void fn_80118C20(void* bank, u32 visible);
+extern void gsParticleKill(void* bank, u32 destroyChildren);
+extern void GSmodelSetParticleVisibility(void* bank, u32 visible);
 extern u32 fn_80191118(GSbound* bound);
 extern u32 GSmaterialGetEnabledExtensions(void* material);
 extern void GSmaterialGetModulate(void* material, GScolor* color);
@@ -195,17 +195,17 @@ extern void GSmaterialResetTexture(void* material);
 extern void GSmaterialResetPEdescr(void* material);
 extern void GSmaterialResetAlpha(void* material);
 extern void GSmaterialResetFlags(void* material);
-extern void fn_800DF608(void* material);
+extern void GSmaterialRemoveExtraTObj(void* material);
 extern void fn_800E24B0(u32 handle);
-extern void fn_800E209C(u32 handle);
+extern void GSmemFree(u32 handle);
 extern void modelShadowFreeModelList__FP8_GSmodel(GSmodel* model);
 extern void GSmodelRemoveNull(GSmodel* model);
 extern void modelRemoveCenterNull(GSmodel* model);
 extern HSDJObj* fn_801A02B0(HSDJObj* jobj);
-extern void fn_801A05EC(void* object);
+extern void HSD_JObjUnref(void* object);
 extern void* memset(void* dst, int value, u32 size);
 extern void* memcpy(void* dst, const void* src, u32 size);
-extern void fn_8019D9DC(HSDJObj* jobj);
+extern void HSD_JObjSetupMatrixSub(HSDJObj* jobj);
 extern void __assert(const char* file, u32 line, const char* message);
 extern char lbl_8047CB60[] __attribute__((section(".sdata2")));
 extern char lbl_8047CB68[] __attribute__((section(".sdata2")));
@@ -226,10 +226,10 @@ extern void fn_8019D620(HSDJObj* jobj);
 extern GSpart* GSmodelGetPart(GSmodel* model, s32 index);
 extern void GSpartGetTransform(GSpart* part, GSvec* position, GSvec* rotation, GSvec* scale);
 extern void GSpartFree(GSpart* part);
-extern HSDJObj* fn_8019F718(void);
+extern HSDJObj* HSD_JObjAlloc(void);
 extern void HSD_JObjAddChild(HSDJObj* parent, HSDJObj* child);
 extern u32 HSD_JObjGetFlags(HSDJObj* jobj);
-extern void fn_8019FE8C(HSDJObj* jobj, u32 flags);
+extern void HSD_JObjSetFlags(HSDJObj* jobj, u32 flags);
 extern void GSmodelSetAnimIndex(GSmodel* model, u32 index);
 extern void GSmodelSetAnimType(GSmodel* model, u32 type);
 extern void GSmodelStartAnimation(GSmodel* model);
@@ -254,7 +254,7 @@ static inline void modelUpdateBoundCenter(GSmodel* model)
     }
 }
 
-void fn_800E3928(void* unused)
+void GSmodelApplyAll(void* unused)
 {
     u32 i;
     GSmodel* model;
@@ -388,7 +388,7 @@ void GSmodelDestroyLinkedParticles(GSmodel* model)
 
     bank = model->linkedGSparticleBank;
     if (bank != NULL) {
-        fn_80118874(bank, 1);
+        gsParticleKill(bank, 1);
     }
 }
 
@@ -620,12 +620,12 @@ void GSmodelSetVisibility(GSmodel* model, u8 visible)
     if (visible) {
         model->flags.raw |= GSMODEL_FLAG_VISIBLE;
         if (model->linkedGSparticleBank != NULL) {
-            fn_80118C20(model->linkedGSparticleBank, 1);
+            GSmodelSetParticleVisibility(model->linkedGSparticleBank, 1);
         }
     } else {
         model->flags.raw &= ~GSMODEL_FLAG_VISIBLE;
         if (model->linkedGSparticleBank != NULL) {
-            fn_80118C20(model->linkedGSparticleBank, 0);
+            GSmodelSetParticleVisibility(model->linkedGSparticleBank, 0);
         }
     }
 }
@@ -875,7 +875,7 @@ void* GSmodelGetMatrixPtr(GSmodel* model)
         }
 
         if (dirty != 0) {
-            fn_8019D9DC(jobj);
+            HSD_JObjSetupMatrixSub(jobj);
         }
     }
 

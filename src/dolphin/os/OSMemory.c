@@ -74,7 +74,7 @@ void __OSModuleInit(void) {
 }
 
 extern void OSInitThreadQueue();
-void fn_8009F1D0(u8* ptr, u32 val1, u32 val2) {
+void OSInitMessageQueue(u8* ptr, u32 val1, u32 val2) {
     OSInitThreadQueue(ptr);
     OSInitThreadQueue(ptr + 0x8);
     *(u32*)(ptr + 0x10) = val1;
@@ -104,7 +104,7 @@ asm void fn_8009F488(void) {
 #include "src/dolphin/os/OSMemory_fn_8009F488.inc"
 }
 #else
-void fn_8009F488(u32 chan, void* addr, u32 nBytes, u32 control) {
+void OSProtectRange(u32 chan, void* addr, u32 nBytes, u32 control) {
     BOOL enabled;
     u32 start;
     u32 end;
@@ -307,12 +307,12 @@ typedef struct OSMessageQueue {
     s32 usedCount;
 } OSMessageQueue;
 
-/* fn_8009F230 - 0x8009F230 | size: 0xC8
+/* OSSendMessage - 0x8009F230 | size: 0xC8
  * OSSendMessage - Enqueue a message into an OS message queue.
  * If blocking (flags & 1), waits when full.
  * Returns TRUE on success, FALSE if non-blocking and queue is full.
  */
-BOOL fn_8009F230(OSMessageQueue* mq, void* msg, s32 flags) {
+BOOL OSSendMessage(OSMessageQueue* mq, void* msg, s32 flags) {
     BOOL enabled;
     s32 lastIndex;
 
@@ -332,13 +332,13 @@ BOOL fn_8009F230(OSMessageQueue* mq, void* msg, s32 flags) {
     return TRUE;
 }
 
-/* fn_8009F2F8 - 0x8009F2F8 | size: 0xDC
+/* OSReceiveMessage - 0x8009F2F8 | size: 0xDC
  * OSReceiveMessage - Dequeue a message from an OS message queue.
  * If msg is non-NULL, stores the dequeued message there.
  * If blocking (flags & 1), waits when empty.
  * Returns TRUE on success, FALSE if non-blocking and queue is empty.
  */
-BOOL fn_8009F2F8(OSMessageQueue* mq, void* msg, s32 flags) {
+BOOL OSReceiveMessage(OSMessageQueue* mq, void* msg, s32 flags) {
     BOOL enabled = OSDisableInterrupts();
 
     while (mq->usedCount == 0) {
@@ -359,10 +359,10 @@ BOOL fn_8009F2F8(OSMessageQueue* mq, void* msg, s32 flags) {
     return TRUE;
 }
 
-/* fn_8009F3D4 - 0x8009F3D4 | size: 0xC
+/* OSGetConsoleSimulatedMemSize - 0x8009F3D4 | size: 0xC
  * OSGetConsoleSimulatedMemSize - returns simulated memory size from boot info.
  */
-u32 fn_8009F3D4(void) {
+u32 OSGetConsoleSimulatedMemSize(void) {
     return *(volatile u32*)0x80000028;
 }
 

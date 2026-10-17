@@ -19,8 +19,8 @@ extern f32 lbl_8047BCBC;
 
 extern u32 menuModelRender();
 extern u32 gfxVtxTexCoord();
-extern u32 fn_800D5CB8();
-extern u32 fn_800D61E4();
+extern u32 gfxVtxColor4u8();
+extern u32 gfxVtxPos2s16();
 extern u32 gfxEnd();
 extern u32 gfxBegin();
 extern u32 gfxSetPrimitive();
@@ -82,12 +82,12 @@ void fn_800492CC(u8* context, PdaSprite* sprite)
         gfxSetVtxDesc(lbl_80314F98);
         gfxLoadTexture(0, firstTexture);
         gfxBegin(2);
-        fn_800D61E4(lbl_804788C8[0], lbl_804788C8[1]);
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, alpha);
+        gfxVtxPos2s16(lbl_804788C8[0], lbl_804788C8[1]);
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, alpha);
         gfxVtxTexCoord(0, lbl_8047BC94, lbl_8047BC94);
-        fn_800D61E4((s16)(lbl_804788C8[0] + (s16)sprite->x),
+        gfxVtxPos2s16((s16)(lbl_804788C8[0] + (s16)sprite->x),
                      (s16)(lbl_804788C8[1] + (s16)sprite->y));
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, alpha);
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, alpha);
         gfxVtxTexCoord(0, lbl_8047BCBC, lbl_8047BCBC);
         gfxEnd();
     }
@@ -98,12 +98,12 @@ void fn_800492CC(u8* context, PdaSprite* sprite)
         gfxSetVtxDesc(lbl_80314F98);
         gfxLoadTexture(0, secondTexture);
         gfxBegin(2);
-        fn_800D61E4(lbl_804788C8[0], lbl_804788C8[1]);
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, alpha);
+        gfxVtxPos2s16(lbl_804788C8[0], lbl_804788C8[1]);
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, alpha);
         gfxVtxTexCoord(0, lbl_8047BC94, lbl_8047BC94);
-        fn_800D61E4((s16)(lbl_804788C8[0] + (s16)sprite->x),
+        gfxVtxPos2s16((s16)(lbl_804788C8[0] + (s16)sprite->x),
                      (s16)(lbl_804788C8[1] + (s16)sprite->y));
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, alpha);
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, alpha);
         gfxVtxTexCoord(0, lbl_8047BCBC, lbl_8047BCBC);
         gfxEnd();
     }

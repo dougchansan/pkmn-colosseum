@@ -3,7 +3,7 @@
  * @brief FSYS per-frame task, state query and subsystem init
  *        (0x8017AAA4 - 0x8017AF6C).
  *
- * fn_8017AAA4 is the GSgapp task fn_8003708C registers right after
+ * fsysUpdateTask is the GSgapp task fn_8003708C registers right after
  * _fsysInitTOC: it polls the drive, reports fatal / no-disk / cover-open /
  * wrong-disk / retry states through the registered error callback, and
  * otherwise steps every load slot through the status dispatch table
@@ -39,23 +39,23 @@ extern const char lbl_80273F70[];    /* "gsfsys.toc" */
 
 extern void* memset(void* dst, int value, u32 size);
 extern char* strcpy(char* dst, const char* src);
-extern void* fn_800A7BCC(void); /* DVDGetCurrentDiskID */
-extern void* fn_800E27B0(u16 handle);
-extern u16 fn_800E2C04(u32 size, u32 alignment);
+extern void* DVDGetCurrentDiskID(void); /* DVDGetCurrentDiskID */
+extern void* GSmemLock(u16 handle);
+extern u16 GSmemAlloc(u32 size, u32 alignment);
 extern s32 fn_80167E10(u32 fileInfo); /* DVDGetCommandBlockStatus wrapper */
-extern s32 fn_80167E34(void);         /* DVDGetDriveStatus wrapper */
-extern u32 fn_80167E5C(u32 file);
-extern void fn_80167E64(u32 file);
-extern void fn_80167ED0(u32 file, void* dst, u32 size, u32 offset);
-extern u32 fn_80167F28(const char* path);
-extern void fn_80167FA8(u32 count);
-extern void fn_801800F8(u32 queueCount, u32 arenaStart, u32 arenaSize);
+extern s32 GSdvdGetDriveStatus(void);         /* DVDGetDriveStatus wrapper */
+extern u32 GSdvdGetLength(u32 file);
+extern void GSdvdClose(u32 file);
+extern void GSdvdRead(u32 file, void* dst, u32 size, u32 offset);
+extern u32 GSdvdOpen(const char* path);
+extern void GSdvdInit(u32 count);
+extern void fsysCacheInit(u32 queueCount, u32 arenaStart, u32 arenaSize);
 extern void fn_8018094C(void);
 extern void fn_80180B94(u32 count);
 
 static inline s32 fsysGetDriveStatus(void)
 {
-    return fn_80167E34();
+    return GSdvdGetDriveStatus();
 }
 
 static inline s32 fsysUpdateSlot(FSYSSlot* slot)
@@ -81,7 +81,7 @@ static inline s32 fsysUpdateSlot(FSYSSlot* slot)
 }
 
 /* Address: 0x8017AAA4 | size: 0x18C */
-void fn_8017AAA4(void)
+void fsysUpdateTask(void)
 {
     FSYSSlot* slot;
     u32 i;
@@ -131,9 +131,9 @@ static inline void* fsysAlloc(u32 size)
     u16 handle;
 
     alignedSize = (size + 0x1F) & ~0x1F;
-    handle = fn_800E2C04(alignedSize, 0x20);
+    handle = GSmemAlloc(alignedSize, 0x20);
     if (handle != 0) {
-        return fn_800E27B0(handle);
+        return GSmemLock(handle);
     }
     return NULL;
 }
@@ -146,11 +146,11 @@ static inline void* fsysLoadFile(const char* name)
     void* buffer;
 
     strcpy(path, name);
-    file = fn_80167F28(path);
-    size = fn_80167E5C(file);
+    file = GSdvdOpen(path);
+    size = GSdvdGetLength(file);
     buffer = fsysAlloc((size + 0x1F) & ~0x1F);
-    fn_80167ED0(file, buffer, (size + 0x1F) & ~0x1F, 0);
-    fn_80167E64(file);
+    GSdvdRead(file, buffer, (size + 0x1F) & ~0x1F, 0);
+    GSdvdClose(file);
     return buffer;
 }
 
@@ -183,8 +183,8 @@ s32 _fsysInitTOC(u32 numSlots, FSYSErrorCallback errorCallback, u32 errorArg0,
         lbl_8047B1B8[i].userData = 0;
     }
 
-    fn_80167FA8(numSlots);
-    diskID = fn_800A7BCC();
+    GSdvdInit(numSlots);
+    diskID = DVDGetCurrentDiskID();
     slot = lbl_8047B1B4;
     for (i = 0; i < lbl_80453FEC.maxSlots; i++, slot++) {
         memset(slot, 0, sizeof(FSYSSlot));
@@ -205,7 +205,7 @@ s32 _fsysInitTOC(u32 numSlots, FSYSErrorCallback errorCallback, u32 errorArg0,
 
     lbl_8047B1B0 = fsysLoadFile(lbl_80273F70);
 
-    fn_801800F8(8, 0xA00000, 0x600000);
+    fsysCacheInit(8, 0xA00000, 0x600000);
     fn_80180B94(100);
     return 1;
 }

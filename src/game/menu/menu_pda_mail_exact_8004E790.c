@@ -26,8 +26,8 @@ extern u8* windowGetKeyInfo(void);
 extern u32 mailGetAttachFileGroup(s32 index);
 extern s32 fn_8017B2CC(u32 fileHandle);
 extern s32 fn_8017B448(u32 fileHandle);
-extern u32 fn_8017B4BC(u32 fileHandle, u32 index);
-extern u32 fn_8017B5A4(void);
+extern u32 fsysFindLoadedArchive(u32 fileHandle, u32 index);
+extern u32 fsysEntryGetType(void);
 extern void menuButtonNormal(void* p);
 extern void winSeqSetMenu(s32 ctx, s32 id);
 extern f32 lbl_8047BE4C;
@@ -35,7 +35,7 @@ extern f32 lbl_8047BE50;
 
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma peephole off
-s32 fn_8004E790(PdaMailAttachWindow* window)
+s32 pdaMailAttachKey(PdaMailAttachWindow* window)
 {
     u8* input;
     s32 total;
@@ -64,8 +64,8 @@ s32 fn_8004E790(PdaMailAttachWindow* window)
         count = 0;
         index = count;
         while (index < total) {
-            fn_8017B4BC(object, index);
-            if (fn_8017B5A4() == 9) {
+            fsysFindLoadedArchive(object, index);
+            if (fsysEntryGetType() == 9) {
                 count++;
             }
             index++;

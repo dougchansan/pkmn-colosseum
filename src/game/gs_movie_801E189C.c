@@ -55,23 +55,23 @@ extern s32 OSResumeThread(OSThread* thread);
 extern void _threadSwitch(void);
 extern void GSscratchSetInvalid(void);
 extern void GSscratchSetValid(void);
-extern BOOL fn_801E4778(const char* path, BOOL onMemory); /* THPPlayerOpen */
+extern BOOL THPPlayerOpen(const char* path, BOOL onMemory); /* THPPlayerOpen */
 extern void GSlogWrite(const char* format, ...);
-extern void fn_801E3930(GsVtrOrigin* origin);
-extern void fn_801E38E8(u32* state);
-extern u32 fn_801E4650(void);
+extern void THPPlayerGetVideoInfo(GsVtrOrigin* origin);
+extern void THPPlayerGetAudioInfo(u32* state);
+extern u32 THPPlayerCalcNeedMemory(void);
 extern u16 fn_800E2B00(u32 size, u32 alignment);
-extern void* fn_800E27B0(u16 handle);
-extern void fn_801E449C(void);
+extern void* GSmemLock(u16 handle);
+extern void THPPlayerSetBuffer(void);
 extern u32 OSGetTick(void);
-extern BOOL fn_801E40F8(u32, u32, u32);
-extern u16 fn_800E202C(void* pointer);
+extern BOOL THPPlayerPrepare(u32, u32, u32);
+extern u16 GSmemGetHandleByPtr(void* pointer);
 extern void fn_800E24B0(u16 handle);
-extern void fn_800E209C(u16 handle);
-extern void fn_801E3858(u32* first, u32* second);
-extern void fn_8014F2DC(s32 id, u32, u32, u32, u32, u32);
-extern void fn_801E4058(void);
-extern BOOL fn_801E4A6C(void);
+extern void GSmemFree(u16 handle);
+extern void movieGetStreamIds(u32* first, u32* second);
+extern void sndStreamMixParameterEx(s32 id, u32, u32, u32, u32, u32);
+extern void THPPlayerPlay(void);
+extern BOOL THPPlayerInit(void);
 
 /* Loader thread entry: opens the THP file and prepares playback. */
 void* fn_801E1924(void* param);
@@ -102,22 +102,22 @@ void* fn_801E1924(void* param)
     path = args->path;
     onMemory = args->onMemory;
     GSscratchSetInvalid();
-    if (!fn_801E4778(path, onMemory)) {
+    if (!THPPlayerOpen(path, onMemory)) {
         GSlogWrite("ERROR(GSmovie): Fail to open the thp file = %s\n", path);
         GSscratchSetValid();
         lbl_8047B444 = 1;
         return NULL;
     }
 
-    fn_801E3930(&lbl_80469030);
-    fn_801E38E8(lbl_80469020);
+    THPPlayerGetVideoInfo(&lbl_80469030);
+    THPPlayerGetAudioInfo(lbl_80469020);
     lbl_8047B45C = &lbl_80466BC0;
     lbl_8047B458 = (lbl_8047B45C->width - lbl_80469030.x) >> 1;
     lbl_8047B454 = (lbl_8047B45C->height - lbl_80469030.y) >> 1;
 
-    handle = fn_800E2B00(fn_801E4650(), 0x20);
+    handle = fn_800E2B00(THPPlayerCalcNeedMemory(), 0x20);
     if (handle != 0) {
-        lbl_8047B450 = fn_800E27B0(handle);
+        lbl_8047B450 = GSmemLock(handle);
     } else {
         lbl_8047B450 = NULL;
     }
@@ -128,39 +128,39 @@ void* fn_801E1924(void* param)
         return NULL;
     }
 
-    fn_801E449C();
+    THPPlayerSetBuffer();
     if (lbl_80469020[3] != 1) {
         remainder = OSGetTick() % lbl_80469020[3];
     } else {
         remainder = 0;
     }
-    if (!fn_801E40F8(0, 0, remainder)) {
+    if (!THPPlayerPrepare(0, 0, remainder)) {
         GSlogWrite("ERROR(GSmovie): Fail to prepare\n");
-        handle = fn_800E202C(lbl_8047B450);
+        handle = GSmemGetHandleByPtr(lbl_8047B450);
         if (handle != 0) {
             fn_800E24B0(handle);
-            fn_800E209C(handle);
+            GSmemFree(handle);
         }
         GSscratchSetValid();
         lbl_8047B444 = 1;
         return NULL;
     }
 
-    fn_801E3858(&first, &second);
+    movieGetStreamIds(&first, &second);
     if (first != (u32)-1) {
-        fn_8014F2DC(first, 0, 0, 0, 0x7F, 0);
+        sndStreamMixParameterEx(first, 0, 0, 0, 0x7F, 0);
     }
     if (second != (u32)-1) {
-        fn_8014F2DC(second, 0, 0x7F, 0, 0x7F, 0);
+        sndStreamMixParameterEx(second, 0, 0x7F, 0, 0x7F, 0);
     }
-    fn_801E4058();
+    THPPlayerPlay();
     lbl_8047B441 = 1;
     lbl_8047B444 = 1;
     return NULL;
 }
 
-void fn_801E1B2C(void)
+void GSmovieInit(void)
 {
-    fn_801E4A6C();
+    THPPlayerInit();
     lbl_8047B440 = 1;
 }

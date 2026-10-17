@@ -13,7 +13,7 @@
  *   - fn_8004EADC and fn_8004EC54 are initialization functions that copy
  *     item data from the save file (via fightTrainerAiValueAddsubDataBiosGetPtr) into the local cache,
  *     iterating 0x229 (553) times with 0x14-byte entries.
- *   - fn_8004EDCC, fn_8004F860, fn_8004FE3C and fn_80050844 share one
+ *   - dbgMenuTrainerAiEditA, fn_8004F860, fn_8004FE3C and fn_80050844 share one
  *     template: reload the species cache, then run a scene-message loop
  *     (menuOpenCustom/menuGetCursorItemID) that dispatches per-message onto
  *     HANDLE_BAG_VALUE, which reads a numeric field from the on-screen input
@@ -42,7 +42,7 @@ extern s32   menuOpenCustom(u32 sceneId, u32 a, u32 b, u32 c,
                          u32 d, u32 e, ...);
 extern u32   menuGetCursorItemID(u32 a);                /* scene message get */
 extern void  winSpriteSetDisp(u32 obj, u8 visible);  /* model visibility */
-extern void  fn_800FB680(u32 a, u32 b, s32 c, u32 d); /* sound trigger */
+extern void  GSmsgPrintColor(u32 a, u32 b, s32 c, u32 d); /* sound trigger */
 extern void  msgctrlSetValue(u32 effectId, u32 param);
 
 /* ===== Pokemon data ===== */
@@ -91,7 +91,7 @@ extern BagCacheEntry lbl_803A6AB0[];   /* Bag item cache (0x2B38 bytes) */
  *
  * fn_8004EADC  0x178  Bag init A (copy item data, 553 species loop, scene 0x89)
  * fn_8004EC54  0x178  Bag init B (copy item data, 553 species loop, scene 0x8A)
- * fn_8004EDCC  0xA94  Item sort/filter handler (2708 bytes)
+ * dbgMenuTrainerAiEditA  0xA94  Item sort/filter handler (2708 bytes)
  * fn_8004F860  0x5DC  Scroll position / item list display (1500 bytes)
  * fn_8004FE3C  0xA08  Item selection confirmation (2568 bytes)
  * fn_80050844  0xECC  Bag main update loop (3788 bytes, msg switch 0x5BC-0xFEC)
@@ -188,7 +188,7 @@ s32 fn_8004EC54(void) {
 }
 
 /* 0x8004EDCC | size: 0xA94 */
-s32 fn_8004EDCC(void) {
+s32 dbgMenuTrainerAiEditA(void) {
     s32 value16;
     s32 value15;
     s32 value14;

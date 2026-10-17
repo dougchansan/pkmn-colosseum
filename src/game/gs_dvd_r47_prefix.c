@@ -40,33 +40,33 @@ typedef struct GSFilterState {
 
 extern BOOL OSDisableInterrupts(void);
 extern BOOL OSRestoreInterrupts(BOOL level);
-extern u32 fn_800E2C04(u32 size, u32 align);
-extern void* fn_800E27B0(u32 handle);
+extern u32 GSmemAlloc(u32 size, u32 align);
+extern void* GSmemLock(u32 handle);
 extern void GXDrawDone(void);
-extern void fn_800B856C(void);
+extern void GXInvalidateVtxCache(void);
 extern void DCFlushRange(void* address, u32 size);
 extern void DVDInit(void);
 extern BOOL DVDSetAutoFatalMessaging(BOOL enable);
-extern s32 fn_800057A0(void);
-extern s32 fn_800057A8(void);
-extern u8* fn_800A7BCC(void);
+extern s32 GSgetVersionMajor(void);
+extern s32 GSgetVersionMinor(void);
+extern u8* DVDGetCurrentDiskID(void);
 extern u32 GSgappCreate(s32 state, u8 priority, u32 parameter,
                        void (*callback)(void));
-extern void _gsdvdErrorTask_801879AC(void);
+extern void _gsdvdErrorTask(void);
 extern void gfxSetFlags(u32 enable);
 extern void gfxClearFlags(u32 value);
 extern void gfxSetOrtho(f32 red, f32 green, f32 blue, f32 alpha);
 extern void gfxSetBlendMode(u32, u32, u32);
 extern void gfxSetUpdates(u32, u32, u32);
-extern void fn_800DA100(u32, u32, u32, u32, u32, u32);
+extern void gfxSetAlphaCompare(u32, u32, u32, u32, u32, u32);
 extern void gfxSetZMode(u32, u32, u32);
 extern void fn_800D9ED8(u32);
 extern void gfxSetCullMode(u32);
 extern void gfxSetVtxDesc(u32);
 extern void gfxSetPrimitive(u32);
 extern void gfxBegin(u32);
-extern void fn_800D5FA4(u32);
-extern void fn_800D5A38(u32, u32);
+extern void gfxVtxPos1x8(u32);
+extern void gfxVtxColor1x8(u32, u32);
 extern void gfxEnd(void);
 
 extern GSDVDWork* lbl_8047B0F4;
@@ -86,7 +86,7 @@ GSDVDWork* fn_8016819C(void);
 void fn_8016821C(void);
 void* fn_8016824C(u32 size);
 
-u32 fn_80167FA8(u32 workCount)
+u32 GSdvdInit(u32 workCount)
 {
     u8* destination;
 
@@ -97,8 +97,8 @@ u32 fn_80167FA8(u32 workCount)
     }
     fn_8016821C();
     DVDInit();
-    if (fn_800057A8() != 4) {
-        switch (fn_800057A0()) {
+    if (GSgetVersionMinor() != 4) {
+        switch (GSgetVersionMajor()) {
         case 0:
             lbl_80478C24 = lbl_8047D578;
             break;
@@ -109,7 +109,7 @@ u32 fn_80167FA8(u32 workCount)
             lbl_80478C24 = lbl_8047D594;
             break;
         }
-        destination = fn_800A7BCC();
+        destination = DVDGetCurrentDiskID();
         destination[0] = lbl_80478C24[0];
         destination[1] = lbl_80478C24[1];
         destination[2] = lbl_80478C24[2];
@@ -120,7 +120,7 @@ u32 fn_80167FA8(u32 workCount)
         destination[7] = 0;
     }
     DVDSetAutoFatalMessaging(TRUE);
-    GSgappCreate(1, 0x13, 0, _gsdvdErrorTask_801879AC);
+    GSgappCreate(1, 0x13, 0, _gsdvdErrorTask);
     return 1;
 }
 
@@ -193,10 +193,10 @@ void fn_8016821C(void)
 
 void* fn_8016824C(u32 size)
 {
-    u32 handle = fn_800E2C04(size, 0x20);
+    u32 handle = GSmemAlloc(size, 0x20);
 
     if ((u16)handle != 0) {
-        return fn_800E27B0(handle);
+        return GSmemLock(handle);
     }
     return 0;
 }
@@ -217,7 +217,7 @@ void fn_80168284(void)
                         lbl_8047D5A8);
             gfxSetBlendMode(1, 6, 7);
             gfxSetUpdates(1, 1, 0);
-            fn_800DA100(0, 7, 0, 0, 7, 0);
+            gfxSetAlphaCompare(0, 7, 0, 0, 7, 0);
             gfxSetZMode(1, 1, 1);
             fn_800D9ED8(1);
             gfxSetCullMode(0);
@@ -226,14 +226,14 @@ void fn_80168284(void)
             gfxBegin((u16)(lbl_804526E0.drawingCount * 4));
             for (index = 0; (u8)index < capacity; index++, filter++) {
                 if (filter->drawing != 0) {
-                    fn_800D5FA4(0);
-                    fn_800D5A38(0, index);
-                    fn_800D5FA4(1);
-                    fn_800D5A38(0, index);
-                    fn_800D5FA4(2);
-                    fn_800D5A38(0, index);
-                    fn_800D5FA4(3);
-                    fn_800D5A38(0, index);
+                    gfxVtxPos1x8(0);
+                    gfxVtxColor1x8(0, index);
+                    gfxVtxPos1x8(1);
+                    gfxVtxColor1x8(0, index);
+                    gfxVtxPos1x8(2);
+                    gfxVtxColor1x8(0, index);
+                    gfxVtxPos1x8(3);
+                    gfxVtxColor1x8(0, index);
                 }
             }
             gfxEnd();
@@ -242,7 +242,7 @@ void fn_80168284(void)
     }
 }
 
-void fn_80168408(GSFilter* filter, const u8* color)
+void GSfilterSetColor(GSFilter* filter, const u8* color)
 {
     u8* destination;
 
@@ -262,19 +262,19 @@ void fn_80168408(GSFilter* filter, const u8* color)
         }
     } else if (filter->drawing != 0) {
         GXDrawDone();
-        fn_800B856C();
+        GXInvalidateVtxCache();
         filter->drawing = 0;
         lbl_804526E0.drawingCount--;
     }
 }
 
-void fn_801684F0(GSDVDWork* work)
+void GSfilterRelease(GSDVDWork* work)
 {
     if (work->started != 0) {
         work->started = 0;
         if (work->drawing != 0) {
             GXDrawDone();
-            fn_800B856C();
+            GXInvalidateVtxCache();
             work->drawing = 0;
             lbl_804526E0.drawingCount--;
         }

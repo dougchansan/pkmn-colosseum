@@ -1,6 +1,6 @@
 /**
  * @file gs_range_exact_8010A420.c
- * @brief fn_8010A420, 0x8010A420 - 0x8010A5BC.
+ * @brief menuModelTerm, 0x8010A420 - 0x8010A5BC.
  *
  * Function-boundary carve of gs_range_80109C88.c. Text only; state and
  * resource globals remain extern-owned by the range data objects.
@@ -9,7 +9,7 @@
 
 /* 0x8010A420 | 0x19C */
 /* RULE-EXCEPTION(user-approved): local peephole control -- see docs/RULE_EXCEPTIONS.md. */
-s32 fn_8010A420(void* obj)
+s32 menuModelTerm(void* obj)
 {
     typedef struct Obj {
         u8 state;
@@ -32,10 +32,10 @@ s32 fn_8010A420(void* obj)
     extern u8 GSthreadIsRunning(u32 task);
     extern void GSthreadClose(u32 task);
     extern void _threadSwitch(void);
-    extern void fn_801DB100(u32 handle);
+    extern void wazaSequenceOwnerFree(u32 handle);
     extern void GSmodelFree(void* a);
     extern void GSlightFree(void* a);
-    extern void fn_800D2738(void* camera);
+    extern void GScameraFree(void* camera);
     extern void GStextureFree(void* a);
     extern int wazaSequenceSysRelease(void);
 
@@ -68,7 +68,7 @@ s32 fn_8010A420(void* obj)
         o->flag1 = 0;
         if (o->flag14) {
             if (o->handle24 != 0) {
-                fn_801DB100(o->handle24);
+                wazaSequenceOwnerFree(o->handle24);
                 o->handle24 = 0;
             }
         } else if (o->handle24 != 0) {
@@ -86,7 +86,7 @@ s32 fn_8010A420(void* obj)
     }
 
     if (o->camera != NULL) {
-        fn_800D2738(o->camera);
+        GScameraFree(o->camera);
         o->camera = NULL;
     }
 

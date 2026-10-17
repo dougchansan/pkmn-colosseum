@@ -32,7 +32,7 @@ void fn_8017A5FC(void)
 #if !defined(GS_RANGE_8017A5FC_SPLIT) || defined(GS_RANGE_8017A624_MIDDLE)
 extern s32 fn_801808B4(void* req);
 extern void* fn_801807A8(void* src, void* dst, u32 size);
-extern u8 fn_80167E98(void* work, void* addr, s32 length, s32 offset,
+extern u8 GSdvdReadAsync(void* work, void* addr, s32 length, s32 offset,
                        void* callback);
 extern void* lbl_8047B1C0[2]; /* DVD staging buffers */
 
@@ -75,14 +75,14 @@ s32 fn_8017A624(FSYSSlot* slot)
     slot->status = 0x12E;
     if (archive->flags & 1) {
         if (!slot->tocBuffer) {
-            fn_80167E98((void*)slot->fileInfo0, dvdBuf, slot->dmaChunkSize,
+            GSdvdReadAsync((void*)slot->fileInfo0, dvdBuf, slot->dmaChunkSize,
                         slot->dmaDstOffset, fn_8017A5FC);
         } else {
-            fn_80167E98(slot->tocBuffer, dvdBuf, slot->dmaChunkSize,
+            GSdvdReadAsync(slot->tocBuffer, dvdBuf, slot->dmaChunkSize,
                         slot->dmaDstOffset, fn_8017A5FC);
         }
     } else {
-        fn_80167E98((void*)slot->fileInfo0, dvdBuf, slot->dmaChunkSize,
+        GSdvdReadAsync((void*)slot->fileInfo0, dvdBuf, slot->dmaChunkSize,
                     slot->dmaDstOffset, fn_8017A5FC);
     }
     return 0;
@@ -99,13 +99,13 @@ s32 fn_8017A624(FSYSSlot* slot)
  */
 extern s64 OSDisableInterrupts(void);
 extern void OSRestoreInterrupts(u32 level);
-extern void fn_80167E64(void* file);
+extern void GSdvdClose(void* file);
 
 /*
  * fn_8017A814 and fn_8017A95C are the ARQ completion callbacks that
- * fn_8017B5C0 and fn_8017BD34 pass to fn_80180584 (userData = the slot).
+ * fsysLoadEntryCompressed and fsysLoadEntryUncompressed pass to fn_80180584 (userData = the slot).
  * Both advance the active slot's status past its read step and close the
- * slot's external file. fn_8017C414 expands the same body after its
+ * slot's external file. fsysSlotStatusFinishRead expands the same body after its
  * fn_8017A624 call.
  *
  * The long-standing r4/r5 wall (docs/recon/fsys_8017C414_wall.md): retail
@@ -160,7 +160,7 @@ void fn_8017A814(s32 result, void* userData)
     }
 
     if (slot->tocBuffer) {
-        fn_80167E64(slot->tocBuffer);
+        GSdvdClose(slot->tocBuffer);
         slot->tocBuffer = NULL;
     }
     OSRestoreInterrupts(enabled);
@@ -212,7 +212,7 @@ void fn_8017A95C(s32 result, void* userData)
     }
 
     if (slot->tocBuffer) {
-        fn_80167E64(slot->tocBuffer);
+        GSdvdClose(slot->tocBuffer);
         slot->tocBuffer = NULL;
     }
     OSRestoreInterrupts(enabled);

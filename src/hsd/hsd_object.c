@@ -44,7 +44,7 @@ extern void GSmtxMakeYRotation(void* dst, f32 angle);
 extern void GSmtxMakeZRotation(void* dst, f32 angle);
 extern void fn_800E048C(void* dst, f32 x, f32 y, f32 z);
 extern void fn_800E0560(void* dst, f32* src);
-extern void fn_800E0290(void* dst, void* lhs, void* rhs);
+extern void GSmtxConcat(void* dst, void* lhs, void* rhs);
 extern void GSvecTransform(void* dst, void* mtx, void* vec);
 extern void _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID(void);
 extern void gfxSetFlags(s32 mode);
@@ -55,7 +55,7 @@ extern void gfxSetVtxDesc(void* handle);
 extern void gfxSetPrimitive(s32 prim_type);
 extern void gfxBegin(s32 count);
 extern void gfxVtxPos(f32 x, f32 y, f32 z);
-extern void fn_800D5CB8(s32 idx, s32 r, s32 g, s32 b, s32 a);
+extern void gfxVtxColor4u8(s32 idx, s32 r, s32 g, s32 b, s32 a);
 extern void gfxEnd(void);
 extern u8 lbl_80314638[];
 void fn_80190E60(HSD_ObjectTransformData* data) {
@@ -73,10 +73,10 @@ void fn_80190E60(HSD_ObjectTransformData* data) {
     fn_800E048C(mtx_translate, data->translate[0], data->translate[1],
                 data->translate[2]);
     fn_800E0560(mtx_scale, data->scale);
-    fn_800E0290(mtx, mtx_y, mtx);
-    fn_800E0290(mtx, mtx_z, mtx);
-    fn_800E0290(mtx, mtx_translate, mtx);
-    fn_800E0290(mtx, mtx_scale, mtx);
+    GSmtxConcat(mtx, mtx_y, mtx);
+    GSmtxConcat(mtx, mtx_z, mtx);
+    GSmtxConcat(mtx, mtx_translate, mtx);
+    GSmtxConcat(mtx, mtx_scale, mtx);
     GSvecTransform(corner0, mtx, data->corner0);
     GSvecTransform(corner1, mtx, data->corner1);
 
@@ -90,25 +90,25 @@ void fn_80190E60(HSD_ObjectTransformData* data) {
     gfxBegin(10);
 
     gfxVtxPos(corner0[0], corner0[1], corner0[2]);
-    fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0x80);
+    gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0x80);
     gfxVtxPos(corner0[0], corner1[1], corner0[2]);
-    fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0x80);
+    gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0x80);
     gfxVtxPos(corner1[0], corner0[1], corner0[2]);
-    fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0x80);
+    gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0x80);
     gfxVtxPos(corner1[0], corner1[1], corner0[2]);
-    fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0x80);
+    gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0x80);
     gfxVtxPos(corner1[0], corner0[1], corner1[2]);
-    fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0x80);
+    gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0x80);
     gfxVtxPos(corner1[0], corner1[1], corner1[2]);
-    fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0x80);
+    gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0x80);
     gfxVtxPos(corner0[0], corner0[1], corner1[2]);
-    fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0x80);
+    gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0x80);
     gfxVtxPos(corner0[0], corner1[1], corner1[2]);
-    fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0x80);
+    gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0x80);
     gfxVtxPos(corner0[0], corner0[1], corner0[2]);
-    fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0x80);
+    gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0x80);
     gfxVtxPos(corner0[0], corner1[1], corner0[2]);
-    fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0x80);
+    gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0x80);
     gfxEnd();
 }
 
@@ -148,10 +148,10 @@ s32 fn_80191118(HSD_ObjectTransformData* data) {
     fn_800E048C(mtx_translate, data->translate[0], data->translate[1],
                 data->translate[2]);
     fn_800E0560(mtx_scale, data->scale);
-    fn_800E0290(mtx, mtx_y, mtx);
-    fn_800E0290(mtx, mtx_z, mtx);
-    fn_800E0290(mtx, mtx_translate, mtx);
-    fn_800E0290(mtx, mtx_scale, mtx);
+    GSmtxConcat(mtx, mtx_y, mtx);
+    GSmtxConcat(mtx, mtx_z, mtx);
+    GSmtxConcat(mtx, mtx_translate, mtx);
+    GSmtxConcat(mtx, mtx_scale, mtx);
     GSvecTransform(corner0, mtx, data->corner0);
     GSvecTransform(corner1, mtx, data->corner1);
 
@@ -239,7 +239,7 @@ void fn_8019147C(HSD_BBox* bbox, void* val) {
 
 /* 0x80191484 | 0x70 */
 extern u32   _toolentryAlloc__FUl(u32 size);   /* GSmemAllocRaw (returns u16 handle) */
-extern void* fn_800E27B0(u16 handle); /* GSmemGetPtr */
+extern void* GSmemLock(u16 handle); /* GSmemGetPtr */
 extern u16  lbl_8047B208; /* GSmem handle for object instance pool */
 extern void* lbl_8047B20C; /* resolved pointer to object instance pool */
 extern u32  lbl_8047B210; /* object instance count */
@@ -251,7 +251,7 @@ void fn_80191484(u32 count) {
     handle = _toolentryAlloc__FUl(count * 0x34);
     lbl_8047B208 = handle;
     if ((u16)handle != 0) {
-        lbl_8047B20C = fn_800E27B0((u16)handle);
+        lbl_8047B20C = GSmemLock((u16)handle);
         for (i = 0; i < lbl_8047B210; i++) {
             ((u8*)lbl_8047B20C)[i * 0x34] = 0;
         }

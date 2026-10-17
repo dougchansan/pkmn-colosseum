@@ -10,7 +10,7 @@ extern GS_SDATA2 const char lbl_8047E474[];
 
 void _vtrTexDispFunc__Fv(void);
 
-void fn_801E1300(void)
+void vtrInit(void)
 {
     extern u32 lbl_80467CF8[];
     extern u8 lbl_8047B420;
@@ -70,7 +70,7 @@ void _vtrTexDispFunc__Fv(void)
     extern void gfxLoadTexture(s32 index, void* texture);
     extern void gfxVtxTexCoord(s32 index, f32 u, f32 v);
     extern void gfxEnd(void);
-    extern void fn_800FAEF8(s32 x, s32 y, s32 color, const char* text,
+    extern void GSmsgPrintf(s32 x, s32 y, s32 color, const char* text,
                             ...);
 
     if (!lbl_8047B420 || !lbl_8047B434) {
@@ -126,28 +126,28 @@ void _vtrTexDispFunc__Fv(void)
 
     switch (lbl_8047B424) {
     case 0:
-        fn_800FAEF8(0x230, 0x2C, -1, lbl_8047E458);
+        GSmsgPrintf(0x230, 0x2C, -1, lbl_8047E458);
         break;
     case 1:
-        fn_800FAEF8(0x230, 0x2C, -1, lbl_8047E45C);
+        GSmsgPrintf(0x230, 0x2C, -1, lbl_8047E45C);
         break;
     case 2:
-        fn_800FAEF8(0x230, 0x2C, -1, lbl_8047E464);
+        GSmsgPrintf(0x230, 0x2C, -1, lbl_8047E464);
         break;
     case 3:
         switch (lbl_8047B428) {
         case 0:
         case 1:
-            fn_800FAEF8(0x230, 0x2C, -1, lbl_8047E46C);
+            GSmsgPrintf(0x230, 0x2C, -1, lbl_8047E46C);
             break;
         case 2:
         case 3:
-            fn_800FAEF8(0x230, 0x2C, -1, lbl_8047E45C);
+            GSmsgPrintf(0x230, 0x2C, -1, lbl_8047E45C);
             break;
         }
         break;
     case 4:
-        fn_800FAEF8(0x230, 0x2C, -1, lbl_8047E474);
+        GSmsgPrintf(0x230, 0x2C, -1, lbl_8047E474);
         break;
     }
     fn_800D9ED8(0);

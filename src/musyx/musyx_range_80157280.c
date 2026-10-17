@@ -120,7 +120,7 @@ extern u32 lbl_8047B07C;
 
 /* GSmem allocator */
 extern u16   _toolentryAlloc__FUl(u32 size);
-extern void* fn_800E27B0(u16 handle);
+extern void* GSmemLock(u16 handle);
 
 /* External functions referenced from asm wrappers */
 extern u32 sndAuxCallbackUpdateSettingsReverbHI(u8* ptr);
@@ -267,12 +267,12 @@ void HandleReverb(s32* samples, ReverbWork* work, u32 channel)
 extern void  GSmodelGetPart(void* model, u32 param);
 extern void  GSpartFree(void* model, u32 param);
 extern void  fn_800E24B0(void* model, u32 param);
-extern void  fn_800E209C(void* model, u32 param);
+extern void  GSmemFree(void* model, u32 param);
 extern void  set__5GSvecFfff(void* dst, void* src);
 extern void  GSvecCopy(void* dst, void* src);
 extern void  GSvecAdd(void* model, void* param);
 extern void  fn_800E0BA0(void* param);
-extern void  fn_800E0BE4(void* param);
+extern void  GSrandf(void* param);
 extern void  vecScale(void* param);
 extern u32   __cvt_fp2unsigned(f64 val);
 
@@ -552,8 +552,8 @@ extern u8 lbl_8047B034;
 extern u8 lbl_8047B035;
 extern u32 lbl_8047B038;
 extern void synthSendKeyOff(u32 voice);
-extern void fn_8014DCA8(u8 studio);
-extern void fn_8014DC00(u8 studio, u32 isMaster, u32 type);
+extern void synthDeactivateStudio(u8 studio);
+extern void synthActivateStudio(u8 studio, u32 isMaster, u32 type);
 extern void salApplyMatrix(const f32* matrix, const f32* src, f32* dst);
 extern f32 salNormalizeVector(f32* vec);
 extern f32 sqrtf(f32 x);
@@ -588,9 +588,9 @@ static f32 fn_8015DEC0_average_distance(MusyxStudioEmitter* emitter, u32 listene
 static void fn_8015DEC0_apply_fade(MusyxStudioEmitter* emitter)
 {
     if ((f64)(lbl_8047D47C * (f32)emitter->fade) >= lbl_8047D480) {
-        fn_8014DC00(emitter->studio, 1, 0);
+        synthActivateStudio(emitter->studio, 1, 0);
     } else {
-        fn_8014DC00(emitter->studio, 0, 0);
+        synthActivateStudio(emitter->studio, 0, 0);
     }
 }
 
@@ -683,7 +683,7 @@ void fn_8015DEC0(void)
                 if (victim->releaseCb != NULL) {
                     victim->releaseCb(victim->studio);
                 }
-                fn_8014DCA8(victim->studio);
+                synthDeactivateStudio(victim->studio);
                 emitter->studio = victim->studio;
                 victim->studio = 0xFF;
                 victim->field_08 = 0;
@@ -925,15 +925,15 @@ typedef struct SDataStackEntry {
 extern u8 lbl_8047AF18;
 extern s16 lbl_8047AFE8;
 extern SDataStackEntry lbl_80447860[128];
-extern void* fn_80162FAC(void* address); /* hwTransAddr */
+extern void* hwTransAddr(void* address); /* hwTransAddr */
 extern u32 dataInsertSDir(void* sampleDirectory, void* samples);
 extern void dataInsertFX(u16 group, void* effects, u16 count);
-extern void fn_80159C54(u16 id, MusyxPoolData* data, u8 type,
+extern void InsertData(u16 id, MusyxPoolData* data, u8 type,
                         u32 remove); /* InsertData */
-extern void fn_80163188(void); /* hwSyncSampleMem */
+extern void hwSyncSampleMem(void); /* hwSyncSampleMem */
 extern void hwDisableIrq(void);
 extern void hwEnableIrq(void);
-extern u32 fn_801463C4(void* normalPage, void* drumPage, void* midiSetup,
+extern u32 seqStartPlay(void* normalPage, void* drumPage, void* midiSetup,
                        void* arrangement, void* parameters, u8 studio,
                        u16 group);
 
@@ -945,17 +945,17 @@ static inline void sdataScanIDList(u16* reference, MusyxPoolData* data,
         if ((*reference & 0x8000) != 0) {
             id = *reference & 0x3FFF;
             while (id <= reference[1]) {
-                fn_80159C54(id, data, type, 0);
+                InsertData(id, data, type, 0);
                 id++;
             }
             reference += 2;
         } else {
-            fn_80159C54(*reference++, data, type, 0);
+            InsertData(*reference++, data, type, 0);
         }
     }
 }
 
-u32 fn_80159EF0(void* project, u16 group, void* samples,
+u32 sndPushGroup(void* project, u16 group, void* samples,
                 void* sampleDirectory,
                 MusyxPoolData* pool) { /* sndPushGroup */
     SDataGroup* entry;
@@ -973,7 +973,7 @@ u32 fn_80159EF0(void* project, u16 group, void* samples,
                 sampleReference =
                     (u16*)((u8*)project + entry->sampleOffset);
                 if (dataInsertSDir(sampleDirectory,
-                                   fn_80162FAC(samples)) != 0) {
+                                   hwTransAddr(samples)) != 0) {
                     sdataScanIDList(sampleReference,
                                     (MusyxPoolData*)sampleDirectory, 1);
                 }
@@ -991,7 +991,7 @@ u32 fn_80159EF0(void* project, u16 group, void* samples,
                         (u8*)project + entry->normalPageOffset;
                     dataInsertFX(group, effectData + 4, *(u16*)effectData);
                 }
-                fn_80163188();
+                hwSyncSampleMem();
                 lbl_8047AFE8++;
                 return 1;
             }
@@ -1006,7 +1006,7 @@ typedef struct SDataMidiSetup {
     u8 _02[0x52];
 } SDataMidiSetup;
 
-u32 fn_8015A21C(u16 group, u16 song, void* arrangement, void* parameters,
+u32 seqPlaySong(u16 group, u16 song, void* arrangement, void* parameters,
                 u8 irqCall, u8 studio) {
     s32 i;
     SDataGroup* data;
@@ -1032,12 +1032,12 @@ u32 fn_8015A21C(u16 group, u16 song, void* arrangement, void* parameters,
             while (midiSetup->song != 0xFFFF) {
                 if (midiSetup->song == song) {
                     if (irqCall != 0) {
-                        sequence = fn_801463C4(
+                        sequence = seqStartPlay(
                             normalPage, drumPage, midiSetup, arrangement,
                             parameters, studio, group);
                     } else {
                         hwDisableIrq();
-                        sequence = fn_801463C4(
+                        sequence = seqStartPlay(
                             normalPage, drumPage, midiSetup, arrangement,
                             parameters, studio, group);
                         hwEnableIrq();
@@ -1054,7 +1054,7 @@ u32 fn_8015A21C(u16 group, u16 song, void* arrangement, void* parameters,
     return -1;
 }
 
-u32 fn_8015A368(u16 group, u16 song, void* arrangement, void* parameters,
+u32 sndSeqPlayEx(u16 group, u16 song, void* arrangement, void* parameters,
                 u8 studio) {
     s32 i;
     SDataGroup* data;
@@ -1080,7 +1080,7 @@ u32 fn_8015A368(u16 group, u16 song, void* arrangement, void* parameters,
             while (midiSetup->song != 0xFFFF) {
                 if (midiSetup->song == song) {
                     hwDisableIrq();
-                    sequence = fn_801463C4(
+                    sequence = seqStartPlay(
                         normalPage, drumPage, midiSetup, arrangement,
                         parameters, studio, group);
                     hwEnableIrq();
@@ -1256,8 +1256,8 @@ extern u32 synthFXStart(u16 effect, u8 volume, u8 pan, u8 studio, u32 itd);
 extern u32 synthFXSetCtrl(u32 handle, u8 ctrl, u8 value);
 extern u32 synthFXSetCtrl14(u32 handle, u8 ctrl, u16 value);
 extern u32 sndFXCheck(u32 handle);
-extern void fn_8014DD98(u8 studio, void* update);
-extern void fn_8014DDB8(u8 studio, void* update);
+extern void synthAddStudioInput(u8 studio, void* update);
+extern void synthRemoveStudioInput(u8 studio, void* update);
 extern void salCrossProduct(f32* result, const f32* first,
                             const f32* second);
 extern void salInvertMatrix(SndFMatrix* result, const SndFMatrix* matrix);
@@ -1306,7 +1306,7 @@ static inline void s3dAddListenerToRoom(SndRoom* room) {
     }
 }
 
-u32 fn_8015ED00(SndListener* listener, SndVec3* position,
+u32 s3dUpdateListener(SndListener* listener, SndVec3* position,
                 SndVec3* direction, SndVec3* heading, SndVec3* up,
                 u8 volume, SndRoom* room) { /* sndUpdateListener */
     if (lbl_8047AF18 != 0) {
@@ -1333,7 +1333,7 @@ u32 fn_8015ED00(SndListener* listener, SndVec3* position,
     return 0;
 }
 
-u32 fn_8015EF04(SndListener* listener, SndVec3* position,
+u32 s3dSetListener(SndListener* listener, SndVec3* position,
                 SndVec3* direction, SndVec3* heading, SndVec3* up,
                 f32 surroundFront, f32 surroundBack, f32 soundSpeed,
                 u32 flags, u8 volume, SndRoom* room) { /* sndAddListener */
@@ -1538,7 +1538,7 @@ set_flags:
 
 #pragma push
 #pragma optimization_level 4
-void fn_8015F620(void)
+void s3dHandle(void)
 {
     SndServiceVoice* voice;
     SndServiceVoice* next;
@@ -1774,17 +1774,17 @@ void fn_8015F620(void)
                 pair->update[0] = (u8)(lbl_8047D488 * pair->scale);
                 if (pair->flags & 1) {
                     pair->update[3] = rightStudio;
-                    fn_8014DD98(leftStudio, pair->update);
+                    synthAddStudioInput(leftStudio, pair->update);
                 } else {
                     pair->update[3] = leftStudio;
-                    fn_8014DD98(rightStudio, pair->update);
+                    synthAddStudioInput(rightStudio, pair->update);
                 }
                 pair->flags |= 0x80000000;
             }
         } else if (leftStudio == 0xFF || rightStudio == 0xFF) {
             if ((leftStudio != 0xFF && leftStudio == pair->lastStudio) ||
                 (rightStudio != 0xFF && rightStudio == pair->lastStudio)) {
-                fn_8014DDB8(pair->lastStudio, pair->update);
+                synthRemoveStudioInput(pair->lastStudio, pair->update);
             }
             pair->flags &= 0x7FFFFFFF;
         } else {
@@ -2001,13 +2001,13 @@ u32 inpGetTremolo(u8* obj) {
 #pragma push
 #pragma optimization_level 4
 #pragma optimizewithasm off
-/* fn_80161934 = inpGetAuxA (0x80161934) -- same shape as fn_801619E8/inpGetAuxB
+/* inpGetAuxA = inpGetAuxA (0x80161934) -- same shape as inpGetAuxB/inpGetAuxB
  * below but using lbl_80369C90 (dirtyMask table) and lbl_80435B74 (inpAuxA,
  * already-known identity) instead of lbl_80369CA0/lbl_804356F4. */
 extern u32 lbl_80449390[];
 extern u32 lbl_80369C90[];
 extern u8  lbl_80435B74[];
-u32 fn_80161934(u8 idx, u8 index, u8 midi, u8 midiSet) {
+u32 inpGetAuxA(u8 idx, u8 index, u8 midi, u8 midiSet) {
     u32 mask = lbl_80369C90[index] & ((u32(*)[16])lbl_80449390)[midiSet][midi];
     u32 nonzero = ((-mask | mask) >> 31);
     if (nonzero) {
@@ -2035,7 +2035,7 @@ asm void fn_801619E8(void) {
 extern u32 lbl_80449390[];
 extern u32 lbl_80369CA0[];
 extern u8  lbl_804356F4[];
-u32 fn_801619E8(u8 idx, u8 index, u8 midi, u8 midiSet) {
+u32 inpGetAuxB(u8 idx, u8 index, u8 midi, u8 midiSet) {
     u32 mask = lbl_80369CA0[index] & ((u32(*)[16])lbl_80449390)[midiSet][midi];
     u32 nonzero = ((-mask | mask) >> 31);
     if (nonzero) {
@@ -2104,7 +2104,7 @@ static inline void inpResetGlobalMIDIDirtyFlags(void) {
 
 #pragma push
 #pragma optimization_level 4
-void fn_80161A9C(SndInputVoice* voice) {
+void inpInit(SndInputVoice* voice) {
     u32 i;
     u32 studio;
 
@@ -2232,7 +2232,7 @@ static inline u8 inpTranslateExCtrlInline(u8 ctrl) {
 }
 
 extern void fn_80160BDC(void);
-extern void fn_801603C0(u8 ctrl, u8 channel, u8 set, u8 value); /* inpSetMidiCtrl -- true
+extern void inpSetMidiCtrl(u8 ctrl, u8 channel, u8 set, u8 value); /* inpSetMidiCtrl -- true
                                                                   * signature is all-u8
                                                                   * (verified: callers don't
                                                                   * re-mask already-clean u8
@@ -2244,16 +2244,16 @@ inline void inpSetMidiCtrl14(u8 ctrl, u8 channel, u8 set, u16 value) {
     }
 
     if (ctrl < 64) {
-        fn_801603C0(ctrl & 31, channel, set, value >> 7);
-        fn_801603C0((ctrl & 31) + 32, channel, set, value & 0x7f);
+        inpSetMidiCtrl(ctrl & 31, channel, set, value >> 7);
+        inpSetMidiCtrl((ctrl & 31) + 32, channel, set, value & 0x7f);
     } else if (ctrl == 128 || ctrl == 129) {
-        fn_801603C0(ctrl & 254, channel, set, value >> 7);
-        fn_801603C0((ctrl & 254) + 1, channel, set, value & 0x7f);
+        inpSetMidiCtrl(ctrl & 254, channel, set, value >> 7);
+        inpSetMidiCtrl((ctrl & 254) + 1, channel, set, value & 0x7f);
     } else if (ctrl == 132 || ctrl == 133) {
-        fn_801603C0(ctrl & 254, channel, set, value >> 7);
-        fn_801603C0((ctrl & 254) + 1, channel, set, value & 0x7f);
+        inpSetMidiCtrl(ctrl & 254, channel, set, value >> 7);
+        inpSetMidiCtrl((ctrl & 254) + 1, channel, set, value & 0x7f);
     } else {
-        fn_801603C0(ctrl, channel, set, value >> 7);
+        inpSetMidiCtrl(ctrl, channel, set, value >> 7);
     }
 }
 extern u32  salInitDspCtrl(u8 a, u8 b, u32 c);
@@ -2306,7 +2306,7 @@ asm void fn_80162070(void) {
 #include "src/game/people/people_field_fn_80162070.inc"
 }
 #else
-u32 fn_80162070(void) {
+u32 sndRand(void) {
     u32 temp;
 
     temp = lbl_80478BF0 * 0xA8351D63;
@@ -2389,9 +2389,9 @@ extern void AIStopDMA(void);
 extern u32  fn_800AE794(void);
 extern void DSPSendMailToDSP(u32 a);
 extern void DSPInit(void);
-extern void fn_800AE8A4(void);
-extern void fn_800AE8EC(void);
-extern u32  fn_800AE92C(void);
+extern void DSPReset(void);
+extern void DSPHalt(void);
+extern u32  DSPGetDMAStatus(void);
 extern void DSPAddTask(u8* ptr);
 extern f64 pow(f64 base, f64 exp); /* MSL pow(double,double); Colosseum's
                                              * pre-2.0.1 adsrConvertTimeCents calls
@@ -2399,7 +2399,7 @@ extern f64 pow(f64 base, f64 exp); /* MSL pow(double,double); Colosseum's
                                              * disassembly: args loaded via lfd
                                              * (double) not lfs, and result is
                                              * frsp'd down to single afterward. */
-extern void fn_8015B250(u32, u32);
+extern void salBuildCommandList(u32, u32);
 typedef struct _SND_REVHI_WORK _SND_REVHI_WORK;
 extern u32 ReverbHICreate(_SND_REVHI_WORK* obj, f32 f1, f32 f2, f32 f3, f32 f4, f32 f5, f32 f6);
 extern u32 ReverbHIModify(_SND_REVHI_WORK* obj, f32 f1, f32 f2, f32 f3, f32 f4, f32 f5, f32 f6);
@@ -2419,7 +2419,7 @@ extern u8 lbl_8047B035;
 extern void dataInit(u32 smpBase, u32 smpLength);
 extern void dataExit(void);
 extern void synthExit(void);
-extern void fn_8015AAA0(u32 studio);
+extern void salDeactivateStudio(u32 studio);
 extern void salActivateVoice(u8* ptr, u8 unused2);
 typedef union HwVolumeStudio {
     struct {
@@ -2438,29 +2438,29 @@ typedef union HwVolumeStudio {
 } HwVolumeStudio;
 extern HwVolumeStudio lbl_80447E60[];
 extern void fn_8015D7D0(void);
-extern void fn_801629A4(u32 index, u8 value);
-extern void fn_801629D0(u32 index, u8 value);
+extern void hwSetSRCType(u32 index, u8 value);
+extern void hwSetPolyPhaseFilter(u32 index, u8 value);
 extern void hwSetITDMode(u32 index, u8 flag);
 extern void fn_801632B4(u8* dst, u8* src, u32 size, u32 priority, u32 callbackArg0, u32 callbackArg1);
-extern void fn_80163490(void);
-extern void fn_801634A8(u32 size);
-extern void fn_80163794(void);
+extern void aramSyncTransferQueue(void);
+extern void aramInit(u32 size);
+extern void aramExit(void);
 extern void aramSetUploadCallback(u8* ptr, u32 size);
-extern u32  fn_80163810(void* ptr, u32 size);
-extern void fn_80163BCC(u8* a, u32 b);
-extern u8   fn_80163CA8();
+extern u32  aramStoreData(void* ptr, u32 size);
+extern void aramRemoveData(u8* a, u32 b);
+extern u8   aramAllocateStreamBuffer();
 extern u32  aramGetStreamBufferAddress(u32 idx, u32 *out);
 extern void aramFreeStreamBuffer();
 extern u32  salInitAi(void(*fnptr)(void), u32 d, u32 a);
-extern void fn_801640C4(void);
+extern void salStartAi(void);
 extern u32  salExitAi(void);
-extern u32  fn_80164148(u32 d);
-extern u32  fn_80164204(void);
-extern void fn_80164324(void);
+extern u32  salInitDsp(u32 d);
+extern u32  salExitDsp(void);
+extern void hwExitIrq(void);
 extern void hwInitIrq(void);
 extern u32 salGetStartDelay(void);
-extern u32  fn_801643D8(u32 size);
-extern void fn_80164400(u32 a);
+extern u32  salMalloc(u32 size);
+extern void salFree(u32 a);
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
@@ -2469,7 +2469,7 @@ asm void fn_801621BC(void) {
 #include "src/game/people/people_field_fn_801621BC.inc"
 }
 #else
-void fn_801621BC(u32* ptr) { *ptr <<= 8; }
+void sndConvertMs(u32* ptr) { *ptr <<= 8; }
 #endif
 #pragma pop
 #pragma push
@@ -2496,7 +2496,7 @@ asm void fn_80162214(void) {
 }
 #else
 /* identity: sndConvert2Ms (MusyX runtime, snd_service.c) */
-u32 fn_80162214(u32 time) { return time / 256; }
+u32 sndConvert2Ms(u32 time) { return time / 256; }
 #endif
 #pragma pop
 extern u8 lbl_8047AF18;
@@ -2504,17 +2504,17 @@ extern u8 lbl_8047B05D;
 extern u8 lbl_8047B05E;
 extern u8 lbl_8047B05F;
 extern u32 lbl_8047B024;
-extern void fn_8014E7CC(void);
-extern u32 fn_80164398(void);
-extern u32 fn_801643B8(void);
+extern void streamCorrectLoops(void);
+extern u32 hwIRQEnterCritical(void);
+extern u32 hwIRQLeaveCritical(void);
 extern u8* salAiGetDest(void);
 extern void salCtrlDsp(u32 arg);
 extern void salHandleAuxProcessing(void);
-extern void fn_8016245C(u8 offset);
-extern void fn_801496A0(u32 ticks);
+extern void hwSetTimeOffset(u8 offset);
+extern void seqHandle(u32 ticks);
 extern void synthHandle(u32 ticks);
-extern void fn_8015F620(void);
-extern void fn_8014DF20(void);
+extern void s3dHandle(void);
+extern void streamHandle(void);
 extern void vsSampleUpdates(void);
 
 typedef struct HwIrqVoice {
@@ -2536,14 +2536,14 @@ void snd_handle_irq(void) {
         return;
     }
 
-    fn_8014E7CC();
-    fn_80164398();
+    streamCorrectLoops();
+    hwIRQEnterCritical();
     salCtrlDsp((u32)salAiGetDest());
-    fn_801643B8();
-    fn_80164398();
+    hwIRQLeaveCritical();
+    hwIRQEnterCritical();
     salHandleAuxProcessing();
-    fn_801643B8();
-    fn_80164398();
+    hwIRQLeaveCritical();
+    hwIRQEnterCritical();
 
     lbl_8047B05F ^= 1;
     lbl_8047B05E = (lbl_8047B05E + 1) % 3;
@@ -2552,26 +2552,26 @@ void snd_handle_irq(void) {
             sndGetIrqVoice(voice)->changed[i] = 0;
         }
     }
-    fn_801643B8();
+    hwIRQLeaveCritical();
 
     for (frame = 0; frame < 5; frame++) {
-        fn_80164398();
-        fn_8016245C(frame);
-        fn_801496A0(0x100);
+        hwIRQEnterCritical();
+        hwSetTimeOffset(frame);
+        seqHandle(0x100);
         synthHandle(0x100);
-        fn_801643B8();
+        hwIRQLeaveCritical();
     }
 
-    fn_80164398();
-    fn_8016245C(0);
-    fn_8015F620();
-    fn_801643B8();
-    fn_80164398();
-    fn_8014DF20();
-    fn_801643B8();
-    fn_80164398();
+    hwIRQEnterCritical();
+    hwSetTimeOffset(0);
+    s3dHandle();
+    hwIRQLeaveCritical();
+    hwIRQEnterCritical();
+    streamHandle();
+    hwIRQLeaveCritical();
+    hwIRQEnterCritical();
     vsSampleUpdates();
-    fn_801643B8();
+    hwIRQLeaveCritical();
 }
 
 #pragma push
@@ -2593,9 +2593,9 @@ u32 hwInit(u32 a, u16 b, u32 c, u32 d) {
     lbl_8047B028 = 0;
     if (salInitAi(snd_handle_irq, d, a) != 0
      && salInitDspCtrl(b, c, (u8)(d & 1)) != 0
-     && fn_80164148(d) != 0) {
+     && salInitDsp(d) != 0) {
         hwEnableIrq();
-        fn_801640C4();
+        salStartAi();
         return 0;
     }
     return -1;
@@ -2612,11 +2612,11 @@ asm void hwExit(void) {
 #else
 void hwExit(void) {
     hwDisableIrq();
-    fn_80164204();
+    salExitDsp();
     salExitDspCtrl();
     salExitAi();
     hwEnableIrq();
-    fn_80164324();
+    hwExitIrq();
 }
 #endif
 extern u8  lbl_8047B050;
@@ -2660,7 +2660,7 @@ asm void fn_8016245C(void) {
 #include "src/game/people/people_field_fn_8016245C.inc"
 }
 #else
-void fn_8016245C(u8 val) { lbl_8047B050 = val; }
+void hwSetTimeOffset(u8 val) { lbl_8047B050 = val; }
 #endif
 #pragma pop
 #pragma push
@@ -2671,7 +2671,7 @@ asm void fn_80162464(void) {
 #include "src/game/people/people_field_fn_80162464.inc"
 }
 #else
-u8 fn_80162464(void) { return lbl_8047B050; }
+u8 hwGetTimeOffset(void) { return lbl_8047B050; }
 #endif
 #pragma pop
 extern u32 lbl_8047B024;
@@ -2680,7 +2680,7 @@ extern u32 lbl_8047B024;
  * this residual TU's auto-inliner from collapsing it into same-file
  * callers that originally lived in a different TU (validated trick). */
 #pragma dont_inline on
-u32 fn_8016246C(u32 index) {
+u32 hwIsActive(u32 index) {
     PeopleFieldMoveSlot* entries = (PeopleFieldMoveSlot*)lbl_8047B024;
 
     return entries[index].active != 0;
@@ -2694,7 +2694,7 @@ asm void fn_8016248C(void) {
 #include "src/game/people/people_field_fn_8016248C.inc"
 }
 #else
-void fn_8016248C(u32 val) { lbl_8047B028 = val; }
+void hwSetMesgCallback(u32 val) { lbl_8047B028 = val; }
 #endif
 #pragma pop
 #pragma push
@@ -2706,9 +2706,9 @@ asm void fn_80162494(void) {
 #else
 /* hwSetPriority (hardware.c) -- cross-TU boundary: synthvoice.c's
  * voiceSetPriority calls this via a real `bl`, not inlined, in retail (see
- * fn_8016246C's dont_inline note). */
+ * hwIsActive's dont_inline note). */
 #pragma dont_inline on
-void fn_80162494(u32 index, u32 val) {
+void hwSetPriority(u32 index, u32 val) {
     PeopleFieldMoveSlot* entries = (PeopleFieldMoveSlot*)lbl_8047B024;
 
     entries[index].field_1C = val;
@@ -2779,8 +2779,8 @@ void hwInitSamplePlayback(u32 index, u16 value70, void* words74, u32 resetState,
     HW_PLAYBACK_VOICES[index].bytes_E4[3] = 0xFF;
 
     if (initFlags != 0) {
-        fn_801629A4(index, 0);
-        fn_801629D0(index, 1);
+        hwSetSRCType(index, 0);
+        hwSetPolyPhaseFilter(index, 1);
     }
 
     hwSetITDMode(index, setupFlag);
@@ -2794,7 +2794,7 @@ asm void hwBreak(void) {
 #include "src/game/people/people_field_fn_8016265C.inc"
 }
 #else
-/* hardware.c -- see fn_8016246C's dont_inline note (cross-TU boundary vs.
+/* hardware.c -- see hwIsActive's dont_inline note (cross-TU boundary vs.
  * voiceBlock/synthvoice.c). */
 #pragma dont_inline on
 void hwBreak(u32 index) {
@@ -2931,7 +2931,7 @@ asm void fn_80162878(void) {
 #include "src/game/people/people_field_fn_80162878.inc"
 }
 #else
-u32 fn_80162878(u32 index) {
+u32 hwGetVirtualSampleState(u32 index) {
     PeopleFieldMoveSlot* entries = (*(PeopleFieldMoveSlot* volatile*)&lbl_8047B024);
 
     return entries[index].field_9C;
@@ -2973,7 +2973,7 @@ asm void fn_801628B4(void) {
 #include "src/game/people/people_field_fn_801628B4.inc"
 }
 #else
-void fn_801628B4(u32 index, u8 val) {
+void hwSetStreamLoopPS(u32 index, u8 val) {
     PeopleFieldMoveSlot* entries = (*(PeopleFieldMoveSlot* volatile*)&lbl_8047B024);
 
     entries[index].field_A0 = val;
@@ -3050,7 +3050,7 @@ asm void fn_801629A4(void) {
 #include "src/game/people/people_field_fn_801629A4.inc"
 }
 #else
-void fn_801629A4(u32 index, u8 value) {
+void hwSetSRCType(u32 index, u8 value) {
     extern u16 lbl_80478BF8;
     PeopleFieldMoveSlot* entries = (*(PeopleFieldMoveSlot* volatile*)&lbl_8047B024);
 
@@ -3067,7 +3067,7 @@ asm void fn_801629D0(void) {
 #include "src/game/people/people_field_fn_801629D0.inc"
 }
 #else
-void fn_801629D0(u32 index, u8 value) {
+void hwSetPolyPhaseFilter(u32 index, u8 value) {
     extern u16 lbl_80478C00;
     PeopleFieldMoveSlot* entries = (*(PeopleFieldMoveSlot* volatile*)&lbl_8047B024);
 
@@ -3085,7 +3085,7 @@ asm void hwSetITDMode(void) {
 }
 #else
 /* peopleFieldMemSetup: flag==0 marks NPC slot active (set hi bit of +0xF0, +0xD0/+0xD2=0x10);
- * else clears the hi bit. Base array lbl_8047B024 (stride 0xF4, same as fn_801629A4/D0) is
+ * else clears the hi bit. Base array lbl_8047B024 (stride 0xF4, same as hwSetSRCType/D0) is
  * re-read per access (volatile reinterpret) to match the target. byte-match verified 22/22. */
 void hwSetITDMode(u32 index, u8 flag) {
     extern u32 lbl_8047B024;
@@ -3242,7 +3242,7 @@ asm void fn_80162D18(void) {
 #include "src/game/people/people_field_fn_80162D18.inc"
 }
 #else
-void fn_80162D18(u32 index) {
+void hwOff(u32 index) {
     extern u32 lbl_8047B024;
     extern void salDeactivateVoice(void* ptr);
     PeopleFieldMoveSlot* entries = (*(PeopleFieldMoveSlot* volatile*)&lbl_8047B024);
@@ -3284,7 +3284,7 @@ asm void fn_80162D6C(void) {
 #include "src/game/people/people_field_fn_80162D6C.inc"
 }
 #else
-void fn_80162D6C(void) { salActivateStudio(); }
+void hwActivateStudio(void) { salActivateStudio(); }
 #endif
 #pragma pop
 #pragma push
@@ -3295,7 +3295,7 @@ asm void fn_80162D8C(void) {
 #include "src/game/people/people_field_fn_80162D8C.inc"
 }
 #else
-void fn_80162D8C(u32 studio) { fn_8015AAA0(studio); }
+void hwDeactivateStudio(u32 studio) { salDeactivateStudio(studio); }
 #endif
 #pragma pop
 #pragma push
@@ -3306,10 +3306,10 @@ asm void fn_80162DAC(void) {
 #include "src/game/people/people_field_fn_80162DAC.inc"
 }
 #else
-void fn_80162DAC(u8 index, u32 arg1) {
-    extern u32 fn_8015D54C(void*, void*);
+void hwAddInput(u8 index, u32 arg1) {
+    extern u32 salAddStudioInput(void*, void*);
     PeopleStudioState* entries = (PeopleStudioState*)lbl_80447E60;
-    fn_8015D54C((u8*)&entries[(u8)index], (void*)arg1);
+    salAddStudioInput((u8*)&entries[(u8)index], (void*)arg1);
 }
 #endif
 #pragma pop
@@ -3321,10 +3321,10 @@ asm void fn_80162DE0(void) {
 #include "src/game/people/people_field_fn_80162DE0.inc"
 }
 #else
-void fn_80162DE0(u8 index, u32 arg1) {
-    extern u32 fn_8015D5F4(void*, void*);
+void hwRemoveInput(u8 index, u32 arg1) {
+    extern u32 salRemoveStudioInput(void*, void*);
     PeopleStudioState* entries = (PeopleStudioState*)lbl_80447E60;
-    fn_8015D5F4((u8*)&entries[(u8)index], (void*)arg1);
+    salRemoveStudioInput((u8*)&entries[(u8)index], (void*)arg1);
 }
 #endif
 #pragma pop
@@ -3347,7 +3347,7 @@ asm void fn_80162E14(void) {
  * binding. The TU default for this block was opt 0 (prologue/spill => 18.5%);
  * opt 4 is correct. */
 #pragma optimization_level 4
-u32 fn_80162E14(u32 idx) {
+u32 hwGetPos(u32 idx) {
     /* Local view of the 0xf4-stride people-field entry; only the fields
      * touched here are named. */
     typedef struct PeopleFieldEntry_E14 {
@@ -3426,7 +3426,7 @@ asm void fn_80162F48(void) {
 #include "src/game/people/people_field_fn_80162F48.inc"
 }
 #else
-void fn_80162F48(void) { fn_80163CA8(); }
+void hwInitStream(void) { aramAllocateStreamBuffer(); }
 #endif
 #pragma pop
 #pragma push
@@ -3437,7 +3437,7 @@ asm void fn_80162F68(void) {
 #include "src/game/people/people_field_fn_80162F68.inc"
 }
 #else
-void fn_80162F68(void) { aramFreeStreamBuffer(); }
+void hwExitStream(void) { aramFreeStreamBuffer(); }
 #endif
 #pragma pop
 #pragma push
@@ -3448,7 +3448,7 @@ asm void fn_80162F88(void) {
 #include "src/game/people/people_field_fn_80162F88.inc"
 }
 #else
-void fn_80162F88(void* a) {
+void hwGetStreamPlayBuffer(void* a) {
     aramGetStreamBufferAddress((u32)a, 0);
 }
 #endif
@@ -3461,7 +3461,7 @@ asm void fn_80162FAC(void) {
 #include "src/game/people/people_field_fn_80162FAC.inc"
 }
 #else
-void* fn_80162FAC(void* address) { return address; }
+void* hwTransAddr(void* address) { return address; }
 #endif
 #pragma pop
 #pragma push
@@ -3491,9 +3491,9 @@ asm void fn_8016300C(void) {
 #include "src/game/people/people_field_fn_8016300C.inc"
 }
 #else
-void fn_8016300C(u32 a, u32 b) {
-    extern void fn_801634A8(u32 x);
-    fn_801634A8(b);
+void hwInitSampleMem(u32 a, u32 b) {
+    extern void aramInit(u32 x);
+    aramInit(b);
 }
 #endif
 #pragma pop
@@ -3505,7 +3505,7 @@ asm void fn_80163030(void) {
 #include "src/game/people/people_field_fn_80163030.inc"
 }
 #else
-void fn_80163030(void) { fn_80163794(); }
+void hwExitSampleMem(void) { aramExit(); }
 #endif
 #pragma pop
 #pragma push
@@ -3521,8 +3521,8 @@ typedef struct PeopleFieldMoveCommand {
     u32 packedSizeWord;    /* 0x04: high byte type, low 24-bit payload */
 } PeopleFieldMoveCommand;
 
-void fn_80163050(u32** src, u32* out) {
-    extern u32 fn_80163810(void* a, u32 b);
+void hwSaveSample(u32** src, u32* out) {
+    extern u32 aramStoreData(void* a, u32 b);
     PeopleFieldMoveCommand* command = (PeopleFieldMoveCommand*)*src;
     u32 val = command->packedSizeWord;
     u32 type = val >> 24;
@@ -3535,7 +3535,7 @@ void fn_80163050(u32** src, u32* out) {
             payload = payload << 1;
             break;
     }
-    *out = fn_80163810((void*)*out, payload);
+    *out = aramStoreData((void*)*out, payload);
 }
 #endif
 #pragma pop
@@ -3547,7 +3547,7 @@ asm void fn_801630E4(void) {
 #include "src/game/people/people_field_fn_801630E4.inc"
 }
 #else
-void fn_801630E4(u8* ptr, u32 size) { aramSetUploadCallback(ptr, size); }
+void hwSetSaveSampleCallback(u8* ptr, u32 size) { aramSetUploadCallback(ptr, size); }
 #endif
 #pragma pop
 #pragma push
@@ -3558,8 +3558,8 @@ asm void fn_80163104(void) {
 #include "src/game/people/people_field_fn_80163104.inc"
 }
 #else
-void fn_80163104(u8* src, u8* dest) {
-    extern void fn_80163BCC(u8* a, u32 b);
+void hwRemoveSample(u8* src, u8* dest) {
+    extern void aramRemoveData(u8* a, u32 b);
     PeopleFieldMoveCommand* command = (PeopleFieldMoveCommand*)src;
     u32 val = command->packedSizeWord;
     u32 type = val >> 24;
@@ -3572,7 +3572,7 @@ void fn_80163104(u8* src, u8* dest) {
             payload = payload << 1;
             break;
     }
-    fn_80163BCC(dest, payload);
+    aramRemoveData(dest, payload);
 }
 #endif
 #pragma pop
@@ -3584,7 +3584,7 @@ asm void fn_80163188(void) {
 #include "src/game/people/people_field_fn_80163188.inc"
 }
 #else
-void fn_80163188(void) { fn_80163490(); }
+void hwSyncSampleMem(void) { aramSyncTransferQueue(); }
 #endif
 #pragma pop
 #pragma push
@@ -3595,7 +3595,7 @@ asm void fn_801631A8(void) {
 #include "src/game/people/people_field_fn_801631A8.inc"
 }
 #else
-void fn_801631A8(void) {}
+void hwFrameDone(void) {}
 #endif
 #pragma pop
 extern u32 lbl_8047B054;
@@ -3604,7 +3604,7 @@ extern u32 lbl_8047B014;
 #pragma push
 typedef struct { u32 a; u32 b; } fn_801631AC_Pair;
 
-void fn_801631AC(fn_801631AC_Pair* src) {
+void sndSetHooks(fn_801631AC_Pair* src) {
     *(fn_801631AC_Pair*)&lbl_8047B054 = *src;
 }
 #pragma push
@@ -3615,7 +3615,7 @@ asm void fn_801631C0(void) {
 #include "src/game/people/people_field_fn_801631C0.inc"
 }
 #else
-void fn_801631C0(void) { lbl_8047B014 = 0; }
+void hwDisableHRTF(void) { lbl_8047B014 = 0; }
 #endif
 #pragma pop
 extern u32 lbl_8047B024;
@@ -3637,7 +3637,7 @@ asm void fn_801631F4(void) {
 #include "src/game/people/people_field_fn_801631F4.inc"
 }
 #else
-u32 fn_801631F4(u32 index) {
+u32 hwVoiceInStartup(u32 index) {
     PeopleFieldMoveSlot* entries = (PeopleFieldMoveSlot*)lbl_8047B024;
     u8 v = entries[index].active;
     u32 diff = 1 - v;
@@ -3753,7 +3753,7 @@ asm void fn_80163490(void) {
 #include "src/game/people/people_field_fn_80163490.inc"
 }
 #else
-void fn_80163490(void) {
+void aramSyncTransferQueue(void) {
     while (((PFAramQueue*)lbl_8044FB90)->count != 0) {
     }
 }
@@ -3764,13 +3764,13 @@ asm void fn_801634A8(void) {
 #include "src/game/people/people_field_fn_801634A8.inc"
 }
 #else
-void fn_801634A8(u32 size) {
+void aramInit(u32 size) {
     s16* temporary;
     u32 i;
     u32 base;
 
     base = ARGetBaseAddress();
-    temporary = (s16*)fn_801643D8(0x500);
+    temporary = (s16*)salMalloc(0x500);
     for (i = 0; i < 640; ++i) {
         temporary[i] = 0;
     }
@@ -3782,8 +3782,8 @@ void fn_801634A8(u32 size) {
         ((PFAramQueue*)lbl_8044FE14)->count = 0;
 
     aramUploadData(temporary, base, 0x500, 0, 0, 0);
-    fn_80163490();
-    fn_80164400((u32)temporary);
+    aramSyncTransferQueue();
+    salFree((u32)temporary);
 
     lbl_8047B07C = base + size;
     if (lbl_8047B07C > ARGetSize()) {
@@ -3802,7 +3802,7 @@ asm void fn_80163794(void) {
 #include "src/game/people/people_field_fn_80163794.inc"
 }
 #else
-void fn_80163794(void) {}
+void aramExit(void) {}
 #endif
 #pragma pop
 extern u32 ARGetBaseAddress(void);
@@ -3814,7 +3814,7 @@ asm void fn_80163798(void) {
 #include "src/game/people/people_field_fn_80163798.inc"
 }
 #else
-void fn_80163798(void) { ARGetBaseAddress(); }
+void aramGetZeroBuffer(void) { ARGetBaseAddress(); }
 #endif
 #pragma pop
 #pragma push
@@ -3844,7 +3844,7 @@ asm void fn_80163810(void) {
 #include "src/game/people/people_field_fn_80163810.inc"
 }
 #else
-u32 fn_80163810(void* ptr, u32 size) {
+u32 aramStoreData(void* ptr, u32 size) {
     u32 address;
     void* buffer;
     u32 blockSize;
@@ -3874,7 +3874,7 @@ u32 fn_80163810(void* ptr, u32 size) {
 }
 #endif
 extern u32 lbl_8047B078;
-void fn_80163BCC(u8* unused, u32 size) {
+void aramRemoveData(u8* unused, u32 size) {
     lbl_8047B078 -= (size + 0x1F) & ~0x1F;
 }
 /* shared free-list node (stride 0x10) + heads; used by 80163BE4/CA8/DB0/DE8 */
@@ -3915,7 +3915,7 @@ asm void fn_80163CA8(void) {
 #else
 /* peopleFieldMoveApplyForce: best-fit allocator over the free list; returns the slot
  * index (u8) or 0xFF. byte-match verified via objdiff. */
-u8 fn_80163CA8(u32 size) {
+u8 aramAllocateStreamBuffer(u32 size) {
     PFNode* node;
     PFNode* prev;
     PFNode* best;
@@ -4099,7 +4099,7 @@ void salCallback(void) {
 #pragma pop
 extern u32 lbl_8047B098;
 extern u32 lbl_8047B088;
-void fn_80163F88(void) {
+void dspInitCallback(void) {
     lbl_8047B098 = 1;
     lbl_8047B088 = 1;
 }
@@ -4142,7 +4142,7 @@ asm u32 salInitAi(u32(*fnptr)(void), u32 d, u32 a) {
  * adjacent stores direct: swapping or chaining them changes the constant-
  * register pairing. */
 u32 salInitAi(void(*fnptr)(void), u32 d, u32 a) {
-    lbl_8047B09C = fn_801643D8(0xA00);
+    lbl_8047B09C = salMalloc(0xA00);
     if (lbl_8047B09C != 0) {
         memset((void*)lbl_8047B09C, 0, 0xA00);
         DCFlushRange((void*)lbl_8047B09C, 0xA00);
@@ -4169,15 +4169,15 @@ asm void fn_801640C4(void) {
 #include "src/game/people/people_field_fn_801640C4.inc"
 }
 #else
-void fn_801640C4(void) { AIStartDMA(); }
+void salStartAi(void) { AIStartDMA(); }
 #endif
 #pragma pop
 u32 salExitAi(void) {
     extern u32 lbl_8047B09C;
-    extern void fn_80164400(u32 a);
+    extern void salFree(u32 a);
     AIRegisterDMACallback(0);
     AIStopDMA();
-    fn_80164400(lbl_8047B09C);
+    salFree(lbl_8047B09C);
     return 1;
 }
 #pragma push
@@ -4201,7 +4201,7 @@ extern u16* lbl_8047B01C;
 extern unsigned char lbl_8047B05C;
 extern unsigned char lbl_8047B05D;
 
-/* fn_80164400's body is defined AFTER this function so MWCC's single-pass
+/* salFree's body is defined AFTER this function so MWCC's single-pass
  * inliner cannot see it here and each call remains a real `bl` (retail:
  * 0x8015A870). Preferred over #pragma dont_inline per global standard
  * global_standard:avoid-pragmas-register-asm. */
@@ -4209,19 +4209,19 @@ u32 salExitDspCtrl(void) {
     extern u32 lbl_8047B010;
     u8 i;
 
-    fn_80164400(lbl_8047B018);
+    salFree(lbl_8047B018);
     for (i = 0; i < lbl_8047B05D; i++) {
-        fn_80164400(*(u32*)(lbl_8047B024 + (u32)i * 0xF4));
-        fn_80164400(*(u32*)(lbl_8047B024 + (u32)i * 0xF4 + 4));
+        salFree(*(u32*)(lbl_8047B024 + (u32)i * 0xF4));
+        salFree(*(u32*)(lbl_8047B024 + (u32)i * 0xF4 + 4));
     }
     for (i = 0; i < lbl_8047B05C; i++) {
-        fn_80164400(lbl_80447E60[i].named.allocation);
-        fn_80164400(lbl_80447E60[i].named.auxAllocation);
+        salFree(lbl_80447E60[i].named.allocation);
+        salFree(lbl_80447E60[i].named.auxAllocation);
     }
-    fn_80164400(lbl_8047B020);
-    fn_80164400(lbl_8047B024);
-    fn_80164400((u32)lbl_8047B01C);
-    fn_80164400((u32)lbl_8047B010);
+    salFree(lbl_8047B020);
+    salFree(lbl_8047B024);
+    salFree((u32)lbl_8047B01C);
+    salFree((u32)lbl_8047B010);
     return 1;
 }
 #pragma push
@@ -4236,7 +4236,7 @@ extern u8  lbl_804504A0[];
 extern u8  lbl_80450500[];
 extern u8  lbl_8036A520[];
 extern u16 lbl_80478C08;
-u32 fn_80164148(u32 d) {
+u32 salInitDsp(u32 d) {
     u8* s = lbl_804504A0;
     *(u32*)(s + 0x0C) = (u32)lbl_8036A520;
     *(u32*)(s + 0x10) = lbl_80478C08;
@@ -4246,7 +4246,7 @@ u32 fn_80164148(u32 d) {
     *(u32*)(s + 0x20) = 0;
     *(u16*)(s + 0x24) = 0x10;
     *(u16*)(s + 0x26) = 0x30;
-    *(u32*)(s + 0x28) = (u32)fn_80163F88;
+    *(u32*)(s + 0x28) = (u32)dspInitCallback;
     *(u32*)(s + 0x2C) = (u32)dspResumeCallback;
     *(u32*)(s + 0x30) = 0;
     *(u32*)(s + 0x34) = 0;
@@ -4262,10 +4262,10 @@ u32 fn_80164148(u32 d) {
 }
 #endif
 #pragma pop
-u32 fn_80164204(void) {
-    fn_800AE8EC();
-    while (fn_800AE92C() != 0) {}
-    fn_800AE8A4();
+u32 salExitDsp(void) {
+    DSPHalt();
+    while (DSPGetDMAStatus() != 0) {}
+    DSPReset();
     return 1;
 }
 #pragma push
@@ -4281,7 +4281,7 @@ extern u16 lbl_8047B00C;
 void salCtrlDsp(u32 arg) {
     extern u32 lbl_8047B098;
     extern u32 salGetStartDelay(void);
-    fn_8015B250(arg, salGetStartDelay());
+    salBuildCommandList(arg, salGetStartDelay());
     arg = lbl_8047B010;
     lbl_8047B098 = 0;
     PPCSync();
@@ -4341,7 +4341,7 @@ asm void fn_80164324(void) {
 #include "src/game/people/people_field_fn_80164324.inc"
 }
 #else
-void fn_80164324(void) {}
+void hwExitIrq(void) {}
 #endif
 #pragma pop
 void hwEnableIrq(void) {
@@ -4372,7 +4372,7 @@ asm void fn_80164398(void) {
 #include "src/game/people/people_field_fn_80164398.inc"
 }
 #else
-u32 fn_80164398(void) { return OSDisableInterrupts(); }
+u32 hwIRQEnterCritical(void) { return OSDisableInterrupts(); }
 #endif
 #pragma pop
 #pragma push
@@ -4383,7 +4383,7 @@ asm void fn_801643B8(void) {
 #include "src/game/people/people_field_fn_801643B8.inc"
 }
 #else
-u32 fn_801643B8(void) { return OSEnableInterrupts(); }
+u32 hwIRQLeaveCritical(void) { return OSEnableInterrupts(); }
 #endif
 #pragma pop
 #pragma push
@@ -4394,7 +4394,7 @@ asm void fn_801643D8(void) {
 #include "src/game/people/people_field_fn_801643D8.inc"
 }
 #else
-u32 fn_801643D8(u32 size) {
+u32 salMalloc(u32 size) {
     extern u32 lbl_8047B054;
     return ((u32(*)(u32))lbl_8047B054)(size);
 }
@@ -4408,7 +4408,7 @@ asm void fn_80164400(void) {
 #include "src/game/people/people_field_fn_80164400.inc"
 }
 #else
-void fn_80164400(u32 a) {
+void salFree(u32 a) {
     extern u32 lbl_8047B054;
     u32* base = &lbl_8047B054;
     ((void(*)(u32))base[1])(a);
@@ -4477,7 +4477,7 @@ void sndAuxCallbackPrepareReverbHI(u8* ptr) {
  * length table `static int lens[] = {1789,1999,2333,433,149,47,73,67}` is the
  * already-transcribed .data blob at lbl_8036BF00 (0x20 bytes) -- referenced by
  * name so the relocation matches instead of emitting a second copy.
- * salMalloc/salFree are the indirect thunks fn_801643D8 / fn_80164400. */
+ * salMalloc/salFree are the indirect thunks salMalloc / salFree. */
 typedef struct _SND_REVHI_DELAYLINE {
     s32 inPoint;
     s32 outPoint;
@@ -4509,7 +4509,7 @@ static inline void DLsetdelay(_SND_REVHI_DELAYLINE* delayline, s32 len) {
 
 static inline void DLcreate(_SND_REVHI_DELAYLINE* delayline, s32 length) {
     delayline->length = (s32)length * sizeof(f32);
-    delayline->inputs = (f32*)fn_801643D8(length * sizeof(f32));
+    delayline->inputs = (f32*)salMalloc(length * sizeof(f32));
     memset(delayline->inputs, 0, length * sizeof(length));
     delayline->lastOutput = 0.f;
     DLsetdelay(delayline, length >> 1);
@@ -4518,7 +4518,7 @@ static inline void DLcreate(_SND_REVHI_DELAYLINE* delayline, s32 length) {
 }
 
 static inline void DLdelete(_SND_REVHI_DELAYLINE* delayline) {
-    fn_80164400((u32)delayline->inputs);
+    salFree((u32)delayline->inputs);
 }
 
 u32 ReverbHICreate(_SND_REVHI_WORK* rev, f32 coloration, f32 time, f32 mix, f32 damping, f32 preDelay,
@@ -4564,7 +4564,7 @@ u32 ReverbHICreate(_SND_REVHI_WORK* rev, f32 coloration, f32 time, f32 mix, f32 
     if (0.f != preDelay) {
         rev->preDelayTime = 32000.f * preDelay;
         for (i = 0; i < 3; ++i) {
-            rev->preDelayLine[i] = (f32*)fn_801643D8(rev->preDelayTime * sizeof(f32));
+            rev->preDelayLine[i] = (f32*)salMalloc(rev->preDelayTime * sizeof(f32));
             memset(rev->preDelayLine[i], 0, rev->preDelayTime * sizeof(f32));
             rev->preDelayPtr[i] = rev->preDelayLine[i];
         }
@@ -4619,7 +4619,7 @@ u32 ReverbHIModify(_SND_REVHI_WORK* rev, f32 coloration, f32 time, f32 mix, f32 
 
     if (rev->preDelayTime != 0) {
         for (i = 0; i < 3; ++i) {
-            fn_80164400((u32)rev->preDelayLine[i]);
+            salFree((u32)rev->preDelayLine[i]);
         }
     }
 
@@ -4694,8 +4694,8 @@ void fn_80164DD0(s32* samples, u8* obj, u32 channel) {
  * 0x404, id@0xF4) per synth.c/stream.c. Colosseum MusyX 2.0.0/2.0.1 (pre-
  * 2.0.1 4-byte PRG_STATE build per slice-3 pin) takes the
  * `MUSY_VERSION <= 2.0.1` branch of allocId (u16, value 0xFFFF).
- * fn_80157A64 = voiceAllocate (not yet decompiled -- still asm/orig; report
- * only, no rename per campaign rules). fn_80157360 = vidRemoveVoiceReferences
+ * voiceAllocate = voiceAllocate (not yet decompiled -- still asm/orig; report
+ * only, no rename per campaign rules). vidRemoveVoiceReferences = vidRemoveVoiceReferences
  * (0x350 bytes, not yet decompiled). macMakeInactive/voiceSetPriority are
  * cross-TU (synthmacros.c / not-yet-decompiled-here respectively). */
 #pragma push
@@ -4744,23 +4744,23 @@ typedef struct {
 #pragma pack()
 
 extern SynthVoiceMini* lbl_8047AF48;      /* synthVoice */
-extern u32 fn_80157A64(u8 priority, u8 maxVoices, u16 allocId, u8 fxFlag); /* voiceAllocate */
-extern void fn_80157360(SynthVoiceMini* sv);                    /* vidRemoveVoiceReferences */
+extern u32 voiceAllocate(u8 priority, u8 maxVoices, u16 allocId, u8 fxFlag); /* voiceAllocate */
+extern void vidRemoveVoiceReferences(SynthVoiceMini* sv);                    /* vidRemoveVoiceReferences */
 extern void macMakeInactive(SynthVoiceMini* sv, s32 newState);
 extern void voiceSetPriority(SynthVoiceMini* sv, u8 prio);
 
-u32 fn_80158328(u8 prio) {
+u32 voiceBlock(u8 prio) {
     u32 voice;
 
-    if ((voice = fn_80157A64(prio, 0xFF, 0xFFFF, 1)) != 0xFFFFFFFF) {
+    if ((voice = voiceAllocate(prio, 0xFF, 0xFFFF, 1)) != 0xFFFFFFFF) {
         lbl_8047AF48[voice].block = 1;
         lbl_8047AF48[voice].fxFlag = 1;
         lbl_8047AF48[voice].allocId = 0xFFFF;
 
-        fn_80157360(&lbl_8047AF48[voice]);
+        vidRemoveVoiceReferences(&lbl_8047AF48[voice]);
         lbl_8047AF48[voice].id = voice | 0xFFFFFF00;
 
-        if (fn_8016246C(voice)) {
+        if (hwIsActive(voice)) {
             hwBreak(voice);
         }
 
@@ -4798,7 +4798,7 @@ typedef struct {
     VidListMini* vidMasterList; /* 0xFC */
 } SvoiceVidMini;
 
-u32 fn_801576B0(SvoiceVidMini* svoice) {
+u32 vidMakeRoot(SvoiceVidMini* svoice) {
     svoice->vidMasterList = svoice->vidList;
     return svoice->vidList->vid;
 }
@@ -4930,7 +4930,7 @@ extern u8 lbl_80445F50[];         /* merged synthvoice statics blob, see above *
 #define synthInfo (*(SynthInfoMini*)lbl_80434C50)
 
 extern void voiceResetLastStarted(SynthVoiceMini* svoice);
-extern void fn_8014E7D0(u32 voice); /* streamKill (stream.c) */
+extern void streamKill(u32 voice); /* streamKill (stream.c) */
 
 static void voiceRemovePriority(SynthVoiceMini* svoice);
 static void vidRemove(VidListFull** list);
@@ -4970,7 +4970,7 @@ static u32 get_newvid(void) {
     return vid;
 }
 
-u32 fn_801576C4(SynthVoiceMini* svoice, u32 isMaster) {
+u32 vidMakeNew(SynthVoiceMini* svoice, u32 isMaster) {
     u32 vid;
     VidListFull* nvl;
     VidListFull* lvl;
@@ -5122,7 +5122,7 @@ void voiceSetPriority(SynthVoiceMini* svoice, u8 prio) {
 
     voicePrioSortVoicesRoot[prio] = v;
     svoice->prio = prio;
-    fn_80162494(svoice->id & 0xFF, ((u32)prio << 24) | (svoice->age >> 15));
+    hwSetPriority(svoice->id & 0xFF, ((u32)prio << 24) | (svoice->age >> 15));
 }
 #endif
 #pragma pop
@@ -5135,7 +5135,7 @@ asm void fn_80157A64(void) {
 #include "src/game/people/people_field_fn_80157A64.inc"
 }
 #else
-u32 fn_80157A64(u8 priority, u8 maxVoices, u16 allocId, u8 fxFlag) {
+u32 voiceAllocate(u8 priority, u8 maxVoices, u16 allocId, u8 fxFlag) {
     u8* voicePrioSortVoicesRoot = lbl_80445F50 + 0x900;
     VoiceListEntry* voicePrioSortVoices = (VoiceListEntry*)(lbl_80445F50 + 0x800);
     RootListEntry* voicePrioSortRootList = (RootListEntry*)(lbl_80445F50 + 0xA00);
@@ -5403,7 +5403,7 @@ void voiceUnblock(u32 voice) {
         return;
     }
 
-    if (fn_8016246C(voice)) {
+    if (hwIsActive(voice)) {
         hwBreak(voice);
     }
 
@@ -5426,14 +5426,14 @@ void voiceKill(u32 vi) {
     SynthVoiceMini* sv = &lbl_8047AF48[vi];
 
     if (sv->addr != NULL) {
-        fn_80157360(sv);
+        vidRemoveVoiceReferences(sv);
         sv->cFlags &= ~(u64)3;
         sv->age = 0;
         voiceFree(sv);
     }
 
     if (sv->block != 0) {
-        fn_8014E7D0(vi);
+        streamKill(vi);
     }
 
     hwBreak(vi);
@@ -5471,7 +5471,7 @@ static void vidRemove(VidListFull** list) {
     *list = NULL;
 }
 
-void fn_80157360(SynthVoiceMini* svoice) {
+void vidRemoveVoiceReferences(SynthVoiceMini* svoice) {
     if (svoice->id == 0xFFFFFFFF) {
         return;
     }
@@ -6035,7 +6035,7 @@ static void vsFreeBuffer(u8 bufferIndex) {
     vs.voices[vs.streamBuffer[bufferIndex].voice] = 0xFF;
 }
 
-u32 fn_80159550(u8 voice) {
+u32 vsSampleStartNotify(u8 voice) {
     u8 sb;
     u8 i;
     u32 address;
@@ -6070,7 +6070,7 @@ u32 fn_80159550(u8 voice) {
 
 #undef vs
 
-void fn_80159840(MusyxVirtualSampleBuffer* sb, u32 cpos) {
+void vsUpdateBuffer(MusyxVirtualSampleBuffer* sb, u32 cpos) {
 #define vs (*(MusyxVirtualSamples*)lbl_80446F10)
     u32 len;
 
@@ -6124,18 +6124,18 @@ void fn_80159840(MusyxVirtualSampleBuffer* sb, u32 cpos) {
 #undef vs
 }
 
-extern u32 fn_80162878(u32 voice); /* hwGetVirtualSampleState */
-extern u32 fn_80162E14(u32 voice); /* hwGetPos */
+extern u32 hwGetVirtualSampleState(u32 voice); /* hwGetVirtualSampleState */
+extern u32 hwGetPos(u32 voice); /* hwGetPos */
 extern u32 hwGetVirtualSampleID(u32 voice);
-extern u32 fn_801631F4(u32 voice); /* hwVoiceInStartup */
+extern u32 hwVoiceInStartup(u32 voice); /* hwVoiceInStartup */
 extern void macSampleEndNotify(SynthVoiceMini* voice);
 
 void vsSampleUpdates(void) {
-    extern void fn_80159840(MusyxVirtualSampleBuffer* buffer, u32 position);
-    extern u32 fn_80162878(u32 voice);
-    extern u32 fn_80162E14(u32 voice);
+    extern void vsUpdateBuffer(MusyxVirtualSampleBuffer* buffer, u32 position);
+    extern u32 hwGetVirtualSampleState(u32 voice);
+    extern u32 hwGetPos(u32 voice);
     extern u32 hwGetVirtualSampleID(u32 voice);
-    extern u32 fn_801631F4(u32 voice);
+    extern u32 hwVoiceInStartup(u32 voice);
     extern void hwBreak(u32 voice);
     extern void macSampleEndNotify(SynthVoiceMini* voice);
     extern void voiceKill(u32 voice);
@@ -6151,9 +6151,9 @@ void vsSampleUpdates(void) {
     }
 
     for (i = 0; i < 64; i++) {
-        if (vs.voices[i] != 0xFF && fn_80162878(i) != 0) {
+        if (vs.voices[i] != 0xFF && hwGetVirtualSampleState(i) != 0) {
             buffer = &vs.streamBuffer[vs.voices[i]];
-            realCPos = fn_80162E14(i);
+            realCPos = hwGetPos(i);
             if (buffer->smpType == 5) {
                 cpos = (realCPos / 14) * 14;
             } else {
@@ -6162,13 +6162,13 @@ void vsSampleUpdates(void) {
 
             switch (buffer->state) {
             case 1:
-                fn_80159840(buffer, cpos);
+                vsUpdateBuffer(buffer, cpos);
                 break;
             case 2:
             case 3:
                 if (((buffer->info.instID << 8) | buffer->voice) ==
                     hwGetVirtualSampleID(buffer->voice)) {
-                    fn_80159840(buffer, cpos);
+                    vsUpdateBuffer(buffer, cpos);
                     if (realCPos >= buffer->finalLast) {
                         buffer->finalGoodSamples -=
                             realCPos - buffer->finalLast;
@@ -6184,7 +6184,7 @@ void vsSampleUpdates(void) {
                         4096;
                     if ((s32)nextSamples >
                         (s32)buffer->finalGoodSamples) {
-                        if (!fn_801631F4(buffer->voice)) {
+                        if (!hwVoiceInStartup(buffer->voice)) {
                             if (buffer->state == 2) {
                                 hwBreak(buffer->voice);
                                 macSampleEndNotify(
@@ -6215,13 +6215,13 @@ void vsSampleUpdates(void) {
  * it; needsDelta/single-dim dspMixerCycles[] variant used, not the
  * >=2.0.1 three-lookup dspMixerCyclesMain[] form; no dspCompressorOn tail
  * command). Globals cross-verified field-by-field against this file's own
- * disassembly (build/GC6E01/asm/musyx/musyx_range_80157280.s, fn_8015B250):
+ * disassembly (build/GC6E01/asm/musyx/musyx_range_80157280.s, salBuildCommandList):
  *   lbl_8047AFF0 = dspARAMZeroBuffer   lbl_8047AFF4 = dspCmdLastLoad
  *   lbl_8047AFF8 = dspCmdLastBase      lbl_8047AFFC = dspCmdLastSize
  *   lbl_8047B000 = dspCmdCurBase       lbl_8047B004 = dspCmdMaxPtr
  *   lbl_8047B008 = dspCmdPtr           lbl_8047B00C = dspCmdFirstSize
  *   lbl_8047B010 = dspCmdList          lbl_8047B014 = dspHRTFOn (already
- *     known from fn_801631C0 = "disable HRTF" setter elsewhere in this file)
+ *     known from hwDisableHRTF = "disable HRTF" setter elsewhere in this file)
  *   lbl_8047B01C = dspSurround         lbl_8047B05C = salMaxStudioNum
  *   lbl_8047B05E = salAuxFrame (used with /3 magic-division + aux offset
  *     0x28/0x30 indexing)              lbl_8047B05F = salFrame (used both
@@ -6240,7 +6240,7 @@ void vsSampleUpdates(void) {
  *     times it's needed (not cached across the function).
  * Helper callees (salCheckVolErrorAndResetDelta, sal_setup_dspvol,
  * sal_update_hostplayinfo, DoDepopFade, SortVoices, HandleDepopVoice =
- * fn_8015AD1C) are real `bl` targets at fixed addresses immediately
+ * HandleDepopVoice) are real `bl` targets at fixed addresses immediately
  * preceding this function (0x8015AAC0-0x8015B24C per symbols.txt,
  * confirmed by the disassembly's literal `bl <name>` targets). SortVoices
  * below is ported from AxioDL/musyx v2.0.0 `runtime/hw_dspctrl.c` and
@@ -6531,7 +6531,7 @@ static inline void AddDpop(s32* sum, s16 delta) {
                : (*sum < -0x7FFFFF ? -0x7FFFFF : *sum);
 }
 
-void fn_8015AD1C(DSPstudioinfo* stp, DSPvoice* dsp_vptr) {
+void HandleDepopVoice(DSPstudioinfo* stp, DSPvoice* dsp_vptr) {
     _PB* pb;
 
     dsp_vptr->postBreak = 0;
@@ -6633,7 +6633,7 @@ void salInitHRTFBuffer(void) {
 }
 
 u32 salInitDspCtrl(u8 numVoices, u8 numStudios, u32 defaultStudioDPL2) {
-    extern u32 fn_80163798(void);
+    extern u32 aramGetZeroBuffer(void);
     extern void DCInvalidateRange(void* addr, u32 nBytes);
     extern void DCStoreRangeNoSync(void* addr, u32 nBytes);
     u32 i;
@@ -6644,19 +6644,19 @@ u32 salInitDspCtrl(u8 numVoices, u8 numStudios, u32 defaultStudioDPL2) {
 
     lbl_8047B05D = numVoices;
     salMaxStudioNum = numStudios;
-    dspARAMZeroBuffer = fn_80163798();
+    dspARAMZeroBuffer = aramGetZeroBuffer();
 
-    lbl_8047B010 = fn_801643D8(1024 * sizeof(u16));
+    lbl_8047B010 = salMalloc(1024 * sizeof(u16));
     if (lbl_8047B010 != 0) {
-        lbl_8047B01C = (u16*)fn_801643D8(160 * sizeof(s32));
+        lbl_8047B01C = (u16*)salMalloc(160 * sizeof(s32));
         if (lbl_8047B01C != NULL) {
             memset(lbl_8047B01C, 0, 160 * sizeof(s32));
             DCFlushRange(lbl_8047B01C, 160 * sizeof(s32));
 
             lbl_8047B024 =
-                fn_801643D8((u32)numVoices * sizeof(DSPvoice));
+                salMalloc((u32)numVoices * sizeof(DSPvoice));
             if (lbl_8047B024 != 0) {
-                lbl_8047B020 = fn_801643D8((u32)numVoices * 64);
+                lbl_8047B020 = salMalloc((u32)numVoices * 64);
                 if (lbl_8047B020 != 0) {
                     DCInvalidateRange((void*)lbl_8047B020,
                                       (u32)numVoices * 64);
@@ -6671,9 +6671,9 @@ u32 salInitDspCtrl(u8 numVoices, u8 numStudios, u32 defaultStudioDPL2) {
                         dv[i].lastUpdate.vol = 0xFF;
                         dv[i].lastUpdate.volA = 0xFF;
                         dv[i].lastUpdate.volB = 0xFF;
-                        dv[i].pb = (_PB*)fn_801643D8(sizeof(_PB));
+                        dv[i].pb = (_PB*)salMalloc(sizeof(_PB));
                         memset(dv[i].pb, 0, sizeof(_PB));
-                        dv[i].patchData = (void*)fn_801643D8(0x80);
+                        dv[i].patchData = (void*)salMalloc(0x80);
                         dv[i].pb->currHi = (u32)dv[i].pb >> 16;
                         dv[i].pb->currLo = (u16)(u32)dv[i].pb;
                         dv[i].pb->update.dataHi =
@@ -6694,12 +6694,12 @@ u32 salInitDspCtrl(u8 numVoices, u8 numStudios, u32 defaultStudioDPL2) {
                     sp = dspStudio;
                     for (i = 0; i < salMaxStudioNum; ++i) {
                         sp[i].state = 0;
-                        sp[i].spb = (void*)fn_801643D8(sizeof(_SPB));
+                        sp[i].spb = (void*)salMalloc(sizeof(_SPB));
                         if (sp[i].spb == NULL) {
                             return 0;
                         }
 
-                        sp[i].main[0] = (s32*)fn_801643D8(0x3C00);
+                        sp[i].main[0] = (s32*)salMalloc(0x3C00);
                         if (sp[i].main[0] == NULL) {
                             return 0;
                         }
@@ -6725,7 +6725,7 @@ u32 salInitDspCtrl(u8 numVoices, u8 numStudios, u32 defaultStudioDPL2) {
 
                     salActivateStudio(0, 1,
                                       defaultStudioDPL2 != 0 ? 1 : 0);
-                    lbl_8047B018 = fn_801643D8(0x100);
+                    lbl_8047B018 = salMalloc(0x100);
                     if (lbl_8047B018 == 0) {
                         return 0;
                     }
@@ -6811,7 +6811,7 @@ void salHandleAuxProcessing(void) {
     }
 }
 
-void fn_8015AAA0(u32 studio) {
+void salDeactivateStudio(u32 studio) {
     lbl_80447E60[(u8)studio].named.state = 0;
 }
 
@@ -6916,7 +6916,7 @@ void salDeactivateVoice(void* voice) {
     dsp_vptr->state = 0;
 }
 
-u32 fn_8015D54C(void* studio, void* data) {
+u32 salAddStudioInput(void* studio, void* data) {
     DSPstudioinfo* stp = studio;
     u8* input = data;
 
@@ -6932,7 +6932,7 @@ u32 fn_8015D54C(void* studio, void* data) {
     return 0;
 }
 
-u32 fn_8015D5F4(DSPstudioinfo* stp, void* input) {
+u32 salRemoveStudioInput(DSPstudioinfo* stp, void* input) {
     long i;
 
     for (i = 0; i < stp->numInputs; i++) {
@@ -6983,7 +6983,7 @@ u32 salCheckVolErrorAndResetDelta(u16* dsp_vol, u16* dsp_delta, u16* last_vol, u
   *dsp_delta = 0;
   return 0;
 }
-extern void fn_8015AD1C(DSPstudioinfo* stp, DSPvoice* dsp_vptr); /* HandleDepopVoice */
+extern void HandleDepopVoice(DSPstudioinfo* stp, DSPvoice* dsp_vptr); /* HandleDepopVoice */
 extern void DCStoreRangeNoSync(void* addr, u32 nBytes);
 
 /* Ensure `n` more u16 slots fit before dspCmdMaxPtr; if not, chain onto a
@@ -7013,7 +7013,7 @@ extern void DCStoreRangeNoSync(void* addr, u32 nBytes);
 #pragma push
 #pragma optimization_level 4
 #pragma optimizewithasm off
-void fn_8015B250(u32 dest, u32 nsDelay) {
+void salBuildCommandList(u32 dest, u32 nsDelay) {
 #define pbOffsets lbl_80273320
 
     u8 s;
@@ -7070,7 +7070,7 @@ void fn_8015B250(u32 dest, u32 nsDelay) {
             for (dsp_vptr = stp->voiceRoot; dsp_vptr; dsp_vptr = next_dsp_vptr) {
                 next_dsp_vptr = dsp_vptr->next;
                 if ((dsp_vptr->postBreak != 0) || ((dsp_vptr->changed[0] & 0x20) != 0)) {
-                    fn_8015AD1C(stp, dsp_vptr);
+                    HandleDepopVoice(stp, dsp_vptr);
                     if (dsp_vptr->virtualSampleID != (u32)-1) {
                         salSynthSendMessage(dsp_vptr, 3);
                     }
@@ -7083,7 +7083,7 @@ void fn_8015B250(u32 dest, u32 nsDelay) {
             }
             dsp_vptr = stp->alienVoiceRoot;
             while (dsp_vptr) {
-                fn_8015AD1C(stp, dsp_vptr);
+                HandleDepopVoice(stp, dsp_vptr);
                 dsp_vptr = dsp_vptr->nextAlien;
             }
             stp->alienVoiceRoot = NULL;
@@ -7634,13 +7634,13 @@ void fn_8015B250(u32 dest, u32 nsDelay) {
                     if (cyclesUsed > (*(volatile u32*)0x800000F8 / 400)) {
                         extern void salDeactivateVoice(void* dsp_vptr);
                         if ((newVoice == 0) && (VoiceDone == 0)) {
-                            fn_8015AD1C(stp, dsp_vptr);
+                            HandleDepopVoice(stp, dsp_vptr);
                         }
                         salDeactivateVoice(dsp_vptr);
                         salSynthSendMessage(dsp_vptr, 1);
                         for (v = v - 1; v > 0; v--) {
                             if (voices[v - 1]->state == 2) {
-                                fn_8015AD1C(stp, voices[v - 1]);
+                                HandleDepopVoice(stp, voices[v - 1]);
                             }
                             salDeactivateVoice(voices[v - 1]);
                             salSynthSendMessage(voices[v - 1], 1);
@@ -7650,7 +7650,7 @@ void fn_8015B250(u32 dest, u32 nsDelay) {
                                 for (dsp_vptr = dspStudio[st1].voiceRoot; dsp_vptr; dsp_vptr = next_dsp_vptr) {
                                     next_dsp_vptr = dsp_vptr->next;
                                     if (dsp_vptr->state == 2) {
-                                        fn_8015AD1C(&dspStudio[st1], dsp_vptr);
+                                        HandleDepopVoice(&dspStudio[st1], dsp_vptr);
                                     }
                                     salDeactivateVoice(dsp_vptr);
                                     salSynthSendMessage(dsp_vptr, 1);
@@ -7798,7 +7798,7 @@ void fn_8015B250(u32 dest, u32 nsDelay) {
 #undef dspSRCCycles
 #undef dspStudio
 
-void fn_80159C48(void) {
+void dataInitStack(void) {
     extern s16 lbl_8047AFE8;
     lbl_8047AFE8 = 0;
 }
@@ -7852,7 +7852,7 @@ static inline MusyxPoolEntry* fn_80159C54_get_layer(u16 id,
             MusyxPoolEntryAt((u32)pool + pool->layerOffset));
 }
 
-void fn_80159C54(u16 id, MusyxPoolData* pool, u8 dataType, u32 remove)
+void InsertData(u16 id, MusyxPoolData* pool, u8 dataType, u32 remove)
 {
     MusyxPoolEntry* entry;
 
@@ -7914,13 +7914,13 @@ void fn_80159C54(u16 id, MusyxPoolData* pool, u8 dataType, u32 remove)
     }
 }
 
-/* fn_80159ED0: pass-through wrapper -- params stay in r3/r4, retail emits a
- * plain `bl fn_801630E4` (its only caller). dont_inline keeps the call real
- * (fn_801630E4 is defined earlier in this TU, so -inline auto would
+/* sndSetSampleDataUploadCallback: pass-through wrapper -- params stay in r3/r4, retail emits a
+ * plain `bl hwSetSaveSampleCallback` (its only caller). dont_inline keeps the call real
+ * (hwSetSaveSampleCallback is defined earlier in this TU, so -inline auto would
  * otherwise fold it to `bl aramSetUploadCallback`). */
 #pragma dont_inline on
-void fn_80159ED0(u8* ptr, u32 size) {
-    fn_801630E4(ptr, size);
+void sndSetSampleDataUploadCallback(u8* ptr, u32 size) {
+    hwSetSaveSampleCallback(ptr, size);
 }
 #pragma dont_inline reset
 
@@ -8074,7 +8074,7 @@ u32 sndAddEmitter(void* emitter, const f32* position, const f32* velocity,
     return -1;
 }
 
-void fn_8015FE4C(u32 arg) {
+void s3dInit(u32 arg) {
     extern u8 lbl_8047B033;
     extern u8 lbl_8047B034;
     extern u8 lbl_8047B035;
@@ -8095,7 +8095,7 @@ void fn_8015FE4C(u32 arg) {
     lbl_8047B033 = (u8)((arg >> 1) & 1);
 }
 
-void fn_8015FE84(void) { }
+void s3dExit(void) { }
 
 extern void seqInit(void);
 extern void synthInit(u32 mixFrq, u8 numVoices);
@@ -8103,10 +8103,10 @@ extern void synthInit(u32 mixFrq, u8 numVoices);
 s32 fn_8015FE88(u8 voicesArg, u8 music, u8 sfx, u8 studios, u32 flags,
                 u32 aramSize) {
     extern u32 hwInit(u32 mixFrq, u16 numVoices, u32 numStudios, u32 flags);
-    extern void fn_80159C48(void);
-    extern void fn_8014DDD8(void);
+    extern void dataInitStack(void);
+    extern void streamInit(void);
     extern void vsInit(void);
-    extern void fn_8015FE4C(u32 flags);
+    extern void s3dInit(u32 flags);
     s32 ret;
     u32 mixFrq;
 
@@ -8131,14 +8131,14 @@ s32 fn_8015FE88(u8 voicesArg, u8 music, u8 sfx, u8 studios, u32 flags,
         return ret;
     }
 
-    fn_80159C48();
+    dataInitStack();
     dataInit(0, aramSize);
     seqInit();
     synthIdleWaitActive = 0;
     synthInit(32000, synthInfo.voiceNum);
-    fn_8014DDD8();
+    streamInit();
     vsInit();
-    fn_8015FE4C(flags);
+    s3dInit(flags);
     lbl_8047AF18 = 1;
     return 0;
 }
@@ -8147,7 +8147,7 @@ s32 fn_8015FE88(u8 voicesArg, u8 music, u8 sfx, u8 studios, u32 flags,
 void sndQuit(void) {
     hwExit();
     dataExit();
-    fn_8015FE84();
+    s3dExit();
     synthExit();
     lbl_8047AF18 = 0;
 }
@@ -8236,14 +8236,14 @@ void salInvertMatrix(SndFMatrix* out, const SndFMatrix* in) {
  * (0x80/0x40 vs 0x480/0x240) because Colosseum's pre-2.0.1
  * CHANNEL_DEFAULTS is just `u8 pbRange` (1 byte) -- the lpfLower/
  * UpperFrqBoundary fields are a >=2.0.1 addition (confirmed by
- * disassembly: fn_80160ED4/inpResetChannelDefaults only ever touches
+ * disassembly: inpResetChannelDefaults/inpResetChannelDefaults only ever touches
  * offset 0x0, never the lpf fields the reference has under
  * MUSY_VERSION>=2.0.1). inpColdMIDIDefaults/inpWarmMIDIDefaults (both
  * 134-byte tables, padded to 0x88 in .rodata) = lbl_80273338/
  * lbl_802733C0 (data already 100% matched in this unit -- no new data
  * needed, just extern declarations by address). */
 extern u32 lbl_80449390[];            /* inpGlobalMIDIDirtyFlags (flat; matches existing
-                                        * extern in fn_801619E8 -- must not redeclare with
+                                        * extern in inpGetAuxB -- must not redeclare with
                                         * a conflicting sized type) */
 extern u8  lbl_80449590[8][16][134];  /* midi_ctrl */
 extern u8  lbl_8044D890[8][16];       /* inpChannelDefaults (pre-2.0.1: just pbRange) */
@@ -8263,7 +8263,7 @@ extern void inpSetMidiLastNote(u8 midi, u8 midiSet, u8 key);
 #pragma push
 #pragma optimization_level 4
 #pragma optimizewithasm off
-void fn_8016039C(u8 chan, u8 midiSet, s32 flag) { /* inpSetGlobalMIDIDirtyFlag */
+void inpSetGlobalMIDIDirtyFlag(u8 chan, u8 midiSet, s32 flag) { /* inpSetGlobalMIDIDirtyFlag */
     /* cast to a true 2D array locally (rather than manually flattening the
      * index) so MWCC emits retail's separate row-stride/column-stride
      * multiplies instead of a single combined-index multiply. */
@@ -8363,7 +8363,7 @@ static inline void inpSetRPNInc(u8* base, u8 set, u8 channel) {
 #pragma push
 #pragma optimization_level 4
 #pragma optimizewithasm off
-void fn_801603C0(u8 ctrl, u8 channel, u8 set, u8 value) { /* inpSetMidiCtrl */
+void inpSetMidiCtrl(u8 ctrl, u8 channel, u8 set, u8 value) { /* inpSetMidiCtrl */
     u8* base = (u8*)lbl_80449390;
     u32 i;
 
@@ -8503,7 +8503,7 @@ u16 inpGetMidiCtrl(u8 ctrl, u8 channel, u8 set) {
 #pragma push
 #pragma optimization_level 4
 #pragma optimizewithasm off
-u8* fn_80160EA0(u8 midi, u8 midiSet) { /* inpGetChannelDefaults */
+u8* inpGetChannelDefaults(u8 midi, u8 midiSet) { /* inpGetChannelDefaults */
     if (midiSet == 0xFF) {
         return &lbl_8044FA90[midi];
     }
@@ -8515,7 +8515,7 @@ u8* fn_80160EA0(u8 midi, u8 midiSet) { /* inpGetChannelDefaults */
 #pragma push
 #pragma optimization_level 4
 #pragma optimizewithasm off
-void fn_80160ED4(u8 midi, u8 midiSet) { /* inpResetChannelDefaults */
+void inpResetChannelDefaults(u8 midi, u8 midiSet) { /* inpResetChannelDefaults */
     u8* channelDefaults;
     channelDefaults = midiSet != 0xFF ? &lbl_8044D890[midiSet][midi] : &lbl_8044FA90[midi];
     *channelDefaults = 2;

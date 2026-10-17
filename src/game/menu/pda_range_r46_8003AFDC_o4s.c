@@ -140,15 +140,15 @@ extern PdaModelWindow lbl_803A6748;
 extern u8 lbl_803A67FC[];
 extern PdaSceneWork lbl_803A6818;
 
-extern s32 fn_8003B85C(void* window, s32 enabled);
-extern void fn_8003C2B8(PdaSprite* sprite, PdaEvent* event);
+extern s32 pdaSnagListDetailKey(void* window, s32 enabled);
+extern void pdaSnagListDrawDetail(PdaSprite* sprite, PdaEvent* event);
 extern s32 fn_80041E48(void* work, s32 mode);
-extern s32 fn_80042658(void* work, s32 mode);
-extern void fn_800439BC(void* scene);
+extern s32 pdaModelViewerControl(void* work, s32 mode);
+extern void pdaReadPadInput(void* scene);
 extern void GSscene_SetMode(s32 mode);
 extern void menuButtonNormal(void* button);
 extern void winSpriteSetDisp(void* sprite, s32 disp);
-extern void fn_800FB680(s32 arg0, s32 arg1, s32 arg2, void* data);
+extern void GSmsgPrintColor(s32 arg0, s32 arg1, s32 arg2, void* data);
 
 #if !defined(PDA_RANGE_EXACT_80037174_ONLY)
 
@@ -287,8 +287,8 @@ static inline void pdaResetPeopleTables(u8* base, u8* tbl)
 static inline void pdaFillSavePrompt(void)
 {
     extern u32 fn_80005748(void);
-    extern u32 fn_801EF214(void);
-    extern u32 fn_801EF274(void);
+    extern u32 darkPokemonCountFlag14(void);
+    extern u32 darkPokemonCountFlag12(void);
     extern void msgctrlSetValue(s32 id, u32 value);
     u32 playTime;
 
@@ -296,11 +296,11 @@ static inline void pdaFillSavePrompt(void)
     if (lbl_8047A498 != 0) {
         playTime = lbl_8047A498;
     }
-    lbl_8047A49C = fn_801EF214();
-    lbl_8047A4A0 = fn_801EF274();
+    lbl_8047A49C = darkPokemonCountFlag14();
+    lbl_8047A4A0 = darkPokemonCountFlag12();
     msgctrlSetValue(0x4c, playTime);
-    msgctrlSetValue(0x2f, fn_801EF274());
-    msgctrlSetValue(0x30, fn_801EF214());
+    msgctrlSetValue(0x2f, darkPokemonCountFlag12());
+    msgctrlSetValue(0x30, darkPokemonCountFlag14());
 }
 
 typedef struct PdaSaveImage {
@@ -412,8 +412,8 @@ extern f32 lbl_8047BDAC;
 extern f32 lbl_8047BDF0;
 
 extern u32 gfxVtxTexCoord();
-extern u32 fn_800D5CB8();
-extern u32 fn_800D61E4();
+extern u32 gfxVtxColor4u8();
+extern u32 gfxVtxPos2s16();
 extern u32 gfxEnd();
 extern u32 gfxBegin();
 extern u32 gfxSetPrimitive();
@@ -421,11 +421,11 @@ extern u32 gfxSetVtxDesc();
 extern u32 gfxLoadTexture();
 extern u32 gfxClearFlags();
 extern u32 gfxSetFlags();
-extern u32 fn_800E202C();
-extern u32 fn_800E209C();
+extern u32 GSmemGetHandleByPtr();
+extern u32 GSmemFree();
 extern u32 fn_800E24B0();
-extern u32 fn_800E27B0();
-extern u32 fn_800E2C04();
+extern u32 GSmemLock();
+extern u32 GSmemAlloc();
 extern u32 fn_800FA280();
 extern void* menuDataBiosGetPtr(s32);
 extern u32 fn_80102510();
@@ -441,18 +441,18 @@ extern u32 pokemonGetSex();
 extern u32 fn_801240C4();
 extern u32 fn_80132A38();
 extern u32 soundStartRaw(u32, u32, u32);
-extern u32 fn_8017B1CC();
+extern u32 GSresReleaseById();
 extern s32 fn_8017B2CC();
 extern u32 fn_8017B3E4();
 extern u32 fn_801EE0BC();
-extern u16 fn_801EE248();
-extern u32 fn_801EE328();
-extern u16 fn_801EE614();
-extern u32 fn_801EE750();
-extern u8 fn_801EE8F4();
-extern u8 fn_801EEAD0();
-extern u8 fn_801EEC74();
-extern u8 fn_801EED88(u16);
+extern u16 darkPokemonSaveGet4A0();
+extern u32 darkPokemonSaveGetName();
+extern u16 darkPokemonGetFlag1C();
+extern u32 darkPokemonSaveGet8();
+extern u8 darkPokemonCheckFlag16();
+extern u8 darkPokemonCheckFlag12();
+extern u8 darkPokemonCheckFlag14();
+extern u8 darkPokemonCheckFlag0C(u16);
 extern u16 fn_801EEFAC();
 extern u32 fn_801FCC7C();
 extern u32 fightTrainerDataBiosGetPtr();
@@ -474,11 +474,11 @@ static inline void pdaDrawModelTexture(PdaSprite* sprite, u8* model)
         gfxSetVtxDesc(lbl_80314F98);
         gfxLoadTexture(0, texture);
         gfxBegin(2);
-        fn_800D61E4(0, 0);
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+        gfxVtxPos2s16(0, 0);
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
         gfxVtxTexCoord(0, lbl_8047BAC4, lbl_8047BAC4);
-        fn_800D61E4(sprite->x, sprite->y);
-        fn_800D5CB8(0, 0xFF, 0xFF, 0xFF, 0xFF);
+        gfxVtxPos2s16(sprite->x, sprite->y);
+        gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
         gfxVtxTexCoord(0, lbl_8047BAC8, lbl_8047BAC8);
         gfxEnd();
     }
@@ -505,20 +505,20 @@ void fn_8003AFDC(u8* context, PdaSprite* sprite)
     case 0x30B:
         break;
     case 0xD98:
-        if (fn_801EE8F4(lbl_8047A4D4[*(u32*)&lbl_803A6748].battleId) != 0 &&
+        if (darkPokemonCheckFlag16(lbl_8047A4D4[*(u32*)&lbl_803A6748].battleId) != 0 &&
             menuModelCheck(model = (u8*)&lbl_803A6748 + 0x4C, 0) == 0) {
             pdaDrawModelTexture(sprite, model);
         }
         break;
     default:
         battleId = lbl_8047A4D4[*(u32*)&lbl_803A6748].battleId;
-        fn_801EED88(lbl_8047A4D4[(u16)*(u32*)&lbl_803A6748].battleId);
+        darkPokemonCheckFlag0C(lbl_8047A4D4[(u16)*(u32*)&lbl_803A6748].battleId);
         layout = lbl_802EF0A8;
         entryId = lbl_8047A4D4[(u16)*(u32*)&lbl_803A6748].battleId;
-        fn_801EE614(entryId);
-        fn_801EE8F4(entryId);
-        registered = fn_801EEAD0(entryId);
-        cleared = fn_801EEC74(entryId);
+        darkPokemonGetFlag1C(entryId);
+        darkPokemonCheckFlag16(entryId);
+        registered = darkPokemonCheckFlag12(entryId);
+        cleared = darkPokemonCheckFlag14(entryId);
         if (registered != 0) {
             if (cleared != 0) {
                 state = 1;
@@ -544,8 +544,8 @@ void fn_8003AFDC(u8* context, PdaSprite* sprite)
         case 2:
             break;
         }
-        registered = fn_801EE8F4(battleId);
-        cleared = fn_801EEC74(battleId);
+        registered = darkPokemonCheckFlag16(battleId);
+        cleared = darkPokemonCheckFlag14(battleId);
         if (registered != 0) {
             if (cleared != 0) {
                 messageId = 0x36E7;
@@ -555,7 +555,7 @@ void fn_8003AFDC(u8* context, PdaSprite* sprite)
         } else {
             messageId = 0x36E8;
         }
-        fn_800FB680(0, 0, context[0x8B] | -0x100, (void*)messageId);
+        GSmsgPrintColor(0, 0, context[0x8B] | -0x100, (void*)messageId);
         break;
     }
 }

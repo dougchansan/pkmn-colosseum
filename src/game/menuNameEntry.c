@@ -408,7 +408,7 @@ s32 fn_80026860(void* r3, u8* r4)
 /* fn_800268F0 - 0x800268F0 | size: 0x254 */
 extern void msgctrlSetValue(s32, void*);
 extern u32 GSmsgGetRect(u32);
-extern void fn_800FB680(s32, s32, s32, u32);
+extern void GSmsgPrintColor(s32, s32, s32, u32);
 extern s32 GSmsgGetLength(void*);
 extern void* GSmsgGetGSchar(u32);
 extern f32 lbl_8047B934;
@@ -518,7 +518,7 @@ static inline void menuNameEntryDrawName(u8* self, u8* draw, s32 type)
             bufp[1] = 0;
             msgctrlSetValue(0x37, bufp);
             width = 0x1b - (s16)(GSmsgGetRect(0xce) >> 16);
-            fn_800FB680(x + width / 2, 0, color, 0xce);
+            GSmsgPrintColor(x + width / 2, 0, color, 0xce);
             x += 0x1a;
             count++;
             letters++;
@@ -534,7 +534,7 @@ static inline void menuNameEntryDrawName(u8* self, u8* draw, s32 type)
                 next[0] = letter;
                 next[1] = 0;
                 msgctrlSetValue(0x37, next);
-                fn_800FB680(count * 0x1a + (0x1b - (s16)(GSmsgGetRect(0xce) >> 16)) / 2, 0, color, 0xce);
+                GSmsgPrintColor(count * 0x1a + (0x1b - (s16)(GSmsgGetRect(0xce) >> 16)) / 2, 0, color, 0xce);
             }
         }
         draw[0x67] = 0xff;
@@ -808,7 +808,7 @@ s32 menuNameEntryDraw50Text(void* window) {
             bufp[0] = letter;
             bufp[1] = 0;
             msgctrlSetValue(0x37, bufp);
-            fn_800FB680(index * 0x1b + (0x1b - (s16)(GSmsgGetRect(0xce) >> 16)) / 2, column * 0x23, color, 0xce);
+            GSmsgPrintColor(index * 0x1b + (0x1b - (s16)(GSmsgGetRect(0xce) >> 16)) / 2, column * 0x23, color, 0xce);
             index++;
         }
     }
@@ -825,7 +825,7 @@ s32 menuNameEntryDraw50Text(void* window) {
 #pragma optimization_level 1
 s32 fn_80027740(void* r3) {
     u32 alpha = ((MenuNameEntryObject*)r3)->alpha;
-    fn_800FB680(0, 0, alpha | 0x509100, 0x2ef5);
+    GSmsgPrintColor(0, 0, alpha | 0x509100, 0x2ef5);
     return 0;
 }
 #pragma pop
@@ -838,7 +838,7 @@ s32 fn_80027740(void* r3) {
 s32 fn_8002777C(void* r3) {
     s32 mask = -0x100;
     u32 alpha = ((MenuNameEntryObject*)r3)->alpha;
-    fn_800FB680(0, 0, alpha | mask, 0x2ef3);
+    GSmsgPrintColor(0, 0, alpha | mask, 0x2ef3);
     return 0;
 }
 #pragma pop
@@ -851,7 +851,7 @@ s32 fn_8002777C(void* r3) {
 s32 fn_800277B8(void* r3) {
     s32 mask = -0x100;
     u32 alpha = ((MenuNameEntryObject*)r3)->alpha;
-    fn_800FB680(0, 0, alpha | mask, 0x2ef4);
+    GSmsgPrintColor(0, 0, alpha | mask, 0x2ef4);
     return 0;
 }
 #pragma pop
@@ -883,7 +883,7 @@ s32 menuNameEntryDrawXButtonText(void* r3, u8* r4) {
         width = (u16)GSmsgGetRect(*r31);
         x = (s16)width;
         x = *(s16*)(r30 + 0x56) - x;
-        fn_800FB680(0, x, r29[0x8b] | -0x100, *r31);
+        GSmsgPrintColor(0, x, r29[0x8b] | -0x100, *r31);
     }
     return 0;
 }
@@ -911,7 +911,7 @@ s32 menuNameEntryDrawTitle(void* r3) {
         }
         msgctrlSetValue(0x4e, (void*)(u32)(u16)r4);
     }
-    fn_800FB680(0, 0, r29[0x8b] | -0x100, *(u32*)(lbl_80266DD8 + (*(s32*)r31 << 4)));
+    GSmsgPrintColor(0, 0, r29[0x8b] | -0x100, *(u32*)(lbl_80266DD8 + (*(s32*)r31 << 4)));
     return 0;
 }
 #pragma pop
@@ -1458,8 +1458,8 @@ extern void gfxSetVtxDesc(void*);
 extern void gfxLoadTexture(s32, void*);
 extern void gfxSetPrimitive(s32);
 extern void gfxBegin(s32);
-extern void fn_800D61E4(s32, s32);
-extern void fn_800D5CB8(s32, s32, s32, s32, s32);
+extern void gfxVtxPos2s16(s32, s32);
+extern void gfxVtxColor4u8(s32, s32, s32, s32, s32);
 extern void gfxVtxTexCoord(s32, f32, f32);
 extern void gfxEnd(void);
 extern u8 lbl_803A2094[];
@@ -1527,7 +1527,7 @@ s32 menuNameEntryBackDrawBall(void* r3) {
 }
 
 /* menuNameEntryBackCtrl - 0x80028948 | size: 0x674 */
-extern f32 fn_800E0BE4(void);
+extern f32 GSrandf(void);
 extern f32 lbl_8047B958;
 extern f32 lbl_8047B95C;
 extern f32 lbl_8047B960;
@@ -1552,7 +1552,7 @@ extern f32 lbl_8047B954;
  *   mode 3 : latch the flag at offset 0x02 (one-shot) and return.
  *   else   : no-op.
  *
- * Each tick: fn_800E0BE4() returns a random f32; if it is <= the spawn
+ * Each tick: GSrandf() returns a random f32; if it is <= the spawn
  * threshold (lbl_8047B958) a new overlay is allocated in the first inactive
  * slot (if any of the 30 are free). The update pass ages every active
  * overlay, retires it when its timer reaches its lifetime, and recomputes
@@ -1584,7 +1584,7 @@ static inline void menuNameEntryBackPrime(void)
     i = 0;
     threshold = lbl_8047B958;
     do {
-        if (!(fn_800E0BE4() > threshold)) {
+        if (!(GSrandf() > threshold)) {
             for (slot = 0, ov = base; slot < 30; ov++, slot++) {
                 if (ov->active == 0) {
                     break;
@@ -1593,14 +1593,14 @@ static inline void menuNameEntryBackPrime(void)
             if (slot < 30) {
                 lbl_803A20DC[slot].active = 1;
                 ov = &lbl_803A20DC[slot];
-                ov->x = lbl_8047B95C * fn_800E0BE4();
-                ov->y = lbl_8047B960 * fn_800E0BE4();
+                ov->x = lbl_8047B95C * GSrandf();
+                ov->y = lbl_8047B960 * GSrandf();
                 ov->scale = lbl_8047B964;
-                ov->unused10 = lbl_8047B968 * fn_800E0BE4() + lbl_8047B964;
+                ov->unused10 = lbl_8047B968 * GSrandf() + lbl_8047B964;
                 ov->color = -0x100;
                 ov->alpha = 0x80;
                 ov->timer = lbl_8047B930;
-                ov->lifetime = lbl_8047B970 * fn_800E0BE4() + lbl_8047B96C;
+                ov->lifetime = lbl_8047B970 * GSrandf() + lbl_8047B96C;
             }
         }
         for (slot2 = 0, ov2 = base; slot2 < 30; ov2++, slot2++) {
@@ -1623,7 +1623,7 @@ static inline void menuNameEntryBackStep(void)
     f32 ratio;
     WorldMapOverlay* ov;
 
-    if (!(fn_800E0BE4() > lbl_8047B958)) {
+    if (!(GSrandf() > lbl_8047B958)) {
         for (slot = 0, ov = lbl_803A20DC; slot < 30; ov++, slot++) {
             if (ov->active == 0) {
                 break;
@@ -1631,14 +1631,14 @@ static inline void menuNameEntryBackStep(void)
         }
         if (slot < 30) {
             lbl_803A20DC[slot].active = 1;
-            lbl_803A20DC[slot].x = lbl_8047B95C * fn_800E0BE4();
-            lbl_803A20DC[slot].y = lbl_8047B960 * fn_800E0BE4();
+            lbl_803A20DC[slot].x = lbl_8047B95C * GSrandf();
+            lbl_803A20DC[slot].y = lbl_8047B960 * GSrandf();
             lbl_803A20DC[slot].scale = lbl_8047B964;
-            lbl_803A20DC[slot].unused10 = lbl_8047B968 * fn_800E0BE4() + lbl_8047B964;
+            lbl_803A20DC[slot].unused10 = lbl_8047B968 * GSrandf() + lbl_8047B964;
             lbl_803A20DC[slot].color = -0x100;
             lbl_803A20DC[slot].alpha = 0x80;
             lbl_803A20DC[slot].timer = lbl_8047B930;
-            lbl_803A20DC[slot].lifetime = lbl_8047B970 * fn_800E0BE4() + lbl_8047B96C;
+            lbl_803A20DC[slot].lifetime = lbl_8047B970 * GSrandf() + lbl_8047B96C;
         }
     }
     for (slot = 0, ov = lbl_803A20DC; slot < 30; ov++, slot++) {
@@ -1656,7 +1656,7 @@ static inline void menuNameEntryBackStep(void)
 
 s32 menuNameEntryBackCtrl(void* r3)
 {
-    extern f32 fn_800E0BE4(void);            /* random f32 source (-> f1) */
+    extern f32 GSrandf(void);            /* random f32 source (-> f1) */
     extern f32 lbl_8047B958;                 /* spawn threshold           */
     extern f32 lbl_8047B95C;                 /* x scale                   */
     extern f32 lbl_8047B960;                 /* y scale                   */
@@ -1698,19 +1698,19 @@ extern void pokemonBiosGetNicknamePtr(void);
 extern void pcboxGetPokemonBoxName(void);
 extern void menuItemBiosGetPtr(void);
 extern void menuModelInit(void);
-extern void fn_8010A010(void);
+extern void menuPokemonModelRequestById(void);
 extern void peopleInfoBiosGetPtr(void);
 extern void fn_8018F4C8(void);
-extern void fn_80109C88(void);
+extern void menuPokemonModelRequest(void);
 extern void menuModelCheck(void);
 extern void fadeSet(void);
 extern void fadeCheck(void);
-extern void fn_8010A420(void);
+extern void menuModelTerm(void);
 extern void heroSetStatus(void);
 extern void pokemonBiosSetNicknamePtr(void);
 extern void fn_801349DC(void);
 extern void fn_800F9EE4(void);
-extern void fn_800FF660(void);
+extern void floorBattleEndTerminateScripts(void);
 extern void floorSetFadeScript(s32, u32);
 extern s32 lbl_804788A0;
 extern u8 lbl_80266DC0[];
@@ -1759,13 +1759,13 @@ void menuNameEntry(void) {
     extern void GScharCpy(void* dst, u8* src);           /* copy/build name struct    */
     extern void* menuItemBiosGetPtr(s32 id);                      /* returns struct ptr        */
     extern void menuModelInit(void* handle, s16 a, s16 b);
-    extern void fn_8010A010(void* handle, s32 v);
+    extern void menuPokemonModelRequestById(void* handle, s32 v);
     extern void* peopleInfoBiosGetPtr(s32 v);
     extern void fn_8018F4C8(void* info, s32 a, s32* outA, s32* outB);
     extern void menuModelSetMotion(void* handle, s32 motion);
-    extern void fn_80109C88(void* handle, u32 v);
+    extern void menuPokemonModelRequest(void* handle, u32 v);
     extern void menuModelCheck(void* handle, s32 v);
-    extern void fn_8010A420(void* handle);
+    extern void menuModelTerm(void* handle);
     extern void fadeSet(s32 mode, f32 v);
     extern void fadeCheck(s32 v);
     extern u32  windowGetActiveID(void);                         /* returns context handle    */
@@ -1782,7 +1782,7 @@ void menuNameEntry(void) {
     extern void pokemonBiosSetNicknamePtr(u32 v, u8* ctx);
     extern void pcboxSetPokemonBoxName(s32 a, s32 name, u8* ctx);
     extern s32  GScharCmp(u8* ctx, void* nameBuf);
-    extern void fn_800FF660(void);
+    extern void floorBattleEndTerminateScripts(void);
     extern void floorSetFadeScript(s32 a, u32 b);
 
     u8* ctx;        /* lbl_803A2068 context block          */
@@ -1878,18 +1878,18 @@ void menuNameEntry(void) {
     case 0:
     case 1:
         sel = entryBuf[mode];
-        fn_8010A010(lbl_803A2094, sel);
+        menuPokemonModelRequestById(lbl_803A2094, sel);
         fn_8018F4C8(peopleInfoBiosGetPtr(sel), 1, &motOut, &motTmp);
         menuModelSetMotion(lbl_803A2094, motOut);
         break;
     case 2:
         sel = heroGetStatus(0, 3, (u16)subIndex);
         if ((pokemonCheckValid() & 0xff) != 0) {
-            fn_80109C88(lbl_803A2094, sel);
+            menuPokemonModelRequest(lbl_803A2094, sel);
         }
         break;
     case 3:
-        fn_8010A010(lbl_803A2094, entryBuf[mode]);
+        menuPokemonModelRequestById(lbl_803A2094, entryBuf[mode]);
         break;
     default:
         break;
@@ -1976,7 +1976,7 @@ void menuNameEntry(void) {
     /* --- Tear down the menu model and finalize the selection by mode. --- */
     fadeSet(3, lbl_8047B940);
     fadeCheck(1);
-    fn_8010A420(lbl_803A2094);
+    menuModelTerm(lbl_803A2094);
     menuClose(0x6f);
     menuCloseSync(0x6f, 1);
 
@@ -2010,7 +2010,7 @@ void menuNameEntry(void) {
 
     /* Async finalize: post the appropriate completion event. */
     if (*(s32*)(ctx2 + 0x28) != 0) {
-        fn_800FF660();
+        floorBattleEndTerminateScripts();
         if (*(s32*)(lbl_803A2068 + 0x24) != 0) {
             floorSetFadeScript(0, 0x05960008);
         } else {

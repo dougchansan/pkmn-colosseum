@@ -13,7 +13,7 @@
 extern u16 fightFloorGetFightTrainerFightOutPokemonPtrAry();
 extern u32 fightOutPokemonGetPokemonPtr(u32);
 extern u32 fn_80236520(void*, u32);
-extern u8 fn_80236BFC(void*, u32, u32);
+extern u8 fightTrainerAiIsPokemonJoutai(void*, u32, u32);
 extern u32 fn_80239984(u32, void*, u32);
 extern void fn_80239EE8(u32, void*, u32, u32, u32, u32, u32, u32);
 
@@ -32,14 +32,14 @@ u32 fightTrainerAiWazaValueKiaipanti(void* ctx, u32 param1, u32 param2, u32 para
         fn_80239EE8(0xEC64, ctx, fightOutPokemonGetPokemonPtr(param1), 0, 0, param2, 0, 0x5B);
     }
     for (i = 0; i < count; i++) {
-        if (fn_80236BFC(ctx, entries[i], 8) == 1) {
+        if (fightTrainerAiIsPokemonJoutai(ctx, entries[i], 8) == 1) {
             handle = fn_80239984(handle, ctx, 0x5C);
             fn_80239EE8(0xEC64, ctx, fightOutPokemonGetPokemonPtr(param1), 0, 0, param2, 0, 0x5C);
             break;
         }
     }
     for (i = 0; i < count; i++) {
-        if (fn_80236BFC(ctx, entries[i], 7) == 1) {
+        if (fightTrainerAiIsPokemonJoutai(ctx, entries[i], 7) == 1) {
             handle = fn_80239984(handle, ctx, 0x5D);
             fn_80239EE8(0xEC64, ctx, fightOutPokemonGetPokemonPtr(param1), 0, 0, param2, 0, 0x5D);
             break;

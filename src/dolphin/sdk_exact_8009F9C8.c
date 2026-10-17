@@ -35,22 +35,22 @@ extern s32 OSDisableScheduler(void);
 extern s32 OSEnableScheduler(void);
 extern void OSSleepThread(OSThreadQueue* queue);
 extern s32 __OSGetEffectivePriority(OSCurThread* thread);
-extern OSCurThread* fn_800A13F8(void);
-extern void fn_8009F7B4(OSMutex* mutex);
+extern OSCurThread* OSGetCurrentThread(void);
+extern void OSLockMutex(OSMutex* mutex);
 
-void fn_8009F9C8(void* queue)
+void OSInitCond(void* queue)
 {
     OSInitThreadQueue((OSThreadQueue*) queue);
 }
 
-void fn_8009F9E8(OSThreadQueue* queue, OSMutex* mutex)
+void OSWaitCond(OSThreadQueue* queue, OSMutex* mutex)
 {
     BOOL enabled;
     OSCurThread* current;
     s32 count;
 
     enabled = OSDisableInterrupts();
-    current = fn_800A13F8();
+    current = OSGetCurrentThread();
 
     if (mutex->thread == current) {
         OSMutex* next;
@@ -84,14 +84,14 @@ void fn_8009F9E8(OSThreadQueue* queue, OSMutex* mutex)
         OSEnableScheduler();
 
         OSSleepThread(queue);
-        fn_8009F7B4(mutex);
+        OSLockMutex(mutex);
         mutex->count = count;
     }
 
     OSRestoreInterrupts(enabled);
 }
 
-void fn_8009FABC(void* queue)
+void OSSignalCond(void* queue)
 {
     OSWakeupThread(queue);
 }

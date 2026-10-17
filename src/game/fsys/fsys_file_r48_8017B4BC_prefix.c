@@ -3,9 +3,9 @@
  * @brief FSYS entry name-hash query and entry flag decode
  *        (0x8017B4BC - 0x8017B5C0).
  *
- * fn_8017B4BC scans the slot array for the loaded archive of fileHandle and
+ * fsysFindLoadedArchive scans the slot array for the loaded archive of fileHandle and
  * returns the name hash of its entry `index` (0 when no slot holds it).
- * fn_8017B5A4 extracts bits 9-14 of an entry word.
+ * fsysEntryGetType extracts bits 9-14 of an entry word.
  *
  * Level-0 code like the rest of fsys (see configure.py; this object used to
  * be scored at -O1 from fsys_file_candidates.c).
@@ -44,7 +44,7 @@ static inline char* fsysGetNameTable(FSYSSlot* slot)
 }
 
 /* Address: 0x8017B4BC | size: 0xE8 */
-u32 fn_8017B4BC(u32 fileHandle, u32 index)
+u32 fsysFindLoadedArchive(u32 fileHandle, u32 index)
 {
     u32 i;
     FSYSSlot* slot;
@@ -76,7 +76,7 @@ done:
 }
 
 /* Address: 0x8017B5A4 | size: 0x1C */
-u32 fn_8017B5A4(u32 val)
+u32 fsysEntryGetType(u32 val)
 {
     u32 result;
 

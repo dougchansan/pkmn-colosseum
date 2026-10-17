@@ -118,17 +118,17 @@ void PSMTXCopy(const Mtx src, Mtx dst);
 u32 PSMTXInvXpose(const Mtx src, Mtx dst);
 
 /* GXClearVtxDesc */
-void fn_800B7D3C(void);
+void GXClearVtxDesc(void);
 /* GXSetVtxDesc */
-void fn_800B7874(int attr, int type);
+void GXSetVtxDesc(int attr, int type);
 /* GXSetVtxAttrFmt */
-void fn_800B7D74(int vtxfmt, int attr, int cnt, int type, u8 frac);
+void GXSetVtxAttrFmt(int vtxfmt, int attr, int cnt, int type, u8 frac);
 /* GXSetArray */
-void fn_800B84E0(int attr, void* base_ptr, u8 stride);
+void GXSetArray(int attr, void* base_ptr, u8 stride);
 /* GXBegin */
-void fn_800B928C(int type, int vtxfmt, u16 nverts);
+void GXBegin(int type, int vtxfmt, u16 nverts);
 /* GXSetCurrentMtx */
-void fn_800BD554(u32 id);
+void GXSetCurrentMtx(u32 id);
 void GXCallDisplayList(void* list, u32 nbytes);
 void GXLoadPosMtxImm(Mtx mtx, u32 id);
 void GXLoadNrmMtxImm(Mtx mtx, u32 id);
@@ -145,21 +145,21 @@ void* fn_80193B10(u32 size);
 /* hsdFreeMemPiece */
 void fn_80193AF0(void* mem, u32 size);
 /* HSD_MemAlloc */
-void* fn_801A6928(u32 size);
+void* HSD_MemAlloc(u32 size);
 /* HSD_Free */
-void fn_801A6960(void* ptr);
+void HSD_Free(void* ptr);
 /* HSD_IsMemoryReleased: nonzero when the pointer lies in freed memory. */
 int fn_801A6990(void* ptr);
 /* HSD_SListAlloc */
-HSD_SList* fn_801A3F48(void);
+HSD_SList* HSD_SListAlloc(void);
 /* HSD_SListRemove */
-HSD_SList* fn_801A3E64(HSD_SList* list);
+HSD_SList* HSD_SListRemove(HSD_SList* list);
 /* _HSD_NeedCacheInvalidate */
 void fn_8019C6EC(u32 flags);
 /* HSD_StateSetCullMode */
-void fn_801B2878(int mode);
+void HSD_StateSetCullMode(int mode);
 /* HSD_PerfCountEnvelopeBlending */
-void fn_801AA5AC(s32 n);
+void HSD_PerfCountEnvelopeBlending(s32 n);
 void* HSD_IDGetDataFromTable(void* table, u32 id, s32* success);
 HSD_JObj* HSD_JObjGetCurrent(void);
 HSD_TObj* _HSD_TObjGetCurrentByType(HSD_TObj* from, u32 mapping);
@@ -226,7 +226,7 @@ static inline void HSD_PObjAddAnim(HSD_PObj* pobj, HSD_ShapeAnim* shapeanim)
 }
 
 /* HSD_PObjAddAnimAll */
-void fn_801AD738(HSD_PObj* pobj, HSD_ShapeAnim* shapeanim)
+void HSD_PObjAddAnimAll(HSD_PObj* pobj, HSD_ShapeAnim* shapeanim)
 {
     HSD_PObj* po;
     HSD_ShapeAnim* sa;
@@ -334,7 +334,7 @@ static inline void HSD_EnvelopeListFree(HSD_SList* list)
             HSD_EnvelopeFree(env);
             env = next;
         }
-        list = fn_801A3E64(list);
+        list = HSD_SListRemove(list);
     }
 }
 
@@ -359,7 +359,7 @@ static inline HSD_SList* loadEnvelopeDesc(HSD_EnvelopeDesc** edesc_p)
             edesc++;
         }
 
-        (*list_p) = fn_801A3F48();
+        (*list_p) = HSD_SListAlloc();
         (*list_p)->data = envelope;
         list_p = &(*list_p)->next;
         edesc_p++;
@@ -382,7 +382,7 @@ static inline void HSD_ShapeSetRemove(HSD_ShapeSet* shape_set)
     }
 
     if (shape_set->flags & SHAPESET_ADDITIVE) {
-        fn_801A6960(shape_set->blend.bp);
+        HSD_Free(shape_set->blend.bp);
     }
 
     HSD_ShapeSetFree(shape_set);
@@ -405,7 +405,7 @@ static inline HSD_ShapeSet* loadShapeSetDesc(HSD_ShapeSetDesc* sdesc)
     shape_set->normal_desc = sdesc->normal_desc;
     shape_set->normal_idx_list = sdesc->normal_idx_list;
     if (shape_set->flags & SHAPESET_ADDITIVE) {
-        shape_set->blend.bp = fn_801A6928(shape_set->nb_shape * sizeof(f32));
+        shape_set->blend.bp = HSD_MemAlloc(shape_set->nb_shape * sizeof(f32));
         for (i = 0; i < shape_set->nb_shape; i++) {
             shape_set->blend.bp[i] = 0.0F;
         }
@@ -706,7 +706,7 @@ void fn_801ACDAC(HSD_PObj* pobj, u32* nb_vtx, u32* nb_tri)
 
 void HSD_ClearVtxDesc(void)
 {
-    fn_800B7D3C();
+    GXClearVtxDesc();
     prev_vtxdesclist_array = 0;
     prev_vtxdesc = 0;
 }
@@ -718,7 +718,7 @@ static inline void setupArrayDesc(HSD_VtxDescList* desc_list)
     if (prev_vtxdesclist_array != desc_list) {
         for (desc = desc_list; desc->attr != GX_VA_NULL; desc++) {
             if (desc->attr_type != GX_DIRECT) {
-                fn_800B84E0(desc->attr, desc->vertex, desc->stride);
+                GXSetArray(desc->attr, desc->vertex, desc->stride);
             }
         }
         prev_vtxdesclist_array = desc_list;
@@ -730,9 +730,9 @@ static inline void setupVtxDesc(HSD_PObj* pobj)
     HSD_VtxDescList* desc;
 
     if (prev_vtxdesc != pobj->verts) {
-        fn_800B7D3C();
+        GXClearVtxDesc();
         for (desc = pobj->verts; desc->attr != GX_VA_NULL; desc++) {
-            fn_800B7874(desc->attr, desc->attr_type);
+            GXSetVtxDesc(desc->attr, desc->attr_type);
             switch (desc->attr) {
             case GX_VA_PNMTXIDX:
             case GX_VA_TEX0MTXIDX:
@@ -745,7 +745,7 @@ static inline void setupVtxDesc(HSD_PObj* pobj)
             case GX_VA_TEX7MTXIDX:
                 break;
             default:
-                fn_800B7D74(GX_VTXFMT0, desc->attr, desc->comp_cnt,
+                GXSetVtxAttrFmt(GX_VTXFMT0, desc->attr, desc->comp_cnt,
                             desc->comp_type, desc->frac);
             }
         }
@@ -765,7 +765,7 @@ static inline void setupShapeAnimArrayDesc(HSD_VtxDescList* desc_list)
             case GX_VA_NBT:
                 break;
             default:
-                fn_800B84E0(desc->attr, desc->vertex, desc->stride);
+                GXSetArray(desc->attr, desc->vertex, desc->stride);
             }
         }
     }
@@ -776,14 +776,14 @@ static inline void setupShapeAnimVtxDesc(HSD_PObj* pobj)
 {
     HSD_VtxDescList* desc;
 
-    fn_800B7D3C();
+    GXClearVtxDesc();
     for (desc = pobj->verts; desc->attr != GX_VA_NULL; desc++) {
         switch (desc->attr) {
         case GX_VA_NRM:
         case GX_VA_POS:
         case GX_VA_NBT:
-            fn_800B7874(desc->attr, GX_DIRECT);
-            fn_800B7D74(GX_VTXFMT0, desc->attr, desc->comp_cnt, GX_F32, 0);
+            GXSetVtxDesc(desc->attr, GX_DIRECT);
+            GXSetVtxAttrFmt(GX_VTXFMT0, desc->attr, desc->comp_cnt, GX_F32, 0);
             break;
 
         case GX_VA_PNMTXIDX:
@@ -795,12 +795,12 @@ static inline void setupShapeAnimVtxDesc(HSD_PObj* pobj)
         case GX_VA_TEX5MTXIDX:
         case GX_VA_TEX6MTXIDX:
         case GX_VA_TEX7MTXIDX:
-            fn_800B7874(desc->attr, desc->attr_type);
+            GXSetVtxDesc(desc->attr, desc->attr_type);
             break;
 
         default:
-            fn_800B7874(desc->attr, desc->attr_type);
-            fn_800B7D74(GX_VTXFMT0, desc->attr, desc->comp_cnt,
+            GXSetVtxDesc(desc->attr, desc->attr_type);
+            GXSetVtxAttrFmt(GX_VTXFMT0, desc->attr, desc->comp_cnt,
                         desc->comp_type, desc->frac);
         }
     }
@@ -1000,7 +1000,7 @@ static void interpretShapeAnimDisplayList(HSD_PObj* pobj, f32 (*vertex)[3],
         if ((dl[0] & GX_OPCODE_MASK) == 0) {
             break;
         }
-        fn_800B928C(dl[0] & GX_OPCODE_MASK, dl[0] & GX_VAT_MASK, n);
+        GXBegin(dl[0] & GX_OPCODE_MASK, dl[0] & GX_VAT_MASK, n);
         for (i = 0; i < n; i++) {
             for (j = 0;; j++) {
                 HSD_VtxDescList* desc = &pobj->verts[j];
@@ -1121,12 +1121,12 @@ static void drawShapeAnim(HSD_PObj* pobj)
 
     if (vertex_buffer_size == 0) {
         vertex_buffer_size = HSD_DEFAULT_MAX_SHAPE_VERTICES;
-        vertex_buffer = fn_801A6928(vertex_buffer_size * sizeof(f32[3]));
+        vertex_buffer = HSD_MemAlloc(vertex_buffer_size * sizeof(f32[3]));
     }
     HSD_ASSERT(1387, vertex_buffer_size >= shape_set->nb_vertex_index);
     if (shape_set->normal_desc && normal_buffer_size == 0) {
         normal_buffer_size = HSD_DEFAULT_MAX_SHAPE_NORMALS;
-        normal_buffer = fn_801A6928(normal_buffer_size * sizeof(f32[3]));
+        normal_buffer = HSD_MemAlloc(normal_buffer_size * sizeof(f32[3]));
     }
 
     if (shape_set->normal_desc) {
@@ -1238,7 +1238,7 @@ static void drawShapeAnim(HSD_PObj* pobj)
 }
 
 /* HSD_PObjClearMtxMark */
-void fn_801AB63C(void* obj, u32 mark)
+void HSD_PObjClearMtxMark(void* obj, u32 mark)
 {
     int i;
 
@@ -1249,7 +1249,7 @@ void fn_801AB63C(void* obj, u32 mark)
 }
 
 /* HSD_PObjSetMtxMark */
-void fn_801AB5F8(int idx, void* obj, u32 mark)
+void HSD_PObjSetMtxMark(int idx, void* obj, u32 mark)
 {
     if (idx >= 2) {
         return;
@@ -1316,10 +1316,10 @@ static inline void SetupRigidModelMtx(HSD_PObj* pobj, Mtx vmtx, Mtx pmtx,
         if (obj == jobj && mark == HSD_MTX_RIGID) {
             return;
         }
-        fn_801AB5F8(0, jobj, HSD_MTX_RIGID);
+        HSD_PObjSetMtxMark(0, jobj, HSD_MTX_RIGID);
     }
 
-    fn_800BD554(GX_PNMTX0);
+    GXSetCurrentMtx(GX_PNMTX0);
     GXLoadPosMtxImm(pmtx, GX_PNMTX0);
     HSD_PerfCountMtxLoad();
 
@@ -1368,7 +1368,7 @@ static void SetupSharedVtxModelMtx(HSD_PObj* pobj, Mtx vmtx, Mtx pmtx,
     flags |= GetSetupFlags(jobj);
 
     if (flags | SETUP_JOINT0) {
-        fn_800BD554(GX_PNMTX0);
+        GXSetCurrentMtx(GX_PNMTX0);
         GXLoadPosMtxImm(pmtx, GX_PNMTX0);
         HSD_PerfCountMtxLoad();
 
@@ -1415,7 +1415,7 @@ static void SetupEnvelopeModelMtx(HSD_PObj* pobj, Mtx vmtx, Mtx pmtx,
     PObjSetupFlag flags = SETUP_NONE;
 
     jobj = HSD_JObjGetCurrent();
-    fn_801AB63C(NULL, HSD_MTX_ENVELOPE);
+    HSD_PObjClearMtxMark(NULL, HSD_MTX_ENVELOPE);
     flags = GetSetupFlags(jobj);
     right = _HSD_mkEnvelopeModelNodeMtx(jobj, mtx);
 
@@ -1458,7 +1458,7 @@ static void SetupEnvelopeModelMtx(HSD_PObj* pobj, Mtx vmtx, Mtx pmtx,
             }
             mtxp = mtx;
         }
-        fn_801AA5AC(perf);
+        HSD_PerfCountEnvelopeBlending(perf);
         if (right) {
             PSMTXConcat(mtxp, right, mtx);
         }
@@ -1524,13 +1524,13 @@ void HSD_PObjDisp(HSD_PObj* pobj, Mtx vmtx, Mtx pmtx, u32 rendermode)
 
     switch (pobj->flags & (POBJ_CULLFRONT | POBJ_CULLBACK)) {
     case 0x0:
-        fn_801B2878(GX_CULL_NONE);
+        HSD_StateSetCullMode(GX_CULL_NONE);
         break;
     case POBJ_CULLFRONT:
-        fn_801B2878(GX_CULL_FRONT);
+        HSD_StateSetCullMode(GX_CULL_FRONT);
         break;
     case POBJ_CULLBACK:
-        fn_801B2878(GX_CULL_BACK);
+        HSD_StateSetCullMode(GX_CULL_BACK);
         break;
     case POBJ_CULLFRONT | POBJ_CULLBACK:
         return;

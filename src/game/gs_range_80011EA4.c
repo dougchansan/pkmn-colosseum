@@ -11,7 +11,7 @@
 
 /* 0x80011EA4 | 0x9B4 -- sprite-driven window gauges and labels */
 extern void winSpriteSetDisp(void*, s32);
-extern void fn_800FB680();
+extern void GSmsgPrintColor();
 extern u8 lbl_80314E08[];
 extern void* windowGetAllocPtr(void*);
 extern void* windowGetFreeWork(void*);
@@ -155,7 +155,7 @@ void fn_80011EA4(u8* window, WindowSprite* sprite)
     extern void fn_8001DACC(void*, WindowSprite*, u16, f32);
     extern void fn_8010B9E8(void*, WindowSprite*, u16);
     extern s32 fightFloorGetStatus(s32, s32, s32, s32);
-    extern void fn_800FB680(s32, s32, u32, s32);
+    extern void GSmsgPrintColor(s32, s32, u32, s32);
     extern void msgctrlSetValue(s32, s32);
     extern u32 GSmsgGetRect(s32);
     extern s32 GSmsgGetGSchar(u32);
@@ -165,8 +165,8 @@ void fn_80011EA4(u8* window, WindowSprite* sprite)
     extern void gfxSetPrimitive(s32);
     extern void gfxSetVtxDesc(void*);
     extern void gfxBegin(s32);
-    extern void fn_800D61E4(s32, s32);
-    extern void fn_800D5BA0(s32, u32);
+    extern void gfxVtxPos2s16(s32, s32);
+    extern void gfxVtxColor1u32(s32, u32);
     extern void gfxEnd(void);
     extern u32 __cvt_fp2unsigned(f32);
     extern u8 winSpriteGetDisp(WindowSprite*);
@@ -216,19 +216,19 @@ void fn_80011EA4(u8* window, WindowSprite* sprite)
         } else {
             value = work->value_1A;
         }
-        fn_800FB680(0x20, -2, color, 0x195);
+        GSmsgPrintColor(0x20, -2, color, 0x195);
         msgctrlSetValue(0x34, value);
-        fn_800FB680((s16)(0x18 - (s16)(GSmsgGetRect(0xCB) >> 16)), -1, color,
+        GSmsgPrintColor((s16)(0x18 - (s16)(GSmsgGetRect(0xCB) >> 16)), -1, color,
                     0xCB);
         msgctrlSetValue(0x34, work->value_18);
-        fn_800FB680((s16)(sprite->x - (s16)(GSmsgGetRect(0xCB) >> 16)), -1,
+        GSmsgPrintColor((s16)(sprite->x - (s16)(GSmsgGetRect(0xCB) >> 16)), -1,
                     color, 0xCB);
         break;
     }
     case 0xA2:
     case 0xAD:
         msgctrlSetValue(0x34, work->value_17);
-        fn_800FB680((s16)(sprite->x - (s16)(GSmsgGetRect(0xCB) >> 16)), -1,
+        GSmsgPrintColor((s16)(sprite->x - (s16)(GSmsgGetRect(0xCB) >> 16)), -1,
                     window[0x8B] | -0x100, 0xCB);
         break;
     case 0xA3:
@@ -237,7 +237,7 @@ void fn_80011EA4(u8* window, WindowSprite* sprite)
         u32 message;
 
         msgctrlSetValue(0x37, (s32)work);
-        fn_800FB680(0, -1, color, 0xE9);
+        GSmsgPrintColor(0, -1, color, 0xE9);
         width = GSmsgGetRect(0xE9) >> 16;
         switch (work->kind_28) {
         case 0:
@@ -253,7 +253,7 @@ void fn_80011EA4(u8* window, WindowSprite* sprite)
         }
         if (message != 0) {
             msgctrlSetValue(0x37, GSmsgGetGSchar(message));
-            fn_800FB680(width, -1, color, 0xD0);
+            GSmsgPrintColor(width, -1, color, 0xD0);
         }
         break;
     }
@@ -298,10 +298,10 @@ void fn_80011EA4(u8* window, WindowSprite* sprite)
             gfxSetPrimitive(7);
             gfxSetVtxDesc(lbl_80314E08);
             gfxBegin(2);
-            fn_800D61E4(0, 0);
-            fn_800D5BA0(0, bar);
-            fn_800D61E4(x, sprite->y);
-            fn_800D5BA0(0, bar);
+            gfxVtxPos2s16(0, 0);
+            gfxVtxColor1u32(0, bar);
+            gfxVtxPos2s16(x, sprite->y);
+            gfxVtxColor1u32(0, bar);
             gfxEnd();
         }
         if (current <= 0.0f) {

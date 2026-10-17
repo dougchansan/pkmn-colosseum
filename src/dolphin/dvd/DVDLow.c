@@ -13,7 +13,7 @@ extern void AlarmHandlerForTimeout(OSAlarm* alarm, OSContext* context);
 extern u32 __OSMaskInterrupts(u32 mask);
 extern void OSClearContext(OSContext* context);
 extern void OSSetCurrentContext(OSContext* context);
-extern DVDDiskID* fn_800A7BCC(void);
+extern DVDDiskID* DVDGetCurrentDiskID(void);
 
 typedef struct DVDLowCommand {
     s32 command;
@@ -241,7 +241,7 @@ static inline BOOL HitCache(DVDLowBuffer* cur, DVDLowBuffer* prev)
 {
     u32 prevBlock = (prev->offset + prev->length - 1) >> 15;
     u32 curBlock = cur->offset >> 15;
-    u32 cacheBlocks = (fn_800A7BCC()->streaming ? TRUE : FALSE) ? 5 : 15;
+    u32 cacheBlocks = (DVDGetCurrentDiskID()->streaming ? TRUE : FALSE) ? 5 : 15;
 
     if ((curBlock > prevBlock - 2) || (curBlock < prevBlock + cacheBlocks + 3)) {
         return TRUE;
@@ -381,7 +381,7 @@ BOOL DVDLowStopMotor(DVDLowCallback callback)
     return TRUE;
 }
 
-BOOL fn_800A48DC(DVDLowCallback callback)
+BOOL DVDLowRequestError(DVDLowCallback callback)
 {
     Callback = callback;
     StopAtNextInt = FALSE;
@@ -463,7 +463,7 @@ BOOL DVDLowBreak(void)
     return TRUE;
 }
 
-DVDLowCallback fn_800A4C94(void)
+DVDLowCallback DVDLowClearCallback(void)
 {
     DVDLowCallback old;
 

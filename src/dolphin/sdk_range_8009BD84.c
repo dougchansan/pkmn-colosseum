@@ -64,7 +64,7 @@ typedef struct OSFatalParam {
     defined(SDK_EXACT_8009C860_8009CD38)
 void ScreenReport(void* xfb, u16 xfbW, u16 xfbH, GXColor yuv, s32 x, s32 y,
                   s32 leading, const char* string) {
-    extern char* fn_8009DC38(const char* string, void* image, s32 pos,
+    extern char* OSGetFontTexel(const char* string, void* image, s32 pos,
                              s32 stride, s32* width);
     u8* ptr;
     s32 width;
@@ -101,7 +101,7 @@ loop_1:
                 image[j + 16] = 0;
             }
 
-            string = fn_8009DC38(string, image, 0, 6, &width);
+            string = OSGetFontTexel(string, image, 0, 6, &width);
 
             for (i = 0; i < 24; i++) {
                 j = (i & 7) + ((i >> 3) * 24);
@@ -176,7 +176,7 @@ void ConfigureVideo(u16 fbWidth, u16 xfbHeight) {
 
 #if !defined(SDK_8009BD84_BANK_ACTIVE) || \
     defined(SDK_CANDIDATE_8009CD38_8009D510)
-/* Inlined into fn_8009CE8C (Halt); emits no standalone code. */
+/* Inlined into Halt (Halt); emits no standalone code. */
 static GXColor RGB2YUV(GXColor rgb) {
     f32 Y;
     f32 Cb;
@@ -211,7 +211,7 @@ static GXColor RGB2YUV(GXColor rgb) {
 extern u32 __OSBusClock : 0x800000F8;
 
 /**
- * OSFatal. Halts the machine, then hands off to fn_8009CE8C (Halt) on a fresh
+ * OSFatal. Halts the machine, then hands off to Halt (Halt) on a fresh
  * fiber stack at the top of the arena to draw the message to the screen.
  */
 #if !defined(SDK_8009BD84_BANK_ACTIVE) || \
@@ -220,15 +220,15 @@ void fn_8009CD38(GXColor fg, GXColor bg, const char* msg) {
     extern void __OSStopAudioSystem(void);
     extern void AISetStreamVolLeft(u8 vol);
     extern void AISetStreamVolRight(u8 vol);
-    extern BOOL fn_8009FEBC(BOOL final); /* __OSCallResetFunctions */
-    extern u32 fn_800AA280(void);        /* VIGetRetraceCount */
-    extern void fn_800B8AE8(void);       /* GXAbortFrame */
+    extern BOOL __OSCallResetFunctions(BOOL final); /* __OSCallResetFunctions */
+    extern u32 VIGetRetraceCount(void);        /* VIGetRetraceCount */
+    extern void GXAbortFrame(void);       /* GXAbortFrame */
     extern void VIInit(void);
     extern OSTime OSGetTime(void);
     extern void VISetBlack(BOOL black);
     extern void VIFlush(void);
     extern u8 lbl_803FB538[];            /* FatalParam + FatalContext */
-    extern void fn_8009CE8C(void);       /* Halt */
+    extern void Halt(void);       /* Halt */
     extern BOOL OSDisableInterrupts(void);
     extern BOOL OSEnableInterrupts(void);
 
@@ -249,26 +249,26 @@ void fn_8009CD38(GXColor fg, GXColor bg, const char* msg) {
     VIFlush();
     OSEnableInterrupts();
 
-    count = fn_800AA280();
+    count = VIGetRetraceCount();
     do {
-    } while ((s32)(fn_800AA280() - count) < 1);
+    } while ((s32)(VIGetRetraceCount() - count) < 1);
 
     t = OSGetTime();
-    while (!fn_8009FEBC(FALSE) &&
+    while (!__OSCallResetFunctions(FALSE) &&
            OSGetTime() - t < 1000 * (__OSBusClock / 4 / 1000)) {
     }
 
     OSDisableInterrupts();
-    fn_8009FEBC(TRUE);
+    __OSCallResetFunctions(TRUE);
     __OSSetExceptionHandler(8, OSDefaultExceptionHandler);
-    fn_800B8AE8();
+    GXAbortFrame();
     OSSetArenaLo((void*)0x81200000);
     OSSetArenaHi((void*)bootInfo->FSTLocation);
 
     fp->fg = fg;
     fp->bg = bg;
     fp->msg = msg;
-    OSSwitchFiber((u32)fn_8009CE8C, (u32)OSGetArenaHi());
+    OSSwitchFiber((u32)Halt, (u32)OSGetArenaHi());
 }
 #endif
 
@@ -277,7 +277,7 @@ volatile u32 __EXIRegs[15] : 0xCC006800;
 
 #if !defined(SDK_8009BD84_BANK_ACTIVE) || \
     defined(SDK_CANDIDATE_8009CD38_8009D510)
-/* Inlined into fn_8009CE8C (Halt); emits no standalone code. */
+/* Inlined into Halt (Halt); emits no standalone code. */
 static void ScreenClear(void* xfb, u16 xfbW, u16 xfbH, GXColor yuv) {
     int i;
     int j;
@@ -301,14 +301,14 @@ static void ScreenClear(void* xfb, u16 xfbW, u16 xfbH, GXColor yuv) {
  *
  * ScreenClear and RGB2YUV above are both inlined here.
  */
-void fn_8009CE8C(void) {
-    extern void fn_8009870C(s32 chan, void* callback); /* EXISetExiCallback */
+void Halt(void) {
+    extern void EXISetExiCallback(s32 chan, void* callback); /* EXISetExiCallback */
     extern BOOL EXILock(s32 chan, u32 dev, void* callback);
     extern BOOL EXIDeselect(s32 chan);
     extern BOOL EXIUnlock(s32 chan);
-    extern u16 fn_8009D820(void);                        /* OSGetFontEncode */
-    extern u32 fn_8009D904(OSFontHeader* fontData, void* tmp); /* OSLoadFont */
-    extern u32 fn_800AA280(void);                        /* VIGetRetraceCount */
+    extern u16 OSGetFontEncode(void);                        /* OSGetFontEncode */
+    extern u32 OSLoadFont(OSFontHeader* fontData, void* tmp); /* OSLoadFont */
+    extern u32 VIGetRetraceCount(void);                        /* VIGetRetraceCount */
     extern void* OSAllocFromArenaLo(u32 size, u32 align);
     extern void* memmove(void* dst, const void* src, u32 size);
     extern u32 strlen(const char* s);
@@ -333,8 +333,8 @@ void fn_8009CE8C(void) {
     len = strlen(fp->msg) + 1;
     fp->msg = memmove(OSAllocFromArenaLo(len, 32), fp->msg, len);
 
-    fn_8009870C(0, NULL);
-    fn_8009870C(2, NULL);
+    EXISetExiCallback(0, NULL);
+    EXISetExiCallback(2, NULL);
 
     while (!EXILock(0, 1, NULL)) {
         while ((__EXIRegs[3] & 1) == 1) {
@@ -347,12 +347,12 @@ void fn_8009CE8C(void) {
     while ((__EXIRegs[3] & 1) == 1) {
     }
 
-    if (fn_8009D820() == 1) {
+    if (OSGetFontEncode() == 1) {
         fontData = OSAllocFromArenaLo(0x90EE4, 32);
     } else {
         fontData = OSAllocFromArenaLo(0x10120, 32);
     }
-    fn_8009D904(fontData, OSGetArenaLo());
+    OSLoadFont(fontData, OSGetArenaLo());
 
     xfb = OSAllocFromArenaLo(0x96000, 32);
     ScreenClear(xfb, 640, 480, RGB2YUV(fp->bg));
@@ -360,9 +360,9 @@ void fn_8009CE8C(void) {
     ConfigureVideo(640, 480);
     VIFlush();
 
-    count = fn_800AA280();
+    count = VIGetRetraceCount();
     do {
-    } while ((s32)(fn_800AA280() - count) < 2);
+    } while ((s32)(VIGetRetraceCount() - count) < 2);
 
     ScreenReport(xfb, 640, 480, RGB2YUV(fp->fg), 48, 100, fontData->leading,
                  fp->msg);
@@ -370,9 +370,9 @@ void fn_8009CE8C(void) {
     VISetBlack(FALSE);
     VIFlush();
 
-    count = fn_800AA280();
+    count = VIGetRetraceCount();
     do {
-    } while ((s32)(fn_800AA280() - count) < 1);
+    } while ((s32)(VIGetRetraceCount() - count) < 1);
 
     OSDisableInterrupts();
     OSReport(lbl_80478998, fp->msg);
@@ -389,12 +389,12 @@ static BOOL IsSjisTrailByte(u8 c) {
 }
 
 /* Maps a character code to its index in the IPL font sheet. */
-int fn_8009D510(u16 code) {
+int GetFontCode(u16 code) {
     extern u16 lbl_80310CD8[]; /* HankakuToCode */
     extern u16 lbl_80310E58[]; /* Zenkaku2Code */
-    extern u16 fn_8009D820(void);
+    extern u16 OSGetFontEncode(void);
 
-    if (fn_8009D820() == 1) {
+    if (OSGetFontEncode() == 1) {
         if (code >= 0x20 && code <= 0xDF) {
             return lbl_80310CD8[code - 0x20];
         }
@@ -490,7 +490,7 @@ void Decode(u8* s, u8* d) {
     } while (q < os);
 }
 
-u16 fn_8009D820(void) {
+u16 OSGetFontEncode(void) {
     extern u16 lbl_804789A0;
 
     if (lbl_804789A0 <= 1) {
@@ -514,7 +514,7 @@ u16 fn_8009D820(void) {
     return lbl_804789A0;
 }
 
-void fn_8009D878(void* dest, s32 size, s32 offset) {
+void ReadROM(void* dest, s32 size, s32 offset) {
     extern BOOL __OSReadROM(void* dest, s32 size, s32 offset);
 
     while (size > 0) {
@@ -541,10 +541,10 @@ static inline u32 GetFontSize(u8* buf) {
 }
 
 static inline u32 ReadFont(void* image) {
-    if (fn_8009D820() == 1) {
-        fn_8009D878(image, 0x4D000, 0x1AFF00);
+    if (OSGetFontEncode() == 1) {
+        ReadROM(image, 0x4D000, 0x1AFF00);
     } else {
-        fn_8009D878(image, 0x3000, 0x1FCF00);
+        ReadROM(image, 0x3000, 0x1FCF00);
     }
 
     return GetFontSize(image);
@@ -552,16 +552,16 @@ static inline u32 ReadFont(void* image) {
 
 /*
  * Reads the font sheet out of IPL ROM, decompresses it, and caches the
- * header, width table and chars-per-sheet that fn_8009DC38 reads back.
+ * header, width table and chars-per-sheet that OSGetFontTexel reads back.
  */
-u32 fn_8009D904(OSFontHeader* fontData, void* tmp) {
+u32 OSLoadFont(OSFontHeader* fontData, void* tmp) {
     extern OSFontHeader* FontData;
     extern u8* FontWidthTable;
     extern s32 FontCharsPerSheet;
     extern u32 lbl_8047A704;
     extern const u32 lbl_8047C280;
     extern const u32 lbl_8047C284;
-    extern void fn_8009D878(void* dest, s32 size, s32 offset);
+    extern void ReadROM(void* dest, s32 size, s32 offset);
     extern void Decode(u8* s, u8* d);
     u32 size;
 
@@ -573,7 +573,7 @@ u32 fn_8009D904(OSFontHeader* fontData, void* tmp) {
         FontWidthTable = (u8*)FontData + FontData->widthTable;
         FontCharsPerSheet = FontData->sheetColumn * FontData->sheetRow;
 
-        if (fn_8009D820() == 1) {
+        if (OSGetFontEncode() == 1) {
             u8* image;
             u8* ptr;
             int fontCode;
@@ -588,7 +588,7 @@ u32 fn_8009D904(OSFontHeader* fontData, void* tmp) {
             *(u32*)&glyph[0] = lbl_8047C280;
             *(u32*)&glyph[2] = lbl_8047C284;
 
-            fontCode = fn_8009D510(0x54);
+            fontCode = GetFontCode(0x54);
             sheet = fontCode / FontCharsPerSheet;
             numChars = fontCode - (sheet * FontCharsPerSheet);
             row = numChars / FontData->sheetColumn;
@@ -618,12 +618,12 @@ static BOOL IsSjisLeadByte(u8 c) {
     return ((c >= 0x81) && (c <= 0x9F)) || ((c >= 0xE0) && (c <= 0xFC));
 }
 
-char* fn_8009DC38(const char* string, void* image, s32 pos, s32 stride,
+char* OSGetFontTexel(const char* string, void* image, s32 pos, s32 stride,
                   s32* width) {
     extern OSFontHeader* FontData;
     extern u8* FontWidthTable;
     extern s32 FontCharsPerSheet;
-    extern int fn_8009D510(u16 code);
+    extern int GetFontCode(u16 code);
     u16 encode;
     u16 code;
     u8* dst;
@@ -645,7 +645,7 @@ char* fn_8009DC38(const char* string, void* image, s32 pos, s32 stride,
     }
     string++;
 
-    encode = fn_8009D820();
+    encode = OSGetFontEncode();
     if (encode == 1) {
         if (IsSjisLeadByte((u8)code) && (s8)*string != 0) {
             code = (code << 8) | (u8)*string;
@@ -654,7 +654,7 @@ char* fn_8009DC38(const char* string, void* image, s32 pos, s32 stride,
     }
 
     colorIndex = &FontData->c0;
-    fontCode = fn_8009D510(code);
+    fontCode = GetFontCode(code);
 
     sheet = fontCode / FontCharsPerSheet;
     numChars = fontCode - (sheet * FontCharsPerSheet);

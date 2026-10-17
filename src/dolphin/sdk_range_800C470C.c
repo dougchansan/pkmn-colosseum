@@ -16,10 +16,10 @@ extern void OSReport(const char* format, ...);
 extern void* OSGetArenaLo(void);
 extern void* OSGetArenaHi(void);
 extern void OSSetArenaLo(void* addr);
-extern void* fn_8009AB60(void* arenaLo, void* arenaHi, s32 maxHeaps); /* OSInitAlloc */
-extern s32 fn_8009ABD0(void* start, void* end);                     /* OSCreateHeap */
-extern s32 fn_8009AB50(s32 heap);                                    /* OSSetCurrentHeap */
-extern void fn_8009AAD4(s32 heap, void* ptr);                        /* OSFreeToHeap */
+extern void* OSInitAlloc(void* arenaLo, void* arenaHi, s32 maxHeaps); /* OSInitAlloc */
+extern s32 OSCreateHeap(void* start, void* end);                     /* OSCreateHeap */
+extern s32 OSSetCurrentHeap(s32 heap);                                    /* OSSetCurrentHeap */
+extern void OSFreeToHeap(s32 heap, void* ptr);                        /* OSFreeToHeap */
 
 inline static void InitDefaultHeap(void)
 {
@@ -32,13 +32,13 @@ inline static void InitDefaultHeap(void)
     arenaLo = OSGetArenaLo();
     arenaHi = OSGetArenaHi();
 
-    arenaLo = fn_8009AB60(arenaLo, arenaHi, 1);
+    arenaLo = OSInitAlloc(arenaLo, arenaHi, 1);
     OSSetArenaLo(arenaLo);
 
     arenaLo = (void*)(((u32)arenaLo + 31) & ~31);
     arenaHi = (void*)((u32)arenaHi & ~31);
 
-    fn_8009AB50(fn_8009ABD0(arenaLo, arenaHi));
+    OSSetCurrentHeap(OSCreateHeap(arenaLo, arenaHi));
     OSSetArenaLo(arenaLo = arenaHi);
 }
 
@@ -48,5 +48,5 @@ void __sys_free(void* ptr)
         InitDefaultHeap();
     }
 
-    fn_8009AAD4(lbl_80478980, ptr);
+    OSFreeToHeap(lbl_80478980, ptr);
 }

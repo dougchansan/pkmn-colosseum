@@ -24,7 +24,7 @@ extern void* pokemonGetStatus();
 extern u32   pokemonSetStatus();
 
 /* Battle system functions */
-extern void fn_801EF8F4();
+extern void battleCameraSelect();
 
 /* Sound functions */
 extern void soundStop();     /* Stop sound */
@@ -85,7 +85,7 @@ typedef struct ToolentrySpeciesList {
 } ToolentrySpeciesList;
 
 static inline u16 toolentryCountValidPokemon(s32 player) {
-    extern void* fn_8006B09C(void*);
+    extern void* savedataBattleGetEntryPtr(void*);
     extern u8 pokemonCheckValid(void*);
     extern void* heroBiosGetPokemonPtr(void*, u32);
     u16 count;
@@ -94,7 +94,7 @@ static inline u16 toolentryCountValidPokemon(s32 player) {
 
     count = 0;
     for (i = 0; i < 6; i++) {
-        valid = pokemonCheckValid(heroBiosGetPokemonPtr((u8*)fn_8006B09C((void*)player) + 0xb44, (u16)i)) != 0;
+        valid = pokemonCheckValid(heroBiosGetPokemonPtr((u8*)savedataBattleGetEntryPtr((void*)player) + 0xb44, (u16)i)) != 0;
         if (valid) {
             count++;
         }
@@ -116,15 +116,15 @@ static inline u16 toolentryEntryPokemonNum(s32 player) {
 }
 
 static inline void* toolentryHeroPokemonPtr(s32 player, s32 index) {
-    extern u8* fn_8006B09C(void*);
+    extern u8* savedataBattleGetEntryPtr(void*);
     extern void* heroBiosGetPokemonPtr(void*, u16);
-    return heroBiosGetPokemonPtr(fn_8006B09C((void*)player) + 0xb44, index);
+    return heroBiosGetPokemonPtr(savedataBattleGetEntryPtr((void*)player) + 0xb44, index);
 }
 
 static inline void* toolentryEntryPokemonPtr(s32 player, s32 index) {
-    extern u8* fn_8006B09C(void*);
+    extern u8* savedataBattleGetEntryPtr(void*);
     extern void* heroBiosGetPokemonPtr(void*, u16);
-    return heroBiosGetPokemonPtr(fn_8006B09C((void*)player) + 0x2c, index);
+    return heroBiosGetPokemonPtr(savedataBattleGetEntryPtr((void*)player) + 0x2c, index);
 }
 
 #if !defined(TOOLENTRY_8025D788_ONLY) && !defined(TOOLENTRY_8025D164_ONLY) && !defined(TOOLENTRY_8025D3F4_ONLY) && !defined(TOOLENTRY_8025D644_ONLY)
@@ -135,17 +135,17 @@ static inline
 #endif
 void toolentryTaisenFreePokemonData(void* ctx, u32 slot, u32 param) {
     extern u32 lbl_8047B650;
-    extern u32 fn_800E202C();
-    extern void fn_800E209C();
+    extern u32 GSmemGetHandleByPtr();
+    extern void GSmemFree();
     extern void fn_800E24B0();
     u32 handle;
     u32 result;
     handle = lbl_8047B650;
     if (handle != 0) {
-        result = fn_800E202C(handle);
+        result = GSmemGetHandleByPtr(handle);
         if ((result & 0xFFFF) != 0) {
             fn_800E24B0(result);
-            fn_800E209C(result);
+            GSmemFree(result);
         }
         lbl_8047B650 = 0;
     }
@@ -183,7 +183,7 @@ void toolentryDebugPokemonCreate(void) {
     extern s32 lbl_80478D98;
     extern void* lbl_8047B650;
     extern u8* lbl_8047B654;
-    extern u8* fn_8006B09C(void*);
+    extern u8* savedataBattleGetEntryPtr(void*);
     extern void* GSmsgGetGSchar(u32);
     extern void pokemonAllKaihuku(void*);
     extern void pokemonSetCatchStatus(void*, u32, u32, u32, u32, u32, void*);
@@ -194,11 +194,11 @@ void toolentryDebugPokemonCreate(void) {
     extern void* heroBiosGetPokemonPtr(void*, u16);
     extern void* gamedataGetStatus(u32, u32);
     extern void* memcpy(void*, const void*, u32);
-    extern u32 fn_800E202C(void*);
-    extern void fn_800E209C(u32);
+    extern u32 GSmemGetHandleByPtr(void*);
+    extern void GSmemFree(u32);
     extern void fn_800E24B0(u32);
-    extern u32 fn_800E2C04(u32, u32);
-    extern void* fn_800E27B0(u32);
+    extern u32 GSmemAlloc(u32, u32);
+    extern void* GSmemLock(u32);
     s32 i;
     s32 j;
     u32 handle;
@@ -209,9 +209,9 @@ void toolentryDebugPokemonCreate(void) {
     s32 k;
 
     lbl_8047B654 = 0;
-    handle = fn_800E2C04((lbl_80478D98 * 0x138 + 0x1f) & ~0x1f, 0x20);
+    handle = GSmemAlloc((lbl_80478D98 * 0x138 + 0x1f) & ~0x1f, 0x20);
     if ((u16)handle != 0) {
-        buffer = fn_800E27B0(handle);
+        buffer = GSmemLock(handle);
     } else {
         buffer = 0;
     }
@@ -219,39 +219,39 @@ void toolentryDebugPokemonCreate(void) {
     toolentryCreateDebugPokemonList(buffer);
 
     toolentryTaisenFreePokemonData(0, 0, 0);
-    handle = fn_800E2C04(0x80, 0x20);
+    handle = GSmemAlloc(0x80, 0x20);
     if ((u16)handle != 0) {
-        buffer = fn_800E27B0(handle);
+        buffer = GSmemLock(handle);
     } else {
         buffer = 0;
     }
     lbl_8047B650 = buffer;
 
     for (j = 0; j < 4; j++) {
-        heroInit(fn_8006B09C((void*)j) + 0xb44);
+        heroInit(savedataBattleGetEntryPtr((void*)j) + 0xb44);
         for (i = 0; i < 6; i++) {
-            pokemonInit(heroBiosGetPokemonPtr(fn_8006B09C((void*)j) + 0xb44, i));
+            pokemonInit(heroBiosGetPokemonPtr(savedataBattleGetEntryPtr((void*)j) + 0xb44, i));
         }
     }
     for (j = 0; j < 4; j++) {
-        heroInit(fn_8006B09C((void*)j) + 0x2c);
+        heroInit(savedataBattleGetEntryPtr((void*)j) + 0x2c);
         for (i = 0; i < 6; i++) {
-            pokemonInit(heroBiosGetPokemonPtr(fn_8006B09C((void*)j) + 0x2c, i));
+            pokemonInit(heroBiosGetPokemonPtr(savedataBattleGetEntryPtr((void*)j) + 0x2c, i));
         }
     }
     /* RULE-EXCEPTION(user-approved): empty loop kept for retail's six-iteration CTR loop — see docs/RULE_EXCEPTIONS.md */
     for (i = 0; i < 6; i++) {
     }
 
-    toolentryCopyHeroData(fn_8006B09C(0) + 0xb44, savedataGetStatus(0, 2));
+    toolentryCopyHeroData(savedataBattleGetEntryPtr(0) + 0xb44, savedataGetStatus(0, 2));
     offset = 0;
     for (i = 0; i < 4; i++) {
         if (i == 0) {
-            toolentryCopyHeroData(fn_8006B09C((void*)i) + 0xb44, savedataGetStatus(0, 2));
+            toolentryCopyHeroData(savedataBattleGetEntryPtr((void*)i) + 0xb44, savedataGetStatus(0, 2));
         } else {
             for (k = 0; k < 6; k++) {
                 src = lbl_8047B654 + offset;
-                dst = heroBiosGetPokemonPtr(fn_8006B09C((void*)i) + 0xb44, k);
+                dst = heroBiosGetPokemonPtr(savedataBattleGetEntryPtr((void*)i) + 0xb44, k);
                 if (dst != 0) {
                     memcpy(dst, src, 0x138);
                 }
@@ -261,10 +261,10 @@ void toolentryDebugPokemonCreate(void) {
     }
 
     if (lbl_8047B654 != 0) {
-        handle = fn_800E202C(lbl_8047B654);
+        handle = GSmemGetHandleByPtr(lbl_8047B654);
         if ((u16)handle != 0) {
             fn_800E24B0(handle);
-            fn_800E209C(handle);
+            GSmemFree(handle);
         }
         lbl_8047B654 = 0;
     }
@@ -272,23 +272,23 @@ void toolentryDebugPokemonCreate(void) {
 
 /* Address: 0x8025D06C | Size: 0x3c | Ghidra import */
 #ifndef TOOLENTRY_DEBUG_ONLY
-u32 fn_8025D06C(void)
+u32 couponAddFromResult(void)
 {
-    extern u32 fn_8006ADEC();
-    extern void fn_8006AFC4();
+    extern u32 savedataBattleGetCouponRun();
+    extern void savedataBattleGetSavedHero();
     extern void* fn_8006B5A8();
     extern void heroAddPokecoupon();
     u32 uVar1;
   fn_8006B5A8();
-  fn_8006AFC4();
-  uVar1 = fn_8006ADEC();
+  savedataBattleGetSavedHero();
+  uVar1 = savedataBattleGetCouponRun();
   heroAddPokecoupon(0,uVar1);
   return 0;
 }
 
 
 /* Address: 0x8025D0A8 | Size: 0xBC */
-f32 fn_8025D0A8(void* ctx, u32 param1, u32 param2) {
+f32 heroCountPartyInList(void* ctx, u32 param1, u32 param2) {
     extern ToolentrySpeciesList* lbl_80478EAC;
     extern f32 lbl_8047E658;
     extern f32 lbl_8047E65C;
@@ -344,13 +344,13 @@ f32 fn_8025D0A8(void* ctx, u32 param1, u32 param2) {
 
 #if !defined(TOOLENTRY_8025D788_ONLY) && !defined(TOOLENTRY_DEBUG_ONLY) && !defined(TOOLENTRY_8025D3F4_ONLY) && !defined(TOOLENTRY_8025D644_ONLY)
 /* Address: 0x8025D164 | Size: 0x128 (296 bytes) */
-s32 fn_8025D164(void) {
+s32 couponCalcEarned(void) {
     extern f32 lbl_8039A648[];
     extern f32 lbl_8039A664[];
     extern ToolentrySpeciesList* lbl_80478EAC;
     extern f32 lbl_8047E658;
     extern f32 lbl_8047E65C;
-    extern u8* fn_8006B09C(void*);
+    extern u8* savedataBattleGetEntryPtr(void*);
     extern void* fn_8006B5A8();
     extern u16 pokemonBiosGetPokemonDataId(void*);
     extern u8 pokemonCheckValid(void*);
@@ -374,7 +374,7 @@ s32 fn_8025D164(void) {
     type = *(s32*)fn_8006B5A8();
     wins = *(s32*)((u8*)fn_8006B5A8() + 0x14);
     for (i = 0; i < 6; i++) {
-        member = heroBiosGetPokemonPtr(fn_8006B09C(0) + 0xb44, i);
+        member = heroBiosGetPokemonPtr(savedataBattleGetEntryPtr(0) + 0xb44, i);
         if (pokemonCheckValid(member)) {
             species = pokemonBiosGetPokemonDataId(member);
             speciesList = lbl_80478EAC;
@@ -415,19 +415,19 @@ s32 fn_8025D164(void) {
 #endif /* TOOLENTRY_8025D788_ONLY */
 
 /* Address: 0x8025D28C | Size: 0x24 | Pattern: null_check_getter */
-extern void* fn_8006B09C(void*);
+extern void* savedataBattleGetEntryPtr(void*);
 
 #if !defined(TOOLENTRY_8025D788_ONLY) && !defined(TOOLENTRY_8025D164_ONLY) && !defined(TOOLENTRY_DEBUG_ONLY)
 #if !defined(TOOLENTRY_8025D3F4_ONLY) && !defined(TOOLENTRY_8025D644_ONLY)
-u16 toolentryTaisenGetTrainerDataID(void* ctx) { return *(u16*)fn_8006B09C(ctx); }
+u16 toolentryTaisenGetTrainerDataID(void* ctx) { return *(u16*)savedataBattleGetEntryPtr(ctx); }
 
 /* Address: 0x8025D2B0 | Size: 0x24 | Pattern: null_check_getter */
-u32 toolentryTaisenGetControlerType(void* ctx) { return *(u32*)((u8*)fn_8006B09C(ctx) + 0x24); }
+u32 toolentryTaisenGetControlerType(void* ctx) { return *(u32*)((u8*)savedataBattleGetEntryPtr(ctx) + 0x24); }
 
 /* Address: 0x8025D2D4 | Size: 0x90 */
 u32 toolentryGetTrainerSamllFaceResID(void* ctx, u32 param1, u32 param2) {
     extern u32 lbl_80478E04;
-    extern void* fn_8006B09C(void*);
+    extern void* savedataBattleGetEntryPtr(void*);
     extern u32 fn_801FCBA4(void);
     extern void fightTrainerDataBiosGetPtr(u32);
     u32 id;
@@ -436,7 +436,7 @@ u32 toolentryGetTrainerSamllFaceResID(void* ctx, u32 param1, u32 param2) {
     u32* entry;
     u32 ret;
 
-    id = *(u16*)fn_8006B09C(ctx);
+    id = *(u16*)savedataBattleGetEntryPtr(ctx);
     if (id == 0) {
         return 0;
     }
@@ -462,7 +462,7 @@ u32 toolentryGetTrainerSamllFaceResID(void* ctx, u32 param1, u32 param2) {
 /* Address: 0x8025D364 | Size: 0x90 */
 u32 toolentryGetTrainerBicFaceResID(void* ctx, u32 param1, u32 param2) {
     extern u32 lbl_80478E04;
-    extern void* fn_8006B09C(void*);
+    extern void* savedataBattleGetEntryPtr(void*);
     extern u32 fn_801FCBA4(void);
     extern void fightTrainerDataBiosGetPtr(u32);
     u16 id16;
@@ -473,9 +473,9 @@ u32 toolentryGetTrainerBicFaceResID(void* ctx, u32 param1, u32 param2) {
     u32 ret;
 
     if ((s32)ctx != 0) {
-        id16 = *(u16*)fn_8006B09C(ctx);
+        id16 = *(u16*)savedataBattleGetEntryPtr(ctx);
     } else {
-        id16 = *(u16*)fn_8006B09C(ctx);
+        id16 = *(u16*)savedataBattleGetEntryPtr(ctx);
     }
     id = id16;
     if (id == 0) {
@@ -507,7 +507,7 @@ void toolentryTaisenEntryPokemon(void* ctx) {
     typedef struct ToolentryPokemonData {
         u32 words[0x138 / 4];
     } ToolentryPokemonData;
-    extern u8* fn_8006B09C(void*);
+    extern u8* savedataBattleGetEntryPtr(void*);
     ToolentryHeroData* hero;
     ToolentryPokemonData* src;
     ToolentryPokemonData* dst;
@@ -517,10 +517,10 @@ void toolentryTaisenEntryPokemon(void* ctx) {
 
     /* RULE-EXCEPTION(user-approved): codegen-only (void*)(s32) casts on ctx and local order chosen for register allocation — see docs/RULE_EXCEPTIONS.md */
     num = toolentryEntryPokemonNum((s32)ctx);
-    hero = (ToolentryHeroData*)(fn_8006B09C((void*)(s32)ctx) + 0x2c);
-    *hero = *(ToolentryHeroData*)(fn_8006B09C((void*)(s32)ctx) + 0xb44);
+    hero = (ToolentryHeroData*)(savedataBattleGetEntryPtr((void*)(s32)ctx) + 0x2c);
+    *hero = *(ToolentryHeroData*)(savedataBattleGetEntryPtr((void*)(s32)ctx) + 0xb44);
     for (i = 0; i < num; i++) {
-        order = *(s32*)(fn_8006B09C((void*)(s32)ctx) + 8 + i * 4);
+        order = *(s32*)(savedataBattleGetEntryPtr((void*)(s32)ctx) + 8 + i * 4);
         src = toolentryHeroPokemonPtr((s32)ctx, order);
         toolentryEntryPokemonPtr((s32)ctx, i);
         dst = toolentryEntryPokemonPtr((s32)ctx, i);
@@ -534,7 +534,7 @@ void toolentryTaisenEntryPokemon(void* ctx) {
 #if !defined(TOOLENTRY_8025D3F4_ONLY)
 #if !defined(TOOLENTRY_8025D644_ONLY)
 /* Address: 0x8025D560 | Size: 0x24 | Pattern: null_check_getter */
-u32 toolentryTaisengetEtnryPokemonOrderNum(void* ctx) { return *(u32*)((u8*)fn_8006B09C(ctx) + 0x20); }
+u32 toolentryTaisengetEtnryPokemonOrderNum(void* ctx) { return *(u32*)((u8*)savedataBattleGetEntryPtr(ctx) + 0x20); }
 
 /* Address: 0x8025D584 | Size: 0x5C | Pattern: field_accessor */
 u32 toolentryTaisenDeleteEtnryPokemonOrder(void* ctx, u32 slot, u32 param) {
@@ -543,11 +543,11 @@ u32 toolentryTaisenDeleteEtnryPokemonOrder(void* ctx, u32 slot, u32 param) {
         u32 values[6];
         u32 count;
     } BattleFieldAccessor;
-    extern BattleFieldAccessor* fn_8006B09C(void*);
+    extern BattleFieldAccessor* savedataBattleGetEntryPtr(void*);
     BattleFieldAccessor* entry;
     s32 index;
 
-    entry = fn_8006B09C(ctx);
+    entry = savedataBattleGetEntryPtr(ctx);
     index = entry->count - 1;
     if ((index < 0) || (index > 6)) {
         return 0;
@@ -564,11 +564,11 @@ u32 toolentryTaisenSetEtnryPokemonOrderGBA(void* ctx, s32 count, u32* src) {
         u32 values[6];
         u32 count;
     } BattleFieldAccessor;
-    extern BattleFieldAccessor* fn_8006B09C(void*);
+    extern BattleFieldAccessor* savedataBattleGetEntryPtr(void*);
     BattleFieldAccessor* dst;
     s32 i;
 
-    dst = fn_8006B09C(ctx);
+    dst = savedataBattleGetEntryPtr(ctx);
     for (i = 0; i < count; i++) {
         dst->values[i] = src[i];
     }
@@ -589,13 +589,13 @@ s32 toolentryTaisenSetEtnryPokemonOrder(unsigned int player, s32 order) {
         s32 values[6];
         s32 count;
     } BattleFieldAccessor;
-    extern BattleFieldAccessor* fn_8006B09C(void*);
+    extern BattleFieldAccessor* savedataBattleGetEntryPtr(void*);
     BattleFieldAccessor* entry;
     s32 entryCount;
     s32 i;
 
     playerId = player;
-    entry = fn_8006B09C((void*)playerId);
+    entry = savedataBattleGetEntryPtr((void*)playerId);
     entryCount = entry->count;
     if (entry->count >= toolentryEntryPokemonNum(playerId)) {
         return -1;
@@ -615,10 +615,10 @@ s32 toolentryTaisenSetEtnryPokemonOrder(unsigned int player, s32 order) {
 #if !defined(TOOLENTRY_8025D644_ONLY)
 /* Address: 0x8025D744 | Size: 0x44 | Pattern: field_accessor */
 u32 toolentryTaisenInitPokemonOrder(void* ctx, u32 slot, u32 param) {
-    extern void* fn_8006B09C();
+    extern void* savedataBattleGetEntryPtr();
     u8* base;
     u32 i;
-    base = (u8*)fn_8006B09C(ctx);
+    base = (u8*)savedataBattleGetEntryPtr(ctx);
     *(u32*)(base + 0x20) = 0;
     for (i = 0; i < 6; i++) {
         *(u32*)(base + 0x8 + i * 4) = (u32)-1;
@@ -642,8 +642,8 @@ void toolentryCopyHero(void* ctx, u32 slot, u32 param) {
 
     i = 0;
     do {
-        src = (BattleCopyBlock*)((u8*)fn_8006B09C((void*)i) + 0xb44);
-        dst = (BattleCopyBlock*)((u8*)fn_8006B09C((void*)i) + 0x2c);
+        src = (BattleCopyBlock*)((u8*)savedataBattleGetEntryPtr((void*)i) + 0xb44);
+        dst = (BattleCopyBlock*)((u8*)savedataBattleGetEntryPtr((void*)i) + 0x2c);
         if ((src != NULL) && (dst != NULL)) {
             *dst = *src;
         }
@@ -667,7 +667,7 @@ u16 toolentryTaisenGetEntryPokemonNum(void* ctx, u32 param1, u32 param2) {
 
 /* Address: 0x8025D89C | Size: 0x78 | Pattern: field_accessor */
 u32 toolentryTaisenGetPokemonNum(void* ctx, u32 slot, u32 param) {
-    extern void* fn_8006B09C(void*);
+    extern void* savedataBattleGetEntryPtr(void*);
     extern u32 pokemonCheckValid(void*);
     extern void* heroBiosGetPokemonPtr(void*, u32);
     u8 sp[0x20];
@@ -682,7 +682,7 @@ u32 toolentryTaisenGetPokemonNum(void* ctx, u32 slot, u32 param) {
     r31 = r3;
     r29 = 0x0;
     do {
-        r3 = (u32)fn_8006B09C((void *)r31);
+        r3 = (u32)savedataBattleGetEntryPtr((void *)r31);
         r4 = r29 & 0xFFFF;
         r3 = (u32)heroBiosGetPokemonPtr((void *)(r3 + 0xb44), r4);
         r3 = pokemonCheckValid((void *)r3);
@@ -704,15 +704,15 @@ u32 toolentryTaisenGetPokemonNum(void* ctx, u32 slot, u32 param) {
 #if !defined(TOOLENTRY_8025D788_ONLY) && !defined(TOOLENTRY_8025D164_ONLY) && !defined(TOOLENTRY_DEBUG_ONLY) && !defined(TOOLENTRY_8025D3F4_ONLY) && !defined(TOOLENTRY_8025D644_ONLY)
 
 /* Address: 0x8025D914 | Size: 0x24 | Pattern: null_check_getter */
-void* toolentryTaisenGetHeroPtr(void* ctx) { return (u8*)fn_8006B09C(ctx) + 0xb44; }
+void* toolentryTaisenGetHeroPtr(void* ctx) { return (u8*)savedataBattleGetEntryPtr(ctx) + 0xb44; }
 
 /* Address: 0x8025D938 | Size: 0x38 | Ghidra import */
 u32 toolentryTaisenGetEntryPokemonPtr(u32 r3, u16 r4)
 {
-    extern void* fn_8006B09C();
+    extern void* savedataBattleGetEntryPtr();
     extern void heroBiosGetPokemonPtr();
     int iVar1;
-  iVar1 = (int)fn_8006B09C();
+  iVar1 = (int)savedataBattleGetEntryPtr();
   heroBiosGetPokemonPtr(iVar1 + 0x2c, r4);
 }
 
@@ -720,28 +720,28 @@ u32 toolentryTaisenGetEntryPokemonPtr(u32 r3, u16 r4)
 /* Address: 0x8025D970 | Size: 0x38 | Ghidra import */
 u32 toolentryTaisenGetPokemonPtr(u32 r3, u16 r4)
 {
-    extern void* fn_8006B09C();
+    extern void* savedataBattleGetEntryPtr();
     extern void heroBiosGetPokemonPtr();
     int iVar1;
-  iVar1 = (int)fn_8006B09C();
+  iVar1 = (int)savedataBattleGetEntryPtr();
   heroBiosGetPokemonPtr(iVar1 + 0xb44, r4);
 }
 
 
 /* Address: 0x8025D9A8 | Size: 0x24 | Pattern: null_check_getter */
 extern void* fn_8006B5A8(void*);
-u32 fn_8025D9A8(void* ctx) { return *(u32*)fn_8006B5A8(ctx); }
+u32 battleResultGet00(void* ctx) { return *(u32*)fn_8006B5A8(ctx); }
 
 /* Address: 0x8025D9CC | Size: 0x24 | Pattern: null_check_getter */
-u32 fn_8025D9CC(void* ctx) { return *(u32*)((u8*)fn_8006B5A8(ctx) + 0x10); }
+u32 battleResultGet10(void* ctx) { return *(u32*)((u8*)fn_8006B5A8(ctx) + 0x10); }
 
 /* Address: 0x8025D9F0 | Size: 0x28 | Ghidra import */
 u32 toolentryTaisenGetHomePlace(void)
 {
     extern u32 fn_8006A7E8();
-    extern void* fn_8006B09C();
+    extern void* savedataBattleGetEntryPtr();
     u16 uVar1;
-  fn_8006B09C();
+  savedataBattleGetEntryPtr();
   uVar1 = fn_8006A7E8();
   return uVar1;
 }
@@ -749,10 +749,10 @@ u32 toolentryTaisenGetHomePlace(void)
 
 /* Address: 0x8025DA18 | Size: 0x24 | Pattern: accessor */
 u32 toolentryTaisenGetBattlePlayerID(void* ctx) {
-    extern void* fn_8006B09C(void*);
+    extern void* savedataBattleGetEntryPtr(void*);
     extern u32 fn_8006A7D8(void);
 
-    fn_8006B09C(ctx);
+    savedataBattleGetEntryPtr(ctx);
     return fn_8006A7D8();
 }
 
@@ -780,13 +780,13 @@ u32 toolentryTaisenGetEntryPlayerNum(void) {
 u32 toolentryTaisenGetBattleType(void* ctx) { return *(u32*)((u8*)fn_8006B5A8(ctx) + 0x4); }
 
 /* Address: 0x8025DAAC | Size: 0x24 | Pattern: null_check_getter */
-u32 fn_8025DAAC(void* ctx) { return *(u32*)((u8*)fn_8006B5A8(ctx) + 0xc); }
+u32 battleResultGet0C(void* ctx) { return *(u32*)((u8*)fn_8006B5A8(ctx) + 0xc); }
 
 /* Address: 0x8025DAD0 | Size: 0x24 | Pattern: null_check_getter */
-u32 fn_8025DAD0(void* ctx) { return *(u32*)((u8*)fn_8006B5A8(ctx) + 0x8); }
+u32 battleResultGet08(void* ctx) { return *(u32*)((u8*)fn_8006B5A8(ctx) + 0x8); }
 
 /* Address: 0x8025DAF4 | Size: 0x38 | Ghidra import */
-u32 fn_8025DAF4(void)
+u32 battleResultDec18(void)
 {
     extern void* fn_8006B5A8();
     u32 uVar1;
@@ -799,7 +799,7 @@ u32 fn_8025DAF4(void)
 
 
 /* Address: 0x8025DB2C | Size: 0x30 | Ghidra import */
-u32 fn_8025DB2C(void)
+u32 battleResultInc18(void)
 {
     extern void* fn_8006B5A8();
     int iVar1;
@@ -810,10 +810,10 @@ u32 fn_8025DB2C(void)
 
 
 /* Address: 0x8025DB5C | Size: 0x24 | Pattern: null_check_getter */
-u32 fn_8025DB5C(void* ctx) { return *(u32*)((u8*)fn_8006B5A8(ctx) + 0x18); }
+u32 battleResultGet18(void* ctx) { return *(u32*)((u8*)fn_8006B5A8(ctx) + 0x18); }
 
 /* Address: 0x8025DB80 | Size: 0x30 | Ghidra import */
-u32 fn_8025DB80(void)
+u32 battleResultInc14(void)
 {
     extern void* fn_8006B5A8();
     int iVar1;
@@ -824,6 +824,6 @@ u32 fn_8025DB80(void)
 
 
 /* Address: 0x8025DBB0 | Size: 0x24 | Pattern: null_check_getter */
-u32 fn_8025DBB0(void* ctx) { return *(u32*)((u8*)fn_8006B5A8(ctx) + 0x14); }
+u32 battleResultGet14(void* ctx) { return *(u32*)((u8*)fn_8006B5A8(ctx) + 0x14); }
 
 #endif /* carve guards */

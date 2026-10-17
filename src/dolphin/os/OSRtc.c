@@ -44,7 +44,7 @@ typedef struct OSSramEx {
 
 extern BOOL OSDisableInterrupts(void);
 extern BOOL OSRestoreInterrupts(BOOL level);
-extern BOOL fn_80098368(s32 chan, void* buffer, s32 length, s32 mode); /* EXIImmEx */
+extern BOOL EXIImmEx(s32 chan, void* buffer, s32 length, s32 mode); /* EXIImmEx */
 
 static void WriteSramCallback(s32 chan, OSContext* context);
 static BOOL WriteSram(void* buffer, u32 offset, u32 size);
@@ -106,7 +106,7 @@ static BOOL WriteSram(void* buffer, u32 offset, u32 size) {
     err = FALSE;
     err |= !EXIImm(0, &cmd, 4, 1, NULL);
     err |= !EXISync(0);
-    err |= !fn_80098368(0, buffer, (s32)size, 1);
+    err |= !EXIImmEx(0, buffer, (s32)size, 1);
     err |= !EXIDeselect(0);
     EXIUnlock(0);
 
@@ -143,7 +143,7 @@ OSSramEx* __OSLockSramEx(void) {
 }
 
 /* UnlockSram (global: the file's tail, linked from sdk_range_800A0D00, calls it) */
-BOOL fn_800A09B0(BOOL commit, u32 offset) {
+BOOL UnlockSram(BOOL commit, u32 offset) {
     u16* p;
 
     if (commit) {
@@ -176,11 +176,11 @@ BOOL fn_800A09B0(BOOL commit, u32 offset) {
 }
 
 BOOL __OSUnlockSram(BOOL commit) {
-    return fn_800A09B0(commit, 0);
+    return UnlockSram(commit, 0);
 }
 
 BOOL __OSUnlockSramEx(BOOL commit) {
-    return fn_800A09B0(commit, sizeof(OSSram));
+    return UnlockSram(commit, sizeof(OSSram));
 }
 
 /*
@@ -238,7 +238,7 @@ u32 OSGetSoundMode(void) {
 }
 
 /* OSSetSoundMode */
-void fn_800A0EB4(u32 mode) {
+void OSSetSoundMode(u32 mode) {
     OSSram* sram;
 
     mode <<= 2;
@@ -266,7 +266,7 @@ u32 OSGetProgressiveMode(void) {
 }
 
 /* OSSetProgressiveMode */
-void fn_800A0FC8(u32 mode) {
+void OSSetProgressiveMode(u32 mode) {
     OSSram* sram;
 
     mode <<= 7;

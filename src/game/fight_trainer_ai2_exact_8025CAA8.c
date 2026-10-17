@@ -17,13 +17,13 @@ typedef struct SawaguContext {
 } SawaguContext;
 
 extern u32 fightTrainerGetStatus(void*, u32, u32, u32);
-extern u8 fn_80229C28(u32, u32);
+extern u8 fightIsWazaBlockedByMamoru(u32, u32);
 extern u32 pokemonGetStatus(u32, u32, u32, u32);
 extern u32 GSrand(void);
 extern u8 fightOutPokemonGetFightOutPokemonEnemyOumuWazaDataIdAry(u32, u16*);
 extern u32 fightFloorLoopValidFightOutPokemon(u32, FightFloorCallback, void*, u32);
 extern u32 fightOutPokemonCheckFightOut(void*);
-extern u32 fn_80236BFC(void*, void*, u32);
+extern u32 fightTrainerAiIsPokemonJoutai(void*, void*, u32);
 extern u32 fn_80237F74();
 
 u32 _fightTrainerAiSimerikeCheckSub(void*, u32, void*);
@@ -36,7 +36,7 @@ u32 fightTrainerAiCheckGuard(void* trainer, u32 pokemon, u32 actionId)
     value = fightTrainerGetStatus(trainer, 0, 0x43, 0) & 0xFFFF;
     value = fightTrainerGetStatus(0, value, 2, 0) & 0xFFFF;
     if ((u8)fightTrainerGetStatus(0, value, 0x24, 0) == 1) {
-        if (fn_80229C28(pokemon, actionId) == 1) {
+        if (fightIsWazaBlockedByMamoru(pokemon, actionId) == 1) {
             return 1;
         }
     }
@@ -110,7 +110,7 @@ u32 _fightTrainerAiSawaguCheckSub(void* pokemon, u32 slot, void* data)
     if ((fightOutPokemonCheckFightOut(pokemon) & 0xFF) == 0) {
         return 1;
     }
-    if ((fn_80236BFC(trainer, pokemon, 0xB) & 0xFF) == 1 &&
+    if ((fightTrainerAiIsPokemonJoutai(trainer, pokemon, 0xB) & 0xFF) == 1 &&
         (fn_80237F74(trainer, target, 0x2B) & 0xFF) == 0) {
         return 0;
     }

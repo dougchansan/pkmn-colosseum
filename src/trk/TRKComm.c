@@ -190,12 +190,12 @@ void TRKEXICallBack(s32 chan, void* ctx) {
 /* Stub functions for coverage - TODO: decompile              */
 /* ========================================================== */
 
-/* fn_800C39A0 - 0x800C39A0 | size: 0x10 */
+/* TRKCommGetState - 0x800C39A0 | size: 0x10 */
 /*
  * TRKCommGetState - Return the TRK comm state byte.
  * 0x800C39A0 | size: 0x10
  */
-u8 fn_800C39A0(void) {
+u8 TRKCommGetState(void) {
     extern u8 lbl_803FED70[];
     return lbl_803FED70[0];
 }
@@ -204,7 +204,7 @@ u8 fn_800C39A0(void) {
  * TRKCommSetState - Set the TRK comm state byte.
  * 0x800C39B0 | size: 0xC
  */
-void fn_800C39B0(u8 state) {
+void TRKCommSetState(u8 state) {
     extern u8 lbl_803FED70[];
     lbl_803FED70[0] = state;
 }
@@ -217,12 +217,12 @@ void fn_800C39B0(u8 state) {
  * 0x800C39BC | size: 0x84
  */
 u32 __close_console(u32 arg) {
-    extern s32 fn_800C04F4(void);
+    extern s32 GetTRKConnected(void);
     extern u32 TRKCloseFile(u32 cmd, u32 param);
     s32 initOk;
     u32 result;
 
-    initOk = fn_800C04F4();
+    initOk = GetTRKConnected();
     if (initOk == 0) {
         return 1;
     }
@@ -247,18 +247,18 @@ u32 __close_console(u32 arg) {
  *
  * 0x800C3A40 | size: 0xBC
  */
-u32 fn_800C3A40(u32 unused, u32 length, u32* addrPtr) {
-    extern u8 fn_800C39A0(void);
-    extern s32 fn_800C04F4(void);
+u32 TRKCommSendRead(u32 unused, u32 length, u32* addrPtr) {
+    extern u8 TRKCommGetState(void);
+    extern s32 GetTRKConnected(void);
     extern u32 TRKAccessFile(u32 cmd, u32 dir, u32* addrBuf, u32 len);
     u32 addrBuf;
     u32 result;
 
-    if ((fn_800C39A0() & 0xFF) == 0) {
+    if ((TRKCommGetState() & 0xFF) == 0) {
         return 1;
     }
 
-    if (fn_800C04F4() == 0) {
+    if (GetTRKConnected() == 0) {
         return 1;
     }
 
@@ -284,18 +284,18 @@ u32 fn_800C3A40(u32 unused, u32 length, u32* addrPtr) {
  *
  * 0x800C3AFC | size: 0xBC
  */
-u32 fn_800C3AFC(u32 unused, u32 length, u32* addrPtr) {
-    extern u8 fn_800C39A0(void);
-    extern s32 fn_800C04F4(void);
+u32 TRKCommSendWrite(u32 unused, u32 length, u32* addrPtr) {
+    extern u8 TRKCommGetState(void);
+    extern s32 GetTRKConnected(void);
     extern u32 TRKAccessFile(u32 cmd, u32 dir, u32* addrBuf, u32 len);
     u32 addrBuf;
     u32 result;
 
-    if ((fn_800C39A0() & 0xFF) == 0) {
+    if ((TRKCommGetState() & 0xFF) == 0) {
         return 1;
     }
 
-    if (fn_800C04F4() == 0) {
+    if (GetTRKConnected() == 0) {
         return 1;
     }
 

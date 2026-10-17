@@ -10,20 +10,20 @@ extern void menuClose(s32);
 extern void menuOpenCustom(s32, ...);
 extern void menuSetPosition(s32, s32, s32);
 extern void d2presentOpen(void);
-extern void fn_801EF02C(void);
-extern void fn_801EF080(void);
-extern void fn_801EF0D4(void);
+extern void darkPokemonSetAllFlag14(void);
+extern void darkPokemonSetAllFlag12(void);
+extern void darkPokemonSetAllFlag16(void);
 extern void memoDataSetMemoFlag(u32);
 extern void memoInitDebug(u32);
 extern void std078_flagSetFalse(u32);
-extern void fn_800884BC(u32, u32, u32);
-extern void fn_800FF660(void);
+extern void dnaKeyCodeCheck(u32, u32, u32);
+extern void floorBattleEndTerminateScripts(void);
 extern u32 floorGetCurrentContext(void);
 extern u32 GSthreadCreate(s32, u32, s32, s32, s32, u32);
 extern u32 savedataGetStatus(s32, s32);
 extern u32 heroBiosGetPokemonPtr(u32, s32);
 extern u32 pokemonCheckValid(u32);
-extern void fn_80097A38(u32, s32);
+extern void menuPokemonStatusOpenWazaForget(u32, s32);
 extern void std098_mapWarpToMenuRoom(u32);
 extern void menuPokemonOpen(s32, s32, s32);
 extern void GSthreadSetArgs(u32, s32, ...);
@@ -154,19 +154,19 @@ u32 dbgMenuMenuTestD2Present(u32 arg) {
 
 /* 0x8000CC3C */
 s32 fn_8000CC3C(void) {
-    fn_801EF02C();
+    darkPokemonSetAllFlag14();
     return 1;
 }
 
 /* 0x8000CC60 */
 s32 fn_8000CC60(void) {
-    fn_801EF080();
+    darkPokemonSetAllFlag12();
     return 1;
 }
 
 /* 0x8000CC84 */
 s32 fn_8000CC84(void) {
-    fn_801EF0D4();
+    darkPokemonSetAllFlag16();
     return 1;
 }
 
@@ -190,7 +190,7 @@ s32 fn_8000CCF8(void) {
 
 /* 0x8000CD20 */
 s32 fn_8000CD20(void) {
-    fn_800884BC(0x99, 0x9C, 0x9F);
+    dnaKeyCodeCheck(0x99, 0x9C, 0x9F);
     return 0;
 }
 
@@ -236,7 +236,7 @@ u32 dbgMenuMenuTestWazaMenu(void) {
     if (val == 0) { return 0; }
     val = heroBiosGetPokemonPtr(val, 0);
     if ((u8)pokemonCheckValid(val) == 0) { return 0; }
-    fn_80097A38(val, 0x25);
+    menuPokemonStatusOpenWazaForget(val, 0x25);
     return 0;
 }
 
@@ -342,7 +342,7 @@ u32 dbgMenuMenuTestNameEntryMenu(u32 arg) {
 s32 dbgMenuWazaDebugStop(void) {
     s32 v = ((BattleAnimState*)lbl_804673F8)->activeFlag;
     if (v != 0) {
-        fn_800FF660();
+        floorBattleEndTerminateScripts();
     }
     return 0;
 }

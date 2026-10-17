@@ -7,11 +7,11 @@ typedef struct BattleFieldAccessor {
     u32 count;
 } BattleFieldAccessor;
 
-extern BattleFieldAccessor* fn_8006B09C(s32 index);
+extern BattleFieldAccessor* savedataBattleGetEntryPtr(s32 index);
 
 u32 toolentryTaisengetEtnryPokemonOrderNum(s32 index)
 {
-    return fn_8006B09C(index)->count;
+    return savedataBattleGetEntryPtr(index)->count;
 }
 
 u32 toolentryTaisenDeleteEtnryPokemonOrder(s32 trainerIndex, u32 slot, u32 param)
@@ -19,7 +19,7 @@ u32 toolentryTaisenDeleteEtnryPokemonOrder(s32 trainerIndex, u32 slot, u32 param
     BattleFieldAccessor* entry;
     s32 index;
 
-    entry = fn_8006B09C(trainerIndex);
+    entry = savedataBattleGetEntryPtr(trainerIndex);
     index = entry->count - 1;
     if ((index < 0) || (index > 6)) {
         return 0;
@@ -34,7 +34,7 @@ u32 toolentryTaisenSetEtnryPokemonOrderGBA(s32 index, s32 count, u32* src)
     BattleFieldAccessor* dst;
     s32 i;
 
-    dst = fn_8006B09C(index);
+    dst = savedataBattleGetEntryPtr(index);
     for (i = 0; i < count; i++) {
         dst->values[i] = src[i];
     }

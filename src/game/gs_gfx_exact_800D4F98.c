@@ -6,7 +6,7 @@
  * While the GSgfx command mode (state+0x000) is 1, the GS state setters
  * record their calls here instead of touching GX: fn_800D4F98 appends the
  * command id and its arguments, laid out by a format code, at the request
- * write pointer.  fn_800D5504 allocates that buffer (GSgfxInit passes
+ * write pointer.  gfxAllocRequestBuffer allocates that buffer (GSgfxInit passes
  * 0x6DDD0 bytes).
  *
  * The unit owns fn_800D4F98's switch jump table (.data 0x803142F8) and the
@@ -21,7 +21,7 @@
 extern void GSlogWrite(const char*, ...);
 extern void* memcpy(void* dst, const void* src, u32 n);
 extern u16 _toolentryAlloc__FUl(u32 size); /* GSmemAllocRaw */
-extern void* fn_800E27B0(u16 handle);      /* GSmemGetPtr */
+extern void* GSmemLock(u16 handle);      /* GSmemGetPtr */
 extern u8 lbl_804001F0[];                  /* per-frame timing counters */
 
 typedef struct GSgfxState {
@@ -124,7 +124,7 @@ void gfxRecordCommand(u32 command, u32 format, ...)
 }
 
 /* Allocate the request buffer that fn_800D4F98 records into. */
-void fn_800D5504(u32 size)
+void gfxAllocRequestBuffer(u32 size)
 {
     if (lbl_8047AA80->requestBuffer != NULL) {
         GSlogWrite("GSgfx: request buffer already alloced\n");
@@ -137,7 +137,7 @@ void fn_800D5504(u32 size)
         return;
     }
 
-    lbl_8047AA80->requestBuffer = fn_800E27B0(lbl_8047AA80->requestBufferHandle);
+    lbl_8047AA80->requestBuffer = GSmemLock(lbl_8047AA80->requestBufferHandle);
     lbl_8047AA80->requestBufferPos = lbl_8047AA80->requestBuffer;
     lbl_8047AA80->requestBufferSize = size;
     *(u32*)(lbl_804001F0 + 0x28) = 0;

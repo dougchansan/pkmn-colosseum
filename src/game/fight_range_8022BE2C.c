@@ -1,6 +1,6 @@
 /**
  * @file fight_range_8022BE2C.c
- * @brief Held-item effects, 0x8022BE2C - 0x8022D20C (fn_8022BE2C,
+ * @brief Held-item effects, 0x8022BE2C - 0x8022D20C (fightOutPokemonDoSoubiItemCheck,
  *        fn_8022D084), with their switch tables (.data 0x8039A388 -
  *        0x8039A478).
  *
@@ -19,14 +19,14 @@
  * docs/RULE_EXCEPTIONS.md. The kinds table {1, 2, 3, 4, 5} is .sdata2
  * 0x8047E604 (4 mod 8; MWCC aligns each .sdata2 section to 8) and the
  * avail initializer {-1 x5} is .rodata 0x80279FF8, followed by
- * fn_8022FE20's table at 0x8027A00C (4 mod 8), so neither can be owned here.
+ * _fightClearRageSub's table at 0x8027A00C (4 mod 8), so neither can be owned here.
  */
 #include "dolphin/types.h"
 
 extern u8* lbl_8047B610;
 extern u8 lbl_80478D78[8];
 extern void* lbl_8047B62C;
-extern void fn_80211B94();
+extern void wsRunScript();
 extern u16 lbl_80279FD0[8];
 extern u8 lbl_80379B06[];
 
@@ -44,7 +44,7 @@ static inline u8 isBitSet(u32 bits, u8 bit)
     return (bits & (1 << bit)) != 0;
 }
 
-u32 fn_8022BE2C(u32 ctx, u8 mode) {
+u32 fightOutPokemonDoSoubiItemCheck(u32 ctx, u8 mode) {
     extern u16 lbl_80279FD0[8];
     extern u8  lbl_80379F58[];
     extern u8  lbl_80379A36[];
@@ -75,8 +75,8 @@ u32 fn_8022BE2C(u32 ctx, u8 mode) {
     extern u32 pokemonWazaCheckValid();
     extern u8  pokemonWazaGetMaxPP();
     extern u32 pokemonSetStatus();
-    extern u8  fn_802026E4();
-    extern u32 fn_80201890();
+    extern u8  fightOutPokemonIsPokemonJoutaiDataId();
+    extern u32 fightOutPokemonGetPokemonJoutai08();
     extern u8  fightOutPokemonIsUseHensinBuff();
     extern void fightOutPokemonSetHensinPokemonStatusId(u32, u32, u8, u32);
     extern s32 wazaGetStatus();
@@ -87,14 +87,14 @@ u32 fn_8022BE2C(u32 ctx, u8 mode) {
     extern u16 fightOutPokemonMaxHpWaruValue(u32, u16);
     extern u32 fightOutPokemonGetTasteLike();
     extern u8  fn_802025B8();
-    extern void fn_8020248C();
+    extern void fightOutPokemonWritePokemonJoutaiDataId();
     extern u16 GSrand(void);
     extern void fightOutPokemonWriteJoutaiDataId();
     extern u8  fightOutPokemonIsJoutaiNormal();
     extern void fn_80119F50();
     extern u32 pokemonInitJoutai();
     extern void fightOutPokemonResetSeqStatus();
-    extern void fn_80211B94();
+    extern void wsRunScript();
     u32 t2;
     u32 pp;
     s32 c;
@@ -175,8 +175,8 @@ u32 fn_8022BE2C(u32 ctx, u8 mode) {
                 npp = mx;
             }
             pokemonSetStatus(t1, 0, 0x80, i, npp);
-            if (fn_802026E4(ctx, 0x10) == 0 && fn_802026E4(ctx, 0x31) == 1 &&
-                !isBitSet(fn_80201890(ctx, 0x31), i) &&
+            if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 0x10) == 0 && fightOutPokemonIsPokemonJoutaiDataId(ctx, 0x31) == 1 &&
+                !isBitSet(fightOutPokemonGetPokemonJoutai08(ctx, 0x31), i) &&
                 fightOutPokemonIsUseHensinBuff(ctx) == 1) {
                 fightOutPokemonSetHensinPokemonStatusId(ctx, 0x80, i & 0xFF, 1);
             }
@@ -438,7 +438,7 @@ u32 fn_8022BE2C(u32 ctx, u8 mode) {
             if (fn_802025B8(ctx, 0xF) != 2) {
                 break;
             }
-            fn_8020248C(ctx, 0xF, 0);
+            fightOutPokemonWritePokemonJoutaiDataId(ctx, 0xF, 0);
             result = 2;
             msg = lbl_80379BD1;
         }
@@ -513,7 +513,7 @@ u32 fn_8022BE2C(u32 ctx, u8 mode) {
         break;
     case 2:
         t1 = 0;
-        if (fn_802026E4(ctx, 5) == 1) {
+        if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 5) == 1) {
             fightOutPokemonWriteJoutaiDataId(ctx, 5);
             t1 = (u32)lbl_80379A36;
         }
@@ -525,7 +525,7 @@ u32 fn_8022BE2C(u32 ctx, u8 mode) {
         break;
     case 4:
         t1 = 0;
-        if (fn_802026E4(ctx, 3) == 1) {
+        if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 3) == 1) {
             fightOutPokemonWriteJoutaiDataId(ctx, 3);
             fightOutPokemonWriteJoutaiDataId(ctx, 4);
             t1 = (u32)lbl_80379A54;
@@ -536,7 +536,7 @@ u32 fn_8022BE2C(u32 ctx, u8 mode) {
             break;
         }
         t1 = 0;
-        if (fn_802026E4(ctx, 4) == 1) {
+        if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 4) == 1) {
             fightOutPokemonWriteJoutaiDataId(ctx, 4);
             fightOutPokemonWriteJoutaiDataId(ctx, 3);
             t1 = (u32)lbl_80379A54;
@@ -549,7 +549,7 @@ u32 fn_8022BE2C(u32 ctx, u8 mode) {
         break;
     case 5:
         t1 = 0;
-        if (fn_802026E4(ctx, 6) == 1) {
+        if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 6) == 1) {
             fightOutPokemonWriteJoutaiDataId(ctx, 6);
             t1 = (u32)lbl_80379A72;
         }
@@ -561,7 +561,7 @@ u32 fn_8022BE2C(u32 ctx, u8 mode) {
         break;
     case 6:
         t1 = 0;
-        if (fn_802026E4(ctx, 7) == 1) {
+        if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 7) == 1) {
             fightOutPokemonWriteJoutaiDataId(ctx, 7);
             t1 = (u32)lbl_80379A90;
         }
@@ -573,7 +573,7 @@ u32 fn_8022BE2C(u32 ctx, u8 mode) {
         break;
     case 3:
         t1 = 0;
-        if (fn_802026E4(ctx, 8) == 1) {
+        if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 8) == 1) {
             fightOutPokemonWriteJoutaiDataId(ctx, 8);
             fightOutPokemonWriteJoutaiDataId(ctx, 0x17);
             t1 = (u32)lbl_80379AAE;
@@ -586,7 +586,7 @@ u32 fn_8022BE2C(u32 ctx, u8 mode) {
         break;
     case 8:
         t1 = 0;
-        if (fn_802026E4(ctx, 9) == 1) {
+        if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 9) == 1) {
             fightOutPokemonWriteJoutaiDataId(ctx, 9);
             t1 = (u32)lbl_80379ACC;
         }
@@ -598,39 +598,39 @@ u32 fn_8022BE2C(u32 ctx, u8 mode) {
         break;
     case 9:
         if ((u8)fightOutPokemonIsJoutaiNormal(ctx)) {
-            if (fn_802026E4(ctx, 9) != 1) {
+            if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 9) != 1) {
                 break;
             }
         }
         t2 = 0;
         lbl_80478D78[5] = 0;
-        if (fn_802026E4(ctx, 3) == 1 || fn_802026E4(ctx, 4) == 1) {
+        if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 3) == 1 || fightOutPokemonIsPokemonJoutaiDataId(ctx, 4) == 1) {
             fn_80119F50(3);
             msgctrlSetValue(0xD, GSmsgGetGSchar());
             t2 = 1;
         }
-        if (fn_802026E4(ctx, 8) == 1) {
+        if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 8) == 1) {
             fightOutPokemonWriteJoutaiDataId(ctx, 0x17);
             fn_80119F50(8);
             msgctrlSetValue(0xD, GSmsgGetGSchar());
             t2++;
         }
-        if (fn_802026E4(ctx, 5) == 1) {
+        if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 5) == 1) {
             fn_80119F50(5);
             msgctrlSetValue(0xD, GSmsgGetGSchar());
             t2++;
         }
-        if (fn_802026E4(ctx, 6) == 1) {
+        if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 6) == 1) {
             fn_80119F50(6);
             msgctrlSetValue(0xD, GSmsgGetGSchar());
             t2++;
         }
-        if (fn_802026E4(ctx, 7) == 1) {
+        if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 7) == 1) {
             fn_80119F50(7);
             msgctrlSetValue(0xD, GSmsgGetGSchar());
             t2++;
         }
-        if (fn_802026E4(ctx, 9) == 1) {
+        if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 9) == 1) {
             fn_80119F50(9);
             msgctrlSetValue(0xD, GSmsgGetGSchar());
             t2++;
@@ -646,7 +646,7 @@ u32 fn_8022BE2C(u32 ctx, u8 mode) {
         break;
     case 0x1C:
         t1 = 0;
-        if (fn_802026E4(ctx, 0xA) == 1) {
+        if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 0xA) == 1) {
             fightOutPokemonWriteJoutaiDataId(ctx, 0xA);
             t1 = (u32)lbl_80379AE8;
         }
@@ -678,7 +678,7 @@ u32 fn_8022BE2C(u32 ctx, u8 mode) {
             break;
         }
         if (msg != 0) {
-            fn_80211B94(lbl_8047B62C, msg, 0);
+            wsRunScript(lbl_8047B62C, msg, 0);
         }
     }
     return result;
@@ -726,7 +726,7 @@ u8 fn_8022D084(void* ctx) {
             fightFloorSetStatus(0, 0, 0x4b, 0, (u32)ctx);
             fightFloorSetStatus(0, 0, 0x36, 0, (u32)ctx);
             fightFloorSetStatus(0, 0, 0x49, 0, (u32)ctx);
-            fn_80211B94(lbl_8047B62C, (void*)&lbl_80379B06, 0);
+            wsRunScript(lbl_8047B62C, (void*)&lbl_80379B06, 0);
         }
         break;
     }

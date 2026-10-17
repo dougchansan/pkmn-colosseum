@@ -112,11 +112,11 @@ extern MenuCBSlotInfo lbl_80267398[0x20];
 extern MenuModelWork lbl_803A9720;
 extern u32 lbl_8047A560;
 
-extern void* fn_80057270(MenuCBPane* pane);
+extern void* pcBoxGetCursorPokemon(MenuCBPane* pane);
 extern s32 fn_800573C0(void);
 extern s32 fn_800566E8(void);
 extern s32 fn_80057E40(MenuCBPane* pane);
-extern void fn_800FB680(s32 x, s32 y, s32 color, u32 msgId);
+extern void GSmsgPrintColor(s32 x, s32 y, s32 color, u32 msgId);
 extern u32 GSmsgGetGSchar(u32 msgId);
 extern u32 GSmsgGetRect(u32 msgId);
 extern void* itemDataBiosGetPtr(u16 itemId);
@@ -142,7 +142,7 @@ extern s8 pcboxGetNbPokemonBox(void);
 extern s8 getPokemonBoxNbUsedSlot__5PCBOXFSc(void* pcbox, s8 box);
 extern void winSpriteSetDisp(MenuCBPane* pane, u8 enable);
 extern MenuKeyInfo* windowGetKeyInfo(void);
-extern void fn_8010A420(MenuModelWork* work);
+extern void menuModelTerm(MenuModelWork* work);
 s32 fn_80057694(void);
 void fn_800576A4(u32 value);
 u32 fn_800567AC(void);
@@ -151,7 +151,7 @@ void menuCursorNormal(MenuCBPane* pane);
 MenuCursorItem* windowGetCursorToItem();
 void fn_80057830(s16 x, s16 y, s32 selected);
 extern void fn_80054760(s32 forward, s32 wait);
-extern void fn_800558B8(void);
+extern void pcBoxRun(void);
 extern void fn_80056A80(void);
 extern void fn_80056B74(MenuCBPane* pane, s32 enabled);
 extern void fn_80057A38(void);
@@ -175,8 +175,8 @@ extern void gfxSetVtxDesc(void* resource);
 extern void gfxLoadTexture(s32 slot, void* texture);
 extern void gfxSetPrimitive(s32 mode);
 extern void gfxBegin(s32 mode);
-extern void fn_800D61E4(s16 x, s16 y);
-extern void fn_800D5CB8(s32, s32, s32, s32, s32);
+extern void gfxVtxPos2s16(s16 x, s16 y);
+extern void gfxVtxColor4u8(s32, s32, s32, s32, s32);
 extern void gfxVtxTexCoord(s32 slot, f32 xScale, f32 yScale);
 extern void gfxEnd(void);
 extern void gfxClearFlags(u32 flags);
@@ -209,7 +209,7 @@ static inline s32 menuCBFindBoxSlot(s32* state)
     return i;
 }
 
-s32 fn_800552D4(s32 box, s32 slot)
+s32 pcBoxPokemonCommand(s32 box, s32 slot)
 {
     extern void* getPokemon__5PCBOXFScSc(void*, s8, s8);
     extern void delPokemon__5PCBOXFScSc(void*, s8, s8);
@@ -487,7 +487,7 @@ static inline void fn_800558B8_rebuild(void) {
     }
 }
 
-void fn_800558B8(void)
+void pcBoxRun(void)
 {
     extern void soundStart(s32, s32, s32, s32);
     extern s32 fn_800576B4(void);
@@ -499,7 +499,7 @@ void fn_800558B8(void)
     extern void fn_800599AC(s32);
     extern void fn_800546C0(s32);
     extern u32 fn_80056A78(void);
-    extern s32 fn_800552D4();
+    extern s32 pcBoxPokemonCommand();
     extern s32 fn_8005D26C(void);
     extern void fadeSet(s32, f32);
     extern s32 fadeCheck(s32);
@@ -577,7 +577,7 @@ void fn_800558B8(void)
             selectedSlotPtr = &selectedSlot;
             break;
         case 0:
-            selectedSlot = fn_800552D4(fn_80056A78(), slot);
+            selectedSlot = pcBoxPokemonCommand(fn_80056A78(), slot);
             selectedSlotPtr = &selectedSlot;
             break;
         case 1:
@@ -601,7 +601,7 @@ void fn_80055B98(MenuCBPane* pane) {
 
     fn_80054760(FALSE, TRUE);
     fn_80057A64(NULL, 0);
-    fn_800558B8();
+    pcBoxRun();
     fn_80057A38();
     fn_8005471C();
     fn_80056A80();
@@ -629,7 +629,7 @@ s32 fn_80055C2C(MenuCBPane* pane, MenuCBPane* sprite) {
     return 0;
 }
 
-s32 fn_80055CD4(MenuCBPane* pane, MenuCBPane* sprite) {
+s32 pcBoxDrawBoxNameItem(MenuCBPane* pane, MenuCBPane* sprite) {
     u8 box;
     u32 name;
     s32 result;
@@ -646,7 +646,7 @@ s32 fn_80055CD4(MenuCBPane* pane, MenuCBPane* sprite) {
     return result;
 }
 
-s32 fn_80055D34(MenuCBPane* pane) {
+s32 pcBoxBoxSelectKey(MenuCBPane* pane) {
     MenuKeyInfo* keyInfo;
 
     keyInfo = windowGetKeyInfo();

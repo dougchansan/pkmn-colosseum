@@ -46,7 +46,7 @@
  * The symbols keep their address names: lbl_8036C638 is hsdClass,
  * lbl_8047B220 memory_list, lbl_8047B224 nb_memory_list, lbl_8047B228
  * current_hash, fn_80193B10 hsdAllocMemPiece, fn_80193AF0 hsdFreeMemPiece,
- * fn_801938FC _hsdClassInfoInit, fn_80193828 hsdNew, fn_80193788
+ * fn_801938FC _hsdClassInfoInit, fn_80193828 hsdNew, hsdIsDescendantOf
  * hsdIsDescendantOf, fn_80193748 hsdSearchClassInfo.
  */
 #include "dolphin/types.h"
@@ -56,8 +56,8 @@
 
 extern void* memset(void* dst, int val, u32 size);
 extern void* memcpy(void* dst, const void* src, u32 size);
-extern void* fn_801A6928(s32 size); /* HSD_MemAlloc */
-extern void fn_801A6960(void* mem); /* HSD_Free */
+extern void* HSD_MemAlloc(s32 size); /* HSD_MemAlloc */
+extern void HSD_Free(void* mem); /* HSD_Free */
 
 void fn_801938FC(void);
 
@@ -104,12 +104,12 @@ void hsdInitClassInfo(HSD_ClassInfo* class_info, HSD_ClassInfo* parent_info,
 
 void* fn_80193B10(s32 size)
 {
-    return fn_801A6928(size);
+    return HSD_MemAlloc(size);
 }
 
 void fn_80193AF0(void* mem, s32 size)
 {
-    fn_801A6960(mem);
+    HSD_Free(mem);
 }
 
 HSD_Class* _hsdClassAlloc(HSD_ClassInfo* info)
@@ -192,7 +192,7 @@ void* fn_80193828(HSD_ClassInfo* info)
     return cls;
 }
 
-BOOL fn_80193788(void* info, void* p)
+BOOL hsdIsDescendantOf(void* info, void* p)
 {
     HSD_ClassInfo* c;
     HSD_ClassInfo* parent;
