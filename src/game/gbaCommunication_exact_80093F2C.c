@@ -4,7 +4,7 @@
  *        menuPokemonStatusCtrlRibbon and the ribbon-grid builder fn_80093F64).
  *
  * Split from gbaCommunication_candidate_800937F4.c so these exact functions
- * link while fn_800937F4 and fn_80093B4C are still being matched. Standalone
+ * link while _gbaCommThread and fn_80093B4C are still being matched. Standalone
  * carve: GBA_COMMUNICATION_DECLS_ONLY takes only the shared declarations from
  * gbaCommunication.c. The bodies are gbaCommunication.c's; keep them in step.
  */

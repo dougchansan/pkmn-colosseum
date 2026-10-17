@@ -5,10 +5,10 @@
  * Shared part of the pkjb_uploader.c translation unit (0x800716C8 -
  * 0x80075390): the GBA link command layer in front of the PKJB multiboot
  * uploader. The unit's rodata is the "pkjb_uploader.c" string block at
- * 0x80268780 (PKJB_Prepare, fn_80073E8C); the command functions share its
+ * 0x80268780 (PKJB_Prepare, pkjbPrepare); the command functions share its
  * statics (the idle callbacks at lbl_803B6E18 and cancel flags at
- * lbl_803B6E08, also used by fn_8007480C, and the boot key at lbl_8047A60C,
- * written by fn_80073E8C and checked by fn_80073C38), so they sit in the
+ * lbl_803B6E08, also used by pkjbValidateKey, and the boot key at lbl_8047A60C,
+ * written by pkjbPrepare and checked by fn_80073C38), so they sit in the
  * same unit. It has no .data or .sdata2.
  *
  * Unit flags: GC/2.0, -O4,p, "-opt nopeephole" (see pkjb_exact_80073990.c
@@ -60,7 +60,7 @@ extern volatile s32 lbl_803B6E08[4];
 extern PkjbIdleCallback lbl_803B6E18[4];
 /* Thread suspended by pkjbWaitZeroResponse. */
 extern OSThread* lbl_8047A600;
-/* Boot key expected back from the GBA after a reset (set by fn_80073E8C). */
+/* Boot key expected back from the GBA after a reset (set by pkjbPrepare). */
 extern u32 lbl_8047A60C;
 
 extern void _threadSwitch(void);

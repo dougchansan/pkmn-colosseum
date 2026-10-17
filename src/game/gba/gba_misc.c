@@ -260,7 +260,7 @@ extern s32 lbl_803FB308[];
 extern s32 lbl_803FB318[];
 
 /* ===== Forward declarations ===== */
-void fn_800895A4(void);
+void gbaReceiveHero(void);
 u32 fn_800896B8(void);
 u32 fn_800896C0(void);
 u32 fn_800896C8(void);
@@ -268,7 +268,7 @@ void fn_800896D0(u32 v);
 void fn_800896D8(u32 v);
 void fn_800896E0(u32 v);
 s32 std215_battleStartTrainerWithPrompt(void* work, void* arg);
-u8 fn_80089978(u8* pokemon, u8* entry);
+u8 gbaBuildTrainerPokemon(u8* pokemon, u8* entry);
 u8 GbaMisc_GetMappedContextByte(void);
 s32 GbaMisc_HasActiveContextState(void);
 s32 std220_gbaUnk_80083bf8(void);
@@ -292,43 +292,43 @@ s32 fn_8008AB8C(s32 r3);
 u8 fn_8008ABA0(s32 idx);
 s32 GbaMisc_SetEntryState(s32 idx, s32 value);
 void fn_8008AC34(void);
-void fn_8008AE18(void* src, void* dst);
-void fn_8008BBDC(void* gc, GbaPokemon* src);
+void pokeconvPokemonToGBA(void* src, void* dst);
+void pokeconvPokemonFromGBA(void* gc, GbaPokemon* src);
 u16 gbaPokemonConditonFromGC(void* pokemon);
 void fn_8008C6FC(void);
 void GbaMisc_RunFlagDispatch(void);
 s32 fn_8008C78C(void);
-void fn_8008C7B0(void);
-void fn_8008CACC(void);
-void fn_8008CDD8(void);
-void fn_8008D0A0(void);
-void fn_8008D348(void);
-void fn_8008D938(void);
-void fn_8008E320(void);
-void fn_8008E7D4(void);
-void fn_8008EC28(void);
-void fn_8008EED0(void);
-void fn_8008F190(void);
-void fn_8008F524(void);
-void fn_8008F91C(void);
-void fn_8008FBF4(void);
-void fn_8008FE94(void);
-void fn_80090100(void);
-void fn_80090720(void);
-void fn_800909E4(void);
-void fn_80090D34(void);
-void fn_8009100C(void);
-void fn_80091564(void);
-void fn_80091774(void);
-void fn_80091984(void);
-void fn_80091B94(void);
-void fn_80091DA4(void);
-void fn_80091F48(void);
-void fn_80092140(void);
-void fn_80092498(void);
-void fn_80092664(void);
-void fn_800929BC(void);
-void fn_80092B2C(void);
+void demoScene30(void);
+void demoScene29(void);
+void demoScene28(void);
+void demoScene27(void);
+void demoScene26(void);
+void demoScene25(void);
+void demoScene24(void);
+void demoScene23(void);
+void demoScene22(void);
+void demoScene21(void);
+void demoScene20(void);
+void demoScene19(void);
+void demoScene18(void);
+void demoScene17(void);
+void demoScene16(void);
+void demoScene15(void);
+void demoScene14(void);
+void demoScene13(void);
+void demoScene12(void);
+void demoScene11(void);
+void demoScene10(void);
+void demoScene09(void);
+void demoScene08(void);
+void demoScene07(void);
+void demoScene06(void);
+void demoScene05(void);
+void demoScene04(void);
+void demoScene03(void);
+void demoScene02(void);
+void demoScene01(void);
+void demoScene00(void);
 
 /* ===== Function implementations ===== */
 
@@ -337,8 +337,8 @@ void fn_80092B2C(void);
 #if !defined(GBA_MISC_80089B8C_ONLY)
 
 /* 0x800895A4 | size: 0x114 */
-void fn_800895A4(void) {
-    extern void fn_8008BBDC();
+void gbaReceiveHero(void) {
+    extern void pokeconvPokemonFromGBA();
     extern void heroBiosSetHomePlace();
     extern void heroBiosSetSexDataId();
     extern void heroBiosSetRnd();
@@ -408,7 +408,7 @@ void fn_800895A4(void) {
         heroBiosGetPokemonPtr();
         r4 = r29 + 0x14;
         r27 = r3;
-        fn_8008BBDC();
+        pokeconvPokemonFromGBA();
         r3 = r27;
         r4 = r28 & 0xFFFF;
         ((void(*)(void))pokemonBiosSetFightTrainerPokemonDataId)();
@@ -520,7 +520,7 @@ s32 std215_battleStartTrainerWithPrompt(void* work, void* arg) {
 
     pokemon = fightTrainerPokemonDataBiosGetPtr();
     for (i = count = 0; i < 4; i++) {
-        if (fn_80089978(pokemon, &((u8(*)[0x2A])&((GbaMiscContext*)ctx)->state_4000)[i][0x138]) == 1) {
+        if (gbaBuildTrainerPokemon(pokemon, &((u8(*)[0x2A])&((GbaMiscContext*)ctx)->state_4000)[i][0x138]) == 1) {
             pokemon += 0x50;
             count++;
         }
@@ -569,7 +569,7 @@ s32 std215_battleStartTrainerWithPrompt(void* work, void* arg) {
 }
 
 /* 0x80089978 | size: 0x214 */
-u8 fn_80089978(u8* pokemon, u8* entry) {
+u8 gbaBuildTrainerPokemon(u8* pokemon, u8* entry) {
     extern u8 fn_801EEAD0(u8 id);
     extern void fn_801EEE6C(u8 id, u8 value);
     extern void fightTrainerPokemonDataBiosSetPokemonDataId(u8* pokemon, u16 id);
@@ -795,7 +795,7 @@ s32 fn_80089E20(s32 r30, void* r31, u32 r5, u32 r29) {
         r4 = tmp & 0xFF;
         pokemonBiosSetTokuseiFlag(r31, r4);
     }
-    fn_8008AE18(r31, (GbaPokemon*)(sp + 0x8));
+    pokeconvPokemonToGBA(r31, (GbaPokemon*)(sp + 0x8));
     r31 = sp + 0x6C;
     memset(r31, 0, 0xc);
     for (r29 = 0; (s32)r29 < 0xb; r31 = (u8*)r31 + 1, r29++) {
@@ -1404,7 +1404,7 @@ void fn_8008AC34(void) {
 }
 
 /* 0x8008AE18 | size: 0xDC4 */
-void fn_8008AE18(void* src, void* dst_) {
+void pokeconvPokemonToGBA(void* src, void* dst_) {
     extern u8 pokemonBiosGetEventGetFlag(void* pokemon);
     extern u16 pokemonBiosGetPara1Amari(void* pokemon);
     extern u16 pokemonBiosGetAmari(void* pokemon);
@@ -1682,7 +1682,7 @@ void fn_8008AE18(void* src, void* dst_) {
 }
 
 /* 0x8008BBDC | size: 0x9F4 */
-void fn_8008BBDC(void* gc, GbaPokemon* src) {
+void pokeconvPokemonFromGBA(void* gc, GbaPokemon* src) {
     extern void pokemonInit(void* pokemon);
     extern void* pokemonBiosGetAttest(void* pokemon);
     extern void* pokemonBiosGetCatchTrainerNamePtr(void* pokemon);
@@ -1997,7 +1997,7 @@ s32 fn_8008C78C(void) {
 }
 
 /* 0x8008C7B0 | size: 0x31C */
-void fn_8008C7B0(void) {
+void demoScene30(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -2216,7 +2216,7 @@ void fn_8008C7B0(void) {
 }
 
 /* 0x8008CACC | size: 0x30C */
-void fn_8008CACC(void) {
+void demoScene29(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -2424,7 +2424,7 @@ void fn_8008CACC(void) {
 }
 
 /* 0x8008CDD8 | size: 0x2C8 */
-void fn_8008CDD8(void) {
+void demoScene28(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -2615,7 +2615,7 @@ void fn_8008CDD8(void) {
 }
 
 /* 0x8008D0A0 | size: 0x2A8 */
-void fn_8008D0A0(void) {
+void demoScene27(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -2797,7 +2797,7 @@ void fn_8008D0A0(void) {
 }
 
 /* 0x8008D348 | size: 0x5F0 */
-void fn_8008D348(void) {
+void demoScene26(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -3206,7 +3206,7 @@ void fn_8008D348(void) {
 }
 
 /* 0x8008D938 | size: 0x9E8 */
-void fn_8008D938(void) {
+void demoScene25(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -3872,7 +3872,7 @@ void fn_8008D938(void) {
 }
 
 /* 0x8008E320 | size: 0x4B4 */
-void fn_8008E320(void) {
+void demoScene24(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -4197,7 +4197,7 @@ void fn_8008E320(void) {
 }
 
 /* 0x8008E7D4 | size: 0x454 */
-void fn_8008E7D4(void) {
+void demoScene23(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -4497,7 +4497,7 @@ void fn_8008E7D4(void) {
 }
 
 /* 0x8008EC28 | size: 0x2A8 */
-void fn_8008EC28(void) {
+void demoScene22(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -4679,7 +4679,7 @@ void fn_8008EC28(void) {
 }
 
 /* 0x8008EED0 | size: 0x2C0 */
-void fn_8008EED0(void) {
+void demoScene21(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -4868,7 +4868,7 @@ void fn_8008EED0(void) {
 }
 
 /* 0x8008F190 | size: 0x394 */
-void fn_8008F190(void) {
+void demoScene20(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -5113,7 +5113,7 @@ void fn_8008F190(void) {
 }
 
 /* 0x8008F524 | size: 0x3F8 */
-void fn_8008F524(void) {
+void demoScene19(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -5390,7 +5390,7 @@ void fn_8008F524(void) {
 }
 
 /* 0x8008F91C | size: 0x2D8 */
-void fn_8008F91C(void) {
+void demoScene18(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -5592,7 +5592,7 @@ void fn_8008F91C(void) {
 }
 
 /* 0x8008FBF4 | size: 0x2A0 */
-void fn_8008FBF4(void) {
+void demoScene17(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -5773,7 +5773,7 @@ void fn_8008FBF4(void) {
 }
 
 /* 0x8008FE94 | size: 0x26C */
-void fn_8008FE94(void) {
+void demoScene16(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -5941,7 +5941,7 @@ void fn_8008FE94(void) {
 }
 
 /* 0x80090100 | size: 0x620 */
-void fn_80090100(void) {
+void demoScene15(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -6366,7 +6366,7 @@ void fn_80090100(void) {
 }
 
 /* 0x80090720 | size: 0x2C4 */
-void fn_80090720(void) {
+void demoScene14(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -6557,7 +6557,7 @@ void fn_80090720(void) {
 }
 
 /* 0x800909E4 | size: 0x350 */
-void fn_800909E4(void) {
+void demoScene13(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -6789,7 +6789,7 @@ void fn_800909E4(void) {
 }
 
 /* 0x80090D34 | size: 0x2D8 */
-void fn_80090D34(void) {
+void demoScene12(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -6990,7 +6990,7 @@ void fn_80090D34(void) {
 }
 
 /* 0x8009100C | size: 0x558 */
-void fn_8009100C(void) {
+void demoScene11(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -7359,7 +7359,7 @@ void fn_8009100C(void) {
 }
 
 /* 0x80091564 | size: 0x210 */
-void fn_80091564(void) {
+void demoScene10(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -7502,7 +7502,7 @@ void fn_80091564(void) {
 }
 
 /* 0x80091774 | size: 0x210 */
-void fn_80091774(void) {
+void demoScene09(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -7645,7 +7645,7 @@ void fn_80091774(void) {
 }
 
 /* 0x80091984 | size: 0x210 */
-void fn_80091984(void) {
+void demoScene08(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -7788,7 +7788,7 @@ void fn_80091984(void) {
 }
 
 /* 0x80091B94 | size: 0x210 */
-void fn_80091B94(void) {
+void demoScene07(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -7931,7 +7931,7 @@ void fn_80091B94(void) {
 }
 
 /* 0x80091DA4 | size: 0x1A4 */
-void fn_80091DA4(void) {
+void demoScene06(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std116_mapObjectStopAnimation();
@@ -8045,7 +8045,7 @@ void fn_80091DA4(void) {
 }
 
 /* 0x80091F48 | size: 0x1F8 */
-void fn_80091F48(void) {
+void demoScene05(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -8188,7 +8188,7 @@ void fn_80091F48(void) {
 }
 
 /* 0x80092140 | size: 0x358 */
-void fn_80092140(void) {
+void demoScene04(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -8424,7 +8424,7 @@ void fn_80092140(void) {
 }
 
 /* 0x80092498 | size: 0x1CC */
-void fn_80092498(void) {
+void demoScene03(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std116_mapObjectStopAnimation();
@@ -8548,7 +8548,7 @@ void fn_80092498(void) {
 }
 
 /* 0x80092664 | size: 0x358 */
-void fn_80092664(void) {
+void demoScene02(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();
@@ -8784,7 +8784,7 @@ void fn_80092664(void) {
 }
 
 /* 0x800929BC | size: 0x170 */
-void fn_800929BC(void) {
+void demoScene01(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std116_mapObjectStopAnimation();
@@ -8885,7 +8885,7 @@ void fn_800929BC(void) {
 }
 
 /* 0x80092B2C | size: 0x164 */
-void fn_80092B2C(void) {
+void demoScene00(void) {
     extern void fn_80176B48();
     extern void cameraPlayAnime();
     extern void std070_characterAttachToCharacter();

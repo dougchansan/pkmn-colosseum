@@ -140,7 +140,7 @@ static inline u32 evolutionCreateModel(u32 pkm, int kind)
 int cbWazaForget(u32 r3,u32 r4,int r5)
 
 {
-    extern int fn_80097A38();
+    extern int menuPokemonStatusOpenWazaForget();
     extern int GScameraGetPerspective();
     extern u32 GScameraGetActiveCamera();
     extern int GSmodelSetAnimType();
@@ -202,7 +202,7 @@ int cbWazaForget(u32 r3,u32 r4,int r5)
   savedView[2] = view[2];
   ((volatile float *)savedView)[3] = local_98;
   wazaSequenceSysRelease();
-  iVar2 = fn_80097A38(r3,r4);
+  iVar2 = menuPokemonStatusOpenWazaForget(r3,r4);
   if (iVar2 >= 4) {
     iVar2 = -1;
   }

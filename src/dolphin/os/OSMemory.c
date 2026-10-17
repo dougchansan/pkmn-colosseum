@@ -104,7 +104,7 @@ asm void fn_8009F488(void) {
 #include "src/dolphin/os/OSMemory_fn_8009F488.inc"
 }
 #else
-void fn_8009F488(u32 chan, void* addr, u32 nBytes, u32 control) {
+void OSProtectRange(u32 chan, void* addr, u32 nBytes, u32 control) {
     BOOL enabled;
     u32 start;
     u32 end;

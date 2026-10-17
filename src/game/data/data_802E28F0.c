@@ -87,7 +87,7 @@ extern u8 fn_800544A8[];
 extern u8 fn_80054C44[];
 extern u8 fn_80054E7C[];
 extern u8 fn_800550B4[];
-extern u8 fn_80055D34[];
+extern u8 pcBoxBoxSelectKey[];
 extern u8 fn_80056610[];
 extern u8 fn_80058798[];
 extern u8 fn_80058880[];
@@ -115,7 +115,7 @@ extern u8 fn_8006C164[];
 extern u8 fn_8006D940[];
 extern u8 fn_8006D98C[];
 extern u8 fn_8006DAE4[];
-extern u8 fn_8006DC28[];
+extern u8 menuTaisenPartyCheckSeq[];
 extern u8 fn_8006E160[];
 extern u8 fn_8006E188[];
 extern u8 fn_8006E18C[];
@@ -146,7 +146,7 @@ extern u8 fn_800702F0[];
 extern u8 fn_80070318[];
 extern u8 fn_800704A8[];
 extern u8 fn_800753D0[];
-extern u8 fn_8007D978[];
+extern u8 menuCardEMatrixWindowProc[];
 extern u8 fn_80084034[];
 extern u8 fn_80084038[];
 extern u8 fn_80096D54[];
@@ -1418,7 +1418,7 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x63840000,
     (void*)0x07A40000,
     (void*)0x00000000,
-    (void*)((u8*)fn_80055D34),
+    (void*)((u8*)pcBoxBoxSelectKey),
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
@@ -1441,7 +1441,7 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8007D978),
+    (void*)((u8*)menuCardEMatrixWindowProc),
     (void*)0x00000000,
     (void*)0x63240000,
     (void*)0x08140000,
@@ -1679,7 +1679,7 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8006DC28),
+    (void*)((u8*)menuTaisenPartyCheckSeq),
     (void*)0x00000000,
     (void*)0x61240000,
     (void*)0x00000000,
@@ -1805,7 +1805,7 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8006DC28),
+    (void*)((u8*)menuTaisenPartyCheckSeq),
     (void*)0x00000000,
     (void*)0x20000000,
     (void*)0x0F860000,
@@ -1994,7 +1994,7 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8006DC28),
+    (void*)((u8*)menuTaisenPartyCheckSeq),
     (void*)0x00000000,
     (void*)0xA6100000,
     (void*)0x11C30000,

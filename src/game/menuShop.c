@@ -2239,9 +2239,9 @@ extern void pcboxGetItemCapacity(void);
 extern void heroItemCheckAddItemDataId(void);
 extern void soundStartRaw(void);
 extern void fn_80093574(void);
-extern void fn_80092C90(void);
+extern void gbaCommStartSendPokemon(void);
 extern void fn_80093610(void);
-extern void fn_80093698(void);
+extern void gbaCommEnd(void);
 extern void fn_801D0748(void);
 extern void* memcpy(void* dst, const void* src, u32 n);
 extern void* memset(void* dst, int val, u32 n);
@@ -2330,9 +2330,9 @@ void fn_8002C408(s32 mapIdx, u32 mode)
     extern void  soundStartRaw(s32 soundId, s32 p2, s32 p3);
     extern s32   fn_801D0748(u32 a, u32 b, u32 c);
     extern void  fn_80093574(s32 a);
-    extern void  fn_80092C90(s32 a, void* list, s32 c);
+    extern void  gbaCommStartSendPokemon(s32 a, void* list, s32 c);
     extern s32   fn_80093610(s32 a);
-    extern void  fn_80093698(s32 a);
+    extern void  gbaCommEnd(s32 a);
     extern void* memcpy(void* dst, const void* src, u32 n);
     extern void* memset(void* dst, int v, u32 n);
     extern u32 lbl_8047A3DC;
@@ -2591,14 +2591,14 @@ void fn_8002C408(s32 mapIdx, u32 mode)
                         }
                     }
                     fn_80093574(1);
-                    fn_80092C90(1, &inv, 0);
+                    gbaCommStartSendPokemon(1, &inv, 0);
                     fn_80093574(1);
                     if (fn_80093610(1) != 0xc) {
-                        fn_80093698(1);
+                        gbaCommEnd(1);
                         winMsgOpenWithSE(2, 0x3d85, 1, 0, name);
                         winMsgClose(1);
                     } else {
-                        fn_80093698(1);
+                        gbaCommEnd(1);
                         winMsgOpenWithSE(2, 0x3d84, 1, 0, name);
                         winMsgClose(1);
                     }

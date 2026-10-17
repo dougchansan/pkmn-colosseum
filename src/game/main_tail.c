@@ -20,7 +20,7 @@ extern u8 fn_8008ABA0(u32 padIdx);
 extern void fn_800F7F64(u32 padIdx);
 extern void* fn_801664F0(void* color);
 extern void GSresRegisterResource(void* work, u32 time, u32 numFrames, u32 arg);
-extern void fn_8009F488(u32 region, u32 addr, u32 size, u32 perm);
+extern void OSProtectRange(u32 region, u32 addr, u32 size, u32 perm);
 extern s32 fn_800A2C58(void);
 extern void OSCreateThread(void* thread, void* func, void* arg,
                            void* stackBase, u32 stackSize,
@@ -181,8 +181,8 @@ void fn_800060F0(const char* file, s32 line, const char* fmt, ...) {
  */
 void fn_80006250(void) {
     /* Set up memory protection regions */
-    fn_8009F488(0, 0, 0x80000000, 3);
-    fn_8009F488(1, 0x81800000, 0x01800000, 3);
+    OSProtectRange(0, 0, 0x80000000, 3);
+    OSProtectRange(1, 0x81800000, 0x01800000, 3);
 
     /* Install custom error handler for standard exceptions */
     OSSetErrorHandler(0, fn_80006378);   /* SYSTEM_RESET */

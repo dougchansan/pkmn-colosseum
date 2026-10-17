@@ -1,6 +1,6 @@
 /**
  * @file menu_exact_80076F2C.c
- * @brief Exact island 0x80076F2C - 0x800776E4 (fn_80076F2C, fn_800772AC,
+ * @brief Exact island 0x80076F2C - 0x800776E4 (fn_80076F2C, menuRuleCheckPokemonAllModes,
  *        fn_800774D4): standalone copies, in address order, of the bodies in
  *        menu_range_8007109C.c, with the helpers, types and externs they use.
  */
@@ -153,7 +153,7 @@ extern u32 OSGetTick(void);
 extern void _threadSwitch(void);
 
 /* Retail inlines this wait loop into its callers rather than calling out to
- * it: framescan shows fn_80078390 and fn_800788BC each hold lbl_8047C0E0 /
+ * it: framescan shows exDiscCelebiTransfer and exDiscCelebiEvent each hold lbl_8047C0E0 /
  * lbl_8047C0E4 and the two int->float conversion biases in callee-saved FPRs
  * (f27-f31), which only happens when the loop is in the function body. Ours
  * emitted `bl MenuWaitMotionInterval` and saved no FPRs at all.
@@ -407,7 +407,7 @@ static inline u8 menuRuleCheckPresentPokemonMode(void* pokemon,
     extern u8 pokemonBiosGetLevel(void*);
     extern u16 pokemonBiosGetItemDataId(void*);
     extern u8 fn_80142984(u16);
-    extern u8* fn_8006B420(void);
+    extern u8* savedataBattleGetRulePtr(void);
     MenuRuleItemRestrictions* restrictions;
     u16 item;
     u32 i;
@@ -420,7 +420,7 @@ static inline u8 menuRuleCheckPresentPokemonMode(void* pokemon,
         return pokemonBiosGetLevel(pokemon) <= levels[1];
     case 2:
         item = pokemonBiosGetItemDataId(pokemon);
-        restrictions = (MenuRuleItemRestrictions*)fn_8006B420();
+        restrictions = (MenuRuleItemRestrictions*)savedataBattleGetRulePtr();
         switch (item) {
         case 0:
             valid = 1;
@@ -481,7 +481,7 @@ pokemon_present:
                                            (const char*)lbl_80268A58);
 }
 
-u8 fn_800772AC(void* pokemon, const s16* levels)
+u8 menuRuleCheckPokemonAllModes(void* pokemon, const s16* levels)
 {
     s32 mode;
 

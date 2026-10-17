@@ -61,9 +61,9 @@ extern u8 cardeAwardCoupons[];
 extern u8 fn_80034280[];
 extern u8 cardeBattleRun[];
 extern u8 fn_8003F464[];
-extern u8 fn_800552D4[];
+extern u8 pcBoxPokemonCommand[];
 extern u8 fn_80059034[];
-extern u8 fn_8008FE94[];
+extern u8 demoScene16[];
 extern u8 lbl_8047BB08[];
 extern u8 lbl_8047BB0C[];
 extern u8 lbl_8047BB10[];
@@ -1721,7 +1721,7 @@ void* lbl_802E6428[1584] = {
     (void*)0x000B0000,
     (void*)0x00000001,
     (void*)0x00000000,
-    (void*)((u8*)fn_8008FE94 + 0x16C),
+    (void*)((u8*)demoScene16 + 0x16C),
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x9003001E,

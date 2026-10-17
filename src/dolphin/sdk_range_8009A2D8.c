@@ -247,7 +247,7 @@ static asm void DecrementerExceptionHandler(register u8 exception, register OSCo
 }
 #endif
 
-extern OSAllocCell* fn_8009A92C(OSAllocCell* head, OSAllocCell* cell);
+extern OSAllocCell* DLInsert(OSAllocCell* head, OSAllocCell* cell);
 
 #if defined(SDK_8009A9D8_PREFIX_ACTIVE)
 static OSAllocCell* DLAddFront(OSAllocCell* list, OSAllocCell* cell) {
@@ -317,7 +317,7 @@ void fn_8009AAD4(u32 idx, void* ptr) {
     OSAllocCell* cell = (OSAllocCell*)((u8*)ptr - 0x20);
 
     hd->allocated = DLExtract(hd->allocated, cell);
-    hd->free = fn_8009A92C(hd->free, cell);
+    hd->free = DLInsert(hd->free, cell);
 }
 
 u32 fn_8009AB50(u32 xfb) {

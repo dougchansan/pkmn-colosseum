@@ -12,7 +12,7 @@ typedef struct ToolentryBattleState {
 } ToolentryBattleState;
 
 extern ToolentryBattleState* fn_8006B5A8(void);
-extern u8* fn_8006B09C(s32 index);
+extern u8* savedataBattleGetEntryPtr(s32 index);
 extern u32 fn_8006A7D8(u32 entry);
 extern u32 fn_8006A7E8(u32 entry);
 
@@ -28,12 +28,12 @@ u32 fn_8025D9CC(void)
 
 u32 toolentryTaisenGetHomePlace(s32 index)
 {
-    return (u16)fn_8006A7E8((u32)fn_8006B09C(index));
+    return (u16)fn_8006A7E8((u32)savedataBattleGetEntryPtr(index));
 }
 
 u32 toolentryTaisenGetBattlePlayerID(s32 index)
 {
-    return fn_8006A7D8((u32)fn_8006B09C(index));
+    return fn_8006A7D8((u32)savedataBattleGetEntryPtr(index));
 }
 
 u32 toolentryTaisenGetEntryPlayerNum(void)

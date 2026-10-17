@@ -16,14 +16,14 @@ extern void fn_801EF0D4(void);
 extern void memoDataSetMemoFlag(u32);
 extern void memoInitDebug(u32);
 extern void std078_flagSetFalse(u32);
-extern void fn_800884BC(u32, u32, u32);
+extern void dnaKeyCodeCheck(u32, u32, u32);
 extern void fn_800FF660(void);
 extern u32 floorGetCurrentContext(void);
 extern u32 GSthreadCreate(s32, u32, s32, s32, s32, u32);
 extern u32 savedataGetStatus(s32, s32);
 extern u32 heroBiosGetPokemonPtr(u32, s32);
 extern u32 pokemonCheckValid(u32);
-extern void fn_80097A38(u32, s32);
+extern void menuPokemonStatusOpenWazaForget(u32, s32);
 extern void std098_mapWarpToMenuRoom(u32);
 extern void menuPokemonOpen(s32, s32, s32);
 extern void GSthreadSetArgs(u32, s32, ...);
@@ -190,7 +190,7 @@ s32 fn_8000CCF8(void) {
 
 /* 0x8000CD20 */
 s32 fn_8000CD20(void) {
-    fn_800884BC(0x99, 0x9C, 0x9F);
+    dnaKeyCodeCheck(0x99, 0x9C, 0x9F);
     return 0;
 }
 
@@ -236,7 +236,7 @@ u32 dbgMenuMenuTestWazaMenu(void) {
     if (val == 0) { return 0; }
     val = heroBiosGetPokemonPtr(val, 0);
     if ((u8)pokemonCheckValid(val) == 0) { return 0; }
-    fn_80097A38(val, 0x25);
+    menuPokemonStatusOpenWazaForget(val, 0x25);
     return 0;
 }
 

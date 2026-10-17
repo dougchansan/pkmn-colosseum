@@ -49,15 +49,15 @@ extern void fn_80121B4C(void* pokemon, s32 ribbon);
 extern s32 menuGetCursorFromItemID(s32 menu, s32 itemId);
 extern void cursorBiosSetPos(s32 cursor, const CursorPos* pos);
 extern void heroMoveRunEvent(s32);
-extern s32 fn_80075638(void);
+extern s32 exShrineModelIsOpen(void);
 extern void fn_8007565C(void);
 extern void std054_characterTalk(s32, s32, s32);
 extern s8 std011_dialogDisplayYesNoMenu(void);
 extern void GBAInit(void);
 extern void gbaCommandSetKeyState(s32, s32);
-extern void fn_8007B090(s32);
-extern s32 fn_8007AB10(s32, s32*);
-extern s32 fn_8007AAA8(void);
+extern void gbaBootPrepare(s32);
+extern s32 gbaBootRun(s32, s32*);
+extern s32 gbaBootWaitThread(void);
 extern void std055_characterEndSpeech(s32, s32);
 extern void menuSubOpenSelect(s32, s32, s32, s32, s32, s32);
 extern u8 heroMoveGetResID(s32* floorId, s32* resId, s32 member);
@@ -79,9 +79,9 @@ extern u32 _fadeEffectGetRandom__FUl(u32 limit);
 extern s32 fn_800D37CC(void);
 extern u32 msgGetCharsPerFrame(void);
 extern void fn_8025D164(void);
-extern s32 fn_8006ADEC(void);
+extern s32 savedataBattleGetCouponRun(void);
 extern f32 fn_8025D0A8(void* status);
-extern void fn_8006ADB4(s32 value);
+extern void savedataBattleSetCouponRun(s32 value);
 
 extern const char lbl_802758AC[];
 extern const f32 lbl_8047E100;
@@ -503,7 +503,7 @@ void std208_promptDNASampleSelection(void)
     heroMoveRunEvent(1);
 }
 
-extern u32 fn_800884BC(u32 arg0, u32 arg1, u32 arg2);
+extern u32 dnaKeyCodeCheck(u32 arg0, u32 arg1, u32 arg2);
 
 u8 std204_promptDNAKeyCode(u16 arg0, u16 arg1, u16 arg2)
 {
@@ -550,12 +550,12 @@ u8 std204_promptDNAKeyCode(u16 arg0, u16 arg1, u16 arg2)
     case 0x210: case 0x211: v2 = 0xf5; break;
     }
 
-    return fn_800884BC(v0, v1, v2) == 0;
+    return dnaKeyCodeCheck(v0, v1, v2) == 0;
 }
 
 void std207_gbaUnk_80075638(void)
 {
-    u32 ready = (u8)fn_80075638();
+    u32 ready = (u8)exShrineModelIsOpen();
 
     if (ready != 0) {
         fn_8007565C();
@@ -564,7 +564,7 @@ void std207_gbaUnk_80075638(void)
 
 #endif /* GS_801C84FC_ONLY */
 
-extern u32 fn_800756C8(s32 pokemonId);
+extern u32 exShrineModelOpen(s32 pokemonId);
 extern s32 heroItemAddItemDataId(u8* ptr, u32 itemId, u32 count, u32 arg4);
 extern s32 heroItemDecItemDataId(u8* ptr, u32 itemId, u32 count, u32 arg4);
 
@@ -610,7 +610,7 @@ s32 std205_getDNASampleSepcies(u16 arg0)
     if ((u16)pokemonId == 0) {
         return 0;
     }
-    fn_800756C8(pokemonId);
+    exShrineModelOpen(pokemonId);
 
     switch (arg0) {
     case 0x200: usedItem = 0x201; break;
@@ -649,14 +649,14 @@ s32 std200_gbaConnectEvent(s32 arg0, s32 arg1)
     if (std011_dialogDisplayYesNoMenu() == 0) {
         GBAInit();
         gbaCommandSetKeyState(2, 0);
-        fn_8007B090(1);
+        gbaBootPrepare(1);
         std054_characterTalk(arg0, arg1, 0x3B62);
 
         linkWork = 0;
         linkState = 1;
         repeat = 0;
         for (;;) {
-            result = fn_8007AB10(linkState, &linkWork);
+            result = gbaBootRun(linkState, &linkWork);
             if (repeat != 0 && result == 0) {
                 continue;
             }
@@ -698,7 +698,7 @@ s32 std200_gbaConnectEvent(s32 arg0, s32 arg1)
                 } else {
                     linkState = 8;
                 }
-                fn_8007AB10(7, &linkWork);
+                gbaBootRun(7, &linkWork);
                 break;
             case 9:
                 std054_characterTalk(arg0, arg1, 0x3B6C);
@@ -707,18 +707,18 @@ s32 std200_gbaConnectEvent(s32 arg0, s32 arg1)
                 } else {
                     linkState = 10;
                 }
-                fn_8007AB10(9, &linkWork);
+                gbaBootRun(9, &linkWork);
                 break;
             case 11:
                 std054_characterTalk(arg0, arg1, 0x3B82);
                 answer = (s8)std011_dialogDisplayYesNoMenu();
-                fn_8007AB10(9, &linkWork);
+                gbaBootRun(9, &linkWork);
                 if (answer != 0) {
                     linkState = 29;
                 } else {
                     linkState = 12;
                 }
-                fn_8007AB10(11, &linkWork);
+                gbaBootRun(11, &linkWork);
                 break;
             case 14:
                 std054_characterTalk(arg0, arg1, 0x3B6F);
@@ -730,7 +730,7 @@ s32 std200_gbaConnectEvent(s32 arg0, s32 arg1)
                 break;
             case 16:
                 if (linkWork != 0) {
-                    fn_8007AAA8();
+                    gbaBootWaitThread();
                 }
                 std054_characterTalk(arg0, arg1, 0x3B81);
                 std054_characterTalk(arg0, arg1, 0x3B6A);
@@ -752,7 +752,7 @@ s32 std200_gbaConnectEvent(s32 arg0, s32 arg1)
                 } else {
                     linkState = 1;
                 }
-                fn_8007AB10(19, &linkWork);
+                gbaBootRun(19, &linkWork);
                 break;
             }
 
@@ -762,7 +762,7 @@ s32 std200_gbaConnectEvent(s32 arg0, s32 arg1)
         }
 
         if (linkWork != 0) {
-            fn_8007AAA8();
+            gbaBootWaitThread();
         }
     }
 
@@ -1417,7 +1417,7 @@ u16 fieldStartEncount(u32 arg0, u8 arg1, s32 arg2)
     extern void fn_80112700(void);
     extern void std079_flagSetTrue(u32 flagId);
     extern void* fightEncountDataBiosGetPtr(u32 index);
-    extern u16 fn_8006A65C(void);
+    extern u16 menuCBBattleReturnToMenuRoom(void);
     extern void std229_mapLoad395(s32 value);
     extern void floorSetFadeScript(s32 a, s32 b);
     extern u32 fightStartEncount(u32 arg0);
@@ -1436,7 +1436,7 @@ u16 fieldStartEncount(u32 arg0, u8 arg1, s32 arg2)
 
     if (std082_flagGetValue(0x8AE)) {
         std079_flagSetTrue(0xE05);
-        result = fn_8006A65C();
+        result = menuCBBattleReturnToMenuRoom();
 
         if (std082_flagGetValue(0x8AE)) {
             fn_80112700();
@@ -1480,21 +1480,21 @@ s32 fn_801CA728(s32 count)
     s32 value;
     f32 multiplier;
 
-    base = fn_8006ADEC();
+    base = savedataBattleGetCouponRun();
     multiplier = fn_8025D0A8(savedataGetStatus(0, 2));
     value = base + (s32)((f32)count * multiplier);
-    fn_8006ADB4(value);
+    savedataBattleSetCouponRun(value);
     return value;
 }
 
 void fn_801CA7AC(s32 value)
 {
-    fn_8006ADB4(value);
+    savedataBattleSetCouponRun(value);
 }
 
 s32 std236_playerGetCouponsEarnedOnCurrentRun(void)
 {
-    return fn_8006ADEC();
+    return savedataBattleGetCouponRun();
 }
 
 

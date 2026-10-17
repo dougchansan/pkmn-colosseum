@@ -278,7 +278,7 @@ void save_SHA1Process(void* ctx);
 void cardesavedata_ValidateLevel(void* pCardE);
 
 /**
- * fn_80082738: Check and validate a card e-Reader series.
+ * cardeSaveRemoveCard: Check and validate a card e-Reader series.
  * Validates series number matches, level bounds, and grid dimensions.
  * If the caller passes a series index of 0 (first series with no cards
  * scanned), returns 1 indicating the series is "clear" (empty).
@@ -291,7 +291,7 @@ void cardesavedata_ValidateLevel(void* pCardE);
 s32 cardesavedata_CheckSeries(void* pCardE, CardESeries* pSeries, s8 seriesIdx);
 
 /**
- * fn_80082960 - fn_800836AC: Additional card e-Reader save functions.
+ * cardeSaveClearSummary - fn_800836AC: Additional card e-Reader save functions.
  * These handle reading/writing specific card data fields,
  * clearing entries, and serialization of card grid state.
  * Total: 9 functions (Func3 through Func11).

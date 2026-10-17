@@ -11,7 +11,7 @@
 #include "src/game/gbaCommunication.c"
 
 /* 0x80091DA4 | size: 0x1A4 */
-void fn_80091DA4(u32 ctx) {
+void demoScene06(u32 ctx) {
     extern u32 GSresGetResource(u32 ctx, u32 id);
     extern void GSmodelSetShadowTextureSize(u32 w, u32 h);
     extern void std116_mapObjectStopAnimation(u32 id);
@@ -80,7 +80,7 @@ void fn_80091DA4(u32 ctx) {
 }
 
 /* The receiver setup below is expanded twice here and five times in
- * fn_80092140 (same calls, same argument sources). */
+ * demoScene04 (same calls, same argument sources). */
 static inline void gbaCommunicationSetShadowReceiver(u32 ctx, u32 model)
 {
     extern u32 GSmodelSetShadowFlags(u32 handle, u32 val);
@@ -95,7 +95,7 @@ static inline void gbaCommunicationSetShadowReceiver(u32 ctx, u32 model)
 }
 
 /* 0x80091F48 | size: 0x1F8 */
-void fn_80091F48(u32 ctx) {
+void demoScene05(u32 ctx) {
     extern u32 GSresGetResource(u32 ctx, u32 id);
     extern void GSmodelSetShadowTextureSize(u32 w, u32 h);
     extern void std116_mapObjectStopAnimation(u32 id);
@@ -166,7 +166,7 @@ void fn_80091F48(u32 ctx) {
 }
 
 /* 0x80092140 | size: 0x358 */
-void fn_80092140(u32 ctx) {
+void demoScene04(u32 ctx) {
     extern void GSmodelSetShadowTextureSize(u32, u32);
     extern u32 std112_modelGetResourceID(u32);
     extern u32 GSmodelSetShadowFlags(u32, u32);
@@ -247,7 +247,7 @@ void fn_80092140(u32 ctx) {
 }
 
 /* 0x80092498 | size: 0x1CC */
-void fn_80092498(u32 ctx) {
+void demoScene03(u32 ctx) {
     extern u32 GSresGetResource(u32 ctx, u32 id);
     extern void GSmodelSetShadowTextureSize(u32 w, u32 h);
     extern void std116_mapObjectStopAnimation(u32 id);
@@ -322,7 +322,7 @@ void fn_80092498(u32 ctx) {
 }
 
 /* 0x80092664 | size: 0x358 */
-void fn_80092664(u32 ctx) {
+void demoScene02(u32 ctx) {
     extern void GSmodelSetShadowTextureSize(u32, u32);
     extern u32 std112_modelGetResourceID(u32);
     extern u32 GSmodelSetShadowFlags(u32, u32);
@@ -403,7 +403,7 @@ void fn_80092664(u32 ctx) {
 }
 
 /* 0x800929BC | size: 0x170 */
-void fn_800929BC(u32 ctx) {
+void demoScene01(u32 ctx) {
     extern u32 GSresGetResource(u32 ctx, u32 id);
     extern void GSmodelSetShadowTextureSize(u32 w, u32 h);
     extern void std116_mapObjectStopAnimation(u32 id);
@@ -473,7 +473,7 @@ void fn_800929BC(u32 ctx) {
 }
 
 /* 0x80092B2C | size: 0x164 */
-void fn_80092B2C(u32 ctx) {
+void demoScene00(u32 ctx) {
     extern u32 GSresGetResource(u32 ctx, u32 id);
     extern void GSmodelSetShadowTextureSize(u32 w, u32 h);
     extern void std116_mapObjectStopAnimation(u32 id);
@@ -536,13 +536,13 @@ void fn_80092B2C(u32 ctx) {
 }
 
 /* 0x80092C90 | size: 0x1A8 */
-s32 fn_80092C90(s32 channel, void* arg1, void* arg2)
+s32 gbaCommStartSendPokemon(s32 channel, void* arg1, void* arg2)
 {
     extern u32 fn_800E2C04(u32 size, u32 align);
     extern void* fn_800E27B0(u32 handle);
     extern void fn_8009F77C(void* work);
-    extern void fn_8009F9C8(void* callback);
-    extern s32 fn_800937F4(void* arg);
+    extern void OSInitCond(void* callback);
+    extern s32 _gbaCommThread(void* arg);
     extern void fn_80093B04(u32 a, u32 b);
     extern s32 fn_80089048(void* out, void* arg1, void* arg2);
     extern void OSCreateThread(void* thread, void* entry, void* arg,
@@ -579,8 +579,8 @@ s32 fn_80092C90(s32 channel, void* arg1, void* arg2)
             *(s32*)(work + GBA_STATE_PORT) = channel;
             fn_800716C8(channel, work + GBA_DATA_OFFSET, fn_80093B04);
             fn_8009F77C(work);
-            fn_8009F9C8(work + 0x18);
-            OSCreateThread(work + GBA_DATA_OFFSET, fn_800937F4, work,
+            OSInitCond(work + 0x18);
+            OSCreateThread(work + GBA_DATA_OFFSET, _gbaCommThread, work,
                            work + GBA_STATE_PORT, 0x4000,
                            GBA_THREAD_PRIORITY, 0);
             OSResumeThread(work + GBA_DATA_OFFSET);
@@ -605,19 +605,19 @@ s32 fn_80092C90(s32 channel, void* arg1, void* arg2)
     fn_8009F890(requestWork);
     fn_800A257C(requestWork + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
     if (requestStarted != 0) {
-        fn_8009FABC(requestWork + 0x18);
+        OSSignalCond(requestWork + 0x18);
     }
     return requestStarted;
 }
 
 /* 0x80092E38 | size: 0x190 */
-s32 fn_80092E38(s32 channel, void* requestValue)
+s32 gbaCommStartTransferA(s32 channel, void* requestValue)
 {
     extern u32 fn_800E2C04(u32 size, u32 align);
     extern void* fn_800E27B0(u32 handle);
     extern void fn_8009F77C(void* work);
-    extern void fn_8009F9C8(void* callback);
-    extern s32 fn_800937F4(void* arg);
+    extern void OSInitCond(void* callback);
+    extern s32 _gbaCommThread(void* arg);
     extern void fn_80093B04(u32 a, u32 b);
     extern void OSCreateThread(void* thread, void* entry, void* arg,
                                void* stack, u32 stackSize, s32 priority,
@@ -653,8 +653,8 @@ s32 fn_80092E38(s32 channel, void* requestValue)
             *(s32*)(work + GBA_STATE_PORT) = channel;
             fn_800716C8(channel, work + GBA_DATA_OFFSET, fn_80093B04);
             fn_8009F77C(work);
-            fn_8009F9C8(work + 0x18);
-            OSCreateThread(work + GBA_DATA_OFFSET, fn_800937F4, work,
+            OSInitCond(work + 0x18);
+            OSCreateThread(work + GBA_DATA_OFFSET, _gbaCommThread, work,
                            work + GBA_STATE_PORT, 0x4000,
                            GBA_THREAD_PRIORITY, 0);
             OSResumeThread(work + GBA_DATA_OFFSET);
@@ -678,7 +678,7 @@ s32 fn_80092E38(s32 channel, void* requestValue)
     fn_8009F890(requestWork);
     fn_800A257C(requestWork + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
     if (requestStarted != 0) {
-        fn_8009FABC(requestWork + 0x18);
+        OSSignalCond(requestWork + 0x18);
     }
     return requestStarted;
 }

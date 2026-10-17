@@ -157,7 +157,7 @@ void fightFloorSetTimeOutAllFightResult(void* param) {
 /* 0x801F1700 | size: 0x58 | small */
 u32 fightFloorIsUseFightTimerCommand(void* param) {
     extern u32 fightFloorGetStatus(void*, u32, u32, u32);
-    extern s32 fn_80077B84(u32);
+    extern s32 menuCBRule_GetCommandTimeLimit(u32);
     u32 val;
     u8 flag;
     s32 r;
@@ -165,7 +165,7 @@ u32 fightFloorIsUseFightTimerCommand(void* param) {
     val = fightFloorGetStatus(param, 0, 0x34, 0);
     r = val;
     flag = r & 0xFF;
-    r = fn_80077B84(r);
+    r = menuCBRule_GetCommandTimeLimit(r);
     if (flag == 1 && r > 0) {
         return 1;
     }

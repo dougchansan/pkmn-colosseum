@@ -121,7 +121,7 @@ extern MenuModelWork lbl_803A9720;
 extern u32 lbl_8047A560;
 extern s32 lbl_804788F8;
 
-extern void* fn_80057270();
+extern void* pcBoxGetCursorPokemon();
 extern s32 fn_800573C0(void);
 extern s32 fn_800566E8(void);
 extern s32 fn_80057E40(MenuCBPane* pane);
@@ -167,7 +167,7 @@ extern void fn_80054760(s32 forward, s32 wait);
 extern MenuItemBios* menuItemBiosGetPtr(s32 itemId);
 extern void menuModelInit(MenuModelWork* work, s16 x, s16 y);
 extern void pokemonInit(MenuCBPokemonBlob* pokemon);
-extern void fn_800558B8(void);
+extern void pcBoxRun(void);
 extern void fn_80056A80(void);
 extern void fn_80056B74(MenuCBPane* pane, s32 enabled);
 extern void fn_80057A38(void);
@@ -331,7 +331,7 @@ u32 fn_80053778(u32 unused, u8* pane) {
         return 0;
     }
 
-    pokemon = fn_80057270();
+    pokemon = pcBoxGetCursorPokemon();
     if (pokemon == NULL) {
         return 0;
     }
@@ -370,7 +370,7 @@ s32 fn_80053A60(MenuCBPane* pane, MenuCBPane* sprite)
     void* pokemon;
 
     visible = FALSE;
-    pokemon = fn_80057270(pane);
+    pokemon = pcBoxGetCursorPokemon(pane);
     if (pokemon != NULL) {
         u32 mark = (u8)pokemonBiosGetPcboxMark(pokemon);
         s32 masked = mark & 8;
@@ -389,7 +389,7 @@ s32 fn_80053AC8(MenuCBPane* pane, MenuCBPane* sprite)
     void* pokemon;
 
     visible = FALSE;
-    pokemon = fn_80057270(pane);
+    pokemon = pcBoxGetCursorPokemon(pane);
     if (pokemon != NULL) {
         u32 mark = (u8)pokemonBiosGetPcboxMark(pokemon);
         s32 masked = mark & 4;
@@ -408,7 +408,7 @@ s32 fn_80053B30(MenuCBPane* pane, MenuCBPane* sprite)
     void* pokemon;
 
     visible = FALSE;
-    pokemon = fn_80057270(pane);
+    pokemon = pcBoxGetCursorPokemon(pane);
     if (pokemon != NULL) {
         u32 mark = (u8)pokemonBiosGetPcboxMark(pokemon);
         s32 masked = mark & 2;
@@ -427,7 +427,7 @@ s32 fn_80053B98(MenuCBPane* pane, MenuCBPane* sprite)
     void* pokemon;
 
     visible = FALSE;
-    pokemon = fn_80057270(pane);
+    pokemon = pcBoxGetCursorPokemon(pane);
     if (pokemon != NULL) {
         u32 mark = (u8)pokemonBiosGetPcboxMark(pokemon);
         s32 masked = mark & 1;
@@ -447,7 +447,7 @@ s32 fn_80053C00(MenuCBPane* pane, MenuCBPane* sprite)
     void* itemData;
     s32 result;
 
-    pokemon = fn_80057270(pane);
+    pokemon = pcBoxGetCursorPokemon(pane);
     if (pokemon != NULL) {
         itemId = pokemonGetSoubiItemDataId(pokemon);
         if (itemId != 0) {
@@ -470,7 +470,7 @@ s32 fn_80053C84(MenuCBPane* pane, MenuCBPane* sprite)
     u32 itemId;
 
     visible = FALSE;
-    pokemon = fn_80057270(pane);
+    pokemon = pcBoxGetCursorPokemon(pane);
     if (pokemon != NULL) {
         itemId = (u16)pokemonGetSoubiItemDataId(pokemon);
         if (itemId != 0) {
@@ -487,7 +487,7 @@ s32 fn_80053CE8(MenuCBPane* pane, MenuCBPane* sprite)
     void* pokemon;
 
     textId = 0;
-    pokemon = fn_80057270(pane);
+    pokemon = pcBoxGetCursorPokemon(pane);
     if (pokemon != NULL) {
         switch ((u8)menuSubGetPokemonSexForDisp(pokemon)) {
         case 0:
@@ -509,7 +509,7 @@ s32 fn_80053D64(MenuCBPane* pane, MenuCBPane* sprite)
     void* pokemon;
     s32 result;
 
-    pokemon = fn_80057270(pane);
+    pokemon = pcBoxGetCursorPokemon(pane);
     if (pokemon != NULL) {
         msgctrlSetValue(0x37, GSmsgGetGSchar(pokemonDataBiosGetName(
                                      pokemonDataBiosGetPtr(pokemonBiosGetPokemonDataId(pokemon)))));
@@ -520,7 +520,7 @@ s32 fn_80053D64(MenuCBPane* pane, MenuCBPane* sprite)
     return result;
 }
 
-s32 fn_80053DD4(MenuCBPane* pane, MenuCBPane* sprite)
+s32 pcBoxDrawLevel(MenuCBPane* pane, MenuCBPane* sprite)
 {
     void* pokemon;
     u32 level;
@@ -528,7 +528,7 @@ s32 fn_80053DD4(MenuCBPane* pane, MenuCBPane* sprite)
     u32 rect;
 
     textId = 0;
-    pokemon = fn_80057270(pane);
+    pokemon = pcBoxGetCursorPokemon(pane);
     if (pokemon != NULL) {
         level = pokemonBiosGetLevel(pokemon);
         if ((s32)level < 100) {
@@ -545,12 +545,12 @@ s32 fn_80053DD4(MenuCBPane* pane, MenuCBPane* sprite)
     return 0;
 }
 
-s32 fn_80053E7C(MenuCBPane* pane)
+s32 pcBoxDrawNickname(MenuCBPane* pane)
 {
     void* pokemon;
     void* nickname;
 
-    pokemon = fn_80057270(pane);
+    pokemon = pcBoxGetCursorPokemon(pane);
     if (pokemon == NULL) {
         return 0;
     }

@@ -18,41 +18,41 @@ extern u8 lbl_802EEFD8[];
 extern u8 lbl_802EF000[];
 extern void* jumptable_802EF01C[];
 
-extern u8 fn_80084A8C[];
-extern u8 fn_8008AE18[];
-extern u8 fn_8008BBDC[];
-extern u8 fn_8008C7B0[];
-extern u8 fn_8008CACC[];
-extern u8 fn_8008CDD8[];
-extern u8 fn_8008D0A0[];
-extern u8 fn_8008D348[];
-extern u8 fn_8008D938[];
-extern u8 fn_8008E320[];
-extern u8 fn_8008E7D4[];
-extern u8 fn_8008EC28[];
-extern u8 fn_8008EED0[];
-extern u8 fn_8008F190[];
-extern u8 fn_8008F524[];
-extern u8 fn_8008F91C[];
-extern u8 fn_8008FBF4[];
-extern u8 fn_8008FE94[];
-extern u8 fn_80090100[];
-extern u8 fn_80090720[];
-extern u8 fn_800909E4[];
-extern u8 fn_80090D34[];
-extern u8 fn_8009100C[];
-extern u8 fn_80091564[];
-extern u8 fn_80091774[];
-extern u8 fn_80091984[];
-extern u8 fn_80091B94[];
-extern u8 fn_80091DA4[];
-extern u8 fn_80091F48[];
-extern u8 fn_80092140[];
-extern u8 fn_80092498[];
-extern u8 fn_80092664[];
-extern u8 fn_800929BC[];
-extern u8 fn_80092B2C[];
-extern u8 fn_800937F4[];
+extern u8 cardeGbaTransfer[];
+extern u8 pokeconvPokemonToGBA[];
+extern u8 pokeconvPokemonFromGBA[];
+extern u8 demoScene30[];
+extern u8 demoScene29[];
+extern u8 demoScene28[];
+extern u8 demoScene27[];
+extern u8 demoScene26[];
+extern u8 demoScene25[];
+extern u8 demoScene24[];
+extern u8 demoScene23[];
+extern u8 demoScene22[];
+extern u8 demoScene21[];
+extern u8 demoScene20[];
+extern u8 demoScene19[];
+extern u8 demoScene18[];
+extern u8 demoScene17[];
+extern u8 demoScene16[];
+extern u8 demoScene15[];
+extern u8 demoScene14[];
+extern u8 demoScene13[];
+extern u8 demoScene12[];
+extern u8 demoScene11[];
+extern u8 demoScene10[];
+extern u8 demoScene09[];
+extern u8 demoScene08[];
+extern u8 demoScene07[];
+extern u8 demoScene06[];
+extern u8 demoScene05[];
+extern u8 demoScene04[];
+extern u8 demoScene03[];
+extern u8 demoScene02[];
+extern u8 demoScene01[];
+extern u8 demoScene00[];
+extern u8 _gbaCommThread[];
 extern u8 menuStatusDrawPokemonInfo[];
 extern u8 fn_80096D54[];
 extern u8 fn_80096FA0[];
@@ -60,14 +60,14 @@ extern u8 fn_80096FA0[];
 /* Auto-carved .data unit 0x802EEB78..0x802EF0A4 (18 objects). Non-relocated data as byte-exact u8[]; pointer/jump tables as void*[] for R_PPC_ADDR32 relocations. */
 
 void* jumptable_802EEB78[8] = {
-    (void*)((u8*)fn_80084A8C + 0x1344),
-    (void*)((u8*)fn_80084A8C + 0x1314),
-    (void*)((u8*)fn_80084A8C + 0x131C),
-    (void*)((u8*)fn_80084A8C + 0x1324),
-    (void*)((u8*)fn_80084A8C + 0x132C),
-    (void*)((u8*)fn_80084A8C + 0x1334),
-    (void*)((u8*)fn_80084A8C + 0x1344),
-    (void*)((u8*)fn_80084A8C + 0x133C),
+    (void*)((u8*)cardeGbaTransfer + 0x1344),
+    (void*)((u8*)cardeGbaTransfer + 0x1314),
+    (void*)((u8*)cardeGbaTransfer + 0x131C),
+    (void*)((u8*)cardeGbaTransfer + 0x1324),
+    (void*)((u8*)cardeGbaTransfer + 0x132C),
+    (void*)((u8*)cardeGbaTransfer + 0x1334),
+    (void*)((u8*)cardeGbaTransfer + 0x1344),
+    (void*)((u8*)cardeGbaTransfer + 0x133C),
 };
 
 u8 lbl_802EEB98[32] = {
@@ -77,113 +77,113 @@ u8 lbl_802EEB98[32] = {
 };
 
 void* jumptable_802EEBB8[10] = {
-    (void*)((u8*)fn_8008AE18 + 0x1E8),
-    (void*)((u8*)fn_8008AE18 + 0x188),
-    (void*)((u8*)fn_8008AE18 + 0x194),
-    (void*)((u8*)fn_8008AE18 + 0x1A0),
-    (void*)((u8*)fn_8008AE18 + 0x1AC),
-    (void*)((u8*)fn_8008AE18 + 0x1B8),
-    (void*)((u8*)fn_8008AE18 + 0x1C4),
-    (void*)((u8*)fn_8008AE18 + 0x1E8),
-    (void*)((u8*)fn_8008AE18 + 0x1D0),
-    (void*)((u8*)fn_8008AE18 + 0x1DC),
+    (void*)((u8*)pokeconvPokemonToGBA + 0x1E8),
+    (void*)((u8*)pokeconvPokemonToGBA + 0x188),
+    (void*)((u8*)pokeconvPokemonToGBA + 0x194),
+    (void*)((u8*)pokeconvPokemonToGBA + 0x1A0),
+    (void*)((u8*)pokeconvPokemonToGBA + 0x1AC),
+    (void*)((u8*)pokeconvPokemonToGBA + 0x1B8),
+    (void*)((u8*)pokeconvPokemonToGBA + 0x1C4),
+    (void*)((u8*)pokeconvPokemonToGBA + 0x1E8),
+    (void*)((u8*)pokeconvPokemonToGBA + 0x1D0),
+    (void*)((u8*)pokeconvPokemonToGBA + 0x1DC),
 };
 
 void* jumptable_802EEBE0[12] = {
-    (void*)((u8*)fn_8008AE18 + 0x14C),
-    (void*)((u8*)fn_8008AE18 + 0x110),
-    (void*)((u8*)fn_8008AE18 + 0x124),
-    (void*)((u8*)fn_8008AE18 + 0x14C),
-    (void*)((u8*)fn_8008AE18 + 0x14C),
-    (void*)((u8*)fn_8008AE18 + 0x14C),
-    (void*)((u8*)fn_8008AE18 + 0x14C),
-    (void*)((u8*)fn_8008AE18 + 0x14C),
-    (void*)((u8*)fn_8008AE18 + 0xD4),
-    (void*)((u8*)fn_8008AE18 + 0xE8),
-    (void*)((u8*)fn_8008AE18 + 0xFC),
-    (void*)((u8*)fn_8008AE18 + 0x138),
+    (void*)((u8*)pokeconvPokemonToGBA + 0x14C),
+    (void*)((u8*)pokeconvPokemonToGBA + 0x110),
+    (void*)((u8*)pokeconvPokemonToGBA + 0x124),
+    (void*)((u8*)pokeconvPokemonToGBA + 0x14C),
+    (void*)((u8*)pokeconvPokemonToGBA + 0x14C),
+    (void*)((u8*)pokeconvPokemonToGBA + 0x14C),
+    (void*)((u8*)pokeconvPokemonToGBA + 0x14C),
+    (void*)((u8*)pokeconvPokemonToGBA + 0x14C),
+    (void*)((u8*)pokeconvPokemonToGBA + 0xD4),
+    (void*)((u8*)pokeconvPokemonToGBA + 0xE8),
+    (void*)((u8*)pokeconvPokemonToGBA + 0xFC),
+    (void*)((u8*)pokeconvPokemonToGBA + 0x138),
 };
 
 void* jumptable_802EEC10[8] = {
-    (void*)((u8*)fn_8008BBDC + 0x3A8),
-    (void*)((u8*)fn_8008BBDC + 0x360),
-    (void*)((u8*)fn_8008BBDC + 0x36C),
-    (void*)((u8*)fn_8008BBDC + 0x378),
-    (void*)((u8*)fn_8008BBDC + 0x384),
-    (void*)((u8*)fn_8008BBDC + 0x390),
-    (void*)((u8*)fn_8008BBDC + 0x3A8),
-    (void*)((u8*)fn_8008BBDC + 0x39C),
+    (void*)((u8*)pokeconvPokemonFromGBA + 0x3A8),
+    (void*)((u8*)pokeconvPokemonFromGBA + 0x360),
+    (void*)((u8*)pokeconvPokemonFromGBA + 0x36C),
+    (void*)((u8*)pokeconvPokemonFromGBA + 0x378),
+    (void*)((u8*)pokeconvPokemonFromGBA + 0x384),
+    (void*)((u8*)pokeconvPokemonFromGBA + 0x390),
+    (void*)((u8*)pokeconvPokemonFromGBA + 0x3A8),
+    (void*)((u8*)pokeconvPokemonFromGBA + 0x39C),
 };
 
 void* jumptable_802EEC30[16] = {
-    (void*)((u8*)fn_8008BBDC + 0x338),
-    (void*)((u8*)fn_8008BBDC + 0x308),
-    (void*)((u8*)fn_8008BBDC + 0x310),
-    (void*)((u8*)fn_8008BBDC + 0x318),
-    (void*)((u8*)fn_8008BBDC + 0x320),
-    (void*)((u8*)fn_8008BBDC + 0x328),
-    (void*)((u8*)fn_8008BBDC + 0x338),
-    (void*)((u8*)fn_8008BBDC + 0x338),
-    (void*)((u8*)fn_8008BBDC + 0x338),
-    (void*)((u8*)fn_8008BBDC + 0x338),
-    (void*)((u8*)fn_8008BBDC + 0x338),
-    (void*)((u8*)fn_8008BBDC + 0x338),
-    (void*)((u8*)fn_8008BBDC + 0x338),
-    (void*)((u8*)fn_8008BBDC + 0x338),
-    (void*)((u8*)fn_8008BBDC + 0x338),
-    (void*)((u8*)fn_8008BBDC + 0x330),
+    (void*)((u8*)pokeconvPokemonFromGBA + 0x338),
+    (void*)((u8*)pokeconvPokemonFromGBA + 0x308),
+    (void*)((u8*)pokeconvPokemonFromGBA + 0x310),
+    (void*)((u8*)pokeconvPokemonFromGBA + 0x318),
+    (void*)((u8*)pokeconvPokemonFromGBA + 0x320),
+    (void*)((u8*)pokeconvPokemonFromGBA + 0x328),
+    (void*)((u8*)pokeconvPokemonFromGBA + 0x338),
+    (void*)((u8*)pokeconvPokemonFromGBA + 0x338),
+    (void*)((u8*)pokeconvPokemonFromGBA + 0x338),
+    (void*)((u8*)pokeconvPokemonFromGBA + 0x338),
+    (void*)((u8*)pokeconvPokemonFromGBA + 0x338),
+    (void*)((u8*)pokeconvPokemonFromGBA + 0x338),
+    (void*)((u8*)pokeconvPokemonFromGBA + 0x338),
+    (void*)((u8*)pokeconvPokemonFromGBA + 0x338),
+    (void*)((u8*)pokeconvPokemonFromGBA + 0x338),
+    (void*)((u8*)pokeconvPokemonFromGBA + 0x330),
 };
 
 void* lbl_802EEC70[32] = {
-    (void*)((u8*)fn_80092B2C),
-    (void*)((u8*)fn_800929BC),
-    (void*)((u8*)fn_80092664),
-    (void*)((u8*)fn_80092498),
-    (void*)((u8*)fn_80092140),
-    (void*)((u8*)fn_80091F48),
-    (void*)((u8*)fn_80091DA4),
-    (void*)((u8*)fn_80091B94),
-    (void*)((u8*)fn_80091984),
-    (void*)((u8*)fn_80091774),
-    (void*)((u8*)fn_80091564),
-    (void*)((u8*)fn_8009100C),
-    (void*)((u8*)fn_80090D34),
-    (void*)((u8*)fn_800909E4),
-    (void*)((u8*)fn_80090720),
-    (void*)((u8*)fn_80090100),
-    (void*)((u8*)fn_8008FE94),
-    (void*)((u8*)fn_8008FBF4),
-    (void*)((u8*)fn_8008F91C),
-    (void*)((u8*)fn_8008F524),
-    (void*)((u8*)fn_8008F190),
-    (void*)((u8*)fn_8008EED0),
-    (void*)((u8*)fn_8008EC28),
-    (void*)((u8*)fn_8008E7D4),
-    (void*)((u8*)fn_8008E320),
-    (void*)((u8*)fn_8008D938),
-    (void*)((u8*)fn_8008D348),
-    (void*)((u8*)fn_8008D0A0),
-    (void*)((u8*)fn_8008CDD8),
-    (void*)((u8*)fn_8008CACC),
-    (void*)((u8*)fn_8008C7B0),
+    (void*)((u8*)demoScene00),
+    (void*)((u8*)demoScene01),
+    (void*)((u8*)demoScene02),
+    (void*)((u8*)demoScene03),
+    (void*)((u8*)demoScene04),
+    (void*)((u8*)demoScene05),
+    (void*)((u8*)demoScene06),
+    (void*)((u8*)demoScene07),
+    (void*)((u8*)demoScene08),
+    (void*)((u8*)demoScene09),
+    (void*)((u8*)demoScene10),
+    (void*)((u8*)demoScene11),
+    (void*)((u8*)demoScene12),
+    (void*)((u8*)demoScene13),
+    (void*)((u8*)demoScene14),
+    (void*)((u8*)demoScene15),
+    (void*)((u8*)demoScene16),
+    (void*)((u8*)demoScene17),
+    (void*)((u8*)demoScene18),
+    (void*)((u8*)demoScene19),
+    (void*)((u8*)demoScene20),
+    (void*)((u8*)demoScene21),
+    (void*)((u8*)demoScene22),
+    (void*)((u8*)demoScene23),
+    (void*)((u8*)demoScene24),
+    (void*)((u8*)demoScene25),
+    (void*)((u8*)demoScene26),
+    (void*)((u8*)demoScene27),
+    (void*)((u8*)demoScene28),
+    (void*)((u8*)demoScene29),
+    (void*)((u8*)demoScene30),
     (void*)0x00000000,
 };
 
 void* jumptable_802EECF0[14] = {
-    (void*)((u8*)fn_800937F4 + 0x2D8),
-    (void*)((u8*)fn_800937F4 + 0x94),
-    (void*)((u8*)fn_800937F4 + 0xEC),
-    (void*)((u8*)fn_800937F4 + 0x2D8),
-    (void*)((u8*)fn_800937F4 + 0x1AC),
-    (void*)((u8*)fn_800937F4 + 0x208),
-    (void*)((u8*)fn_800937F4 + 0x210),
-    (void*)((u8*)fn_800937F4 + 0x218),
-    (void*)((u8*)fn_800937F4 + 0x220),
-    (void*)((u8*)fn_800937F4 + 0x228),
-    (void*)((u8*)fn_800937F4 + 0x230),
-    (void*)((u8*)fn_800937F4 + 0x238),
-    (void*)((u8*)fn_800937F4 + 0x264),
-    (void*)((u8*)fn_800937F4 + 0x2D0),
+    (void*)((u8*)_gbaCommThread + 0x2D8),
+    (void*)((u8*)_gbaCommThread + 0x94),
+    (void*)((u8*)_gbaCommThread + 0xEC),
+    (void*)((u8*)_gbaCommThread + 0x2D8),
+    (void*)((u8*)_gbaCommThread + 0x1AC),
+    (void*)((u8*)_gbaCommThread + 0x208),
+    (void*)((u8*)_gbaCommThread + 0x210),
+    (void*)((u8*)_gbaCommThread + 0x218),
+    (void*)((u8*)_gbaCommThread + 0x220),
+    (void*)((u8*)_gbaCommThread + 0x228),
+    (void*)((u8*)_gbaCommThread + 0x230),
+    (void*)((u8*)_gbaCommThread + 0x238),
+    (void*)((u8*)_gbaCommThread + 0x264),
+    (void*)((u8*)_gbaCommThread + 0x2D0),
 };
 
 u8 lbl_802EED28[28] = {

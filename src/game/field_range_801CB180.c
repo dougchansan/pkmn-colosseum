@@ -161,7 +161,7 @@ extern void GSmodelSetBoundCheck(void* model, s32 enabled);
 extern s32 floorRequestChange(s32 msg_id);
 extern void winMsgOpen(s32 id, s32 msg_id, s32 arg2, s32 arg3);
 extern s32 std011_dialogDisplayYesNoMenu(void);
-extern s32 fn_800889E4(s32 arg);
+extern s32 menuSaveLoadSaveGame(s32 arg);
 extern void* fn_800E202C(void* ptr);
 extern void fn_800E24B0(void);
 extern s32 fn_800E209C(void* ptr);
@@ -209,7 +209,7 @@ void* gamedatasaveBiosGetPtr(void* data);
 u64 gamedatasaveBiosGetMemcardID(u32* data);
 void gamedatasaveBiosSetMemcardID(void* data, u64 memcard_id);
 u16 fn_8006A718(void* data);
-void fn_8006AF44(void* data, void* value);
+void savedataBattleSetSavedHero(void* data, void* value);
 void fn_801CBE44(void* data, u32 size, void* hash, u32 offset);
 u16 GSrand(void);
 void* heroGetStatus(void* data, s32 status, s32 index);
@@ -571,7 +571,7 @@ s32 std223_askYesNoThenWarp395(void)
             }
             break;
         case 2:
-            if (fn_800889E4(1) == 0) {
+            if (menuSaveLoadSaveGame(1) == 0) {
                 state = 3;
                 result = 1;
             } else {
@@ -828,7 +828,7 @@ s32 fn_801CF320(void)
     case 9:
         data = savedataGetStatus(save->header.fields.savedata, 14);
         if (fn_8006A718(save->header.fields.savedata) == 1) {
-            fn_8006AF44(data, NULL);
+            savedataBattleSetSavedHero(data, NULL);
         }
         /* fallthrough */
     case 4:
@@ -893,7 +893,7 @@ s32 fn_801CF568(void)
         *lbl_8047B3D4->savedata_status = *savedata;
         break;
     case 5:
-        fn_8006AF44(status14, default_status14->field_B328);
+        savedataBattleSetSavedHero(status14, default_status14->field_B328);
         break;
     case 13:
         memcpy(status14->field_C9DC, default_status14->field_C9DC, 0x1F8);

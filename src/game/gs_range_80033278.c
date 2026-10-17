@@ -15,19 +15,19 @@
 #include "dolphin/types.h"
 
 extern void GBAInit(void);
-extern void fn_8007B090(s32);
+extern void gbaBootPrepare(s32);
 extern s32 windowGetActiveID(void);
 extern u8* windowGetKeyInfo(void);
 extern void fn_8007AAFC(void);
-extern void fn_8007AAA8(void);
-extern s32 fn_8007AB10(s32, s32*);
+extern void gbaBootWaitThread(void);
+extern s32 gbaBootRun(s32, s32*);
 extern void soundStartSE(u32);
 extern void winMsgClose(s32);
 extern void winMsgOpen(s32, u32, s32, s32);
 extern void _threadSwitch(void);
 extern s32 fn_800D37CC(void);
 extern u32 msgGetCharsPerFrame(void);
-extern void fn_80080310(void*, const void*, u32);
+extern void cardeDecode(void*, const void*, u32);
 extern u8 lbl_803A3334[];
 extern u8 lbl_803F7A30[];
 extern const f32 lbl_8047B9F8;
@@ -78,15 +78,15 @@ extern void fn_8007CAB0(void);
 extern void* fn_800836AC(s32, void*, s32);
 extern void fn_8007C7EC(void);
 
-extern u8* fn_80082EA4(void*, s32, s32, s32);
-extern u8* fn_80082FE4(void*, s32);
+extern u8* cardeSaveGetCard(void*, s32, s32, s32);
+extern u8* cardeSaveGetLevel(void*, s32);
 
-extern void fn_8007C450(s32, s32, s32, s32, s32);
+extern void menuCardEMatrixSetTarget(s32, s32, s32, s32, s32);
 extern void fn_8007C414(void);
 
-extern void fn_80082CF0(void*, void*, s32);
-extern void fn_80082BA4(void*, void*, s32);
-extern void fn_80082960(void*, void*, s32);
+extern void cardeSaveSetCard(void*, void*, s32);
+extern void cardeSaveSetSummary(void*, void*, s32);
+extern void cardeSaveClearSummary(void*, void*, s32);
 
 extern void soundStartSE(u32);
 
@@ -102,9 +102,9 @@ extern void pokemonBiosSetItemDataId(void*, u16);
 extern u32 cardeBuildTrainerEncounter(void*, s32, s32);
 extern s32 windowGetActiveID(void);
 
-extern void fn_8007C300(s32, s32);
+extern void menuCardEMatrixSelectCard(s32, s32);
 
-extern u8 fn_80082738(void*, void*, s32);
+extern u8 cardeSaveRemoveCard(void*, void*, s32);
 extern void fn_8007C634(void);
 extern void fn_80082650(void*);
 
@@ -115,7 +115,7 @@ extern s32 heroItemAddItemDataId(s32, u16, s32, s32);
 extern u16 pcboxDelItem(s32, u16, s32);
 
 extern void std130_soundUnk_801653cc(s32, s32, s32);
-extern void fn_800832C8(s32, void*, s32);
+extern void cardeGridSetShadowPokemon(s32, void*, s32);
 
 #pragma push
 #pragma peephole off
@@ -279,7 +279,7 @@ restart:
 
     slot = (s8)(sv[0x58] - 1);
 
-    ptr = fn_80082EA4(
+    ptr = cardeSaveGetCard(
         lbl_8047A434,
         slot,
         sv[0x24],
@@ -297,7 +297,7 @@ restart:
         i = 0;
 
         while (i < (s8)sv[0x58]) {
-            ptr = fn_80082EA4(
+            ptr = cardeSaveGetCard(
                 lbl_8047A434,
                 (s8)i,
                 area,
@@ -332,7 +332,7 @@ restart:
                     (s8)sv[0x5E + j] < 0) {
                     valid = 0;
                 } else {
-                    ptr = fn_80082FE4(lbl_8047A434, j);
+                    ptr = cardeSaveGetLevel(lbl_8047A434, j);
 
                     if (ptr[0x1C + region * 0x0E] != 0) {
                         valid = 0;
@@ -385,7 +385,7 @@ restart:
                 (s8)sv[0x5E + slot] < 0) {
                 valid = 0;
             } else {
-                ptr = fn_80082FE4(lbl_8047A434, slot);
+                ptr = cardeSaveGetLevel(lbl_8047A434, slot);
 
                 if (ptr[0x1C + region * 0x0E] != 0) {
                     valid = 0;
@@ -457,7 +457,7 @@ restart:
             (u32)(sv + 0x28 +
                   ((s8)slot + 1) * 0x10));
 
-        fn_8007C450(
+        menuCardEMatrixSetTarget(
             sv[8],
             slot,
             sv[0x24],
@@ -484,7 +484,7 @@ restart:
     i = 0;
 
     while (i < (s8)sv[0x58]) {
-        ptr = fn_80082EA4(
+        ptr = cardeSaveGetCard(
             lbl_8047A434,
             (s8)i,
             area,
@@ -502,12 +502,12 @@ restart:
 
     winMsgClose(1);
 
-    fn_80082CF0(
+    cardeSaveSetCard(
         lbl_8047A434,
         base + 0xBC,
         (u8)lbl_8047A448);
 
-    fn_8007C450(
+    menuCardEMatrixSetTarget(
         sv[8],
         (u8)lbl_8047A448,
         sv[0x24],
@@ -553,7 +553,7 @@ first_menu:
         1,
         name);
 
-    fn_8007C300(
+    menuCardEMatrixSelectCard(
         sv[8],
         (u8)lbl_8047A448);
 
@@ -576,7 +576,7 @@ first_menu:
             goto first_menu;
         }
 
-        fn_8007C450(
+        menuCardEMatrixSetTarget(
             sv[8],
             (u8)lbl_8047A448,
             sv[0x24],
@@ -589,7 +589,7 @@ first_menu:
 
         fn_8007CAB0();
 
-        if (fn_80082738(
+        if (cardeSaveRemoveCard(
                 lbl_8047A434,
                 base + 0xBC,
                 (u8)lbl_8047A448) != 0) {
@@ -610,7 +610,7 @@ first_menu:
     /*
      * First menu accepted.
      */
-    fn_8007C450(
+    menuCardEMatrixSetTarget(
         sv[8],
         (u8)lbl_8047A448,
         sv[0x24],
@@ -619,7 +619,7 @@ first_menu:
 
     sysvarsWaitForTransfer();
 
-    fn_8007C450(
+    menuCardEMatrixSetTarget(
         sv[8],
         (u8)lbl_8047A448,
         sv[0x24],
@@ -649,7 +649,7 @@ first_menu:
         i = 0;
 
         while (i < (s8)sv[0x5A]) {
-            ptr = fn_80082EA4(
+            ptr = cardeSaveGetCard(
                 lbl_8047A434,
                 chosen,
                 area,
@@ -668,12 +668,12 @@ first_menu:
         goto post_validate;
     }
 
-    fn_80082BA4(
+    cardeSaveSetSummary(
         lbl_8047A434,
         base + 0xBC,
         (u8)lbl_8047A448);
 
-    fn_8007C450(
+    menuCardEMatrixSetTarget(
         sv[8],
         (u8)lbl_8047A448,
         sv[0x24],
@@ -707,7 +707,7 @@ first_menu:
         1,
         name);
 
-    fn_8007C300(
+    menuCardEMatrixSelectCard(
         sv[8],
         (u8)lbl_8047A448);
 
@@ -715,7 +715,7 @@ first_menu:
      * Second menu cancelled/rejected.
      */
     if (menuResult != 2) {
-        fn_8007C450(
+        menuCardEMatrixSetTarget(
             sv[8],
             (u8)lbl_8047A448,
             sv[0x24],
@@ -726,12 +726,12 @@ first_menu:
 
         sysvarsWaitForTransfer();
 
-        fn_80082960(
+        cardeSaveClearSummary(
             lbl_8047A434,
             base + 0xBC,
             (u8)lbl_8047A448);
 
-        fn_8007C450(
+        menuCardEMatrixSetTarget(
             sv[8],
             (u8)lbl_8047A448,
             sv[0x24],
@@ -744,7 +744,7 @@ first_menu:
 
         fn_8007CAB0();
 
-        if (fn_80082738(
+        if (cardeSaveRemoveCard(
                 lbl_8047A434,
                 base + 0xBC,
                 (u8)lbl_8047A448) != 0) {
@@ -787,7 +787,7 @@ first_menu:
     /*
      * Second menu accepted.
      */
-    fn_8007C450(
+    menuCardEMatrixSetTarget(
         sv[8],
         (u8)lbl_8047A448,
         sv[0x24],
@@ -796,7 +796,7 @@ first_menu:
 
     sysvarsWaitForTransfer();
 
-    fn_8007C450(
+    menuCardEMatrixSetTarget(
         sv[8],
         (u8)lbl_8047A448,
         sv[0x24],
@@ -872,7 +872,7 @@ post_validate:
             j = 0;
 
             while (j < (s8)sv[0x5A]) {
-                ptr = fn_80082EA4(
+                ptr = cardeSaveGetCard(
                     lbl_8047A434,
                     (u8)lbl_8047A448,
                     i,
@@ -921,7 +921,7 @@ validation_done:
         0,
         0xFF);
 
-    fn_800832C8(
+    cardeGridSetShadowPokemon(
         0,
         base + 0xBC,
         (u8)lbl_8047A448);
@@ -959,7 +959,7 @@ s32 fn_80034280(void)
 
     watchedWindow = -1;
     GBAInit();
-    fn_8007B090(0);
+    gbaBootPrepare(0);
     transferActive = 0;
     state = 1;
     waitForWindow = 0;
@@ -971,7 +971,7 @@ s32 fn_80034280(void)
                 fn_8007AAFC();
             } else {
                 if (transferActive != 0) {
-                    fn_8007AAA8();
+                    gbaBootWaitThread();
                 }
                 soundStartSE(0x3C7);
                 winMsgClose(1);
@@ -981,7 +981,7 @@ s32 fn_80034280(void)
             }
         }
 
-        nextState = fn_8007AB10(state, &transferActive);
+        nextState = gbaBootRun(state, &transferActive);
         _threadSwitch();
         if (waitForWindow != 0 && nextState == 0) {
             continue;
@@ -999,7 +999,7 @@ s32 fn_80034280(void)
         case 19:
             soundStartSE(0x3C7);
             if (transferActive != 0) {
-                fn_8007AAA8();
+                gbaBootWaitThread();
             }
             winMsgOpen(8, 0x3B91, 1, 0);
             return 0;
@@ -1008,12 +1008,12 @@ s32 fn_80034280(void)
             winMsgOpen(8, 0x3B88, 0, 0);
             sysvarsWaitTwoSeconds();
             state = 18;
-            fn_8007AB10(state, &transferActive);
+            gbaBootRun(state, &transferActive);
             break;
 
         case 21:
             if (transferActive != 0) {
-                fn_8007AAA8();
+                gbaBootWaitThread();
             }
             soundStartSE(0x3C7);
             winMsgClose(1);
@@ -1028,8 +1028,8 @@ s32 fn_80034280(void)
             break;
 
         case 20:
-            fn_8007AAA8();
-            fn_80080310(lbl_803A3334, lbl_803F7A30 + 0x2388,
+            gbaBootWaitThread();
+            cardeDecode(lbl_803A3334, lbl_803F7A30 + 0x2388,
                         0x1040);
             return 2;
         }
@@ -1316,7 +1316,7 @@ void fn_80034B5C(u8* valid, s8* selectionOut, u8* valueOut)
     extern void* heroGetStatus(s32, s32, u16);
     extern u8 pokemonCheckValid(void*);
     extern u32 pokemonGetStatus(void*, s32, s32, s32);
-    extern void* fn_80082FE4(void*, s8);
+    extern void* cardeSaveGetLevel(void*, s8);
     extern u32 _fadeEffectGetRandom__FUl(u32);
     u8* pokemon;
     u8 maxLevel;
@@ -1352,7 +1352,7 @@ void fn_80034B5C(u8* valid, s8* selectionOut, u8* valueOut)
 
     for (candidate = 0; candidate < (s8)lbl_803A3334[0x58]; candidate++) {
         score[candidate] = 0x7FFFFFFF;
-        layer = fn_80082FE4(lbl_8047A434, candidate);
+        layer = cardeSaveGetLevel(lbl_8047A434, candidate);
         if (layer[0x1C + (s8)region * 0xE] != 0) {
             group = lbl_803A3334 + (s8)lbl_803A3334[0x5E + candidate] * 0x28;
             maxRequired = sysvarsGroupMaxLevel(group);
@@ -1504,7 +1504,7 @@ void cardeBattleRun(void)
     extern s32 _sysvarsProcessData__FP16sysvarsFuncEntryPc(void);
     extern void cardeAwardCoupons(void);
     extern void cardeBattleSelectCard(void);
-    extern void* fn_80082EA4(void*, s8, u8, u8);
+    extern void* cardeSaveGetCard(void*, s8, u8, u8);
     extern void* fn_800836AC(void*, void*, s32);
     extern u8 fn_800FF52C(void);
     extern void fn_800FF660(void);
@@ -1726,7 +1726,7 @@ void cardeBattleRun(void)
             save = savedataGetStatus(0, 0xD);
             lbl_8047A434 = fn_800836AC(save, menuData, 0);
             if (lbl_8047A434 != 0) {
-                entry = fn_80082EA4(lbl_8047A434, (s8)(menuData[0x58] - 1),
+                entry = cardeSaveGetCard(lbl_8047A434, (s8)(menuData[0x58] - 1),
                                     menuData[0x24], menuData[0x26]);
                 result = 4;
                 if (*(u8*)((u8*)entry + 0xC) != 0) {

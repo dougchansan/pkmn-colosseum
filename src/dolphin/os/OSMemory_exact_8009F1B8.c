@@ -141,7 +141,7 @@ void MEMIntrruptHandler_8009F41C(s16 interrupt, OSContext* context) {
     __OSUnhandledException(OS_ERROR_PROTECTION, context, cause, addr);
 }
 
-void fn_8009F488(u32 chan, void* addr, u32 nBytes, u32 control) {
+void OSProtectRange(u32 chan, void* addr, u32 nBytes, u32 control) {
     BOOL enabled;
     u32 start;
     u32 end;

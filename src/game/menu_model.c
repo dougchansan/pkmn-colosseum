@@ -57,7 +57,7 @@ extern void  fn_800D2738(void);
 extern void* menuDataBiosGetPtr(void);    /* linked list head */
 extern void* menuItemBiosGetPtr(s16 idx); /* node by index */
 extern void* menuSeBiosGetPtr(s32);
-extern u16   fn_8005D798(void*, s32);
+extern u16   menuSeTableLookup(void*, s32);
 extern void* menuSpriteBiosGetPtr(s32);
 extern int   soundStartSE(u16);
 extern s32   GSthreadGetCurrentThread(void);    /* poll/yield -- 0 if pending */

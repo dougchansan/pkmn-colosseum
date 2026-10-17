@@ -3732,7 +3732,7 @@ config.libs = [
                 progress_category="game",
             ),
             # The cardedecode.c TU (0x80080310-0x80082650) with its .rodata
-            # pool and fn_8008102C's jump tables; GC/1.3.2 like the grid TU.
+            # pool and cardeSaveApplyField's jump tables; GC/1.3.2 like the grid TU.
             Object(
                 Matching,
                 "game/menu/cardesavedata_decode_80080310.c",
@@ -3743,7 +3743,7 @@ config.libs = [
             # The Card-e grid TU: fn_80082650 - fn_800836AC with its own
             # string pool (.rodata 0x8026F1C8, .sdata2 "series"/"lv").
             # Deferred inlining emits the functions in reverse source order
-            # and lets fn_80082738/fn_80082CF0 inline their later callees.
+            # and lets cardeSaveRemoveCard/cardeSaveSetCard inline their later callees.
             Object(
                 Matching,
                 "game/menu/cardesavedata_grid_80082650.c",
@@ -6196,7 +6196,7 @@ config.libs = [
                     (CodeCandidate, "game/menu/menu_candidate_8007480C_gc125n.c"),
                 ]
             ],
-            # fn_80073E8C reports through real string literals; retail pools
+            # pkjbPrepare reports through real string literals; retail pools
             # the unit's read-only strings off one base register (-rostr).
             Object(
                 CodeCandidate,
@@ -8141,7 +8141,7 @@ config.libs = [
                     extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8", *extra],
                     progress_category="game",
                 )
-                # fn_800889E4's assert strings are pooled in .rodata
+                # menuSaveLoadSaveGame's assert strings are pooled in .rodata
                 # (lbl_8026F4F8) and addressed as base+0: GC/1.3.2 + -rostr.
                 for status, path, version, opt, extra in [
                     (Matching, "game/gba/gba_conv_r59_800886D0_o1.c", "GC/1.3", None, ["-opt nopeephole"]),

@@ -32,11 +32,11 @@ void fn_8009F77C(fn_8009F77C_Worker* arg) {
 #endif
 
 #if defined(SDK_8009F9C8_SUFFIX_ACTIVE)
-void fn_8009F9C8(void* queue) {
+void OSInitCond(void* queue) {
     OSInitThreadQueue((OSThreadQueue*)queue);
 }
 
-void fn_8009FABC(void* queue) {
+void OSSignalCond(void* queue) {
     OSWakeupThread(queue);
 }
 #endif
@@ -173,7 +173,7 @@ void __OSUnlockAllMutex(OSCurThread* thread) {
 #endif
 
 #if defined(SDK_8009F9C8_SUFFIX_ACTIVE)
-void fn_8009F9E8(OSThreadQueue* queue, OSMutex* mutex) {
+void OSWaitCond(OSThreadQueue* queue, OSMutex* mutex) {
     BOOL enabled;
     OSCurThread* current;
     s32 count;

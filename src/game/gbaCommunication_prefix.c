@@ -53,7 +53,7 @@ extern void fn_8009F7B4(void *p);
 extern void fn_8009F890(void *p);
 extern void fn_800A257C(void *p, u32 b);
 extern void fn_800716E8(u32 port, u32 val);
-extern void fn_8009FABC(void *p);
+extern void OSSignalCond(void *p);
 extern void fn_800A1E54(void *p, u32 v);
 extern void fn_800716C8(u32 port, void *a, void *b);
 extern u32 fn_800E202C(void *p);
@@ -114,7 +114,7 @@ extern u32 menuPokemonGetStatusSprite(void* pokemon, u32 arg);
 extern u8 menuSubGetPokemonSexForDisp(void* pokemon);
 
 /* 0x8008C7B0 */
-void fn_8008C7B0(u32 ctx) {
+void demoScene30(u32 ctx) {
     extern u32 GSresGetResource(u32 ctx, u32 id);
     extern void GSmodelSetShadowTextureSize(u32 w, u32 h);
     extern void std116_mapObjectStopAnimation(u32 id);
@@ -228,7 +228,7 @@ void fn_8008C7B0(u32 ctx) {
 }
 
 /* 0x8008CACC */
-void fn_8008CACC(u32 ctx) {
+void demoScene29(u32 ctx) {
     extern u32 GSresGetResource(u32 ctx, u32 id);
     extern void GSmodelSetShadowTextureSize(u32 w, u32 h);
     extern void std116_mapObjectStopAnimation(u32 id);
@@ -341,7 +341,7 @@ void fn_8008CACC(u32 ctx) {
 }
 
 /* 0x8008CDD8 */
-void fn_8008CDD8(u32 ctx) {
+void demoScene28(u32 ctx) {
     extern u32 GSresGetResource(u32 ctx, u32 id);
     extern void GSmodelSetShadowTextureSize(u32 w, u32 h);
     extern void std116_mapObjectStopAnimation(u32 id);
@@ -444,7 +444,7 @@ void fn_8008CDD8(u32 ctx) {
 }
 
 /* 0x8008D0A0 */
-void fn_8008D0A0(u32 ctx) {
+void demoScene27(u32 ctx) {
     extern u32 GSresGetResource(u32 ctx, u32 id);
     extern void GSmodelSetShadowTextureSize(u32 w, u32 h);
     extern void std116_mapObjectStopAnimation(u32 id);
@@ -544,7 +544,7 @@ void fn_8008D0A0(u32 ctx) {
 }
 
 /* 0x8008D348 */
-void fn_8008D348(u32 ctx) {
+void demoScene26(u32 ctx) {
     extern void GSmodelSetShadowTextureSize(u32 w, u32 h);
     extern void GSmodelSetShadowFlags(u32 handle, u32 val);
     extern void GSmodelSetShadowLight(u32 handle, u32 val);
@@ -705,7 +705,7 @@ void fn_8008D348(u32 ctx) {
 }
 
 /* 0x8008D938 */
-void fn_8008D938(u32 ctx) {
+void demoScene25(u32 ctx) {
     extern u32 GSresGetResource(u32 ctx, u32 id);
     extern void GSmodelSetShadowTextureSize(u32 w, u32 h);
     extern void std116_mapObjectStopAnimation(u32 id);
@@ -937,7 +937,7 @@ void fn_8008D938(u32 ctx) {
 }
 
 /* 0x8008E320 */
-void fn_8008E320(u32 ctx) {
+void demoScene24(u32 ctx) {
     extern void GSmodelSetShadowTextureSize(u32 w, u32 h);
     extern void GSmodelSetShadowFlags(u32 handle, u32 val);
     extern void GSmodelSetShadowLight(u32 handle, u32 val);
@@ -1083,7 +1083,7 @@ void fn_8008E320(u32 ctx) {
 }
 
 /* 0x8008E7D4 */
-void fn_8008E7D4(u32 ctx) {
+void demoScene23(u32 ctx) {
     extern void GSmodelSetShadowTextureSize(u32 w, u32 h);
     extern void GSmodelSetShadowFlags(u32 handle, u32 val);
     extern void GSmodelSetShadowLight(u32 handle, u32 val);
@@ -1222,7 +1222,7 @@ void fn_8008E7D4(u32 ctx) {
 }
 
 /* 0x8008EC28 */
-void fn_8008EC28(u32 ctx) {
+void demoScene22(u32 ctx) {
     extern u32 GSresGetResource(u32 ctx, u32 id);
     extern void GSmodelSetShadowTextureSize(u32 w, u32 h);
     extern void std116_mapObjectStopAnimation(u32 id);
@@ -1322,7 +1322,7 @@ void fn_8008EC28(u32 ctx) {
 }
 
 /* 0x8008EED0 */
-void fn_8008EED0(u32 ctx) {
+void demoScene21(u32 ctx) {
     extern u32 GSresGetResource(u32 ctx, u32 id);
     extern void GSmodelSetShadowTextureSize(u32 w, u32 h);
     extern void std116_mapObjectStopAnimation(u32 id);
@@ -1425,7 +1425,7 @@ void fn_8008EED0(u32 ctx) {
 }
 
 /* 0x8008F190 */
-void fn_8008F190(u32 ctx) {
+void demoScene20(u32 ctx) {
     extern u32 GSresGetResource(u32 ctx, u32 id);
     extern void GSmodelSetShadowTextureSize(u32 w, u32 h);
     extern void std116_mapObjectStopAnimation(u32 id);
@@ -1547,7 +1547,7 @@ void fn_8008F190(u32 ctx) {
 }
 
 /* 0x8008F524 */
-void fn_8008F524(u32 ctx) {
+void demoScene19(u32 ctx) {
     extern u32 GSresGetResource(u32 ctx, u32 id);
     extern void GSmodelSetShadowTextureSize(u32 w, u32 h);
     extern void std116_mapObjectStopAnimation(u32 id);
@@ -1690,7 +1690,7 @@ void fn_8008F524(u32 ctx) {
 }
 
 /* 0x8008F91C */
-void fn_8008F91C(u32 ctx) {
+void demoScene18(u32 ctx) {
     extern u32 GSresGetResource(u32 ctx, u32 id);
     extern void GSmodelSetShadowTextureSize(u32 w, u32 h);
     extern void std116_mapObjectStopAnimation(u32 id);
@@ -1801,7 +1801,7 @@ void fn_8008F91C(u32 ctx) {
 }
 
 /* 0x8008FBF4 */
-void fn_8008FBF4(u32 ctx) {
+void demoScene17(u32 ctx) {
     extern u32 GSresGetResource(u32 ctx, u32 id);
     extern void GSmodelSetShadowTextureSize(u32 w, u32 h);
     extern void std116_mapObjectStopAnimation(u32 id);
@@ -1901,7 +1901,7 @@ void fn_8008FBF4(u32 ctx) {
 }
 
 /* 0x8008FE94 */
-void fn_8008FE94(u32 ctx) {
+void demoScene16(u32 ctx) {
     extern u32 GSresGetResource(u32 ctx, u32 id);
     extern void GSmodelSetShadowTextureSize(u32 w, u32 h);
     extern void std116_mapObjectStopAnimation(u32 id);
@@ -1996,7 +1996,7 @@ void fn_8008FE94(u32 ctx) {
 }
 
 /* 0x80090100 */
-void fn_80090100(u32 ctx) {
+void demoScene15(u32 ctx) {
     extern void GSmodelSetShadowTextureSize(u32 w, u32 h);
     extern void GSmodelSetShadowFlags(u32 handle, u32 val);
     extern void GSmodelSetShadowLight(u32 handle, u32 val);

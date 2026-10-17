@@ -6,7 +6,7 @@ extern void* lbl_802EE608[];
 extern u8 lbl_802EE618[];
 extern void* jumptable_802EE868[];
 
-extern u8 fn_8007D978[];
+extern u8 menuCardEMatrixWindowProc[];
 extern u8 lbl_80268AF8[];
 extern u8 lbl_80268B0C[];
 extern u8 lbl_80268B20[];
@@ -74,14 +74,14 @@ u8 lbl_802EE618[592] = {
 };
 
 void* jumptable_802EE868[10] = {
-    (void*)((u8*)fn_8007D978 + 0x2348),
-    (void*)((u8*)fn_8007D978 + 0x196C),
-    (void*)((u8*)fn_8007D978 + 0x1B08),
-    (void*)((u8*)fn_8007D978 + 0x1B0C),
-    (void*)((u8*)fn_8007D978 + 0x1B34),
-    (void*)((u8*)fn_8007D978 + 0x1B38),
-    (void*)((u8*)fn_8007D978 + 0x1E4C),
-    (void*)((u8*)fn_8007D978 + 0x2178),
-    (void*)((u8*)fn_8007D978 + 0x219C),
-    (void*)((u8*)fn_8007D978 + 0x2314),
+    (void*)((u8*)menuCardEMatrixWindowProc + 0x2348),
+    (void*)((u8*)menuCardEMatrixWindowProc + 0x196C),
+    (void*)((u8*)menuCardEMatrixWindowProc + 0x1B08),
+    (void*)((u8*)menuCardEMatrixWindowProc + 0x1B0C),
+    (void*)((u8*)menuCardEMatrixWindowProc + 0x1B34),
+    (void*)((u8*)menuCardEMatrixWindowProc + 0x1B38),
+    (void*)((u8*)menuCardEMatrixWindowProc + 0x1E4C),
+    (void*)((u8*)menuCardEMatrixWindowProc + 0x2178),
+    (void*)((u8*)menuCardEMatrixWindowProc + 0x219C),
+    (void*)((u8*)menuCardEMatrixWindowProc + 0x2314),
 };

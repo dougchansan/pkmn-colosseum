@@ -836,12 +836,12 @@ extern const f32 lbl_8047E6C8;
 
 s32 fightMenuWazaWasure(u32 r3, u32 r4)
 {
-    extern s32 fn_80097A38(u32, u32);
+    extern s32 menuPokemonStatusOpenWazaForget(u32, u32);
     s32 result;
 
     fadeSet(lbl_8047E6C8, 3);
     fadeCheck(1);
-    result = fn_80097A38(r3, r4);
+    result = menuPokemonStatusOpenWazaForget(r3, r4);
     if (result == 4) {
         result = -1;
     }

@@ -41,7 +41,7 @@ extern void fn_8009F7B4(void *p);
 extern void fn_8009F890(void *p);
 extern void fn_800A257C(void *p, u32 b);
 extern void fn_800716E8(u32 port, u32 val);
-extern void fn_8009FABC(void *p);
+extern void OSSignalCond(void *p);
 extern void fn_800A1E54(void *p, u32 v);
 extern void fn_800716C8(u32 port, void *a, void *b);
 extern u32 fn_800E202C(void *p);
@@ -110,7 +110,7 @@ static inline u32 fn_80090720_getHandle2(u32 ctx) {
 #pragma force_active on
 
 /* 0x80090720 | size: 0x2C4 */
-void fn_80090720(u32 ctx) {
+void demoScene14(u32 ctx) {
     /* RULE-EXCEPTION(user-approved): local compiler-control pragma (peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
     #pragma peephole off
     extern u32 GSresGetResource(u32 ctx, u32 id);
@@ -215,7 +215,7 @@ void fn_80090720(u32 ctx) {
 }
 
 /* 0x800909E4 | size: 0x350 */
-void fn_800909E4(u32 ctx) {
+void demoScene13(u32 ctx) {
     /* RULE-EXCEPTION(user-approved): local compiler-control pragma (peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
     #pragma peephole off
     extern void GSmodelSetShadowTextureSize(u32 w, u32 h);
@@ -330,7 +330,7 @@ void fn_800909E4(u32 ctx) {
 }
 
 /* 0x80090D34 | size: 0x2D8 */
-void fn_80090D34(u32 ctx) {
+void demoScene12(u32 ctx) {
     extern void GSmodelSetShadowTextureSize(u32 w, u32 h);
     extern void std116_mapObjectStopAnimation(u32 id);
     extern void std115_mapObjectPlayAnimation(u32 id, u32 slot, u32 x, u32 y);
@@ -439,7 +439,7 @@ void fn_80090D34(u32 ctx) {
     GSmodelSetShadowSurface(configured, 1, &lbl_8047A694)
 
 /* 0x8009100C | size: 0x558 */
-void fn_8009100C(u32 ctx) {
+void demoScene11(u32 ctx) {
     extern void GSmodelSetShadowTextureSize(u32, u32);
     extern u32 std112_modelGetResourceID(u32);
     extern u32 GSmodelSetShadowFlags(u32, u32);
@@ -527,7 +527,7 @@ void fn_8009100C(u32 ctx) {
 
 #undef SET_SCENE_SHADOW
 
-void fn_80091564(u32 ctx) {
+void demoScene10(u32 ctx) {
     extern u32 GSresGetResource(u32 ctx, u32 id);
     extern void GSmodelSetShadowTextureSize(u32 w, u32 h);
     extern void std116_mapObjectStopAnimation(u32 id);
@@ -604,7 +604,7 @@ void fn_80091564(u32 ctx) {
 }
 
 /* 0x80091774 | size: 0x210 */
-void fn_80091774(u32 ctx) {
+void demoScene09(u32 ctx) {
     extern u32 GSresGetResource(u32 ctx, u32 id);
     extern void GSmodelSetShadowTextureSize(u32 w, u32 h);
     extern void std116_mapObjectStopAnimation(u32 id);
@@ -681,7 +681,7 @@ void fn_80091774(u32 ctx) {
 }
 
 /* 0x80091984 | size: 0x210 */
-void fn_80091984(u32 ctx) {
+void demoScene08(u32 ctx) {
     extern u32 GSresGetResource(u32 ctx, u32 id);
     extern void GSmodelSetShadowTextureSize(u32 w, u32 h);
     extern void std116_mapObjectStopAnimation(u32 id);
@@ -758,7 +758,7 @@ void fn_80091984(u32 ctx) {
 }
 
 /* 0x80091B94 | size: 0x210 */
-void fn_80091B94(u32 ctx) {
+void demoScene07(u32 ctx) {
     extern u32 GSresGetResource(u32 ctx, u32 id);
     extern void GSmodelSetShadowTextureSize(u32 w, u32 h);
     extern void std116_mapObjectStopAnimation(u32 id);

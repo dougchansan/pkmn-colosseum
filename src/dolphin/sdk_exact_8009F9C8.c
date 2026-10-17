@@ -38,12 +38,12 @@ extern s32 __OSGetEffectivePriority(OSCurThread* thread);
 extern OSCurThread* fn_800A13F8(void);
 extern void fn_8009F7B4(OSMutex* mutex);
 
-void fn_8009F9C8(void* queue)
+void OSInitCond(void* queue)
 {
     OSInitThreadQueue((OSThreadQueue*) queue);
 }
 
-void fn_8009F9E8(OSThreadQueue* queue, OSMutex* mutex)
+void OSWaitCond(OSThreadQueue* queue, OSMutex* mutex)
 {
     BOOL enabled;
     OSCurThread* current;
@@ -91,7 +91,7 @@ void fn_8009F9E8(OSThreadQueue* queue, OSMutex* mutex)
     OSRestoreInterrupts(enabled);
 }
 
-void fn_8009FABC(void* queue)
+void OSSignalCond(void* queue)
 {
     OSWakeupThread(queue);
 }

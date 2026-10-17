@@ -781,7 +781,7 @@ int _cbWazaForget__FP7PokemonUsl(u32 r3,u32 r4)
   snapshot[11] = view[2];
   ((f32 *)snapshot)[12] = local_54;
   wazaSequenceSysRelease();
-  iVar2 = fn_80097A38(r3,r4);
+  iVar2 = menuPokemonStatusOpenWazaForget(r3,r4);
   if (iVar2 >= 4) {
     iVar2 = -1;
   }

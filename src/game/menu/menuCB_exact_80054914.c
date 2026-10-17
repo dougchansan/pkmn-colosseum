@@ -110,7 +110,7 @@ extern MenuCBSlotInfo lbl_80267398[0x20];
 extern MenuModelWork lbl_803A9720;
 extern u32 lbl_8047A560;
 
-extern void* fn_80057270(MenuCBPane* pane);
+extern void* pcBoxGetCursorPokemon(MenuCBPane* pane);
 extern s32 fn_800573C0(void);
 extern s32 fn_800566E8(void);
 extern s32 fn_80057E40(MenuCBPane* pane);
@@ -149,7 +149,7 @@ void menuCursorNormal(MenuCBPane* pane);
 MenuCursorItem* windowGetCursorToItem();
 void fn_80057830(s16 x, s16 y, s32 selected);
 extern void fn_80054760(s32 forward, s32 wait);
-extern void fn_800558B8(void);
+extern void pcBoxRun(void);
 extern void fn_80056A80(void);
 extern void fn_80056B74(MenuCBPane* pane, s32 enabled);
 extern void fn_80057A38(void);
@@ -437,7 +437,7 @@ void fn_80054E7C(MenuCBPane* pane) {
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-void fn_80054EC8(MenuCBPane* pane) {
+void pcBoxMovePokemon(MenuCBPane* pane) {
     s32 selectedSlot;
     s32 state;
     s32 box;
@@ -517,7 +517,7 @@ s32 fn_800550B4(MenuCBStatusWork* work) {
     extern void fn_80057948(void);
     extern void fn_80056854(void);
     extern s32 windowGetActiveID(void);
-    extern void fn_80054EC8(MenuCBStatusWork* work);
+    extern void pcBoxMovePokemon(MenuCBStatusWork* work);
 
     switch (work->state) {
     case 0:
@@ -534,7 +534,7 @@ s32 fn_800550B4(MenuCBStatusWork* work) {
         fn_80057948();
         fn_80056854();
         if (work->windowId == windowGetActiveID()) {
-            fn_80054EC8(work);
+            pcBoxMovePokemon(work);
         }
         break;
     case 3:

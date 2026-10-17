@@ -313,8 +313,8 @@ extern u8 lbl_802E2888[];   /* Error name string table */
 extern const char lbl_80266420[]; /* "OS avail memory: %d\n" */
 extern const char lbl_80266448[]; /* "OS_ERROR_SYSTEM_RESET" (error name table base) */
 
-/* fn_8009F488 = __OSInitMemoryProtection region setup */
-extern void fn_8009F488(u32 region, u32 addr, u32 size, u32 perm);
+/* OSProtectRange = __OSInitMemoryProtection region setup */
+extern void OSProtectRange(u32 region, u32 addr, u32 size, u32 perm);
 
 /* fn_800A2C58 = __DBIsExceptionMarked or similar */
 extern s32  fn_800A2C58(void);

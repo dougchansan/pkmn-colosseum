@@ -64,7 +64,7 @@ typedef struct OSFatalParam {
     defined(SDK_EXACT_8009C860_8009CD38)
 void ScreenReport(void* xfb, u16 xfbW, u16 xfbH, GXColor yuv, s32 x, s32 y,
                   s32 leading, const char* string) {
-    extern char* fn_8009DC38(const char* string, void* image, s32 pos,
+    extern char* OSGetFontTexel(const char* string, void* image, s32 pos,
                              s32 stride, s32* width);
     u8* ptr;
     s32 width;
@@ -101,7 +101,7 @@ loop_1:
                 image[j + 16] = 0;
             }
 
-            string = fn_8009DC38(string, image, 0, 6, &width);
+            string = OSGetFontTexel(string, image, 0, 6, &width);
 
             for (i = 0; i < 24; i++) {
                 j = (i & 7) + ((i >> 3) * 24);
@@ -389,7 +389,7 @@ static BOOL IsSjisTrailByte(u8 c) {
 }
 
 /* Maps a character code to its index in the IPL font sheet. */
-int fn_8009D510(u16 code) {
+int GetFontCode(u16 code) {
     extern u16 lbl_80310CD8[]; /* HankakuToCode */
     extern u16 lbl_80310E58[]; /* Zenkaku2Code */
     extern u16 fn_8009D820(void);
@@ -514,7 +514,7 @@ u16 fn_8009D820(void) {
     return lbl_804789A0;
 }
 
-void fn_8009D878(void* dest, s32 size, s32 offset) {
+void ReadROM(void* dest, s32 size, s32 offset) {
     extern BOOL __OSReadROM(void* dest, s32 size, s32 offset);
 
     while (size > 0) {
@@ -542,9 +542,9 @@ static inline u32 GetFontSize(u8* buf) {
 
 static inline u32 ReadFont(void* image) {
     if (fn_8009D820() == 1) {
-        fn_8009D878(image, 0x4D000, 0x1AFF00);
+        ReadROM(image, 0x4D000, 0x1AFF00);
     } else {
-        fn_8009D878(image, 0x3000, 0x1FCF00);
+        ReadROM(image, 0x3000, 0x1FCF00);
     }
 
     return GetFontSize(image);
@@ -552,7 +552,7 @@ static inline u32 ReadFont(void* image) {
 
 /*
  * Reads the font sheet out of IPL ROM, decompresses it, and caches the
- * header, width table and chars-per-sheet that fn_8009DC38 reads back.
+ * header, width table and chars-per-sheet that OSGetFontTexel reads back.
  */
 u32 fn_8009D904(OSFontHeader* fontData, void* tmp) {
     extern OSFontHeader* FontData;
@@ -561,7 +561,7 @@ u32 fn_8009D904(OSFontHeader* fontData, void* tmp) {
     extern u32 lbl_8047A704;
     extern const u32 lbl_8047C280;
     extern const u32 lbl_8047C284;
-    extern void fn_8009D878(void* dest, s32 size, s32 offset);
+    extern void ReadROM(void* dest, s32 size, s32 offset);
     extern void Decode(u8* s, u8* d);
     u32 size;
 
@@ -588,7 +588,7 @@ u32 fn_8009D904(OSFontHeader* fontData, void* tmp) {
             *(u32*)&glyph[0] = lbl_8047C280;
             *(u32*)&glyph[2] = lbl_8047C284;
 
-            fontCode = fn_8009D510(0x54);
+            fontCode = GetFontCode(0x54);
             sheet = fontCode / FontCharsPerSheet;
             numChars = fontCode - (sheet * FontCharsPerSheet);
             row = numChars / FontData->sheetColumn;
@@ -618,12 +618,12 @@ static BOOL IsSjisLeadByte(u8 c) {
     return ((c >= 0x81) && (c <= 0x9F)) || ((c >= 0xE0) && (c <= 0xFC));
 }
 
-char* fn_8009DC38(const char* string, void* image, s32 pos, s32 stride,
+char* OSGetFontTexel(const char* string, void* image, s32 pos, s32 stride,
                   s32* width) {
     extern OSFontHeader* FontData;
     extern u8* FontWidthTable;
     extern s32 FontCharsPerSheet;
-    extern int fn_8009D510(u16 code);
+    extern int GetFontCode(u16 code);
     u16 encode;
     u16 code;
     u8* dst;
@@ -654,7 +654,7 @@ char* fn_8009DC38(const char* string, void* image, s32 pos, s32 stride,
     }
 
     colorIndex = &FontData->c0;
-    fontCode = fn_8009D510(code);
+    fontCode = GetFontCode(code);
 
     sheet = fontCode / FontCharsPerSheet;
     numChars = fontCode - (sheet * FontCharsPerSheet);

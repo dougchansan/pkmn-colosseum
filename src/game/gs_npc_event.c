@@ -1071,7 +1071,7 @@ void cardeAwardCoupons(void) {
 extern u32 _fadeEffectGetRandom__FUl(u32 range);
 extern void GScharCpy(void* dst, const void* src);
 extern u32 pokemonGetStatus(void*, u32, u32, u32);
-extern void fn_80082EA4(u32, s8, u8, u8);
+extern void cardeSaveGetCard(u32, s8, u8, u8);
 extern u32 menuIsCheck(u32);
 extern s32 fn_800D37CC(void);
 extern u32 msgGetCharsPerFrame(void);
@@ -1195,7 +1195,7 @@ static inline s8 NpcEventSelectCandidate(void)
          candidate++) {
         u8 enemy_level;
 
-        fn_80082EA4(lbl_8047A434, candidate, group, variant);
+        cardeSaveGetCard(lbl_8047A434, candidate, group, variant);
         enemy_level = NpcEventGetTeamLevel(
             NPC_EVENT_ENCOUNTER->candidate_slots[candidate]);
 
@@ -1220,7 +1220,7 @@ void cardeBattleSelectCard(void)
 {
     extern u8 pokemonCheckValid(void*);
     extern void* heroGetStatus(void*, s32, u16);
-    extern void fn_80082EA4(u32, s8, u8, u8);
+    extern void cardeSaveGetCard(u32, s8, u8, u8);
     extern u8 menuIsCheck(s32);
     extern void menuClose(s32);
     extern void fadeSet(s32, f32);

@@ -124,7 +124,7 @@ static inline s32 colosseumBattleCountPokemon(void) {
 }
 
 /* Address: 0x80058150 | Size: 0x604 */
-void fn_80058150(void) {
+void pcBoxStorageMain(void) {
     u32 handle;
     u32* list;
     u32* out;

@@ -361,7 +361,7 @@ void DoneCallback(void* _task)
     }
 
     result = __CARDReadStatus(chan, &unk);
-    if (!fn_80098944(chan)) {
+    if (!EXIProbe(chan)) {
         EXIUnlock(chan);
         __CARDMountCallback(chan, -3);
         return;

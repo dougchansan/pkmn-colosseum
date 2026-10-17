@@ -132,7 +132,7 @@ u32 fightActionFlowHeijou(void* action) { return 1; }
 u32 fightActionFlowSyuuryouPost(void* action)
 
 {
-    extern int fn_8006B0F8();
+    extern int savedataBattleGetTeamPtr();
     extern u8 fn_8006B57C();
     extern u8 pokemonIsDarkPokemon();
     extern u8 pokemonCheckFightOut();
@@ -228,7 +228,7 @@ u32 fightActionFlowSyuuryouPost(void* action)
                     continue;
                 }
                 fightTrainerBackFightPokemonToTemotiPokemon(trainer, 0);
-                srcHero = (void*)fn_8006B0F8((u8)(k + base));
+                srcHero = (void*)savedataBattleGetTeamPtr((u8)(k + base));
                 if (srcHero != 0 && (hero = (void*)fightTrainerGetStatus(trainer, 0, 0x44, 0)) != 0) {
                     heroBiosCopy(srcHero, hero);
                 }
@@ -1396,7 +1396,7 @@ void _fightActionFlowKaisiNyuujouPokemonSubAppearMsg__FP13FIGHT_TRAINERP15FightO
 u32 fightActionFlowKaisiNyuujouTrainer(void* action)
 
 {
-    extern u32 fn_8006B0F8();
+    extern u32 savedataBattleGetTeamPtr();
     extern u8 fn_8006B57C();
     extern u8 pokemonCheckFightOut();
     extern u8 pokemonCheckValid();
@@ -1480,7 +1480,7 @@ u32 fightActionFlowKaisiNyuujouTrainer(void* action)
             continue;
         }
         if ((u8)fn_8006B57C() == 1) {
-            heroBiosCopy(hero, fn_8006B0F8(index));
+            heroBiosCopy(hero, savedataBattleGetTeamPtr(index));
         } else {
             fightTrainerCreateFightTrainerDataIdToHero(dataId, device, hero);
         }

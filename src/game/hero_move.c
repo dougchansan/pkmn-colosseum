@@ -500,7 +500,7 @@ extern void pcboxInit(void);
 extern void fn_801908D4(void);
 extern void mailInitMailbox(void);
 extern void sodateyaInit(void);
-extern void fn_8006B6B4(void);
+extern void savedataBattleInit(void);
 extern void memoInit(void);
 extern void fn_80083CBC(void);
 extern void fn_801EF128(void);
@@ -589,7 +589,7 @@ extern void fn_8010E138(void);
 extern void GSmodelSetRotation(void);
 void initFloor__Fv(void);
 extern u32 floorGetNextFloorID(void);
-extern s32 fn_8006AE18(void);
+extern s32 savedataBattleGetSavedHeroKind(void);
 extern u8 lbl_802729C0[];
 extern u8 lbl_80272A10[];
 u32 heroMoveGetKenObjID(void);
@@ -2239,7 +2239,7 @@ s32 heroMoveInit(void* position, void* rotation)
             if (i >= 20) {
                 theme = 0x00F70400;
             } else {
-                area = fn_8006AE18();
+                area = savedataBattleGetSavedHeroKind();
                 for (i = 0; i < 5; i++) {
                     if (area == (s32)themes.words[i * 2]) {
                         break;
@@ -2311,7 +2311,7 @@ u32 heroMoveGetKenObjID(void)
     if (i >= 20) {
         return 0x00F70400;
     }
-    area = fn_8006AE18();
+    area = savedataBattleGetSavedHeroKind();
     for (i = 0; i < 5; i++) {
         if (area == (s32)themes.words[i * 2]) {
             break;

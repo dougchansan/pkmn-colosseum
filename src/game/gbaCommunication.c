@@ -44,7 +44,7 @@ extern void fn_8009F7B4(void *p);
 extern void fn_8009F890(void *p);
 extern void fn_800A257C(void *p, u32 b);
 extern void fn_800716E8(u32 port, u32 val);
-extern void fn_8009FABC(void *p);
+extern void OSSignalCond(void *p);
 extern void fn_800A1E54(void *p, u32 v);
 extern void fn_800716C8(u32 port, void *a, void *b);
 extern u32 fn_800E202C(void *p);
@@ -1202,7 +1202,7 @@ void menuStatusDrawPokemonInfo(u8* context, u8* sprite)
 
 #pragma pop
 /* 0x80091DA4 - 0x80092C90: defined in gbaCommunication_candidate_80091DA4.c.
- * The peephole pass stayed off from fn_80092140 onward; keep that state for
+ * The peephole pass stayed off from demoScene04 onward; keep that state for
  * the code below. */
 
 #endif
@@ -1214,13 +1214,13 @@ void menuStatusDrawPokemonInfo(u8* context, u8* sprite)
 #endif
 #if !defined(GBA_COMMUNICATION_EXACT_80092FC8_ONLY)
 #endif
-s32 fn_80092FC8(s32 channel, void* requestValue, void* requestContext)
+s32 gbaCommStartTransferB(s32 channel, void* requestValue, void* requestContext)
 {
     extern u32 fn_800E2C04(u32 size, u32 align);
     extern void* fn_800E27B0(u32 handle);
     extern void fn_8009F77C(void* work);
-    extern void fn_8009F9C8(void* callback);
-    extern s32 fn_800937F4(void* arg);
+    extern void OSInitCond(void* callback);
+    extern s32 _gbaCommThread(void* arg);
     extern void fn_80093B04(u32 a, u32 b);
     extern void OSCreateThread(void* thread, void* entry, void* arg,
                                void* stack, u32 stackSize, s32 priority,
@@ -1256,8 +1256,8 @@ s32 fn_80092FC8(s32 channel, void* requestValue, void* requestContext)
             *(s32*)(work + GBA_STATE_PORT) = channel;
             fn_800716C8(channel, work + GBA_DATA_OFFSET, fn_80093B04);
             fn_8009F77C(work);
-            fn_8009F9C8(work + 0x18);
-            OSCreateThread(work + GBA_DATA_OFFSET, fn_800937F4, work,
+            OSInitCond(work + 0x18);
+            OSCreateThread(work + GBA_DATA_OFFSET, _gbaCommThread, work,
                            work + GBA_STATE_PORT, 0x4000,
                            GBA_THREAD_PRIORITY, 0);
             OSResumeThread(work + GBA_DATA_OFFSET);
@@ -1282,7 +1282,7 @@ s32 fn_80092FC8(s32 channel, void* requestValue, void* requestContext)
     fn_8009F890(requestWork);
     fn_800A257C(requestWork + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
     if (requestStarted != 0) {
-        fn_8009FABC(requestWork + 0x18);
+        OSSignalCond(requestWork + 0x18);
     }
     return requestStarted;
 }
@@ -1294,13 +1294,13 @@ s32 fn_80092FC8(s32 channel, void* requestValue, void* requestContext)
 #endif
 #if !defined(GBA_COMMUNICATION_EXACT_80092FC8_ONLY)
 #endif
-s32 fn_80093160(s32 channel, void* requestValue)
+s32 gbaCommStartTransferC(s32 channel, void* requestValue)
 {
     extern u32 fn_800E2C04(u32 size, u32 align);
     extern void* fn_800E27B0(u32 handle);
     extern void fn_8009F77C(void* work);
-    extern void fn_8009F9C8(void* callback);
-    extern s32 fn_800937F4(void* arg);
+    extern void OSInitCond(void* callback);
+    extern s32 _gbaCommThread(void* arg);
     extern void fn_80093B04(u32 a, u32 b);
     extern void OSCreateThread(void* thread, void* entry, void* arg,
                                void* stack, u32 stackSize, s32 priority,
@@ -1336,8 +1336,8 @@ s32 fn_80093160(s32 channel, void* requestValue)
             *(s32*)(work + GBA_STATE_PORT) = channel;
             fn_800716C8(channel, work + GBA_DATA_OFFSET, fn_80093B04);
             fn_8009F77C(work);
-            fn_8009F9C8(work + 0x18);
-            OSCreateThread(work + GBA_DATA_OFFSET, fn_800937F4, work,
+            OSInitCond(work + 0x18);
+            OSCreateThread(work + GBA_DATA_OFFSET, _gbaCommThread, work,
                            work + GBA_STATE_PORT, 0x4000,
                            GBA_THREAD_PRIORITY, 0);
             OSResumeThread(work + GBA_DATA_OFFSET);
@@ -1361,7 +1361,7 @@ s32 fn_80093160(s32 channel, void* requestValue)
     fn_8009F890(requestWork);
     fn_800A257C(requestWork + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
     if (requestStarted != 0) {
-        fn_8009FABC(requestWork + 0x18);
+        OSSignalCond(requestWork + 0x18);
     }
     return requestStarted;
 }
@@ -1373,13 +1373,13 @@ s32 fn_80093160(s32 channel, void* requestValue)
 #endif
 #if !defined(GBA_COMMUNICATION_EXACT_80092FC8_ONLY)
 #endif
-s32 fn_800932F0(s32 channel, const char* primary, const char* secondary)
+s32 gbaCommStartTransferFile(s32 channel, const char* primary, const char* secondary)
 {
     extern u32 fn_800E2C04(u32 size, u32 align);
     extern void* fn_800E27B0(u32 handle);
     extern void fn_8009F77C(void* work);
-    extern void fn_8009F9C8(void* callback);
-    extern s32 fn_800937F4(void* arg);
+    extern void OSInitCond(void* callback);
+    extern s32 _gbaCommThread(void* arg);
     extern void fn_80093B04(u32 a, u32 b);
     extern void OSCreateThread(void* thread, void* entry, void* arg,
                                void* stack, u32 stackSize, s32 priority,
@@ -1419,8 +1419,8 @@ s32 fn_800932F0(s32 channel, const char* primary, const char* secondary)
             *(s32*)(work + GBA_STATE_PORT) = channel;
             fn_800716C8(channel, work + GBA_DATA_OFFSET, fn_80093B04);
             fn_8009F77C(work);
-            fn_8009F9C8(work + 0x18);
-            OSCreateThread(work + GBA_DATA_OFFSET, fn_800937F4, work,
+            OSInitCond(work + 0x18);
+            OSCreateThread(work + GBA_DATA_OFFSET, _gbaCommThread, work,
                            work + GBA_STATE_PORT, 0x4000,
                            GBA_THREAD_PRIORITY, 0);
             OSResumeThread(work + GBA_DATA_OFFSET);
@@ -1461,7 +1461,7 @@ s32 fn_800932F0(s32 channel, const char* primary, const char* secondary)
     fn_8009F890(commandWork);
     fn_800A257C(commandWork + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
     if (commandStarted != 0) {
-        fn_8009FABC(commandWork + 0x18);
+        OSSignalCond(commandWork + 0x18);
     }
 
 done:
@@ -1471,7 +1471,7 @@ done:
 #endif
 
 /* 0x800934E4 | size: 0x90 */
-s32 fn_800934E4(s32 channel)
+s32 gbaCommIsBusy(s32 channel)
 {
 #if !defined(GBA_COMMUNICATION_EXACT_80092FC8_ONLY)
 #endif
@@ -1557,7 +1557,7 @@ u32 fn_80093610(s32 channel)
 }
 
 /* 0x80093698 | size: 0x15C */
-s32 fn_80093698(s32 channel)
+s32 gbaCommEnd(s32 channel)
 {
 #if !defined(GBA_COMMUNICATION_EXACT_80092FC8_ONLY)
 #endif
@@ -1593,7 +1593,7 @@ s32 fn_80093698(s32 channel)
     *(u32*)(work + GBA_STATE_TIMEOUT) = 0x3000D;
     fn_8009F890(work);
     fn_800A257C(work + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
-    fn_8009FABC(work + 0x18);
+    OSSignalCond(work + 0x18);
     fn_800A1E54(work + GBA_DATA_OFFSET, 0);
     fn_800716C8(*(s32*)(work + GBA_STATE_PORT), NULL, NULL);
     fn_800716E8(*(s32*)(work + GBA_STATE_PORT), 0);
@@ -1616,15 +1616,15 @@ s32 fn_80093698(s32 channel)
 /* 0x800937F4 | size: 0x310 */
 #pragma push
 #pragma peephole off
-s32 fn_800937F4(void* arg0)
+s32 _gbaCommThread(void* arg0)
 {
-    extern void fn_8009F9E8();
-    extern s32 fn_80073E8C();
+    extern void OSWaitCond();
+    extern s32 pkjbPrepare();
     extern s32 fn_80073E84();
     extern s32 fn_80074324();
     extern s32 fn_800745B4();
     extern s32 fn_80073690();
-    extern void fn_800895A4();
+    extern void gbaReceiveHero();
     extern s32 fn_80071E34();
     extern void fn_80089380();
     extern s32 fn_80089D30();
@@ -1652,7 +1652,7 @@ s32 fn_800937F4(void* arg0)
             *(s32*)(p + GBA_STATE_TIMEOUT) = result;
             *(s32*)(p + GBA_STATE_PHASE) = 0;
             while (*(s32*)(p + GBA_STATE_PHASE) == 0) {
-                fn_8009F9E8(p + 0x18, p);
+                OSWaitCond(p + 0x18, p);
             }
         }
 
@@ -1670,7 +1670,7 @@ s32 fn_800937F4(void* arg0)
             } else {
                 arg = NULL;
             }
-            status = fn_80073E8C(p + 0x4344, arg);
+            status = pkjbPrepare(p + 0x4344, arg);
             if (status == 0) {
                 while (fn_80073E84() == 0) {
                     fn_800A257C((void*)fn_800A13F8(), 0x10);
@@ -1710,7 +1710,7 @@ s32 fn_800937F4(void* arg0)
         case 4:
             status = fn_80073690(*(s32*)(p + GBA_STATE_PORT), statusBuffer);
             if (status == 0) {
-                fn_800895A4(*(s32*)(p + 0x4344), statusBuffer);
+                gbaReceiveHero(*(s32*)(p + 0x4344), statusBuffer);
                 result = 4;
                 **(u32**)(p + 0x4348) =
                     (statusBuffer[3] << 24) | (statusBuffer[2] << 16)
@@ -2589,7 +2589,7 @@ s32 fn_80097BBC(u8 chan) {
 }
 
 /* 0x8009769C | size: 0x350 */
-u32 fn_8009769C(u8 flags, u32 arg1, s32 pokemon, u16 arg3, u32 arg4, u32 arg5) {
+u32 menuPokemonStatusOpen(u8 flags, u32 arg1, s32 pokemon, u16 arg3, u32 arg4, u32 arg5) {
     extern void menuModelInit(void* model, s32 width, s32 height);
     extern void fn_80109C88(void* model, u32 pokemon);
     extern void fadeCheck(s32 wait);
@@ -2710,7 +2710,7 @@ u32 fn_8009769C(u8 flags, u32 arg1, s32 pokemon, u16 arg3, u32 arg4, u32 arg5) {
 #pragma scheduling off
 #pragma scheduling off
 void menuPokemonStatus(void) {
-    *(u32*)(lbl_803FB380 + 4) = fn_8009769C(
+    *(u32*)(lbl_803FB380 + 4) = menuPokemonStatusOpen(
         lbl_803FB380[0],
         *(u32*)(lbl_803FB380 + 8),
         *(u32*)(lbl_803FB380 + 0xC),
@@ -2740,7 +2740,7 @@ void fn_80097FF8(void) {
 }
 
 /* 0x80097A38 | size: 0xCC */
-s32 fn_80097A38(u32 arg0, u16 arg1) {
+s32 menuPokemonStatusOpenWazaForget(u32 arg0, u16 arg1) {
     extern int fn_8010B560();
 
     while ((u8)fn_8010B560() != 0) {
@@ -2777,7 +2777,7 @@ s32 fn_80097B04(u32 arg0, u16 arg1) {
     *(u32*)(lbl_803FB380 + 0x10) = 0;
     *(u32*)(lbl_803FB380 + 0x14) = 0;
     *(s32*)(lbl_803FB380 + 0x4) = -1;
-    fn_8009769C(lbl_803FB380[0], *(u32*)(lbl_803FB380 + 0x8), *(u32*)(lbl_803FB380 + 0xC),
+    menuPokemonStatusOpen(lbl_803FB380[0], *(u32*)(lbl_803FB380 + 0x8), *(u32*)(lbl_803FB380 + 0xC),
                 arg1, *(u32*)(lbl_803FB380 + 0x10), *(u32*)(lbl_803FB380 + 0x14));
     return *(s32*)(lbl_803FB380 + 0x4);
 }
@@ -2797,7 +2797,7 @@ s32 fn_80097CD0(u32 arg0, u32 arg1, u32 arg2) {
     *(u32*)(lbl_803FB380 + 0x10) = arg1;
     *(u32*)(lbl_803FB380 + 0x14) = arg2;
     *(s32*)(lbl_803FB380 + 0x4) = -1;
-    fn_8009769C(lbl_803FB380[0], *(u32*)(lbl_803FB380 + 0x8), *(u32*)(lbl_803FB380 + 0xC),
+    menuPokemonStatusOpen(lbl_803FB380[0], *(u32*)(lbl_803FB380 + 0x8), *(u32*)(lbl_803FB380 + 0xC),
                 *(u16*)(lbl_803FB380 + 0x18), *(u32*)(lbl_803FB380 + 0x10), *(u32*)(lbl_803FB380 + 0x14));
     return *(s32*)(lbl_803FB380 + 0x4);
 }
@@ -2817,7 +2817,7 @@ s32 fn_80097D94(u32 arg0, u32 arg1, u32 arg2) {
     *(u32*)(lbl_803FB380 + 0x10) = arg1;
     *(u32*)(lbl_803FB380 + 0x14) = arg2;
     *(s32*)(lbl_803FB380 + 0x4) = -1;
-    fn_8009769C(lbl_803FB380[0], *(u32*)(lbl_803FB380 + 0x8), *(u32*)(lbl_803FB380 + 0xC),
+    menuPokemonStatusOpen(lbl_803FB380[0], *(u32*)(lbl_803FB380 + 0x8), *(u32*)(lbl_803FB380 + 0xC),
                 *(u16*)(lbl_803FB380 + 0x18), *(u32*)(lbl_803FB380 + 0x10), *(u32*)(lbl_803FB380 + 0x14));
     return *(s32*)(lbl_803FB380 + 0x4);
 }
@@ -2837,7 +2837,7 @@ s32 fn_80097E58(u32 arg0, u32 arg1, u32 arg2, u32 arg3) {
     *(u32*)(lbl_803FB380 + 0x10) = arg2;
     *(u32*)(lbl_803FB380 + 0x14) = arg3;
     *(s32*)(lbl_803FB380 + 0x4) = -1;
-    fn_8009769C(lbl_803FB380[0], *(u32*)(lbl_803FB380 + 0x8), *(u32*)(lbl_803FB380 + 0xC),
+    menuPokemonStatusOpen(lbl_803FB380[0], *(u32*)(lbl_803FB380 + 0x8), *(u32*)(lbl_803FB380 + 0xC),
                 *(u16*)(lbl_803FB380 + 0x18), *(u32*)(lbl_803FB380 + 0x10), *(u32*)(lbl_803FB380 + 0x14));
     return *(s32*)(lbl_803FB380 + 0x4);
 }
@@ -2857,7 +2857,7 @@ s32 fn_80097F08(u32 arg0, u32 arg1, u32 arg2) {
     *(u32*)(lbl_803FB380 + 0x10) = arg1;
     *(u32*)(lbl_803FB380 + 0x14) = arg2;
     *(s32*)(lbl_803FB380 + 0x4) = -1;
-    fn_8009769C(lbl_803FB380[0], *(u32*)(lbl_803FB380 + 0x8), *(u32*)(lbl_803FB380 + 0xC),
+    menuPokemonStatusOpen(lbl_803FB380[0], *(u32*)(lbl_803FB380 + 0x8), *(u32*)(lbl_803FB380 + 0xC),
                 *(u16*)(lbl_803FB380 + 0x18), *(u32*)(lbl_803FB380 + 0x10), *(u32*)(lbl_803FB380 + 0x14));
     return *(s32*)(lbl_803FB380 + 0x4);
 }

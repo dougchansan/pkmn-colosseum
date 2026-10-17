@@ -1,13 +1,13 @@
 /**
  * gba_misc 0x80089978 - 0x80089B8C: copy one GBA party entry into a
- * fight-trainer Pokemon record. Same code as fn_80089978 in gba_misc.c,
+ * fight-trainer Pokemon record. Same code as gbaBuildTrainerPokemon in gba_misc.c,
  * kept as a standalone unit (like the gba_misc_exact_* siblings) so it
  * can be linked.
  */
 #include "dolphin/types.h"
 
 /* 0x80089978 | size: 0x214 */
-u8 fn_80089978(u8* pokemon, u8* entry) {
+u8 gbaBuildTrainerPokemon(u8* pokemon, u8* entry) {
     extern u8 fn_801EEAD0(u8 id);
     extern void fn_801EEE6C(u8 id, u8 value);
     extern void fightTrainerPokemonDataBiosSetPokemonDataId(u8* pokemon, u16 id);

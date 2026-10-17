@@ -39,7 +39,7 @@ u8 fn_80075B08(void) { return std081_flagCheckTrue(0xab4); }
 s32 fn_80075B2C(void) { return std078_flagSetFalse(0xab3); }
 u8 fn_80075B50(void) { return std081_flagCheckTrue(0xab3); }
 
-s32 fn_80075B74(void)
+s32 exShrineIncCounter(void)
 {
     s32 result;
     u32 value;
@@ -76,7 +76,7 @@ s32 fn_80075C68(void)
     return menuClose(0xe0);
 }
 
-void fn_80075C94(void)
+void exDiscCheckStorySave(void)
 {
     s32 result;
 

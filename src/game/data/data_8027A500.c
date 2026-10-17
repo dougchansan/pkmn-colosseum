@@ -65,7 +65,7 @@ extern u8 std215_battleStartTrainerWithPrompt[];
 extern u8 std213_gbaGetLinkedGameId[];
 extern u8 std212_gbaIsLinkActive[];
 extern u8 std220_gbaUnk_80083bf8[];
-extern u8 fn_8008F91C[];
+extern u8 demoScene18[];
 extern u8 fn_80097BBC[];
 extern u8 fn_800AFFE0[];
 extern u8 GSmodelGetRotation[];
@@ -52393,7 +52393,7 @@ void* lbl_8027A500[68440] = {
     (void*)0x008FA00A,
     (void*)0xF800AF80,
     (void*)0x08FA00AF,
-    (void*)((u8*)fn_8008F91C + 0xE4),
+    (void*)((u8*)demoScene18 + 0xE4),
     (void*)0x8FA00AF8,
     (void*)0x002FB01C,
     (void*)0xF2002EF9,

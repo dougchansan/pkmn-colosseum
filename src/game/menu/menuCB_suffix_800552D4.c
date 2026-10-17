@@ -112,7 +112,7 @@ extern MenuCBSlotInfo lbl_80267398[0x20];
 extern MenuModelWork lbl_803A9720;
 extern u32 lbl_8047A560;
 
-extern void* fn_80057270(MenuCBPane* pane);
+extern void* pcBoxGetCursorPokemon(MenuCBPane* pane);
 extern s32 fn_800573C0(void);
 extern s32 fn_800566E8(void);
 extern s32 fn_80057E40(MenuCBPane* pane);
@@ -151,7 +151,7 @@ void menuCursorNormal(MenuCBPane* pane);
 MenuCursorItem* windowGetCursorToItem();
 void fn_80057830(s16 x, s16 y, s32 selected);
 extern void fn_80054760(s32 forward, s32 wait);
-extern void fn_800558B8(void);
+extern void pcBoxRun(void);
 extern void fn_80056A80(void);
 extern void fn_80056B74(MenuCBPane* pane, s32 enabled);
 extern void fn_80057A38(void);
@@ -209,7 +209,7 @@ static inline s32 menuCBFindBoxSlot(s32* state)
     return i;
 }
 
-s32 fn_800552D4(s32 box, s32 slot)
+s32 pcBoxPokemonCommand(s32 box, s32 slot)
 {
     extern void* getPokemon__5PCBOXFScSc(void*, s8, s8);
     extern void delPokemon__5PCBOXFScSc(void*, s8, s8);
@@ -487,7 +487,7 @@ static inline void fn_800558B8_rebuild(void) {
     }
 }
 
-void fn_800558B8(void)
+void pcBoxRun(void)
 {
     extern void soundStart(s32, s32, s32, s32);
     extern s32 fn_800576B4(void);
@@ -499,7 +499,7 @@ void fn_800558B8(void)
     extern void fn_800599AC(s32);
     extern void fn_800546C0(s32);
     extern u32 fn_80056A78(void);
-    extern s32 fn_800552D4();
+    extern s32 pcBoxPokemonCommand();
     extern s32 fn_8005D26C(void);
     extern void fadeSet(s32, f32);
     extern s32 fadeCheck(s32);
@@ -577,7 +577,7 @@ void fn_800558B8(void)
             selectedSlotPtr = &selectedSlot;
             break;
         case 0:
-            selectedSlot = fn_800552D4(fn_80056A78(), slot);
+            selectedSlot = pcBoxPokemonCommand(fn_80056A78(), slot);
             selectedSlotPtr = &selectedSlot;
             break;
         case 1:
@@ -601,7 +601,7 @@ void fn_80055B98(MenuCBPane* pane) {
 
     fn_80054760(FALSE, TRUE);
     fn_80057A64(NULL, 0);
-    fn_800558B8();
+    pcBoxRun();
     fn_80057A38();
     fn_8005471C();
     fn_80056A80();
@@ -629,7 +629,7 @@ s32 fn_80055C2C(MenuCBPane* pane, MenuCBPane* sprite) {
     return 0;
 }
 
-s32 fn_80055CD4(MenuCBPane* pane, MenuCBPane* sprite) {
+s32 pcBoxDrawBoxNameItem(MenuCBPane* pane, MenuCBPane* sprite) {
     u8 box;
     u32 name;
     s32 result;
@@ -646,7 +646,7 @@ s32 fn_80055CD4(MenuCBPane* pane, MenuCBPane* sprite) {
     return result;
 }
 
-s32 fn_80055D34(MenuCBPane* pane) {
+s32 pcBoxBoxSelectKey(MenuCBPane* pane) {
     MenuKeyInfo* keyInfo;
 
     keyInfo = windowGetKeyInfo();

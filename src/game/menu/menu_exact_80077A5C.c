@@ -36,28 +36,28 @@ u8 fn_80077A5C(void* pokemon) {
     return result;
 }
 
-extern u8* fn_8006B420(void);
+extern u8* savedataBattleGetRulePtr(void);
 
 /* fn_80077AAC..fn_80077B60 (0x80077AAC-0x80077B60): fixed-index byte
- * accessors into the fn_8006B420() record. */
-u8 fn_80077AAC(void) { return fn_8006B420()[0x13]; }
+ * accessors into the savedataBattleGetRulePtr() record. */
+u8 fn_80077AAC(void) { return savedataBattleGetRulePtr()[0x13]; }
 
-u8 fn_80077AD0(void) { return fn_8006B420()[0x12]; }
+u8 fn_80077AD0(void) { return savedataBattleGetRulePtr()[0x12]; }
 
-u8 fn_80077AF4(void) { return fn_8006B420()[0x11]; }
+u8 fn_80077AF4(void) { return savedataBattleGetRulePtr()[0x11]; }
 
-u8 fn_80077B18(void) { return fn_8006B420()[0x10]; }
+u8 fn_80077B18(void) { return savedataBattleGetRulePtr()[0x10]; }
 
-u8 fn_80077B3C(void) { return fn_8006B420()[0xf]; }
+u8 fn_80077B3C(void) { return savedataBattleGetRulePtr()[0xf]; }
 
-u8 fn_80077B60(void) { return fn_8006B420()[0xe]; }
+u8 fn_80077B60(void) { return savedataBattleGetRulePtr()[0xe]; }
 
-/* fn_80077B84 (0x80077B84): fixed-index s16 accessor into the same record. */
-s16 fn_80077B84(void) { return ((s16*)fn_8006B420())[0xb]; }
+/* menuCBRule_GetCommandTimeLimit (0x80077B84): fixed-index s16 accessor into the same record. */
+s16 menuCBRule_GetCommandTimeLimit(void) { return ((s16*)savedataBattleGetRulePtr())[0xb]; }
 
 /* menuCBRule_GetBattleTimeLimit (0x80077BA8): same shape, scaled by 0x3c. */
 s32 menuCBRule_GetBattleTimeLimit(void) {
-    return ((s16*)fn_8006B420())[0xa] * 0x3c;
+    return ((s16*)savedataBattleGetRulePtr())[0xa] * 0x3c;
 }
 
 /* fn_80077BD0 (0x80077BD0): accept initialized save-status values. */
@@ -101,7 +101,7 @@ u8 fn_80077C68(u16 item) {
     MenuRuleItemRestrictions* rule;
     u32 i;
 
-    rule = (MenuRuleItemRestrictions*)fn_8006B420();
+    rule = (MenuRuleItemRestrictions*)savedataBattleGetRulePtr();
     if (menuCBRule_CheckValidItem(item) == 0) {
         return 0;
     }
@@ -131,8 +131,8 @@ u16 fn_80077D88(s32 index) {
     return lbl_802EE458[index];
 }
 
-/* fn_80077DB8 (0x80077DB8): map the current save state to a rule value. */
-s32 fn_80077DB8(void) {
+/* savedataBattleGetEntryCount (0x80077DB8): map the current save state to a rule value. */
+s32 savedataBattleGetEntryCount(void) {
     s32* entry;
     s32 state;
 

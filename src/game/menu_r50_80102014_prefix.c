@@ -126,7 +126,7 @@ extern void fadeDaemon(void);
 extern void fn_800FE6D0();
 extern void fn_800FE35C(void);
 extern void spriteSetEnv(void);
-extern u16 fn_8005D798(void*, s32);
+extern u16 menuSeTableLookup(void*, s32);
 extern void cmsRunSync(void*, u32, ...);
 extern int soundStartSE(u16);
 
@@ -449,7 +449,7 @@ void menuSetPosition(u32 id, s16 x, s16 y) {
         void* sound = menuSeBiosGetPtr(                                     \
             menuDataBiosGetPtr((window)->id)->soundGroup & 7);              \
         if (sound != NULL) {                                                \
-            u32 se = fn_8005D798(sound, (event));                           \
+            u32 se = menuSeTableLookup(sound, (event));                           \
             if (se != 0) {                                                  \
                 soundStartSE(se);                                            \
             }                                                               \

@@ -11,7 +11,7 @@ typedef struct AlarmCallback {
     u32 unk8;
 } AlarmCallback;
 
-AlarmCallback* fn_8009A92C(AlarmCallback* head, AlarmCallback* blk)
+AlarmCallback* DLInsert(AlarmCallback* head, AlarmCallback* blk)
 {
     AlarmCallback* prev = 0;
     AlarmCallback* node = head;

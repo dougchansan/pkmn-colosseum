@@ -9,7 +9,7 @@
  * toolentryTaisen*, gbaCommandEntryPokemon, gbaCommandSendWazaText,
  * heroBiosGet/SetPokecoupon(All).
  *
- * fn_80065A48 (below) is reintroduced from the previous campaign's
+ * menuTaisenDrawPlayerPanel (below) is reintroduced from the previous campaign's
  * ui_core.c (archive/previous_campaign/src/game/ui/ui_core.c, commits
  * 745775c5 and 9f9727ef) through the current dtk-template pipeline: ported
  * into this unit's split and re-verified against this unit's own compiler
@@ -18,7 +18,7 @@
  */
 #include "dolphin/types.h"
 
-/* ===== External function declarations (fn_80065A48 only) ===== */
+/* ===== External function declarations (menuTaisenDrawPlayerPanel only) ===== */
 extern void fn_8010B9E8();
 extern s32  toolentryTaisenGetPokemonNum();
 extern s32  toolentryTaisenGetHomePlace();
@@ -100,7 +100,7 @@ extern u8 lbl_802EF0A8[];
  * with peephole optimization disabled. */
 #pragma push
 #pragma peephole off
-void fn_800643D4(u8* ctx, UICmdMsg* msg)
+void menuTaisenDrawPokemonStatus(u8* ctx, UICmdMsg* msg)
 {
     s32 h;
     s32 fl;
@@ -699,7 +699,7 @@ void fn_800643D4(u8* ctx, UICmdMsg* msg)
 #endif
 
 #if defined(MENUCB_RANGE_RESIDUAL_EMPTY_ONLY)
-void fn_80065A48(void*, UICmdMsg*, s32);
+void menuTaisenDrawPlayerPanel(void*, UICmdMsg*, s32);
 extern s32 fn_8006B1D4(void);
 extern s32 toolentryTaisenGetPokemonNum(s32);
 extern s32 toolentryTaisengetEtnryPokemonOrderNum(s32);
@@ -720,10 +720,10 @@ extern f32 lbl_8047C018;
 #if defined(MENUCB_RANGE_HEAD_ONLY) || \
     defined(MENUCB_RANGE_EXACT_800638F4_ONLY) || \
     defined(MENUCB_RANGE_HEAD_SUFFIX_ONLY)
-extern u8 fn_8006B1F4(s32, s32);
-extern void fn_8006B2A4(s32, s32);
-extern u8 fn_8006B3C8(s32);
-extern void fn_8006B354(s32);
+extern u8 savedataBattleGetCourseCleared(s32, s32);
+extern void savedataBattleSetCourseCleared(s32, s32);
+extern u8 savedataBattleIsCourseUnlocked(s32);
+extern void savedataBattleUnlockCourse(s32);
 extern s32 fn_8025DAAC(void);
 extern void fn_800FB680(s32, s32, s32, u32);
 extern void fn_80063AD4(u8*, UICmdMsg*);
@@ -769,12 +769,12 @@ extern void winMsgOpen(s32 type, s32 message, s32 a, s32 b);
 extern void winMsgClose(s32 window);
 extern s32 lbl_8047A5D0;
 
-s32 fn_80062948(MenuCBBattleEntryContext* context)
+s32 menuTaisenRun(MenuCBBattleEntryContext* context)
 {
     extern void menuCBBattleStartInit(void*, s32);
     extern s32 fn_8025D9A8(void);
-    extern s32 fn_80063060(void*);
-    extern s32 fn_80062AB4(void*);
+    extern s32 menuTaisenAwardCoupons(void*);
+    extern s32 menuTaisenShowResult(void*);
     extern s32 menuOpen(s32, s32);
     extern void menuCloseCustom(s32, s32, s32);
     extern void winSeqSetMenu(s32, s32);
@@ -793,7 +793,7 @@ s32 fn_80062948(MenuCBBattleEntryContext* context)
     switch (battleMode) {
     case 0:
     case 1:
-        result = fn_80063060(context);
+        result = menuTaisenAwardCoupons(context);
         break;
     case 3:
         menuOpen(0xDF, 0);
@@ -815,7 +815,7 @@ s32 fn_80062948(MenuCBBattleEntryContext* context)
         menuCloseCustom(0x106, 0, 1);
         break;
     default:
-        result = fn_80062AB4(context);
+        result = menuTaisenShowResult(context);
         break;
     }
 
@@ -912,7 +912,7 @@ static inline u16 fn_80062AB4_IsHomeBattle(void)
     return 0;
 }
 
-s32 fn_80062AB4(MenuCBBattleEntryContext* context)
+s32 menuTaisenShowResult(MenuCBBattleEntryContext* context)
 {
     u16 status;
     u8 abort;
@@ -1046,15 +1046,15 @@ s32 fn_80062AB4(MenuCBBattleEntryContext* context)
     return result;
 }
 
-s32 fn_80063060(MenuCBBattleEntryContext* context)
+s32 menuTaisenAwardCoupons(MenuCBBattleEntryContext* context)
 {
     extern void fn_8006A7D0(void);
     extern u16 fn_8006AC6C(void);
-    extern void fn_8006ADB4(s32);
-    extern u32 fn_8006ADEC(void);
-    extern void fn_8006B09C(s32);
-    extern s32 fn_800886D0(void);
-    extern s32 fn_800889E4(s32);
+    extern void savedataBattleSetCouponRun(s32);
+    extern u32 savedataBattleGetCouponRun(void);
+    extern void savedataBattleGetEntryPtr(s32);
+    extern s32 menuSaveLoadReceiveGift(void);
+    extern s32 menuSaveLoadSaveGame(s32);
     extern s32 fn_80088D84(void);
     extern s8 menuSubOpenYesNo(s32, s16, s16, s32);
     extern void menuCBPokemonEntryTexWorkInit(void);
@@ -1082,7 +1082,7 @@ s32 fn_80063060(MenuCBBattleEntryContext* context)
     extern void fn_8025DB80(void);
     extern s32 fn_8025DBB0(void);
     extern void fn_80061028(s32);
-    extern void fn_80069C0C(void*);
+    extern void menuCBBattleSetupFight(void*);
     extern s16 lbl_80478920;
     extern s16 lbl_80478922;
     s32 state;
@@ -1131,7 +1131,7 @@ s32 fn_80063060(MenuCBBattleEntryContext* context)
                 switch (battleMode) {
                 case 0:
                     if (battleCount == 7) {
-                        fn_8006ADB4(fn_8025D164());
+                        savedataBattleSetCouponRun(fn_8025D164());
                         pendingSetup = 1;
                         fn_800637B0();
                     }
@@ -1139,7 +1139,7 @@ s32 fn_80063060(MenuCBBattleEntryContext* context)
                 case 1:
                     if (onesDigit == 0) {
                         s32 base = fn_8025D164();
-                        fn_8006ADB4(base + fn_8006ADEC());
+                        savedataBattleSetCouponRun(base + savedataBattleGetCouponRun());
                     }
                     if (battleCount + 1 == 100) {
                         pendingSetup = 1;
@@ -1250,12 +1250,12 @@ s32 fn_80063060(MenuCBBattleEntryContext* context)
 
         case 5:
             {
-                s32 n = fn_8006ADEC();
+                s32 n = savedataBattleGetCouponRun();
                 msgctrlSetValue(0x30, n);
             }
             soundStartRaw(0x3CC, 0, 0);
             winMsgOpen(2, 0x3C11, 1, 1);
-            fn_8006B09C(0);
+            savedataBattleGetEntryPtr(0);
             fn_8006A7D0();
             {
                 s32 entries = fn_8006AC6C();
@@ -1344,7 +1344,7 @@ s32 fn_80063060(MenuCBBattleEntryContext* context)
             menuCBBattleStartTrainerFaceFree();
             fn_80061028(1);
             menuCloseCustom(0xDF, 0, 1);
-            fn_800886D0();
+            menuSaveLoadReceiveGift();
             result = 0x105;
             state = 9;
             break;
@@ -1352,12 +1352,12 @@ s32 fn_80063060(MenuCBBattleEntryContext* context)
         case 9:
             if (usedCancelRoute) {
                 if (openedCustomMenu) {
-                    if (fn_800889E4(0) < 0) {
+                    if (menuSaveLoadSaveGame(0) < 0) {
                         state = 4;
                         allowDbCleanup = 0;
                     } else {
                         keepRunning = 0;
-                        fn_80069C0C(context);
+                        menuCBBattleSetupFight(context);
                     }
                 } else {
                     if (fn_80088D84() < 0) {
@@ -1365,13 +1365,13 @@ s32 fn_80063060(MenuCBBattleEntryContext* context)
                         allowRestore = 0;
                     } else {
                         keepRunning = 0;
-                        fn_80069C0C(context);
+                        menuCBBattleSetupFight(context);
                     }
                 }
             } else {
                 keepRunning = 0;
                 if (openedCustomMenu) {
-                    fn_80069C0C(context);
+                    menuCBBattleSetupFight(context);
                 }
             }
             break;
@@ -1395,36 +1395,36 @@ void fn_800637B0(void)
 
     battleType = toolentryTaisenGetBattleType();
     setting = fn_8025DAAC();
-    if (fn_8006B1F4(setting, battleType) == 0) {
-        fn_8006B2A4(setting, battleType);
+    if (savedataBattleGetCourseCleared(setting, battleType) == 0) {
+        savedataBattleSetCourseCleared(setting, battleType);
     }
 
-    if (fn_8006B3C8(3) == 0) {
+    if (savedataBattleIsCourseUnlocked(3) == 0) {
         ready = 1;
         for (player = 0; player <= 2; player++) {
-            if (fn_8006B1F4(player, 0) == 0) {
+            if (savedataBattleGetCourseCleared(player, 0) == 0) {
                 ready = 0;
                 break;
             }
-            if (fn_8006B1F4(player, 1) == 0) {
+            if (savedataBattleGetCourseCleared(player, 1) == 0) {
                 ready = 0;
                 break;
             }
         }
         if (ready == 1) {
-            fn_8006B354(3);
+            savedataBattleUnlockCourse(3);
         }
     }
 
-    if (fn_8006B3C8(5) == 0) {
+    if (savedataBattleIsCourseUnlocked(5) == 0) {
         ready = 1;
-        if (fn_8006B1F4(4, 0) == 0) {
+        if (savedataBattleGetCourseCleared(4, 0) == 0) {
             ready = 0;
-        } else if (fn_8006B1F4(4, 1) == 0) {
+        } else if (savedataBattleGetCourseCleared(4, 1) == 0) {
             ready = 0;
         }
         if (ready == 1) {
-            fn_8006B354(5);
+            savedataBattleUnlockCourse(5);
         }
     }
 }
@@ -1547,7 +1547,7 @@ void fn_80063AD4(u8* context, UICmdMsg* msg)
 #if defined(MENUCB_RANGE_RESIDUAL_EMPTY_ONLY)
 /* The 0x80065628 and 0x80065730 wrappers compile only their own callbacks. */
 #if !defined(MENUCB_RANGE_80065628_ONLY) && !defined(MENUCB_RANGE_80065730_ONLY)
-/* The 0x8006905C wrapper compiles only fn_8006905C. */
+/* The 0x8006905C wrapper compiles only menuTaisenEntryCheck. */
 /* Single-range wrappers: 0x800676EC (fn_800676EC..fn_80068418),
  * 0x8006905C, 0x80069220 and 0x800693A4 each compile only their own range. */
 #if !defined(MENUCB_RANGE_8006905C_ONLY) && !defined(MENUCB_RANGE_80069220_ONLY) && \
@@ -1558,7 +1558,7 @@ void fn_800676EC(u8* context)
     extern s32 toolentryTaisenGetControlerType(s32);
     extern s32 toolentryTaisenGetPokemonNum(s32);
     extern void fn_800679C0(u8*, s32);
-    extern u8 fn_8006905C(void);
+    extern u8 menuTaisenEntryCheck(void);
     extern void menuButtonNormal(u8*);
     u32 buttons;
     u32 mask;
@@ -1645,7 +1645,7 @@ void fn_800676EC(u8* context)
         }
     }
 
-    if (fn_8006905C() != 0) {
+    if (menuTaisenEntryCheck() != 0) {
         context[0x98] = 1;
         context[0x99] = 1;
     }
@@ -1678,7 +1678,7 @@ extern u8 lbl_803A9F08[];
 extern u32 lbl_802EDB64[];
 extern f32 lbl_8047BFE8;
 extern f32 lbl_8047BFEC;
-extern MenuCBAfe4* fn_8006AFE4(s32);
+extern MenuCBAfe4* savedataBattleGetEntryById(s32);
 extern s32 fn_8006B1D4(void);
 extern u8 fn_8008ABA0(s32);
 extern u32 fn_800F7AF0(void);
@@ -1709,7 +1709,7 @@ static inline void menuCBEntryCheckLinkLost(int player)
     s32 controller;
 
     if (fn_8025D9CC() == 4 && lbl_803A9F08[(s32)player + 4] != 0) {
-        type = fn_8006AFE4(toolentryTaisenGetControlerType(player))->type;
+        type = savedataBattleGetEntryById(toolentryTaisenGetControlerType(player))->type;
         if (type == 1 || type == 2) {
             controller = toolentryTaisenGetControlerType(player);
             if (fn_8008ABA0(controller) == 0) {
@@ -1846,7 +1846,7 @@ void fn_800679C0(MenuCBContext676EC* context, s32 startPlayer)
 
         if (lbl_803A9F08[(u32)player + 4] == 0) {
             if (fn_8025D9CC() == 4) {
-                type = fn_8006AFE4(toolentryTaisenGetControlerType(player))->type;
+                type = savedataBattleGetEntryById(toolentryTaisenGetControlerType(player))->type;
                 if (type == 1 || type == 2) {
                     _menuCBPokemonEntryEntCheckGBA__F13GSinputDevicel(
                         toolentryTaisenGetControlerType(player), player);
@@ -2102,7 +2102,7 @@ static inline u16 menuCBEntryLimit(s32 player)
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-u8 fn_8006905C(void)
+u8 menuTaisenEntryCheck(void)
 {
     u16 count;
     s32 active_players = 1;
@@ -2158,7 +2158,7 @@ u8 fn_8006905C(void)
     return 1;
 }
 #pragma pop
-#endif /* fn_8006905C */
+#endif /* menuTaisenEntryCheck */
 
 #if !defined(MENUCB_RANGE_8006905C_ONLY) && !defined(MENUCB_RANGE_800676EC_ONLY)
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
@@ -2216,7 +2216,7 @@ void fn_80065628(void* menu, UICmdMsg* msg)
     if (*(s32*)(lbl_803A9F08 + 0x154) != 2) {
         msg->flags4 &= ~2;
     }
-    fn_80065A48(menu, msg, 3);
+    menuTaisenDrawPlayerPanel(menu, msg, 3);
     color = lbl_802ED9F0 + toolentryTaisenGetBattlePlayerID(player) * 3;
     switch (msg->cmd) {
     case 0xBB1:
@@ -2255,7 +2255,7 @@ void fn_80065730(void* menu, UICmdMsg* msg)
     if (*(s32*)(lbl_803A9F08 + 0x154) != 2) {
         msg->flags4 |= 2;
     }
-    fn_80065A48(menu, msg, 2);
+    menuTaisenDrawPlayerPanel(menu, msg, 2);
     color = lbl_802ED9F0 + toolentryTaisenGetBattlePlayerID(player) * 3;
     switch (msg->cmd) {
     case 0xBB1:
@@ -2289,7 +2289,7 @@ void fn_80065838(void* menu, UICmdMsg* msg)
     if (*(s32*)(lbl_803A9F08 + 0x154) != 2) {
         msg->flags4 &= ~2;
     }
-    fn_80065A48(menu, msg, 1);
+    menuTaisenDrawPlayerPanel(menu, msg, 1);
     color = lbl_802ED9F0 + toolentryTaisenGetBattlePlayerID(player) * 3;
     switch (msg->cmd) {
     case 0xBB1:
@@ -2323,7 +2323,7 @@ void fn_80065940(void* menu, UICmdMsg* msg)
     if (*(s32*)(lbl_803A9F08 + 0x154) != 2) {
         msg->flags4 |= 2;
     }
-    fn_80065A48(menu, msg, 0);
+    menuTaisenDrawPlayerPanel(menu, msg, 0);
     color = lbl_802ED9F0 + toolentryTaisenGetBattlePlayerID(player) * 3;
     switch (msg->cmd) {
     case 0xBB1:
@@ -2675,7 +2675,7 @@ void fn_80068F84(void)
 #pragma optimization_level 4
 #pragma scheduling on
 #pragma peephole off
-void fn_80065A48(void* ctx, void* arg1, s32 arg2)
+void menuTaisenDrawPlayerPanel(void* ctx, void* arg1, s32 arg2)
 {
     UICmdMsg* msg = (UICmdMsg*) arg1;
     s32 i0;

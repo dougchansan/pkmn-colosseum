@@ -242,7 +242,7 @@ extern void* gamedatasaveBiosGetPtr(void* ptr);
 extern void gamedatasaveBiosSetMemcardID(void* ptr, u64 id);
 extern u64 gamedatasaveBiosGetMemcardID(void* ptr);
 extern u16 fn_8006A718(void* data);
-extern void fn_8006AF44(void* data, void* arg);
+extern void savedataBattleSetSavedHero(void* data, void* arg);
 extern u32 gamedatasaveGetStatus(void* data, s32 kind);
 extern void gamedatasaveSetStatus(void* data, s32 kind, s32 value);
 extern void* heroGetStatus(void* hero, s32 kind, s32 index);
@@ -2197,7 +2197,7 @@ s32 fn_801CF568(void)
         *lbl_8047B3D4->savedata_status = *savedata;
         break;
     case 5:
-        fn_8006AF44(status14, default_status14->field_B328);
+        savedataBattleSetSavedHero(status14, default_status14->field_B328);
         break;
     case 13:
         memcpy(status14->field_C9DC, default_status14->field_C9DC, 0x1F8);
@@ -2244,7 +2244,7 @@ s32 fn_801CF320(void)
     case 9:
         data = savedataGetStatus(save->header.fields.savedata, 14);
         if (fn_8006A718(save->header.fields.savedata) == 1) {
-            fn_8006AF44(data, NULL);
+            savedataBattleSetSavedHero(data, NULL);
         }
         /* fallthrough */
     case 4:

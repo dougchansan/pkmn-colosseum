@@ -198,7 +198,7 @@ static inline s32 fn_80055F88_find(s16 val, u32* ptr) {
 
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
 #pragma peephole off
-u32 fn_80055F88(u8* unused, u8* p) {
+u32 pcBoxDrawBoxName(u8* unused, u8* p) {
     extern u8 lbl_80267680[];
     extern void* pcboxGetPokemonBoxName(void* pcbox, s8 box);
     extern void msgctrlSetValue(u32 id, u32 value);

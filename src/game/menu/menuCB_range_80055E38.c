@@ -99,7 +99,7 @@ static inline s32 fn_80055F88_find(s16 val, u32* ptr) {
     return -1;
 }
 
-u32 fn_80055F88(u8* unused, u8* p) {
+u32 pcBoxDrawBoxName(u8* unused, u8* p) {
     extern u8 lbl_80267680[];
     extern void* pcboxGetPokemonBoxName(void* pcbox, s8 box);
     extern void msgctrlSetValue(u32 id, u32 value);
@@ -570,11 +570,11 @@ u32 fn_80057144(u8* ctx, u8* p) {
     defined(MENUCB_EXACT_80057270_ONLY) || \
     defined(MENUCB_TU_80056C54_ONLY)
 
-/* RULE-EXCEPTION(user-approved): local peephole off / scheduling on for fn_80057270 — see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): local peephole off / scheduling on for pcBoxGetCursorPokemon — see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
 #pragma scheduling on
-void* fn_80057270(void) {
+void* pcBoxGetCursorPokemon(void) {
     extern s32 fn_80055194(u32*, s32);
     extern s32 fn_80058F08(u32*, s32);
     extern s32 fn_80056A78(void);

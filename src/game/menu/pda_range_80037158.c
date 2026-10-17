@@ -933,7 +933,7 @@ void std024_dialogDisplayPCBoxMenu(void)
     extern void soundDuck(s32 a, s32 b, s32 c, s32 d);
     extern void soundUnduck(s32 a, s32 b, s32 c);
     extern void fn_800FF660(void);
-    extern void fn_80058150(void);
+    extern void pcBoxStorageMain(void);
     extern void itemStorageRun(void);
     extern s32 pcMenuSave(void);
     extern void menuModelInit(u8* model, s16 a, s16 b);
@@ -1001,7 +1001,7 @@ void std024_dialogDisplayPCBoxMenu(void)
             }
             break;
         case 0xa:
-            fn_80058150();
+            pcBoxStorageMain();
             state = 1;
             break;
         case 0x14:

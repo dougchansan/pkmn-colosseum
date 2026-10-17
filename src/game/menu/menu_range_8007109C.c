@@ -167,7 +167,7 @@ extern u32 OSGetTick(void);
 extern void _threadSwitch(void);
 
 /* Retail inlines this wait loop into its callers rather than calling out to
- * it: framescan shows fn_80078390 and fn_800788BC each hold lbl_8047C0E0 /
+ * it: framescan shows exDiscCelebiTransfer and exDiscCelebiEvent each hold lbl_8047C0E0 /
  * lbl_8047C0E4 and the two int->float conversion biases in callee-saved FPRs
  * (f27-f31), which only happens when the loop is in the function body. Ours
  * emitted `bl MenuWaitMotionInterval` and saved no FPRs at all.
@@ -251,7 +251,7 @@ static inline u8 menuRuleEventPokemonAllowed(void* pokemon)
 }
 
 #if !defined(MENU_RANGE_CARVE)
-u8 fn_80076398(void* pokemon, s32 check)
+u8 menuRuleCheckPokemon(void* pokemon, s32 check)
 {
     extern s32 pokemonGetStatus(void*, s32, s32, u16);
     extern void pokemonBiosCopy(void*, void*);
@@ -287,7 +287,7 @@ u8 fn_80076398(void* pokemon, s32 check)
 
     switch (check) {
     case 0:
-        if (fn_80076398(pokemon, 2) == 0) {
+        if (menuRuleCheckPokemon(pokemon, 2) == 0) {
             return 1;
         }
         if (menuRuleEventPokemonAllowed(pokemon) == 0) {
@@ -404,8 +404,8 @@ extern const u8 lbl_80268718[];
 extern const u8 lbl_80268750[];
 extern char lbl_8047C090;
 
-/* fn_8007109C (0x8007109C): release the current heap handle, if any. */
-void fn_8007109C(void) {
+/* menuCommonFree (0x8007109C): release the current heap handle, if any. */
+void menuCommonFree(void) {
     extern u16 fn_800E202C(void);
     extern void fn_800E24B0(u16 handle);
     extern void fn_800E209C(u16 handle);
@@ -421,8 +421,8 @@ void fn_8007109C(void) {
     }
 }
 
-/* fn_80071104 (0x80071104): allocate a 32-byte-aligned handle and lock it. */
-s32 fn_80071104(s32 size) {
+/* menuCommonAlloc (0x80071104): allocate a 32-byte-aligned handle and lock it. */
+s32 menuCommonAlloc(s32 size) {
     extern u16 fn_800E2C04(s32 size, s32 align);
     extern s32 fn_800E27B0(u16 handle);
     u16 handle;
@@ -666,7 +666,7 @@ extern s32 std082_flagGetValue(s32);
 extern void _flagSet();
 
 /* fn_80074324 (0x80074324): prep key-state then perform per-channel reset path. */
-s32 fn_80074360(s32 chan)
+s32 pkjbProbe(s32 chan)
 {
     extern u32 fn_800D0F44(s32 chan);
     u32 response;
@@ -741,7 +741,7 @@ s32 fn_80074360(s32 chan)
     return result;
 }
 
-extern s32 fn_8007480C();
+extern s32 pkjbValidateKey();
 
 /* Wait (up to 5 ms) for the GBA to become ready, then send the 0xAA
  * handshake byte and check that the GBA echoes it. */
@@ -792,7 +792,7 @@ s32 fn_800745B4(s32 chan)
     u32 timeout;
     u32 start;
 
-    result = fn_8007480C(chan);
+    result = pkjbValidateKey(chan);
     if (result == 0) {
         timeout = OS_TIMER_CLOCK * 8;
         start = OSGetTick();
@@ -814,10 +814,10 @@ s32 fn_800745B4(s32 chan)
 }
 
 s32 fn_80074324(s32 arg0) {
-    extern s32 fn_80074360(s32);
+    extern s32 pkjbProbe(s32);
 
     gbaCommandSetKeyState(arg0 + 1, 0);
-    return fn_80074360(arg0);
+    return pkjbProbe(arg0);
 }
 
 
@@ -1105,12 +1105,12 @@ extern u32 lbl_8047A600;
 
 extern s32 menuIsCheck(s32);
 
-/* fn_80073E8C reports through string literals: retail pools pkjb_uploader.c's
+/* pkjbPrepare reports through string literals: retail pools pkjb_uploader.c's
  * read-only strings (lbl_80268780) and addresses each off one base register,
  * which needs -rostr on its unit. */
 
-/* fn_80073E8C (0x80073E8C): load one or two menu binary blocks and refresh checksum bytes. */
-s32 fn_80073E8C(void* pathA, void* pathB) {
+/* pkjbPrepare (0x80073E8C): load one or two menu binary blocks and refresh checksum bytes. */
+s32 pkjbPrepare(void* pathA, void* pathB) {
     extern void* memcpy(void* dst, const void* src, u32 size);
     extern void* fn_800A7BCC(void);
     extern void GBAInit(void);
@@ -1216,7 +1216,7 @@ static inline u8 menuRuleCheckPresentPokemonMode(void* pokemon,
     extern u8 pokemonBiosGetLevel(void*);
     extern u16 pokemonBiosGetItemDataId(void*);
     extern u8 fn_80142984(u16);
-    extern u8* fn_8006B420(void);
+    extern u8* savedataBattleGetRulePtr(void);
     MenuRuleItemRestrictions* restrictions;
     u16 item;
     u32 i;
@@ -1229,7 +1229,7 @@ static inline u8 menuRuleCheckPresentPokemonMode(void* pokemon,
         return pokemonBiosGetLevel(pokemon) <= levels[1];
     case 2:
         item = pokemonBiosGetItemDataId(pokemon);
-        restrictions = (MenuRuleItemRestrictions*)fn_8006B420();
+        restrictions = (MenuRuleItemRestrictions*)savedataBattleGetRulePtr();
         switch (item) {
         case 0:
             valid = 1;
@@ -1332,7 +1332,7 @@ s32 fn_80076054(void* hero, const u8* battleRules)
 
     for (error = 0; error < 6; error++) {
         for (slot = 0; slot < 6; slot++) {
-            if (fn_80076398(heroBiosGetPokemonPtr(hero, (u16)slot), error) == 0) {
+            if (menuRuleCheckPokemon(heroBiosGetPokemonPtr(hero, (u16)slot), error) == 0) {
                 return ((const MenuRuleText*)text)->errorMessages[error];
             }
         }
@@ -1365,11 +1365,11 @@ s32 fn_80076054(void* hero, const u8* battleRules)
 /* menuCBRule_CheckPokemonErrorAll (0x80076334): require every party member to
  * pass the per-slot error check. */
 u8 menuCBRule_CheckPokemonErrorAll(void* pokemon) {
-    extern u8 fn_80076398(void* pokemon, s32 index);
+    extern u8 menuRuleCheckPokemon(void* pokemon, s32 index);
     s32 i;
 
     for (i = 0; i < 6; i++) {
-        if (fn_80076398(pokemon, i) == 0) {
+        if (menuRuleCheckPokemon(pokemon, i) == 0) {
             return 0;
         }
     }
@@ -1391,7 +1391,7 @@ static inline u8 menuRuleCheckPartyAllModes(void* hero, const u8* rule)
 }
 
 /* Validate every party member against the active battle rule. */
-u8 fn_800767B8(void* hero, const u8* rule)
+u8 menuRuleCheckPartyByRule(void* hero, const u8* rule)
 {
     extern void* heroBiosGetPokemonPtr(void* hero, u16 slot);
     extern u8 pokemonCheckValid(void* pokemon);
@@ -1427,7 +1427,7 @@ pokemon_checked:
     return partyCount > 0;
 }
 
-/* Inlined copy of fn_800767B8 used by fn_800776E4. */
+/* Inlined copy of menuRuleCheckPartyByRule used by menuRuleCheckPartyAndRule. */
 /* RULE-EXCEPTION(user-approved): inline helper duplicating a real function's body — see docs/RULE_EXCEPTIONS.md */
 static inline u8 menuRuleCheckParty(void* hero, const u8* rule)
 {
@@ -1482,12 +1482,12 @@ static inline u8 menuRulePartyHasNoPokemonError(void* hero)
 }
 
 /* Check every party slot for Pokemon errors, then the active battle rule. */
-u8 fn_800776E4(void* hero)
+u8 menuRuleCheckPartyAndRule(void* hero)
 {
-    extern u8* fn_8006B420(void);
+    extern u8* savedataBattleGetRulePtr(void);
 
     return menuRulePartyHasNoPokemonError(hero) &&
-           menuRuleCheckParty(hero, fn_8006B420());
+           menuRuleCheckParty(hero, savedataBattleGetRulePtr());
 }
 
 /* fn_80077A5C (0x80077A5C): accept an empty slot or a zero species value. */
@@ -1502,28 +1502,28 @@ u8 fn_80077A5C(void* pokemon) {
     return result;
 }
 
-extern u8* fn_8006B420(void);
+extern u8* savedataBattleGetRulePtr(void);
 
 /* fn_80077AAC..fn_80077B60 (0x80077AAC-0x80077B60): fixed-index byte
- * accessors into the fn_8006B420() record. */
-u8 fn_80077AAC(void) { return fn_8006B420()[0x13]; }
+ * accessors into the savedataBattleGetRulePtr() record. */
+u8 fn_80077AAC(void) { return savedataBattleGetRulePtr()[0x13]; }
 
-u8 fn_80077AD0(void) { return fn_8006B420()[0x12]; }
+u8 fn_80077AD0(void) { return savedataBattleGetRulePtr()[0x12]; }
 
-u8 fn_80077AF4(void) { return fn_8006B420()[0x11]; }
+u8 fn_80077AF4(void) { return savedataBattleGetRulePtr()[0x11]; }
 
-u8 fn_80077B18(void) { return fn_8006B420()[0x10]; }
+u8 fn_80077B18(void) { return savedataBattleGetRulePtr()[0x10]; }
 
-u8 fn_80077B3C(void) { return fn_8006B420()[0xf]; }
+u8 fn_80077B3C(void) { return savedataBattleGetRulePtr()[0xf]; }
 
-u8 fn_80077B60(void) { return fn_8006B420()[0xe]; }
+u8 fn_80077B60(void) { return savedataBattleGetRulePtr()[0xe]; }
 
-/* fn_80077B84 (0x80077B84): fixed-index s16 accessor into the same record. */
-s16 fn_80077B84(void) { return ((s16*)fn_8006B420())[0xb]; }
+/* menuCBRule_GetCommandTimeLimit (0x80077B84): fixed-index s16 accessor into the same record. */
+s16 menuCBRule_GetCommandTimeLimit(void) { return ((s16*)savedataBattleGetRulePtr())[0xb]; }
 
 /* menuCBRule_GetBattleTimeLimit (0x80077BA8): same shape, scaled by 0x3c. */
 s32 menuCBRule_GetBattleTimeLimit(void) {
-    return ((s16*)fn_8006B420())[0xa] * 0x3c;
+    return ((s16*)savedataBattleGetRulePtr())[0xa] * 0x3c;
 }
 
 /* fn_80077BD0 (0x80077BD0): accept initialized save-status values. */
@@ -1560,7 +1560,7 @@ u8 fn_80077C68(u16 item) {
     MenuRuleItemRestrictions* rule;
     u32 i;
 
-    rule = (MenuRuleItemRestrictions*)fn_8006B420();
+    rule = (MenuRuleItemRestrictions*)savedataBattleGetRulePtr();
     if (menuCBRule_CheckValidItem(item) == 0) {
         return 0;
     }
@@ -1590,8 +1590,8 @@ u16 fn_80077D88(s32 index) {
     return lbl_802EE458[index];
 }
 
-/* fn_80077DB8 (0x80077DB8): map the current save state to a rule value. */
-s32 fn_80077DB8(void) {
+/* savedataBattleGetEntryCount (0x80077DB8): map the current save state to a rule value. */
+s32 savedataBattleGetEntryCount(void) {
     extern s32* savedataGetStatus(s32 side, s32 slotType);
     s32* entry;
     s32 state;
@@ -1643,7 +1643,7 @@ void fn_80077E80(void* dst, void* src) {
  * this region used to carry. This bare "scheduling on" used to close a
  * "scheduling off" around fn_80077E80 and leaks into the rest of the file;
  * it stays so that the -O1/-O3 score-instrumentation chunks that compile
- * the later functions (fn_80078390, fn_8007B6D8, _menuPop_80071398) keep
+ * the later functions (exDiscCelebiTransfer, gbaBootTransfer, _menuPop_80071398) keep
  * their effective setting. At -O4,p it is a no-op. */
 #pragma scheduling on
 
@@ -1723,7 +1723,7 @@ extern const f32 lbl_8047C128;
     ((((x) >> 24) | (((x) >> 8) & 0xFF00)) | (((x) << 8) & 0xFF0000) |  \
      ((x) << 24))
 
-s32 fn_8007480C(s32 channel, s32 use_primary_image) {
+s32 pkjbValidateKey(s32 channel, s32 use_primary_image) {
     extern void OSReport(const char* fmt, ...);
     u8 status;
     u32 recv_word;
@@ -2047,7 +2047,7 @@ static inline u32 gbaBootCrc(u32 crc, u8* data, u32 length) {
     return crc;
 }
 
-u32 fn_8007B6D8(GbaBootContext* context) {
+u32 gbaBootTransfer(GbaBootContext* context) {
     u8 crc_byte;
     u8 gba_status;
     u32 recv_word;
@@ -2305,7 +2305,7 @@ extern s32 std011_dialogDisplayYesNoMenu(void);
 
 #if !defined(MENU_RANGE_CARVE) || defined(MENU_R47_80077ED4_ONLY)
 /* 0x80077ED4 | Celebi/e-Reader party transfer sequence. */
-void fn_80077ED4(void)
+void menuExDiscShrineRun(void)
 {
     typedef struct MenuSaveSnapshot {
         u8 bytes[0x1DFD0];
@@ -2313,7 +2313,7 @@ void fn_80077ED4(void)
     extern void* fn_801D036C(void);
     extern void fn_801D0314(void*);
     extern void* savedataGetStatus(u32, u32);
-    extern void fn_80075B74(void);
+    extern void exShrineIncCounter(void);
     extern s32 fn_801D0748(u32, u32, u32);
     extern void soundStartSE(u32);
     extern void* heroBiosGetPokemonPtr(void*, u32);
@@ -2326,9 +2326,9 @@ void fn_80077ED4(void)
     extern char lbl_80268AB8[];
     extern char lbl_8047C0E8[] __attribute__((section(".sdata2")));
     extern void fn_80093574(u32);
-    extern void fn_80092C90(u32, void*, void*);
+    extern void gbaCommStartSendPokemon(u32, void*, void*);
     extern s32 fn_80093610(u32);
-    extern void fn_80093698(u32);
+    extern void gbaCommEnd(u32);
     extern s32 fn_800D37CC(void);
     extern u32 msgGetCharsPerFrame(void);
 
@@ -2343,7 +2343,7 @@ void fn_80077ED4(void)
     backup = fn_801D036C();
     *(MenuSaveSnapshot*)backup =
         *(MenuSaveSnapshot*)savedataGetStatus(0, 0);
-    fn_80075B74();
+    exShrineIncCounter();
 
     if (fn_801D0748(4, 2, 0) != 4) {
         soundStartSE(0x4C7);
@@ -2387,11 +2387,11 @@ void fn_80077ED4(void)
 
         *(u32*)(lbl_803F6E40 + 8) |= 8;
         fn_80093574(1);
-        fn_80092C90(1, lbl_803F6E40, pokemon);
+        gbaCommStartSendPokemon(1, lbl_803F6E40, pokemon);
         fn_80093574(1);
 
         if (fn_80093610(1) != 0xC) {
-            fn_80093698(1);
+            gbaCommEnd(1);
             winMsgClose(1);
             menuSetEnablePort(1);
             winMsgOpen(2, 0x3D85, 1, 0);
@@ -2416,7 +2416,7 @@ void fn_80077ED4(void)
             winMsgOpen(2, 0x44CF, 1, 0);
             winMsgClose(1);
         } else {
-            fn_80093698(1);
+            gbaCommEnd(1);
             menuSetEnablePort(1);
             winMsgOpen(2, 0x3D84, 1, 0);
             winMsgClose(1);
@@ -2434,7 +2434,7 @@ void fn_80077ED4(void)
     fn_801D0314(backup);
     lbl_8047A620 = 0;
 }
-void fn_80078390(void)
+void exDiscCelebiTransfer(void)
 {
     extern s8 menuSubOpenYesNo(s32 port, s32 x, s32 y, s32 initial);
     void* name;
@@ -2571,7 +2571,7 @@ static inline u8 MenuHeroHasFreePartySlot(void* hero)
     return 0;
 }
 
-void fn_800788BC(void* backup)
+void exDiscCelebiEvent(void* backup)
 {
     typedef struct MenuSaveSnapshot {
         u8 bytes[0x1DFD0];
@@ -2688,8 +2688,8 @@ void fn_80078D5C(void)
     extern void soundStartSE();
     extern void msgctrlSetValue();
     extern s8 std011_dialogDisplayYesNoMenu();
-    extern void fn_800788BC();
-    extern void fn_80077ED4();
+    extern void exDiscCelebiEvent();
+    extern void menuExDiscShrineRun();
     extern void* GSresGetResource();
     extern void GSmodelSetVisibility();
     extern u32 std112_modelGetResourceID();
@@ -2800,7 +2800,7 @@ void fn_80078D5C(void)
             break;
 
         case 7:
-            fn_800788BC(context);
+            exDiscCelebiEvent(context);
             break;
 
         case 8:
@@ -2836,11 +2836,11 @@ void fn_80078D5C(void)
             break;
 
         case 10:
-            fn_80078390();
+            exDiscCelebiTransfer();
             break;
 
         case 11:
-            fn_80077ED4();
+            menuExDiscShrineRun();
             break;
 
         default:
@@ -2947,7 +2947,7 @@ void fn_800792D8(void) {
         canParty = (u8)(result.partyCount < 6);
     }
 
-    if ((u8)fn_80079C1C(0, canBag, canParty, heroGetStatus(hero, 1, 0)) == 0) {
+    if ((u8)exDiscCouponGive(0, canBag, canParty, heroGetStatus(hero, 1, 0)) == 0) {
         return;
     }
 
@@ -2980,10 +2980,10 @@ void fn_800792D8(void) {
     }
 
     fn_80093574(1);
-    fn_80092C90(1, &result, giftPokemon);
+    gbaCommStartSendPokemon(1, &result, giftPokemon);
     fn_80093574(1);
     if (fn_80093610(1) != 0xc) {
-        fn_80093698(1);
+        gbaCommEnd(1);
         winMsgOpen(2, 0x3d85, 1, 0);
         winMsgClose(1);
         winMsgOpen(2, 0x44cf, 1, 0);
@@ -2993,7 +2993,7 @@ void fn_800792D8(void) {
         return;
     }
 
-    fn_80093698(1);
+    gbaCommEnd(1);
     winMsgClose(1);
     winMsgOpenField(0x43c5, 1, 0);
     choice = (s8)std011_dialogDisplayYesNoMenu();
@@ -3018,7 +3018,7 @@ void fn_800792D8(void) {
 #endif /* !MENU_RANGE_CARVE || MENU_R47_80077ED4_ONLY */
 
 #if !defined(MENU_RANGE_CARVE)
-/* fn_800798E8 (0x800798E8): e-card save/commit flow for the shop menu.
+/* exDiscCouponMenu (0x800798E8): e-card save/commit flow for the shop menu.
  *
  * Retail keeps the compare and the sign/zero extension apart (`clrlwi`+`cmplwi`,
  * one `extsb` feeding three compares), so the peephole pass has to be off; the
@@ -3027,13 +3027,13 @@ void fn_800792D8(void) {
  * in front of each `stb`. `hero` is declared after the party-loop counter
  * because that is what puts it above `backup` in the callee-saved ranking and
  * lets it share r29 with the dead saveResult, as retail does. */
-void fn_800798E8(void* backup)
+void exDiscCouponMenu(void* backup)
 {
     typedef struct MenuSaveSnapshot {
         u8 bytes[0x1DFD0];
     } MenuSaveSnapshot;
     extern s32 fn_801D0748(u32, u32, u32);
-    extern u32 fn_80079C1C();
+    extern u32 exDiscCouponGive();
     extern void* gamedatasaveGetStatus(u32, u32);
     extern void* savedataGetStatus(u32, u32);
     extern void* fn_80128DD4(void*);
@@ -3100,7 +3100,7 @@ party_capacity_done:
     pokemon = heroGetStatus(0, 1, 0);
     *(MenuSaveSnapshot*)backup =
         *(MenuSaveSnapshot*)savedataGetStatus(0, 0);
-    if ((u8)fn_80079C1C(1, canBag, canParty, pokemon) == 0) {
+    if ((u8)exDiscCouponGive(1, canBag, canParty, pokemon) == 0) {
         return;
     }
 
@@ -3206,7 +3206,7 @@ extern u32 msgGetCharsPerFrame(void);
 
 #if !defined(MENU_RANGE_CARVE) || defined(MENU_R47_80079C1C_ONLY)
 
-int fn_80079C1C(s32 arg0, int arg1, int arg2, s32 arg3) {
+int exDiscCouponGive(s32 arg0, int arg1, int arg2, s32 arg3) {
     if ((u8)arg1 == 0 && (u8)arg2 == 0) {
         winMsgOpenField(0x43D2, 1, 0);
         winMsgClose(1);
@@ -3551,7 +3551,7 @@ void fn_8007A850(void)
             break;
         }
         case 3:
-            fn_800798E8(backup);
+            exDiscCouponMenu(backup);
             break;
         case 4:
             fn_800792D8();
@@ -3572,8 +3572,8 @@ void fn_8007AA6C(void) {
     cameraPlayAnime(std093_getCurrentGroupID(), 0x10941800, 0, 0);
 }
 
-/* fn_8007AAA8 (0x8007AAA8): wait for the worker and release its state. */
-s32 fn_8007AAA8(void) {
+/* gbaBootWaitThread (0x8007AAA8): wait for the worker and release its state. */
+s32 gbaBootWaitThread(void) {
     extern s32 fn_800A1E54(void* thread, void** result);
     extern void fn_8007B0D8(void);
     void* result;
@@ -3590,7 +3590,7 @@ void fn_8007AAFC(void) {
     lbl_803F7A30[0x342] = 1;
 }
 
-extern void fn_8007B350(GbaBootContext* context, u32 channel,
+extern void gbaBootStartThread(GbaBootContext* context, u32 channel,
                         const u8* device_code, u32 region, const u8* name,
                         u32 variant, u32 flags);
 extern u32 lbl_8047A640;
@@ -3606,7 +3606,7 @@ extern u8 lbl_80478930;
     (const u8*)"\x83\x7C\x83\x50\x83\x82\x83\x93\x83\x52\x83\x8D\x83\x56\x83\x41\x83\x80"
 
 #define OPEN_LINK_PROMPT(flags_)                                  \
-    fn_8007B350((GbaBootContext*)lbl_803F7A30, 1,                 \
+    gbaBootStartThread((GbaBootContext*)lbl_803F7A30, 1,                 \
                 (const u8*)&lbl_8047A640, 0x4A, MENU_GBA_GAME_NAME, \
                 lbl_80478930, (flags_))
 
@@ -3631,7 +3631,7 @@ static inline s32 fn_8007AB10_initial_result(s32 code) {
     return 0;
 }
 
-s32 fn_8007AB10(s32 code, s32* state) {
+s32 gbaBootRun(s32 code, s32* state) {
     s32 event;
     s32 kind;
 
@@ -3778,16 +3778,16 @@ s32 fn_8007AB10(s32 code, s32* state) {
 #undef SHOW_CANCEL_MESSAGE
 #undef WAIT_MENU_TIME
 
-/* fn_8007B090 (0x8007B090): snapshot callback state, then start the request. */
-void fn_8007B090(s32 request) {
+/* gbaBootPrepare (0x8007B090): snapshot callback state, then start the request. */
+void gbaBootPrepare(s32 request) {
     extern void* fn_800A7BCC(void);
     extern u32 lbl_8047A640;
-    extern void fn_8007B114(s32 request);
+    extern void gbaBootLoadImage(s32 request);
     void* state;
 
     state = fn_800A7BCC();
     memcpy(&lbl_8047A640, state, 4);
-    fn_8007B114(request);
+    gbaBootLoadImage(request);
 }
 
 /* fn_8007B0D8 (0x8007B0D8): free outstanding pending callback state. */
@@ -3806,7 +3806,7 @@ void fn_8007B0D8(void) {
     }
 }
 
-/* Build the CRC-32 table used by the GBA upload checksum (fn_8007B114 only). */
+/* Build the CRC-32 table used by the GBA upload checksum (gbaBootLoadImage only). */
 /* RULE-EXCEPTION(user-approved): single-use inline helper — see docs/RULE_EXCEPTIONS.md */
 static inline void menuCrcTable(u32* table)
 {
@@ -3827,7 +3827,7 @@ static inline void menuCrcTable(u32* table)
     }
 }
 
-void fn_8007B114(s32 request)
+void gbaBootLoadImage(s32 request)
 {
     extern u32 lbl_803FAEF8[256];
     extern char* lbl_802EE608[];
@@ -3905,13 +3905,13 @@ void fn_8007B114(s32 request)
 #endif /* !MENU_RANGE_CARVE || MENU_R47_80079C1C_ONLY */
 
 #if !defined(MENU_RANGE_CARVE)
-/* fn_8007B350 (0x8007B350): prepare the GBA upload context and worker. */
-void fn_8007B350(GbaBootContext* context, u32 channel, const u8* device_code,
+/* gbaBootStartThread (0x8007B350): prepare the GBA upload context and worker. */
+void gbaBootStartThread(GbaBootContext* context, u32 channel, const u8* device_code,
                  u32 region, const u8* name, u32 variant, u32 flags) {
     extern u8* lbl_8047A648;
     extern u32 lbl_8047A650;
     extern void fn_8009F1D0(void* queue, void* messages, u32 count);
-    extern void fn_8007B6A4(u8* context);
+    extern void _gbaBootThread(u8* context);
     extern void OSCreateThread(void* thread, void* entry, void* arg,
                                void* stack, u32 stack_size, u32 priority,
                                u32 attributes);
@@ -3981,16 +3981,16 @@ void fn_8007B350(GbaBootContext* context, u32 channel, const u8* device_code,
     upload_start[3] = crc >> 24;
 
     fn_8009F1D0(context->pad_35C, context->pad_35C + 0x20, 1);
-    OSCreateThread(context->thread_and_work, (void*)fn_8007B6A4, context,
+    OSCreateThread(context->thread_and_work, (void*)_gbaBootThread, context,
                    context->reply, 0x2000, 8, 0);
     OSResumeThread(context->thread_and_work);
 }
 
-void fn_8007B6A4(u8* r3) {
-    extern void fn_8007B6D8(u8* p);
+void _gbaBootThread(u8* r3) {
+    extern void gbaBootTransfer(u8* p);
     u8* r31 = r3;
 
-    fn_8007B6D8(r31);
+    gbaBootTransfer(r31);
     *(u8*)(r31 + 0x345) = 0x1;
 }
 
@@ -4105,14 +4105,14 @@ extern u8 lbl_80314F98[];
 
 #if !defined(MENU_RANGE_CARVE) || defined(MENU_80075390_ONLY)
 s32 fn_80075390(void) {
-    extern u8 fn_80075638(void);
+    extern u8 exShrineModelIsOpen(void);
     extern void fn_8007565C(void);
-    extern void fn_800756C8(s32);
+    extern void exShrineModelOpen(s32);
 
-    if (fn_80075638() != 0) {
+    if (exShrineModelIsOpen() != 0) {
         fn_8007565C();
     } else {
-        fn_800756C8(3);
+        exShrineModelOpen(3);
     }
     return 0;
 }
@@ -4192,8 +4192,8 @@ extern void menuModelInit(void*, s32, s32);
 extern void fn_80109C88(void*, void*);
 extern s32 menuOpenCustom(s32, ...);
 
-/* fn_80075638 (0x80075638): tail-call wrapper. */
-s32 fn_80075638(void) { return menuIsCheck(0xd8); }
+/* exShrineModelIsOpen (0x80075638): tail-call wrapper. */
+s32 exShrineModelIsOpen(void) { return menuIsCheck(0xd8); }
 
 /* fn_8007565C (0x8007565C): close and release the active menu resource. */
 void fn_8007565C(void) {
@@ -4214,7 +4214,7 @@ void fn_8007565C(void) {
     *(u32*)&lbl_8047A610 = 0;
 }
 
-void fn_800756C8(s32 pokemonId)
+void exShrineModelOpen(s32 pokemonId)
 {
     u8* work;
     u16 handle;
@@ -4254,18 +4254,18 @@ void fn_800757F0(void) {
     *(u32*)&lbl_8047A5D0 = 0;
 }
 
-/* fn_8007581C (0x8007581C): run the battle menu until it settles on an
+/* menuToolBattleRun (0x8007581C): run the battle menu until it settles on an
  * exit, then hand off to the next floor. Defined ahead of the
  * menuCB_Common block so that _menuPush (another unit in retail) is called
  * rather than inlined. */
-void fn_8007581C(void)
+void menuToolBattleRun(void)
 {
     extern s32 _menuPop_80071398(s32);
     extern u8* savedataGetStatus(s32, s32);
     extern void fn_8005E750(void*);
-    extern s32 fn_80063D14(void*);
+    extern s32 menuTaisenSetupBattle(void*);
     extern s32 menuCB_Battle(void*);
-    extern s32 fn_80062948(void*);
+    extern s32 menuTaisenRun(void*);
     extern u8 fn_800FF52C(void);
     extern void fn_800FF660(void);
     extern void floorRequestChange(s32);
@@ -4284,7 +4284,7 @@ void fn_8007581C(void)
     result = 0;
     while (running) {
         fn_8005E750(savedataGetStatus(0, 0xE));
-        result = fn_80063D14(savedataGetStatus(0, 0xE));
+        result = menuTaisenSetupBattle(savedataGetStatus(0, 0xE));
         switch (result) {
         case 0xB3:
             _menuPop_80071398(result);
@@ -4296,7 +4296,7 @@ void fn_8007581C(void)
 
         *(s32*)(savedataGetStatus(0, 0xE) + 0x20) =
             menuCB_Battle(savedataGetStatus(0, 0xE));
-        result = fn_80062948(savedataGetStatus(0, 0xE));
+        result = menuTaisenRun(savedataGetStatus(0, 0xE));
         switch (result) {
         case 0xD1:
             if (*(s32*)savedataGetStatus(0, 0xE) == 1 &&
@@ -4388,7 +4388,7 @@ void fn_80075DC8(void)
     floorSetFadeScript(0, 0x05960008);
 }
 
-u8 fn_800772AC(void* pokemon, const s16* levels)
+u8 menuRuleCheckPokemonAllModes(void* pokemon, const s16* levels)
 {
     s32 mode;
 

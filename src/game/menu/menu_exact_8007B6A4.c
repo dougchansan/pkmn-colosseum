@@ -4,12 +4,12 @@
  */
 #include "dolphin/types.h"
 
-extern void fn_8007B6D8(u8* context);
+extern void gbaBootTransfer(u8* context);
 
-void fn_8007B6A4(u8* context)
+void _gbaBootThread(u8* context)
 {
     u8* saved_context = context;
 
-    fn_8007B6D8(saved_context);
+    gbaBootTransfer(saved_context);
     saved_context[0x345] = 1;
 }

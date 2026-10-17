@@ -28,7 +28,7 @@ extern void mailInitMailbox(void* data);
 extern void sodateyaInit(void* data);
 extern void memoInit(void* data);
 extern void exribbonInit(void* data);
-extern void fn_8006B6B4(void* data);
+extern void savedataBattleInit(void* data);
 extern void fn_80083CBC(void* data);
 extern void fn_801EF128(void* data);
 
@@ -140,7 +140,7 @@ void savedataInit(SaveData* save)
 
     mailInitMailbox(savedataGetPart(save, fn_80128D68));
     sodateyaInit(savedataGetPart(save, fn_80128D4C));
-    fn_8006B6B4(savedataGetPart(save, fn_80128CF8));
+    savedataBattleInit(savedataGetPart(save, fn_80128CF8));
     memoInit(savedataGetPart(save, fn_80128D30));
     fn_80083CBC(savedataGetPart(save, fn_80128D14));
     fn_801EF128(savedataGetPart(save, fn_80128CDC));

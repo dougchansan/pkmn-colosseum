@@ -9,7 +9,7 @@ extern void __CARDExtHandler(s32 chan);
 
 s32 CARDProbeEx(s32 chan, s32* memSize, s32* sectorSize)
 {
-    extern u32 fn_800993A8(s32 chan);
+    extern u32 EXIGetState(s32 chan);
     CARDControl* card;
     BOOL enabled;
     s32 result;
@@ -42,7 +42,7 @@ s32 CARDProbeEx(s32 chan, s32* memSize, s32* sectorSize)
             }
             result = 0;
         }
-    } else if (fn_800993A8(chan) & 8) {
+    } else if (EXIGetState(chan) & 8) {
         result = -2;
     } else if (!fn_80099400(chan, 0, &id)) {
         result = -1;
@@ -71,7 +71,7 @@ s32 fn_800B31F4(s32 chan)
     extern s32 IsCard(u32);
     extern s32 __CARDClearStatus(s32);
     extern s32 __CARDReadStatus(s32, u8*);
-    extern s32 fn_80098944(s32);
+    extern s32 EXIProbe(s32);
     extern s32 __CARDUnlock(s32, u8*);
     extern s32 __CARDEnableInterrupt(s32, s32);
     extern void __CARDExiHandler(void);
@@ -116,7 +116,7 @@ s32 fn_800B31F4(s32 chan)
         if (result < 0) {
             goto error;
         }
-        if (!fn_80098944(chan)) {
+        if (!EXIProbe(chan)) {
             result = -3;
             goto error;
         }
@@ -230,7 +230,7 @@ void __CARDMountCallback(s32 chan, s32 result)
 s32 CARDMountAsync(s32 chan, void* workArea, CARDCallback detachCallback,
                    CARDCallback attachCallback)
 {
-    extern u32 fn_800993A8(s32 chan);
+    extern u32 EXIGetState(s32 chan);
     extern BOOL fn_800989C0(s32 chan, EXICallback callback); /* EXIAttach */
     CARDControl* card;
     BOOL enabled;
@@ -249,7 +249,7 @@ s32 CARDMountAsync(s32 chan, void* workArea, CARDCallback detachCallback,
         return -1;
     }
 
-    if (!card->attached && (fn_800993A8(chan) & 8)) {
+    if (!card->attached && (EXIGetState(chan) & 8)) {
         OSRestoreInterrupts(enabled);
         return -2;
     }

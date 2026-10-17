@@ -88,7 +88,7 @@ extern void* fn_800E24B0(u16 handle);
 extern void* fn_800E27B0(u16 handle);
 extern u16 fn_800E2C04(u32 alignment, u32 size);
 extern u16 _toolentryAlloc__FUl(u32 size);
-extern void fn_80080ED8(void);
+extern void SJIStoGSchar(void);
 extern void fn_800DBEB4(u32 a, void* b);
 extern void fn_800D5CB8(s32 a, s32 b, s32 c, s32 d, s32 e);
 extern void fn_800D61E4(s16 x, s16 y);
@@ -1492,7 +1492,7 @@ u32 fn_800F9C04(void* outbuf, u8* src, u32 count, u32 mode) {
 #pragma optimizewithasm off
 #pragma optimization_level 2
 void GScharMakeFromSJIS(void) {
-    fn_80080ED8();
+    SJIStoGSchar();
 }
 #pragma pop
 

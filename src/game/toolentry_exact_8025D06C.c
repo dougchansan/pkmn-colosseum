@@ -7,14 +7,14 @@ typedef struct ToolentrySpeciesList {
 
 u32 fn_8025D06C(void)
 {
-    extern s32 fn_8006ADEC(void);
-    extern u8* fn_8006AFC4(u8* savedata);
+    extern s32 savedataBattleGetCouponRun(void);
+    extern u8* savedataBattleGetSavedHero(u8* savedata);
     extern u8* fn_8006B5A8(void);
     extern void heroAddPokecoupon(u8* savedata, s32 amount);
     s32 amount;
 
-    fn_8006AFC4(fn_8006B5A8());
-    amount = fn_8006ADEC();
+    savedataBattleGetSavedHero(fn_8006B5A8());
+    amount = savedataBattleGetCouponRun();
     heroAddPokecoupon(0, amount);
     return 0;
 }

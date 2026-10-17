@@ -74,7 +74,7 @@ extern void* fn_800E24B0(u16 handle);
 extern void* fn_800E27B0(u16 handle);
 extern u16 fn_800E2C04(u32 alignment, u32 size);
 extern u16 _toolentryAlloc__FUl(u32 size);
-extern u32 fn_80080ED8(u16* destination, const u8* source);
+extern u32 SJIStoGSchar(u16* destination, const u8* source);
 extern void fn_800DBEB4(u32 index, GXColor color);
 extern void fn_800D5CB8(s32 a, s32 b, s32 c, s32 d, s32 e);
 extern void fn_800D61E4(s16 x, s16 y);
@@ -690,7 +690,7 @@ u32 fn_800F9C04(void* outbuf, const u8* src, s32 count, s32 mode) {
 
 /* 0x800F9D04 | 0x20 */
 void GScharMakeFromSJIS(u16* destination, const u8* source) {
-    fn_80080ED8(destination, source);
+    SJIStoGSchar(destination, source);
 }
 
 /* 0x800F9D24 | 0x14C */
@@ -1216,7 +1216,7 @@ s32 fn_800FAEF8(s32 x, s32 y, u32 color, const char* fmt, ...) {
     logVsnprintf_float(lbl_804022B0, 0xFF, fmt, &args);
     str = (u8*)lbl_804022B0;
     str[0xFF] = 0;
-    fn_80080ED8(lbl_80401EB0, str);
+    SJIStoGSchar(lbl_80401EB0, str);
 
     /* Cleared through `work`, filled through the static itself (see
      * msgPrintRest). */

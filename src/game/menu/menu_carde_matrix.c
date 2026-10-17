@@ -10,9 +10,9 @@
 
 /* ===== External function declarations ===== */
 extern void menuSpriteBiosGetPtr();
-extern void fn_80082A88();
-extern void fn_80082EA4();
-extern void fn_80082FE4();
+extern void cardeSaveLevelHasCard();
+extern void cardeSaveGetCard();
+extern void cardeSaveGetLevel();
 extern void _threadSwitch();
 extern void windowGetFreeWork();
 extern void windowGetParam();
@@ -204,9 +204,9 @@ extern u8 lbl_80268DB4[];
 #endif
 
 /* ===== Forward declarations ===== */
-void fn_8007C300(u8 cardId, u8 subIndex);
+void menuCardEMatrixSelectCard(u8 cardId, u8 subIndex);
 void fn_8007C414(void);
-void fn_8007C450(u8 cardId, u8 subIndex, s8 row, s8 column, s32 state);
+void menuCardEMatrixSetTarget(u8 cardId, u8 subIndex, s8 row, s8 column, s32 state);
 void fn_8007C634(void);
 void fn_8007C764(u8 arg);
 void fn_8007C7A8(u8 arg);
@@ -220,7 +220,7 @@ void fn_8007D564(void* window, u8* param);
 void fn_8007D79C(void* window, u8* param);
 void fn_8007D89C(void* window, u8* param);
 struct MenuCardEWindow;
-void fn_8007D978(struct MenuCardEWindow* window);
+void menuCardEMatrixWindowProc(struct MenuCardEWindow* window);
 
 /*
  * Raw Card-E matrix offset map. Keep the function bodies below in raw
@@ -235,7 +235,7 @@ void fn_8007D978(struct MenuCardEWindow* window);
  *   +0x0B5  currentSubIndex
  *   +0x0B6  transitionActive
  *   +0x0B8  transitionFrame
- *   +0x0BC  state/switch selector used by fn_8007D978
+ *   +0x0BC  state/switch selector used by menuCardEMatrixWindowProc
  */
 
 /* ===== Function implementations ===== */
@@ -301,7 +301,7 @@ static inline MenuCardEMatrixContext* menuCardEWaitTransition(void) {
 /* RULE-EXCEPTION(user-approved): unit-wide local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-void fn_8007C300(u8 cardId, u8 subIndex) {
+void menuCardEMatrixSelectCard(u8 cardId, u8 subIndex) {
     MenuCardEMatrixContext* context;
     s32 index;
 
@@ -343,7 +343,7 @@ void fn_8007C414(void) {
  * entry/sub-selection, and arm the transition flag/frame when the target
  * differs.
  */
-void fn_8007C450(u8 cardId, u8 subIndex, s8 row, s8 column, s32 state) {
+void menuCardEMatrixSetTarget(u8 cardId, u8 subIndex, s8 row, s8 column, s32 state) {
     MenuCardEMatrixContext* context;
     MenuCardEEntry* entry;
     s32 index;
@@ -491,7 +491,7 @@ void fn_8007C7EC(void) {
     extern MenuCardEMatrixContext** windowGetFreeWork(void* window);
     extern s32 fn_80083BF8(void* arena);
     extern MenuCardEEntry* fn_80083AF4(void* arena, s32 index);
-    extern u8 fn_80082A88(MenuCardEEntry* entry, u8 subIndex);
+    extern u8 cardeSaveLevelHasCard(MenuCardEEntry* entry, u8 subIndex);
     extern void qsort(void* base, u32 count, u32 size, s32 (*compare)(const void*, const void*));
     extern s32 menuCardE_CompareEntryPtrs(const void* a, const void* b);
     extern u16 fn_800E2C04(u32 size, u32 align);
@@ -558,7 +558,7 @@ void fn_8007C7EC(void) {
     }
     if (entry != NULL) {
         for (subIndex = context->currentSubIndex; (s8)subIndex > 0; subIndex--) {
-            if (fn_80082A88(entry, subIndex) != 0) {
+            if (cardeSaveLevelHasCard(entry, subIndex) != 0) {
                 break;
             }
         }
@@ -670,8 +670,8 @@ void fn_8007CBB4(void* window, MenuCardEMatrixItem* item) {
     extern u8 winSpriteGetDisp(MenuCardEMatrixItem* item);
     extern MenuCardEMatrixSprite* menuSpriteBiosGetPtr(s32 id);
     extern void msgctrlSetValue(u32 id, void* value);
-    extern u8* fn_80082FE4(MenuCardEEntry* entry, u8 layer);
-    extern MenuCardEMatrixCell* fn_80082EA4(MenuCardEEntry* entry, u8 layer, s8 row, s8 column);
+    extern u8* cardeSaveGetLevel(MenuCardEEntry* entry, u8 layer);
+    extern MenuCardEMatrixCell* cardeSaveGetCard(MenuCardEEntry* entry, u8 layer, s8 row, s8 column);
     MenuCardEMatrixSprite* sprite;
 #if !defined(MENU_CARDE_MATRIX_TU)
     MenuCardEMatrixTable* table;
@@ -745,7 +745,7 @@ void fn_8007CBB4(void* window, MenuCardEMatrixItem* item) {
     }
 
     if (column == entry->columns) {
-        rows = fn_80082FE4(entry, (&context->prevSubIndex)[which]);
+        rows = cardeSaveGetLevel(entry, (&context->prevSubIndex)[which]);
         switch (group) {
         case 0:
             sprite = menuSpriteBiosGetPtr(CARDE_MATRIX_END_SPRITES[layer]);
@@ -761,7 +761,7 @@ void fn_8007CBB4(void* window, MenuCardEMatrixItem* item) {
             break;
         }
     } else if (column < entry->columns) {
-        cell = fn_80082EA4(entry, (&context->prevSubIndex)[which], row, column);
+        cell = cardeSaveGetCard(entry, (&context->prevSubIndex)[which], row, column);
         if (cell->valid != 0) {
             msgctrlSetValue(0x37, cell);
         }
@@ -852,7 +852,7 @@ static inline void* menuCardEGetEntry(u8* work, s32 which) {
 
 /* 0x8007D564 | size: 0x238 */
 void fn_8007D564(void* window, u8* param) {
-    extern u8* fn_80082FE4(void* entry, s8 sub_index);
+    extern u8* cardeSaveGetLevel(void* entry, s8 sub_index);
     extern void msgctrlSetValue(u32 id, void* value);
     u8* work;
     u8* entry;
@@ -893,7 +893,7 @@ void fn_8007D564(void* window, u8* param) {
     }
 
     if (entry != 0 && sub < (s8)entry[0x1B]) {
-        text = fn_80082FE4(entry, sub);
+        text = cardeSaveGetLevel(entry, sub);
         *(u32*)(param + 0x4C) = 0xE4;
         msgctrlSetValue(0x37, text);
         return;
@@ -903,7 +903,7 @@ void fn_8007D564(void* window, u8* param) {
 
 /* 0x8007D79C | size: 0x100 */
 void fn_8007D79C(void* window, u8* param) {
-    extern u8* fn_80082FE4(void* entry, u32 sub_index);
+    extern u8* cardeSaveGetLevel(void* entry, u32 sub_index);
     extern void msgctrlSetValue(u32 id, u32 value);
     u8* work;
     void* entry;
@@ -933,7 +933,7 @@ void fn_8007D79C(void* window, u8* param) {
     }
 
     work += which;
-    result = fn_80082FE4(entry, *(u8*)(work + 0xB4));
+    result = cardeSaveGetLevel(entry, *(u8*)(work + 0xB4));
     if (*(u8*)(result + 0x71) == 0) {
         return;
     }
@@ -1100,7 +1100,7 @@ static inline void menuCardEFreeHandle(void* buf) {
 /* 0x8007D978 | size: 0x23EC
  * Card-E matrix window procedure: builds/frees the work area, handles
  * the entry/layer cursor keys and animates the grid, tabs and cursor. */
-void fn_8007D978(MenuCardEWindow* window) {
+void menuCardEMatrixWindowProc(MenuCardEWindow* window) {
     extern void* windowSearchID(s32 id);
     extern MenuCardEMatrixWork** windowGetFreeWork(void* window);
     extern void* windowGetParam(void* window, s32 index);
@@ -1110,9 +1110,9 @@ void fn_8007D978(MenuCardEWindow* window) {
     extern void fn_801081F8(void* window, s32 itemId, s32 arg);
     extern void winSpriteSetDisp(MenuCardESprite* sprite, s32 disp);
     extern void soundStartSE(s32 id);
-    extern u8 fn_80082A88(MenuCardEEntry* entry, s8 layer);
-    extern u8* fn_80082FE4(MenuCardEEntry* entry, s8 layer);
-    extern u8* fn_80082EA4(MenuCardEEntry* entry, s8 layer, s8 row, s8 column);
+    extern u8 cardeSaveLevelHasCard(MenuCardEEntry* entry, s8 layer);
+    extern u8* cardeSaveGetLevel(MenuCardEEntry* entry, s8 layer);
+    extern u8* cardeSaveGetCard(MenuCardEEntry* entry, s8 layer, s8 row, s8 column);
     MenuCardEMatrixWork* work;
     MenuCardEEntry* entries[3];
     MenuCardEEntry** entryp;
@@ -1275,7 +1275,7 @@ void fn_8007D978(MenuCardEWindow* window) {
                     __assert(CARDE_MATRIX_FILE, 0x28E, CARDE_MATRIX_ANIM_CUR);
                 }
                 if (work->subIndex[1] == entries[1]->layerCount - 1 ||
-                    fn_80082A88(entries[1], work->subIndex[1] + 1) == 0) {
+                    cardeSaveLevelHasCard(entries[1], work->subIndex[1] + 1) == 0) {
                     menuCardEBuzz(work);
                 } else {
                     soundStartSE(0x3C5);
@@ -1292,7 +1292,7 @@ void fn_8007D978(MenuCardEWindow* window) {
                 work->subIndex[1] = entries[1]->layerCount - 1;
             }
             entry = entries[1];
-            while (fn_80082A88(entry, work->subIndex[1]) == 0) {
+            while (cardeSaveLevelHasCard(entry, work->subIndex[1]) == 0) {
                 work->subIndex[1]--;
             }
             t = 0.0f;
@@ -1348,14 +1348,14 @@ void fn_8007D978(MenuCardEWindow* window) {
                 break;
             }
             color = menuCardELerpColor(gridTo, gridFrom, t);
-            layer = fn_80082FE4(entryp[which], work->subIndex[which]);
+            layer = cardeSaveGetLevel(entryp[which], work->subIndex[which]);
             for (row = 0; row < entryp[which]->sortGroup; row++) {
                 for (column = 0; column < 6; column++) {
                     work->cell[which][row * 6 + column]->x = baseX + column * stepX;
                     work->cell[which][row * 6 + column]->y = baseY + row * stepY;
                     if ((column == entryp[which]->columns && layer[row * 0xE + 0x1C] != 0) ||
                         (column < entryp[which]->columns &&
-                         fn_80082EA4(entryp[which], work->subIndex[which], row, column)[0xC] != 0)) {
+                         cardeSaveGetCard(entryp[which], work->subIndex[which], row, column)[0xC] != 0)) {
                         if (work->state == 0 || work->state == 6 ||
                             work->gridIndex != row * 6 + column || work->transitionActive == 0) {
                             winSpriteSetDisp(work->cell[which][row * 6 + column], 1);
@@ -1459,7 +1459,7 @@ void fn_8007D978(MenuCardEWindow* window) {
 
     /* Layer frames. */
     for (which = 0; which < 2; which++, entryp++) {
-        if (*entryp != NULL && fn_80082FE4(*entryp, work->subIndex[which])[0x71] != 0) {
+        if (*entryp != NULL && cardeSaveGetLevel(*entryp, work->subIndex[which])[0x71] != 0) {
             winSpriteSetDisp(work->frameB[which], 1);
             work->frameB[which]->color =
                 menuCardELerpColor(lbl_8047C138[which], lbl_8047C130[which], t);
@@ -1523,7 +1523,7 @@ void fn_8007D978(MenuCardEWindow* window) {
             row = index / 6;
             entry = entries[1];
             for (column = 0; column < entry->columns; column++) {
-                if (fn_80082EA4(entry, work->subIndex[1], row, column)[0xC] == 0) {
+                if (cardeSaveGetCard(entry, work->subIndex[1], row, column)[0xC] == 0) {
                     winSpriteSetDisp(work->cell[1][row * 6 + column], 1);
                     phase = work->stateFrame * 0.03125f;
                     if (phase < 1.0f) {

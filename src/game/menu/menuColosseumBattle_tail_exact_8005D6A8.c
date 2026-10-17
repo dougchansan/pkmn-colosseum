@@ -85,7 +85,7 @@ u32 fn_8005D738(u8 flags) {
 #pragma pop
 
 /* Address: 0x8005D798 | Size: 0x60 */
-u32 fn_8005D798(MenuSeTable* table, u8 index) {
+u32 menuSeTableLookup(MenuSeTable* table, u8 index) {
     u32 value = 0;
 
     switch (index) {

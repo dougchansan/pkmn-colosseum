@@ -415,7 +415,7 @@ extern void __DSP_debug_printf(char* fmt, ...);
 extern void __DSP_exec_task(DSPTaskInfo* current, DSPTaskInfo* next);
 extern void __DSP_remove_task(DSPTaskInfo* task);
 extern void fn_8009870C();
-extern BOOL fn_80098944(s32 chan);
+extern BOOL EXIProbe(s32 chan);
 extern void fn_80098AE8(s32 chan);
 s32 fn_800AF8A0(s32 chan);
 void __CARDUnlockedHandler(s32 chan, OSContext* context);
@@ -2268,7 +2268,7 @@ void __CARDTxHandler(s32 chan) {
     callback = card->txCallback;
     if (callback != NULL) {
         card->txCallback = NULL;
-        callback(chan, (!error && fn_80098944(chan)) ? 0 : -3);
+        callback(chan, (!error && EXIProbe(chan)) ? 0 : -3);
     }
 }
 
@@ -2317,7 +2317,7 @@ void __CARDUnlockedHandler(s32 chan, OSContext* context) {
 
     if (callback != NULL) {
         card->unlockCallback = NULL;
-        callback(chan, fn_80098944(chan) ? 1 : -3);
+        callback(chan, EXIProbe(chan) ? 1 : -3);
     }
 }
 

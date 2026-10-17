@@ -13,23 +13,23 @@
 extern void fn_8001E074();
 extern void fn_8005CF2C();
 extern void fn_8006A76C();
-extern void fn_8006A79C();
-extern void fn_8006A7AC();
-extern void fn_8006A7BC();
-extern void fn_8006ADB4();
-extern void fn_8006ADEC();
-extern void fn_8006AE18();
-extern void fn_8007109C();
-extern void fn_80071104();
-extern void fn_800776E4();
+extern void savedataBattleClearFlagC98B();
+extern void savedataBattleSetFlagC98B();
+extern void savedataBattleGetFlagC98B();
+extern void savedataBattleSetCouponRun();
+extern void savedataBattleGetCouponRun();
+extern void savedataBattleGetSavedHeroKind();
+extern void menuCommonFree();
+extern void menuCommonAlloc();
+extern void menuRuleCheckPartyAndRule();
 extern void fn_8008ABA0();
-extern void fn_80092E38();
-extern void fn_80092FC8();
-extern void fn_80093160();
-extern void fn_800932F0();
-extern void fn_800934E4();
+extern void gbaCommStartTransferA();
+extern void gbaCommStartTransferB();
+extern void gbaCommStartTransferC();
+extern void gbaCommStartTransferFile();
+extern void gbaCommIsBusy();
 extern void fn_80093610();
-extern void fn_80093698();
+extern void gbaCommEnd();
 extern void fn_800D0F44();
 extern void msgGetCharsPerFrame();
 extern void fn_800D37CC();
@@ -111,18 +111,18 @@ void fn_80083ECC(void);
 void fn_80084034(void);
 void fn_80084038(void);
 void fn_800849B4(void);
-void fn_80084A8C(void);
+void cardeGbaTransfer(void);
 void fn_80087AE8(void);
 void fn_80087C64(void);
 void fn_80088428(void);
-u32 fn_800884BC(u16 a, u16 b, u16 c);
-s32 fn_800886D0(void);
+u32 dnaKeyCodeCheck(u16 a, u16 b, u16 c);
+s32 menuSaveLoadReceiveGift(void);
 s32 fn_80088964(void);
 s32 fn_800889A4(void);
-s32 fn_800889E4(s32 capture);
-s32 fn_80088C60(void);
+s32 menuSaveLoadSaveGame(s32 capture);
+s32 menuSaveLoadCommitA(void);
 s32 fn_80088D84(void);
-void fn_80088EA8(u8* p);
+void menuSaveLoadStorePosition(u8* p);
 s32 fn_80088F58(void);
 s32 fn_80088F74(void);
 s32 fn_80088F88(void);
@@ -1172,7 +1172,7 @@ L_80084458:
 
 /* 0x800849B4 | size: 0xD8 */
 void fn_800849B4(void) {
-    extern void fn_80084A8C();
+    extern void cardeGbaTransfer();
     u8 sp[0x20];
     u32 tmp = 0;
     u32 r3 = 0;
@@ -1196,7 +1196,7 @@ void fn_800849B4(void) {
     r4 = r28;
     r5 = r29;
     r6 = r31;
-    fn_80084A8C();
+    cardeGbaTransfer();
     r31 = r3;
     r3 = 0x0;
     ((void(*)(void))winMsgClose)();
@@ -1214,7 +1214,7 @@ void fn_800849B4(void) {
     r30 = 0x0;
     do {
         r3 = r30;
-        ((void(*)(void))fn_80093698)();
+        ((void(*)(void))gbaCommEnd)();
         r30 = r30 + 0x1;
     } while ((s32)r30 < 3);
     tmp = r31 & 0xFF;
@@ -1228,7 +1228,7 @@ void fn_800849B4(void) {
 }
 
 /* 0x80084A8C | size: 0x305C */
-void fn_80084A8C(void) {
+void cardeGbaTransfer(void) {
     extern void fn_80087AE8();
     extern void fn_80128E04();
     extern void fn_80128E24();
@@ -1278,12 +1278,12 @@ void fn_80084A8C(void) {
     tmp = (u32)&lbl_8026F2E8;
     *(u32*)(sp + 0xC34) = tmp;
     r3 = 0x1;
-    ((void(*)(void))fn_80093698)();
+    ((void(*)(void))gbaCommEnd)();
     while (1) {
         r5 = 0x0;
         r4 = r3 + 0x190;
         r3 = 0x1;
-        ((void(*)(void))fn_800932F0)();
+        ((void(*)(void))gbaCommStartTransferFile)();
         if ((s32)r3 != 0) break;
         ((void(*)(void))_threadSwitch)();
 
@@ -1412,7 +1412,7 @@ void fn_80084A8C(void) {
 
             }
             r3 = r18;
-            ((void(*)(void))fn_800776E4)();
+            ((void(*)(void))menuRuleCheckPartyAndRule)();
             tmp = r3 & 0xFF;
             if (tmp == 0) {
                 r3 = 0xe4;
@@ -1613,7 +1613,7 @@ void fn_80084A8C(void) {
                 }
                 r3 = *(u8*)((u8*)r24 + 0x21);
                 r3 = (s8)r3;
-                ((void(*)(void))fn_80093698)();
+                ((void(*)(void))gbaCommEnd)();
                 r3 = 0x0;
                 return;
             }
@@ -1659,7 +1659,7 @@ void fn_80084A8C(void) {
         L_80085114:
             r3 = *(u8*)((u8*)r24 + 0x21);
             r3 = (s8)r3;
-            ((void(*)(void))fn_800934E4)();
+            ((void(*)(void))gbaCommIsBusy)();
             if ((s32)r3 == 0) goto L_800850BC;
             tmp = 0x0;
             *(u32*)((u8*)r24 + 0x28) = tmp;
@@ -1785,7 +1785,7 @@ void fn_80084A8C(void) {
                 }
                 r3 = *(u8*)((u8*)r24 + 0x21);
                 r3 = (s8)r3;
-                ((void(*)(void))fn_80093698)();
+                ((void(*)(void))gbaCommEnd)();
                 r3 = 0x0;
                 return;
             }
@@ -1793,7 +1793,7 @@ void fn_80084A8C(void) {
         }
         r3 = r28;
         r4 = 0x0;
-        ((void(*)(void))fn_80093160)();
+        ((void(*)(void))gbaCommStartTransferC)();
         tmp = 0x0;
         *(u32*)((u8*)r24 + 0x28) = tmp;
         goto L_8008538C;
@@ -1823,7 +1823,7 @@ void fn_80084A8C(void) {
     L_8008538C:
         r3 = *(u8*)((u8*)r24 + 0x21);
         r3 = (s8)r3;
-        ((void(*)(void))fn_800934E4)();
+        ((void(*)(void))gbaCommIsBusy)();
         if ((s32)r3 == 0) goto L_80085334;
         tmp = 0x0;
         *(u32*)((u8*)r24 + 0x28) = tmp;
@@ -1959,7 +1959,7 @@ void fn_80084A8C(void) {
             }
             r3 = *(u8*)((u8*)r24 + 0x21);
             r3 = (s8)r3;
-            ((void(*)(void))fn_80093698)();
+            ((void(*)(void))gbaCommEnd)();
             r3 = 0x0;
             return;
         } while (0);
@@ -2099,7 +2099,7 @@ void fn_80084A8C(void) {
             }
             r3 = *(u8*)((u8*)r24 + 0x21);
             r3 = (s8)r3;
-            ((void(*)(void))fn_80093698)();
+            ((void(*)(void))gbaCommEnd)();
             tmp = 0x0;
         } while (0);
             tmp = tmp & 0xFF;
@@ -2161,7 +2161,7 @@ void fn_80084A8C(void) {
         *(u32*)(sp + 0x18) = tmp;
         r4 = r22;
         r5 = (u32)sp + 0x18;
-        ((void(*)(void))fn_80092FC8)();
+        ((void(*)(void))gbaCommStartTransferB)();
         tmp = 0x0;
         *(u32*)((u8*)r24 + 0x28) = tmp;
         goto L_80085934;
@@ -2191,7 +2191,7 @@ void fn_80084A8C(void) {
     L_80085934:
         r3 = *(u8*)((u8*)r24 + 0x21);
         r3 = (s8)r3;
-        ((void(*)(void))fn_800934E4)();
+        ((void(*)(void))gbaCommIsBusy)();
         if ((s32)r3 == 0) goto L_800858DC;
         tmp = 0x0;
         *(u32*)((u8*)r24 + 0x28) = tmp;
@@ -2320,7 +2320,7 @@ void fn_80084A8C(void) {
         }
         r3 = *(u8*)((u8*)r24 + 0x21);
         r3 = (s8)r3;
-        ((void(*)(void))fn_80093698)();
+        ((void(*)(void))gbaCommEnd)();
         r3 = 0x0;
         return;
     L_80085B40:
@@ -2462,7 +2462,7 @@ void fn_80084A8C(void) {
             }
             r3 = *(u8*)((u8*)r24 + 0x21);
             r3 = (s8)r3;
-            ((void(*)(void))fn_80093698)();
+            ((void(*)(void))gbaCommEnd)();
             tmp = 0x0;
         } while (0);
             tmp = tmp & 0xFF;
@@ -2640,7 +2640,7 @@ void fn_80084A8C(void) {
             }
             r3 = *(u8*)((u8*)r24 + 0x21);
             r3 = (s8)r3;
-            ((void(*)(void))fn_80093698)();
+            ((void(*)(void))gbaCommEnd)();
             tmp = 0x0;
         } while (0);
             tmp = tmp & 0xFF;
@@ -2790,7 +2790,7 @@ void fn_80084A8C(void) {
         }
         r3 = *(u8*)((u8*)r24 + 0x21);
         r3 = (s8)r3;
-        ((void(*)(void))fn_80093698)();
+        ((void(*)(void))gbaCommEnd)();
         tmp = 0x0;
     } while (0);
         tmp = tmp & 0xFF;
@@ -2952,7 +2952,7 @@ void fn_80084A8C(void) {
             }
             r3 = *(u8*)((u8*)r24 + 0x21);
             r3 = (s8)r3;
-            ((void(*)(void))fn_80093698)();
+            ((void(*)(void))gbaCommEnd)();
             tmp = 0x0;
         } while (0);
             tmp = tmp & 0xFF;
@@ -3100,7 +3100,7 @@ void fn_80084A8C(void) {
                 }
                 r3 = *(u8*)((u8*)r24 + 0x21);
                 r3 = (s8)r3;
-                ((void(*)(void))fn_80093698)();
+                ((void(*)(void))gbaCommEnd)();
                 tmp = 0x0;
             } while (0);
                 tmp = tmp & 0xFF;
@@ -3109,7 +3109,7 @@ void fn_80084A8C(void) {
                 return;
             }
             r3 = r22;
-            ((void(*)(void))fn_800776E4)();
+            ((void(*)(void))menuRuleCheckPartyAndRule)();
             tmp = r3 & 0xFF;
             if (tmp != 0) break;
             r3 = 0xe4;
@@ -3212,7 +3212,7 @@ void fn_80084A8C(void) {
             }
         r3 = r28;
         r4 = r21;
-        ((void(*)(void))fn_80092E38)();
+        ((void(*)(void))gbaCommStartTransferA)();
         tmp = 0x0;
         *(u32*)((u8*)r24 + 0x28) = tmp;
         goto L_8008697C;
@@ -3242,7 +3242,7 @@ void fn_80084A8C(void) {
     L_8008697C:
         r3 = *(u8*)((u8*)r24 + 0x21);
         r3 = (s8)r3;
-        ((void(*)(void))fn_800934E4)();
+        ((void(*)(void))gbaCommIsBusy)();
         if ((s32)r3 == 0) goto L_80086924;
         tmp = 0x0;
         *(u32*)((u8*)r24 + 0x28) = tmp;
@@ -3373,7 +3373,7 @@ void fn_80084A8C(void) {
         }
         r3 = *(u8*)((u8*)r24 + 0x21);
         r3 = (s8)r3;
-        ((void(*)(void))fn_80093698)();
+        ((void(*)(void))gbaCommEnd)();
         r3 = 0x0;
         return;
     L_80086B90:
@@ -3513,7 +3513,7 @@ void fn_80084A8C(void) {
         }
         r3 = *(u8*)((u8*)r24 + 0x21);
         r3 = (s8)r3;
-        ((void(*)(void))fn_80093698)();
+        ((void(*)(void))gbaCommEnd)();
         tmp = 0x0;
     } while (0);
         tmp = tmp & 0xFF;
@@ -3662,7 +3662,7 @@ void fn_80084A8C(void) {
             }
             r3 = *(u8*)((u8*)r24 + 0x21);
             r3 = (s8)r3;
-            ((void(*)(void))fn_80093698)();
+            ((void(*)(void))gbaCommEnd)();
             tmp = 0x0;
         } while (0);
             tmp = tmp & 0xFF;
@@ -3683,7 +3683,7 @@ void fn_80084A8C(void) {
         }
     do {
         r3 = r28;
-        ((void(*)(void))fn_80093698)();
+        ((void(*)(void))gbaCommEnd)();
         r3 = 0x3cc;
         soundStartSE();
         tmp = 0x5;
@@ -3836,7 +3836,7 @@ void fn_80084A8C(void) {
                 }
                 r3 = *(u8*)((u8*)r24 + 0x21);
                 r3 = (s8)r3;
-                ((void(*)(void))fn_80093698)();
+                ((void(*)(void))gbaCommEnd)();
                 r3 = 0x0;
                 return;
                     }
@@ -3967,7 +3967,7 @@ void fn_80084A8C(void) {
             }
             r3 = *(u8*)((u8*)r24 + 0x21);
             r3 = (s8)r3;
-            ((void(*)(void))fn_80093698)();
+            ((void(*)(void))gbaCommEnd)();
             r3 = 0x0;
             return;
         }
@@ -4098,7 +4098,7 @@ void fn_80084A8C(void) {
         }
         r3 = *(u8*)((u8*)r24 + 0x21);
         r3 = (s8)r3;
-        ((void(*)(void))fn_80093698)();
+        ((void(*)(void))gbaCommEnd)();
         r3 = 0x0;
         return;
     L_8008769C:
@@ -4229,7 +4229,7 @@ void fn_80084A8C(void) {
             }
             r3 = *(u8*)((u8*)r24 + 0x21);
             r3 = (s8)r3;
-            ((void(*)(void))fn_80093698)();
+            ((void(*)(void))gbaCommEnd)();
             r3 = 0x0;
             return;
         }
@@ -4358,7 +4358,7 @@ void fn_80084A8C(void) {
             }
             r3 = *(u8*)((u8*)r24 + 0x21);
             r3 = (s8)r3;
-            ((void(*)(void))fn_80093698)();
+            ((void(*)(void))gbaCommEnd)();
             r3 = 0x0;
             return;
         }
@@ -5027,8 +5027,8 @@ static inline void gbaConvCaptureMemo(GbaConvPlayerMemo* memo) {
 /* Snapshot the save image, renumber the slots, run link mode 6 and restore. */
 static inline s32 gbaConvRunLinkMode(void) {
     extern u8 fn_8006A76C(void);
-    extern void* fn_80071104(u32 size);
-    extern void fn_8007109C(void* p);
+    extern void* menuCommonAlloc(u32 size);
+    extern void menuCommonFree(void* p);
     extern void* fn_80128E24(void);
     extern u8* savedataGetStatus(s32 side, s32 slotType);
     extern void _flagSet(s32 id, s32 value);
@@ -5039,25 +5039,25 @@ static inline s32 gbaConvRunLinkMode(void) {
     if (fn_8006A76C() != 0) {
         return 0;
     }
-    buf = fn_80071104(0x1DFD0);
+    buf = menuCommonAlloc(0x1DFD0);
     memcpy(buf, fn_80128E24(), 0x1DFD0);
     gbaConvResetSlotIds();
     savedataGetStatus(0, 0xE)[0x1C] = 0;
     _flagSet(0x8AE, 0);
     result = fn_801D0748(6, 2, 0);
     memcpy(fn_80128E24(), buf, 0x1DFD0);
-    fn_8007109C(buf);
+    menuCommonFree(buf);
     if (result == 4) {
         return 0;
     }
     return -1;
 }
 
-/* The species grid's initializer lands in .rodata ahead of fn_800889E4's
- * pooled assert strings; that unit's wrapper leaves fn_800884BC out so the
+/* The species grid's initializer lands in .rodata ahead of menuSaveLoadSaveGame's
+ * pooled assert strings; that unit's wrapper leaves dnaKeyCodeCheck out so the
  * strings keep their retail base. */
 #if !defined(GBA_CONV_800889E4_ONLY)
-/* 3x3 table of species ids searched by fn_800884BC (passed by value). */
+/* 3x3 table of species ids searched by dnaKeyCodeCheck (passed by value). */
 typedef struct GbaConvSpeciesGrid {
     u16 ids[3][3];
 } GbaConvSpeciesGrid;
@@ -5110,7 +5110,7 @@ void fn_80088428(void) {
 
 #if !defined(GBA_CONV_800889E4_ONLY)
 /* 0x800884BC | size: 0x214 */
-u32 fn_800884BC(u16 a, u16 b, u16 c) {
+u32 dnaKeyCodeCheck(u16 a, u16 b, u16 c) {
     extern void std098_mapWarpToMenuRoom(s32 id);
     extern void _threadSwitch(void);
     GbaConvChannelState* state = (GbaConvChannelState*)lbl_803FB2F8;
@@ -5136,18 +5136,18 @@ u32 fn_800884BC(u16 a, u16 b, u16 c) {
 
 #if !defined(GBA_CONV_CARVE) || defined(GBA_CONV_CARVE_800886D0)
 /* 0x800886D0 | size: 0x294 */
-s32 fn_800886D0(void) {
+s32 menuSaveLoadReceiveGift(void) {
     extern u8 fn_8006A76C(void);
-    extern s32 fn_8006AE18(void);
+    extern s32 savedataBattleGetSavedHeroKind(void);
     extern u8 fn_801EE398(void);
     extern u8 std081_flagCheckTrue(s32 id);
-    extern void* fn_80071104(u32 size);
-    extern void fn_8007109C(void* p);
+    extern void* menuCommonAlloc(u32 size);
+    extern void menuCommonFree(void* p);
     extern void* fn_80128E24(void);
     extern s16 std217_playerReceiveGiftPokemon(s32 kind);
     extern void d2presentOpen(s32 mode);
-    extern s32 fn_8006ADEC(void);
-    extern void fn_8006ADB4(s32 value);
+    extern s32 savedataBattleGetCouponRun(void);
+    extern void savedataBattleSetCouponRun(s32 value);
     extern void heroAddPokecoupon(s32 hero, s32 amount);
     extern void std078_flagSetFalse(s32 id);
     extern void winMsgOpen(s32 a, s32 msg, s32 c, s32 d);
@@ -5163,7 +5163,7 @@ s32 fn_800886D0(void) {
     if (fn_8006A76C() != 0) {
         return 0;
     }
-    if (fn_8006AE18() != 0) {
+    if (savedataBattleGetSavedHeroKind() != 0) {
         return 0;
     }
     if (fn_801EE398() == 0) {
@@ -5175,7 +5175,7 @@ s32 fn_800886D0(void) {
     if (std081_flagCheckTrue(0xAFD) != 0) {
         return 0;
     }
-    buf = fn_80071104(0x1DFD0);
+    buf = menuCommonAlloc(0x1DFD0);
     memcpy(buf, fn_80128E24(), 0x1DFD0);
     switch (std217_playerReceiveGiftPokemon(4)) {
     case -1:
@@ -5191,11 +5191,11 @@ s32 fn_800886D0(void) {
     d2presentOpen(mode);
     if (mode == 2) {
         memcpy(fn_80128E24(), buf, 0x1DFD0);
-        fn_8007109C(buf);
+        menuCommonFree(buf);
         return 0;
     }
-    coupons = fn_8006ADEC();
-    fn_8006ADB4(0);
+    coupons = savedataBattleGetCouponRun();
+    savedataBattleSetCouponRun(0);
     heroAddPokecoupon(0, coupons);
     std078_flagSetFalse(0xAFD);
     for (;;) {
@@ -5212,12 +5212,12 @@ s32 fn_800886D0(void) {
         winMsgOpen(2, 0x3C0F, 1, 0);
         if (menuSubOpenYesNo(0, -1, -1, 1) == 0) {
             memcpy(fn_80128E24(), buf, 0x1DFD0);
-            fn_8006ADB4(0);
-            fn_8007109C(buf);
+            savedataBattleSetCouponRun(0);
+            menuCommonFree(buf);
             return 0;
         }
     }
-    fn_8007109C(buf);
+    menuCommonFree(buf);
     return 1;
 }
 #endif
@@ -5249,11 +5249,11 @@ s32 fn_800889A4(void) {
 
 #if !defined(GBA_CONV_CARVE) || defined(GBA_CONV_CARVE_800889E4)
 /* 0x800889E4 | size: 0x27C */
-s32 fn_800889E4(s32 capture) {
+s32 menuSaveLoadSaveGame(s32 capture) {
     extern u8* savedataGetStatus(s32 side, s32 slotType);
-    extern u8 fn_8006A7BC(u8* status);
-    extern void fn_8006A7AC(u8* status);
-    extern void fn_8006A79C(u8* status);
+    extern u8 savedataBattleGetFlagC98B(u8* status);
+    extern void savedataBattleSetFlagC98B(u8* status);
+    extern void savedataBattleClearFlagC98B(u8* status);
     extern void __assert(const char* file, s32 line, const char* expr);
     u8* status;
     GbaConvSaveHeader* hdr;
@@ -5263,7 +5263,7 @@ s32 fn_800889E4(s32 capture) {
     status = savedataGetStatus(0, 0xE);
     hdr = (GbaConvSaveHeader*)(status + 0xC98C);
     memo = (GbaConvPlayerMemo*)(status + 0xC9A8);
-    if (fn_8006A7BC(status) != 0) {
+    if (savedataBattleGetFlagC98B(status) != 0) {
         __assert("menuCB_SaveLoad.c", 0x7B, "!menuCBBios_SaveDataAvailable(p)");
     }
     hdr->kind = ((GbaConvSaveHeader*)status)->kind;
@@ -5283,10 +5283,10 @@ s32 fn_800889E4(s32 capture) {
     } else {
         memset(memo, 0, sizeof(GbaConvPlayerMemo));
     }
-    fn_8006A7AC(status);
+    savedataBattleSetFlagC98B(status);
     result = gbaConvRunLinkMode();
     if (result < 0) {
-        fn_8006A79C(status);
+        savedataBattleClearFlagC98B(status);
     }
     return result;
 }
@@ -5294,10 +5294,10 @@ s32 fn_800889E4(s32 capture) {
 
 #if !defined(GBA_CONV_CARVE) || defined(GBA_CONV_CARVE_80088C60)
 /* 0x80088C60 | size: 0x124 */
-s32 fn_80088C60(void) {
+s32 menuSaveLoadCommitA(void) {
     extern u8 fn_8006A76C(void);
-    extern void* fn_80071104(u32 size);
-    extern void fn_8007109C(void* p);
+    extern void* menuCommonAlloc(u32 size);
+    extern void menuCommonFree(void* p);
     extern void* fn_80128E24(void);
     extern u8* savedataGetStatus(s32 side, s32 slotType);
     extern void _flagSet(s32 id, s32 value);
@@ -5308,14 +5308,14 @@ s32 fn_80088C60(void) {
     if (fn_8006A76C() != 0) {
         return 0;
     }
-    buf = fn_80071104(0x1DFD0);
+    buf = menuCommonAlloc(0x1DFD0);
     memcpy(buf, fn_80128E24(), 0x1DFD0);
     gbaConvResetSlotIds();
     savedataGetStatus(0, 0xE)[0x1C] = 0;
     _flagSet(0x8AE, 0);
     result = fn_801D0748(6, 2, 0);
     memcpy(fn_80128E24(), buf, 0x1DFD0);
-    fn_8007109C(buf);
+    menuCommonFree(buf);
     if (result == 4) {
         return 0;
     }
@@ -5331,7 +5331,7 @@ s32 fn_80088D84(void) {
 
 #if !defined(GBA_CONV_CARVE)
 /* 0x80088EA8 | size: 0xB0 */
-void fn_80088EA8(u8* p) {
+void menuSaveLoadStorePosition(u8* p) {
     extern void heroMoveGetHeroRot(f32*);
     extern void heroMoveGetHeroPos(f32*);
     extern u32 std092_getCurrentRoomID(void);
