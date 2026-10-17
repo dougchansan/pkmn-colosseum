@@ -164,7 +164,6 @@ s32 menuCardE_CompareEntryPtrs(u32 r3, u32 r4) {
 #endif
 
 extern void GScharCpy(void* dst, const void* src);
-extern const u8 lbl_80268DC0[];
 extern const u8 lbl_80478948[8];
 extern u8 fn_8008102C(void** object_ref, const u32* descriptor, s32 index,
                       s32 value, const char* text, s32 subindex);
@@ -1833,7 +1832,7 @@ u8 fn_8008102C(void** object_ref, const u32* descriptor, s32 index,
 #define card (*(CardERecordData**)object_ref)
     u32 field = descriptor[0];
 #if !defined(CARDESAVEDATA_DECODE_TU)
-    const u8* table = lbl_80268DC0;
+    const u8* table = (const u8*)sCardEHeaderFields;
 #endif
 
     s32 i;

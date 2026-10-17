@@ -56,6 +56,25 @@ block_relocations:
   # word 0x803FFFFF, which falls inside SIBios.c's static Packet array
   # (0x803FFFB0), now a file static of dolphin/si/SI_range_800CF764.c.
   - target: .bss:0x803FFFFF
+  # False pointers: the Shift-JIS to GS character tables sCardESjisToGs81 and
+  # sCardESjisToGsE0 (cardesavedata_decode_80080310.c) contain u16 pairs that
+  # read as main.dol addresses.
+  - source: .rodata:0x8026AEE8
+  - source: .rodata:0x8026B414
+  - source: .rodata:0x8026CD64
+  - source: .rodata:0x8026CD68
+  - source: .rodata:0x8026CD6C
+  - source: .rodata:0x8026CD70
+  # False pointers: pixel data in memcard.c's sMemcardBanner and sMemcardIcon.
+  - source: .rodata:0x802766A4
+  - source: .rodata:0x80276948
+  - source: .rodata:0x80276958
+  - source: .rodata:0x80276B74
+  - source: .rodata:0x80276B78
+  - source: .rodata:0x80276BB4
+  - source: .rodata:0x80276C28
+  - source: .rodata:0x80276E34
+  - source: .rodata:0x802790E8
 
 # REL modules. The game keeps them inside FSYS archives; extract them into
 # orig/GC6E01/files/ with tools/fsys_extract.py first (docs/REL_MODULES.md).
