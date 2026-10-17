@@ -14,7 +14,7 @@ void ObjInfoInit_801AA568(void)
                      (char*) lbl_8047DCA0, 0x3C, 8);
 }
 
-void fn_801AA5AC(s32 index)
+void HSD_PerfCountEnvelopeBlending(s32 index)
 {
     if (index >= 32) {
         __assert((const char*) lbl_8047DCA8, 0xA4,

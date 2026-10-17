@@ -151,15 +151,15 @@ void fn_801A6960(void* ptr);
 /* HSD_IsMemoryReleased: nonzero when the pointer lies in freed memory. */
 int fn_801A6990(void* ptr);
 /* HSD_SListAlloc */
-HSD_SList* fn_801A3F48(void);
+HSD_SList* HSD_SListAlloc(void);
 /* HSD_SListRemove */
-HSD_SList* fn_801A3E64(HSD_SList* list);
+HSD_SList* HSD_SListRemove(HSD_SList* list);
 /* _HSD_NeedCacheInvalidate */
 void fn_8019C6EC(u32 flags);
 /* HSD_StateSetCullMode */
-void fn_801B2878(int mode);
+void HSD_StateSetCullMode(int mode);
 /* HSD_PerfCountEnvelopeBlending */
-void fn_801AA5AC(s32 n);
+void HSD_PerfCountEnvelopeBlending(s32 n);
 void* HSD_IDGetDataFromTable(void* table, u32 id, s32* success);
 HSD_JObj* HSD_JObjGetCurrent(void);
 HSD_TObj* _HSD_TObjGetCurrentByType(HSD_TObj* from, u32 mapping);
@@ -334,7 +334,7 @@ static inline void HSD_EnvelopeListFree(HSD_SList* list)
             HSD_EnvelopeFree(env);
             env = next;
         }
-        list = fn_801A3E64(list);
+        list = HSD_SListRemove(list);
     }
 }
 
@@ -359,7 +359,7 @@ static inline HSD_SList* loadEnvelopeDesc(HSD_EnvelopeDesc** edesc_p)
             edesc++;
         }
 
-        (*list_p) = fn_801A3F48();
+        (*list_p) = HSD_SListAlloc();
         (*list_p)->data = envelope;
         list_p = &(*list_p)->next;
         edesc_p++;
@@ -1238,7 +1238,7 @@ static void drawShapeAnim(HSD_PObj* pobj)
 }
 
 /* HSD_PObjClearMtxMark */
-void fn_801AB63C(void* obj, u32 mark)
+void HSD_PObjClearMtxMark(void* obj, u32 mark)
 {
     int i;
 
@@ -1249,7 +1249,7 @@ void fn_801AB63C(void* obj, u32 mark)
 }
 
 /* HSD_PObjSetMtxMark */
-void fn_801AB5F8(int idx, void* obj, u32 mark)
+void HSD_PObjSetMtxMark(int idx, void* obj, u32 mark)
 {
     if (idx >= 2) {
         return;
@@ -1316,7 +1316,7 @@ static inline void SetupRigidModelMtx(HSD_PObj* pobj, Mtx vmtx, Mtx pmtx,
         if (obj == jobj && mark == HSD_MTX_RIGID) {
             return;
         }
-        fn_801AB5F8(0, jobj, HSD_MTX_RIGID);
+        HSD_PObjSetMtxMark(0, jobj, HSD_MTX_RIGID);
     }
 
     fn_800BD554(GX_PNMTX0);
@@ -1415,7 +1415,7 @@ static void SetupEnvelopeModelMtx(HSD_PObj* pobj, Mtx vmtx, Mtx pmtx,
     PObjSetupFlag flags = SETUP_NONE;
 
     jobj = HSD_JObjGetCurrent();
-    fn_801AB63C(NULL, HSD_MTX_ENVELOPE);
+    HSD_PObjClearMtxMark(NULL, HSD_MTX_ENVELOPE);
     flags = GetSetupFlags(jobj);
     right = _HSD_mkEnvelopeModelNodeMtx(jobj, mtx);
 
@@ -1458,7 +1458,7 @@ static void SetupEnvelopeModelMtx(HSD_PObj* pobj, Mtx vmtx, Mtx pmtx,
             }
             mtxp = mtx;
         }
-        fn_801AA5AC(perf);
+        HSD_PerfCountEnvelopeBlending(perf);
         if (right) {
             PSMTXConcat(mtxp, right, mtx);
         }
@@ -1524,13 +1524,13 @@ void HSD_PObjDisp(HSD_PObj* pobj, Mtx vmtx, Mtx pmtx, u32 rendermode)
 
     switch (pobj->flags & (POBJ_CULLFRONT | POBJ_CULLBACK)) {
     case 0x0:
-        fn_801B2878(GX_CULL_NONE);
+        HSD_StateSetCullMode(GX_CULL_NONE);
         break;
     case POBJ_CULLFRONT:
-        fn_801B2878(GX_CULL_FRONT);
+        HSD_StateSetCullMode(GX_CULL_FRONT);
         break;
     case POBJ_CULLBACK:
-        fn_801B2878(GX_CULL_BACK);
+        HSD_StateSetCullMode(GX_CULL_BACK);
         break;
     case POBJ_CULLFRONT | POBJ_CULLBACK:
         return;

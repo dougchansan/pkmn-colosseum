@@ -9,8 +9,8 @@
 #include "src/game/gs_model_shadow.c"
 
 extern void* modelGetRenderJObj(GSmodel*);
-extern void fn_801A3918(void*, void (*)(GSjobjNode*, void*, int), u32);
-extern void fn_801B0880(void*, u32);
+extern void HSD_JObjWalkTree(void*, void (*)(GSjobjNode*, void*, int), u32);
+extern void HSD_ShadowSetActive(void*, u32);
 extern void _modelShadowSetShadowFlag__FP9_HSD_JObjPPvi(GSjobjNode* jobj,
                                                         void* arg, int unused);
 
@@ -51,15 +51,15 @@ void modelShadowPrepare__FP8_GSmodelb(GSmodel* model, u8 enable)
     }
     render = modelGetRenderJObj(model);
     if (!enable) {
-        fn_801A3918(render,
+        HSD_JObjWalkTree(render,
                     _modelShadowSetShadowFlag__FP9_HSD_JObjPPvi, 0);
     } else {
-        fn_801A3918(render,
+        HSD_JObjWalkTree(render,
                     _modelShadowSetShadowFlag__FP9_HSD_JObjPPvi, 1);
     }
     for (i = 0; i < 6; i++) {
         if (lbl_80401490[i].flag && lbl_80401490[i].model == model) {
-            fn_801B0880(lbl_80401490[i].obj, (u8)enable);
+            HSD_ShadowSetActive(lbl_80401490[i].obj, (u8)enable);
         }
     }
 }

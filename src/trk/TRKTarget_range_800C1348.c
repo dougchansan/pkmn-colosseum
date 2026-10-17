@@ -34,7 +34,7 @@ extern u8 lbl_8026FB70[];
 
 s32 TRKTargetSupportRequest(void)
 {
-    extern void fn_800BE464(void* event, s32 type);
+    extern void TRKConstructEvent(void* event, s32 type);
     extern s32 TRKPostEvent(void* event);
     extern s32 HandleOpenFileSupportRequest(u32 handle, u8 mode, u32 length,
                                             s32* ioResult);
@@ -56,7 +56,7 @@ s32 TRKTargetSupportRequest(void)
     if (command != 0xD1 && command != 0xD0 && command != 0xD2 &&
         command != 0xD3 && command != 0xD4)
     {
-        fn_800BE464(event, 4);
+        TRKConstructEvent(event, 4);
         TRKPostEvent(event);
         return 0;
     } else if (command == 0xD2) {
@@ -284,7 +284,7 @@ void TRKPostInterruptEvent(void) {
     u8 event[0xC];
     s32 eventType;
 
-    extern void fn_800BE464(void* event, s32 type);
+    extern void TRKConstructEvent(void* event, s32 type);
     extern s32 TRKPostEvent(void* event);
 
     if (*(s32*)&gTRKState[0x9C] != 0) {
@@ -306,7 +306,7 @@ void TRKPostInterruptEvent(void) {
             eventType = 4;
             break;
         }
-        fn_800BE464(event, eventType);
+        TRKConstructEvent(event, eventType);
         TRKPostEvent(event);
     }
 }

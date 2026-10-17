@@ -43,13 +43,13 @@ extern BOOL OSRestoreInterrupts(BOOL level);
 extern u32 fn_800E2C04(u32 size, u32 align);
 extern void* fn_800E27B0(u32 handle);
 extern void GXDrawDone(void);
-extern void fn_800B856C(void);
+extern void GXInvalidateVtxCache(void);
 extern void DCFlushRange(void* address, u32 size);
 extern void DVDInit(void);
 extern BOOL DVDSetAutoFatalMessaging(BOOL enable);
 extern s32 GSgetVersionMajor(void);
 extern s32 GSgetVersionMinor(void);
-extern u8* fn_800A7BCC(void);
+extern u8* DVDGetCurrentDiskID(void);
 extern u32 GSgappCreate(s32 state, u8 priority, u32 parameter,
                        void (*callback)(void));
 extern void _gsdvdErrorTask(void);
@@ -109,7 +109,7 @@ u32 GSdvdInit(u32 workCount)
             lbl_80478C24 = lbl_8047D594;
             break;
         }
-        destination = fn_800A7BCC();
+        destination = DVDGetCurrentDiskID();
         destination[0] = lbl_80478C24[0];
         destination[1] = lbl_80478C24[1];
         destination[2] = lbl_80478C24[2];
@@ -262,7 +262,7 @@ void GSfilterSetColor(GSFilter* filter, const u8* color)
         }
     } else if (filter->drawing != 0) {
         GXDrawDone();
-        fn_800B856C();
+        GXInvalidateVtxCache();
         filter->drawing = 0;
         lbl_804526E0.drawingCount--;
     }
@@ -274,7 +274,7 @@ void fn_801684F0(GSDVDWork* work)
         work->started = 0;
         if (work->drawing != 0) {
             GXDrawDone();
-            fn_800B856C();
+            GXInvalidateVtxCache();
             work->drawing = 0;
             lbl_804526E0.drawingCount--;
         }

@@ -282,7 +282,7 @@ BOOL __EXIProbe(s32 chan) {
 
 s32 EXIProbeEx(s32 chan) {
     extern BOOL __EXIProbe(s32 chan);
-    extern BOOL fn_80099400(s32 chan, u32 dev, u32* id);
+    extern BOOL EXIGetID(s32 chan, u32 dev, u32* id);
     extern EXIProbeControl lbl_803FFEF0[];
     EXIProbeControl* exi = &lbl_803FFEF0[chan];
     u32 id;
@@ -290,7 +290,7 @@ s32 EXIProbeEx(s32 chan) {
 
     probe = __EXIProbe(chan);
     if (probe && exi->idTime == 0) {
-        probe = fn_80099400(chan, 0, &id) ? TRUE : FALSE;
+        probe = EXIGetID(chan, 0, &id) ? TRUE : FALSE;
     }
     if (probe) {
         return 1;

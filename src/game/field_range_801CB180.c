@@ -123,7 +123,7 @@ extern void floorTerminateScriptThreads(s32 id);
 extern void* GSthreadGetCurrentThread(void);
 extern s32 fn_800F036C(void);
 extern void GSlogWrite(const void* format, const void* text, ...);
-extern s32 fn_800F7318(s32 task, void* callback, s32 stack_size, s32 arg3, s32 arg4, s32 arg5, ...);
+extern s32 _vmThreadCreate(s32 task, void* callback, s32 stack_size, s32 arg3, s32 arg4, s32 arg5, ...);
 extern void cmsRunSync(void* callback, s32 arg, ...);
 extern u32 std093_getCurrentGroupID(void);
 extern void* GSresGetResource(u32 group, u32 resource);
@@ -197,7 +197,7 @@ extern s32 fn_80089D74();
 extern s32 fn_8008ABA0();
 extern s32 fn_800B01C4();
 extern void* fn_800B01AC(s32 channel);
-extern s32 fn_800B4488();
+extern s32 CARDOpen();
 extern s32 fn_800B4C7C();
 extern s32 CARDGetStatus();
 extern s32 fn_800B5BE4();
@@ -341,7 +341,7 @@ s32 scriptExecTask(void* callback, u32 priority, u32 arg2, u32 arg3, u32 arg4, u
 
     task += priority;
 
-    return fn_800F7318(task, callback, 0x1000, 1, 0, 4, arg2, arg3, arg4, arg5);
+    return _vmThreadCreate(task, callback, 0x1000, 1, 0, 4, arg2, arg3, arg4, arg5);
 }
 
 void std209_threadRunScriptMode4(void* callback, s32 arg1, s32 arg2, s32 arg3, s32 arg4)
@@ -938,7 +938,7 @@ s32 fn_801CFD08(void)
     channel = lbl_8047B3D4->card_channel;
     file_info = &lbl_8047B3D4->file_info;
     for (file_no = 0; file_no < 0x7F; file_no++) {
-        result = fn_800B4488(channel, file_no, file_info);
+        result = CARDOpen(channel, file_no, file_info);
         if (result == 0) {
             result = CARDGetStatus(channel, file_no, &status);
             if (result != 0) {

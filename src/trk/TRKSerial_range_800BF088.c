@@ -21,7 +21,7 @@ typedef struct TRKBuffer {
 
 extern void MWTRACE(s32 level, const char* format, ...);
 extern u8 lbl_803FE7B8[];
-extern void fn_800BE464(TRKEvent* event, s32 type);
+extern void TRKConstructEvent(TRKEvent* event, s32 type);
 extern TRKResult TRKPostEvent(TRKEvent* event);
 extern TRKBuffer* TRKGetBuffer(s32 bufferID);
 extern TRKResult TRKGetFreeBuffer(s32* bufferID, TRKBuffer** buffer);
@@ -83,7 +83,7 @@ void TRKGetInput(void)
         TRKEvent event;
 
         TRKGetBuffer(bufferID);
-        fn_800BE464(&event, kEventMessage);
+        TRKConstructEvent(&event, kEventMessage);
         event.bufferIndex = bufferID;
         ((s32*)lbl_803FE7B8)[0] = -1;
         TRKPostEvent(&event);
@@ -94,7 +94,7 @@ void TRKProcessInput(s32 bufferID)
 {
     TRKEvent event;
 
-    fn_800BE464(&event, kEventMessage);
+    TRKConstructEvent(&event, kEventMessage);
     event.bufferIndex = bufferID;
     ((s32*)lbl_803FE7B8)[0] = -1;
     TRKPostEvent(&event);

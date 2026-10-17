@@ -9,7 +9,7 @@ void menuFightDrawTimer(u8* ctx, u8* npc) {
     extern s32 windowGetParam(u8* a, s32 b);
     extern void msgctrlSetValue(s32 a, s32 b);
     extern void GSmsgPrintColor();
-    extern void fn_800FBB34();
+    extern void GSmsgPrintRect();
     s32 value;
     s32 hour;
     s32 minute;
@@ -33,7 +33,7 @@ void menuFightDrawTimer(u8* ctx, u8* npc) {
         break;
     case 0x12AF:
         msgctrlSetValue(0x34, windowGetParam(ctx, 0));
-        fn_800FBB34(0, 0, *(s16*)(npc + 0x54), *(s16*)(npc + 0x56),
+        GSmsgPrintRect(0, 0, *(s16*)(npc + 0x54), *(s16*)(npc + 0x56),
                     (s32)menuSubCalcColor(ctx, npc), 0xDE);
         break;
     }

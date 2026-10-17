@@ -102,7 +102,7 @@ void fn_800B7D74(s32 vtxfmt, s32 attr, s32 cnt, s32 type, u8 frac)
     *((u8*)gx + 0x4F3) |= (u8)(1 << (u8)vtxfmt);
 }
 
-void fn_800B80CC(s32 vtxfmt, const GXVtxAttrFmtList_800B771C* list)
+void GXSetVtxAttrFmtv(s32 vtxfmt, const GXVtxAttrFmtList_800B771C* list)
 {
     u32* va = (u32*)((u8*)gx + 0x1C + vtxfmt * 4);
     u32* vb = (u32*)((u8*)gx + 0x3C + vtxfmt * 4);
@@ -132,7 +132,7 @@ static inline void WriteVatRegs(s32 idx) {
 }
 
 /* __GXSetVAT: flush the dirty vertex attribute formats. */
-void fn_800B8444(void) {
+void __GXSetVAT(void) {
     u8 i;
 
     for (i = 0; i < 8; i++) {

@@ -193,7 +193,7 @@ void winSpriteDraw(u8* context, WinSpriteDrawNode* sprite)
     extern void windowDrawPanel(s16, s16, s16, s16);
     extern void fn_8001E644(s16, s16, s16, s16, u8);
     extern void gfxSetLineWidth(f32);
-    extern void fn_800FBB34(s16, s16, s16, s16, u32, void*);
+    extern void GSmsgPrintRect(s16, s16, s16, s16, u32, void*);
     extern u8 lbl_80314E08[];
     u8 red;
     u8 red2;
@@ -329,7 +329,7 @@ void winSpriteDraw(u8* context, WinSpriteDrawNode* sprite)
     }
 
     if (sprite->drawArg != NULL) {
-        fn_800FBB34(sprite->x, sprite->y, sprite->width, sprite->height,
+        GSmsgPrintRect(sprite->x, sprite->y, sprite->width, sprite->height,
                     color, sprite->drawArg);
     }
 }

@@ -17,7 +17,7 @@ extern u8 lbl_80314510[];
 extern u8 lbl_80314530[];
 
 extern void gfxRecordCommand(u32, ...);
-extern void fn_800BAE34(void* texObj, u32 wrapS, u32 wrapT);     /* GXInitTexObjWrapMode */
+extern void GXInitTexObjWrapMode(void* texObj, u32 wrapS, u32 wrapT);     /* GXInitTexObjWrapMode */
 extern void fn_800BACA0(void* texObj, u32 minFilt, u32 magFilt, f32 minLod, f32 maxLod,
                         f32 lodBias, u8 biasClamp, u8 edgeLod, u32 maxAniso); /* GXInitTexObjLOD */
 extern void fn_800BB098(void* tlutObj, u32 tlutName);           /* GXLoadTlut */
@@ -40,7 +40,7 @@ void gfxLoadTexture(s32 slot, void* model) {
 
     obj = (u8*)model;
     if (obj[0x7] != 0) {
-        fn_800BAE34(obj + 0x54, ((u32*)lbl_80314530)[*(u32*)(obj + 0x10)],
+        GXInitTexObjWrapMode(obj + 0x54, ((u32*)lbl_80314530)[*(u32*)(obj + 0x10)],
                     ((u32*)lbl_80314530)[*(u32*)(obj + 0x14)]);
         switch (*(s32*)(obj + 0x20)) {
         case 0:

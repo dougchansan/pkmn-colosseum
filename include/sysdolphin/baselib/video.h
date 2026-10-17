@@ -110,16 +110,16 @@ extern HSD_VIInfo lbl_80466BC0;
 /* dtk names; HAL names in the comments */
 void HSD_VIInit(HSD_VIStatus* vi, void* xfb0, void* xfb1,
                  void* xfb2);                   /* HSD_VIInit */
-void fn_801BF4C4(BOOL black);                   /* HSD_VISetBlack */
-void fn_801BF4E4(GXRenderModeObj* rmode);       /* HSD_VISetConfigure */
-int fn_801BF574(void);                          /* HSD_VIGetXFBLastDrawDone */
+void HSD_VISetBlack(BOOL black);                   /* HSD_VISetBlack */
+void HSD_VISetConfigure(GXRenderModeObj* rmode);       /* HSD_VISetConfigure */
+int HSD_VIGetXFBLastDrawDone(void);                          /* HSD_VIGetXFBLastDrawDone */
 void fn_801BF8A0(HSD_RenderPass rpass);         /* HSD_VICopyXFBAsync */
 void HSD_VICopyEFB2XFB(HSD_VIStatus* vi, void* buffer,
                  HSD_RenderPass rpass);         /* HSD_VICopyEFB2XFBPtr */
 HSD_VIGXDrawDoneCallback
-fn_801C01C8(HSD_VIGXDrawDoneCallback cb);       /* HSD_VISetUserGXDrawDoneCallback */
+HSD_VISetUserGXDrawDoneCallback(HSD_VIGXDrawDoneCallback cb);       /* HSD_VISetUserGXDrawDoneCallback */
 HSD_VIRetraceCallback
-fn_801C021C(HSD_VIRetraceCallback cb);          /* HSD_VISetUserPostRetraceCallback */
+HSD_VISetUserPostRetraceCallback(HSD_VIRetraceCallback cb);          /* HSD_VISetUserPostRetraceCallback */
 
 static inline int HSD_VIGetNbXFB(void)
 {

@@ -7,7 +7,7 @@
 extern u32 GSmsgGetRect(u32 id);
 extern void msgctrlSetValue(u32 id, s32 value);
 extern void GSmsgPrintColor(s32, s32, s32, s32);
-extern void fn_800FB8C8(s32, s32, s16, s16, s32, s32);
+extern void GSmsgPrintRight(s32, s32, s16, s16, s32, s32);
 extern u8 lbl_80266E58[];
 
 s32 fn_8002A3D4(void* owner, u8* draw)
@@ -103,6 +103,6 @@ s32 fn_8002A48C(ShopMenuOwner* owner, ShopDrawData* draw)
     tens = value / 10 * 10;
     value -= tens;
     msgctrlSetValue(0x34, value);
-    fn_800FB8C8(0, 0, draw->x, draw->y, -1, 0xc9);
+    GSmsgPrintRight(0, 0, draw->x, draw->y, -1, 0xc9);
     return 0;
 }

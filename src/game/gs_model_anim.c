@@ -136,7 +136,7 @@ extern char lbl_8047CC70[] __attribute__((section(".sdata2")));
 extern char lbl_80270EE8[];
 
 void HSD_ForeachAnim(void* obj, u32 type, u32 mask, void* func, u32 arg_type, ...);
-void fn_801A32A0(HSD_JObj* jobj, u32 flags, f32 frame);
+void HSD_JObjReqAnimAllByFlags(HSD_JObj* jobj, u32 flags, f32 frame);
 void fn_801A2B5C(HSD_JObj* jobj, void* anim, void* mat_anim,
                  void* shape_anim);
 void modelCalculateBlendModel__FP8_GSmodelf(GSmodel* model);
@@ -161,7 +161,7 @@ void modelSetPos(GSmodel* model, GSvec* position);
 void modelSetRot(GSmodel* model, GSvec* rotation);
 void modelSetScl(GSmodel* model, GSvec* scale);
 void fn_8019D620(HSD_JObj* jobj);
-void fn_8019D9DC(HSD_JObj* jobj);
+void HSD_JObjSetupMatrixSub(HSD_JObj* jobj);
 
 typedef struct GSmodelAnimEndedInfo {
     u32 event_flags;
@@ -227,7 +227,7 @@ typedef struct GSmodelAnimEndedInfo {
 extern s32 sModelJObjCount;
 extern s32 sModelJObjLastIndex;
 typedef void (*GSmodelAObjApplyFunc)(HSD_AObj* aobj, void* arg);
-void fn_801A3918(HSD_JObj* jobj, GSmodelAObjApplyFunc func, u32 arg);
+void HSD_JObjWalkTree(HSD_JObj* jobj, GSmodelAObjApplyFunc func, u32 arg);
 void fn_800EE20C(HSD_AObj* aobj, void* arg);
 
 #if defined(GS_MODEL_ANIM_800EC0E8_800EC35C)
@@ -325,7 +325,7 @@ void GSmodelSetTexAnimFrame(GSmodel* model, f32 frame)
         }
         model->tex_anim_frame = frame;
         model->tex_anim_req_frame = frame;
-        fn_801A32A0(jobj, 0x634, model->tex_anim_req_frame);
+        HSD_JObjReqAnimAllByFlags(jobj, 0x634, model->tex_anim_req_frame);
         model->flags = model->flags & ~MODEL_FLAG_TEX_ANIM_ENDED;
     }
 }
@@ -374,7 +374,7 @@ void GSmodelSetTexAnimIndex(GSmodel* model, u32 index)
         }
         model->tex_anim_frame = lbl_8047CC5C;
         model->tex_anim_req_frame = lbl_8047CC5C;
-        fn_801A32A0(jobj, 0x634, model->tex_anim_req_frame);
+        HSD_JObjReqAnimAllByFlags(jobj, 0x634, model->tex_anim_req_frame);
         flags = model->flags & ~MODEL_FLAG_TEX_ANIM_ENDED;
         model->flags = flags;
     }

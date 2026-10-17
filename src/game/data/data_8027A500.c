@@ -67,7 +67,7 @@ extern u8 std212_gbaIsLinkActive[];
 extern u8 std220_gbaUnk_80083bf8[];
 extern u8 demoScene18[];
 extern u8 fn_80097BBC[];
-extern u8 fn_800AFFE0[];
+extern u8 __CARDEraseSector[];
 extern u8 GSmodelGetRotation[];
 extern u8 GSmodelSetRotation[];
 extern u8 std001_messageFormatLookup[];
@@ -85738,7 +85738,7 @@ void* lbl_802C0CB0[15064] = {
     (void*)0xFFFFFF80,
     (void*)0x0AFFDCFF,
     (void*)0xFFFFFFFF,
-    (void*)((u8*)fn_800AFFE0 + 0x10),
+    (void*)((u8*)__CARDEraseSector + 0x10),
     (void*)0x00000000,
     (void*)0x0000003F,
     (void*)0xF0AFFFFF,

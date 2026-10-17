@@ -164,11 +164,11 @@ extern u32 lbl_80313608[];
 extern void GXSetTevIndirect(u32 dstCoord, u32 func, u32 srcParam, u32 mtx,
                         u32 normalize, u32 postMtx, u32 normalizeColor,
                         u8 bias, u8 arg8, u32 arg9);
-extern void fn_800BD640(f32 left, f32 top, f32 width, f32 height, f32 nearz,
+extern void GXSetViewportJitter(f32 left, f32 top, f32 width, f32 height, f32 nearz,
                         f32 farz, u32 field);
 extern void __GXSetMatrixIndex(s32 value);
 extern void fn_800BE164(u32* hi, u32* lo);
-extern void fn_800B91EC(void);
+extern void __GXSetDirtyState(void);
 extern void __GXSendFlushPrim(void);
 extern u32 __cvt_fp2unsigned(f32 value);
 extern s32 TRKReleaseBuffer(s32 bufferIndex);
@@ -333,14 +333,14 @@ void GXSetIndTexOrder(u32 stage, u32 tex_coord, u32 tex_map)
     gx->field_002 = 0;
 }
 
-void fn_800BBC0C(u32 nChans) {
+void GXSetNumIndStages(u32 nChans) {
     GXData_800BB30C* p = gx;
 
     p->genMode = (p->genMode & ~0x70000U) | ((nChans & 0xFF) << 16);
     p->dirtyState |= 6;
 }
 
-void fn_800BBC34(u32 dstCoord) {
+void GXSetTevDirect(u32 dstCoord) {
     GXSetTevIndirect(dstCoord, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 }
 

@@ -35,7 +35,7 @@ extern f32 lbl_8047C230;
 
 extern void winSpriteSetDisp();
 extern void GSmsgPrintColor();
-extern void fn_800FBB34();
+extern void GSmsgPrintRect();
 extern void* pokemonDataBiosGetPtr(u32 id);
 extern u8 pokemonBiosGetCatchBallId(void* pokemon);
 extern u32 pokemonGetSoubiItemDataId(void* pokemon);
@@ -163,13 +163,13 @@ void fn_800965C8(void* window, u8* sprite) {
         value = pokemonGetSoubiItemDataId(pokemon);
         if ((u16)value != 0) {
             msgctrlSetValue(0x2D, (u16)value);
-            fn_800FBB34(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0x2BD3);
+            GSmsgPrintRect(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0x2BD3);
         }
         break;
     case 0x552: {
         s32 x = (s16)(GSmsgGetRect(*(u32*)(sprite + 0x4C)) >> 16);
         msgctrlSetValue(0x34, (u8)pokemonGetStatus(pokemon, 0, 0x7A, 0));
-        fn_800FBB34(x, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xD2);
+        GSmsgPrintRect(x, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xD2);
         break;
     }
     case 0x554:
@@ -187,7 +187,7 @@ void fn_800965C8(void* window, u8* sprite) {
         u32 sexMsg;
 
         msgctrlSetValue(0x37, pokemonGetStatus(pokemon, 0, 0x77, 0));
-        fn_800FBB34(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xE7);
+        GSmsgPrintRect(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xE7);
         value = (s16)(GSmsgGetRect(0xE7) >> 16);
         switch ((u8)menuSubGetPokemonSexForDisp(pokemon)) {
         case 0:

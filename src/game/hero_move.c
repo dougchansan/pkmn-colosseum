@@ -165,7 +165,7 @@ extern u32 wazaDataBiosGetFightTrainerAiWazaHitFuncPtr(u8* ptr);
 extern u32 wazaDataBiosGetFightTrainerAiWazaValueFuncPtr(u8* ptr);
 extern void pokemonGetDarkPokemonLevel(void);
 extern u32 pokemonDataCheckValid(u32 a, u16 key);
-extern u8 fn_80121ADC(u8* ptr, u32 slot);
+extern u8 pokemonIsJoutaiDataId(u8* ptr, u32 slot);
 extern void pokemonSetWazaStatus(void);
 extern u32 pokemonWazaCheckValid(u8* ptr, u32 arg2);
 extern void pokemonInit(u8* ptr);
@@ -369,7 +369,7 @@ extern void fn_8016AAF4(void);
 extern void HSD_JObjSetSPtclCallback(void);
 extern void HSD_JObjSetPtclCallback(void);
 extern void psSetPointJObjNodup(void);
-extern void fn_8019D610(void);
+extern void HSD_JObjSetDPtclCallback(void);
 extern u16 lbl_8047AD98;
 extern u16 lbl_8047ADA4;
 extern void GSmodelSearchModelList(void);
@@ -3692,7 +3692,7 @@ void cbPoison__Fl15FootStepCounterl(s32 arg) {
     extern u8 pokemonCheckValid(u32 mon);
     extern u32 pokemonGetStatus(u32 mon, u32 a, u32 b, u32 c);
     extern void pokemonSetStatus(u32 mon, u32 a, u32 b, u32 c, u32 val);
-    extern u8 fn_80121ADC(u32 mon, u32 status);
+    extern u8 pokemonIsJoutaiDataId(u32 mon, u32 status);
     extern void* pokemonBiosGetNicknamePtr(u32 mon);
     extern void msgctrlSetValue(u32 id, void* value);
     extern void winMsgOpenField(u32 msg, u32 a, u32 b);
@@ -3733,7 +3733,7 @@ void cbPoison__Fl15FootStepCounterl(s32 arg) {
         if (mon != 0 && pokemonCheckValid(mon)) {
             poison = pokemonGetStatus(mon, 0, 0x83, 0);
             if (poison != 0) {
-                if (fn_80121ADC(mon, 3) || fn_80121ADC(mon, 4)) {
+                if (pokemonIsJoutaiDataId(mon, 3) || pokemonIsJoutaiDataId(mon, 4)) {
                     poison--;
                     pokemonSetStatus(mon, 0, 0x83, 0, poison);
                     changed = 1;
@@ -3789,7 +3789,7 @@ void cbPoison__Fl15FootStepCounterl(s32 arg) {
 
         for (slot = 0; slot < 6; slot++) {
             mon = heroGetStatus(NULL, 3, (u16)slot);
-            if (mon != 0 && pokemonCheckValid(mon) && fn_80121ADC(mon, 0x3e)) {
+            if (mon != 0 && pokemonCheckValid(mon) && pokemonIsJoutaiDataId(mon, 0x3e)) {
                 pokemonInitPersistentJoutai(mon, 0x3e);
             }
         }

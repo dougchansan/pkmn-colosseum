@@ -307,8 +307,8 @@ extern void GSmsgInitRuby();
 extern s32 GSmsgPrintf(s32, s32, u32, const char*, ...);
 extern s32 std001_messageFormatLookup();
 extern s32 GSmsgPrintColor();
-extern s32 fn_800FB8C8(s32 x, s32 y, s16 width, s16 height, s32 color, u32 key);
-extern s32 fn_800FBB34(s32 x, s32 y, s16 width, s16 height, s32 color, u32 key);
+extern s32 GSmsgPrintRight(s32 x, s32 y, s16 width, s16 height, s32 color, u32 key);
+extern s32 GSmsgPrintRect(s32 x, s32 y, s16 width, s16 height, s32 color, u32 key);
 extern void GSmsgDaemon(void);
 extern s32 GSmsgExec();
 extern u32 fn_800FC2A8(void* ptr);
@@ -316,7 +316,7 @@ extern void* GSmsgFontOpen();
 extern s32 GSmsgInit(u16 taskCount, u16 fontCount);
 extern s32 msgTaskDraw(u8* arg0, u32 arg1, u32 arg2, u32 arg3);
 extern void msgDrawRuby(u8* work);
-extern void fn_800FD69C(u8* work, const u8* pixels, s16 width, s16 height, s16 yOffset);
+extern void _msgMakeTexture(u8* work, const u8* pixels, s16 width, s16 height, s16 yOffset);
 extern u16* _msgGetCodeInfo__FP13MSG_TASK_WORKUsPP12tagFONT_INFO(u8* work, u16 code, void** outBank);
 extern s32 _msgGetLength__FPCUs(const void* str);
 extern s32 _msgGetSize__FPCUs(const u16* text);
@@ -1160,7 +1160,7 @@ static inline void msgSetChar(u8* work, u16 code) {
         *(f32*)(work + 0x14) = 2.0f + advance;
     } else {
         glyphWidth = ((struct GlyphEntry*)glyph)->width;
-        fn_800FD69C(work, (u8*)outNode + ((struct FontBank*)outNode)->dataOffset + (((struct GlyphEntry*)glyph)->offset & 0xFFFFFF),
+        _msgMakeTexture(work, (u8*)outNode + ((struct FontBank*)outNode)->dataOffset + (((struct GlyphEntry*)glyph)->offset & 0xFFFFFF),
                     glyphWidth, ((struct GlyphEntry*)glyph)->height, (s8)(((struct GlyphEntry*)glyph)->offset >> 24));
         *(f32*)(work + 0x14) = (f32)glyphWidth * *(f32*)(work + 0x60);
     }
@@ -1255,7 +1255,7 @@ s32 GSmsgPrintf(s32 x, s32 y, u32 color, const char* fmt, ...) {
 /* GSmsgPrintRect's body. Retail inlines it into the three print wrappers
  * below (XD keeps them as calls: GSmsgPrint2 and GSmsgPrintRight call
  * GSmsgPrintRect, trevor403/xd-asm b1087f18 func_FUN_80108464.s and
- * func_FUN_80108494.s). Out of line, fn_800FBB34 copies the work address
+ * func_FUN_80108494.s). Out of line, GSmsgPrintRect copies the work address
  * through r0 (as XD's GSmsgPrintRect does); inlined, it is materialized
  * straight into r31, as in the three wrappers. */
 static inline s32 msgPrintRect(s32 x, s32 y, s16 width, s16 height, s32 color, u32 key) {
@@ -1301,7 +1301,7 @@ s32 GSmsgPrintColor(s32 x, s32 y, s32 color, u32 key) {
 }
 
 /* 0x800FB8C8 | 0x26C */
-s32 fn_800FB8C8(s32 x, s32 y, s16 width, s16 height, s32 color, u32 key) {
+s32 GSmsgPrintRight(s32 x, s32 y, s16 width, s16 height, s32 color, u32 key) {
     x += width - (s16)((u32)GSmsgGetRect(key) >> 16);
     return msgPrintRect(x, y, width, height, color, key);
 }
@@ -1309,7 +1309,7 @@ s32 fn_800FB8C8(s32 x, s32 y, s16 width, s16 height, s32 color, u32 key) {
 #pragma pop
 
 /* 0x800FBB34 | 0x254 */
-s32 fn_800FBB34(s32 x, s32 y, s16 width, s16 height, s32 color, u32 key) {
+s32 GSmsgPrintRect(s32 x, s32 y, s16 width, s16 height, s32 color, u32 key) {
     struct MessageGroup* group;
     void* text;
     u8* work;
@@ -1919,7 +1919,7 @@ void msgDrawRuby(u8* arg0)
                 *(f32 *)(arg0 + 0x14) = 2.0f + scaleX;
             } else {
                 glyphWidth = ((struct GlyphEntry *)fontInfo)->width;
-                fn_800FD69C(arg0,
+                _msgMakeTexture(arg0,
                             (u8 *)fontNode + ((struct FontBank *)fontNode)->dataOffset +
                                 (((struct GlyphEntry *)fontInfo)->offset & 0xFFFFFF),
                             glyphWidth, ((struct GlyphEntry *)fontInfo)->height,
@@ -1948,7 +1948,7 @@ void msgDrawRuby(u8* arg0)
  * rest (add lo,lo,image; stbx v,hi,lo). "* 32" or buffer[...] reorders it.
  * The second loop reuses `row`, so its counter is a split web and the
  * zero is shared (li r3,0; mr r0,r3). */
-void fn_800FD69C(u8* arg0, const u8* arg1, s16 arg2, s16 arg3, s16 arg4)
+void _msgMakeTexture(u8* arg0, const u8* arg1, s16 arg2, s16 arg3, s16 arg4)
 {
     s32 xPos;
     s32 widthRounded;

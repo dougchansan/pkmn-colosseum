@@ -217,11 +217,11 @@ u32 strlen(const char* str) {
     return len;
 }
 
-/* fn_800CAA3C - 0x800CAA3C | size: 0x1C
+/* wcscpy - 0x800CAA3C | size: 0x1C
  * wcscpy - Copy a wide character string from src to dst.
  * MSL_C/MSL_Common/Src/wchar_io.c (CW pattern); CW 1.3.
  */
-u16* fn_800CAA3C(u16* dst, const u16* src) {
+u16* wcscpy(u16* dst, const u16* src) {
     const u16* s = src - 1;
     u16* d = dst - 1;
     u16 c;

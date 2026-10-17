@@ -406,7 +406,7 @@ extern GSDVDWork* lbl_8047B0F4;
 extern u32 lbl_8047B0F8;
 extern GSFilterState lbl_804526E0;
 extern void GXDrawDone(void);
-extern void fn_800B856C(void);
+extern void GXInvalidateVtxCache(void);
 extern u32 sndFXCtrl(u32 voice, u8 control, u8 value);
 extern u32 sndFXKeyOff(u32 voice);
 extern void sndSeqVolume(u8 group, u16 volume, u32 sequence, u8 fade);
@@ -444,21 +444,21 @@ extern void __assert(const char* file, u32 line, const char* condition);
 extern BOOL DVDOpen(const char* path, void* fileInfo);
 extern u32 sndFXStartEx(u16 id, u8 volume, u8 pan, u8 studio);
 extern void soundApplyReverb(u32 reverb);
-extern u32 fn_8015A368(u8 group, u16 id, void* resource, void* params,
+extern u32 sndSeqPlayEx(u8 group, u16 id, void* resource, void* params,
                       u32 flags);
 extern void DCFlushRange(void* address, u32 size);
 extern void DVDInit(void);
 extern BOOL DVDSetAutoFatalMessaging(BOOL enable);
 extern s32 GSgetVersionMajor(void);
 extern s32 GSgetVersionMinor(void);
-extern u8* fn_800A7BCC(void);
+extern u8* DVDGetCurrentDiskID(void);
 extern u32 GSgappCreate(s32 state, u8 priority, u32 parameter,
                        void (*callback)(void));
 extern void winMsgCloseError(u32 wait);
 extern void fn_800056D4(void);
 extern u32 ARQGetChunkSize(void);
-extern void fn_80159ED0(u8* callback, u32 chunkSize);
-extern u8 fn_80159EF0(void* resource, u16 soundId, void* sampleData,
+extern void sndSetSampleDataUploadCallback(u8* callback, u32 chunkSize);
+extern u8 sndPushGroup(void* resource, u16 soundId, void* sampleData,
                      void* resource2, void* resource3);
 extern const f32 lbl_8047D5A0;
 extern const f32 lbl_8047D5A4;
@@ -585,7 +585,7 @@ u8 soundPushWave(u32 slot, u32 stream, const char* path, u32 offset,
     }
     if (stream == 1) {
         sampleData = NULL;
-        fn_80159ED0((u8*)_sndSetSampleDataUploadCallbackFunction,
+        sndSetSampleDataUploadCallback((u8*)_sndSetSampleDataUploadCallbackFunction,
                     ARQGetChunkSize());
         lbl_8047B0BC = GSdvdOpen(path);
         if (lbl_8047B0BC == NULL) {
@@ -599,9 +599,9 @@ u8 soundPushWave(u32 slot, u32 stream, const char* path, u32 offset,
         }
     } else {
         sampleData = (void*)path;
-        fn_80159ED0(NULL, 0);
+        sndSetSampleDataUploadCallback(NULL, 0);
     }
-    if (!fn_80159EF0(resource1, state->soundId, sampleData, resource2,
+    if (!sndPushGroup(resource1, state->soundId, sampleData, resource2,
                      resource3)) {
         if (stream == 1) {
             GSdvdClose((u8*)lbl_8047B0BC);
@@ -683,7 +683,7 @@ u32 _soundSlotStartStream(GSsndEntry* entry, u16 value)
     params.unk18 = 0;
     params.unk1C = 0;
     work->handle =
-        fn_8015A368(entry->unk1, entry->waveId, resource, &params, 0);
+        sndSeqPlayEx(entry->unk1, entry->waveId, resource, &params, 0);
     return 1;
 }
 
@@ -778,7 +778,7 @@ u32 GSdvdInit(u32 workCount)
             lbl_80478C24 = (const u8*)"GC6E";
             break;
         }
-        destination = fn_800A7BCC();
+        destination = DVDGetCurrentDiskID();
         destination[0] = lbl_80478C24[0];
         destination[1] = lbl_80478C24[1];
         destination[2] = lbl_80478C24[2];
@@ -883,7 +883,7 @@ void fn_801684F0(GSDVDWork* work)
         work->started = 0;
         if (work->drawing != 0) {
             GXDrawDone();
-            fn_800B856C();
+            GXInvalidateVtxCache();
             work->drawing = 0;
             lbl_804526E0.drawingCount--;
         }
@@ -911,7 +911,7 @@ void GSfilterSetColor(GSFilter* filter, const u8* color)
         }
     } else if (filter->drawing != 0) {
         GXDrawDone();
-        fn_800B856C();
+        GXInvalidateVtxCache();
         filter->drawing = 0;
         lbl_804526E0.drawingCount--;
     }

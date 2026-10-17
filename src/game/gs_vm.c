@@ -4,7 +4,7 @@
  *
  * Address range: 0x800F10E8 - 0x800F78A4 (fn_800F10E8 .. cms_InitThreadPool), with
  * its data: the .rodata string pool 0x80271068-0x80271300, the opcode table
- * and fn_800F7318's name (.data 0x803155D0-0x80315678), the manager pointer
+ * and _vmThreadCreate's name (.data 0x803155D0-0x80315678), the manager pointer
  * (.sdata 0x80478B00), "\n", 0.0f and the int-to-float bias (.sdata2
  * 0x8047CCB8-0x8047CCC8), the GSVMValue zero initializer (.sbss2
  * 0x8047E710), the native-call registers (.sbss 0x8047AC38) and buffers
@@ -230,7 +230,7 @@
  * stand-ins for the TU's own literals) - see docs/RULE_EXCEPTIONS.md.
  * Retail passes these as literals of this TU's pool; the .text-only
  * pieces carved from the unit (fn_800F10E8, fn_800F13D0, fn_800F16C0,
- * fn_800F7318, cms_UnregisterScript, input.c's cms_InitThreadPool) link to them by
+ * _vmThreadCreate, cms_UnregisterScript, input.c's cms_InitThreadPool) link to them by
  * name. A named const array gives the same code (base-register
  * addressing) and the same pool layout as the literal. */
 const char lbl_80271068[] = "Stack overflow.\n";
@@ -1381,7 +1381,7 @@ GSVMCtx* cms_ScriptCreateThread(u32 scriptId, u32 argc, va_list args)
 
 /* RULE-EXCEPTION(title-path): pool literals given global names - see
  * docs/RULE_EXCEPTIONS.md. The last three strings of the pool are
- * printed by fn_800F7318, cms_UnregisterScript and cms_InitThreadPool, which lie
+ * printed by _vmThreadCreate, cms_UnregisterScript and cms_InitThreadPool, which lie
  * outside the linked range and link to them by name. */
 const char lbl_80271294[] = "[%s] スレッドのさくせいにしっぱい\n";
 const char lbl_802712B8[] = "スクリプトのアンマップに失敗しました:[%d]\n";
@@ -1462,7 +1462,7 @@ s32 floorTerminateScriptThreads(u16 key)
 /* RULE-EXCEPTION(title-path): named stand-in for this TU's function-name
  * string in retail .data; see docs/RULE_EXCEPTIONS.md. */
 extern const char lbl_80315668[];
-u16 fn_800F7318(u32 affinity, u32 script, u32 stackSize, u32 autoStart,
+u16 _vmThreadCreate(u32 affinity, u32 script, u32 stackSize, u32 autoStart,
                 void* done, u32 argc, ...)
 {
     va_list args;

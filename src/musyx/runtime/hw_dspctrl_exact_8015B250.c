@@ -1,6 +1,6 @@
 /**
  * @file hw_dspctrl_exact_8015B250.c
- * @brief MusyX hw_dspctrl.c salBuildCommandList (fn_8015B250),
+ * @brief MusyX hw_dspctrl.c salBuildCommandList (salBuildCommandList),
  *        0x8015B250 - 0x8015D408.
  *
  * Ported from AxioDL/musyx runtime/hw_dspctrl.c (MIT; see the notice in
@@ -95,7 +95,7 @@ extern void DCFlushRange(void* addr, u32 nBytes);
 extern void DCStoreRangeNoSync(void* addr, u32 nBytes);
 extern u32 salSynthSendMessage(DSPvoice* dsp_vptr, u32 mesg);
 extern void salDeactivateVoice(DSPvoice* dsp_vptr);
-extern void fn_8015AD1C(DSPstudioinfo* stp, DSPvoice* dsp_vptr); /* HandleDepopVoice */
+extern void HandleDepopVoice(DSPstudioinfo* stp, DSPvoice* dsp_vptr); /* HandleDepopVoice */
 extern void SortVoices(DSPvoice** voices, s32 l, s32 r);
 extern void DoDepopFade(s32* dspStart, s16* dspDelta, s32* hostSum);
 extern void sal_setup_dspvol(u16* dsp_delta, u16* last_vol, u16 vol);
@@ -127,7 +127,7 @@ extern u32 salCheckVolErrorAndResetDelta(u16* dsp_vol, u16* dsp_delta, u16* last
         dspCmdMaxPtr = dspCmdPtr + 0xC0;                                     \
     }
 
-void fn_8015B250(s16* dest, u32 nsDelay) {
+void salBuildCommandList(s16* dest, u32 nsDelay) {
 #define pbOffsets lbl_80273320
 
     u8 s;
@@ -185,7 +185,7 @@ void fn_8015B250(s16* dest, u32 nsDelay) {
             for (dsp_vptr = stp->voiceRoot; dsp_vptr; dsp_vptr = next_dsp_vptr) {
                 next_dsp_vptr = dsp_vptr->next;
                 if ((dsp_vptr->postBreak != 0) || ((dsp_vptr->changed[0] & 0x20) != 0)) {
-                    fn_8015AD1C(stp, dsp_vptr);
+                    HandleDepopVoice(stp, dsp_vptr);
                     if (dsp_vptr->virtualSampleID != (u32)-1) {
                         salSynthSendMessage(dsp_vptr, 3);
                     }
@@ -197,7 +197,7 @@ void fn_8015B250(s16* dest, u32 nsDelay) {
             }
             dsp_vptr = stp->alienVoiceRoot;
             while (dsp_vptr) {
-                fn_8015AD1C(stp, dsp_vptr);
+                HandleDepopVoice(stp, dsp_vptr);
                 dsp_vptr = dsp_vptr->nextAlien;
             }
             stp->alienVoiceRoot = NULL;
@@ -738,13 +738,13 @@ void fn_8015B250(s16* dest, u32 nsDelay) {
                     }
                     if (cyclesUsed > (__OSBusClock / 400)) {
                         if ((newVoice == 0) && (VoiceDone == 0)) {
-                            fn_8015AD1C(stp, dsp_vptr);
+                            HandleDepopVoice(stp, dsp_vptr);
                         }
                         salDeactivateVoice(dsp_vptr);
                         salSynthSendMessage(dsp_vptr, 1);
                         for (v = v - 1; v > 0; v--) {
                             if (voices[v - 1]->state == 2) {
-                                fn_8015AD1C(stp, voices[v - 1]);
+                                HandleDepopVoice(stp, voices[v - 1]);
                             }
                             salDeactivateVoice(voices[v - 1]);
                             salSynthSendMessage(voices[v - 1], 1);
@@ -754,7 +754,7 @@ void fn_8015B250(s16* dest, u32 nsDelay) {
                                 for (dsp_vptr = dspStudio[st1].voiceRoot; dsp_vptr; dsp_vptr = next_dsp_vptr) {
                                     next_dsp_vptr = dsp_vptr->next;
                                     if (dsp_vptr->state == 2) {
-                                        fn_8015AD1C(&dspStudio[st1], dsp_vptr);
+                                        HandleDepopVoice(&dspStudio[st1], dsp_vptr);
                                     }
                                     salDeactivateVoice(dsp_vptr);
                                     salSynthSendMessage(dsp_vptr, 1);

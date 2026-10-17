@@ -67,7 +67,7 @@ HSD_ClassInfo* fn_80193748(const char* class_name);
 /* hsdNew */
 void* fn_80193828(HSD_ClassInfo* info);
 /* HSD_SListRemove */
-HSD_SList* fn_801A3E64(HSD_SList* list);
+HSD_SList* HSD_SListRemove(HSD_SList* list);
 /* HSD_SListAllocAndPrepend */
 HSD_SList* HSD_SListPrepend(HSD_SList* list, void* data);
 
@@ -800,7 +800,7 @@ void HSD_LObjDeleteCurrent(HSD_LObj* lobj)
                         active_lights[i] = NULL;
                     }
                 }
-                *p = fn_801A3E64(*p);
+                *p = HSD_SListRemove(*p);
                 HSD_LObjUnrefThis(lobj);
                 return;
             }
@@ -817,7 +817,7 @@ static inline void LObjRemoveAll(void)
     nb_active_lights = 0;
     while (current_lights != NULL) {
         HSD_LObjUnrefThis(current_lights->data);
-        current_lights = fn_801A3E64(current_lights);
+        current_lights = HSD_SListRemove(current_lights);
     }
 }
 

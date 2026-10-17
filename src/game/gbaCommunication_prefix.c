@@ -86,8 +86,8 @@ extern void menuDrawRectOutline();
 extern void fn_800FA280();
 extern void fn_800FA444();
 extern void GSmsgPrintColor();
-extern void fn_800FB8C8();
-extern void fn_800FBB34();
+extern void GSmsgPrintRight();
+extern void GSmsgPrintRect();
 
 extern u16* windowGetKeyInfo(void);
 extern void* pokemonDataBiosGetPtr(u32 id);

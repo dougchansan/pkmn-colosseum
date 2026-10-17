@@ -52,7 +52,7 @@ extern void GSthreadSetArgs(u32 task, u32 count, ...);
 extern u8 GSthreadIsRunning(u32 task);
 extern void GSthreadClose(u32 task);
 extern s32 _menuPokemonModelLoadThread(FaceModel* m);
-extern u8 fn_80121ADC(void* pokemon, u32 slot);
+extern u8 pokemonIsJoutaiDataId(void* pokemon, u32 slot);
 
 static inline u8 faceKeyEqual(FaceKey* a, FaceKey* b)
 {
@@ -96,7 +96,7 @@ static inline void faceKeyFromPokemon(FaceKey* k, void* pokemon)
     k->species = species;
     k->u.s.hi = pokemonGetStatus(NULL, species, 0x66, 0);
     if (pokemonGetStatus(pokemon, 0, 0xC2, 0) != 0) {
-        if (fn_80121ADC(pokemon, 0x3E) == 1) {
+        if (pokemonIsJoutaiDataId(pokemon, 0x3E) == 1) {
             k->u.s.lo = 0x87;
         } else {
             k->u.s.lo = 0x25;

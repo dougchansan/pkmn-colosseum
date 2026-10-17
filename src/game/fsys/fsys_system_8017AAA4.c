@@ -39,7 +39,7 @@ extern const char lbl_80273F70[];    /* "gsfsys.toc" */
 
 extern void* memset(void* dst, int value, u32 size);
 extern char* strcpy(char* dst, const char* src);
-extern void* fn_800A7BCC(void); /* DVDGetCurrentDiskID */
+extern void* DVDGetCurrentDiskID(void); /* DVDGetCurrentDiskID */
 extern void* fn_800E27B0(u16 handle);
 extern u16 fn_800E2C04(u32 size, u32 alignment);
 extern s32 fn_80167E10(u32 fileInfo); /* DVDGetCommandBlockStatus wrapper */
@@ -184,7 +184,7 @@ s32 _fsysInitTOC(u32 numSlots, FSYSErrorCallback errorCallback, u32 errorArg0,
     }
 
     GSdvdInit(numSlots);
-    diskID = fn_800A7BCC();
+    diskID = DVDGetCurrentDiskID();
     slot = lbl_8047B1B4;
     for (i = 0; i < lbl_80453FEC.maxSlots; i++, slot++) {
         memset(slot, 0, sizeof(FSYSSlot));

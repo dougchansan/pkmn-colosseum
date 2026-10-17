@@ -162,7 +162,7 @@ typedef struct psGenerator {
 extern void* memset(void* dst, int val, u32 size);
 extern void* fn_801A6928(u32 size);             /* HSD_MemAlloc */
 extern void fn_801A6960(void* p);               /* HSD_Free */
-extern HSD_SList* fn_801A3E64(HSD_SList* list); /* HSD_SListRemove */
+extern HSD_SList* HSD_SListRemove(HSD_SList* list); /* HSD_SListRemove */
 extern f32 HSD_Randf(void);                   /* HSD_Randf */
 
 extern void PSMTXIdentity(Mtx m);
@@ -365,7 +365,7 @@ void psKillAllGenerator(void)
         gen = next;
     }
     while (lbl_8047B180 != NULL) {
-        lbl_8047B180 = fn_801A3E64(lbl_8047B180);
+        lbl_8047B180 = HSD_SListRemove(lbl_8047B180);
     }
 }
 
@@ -941,7 +941,7 @@ void psExecGenerator(u32 mask)
     psGenerator* gen;
 
     while (lbl_8047B180 != NULL) {
-        lbl_8047B180 = fn_801A3E64(lbl_8047B180);
+        lbl_8047B180 = HSD_SListRemove(lbl_8047B180);
     }
 
     gen = lbl_8047B188;

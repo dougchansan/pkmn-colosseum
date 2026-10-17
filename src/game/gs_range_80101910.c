@@ -123,7 +123,7 @@ extern void winSpriteSetDisp(void* node, u32 enable);
 extern void winSpriteRelease(void* head);
 extern void* fn_80109290(void* root);
 extern void winSpriteInit(void);
-extern void fn_801093C8(void);
+extern void menuOffScreenDraw(void);
 extern u8 menuOffScreenFadeSync(u8 param);
 extern void menuOffScreenFadeSet(f32 f1, f32 f2);
 extern u8 menuOffScreenSetPriority(u8 val);

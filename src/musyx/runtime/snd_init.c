@@ -34,16 +34,16 @@ extern u8 lbl_8047AF50;                      /* synthIdleWaitActive */
 
 extern s32 hwInit(u32* frq, u16 numVoices, u16 numStudios, u32 flags);
 extern void hwExit(void);
-extern void fn_80159C48(void);               /* dataInitStack */
+extern void dataInitStack(void);               /* dataInitStack */
 extern void dataInit(u32 smpBase, u32 smpLength);
 extern void dataExit(void);
 extern void seqInit(void);
 extern void synthInit(u32 mixFrq, u32 numVoices);
 extern void synthExit(void);
-extern void fn_8014DDD8(void);               /* streamInit */
+extern void streamInit(void);               /* streamInit */
 extern void vsInit(void);
-extern void fn_8015FE4C(u32 flags);          /* s3dInit */
-extern void fn_8015FE84(void);               /* s3dExit */
+extern void s3dInit(u32 flags);          /* s3dInit */
+extern void s3dExit(void);               /* s3dExit */
 
 static s32 DoInit(u32 mixFrq, u32 aramSize, u32 numVoices, u32 flags)
 {
@@ -51,14 +51,14 @@ static s32 DoInit(u32 mixFrq, u32 aramSize, u32 numVoices, u32 flags)
 
     ret = FALSE;
 
-    fn_80159C48();
+    dataInitStack();
     dataInit(0, aramSize);
     seqInit();
     lbl_8047AF50 = 0;
     synthInit(mixFrq, numVoices);
-    fn_8014DDD8();
+    streamInit();
     vsInit();
-    fn_8015FE4C(flags);
+    s3dInit(flags);
     lbl_8047AF18 = 1;
 
     return ret;
@@ -96,7 +96,7 @@ void sndQuit(void)
 {
     hwExit();
     dataExit();
-    fn_8015FE84();
+    s3dExit();
     synthExit();
     lbl_8047AF18 = 0;
 }

@@ -300,8 +300,8 @@ typedef struct TypeMatchup {
  * game/effect/fade.c, and game/effect/fade_effect.c.
  * ========================================================================= */
 
-/* fn_801C01C8 */ void* fn_801C01C8(void* callback);
-/* fn_801C021C */ void* fn_801C021C(void* callback);
+/* HSD_VISetUserGXDrawDoneCallback */ void* HSD_VISetUserGXDrawDoneCallback(void* callback);
+/* HSD_VISetUserPostRetraceCallback */ void* HSD_VISetUserPostRetraceCallback(void* callback);
 /* fn_801C0270 */ s32  fn_801C0270(void);
 /* fn_801C027C */ void fn_801C027C(void* obj, f32 frame);
 /* fn_801C028C */ void fn_801C028C(void* ctx);                   /* 0xC94 pre-grid state machine */

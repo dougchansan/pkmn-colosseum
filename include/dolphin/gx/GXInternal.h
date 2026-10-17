@@ -70,9 +70,9 @@ extern volatile u16* __cpReg;
 
 extern u32 lbl_80313608[];
 
-void fn_800B91EC(void);
+void __GXSetDirtyState(void);
 void __GXSendFlushPrim(void);
-void fn_800BD640(f32 left, f32 top, f32 width, f32 height, f32 nearz,
+void GXSetViewportJitter(f32 left, f32 top, f32 width, f32 height, f32 nearz,
                  f32 farz, u32 field);
 void __GXSetMatrixIndex(s32 value);
 void fn_800BE164(u32* hi, u32* lo);

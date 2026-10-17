@@ -4,7 +4,7 @@
  *        0x8015AD1C - 0x8015B250.
  *
  * AddDpop is the reference's static helper; retail expands it nine times
- * in HandleDepopVoice (fn_8015AD1C). salBuildCommandList (0x8015B250)
+ * in HandleDepopVoice (HandleDepopVoice). salBuildCommandList (0x8015B250)
  * follows in hw_dspctrl_exact_8015B250.c.
  */
 #include "musyx/runtime/hw_dspctrl.h"
@@ -16,7 +16,7 @@ static inline void AddDpop(s32* sum, s16 delta) {
                : (*sum < -0x7FFFFF ? -0x7FFFFF : *sum);
 }
 
-void fn_8015AD1C(DSPstudioinfo* stp, DSPvoice* dsp_vptr) {
+void HandleDepopVoice(DSPstudioinfo* stp, DSPvoice* dsp_vptr) {
     _PB* pb;
 
     dsp_vptr->postBreak = 0;

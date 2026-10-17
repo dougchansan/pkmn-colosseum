@@ -1892,7 +1892,7 @@ extern void* heroBiosGetNamePtr(u16);
 extern void* GSmsgGetGSchar(s32);
 extern void msgctrlSetValue();
 extern void GSmsgPrintColor();
-extern void fn_800FBB34();
+extern void GSmsgPrintRect();
 extern void fn_800FE6D0(s32, s32);
 extern void spriteSetEnv(void);
 extern void fn_801040F0();
@@ -2247,7 +2247,7 @@ void fn_800615F4(void* context, UICmdMsg* msg, s32 player, s32 kind)
         if (kind == 0) {
             msgctrlSetValue(0x34, toolentryTaisenGetBattlePlayerID(player) + 1);
             if (player == 0) {
-                fn_800FBB34(0, 0, msg->field54, msg->field56,
+                GSmsgPrintRect(0, 0, msg->field54, msg->field56,
                     0xFFFFFF00 | *((u8*)context + 0x8B), 0x30E9);
             } else {
                 GSmsgPrintColor(0, 0,
@@ -2310,7 +2310,7 @@ void fn_800617E0(void* context, UICmdMsg* msg, s32 player, s32 kind)
     }
     if (kind == 0) {
         if (player == 0) {
-            fn_800FBB34(0, 0, msg->field54, msg->field56,
+            GSmsgPrintRect(0, 0, msg->field54, msg->field56,
                 0xFFFFFF00 | *((u8*)context + 0x8B), 0x30E2);
         } else {
             GSmsgPrintColor(0, 0,
@@ -2319,9 +2319,9 @@ void fn_800617E0(void* context, UICmdMsg* msg, s32 player, s32 kind)
     } else {
         msgctrlSetValue(0x34, toolentryTaisenGetBattlePlayerID(player) + 1);
         if (player < 2) {
-            fn_800FBB34(0, 0, msg->field54, msg->field56,
+            GSmsgPrintRect(0, 0, msg->field54, msg->field56,
                 0xFFFFFF00 | *((u8*)context + 0x8B), 0x30E9);
-            fn_800FBB34(0, 0x16, msg->field54, msg->field56,
+            GSmsgPrintRect(0, 0x16, msg->field54, msg->field56,
                 0xFFFFFF00 | *((u8*)context + 0x8B), 0x30E8);
         } else {
             GSmsgPrintColor(0, 0,

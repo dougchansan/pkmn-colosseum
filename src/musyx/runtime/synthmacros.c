@@ -297,7 +297,7 @@ extern void synthForceLowPrecisionUpdate(SYNTH_VOICE* sv);
 extern void synthStartSynthJobHandling(SYNTH_VOICE* sv);
 extern void synthFXCloneMidiSetup(SYNTH_VOICE* dst, SYNTH_VOICE* src);
 extern void fn_80157360(SYNTH_VOICE* sv);       /* vidRemoveVoiceReferences */
-extern u32 fn_8016246C(u32 voice);              /* hwIsActive */
+extern u32 hwIsActive(u32 voice);              /* hwIsActive */
 extern void fn_80162494(u32 voice, u32 val);    /* hwSetPriority */
 extern u16 fn_80162070(void);                   /* sndRand -- returns u16, confirmed by target's
                                                   * zero-extend (clrlwi ...,16) of the result
@@ -305,20 +305,20 @@ extern u16 fn_80162070(void);                   /* sndRand -- returns u16, confi
 extern void fn_801621BC(u32* ms);                /* sndConvertMs */
 extern u32 fn_80162214(u32 time);                /* sndConvert2Ms: time / 256 */
 extern void sndConvertTicks(u32* ticks, SYNTH_VOICE* sv);
-extern void fn_801603C0(u32 ctrl, u32 midi, u32 midiSet, u32 value); /* inpSetMidiCtrl */
+extern void inpSetMidiCtrl(u32 ctrl, u32 midi, u32 midiSet, u32 value); /* inpSetMidiCtrl */
 extern void synthInitPortamento(SYNTH_VOICE* svoice);
 extern u32 macStart(u16 macid, u8 priority, u8 maxVoices, u16 allocId, u8 key, u8 vol, u8 panning,
                         u8 midi, u8 midiSet, u8 section, u16 step, u16 trackid, u8 new_vid,
                         u8 vGroup, u8 studio, u32 itd); /* macStart, defined later in this file */
-extern u16 fn_8014D740(u8 midiSet, u8 midi);              /* seqGetMIDIPriority */
+extern u16 seqGetMIDIPriority(u8 midiSet, u8 midi);              /* seqGetMIDIPriority */
 extern u32 fn_80157A64(u8 priority, u8 maxVoices, u16 allocId, u8 isFX); /* voiceAllocate */
 extern void inpResetMidiCtrl(u8 voice, u32 arg2, u32 arg3);
-extern void fn_80160ED4(u8 voice, u32 val); /* inpResetChannelDefaults */
+extern void inpResetChannelDefaults(u8 voice, u32 val); /* inpResetChannelDefaults */
 extern u32 fn_801576C4(SYNTH_VOICE* svoice, u8 new_vid); /* vidMakeNew */
 extern void hwBreak(u32 voice); /* src/musyx/musyx_range_80157280.c, real symbol */
 
 extern void inpAddCtrl(CTRL_DEST* dst, u8 lowByte, s32 value, u8 repeat, u32 hasUpperByte);
-extern void fn_8016039C(u8 midi, u8 midiSet, u32 dirtyFlag); /* inpSetGlobalMIDIDirtyFlag */
+extern void inpSetGlobalMIDIDirtyFlag(u8 midi, u8 midiSet, u32 dirtyFlag); /* inpSetGlobalMIDIDirtyFlag */
 extern CTRL_DEST lbl_80435B74[8][4]; /* inpAuxA, per-studio stride 0x90 */
 extern CTRL_DEST lbl_804356F4[8][4]; /* inpAuxB, per-studio stride 0x90 */
 
@@ -418,7 +418,7 @@ static inline void SelectSourceCommon(SYNTH_VOICE* svoice, CTRL_DEST* dest, MSTE
     inpAddCtrl(dest, (u8)(cstep->para[0] >> 8), scale, comb,
                (u8)(cstep->para[1] >> 8) != 0);
     if ((dirtyFlag & 0x80000000u) != 0) {
-        fn_8016039C(svoice->midi, svoice->midiSet, dirtyFlag);
+        inpSetGlobalMIDIDirtyFlag(svoice->midi, svoice->midiSet, dirtyFlag);
     } else {
         svoice->midiDirtyFlags |= dirtyFlag;
     }
@@ -490,7 +490,7 @@ static inline u32 HasHWEventTrap(SYNTH_VOICE* svoice) {
 }
 
 static inline void CheckHWEventTrap(SYNTH_VOICE* svoice) {
-    if ((svoice->cFlags & 0x20) == 0 && !fn_8016246C(svoice->id & 0xFF)) {
+    if ((svoice->cFlags & 0x20) == 0 && !hwIsActive(svoice->id & 0xFF)) {
         ExecuteTrap(svoice, 1);
     }
 }
@@ -603,10 +603,10 @@ static inline void DoPanningSetup(SYNTH_VOICE* svoice, MSTEP* cstep, u8 pi) {
 /* mcmdPlayMacro */
 
 extern void* memset(void* dst, int val, u32 size);
-extern void fn_80161A9C(void* svoice); /* inpInit */
+extern void inpInit(void* svoice); /* inpInit */
 extern u8 inpGetMidiLastNote(u8 midi, u8 midiSet);
 extern void voiceSetLastStarted(SYNTH_VOICE* svoice);
-extern u8* fn_80160EA0(u8 midi, u8 midiSet); /* inpGetChannelDefaults; only pbRange (offset 0) used here */
+extern u8* inpGetChannelDefaults(u8 midi, u8 midiSet); /* inpGetChannelDefaults; only pbRange (offset 0) used here */
 extern u32 inpGetModulation(SYNTH_VOICE* sv);
 extern void hwSetSRCType(u32 index, u8 value);
 extern void hwSetPolyPhaseFilter(u32 index, u8 value);
@@ -835,7 +835,7 @@ u32 mcmdWait(SYNTH_VOICE* svoice, MSTEP* cstep) {
         }
 
         if (((u8)(cstep->para[0] >> 0x18) & 1)) {
-            if (!(svoice->cFlags & 0x20) && !fn_8016246C(svoice->id & 0xFF)) {
+            if (!(svoice->cFlags & 0x20) && !hwIsActive(svoice->id & 0xFF)) {
                 return 0;
             }
             svoice->cFlags |= 0x40000;
@@ -927,7 +927,7 @@ skip:
     if (((u8)(cstep->para[0] >> 8) & 1) != 0 && (svoice->cFlags & 0x10000000008ULL) == 0x8ULL) {
         svoice->loop = 0;
     } else if (((u8)(cstep->para[0] >> 0x18) & 1) && (svoice->cFlags & 0x20) == 0 &&
-               !fn_8016246C(svoice->id & 0xFF)) {
+               !hwIsActive(svoice->id & 0xFF)) {
         svoice->loop = 0;
     } else {
         svoice->curAddr = svoice->addr + ((u16)cstep->para[1]);
@@ -1440,13 +1440,13 @@ void mcmdPortamento(SYNTH_VOICE* svoice, MSTEP* cstep) {
     switch ((u8)(cstep->para[0] >> 8)) {
     case 0:
         if (svoice->midi != 0xFF) {
-            fn_801603C0(0x41, svoice->midi, svoice->midiSet, 0);
+            inpSetMidiCtrl(0x41, svoice->midi, svoice->midiSet, 0);
         }
         svoice->cFlags &= ~0x400ULL;
         return;
     case 1:
         if (svoice->midi != 0xFF) {
-            fn_801603C0(0x41, svoice->midi, svoice->midiSet, 0x7f);
+            inpSetMidiCtrl(0x41, svoice->midi, svoice->midiSet, 0x7f);
         }
     init_port:
         if (!(svoice->cFlags & 0x400)) {
@@ -1645,7 +1645,7 @@ void macHandleActive(SYNTH_VOICE* svoice) { /* macHandleActive */
         svoice->keyGroup = 0;
         svoice->vibModAddScale = 0;
         svoice->treScale = 0;
-        fn_80161A9C(svoice);
+        inpInit(svoice);
         if ((lastNote = inpGetMidiLastNote(svoice->midi, svoice->midiSet)) != 0xFF) {
             svoice->lastNote = lastNote;
         } else {
@@ -1664,7 +1664,7 @@ void macHandleActive(SYNTH_VOICE* svoice) { /* macHandleActive */
         } else {
             svoice->portLastCtrlState = 0;
         }
-        channelDefaults = fn_80160EA0(svoice->midi, svoice->midiSet);
+        channelDefaults = inpGetChannelDefaults(svoice->midi, svoice->midiSet);
         svoice->pbLowerKeyRange = *channelDefaults;
         svoice->pbUpperKeyRange = *channelDefaults;
         svoice->revVolScale = 128;
@@ -2158,7 +2158,7 @@ u32 macStart(u16 macid, u8 priority, u8 maxVoices, u16 allocId, u8 key, u8 vol, 
     u16 seqPrio;
 
     if ((addr = (MSTEP*)dataGetMacro(macid)) != 0) {
-        if (!(key & 0x80) && (seqPrio = fn_8014D740(midiSet, midi)) != 0xFFFF) {
+        if (!(key & 0x80) && (seqPrio = seqGetMIDIPriority(midiSet, midi)) != 0xFFFF) {
             priority = (u8)seqPrio;
         }
 
@@ -2168,7 +2168,7 @@ u32 macStart(u16 macid, u8 priority, u8 maxVoices, u16 allocId, u8 key, u8 vol, 
             macMakeInactive(svoice, 2);
             svoice->cFlags = (svoice->cFlags & 0x10) | 2;
 
-            if (fn_8016246C(voice)) {
+            if (hwIsActive(voice)) {
                 svoice->cFlags |= 1;
             }
 
@@ -2178,7 +2178,7 @@ u32 macStart(u16 macid, u8 priority, u8 maxVoices, u16 allocId, u8 key, u8 vol, 
                 key &= 0x7f;
                 svoice->fxFlag = 1;
                 inpResetMidiCtrl((u8)voice, 0xff, 1);
-                fn_80160ED4((u8)voice, 0xff);
+                inpResetChannelDefaults((u8)voice, 0xff);
                 svoice->setup_midi = (u8)voice;
                 svoice->setup_midiSet = 0xff;
                 svoice->setup_section = 0;
@@ -2218,7 +2218,7 @@ u32 macStart(u16 macid, u8 priority, u8 maxVoices, u16 allocId, u8 key, u8 vol, 
                 return vid;
             }
 
-            if (fn_8016246C(voice)) {
+            if (hwIsActive(voice)) {
                 hwBreak(voice);
             }
 

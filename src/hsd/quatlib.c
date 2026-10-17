@@ -8,7 +8,7 @@
  * longer keeps 2t in a temporary.
  *
  * Only the slerp (fn_801AD7CC, Melee HSD_QuatLib_8037EF28) and EulerToQuat
- * (fn_801ADAAC) are referenced by the game; the linker strips the rest.
+ * (EulerToQuat) are referenced by the game; the linker strips the rest.
  * Under deferred inlining MWCC emits functions in reverse source order, so
  * EulerToQuat precedes the slerp here and the unreferenced helpers follow
  * it: they are generated first, and the constants they create first
@@ -27,7 +27,7 @@ typedef struct Quaternion {
 } Quaternion;
 
 /* EulerToQuat */
-s32 fn_801ADAAC(Vec3* euler, Quaternion* q)
+s32 EulerToQuat(Vec3* euler, Quaternion* q)
 {
     f32 cx;
     f32 cy;

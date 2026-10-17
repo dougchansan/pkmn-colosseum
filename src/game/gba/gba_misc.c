@@ -1478,7 +1478,7 @@ void pokeconvPokemonToGBA(void* src, void* dst_) {
     extern u16 pokemonBiosGetPokemonDataId(void* pokemon);
     extern s16 pokemonGetJoutaiStack(void* pokemon, s32 kind);
     extern s8 pokemonGetJoutaiKaisuu(void* pokemon, s32 kind);
-    extern u8 fn_80121ADC(void* pokemon, s32 kind);
+    extern u8 pokemonIsJoutaiDataId(void* pokemon, s32 kind);
     extern u8 pokemonCheckValid(void* pokemon);
     extern u8 gamedataAttestBiosGetLangareaId(void* attest);
     extern u8 gamedataAttestBiosGetVerId(void* attest);
@@ -1614,17 +1614,17 @@ void pokeconvPokemonToGBA(void* src, void* dst_) {
     misc.ribbons.eventGet = pokemonBiosGetEventGetFlag(src);
 
     status = 0;
-    if (fn_80121ADC(src, 4) != 0) {
+    if (pokemonIsJoutaiDataId(src, 4) != 0) {
         status = (pokemonGetJoutaiStack(src, 4) << 8) | 0x80;
-    } else if (fn_80121ADC(src, 5) != 0) {
+    } else if (pokemonIsJoutaiDataId(src, 5) != 0) {
         status |= 0x40;
-    } else if (fn_80121ADC(src, 7) != 0) {
+    } else if (pokemonIsJoutaiDataId(src, 7) != 0) {
         status |= 0x20;
-    } else if (fn_80121ADC(src, 6) != 0) {
+    } else if (pokemonIsJoutaiDataId(src, 6) != 0) {
         status |= 0x10;
-    } else if (fn_80121ADC(src, 3) != 0) {
+    } else if (pokemonIsJoutaiDataId(src, 3) != 0) {
         status |= 0x8;
-    } else if (fn_80121ADC(src, 8) != 0) {
+    } else if (pokemonIsJoutaiDataId(src, 8) != 0) {
         status = (s16)pokemonGetJoutaiKaisuu(src, 8);
     }
     {
@@ -1941,20 +1941,20 @@ void pokeconvPokemonFromGBA(void* gc, GbaPokemon* src) {
 u16 gbaPokemonConditonFromGC(void* pokemon) {
     extern s16 pokemonGetJoutaiStack(void* pokemon, s32 kind);
     extern s8 pokemonGetJoutaiKaisuu(void* pokemon, s32 kind);
-    extern u8 fn_80121ADC(void* pokemon, s32 kind);
+    extern u8 pokemonIsJoutaiDataId(void* pokemon, s32 kind);
     u16 status = 0;
 
-    if (fn_80121ADC(pokemon, 4) != 0) {
+    if (pokemonIsJoutaiDataId(pokemon, 4) != 0) {
         status = (pokemonGetJoutaiStack(pokemon, 4) << 8) | 0x80;
-    } else if (fn_80121ADC(pokemon, 5) != 0) {
+    } else if (pokemonIsJoutaiDataId(pokemon, 5) != 0) {
         status |= 0x40;
-    } else if (fn_80121ADC(pokemon, 7) != 0) {
+    } else if (pokemonIsJoutaiDataId(pokemon, 7) != 0) {
         status |= 0x20;
-    } else if (fn_80121ADC(pokemon, 6) != 0) {
+    } else if (pokemonIsJoutaiDataId(pokemon, 6) != 0) {
         status |= 0x10;
-    } else if (fn_80121ADC(pokemon, 3) != 0) {
+    } else if (pokemonIsJoutaiDataId(pokemon, 3) != 0) {
         status |= 0x08;
-    } else if (fn_80121ADC(pokemon, 8) != 0) {
+    } else if (pokemonIsJoutaiDataId(pokemon, 8) != 0) {
         status = (s16)pokemonGetJoutaiKaisuu(pokemon, 8);
     }
     return status;

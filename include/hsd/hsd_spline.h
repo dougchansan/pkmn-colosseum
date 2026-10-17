@@ -16,10 +16,10 @@ struct HSD_Spline {
     /* 0x14 */ f32 (*segPoly)[5];
 };
 
-f32 fn_801B2560(f32 fterm, f32 time, f32 p0, f32 p1, f32 d0,
+f32 splGetHelmite(f32 fterm, f32 time, f32 p0, f32 p1, f32 d0,
                 f32 d1);                                   /* splGetHelmite */
-void fn_801B2038(Vec3* p, HSD_Spline* spline, f32 u);    /* splGetSplinePoint */
-f32 fn_801B18D8(HSD_Spline* spline, f32 u); /* splArcLengthGetParameter */
+void splGetSplinePoint(Vec3* p, HSD_Spline* spline, f32 u);    /* splGetSplinePoint */
+f32 splArcLengthGetParameter(HSD_Spline* spline, f32 u); /* splArcLengthGetParameter */
 void splArcLengthPoint(Vec3* p, HSD_Spline* spline, f32 u);
 
 #endif /* HSD_SPLINE_H */

@@ -811,7 +811,7 @@ void reliveCeremonyAll(u32 r3)
     extern u16 pokemonBiosGetPokemonWazaDataId();
     extern u32 pokemonBiosGetNicknamePtr();
     extern int pokemonSetDp();
-    extern u8 fn_80121ADC();
+    extern u8 pokemonIsJoutaiDataId();
     extern int pokemonInitPersistentJoutai();
     extern int pokemonEvolutionAll();
     extern u32 pokemonEvolutionCheck();
@@ -846,7 +846,7 @@ void reliveCeremonyAll(u32 r3)
     pokemonGetStatus(uVar1,0,0x6e,0);
     uVar2 = pokemonBiosGetDarkpokemonDataId(uVar1);
     darkPokemonSetFlag14(uVar2,1);
-    uVar8 = fn_80121ADC(uVar1,0x3e);
+    uVar8 = pokemonIsJoutaiDataId(uVar1,0x3e);
     if (uVar8 != 0) {
       pokemonInitPersistentJoutai(uVar1,0x3e);
     }

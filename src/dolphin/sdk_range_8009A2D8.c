@@ -270,7 +270,7 @@ static OSAllocCell* DLExtract(OSAllocCell* list, OSAllocCell* cell) {
     return list;
 }
 
-void* fn_8009A9D8(s32 heap, u32 size) {
+void* OSAllocFromHeap(s32 heap, u32 size) {
     OSHeapDesc* hd;
     OSAllocCell* cell;
     OSAllocCell* newCell;
@@ -312,7 +312,7 @@ void* fn_8009A9D8(s32 heap, u32 size) {
     return (u8*)cell + 0x20;
 }
 
-void fn_8009AAD4(u32 idx, void* ptr) {
+void OSFreeToHeap(u32 idx, void* ptr) {
     OSHeapDesc* hd = &lbl_8047A6E8[idx];
     OSAllocCell* cell = (OSAllocCell*)((u8*)ptr - 0x20);
 
@@ -320,14 +320,14 @@ void fn_8009AAD4(u32 idx, void* ptr) {
     hd->free = DLInsert(hd->free, cell);
 }
 
-u32 fn_8009AB50(u32 xfb) {
+u32 OSSetCurrentHeap(u32 xfb) {
     u32 previous = lbl_80478980;
 
     lbl_80478980 = xfb;
     return previous;
 }
 
-void* fn_8009AB60(void* start, void* end, s32 count) {
+void* OSInitAlloc(void* start, void* end, s32 count) {
     u32 arraySize;
     s32 i;
     OSHeapDesc* hd;
@@ -351,7 +351,7 @@ void* fn_8009AB60(void* start, void* end, s32 count) {
 #endif
 
 #if defined(SDK_EXACT_8009ABD0)
-s32 fn_8009ABD0(u32 start, u32 end) {
+s32 OSCreateHeap(u32 start, u32 end) {
     s32 i;
     OSHeapDesc* arr = lbl_8047A6E8;
     s32 count;
@@ -377,7 +377,7 @@ s32 fn_8009ABD0(u32 start, u32 end) {
 #endif
 
 #if defined(SDK_8009AC3C_SUFFIX_ACTIVE)
-void fn_8009AC3C(u32 xfb) {
+void OSDestroyHeap(u32 xfb) {
     lbl_8047A6E8[xfb].size = -1;
 }
 #endif
@@ -395,7 +395,7 @@ void fn_8009AC3C(u32 xfb) {
         return -1;                                           \
     }
 
-s32 fn_8009AC50(s32 heap)
+s32 OSCheckHeap(s32 heap)
 {
     OSHeapDesc* hd;
     OSAllocCell* cell;

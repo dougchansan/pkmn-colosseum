@@ -55,7 +55,7 @@ extern u8 itemFieldUseForbidden[];
 extern u8 itemFieldUseMeaningless[];
 extern u8 itemFieldUseNotNow[];
 extern u8 fn_80142B24[];
-extern u8 fn_801485FC[];
+extern u8 HandleEvent[];
 extern u8 itemParamConvertOrigFormat[];
 extern u8 macHandleActive[];
 
@@ -4427,26 +4427,26 @@ u8 lbl_80368630[1024] = {
 
 #if defined(DATA_80363CA8_SEQ_TABLE)
 void* jumptable_80368A30[20] = {
-    (void*)((u8*)fn_801485FC + 0x4AC),
-    (void*)((u8*)fn_801485FC + 0x4DC),
-    (void*)((u8*)fn_801485FC + 0x500),
-    (void*)((u8*)fn_801485FC + 0x5D8),
-    (void*)((u8*)fn_801485FC + 0x5D8),
-    (void*)((u8*)fn_801485FC + 0x5D8),
-    (void*)((u8*)fn_801485FC + 0x5D8),
-    (void*)((u8*)fn_801485FC + 0x5D8),
-    (void*)((u8*)fn_801485FC + 0x5D8),
-    (void*)((u8*)fn_801485FC + 0x5D8),
-    (void*)((u8*)fn_801485FC + 0x5D8),
-    (void*)((u8*)fn_801485FC + 0x5D8),
-    (void*)((u8*)fn_801485FC + 0x5D8),
-    (void*)((u8*)fn_801485FC + 0x5D8),
-    (void*)((u8*)fn_801485FC + 0x5D8),
-    (void*)((u8*)fn_801485FC + 0x5D8),
-    (void*)((u8*)fn_801485FC + 0x5D8),
-    (void*)((u8*)fn_801485FC + 0x528),
-    (void*)((u8*)fn_801485FC + 0x5D8),
-    (void*)((u8*)fn_801485FC + 0x540),
+    (void*)((u8*)HandleEvent + 0x4AC),
+    (void*)((u8*)HandleEvent + 0x4DC),
+    (void*)((u8*)HandleEvent + 0x500),
+    (void*)((u8*)HandleEvent + 0x5D8),
+    (void*)((u8*)HandleEvent + 0x5D8),
+    (void*)((u8*)HandleEvent + 0x5D8),
+    (void*)((u8*)HandleEvent + 0x5D8),
+    (void*)((u8*)HandleEvent + 0x5D8),
+    (void*)((u8*)HandleEvent + 0x5D8),
+    (void*)((u8*)HandleEvent + 0x5D8),
+    (void*)((u8*)HandleEvent + 0x5D8),
+    (void*)((u8*)HandleEvent + 0x5D8),
+    (void*)((u8*)HandleEvent + 0x5D8),
+    (void*)((u8*)HandleEvent + 0x5D8),
+    (void*)((u8*)HandleEvent + 0x5D8),
+    (void*)((u8*)HandleEvent + 0x5D8),
+    (void*)((u8*)HandleEvent + 0x5D8),
+    (void*)((u8*)HandleEvent + 0x528),
+    (void*)((u8*)HandleEvent + 0x5D8),
+    (void*)((u8*)HandleEvent + 0x540),
 };
 #endif
 

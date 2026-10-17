@@ -45,7 +45,7 @@ extern GSRenderColor lbl_80270350;
 extern void* HSD_FogLoadDesc(void* desc);
 extern void HSD_FogSet(u32 fog);
 extern void fn_8016EA88(void);
-extern void fn_8016EB30(void);
+extern void psSetFog(void);
 extern void* gfxGetCameraMatrix(u32 index);
 extern void GSvecTransform(f32* out, GSMtx34 m, const f32* in);
 extern void GXProject(f32 x, f32 y, f32 z, GSMtx34 mtx, const f32* pm,
@@ -57,7 +57,7 @@ extern void fn_801BF8A0(s32 value);
 extern void fn_801E16F0(void);
 extern void HSD_VIFinishDrawXFB(void);
 extern void GStextureConvertFromHW(void* texture, s32 mode);
-extern void fn_800B8E74(void);
+extern void GXPixModeSync(void);
 extern void GXInvalidateTexAll(void);
 extern u32 lbl_804001F0[]; /* frame statistics block */
 extern u8 lbl_8047AA90;    /* profiling enabled */
@@ -115,7 +115,7 @@ void gfxSetFog(void* arg1) {
         return;
     }
     lbl_8047AA8C = (u32)HSD_FogLoadDesc(arg1);
-    fn_8016EB30();
+    psSetFog();
     color.r = *(u8*)((u8*)arg1 + 0x10) / 255.0f;
     color.g = *(u8*)((u8*)arg1 + 0x11) / 255.0f;
     color.b = *(u8*)((u8*)arg1 + 0x12) / 255.0f;
@@ -254,7 +254,7 @@ void fn_800D30AC(void)
     }
 }
 
-void fn_800D30F0(u32 flag)
+void GSgfxSwapBuffers(u32 flag)
 {
     void* renderTarget = lbl_8047AA80->renderTarget;
 
@@ -275,7 +275,7 @@ void fn_800D30F0(u32 flag)
     lbl_8047AA80->progressiveFlag = 1;
 
     if ((u8)flag != 0) {
-        fn_800B8E74();
+        GXPixModeSync();
         if (lbl_8047AA80->renderTarget != NULL) {
             GXInvalidateTexAll();
         }
@@ -326,7 +326,7 @@ void GSgfxRenderEnd(void)
             }
             lbl_8047AA80->progressiveFlag = 1;
             if (flag != 0) {
-                fn_800B8E74();
+                GXPixModeSync();
                 if (lbl_8047AA80->renderTarget != NULL) {
                     GXInvalidateTexAll();
                 }
@@ -407,7 +407,7 @@ void GSgfxRenderLayer(void* arg0, u8 arg1) {
                 }
                 ((u8*)lbl_8047AA80)[0x49D] = 1;
                 if (r30 != 0) {
-                    fn_800B8E74();
+                    GXPixModeSync();
                     if (*(u32*)((u8*)lbl_8047AA80 + 0xC) != 0) {
                         GXInvalidateTexAll();
                     }

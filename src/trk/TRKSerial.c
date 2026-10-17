@@ -8,7 +8,7 @@
  */
 
 extern void MWTRACE(s32 level, const char* fmt, ...);
-extern void fn_800BE464(void* event, s32 type);
+extern void TRKConstructEvent(void* event, s32 type);
 extern s32  fn_800BE47C(void* event);
 extern s32  fn_800BF1FC(void);  /* TRKProcessInput - returns buffer index or -1 */
 extern void* TRKGetBuffer(s32 index);
@@ -65,7 +65,7 @@ void TRKGetInput(void) {
 
         TRKGetBuffer(bufIdx);
 
-        fn_800BE464((void*)eventBuf, 2); /* construct message event */
+        TRKConstructEvent((void*)eventBuf, 2); /* construct message event */
 
         /* Store buffer index in event at offset 0x08 */
         ((s32*)eventBuf)[2] = bufIdx;
@@ -93,7 +93,7 @@ void TRKProcessInput(s32 bufIdx) {
     extern s32 TRKPostEvent(void* event);
     u8 eventBuf[0x10];
 
-    fn_800BE464((void*)eventBuf, 2);
+    TRKConstructEvent((void*)eventBuf, 2);
     ((s32*)lbl_803FE7B8)[0] = -1;
     *(s32*)(eventBuf + 0x8) = bufIdx;
     TRKPostEvent((void*)eventBuf);

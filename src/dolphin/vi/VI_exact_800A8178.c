@@ -33,7 +33,7 @@ void ShowMessage(void)
     extern const char* lbl_804789E4;
     extern const char* lbl_8026F5F8[6];
     extern u32 VIGetTvFormat(void);
-    extern u16 fn_8009D820(void);
+    extern u16 OSGetFontEncode(void);
     extern u8 OSGetLanguage(void);
     extern void fn_8009CD38(GXColor foreground, GXColor background,
                             const char* message);
@@ -42,7 +42,7 @@ void ShowMessage(void)
     const char* message;
 
     if (VIGetTvFormat() == 0) {
-        if (fn_8009D820() == 1) {
+        if (OSGetFontEncode() == 1) {
             message = lbl_804789E0;
         } else {
             message = lbl_804789E4;

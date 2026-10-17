@@ -19,7 +19,7 @@ extern void GXSetNumChans(u8 num);
 extern void GXSetChanCtrl(u32 chan, u8 enable, u8 ambSrc, u8 matSrc, u8 lightMask, u8 diffFn, u8 attnFn);
 extern void fn_800B884C(u8 num);
 extern void fn_800BC8C8(u8 num);
-extern void fn_800BBC0C(u8 num);
+extern void GXSetNumIndStages(u8 num);
 extern void GXSetIndTexOrder(u32 stage, u8 coord, u8 map);
 extern void GXSetIndTexCoordScale(u32 stage, u8 scaleS, u8 scaleT);
 extern void GXSetIndTexMtx(u32 id, f32 (*mtx)[3], u8 scale);
@@ -36,8 +36,8 @@ extern void fn_800BBCE0(u32 stage, u8 indStage, u16 sizeS, u16 sizeT, u16 spacin
 extern void fn_800BBE8C(u32 stage, u8 indStage, u8 mtxSel);
 extern void fn_800BBF98(u32 stage, u8 indStage, u8 mtxSel);
 extern void fn_800BBFDC(u32 stage);
-extern void fn_800BBC34(u32 stage);
-extern void fn_800BC3E0(u32 id, GXColor color);
+extern void GXSetTevDirect(u32 stage);
+extern void GXSetTevKColor(u32 id, GXColor color);
 extern void GXSetTevSwapModeTable(u32 table, u32 r, u32 g, u32 b, u32 a);
 
 /*
@@ -85,7 +85,7 @@ void _gfxFlushTevState(void) {
         alphaIn = lbl_8047AA80->tev.alphaIn;
         indEnable = lbl_8047AA80->tev.indEnable;
         ind = lbl_8047AA80->tev.ind;
-        fn_800BBC0C(numInd);
+        GXSetNumIndStages(numInd);
         if (numInd != 0) {
             GSIndOrder* indOrder = lbl_8047AA80->tev.indOrder;
             GSIndMtx* indMtx = lbl_8047AA80->tev.indMtx;
@@ -131,12 +131,12 @@ void _gfxFlushTevState(void) {
                     break;
                 }
             } else {
-                fn_800BBC34(i);
+                GXSetTevDirect(i);
             }
         }
 
         for (i = 0; i < 4; i++) {
-            fn_800BC3E0(i, lbl_8047AA80->tev.kcolor[i]);
+            GXSetTevKColor(i, lbl_8047AA80->tev.kcolor[i]);
         }
         GXSetTevSwapModeTable(0, 0, 1, 2, 3);
         lbl_804001F0.tevUpdates++;

@@ -475,7 +475,7 @@ s32 fightTrainerGetFightPokemonToTemotiBanme(void* context, void* target) {
 void fightTrainerBackFightPokemonToTemotiPokemon(void* context, u8 flag) {
     extern void pokemonBiosCopy(void* ptr, void* pokemon);
     extern void fn_8012190C(void* ptr, u32 field, u32 val);
-    extern u8 fn_80121ADC(void* ptr, u32 field);
+    extern u8 pokemonIsJoutaiDataId(void* ptr, u32 field);
     extern u16 pokemonGetSoubiItemDataId(void* pokemon);
     extern u8 fightPokemonCheckValid(void* ptr);
     extern void* fightTrainerGetStatus(void* ctx, u32 slot, u32 field, u16 idx);
@@ -498,7 +498,7 @@ void fightTrainerBackFightPokemonToTemotiPokemon(void* context, u8 flag) {
                 speciesId = pokemonGetSoubiItemDataId(pokemon);
                 if ((moveData = pokemonGetStatus(slot, 0, 0xCB, 0)) != NULL) {
                     pokemonBiosCopy(moveData, pokemon);
-                    if ((u8)fn_80121ADC(moveData, 4) == 1) {
+                    if ((u8)pokemonIsJoutaiDataId(moveData, 4) == 1) {
                         fn_8012190C(moveData, 4, 1);
                     }
                     if (flag == 1) {

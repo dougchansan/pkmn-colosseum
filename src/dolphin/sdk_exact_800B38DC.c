@@ -2,8 +2,8 @@
 #include "dolphin/os/OSInterrupt.h"
 #include "src/dolphin/card_dsp_private.h"
 
-extern EXICallback fn_8009870C(s32 chan, EXICallback callback);
-extern void fn_80098AE8(s32 chan);
+extern EXICallback EXISetExiCallback(s32 chan, EXICallback callback);
+extern void EXIDetach(s32 chan);
 
 void DoUnmount(s32 chan, s32 result)
 {
@@ -12,8 +12,8 @@ void DoUnmount(s32 chan, s32 result)
 
     enabled = OSDisableInterrupts();
     if (card->attached != 0) {
-        fn_8009870C(chan, NULL);
-        fn_80098AE8(chan);
+        EXISetExiCallback(chan, NULL);
+        EXIDetach(chan);
         OSCancelAlarm(&card->alarm);
         card->attached = 0;
         card->result = result;

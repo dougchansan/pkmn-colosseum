@@ -9,7 +9,7 @@
  * functions (0x801C0F20-0x801C2AE8), all of which are HSD sysdolphin
  * library code, not battle-grid code -- this is the direct continuation
  * of the same XD translation unit (aobj.cpp) as the functions above.
- * fn_801C021C is matched below; HSD_ForeachAnim remains a near match.
+ * HSD_VISetUserPostRetraceCallback is matched below; HSD_ForeachAnim remains a near match.
  */
 #include "dolphin/types.h"
 #include "dolphin/os/OSInterrupt.h"
@@ -59,9 +59,9 @@ extern f64 fmod(f64 x, f64 y);
 extern void* memset(void* dst, int val, u32 size);
 
 /**
- * fn_801C01C8 - Address: 0x801C01C8 | Size: 0x54
+ * HSD_VISetUserGXDrawDoneCallback - Address: 0x801C01C8 | Size: 0x54
  */
-void* fn_801C01C8(void* callback)
+void* HSD_VISetUserGXDrawDoneCallback(void* callback)
 {
     void* previous = lbl_80466BC0[0x7A];
     BOOL enabled = OSDisableInterrupts();
@@ -72,9 +72,9 @@ void* fn_801C01C8(void* callback)
 }
 
 /**
- * fn_801C021C - Address: 0x801C021C | Size: 0x54
+ * HSD_VISetUserPostRetraceCallback - Address: 0x801C021C | Size: 0x54
  */
-void* fn_801C021C(void* callback)
+void* HSD_VISetUserPostRetraceCallback(void* callback)
 {
     void* previous = lbl_80466BC0[0x77];
     BOOL enabled = OSDisableInterrupts();

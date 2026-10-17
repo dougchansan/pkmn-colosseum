@@ -101,7 +101,7 @@ extern u32 __DBVECTOR[];
 static volatile EXIRegBlock* const ExiHw = (volatile EXIRegBlock*)0xCC006800;
 static volatile OSLowMem* const LowMem = (volatile OSLowMem*)0x80000000;
 
-s32 fn_80099400(s32 chan, u32 dev, u32* id);
+s32 EXIGetID(s32 chan, u32 dev, u32* id);
 BOOL fn_80098790(s32 chan);
 u32 EXIClearInterrupts(s32 chan, s32 exi, s32 tc, s32 ext);
 u32 __OSGetDIConfig(void);
@@ -210,7 +210,7 @@ BOOL EXIImm(s32 chan, void* buf, s32 len, u32 type, EXICallback callback)
 #pragma push
 #pragma optimize_for_size on
 #pragma scheduling off
-BOOL fn_80098368(s32 chan, u8* buf, s32 len, volatile u32 type) {
+BOOL EXIImmEx(s32 chan, u8* buf, s32 len, volatile u32 type) {
     while (len != 0) {
         s32 xfer;
 
@@ -352,7 +352,7 @@ u32 EXIClearInterrupts(s32 chan, s32 exi, s32 tc, s32 ext) {
 #pragma optimization_level 0
 #pragma optimize_for_size on
 #pragma scheduling off
-EXICallback fn_8009870C(s32 chan, EXICallback volatile callback) {
+EXICallback EXISetExiCallback(s32 chan, EXICallback volatile callback) {
     EXIControl* exi = &lbl_803FB3C8[chan];
     EXICallback oldCallback;
     BOOL enabled = OSDisableInterrupts();
@@ -429,7 +429,7 @@ BOOL EXIProbe(s32 chan) {
 
     probe = fn_80098790(chan);
     if (probe && exi->idTime == 0) {
-        probe = fn_80099400(chan, 0, &id) ? TRUE : FALSE;
+        probe = EXIGetID(chan, 0, &id) ? TRUE : FALSE;
     }
     return probe;
 }
@@ -444,7 +444,7 @@ static inline BOOL fn_800989C0_probe(s32 chan, EXIControl* base) {
     exi = &base[chan];
     probe = fn_80098790(chan);
     if (probe && exi->idTime == 0) {
-        probe = fn_80099400(chan, 0, &id) ? TRUE : FALSE;
+        probe = EXIGetID(chan, 0, &id) ? TRUE : FALSE;
     }
     return probe;
 }
@@ -474,7 +474,7 @@ static inline BOOL fn_800989C0_attach(s32 chan, EXICallback extCallback, EXICont
 #pragma optimization_level 0
 #pragma optimize_for_size on
 #pragma scheduling off
-BOOL fn_800989C0(s32 chan, EXICallback extCallback) {
+BOOL EXIAttach(s32 chan, EXICallback extCallback) {
     EXIControl* base;
     EXIControl* exi;
     BOOL enabled;
@@ -501,7 +501,7 @@ BOOL fn_800989C0(s32 chan, EXICallback extCallback) {
 #pragma optimization_level 0
 #pragma optimize_for_size on
 #pragma scheduling off
-BOOL fn_80098AE8(s32 chan) {
+BOOL EXIDetach(s32 chan) {
     EXIControl* exi = &lbl_803FB3C8[chan];
     BOOL enabled = OSDisableInterrupts();
 
@@ -802,7 +802,7 @@ BOOL UnlockedHandler(s32 chan) {
     u32 id;
     u32 unused;
 
-    return fn_80099400(chan, 0, &id);
+    return EXIGetID(chan, 0, &id);
 }
 #pragma scheduling reset
 #pragma pop
@@ -898,7 +898,7 @@ static inline int EXIGetID_Detach(s32 chan) {
     return 1;
 }
 
-s32 fn_80099400(s32 chan, u32 dev, u32* id) {
+s32 EXIGetID(s32 chan, u32 dev, u32* id) {
     EXIControl* exi = &lbl_803FB3C8[chan];
     int err;
     u32 cmd;

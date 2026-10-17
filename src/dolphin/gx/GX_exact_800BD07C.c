@@ -1,6 +1,6 @@
 #include "dolphin/gx/GXInternal.h"
 
-void fn_800BD07C(u32 fieldMode, u32 halfAspectRatio)
+void GXSetFieldMode(u32 fieldMode, u32 halfAspectRatio)
 {
     GXData* data = gx;
 
@@ -19,7 +19,7 @@ void __GXSetRange(void)
 void GXCallDisplayList(void* list, u32 nbytes)
 {
     if (gx->dirtyState != 0) {
-        fn_800B91EC();
+        __GXSetDirtyState();
     }
     if (gx->status.word == 0) {
         __GXSendFlushPrim();

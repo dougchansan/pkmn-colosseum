@@ -83,9 +83,9 @@ typedef struct FloorColor {
     f32 r, g, b, a;
 } FloorColor;
 
-extern void fn_8011207C(void);
-extern void fn_80111F2C(void);
-extern void fn_80111DF8(void);
+extern void _floorRestoreStateData(void);
+extern void _floorMakeStateData(void);
+extern void _floorGetStateSize(void);
 
 /*
  * This TU's .rodata, in retail order (0x80272088-0x802720BB), followed by
@@ -95,7 +95,7 @@ extern void fn_80111DF8(void);
  */
 static const FloorViewVec sFloorCameraView = {0.0f, 14.0f, 0.0f};
 static const FloorReadFuncs sFloorDefaultReadFuncs = {
-    fn_8011207C, fn_80111F2C, fn_80111DF8,
+    _floorRestoreStateData, _floorMakeStateData, _floorGetStateSize,
 };
 static const FloorColor sFloorFadeColor = {0.0f, 0.0f, 0.0f, 0.0f};
 /* Name of a map archive's public scene descriptor; GScolsys2 reads it too. */
@@ -213,11 +213,11 @@ void fn_801123D4(FloorData* floor) {
 /* 0x80112700 | 0x4C */
 void floorStartSoundScript(void) {
     extern u32 floorDataBiosGetSoundSctID(FloorData*);
-    extern void fn_800F7318(s32, u32, s32, s32, s32, ...);
+    extern void _vmThreadCreate(s32, u32, s32, s32, s32, ...);
     u32 id;
 
     if ((id = floorDataBiosGetSoundSctID(floorDataBiosGetCurrentPtr())) != 0) {
-        fn_800F7318(0xF, id, 0x1000, 1, 0, 0);
+        _vmThreadCreate(0xF, id, 0x1000, 1, 0, 0);
     }
 }
 
@@ -301,7 +301,7 @@ void fn_801128A0(void) {
     extern void fn_800FF178(s32, s32, void*);
     extern void fn_800FF4D4(void*, u32);
     extern s32 GSgetVersionMinor(void);
-    extern void fn_800FF788(u32);
+    extern void GSfloorOpen(u32);
     extern void fn_800FF784(u32);
     extern void fn_80118020(void);
     extern void floorResolveEntryPosition(void);
@@ -335,7 +335,7 @@ void fn_801128A0(void) {
     *(u32*)(lbl_80408378 + 0x4) = r;
     *(u8*)(lbl_80408378 + 0x8) = 1;
     *(u32*)(lbl_80408378 + 0xC) = 0;
-    fn_800FF788(r);
+    GSfloorOpen(r);
     fn_800FF784(r);
     fn_80118020();
 }

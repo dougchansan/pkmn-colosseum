@@ -919,7 +919,7 @@ void VISetBlack(BOOL black) {
 }
 
 
-u32 fn_800AA280(void) {
+u32 VIGetRetraceCount(void) {
     return retraceCount;
 }
 
@@ -944,7 +944,7 @@ u32 getCurrentFieldEvenOdd(void) {
     return 0;
 }
 
-u32 fn_800AA2F0(void) {
+u32 VIGetNextField(void) {
     volatile u16* hregs;
     u32 vcount;
     u32 previous;

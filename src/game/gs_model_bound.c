@@ -60,7 +60,7 @@ extern void GSmodelSetAnimIndex(GSmodel* model, u32 index);
 extern void fn_80191460(GSbound* bound);
 extern void GSmodelSetAnimFrame(GSmodel* model, f32 frame);
 extern void fn_800EC134(GSmodel* model);
-extern void fn_8019D9DC(HSDJObj* jobj);
+extern void HSD_JObjSetupMatrixSub(HSDJObj* jobj);
 extern void GSmodelParse(GSmodel* model, BOOL is_visible, GSModelPObjDisp disp,
                          void* arg);
 extern void _modelBoundPObj__FP9_HSD_PObjP5GSmtxP5GSmtxP5GSmtxPv(
@@ -95,7 +95,7 @@ void fn_800EB268(GSmodel* model, u32 anim_index)
         fn_800EC134(model);
         jobj = model->renderJObj;
         if (jobj != NULL && HSD_JObjMtxIsDirty(jobj)) {
-            fn_8019D9DC(jobj);
+            HSD_JObjSetupMatrixSub(jobj);
         }
     }
     GSmodelParse(
@@ -117,7 +117,7 @@ void GSmodelRecalculateBound(GSmodel* model)
         fn_800EC134(model);
         jobj = model->renderJObj;
         if (jobj != NULL && HSD_JObjMtxIsDirty(jobj)) {
-            fn_8019D9DC(jobj);
+            HSD_JObjSetupMatrixSub(jobj);
         }
     }
     GSmodelParse(

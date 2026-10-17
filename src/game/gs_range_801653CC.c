@@ -5,7 +5,7 @@
  * fn_80166E88 initialises the MusyX wrapper. Its allocator hooks are a local
  * aggregate initializer, so MWCC emits the { alloc, free } pair as this
  * unit's own .sdata2 constant (0x8047D558 - 0x8047D560) and copies it to
- * the stack before handing it to sndSetHooks (fn_801631AC).
+ * the stack before handing it to sndSetHooks (sndSetHooks).
  */
 #include "game/gs_range_801653CC_shared.h"
 
@@ -29,7 +29,7 @@ extern void fn_80167A6C(void);
 extern void fn_80167A14(void);
 extern void fn_801679E4(void);
 extern void _sndInitStack(void);
-extern void fn_801631AC(GSsndHooks* hooks);
+extern void sndSetHooks(GSsndHooks* hooks);
 extern s32 fn_8015FE88(u32, u32, u32, u32, u32, u32);
 extern void sndAuxCallbackPrepareReverbHI(void* work);
 extern void sndAuxCallbackReverbHI(void);
@@ -76,7 +76,7 @@ u32 soundInit(u32 stackCount, u32 workSize, u32 extraStackCount,
     }
     fn_801679E4();
 
-    fn_801631AC(&hooks);
+    sndSetHooks(&hooks);
     if (fn_8015FE88(0x40, 0x30, 0x10, 1, 0, 0x9FC000) != 0) {
         return 0;
     }

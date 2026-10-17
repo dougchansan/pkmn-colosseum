@@ -81,7 +81,7 @@ void fn_800BC8C8(u8 nStages);
 void GXSetTevOrder(int stage, int coord, int map, int color);
 void GXSetTevOp(int id, int mode);
 /* GXSetZTexture */
-void fn_800BC66C(int op, int fmt, u32 bias);
+void GXSetZTexture(int op, int fmt, u32 bias);
 /* GXSetCullMode */
 void fn_800B94F0(int mode);
 /* GXSetAlphaCompare */
@@ -91,9 +91,9 @@ void fn_800BCEBC(u8 before_tex);
 void GXSetZMode(u8 compare_enable, int func, u8 update_enable);
 void GXSetBlendMode(int type, int src_factor, int dst_factor, int op);
 /* GXSetColorUpdate */
-void fn_800BCE30(u8 update_enable);
+void GXSetColorUpdate(u8 update_enable);
 /* GXSetAlphaUpdate */
-void fn_800BCE5C(u8 update_enable);
+void GXSetAlphaUpdate(u8 update_enable);
 /* GXSetNumChans */
 void GXSetNumChans(u8 nChans);
 /* GXSetChanCtrl */
@@ -122,7 +122,7 @@ void HSD_DObjSetCurrent(HSD_DObj* dobj);
 /* HSD_LObjSetupSpecularInit */
 void HSD_LObjSetupSpecularInit(MtxPtr pmtx);
 /* HSD_PObjClearMtxMark */
-void fn_801AB63C(void* obj, u32 mark);
+void HSD_PObjClearMtxMark(void* obj, u32 mark);
 f32* HSD_MtxAlloc(void);
 void HSD_MtxFree(f32* mtx);
 /* HSD_MtxInverseConcat */
@@ -421,7 +421,7 @@ void HSD_JObjDispDObj(HSD_JObj* jobj, MtxPtr vmtx, MtxPtr pmtx,
         }
     }
 
-    fn_801AB63C(NULL, 0);
+    HSD_PObjClearMtxMark(NULL, 0);
     for (dobj = jobj->u.dobj; dobj; dobj = dobj->next) {
         if (dobj->flags & DOBJ_HIDDEN) {
             continue;
@@ -545,7 +545,7 @@ static HSD_ZList* zlist_sort(HSD_ZList* list, s32 nb, s32 offset)
 }
 
 /* _HSD_ZListSort */
-void fn_801975FC(void)
+void _HSD_ZListSort(void)
 {
     if (zsort_sorting) {
         zlist_texedge_top =
@@ -554,10 +554,10 @@ void fn_801975FC(void)
     }
 }
 
-void fn_80197400(void);
+void _HSD_ZListClear(void);
 
 /* _HSD_ZListDisp */
-void fn_801974A8(void)
+void _HSD_ZListDisp(void)
 {
     HSD_ZList* list;
     MtxPtr vmtx;
@@ -582,11 +582,11 @@ void fn_801974A8(void)
         list = list->sort.xlu;
     }
 
-    fn_80197400();
+    _HSD_ZListClear();
 }
 
 /* _HSD_ZListClear */
-void fn_80197400(void)
+void _HSD_ZListClear(void)
 {
     HSD_ZList* list = zlist_top;
 
@@ -678,7 +678,7 @@ void HSD_EraseRect(f32 top, f32 bottom, f32 left, f32 right, f32 z,
         fn_800BC8C8(1);
         GXSetTevOrder(0, 0, 0, 4);
         GXSetTevOp(0, 4);
-        fn_800BC66C(2, 0x11, 0);
+        GXSetZTexture(2, 0x11, 0);
     } else {
         fn_800B884C(0);
         fn_800BC8C8(1);
@@ -692,8 +692,8 @@ void HSD_EraseRect(f32 top, f32 bottom, f32 left, f32 right, f32 z,
     fn_800BCEBC(1);
     GXSetZMode(1, 7, enable_depth ? 1 : 0);
     GXSetBlendMode(2, 1, 0, 3);
-    fn_800BCE30(enable_color ? 1 : 0);
-    fn_800BCE5C(enable_alpha ? 1 : 0);
+    GXSetColorUpdate(enable_color ? 1 : 0);
+    GXSetAlphaUpdate(enable_alpha ? 1 : 0);
 
     GXSetNumChans(1);
     GXSetChanCtrl(4, 0, 0, 1, 0, 0, 2);
@@ -725,7 +725,7 @@ void HSD_EraseRect(f32 top, f32 bottom, f32 left, f32 right, f32 z,
     GXTexCoord2u8(0, 1);
     GXEnd();
 
-    fn_800BC66C(0, 0x11, 0);
+    GXSetZTexture(0, 0x11, 0);
 
     fn_801B25C4(-1);
 }

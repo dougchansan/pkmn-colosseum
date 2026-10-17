@@ -27,7 +27,7 @@
  * title-path code first (2026-09-28); the policy-clean search is recorded
  * in this file's git history (fc9e71ca, 4e65d59a, B15's GNT4 notes).
  *
- * Cardinal case of splGetSplinePoint (fn_801B2038). The helper reads
+ * Cardinal case of splGetSplinePoint (splGetSplinePoint). The helper reads
  * tension through a local copy (f32 t = tension). The register coalescer
  * deletes the copy's fmr, but the copy stays in the dependence graph the
  * pre-allocation scheduler works on. It lets the tension load issue at
@@ -56,7 +56,7 @@
 #define ABS(x) ((x) < 0 ? -(x) : (x))
 
 /* splGetHelmite */
-f32 fn_801B2560(f32 fterm, f32 time, f32 p0, f32 p1, f32 d0, f32 d1)
+f32 splGetHelmite(f32 fterm, f32 time, f32 p0, f32 p1, f32 d0, f32 d1)
 {
     f32 _3t2_T2;
     f32 _2t3_T3;
@@ -130,7 +130,7 @@ static inline void splGetBezierPoint(Vec3* p, Vec3* cp, f32 u)
 }
 
 /* splGetSplinePoint */
-void fn_801B2038(Vec3* p, HSD_Spline* spline, f32 u)
+void splGetSplinePoint(Vec3* p, HSD_Spline* spline, f32 u)
 {
     Vec3* cp;
     s16 idx;
@@ -219,7 +219,7 @@ f32 fn_801B1AD0(const f32 coeffs[5], f32 start, f32 end)
 }
 
 /* splArcLengthGetParameter */
-f32 fn_801B18D8(HSD_Spline* spl, f32 arg1)
+f32 splArcLengthGetParameter(HSD_Spline* spl, f32 arg1)
 {
     s32 idx = 0;
     f32 start = 0.0F;
@@ -268,5 +268,5 @@ f32 fn_801B18D8(HSD_Spline* spl, f32 arg1)
 
 void splArcLengthPoint(Vec3* p, HSD_Spline* spline, f32 u)
 {
-    fn_801B2038(p, spline, fn_801B18D8(spline, u));
+    splGetSplinePoint(p, spline, splArcLengthGetParameter(spline, u));
 }

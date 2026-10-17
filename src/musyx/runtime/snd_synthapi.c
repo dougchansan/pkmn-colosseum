@@ -5,8 +5,8 @@
  *
  * Split out of the misnamed people_field.c unit (2026-07-02). Reference:
  * AxioDL/musyx `musyx/runtime/snd_synthapi.c`. Boundary evidence:
- * fn_8014DCA8 is synthDeactivateStudio (simindex seq=1.0 vs the MP4
- * matched copy); the two 0x20 wrappers fn_8014DD98/fn_8014DDB8 are
+ * synthDeactivateStudio is synthDeactivateStudio (simindex seq=1.0 vs the MP4
+ * matched copy); the two 0x20 wrappers synthAddStudioInput/synthRemoveStudioInput are
  * snd_synthapi tail one-call wrappers (stream.c has no functions before
  * streamInit, which is confirmed at 0x8014DDD8 at seq=1.0).
  * All functions asm-only until matched.
@@ -45,7 +45,7 @@ extern u32 synthSendKeyOff(u32 id);
 extern u32 synthFXStart(u16 fid, u8 vol, u8 pan, u8 studio, u32 itd); /* synthFXStart */
 extern u32 vidGetInternalId(u32 id);
 extern void synthVolume(u8 volume, u16 time, u8 vGroup, u8 seqMode, u32 seqId);
-extern u32 fn_8016246C(u32 voice); /* hwIsActive */
+extern u32 hwIsActive(u32 voice); /* hwIsActive */
 extern void voiceKillSound(u32 id);
 
 /* ===== Cross-TU MusyX runtime globals (defined in synth.c) ===== */
@@ -191,7 +191,7 @@ void sndSetAuxProcessingCallbacks(u8 studio,
   hwEnableIrq();
 }
 
-void fn_8014DC00(u8 studio, u32 isMaster, u32 type) {
+void synthActivateStudio(u8 studio, u32 isMaster, u32 type) {
   hwDisableIrq();
   lbl_80435644[studio] = NULL;
   lbl_80435684[studio] = NULL;
@@ -203,7 +203,7 @@ void fn_8014DC00(u8 studio, u32 isMaster, u32 type) {
   hwEnableIrq();
 }
 
-void fn_8014DCA8(u8 studio) {
+void synthDeactivateStudio(u8 studio) {
   u32 i;
 
   for (i = 0; i < ((SynthInfo*)lbl_80434C50)->voiceNum; ++i) {
@@ -211,7 +211,7 @@ void fn_8014DCA8(u8 studio) {
     if (studio == lbl_8047AF48[i].studio) {
       if (lbl_8047AF48[i].id != 0xFFFFFFFF) {
         voiceKillSound(lbl_8047AF48[i].vidList->vid);
-      } else if (fn_8016246C(i)) {
+      } else if (hwIsActive(i)) {
         fn_80162D18(i);
       }
     }
@@ -229,6 +229,6 @@ void fn_8014DCA8(u8 studio) {
   fn_80162D8C(studio);
 }
 
-void fn_8014DD98(u8 studio, u32 arg1) { hwAddInput(studio, arg1); }
+void synthAddStudioInput(u8 studio, u32 arg1) { hwAddInput(studio, arg1); }
 
-void fn_8014DDB8(u8 studio, u32 arg1) { hwRemoveInput(studio, arg1); }
+void synthRemoveStudioInput(u8 studio, u32 arg1) { hwRemoveInput(studio, arg1); }

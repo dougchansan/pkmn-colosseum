@@ -371,7 +371,7 @@ s32 fn_8003A6C0(PdaDrawWork* work, PdaSprite* sprite)
 {
     extern const s32 lbl_80267130[3];
     extern s32 lbl_8047A4C8;
-    extern void fn_800FB8C8(s32, s32, s16, s16, void*, s32);
+    extern void GSmsgPrintRight(s32, s32, s16, s16, void*, s32);
     extern void msgctrlSetValue(s32 id, s32 value);
     s32 index;
     s32 i;
@@ -398,7 +398,7 @@ s32 fn_8003A6C0(PdaDrawWork* work, PdaSprite* sprite)
     digit = lbl_8047A4C8 / divisor;
     digit %= 10;
     msgctrlSetValue(0x34, digit);
-    fn_800FB8C8(0, 0, sprite->x, sprite->y, work->drawData, 0xC9);
+    GSmsgPrintRight(0, 0, sprite->x, sprite->y, work->drawData, 0xC9);
     return 0;
 }
 #pragma peephole reset

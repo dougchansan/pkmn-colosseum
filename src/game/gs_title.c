@@ -3145,7 +3145,7 @@ s32 fn_80021A9C(u32 r3, u32* r4) {
 extern void fn_80142EF8(void);
 extern void fn_801431AC(void);
 extern s32 fn_80014110(void);
-extern s32 fn_80121ADC(s32, s32);
+extern s32 pokemonIsJoutaiDataId(s32, s32);
 extern s16 fn_80144574(void*, s32, s32, u16, s32);
 extern void soundStart(s32, s32, s32, s32);
 extern void menuPokemonRefresh(void);
@@ -3173,7 +3173,7 @@ s32 itemFieldUseRecover(u32 arg0, u32* arg1) {
     extern s32 fn_80144574(void*, s32, s32, u16, u8);
     extern void itemUseFormatMessage(void*, s32, void*, s32, s32);
     extern s32 itemUseOpenPartyMenu(void*, s32);
-    extern u8 fn_80121ADC(s32, s32);
+    extern u8 pokemonIsJoutaiDataId(s32, s32);
     u8 item_param[0x10];
     u8 result;
 
@@ -3201,7 +3201,7 @@ s32 itemFieldUseRecover(u32 arg0, u32* arg1) {
 
         slot = fn_80014110();
         itemUseGetTargetPokemon(slot, &pokemon, &data);
-        if (fn_80121ADC(pokemon, 0x3E)) {
+        if (pokemonIsJoutaiDataId(pokemon, 0x3E)) {
             msgctrlSetValue(0x32, (void*)pokemonBiosGetNicknamePtr(pokemon));
             winMsgOpen(2, 0x424D, 1, 0);
             winMsgClose(1);
@@ -3282,7 +3282,7 @@ s32 itemFieldUseRecover(u32 arg0, u32* arg1) {
         slot = itemUseOpenPartyMenu((void*)arg0, 1);
         if (slot >= 0) {
             itemUseGetTargetPokemon(slot, &pokemon, &data);
-            if (fn_80121ADC(pokemon, 0x3E) == 0) {
+            if (pokemonIsJoutaiDataId(pokemon, 0x3E) == 0) {
                 effect_count = fn_80144574(effects, pokemon, data, arg0, 0);
                 if ((s16)effect_count > 0) {
                     bgm = *(TitleBgmTable*)lbl_80266DB0;
@@ -3428,7 +3428,7 @@ s32 fn_8002217C(u32 wazaDataId, u32* result) {
 
     slot = fn_80014110();
     itemUseGetTargetPokemon(slot, &pokemon, &data);
-    if ((u8)fn_80121ADC(pokemon, 0x3E)) {
+    if ((u8)pokemonIsJoutaiDataId(pokemon, 0x3E)) {
         nickname = pokemonBiosGetNicknamePtr(pokemon);
         msgctrlSetValue(0x32, nickname);
         winMsgOpen(2, 0x424D, 1, 0);
@@ -3535,7 +3535,7 @@ s32 itemFieldUseParamItem(u32 arg0, u32* arg1) {
         slot = itemUseOpenPartyMenu((void*)arg0, 1);
         if (slot >= 0) {
             itemUseGetTargetPokemon(slot, &pokemon, &data);
-            if ((u8)fn_80121ADC(pokemon, 0x3E) == 0) {
+            if ((u8)pokemonIsJoutaiDataId(pokemon, 0x3E) == 0) {
                 effect_count = fn_80144574(effects, pokemon, data, (u16)arg0, 0);
                 if (effect_count > 0) {
                     bgm = *(TitleBgmList*)lbl_80266DB0;
@@ -3855,7 +3855,7 @@ s32 std163_useCologne(s32 arg0, s32 arg1) {
     msgctrlSetValue(0x32, pokemonBiosGetNicknamePtr(pokemon));
     winMsgOpen(2, 0x3AF7, 1, 0);
     winMsgClose(1);
-    if ((u8)fn_80121ADC(pokemon, 0x3E) != 0) {
+    if ((u8)pokemonIsJoutaiDataId(pokemon, 0x3E) != 0) {
         pokemonInitPersistentJoutai(pokemon, 0x3E);
         winMsgOpen(2, 0x4277, 1, 0);
         winMsgClose(1);
@@ -3953,7 +3953,7 @@ s32 _itemUseHealStatus(u32 arg0, u32* arg1) {
     extern s32 fn_80144574(void*, s32, s32, u16, u8);
     extern void itemUseFormatMessage(void*, s32, void*, s32, s32);
     extern s32 itemUseOpenPartyMenu(void*, s32);
-    extern u8 fn_80121ADC(s32, s32);
+    extern u8 pokemonIsJoutaiDataId(s32, s32);
     s32 pokemon;
     s32 slot;
     TitleBgmList bgm;
@@ -3973,7 +3973,7 @@ s32 _itemUseHealStatus(u32 arg0, u32* arg1) {
             break;
         }
         itemUseGetTargetPokemon(slot, &pokemon, &data);
-        if (fn_80121ADC(pokemon, 0x3E) != 0) {
+        if (pokemonIsJoutaiDataId(pokemon, 0x3E) != 0) {
             blocked = 1;
             break;
         }
@@ -4202,7 +4202,7 @@ s32 fn_80023760(u32 arg0, u32* arg1) {
     extern s32 fn_80144574(void*, s32, s32, u16, u8);
     extern void itemUseFormatMessage(void*, s32, void*, s32, s32);
     extern s32 itemUseOpenPartyMenu(void*, s32);
-    extern u8 fn_80121ADC(s32, s32);
+    extern u8 pokemonIsJoutaiDataId(s32, s32);
     s32 pokemon;
     u8* text;
     s32 slot;
@@ -4226,7 +4226,7 @@ s32 fn_80023760(u32 arg0, u32* arg1) {
         if ((s32)pokemonGetStatus(pokemon, 0, 0x83, 0) > 0) {
             continue;
         }
-        if (fn_80121ADC(pokemon, 0x3E) != 0) {
+        if (pokemonIsJoutaiDataId(pokemon, 0x3E) != 0) {
             continue;
         }
         effect_count = fn_80144574(effects, pokemon, data, arg0, 0);
@@ -4274,7 +4274,7 @@ s32 _itemUsePPRestore(u32 arg0, u32* arg1) {
     extern s32 fn_80144574(void*, s32, s32, u16, u8);
     extern void itemUseFormatMessage(void*, s32, void*, s32, s32);
     extern s32 itemUseOpenPartyMenu(void*, s32);
-    extern u8 fn_80121ADC(s32, s32);
+    extern u8 pokemonIsJoutaiDataId(s32, s32);
     extern void* itemDataBiosGetPtr(u16);
     s32 pokemon;
     s32 slot;
@@ -4295,7 +4295,7 @@ s32 _itemUsePPRestore(u32 arg0, u32* arg1) {
             break;
         }
         itemUseGetTargetPokemon(slot, &pokemon, &data);
-        if (fn_80121ADC(pokemon, 0x3E) != 0) {
+        if (pokemonIsJoutaiDataId(pokemon, 0x3E) != 0) {
             blocked = 1;
             break;
         }
@@ -4350,7 +4350,7 @@ s32 itemFieldUseStatBoost(u32 arg0, u32* arg1) {
     extern s32 fn_80144574(void*, s32, s32, u16, u8);
     extern void itemUseFormatMessage(void*, s32, void*, s32, s32);
     extern s32 itemUseOpenPartyMenu(void*, s32);
-    extern u8 fn_80121ADC(s32, s32);
+    extern u8 pokemonIsJoutaiDataId(s32, s32);
     s32 pokemon;
     s32 data;
     TitleBgmList bgm;
@@ -4364,7 +4364,7 @@ s32 itemFieldUseStatBoost(u32 arg0, u32* arg1) {
     slot = itemUseOpenPartyMenu((void*)arg0, 1);
     if (slot >= 0) {
         itemUseGetTargetPokemon(slot, &pokemon, &data);
-        if (fn_80121ADC(pokemon, 0x3E) == 0) {
+        if (pokemonIsJoutaiDataId(pokemon, 0x3E) == 0) {
             effect_count = fn_80144574(effects, pokemon, data, arg0, 0);
             if ((s16)effect_count > 0) {
                 bgm = *(TitleBgmList*)lbl_80266DB0;

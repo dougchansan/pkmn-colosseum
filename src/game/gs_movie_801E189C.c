@@ -55,7 +55,7 @@ extern s32 OSResumeThread(OSThread* thread);
 extern void _threadSwitch(void);
 extern void GSscratchSetInvalid(void);
 extern void GSscratchSetValid(void);
-extern BOOL fn_801E4778(const char* path, BOOL onMemory); /* THPPlayerOpen */
+extern BOOL THPPlayerOpen(const char* path, BOOL onMemory); /* THPPlayerOpen */
 extern void GSlogWrite(const char* format, ...);
 extern void THPPlayerGetVideoInfo(GsVtrOrigin* origin);
 extern void THPPlayerGetAudioInfo(u32* state);
@@ -64,14 +64,14 @@ extern u16 fn_800E2B00(u32 size, u32 alignment);
 extern void* fn_800E27B0(u16 handle);
 extern void THPPlayerSetBuffer(void);
 extern u32 OSGetTick(void);
-extern BOOL fn_801E40F8(u32, u32, u32);
+extern BOOL THPPlayerPrepare(u32, u32, u32);
 extern u16 GSmemGetHandleByPtr(void* pointer);
 extern void fn_800E24B0(u16 handle);
 extern void fn_800E209C(u16 handle);
 extern void movieGetStreamIds(u32* first, u32* second);
 extern void sndStreamMixParameterEx(s32 id, u32, u32, u32, u32, u32);
 extern void THPPlayerPlay(void);
-extern BOOL fn_801E4A6C(void);
+extern BOOL THPPlayerInit(void);
 
 /* Loader thread entry: opens the THP file and prepares playback. */
 void* fn_801E1924(void* param);
@@ -102,7 +102,7 @@ void* fn_801E1924(void* param)
     path = args->path;
     onMemory = args->onMemory;
     GSscratchSetInvalid();
-    if (!fn_801E4778(path, onMemory)) {
+    if (!THPPlayerOpen(path, onMemory)) {
         GSlogWrite("ERROR(GSmovie): Fail to open the thp file = %s\n", path);
         GSscratchSetValid();
         lbl_8047B444 = 1;
@@ -134,7 +134,7 @@ void* fn_801E1924(void* param)
     } else {
         remainder = 0;
     }
-    if (!fn_801E40F8(0, 0, remainder)) {
+    if (!THPPlayerPrepare(0, 0, remainder)) {
         GSlogWrite("ERROR(GSmovie): Fail to prepare\n");
         handle = GSmemGetHandleByPtr(lbl_8047B450);
         if (handle != 0) {
@@ -161,6 +161,6 @@ void* fn_801E1924(void* param)
 
 void GSmovieInit(void)
 {
-    fn_801E4A6C();
+    THPPlayerInit();
     lbl_8047B440 = 1;
 }

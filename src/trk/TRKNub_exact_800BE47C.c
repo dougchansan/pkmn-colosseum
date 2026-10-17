@@ -20,7 +20,7 @@ typedef struct TRKEventQueue {
 
 extern TRKEventQueue lbl_803FCDD8;
 extern void fn_80003488(void* dst, const void* src, u32 size);
-extern void fn_800BF080(void);
+extern void TRKTerminateSerialHandler(void);
 extern void fn_800C0CC0(void* mutex);
 extern void fn_800C0CC8(void* mutex);
 extern void fn_800C0CD0(void* mutex);
@@ -88,7 +88,7 @@ void TRKNubWelcome(void)
 
 s32 TRKTerminateNub(void)
 {
-    fn_800BF080();
+    TRKTerminateSerialHandler();
     return 0;
 }
 

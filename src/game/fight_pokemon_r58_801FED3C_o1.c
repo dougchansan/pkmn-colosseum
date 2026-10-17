@@ -16,7 +16,7 @@ extern void* pokemonGetStatus(void* context, u32 slot, u16 tableId, u32 flags);
 static inline u8 fightPokemonIsJoutai(void* pokemon, u16 id) {
     extern u16 joutaiDataBiosGetStatusKind(u16 id);
     extern u8 fn_8011B67C(void* obj, u16 id);
-    extern u8 fn_80121ADC(void* obj, u16 id);
+    extern u8 pokemonIsJoutaiDataId(void* obj, u16 id);
     void* slot;
     void* data;
 
@@ -28,7 +28,7 @@ static inline u8 fightPokemonIsJoutai(void* pokemon, u16 id) {
             } else {
                 data = pokemonGetStatus(slot, 0, 0xCC, 0);
             }
-            return fn_80121ADC(data, id);
+            return pokemonIsJoutaiDataId(data, id);
         } else if (joutaiDataBiosGetStatusKind(id) != 0xCD) {
             return 0;
         } else {

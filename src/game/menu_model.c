@@ -65,7 +65,7 @@ extern void  _threadSwitch(void);    /* yield */
 extern u32   fn_800BE31C(void);    /* rand or tick */
 extern u32   GXSetDrawSyncCallback(void*);   /* register fn, returns handle */
 extern void  fn_800BD91C(s32, s32);
-extern void  fn_800B8C58(s32);
+extern void  GXSetDrawSync(s32);
 extern void  GSgfxBeginBackFBCapture(u32, void*, void*);
 extern u32   GStextureCreate(s32, s32, s32, s32, s32);
 extern u32   GSmodelCanAnimate(u32);
@@ -284,7 +284,7 @@ extern void winSpriteSetDisp(void* node, u32 enable);
 extern void winSpriteRelease(void* head);
 extern void* fn_80109290(void* root);
 extern void winSpriteInit(void);
-extern void fn_801093C8(void);
+extern void menuOffScreenDraw(void);
 extern u8 menuOffScreenFadeSync(u8 param);
 extern void menuOffScreenFadeSet(f32 f1, f32 f2);
 extern u8 menuOffScreenSetPriority(u8 val);

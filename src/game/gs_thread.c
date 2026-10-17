@@ -433,8 +433,8 @@ extern void GSmsgInitRuby();
 extern s32 GSmsgPrintf();
 extern s32 std001_messageFormatLookup();
 extern s32 GSmsgPrintColor();
-extern s32 fn_800FB8C8();
-extern s32 fn_800FBB34();
+extern s32 GSmsgPrintRight();
+extern s32 GSmsgPrintRect();
 extern void GSmsgDaemon(void);
 extern s32 GSmsgExec();
 extern void fn_800FC2A4(void);
@@ -444,7 +444,7 @@ extern s32 GSmsgSetCtrlFunc(u32 val);
 extern s32 GSmsgInit();
 extern s32 msgTaskDraw();
 extern void msgDrawRuby();
-extern void fn_800FD69C();
+extern void _msgMakeTexture();
 extern u16 * _msgGetCodeInfo__FP13MSG_TASK_WORKUsPP12tagFONT_INFO();
 extern s32 _msgGetLength__FPCUs(const void* str);
 extern s32 _msgGetSize__FPCUs();
@@ -2509,7 +2509,7 @@ loop_19:
 #pragma push
 #pragma optimization_level 2
 #pragma optimizewithasm off
-s32 fn_800FB8C8(arg0, arg1, arg2, arg3, arg4, arg5)
+s32 GSmsgPrintRight(arg0, arg1, arg2, arg3, arg4, arg5)
     s32 arg0;
     s32 arg1;
     s16 arg2;
@@ -2635,7 +2635,7 @@ loop_19:
 #pragma push
 #pragma optimization_level 2
 #pragma optimizewithasm off
-s32 fn_800FBB34(arg0, arg1, arg2, arg3, arg4, arg5)
+s32 GSmsgPrintRect(arg0, arg1, arg2, arg3, arg4, arg5)
     s32 arg0;
     s32 arg1;
     s16 arg2;
@@ -3300,7 +3300,7 @@ void msgDrawRuby(arg0, farg1)
             } else {
                 glyphInfo = *(u32 *)((u8 *)fontInfo + 4);
                 glyphWidth = ((u8 *)fontInfo)[2];
-                fn_800FD69C(arg0, (u32)fontNode + (*(s32 *)((u8 *)fontNode + 4) + (glyphInfo & 0xFFFFFF)),
+                _msgMakeTexture(arg0, (u32)fontNode + (*(s32 *)((u8 *)fontNode + 4) + (glyphInfo & 0xFFFFFF)),
                             glyphWidth, ((u8 *)fontInfo)[3], (s8)(glyphInfo >> 0x18));
                 spaceBias = lbl_8047CD10;
                 *(f32 *)(arg0 + 0x14) = (f32)((s16)glyphWidth * *(f32 *)(arg0 + 0x60));
@@ -3326,7 +3326,7 @@ void msgDrawRuby(arg0, farg1)
 #pragma push
 #pragma optimization_level 2
 #pragma optimizewithasm off
-void fn_800FD69C(arg0, arg1, arg2, arg3, arg4)
+void _msgMakeTexture(arg0, arg1, arg2, arg3, arg4)
     u8 *arg0;
     s32 arg1;
     s16 arg2;

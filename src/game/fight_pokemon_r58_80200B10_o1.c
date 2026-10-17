@@ -31,11 +31,11 @@ static inline void* fightPokemonGetPokemonPtrInline(void* fp)
 static inline u8 fightPokemonCheckJoutaiInline(void* fp, u16 id)
 {
     extern u16 joutaiDataBiosGetStatusKind(u16 id);
-    extern u8 fn_80121ADC(void* obj, u16 id);
+    extern u8 pokemonIsJoutaiDataId(void* obj, u16 id);
     extern u8 fn_8011B67C(void* obj, u16 id);
 
     if (joutaiDataBiosGetStatusKind(id) == 0x7C || joutaiDataBiosGetStatusKind(id) == 0xC8) {
-        return fn_80121ADC(fightPokemonGetPokemonPtrInline(fp), id);
+        return pokemonIsJoutaiDataId(fightPokemonGetPokemonPtrInline(fp), id);
     }
     if (joutaiDataBiosGetStatusKind(id) != 0xCD) {
         return 0;

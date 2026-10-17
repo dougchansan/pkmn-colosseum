@@ -11,8 +11,8 @@
  * retail address order); HSD_Randi inlines HSD_Rand.
  *
  * Symbols keep their dtk names (fn_/lbl_) because game code already links
- * against them: HSD_Rand is fn_801ADCD8, HSD_Randf fn_801ADC7C, HSD_Randi
- * fn_801ADC3C, the seed lbl_80478C90 and HSD_RandSeedPtr lbl_80478C94 (the
+ * against them: HSD_Rand is HSD_Rand, HSD_Randf fn_801ADC7C, HSD_Randi
+ * HSD_Randi, the seed lbl_80478C90 and HSD_RandSeedPtr lbl_80478C94 (the
  * GS math code repoints it).
  */
 #include "dolphin/types.h"
@@ -26,7 +26,7 @@ u32 lbl_80478C90 = 1;
 u32* lbl_80478C94 = &lbl_80478C90;
 
 /* HSD_Rand */
-s32 fn_801ADCD8(void)
+s32 HSD_Rand(void)
 {
     *lbl_80478C94 = *lbl_80478C94 * 214013 + 2531011;
     return *lbl_80478C94 >> 0x10;
@@ -40,9 +40,9 @@ f32 HSD_Randf(void)
 }
 
 /* HSD_Randi */
-s32 fn_801ADC3C(s32 max_val)
+s32 HSD_Randi(s32 max_val)
 {
-    return max_val * fn_801ADCD8() / (1 << 16);
+    return max_val * HSD_Rand() / (1 << 16);
 }
 
 void _HSD_RandForgetMemory(void)

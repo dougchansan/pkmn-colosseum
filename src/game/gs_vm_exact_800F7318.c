@@ -2,7 +2,7 @@
  * @file gs_vm_exact_800F7318.c
  * @brief GS script VM: start a script on its own cooperative thread.
  *
- * Address range: 0x800F7318 - 0x800F7434 (fn_800F7318).
+ * Address range: 0x800F7318 - 0x800F7434 (_vmThreadCreate).
  *
  * The thread-creation failure message (lbl_80271294, GS VM string pool)
  * and the name it prints (lbl_80315668) stay extern: this unit is .text
@@ -32,7 +32,7 @@ extern u8 lbl_80315668[];                /* "_vmThreadCreate", this function's n
  * the script executor fn_800F6BC4. `done` is called with the task and its
  * result when the script ends. Returns the task key, or 0.
  */
-u16 fn_800F7318(u32 affinity, u32 script, u32 stackSize, u32 autoStart,
+u16 _vmThreadCreate(u32 affinity, u32 script, u32 stackSize, u32 autoStart,
                 void* done, u32 argc, ...)
 {
     va_list args;

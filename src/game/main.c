@@ -62,7 +62,7 @@ extern void  GSmemInit(u32 heapId, void* start, void* end); /* GSmem heap init *
 extern void  fn_800E3560(u32 heapId);                          /* GSmem set default heap */
 
 /* --- Heap allocator (around 0x8009AB60) --- */
-extern void* fn_8009AB60(void* start, void* end, u32 numHeaps); /* OSInitAlloc / OSCreateHeap */
+extern void* OSInitAlloc(void* start, void* end, u32 numHeaps); /* OSInitAlloc / OSCreateHeap */
 
 /* --- DVD / file system init --- */
 extern void fn_800ACA80(void* dvdInfo, u32 priority);  /* DVDInit-related */
@@ -230,7 +230,7 @@ extern void fn_80101B90(u32 mask);   /* GXSetChanCtrl / GX render state */
 extern void fn_80101D8C(void);       /* GX render flush */
 extern void fn_80101D5C(void);       /* GX render end */
 extern void GSgfxWaitRetrace(u8 mode);    /* GSgfx set draw mode */
-extern void fn_800D30F0(u32 flag);   /* GSgfx swap buffers */
+extern void GSgfxSwapBuffers(u32 flag);   /* GSgfx swap buffers */
 extern void GSgfxCaptureUpdate(void);       /* World/scene render tick */
 
 extern void fn_801E0FB4(s32 unk, u32 a, u32 b); /* Save/card per-frame update */
@@ -393,7 +393,7 @@ int main(int argc, char** argv) {
 
     /* Create OS heap from [heapStart, arenaHi) for system allocations,
      * then move arena low past our heaps */
-    OSSetArenaLo(fn_8009AB60(heapStart, OSGetArenaHi(), 1));
+    OSSetArenaLo(OSInitAlloc(heapStart, OSGetArenaHi(), 1));
 
     /* Initialize ARAM (audio RAM) */
     ARInit(&lbl_80478DC0, 2);
@@ -902,7 +902,7 @@ void mainRetraceDraw(void) {
     fn_80101D8C();
 
     /* Clear swap flag */
-    fn_800D30F0(0);
+    GSgfxSwapBuffers(0);
 
     /* Tick world/scene renderer */
     GSgfxCaptureUpdate();

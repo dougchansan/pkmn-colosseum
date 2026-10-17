@@ -49,7 +49,7 @@ extern void GXSetTexCoordGen2(u32 dst, u32 func, u32 src, u32 mtx, u8 normalize,
                         u32 postMtx);                              /* GXSetTexCoordGen2 */
 extern void fn_800B884C(u8 nTexGens);                              /* GXSetNumTexGens */
 extern void fn_800B928C(u8 type, u8 fmt, u16 nverts);              /* GXBegin */
-extern void fn_800B9E6C(u8 nChans);                                /* GXSetDispCopyGamma */
+extern void GXSetDispCopyGamma(u8 nChans);                                /* GXSetDispCopyGamma */
 extern void GXSetNumChans(u8 nChans);                                /* GXSetNumChans */
 extern void fn_800BA9E4(GXTexObj* obj, void* image, u16 width, u16 height,
                         u32 format, u32 wrapS, u32 wrapT, u8 mipmap); /* GXInitTexObj */
@@ -63,23 +63,23 @@ extern void GXSetTevColorOp(u32 stage, u32 op, u32 bias, u32 scale, u8 clamp,
                         u32 outReg);                               /* GXSetTevColorOp */
 extern void GXSetTevAlphaOp(u32 stage, u32 op, u32 bias, u32 scale, u8 clamp,
                         u32 outReg);                               /* GXSetTevAlphaOp */
-extern void fn_800BC36C(u32 id, GXColorS10 color);                 /* GXSetTevColorS10 */
-extern void fn_800BC3E0(u32 id, GXColor color);                    /* GXSetTevKColor */
+extern void GXSetTevColorS10(u32 id, GXColorS10 color);                 /* GXSetTevColorS10 */
+extern void GXSetTevKColor(u32 id, GXColor color);                    /* GXSetTevKColor */
 extern void GXSetTevKColorSel(u32 stage, u32 sel);                       /* GXSetTevKColorSel */
 extern void GXSetTevKAlphaSel(u32 stage, u32 sel);                       /* GXSetTevKAlphaSel */
 extern void GXSetTevSwapMode(u32 stage, u32 rasSel, u32 texSel);        /* GXSetTevSwapMode */
 extern void GXSetTevSwapModeTable(u32 table, u32 red, u32 green, u32 blue, u32 alpha); /* GXSetTevSwapModeTable */
 extern void GXSetTevOrder(u32 stage, u32 coord, u32 map, u32 color); /* GXSetTevOrder */
 extern void fn_800BC8C8(u8 nStages);                               /* GXSetNumTevStages */
-extern void fn_800BCE30(u8 enable);                                /* GXSetColorUpdate */
-extern void fn_800BCE5C(u8 enable);                                /* GXSetAlphaUpdate */
-extern void fn_800BCEF4(u32 pixFmt, u32 zFmt);                     /* GXSetPixelFmt */
+extern void GXSetColorUpdate(u8 enable);                                /* GXSetColorUpdate */
+extern void GXSetAlphaUpdate(u8 enable);                                /* GXSetAlphaUpdate */
+extern void GXSetPixelFmt(u32 pixFmt, u32 zFmt);                     /* GXSetPixelFmt */
 extern void fn_800BD2E0(f32 mtx[4][4], u32 type);                  /* GXSetProjection */
 extern void fn_800BD554(u32 id);                                   /* GXSetCurrentMtx */
 extern void fn_800BD744(f32 left, f32 top, f32 wd, f32 ht, f32 nearz, f32 farz); /* GXSetViewport */
-extern void fn_800BD7A0(u32 left, u32 top, u32 wd, u32 ht);        /* GXSetScissor */
+extern void GXSetScissor(u32 left, u32 top, u32 wd, u32 ht);        /* GXSetScissor */
 
-void fn_801E24B0(void)
+void THPGXRestore(void)
 {
     GXSetZMode(1, 7, 0);
     GXSetBlendMode(0, 1, 0, 0xF);
@@ -98,7 +98,7 @@ void fn_801E24B0(void)
     GXSetTevSwapModeTable(3, 2, 2, 2, 3);
 }
 
-void fn_801E1FF8(GXRenderModeObj* rmode)
+void THPGXYuv2RgbSetup(GXRenderModeObj* rmode)
 {
     s32 w;
     s32 h;
@@ -108,12 +108,12 @@ void fn_801E1FF8(GXRenderModeObj* rmode)
     w = rmode->fbWidth;
     h = rmode->efbHeight;
 
-    fn_800BCEF4(0, 0);
+    GXSetPixelFmt(0, 0);
 
     C_MTXOrtho(m, 0.0f, h, 0.0f, w, 0.0f, -1.0f);
     fn_800BD2E0(m, 1);
     fn_800BD744(0.0f, 0.0f, w, h, 0.0f, 1.0f);
-    fn_800BD7A0(0, 0, w, h);
+    GXSetScissor(0, 0, w, h);
 
     PSMTXIdentity(e_m);
     GXLoadPosMtxImm(e_m, 0);
@@ -121,9 +121,9 @@ void fn_801E1FF8(GXRenderModeObj* rmode)
 
     GXSetZMode(1, 7, 0);
     GXSetBlendMode(0, 1, 0, 0);
-    fn_800BCE30(1);
-    fn_800BCE5C(0);
-    fn_800B9E6C(0);
+    GXSetColorUpdate(1);
+    GXSetAlphaUpdate(0);
+    GXSetDispCopyGamma(0);
     GXSetNumChans(0);
 
     fn_800B884C(2);
@@ -171,14 +171,14 @@ void fn_801E1FF8(GXRenderModeObj* rmode)
     GXSetTevSwapMode(3, 0, 0);
     GXSetTevKColorSel(3, 14);
 
-    fn_800BC36C(1, (GXColorS10){ -90, 0, -114, 135 });
-    fn_800BC3E0(0, (GXColor){ 0, 0, 226, 88 });
-    fn_800BC3E0(1, (GXColor){ 179, 0, 0, 182 });
-    fn_800BC3E0(2, (GXColor){ 255, 0, 255, 128 });
+    GXSetTevColorS10(1, (GXColorS10){ -90, 0, -114, 135 });
+    GXSetTevKColor(0, (GXColor){ 0, 0, 226, 88 });
+    GXSetTevKColor(1, (GXColor){ 179, 0, 0, 182 });
+    GXSetTevKColor(2, (GXColor){ 255, 0, 255, 128 });
     GXSetTevSwapModeTable(0, 0, 1, 2, 3);
 }
 
-void fn_801E1E1C(u8* y_data, u8* u_data, u8* v_data, s16 x, s16 y,
+void THPGXYuv2RgbDraw(u8* y_data, u8* u_data, u8* v_data, s16 x, s16 y,
                  s16 textureWidth, s16 textureHeight, s16 polygonWidth,
                  s16 polygonHeight)
 {

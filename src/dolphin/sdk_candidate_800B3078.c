@@ -44,7 +44,7 @@ s32 CARDProbeEx(s32 chan, s32* memSize, s32* sectorSize)
         }
     } else if (EXIGetState(chan) & 8) {
         result = -2;
-    } else if (!fn_80099400(chan, 0, &id)) {
+    } else if (!EXIGetID(chan, 0, &id)) {
         result = -1;
     } else if (IsCard(id)) {
         if (memSize != NULL) {
@@ -62,12 +62,12 @@ s32 CARDProbeEx(s32 chan, s32* memSize, s32* sectorSize)
 }
 
 /* DoMount */
-s32 fn_800B31F4(s32 chan)
+s32 DoMount(s32 chan)
 {
     extern s32 lbl_80312960[8];
     extern u32 lbl_80312980[8];
     extern u16 lbl_80478A58;
-    extern s32 fn_80099400(s32, s32, u32*);
+    extern s32 EXIGetID(s32, s32, u32*);
     extern s32 IsCard(u32);
     extern s32 __CARDClearStatus(s32);
     extern s32 __CARDReadStatus(s32, u8*);
@@ -75,7 +75,7 @@ s32 fn_800B31F4(s32 chan)
     extern s32 __CARDUnlock(s32, u8*);
     extern s32 __CARDEnableInterrupt(s32, s32);
     extern void __CARDExiHandler(void);
-    extern void fn_8009870C(s32, void*);
+    extern void EXISetExiCallback(s32, void*);
     extern void EXIUnlock(s32);
     extern s32 __CARDRead(s32, u32, u32, void*, CARDCallback);
     extern void __CARDMountCallback(s32, s32);
@@ -91,7 +91,7 @@ s32 fn_800B31F4(s32 chan)
     int step;
 
     if (card->mountStep == 0) {
-        if (fn_80099400(chan, 0, &id) == 0) {
+        if (EXIGetID(chan, 0, &id) == 0) {
             result = -3;
         } else if (IsCard(id)) {
             result = 0;
@@ -167,7 +167,7 @@ s32 fn_800B31F4(s32 chan)
         if (result < 0) {
             goto error;
         }
-        fn_8009870C(chan, __CARDExiHandler);
+        EXISetExiCallback(chan, __CARDExiHandler);
         EXIUnlock(chan);
         DCInvalidateRange(card->workArea, 0xA000);
     }
@@ -196,7 +196,7 @@ void __CARDMountCallback(s32 chan, s32 result)
     switch (result) {
     case 0:
         if (++card->field_24 < 7) {
-            result = fn_800B31F4(chan);
+            result = DoMount(chan);
             if (result >= 0) {
                 return;
             }
@@ -210,7 +210,7 @@ void __CARDMountCallback(s32 chan, s32 result)
             return;
         }
         card->unlockCallback = NULL;
-        result = fn_800B31F4(chan);
+        result = DoMount(chan);
         if (result >= 0) {
             return;
         }
@@ -231,7 +231,7 @@ s32 CARDMountAsync(s32 chan, void* workArea, CARDCallback detachCallback,
                    CARDCallback attachCallback)
 {
     extern u32 EXIGetState(s32 chan);
-    extern BOOL fn_800989C0(s32 chan, EXICallback callback); /* EXIAttach */
+    extern BOOL EXIAttach(s32 chan, EXICallback callback); /* EXIAttach */
     CARDControl* card;
     BOOL enabled;
 
@@ -262,7 +262,7 @@ s32 CARDMountAsync(s32 chan, void* workArea, CARDCallback detachCallback,
     card->callback_CC = NULL;
 
     if (!card->attached &&
-        !fn_800989C0(chan, (EXICallback) __CARDExtHandler))
+        !EXIAttach(chan, (EXICallback) __CARDExtHandler))
     {
         card->result = -3;
         OSRestoreInterrupts(enabled);
@@ -271,7 +271,7 @@ s32 CARDMountAsync(s32 chan, void* workArea, CARDCallback detachCallback,
 
     card->field_24 = 0;
     card->attached = TRUE;
-    fn_8009870C(chan, NULL);
+    EXISetExiCallback(chan, NULL);
     OSCancelAlarm(&card->alarm);
     card->dirBlock = NULL;
     card->fatBlock = NULL;
@@ -283,5 +283,5 @@ s32 CARDMountAsync(s32 chan, void* workArea, CARDCallback detachCallback,
     }
 
     card->unlockCallback = NULL;
-    return fn_800B31F4(chan);
+    return DoMount(chan);
 }

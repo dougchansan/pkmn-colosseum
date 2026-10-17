@@ -16,7 +16,7 @@ extern u8 statusGetJoutai08(void* obj, s32 arg);
 u8 fightOutPokemonGetJoutaiMigawariHp(void* trainer) {
     extern u16 joutaiDataBiosGetStatusKind(s32 id);
     extern u8 fn_8011B67C(void* obj, s32 arg);
-    extern u8 fn_80121ADC(void* obj, u32 field);
+    extern u8 pokemonIsJoutaiDataId(void* obj, u32 field);
     void* obj;
     void* target;
     void* obj2;
@@ -34,7 +34,7 @@ u8 fightOutPokemonGetJoutaiMigawariHp(void* trainer) {
             } else {
                 target = pokemonGetStatus(obj, 0, 0xCC, 0);
             }
-            status = fn_80121ADC(target, 0x14);
+            status = pokemonIsJoutaiDataId(target, 0x14);
         } else if (joutaiDataBiosGetStatusKind(0x14) != 0xCD) {
             status = 0;
         } else {

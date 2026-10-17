@@ -6,7 +6,7 @@
 extern void GSmtxInverse(void* dst, void* src);
 
 /* XD: GScameraGetInvMatrixPtr. */
-void* fn_800D1B3C(void* obj) {
+void* GScameraGetInvMatrixPtr(void* obj) {
     GSRenderCamera* c = (GSRenderCamera*)obj;
 
     if (c->dirty != 0) {
@@ -17,7 +17,7 @@ void* fn_800D1B3C(void* obj) {
 }
 
 /* XD: GScameraGetMatrixPtr. */
-void* fn_800D1D00(void* obj) {
+void* GScameraGetMatrixPtr(void* obj) {
     GSRenderCamera* c = (GSRenderCamera*)obj;
 
     if (c->dirty != 0) {

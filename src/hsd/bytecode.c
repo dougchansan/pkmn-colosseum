@@ -43,9 +43,9 @@
 extern void HSD_Panic(const char* file, u32 line, const char* msg);
 extern void OSReport(const char* fmt, ...);
 
-extern HSD_SList* fn_801A3E64(HSD_SList* node);   /* HSD_SListRemove  */
+extern HSD_SList* HSD_SListRemove(HSD_SList* node);   /* HSD_SListRemove  */
 extern HSD_SList* HSD_SListPrepend(HSD_SList* next, void* data);
-extern s32 fn_801ADC3C(s32 range);                /* HSD_Randi        */
+extern s32 HSD_Randi(s32 range);                /* HSD_Randi        */
 extern f32 HSD_Randf(void);                     /* HSD_Randf        */
 
 extern f64 sin(f64 x);
@@ -121,7 +121,7 @@ f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 nb_args)
                 break;
             case 5:
                 for (i = 0; i < operand; i++) {
-                    stack = fn_801A3E64(stack);
+                    stack = HSD_SListRemove(stack);
                 }
                 break;
             case 0x3C:
@@ -143,7 +143,7 @@ f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 nb_args)
                 if ((int) stack->data != 0) {
                     bytecode += operand;
                 }
-                stack = fn_801A3E64(stack);
+                stack = HSD_SListRemove(stack);
                 break;
             case 4:
                 bytecode += operand;
@@ -169,7 +169,7 @@ f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 nb_args)
             HSD_ASSERT(339, stack);
             f0 = ((ByteCodeVal*) &stack->data)->f;
             while (stack != NULL) {
-                stack = fn_801A3E64(stack);
+                stack = HSD_SListRemove(stack);
             }
             return f0;
         case 5:
@@ -212,7 +212,7 @@ f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 nb_args)
             break;
         case 0x0B:
             HSD_ASSERT(399, stack);
-            ((ByteCodeVal*) &stack->data)->i = fn_801ADC3C(2);
+            ((ByteCodeVal*) &stack->data)->i = HSD_Randi(2);
             break;
         case 0x0C:
             HSD_ASSERT(405, stack);
@@ -297,7 +297,7 @@ f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 nb_args)
             HSD_ASSERT(501, stack);
             HSD_ASSERT(501, stack->next);
             f0 = ((ByteCodeVal*) &stack->data)->f;
-            stack = fn_801A3E64(stack);
+            stack = HSD_SListRemove(stack);
             f1 = ((ByteCodeVal*) &stack->data)->f;
             fv = f1 + f0;
             stack->data = *(void**) &fv;
@@ -306,7 +306,7 @@ f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 nb_args)
             HSD_ASSERT(507, stack);
             HSD_ASSERT(507, stack->next);
             f0 = ((ByteCodeVal*) &stack->data)->f;
-            stack = fn_801A3E64(stack);
+            stack = HSD_SListRemove(stack);
             f1 = ((ByteCodeVal*) &stack->data)->f;
             fv = f1 - f0;
             stack->data = *(void**) &fv;
@@ -315,7 +315,7 @@ f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 nb_args)
             HSD_ASSERT(513, stack);
             HSD_ASSERT(513, stack->next);
             f0 = ((ByteCodeVal*) &stack->data)->f;
-            stack = fn_801A3E64(stack);
+            stack = HSD_SListRemove(stack);
             f1 = ((ByteCodeVal*) &stack->data)->f;
             fv = f1 * f0;
             stack->data = *(void**) &fv;
@@ -324,7 +324,7 @@ f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 nb_args)
             HSD_ASSERT(519, stack);
             HSD_ASSERT(519, stack->next);
             f0 = ((ByteCodeVal*) &stack->data)->f;
-            stack = fn_801A3E64(stack);
+            stack = HSD_SListRemove(stack);
             f1 = ((ByteCodeVal*) &stack->data)->f;
             fv = f1 / f0;
             stack->data = *(void**) &fv;
@@ -333,7 +333,7 @@ f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 nb_args)
             HSD_ASSERT(525, stack);
             HSD_ASSERT(525, stack->next);
             f0 = ((ByteCodeVal*) &stack->data)->f;
-            stack = fn_801A3E64(stack);
+            stack = HSD_SListRemove(stack);
             f1 = ((ByteCodeVal*) &stack->data)->f;
             fv = (f32) fmod(f1, f0);
             stack->data = *(void**) &fv;
@@ -342,7 +342,7 @@ f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 nb_args)
             HSD_ASSERT(531, stack);
             HSD_ASSERT(531, stack->next);
             d1 = ((ByteCodeVal*) &stack->data)->i;
-            stack = fn_801A3E64(stack);
+            stack = HSD_SListRemove(stack);
             d0 = ((ByteCodeVal*) &stack->data)->i;
             ((ByteCodeVal*) &stack->data)->i = d0 + d1;
             break;
@@ -350,7 +350,7 @@ f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 nb_args)
             HSD_ASSERT(536, stack);
             HSD_ASSERT(536, stack->next);
             d1 = ((ByteCodeVal*) &stack->data)->i;
-            stack = fn_801A3E64(stack);
+            stack = HSD_SListRemove(stack);
             d0 = ((ByteCodeVal*) &stack->data)->i;
             ((ByteCodeVal*) &stack->data)->i = d0 - d1;
             break;
@@ -358,7 +358,7 @@ f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 nb_args)
             HSD_ASSERT(541, stack);
             HSD_ASSERT(541, stack->next);
             d1 = ((ByteCodeVal*) &stack->data)->i;
-            stack = fn_801A3E64(stack);
+            stack = HSD_SListRemove(stack);
             d0 = ((ByteCodeVal*) &stack->data)->i;
             ((ByteCodeVal*) &stack->data)->i = d0 * d1;
             break;
@@ -366,7 +366,7 @@ f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 nb_args)
             HSD_ASSERT(546, stack);
             HSD_ASSERT(546, stack->next);
             d1 = ((ByteCodeVal*) &stack->data)->i;
-            stack = fn_801A3E64(stack);
+            stack = HSD_SListRemove(stack);
             d0 = ((ByteCodeVal*) &stack->data)->i;
             ((ByteCodeVal*) &stack->data)->i = d0 / d1;
             break;
@@ -374,7 +374,7 @@ f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 nb_args)
             HSD_ASSERT(551, stack);
             HSD_ASSERT(551, stack->next);
             d1 = ((ByteCodeVal*) &stack->data)->i;
-            stack = fn_801A3E64(stack);
+            stack = HSD_SListRemove(stack);
             d0 = ((ByteCodeVal*) &stack->data)->i;
             ((ByteCodeVal*) &stack->data)->i = d0 % d1;
             break;
@@ -382,7 +382,7 @@ f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 nb_args)
             HSD_ASSERT(556, stack);
             HSD_ASSERT(556, stack->next);
             f0 = ((ByteCodeVal*) &stack->data)->f;
-            stack = fn_801A3E64(stack);
+            stack = HSD_SListRemove(stack);
             f1 = ((ByteCodeVal*) &stack->data)->f;
             fv = (f32) pow(f1, f0);
             stack->data = *(void**) &fv;
@@ -391,7 +391,7 @@ f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 nb_args)
             HSD_ASSERT(562, stack);
             HSD_ASSERT(562, stack->next);
             f0 = ((ByteCodeVal*) &stack->data)->f;
-            stack = fn_801A3E64(stack);
+            stack = HSD_SListRemove(stack);
             if (((ByteCodeVal*) &stack->data)->f > f0) {
                 stack->data = *(void**) &f0;
             }
@@ -400,7 +400,7 @@ f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 nb_args)
             HSD_ASSERT(569, stack);
             HSD_ASSERT(569, stack->next);
             f0 = ((ByteCodeVal*) &stack->data)->f;
-            stack = fn_801A3E64(stack);
+            stack = HSD_SListRemove(stack);
             if (((ByteCodeVal*) &stack->data)->f < f0) {
                 stack->data = *(void**) &f0;
             }
@@ -409,7 +409,7 @@ f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 nb_args)
             HSD_ASSERT(576, stack);
             HSD_ASSERT(576, stack->next);
             d1 = ((ByteCodeVal*) &stack->data)->i;
-            stack = fn_801A3E64(stack);
+            stack = HSD_SListRemove(stack);
             d0 = ((ByteCodeVal*) &stack->data)->i;
             if (d0 > d1) {
                 ((ByteCodeVal*) &stack->data)->i = d1;
@@ -419,7 +419,7 @@ f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 nb_args)
             HSD_ASSERT(583, stack);
             HSD_ASSERT(583, stack->next);
             d1 = ((ByteCodeVal*) &stack->data)->i;
-            stack = fn_801A3E64(stack);
+            stack = HSD_SListRemove(stack);
             d0 = ((ByteCodeVal*) &stack->data)->i;
             if (d0 < d1) {
                 ((ByteCodeVal*) &stack->data)->i = d1;
@@ -429,7 +429,7 @@ f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 nb_args)
             HSD_ASSERT(590, stack);
             HSD_ASSERT(590, stack->next);
             f0 = ((ByteCodeVal*) &stack->data)->f;
-            stack = fn_801A3E64(stack);
+            stack = HSD_SListRemove(stack);
             f1 = ((ByteCodeVal*) &stack->data)->f;
             fv = (f32) (BC_RAD_TO_DEG * bcAtan2(f1, f0));
             stack->data = *(void**) &fv;
@@ -438,7 +438,7 @@ f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 nb_args)
             HSD_ASSERT(596, stack);
             HSD_ASSERT(596, stack->next);
             f0 = ((ByteCodeVal*) &stack->data)->f;
-            stack = fn_801A3E64(stack);
+            stack = HSD_SListRemove(stack);
             f1 = ((ByteCodeVal*) &stack->data)->f;
             ((ByteCodeVal*) &stack->data)->i = f1 < f0;
             break;
@@ -446,7 +446,7 @@ f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 nb_args)
             HSD_ASSERT(601, stack);
             HSD_ASSERT(601, stack->next);
             f0 = ((ByteCodeVal*) &stack->data)->f;
-            stack = fn_801A3E64(stack);
+            stack = HSD_SListRemove(stack);
             f1 = ((ByteCodeVal*) &stack->data)->f;
             ((ByteCodeVal*) &stack->data)->i = f1 > f0;
             break;
@@ -454,7 +454,7 @@ f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 nb_args)
             HSD_ASSERT(606, stack);
             HSD_ASSERT(606, stack->next);
             f0 = ((ByteCodeVal*) &stack->data)->f;
-            stack = fn_801A3E64(stack);
+            stack = HSD_SListRemove(stack);
             f1 = ((ByteCodeVal*) &stack->data)->f;
             ((ByteCodeVal*) &stack->data)->i = f1 <= f0;
             break;
@@ -462,7 +462,7 @@ f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 nb_args)
             HSD_ASSERT(611, stack);
             HSD_ASSERT(611, stack->next);
             f0 = ((ByteCodeVal*) &stack->data)->f;
-            stack = fn_801A3E64(stack);
+            stack = HSD_SListRemove(stack);
             f1 = ((ByteCodeVal*) &stack->data)->f;
             ((ByteCodeVal*) &stack->data)->i = f1 >= f0;
             break;
@@ -470,7 +470,7 @@ f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 nb_args)
             HSD_ASSERT(616, stack);
             HSD_ASSERT(616, stack->next);
             f0 = ((ByteCodeVal*) &stack->data)->f;
-            stack = fn_801A3E64(stack);
+            stack = HSD_SListRemove(stack);
             f1 = ((ByteCodeVal*) &stack->data)->f;
             ((ByteCodeVal*) &stack->data)->i = f1 == f0;
             break;
@@ -478,7 +478,7 @@ f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 nb_args)
             HSD_ASSERT(621, stack);
             HSD_ASSERT(621, stack->next);
             f0 = ((ByteCodeVal*) &stack->data)->f;
-            stack = fn_801A3E64(stack);
+            stack = HSD_SListRemove(stack);
             f1 = ((ByteCodeVal*) &stack->data)->f;
             ((ByteCodeVal*) &stack->data)->i = f1 != f0;
             break;
@@ -486,7 +486,7 @@ f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 nb_args)
             HSD_ASSERT(626, stack);
             HSD_ASSERT(626, stack->next);
             d1 = ((ByteCodeVal*) &stack->data)->i;
-            stack = fn_801A3E64(stack);
+            stack = HSD_SListRemove(stack);
             d0 = ((ByteCodeVal*) &stack->data)->i;
             ((ByteCodeVal*) &stack->data)->i = d0 < d1;
             break;
@@ -494,7 +494,7 @@ f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 nb_args)
             HSD_ASSERT(631, stack);
             HSD_ASSERT(631, stack->next);
             d1 = ((ByteCodeVal*) &stack->data)->i;
-            stack = fn_801A3E64(stack);
+            stack = HSD_SListRemove(stack);
             d0 = ((ByteCodeVal*) &stack->data)->i;
             ((ByteCodeVal*) &stack->data)->i = d0 > d1;
             break;
@@ -502,7 +502,7 @@ f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 nb_args)
             HSD_ASSERT(636, stack);
             HSD_ASSERT(636, stack->next);
             d1 = ((ByteCodeVal*) &stack->data)->i;
-            stack = fn_801A3E64(stack);
+            stack = HSD_SListRemove(stack);
             d0 = ((ByteCodeVal*) &stack->data)->i;
             ((ByteCodeVal*) &stack->data)->i = d0 <= d1;
             break;
@@ -510,7 +510,7 @@ f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 nb_args)
             HSD_ASSERT(641, stack);
             HSD_ASSERT(641, stack->next);
             d1 = ((ByteCodeVal*) &stack->data)->i;
-            stack = fn_801A3E64(stack);
+            stack = HSD_SListRemove(stack);
             d0 = ((ByteCodeVal*) &stack->data)->i;
             ((ByteCodeVal*) &stack->data)->i = d0 >= d1;
             break;
@@ -518,7 +518,7 @@ f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 nb_args)
             HSD_ASSERT(646, stack);
             HSD_ASSERT(646, stack->next);
             d1 = ((ByteCodeVal*) &stack->data)->i;
-            stack = fn_801A3E64(stack);
+            stack = HSD_SListRemove(stack);
             d0 = ((ByteCodeVal*) &stack->data)->i;
             ((ByteCodeVal*) &stack->data)->i = d0 == d1;
             break;
@@ -526,7 +526,7 @@ f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 nb_args)
             HSD_ASSERT(651, stack);
             HSD_ASSERT(651, stack->next);
             d1 = ((ByteCodeVal*) &stack->data)->i;
-            stack = fn_801A3E64(stack);
+            stack = HSD_SListRemove(stack);
             d0 = ((ByteCodeVal*) &stack->data)->i;
             ((ByteCodeVal*) &stack->data)->i = d0 != d1;
             break;
@@ -534,7 +534,7 @@ f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 nb_args)
             HSD_ASSERT(656, stack);
             HSD_ASSERT(656, stack->next);
             d1 = ((ByteCodeVal*) &stack->data)->i;
-            stack = fn_801A3E64(stack);
+            stack = HSD_SListRemove(stack);
             d0 = ((ByteCodeVal*) &stack->data)->i;
             ((ByteCodeVal*) &stack->data)->i = d0 != 0 && d1 != 0;
             break;
@@ -542,7 +542,7 @@ f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 nb_args)
             HSD_ASSERT(661, stack);
             HSD_ASSERT(661, stack->next);
             d1 = ((ByteCodeVal*) &stack->data)->i;
-            stack = fn_801A3E64(stack);
+            stack = HSD_SListRemove(stack);
             d0 = ((ByteCodeVal*) &stack->data)->i;
             ((ByteCodeVal*) &stack->data)->i = d0 != 0 || d1 != 0;
             break;
@@ -550,7 +550,7 @@ f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 nb_args)
             HSD_ASSERT(666, stack);
             HSD_ASSERT(666, stack->next);
             d1 = ((ByteCodeVal*) &stack->data)->i;
-            stack = fn_801A3E64(stack);
+            stack = HSD_SListRemove(stack);
             d0 = ((ByteCodeVal*) &stack->data)->i;
             ((ByteCodeVal*) &stack->data)->i =
                 (d0 == 0 && d1 != 0) || (d0 != 0 && d1 == 0);
@@ -559,7 +559,7 @@ f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 nb_args)
             HSD_ASSERT(671, stack);
             HSD_ASSERT(671, stack->next);
             d1 = ((ByteCodeVal*) &stack->data)->i;
-            stack = fn_801A3E64(stack);
+            stack = HSD_SListRemove(stack);
             d0 = ((ByteCodeVal*) &stack->data)->i;
             stack->data = (void*) (d0 & d1);
             break;
@@ -567,7 +567,7 @@ f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 nb_args)
             HSD_ASSERT(676, stack);
             HSD_ASSERT(676, stack->next);
             d1 = ((ByteCodeVal*) &stack->data)->i;
-            stack = fn_801A3E64(stack);
+            stack = HSD_SListRemove(stack);
             d0 = ((ByteCodeVal*) &stack->data)->i;
             stack->data = (void*) (d0 | d1);
             break;
@@ -575,7 +575,7 @@ f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 nb_args)
             HSD_ASSERT(681, stack);
             HSD_ASSERT(681, stack->next);
             d1 = ((ByteCodeVal*) &stack->data)->i;
-            stack = fn_801A3E64(stack);
+            stack = HSD_SListRemove(stack);
             d0 = ((ByteCodeVal*) &stack->data)->i;
             stack->data = (void*) (d0 ^ d1);
             break;
@@ -583,9 +583,9 @@ f32 HSD_ByteCodeEval(u8* bytecode, f32* args, s32 nb_args)
             HSD_ASSERT(687, stack);
             HSD_ASSERT(687, stack->next);
             d1 = ((ByteCodeVal*) &stack->data)->i;
-            stack = fn_801A3E64(stack);
+            stack = HSD_SListRemove(stack);
             d0 = ((ByteCodeVal*) &stack->data)->i;
-            ((ByteCodeVal*) &stack->data)->i = d0 + fn_801ADC3C((d1 - d0) + 1);
+            ((ByteCodeVal*) &stack->data)->i = d0 + HSD_Randi((d1 - d0) + 1);
             break;
         default:
             OSReport("unexpected opcode 0x%x.\n", last_command);

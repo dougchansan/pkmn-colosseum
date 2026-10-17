@@ -1184,7 +1184,7 @@ s32 fn_8001431C(void* arg0, u8* arg1) {
 #endif
 
 /* fn_80014398 - 0x80014398 | size: 0x1b8 */
-extern void fn_800FB8C8(s32, s32, s16, s16, s32, s32);
+extern void GSmsgPrintRight(s32, s32, s16, s16, s32, s32);
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma (the GS_EVENT_EXEC_ONLY_800141BC carve skips it and uses the unit's -opt nopeephole) - see docs/RULE_EXCEPTIONS.md */
 #if !defined(GS_EVENT_EXEC_ONLY_800141BC)
 #pragma push
@@ -1219,7 +1219,7 @@ s32 fn_80014398(u8* ctx, u8* arg1) {
     digit = (s32)lbl_8047A2FC / power;
     digit %= 10;
     msgctrlSetValue(0x34, digit);
-    fn_800FB8C8(0, 0, *(s16*)(arg1 + 0x54), *(s16*)(arg1 + 0x56), -1, 0xC9);
+    GSmsgPrintRight(0, 0, *(s16*)(arg1 + 0x54), *(s16*)(arg1 + 0x56), -1, 0xC9);
     return 0;
 }
 #if !defined(GS_EVENT_EXEC_ONLY_800141BC)

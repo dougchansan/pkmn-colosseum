@@ -2,8 +2,8 @@
  * @file floor_range_80111DF8.c
  * @brief Floor map resource/state helpers ahead of floor.c.
  *
- * Address range: 0x80111DF8 - 0x80112380 (fn_80111DF8, fn_80111F2C,
- * fn_8011207C, fn_80112260).
+ * Address range: 0x80111DF8 - 0x80112380 (_floorGetStateSize, _floorMakeStateData,
+ * _floorRestoreStateData, fn_80112260).
  *
  * These four functions read floor.c's .rodata (lbl_802720B0, inside
  * floor.c's 0x80272088-0x802721FA) and call the floorDataBios and
@@ -183,7 +183,7 @@ static inline void floorMapSetDispCB(u32 kind, u32 groupId, u32 resourceId,
 }
 
 /* 0x80111DF8 | 0x134: state size (XD _floorGetStateSize, 0x8011DF24) */
-u32 fn_80111DF8(void) {
+u32 _floorGetStateSize(void) {
     u32 counts[2];
 
     counts[0] = 0;
@@ -193,14 +193,14 @@ u32 fn_80111DF8(void) {
 }
 
 /* 0x80111F2C | 0x150: make state (XD _floorMakeStateData, 0x8011E07C) */
-void fn_80111F2C(u8* state) {
+void _floorMakeStateData(u8* state) {
     u8* cursor = state;
 
     floorMapResourceDataIterate(floorMapPushCB, &cursor);
 }
 
 /* 0x8011207C | 0x1E4: restore state (XD _floorRestoreStateData, 0x8011DF78) */
-void fn_8011207C(u8* state, u32 stateSize) {
+void _floorRestoreStateData(u8* state, u32 stateSize) {
     FloorStateData data;
 
     data.data = state;

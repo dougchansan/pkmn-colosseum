@@ -10,7 +10,7 @@
  * StarsMmd/Colo-XD-PBR-symbol-maps @ 6b51d3a) ends with GScolsys2Sun
  * (0x1D4, the same size as here), and floor.o follows it. In Colosseum
  * GScolsys2Sun follows GScolsys2CheckGetEventID directly and is followed by
- * floor code (fn_80111DF8 onwards reads floor.c's .rodata), so the retail
+ * floor code (_floorGetStateSize onwards reads floor.c's .rodata), so the retail
  * TU here is this one function; XD's live getCpSegPolyArray and
  * GScolsys2SunArray have no Colosseum copies.
  *

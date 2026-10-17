@@ -50,7 +50,7 @@ extern u32   pokemonSetStatus();
 extern void  pokemonGrowBasisStatus();
 extern u32   itemGetStatus();
 extern void  joutaiDataBiosGetStatusKind(void);
-extern void  fn_80121ADC(void);
+extern void  pokemonIsJoutaiDataId(void);
 extern void  fn_8011B67C(void);
 extern void  pokemonGetSoubiItemDataId(void);
 extern void  wazaGetStatus(void);
@@ -81,11 +81,11 @@ static inline void* fightPokemonGetPokemonPtrInline(void* fp)
 static inline u8 fightPokemonCheckJoutaiInline(void* fp, u16 id)
 {
     extern u16 joutaiDataBiosGetStatusKind();
-    extern u8 fn_80121ADC();
+    extern u8 pokemonIsJoutaiDataId();
     extern u8 fn_8011B67C();
 
     if (joutaiDataBiosGetStatusKind(id) == 0x7C || joutaiDataBiosGetStatusKind(id) == 0xC8) {
-        return fn_80121ADC(fightPokemonGetPokemonPtrInline(fp), id);
+        return pokemonIsJoutaiDataId(fightPokemonGetPokemonPtrInline(fp), id);
     }
     if (joutaiDataBiosGetStatusKind(id) != 0xCD) {
         return 0;
@@ -202,7 +202,7 @@ static inline u8 fightOutPokemonCheckFightOutInline(void* fo)
 u16 figthOutPokemonGetSoubiItemBuff(void* ctx) {
     extern u16 joutaiDataBiosGetStatusKind();
     extern u8 fn_8011B67C();
-    extern u8 fn_80121ADC();
+    extern u8 pokemonIsJoutaiDataId();
     extern u32 pokemonGetSoubiItemBuff();
     void* ccData;
     void* d6Data;
@@ -224,7 +224,7 @@ u16 figthOutPokemonGetSoubiItemBuff(void* ctx) {
         } else {
             data = pokemonGetStatus(d6Data, 0, 0xCC, 0);
         }
-        result = fn_80121ADC(data, 0x3D);
+        result = pokemonIsJoutaiDataId(data, 0x3D);
     } else {
         if (joutaiDataBiosGetStatusKind(0x3D) != 0xCD) {
             result = 0;
@@ -240,7 +240,7 @@ u16 figthOutPokemonGetSoubiItemBuff(void* ctx) {
 u32 fightOutPokemonGetSoubiItemSoubiDataId(void* ctx) {
     extern u16 joutaiDataBiosGetStatusKind();
     extern u8 fn_8011B67C();
-    extern u8 fn_80121ADC();
+    extern u8 pokemonIsJoutaiDataId();
     extern u32 pokemonGetSoubiItemSoubiDataId();
 void* ccData;
 void* d6Data;
@@ -262,7 +262,7 @@ u8 result;
         } else {
             data = pokemonGetStatus(d6Data, 0, 0xCC, 0);
         }
-        result = fn_80121ADC(data, 0x3D);
+        result = pokemonIsJoutaiDataId(data, 0x3D);
     } else if (joutaiDataBiosGetStatusKind(0x3D) != 0xCD) {
         result = 0;
     } else {
@@ -277,7 +277,7 @@ u8 result;
 u32 fightOutPokemonGetSoubiItemDataId(void* ctx) {
     extern u16 joutaiDataBiosGetStatusKind();
     extern u8 fn_8011B67C();
-    extern u8 fn_80121ADC();
+    extern u8 pokemonIsJoutaiDataId();
     extern u32 pokemonGetSoubiItemDataId();
     void* ccData;
     void* d6Data;
@@ -299,7 +299,7 @@ u32 fightOutPokemonGetSoubiItemDataId(void* ctx) {
         } else {
             data = pokemonGetStatus(d6Data, 0, 0xCC, 0);
         }
-        result = fn_80121ADC(data, 0x3D);
+        result = pokemonIsJoutaiDataId(data, 0x3D);
     } else if (joutaiDataBiosGetStatusKind(0x3D) != 0xCD) {
         result = 0;
     } else {
@@ -356,7 +356,7 @@ u32 fightPokemonGetSoubiItemDataId(void* param_1) {
 static inline u32 figthOutPokemonGetSoubiItemBuffInline(void* ctx) {
     extern u16 joutaiDataBiosGetStatusKind();
     extern u8 fn_8011B67C();
-    extern u8 fn_80121ADC();
+    extern u8 pokemonIsJoutaiDataId();
     extern u32 pokemonGetSoubiItemBuff();
     void* ccData;
     void* d6Data;
@@ -378,7 +378,7 @@ static inline u32 figthOutPokemonGetSoubiItemBuffInline(void* ctx) {
         } else {
             data = pokemonGetStatus(d6Data, 0, 0xCC, 0);
         }
-        result = fn_80121ADC(data, 0x3D);
+        result = pokemonIsJoutaiDataId(data, 0x3D);
     } else {
         if (joutaiDataBiosGetStatusKind(0x3D) != 0xCD) {
             result = 0;
@@ -393,7 +393,7 @@ static inline u32 figthOutPokemonGetSoubiItemBuffInline(void* ctx) {
 static inline u32 fightOutPokemonGetSoubiItemSoubiDataIdInline(void* ctx) {
     extern u16 joutaiDataBiosGetStatusKind();
     extern u8 fn_8011B67C();
-    extern u8 fn_80121ADC();
+    extern u8 pokemonIsJoutaiDataId();
     extern u32 pokemonGetSoubiItemSoubiDataId();
 void* d6Data;
 void* ccData;
@@ -415,7 +415,7 @@ u8 result;
         } else {
             data = pokemonGetStatus(d6Data, 0, 0xCC, 0);
         }
-        result = fn_80121ADC(data, 0x3D);
+        result = pokemonIsJoutaiDataId(data, 0x3D);
     } else if (joutaiDataBiosGetStatusKind(0x3D) != 0xCD) {
         result = 0;
     } else {

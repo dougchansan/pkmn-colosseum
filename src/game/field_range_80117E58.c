@@ -246,7 +246,7 @@ extern u32 wazaDataBiosGetFightTrainerAiWazaHitFuncPtr(u8* ptr);
 extern u32 wazaDataBiosGetFightTrainerAiWazaValueFuncPtr(u8* ptr);
 extern void pokemonGetDarkPokemonLevel(void);
 extern u32 pokemonDataCheckValid(u32 a, u16 key);
-extern u8 fn_80121ADC(u8* ptr, u32 slot);
+extern u8 pokemonIsJoutaiDataId(u8* ptr, u32 slot);
 extern void pokemonSetWazaStatus(void);
 extern u32 pokemonWazaCheckValid(u8* ptr, u32 arg2);
 extern void pokemonInit(u8* ptr);
@@ -443,7 +443,7 @@ extern void psInitGenerator(void);
 extern void fn_8016AAF4(void);
 extern void HSD_JObjSetSPtclCallback(void);
 extern void HSD_JObjSetPtclCallback(void);
-extern void fn_8019D610(void);
+extern void HSD_JObjSetDPtclCallback(void);
 extern u16 lbl_8047AD98;
 extern u16 lbl_8047ADA4;
 extern struct GSmodel* GSmodelSearchModelList(void* jobj);
@@ -2405,7 +2405,7 @@ void gsParticleInit(u32 count1, u32 count2) {
     extern void psInitAppSRT(s32 a, s32 b);
     extern void HSD_JObjSetSPtclCallback(void* fp);
     extern void HSD_JObjSetPtclCallback(void* fp);
-    extern void fn_8019D610(void* fp);
+    extern void HSD_JObjSetDPtclCallback(void* fp);
     extern void gsParticlePtclHook(void);
     u32 h;
     u32 i;
@@ -2430,7 +2430,7 @@ void gsParticleInit(u32 count1, u32 count2) {
     psInitAppSRT(0, 0x74);
     HSD_JObjSetSPtclCallback(gsParticlePtclHook);
     HSD_JObjSetPtclCallback(gsParticlePtclHook);
-    fn_8019D610(psSetPointJObjNodup);
+    HSD_JObjSetDPtclCallback(psSetPointJObjNodup);
 }
 /* 0x80119930 | 0x2A0 */
 void gsParticleKillOldest(FieldParticleInstanceList* list) {

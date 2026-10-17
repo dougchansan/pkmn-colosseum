@@ -52,7 +52,7 @@ extern u8 OnReset_800C0734[];
 extern u8 __GXShutdown_800C6260[];
 extern u8 fn_800B7874[];
 extern u8 fn_800B7D74[];
-extern u8 fn_800B80CC[];
+extern u8 GXSetVtxAttrFmtv[];
 extern u8 GXSetTexCoordGen2[];
 
 /* Auto-carved .data unit 0x803127F0..0x80313364 (44 objects). Non-relocated data as byte-exact u8[]; pointer/jump tables as void*[] for R_PPC_ADDR32 relocations. */
@@ -209,23 +209,23 @@ void* jumptable_80312B48[17] = {
 };
 
 void* jumptable_80312B8C[17] = {
-    (void*)((u8*)fn_800B80CC + 0x50),
-    (void*)((u8*)fn_800B80CC + 0x8C),
-    (void*)((u8*)fn_800B80CC + 0xF0),
-    (void*)((u8*)fn_800B80CC + 0x11C),
-    (void*)((u8*)fn_800B80CC + 0x148),
-    (void*)((u8*)fn_800B80CC + 0x188),
-    (void*)((u8*)fn_800B80CC + 0x1C4),
-    (void*)((u8*)fn_800B80CC + 0x204),
-    (void*)((u8*)fn_800B80CC + 0x244),
-    (void*)((u8*)fn_800B80CC + 0x280),
-    (void*)((u8*)fn_800B80CC + 0x2C0),
-    (void*)((u8*)fn_800B80CC + 0x300),
-    (void*)((u8*)fn_800B80CC + 0x338),
-    (void*)((u8*)fn_800B80CC + 0x338),
-    (void*)((u8*)fn_800B80CC + 0x338),
-    (void*)((u8*)fn_800B80CC + 0x338),
-    (void*)((u8*)fn_800B80CC + 0x8C),
+    (void*)((u8*)GXSetVtxAttrFmtv + 0x50),
+    (void*)((u8*)GXSetVtxAttrFmtv + 0x8C),
+    (void*)((u8*)GXSetVtxAttrFmtv + 0xF0),
+    (void*)((u8*)GXSetVtxAttrFmtv + 0x11C),
+    (void*)((u8*)GXSetVtxAttrFmtv + 0x148),
+    (void*)((u8*)GXSetVtxAttrFmtv + 0x188),
+    (void*)((u8*)GXSetVtxAttrFmtv + 0x1C4),
+    (void*)((u8*)GXSetVtxAttrFmtv + 0x204),
+    (void*)((u8*)GXSetVtxAttrFmtv + 0x244),
+    (void*)((u8*)GXSetVtxAttrFmtv + 0x280),
+    (void*)((u8*)GXSetVtxAttrFmtv + 0x2C0),
+    (void*)((u8*)GXSetVtxAttrFmtv + 0x300),
+    (void*)((u8*)GXSetVtxAttrFmtv + 0x338),
+    (void*)((u8*)GXSetVtxAttrFmtv + 0x338),
+    (void*)((u8*)GXSetVtxAttrFmtv + 0x338),
+    (void*)((u8*)GXSetVtxAttrFmtv + 0x338),
+    (void*)((u8*)GXSetVtxAttrFmtv + 0x8C),
 };
 #endif
 #endif

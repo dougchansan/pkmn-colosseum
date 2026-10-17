@@ -344,7 +344,7 @@ extern s8 GSinputGetLeftStickXData(s32 pad, s32 stick);
 extern s8 GSinputGetLeftStickYData(s32 pad, s32 stick);
 extern u32 fn_800F7BC4(s32 pad);
 extern void* fn_800F7108(u16 id);
-extern u16 fn_800F7318(u32 type, u32 scriptId, u32 stackSize, u32 a, u32 b, s32 argc, ...);
+extern u16 _vmThreadCreate(u32 type, u32 scriptId, u32 stackSize, u32 a, u32 b, s32 argc, ...);
 extern void fn_800F9210(u32 groupId, u32 index);
 extern void fn_800FF4D4(void* funcs, u8 typeId);
 extern void fn_80101B90(u32 color);
@@ -383,7 +383,7 @@ extern u8 GScolsys2WalkGetLayer(void* position, u8* layer, u8* subLayer);
 extern s32 GScolsys2ThruGetEventID(void* from, void* to, void* events, f32 radius);
 extern s32 GScolsys2HumanCollision(s32 id, void* from, void* to, void* hit);
 extern s32 fn_8010E138(void* position, PeopleFloorHit* hits);
-extern s32 fn_8010F188(void* from, void* to, void* hit, f32 radius);
+extern s32 GScolsys2HitNpcCollision(void* from, void* to, void* hit, f32 radius);
 extern s32 colsysWallSweep(void* from, void* to, void* hit, f32 radius);
 extern s32 fn_80110084(s32* result, void* query);
 extern s32 colsysPassGetEventID(void* from, void* to, void* events);
@@ -3258,7 +3258,7 @@ u8 peopleCanSee(u32 groupId, u32 index, f32 range, u32 targetGroupId, u32 target
     if (info != NULL) {
         radius = fn_8018F5E4(info);
     }
-    if (fn_8010F188(&position, &targetPosition, NULL, radius)) {
+    if (GScolsys2HitNpcCollision(&position, &targetPosition, NULL, radius)) {
         return FALSE;
     }
     return TRUE;
@@ -3835,7 +3835,7 @@ s32 peopleStartScript(u32 groupId, u32 index, u32 flagId, u32 param1, u32 param2
     }
 
     entry->flagId =
-        fn_800F7318(15, flagId, 0x1000, 1, 0, 4, groupId, index,
+        _vmThreadCreate(15, flagId, 0x1000, 1, 0, 4, groupId, index,
                     param1, param2);
     return 1;
 }
@@ -3994,7 +3994,7 @@ void std131_characterSurpriseAnimation(u32 groupId, u32 index) {
 
     entry = peopleFindBySelf(peopleFindSelf(modelGroup, modelIndex));
     if (entry != NULL) {
-        entry->flagId = fn_800F7318(0xF, 0x0596000E, 0x1000, 1, 0, 4,
+        entry->flagId = _vmThreadCreate(0xF, 0x0596000E, 0x1000, 1, 0, 4,
                                     modelGroup, modelIndex, 0, 0);
     }
 }

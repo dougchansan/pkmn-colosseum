@@ -26,43 +26,43 @@ static OSMessage lbl_8046C190[BUFFER_COUNT]; /* DecodedTextureSetMessage */
 static BOOL lbl_8047B48C; /* First */
 static BOOL lbl_8047B488; /* VideoDecodeThreadCreated */
 
-static void* fn_801E4F64(void* arg);
-static void* fn_801E5154(void* arg);
+static void* VideoDecoderForOnMemory(void* arg);
+static void* VideoDecoder(void* arg);
 static inline void VideoDecode(THPReadBuffer* readBuffer);
 static inline void* PopFreeTextureSet(void);
 static inline void PushDecodedTextureSet(void* tex);
 
-BOOL fn_801E5470(s32 priority, void* arg)
+BOOL CreateVideoDecodeThread(s32 priority, void* arg)
 {
     if (arg) {
-        if (OSCreateThread(&lbl_8046D1E8, fn_801E4F64, arg,
+        if (OSCreateThread(&lbl_8046D1E8, VideoDecoderForOnMemory, arg,
                            lbl_8046C1E8 + STACK_SIZE, STACK_SIZE, priority,
                            1) == FALSE) {
             return FALSE;
         }
     } else {
-        if (OSCreateThread(&lbl_8046D1E8, fn_801E5154, NULL,
+        if (OSCreateThread(&lbl_8046D1E8, VideoDecoder, NULL,
                            lbl_8046C1E8 + STACK_SIZE, STACK_SIZE, priority,
                            1) == FALSE) {
             return FALSE;
         }
     }
 
-    fn_8009F1D0(&lbl_8046C1C8, lbl_8046C19C, BUFFER_COUNT);
-    fn_8009F1D0(&lbl_8046C1A8, lbl_8046C190, BUFFER_COUNT);
+    OSInitMessageQueue(&lbl_8046C1C8, lbl_8046C19C, BUFFER_COUNT);
+    OSInitMessageQueue(&lbl_8046C1A8, lbl_8046C190, BUFFER_COUNT);
     lbl_8047B488 = TRUE;
     lbl_8047B48C = TRUE;
     return TRUE;
 }
 
-void fn_801E543C(void)
+void VideoDecodeThreadStart(void)
 {
     if (lbl_8047B488) {
         OSResumeThread(&lbl_8046D1E8);
     }
 }
 
-void fn_801E5400(void)
+void VideoDecodeThreadCancel(void)
 {
     if (lbl_8047B488) {
         OSCancelThread(&lbl_8046D1E8);
@@ -71,7 +71,7 @@ void fn_801E5400(void)
 }
 
 /* VideoDecoder */
-static void* fn_801E5154(void* arg)
+static void* VideoDecoder(void* arg)
 {
     THPReadBuffer* readBuffer;
     u32 curFrame;
@@ -88,7 +88,7 @@ static void* fn_801E5154(void* arg)
                     VideoDecode(readBuffer);
                 }
 
-                fn_801E1BB8(readBuffer);
+                PushFreeReadBuffer(readBuffer);
                 level = OSDisableInterrupts();
                 lbl_8046AC60.videoDecodeCount++;
                 OSRestoreInterrupts(level);
@@ -102,12 +102,12 @@ static void* fn_801E5154(void* arg)
         }
 
         VideoDecode(readBuffer);
-        fn_801E1BB8(readBuffer);
+        PushFreeReadBuffer(readBuffer);
     }
 }
 
 /* VideoDecoderForOnMemory */
-static void* fn_801E4F64(void* arg)
+static void* VideoDecoderForOnMemory(void* arg)
 {
     THPReadBuffer readBuffer;
     s32 readSize;
@@ -182,7 +182,7 @@ static inline void VideoDecode(THPReadBuffer* readBuffer)
                      THPVideoDecode(tile, textureSet->ytexture, textureSet->utexture,
                                     textureSet->vtexture, lbl_8046AC60.thpWork))) {
                 if (lbl_8047B48C) {
-                    fn_801E446C(FALSE);
+                    PrepareReady(FALSE);
                     lbl_8047B48C = FALSE;
                 }
                 OSSuspendThread(&lbl_8046D1E8);
@@ -199,7 +199,7 @@ static inline void VideoDecode(THPReadBuffer* readBuffer)
     }
 
     if (lbl_8047B48C) {
-        fn_801E446C(TRUE);
+        PrepareReady(TRUE);
         lbl_8047B48C = FALSE;
     }
 }
@@ -207,19 +207,19 @@ static inline void VideoDecode(THPReadBuffer* readBuffer)
 static inline void* PopFreeTextureSet(void)
 {
     OSMessage tex;
-    fn_8009F2F8(&lbl_8046C1C8, &tex, OS_MESSAGE_BLOCK);
+    OSReceiveMessage(&lbl_8046C1C8, &tex, OS_MESSAGE_BLOCK);
     return tex;
 }
 
-void fn_801E4F34(void* tex)
+void PushFreeTextureSet(void* tex)
 {
-    fn_8009F230(&lbl_8046C1C8, tex, OS_MESSAGE_NOBLOCK);
+    OSSendMessage(&lbl_8046C1C8, tex, OS_MESSAGE_NOBLOCK);
 }
 
-void* fn_801E4EF0(s32 flags)
+void* PopDecodedTextureSet(s32 flags)
 {
     OSMessage tex;
-    if (fn_8009F2F8(&lbl_8046C1A8, &tex, flags) == TRUE) {
+    if (OSReceiveMessage(&lbl_8046C1A8, &tex, flags) == TRUE) {
         return tex;
     }
     return NULL;
@@ -227,5 +227,5 @@ void* fn_801E4EF0(s32 flags)
 
 static inline void PushDecodedTextureSet(void* tex)
 {
-    fn_8009F230(&lbl_8046C1A8, tex, OS_MESSAGE_BLOCK);
+    OSSendMessage(&lbl_8046C1A8, tex, OS_MESSAGE_BLOCK);
 }

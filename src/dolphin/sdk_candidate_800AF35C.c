@@ -5,7 +5,7 @@
 
 extern s32 __CARDReadStatus(s32 chan, u8* status);
 extern s32 __CARDClearStatus(s32 chan);
-extern s32 fn_800AF8A0(s32 chan);
+extern s32 Retry(s32 chan);
 
 void __CARDExiHandler(s32 chan, OSContext* context)
 {
@@ -31,7 +31,7 @@ void __CARDExiHandler(s32 chan, OSContext* context)
     }
     result = (status & 0x18) ? -5 : 0;
     if (result == -5 && --card->field_A8 > 0) {
-        result = fn_800AF8A0(chan);
+        result = Retry(chan);
         if (result >= 0) {
             return;
         }

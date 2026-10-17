@@ -26,7 +26,7 @@
 #include "hsd/hsd_dobj.h"
 #include "hsd/hsd_robj.h"
 
-void fn_8019CE50(void);
+void JObjInfoInit(void);
 extern void HSD_JObjDispDObj(HSD_JObj* jobj, f32 vmtx[3][4], f32 pmtx[3][4],
                         HSD_TrspMask trsp_mask, u32 rendermode);
 extern void HSD_JObjMakePositionMtx(HSD_JObj* jobj, f32 mtx[3][4],
@@ -37,7 +37,7 @@ void JObjRelease(HSD_JObj* jobj);
 void JObjAmnesia(void* info);
 s32 JObjLoad(HSD_JObj* jobj, HSD_Joint* joint, HSD_JObj* parent);
 void HSD_JObjAnimCallback(void* obj, u32 type, HSD_ObjData* val);
-void fn_801A3600(HSD_JObj* jobj);
+void HSD_JObjMakeMatrix(HSD_JObj* jobj);
 void fn_801A1B7C(HSD_JObj* jobj);
 extern u8 lbl_8036C8E0[];
 extern char lbl_80274AD0[];
@@ -56,7 +56,7 @@ extern HSD_RObj* HSD_RObjGetByType(HSD_RObj* robj, u32 type, u32 subtype);
 extern void fn_801AED88(HSD_RObj* robj, HSD_JObj* jobj,
                         HSD_ObjUpdateFunc update_func);
 
-HSD_JObjInfo hsdJObj = { fn_8019CE50 };
+HSD_JObjInfo hsdJObj = { JObjInfoInit };
 
 static HSD_ClassInfo* default_class = NULL;
 static HSD_JObj* current_jobj = NULL;
@@ -146,7 +146,7 @@ void resolveIKJoint1(HSD_JObj* jobj);
 void resolveIKJoint2(HSD_JObj* jobj);
 static inline f32 JObjIKSqrtf(f32 value);
 
-void fn_8019D9DC(HSD_JObj* jobj)
+void HSD_JObjSetupMatrixSub(HSD_JObj* jobj)
 {
     HSD_JObj* parent;
     HSD_RObj* robj;
@@ -462,7 +462,7 @@ void HSD_JObjSetDefaultClass(HSD_ClassInfo* info)
 #pragma push
 #pragma optimization_level 1
 #pragma use_lmw_stmw on
-void fn_8019CE50(void)
+void JObjInfoInit(void)
 {
     hsdInitClassInfo(HSD_CLASS_INFO(lbl_8036C8E0),
                      HSD_CLASS_INFO(&hsdObj), lbl_80274AD0, lbl_80274AE8,
@@ -472,7 +472,7 @@ void fn_8019CE50(void)
         (void (*)(HSD_Class*)) JObjRelease;
     HSD_CLASS_INFO(lbl_8036C8E0)->amnesia =
         (void (*)(HSD_ClassInfo*)) JObjAmnesia;
-    HSD_JOBJ_INFO(lbl_8036C8E0)->make_mtx = fn_801A3600;
+    HSD_JOBJ_INFO(lbl_8036C8E0)->make_mtx = HSD_JObjMakeMatrix;
     HSD_JOBJ_INFO(lbl_8036C8E0)->make_pmtx = HSD_JObjMakePositionMtx;
     HSD_JOBJ_INFO(lbl_8036C8E0)->disp = HSD_JObjDispDObj;
     HSD_JOBJ_INFO(lbl_8036C8E0)->load = JObjLoad;
@@ -682,7 +682,7 @@ static HSD_JObj* JObj_GetPrev(HSD_JObj* jobj)
     return NULL;
 }
 
-/* fn_8019D610 and fn_8019D618 (the particle-callback setters) are linked
+/* HSD_JObjSetDPtclCallback and fn_8019D618 (the particle-callback setters) are linked
  * from jobj_exact_8019D5A0.c. */
 
 static void JObj_RecalcParentRootBits(HSD_JObj* jobj)
@@ -2506,7 +2506,7 @@ void fn_801A13CC(HSD_JObj* jobj, f32 vmtx[3][4], u32 flags, u32 rendermode);
 
 static void JObjSetupIfDirty(HSD_JObj* jobj)
 {
-    extern void fn_8019D9DC(HSD_JObj*);
+    extern void HSD_JObjSetupMatrixSub(HSD_JObj*);
     extern char lbl_8047DB34;
     extern char lbl_8047DB3C;
     s32 dirty;
@@ -2520,7 +2520,7 @@ static void JObjSetupIfDirty(HSD_JObj* jobj)
             dirty = 1;
         }
         if (dirty != 0) {
-            fn_8019D9DC(jobj);
+            HSD_JObjSetupMatrixSub(jobj);
         }
     }
 }
@@ -2532,7 +2532,7 @@ void fn_801A13CC(HSD_JObj* jobj, f32 vmtx[3][4], u32 flags, u32 rendermode)
     extern void* HSD_CObjGetCurrent(void);
     extern f32* fn_801A1980(void*);
     extern void fn_801A1988(HSD_JObj*);
-    extern void fn_801A1A00(f32 src[3][4], HSD_JObj* jobj, f32 dst[3][4]);
+    extern void JObjSetupInstanceMtx(f32 src[3][4], HSD_JObj* jobj, f32 dst[3][4]);
     extern void fn_80197344(HSD_JObj*, f32 mtx[3][4], u32 flags, u32 rendermode);
     HSD_JObj* child;
     HSD_JObj* inst;
@@ -2589,7 +2589,7 @@ void fn_801A13CC(HSD_JObj* jobj, f32 vmtx[3][4], u32 flags, u32 rendermode)
                 if (inst->flags & JOBJ_HIDDEN) {
                     return;
                 }
-                fn_801A1A00(mtx1, inst, mtx2);
+                JObjSetupInstanceMtx(mtx1, inst, mtx2);
                 fn_801A13CC(inst->child, mtx2, flags, rendermode);
                 return;
             }
@@ -2617,7 +2617,7 @@ void fn_801A13CC(HSD_JObj* jobj, f32 vmtx[3][4], u32 flags, u32 rendermode)
                 if (inst != NULL) {
                     if (inst->flags & JOBJ_INSTANCE) {
                         if (!(inst->flags & JOBJ_HIDDEN)) {
-                            fn_801A1A00(mtx0, inst, mtx2);
+                            JObjSetupInstanceMtx(mtx0, inst, mtx2);
                             fn_801A13CC(inst->child, mtx2, flags, rendermode);
                         }
                     } else {
@@ -2669,7 +2669,7 @@ void fn_801A13CC(HSD_JObj* jobj, f32 vmtx[3][4], u32 flags, u32 rendermode)
                     if (grandchild != NULL) {
                         if (grandchild->flags & JOBJ_INSTANCE) {
                             if (!(grandchild->flags & JOBJ_HIDDEN)) {
-                                fn_801A1A00(mtx3, grandchild, mtx2);
+                                JObjSetupInstanceMtx(mtx3, grandchild, mtx2);
                                 fn_801A13CC(grandchild->child, mtx2, flags, rendermode);
                             }
                         } else {
@@ -2697,7 +2697,7 @@ void fn_801A13CC(HSD_JObj* jobj, f32 vmtx[3][4], u32 flags, u32 rendermode)
                         if (inst != NULL) {
                             if (inst->flags & JOBJ_INSTANCE) {
                                 if (!(inst->flags & JOBJ_HIDDEN)) {
-                                    fn_801A1A00(vmtx, inst, mtx2);
+                                    JObjSetupInstanceMtx(vmtx, inst, mtx2);
                                     fn_801A13CC(inst->child, mtx2, flags, rendermode);
                                 }
                             } else {
@@ -2761,27 +2761,27 @@ static inline s32 JObjMtxIsDirtyForSetup(HSD_JObj* jobj)
 
 void fn_801A1988(HSD_JObj* jobj)
 {
-    extern void fn_8019D9DC(HSD_JObj*);
+    extern void HSD_JObjSetupMatrixSub(HSD_JObj*);
 
     if (jobj == NULL || !JObjMtxIsDirtyForSetup(jobj)) {
         return;
     }
-    fn_8019D9DC(jobj);
+    HSD_JObjSetupMatrixSub(jobj);
 }
 #pragma pop
 
-void fn_801A1A00(Mtx src, HSD_JObj* jobj, Mtx dst)
+void JObjSetupInstanceMtx(Mtx src, HSD_JObj* jobj, Mtx dst)
 {
     HSD_CObj* cobj;
     HSD_JObj* child;
 
     if (jobj != NULL && JObjMtxIsDirtyForSetup(jobj)) {
-        fn_8019D9DC(jobj);
+        HSD_JObjSetupMatrixSub(jobj);
     }
 
     child = jobj->child;
     if (child != NULL && JObjMtxIsDirtyForSetup(child)) {
-        fn_8019D9DC(child);
+        HSD_JObjSetupMatrixSub(child);
     }
 
     PSMTXInverse(child->mtx, dst);
@@ -3216,7 +3216,7 @@ void fn_801A2B5C(HSD_JObj* jobj, HSD_AnimJoint* animjoint,
                  HSD_ShapeAnimJoint* shapeanimjoint)
 {
     extern void fn_8019FE8C(HSD_JObj* jobj, u32 flags);
-    extern void fn_801A323C(HSD_AObj* aobj);
+    extern void JObjSortAnim(HSD_AObj* aobj);
 
     if (jobj == NULL) {
         return;
@@ -3321,7 +3321,7 @@ void fn_801A2B5C(HSD_JObj* jobj, HSD_AnimJoint* animjoint,
                         HSD_AObjRemove(child->aobj);
                     }
                     child->aobj = HSD_AObjLoadDesc(childAnim->aobjdesc);
-                    fn_801A323C(child->aobj);
+                    JObjSortAnim(child->aobj);
                     fn_801AFE68(child->robj, childAnim->robj_anim);
                     if (childAnim->flags & 1) {
                         fn_8019FE8C(child, JOBJ_CLASSICAL_SCALE);
@@ -3349,7 +3349,7 @@ void fn_801A2B5C(HSD_JObj* jobj, HSD_AnimJoint* animjoint,
 
                     while (grandchild != NULL) {
                         if (grandchild != NULL) {
-                            fn_801A301C(grandchild, grandAnim, grandMatAnim, grandShapeAnim);
+                            HSD_JObjAddAnim(grandchild, grandAnim, grandMatAnim, grandShapeAnim);
                             if (!(grandchild->flags & JOBJ_INSTANCE)) {
                                 HSD_JObj* scan;
                                 HSD_AnimJoint* scanAnim;

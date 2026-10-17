@@ -35,7 +35,7 @@ extern s32 lbl_8047ABCC;
 extern void* lbl_8047ABD0;
 
 extern void* modelGetRenderJObj(void* model);
-extern void fn_801A3918(void* root, void (*callback)(void*), u32 flags);
+extern void HSD_JObjWalkTree(void* root, void (*callback)(void*), u32 flags);
 extern void GSlogWrite(const char* format, ...);
 extern char lbl_80270F10[];
 extern char lbl_80270F44[];
@@ -59,7 +59,7 @@ GSpart* GSmodelGetPart(void* model, s32 index)
     lbl_8047ABA8 = NULL;
     jobj = modelGetRenderJObj(model);
     if (traversalIndex != 0) {
-        fn_801A3918(jobj, fn_800EE20C, 0);
+        HSD_JObjWalkTree(jobj, fn_800EE20C, 0);
         if (lbl_8047ABA8 == NULL) {
             return NULL;
         }
@@ -94,7 +94,7 @@ u32 GSpartGetJObjIndex(void* jobj, void* root)
     lbl_8047ABD0 = root;
     lbl_8047ABC8 = 0;
     lbl_8047ABCC = -1;
-    fn_801A3918(jobj, _partFindIndexCB__FP9_HSD_JObjPPvi, 0);
+    HSD_JObjWalkTree(jobj, _partFindIndexCB__FP9_HSD_JObjPPvi, 0);
     return lbl_8047ABCC;
 }
 

@@ -93,12 +93,12 @@ extern void DSPInit(void);
 extern DSPTaskInfo* DSPAddTask(DSPTaskInfo* task);
 extern void DSPSendMailToDSP(u32 mail);
 extern u32 fn_800AE794(void);                /* DSPCheckMailToDSP */
-extern void fn_800AE8EC(void);               /* DSPHalt */
-extern u32 fn_800AE92C(void);                /* DSPGetDMAStatus */
-extern void fn_800AE8A4(void);               /* DSPReset */
+extern void DSPHalt(void);               /* DSPHalt */
+extern u32 DSPGetDMAStatus(void);                /* DSPGetDMAStatus */
+extern void DSPReset(void);               /* DSPReset */
 extern void* fn_801643D8(u32 size);          /* salMalloc */
 extern void fn_80164400(void* ptr);          /* salFree */
-extern void fn_8015B250(u16* dest, u32 nsDelay); /* salBuildCommandList */
+extern void salBuildCommandList(u16* dest, u32 nsDelay); /* salBuildCommandList */
 
 u32 salGetStartDelay(void);
 void hwEnableIrq(void);
@@ -129,7 +129,7 @@ void salCallback(void)
     }
 }
 
-void fn_80163F88(void) /* dspInitCallback */
+void dspInitCallback(void) /* dspInitCallback */
 {
     lbl_8047B098 = TRUE;
     lbl_8047B088 = TRUE;
@@ -196,7 +196,7 @@ u32 fn_80164148(void) /* salInitDsp */
     lbl_804504A0.dram_addr = 0;
     lbl_804504A0.dsp_init_vector = 0x10;
     lbl_804504A0.dsp_resume_vector = 0x30;
-    lbl_804504A0.init_cb = (DSPCallback)fn_80163F88;
+    lbl_804504A0.init_cb = (DSPCallback)dspInitCallback;
     lbl_804504A0.res_cb = (DSPCallback)dspResumeCallback;
     lbl_804504A0.done_cb = NULL;
     lbl_804504A0.req_cb = NULL;
@@ -211,12 +211,12 @@ u32 fn_80164148(void) /* salInitDsp */
     return TRUE;
 }
 
-u32 fn_80164204(void) /* salExitDsp */
+u32 salExitDsp(void) /* salExitDsp */
 {
-    fn_800AE8EC();
-    while (fn_800AE92C()) {
+    DSPHalt();
+    while (DSPGetDMAStatus()) {
     }
-    fn_800AE8A4();
+    DSPReset();
     return TRUE;
 }
 
@@ -235,7 +235,7 @@ static void salStartDsp(u16* cmdList)
 
 void salCtrlDsp(u16* dest)
 {
-    fn_8015B250(dest, salGetStartDelay());
+    salBuildCommandList(dest, salGetStartDelay());
     salStartDsp(lbl_8047B010);
 }
 

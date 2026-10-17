@@ -14,7 +14,7 @@
  *           register (base+0x14, +0x28, +0x120, ...).
  *   .data   0x803155D0-0x80315678: the 0x26-entry opcode table (0 = fn_800F6BBC
  *           ... 0x25 = fn_800F10E8) and "_vmThreadCreate", the name
- *           fn_800F7318 prints.
+ *           _vmThreadCreate prints.
  *   .sdata  0x80478B00 (VM manager), .sdata2 0x8047CCB8-0x8047CCC8 ("\n",
  *           0.0f, the int-to-float bias), .sbss2 0x8047E710 (the zero
  *           initializer of a GSVMValue), .sbss 0x8047AC38-0x8047AC48 (the

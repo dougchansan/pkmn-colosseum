@@ -3,7 +3,7 @@
 extern void MWTRACE(s32 level, const char* fmt, ...);
 
 extern void fn_80003488(void* dst, const void* src, u32 size);
-extern void fn_800BF080(void);        /* TRKTerminateSerialHandler */
+extern void TRKTerminateSerialHandler(void);        /* TRKTerminateSerialHandler */
 extern s32  TRKWriteUARTN(void* dst, u32 val);
 
 extern void TRK_board_display(const char* msg);
@@ -148,7 +148,7 @@ void TRKNubWelcome(void) {
 
 /* TRKTerminateNub - 0x800BE690 | size 0x24 | scope global */
 s32 TRKTerminateNub(void) {
-    fn_800BF080();
+    TRKTerminateSerialHandler();
     return 0;
 }
 #endif /* !TRKNUB_800BE844_ONLY && !TRKNUB_800BE6B4_ONLY */

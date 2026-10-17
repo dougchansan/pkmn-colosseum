@@ -9,7 +9,7 @@
 #include "dolphin/dvd/dvd.h"
 #include "dolphin/os/OSInterrupt.h"
 
-s32 fn_800A7820(s32 arg0) {
+s32 DVDSetAutoInvalidation(s32 arg0) {
     extern s32 autoInvalidation_804789CC;
     s32 oldValue = autoInvalidation_804789CC;
 

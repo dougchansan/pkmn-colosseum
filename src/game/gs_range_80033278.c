@@ -1389,7 +1389,7 @@ void fn_80034DC0(u8* arg0, u8* arg1) {
     extern u32 lbl_8047A44C;
     extern void GSmsgPrintColor(s32, s32, u32, u16);
     extern void msgctrlSetValue(s32, s32);
-    extern void fn_800FBB34(s32, s32, s32, s32, u32, u16);
+    extern void GSmsgPrintRect(s32, s32, s32, s32, u32, u16);
     u8 byte;
     s32 mask;
     s32 combined;
@@ -1399,7 +1399,7 @@ void fn_80034DC0(u8* arg0, u8* arg1) {
     combined = byte | mask;
     GSmsgPrintColor(0, 0, combined, 0x3CC8);
     msgctrlSetValue(0x34, lbl_8047A44C);
-    fn_800FBB34(0, 0, *(s16*)(arg1 + 0x54), *(s16*)(arg1 + 0x56), combined, 0x3CC9);
+    GSmsgPrintRect(0, 0, *(s16*)(arg1 + 0x54), *(s16*)(arg1 + 0x56), combined, 0x3CC9);
 }
 #pragma pop
 
@@ -1411,7 +1411,7 @@ void fn_80034E38(u8* arg0, u8* arg1) {
     extern u32 lbl_8047A450;
     extern void GSmsgPrintColor(s32, s32, u32, u16);
     extern void msgctrlSetValue(s32, u32);
-    extern void fn_800FBB34(s32, s32, s32, s32, u32, u16);
+    extern void GSmsgPrintRect(s32, s32, s32, s32, u32, u16);
     u32 count;
     u32 value;
     s32 mask;
@@ -1430,7 +1430,7 @@ void fn_80034E38(u8* arg0, u8* arg1) {
     } else {
         msgctrlSetValue(0x34, 0x98967F);
     }
-    fn_800FBB34(0, 0, *(s16*)(arg1 + 0x54), *(s16*)(arg1 + 0x56), value, 0x3CC9);
+    GSmsgPrintRect(0, 0, *(s16*)(arg1 + 0x54), *(s16*)(arg1 + 0x56), value, 0x3CC9);
 }
 #pragma pop
 
@@ -1442,7 +1442,7 @@ void fn_80034EF0(u8* arg0, u8* arg1) {
     extern void GSmsgPrintColor(s32, s32, u32, u16);
     extern s32 heroGetStatus(s32, s32, s32);
     extern void msgctrlSetValue(s32, s32);
-    extern void fn_800FBB34(s32, s32, s16, s16, u32, u16);
+    extern void GSmsgPrintRect(s32, s32, s16, s16, u32, u16);
     s32 mask;
     u32 byte;
     s32 value;
@@ -1459,7 +1459,7 @@ void fn_80034EF0(u8* arg0, u8* arg1) {
      * function's optimization level it only orders the argument setup (li r8
      * before the extsh) - see docs/RULE_EXCEPTIONS.md */
     position = *(s16*)(arg1 + 0x54) + 2;
-    fn_800FBB34(0, 0, *(s16*)(arg1 + 0x54) + 2, *(s16*)(arg1 + 0x56), value, 0x3CD3);
+    GSmsgPrintRect(0, 0, *(s16*)(arg1 + 0x54) + 2, *(s16*)(arg1 + 0x56), value, 0x3CD3);
 }
 #pragma pop
 

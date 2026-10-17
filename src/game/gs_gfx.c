@@ -15,7 +15,7 @@
  * be compiled into any real target. None of the seven names appear in
  * config/GC6E01/symbols.txt, and their claimed sizes didn't consistently
  * match the real fn_ symbols living at those addresses (e.g. fn_800D3088
- * is really 0xC bytes, not the claimed 0x68; fn_800D30F0 is really 0xA0,
+ * is really 0xC bytes, not the claimed 0x68; GSgfxSwapBuffers is really 0xA0,
  * not the claimed 0xF0). It was fiction from the old campaign transplant
  * and has been deleted wholesale.
  *
@@ -74,7 +74,7 @@ extern void fn_801BF8A0(s32 a);
 extern void fn_801E16F0(void);
 extern void HSD_VIFinishDrawXFB(void);
 extern void GStextureConvertFromHW(void* a, s32 b);
-extern void fn_800B8E74(void);
+extern void GXPixModeSync(void);
 extern void GXInvalidateTexAll(void);
 extern void fn_800D1070(void* a);
 extern void GSlightUpdate(void* a);
@@ -84,7 +84,7 @@ extern u32 OSGetTick(void);
 extern u8 lbl_8047AA91;
 extern u8 lbl_8047AA90;
 
-void fn_800D30F0(u32 flag)
+void GSgfxSwapBuffers(u32 flag)
 {
     u32 sc = (u32)lbl_8047AA80->renderTarget;
 
@@ -107,7 +107,7 @@ void fn_800D30F0(u32 flag)
     lbl_8047AA80->progressiveFlag = 1;
 
     if ((u8)flag != 0) {
-        fn_800B8E74();
+        GXPixModeSync();
         if (lbl_8047AA80->renderTarget != NULL) {
             GXInvalidateTexAll();
         }
@@ -177,7 +177,7 @@ void GSgfxRenderEnd(void) {
             }
             ((u8*)lbl_8047AA80)[0x49D] = 1;
             if (r29b != 0) {
-                fn_800B8E74();
+                GXPixModeSync();
                 if (*(u32*)((u8*)lbl_8047AA80 + 0xC) != 0) {
                     GXInvalidateTexAll();
                 }
@@ -277,7 +277,7 @@ void GSgfxRenderLayer(void* arg0, u8 arg1) {
                 }
                 ((u8*)lbl_8047AA80)[0x49D] = 1;
                 if (r30 != 0) {
-                    fn_800B8E74();
+                    GXPixModeSync();
                     if (*(u32*)((u8*)lbl_8047AA80 + 0xC) != 0) {
                         GXInvalidateTexAll();
                     }

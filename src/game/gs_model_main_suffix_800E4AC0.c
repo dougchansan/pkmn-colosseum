@@ -209,7 +209,7 @@ extern HSDJObj* fn_801A02B0(HSDJObj* jobj);
 extern void fn_801A05EC(void* object);
 extern void* memset(void* dst, int value, u32 size);
 extern void* memcpy(void* dst, const void* src, u32 size);
-extern void fn_8019D9DC(HSDJObj* jobj);
+extern void HSD_JObjSetupMatrixSub(HSDJObj* jobj);
 extern void __assert(const char* file, u32 line, const char* message);
 extern char lbl_8047CB60[] __attribute__((section(".sdata2")));
 extern char lbl_8047CB68[] __attribute__((section(".sdata2")));
@@ -1470,7 +1470,7 @@ void GSmodelResetRenderFlags(GSmodel* model)
                 dirty_ = 1;                                                         \
             }                                                                       \
             if (dirty_ != 0) {                                                      \
-                fn_8019D9DC(jobj);                                                  \
+                HSD_JObjSetupMatrixSub(jobj);                                                  \
             }                                                                       \
         }                                                                           \
     } while (0)
@@ -1846,7 +1846,7 @@ u8 GSmodelCenterNull(GSmodel* model)
                 }
             }
             if (dirty != 0) {
-                fn_8019D9DC(null);
+                HSD_JObjSetupMatrixSub(null);
             }
         }
     }
@@ -2083,7 +2083,7 @@ void GSmodelRemoveNull(GSmodel* model)
         }
 
         if (dirty != 0) {
-            fn_8019D9DC(child);
+            HSD_JObjSetupMatrixSub(child);
         }
     }
 

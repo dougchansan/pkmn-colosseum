@@ -52,10 +52,10 @@ extern s32 TRKTargetAccessMemory(void* data, u32 address, u32* length,
 extern s32 MessageSend(TRKBuffer* buffer);
 extern void fn_800053E0(void);
 extern void __TRK_copy_vectors(void);
-extern void fn_800BE464(TRKEvent* event, s32 type);
+extern void TRKConstructEvent(TRKEvent* event, s32 type);
 extern s32 TRKPostEvent(TRKEvent* event);
 extern s32 usr_puts_serial(char* text);
-extern void fn_800C39B0(u8 enabled);
+extern void TRKCommSetState(u8 enabled);
 
 static inline s32 TRKStandardACK(TRKBuffer* buffer, u8 error)
 {
@@ -90,7 +90,7 @@ s32 TRKDoSetOption(TRKBuffer* buffer)
         } else {
             usr_puts_serial("Disable\n");
         }
-        fn_800C39B0(enabled);
+        TRKCommSetState(enabled);
     }
     TRKStandardACK(buffer, 0);
     return 0;
@@ -485,7 +485,7 @@ s32 TRKDoDisconnect(TRKBuffer* buffer)
 
     lbl_803FE7D0[0] = 0;
     TRKStandardACK(buffer, 0);
-    fn_800BE464(&event, 1);
+    TRKConstructEvent(&event, 1);
     TRKPostEvent(&event);
     return 0;
 }

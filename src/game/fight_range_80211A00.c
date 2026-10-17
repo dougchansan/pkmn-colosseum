@@ -10785,7 +10785,7 @@ void wsCmdF0(void)
 
 {
     extern void fn_8012190C();
-    extern u8 fn_80121ADC();
+    extern u8 pokemonIsJoutaiDataId();
     extern void fn_80232FE4();
     extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern u32 fightTargetGetPtrAsNowFightType();
@@ -10852,7 +10852,7 @@ void wsCmdF0(void)
       (uVar5 = fightTrainerSearchInvalidFightPokemonPtr(uVar2,uVar10), uVar5 != 0) &&
       (caught = heroGetStatus(uVar7,3,(u16)uVar1.value), caught != 0) &&
       (cVar12 = pokemonCheckValid(), cVar12 == 1)) {
-    cVar12 = fn_80121ADC(caught,4);
+    cVar12 = pokemonIsJoutaiDataId(caught,4);
     if (cVar12 == 1) {
       fn_8012190C(caught,4,1);
     }

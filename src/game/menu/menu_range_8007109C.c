@@ -1112,7 +1112,7 @@ extern s32 menuIsCheck(s32);
 /* pkjbPrepare (0x80073E8C): load one or two menu binary blocks and refresh checksum bytes. */
 s32 pkjbPrepare(void* pathA, void* pathB) {
     extern void* memcpy(void* dst, const void* src, u32 size);
-    extern void* fn_800A7BCC(void);
+    extern void* DVDGetCurrentDiskID(void);
     extern void GBAInit(void);
     extern s32 DVDOpen(void* path, MenuDVDFileInfo* info);
     extern s32 DVDRead(MenuDVDFileInfo* info, void* dst, s32 length, s32 offset, s32 prio);
@@ -1131,7 +1131,7 @@ s32 pkjbPrepare(void* pathA, void* pathB) {
     u8* key;
     void* bootKey;
 
-    bootKey = fn_800A7BCC();
+    bootKey = DVDGetCurrentDiskID();
     memcpy(&lbl_8047A60C, bootKey, 4);
     lbl_8047A60C |= 0x202020;
     GBAInit();
@@ -3780,12 +3780,12 @@ s32 gbaBootRun(s32 code, s32* state) {
 
 /* gbaBootPrepare (0x8007B090): snapshot callback state, then start the request. */
 void gbaBootPrepare(s32 request) {
-    extern void* fn_800A7BCC(void);
+    extern void* DVDGetCurrentDiskID(void);
     extern u32 lbl_8047A640;
     extern void gbaBootLoadImage(s32 request);
     void* state;
 
-    state = fn_800A7BCC();
+    state = DVDGetCurrentDiskID();
     memcpy(&lbl_8047A640, state, 4);
     gbaBootLoadImage(request);
 }
@@ -3795,12 +3795,12 @@ void fn_8007B0D8(void) {
     extern void* lbl_80478980;
     extern void* lbl_8047A648;
     extern void* lbl_8047A64C;
-    extern void fn_8009AAD4(void*, void*);
+    extern void OSFreeToHeap(void*, void*);
     void* r4;
 
     r4 = lbl_8047A648;
     if (r4 != NULL) {
-        fn_8009AAD4((void*)lbl_80478980, r4);
+        OSFreeToHeap((void*)lbl_80478980, r4);
         lbl_8047A648 = NULL;
         lbl_8047A64C = NULL;
     }
@@ -3842,8 +3842,8 @@ void gbaBootLoadImage(s32 request)
     extern s32 DVDOpen(const char*, MenuDVDFileInfo*);
     extern s32 DVDRead(MenuDVDFileInfo*, void*, s32, s32, s32);
     extern void DVDClose(MenuDVDFileInfo*);
-    extern void fn_8009AAD4(void*, void*);
-    extern void* fn_8009A9D8(void*, u32);
+    extern void OSFreeToHeap(void*, void*);
+    extern void* OSAllocFromHeap(void*, u32);
     MenuDVDFileInfo file;
     MenuDVDFileInfo readFile;
     s32 i;
@@ -3866,9 +3866,9 @@ void gbaBootLoadImage(s32 request)
 
     lbl_8047A650 = (file.length + 0x5B) & ~0x1F;
     if (lbl_8047A648 != NULL) {
-        fn_8009AAD4(lbl_80478980, lbl_8047A648);
+        OSFreeToHeap(lbl_80478980, lbl_8047A648);
     }
-    lbl_8047A648 = fn_8009A9D8(lbl_80478980, lbl_8047A650);
+    lbl_8047A648 = OSAllocFromHeap(lbl_80478980, lbl_8047A650);
     if (lbl_8047A648 == NULL) {
         return;
     }
@@ -3910,7 +3910,7 @@ void gbaBootStartThread(GbaBootContext* context, u32 channel, const u8* device_c
                  u32 region, const u8* name, u32 variant, u32 flags) {
     extern u8* lbl_8047A648;
     extern u32 lbl_8047A650;
-    extern void fn_8009F1D0(void* queue, void* messages, u32 count);
+    extern void OSInitMessageQueue(void* queue, void* messages, u32 count);
     extern void _gbaBootThread(u8* context);
     extern void OSCreateThread(void* thread, void* entry, void* arg,
                                void* stack, u32 stack_size, u32 priority,
@@ -3980,7 +3980,7 @@ void gbaBootStartThread(GbaBootContext* context, u32 channel, const u8* device_c
     upload_start[2] = crc >> 16;
     upload_start[3] = crc >> 24;
 
-    fn_8009F1D0(context->pad_35C, context->pad_35C + 0x20, 1);
+    OSInitMessageQueue(context->pad_35C, context->pad_35C + 0x20, 1);
     OSCreateThread(context->thread_and_work, (void*)_gbaBootThread, context,
                    context->reply, 0x2000, 8, 0);
     OSResumeThread(context->thread_and_work);

@@ -42,7 +42,7 @@ typedef union FloatShape {
 extern u32 OSGetConsoleType(void);
 extern s32 InitializeUART(u32 baud);
 extern s32 WriteUARTN(const void* data, u32 count);
-extern u32 fn_800C3A40(u32 handle, const void* data, u32* count, void* ref);
+extern u32 TRKCommSendRead(u32 handle, const void* data, u32* count, void* ref);
 
 extern f64 __ieee754_acos(f64 x);
 extern f64 __ieee754_asin(f64 x);
@@ -140,7 +140,7 @@ s32 __write_console(u32 handle, const void* data, u32* count, void* ref) {
         }
     }
 
-    fn_800C3A40(handle, data, count, ref);
+    TRKCommSendRead(handle, data, count, ref);
     return 0;
 }
 

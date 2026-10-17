@@ -2,7 +2,7 @@
  * @file DVD_range_800A7880.c
  * @brief Dolphin DVD cancellation and disk-state queries, 0x800A7880 -
  *        0x800A7CCC: DVDCancelAsync, DVDCancel, the cancel callback,
- *        fn_800A7BCC and DVDCheckDisk, with their switch tables
+ *        DVDGetCurrentDiskID and DVDCheckDisk, with their switch tables
  *        (.data 0x80311B98 - 0x80311C00).
  *
  * Merged (lane D18) from sdk_candidate_800A7880.c, sdk_exact_800A7AFC.c and
@@ -158,7 +158,7 @@ static void cbForCancelSync(s32 result, DVDCommandBlock* block) {
     OSWakeupThread(&__DVDThreadQueue);
 }
 
-void* fn_800A7BCC(void) {
+void* DVDGetCurrentDiskID(void) {
     return (void*)0x80000000;
 }
 

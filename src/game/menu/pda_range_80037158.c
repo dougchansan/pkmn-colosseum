@@ -1610,7 +1610,7 @@ s32 fn_8003A6C0(PdaDrawWork* work, PdaSprite* sprite)
 {
     extern const s32 lbl_80267130[3];
     extern s32 lbl_8047A4C8;
-    extern void fn_800FB8C8(s32, s32, s16, s16, void*, s32);
+    extern void GSmsgPrintRight(s32, s32, s16, s16, void*, s32);
     extern void msgctrlSetValue(s32 id, s32 value);
     s32 index;
     s32 i;
@@ -1637,7 +1637,7 @@ s32 fn_8003A6C0(PdaDrawWork* work, PdaSprite* sprite)
     digit = lbl_8047A4C8 / divisor;
     digit %= 10;
     msgctrlSetValue(0x34, digit);
-    fn_800FB8C8(0, 0, sprite->x, sprite->y, work->drawData, 0xC9);
+    GSmsgPrintRight(0, 0, sprite->x, sprite->y, work->drawData, 0xC9);
     return 0;
 }
 
@@ -6618,8 +6618,8 @@ static inline u16 pdaCurrentWeight(void)
 #pragma peephole off
 void fn_800411FC(PdaSprite* alphaSprite, PdaEvent* event)
 {
-    extern void fn_800FB8C8(s32 x, s32 y, s16 w, s16 h, void* color, s32 msg);
-    extern void fn_800FBB34(s32 x, s32 y, s16 w, s16 h, void* color, s32 msg);
+    extern void GSmsgPrintRight(s32 x, s32 y, s16 w, s16 h, void* color, s32 msg);
+    extern void GSmsgPrintRect(s32 x, s32 y, s16 w, s16 h, void* color, s32 msg);
     PdaSprite* sprite = (PdaSprite*)event;
     u8* layout;
     u32 name;
@@ -6696,14 +6696,14 @@ void fn_800411FC(PdaSprite* alphaSprite, PdaEvent* event)
             }
         }
         msgctrlSetValue(0x37, (u32)&lbl_803A67E8[i]);
-        fn_800FB8C8(lbl_8047A4F0 +
+        GSmsgPrintRight(lbl_8047A4F0 +
                         (*(s16*)(layout + 0x5a76) - sprite->field_50),
                     *(s16*)(layout + 0x5a78) - sprite->field_52,
                     *(s16*)(layout + 0x5a7a),
                     *(s16*)(layout + 0x5a7c),
                     (void*)(alphaSprite->alphaByte | -0x100), 0xcf);
     } else {
-        fn_800FBB34(lbl_8047A4F0 +
+        GSmsgPrintRect(lbl_8047A4F0 +
                         (*(s16*)(layout + 0x5a76) - sprite->field_50),
                     *(s16*)(layout + 0x5a78) - sprite->field_52,
                     *(s16*)(layout + 0x5a7a),
@@ -6716,14 +6716,14 @@ void fn_800411FC(PdaSprite* alphaSprite, PdaEvent* event)
         weight = pdaCurrentWeight();
         msgctrlSetValue(0x34, weight / 10);
         msgctrlSetValue(0x35, weight % 10);
-        fn_800FBB34(lbl_8047A4F0 +
+        GSmsgPrintRect(lbl_8047A4F0 +
                         (*(s16*)(layout + 0x5a92) - sprite->field_50),
                     *(s16*)(layout + 0x5a94) - sprite->field_52,
                     *(s16*)(layout + 0x5a96),
                     *(s16*)(layout + 0x5a98),
                     (void*)(alphaSprite->alphaByte | -0x100), 0x189c);
     } else {
-        fn_800FBB34(lbl_8047A4F0 +
+        GSmsgPrintRect(lbl_8047A4F0 +
                         (*(s16*)(layout + 0x5a92) - sprite->field_50),
                     *(s16*)(layout + 0x5a94) - sprite->field_52,
                     *(s16*)(layout + 0x5a96),
@@ -6734,7 +6734,7 @@ void fn_800411FC(PdaSprite* alphaSprite, PdaEvent* event)
     layout = lbl_802EF0A8;
     if (pdaEntrySeen() != 0) {
         msgctrlSetValue(0x31, pokemonDataBiosGetTypeName(pdaCurrentData()));
-        fn_800FBB34(lbl_8047A4F0 +
+        GSmsgPrintRect(lbl_8047A4F0 +
                         (*(s16*)(layout + 0x5a22) - sprite->field_50),
                     *(s16*)(layout + 0x5a24) - sprite->field_52,
                     *(s16*)(layout + 0x5a26),
@@ -6742,7 +6742,7 @@ void fn_800411FC(PdaSprite* alphaSprite, PdaEvent* event)
                     (void*)(alphaSprite->alphaByte | -0x100), 0x371e);
     } else {
         msgctrlSetValue(0x31, 0x371c);
-        fn_800FBB34(lbl_8047A4F0 +
+        GSmsgPrintRect(lbl_8047A4F0 +
                         (*(s16*)(layout + 0x5a22) - sprite->field_50),
                     *(s16*)(layout + 0x5a24) - sprite->field_52,
                     *(s16*)(layout + 0x5a26),

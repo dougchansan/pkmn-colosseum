@@ -380,7 +380,7 @@ s16 fn_802025B8(void* ctx, void* typeObj) {
 s16 fightOutPokemonIsPokemonJoutaiDataId(void* ctx, void* typeObj) {
     extern u16 joutaiDataBiosGetStatusKind();
     extern s16 fn_8011B67C();
-    extern s16 fn_80121ADC();
+    extern s16 pokemonIsJoutaiDataId();
     void* originalCtx;
     void* resolved;
     resolved = (originalCtx = ctx);
@@ -392,7 +392,7 @@ s16 fightOutPokemonIsPokemonJoutaiDataId(void* ctx, void* typeObj) {
             } else {
                 resolved = pokemonGetStatus(resolved, 0, 0xCC, 0);
             }
-            return fn_80121ADC(resolved, typeObj);
+            return pokemonIsJoutaiDataId(resolved, typeObj);
         }
         if (joutaiDataBiosGetStatusKind(typeObj) != 0xCD) {
             return 0;

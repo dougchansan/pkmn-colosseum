@@ -40,8 +40,8 @@ extern u16   _toolentryAlloc__FUl(u32 size);                    /* GSmemAllocRaw
 extern void* fn_800E27B0(u16 handle);                  /* GSmemGetPtr */
 
 /* SDK GX functions */
-extern void  fn_800AA2F0(void);                        /* GXSetViewport */
-extern void  fn_800BD640(void);                        /* GXSetProjection */
+extern void  VIGetNextField(void);                        /* GXSetViewport */
+extern void  GXSetViewportJitter(void);                        /* GXSetProjection */
 extern void  fn_800BD744(void);                        /* GXLoadPosMtxImm */
 extern void  GXInvalidateTexAll(void);                        /* GXInvalidateTexAll */
 
@@ -155,8 +155,8 @@ extern u8 lbl_803144D0[];
 extern u32 lbl_8047AAB4;
 extern u16 lbl_8047AAA8;
 extern u32 GScameraGetActiveCamera(void);
-extern u32 fn_800D1D00(void);
-extern u32 fn_800D1B3C(void);
+extern u32 GScameraGetMatrixPtr(void);
+extern u32 GScameraGetInvMatrixPtr(void);
 extern u32 GScameraGetProjMatrixPtr(void);
 extern void GXLoadPosMtxImm(u32, u32);
 extern void GXLoadNrmMtxImm(u32, u32);
@@ -174,7 +174,7 @@ extern u8 lbl_80314404[];
 extern u8 lbl_80314454[];
 extern u8 lbl_803144A8[];
 extern u8 lbl_80314424[];
-extern void fn_800BAE34();
+extern void GXInitTexObjWrapMode();
 extern void fn_800BACA0();
 extern void fn_800BB098();
 extern void GXLoadTexObj();
@@ -183,8 +183,8 @@ extern u32 lbl_8047CA40;
 extern u32 lbl_8047CA48;
 extern u8 lbl_80314510[];
 extern u8 lbl_803144F0[];
-extern void fn_800BBC34(u32);
-extern void fn_800BBC0C(u32);
+extern void GXSetTevDirect(u32);
+extern void GXSetNumIndStages(u32);
 extern void GXSetNumChans();
 extern void GXSetChanCtrl();
 extern void fn_800B884C();
@@ -205,7 +205,7 @@ extern void fn_800BBCE0();
 extern void fn_800BBE8C();
 extern void fn_800BBF98();
 extern void fn_800BBFDC();
-extern void fn_800BC3E0();
+extern void GXSetTevKColor();
 extern void GXSetTevSwapModeTable();
 extern void fn_800BD2E0(void*, u32);
 extern f32 lbl_8047CA50;
@@ -214,14 +214,14 @@ extern void GScameraSetViewport(void*, u16, u16, u16, u16);
 extern u32 lbl_8047CA60;
 extern u32 lbl_8047CA68;
 extern u32 lbl_8047CA58;
-extern void fn_800BD7A0(u32, u32, u32, u32);
+extern void GXSetScissor(u32, u32, u32, u32);
 extern void GScameraSetScissor(u32, u16, u16, u16, u16);
 extern void HSD_FogSet(u32);
 extern u32 lbl_8047AA8C;
 extern void GXSetClipMode(u32);
 extern void fn_800B94F0(u32);
 extern u8 lbl_8031453C[];
-extern void fn_800BCFDC(u32);
+extern void GXSetDither(u32);
 extern void fn_800BC618(u32, u8, u32, u32, u8);
 extern u8 lbl_8031457C[];
 extern u8 lbl_8031456C[];
@@ -369,7 +369,7 @@ extern u8 lbl_80315568[];
 extern void C_MTXPerspective(void);
 extern void C_MTXOrtho(void);
 extern void C_QUATSlerp(void*, void*, void*);
-extern void fn_801ADAAC(void*, void*);
+extern void EulerToQuat(void*, void*);
 extern void C_QUATRotAxisRad(void);
 extern void PSQUATMultiply(void*, void*, void*);
 extern u32 lbl_8047CAE4;
@@ -383,7 +383,7 @@ extern u32 lbl_8047CB08;
 extern u32 lbl_8047CAFC;
 extern f32 HSD_Randf(void);
 extern f32 lbl_8047CB10;
-extern u32 fn_801ADCD8(void);
+extern u32 HSD_Rand(void);
 extern u32 lbl_80478C94;
 extern f64 fmod(f64 x, f64 y);
 extern s32 __cvt_fp2unsigned(f32 x);

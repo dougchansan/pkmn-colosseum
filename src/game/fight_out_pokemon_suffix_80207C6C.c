@@ -49,7 +49,7 @@ extern u32   pokemonSetStatus();
 extern void  pokemonGrowBasisStatus();
 extern u32   itemGetStatus();
 extern void  joutaiDataBiosGetStatusKind(void);
-extern void  fn_80121ADC(void);
+extern void  pokemonIsJoutaiDataId(void);
 extern void  fn_8011B67C(void);
 extern void  pokemonGetSoubiItemDataId(void);
 extern void* fightActionGetPri(void* p);
@@ -92,11 +92,11 @@ static inline void* fightOutPokemonGetPokemonPtrInline(void* fo)
 static inline u8 fightPokemonCheckJoutaiInline(void* fp, u16 id)
 {
     extern u16 joutaiDataBiosGetStatusKind();
-    extern u8 fn_80121ADC();
+    extern u8 pokemonIsJoutaiDataId();
     extern u8 fn_8011B67C();
 
     if (joutaiDataBiosGetStatusKind(id) == 0x7C || joutaiDataBiosGetStatusKind(id) == 0xC8) {
-        return fn_80121ADC(fightPokemonGetPokemonPtrInline(fp), id);
+        return pokemonIsJoutaiDataId(fightPokemonGetPokemonPtrInline(fp), id);
     }
     if (joutaiDataBiosGetStatusKind(id) != 0xCD) {
         return 0;

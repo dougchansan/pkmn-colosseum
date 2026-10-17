@@ -44,7 +44,7 @@ extern u32 std082_flagGetValue(u32 flag);
 extern void fn_801D0AFC(s32);
 extern void* heroBiosGetPokemonPtr(void* status, u16 index);
 extern u8 pokemonCheckValid(void* pokemon);
-extern u8 fn_80121ADC(void* pokemon, s32 ribbon);
+extern u8 pokemonIsJoutaiDataId(void* pokemon, s32 ribbon);
 extern void pokemonInitPersistentJoutai(void* pokemon, s32 ribbon);
 extern s32 menuGetCursorFromItemID(s32 menu, s32 itemId);
 extern void cursorBiosSetPos(s32 cursor, const CursorPos* pos);
@@ -471,10 +471,10 @@ void std216_partyStatusUpdate_8ae(s32 mode)
             while (i < 6) {
                 pokemon = heroBiosGetPokemonPtr(status, i);
                 if (pokemonCheckValid(pokemon) != 0) {
-                    if (fn_80121ADC(pokemon, 3) != 0) {
+                    if (pokemonIsJoutaiDataId(pokemon, 3) != 0) {
                         pokemonInitPersistentJoutai(pokemon, 3);
                     }
-                    if (fn_80121ADC(pokemon, 4) != 0) {
+                    if (pokemonIsJoutaiDataId(pokemon, 4) != 0) {
                         pokemonInitPersistentJoutai(pokemon, 4);
                     }
                 }

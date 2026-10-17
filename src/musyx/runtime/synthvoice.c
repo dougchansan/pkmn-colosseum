@@ -58,10 +58,10 @@ extern u8 lbl_8047AF18;                      /* sndActive */
 extern u8 lbl_8047AF50;                      /* synthIdleWaitActive */
 
 extern void fn_80162494(u32 voice, u32 prio);  /* hwSetPriority */
-extern u32 fn_8016246C(u32 voice);            /* hwIsActive */
+extern u32 hwIsActive(u32 voice);            /* hwIsActive */
 extern void hwBreak(u32 voice);
 extern void macMakeInactive(SYNTH_VOICE* svoice, s32 newState);
-extern void fn_8014E7D0(u32 voice);          /* streamKill */
+extern void streamKill(u32 voice);          /* streamKill */
 
 void voiceResetLastStarted(SYNTH_VOICE* svoice);
 
@@ -574,7 +574,7 @@ u32 fn_80158328(u8 prio) /* voiceBlock */
         fn_80157360(&lbl_8047AF48[voice]);
         lbl_8047AF48[voice].id = voice | 0xFFFFFF00;
 
-        if (fn_8016246C(voice)) {
+        if (hwIsActive(voice)) {
             hwBreak(voice);
         }
 
@@ -592,7 +592,7 @@ void voiceUnblock(u32 voice)
         return;
     }
 
-    if (fn_8016246C(voice)) {
+    if (hwIsActive(voice)) {
         hwBreak(voice);
     }
 
@@ -613,7 +613,7 @@ void voiceKill(u32 vi)
     }
 
     if (sv->block != 0) {
-        fn_8014E7D0(vi);
+        streamKill(vi);
     }
 
     hwBreak(vi);

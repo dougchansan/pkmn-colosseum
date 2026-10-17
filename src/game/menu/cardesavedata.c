@@ -2516,7 +2516,7 @@ static inline u8* cardEGetCell(u8* card, s8 pageIndex, s8 row, s8 column)
  * inline cardeSaveLevelHasCard/cardeSaveGetCard although those come earlier in the file. */
 void* fn_800836AC(u8* arena, u8* descriptor, u8 create)
 {
-    extern void fn_800CAA3C(void*, const void*);
+    extern void wcscpy(void*, const void*);
     CardEGridEntry* series;
     int count;
     s32 i;
@@ -2539,13 +2539,13 @@ void* fn_800836AC(u8* arena, u8* descriptor, u8 create)
         series = CardEGridAppend(arena, ((s8*)descriptor)[0x58],
                                  ((s8*)descriptor)[0x59], ((s8*)descriptor)[0x5A]);
         if (series != NULL) {
-            fn_800CAA3C(series, descriptor + 0x0A);
+            wcscpy(series, descriptor + 0x0A);
             series->key = descriptor[8];
             series->layers = ((s8*)descriptor)[0x58];
             series->rows = ((s8*)descriptor)[0x59];
             series->columns = ((s8*)descriptor)[0x5A];
             for (i = 0; i < series->layers; i++) {
-                fn_800CAA3C(CardEGetLevel(series, i), descriptor + 0x28 + i * 0x10);
+                wcscpy(CardEGetLevel(series, i), descriptor + 0x28 + i * 0x10);
             }
         }
     }
@@ -2575,7 +2575,7 @@ void cardeGridSetShadowPokemon(u8* arena, u8* cardData, s8 layer)
         u8 bytes[0x2A];
     } CardEObjectData;
     extern void* savedataGetStatus(u32, u32);
-    extern void fn_800CAA3C(void*, const void*);
+    extern void wcscpy(void*, const void*);
     extern void darkPokemonSaveSet4A0(u8 type, u16 id);
     extern void darkPokemonSaveSetName(u8 type, void* data);
     extern void fn_801EE10C(u8 type, u8 key);
@@ -2599,10 +2599,10 @@ void cardeGridSetShadowPokemon(u8* arena, u8* cardData, s8 layer)
     pending[0] = 1;
     pending[1] = cardData[8];
     ((s8*)pending)[2] = layer;
-    fn_800CAA3C(pending + 4, cardData + layer * 0x5C + 0x6E);
-    fn_800CAA3C(pending + 0x60, cardData + layer * 0x5C + 0x182);
-    fn_800CAA3C(pending + 0xBC, cardData + layer * 0x5C + 0x296);
-    fn_800CAA3C(pending + 0x118, record);
+    wcscpy(pending + 4, cardData + layer * 0x5C + 0x6E);
+    wcscpy(pending + 0x60, cardData + layer * 0x5C + 0x182);
+    wcscpy(pending + 0xBC, cardData + layer * 0x5C + 0x296);
+    wcscpy(pending + 0x118, record);
     pending[0x124] = record->enabled;
     pending[0x125] = cardData[0x6A + layer];
     *(u16*)(pending + 0x126) = record->field12;
@@ -2649,7 +2649,7 @@ void cardeGridSetShadowPokemon(u8* arena, u8* cardData, s8 layer)
         }
     }
 
-    fn_800CAA3C(layerData->summary + 0x54, pending + 0x118);
+    wcscpy(layerData->summary + 0x54, pending + 0x118);
     layerData->summary[0x60] = pending[0x125];
     layerData->summary[0x61] = 0;
     layerData->summary[0x62] = pending[0x1E1];
@@ -2726,7 +2726,7 @@ u8* cardeSaveGetCard(u8* card, s8 pageIndex, s8 row, s8 column)
 
 u8* cardeSaveSetCard(u8* card, const u8* window, s8 pageIndex)
 {
-    extern void fn_800CAA3C(void*, const void*);
+    extern void wcscpy(void*, const void*);
     u8* cell;
     const u8* descriptor;
 
@@ -2735,7 +2735,7 @@ u8* cardeSaveSetCard(u8* card, const u8* window, s8 pageIndex)
     }
     cell = cardeSaveGetCard(card, pageIndex, ((s8*)window)[0x24], ((s8*)window)[0x26]);
     descriptor = window + 0x3AC + (s8)(window + 0x5B)[pageIndex] * 0x28;
-    fn_800CAA3C(cell, descriptor);
+    wcscpy(cell, descriptor);
     cell[0x0C] = 1;
     *(u16*)(cell + 0x0E) = *(const u16*)(descriptor + 0x22);
     card[0x1E + (s8)window[0x24]] = window[0x25];
@@ -2744,7 +2744,7 @@ u8* cardeSaveSetCard(u8* card, const u8* window, s8 pageIndex)
 
 u8* cardeSaveSetSummary(u8* card, const u8* window, s8 pageIndex)
 {
-    extern void fn_800CAA3C(void*, const void*);
+    extern void wcscpy(void*, const void*);
     CardEGridEntry* series = (CardEGridEntry*)card;
     CardEPageLayout* lv;
     u8* entry;
@@ -2757,7 +2757,7 @@ u8* cardeSaveSetSummary(u8* card, const u8* window, s8 pageIndex)
         __assert("cardesavedata.c", 0x1D4, "lv");
     }
     entry = lv->summary + (s8)window[0x24] * 0x0E;
-    fn_800CAA3C(entry, window + 0x3AC + (s8)(window + 0x5E)[pageIndex] * 0x28);
+    wcscpy(entry, window + 0x3AC + (s8)(window + 0x5E)[pageIndex] * 0x28);
     entry[0x0C] = 1;
     return (u8*)lv;
 }

@@ -56,10 +56,10 @@ extern void __GXSetSUTexRegs(void);
 extern void __GXUpdateBPMask(void);
 extern void __GXSetGenMode(void);
 extern void __GXSetVCD(void);
-extern void fn_800B8444(void);
+extern void __GXSetVAT(void);
 extern void __GXCalculateVLim(void);
 
-void fn_800B91EC(void);
+void __GXSetDirtyState(void);
 void __GXSendFlushPrim(void);
 
 #define GX_FIFO_U8  (*(volatile u8*)0xCC008000)
@@ -161,7 +161,7 @@ void GXTokenInterruptHandler(__OSInterrupt interrupt, OSContext* context)
     __peReg[5] = (__peReg[5] & ~4U) | 4;
 }
 
-GXDrawDoneCallback fn_800B90A4(GXDrawDoneCallback callback)
+GXDrawDoneCallback GXSetDrawDoneCallback(GXDrawDoneCallback callback)
 {
     GXDrawDoneCallback old = lbl_8047A9C4;
     BOOL enabled = OSDisableInterrupts();
@@ -209,7 +209,7 @@ void __GXPEInit(void)
     *regp = (u16) reg;
 }
 
-void fn_800B91EC(void)
+void __GXSetDirtyState(void)
 {
     if (gx->dirtyState & 1) {
         __GXSetSUTexRegs();
@@ -224,7 +224,7 @@ void fn_800B91EC(void)
         __GXSetVCD();
     }
     if (gx->dirtyState & 0x10) {
-        fn_800B8444();
+        __GXSetVAT();
     }
     if (gx->dirtyState & 0x18) {
         __GXCalculateVLim();
@@ -235,7 +235,7 @@ void fn_800B91EC(void)
 void fn_800B928C(u32 primitive, u32 vertexFormat, u16 vertexCount)
 {
     if (gx->dirtyState != 0) {
-        fn_800B91EC();
+        __GXSetDirtyState();
     }
 
     if (*(u32*) &gx->field_000 == 0) {

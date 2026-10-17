@@ -94,7 +94,7 @@ typedef struct { u16 ids[3]; } JoutaiIdTable3;
 static inline u8 fightPokemonIsJoutai(void* pokemon, u16 id) {
     extern u16 joutaiDataBiosGetStatusKind(u16 id);
     extern u8 fn_8011B67C(void* obj, u16 id);
-    extern u8 fn_80121ADC(void* obj, u16 id);
+    extern u8 pokemonIsJoutaiDataId(void* obj, u16 id);
     void* slot;
     void* data;
 
@@ -106,7 +106,7 @@ static inline u8 fightPokemonIsJoutai(void* pokemon, u16 id) {
             } else {
                 data = pokemonGetStatus(slot, 0, 0xCC, 0);
             }
-            return fn_80121ADC(data, id);
+            return pokemonIsJoutaiDataId(data, id);
         } else if (joutaiDataBiosGetStatusKind(id) != 0xCD) {
             return 0;
         } else {
@@ -778,7 +778,7 @@ void fightOutPokemonSetJoutaiMigawariHp(void) {
     extern void statusSetJoutai08();
     extern void fn_8011B67C();
     extern void pokemonSetJoutai08();
-    extern void fn_80121ADC();
+    extern void pokemonIsJoutaiDataId();
     u8 sp[0x20];
     u32 r0 = 0;
     u32 r1 = (u32)sp;
@@ -833,7 +833,7 @@ void fightOutPokemonSetJoutaiMigawariHp(void) {
                 ((void(*)(void))pokemonGetStatus)();
             }
             r4 = 0x14;
-            fn_80121ADC();
+            pokemonIsJoutaiDataId();
             goto L_801FEE58;
             }
         r3 = 0x14;
@@ -934,7 +934,7 @@ void fightOutPokemonSetJoutaiMigawariHp(void) {
 u8 fightOutPokemonGetJoutaiMigawariHp(void* trainer) {
     extern u16 joutaiDataBiosGetStatusKind(s32 id);
     extern u8 fn_8011B67C(void* obj, s32 arg);
-    extern u8 fn_80121ADC(void* obj, u32 field);
+    extern u8 pokemonIsJoutaiDataId(void* obj, u32 field);
     void* obj;
     void* target;
     void* obj2;
@@ -952,7 +952,7 @@ u8 fightOutPokemonGetJoutaiMigawariHp(void* trainer) {
             } else {
                 target = pokemonGetStatus(obj, 0, 0xCC, 0);
             }
-            status = fn_80121ADC(target, 0x14);
+            status = pokemonIsJoutaiDataId(target, 0x14);
         } else if (joutaiDataBiosGetStatusKind(0x14) != 0xCD) {
             status = 0;
         } else {
@@ -997,7 +997,7 @@ u8 fightOutPokemonCheckFightActionWazaSelect(void* fighter, u8 mode) {
     extern void fn_8011B788();
     extern void pokemonGetJoutai08();
     extern void pokemonGetJoutai0C();
-    extern void fn_80121ADC();
+    extern void pokemonIsJoutaiDataId();
     extern void pokemonInitPersistentJoutai();
     extern void pokemonCheckFightOut();
     extern void pokemonCheckValid();
@@ -1334,7 +1334,7 @@ u8 fightOutPokemonCheckFightActionWazaSelect(void* fighter, u8 mode) {
                 ((void(*)(void))pokemonGetStatus)();
             }
             r4 = 0x2a;
-            fn_80121ADC();
+            pokemonIsJoutaiDataId();
             goto L_801FF714;
             }
         r3 = 0x2a;
@@ -1639,7 +1639,7 @@ void fightOutPokemonGetOutOkWazaBanmeAry(void) {
     extern void statusGetJoutai08();
     extern void fn_8011B67C();
     extern void pokemonGetJoutai08();
-    extern void fn_80121ADC();
+    extern void pokemonIsJoutaiDataId();
     extern void pokemonWazaCheckValid();
     extern void fightOutPokemonCheckCanOutOkWazaBanme();
     u8 sp[0x20];
@@ -1772,7 +1772,7 @@ void fightOutPokemonGetOutOkWazaBanmeAry(void) {
                 ((void(*)(void))pokemonGetStatus)();
             }
             r4 = 0x2a;
-            fn_80121ADC();
+            pokemonIsJoutaiDataId();
             goto L_801FFD78;
             }
         r3 = 0x2a;
@@ -1897,7 +1897,7 @@ u8 fightOutPokemonCheckCanOutOkWazaBanme(void* fighter, u32 slot, u32 mode, u16*
     extern void fn_8011B788();
     extern void wazaGetStatus();
     extern void pokemonGetJoutai0C();
-    extern void fn_80121ADC();
+    extern void pokemonIsJoutaiDataId();
     extern void pokemonInitPersistentJoutai();
     extern void pokemonGetSoubiItemSoubiDataId();
     extern void pokemonWazaCheckValid();
@@ -2008,7 +2008,7 @@ u8 fightOutPokemonCheckCanOutOkWazaBanme(void* fighter, u32 slot, u32 mode, u16*
         ((void(*)(void))pokemonGetStatus)();
         }
         r4 = 0x3d;
-        fn_80121ADC();
+        pokemonIsJoutaiDataId();
 
         } else {
         r3 = 0x3d;
@@ -2077,7 +2077,7 @@ u8 fightOutPokemonCheckCanOutOkWazaBanme(void* fighter, u32 slot, u32 mode, u16*
                 ((void(*)(void))pokemonGetStatus)();
             }
             r4 = 0x29;
-            fn_80121ADC();
+            pokemonIsJoutaiDataId();
             goto L_80200180;
             }
         r3 = 0x29;
@@ -2221,7 +2221,7 @@ u8 fightOutPokemonCheckCanOutOkWazaBanme(void* fighter, u32 slot, u32 mode, u16*
                 ((void(*)(void))pokemonGetStatus)();
             }
             r4 = 0x1b;
-            fn_80121ADC();
+            pokemonIsJoutaiDataId();
             goto L_802003A8;
             }
         r3 = 0x1b;
@@ -2316,7 +2316,7 @@ u8 fightOutPokemonCheckCanOutOkWazaBanme(void* fighter, u32 slot, u32 mode, u16*
                                 ((void(*)(void))pokemonGetStatus)();
                             }
                             r4 = r28;
-                            fn_80121ADC();
+                            pokemonIsJoutaiDataId();
                             goto L_80200520;
                             }
                         r3 = r28;
@@ -2482,7 +2482,7 @@ u8 fightOutPokemonCheckCanOutOkWazaBanme(void* fighter, u32 slot, u32 mode, u16*
                 ((void(*)(void))pokemonGetStatus)();
             }
             r4 = 0x30;
-            fn_80121ADC();
+            pokemonIsJoutaiDataId();
             goto L_8020079C;
             }
         r3 = 0x30;
@@ -2565,7 +2565,7 @@ u8 fightOutPokemonCheckCanOutOkWazaBanme(void* fighter, u32 slot, u32 mode, u16*
                     ((void(*)(void))pokemonGetStatus)();
                 }
                 r4 = 0x36;
-                fn_80121ADC();
+                pokemonIsJoutaiDataId();
                 goto L_802008E0;
                 }
             r3 = 0x36;
@@ -2714,7 +2714,7 @@ void fightOutPokemonInitJoutaiKeep(void) {
     extern void joutaiDataBiosGetStatusKind();
     extern void fn_8011B67C();
     extern void fn_8011B788();
-    extern void fn_80121ADC();
+    extern void pokemonIsJoutaiDataId();
     extern void pokemonInitPersistentJoutai();
     extern void fn_801DA36C();
     u8 sp[0x40];
@@ -2795,7 +2795,7 @@ void fightOutPokemonInitJoutaiKeep(void) {
                     ((void(*)(void))pokemonGetStatus)();
                 }
                 r4 = r28;
-                fn_80121ADC();
+                pokemonIsJoutaiDataId();
                 goto L_80200C74;
                 }
             r3 = r28;

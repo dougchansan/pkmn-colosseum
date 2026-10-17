@@ -11,7 +11,7 @@
 
 #include "src/dolphin/sdk_range_800BB30C.c"
 
-void fn_800BD7A0(u32 xOrigin, u32 yOrigin, u32 width, u32 height) {
+void GXSetScissor(u32 xOrigin, u32 yOrigin, u32 width, u32 height) {
     GXData_800BB30C* p = gx;
     u32* scissorTL;
     u32* scissorBR;
@@ -35,7 +35,7 @@ void fn_800BD7A0(u32 xOrigin, u32 yOrigin, u32 width, u32 height) {
     p->field_002 = 0;
 }
 
-void fn_800BD830(u32 arg0, u32 arg1) {
+void GXSetScissorBoxOffset(u32 arg0, u32 arg1) {
     u32 reg = 0;
     u32 hx;
     u32 hy;

@@ -9,9 +9,9 @@ extern void fn_800E209C(u16 handle); /* GSmemFree */
 
 s32 GSmovieGetFrame(void)
 {
-    extern s32 fn_801E25C8(void);
+    extern s32 THPPlayerGetFrame(void);
 
-    return fn_801E25C8();
+    return THPPlayerGetFrame();
 }
 
 void fn_801E16F0(void)
@@ -20,7 +20,7 @@ void fn_801E16F0(void)
     extern u8 lbl_8047B441;
     extern void* lbl_8047B450;
     extern void THPPlayerDrawDone(void);
-    extern s32 fn_801E38D8(void);
+    extern s32 THPPlayerGetState(void);
     extern void THPPlayerStop(void);
     extern BOOL THPPlayerClose(void);
     extern void GSscratchSetValid(void);
@@ -34,7 +34,7 @@ void fn_801E16F0(void)
     }
     if (active != 0) {
         THPPlayerDrawDone();
-        switch (fn_801E38D8()) {
+        switch (THPPlayerGetState()) {
         case 3:
         case 5:
             if (lbl_8047B441 != 0) {

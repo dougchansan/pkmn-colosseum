@@ -155,12 +155,12 @@ static inline s32 modelShadowFindCastModel(GSshadowSlot* slot, GSmodel* model)
 void GSmodelFreeAllShadowTextures(void)
 {
     extern void fn_801B06DC(void* obj);
-    extern void fn_801B0880(void* obj, u32 flag);
+    extern void HSD_ShadowSetActive(void* obj, u32 flag);
     u32 i;
 
     for (i = 0; i < 6; i++) {
         fn_801B06DC(lbl_80401490[i].obj);
-        fn_801B0880(lbl_80401490[i].obj, 0);
+        HSD_ShadowSetActive(lbl_80401490[i].obj, 0);
         lbl_80401490[i].flag = 0;
     }
 }
@@ -308,8 +308,8 @@ void modelShadowInit__Fv(void)
     extern u8 lbl_8047AB94;
     extern u32 lbl_8047AB90;
     extern u32 lbl_8047AB8C;
-    extern void* fn_801B1730(void);
-    extern void fn_801B0880(void* obj, u32 flag);
+    extern void* HSD_ShadowAlloc(void);
+    extern void HSD_ShadowSetActive(void* obj, u32 flag);
     f32 dist;
     u32 i;
 
@@ -321,8 +321,8 @@ void modelShadowInit__Fv(void)
     lbl_8047AB84 = 0;
 
     for (i = 0; i < 6; i++) {
-        lbl_80401490[i].obj = fn_801B1730();
-        fn_801B0880(lbl_80401490[i].obj, 0);
+        lbl_80401490[i].obj = HSD_ShadowAlloc();
+        HSD_ShadowSetActive(lbl_80401490[i].obj, 0);
     }
 }
 

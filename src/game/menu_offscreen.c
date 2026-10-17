@@ -8,7 +8,7 @@
  *        with _menuCBOffScreen (segment's and XD TU's last fn) an exact
  *        size match. menuOffScreenInit is called by menuInit (menu.c).
  *
- *        fn_801093C8 is XD's first function here, menuOffScreenDraw
+ *        menuOffScreenDraw is XD's first function here, menuOffScreenDraw
  *        (TeamOrre/xd-decomp config/GXXE01/symbols.txt @4989794e,
  *        0x801145EC): it drives the same fade state (lbl_8047AD2C..AD3C).
  *        The TU owns the .sdata2 literal pool 0x8047CE48-0x8047CE70
@@ -70,7 +70,7 @@ extern void  _threadSwitch(void);    /* yield */
 extern u32   fn_800BE31C(void);    /* rand or tick */
 extern u32   GXSetDrawSyncCallback(void*);   /* register fn, returns handle */
 extern void  fn_800BD91C(s32, s32);
-extern void  fn_800B8C58(s32);
+extern void  GXSetDrawSync(s32);
 extern void  GSgfxBeginBackFBCapture(u32, void*, void*);
 extern u32   GStextureCreate(s32, s32, s32, s32, s32);
 extern u32   GSmodelCanAnimate(u32);
@@ -266,7 +266,7 @@ extern void winSpriteSetDisp(void* node, u32 enable);
 extern void winSpriteRelease(void* head);
 extern void* fn_80109290(void* root);
 extern void winSpriteInit(void);
-extern void fn_801093C8(void);
+extern void menuOffScreenDraw(void);
 extern u8 menuOffScreenFadeSync(u8 param);
 extern void menuOffScreenFadeSet(f32 f1, f32 f2);
 extern u8 menuOffScreenSetPriority(u8 val);
@@ -293,7 +293,7 @@ extern void gfxSetCoPlanar(s32);
 extern u32 msgGetCharsPerFrame(void);
 
 /* 0x801093C8 | 0x29C */
-void fn_801093C8(void) {
+void menuOffScreenDraw(void) {
     s32 alpha;
     f32 progress;
 

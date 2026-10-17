@@ -41,7 +41,7 @@
  * applied (map names alone do not meet the sister-title clause).
  *
  * The unit builds with -inline noauto,deferred: under auto, movieStreamCreate is
- * inlined into THPPlayerPrepare (fn_801E40F8), which retail did not do.
+ * inlined into THPPlayerPrepare (THPPlayerPrepare), which retail did not do.
  */
 #include "dolphin/thp/THPPlayer.h"
 #include "dolphin/gx/GX.h"
@@ -56,16 +56,16 @@ extern u32 VIGetTvFormat(void);
 
 typedef void (*VIRetraceCallback)(u32 retraceCount);
 extern VIRetraceCallback fn_800A8850(VIRetraceCallback callback); /* VISetPostRetraceCallback */
-extern u32 fn_800AA2F0(void);                                     /* VIGetNextField */
+extern u32 VIGetNextField(void);                                     /* VIGetNextField */
 
 /* MusyX streaming (src/musyx/runtime/stream.c) */
 typedef u32 (*SND_STREAM_UPDATE_CALLBACK)(void* buffer1, u32 len1, void* buffer2, u32 len2,
                                           u32 user);
-extern u32 fn_8014EE40(u8 prio, void* buffer, u32 samples, u32 frq, u8 vol, u8 pan, u8 span,
+extern u32 sndStreamAllocEx(u8 prio, void* buffer, u32 samples, u32 frq, u8 vol, u8 pan, u8 span,
                        u8 auxa, u8 auxb, u8 studio, u32 flags,
                        SND_STREAM_UPDATE_CALLBACK updateFunction, u32 user,
                        void* adpcmInfo); /* sndStreamAllocEx */
-extern void fn_8014E9B4(u32 stid, u32 offset, u32 num, u32 offset2, u32 num2); /* sndStreamADPCMParameter / update */
+extern void sndStreamARAMUpdate(u32 stid, u32 offset, u32 num, u32 offset2, u32 num2); /* sndStreamADPCMParameter / update */
 extern u8 sndStreamActivate(u32 stid);
 extern void sndStreamDeactivate(u32 stid);
 extern void sndStreamFree(u32 stid);
@@ -109,15 +109,15 @@ void movieStreamFill(void);
 u32 fn_801E2B74(s16* left, s16* right, u32 sample, s32* status);
 u32 fn_801E260C(void* buffer1, u32 len1, void* buffer2, u32 len2, u32 user);
 
-BOOL fn_801E4A6C(void)
+BOOL THPPlayerInit(void)
 {
     memset(&lbl_8046AC60, 0, sizeof(THPPlayer));
-    fn_8009F1D0(&lbl_8046A494, lbl_8046A488, 3);
+    OSInitMessageQueue(&lbl_8046A494, lbl_8046A488, 3);
     lbl_8047B468 = TRUE;
     return TRUE;
 }
 
-BOOL fn_801E4778(const char* fileName, BOOL onMemory)
+BOOL THPPlayerOpen(const char* fileName, BOOL onMemory)
 {
     s32 offset;
     s32 i;
@@ -302,21 +302,21 @@ static inline void InitAllMessageQueue(void)
 
     if (lbl_8046AC60.onMemory == FALSE) {
         for (i = 0; i < 10; i++) {
-            fn_801E1BB8(&lbl_8046AC60.readBuffer[i]);
+            PushFreeReadBuffer(&lbl_8046AC60.readBuffer[i]);
         }
     }
 
     for (i = 0; i < 3; i++) {
-        fn_801E4F34(&lbl_8046AC60.textureSet[i]);
+        PushFreeTextureSet(&lbl_8046AC60.textureSet[i]);
     }
 
     if (lbl_8046AC60.audioExist) {
         for (i = 0; i < 3; i++) {
-            fn_801E4B08(&lbl_8046AC60.audioBuffer[i]);
+            PushFreeAudioBuffer(&lbl_8046AC60.audioBuffer[i]);
         }
     }
 
-    fn_8009F1D0(&lbl_8046A4B4, lbl_8047B478, 2);
+    OSInitMessageQueue(&lbl_8046A4B4, lbl_8047B478, 2);
 }
 
 static inline BOOL WaitUntilPrepare(void)
@@ -325,15 +325,15 @@ static inline BOOL WaitUntilPrepare(void)
     OSMessage msg1;
 
     if (lbl_8046AC60.audioExist) {
-        fn_8009F2F8(&lbl_8046A4B4, &msg0, OS_MESSAGE_BLOCK);
-        fn_8009F2F8(&lbl_8046A4B4, &msg1, OS_MESSAGE_BLOCK);
+        OSReceiveMessage(&lbl_8046A4B4, &msg0, OS_MESSAGE_BLOCK);
+        OSReceiveMessage(&lbl_8046A4B4, &msg1, OS_MESSAGE_BLOCK);
         if ((BOOL)msg0 && (BOOL)msg1) {
             return TRUE;
         } else {
             return FALSE;
         }
     } else {
-        fn_8009F2F8(&lbl_8046A4B4, &msg0, OS_MESSAGE_BLOCK);
+        OSReceiveMessage(&lbl_8046A4B4, &msg0, OS_MESSAGE_BLOCK);
         if ((BOOL)msg0) {
             return TRUE;
         } else {
@@ -342,12 +342,12 @@ static inline BOOL WaitUntilPrepare(void)
     }
 }
 
-void fn_801E446C(BOOL msg)
+void PrepareReady(BOOL msg)
 {
-    fn_8009F230(&lbl_8046A4B4, (OSMessage)msg, OS_MESSAGE_BLOCK);
+    OSSendMessage(&lbl_8046A4B4, (OSMessage)msg, OS_MESSAGE_BLOCK);
 }
 
-BOOL fn_801E40F8(s32 frame, u8 flag, s32 audioTrack)
+BOOL THPPlayerPrepare(s32 frame, u8 flag, s32 audioTrack)
 {
     u8* threadData;
 
@@ -394,26 +394,26 @@ BOOL fn_801E40F8(s32 frame, u8 flag, s32 audioTrack)
 
             threadData = lbl_8046AC60.movieData + lbl_8046AC60.initOffset -
                          lbl_8046AC60.header.movieDataOffsets;
-            fn_801E5470(20, threadData);
+            CreateVideoDecodeThread(20, threadData);
             if (lbl_8046AC60.audioExist) {
-                fn_801E4E1C(12, threadData);
+                CreateAudioDecodeThread(12, threadData);
             }
         } else {
-            fn_801E5470(20, NULL);
+            CreateVideoDecodeThread(20, NULL);
             if (lbl_8046AC60.audioExist) {
-                fn_801E4E1C(12, NULL);
+                CreateAudioDecodeThread(12, NULL);
             }
-            fn_801E1D7C(8);
+            CreateReadThread(8);
         }
 
         InitAllMessageQueue();
 
-        fn_801E543C();
+        VideoDecodeThreadStart();
         if (lbl_8046AC60.audioExist) {
-            fn_801E4DE8();
+            AudioDecodeThreadStart();
         }
         if (lbl_8046AC60.onMemory == FALSE) {
-            fn_801E1D48();
+            ReadThreadStart();
         }
 
         if (!WaitUntilPrepare()) {
@@ -460,10 +460,10 @@ void THPPlayerStop(void)
         fn_800A8850(lbl_8047B46C);
         if (lbl_8046AC60.onMemory == FALSE) {
             DVDCancel(&lbl_8046AC60.fileInfo.cb);
-            fn_801E1D0C();
+            ReadThreadCancel();
         }
 
-        fn_801E5400();
+        VideoDecodeThreadCancel();
         if (lbl_8046AC60.audioExist) {
             sndStreamFree(lbl_80478D00);
             lbl_80478D00 = 0xFFFFFFFF;
@@ -471,7 +471,7 @@ void THPPlayerStop(void)
                 sndStreamFree(lbl_80478D04);
                 lbl_80478D04 = 0xFFFFFFFF;
             }
-            fn_801E4DAC();
+            AudioDecodeThreadCancel();
         }
 
         while (PopUsedTextureSet() != NULL) {
@@ -520,7 +520,7 @@ static void PlayControl(u32 retraceCount)
             if (ProperTimingForStart()) {
                 if (lbl_8046AC60.audioExist) {
                     if (lbl_8046AC60.curVideoNumber - lbl_8046AC60.curAudioNumber <= 1) {
-                        decodedTexture = (THPTextureSet*)fn_801E4EF0(0);
+                        decodedTexture = (THPTextureSet*)PopDecodedTextureSet(0);
                         lbl_8046AC60.videoDecodeCount--;
                         lbl_8046AC60.curVideoNumber++;
                     } else {
@@ -532,7 +532,7 @@ static void PlayControl(u32 retraceCount)
                         lbl_8046AC60.internalState = 2;
                     }
                 } else {
-                    decodedTexture = (THPTextureSet*)fn_801E4EF0(0);
+                    decodedTexture = (THPTextureSet*)PopDecodedTextureSet(0);
                 }
             } else {
                 lbl_8046AC60.retraceCount = -1;
@@ -551,12 +551,12 @@ static void PlayControl(u32 retraceCount)
             if (ProperTimingForGettingNextFrame()) {
                 if (lbl_8046AC60.audioExist) {
                     if (lbl_8046AC60.curVideoNumber - lbl_8046AC60.curAudioNumber <= 1) {
-                        decodedTexture = (THPTextureSet*)fn_801E4EF0(0);
+                        decodedTexture = (THPTextureSet*)PopDecodedTextureSet(0);
                         lbl_8046AC60.videoDecodeCount--;
                         lbl_8046AC60.curVideoNumber++;
                     }
                 } else {
-                    decodedTexture = (THPTextureSet*)fn_801E4EF0(0);
+                    decodedTexture = (THPTextureSet*)PopDecodedTextureSet(0);
                 }
             }
         }
@@ -599,11 +599,11 @@ static void PlayControl(u32 retraceCount)
 static inline BOOL ProperTimingForStart(void)
 {
     if (lbl_8046AC60.videoInfo.videoType & 1) {
-        if (fn_800AA2F0() == 0) {
+        if (VIGetNextField() == 0) {
             return TRUE;
         }
     } else if (lbl_8046AC60.videoInfo.videoType & 2) {
-        if (fn_800AA2F0() == 1) {
+        if (VIGetNextField() == 1) {
             return TRUE;
         }
     } else {
@@ -617,11 +617,11 @@ static inline BOOL ProperTimingForGettingNextFrame(void)
     s32 frameRate;
 
     if (lbl_8046AC60.videoInfo.videoType & 1) {
-        if (fn_800AA2F0() == 0) {
+        if (VIGetNextField() == 0) {
             return TRUE;
         }
     } else if (lbl_8046AC60.videoInfo.videoType & 2) {
-        if (fn_800AA2F0() == 1) {
+        if (VIGetNextField() == 1) {
             return TRUE;
         }
     } else {
@@ -643,11 +643,11 @@ static inline BOOL ProperTimingForGettingNextFrame(void)
 s32 THPPlayerDrawCurrentFrame(GXRenderModeObj* rmode, u32 x, u32 y, u32 polygonW, u32 polygonH)
 {
     if (lbl_8046AC60.open && lbl_8046AC60.state != 0 && lbl_8046AC60.dispTextureSet != NULL) {
-        fn_801E1FF8(rmode);
-        fn_801E1E1C(lbl_8046AC60.dispTextureSet->ytexture, lbl_8046AC60.dispTextureSet->utexture,
+        THPGXYuv2RgbSetup(rmode);
+        THPGXYuv2RgbDraw(lbl_8046AC60.dispTextureSet->ytexture, lbl_8046AC60.dispTextureSet->utexture,
                     lbl_8046AC60.dispTextureSet->vtexture, x, y, lbl_8046AC60.videoInfo.xSize,
                     lbl_8046AC60.videoInfo.ySize, polygonW, polygonH);
-        fn_801E24B0();
+        THPGXRestore();
         return (lbl_8046AC60.dispTextureSet->frameNumber + lbl_8046AC60.initReadFrame) %
                lbl_8046AC60.header.numFrames;
     }
@@ -672,7 +672,7 @@ BOOL THPPlayerGetAudioInfo(THPAudioInfo* audioInfo)
     return FALSE;
 }
 
-u8 fn_801E38D8(void)
+u8 THPPlayerGetState(void)
 {
     return lbl_8046AC60.state;
 }
@@ -687,21 +687,21 @@ void THPPlayerDrawDone(void)
             if (tex == NULL) {
                 break;
             }
-            fn_801E4F34(tex);
+            PushFreeTextureSet(tex);
         }
     }
 }
 
 static inline void PushUsedTextureSet(OSMessage msg)
 {
-    fn_8009F230(&lbl_8046A494, msg, OS_MESSAGE_NOBLOCK);
+    OSSendMessage(&lbl_8046A494, msg, OS_MESSAGE_NOBLOCK);
 }
 
 static inline OSMessage PopUsedTextureSet(void)
 {
     OSMessage msg;
 
-    if (fn_8009F2F8(&lbl_8046A494, &msg, OS_MESSAGE_NOBLOCK) == TRUE) {
+    if (OSReceiveMessage(&lbl_8046A494, &msg, OS_MESSAGE_NOBLOCK) == TRUE) {
         return msg;
     }
     return NULL;
@@ -782,7 +782,7 @@ BOOL movieStreamCreate(void)
      * are both u8 needs no narrowing. Pokemon XD's C++ build, where the u8
      * prototype is mandatory, is also unnarrowed.
      */
-    lbl_80478D00 = fn_8014EE40(0xFF, lbl_8047B470, sample, lbl_8046AC60.audioInfo.sndFrequency,
+    lbl_80478D00 = sndStreamAllocEx(0xFF, lbl_8047B470, sample, lbl_8046AC60.audioInfo.sndFrequency,
                                0x7F,
                                lbl_8046AC60.audioInfo.sndChannels == 2 ? (u8)0 : (u8)0x40, 0,
                                0, 0, 0, 0x30000, fn_801E260C, 1, NULL);
@@ -791,7 +791,7 @@ BOOL movieStreamCreate(void)
     }
 
     if (lbl_8046AC60.audioInfo.sndChannels == 2) {
-        lbl_80478D04 = fn_8014EE40(0xFF, lbl_8047B474, sample,
+        lbl_80478D04 = sndStreamAllocEx(0xFF, lbl_8047B474, sample,
                                    lbl_8046AC60.audioInfo.sndFrequency, 0x7F, 0x7F, 0, 0, 0, 0,
                                    0x30000, fn_801E260C, 0, NULL);
         if (lbl_80478D04 == 0xFFFFFFFF) {
@@ -813,10 +813,10 @@ BOOL movieStreamCreate(void)
     }
 
     DCFlushRange(lbl_8047B470, sample * sizeof(s16));
-    fn_8014E9B4(lbl_80478D00, 0, sample, 0, 0);
+    sndStreamARAMUpdate(lbl_80478D00, 0, sample, 0, 0);
     if (lbl_8046AC60.audioInfo.sndChannels == 2) {
         DCFlushRange(lbl_8047B474, sample * sizeof(s16));
-        fn_8014E9B4(lbl_80478D04, 0, sample, 0, 0);
+        sndStreamARAMUpdate(lbl_80478D04, 0, sample, 0, 0);
     }
     return TRUE;
 }
@@ -931,10 +931,10 @@ void movieStreamFill(void)
     lbl_8046A440.dmaPosition = 0;
     lbl_8046A440.requestedPosition = 0;
     DCFlushRange(lbl_8047B470, sample * sizeof(s16));
-    fn_8014E9B4(lbl_80478D00, 0, sample, 0, 0);
+    sndStreamARAMUpdate(lbl_80478D00, 0, sample, 0, 0);
     if (lbl_8046AC60.audioInfo.sndChannels == 2) {
         DCFlushRange(lbl_8047B474, sample * sizeof(s16));
-        fn_8014E9B4(lbl_80478D04, 0, sample, 0, 0);
+        sndStreamARAMUpdate(lbl_80478D04, 0, sample, 0, 0);
     }
 }
 
@@ -953,7 +953,7 @@ u32 fn_801E2B74(s16* left, s16* right, u32 sample, s32* status)
     u32 i;
 
     if (lbl_8046AC60.playAudioBuffer == NULL) {
-        if ((lbl_8046AC60.playAudioBuffer = (THPAudioBuffer*)fn_801E4AC4(0)) == NULL) {
+        if ((lbl_8046AC60.playAudioBuffer = (THPAudioBuffer*)PopDecodedAudioBuffer(0)) == NULL) {
             *status = 2;
             return 0;
         }
@@ -983,7 +983,7 @@ u32 fn_801E2B74(s16* left, s16* right, u32 sample, s32* status)
         lbl_8046AC60.playAudioBuffer->validSample -= num;
         lbl_8046AC60.playAudioBuffer->curPtr = src;
         if (lbl_8046AC60.playAudioBuffer->validSample == 0) {
-            fn_801E4B08(lbl_8046AC60.playAudioBuffer);
+            PushFreeAudioBuffer(lbl_8046AC60.playAudioBuffer);
             lbl_8046AC60.playAudioBuffer = NULL;
             *status = 1;
         } else {
@@ -1023,10 +1023,10 @@ u32 fn_801E260C(void* buffer1, u32 len1, void* buffer2, u32 len2, u32 user)
                     FillStreamBuffer(lbl_8047B470, NULL, sample);
                 }
                 DCFlushRange(lbl_8047B470, size);
-                fn_8014E9B4(lbl_80478D00, 0, sample, 0, 0);
+                sndStreamARAMUpdate(lbl_80478D00, 0, sample, 0, 0);
                 if (lbl_8046AC60.audioInfo.sndChannels == 2) {
                     DCFlushRange(lbl_8047B474, size);
-                    fn_8014E9B4(lbl_80478D04, 0, sample, 0, 0);
+                    sndStreamARAMUpdate(lbl_80478D04, 0, sample, 0, 0);
                 }
             } else {
                 if (lbl_8046AC60.audioInfo.sndChannels == 2) {
@@ -1035,11 +1035,11 @@ u32 fn_801E260C(void* buffer1, u32 len1, void* buffer2, u32 len2, u32 user)
                     FillStreamBuffer(lbl_8047B470 + sample, NULL, sample);
                 }
                 DCFlushRange(lbl_8047B470 + sample, size);
-                fn_8014E9B4(lbl_80478D00, sample, sample, 0, 0);
+                sndStreamARAMUpdate(lbl_80478D00, sample, sample, 0, 0);
                 if (lbl_8046AC60.audioInfo.sndChannels == 2) {
                     /* retail flushes `sample` bytes here, not `size` as on the other three */
                     DCFlushRange(lbl_8047B474 + sample, sample);
-                    fn_8014E9B4(lbl_80478D04, sample, sample, 0, 0);
+                    sndStreamARAMUpdate(lbl_80478D04, sample, sample, 0, 0);
                 }
             }
 
@@ -1050,7 +1050,7 @@ u32 fn_801E260C(void* buffer1, u32 len1, void* buffer2, u32 len2, u32 user)
     return 0;
 }
 
-s32 fn_801E25C8(void)
+s32 THPPlayerGetFrame(void)
 {
     if (lbl_8046AC60.open && lbl_8046AC60.state != 0 && lbl_8046AC60.dispTextureSet != NULL) {
         return lbl_8046AC60.dispTextureSet->frameNumber + lbl_8046AC60.initReadFrame;

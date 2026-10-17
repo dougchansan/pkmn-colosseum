@@ -82,7 +82,7 @@ static inline void HSD_JObjSetupMatrix(ModelIntpJObj* jobj)
     if (jobj == NULL || !HSD_JObjMtxIsDirty(jobj)) {
         return;
     }
-    fn_8019D9DC((HSDJObj*)jobj);
+    HSD_JObjSetupMatrixSub((HSDJObj*)jobj);
 }
 
 static inline GSmtx* HSD_JObjGetMtxPtr(HSDJObj* jobj)
@@ -97,7 +97,7 @@ static inline GSmtx* HSD_JObjGetMtxPtr(HSDJObj* jobj)
 #if defined(GS_MODEL_BOUND_EMIT_INTP)
 
 extern void fn_8019D620(ModelIntpJObj* jobj);        /* HSD_JObjSetMtxDirtySub */
-extern void fn_801ADAAC(GSvec* euler, ModelQuat* q); /* EulerToQuat */
+extern void EulerToQuat(GSvec* euler, ModelQuat* q); /* EulerToQuat */
 extern void fn_801AD7CC(ModelQuat* from, ModelQuat* to, ModelQuat* out,
                         f32 t);                      /* QuatSlerp */
 /* RULE-EXCEPTION(title-path): extern named stand-in for the TU's pooled
@@ -274,8 +274,8 @@ void fn_800EB904(GSmodel* model, ModelIntpJObj* from, ModelIntpJObj* to,
         }
     }
 
-    fn_801ADAAC(&fromVec, &fromQuat);
-    fn_801ADAAC(&toVec, &toQuat);
+    EulerToQuat(&fromVec, &fromQuat);
+    EulerToQuat(&toVec, &toQuat);
     if ((fromQuat.x - toQuat.x) * (fromQuat.x - toQuat.x) +
             (fromQuat.y - toQuat.y) * (fromQuat.y - toQuat.y) +
             (fromQuat.z - toQuat.z) * (fromQuat.z - toQuat.z) +

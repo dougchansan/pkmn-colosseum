@@ -23,7 +23,7 @@ extern u32 lbl_8047ACE8;
 extern u8 lbl_80478B28;
 
 extern u32 OSGetTick(void);
-extern void fn_800B8C58(s32);
+extern void GXSetDrawSync(s32);
 extern void fn_800BE30C(void);
 extern void fn_800D9ED8(s32);
 extern void gfxSetFlags(s32);
@@ -78,7 +78,7 @@ void fn_80101B90(u32 color) {
 
 void fn_80101D5C(void) {
     if ((s32)lbl_8047ACF0 != 0) {
-        fn_800B8C58(3);
+        GXSetDrawSync(3);
     }
 }
 

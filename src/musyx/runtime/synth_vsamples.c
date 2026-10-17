@@ -117,7 +117,7 @@ static void vsFreeBuffer(u8 bufferIndex)
     lbl_80446F10.voices[lbl_80446F10.streamBuffer[bufferIndex].voice] = 0xFF;
 }
 
-u32 fn_80159550(u8 voice) /* vsSampleStartNotify */
+u32 vsSampleStartNotify(u8 voice) /* vsSampleStartNotify */
 {
     u8 sb;
     u8 i;
@@ -167,7 +167,7 @@ void vsSampleEndNotify(u32 pubID)
     }
 }
 
-void fn_80159840(VS_BUFFER* sb, u32 cpos) /* vsUpdateBuffer */
+void vsUpdateBuffer(VS_BUFFER* sb, u32 cpos) /* vsUpdateBuffer */
 {
     u32 len;
 
@@ -246,12 +246,12 @@ void vsSampleUpdates(void)
 
             switch (sb->state) {
             case 1:
-                fn_80159840(sb, cpos);
+                vsUpdateBuffer(sb, cpos);
                 break;
             case 2:
             case 3:
                 if (((sb->info.instID << 8) | sb->voice) == hwGetVirtualSampleID(sb->voice)) {
-                    fn_80159840(sb, cpos);
+                    vsUpdateBuffer(sb, cpos);
 
                     if (realCPos >= sb->finalLast) {
                         sb->finalGoodSamples -= (realCPos - sb->finalLast);

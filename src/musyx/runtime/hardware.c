@@ -99,7 +99,7 @@ extern void* salAiGetDest(void);
 extern void salHandleAuxProcessing(void);
 extern void fn_801496A0(u32 deltaTime);      /* fn_801496A0 */
 extern void synthHandle(u32 deltaTime);
-extern void fn_8015F620(void);               /* fn_8015F620 */
+extern void s3dHandle(void);               /* s3dHandle */
 extern void streamHandle(void);               /* streamHandle */
 extern void vsSampleUpdates(void);
 extern void hwInitIrq(void);
@@ -109,7 +109,7 @@ extern u32 fn_80164148(u32 flags);           /* fn_80164148 */
 extern void hwEnableIrq(void);
 extern void hwDisableIrq(void);
 extern void fn_801640C4(void);               /* fn_801640C4 */
-extern u32 fn_80164204(void);                /* fn_80164204 */
+extern u32 salExitDsp(void);                /* salExitDsp */
 extern u32 salExitDspCtrl(void);
 extern u32 salExitAi(void);
 extern void fn_80164324(void);               /* fn_80164324 */
@@ -132,7 +132,7 @@ extern void fn_801634A8(u32 length);         /* fn_801634A8 */
 extern void fn_80163794(void);               /* fn_80163794 */
 extern void* fn_80163810(void* src, u32 len); /* fn_80163810 */
 extern void aramSetUploadCallback(ARAMUploadCallback callback, u32 chunckSize);
-extern void fn_80163BCC(void* aram, u32 len); /* fn_80163BCC */
+extern void aramRemoveData(void* aram, u32 len); /* aramRemoveData */
 extern void fn_80163490(void);               /* fn_80163490 */
 extern void salInitHRTFBuffer(void);
 
@@ -204,7 +204,7 @@ void snd_handle_irq(void) {
   fn_80164398();
   hwSetTimeOffset(0);
   // sndProfStartPMC(&prof.emitters);
-  fn_8015F620();
+  s3dHandle();
   // sndProfStopPMC(&prof.emitters);
   fn_801643B8();
   fn_80164398();
@@ -243,7 +243,7 @@ s32 hwInit(u32* frq, u16 numVoices, u16 numStudios, u32 flags) {
 
 void hwExit() {
   hwDisableIrq();
-  fn_80164204();
+  salExitDsp();
   salExitDspCtrl();
   salExitAi();
   hwEnableIrq();
@@ -254,7 +254,7 @@ void hwSetTimeOffset(u8 offset) { lbl_8047B050 = offset; }
 
 u8 hwGetTimeOffset() { return lbl_8047B050; }
 
-u32 fn_8016246C(u32 v) { return lbl_8047B024[v].state != 0; }
+u32 hwIsActive(u32 v) { return lbl_8047B024[v].state != 0; }
 
 void fn_8016248C(SND_MESSAGE_CALLBACK callback) { lbl_8047B028 = (u32)callback; } /* hwSetMesgCallback */
 
@@ -625,7 +625,7 @@ void hwRemoveSample(void* header, void* data
 ) {
   u8 type = (((u32*)header))[1] >> 0x18;
   u32 len = convert_length((((u32*)header))[1] & 0xFFFFFF, type);
-  fn_80163BCC(data, len);
+  aramRemoveData(data, len);
 }
 
 // TODO: Platform specific audio memory handling
@@ -633,7 +633,7 @@ void fn_80163188() { fn_80163490(); }
 
 void hwFrameDone() {}
 
-void fn_801631AC(SND_HOOKS* hooks) {
+void sndSetHooks(SND_HOOKS* hooks) {
   lbl_8047B054 = *hooks;
 }
 

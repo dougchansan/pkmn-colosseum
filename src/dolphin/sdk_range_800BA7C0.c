@@ -324,7 +324,7 @@ void fn_800BACA0(GXTexObj_800BA7C0* object, GXTexFilter_800BA7C0 minFilter,
     GX_SET_REG_FIELD(texture->mode1, 8, 8, encodedMaxLod);
 }
 
-void fn_800BAE34(u32* mode0, u32 wrapS, u32 wrapT) {
+void GXInitTexObjWrapMode(u32* mode0, u32 wrapS, u32 wrapT) {
     *mode0 = (*mode0 & 0xFFFFFFFC) | wrapS;
     *mode0 = (*mode0 & 0xFFFFFFF3) | (wrapT << 2);
 }

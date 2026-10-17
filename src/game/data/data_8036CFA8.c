@@ -7,13 +7,13 @@ extern void* jumptable_8036CD94[];
 extern void* lbl_8036CFA8[];
 
 extern u8 fn_801AEFF0[];
-extern u8 fn_801B2654[];
-extern u8 fn_801B26F8[];
-extern u8 fn_801B2718[];
-extern u8 fn_801B3168[];
-extern u8 fn_801B3174[];
-extern u8 fn_801B31A4[];
-extern u8 fn_801B31F4[];
+extern u8 _HSD_StateInvalidateRenderMode[];
+extern u8 _HSD_StateInvalidateVtxAttr[];
+extern u8 _HSD_StateInvalidatePrimitive[];
+extern u8 _HSD_StateInvalidateTexCoordGen[];
+extern u8 _HSD_StateInvalidateTevRegister[];
+extern u8 _HSD_StateInvalidateTevStage[];
+extern u8 _HSD_StateInvalidateColorChannel[];
 
 /* .data unit 0x8036CFA8..0x8036CFE8: the state invalidate table (state.c's
  * channel set-ups before it, 0x8036CE88, are owned by hsd/state.c). Originally
@@ -21,19 +21,19 @@ extern u8 fn_801B31F4[];
 
 void* lbl_8036CFA8[16] = {
     (void*)0x00000001,
-    (void*)((u8*)fn_801B2718),
+    (void*)((u8*)_HSD_StateInvalidatePrimitive),
     (void*)0x00000002,
-    (void*)((u8*)fn_801B26F8),
+    (void*)((u8*)_HSD_StateInvalidateVtxAttr),
     (void*)0x00000004,
-    (void*)((u8*)fn_801B31F4),
+    (void*)((u8*)_HSD_StateInvalidateColorChannel),
     (void*)0x00000008,
-    (void*)((u8*)fn_801B31A4),
+    (void*)((u8*)_HSD_StateInvalidateTevStage),
     (void*)0x00000010,
-    (void*)((u8*)fn_801B3174),
+    (void*)((u8*)_HSD_StateInvalidateTevRegister),
     (void*)0x00000020,
-    (void*)((u8*)fn_801B3168),
+    (void*)((u8*)_HSD_StateInvalidateTexCoordGen),
     (void*)0x00000040,
-    (void*)((u8*)fn_801B2654),
+    (void*)((u8*)_HSD_StateInvalidateRenderMode),
     (void*)0x00000000,
     (void*)0x00000000,
 };

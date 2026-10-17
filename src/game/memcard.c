@@ -263,7 +263,7 @@ extern s32 CARDFreeBlocks(s32 chan, s32* bytes_not_used, s32* files_not_used);
 extern s32 CARDDeleteAsync(s32 chan, const char* file_name, CARDCallback callback);
 extern s32 CARDCreateAsync(s32 chan, const char* file_name, u32 size, void* file_info,
                            CARDCallback callback);
-extern s32 fn_800B4488(s32 chan, s32 file_no, void* file_info);
+extern s32 CARDOpen(s32 chan, s32 file_no, void* file_info);
 extern s32 CARDClose(void* file_info);
 extern s32 CARDCancel(void* file_info);
 extern s32 fn_800B4C7C(void* file_info, void* buffer, s32 length, s32 offset,
@@ -1860,7 +1860,7 @@ s32 fn_801CFD08(void)
     channel = lbl_8047B3D4->card_channel;
     file_info = &lbl_8047B3D4->file_info;
     for (file_no = 0; file_no < 0x7F; file_no++) {
-        result = fn_800B4488(channel, file_no, file_info);
+        result = CARDOpen(channel, file_no, file_info);
         if (result == 0) {
             result = CARDGetStatus(channel, file_no, &status);
             if (result != 0) {

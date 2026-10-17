@@ -87,7 +87,7 @@ typedef enum GSFloorResStatus {
  * Size: at least 0x14 bytes. Stored in the GSmem-allocated pool
  * (handle gsFloorPoolHandle, pointer gsFloorPoolPtr).
  *
- * Fields recovered from disassembly of fn_800FF788 and _floorManagerThread:
+ * Fields recovered from disassembly of GSfloorOpen and _floorManagerThread:
  *   0x00: void*  floorDataEntry  -- pointer to GSFloorDataEntry for this floor
  *   0x04: u32    floorId         -- composite floor ID (floor_index * 0x5001 + base)
  *   0x08: u16    resMemHandle    -- GSmem handle for resource memory block

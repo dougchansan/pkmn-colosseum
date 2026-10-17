@@ -1772,7 +1772,7 @@ void fn_8003042C(u8* arg0, u8* arg1) {
 /* fn_80030574 - 0x80030574 | size: 0x234 */
 extern void pokemonWazaCheckValid(void);
 extern void wazaGetStatus(void);
-extern void fn_800FBB34(s32, s32, s32, s32, u32, u16);
+extern void GSmsgPrintRect(s32, s32, s32, s32, u32, u16);
 extern u32 lbl_8047A424;
 extern u32 lbl_8047A420;
 #if 0
@@ -1860,7 +1860,7 @@ grp_done:
 
     if (value != 0) {
         msgctrlSetValue(0x37, ((s32 (*)(u32))GSmsgGetGSchar)(value));
-        fn_800FBB34(0, 0, *(s16*)(arg1 + 0x54), *(s16*)(arg1 + 0x56), combined, 0xE7);
+        GSmsgPrintRect(0, 0, *(s16*)(arg1 + 0x54), *(s16*)(arg1 + 0x56), combined, 0xE7);
         winSpriteSetDisp(arg1, 1);
     } else {
         winSpriteSetDisp(arg1, 0);
@@ -1903,7 +1903,7 @@ void fn_800307A8(u8* arg0, u8* arg1) {
 
     if (obj != 0) {
         msgctrlSetValue(0x2F, ((u8 (*)(void*, s32, s32, s32))pokemonGetStatus)(obj, 0, 0x7A, 0));
-        fn_800FBB34(0, 0, *(s16*)(arg1 + 0x54), *(s16*)(arg1 + 0x56), combined, 0x4414);
+        GSmsgPrintRect(0, 0, *(s16*)(arg1 + 0x54), *(s16*)(arg1 + 0x56), combined, 0x4414);
         winSpriteSetDisp(arg1, 1);
     } else {
         winSpriteSetDisp(arg1, 0);
@@ -2261,7 +2261,7 @@ void fn_80034DC0(u8* arg0, u8* arg1) {
     combined = byte | mask;
     GSmsgPrintColor(0, 0, combined, 0x3CC8);
     msgctrlSetValue(0x34, lbl_8047A44C);
-    fn_800FBB34(0, 0, *(s16*)(arg1 + 0x54), *(s16*)(arg1 + 0x56), combined, 0x3CC9);
+    GSmsgPrintRect(0, 0, *(s16*)(arg1 + 0x54), *(s16*)(arg1 + 0x56), combined, 0x3CC9);
 }
 #endif
 

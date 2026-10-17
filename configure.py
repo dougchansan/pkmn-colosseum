@@ -8269,7 +8269,7 @@ config.libs = [
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
-            # Carve of fn_800D1B3C/fn_800D1D00 with the cameraBuildMatrix
+            # Carve of GScameraGetInvMatrixPtr/GScameraGetMatrixPtr with the cameraBuildMatrix
             # inline (repeated expansion; XD name); text only.
             Object(
                 Matching,

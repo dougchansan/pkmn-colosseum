@@ -49,7 +49,7 @@
  *     "filterStart: Could not start filter effect!"
  *     Struct size: 0x14 bytes
  *     Callbacks: start=fn_8013A520, stop=filterAddKey,
- *                update=fn_8013A49C, render=fn_8013AD9C
+ *                update=fn_8013A49C, render=_filterUpdate
  *     Core logic: fn_8013A520 (0x56C bytes -- large switch on filter type)
  *
  *   surfEffectStart         (filterEffectCreate)  -- Water surface wave effect
@@ -92,15 +92,15 @@
  *     Uses rodata string "translate" for matrix node lookup
  *     Callbacks: start=fn_8013E5AC, stop=fn_8013E8A4,
  *                update=fn_8013E54C, render=auraEffectStart
- *     Core logic: fn_8013E6C4 (0x1E0 bytes), _auraDrawModel (0x5BC bytes)
+ *     Core logic: _auraRender (0x1E0 bytes), _auraDrawModel (0x5BC bytes)
  *
  *   billboardEffectStart    (distortionEffectCreate)  -- Billboard sprite particles
  *     "billboardEffectStart: Could not start billboard effect!"
  *     Struct size: 0xB4 bytes
  *     Callbacks: start=_distortionInit, stop=distortionEffectStart,
- *                update=_distortionDestroy, render=fn_8013F410
+ *                update=_distortionDestroy, render=_distortionRender
  *     Core logic: fn_8013F80C (0x170 bytes), _distortionEffectUpdateMatrices (0x264 bytes),
- *                 fn_8013FF0C (0x22C bytes -- billboard transform setup)
+ *                 _billboardUpdate (0x22C bytes -- billboard transform setup)
  *
  *   patchiruTextureStart   (0x8013FBE0)  -- Patchiru (Spinda) texture effect
  *     "Failed to create Patchiru texture"
@@ -124,7 +124,7 @@
  *   fn_800D6A00 -- GX cull mode
  *   fn_800D67BC, fn_800D6680, gfxVtxColor4u8 -- GX position/color/texcoord
  *   fn_800B9404 -- fog setup
- *   GXDrawDone, fn_800B856C -- GX begin/end frame
+ *   GXDrawDone, GXInvalidateVtxCache -- GX begin/end frame
  *   GStextureFree -- model release
  *   cameraGetActive -- camera matrix helper
  *
@@ -201,7 +201,7 @@ extern void  gfxVtxPos(f32 x, f32 y, f32 z);
 extern void  gfxVtxColor4u8(u32 a, u8 r, u8 g, u8 b, u32 alpha);
 extern void  fn_800B9404(u32 index, u32 param);
 extern void  GXDrawDone(void);
-extern void  fn_800B856C(void);
+extern void  GXInvalidateVtxCache(void);
 extern void  GStextureFree(void* model);
 extern void  gfxSetOrtho(f32 a, f32 b, f32 c, f32 d);
 extern void  fn_800D9ED8(u32 param);
@@ -279,7 +279,7 @@ extern void  DCFlushRange(void* ptr, u32 size);
 /* filterIsHolding: _surfHelper */
 /* filterAddKey: _filterStop callback (0x208 bytes) */
 /* _filterNextKey: _filterHelper2 */
-/* fn_8013AD9C: _filterRender callback (0x298 bytes) */
+/* _filterUpdate: _filterRender callback (0x298 bytes) */
 
 /* ---- Surf / wave effect ---- */
 /* fn_8013B034: _surfUpdate callback */
@@ -333,7 +333,7 @@ extern void  DCFlushRange(void* ptr, u32 size);
 /* fn_8013E54C: _distortionUpdate callback */
 /* fn_8013E5AC: _distortionStart callback */
 /* auraEffectStart: _distortionRender callback */
-/* fn_8013E6C4: _distortionCalcMatrices (0x1E0 bytes) */
+/* _auraRender: _distortionCalcMatrices (0x1E0 bytes) */
 /* fn_8013E8A4: _distortionStop callback (0x1A0 bytes) */
 /* _auraDrawModel: _distortionEffectUpdateMatrices (0x5BC bytes) */
 
@@ -342,7 +342,7 @@ extern void  DCFlushRange(void* ptr, u32 size);
 /* _distortionDestroy: _billboardUpdate callback */
 /* _distortionInit: _billboardStart callback (0x230 bytes) */
 /* distortionEffectStart: _billboardStop callback */
-/* fn_8013F410: _billboardRender callback (0x3FC bytes) */
+/* _distortionRender: _billboardRender callback (0x3FC bytes) */
 /* fn_8013F80C: _billboardCalcTransform (0x170 bytes) */
 /* _distortionEffectUpdateMatrices: _billboardRenderQuad (0x264 bytes) */
 
@@ -354,7 +354,7 @@ extern void  DCFlushRange(void* ptr, u32 size);
 /* billboardEffectStart: _patchiruStop callback (0x13C bytes) */
 
 /* ---- Billboard transform helpers ---- */
-/* fn_8013FF0C: _billboardTransformSetup (0x22C bytes) */
+/* _billboardUpdate: _billboardTransformSetup (0x22C bytes) */
 /* Unload__13ModelSequenceFPUc: _billboardTransformHelper */
 /* pachiruEffectSetupModel: _billboardTransformHelper2 (0x11C bytes) */
 /* _pachiruEffectCreateTexture__FP9GStextureP9GStextureUl: _billboardTransformMain (0x2DC bytes) */
@@ -390,7 +390,7 @@ extern u32 fn_8013A49C(void* ptr);
 extern u32 fn_8013A520(void* ptr);
 extern u32 fn_8013AA8C(void* ptr, u16 delta);
 extern u32 _filterNextKey(void* ptr);
-extern u32 fn_8013AD9C(void* ptr, u32 delta);
+extern u32 _filterUpdate(void* ptr, u32 delta);
 extern u32 fn_8013B034(void* ptr);
 extern u32 fn_8013B0A0(void* ptr);
 extern u16 filterStart(void* ptr);
@@ -426,20 +426,20 @@ extern u32 fn_8013E470(void* ptr, u32 delta);
 extern u32 fn_8013E54C(void* ptr);
 extern u32  fn_8013E5AC(u8* p);
 extern u32 auraEffectStart(void* ptr);
-extern u32 fn_8013E6C4(u8* ptr);
+extern u32 _auraRender(u8* ptr);
 extern u32 fn_8013E8A4(void* ptr, u32 delta);
 extern void _auraDrawModel(void* ptr);
 extern u32 _distortionDestroy(void* ptr);
 extern u32 _distortionInit(void* ptr);
 extern u16 distortionEffectStart(void* ptr);
-extern u32 fn_8013F410(void* ptr);
+extern u32 _distortionRender(void* ptr);
 extern u32 fn_8013F80C(void* ptr, u32 delta);
 extern void _distortionEffectUpdateMatrices(void* ptr);
 extern u32 fn_8013FC58(void* ptr);
 extern u32 fn_8013FCC4(void* ptr);
 extern u32 fn_8013FD68(void* ptr);
 extern u16 billboardEffectStart(void* ptr);
-extern u32 fn_8013FF0C(void* ptr);
+extern u32 _billboardUpdate(void* ptr);
 
 #if !defined(EFFECT_VISUAL_BANK_ACTIVE) || \
     defined(EFFECT_VISUAL_EXACT_801380D4_8013814C)
@@ -637,7 +637,7 @@ asm void fn_80138630(void* ptr) {
 u32 fn_80138630(void* ptr) {
     if (ptr) {
         GXDrawDone();
-        fn_800B856C();
+        GXInvalidateVtxCache();
         if (*(void**)((u8*)ptr + 0x1c) != NULL) {
             GStextureFree(*(void**)((u8*)ptr + 0x1c));
         }
@@ -659,7 +659,7 @@ u32 fn_80138680(void* ptr) {
     if (ptr) {
         val = *(u16*)ptr;
         GXDrawDone();
-        fn_800B856C();
+        GXInvalidateVtxCache();
         if (val) {
             fn_800E24B0(val);
             fn_800E209C(val);
@@ -1421,7 +1421,7 @@ asm void fn_80139898(void* ptr) {
 u32 fn_80139898(void* ptr) {
     if (ptr) {
         GXDrawDone();
-        fn_800B856C();
+        GXInvalidateVtxCache();
         if (*(void**)((u8*)ptr + 0x58) != NULL) {
             GStextureFree(*(void**)((u8*)ptr + 0x58));
         }
@@ -1440,7 +1440,7 @@ u32 fn_801398E0(void* ptr) {
         val = *(u16*)((u8*)ptr + 0x4);
         if (val) {
             GXDrawDone();
-            fn_800B856C();
+            GXInvalidateVtxCache();
             fn_800E24B0(val);
             fn_800E209C(val);
         }
@@ -2138,7 +2138,7 @@ u32 filterEffectCreate(void* callbacks) {
             (GSEffectStartFunc)filterStart,
             (GSEffectStopFunc)fn_8013B0A0,
             (void*)_filterNextKey,
-            (GSEffectUpdateFunc)fn_8013AD9C,
+            (GSEffectUpdateFunc)_filterUpdate,
             0);
         GSeffectSetup(effectId, 0);
     }
@@ -2259,7 +2259,7 @@ extern void GSfilterSetColor(void* filter, u8* color);
 extern u32 lbl_8047D1E8;
 extern const f32 lbl_8047D1F0;
 extern const f32 lbl_8047D1F4;
-u32 fn_8013AD9C(void* ptr, u32 delta) {
+u32 _filterUpdate(void* ptr, u32 delta) {
     u8* p;
     u8* node;
     u8* previous;
@@ -2395,7 +2395,7 @@ u32 fn_8013B0A0(void* ptr) {
         flag1 = *(u8*)((u8*)ptr + 0x4e);
         flag2 = *(u8*)((u8*)ptr + 0x4f);
         GXDrawDone();
-        fn_800B856C();
+        GXInvalidateVtxCache();
         for (i = 0; i < count; i++, p += 4) {
             if (*(void**)p != NULL) {
                 if (flag2 == 0) {
@@ -2591,7 +2591,7 @@ u32 fn_8013B558(void* ptr) {
             GSmodelSetVisibility(*(void**)ptr, 0);
         }
         GXDrawDone();
-        fn_800B856C();
+        GXInvalidateVtxCache();
         val = *(u16*)((u8*)ptr + 0x20);
         if (val) {
             fn_800E24B0(val);
@@ -2713,7 +2713,7 @@ u16 surfEffectStart(void* ptr) {
         goto fail;
     }
 
-    fn_800B856C();
+    GXInvalidateVtxCache();
     if (!surfAllocMesh(p, model)) {
         goto fail;
     }
@@ -3230,7 +3230,7 @@ asm u32 fn_8013C614(void* ptr) {
 u32 fn_8013C614(void* ptr) {
     if (ptr) {
         GXDrawDone();
-        fn_800B856C();
+        GXInvalidateVtxCache();
         if (*(s32*)((u8*)ptr + 0x7c) != 0) {
             fn_800F9210(*(u32*)((u8*)ptr + 0x74), *(u32*)((u8*)ptr + 0x78));
             fn_800F9210(*(u32*)((u8*)ptr + 0x74), *(u32*)((u8*)ptr + 0x7c));
@@ -3260,7 +3260,7 @@ u32 fn_8013C670(void* arg) {
             GSmodelSetVisibility(inner, 0);
         }
         GXDrawDone();
-        fn_800B856C();
+        GXInvalidateVtxCache();
         _seaResetMaterial(inner, ptr);
 
         {
@@ -3408,7 +3408,7 @@ u16 seaEffectStart(void* ptr) {
     }
 
     GXDrawDone();
-    fn_800B856C();
+    GXInvalidateVtxCache();
     if (!seaAllocMesh(p, model)) {
         goto fail;
     }
@@ -3523,7 +3523,7 @@ u32 fn_8013CA48(void* ptr, u32 delta) {
         columns = *(u16*)(p + 0x1A);
 
         GXDrawDone();
-        fn_800B856C();
+        GXInvalidateVtxCache();
         set__5GSvecFfff(lbl_80363CB8, lbl_8047D23C, 1.0f,
                         lbl_8047D23C);
 
@@ -3573,7 +3573,7 @@ void fn_8013CBF0(void* ptr, void* mtx, u8* color, f32 x, f32 z, f32 scale) {
     u16 column;
 
     GXDrawDone();
-    fn_800B856C();
+    GXInvalidateVtxCache();
     set__5GSvecFfff(lbl_80363CB8, lbl_8047D23C, 1.0f, lbl_8047D23C);
     set__5GSvecFfff(offset, -0.5f * x, lbl_8047D23C, -0.5f * z);
     /* RULE-EXCEPTION(user-approved): the second zero is spelled through a
@@ -4266,7 +4266,7 @@ u32 fn_8013DC94(void* ptr) {
         node = *(void**)((u8*)ptr + 0x14);
         if (*(void**)((u8*)ptr + 0xc) != NULL) {
             GXDrawDone();
-            fn_800B856C();
+            GXInvalidateVtxCache();
             GStextureFree(*(void**)((u8*)ptr + 0xc));
         }
         while (node) {
@@ -4610,7 +4610,7 @@ u32 fn_8013E4D4(void* callbacks) {
             0,
             0,
             (GSEffectUpdateFunc)fn_8013E8A4,
-            (GSEffectRenderFunc)fn_8013E6C4);
+            (GSEffectRenderFunc)_auraRender);
         GSeffectSetup(effectId, 0);
     }
     return effectId;
@@ -4630,7 +4630,7 @@ u32 fn_8013E54C(void* arg) {
         ptr = arg;
         if (*(void**)((u8*)ptr + 4) != 0) {
             GXDrawDone();
-            fn_800B856C();
+            GXInvalidateVtxCache();
             GStextureFree(*(void**)((u8*)ptr + 4));
         }
         memset(ptr, 0, 0x34);
@@ -4693,7 +4693,7 @@ extern const f32 lbl_8047D2B0;
 extern const f32 lbl_8047D2B4;
 extern const f32 lbl_8047D2A8;
 #if 1
-u32 fn_8013E6C4(u8* ptr)
+u32 _auraRender(u8* ptr)
 {
     void* model;
 
@@ -4741,7 +4741,7 @@ u32 fn_8013E6C4(u8* ptr)
     return 0;
 }
 #else
-void fn_8013E6C4(void) { /* TODO */ }
+void _auraRender(void) { /* TODO */ }
 #endif
 #endif
 
@@ -4750,7 +4750,7 @@ void fn_8013E6C4(void) { /* TODO */ }
 extern double fmod(double value, double modulus);
 extern const f32 lbl_8047D2B8;
 /* RULE-EXCEPTION(user-approved): extern-named stand-in for the 1.0f this
-   function shares with the linked fn_8013E6C4 (0x8047D2A8) — see
+   function shares with the linked _auraRender (0x8047D2A8) — see
    docs/RULE_EXCEPTIONS.md */
 extern const f32 lbl_8047D2A8;
 extern const f32 lbl_8047D2BC;
@@ -5022,7 +5022,7 @@ u32 distortionEffectCreate(void* callbacks) {
             0,
             0,
             (GSEffectUpdateFunc)fn_8013F80C,
-            (GSEffectRenderFunc)fn_8013F410);
+            (GSEffectRenderFunc)_distortionRender);
         GSeffectSetup(effectId, 0);
     }
     return effectId;
@@ -5039,7 +5039,7 @@ asm void fn_8013F078(void) {
 u32 _distortionDestroy(void* ptr) {
     if (ptr) {
         GXDrawDone();
-        fn_800B856C();
+        GXInvalidateVtxCache();
         if (*(void**)((u8*)ptr + 0x4) != NULL) {
             GStextureFree(*(void**)((u8*)ptr + 0x4));
             *(u32*)((u8*)ptr + 0x4) = 0;
@@ -5079,7 +5079,7 @@ u32 _distortionInit(void* ptr) {
             if (lbl_8047AEE8 == 0) {
                 if (p != NULL) {
                     GXDrawDone();
-                    fn_800B856C();
+                    GXInvalidateVtxCache();
                     if (*(void**)(p + 0x4) != NULL) {
                         GStextureFree(*(void**)(p + 0x4));
                         *(u32*)(p + 0x4) = 0;
@@ -5105,7 +5105,7 @@ u32 _distortionInit(void* ptr) {
         if (*(void**)p == NULL) {
             if (p != NULL) {
                 GXDrawDone();
-                fn_800B856C();
+                GXInvalidateVtxCache();
                 if (*(void**)(p + 0x4) != NULL) {
                     GStextureFree(*(void**)(p + 0x4));
                     *(u32*)(p + 0x4) = 0;
@@ -5225,7 +5225,7 @@ extern const f32 lbl_8047D304;
 extern const f32 lbl_8047D300;
 extern const f32 lbl_8047D308;
 #if 1
-u32 fn_8013F410(void* ptr) {
+u32 _distortionRender(void* ptr) {
     f32 mtx[12];
     u8* p;
     s32 count;
@@ -5319,7 +5319,7 @@ u32 fn_8013F410(void* ptr) {
     return 0;
 }
 #else
-u32 fn_8013F410(void* ptr) { /* TODO */ }
+u32 _distortionRender(void* ptr) { /* TODO */ }
 #endif
 #endif
 
@@ -5500,7 +5500,7 @@ u32 patchiruTextureStart(void* callbacks) {
             (GSEffectStartFunc)billboardEffectStart,
             (GSEffectStopFunc)fn_8013FD68,
             0,
-            (GSEffectUpdateFunc)fn_8013FF0C,
+            (GSEffectUpdateFunc)_billboardUpdate,
             0);
         GSeffectSetup(effectId, 0);
     }
@@ -5660,7 +5660,7 @@ typedef struct BillboardVec {
     f32 z;
 } BillboardVec;
 
-u32 fn_8013FF0C(void* ptr) {
+u32 _billboardUpdate(void* ptr) {
     u8* p;
     void* camera;
     void* model;

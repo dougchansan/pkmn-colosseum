@@ -219,7 +219,7 @@ void* fn_80163810(void* src, u32 len) /* aramStoreData */
     return (void*)addr;
 }
 
-void fn_80163BCC(void* aram, u32 len) /* aramRemoveData */
+void aramRemoveData(void* aram, u32 len) /* aramRemoveData */
 {
     len = (len + 31) & ~31;
     lbl_8047B078 -= len;

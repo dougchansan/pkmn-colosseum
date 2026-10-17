@@ -159,7 +159,7 @@ void sndStreamDeactivate(u32 stid);
 
 /* The typed object declaration is significant here: it gives MWCC the same
  * alias information as the MusyX source and preserves its by-eight unroll. */
-void fn_8014DDD8(void) {
+void streamInit(void) {
   s32 i;
   streamCallCnt = 0;
   streamCallDelay = 3;
@@ -371,7 +371,7 @@ void streamHandle(void) {
 
 void streamCorrectLoops(void) {}
 
-void fn_8014E7D0(u32 voice) {
+void streamKill(u32 voice) {
   STREAM_INFO* si;
   si = &streamInfo[voice];
   switch (si->state) {
@@ -418,7 +418,7 @@ static inline u32 GeneratePublicID(void) {
   return id;
 }
 
-void fn_8014E9B4(u32 stid, u32 off1, u32 len1, u32 off2, u32 len2) {
+void sndStreamARAMUpdate(u32 stid, u32 off1, u32 len1, u32 off2, u32 len2) {
   u32 i;
 
   hwDisableIrq();
@@ -496,7 +496,7 @@ void streamOutputModeChanged(void) {
   hwEnableIrq();
 }
 
-u32 fn_8014EE40(u8 prio, void* buffer, u32 samples, u32 frq, u8 vol, u8 pan, u8 span, u8 auxa,
+u32 sndStreamAllocEx(u8 prio, void* buffer, u32 samples, u32 frq, u8 vol, u8 pan, u8 span, u8 auxa,
                 u8 auxb, u8 studio, u32 flags,
                 u32 (*updateFunction)(void* buffer1, u32 len1, void* buffer2, u32 len2, u32 user),
                 u32 user, SND_ADPCMSTREAM_INFO* adpcmInfo) {

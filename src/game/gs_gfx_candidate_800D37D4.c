@@ -68,8 +68,8 @@ extern f32 lbl_8047CA1C;  /* 30000.0f */
 
 extern void* memcpy(void*, const void*, u32);
 extern void VIWaitForRetrace(void);
-extern void fn_801BF4C4(u32 black);            /* HSD video: set black */
-extern void fn_801BF4E4(GXRenderModeObj* rmode); /* HSD video: configure */
+extern void HSD_VISetBlack(u32 black);            /* HSD video: set black */
+extern void HSD_VISetConfigure(GXRenderModeObj* rmode); /* HSD video: configure */
 extern void GSmathInit(void);
 extern void _gfxScratchNotify__F15GSscratchNotifyPvUc(void);
 extern void* GSscratchAlloc(u32, void*);
@@ -79,8 +79,8 @@ extern void GSlogWrite(const char*, ...);
 extern void fn_8019C3C4(s32, ...);
 extern void HSD_InitComponent(void);
 extern void fn_8019C690(u32, u32);
-extern void fn_801C021C(void*);
-extern void fn_801C01C8(void*);
+extern void HSD_VISetUserPostRetraceCallback(void*);
+extern void HSD_VISetUserGXDrawDoneCallback(void*);
 extern void fn_80196C3C(void*);
 extern void fn_800D3F5C(void);
 extern void fn_800D3F50(void);
@@ -224,12 +224,12 @@ s32 fn_800D37D4(s32 standard, s32 lines, u8 interlace, s32 filter,
     renderMode.viXOrigin = 30;
     renderMode.viWidth = 660;
 
-    fn_801BF4C4(1);
-    fn_801BF4E4(&renderMode);
+    HSD_VISetBlack(1);
+    HSD_VISetConfigure(&renderMode);
     for (i = 0; i < retraces; i++) {
         VIWaitForRetrace();
     }
-    fn_801BF4C4(0);
+    HSD_VISetBlack(0);
     return 1;
 }
 
@@ -336,7 +336,7 @@ void GSgfxInit__FP15_GSgfxInitParms(u32 heapSize, u32 matrixSize,
     fn_8019C3C4(4, renderMode);
     HSD_InitComponent();
     fn_800D37D4(videoMode, 2, 0, 2, 0, 0);
-    fn_801BF4C4(1);
+    HSD_VISetBlack(1);
     fn_8019C690(0, 0);
 
     *(u32*)((u8*)lbl_8047AA80 + 0x048) = 0;
@@ -345,8 +345,8 @@ void GSgfxInit__FP15_GSgfxInitParms(u32 heapSize, u32 matrixSize,
     *(u32*)((u8*)lbl_8047AA80 + 0x054) = 0;
     *(u32*)((u8*)lbl_8047AA80 + 0x058) = 1;
     *(u8*)((u8*)lbl_8047AA80 + 0x05C) = 1;
-    fn_801C021C(fn_800D3F5C);
-    fn_801C01C8(fn_800D3F50);
+    HSD_VISetUserPostRetraceCallback(fn_800D3F5C);
+    HSD_VISetUserGXDrawDoneCallback(fn_800D3F50);
     fn_80196C3C(GSgfxSetViewportJitter);
 
     gfxAllocRequestBuffer(heapSize);
@@ -378,7 +378,7 @@ void GSgfxInit__FP15_GSgfxInitParms(u32 heapSize, u32 matrixSize,
     lbl_8047AA8C = 0;
     *(u32*)((u8*)lbl_8047AA80 + 0x00) = 1;
     GSgfxBackFBInit__Fv();
-    fn_801BF4C4(0);
+    HSD_VISetBlack(0);
     lbl_8047AA84 = 1;
     lbl_8047AA85 = 0;
     GSlogWrite(lbl_80270388, lbl_8047AA80, 0x5A0);

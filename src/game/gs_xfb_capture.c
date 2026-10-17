@@ -38,11 +38,11 @@ void GSgfxCaptureUpdate(void) {
     } CaptureEntry;
     char filename[16];
     extern CaptureEntry lbl_80466BC0[];
-    extern u32 fn_801BF574(void);
+    extern u32 HSD_VIGetXFBLastDrawDone(void);
     extern int sprintf(char* dst, const char* format, ...);
 
     if (lbl_8047B1A0 == 1) {
-        u32 index = fn_801BF574();
+        u32 index = HSD_VIGetXFBLastDrawDone();
         CaptureEntry* entry = lbl_80466BC0;
         entry += index;
         if (entry->xfb != 0) {

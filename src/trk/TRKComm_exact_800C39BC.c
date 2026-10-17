@@ -27,15 +27,15 @@ u32 __close_console(u32 arg)
     }
 }
 
-u32 fn_800C3A40(u32 unused, u32 length, u32* addrPtr)
+u32 TRKCommSendRead(u32 unused, u32 length, u32* addrPtr)
 {
-    extern u8 fn_800C39A0(void);
+    extern u8 TRKCommGetState(void);
     extern s32 GetTRKConnected(void);
     extern u32 TRKAccessFile(u32 cmd, u32 dir, u32* addrBuf, u32 len);
     u32 addrBuf;
     u32 result;
 
-    if ((fn_800C39A0() & 0xFF) == 0) {
+    if ((TRKCommGetState() & 0xFF) == 0) {
         return 1;
     }
 
@@ -57,15 +57,15 @@ u32 fn_800C3A40(u32 unused, u32 length, u32* addrPtr)
     }
 }
 
-u32 fn_800C3AFC(u32 unused, u32 length, u32* addrPtr)
+u32 TRKCommSendWrite(u32 unused, u32 length, u32* addrPtr)
 {
-    extern u8 fn_800C39A0(void);
+    extern u8 TRKCommGetState(void);
     extern s32 GetTRKConnected(void);
     extern u32 TRKAccessFile(u32 cmd, u32 dir, u32* addrBuf, u32 len);
     u32 addrBuf;
     u32 result;
 
-    if ((fn_800C39A0() & 0xFF) == 0) {
+    if ((TRKCommGetState() & 0xFF) == 0) {
         return 1;
     }
 

@@ -4,7 +4,7 @@
  *        per-floor resource pools.
  *
  * Address range: 0x800FF788 - 0x80101910
- *   fn_800FF788   request a floor (idle worker only)
+ *   GSfloorOpen   request a floor (idle worker only)
  *   fn_800FF81C   install the floor table
  *   fn_800FF828   allocate the floor-context stack and the three resource
  *                 pools, then start _floorManagerThread as a GS thread
@@ -123,7 +123,7 @@ extern u16   _toolentryAlloc__FUl(u32 size);
 extern void* fn_800E27B0(u16 handle);
 extern void  fn_800E24B0(u16 handle);
 extern void  fn_800E209C(u16 handle);
-extern u32   fn_800F7318(u32 task, void* callback, u32 stackSize, u32 arg3,
+extern u32   _vmThreadCreate(u32 task, void* callback, u32 stackSize, u32 arg3,
                          u32 arg4, u32 arg5, ...);
 extern void* fn_800F7108(u16 handle);
 extern u8    GSthreadIsRunning(u32 task);
@@ -137,7 +137,7 @@ typedef void (*GSFloorResInitFunc)(void* entry, u32 floorId);
 
 /**
  * Locate the floor table entry for a floor index, or NULL. Expanded in
- * fn_800FF788 and twice in the worker.
+ * GSfloorOpen and twice in the worker.
  */
 static inline void* floorFindDataEntry(u32 floorIndex) {
     GSFloorTableEntry* entry;
@@ -427,7 +427,7 @@ static inline void floorStartResources(GSFloorContext* ctx, s32 state) {
                 ((GSFloorResInitFunc)res->callback)(entry, res->floorId);
             }
             if (res->status == GSFLOOR_RES_LOADED) {
-                res->textureHandle = fn_800F7318(res->priority, res->callback, 0x4000, 0, 0, 4,
+                res->textureHandle = _vmThreadCreate(res->priority, res->callback, 0x4000, 0, 0, 4,
                                                  floorDataBiosGetGroupID(entry), 0, 0, 0);
                 res->modelHandle = fn_800F7108(res->textureHandle);
             }
@@ -549,7 +549,7 @@ static inline void floorCacheArchive(HSD_Archive* archive) {
 }
 
 /* 0x800FF788 | 0x94 */
-void fn_800FF788(u32 floorId) {
+void GSfloorOpen(u32 floorId) {
     GSFloorContext* ctx;
     void* entry;
 

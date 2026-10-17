@@ -77,8 +77,8 @@ extern void menuDrawRectOutline();
 extern void fn_800FA280();
 extern void fn_800FA444();
 extern void GSmsgPrintColor();
-extern void fn_800FB8C8();
-extern void fn_800FBB34();
+extern void GSmsgPrintRight();
+extern void GSmsgPrintRect();
 extern s32 GSmsgPrintf(s32 x, s32 y, u32 color, const void* format, ...);
 extern u8 exribbonGetNo(s32 ribbon);
 extern void* menuItemBiosGetPtr(u16 id);
@@ -149,7 +149,7 @@ void fn_80093B4C(s32 context, void* widget)
     switch (*(s16*)((u8*)widget + 6)) {
     case 0x1F7:
         msgctrlSetValue(0x34, *(u32*)(lbl_803FB380 + 0x1C));
-        fn_800FBB34(0, 0, *(s16*)((u8*)widget + 0x54),
+        GSmsgPrintRect(0, 0, *(s16*)((u8*)widget + 0x54),
                     *(s16*)((u8*)widget + 0x56), color, 0xDD);
         break;
 
@@ -187,7 +187,7 @@ void fn_80093B4C(s32 context, void* widget)
             resource = lbl_802EED44[ribbon].resource;
             break;
         }
-        fn_800FBB34(0, 0, *(s16*)((u8*)widget + 0x54),
+        GSmsgPrintRect(0, 0, *(s16*)((u8*)widget + 0x54),
                     *(s16*)((u8*)widget + 0x56), color, resource);
         break;
 
@@ -346,7 +346,7 @@ void menuStatusDrawMoveDetail(u8* context, u8* sprite)
     extern u8 darkPokemonEntryGet0(u16 id);
     extern u16 darkPokemonGetIdByIndex(u8 kind);
     extern void menuDrawRectOutline(s32 x, s32 y, s32 w, s32 h, MenuStatusColor color);
-    extern void fn_800FB8C8();
+    extern void GSmsgPrintRight();
     extern void windowDrawSprite(s32 x, s32 y, void* win, u16 sprite, u32 data);
     s32 color;
     u16 slot;
@@ -522,7 +522,7 @@ void menuStatusDrawMoveDetail(u8* context, u8* sprite)
         }
         move = menuStatusGetMove(pokemon, slot);
         if (move == 0) {
-            fn_800FBB34(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0x2BE0);
+            GSmsgPrintRect(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0x2BE0);
             break;
         }
         value = wazaGetStatus(0, move, 1, 0);
@@ -530,7 +530,7 @@ void menuStatusDrawMoveDetail(u8* context, u8* sprite)
             break;
         }
         msgctrlSetValue(0x37, GSmsgGetGSchar(value));
-        fn_800FBB34(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xE7);
+        GSmsgPrintRect(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xE7);
         break;
     case 0x196:
     case 0x197:
@@ -576,12 +576,12 @@ void menuStatusDrawMoveDetail(u8* context, u8* sprite)
         switch (move) {
         case 0:
         case 0x164:
-            fn_800FB8C8(0, 0, x, *(s16*)(sprite + 0x56), color, 0x2BE1);
-            fn_800FB8C8(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0x2BE1);
+            GSmsgPrintRight(0, 0, x, *(s16*)(sprite + 0x56), color, 0x2BE1);
+            GSmsgPrintRight(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0x2BE1);
             break;
         case 0x165:
-            fn_800FB8C8(0, 0, x, *(s16*)(sprite + 0x56), color, 0x2B6D);
-            fn_800FB8C8(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0x2B6D);
+            GSmsgPrintRight(0, 0, x, *(s16*)(sprite + 0x56), color, 0x2B6D);
+            GSmsgPrintRight(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0x2B6D);
             break;
         default:
             if (slot == 4) {
@@ -590,14 +590,14 @@ void menuStatusDrawMoveDetail(u8* context, u8* sprite)
                 value = pokemonGetStatus(pokemon, 0, 0x80, slot);
             }
             msgctrlSetValue(0x34, value);
-            fn_800FB8C8(0, 0, x, *(s16*)(sprite + 0x56), color, 0xD2);
+            GSmsgPrintRight(0, 0, x, *(s16*)(sprite + 0x56), color, 0xD2);
             if (slot == 4) {
                 value = wazaGetStatus(0, move, 2, 0);
             } else {
                 value = pokemonWazaGetMaxPP(pokemon, slot);
             }
             msgctrlSetValue(0x34, value);
-            fn_800FB8C8(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xD2);
+            GSmsgPrintRight(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xD2);
             break;
         }
         break;
@@ -623,13 +623,13 @@ void menuStatusDrawMoveDetail(u8* context, u8* sprite)
     case 0x18B:
     case 0x1D3:
         move = menuStatusGetMove(pokemon, (s8)lbl_803FB380[2]);
-        fn_800FBB34(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color,
+        GSmsgPrintRect(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color,
                     darkPokemonEntryGet4(darkPokemonGetTableEntry(wazaGetStatus(0, move, 0x23, 0))));
         break;
     case 0x18C:
     case 0x1D4:
         move = menuStatusGetMove(pokemon, (s8)lbl_803FB380[2]);
-        fn_800FBB34(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color,
+        GSmsgPrintRect(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color,
                     wazaGetStatus(0, move, 0x22, 0));
         break;
     case 0x18D:
@@ -637,22 +637,22 @@ void menuStatusDrawMoveDetail(u8* context, u8* sprite)
         move = menuStatusGetMove(pokemon, (s8)lbl_803FB380[2]);
         value = wazaGetStatus(0, move, 6, 0);
         if (value <= 1) {
-            fn_800FB8C8(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0x2BE2);
+            GSmsgPrintRight(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0x2BE2);
             break;
         }
         msgctrlSetValue(0x34, value);
-        fn_800FB8C8(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xD2);
+        GSmsgPrintRight(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xD2);
         break;
     case 0x18F:
     case 0x1D7:
         move = menuStatusGetMove(pokemon, (s8)lbl_803FB380[2]);
         value = wazaGetStatus(0, move, 7, 0);
         if (value <= 1) {
-            fn_800FB8C8(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0x2BE2);
+            GSmsgPrintRight(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0x2BE2);
             break;
         }
         msgctrlSetValue(0x34, value);
-        fn_800FB8C8(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xD2);
+        GSmsgPrintRight(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xD2);
         break;
     case 0x179:
     case 0x17A:
@@ -877,7 +877,7 @@ void menuStatusDrawPokemonInfo(u8* context, u8* sprite)
     extern f32 pokemonGetDp(u8* pokemon);
     extern u32 floorGetPlaceName(u32 id);
     extern void GSmsgPrintColor();
-    extern void fn_800FBB34();
+    extern void GSmsgPrintRect();
     extern void winSpriteSetDisp(u8* sprite, u8 disp);
     s32 i;
     void* pokemon_data;
@@ -967,7 +967,7 @@ void menuStatusDrawPokemonInfo(u8* context, u8* sprite)
         } else {
             text = 0x2BCD;
         }
-        fn_800FBB34(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, text);
+        GSmsgPrintRect(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, text);
         break;
     case 0x54E:
     case 0x599:
@@ -1015,7 +1015,7 @@ void menuStatusDrawPokemonInfo(u8* context, u8* sprite)
                 break;
             }
         }
-        fn_800FBB34(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, message);
+        GSmsgPrintRect(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, message);
         break;
     case 0x582:
         switch (pokemonGetDarkPokemonLevel(pokemon)) {
@@ -1052,56 +1052,56 @@ void menuStatusDrawPokemonInfo(u8* context, u8* sprite)
             value = next_exp - pokemonGetStatus(pokemon, 0, 0x79, 0);
         }
         msgctrlSetValue(0x34, value);
-        fn_800FBB34(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xDE);
+        GSmsgPrintRect(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xDE);
         break;
     case 0x144:
         msgctrlSetValue(0x34, pokemonGetStatus(pokemon, 0, 0x79, 0));
-        fn_800FBB34(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xDE);
+        GSmsgPrintRect(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xDE);
         break;
     case 0x147:
     case 0x583:
         msgctrlSetValue(0x34, (s16)pokemonGetStatus(pokemon, 0, 0x8C, 0));
-        fn_800FBB34(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xDE);
+        GSmsgPrintRect(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xDE);
         break;
     case 0x148:
     case 0x584:
         msgctrlSetValue(0x34, (s16)pokemonGetStatus(pokemon, 0, 0x8B, 0));
-        fn_800FBB34(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xDE);
+        GSmsgPrintRect(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xDE);
         break;
     case 0x149:
     case 0x585:
         msgctrlSetValue(0x34, (s16)pokemonGetStatus(pokemon, 0, 0x8A, 0));
-        fn_800FBB34(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xDE);
+        GSmsgPrintRect(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xDE);
         break;
     case 0x14A:
     case 0x586:
         msgctrlSetValue(0x34, (s16)pokemonGetStatus(pokemon, 0, 0x89, 0));
-        fn_800FBB34(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xDE);
+        GSmsgPrintRect(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xDE);
         break;
     case 0x14B:
     case 0x587:
         msgctrlSetValue(0x34, (s16)pokemonGetStatus(pokemon, 0, 0x88, 0));
-        fn_800FBB34(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xDE);
+        GSmsgPrintRect(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xDE);
         break;
     case 0x14C:
     case 0x588:
         msgctrlSetValue(0x34, (s16)pokemonGetStatus(pokemon, 0, 0x83, 0));
-        fn_800FBB34(0, 0, 0x37, *(s16*)(sprite + 0x56), color, 0xDE);
+        GSmsgPrintRect(0, 0, 0x37, *(s16*)(sprite + 0x56), color, 0xDE);
         GSmsgPrintColor(0x37, 0, color, 0x2BD4);
         msgctrlSetValue(0x34, (s16)pokemonGetStatus(pokemon, 0, 0x87, 0));
-        fn_800FBB34(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xDE);
+        GSmsgPrintRect(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xDE);
         break;
     case 0x153:
     case 0x58F:
         msgctrlSetValue(0x37, GSmsgGetGSchar(pokemonTokuseiDataBiosGetDoc(
                                   pokemonTokuseiDataBiosGetPtr(pokemonGetTokuseiDataId(pokemon)))));
-        fn_800FBB34(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xCF);
+        GSmsgPrintRect(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xCF);
         break;
     case 0x54D:
     case 0x590:
         msgctrlSetValue(0x37, GSmsgGetGSchar(pokemonTokuseiDataBiosGetName(
                                   pokemonTokuseiDataBiosGetPtr(pokemonGetTokuseiDataId(pokemon)))));
-        fn_800FBB34(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xCF);
+        GSmsgPrintRect(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xCF);
         break;
     case 0x154:
     case 0x591:
@@ -1989,13 +1989,13 @@ void fn_800965C8(void* window, u8* sprite) {
         value = pokemonGetSoubiItemDataId(pokemon);
         if ((u16)value != 0) {
             msgctrlSetValue(0x2D, (u16)value);
-            fn_800FBB34(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0x2BD3);
+            GSmsgPrintRect(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0x2BD3);
         }
         break;
     case 0x552: {
         s32 x = (s16)(GSmsgGetRect(*(u32*)(sprite + 0x4C)) >> 16);
         msgctrlSetValue(0x34, (u8)pokemonGetStatus(pokemon, 0, 0x7A, 0));
-        fn_800FBB34(x, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xD2);
+        GSmsgPrintRect(x, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xD2);
         break;
     }
     case 0x554:
@@ -2011,7 +2011,7 @@ void fn_800965C8(void* window, u8* sprite) {
         u32 sexMsg;
 
         msgctrlSetValue(0x37, pokemonGetStatus(pokemon, 0, 0x77, 0));
-        fn_800FBB34(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xE7);
+        GSmsgPrintRect(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), color, 0xE7);
         value = (s16)(GSmsgGetRect(0xE7) >> 16);
         switch ((u8)menuSubGetPokemonSexForDisp(pokemon)) {
         case 0:

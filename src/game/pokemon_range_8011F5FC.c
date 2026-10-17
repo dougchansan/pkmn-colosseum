@@ -148,7 +148,7 @@ extern u32 wazaDataBiosGetFightTrainerAiWazaHitFuncPtr(u8* ptr);
 extern u32 wazaDataBiosGetFightTrainerAiWazaValueFuncPtr(u8* ptr);
 extern s32 pokemonGetDarkPokemonLevel(u8* pokemon);
 extern u32 pokemonDataCheckValid(u32 a, u16 key);
-extern u8 fn_80121ADC(u8* ptr, u32 slot);
+extern u8 pokemonIsJoutaiDataId(u8* ptr, u32 slot);
 extern s8 pokemonSetWazaStatus(u8*, u32, u8);
 extern u32 pokemonWazaCheckValid(u8* ptr, u32 arg2);
 extern void pokemonInit(u8* ptr);
@@ -352,7 +352,7 @@ extern void fn_8016AAF4(void);
 extern void HSD_JObjSetSPtclCallback(void);
 extern void HSD_JObjSetPtclCallback(void);
 extern void psSetPointJObjNodup(void);
-extern void fn_8019D610(void);
+extern void HSD_JObjSetDPtclCallback(void);
 extern u16 lbl_8047AD98;
 extern u16 lbl_8047ADA4;
 extern void GSmodelSearchModelList(void);
@@ -2720,7 +2720,7 @@ s32 pokemonCheckWriteJoutaiDataId(void* a, u16 b) {
     return statusCheckWriteJoutaiDataId(a, b);
 }
 
-u8 fn_80121ADC(u8* ptr, u32 slot) {
+u8 pokemonIsJoutaiDataId(u8* ptr, u32 slot) {
     extern u16 joutaiDataBiosGetStatusKind(u32 val);
     extern u8 fn_8011B67C(u8* ptr, u32 val);
     if ((u16)joutaiDataBiosGetStatusKind(slot) != 0x7c) { if ((u16)joutaiDataBiosGetStatusKind(slot) != 0xc8) { return 0; } }
@@ -2749,7 +2749,7 @@ void pokemonReplace(u32* arg1, u32* arg2) {
 
 #if !defined(POKEMON_RANGE_SPLIT) || defined(POKEMON_RANGE_RESIDUAL_80121C18)
 
-/* fn_80121ADC's body: retail expands the TU's global in place. */
+/* pokemonIsJoutaiDataId's body: retail expands the TU's global in place. */
 static inline s32 pokemonSeqCheckSlot(u8* ptr, u32 slot) {
     if ((u16)joutaiDataBiosGetStatusKind(slot) != 0x7c) { if ((u16)joutaiDataBiosGetStatusKind(slot) != 0xc8) { return 0; } }
     return fn_8011B67C(ptr, slot);

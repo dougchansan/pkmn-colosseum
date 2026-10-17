@@ -304,7 +304,7 @@ extern u32 lbl_8047AF00;             /* curSeqId */
 extern void synthSetBpm(u32 bpm, u8 seqId, u8 secIndex);
 extern f64 fmod(f64 a, f64 b); /* fmod (wraps __ieee754_fmod) */
 extern f64 floor(f64 x);
-extern SEQ_EVENT* fn_801485FC(SEQ_EVENT* event, u8 secIndex, u32* loopFlag); /* HandleEvent */
+extern SEQ_EVENT* HandleEvent(SEQ_EVENT* event, u8 secIndex, u32* loopFlag); /* HandleEvent */
 extern u32 synthSendKeyOff(u32 id);
 extern u32 synthIsFadeOutActive(u8 volGroup);
 extern u32 sndFXCheck(u32 id); /* sndFXCheck */
@@ -371,9 +371,9 @@ typedef struct {
 
 extern u8 lbl_80435464[64]; /* synthTrackVolume */
 extern void synthSetMusicVolumeType(u8 volumeGroup, u8 type);
-extern void fn_801603C0(u8 ctrl, u8 midi, u8 midiSet, u8 value);
+extern void inpSetMidiCtrl(u8 ctrl, u8 midi, u8 midiSet, u8 value);
 extern void inpResetMidiCtrl(u8 midi, u8 midiSet, u32 coldReset);
-extern void fn_80160ED4(u8 midi, u8 midiSet);
+extern void inpResetChannelDefaults(u8 midi, u8 midiSet);
 extern void InitTrackEvents(void);
 
 void StartPause(SEQ_INSTANCE* si);
@@ -455,7 +455,7 @@ u32 seqGetPrivateId(u32 seqId) {
 }
 #endif
 
-u32 fn_801463C4(PAGE* normal, PAGE* drum, MIDISETUP* midiSetup, u32* song,
+u32 seqStartPlay(PAGE* normal, PAGE* drum, MIDISETUP* midiSetup, u32* song,
                 SND_PLAYPARA* para, u8 studio, u16 groupId)
 {
     ARR* arr;
@@ -581,15 +581,15 @@ u32 fn_801463C4(PAGE* normal, PAGE* drum, MIDISETUP* midiSetup, u32* song,
         seq->prgState[i].macId = 0xFFFF;
     }
     for (i = 0; i < 16; i++) {
-        fn_80160ED4(i, seqId);
+        inpResetChannelDefaults(i, seqId);
     }
     if (midiSetup != NULL) {
         for (i = 0; i < 16; i++) {
             DoPrgChange(seq, midiSetup->channel[i].program, i);
-            fn_801603C0(7, i, seqId, midiSetup->channel[i].volume);
-            fn_801603C0(10, i, seqId, midiSetup->channel[i].panning);
-            fn_801603C0(91, i, seqId, midiSetup->channel[i].reverb);
-            fn_801603C0(93, i, seqId, midiSetup->channel[i].chorus);
+            inpSetMidiCtrl(7, i, seqId, midiSetup->channel[i].volume);
+            inpSetMidiCtrl(10, i, seqId, midiSetup->channel[i].panning);
+            inpSetMidiCtrl(91, i, seqId, midiSetup->channel[i].reverb);
+            inpSetMidiCtrl(93, i, seqId, midiSetup->channel[i].chorus);
         }
     }
     for (i = 0; i < 16; i++) {

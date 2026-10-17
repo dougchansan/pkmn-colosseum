@@ -10,7 +10,7 @@ void fn_800BCEBC(u32 value)
     data->status.half.field_002 = 0;
 }
 
-void fn_800BCEF4(s32 pixelFmt, u32 zFmt)
+void GXSetPixelFmt(s32 pixelFmt, u32 zFmt)
 {
     GXData* data = gx;
     u32 old = data->field_1DC;

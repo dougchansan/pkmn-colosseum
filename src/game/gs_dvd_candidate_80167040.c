@@ -109,10 +109,10 @@ extern u32 sndFXKeyOff(u32 voice);
 extern u32 sndFXCheck(u32 voice);
 extern u32 sndFXStartEx(u16 id, u8 volume, u8 pan, u8 studio);
 extern void sndSeqVolume(u8 group, u16 volume, u32 sequence, u8 fade);
-extern u32 fn_8015A368(u8 group, u16 id, void* resource, void* params,
+extern u32 sndSeqPlayEx(u8 group, u16 id, void* resource, void* params,
                        u32 flags);
-extern void fn_80159ED0(u8* callback, u32 chunkSize);
-extern u8 fn_80159EF0(void* resource, u16 soundId, void* sampleData,
+extern void sndSetSampleDataUploadCallback(u8* callback, u32 chunkSize);
+extern u8 sndPushGroup(void* resource, u16 soundId, void* sampleData,
                       void* resource2, void* resource3);
 extern void winMsgOpenError(u32 message, u32 mode, u32 wait);
 extern void winMsgCloseError(u32 wait);
@@ -220,7 +220,7 @@ u8 soundPushWave(u32 slot, u32 stream, const char* path, u32 offset,
     }
     if (stream == 1) {
         sampleData = NULL;
-        fn_80159ED0((u8*)_sndSetSampleDataUploadCallbackFunction,
+        sndSetSampleDataUploadCallback((u8*)_sndSetSampleDataUploadCallbackFunction,
                     ARQGetChunkSize());
         lbl_8047B0BC = GSdvdOpen(path);
         if (lbl_8047B0BC == NULL) {
@@ -234,9 +234,9 @@ u8 soundPushWave(u32 slot, u32 stream, const char* path, u32 offset,
         }
     } else {
         sampleData = (void*)path;
-        fn_80159ED0(NULL, 0);
+        sndSetSampleDataUploadCallback(NULL, 0);
     }
-    if (!fn_80159EF0(resource1, state->soundId, sampleData, resource2,
+    if (!sndPushGroup(resource1, state->soundId, sampleData, resource2,
                      resource3)) {
         if (stream == 1) {
             GSdvdClose((u8*)lbl_8047B0BC);
@@ -407,7 +407,7 @@ u32 _soundSlotStartStream(GSsndEntry* entry, u16 value)
     params.unk18 = 0;
     params.unk1C = 0;
     work->handle =
-        fn_8015A368(entry->unk1, entry->waveId, resource, &params, 0);
+        sndSeqPlayEx(entry->unk1, entry->waveId, resource, &params, 0);
     return 1;
 }
 

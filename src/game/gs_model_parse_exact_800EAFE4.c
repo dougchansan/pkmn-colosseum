@@ -49,18 +49,18 @@ static inline BOOL HSD_JObjMtxIsDirty(HSD_JObj* jobj)
     return !(jobj->flags & 0x00800000) && (jobj->flags & 0x40);
 }
 
-extern void fn_8019D9DC(HSD_JObj*);
+extern void HSD_JObjSetupMatrixSub(HSD_JObj*);
 static inline void HSD_JObjSetupMatrix(HSD_JObj* jobj)
 {
     if (jobj == NULL || !HSD_JObjMtxIsDirty(jobj)) {
         return;
     }
-    fn_8019D9DC(jobj);
+    HSD_JObjSetupMatrixSub(jobj);
 }
 
 extern const f32 lbl_8047CC18;
 extern const f32 lbl_8047CC1C;
-extern void fn_801AB63C(u32 first, u32 second);
+extern void HSD_PObjClearMtxMark(u32 first, u32 second);
 extern HSD_JObj* HSD_JObjGetCurrent(void);
 extern void PSMTXConcat(f32* left, f32* right, f32* out);
 extern void fn_800E0628(void* dst, void* src);
@@ -79,7 +79,7 @@ void _modelParseLoadEnvelopeMatrix__FP9_HSD_PObjP5GSmtxP5GSmtxP5GSmtx(
     f32 nmtx[12];
 
     jobj = HSD_JObjGetCurrent();
-    fn_801AB63C(0, 2);
+    HSD_PObjClearMtxMark(0, 2);
     right = _HSD_mkEnvelopeModelNodeMtx(jobj, nmtx);
 
     for (idx = 0, list = pobj->u.envelope_list; idx < 10 && list != NULL;

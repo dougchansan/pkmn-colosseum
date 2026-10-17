@@ -4,7 +4,7 @@
 #define SDATA2 __declspec(section ".sdata2")
 
 /*
- * Numeric .sdata2 run after fn_801093C8's pool (0x8047CE48-0x8047CE70, owned
+ * Numeric .sdata2 run after menuOffScreenDraw's pool (0x8047CE48-0x8047CE70, owned
  * by menu_offscreen.c). Text relocations reference it from
  * gs_range_80109C88.c.
  */

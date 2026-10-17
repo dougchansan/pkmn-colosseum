@@ -53,7 +53,7 @@
  *
  * The symbols keep their address names: lbl_8036D3F0 is hsdTObj,
  * lbl_8047B378 default_class, lbl_8047B37C tobj_head, fn_801BEEDC
- * HSD_TObjAddAnimAll, fn_801BEE68 HSD_TObjReqAnimAllByFlags, fn_801BE85C
+ * HSD_TObjAddAnimAll, fn_801BEE68 HSD_TObjReqAnimAllByFlags, TObjUpdateFunc
  * TObjUpdateFunc, fn_801BE800 HSD_TObjAnimAll, fn_801BDA58
  * HSD_TObjSetupTextureCoordGen, fn_801BD8D0 HSD_TObjSetupVolatileTev,
  * fn_801BBE3C HSD_TObjInsert, fn_801BBCE0 TObjInit.
@@ -307,7 +307,7 @@ static inline f32 TObjClamp01(f32 x)
 }
 
 /* TObjUpdateFunc */
-void fn_801BE85C(void* obj, u32 type, HSD_ObjData* val)
+void TObjUpdateFunc(void* obj, u32 type, HSD_ObjData* val)
 {
     HSD_TObj* tobj = obj;
 
@@ -1767,5 +1767,5 @@ static void TObjInfoInit(void)
     HSD_TOBJ_INFO(&hsdTObj)->load = TObjLoad;
     HSD_TOBJ_INFO(&hsdTObj)->make_texp = TObjMakeTExp;
     hsdTObj.make_mtx = MakeTextureMtx;
-    hsdTObj.update = fn_801BE85C;
+    hsdTObj.update = TObjUpdateFunc;
 }

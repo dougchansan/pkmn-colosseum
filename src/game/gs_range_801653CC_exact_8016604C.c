@@ -296,7 +296,7 @@ u32 soundResumeSong(u32 id, u32 volume, u32 arg2)
         return 1;
     }
 
-    fn_8014D648(work->handle);
+    sndSeqContinue(work->handle);
     sndSeqVolume(work->priority, volume, work->handle, 0);
 
     ((GSsndFlagBits*)&entry->flags)->paused = 0;
@@ -446,11 +446,11 @@ void soundSetOutputMode(s32 mode)
     sndOutputMode();
     switch (mode) {
     case 0:
-        fn_800A0EB4(0);
+        OSSetSoundMode(0);
         break;
     case 1:
     case 2:
-        fn_800A0EB4(1);
+        OSSetSoundMode(1);
         break;
     }
 }

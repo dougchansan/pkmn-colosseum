@@ -1,7 +1,7 @@
 #include "crt/string.h"
 
 extern void GXDrawDone(void);
-extern void fn_800B856C(void);
+extern void GXInvalidateVtxCache(void);
 extern void GStextureFree(void* texture);
 
 u32 fn_8013E54C(void* arg)
@@ -12,7 +12,7 @@ u32 fn_8013E54C(void* arg)
         ptr = arg;
         if (*(void**)((u8*)ptr + 4) != 0) {
             GXDrawDone();
-            fn_800B856C();
+            GXInvalidateVtxCache();
             GStextureFree(*(void**)((u8*)ptr + 4));
         }
         memset(ptr, 0, 0x34);

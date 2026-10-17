@@ -63,7 +63,7 @@ extern u8 fn_802025B8(void*, s32);
 extern u8 fightOutPokemonCheckWriteJoutaiDataId(void* fightPokemon, s32 statusId);
 extern void fightOutPokemonWriteJoutaiDataId(void* fightOutPokemon, s32 statusId);
 extern u8 fightOutPokemonIsPokemonJoutaiDataId(void* fightOutPokemon, s32 statusId);
-extern u8 fn_80121ADC(void* pokemon, s32 statusId);
+extern u8 pokemonIsJoutaiDataId(void* pokemon, s32 statusId);
 extern void pokemonInitPersistentJoutai(void* pokemon, s32 statusId);
 extern void* fightTargetGetPtrAsNowFightType(s32 type, void* fightPokemon);
 extern u8 fightSideCheckWriteJoutaiDataId(void* side, s32 statusId);
@@ -317,7 +317,7 @@ static inline void itemUsePPRecover(
         slot = 0xFF;
     }
     target = pokemon;
-    if (fn_80121ADC(pokemon, 0x10) || fn_80121ADC(pokemon, 0x31)) {
+    if (pokemonIsJoutaiDataId(pokemon, 0x10) || pokemonIsJoutaiDataId(pokemon, 0x31)) {
         target = fightPokemonBiosGetMotoPokemonPtr(fightPokemon);
     }
     if (slot != 0xFF) {
@@ -385,7 +385,7 @@ static inline void itemUseCureSleep(
     u8 wokeUp = 0;
     void* fightOut;
 
-    if (fn_80121ADC(pokemon, 8)) {
+    if (pokemonIsJoutaiDataId(pokemon, 8)) {
         pokemonInitPersistentJoutai(pokemon, 8);
         fightOut = itemUseGetFightOut(fightPokemon);
         if (fightOut != NULL) {
@@ -406,11 +406,11 @@ static inline void itemUseCurePoison(
     u8 poisonCleared = 0;
     u8 badPoisonCleared = 0;
 
-    if (fn_80121ADC(pokemon, 3)) {
+    if (pokemonIsJoutaiDataId(pokemon, 3)) {
         pokemonInitPersistentJoutai(pokemon, 3);
         poisonCleared = 1;
     }
-    if (fn_80121ADC(pokemon, 4)) {
+    if (pokemonIsJoutaiDataId(pokemon, 4)) {
         pokemonInitPersistentJoutai(pokemon, 4);
         badPoisonCleared = 1;
     }
@@ -580,17 +580,17 @@ s16 fn_80144574(
         itemUseCurePoison(log, &logCount, pokemon, fightPokemon);
     }
 
-    if (itemParamGetBurnFlag(itemParam) && fn_80121ADC(pokemon, 6)) {
+    if (itemParamGetBurnFlag(itemParam) && pokemonIsJoutaiDataId(pokemon, 6)) {
         pokemonInitPersistentJoutai(pokemon, 6);
         itemUseNotify(fightPokemon, 0x7C);
         itemUseAddLog(log, &logCount, 0xE, 0, 0);
     }
-    if (itemParamGetFreezeFlag(itemParam) && fn_80121ADC(pokemon, 7)) {
+    if (itemParamGetFreezeFlag(itemParam) && pokemonIsJoutaiDataId(pokemon, 7)) {
         pokemonInitPersistentJoutai(pokemon, 7);
         itemUseNotify(fightPokemon, 0x7C);
         itemUseAddLog(log, &logCount, 0xF, 0, 0);
     }
-    if (itemParamGetParalyzeFlag(itemParam) && fn_80121ADC(pokemon, 5)) {
+    if (itemParamGetParalyzeFlag(itemParam) && pokemonIsJoutaiDataId(pokemon, 5)) {
         pokemonInitPersistentJoutai(pokemon, 5);
         itemUseNotify(fightPokemon, 0x7C);
         itemUseAddLog(log, &logCount, 0x10, 0, 0);

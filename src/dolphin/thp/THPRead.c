@@ -4,7 +4,7 @@
  *
  * Built with -inline noauto,deferred: functions and .bss objects are emitted
  * in reverse source order. PopFreeReadBuffer and PushReadedBuffer are only
- * called by the reader thread (fn_801E1C1C), where they are expanded; they
+ * called by the reader thread (Reader), where they are expanded; they
  * have no copy of their own in the binary.
  */
 #include "dolphin/thp/THPPlayer.h"
@@ -22,32 +22,32 @@ static OSThread lbl_8046A040; /* ReadThread */
 static u8 lbl_80469040[STACK_SIZE]; /* ReadThreadStack */
 static BOOL lbl_8047B460; /* ReadThreadCreated */
 
-static void* fn_801E1C1C(void* arg);
+static void* Reader(void* arg);
 static inline void* PopFreeReadBuffer(void);
 static inline void PushReadedBuffer(void* buffer);
 
-BOOL fn_801E1D7C(s32 priority)
+BOOL CreateReadThread(s32 priority)
 {
-    if (OSCreateThread(&lbl_8046A040, fn_801E1C1C, NULL, lbl_80469040 + STACK_SIZE,
+    if (OSCreateThread(&lbl_8046A040, Reader, NULL, lbl_80469040 + STACK_SIZE,
                        STACK_SIZE, priority, 1) == FALSE) {
         return FALSE;
     }
 
-    fn_8009F1D0(&lbl_8046A410, lbl_8046A3A8, BUFFER_COUNT);
-    fn_8009F1D0(&lbl_8046A3F0, lbl_8046A380, BUFFER_COUNT);
-    fn_8009F1D0(&lbl_8046A3D0, lbl_8046A358, BUFFER_COUNT);
+    OSInitMessageQueue(&lbl_8046A410, lbl_8046A3A8, BUFFER_COUNT);
+    OSInitMessageQueue(&lbl_8046A3F0, lbl_8046A380, BUFFER_COUNT);
+    OSInitMessageQueue(&lbl_8046A3D0, lbl_8046A358, BUFFER_COUNT);
     lbl_8047B460 = TRUE;
     return TRUE;
 }
 
-void fn_801E1D48(void)
+void ReadThreadStart(void)
 {
     if (lbl_8047B460) {
         OSResumeThread(&lbl_8046A040);
     }
 }
 
-void fn_801E1D0C(void)
+void ReadThreadCancel(void)
 {
     if (lbl_8047B460) {
         OSCancelThread(&lbl_8046A040);
@@ -55,7 +55,7 @@ void fn_801E1D0C(void)
     }
 }
 
-static void* fn_801E1C1C(void* arg)
+static void* Reader(void* arg)
 {
     THPReadBuffer* readBuffer;
     s32 offset;
@@ -77,7 +77,7 @@ static void* fn_801E1C1C(void* arg)
                 lbl_8046AC60.dvdError = -1;
             }
             if (readFrame == 0) {
-                fn_801E446C(FALSE);
+                PrepareReady(FALSE);
             }
             OSSuspendThread(&lbl_8046A040);
         }
@@ -104,35 +104,35 @@ static void* fn_801E1C1C(void* arg)
 void* fn_801E1BE8(void)
 {
     OSMessage msg;
-    fn_8009F2F8(&lbl_8046A3F0, &msg, OS_MESSAGE_BLOCK);
+    OSReceiveMessage(&lbl_8046A3F0, &msg, OS_MESSAGE_BLOCK);
     return msg;
 }
 
 static inline void PushReadedBuffer(void* buffer)
 {
-    fn_8009F230(&lbl_8046A3F0, buffer, OS_MESSAGE_BLOCK);
+    OSSendMessage(&lbl_8046A3F0, buffer, OS_MESSAGE_BLOCK);
 }
 
 static inline void* PopFreeReadBuffer(void)
 {
     OSMessage msg;
-    fn_8009F2F8(&lbl_8046A410, &msg, OS_MESSAGE_BLOCK);
+    OSReceiveMessage(&lbl_8046A410, &msg, OS_MESSAGE_BLOCK);
     return msg;
 }
 
-void fn_801E1BB8(void* buffer)
+void PushFreeReadBuffer(void* buffer)
 {
-    fn_8009F230(&lbl_8046A410, buffer, OS_MESSAGE_BLOCK);
+    OSSendMessage(&lbl_8046A410, buffer, OS_MESSAGE_BLOCK);
 }
 
 void* fn_801E1B84(void)
 {
     OSMessage msg;
-    fn_8009F2F8(&lbl_8046A3D0, &msg, OS_MESSAGE_BLOCK);
+    OSReceiveMessage(&lbl_8046A3D0, &msg, OS_MESSAGE_BLOCK);
     return msg;
 }
 
 BOOL fn_801E1B54(void* buffer)
 {
-    return fn_8009F230(&lbl_8046A3D0, buffer, OS_MESSAGE_BLOCK);
+    return OSSendMessage(&lbl_8046A3D0, buffer, OS_MESSAGE_BLOCK);
 }

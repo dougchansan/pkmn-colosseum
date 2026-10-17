@@ -75,7 +75,7 @@ static inline void partJObjSetupMatrix(HSD_JObj* jobj)
     if (jobj == NULL || !partJObjMtxIsDirty(jobj)) {
         return;
     }
-    fn_8019D9DC(jobj);
+    HSD_JObjSetupMatrixSub(jobj);
 }
 
 static inline f32 partJObjGetRotationX(HSD_JObj* jobj)

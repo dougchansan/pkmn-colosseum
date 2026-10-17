@@ -190,7 +190,7 @@ s32 windowGetValue(u32 id);
 void windowCreateCursorSprite(MenuWindow* window);
 void winSpriteSetDisp(MenuSprite* sprite, u32 enable);
 void winSpriteDraw(MenuWindow* window, MenuSprite* sprite);
-void fn_801093C8(void);
+void menuOffScreenDraw(void);
 void fn_80106F98(u32 id);
 s32 winSeqCheckMove(u32 id);
 void winSeqMoveMenu(MenuWindow* window);
@@ -542,7 +542,7 @@ void menuDaemon(void) {
     active = windowSearchID(windowGetActiveID());
     _menuUpdateKeyInfo__FP15WINDOW_SYS_WORK(&lbl_80404ACC);
     fn_800D9E4C(0);
-    fn_801093C8();
+    menuOffScreenDraw();
     fn_800D9ED8(1);
     system = &lbl_80404ACC;
 

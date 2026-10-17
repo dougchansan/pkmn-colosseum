@@ -125,7 +125,7 @@ extern void GXProject(void* sphere, void* center, void* radii, f32 x, f32 y, f32
 extern void* HSD_FogLoadDesc(void* ctx);
 extern void HSD_FogSet(u32 zero);
 extern void fn_8016EA88(void);
-extern void fn_8016EB30(void);
+extern void psSetFog(void);
 
 /* Forward declarations for functions defined later in this file */
 void _GScameraAnimCallback(void* obj);
@@ -497,12 +497,12 @@ void* GScameraGetProjMatrixPtr(GSRenderCamera* camera) {
 #if defined(GS_RENDER_UTIL_SUFFIX_800D1B3C)
 
 /* ==================================================================
- * fn_800D1B3C - GS render: update transform and return matrix ptr
+ * GScameraGetInvMatrixPtr - GS render: update transform and return matrix ptr
  * Address: 0x800D1B3C, Size: 0x1C4
- * Updates transform (same 3-way logic as fn_800D1D00), then
+ * Updates transform (same 3-way logic as GScameraGetMatrixPtr), then
  * calls GSmtxInverse(obj+0xc4, obj+0x94). Returns obj+0xc4.
  * ================================================================== */
-void* fn_800D1B3C(void* obj) {
+void* GScameraGetInvMatrixPtr(void* obj) {
     GSRenderCamera* c = (GSRenderCamera*)obj;
     if (c->dirty != 0) {
         if (c->isAnimating != 0) {
@@ -549,10 +549,10 @@ void* fn_800D1B3C(void* obj) {
 }
 
 /* ==================================================================
- * fn_800D1D00 - GS render: update object transform from animation
+ * GScameraGetMatrixPtr - GS render: update object transform from animation
  * Address: 0x800D1D00, Size: 0x1B8
  * ================================================================== */
-void fn_800D1D00(void* obj) {
+void GScameraGetMatrixPtr(void* obj) {
     GSRenderCamera* c = (GSRenderCamera*)obj;
     if (c->dirty == 0) {
         return;
@@ -819,7 +819,7 @@ u32 GScameraGetActiveCamera(void) {
 /* ==================================================================
  * fn_800D258C - GS render: set current render obj, update transform
  * Address: 0x800D258C, Size: 0x1AC
- * Sets lbl_8047AA74 to obj, then updates transform (same logic as fn_800D1D00).
+ * Sets lbl_8047AA74 to obj, then updates transform (same logic as GScameraGetMatrixPtr).
  * ================================================================== */
 void fn_800D258C(void* obj) {
     GSRenderCamera* c = (GSRenderCamera*)obj;

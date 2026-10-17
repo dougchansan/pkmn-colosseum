@@ -160,11 +160,11 @@ extern u32 lbl_80313608[];
 extern void GXSetTevIndirect(u32 dstCoord, u32 func, u32 srcParam, u32 mtx,
                         u32 normalize, u32 postMtx, u32 normalizeColor,
                         u8 bias, u8 arg8, u32 arg9);
-extern void fn_800BD640(f32 left, f32 top, f32 width, f32 height, f32 nearz,
+extern void GXSetViewportJitter(f32 left, f32 top, f32 width, f32 height, f32 nearz,
                         f32 farz, u32 field);
 extern void __GXSetMatrixIndex(s32 value);
 extern void fn_800BE164(u32* hi, u32* lo);
-extern void fn_800B91EC(void);
+extern void __GXSetDirtyState(void);
 extern void __GXSendFlushPrim(void);
 extern u32 __cvt_fp2unsigned(f32 value);
 extern s32 TRKReleaseBuffer(s32 bufferIndex);
@@ -345,14 +345,14 @@ void GXSetTevIndirect(u32 dstCoord, u32 func, u32 srcParam, u32 mtx,
     p->field_002 = 0;
 }
 
-void fn_800BBC0C(u32 nChans) {
+void GXSetNumIndStages(u32 nChans) {
     GXData_800BB30C* p = gx;
 
     p->genMode = (p->genMode & ~0x70000U) | ((nChans & 0xFF) << 16);
     p->dirtyState |= 6;
 }
 
-void fn_800BBC34(u32 dstCoord) {
+void GXSetTevDirect(u32 dstCoord) {
     GXSetTevIndirect(dstCoord, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 }
 
@@ -556,7 +556,7 @@ void fn_800BC2F8(u32 id, GXColor_800BC2F8 color) {
     gx->field_002 = 0;
 }
 
-void fn_800BC36C(u32 id, GXColorS10_800BC36C color) {
+void GXSetTevColorS10(u32 id, GXColorS10_800BC36C color) {
     u32 reg0;
     u32 reg1;
 
@@ -577,7 +577,7 @@ void fn_800BC36C(u32 id, GXColorS10_800BC36C color) {
     gx->field_002 = 0;
 }
 
-void fn_800BC3E0(u32 id, GXColor_800BC2F8 color) {
+void GXSetTevKColor(u32 id, GXColor_800BC2F8 color) {
     u32 reg0;
     u32 reg1;
 
@@ -676,7 +676,7 @@ void fn_800BC618(u32 comp0, u8 ref0, u32 op, u32 comp1, u8 ref1) {
               ((int)(value) << (31 - (pos) - (size) + 1))
 
 /* GXSetZTexture */
-void fn_800BC66C(int op, int format, u32 bias) {
+void GXSetZTexture(int op, int format, u32 bias) {
     u32 val1;
     u32 val2;
     u32 val3;
@@ -719,7 +719,7 @@ void fn_800BC8C8(u32 nStages) {
     p->dirtyState |= 4;
 }
 
-void fn_800BCCDC(u8 enable, u16 center, GXFogAdjTable_800BCCDC* table) {
+void GXSetFogRangeAdj(u8 enable, u16 center, GXFogAdjTable_800BCCDC* table) {
     GXData_800BB30C* p;
     u16* values;
     u32 i;
@@ -754,7 +754,7 @@ void __GXSetRange(f32 nearz, f32 sideX) {}
 
 void GXCallDisplayList(void* list, u32 nbytes) {
     if (gx->dirtyState != 0) {
-        fn_800B91EC();
+        __GXSetDirtyState();
     }
 
     if (gx->status.word == 0) {
@@ -950,7 +950,7 @@ void GXLoadTexMtxImm(f32 mtx[3][4], u32 id, s32 type) {
 /* RULE-EXCEPTION(user-approved): extern pool stand-in for the 0.5f GXProject shares at 0x8047C3E8 — see docs/RULE_EXCEPTIONS.md */
 extern const f32 lbl_8047C3E8; /* 0.5f, shared with GXProject */
 
-void fn_800BD640(f32 left, f32 top, f32 wd, f32 ht, f32 nearz, f32 farz,
+void GXSetViewportJitter(f32 left, f32 top, f32 wd, f32 ht, f32 nearz, f32 farz,
                  u32 field) {
     f32 sx;
     f32 sy;
@@ -999,10 +999,10 @@ void fn_800BD640(f32 left, f32 top, f32 wd, f32 ht, f32 nearz, f32 farz,
 
 
 void fn_800BD744(void) {
-    fn_800BD640(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1);
+    GXSetViewportJitter(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1);
 }
 
-void fn_800BD768(f32* projection) {
+void GXGetViewportv(f32* projection) {
     GXData_800BB30C* p = gx;
 
     projection[0] = p->projection[0];
@@ -1013,7 +1013,7 @@ void fn_800BD768(f32* projection) {
     projection[5] = p->projection[5];
 }
 
-void fn_800BD7A0(u32 xOrigin, u32 yOrigin, u32 width, u32 height) {
+void GXSetScissor(u32 xOrigin, u32 yOrigin, u32 width, u32 height) {
     GXData_800BB30C* p = gx;
     u32* scissorTL;
     u32* scissorBR;
@@ -1363,7 +1363,7 @@ void GXSetBlendMode(u32 type, u32 srcFactor, u32 dstFactor, u32 op) {
     p->field_002 = 0;
 }
 
-void fn_800BCE30(u32 zCompLoc) {
+void GXSetColorUpdate(u32 zCompLoc) {
     GXData_800BB30C* p = gx;
     u32 value = p->field_1D0;
 
@@ -1373,7 +1373,7 @@ void fn_800BCE30(u32 zCompLoc) {
     p->field_002 = 0;
 }
 
-void fn_800BCE5C(u32 zCompLoc) {
+void GXSetAlphaUpdate(u32 zCompLoc) {
     GXData_800BB30C* p = gx;
     u32 value = p->field_1D0;
 
@@ -1396,7 +1396,7 @@ void GXSetZMode(u32 compareEnable, u32 func, u32 updateEnable) {
     p->field_002 = 0;
 }
 
-void fn_800BCEF4(s32 pixelFmt, u32 zFmt) {
+void GXSetPixelFmt(s32 pixelFmt, u32 zFmt) {
     GXData_800BB30C* p = gx;
     u32 old = p->field_1DC;
     u32 value;
@@ -1433,7 +1433,7 @@ void fn_800BCEF4(s32 pixelFmt, u32 zFmt) {
 #endif /* !SDK_800BE348_ONLY && !SDK_800BCFDC_ONLY */
 
 #if !defined(SDK_800BE348_ONLY) && !defined(SDK_800BD58C_ONLY)
-void fn_800BCFDC(u8 dither) {
+void GXSetDither(u8 dither) {
     GXData_800BB30C* p = gx;
     u32 value = p->field_1D0;
 
@@ -1481,7 +1481,7 @@ void GXSetFieldMask(u8 oddMask, u8 evenMask) {
 #endif /* !SDK_800BE348_ONLY */
 
 #if !defined(SDK_800BE348_ONLY) && !defined(SDK_800BCFDC_ONLY) && !defined(SDK_800BD58C_ONLY)
-void fn_800BD07C(u32 fieldMode, u32 halfAspectRatio) {
+void GXSetFieldMode(u32 fieldMode, u32 halfAspectRatio) {
     GXData_800BB30C* p = gx;
 
     p->lpSize = (p->lpSize & ~0x400000U) |
@@ -1492,7 +1492,7 @@ void fn_800BD07C(u32 fieldMode, u32 halfAspectRatio) {
     __GXFlushTextureState();
 }
 
-void fn_800BD830(u32 arg0, u32 arg1) {
+void GXSetScissorBoxOffset(u32 arg0, u32 arg1) {
     u32 reg = 0;
     u32 hx;
     u32 hy;

@@ -75,7 +75,7 @@ extern void  loadModel(u32 memOffset, u32 size,
                           u32 data, u32 handle);         /* GSfloor load data */
 extern void  memset(void* dst, u32 val, u32 size);
 extern void  GXDrawDone(void);
-extern void  fn_800B856C(void);
+extern void  GXInvalidateVtxCache(void);
 extern void  GStextureFree(void* p);
 extern void* GSeffectCreate(void* owner, u32 size);
 extern void  GSeffectSetCallbacks();
@@ -764,7 +764,7 @@ void* tracefxEffectCreate(void* owner) {
 BOOL fn_801379E4(u8* w) {
     if (w != (void*)0) {
         GXDrawDone();
-        fn_800B856C();
+        GXInvalidateVtxCache();
         if (*(void**)(w + 0x14) != (void*)0) {
             GStextureFree(*(void**)(w + 0x14));
         }
@@ -777,7 +777,7 @@ BOOL fn_80137A2C(u8* w) {
     u16 handle;
     if (w != (void*)0) {
         GXDrawDone();
-        fn_800B856C();
+        GXInvalidateVtxCache();
         handle = *(u16*)(w + 0x0C);
         if (handle != 0) {
             fn_800E24B0(handle);

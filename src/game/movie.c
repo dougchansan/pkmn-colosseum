@@ -80,7 +80,7 @@ extern void fn_8017B370(u32 arg);
 extern s32  fn_8017B2CC(u32 arg);
 extern u32  msgGetCharsPerFrame(void);                         /* frames since the last call */
 extern s32  fn_800D37CC(void);                         /* frames per second */
-extern void fn_800A0FC8(u32 mode);                     /* OSSetProgressiveMode */
+extern void OSSetProgressiveMode(u32 mode);                     /* OSSetProgressiveMode */
 extern void fn_800D37D4(u32 a, u32 b, u32 c, u32 d, u32 e, u16 size);
 extern s32  _fsysInitTOC(u32 numSlots, u32 param2, u32 param3, u32 param4);
 extern u32  GSgappCreate(s32 state, u8 priority, void* param, void* func);
@@ -273,7 +273,7 @@ void bootWaitLogo(void)
         } else {
             fadeCheck(1);
             movieWait();
-            fn_800A0FC8(0);
+            OSSetProgressiveMode(0);
         }
     } else {
         fadeCheck(1);
@@ -346,7 +346,7 @@ void fn_800366A8(void)
     if (lbl_804788B8 != -1) {
         /* Retail converts through __cvt_fp2unsigned before narrowing. */
         fadeFrames = (u32)(1.5f * (f32)fn_800D37CC());
-        fn_800A0FC8(lbl_804788B8); /* OSSetProgressiveMode */
+        OSSetProgressiveMode(lbl_804788B8); /* OSSetProgressiveMode */
         /* Retail tests the mode it just passed on as unsigned (cmplwi). */
         if ((u32)lbl_804788B8 == 1) {
             fn_800D37D4(1, 2, 0, 2, 1, fadeFrames);

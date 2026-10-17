@@ -187,7 +187,7 @@ void menuTaisenDrawPokemonStatus(u8* ctx, UICmdMsg* msg)
         }
         if (snd != 0) {
             msgctrlSetValue(0x37, GSmsgGetGSchar(snd));
-            fn_800FBB34(0, 0, msg->s54, msg->s56, (ctx[0x8b] | mask),
+            GSmsgPrintRect(0, 0, msg->s54, msg->s56, (ctx[0x8b] | mask),
                         0xe9);
         }
         break;
@@ -224,7 +224,7 @@ void menuTaisenDrawPokemonStatus(u8* ctx, UICmdMsg* msg)
         }
         if (snd != 0) {
             msgctrlSetValue(0x37, GSmsgGetGSchar(snd));
-            fn_800FBB34(0, 0, msg->s54, msg->s56, (ctx[0x8b] | mask),
+            GSmsgPrintRect(0, 0, msg->s54, msg->s56, (ctx[0x8b] | mask),
                         0xe9);
         }
         break;
@@ -261,7 +261,7 @@ void menuTaisenDrawPokemonStatus(u8* ctx, UICmdMsg* msg)
         }
         if (snd != 0) {
             msgctrlSetValue(0x37, GSmsgGetGSchar(snd));
-            fn_800FBB34(0, 0, msg->s54, msg->s56, (ctx[0x8b] | mask),
+            GSmsgPrintRect(0, 0, msg->s54, msg->s56, (ctx[0x8b] | mask),
                         0xe9);
         }
         break;
@@ -298,7 +298,7 @@ void menuTaisenDrawPokemonStatus(u8* ctx, UICmdMsg* msg)
         }
         if (snd != 0) {
             msgctrlSetValue(0x37, GSmsgGetGSchar(snd));
-            fn_800FBB34(0, 0, msg->s54, msg->s56, (ctx[0x8b] | mask),
+            GSmsgPrintRect(0, 0, msg->s54, msg->s56, (ctx[0x8b] | mask),
                         0xe9);
         }
         break;
@@ -326,7 +326,7 @@ void menuTaisenDrawPokemonStatus(u8* ctx, UICmdMsg* msg)
             break;
         default:
             msgctrlSetValue(0x34, pokemonGetStatus(h, 0, 0x80, 0));
-            fn_800FBB34(0, 0, msg->s54, msg->s56, (ctx[0x8b] | mask),
+            GSmsgPrintRect(0, 0, msg->s54, msg->s56, (ctx[0x8b] | mask),
                         0xdf);
             break;
         }
@@ -355,7 +355,7 @@ void menuTaisenDrawPokemonStatus(u8* ctx, UICmdMsg* msg)
             break;
         default:
             msgctrlSetValue(0x34, pokemonGetStatus(h, 0, 0x80, 1));
-            fn_800FBB34(0, 0, msg->s54, msg->s56, (ctx[0x8b] | mask),
+            GSmsgPrintRect(0, 0, msg->s54, msg->s56, (ctx[0x8b] | mask),
                         0xdf);
             break;
         }
@@ -384,7 +384,7 @@ void menuTaisenDrawPokemonStatus(u8* ctx, UICmdMsg* msg)
             break;
         default:
             msgctrlSetValue(0x34, pokemonGetStatus(h, 0, 0x80, 2));
-            fn_800FBB34(0, 0, msg->s54, msg->s56, (ctx[0x8b] | mask),
+            GSmsgPrintRect(0, 0, msg->s54, msg->s56, (ctx[0x8b] | mask),
                         0xdf);
             break;
         }
@@ -413,7 +413,7 @@ void menuTaisenDrawPokemonStatus(u8* ctx, UICmdMsg* msg)
             break;
         default:
             msgctrlSetValue(0x34, pokemonGetStatus(h, 0, 0x80, 3));
-            fn_800FBB34(0, 0, msg->s54, msg->s56, (ctx[0x8b] | mask),
+            GSmsgPrintRect(0, 0, msg->s54, msg->s56, (ctx[0x8b] | mask),
                         0xdf);
             break;
         }
@@ -583,7 +583,7 @@ void menuTaisenDrawPokemonStatus(u8* ctx, UICmdMsg* msg)
         v = (u16) pokemonGetSoubiItemDataId(h);
         if (v != 0) {
             msgctrlSetValue(0x2d, v);
-            fn_800FBB34(0, 0, msg->s54, msg->s56, fl, 0x30da);
+            GSmsgPrintRect(0, 0, msg->s54, msg->s56, fl, 0x30da);
         }
         break;
     }
@@ -592,7 +592,7 @@ void menuTaisenDrawPokemonStatus(u8* ctx, UICmdMsg* msg)
         h = toolentryTaisenGetPokemonPtr(0, ((u32*) lbl_803A9F08)[3]);
         fl = ctx[0x8b] | mask;
         msgctrlSetValue(0x34, (s16) pokemonGetStatus(h, 0, 0x88, 0));
-        fn_800FBB34(0, 0, msg->s54, msg->s56, fl, 0xdf);
+        GSmsgPrintRect(0, 0, msg->s54, msg->s56, fl, 0xdf);
         break;
     }
     case 0xB28: {
@@ -600,7 +600,7 @@ void menuTaisenDrawPokemonStatus(u8* ctx, UICmdMsg* msg)
         h = toolentryTaisenGetPokemonPtr(0, ((u32*) lbl_803A9F08)[3]);
         fl = ctx[0x8b] | mask;
         msgctrlSetValue(0x34, (s16) pokemonGetStatus(h, 0, 0x89, 0));
-        fn_800FBB34(0, 0, msg->s54, msg->s56, fl, 0xdf);
+        GSmsgPrintRect(0, 0, msg->s54, msg->s56, fl, 0xdf);
         break;
     }
     case 0xB29: {
@@ -608,7 +608,7 @@ void menuTaisenDrawPokemonStatus(u8* ctx, UICmdMsg* msg)
         h = toolentryTaisenGetPokemonPtr(0, ((u32*) lbl_803A9F08)[3]);
         fl = ctx[0x8b] | mask;
         msgctrlSetValue(0x34, (s16) pokemonGetStatus(h, 0, 0x8a, 0));
-        fn_800FBB34(0, 0, msg->s54, msg->s56, fl, 0xdf);
+        GSmsgPrintRect(0, 0, msg->s54, msg->s56, fl, 0xdf);
         break;
     }
     case 0xB2A: {
@@ -616,7 +616,7 @@ void menuTaisenDrawPokemonStatus(u8* ctx, UICmdMsg* msg)
         h = toolentryTaisenGetPokemonPtr(0, ((u32*) lbl_803A9F08)[3]);
         fl = ctx[0x8b] | mask;
         msgctrlSetValue(0x34, (s16) pokemonGetStatus(h, 0, 0x8b, 0));
-        fn_800FBB34(0, 0, msg->s54, msg->s56, fl, 0xdf);
+        GSmsgPrintRect(0, 0, msg->s54, msg->s56, fl, 0xdf);
         break;
     }
     case 0xB2B: {
@@ -624,7 +624,7 @@ void menuTaisenDrawPokemonStatus(u8* ctx, UICmdMsg* msg)
         h = toolentryTaisenGetPokemonPtr(0, ((u32*) lbl_803A9F08)[3]);
         fl = ctx[0x8b] | mask;
         msgctrlSetValue(0x34, (s16) pokemonGetStatus(h, 0, 0x8c, 0));
-        fn_800FBB34(0, 0, msg->s54, msg->s56, fl, 0xdf);
+        GSmsgPrintRect(0, 0, msg->s54, msg->s56, fl, 0xdf);
         break;
     }
     case 0xB1E: {
@@ -688,7 +688,7 @@ void menuTaisenDrawPokemonStatus(u8* ctx, UICmdMsg* msg)
             t = GSmsgGetGSchar(0x3c1e);
         }
         msgctrlSetValue(0x37, t);
-        fn_800FBB34(*(s16*) (p - 0x2df2) - msg->s50 - 0x12,
+        GSmsgPrintRect(*(s16*) (p - 0x2df2) - msg->s50 - 0x12,
                     *(s16*) (p - 0x2df0) - msg->s52, *(s16*) (p - 0x2dee),
                     *(s16*) (p - 0x2dec), (ctx[0x8b] | mask), 0xcf);
         break;

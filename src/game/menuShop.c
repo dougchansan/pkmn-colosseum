@@ -595,7 +595,7 @@ s32 fn_8002A400(void* r3, u8* r4) {
 #endif
 
 /* fn_8002A48C - 0x8002A48C | size: 0x124 */
-extern void fn_800FB8C8(s32, s32, s16, s16, s32, s32);
+extern void GSmsgPrintRight(s32, s32, s16, s16, s32, s32);
 typedef struct ShopDisplayEntry {
     s32 key;
     s32 field_4;
@@ -659,7 +659,7 @@ s32 fn_8002A48C(ShopMenuOwner* owner, ShopDrawData* draw) {
     tens = value / 10 * 10;
     value -= tens;
     msgctrlSetValue(0x34, value);
-    fn_800FB8C8(0, 0, draw->x, draw->y, -1, 0xC9);
+    GSmsgPrintRight(0, 0, draw->x, draw->y, -1, 0xC9);
     return 0;
 }
 #endif

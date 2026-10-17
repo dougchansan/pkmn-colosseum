@@ -232,11 +232,11 @@ extern void HSD_JObjSetupMatrix(void* camSlot);
 extern void HSD_JObjAddTx(PSJObjTransform* jobj, f32 dx);
 extern void HSD_JObjAddTy(PSJObjTransform* jobj, f32 dy);
 extern void HSD_JObjAddTz(PSJObjTransform* jobj, f32 dz);
-extern void fn_8019D9DC(PSForceJObj* jobj);
+extern void HSD_JObjSetupMatrixSub(PSForceJObj* jobj);
 extern void HSD_MtxSRT(void* dst, void* scale, void* rot, void* trans, void* order);
 extern void fn_801A6960(void* ptr);
 extern void* fn_801A6928(s32 size);
-extern void* fn_801A3E64(void);
+extern void* HSD_SListRemove(void);
 extern void __assert(const char* file, u32 line, const char* msg);
 extern void* memset(void* dst, s32 value, u32 size);
 extern void PSMTXIdentity(Mtx m);
@@ -1725,7 +1725,7 @@ void fn_8016EA88(void) {
     }
 }
 
-void fn_8016EB30(HSD_Obj* obj) {
+void psSetFog(HSD_Obj* obj) {
     HSD_Obj* old_obj;
 
     if ((old_obj = lbl_8047B128) != NULL) {
@@ -1903,7 +1903,7 @@ s32 applyForceJObj(PSParticle* pp, PSForceJObj* jobj,
     }
 
     if (!(jobj->flags & 0x800000) && (jobj->flags & 0x40)) {
-        fn_8019D9DC(jobj);
+        HSD_JObjSetupMatrixSub(jobj);
     }
 
     dx = jobj->worldX - pp->positionX;
@@ -2036,7 +2036,7 @@ void setVelToJObj(PSParticle* pp, PSForceJObj* jobj) {
     }
 
     if (!(jobj->flags & 0x800000) && (jobj->flags & 0x40)) {
-        fn_8019D9DC(jobj);
+        HSD_JObjSetupMatrixSub(jobj);
     }
 
     dx = jobj->worldX - pp->positionX;
@@ -5431,7 +5431,7 @@ void psExecGenerator(u32 linkMask) {
     PSGeneratorState* gen;
 
     while (lbl_8047B180 != NULL) {
-        lbl_8047B180 = fn_801A3E64();
+        lbl_8047B180 = HSD_SListRemove();
     }
 
     lbl_8047B184 = NULL;
@@ -5457,7 +5457,7 @@ void psExecGenerator(u32 linkMask) {
             PSForceJObj* jobj = gen->linkedJObj;
 
             if (!(jobj->flags & 0x800000) && (jobj->flags & 0x40)) {
-                fn_8019D9DC(jobj);
+                HSD_JObjSetupMatrixSub(jobj);
             }
             gen->positionX = jobj->worldX;
             gen->positionY = jobj->worldY;
@@ -6070,13 +6070,13 @@ static inline s32 PSJObjMtxIsDirty(PSJObjTransform* jobj) {
 }
 
 void HSD_JObjSetupMatrix(void* camSlot) {
-    extern void fn_8019D9DC(void* jobj);
+    extern void HSD_JObjSetupMatrixSub(void* jobj);
     PSJObjTransform* jobj = camSlot;
 
     if (jobj == NULL || !PSJObjMtxIsDirty(jobj)) {
         return;
     }
-    fn_8019D9DC(jobj);
+    HSD_JObjSetupMatrixSub(jobj);
 }
 
 void HSD_JObjAddTz(PSJObjTransform* jobj, f32 dz) {

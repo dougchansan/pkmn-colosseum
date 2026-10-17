@@ -51,7 +51,7 @@ extern void OSRegisterVersion(char *version);
 
 static void UpdateOrigin(s32 chan);
 static void PADOriginCallback(s32 chan, u32 error, OSContext *context);
-static void fn_800AA73C(s32 chan, u32 error, OSContext *context);
+static void PADOriginUpdateCallback(s32 chan, u32 error, OSContext *context);
 static void PADProbeCallback(s32 chan, u32 error, OSContext *context);
 static void PADTypeAndStatusCallback(s32 chan, u32 type);
 void PADSetSpec(s32 spec);
@@ -159,9 +159,9 @@ static void PADOriginCallback(s32 chan, u32 error, OSContext *context) {
 }
 
 /*
- * fn_800AA73C = PADOriginUpdateCallback
+ * PADOriginUpdateCallback = PADOriginUpdateCallback
  */
-static void fn_800AA73C(s32 chan, u32 error, OSContext *context) {
+static void PADOriginUpdateCallback(s32 chan, u32 error, OSContext *context) {
     if (!(lbl_8047A8A4 & (0x80000000u >> chan))) {
         return;
     }
@@ -245,9 +245,9 @@ static void PADTypeAndStatusCallback(s32 chan, u32 type) {
 }
 
 /*
- * fn_800AAC00 = PADReceiveCheckCallback
+ * PADReceiveCheckCallback = PADReceiveCheckCallback
  */
-static void fn_800AAC00(s32 chan, u32 type) {
+static void PADReceiveCheckCallback(s32 chan, u32 type) {
     u32 error;
     u32 chanBit;
 
@@ -262,7 +262,7 @@ static void fn_800AAC00(s32 chan, u32 type) {
         if (!(error & 0xF) && (type & 0x80000000) && (type & 0x00100000) &&
             (type & 0x40000000) && !(type & 0x04000000) && !(type & 0x00080000) &&
             !(type & 0x00040000)) {
-            SITransfer(chan, &lbl_80478A20, 1, &lbl_803FC5E0[chan], 10, fn_800AA73C, 0);
+            SITransfer(chan, &lbl_80478A20, 1, &lbl_803FC5E0[chan], 10, PADOriginUpdateCallback, 0);
         } else {
             PADDisable(chan);
         }
@@ -421,7 +421,7 @@ u32 fn_800AB150(PADStatus *status) {
 
                 if (!(lbl_8047A8B4 & chanBit)) {
                     lbl_8047A8B4 |= chanBit;
-                    SIGetTypeAsync(chan, fn_800AAC00);
+                    SIGetTypeAsync(chan, PADReceiveCheckCallback);
                 }
                 continue;
             }
@@ -454,7 +454,7 @@ u32 fn_800AB150(PADStatus *status) {
         if (status->button & 0x2000) {
             status->err = PAD_ERR_TRANSFER;
             memset(status, 0, 10);
-            SITransfer(chan, &lbl_80478A20, 1, &lbl_803FC5E0[chan], 10, fn_800AA73C, 0);
+            SITransfer(chan, &lbl_80478A20, 1, &lbl_803FC5E0[chan], 10, PADOriginUpdateCallback, 0);
             continue;
         }
 

@@ -8,7 +8,7 @@
  * colsysCheckHitMdl is checkHitMdl (0x4BC in both). They run three passes (face,
  * flagged edges, flagged corners) through XD's stripped getCpPointPoly /
  * getCpPointLine / getCpPointPoint inlines. fn_8010EFE4 is checkHitCollision
- * (XD 0x1AC), and fn_8010F188 / fn_8010F320 are GScolsys2HitNpcCollision /
+ * (XD 0x1AC), and GScolsys2HitNpcCollision / fn_8010F320 are GScolsys2HitNpcCollision /
  * GScolsys2HitCollision (0x198 each); they were the carve
  * gs_colsys_exact_8010EFE4.c, folded in so the unit owns its pool.
  *
@@ -453,7 +453,7 @@ s32 colsysWallAll(Vec3f* segStart, Vec3f* segEnd, f32 radius,
 }
 
 /* 0x8010F188 | 0x198 */
-s32 fn_8010F188(Vec3f* start, Vec3f* end, f32 radius, Vec3f* result)
+s32 GScolsys2HitNpcCollision(Vec3f* start, Vec3f* end, f32 radius, Vec3f* result)
 {
     extern f32 PSVECDistance(const Vec3f*, const Vec3f*);
     extern void PSVECSubtract(const Vec3f*, const Vec3f*, Vec3f*);

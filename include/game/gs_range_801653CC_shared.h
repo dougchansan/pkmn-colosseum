@@ -113,7 +113,7 @@ extern void fn_800F9210(u32, u32);
 extern u32 fn_800E2C04(u32, u32);
 extern void* fn_800E27B0(u32);
 extern s32 OSGetSoundMode(void);
-extern void fn_800A0EB4(u32);
+extern void OSSetSoundMode(u32);
 extern void sndOutputMode(void);
 extern void sndMasterVolume(u8, u16, u8, u8);
 extern void sndVolume(u8, u16, u8);
@@ -128,7 +128,7 @@ extern u8 s3dUpdateListener(void*, const GSvec*, const GSvec*, const GSvec*, con
 extern u8 s3dSetListener(void*, const GSvec*, const GSvec*, const GSvec*, const GSvec*, u32, u32, u32, f32, f32, f32);
 extern u32 fn_8014D598(u32);
 extern void sndSeqStop(u32);
-extern void fn_8014D648(u32);
+extern void sndSeqContinue(u32);
 extern s32 fn_8017B2CC(u32);
 extern void* GSdvdOpen(const char*);
 extern u32 GSdvdGetLength(void*);

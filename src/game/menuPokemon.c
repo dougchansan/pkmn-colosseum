@@ -2087,7 +2087,7 @@ extern s32 windowGetParam(s32, s32);
 extern u32 itemDataBiosGetWazaMachineNo();
 extern u32 pokemonIsDarkPokemon();
 extern u32 pokemonDataBiosGetWazaMcn();
-extern void fn_800FBB34();
+extern void GSmsgPrintRect();
 extern void fn_8010B9E8();
 extern u32 fn_80107E78();
 extern void fn_801081F8();
@@ -2108,7 +2108,7 @@ extern s32 windowGetParam(s32, s32);
 extern u32 itemDataBiosGetWazaMachineNo();
 extern u32 pokemonIsDarkPokemon();
 extern u32 pokemonDataBiosGetWazaMcn();
-extern void fn_800FBB34();
+extern void GSmsgPrintRect();
 extern void fn_8010B9E8();
 extern u32 fn_80107E78();
 extern void fn_801081F8();
@@ -2261,21 +2261,21 @@ void menuPokemonDrawItem(u8* ctx, u8* pane) {
     case 0x3BF:
         GSmsgPrintColor(0x2E, 0, color, 0x2BD4);
         msgctrlSetValue(0x34, *(s16*)(entry + 0x1A));
-        fn_800FBB34(0, 0, 0x2C, *(s16*)(pane + 0x56), color, 0xDE);
+        GSmsgPrintRect(0, 0, 0x2C, *(s16*)(pane + 0x56), color, 0xDE);
         msgctrlSetValue(0x34, *(s16*)(entry + 0x18));
-        fn_800FBB34(0, 0, (s16)(*(s16*)(pane + 0x54) - 2), *(s16*)(pane + 0x56), color, 0xDE);
+        GSmsgPrintRect(0, 0, (s16)(*(s16*)(pane + 0x54) - 2), *(s16*)(pane + 0x56), color, 0xDE);
         break;
     case 0x545:
         GSmsgPrintColor(0x1B, 0, color, 0x195);
         msgctrlSetValue(0x34, *(s16*)(entry + 0x1A));
-        fn_800FBB34(0, 0, 0x1B, *(s16*)(pane + 0x56), color, 0xDF);
+        GSmsgPrintRect(0, 0, 0x1B, *(s16*)(pane + 0x56), color, 0xDF);
         msgctrlSetValue(0x34, *(s16*)(entry + 0x18));
-        fn_800FBB34(0, 0, (s16)(*(s16*)(pane + 0x54) - 2), *(s16*)(pane + 0x56), color, 0xDF);
+        GSmsgPrintRect(0, 0, (s16)(*(s16*)(pane + 0x54) - 2), *(s16*)(pane + 0x56), color, 0xDF);
         break;
     case 0x3C0:
     case 0x546:
         msgctrlSetValue(0x34, entry[0x17]);
-        fn_800FBB34(0, 0, *(s16*)(pane + 0x54), *(s16*)(pane + 0x56), color, 0xD3);
+        GSmsgPrintRect(0, 0, *(s16*)(pane + 0x54), *(s16*)(pane + 0x56), color, 0xD3);
         break;
     case 0x3C1:
     case 0x547:

@@ -49,7 +49,7 @@ extern u32   pokemonSetStatus();
 extern void  pokemonGrowBasisStatus();
 extern u32   itemGetStatus();
 extern void  joutaiDataBiosGetStatusKind(void);
-extern void  fn_80121ADC(void);
+extern void  pokemonIsJoutaiDataId(void);
 extern void  fn_8011B67C(void);
 extern void  pokemonGetSoubiItemDataId(void);
 extern void* fightActionGetPri(void* p);
@@ -150,7 +150,7 @@ void fightPokemonWriteJoutaiDataId(void* ctx, void* typeObj, u32 param) {
 u32 fightPokemonCheckWriteJoutaiDataId(void* ctx, void* typeObj) {
     extern u16 joutaiDataBiosGetStatusKind();
     extern u32 fn_8011B67C();
-    extern u32 fn_80121ADC();
+    extern u32 pokemonIsJoutaiDataId();
     void* resolved;
     u32 result;
     if (joutaiDataBiosGetStatusKind(typeObj) == 0x7C || joutaiDataBiosGetStatusKind(typeObj) == 0xC8) {
@@ -159,7 +159,7 @@ u32 fightPokemonCheckWriteJoutaiDataId(void* ctx, void* typeObj) {
         } else {
             resolved = pokemonGetStatus(ctx, 0, 0xCC, 0);
         }
-        result = fn_80121ADC(resolved, typeObj);
+        result = pokemonIsJoutaiDataId(resolved, typeObj);
     } else if (joutaiDataBiosGetStatusKind(typeObj) != 0xCD) {
         result = 0;
     } else {
@@ -433,7 +433,7 @@ static inline void* fn_802032E4_getCC(void* ctx) {
 void fightPokemonGetFriendFormPokemonFriendFilterId(void* ctx, u32 param) {
     extern u16 joutaiDataBiosGetStatusKind();
     extern u8 fn_8011B67C();
-    extern u8 fn_80121ADC();
+    extern u8 pokemonIsJoutaiDataId();
     extern void pokemonGetFriendFormPokemonFriendFilterId();
     extern u32 pokemonGetSoubiItemSoubiDataId();
     void* resolvedPtr;
@@ -451,7 +451,7 @@ void fightPokemonGetFriendFormPokemonFriendFilterId(void* ctx, u32 param) {
         if (joutaiDataBiosGetStatusKind(0x3D) == 0x7C || joutaiDataBiosGetStatusKind(0x3D) == 0xC8) {
             void* tmp;
             if (ctx == 0) { tmp = 0; } else { resolvedPtr = pokemonGetStatus(ctx, 0, 0xCC, 0); tmp = resolvedPtr; }
-            result = fn_80121ADC(tmp, 0x3D);
+            result = pokemonIsJoutaiDataId(tmp, 0x3D);
         } else {
             if (joutaiDataBiosGetStatusKind(0x3D) != 0xCD) {
                 result = 0;
@@ -482,7 +482,7 @@ static inline void* fn_8020341C_resolveCcCtx(void* ctx)
 void fightPokemonGetEffortFromPokemon(void* ctx, u32 param1, u32 param2) {
     extern u16 joutaiDataBiosGetStatusKind();
     extern u8 fn_8011B67C();
-    extern u8 fn_80121ADC();
+    extern u8 pokemonIsJoutaiDataId();
     extern void pokemonGetEffortFromPokemon();
     extern u32 pokemonGetSoubiItemSoubiDataId();
     void* ccData;
@@ -499,7 +499,7 @@ void fightPokemonGetEffortFromPokemon(void* ctx, u32 param1, u32 param2) {
         if (joutaiDataBiosGetStatusKind(0x3D) == 0x7C || joutaiDataBiosGetStatusKind(0x3D) == 0xC8) {
             void* tmp;
             if (ctx == 0) { tmp = 0; } else { tmp = pokemonGetStatus(ctx, 0, 0xCC, 0); }
-            result = fn_80121ADC(tmp, 0x3D);
+            result = pokemonIsJoutaiDataId(tmp, 0x3D);
         } else {
             if (joutaiDataBiosGetStatusKind(0x3D) != 0xCD) {
                 result = 0;

@@ -69,7 +69,7 @@ static u32 lbl_8047B30C;
 static f32* lbl_8047B308;
 
 /* HSD_RObjInitAllocData */
-void fn_801B0158(void)
+void HSD_RObjInitAllocData(void)
 {
     HSD_ObjAllocInit(&lbl_804656B4, sizeof(HSD_RObj), 4);
     HSD_ObjAllocInit(&lbl_80465688, sizeof(HSD_Rvalue), 4);
@@ -483,7 +483,7 @@ static void resolveLimits(HSD_RObj* robj, void* obj,
             }
         }
         if (update_mtx) {
-            fn_801A3600(jobj);
+            HSD_JObjMakeMatrix(jobj);
         }
     }
 }
