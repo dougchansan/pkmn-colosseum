@@ -52,7 +52,7 @@ extern u8 wsCmdF3[];
 extern u8 wsCmdF2[];
 extern u8 wsCmdF1[];
 extern u8 wsCmdF0[];
-extern u8 fn_80213E94[];
+extern u8 wsCmdEF[];
 extern u8 wsCmdEE[];
 extern u8 wsCmdED[];
 extern u8 wsCmdEC[];
@@ -67,7 +67,7 @@ extern u8 wsCmdE3[];
 extern u8 wsCmdE2[];
 extern u8 wsCmdE1[];
 extern u8 wsCmdE0[];
-extern u8 fn_80214E50[];
+extern u8 wsCmdDF[];
 extern u8 wsCmdDE[];
 extern u8 wsCmdDD[];
 extern u8 wsCmdDB[];
@@ -93,13 +93,13 @@ extern u8 wsCmdBE[];
 extern u8 wsCmdBC[];
 extern u8 wsCmdBB[];
 extern u8 wsCmdBA[];
-extern u8 fn_802177E4[];
+extern u8 wsCmdB9[];
 extern u8 wsCmdB8[];
 extern u8 wsCmdB7[];
 extern u8 wsCmdB6[];
 extern u8 wsCmdB5[];
 extern u8 wsCmdB4[];
-extern u8 fn_80217E20[];
+extern u8 wsCmdB3[];
 extern u8 wsCmdB2[];
 extern u8 wsCmdB0[];
 extern u8 wsCmdAF[];
@@ -118,7 +118,7 @@ extern u8 wsCmdA2[];
 extern u8 wsCmdA1[];
 extern u8 wsCmdA0[];
 extern u8 wsCmd9F[];
-extern u8 fn_80219E10[];
+extern u8 wsCmd9E[];
 extern u8 wsCmd9D[];
 extern u8 wsCmd9C[];
 extern u8 wsCmd9B[];
@@ -169,13 +169,13 @@ extern u8 wsCmd6A[];
 extern u8 wsCmd67[];
 extern u8 wsCmd66[];
 extern u8 wsCmd65[];
-extern u8 fn_8021E288[];
-extern u8 fn_8021E600[];
+extern u8 wsCmd64[];
+extern u8 wsCmd63[];
 extern u8 wsCmd62[];
 extern u8 wsCmd61[];
 extern u8 wsCmd60[];
-extern u8 fn_8021E744[];
-extern u8 fn_8021E754[];
+extern u8 wsCmd5E[];
+extern u8 wsCmd5D[];
 extern u8 wsCmd5C[];
 extern u8 wsCmd5B[];
 extern u8 wsCmd5A[];
@@ -243,7 +243,7 @@ extern u8 wsCmd10[];
 extern u8 wsCmd0F[];
 extern u8 wsCmd0E[];
 extern u8 wsCmd0D[];
-extern u8 fn_802267E8[];
+extern u8 wsCmd0C[];
 extern u8 wsCmd0B[];
 extern u8 wsCmd0A[];
 extern u8 wsCmd09[];
@@ -490,7 +490,7 @@ const void* lbl_8027A00C[255] = {
     (void*)wsCmd09,
     (void*)wsCmd0A,
     (void*)wsCmd0B,
-    (void*)fn_802267E8,
+    (void*)wsCmd0C,
     (void*)wsCmd0D,
     (void*)wsCmd0E,
     (void*)wsCmd0F,
@@ -571,14 +571,14 @@ const void* lbl_8027A00C[255] = {
     (void*)wsCmd5A,
     (void*)wsCmd5B,
     (void*)wsCmd5C,
-    (void*)fn_8021E754,
-    (void*)fn_8021E744,
+    (void*)wsCmd5D,
+    (void*)wsCmd5E,
     (void*)WS_SWITCH_A_D,
     (void*)wsCmd60,
     (void*)wsCmd61,
     (void*)wsCmd62,
-    (void*)fn_8021E600,
-    (void*)fn_8021E288,
+    (void*)wsCmd63,
+    (void*)wsCmd64,
     (void*)wsCmd65,
     (void*)wsCmd66,
     (void*)wsCmd67,
@@ -636,7 +636,7 @@ const void* lbl_8027A00C[255] = {
     (void*)wsCmd9B,
     (void*)wsCmd9C,
     (void*)wsCmd9D,
-    (void*)fn_80219E10,
+    (void*)wsCmd9E,
     (void*)wsCmd9F,
     (void*)wsCmdA0,
     (void*)wsCmdA1,
@@ -657,13 +657,13 @@ const void* lbl_8027A00C[255] = {
     (void*)wsCmdB0,
     (void*)WS_MIYABURU,
     (void*)wsCmdB2,
-    (void*)fn_80217E20,
+    (void*)wsCmdB3,
     (void*)wsCmdB4,
     (void*)wsCmdB5,
     (void*)wsCmdB6,
     (void*)wsCmdB7,
     (void*)wsCmdB8,
-    (void*)fn_802177E4,
+    (void*)wsCmdB9,
     (void*)wsCmdBA,
     (void*)wsCmdBB,
     (void*)wsCmdBC,
@@ -701,7 +701,7 @@ const void* lbl_8027A00C[255] = {
     (void*)WS_ONNEN,
     (void*)wsCmdDD,
     (void*)wsCmdDE,
-    (void*)fn_80214E50,
+    (void*)wsCmdDF,
     (void*)wsCmdE0,
     (void*)wsCmdE1,
     (void*)wsCmdE2,
@@ -717,7 +717,7 @@ const void* lbl_8027A00C[255] = {
     (void*)wsCmdEC,
     (void*)wsCmdED,
     (void*)wsCmdEE,
-    (void*)fn_80213E94,
+    (void*)wsCmdEF,
     (void*)wsCmdF0,
     (void*)wsCmdF1,
     (void*)wsCmdF2,

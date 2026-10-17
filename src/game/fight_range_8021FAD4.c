@@ -50,7 +50,7 @@ void wsCmd49(void)
     extern void pokemonSetStatus(u32, int, int, int, u16);
     extern s8 pokemonSearchWazaDataId();
     extern u32 wazaGetStatus();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern u8 fn_802025B8();
     extern s32 fightOutPokemonGetPokemonJoutai0C();
     extern void fightOutPokemonSetPokemonJoutai0C();
@@ -137,7 +137,7 @@ void wsCmd49(void)
     do {
         switch (lbl_8047B627) {
         case 0:
-            if (fn_802026E4(defender, 0x13) == 1 &&
+            if (fightOutPokemonIsPokemonJoutaiDataId(defender, 0x13) == 1 &&
                 fightOutPokemonCheckFightOut(defender) == 1 &&
                 attacker != defender &&
                 fightOutPokemonIsAlly(attacker, defender) == 0 &&
@@ -155,7 +155,7 @@ void wsCmd49(void)
             break;
 
         case 1:
-            if (fn_802026E4(defender, 7) == 1 &&
+            if (fightOutPokemonIsPokemonJoutaiDataId(defender, 7) == 1 &&
                 fightOutPokemonCheckFightOut(defender) == 1 &&
                 attacker != defender &&
                 pokemonGetStatus(defender, 0, 0x11E, 0) != 0 &&
@@ -204,7 +204,7 @@ void wsCmd49(void)
                 fightOutPokemonWritePokemonJoutaiDataId(attacker, 0x36, 0);
                 fightOutPokemonSetPokemonJoutai0C(attacker, 0x36, originalMove);
             }
-            if (fn_802026E4(attacker, 0x36) == 1) {
+            if (fightOutPokemonIsPokemonJoutaiDataId(attacker, 0x36) == 1) {
                 other = fightOutPokemonGetPokemonJoutai0C(attacker, 0x36);
                 if (pokemonSearchWazaDataId(fightOutPokemonGetPokemonPtr(attacker), other) < 0) {
                     fightOutPokemonWriteJoutaiDataId(attacker, 0x36);

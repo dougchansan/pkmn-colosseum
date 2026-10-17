@@ -141,14 +141,14 @@ u32 fightTrainerAiWazaValueTeiryouDameeji(u32 arg0, u32 arg1, u32 arg2, u32 arg3
 
 {
     extern u32 fn_80205B8C();
-    extern u16 fn_802377E8();
+    extern u16 fightTrainerAiGetPokemonDataId();
     extern int fn_80239984();
     extern u32 fn_80239EE8();
   u32 uVar1;
   u32 uVar3;
 
   uVar3 = 0;
-  if (fn_802377E8(arg0, arg3) == 0xd5) {
+  if (fightTrainerAiGetPokemonDataId(arg0, arg3) == 0xd5) {
     uVar3 = fn_80239984(0, arg0, 0x220);
     uVar1 = fn_80205B8C(arg1);
     fn_80239EE8(0xec64, arg0, uVar1, 0, 0, arg2, 0, 0x220);
@@ -252,7 +252,7 @@ u32 fightTrainerAiWazaValueOnibi(void* ctx, u32 param1, u32 param2, u32 param3)
     extern u16 fn_8023715C(void*, u32);
     extern u16 fn_80236520(void*, u32);
     extern u16 fn_801F1C18(u32, void*, void*, u32, u32);
-    extern u16 fn_802377E8(void*, u32);
+    extern u16 fightTrainerAiGetPokemonDataId(void*, u32);
     extern u32 fn_80239984(u32, void*, u32);
     extern u32 fn_80205B8C(u32);
     extern void fn_80239EE8(u32, void*, u32, u32, u32, u32, u32, u32);
@@ -266,7 +266,7 @@ u32 fightTrainerAiWazaValueOnibi(void* ctx, u32 param1, u32 param2, u32 param3)
 
     count = fn_801F1C18(0, ctx, arr, 0, 1);
     for (i = 0; i < count; i++) {
-        u16 v = fn_802377E8(ctx, arr[i]);
+        u16 v = fightTrainerAiGetPokemonDataId(ctx, arr[i]);
         if (v == 0xca || v == 0x168 || v == 0x12f || v == 0xd5) {
             handle = fn_80239984(0, ctx, 0x217);
             fn_80239EE8(0xEC64, ctx, fn_80205B8C(param1), 0, 0, param2, 0, 0x217);
@@ -293,7 +293,7 @@ u32 fightTrainerAiWazaValueDoku(void* ctx, u32 param1, u32 param2, u32 param3)
 {
     extern u16 fn_801F1C18(u32, void*, void*, u32, u32);
     extern u16 fn_80236520(void*, u32);
-    extern u16 fn_802377E8(void*, u32);
+    extern u16 fightTrainerAiGetPokemonDataId(void*, u32);
     extern u32 fn_80239984(u32, void*, u32);
     extern u32 fn_80205B8C(u32);
     extern void fn_80239EE8(u32, void*, u32, u32, u32, u32, u32, u32);
@@ -306,7 +306,7 @@ u32 fightTrainerAiWazaValueDoku(void* ctx, u32 param1, u32 param2, u32 param3)
     count = fn_801F1C18(0, ctx, arr, 0, 1);
     c = fn_80236520(ctx, param3);
     for (i = 0; i < count; i++) {
-        u16 v = fn_802377E8(ctx, arr[i]);
+        u16 v = fightTrainerAiGetPokemonDataId(ctx, arr[i]);
         if (v == 0xca || v == 0x168 || v == 0x12f || v == 0xd5) {
             handle = fn_80239984(0, ctx, 0x215);
             fn_80239EE8(0xEC64, ctx, fn_80205B8C(param1), 0, 0, param2, 0, 0x215);

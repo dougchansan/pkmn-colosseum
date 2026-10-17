@@ -275,7 +275,7 @@ void wsCmd0D(void) {
 #define fn_80207C24 fightOutPokemonSetWazaEffectDownFlag
 #define fn_801FEF74 fightOutPokemonGetJoutaiMigawariHp
 #define fn_80202810 fightOutPokemonWriteJoutaiDataId
-void fn_802267E8(void) {
+void wsCmd0C(void) {
     extern int fn_802656AC();
     extern s32 fn_80102620();
     extern u32 fn_80011C78();
@@ -285,7 +285,7 @@ void fn_802267E8(void) {
     extern void fn_80202810();
     extern u32 fn_801F025C();
     extern u32 fn_801F54A4();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     u32 val;
     u32 ctx;
     u16 count;
@@ -300,7 +300,7 @@ void fn_802267E8(void) {
     if ((u8)fn_802038A4(ctx) == 1) {
         fn_80207C24(ctx, 1);
     }
-    if ((u8)fn_802026E4(ctx, 0x14) == 1 && fn_801FEF74(ctx) <= 0) {
+    if ((u8)fightOutPokemonIsPokemonJoutaiDataId(ctx, 0x14) == 1 && fn_801FEF74(ctx) <= 0) {
         do {
             if ((u8)wazaSequenceSysIsAllEnd(6) == 1) {
                 break;
@@ -615,7 +615,7 @@ void fightApplyDamageVariance(u8 r3, u8 r4)
     extern int fn_8011BEB4();
     extern u32 fn_801F025C();
     extern void fn_801F4C14();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern int fn_80203EDC();
     extern u16 fn_80203FE4();
     extern u16 fn_802040E8();
@@ -660,11 +660,11 @@ void fightApplyDamageVariance(u8 r3, u8 r4)
   if ((sVar10 == 0x27) && (uVar8 = GSrand(), (int)(uVar8 % 100) < iVar5)) {
     fn_801254B4((void*)uVar4,0,0x11a,0,1);
   }
-  cVar11 = fn_802026E4(uVar4,0x14);
+  cVar11 = fightOutPokemonIsPokemonJoutaiDataId(uVar4,0x14);
   if (cVar11 == 0) {
     sVar10 = fn_8011BEB4(0,uVar2,9,0);
     if ((((sVar10 != 0x65) || (r3 != 1)) &&
-        (cVar11 = fn_802026E4(uVar4,0x2c), cVar11 == 0)) &&
+        (cVar11 = fightOutPokemonIsPokemonJoutaiDataId(uVar4,0x2c), cVar11 == 0)) &&
        (iVar5 = (int)fn_8012640C(uVar4,0,0x11a,0), iVar5 == 0)) {
       return;
     }
@@ -672,7 +672,7 @@ void fightApplyDamageVariance(u8 r3, u8 r4)
     iVar5 = (int)fn_8012640C(uVar2,0,0x83,0);
     if (iVar5 <= iVar3) {
       fn_8011BBD8(uVar1,0,0x2d,0,(uVar7 & 0xffff) - 1);
-      cVar11 = fn_802026E4(uVar4,0x2c);
+      cVar11 = fightOutPokemonIsPokemonJoutaiDataId(uVar4,0x2c);
       if (cVar11 != 0) {
         cVar11 = fn_8020981C(uVar1,0x46);
         if (cVar11 == 2) {

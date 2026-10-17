@@ -104,7 +104,7 @@ extern u32  fn_80239984();
 extern u32  fn_80205B8C(u32);
 extern u8 fn_80239EE8();
 extern u8 fn_80239CCC();
-extern u16  fn_802377E8(void*, u32);
+extern u16  fightTrainerAiGetPokemonDataId(void*, u32);
 extern u16  fn_801F1990(u32, void*, u32, u32, u32, u32);
 extern u16  fn_801F1C18(u32, void*, void*, u32, u32);
 extern u8   fn_801F4C14(u32, u16, u32, u16, u32);
@@ -209,7 +209,7 @@ extern u8  fightTrainerIsAllyFightTargetPtr(u32 ctx, u32 poke, u16 floorVal);
 extern u16 fightOutPokemonGetZokuseiDataId(u32 poke, u8 idx);
 extern u16 fightOutPokemonGetTokuseiDataId(u32 poke);
 extern u32 zokuseiGetAisyouDualType(u16 waza, u16* types, u16 typeCount);
-extern int fn_802026E4();
+extern int fightOutPokemonIsPokemonJoutaiDataId();
 extern u8 fn_80235714();
 extern u32 fightTrainerAiGetFightPokemonWazaAry();
 extern u32 fightFloorGetFightTrainerFightOutPokemonPtrAry();
@@ -263,7 +263,7 @@ void WS_WAZAKOUKA_CHECK(void)
 
 {
     extern u32 fn_801F025C();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
   u32 uVar1;
   u8 cVar2;
 
@@ -272,7 +272,7 @@ void WS_WAZAKOUKA_CHECK(void)
 
   uVar1 = fn_801F025C(*(u8 *)(lbl_8047B610 + 1),0);
   jumpTarget = (u8*)*(u32 *)(lbl_8047B610 + 7);
-  cVar2 = fn_802026E4(uVar1,*(u32 *)(lbl_8047B610 + 2) & 0xffff);
+  cVar2 = fightOutPokemonIsPokemonJoutaiDataId(uVar1,*(u32 *)(lbl_8047B610 + 2) & 0xffff);
   if (*(u8 *)(lbl_8047B610 + 6) == cVar2) {
     nextPc = jumpTarget;
   }
@@ -445,7 +445,7 @@ void wsCmd1D(void) {
     extern u32 fn_801F025C();
     extern u8 fn_80203CCC();
     extern u8 fn_80203C5C();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern u32 fn_802062FC();
     u8* target;
     u32 ctx;
@@ -468,7 +468,7 @@ void wsCmd1D(void) {
             lbl_8047B610 = lbl_8047B610 + 10;
         }
     } else {
-        if ((u8)fn_802026E4(ctx, kind) == 1 && (u8)fn_802062FC(ctx) == 1) {
+        if ((u8)fightOutPokemonIsPokemonJoutaiDataId(ctx, kind) == 1 && (u8)fn_802062FC(ctx) == 1) {
             lbl_8047B610 = target;
         } else {
             lbl_8047B610 = lbl_8047B610 + 10;
@@ -494,7 +494,7 @@ void WS_CONDITION_CHECK(void)
 
 {
     extern u32 fn_801F025C();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern u8 fn_80203C5C();
     extern u8 fn_80203CCC();
     extern u32 fn_802062FC();
@@ -522,7 +522,7 @@ void WS_CONDITION_CHECK(void)
     }
   }
   else {
-    if ((u8)fn_802026E4(ctx, kind) == 1 &&
+    if ((u8)fightOutPokemonIsPokemonJoutaiDataId(ctx, kind) == 1 &&
         (u8)fn_802062FC(ctx) == 1) {
       lbl_8047B610 = target;
     }
@@ -552,7 +552,7 @@ void WS_CONDITION_CHECK(void)
 void wsCmd1B(void) {
     extern u32 fn_801F025C();
     extern u32 fn_801F54A4();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern u8 fn_801FECD4();
     extern void fn_801FE7EC();
     u32 ctx;
@@ -573,7 +573,7 @@ void wsCmd1B(void) {
     if ((u8)fn_801FECD4(ctx) == 1) {
         fn_801FE7EC(ctx, 0x7c, 0, 0);
     }
-    if ((u8)fn_802026E4(ctx, 0x3e) == 1) {
+    if ((u8)fightOutPokemonIsPokemonJoutaiDataId(ctx, 0x3e) == 1) {
         fn_80202810(ctx, 0x3e);
         if ((u8)fn_801FECD4(ctx) == 1) {
             fn_801FE7EC(ctx, 0xc8, 0, 0);
@@ -609,14 +609,14 @@ void wsCmd1A(void) {
     extern u32 fn_8020912C();
     extern u32 fn_801F025C();
     extern u32 fn_801F54A4();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     u32 ctx;
     u16 count;
 
     count = (u16)fn_801F54A4(0, 0, 0x14, 0);
     ctx = fn_801F025C(*(u8*)(lbl_8047B610 + 1), 0);
 
-    if ((u8)fn_802026E4(ctx, 0x14) == 1 && fn_801FEF74(ctx) > 0) {
+    if ((u8)fightOutPokemonIsPokemonJoutaiDataId(ctx, 0x14) == 1 && fn_801FEF74(ctx) > 0) {
         fn_80202810(ctx, 0x14);
         fn_802086B0(ctx);
         fn_8020F108(0xa4, ctx, ctx, 0, 0);

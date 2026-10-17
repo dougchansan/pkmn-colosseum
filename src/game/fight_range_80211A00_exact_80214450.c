@@ -107,7 +107,7 @@ extern u32  fn_80239984();
 extern u32  fn_80205B8C(u32);
 extern u8 fn_80239EE8();
 extern u8 fn_80239CCC();
-extern u16  fn_802377E8(void*, u32);
+extern u16  fightTrainerAiGetPokemonDataId(void*, u32);
 extern u16  fn_801F1990(u32, void*, u32, u32, u32, u32);
 extern u16  fn_801F1C18(u32, void*, void*, u32, u32);
 extern u8   fn_801F4C14(u32, u16, u32, u16, u32);
@@ -212,7 +212,7 @@ extern u8  fightTrainerIsAllyFightTargetPtr(u32 ctx, u32 poke, u16 floorVal);
 extern u16 fightOutPokemonGetZokuseiDataId(u32 poke, u8 idx);
 extern u16 fightOutPokemonGetTokuseiDataId(u32 poke);
 extern u32 zokuseiGetAisyouDualType(u16 waza, u16* types, u16 typeCount);
-extern int fn_802026E4();
+extern int fightOutPokemonIsPokemonJoutaiDataId();
 extern u8 fn_80235714();
 extern u32 fightTrainerAiGetFightPokemonWazaAry();
 extern u32 fightFloorGetFightTrainerFightOutPokemonPtrAry();
@@ -528,8 +528,8 @@ void wsCmdE7(void) {
 #define fn_801F025C fightTargetGetPtrAsNowFightType
 void wsCmdE6(void) {
     extern u32 fn_801F025C();
-    extern u32 fn_802026E4(u32, u16);
-    if ((u8)fn_802026E4((u32)fn_801F025C(0x19, 0), 0x14) == 0) {
+    extern u32 fightOutPokemonIsPokemonJoutaiDataId(u32, u16);
+    if ((u8)fightOutPokemonIsPokemonJoutaiDataId((u32)fn_801F025C(0x19, 0), 0x14) == 0) {
         lbl_80379F58[0x1609B] |= 0x80;
     }
     lbl_8047B610++;
@@ -721,12 +721,12 @@ check2:
 #undef fn_801254B4
 #undef fn_801F025C
 
-/* 0x80214E50 size 0xC0: fn_80214E50 (owner line 2638) */
+/* 0x80214E50 size 0xC0: wsCmdDF (owner line 2638) */
 #define fn_801F025C fightTargetGetPtrAsNowFightType
 #define fn_801F4C14 fightFloorSetStatus
 #define fn_801254B4 pokemonSetStatus
 #define fn_801F221C fightFloorIsLastActionFightOutPokemon
-void fn_80214E50(void) {
+void wsCmdDF(void) {
     extern u32 fn_801F025C();
     extern u32 fn_801254B4();
     extern void fn_801F4C14();
@@ -943,7 +943,7 @@ void wsCmdDB(void)
     extern u32 fightOutPokemonGetPokemonJoutai08();
     extern void fightOutPokemonWritePokemonJoutaiDataId();
     extern u8 fn_802025B8();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern u32 fightCheckTargetHasWaza();
     u32 pokemon;
     u32 stateMask;
@@ -974,8 +974,8 @@ void wsCmdDB(void)
                 newValue = amount < currentValue ? (u8)(currentValue - amount) : 0;
                 pokemonSetStatus(pokemonData, 0, 0x80, signedMoveSlot, (u8)newValue);
                 slot = moveSlot;
-                if (fn_802026E4(pokemon, 0x10) == 0 &&
-                    fn_802026E4(pokemon, 0x31) == 1) {
+                if (fightOutPokemonIsPokemonJoutaiDataId(pokemon, 0x10) == 0 &&
+                    fightOutPokemonIsPokemonJoutaiDataId(pokemon, 0x31) == 1) {
                     stateMask = fightOutPokemonGetPokemonJoutai08(pokemon, 0x31);
                     if ((stateMask & (1 << slot)) == 0 &&
                         fightOutPokemonIsUseHensinBuff(pokemon) == 1) {
@@ -1358,7 +1358,7 @@ void wsCmdD2(void)
     extern u32 fightOutPokemonGetTokuseiDataId();
     extern s32 fightFloorGetStatus();
     extern u8 fightOutPokemonIsGcHeroFightOutPokemon();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern u8 fn_80142984();
     extern void fightOutPokemonDoItemSoubi();
     extern void pokemonSetStatus();
@@ -1386,7 +1386,7 @@ void wsCmdD2(void)
         fightOutPokemonIsGcHeroFightOutPokemon(attacker) == 0) {
         proceed = 0;
     } else if ((u8)fightFloorGetStatus(0, 0, 0x2f, 0) == 1 &&
-               fn_802026E4(attacker, 0x3d) == 1) {
+               fightOutPokemonIsPokemonJoutaiDataId(attacker, 0x3d) == 1) {
         proceed = 0;
     } else {
         proceed = 1;
@@ -1400,10 +1400,10 @@ void wsCmdD2(void)
     if (fightFloorGetStatus(0, 0, 0x2f, 0) == 0) {
         goto second_check_true;
     }
-    if (fn_802026E4(attacker, 0x3d) != 0) {
+    if (fightOutPokemonIsPokemonJoutaiDataId(attacker, 0x3d) != 0) {
         goto second_check_false;
     }
-    if (fn_802026E4(defender, 0x3d) == 0) {
+    if (fightOutPokemonIsPokemonJoutaiDataId(defender, 0x3d) == 0) {
         goto second_check_true;
     }
 second_check_false:
@@ -1487,14 +1487,14 @@ item_state_done:
 u8 fightAiCanStealItem(u32 elem) {
     extern u32 fn_801F54A4();
     extern u8 fn_80204A10();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     if ((u8)fn_801F54A4(0, 0, 0x2f, 0) == 1) {
         if (fn_80204A10(elem) == 0) {
             return 0;
         }
     }
     if ((u8)fn_801F54A4(0, 0, 0x2f, 0) == 1) {
-        if (fn_802026E4(elem, 0x3d) == 1) {
+        if (fightOutPokemonIsPokemonJoutaiDataId(elem, 0x3d) == 1) {
             return 0;
         }
     }
@@ -1514,15 +1514,15 @@ void wsCmdD1(void) {
     extern u8 fn_801F4C14();
     extern u32 fn_801F025C();
     extern u32 fn_801F54A4();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     u32 ctx1 = fn_801F025C(0x11, 0);
     u32 ctx2 = fn_801F025C(0xe, ctx1);
 
     if (ctx2 != 0 &&
         (u16)fn_801F54A4(0, 0, 0x19, 0) >= 2 &&
         fn_802062FC(ctx2) == 1 &&
-        fn_802026E4(ctx1, 0x32) == 0 &&
-        fn_802026E4(ctx2, 0x32) == 0) {
+        fightOutPokemonIsPokemonJoutaiDataId(ctx1, 0x32) == 0 &&
+        fightOutPokemonIsPokemonJoutaiDataId(ctx2, 0x32) == 0) {
         fn_801F4C14(0, 0, 0x43, 0, ctx2);
         if (fn_802025B8(ctx2, 0x32) == 2) {
             fightOutPokemonWritePokemonJoutaiDataId(ctx2, 0x32, 0);
@@ -1844,24 +1844,24 @@ void WS_CHIISAKUNARU(void) {
 
 /* 0x80216874 size 0xEC: WS_KIERUTAME_AFTAR (owner line 10164) */
 void WS_KIERUTAME_AFTAR(void) {
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     u32 ctx = fightTargetGetPtrAsNowFightType(0x11, 0);
     u16 moveId = fightOutPokemonGetUseWazaDataId(ctx);
 
     switch (moveId) {
     case 0x13:
     case 0x154:
-        if (fn_802026E4(ctx, 0x1f) == 1) {
+        if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 0x1f) == 1) {
             fightOutPokemonWriteJoutaiDataId(ctx, 0x1f);
         }
         break;
     case 0x5b:
-        if (fn_802026E4(ctx, 0x20) == 1) {
+        if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 0x20) == 1) {
             fightOutPokemonWriteJoutaiDataId(ctx, 0x20);
         }
         break;
     case 0x123:
-        if (fn_802026E4(ctx, 0x21) == 1) {
+        if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 0x21) == 1) {
             fightOutPokemonWriteJoutaiDataId(ctx, 0x21);
         }
         break;

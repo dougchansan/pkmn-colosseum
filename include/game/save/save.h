@@ -14,7 +14,7 @@
  * Save data integrity is verified using a SHA-1 hash (sha1Transform).
  *
  * The save system is initialized at boot from main.c:
- *   fn_801E1300 - Card system init
+ *   vtrInit - Card system init
  *   GSmovieInit - Save data init
  *   GSvtrRegisterGSgapp - Save system post-init
  *
@@ -196,7 +196,7 @@ typedef struct CardEMatrixEntry {
  * ========================================================================= */
 
 /**
- * fn_801E1300: Initialize the card/save system.
+ * vtrInit: Initialize the card/save system.
  * Called from GameInit() during boot.
  * Sets up memory card communication and file handles.
  */

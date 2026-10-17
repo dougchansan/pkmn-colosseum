@@ -201,7 +201,7 @@ BOOL fn_801E4778(const char* fileName, BOOL onMemory)
     return TRUE;
 }
 
-BOOL fn_801E4724(void)
+BOOL THPPlayerClose(void)
 {
     if (lbl_8046AC60.open && lbl_8046AC60.state == 0) {
         lbl_8046AC60.open = FALSE;
@@ -211,7 +211,7 @@ BOOL fn_801E4724(void)
     return FALSE;
 }
 
-u32 fn_801E4650(void)
+u32 THPPlayerCalcNeedMemory(void)
 {
     u32 size;
 
@@ -437,7 +437,7 @@ BOOL fn_801E40F8(s32 frame, u8 flag, s32 audioTrack)
     return FALSE;
 }
 
-BOOL fn_801E4058(void)
+BOOL THPPlayerPlay(void)
 {
     if (lbl_8046AC60.open && (lbl_8046AC60.state == 1 || lbl_8046AC60.state == 4)) {
         if (lbl_8046AC60.state == 4 && lbl_8046AC60.audioExist) {
@@ -640,7 +640,7 @@ static inline BOOL ProperTimingForGettingNextFrame(void)
     return FALSE;
 }
 
-s32 fn_801E3978(GXRenderModeObj* rmode, u32 x, u32 y, u32 polygonW, u32 polygonH)
+s32 THPPlayerDrawCurrentFrame(GXRenderModeObj* rmode, u32 x, u32 y, u32 polygonW, u32 polygonH)
 {
     if (lbl_8046AC60.open && lbl_8046AC60.state != 0 && lbl_8046AC60.dispTextureSet != NULL) {
         fn_801E1FF8(rmode);
@@ -654,7 +654,7 @@ s32 fn_801E3978(GXRenderModeObj* rmode, u32 x, u32 y, u32 polygonW, u32 polygonH
     return -1;
 }
 
-BOOL fn_801E3930(THPVideoInfo* videoInfo)
+BOOL THPPlayerGetVideoInfo(THPVideoInfo* videoInfo)
 {
     if (lbl_8046AC60.open) {
         memcpy(videoInfo, &lbl_8046AC60.videoInfo, sizeof(THPVideoInfo));
@@ -707,7 +707,7 @@ static inline OSMessage PopUsedTextureSet(void)
     return NULL;
 }
 
-void fn_801E3858(u32* left, u32* right)
+void movieGetStreamIds(u32* left, u32* right)
 {
     *left = lbl_80478D00;
     *right = lbl_80478D04;

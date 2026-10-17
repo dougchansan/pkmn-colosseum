@@ -2014,7 +2014,7 @@ u32 _fightMenuFightTrainerGcHeroOpenMenuSubItem__FP13FIGHT_TRAINERP15FightOutPok
     extern u8 fightPokemonCheckFightOut(u32);
     /* RULE-EXCEPTION(user-approved): long copy of the selected item for its last two uses, chosen for register allocation (permuter farm) — see docs/RULE_EXCEPTIONS.md */
     long itemId;
-    extern u8 fn_802026E4(u32, u32);
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId(u32, u32);
     extern s16 fightTrainerGetFightPokemonToTemotiBanme(u32, u32);
     extern s32 pokemonGetStatus(u32, u32, u32, u32);
     extern s32 fn_800D37CC(void);
@@ -2060,8 +2060,8 @@ u32 _fightMenuFightTrainerGcHeroOpenMenuSubItem__FP13FIGHT_TRAINERP15FightOutPok
         if (pokemon != 0) {
             index = fightTrainerGetFightOutPokemonToTemotiBanme(trainer, pokemon);
             wasOut[i] = fightPokemonCheckFightOut(fightTrainerGetStatus(trainer, 0, 0x45, index));
-            hadFlag8[i] = fn_802026E4(pokemon, 8);
-            hadFlag7[i] = fn_802026E4(pokemon, 7);
+            hadFlag8[i] = fightOutPokemonIsPokemonJoutaiDataId(pokemon, 8);
+            hadFlag7[i] = fightOutPokemonIsPokemonJoutaiDataId(pokemon, 7);
         }
     }
     if (fightTrainerGetStatus(trainer, 0, 0x44, 0) == 0) {
@@ -2079,10 +2079,10 @@ u32 _fightMenuFightTrainerGcHeroOpenMenuSubItem__FP13FIGHT_TRAINERP15FightOutPok
             for (i = 0; i < 2; i++) {
                 pokemon = fightTrainerGetStatus(trainer, 0, 0x46, i);
                 if (pokemon != 0 && (effect = pokemonGetStatus(pokemon, 0, 0xee, 0)) != 0) {
-                    if (hadFlag8[i] == 1 && fn_802026E4(pokemon, 8) == 0) {
+                    if (hadFlag8[i] == 1 && fightOutPokemonIsPokemonJoutaiDataId(pokemon, 8) == 0) {
                         fn_801DA36C(effect, 1);
                     }
-                    if (hadFlag7[i] == 1 && fn_802026E4(pokemon, 7) == 0) {
+                    if (hadFlag7[i] == 1 && fightOutPokemonIsPokemonJoutaiDataId(pokemon, 7) == 0) {
                         fn_801DA36C(effect, 2);
                     }
                 }

@@ -117,7 +117,7 @@ void wsCmd05(void) {
     extern u32 fn_801F025C();
     extern u32 fn_8012640C();
     extern u32 fn_8011BEB4();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     u32 ctx2;
     u32 ctx1;
     u32 sub;
@@ -143,10 +143,10 @@ void wsCmd05(void) {
     mult2 = (u8)fn_8011BEB4(fieldD9, 0, 0x2c, 0);
     power = power * mult2;
 
-    if ((u8)fn_802026E4(ctx1, 0x24) == 1 && val30 == 0xd) {
+    if ((u8)fightOutPokemonIsPokemonJoutaiDataId(ctx1, 0x24) == 1 && val30 == 0xd) {
         power = power * 2;
     }
-    if ((u8)fn_802026E4(ctx1, 0x32) == 1) {
+    if ((u8)fightOutPokemonIsPokemonJoutaiDataId(ctx1, 0x32) == 1) {
         power = power * 15 / 10;
     }
     fn_8011BBD8(fieldD9, 0, 0x2d, 0, power);

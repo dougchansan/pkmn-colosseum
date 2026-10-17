@@ -28,7 +28,7 @@ extern u8 fightTrainerIsAllyFightTargetPtr(u32, u32, u16);
 extern u16 fightOutPokemonGetZokuseiDataId(u32, u8);
 extern u16 fightOutPokemonGetTokuseiDataId(u32);
 extern u32 zokuseiGetAisyouDualType(u16, u16*, u16);
-extern int fn_802026E4();
+extern int fightOutPokemonIsPokemonJoutaiDataId();
 
 u32 fightTrainerAiGetHpRatio(u32 r3, u32 r4)
 
@@ -86,7 +86,7 @@ u32 fightAiGetLevel(void* ctx, u32 param) {
     return fn_80203E7C(resolved);
 }
 
-u16 fn_802377E8(void* ctx, u32 param) {
+u16 fightTrainerAiGetPokemonDataId(void* ctx, u32 param) {
     extern void* fn_8012640C();
     extern u32 fn_801FB1C0();
     extern u16 fn_80203DAC(void* ctx);
@@ -179,7 +179,7 @@ u32 fightTrainerAiGetAisyou(u32 ctx, u32 poke, u16 waza, s32 val) {
         tmp = (u16)fightTrainerGetStatus(ctx, 0, 0x43, 0);
         tmp = (u16)fightTrainerGetStatus(0, tmp, 2, 0);
         if ((u8)fightTrainerGetStatus(0, tmp, 0x24, 0) == 1) {
-            valid = fn_802026E4(poke, 0x19);
+            valid = fightOutPokemonIsPokemonJoutaiDataId(poke, 0x19);
         } else {
             valid = 0;
         }

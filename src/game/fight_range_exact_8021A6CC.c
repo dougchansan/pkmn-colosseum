@@ -107,7 +107,7 @@ extern u32  fn_80239984();
 extern u32  fn_80205B8C(u32);
 extern u8 fn_80239EE8();
 extern u8 fn_80239CCC();
-extern u16  fn_802377E8(void*, u32);
+extern u16  fightTrainerAiGetPokemonDataId(void*, u32);
 extern u16  fn_801F1990(u32, void*, u32, u32, u32, u32);
 extern u16  fn_801F1C18(u32, void*, void*, u32, u32);
 extern u8   fn_801F4C14(u32, u16, u32, u16, u32);
@@ -212,7 +212,7 @@ extern u8  fightTrainerIsAllyFightTargetPtr(u32 ctx, u32 poke, u16 floorVal);
 extern u16 fightOutPokemonGetZokuseiDataId(u32 poke, u8 idx);
 extern u16 fightOutPokemonGetTokuseiDataId(u32 poke);
 extern u32 zokuseiGetAisyouDualType(u16 waza, u16* types, u16 typeCount);
-extern int fn_802026E4();
+extern int fightOutPokemonIsPokemonJoutaiDataId();
 extern u8 fn_80235714();
 extern u32 fightTrainerAiGetFightPokemonWazaAry();
 extern u32 fightFloorGetFightTrainerFightOutPokemonPtrAry();
@@ -361,7 +361,7 @@ void wsCmd96(void)
     extern u32 fn_8012640C();
     extern u32 fn_801F025C();
     extern u8 fn_801F453C();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern u32 fn_80203B5C();
     extern u8 fn_802062FC();
     extern u8 fn_80207AE0();
@@ -389,8 +389,8 @@ void wsCmd96(void)
       cVar6 = fn_80207AE0(uVar1,8);
       if ((cVar6 == 0) && (cVar6 = fn_80207AE0(uVar1,4), cVar6 == 0)) {
         if ((sVar3 & 0xffff) != 8) {
-          cVar6 = fn_802026E4(uVar1,0x20);
-          if ((cVar6 == 0) && (cVar6 = fn_802026E4(uVar1,0x21), cVar6 == 0)) {
+          cVar6 = fightOutPokemonIsPokemonJoutaiDataId(uVar1,0x20);
+          if ((cVar6 == 0) && (cVar6 = fightOutPokemonIsPokemonJoutaiDataId(uVar1,0x21), cVar6 == 0)) {
             uVar4 = fn_80203B5C(uVar1,0x10) & 0xffff;
             goto LAB_00217a84;
           }
@@ -403,8 +403,8 @@ LAB_00217a84:
   if (cVar5 == 4) {
     cVar5 = fn_80207AE0(uVar1,0xf);
     if (cVar5 == 0) {
-      cVar5 = fn_802026E4(uVar1,0x20);
-      if ((cVar5 == 0) && (cVar5 = fn_802026E4(uVar1,0x21), cVar5 == 0)) {
+      cVar5 = fightOutPokemonIsPokemonJoutaiDataId(uVar1,0x20);
+      if ((cVar5 == 0) && (cVar5 = fightOutPokemonIsPokemonJoutaiDataId(uVar1,0x21), cVar5 == 0)) {
         uVar4 = fn_80203B5C(uVar1,0x10) & 0xffff;
         goto LAB_00217ae0;
       }
@@ -490,7 +490,7 @@ void fightCheckOneHitKO(void)
     extern void fightFloorSetStatus();
     extern u32 fightFloorGetStatus();
     extern u32 fightOutPokemonGetJoutaiParam();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern u32 figthOutPokemonGetLevel();
     extern int figthOutPokemonGetSoubiItemBuff();
     extern u32 fightOutPokemonGetSoubiItemSoubiDataId();
@@ -548,7 +548,7 @@ void fightCheckOneHitKO(void)
     lbl_8047B610 = lbl_803797A0;
     return;
   }
-  condition = fn_802026E4(attacker,0x1d);
+  condition = fightOutPokemonIsPokemonJoutaiDataId(attacker,0x1d);
   if ((condition == 1) &&
       ((u16)relativeTarget == (u16)fightOutPokemonGetJoutaiParam(attacker,0x1d))) {
     if ((u8)attackerLevel >= (u8)defenderLevel) {
@@ -572,7 +572,7 @@ void fightCheckOneHitKO(void)
     }
   }
   if (canSteal) {
-    condition = fn_802026E4(attacker,0x2c);
+    condition = fightOutPokemonIsPokemonJoutaiDataId(attacker,0x2c);
     if (condition != 0) {
       wazaSetStatus(attackerStatus,0,0x2d,0,remainingPP - 1);
       fightFloorSetStatus(0,0,0x3b,0,0x46);

@@ -1,7 +1,7 @@
 /** Exact save/card-state accessors, 0x801E1170 - 0x801E11F0. */
 #include "dolphin/types.h"
 
-void fn_801E1170(void)
+void vtrSetMode4(void)
 {
     extern s32 lbl_8047B424;
     extern s32 lbl_8047B428;

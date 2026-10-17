@@ -63,7 +63,7 @@ u8 fn_80235714(u32 r3, u32 r4)
 u8 fightTrainerAiGetAbicntAvoid(u32 ctx, u32 param1) {
     extern u32 fn_801FB1C0();
     extern u32 fn_8012640C();
-    extern u8  fn_802026E4();
+    extern u8  fightOutPokemonIsPokemonJoutaiDataId();
     u16 slot1;
     u16 slot2;
     u8 val;
@@ -77,7 +77,7 @@ u8 fightTrainerAiGetAbicntAvoid(u32 ctx, u32 param1) {
     slot2 = (u16)fn_801FB1C0(0, slot2, 2, 0);
 
     if ((u8)fn_801FB1C0(0, slot2, 0x24, 0) == 1) {
-        x = fn_802026E4(param1, 0x19);
+        x = fightOutPokemonIsPokemonJoutaiDataId(param1, 0x19);
     } else {
         x = 0;
     }
@@ -180,7 +180,7 @@ u32 fn_80235BE4(u32 trainer, u32 floor, u32 fightOut, u32* outValue)
     extern u32 fightFloorGetStatus();
     extern u8 fightTrainerIsAllyFightTargetPtr();
     extern u32 fightTrainerGetStatus();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern u8 fightOutPokemonCheckValid();
     extern u32 fightOutPokemonGetZokuseiDataId();
     extern u32 fightOutPokemonGetTokuseiDataId();
@@ -349,7 +349,7 @@ LAB_00233098:
   uVar7 = fightTrainerGetStatus(0,uVar7,2,0);
   cVar10 = fightTrainerGetStatus(0,uVar7,0x24,0);
   if (cVar10 == 1) {
-    cVar10 = fn_802026E4(fightOut,0x16);
+    cVar10 = fightOutPokemonIsPokemonJoutaiDataId(fightOut,0x16);
   }
   else {
     cVar10 = 0;
@@ -361,7 +361,7 @@ LAB_00233098:
   uVar7 = fightTrainerGetStatus(0,uVar7,2,0);
   cVar10 = fightTrainerGetStatus(0,uVar7,0x24,0);
   if (cVar10 == 1) {
-    cVar10 = fn_802026E4(fightOut,0xe);
+    cVar10 = fightOutPokemonIsPokemonJoutaiDataId(fightOut,0xe);
   }
   else {
     cVar10 = 0;
@@ -373,7 +373,7 @@ LAB_00233098:
   uVar7 = fightTrainerGetStatus(0,uVar7,2,0);
   cVar10 = fightTrainerGetStatus(0,uVar7,0x24,0);
   if (cVar10 == 1) {
-    cVar10 = fn_802026E4(fightOut,0x25);
+    cVar10 = fightOutPokemonIsPokemonJoutaiDataId(fightOut,0x25);
   }
   else {
     cVar10 = 0;
@@ -724,10 +724,10 @@ u16 fightAiGetUsedItem(void* ctx, u32 param) {
 
 u32 fightTrainerAiIsPokemonJoutai(void* ctx, void* param2, void* param3) {
     extern u32 fn_801FB1C0();
-    extern u32 fn_802026E4();
+    extern u32 fightOutPokemonIsPokemonJoutaiDataId();
     u16 val = (u16)fn_801FB1C0(0, fn_801FB1C0(ctx, 0, 0x43, 0) & 0xFFFF, 0x2, 0);
     if ((u8)fn_801FB1C0(0, val, 0x24, 0) == 1) {
-        return fn_802026E4(param2, param3);
+        return fightOutPokemonIsPokemonJoutaiDataId(param2, param3);
     }
     return 0;
 }

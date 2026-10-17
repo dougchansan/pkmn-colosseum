@@ -22,7 +22,7 @@ void fn_801E16F0(void)
     extern void THPPlayerDrawDone(void);
     extern s32 fn_801E38D8(void);
     extern void THPPlayerStop(void);
-    extern BOOL fn_801E4724(void);
+    extern BOOL THPPlayerClose(void);
     extern void GSscratchSetValid(void);
     u16 handle;
     u8 active;
@@ -39,7 +39,7 @@ void fn_801E16F0(void)
         case 5:
             if (lbl_8047B441 != 0) {
                 THPPlayerStop();
-                fn_801E4724();
+                THPPlayerClose();
                 handle = GSmemGetHandleByPtr(lbl_8047B450);
                 if (handle != 0) {
                     fn_800E24B0(handle);
@@ -61,7 +61,7 @@ void fn_801E17A8(void)
     extern s32 lbl_8047B458;
     extern s32 lbl_8047B45C;
     extern s32 lbl_80469030[4];
-    extern s32 fn_801E3978(s32, s32, s32, s32, s32);
+    extern s32 THPPlayerDrawCurrentFrame(s32, s32, s32, s32, s32);
     u8 active;
 
     if (lbl_8047B440 == 0 || lbl_8047B441 == 0) {
@@ -70,7 +70,7 @@ void fn_801E17A8(void)
         active = 1;
     }
     if (active != 0) {
-        fn_801E3978(lbl_8047B45C, lbl_8047B458, lbl_8047B454,
+        THPPlayerDrawCurrentFrame(lbl_8047B45C, lbl_8047B458, lbl_8047B454,
                     lbl_80469030[0], lbl_80469030[1]);
     }
 }
@@ -80,13 +80,13 @@ void GSmovieClose(void)
     extern u8 lbl_8047B441;
     extern void* lbl_8047B450;
     extern void THPPlayerStop(void);
-    extern BOOL fn_801E4724(void);
+    extern BOOL THPPlayerClose(void);
     extern void GSscratchSetValid(void);
     u16 handle;
 
     if (lbl_8047B441 != 0) {
         THPPlayerStop();
-        fn_801E4724();
+        THPPlayerClose();
         handle = GSmemGetHandleByPtr(lbl_8047B450);
         if (handle != 0) {
             fn_800E24B0(handle);

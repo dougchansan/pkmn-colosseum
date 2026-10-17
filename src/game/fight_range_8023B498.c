@@ -22,7 +22,7 @@ extern u32 wazaGetStatus();
 extern u32 fightFloorGetFightTrainerFightOutPokemonPtrAry();
 extern u8 fightOutPokemonCheckFightOut();
 extern u8 fn_80237F74();
-extern u8 fn_802026E4();
+extern u8 fightOutPokemonIsPokemonJoutaiDataId();
 extern s32 fn_80239500();
 extern u32 fightTrainerAiGetWazaTenkouValue();
 extern u32 fightTrainerAiWazaHitNull();
@@ -51,7 +51,7 @@ static inline u8 aiWazaHitCheck(void* trainer, s32 pokemon, u32 move, u32 target
             valid = 0;
         }
         if (fn_80237F74(trainer, target, 0x12) == 1 &&
-            (u16)moveType == 0xA && fn_802026E4(target, 7) == 0) {
+            (u16)moveType == 0xA && fightOutPokemonIsPokemonJoutaiDataId(target, 7) == 0) {
             valid = 0;
         }
         if (fn_80237F74(trainer, target, 0x2B) == 1 &&

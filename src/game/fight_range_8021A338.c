@@ -22,7 +22,7 @@ void wsCmd9C(void)
     extern void fightOutPokemonSetPokemonJoutai08();
     extern void fightOutPokemonWritePokemonJoutaiDataId();
     extern u8 fn_802025B8();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern void fightOutPokemonWriteJoutaiDataId();
     extern u32 fightOutPokemonMaxHpWaruValue();
     extern u32 fightOutPokemonGetPokemonPtr();
@@ -54,7 +54,7 @@ check_status:
   wazaSetStatus(move,0,0x2d,0,amount);
   fightOutPokemonWritePokemonJoutaiDataId(attacker,0x14,0);
   fightOutPokemonSetPokemonJoutai08(attacker,0x14,amount);
-  if (fn_802026E4(attacker,0xe) == 1) {
+  if (fightOutPokemonIsPokemonJoutaiDataId(attacker,0xe) == 1) {
     fightOutPokemonWriteJoutaiDataId(attacker,0xe);
   }
   lbl_80478D78[5] = 0;
@@ -81,7 +81,7 @@ void wsCmd9B(void)
     extern void fightOutPokemonSetPokemonJoutaiKaisuu();
     extern void fn_80201FDC(u32, u32, s8);
     extern void fightOutPokemonWritePokemonJoutaiDataId();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern void fightOutPokemonWriteJoutaiDataId();
     extern u32 fightOutPokemonGetNamePtr();
     extern u32 fightOutPokemonGetPokemonPtr();
@@ -104,7 +104,7 @@ void wsCmd9B(void)
   uVar5 = fightOutPokemonGetPokemonPtr(uVar3);
   uVar6 = pokemonGetStatus(uVar5,0,0x75,0);
   wazaSetStatus(uVar2,0,0x27,0,0xffff);
-  cVar9 = fn_802026E4(uVar3,0x10);
+  cVar9 = fightOutPokemonIsPokemonJoutaiDataId(uVar3,0x10);
   if (cVar9 == 1) {
     goto failed;
   }
@@ -135,7 +135,7 @@ check_hensin:
   }
 
 apply_hensin:
-  cVar9 = fn_802026E4(uVar1,0x10);
+  cVar9 = fightOutPokemonIsPokemonJoutaiDataId(uVar1,0x10);
   if (cVar9 == 0) {
     fightOutPokemonWritePokemonJoutaiDataId(uVar1,0x10,0);
   }
@@ -144,11 +144,11 @@ apply_hensin:
   fightOutPokemonSetPokemonJoutaiKaisuu(uVar1,0x10,(s8)lowByte);
   fn_80201FDC(uVar1,0x10,(s8)(u8)(uVar6 >> 8));
   fightOutPokemonSetPokemonJoutai0C(uVar1,0x10,uVar6 >> 0x10);
-  cVar9 = fn_802026E4(uVar1,0x29);
+  cVar9 = fightOutPokemonIsPokemonJoutaiDataId(uVar1,0x29);
   if (cVar9 == 1) {
     fightOutPokemonWriteJoutaiDataId(uVar1,0x29);
   }
-  cVar9 = fn_802026E4(uVar1,0x31);
+  cVar9 = fightOutPokemonIsPokemonJoutaiDataId(uVar1,0x31);
   if (cVar9 == 1) {
     fightOutPokemonWriteJoutaiDataId(uVar1,0x31);
   }

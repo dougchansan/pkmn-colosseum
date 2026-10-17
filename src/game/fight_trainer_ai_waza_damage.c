@@ -330,13 +330,13 @@ u32 fightTrainerAiWazaDamage196(u32 r3, u32 r4, u32 r5, u32 r6)
 void _fightTrainerAiWazaDamage196SubPre__FP13FIGHT_TRAINERUsP15FightOutPokemonP15FightOutPokemon(void* ctx, u32 param1, u32 param2) {
     extern void wazaSetStatus(u32, u32, u32, u32, u32);
     extern u32 fightSeqGetKetaguriIryoku(u32);
-    extern u32 fn_802377E8(void*, u32);
+    extern u32 fightTrainerAiGetPokemonDataId(void*, u32);
     u32 sourceValue;
     u32 convertedValue;
     u32 scaledValue;
 
     sourceValue = (u32)pokemonGetStatus(param2, 0, 0xd9, 0);
-    convertedValue = fn_802377E8(ctx, param2);
+    convertedValue = fightTrainerAiGetPokemonDataId(ctx, param2);
     scaledValue = fightSeqGetKetaguriIryoku((u32)pokemonGetStatus(0, convertedValue, 0x5f, 0) & 0xffff);
     wazaSetStatus(sourceValue, 0, 0x2f, 0, scaledValue & 0xffff);
 }
@@ -658,7 +658,7 @@ u32 fightTrainerAiWazaDamage154(void* ctx, u32 unused, u32 param2, u32 param3) {
     extern u16 fightFloorGetFightTrainerFightPokemonPtrAry(u32, void*, u32*, u32, u32);
     extern u32 fn_80216CF8(u32, u32, u8, u32, u8);
     extern u32 fightAiGetLevel();
-    extern u32 fn_802377E8();
+    extern u32 fightTrainerAiGetPokemonDataId();
     extern u32 fightAiGetLevel2();
     extern u32 fightTrainerAiGetPokemonDataId2();
     u32 entries[24];
@@ -676,7 +676,7 @@ u32 fightTrainerAiWazaDamage154(void* ctx, u32 unused, u32 param2, u32 param3) {
     while (index < count) {
         mappedEntry = fightTrainerAiGetPokemonDataId2(ctx, entries[index]);
         entryType = fightAiGetLevel2(ctx, entries[index]);
-        convertedParam = fn_802377E8(ctx, param3);
+        convertedParam = fightTrainerAiGetPokemonDataId(ctx, param3);
         convertedState = fightAiGetLevel(ctx, param3);
         total += fn_80216CF8(param2, mappedEntry, (u8)entryType, convertedParam, (u8)convertedState);
         index++;
@@ -742,7 +742,7 @@ u32 fightTrainerAiWazaDamage149(void* ctx, u32 param1, u32 param2, u32 param3) {
 u32 fightTrainerAiWazaDamage148(void* ctx, u32 slot, u32 param, u32 extra) {
     extern u32 wazaGetStatus(u32, u32, u32, u32);
     extern u32 fightTargetGetPtrAsNowFightType(u32, u32);
-    extern u8 fn_802026E4(u32, u32);
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId(u32, u32);
     extern u32 fightSeqCalcDamage(u32, u32, u32, u32, u32, u32);
     u32 damage;
     u32 stat7;
@@ -753,7 +753,7 @@ u32 fightTrainerAiWazaDamage148(void* ctx, u32 slot, u32 param, u32 extra) {
     stat3 = wazaGetStatus(0, param, 3, 0) & 0xFFFF;
     target = fightTargetGetPtrAsNowFightType(2, extra);
     damage = fightSeqCalcDamage(slot, extra, target, param, stat7, stat3);
-    if (fn_802026E4(slot, 0x32) == 1) {
+    if (fightOutPokemonIsPokemonJoutaiDataId(slot, 0x32) == 1) {
         damage = (s32)(damage * 0xf) / 0xa;
     }
     return damage;

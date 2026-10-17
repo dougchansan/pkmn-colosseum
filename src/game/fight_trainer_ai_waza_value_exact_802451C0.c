@@ -83,7 +83,7 @@ u8 fn_802384B4(void*, u32, u32);
 u8 fn_80239564(void*, u32);
 u8 fightTrainerAiGetNowTenkou(void*, u32, u32);
 u16 fightTrainerAiGetPokemonDataId2(void*, u32);
-u8 fn_80238E30(void*, u32, u32);
+u8 fightTrainerAiGetPokemonZokusei(void*, u32, u32);
 u8 fn_80239058(void*, u32, u32);
 u32 fn_80239984(u32, void*, u32);
 u32 fightTrainerAiAddValue(u32, s32);
@@ -108,7 +108,7 @@ u32 fightTrainerAiWazaValueAmagoi(void* ctx, u32 param1, u32 param2, u32 param3)
     }
 
     for (i = 0; i < count; i++) {
-        if (fn_80238E30(ctx, pokemon[i], 0xb) == 1 ||
+        if (fightTrainerAiGetPokemonZokusei(ctx, pokemon[i], 0xb) == 1 ||
             fn_80239058(ctx, pokemon[i], 0x21) == 1 ||
             fn_80239058(ctx, pokemon[i], 0x2c) == 1) {
             handle = fn_80239984(handle, ctx, 0x14f);

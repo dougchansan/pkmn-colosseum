@@ -206,13 +206,13 @@ void fightWazaWzxTypeFuncMagiccort(void* ctx1, void* target1, void* sideCtx, u32
 {
     extern void* fightTargetDataBiosGetBuff();
     extern void* fightTargetDataBiosGetPtr();
-    extern int fn_802026E4();
+    extern int fightOutPokemonIsPokemonJoutaiDataId();
     extern void fightOutPokemonWazaEffect();
     extern void fightOutPokemonLoadWazaEffect();
   u8 cVar2;
 
   fightOutPokemonLoadWazaEffect(target1,ctx1,1,p7);
-  cVar2 = fn_802026E4(sideCtx,0x37);
+  cVar2 = fightOutPokemonIsPokemonJoutaiDataId(sideCtx,0x37);
   if (cVar2 == 1) {
     fightOutPokemonWazaEffect(target1,ctx1,1,0,fightTargetDataBiosGetBuff(fightTargetDataBiosGetPtr(0x11)));
   }

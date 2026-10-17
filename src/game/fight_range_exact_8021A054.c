@@ -9,7 +9,7 @@ void wsCmd9D(void)
     extern u32 fightTargetGetPtrAsNowFightType();
     extern u32 pokemonGetStatus();
     extern void wazaSetStatus();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern u32 fightOutPokemonGetPokemonPtr();
     extern s8 pokemonSearchWazaDataId();
     extern u32 wazaGetStatus();
@@ -40,7 +40,7 @@ void wsCmd9D(void)
            0xffff;
     wazaSetStatus(pokemon, 0, 0x27, 0, 0xffff);
 
-    if (fn_802026E4(attacker, 0x10) == 1) {
+    if (fightOutPokemonIsPokemonJoutaiDataId(attacker, 0x10) == 1) {
         goto advance_alt;
     }
 
@@ -83,7 +83,7 @@ advance_alt:
         goto advance_alt;
     }
 
-    if (fn_802026E4(attacker, 0x31) == 0) {
+    if (fightOutPokemonIsPokemonJoutaiDataId(attacker, 0x31) == 0) {
         fightOutPokemonWritePokemonJoutaiDataId(attacker, 0x31, 0);
     }
 

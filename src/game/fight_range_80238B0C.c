@@ -6,7 +6,7 @@
  *
  * Exact: written with the fight AI accessor inlines. The per-slot type getter
  * (aiGetType) is the body retail expands in fightTrainerAiGetPokemonAisyouScore's loop and twice in
- * fn_80238E30; keeping it a nested inline under aiGetTypeList numbers the
+ * fightTrainerAiGetPokemonZokusei; keeping it a nested inline under aiGetTypeList numbers the
  * first tokusei check's trainer/pokemon webs between the list's count and
  * species, which gives retail's r26.
  */
@@ -40,7 +40,7 @@ static inline u8 aiIsTokusei(u32 ctx, u32 pokemon, u16 tokusei)
 }
 
 /* RULE-EXCEPTION(user-approved): single-use inline helper (one call here; the
- * same body is expanded in fightTrainerAiGetPokemonAisyouScore and twice in fn_80238E30), kept as a
+ * same body is expanded in fightTrainerAiGetPokemonAisyouScore and twice in fightTrainerAiGetPokemonZokusei), kept as a
  * nested inline for register numbering -- see docs/RULE_EXCEPTIONS.md. */
 static inline u16 aiGetType(u32 ctx, u32 pokemon, u32 i)
 {

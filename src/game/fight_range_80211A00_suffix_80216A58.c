@@ -30,7 +30,7 @@ void wsCmdC4(void)
     extern u8 figthOutPokemonGetLevel();
     extern void msgctrlSetValue();
     extern u32 wazaGetStatus();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern void wazaSetStatus();
     s32 damage;
     u32 attacker;
@@ -89,7 +89,7 @@ void wsCmdC4(void)
         damage /= defense;
         damage = damage / 50 + 2;
         result = damage;
-        if (fn_802026E4(attacker, 0x32) == 1) {
+        if (fightOutPokemonIsPokemonJoutaiDataId(attacker, 0x32) == 1) {
             result = damage * 15 / 10;
         }
         wazaSetStatus(moveData, 0, 0x2d, 0, result);
@@ -141,7 +141,7 @@ void wsCmdC3(void)
     extern void fightOutPokemonSetPokemonJoutai0C();
     extern void fightOutPokemonWritePokemonJoutaiDataId();
     extern u8 fn_802025B8();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern u32 fn_80205184();
     extern int fightSeqCalcDamage();
   u16 uVar7;
@@ -173,7 +173,7 @@ void wsCmdC3(void)
   fightOutPokemonWritePokemonJoutaiDataId(uVar3,0x34,uVar2);
   fightOutPokemonSetPokemonJoutai0C(uVar3,0x34,uVar4);
   iVar6 = fightSeqCalcDamage(uVar1,uVar3,uVar5,uVar4,uVar10,uVar8);
-  cVar9 = fn_802026E4(uVar1,0x32);
+  cVar9 = fightOutPokemonIsPokemonJoutaiDataId(uVar1,0x32);
   if (cVar9 == 1) {
     iVar6 = iVar6 * 15 / 10;
   }

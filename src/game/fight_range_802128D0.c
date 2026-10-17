@@ -30,7 +30,7 @@ void fightSeqTurnEnd(void)
     extern u32 _fightJoutai1ETurnEndSub();
     extern u32 fn_80230318();
     extern void wsRunEndOfTurnScript();
-    extern void fn_802317E4();
+    extern void fightSeqTurnEndAll();
     extern u8 lbl_80379F58[];
     extern u8 lbl_80478D78[1];
     extern u32 lbl_8047B618;
@@ -59,7 +59,7 @@ void fightSeqTurnEnd(void)
       fightSideInitJoutaiDataId(side,0x4d);
     }
   }
-  fn_802317E4();
+  fightSeqTurnEndAll();
   fightFloorLoopValidFightOutPokemon(0,_fightSeqTurnEndJoutaiSub,0,1);
   wsRunEndOfTurnScript();
   fightFloorLoopValidFightOutPokemon(0,fn_80230318,0,0);

@@ -13,7 +13,7 @@ u32 _fightCheckYokodoriSub(u32 r3, u32 r4, u32* r5)
     extern u32 fightOutPokemonGetUseWazaDataId();
     extern u32 wazaGetStatus();
     extern u8 fightOutPokemonCheckFightOut();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern u16 fightOutPokemonGetTokuseiDataId();
     extern u32 fightOutPokemonGetPokemonPtr();
     extern s8 pokemonSearchWazaDataId();
@@ -49,7 +49,7 @@ u32 _fightCheckYokodoriSub(u32 r3, u32 r4, u32* r5)
     if (cVar5 == 0) {
         return 1;
     }
-    cVar5 = fn_802026E4(context, 0x33);
+    cVar5 = fightOutPokemonIsPokemonJoutaiDataId(context, 0x33);
     if ((cVar5 == 1) && (cVar4 == 1)) {
         if ((iVar7 != 0) && (context != 0) &&
             (sVar3 = fightOutPokemonGetTokuseiDataId(iVar7), sVar3 == 0x2e)) {
@@ -63,9 +63,9 @@ u32 _fightCheckYokodoriSub(u32 r3, u32 r4, u32* r5)
                 }
                 pokemonSetStatus((void*)pokemon, 0, 0x80, slot, cVar4);
                 moveSlot = bVar6;
-                cVar5 = fn_802026E4(context, 0x10);
+                cVar5 = fightOutPokemonIsPokemonJoutaiDataId(context, 0x10);
                 if ((cVar5 == 0) &&
-                    (cVar5 = fn_802026E4(context, 0x31), cVar5 == 1) &&
+                    (cVar5 = fightOutPokemonIsPokemonJoutaiDataId(context, 0x31), cVar5 == 1) &&
                     (uVar2 = fightOutPokemonGetPokemonJoutai08(context, 0x31),
                      (uVar2 & (1 << (u32)moveSlot)) == 0) &&
                     (cVar5 = fightOutPokemonIsUseHensinBuff(context), cVar5 == 1)) {
@@ -140,7 +140,7 @@ u32 _wsHitCheckSub(u32 r3)
     extern void fn_801FB1C0();
     extern void fightTrainerWazaSeq74();
     extern u32 fn_801FFEC8();
-    extern u32 fn_802026E4();
+    extern u32 fightOutPokemonIsPokemonJoutaiDataId();
     extern void fn_80203E0C();
     extern void fn_80203FE4();
     extern u32 fn_80205B8C();
@@ -203,7 +203,7 @@ u32 _wsHitCheckSub(u32 r3)
   if ((cVar15 != 1) && ((u8)fn_801F54A4(0,0,0x31,0) != 0)) {
     fn_80205B8C(r3);
     cVar15 = (u8)fn_8011FC74();
-    if ((cVar15 != 0) && ((u8)fn_802026E4(r3,0x3e) != 0) &&
+    if ((cVar15 != 0) && ((u8)fightOutPokemonIsPokemonJoutaiDataId(r3,0x3e) != 0) &&
         ((u16)activeMove != 0x164)) {
       fn_80132A38(0x13,fn_801F8100(iVar5));
       uVar17 = GSrand() % 100;

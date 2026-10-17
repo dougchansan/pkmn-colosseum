@@ -32,7 +32,7 @@ extern u8 lbl_8039A664[];
 
 extern u8 fightSeqCondChgActTypeToPokemonStatusId[];
 extern u8 fightTrainerAiWazaValueHimitunotikara[];
-extern u8 fn_80213E94[];
+extern u8 wsCmdEF[];
 extern u8 wsCmdB4[];
 extern u8 wsStatBuffChange[];
 extern u8 wsCmd76[];
@@ -3510,17 +3510,17 @@ void* lbl_80399F58[39] = {
 };
 
 void* jumptable_80399FF4[13] = {
-    (void*)((u8*)fn_80213E94 + 0x2D0),
-    (void*)((u8*)fn_80213E94 + 0x2D0),
-    (void*)((u8*)fn_80213E94 + 0x184),
-    (void*)((u8*)fn_80213E94 + 0x18C),
-    (void*)((u8*)fn_80213E94 + 0x194),
-    (void*)((u8*)fn_80213E94 + 0x194),
-    (void*)((u8*)fn_80213E94 + 0x19C),
-    (void*)((u8*)fn_80213E94 + 0x1DC),
-    (void*)((u8*)fn_80213E94 + 0x204),
-    (void*)((u8*)fn_80213E94 + 0x22C),
-    (void*)((u8*)fn_80213E94 + 0x29C),
-    (void*)((u8*)fn_80213E94 + 0x2CC),
-    (void*)((u8*)fn_80213E94 + 0x2CC),
+    (void*)((u8*)wsCmdEF + 0x2D0),
+    (void*)((u8*)wsCmdEF + 0x2D0),
+    (void*)((u8*)wsCmdEF + 0x184),
+    (void*)((u8*)wsCmdEF + 0x18C),
+    (void*)((u8*)wsCmdEF + 0x194),
+    (void*)((u8*)wsCmdEF + 0x194),
+    (void*)((u8*)wsCmdEF + 0x19C),
+    (void*)((u8*)wsCmdEF + 0x1DC),
+    (void*)((u8*)wsCmdEF + 0x204),
+    (void*)((u8*)wsCmdEF + 0x22C),
+    (void*)((u8*)wsCmdEF + 0x29C),
+    (void*)((u8*)wsCmdEF + 0x2CC),
+    (void*)((u8*)wsCmdEF + 0x2CC),
 };

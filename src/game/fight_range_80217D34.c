@@ -8,7 +8,7 @@ void wsCmdB4(void)
 {
     extern u32 fightTargetGetPtrAsNowFightType();
     extern u32 pokemonGetStatus();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     u8 index;
     u32 target;
     u32 statusId;
@@ -44,7 +44,7 @@ void wsCmdB4(void)
         break;
     }
     value = pokemonGetStatus(target, 0, statusId, 0);
-    if (fn_802026E4(target, 9) == 1 && value >= 12) {
+    if (fightOutPokemonIsPokemonJoutaiDataId(target, 9) == 1 && value >= 12) {
         lbl_8047B610 = (u8*)*(u32*)(lbl_8047B610 + 2);
     } else {
         lbl_8047B610 += 6;

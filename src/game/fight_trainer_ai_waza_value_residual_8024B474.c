@@ -83,7 +83,7 @@ u8 fn_802384B4(void*, u32, u32);
 u8 fn_80239564(void*, u32);
 u8 fightTrainerAiGetNowTenkou(void*, u32, u32);
 u16 fightTrainerAiGetPokemonDataId2(void*, u32);
-u8 fn_80238E30(void*, u32, u32);
+u8 fightTrainerAiGetPokemonZokusei(void*, u32, u32);
 u8 fn_80239058(void*, u32, u32);
 u32 fn_80239984(u32, void*, u32);
 u32 fightTrainerAiAddValue(u32, s32);
@@ -1882,7 +1882,7 @@ u32 fightTrainerAiWazaValueKouPuraioritii(void* ctx, u32 slot, u32 param, u32 un
     return handle;
 }
 /* Address: 0x8024E234 | Size: 0xEC (236 bytes) */
-u32 fn_8024E234(void* ctx, u32 slot, u32 param, u32 unused) {
+u32 fightTrainerAiWazaValueKaihukuAddsub(void* ctx, u32 slot, u32 param, u32 unused) {
     extern u8 fightFloorGetFightTrainerFightOutPokemonIsFightActionAttackWazaOut(u32, void*, u32, u32, u32, u32);
     extern u32 fightOutPokemonGetPokemonPtr(u32);
     extern u32 fn_80239984(u32, void*, u32);

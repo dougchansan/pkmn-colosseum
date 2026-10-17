@@ -154,8 +154,8 @@ s32 fightTrainerAiSelectIrekaeDasuFightPokemon(void* ctx, u32 param1, u32 param2
     extern u16 fightTrainerAiGetFightPokemonWazaAry2(void* ctx, u32 pokemon, u16* moves, u32 zero, u32 one);
     extern s32 fn_80239984(s32 value, void* ctx, u32 id);
     extern void fn_80239EE8(u32, void*, u32, u32, u32, u32, u32, u32);
-    extern u8 fn_80238E30(void* ctx, u32 pokemon, u32 type);
-    extern s32 fn_802398E4(s32 value, u32 amount, void* ctx, u32 id);
+    extern u8 fightTrainerAiGetPokemonZokusei(void* ctx, u32 pokemon, u32 type);
+    extern s32 fightTrainerAiAddValueScaled(s32 value, u32 amount, void* ctx, u32 id);
     extern void fightTrainerAiAddValueLog(u32, void*, u32, u32, u32, u32, u32, u32, u32);
     extern u8 fn_8023881C(void* ctx, u32 pokemon);
     extern u16 fightTrainerAiGetWazaTenkouValue(void* ctx, u32 move, u32 pokemon);
@@ -361,9 +361,9 @@ s32 fightTrainerAiSelectIrekaeDasuFightPokemon(void* ctx, u32 param1, u32 param2
             if (type == 9) {
                 continue;
             }
-            if (fn_80238E30(ctx, p, type) == 1) {
+            if (fightTrainerAiGetPokemonZokusei(ctx, p, type) == 1) {
                 amount = fightTrainerGetStatus(0, aiId, 0x3A, k);
-                values[i] = fn_802398E4(values[i], amount, ctx, 0x1D);
+                values[i] = fightTrainerAiAddValueScaled(values[i], amount, ctx, 0x1D);
                 fightTrainerAiAddValueLog(0xEC63, ctx, fightPokemonGetPokemonPtr(p), 0, 0, 0, 0, 0x1D, amount);
             }
         }
@@ -483,8 +483,8 @@ s32 fightTrainerAiSelectIrekaeDasuFightPokemon(void* ctx, u32 param1, u32 param2
             if (fn_80239058(ctx, p, 8) == 1) {
                 hit = 1;
             }
-            if (fn_80238E30(ctx, p, 8) == 1 || fn_80238E30(ctx, p, 5) == 1 ||
-                fn_80238E30(ctx, p, 4) == 1) {
+            if (fightTrainerAiGetPokemonZokusei(ctx, p, 8) == 1 || fightTrainerAiGetPokemonZokusei(ctx, p, 5) == 1 ||
+                fightTrainerAiGetPokemonZokusei(ctx, p, 4) == 1) {
                 hit = 1;
             }
             if (hit == 1) {
@@ -492,7 +492,7 @@ s32 fightTrainerAiSelectIrekaeDasuFightPokemon(void* ctx, u32 param1, u32 param2
                 fn_80239EE8(0xEC63, trainer, fightPokemonGetPokemonPtr(p), 0, 0, 0, 0, 0x2B);
             }
         } else if (mode == 4) {
-            if (fn_80238E30(ctx, p, 0xF) == 1) {
+            if (fightTrainerAiGetPokemonZokusei(ctx, p, 0xF) == 1) {
                 values[i] = fn_80239984(values[i], ctx, 0x2C);
                 fn_80239EE8(0xEC63, trainer, fightPokemonGetPokemonPtr(p), 0, 0, 0, 0, 0x2C);
             }

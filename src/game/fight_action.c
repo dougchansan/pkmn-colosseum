@@ -471,7 +471,7 @@ u32 fightActionFlowFightTrainerUseItem(void* ctx)
     extern u32 fightTargetGetRelativeHostSideFightTargetIdToTragetPtr();
     extern void fightFloorSetStatus();
     extern u16 fightFloorGetStatus();
-    extern void fn_80211E18();
+    extern void fightActionUseItemMain();
     u32 actionValue;
     void* itemData;
     u16 itemId;
@@ -495,7 +495,7 @@ u32 fightActionFlowFightTrainerUseItem(void* ctx)
     }
     fightFloorSetStatus(0, 0, 0x42, 0, selectedTarget);
     actionValue = itemId;
-    fn_80211E18(ctx, actionValue);
+    fightActionUseItemMain(ctx, actionValue);
     return 1;
 }
 #if !defined(NO_LOCAL_PRAGMAS_FIGHT_ACTION_EXACT_8020B910)
@@ -768,7 +768,7 @@ u32 fightActionFlowKaisiPost(void* ctx) {
         void* motoAction, void* actorTarget, u32 kind, u32 buff,
         FightActionData* actionData, void* buffData);
     extern void fightDoTraceAll();
-    extern void fn_8022E314();
+    extern void fightDoIkakuAll();
     extern s32 _fightActionFlowKaisiPostSubFightOutPokemonSoubiItemCheckAppear__FPvUsPv();
     extern s32 _fightActionFlowKaisiPostSubFightOutPokemonTokuseiCheckAppear__FPvUsPv();
     extern s32 _fightActionFlowKaisiPostSubFightOutPokemonDarkCheckAppear__FPvUsPv();
@@ -783,7 +783,7 @@ u32 fightActionFlowKaisiPost(void* ctx) {
         fightActionBiosGetFightActionDataPtr((FightAction*)ctx), 0, 6, 0,
         lbl_80375CC8, lbl_80378AA0);
     fightFloorLoopValidFightOutPokemon(0, (u32)_fightActionFlowKaisiPostSubFightOutPokemonTokuseiCheckAppear__FPvUsPv, 0, 1);
-    fn_8022E314(1);
+    fightDoIkakuAll(1);
     fightDoTraceAll();
     fightFloorLoopValidFightOutPokemon(0, (u32)_fightActionFlowKaisiPostSubFightOutPokemonSoubiItemCheckAppear__FPvUsPv, 0, 1);
     localBuf[0] = 1;
@@ -813,14 +813,14 @@ s32 _fightActionFlowKaisiPostSubFightOutPokemonSoubiItemCheckAppear__FPvUsPv(voi
 #endif
 
 /* 0x8020C0E4 | size: 0x24 | small */
-/* _fightActionFlowKaisiPostSubFightOutPokemonTokuseiCheckAppear__FPvUsPv | Size: 0x24 | Call fn_8022E410 and return 1 */
+/* _fightActionFlowKaisiPostSubFightOutPokemonTokuseiCheckAppear__FPvUsPv | Size: 0x24 | Call fightOutPokemonTokuseiCheckAppear and return 1 */
 #if !defined(NO_LOCAL_PRAGMAS_FIGHT_ACTION_EXACT_8020B910)
 #endif
 #if !defined(NO_LOCAL_PRAGMAS_FIGHT_ACTION_EXACT_8020B910)
 #endif
 s32 _fightActionFlowKaisiPostSubFightOutPokemonTokuseiCheckAppear__FPvUsPv(void) {
-    extern void fn_8022E410(void);
-    fn_8022E410();
+    extern void fightOutPokemonTokuseiCheckAppear(void);
+    fightOutPokemonTokuseiCheckAppear();
     return 1;
 }
 #if !defined(NO_LOCAL_PRAGMAS_FIGHT_ACTION_EXACT_8020B910)

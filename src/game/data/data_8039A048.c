@@ -31,7 +31,7 @@ extern u8 lbl_8039A664[];
 
 extern u8 fightSeqCondChgActTypeToPokemonStatusId[];
 extern u8 fightTrainerAiWazaValueHimitunotikara[];
-extern u8 fn_80213E94[];
+extern u8 wsCmdEF[];
 extern u8 wsCmdB4[];
 extern u8 wsStatBuffChange[];
 extern u8 wsCmd76[];

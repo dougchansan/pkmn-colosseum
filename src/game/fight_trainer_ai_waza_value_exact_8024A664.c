@@ -83,7 +83,7 @@ u8 fn_802384B4(void*, u32, u32);
 u8 fn_80239564(void*, u32);
 u8 fightTrainerAiGetNowTenkou(void*, u32, u32);
 u16 fightTrainerAiGetPokemonDataId2(void*, u32);
-u8 fn_80238E30(void*, u32, u32);
+u8 fightTrainerAiGetPokemonZokusei(void*, u32, u32);
 u8 fn_80239058(void*, u32, u32);
 u32 fn_80239984(u32, void*, u32);
 u32 fightTrainerAiAddValue(u32, s32);

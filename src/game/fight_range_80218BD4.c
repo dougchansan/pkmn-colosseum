@@ -8,7 +8,7 @@ extern u8* lbl_8047B610;
 extern u32 lbl_8047B618;
 
 extern u32 fightTargetGetPtrAsNowFightType(u32, u32);
-extern u8 fn_802026E4();
+extern u8 fightOutPokemonIsPokemonJoutaiDataId();
 extern void fightOutPokemonWritePokemonJoutaiDataId();
 extern s8 fn_802025B8();
 extern int fightCheckAccuracyRules();
@@ -26,7 +26,7 @@ void wsCmdAB(void) {
     u32 ctx2 = fightGetDefenderContext();
     u32 sub2 = fightTargetGetPtrAsNowFightType(2, ctx2);
 
-    if (fn_802026E4(ctx2, 0x15) == 1 && sub1 != sub2 &&
+    if (fightOutPokemonIsPokemonJoutaiDataId(ctx2, 0x15) == 1 && sub1 != sub2 &&
         (lbl_8047B618 & 0x1000000) == 0) {
         lbl_8047B618 |= 0x40;
     }

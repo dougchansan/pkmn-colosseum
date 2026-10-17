@@ -8,7 +8,7 @@ extern u8 lbl_80375CA8[];
 extern u32 lbl_8047B618;
 extern u16 GSrand(void);
 
-u8 fn_80238E30(u32 ctx, void *param2, u16 target) {
+u8 fightTrainerAiGetPokemonZokusei(u32 ctx, void *param2, u16 target) {
   extern u32 fightTrainerGetStatus();
   extern u32 fightFloorGetStatus();
   extern u32 pokemonGetStatus();
@@ -295,7 +295,7 @@ s32 fightTrainerAiGetValueAryMaxBanme(s32 *valueAry, u16 count, u8 useRandom) {
   return banmeAry[idx];
 }
 
-int fn_802398E4(int r3, int r4, u32 r5, u32 r6) {
+int fightTrainerAiAddValueScaled(int r3, int r4, u32 r5, u32 r6) {
   extern int fightTrainerGetStatus();
   int iVar1;
   int result;

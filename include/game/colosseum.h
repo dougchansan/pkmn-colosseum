@@ -160,7 +160,7 @@ u32 BattleResultCheck(void* context, u32 trainerSlot, u32 resultType);
  * ========================================================================= */
 
 /**
- * fn_802026E4 - CheckEventFlag
+ * fightOutPokemonIsPokemonJoutaiDataId - CheckEventFlag
  * Called 291 times. Checks whether an event flag is set on a
  * trainer/Pokemon context.
  *
@@ -193,7 +193,7 @@ void SetEventState(void* context, u32 eventId, u32 value);
 void TriggerEvent(void* context, void* eventData, u32 param);
 
 /**
- * fn_80211E18 - EventCallback
+ * fightActionUseItemMain - EventCallback
  * Called from story script after battle completion to process results.
  */
 void EventCallback(void* context, u32 param);

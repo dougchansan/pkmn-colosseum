@@ -10,7 +10,7 @@ extern GS_SDATA2 const char lbl_8047E474[];
 
 void _vtrTexDispFunc__Fv(void);
 
-void fn_801E1300(void)
+void vtrInit(void)
 {
     extern u32 lbl_80467CF8[];
     extern u8 lbl_8047B420;

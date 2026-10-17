@@ -36,7 +36,7 @@ static inline u32 fn_80219E10_checkMove(u16 move)
 
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (optimize_for_size on) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma optimize_for_size on
-void fn_80219E10(void)
+void wsCmd9E(void)
 {
     extern u32 fn_8000814C();
     extern u32 GSrand();

@@ -6,7 +6,7 @@
 
 extern u8 fightOutPokemonCheckFightOut(void*);
 extern void fightOutPokemonWriteJoutaiDataId(void*, u32);
-extern u8 fn_802026E4(void*, u32);
+extern u8 fightOutPokemonIsPokemonJoutaiDataId(void*, u32);
 extern void fightOutPokemonInitJoutaiKeep(void*);
 
 s32 _fightSeqTurnCheckSubFightOutPokemon__FPvUsPv(
@@ -16,7 +16,7 @@ s32 _fightSeqTurnCheckSubFightOutPokemon__FPvUsPv(
         return 1;
     }
     fightOutPokemonWriteJoutaiDataId(ctx, 0x11);
-    if (fn_802026E4(ctx, 8) == 1 && fn_802026E4(ctx, 0x22) == 1) {
+    if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 8) == 1 && fightOutPokemonIsPokemonJoutaiDataId(ctx, 0x22) == 1) {
         fightOutPokemonInitJoutaiKeep(ctx);
     }
     return 1;

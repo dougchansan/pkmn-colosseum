@@ -67,7 +67,7 @@ extern void* fightTargetGetPtrAsNowFightType();
 extern void fightFloorSetStatus();
 extern u32 fightFloorGetStatus();
 extern void fightOutPokemonBiosCopy();
-extern u8 fn_802026E4();
+extern u8 fightOutPokemonIsPokemonJoutaiDataId();
 extern u16 figthOutPokemonGetPokemonDataId();
 extern u16 fightOutPokemonGetSoubiItemSoubiDataId();
 extern u16 fightOutPokemonGetUseWazaDataId();
@@ -118,7 +118,7 @@ static inline void fightSeqCriticalCheck(void)
     /* Lucky Punch on Chansey, Stick on Farfetch'd. */
     lucky = item == 0x3f && species == 0x71;
     stick = item == 0x42 && species == 0x53;
-    crit = (fn_802026E4(atk, 0xf) == 1) * 2
+    crit = (fightOutPokemonIsPokemonJoutaiDataId(atk, 0xf) == 1) * 2
          + ((u16)wazaGetStatus(0, wazaId, 9, 0) == 0x2b)
          + ((u16)wazaGetStatus(0, wazaId, 9, 0) == 0x4b)
          + ((u16)wazaGetStatus(0, wazaId, 9, 0) == 200)
@@ -135,7 +135,7 @@ static inline void fightSeqCriticalCheck(void)
         (u8)fightFloorGetStatus(0, 0, 0x29, 0) == 1) {
         bunbo = fightWazaCriticalDataBiosGetBunbo(fightWazaCriticalDataBiosGetPtr(crit));
         if (GSrand() % bunbo == 0 ||
-            (fn_802026E4(atk, 0x3e) == 1 && wazaId == 0x164 &&
+            (fightOutPokemonIsPokemonJoutaiDataId(atk, 0x3e) == 1 && wazaId == 0x164 &&
              GSrand() % 100 < 90)) {
             wazaSetStatus(atkWaza, 0, 0x2b, 0, 2);
         } else {
@@ -169,10 +169,10 @@ static inline void fightSeqDamageCalc(void)
     damage = fightSeqCalcDamage(atk, def, side, wazaId, power, type);
     damage *= (u8)wazaGetStatus(atkWaza, 0, 0x2b, 0);
     damage *= (u8)wazaGetStatus(atkWaza, 0, 0x2c, 0);
-    if (fn_802026E4(atk, 0x24) == 1 && type == 0xd) {
+    if (fightOutPokemonIsPokemonJoutaiDataId(atk, 0x24) == 1 && type == 0xd) {
         damage *= 2;
     }
-    if (fn_802026E4(atk, 0x32) == 1) {
+    if (fightOutPokemonIsPokemonJoutaiDataId(atk, 0x32) == 1) {
         damage = damage * 15 / 10;
     }
     wazaSetStatus(atkWaza, 0, 0x2d, 0, damage);
@@ -402,7 +402,7 @@ u32 _fightCheckKiaipanchiSub(void* ctx) {
     extern u8 lbl_80375D30[];
     extern u8 lbl_803791FE[];
     extern void* lbl_8047B62C;
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern u16 fightOutPokemonGetMotoWazaDataId();
     extern u8 fightOutPokemonCheckFightOut();
     u8 localBuf[0x30];
@@ -415,7 +415,7 @@ u32 _fightCheckKiaipanchiSub(void* ctx) {
     if (feData == NULL) { return 1; }
     if ((u8)fightActionCheckValid(feData) == 0) { return 1; }
     if (fightOutPokemonGetMotoWazaDataId(ctx) != 0x108) { goto done; }
-    if ((u8)fn_802026E4(ctx, 8) != 0) { goto done; }
+    if ((u8)fightOutPokemonIsPokemonJoutaiDataId(ctx, 8) != 0) { goto done; }
     if ((u8)(u32)pokemonGetStatus(ctx, 0, 0xF9, 0) != 0) { goto done; }
     d920val = fightActionBiosGetFightActionDataPtr((FightAction*)lbl_8047B62C);
     result = fightActionCreate((FightAction*)localBuf, d920val, ctx, 0xC, 0,
@@ -526,7 +526,7 @@ LAB_0020eddc:
 }
 /* Address: 0x80211E18 | Size: 0x8ac | Ghidra import */
 
-void fn_80211E18(u32 r3,u32 r4)
+void fightActionUseItemMain(u32 r3,u32 r4)
 
 {
     extern u32 DAT_80375e24;
@@ -568,7 +568,7 @@ void fn_80211E18(u32 r3,u32 r4)
     extern u32 fightTrainerGetKindPrefixName();
     extern u32 fightTrainerGetNamePtr();
     extern u32 fightTrainerGetStatus();
-    extern int fn_802026E4();
+    extern int fightOutPokemonIsPokemonJoutaiDataId();
     extern void fightOutPokemonWriteJoutaiDataId();
     extern void wsRunScript();
     extern void fightMenuAllFightTrainerCloseStatusMenu();
@@ -609,15 +609,15 @@ void fn_80211E18(u32 r3,u32 r4)
     uVar8 = itemParamGetPtr();
     cVar2 = DAT_8038fffc;
     bVar1 = DAT_8038ff76;
-    cVar13 = fn_802026E4(uVar3,0x2e);
+    cVar13 = fightOutPokemonIsPokemonJoutaiDataId(uVar3,0x2e);
     if (cVar13 == 1) {
       fightOutPokemonWriteJoutaiDataId(uVar3,0x2e);
     }
-    cVar13 = fn_802026E4(uVar3,0x15);
+    cVar13 = fightOutPokemonIsPokemonJoutaiDataId(uVar3,0x15);
     if (cVar13 == 1) {
       fightOutPokemonWriteJoutaiDataId(uVar3,0x15);
     }
-    cVar13 = fn_802026E4(uVar3,0x28);
+    cVar13 = fightOutPokemonIsPokemonJoutaiDataId(uVar3,0x28);
     if (cVar13 == 1) {
       fightOutPokemonWriteJoutaiDataId(uVar3,0x28);
     }
@@ -693,32 +693,32 @@ void fn_80211E18(u32 r3,u32 r4)
                     (cVar13 = itemParamGetBurnFlag(uVar8), cVar13 == 1)) &&
                    ((cVar13 = itemParamGetFreezeFlag(uVar8), cVar13 == 1 &&
                     (cVar13 = itemParamGetParalyzeFlag(uVar8), cVar13 == 1)))) {
-                  cVar13 = fn_802026E4(uVar3,8);
+                  cVar13 = fightOutPokemonIsPokemonJoutaiDataId(uVar3,8);
                   if (cVar13 == 1) {
                     lbl_80478D7D = 5;
                   }
                   else {
-                    cVar13 = fn_802026E4(uVar3,3);
+                    cVar13 = fightOutPokemonIsPokemonJoutaiDataId(uVar3,3);
                     if (cVar13 == 1) {
                       lbl_80478D7D = 4;
                     }
                     else {
-                      cVar13 = fn_802026E4(uVar3,4);
+                      cVar13 = fightOutPokemonIsPokemonJoutaiDataId(uVar3,4);
                       if (cVar13 == 1) {
                         lbl_80478D7D = 4;
                       }
                       else {
-                        cVar13 = fn_802026E4(uVar3,6);
+                        cVar13 = fightOutPokemonIsPokemonJoutaiDataId(uVar3,6);
                         if (cVar13 == 1) {
                           lbl_80478D7D = 3;
                         }
                         else {
-                          cVar13 = fn_802026E4(uVar3,7);
+                          cVar13 = fightOutPokemonIsPokemonJoutaiDataId(uVar3,7);
                           if (cVar13 == 1) {
                             lbl_80478D7D = 2;
                           }
                           else {
-                            cVar13 = fn_802026E4(uVar3,5);
+                            cVar13 = fightOutPokemonIsPokemonJoutaiDataId(uVar3,5);
                             if (cVar13 == 1) {
                               lbl_80478D7D = 1;
                             }

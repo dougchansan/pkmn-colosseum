@@ -83,7 +83,7 @@ u8 fn_802384B4(void*, u32, u32);
 u8 fn_80239564(void*, u32);
 u8 fightTrainerAiGetNowTenkou(void*, u32, u32);
 u16 fightTrainerAiGetPokemonDataId2(void*, u32);
-u8 fn_80238E30(void*, u32, u32);
+u8 fightTrainerAiGetPokemonZokusei(void*, u32, u32);
 u8 fn_80239058(void*, u32, u32);
 u32 fn_80239984(u32, void*, u32);
 u32 fightTrainerAiAddValue(u32, s32);
@@ -162,7 +162,7 @@ s32 fightTrainerAiWazaValueYokodori(void* ctx, void* param1, u32 param2, u32 par
     extern void* fightOutPokemonGetPokemonPtr();
     extern u16 fn_802364BC();
     extern u32 fn_80236520();
-    extern u16 fn_802377E8();
+    extern u16 fightTrainerAiGetPokemonDataId();
     extern u8 fn_8023943C();
     extern void* fn_80239984();
     extern void fn_80239EE8();
@@ -186,7 +186,7 @@ s32 fightTrainerAiWazaValueYokodori(void* ctx, void* param1, u32 param2, u32 par
     }
 
     for (i = 0; i < count; i++) {
-        u16 v = fn_802377E8(ctx, buf[i]);
+        u16 v = fightTrainerAiGetPokemonDataId(ctx, buf[i]);
         if (v == 0x12e || v == 0xd4 || v == 0x177) {
             handle = (s32)fn_80239984(handle, ctx, 0x1aa);
             fn_80239EE8(0xEC64, ctx, fightOutPokemonGetPokemonPtr(param1), 0, 0, param2, 0, 0x1aa);
@@ -204,7 +204,7 @@ s32 fightTrainerAiWazaValueYokodori(void* ctx, void* param1, u32 param2, u32 par
 s32 fightTrainerAiWazaValueKonoyubitomare(void* ctx, u32 param1, u32 param2, u32 param3) {
     extern u16 fightFloorGetFightTrainerFightOutPokemonPtrAry();
     extern void* fightOutPokemonGetPokemonPtr();
-    extern u16 fn_802377E8();
+    extern u16 fightTrainerAiGetPokemonDataId();
     extern u8 fightTrainerAiGetPartData1C();
     extern u16 fightTrainerAiGetAisyou();
     extern u16 fightAiCheckAllyFlag2A();
@@ -253,7 +253,7 @@ s32 fightTrainerAiWazaValueKonoyubitomare(void* ctx, u32 param1, u32 param2, u32
     }
 
     for (i = 0; i < countB; i++) {
-        u16 v = fn_802377E8(ctx, listB[i]);
+        u16 v = fightTrainerAiGetPokemonDataId(ctx, listB[i]);
         if (v == 0x12E || v == 0xD4 || v == 0x177) {
             handle = (s32)fn_80239984(handle, ctx, 0x1A8);
             fn_80239EE8(0xEC64, ctx, fightOutPokemonGetPokemonPtr(param1), 0, 0, param2, 0, 0x1A8);

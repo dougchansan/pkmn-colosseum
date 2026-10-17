@@ -51,12 +51,12 @@ extern void GSgfxCaptureMovieStart(u32 mode);
 
 extern u8 vtrGetDisp(void);
 extern void vtrSetDisp(u8 index, u8 active);
-extern void fn_801E1170(void);
+extern void vtrSetMode4(void);
 extern void vtrSetMode3(void);
 extern void vtrSetMode1(void);
 extern void vtrSetMode2(void);
 extern u8 vtrIsActive(void);
-extern void fn_801E1258(void);
+extern void vtrActivate(void);
 extern void vtrDeactivate(void);
 
 extern void fn_801D0748(u32 a, u32 b, u32 c);
@@ -216,7 +216,7 @@ s32 fn_8000C1A8(void) {
 }
 
 s32 dbgMenuVtrMode4(void) {
-    fn_801E1170();
+    vtrSetMode4();
     return 0;
 }
 
@@ -242,7 +242,7 @@ s32 dbgMenuGSvtrChangeDisp(void) {
 
 s32 dbgMenuGSvtrChangeActive(void) {
     if (vtrIsActive() == 0) {
-        fn_801E1258();
+        vtrActivate();
     } else {
         vtrDeactivate();
     }

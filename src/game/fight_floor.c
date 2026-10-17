@@ -477,7 +477,7 @@ u8 fightFloorCheckHuuinWazaFightOutPokemon(u32 param_1, u32 param_2, u16 param_3
 u32 _fightFloorCheckHuuinWazaFightOutPokemonSub__FPvUsPv(u32 p, u16 slot, void* data) {
     extern u8 fightOutPokemonCheckFightOut(void*);
     extern u8 fightOutPokemonIsAlly(void*, void*);
-    extern u8 fn_802026E4(void*, u32);
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId(void*, u32);
     extern void* fightOutPokemonGetPokemonPtr(void*);
     extern s8 pokemonSearchWazaDataId(void*, u16);
     struct W { void* mon; u32 waza; u32 result; };
@@ -490,7 +490,7 @@ u32 _fightFloorCheckHuuinWazaFightOutPokemonSub__FPvUsPv(u32 p, u16 slot, void* 
     mon = s->mon;
     if (fightOutPokemonCheckFightOut(obj) == 0)
         return 1;
-    if (fightOutPokemonIsAlly(obj, mon) == 0 && fn_802026E4(obj, 0x27) == 1
+    if (fightOutPokemonIsAlly(obj, mon) == 0 && fightOutPokemonIsPokemonJoutaiDataId(obj, 0x27) == 1
         && pokemonSearchWazaDataId(fightOutPokemonGetPokemonPtr(obj), waza) >= 0) {
         s->result = 1;
         return 0;
@@ -508,7 +508,7 @@ u32 fightFloorCheckFightActionFightOutPokemonIrekaeSelect(u32 obj, u32 r4arg, u3
     extern void fightFloorLoopValidFightOutPokemon(u32, void*, void*, u32);
     extern u32 fightOutPokemonIsZokuseiDataId(u32, u32);
     extern u32 fightOutPokemonGetTokuseiDataId(u32);
-    extern u32 fn_802026E4(u32, u32);
+    extern u32 fightOutPokemonIsPokemonJoutaiDataId(u32, u32);
     extern void _fightFloorGetFightOutPokemonPtrAryPokemonTokuseiDataIdFirstSub__FPvUsPv(void);
     u32 buf1[4];
     u32 buf2[4];
@@ -551,9 +551,9 @@ _setR30:
     r30 = 1;
 _afterR30:
     if ((u8)fightOutPokemonIsZokuseiDataId(r27, 8) == 1) r29 = 1;
-    if ((u8)fn_802026E4(r27, 0x16) == 1) goto _ret1;
-    if ((u8)fn_802026E4(r27, 0xe) == 1) goto _ret1;
-    if ((u8)fn_802026E4(r27, 0x25) == 1) { _ret1: return 1; }
+    if ((u8)fightOutPokemonIsPokemonJoutaiDataId(r27, 0x16) == 1) goto _ret1;
+    if ((u8)fightOutPokemonIsPokemonJoutaiDataId(r27, 0xe) == 1) goto _ret1;
+    if ((u8)fightOutPokemonIsPokemonJoutaiDataId(r27, 0x25) == 1) { _ret1: return 1; }
     if (r31 != 0) {
         if (r28 != 0) *(u32*)r28 = r31;
         return 2;
@@ -1240,12 +1240,12 @@ u16 fightFloorCheckFightOutPokemonPtrAryJoutaiDataId(void *param_1, u16 param_2)
 /* 0x801F3430 | size: 0x6C | small */
 u32 _fightFloorCheckFightOutPokemonPtrAryJoutaiDataIdSub__FPvUsPv(void *param_1, u32 r4_unused, u32 *buf) {
     extern u32 fightOutPokemonCheckFightOut(void*);
-    extern u32 fn_802026E4(void*, u16);
+    extern u32 fightOutPokemonIsPokemonJoutaiDataId(void*, u16);
     void *obj;
 
     if (!(fightOutPokemonCheckFightOut(obj = param_1) & 0xFF))
         return 1;
-    if ((fn_802026E4(obj, (u16)buf[0]) & 0xFF) == 1)
+    if ((fightOutPokemonIsPokemonJoutaiDataId(obj, (u16)buf[0]) & 0xFF) == 1)
         buf[1]++;
     return 1;
 }

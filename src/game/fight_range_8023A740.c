@@ -20,7 +20,7 @@ extern s32 fightTrainerAiAddValue(s32, s32);
 #define AI_SCORE_VALUE(code, value)                                           \
     do {                                                                      \
         u8 scoreValue = (u8)(value);                                          \
-        score[i] = fn_802398E4(score[i], scoreValue, trainer, (code));        \
+        score[i] = fightTrainerAiAddValueScaled(score[i], scoreValue, trainer, (code));        \
         fightTrainerAiAddValueLog(0xEC64, trainer,                                          \
                     fightOutPokemonGetPokemonPtr(pokemon), 0, 0, move, 0,    \
                     (code), scoreValue);                                      \
@@ -66,7 +66,7 @@ s32 fightTrainerAiScoreWazaToTarget(u32 trainer, u32 pokemon, u32 moveCount,
     extern u8 fn_80239154();
     extern u8 fn_8000815C();
     extern u16 fightFloorGetValidFightOutPokemonCount();
-    extern s32 fn_802398E4();
+    extern s32 fightTrainerAiAddValueScaled();
     extern s32 fn_80239984();
     extern void fightTrainerAiAddValueLog();
     extern void fn_80239EE8();

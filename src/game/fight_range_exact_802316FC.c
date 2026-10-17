@@ -1,6 +1,6 @@
 /**
  * @file fight_range_exact_802316FC.c
- * @brief Exact island 0x802316FC - 0x80232110 (fn_802316FC, fn_802317E4,
+ * @brief Exact island 0x802316FC - 0x80232110 (fn_802316FC, fightSeqTurnEndAll,
  *        _fightFindFightOutPokemonWithSequenceSub, fn_80232024), moved out of fight_range_80211A00.c in
  *        address order.
  */
@@ -33,7 +33,7 @@ u8 fn_802316FC(void* ctx) {
     extern void fn_80202810();
     extern u8 fn_801F4C14();
     extern u16  fn_80207BF4(void*);
-    extern u8   fn_802026E4();
+    extern u8   fightOutPokemonIsPokemonJoutaiDataId();
     extern u8   fn_801FECD4();
     extern void fn_801FE7EC();
     u16 moveId = fn_80207BF4(ctx);
@@ -41,7 +41,7 @@ u8 fn_802316FC(void* ctx) {
     if ((u8)fn_802062FC(ctx) == 0) {
         return 1;
     }
-    if ((u8)fn_802026E4(ctx, 8) == 1 && moveId != 0x2b) {
+    if ((u8)fightOutPokemonIsPokemonJoutaiDataId(ctx, 8) == 1 && moveId != 0x2b) {
         fn_80202810(ctx, 8);
         fn_80202810(ctx, 0x17);
         lbl_80478D78[5] = 1;
@@ -60,9 +60,9 @@ u8 fn_802316FC(void* ctx) {
 #undef fn_801FECD4
 #undef fn_801FE7EC
 
-/* RULE-EXCEPTION(user-approved): opt_propagation off for fn_802317E4 only; the unit builds with -O4,s — see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): opt_propagation off for fightSeqTurnEndAll only; the unit builds with -O4,s — see docs/RULE_EXCEPTIONS.md */
 #pragma opt_propagation off
-void fn_802317E4(void) {
+void fightSeqTurnEndAll(void) {
     extern u16 std103_battleGetResult();
     extern u8 fightOutPokemonCheckFightOut();
     extern u8 fightSideIsJoutaiDataId();
@@ -300,7 +300,7 @@ u32 fn_80232024(u32 r3)
     extern void fn_80201FDC();
     extern u32 fn_80202108();
     extern u32 fn_80202234();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern void fightOutPokemonWriteJoutaiDataId();
     extern u8 fightOutPokemonCheckFightOut();
     extern void wsRunScript();
@@ -317,7 +317,7 @@ u32 fn_80232024(u32 r3)
   if (check == 0) {
     return 1;
   }
-  check = fn_802026E4(r3,0x35);
+  check = fightOutPokemonIsPokemonJoutaiDataId(r3,0x35);
   if (check == 1) {
     count = fn_80202234(r3,0x35);
     current = fn_80202108(r3,0x35);

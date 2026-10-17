@@ -9,7 +9,7 @@ u32 fn_80232FE4(u32 r3, u32 r4, u32 r5)
     extern u32 fightTargetGetRelativeHostSideFightTargetIdToTragetPtr();
     extern void fightOutPokemonSetOumuWazaDataId();
     extern u32 fightOutPokemonGetJoutaiParam();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern void fightOutPokemonWriteJoutaiDataId();
     extern u8 fightOutPokemonIsAlly();
     extern void fightOutPokemonEnemyClearOumu();
@@ -36,7 +36,7 @@ u32 fn_80232FE4(u32 r3, u32 r4, u32 r5)
     if (pokemon == other) {
         return 1;
     }
-    if (fn_802026E4(pokemon, 0x16) == 1 &&
+    if (fightOutPokemonIsPokemonJoutaiDataId(pokemon, 0x16) == 1 &&
         (targetId = fightOutPokemonGetJoutaiParam(pokemon, 0x16), (targetId & 0xffff) != 0) &&
         (relative = fightTargetGetRelativeHostSideFightTargetIdToTragetPtr(
              targetId, hostSide)) != 0 &&
@@ -48,7 +48,7 @@ u32 fn_80232FE4(u32 r3, u32 r4, u32 r5)
     if (matched == 1) {
         fightOutPokemonWriteJoutaiDataId(pokemon, 0x16);
     }
-    if (fn_802026E4(pokemon, 10) == 1 &&
+    if (fightOutPokemonIsPokemonJoutaiDataId(pokemon, 10) == 1 &&
         (targetId = fightOutPokemonGetJoutaiParam(pokemon, 10), (targetId & 0xffff) != 0) &&
         (relative = fightTargetGetRelativeHostSideFightTargetIdToTragetPtr(
              targetId, hostSide)) != 0 &&
@@ -60,7 +60,7 @@ u32 fn_80232FE4(u32 r3, u32 r4, u32 r5)
     if (matched == 1) {
         fightOutPokemonWriteJoutaiDataId(pokemon, 10);
     }
-    if (fn_802026E4(pokemon, 0xe) == 1 &&
+    if (fightOutPokemonIsPokemonJoutaiDataId(pokemon, 0xe) == 1 &&
         (targetId = fightOutPokemonGetJoutaiParam(pokemon, 0xe), (targetId & 0xffff) != 0) &&
         (relative = fightTargetGetRelativeHostSideFightTargetIdToTragetPtr(
              targetId, hostSide)) != 0 &&

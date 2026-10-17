@@ -20,7 +20,7 @@ void wsCmd03(void)
     extern void fightOutPokemonSetHensinPokemonStatusId();
     extern u8 fightOutPokemonIsUseHensinBuff();
     extern u32 fightOutPokemonGetPokemonJoutai08();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern u32 fightOutPokemonGetPokemonPtr();
     extern u32 fightOutPokemonGetUseWazaDataId();
     extern u32 fightOutPokemonGetTokuseiDataId();
@@ -79,8 +79,8 @@ void wsCmd03(void)
             }
             pokemonSetStatus((void*)pokemon, 0, 0x80, (s8)statusSlot, pp);
 
-            if (fn_802026E4(attacker, 0x10) == 0 &&
-                fn_802026E4(attacker, 0x31) == 1) {
+            if (fightOutPokemonIsPokemonJoutaiDataId(attacker, 0x10) == 0 &&
+                fightOutPokemonIsPokemonJoutaiDataId(attacker, 0x31) == 1) {
                 usedFlags = fightOutPokemonGetPokemonJoutai08(attacker, 0x31);
                 if ((usedFlags & (1 << (u8)statusSlot)) == 0 &&
                     fightOutPokemonIsUseHensinBuff(attacker) == 1) {

@@ -384,7 +384,7 @@ void fn_801D58E4(void) {
     extern s32 GSgetVersionMinor(void);
     extern void* GSfilterCreate(u8* color);
     extern u8 vtrIsActive(void);
-    extern void fn_801E1258(void);
+    extern void vtrActivate(void);
     extern void battleGridInit(void);
     extern u32 GSgappCreate(s32 group, s32 priority, s32 flags, void* callback);
 
@@ -430,7 +430,7 @@ void fn_801D58E4(void) {
     *(s32*)(lbl_804673F8 + 0x878) = 0;
     *(s32*)(lbl_804673F8 + 0x874) = 1;
     lbl_804673F8[0x87D] = vtrIsActive();
-    fn_801E1258();
+    vtrActivate();
     battleGridInit();
     lbl_8047B3F8 = GSgappCreate(1, 0x7F, 0, fn_801D603C);
     *(s32*)(lbl_804673F8 + 0x63C) = 0;

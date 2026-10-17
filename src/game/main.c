@@ -119,7 +119,7 @@ extern void GSmsgFontOpen(void* relData);                  /* GSfloor register R
 extern void GSmsgOpen(void* relData);                  /* GSfloor register REL data (alt) */
 extern void cms_RegisterScript(void* relData);                  /* GSfloor register REL data (floor) */
 extern void soundSetInitParams(u32 a, u32 b, u32 c, u32 d, u32 e); /* set the five DVD error message IDs */
-extern void fn_801E1300(void);                           /* Save/card system init */
+extern void vtrInit(void);                           /* Save/card system init */
 extern void flareCreateTask(void);                           /* GBA communication init */
 extern void GSmovieInit(void);                           /* Save data init */
 extern void menuInit(u32 param);                      /* Effect system init */
@@ -638,7 +638,7 @@ void fn_800057B0(void) {
     soundSetInitParams(0x3BE8, 0x3BEA, 0x3BED, 0x3BEF, 0x3BF2);
 
     /* Initialize GSvtr texture-display state and create its display task */
-    fn_801E1300();
+    vtrInit();
 
     /* Initialize battle texture/resource state and create its render callback */
     flareCreateTask();

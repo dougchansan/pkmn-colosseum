@@ -288,11 +288,11 @@ void wsCmd65(void) {
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (optimize_for_size reset; optimize_for_size on) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma optimize_for_size reset
 #pragma optimize_for_size on
-void fn_8021E288(void) {
+void wsCmd64(void) {
     extern u32 fightTargetGetPtrAsNowFightType();
     extern u32 fightFloorGetStatus(u32 a, u32 b, u32 c, u32 d);
     extern void* pokemonGetStatus(void* context, u32 slot, u16 tableId, u32 flags);
-    extern u8 fn_802026E4(void* ctx, void* typeObj);
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId(void* ctx, void* typeObj);
     extern u8 fn_801DDD28(void* ptr, u32 field, u32 size, u32 flags);
     extern void wazaSequenceSysStartWaza(void* ptr, u32 field, u32 size);
     extern void fn_80265598();
@@ -302,7 +302,7 @@ void fn_8021E288(void) {
     pc = (u8*)lbl_8047B610;
     ctx = (void*)fightTargetGetPtrAsNowFightType(pc[1], 0);
     if ((lbl_8047B618 & 0x80) == 0) {
-        if (fn_802026E4(ctx, (void*)0x8) == 1) {
+        if (fightOutPokemonIsPokemonJoutaiDataId(ctx, (void*)0x8) == 1) {
             u16 val = (u16)fightFloorGetStatus(0, 0, 0x14, 0);
             void* poke = pokemonGetStatus(ctx, 0, 0xee, 0);
             if (poke != 0) {
@@ -312,7 +312,7 @@ void fn_8021E288(void) {
                 }
             }
         }
-        if (fn_802026E4(ctx, (void*)0x5) == 1) {
+        if (fightOutPokemonIsPokemonJoutaiDataId(ctx, (void*)0x5) == 1) {
             u16 val = (u16)fightFloorGetStatus(0, 0, 0x14, 0);
             void* poke = pokemonGetStatus(ctx, 0, 0xee, 0);
             if (poke != 0) {
@@ -322,7 +322,7 @@ void fn_8021E288(void) {
                 }
             }
         }
-        if (fn_802026E4(ctx, (void*)0x7) == 1) {
+        if (fightOutPokemonIsPokemonJoutaiDataId(ctx, (void*)0x7) == 1) {
             u16 val = (u16)fightFloorGetStatus(0, 0, 0x14, 0);
             void* poke = pokemonGetStatus(ctx, 0, 0xee, 0);
             if (poke != 0) {
@@ -332,7 +332,7 @@ void fn_8021E288(void) {
                 }
             }
         }
-        if (fn_802026E4(ctx, (void*)0x6) == 1) {
+        if (fightOutPokemonIsPokemonJoutaiDataId(ctx, (void*)0x6) == 1) {
             u16 val = (u16)fightFloorGetStatus(0, 0, 0x14, 0);
             void* poke = pokemonGetStatus(ctx, 0, 0xee, 0);
             if (poke != 0) {
@@ -342,7 +342,7 @@ void fn_8021E288(void) {
                 }
             }
         }
-        if (fn_802026E4(ctx, (void*)0x3) == 1) {
+        if (fightOutPokemonIsPokemonJoutaiDataId(ctx, (void*)0x3) == 1) {
             u16 val = (u16)fightFloorGetStatus(0, 0, 0x14, 0);
             void* poke = pokemonGetStatus(ctx, 0, 0xee, 0);
             if (poke != 0) {
@@ -352,7 +352,7 @@ void fn_8021E288(void) {
                 }
             }
         }
-        if (fn_802026E4(ctx, (void*)0x4) == 1) {
+        if (fightOutPokemonIsPokemonJoutaiDataId(ctx, (void*)0x4) == 1) {
             u16 val = (u16)fightFloorGetStatus(0, 0, 0x14, 0);
             void* poke = pokemonGetStatus(ctx, 0, 0xee, 0);
             if (poke != 0) {
@@ -370,7 +370,7 @@ void fn_8021E288(void) {
 #pragma optimize_for_size reset
 #pragma optimize_for_size on
 #pragma opt_propagation off
-void fn_8021E600(void) {
+void wsCmd63(void) {
     extern void wazaSetStatus();
     extern u32 wazaGetStatus();
     extern u32 pokemonGetStatus();
@@ -438,13 +438,13 @@ void WS_SWITCH_A_D(void) {
     return;
 }
 
-u8* fn_8021E744(void) {
+u8* wsCmd5E(void) {
     u8* pc = lbl_8047B610;
     lbl_8047B610 = pc + 2;
     return pc;
 }
 
-void fn_8021E754(void) {
+void wsCmd5D(void) {
     extern u32 fightFloorGetStatus();
     extern u32 fightFloorGetGcHeroFightTrainerPtr();
     extern u32 fightTrainerGetStatus(u32, u32, u32, u16);
@@ -744,7 +744,7 @@ void wsCmd52(void) {
     extern void fightWazaBiosCopy();
     extern void wsRunScript();
     extern void fn_8022D084();
-    extern void fn_8022E410();
+    extern void fightOutPokemonTokuseiCheckAppear();
     extern void fightCheckRuiShadowSense();
     extern u32 fightOutPokemonGetTokuseiDataId();
     extern void pokemonSetStatus(void*, u32, u32, u32, u32);
@@ -802,7 +802,7 @@ void wsCmd52(void) {
         pokemonSetStatus((void*)uVar2, 0, 0xf9, 0, 1);
     }
     fightCheckRuiShadowSense(uVar2, 0);
-    fn_8022E410(uVar2);
+    fightOutPokemonTokuseiCheckAppear(uVar2);
     fn_8022D084(uVar2);
     fightCheckRuiShadowSense(uVar2, 1);
     fightFloorCreateFightPokemonEnemyAryEnemySideAll(0);
@@ -913,7 +913,7 @@ void wsCmd4E(void) {
     extern u32 fightTargetGetPtrAsNowFightType();
     extern u32 pokemonGetStatus();
     extern u32 fightTrainerGetStatus();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     u32 ctx1;
     u32 trainerData;
     u32 result;
@@ -945,7 +945,7 @@ void wsCmd4E(void) {
         fightTrainerBallThrowEffect(result, ctx1, 3);
     }
     fightOutPokemonDasuEffect(ctx1, 5);
-    if (mode == 1 && (u8)fn_802026E4(ctx1, 0x14) == 1 &&
+    if (mode == 1 && (u8)fightOutPokemonIsPokemonJoutaiDataId(ctx1, 0x14) == 1 &&
         fightOutPokemonGetJoutaiMigawariHp(ctx1) > 0) {
         fightMenuCloseMsg();
         fightWazaWzxTypeFuncMigawari(0xa4, ctx1, ctx1, 0, 0);
@@ -984,7 +984,7 @@ void wsCmd4D(void) {
     extern u32 pokemonGetStatus();
     extern void fightOutPokemonCopyAllAbiCnt();
     extern void fightOutPokemonCopyPokemonJoutai();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern void fightPokemonWriteJoutaiDataId();
     extern u8 fightPokemonCheckWriteJoutaiDataId();
     extern u32 fightOutPokemonGetNicknamePtr();
@@ -1052,7 +1052,7 @@ void wsCmd4D(void) {
             fightOutPokemonCopyAllAbiCnt(context, trainerPokemon);
             for (i = 0; i < 11; i++) {
                 ability = abilities.values[i];
-                hasAbility = fn_802026E4(trainerPokemon, ability);
+                hasAbility = fightOutPokemonIsPokemonJoutaiDataId(trainerPokemon, ability);
                 if (hasAbility == 1) {
                     fightOutPokemonCopyPokemonJoutai(context, trainerPokemon, ability);
                 }
@@ -1062,10 +1062,10 @@ void wsCmd4D(void) {
     callbackData[0] = context;
     callbackData[1] = copyMode;
     fightFloorLoopValidFightOutPokemon(0, _fightCheckLockOnSub, callbackData, 0);
-    if (fn_802026E4(trainerPokemon, 0x34) == 1) {
+    if (fightOutPokemonIsPokemonJoutaiDataId(trainerPokemon, 0x34) == 1) {
         fightOutPokemonCopyPokemonJoutai(context, trainerPokemon, 0x34);
     }
-    if (fn_802026E4(trainerPokemon, 0x35) == 1) {
+    if (fightOutPokemonIsPokemonJoutaiDataId(trainerPokemon, 0x35) == 1) {
         fightOutPokemonCopyPokemonJoutai(context, trainerPokemon, 0x35);
     }
     msgctrlSetValue(0xD, fightOutPokemonGetNicknamePtr(context));
@@ -1106,12 +1106,12 @@ void wsCmd4C(void) {
 void wsCmd4B(void) {
     extern u32 fightTargetGetPtrAsNowFightType();
     extern u32 fightFloorGetStatus();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     u32 ctx;
     u16 val = (u16)fightFloorGetStatus(0, 0, 0x14, 0);
     ctx = fightTargetGetPtrAsNowFightType(0x14, 0);
     if ((u8)fightOutPokemonCheckFightOut(ctx) == 1) {
-        if ((u8)fn_802026E4(ctx, 0x14) == 1 && fightOutPokemonGetJoutaiMigawariHp(ctx) > 0) {
+        if ((u8)fightOutPokemonIsPokemonJoutaiDataId(ctx, 0x14) == 1 && fightOutPokemonGetJoutaiMigawariHp(ctx) > 0) {
             fightOutPokemonWriteJoutaiDataId(ctx, 0x14);
             fightOutPokemonFreeAllSequenceWaza(ctx);
             fightWazaWzxTypeFuncMigawari(0xa4, ctx, ctx, 0, 0);

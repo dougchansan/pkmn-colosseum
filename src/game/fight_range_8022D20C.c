@@ -59,7 +59,7 @@ u32 _fightTokuseiCureJoutaiSub(u32 pokemon) {
     extern u8 fightOutPokemonCheckFightOut();
     extern u32 fightOutPokemonGetTokuseiDataId();
     extern u32 fightOutPokemonGetPokemonPtr();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern void fn_80119F50();
     extern u32 GSmsgGetGSchar();
     extern void msgctrlSetValue();
@@ -85,21 +85,21 @@ u32 _fightTokuseiCureJoutaiSub(u32 pokemon) {
 
         switch ((u16)pokemon) {
         case 0x11:
-            if (fn_802026E4(ability, 3) == 1 || fn_802026E4(ability, 4) == 1) {
+            if (fightOutPokemonIsPokemonJoutaiDataId(ability, 3) == 1 || fightOutPokemonIsPokemonJoutaiDataId(ability, 4) == 1) {
                 fn_80119F50(3);
                 msgctrlSetValue(0xD, GSmsgGetGSchar());
                 result = 1;
             }
             break;
         case 0x14:
-            if (fn_802026E4(ability, 9) == 1) {
+            if (fightOutPokemonIsPokemonJoutaiDataId(ability, 9) == 1) {
                 fn_80119F50(9);
                 msgctrlSetValue(0xD, GSmsgGetGSchar());
                 result = 2;
             }
             break;
         case 7:
-            if (fn_802026E4(ability, 5) == 1) {
+            if (fightOutPokemonIsPokemonJoutaiDataId(ability, 5) == 1) {
                 fn_80119F50(5);
                 msgctrlSetValue(0xD, GSmsgGetGSchar());
                 result = 1;
@@ -107,7 +107,7 @@ u32 _fightTokuseiCureJoutaiSub(u32 pokemon) {
             break;
         case 0xF:
         case 0x48:
-            if (fn_802026E4(ability, 8) == 1) {
+            if (fightOutPokemonIsPokemonJoutaiDataId(ability, 8) == 1) {
                 fightOutPokemonWriteJoutaiDataId(ability, 0x17);
                 fn_80119F50(8);
                 msgctrlSetValue(0xD, GSmsgGetGSchar());
@@ -115,21 +115,21 @@ u32 _fightTokuseiCureJoutaiSub(u32 pokemon) {
             }
             break;
         case 0x29:
-            if (fn_802026E4(ability, 6) == 1) {
+            if (fightOutPokemonIsPokemonJoutaiDataId(ability, 6) == 1) {
                 fn_80119F50(6);
                 msgctrlSetValue(0xD, GSmsgGetGSchar());
                 result = 1;
             }
             break;
         case 0x28:
-            if (fn_802026E4(ability, 7) == 1) {
+            if (fightOutPokemonIsPokemonJoutaiDataId(ability, 7) == 1) {
                 fn_80119F50(7);
                 msgctrlSetValue(0xD, GSmsgGetGSchar());
                 result = 1;
             }
             break;
         case 0xC:
-            if (fn_802026E4(ability, 10) == 1) {
+            if (fightOutPokemonIsPokemonJoutaiDataId(ability, 10) == 1) {
                 fn_80119F50(10);
                 msgctrlSetValue(0xD, GSmsgGetGSchar());
                 result = 3;

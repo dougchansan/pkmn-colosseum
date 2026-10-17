@@ -377,7 +377,7 @@ s16 fn_802025B8(void* ctx, void* typeObj) {
 }
 
 /* 0x802026E4 | size: 0x12C */
-s16 fn_802026E4(void* ctx, void* typeObj) {
+s16 fightOutPokemonIsPokemonJoutaiDataId(void* ctx, void* typeObj) {
     extern u16 joutaiDataBiosGetStatusKind();
     extern s16 fn_8011B67C();
     extern s16 fn_80121ADC();

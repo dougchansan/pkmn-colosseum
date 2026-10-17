@@ -48,7 +48,7 @@ void wsCmdA6(void)
     extern u32 fightTargetGetRelativeHostSideFightTargetIdToTragetPtr();
     extern u32 fightTargetGetPtrAsNowFightType();
     extern u32 fightFloorGetStatus();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern u32 fightOutPokemonGetTeikouZokuseiDataIdAry();
     extern u32 fightOutPokemonSetZokuseiDataId(u32, u8, u16);
     extern u32 pokemonGetStatus();
@@ -86,7 +86,7 @@ void wsCmdA6(void)
             } else {
                 specialMove = 0;
             }
-            if (specialMove && fn_802026E4(target, 0x22) == 1) {
+            if (specialMove && fightOutPokemonIsPokemonJoutaiDataId(target, 0x22) == 1) {
                 lbl_8047B610 = (u8*)*(u32*)(lbl_8047B610 + 1);
                 return;
             }
@@ -119,7 +119,7 @@ void wsCmdA5(void)
     extern u32 fightTargetGetPtrAsNowFightType();
     extern u32 pokemonGetStatus();
     extern u32 fightOutPokemonGetPokemonPtr();
-    extern u8 fn_802026E4();
+    extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern void wazaSetStatus();
     extern void pokemonSetStatus();
     extern s32 lbl_8047B608;
@@ -140,7 +140,7 @@ void wsCmdA5(void)
     defenderPokemon = fightOutPokemonGetPokemonPtr(defender);
     defenderHp = (u16)pokemonGetStatus(defenderPokemon, 0, 0x83, 0);
 
-    if (fn_802026E4(defender, 0x14) == 0) {
+    if (fightOutPokemonIsPokemonJoutaiDataId(defender, 0x14) == 0) {
         average = (attackerHp + defenderHp) / 2;
         lbl_8047B608 = defenderHp - average;
         wazaSetStatus(move, 0, 0x2d, 0, attackerHp - average);
