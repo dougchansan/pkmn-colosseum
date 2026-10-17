@@ -17,7 +17,7 @@ extern u32 fn_80077AF4(void);
 #define fn_801F4C14 fightFloorSetStatus
 #define fn_801F54A4 fightFloorGetStatus
 #define fn_802096E8 fightWazaIsHit
-u32 fn_80228DAC(u32 r3, u32 r4, u32 r5)
+u32 _fightCheckAccuracySpecial(u32 r3, u32 r4, u32 r5)
 
 {
     extern u16 fn_8011BEB4();
@@ -28,7 +28,7 @@ u32 fn_80228DAC(u32 r3, u32 r4, u32 r5)
     extern u16 fightOutPokemonGetJoutaiParam();
     extern u8 fn_802026E4();
     extern u8 fn_802096E8();
-    extern int fn_8022DCB8();
+    extern int fightCheckTokuseiWazaKyuushuu();
     extern u32 lbl_8047B618;
   u8 bVar1;
   u16 uVar8;
@@ -73,7 +73,7 @@ u32 fn_80228DAC(u32 r3, u32 r4, u32 r5)
          ((lbl_8047B618 & 0x1000000) == 0)) {
         lbl_8047B618 = lbl_8047B618 | 0x40;
       }
-      cVar11 = fn_8022DCB8((u32)savedAttacker,uVar4,r5);
+      cVar11 = fightCheckTokuseiWazaKyuushuu((u32)savedAttacker,uVar4,r5);
       if (cVar11 == 0) {
         lbl_8047B610 = lbl_8047B610 + 7;
       }
@@ -104,7 +104,7 @@ first_check_done:
          ((lbl_8047B618 & 0x1000000) == 0)) {
         lbl_8047B618 = lbl_8047B618 | 0x40;
       }
-      cVar11 = fn_8022DCB8(uVar2,uVar4,r5);
+      cVar11 = fightCheckTokuseiWazaKyuushuu(uVar2,uVar4,r5);
       if (cVar11 == 0) {
         lbl_8047B610 = lbl_8047B610 + 7;
       }
@@ -134,7 +134,7 @@ first_check_done:
          ((lbl_8047B618 & 0x1000000) == 0)) {
         lbl_8047B618 = lbl_8047B618 | 0x40;
       }
-      cVar11 = fn_8022DCB8(uVar3,uVar2,r5);
+      cVar11 = fightCheckTokuseiWazaKyuushuu(uVar3,uVar2,r5);
       if (cVar11 == 0) {
         lbl_8047B610 = lbl_8047B610 + 7;
       }
@@ -164,7 +164,7 @@ first_check_done:
          ((lbl_8047B618 & 0x1000000) == 0)) {
         lbl_8047B618 = lbl_8047B618 | 0x40;
       }
-      cVar11 = fn_8022DCB8(uVar3,uVar2,r5);
+      cVar11 = fightCheckTokuseiWazaKyuushuu(uVar3,uVar2,r5);
       if (cVar11 == 0) {
         lbl_8047B610 = lbl_8047B610 + 7;
       }
@@ -201,7 +201,7 @@ first_check_done:
          ((lbl_8047B618 & 0x1000000) == 0)) {
         lbl_8047B618 = lbl_8047B618 | 0x40;
       }
-      cVar11 = fn_8022DCB8(uVar3,uVar2,r5);
+      cVar11 = fightCheckTokuseiWazaKyuushuu(uVar3,uVar2,r5);
       if (cVar11 == 0) {
         lbl_8047B610 = lbl_8047B610 + 7;
       }
@@ -236,7 +236,7 @@ first_check_done:
            ((lbl_8047B618 & 0x1000000) == 0)) {
           lbl_8047B618 = lbl_8047B618 | 0x40;
         }
-        cVar11 = fn_8022DCB8(uVar3,uVar2,r5);
+        cVar11 = fightCheckTokuseiWazaKyuushuu(uVar3,uVar2,r5);
         if (cVar11 == 0) {
           lbl_8047B610 = lbl_8047B610 + 7;
         }

@@ -1,12 +1,12 @@
 /**
  * @file fight_range_80229704.c
  * @brief Status-move usability checks, 0x80229704 - 0x80229B70
- *        (fn_80229704, fn_80229934).
+ *        (fightAiCheckRule0E0F, fightCheckAccuracyRules).
  *
  * Standalone source at GC/1.3 -O4,s. Both functions count the valid, fought-in
  * Pokemon on the target's side that can take a status through one shared
- * inline, fightCountJoutai: fn_80229704 expands it twice (the status id, then
- * status 7), fn_80229934 once (status 8), and fn_802249B8 expands the same
+ * inline, fightCountJoutai: fightAiCheckRule0E0F expands it twice (the status id, then
+ * status 7), fightCheckAccuracyRules once (status 8), and fightSeqSetTsuikaKouka expands the same
  * sequence for statuses 7 and 8. Its locals are declared pokemon, side,
  * trainerCount, found, trainer, trainerIndex, pokemonIndex, which gives
  * retail's register order in every expansion.
@@ -51,7 +51,7 @@ static inline u16 fightCountJoutai(u32 target, u32 statusId)
     return found;
 }
 
-u32 fn_80229704(u32 statusId, u32 target)
+u32 fightAiCheckRule0E0F(u32 statusId, u32 target)
 {
     u8 enabled;
     u8 disabled8;
@@ -74,7 +74,7 @@ u32 fn_80229704(u32 statusId, u32 target)
     return 0;
 }
 
-u8 fn_80229934(u32 move, u32 attacker, u32 target)
+u8 fightCheckAccuracyRules(u32 move, u32 attacker, u32 target)
 {
     extern u8 fn_80077AAC();
     extern u8 fn_80077AD0();

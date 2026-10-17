@@ -115,10 +115,10 @@ int fightTrainerAiWazaHit115(void)
 }
 
 u32 fightTrainerAiWazaHit114(void* ctx, u32 slot, u32 param, u32 arg3) {
-    extern u32 fn_80229934();
+    extern u32 fightCheckAccuracyRules();
     extern u32 fightTrainerAiCheckHorobinouta();
 
-    if ((u8)fn_80229934(param, slot, arg3) == 1) {
+    if ((u8)fightCheckAccuracyRules(param, slot, arg3) == 1) {
         return 0;
     }
     return (u16)fightTrainerAiCheckHorobinouta(ctx) != 0;
@@ -406,9 +406,9 @@ s32 fightTrainerAiWazaHit099(void* ctx, u32 param1, u32 param2, u32 param3) {
 
 int fightTrainerAiWazaHit098(u32 arg0, u32 arg1, u32 arg2, u32 arg3)
 {
-    extern u32 fn_80229934();
+    extern u32 fightCheckAccuracyRules();
 
-    return (u8)fn_80229934(arg2, arg1, arg3) != 1;
+    return (u8)fightCheckAccuracyRules(arg2, arg1, arg3) != 1;
 }
 
 s32 fightTrainerAiWazaHit097(void* ctx, u32 param1, u32 param2, u32 param3) {

@@ -947,7 +947,7 @@ u32 fightMenuFightTrainerAgbHeroOpenMenu(u32 trainer, u32 side)
     extern u32 fn_80089F68(u32);
     extern u32 fightOutPokemonGetPokemonPtr(u32);
     extern u32 pokemonGetStatus(u32, u32, u32, u32);
-    extern u32 fn_8022B2CC(u32, u16, u32, void*, u32, u32, s32);
+    extern u32 fightSeqSelectTarget(u32, u16, u32, void*, u32, u32, s32);
     extern u32 _fightMenuFightTrainerAgbHeroSelectDefensePokemon__FP15FightOutPokemonUsUs();
     extern u32 fn_80089F60(u32);
     extern u32 fightFloorGetValidFightSidePtr(u32, u16);
@@ -1034,7 +1034,7 @@ u32 fightMenuFightTrainerAgbHeroOpenMenu(u32 trainer, u32 side)
                 goto select_action;
             }
             target = 0;
-            defense = fn_8022B2CC(pokemon, waza, side,
+            defense = fightSeqSelectTarget(pokemon, waza, side,
                 _fightMenuFightTrainerAgbHeroSelectDefensePokemon__FP15FightOutPokemonUsUs, 1, 0, -1);
             if (defense != 0) {
                 target = defense;
@@ -1889,7 +1889,7 @@ u32 _fightMenuFightTrainerGcHeroOpenMenuSubWaza__FP13FIGHT_TRAINERP15FightOutPok
   extern void fightMainWaitFrame(u32);
   extern u32 wazaGetStatus(u32, u16, u32, u32);
   extern void winMsgCloseFight(u32);
-  extern u32 fn_8022B2CC(u32, u16, u32, void *, u32, u32, s32);
+  extern u32 fightSeqSelectTarget(u32, u16, u32, void *, u32, u32, s32);
   extern u32 _fightMenuFightTrainerGcHeroOpenMenuSubWazaSelectDefensePokemon__FP15FightOutPokemonUsUs(u32, u16, u32);
   extern u32 fightTargetGetTragetPtrToRelativeHostSideFightTargetId(u32, u32);
   extern void fightOutPokemonCreateFightActionAttackWaza(u32, u32, u32, u32, char *, u16, u32, s8, u32);
@@ -1981,7 +1981,7 @@ u32 _fightMenuFightTrainerGcHeroOpenMenuSubWaza__FP13FIGHT_TRAINERP15FightOutPok
     }
     lbl_8047B678 = 0;
     attacker = carrier;
-    result = fn_8022B2CC(attacker, waza, side, _fightMenuFightTrainerGcHeroOpenMenuSubWazaSelectDefensePokemon__FP15FightOutPokemonUsUs, 1, 0, -1);
+    result = fightSeqSelectTarget(attacker, waza, side, _fightMenuFightTrainerGcHeroOpenMenuSubWazaSelectDefensePokemon__FP15FightOutPokemonUsUs, 1, 0, -1);
     target = result;
     if (((fn_801F18DC(0) == 1) && (lbl_8047B678 == 0)) && (num >= 2))
     {
@@ -2030,7 +2030,7 @@ u32 _fightMenuFightTrainerGcHeroOpenMenuSubItem__FP13FIGHT_TRAINERP15FightOutPok
     extern void menuFightStatusSetActive(u32, u32);
     extern u8 fightTrainerIsSelectedItemBall(u32);
     extern u32 fightTargetGetTragetPtrToRelativeHostSideFightTargetId(u32, u32);
-    extern void fn_8022FF90(void);
+    extern void wsRunEndOfTurnScript2(void);
     extern u8 fightOutPokemonCheckFightOut(u32);
     extern void pokemonSetStatus(u32, u32, u32, u32, u32);
     extern void fightOutPokemonCreateFightActionUseItem(u32, u32, u32, u32, char*, u16, u32, u8, u32);
@@ -2111,7 +2111,7 @@ u32 _fightMenuFightTrainerGcHeroOpenMenuSubItem__FP13FIGHT_TRAINERP15FightOutPok
             useSlot = 0;
         } else {
             if (itemGetStatus(0, item, 2, 0) == 2) {
-                fn_8022FF90();
+                wsRunEndOfTurnScript2();
                 for (i = 0; i < 2; i++) {
                     pokemon = fightTrainerGetStatus(trainer, 0, 0x46, i);
                     if (pokemon != 0 && wasOut[i] == 0 && fightOutPokemonCheckFightOut(pokemon) == 1) {

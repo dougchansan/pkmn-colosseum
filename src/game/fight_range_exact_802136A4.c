@@ -11,7 +11,7 @@ extern void fightOutPokemonInitOneSelfTurn(void*);
 extern void statusSetStatus(u8, u32, u32, u16, u32, u32);
 extern u32 statusGetStatus(u8, u32, u32, u16, u32);
 
-s32 fn_802136A4(void* p)
+s32 _fightOutPokemonInitOneSelfTurnSub(void* p)
 {
     fightOutPokemonInitOneSelfTurn(p);
     return 1;
@@ -129,29 +129,29 @@ void WS_ITEMEND(void)
     lbl_8047B614 = 1;
 }
 
-u8* fn_80213A28(void)
+u8* wsCmdF5(void)
 {
     return lbl_8047B610++;
 }
 
-u8* fn_80213A38(void)
+u8* wsCmdF4(void)
 {
     return lbl_8047B610++;
 }
 
-u8* fn_80213A48(void)
+u8* wsCmdF3(void)
 {
     u8* pc = lbl_8047B610;
     lbl_8047B610 = pc + 5;
     return pc;
 }
 
-u8* fn_80213A58(void)
+u8* wsCmdF2(void)
 {
     return lbl_8047B610++;
 }
 
-u8* fn_80213A68(void)
+u8* wsCmdF1(void)
 {
     u8* pc = lbl_8047B610;
     lbl_8047B610 = pc + 5;

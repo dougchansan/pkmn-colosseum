@@ -63,18 +63,18 @@ extern u8  lbl_8047B614;
 extern u8  lbl_8047B626;
 extern void fn_80207448(void* p);
 extern void fightOutPokemonInitOneSelfTurn(void* p);
-extern void fn_802249B8();
+extern void fightSeqSetTsuikaKouka();
 extern void fightApplyDamageVariance(char, char);
-extern void fn_802274F0(u32, char, char, char);
+extern void fightSeqWazaTypeCalc(u32, char, char, char);
 extern void* fn_801F025C();
 extern u8 fn_802624CC();
 extern u8 lbl_80478D78[1];
 extern void fn_801F37B0();
-extern u32 fn_8022E1F8();
+extern u32 _fightDoTraceSub();
 extern s32 _fightSeqWsKuroikiriSub__FPvUsPv(void*, u16, void*);
 extern u8  fn_80136468();
 extern u8  fn_802025B8();
-extern u32 fn_80214CFC();
+extern u32 _wsAnnounceEnemyTokuseiSub();
 extern int  fn_801F000C();
 extern int  fightMainWaitFrame();
 extern void fn_8026246C();
@@ -91,12 +91,12 @@ extern void  fn_801FE468(void* context, u8* dest);
 extern void  fightMenuSubMenuLvupStatus(void* a, void* b, void* c);
 extern void  fightMenuOpenLevelUpStatusMenu(void* a, u32 flag);
 extern void  fn_802622E4(void);
-extern u32 fn_80211A78();
+extern u32 _fightCheckKiaipanchiSub();
 extern void wazaSequenceSysFreeAll();
 extern u8   lbl_8047B625;
 extern void fightOutPokemonWritePokemonJoutaiDataId();
 extern void* lbl_8047B62C;
-extern void  fn_80211B94(void* a, void* b, u8 c);
+extern void  wsRunScript(void* a, void* b, u8 c);
 extern u8    fn_80207AE0(void* obj, u8 v);
 extern void* fightFloorGetFightOutPokemonPtrAryPokemonTokuseiDataIdFirst(u32 a, u8 b, u32 c, u32 d, u32 e);
 extern void  fn_801254B4(void* a, u32 b, u32 c, u32 d, u32 e);
@@ -110,7 +110,7 @@ extern u16  fn_801F1C18(u32, void*, void*, u32, u32);
 extern u8   fn_801F4C14(u32, u16, u32, u16, u32);
 extern u32  fn_802096E8(void*);
 extern u32  fn_80077AF4(void);
-extern u8    fn_8021B910();
+extern u8    wsStatBuffChange();
 extern u8    lbl_80279F7C[12];
 extern void  fn_802653FC(void* ptr, u16 a, s32 b);
 extern u8    fn_80203E0C(void* ctx);
@@ -123,7 +123,7 @@ extern u8    fn_801F6E44(u32 param1, u32 param2);
 extern void  fn_801F6DF0(u32 param1, u32 param2, u32 param3);
 extern u32   fn_80203B5C(void* ctx, u32 param);
 extern u32   fn_80205184(void* ctx);
-extern u8    fn_80229934(u32 param2, u32 param1, u32 param3);
+extern u8    fightCheckAccuracyRules(u32 param2, u32 param1, u32 param3);
 extern u16  fn_80205224();
 extern void fn_80202810();
 extern u8   fn_802062FC();
@@ -171,7 +171,7 @@ extern u8   fn_802038A4();
 extern void fn_80207C24();
 extern void fightOutPokemonSetPokemonJoutai08();
 extern s32  fn_80232110();
-extern u32 fn_8022E34C();
+extern u32 _fightDoIkakuSub();
 extern u8   fn_801F453C();
 extern u8   lbl_8047B628;
 extern u8   lbl_80379945[];
@@ -194,7 +194,7 @@ extern u8  fn_801DDD28();
 extern void wazaSequenceSysStartWaza();
 extern u16 lbl_8047B60C;
 extern int fn_80215008();
-extern u32 fn_8022B2CC();
+extern u32 fightSeqSelectTarget();
 extern void fn_801F6EEC();
 extern void fightSideInitJoutaiDataId();
 extern void fn_801FBC20();
@@ -225,7 +225,7 @@ extern s32 fightTrainerAiWazaValueNull();
 
 
 
-/* fn_80222C44 */
+/* wsCmd24 */
 #define fn_8011BEB4 wazaGetStatus
 #define fn_801C2D5C battleCameraDoFull
 #define fn_801C2D68 battleCameraDoSimple
@@ -245,7 +245,7 @@ extern s32 fightTrainerAiWazaValueNull();
 #define fn_802659A4 fightTimerCommandBlock
 #define fn_802659F8 fightTimerCommandStart
 #define fn_80265A6C fightTimerCommandInit
-void fn_80222C44(void) {
+void wsCmd24(void) {
     extern u32 fn_801F025C();
     extern u32 fn_80205184();
     extern u32 fn_801F54A4();
@@ -269,8 +269,8 @@ void fn_80222C44(void) {
     extern void fn_802659A4();
     extern void fn_802658C8();
     extern void fn_801F37B0();
-    extern void fn_802230BC();
-    extern void fn_80222EF0();
+    extern void _wsCmd24SelectIrekaeSub();
+    extern void _fightCheckFaintedFightOutPokemonSub();
 
     u16 a17;
     u16 a16;
@@ -344,7 +344,7 @@ opByteCheck:
     fn_801C3430();
     h = battleCameraSelect(0);
     fn_80261AD0(-1);
-    fn_801F2B5C(0, (u32)fn_802230BC, 0, 1);
+    fn_801F2B5C(0, (u32)_wsCmd24SelectIrekaeSub, 0, 1);
     fn_80261954(0);
     if ((u8)h == 1) {
         fn_801C2D68();
@@ -361,7 +361,7 @@ opByteCheck:
     return;
 
 msgAdvance:
-    fn_801F37B0(0, (u32)fn_80222EF0, 0, 0);
+    fn_801F37B0(0, (u32)_fightCheckFaintedFightOutPokemonSub, 0, 0);
 advance:
     lbl_8047B610 = lbl_8047B610 + 5;
 }
@@ -385,8 +385,8 @@ advance:
 #undef fn_802659F8
 #undef fn_80265A6C
 
-/* fn_80222EF0 */
-u32 fn_80222EF0(u32 r3)
+/* _fightCheckFaintedFightOutPokemonSub */
+u32 _fightCheckFaintedFightOutPokemonSub(u32 r3)
 
 {
     extern void pokemonInit();
@@ -398,7 +398,7 @@ u32 fn_80222EF0(u32 r3)
     extern u8 fightOutPokemonCheckFightOut();
     extern void fightOutPokemonInit();
     extern void fightPokemonInit();
-    extern void fn_80211B94();
+    extern void wsRunScript();
     extern void* lbl_8047B62C;
     extern u8 lbl_8037879E[];
   void* ctx;
@@ -446,7 +446,7 @@ u32 fn_80222EF0(u32 r3)
         fightPokemonInit(uVar1);
         fightPokemonInit(uVar2);
       }
-      fn_80211B94(lbl_8047B62C,(u32)lbl_8037879E,0);
+      wsRunScript(lbl_8047B62C,(u32)lbl_8037879E,0);
     }
   }
   return 1;

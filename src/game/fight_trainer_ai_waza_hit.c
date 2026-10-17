@@ -25,8 +25,8 @@ s32 _fightTrainerAiWazaHitCheck(void* ai, void* self, u16 waza, void* target, u3
     extern u16 fightOutPokemonGetJoutaiParam(void*, u32);
     extern u8 fn_80237288(void*, void*);
     extern u8 fightTrainerAiCheckGuard(void*, void*, u16);
-    extern u8 fn_80229934(u16, void*, void*);
-    extern u8 fn_80229B70(u16);
+    extern u8 fightCheckAccuracyRules(u16, void*, void*);
+    extern u8 fightIsWazaThunderInRain(u16);
     extern u8 fn_80229BD8(u16);
 
     void* list[8];
@@ -77,7 +77,7 @@ s32 _fightTrainerAiWazaHitCheck(void* ai, void* self, u16 waza, void* target, u3
         return 1;
     }
 
-    if (fn_80229934(waza, self, target) == 1) {
+    if (fightCheckAccuracyRules(waza, self, target) == 1) {
         return 0;
     }
     if (fightTrainerAiCheckGuard(ai, target, waza) == 1) {
@@ -98,7 +98,7 @@ s32 _fightTrainerAiWazaHitCheck(void* ai, void* self, u16 waza, void* target, u3
             return 0;
         }
     }
-    if (fn_80229B70(waza) == 1) {
+    if (fightIsWazaThunderInRain(waza) == 1) {
         return -1;
     }
     return fn_80229BD8(waza) == 1 ? -1 : 1;

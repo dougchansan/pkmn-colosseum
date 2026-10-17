@@ -1,6 +1,6 @@
 /**
  * @file fight_range_exact_8022808C.c
- * @brief Exact island 0x8022808C - 0x802282D8 (fn_8022808C), moved out of
+ * @brief Exact island 0x8022808C - 0x802282D8 (wsCmd03), moved out of
  *        fight_range_80211A00.c.
  */
 #include "dolphin/types.h"
@@ -9,9 +9,9 @@ extern u8* lbl_8047B610;
 extern u8 lbl_80478D78[8];
 extern u32 lbl_8047B618;
 extern void* lbl_8047B62C;
-extern void fn_80211B94(void*, void*, u8);
+extern void wsRunScript(void*, void*, u8);
 
-void fn_8022808C(void)
+void wsCmd03(void)
 
 {
     extern u32 wazaGetStatus();

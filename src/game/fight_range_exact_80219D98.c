@@ -8,7 +8,7 @@ extern u8 figthOutPokemonGetLevel(void* context);
 extern void wazaSetStatus(
     void* ptr, u16 dataId, u16 status, u32 index, u32 value);
 
-void fn_80219D98(void)
+void wsCmd9F(void)
 {
     void* context = fightTargetGetPtrAsNowFightType(0x11, 0);
     void* move = (void*)pokemonGetStatus(context, 0, 0xd9, 0);

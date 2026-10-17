@@ -1,7 +1,7 @@
 /**
  * @file fight_range_8021A338.c
- * @brief Fight sequence carve, 0x8021A338 - 0x8021A6CC (fn_8021A338,
- *        fn_8021A478), linked.
+ * @brief Fight sequence carve, 0x8021A338 - 0x8021A6CC (wsCmd9C,
+ *        wsCmd9B), linked.
  *
  * Built with GC/1.3.2 at -O4,s (configure.py). Under GC/1.3 the scheduler
  * issues the flag-byte store ahead of the ori/addi that feeds the following
@@ -14,7 +14,7 @@ extern u8* lbl_8047B610;
 extern u8 lbl_80478D78[1];
 extern u32 lbl_8047B618;
 
-void fn_8021A338(void)
+void wsCmd9C(void)
 
 {
     extern void wazaSetStatus();
@@ -64,7 +64,7 @@ done:
   return;
 }
 
-void fn_8021A478(void)
+void wsCmd9B(void)
 
 {
     extern void wazaSetStatus();

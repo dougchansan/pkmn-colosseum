@@ -508,7 +508,7 @@ static inline void fightOutPokemonCureJoutaiInline(void* fo, u16 id)
  * encore move (2); with `doIt` set, queues that move as its action. */
 u8 fightOutPokemonCheckFightActionWazaSelect(void* fighter, u8 doIt) {
     extern u32 fightFloorGetStatus(u32 floor, u32 index, u32 status, u32 subindex);
-    extern u32 fn_8022B2CC(void* fighter, u16 waza, u16 target, u32 a, u32 b, u32 c, s32 d);
+    extern u32 fightSeqSelectTarget(void* fighter, u16 waza, u16 target, u32 a, u32 b, u32 c, s32 d);
     extern u32 fightTargetGetTragetPtrToRelativeHostSideFightTargetId(u32 side, u16 target);
     extern void fightWazaCreate(void* waza, s8 slot, u16 wazaId, u32 target, u32 flag);
     extern u8 fightActionCreate(void* action, void* parent, void* fighter, u32 kind, u32 arg, void* data);
@@ -534,7 +534,7 @@ u8 fightOutPokemonCheckFightActionWazaSelect(void* fighter, u8 doIt) {
     if (fightOutPokemonGetOutOkWazaBanmeAry(fighter) == 1) {
         if (doIt != 0) {
             targetPtr = fightTargetGetTragetPtrToRelativeHostSideFightTargetId(
-                fn_8022B2CC(fighter, 0xA5, target, 0, 1, 1, -1), target);
+                fightSeqSelectTarget(fighter, 0xA5, target, 0, 1, 1, -1), target);
             ptr = pokemonGetStatus(fighter, 0, 0xD9, 0);
             if (ptr != NULL) {
                 fightWazaCreate(ptr, -1, 0xA5, targetPtr, 1);
@@ -556,7 +556,7 @@ u8 fightOutPokemonCheckFightActionWazaSelect(void* fighter, u8 doIt) {
             }
             wazaSlot = slot;
             targetPtr = fightTargetGetTragetPtrToRelativeHostSideFightTargetId(
-                fn_8022B2CC(fighter, waza, target, 0, 1, 1, -1), target);
+                fightSeqSelectTarget(fighter, waza, target, 0, 1, 1, -1), target);
             ptr = pokemonGetStatus(fighter, 0, 0xD9, 0);
             if (ptr != NULL) {
                 fightWazaCreate(ptr, wazaSlot, waza, targetPtr, 1);

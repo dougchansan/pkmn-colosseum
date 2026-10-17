@@ -23,7 +23,7 @@ s32 _WsWkcActSubJoutaiMigawari__FPvUsPv(void* ctx, u16 param2, void* param3) {
 #define fn_801254B4 pokemonSetStatus
 #define fn_801FECD4 fightOutPokemonIsUseHensinBuff
 #define fn_801FE7EC fightOutPokemonSetHensinPokemonStatusId
-s32 fn_802207D4(u32 ctx) {
+s32 _fightOutPokemonDoStockItemSub(u32 ctx) {
     extern u32 fn_8012640C();
     extern u16 fn_8020147C();
     extern u32 fn_801254B4();

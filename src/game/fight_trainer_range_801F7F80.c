@@ -751,7 +751,7 @@ void fightTrainerTimeOutSelectFightAction(void* unused, void* trainer, void* pok
     extern u8 fightOutPokemonCheckFightActionWazaSelect(void* trainer, u32 mode);
     extern u8 fightOutPokemonCheckCanOutOkWazaBanme(void* trainer, s32 slot, u32 field, u32 flags);
     extern void* fightOutPokemonGetPokemonPtr(void* trainer);
-    extern u32 fn_8022B2CC(void* trainer, u16 moveId, void* pokemon, u32 p3, u32 p4, u32 p5, s32 p6);
+    extern u32 fightSeqSelectTarget(void* trainer, u16 moveId, void* pokemon, u32 p3, u32 p4, u32 p5, s32 p6);
     extern void* fightOutPokemonCreateFightActionAttackWaza(
         void* ctx, void* motoAction, u32 kind, u32 buff,
         FightActionData* actionData, u32 moveId, u32 targetId, s8 slot, u8 mode);
@@ -773,7 +773,7 @@ void fightTrainerTimeOutSelectFightAction(void* unused, void* trainer, void* pok
     fightOutPokemonCreateFightActionAttackWaza(
         trainer, NULL, 0x13, 0, lbl_80375CA8, moveId,
         fightTargetGetTragetPtrToRelativeHostSideFightTargetId(
-            fn_8022B2CC(trainer, moveId, pokemon, 0, 1, 0, -1), pokemon),
+            fightSeqSelectTarget(trainer, moveId, pokemon, 0, 1, 0, -1), pokemon),
         i, 0);
 }
 

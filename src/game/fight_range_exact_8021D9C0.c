@@ -17,7 +17,7 @@ extern u16 lbl_8047B61C;
 
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (optimize_for_size on) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma optimize_for_size on
-void fn_8021D9C0(void) {
+void wsCmd74(void) {
     extern u32 fightTargetGetPtrAsNowFightType();
     extern void* fightFloorGetFightOutPokemonPtrToFightTrainerPtr();
     extern u8 fightOutPokemonIsGcHeroFightOutPokemon();
@@ -64,7 +64,7 @@ void fn_8021D9C0(void) {
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (optimize_for_size reset; optimize_for_size on) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma optimize_for_size reset
 #pragma optimize_for_size on
-void fn_8021DB78(void) {
+void wsCmd73(void) {
     extern u32 fightTargetGetPtrAsNowFightType();
     extern void* fightFloorGetFightOutPokemonPtrToFightTrainerPtr();
     extern u8 fightOutPokemonIsGcHeroFightOutPokemon();
@@ -107,17 +107,17 @@ void fn_8021DB78(void) {
 }
 
 #pragma optimize_for_size reset
-u8* fn_8021DD24(void) {
+u8* wsCmd72(void) {
     u8* pc = lbl_8047B610;
     lbl_8047B610 = pc + 5;
     return pc;
 }
 
-void fn_8021DD34(void) {
+void wsCmd70(void) {
     lbl_8047B610++;
 }
 
-void fn_8021DD44(void) {
+void wsCmd6F(void) {
     extern void* fightTargetGetPtrAsNowFightType();
     extern void fightOutPokemonSetVisibility();
     extern void* pokemonGetStatus();
@@ -133,15 +133,15 @@ void fn_8021DD44(void) {
     lbl_8047B610 += 2;
 }
 
-void fn_8021DDB8(void) {
+void wsCmd6E(void) {
     lbl_8047B610++;
 }
 
-void fn_8021DDC8(void) {
+void wsCmd6D(void) {
     lbl_8047B610++;
 }
 
-void fn_8021DDD8(void) {
+void wsCmd6C(void) {
     extern void fightPokemonToMenuLvupStatus();
     extern void fightMenuCloseLevelUpStatusMenu();
     u8 buf1[24];
@@ -154,11 +154,11 @@ void fn_8021DDD8(void) {
     lbl_8047B610 += 1;
 }
 
-void fn_8021DE3C(void) {
+void wsCmd6B(void) {
     lbl_8047B610++;
 }
 
-void fn_8021DE4C(void) {
+void wsCmd6A(void) {
     extern int fightTargetGetPtrAsNowFightType();
     extern int fightOutPokemonDoItemSoubi();
     extern u8 fightOutPokemonIsUseHensinBuff(void* trainer);
@@ -191,13 +191,13 @@ s32 fn_8021DF3C(void* arg) {
     return 1;
 }
 
-void fn_8021DF70(void) {
+void wsCmd67(void) {
     lbl_8047B610++;
 }
 
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (optimize_for_size on) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma optimize_for_size on
-void fn_8021DF80(void) {
+void wsCmd66(void) {
     extern u32 fightTargetGetPtrAsNowFightType();
     extern u32 pokemonGetStatus();
     extern u32 fightFloorGetStatus();
@@ -229,7 +229,7 @@ skip:
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (optimize_for_size reset; optimize_for_size on) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma optimize_for_size reset
 #pragma optimize_for_size on
-void fn_8021E04C(void) {
+void wsCmd65(void) {
     extern void wazaSequenceSysStartWaza();
     extern s8 fn_801DDD28();
     extern u32 pokemonGetStatus();
@@ -404,19 +404,19 @@ done:
 
 #pragma optimize_for_size reset
 #pragma opt_propagation reset
-u8* fn_8021E6CC(void) {
+u8* wsCmd62(void) {
     u8* pc = lbl_8047B610;
     lbl_8047B610 = pc + 2;
     return pc;
 }
 
-u8* fn_8021E6DC(void) {
+u8* wsCmd61(void) {
     u8* pc = lbl_8047B610;
     lbl_8047B610 = pc + 2;
     return pc;
 }
 
-u8* fn_8021E6EC(void) {
+u8* wsCmd60(void) {
     u8* pc = lbl_8047B610;
     lbl_8047B610 = pc + 2;
     return pc;
@@ -531,7 +531,7 @@ void fn_8021E754(void) {
     lbl_8047B610 = lbl_8047B610 + 5;
 }
 
-void fn_8021E9F4(void) {
+void wsCmd5C(void) {
     extern u32 fightTargetGetPtrAsNowFightType();
     extern u32 pokemonGetStatus();
     extern u8 fightWazaIsHit();
@@ -549,7 +549,7 @@ void fn_8021E9F4(void) {
     lbl_8047B610 = lbl_8047B610 + 2;
 }
 
-void fn_8021EA94(void) {
+void wsCmd5B(void) {
     extern u32 fightMenuYesNo();
     if ((u8)fightMenuYesNo() == 1) {
         lbl_8047B642++;
@@ -561,7 +561,7 @@ void fn_8021EA94(void) {
 
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (optimize_for_size on) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma optimize_for_size on
-void fn_8021EAE8(void) {
+void wsCmd5A(void) {
     extern u32 GSmsgGetGSchar();
     extern u8 wazaGetStatus(u32, u16, u32, u32);
     extern void pokemonWazaCreate(u32, u16, u16);
@@ -663,7 +663,7 @@ void WS_WAZAOBOE_CHECK(void) {
 }
 
 #pragma optimize_for_size reset
-void fn_8021ECF8(void) {
+void wsCmd71(void) {
     extern s32 wazaGetStatus();
     extern u32 GSmsgGetGSchar();
     extern u32 fightPokemonGetNicknamePtr();
@@ -678,7 +678,7 @@ void fn_8021ECF8(void) {
 
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (optimize_for_size on) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma optimize_for_size on
-void fn_8021ED70(void) {
+void wsCmd58(void) {
     extern u8 fightOutPokemonCheckFightOut();
     extern void fightOutPokemonModosuEffect();
     extern u32 fightTargetGetPtrAsNowFightType();
@@ -699,11 +699,11 @@ void fn_8021ED70(void) {
 }
 
 #pragma optimize_for_size reset
-void fn_8021EE38(void) {
+void wsCmd57(void) {
     lbl_8047B610 = lbl_8047B610 + 1;
 }
 
-void fn_8021EE48(void) {
+void wsCmd56(void) {
     extern u32 fightTargetGetPtrAsNowFightType();
     extern int fightOutPokemonGetVoiceSndId();
     u32 ctx = fightTargetGetPtrAsNowFightType(*(u8*)(lbl_8047B610 + 1), 0);
@@ -711,23 +711,23 @@ void fn_8021EE48(void) {
     lbl_8047B610 = lbl_8047B610 + 2;
 }
 
-void fn_8021EE98(void) {
+void wsCmd55(void) {
     std130_soundUnk_801653cc(*(u16*)(lbl_8047B610 + 1), 0, 0xff);
     lbl_8047B610 = lbl_8047B610 + 3;
 }
 
-void fn_8021EED4(void) {
+void wsCmd54(void) {
     soundStart(*(u16*)(lbl_8047B610 + 1), 0, 0xff, 0);
     lbl_8047B610 = lbl_8047B610 + 3;
 }
 
-void fn_8021EF14(void) {
+void wsCmd53(void) {
     lbl_8047B610 = lbl_8047B610 + 2;
 }
 
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (optimize_for_size on) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma optimize_for_size on
-void fn_8021EF24(void) {
+void wsCmd52(void) {
     extern void wazaSetStatus();
     extern u32 fightTargetGetPtrAsNowFightType();
     extern void fightFloorCreateFightPokemonEnemyAryEnemySideAll();
@@ -742,7 +742,7 @@ void fn_8021EF24(void) {
     extern s8 fightOutPokemonIsZokuseiDataId();
     extern void fightWazaInitJoutai();
     extern void fightWazaBiosCopy();
-    extern void fn_80211B94();
+    extern void wsRunScript();
     extern void fn_8022D084();
     extern void fn_8022E410();
     extern void fightCheckRuiShadowSense();
@@ -789,7 +789,7 @@ void fn_8021EF24(void) {
         } else {
             uVar1 = (u32)lbl_80378DE2;
         }
-        fn_80211B94(lbl_8047B62C, uVar1, 0);
+        wsRunScript(lbl_8047B62C, uVar1, 0);
         fightWazaBiosCopy(uVar5, auStack_c8);
         iVar4 = fightSideGetStatus(uVar3, 0, 8, 0);
         if (iVar4 == 0) {
@@ -812,7 +812,7 @@ void fn_8021EF24(void) {
 }
 
 #pragma optimize_for_size reset
-void fn_8021F1CC(void) {
+void wsCmd51(void) {
     extern u32 fightTargetGetPtrAsNowFightType();
     extern u32 fightOutPokemonGetNicknamePtr();
     extern u32 fightOutPokemonGetNamePtr();
@@ -836,7 +836,7 @@ void fn_8021F1CC(void) {
 
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (optimize_for_size on) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma optimize_for_size on
-void fn_8021F24C(void) {
+void wsCmd50(void) {
     extern u32 fightTargetGetPtrAsNowFightType();
     extern void fightFloorSetTuusinErrorFightResult();
     extern u32 fightFloorGetFightOutPokemonPtrToFightTrainerPtr();
@@ -887,7 +887,7 @@ void fn_8021F24C(void) {
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (optimize_for_size reset; optimize_for_size on) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma optimize_for_size reset
 #pragma optimize_for_size on
-void fn_8021F39C(void) {
+void wsCmd4F(void) {
     extern u32 fightTargetGetPtrAsNowFightType();
     extern u32 fightFloorGetFightOutPokemonPtrToFightTrainerPtr();
     extern u8 fightFloorCheckFightActionFightOutPokemonIrekaeSelect();
@@ -908,7 +908,7 @@ void fn_8021F39C(void) {
 }
 
 #pragma optimize_for_size reset
-void fn_8021F458(void) {
+void wsCmd4E(void) {
     extern u32 fightFloorGetStatus();
     extern u32 fightTargetGetPtrAsNowFightType();
     extern u32 pokemonGetStatus();
@@ -968,7 +968,7 @@ void fn_8021F458(void) {
 
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (optimize_for_size on) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma optimize_for_size on
-void fn_8021F664(void) {
+void wsCmd4D(void) {
     extern void fightPokemonGetFaceSpriteId();
     extern u32 fn_80232D28();
     extern u32 pokemonCreateSequence();
@@ -1090,7 +1090,7 @@ void fn_8021F664(void) {
 }
 
 #pragma optimize_for_size reset
-void fn_8021F92C(void) {
+void wsCmd4C(void) {
     extern u32 fightTargetGetPtrAsNowFightType();
     extern u32 fightFloorGetFightOutPokemonPtrToFightTrainerPtr();
     extern u32 fightTrainerGetStatus();
@@ -1103,7 +1103,7 @@ void fn_8021F92C(void) {
 
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (optimize_for_size on) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma optimize_for_size on
-void fn_8021F998(void) {
+void wsCmd4B(void) {
     extern u32 fightTargetGetPtrAsNowFightType();
     extern u32 fightFloorGetStatus();
     extern u8 fn_802026E4();

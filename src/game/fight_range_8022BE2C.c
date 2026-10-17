@@ -1,6 +1,6 @@
 /**
  * @file fight_range_8022BE2C.c
- * @brief Held-item effects, 0x8022BE2C - 0x8022D20C (fn_8022BE2C,
+ * @brief Held-item effects, 0x8022BE2C - 0x8022D20C (fightOutPokemonDoSoubiItemCheck,
  *        fn_8022D084), with their switch tables (.data 0x8039A388 -
  *        0x8039A478).
  *
@@ -19,14 +19,14 @@
  * docs/RULE_EXCEPTIONS.md. The kinds table {1, 2, 3, 4, 5} is .sdata2
  * 0x8047E604 (4 mod 8; MWCC aligns each .sdata2 section to 8) and the
  * avail initializer {-1 x5} is .rodata 0x80279FF8, followed by
- * fn_8022FE20's table at 0x8027A00C (4 mod 8), so neither can be owned here.
+ * _fightClearRageSub's table at 0x8027A00C (4 mod 8), so neither can be owned here.
  */
 #include "dolphin/types.h"
 
 extern u8* lbl_8047B610;
 extern u8 lbl_80478D78[8];
 extern void* lbl_8047B62C;
-extern void fn_80211B94();
+extern void wsRunScript();
 extern u16 lbl_80279FD0[8];
 extern u8 lbl_80379B06[];
 
@@ -44,7 +44,7 @@ static inline u8 isBitSet(u32 bits, u8 bit)
     return (bits & (1 << bit)) != 0;
 }
 
-u32 fn_8022BE2C(u32 ctx, u8 mode) {
+u32 fightOutPokemonDoSoubiItemCheck(u32 ctx, u8 mode) {
     extern u16 lbl_80279FD0[8];
     extern u8  lbl_80379F58[];
     extern u8  lbl_80379A36[];
@@ -94,7 +94,7 @@ u32 fn_8022BE2C(u32 ctx, u8 mode) {
     extern void fn_80119F50();
     extern u32 pokemonInitJoutai();
     extern void fightOutPokemonResetSeqStatus();
-    extern void fn_80211B94();
+    extern void wsRunScript();
     u32 t2;
     u32 pp;
     s32 c;
@@ -678,7 +678,7 @@ u32 fn_8022BE2C(u32 ctx, u8 mode) {
             break;
         }
         if (msg != 0) {
-            fn_80211B94(lbl_8047B62C, msg, 0);
+            wsRunScript(lbl_8047B62C, msg, 0);
         }
     }
     return result;
@@ -726,7 +726,7 @@ u8 fn_8022D084(void* ctx) {
             fightFloorSetStatus(0, 0, 0x4b, 0, (u32)ctx);
             fightFloorSetStatus(0, 0, 0x36, 0, (u32)ctx);
             fightFloorSetStatus(0, 0, 0x49, 0, (u32)ctx);
-            fn_80211B94(lbl_8047B62C, (void*)&lbl_80379B06, 0);
+            wsRunScript(lbl_8047B62C, (void*)&lbl_80379B06, 0);
         }
         break;
     }

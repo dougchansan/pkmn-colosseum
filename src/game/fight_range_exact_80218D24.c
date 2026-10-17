@@ -2,7 +2,7 @@
 
 extern u8* lbl_8047B610;
 
-void fn_80218D24(void)
+void wsCmdA9(void)
 {
     extern u32 GSrand();
     extern void wazaSetStatus();
@@ -13,7 +13,7 @@ void fn_80218D24(void)
     extern u32 fightFloorGetStatus();
     extern u8 fightOutPokemonCheckCanOutOkWazaBanme();
     extern u32 fightOutPokemonGetPokemonPtr();
-    extern int fn_8022B2CC();
+    extern int fightSeqSelectTarget();
     extern u16 lbl_8047B60C;
     extern u32 lbl_8047B618;
     u8 bVar1;
@@ -106,7 +106,7 @@ choose_move:
     wazaSetStatus(uVar4, 0, 0x26, 0, (int)sVar10);
     lbl_8047B618 = lbl_8047B618 & 0xfffffbff;
     floorTarget =
-        fn_8022B2CC(uVar2, lbl_8047B60C, uVar6, 0, 1, 1, (void*)0xffffffff);
+        fightSeqSelectTarget(uVar2, lbl_8047B60C, uVar6, 0, 1, 1, (void*)0xffffffff);
     fightFloorSetStatus(0, 0, 0x43, 0, floorTarget);
     lbl_8047B610 = (u8*)*(u32*)(lbl_8047B610 + 1);
 done:

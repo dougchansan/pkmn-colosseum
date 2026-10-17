@@ -1,6 +1,6 @@
 /**
  * @file fight_range_exact_80224740.c
- * @brief Exact island 0x80224740 - 0x802247D0 (fn_80224740), moved out of
+ * @brief Exact island 0x80224740 - 0x802247D0 (wsCmd18), moved out of
  *        fight_range_80211A00.c.
  */
 #include "dolphin/types.h"
@@ -9,13 +9,13 @@ extern u8* lbl_8047B610;
 extern u8 lbl_80478D78[8];
 extern u32 lbl_8047B618;
 extern void* lbl_8047B62C;
-extern void fn_80211B94(void*, void*, u8);
+extern void wsRunScript(void*, void*, u8);
 
 #define fn_801F025C fightTargetGetPtrAsNowFightType
 #define fn_80202810 fightOutPokemonWriteJoutaiDataId
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (optimize_for_size on) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma optimize_for_size on
-void fn_80224740(void)
+void wsCmd18(void)
 
 {
     extern u32 fn_801F025C();

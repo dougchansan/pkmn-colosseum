@@ -5,9 +5,9 @@
 #include "dolphin/types.h"
 
 extern u8* lbl_8047B610;
-extern void fn_8022B29C(s32);
+extern void fightGetRandomOpponent(s32);
 
-u32 fn_8022A504(u32 r3, u32 r4, u32* r5)
+u32 _fightCheckYokodoriSub(u32 r3, u32 r4, u32* r5)
 
 {
     extern u32 fightOutPokemonGetUseWazaDataId();
@@ -24,7 +24,7 @@ u32 fn_8022A504(u32 r3, u32 r4, u32* r5)
     extern void fightOutPokemonSetHensinPokemonStatusId();
     extern void fightOutPokemonWriteJoutaiDataId();
     extern void fightFloorSetStatus();
-    extern void fn_80211B94();
+    extern void wsRunScript();
     extern void* lbl_8047B62C;
     extern u8 lbl_8037919D[];
     void* context;
@@ -75,7 +75,7 @@ u32 fn_8022A504(u32 r3, u32 r4, u32* r5)
         }
         fightOutPokemonWriteJoutaiDataId(context, 0x33);
         fightFloorSetStatus(0, 0, 0x4b, 0, context);
-        fn_80211B94(lbl_8047B62C, lbl_8037919D, 0);
+        wsRunScript(lbl_8047B62C, lbl_8037919D, 0);
         state[1] = (u32)context;
     }
     return 1;
@@ -109,9 +109,9 @@ u32 fn_8022A504(u32 r3, u32 r4, u32* r5)
 #define fn_802099AC fightWazaCreate
 #define fn_8026246C fightMenuCloseMsg
 #define fn_802624CC fightMenuOpenMsg
-/* RULE-EXCEPTION(user-approved): opt_lifetimes off for fn_8022A6C8 only; the unit builds with -O4,s — see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): opt_lifetimes off for _wsHitCheckSub only; the unit builds with -O4,s — see docs/RULE_EXCEPTIONS.md */
 #pragma opt_lifetimes off
-u32 fn_8022A6C8(u32 r3)
+u32 _wsHitCheckSub(u32 r3)
 
 {
     extern u16 GSrand();
@@ -152,8 +152,8 @@ u32 fn_8022A6C8(u32 r3)
     extern void fn_80208750();
     extern void fn_80208ED0();
     extern void fn_802099AC(u32, s8, u16, u32, u32);
-    extern int fn_8022B2CC();
-    extern int fn_8022BE2C();
+    extern int fightSeqSelectTarget();
+    extern int fightOutPokemonDoSoubiItemCheck();
     extern int fn_80232110();
     extern void fn_8026246C();
     extern void fn_802624CC();
@@ -246,7 +246,7 @@ u32 fn_8022A6C8(u32 r3)
             flags = lbl_8047B618 & 0xfffffbff;
             *(volatile u32*)&lbl_8047B618 = flags;
             *(volatile u32*)&lbl_8047B618 = flags | 0x200000;
-            targetOutPokemon = fn_8022B2CC(r3,(u16)uVar2,uVar11,(u32)fn_8022B29C,1,1, (void*)0xffffffff);
+            targetOutPokemon = fightSeqSelectTarget(r3,(u16)uVar2,uVar11,(u32)fightGetRandomOpponent,1,1, (void*)0xffffffff);
             relativeTarget = fn_801F0134(targetOutPokemon, uVar11);
             fn_802099AC(uVar4, selectedSlot, (u16)uVar2, relativeTarget, 0);
             fn_801F4C14(0,0,0x43,0,targetOutPokemon);
@@ -378,7 +378,7 @@ after_fallback_7710:
             else {
               bVar1 = 0;
             }
-            if ((bVar1 == 1) && (cVar15 = fn_8022BE2C(r3,2), cVar15 != 0)) {
+            if ((bVar1 == 1) && (cVar15 = fightOutPokemonDoSoubiItemCheck(r3,2), cVar15 != 0)) {
               fn_80208404(r3,0,1,3);
               fn_802086E8(r3,0x85,3);
               lbl_8047B610 = lbl_803799F4;

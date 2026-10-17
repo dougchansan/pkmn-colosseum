@@ -1,9 +1,9 @@
 /**
  * @file fight_range_80211A00_suffix_80216A58.c
  * @brief Beat Up damage and neighbours, 0x80216A58 - 0x80217018
- *        (fn_80216A58, fn_80216CF8, fn_80216D9C, fn_80216F50).
+ *        (wsCmdC4, fn_80216CF8, wsCmdC3, wsCmdC2).
  *
- * Standalone source at GC/1.3 -O4,s with no pragmas. fn_80216A58 walks the
+ * Standalone source at GC/1.3 -O4,s with no pragmas. wsCmdC4 walks the
  * party with heroGetStatus(party, 3, index): the index is the third argument,
  * which is why retail loads the loop test into r5. Its locals follow the
  * declaration order found with the colouring simulator; the damage division is
@@ -12,7 +12,7 @@
 #include "dolphin/types.h"
 extern u8* lbl_8047B610;
 extern u8 lbl_80478D78[1];
-void fn_80216A58(void)
+void wsCmdC4(void)
 {
     extern u32 fightTargetGetPtrAsNowFightType();
     extern u32 pokemonGetStatus();
@@ -130,7 +130,7 @@ u32 fn_80216CF8(u32 p1, u32 p2, u16 p3, u32 p4, u8 p5) {
 #define fn_8012640C pokemonGetStatus
 #define fn_80205184 fightOutPokemonGetUseWazaDataId
 #define fn_8011BEB4 wazaGetStatus
-void fn_80216D9C(void)
+void wsCmdC3(void)
 {
     extern u32 fn_8011BEB4();
     extern u32 fn_8012640C();
@@ -188,7 +188,7 @@ void fn_80216D9C(void)
   return;
 }
 
-void fn_80216F50(void)
+void wsCmdC2(void)
 {
     extern u32 fightTargetGetPtrAsNowFightType();
     extern void fightFloorSetStatus();

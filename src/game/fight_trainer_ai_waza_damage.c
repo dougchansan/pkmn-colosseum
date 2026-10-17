@@ -1008,14 +1008,14 @@ void _fightTrainerAiWazaDamage123SubPre__FP13FIGHT_TRAINERUsP15FightOutPokemonP1
     extern void wazaSetStatus(u32, u32, u32, u32, u32);
     extern u32 wazaGetStatus(u32, u32, u32, u32);
     extern u32 pokemonGetStatus(u32, u32, u32, u32);
-    extern u32 fn_80217BD0(u32);
+    extern u32 fightSeqGetOngaeshiIryoku(u32);
     extern u32 fn_8023842C(void*, u32);
     u32 value;
     u32 amount;
 
     value = pokemonGetStatus(param, 0, 0xd9, 0);
     wazaGetStatus(value, 0, 0x2f, 0);
-    amount = fn_80217BD0(fn_8023842C(ctx, param));
+    amount = fightSeqGetOngaeshiIryoku(fn_8023842C(ctx, param));
     wazaSetStatus(value, 0, 0x2f, 0, amount & 0xFFFF);
 }
 
@@ -1049,14 +1049,14 @@ void _fightTrainerAiWazaDamage121SubPre__FP13FIGHT_TRAINERUsP15FightOutPokemonP1
     extern void wazaSetStatus(u32, u32, u32, u32, u32);
     extern u32 wazaGetStatus(u32, u32, u32, u32);
     extern u32 pokemonGetStatus(u32, u32, u32, u32);
-    extern u32 fn_80217BEC(u32);
+    extern u32 fightAiScale10Div25(u32);
     extern u32 fn_8023842C(void*, u32);
     u32 value;
     u32 amount;
 
     value = pokemonGetStatus(param, 0, 0xd9, 0);
     wazaGetStatus(value, 0, 0x2f, 0);
-    amount = fn_80217BEC(fn_8023842C(ctx, param));
+    amount = fightAiScale10Div25(fn_8023842C(ctx, param));
     wazaSetStatus(value, 0, 0x2f, 0, amount & 0xFFFF);
 }
 
@@ -1237,7 +1237,7 @@ void _fightTrainerAiWazaDamage099SubPre__FP13FIGHT_TRAINERUsP15FightOutPokemonP1
     extern void* pokemonGetStatus();
     extern u32 fn_802376EC();
     extern s32 fn_80237664();
-    extern u8 fn_80218B6C();
+    extern u8 fightSeqGetJitabataIryoku();
     extern void wazaSetStatus();
     void* a;
     u32 b;
@@ -1246,7 +1246,7 @@ void _fightTrainerAiWazaDamage099SubPre__FP13FIGHT_TRAINERUsP15FightOutPokemonP1
     a = pokemonGetStatus(param2, 0, 0xD9, 0);
     b = fn_802376EC(ctx, param2);
     t = fn_80237664(ctx, param2);
-    wazaSetStatus(a, 0, 0x2F, 0, fn_80218B6C(b, t));
+    wazaSetStatus(a, 0, 0x2F, 0, fightSeqGetJitabataIryoku(b, t));
 }
 
 /* Address: 0x80252894 | Size: 0x28 | Pattern: call_return_u16 */

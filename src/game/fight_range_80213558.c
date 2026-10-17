@@ -1,14 +1,14 @@
 /**
  * @file fight_range_80213558.c
  * @brief Fight turn-end joutai countdown carve, 0x80213558 - 0x802136A4
- *        (fn_80213558), linked.
+ *        (_fightSeqTurnEndSubFightOutPokemon), linked.
  *
  * Standalone copy of the shared candidate body, built at -O4,s
  * (configure.py) in place of the shared file's optimize_for_size pragma.
  */
 #include "dolphin/types.h"
 
-u32 fn_80213558(u32 r3, u32 r4, char* r5)
+u32 _fightSeqTurnEndSubFightOutPokemon(u32 r3, u32 r4, char* r5)
 
 {
     extern int fightOutPokemonGetJoutaiMigawariHp();

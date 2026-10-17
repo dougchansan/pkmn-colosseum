@@ -17,7 +17,7 @@ typedef struct SawaguContext {
 } SawaguContext;
 
 extern u32 fightTrainerGetStatus(void*, u32, u32, u32);
-extern u8 fn_80229C28(u32, u32);
+extern u8 fightIsWazaBlockedByMamoru(u32, u32);
 extern u32 pokemonGetStatus(u32, u32, u32, u32);
 extern u32 GSrand(void);
 extern u8 fightOutPokemonGetFightOutPokemonEnemyOumuWazaDataIdAry(u32, u16*);
@@ -36,7 +36,7 @@ u32 fightTrainerAiCheckGuard(void* trainer, u32 pokemon, u32 actionId)
     value = fightTrainerGetStatus(trainer, 0, 0x43, 0) & 0xFFFF;
     value = fightTrainerGetStatus(0, value, 2, 0) & 0xFFFF;
     if ((u8)fightTrainerGetStatus(0, value, 0x24, 0) == 1) {
-        if (fn_80229C28(pokemon, actionId) == 1) {
+        if (fightIsWazaBlockedByMamoru(pokemon, actionId) == 1) {
             return 1;
         }
     }

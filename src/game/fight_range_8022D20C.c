@@ -7,9 +7,9 @@ extern void* lbl_8047B62C;
 extern u8 lbl_80379945[];
 extern u8 lbl_8037994A[];
 
-extern void fn_80211B94(void* context, void* script, u8 preserveState);
+extern void wsRunScript(void* context, void* script, u8 preserveState);
 
-void fn_8022D20C(void* context) {
+void _wsCheckSynchronizeAttacker(void* context) {
     extern u16 fightOutPokemonGetTokuseiDataId();
     extern u32 fightOutPokemonCheckFightOut();
     extern void fightFloorSetStatus();
@@ -28,7 +28,7 @@ void fn_8022D20C(void* context) {
         lbl_80478D78[3] = lbl_8047B628;
         fightFloorSetStatus(0, 0, 0x4B, 0, (u32)context);
         lbl_8047B618 = lbl_8047B618 | 0x2000;
-        fn_80211B94(lbl_8047B62C, (void*)&lbl_80379945, 0);
+        wsRunScript(lbl_8047B62C, (void*)&lbl_80379945, 0);
     }
 }
 
@@ -51,11 +51,11 @@ void fn_8022D2CC(void* attacker, void* context) {
         lbl_80478D78[3] = lbl_8047B628 + 0x40;
         fightFloorSetStatus(0, 0, 0x4B, 0, (u32)context);
         lbl_8047B618 = lbl_8047B618 | 0x2000;
-        fn_80211B94(lbl_8047B62C, (void*)&lbl_80379945, 0);
+        wsRunScript(lbl_8047B62C, (void*)&lbl_80379945, 0);
     }
 }
 
-u32 fn_8022D394(u32 pokemon) {
+u32 _fightTokuseiCureJoutaiSub(u32 pokemon) {
     extern u8 fightOutPokemonCheckFightOut();
     extern u32 fightOutPokemonGetTokuseiDataId();
     extern u32 fightOutPokemonGetPokemonPtr();
@@ -160,7 +160,7 @@ u32 fn_8022D394(u32 pokemon) {
             break;
         }
 
-        fn_80211B94(lbl_8047B62C, lbl_8037994A, 0);
+        wsRunScript(lbl_8047B62C, lbl_8037994A, 0);
     }
 
 return_one:

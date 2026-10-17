@@ -6,11 +6,11 @@
 
 s32 fightTrainerAiWazaHit191(void* ctx, u32 param1, u32 param2, u32 param3) {
     extern s32 _fightTrainerAiWazaHitCheck(void* ctx, u32 param1, u32 param2, u32 param3, u32 one);
-    extern u8 fn_80229934(u32 param2, u32 param1, u32 param3);
+    extern u8 fightCheckAccuracyRules(u32 param2, u32 param1, u32 param3);
     extern u8 fn_80237F74(void* ctx, u32 a, u32 type);
     s32 gate = _fightTrainerAiWazaHitCheck(ctx, param1, param2, param3, 0xFFFF);
 
-    if (fn_80229934(param2, param1, param3) == 1) {
+    if (fightCheckAccuracyRules(param2, param1, param3) == 1) {
         return 0;
     }
     if (fn_80237F74(ctx, param1, 0x19) == 1) {
@@ -89,7 +89,7 @@ s32 fightTrainerAiWazaHit187(void* ctx, u32 param1, u32 param2, u32 param3) {
     extern s32 _fightTrainerAiWazaHitCheck(void* ctx, u32 param1, u32 param2, u32 param3, u32 zero);
     extern u8 fightTrainerAiCheckSawagu(void* ctx, u32 a);
     extern u8 fn_80237310(void* ctx, u32 a);
-    extern u8 fn_80229704(u32 type, u32 elem);
+    extern u8 fightAiCheckRule0E0F(u32 type, u32 elem);
     s32 gate;
 
     if (fn_80237F74(ctx, param3, 0x48) == 1) {
@@ -114,7 +114,7 @@ s32 fightTrainerAiWazaHit187(void* ctx, u32 param1, u32 param2, u32 param3) {
     if (fn_80237310(ctx, param3) == 0) {
         return 0;
     }
-    if (fn_80229704(8, param3) != 1) {
+    if (fightAiCheckRule0E0F(8, param3) != 1) {
         return 0;
     }
     if (gate == 0) {
@@ -234,13 +234,13 @@ u32 fightTrainerAiWazaHit178(void* ctx, u32 slot, u32 param, u32 extra) {
 
 s32 fightTrainerAiWazaHit177(void* ctx, u32 param1, u32 param2, u32 param3) {
     extern u16 fn_802383A4(void* ctx, u32 elem);
-    extern u8 fn_80216048(u32 elem);
+    extern u8 fightAiCanStealItem(u32 elem);
     extern u8 fn_80142984(u16 elem);
     extern u8 fn_80237F74(void* ctx, u32 a, u32 type);
     u16 A = fn_802383A4(ctx, param1);
     u16 B = fn_802383A4(ctx, param3);
 
-    if (fn_80216048(param1) == 0) {
+    if (fightAiCanStealItem(param1) == 0) {
         return 0;
     }
     if (A == 0 && B == 0) {

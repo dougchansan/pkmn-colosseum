@@ -938,7 +938,7 @@ u32 fn_80089F78(u32 port, u32 trainer, u32 slot, s32 irekae) {
     extern u8 fightFloorIsUseFightTimerCommand(s32 arg);
     extern u8 fightTimerCommandIsOver(void);
     extern u16 std103_battleGetResult(void);
-    extern void fn_8022B2CC(void* out, s32 waza, u16 fightType, void* callback, s32 a, s32 b,
+    extern void fightSeqSelectTarget(void* out, s32 waza, u16 fightType, void* callback, s32 a, s32 b,
                             s32 c);
     GbaBattleSnapshot snap;
     void* targets[4];
@@ -1095,7 +1095,7 @@ u32 fn_80089F78(u32 port, u32 trainer, u32 slot, s32 irekae) {
         wazaId = pokemonBiosGetPokemonWazaDataId(outPokemon, j);
         snap.moves[j] = GbaSwap16(wazaId);
         snap.pp[j] = pokemonBiosGetPokemonWazaPp(outPokemon, j);
-        fn_8022B2CC(out, wazaId, fightType, fn_8008A99C, 1, 0, -1);
+        fightSeqSelectTarget(out, wazaId, fightType, fn_8008A99C, 1, 0, -1);
         if (lbl_8047A678 != 0) {
             moveFlags |= 8 << (j * 4);
         }

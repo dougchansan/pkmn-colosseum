@@ -1068,7 +1068,7 @@ u32 fightOutPokemonCheckFightActionSelect(void* r3, u8 r4)
     extern void fightWazaCreate();
     extern u8 fightWazaCheckValid();
     extern void fightActionBiosSetBuffDataId();
-    extern u32 fn_8022B2CC();
+    extern u32 fightSeqSelectTarget();
     u16 count;
     void* waza;
     u16 wazaId;
@@ -1091,7 +1091,7 @@ u32 fightOutPokemonCheckFightActionSelect(void* r3, u8 r4)
                 wazaId = wazaGetStatus(waza, 0, 0x28, 0);
                 wazaArg = wazaGetStatus(waza, 0, 0x26, 0);
                 target = fightTargetGetTragetPtrToRelativeHostSideFightTargetId(
-                    fn_8022B2CC(r3, wazaId, count,
+                    fightSeqSelectTarget(r3, wazaId, count,
                                 _fightOutPokemonCheckFightActionSelectSub__FP15FightOutPokemonUsUs,
                                 1, 0, -1),
                     count);

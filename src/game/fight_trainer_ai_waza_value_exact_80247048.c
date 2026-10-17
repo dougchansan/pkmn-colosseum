@@ -238,7 +238,7 @@ s32 fightTrainerAiWazaValueHatakiotosu(void* ctx, void* param1, u32 param2, u32 
 u32 fightTrainerAiWazaValueDouguUbau(void* ctx, u32 param1, u32 param2, u32 param3) {
     extern u8 fn_80142984(u32);
     extern u32 fightOutPokemonGetPokemonPtr(u32);
-    extern u8 fn_80216048(u32);
+    extern u8 fightAiCanStealItem(u32);
     extern u8 fn_80237F74(void*, u32, u32);
     extern u32 fn_802383A4();
     extern u32 fn_80239984(u32, void*, u32);
@@ -255,7 +255,7 @@ u32 fightTrainerAiWazaValueDouguUbau(void* ctx, u32 param1, u32 param2, u32 para
     ownItem = fn_802383A4(battleCtx);
     targetItem = fn_802383A4(battleCtx, target);
     canSteal = 1;
-    if (fn_80216048(trainer) == 0) {
+    if (fightAiCanStealItem(trainer) == 0) {
         canSteal = 0;
     }
     if ((ownItem & 0xFFFF) != 0 || (targetItem & 0xFFFF) == 0xAF || (targetItem & 0xFFFF) == 0 ||

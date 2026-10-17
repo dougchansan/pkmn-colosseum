@@ -12,13 +12,13 @@ extern u32 lbl_8047B618;
 extern void* lbl_8047B62C;
 extern u8 lbl_80379F58[];
 extern u8 lbl_80379A22[];
-extern void fn_80211B94(void*, void*, u8);
-extern void fn_802274F0(u32, u8, u8, u8);
+extern void wsRunScript(void*, void*, u8);
+extern void fightSeqWazaTypeCalc(u32, u8, u8, u8);
 extern void fightApplyDamageVariance(u8, u8);
 
 #define fn_801F54A4 fightFloorGetStatus
 #define fn_802624CC fightMenuOpenMsg
-void fn_80226134(void) {
+void wsCmd14(void) {
     extern int fn_801F54A4();
     extern u8 fn_802624CC();
     u32* arr = *(u32**)(lbl_8047B610 + 1);
@@ -37,7 +37,7 @@ void fn_80226134(void) {
 
 #define fn_801F54A4 fightFloorGetStatus
 #define fn_802624CC fightMenuOpenMsg
-void fn_802261B0(void) {
+void wsCmd13(void) {
     extern int fn_801F54A4();
     extern u8 fn_802624CC();
     u32* arr = *(u32**)(lbl_8047B610 + 1);
@@ -56,7 +56,7 @@ void fn_802261B0(void) {
 
 #define fn_801F000C fightMainWaitFrame
 #define fn_8026246C fightMenuCloseMsg
-void fn_8022622C(void) {
+void wsCmd12(void) {
     if (lbl_80478D78[7] != 0) {
         fn_8026246C(fn_801F000C(*(u16*)(lbl_8047B610 + 1)));
         lbl_80478D78[7] = 0;
@@ -65,7 +65,7 @@ void fn_8022622C(void) {
 }
 
 #define fn_802624CC fightMenuOpenMsg
-void fn_80226284(void) {
+void wsCmd11(void) {
     extern u8 fn_802624CC();
     if (fn_802624CC(*(u32*)(lbl_8047B610 + 1)) == 1) {
         lbl_80478D78[7] = 1;
@@ -74,7 +74,7 @@ void fn_80226284(void) {
 }
 
 #define fn_802624CC fightMenuOpenMsg
-void fn_802262D0(void) {
+void wsCmd10(void) {
     extern u8 fn_802624CC();
     if (fn_802624CC(*(u32*)(lbl_8047B610 + 1)) == 1) {
         lbl_80478D78[7] = 1;
@@ -90,7 +90,7 @@ void fn_802262D0(void) {
 #define fn_8020990C fightWazaIsJoutaiDataId
 #define fn_80209960 fightWazaInitJoutaiDataId
 #define fn_80262334 fightMenuWazaKoukaMsg
-void fn_8022631C(void)
+void wsCmd0F(void)
 
 {
     extern u32 fn_801F025C();
@@ -99,7 +99,7 @@ void fn_8022631C(void)
     extern u8 fn_80209618();
     extern u8 fn_8020990C();
     extern void fn_80209960();
-    extern void fn_80211B94();
+    extern void wsRunScript();
     extern u8 fn_80262334();
     extern u32 fightOutPokemonGetSoubiItemDataId();
     extern void* lbl_8047B62C;
@@ -171,7 +171,7 @@ _else:
                     fn_80209960(uVar1,0x47);
                     fn_801F4C14(0,0,0x56,0,uVar3 & 0xffff);
                     fn_801F4C14(0,0,0x49,0,uVar2);
-                    fn_80211B94(lbl_8047B62C,(u32)lbl_80379BE7,0);
+                    wsRunScript(lbl_8047B62C,(u32)lbl_80379BE7,0);
                     return;
                   }
                 }
@@ -192,14 +192,14 @@ _else:
           fn_80209960(uVar1,0x44);
           fn_80209960(uVar1,0x41);
           fn_80209960(uVar1,0x42);
-          fn_80211B94(lbl_8047B62C,(u32)lbl_803791C7,0);
+          wsRunScript(lbl_8047B62C,(u32)lbl_803791C7,0);
           return;
         }
         cVar4 = fn_8020990C(uVar1,0x46);
         if (cVar4 == 1) {
           fn_80209960(uVar1,0x46);
           fn_80209960(uVar1,0x47);
-          fn_80211B94(lbl_8047B62C,(u32)lbl_803791BE,0);
+          wsRunScript(lbl_8047B62C,(u32)lbl_803791BE,0);
           return;
         }
         cVar4 = fn_8020990C(uVar1,0x47);
@@ -208,7 +208,7 @@ _else:
           fn_80209960(uVar1,0x47);
           fn_801F4C14(0,0,0x56,0,uVar3 & 0xffff);
           fn_801F4C14(0,0,0x49,0,uVar2);
-          fn_80211B94(lbl_8047B62C,(u32)lbl_80379BE7,0);
+          wsRunScript(lbl_8047B62C,(u32)lbl_80379BE7,0);
           return;
         }
         cVar4 = fn_8020990C(uVar1,0x45);
@@ -232,7 +232,7 @@ _join:
 
 #define fn_801F025C fightTargetGetPtrAsNowFightType
 #define fn_8012640C pokemonGetStatus
-void fn_802266EC(void) {
+void wsCmd0E(void) {
     extern void* fn_801F025C();
     extern void* fn_8012640C();
     fn_8012640C(fn_801F025C(0x11, 0), 0, 0xD9, 0);
@@ -245,7 +245,7 @@ void fn_802266EC(void) {
 #define fn_802096E8 fightWazaIsHit
 #define fn_801F4C14 fightFloorSetStatus
 #define fn_802624CC fightMenuOpenMsg
-void fn_80226730(void) {
+void wsCmd0D(void) {
     extern void* fn_801F025C();
     extern u8 fn_802096E8();
     extern u8 fn_801F4C14();
@@ -308,7 +308,7 @@ void fn_802267E8(void) {
             _threadSwitch();
         } while (1);
         fn_80202810(ctx, 0x14);
-        fn_80211B94(lbl_8047B62C, (void*)&lbl_80379A22, 0);
+        wsRunScript(lbl_8047B62C, (void*)&lbl_80379A22, 0);
         fightOutPokemonWritePokemonJoutaiDataId(ctx, 0x14, 0);
         fightOutPokemonSetPokemonJoutai08(ctx, 0x14, 0);
     }
@@ -318,7 +318,7 @@ void fn_802267E8(void) {
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (optimization_level 4; opt_lifetimes off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma optimization_level 4
 #pragma opt_lifetimes off
-void fn_80226914(void)
+void wsCmd0B(void)
 {
     extern void menuFightStatusStartAnimHP();
     extern u32 menuIsCheck(u32);
@@ -501,7 +501,7 @@ void fn_80226914(void)
 /* RULE-EXCEPTION(user-approved): local compiler-control pragmas kept for this function; the unit builds with unit-level flags — see docs/RULE_EXCEPTIONS.md */
 #pragma opt_lifetimes reset
 #pragma optimization_level 2
-void fn_80226F0C(void) {
+void wsCmd0A(void) {
     extern u32 lbl_8047B618;
     extern void _threadSwitch();
     extern u8 wazaSequenceSysIsAllEnd();
@@ -538,7 +538,7 @@ void fn_80226F0C(void) {
 
 /* RULE-EXCEPTION(user-approved): local compiler-control pragmas kept for this function; the unit builds with unit-level flags — see docs/RULE_EXCEPTIONS.md */
 #pragma optimization_level reset
-void fn_80226FD4(void)
+void wsCmd09(void)
 
 {
     extern void wazaSequenceSysStartWaza();
@@ -549,7 +549,7 @@ void fn_80226FD4(void)
     extern u8 fightWazaIsHit();
     extern u32 fightOutPokemonGetUseWazaDataId();
     extern u32 pokemonGetStatus();
-    extern void fn_80211B94();
+    extern void wsRunScript();
     extern void fightMenuAllFightOutPokemonCloseStatusMenu();
     extern void fn_80265598();
     extern u32 lbl_8047B618;
@@ -571,7 +571,7 @@ void fn_80226FD4(void)
     if (fightWazaIsHit(status) == 1) {
         if ((lbl_8047B618 & 0x80) != 0 && (u16)move != 0x90 &&
             (u16)move != 0xa4) {
-            fn_80211B94(lbl_8047B62C, lbl_80378964, 0);
+            wsRunScript(lbl_8047B62C, lbl_80378964, 0);
         } else {
             fightWazaDoEffectFunc(move, attacker, target,
                                   lbl_80379F58[0x160a1]);
@@ -694,6 +694,6 @@ void fightApplyDamageVariance(u8 r3, u8 r4)
   return;
 }
 
-void fn_80227490(void) { fn_802274F0(0, 1, 1, 0); }
+void wsCmd4A(void) { fightSeqWazaTypeCalc(0, 1, 1, 0); }
 
-void WS_TYPE_CHECK(void) { fn_802274F0(1, 1, 1, 0); }
+void WS_TYPE_CHECK(void) { fightSeqWazaTypeCalc(1, 1, 1, 0); }

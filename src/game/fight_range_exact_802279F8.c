@@ -1,6 +1,6 @@
 /**
  * @file fight_range_exact_802279F8.c
- * @brief Exact island 0x802279F8 - 0x80227DB8 (fn_802279F8, fn_80227C40),
+ * @brief Exact island 0x802279F8 - 0x80227DB8 (_fightSeqApplyAisyouToDamage, wsCmd05),
  *        moved out of fight_range_80211A00.c in address order.
  */
 #include "dolphin/types.h"
@@ -9,7 +9,7 @@ extern u8* lbl_8047B610;
 extern u8 lbl_80478D78[8];
 extern u32 lbl_8047B618;
 extern void* lbl_8047B62C;
-extern void fn_80211B94(void*, void*, u8);
+extern void wsRunScript(void*, void*, u8);
 
 #define fn_8011BBD8 wazaSetStatus
 #define fn_8011BEB4 wazaGetStatus
@@ -18,7 +18,7 @@ extern void fn_80211B94(void*, void*, u8);
 #define fn_8020981C fightWazaCheckWriteJoutaiDataId
 #define fn_8020990C fightWazaIsJoutaiDataId
 #define fn_80209960 fightWazaInitJoutaiDataId
-void fn_802279F8(u32 r3, u32 r4, u32 r5, u8 r6)
+void _fightSeqApplyAisyouToDamage(u32 r3, u32 r4, u32 r5, u8 r6)
 
 {
     extern void fn_8011BBD8();
@@ -99,7 +99,7 @@ void fn_802279F8(u32 r3, u32 r4, u32 r5, u8 r6)
 }
 
 /*
- * fn_80227C40 (0x80227C40)
+ * wsCmd05 (0x80227C40)
  *
  * Move-power modifier: derives a base power via fn_80232110(ctx1, ctx2,
  * sub, moveId, val2f, val30) then scales it by the field-0xD9 object's
@@ -112,7 +112,7 @@ void fn_802279F8(u32 r3, u32 r4, u32 r5, u8 r6)
 #define fn_8012640C pokemonGetStatus
 #define fn_8011BEB4 wazaGetStatus
 #define fn_8011BBD8 wazaSetStatus
-void fn_80227C40(void) {
+void wsCmd05(void) {
     extern u32 fn_80205184();
     extern u32 fn_801F025C();
     extern u32 fn_8012640C();

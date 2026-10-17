@@ -1,14 +1,14 @@
 /**
  * @file fight_range_candidate_802192B4.c
- * @brief Fight sequence commands, 0x802192B4 - 0x80219804 (fn_802192B4,
- *        fn_80219354, fn_802195A0, fn_802196A8).
+ * @brief Fight sequence commands, 0x802192B4 - 0x80219804 (wsCmdA7,
+ *        wsCmdA6, wsCmdA5, wsCmdA4).
  *
- * fn_80219354 picks a random entry of its stack type array as
+ * wsCmdA6 picks a random entry of its stack type array as
  * `p = typeArray; p += index; *p`, written after the random call: that
  * creates the array base before the modulo operands, which gives retail's
  * volatile registers (random r4, count r3, base r5).
  *
- * fn_802196A8 needs fightOutPokemonSetPokemonJoutai08's third parameter prototyped as a full
+ * wsCmdA4 needs fightOutPokemonSetPokemonJoutai08's third parameter prototyped as a full
  * word (s32): the slot is then sign-extended again at that call instead
  * of reusing the extension made for pokemonGetStatus.
  */
@@ -18,7 +18,7 @@ extern u8* lbl_8047B610;
 extern u8 fn_802025B8();
 extern void fightOutPokemonWritePokemonJoutaiDataId();
 
-void fn_802192B4(void)
+void wsCmdA7(void)
 {
     extern int fightTargetGetPtrAsNowFightType();
     extern int fightFloorGetStatus();
@@ -38,7 +38,7 @@ void fn_802192B4(void)
     lbl_8047B610++;
 }
 
-void fn_80219354(void)
+void wsCmdA6(void)
 {
     extern u32 GSrand();
     extern u32 GSmsgGetGSchar();
@@ -114,7 +114,7 @@ void fn_80219354(void)
     }
 }
 
-void fn_802195A0(void)
+void wsCmdA5(void)
 {
     extern u32 fightTargetGetPtrAsNowFightType();
     extern u32 pokemonGetStatus();
@@ -151,7 +151,7 @@ void fn_802195A0(void)
     }
 }
 
-void fn_802196A8(void)
+void wsCmdA4(void)
 {
     extern s8 pokemonSearchWazaDataId();
     extern u32 fightTargetGetPtrAsNowFightType();

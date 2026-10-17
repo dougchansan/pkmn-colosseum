@@ -8,7 +8,7 @@
 
 extern u8 lbl_80478D78[8];
 extern void* lbl_8047B62C;
-extern void fn_80211B94(void*, void*, u8);
+extern void wsRunScript(void*, void*, u8);
 s32 fn_80231FC8(void* param1, s32 param2, void** param3);
 extern u32 fn_80232024();
 extern u8 lbl_80378968[];
@@ -46,7 +46,7 @@ u8 fn_802316FC(void* ctx) {
         fn_80202810(ctx, 0x17);
         lbl_80478D78[5] = 1;
         fn_801F4C14(0, 0, 0x36, 0, (u32)ctx);
-        fn_80211B94(lbl_8047B62C, (void*)lbl_80379249, 0);
+        wsRunScript(lbl_8047B62C, (void*)lbl_80379249, 0);
         if ((u8)fn_801FECD4(ctx) == 1) {
             fn_801FE7EC(ctx, 0x7c, 0, 0);
         }
@@ -104,7 +104,7 @@ void fn_802317E4(void) {
                 } else {
                     fightSideInitJoutaiDataId(side, 0x48);
                     msgctrlSetValue(0xd, GSmsgGetGSchar(wazaGetStatus(0, 0x73, 1, 0)));
-                    fn_80211B94(lbl_8047B62C, lbl_80378B30, 0);
+                    wsRunScript(lbl_8047B62C, lbl_80378B30, 0);
                 }
             }
         }
@@ -128,7 +128,7 @@ void fn_802317E4(void) {
                     fightSideInitJoutaiDataId(side, 0x49);
                     msgctrlSetValue(0xd, GSmsgGetGSchar(wazaGetStatus(0, 0x71, 1, 0)));
                     flags[5] = i;
-                    fn_80211B94(lbl_8047B62C, lbl_80378B30, 0);
+                    wsRunScript(lbl_8047B62C, lbl_80378B30, 0);
                 }
             }
         }
@@ -151,7 +151,7 @@ void fn_802317E4(void) {
                 } else {
                     fightSideInitJoutaiDataId(side, 0x4c);
                     msgctrlSetValue(0xd, GSmsgGetGSchar(wazaGetStatus(0, 0x36, 1, 0)));
-                    fn_80211B94(lbl_8047B62C, lbl_80378B30, 0);
+                    wsRunScript(lbl_8047B62C, lbl_80378B30, 0);
                 }
             }
         }
@@ -173,7 +173,7 @@ void fn_802317E4(void) {
                     fightSideSetNowKaisuuJoutaiDataId(side, 0x4b, next);
                 } else {
                     fightSideInitJoutaiDataId(side, 0x4b);
-                    fn_80211B94(lbl_8047B62C, lbl_80378B5B, 0);
+                    wsRunScript(lbl_8047B62C, lbl_80378B5B, 0);
                 }
             }
         }
@@ -198,7 +198,7 @@ void fn_802317E4(void) {
         } else {
             flags[5] = 0;
         }
-        fn_80211B94(lbl_8047B62C, lbl_80378A5F, 0);
+        wsRunScript(lbl_8047B62C, lbl_80378A5F, 0);
     }
 
     wazaSequenceSysFreeAll();
@@ -224,7 +224,7 @@ void fn_802317E4(void) {
         weatherCode = 0xc;
         flags[5] = 0;
         lbl_80379F58[0x160A4] = weatherCode;
-        fn_80211B94(lbl_8047B62C, msg, 0);
+        wsRunScript(lbl_8047B62C, msg, 0);
     }
 
     wazaSequenceSysFreeAll();
@@ -247,7 +247,7 @@ void fn_802317E4(void) {
                 msg = lbl_80378A8E;
             }
         }
-        fn_80211B94(lbl_8047B62C, msg, 0);
+        wsRunScript(lbl_8047B62C, msg, 0);
     }
 
     wazaSequenceSysFreeAll();
@@ -269,7 +269,7 @@ void fn_802317E4(void) {
         weatherCode = 0xd;
         flags[5] = 1;
         lbl_80379F58[0x160A4] = weatherCode;
-        fn_80211B94(lbl_8047B62C, msg, 0);
+        wsRunScript(lbl_8047B62C, msg, 0);
     }
 
     wazaSequenceSysFreeAll();
@@ -303,7 +303,7 @@ u32 fn_80232024(u32 r3)
     extern u8 fn_802026E4();
     extern void fightOutPokemonWriteJoutaiDataId();
     extern u8 fightOutPokemonCheckFightOut();
-    extern void fn_80211B94();
+    extern void wsRunScript();
     extern void* lbl_8047B62C;
     extern u8 lbl_80379052[];
   u8 check;
@@ -330,7 +330,7 @@ u32 fn_80232024(u32 r3)
     else {
       fightFloorSetStatus(0,0,0x36,0,r3);
       fightFloorSetStatus(0,0,0x43,0,r3);
-      fn_80211B94(lbl_8047B62C,lbl_80379052,0);
+      wsRunScript(lbl_8047B62C,lbl_80379052,0);
       fightOutPokemonWriteJoutaiDataId(r3,0x35);
     }
   }

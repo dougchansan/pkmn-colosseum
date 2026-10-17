@@ -1,6 +1,6 @@
 /**
  * @file fight_range_80229C28.c
- * @brief Hit check, 0x80229C28 - 0x8022A504 (fn_80229C28, fn_80229C90,
+ * @brief Hit check, 0x80229C28 - 0x8022A504 (fightIsWazaBlockedByMamoru, wsCmd40,
  *        WS_HITCHECK).
  *
  * Standalone source at GC/1.3.2 -O4,s. WS_HITCHECK's register walls were two
@@ -13,7 +13,7 @@
 extern u8* lbl_8047B610;
 extern u8 lbl_80478D78[8];
 #define fn_8011BEB4 wazaGetStatus
-u8 fn_80229C28(void* ctx, u32 param) {
+u8 fightIsWazaBlockedByMamoru(void* ctx, u32 param) {
     extern u32 fn_8011BEB4();
     extern u8 fn_802026E4();
     u8 val = (u8)fn_8011BEB4(0, param, 0xe, 0);
@@ -24,7 +24,7 @@ u8 fn_80229C28(void* ctx, u32 param) {
     return 0;
 }
 
-void fn_80229C90(void)
+void wsCmd40(void)
 {
     extern u32 wazaGetStatus();
     extern u32 fightTargetGetPtrAsNowFightType();
@@ -34,7 +34,7 @@ void fn_80229C90(void)
     extern void pokemonSetStatus();
     extern u8 fightWazaIsHit();
     extern u8 fn_802026E4();
-    extern u8 fn_8022DCB8();
+    extern u8 fightCheckTokuseiWazaKyuushuu();
     extern u32 lbl_8047B618;
   u32 uVar1;
   u32 initialFlag;
@@ -79,7 +79,7 @@ void fn_80229C90(void)
           }
         }
       }
-      cVar6 = fn_8022DCB8(uVar1,uVar3.value,0);
+      cVar6 = fightCheckTokuseiWazaKyuushuu(uVar1,uVar3.value,0);
       if (cVar6 == 0) {
         lbl_8047B610 = lbl_8047B610 + 5;
       }
@@ -168,10 +168,10 @@ void WS_HITCHECK(void)
     extern void fightWazaWriteJoutaiDataId();
     extern u8 fightWazaCheckWriteJoutaiDataId();
     extern void fightWazaBiosCopy();
-    extern void fn_80211B94();
-    extern u32 fn_8022A504();
-    extern u32 fn_8022A6C8();
-    extern u8 fn_8022F2F8();
+    extern void wsRunScript();
+    extern u32 _fightCheckYokodoriSub();
+    extern u32 _wsHitCheckSub();
+    extern u8 _wsHitCheckJoutaiSub();
     extern u32 fightOutPokemonGetTokuseiDataId();
     extern u32 fightOutPokemonGetUseWazaDataId();
     extern u32 pokemonGetStatus();
@@ -222,7 +222,7 @@ void WS_HITCHECK(void)
       lbl_8047B610 = lbl_80375FBF;
     }
     else {
-      cVar12 = fn_8022F2F8();
+      cVar12 = _wsHitCheckJoutaiSub();
       if (cVar12 == 0) {
         if (fightSeqCheckTokuseiBlock(iVar2, iVar4) == 0) {
           iVar6 = pokemonGetStatus(iVar2,0,0xd9,0);
@@ -258,7 +258,7 @@ void WS_HITCHECK(void)
             lbl_8047B618 = uVar8 & 0xff7fffff;
             if ((uVar8 & 0x2000000) == 0) {
               if (fn_802026E4(iVar2,0x22) == 0) {
-                hitResult = (u8)fn_8022A6C8(iVar2);
+                hitResult = (u8)_wsHitCheckSub(iVar2);
                 if (hitResult != 0) {
                   if (hitResult == 2) {
                     lbl_8047B618 = lbl_8047B618 | 0x2000000;
@@ -309,7 +309,7 @@ void WS_HITCHECK(void)
               }
               fightOutPokemonWriteJoutaiDataId(iVar4,0x37);
               iVar9 = pokemonGetStatus(iVar4,0,0xd9,0);
-              fn_80211B94(lbl_8047B62C,lbl_8037917B,0);
+              wsRunScript(lbl_8047B62C,lbl_8037917B,0);
               if ((iVar6 != 0) && (iVar9 != 0)) {
                 fightWazaBiosCopy(iVar9,iVar6);
                 wazaSetStatus(iVar9,0,0x27,0,uVar7 & 0xffff);
@@ -318,14 +318,14 @@ void WS_HITCHECK(void)
             else {
               loopState.attacker = iVar2;
               loopState.result = 0;
-              fightFloorLoopValidFightOutPokemon(0,fn_8022A504,&loopState,1);
+              fightFloorLoopValidFightOutPokemon(0,_fightCheckYokodoriSub,&loopState,1);
               if (loopState.result != 0) {
                 fightSeqCopyWaza(iVar2, loopState.result);
               }
               status114 = pokemonGetStatus(iVar4,0,0x114,0);
               if (status114 == 1) {
                 pokemonSetStatus((void*)iVar4,0,0x114,0,0);
-                fn_80211B94(lbl_8047B62C,lbl_803796F3,0);
+                wsRunScript(lbl_8047B62C,lbl_803796F3,0);
               }
               specialResult = fn_802026E4(iVar4,0x2b);
               if ((specialResult == 1) && (moveFlag == 1)) {

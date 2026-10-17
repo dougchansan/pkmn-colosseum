@@ -22,10 +22,10 @@ extern u8 fightWazaIsHit();
 extern u8 fightOutPokemonCheckFightOut();
 extern u8 fightOutPokemonIsHpMantan();
 extern void fightFloorSetStatus();
-extern void fn_80211B94();
-extern void fn_802249B8(u32, u32);
+extern void wsRunScript();
+extern void fightSeqSetTsuikaKouka(u32, u32);
 
-u32 fn_8022BB84(u32 attacker, u32 target)
+u32 _wsSoubiItemAfterDamage(u32 attacker, u32 target)
 {
     u32 move;
     u32 itemData;
@@ -68,7 +68,7 @@ u32 fn_8022BB84(u32 attacker, u32 target)
             fightOutPokemonCheckFightOut(target) == 1) {
             lbl_80478D78[3] = 8;
             saved = lbl_8047B610;
-            fn_802249B8(0, 0);
+            fightSeqSetTsuikaKouka(0, 0);
             lbl_8047B610 = saved;
         }
         break;
@@ -85,7 +85,7 @@ u32 fn_8022BB84(u32 attacker, u32 target)
             }
             wazaSetStatus(move, 0, 0x2D, 0, heal);
             pokemonSetStatus(target, 0, 0x11B, 0, 0);
-            fn_80211B94(lbl_8047B62C, lbl_80379B61, 0);
+            wsRunScript(lbl_8047B62C, lbl_80379B61, 0);
             result = 1;
         }
         break;

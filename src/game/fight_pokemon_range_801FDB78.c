@@ -1008,7 +1008,7 @@ u8 fightOutPokemonCheckFightActionWazaSelect(void* fighter, u8 mode) {
     extern void fightOutPokemonGetOutOkWazaBanmeAry();
     extern void fightWazaCreate();
     extern void fightActionBiosSetBuffDataId();
-    extern void fn_8022B2CC();
+    extern void fightSeqSelectTarget();
     u8 sp[0x20];
     u32 r0 = 0;
     u32 r1 = (u32)sp;
@@ -1252,7 +1252,7 @@ u8 fightOutPokemonCheckFightActionWazaSelect(void* fighter, u8 mode) {
             r7 = 0x1;
             r8 = 0x1;
             r9 = -0x1;
-            fn_8022B2CC();
+            fightSeqSelectTarget();
             r4 = r30;
             fightTargetGetTragetPtrToRelativeHostSideFightTargetId();
             r0 = r3;
@@ -1590,7 +1590,7 @@ u8 fightOutPokemonCheckFightActionWazaSelect(void* fighter, u8 mode) {
     r7 = 0x1;
     r8 = 0x1;
     r9 = -0x1;
-    fn_8022B2CC();
+    fightSeqSelectTarget();
     r4 = r30;
     fightTargetGetTragetPtrToRelativeHostSideFightTargetId();
     r26 = r3;

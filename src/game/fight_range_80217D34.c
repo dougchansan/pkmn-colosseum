@@ -4,7 +4,7 @@ extern u8* lbl_8047B610;
 
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (optimize_for_size on) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma optimize_for_size on
-void fn_80217D34(void)
+void wsCmdB4(void)
 {
     extern u32 fightTargetGetPtrAsNowFightType();
     extern u32 pokemonGetStatus();

@@ -6,7 +6,7 @@
 
 extern u32 fightFloorGetFightOutPokemonPtrRandom();
 
-void fn_8022B29C(s32 arg)
+void fightGetRandomOpponent(s32 arg)
 {
     fightFloorGetFightOutPokemonPtrRandom(0, 1, 3, arg);
 }

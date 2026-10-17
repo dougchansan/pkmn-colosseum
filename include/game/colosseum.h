@@ -28,7 +28,7 @@
  * acting as a bytecode program counter for the event/story interpreter. */
 
 /* Script command IDs (from the jumptable at jumptable_8039A220, 0x34 entries) */
-/* These are the opcodes used by the story script interpreter in fn_802249B8. */
+/* These are the opcodes used by the story script interpreter in fightSeqSetTsuikaKouka. */
 #define SCRIPT_CMD_NOP         0x00
 #define SCRIPT_CMD_END         0x01
 #define SCRIPT_CMD_JUMP        0x02
@@ -56,7 +56,7 @@
  * ========================================================================= */
 
 /**
- * fn_802249B8 - StoryScriptExecute
+ * fightSeqSetTsuikaKouka - StoryScriptExecute
  * The single largest function in the range (0x177C = 6012 bytes).
  *
  * This is the main story/event script interpreter. It reads bytecode-like
@@ -82,7 +82,7 @@
 void StoryScriptExecute(u32 param1, u32 param2);
 
 /**
- * fn_8022BE2C - ColosseumRoundExecute
+ * fightOutPokemonDoSoubiItemCheck - ColosseumRoundExecute
  * Second largest function (0x1258 = 4696 bytes).
  * Manages a complete round in a Colosseum battle sequence.
  * Heavily uses TrainerDataGet, PokemonGet, and the battle sequence IDs.
@@ -90,7 +90,7 @@ void StoryScriptExecute(u32 param1, u32 param2);
 void ColosseumRoundExecute(u32 context, u32 param);
 
 /**
- * fn_80221104 - ColosseumMatchSetup
+ * wsPlayAnimation - ColosseumMatchSetup
  * Third largest function (0x100C = 4108 bytes).
  * Initializes a Colosseum match: sets up trainers, validates teams,
  * configures battle rules.
@@ -98,7 +98,7 @@ void ColosseumRoundExecute(u32 context, u32 param);
 void ColosseumMatchSetup(u32 param1, u32 param2);
 
 /**
- * fn_8021FAD4 - TeamValidation
+ * wsCmd49 - TeamValidation
  * Large function (0xCA4 = 3236 bytes).
  * Validates a team for Colosseum entry: checks species clauses,
  * item clauses, level restrictions, banned Pokemon/moves.
@@ -183,7 +183,7 @@ u32 GetEventState(void* context, u32 eventId);
 void SetEventState(void* context, u32 eventId, u32 value);
 
 /**
- * fn_80211B94 - TriggerEvent
+ * wsRunScript - TriggerEvent
  * Called 121 times. Triggers an event on a trainer/scene context.
  *
  * @param context    Scene/trainer context

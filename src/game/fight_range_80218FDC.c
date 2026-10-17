@@ -8,7 +8,7 @@
  */
 #include "dolphin/types.h"
 extern u8* lbl_8047B610;
-void fn_8021908C(void)
+void wsCmdA8(void)
 {
     extern u32 GSmsgGetGSchar();
     extern void wazaSetStatus();
