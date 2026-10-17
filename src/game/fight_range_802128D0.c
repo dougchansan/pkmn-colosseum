@@ -8,7 +8,7 @@
  */
 #include "dolphin/types.h"
 
-extern u8 fn_80230568(void* ctx, u32 side);
+extern u8 _fightSeqTurnEndJoutaiSub(void* ctx, u32 side);
 extern s32 _fightSeqTurnCheckSubFightOutPokemon__FPvUsPv(void* ctx, u16 param2, void* param3);
 
 void fightSeqTurnEnd(void)
@@ -27,7 +27,7 @@ void fightSeqTurnEnd(void)
     extern void fightMenuAllFightOutPokemonCloseStatusMenu();
     extern void fightMenuCloseMsg();
     extern u32 _fightSeqTurnEndSubFightOutPokemon();
-    extern u32 fn_802301A8();
+    extern u32 _fightJoutai1ETurnEndSub();
     extern u32 fn_80230318();
     extern void wsRunEndOfTurnScript();
     extern void fn_802317E4();
@@ -60,11 +60,11 @@ void fightSeqTurnEnd(void)
     }
   }
   fn_802317E4();
-  fightFloorLoopValidFightOutPokemon(0,fn_80230568,0,1);
+  fightFloorLoopValidFightOutPokemon(0,_fightSeqTurnEndJoutaiSub,0,1);
   wsRunEndOfTurnScript();
   fightFloorLoopValidFightOutPokemon(0,fn_80230318,0,0);
   wazaSequenceSysFreeAll();
-  fightFloorLoopValidFightOutPokemon(0,fn_802301A8,0,1);
+  fightFloorLoopValidFightOutPokemon(0,_fightJoutai1ETurnEndSub,0,1);
   wazaSequenceSysFreeAll();
   local_18 = 0;
   fightFloorLoopValidFightOutPokemon(0,_fightSeqTurnEndSubFightOutPokemon,&local_18,0);

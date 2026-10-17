@@ -3192,7 +3192,7 @@ s32 friendXUp__FP7PokemonP12FightPokemonScUsUs(
     extern u8 pokemonBiosGetCatchBallId(void*);
     extern void* fightFloorGetFightPokemonPtrToFightTrainerPtr(s32, void*);
     extern void* fightTrainerCheckFightPokemonFightOut(void*, void*);
-    extern void fn_802331A4(void*, s32);
+    extern void fightOutPokemonUpdateHensinStatus(void*, s32);
     void* item;
     void* trainer;
     s32 oldFriend;
@@ -3250,7 +3250,7 @@ s32 friendXUp__FP7PokemonP12FightPokemonScUsUs(
                 fightPokemon);
         }
         if (trainer != NULL) {
-            fn_802331A4(trainer, 0xC7);
+            fightOutPokemonUpdateHensinStatus(trainer, 0xC7);
         }
     } else {
         pokemonBiosSetFriend(pokemon, newFriend);
@@ -3262,7 +3262,7 @@ s32 friendXUp__FP7PokemonP12FightPokemonScUsUs(
                 fightPokemon);
         }
         if (trainer != NULL) {
-            fn_802331A4(trainer, 0x99);
+            fightOutPokemonUpdateHensinStatus(trainer, 0x99);
         }
     }
     return (s16)(newFriend - oldFriend);
@@ -3298,7 +3298,7 @@ void hpRecover__FP20ITEMUSE2POKEMON_LOG1PsP7PokemonUcbUsP12FightPokemon(
     extern void pokemonBiosSetHp(void*, u16);
     extern void* fightFloorGetFightPokemonPtrToFightTrainerPtr(s32, void*);
     extern void* fightTrainerCheckFightPokemonFightOut(void*, void*);
-    extern void fn_802331A4(void*, s32);
+    extern void fightOutPokemonUpdateHensinStatus(void*, s32);
     u16 oldHp;
     u16 maxHp;
     u16 newHp;
@@ -3358,7 +3358,7 @@ void hpRecover__FP20ITEMUSE2POKEMON_LOG1PsP7PokemonUcbUsP12FightPokemon(
             fightPokemon);
     }
     if (trainer != NULL) {
-        fn_802331A4(trainer, 0x83);
+        fightOutPokemonUpdateHensinStatus(trainer, 0x83);
     }
 
     if (revived != 0) {

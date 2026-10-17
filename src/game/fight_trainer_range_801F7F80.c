@@ -783,7 +783,7 @@ u32 fightTrainerSelectFightAction(void* context, void* param) {
     extern void fightActionInit(void* ptr);
     extern void* fightTrainerGetStatus(void* ctx, u32 slot, u32 field, u16 idx);
     extern void fightOutPokemonInitFightActionBuff(void* ptr);
-    extern void fn_802342CC(void* ctx, void* param);
+    extern void fightTrainerAiSelectFightAction(void* ctx, void* param);
     extern u8 fightMenuFightTrainerAgbHeroOpenMenu(void* ctx, void* param);
     extern void fightMenuFightTrainerGcHeroOpenMenu(void* ctx, void* param, u32 flags);
     void* result;
@@ -803,7 +803,7 @@ u32 fightTrainerSelectFightAction(void* context, void* param) {
     }
     slot = (u16)(u32)fightTrainerGetStatus(context, 0, 0x43, 0);
     if ((u16)(u32)fightTrainerGetStatus(0, slot, 0x2, 0) != 0) {
-        fn_802342CC(context, param);
+        fightTrainerAiSelectFightAction(context, param);
     } else if (fightTrainerGetHeroKindInline(slot) == 0) {
         fightMenuFightTrainerGcHeroOpenMenu(context, param, 0);
     } else if (fightTrainerGetHeroKindInline(slot) == 1) {
@@ -959,7 +959,7 @@ void fightTrainerSortFightTrainerDataIdToHeroTemotiPokemon(
     extern void pokemonInit(void*);
     extern void* heroGetStatus(void*, s32, s32);
     extern void* fightTrainerGetStatus(void*, u32, u32, u32);
-    extern void fn_802331F4(void*, void*, void**, u16, u16);
+    extern void fightTrainerSortTemoti(void*, void*, void**, u16, u16);
     void* selected[6];
     FightTrainerPokemonCopy sortedPokemon[6];
     void* hero;
@@ -994,7 +994,7 @@ void fightTrainerSortFightTrainerDataIdToHeroTemotiPokemon(
     if (selectionCount > 6) {
         selectionCount = 6;
     }
-    fn_802331F4(trainer, hero, selected, selectionCount, selectionMode);
+    fightTrainerSortTemoti(trainer, hero, selected, selectionCount, selectionMode);
 
     validCount = 0;
     for (i = 0; i < selectionCount; i++) {

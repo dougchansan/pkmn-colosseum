@@ -154,7 +154,7 @@ u32 _wsHitCheckSub(u32 r3)
     extern void fn_802099AC(u32, s8, u16, u32, u32);
     extern int fightSeqSelectTarget();
     extern int fightOutPokemonDoSoubiItemCheck();
-    extern int fn_80232110();
+    extern int fightSeqCalcDamage();
     extern void fn_8026246C();
     extern void fn_802624CC();
     extern u16 lbl_8047B60C;
@@ -319,7 +319,7 @@ u32 _wsHitCheckSub(u32 r3)
           fn_80208404(r3,0,1,0);
           fn_80208404(r3,0,2,0);
           fn_801F4C14(0,0,0x43,0,r3);
-          uVar10 = fn_80232110(r3,r3,uVar3,1,0x28, (void*)0xffffffff);
+          uVar10 = fightSeqCalcDamage(r3,r3,uVar3,1,0x28, (void*)0xffffffff);
           fn_8011BBD8(uVar4,0,0x2d,0,uVar10);
           fn_801254B4((void*)r3,0,0x107,0,1);
           lbl_8047B618 = lbl_8047B618 | 0x80000;

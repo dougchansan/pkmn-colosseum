@@ -23,7 +23,7 @@ extern u32 GSrand(void);
 extern u8 fightOutPokemonGetFightOutPokemonEnemyOumuWazaDataIdAry(u32, u16*);
 extern u32 fightFloorLoopValidFightOutPokemon(u32, FightFloorCallback, void*, u32);
 extern u32 fightOutPokemonCheckFightOut(void*);
-extern u32 fn_80236BFC(void*, void*, u32);
+extern u32 fightTrainerAiIsPokemonJoutai(void*, void*, u32);
 extern u32 fn_80237F74();
 
 u32 _fightTrainerAiSimerikeCheckSub(void*, u32, void*);
@@ -110,7 +110,7 @@ u32 _fightTrainerAiSawaguCheckSub(void* pokemon, u32 slot, void* data)
     if ((fightOutPokemonCheckFightOut(pokemon) & 0xFF) == 0) {
         return 1;
     }
-    if ((fn_80236BFC(trainer, pokemon, 0xB) & 0xFF) == 1 &&
+    if ((fightTrainerAiIsPokemonJoutai(trainer, pokemon, 0xB) & 0xFF) == 1 &&
         (fn_80237F74(trainer, target, 0x2B) & 0xFF) == 0) {
         return 0;
     }

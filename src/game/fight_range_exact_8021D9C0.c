@@ -693,7 +693,7 @@ void wsCmd58(void) {
         fightOutPokemonModosuEffect(ctx, 2);
         fightOutPokemonModosuEffect(ctx, 3);
         fightOutPokemonModosuEffect(ctx, 4);
-        fn_8026532C(ctx, val, 0);
+        fightMenuStatusMenuClose(ctx, val, 0);
     }
     lbl_8047B610 = lbl_8047B610 + 2;
 }
@@ -940,7 +940,7 @@ void wsCmd4E(void) {
     }
     fightOutPokemonDasuEffect(ctx1, 3);
     fightOutPokemonDasuEffect(ctx1, 4);
-    fn_8026532C(ctx1, val, 0);
+    fightMenuStatusMenuClose(ctx1, val, 0);
     if (mode != 2) {
         fightTrainerBallThrowEffect(result, ctx1, 3);
     }
@@ -970,7 +970,7 @@ void wsCmd4E(void) {
 #pragma optimize_for_size on
 void wsCmd4D(void) {
     extern void fightPokemonGetFaceSpriteId();
-    extern u32 fn_80232D28();
+    extern u32 _fightCheckLockOnSub();
     extern u32 pokemonCreateSequence();
     extern void msgctrlSetValue();
     extern void battleGridUpdate();
@@ -1061,7 +1061,7 @@ void wsCmd4D(void) {
     }
     callbackData[0] = context;
     callbackData[1] = copyMode;
-    fightFloorLoopValidFightOutPokemon(0, fn_80232D28, callbackData, 0);
+    fightFloorLoopValidFightOutPokemon(0, _fightCheckLockOnSub, callbackData, 0);
     if (fn_802026E4(trainerPokemon, 0x34) == 1) {
         fightOutPokemonCopyPokemonJoutai(context, trainerPokemon, 0x34);
     }
@@ -1129,7 +1129,7 @@ void wsCmd4B(void) {
         fightOutPokemonModosuEffect(ctx, 2);
         fightOutPokemonModosuEffect(ctx, 3);
         fightOutPokemonModosuEffect(ctx, 4);
-        fn_8026532C(ctx, val, 0);
+        fightMenuStatusMenuClose(ctx, val, 0);
     }
     lbl_8047B610 = lbl_8047B610 + 1;
 }

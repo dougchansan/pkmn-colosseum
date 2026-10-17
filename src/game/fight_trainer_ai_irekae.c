@@ -12,7 +12,7 @@ u32 fightTrainerAiSelectFightActionIrekae(void* ctx, u32 param1, u32 param2,
     extern void fightOutPokemonCreateFightAction(u32, u32, u32, u32, void*,
                                                  s32);
     extern u32 fightOutPokemonGetPokemonPtr(u32);
-    extern void fn_8023A118(u32, u32, u32, u32, u32, u32, u32, u32, u32, u32,
+    extern void fightTrainerAiLogText(u32, u32, u32, u32, u32, u32, u32, u32, u32, u32,
                             s32);
     long long new_var;
     extern s32 fightTrainerAiSelectIrekaeDasuFightPokemon(void*, u32, u32,
@@ -33,7 +33,7 @@ u32 fightTrainerAiSelectFightActionIrekae(void* ctx, u32 param1, u32 param2,
     if (new_var) {
     }
     new_var2 = 0;
-    fn_8023A118(
+    fightTrainerAiLogText(
         0xEC63, 0xEC04, 0xEC05, field, fightOutPokemonGetPokemonPtr(param1), 0,
         new_var2, new_var2, 0,
         (((((0x228 & 0xFFFF) & 0xFFFF) & 0xFFFF) & 0xFFFF) & 0xFFFF) & 0xFFFF,

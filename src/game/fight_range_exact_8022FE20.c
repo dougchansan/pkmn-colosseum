@@ -173,7 +173,7 @@ extern u32  fn_80011C78();
 extern u8   fn_802038A4();
 extern void fn_80207C24();
 extern void fightOutPokemonSetPokemonJoutai08();
-extern s32  fn_80232110();
+extern s32  fightSeqCalcDamage();
 extern u32 _fightDoIkakuSub();
 extern u8   fn_801F453C();
 extern u8   lbl_8047B628;
@@ -214,7 +214,7 @@ extern u16 fightOutPokemonGetTokuseiDataId(u32 poke);
 extern u32 zokuseiGetAisyouDualType(u16 waza, u16* types, u16 typeCount);
 extern int fn_802026E4();
 extern u8 fn_80235714();
-extern u32 fn_802367CC();
+extern u32 fightTrainerAiGetFightPokemonWazaAry();
 extern u32 fightFloorGetFightTrainerFightOutPokemonPtrAry();
 extern u32 fn_80239984();
 extern s32 fightTrainerAiAddValue();
@@ -257,7 +257,7 @@ void wsRunEndOfTurnScript(void) {
     extern void _fightDoIkakuSub();
     extern void _fightCheckForecastSub();
     extern void fn_80230088();
-    extern void fn_8023011C();
+    extern void _fightDoKizetuScriptSub();
     u8 sp[2];
     u32 saved610;
     u8 saved614;
@@ -265,7 +265,7 @@ void wsRunEndOfTurnScript(void) {
     u8* start;
     u32 dispatch;
 
-    fightFloorLoopValidFightOutPokemon(0, fn_8023011C, 0, 0);
+    fightFloorLoopValidFightOutPokemon(0, _fightDoKizetuScriptSub, 0, 0);
     saved62c = (u32)lbl_8047B62C;
     start = lbl_80378798;
     saved614 = lbl_8047B614;
@@ -361,10 +361,10 @@ u32 fn_80230088(int r3)
 #undef fn_801F54A4
 #undef fn_802062FC
 
-/* fn_8023011C */
+/* _fightDoKizetuScriptSub */
 #define fn_8012640C pokemonGetStatus
 #define fn_801F4C14 fightFloorSetStatus
-u8 fn_8023011C(void* ctx) {
+u8 _fightDoKizetuScriptSub(void* ctx) {
     extern void* fn_8012640C();
     extern void fn_801F4C14();
     if ((u8)(u32)fn_8012640C(ctx, 0, 0x120, 0) == 1) {
@@ -377,8 +377,8 @@ u8 fn_8023011C(void* ctx) {
 #undef fn_801F4C14
 #undef fn_8012640C
 
-/* fn_802301A8 */
-u32 fn_802301A8(u32 r3)
+/* _fightJoutai1ETurnEndSub */
+u32 _fightJoutai1ETurnEndSub(u32 r3)
 {
     extern void wazaSetStatus();
     extern void msgctrlSetValue();

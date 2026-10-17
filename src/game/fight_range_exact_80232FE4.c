@@ -84,7 +84,7 @@ u32 fn_80232FE4(u32 r3, u32 r4, u32 r5)
 
 #define fn_801FECD4 fightOutPokemonIsUseHensinBuff
 #define fn_801FE7EC fightOutPokemonSetHensinPokemonStatusId
-void fn_802331A4(void* param1, void* param2)
+void fightOutPokemonUpdateHensinStatus(void* param1, void* param2)
 {
     extern u8 fn_801FECD4();
     extern void fn_801FE7EC();

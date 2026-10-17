@@ -115,7 +115,7 @@ u8 fn_80239244(void *ctx, u32 param) {
   return (u8)wazaGetStatus(0, param, 0x5, 0);
 }
 
-char fn_802392A8(u32 r3, u32 r4) {
+char fightTrainerAiGetWazaAvgAdjusted(u32 r3, u32 r4) {
   extern int wazaGetStatus();
   extern u32 fightTrainerGetStatus();
   extern u32 fightIsWazaThunderInRain();
@@ -193,7 +193,7 @@ u8 fn_80239564(void *ctx, u32 param) {
   return (u8)wazaGetStatus(0, param, 0xc, 0);
 }
 
-u32 fn_802395C8(u32 trainer, u32 move, u32 target) {
+u32 fightTrainerAiGetWazaTenkouValue(u32 trainer, u32 move, u32 target) {
   extern u32 fightTrainerGetStatus();
   extern u8 fightFloorGetNowTenkouDataId();
   extern void fightFloorLoopValidFightOutPokemon();
@@ -376,7 +376,7 @@ s32 fightTrainerAiAddValue(s32 value, s32 delta) {
 /* RULE-EXCEPTION(user-approved): restores the unit settings after the tagged local block above — see docs/RULE_EXCEPTIONS.md */
 #pragma pop
 
-u32 fn_80239A40(u32 r3, u32 r4, u32 r5, u32 r6, u32 r7, u32 r8, u32 r9, u32 r10,
+u32 fightTrainerAiAddValueLog(u32 r3, u32 r4, u32 r5, u32 r6, u32 r7, u32 r8, u32 r9, u32 r10,
                 u8 param_9) {
   extern u8 fn_80008164();
   extern u32 GSmsgGetGSchar();
@@ -571,7 +571,7 @@ u8 fn_80239EE8(u32 ctx, u32 p2, u32 p3, u32 p4, u32 p5, u32 p6, u32 p7,
   return 0;
 }
 
-u8 fn_8023A118(u32 ctx, u32 p2, u32 p3, u32 p4, u32 p5, u32 p6, u32 p7, u32 p8,
+u8 fightTrainerAiLogText(u32 ctx, u32 p2, u32 p3, u32 p4, u32 p5, u32 p6, u32 p7, u32 p8,
                u16 p9, u16 p10, u32 p11) {
   extern u32 GSmsgGetGSchar();
   extern void msgctrlSetValue();

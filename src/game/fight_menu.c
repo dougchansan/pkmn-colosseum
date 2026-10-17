@@ -602,7 +602,7 @@ void fightMenuAllFightTrainerCloseStatusMenu(u32 wait)
  * trainers, 3 for Pokemon), or 0 when the target, its host-side relative
  * ID or its buffer is missing. Retail expands these in every status-menu
  * helper of the unit (the three trainer subs and fightMenuFightTrainer-
- * RenewStatusMenu (twice) for kind 2; the three Pokemon subs, fn_8026532C
+ * RenewStatusMenu (twice) for kind 2; the three Pokemon subs, fightMenuStatusMenuClose
  * and fn_80265598 for kind 3), each copy the same call sequence with the
  * same constants. Pokemon XD keeps both as out-of-line functions with this
  * body: fightMenuGetFightTrainerPtrToStatusMenuId (0x8023943C) and
@@ -1591,7 +1591,7 @@ LAB_00262054:
 }
 
 /* Address: 0x8026532C | Size: 0xD0 | Ghidra import */
-void fn_8026532C(u32 r3, u32 r4, u32 r5)
+void fightMenuStatusMenuClose(u32 r3, u32 r4, u32 r5)
 {
   u32 iVar1;
   u16 uVar3;

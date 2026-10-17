@@ -500,8 +500,8 @@ static inline void battleStartDrawPair(MenuCBBattleStartMessageContext* context,
 void fn_80060434(MenuCBBattleStartMessageContext* context, UICmdMsg* message)
 {
     extern s32 toolentryTaisenGetBattleType(void);
-    extern s32 fn_8025D9A8(void);
-    extern s32 fn_8025DAD0(void);
+    extern s32 battleResultGet00(void);
+    extern s32 battleResultGet08(void);
     extern void msgctrlSetValue(s32 index, s32 value);
     extern u32 GSmsgGetRect(u32 messageId);
     extern void GSmsgPrintColor(s32 x, s32 y, s32 color, u32 messageId);
@@ -516,8 +516,8 @@ void fn_80060434(MenuCBBattleStartMessageContext* context, UICmdMsg* message)
 
     (void)message;
     toolentryTaisenGetBattleType();
-    displayMode = fn_8025D9A8();
-    variant = fn_8025DAD0();
+    displayMode = battleResultGet00();
+    variant = battleResultGet08();
     battleId = lbl_803A9A60.model.battleId;
     screenWidth = &((MenuCBBattleStartResourceData*)lbl_802EF0A8)->screenWidth;
 
@@ -841,12 +841,12 @@ void menuCBBattleStartInit(void* menu, s32 mode)
     extern u16 fightTrainerDataBiosGetKindDataId(void*);
     extern void* fightTrainerKindDataBiosGetPtr(u16);
     extern u32 fightTrainerKindDataBiosGetPrefixName(void*);
-    extern s32 fn_8025DBB0(void);
+    extern s32 battleResultGet14(void);
     extern void _menuCBBattleStartSetIndex__Fv(void);
     extern void fn_80062334(void);
     extern void fn_80068F84(void);
     extern void menuCBPokemonEntryLoadTex(void);
-    extern s32 fn_8025D9A8(void);
+    extern s32 battleResultGet00(void);
     extern void std104_soundSetBackgroundMusic(u32, s32, s32);
     extern const u32 lbl_802ED958[];
     extern const u32 lbl_802ED978[];
@@ -875,7 +875,7 @@ void menuCBBattleStartInit(void* menu, s32 mode)
             fightTrainerKindDataBiosGetPrefixName(trainerKind);
     }
 
-    battleId = fn_8025DBB0();
+    battleId = battleResultGet14();
     lbl_803A9A60.model.battleId = battleId;
     lbl_803A9A60.menu = menu;
     lbl_803A9A60.status = mode;
@@ -888,8 +888,8 @@ void menuCBBattleStartInit(void* menu, s32 mode)
     case 0:
         fn_80068F84();
         menuCBPokemonEntryLoadTex();
-        battleId = fn_8025DBB0();
-        switch (fn_8025D9A8()) {
+        battleId = battleResultGet14();
+        switch (battleResultGet00()) {
         case 0:
             lbl_803A9A60.model.soundId = lbl_802ED958[battleId];
             break;
@@ -1881,8 +1881,8 @@ extern u8 fn_80061D34(void*, UICmdMsg*, s32, s32, s32);
 extern u8 fn_80069A08(void*, UICmdMsg*, s32, s32);
 extern u16 toolentryTaisenGetEntryPokemonNum(s32);
 extern u16 toolentryTaisenGetPokemonNum(s32);
-extern s32 fn_8025D9A8(void);
-extern s32 fn_8025D9CC(void);
+extern s32 battleResultGet00(void);
+extern s32 battleResultGet10(void);
 extern s32 toolentryTaisenGetBattleType(void);
 extern u16 toolentryTaisenGetTrainerDataID(s32);
 extern u16 toolentryTaisenGetHeroPtr(s32);
@@ -2008,7 +2008,7 @@ void fn_80060D70(void* context, UICmdMsg* msg, s32 player, s32 kind)
 void fn_80060EF4(void* context, UICmdMsg* msg, s32 index)
 {
     s32 count = *(s32*)((u8*)lbl_803A9A60.menu + 0xC);
-    s32 mode = fn_8025D9A8();
+    s32 mode = battleResultGet00();
 #if !defined(MENUCB_BATTLESTART_80060D70_ONLY)
 #endif
     if (index < 0) {
@@ -2227,7 +2227,7 @@ void fn_800615F4(void* context, UICmdMsg* msg, s32 player, s32 kind)
     void* text;
     u16 trainerId;
     u32 nameId;
-    s32 battleMode = fn_8025D9CC();
+    s32 battleMode = battleResultGet10();
     u8 visible = 1;
     s32 battleType = toolentryTaisenGetBattleType();
 
@@ -2297,7 +2297,7 @@ void fn_800617E0(void* context, UICmdMsg* msg, s32 player, s32 kind)
     if (text == NULL) {
         text = GSmsgGetGSchar(1);
     }
-    if (fn_8025D9CC() == 4) {
+    if (battleResultGet10() == 4) {
         msgctrlSetValue(0x37, text);
         msgctrlSetValue(0x4D, text);
     } else if (player == 0) {

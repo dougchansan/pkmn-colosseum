@@ -1,13 +1,13 @@
 /**
  * @file fight_range_exact_80232D28.c
- * @brief Exact island 0x80232D28 - 0x80232FE4 (fn_80232D28), moved out of
+ * @brief Exact island 0x80232D28 - 0x80232FE4 (_fightCheckLockOnSub), moved out of
  *        fight_range_80211A00.c.
  */
 #include "dolphin/types.h"
 
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (optimize_for_size on) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma optimize_for_size on
-u32 fn_80232D28(s32 pokemonArg, u32 hostSide, u32* data)
+u32 _fightCheckLockOnSub(s32 pokemonArg, u32 hostSide, u32* data)
 {
     extern u32 fightTargetGetRelativeHostSideFightTargetIdToTragetPtr();
     extern void fightOutPokemonSetOumuWazaDataId();

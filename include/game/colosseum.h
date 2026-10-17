@@ -135,7 +135,7 @@ void BattleSequenceStart(u32 battleId, u32 trainerSlot, void* pokemonPtr,
                          u32 param7, u16 seqId);
 
 /**
- * fn_802395C8 - BattleSequenceCheck
+ * fightTrainerAiGetWazaTenkouValue - BattleSequenceCheck
  * Called 98 times. Checks the status of a running battle sequence.
  *
  * @param trainerSlot  Trainer slot to check
@@ -145,7 +145,7 @@ void BattleSequenceStart(u32 battleId, u32 trainerSlot, void* pokemonPtr,
 u32 BattleSequenceCheck(u32 trainerSlot, u16 sequenceId);
 
 /**
- * fn_8023793C - BattleResultCheck
+ * fightTrainerAiGetAisyou - BattleResultCheck
  * Called 98 times. Checks the result of a completed battle.
  *
  * @param context      Battle context

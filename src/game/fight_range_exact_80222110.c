@@ -66,7 +66,7 @@ void fn_802221EC(u32 a, u32 b, u32 c, u32 d) {
     extern u32 wazaSequenceSysIsPlayingWaza(u32, u16, u32);
     extern void _threadSwitch();
     extern void wazaSequenceSysStopWaza(u32, u16, u32);
-    extern void fn_8026532C(u32, u16, u32);
+    extern void fightMenuStatusMenuClose(u32, u16, u32);
     u32 obj;
     u16 partyCount;
 
@@ -98,7 +98,7 @@ void fn_802221EC(u32 a, u32 b, u32 c, u32 d) {
     wazaSequenceSysStopWaza(obj, c, 4);
 
     if ((u8)d == 1) {
-        fn_8026532C(b, partyCount, 0);
+        fightMenuStatusMenuClose(b, partyCount, 0);
     }
 }
 

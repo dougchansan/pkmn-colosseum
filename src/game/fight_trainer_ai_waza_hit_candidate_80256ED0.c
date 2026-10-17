@@ -23,7 +23,7 @@ s32 fightTrainerAiWazaHit120(void* ctx, u32 param1, u32 param2, u32 param3) {
     extern u8 fightOutPokemonGetSex(u32 pokemon);
     extern s32 _fightTrainerAiWazaHitCheck(void* ctx, u32 param1, u32 param2, u32 param3, u32 zero);
     extern u8 fn_80237288(void* ctx, u32 pokemon);
-    extern u8 fn_80236BFC(void* ctx, u32 pokemon, s32 kind);
+    extern u8 fightTrainerAiIsPokemonJoutai(void* ctx, u32 pokemon, s32 kind);
     u8 sex1 = fightOutPokemonGetSex(param1);
     u8 sex3 = fightOutPokemonGetSex(param3);
     s32 gate = _fightTrainerAiWazaHitCheck(ctx, param1, param2, param3, 0);
@@ -34,7 +34,7 @@ s32 fightTrainerAiWazaHit120(void* ctx, u32 param1, u32 param2, u32 param3) {
     if (!wazaHit120TargetClear(ctx, param3)) {
         return 0;
     }
-    if (sex1 == sex3 || fn_80237288(ctx, param3) == 1 || fn_80236BFC(ctx, param3, 0xA) == 1 ||
+    if (sex1 == sex3 || fn_80237288(ctx, param3) == 1 || fightTrainerAiIsPokemonJoutai(ctx, param3, 0xA) == 1 ||
         sex1 == 2 || sex3 == 2) {
         gate = 0;
     }

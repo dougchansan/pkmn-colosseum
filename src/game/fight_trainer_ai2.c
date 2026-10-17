@@ -16,7 +16,7 @@ typedef struct HorobinoutaContext {
 extern u8 fightOutPokemonCheckFightOut(
     void* pokemon, u32 slot, HorobinoutaContext* context);
 extern u8 fightTrainerIsAllyFightTargetPtr(u32 trainer, void* pokemon, u32 slot);
-extern u8 fn_80236BFC(u32 trainer, void* pokemon, u32 flag);
+extern u8 fightTrainerAiIsPokemonJoutai(u32 trainer, void* pokemon, u32 flag);
 extern u8 fn_80237F74(u32 trainer, void* pokemon, u32 flag);
 
 s32 _fightTrainerAiCheckHorobinoutaSub(
@@ -38,7 +38,7 @@ s32 _fightTrainerAiCheckHorobinoutaSub(
     if (fightTrainerIsAllyFightTargetPtr(r30, (void*)r31, r28) == 1) {
         return 1;
     }
-    if (fn_80236BFC(r30, (void*)r31, 0x1E) != 1 &&
+    if (fightTrainerAiIsPokemonJoutai(r30, (void*)r31, 0x1E) != 1 &&
         fn_80237F74(r30, (void*)r31, 0x2B) != 1) {
         *(u32*)(r29 + 4) = *(u32*)(r29 + 4) + 1;
     }

@@ -173,7 +173,7 @@ extern u32  fn_80011C78();
 extern u8   fn_802038A4();
 extern void fn_80207C24();
 extern void fightOutPokemonSetPokemonJoutai08();
-extern s32  fn_80232110();
+extern s32  fightSeqCalcDamage();
 extern u32 _fightDoIkakuSub();
 extern u8   fn_801F453C();
 extern u8   lbl_8047B628;
@@ -214,7 +214,7 @@ extern u16 fightOutPokemonGetTokuseiDataId(u32 poke);
 extern u32 zokuseiGetAisyouDualType(u16 waza, u16* types, u16 typeCount);
 extern int fn_802026E4();
 extern u8 fn_80235714();
-extern u32 fn_802367CC();
+extern u32 fightTrainerAiGetFightPokemonWazaAry();
 extern u32 fightFloorGetFightTrainerFightOutPokemonPtrAry();
 extern u32 fn_80239984();
 extern s32 fightTrainerAiAddValue();
@@ -227,7 +227,7 @@ extern s32 fightTrainerAiWazaValueJibaku();
 extern s32 fightTrainerAiWazaValueNull();
 
 
-/* fn_80233DB0 */
+/* fightTrainerCreateTemotiFightPokemon */
 #define fn_801233F4 pokemonCheckFightOut
 #define fn_80123FBC pokemonCheckValid
 #define fn_8012640C pokemonGetStatus
@@ -237,7 +237,7 @@ extern s32 fightTrainerAiWazaValueNull();
 #define fn_801FB1C0 fightTrainerGetStatus
 #define fn_80205BE8 fightPokemonGetPokemonPtr
 #define fn_80206AEC fightPokemonCreate
-u32 fn_80233DB0(u32 r3, u32 r4, int r5, u16 r6, char r7, int r8)
+u32 fightTrainerCreateTemotiFightPokemon(u32 r3, u32 r4, int r5, u16 r6, char r7, int r8)
 {
     extern u8 fn_801233F4();
     extern u8 fn_80123FBC();
@@ -391,8 +391,8 @@ LAB_0023124c: (void)0;
 #undef fn_80123FBC
 #undef fn_801233F4
 
-/* fn_802342CC */
-void fn_802342CC(u32 trainer, u32 fightType) {
+/* fightTrainerAiSelectFightAction */
+void fightTrainerAiSelectFightAction(u32 trainer, u32 fightType) {
     extern u8 fightTypeDataBiosGetFightoutPokemonNum();
     extern u8 fightOutPokemonCheckFightActionSelect();
     extern u8 fn_80008164();
@@ -579,7 +579,7 @@ void fn_802342CC(u32 trainer, u32 fightType) {
         fightFloorSortFightOutPokemonPtrArySub(0, noAction, 8, 0);
         for (count = 0; (u16)count < selectedCount; count++) {
             if (noAction[(u16)count] != 0) {
-                fn_8023A308(trainer, noAction[(u16)count], fightType);
+                fightTrainerAiSelectWaza(trainer, noAction[(u16)count], fightType);
             }
         }
     }

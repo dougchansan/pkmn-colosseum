@@ -532,7 +532,7 @@ void fightOutPokemonHokakuEffect(void* r3, u8 r4, u32 r5, u8 r6, u8* r7)
     extern void fn_801DDD28(void*, u16, u16, u32);
     extern void fightFloorLoopValidFightOutPokemon();
     extern u32 fightFloorGetStatus();
-    extern void fn_8026532C();
+    extern void fightMenuStatusMenuClose();
   void* iVar1;
   u32 uVar4;
   u32 uVar5;
@@ -653,7 +653,7 @@ void fightOutPokemonHokakuEffect(void* r3, u8 r4, u32 r5, u8 r6, u8* r7)
           battleGridRemovePokemon(iVar1);
           wazaSequenceOwnerFree(iVar1);
         }
-        fn_8026532C(r3,(u16)fightFloorGetStatus(0,0,0x14,0),1);
+        fightMenuStatusMenuClose(r3,(u16)fightFloorGetStatus(0,0,0x14,0),1);
       }
       else if (r7 != (void *)0) {
         fn_801DA224(iVar1,*r7);
@@ -761,7 +761,7 @@ void fightOutPokemonModosuEffect(void* r3, u8 r4)
     extern void fn_801DDD28(void*, u16, u32, u32);
     extern void fightFloorLoopValidFightOutPokemon();
     extern u32 fightFloorGetStatus();
-    extern void fn_8026532C();
+    extern void fightMenuStatusMenuClose();
   void* iVar1;
   u32 uVar2;
   u8 uVar5;
@@ -818,7 +818,7 @@ void fightOutPokemonModosuEffect(void* r3, u8 r4)
         battleGridRemovePokemon(iVar1);
         wazaSequenceOwnerFree(iVar1);
       }
-      fn_8026532C(r3,(u16)fightFloorGetStatus(0,0,0x14,0),1);
+      fightMenuStatusMenuClose(r3,(u16)fightFloorGetStatus(0,0,0x14,0),1);
     }
   }
   return;
@@ -838,7 +838,7 @@ void fightOutPokemonKizetuEffect(void* r3, u8 r4)
     extern void fn_801DDD28(void*, u16, u32, u32);
     extern void fightFloorLoopValidFightOutPokemon();
     extern u32 fightFloorGetStatus();
-    extern void fn_8026532C();
+    extern void fightMenuStatusMenuClose();
   void* iVar1;
   u32 uVar2;
   u8 uVar5;
@@ -871,7 +871,7 @@ void fightOutPokemonKizetuEffect(void* r3, u8 r4)
         _threadSwitch();
       }
       wazaSequenceSysStopWaza(iVar1,uVar4,4);
-      fn_8026532C(r3,(u16)fightFloorGetStatus(0,0,0x14,0),1);
+      fightMenuStatusMenuClose(r3,(u16)fightFloorGetStatus(0,0,0x14,0),1);
     }
     else if (r4 == 3) {
       uVar2 = (u32)fightOutPokemonGetPokemonPtrInline(r3);

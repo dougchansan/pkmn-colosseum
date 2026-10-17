@@ -78,9 +78,9 @@ extern void heroMoveDismissMember(s32 member);
 extern u32 _fadeEffectGetRandom__FUl(u32 limit);
 extern s32 fn_800D37CC(void);
 extern u32 msgGetCharsPerFrame(void);
-extern void fn_8025D164(void);
+extern void couponCalcEarned(void);
 extern s32 savedataBattleGetCouponRun(void);
-extern f32 fn_8025D0A8(void* status);
+extern f32 heroCountPartyInList(void* status);
 extern void savedataBattleSetCouponRun(s32 value);
 
 extern const char lbl_802758AC[];
@@ -1471,7 +1471,7 @@ u16 fieldStartEncount(u32 arg0, u8 arg1, s32 arg2)
 
 void std239_playerGetCouponsEarnedInLastArea(void)
 {
-    fn_8025D164();
+    couponCalcEarned();
 }
 
 s32 fn_801CA728(s32 count)
@@ -1481,7 +1481,7 @@ s32 fn_801CA728(s32 count)
     f32 multiplier;
 
     base = savedataBattleGetCouponRun();
-    multiplier = fn_8025D0A8(savedataGetStatus(0, 2));
+    multiplier = heroCountPartyInList(savedataGetStatus(0, 2));
     value = base + (s32)((f32)count * multiplier);
     savedataBattleSetCouponRun(value);
     return value;

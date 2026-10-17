@@ -5,7 +5,7 @@ typedef struct ToolentrySpeciesList {
     u16 speciesId[1];
 } ToolentrySpeciesList;
 
-u32 fn_8025D06C(void)
+u32 couponAddFromResult(void)
 {
     extern s32 savedataBattleGetCouponRun(void);
     extern u8* savedataBattleGetSavedHero(u8* savedata);
@@ -19,7 +19,7 @@ u32 fn_8025D06C(void)
     return 0;
 }
 
-f32 fn_8025D0A8(void* ctx, u32 param1, u32 param2)
+f32 heroCountPartyInList(void* ctx, u32 param1, u32 param2)
 {
     extern ToolentrySpeciesList* lbl_80478EAC;
     extern f32 lbl_8047E658;

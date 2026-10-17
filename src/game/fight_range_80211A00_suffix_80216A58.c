@@ -143,7 +143,7 @@ void wsCmdC3(void)
     extern u8 fn_802025B8();
     extern u8 fn_802026E4();
     extern u32 fn_80205184();
-    extern int fn_80232110();
+    extern int fightSeqCalcDamage();
   u16 uVar7;
   u32 uVar1;
   u32 uVar11;
@@ -172,7 +172,7 @@ void wsCmdC3(void)
   }
   fightOutPokemonWritePokemonJoutaiDataId(uVar3,0x34,uVar2);
   fightOutPokemonSetPokemonJoutai0C(uVar3,0x34,uVar4);
-  iVar6 = fn_80232110(uVar1,uVar3,uVar5,uVar4,uVar10,uVar8);
+  iVar6 = fightSeqCalcDamage(uVar1,uVar3,uVar5,uVar4,uVar10,uVar8);
   cVar9 = fn_802026E4(uVar1,0x32);
   if (cVar9 == 1) {
     iVar6 = iVar6 * 15 / 10;

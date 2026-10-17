@@ -1165,7 +1165,7 @@ u32 fightActionFlowKaisiNyuujouPokemon(void* action)
     extern void fightOutPokemonDasuEffect();
     extern void _fightActionFlowKaisiNyuujouPokemonSubAppearMsg__FP13FIGHT_TRAINERP15FightOutPokemonUsUsUsUsUc();
     extern void fightMenuCloseMsg();
-    extern void fn_8026532C(void*, u16, s32);
+    extern void fightMenuStatusMenuClose(void*, u16, s32);
     extern void fn_80265598(void*, u16, s32);
     void* side;
     u32 num;
@@ -1287,7 +1287,7 @@ u32 fightActionFlowKaisiNyuujouPokemon(void* action)
                 fightOutPokemonDasuEffect(fop, 2);
                 fightOutPokemonDasuEffect(fop, 3);
                 fightOutPokemonDasuEffect(fop, 4);
-                fn_8026532C(fop, sideId, 0);
+                fightMenuStatusMenuClose(fop, sideId, 0);
                 fightFloorSetStatus(0, 0, 0x36, 0, prevTarget);
             }
         }

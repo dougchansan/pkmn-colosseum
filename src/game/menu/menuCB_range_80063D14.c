@@ -270,7 +270,7 @@ s32 menuTaisenSetupBattle(void* work)
     }
 
     battleType = toolentryTaisenGetBattleType();
-    if (fn_8025D9CC() == 4) {
+    if (battleResultGet10() == 4) {
         switch (battleType) {
         case 0:
         case 1:

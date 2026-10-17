@@ -1,6 +1,6 @@
 /**
  * @file fight_range_80238060.c
- * @brief fn_80238060, 0x80238060 - 0x802381C4: whether a move slot's PP is
+ * @brief fightTrainerAiGetWazaPpRatio, 0x80238060 - 0x802381C4: whether a move slot's PP is
  *        at or below the trainer's threshold percentage (trainer status
  *        0x37) of its max PP.
  *
@@ -40,7 +40,7 @@ static inline u8 aiGetMaxPP(u32 ctx, void* resolved, u32 slot)
     return pokemonWazaGetMaxPP(aiGetFightPokemon(ctx, resolved), slot & 0xFF);
 }
 
-u32 fn_80238060(u32 ctx, u32 pokemon, u32 slot)
+u32 fightTrainerAiGetWazaPpRatio(u32 ctx, u32 pokemon, u32 slot)
 {
     u16 trainer;
     void* resolved;

@@ -159,10 +159,10 @@ fn_800FF540
 floorDataBiosGetFloorID
 toolentryTaisenFreePokemonData
 toolentryDebugPokemonCreate
-fn_8025D06C
+couponAddFromResult
 toolentryCopyHero
-fn_8025DAAC
-fn_8025DAF4
-fn_8025DB2C
-fn_8025DB5C
-fn_8025DB80
+battleResultGet0C
+battleResultDec18
+battleResultInc18
+battleResultGet18
+battleResultInc14

@@ -1,7 +1,7 @@
 /**
  * @file fight_range_exact_802316FC.c
  * @brief Exact island 0x802316FC - 0x80232110 (fn_802316FC, fn_802317E4,
- *        fn_80231FC8, fn_80232024), moved out of fight_range_80211A00.c in
+ *        _fightFindFightOutPokemonWithSequenceSub, fn_80232024), moved out of fight_range_80211A00.c in
  *        address order.
  */
 #include "dolphin/types.h"
@@ -9,7 +9,7 @@
 extern u8 lbl_80478D78[8];
 extern void* lbl_8047B62C;
 extern void wsRunScript(void*, void*, u8);
-s32 fn_80231FC8(void* param1, s32 param2, void** param3);
+s32 _fightFindFightOutPokemonWithSequenceSub(void* param1, s32 param2, void** param3);
 extern u32 fn_80232024();
 extern u8 lbl_80378968[];
 extern u8 lbl_80378A4D[];
@@ -86,7 +86,7 @@ void fn_802317E4(void) {
     fightFloorCreateFightOutPokemonPtrAry(0);
     fightFloorSortFightOutPokemonPtrAry(0, 0);
     selected = 0;
-    fightFloorLoopValidFightOutPokemon(0, fn_80231FC8, &selected, 0);
+    fightFloorLoopValidFightOutPokemon(0, _fightFindFightOutPokemonWithSequenceSub, &selected, 0);
 
     for (i = 0; i < 2; i++) {
         side = fightFloorGetValidFightSidePtr(0, i);
@@ -281,7 +281,7 @@ void fn_802317E4(void) {
 
 /* Report whether the 0xEE record is absent; stash the owner when present. */
 #define fn_8012640C pokemonGetStatus
-s32 fn_80231FC8(void* param1, s32 param2, void** param3) {
+s32 _fightFindFightOutPokemonWithSequenceSub(void* param1, s32 param2, void** param3) {
     extern void* fn_8012640C();
     if (fn_8012640C(param1, 0, 0xee, 0) != 0) {
         if (param3 != NULL) {

@@ -101,7 +101,7 @@ void _fightSeqApplyAisyouToDamage(u32 r3, u32 r4, u32 r5, u8 r6)
 /*
  * wsCmd05 (0x80227C40)
  *
- * Move-power modifier: derives a base power via fn_80232110(ctx1, ctx2,
+ * Move-power modifier: derives a base power via fightSeqCalcDamage(ctx1, ctx2,
  * sub, moveId, val2f, val30) then scales it by the field-0xD9 object's
  * 0x2b/0x2c byte multipliers; doubles it when flag 0x24 is set and
  * val30==0xd, then applies a 1.5x (*15/10) scale when flag 0x32 is
@@ -136,7 +136,7 @@ void wsCmd05(void) {
     fieldD9 = fn_8012640C(ctx1, 0, 0xD9, 0);
     val2f = (u16)fn_8011BEB4(fieldD9, 0, 0x2f, 0);
     val30 = (u16)fn_8011BEB4(fieldD9, 0, 0x30, 0);
-    power = fn_80232110(ctx1, ctx2, sub, moveId, val2f, val30);
+    power = fightSeqCalcDamage(ctx1, ctx2, sub, moveId, val2f, val30);
     mult1 = (u8)fn_8011BEB4(fieldD9, 0, 0x2b, 0);
 
     power = power * mult1;

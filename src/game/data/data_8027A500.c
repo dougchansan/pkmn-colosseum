@@ -235,7 +235,7 @@ extern u8 std244_spawnEffectAtPosition[];
 extern u8 preReliveDisplayHokoraParticle[];
 extern u8 reliveMain[];
 extern u8 preReliveSetParameter[];
-extern u8 fn_80266250[];
+extern u8 evolutionSequenceEnd[];
 extern u8 lbl_80003FF0[];
 extern u8 lbl_80266448[];
 extern u8 lbl_80266460[];
@@ -94484,7 +94484,7 @@ void* lbl_802E1CF0[742] = {
     (void*)((u8*)std229_mapLoad395),
     (void*)0x01000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_80266250),
+    (void*)((u8*)evolutionSequenceEnd),
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)((u8*)std231_characterSetPathPaused),

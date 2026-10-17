@@ -81,7 +81,7 @@ u32 fightTrainerAiWazaHit045(void* trainerCtx, u32 trainerSlot, u32 resultSlot, 
 u32 fightMenuFightTrainerGcHeroOpenMenu(void* ctx, u32 param1, u32 param2);
 
 /* Address: 0x8025DCBC | Size: 0x58 | Ghidra import */
-void fn_8025DCBC(int *param)
+void reliveRestoreSound(int *param)
 {
     u32 *r3 = (u32 *)param;
     if (*r3 != 0) {
@@ -96,7 +96,7 @@ void fn_8025DCBC(int *param)
 #pragma push
 #pragma use_lmw_stmw off
 #pragma optimize_for_size off
-void fn_8025DD14(int *r3)
+void reliveSaveSound(int *r3)
 {
     extern int soundGetCurrentSubSound();
     extern int std228_soundGetCurrentBackgroundMusic();
@@ -128,7 +128,7 @@ void fn_8025DD14(int *r3)
 #pragma pop
 
 /* Address: 0x8025DDAC | Size: 0x48 | Ghidra import */
-void fn_8025DDAC(u32 *r3,u32 r4)
+void effectSetRotation(u32 *r3,u32 r4)
 {
     extern u32 GSmodelSetRotation();
     extern u32 wazaSequenceOwnerGetModel(u32);
@@ -141,7 +141,7 @@ void fn_8025DDAC(u32 *r3,u32 r4)
 }
 
 /* Address: 0x8025DDF4 | Size: 0x18 | Ghidra import */
-void fn_8025DDF4(u32 *r3)
+void effectClear(u32 *r3)
 
 {
   if (*r3 == 0) {
@@ -152,7 +152,7 @@ void fn_8025DDF4(u32 *r3)
 }
 
 /* Address: 0x8025DE0C | Size: 0x48 | Ghidra import */
-void fn_8025DE0C(u32 *r3,u32 r4)
+void effectSetPosition(u32 *r3,u32 r4)
 {
     extern u32 GSmodelSetPosition();
     extern u32 wazaSequenceOwnerGetModel(u32);
@@ -165,7 +165,7 @@ void fn_8025DE0C(u32 *r3,u32 r4)
 }
 
 /* Address: 0x8025DE54 | Size: 0xE4 | Ghidra import */
-void fn_8025DE54(u32 *r3,u16 *r4,int r5,int r6,int r7,
+void effectPlayWaza(u32 *r3,u16 *r4,int r5,int r6,int r7,
                  int r8)
 
 {
@@ -206,7 +206,7 @@ void fn_8025DE54(u32 *r3,u16 *r4,int r5,int r6,int r7,
 }
 
 /* Address: 0x8025DF38 | Size: 0x178 | Ghidra import */
-u32 fn_8025DF38(u32* r3, u32 r4, u16* r5, int r6)
+u32 effectCreate(u32* r3, u32 r4, u16* r5, int r6)
 {
     extern u32 _fadeEffectGetRandom__FUl(u32);
     extern void GSmodelSetBoundCheck(void* model, s32 on);
@@ -341,11 +341,11 @@ void std244_spawnEffectAtPosition(float f1, float f2, float f3, float f4, float 
   extern u16 lbl_80478DA0;
   extern f32 lbl_8047E678;
   extern f32 lbl_8047E67C;
-  extern void fn_8025DDF4();
-  extern u8 fn_8025DF38();
-  extern void fn_8025DE0C();
-  extern void fn_8025DDAC();
-  extern void fn_8025DE54();
+  extern void effectClear();
+  extern u8 effectCreate();
+  extern void effectSetPosition();
+  extern void effectSetRotation();
+  extern void effectPlayWaza();
   extern void set__5GSvecFfff();
   u32 *r31;
   u32 *r30;
@@ -356,13 +356,13 @@ void std244_spawnEffectAtPosition(float f1, float f2, float f3, float f4, float 
   sv1 = f1; sv2 = f2; sv3 = f3;
   sv4 = f4; sv5 = f5; sv6 = f6;
   fn_801DADC0(1);
-  fn_8025DDF4(&lbl_8047B658);
-  if ((u8)(fn_8025DF38(&lbl_8047B658, 0x3f, &lbl_80478DA0, 1) == 1) == 1) {
+  effectClear(&lbl_8047B658);
+  if ((u8)(effectCreate(&lbl_8047B658, 0x3f, &lbl_80478DA0, 1) == 1) == 1) {
     r31 = validptr_8025E1BC(&lbl_8047B658);
     r30 = validptr_8025E1BC(&lbl_8047B658);
     if (r30 != (u32 *)0 && *r30 != 0) {
       set__5GSvecFfff(sv1, out_buf, sv2, sv3);
-      fn_8025DE0C(r30, (u32)out_buf);
+      effectSetPosition(r30, (u32)out_buf);
     }
     {
       u32 *r3;
@@ -372,11 +372,11 @@ void std244_spawnEffectAtPosition(float f1, float f2, float f3, float f4, float 
         scale_buf[0] = fscale * sv4;
         scale_buf[1] = fscale * sv5;
         scale_buf[2] = fscale * sv6;
-        fn_8025DDAC(r3, (u32)scale_buf);
+        effectSetRotation(r3, (u32)scale_buf);
       }
     }
     if (r31 != (u32 *)0 && *r31 != 0) {
-      fn_8025DE54(r31, &lbl_80478DA0, 1, 0, 0, 1);
+      effectPlayWaza(r31, &lbl_80478DA0, 1, 0, 0, 1);
       fadeSet(5, lbl_8047E67C);
       fadeCheck(1);
     }
@@ -576,7 +576,7 @@ typedef struct ReliveTarget {
 
 void preReliveMain(void)
 {
-    extern void fn_8025DCBC(int* param);
+    extern void reliveRestoreSound(int* param);
     extern s32 menuPokemonOpen(s32, s32, s32);
     extern void std098_mapWarpToMenuRoom(s32);
     extern void winMsgCloseField(s32);
@@ -656,7 +656,7 @@ void preReliveMain(void)
     }
 
     if (action == 2) {
-        fn_8025DD14((int*)work);
+        reliveSaveSound((int*)work);
         std130_soundUnk_801653cc(0x3C8, 0, 0xFF);
         selection = (ReliveSelection*)&lbl_8047B668;
         species = (s16)pokemonGetStatus(heroGetStatus(0, 3, selection->index), 0, 0x6E, 0);
@@ -670,7 +670,7 @@ void preReliveMain(void)
         _threadSwitch();
         fadeSet(2, lbl_8047E68C);
         fadeCheck(1);
-        fn_8025DCBC((int*)work);
+        reliveRestoreSound((int*)work);
     } else if (action == 4) {
         if ((s32)lbl_8047B664 == 1) {
             gsParticleKillOwned(lbl_8047B660, 1);
@@ -691,13 +691,13 @@ void preReliveMain(void)
                 ((ReliveTarget*)lbl_804782BC)->index = picked;
                 fadeSet(3, lbl_8047E680);
                 fadeCheck(1);
-                fn_8025DD14((int*)work);
+                reliveSaveSound((int*)work);
                 std098_mapWarpToMenuRoom(0x385);
                 floorSetFadeScript(0, 0);
                 _threadSwitch();
                 fadeSet(2, lbl_8047E68C);
                 fadeCheck(1);
-                fn_8025DCBC((int*)work);
+                reliveRestoreSound((int*)work);
             }
         }
     } else {
@@ -790,7 +790,7 @@ int _cbWazaForget__FP7PokemonUsl(u32 r3,u32 r4)
   iVar3 = loadSequence((int*)auStack_58,r3,(u16*)&lbl_80478DB0,1);
   if (iVar3 == 1) {
     fadeSet((double)lbl_8047E680,2);
-    fn_8025DE54((u32*)auStack_58,(u16*)&lbl_80478DB0,1,1,1,0);
+    effectPlayWaza((u32*)auStack_58,(u16*)&lbl_80478DB0,1,1,1,0);
   }
   return (int)(signed char)iVar2;
 }
@@ -880,7 +880,7 @@ void reliveCeremonyAll(u32 r3)
           iVar3 = loadSequence((int*)auStack_1c,uVar1,(u16*)&lbl_80478DB0,1);
           if (iVar3 == 1) {
             fadeSet((double)lbl_8047E680,2);
-            fn_8025DE54((u32*)auStack_1c,(u16*)&lbl_80478DB0,1,1,1,0);
+            effectPlayWaza((u32*)auStack_1c,(u16*)&lbl_80478DB0,1,1,1,0);
           }
           uVar2 = pokemonBiosGetNicknamePtr(uVar1);
           msgctrlSetValue(0x32,uVar2);
@@ -892,7 +892,7 @@ void reliveCeremonyAll(u32 r3)
           iVar3 = loadSequence((int*)auStack_20,uVar1,(u16*)&lbl_80478DB0,1);
           if (iVar3 == 1) {
             fadeSet((double)lbl_8047E680,2);
-            fn_8025DE54((u32*)auStack_20,(u16*)&lbl_80478DB0,1,1,1,0);
+            effectPlayWaza((u32*)auStack_20,(u16*)&lbl_80478DB0,1,1,1,0);
           }
         }
       }
@@ -915,7 +915,7 @@ void reliveCeremonyAll(u32 r3)
       iVar3 = loadSequence((int*)auStack_24,uVar1,(u16*)&lbl_80478DB0,1);
       if (iVar3 == 1) {
         fadeSet((double)lbl_8047E680,2);
-        fn_8025DE54((u32*)auStack_24,(u16*)&lbl_80478DB0,1,1,1,0);
+        effectPlayWaza((u32*)auStack_24,(u16*)&lbl_80478DB0,1,1,1,0);
       }
     }
   }
@@ -954,7 +954,7 @@ void reliveMain(void)
         pokemonGetStatus(uVar2,0,0x6e,0);
         iVar3 = loadSequence((int*)auStack_18,uVar2,(u16*)&lbl_80478DA8,2);
         if (iVar3 == 1) {
-          fn_8025DE54((u32*)auStack_18,(u16*)&lbl_80478DA8,2,1,1,0);
+          effectPlayWaza((u32*)auStack_18,(u16*)&lbl_80478DA8,2,1,1,0);
           bVar1 = 1;
         }
         else {
@@ -976,7 +976,7 @@ void reliveMain(void)
         pokemonGetStatus(uVar2,0,0x6e,0);
         iVar3 = loadSequence((int*)auStack_18,uVar2,(u16*)lbl_8039A6A8,4);
         if (iVar3 == 1) {
-          fn_8025DE54((u32*)auStack_18,(u16*)lbl_8039A6A8,4,1,1,0);
+          effectPlayWaza((u32*)auStack_18,(u16*)lbl_8039A6A8,4,1,1,0);
           bVar1 = 1;
         }
         else {

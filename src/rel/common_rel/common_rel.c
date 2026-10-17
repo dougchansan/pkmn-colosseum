@@ -215,7 +215,7 @@ void _prolog(void)
     /* msgctrlPalette */
     lbl_80478E8C = lbl_125_data_0;
     lbl_80478E88 = &lbl_125_data_14A654;
-    /* fn_8025D0A8 */
+    /* heroCountPartyInList */
     lbl_80478EAC = lbl_125_data_18;
     lbl_80478EA8 = &lbl_125_data_14A658;
     /* _menuFaceBiosGetPtr__FUs */

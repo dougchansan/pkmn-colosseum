@@ -1010,7 +1010,7 @@ extern u8 fightWazaWzxVariationFuncNormal[];
 extern u8 fightWazaWzxTypeFuncNull[];
 extern u8 fightWazaWzxVariationFuncNull[];
 extern u8 fightTrainerAiWazaValueToriaezutukae[];
-extern u8 fn_802473B4[];
+extern u8 fightAiValueSoubiItem17[];
 extern u8 fn_8024E234[];
 extern u8 fightTrainerAiWazaValueNull[];
 extern u8 fightTrainerAiWazaDamage048[];
@@ -2566,7 +2566,7 @@ void* lbl_8035C430[1790] = {
     (void*)((u8*)fightTrainerAiWazaDamage181),
     (void*)((u8*)fightWazaWzxTypeFuncSpc),
     (void*)((u8*)fightWazaWzxVariationFuncSpc),
-    (void*)((u8*)fn_802473B4),
+    (void*)((u8*)fightAiValueSoubiItem17),
     (void*)((u8*)fightTrainerAiWazaHit182),
     (void*)((u8*)fightTrainerAiWazaDamage182),
     (void*)((u8*)fightWazaWzxTypeFuncNormal),
@@ -2956,7 +2956,7 @@ void* lbl_8035C430[1790] = {
     (void*)((u8*)fightTrainerAiWazaDamage148),
     (void*)((u8*)fightWazaWzxTypeFuncAtt),
     (void*)((u8*)fightWazaWzxVariationFuncAtt),
-    (void*)((u8*)fn_802473B4),
+    (void*)((u8*)fightAiValueSoubiItem17),
     (void*)((u8*)fightTrainerAiWazaHit204),
     (void*)((u8*)fightTrainerAiWazaDamage204),
     (void*)((u8*)fightWazaWzxTypeFuncNormal),

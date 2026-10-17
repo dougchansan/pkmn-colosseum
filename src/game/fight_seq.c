@@ -80,7 +80,7 @@ extern u8* fightWazaCriticalDataBiosGetPtr(u16 index);
 extern void fightWazaBiosCopy();
 extern void fightApplyDamageVariance();
 extern void fightSeqWazaTypeCalc();
-extern int fn_80232110(void* attacker, void* defender, void* side, u16 wazaId,
+extern int fightSeqCalcDamage(void* attacker, void* defender, void* side, u16 wazaId,
                        u16 power, u16 type);
 extern u32 lbl_80478D60;   /* critical-hit table length */
 extern u8 lbl_80478D78[8];
@@ -166,7 +166,7 @@ static inline void fightSeqDamageCalc(void)
     atkWaza = pokemonGetStatus(atk, 0, 0xd9, 0);
     power = wazaGetStatus(atkWaza, 0, 0x2f, 0);
     type = wazaGetStatus(atkWaza, 0, 0x30, 0);
-    damage = fn_80232110(atk, def, side, wazaId, power, type);
+    damage = fightSeqCalcDamage(atk, def, side, wazaId, power, type);
     damage *= (u8)wazaGetStatus(atkWaza, 0, 0x2b, 0);
     damage *= (u8)wazaGetStatus(atkWaza, 0, 0x2c, 0);
     if (fn_802026E4(atk, 0x24) == 1 && type == 0xd) {

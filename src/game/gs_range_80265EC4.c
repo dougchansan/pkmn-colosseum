@@ -68,7 +68,7 @@ void exribbonInit(u8* data)
 /* Address: 0x80265F94 | Size: 0x2BC | Ghidra import
  * d2present gift scene: effect on the gift Pokemon, fade in, its cry,
  * message 0x44BA then a mode-dependent message (0x44BC/0x44BB/0x44B9),
- * fade out; run by fn_80266250 after d2presentOpen stores the mode. */
+ * fade out; run by evolutionSequenceEnd after d2presentOpen stores the mode. */
 void d2presentPlayGiftScene(int r3)
 
 {
@@ -176,7 +176,7 @@ void d2presentPlayGiftScene(int r3)
 
 /* RULE-EXCEPTION(user-approved): redundant masks preserve retail's saved-volume register moves; see docs/RULE_EXCEPTIONS.md. */
 /* Address: 0x80266250 | Size: 0xD0 | Ghidra import */
-void fn_80266250(void)
+void evolutionSequenceEnd(void)
 {
     extern int floorBattleEndTerminateScripts();
     extern u32 lbl_8047B680;

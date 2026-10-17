@@ -1,11 +1,11 @@
 /**
  * @file fight_range_80238B0C.c
- * @brief fn_80238B0C, 0x80238B0C - 0x80238E30: the AI's type-effectiveness
+ * @brief fightTrainerAiGetPokemonAisyou, 0x80238B0C - 0x80238E30: the AI's type-effectiveness
  *        lookup for a move type against a pokemon (zokuseiGetAisyouDualType), with the
  *        tokusei 0x1A / 0x19 overrides (0x43).
  *
  * Exact: written with the fight AI accessor inlines. The per-slot type getter
- * (aiGetType) is the body retail expands in fn_802389D4's loop and twice in
+ * (aiGetType) is the body retail expands in fightTrainerAiGetPokemonAisyouScore's loop and twice in
  * fn_80238E30; keeping it a nested inline under aiGetTypeList numbers the
  * first tokusei check's trainer/pokemon webs between the list's count and
  * species, which gives retail's r26.
@@ -40,7 +40,7 @@ static inline u8 aiIsTokusei(u32 ctx, u32 pokemon, u16 tokusei)
 }
 
 /* RULE-EXCEPTION(user-approved): single-use inline helper (one call here; the
- * same body is expanded in fn_802389D4 and twice in fn_80238E30), kept as a
+ * same body is expanded in fightTrainerAiGetPokemonAisyouScore and twice in fn_80238E30), kept as a
  * nested inline for register numbering -- see docs/RULE_EXCEPTIONS.md. */
 static inline u16 aiGetType(u32 ctx, u32 pokemon, u32 i)
 {
@@ -83,7 +83,7 @@ static inline u32 aiGetTypeList(u32 ctx, u32 pokemon, u16* types)
     return count;
 }
 
-u32 fn_80238B0C(u32 ctx, u32 pokemon, u32 moveType, s16 power)
+u32 fightTrainerAiGetPokemonAisyou(u32 ctx, u32 pokemon, u32 moveType, s16 power)
 {
     u16 types[2];
     u32 count;

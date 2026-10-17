@@ -173,7 +173,7 @@ extern u32  fn_80011C78();
 extern u8   fn_802038A4();
 extern void fn_80207C24();
 extern void fightOutPokemonSetPokemonJoutai08();
-extern s32  fn_80232110();
+extern s32  fightSeqCalcDamage();
 extern u32 _fightDoIkakuSub();
 extern u8   fn_801F453C();
 extern u8   lbl_8047B628;
@@ -214,7 +214,7 @@ extern u16 fightOutPokemonGetTokuseiDataId(u32 poke);
 extern u32 zokuseiGetAisyouDualType(u16 waza, u16* types, u16 typeCount);
 extern int fn_802026E4();
 extern u8 fn_80235714();
-extern u32 fn_802367CC();
+extern u32 fightTrainerAiGetFightPokemonWazaAry();
 extern u32 fightFloorGetFightTrainerFightOutPokemonPtrAry();
 extern u32 fn_80239984();
 extern s32 fightTrainerAiAddValue();
@@ -339,7 +339,7 @@ void wsCmd86(void) {
     extern s32 fn_8011BEB4();
     extern u8 fn_802026E4();
     extern s16 fightOutPokemonGetPokemonJoutaiStack();
-    extern s32 fn_80232110();
+    extern s32 fightSeqCalcDamage();
     extern void fn_8011BBD8();
     extern void fn_80202810();
 
@@ -372,7 +372,7 @@ void wsCmd86(void) {
         return;
     }
     if (lbl_80478D78[6] != 1) {
-        s32 result = fn_80232110(ctx1, ctx2, obj, aux, v1, v2);
+        s32 result = fightSeqCalcDamage(ctx1, ctx2, obj, aux, v1, v2);
         ctx2 = (s32)val * result;
         lbl_80379F58[0x16002] = (u8)val;
         if (fn_802026E4(ctx1, 0x32) == 1) {

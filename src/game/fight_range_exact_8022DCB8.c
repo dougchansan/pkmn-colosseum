@@ -173,7 +173,7 @@ extern u32  fn_80011C78();
 extern u8   fn_802038A4();
 extern void fn_80207C24();
 extern void fightOutPokemonSetPokemonJoutai08();
-extern s32  fn_80232110();
+extern s32  fightSeqCalcDamage();
 extern u32 _fightDoIkakuSub();
 extern u8   fn_801F453C();
 extern u8   lbl_8047B628;
@@ -214,7 +214,7 @@ extern u16 fightOutPokemonGetTokuseiDataId(u32 poke);
 extern u32 zokuseiGetAisyouDualType(u16 waza, u16* types, u16 typeCount);
 extern int fn_802026E4();
 extern u8 fn_80235714();
-extern u32 fn_802367CC();
+extern u32 fightTrainerAiGetFightPokemonWazaAry();
 extern u32 fightFloorGetFightTrainerFightOutPokemonPtrAry();
 extern u32 fn_80239984();
 extern s32 fightTrainerAiAddValue();
@@ -1015,7 +1015,7 @@ u32 _fightCheckDarkPokemonAppear(u32 r3, u8 r4)
     extern void fn_80208404();
     extern void fn_8026246C();
     extern void fn_802624CC();
-    extern void fn_8026532C();
+    extern void fightMenuStatusMenuClose();
     extern void fn_802653FC();
     extern void fn_80265598();
   u16 uVar4;
@@ -1084,7 +1084,7 @@ u32 _fightCheckDarkPokemonAppear(u32 r3, u8 r4)
                 fn_802624CC(0x771b);
                 fn_80208404(r3,1,1,2);
                 fn_8026246C();
-                fn_8026532C(r3,uVar4,0);
+                fightMenuStatusMenuClose(r3,uVar4,0);
                 fn_801F4C14(0,0,0x36,0,uVar1);
                 fn_80208404(r3,1,1,3);
               }
@@ -1105,7 +1105,7 @@ u32 _fightCheckDarkPokemonAppear(u32 r3, u8 r4)
               fn_802624CC(0x771c);
               fn_80208404(r3,0,2,2);
               fn_8026246C();
-              fn_8026532C(r3,uVar4,0);
+              fightMenuStatusMenuClose(r3,uVar4,0);
               fn_801F4C14(0,0,0x36,0,uVar1);
               fn_80208404(r3,0,2,3);
             }
@@ -1138,7 +1138,7 @@ u32 _fightCheckDarkPokemonAppear(u32 r3, u8 r4)
               fn_802080A8(r3,1,1,0x771e,1);
               fn_802080A8(r3,1,1,0,2);
               fn_8026246C();
-              fn_8026532C(r3,uVar4,0);
+              fightMenuStatusMenuClose(r3,uVar4,0);
               fn_801F4C14(0,0,0x36,0,uVar1);
               fn_802080A8(r3,1,1,0,3);
             }

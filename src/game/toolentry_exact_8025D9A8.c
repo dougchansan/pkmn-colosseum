@@ -16,12 +16,12 @@ extern u8* savedataBattleGetEntryPtr(s32 index);
 extern u32 fn_8006A7D8(u32 entry);
 extern u32 fn_8006A7E8(u32 entry);
 
-u32 fn_8025D9A8(void)
+u32 battleResultGet00(void)
 {
     return fn_8006B5A8()->unk_00;
 }
 
-u32 fn_8025D9CC(void)
+u32 battleResultGet10(void)
 {
     return fn_8006B5A8()->unk_10;
 }
@@ -62,17 +62,17 @@ u32 toolentryTaisenGetBattleType(void)
     return fn_8006B5A8()->battleType;
 }
 
-u32 fn_8025DAAC(void)
+u32 battleResultGet0C(void)
 {
     return fn_8006B5A8()->unk_0C;
 }
 
-u32 fn_8025DAD0(void)
+u32 battleResultGet08(void)
 {
     return fn_8006B5A8()->unk_08;
 }
 
-u32 fn_8025DAF4(void)
+u32 battleResultDec18(void)
 {
     ToolentryBattleState* state;
 
@@ -83,7 +83,7 @@ u32 fn_8025DAF4(void)
     return state->count_18;
 }
 
-u32 fn_8025DB2C(void)
+u32 battleResultInc18(void)
 {
     ToolentryBattleState* state;
 
@@ -92,12 +92,12 @@ u32 fn_8025DB2C(void)
     return state->count_18;
 }
 
-u32 fn_8025DB5C(void)
+u32 battleResultGet18(void)
 {
     return fn_8006B5A8()->count_18;
 }
 
-u32 fn_8025DB80(void)
+u32 battleResultInc14(void)
 {
     ToolentryBattleState* state;
 

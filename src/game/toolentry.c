@@ -272,7 +272,7 @@ void toolentryDebugPokemonCreate(void) {
 
 /* Address: 0x8025D06C | Size: 0x3c | Ghidra import */
 #ifndef TOOLENTRY_DEBUG_ONLY
-u32 fn_8025D06C(void)
+u32 couponAddFromResult(void)
 {
     extern u32 savedataBattleGetCouponRun();
     extern void savedataBattleGetSavedHero();
@@ -288,7 +288,7 @@ u32 fn_8025D06C(void)
 
 
 /* Address: 0x8025D0A8 | Size: 0xBC */
-f32 fn_8025D0A8(void* ctx, u32 param1, u32 param2) {
+f32 heroCountPartyInList(void* ctx, u32 param1, u32 param2) {
     extern ToolentrySpeciesList* lbl_80478EAC;
     extern f32 lbl_8047E658;
     extern f32 lbl_8047E65C;
@@ -344,7 +344,7 @@ f32 fn_8025D0A8(void* ctx, u32 param1, u32 param2) {
 
 #if !defined(TOOLENTRY_8025D788_ONLY) && !defined(TOOLENTRY_DEBUG_ONLY) && !defined(TOOLENTRY_8025D3F4_ONLY) && !defined(TOOLENTRY_8025D644_ONLY)
 /* Address: 0x8025D164 | Size: 0x128 (296 bytes) */
-s32 fn_8025D164(void) {
+s32 couponCalcEarned(void) {
     extern f32 lbl_8039A648[];
     extern f32 lbl_8039A664[];
     extern ToolentrySpeciesList* lbl_80478EAC;
@@ -730,10 +730,10 @@ u32 toolentryTaisenGetPokemonPtr(u32 r3, u16 r4)
 
 /* Address: 0x8025D9A8 | Size: 0x24 | Pattern: null_check_getter */
 extern void* fn_8006B5A8(void*);
-u32 fn_8025D9A8(void* ctx) { return *(u32*)fn_8006B5A8(ctx); }
+u32 battleResultGet00(void* ctx) { return *(u32*)fn_8006B5A8(ctx); }
 
 /* Address: 0x8025D9CC | Size: 0x24 | Pattern: null_check_getter */
-u32 fn_8025D9CC(void* ctx) { return *(u32*)((u8*)fn_8006B5A8(ctx) + 0x10); }
+u32 battleResultGet10(void* ctx) { return *(u32*)((u8*)fn_8006B5A8(ctx) + 0x10); }
 
 /* Address: 0x8025D9F0 | Size: 0x28 | Ghidra import */
 u32 toolentryTaisenGetHomePlace(void)
@@ -780,13 +780,13 @@ u32 toolentryTaisenGetEntryPlayerNum(void) {
 u32 toolentryTaisenGetBattleType(void* ctx) { return *(u32*)((u8*)fn_8006B5A8(ctx) + 0x4); }
 
 /* Address: 0x8025DAAC | Size: 0x24 | Pattern: null_check_getter */
-u32 fn_8025DAAC(void* ctx) { return *(u32*)((u8*)fn_8006B5A8(ctx) + 0xc); }
+u32 battleResultGet0C(void* ctx) { return *(u32*)((u8*)fn_8006B5A8(ctx) + 0xc); }
 
 /* Address: 0x8025DAD0 | Size: 0x24 | Pattern: null_check_getter */
-u32 fn_8025DAD0(void* ctx) { return *(u32*)((u8*)fn_8006B5A8(ctx) + 0x8); }
+u32 battleResultGet08(void* ctx) { return *(u32*)((u8*)fn_8006B5A8(ctx) + 0x8); }
 
 /* Address: 0x8025DAF4 | Size: 0x38 | Ghidra import */
-u32 fn_8025DAF4(void)
+u32 battleResultDec18(void)
 {
     extern void* fn_8006B5A8();
     u32 uVar1;
@@ -799,7 +799,7 @@ u32 fn_8025DAF4(void)
 
 
 /* Address: 0x8025DB2C | Size: 0x30 | Ghidra import */
-u32 fn_8025DB2C(void)
+u32 battleResultInc18(void)
 {
     extern void* fn_8006B5A8();
     int iVar1;
@@ -810,10 +810,10 @@ u32 fn_8025DB2C(void)
 
 
 /* Address: 0x8025DB5C | Size: 0x24 | Pattern: null_check_getter */
-u32 fn_8025DB5C(void* ctx) { return *(u32*)((u8*)fn_8006B5A8(ctx) + 0x18); }
+u32 battleResultGet18(void* ctx) { return *(u32*)((u8*)fn_8006B5A8(ctx) + 0x18); }
 
 /* Address: 0x8025DB80 | Size: 0x30 | Ghidra import */
-u32 fn_8025DB80(void)
+u32 battleResultInc14(void)
 {
     extern void* fn_8006B5A8();
     int iVar1;
@@ -824,6 +824,6 @@ u32 fn_8025DB80(void)
 
 
 /* Address: 0x8025DBB0 | Size: 0x24 | Pattern: null_check_getter */
-u32 fn_8025DBB0(void* ctx) { return *(u32*)((u8*)fn_8006B5A8(ctx) + 0x14); }
+u32 battleResultGet14(void* ctx) { return *(u32*)((u8*)fn_8006B5A8(ctx) + 0x14); }
 
 #endif /* carve guards */
