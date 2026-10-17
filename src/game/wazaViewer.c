@@ -230,7 +230,7 @@ static inline void wazaViewerPollCommand(const char* messages) {
 void _wazaViewerInitialize(void) {
     extern struct GSmodel* GSresGetResource(u32 group, u32 handle);
     extern s32 GSthreadCreate(s32, s32, s32, s32, s32, void*);
-    extern s32 fn_800057A8(void);
+    extern s32 GSgetVersionMinor(void);
 
     struct GSmodel* result;
     s32 value;
@@ -242,7 +242,7 @@ void _wazaViewerInitialize(void) {
         GSmodelSetVisibility(result, 0);
     }
     *(s32*)(lbl_804673F8 + 0x66C) = GSthreadCreate(0x14, 0x58, 0x2000, 1, 0, wazaViewerThread);
-    value = fn_800057A8();
+    value = GSgetVersionMinor();
     *(u32*)lbl_804673F8 = (u32)((u32)((2 - value) | (value - 2)) >> 31);
 }
 #endif
@@ -296,7 +296,7 @@ void fn_801D56B0(void) {
     extern void GSscene_SetCameraPositionVector(WazaViewerVec* src);
     extern void GSscene_SetCameraViewVector(WazaViewerVec* src);
     extern void GSscene_SetMode(s32 mode);
-    extern s32 fn_800057A8(void);
+    extern s32 GSgetVersionMinor(void);
     extern void GSmodelDisableColorSwap(void* model);
     extern void DVDInit(void);
     extern void fn_801DB100(void* sequence);
@@ -311,7 +311,7 @@ void fn_801D56B0(void) {
     void* sequence;
 
     presets = (const WazaViewerCamPreset*)lbl_80279338;
-    if (fn_800057A8() == 2) {
+    if (GSgetVersionMinor() == 2) {
         direction = presets[2].direction;
         position = presets[2].position;
         view = presets[2].view;
@@ -364,7 +364,7 @@ void fn_801D56B0(void) {
     if (strlen((char*)(lbl_804673F8 + 0x21C)) != 0) {
         fn_801D5DA0();
     }
-    if (fn_800057A8() == 2) {
+    if (GSgetVersionMinor() == 2) {
         GSscene_SetMode(2);
     } else {
         GSscene_SetMode(7);
@@ -381,7 +381,7 @@ void fn_801D58E4(void) {
     extern void GSscene_SetCameraPositionVector(WazaViewerVec* src);
     extern void GSscene_SetCameraViewVector(WazaViewerVec* src);
     extern void GSscene_SetMode(s32 mode);
-    extern s32 fn_800057A8(void);
+    extern s32 GSgetVersionMinor(void);
     extern void* GSfilterCreate(u8* color);
     extern u8 fn_801E11E8(void);
     extern void fn_801E1258(void);
@@ -395,7 +395,7 @@ void fn_801D58E4(void) {
     u8 color[4];
 
     presets = (const WazaViewerCamPreset*)lbl_80279338;
-    if (fn_800057A8() == 2) {
+    if (GSgetVersionMinor() == 2) {
         direction = presets[1].direction;
         position = presets[1].position;
         view = presets[1].view;

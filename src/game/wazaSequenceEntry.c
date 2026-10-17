@@ -351,7 +351,7 @@ u8 wazaSequenceEntryUpdate(void* entry, s32 elapsed) {
 
     case 0:
     default:
-        if (fn_800057A8() == 2) {
+        if (GSgetVersionMinor() == 2) {
             fn_801D744C(1);
         }
         GSlogWrite(lbl_802795B4);
@@ -439,7 +439,7 @@ u8 wazaSequenceEntryStart(void* entry) {
             started = soundStartRaw(node->resourceId, 0, 0);
         }
         if (!(u8)started) {
-            if (fn_800057A8() == 2) {
+            if (GSgetVersionMinor() == 2) {
                 fn_801D744C(0x100);
             }
             goto failed;
@@ -496,7 +496,7 @@ control_checked:
     }
     default:
         GSlogWrite(lbl_802795E4);
-        if (fn_800057A8() == 2) {
+        if (GSgetVersionMinor() == 2) {
             fn_801D744C(1);
         }
         goto failed;
@@ -567,7 +567,7 @@ u8 _wazaSequenceEffectEntryStart(void* entry) {
     if (effectId != 0) {
         effect = fn_8013151C((u32)effectId);
         if (effect == NULL) {
-            if (fn_800057A8() == 2) {
+            if (GSgetVersionMinor() == 2) {
                 fn_801D744C(0x80);
             }
             return FALSE;
@@ -698,7 +698,7 @@ u8 _wazaSequenceEffectEntryStart(void* entry) {
 
         case -1:
         default:
-            if (fn_800057A8() == 2) {
+            if (GSgetVersionMinor() == 2) {
                 fn_801D744C(0x80);
             }
             return FALSE;
@@ -706,7 +706,7 @@ u8 _wazaSequenceEffectEntryStart(void* entry) {
 
         GSeffect((u32)effectId);
     } else {
-        if (fn_800057A8() == 2) {
+        if (GSgetVersionMinor() == 2) {
             fn_801D744C(0x80);
         }
         return FALSE;
@@ -783,7 +783,7 @@ u8 _wazaSequenceParticleEntryStart(WazaSequenceNode* node) {
     fn_801D9950(node->sequence, scale, *(s32*)((u8*)owner + 0x10));
 
     if (resource == NULL) {
-        if (fn_800057A8() == 2) {
+        if (GSgetVersionMinor() == 2) {
             fn_801D744C(0x20);
         }
         return FALSE;
@@ -795,7 +795,7 @@ u8 _wazaSequenceParticleEntryStart(WazaSequenceNode* node) {
     *(u32*)((u8*) node + 0x90) = 0;
 
     if (*(void**)((u8*) node + 0x8C) == NULL) {
-        if (fn_800057A8() == 2) {
+        if (GSgetVersionMinor() == 2) {
             fn_801D744C(0x20);
         }
         return FALSE;
@@ -911,7 +911,7 @@ u8 _wazaSequenceParticleEntryStart(WazaSequenceNode* node) {
                 fn_80118E8C(*(void**)((u8*) node + 0x8C), rotation);
                 break;
             default:
-                if (fn_800057A8() == 2) {
+                if (GSgetVersionMinor() == 2) {
                     fn_801D744C(1);
                 }
                 GSlogWrite(lbl_80279658);
@@ -1090,7 +1090,7 @@ u8 _wazaSequenceModelEntryStart(WazaSequenceNode* node) {
             case 7:
                 break;
             default:
-                if (fn_800057A8() == 2) {
+                if (GSgetVersionMinor() == 2) {
                     fn_801D744C(1);
                 }
                 GSlogWrite(lbl_80279694);
@@ -1131,7 +1131,7 @@ u8 _wazaSequenceModelEntryStart(WazaSequenceNode* node) {
             case 7:
                 break;
             default:
-                if (fn_800057A8() == 2) {
+                if (GSgetVersionMinor() == 2) {
                     fn_801D744C(1);
                 }
                 GSlogWrite(lbl_802796CC);
@@ -1154,7 +1154,7 @@ u8 _wazaSequenceModelEntryStart(WazaSequenceNode* node) {
             GSmodelSetAnimFrame(model, lbl_8047E350);
             GSmodelStartAnimation(model);
         } else {
-            if (fn_800057A8() == 2) {
+            if (GSgetVersionMinor() == 2) {
                 fn_801D744C(0x200);
             }
             *(s32*)((u8*)node + 0x88) = -1;
@@ -1172,7 +1172,7 @@ u8 _wazaSequenceModelEntryStart(WazaSequenceNode* node) {
             GSmodelSetTexAnimFrame(model, lbl_8047E350);
             GSmodelStartTexAnimation(model);
         } else {
-            if (fn_800057A8() == 2) {
+            if (GSgetVersionMinor() == 2) {
                 fn_801D744C(0x400);
             }
             *(s32*)((u8*)node + 0x90) = -1;
@@ -1233,7 +1233,7 @@ void* fn_801D97F0(void* entry) {
         if (linked->kind == 2) {
             if (linked->model != NULL) {
                 part = GSmodelGetPart(linked->model, node->partIndex);
-                if (fn_800057A8() == 2 && part == NULL) {
+                if (GSgetVersionMinor() == 2 && part == NULL) {
                     fn_801D744C(2);
                 }
                 return part;
@@ -1259,7 +1259,7 @@ void* fn_801D97F0(void* entry) {
     if (partIndex >= 0) {
         part = GSmodelGetPart(*(void**)(owner + 0x24), partIndex);
     }
-    if (fn_800057A8() == 2 && part == NULL) {
+    if (GSgetVersionMinor() == 2 && part == NULL) {
         fn_801D744C(2);
     }
 
@@ -1471,7 +1471,7 @@ u8 wazaSequencePokemonMotionStart(void* ownerPtr, BOOL enabled) {
 done:
         return TRUE;
     }
-    if (fn_800057A8() == 2) {
+    if (GSgetVersionMinor() == 2) {
         fn_801D744C(4);
     }
     GSlogWrite(lbl_80279740);

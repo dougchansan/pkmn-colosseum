@@ -6,7 +6,7 @@
  * 0x8047B7C8-0x8047B808 (0.0f, both int->float doubles, 1.0f, 255.0f, 30.0,
  * 2*pi, 1/32, 15.0). No function outside this range reads it, and the
  * neighbouring pools repeat 0.0f and the conversion double, so the TU
- * boundaries sit at 0x8001D718 (after menuPokemon's fn_8001D624) and
+ * boundaries sit at 0x8001D718 (after menuPokemon's menuPokemonGetStatusSprite) and
  * 0x8001EF78 (the GStitle TU). It also owns fn_8001E644's colour initializer
  * (.rodata 0x80266C20-0x80266C30) and fn_8001EC08's vertex work area
  * (.bss 0x803A1D60-0x803A1F88). The function names that are known come
@@ -15,7 +15,7 @@
  * Built with GC/1.3.2, -O4,p and -opt nopeephole. GC/1.3.2 is what keeps
  * fn_8001EC08's pooled .bss offsets out of its store displacements; the rest
  * of the TU is the same under GC/1.3. The GX wrappers are declared once for
- * the whole file. fn_800D61E4 takes s16 coordinates, so fn_8001E58C's int
+ * the whole file. fn_800D61E4 takes s16 coordinates, so menuDrawRectOutline's int
  * corners are narrowed at the call.
  */
 #include "dolphin/types.h"
@@ -387,7 +387,7 @@ s32 menuSubOpenNumberInputSub__FUlPUlUcssbPFUl_PUs(void* a, u32* b, void* c) {
 }
 
 /* 0x8001E3E0 | 0xD4 */
-s32 fn_8001E3E0(void* a, u32* b) {
+s32 menuSelectInput(void* a, u32* b) {
     extern void* windowGetActiveID();
     extern void menuOpenCustom(s32, ...);
     extern void menuSetPosition();
@@ -416,7 +416,7 @@ s32 fn_8001E3E0(void* a, u32* b) {
 }
 
 /* 0x8001E4B4 | 0xD8 */
-void fn_8001E4B4(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f) {
+void menuDrawRect(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f) {
     gfxSetFlags(0x1);
     gfxClearFlags(0x6);
     gfxSetPrimitive(0x3);
@@ -432,7 +432,7 @@ void fn_8001E4B4(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f) {
 }
 
 /* 0x8001E58C | 0xB8 */
-void fn_8001E58C(s32 x, s32 y, s32 width, s32 height, u8* color) {
+void menuDrawRectOutline(s32 x, s32 y, s32 width, s32 height, u8* color) {
     gfxSetFlags(1);
     gfxClearFlags(6);
     gfxSetPrimitive(7);
@@ -562,7 +562,7 @@ void fn_8001E644(s32 x, s32 y, s32 width, s32 height, u8 alpha) {
 }
 
 /* 0x8001EA98 | 0x170 */
-void fn_8001EA98(s32 x, s32 y, s32 width, s32 height) {
+void windowDrawPanel(s32 x, s32 y, s32 width, s32 height) {
     s32 right;
     s32 bottom;
 

@@ -6,8 +6,8 @@ gTRKInterruptVectorTableEnd
 fn_80020328
 fn_800203B4
 fn_8002049C
-fn_80029850
-fn_800298DC
+bagFindItemSlot
+bagPocketAddItem
 fn_80031B10
 fn_800324A0
 fn_80035C48

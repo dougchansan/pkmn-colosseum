@@ -148,10 +148,10 @@ extern PdaModelWindow lbl_803A6748;
 extern u8 lbl_803A67FC[];
 extern PdaSceneWork lbl_803A6818;
 
-extern s32 fn_8003B85C(void* window, s32 enabled);
-extern void fn_8003C2B8(PdaSprite* sprite, PdaEvent* event);
+extern s32 pdaSnagListDetailKey(void* window, s32 enabled);
+extern void pdaSnagListDrawDetail(PdaSprite* sprite, PdaEvent* event);
 extern s32 fn_80041E48(void* work, s32 mode);
-extern s32 fn_80042658(void* work, s32 mode);
+extern s32 pdaModelViewerControl(void* work, s32 mode);
 extern void pdaReadPadInput(void* scene);
 extern void GSscene_SetMode(s32 mode);
 extern void menuButtonNormal(void* button);
@@ -183,7 +183,7 @@ void fn_80037174(void)
 /* Retail places this callback immediately after fn_80037174. */
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma peephole off
-void fn_80037180(u32 unused, u8* p)
+void pcMenuDrawPurifiedCount(u32 unused, u8* p)
 {
     extern u32 gfxVtxTexCoord();
     extern u32 fn_800D5CB8();
@@ -934,8 +934,8 @@ void std024_dialogDisplayPCBoxMenu(void)
     extern void soundUnduck(s32 a, s32 b, s32 c);
     extern void fn_800FF660(void);
     extern void fn_80058150(void);
-    extern void fn_8003A520(void);
-    extern s32 fn_80038A0C(void);
+    extern void itemStorageRun(void);
+    extern s32 pcMenuSave(void);
     extern void menuModelInit(u8* model, s16 a, s16 b);
     extern void menuModelSetMotion(u8* model, s32 motion);
     extern void fn_8010A010(u8* model, s32 id);
@@ -1006,7 +1006,7 @@ void std024_dialogDisplayPCBoxMenu(void)
             break;
         case 0x14:
             lbl_8047A480 = (void*)0x1b61;
-            fn_8003A520();
+            itemStorageRun();
             lbl_8047A480 = (void*)0x1b5a;
             state = 1;
             break;
@@ -1016,7 +1016,7 @@ void std024_dialogDisplayPCBoxMenu(void)
             fn_8010A010(base, 0xf70400);
             fn_8018F4C8(peopleInfoBiosGetPtr(0xf70400), 1, &motion, &scratch);
             menuModelSetMotion(base, motion);
-            state = fn_80038A0C();
+            state = pcMenuSave();
             fn_8010A420(base);
             break;
         case 0x28:
@@ -1060,13 +1060,13 @@ typedef struct PdaSaveImage {
 
 /* Save-and-quit flow reached from the People screen's model preview. */
 #pragma peephole off
-s32 fn_80038A0C(void)
+s32 pcMenuSave(void)
 {
     extern u8 lbl_802E51C8[];
     extern s32 menuOpen(s32 menu, s32 mode);
     extern s8 menuSubOpenYesNo(s32 a, s32 b, s32 c, s32 d);
     extern u32 fn_80005748(void);
-    extern void fn_800056EC(f32 seconds);
+    extern void gamedataSetPlaytime(f32 seconds);
     extern void* fn_801D036C(void);
     extern void fn_801D0314(void* buffer);
     extern s32 fn_801D0748(s32 a, s32 b, s32 c);
@@ -1144,7 +1144,7 @@ s32 fn_80038A0C(void)
                 }
             }
             *(PdaSaveImage*)savedataGetStatus(0, 0) = *(PdaSaveImage*)backup;
-            fn_800056EC((f32)(lbl_8047A498 + fn_80005748()));
+            gamedataSetPlaytime((f32)(lbl_8047A498 + fn_80005748()));
             lbl_8047A498 = 0;
             fn_801D0314(backup);
             if (saved) {
@@ -1354,7 +1354,7 @@ static inline s32 pdaBoxItemNum(s32 target)
 
 /* PC item list: cursor/page input, item swapping, and caption refresh. */
 #pragma peephole off
-s32 fn_80039A84(void)
+s32 itemStorageListKey(void)
 {
     extern PdaKeyInfo* windowGetKeyInfo(void);
     extern u16 pcboxGetNbItemSlot(s32 box);
@@ -1510,7 +1510,7 @@ void fn_80039F44(void* button)
 /* PC item transfer loop: run the box list and move the highlighted stack
    between the bag (mode 0) and the PC (mode 1) until the list is closed. */
 #pragma peephole off
-void fn_8003A10C(s32 mode)
+void itemStorageTransfer(s32 mode)
 {
     extern s32 menuOpen(s32 menu, s32 mode);
     extern void menuClose(s32 menu);
@@ -1858,7 +1858,7 @@ s32 fn_8003AE84(void)
     return value;
 }
 
-void fn_8003AEF0(PdaSprite* sprite)
+void pdaSnagListDrawCount(PdaSprite* sprite)
 {
     extern PdaListEntry* lbl_8047A4D4;
     extern void fn_801EED88(u16 id);
@@ -1886,14 +1886,14 @@ void fn_8003AEF0(PdaSprite* sprite)
 #pragma scheduling off
 void fn_8003B814(void* window)
 {
-    fn_8003B85C(window, 1);
+    pdaSnagListDetailKey(window, 1);
 }
 #pragma scheduling reset
 
 #pragma scheduling off
 void fn_8003B838(void* window)
 {
-    fn_8003B85C(window, 0);
+    pdaSnagListDetailKey(window, 0);
 }
 #pragma scheduling reset
 
@@ -2002,7 +2002,7 @@ void fn_8003C24C(PdaSprite* sprite, PdaEvent* event)
         sprite->alphaByte = lbl_8047BAC0 * lbl_803A6748.alphaScale;
         break;
     default:
-        fn_8003C2B8(sprite, event);
+        pdaSnagListDrawDetail(sprite, event);
         break;
     }
 }
@@ -2029,7 +2029,7 @@ void fn_8003C728(PdaSprite* alphaSprite, PdaSprite* sprite)
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-s32 fn_8003CE1C(s32 index)
+s32 pdaSnagListGetTrainerName(s32 index)
 {
     extern u32 lbl_8047A4D0;
     extern PdaListEntry* lbl_8047A4D4;
@@ -2127,14 +2127,14 @@ void fn_8004115C(void* work)
 {
     GSscene_SetMode(4);
     pdaReadPadInput(lbl_803A67FC);
-    fn_80042658(work, 1);
+    pdaModelViewerControl(work, 1);
 }
 
 void fn_800411A4(void* work)
 {
     GSscene_SetMode(4);
     pdaReadPadInput(lbl_803A67FC);
-    fn_80042658(work, 0);
+    pdaModelViewerControl(work, 0);
 }
 
 s32 fn_800411EC(void)
@@ -2546,7 +2546,7 @@ static inline f32 pdaAbsF(f32 x)
     return x > 0.0f ? x : -x;
 }
 
-/* RULE-EXCEPTION(user-approved): reconstructed inline helpers pdaAbsF/pdaApproach (pdaUpdateFadeAndSelect, fn_80041E48, fn_80044630) — see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): reconstructed inline helpers pdaAbsF/pdaApproach (pdaUpdateFadeAndSelect, fn_80041E48, pdaStrategyMemoRun) — see docs/RULE_EXCEPTIONS.md */
 static inline void pdaApproach(f32* current, f32* target, f32 delta)
 {
     f32 step;
@@ -2804,7 +2804,7 @@ extern u32 GSmsgGetGSchar(u32 msg);
 extern void msgctrlSetValue(s32 id, u32 value);
 
 #pragma peephole off
-void fn_8003B478(u8* context)
+void pdaSnagListCreatePokemon(u8* context)
 {
     u8 caught;
     u32 liveModel;
@@ -3138,7 +3138,7 @@ u32 fn_80043728(u32 unused, s32 mode, u16 buttons)
 #pragma pop
 #pragma peephole reset
 
-void fn_8003A520(void)
+void itemStorageRun(void)
 {
     extern s32 fn_80039498(s32 value);
     extern void menuClose(s32 id);
@@ -3157,7 +3157,7 @@ void fn_8003A520(void)
             menuClose(0x1B);
             menuCloseSync(0x19, 1);
             menuCloseSync(0x1B, 1);
-            fn_8003A10C(0);
+            itemStorageTransfer(0);
             menuOpen(0x1B, 0);
             menuOpen(0x19, 0);
             break;
@@ -3184,7 +3184,7 @@ void fn_8003A520(void)
             menuClose(0x1B);
             menuCloseSync(0x19, 1);
             menuCloseSync(0x1B, 1);
-            fn_8003A10C(1);
+            itemStorageTransfer(1);
             menuOpen(0x1B, 0);
             menuOpen(0x19, 0);
             break;
@@ -3197,7 +3197,7 @@ extern u32 GSmsgGetGSchar(u32 msg);
 extern void msgctrlSetValue(s32 id, u32 value);
 
 #pragma peephole off
-void fn_8003B2D8(u8* context)
+void pdaSnagListDrawEntry(u8* context)
 {
     extern s32 fn_801EE544(u16, s8*);
     u8* slot;
@@ -3243,7 +3243,7 @@ void fn_8003B2D8(u8* context)
     if (ownerText == 0) {
         owner = GSmsgGetGSchar(1);
     }
-    caption = fn_8003CE1C(*(u32*)&lbl_803A6748);
+    caption = pdaSnagListGetTrainerName(*(u32*)&lbl_803A6748);
     if (caption == 0) {
         caption = GSmsgGetGSchar(1);
     }
@@ -3256,7 +3256,7 @@ void fn_8003B2D8(u8* context)
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-s32 fn_80039F70(u8* ctx)
+s32 itemStorageListSeq(u8* ctx)
 {
     extern void winSeqSetMenu(s32 sequence, s32 menu);
     extern u8 fn_801429E8(void* item);
@@ -3561,7 +3561,7 @@ void fn_8003F2DC(u8* arr, s32 count, s32 dir) {
 
 /* Main summary-screen state machine. */
 #pragma peephole off
-void fn_80044630(void) {
+void pdaStrategyMemoRun(void) {
     extern void  _threadSwitch(void);
     extern u32   menuCloseCustom(u32 a, u32 b, u32 c);
     extern s32   menuOpen(s32 menu, s32 mode);
@@ -4933,7 +4933,7 @@ extern u8 lbl_802E5448[];
 extern u8 lbl_80267180[];
 extern f32 lbl_8047BC9C;
 extern u8 fn_80047CC0(u8* work);
-extern u8 fn_800478B4(void* work, void* sub);
+extern u8 pdaModelFrameCamera(void* work, void* sub);
 
 
 /* Bring the PDA model/camera/light rig online for the summary screen. */
@@ -5013,7 +5013,7 @@ s32 fn_8003D1FC(void)
         break;
     case 5:
         *((u8*)&lbl_803A6818 + 0x214) =
-            fn_800478B4((u8*)&lbl_803A6818 + 0x7c, (u8*)&lbl_803A6818 + 0xc4);
+            pdaModelFrameCamera((u8*)&lbl_803A6818 + 0x7c, (u8*)&lbl_803A6818 + 0xc4);
         *((u8*)&lbl_803A6818 + 0x214) =
             fn_8003D1FC_setup((u8*)&lbl_803A6818 + 0xc4);
         break;
@@ -5025,7 +5025,7 @@ s32 fn_8003D1FC(void)
 
 /* Rebuild the memo index table, optionally filtered by the active color tab. */
 #pragma peephole off
-u16 fn_8003D4C8(void)
+u16 pdaMemoLoadPokemon(void)
 {
     extern u16 memoDataGetCount(s32 a);
     extern u16 memoDataGetPokemonID(s32 a, u16 index);
@@ -5386,7 +5386,7 @@ extern void fn_800E03B4(f32* mtx, void* vec);
 
 /* Frame the two compared models in the PDA's side-by-side camera. */
 #pragma peephole off
-u8 fn_800478B4(void* work, void* sub)
+u8 pdaModelFrameCamera(void* work, void* sub)
 {
     extern f64 tan(f64 x);
     f32 mtx0[12];
@@ -5863,7 +5863,7 @@ extern void fn_800E0560(f32* mtx, void* vec);
 extern void GSvecTransform(void* dst, f32* mtx, void* src);
 
 /* Orbit camera for the PDA's rotatable model page. */
-u8 fn_800484A4(u8* work)
+u8 pdaModelOrbitCamera(u8* work)
 {
     extern f64 tan(f64 x);
     f32 mtx1[12];
@@ -7044,7 +7044,7 @@ static inline void pdaCloseLevelWindows(u8* S)
 
 /* Per-frame scene update for the PDA's model page. */
 #pragma peephole off
-s32 fn_80042658(void* work, s32 mode)
+s32 pdaModelViewerControl(void* work, s32 mode)
 {
     extern u32 msgGetCharsPerFrame(void);
     extern s32 fn_800D37CC(void);
@@ -7138,7 +7138,7 @@ s32 fn_80042658(void* work, s32 mode)
         fn_80043728((u32)work, mode, keys);
         break;
     case 4:
-        ((u8*)&lbl_803A6818)[0x214] = fn_800484A4((u8*)&lbl_803A6818 + 0x7c);
+        ((u8*)&lbl_803A6818)[0x214] = pdaModelOrbitCamera((u8*)&lbl_803A6818 + 0x7c);
         spin.x = lbl_8047BC94;
         spin.y = lbl_8047BC94;
         spin.z = lbl_8047BC94;
@@ -7175,7 +7175,7 @@ s32 fn_80042658(void* work, s32 mode)
         }
         break;
     case 5:
-        ((u8*)&lbl_803A6818)[0x214] = fn_800478B4((u8*)&lbl_803A6818 + 0x7c, (u8*)&lbl_803A6818 + 0xc4);
+        ((u8*)&lbl_803A6818)[0x214] = pdaModelFrameCamera((u8*)&lbl_803A6818 + 0x7c, (u8*)&lbl_803A6818 + 0xc4);
         ((u8*)&lbl_803A6818)[0x214] = fn_8003D1FC_setup((u8*)&lbl_803A6818 + 0xc4);
         break;
     default:
@@ -7246,7 +7246,7 @@ s32 fn_80042658(void* work, s32 mode)
                 fn_80047CC0((u8*)&lbl_803A6818 + 0x7c);
             break;
         case 5:
-            *((u8*)&lbl_803A6818 + 0x214) = fn_800478B4(
+            *((u8*)&lbl_803A6818 + 0x214) = pdaModelFrameCamera(
                 (u8*)&lbl_803A6818 + 0x7c, (u8*)&lbl_803A6818 + 0xc4);
             *((u8*)&lbl_803A6818 + 0x214) =
                 fn_8003D1FC_setup((u8*)&lbl_803A6818 + 0xc4);
@@ -7407,7 +7407,7 @@ void fn_80048918(void)
     *(s8*)((u8*)&lbl_803A6818 + 0x1a0) = 0;
     *(s8*)((u8*)&lbl_803A6818 + 0x1b4) = 0;
     *(s32*)((u8*)&lbl_803A6818 + 0x1e4) = 0;
-    fn_8003D4C8();
+    pdaMemoLoadPokemon();
     if (lbl_804788C0 != 0) {
         pokemon = pdaLoadPokemon(lbl_803A6818.currentIndex);
         if (fn_8010A210((u8*)&lbl_803A6818 + 0x7c, pokemon) == 0) {
@@ -7428,7 +7428,7 @@ void fn_80048918(void)
             *((u8*)&lbl_803A6818 + 0x214) = fn_80047CC0((u8*)&lbl_803A6818 + 0x7c);
             break;
         case 5:
-            *((u8*)&lbl_803A6818 + 0x214) = fn_800478B4((u8*)&lbl_803A6818 + 0x7c, (u8*)&lbl_803A6818 + 0xc4);
+            *((u8*)&lbl_803A6818 + 0x214) = pdaModelFrameCamera((u8*)&lbl_803A6818 + 0x7c, (u8*)&lbl_803A6818 + 0xc4);
             *((u8*)&lbl_803A6818 + 0x214) = fn_8003D1FC_setup((u8*)&lbl_803A6818 + 0xc4);
             break;
         default:
@@ -7449,7 +7449,7 @@ void fn_80048918(void)
         *((u8*)&lbl_803A6818 + 0x214) = fn_80047CC0((u8*)&lbl_803A6818 + 0x7c);
         break;
     case 5:
-        *((u8*)&lbl_803A6818 + 0x214) = fn_800478B4((u8*)&lbl_803A6818 + 0x7c, (u8*)&lbl_803A6818 + 0xc4);
+        *((u8*)&lbl_803A6818 + 0x214) = pdaModelFrameCamera((u8*)&lbl_803A6818 + 0x7c, (u8*)&lbl_803A6818 + 0xc4);
         *((u8*)&lbl_803A6818 + 0x214) = fn_8003D1FC_setup((u8*)&lbl_803A6818 + 0xc4);
         break;
     default:
@@ -7582,7 +7582,7 @@ void fn_80040308(void* menu)
         if (page == 4) {
             switch (*(s32*)(L + 0x90)) {
             case 0:
-                if (fn_8003D4C8() != 0) {
+                if (pdaMemoLoadPokemon() != 0) {
                     total = lbl_8047A4E8;
                     *(s32*)(L + 0x90) = 1;
                     pdaResetCarousel(total);
@@ -7618,7 +7618,7 @@ void fn_80040308(void* menu)
                             break;
                         case 5:
                             *((u8*)&lbl_803A6818 + 0x214) =
-                                fn_800478B4((u8*)&lbl_803A6818 + 0x7c,
+                                pdaModelFrameCamera((u8*)&lbl_803A6818 + 0x7c,
                                             (u8*)&lbl_803A6818 + 0xc4);
                             *((u8*)&lbl_803A6818 + 0x214) =
                                 fn_8003D1FC_setup((u8*)&lbl_803A6818 + 0xc4);
@@ -7756,7 +7756,7 @@ void fn_80040308(void* menu)
                             break;
                         case 5:
                             *((u8*)&lbl_803A6818 + 0x214) =
-                                fn_800478B4((u8*)&lbl_803A6818 + 0x7c,
+                                pdaModelFrameCamera((u8*)&lbl_803A6818 + 0x7c,
                                             (u8*)&lbl_803A6818 + 0xc4);
                             *((u8*)&lbl_803A6818 + 0x214) =
                                 fn_8003D1FC_setup((u8*)&lbl_803A6818 + 0xc4);
@@ -8352,7 +8352,7 @@ extern void fn_8004A7A8(void* work, PdaSprite* sprite);
 
 /* Per-widget update for the mail screen's sprites and captions. */
 #pragma peephole off
-s32 fn_800499BC(void* work, PdaSprite* sprite)
+s32 pdaTrainerDataDraw(void* work, PdaSprite* sprite)
 {
     extern f64 sin(f64 x);
     extern void windowDrawSprite2(s16 x, s16 y, s16 w, s16 h, u32 color,
@@ -8993,7 +8993,7 @@ extern void pokemonBiosSetDp(u32 work, s32 dp);
 
 /* Party-list scroll, cursor movement and the selected Pokemon preview. */
 #pragma peephole off
-s32 fn_8003B85C(void* window, s32 enabled)
+s32 pdaSnagListDetailKey(void* window, s32 enabled)
 {
     extern u32 msgGetCharsPerFrame(void);
     extern s32 fn_800D37CC(void);
@@ -9229,7 +9229,7 @@ extern void fn_8010A420(void* work);
 
 /* Party-select scene: open the windows, drive the fade, tear it back down. */
 #pragma peephole off
-void fn_8003C7C0(void)
+void pdaSnagListRun(void)
 {
     extern void _threadSwitch(void);
     u8* model;
@@ -9476,7 +9476,7 @@ extern u8 fightTrainerPokemonDataBiosGetDarkPokemonFlag(void* entry);
 
 /* Draw one row per party entry: nickname, owner and battle caption. */
 #pragma peephole off
-void fn_8003C2B8(PdaSprite* alphaSprite, PdaEvent* event)
+void pdaSnagListDrawDetail(PdaSprite* alphaSprite, PdaEvent* event)
 {
     s32 y;
     void* entry;
@@ -9581,7 +9581,7 @@ void fn_8003C2B8(PdaSprite* alphaSprite, PdaEvent* event)
             if (ownerText == 0) {
                 owner = GSmsgGetGSchar(1);
             }
-            caption = fn_8003CE1C(i);
+            caption = pdaSnagListGetTrainerName(i);
             if (caption == 0) {
                 caption = GSmsgGetGSchar(1);
             }
@@ -9635,7 +9635,7 @@ extern u8 lbl_803A65B0[];
 
 /* Position and tint one of the PDA's eight main menu buttons. */
 #pragma peephole off
-s32 fn_80038E74(void* work, PdaSprite* sprite)
+s32 itemStorageMenuCB(void* work, PdaSprite* sprite)
 {
     s32 i;
     u8 enabled;

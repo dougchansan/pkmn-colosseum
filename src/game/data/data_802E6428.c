@@ -54,12 +54,12 @@ extern u8 lbl_802ED9A0[];
 
 extern u8 __OSDoHotReset[];
 extern u8 _sysvarsProcessData__FP16sysvarsFuncEntryPc[];
-extern u8 fn_80022478[];
+extern u8 itemFieldUseParamItem[];
 extern u8 fn_8002FC58[];
-extern u8 fn_80031B4C[];
-extern u8 fn_8003258C[];
+extern u8 gbaTradeRun[];
+extern u8 cardeAwardCoupons[];
 extern u8 fn_80034280[];
-extern u8 fn_80034FB4[];
+extern u8 cardeBattleRun[];
 extern u8 fn_8003F464[];
 extern u8 fn_800552D4[];
 extern u8 fn_80059034[];

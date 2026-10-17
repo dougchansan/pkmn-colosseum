@@ -8,7 +8,7 @@
  * address range of this translation unit (0x8002DD24-0x80030170). This
  * range was originally mislabeled as world-map code; it is actually the
  * head of the XD-era menuPokemonChange.cpp translation unit -- the
- * dispatcher fn_80031B4C and the remainder of that TU live in the next
+ * dispatcher gbaTradeRun and the remainder of that TU live in the next
  * unit, game/gs_npc_event.c (0x80030170-0x80033278).
  */
 
@@ -745,7 +745,7 @@ static inline u8 menuPokemonChangeHasOther(void* hero, s32 exclude) {
 #pragma push
 #pragma peephole off
 #pragma opt_common_subs off
-void fn_8002EA5C(void) {
+void gbaTradeCheckImportItems(void) {
     extern u8 lbl_803A2688[];
     extern u32 lbl_8047A428;
     extern u32 lbl_8047A420;
@@ -1383,7 +1383,7 @@ void fn_8002F284(void)
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-void fn_8002F79C(void) {
+void gbaTradeCheckExportItems(void) {
     extern u32 lbl_8047A428;
     extern u32 lbl_8047A42C;
     extern u32 lbl_8047A410;

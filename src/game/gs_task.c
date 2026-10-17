@@ -66,7 +66,7 @@
  *   fn_8000815C  GStask_Accessor3           -- 8-byte accessor
  *   fn_80008164  GStask_Accessor4           -- 8-byte accessor
  *   fn_8000816C  GStask_Accessor5           -- 8-byte accessor
- *   fn_80008174  GStask_Accessor6           -- 8-byte accessor
+ *   dbgMenuFightGetAllManual  GStask_Accessor6           -- 8-byte accessor
  *   fn_8000817C  GStask_Accessor7           -- 8-byte accessor
  *   dbgMenuFightGetMsgSpeedToFrame  GStask_FinalizeLoad        -- 0xC0 bytes, finalize resource load
  *   _dbgMenuFightGetFightTrainerAiAddsubValueDataIdSub  GStask_BuildResourceList   -- 0x14C bytes, compile resource table
@@ -455,8 +455,8 @@ extern u8 lbl_8047A286;
 /* 0x80008868 | 0x3D8 */
 #if !defined(GS_TASK_RANGE_SPLIT) || defined(GS_TASK_RANGE_RESIDUAL_80008868)
 extern u32 menuDataBiosGetType(u32);
-extern void fn_8001EA98(s32, s32, s32, s32);
-extern void fn_8001E4B4(s32, s32, s32, s32, s32, s32);
+extern void windowDrawPanel(s32, s32, s32, s32);
+extern void menuDrawRect(s32, s32, s32, s32, s32, s32);
 extern s32 sprintf(char*, const char*, ...);
 extern s32 fn_800FAEF8(s32, s32, s32, ...);
 extern u32 std082_flagGetValue(u32);
@@ -529,17 +529,17 @@ void fn_80008868(u8* window)
     }
 
     rowHeight = visibleCount * 13;
-    fn_8001EA98(30, 40, width + 25, rowHeight);
+    windowDrawPanel(30, 40, width + 25, rowHeight);
 
     if (*(s16*)lbl_80478838 > 0) {
         center = width / 2;
-        fn_8001E4B4(center + 20, 33, center + 40, 33, center + 30, 23);
+        menuDrawRect(center + 20, 33, center + 40, 33, center + 30, 23);
     }
 
     config = (GsTaskFlagConfig*)lbl_80478F98;
     if ((s32)config->count - *(s16*)lbl_80478838 > pageSize) {
         center = width / 2;
-        fn_8001E4B4(center + 20, rowHeight + 47, center + 40,
+        menuDrawRect(center + 20, rowHeight + 47, center + 40,
                     rowHeight + 47, center + 30, rowHeight + 57);
     }
 
@@ -1105,7 +1105,7 @@ extern void* fightTrainerGetFightPokemonPtrToFightOutPokemonPtr(void* ptr, u32 c
 extern u8   fightOutPokemonIsUseHensinBuff(void);
 extern void fightOutPokemonGetTokuseiDataId(void* ptr);
 extern void fightOutPokemonGetZokuseiDataId(void* ptr, s32 a);
-extern s32  fn_800096B4(void* ptr, s32 a, u8* b, u8* c, u8* d, u8* e);
+extern s32  dbgMenuPokemonEdit(void* ptr, s32 a, u8* b, u8* c, u8* d, u8* e);
 extern u32  pokemonGetStatus(void* ptr, u16 b, s32 c, s32 d);
 extern void fn_8010B01C(void* ptr, s32 a, s32 b);
 extern void _threadSwitch(void);
@@ -1173,7 +1173,7 @@ s32 menuFightPokemonSelectSub(u32 ctx) {
             }
         }
 
-        result = fn_800096B4(scene, 1, &sp_b, &sp_a, &sp_9, &sp_8);
+        result = dbgMenuPokemonEdit(scene, 1, &sp_b, &sp_a, &sp_9, &sp_8);
         if (result == 1) {
             itemId = pokemonGetStatus(scene, 0, 0x6e, 0);
             if (encounter != 0) {
@@ -1216,7 +1216,7 @@ s32 menuFightPokemonSelectSub(u32 ctx) {
             }
         }
     } else {
-        result = fn_800096B4(scene, 1, 0, 0, 0, 0);
+        result = dbgMenuPokemonEdit(scene, 1, 0, 0, 0, 0);
     }
 
     if ((u8)figthPokemonGetLevel(ctx) > (u8)prevLevel) {
@@ -1293,10 +1293,10 @@ void fn_80007798(void) {
 #endif
 
 /* fn_800077B8 - 0x800077B8 | size: 0x20 */
-extern void fn_8004EDCC(void);
+extern void dbgMenuTrainerAiEditA(void);
 #if 1
 void fn_800077B8(void) {
-    fn_8004EDCC();
+    dbgMenuTrainerAiEditA();
 }
 #endif
 
@@ -1744,7 +1744,7 @@ u8 fn_8000816C(void) {
 }
 
 /* Address: 0x80008174 | Size: 0x8 | Pattern: sda_getter */
-u8 fn_80008174(void) {
+u8 dbgMenuFightGetAllManual(void) {
     return lbl_8047A284;
 }
 

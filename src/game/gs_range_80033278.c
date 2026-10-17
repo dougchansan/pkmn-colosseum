@@ -99,7 +99,7 @@ extern void* savedataGetStatus(s32, s32);
 extern void* heroBiosGetPokemonPtr(void*, u8);
 extern void pokemonBiosSetItemDataId(void*, u16);
 
-extern u32 fn_80032ED8(void*, s32, s32);
+extern u32 cardeBuildTrainerEncounter(void*, s32, s32);
 extern s32 windowGetActiveID(void);
 
 extern void fn_8007C300(s32, s32);
@@ -533,7 +533,7 @@ first_menu:
     /*
      * NOTE OFFSET 0x5B HERE.
      */
-    menuResult = fn_80032ED8(
+    menuResult = cardeBuildTrainerEncounter(
         sv + 0x3AC +
             (s8)sv[0x5B + (s8)lbl_8047A448] *
                 0x28,
@@ -690,7 +690,7 @@ first_menu:
     /*
      * NOTE OFFSET 0x5E HERE, unlike the first menu's 0x5B.
      */
-    menuResult = fn_80032ED8(
+    menuResult = cardeBuildTrainerEncounter(
         sv + 0x3AC +
             (s8)sv[
                 0x5E + (s8)lbl_8047A448] *
@@ -1480,10 +1480,10 @@ void fn_80034F84(void) {
 void fn_80034FB0(void) {
 }
 
-/* fn_80034FB4 - 0x80034FB4 | size: 0xC94 */
+/* cardeBattleRun - 0x80034FB4 | size: 0xC94 */
 #pragma push
 #pragma peephole off
-void fn_80034FB4(void)
+void cardeBattleRun(void)
 {
     extern u8 lbl_803A3278[];
     extern u32 lbl_8047A430;
@@ -1502,8 +1502,8 @@ void fn_80034FB4(void)
     extern const f32 lbl_8047BA00;
     extern u8 lbl_8047BA1C;
     extern s32 _sysvarsProcessData__FP16sysvarsFuncEntryPc(void);
-    extern void fn_8003258C(void);
-    extern void fn_800327FC(void);
+    extern void cardeAwardCoupons(void);
+    extern void cardeBattleSelectCard(void);
     extern void* fn_80082EA4(void*, s8, u8, u8);
     extern void* fn_800836AC(void*, void*, s32);
     extern u8 fn_800FF52C(void);
@@ -1879,7 +1879,7 @@ void fn_80034FB4(void)
             break;
 
         case 11:
-            fn_800327FC();
+            cardeBattleSelectCard();
             break;
 
         case 12:
@@ -1948,7 +1948,7 @@ void fn_80034FB4(void)
             break;
 
         case 13:
-            fn_8003258C();
+            cardeAwardCoupons();
             break;
 
         case 14:

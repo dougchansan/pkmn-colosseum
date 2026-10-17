@@ -31,7 +31,7 @@ extern u32* lbl_80478E28;
 extern u16* lbl_80478E2C;
 
 extern u32 fn_800F7BC4(u32 flags);
-extern u8 fn_8001E3E0(u32 index, u32* out);
+extern u8 menuSelectInput(u32 index, u32* out);
 extern void floorLink(u32 floorId, u32 arg);
 
 extern u8 fn_800FF52C(void);
@@ -89,12 +89,12 @@ extern void std104_soundSetBackgroundMusic(u16 entry, u32 a, u32 b);
 /* Retail retains this otherwise-unreferenced debug-menu entry-point group. */
 #pragma force_active on
 
-s32 fn_8000BE74(s32 arg) {
+s32 dbgMenuWarpToRoom(s32 arg) {
     u32 linkArg = 0;
     s32 i;
 
     if ((fn_800F7BC4(1) & 0x20) != 0) {
-        if (fn_8001E3E0(0, &linkArg) == 0) {
+        if (menuSelectInput(0, &linkArg) == 0) {
             return -1;
         }
     }
@@ -132,7 +132,7 @@ s32 fn_8000BE74(s32 arg) {
     return 0;
 }
 
-s32 fn_8000BFA0(void) {
+s32 dbgMenuWarpSelect(void) {
     u32 floorId;
     s32 i;
 
@@ -149,7 +149,7 @@ s32 fn_8000BFA0(void) {
     }
 
     if ((fn_800F7BC4(1) & 0x20) != 0) {
-        if (fn_8001E3E0(0, &floorId) == 0) {
+        if (menuSelectInput(0, &floorId) == 0) {
             return -1;
         }
 
@@ -171,7 +171,7 @@ s32 fn_8000C06C(void) {
     return 0;
 }
 
-void fn_8000C0DC(void) {
+void dbgMovieCaptureUpdate(void) {
     if (lbl_8047A298 == 0) {
         return;
     }
@@ -185,7 +185,7 @@ void fn_8000C0DC(void) {
     }
 }
 
-s32 fn_8000C144(void) {
+s32 dbgMenuMovieCaptureToggle(void) {
     if (lbl_8047A298 == 0) {
         lbl_8047A299 = 1;
         lbl_8047A298 = 1;
@@ -215,22 +215,22 @@ s32 fn_8000C1A8(void) {
     return 0;
 }
 
-s32 fn_8000C210(void) {
+s32 dbgMenuVtrMode4(void) {
     fn_801E1170();
     return 0;
 }
 
-s32 fn_8000C234(void) {
+s32 dbgMenuVtrMode3(void) {
     fn_801E118C();
     return 0;
 }
 
-s32 fn_8000C258(void) {
+s32 dbgMenuVtrMode1(void) {
     fn_801E11B0();
     return 0;
 }
 
-s32 fn_8000C27C(void) {
+s32 dbgMenuVtrMode2(void) {
     fn_801E119C();
     return 0;
 }
@@ -263,7 +263,7 @@ s32 fn_8000C328(void) {
     return 0;
 }
 
-s32 fn_8000C358(void) {
+s32 dbgMenuMemcardTask2(void) {
     fn_801D0748(2, 2, 0);
     winMsgOpen(2, 0x17A7, 1, 1);
     winMsgClose(1);
@@ -309,7 +309,7 @@ s32 dbgMenuMsgCheck(void) {
     u32 msgId;
 
     if ((fn_800F7BC4(1) & 0x20) != 0) {
-        if (fn_8001E3E0(0, &msgId) == 0) {
+        if (menuSelectInput(0, &msgId) == 0) {
             return -1;
         }
 
@@ -354,7 +354,7 @@ s32 fn_8000C588(void) {
     return 0;
 }
 
-s32 fn_8000C624(s32 arg) {
+s32 dbgMenuSoundVolume(s32 arg) {
     switch (arg) {
     case 0xD3:
         fn_80166D18(0x7F, 0, 0, 1);
@@ -380,7 +380,7 @@ s32 fn_8000C688(s32 arg) {
     return 0;
 }
 
-s32 fn_8000C6EC(void) {
+s32 dbgMenuSoundTestSE(void) {
     s32 selected;
     u16 entry;
     s32 status;
@@ -417,7 +417,7 @@ loop_check:
     return -1;
 }
 
-s32 fn_8000C788(void) {
+s32 dbgMenuSoundTestSE2(void) {
     s32 selected;
     u16 entry;
     s32 status;
@@ -454,7 +454,7 @@ loop_check:
     return -1;
 }
 
-s32 fn_8000C824(void) {
+s32 dbgMenuSoundTestSEExclusive(void) {
     s32 selected;
     u16 entry;
     s32 status;

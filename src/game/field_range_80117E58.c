@@ -421,7 +421,7 @@ extern void GSvecTransformQuat(void);
 extern void fn_800E0108(void*, void*, void*);
 extern void psInterpretParticles(u32);
 extern void psExecGenerator(u32);
-extern s32 fn_800057A0(void);
+extern s32 GSgetVersionMajor(void);
 extern void jumptable_8035BB88();
 extern u8 lbl_8047ADB0;
 void gsParticleUpdate(u32 particleCount);
@@ -682,7 +682,7 @@ void moveLeader__F15HEROMOVE_MEMBER(void);
 extern void dbgMenuIsOpen(void);
 extern void menuIsCheck(void);
 extern void fn_8018C424(void);
-extern void fn_8000D710(void);
+extern void heroMoveRunEvent(void);
 extern u8 lbl_80272A38[];
 extern f32 lbl_8047D064;
 void heroMoveMain(void);
@@ -1951,7 +1951,7 @@ void gsParticleUpdate(u32 particleCount) {
         psExecGenerator(0);
     }
 
-    if (fn_800057A0() == 2) {
+    if (GSgetVersionMajor() == 2) {
         if (++lbl_8047ADB0 >= 5) {
             psInterpretParticles(0);
             psExecGenerator(0);

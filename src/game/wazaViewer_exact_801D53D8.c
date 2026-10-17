@@ -13,7 +13,7 @@
 
 extern struct GSmodel* GSresGetResource(u32 group, u32 handle);
 extern s32 GSthreadCreate(s32, s32, s32, s32, s32, void*);
-extern s32 fn_800057A8(void);
+extern s32 GSgetVersionMinor(void);
 
 void _wazaViewerInitialize(void) {
     struct GSmodel* model;
@@ -25,5 +25,5 @@ void _wazaViewerInitialize(void) {
         GSmodelSetVisibility(model, 0);
     }
     *(s32*)(lbl_804673F8 + 0x66C) = GSthreadCreate(0x14, 0x58, 0x2000, 1, 0, wazaViewerThread);
-    *(u32*)lbl_804673F8 = fn_800057A8() != 2;
+    *(u32*)lbl_804673F8 = GSgetVersionMinor() != 2;
 }

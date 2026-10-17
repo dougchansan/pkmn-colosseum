@@ -679,7 +679,7 @@ u32 _fightActionFlowAllFightOutPokemonDoFightActionOneLoop__FP11FIGHT_FLOORUc(vo
 
 /* 0x8020BE38 | size: 0x108 */
 u32 fightActionFlowAllFightTrainerSelectFightAction(void* action) {
-    extern u32 fn_80008174();
+    extern u32 dbgMenuFightGetAllManual();
     extern void fightFloorLoopValidFightTrainer();
     extern void* fightFloorGetValidFightSidePtr();
     extern u32 fightFloorGetStatus();
@@ -694,7 +694,7 @@ u32 fightActionFlowAllFightTrainerSelectFightAction(void* action) {
     u32 i;
     void* trainer;
 
-    checkResult = fn_80008174();
+    checkResult = dbgMenuFightGetAllManual();
     if ((u8)checkResult == 1) {
         partyCount = fightFloorGetStatus(0, 0, 0x14, 0) & 0xFFFF;
         slotCount = fightFloorGetStatus(0, 0, 0x16, 0);

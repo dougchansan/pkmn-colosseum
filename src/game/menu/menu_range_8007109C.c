@@ -2930,15 +2930,15 @@ void fn_800792D8(void) {
 
     canBag = 1;
     if (lbl_8047A632 != 0) {
-        if (fn_80029850(result.bag, result.itemId, 0x47, 0x3e7) < 1) {
+        if (bagFindItemSlot(result.bag, result.itemId, 0x47, 0x3e7) < 1) {
             canBag = 0;
         } else {
-            fn_800298DC(result.bag, result.itemId, 0x47, 1, -1, 0x3e7);
+            bagPocketAddItem(result.bag, result.itemId, 0x47, 1, -1, 0x3e7);
             result.optionFlags |= 4;
         }
     }
 
-    if (lbl_8047A630 != 0 && fn_80029850(result.bag, result.itemId, 1, 0x3e7) < 1) {
+    if (lbl_8047A630 != 0 && bagFindItemSlot(result.bag, result.itemId, 1, 0x3e7) < 1) {
         canBag = 0;
     }
 
@@ -2975,7 +2975,7 @@ void fn_800792D8(void) {
     }
 
     if (lbl_8047A630 != 0) {
-        fn_800298DC(result.bag, result.itemId, 1, 1, -1, 0x3e7);
+        bagPocketAddItem(result.bag, result.itemId, 1, 1, -1, 0x3e7);
         result.optionFlags |= 1;
     }
 

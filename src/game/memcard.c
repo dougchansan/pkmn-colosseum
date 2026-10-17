@@ -231,9 +231,9 @@ extern void savedataCreate(void* data, s32 index);
 extern void winMsgOpen(s32 window, u32 message, s32 arg2, s32 arg3);
 extern s8 menuSubOpenYesNo(s32 port, s32 x, s32 y, s32 initial);
 extern void msgctrlSetValue(u32 id, u32 value);
-extern s32 fn_800057A0(void);
-extern s32 fn_800057A8(void);
-extern u8 fn_800056C4(u8 value);
+extern s32 GSgetVersionMajor(void);
+extern s32 GSgetVersionMinor(void);
+extern u8 mainSetPauseFlag(u8 value);
 extern u8 fn_800056D4(void);
 extern void fn_80072A00(s32 port);
 extern s32 fn_80089D74(s32 port);
@@ -1353,7 +1353,7 @@ static inline s32 memcardEndAccess(void)
     u64 serial;
 
     if (lbl_8047B3D4->dialog_result != 0) {
-        if (fn_800057A8() == 4) {
+        if (GSgetVersionMinor() == 4) {
             fn_800B01C4(lbl_8047B3D4->card_channel, lbl_8047B3D4->disk_id);
         }
         CARDGetSerialNo(lbl_8047B3D4->card_channel, &serial);
@@ -1361,7 +1361,7 @@ static inline s32 memcardEndAccess(void)
         lbl_8047B3D4->dialog_result = 0;
     }
     CARDUnmount(lbl_8047B3D4->card_channel);
-    fn_800056C4(lbl_8047B3D4->initial_dialog_result);
+    mainSetPauseFlag(lbl_8047B3D4->initial_dialog_result);
     if (lbl_8047B3D4->callback_finished != 0) {
         return 0;
     }
@@ -1866,7 +1866,7 @@ s32 fn_801CFD08(void)
             if (result != 0) {
                 goto invalid_file;
             }
-            switch (fn_800057A0()) {
+            switch (GSgetVersionMajor()) {
             case 0:
                 if (strcmp(status.file_name, "pokemon_colosseum") != 0 ||
                     status.game_code != *(u32*)"GC6J" ||
@@ -1916,7 +1916,7 @@ scan_done:
     switch (error) {
     case 0:
         lbl_8047B3D4->dialog_result = 1;
-        if (fn_800057A8() == 4) {
+        if (GSgetVersionMinor() == 4) {
             lbl_8047B3D4->disk_id = fn_800B01AC(lbl_8047B3D4->card_channel);
             lbl_8047B3D4->mounted_disk_id = *lbl_8047B3D4->disk_id;
             lbl_8047B3D4->mounted_disk_id.game_code = *(u32*)"GC6J";
@@ -2299,7 +2299,7 @@ void fn_801CDB04(void)
             lbl_8047B3D4->format_requested = 0;
             lbl_8047B3D4->initial_dialog_result = fn_800056D4();
             lbl_8047B3D4->callback_finished = 0;
-            fn_800056C4(lbl_8047B3D4->initial_dialog_result);
+            mainSetPauseFlag(lbl_8047B3D4->initial_dialog_result);
             switch (lbl_8047B3D4->task_kind) {
             case 1:
             case 2:
@@ -2411,7 +2411,7 @@ void fn_801CDB04(void)
                 next = 8;
                 break;
             case CARD_RESULT_READY:
-                fn_800056C4(lbl_8047B3D4->initial_dialog_result);
+                mainSetPauseFlag(lbl_8047B3D4->initial_dialog_result);
                 lbl_8047B3D4->next_state_after_delay = 0x32;
                 next = memcardAsk(9, 9);
                 break;

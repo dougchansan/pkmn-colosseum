@@ -14,7 +14,7 @@
  * CodeCandidate range, so the split follows the high-confidence boundary
  * at 0x80011B4C (see split rationale in the naming-pass notes).
  *
- * fn_8000D710 is physically included at the top of this file even though
+ * heroMoveRunEvent is physically included at the top of this file even though
  * its address (0x8000D710) sits just below this TU's declared start; it
  * belongs to the preceding range unit (game/gs_range_8000D290.c) and is
  * carried over unmodified from the original monolithic file pending a
@@ -392,7 +392,7 @@ s32 fn_80011A1C(u8* obj, s32 a1, s32 a2) {
 
 /* ===== Phase 2 recovery stubs ===== */
 
-/* fn_8000D710 - 0x8000D710 | size: 0x398 */
+/* heroMoveRunEvent - 0x8000D710 | size: 0x398 */
 extern s32 heroMoveCheckEvent();
 extern void heroDispatchEvent(void);
 extern void heroMoveInitEvent(void);
@@ -430,13 +430,13 @@ extern u32 lbl_8047A2A4;
 extern u32 lbl_8047A2A8;
 extern u32 lbl_8047A2AC;
 extern u32 lbl_8047A2B0;
-u32 fn_8000DAB0(void); /* forward decl: referenced by fn_8000D710 asm inc */
+u32 fn_8000DAB0(void); /* forward decl: referenced by heroMoveRunEvent asm inc */
 #if 0
 asm void fn_8000D710(void) {
 #include "src/game/gs_npc_interact_fn_8000D710.inc"
 }
 #else
-u32 fn_8000D710(u32 mode) {
+u32 heroMoveRunEvent(u32 mode) {
     extern s32 heroMoveCheckEvent(void* out);
     extern void heroDispatchEvent(s32 kind, u16 value);
     extern void heroMoveInitEvent(void);
@@ -921,7 +921,7 @@ void menuFightDrawSecretPokemonStatus(u8* ctx, u8* sprite)
     extern u32 fightTrainerGetValidFightPokemonPtr();
     extern u32 pokemonGetStatus(u32, u32, u32, u16);
     extern u32 pokemonCheckValid();
-    extern u32 fn_8001D624();
+    extern u32 menuPokemonGetStatusSprite();
     extern u32 pokemonDataBiosGetPtr();
     extern u32 pokemonDataBiosGetZokuseiDataId();
     extern u32 fn_8010C46C();
@@ -980,7 +980,7 @@ void menuFightDrawSecretPokemonStatus(u8* ctx, u8* sprite)
         break;
 
     case 0x123B:
-        windowDrawSprite(0, 0, ctx, fn_8001D624(pokemon, 1), 0);
+        windowDrawSprite(0, 0, ctx, menuPokemonGetStatusSprite(pokemon, 1), 0);
         break;
 
     case 0x123D: {
@@ -1146,7 +1146,7 @@ extern u32 fightFloorGetGcHeroFightTrainerPtr(s32 arg);
 extern u32 fightTrainerGetValidFightPokemonPtr(u32 warpId, u16 variant);
 extern u32 pokemonGetStatus();
 extern u32 pokemonCheckValid();
-extern u32 fn_8001D624();
+extern u32 menuPokemonGetStatusSprite();
 extern void jumptable_802E4C20();
 #if 0
 asm void menuFightDrawSecretPokemon(void) {
@@ -1156,7 +1156,7 @@ asm void menuFightDrawSecretPokemon(void) {
 
 void menuFightDrawSecretPokemon(u8* ctx, u8* npc) {
     extern u32 windowGetParam(u8* a, s32 b);
-    extern u32 fn_8001D624(u32, s32);
+    extern u32 menuPokemonGetStatusSprite(u32, s32);
     extern s32 fn_800FBB34(s32 x, s32 y, s16 width, s16 height, s32 color, u32 key);
     extern void fn_800FB680();
     s32 slot;
@@ -1220,7 +1220,7 @@ void menuFightDrawSecretPokemon(u8* ctx, u8* npc) {
     case 0x1218:
     case 0x1219:
     case 0x121A:
-        windowDrawSprite(0, 0, ctx, fn_8001D624(pokemon, 1), 0);
+        windowDrawSprite(0, 0, ctx, menuPokemonGetStatusSprite(pokemon, 1), 0);
         break;
     case 0x121B:
     case 0x121C:

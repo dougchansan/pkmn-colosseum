@@ -300,7 +300,7 @@ void fn_801128A0(void) {
     extern void fn_800FF3C0(s32, s32, void*);
     extern void fn_800FF178(s32, s32, void*);
     extern void fn_800FF4D4(void*, u32);
-    extern s32 fn_800057A8(void);
+    extern s32 GSgetVersionMinor(void);
     extern void fn_800FF788(u32);
     extern void fn_800FF784(u32);
     extern void fn_80118020(void);
@@ -313,7 +313,7 @@ void fn_801128A0(void) {
     fn_800FF178(0xFF, 0x5000, (void*)fn_801129AC);
     fn_800FF4D4(&funcs, 1);
     fn_800FF4D4(&funcs, 2);
-    switch (fn_800057A8()) {
+    switch (GSgetVersionMinor()) {
     case 5:
         r = 0x3E4;
         break;
@@ -870,7 +870,7 @@ void floorInitMap(u32 group, u32 floorId)
     extern void GSresRegisterResource(void*, u32, u32, void*);
     extern u32 _floorUnloadModel__FPvUlUl(u32);
     extern void GSmodelSetVisibility(void*, u32);
-    extern s32 fn_800057A0(void);
+    extern s32 GSgetVersionMajor(void);
     extern u32 std092_getCurrentRoomID(void);
     extern u8 GSmodelCanAnimate(void*);
     extern void GSmodelLinkTexAnimToAnim(void*, u32);
@@ -919,7 +919,7 @@ void floorInitMap(u32 group, u32 floorId)
                                   _floorUnloadModel__FPvUlUl);
             GSmodelSetVisibility(object, 0);
 
-            if (fn_800057A0() == 1) {
+            if (GSgetVersionMajor() == 1) {
                 switch (std092_getCurrentRoomID()) {
                 case 3:
                 case 0xB:

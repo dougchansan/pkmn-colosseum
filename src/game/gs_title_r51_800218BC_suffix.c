@@ -1,4 +1,4 @@
-/** Exact-owner isolate for fn_800218BC at 0x800218BC. */
+/** Exact-owner isolate for itemFieldUseCologne at 0x800218BC. */
 #include "dolphin/types.h"
 
 extern s32 pokemonCheckValid(s32);
@@ -6,13 +6,13 @@ extern u8 pokemonIsDarkPokemon(s32);
 extern f32 pokemonGetDp(void*);
 extern void winMsgOpen(s32, s32, s32, s32);
 extern void winMsgClose(s32);
-extern void fn_80014118(s32, void*, void*);
-extern s32 fn_800141BC(void*, s32);
-extern void fn_80014198(s32);
+extern void itemUseGetTargetPokemon(s32, void*, void*);
+extern s32 itemUseOpenPartyMenu(void*, s32);
+extern void itemUseClosePartyMenu(s32);
 extern u8 lbl_803A1B90[];
 extern u32 lbl_8047B8A0;
 
-s32 fn_800218BC(u32 arg0, u32* arg1)
+s32 itemFieldUseCologne(u32 arg0, u32* arg1)
 {
     f32 thresh;
     void* sp_c;
@@ -41,7 +41,7 @@ s32 fn_800218BC(u32 arg0, u32* arg1)
     i = 0;
     thresh = *((f32*)(&lbl_8047B8A0));
     do {
-        fn_80014118(i, &sp_c, &sp_8);
+        itemUseGetTargetPokemon(i, &sp_c, &sp_8);
         if (((u8)pokemonCheckValid((s32)sp_c)) != 0) {
             if (pokemonIsDarkPokemon((s32)sp_c) != 0) {
                 if (pokemonGetDp(sp_c) > thresh) {
@@ -57,9 +57,9 @@ s32 fn_800218BC(u32 arg0, u32* arg1)
         winMsgClose(1);
         return 1;
     }
-    idx = fn_800141BC((void*)arg0, 1);
+    idx = itemUseOpenPartyMenu((void*)arg0, 1);
     if (idx >= 0) {
-        fn_80014118(idx, &sp_c, &sp_8);
+        itemUseGetTargetPokemon(idx, &sp_c, &sp_8);
         ok = 0;
         if (pokemonIsDarkPokemon((s32)sp_c) != 0) {
             if (pokemonGetDp(sp_c) > *((f32*)(&lbl_8047B8A0))) {
@@ -71,7 +71,7 @@ s32 fn_800218BC(u32 arg0, u32* arg1)
             winMsgClose(1);
         }
     }
-    fn_80014198(idx);
+    itemUseClosePartyMenu(idx);
     if ((idx >= 0) && (ok != 0)) {
         *arg1 = 1;
         return 2;

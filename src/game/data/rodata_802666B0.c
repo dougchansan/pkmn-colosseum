@@ -3,16 +3,16 @@
 typedef void (*FuncPtr)(void);
 
 extern void fn_80013744(void);
-extern void fn_8001374C(void);
+extern void itemStorageWithdraw(void);
 extern void fn_800138B4(void);
-extern void fn_80013A18(void);
-extern void fn_80013DFC(void);
-extern void fn_80013F80(void);
+extern void bagItemToss(void);
+extern void bagItemGive(void);
+extern void bagItemUse(void);
 extern void fn_8001501C(void);
 extern void fn_800150E4(void);
 extern void menuPocketDrawNameList(void);
 extern void fn_800155B0(void);
-extern void fn_800159BC(void);
+extern void bagDrawTMList(void);
 extern void menuPocketDrawItemList(void);
 
 /*
@@ -58,51 +58,51 @@ typedef struct SubEntry {
 } SubEntry;
 
 const SubEntry lbl_802667B0[5] = {
-    { 0x00000131, fn_80013F80, 0x00000000 },
-    { 0x00000132, fn_80013DFC, 0x00080000 },
-    { 0x00000133, fn_80013A18, 0x00000000 },
+    { 0x00000131, bagItemUse, 0x00000000 },
+    { 0x00000132, bagItemGive, 0x00080000 },
+    { 0x00000133, bagItemToss, 0x00000000 },
     { 0x00002B01, fn_800138B4, 0x00050000 },
     { 0x00000134, NULL, 0x00000000 },
 };
 const SubEntry lbl_802667EC[3] = {
-    { 0x00000132, fn_80013DFC, 0x00000000 },
-    { 0x00000133, fn_80013A18, 0x00000000 },
+    { 0x00000132, bagItemGive, 0x00000000 },
+    { 0x00000133, bagItemToss, 0x00000000 },
     { 0x00000134, NULL, 0x00000000 },
 };
 const SubEntry lbl_80266810[3] = {
-    { 0x00000131, fn_80013F80, 0x00000000 },
-    { 0x00000132, fn_80013DFC, 0x00000000 },
+    { 0x00000131, bagItemUse, 0x00000000 },
+    { 0x00000132, bagItemGive, 0x00000000 },
     { 0x00000134, NULL, 0x00000000 },
 };
 const SubEntry lbl_80266834[4] = {
-    { 0x00000131, fn_80013F80, 0x00000000 },
-    { 0x00000132, fn_80013DFC, 0x00000000 },
-    { 0x00000133, fn_80013A18, 0x00000000 },
+    { 0x00000131, bagItemUse, 0x00000000 },
+    { 0x00000132, bagItemGive, 0x00000000 },
+    { 0x00000133, bagItemToss, 0x00000000 },
     { 0x00000134, NULL, 0x00000000 },
 };
 const SubEntry lbl_80266864[2] = {
-    { 0x00000131, fn_80013F80, 0x00000000 },
+    { 0x00000131, bagItemUse, 0x00000000 },
     { 0x00000134, NULL, 0x00000000 },
 };
 const SubEntry lbl_8026687C[4] = {
-    { 0x00002B12, fn_8001374C, 0x00000000 },
+    { 0x00002B12, itemStorageWithdraw, 0x00000000 },
     { 0x00002B3F, fn_80013744, 0x00000000 },
-    { 0x00000131, fn_80013F80, 0x00000000 },
+    { 0x00000131, bagItemUse, 0x00000000 },
     { 0x00000134, NULL, 0x00000000 },
 };
 const SubEntry lbl_802668AC[2] = {
-    { 0x00000131, fn_80013F80, 0x00020000 },
+    { 0x00000131, bagItemUse, 0x00020000 },
     { 0x00000134, NULL, 0x00000000 },
 };
 const SubEntry lbl_802668C4[2] = {
-    { 0x00000131, fn_80013F80, 0x00000000 },
+    { 0x00000131, bagItemUse, 0x00000000 },
     { 0x00000134, NULL, 0x00000000 },
 };
 const SubEntry lbl_802668DC[1] = {
     { 0x00000134, NULL, 0x00000000 },
 };
 const SubEntry lbl_802668E8[2] = {
-    { 0x00000131, fn_80013F80, 0x00000000 },
+    { 0x00000131, bagItemUse, 0x00000000 },
     { 0x00000134, NULL, 0x00000000 },
 };
 const SubEntry lbl_80266900[1] = {
@@ -139,7 +139,7 @@ const BigEntry lbl_80266918[6] = {
     { 0xAECCD300, 0x00000003, 0x00000000, 0x00000205, 0x0000020D, fn_800155B0, fn_8001501C,
       0x00000006, 0x00002AFC, lbl_80266834, 0x00000004, lbl_802668E8, 0x00000002,
       { 0, 0, 0, 0, 0, 0 } },
-    { 0xAED3B200, 0x00000004, 0x00000000, 0x00000206, 0x0000020E, fn_800159BC, fn_8001501C,
+    { 0xAED3B200, 0x00000004, 0x00000000, 0x00000206, 0x0000020E, bagDrawTMList, fn_8001501C,
       0x00000005, 0x00002AFB, lbl_80266810, 0x00000003, lbl_802668DC, 0x00000001,
       { 0, 0, 0, 0, 0, 0 } },
     { 0xD3C4AE00, 0x00000001, 0x00000001, 0x00000207, 0x0000020F, menuPocketDrawItemList, fn_8001501C,

@@ -22,7 +22,7 @@
  *   fn_800150E4  GSpokeSummary_DrawPage        -- 0x290 bytes, main page renderer
  *   menuPocketDrawNameList                    -- 0x23C bytes, names-only item-list page (pocket 1)
  *   fn_800155B0  GSpokeSummary_DrawStatsPage    -- 0x40C bytes, stat hexagon page
- *   fn_800159BC  GSpokeSummary_DrawRibbonPage   -- 0x480 bytes, ribbon collection
+ *   bagDrawTMList  GSpokeSummary_DrawRibbonPage   -- 0x480 bytes, ribbon collection
  *   menuPocketDrawItemList                    -- 0x374 bytes, item-list page draw (pockets 4/5)
  *   fn_800161B0  GSpokeSummary_PageTransition   -- 0x198 bytes, page flip animation
  *   fn_80016348  GSpokeSummary_UpdateCursor     -- 0x188 bytes, cursor movement
@@ -42,7 +42,7 @@
  *   fn_80017990  GSpokeSummary_AnimateGauge     -- 0x7C bytes, gauge fill animation
  *   fn_80017A0C  GSpokeSummary_DrawPageDots     -- 0x2AC bytes, page indicator dots
  *   fn_80017CB8  GSpokeSummary_DrawBackground   -- 0x1D4 bytes, background gradient
- *   fn_80017E8C  GSpokeSummary_Init             -- 0x338 bytes, full initialization
+ *   bagItemStore  GSpokeSummary_Init             -- 0x338 bytes, full initialization
  *
  * The page drawing system uses a function pointer table at sSummaryPageEntries.
  * Each page entry is 0x4C bytes and contains:
@@ -610,7 +610,7 @@ s32 fn_800155B0(s32 x, s32 pageIndex, u16* packedRange) {
 #pragma pop
 #endif
 
-/* fn_800159BC - 0x800159BC | size: 0x480 */
+/* bagDrawTMList - 0x800159BC | size: 0x480 */
 extern void* lbl_8047A2F8;
 extern const f32 lbl_8047B748;
 extern u32 lbl_8047A2D0;
@@ -622,7 +622,7 @@ asm void fn_800159BC(void) {
 #else
 #pragma push
 #pragma peephole off
-s32 fn_800159BC(s32 x, s32 pageIndex, u16* packedRange) {
+s32 bagDrawTMList(s32 x, s32 pageIndex, u16* packedRange) {
     s32 validCount;
     s32 itemIndex;
     s32 displayLine;
@@ -1674,7 +1674,7 @@ s32 fn_80017CB8(SummaryMenuItem* out, s32 maxEntries, s32 pageIndex, s32 selecte
 #endif /* 0x80017CB8 - 0x80017E8C */
 
 #if !defined(GS_POKEMON_SUMMARY_ISLAND) || defined(GS_POKEMON_SUMMARY_80017E8C_ONLY)
-/* fn_80017E8C - 0x80017E8C | size: 0x338 */
+/* bagItemStore - 0x80017E8C | size: 0x338 */
 /* Argument block for the quantity picker menus 0x5B / 0x5C. */
 typedef struct SummaryQuantityMenuArg {
     u8 color[3];
@@ -1695,7 +1695,7 @@ asm void fn_80017E8C(void) {
 /* RULE-EXCEPTION(user-approved): local peephole-off pragma — see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-s32 fn_80017E8C(s32 pageIndex, u16 species, s32 slotIndex) {
+s32 bagItemStore(s32 pageIndex, u16 species, s32 slotIndex) {
     SummaryQuantityMenuArg arg;
     s32 digits;
     s32 menuId;

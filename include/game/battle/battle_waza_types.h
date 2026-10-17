@@ -222,7 +222,7 @@ extern void  fn_80118CAC(void* particleNode, u8 enabled);
 extern void  GSscene_SetMode(s32 arg);
 extern void  cameraStopAnime(void* arg);
 extern void  fn_801765F4(s32 arg);
-extern s32   fn_800057A8(void);
+extern s32   GSgetVersionMinor(void);
 extern void  _threadSwitch(void);
 extern s32   fn_8017B2CC(s32 id);
 extern void  fn_800F915C(s32 id);

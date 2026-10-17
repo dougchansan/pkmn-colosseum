@@ -34,7 +34,7 @@ extern u8 fn_800195E0[];
 extern u8 fn_80019680[];
 extern u8 fn_800199F4[];
 extern u8 menuPokemonButton[];
-extern u8 fn_8001AB70[];
+extern u8 menuPokemonCursor[];
 extern u8 menuPokemonCtrl[];
 extern u8 fn_8001EF78[];
 extern u8 fn_8001F1E8[];
@@ -58,9 +58,9 @@ extern u8 fn_800382E8[];
 extern u8 fn_80038380[];
 extern u8 fn_8003907C[];
 extern u8 fn_80039128[];
-extern u8 fn_80039A84[];
+extern u8 itemStorageListKey[];
 extern u8 fn_80039F44[];
-extern u8 fn_80039F70[];
+extern u8 itemStorageListSeq[];
 extern u8 fn_8003A7F0[];
 extern u8 fn_8003AC50[];
 extern u8 fn_8003B814[];
@@ -74,13 +74,13 @@ extern u8 fn_800411A4[];
 extern u8 fn_8004B278[];
 extern u8 fn_8004CF78[];
 extern u8 fn_8004D26C[];
-extern u8 fn_8004D7D0[];
+extern u8 pdaMailViewKey[];
 extern u8 fn_8004D8BC[];
 extern u8 fn_8004D928[];
 extern u8 fn_8004DB80[];
 extern u8 fn_8004DDC0[];
 extern u8 fn_8004DF34[];
-extern u8 fn_8004E790[];
+extern u8 pdaMailAttachKey[];
 extern u8 fn_8004E89C[];
 extern u8 fn_8004E8E0[];
 extern u8 fn_800544A8[];
@@ -536,9 +536,9 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x63900000,
     (void*)0x03770000,
     (void*)0x00000000,
-    (void*)((u8*)fn_80039A84),
+    (void*)((u8*)itemStorageListKey),
     (void*)((u8*)fn_80039F44),
-    (void*)((u8*)fn_80039F70),
+    (void*)((u8*)itemStorageListSeq),
     (void*)0x00000000,
     (void*)0x63840000,
     (void*)0x038E0000,
@@ -970,7 +970,7 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x61900700,
     (void*)0x03AA0000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8001AB70),
+    (void*)((u8*)menuPokemonCursor),
     (void*)((u8*)menuPokemonButton),
     (void*)((u8*)menuPokemonCtrl),
     (void*)0x00000000,
@@ -1089,7 +1089,7 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x61900000,
     (void*)0x04B00000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8004D7D0),
+    (void*)((u8*)pdaMailViewKey),
     (void*)((u8*)fn_8004D8BC),
     (void*)((u8*)fn_8004D928),
     (void*)0x00000000,
@@ -1110,7 +1110,7 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x61900000,
     (void*)0x04FC0000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8004E790),
+    (void*)((u8*)pdaMailAttachKey),
     (void*)((u8*)fn_8004E89C),
     (void*)((u8*)fn_8004E8E0),
     (void*)0x00000000,

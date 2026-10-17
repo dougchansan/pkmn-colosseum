@@ -48,7 +48,7 @@ extern u8 fn_80121ADC(void* pokemon, s32 ribbon);
 extern void fn_80121B4C(void* pokemon, s32 ribbon);
 extern s32 menuGetCursorFromItemID(s32 menu, s32 itemId);
 extern void cursorBiosSetPos(s32 cursor, const CursorPos* pos);
-extern void fn_8000D710(s32);
+extern void heroMoveRunEvent(s32);
 extern s32 fn_80075638(void);
 extern void fn_8007565C(void);
 extern void std054_characterTalk(s32, s32, s32);
@@ -500,7 +500,7 @@ void std208_promptDNASampleSelection(void)
     initial.col = cursor;
     pos = initial;
     cursorBiosSetPos(2, &pos);
-    fn_8000D710(1);
+    heroMoveRunEvent(1);
 }
 
 extern u32 fn_800884BC(u32 arg0, u32 arg1, u32 arg2);

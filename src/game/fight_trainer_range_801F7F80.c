@@ -837,7 +837,7 @@ s16 fightTrainerTimeOutSelectIrekaeFightPokemon(void* trainer) {
     defined(FTR_EXACT_801F9600_801F9790)
 /* 0x801F9600 | size: 0x190 */
 s32 fightTrainerSelectIrekaeFightPokemon(void* context, void* p1, void* p2, void* p3) {
-    extern u8 fn_80008174(void);
+    extern u8 dbgMenuFightGetAllManual(void);
     extern void* fightTrainerGetStatus(void* ctx, u32 slot, u32 field, u16 idx);
     extern s32 fightTrainerAiSelectIrekaeDasuFightPokemon(void* ctx, void* p1, void* p2, void* p3);
     extern s32 fightMenuFightTrainerAgbHeroSelectIrekaeFightPokemon(void* ctx, void* p1, void* p2, void* p3);
@@ -849,7 +849,7 @@ s32 fightTrainerSelectIrekaeFightPokemon(void* context, void* p1, void* p2, void
     result = -1;
     slot = (u16)(u32)fightTrainerGetStatus(context, 0, 0x43, 0);
     species = (u16)(u32)fightTrainerGetStatus(0, slot, 0x2, 0);
-    if ((u8)fn_80008174() == 1) {
+    if ((u8)dbgMenuFightGetAllManual() == 1) {
         result = fightMenuFightTrainerGcHeroSelectIrekaeFightPokemon(context, 0, p1, p2, 0);
     } else if (species != 0) {
         result = fightTrainerAiSelectIrekaeDasuFightPokemon(context, p1, p2, p3);

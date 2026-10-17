@@ -97,8 +97,8 @@ extern void GSlightSetActive(void* light, s32 active);
 extern void soundStartRaw(s32 soundId, s32 arg1, s32 arg2);
 extern void cameraWaitSyncAnime(s32 camera);
 extern void fn_8004A47C(void);
-extern void fn_8003C7C0(void);
-extern void fn_80044630(void);
+extern void pdaSnagListRun(void);
+extern void pdaStrategyMemoRun(void);
 extern u8 std081_flagCheckTrue(s32 id);
 extern void fn_8004C120(void);
 extern void fadeSet(s32 type, f32 speed);
@@ -220,7 +220,7 @@ void std027_unkMenuSequence27(void)
             menuClose(0x97);
             menuCloseSync(0x97, 1);
             *config.message = 0x36B4;
-            fn_8003C7C0();
+            pdaSnagListRun();
             state->menuBusy = 0;
             *transitionTarget = lbl_8047BDAC;
             break;
@@ -237,7 +237,7 @@ void std027_unkMenuSequence27(void)
             menuClose(0x97);
             menuCloseSync(0x97, 1);
             *config.message = 0x36B5;
-            fn_80044630();
+            pdaStrategyMemoRun();
             state->menuBusy = 0;
             *transitionTarget = lbl_8047BDAC;
             break;
@@ -422,7 +422,7 @@ static inline s32 pdaMailIsAttachReady(s32 index)
     return 1;
 }
 
-/* RULE-EXCEPTION(user-approved): reconstructed inline helper (fn_8004E440, fn_8004E180, fn_8004E2E0, fn_8004E510) — see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): reconstructed inline helper (fn_8004E440, pdaMailAttachDrawTitle, fn_8004E2E0, fn_8004E510) — see docs/RULE_EXCEPTIONS.md */
 static inline s32 pdaMailCountAttachItems(s32* state)
 {
     u32 object;
@@ -492,7 +492,7 @@ extern const s32 lbl_802672D8[6];
 extern const s32 lbl_802671D0[12];
 
 #ifndef MENU_PDA_MAIL_PARTIAL
-s32 fn_8004C5B0(void* unused, PdaMailSpriteField* field)
+s32 pdaMailDrawCursor(void* unused, PdaMailSpriteField* field)
 {
     typedef union PdaMailCursorPosition {
         u32 storage;
@@ -611,7 +611,7 @@ asm s32 fn_8004D590(PdaMailWindowA* window, PdaMailOutA* out) {
 #include "src/game/menu/menu_pda_mail_fn_8004D590.inc"
 }
 #else
-s32 fn_8004D590(PdaMailWindowA* window, PdaMailOutA* out)
+s32 pdaMailDrawPicture(PdaMailWindowA* window, PdaMailOutA* out)
 {
     if (mailGetAttachFileGroup(pdaMailGetMailID(**window->field_0x60)) != 0) {
         out->field_0x4c = 0x36B9;
@@ -633,7 +633,7 @@ asm s32 fn_8004D6F0(PdaMailWindowA* window, PdaMailOutA* out) {
 #include "src/game/menu/menu_pda_mail_fn_8004D6F0.inc"
 }
 #else
-s32 fn_8004D6F0(PdaMailWindowA* window, PdaMailOutA* out)
+s32 pdaMailDrawSender(PdaMailWindowA* window, PdaMailOutA* out)
 {
     u32 val = mailGetSenderName(pdaMailGetMailID(**window->field_0x60));
     if (val != 0) {
@@ -655,7 +655,7 @@ asm s32 fn_8004D760(PdaMailWindowA* window, PdaMailOutA* out) {
 #include "src/game/menu/menu_pda_mail_fn_8004D760.inc"
 }
 #else
-s32 fn_8004D760(PdaMailWindowA* window, PdaMailOutA* out)
+s32 pdaMailDrawSubject(PdaMailWindowA* window, PdaMailOutA* out)
 {
     u32 val = mailGetSubject(pdaMailGetMailID(**window->field_0x60));
     if (val != 0) {
@@ -805,7 +805,7 @@ s32 fn_8004D34C(s32 index)
     extern s32 mailGetSortMode(void);
     extern s32 fn_8004DC18(s32 mode);
     extern void fn_8004BFB0(void);
-    extern u8 fn_8004DFCC(u8 initialSelection);
+    extern u8 pdaMailPickerRun(u8 initialSelection);
     extern u8 fn_801D16C4(void);
     extern void fn_801D167C(u8 handle);
     extern void fn_801D1B10(s32 handle);
@@ -888,7 +888,7 @@ s32 fn_8004D34C(s32 index)
             }
             break;
         case 11:
-            handle = fn_8004DFCC(fn_801D16C4());
+            handle = pdaMailPickerRun(fn_801D16C4());
             if (handle != 0xff) {
                 fn_801D167C(handle);
             }
@@ -912,7 +912,7 @@ extern s32 mailGetReceiveNumber(s32 mailId);
 /* GScharCmp (menuCB_Battle.c): compares two rendered-message buffers. */
 extern s32 GScharCmp(void* a, void* b);
 
-extern s32 fn_8004BE90(u16* a, u16* b);
+extern s32 pdaMailCompareSubject(u16* a, u16* b);
 extern s32 fn_8004BF20(u16* a, u16* b);
 
 #ifndef MENU_PDA_MAIL_PARTIAL
@@ -1147,7 +1147,7 @@ void fn_8004BFB0(void)
             *alphaCursor++ = mailGetMailIDInMailbox(alphaIndex);
         }
         qsort(output, alphaCount, sizeof(u16),
-              (s32 (*)(const void*, const void*))fn_8004BE90);
+              (s32 (*)(const void*, const void*))pdaMailCompareSubject);
         break;
     case 0:
     default:
@@ -1232,7 +1232,7 @@ asm s32 fn_8004D7D0(PdaMailWindowA* window) {
 #include "src/game/menu/menu_pda_mail_fn_8004D7D0.inc"
 }
 #else
-s32 fn_8004D7D0(PdaMailWindowA* window)
+s32 pdaMailViewKey(PdaMailWindowA* window)
 {
     extern s32 mailGetNbMailInMailbox(void);
     s32** field = window->field_0x60;
@@ -1632,7 +1632,7 @@ extern s32 fn_801026A4(u32 menuId, ...);
 extern void fn_80102510(u32 menuId);
 
 #pragma peephole off
-u8 fn_8004DFCC(u8 initialSelection)
+u8 pdaMailPickerRun(u8 initialSelection)
 {
     s32 selection;
     u32 state;
@@ -1710,7 +1710,7 @@ static inline s32 pdaMailCountAttachmentEntries(u32 fileHandle)
 }
 
 #pragma peephole off
-s32 fn_8004E180(u8* context, u8* object)
+s32 pdaMailAttachDrawTitle(u8* context, u8* object)
 {
     u8* attachmentState;
     u32 fileHandle;
@@ -1920,7 +1920,7 @@ void fn_8004C120(void)
                 *alphaCursor++ = mailGetMailIDInMailbox(alphaIndex);
             }
             qsort(output, alphaCount, sizeof(u16),
-                  (s32 (*)(const void*, const void*))fn_8004BE90);
+                  (s32 (*)(const void*, const void*))pdaMailCompareSubject);
             break;
         case 0:
         default:

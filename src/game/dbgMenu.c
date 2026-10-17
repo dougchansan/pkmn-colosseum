@@ -637,8 +637,8 @@ s32 dbgMenuGetLink__Fl(s32 idx) {
 /* 0x80134274 | 0x44 */
 u32 dbgMenuGetRootMenu(void) {
     int new_var;
-    extern u32 fn_800057A8(void);
-    s32 val = (s32)fn_800057A8();
+    extern u32 GSgetVersionMinor(void);
+    s32 val = (s32)GSgetVersionMinor();
     if (val == 1) goto _ret2;
     if (val >= 1) goto _chk3;
     new_var = 2;

@@ -82,7 +82,7 @@ extern f32 lbl_8047C234;
 extern f32 lbl_8047C238;
 extern void fn_801040F0();
 extern void winSpriteSetDisp();
-extern void fn_8001E58C();
+extern void menuDrawRectOutline();
 extern void fn_800FA280();
 extern void fn_800FA444();
 extern void fn_800FB680();
@@ -110,7 +110,7 @@ extern void fn_800D61E4(s32 x, s32 y);
 extern void fn_800D5CB8(u32 arg0, u32 r, u32 g, u32 b, u32 a);
 extern void gfxVtxTexCoord(u32 arg0, f32 s, f32 t);
 extern void gfxEnd(void);
-extern u32 fn_8001D624(void* pokemon, u32 arg);
+extern u32 menuPokemonGetStatusSprite(void* pokemon, u32 arg);
 extern u8 menuSubGetPokemonSexForDisp(void* pokemon);
 
 /* 0x8008C7B0 */

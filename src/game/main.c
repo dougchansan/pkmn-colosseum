@@ -3,8 +3,8 @@
  * @brief Main entry point and top-level game initialization for Pokemon Colosseum.
  *
  * Contains main(), the game initialization sequence (fn_800057B0), the main
- * game loop thread (fn_80005AAC), the early reset/retrace callbacks, and the
- * per-retrace game logic (fn_80005E00).
+ * game loop thread (mainGameThread), the early reset/retrace callbacks, and the
+ * per-retrace game logic (mainRetraceLogic).
  *
  * Address range: 0x800055E0 - 0x80005FA8
  * Small data:    .sdata2 0x8047B6A0 - 0x8047B6B8 (the 0.0f and 359940.0f
@@ -141,23 +141,23 @@ extern u32  fn_800E0DDC(void);                           /* OSGetFreeMemSize-lik
 extern void GSlogWrite(const char* fmt, ...);           /* OSReport / debug printf */
 extern f32 __cvt_fp2unsigned(f32 volume);                     /* volume clamp/process */
 
-/* --- Game main loop (fn_80005AAC) and its helpers --- */
-void fn_80005AAC(void);
+/* --- Game main loop (mainGameThread) and its helpers --- */
+void mainGameThread(void);
 void fn_8000609C(void); /* fn_8000609C - background color / render schedule init */
 
 /* --- Per-frame callback tasks registered by fn_800057B0 --- */
-void fn_80005D80(void);       /* fn_80005D80 - primary retrace handler */
+void mainRetraceDraw(void);       /* mainRetraceDraw - primary retrace handler */
 void fn_80005FFC(void);      /* fn_80005FFC - controller polling task */
 void fn_8000604C(void);    /* fn_8000604C - controller rumble task */
-void fn_80005FA8(u32 a, u32 b); /* fn_80005FA8 - audio retrace callback */
-void fn_80005CE4(void);    /* fn_80005CE4 - reset button countdown */
-void fn_80005E00(void);  /* fn_80005E00 - per-retrace game logic */
-void fn_80005C3C(void); /* fn_80005C3C - reset button handler */
+void mainLogicTask(u32 a, u32 b); /* mainLogicTask - audio retrace callback */
+void mainClearExceptionVectors(void);    /* mainClearExceptionVectors - reset button countdown */
+void mainRetraceLogic(void);  /* mainRetraceLogic - per-retrace game logic */
+void mainCheckResetButton(void); /* mainCheckResetButton - reset button handler */
 
 /* --- Small utility functions near main --- */
 
-/* fn_800056C4: fn_800056C4 - sets a byte flag; returns previous value */
-extern u8 fn_800056C4(u8 newVal);
+/* mainSetPauseFlag: mainSetPauseFlag - sets a byte flag; returns previous value */
+extern u8 mainSetPauseFlag(u8 newVal);
 
 /* fn_800056D4: fn_800056D4 - reads flag, clears it, returns old */
 extern u8 fn_800056D4(void);
@@ -165,17 +165,17 @@ extern u8 fn_800056D4(void);
 /* fn_800056E4: fn_800056E4 */
 extern void fn_800056E4(u8 val);
 
-/* fn_800056EC: fn_800056EC - if sound system present, set volume */
-extern void fn_800056EC(f32 volume);
+/* gamedataSetPlaytime: gamedataSetPlaytime - if sound system present, set volume */
+extern void gamedataSetPlaytime(f32 volume);
 
 /* fn_80005748: fn_80005748 - if sound system present, get volume */
 extern f32 fn_80005748(void);
 
-/* fn_800057A0: fn_800057A0 - returns 1 */
-extern u32 fn_800057A0(void);
+/* GSgetVersionMajor: GSgetVersionMajor - returns 1 */
+extern u32 GSgetVersionMajor(void);
 
-/* fn_800057A8: fn_800057A8 - returns 6 */
-extern u32 fn_800057A8(void);
+/* GSgetVersionMinor: GSgetVersionMinor - returns 6 */
+extern u32 GSgetVersionMinor(void);
 
 /* --- Miscellaneous engine functions --- */
 extern void fn_800366A8(void);    /* Scene/floor update tick */
@@ -250,7 +250,7 @@ extern u32  msgGetCharsPerFrame(void);       /* GSgfx get tick counter */
 
 extern u32  fn_800F7AF0(u32 padIdx); /* PAD get buttons pressed */
 extern u32  fn_800F7BC4(u32 padIdx); /* PAD get buttons held */
-extern void fn_8000C0DC(void);       /* Debug menu toggle */
+extern void dbgMovieCaptureUpdate(void);       /* Debug menu toggle */
 
 /* --- SDA (small data area) globals used by this module --- */
 
@@ -418,13 +418,13 @@ int main(int argc, char** argv) {
 }
 
 /* =========================================================================
- *  fn_800056C4 / fn_800056C4
+ *  mainSetPauseFlag / mainSetPauseFlag
  *  Address: 0x800056C4, Size: 0x10
  *
  *  Atomically sets the pause flag and returns the previous value.
  * =========================================================================
  */
-u8 fn_800056C4(u8 newVal) {
+u8 mainSetPauseFlag(u8 newVal) {
     u8 oldVal = lbl_80478DC9;
     lbl_80478DC9 = newVal;
     return oldVal;
@@ -455,14 +455,14 @@ void fn_800056E4(u8 val) {
 }
 
 /* =========================================================================
- *  fn_800056EC / fn_800056EC
+ *  gamedataSetPlaytime / gamedataSetPlaytime
  *  Address: 0x800056EC, Size: 0x5C
  *
  *  If the sound system is initialized, sets the master volume on the
  *  sound mixer. The volume parameter arrives in f1.
  * =========================================================================
  */
-void fn_800056EC(f32 volume) {
+void gamedataSetPlaytime(f32 volume) {
     void* mixer;
 
     /* Check if sound system is ready */
@@ -505,25 +505,25 @@ f32 fn_80005748(void) {
 }
 
 /* =========================================================================
- *  fn_800057A0 / fn_800057A0
+ *  GSgetVersionMajor / GSgetVersionMajor
  *  Address: 0x800057A0, Size: 0x8
  *
  *  Returns the major version number: 1
  * =========================================================================
  */
-u32 fn_800057A0(void) {
+u32 GSgetVersionMajor(void) {
     return 1;
 }
 
 /* =========================================================================
- *  fn_800057A8 / fn_800057A8
+ *  GSgetVersionMinor / GSgetVersionMinor
  *  Address: 0x800057A8, Size: 0x8
  *
  *  Returns the minor version number: 6
  *  (Pokemon Colosseum version 1.6)
  * =========================================================================
  */
-u32 fn_800057A8(void) {
+u32 GSgetVersionMinor(void) {
     return 6;
 }
 
@@ -661,8 +661,8 @@ void fn_800057B0(void) {
      * ---------------------------------------------------------------
      */
 
-    /* Task 0xFF: Primary VBlank handler (fn_80005D80) */
-    GSgappCreate(1, 0xFF, 0, (void*)fn_80005D80);
+    /* Task 0xFF: Primary VBlank handler (mainRetraceDraw) */
+    GSgappCreate(1, 0xFF, 0, (void*)mainRetraceDraw);
 
     /* Task 0x00: Pad rumble update (fn_8000604C) */
     GSgappCreate(1, 0x00, 0, (void*)fn_8000604C);
@@ -670,18 +670,18 @@ void fn_800057B0(void) {
     /* Task 0x01: Pad read/polling (fn_80005FFC) */
     GSgappCreate(1, 0x01, 0, (void*)fn_80005FFC);
 
-    /* Task 0x0A: Audio retrace callback (fn_80005FA8) */
+    /* Task 0x0A: Audio retrace callback (mainLogicTask) */
     GSvtrRegisterGSgapp(
-        GSgappCreate(1, 0x0A, 0, (void*)fn_80005FA8));
+        GSgappCreate(1, 0x0A, 0, (void*)mainLogicTask));
 
-    /* Task 0xFD: Reset button countdown (fn_80005CE4) */
-    GSgappCreate(1, 0xFD, 0, (void*)fn_80005CE4);
+    /* Task 0xFD: Reset button countdown (mainClearExceptionVectors) */
+    GSgappCreate(1, 0xFD, 0, (void*)mainClearExceptionVectors);
 
-    /* Task 0xFE: Main retrace logic (fn_80005E00) */
-    GSgappCreate(1, 0xFE, 0, (void*)fn_80005E00);
+    /* Task 0xFE: Main retrace logic (mainRetraceLogic) */
+    GSgappCreate(1, 0xFE, 0, (void*)mainRetraceLogic);
 
-    /* Task 0xFF: Reset handler (fn_80005C3C) - overrides earlier 0xFF? */
-    GSgappCreate(1, 0xFF, 0, (void*)fn_80005C3C);
+    /* Task 0xFF: Reset handler (mainCheckResetButton) - overrides earlier 0xFF? */
+    GSgappCreate(1, 0xFF, 0, (void*)mainCheckResetButton);
 
     /* Mark initialization as complete */
     lbl_80478DC9 = 1;
@@ -703,8 +703,8 @@ void fn_800057B0(void) {
 
     /* Create and start the main game loop thread:
      *   affinity=0, priority=1000, stackSize=0x4000,
-     *   usesFPU=1, autoStart=1, entry=fn_80005AAC */
-    GSthreadCreate(0, 0x3E8, 0x4000, 1, 1, (void*)fn_80005AAC);
+     *   usesFPU=1, autoStart=1, entry=mainGameThread */
+    GSthreadCreate(0, 0x3E8, 0x4000, 1, 1, (void*)mainGameThread);
 
     /* Infinite yield loop - scheduler takes over from here */
     for (;;) {
@@ -713,7 +713,7 @@ void fn_800057B0(void) {
 }
 
 /* =========================================================================
- *  fn_80005AAC / fn_80005AAC
+ *  mainGameThread / mainGameThread
  *  Address: 0x80005AAC, Size: 0x190
  *
  *  The main game loop thread entry point. Runs once per frame:
@@ -724,7 +724,7 @@ void fn_800057B0(void) {
  *  5. Clears scratch memory
  * =========================================================================
  */
-void fn_80005AAC(void) {
+void mainGameThread(void) {
     void* mixer;
 
     /* Tick the scene/floor system */
@@ -813,7 +813,7 @@ void fn_80005AAC(void) {
 }
 
 /* =========================================================================
- *  fn_80005C3C / fn_80005C3C
+ *  mainCheckResetButton / mainCheckResetButton
  *  Address: 0x80005C3C, Size: 0xA8
  *
  *  Checks the reset button state. On first press, latches.
@@ -821,7 +821,7 @@ void fn_80005AAC(void) {
  *  hardware shutdown and calls OSResetSystem.
  * =========================================================================
  */
-void fn_80005C3C(void) {
+void mainCheckResetButton(void) {
     if (lbl_80478DCA == 0) {
         /* Button not yet latched - check if pressed */
         if (OSGetResetButtonState() == 1) {
@@ -847,7 +847,7 @@ void fn_80005C3C(void) {
 }
 
 /* =========================================================================
- *  fn_80005CE4 / fn_80005CE4
+ *  mainClearExceptionVectors / mainClearExceptionVectors
  *  Address: 0x80005CE4, Size: 0x9C
  *
  *  On first call (lbl_80478DCC == 0), clears OS exception vectors by
@@ -856,7 +856,7 @@ void fn_80005C3C(void) {
  *  This provides a delay before the game is fully ready.
  * =========================================================================
  */
-void fn_80005CE4(void) {
+void mainClearExceptionVectors(void) {
     u32 i;
 
     if (lbl_80478DCC == 0) {
@@ -879,7 +879,7 @@ void fn_80005CE4(void) {
 }
 
 /* =========================================================================
- *  fn_80005D80 / fn_80005D80
+ *  mainRetraceDraw / mainRetraceDraw
  *  Address: 0x80005D80, Size: 0x80
  *
  *  Primary vertical blank handler. Runs each frame:
@@ -891,7 +891,7 @@ void fn_80005CE4(void) {
  *  6. Finalizes the GX render state
  * =========================================================================
  */
-void fn_80005D80(void) {
+void mainRetraceDraw(void) {
     /* Set render state mask (0xFF00 = enable all channels) */
     fn_80101B90(0xFF00);
 
@@ -922,7 +922,7 @@ void fn_80005D80(void) {
 }
 
 /* =========================================================================
- *  fn_80005E00 / fn_80005E00
+ *  mainRetraceLogic / mainRetraceLogic
  *  Address: 0x80005E00, Size: 0x1A8
  *
  *  Per-retrace game logic handler. Checks controller buttons for
@@ -935,7 +935,7 @@ void fn_80005D80(void) {
  *  an extern reference instead changes the FPR allocation of the clamp.
  * =========================================================================
  */
-void fn_80005E00(void) {
+void mainRetraceLogic(void) {
     void* mixer;
     f32 vol;
     f32 v;
@@ -947,7 +947,7 @@ void fn_80005E00(void) {
     pressed = fn_800F7AF0(1);
     held = fn_800F7BC4(1);
     if (held & pressed & 0x10) {
-        fn_8000C0DC();
+        dbgMovieCaptureUpdate();
     }
 
     if (fn_801E11E8()) {

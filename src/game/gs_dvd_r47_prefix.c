@@ -47,8 +47,8 @@ extern void fn_800B856C(void);
 extern void DCFlushRange(void* address, u32 size);
 extern void DVDInit(void);
 extern BOOL DVDSetAutoFatalMessaging(BOOL enable);
-extern s32 fn_800057A0(void);
-extern s32 fn_800057A8(void);
+extern s32 GSgetVersionMajor(void);
+extern s32 GSgetVersionMinor(void);
 extern u8* fn_800A7BCC(void);
 extern u32 GSgappCreate(s32 state, u8 priority, u32 parameter,
                        void (*callback)(void));
@@ -97,8 +97,8 @@ u32 fn_80167FA8(u32 workCount)
     }
     fn_8016821C();
     DVDInit();
-    if (fn_800057A8() != 4) {
-        switch (fn_800057A0()) {
+    if (GSgetVersionMinor() != 4) {
+        switch (GSgetVersionMajor()) {
         case 0:
             lbl_80478C24 = lbl_8047D578;
             break;

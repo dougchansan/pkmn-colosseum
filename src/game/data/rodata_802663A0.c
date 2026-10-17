@@ -3,16 +3,16 @@
 typedef void (*FuncPtr)(void);
 
 extern void fn_80013744(void);
-extern void fn_8001374C(void);
+extern void itemStorageWithdraw(void);
 extern void fn_800138B4(void);
-extern void fn_80013A18(void);
-extern void fn_80013DFC(void);
-extern void fn_80013F80(void);
+extern void bagItemToss(void);
+extern void bagItemGive(void);
+extern void bagItemUse(void);
 extern void fn_8001501C(void);
 extern void fn_800150E4(void);
 extern void menuPocketDrawNameList(void);
 extern void fn_800155B0(void);
-extern void fn_800159BC(void);
+extern void bagDrawTMList(void);
 extern void menuPocketDrawItemList(void);
 
 /*

@@ -205,10 +205,10 @@ extern f32 lbl_8047BAC0;
 extern PdaModelWindow lbl_803A6748;
 extern u8 lbl_803A67FC[];
 extern PdaSceneWork lbl_803A6818;
-extern s32 fn_8003B85C(void* window, s32 enabled);
-extern void fn_8003C2B8(PdaSprite* sprite, PdaEvent* event);
+extern s32 pdaSnagListDetailKey(void* window, s32 enabled);
+extern void pdaSnagListDrawDetail(PdaSprite* sprite, PdaEvent* event);
 extern s32 fn_80041E48(void* work, s32 mode);
-extern s32 fn_80042658(void* work, s32 mode);
+extern s32 pdaModelViewerControl(void* work, s32 mode);
 extern void pdaReadPadInput(void* scene);
 extern void GSscene_SetMode(s32 mode);
 extern void menuButtonNormal(void* button);
@@ -330,7 +330,7 @@ extern u8 lbl_802E5448[];
 extern u8 lbl_80267180[];
 extern f32 lbl_8047BC9C;
 extern u8 fn_80047CC0(u8* work);
-extern u8 fn_800478B4(void* work, void* sub);
+extern u8 pdaModelFrameCamera(void* work, void* sub);
 extern PdaKanaGroup* lbl_802E60B0[];
 extern void GScharMakeFromSJIS(u16* dst, u32 sjis);
 extern f32 lbl_8047BCFC;
@@ -529,7 +529,7 @@ static inline u32 pdaLoadPokemon(s32 index)
     return 0;
 }
 
-u8 fn_800484A4(u8* work)
+u8 pdaModelOrbitCamera(u8* work)
 {
     extern f64 tan(f64 x);
     f32 mtx1[12];

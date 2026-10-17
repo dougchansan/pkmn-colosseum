@@ -32,7 +32,7 @@ extern const u32 lbl_802672F0[12];
 
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (scheduling off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma scheduling off
-s32 fn_8004DB34(PdaMailWindowB* window, void* fieldHandle)
+s32 pdaMailSortMenuDraw(PdaMailWindowB* window, void* fieldHandle)
 {
     if (*window->field_0x60 != 0) {
         winSpriteSetDisp(fieldHandle, 0);

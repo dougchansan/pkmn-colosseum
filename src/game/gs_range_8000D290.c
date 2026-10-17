@@ -173,7 +173,7 @@ typedef struct MenuPendingEvent {
     u8 pad32[2];
 } MenuPendingEvent;
 
-s32 fn_8000D710(u8 mode)
+s32 heroMoveRunEvent(u8 mode)
 {
     extern s32 heroMoveCheckEvent(MenuPendingEvent* events);
     extern void heroDispatchEvent(s8 kind, u32 eventId);

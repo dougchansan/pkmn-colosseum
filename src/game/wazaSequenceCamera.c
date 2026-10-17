@@ -134,7 +134,7 @@ void fn_801D2C74(void* owner) {
     extern void GSscene_SetMode(s32 arg);
     extern void cameraStopAnime(void* arg);
     extern void fn_801765F4(s32 arg);
-    extern s32  fn_800057A8(void);
+    extern s32  GSgetVersionMinor(void);
     extern u8   lbl_8047B3F4;
 
     void* obj;
@@ -153,7 +153,7 @@ void fn_801D2C74(void* owner) {
                 }
                 fn_801765F4(0);
                 lbl_8047B3EC = NULL;
-                if (fn_800057A8() == 2) {
+                if (GSgetVersionMinor() == 2) {
                     GSscene_SetMode(2);
                 }
             }
@@ -275,7 +275,7 @@ void fn_801D2D28(void)
 extern void GSscene_SetMode(s32 arg);
 extern void cameraStopAnime(void* arg);
 extern void fn_801765F4(s32 arg);
-extern s32  fn_800057A8(void);
+extern s32  GSgetVersionMinor(void);
 void fn_801D2F94(void) {
     void* obj;
     if (lbl_8047B3EC != NULL) {
@@ -290,7 +290,7 @@ void fn_801D2F94(void) {
         }
         fn_801765F4(0);
         lbl_8047B3EC = NULL;
-        if (fn_800057A8() == 2) {
+        if (GSgetVersionMinor() == 2) {
             GSscene_SetMode(2);
         }
     }
@@ -325,7 +325,7 @@ void fn_801D3034(void* state) {
         }
         fn_801765F4(0);
         lbl_8047B3EC = NULL;
-        if (fn_800057A8() == 2) {
+        if (GSgetVersionMinor() == 2) {
             GSscene_SetMode(2);
         }
     }

@@ -265,13 +265,13 @@ void _prolog(void)
     /* fn_8000C92C */
     lbl_80478E2C = lbl_125_data_911AC;
     lbl_80478E28 = &lbl_125_data_14A698;
-    /* fn_8000C788 */
+    /* dbgMenuSoundTestSE2 */
     lbl_80478E14 = lbl_125_data_91246;
     lbl_80478E10 = &lbl_125_data_14A69C;
-    /* fn_8000C824 */
+    /* dbgMenuSoundTestSEExclusive */
     lbl_80478E24 = lbl_125_data_91334;
     lbl_80478E20 = &lbl_125_data_14A6A0;
-    /* fn_8000C6EC */
+    /* dbgMenuSoundTestSE */
     lbl_80478E1C = lbl_125_data_91346;
     lbl_80478E18 = &lbl_125_data_14A6A4;
     /* fightTypeDataBiosGetPtr */
@@ -307,13 +307,13 @@ void _prolog(void)
     /* _fightMenuFightTrainerGcHeroOpenMenuSubWaza__FP13FIGHT_TRAINERP15FightOutPokemonUs */
     lbl_80478DFC = lbl_125_data_11C7C4;
     lbl_80478DF8 = &lbl_125_data_14A6D4;
-    /* fn_800096B4 */
+    /* dbgMenuPokemonEdit */
     lbl_80478E64 = lbl_125_data_121614;
     lbl_80478E60 = &lbl_125_data_14A6D8;
     /* pokemonDpFilterDataBiosGetPtr */
     lbl_80478E6C = lbl_125_data_1219FC;
     lbl_80478E68 = &lbl_125_data_14A6DC;
-    /* fn_800096B4 */
+    /* dbgMenuPokemonEdit */
     lbl_80478F94 = lbl_125_data_121A04;
     lbl_80478F90 = &lbl_125_data_14A6E0;
     /* pokemonSeikakuRateDataBiosGetPtr */
@@ -331,7 +331,7 @@ void _prolog(void)
     /* fn_801655D4 */
     lbl_80478FB4 = lbl_125_data_143918;
     lbl_80478FB0 = &lbl_125_data_14A6F4;
-    /* fn_800096B4 */
+    /* dbgMenuPokemonEdit */
     lbl_80478F6C = lbl_125_data_1439D8;
     lbl_80478F68 = &lbl_125_data_14A6F8;
     /* fn_801EE544 */

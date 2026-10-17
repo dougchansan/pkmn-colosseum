@@ -1,5 +1,5 @@
 /**
- * PDA functions 0x8003A6C0 - 0x8003AFDC (fn_8003A6C0 .. fn_8003AEF0): the
+ * PDA functions 0x8003A6C0 - 0x8003AFDC (fn_8003A6C0 .. pdaSnagListDrawCount): the
  * digit display, the numeric spinner, menu setup and the event-group
  * visibility check. Carved from
  * pda_range_80037158.c, which keeps the same bodies for its other
@@ -142,10 +142,10 @@ extern PdaModelWindow lbl_803A6748;
 extern u8 lbl_803A67FC[];
 extern PdaSceneWork lbl_803A6818;
 
-extern s32 fn_8003B85C(void* window, s32 enabled);
-extern void fn_8003C2B8(PdaSprite* sprite, PdaEvent* event);
+extern s32 pdaSnagListDetailKey(void* window, s32 enabled);
+extern void pdaSnagListDrawDetail(PdaSprite* sprite, PdaEvent* event);
 extern s32 fn_80041E48(void* work, s32 mode);
-extern s32 fn_80042658(void* work, s32 mode);
+extern s32 pdaModelViewerControl(void* work, s32 mode);
 extern void pdaReadPadInput(void* scene);
 extern void GSscene_SetMode(s32 mode);
 extern void menuButtonNormal(void* button);
@@ -623,7 +623,7 @@ s32 fn_8003AE84(void)
     return value;
 }
 
-void fn_8003AEF0(PdaSprite* sprite)
+void pdaSnagListDrawCount(PdaSprite* sprite)
 {
     extern PdaListEntry* lbl_8047A4D4;
     extern void fn_801EED88(u16 id);

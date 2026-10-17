@@ -9,12 +9,12 @@ extern void* lbl_8047B3F0; /* its camera animation */
 extern void GSscene_SetMode(s32 arg);
 extern void cameraStopAnime(void* arg);
 extern void fn_801765F4(s32 arg);
-extern s32 fn_800057A8(void);
+extern s32 GSgetVersionMinor(void);
 
 /*
  * wazaCameraStop -- end the active waza camera: stop its camera animation
  * (or put the scene back to mode 8 if it has none), clear the sequence and
- * restore scene mode 2 when fn_800057A8 reports 2.
+ * restore scene mode 2 when GSgetVersionMinor reports 2.
  *
  * Expanded inline at four sites in retail (fn_801D2C74, fn_801D2D28,
  * fn_801D2F94, fn_801D3034): find_inline_expansions.py block 0x801D2FAC
@@ -36,7 +36,7 @@ static inline void wazaCameraStop(void)
     }
     fn_801765F4(0);
     lbl_8047B3EC = NULL;
-    if (fn_800057A8() == 2) {
+    if (GSgetVersionMinor() == 2) {
         GSscene_SetMode(2);
     }
 }

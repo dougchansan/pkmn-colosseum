@@ -73,7 +73,7 @@ extern f32 lbl_8047C234;
 extern f32 lbl_8047C238;
 extern void fn_801040F0();
 extern void winSpriteSetDisp();
-extern void fn_8001E58C();
+extern void menuDrawRectOutline();
 extern void fn_800FA280();
 extern void fn_800FA444();
 extern void fn_800FB680();
@@ -105,7 +105,7 @@ extern void fn_800D61E4(s32 x, s32 y);
 extern void fn_800D5CB8(u32 arg0, u32 r, u32 g, u32 b, u32 a);
 extern void gfxVtxTexCoord(u32 arg0, f32 s, f32 t);
 extern void gfxEnd(void);
-extern u32 fn_8001D624(void* pokemon, u32 arg);
+extern u32 menuPokemonGetStatusSprite(void* pokemon, u32 arg);
 extern u8 menuSubGetPokemonSexForDisp(void* pokemon);
 
 #if !defined(GBA_COMMUNICATION_DECLS_ONLY)
@@ -345,7 +345,7 @@ void menuStatusDrawMoveDetail(u8* context, u8* sprite)
     extern u8 fn_801EE04C(u16 id);
     extern u8 fn_801EE064(u16 id);
     extern u16 fn_801EE0A8(u8 kind);
-    extern void fn_8001E58C(s32 x, s32 y, s32 w, s32 h, MenuStatusColor color);
+    extern void menuDrawRectOutline(s32 x, s32 y, s32 w, s32 h, MenuStatusColor color);
     extern void fn_800FB8C8();
     extern void windowDrawSprite(s32 x, s32 y, void* win, u16 sprite, u32 data);
     s32 color;
@@ -412,16 +412,16 @@ void menuStatusDrawMoveDetail(u8* context, u8* sprite)
         switch (lbl_803FB380[1]) {
         case 4:
             if ((s8)lbl_803FB380[3] == (s8)slot) {
-                fn_8001E58C(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), learn);
+                menuDrawRectOutline(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), learn);
             }
             if ((s8)lbl_803FB380[2] == (s8)slot) {
-                fn_8001E58C(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), cursor);
+                menuDrawRectOutline(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), cursor);
             }
             break;
         case 3:
         case 7:
             if ((s8)lbl_803FB380[2] == (s8)slot) {
-                fn_8001E58C(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), cursor);
+                menuDrawRectOutline(0, 0, *(s16*)(sprite + 0x54), *(s16*)(sprite + 0x56), cursor);
             }
             break;
         }
@@ -1974,7 +1974,7 @@ void fn_800965C8(void* window, u8* sprite) {
         windowDrawSprite(0, 0, window, msg, 0);
         break;
     case 0x10D:
-        windowDrawSprite(0, 0, window, fn_8001D624(pokemon, 1), 0);
+        windowDrawSprite(0, 0, window, menuPokemonGetStatusSprite(pokemon, 1), 0);
         break;
     case 0x10E:
         value = pokemonGetSoubiItemDataId(pokemon);

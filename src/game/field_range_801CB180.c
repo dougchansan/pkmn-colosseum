@@ -188,10 +188,10 @@ extern s32 CARDFreeBlocks();
 extern s32 CARDCancel();
 extern s32 CARDClose();
 extern s32 CARDUnmount();
-extern s32 fn_800056C4();
+extern s32 mainSetPauseFlag();
 extern s32 fn_800056D4();
-extern s32 fn_800057A8();
-extern s32 fn_800057A0(void);
+extern s32 GSgetVersionMinor();
+extern s32 GSgetVersionMajor(void);
 extern s32 fn_80072A00();
 extern s32 fn_80089D74();
 extern s32 fn_8008ABA0();
@@ -944,7 +944,7 @@ s32 fn_801CFD08(void)
             if (result != 0) {
                 goto invalid_file;
             }
-            switch (fn_800057A0()) {
+            switch (GSgetVersionMajor()) {
                 case 0:
                     if (strcmp(status.file_name, lbl_802792E8) != 0 ||
                         status.game_code != lbl_8047E168 ||
@@ -994,7 +994,7 @@ scan_done:
     switch (error) {
     case 0:
         lbl_8047B3D4->dialog_result = 1;
-        if (fn_800057A8() == 4) {
+        if (GSgetVersionMinor() == 4) {
             lbl_8047B3D4->disk_id = fn_800B01AC(lbl_8047B3D4->card_channel);
             lbl_8047B3D4->mounted_disk_id = *lbl_8047B3D4->disk_id;
             lbl_8047B3D4->mounted_disk_id.game_code = lbl_8047E168;

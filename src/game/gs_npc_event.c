@@ -491,13 +491,13 @@ extern void fadeCheck(void);
 extern void GSmodelSetVisibility(void);
 extern void menuSetDisp(void);
 extern void fn_80097CD0(void);
-extern void fn_8002F79C(void);
+extern void gbaTradeCheckExportItems(void);
 extern void fn_8002F284(void);
 extern void fn_8002EE74(void);
 extern void menuSetEnablePort(void);
 extern s32 menuGetLastError(void);
 extern void winMsgOpen(s32, s32, s32, s32);
-extern void fn_8002EA5C(void);
+extern void gbaTradeCheckImportItems(void);
 extern void fn_8002E460(void);
 extern void menuOpen(void);
 extern void menuModelInit(void);
@@ -597,16 +597,16 @@ static inline s32 NpcEventRunChoiceMenu(s32 yes_sprite, s32 no_sprite)
 
 #pragma push
 #pragma peephole off
-void fn_80031B4C(void) {
+void gbaTradeRun(void) {
     extern void fn_8001E074();
     extern void stateFunctionSaveReport(s32);
     extern void stateFunctionEvolution(void);
     extern void stateFunctionExChangeMain(void);
     extern void fn_8002E460(s32);
-    extern void fn_8002EA5C(void);
+    extern void gbaTradeCheckImportItems(void);
     extern void fn_8002EE74(void);
     extern void fn_8002F284(void);
-    extern void fn_8002F79C(void);
+    extern void gbaTradeCheckExportItems(void);
     extern void fn_8002FC58(void);
     extern s32 fn_800849B4(s32 mode, s32 command, void* input, void* output);
     extern void fn_80097CD0(s32, s32, s32);
@@ -720,7 +720,7 @@ void fn_80031B4C(void) {
                 lbl_8047A42C = 2;
                 break;
             case 6:
-                fn_8002F79C();
+                gbaTradeCheckExportItems();
                 break;
             case 7:
                 fn_8002F284();
@@ -762,7 +762,7 @@ void fn_80031B4C(void) {
                 break;
             }
             case 11:
-                fn_8002EA5C();
+                gbaTradeCheckImportItems();
                 break;
             case 12:
                 fn_8002E460(handle);
@@ -978,7 +978,7 @@ asm void fn_8003258C(void) {
 #endif
 #if !defined(GS_NPC_EVENT_ONLY_800324A0)
 #endif
-void fn_8003258C(void) {
+void cardeAwardCoupons(void) {
     s32 ctr;
     s32 r31;
 
@@ -1088,7 +1088,7 @@ extern f64 lbl_8047BA08;
 extern f64 lbl_8047BA10;
 extern f32 lbl_8047BA18;
 extern u32 lbl_8047A458;
-extern u8* fn_80032ED8(s32, s32, u8*);
+extern u8* cardeBuildTrainerEncounter(s32, s32, u8*);
 #if 0
 asm void fn_800327FC(void) {
 #include "src/game/gs_npc_event_fn_800327FC.inc"
@@ -1216,7 +1216,7 @@ static inline s8 NpcEventSelectCandidate(void)
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-void fn_800327FC(void)
+void cardeBattleSelectCard(void)
 {
     extern u8 pokemonCheckValid(void*);
     extern void* heroGetStatus(void*, s32, u16);
@@ -1284,14 +1284,14 @@ void fn_800327FC(void)
         lbl_803A3278[12] = 0;
         lbl_803A3278[13] = 0;
         lbl_803A3278[14] = 0;
-        result = (s32)fn_80032ED8((s32)&display, 0x209, (u8*)&display + 0x28);
+        result = (s32)cardeBuildTrainerEncounter((s32)&display, 0x209, (u8*)&display + 0x28);
     } else {
         s8 selected = NpcEventSelectCandidate();
 
         lbl_8047A448 = selected;
         *(NpcEventSetupData*)&display = *(NpcEventSetupData*)(lbl_803A3334 +
             NPC_EVENT_ENCOUNTER->candidate_slots[selected] * 0x28 + 0x3AC);
-        result = (s32)fn_80032ED8((s32)&display, 0x209, NULL);
+        result = (s32)cardeBuildTrainerEncounter((s32)&display, 0x209, NULL);
     }
 
     if (menuIsCheck(0xA5)) {
@@ -1329,7 +1329,7 @@ void fn_800327FC(void)
 
 #endif
 
-/* fn_80032ED8 and fn_800330B8 also build alone for the linked
+/* cardeBuildTrainerEncounter and cardeBuildTrainerPokemon also build alone for the linked
  * gs_npc_event_candidate_80032ED8 unit. */
 #if !defined(GS_NPC_EVENT_ONLY_800324A0) && !defined(GS_NPC_EVENT_ONLY_800301B0)
 /* 0x80032ED8 | 0x1E0 */
@@ -1353,7 +1353,7 @@ extern u32  std228_soundGetCurrentBackgroundMusic(void);
 extern void std104_soundSetBackgroundMusic(s32, s32, s32);
 extern u32 lbl_8047A444;
 extern u8 lbl_8047A439;
-extern void fn_800330B8(s32, u8*);
+extern void cardeBuildTrainerPokemon(s32, u8*);
 #if 0
 asm void fn_80032ED8(void) {
 #include "src/game/gs_npc_event_fn_80032ED8.inc"
@@ -1362,7 +1362,7 @@ asm void fn_80032ED8(void) {
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-u8* fn_80032ED8(s32 arg0, s32 arg1, u8* arg2) {
+u8* cardeBuildTrainerEncounter(s32 arg0, s32 arg1, u8* arg2) {
     extern u8 lbl_803A3334[];
     u8* result;
     s32 i;
@@ -1398,9 +1398,9 @@ u8* fn_80032ED8(s32 arg0, s32 arg1, u8* arg2) {
     base = fightTrainerPokemonDataBiosGetPtr();
     for (j = 0; j < 4; j++) {
         if (arg2 != 0) {
-            fn_800330B8((s32)(base + j * 0x50), arg2 + j * 0x2A);
+            cardeBuildTrainerPokemon((s32)(base + j * 0x50), arg2 + j * 0x2A);
         } else {
-            fn_800330B8((s32)(base + j * 0x50), lbl_803A3334 + 0x514 + (s8)*(u8*)(arg0 + j + 0xD) * 0x2A);
+            cardeBuildTrainerPokemon((s32)(base + j * 0x50), lbl_803A3334 + 0x514 + (s8)*(u8*)(arg0 + j + 0xD) * 0x2A);
         }
     }
     for (; j < 6; j++) {
@@ -1498,7 +1498,7 @@ void fn_80032ED8_legacy_disabled(void) {
         if (r31 != 0) {
             r3 = r26;
             r4 = r27;
-            fn_800330B8();
+            cardeBuildTrainerPokemon();
         } else {
 
             tmp = r24 + 0xd;
@@ -1508,7 +1508,7 @@ void fn_80032ED8_legacy_disabled(void) {
             tmp = tmp * 0x2a;
             r4 = r28 + tmp;
             r4 = r4 + 0x514;
-            fn_800330B8();
+            cardeBuildTrainerPokemon();
         }
         r27 = r27 + 0x2a;
         r26 = r26 + 0x50;
@@ -1579,7 +1579,7 @@ asm void fn_800330B8(void) {
 #pragma push
 #pragma optimization_level 4
 #pragma peephole off
-void fn_800330B8(s32 arg0, u8* arg1) {
+void cardeBuildTrainerPokemon(s32 arg0, u8* arg1) {
     u8* walk;
     s32 i;
 

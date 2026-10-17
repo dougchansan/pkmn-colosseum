@@ -232,7 +232,7 @@ s32 fn_800093D0(void)
     extern u32 fn_800F7BC4(s32 padId);
     extern s32 menuOpen(s32 menuId, s32 arg);
     extern u32 std082_flagGetValue(s32 flagId);
-    extern u8 fn_8001E3E0(u32 value, u32* out);
+    extern u8 menuSelectInput(u32 value, u32* out);
     extern void _flagSet(s32 flagId, u32 value);
     extern void menuClose(s32 menuId);
     extern void fn_8018FE30(s32 value);
@@ -245,7 +245,7 @@ s32 fn_800093D0(void)
             result = menuOpen(0xDD, 1);
             if (result >= 0) {
                 selected = result;
-                if (fn_8001E3E0(std082_flagGetValue(selected), &value) == 0) {
+                if (menuSelectInput(std082_flagGetValue(selected), &value) == 0) {
                     continue;
                 }
                 _flagSet(selected, value);

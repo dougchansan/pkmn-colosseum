@@ -55,7 +55,7 @@ extern void fn_800D61E4(s32 x, s32 y);
 extern void fn_800D5CB8(u32 arg0, u32 r, u32 g, u32 b, u32 a);
 extern void gfxVtxTexCoord(u32 arg0, f32 s, f32 t);
 extern void gfxEnd(void);
-extern u32 fn_8001D624(void* pokemon, u32 arg);
+extern u32 menuPokemonGetStatusSprite(void* pokemon, u32 arg);
 extern u8 menuSubGetPokemonSexForDisp(void* pokemon);
 extern u32 pokemonGetStatus();
 
@@ -148,7 +148,7 @@ void fn_800965C8(void* window, u8* sprite) {
         windowDrawSprite(0, 0, window, msg, 0);
         break;
     case 0x10D:
-        windowDrawSprite(0, 0, window, fn_8001D624(pokemon, 1), 0);
+        windowDrawSprite(0, 0, window, menuPokemonGetStatusSprite(pokemon, 1), 0);
         break;
     case 0x10E:
         value = pokemonGetSoubiItemDataId(pokemon);

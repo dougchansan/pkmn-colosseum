@@ -17,7 +17,7 @@ extern void memoDataSet(u32 index, void* pokemon);
 extern void* heroBiosGetPokemonPtr(u8* data, u32 index);
 extern void heroSetStatus(u8* data, u32 kind, u32 value);
 extern void heroItemAddItemDataId(u8* data, u32 item, u32 count, s32 slot);
-extern s32 fn_800057A0(void);
+extern s32 GSgetVersionMajor(void);
 extern const u8 lbl_8047D028[8];
 
 extern void GSflagClear(u32 flag);
@@ -84,7 +84,7 @@ void savedataCreate(SaveData* save, const u16* name)
     savedataInit(save);
     gameData = savedataGetPart(save, fn_80128E04);
 
-    version = fn_800057A0();
+    version = GSgetVersionMajor();
     switch (version) {
     case 0:
         gamedataCreate(gameData, 0xB, 3, 1, 1);

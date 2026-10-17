@@ -344,7 +344,7 @@ extern void GSvecTransformQuat(void);
 extern void fn_800E0108(void);
 extern void psInterpretParticles(void);
 extern void psExecGenerator(void);
-extern void fn_800057A0(void);
+extern void GSgetVersionMajor(void);
 extern void jumptable_8035BB88();
 extern u8 lbl_8047ADB0;
 void gsParticleUpdate(void);
@@ -577,7 +577,7 @@ f32 moveLeader__F15HEROMOVE_MEMBER();
 extern u8 dbgMenuIsOpen(void);
 extern u8 menuIsCheck(u32);
 extern u8 fn_8018C424(u32, u32, u32);
-extern void fn_8000D710(u32);
+extern void heroMoveRunEvent(u32);
 extern u8 lbl_80272A38[];
 u32 heroMoveMain(void);
 extern void std067_characterStopLookAt(u32, u32);
@@ -1819,7 +1819,7 @@ static inline void heroMoveInitEventChat(void)
 extern u8 dbgMenuIsOpen(void);
 extern u8 menuIsCheck(u32);
 extern u8 fn_8018C424(u32, u32, u32);
-extern void fn_8000D710(u32);
+extern void heroMoveRunEvent(u32);
 extern u8 lbl_80272A38[];
 /*
  * Sample the member's foot heights for this frame (XD procStep__F15HEROMOVE_MEMBER,
@@ -2553,7 +2553,7 @@ u32 heroMoveMain(void)
     }
 
     if (fn_800F7BC4(1) & fn_800F7AF0(1) & 0x1C00) {
-        fn_8000D710(0);
+        heroMoveRunEvent(0);
         return 0;
     }
 

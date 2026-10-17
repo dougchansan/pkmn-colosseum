@@ -252,7 +252,7 @@ config.force_active_symbols["main"] = [
     "movieOpeningStart",
     "fn_80035F34",
     "fn_80035F64",
-    "fn_800361C0",
+    "staffrollStart",
     "fn_80036210",
     "fn_80036240",
     "movieStartAttract",
@@ -271,14 +271,14 @@ config.force_active_symbols["main"] = [
     # game/gs_range_8000D290.c: fn_8000D290 has no reference in main.dol but
     # is present in retail; compiled from source it would be dead-stripped.
     "fn_8000D290",
-    # game/gs_range_800096B4.c: the ten functions after fn_800096B4 have no
+    # game/gs_range_800096B4.c: the ten functions after dbgMenuPokemonEdit have no
     # reference in main.dol but are present in retail; compiled from source
     # they would be dead-stripped.
     "fn_8000BA94",
     "fn_8000BAB8",
     "fn_8000BB00",
     "dbgMenuHeroPokemonAdd",
-    "fn_8000BBEC",
+    "dbgMenuPokemonEditSlot6",
     "fn_8000BC58",
     "fn_8000BCC4",
     "fn_8000BD30",

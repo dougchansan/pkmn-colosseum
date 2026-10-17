@@ -48,7 +48,7 @@ extern void fn_8004E9C0(s32 mailId);
 extern void menuClose(s32 id);
 extern void menuCloseSync(s32 id, s32 wait);
 
-s32 fn_8004D6F0(PdaMailWindow* window, PdaMailOutput* output)
+s32 pdaMailDrawSender(PdaMailWindow* window, PdaMailOutput* output)
 {
     u32 value = mailGetSenderName(pdaMailGetMailID(**window->field_0x60));
 
@@ -62,7 +62,7 @@ s32 fn_8004D6F0(PdaMailWindow* window, PdaMailOutput* output)
     return 0;
 }
 
-s32 fn_8004D760(PdaMailWindow* window, PdaMailOutput* output)
+s32 pdaMailDrawSubject(PdaMailWindow* window, PdaMailOutput* output)
 {
     u32 value = mailGetSubject(pdaMailGetMailID(**window->field_0x60));
 
@@ -76,7 +76,7 @@ s32 fn_8004D760(PdaMailWindow* window, PdaMailOutput* output)
     return 0;
 }
 
-s32 fn_8004D7D0(PdaMailWindow* window)
+s32 pdaMailViewKey(PdaMailWindow* window)
 {
     s32** field = window->field_0x60;
     u8* state = windowGetKeyInfo();

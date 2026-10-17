@@ -18,7 +18,7 @@
  * out finish/play/start. Nothing in main.dol references them, so the link
  * keeps them with FORCEACTIVE (configure.py).
  *   openingdemo  fn_80035EE4 / fn_80035E04 / fn_80035DD4
- *   staffroll    fn_800361C0 / fn_80035F64 / fn_80035F34
+ *   staffroll    staffrollStart / fn_80035F64 / fn_80035F34
  *   autodemo01   fn_80036360 / fn_80036240 / fn_80036210
  *   (none)       fn_800363B8 / fn_800363B4 / fn_800363B0
  *   gs_logo      fn_800364C8 / fn_80036468 / fn_800363BC
@@ -579,7 +579,7 @@ void fn_80036210(void)
 }
 
 /* staffroll: start */
-void fn_800361C0(void)
+void staffrollStart(void)
 {
     fadeSet(2, 0.0f);
     fadeCheck(1);

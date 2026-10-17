@@ -64,7 +64,7 @@ extern int vsprintf(char* buf, const char* fmt, va_list ap);
 extern int sprintf(char* buf, const char* fmt, ...);
 
 /* =========================================================================
- *  fn_80005FA8 / fn_80005FA8
+ *  mainLogicTask / mainLogicTask
  *  Address: 0x80005FA8, Size: 0x54
  *
  *  Audio retrace callback. Called with (error, context) from the task
@@ -72,7 +72,7 @@ extern int sprintf(char* buf, const char* fmt, ...);
  *  potentially trigger a reconnect handler.
  * =========================================================================
  */
-void fn_80005FA8(u32 a, u32 b)
+void mainLogicTask(u32 a, u32 b)
 {
     GSthreadExecuteAll();
     if (fn_8000DAA8() == 0) {

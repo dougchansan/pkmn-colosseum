@@ -190,7 +190,7 @@ void winSpriteDraw(u8* context, WinSpriteDrawNode* sprite)
     extern void fn_800DA100(s32, s32, s32, s32, s32, s32);
     extern void fn_800FE6D0(s16, s16);
     extern void spriteSetEnv(void);
-    extern void fn_8001EA98(s16, s16, s16, s16);
+    extern void windowDrawPanel(s16, s16, s16, s16);
     extern void fn_8001E644(s16, s16, s16, s16, u8);
     extern void fn_800D5648(f32);
     extern void fn_800FBB34(s16, s16, s16, s16, u32, void*);
@@ -291,7 +291,7 @@ void winSpriteDraw(u8* context, WinSpriteDrawNode* sprite)
             gfxEnd();
             break;
         case 0x10001:
-            fn_8001EA98(sprite->x, sprite->y, sprite->width, sprite->height);
+            windowDrawPanel(sprite->x, sprite->y, sprite->width, sprite->height);
             break;
         case 0x10004:
             fn_8001E644(sprite->x, sprite->y, sprite->width,

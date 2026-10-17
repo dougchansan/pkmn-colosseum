@@ -531,7 +531,7 @@ extern u32 lbl_80478F8C;
 
 extern u32 GSmsgGetRect(u32 val);
 
-extern void fn_800057A8(void);
+extern void GSgetVersionMinor(void);
 
 extern void fn_80140A9C(void);
 

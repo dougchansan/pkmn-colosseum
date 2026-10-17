@@ -40,7 +40,7 @@ extern u32 GSmsgGetRect(u32 id);
 
 #if !defined(MENUSHOP_ISLAND_ONLY) || defined(MENUSHOP_ISLAND_80029850_ONLY)
 
-/* fn_80029850 - 0x80029850 | size: 0x8c */
+/* bagFindItemSlot - 0x80029850 | size: 0x8c */
 extern u16 itemBiosGetItemDataId(void*);
 extern u16 itemBiosGetNum(void*);
 #if 0
@@ -51,7 +51,7 @@ asm void fn_80029850(void) {
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma — see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-u32 fn_80029850(u8* slot, u16 count, u16 item_id, u16 maximum) {
+u32 bagFindItemSlot(u8* slot, u16 count, u16 item_id, u16 maximum) {
     u32 space;
     s32 i;
     u16 id;
@@ -95,7 +95,7 @@ typedef struct ShopInventory {
 
 #endif /* guard split */
 #if !defined(MENUSHOP_ISLAND_ONLY) || defined(MENUSHOP_ISLAND_80029850_ONLY)
-/* fn_800298DC - 0x800298DC | size: 0x1ec */
+/* bagPocketAddItem - 0x800298DC | size: 0x1ec */
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; optimization_level 4; peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma optimization_level 4
@@ -161,7 +161,7 @@ static inline s32 shopAddToSlotOnce(ShopItemSlot* slots, s32 count, s32 item_id,
     return (u16)(quantity - maximum);
 }
 
-/* The shop's own copy of fn_800298DC: quantity and maximum are u16, so a
+/* The shop's own copy of bagPocketAddItem: quantity and maximum are u16, so a
  * slot step narrows the running quantity once on entry. */
 static inline s32 shopFillSlot(ShopItemSlot* slots, u16 count, s32 item_id,
                                u16 quantity, s16 index, u16 maximum) {
@@ -190,7 +190,7 @@ static inline s32 shopFillSlot(ShopItemSlot* slots, u16 count, s32 item_id,
     return (u16)(quantity - added);
 }
 
-/* RULE-EXCEPTION(user-approved): inline copy of the real fn_800298DC used by fn_80029AC8/fn_80029CC0 — see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): inline copy of the real bagPocketAddItem used by fn_80029AC8/fn_80029CC0 — see docs/RULE_EXCEPTIONS.md */
 static inline u16 shopAddItem(ShopItemSlot* slots, u16 count, s32 item_id,
                               s32 quantity, s16 index, u16 maximum) {
     s32 i;
@@ -209,7 +209,7 @@ static inline u16 shopAddItem(ShopItemSlot* slots, u16 count, s32 item_id,
     return quantity;
 }
 
-/* RULE-EXCEPTION(user-approved): second inline copy of fn_800298DC, taking the
+/* RULE-EXCEPTION(user-approved): second inline copy of bagPocketAddItem, taking the
  * item id as u16, used only by fn_80029CC0 — see docs/RULE_EXCEPTIONS.md */
 static inline u16 shopAddItemId(ShopItemSlot* slots, u16 count, u16 item_id,
                               s32 quantity, s16 index, u16 maximum) {
@@ -229,7 +229,7 @@ static inline u16 shopAddItemId(ShopItemSlot* slots, u16 count, u16 item_id,
     return quantity;
 }
 
-s32 fn_800298DC(ShopItemSlot* slots, s32 count, s32 item_id, s32 quantity,
+s32 bagPocketAddItem(ShopItemSlot* slots, s32 count, s32 item_id, s32 quantity,
                  s16 index, s32 maximum) {
     s32 i;
 
@@ -329,7 +329,7 @@ s32 fn_80029CC0(u8* r30) {
 #if defined(MENUSHOP_ISLAND_80029EF4_ONLY)
 void fn_80029AC8(s32 price, s32 item_id, s32 quantity, ShopInventory* inventory);
 #endif
-/* fn_80029EF4 - 0x80029EF4 | size: 0xb8 */
+/* shopCouponBuyItem - 0x80029EF4 | size: 0xb8 */
 extern void heroDecPokecoupon(s32, void*);
 extern void pcboxDelItem(s32, s32, u16);
 extern void heroItemAddItemDataId(s32, s32, u16, s32);
@@ -341,7 +341,7 @@ asm void fn_80029EF4(void) {
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma — see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-void fn_80029EF4(void* price, s32 item_id, s32 quantity, s32 currency, ShopInventory* inventory) {
+void shopCouponBuyItem(void* price, s32 item_id, s32 quantity, s32 currency, ShopInventory* inventory) {
     switch ((u8)currency) {
     case 2:
         heroDecPokecoupon(0, price);
@@ -2316,7 +2316,7 @@ void fn_8002C408(s32 mapIdx, u32 mode)
     extern u16   itemBiosGetNum(void* slot);
     extern u32   pcboxGetItemCapacity(s32 a, u32 item);
     extern s32   heroItemCheckAddItemDataId(u8* ptr, u32 item);
-    extern void  fn_80029EF4(void* a, s32 b, s32 c, s32 d, void* e);
+    extern void  shopCouponBuyItem(void* a, s32 b, s32 c, s32 d, void* e);
     extern void  fn_8002A1C4(u8* idx, s32 msgId, s32 term, ...);
     extern u32   fn_80029FAC(u8* idx, s32 a, s32 b, s32 c, ...);
     extern void  winMsgOpenWithSE(s32 a, u32 str, s32 c, s32 d, u8 e);
@@ -2534,7 +2534,7 @@ void fn_8002C408(s32 mapIdx, u32 mode)
             continue;
         }
         fn_8002A1C4((u8*)mapIdx, 6, -1);
-        fn_80029EF4((void*)total, done, qty, mode, work);
+        shopCouponBuyItem((void*)total, done, qty, mode, work);
         soundStartRaw(0x3cc, 0, 0);
         if ((u8)mode != 4) {
             continue;

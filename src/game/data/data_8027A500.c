@@ -30,11 +30,11 @@ extern u8 fadeSet[];
 extern u8 floorCharacterSetPos[];
 extern u8 floorEventChangeTresure[];
 extern u8 floorEventSetTresureDisp[];
-extern u8 fn_80005FA8[];
+extern u8 mainLogicTask[];
 extern u8 fn_80006908[];
 extern u8 dbgMenuFightStop[];
 extern u8 fn_80008C40[];
-extern u8 fn_800096B4[];
+extern u8 dbgMenuPokemonEdit[];
 extern u8 menuFightButtonSecretPokemonTop[];
 extern u8 menuFightButtonSecretMain[];
 extern u8 menuFightDrawBall[];
@@ -46,7 +46,7 @@ extern u8 menuPokemonMain[];
 extern u8 std158_menuOpenCustom43[];
 extern u8 std011_dialogDisplayYesNoMenu[];
 extern u8 std021_newGameIntroSequence[];
-extern u8 fn_80021B14[];
+extern u8 itemFieldUseRecover[];
 extern u8 std163_useCologne[];
 extern u8 std018_nop18[];
 extern u8 menuNameEntry[];
@@ -8806,7 +8806,7 @@ void* lbl_8027A500[68440] = {
     (void*)0xFF805FFF,
     (void*)0xFFFFFFFF,
     (void*)0xFFFFFFFF,
-    (void*)((u8*)fn_80021B14 + 0x4EC),
+    (void*)((u8*)itemFieldUseRecover + 0x4EC),
     (void*)0x0000007F,
     (void*)0x70000000,
     (void*)0x00000000,
@@ -52677,7 +52677,7 @@ void* lbl_8027A500[68440] = {
     (void*)0x00000000,
     (void*)0x00001000,
     (void*)0x1EFFFFFD,
-    (void*)((u8*)fn_80005FA8 + 0x30),
+    (void*)((u8*)mainLogicTask + 0x30),
     (void*)0x88AFF700,
     (void*)0x5F800008,
     (void*)0xF8005F80,
@@ -79972,7 +79972,7 @@ void* lbl_802C0CB0[15064] = {
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000009,
-    (void*)((u8*)fn_800096B4 + 0x34C),
+    (void*)((u8*)dbgMenuPokemonEdit + 0x34C),
     (void*)0x00000000,
     (void*)0x0FF006FF,
     (void*)0xFFFFD300,
