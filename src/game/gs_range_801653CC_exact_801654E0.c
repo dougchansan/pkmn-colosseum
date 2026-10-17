@@ -184,7 +184,7 @@ u32 soundPlay(u32 id, u32 volume, u32 priority, s32 kind)
     flags = lbl_80478FAC[id].flags;
     if (((flags >> 7) & 1U) == 1U) {
         if (kind == 0) {
-            s32 status = soundGetStatus(id);
+            s32 status = GSsndGetStatus(id);
 
             if (status != 0 && status >= 0 && status < 4) {
                 soundSetVolume(id, 0x32, 0);
@@ -217,7 +217,7 @@ u32 soundPlay(u32 id, u32 volume, u32 priority, s32 kind)
         currentId = fn_801662E8(0, resourceId);
         if (currentId != id) {
             if (currentId != (u32)-1) {
-                s32 status = soundGetStatus(currentId);
+                s32 status = GSsndGetStatus(currentId);
 
                 if (status != 0 && status >= 0 && status < 4) {
                     soundSetVolume(currentId, 0x32, 0);
@@ -257,7 +257,7 @@ void soundFadeSlot(u32 volume, u32 isSe, s32 wait)
     u32 id = fn_801662E8(0, resourceId);
 
     if (id != (u32)-1) {
-        s32 status = soundGetStatus(id);
+        s32 status = GSsndGetStatus(id);
 
         if (status != 0 && status >= 0 && status < 4) {
             soundSetVolume(id, volume, 0);

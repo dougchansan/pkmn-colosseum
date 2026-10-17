@@ -49,7 +49,7 @@
  *
  * HSD integration (lbl_80315490):
  *   The GSmaterial class descriptor is registered with HSD's object system
- *   at lbl_80315490.  _GSmaterialObjInit_800EF33C installs the class info, render callback
+ *   at lbl_80315490.  _GSmaterialObjInit installs the class info, render callback
  *   (_matGSmatObjLoad), and setup callback (fn_800DF930) into this descriptor.
  */
 #ifndef GS_MATERIAL_H
@@ -221,7 +221,7 @@ typedef struct GSmaterialEntry {
  *   - Render callback _matGSmatObjLoad
  *   - Setup callback fn_800DF930
  *
- * Corresponds to _GSmaterialObjInit_800EF33C.
+ * Corresponds to _GSmaterialObjInit.
  */
 
 /**

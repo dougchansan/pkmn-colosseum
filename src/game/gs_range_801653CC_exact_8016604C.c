@@ -223,7 +223,7 @@ u32 soundSetVolume(u32 id, u32 volume, u32 arg2)
     return fn_8016737C(entry, volume, arg2);
 }
 
-s32 soundGetStatus(u32 id)
+s32 GSsndGetStatus(u32 id)
 {
   u32 offset = id * (sizeof(GSsndEntry));
   u8 *entry = ((u8 *) lbl_80478FAC) + offset;

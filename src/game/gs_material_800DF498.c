@@ -281,7 +281,7 @@ void GSmaterialInit(u32 count)
     }
 }
 
-void _GSmaterialObjInit_800EF33C(void)
+void _GSmaterialObjInit(void)
 {
     hsdInitClassInfo((HSD_ClassInfo*)&lbl_80315490, (HSD_ClassInfo*)&lbl_8036CB30,
                      lbl_802705C0, lbl_802705C0, sizeof(HSD_MObjInfo), sizeof(GSmatObj));

@@ -6,24 +6,24 @@
     "total_code": 2504940,
     "total_data": 3566037,
     "total_functions": 8677,
-    "total_units": 2166
+    "total_units": 2169
   },
   "topology_status": {
     "auto_units": 97,
-    "named_units": 2069,
-    "source_backed_units": 2068,
+    "named_units": 2072,
+    "source_backed_units": 2071,
     "auto_code": 0,
     "auto_data": 1399655,
     "auto_functions": 0
   },
   "baseline_progress": {
-    "matched_code": "2303400",
-    "matched_code_percent": 91.9543,
+    "matched_code": "2306056",
+    "matched_code_percent": 92.060326,
     "matched_data": "2098410",
     "matched_data_percent": 58.844315,
-    "matched_functions": 8541,
-    "matched_functions_percent": 98.43263,
-    "fuzzy_match_percent": 99.69066
+    "matched_functions": 8544,
+    "matched_functions_percent": 98.46722,
+    "fuzzy_match_percent": 99.6914
   },
   "unit_topology": [
     {
@@ -2323,16 +2323,29 @@
       "sections": [
         {
           "name": ".text",
-          "size": 1760,
+          "size": 1012,
           "virtual_address": 2147660192
         }
       ],
-      "total_code": 1760,
+      "total_code": 1012,
       "total_data": 0,
-      "total_functions": 3
+      "total_functions": 2
     },
     {
-      "name": "main/game/menuShop_r40_8002B880_gc125n",
+      "name": "main/game/menuShop_island_8002B594",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 748,
+          "virtual_address": 2147661204
+        }
+      ],
+      "total_code": 748,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/menuShop_island_8002B880",
       "sections": [
         {
           "name": ".text",
@@ -24626,13 +24639,39 @@
       "sections": [
         {
           "name": ".text",
-          "size": 7580,
+          "size": 996,
           "virtual_address": 2149406384
         }
       ],
-      "total_code": 7580,
+      "total_code": 996,
       "total_data": 0,
-      "total_functions": 9
+      "total_functions": 2
+    },
+    {
+      "name": "main/game/wazaViewer_exact_801D5A94",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 780,
+          "virtual_address": 2149407380
+        }
+      ],
+      "total_code": 780,
+      "total_data": 0,
+      "total_functions": 1
+    },
+    {
+      "name": "main/game/wazaViewer_candidate_801D5DA0",
+      "sections": [
+        {
+          "name": ".text",
+          "size": 5804,
+          "virtual_address": 2149408160
+        }
+      ],
+      "total_code": 5804,
+      "total_data": 0,
+      "total_functions": 6
     },
     {
       "name": "main/game/wazaViewer_exact_801D744C",

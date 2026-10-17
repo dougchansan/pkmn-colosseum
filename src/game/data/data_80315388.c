@@ -13,7 +13,7 @@ extern void* jumptable_803155B0[];
 extern void* lbl_803155D0[];
 extern u8 lbl_80315668[];
 
-extern u8 _GSmaterialObjInit_800EF33C[];
+extern u8 _GSmaterialObjInit[];
 extern u8 _modelBoundVertex__FUlPvPv[];
 extern u8 _modelBoundBeginSurface__F13GSgfxPrimTypeUsUlPv[];
 extern u8 modelUpdateAttachments__FP8_GSmodel[];
@@ -56,7 +56,7 @@ extern u8 cms_op00_nop[];
 
 #if !defined(DATA_80315388_SPLIT) || defined(DATA_80315388_PREFIX)
 void* lbl_80315490[21] = {
-    (void*)((u8*)_GSmaterialObjInit_800EF33C),
+    (void*)((u8*)_GSmaterialObjInit),
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,

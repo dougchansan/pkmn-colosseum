@@ -145,7 +145,7 @@ extern s32 fn_8003B85C(void* window, s32 enabled);
 extern void fn_8003C2B8(PdaSprite* sprite, PdaEvent* event);
 extern s32 fn_80041E48(void* work, s32 mode);
 extern s32 fn_80042658(void* work, s32 mode);
-extern void fn_800439BC(void* scene);
+extern void pdaReadPadInput(void* scene);
 extern void GSscene_SetMode(s32 mode);
 extern void menuButtonNormal(void* button);
 extern void winSpriteSetDisp(void* sprite, s32 disp);

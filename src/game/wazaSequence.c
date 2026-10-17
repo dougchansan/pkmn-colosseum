@@ -553,8 +553,8 @@ void* fn_801DC46C(u8* entry, void* dataPtr) {
  * Address: 0x801DC5F0 | Size: 0x22C
  */
 void* fn_801DC5F0(void* sequencePtr, u8* next) {
-    extern void fn_8010147C(void* resource, u32 size, u32 group, u32 handle);
-    extern void fn_801012E8(void* archive, u32 resourceArg, u32 callbackArg);
+    extern void loadArchivePtr(void* resource, u32 size, u32 group, u32 handle);
+    extern void loadCamera(void* archive, u32 resourceArg, u32 callbackArg);
     extern void* GSresGetResource(u32 group, u32 resource);
     u8* sequence = sequencePtr;
     s32* header = (s32*)next;
@@ -628,10 +628,10 @@ void* fn_801DC5F0(void* sequencePtr, u8* next) {
 
     if (size != 0) {
         *(u32*)(sequence + 0x18) = 0x4E20;
-        fn_8010147C(next, size, 0x4E20, firstHandle);
+        loadArchivePtr(next, size, 0x4E20, firstHandle);
         if (GSresGetResource(0x4E20, firstHandle) != NULL) {
             *(u32*)(sequence + 0x1C) = firstHandle;
-            fn_801012E8(GSresGetResource(0x4E20, firstHandle), 0x4E20,
+            loadCamera(GSresGetResource(0x4E20, firstHandle), 0x4E20,
                         secondHandle);
             if (GSresGetResource(0x4E20, secondHandle) != NULL) {
                 *(u32*)(sequence + 0x20) = secondHandle;
@@ -854,8 +854,8 @@ void* _wazaSequenceParticleEntryLoad(void* sequence, u8* entry,
  * Address: 0x801DCBC8 | Size: 0x1E0
  */
 void* _wazaSequenceModelEntryLoad(void* sequence, u8* entry, u8* data) {
-    extern void fn_8010147C(void* resource, u32 size, u32 group, u32 handle);
-    extern void fn_801013A0(void* model, u32 group, u32 flags, u32 handle);
+    extern void loadArchivePtr(void* resource, u32 size, u32 group, u32 handle);
+    extern void loadModel(void* model, u32 group, u32 flags, u32 handle);
     extern void* GSresGetResource(u32 group, u32 resource);
     extern void GSmodelGetFrameCount(void* model, f32* start, f32* end);
     extern const f32 lbl_8047E3B0;
@@ -870,10 +870,10 @@ void* _wazaSequenceModelEntryLoad(void* sequence, u8* entry, u8* data) {
     *(u32*)(entry + 0x80) = 0;
     *(u32*)(entry + 0x7C) = 0;
     *(void**)(entry + 0xA4) = NULL;
-    fn_8010147C(data, *(u32*)(header + 0x1C), 0x4E20, modelHandle);
+    loadArchivePtr(data, *(u32*)(header + 0x1C), 0x4E20, modelHandle);
     if (GSresGetResource(0x4E20, modelHandle) != NULL) {
         *(u32*)(entry + 0x80) = modelHandle;
-        fn_801013A0(GSresGetResource(0x4E20, modelHandle), 0x4E20, 0, motionHandle);
+        loadModel(GSresGetResource(0x4E20, modelHandle), 0x4E20, 0, motionHandle);
         if (GSresGetResource(0x4E20, motionHandle) != NULL) {
             *(u32*)(entry + 0x7C) = motionHandle;
             *(void**)(entry + 0xA4) = GSresGetResource(0x4E20, motionHandle);

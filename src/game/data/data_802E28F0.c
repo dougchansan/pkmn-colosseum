@@ -66,7 +66,7 @@ extern u8 fn_8003AC50[];
 extern u8 fn_8003B814[];
 extern u8 fn_8003B838[];
 extern u8 fn_8003D1FC[];
-extern u8 fn_80040018[];
+extern u8 pdaUpdateFadeAndSelect[];
 extern u8 fn_80040308[];
 extern u8 fn_80041114[];
 extern u8 fn_8004115C[];
@@ -121,7 +121,7 @@ extern u8 fn_8006E188[];
 extern u8 fn_8006E18C[];
 extern u8 fn_8006E258[];
 extern u8 fn_8006E338[];
-extern u8 fn_8006E798[];
+extern u8 menuBattleModeRefreshRules[];
 extern u8 fn_8006EE7C[];
 extern u8 fn_8006EF24[];
 extern u8 fn_8006EFF8[];
@@ -684,7 +684,7 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x03260000,
     (void*)0x00000000,
     (void*)((u8*)fn_800411A4),
-    (void*)((u8*)fn_80040018),
+    (void*)((u8*)pdaUpdateFadeAndSelect),
     (void*)((u8*)fn_8003D1FC),
     (void*)0x00000000,
     (void*)0x60240000,
@@ -1637,7 +1637,7 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8006E798),
+    (void*)((u8*)menuBattleModeRefreshRules),
     (void*)0x00000000,
     (void*)0x00240000,
     (void*)0x0A840000,

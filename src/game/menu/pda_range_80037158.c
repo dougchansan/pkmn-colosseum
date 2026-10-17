@@ -152,7 +152,7 @@ extern s32 fn_8003B85C(void* window, s32 enabled);
 extern void fn_8003C2B8(PdaSprite* sprite, PdaEvent* event);
 extern s32 fn_80041E48(void* work, s32 mode);
 extern s32 fn_80042658(void* work, s32 mode);
-extern void fn_800439BC(void* scene);
+extern void pdaReadPadInput(void* scene);
 extern void GSscene_SetMode(s32 mode);
 extern void menuButtonNormal(void* button);
 extern void winSpriteSetDisp(void* sprite, s32 disp);
@@ -2119,21 +2119,21 @@ void fn_8003D818(void)
 void fn_80041114(void* work)
 {
     GSscene_SetMode(4);
-    fn_800439BC(lbl_803A67FC);
+    pdaReadPadInput(lbl_803A67FC);
     fn_80041E48(work, 0);
 }
 
 void fn_8004115C(void* work)
 {
     GSscene_SetMode(4);
-    fn_800439BC(lbl_803A67FC);
+    pdaReadPadInput(lbl_803A67FC);
     fn_80042658(work, 1);
 }
 
 void fn_800411A4(void* work)
 {
     GSscene_SetMode(4);
-    fn_800439BC(lbl_803A67FC);
+    pdaReadPadInput(lbl_803A67FC);
     fn_80042658(work, 0);
 }
 
@@ -2546,7 +2546,7 @@ static inline f32 pdaAbsF(f32 x)
     return x > 0.0f ? x : -x;
 }
 
-/* RULE-EXCEPTION(user-approved): reconstructed inline helpers pdaAbsF/pdaApproach (fn_80040018, fn_80041E48, fn_80044630) — see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): reconstructed inline helpers pdaAbsF/pdaApproach (pdaUpdateFadeAndSelect, fn_80041E48, fn_80044630) — see docs/RULE_EXCEPTIONS.md */
 static inline void pdaApproach(f32* current, f32* target, f32 delta)
 {
     f32 step;
@@ -2571,7 +2571,7 @@ static inline void pdaApproach(f32* current, f32* target, f32 delta)
 #pragma peephole off
 #define G(off) (*(f32*)((u8*)&lbl_803A6818 + (off)))
 #define GI(off) (*(s32*)((u8*)&lbl_803A6818 + (off)))
-void fn_80040018(u8* menu)
+void pdaUpdateFadeAndSelect(u8* menu)
 {
     f32 target;
     f32 current;
@@ -5172,7 +5172,7 @@ static inline f32 pdaFabs(f32 v)
 
 /* Sample the stick and buttons into the PDA's own key-repeat state. */
 #pragma peephole off
-void fn_800439BC(void* scene)
+void pdaReadPadInput(void* scene)
 {
     extern s8 fn_800F7A08(s32 chan, s32 index);
     extern s8 fn_800F7A7C(s32 chan, s32 index);
@@ -7804,7 +7804,7 @@ extern u32 lbl_8047A4EC;
 extern f32 lbl_8047BD1C;
 extern u16 pokemonDataBiosGetVoice(void* data);
 extern void* pokemonNakigoeDataBiosGetDataAddress(void* data);
-extern s32 soundGetStatus(u32 voice);
+extern s32 GSsndGetStatus(u32 voice);
 extern u32 fn_800F7AF0(s32 chan);
 extern s32 menuOpen(s32 id, s32 flag);
 
@@ -7928,7 +7928,7 @@ void fn_80046168(void)
             playing = 0;
             for (i = 0; i < 8; i++) {
                 if (t->data != NULL) {
-                    switch (soundGetStatus(t->voice)) {
+                    switch (GSsndGetStatus(t->voice)) {
                     case 0:
                         break;
                     case 2:

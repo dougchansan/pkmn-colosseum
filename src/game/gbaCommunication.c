@@ -334,7 +334,7 @@ static inline u8 menuStatusMoveDetailVisible(u8* sprite)
     return visible;
 }
 
-void fn_80094650(u8* context, u8* sprite)
+void menuStatusDrawMoveDetail(u8* context, u8* sprite)
 {
     extern u32 pokemonGetStatus();
     extern u32 wazaGetStatus(u32, u16, u32, u32);
@@ -856,7 +856,7 @@ static inline u8 menuStatusIsOriginalTrainer(u8* pokemon)
 }
 
 /* Battle-status detail window renderer. */
-void fn_8009567C(u8* context, u8* sprite)
+void menuStatusDrawPokemonInfo(u8* context, u8* sprite)
 {
     extern u32 pokemonGetStatus();
     extern void* pokemonDataBiosGetPtr();

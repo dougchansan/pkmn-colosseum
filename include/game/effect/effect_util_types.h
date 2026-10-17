@@ -611,9 +611,9 @@ extern void GStextureSetWrap(void);
 
 extern void wazaSequenceSysGetResID(void);
 
-extern void fn_8010147C(void);
+extern void loadArchivePtr(void);
 
-extern void fn_801013A0(void);
+extern void loadModel(void);
 
 extern void GSmodelSetVisibility(void);
 
@@ -641,7 +641,7 @@ extern f32 lbl_8047D11C;
 
 extern f32 lbl_8047D120;
 
-extern s32 soundGetStatus(u16);
+extern s32 GSsndGetStatus(u16);
 
 extern void std104_soundSetBackgroundMusic(u16, u32, u32);
 

@@ -9,7 +9,7 @@ extern u8 lbl_8036CC40[];
 extern void* lbl_8036CCD0[];
 extern void* jumptable_8036CD1C[];
 
-extern u8 HSD_PObjInit[];
+extern u8 PObjInfoInit[];
 extern u8 ObjInfoInit_801AA568[];
 extern u8 fn_801ABDD4[];
 

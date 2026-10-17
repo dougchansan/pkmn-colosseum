@@ -87,7 +87,7 @@ extern void fn_800EC990(void*);
 extern void fn_800ECB74(void*, u32);
 extern u8 fn_800EC960(void*);
 extern void soundStartSE();
-extern s32 soundGetStatus();
+extern s32 GSsndGetStatus();
 
 extern void GScharLenCpy(void*, const void*, u32);
 extern u16 fn_800E2C04(u32, u32);
@@ -4097,7 +4097,7 @@ u32 fn_80087C64(const u16* expected)
                 if (count >= 3) {
                     if (cardGridCountMatches(data->tiles, occupied, expected) < 3) {
                         soundStartSE(0x26);
-                        while (soundGetStatus(0x26) == 2) {
+                        while (GSsndGetStatus(0x26) == 2) {
                             _threadSwitch();
                         }
                         cardGridResetAll(data, occupied);
@@ -4105,7 +4105,7 @@ u32 fn_80087C64(const u16* expected)
                         cardGridShowCount(count);
                     } else {
                         soundStartSE(0x4A1);
-                        while (soundGetStatus(0x4A1) == 2) {
+                        while (GSsndGetStatus(0x4A1) == 2) {
                             _threadSwitch();
                         }
                     }

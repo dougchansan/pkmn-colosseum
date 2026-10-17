@@ -257,7 +257,7 @@ typedef struct KeyInfo_8006BB34 {
     u16 flags6;
     u8 padA[2];
 } KeyInfo_8006BB34;
-void fn_8006E798(void* menu);
+void menuBattleModeRefreshRules(void* menu);
 void fn_8006E9A4(void* window, void* sprite);
 void fn_8006EE7C(void* menu);
 void fn_8006EF24(void* menu);
@@ -3667,7 +3667,7 @@ void fn_8006E338(void* obj) {
 
 
 /* 0x8006E798 | size: 0x20C */
-void fn_8006E798(void* menu) {
+void menuBattleModeRefreshRules(void* menu) {
     extern u8* savedataGetStatus(s32 index, s32 type);
     extern void* windowSearchItemID(void* menu, s32 itemId);
     extern void winSetSequence(void* sprite, u16 sequence);

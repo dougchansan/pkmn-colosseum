@@ -81,7 +81,7 @@ extern void std136_fieldClearFlag_8047ad71(void);
 extern void fn_800FECB8(u32 id);
 
 extern void fn_80166D18(u32 a, u32 b, u32 c, u32 d);
-extern s32 soundGetStatus(u16 entry);
+extern s32 GSsndGetStatus(u16 entry);
 extern void soundKill(u16 entry);
 extern void std105_soundPlayEffect(u16 entry, u32 a, u32 b);
 extern void std104_soundSetBackgroundMusic(u16 entry, u32 a, u32 b);
@@ -392,7 +392,7 @@ loop_body:
     }
 
     entry = lbl_80478E1C[selected];
-    status = soundGetStatus(entry);
+    status = GSsndGetStatus(entry);
     if (status == 0) {
         goto use_default;
     }
@@ -429,7 +429,7 @@ loop_body:
     }
 
     entry = lbl_80478E14[selected];
-    status = soundGetStatus(entry);
+    status = GSsndGetStatus(entry);
     if (status == 0) {
         goto use_default;
     }
@@ -474,7 +474,7 @@ inner_body:
     if (selected == (s32)i) {
         goto inner_next;
     }
-    status = soundGetStatus(*(u16*)((u8*)lbl_80478E24 + offset));
+    status = GSsndGetStatus(*(u16*)((u8*)lbl_80478E24 + offset));
     switch (status) {
     case 1:
     case 2:
@@ -494,7 +494,7 @@ inner_check:
     }
 
     entry = lbl_80478E24[selected];
-    status = soundGetStatus(entry);
+    status = GSsndGetStatus(entry);
     if (status == 0) {
         goto use_default;
     }
@@ -539,7 +539,7 @@ inner_body:
     if (selected == (s32)i) {
         goto inner_next;
     }
-    status = soundGetStatus(*(u16*)((u8*)lbl_80478E2C + offset));
+    status = GSsndGetStatus(*(u16*)((u8*)lbl_80478E2C + offset));
     switch (status) {
     case 1:
     case 2:
@@ -559,7 +559,7 @@ inner_check:
     }
 
     entry = lbl_80478E2C[selected];
-    status = soundGetStatus(entry);
+    status = GSsndGetStatus(entry);
     if (status == 0) {
         goto use_default;
     }

@@ -154,7 +154,7 @@ typedef struct GSFloorResource {
  * table) is actually gs_model.c's model resource table, not a floor data
  * table. No confirmed backing storage for this struct is currently known.
  * This type is currently unused; kept only as a size/layout note pending
- * real decompilation of fn_8010147C.
+ * real decompilation of loadArchivePtr.
  */
 typedef struct GSFloorDataEntry {
     /* 0x00 */ u8   data[0x40];      /**< Floor-specific data (area config, etc.) */

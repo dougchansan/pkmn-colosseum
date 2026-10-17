@@ -733,14 +733,14 @@ u32 evolutionDemo(EvoWork *work,int canSkip,u32 before,u32 after)
     }
     switch (state) {
     case 0:
-      if (soundGetStatus(voice) != 2) {
+      if (GSsndGetStatus(voice) != 2) {
         std104_soundSetBackgroundMusic(0x3d3,0,0xff);
         wait = 0;
         state = 1;
       }
       break;
     case 1:
-      if (soundGetStatus(0x3d3) != 2) {
+      if (GSsndGetStatus(0x3d3) != 2) {
         wait += msgGetCharsPerFrame();
         if (wait >= 0x1e) {
           std104_soundSetBackgroundMusic(0x3d4,0,0xff);
@@ -779,7 +779,7 @@ u32 evolutionDemo(EvoWork *work,int canSkip,u32 before,u32 after)
     }
     doWazaSequence((u32 *)work,lbl_8027A4B0[level].seq,0,8);
     voice = evolutionPlayVoice(before);
-    while (soundGetStatus(voice) == 2) {
+    while (GSsndGetStatus(voice) == 2) {
       _threadSwitch();
     }
     msgctrlSetValue(0x32,pokemonBiosGetNicknamePtr(before));
@@ -795,7 +795,7 @@ u32 evolutionDemo(EvoWork *work,int canSkip,u32 before,u32 after)
   winMsgCloseField(1);
   soundStop(0x3d4,0x32);
   voice = evolutionPlayVoice(after);
-  while (soundGetStatus(voice) == 2) {
+  while (GSsndGetStatus(voice) == 2) {
     _threadSwitch();
   }
   msgctrlSetValue(0x32,pokemonBiosGetNicknamePtr(before));

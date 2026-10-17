@@ -52,7 +52,7 @@ extern s32 fn_800057A8(void);
 extern u8* fn_800A7BCC(void);
 extern u32 GSgappCreate(s32 state, u8 priority, u32 parameter,
                        void (*callback)(void));
-extern void _gsdvdErrorTask_801879AC(void);
+extern void _gsdvdErrorTask(void);
 extern void gfxSetFlags(u32 enable);
 extern void gfxClearFlags(u32 value);
 extern void gfxSetOrtho(f32 red, f32 green, f32 blue, f32 alpha);
@@ -120,7 +120,7 @@ u32 fn_80167FA8(u32 workCount)
         destination[7] = 0;
     }
     DVDSetAutoFatalMessaging(TRUE);
-    GSgappCreate(1, 0x13, 0, _gsdvdErrorTask_801879AC);
+    GSgappCreate(1, 0x13, 0, _gsdvdErrorTask);
     return 1;
 }
 
