@@ -59,7 +59,7 @@ typedef struct OSResetFunctionQueue {
     OSResetFunctionInfo* tail;
 } OSResetFunctionQueue;
 
-#if defined(OSRESET_SUFFIX)
+#if defined(OSRESET_SUFFIX) || defined(OSRESET_PREFIX)
 #define ResetFunctionQueue (*(OSResetFunctionQueue*)&ResetFunctionQueue_8047A738)
 #else
 static OSResetFunctionQueue ResetFunctionQueue;
@@ -85,7 +85,9 @@ typedef struct ApploaderHeader {
 
 #define AT_ADDRESS(addr) : addr
 
-extern ApploaderHeader lbl_803FB820;
+#if defined(OSRESET_PREFIX)
+static ApploaderHeader Header __attribute__((aligned(32)));
+#endif
 extern void* lbl_8047A728;
 extern void* lbl_8047A72C;
 extern volatile BOOL lbl_8047A730[2];
@@ -148,7 +150,6 @@ void __OSReboot(u32 resetCode, u32 bootDol) {
     DVDCommandBlock streamCommand;
     DVDCommandBlock headerCommand;
     DVDCommandBlock rebootCommand;
-    ApploaderHeader* header = &lbl_803FB820;
     u32 rebootSize;
     u32 offset;
     OSTime start;
@@ -194,7 +195,7 @@ void __OSReboot(u32 resetCode, u32 bootDol) {
         AISetStreamPlayState(0);
     }
 
-    DVDReadAbsAsyncPrio(&headerCommand, header, sizeof(ApploaderHeader),
+    DVDReadAbsAsyncPrio(&headerCommand, &Header, sizeof(ApploaderHeader),
                         0x2440, NULL, 0);
     start = OSGetTime();
     while (DVDGetCommandBlockStatus(&headerCommand)) {
@@ -203,8 +204,8 @@ void __OSReboot(u32 resetCode, u32 bootDol) {
         }
     }
 
-    offset = header->size + 0x20;
-    rebootSize = OS_ROUND_UP_32B(header->rebootSize);
+    offset = Header.size + 0x20;
+    rebootSize = OS_ROUND_UP_32B(Header.rebootSize);
     DVDReadAbsAsyncPrio(&rebootCommand, (void*)0x81300000, rebootSize,
                         offset + 0x2440, NULL, 0);
     start = OSGetTime();

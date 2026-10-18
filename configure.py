@@ -11224,7 +11224,7 @@ config.libs = [
                 progress_category="sdk",
             ),
             Object(
-                CodeCandidate,
+                Matching,
                 "dolphin/os/OSReset_candidate_prefix.c",
                 progress_category="sdk",
             ),
