@@ -152,7 +152,7 @@ GSspline* GSsplineCreate(s32 kind, s32 state, u8 capacity)
                     data = GSmemLock(handle);
                     spline->vectors = data;
                     spline->secondaryVectors = NULL;
-                    spline->values = (f32*)(data + capacity * 12);
+                    spline->values = (f32*)((GSSceneVec3*)data + capacity);
                     spline->capacity = capacity;
                     spline->state = 1;
                 } else {
@@ -168,7 +168,7 @@ GSspline* GSsplineCreate(s32 kind, s32 state, u8 capacity)
                     data = GSmemLock(handle);
                     spline->vectors = data;
                     spline->secondaryVectors = NULL;
-                    spline->values = (f32*)(data + capacity * 4);
+                    spline->values = ((f32*)data + capacity);
                     spline->capacity = capacity;
                     spline->state = 0;
                 } else {
@@ -188,7 +188,7 @@ GSspline* GSsplineCreate(s32 kind, s32 state, u8 capacity)
                     data = GSmemLock(handle);
                     spline->vectors = data;
                     spline->secondaryVectors = NULL;
-                    spline->values = (f32*)(data + capacity * 12);
+                    spline->values = (f32*)((GSSceneVec3*)data + capacity);
                     spline->capacity = capacity;
                     spline->state = 1;
                 } else {
@@ -204,7 +204,7 @@ GSspline* GSsplineCreate(s32 kind, s32 state, u8 capacity)
                     data = GSmemLock(handle);
                     spline->vectors = data;
                     spline->secondaryVectors = NULL;
-                    spline->values = (f32*)(data + capacity * 4);
+                    spline->values = ((f32*)data + capacity);
                     spline->capacity = capacity;
                     spline->state = 0;
                 } else {
@@ -222,9 +222,9 @@ GSspline* GSsplineCreate(s32 kind, s32 state, u8 capacity)
                     spline->dataHandle = handle;
                     data = GSmemLock(handle);
                     spline->vectors = data;
-                    secondary = data + capacity * 12;
+                    secondary = (u8*)((GSSceneVec3*)data + capacity);
                     spline->secondaryVectors = secondary;
-                    spline->values = (f32*)(secondary + capacity * 4);
+                    spline->values = ((f32*)secondary + capacity);
                     spline->capacity = capacity;
                     spline->state = 1;
                 } else {
@@ -239,9 +239,9 @@ GSspline* GSsplineCreate(s32 kind, s32 state, u8 capacity)
                     spline->dataHandle = handle;
                     data = GSmemLock(handle);
                     spline->vectors = data;
-                    secondary = data + capacity * 4;
+                    secondary = (u8*)((f32*)data + capacity);
                     spline->secondaryVectors = secondary;
-                    spline->values = (f32*)(secondary + capacity * 4);
+                    spline->values = ((f32*)secondary + capacity);
                     spline->capacity = capacity;
                     spline->state = 0;
                 } else {
