@@ -119,6 +119,7 @@ extern void cardeGridSetShadowPokemon(s32, void*, s32);
 
 #pragma push
 #pragma peephole off
+#if !defined(GS_RANGE_EXACT_80034280) && !defined(GS_RANGE_SUFFIX_80034FB4)
 static void sysvarsWaitForTransfer(void)
 {
     f32 progress;
@@ -129,9 +130,11 @@ static void sysvarsWaitForTransfer(void)
         progress += (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
     }
 }
+#endif
 
+#if defined(GS_RANGE_EXACT_80034280)
 /* The same wait for two seconds (fn_80034280's GBA link retries). */
-static void sysvarsWaitTwoSeconds(void)
+static inline void sysvarsWaitTwoSeconds(void)
 {
     f32 progress;
 
@@ -141,7 +144,9 @@ static void sysvarsWaitTwoSeconds(void)
         progress += (f32)msgGetCharsPerFrame() / (f32)fn_800D37CC();
     }
 }
+#endif
 
+#if !defined(GS_RANGE_EXACT_80034280) && !defined(GS_RANGE_SUFFIX_80034FB4)
 s32 _sysvarsProcessData__FP16sysvarsFuncEntryPc(
     void* unusedEntry,
     char* unusedText)
@@ -947,7 +952,9 @@ validation_done:
 
     return 0;
 }
+#endif
 
+#if defined(GS_RANGE_EXACT_80034280)
 /* Run the GBA transfer UI until it finishes or the user cancels it. */
 s32 fn_80034280(void)
 {
@@ -1035,8 +1042,10 @@ s32 fn_80034280(void)
         }
     }
 }
+#endif
 #pragma pop
 
+#if defined(GS_RANGE_EXACT_80034280)
 /* fn_800345A4 - 0x800345A4 | size: 0x164 */
 #pragma push
 #pragma peephole off
@@ -1159,6 +1168,8 @@ void fn_8003480C(void) {
 }
 #pragma pop
 
+#endif
+
 typedef struct SysvarsOpponentSource {
     u8 name[0x0C];
     u8 category;
@@ -1210,6 +1221,7 @@ typedef struct SysvarsSaveWork {
     SysvarsOpponentSnapshot history[10];
 } SysvarsSaveWork;
 
+#if defined(GS_RANGE_EXACT_80034280)
 /*
  * Record the current opponent in the recent-opponent history. Nothing happens
  * if this trainer/region/variant triple is already listed; otherwise the ten
@@ -1479,7 +1491,9 @@ void fn_80034F84(void) {
 /* fn_80034FB0 - 0x80034FB0 | size: 0x4 */
 void fn_80034FB0(void) {
 }
+#endif
 
+#if defined(GS_RANGE_SUFFIX_80034FB4)
 /* cardeBattleRun - 0x80034FB4 | size: 0xC94 */
 #pragma push
 #pragma peephole off
@@ -1973,3 +1987,4 @@ void cardeBattleRun(void)
     lbl_8047A438 = 0;
 }
 #pragma pop
+#endif

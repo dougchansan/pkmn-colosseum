@@ -40,6 +40,7 @@
     !defined(MENU_MIDDLE_EXACT_8006D940_ONLY) && \
     !defined(MENU_MIDDLE_EXACT_8006DC28_ONLY) && \
     !defined(MENU_MIDDLE_EXACT_8006E9A4_ONLY) && \
+    !defined(MENU_MIDDLE_EXACT_8006F720_ONLY) && \
     !defined(MENU_MIDDLE_EXACT_8006FBFC_ONLY) && \
     !defined(MENU_MIDDLE_EXACT_8006FCF8_ONLY) && \
     !defined(MENU_MIDDLE_RESIDUAL_8006FEE4_ONLY) && \
@@ -4185,6 +4186,10 @@ void fn_8006F284(void* menu) {
 }
 #pragma peephole reset
 
+#endif
+
+#if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_RESIDUAL_8006B9B8_ONLY) || \
+    defined(MENU_MIDDLE_EXACT_8006F720_ONLY)
 
 /* 0x8006F720 | size: 0x4DC */
 void fn_8006F720(void* menu) {

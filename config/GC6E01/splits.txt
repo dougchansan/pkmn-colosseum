@@ -115,14 +115,20 @@ game/menuFight_exact_8000DE24.c:
 game/menuFight_exact_8000DEC4.c:
 	.text       start:0x8000DEC4 end:0x8000DFF0
 
-game/menuFight_r51_8000DFF0.c:
+game/menuFight_exact_8000DFF0.c:
 	.text       start:0x8000DFF0 end:0x8000E204
 
 game/menuFight_exact_8000E204.c:
 	.text       start:0x8000E204 end:0x8000E290
 
 game/menuFight_r51_8000E290.c:
-	.text       start:0x8000E290 end:0x8000F310
+	.text       start:0x8000E290 end:0x8000EA10
+
+game/menuFight_exact_8000EA10.c:
+	.text       start:0x8000EA10 end:0x8000ED34
+
+game/menuFight_candidate_8000ED34.c:
+	.text       start:0x8000ED34 end:0x8000F310
 
 game/menuFight_exact_8000F310.c:
 	.text       start:0x8000F310 end:0x8000F400
@@ -529,7 +535,10 @@ game/menuShop_exact_8002B03C.c:
 	.text       start:0x8002B03C end:0x8002B1A0
 
 game/menuShop_candidate_8002B1A0.c:
-	.text       start:0x8002B1A0 end:0x8002B594
+	.text       start:0x8002B1A0 end:0x8002B40C
+
+game/menuShop_exact_8002B40C.c:
+	.text       start:0x8002B40C end:0x8002B594
 
 game/menuShop_island_8002B594.c:
 	.text       start:0x8002B594 end:0x8002B880
@@ -644,7 +653,13 @@ game/gs_npc_event_candidate_80032ED8.c:
 	.text       start:0x80032ED8 end:0x80033278
 
 game/gs_range_80033278.c:
-	.text       start:0x80033278 end:0x80035C48
+	.text       start:0x80033278 end:0x80034280
+
+game/gs_range_exact_80034280.c:
+	.text       start:0x80034280 end:0x80034FB4
+
+game/gs_range_suffix_80034FB4.c:
+	.text       start:0x80034FB4 end:0x80035C48
 
 game/gs_exact_80035C48.c:
 	.text       start:0x80035C48 end:0x80035DD4
@@ -710,7 +725,7 @@ game/menu/pda_range_80037158.c:
 game/menu/pda_exact_80037174.c:
 	.text       start:0x80037174 end:0x800376F8
 
-game/menu/pda_candidate_800376F8.c:
+game/menu/pda_exact_800376F8.c:
 	.text       start:0x800376F8 end:0x800379E8
 
 game/menu/pda_exact_800379E8.c:
@@ -758,14 +773,20 @@ game/menu/pda_candidate_80039644.c:
 game/menu/pda_exact_800398D4.c:
 	.text       start:0x800398D4 end:0x80039A50
 
+game/menu/pda_exact_80039A50.c:
+	.text       start:0x80039A50 end:0x80039A84
+
 game/menu/pda_candidate_80039A50.c:
-	.text       start:0x80039A50 end:0x80039F44
+	.text       start:0x80039A84 end:0x80039F44
 
 game/menu/pda_exact_80039F44.c:
 	.text       start:0x80039F44 end:0x80039F70
 
-game/menu/pda_candidate_80039F70.c:
-	.text       start:0x80039F70 end:0x8003A520
+game/menu/pda_exact_80039F70.c:
+	.text       start:0x80039F70 end:0x8003A10C
+
+game/menu/pda_candidate_8003A10C.c:
+	.text       start:0x8003A10C end:0x8003A520
 
 game/menu/pda_range_r47_8003A520_o2.c:
 	.text       start:0x8003A520 end:0x8003A6C0
@@ -782,14 +803,38 @@ game/menu/pda_range_r46_8003B2D8.c:
 game/menu/pda_candidate_8003B6D0_gc20.c:
 	.text       start:0x8003B6D0 end:0x8003B814
 
-game/menu/pda_candidate_8003B814.c:
-	.text       start:0x8003B814 end:0x8003CF38
+game/menu/pda_exact_8003B814.c:
+	.text       start:0x8003B814 end:0x8003B85C
+
+game/menu/pda_candidate_8003B85C.c:
+	.text       start:0x8003B85C end:0x8003BF54
+
+game/menu/pda_exact_8003BF54.c:
+	.text       start:0x8003BF54 end:0x8003C24C
+
+game/menu/pda_exact_8003C24C.c:
+	.text       start:0x8003C24C end:0x8003C2B8
+
+game/menu/pda_candidate_8003C2B8.c:
+	.text       start:0x8003C2B8 end:0x8003C728
+
+game/menu/pda_exact_8003C728.c:
+	.text       start:0x8003C728 end:0x8003C7C0
+
+game/menu/pda_candidate_8003C7C0.c:
+	.text       start:0x8003C7C0 end:0x8003CE1C
+
+game/menu/pda_exact_8003CE1C.c:
+	.text       start:0x8003CE1C end:0x8003CF38
 
 game/menu/pda_candidate_8003B814_r46_8003CF38_o4s.c:
 	.text       start:0x8003CF38 end:0x8003D1FC
 
+game/menu/pda_exact_8003D1FC.c:
+	.text       start:0x8003D1FC end:0x8003D4C8
+
 game/menu/pda_candidate_8003B814_r46_8003D1FC.c:
-	.text       start:0x8003D1FC end:0x8003F2DC
+	.text       start:0x8003D4C8 end:0x8003F2DC
 
 game/menu/pda_exact_8003F2DC.c:
 	.text       start:0x8003F2DC end:0x8003F464
@@ -807,7 +852,10 @@ game/menu/pda_exact_80041B5C.c:
 	.text       start:0x80041B5C end:0x80041E48
 
 game/menu/pda_candidate_8003B814_r46_80041B5C.c:
-	.text       start:0x80041E48 end:0x80043DC0
+	.text       start:0x80041E48 end:0x80043CD8
+
+game/menu/pda_exact_80043CD8.c:
+	.text       start:0x80043CD8 end:0x80043DC0
 
 game/menu/pda_exact_80043DC0.c:
 	.text       start:0x80043DC0 end:0x80043EC8
@@ -828,7 +876,10 @@ game/menu/pda_exact_800472CC.c:
 	.text       start:0x800472CC end:0x800473E0
 
 game/menu/pda_candidate_8003B814_r46_800473E0.c:
-	.text       start:0x800473E0 end:0x80047CC0
+	.text       start:0x800473E0 end:0x800478B4
+
+game/menu/pda_exact_800478B4.c:
+	.text       start:0x800478B4 end:0x80047CC0
 
 game/menu/pda_exact_80047CC0.c:
 	.text       start:0x80047CC0 end:0x800484A4
@@ -900,8 +951,20 @@ game/menu/menu_pda_mail_candidate_8004DDC0.c:
 game/menu/menu_pda_mail_exact_8004DF34.c:
 	.text       start:0x8004DF34 end:0x8004DFCC
 
-game/menu/menu_pda_mail_candidate_8004DFCC.c:
-	.text       start:0x8004DFCC end:0x8004E790
+game/menu/menu_pda_mail_exact_8004DFCC.c:
+	.text       start:0x8004DFCC end:0x8004E144
+
+game/menu/menu_pda_mail_candidate_8004E144.c:
+	.text       start:0x8004E144 end:0x8004E180
+
+game/menu/menu_pda_mail_exact_8004E180.c:
+	.text       start:0x8004E180 end:0x8004E440
+
+game/menu/menu_pda_mail_exact_8004E440.c:
+	.text       start:0x8004E440 end:0x8004E510
+
+game/menu/menu_pda_mail_candidate_8004E510.c:
+	.text       start:0x8004E510 end:0x8004E790
 
 game/menu/menu_pda_mail_exact_8004E790.c:
 	.text       start:0x8004E790 end:0x8004E9C0
@@ -1046,7 +1109,10 @@ game/menu/menuCB_BattleStart_exact_80060434.c:
 	.text       start:0x80060434 end:0x800609B4
 
 game/menu/menuCB_BattleStart_candidate_800609B4.c:
-	.text       start:0x800609B4 end:0x80060D70
+	.text       start:0x800609B4 end:0x80060A28
+
+game/menu/menuCB_BattleStart_candidate_80060A28.c:
+	.text       start:0x80060A28 end:0x80060D70
 
 game/menu/menuCB_BattleStart_exact_80060D70.c:
 	.text       start:0x80060D70 end:0x8006106C
@@ -1550,7 +1616,10 @@ game/gba/gba_conv_candidate_80089030.c:
 	.text       start:0x80089030 end:0x80089048
 
 game/pokeconv.c:
-	.text       start:0x80089048 end:0x800896B8
+	.text       start:0x80089048 end:0x80089380
+
+game/pokeconv_exact_80089380.c:
+	.text       start:0x80089380 end:0x800896B8
 
 game/gba/gba_misc_exact_800896B8.c:
 	.text       start:0x800896B8 end:0x800896E8
@@ -4770,8 +4839,11 @@ game/data/rodata_80273A00.c:
 game/gs_xfb_capture.c:
 	.text       start:0x80175F6C end:0x80176068
 
+game/gs_spline_exact_80176068.c:
+	.text       start:0x80176068 end:0x80176228
+
 game/gs_spline.c:
-	.text       start:0x80176068 end:0x801765F4
+	.text       start:0x80176228 end:0x801765F4
 
 game/camera_801765F4.c:
 	.text       start:0x801765F4 end:0x80179DFC
@@ -5530,7 +5602,7 @@ game/wazaViewer_exact_801D53D8.c:
 game/wazaViewer_candidate_801D5464.c:
 	.text       start:0x801D5464 end:0x801D56B0
 
-game/wazaViewer_candidate_801D56B0.c:
+game/wazaViewer_exact_801D56B0.c:
 	.text       start:0x801D56B0 end:0x801D5A94
 
 game/wazaViewer_exact_801D5A94.c:

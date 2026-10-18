@@ -85,7 +85,7 @@ void _wazaViewerUpdate(void) {
 
 #endif
 
-#if !defined(PR409_WAZA_VIEWER_SPLIT) || defined(PR409_WAZA_VIEWER_53D8_7E58)
+#if !defined(PR409_WAZA_VIEWER_SPLIT) || defined(PR409_WAZA_VIEWER_53D8_7E58) || defined(PR409_WAZA_VIEWER_EXACT_56B0_5A94)
 
 extern u8 lbl_80279338[];
 
@@ -96,6 +96,7 @@ extern void GSdvdClose(void* file);
 extern s32 GSdvdRead(void* file, void* buf, u32 size, s32 offset);
 extern s32 fn_80167E54(void* file, void* buf, u32 size, s32 offset);
 
+#if !defined(PR409_WAZA_VIEWER_EXACT_56B0_5A94)
 /**
  * wazaViewerGetFilesize - size of a host file, or 0 if it cannot be opened.
  * Named by the diagnostic it prints. Inlined into every caller by -inline auto,
@@ -226,6 +227,9 @@ static inline void wazaViewerPollCommand(const char* messages) {
  * _wazaViewerInitialize - Move animation helper: camera zoom.
  * Address: 0x801D53D8 | Size: 0x8C
  */
+#endif
+
+#if !defined(PR409_WAZA_VIEWER_EXACT_56B0_5A94)
 #if !defined(PR409_WAZA_VIEWER_THREAD_ONLY)
 void _wazaViewerInitialize(void) {
     extern struct GSmodel* GSresGetResource(u32 group, u32 handle);
@@ -283,6 +287,8 @@ void wazaViewerThread(void) {
         _threadSwitch();
     }
 }
+
+#endif
 
 #if !defined(PR409_WAZA_VIEWER_THREAD_ONLY)
 
@@ -436,6 +442,7 @@ void fn_801D58E4(void) {
     *(s32*)(lbl_804673F8 + 0x63C) = 0;
 }
 
+#if !defined(PR409_WAZA_VIEWER_EXACT_56B0_5A94)
 /**
  * wazaViewerLoadSequenceFiles - load the viewer's waza sequence file (+0x1C)
  * and optional second file (+0x41C) from the host into a new effect, and
@@ -1622,6 +1629,8 @@ void fn_801D7B94(void* effect) {
         gfxEnd();
     }
 }
+
+#endif
 
 #endif
 

@@ -18,7 +18,7 @@
  * build only their own run of functions. */
 #if defined(MENU_R56B_8007109C_ONLY) || defined(MENU_R47_80077ED4_ONLY) || \
     defined(MENU_R47_80079C1C_ONLY) || defined(MENU_80075390_ONLY) || \
-    defined(MENU_R56B_80071398_ONLY)
+    defined(MENU_R56B_80071398_ONLY) || defined(MENU_80073E8C_ONLY)
 #define MENU_RANGE_CARVE 1
 #endif
 
@@ -1105,6 +1105,8 @@ extern u32 lbl_8047A600;
 
 extern s32 menuIsCheck(s32);
 
+#endif /* !MENU_RANGE_CARVE */
+#if !defined(MENU_RANGE_CARVE) || defined(MENU_80073E8C_ONLY)
 /* pkjbPrepare reports through string literals: retail pools pkjb_uploader.c's
  * read-only strings (lbl_80268780) and addresses each off one base register,
  * which needs -rostr on its unit. */
@@ -1194,6 +1196,8 @@ s32 pkjbPrepare(void* pathA, void* pathB) {
 
 
 
+#endif /* !MENU_RANGE_CARVE || MENU_80073E8C_ONLY */
+#if !defined(MENU_RANGE_CARVE)
 extern u32 lbl_80478928;
 extern u16 lbl_802EE458[];
 

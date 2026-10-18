@@ -625,7 +625,7 @@ extern void GSmsgFontOpen();
 extern void GSmsgOpen();
 extern u8 fn_800FF554(void);
 extern void cms_UnregisterScript();
-extern void fn_800FC2A8();
+extern void GSmsgFontClose();
 extern void GSmsgClose();
 extern u8 lbl_8035BA98[];
 extern u8 lbl_8035BA7C[];
@@ -1467,7 +1467,6 @@ void heroDispatchEvent(u32 kind, u32 arg)
 {
     s32 skind;
     u32 floor;
-    u32 i;
     u32 offset;
     u8* rec;
     u8* text;
@@ -1492,21 +1491,21 @@ void heroDispatchEvent(u32 kind, u32 arg)
     }
 
     floor = (u32)std092_getCurrentRoomID();
-    i = 0;
+    kind = 0;
     offset = 0;
-    while (i < *(u32*)lbl_80478EC0) {
+    while (kind < *(u32*)lbl_80478EC0) {
         rec = (u8*)(lbl_80478EC4 + offset);
         if (*(u16*)(rec + 2) == floor &&
             (s32)*(u8*)rec == skind &&
             *(u32*)(rec + 4) == arg &&
             *(u32*)(rec + 8) != 0) {
-            scriptSetEventColID(arg);
+            scriptSetEventColID((u32)arg);
             cmsRunSync(*(u32*)(rec + 8), 4, *(u32*)(rec + 0xC),
                         *(u32*)(rec + 0x10), *(u32*)(rec + 0x14),
                         *(u32*)(rec + 0x18));
         }
         offset += 0x1C;
-        i++;
+        kind++;
     }
 }
 #endif

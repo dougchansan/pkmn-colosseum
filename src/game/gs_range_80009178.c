@@ -4,7 +4,7 @@
  *
  * Boundary evidence-verified from asm (sdata clusters, callee families,
  * static linkage, call chains) -- mixed-block split pass, 2026-07-01.
- * All functions asm-only until matched.
+ * The three functions in this range are reconstructed in C.
  */
 #include "dolphin/types.h"
 
@@ -85,8 +85,6 @@ static inline s32 gsMenuGetValidEntry(s32 target)
     extern GsMenuListState* lbl_80478F98;
     extern GsMenuListEntry* lbl_80478F9C;
     extern u8* lbl_80478EFC;
-    u8* scenes;
-    GsMenuListEntry* entry;
     GsMenuListEntry* entries;
     s32 entryIndex;
     s32 count;
@@ -94,17 +92,15 @@ static inline s32 gsMenuGetValidEntry(s32 target)
     count = 0;
     entryIndex = lbl_80478F98->head;
     entries = lbl_80478F9C;
-    scenes = lbl_80478EFC;
     while (entryIndex != -1) {
-        entry = &entries[entryIndex];
-        if (entry->item != 0 &&
-            *(void**)(scenes + entry->item * 0x18 + 0x14) != NULL) {
+        if (entries[entryIndex].item != 0 &&
+            *(void**)(lbl_80478EFC + entries[entryIndex].item * 0x18 + 0x14) != NULL) {
             if (target == count) {
                 return entryIndex;
             }
             count++;
         }
-        entryIndex = entry->next;
+        entryIndex = entries[entryIndex].next;
     }
     return -1;
 }
@@ -155,6 +151,49 @@ void fn_80009178(GsMenuNumberInput* input)
     *(GsMenuCursor*)&input->pad_84[0x10] = cursor;
 
     input->result = gsMenuGetValidEntry(cursor.row + cursor.column);
+}
+
+s32 fn_800093D0(void)
+{
+    extern u32 fn_800F7BC4(s32 padId);
+    extern s32 menuOpen(s32 menuId, s32 arg);
+    extern u32 std082_flagGetValue(s32 flagId);
+    extern u8 menuSelectInput(u32 value, u32* out);
+    extern void _flagSet(s32 flagId, u32 value);
+    extern void menuClose(s32 menuId);
+    extern void fn_8018FE30(s32 value);
+    s32 result;
+    u32 selected;
+    u32 value;
+
+    if (fn_800F7BC4(1) & 0x20) {
+        for (;;) {
+            result = menuOpen(0xDD, 1);
+            if (result >= 0) {
+                selected = result;
+                if (menuSelectInput(std082_flagGetValue(selected), &value) == 0) {
+                    continue;
+                }
+                _flagSet(selected, value);
+            } else {
+                if (result == -1) {
+                    menuClose(0xDD);
+                    return -1;
+                }
+                break;
+            }
+        }
+    } else {
+        result = menuOpen(0xB, 1);
+        menuClose(0xB);
+        if (result >= 0) {
+            fn_8018FE30(result);
+        } else if (result == -1) {
+            return -1;
+        }
+    }
+
+    return 0;
 }
 
 void fn_800094A4(GsMenuNumberInput* input)
@@ -227,46 +266,4 @@ void fn_800094A4(GsMenuNumberInput* input)
     input->done = 1;
 }
 
-s32 fn_800093D0(void)
-{
-    extern u32 fn_800F7BC4(s32 padId);
-    extern s32 menuOpen(s32 menuId, s32 arg);
-    extern u32 std082_flagGetValue(s32 flagId);
-    extern u8 menuSelectInput(u32 value, u32* out);
-    extern void _flagSet(s32 flagId, u32 value);
-    extern void menuClose(s32 menuId);
-    extern void fn_8018FE30(s32 value);
-    s32 result;
-    u32 selected;
-    u32 value;
-
-    if (fn_800F7BC4(1) & 0x20) {
-        for (;;) {
-            result = menuOpen(0xDD, 1);
-            if (result >= 0) {
-                selected = result;
-                if (menuSelectInput(std082_flagGetValue(selected), &value) == 0) {
-                    continue;
-                }
-                _flagSet(selected, value);
-            } else {
-                if (result == -1) {
-                    menuClose(0xDD);
-                    return -1;
-                }
-                break;
-            }
-        }
-    } else {
-        result = menuOpen(0xB, 1);
-        menuClose(0xB);
-        if (result >= 0) {
-            fn_8018FE30(result);
-        } else if (result == -1) {
-            return -1;
-        }
-    }
-
-    return 0;
-}
 #pragma peephole on

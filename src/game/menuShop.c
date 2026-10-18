@@ -1243,7 +1243,10 @@ s32 menuShopDrawListText(void* arg0, u8* arg1)
 
     u8* tbl;
     u8* entry;
-    u8* ctx;
+    struct {
+        u8* ctx;
+        u8* draw;
+    } refs;
     s32 slot_count;
     s32 slot_i;
     s32 loop_lim;
@@ -1260,8 +1263,9 @@ s32 menuShopDrawListText(void* arg0, u8* arg1)
     u8 mode;
 
     tbl = lbl_802EF0A8;
-    ctx = *(u8**)((u8*)arg0 + 0x60);
-    entry = tbl + *(s16*)(arg1 + 0x6) * 0x1c;
+    refs.draw = arg1;
+    refs.ctx = *(u8**)((u8*)arg0 + 0x60);
+    entry = tbl + *(s16*)(refs.draw + 0x6) * 0x1c;
     dir_off = 0;
     loop_lim = 10;
     scroll_px = 0;
@@ -1272,14 +1276,14 @@ s32 menuShopDrawListText(void* arg0, u8* arg1)
                 *(s16*)(tbl + 0x4932), *(s16*)(tbl + 0x4934));
 
     slot_i = (s8)((u8*)arg0)[0x94];
-    slot_count = *(s32*)(ctx + 0x8);
+    slot_count = *(s32*)(refs.ctx + 0x8);
     msgctrlSetValue(0x50, (void*)0x270f);
     x_mid = GSmsgGetRect(0xdb) >> 16;
-    x_mid = *(s16*)(arg1 + 0x54) - x_mid - (GSmsgGetRect(0x14f) >> 16);
+    x_mid = *(s16*)(refs.draw + 0x54) - x_mid - (GSmsgGetRect(0x14f) >> 16);
 
     /* scroll animation */
-    scroll_f = **(f32**)(ctx + 0xc);
-    if (lbl_8047B980 != scroll_f && **(s32**)(ctx + 0x14) != 0) {
+    scroll_f = **(f32**)(refs.ctx + 0xc);
+    if (lbl_8047B980 != scroll_f && **(s32**)(refs.ctx + 0x14) != 0) {
         if (scroll_f < lbl_8047B980) {
             slot_i--;
             dir_off = -1;
@@ -1297,7 +1301,7 @@ s32 menuShopDrawListText(void* arg0, u8* arg1)
         }
 
         x_pos = x_acc - scroll_px;
-        slot_id = shopListItem(ctx, slot_i);
+        slot_id = shopListItem(refs.ctx, slot_i);
 
         itemDataBiosGetPtr(slot_id);
         icon = itemDataBiosGetName();
@@ -1305,19 +1309,19 @@ s32 menuShopDrawListText(void* arg0, u8* arg1)
             GSmsgPrintColor(0, x_pos, -1, icon);
         }
 
-        mode = ctx[0x1c];
+        mode = refs.ctx[0x1c];
         if (mode == 0 || mode == 1) {
             GSmsgPrintColor(x_mid, x_pos, -1, 0x14f);
             itemDataBiosGetPtr(slot_id);
             value = itemDataBiosGetPrice();
             msgctrlSetValue(0x50, (void*)(u16)value);
-            GSmsgPrintColor(*(s16*)(arg1 + 0x54) - (GSmsgGetRect(0xdb) >> 16),
+            GSmsgPrintColor(*(s16*)(refs.draw + 0x54) - (GSmsgGetRect(0xdb) >> 16),
                         x_pos, -1, 0xdb);
         } else {
             itemDataBiosGetPtr(slot_id);
             value = itemDataBiosGetCoupon();
             msgctrlSetValue(0x50, (void*)(u16)value);
-            GSmsgPrintColor(*(s16*)(arg1 + 0x54) - (GSmsgGetRect(0x153) >> 16),
+            GSmsgPrintColor(*(s16*)(refs.draw + 0x54) - (GSmsgGetRect(0x153) >> 16),
                         x_pos, -1, 0x153);
         }
     }
@@ -1325,7 +1329,7 @@ s32 menuShopDrawListText(void* arg0, u8* arg1)
     /* trailing "add"/"locked" button if visual columns remain */
     if (loop_i < loop_lim) {
         GSmsgPrintColor(0, loop_i * 0x1f - scroll_px, -1,
-                    (ctx[0x1d] & 1) ? 0x2b47 : 0x2b2c);
+                    (refs.ctx[0x1d] & 1) ? 0x2b47 : 0x2b2c);
     }
 
     fn_800FE35C();

@@ -13,6 +13,7 @@
     (((value) << 24) | (((value) & 0x0000FF00) << 8)                         \
      | (((value) & 0x00FF0000) >> 8) | ((value) >> 24))
 
+#ifndef POKECONV_EXACT_SUFFIX
 /* fn_80089048 - 0x80089048 | size: 0x338 */
 s32 fn_80089048(u8* destination, const u8* source, void* pokemon)
 {
@@ -85,6 +86,7 @@ s32 fn_80089048(u8* destination, const u8* source, void* pokemon)
     return 1;
 }
 
+#else
 /* fn_80089380 - 0x80089380 | size: 0x224 */
 s32 fn_80089380(u8* destination, const u8* source)
 {
@@ -186,5 +188,7 @@ void gbaReceiveHero(u8* hero, u8* source) {
         exribbonSetNo(i, source[0x26C + i]);
     }
 }
+
+#endif
 
 #undef BSWAP32
