@@ -2174,8 +2174,15 @@ s32 pdaSnagListGetTrainerName(s32 index)
 #pragma pop
 
 
+/* pdaMemoBuildList - 0x8003D818 | size: 0xb4
+ * Strategy-memo list setup: copies each memo entry's Pokemon ID into
+ * lbl_8047A4E4, stores the count in lbl_8047A4E8, clears the list
+ * cursor/scroll bytes, draws the memo page (fn_8003E394) and records the
+ * count in the scene work.
+ * STATUS (94.89%): retail copies `index = count` with mr (ours folds it to
+ * li 0) and builds the final field_10 store in r3/r4 instead of r0/r3. */
 #pragma peephole off
-void fn_8003D818(void)
+void pdaMemoBuildList(void)
 {
     extern u16* lbl_8047A4E4;
     extern u16 lbl_8047A4E8;
@@ -7820,7 +7827,7 @@ void fn_80040308(void* menu)
         case 0:
             if (lbl_8047BCCC == *(f32*)(L + 0x88)) {
                 if (*(s32*)(L + 0x90) != 1) {
-                    fn_8003D818();
+                    pdaMemoBuildList();
                     total = lbl_8047A4E8;
                     pdaResetCarousel(total);
                     if (lbl_804788C0 != 0) {

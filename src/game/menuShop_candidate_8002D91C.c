@@ -185,6 +185,9 @@ void fn_8002D91C(u32 location_index)
 }
 #pragma pop
 
+/* STATUS (99.67%): retail schedules `li r0,1` (active) before the
+ * `li r5,&lbl_8047A3FC` state pointer; every statement order, inline
+ * helper, array and direct-global form tried keeps ours the other way. */
 void menuShopOpen(u32 flag)
 {
     ShopTravelState* state;
