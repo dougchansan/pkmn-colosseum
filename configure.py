@@ -129,6 +129,12 @@ parser.add_argument(
     help="disable progress calculation",
 )
 parser.add_argument(
+    "--coop-pad-diag",
+    dest="coop_pad_diag",
+    action="store_true",
+    help="diagnostic co-op build: route every field member to logical pad 2",
+)
+parser.add_argument(
     "--coop",
     action="store_true",
     help="build the two-player co-op mod: defines COLO_COOP, writes to a"
@@ -398,6 +404,8 @@ cflags_base = [
 
 if args.coop:
     cflags_base.append("-DCOLO_COOP=1")
+if args.coop_pad_diag:
+    cflags_base.append("-DCOLO_COOP_PAD_DIAG=1")
 
 if args.debug:
     cflags_base.extend(["-sym on", "-DDEBUG=1"])

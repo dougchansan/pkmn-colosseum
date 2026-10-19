@@ -2504,7 +2504,15 @@ static void proc1Step(f32 distance);
    whichever member it is moving, so without COLO_COOP this collapses to the
    original constant and the generated code is unchanged. */
 #ifdef COLO_COOP
+#ifdef COLO_COOP_PAD_DIAG
+/* Diagnostic build only: route EVERY field member to logical pad 2.
+   The runtime's navigation telemetry reports the leader's position, so
+   driving port 1 and watching the leader move answers whether logical pad
+   2 reaches the game at all, without needing a guest-memory readout. */
+#define COOP_PAD(member) 2
+#else
 #define COOP_PAD(member) ((member) + 1)
+#endif
 
 /* Whether the non-leader field member is under human control. Co-op is a
    lobby option, so this is runtime state; the co-op lobby sets it once both
