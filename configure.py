@@ -128,6 +128,13 @@ parser.add_argument(
     action="store_false",
     help="disable progress calculation",
 )
+parser.add_argument(
+    "--coop",
+    action="store_true",
+    help="build the two-player co-op mod: defines COLO_COOP, writes to a"
+    " separate build directory, and skips the matching SHA-1 check because the"
+    " output is intentionally not the retail executable",
+)
 args = parser.parse_args()
 
 config = ProjectConfig()
@@ -135,9 +142,11 @@ config.version = str(args.version)
 version_num = VERSIONS.index(config.version)
 
 # Apply arguments
-config.build_dir = args.build_dir
+# The co-op mod is an intentional divergence from retail, so it never shares
+# a build directory with the matching target and never claims its SHA-1.
+config.build_dir = Path("build-coop") if args.coop else args.build_dir
 config.generate_map = args.map
-config.non_matching = args.non_matching
+config.non_matching = args.non_matching or args.coop
 config.ninja_path = args.ninja
 config.progress = args.progress
 if not is_windows():
@@ -382,10 +391,13 @@ cflags_base = [
     "-str reuse",
     "-multibyte",
     "-i include",
-    f"-i build/{config.version}/include",
+    f"-i {config.build_dir.as_posix()}/{config.version}/include",
     f"-DBUILD_VERSION={version_num}",
     f"-DVERSION_{config.version}",
 ]
+
+if args.coop:
+    cflags_base.append("-DCOLO_COOP=1")
 
 if args.debug:
     cflags_base.extend(["-sym on", "-DDEBUG=1"])

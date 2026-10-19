@@ -742,7 +742,10 @@ def generate_build_ninja(
     # symbol table without touching section data or relocations.
     gnu_objcopy = binutils / f"powerpc-eabi-objcopy{EXE}"
     prodg_cmd = (
-        f"{CHAIN}{prodg_env}{wrapper_cmd}{prodg_ngccc} $cflags -c -o $out $in"
+        # prodg_env already begins with CHAIN (it chains a `set` of
+        # SN_NGC_PATH), so do not wrap this a second time: `cmd /c cmd /c set
+        # VAR=x && prog` loses the variable and ngccc aborts.
+        f"{prodg_env}{wrapper_cmd}{prodg_ngccc} $cflags -c -o $out $in"
         f" && {gnu_objcopy} $out"
     )
     prodg_implicit: List[Optional[Path]] = [
