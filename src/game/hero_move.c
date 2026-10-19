@@ -2496,6 +2496,27 @@ u8 heroMoveGetResID(u32* group, u32* id, s32 member)
 
 static void proc1Step(f32 distance);
 
+/* Field member -> logical input pad.
+
+   Logical pad IDs are 1-based: Dolphin/SI port 0 is logical pad 1 and port 1 is
+   logical pad 2, confirmed at runtime (docs/coop/hook_inventory.md section 11).
+   Member 0 is Wes on pad 1; member 1 is Rui on pad 2. Retail reads pad 1 for
+   whichever member it is moving, so without COLO_COOP this collapses to the
+   original constant and the generated code is unchanged. */
+#ifdef COLO_COOP
+#define COOP_PAD(member) ((member) + 1)
+
+/* Whether the non-leader field member is under human control. Co-op is a
+   lobby option, so this is runtime state; the co-op lobby sets it once both
+   players have joined and picked their roles. */
+static u8 coopFieldActive = TRUE;
+
+int coopFieldIsActive(void) { return coopFieldActive != 0; }
+void coopFieldSetActive(int active) { coopFieldActive = (u8)(active != 0); }
+#else
+#define COOP_PAD(member) 1
+#endif
+
 u32 heroMoveMain(void)
 {
     extern u32 GSinputButtonsChanged(s32);
@@ -2559,7 +2580,29 @@ u32 heroMoveMain(void)
 
     for (i = 0; i < 2; i++) {
         if (heroMoveCheckMember(i) && i != lbl_80426BD0.leader) {
+#ifdef COLO_COOP
+            /* Two-player field control. Retail runs the follower AI for the
+               non-leader member; under co-op that member takes human movement
+               from its own pad instead (see COOP_PAD).
+
+               This is a runtime branch rather than an #ifdef around
+               partnerMove, for two reasons: co-op is a lobby option and has to
+               be switchable without rebuilding, and removing the partnerMove
+               call lets the linker dead-strip it and its callees, which moves
+               every section after .text and destroys address compatibility
+               with retail.
+
+               proc1Step below stays driven by the leader's distance alone, so
+               shared step effects (poison, friendship) never advance twice. */
+            if (coopFieldIsActive()) {
+                moveLeader__F15HEROMOVE_MEMBER(i);
+                procStep(i);
+            } else {
+                partnerMove(i);
+            }
+#else
             partnerMove(i);
+#endif
         }
     }
     distance = moveLeader__F15HEROMOVE_MEMBER(lbl_80426BD0.leader);
@@ -2592,7 +2635,7 @@ f32 moveLeader__F15HEROMOVE_MEMBER(s32 member)
     u32 id;
     f32 turn;
 
-    if ((fn_800F7BC4(1) & GSinputButtonsChanged(1) & 0x100) != 0 &&
+    if ((fn_800F7BC4(COOP_PAD(member)) & GSinputButtonsChanged(COOP_PAD(member)) & 0x100) != 0 &&
         updateChat__F15HEROMOVE_MEMBER(member) != 0) {
         return 0.0f;
     }
@@ -2667,21 +2710,21 @@ void heroReadStick(s32 member, f32* speed)
     getResID(&group, &id, member);
     heroMoveGetModel(member);
 
-    x = GSinputGetLeftStickXData(1, 1);
-    y = GSinputGetLeftStickYData(1, 1);
-    subX = GSinputGetLeftStickXData(1, 0);
-    subY = GSinputGetLeftStickYData(1, 0);
+    x = GSinputGetLeftStickXData(COOP_PAD(member), 1);
+    y = GSinputGetLeftStickYData(COOP_PAD(member), 1);
+    subX = GSinputGetLeftStickXData(COOP_PAD(member), 0);
+    subY = GSinputGetLeftStickYData(COOP_PAD(member), 0);
     if (x == 0 && y == 0) {
-        if (fn_800F7BC4(1) & 8) {
+        if (fn_800F7BC4(COOP_PAD(member)) & 8) {
             y = -56;
         }
-        if (fn_800F7BC4(1) & 4) {
+        if (fn_800F7BC4(COOP_PAD(member)) & 4) {
             y = 56;
         }
-        if (fn_800F7BC4(1) & 1) {
+        if (fn_800F7BC4(COOP_PAD(member)) & 1) {
             x = -56;
         }
-        if (fn_800F7BC4(1) & 2) {
+        if (fn_800F7BC4(COOP_PAD(member)) & 2) {
             x = 56;
         }
         subX = x;
