@@ -586,31 +586,15 @@ slower.
 
 ### Open
 
-- The on-screen controller overlay does not animate for a **keyboard**. It is
-  device-specific, not port-specific: swapping the devices (keyboard to P1,
-  gamepad to P2) moves the dead panel with the keyboard, and the gamepad
-  animates on either port. So port-1 sampling and drawing are both fine, and
-  `Pad::GetStatus()` returns neutral for a keyboard device at the overlay's
-  call site while the same call inside the SI poll returns the input the game
-  plainly acts on.
+- Nothing. The controller overlay was working; the report was a misreading.
+  Arrow keys bind to the **D-Pad** (HID 82/81/80/79) and WASD to the **Main
+  Stick** (`controller_bindings.hpp` `DefaultBindings`). Colosseum's field code
+  moves the character on the D-pad as well as the stick - `heroReadStick` tests
+  `fn_800F7BC4(pad) & 8/4/1/2` and overrides the stick axes from them - so
+  driving Rui with the arrow keys moved her while the overlay's stick art
+  correctly stayed centred and the D-pad lit instead.
 
-  Ruled out by reading, so none of this needs re-deriving:
-
-  | candidate | why not |
-  |---|---|
-  | input channel | `GetCurrentInputChannel` is read only by `RelativeInputState` (mouse-style relative inputs), never for key presses |
-  | art coverage | `ArtStateFromPad` maps every button, all four D-pad bits, both sticks and both triggers |
-  | keyboard mapping | `DefaultBindings` binds WASD to the **Main Stick** (`Calibration 100.00`), not the D-pad, so `art.stick` should move |
-  | port indexing | one symmetric loop fills `input_status[0..3]`, and a gamepad on P2 animates |
-
-  The one asymmetry left in the code: `SI.cpp:557` calls
-  `SetCurrentInputChannel(SerialInterface)` **and `UpdateInput()`** immediately
-  before reading any pad, while the overlay's sampler
-  (`dolphin_runtime.cpp:4426`, in the `vi_end_field_event` callback) calls
-  neither. An SDL gamepad's device state is pumped independently of
-  `UpdateInput()`; a DInput keyboard's is written only inside it. That fits the
-  symptom but is **unconfirmed** — the automation `screenshot` command captures
-  the game framebuffer without the ImGui layer, so it cannot be reproduced from
-  a scripted run, and confirming it needs an instrumented ModernGekko build.
-
-  Cosmetic: the input itself works, so this blocks nothing.
+  The earlier entry here claimed a keyboard-specific overlay fault and named
+  `UpdateInput()` as the suspect. That was wrong: `Pad::GetStatus()` was
+  returning the keyboard's input all along, and the four candidates it listed
+  were eliminating a bug that did not exist.
