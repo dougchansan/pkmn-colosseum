@@ -2514,13 +2514,6 @@ static void proc1Step(f32 distance);
 #define COOP_PAD(member) ((member) + 1)
 #endif
 
-/* Whether the non-leader field member is under human control. Co-op is a
-   lobby option, so this is runtime state; the co-op lobby sets it once both
-   players have joined and picked their roles. */
-static u8 coopFieldActive = TRUE;
-
-int coopFieldIsActive(void) { return coopFieldActive != 0; }
-void coopFieldSetActive(int active) { coopFieldActive = (u8)(active != 0); }
 #else
 #define COOP_PAD(member) 1
 #endif
@@ -2589,25 +2582,27 @@ u32 heroMoveMain(void)
     for (i = 0; i < 2; i++) {
         if (heroMoveCheckMember(i) && i != lbl_80426BD0.leader) {
 #ifdef COLO_COOP
-            /* Two-player field control. Retail runs the follower AI for the
-               non-leader member; under co-op that member takes human movement
-               from its own pad instead (see COOP_PAD).
+            /* Two-player field control: the non-leader member takes human
+               movement from its own pad (see COOP_PAD) instead of the follower
+               AI.
 
-               This is a runtime branch rather than an #ifdef around
-               partnerMove, for two reasons: co-op is a lobby option and has to
-               be switchable without rebuilding, and removing the partnerMove
-               call lets the linker dead-strip it and its callees, which moves
-               every section after .text and destroys address compatibility
-               with retail.
+               This MUST stay a one-for-one call swap. Growing heroMoveMain
+               grows .text, which moves every later section including .bss -
+               and the game reaches its globals partly through addresses baked
+               into code that no relocation rewrites. A +192 build put the pad
+               table's symbol at 0x80401CD0 while the game kept filling the one
+               at 0x80401C10, so every pad read returned an empty slot and Rui
+               got no input at all. Size neutrality is what keeps the symbol
+               and the baked-in address agreeing.
+
+               partnerMove is kept alive via FORCEACTIVE (see configure.py):
+               dropping its only call would let the linker dead-strip it and
+               its callees, which shrinks .text and moves everything the other
+               way.
 
                proc1Step below stays driven by the leader's distance alone, so
                shared step effects (poison, friendship) never advance twice. */
-            if (coopFieldIsActive()) {
-                moveLeader__F15HEROMOVE_MEMBER(i);
-                procStep(i);
-            } else {
-                partnerMove(i);
-            }
+            moveLeader__F15HEROMOVE_MEMBER(i);
 #else
             partnerMove(i);
 #endif

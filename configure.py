@@ -404,6 +404,14 @@ cflags_base = [
 
 if args.coop:
     cflags_base.append("-DCOLO_COOP=1")
+    # The co-op build swaps heroMoveMain's partnerMove call for
+    # moveLeader. That leaves partnerMove with no caller, and dead-
+    # stripping it (and its callees) shrinks .text by ~6.5KB, which
+    # moves every later section. Keeping it linked is what makes the
+    # edit size-neutral, which the game depends on: some globals are
+    # reached through addresses baked into code that no relocation
+    # rewrites, so .bss must not move.
+    config.force_active_symbols.setdefault("main", []).append("partnerMove")
 if args.coop_pad_diag:
     cflags_base.append("-DCOLO_COOP_PAD_DIAG=1")
 
