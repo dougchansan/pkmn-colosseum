@@ -411,3 +411,136 @@ independently by the retail code with no patch at all.
   the Dolphin scripting harness needs no payload, no hooks and no patched DOL,
   and it produced every result in §11. Use it for evidence; reserve the payload
   for changing behaviour.
+
+---
+
+## 13. The recomp: a savestate restores the other build's code [R]
+
+Measured on ModernGekko (not Dolphin), co-op DOL `47f8322f…`, hook-aware
+module, probe mod `coop_mod.c` (`diag8`), headless, automation driving
+`main_x` in 24-30 frame taps on port 0 then port 1.
+
+### What the field map actually is — re-derived from the shipped DOL
+
+§2's offsets were right, and now have a second, independent derivation that
+does not go through Dolphin. `GSinputGetLeftStickXData` (0x800F7A7C) is nine
+instructions:
+
+```
+800F7A7C  lis   r5, 0x8040
+800F7A80  lwzu  r0, 0x1c10(r5)      ; table 0x80401C10
+800F7A88  cmpw  r0, r3              ; 4-way scan, stride 0x6C, key +0x00
+...
+800F7AD8  cmpwi r4, 1
+800F7AE0  lbz   r3, 0x58(r5)        ; sel == 1 -> processed
+800F7AE8  lbz   r3, 0x26(r5)        ; else      -> raw
+```
+
+So the table base, the stride, the key and both stick offsets are readable
+straight out of the binary, and `GSinputRead`'s
+`memcpy(entry+0x24, entry+0x18, 12)` fixes `+0x18` as the incoming SI snapshot
+and `+0x24` as the latched copy. **The map was never the problem.**
+
+### Both logical pads receive input, independently
+
+Driving automation port 0 and then port 1, with the probe logging every change:
+
+| | port 0 tap | port 1 tap |
+|---|---|---|
+| `id=1` raw `+0x26` | 0 → 56 → 0 → 200 → 0 | unchanged |
+| `id=2` raw `+0x26` | unchanged | 0 → 56 → 0 → 200 → 0 |
+
+`gate(id) -> 0 (POLLED)` for all four ids; `GSinputRead` runs ~once per frame
+per pad. **Port 0 is logical pad 1 and port 1 is logical pad 2 in the recomp,
+exactly as §11 found under Dolphin, and the pad table is live for both.**
+
+**The earlier "`+0x24` and `+0x26/+0x27` never change" reading was wrong.** It
+came from sampling with no input actually applied: the taps in that session
+landed before the field code began reading, because the harness's "settle"
+wait was satisfied instantly by the frame-count jump that `--load-state`
+itself causes.
+
+### Rui never moves because the running code is the retail build
+
+The probe counts `heroReadStick` (0x8012E388, same address in both builds) by
+its member argument:
+
+```
+readStick=[491 0 0 0]      ; 491 calls, every one with member 0
+moveLeader=[0 0 0 0]       ; hook at the co-op address 0x8012E7BC never fires
+main=0                     ; hook at the co-op address 0x8012EBD8 never fires
+```
+
+`heroReadStick` has exactly one caller (`moveLeader`, 0x8012E858) and
+`moveLeader` exactly two (both in `heroMoveMain`), so `heroMoveMain` is
+running — but its co-op branch is not, and the two hooks placed at the co-op
+addresses never fire while the one at the shared address does.
+
+Reading the instruction at the call site settles it. The co-op edit is a single
+`bl` and the two builds put it four bytes apart:
+
+```
+retail   8012EE28  bl 0x8012DE94    partnerMove   (follower AI)
+co-op    8012EE2C  bl 0x8012E7BC    moveLeader    (human control)
+```
+
+| boot | word at 0x8012EE28 | word at 0x8012EE2C | variant in RAM |
+|---|---|---|---|
+| co-op DOL, no savestate | `7F83E378` | `4BFFF991` → 0x8012E7BC | **CO-OP** |
+| co-op DOL + `part1-rui-named.sav` | `4BFFF06D` → 0x8012DE94 | `3B9C0001` | **RETAIL** |
+
+A Dolphin savestate carries the whole MEM1 image, `.text` included. Every state
+in `states/` was captured on 2026-08-19/20, months before the co-op build
+existed, so **loading one replaces the co-op code in RAM with the code of the
+build it was captured on.** Rui then gets `partnerMove`, the follower AI, which
+is precisely what the position probe shows her doing: her model tracks Wes
+(member 1 went from `(0, 0, 313.0)` to `(6.5, 0.03, 323.6)` while Wes walked
+`0 → 15.5`).
+
+The same control explains the SMC noise, and reverses §12's last bullet for
+this case:
+
+| | SMC chunk hash mismatches | `heroMoveMain` in RAM |
+|---|---|---|
+| with `part1-rui-named.sav` | **66** | retail |
+| no savestate | **0** | co-op |
+
+The mismatches are not a red herring here: they are the savestate's text
+disagreeing with the module's, chunk by chunk, which also drops ~66 chunks of
+the game onto the interpreter.
+
+### Consequence: the savestates cannot be reused across builds
+
+Restoring `.text` from the DOL after a load does not rescue them. The co-op
+edit grows `heroReadStick` by 4 bytes, so **4495 text symbols from
+0x8012E7B8 to the end of text1 shift by +4**, and a savestate's data and heap
+are full of code pointers from the build that wrote them — `heroMoveMain`
+itself is reached through one. A retail-era pointer to 0x8012EBD4 lands on
+`moveLeader`'s trailing `blr` in a co-op image.
+
+So a co-op savestate has to be captured on the co-op build. Nothing in
+`states/` qualifies and `GC/USA/Card A` is empty, so there is no in-game save
+to load either.
+
+### Reproducing
+
+```
+# probe mod
+cmake --build <modsbuild> --target colosseum_coop_mod
+# hook-aware pass needs CO-OP function bounds: the retail CSV has
+# moveLeader at 0x8012E7B8 and would reject the hook
+python tools/coop/gen_functions_csv.py \
+    --base <recomp>/patches/GC6E01-functions.csv > build-coop/GC6E01/functions.csv
+python <recomp>/scripts/make-hook-aware-module.py --src <built>/dolrecomp-output/generated \
+    --dst <built>/hook-aware/generated --functions build-coop/GC6E01/functions.csv \
+    --mods <coop>/mods --idle-continuation 800FEB9C
+```
+
+Two harness rules the sessions above cost us:
+
+- **A relative frame wait straddling `--load-state` is not a wait.** The load
+  jumps `frame_count` by ~152000, so "wait for +240 frames" returns at once and
+  the taps land before the field is reading input. Wait for the jump to be
+  behind you first.
+- **`commands/` is read with `directory_iterator`, so a half-written file is a
+  command.** Stage the file outside the directory and rename it in.
