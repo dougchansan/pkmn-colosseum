@@ -586,10 +586,31 @@ slower.
 
 ### Open
 
-- The on-screen controller overlay animates P1 but not P2. `DrawInputOverlay`
-  reads `input_status[port]`, filled from `Pad::GetStatus(port)` for all four
-  ports in one loop, and `CSIDevice_GCController::GetPadStatus` reads the same
-  `Pad::GetStatus(m_device_number)` the game sees — so the draw path is
-  symmetric and the asymmetry has to be upstream of it. Unconfirmed; the
-  automation `screenshot` command captures the game framebuffer without the
-  ImGui overlay, so it cannot be reproduced from a scripted run.
+- The on-screen controller overlay does not animate for a **keyboard**. It is
+  device-specific, not port-specific: swapping the devices (keyboard to P1,
+  gamepad to P2) moves the dead panel with the keyboard, and the gamepad
+  animates on either port. So port-1 sampling and drawing are both fine, and
+  `Pad::GetStatus()` returns neutral for a keyboard device at the overlay's
+  call site while the same call inside the SI poll returns the input the game
+  plainly acts on.
+
+  Ruled out by reading, so none of this needs re-deriving:
+
+  | candidate | why not |
+  |---|---|
+  | input channel | `GetCurrentInputChannel` is read only by `RelativeInputState` (mouse-style relative inputs), never for key presses |
+  | art coverage | `ArtStateFromPad` maps every button, all four D-pad bits, both sticks and both triggers |
+  | keyboard mapping | `DefaultBindings` binds WASD to the **Main Stick** (`Calibration 100.00`), not the D-pad, so `art.stick` should move |
+  | port indexing | one symmetric loop fills `input_status[0..3]`, and a gamepad on P2 animates |
+
+  The one asymmetry left in the code: `SI.cpp:557` calls
+  `SetCurrentInputChannel(SerialInterface)` **and `UpdateInput()`** immediately
+  before reading any pad, while the overlay's sampler
+  (`dolphin_runtime.cpp:4426`, in the `vi_end_field_event` callback) calls
+  neither. An SDL gamepad's device state is pumped independently of
+  `UpdateInput()`; a DInput keyboard's is written only inside it. That fits the
+  symptom but is **unconfirmed** — the automation `screenshot` command captures
+  the game framebuffer without the ImGui layer, so it cannot be reproduced from
+  a scripted run, and confirming it needs an instrumented ModernGekko build.
+
+  Cosmetic: the input itself works, so this blocks nothing.
