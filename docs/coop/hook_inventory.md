@@ -544,3 +544,52 @@ Two harness rules the sessions above cost us:
   behind you first.
 - **`commands/` is read with `directory_iterator`, so a half-written file is a
   command.** Stage the file outside the directory and rename it in.
+
+---
+
+## 14. G2 done: Rui moves independently on pad 2 [R]
+
+With a save state captured **on the co-op build** (via a memory card save, which
+carries no code and so crosses builds freely), `heroMoveMain`'s co-op branch
+runs and the two members are separately controllable.
+
+Phenac City fountain plaza, 40-frame taps, positions read from the game's own
+resource table (`GSresGetResource(0, resId)` then the VECTOR at `model+0x18`),
+because the runner's `navigation_player_*` reports the leader only:
+
+| tap | Wes (member 0) | Rui (member 1) |
+|---|---|---|
+| settled | 28.30 | 26.97 |
+| **port 0** right | **28.30 → 74.11** | 26.97 → 26.97 |
+| **port 0** left | **74.11 → 33.09** | 26.97 → 26.59 |
+| **port 1** right | 33.09 → 33.09 | **26.59 → 30.62** |
+| **port 1** left | 33.09 → 33.09 | **30.62 → -0.55** |
+
+Port 0 moves Wes and leaves Rui standing; port 1 moves Rui and leaves Wes
+standing. Screenshots agree: after the port-0 taps Wes is across the plaza with
+Rui still at the fountain, and after the port-1 taps Rui has walked around the
+fountain while Wes has not moved.
+
+### The savestate was also the performance problem
+
+| | SMC chunk mismatches | field rate |
+|---|---|---|
+| retail-code state on the co-op build | 66 | ~13 fps (reported) |
+| co-op state on the co-op build | **0** (`smc_failed=0`) | **29.97 fps** |
+
+29.97 is the field's own 30 Hz cap, so the co-op build runs at full speed. The
+~13 fps was ~66 chunks failing their hash and dropping to the interpreter —
+the same cause as the movement bug, not a separate one. The module's build
+options are byte-identical to a shipping module's (`flags`, `backend=c`,
+`patches=004db4ab7e71fefa`), so nothing about the co-op build is inherently
+slower.
+
+### Open
+
+- The on-screen controller overlay animates P1 but not P2. `DrawInputOverlay`
+  reads `input_status[port]`, filled from `Pad::GetStatus(port)` for all four
+  ports in one loop, and `CSIDevice_GCController::GetPadStatus` reads the same
+  `Pad::GetStatus(m_device_number)` the game sees — so the draw path is
+  symmetric and the asymmetry has to be upstream of it. Unconfirmed; the
+  automation `screenshot` command captures the game framebuffer without the
+  ImGui overlay, so it cannot be reproduced from a scripted run.
