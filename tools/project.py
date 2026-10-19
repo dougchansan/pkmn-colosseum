@@ -742,7 +742,7 @@ def generate_build_ninja(
     # symbol table without touching section data or relocations.
     gnu_objcopy = binutils / f"powerpc-eabi-objcopy{EXE}"
     prodg_cmd = (
-        f"{prodg_env}{wrapper_cmd}{prodg_ngccc} $cflags -c -o $out $in"
+        f"{CHAIN}{prodg_env}{wrapper_cmd}{prodg_ngccc} $cflags -c -o $out $in"
         f" && {gnu_objcopy} $out"
     )
     prodg_implicit: List[Optional[Path]] = [
@@ -831,6 +831,20 @@ def generate_build_ninja(
     constant_export = config.tools_dir / "export_constant_symbol.py"
     constant_import = config.tools_dir / "import_constant_symbol.py"
     jump_table_import = config.tools_dir / "import_jump_table_symbol.py"
+    def chained(command: str) -> str:
+        """Ensure a `&&` command runs through a shell on Windows.
+
+        Ninja does not invoke a shell on Windows: the first token is run via
+        CreateProcess and everything after it, `&&` included, arrives as literal
+        arguments. Without this the compiler is handed the chained command's
+        flags and aborts with "Unknown option '-object'". CHAIN is the existing
+        convention for this (see mwcc_extab_cmd), and mwcc_extab_cmd /
+        mwcc_sjis_extab_cmd already carry it, so only add it when absent.
+        """
+        if CHAIN and not command.startswith(CHAIN):
+            return CHAIN + command
+        return command
+
     for rule, command in [
         ("mwcc", mwcc_cmd),
         ("mwcc_sjis", mwcc_sjis_cmd),
@@ -839,7 +853,7 @@ def generate_build_ninja(
     ]:
         n.rule(
             name=rule + "_constant_export",
-            command=command + f' && $python {constant_export} --objcopy "{gnu_objcopy}"'
+            command=chained(command) + f' && $python {constant_export} --objcopy "{gnu_objcopy}"'
             ' --object "$out" --symbol "$constant_symbol" --offset "$constant_offset"'
             ' --expected "$constant_bytes"',
             description="MWCC $out (export shared constant)",
@@ -849,14 +863,14 @@ def generate_build_ninja(
         # TEMPORARY constant_import: see tools/import_constant_symbol.py.
         n.rule(
             name=rule + "_constant_import",
-            command=command + f" && $python {constant_import} --object \"$out\" $constant_imports",
+            command=chained(command) + f" && $python {constant_import} --object \"$out\" $constant_imports",
             description="MWCC $out (import shared constant)",
             depfile="$basefile.d",
             deps="gcc",
         )
         n.rule(
             name=rule + "_jump_table_import",
-            command=command + f' && $python {jump_table_import} --object "$out"'
+            command=chained(command) + f' && $python {jump_table_import} --object "$out"'
             ' --owner "$jump_table_owner" --symbol "$jump_table_symbol"'
             ' --function "$jump_table_function" --owner-offset "$jump_table_owner_offset"',
             description="MWCC $out (import verified jump table)",
@@ -865,7 +879,7 @@ def generate_build_ninja(
         )
         n.rule(
             name=rule + "_constant_import_jump_table_import",
-            command=command + f" && $python {constant_import} --object \"$out\" $constant_imports"
+            command=chained(command) + f" && $python {constant_import} --object \"$out\" $constant_imports"
             + f' && $python {jump_table_import} --object "$out"'
             ' --owner "$jump_table_owner" --symbol "$jump_table_symbol"'
             ' --function "$jump_table_function" --owner-offset "$jump_table_owner_offset"',
