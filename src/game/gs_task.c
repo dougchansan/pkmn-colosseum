@@ -584,6 +584,7 @@ typedef struct GsTaskFlagCursor {
 static inline u16 gsTaskFlagGetLinkedId(s32 index) {
     s16 id;
     s32 i;
+    GsTaskFlagDef* def;
 
     if (index < 0) {
         return 0;
@@ -596,7 +597,9 @@ static inline u16 gsTaskFlagGetLinkedId(s32 index) {
         for (i = 0; i < index - 1; i++) {
             id = ((GsTaskFlagDef*)lbl_80478F9C)[id].next;
         }
-        id = *(s16*)(lbl_80478F9C + id * 8 + 6);
+        def = (GsTaskFlagDef*)lbl_80478F9C;
+        def += id;
+        id = def->next;
     }
     return id;
 }
