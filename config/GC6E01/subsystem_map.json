@@ -697,7 +697,7 @@
 "seed": null
 },
 {
-"name": "fn_80008C40",
+"name": "dbgFlagMenuCursor",
 "addr": "0x80008C40",
 "size": 1336,
 "label": "gs-engine",

@@ -607,7 +607,7 @@ static inline u16 gsTaskFlagGetLinkedId(s32 index) {
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-void fn_80008C40(u8* window) {
+void dbgFlagMenuCursor(u8* window) {
     extern u8 menuDataBiosGetType(u32);
     u16 repeat;
     u16 trigger;
