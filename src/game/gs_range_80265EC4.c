@@ -100,10 +100,10 @@ static inline u32 d2presentCreateEffect(u16 species)
 #pragma opt_loop_invariants off
 void d2presentPlayGiftScene(int r3)
 {
-    extern int pokemonDataBiosGetVoice();
+    extern u16 pokemonDataBiosGetVoice();
     extern void* pokemonDataBiosGetPtr();
-    extern int GSsndGetStatus(u16);
-    extern int soundStartSE(u16);
+    extern int GSsndGetStatus(u32);
+    extern int soundStartSE(u32);
     extern u16 lbl_8047E6F8;
     extern f32 lbl_8047E6FC;
     u16 sequence;
