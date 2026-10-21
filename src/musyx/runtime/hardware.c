@@ -350,16 +350,16 @@ void hwSetADSR(u32 v, void* _adsr, u8 mode) {
   lbl_8047B024[v].changed[0] |= 0x10;
 }
 
-void fn_80162858(u32 voice, void* addr, u32 len) {
+void hwSetVirtualSampleLoopBuffer(u32 voice, void* addr, u32 len) {
   lbl_8047B024[voice].vSampleInfo.loopBufferAddr = addr;
   lbl_8047B024[voice].vSampleInfo.loopBufferLength = len;
 }
 
 u32 hwGetVirtualSampleState(u32 voice) { return lbl_8047B024[voice].vSampleInfo.inLoopBuffer; }
 
-u8 fn_8016288C(u32 voice) { return lbl_8047B024[voice].smp_info.compType; }
+u8 hwGetSampleType(u32 voice) { return lbl_8047B024[voice].smp_info.compType; }
 
-u16 fn_801628A0(u32 voice) { return lbl_8047B024[voice].smp_id; }
+u16 hwGetSampleID(u32 voice) { return lbl_8047B024[voice].smp_id; }
 
 
 void hwSetStreamLoopPS(u32 voice, u8 ps) { lbl_8047B024[voice].streamLoopPS = ps; }

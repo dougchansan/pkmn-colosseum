@@ -54,9 +54,9 @@ extern VS lbl_80446F10;                      /* vs */
 extern SYNTH_VOICE* lbl_8047AF48;            /* synthVoice */
 
 extern u32 aramGetStreamBufferAddress(u8 id, u32* len);
-extern void fn_80162858(u32 voice, void* addr, u32 len); /* hwSetVirtualSampleLoopBuffer */
-extern u16 fn_801628A0(u32 voice);           /* hwGetSampleID */
-extern u8 fn_8016288C(u32 voice);            /* hwGetSampleType */
+extern void hwSetVirtualSampleLoopBuffer(u32 voice, void* addr, u32 len); /* hwSetVirtualSampleLoopBuffer */
+extern u16 hwGetSampleID(u32 voice);           /* hwGetSampleID */
+extern u8 hwGetSampleType(u32 voice);            /* hwGetSampleType */
 extern u32 hwGetVirtualSampleState(u32 voice);           /* hwGetVirtualSampleState */
 extern u32 hwGetPos(u32 voice);           /* hwGetPos */
 extern u32 hwGetVirtualSampleID(u32 voice);
@@ -132,18 +132,18 @@ u32 vsSampleStartNotify(u8 voice) /* vsSampleStartNotify */
     sb = lbl_80446F10.voices[voice] = vsAllocateBuffer();
     if (sb != 0xFF) {
         addr = aramGetStreamBufferAddress(lbl_80446F10.voices[voice], 0);
-        fn_80162858(voice, (void*)addr, lbl_80446F10.bufferLength);
-        lbl_80446F10.streamBuffer[sb].info.smpID = fn_801628A0(voice);
+        hwSetVirtualSampleLoopBuffer(voice, (void*)addr, lbl_80446F10.bufferLength);
+        lbl_80446F10.streamBuffer[sb].info.smpID = hwGetSampleID(voice);
         lbl_80446F10.streamBuffer[sb].info.instID = vsNewInstanceID();
-        lbl_80446F10.streamBuffer[sb].smpType = fn_8016288C(voice);
+        lbl_80446F10.streamBuffer[sb].smpType = hwGetSampleType(voice);
         lbl_80446F10.streamBuffer[sb].voice = voice;
         if (lbl_80446F10.callback != NULL) {
             lbl_80446F10.callback(0, &lbl_80446F10.streamBuffer[sb].info);
             return (lbl_80446F10.streamBuffer[sb].info.instID << 8) | voice;
         }
-        fn_80162858(voice, 0, 0);
+        hwSetVirtualSampleLoopBuffer(voice, 0, 0);
     } else {
-        fn_80162858(voice, 0, 0);
+        hwSetVirtualSampleLoopBuffer(voice, 0, 0);
     }
 
     return 0xFFFFFFFF;

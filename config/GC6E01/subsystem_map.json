@@ -17049,7 +17049,7 @@
 "seed": "range"
 },
 {
-"name": "fn_800C0E60",
+"name": "__TRK_get_MSR",
 "addr": "0x800C0E60",
 "size": 8,
 "label": "dolphin-sdk",
@@ -17057,7 +17057,7 @@
 "seed": "range"
 },
 {
-"name": "fn_800C0E68",
+"name": "__TRK_set_MSR",
 "addr": "0x800C0E68",
 "size": 8,
 "label": "dolphin-sdk",
@@ -17105,7 +17105,7 @@
 "seed": "range"
 },
 {
-"name": "fn_800C11F4",
+"name": "ReadFPSCR",
 "addr": "0x800C11F4",
 "size": 36,
 "label": "dolphin-sdk",
@@ -17113,7 +17113,7 @@
 "seed": "range"
 },
 {
-"name": "fn_800C1218",
+"name": "WriteFPSCR",
 "addr": "0x800C1218",
 "size": 36,
 "label": "dolphin-sdk",
@@ -38473,7 +38473,7 @@
 "seed": "range"
 },
 {
-"name": "fn_80162858",
+"name": "hwSetVirtualSampleLoopBuffer",
 "addr": "0x80162858",
 "size": 32,
 "label": "musyx",
@@ -38489,7 +38489,7 @@
 "seed": "range"
 },
 {
-"name": "fn_8016288C",
+"name": "hwGetSampleType",
 "addr": "0x8016288C",
 "size": 20,
 "label": "musyx",
@@ -38497,7 +38497,7 @@
 "seed": "range"
 },
 {
-"name": "fn_801628A0",
+"name": "hwGetSampleID",
 "addr": "0x801628A0",
 "size": 20,
 "label": "musyx",
@@ -50417,7 +50417,7 @@
 "seed": null
 },
 {
-"name": "fn_801E1B54",
+"name": "PushReadedBuffer2",
 "addr": "0x801E1B54",
 "size": 48,
 "label": "dolphin-sdk",
@@ -50425,7 +50425,7 @@
 "seed": null
 },
 {
-"name": "fn_801E1B84",
+"name": "PopReadedBuffer2",
 "addr": "0x801E1B84",
 "size": 52,
 "label": "dolphin-sdk",
@@ -50441,7 +50441,7 @@
 "seed": null
 },
 {
-"name": "fn_801E1BE8",
+"name": "PopReadedBuffer",
 "addr": "0x801E1BE8",
 "size": 52,
 "label": "dolphin-sdk",

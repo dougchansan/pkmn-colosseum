@@ -2906,11 +2906,11 @@ void hwSetADSR(u32 index, void* ptr, u8 mode) {
 #pragma push
 #pragma optimization_level 2
 #if 0
-asm void fn_80162858(void) {
+asm void hwSetVirtualSampleLoopBuffer(void) {
 #include "src/game/people/people_field_fn_80162858.inc"
 }
 #else
-void fn_80162858(u32 index, u32 val1, u32 val2) {
+void hwSetVirtualSampleLoopBuffer(u32 index, u32 val1, u32 val2) {
     extern u32 lbl_8047B024;
     u32 offset = index * 0xF4;
     {
@@ -2941,11 +2941,11 @@ u32 hwGetVirtualSampleState(u32 index) {
 #pragma push
 #pragma optimization_level 2
 #if 0
-asm void fn_8016288C(void) {
+asm void hwGetSampleType(void) {
 #include "src/game/people/people_field_fn_8016288C.inc"
 }
 #else
-u8 fn_8016288C(u32 index) {
+u8 hwGetSampleType(u32 index) {
     PeopleFieldMoveSlot* entries = (*(PeopleFieldMoveSlot* volatile*)&lbl_8047B024);
 
     return entries[index].field_90;
@@ -2955,11 +2955,11 @@ u8 fn_8016288C(u32 index) {
 #pragma push
 #pragma optimization_level 2
 #if 0
-asm void fn_801628A0(void) {
+asm void hwGetSampleID(void) {
 #include "src/game/people/people_field_fn_801628A0.inc"
 }
 #else
-u16 fn_801628A0(u32 index) {
+u16 hwGetSampleID(u32 index) {
     PeopleFieldMoveSlot* entries = (*(PeopleFieldMoveSlot* volatile*)&lbl_8047B024);
 
     return entries[index].field_70;

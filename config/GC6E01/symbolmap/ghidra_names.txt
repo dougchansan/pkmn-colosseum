@@ -336,3 +336,13 @@ fn_801C6934 -> fadeEffectFluidDraw
 fn_80210BF0 -> fightReturnFalse_80210BF0
 fn_8022967C -> fightAiCheckRule11Effect7
 fn_8023C368 -> fightReturnFalse_8023C368
+fn_800C0E60 -> __TRK_get_MSR
+fn_800C0E68 -> __TRK_set_MSR
+fn_800C11F4 -> ReadFPSCR
+fn_800C1218 -> WriteFPSCR
+fn_80162858 -> hwSetVirtualSampleLoopBuffer
+fn_8016288C -> hwGetSampleType
+fn_801628A0 -> hwGetSampleID
+fn_801E1B54 -> PushReadedBuffer2
+fn_801E1B84 -> PopReadedBuffer2
+fn_801E1BE8 -> PopReadedBuffer

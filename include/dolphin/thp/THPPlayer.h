@@ -133,10 +133,10 @@ void PrepareReady(BOOL msg); /* PrepareReady */
 BOOL CreateReadThread(s32 priority);    /* CreateReadThread */
 void ReadThreadStart(void);            /* ReadThreadStart */
 void ReadThreadCancel(void);            /* ReadThreadCancel */
-void* fn_801E1BE8(void);           /* PopReadedBuffer */
+void* PopReadedBuffer(void);           /* PopReadedBuffer */
 void PushFreeReadBuffer(void* buffer);    /* PushFreeReadBuffer */
-void* fn_801E1B84(void);           /* PopReadedBuffer2 */
-BOOL fn_801E1B54(void* buffer);    /* PushReadedBuffer2 */
+void* PopReadedBuffer2(void);           /* PopReadedBuffer2 */
+BOOL PushReadedBuffer2(void* buffer);    /* PushReadedBuffer2 */
 
 /* THPAudioDecode.c */
 BOOL CreateAudioDecodeThread(s32 priority, void* arg); /* CreateAudioDecodeThread */

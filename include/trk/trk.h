@@ -143,7 +143,7 @@ extern void fn_800C0CC0(void* mutex);  /* TRKReleaseMutex */
 extern void fn_800C0CC8(void* mutex);  /* TRKAcquireMutex */
 extern void fn_800C0CD0(void* mutex);  /* TRKInitializeMutex */
 extern TRKResult TRKDoNotifyStopped(s32 event); /* TRKNubEvent */
-extern void fn_800C0E60(void);         /* TRKGetMSR or similar */
+extern void __TRK_get_MSR(void);         /* TRKGetMSR or similar */
 extern void fn_80003488(void* dst, const void* src, u32 size); /* memcpy variant */
 
 extern TRKResult TRKTerminateSerialHandler(void);    /* TRKTerminateSerialHandler */
