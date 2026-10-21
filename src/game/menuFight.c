@@ -402,7 +402,7 @@ extern s32 fn_800D37CC();
 extern void menuCreateOffScreen(void);
 extern u8 menuGetOffScreenFlag();
 extern void soundDuck(void);
-extern void fn_800D3074(void);
+extern void GSgfxSetFrameInterval(void);
 extern void* std082_flagGetValue();
 extern u32 floorGetCurrentContext();
 extern void GSeffectGetUpdateGapp(void);
@@ -446,7 +446,7 @@ u32 heroMoveRunEvent(u32 mode) {
     extern void menuCreateOffScreen(f32 value);
     extern u8 menuGetOffScreenFlag(void);
     extern void soundDuck(s32, s32, s32, s32);
-    extern void fn_800D3074(s32);
+    extern void GSgfxSetFrameInterval(s32);
     extern void* std082_flagGetValue(s32);
     extern u32 floorGetCurrentContext(void);
     extern void GSeffectGetUpdateGapp(void);
@@ -495,7 +495,7 @@ u32 heroMoveRunEvent(u32 mode) {
         _threadSwitch();
     }
     soundDuck(0x55, 0x1F4, 1, 1);
-    fn_800D3074(1);
+    GSgfxSetFrameInterval(1);
     dialogId = (std082_flagGetValue(0x8AE) == NULL) ? 0x41 : 0x109;
     result = 0;
 
@@ -503,7 +503,7 @@ u32 heroMoveRunEvent(u32 mode) {
     case 0:
         threadEntry = (void*)fn_8000DAB0;
         do {
-            fn_800D3074(1);
+            GSgfxSetFrameInterval(1);
             lbl_8047A2A4 = dialogId;
             lbl_8047A2A8 = floorGetCurrentContext();
             GSeffectGetUpdateGapp();
@@ -557,7 +557,7 @@ u32 heroMoveRunEvent(u32 mode) {
         menuReleaseOffScreen(lbl_8047B6F0 / (f32)(s32)tmp);
     }
     menuCloseSync(dialogId, 1);
-    fn_800D3074(2);
+    GSgfxSetFrameInterval(2);
     heroMoveTermEvent();
     GSmodelAllUnpauseAnimation();
     lbl_8047A2A0 = 0;

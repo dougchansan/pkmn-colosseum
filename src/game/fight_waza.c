@@ -921,7 +921,7 @@ void fn_80210B08(void* p1, void* p2, void* p3, u16 mode, u32 p5) {
 }
 
 /* Address: 0x80210BF0 | Size: 0x8 | Pattern: return_constant */
-u32 fn_80210BF0(void) { return 0; }
+u32 fightReturnFalse_80210BF0(void) { return 0; }
 
 /* 0x80210BF8 | size: 0x104 */
 void fightWazaWzxTypeFuncAttDefSpc(void* p1, void* p2, void* p3, u16 mode, u32 p5) {

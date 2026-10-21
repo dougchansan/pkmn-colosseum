@@ -4404,7 +4404,7 @@ u8 menuRuleCheckPokemonAllModes(void* pokemon, const s16* levels)
     return 1;
 }
 
-u8 fn_800774D4(void* pokemon, const s16* levels, s32 mode)
+u8 menuRuleCheckSlotModeDefault(void* pokemon, const s16* levels, s32 mode)
 {
     return menuRuleCheckSlotMode(pokemon, levels, mode,
                                  (const char*)lbl_80268A48,

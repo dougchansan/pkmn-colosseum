@@ -31,7 +31,7 @@
 extern u8 lbl_804001F0[];  /* GX state / FIFO state block */
 
 #ifndef PCPORT
-void fn_800D3074(u32 flag) {
+void GSgfxSetFrameInterval(u32 flag) {
     if (flag == 0) {
         return;
     }

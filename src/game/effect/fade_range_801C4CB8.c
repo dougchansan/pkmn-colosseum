@@ -6,7 +6,7 @@
  * static linkage, call chains) -- mixed-block split pass, 2026-07-01.
  * All functions asm-only until matched.
  *
- * Boundary bug fix (battle_grid.c 5-way split, 2026-07-07): fn_801C4CB8
+ * Boundary bug fix (battle_grid.c 5-way split, 2026-07-07): fadeEffectFuncCapture
  * (0x704 bytes) was physically sitting in the old monolithic
  * game/battle/battle_grid.c despite being outside that file's own
  * declared splits.txt range (which ended at 0x801C4CB8, exclusive) --
@@ -74,14 +74,14 @@ typedef struct FadeTrailWork {
 } FadeTrailWork;
 
 extern void fn_801C6688(f32 t);
-extern void fn_801C63C0(void* tex, GSvec* pos, f32 scale, f32 offset, f32 t, f32 alpha);
+extern void fadeEffectDrawCapturedQuad(void* tex, GSvec* pos, f32 scale, f32 offset, f32 t, f32 alpha);
 extern void fn_801C5B60(FadeTrailPoint* point, s32 alpha, f32 scale, f32 angle);
-extern void fn_801C5D60(void);
-extern void fn_801C673C(void);
+extern void fadeEffectSpinFirstInit(void);
+extern void fadeEffectEnd2D(void);
 extern void fn_801C680C(void* texture);
-extern void fn_801C53BC(void* texture);
+extern void fadeEffectCaptureInit(void* texture);
 extern void gfxVtxDescFree(void* ptr);
-extern void fn_800D3074(u32 enable);
+extern void GSgfxSetFrameInterval(u32 enable);
 extern void* GSresFindById(u32 resource);
 extern void GSgfxBeginBackFBCapture(void* texture, u32 (*callback)(void), u32 arg);
 extern void* gfxVtxDescAlloc(void);
@@ -197,8 +197,8 @@ void _fadeEffect_AdjustParms__Fv(void);
 u32 fn_801C6908(u32 range);
 void fn_801C5748(void);
 void fn_801C6688(f32 t);
-void fn_801C6934(void* texture, f32 progress, f32 alpha);
-u32 fn_801C6008(u32 finish, void* texture, f32 frame, f32 duration,
+void fadeEffectFluidDraw(void* texture, f32 progress, f32 alpha);
+u32 fadeEffectUDLRUpdate(u32 finish, void* texture, f32 frame, f32 duration,
                 f32 angle, f32 angleDuration);
 void _fadeEffectFunction_UDLR_FirstInit__FP9GStextureUs(void* texture,
                                                         u16 mode);
@@ -206,7 +206,7 @@ void _fadeEffectFunction_UDLR_FirstInit__FP9GStextureUs(void* texture,
 /* fade_effect.o functions: fade_range_801C6934.c (FADE_FLUID_TU) builds
  * only the fade_fluid.o range below. */
 #ifndef FADE_FLUID_TU
-u32 fn_801C4CB8(u32 finish, void* texture, f32 frame, f32 duration)
+u32 fadeEffectFuncCapture(u32 finish, void* texture, f32 frame, f32 duration)
 {
     FadeCameraWork* camera;
     f32 textureMatrix[3][4];
@@ -227,7 +227,7 @@ u32 fn_801C4CB8(u32 finish, void* texture, f32 frame, f32 duration)
 
     if (lbl_8047B3B0 == 1) {
         lbl_8047B3B0 = 0;
-        fn_801C53BC(texture);
+        fadeEffectCaptureInit(texture);
     }
 
     if (lbl_8047B3B0 == 0 && (u8)finish == 0 && lbl_8047B3B4 != NULL) {
@@ -254,19 +254,19 @@ u32 fn_801C4CB8(u32 finish, void* texture, f32 frame, f32 duration)
     position.x = 320.0f;
     position.y = 240.0f;
     position.z = 0.0f;
-    fn_801C63C0(texture, &position, 1.0f, 0.0f, progress,
+    fadeEffectDrawCapturedQuad(texture, &position, 1.0f, 0.0f, progress,
                 0.0f);
 
     position.x = 320.0f + camera->value;
     position.y = 240.0f;
     position.z = 0.0f;
-    fn_801C63C0(texture, &position, 1.0f, 0.0f, progress,
+    fadeEffectDrawCapturedQuad(texture, &position, 1.0f, 0.0f, progress,
                 0.5f);
 
     position.x = 320.0f - camera->value;
     position.y = 240.0f;
     position.z = 0.0f;
-    fn_801C63C0(texture, &position, 1.0f, 0.0f, progress,
+    fadeEffectDrawCapturedQuad(texture, &position, 1.0f, 0.0f, progress,
                 0.5f);
 
     if (lbl_8047B3B4 != NULL) {
@@ -368,9 +368,9 @@ u32 fn_801C4CB8(u32 finish, void* texture, f32 frame, f32 duration)
     return finish;
 }
 
-void fn_801C53BC(void* texture)
+void fadeEffectCaptureInit(void* texture)
 {
-    fn_800D3074(1);
+    GSgfxSetFrameInterval(1);
     ((FadeCameraWork*)lbl_80467030)->tex0 = GSresFindById(0x0F861200);
     ((FadeCameraWork*)lbl_80467030)->tex1 = GSresFindById(0x0F871200);
     {
@@ -422,16 +422,16 @@ u32 fn_801C5530(u32 arg0, void* texture, f32 frame, f32 duration, f32 angle, f32
         pos.x = 320.0f;
         pos.y = 240.0f;
         pos.z = 0.0f;
-        fn_801C63C0(tex, &pos, 1.0f, 0.0f, t, rot);
+        fadeEffectDrawCapturedQuad(tex, &pos, 1.0f, 0.0f, t, rot);
     }
     return result;
 }
 
-u32 fn_801C55D8(u32 finish, void* texture, f32 frame, f32 duration,
+u32 fadeEffectFuncFluid(u32 finish, void* texture, f32 frame, f32 duration,
                 f32 angle, f32 angleDuration)
 {
     /* RULE-EXCEPTION(title-path): parameter copies whose only effect is the
-     * prologue's copy order (texture last, as in fn_801C5ED0) - see
+     * prologue's copy order (texture last, as in fadeEffectFuncUDLR8) - see
      * docs/RULE_EXCEPTIONS.md */
     f32 frameLocal = frame;
     u32 result = finish;
@@ -474,7 +474,7 @@ u32 fn_801C55D8(u32 finish, void* texture, f32 frame, f32 duration,
     fn_801C6688(progress);
     if ((u8)result == 1) {
         fadeFluidEvaluate();
-        fn_801C6934(tex, progress, alpha);
+        fadeEffectFluidDraw(tex, progress, alpha);
     }
     return result;
 }
@@ -483,7 +483,7 @@ void fn_801C5748(void)
 {
     GSvec position;
 
-    fn_800D3074(1);
+    GSgfxSetFrameInterval(1);
     ((FadeCameraWork*)lbl_80467030)->tex0 = GSresFindById(0x0F861200);
     ((FadeCameraWork*)lbl_80467030)->tex1 = GSresFindById(0x0F871200);
     ((FadeCameraWork*)lbl_80467030)->frame = 0;
@@ -523,7 +523,7 @@ void fn_801C5748(void)
 /* RULE-EXCEPTION(title-path): pool constants written as one-element const
  * arrays so MWCC loads them instead of folding them - see
  * docs/RULE_EXCEPTIONS.md. As literals, 896.0f becomes a hoisted temporary
- * and the four saved FPRs rotate; as loads, fn_801C5898 matches and the
+ * and the four saved FPRs rotate; as loads, fadeEffectFuncSpin matches and the
  * four land at 0x8047E04C - 0x8047E05C in the TU pool, where retail has
  * them. */
 static const f32 lbl_8047E04C[1] = { 360.0f };
@@ -531,7 +531,7 @@ static const f32 lbl_8047E050[1] = { 804.24774f };
 static const f32 lbl_8047E054[1] = { 896.0f };
 static const f32 lbl_8047E058[1] = { -256.0f };
 
-u32 fn_801C5898(u32 arg0, void* texture, f32 frame, f32 duration,
+u32 fadeEffectFuncSpin(u32 arg0, void* texture, f32 frame, f32 duration,
                 f32 angle, f32 angleDuration)
 {
     FadeCameraWork* camera;
@@ -549,7 +549,7 @@ u32 fn_801C5898(u32 arg0, void* texture, f32 frame, f32 duration,
 
     if (lbl_8047B3B0 == 1) {
         lbl_8047B3B0 = 0;
-        fn_801C5D60();
+        fadeEffectSpinFirstInit();
     }
 
     progress = frame / duration;
@@ -569,7 +569,7 @@ u32 fn_801C5898(u32 arg0, void* texture, f32 frame, f32 duration,
     position.x = 320.0f;
     position.y = 240.0f;
     position.z = 0.0f;
-    fn_801C63C0(texture, &position, 1.0f, 0.0f,
+    fadeEffectDrawCapturedQuad(texture, &position, 1.0f, 0.0f,
                 progress, angleProgress);
     fn_801C680C(((FadeCameraWork*)lbl_80467030)->tex0);
 
@@ -617,7 +617,7 @@ u32 fn_801C5898(u32 arg0, void* texture, f32 frame, f32 duration,
                     (s32)(alphaScale * (f32)trail[i].point[0].alpha),
                     1.0f, trail[i].point[0].angle);
     }
-    fn_801C673C();
+    fadeEffectEnd2D();
     return arg0;
 }
 
@@ -669,14 +669,14 @@ void fn_801C5B60(FadeTrailPoint* position, s32 alpha, f32 scale, f32 angle)
     gfxEnd();
 }
 
-void fn_801C5D60(void)
+void fadeEffectSpinFirstInit(void)
 {
     FadeTrailWork* trails = (FadeTrailWork*)lbl_80466E50;
     GSvec start[2];
     s32 side;
     s32 point;
 
-    fn_800D3074(1);
+    GSgfxSetFrameInterval(1);
     ((FadeCameraWork*)lbl_80467030)->tex0 = GSresFindById(0x0F861200);
     ((FadeCameraWork*)lbl_80467030)->tex1 = GSresFindById(0x0F871200);
     ((FadeCameraWork*)lbl_80467030)->frame = 0;
@@ -706,7 +706,7 @@ void fn_801C5D60(void)
     _fadeEffect_AdjustParms__Fv();
 }
 
-u32 fn_801C5ED0(u32 arg0, void* texture, f32 arg2, f32 arg3, f32 arg4, f32 arg5) {
+u32 fadeEffectFuncUDLR8(u32 arg0, void* texture, f32 arg2, f32 arg3, f32 arg4, f32 arg5) {
     f32 arg2Local = arg2;
     u32 arg0Local = arg0;
     f32 arg3Local = arg3;
@@ -723,10 +723,10 @@ u32 fn_801C5ED0(u32 arg0, void* texture, f32 arg2, f32 arg3, f32 arg4, f32 arg5)
         _fadeEffectFunction_UDLR_FirstInit__FP9GStextureUs(tex, 8);
     }
 
-    return fn_801C6008(arg0Local, tex, arg2Local, arg3Local, arg4Local, arg5Local);
+    return fadeEffectUDLRUpdate(arg0Local, tex, arg2Local, arg3Local, arg4Local, arg5Local);
 }
 
-u32 fn_801C5F6C(u32 arg0, void* texture, f32 arg2, f32 arg3, f32 arg4, f32 arg5) {
+u32 fadeEffectFuncUDLR2(u32 arg0, void* texture, f32 arg2, f32 arg3, f32 arg4, f32 arg5) {
     f32 arg2Local = arg2;
     u32 arg0Local = arg0;
     f32 arg3Local = arg3;
@@ -743,17 +743,17 @@ u32 fn_801C5F6C(u32 arg0, void* texture, f32 arg2, f32 arg3, f32 arg4, f32 arg5)
         _fadeEffectFunction_UDLR_FirstInit__FP9GStextureUs(tex, 2);
     }
 
-    return fn_801C6008(arg0Local, tex, arg2Local, arg3Local, arg4Local, arg5Local);
+    return fadeEffectUDLRUpdate(arg0Local, tex, arg2Local, arg3Local, arg4Local, arg5Local);
 }
 
 /* RULE-EXCEPTION(title-path): pool constant declared here and defined after
- * fn_801C6008 - see docs/RULE_EXCEPTIONS.md. As a literal, MWCC puts -1.5f
+ * fadeEffectUDLRUpdate - see docs/RULE_EXCEPTIONS.md. As a literal, MWCC puts -1.5f
  * first in the multiply (retail multiplies pulse by it); declared ahead and
  * defined after the function, it is loaded, and it lands at 0x8047E088
- * between fn_801C6008's literals and UDLR_FirstInit's. */
+ * between fadeEffectUDLRUpdate's literals and UDLR_FirstInit's. */
 extern const f32 lbl_8047E088[1];
 
-u32 fn_801C6008(u32 finish, void* texture, f32 frame, f32 duration,
+u32 fadeEffectUDLRUpdate(u32 finish, void* texture, f32 frame, f32 duration,
                 f32 angle, f32 angleDuration)
 {
     GSvec position;
@@ -777,7 +777,7 @@ u32 fn_801C6008(u32 finish, void* texture, f32 frame, f32 duration,
     position.x = 320.0f;
     position.y = 240.0f;
     position.z = 0.0f;
-    fn_801C63C0(texture, &position, 1.0f, 0.0f,
+    fadeEffectDrawCapturedQuad(texture, &position, 1.0f, 0.0f,
                 progress, 0.0f);
 
     switch (((FadeCameraWork*)lbl_80467030)->unk0C) {
@@ -796,7 +796,7 @@ u32 fn_801C6008(u32 finish, void* texture, f32 frame, f32 duration,
     position.z = 0.0f;
     pulse = (f32)((FadeCameraWork*)lbl_80467030)->frame /
             (45.0f * (1.0f - progress) + 1.0f);
-    fn_801C63C0(texture, &position, 1.0f, pulse, progress,
+    fadeEffectDrawCapturedQuad(texture, &position, 1.0f, pulse, progress,
                 0.4f);
 
     switch (((FadeCameraWork*)lbl_80467030)->unk0C) {
@@ -809,7 +809,7 @@ u32 fn_801C6008(u32 finish, void* texture, f32 frame, f32 duration,
         position.y = 240.0f + 1.5f * ((FadeCameraWork*)lbl_80467030)->value;
         break;
     }
-    fn_801C63C0(texture, &position, 1.0f,
+    fadeEffectDrawCapturedQuad(texture, &position, 1.0f,
                 pulse * lbl_8047E088[0], progress, 0.4f);
 
     if (lbl_8047B3B0 == 0 && (u8)finish == 0) {
@@ -824,7 +824,7 @@ void _fadeEffectFunction_UDLR_FirstInit__FP9GStextureUs(void* texture, u16 mode)
 {
     FadeCameraWork* camera;
 
-    fn_800D3074(1);
+    GSgfxSetFrameInterval(1);
     ((FadeCameraWork*)lbl_80467030)->tex0 = GSresFindById(0x0F861200);
     ((FadeCameraWork*)lbl_80467030)->tex1 = GSresFindById(0x0F871200);
     camera = (FadeCameraWork*)lbl_80467030;
@@ -862,7 +862,7 @@ u32 fn_801C63B8(void) {
     return 1;
 }
 
-void fn_801C63C0(void* texture, GSvec* position, f32 scale, f32 angle,
+void fadeEffectDrawCapturedQuad(void* texture, GSvec* position, f32 scale, f32 angle,
                  f32 fade, f32 blend)
 {
     GSvec interpolated;
@@ -921,11 +921,11 @@ void fn_801C63C0(void* texture, GSvec* position, f32 scale, f32 angle,
     gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, (u8)alpha);
     gfxVtxTexCoord(0, 1.0f, 1.0f);
     gfxEnd();
-    fn_801C673C();
+    fadeEffectEnd2D();
 }
 
 void fn_801C6688(f32 t) {
-    extern void fn_801C673C(void);
+    extern void fadeEffectEnd2D(void);
     extern void fn_801C6760(void);
     s32 alpha;
 
@@ -937,10 +937,10 @@ void fn_801C6688(f32 t) {
     gfxVtxPos(640.0f, 480.0f, 0.0f);
     gfxVtxColor4u8(0, 0, 0, 0, alpha);
     gfxEnd();
-    fn_801C673C();
+    fadeEffectEnd2D();
 }
 
-void fn_801C673C(void) {
+void fadeEffectEnd2D(void) {
     fn_800D9ED8(0);
 }
 
@@ -986,7 +986,7 @@ u32 fn_801C6908(u32 range) {
     return _fadeEffectGetRandom__FUl(range);
 }
 
-void fn_801C6928(void) {
+void fadeEffectSetFirstFrame(void) {
     lbl_8047B3B0 = 1;
 }
 
@@ -997,7 +997,7 @@ void fn_801C6928(void) {
  * with its own .sdata2 pool from 0x8047E0A8. */
 void fn_801C6AE8(u32 x, u32 y, u8 alpha);
 
-void fn_801C6934(void* texture, f32 progress, f32 blend)
+void fadeEffectFluidDraw(void* texture, f32 progress, f32 blend)
 {
     FadeFluidWork* fluid;
     GSvec interpolated;

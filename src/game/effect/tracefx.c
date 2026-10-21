@@ -3,10 +3,10 @@
  * @brief TraceFX -- Trail / trace visual effects for Pokemon Colosseum.
  *
  * Decompiled from:
- *   fn_801364A8                          -- Trail resource/model load helper
+ *   wazaEffectParseParams                          -- Trail resource/model load helper
  *   fn_80137114 (tracefxRender)          -- Per-frame trail rendering
- *   fn_8013735C (tracefxInit)            -- Initialise a TraceFXWork structure
- *   fn_8013757C (tracefxStartEffectImpl) -- Internal start implementation
+ *   _wazaEffectParseSea (tracefxInit)            -- Initialise a TraceFXWork structure
+ *   _wazaEffectParseLightning (tracefxStartEffectImpl) -- Internal start implementation
  *   fn_80137780 (tracefxStopEffectImpl)  -- Internal stop / cleanup
  *   tracefxEffectCreate (tracefxStartUpdate)     -- Begin trail update cycle
  *   fn_801379E4 (tracefxSetTrailParam)   -- Set a trail parameter
@@ -17,7 +17,7 @@
  *
  * A prior campaign transplant had left invented duplicate definitions
  * named tracefxInit, tracefxAddSegment, and tracefxUpdate that reimplement
- * fn_8013735C, _tracefxUpdate, and _tracefxRender under friendly names; none had
+ * _wazaEffectParseSea, _tracefxUpdate, and _tracefxRender under friendly names; none had
  * any callers anywhere in the tree (the real fn_ names are what get called
  * -- see tracefxEffectCreate below), so they have been removed, along with the
  * tracefxStartEffect_Draft helper that only existed to call the fictional
@@ -39,10 +39,10 @@
  *   3. Applying colour fade and width taper over the segment lifetime.
  *   4. Rendering via the GS rendering pipeline (GSpart model system).
  *
- * fn_801364A8 was merged in from the former game/effect/effect_util.c
+ * wazaEffectParseParams was merged in from the former game/effect/effect_util.c
  * CodeCandidate bucket (0x8013151C - 0x80137114): it shares the
  * 60.0f/0.0f/int-to-float state and directly calls
- * fn_80137114/fn_8013735C/fn_8013757C/fn_80137780 below, so it is the
+ * fn_80137114/_wazaEffectParseSea/_wazaEffectParseLightning/fn_80137780 below, so it is the
  * true first function of this translation unit.
  *
  * Address range: 0x801364A8 - 0x801380D4 (approx.)
@@ -100,8 +100,8 @@ extern void  gfxEnd(void);
 
 /* ===== Forward declarations (vtable callbacks) ===== */
 u8*   fn_80137114(u8* work, u8* params, s32 frames);
-u8*   fn_8013735C(u8* work, void* params, s32 frames);
-u8*   fn_8013757C(u8* work, void* params, s32 frames);
+u8*   _wazaEffectParseSea(u8* work, void* params, s32 frames);
+u8*   _wazaEffectParseLightning(u8* work, void* params, s32 frames);
 u8*   fn_80137780();
 BOOL  fn_801379E4(u8* w);
 BOOL  fn_80137A2C(u8* w);
@@ -129,7 +129,7 @@ extern const char lbl_80272B08[]; /* "tracefxStartEffect: Could not start trail 
 #pragma push
 #pragma opt_propagation off
 /* 0x801364A8 | 0xC6C */
-u8* fn_801364A8(u8* work, u8* params) {
+u8* wazaEffectParseParams(u8* work, u8* params) {
     extern u8 lbl_80314638[];
     extern u8 lbl_80314AE8[];
     extern s32 fn_800D37CC(void);
@@ -216,7 +216,7 @@ u8* fn_801364A8(u8* work, u8* params) {
         break;
 
     case 3:
-        params = fn_8013757C(work + 8, params, frames);
+        params = _wazaEffectParseLightning(work + 8, params, frames);
         break;
 
     case 4:
@@ -292,7 +292,7 @@ u8* fn_801364A8(u8* work, u8* params) {
     }
 
     case 6:
-        params = fn_8013735C(work + 8, params, frames);
+        params = _wazaEffectParseSea(work + 8, params, frames);
         break;
 
     case 7:
@@ -539,7 +539,7 @@ u8* fn_80137114(u8* work, u8* params, s32 frames) {
 /* 86.32%: real correct C. Documented src-dup 5-reg stmw reg-coloring (target copies
  * params->r31 so r29 reuses for arena; CW coalescer keeps 4 regs) + float-const
  * band-isolation reloc (lbl_8047D118 @nn) = un-saveable in isolated band. equivalent.txt */
-u8* fn_8013735C(u8* work, void* params, s32 frames) {
+u8* _wazaEffectParseSea(u8* work, void* params, s32 frames) {
     u8* p = params;
     s32 memOffset = 0;
     void* model;
@@ -608,7 +608,7 @@ u8* fn_8013735C(u8* work, void* params, s32 frames) {
 }
 
 /* 0x8013757C | 0x204 */
-u8* fn_8013757C(u8* work, void* params, s32 frames) {
+u8* _wazaEffectParseLightning(u8* work, void* params, s32 frames) {
     extern u16 GSmemAlloc(u32, u32);
     extern void* GStextureLoad(void*);
     extern void fn_800EFD14(void*, u16);

@@ -592,7 +592,7 @@ BATTLE_MAIN_HELPER u8 battleCameraSelect(u8 useSimpleCamera) {
 BATTLE_MAIN_HELPER void fightDbgMenuCheck(void) {
     extern u8 dbgMenuGetEnable(void);
     extern void dbgMenuSetEnable(u8 mode);
-    extern u8 fn_8000816C(void);
+    extern u8 dbgMenuFightGetFlag8047A285(void);
     extern void dbgMenuMain(s32 mode);
     extern void menuGetKeyInfo(void* padData, s32 port);
     extern void _threadSwitch(void);
@@ -603,7 +603,7 @@ BATTLE_MAIN_HELPER void fightDbgMenuCheck(void) {
 
     mode = dbgMenuGetEnable();
     dbgMenuSetEnable(1);
-    if (fn_8000816C() == 1) {
+    if (dbgMenuFightGetFlag8047A285() == 1) {
         dbgMenuMain(1);
     } else {
         ticks = 0;

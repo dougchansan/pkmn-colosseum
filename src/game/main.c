@@ -124,7 +124,7 @@ extern void flareCreateTask(void);                           /* GBA communicatio
 extern void GSmovieInit(void);                           /* Save data init */
 extern void menuInit(u32 param);                      /* Effect system init */
 extern void fn_80101FB8(u32 param);                      /* GS load meter draw-sync hook init */
-extern void fn_800D3074(u32 flag);                       /* GSgfx enable rendering */
+extern void GSgfxSetFrameInterval(u32 flag);                       /* GSgfx enable rendering */
 
 extern u32 GSgappCreate(s32 state, u8 priority, void* param, /* GSthread create task */
                        void* func);
@@ -653,7 +653,7 @@ void fn_800057B0(void) {
     fn_80101FB8(0x4);
 
     /* Enable rendering pipeline */
-    fn_800D3074(1);
+    GSgfxSetFrameInterval(1);
 
     /* ---------------------------------------------------------------
      * Register per-frame callback tasks.

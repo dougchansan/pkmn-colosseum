@@ -224,12 +224,12 @@ void floorStartSoundScript(void) {
 /* 0x8011274C | 0x34 */
 void floorCheckFade(void) {
     extern void fadeCheck(s32);
-    extern void fn_800D3074(s32);
+    extern void GSgfxSetFrameInterval(s32);
     extern u8 lbl_80478DD0;
 
     fadeCheck(1);
     lbl_80478DD0 = 0;
-    fn_800D3074(1);
+    GSgfxSetFrameInterval(1);
 }
 
 /* 0x80112780 | 0x3C */
@@ -247,7 +247,7 @@ void fn_80112780(void) {
 /* 0x801127BC | 0x88 */
 void fn_801127BC(void) {
     extern u8 lbl_80478DD0;
-    extern void fn_800D3074(s32);
+    extern void GSgfxSetFrameInterval(s32);
     extern u32 floorGetCurrentContext(void);
     extern void fn_800FF2A0(u32, u32, void*);
     extern void fn_80112844(void);
@@ -258,14 +258,14 @@ void fn_801127BC(void) {
     switch (kind) {
     case 5:
     case 6:
-        fn_800D3074(1);
+        GSgfxSetFrameInterval(1);
         break;
     case 1:
     case 2:
     case 3:
     case 4:
     default:
-        fn_800D3074(2);
+        GSgfxSetFrameInterval(2);
         break;
     }
     if (*(u32*)(lbl_80408378 + 0x28) != 0) {

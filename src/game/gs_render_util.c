@@ -1074,24 +1074,24 @@ void _GScameraAnimCallback(void* obj) {
     lbl_8047AA78 = lbl_8047C990 + *(f32*)((u8*)obj + 0xc);
 }
 
-/* fn_800D2B90 (fog setter) through fn_800D3068, 0x800D2B90 - 0x800D3074, are
+/* fn_800D2B90 (fog setter) through GSgfxGetFrameInterval, 0x800D2B90 - 0x800D3074, are
  * linked from gs_gfx_range_800D2B90.c together with the GSgfx functions up
  * to fn_800D36B4 and their .sdata2 literal pool. */
 
 /* ==================================================================
- * fn_800D305C - GS render: get frame counter
+ * GSgfxSetFrameClamp - GS render: get frame counter
  * Address: 0x800D305C, Size: 0xC
  * ================================================================== */
-void fn_800D305C(u8 val) {
+void GSgfxSetFrameClamp(u8 val) {
     GSRenderState* rs = (GSRenderState*)lbl_8047AA80;
     rs->frameLevel = val;
 }
 
 /* ==================================================================
- * fn_800D3068 - GS render: get render target width
+ * GSgfxGetFrameInterval - GS render: get render target width
  * Address: 0x800D3068, Size: 0xC
  * ================================================================== */
-u32 fn_800D3068(void) {
+u32 GSgfxGetFrameInterval(void) {
     GSRenderState* rs = (GSRenderState*)lbl_8047AA80;
     return rs->renderWidth;
 }

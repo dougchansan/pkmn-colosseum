@@ -4351,7 +4351,7 @@ u32 blurEffectStart(void* ptr) {
 #if !defined(EFFECT_VISUAL_BANK_ACTIVE) || \
     defined(EFFECT_VISUAL_EXACT_8013DE6C)
 extern u8 GSmodelIsAnimating(void* model);
-extern s32 fn_800D3068(void);
+extern s32 GSgfxGetFrameInterval(void);
 extern f32 GSmodelGetAnimFrame(void* model);
 extern f32 GSmodelGetAnimRate(void* model);
 extern s32 fn_800D45F8(void);
@@ -4412,7 +4412,7 @@ u32 _blurRender(void* ptr) {
         frame = *(u32*)(p + 0x1C);
         blend = (f32)frame / (f32)*(u32*)(timing + 8);
         blend = blend * (*(f32*)(timing + 4) - *(f32*)timing) + *(f32*)timing;
-        switch (fn_800D3068()) {
+        switch (GSgfxGetFrameInterval()) {
         case 1:
             copies = 60.0f * blend + 0.5f;
             break;

@@ -395,7 +395,7 @@ LAB_0023124c: (void)0;
 void fightTrainerAiSelectFightAction(u32 trainer, u32 fightType) {
     extern u8 fightTypeDataBiosGetFightoutPokemonNum();
     extern u8 fightOutPokemonCheckFightActionSelect();
-    extern u8 fn_80008164();
+    extern u8 dbgMenuFightGetFlag8047A286();
     extern u8 fightMenuOpenMsg();
     extern u8 fightFloorCheckFightActionFightOutPokemonIrekaeSelect();
     extern u8 fightFloorGetStatus();
@@ -437,7 +437,7 @@ void fightTrainerAiSelectFightAction(u32 trainer, u32 fightType) {
             msgctrlSetValue(0x13, fightTrainerGetNamePtr(trainer));
         }
         msgctrlSetValue(0x2f, j);
-        if (fn_80008164() == 1) {
+        if (dbgMenuFightGetFlag8047A286() == 1) {
             menuGetKeyInfo(keyOk1, 1);
             if ((keyOk1[0] & 0x800) == 0 && fightMenuOpenMsg(0xec67) == 1) {
                 fightMenuCloseMsg();
@@ -450,7 +450,7 @@ void fightTrainerAiSelectFightAction(u32 trainer, u32 fightType) {
             msgctrlSetValue(0x13, fightTrainerGetNamePtr(trainer));
         }
         msgctrlSetValue(0x2f, j);
-        if (fn_80008164() == 1) {
+        if (dbgMenuFightGetFlag8047A286() == 1) {
             menuGetKeyInfo(keyFail1, 1);
             if ((keyFail1[0] & 0x800) == 0 && fightMenuOpenMsg(0xec68) == 1) {
                 fightMenuCloseMsg();
@@ -478,7 +478,7 @@ void fightTrainerAiSelectFightAction(u32 trainer, u32 fightType) {
                 msgctrlSetValue(0x13, fightTrainerGetNamePtr(trainer));
             }
             msgctrlSetValue(0x2f, j);
-            if (fn_80008164() == 1) {
+            if (dbgMenuFightGetFlag8047A286() == 1) {
                 menuGetKeyInfo(keyOk2, 1);
                 if ((keyOk2[0] & 0x800) == 0 && fightMenuOpenMsg(0xec67) == 1) {
                     fightMenuCloseMsg();
@@ -491,7 +491,7 @@ void fightTrainerAiSelectFightAction(u32 trainer, u32 fightType) {
                 msgctrlSetValue(0x13, fightTrainerGetNamePtr(trainer));
             }
             msgctrlSetValue(0x2f, j);
-            if (fn_80008164() == 1) {
+            if (dbgMenuFightGetFlag8047A286() == 1) {
                 menuGetKeyInfo(keyFail2, 1);
                 if ((keyFail2[0] & 0x800) == 0 && fightMenuOpenMsg(0xec68) == 1) {
                     fightMenuCloseMsg();
@@ -519,7 +519,7 @@ void fightTrainerAiSelectFightAction(u32 trainer, u32 fightType) {
             msgctrlSetValue(0x13, fightTrainerGetNamePtr(trainer));
         }
         msgctrlSetValue(0x2f, j);
-        if (fn_80008164() == 1) {
+        if (dbgMenuFightGetFlag8047A286() == 1) {
             menuGetKeyInfo(keyOk3, 1);
             if ((keyOk3[0] & 0x800) == 0 && fightMenuOpenMsg(0xec67) == 1) {
                 fightMenuCloseMsg();
@@ -532,7 +532,7 @@ void fightTrainerAiSelectFightAction(u32 trainer, u32 fightType) {
             msgctrlSetValue(0x13, fightTrainerGetNamePtr(trainer));
         }
         msgctrlSetValue(0x2f, j);
-        if (fn_80008164() == 1) {
+        if (dbgMenuFightGetFlag8047A286() == 1) {
             menuGetKeyInfo(keyFail3, 1);
             if ((keyFail3[0] & 0x800) == 0 && fightMenuOpenMsg(0xec68) == 1) {
                 fightMenuCloseMsg();
@@ -555,7 +555,7 @@ void fightTrainerAiSelectFightAction(u32 trainer, u32 fightType) {
         msgctrlSetValue(0x13, fightTrainerGetNamePtr(trainer));
     }
     msgctrlSetValue(0x2f, 100);
-    if (fn_80008164() == 1) {
+    if (dbgMenuFightGetFlag8047A286() == 1) {
         menuGetKeyInfo(keyFinal, 1);
         if ((keyFinal[0] & 0x800) == 0 && fightMenuOpenMsg(0xec67) == 1) {
             fightMenuCloseMsg();

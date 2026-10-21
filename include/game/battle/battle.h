@@ -372,7 +372,7 @@ typedef struct GStexture GStexture;
 /* fadeEffectHookFunction_yoko_Init */ void fadeEffectHookFunction_yoko_Init(s32 slot, f32 scale);
 /* fadeEffectHookFunction_Doku (was fn_801C4A44) */ s32 fadeEffectHookFunction_Doku(s32 slot, f32 x, f32 y, f32 z, f32 rot, f32 scale);
 /* fadeEffectHookFunction_carde (was fn_801C4C98) */ f32  fadeEffectHookFunction_carde(void);
-/* fn_801C4CB8 */ void fn_801C4CB8(void);                        /* grid full render 0x704 (game/effect/fade_range_801C4CB8.c) */
+/* fadeEffectFuncCapture */ void fadeEffectFuncCapture(void);                        /* grid full render 0x704 (game/effect/fade_range_801C4CB8.c) */
 
 /* =========================================================================
  * Battle Scene (0x801C53BC - 0x801D1338) [battle_scene.c]
@@ -380,30 +380,30 @@ typedef struct GStexture GStexture;
  * ========================================================================= */
 
 /* Camera control */
-/* fn_801C53BC */ void fn_801C53BC(void* ctx, s32 arg1, s32 arg2, s32 arg3, f32 arg4);
+/* fadeEffectCaptureInit */ void fadeEffectCaptureInit(void* ctx, s32 arg1, s32 arg2, s32 arg3, f32 arg4);
 /* fn_801C54FC */ f32  fn_801C54FC(void);
 /* fn_801C5530 */ void fn_801C5530(f32 fov, f32 minFov, f32 maxFov);
-/* fn_801C55D8 */ void fn_801C55D8(f32 x, f32 y, f32 z, f32 speed);
+/* fadeEffectFuncFluid */ void fadeEffectFuncFluid(f32 x, f32 y, f32 z, f32 speed);
 /* fn_801C5748 */ void fn_801C5748(void* target, f32 speed);
-/* fn_801C5898 */ void fn_801C5898(void* camObj, void* target, f32 speed, f32 fov, f32 nearClip, f32 farClip);
+/* fadeEffectFuncSpin */ void fadeEffectFuncSpin(void* camObj, void* target, f32 speed, f32 fov, f32 nearClip, f32 farClip);
 /* fn_801C5B60 */ void fn_801C5B60(f32 zoomTarget, f32 zoomSpeed);
-/* fn_801C5D60 */ void fn_801C5D60(f32 angle, f32 radius, f32 height);
-/* fn_801C5ED0 */ f32  fn_801C5ED0(void);
-/* fn_801C5F6C */ f32  fn_801C5F6C(void);
-/* fn_801C6008 */ void fn_801C6008(u8 transition, void* target, f32 speed, f32 zoom);
+/* fadeEffectSpinFirstInit */ void fadeEffectSpinFirstInit(f32 angle, f32 radius, f32 height);
+/* fadeEffectFuncUDLR8 */ f32  fadeEffectFuncUDLR8(void);
+/* fadeEffectFuncUDLR2 */ f32  fadeEffectFuncUDLR2(void);
+/* fadeEffectUDLRUpdate */ void fadeEffectUDLRUpdate(u8 transition, void* target, f32 speed, f32 zoom);
 /* fn_801C6274 */ void fn_801C6274(f32 t, f32 ease);
 /* fn_801C63B8 */ u8   fn_801C63B8(void);
-/* fn_801C63C0 */ void fn_801C63C0(void* target, void* params, f32 t, f32 speed, f32 zoom, f32 blend);
+/* fadeEffectDrawCapturedQuad */ void fadeEffectDrawCapturedQuad(void* target, void* params, f32 t, f32 speed, f32 zoom, f32 blend);
 /* fn_801C6688 */ void fn_801C6688(f32 angle);
-/* fn_801C673C */ void fn_801C673C(void);
+/* fadeEffectEnd2D */ void fadeEffectEnd2D(void);
 /* fn_801C6760 */ void fn_801C6760(f32 intensity, f32 duration);
 /* fn_801C680C */ void fn_801C680C(s32 arg0);
 /* _fadeEffect_AdjustParms__Fv */ u8   _fadeEffect_AdjustParms__Fv(void);
 /* fn_801C6908 */ void fn_801C6908(void);
-/* fn_801C6928 */ u8   fn_801C6928(void);
+/* fadeEffectSetFirstFrame */ u8   fadeEffectSetFirstFrame(void);
 
 /* Scene layout */
-/* fn_801C6934 */ void fn_801C6934(void* stageModel, f32 scale);
+/* fadeEffectFluidDraw */ void fadeEffectFluidDraw(void* stageModel, f32 scale);
 /* fn_801C6AE8 */ void fn_801C6AE8(s32 row, s32 col, u8 type);
 /* fn_801C6D78 */ void fn_801C6D78(s32 slot, f32 x, f32 y, f32 z);
 /* _fadeFluidSetShockSub__FUlUlf */ void* _fadeFluidSetShockSub__FUlUlf(s32 slot);

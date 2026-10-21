@@ -666,7 +666,7 @@ typedef struct WazaEffectLoadList {
 void* _wazaSequenceEffectEntryLoad(void* entryPtr, void* dataPtr)
 {
     extern s32 fn_800D37CC(void);
-    extern u8* fn_801364A8(u8* work, u8* desc);
+    extern u8* wazaEffectParseParams(u8* work, u8* desc);
     extern u32 filterEffectCreate(void* callbacks);
     extern u32 boltEffectCreate(void* callbacks);
     extern u32 electronEffectCreate(void* callbacks);
@@ -696,7 +696,7 @@ void* _wazaSequenceEffectEntryLoad(void* entryPtr, void* dataPtr)
     entry->field_80 = 0;
     entry->animationMode = 0;
 
-    dataPtr = fn_801364A8(parsed, dataPtr);
+    dataPtr = wazaEffectParseParams(parsed, dataPtr);
     type = *(u32*)parsed;
     switch (type) {
     case 0:

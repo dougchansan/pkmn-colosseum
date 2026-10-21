@@ -2109,7 +2109,7 @@ s32 fightTrainerAiWazaHit008(void* ctx, u32 param1, u32 param2, u32 param3) {
 s32 fightTrainerAiWazaHit007(void* ctx, u32 param1, u32 param2, u32 param3) {
     extern u32 fightTrainerAiGetWazaTenkouValue(void* ctx, u32 param2, u32 param1);
     extern u32 fightFloorGetFightTrainerFightPokemonPtrAry(u32 zero, void* ctx, void* buf, u32 one1, u32 one2);
-    extern u8 fn_8022967C(u32 param2);
+    extern u8 fightAiCheckRule11Effect7(u32 param2);
     extern u8 fightTrainerAiCheckSimerike(void* ctx);
     extern u32 fn_80239500(void* ctx, u32 param2);
     extern u16 fightTrainerAiGetAisyou(void* ctx, u32 param3, u32 v1, u32 v3);
@@ -2119,7 +2119,7 @@ s32 fightTrainerAiWazaHit007(void* ctx, u32 param1, u32 param2, u32 param3) {
     u32 flinchCount = fightFloorGetFightTrainerFightPokemonPtrAry(0, ctx, buf, 1, 1);
     s32 gate;
 
-    if (fn_8022967C(param2) == 1 && (u16)flinchCount <= 1) {
+    if (fightAiCheckRule11Effect7(param2) == 1 && (u16)flinchCount <= 1) {
         return 0;
     }
     if (fightTrainerAiCheckSimerike(ctx) == 1) {

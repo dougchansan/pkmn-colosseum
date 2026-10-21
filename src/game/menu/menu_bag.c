@@ -13,7 +13,7 @@
  *   - fn_8004EADC and fn_8004EC54 are initialization functions that copy
  *     item data from the save file (via fightTrainerAiValueAddsubDataBiosGetPtr) into the local cache,
  *     iterating 0x229 (553) times with 0x14-byte entries.
- *   - dbgMenuTrainerAiEditA, fn_8004F860, fn_8004FE3C and fn_80050844 share one
+ *   - dbgMenuTrainerAiEditA, dbgMenuTrainerAiWazaDefEdit, fn_8004FE3C and fn_80050844 share one
  *     template: reload the species cache, then run a scene-message loop
  *     (menuOpenCustom/menuGetCursorItemID) that dispatches per-message onto
  *     HANDLE_BAG_VALUE, which reads a numeric field from the on-screen input
@@ -92,7 +92,7 @@ extern BagCacheEntry lbl_803A6AB0[];   /* Bag item cache (0x2B38 bytes) */
  * fn_8004EADC  0x178  Bag init A (copy item data, 553 species loop, scene 0x89)
  * fn_8004EC54  0x178  Bag init B (copy item data, 553 species loop, scene 0x8A)
  * dbgMenuTrainerAiEditA  0xA94  Item sort/filter handler (2708 bytes)
- * fn_8004F860  0x5DC  Scroll position / item list display (1500 bytes)
+ * dbgMenuTrainerAiWazaDefEdit  0x5DC  Scroll position / item list display (1500 bytes)
  * fn_8004FE3C  0xA08  Item selection confirmation (2568 bytes)
  * fn_80050844  0xECC  Bag main update loop (3788 bytes, msg switch 0x5BC-0xFEC)
  */
@@ -305,7 +305,7 @@ s32 dbgMenuTrainerAiEditA(void) {
 }
 
 /* 0x8004F860 | size: 0x5DC */
-s32 fn_8004F860(void) {
+s32 dbgMenuTrainerAiWazaDefEdit(void) {
     s32 value7;
     s32 value6;
     s32 value5;

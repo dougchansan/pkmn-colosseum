@@ -2531,7 +2531,7 @@ void HSD_JObjDispAll(HSD_JObj* jobj, f32 vmtx[3][4], u32 flags, u32 rendermode)
     extern void PSMTXConcat(f32 a[3][4], f32 b[3][4], f32 dst[3][4]);
     extern void* HSD_CObjGetCurrent(void);
     extern f32* fn_801A1980(void*);
-    extern void fn_801A1988(HSD_JObj*);
+    extern void HSD_JObjSetupMatrix_801A1988(HSD_JObj*);
     extern void JObjSetupInstanceMtx(f32 src[3][4], HSD_JObj* jobj, f32 dst[3][4]);
     extern void HSD_JObjDisp(HSD_JObj*, f32 mtx[3][4], u32 flags, u32 rendermode);
     HSD_JObj* child;
@@ -2575,8 +2575,8 @@ void HSD_JObjDispAll(HSD_JObj* jobj, f32 vmtx[3][4], u32 flags, u32 rendermode)
                 return;
             }
 
-            fn_801A1988(child);
-            fn_801A1988(child->child);
+            HSD_JObjSetupMatrix_801A1988(child);
+            HSD_JObjSetupMatrix_801A1988(child->child);
             PSMTXInverse(child->child->mtx, mtx1);
             PSMTXConcat(child->mtx, mtx1, mtx1);
             PSMTXConcat(mtx0, mtx1, mtx1);
@@ -2652,8 +2652,8 @@ void HSD_JObjDispAll(HSD_JObj* jobj, f32 vmtx[3][4], u32 flags, u32 rendermode)
         if (inst != NULL) {
             if (inst->flags & JOBJ_INSTANCE) {
                 if (!(inst->flags & JOBJ_HIDDEN)) {
-                    fn_801A1988(inst);
-                    fn_801A1988(inst->child);
+                    HSD_JObjSetupMatrix_801A1988(inst);
+                    HSD_JObjSetupMatrix_801A1988(inst->child);
                     PSMTXInverse(inst->child->mtx, mtx3);
                     PSMTXConcat(inst->mtx, mtx3, mtx3);
                     if (vmtx != NULL) {
@@ -2759,7 +2759,7 @@ static inline s32 JObjMtxIsDirtyForSetup(HSD_JObj* jobj)
     return dirty;
 }
 
-void fn_801A1988(HSD_JObj* jobj)
+void HSD_JObjSetupMatrix_801A1988(HSD_JObj* jobj)
 {
     extern void HSD_JObjSetupMatrixSub(HSD_JObj*);
 

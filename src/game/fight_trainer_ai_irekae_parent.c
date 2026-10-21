@@ -165,7 +165,7 @@ s32 fightTrainerAiSelectIrekaeDasuFightPokemon(void* ctx, u32 param1, u32 param2
     extern u16 fightTrainerAiGetPokemonAisyou(void* ctx, u32 pokemon, u16 type, u32 power);
     extern u8 fightTrainerCheckCanIrekaeFightPokemon(void* trainer, u32 pokemon);
     extern u8 fn_80239058(void* ctx, u32 elem, u32 type);
-    extern u8 fn_8000815C(void);
+    extern u8 dbgMenuFightGetFlag8047882E(void);
     extern s32 fightTrainerAiAddValue(s32 value, s32 add);
     extern s32 fightTrainerAiGetValueAryMaxBanme(s32* values, u16 count, u32 one);
     u8 work[0x6E0];
@@ -497,7 +497,7 @@ s32 fightTrainerAiSelectIrekaeDasuFightPokemon(void* ctx, u32 param1, u32 param2
                 fn_80239EE8(0xEC63, trainer, fightPokemonGetPokemonPtr(p), 0, 0, 0, 0, 0x2C);
             }
         }
-        if (fn_8000815C() == 1) {
+        if (dbgMenuFightGetFlag8047882E() == 1) {
             rnd = GSrand() % rangeSize - randRange;
             values[i] = fightTrainerAiAddValue(values[i], rnd);
             fightTrainerAiLogText(0xEC63, 0xEC04, 0xEC1D, trainer, fightPokemonGetPokemonPtr(p),

@@ -63,11 +63,11 @@
  *   fn_80008144  GStask_Accessor0           -- 8-byte accessor (lwz/blr)
  *   fn_8000814C  GStask_Accessor1           -- 8-byte accessor
  *   fn_80008154  GStask_Accessor2           -- 8-byte accessor
- *   fn_8000815C  GStask_Accessor3           -- 8-byte accessor
- *   fn_80008164  GStask_Accessor4           -- 8-byte accessor
- *   fn_8000816C  GStask_Accessor5           -- 8-byte accessor
+ *   dbgMenuFightGetFlag8047882E  GStask_Accessor3           -- 8-byte accessor
+ *   dbgMenuFightGetFlag8047A286  GStask_Accessor4           -- 8-byte accessor
+ *   dbgMenuFightGetFlag8047A285  GStask_Accessor5           -- 8-byte accessor
  *   dbgMenuFightGetAllManual  GStask_Accessor6           -- 8-byte accessor
- *   fn_8000817C  GStask_Accessor7           -- 8-byte accessor
+ *   dbgMenuFightGetFlag8047A271  GStask_Accessor7           -- 8-byte accessor
  *   dbgMenuFightGetMsgSpeedToFrame  GStask_FinalizeLoad        -- 0xC0 bytes, finalize resource load
  *   _dbgMenuFightGetFightTrainerAiAddsubValueDataIdSub  GStask_BuildResourceList   -- 0x14C bytes, compile resource table
  *
@@ -1304,10 +1304,10 @@ void fn_800077B8(void) {
 #endif
 
 /* dbgMenuFightFightTrainerAiAddsubWazaDefpokemon - 0x800077D8 | size: 0x20 */
-extern void fn_8004F860(void);
+extern void dbgMenuTrainerAiWazaDefEdit(void);
 #if 1
 void dbgMenuFightFightTrainerAiAddsubWazaDefpokemon(void) {
-    fn_8004F860();
+    dbgMenuTrainerAiWazaDefEdit();
 }
 #endif
 
@@ -1732,17 +1732,17 @@ u8 fn_80008154(void) {
 }
 
 /* Address: 0x8000815C | Size: 0x8 | Pattern: sda_getter */
-u8 fn_8000815C(void) {
+u8 dbgMenuFightGetFlag8047882E(void) {
     return lbl_8047882E;
 }
 
 /* Address: 0x80008164 | Size: 0x8 | Pattern: sda_getter */
-u8 fn_80008164(void) {
+u8 dbgMenuFightGetFlag8047A286(void) {
     return lbl_8047A286;
 }
 
 /* Address: 0x8000816C | Size: 0x8 | Pattern: sda_getter */
-u8 fn_8000816C(void) {
+u8 dbgMenuFightGetFlag8047A285(void) {
     return lbl_8047A285;
 }
 
@@ -1752,7 +1752,7 @@ u8 dbgMenuFightGetAllManual(void) {
 }
 
 /* Address: 0x8000817C | Size: 0x8 | Pattern: sda_getter */
-u8 fn_8000817C(void) {
+u8 dbgMenuFightGetFlag8047A271(void) {
     return lbl_8047A271;
 }
 

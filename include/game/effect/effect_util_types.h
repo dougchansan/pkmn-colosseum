@@ -499,7 +499,7 @@ extern const char lbl_80272AE0[];
 
 extern const char lbl_80272AF0[];
 
-extern void fn_800D3074(u32 mode);
+extern void GSgfxSetFrameInterval(u32 mode);
 
 extern void GSresGetResource(void);
 
@@ -605,7 +605,7 @@ extern void GStextureLoad(void);
 
 extern void fn_800EFD14(void);
 
-extern u8* fn_8013757C(u8* work, u8* params, s32 frames);
+extern u8* _wazaEffectParseLightning(u8* work, u8* params, s32 frames);
 
 extern void GStextureSetWrap(void);
 
@@ -617,7 +617,7 @@ extern void loadModel(void);
 
 extern void GSmodelSetVisibility(void);
 
-extern void fn_8013735C(void);
+extern void _wazaEffectParseSea(void);
 
 extern void envMapAddKey(void);
 

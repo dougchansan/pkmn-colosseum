@@ -464,7 +464,7 @@ void menuCB_Rule_Init(void);
 void menuCB_Rule_HandleLevel(void);
 
 /**
- * fn_800774D4: Rule menu handler 3 - item rules.
+ * menuRuleCheckSlotModeDefault: Rule menu handler 3 - item rules.
  * Size: 0x210
  */
 void menuCB_Rule_HandleItems(void);

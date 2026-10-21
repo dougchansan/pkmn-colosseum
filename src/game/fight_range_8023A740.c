@@ -64,7 +64,7 @@ s32 fightTrainerAiScoreWazaToTarget(u32 trainer, u32 pokemon, u32 moveCount,
     extern u8 fightTrainerAiGetWazaAvgAdjusted();
     extern u8 fightTrainerAiGetWazaPpRatio(u32, u32, u8);
     extern u8 fn_80239154();
-    extern u8 fn_8000815C();
+    extern u8 dbgMenuFightGetFlag8047882E();
     extern u16 fightFloorGetValidFightOutPokemonCount();
     extern s32 fightTrainerAiAddValueScaled();
     extern s32 fn_80239984();
@@ -316,7 +316,7 @@ value_done:
             AI_SCORE(0x4C);
         }
 
-        if (fn_8000815C() == 1) {
+        if (dbgMenuFightGetFlag8047882E() == 1) {
             delta = (u16)GSrand() % randomRange - randomBase;
             score[i] = fightTrainerAiAddValue(score[i], delta);
             fightTrainerAiLogText(0xEC64, 0xEC2C, 0xEC32,

@@ -128,7 +128,7 @@
 #define iref_CNT fn_801A0D3C
 #define ref_DEC ref_DEC_801A0D48
 #define HSD_CObjGetViewingMtxPtrDirect fn_801A1980
-#define HSD_JObjSetupMatrix fn_801A1988
+#define HSD_JObjSetupMatrix HSD_JObjSetupMatrix_801A1988
 
 #include "crt/math_ppc.h"
 #include "dolphin/mtx.h"

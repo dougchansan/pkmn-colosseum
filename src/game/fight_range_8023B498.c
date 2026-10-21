@@ -4,7 +4,7 @@
  *
  * The unit builds with -inline auto,deferred, which emits functions in
  * reverse source order. The functions are therefore written last-first
- * (fightTrainerAiGetWazaHitValue, fightTrainerAiGetWazaDamageValue, fn_8023C368, fn_8023B498), and fn_8023B498
+ * (fightTrainerAiGetWazaHitValue, fightTrainerAiGetWazaDamageValue, fightReturnFalse_8023C368, fn_8023B498), and fn_8023B498
  * inlines both of its fightTrainerAiGetWazaDamageValue calls as retail does (its two party
  * buffers at 0x40 and 0x60 are the two inlined copies of `party`).
  */
@@ -188,7 +188,7 @@ u32 fightTrainerAiGetWazaDamageValue(void* trainer, s32 pokemon, u32 move, u32 t
 }
 
 /* Trivial constant return. */
-s32 fn_8023C368(void) { return 0; }
+s32 fightReturnFalse_8023C368(void) { return 0; }
 
 s32 fn_8023B498(void* ctx, s32 userPoke, u16 moveCount, u16* moveList,
                 u16 allyCount, u32* allyArray, u32* outMoveId, s16* outValue) {
@@ -212,7 +212,7 @@ s32 fn_8023B498(void* ctx, s32 userPoke, u16 moveCount, u16* moveList,
     extern u8 fn_80239EE8();
     extern u8 fightTrainerAiLogText();
     extern u8 fightFloorGetFightTrainerFightOutPokemonIsFightActionAttackWazaOut();
-    extern u8 fn_8000815C();
+    extern u8 dbgMenuFightGetFlag8047882E();
     extern u32 fightTrainerAiAddValue();
     extern s32 fightTrainerAiGetValueAryMaxBanme(s32* valueAry, u16 count, u8 useRandom);
     extern u16 GSrand();
@@ -453,7 +453,7 @@ s32 fn_8023B498(void* ctx, s32 userPoke, u16 moveCount, u16* moveList,
                 fn_80239EE8(0xEC6C, userTrainer, fightOutPokemonGetPokemonPtr(userPoke), allyTrainer,
                             fightOutPokemonGetPokemonPtr(ally2), 0, 0, 0x3b);
             }
-            if ((u8)fn_8000815C() == 1) {
+            if ((u8)dbgMenuFightGetFlag8047882E() == 1) {
                 rngVal = GSrand();
                 delta = (s32)(rngVal % ((s32)randRange * 2 + 1)) - randRange;
                 valueAry[k2] = fightTrainerAiAddValue(valueAry[k2], delta);

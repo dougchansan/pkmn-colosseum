@@ -301,16 +301,16 @@ u32 dbgMenuGSmemCheck(void) {
 
 
 /* 0x5C | dbgMenuGSmemCheck -- GSmemDumpMap(1,0) check then print */
-/* 0x801332D8 | 0x28 -- fn_800D3074(2), return 0 */
+/* 0x801332D8 | 0x28 -- GSgfxSetFrameInterval(2), return 0 */
 u32 dbgMenuFrameRate20(void) {
-    fn_800D3074(2);
+    GSgfxSetFrameInterval(2);
     return 0;
 }
 
 
-/* 0x80133300 | 0x28 -- fn_800D3074(1), return 0 */
+/* 0x80133300 | 0x28 -- GSgfxSetFrameInterval(1), return 0 */
 u32 dbgMenuFrameRate30(void) {
-    fn_800D3074(1);
+    GSgfxSetFrameInterval(1);
     return 0;
 }
 

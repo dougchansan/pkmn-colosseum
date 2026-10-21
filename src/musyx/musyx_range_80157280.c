@@ -7938,7 +7938,7 @@ extern MusyxEmitter lbl_80448540;
 extern u8 synthFXGetMaxVoices(u16 effect);
 extern f32 lbl_8047D4A4;
 
-u32 fn_8015E8B0(MusyxEmitter* emitterBuffer, const MusyxVec3* position,
+u32 s3dAddEmitter(MusyxEmitter* emitterBuffer, const MusyxVec3* position,
                  const MusyxVec3* velocity, f32 maxDistance, f32 curve,
                  u32 flags, u16 effectId, u32 group, u8 maxVolume,
                  u8 minVolume, MusyxStudioEmitter* studioEmitter,
@@ -8062,12 +8062,12 @@ u32 fn_8015E8B0(MusyxEmitter* emitterBuffer, const MusyxVec3* position,
 u32 sndAddEmitter(void* emitter, const f32* position, const f32* velocity,
                   u32 maxVoices, u32 soundId, u32 volume, u32 panning,
                   u32 studio, f32 minDistance, f32 maxDistance) {
-    extern u32 fn_8015E8B0(void*, const f32*, const f32*, u32, u32, u32,
+    extern u32 s3dAddEmitter(void*, const f32*, const f32*, u32, u32, u32,
                            u32, u32, u32, u32, u32, f32, f32);
     extern u8 lbl_8047AF18;
 
     if (lbl_8047AF18 != 0) {
-        return fn_8015E8B0(emitter, position, velocity, maxVoices, soundId,
+        return s3dAddEmitter(emitter, position, velocity, maxVoices, soundId,
                            (soundId & 0xffff) | 0x80000000, volume, panning,
                            studio, 0, 0, minDistance, maxDistance);
     }

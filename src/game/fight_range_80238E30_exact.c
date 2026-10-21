@@ -378,7 +378,7 @@ s32 fightTrainerAiAddValue(s32 value, s32 delta) {
 
 u32 fightTrainerAiAddValueLog(u32 r3, u32 r4, u32 r5, u32 r6, u32 r7, u32 r8, u32 r9, u32 r10,
                 u8 param_9) {
-  extern u8 fn_80008164();
+  extern u8 dbgMenuFightGetFlag8047A286();
   extern u32 GSmsgGetGSchar();
   extern void menuGetKeyInfo();
   extern void wazaGetStatus();
@@ -448,7 +448,7 @@ u32 fightTrainerAiAddValueLog(u32 r3, u32 r4, u32 r5, u32 r6, u32 r7, u32 r8, u3
     msgctrlSetValue(0x41, GSmsgGetGSchar());
   }
   msgctrlSetValue(0x2f, iVar6);
-  cVar5 = fn_80008164();
+  cVar5 = dbgMenuFightGetFlag8047A286();
   if (cVar5 == 1) {
     menuGetKeyInfo(local_58, 1);
     if ((local_58[0] & 0x800) != 0) {
@@ -473,7 +473,7 @@ u8 fn_80239CCC(u32 ctx, u32 p2, u32 p3, u32 p4, u32 p5, u32 p6, u32 p7, u32 p8,
   extern u32 wazaGetStatus();
   extern u32 itemGetStatus();
   extern void menuGetKeyInfo();
-  extern u32 fn_80008164();
+  extern u32 dbgMenuFightGetFlag8047A286();
   extern u32 fightMenuOpenMsg();
   extern void fightMenuCloseMsg();
   u32 v40;
@@ -501,7 +501,7 @@ u8 fn_80239CCC(u32 ctx, u32 p2, u32 p3, u32 p4, u32 p5, u32 p6, u32 p7, u32 p8,
     msgctrlSetValue(0x41,
                     GSmsgGetGSchar(fightTrainerGetStatus(0, p8, 0x3f, 0)));
   msgctrlSetValue(0x2F, p9);
-  if ((u8)fn_80008164() == 1) {
+  if ((u8)dbgMenuFightGetFlag8047A286() == 1) {
     menuGetKeyInfo(buf, 1);
     if ((*(u16 *)buf & 0x800) == 0) {
       goto do_check;
@@ -526,7 +526,7 @@ u8 fn_80239EE8(u32 ctx, u32 p2, u32 p3, u32 p4, u32 p5, u32 p6, u32 p7,
   extern u32 wazaGetStatus();
   extern u32 itemGetStatus();
   extern void menuGetKeyInfo();
-  extern u32 fn_80008164();
+  extern u32 dbgMenuFightGetFlag8047A286();
   extern u32 fightMenuOpenMsg();
   extern void fightMenuCloseMsg();
   u32 v3e;
@@ -556,7 +556,7 @@ u8 fn_80239EE8(u32 ctx, u32 p2, u32 p3, u32 p4, u32 p5, u32 p6, u32 p7,
     msgctrlSetValue(0x41,
                     GSmsgGetGSchar(fightTrainerGetStatus(0, p8, 0x3f, 0)));
   msgctrlSetValue(0x2F, v3e);
-  if ((u8)fn_80008164() == 1) {
+  if ((u8)dbgMenuFightGetFlag8047A286() == 1) {
     menuGetKeyInfo(buf, 1);
     if ((*(u16 *)buf & 0x800) == 0) {
       goto do_check;
@@ -581,7 +581,7 @@ u8 fightTrainerAiLogText(u32 ctx, u32 p2, u32 p3, u32 p4, u32 p5, u32 p6, u32 p7
   extern u32 itemGetStatus();
   extern u32 fightTrainerGetStatus();
   extern void menuGetKeyInfo();
-  extern u32 fn_80008164();
+  extern u32 dbgMenuFightGetFlag8047A286();
   extern u32 fightMenuOpenMsg();
   extern void fightMenuCloseMsg();
   u8 buf[0x20];
@@ -605,7 +605,7 @@ u8 fightTrainerAiLogText(u32 ctx, u32 p2, u32 p3, u32 p4, u32 p5, u32 p6, u32 p7
     msgctrlSetValue(0x41,
                     GSmsgGetGSchar(fightTrainerGetStatus(0, p10, 0x3f, 0)));
   msgctrlSetValue(0x2F, p11);
-  if ((u8)fn_80008164() == 1) {
+  if ((u8)dbgMenuFightGetFlag8047A286() == 1) {
     menuGetKeyInfo(buf, 1);
     if ((*(u16 *)buf & 0x800) == 0) {
       goto do_check;

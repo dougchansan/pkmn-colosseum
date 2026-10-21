@@ -537,7 +537,7 @@
 "seed": null
 },
 {
-"name": "fn_8000815C",
+"name": "dbgMenuFightGetFlag8047882E",
 "addr": "0x8000815C",
 "size": 8,
 "label": "fight",
@@ -545,7 +545,7 @@
 "seed": null
 },
 {
-"name": "fn_80008164",
+"name": "dbgMenuFightGetFlag8047A286",
 "addr": "0x80008164",
 "size": 8,
 "label": "fight",
@@ -553,7 +553,7 @@
 "seed": null
 },
 {
-"name": "fn_8000816C",
+"name": "dbgMenuFightGetFlag8047A285",
 "addr": "0x8000816C",
 "size": 8,
 "label": "fight",
@@ -569,7 +569,7 @@
 "seed": null
 },
 {
-"name": "fn_8000817C",
+"name": "dbgMenuFightGetFlag8047A271",
 "addr": "0x8000817C",
 "size": 8,
 "label": "fight",
@@ -6073,7 +6073,7 @@
 "seed": null
 },
 {
-"name": "fn_8004F860",
+"name": "dbgMenuTrainerAiWazaDefEdit",
 "addr": "0x8004F860",
 "size": 1500,
 "label": "gs-engine",
@@ -9169,7 +9169,7 @@
 "seed": null
 },
 {
-"name": "fn_800774D4",
+"name": "menuRuleCheckSlotModeDefault",
 "addr": "0x800774D4",
 "size": 528,
 "label": "field",
@@ -19465,7 +19465,7 @@
 "seed": "range"
 },
 {
-"name": "fn_800D305C",
+"name": "GSgfxSetFrameClamp",
 "addr": "0x800D305C",
 "size": 12,
 "label": "gs-engine",
@@ -19473,7 +19473,7 @@
 "seed": "range"
 },
 {
-"name": "fn_800D3068",
+"name": "GSgfxGetFrameInterval",
 "addr": "0x800D3068",
 "size": 12,
 "label": "gs-engine",
@@ -19481,7 +19481,7 @@
 "seed": "range"
 },
 {
-"name": "fn_800D3074",
+"name": "GSgfxSetFrameInterval",
 "addr": "0x800D3074",
 "size": 20,
 "label": "gs-engine",
@@ -34633,7 +34633,7 @@
 "seed": null
 },
 {
-"name": "fn_801364A8",
+"name": "wazaEffectParseParams",
 "addr": "0x801364A8",
 "size": 3180,
 "label": "gs-engine",
@@ -34649,7 +34649,7 @@
 "seed": null
 },
 {
-"name": "fn_8013735C",
+"name": "_wazaEffectParseSea",
 "addr": "0x8013735C",
 "size": 544,
 "label": "gs-engine",
@@ -34657,7 +34657,7 @@
 "seed": null
 },
 {
-"name": "fn_8013757C",
+"name": "_wazaEffectParseLightning",
 "addr": "0x8013757C",
 "size": 516,
 "label": "gs-engine",
@@ -37969,7 +37969,7 @@
 "seed": "range"
 },
 {
-"name": "fn_8015E8B0",
+"name": "s3dAddEmitter",
 "addr": "0x8015E8B0",
 "size": 1016,
 "label": "musyx",
@@ -44817,7 +44817,7 @@
 "seed": "range"
 },
 {
-"name": "fn_801A1988",
+"name": "HSD_JObjSetupMatrix_801A1988",
 "addr": "0x801A1988",
 "size": 120,
 "label": "hsd",
@@ -47689,7 +47689,7 @@
 "seed": null
 },
 {
-"name": "fn_801C4CB8",
+"name": "fadeEffectFuncCapture",
 "addr": "0x801C4CB8",
 "size": 1796,
 "label": "gs-engine",
@@ -47697,7 +47697,7 @@
 "seed": null
 },
 {
-"name": "fn_801C53BC",
+"name": "fadeEffectCaptureInit",
 "addr": "0x801C53BC",
 "size": 320,
 "label": "gs-engine",
@@ -47721,7 +47721,7 @@
 "seed": null
 },
 {
-"name": "fn_801C55D8",
+"name": "fadeEffectFuncFluid",
 "addr": "0x801C55D8",
 "size": 368,
 "label": "fade",
@@ -47737,7 +47737,7 @@
 "seed": null
 },
 {
-"name": "fn_801C5898",
+"name": "fadeEffectFuncSpin",
 "addr": "0x801C5898",
 "size": 712,
 "label": "fade",
@@ -47753,7 +47753,7 @@
 "seed": null
 },
 {
-"name": "fn_801C5D60",
+"name": "fadeEffectSpinFirstInit",
 "addr": "0x801C5D60",
 "size": 368,
 "label": "gs-engine",
@@ -47761,7 +47761,7 @@
 "seed": null
 },
 {
-"name": "fn_801C5ED0",
+"name": "fadeEffectFuncUDLR8",
 "addr": "0x801C5ED0",
 "size": 156,
 "label": "fade",
@@ -47769,7 +47769,7 @@
 "seed": null
 },
 {
-"name": "fn_801C5F6C",
+"name": "fadeEffectFuncUDLR2",
 "addr": "0x801C5F6C",
 "size": 156,
 "label": "fade",
@@ -47777,7 +47777,7 @@
 "seed": null
 },
 {
-"name": "fn_801C6008",
+"name": "fadeEffectUDLRUpdate",
 "addr": "0x801C6008",
 "size": 620,
 "label": "fade",
@@ -47801,7 +47801,7 @@
 "seed": "range"
 },
 {
-"name": "fn_801C63C0",
+"name": "fadeEffectDrawCapturedQuad",
 "addr": "0x801C63C0",
 "size": 712,
 "label": "fade",
@@ -47817,7 +47817,7 @@
 "seed": "range"
 },
 {
-"name": "fn_801C673C",
+"name": "fadeEffectEnd2D",
 "addr": "0x801C673C",
 "size": 36,
 "label": "fade",
@@ -47857,7 +47857,7 @@
 "seed": "range"
 },
 {
-"name": "fn_801C6928",
+"name": "fadeEffectSetFirstFrame",
 "addr": "0x801C6928",
 "size": 12,
 "label": "fade",
@@ -47865,7 +47865,7 @@
 "seed": "range"
 },
 {
-"name": "fn_801C6934",
+"name": "fadeEffectFluidDraw",
 "addr": "0x801C6934",
 "size": 436,
 "label": "fade",
@@ -59345,7 +59345,7 @@
 "seed": "range"
 },
 {
-"name": "fn_80210BF0",
+"name": "fightReturnFalse_80210BF0",
 "addr": "0x80210BF0",
 "size": 8,
 "label": "fight",
@@ -61913,7 +61913,7 @@
 "seed": "range"
 },
 {
-"name": "fn_8022967C",
+"name": "fightAiCheckRule11Effect7",
 "addr": "0x8022967C",
 "size": 136,
 "label": "fight",
@@ -62977,7 +62977,7 @@
 "seed": "range"
 },
 {
-"name": "fn_8023C368",
+"name": "fightReturnFalse_8023C368",
 "addr": "0x8023C368",
 "size": 8,
 "label": "fight",

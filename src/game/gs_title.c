@@ -1512,7 +1512,7 @@ extern void menuItemBiosSetSelectFlag(void);
 extern void windowGetActiveID(void);
 extern void menuOpenCustom(void);
 extern void floorGetPrevFloorID(void);
-extern void fn_800D3074(void);
+extern void GSgfxSetFrameInterval(void);
 extern void GStextureCreate(void);
 extern void menuOpen(void);
 extern u32 lbl_80478DDC;
@@ -1536,7 +1536,7 @@ void worldMapMain(void) {
     extern s32 windowGetActiveID(void);
     extern s32 menuOpenCustom(s32 id, ...);
     extern u32 floorGetPrevFloorID(void);
-    extern void fn_800D3074(s32 mode);
+    extern void GSgfxSetFrameInterval(s32 mode);
     extern u32 GStextureCreate(s32, s32, s32, s32, s32);
     extern void GSgfxBeginBackFBCapture(u32 texture, void (*callback)(void), s32 arg);
     extern void menuOpen(s32 id, s32 arg);
@@ -1606,7 +1606,7 @@ void worldMapMain(void) {
         change = 0;
     }
     if (change == 1) {
-        fn_800D3074(2);
+        GSgfxSetFrameInterval(2);
         lbl_8047A3A8 = 0;
         GSgfxBeginBackFBCapture(lbl_8047A388 = GStextureCreate(0, 0, 0x44, 0, 0),
                                 wmapCaptureDone, 0);

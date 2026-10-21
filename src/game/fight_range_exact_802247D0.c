@@ -249,7 +249,7 @@ void wsCmd15(void) {
     extern u32  fn_80205184();
     extern u16  fn_80207BF4();
     extern s32  fn_8011BEB4();
-    extern u8   fn_8000817C(void);
+    extern u8   dbgMenuFightGetFlag8047A271(void);
     extern u8   fn_802096E8();
     extern void fightSeqSetTsuikaKouka();
     extern u16  GSrand(void);
@@ -275,7 +275,7 @@ void wsCmd15(void) {
     } else {
         power = (u8)fn_8011BEB4(0, moveId, 0xc, 0);
     }
-    if ((u8)fn_8000817C() == 1) {
+    if ((u8)dbgMenuFightGetFlag8047A271() == 1) {
         power = 0x63;
     }
 

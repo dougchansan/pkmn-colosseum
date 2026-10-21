@@ -261,7 +261,7 @@ first_check_done:
 
 #define fn_801F54A4 fightFloorGetStatus
 #define fn_8011BEB4 wazaGetStatus
-u8 fn_8022967C(u32 param2) {
+u8 fightAiCheckRule11Effect7(u32 param2) {
     extern u16 fn_8011BEB4();
     extern int fn_801F54A4();
     u8 a = (u8)fn_801F54A4(0, 0, 0x34, 0);

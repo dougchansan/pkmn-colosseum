@@ -1086,8 +1086,8 @@ void wsCmd0D(void);
 #undef fn_802624CC
 
 /* Tri-condition predicate. */
-u8 fn_8022967C(u32 param2);
-/* body moved to fight_range_exact_80228DAC.c: fn_8022967C */
+u8 fightAiCheckRule11Effect7(u32 param2);
+/* body moved to fight_range_exact_80228DAC.c: fightAiCheckRule11Effect7 */
 
 /* ===== 0x80217-0x8021D bytecode ops (integrated from batch-1 worker) ===== */
 extern u8    wsStatBuffChange();
@@ -3989,7 +3989,7 @@ void wsCmd27(void);
  * Move-effect accuracy/flinch-style roll: closes the status menus,
  * derives a base power (doubled if the move-effect id is 0x20, else a
  * plain field-0xc lookup), then unconditionally applies a
- * fn_8000817C-gated override to 0x63. If lbl_80478D78[3] bit 0x80 is
+ * dbgMenuFightGetFlag8047A271-gated override to 0x63. If lbl_80478D78[3] bit 0x80 is
  * set and the mon is shadow (fn_802096E8), clears the bit and fires
  * fightSeqSetTsuikaKouka(0,0x80) without advancing the PC (fightSeqSetTsuikaKouka owns PC on
  * that path). Otherwise rolls fn_800E0C54()%100 against power; on
@@ -4789,7 +4789,7 @@ not_found:
  * with up to 9 optional/const fields via fn_80132A38(fieldId, value), then
  * dispatches. p8 packs two sub-ids decoded via fn_801FB1C0(0,p8,0x40/0x41,0)
  * AND is reused later for field 0x41 via fn_801FB1C0(0,p8,0x3f,0).
- * Key levers: (u8) casts on the two status-check calls (fn_80008164 /
+ * Key levers: (u8) casts on the two status-check calls (dbgMenuFightGetFlag8047A286 /
  * fn_802624CC) -- without them the compiler emits a spurious clrlwi at the
  * callsite; a 0x20-byte stack buffer for fn_80103BA8's output (a bare u16
  * local undersizes the frame by 0x20 bytes and shifts the whole GPR save
@@ -4816,7 +4816,7 @@ u8 fn_80239CCC(u32 ctx, u32 p2, u32 p3, u32 p4, u32 p5, u32 p6, u32 p7, u32 p8, 
     extern u32 fn_8011BEB4();
     extern u32 itemGetStatus();
     extern void fn_80103BA8();
-    extern u32 fn_80008164();
+    extern u32 dbgMenuFightGetFlag8047A286();
     extern u32 fn_802624CC();
     extern void fn_8026246C();
     u32 v40;
@@ -4837,7 +4837,7 @@ u8 fn_80239CCC(u32 ctx, u32 p2, u32 p3, u32 p4, u32 p5, u32 p6, u32 p7, u32 p8, 
     if ((u16)p8) fn_80132A38(0x41, fn_800FA280(fn_801FB1C0(0, p8, 0x3f, 0)));
     fn_80132A38(0x2F, p9);
 
-    if ((u8)fn_80008164() == 1) {
+    if ((u8)dbgMenuFightGetFlag8047A286() == 1) {
         fn_80103BA8(buf, 1);
         if ((*(u16*)buf & 0x800) == 0) {
             goto do_check;
@@ -4873,7 +4873,7 @@ u8 fightTrainerAiLogText(u32 ctx, u32 p2, u32 p3, u32 p4, u32 p5, u32 p6, u32 p7
     extern u32 itemGetStatus();
     extern u32 fn_801FB1C0();
     extern void fn_80103BA8();
-    extern u32 fn_80008164();
+    extern u32 dbgMenuFightGetFlag8047A286();
     extern u32 fn_802624CC();
     extern void fn_8026246C();
     u8 buf[0x20];
@@ -4889,7 +4889,7 @@ u8 fightTrainerAiLogText(u32 ctx, u32 p2, u32 p3, u32 p4, u32 p5, u32 p6, u32 p7
     if (p10) fn_80132A38(0x41, fn_800FA280(fn_801FB1C0(0, p10, 0x3f, 0)));
     fn_80132A38(0x2F, p11);
 
-    if ((u8)fn_80008164() == 1) {
+    if ((u8)dbgMenuFightGetFlag8047A286() == 1) {
         fn_80103BA8(buf, 1);
         if ((*(u16*)buf & 0x800) == 0) {
             goto do_check;
@@ -4922,7 +4922,7 @@ u8 fn_80239EE8(u32 ctx, u32 p2, u32 p3, u32 p4, u32 p5, u32 p6, u32 p7, u32 p8) 
     extern u32 fn_8011BEB4();
     extern u32 itemGetStatus();
     extern void fn_80103BA8();
-    extern u32 fn_80008164();
+    extern u32 dbgMenuFightGetFlag8047A286();
     extern u32 fn_802624CC();
     extern void fn_8026246C();
     u32 v3e;
@@ -4945,7 +4945,7 @@ u8 fn_80239EE8(u32 ctx, u32 p2, u32 p3, u32 p4, u32 p5, u32 p6, u32 p7, u32 p8) 
     if ((u16)p8) fn_80132A38(0x41, fn_800FA280(fn_801FB1C0(0, p8, 0x3f, 0)));
     fn_80132A38(0x2F, v3e);
 
-    if ((u8)fn_80008164() == 1) {
+    if ((u8)dbgMenuFightGetFlag8047A286() == 1) {
         fn_80103BA8(buf, 1);
         if ((*(u16*)buf & 0x800) == 0) {
             goto do_check;
@@ -8049,7 +8049,7 @@ void wsPlayAnimation(u32 a, u32 code) {
  *   3. Runs a battle-log-heavy scoring pass (fn_80239984 accumulator +
  *      fightTrainerAiLogText/fn_80239EE8 debug-message emitters, msg ids 0x34-0x3b,
  *      0x225/0x226) per ally, folding in a random jitter via
- *      fightTrainerAiAddValue when fn_8000815C() is set.
+ *      fightTrainerAiAddValue when dbgMenuFightGetFlag8047882E() is set.
  *   4. Picks the best-scoring ally via fightTrainerAiGetValueAryMaxBanme,
  *      emits a final 0x228 debug message, and returns its index (or -1).
  *
@@ -8660,8 +8660,8 @@ void wsCmdA5(void) {
 #pragma optimize_for_size reset
 
 /* Trivial constant return. */
-s32 fn_8023C368(void);
-/* body moved to fight_range_8023B498.c: fn_8023C368 */
+s32 fightReturnFalse_8023C368(void);
+/* body moved to fight_range_8023B498.c: fightReturnFalse_8023C368 */
 
 /*
  * u16 scaling helpers: scale a value by *10/25.
@@ -20255,7 +20255,7 @@ fightTrainerAiAddValueLog(u32 r3, u32 r4, u32 r5, u32 r6, u32 r7,
     u32 r8, u32 r9, u32 r10, u8 param_9)
 
 {
-    extern u8 fn_80008164();
+    extern u8 dbgMenuFightGetFlag8047A286();
     extern u32 fn_800FA280();
     extern void fn_80103BA8();
     extern void fn_8011BEB4();
@@ -20327,7 +20327,7 @@ fightTrainerAiAddValueLog(u32 r3, u32 r4, u32 r5, u32 r6, u32 r7,
     fn_80132A38(0x41,fn_800FA280());
   }
   fn_80132A38(0x2f,iVar6);
-  cVar5 = fn_80008164();
+  cVar5 = dbgMenuFightGetFlag8047A286();
   if (cVar5 == 1) {
     fn_80103BA8(local_58,1);
     if ((local_58[0] & 0x800) != 0) {
@@ -20374,7 +20374,7 @@ int fightTrainerAiSelectWaza(u32 r3, u32 r4, u32 r5)
     extern u32 fightTrainerAiLogText();
     extern int fightTrainerAiScoreWazaToTarget();
     extern int fn_8023B498();
-    extern void fn_8023C368();
+    extern void fightReturnFalse_8023C368();
     extern u8 lbl_80375CA8[];
   u32 local_64;
   u16 asStack_2c [10];
@@ -20462,7 +20462,7 @@ int fightTrainerAiSelectWaza(u32 r3, u32 r4, u32 r5)
                 uVar4 = 0;
               }
               else {
-                overrideTarget = fightSeqSelectTarget(r4,sVar2,r5,fn_8023C368,1,0, (void*)0xffffffff);
+                overrideTarget = fightSeqSelectTarget(r4,sVar2,r5,fightReturnFalse_8023C368,1,0, (void*)0xffffffff);
                 if (overrideTarget != 0) {
                   selectedTarget = overrideTarget;
                 }

@@ -186,7 +186,7 @@ s32 heroMoveRunEvent(u8 mode)
     extern void menuCreateOffScreen(f32 rate);
     extern u8 menuGetOffScreenFlag(void);
     extern void soundDuck(s32, s32, s32, s32);
-    extern void fn_800D3074(s32);
+    extern void GSgfxSetFrameInterval(s32);
     extern u32 std082_flagGetValue(u32 flag);
     extern void* floorGetCurrentContext(void);
     extern u32 GSeffectGetUpdateGapp(void);
@@ -238,7 +238,7 @@ s32 heroMoveRunEvent(u8 mode)
     }
 
     soundDuck(0x55, 0x1F4, 1, 1);
-    fn_800D3074(1);
+    GSgfxSetFrameInterval(1);
     if (std082_flagGetValue(0x8AE) == 0) {
         menuId = 0x41;
     } else {
@@ -249,7 +249,7 @@ s32 heroMoveRunEvent(u8 mode)
     case 0:
         if (std082_flagGetValue(0x8AE) == 0) {
             for (;;) {
-                fn_800D3074(1);
+                GSgfxSetFrameInterval(1);
                 lbl_8047A2A4 = menuId;
                 lbl_8047A2A8 = floorGetCurrentContext();
                 GSgappBlock(GSeffectGetUpdateGapp());
@@ -289,7 +289,7 @@ s32 heroMoveRunEvent(u8 mode)
             }
         } else {
             for (;;) {
-                fn_800D3074(1);
+                GSgfxSetFrameInterval(1);
                 lbl_8047A2A4 = menuId;
                 lbl_8047A2A8 = floorGetCurrentContext();
                 GSgappBlock(GSeffectGetUpdateGapp());
@@ -334,7 +334,7 @@ s32 heroMoveRunEvent(u8 mode)
     menuClose(menuId);
     menuReleaseOffScreen(lbl_8047B6F0 / (f32)fn_800D37CC());
     menuCloseSync(menuId, 1);
-    fn_800D3074(2);
+    GSgfxSetFrameInterval(2);
     heroMoveTermEvent();
     GSmodelAllUnpauseAnimation();
     lbl_8047A2A0 = 0;

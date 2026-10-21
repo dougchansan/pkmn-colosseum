@@ -1,7 +1,7 @@
 /**
  * @file menu_exact_80076F2C.c
  * @brief Exact island 0x80076F2C - 0x800776E4 (fn_80076F2C, menuRuleCheckPokemonAllModes,
- *        fn_800774D4): standalone copies, in address order, of the bodies in
+ *        menuRuleCheckSlotModeDefault): standalone copies, in address order, of the bodies in
  *        menu_range_8007109C.c, with the helpers, types and externs they use.
  */
 #include "dolphin/types.h"
@@ -510,7 +510,7 @@ static inline u8 menuRuleCheckSlotMode(void* pokemon, const s16* levels,
     return menuRuleCheckPresentPokemonMode(pokemon, levels, mode, file, cond);
 }
 
-u8 fn_800774D4(void* pokemon, const s16* levels, s32 mode)
+u8 menuRuleCheckSlotModeDefault(void* pokemon, const s16* levels, s32 mode)
 {
     return menuRuleCheckSlotMode(pokemon, levels, mode,
                                  (const char*)lbl_80268A48,

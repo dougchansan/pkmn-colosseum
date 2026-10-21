@@ -69,7 +69,7 @@ extern void menuRuleCheckPartyByRule();
 extern void fn_80076A8C();
 extern void fn_80076F2C();
 extern void menuRuleCheckPokemonAllModes();
-extern void fn_800774D4();
+extern void menuRuleCheckSlotModeDefault();
 extern void fn_80077A5C();
 extern u8 fn_80077BD0(void);
 extern void menuCBRule_CheckValidItem();
@@ -2837,7 +2837,7 @@ void menuTaisenDrawPartyList(void* window, MenuMiddleSprite_8006CCC0* sprite) {
     extern u16* pokemonBiosGetNicknamePtr(u8* pokemon);
     extern u8 menuSubGetPokemonSexForDisp(u8* pokemon);
     extern u32 pokemonGetStatus(u8* pokemon, s32 a, s32 b, s32 c);
-    extern u8 fn_800774D4(u8* pokemon, void* item, s32 flag);
+    extern u8 menuRuleCheckSlotModeDefault(u8* pokemon, void* item, s32 flag);
     extern u8 fn_80076F2C(void* hero, void* item, s32 flag);
     extern void __assert(const char* file, s32 line, const char* expr);
     s32 kind = 0;
@@ -3168,7 +3168,7 @@ void menuTaisenDrawPartyList(void* window, MenuMiddleSprite_8006CCC0* sprite) {
                     color = sprite->color;
                     msgctrlSetValue(0x2F, pokemonGetStatus(pokemon, 0, 0x7A, 0));
                     if (item != NULL &&
-                        (!fn_800774D4(pokemon, item, 0) || !fn_800774D4(pokemon, item, 1) ||
+                        (!menuRuleCheckSlotModeDefault(pokemon, item, 0) || !menuRuleCheckSlotModeDefault(pokemon, item, 1) ||
                          !fn_80076F2C(hero, item, 0))) {
                         color |= 0xFF000000;
                         color &= 0xFF0000FF;

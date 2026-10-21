@@ -56,7 +56,7 @@ extern GStexture* menuOffScreenGetPtr(void);
 extern GStexture* GStextureCreate(u32 arg0, u32 arg1, u32 format, u32 arg3, u32 arg4);
 extern void GStextureFree(GStexture* texture);
 extern void GSgfxBeginBackFBCapture(GStexture* texture, void* callback, void* userData);
-extern void fn_801C6928(void);
+extern void fadeEffectSetFirstFrame(void);
 extern s32 fn_800D37CC(void);
 extern u32 GSgetFrameStep(void);
 extern void fn_800D9ED8(u32 arg0);
@@ -169,7 +169,7 @@ FadeHook fadeSetFunction__FPFv_vbUsf(void (*init)(void), u8 snapshot, u16 type, 
         lbl_80466E30.texture = NULL;
     }
 
-    fn_801C6928();
+    fadeEffectSetFirstFrame();
     init();
     return previous;
 }

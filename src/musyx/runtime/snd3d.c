@@ -591,7 +591,7 @@ u32 fn_8015E890(SND_EMITTER* em) /* sndCheckEmitter */
     return FALSE;
 }
 
-SND_VOICEID fn_8015E8B0(SND_EMITTER* em_buffer, SND_FVECTOR* pos, SND_FVECTOR* dir, f32 maxDis,
+SND_VOICEID s3dAddEmitter(SND_EMITTER* em_buffer, SND_FVECTOR* pos, SND_FVECTOR* dir, f32 maxDis,
                         f32 comp, u32 flags, u16 fxid, u32 groupid, u8 maxVol, u8 minVol,
                         SND_ROOM* room, SND_PARAMETER_INFO* para, u8 studio) /* AddEmitter */
 {
@@ -661,7 +661,7 @@ SND_VOICEID sndAddEmitter(SND_EMITTER* em_buffer, SND_FVECTOR* pos, SND_FVECTOR*
                           f32 comp, u32 flags, SND_FXID fxid, u8 maxVol, u8 minVol, SND_ROOM* room)
 {
     if (lbl_8047AF18) {
-        return fn_8015E8B0(em_buffer, pos, dir, maxDis, comp, flags, fxid, fxid | 0x80000000, maxVol,
+        return s3dAddEmitter(em_buffer, pos, dir, maxDis, comp, flags, fxid, fxid | 0x80000000, maxVol,
                            minVol, room, NULL, 0);
     }
 

@@ -43,7 +43,7 @@ extern void* std092_getCurrentRoomID(void);                         /* GSfloor g
 /* Script/generator */
 extern void  fn_80169520(void* obj);                    /* status flag update */
 extern void  fn_8016A644(void* obj);                    /* resource cleanup */
-extern void  fn_800D305C(s32 param);                     /* gs_render_util: set render mode */
+extern void  GSgfxSetFrameClamp(s32 param);                     /* gs_render_util: set render mode */
 extern void  fn_800E24B0(u16 handle);                  /* GSmemLock */
 extern void  GSvecCopy(void* dst, void* src);
 extern u32  menuIsCheck(u32 a);
