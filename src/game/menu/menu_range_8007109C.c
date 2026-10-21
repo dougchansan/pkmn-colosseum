@@ -2054,13 +2054,13 @@ static inline u32 gbaBootCrc(u32 crc, u8* data, u32 length) {
 u32 gbaBootTransfer(GbaBootContext* context) {
     u8 crc_byte;
     u8 gba_status;
+    u32 transfer_size;
+    u32 retries;
     u32 recv_word;
     u32 send_word;
     u32 channel;
-    u32 transfer_size;
     u32 handshake;
     u32 offset;
-    u32 retries;
     u32 interrupts;
     u32 reply_crc;
     u32 candidate;
