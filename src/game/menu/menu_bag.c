@@ -10,14 +10,14 @@
  *   - Uses BSS lbl_803A6AB0 (0x2B38 = 11,064 bytes) as the bag state buffer.
  *     This is the largest BSS allocation in the gap -- it stores cached copies
  *     of all item data for fast display (553 species * 0x14 bytes = 0x2B24).
- *   - fn_8004EADC and fn_8004EC54 are initialization functions that copy
+ *   - dbgMenuTrainerAiInitA and dbgMenuTrainerAiInitB are initialization functions that copy
  *     item data from the save file (via fightTrainerAiValueAddsubDataBiosGetPtr) into the local cache,
  *     iterating 0x229 (553) times with 0x14-byte entries.
- *   - dbgMenuTrainerAiEditA, dbgMenuTrainerAiWazaDefEdit, fn_8004FE3C and fn_80050844 share one
+ *   - dbgMenuTrainerAiEditA, dbgMenuTrainerAiWazaDefEdit, dbgMenuTrainerAiIrekaeEdit and dbgMenuTrainerAiEditB share one
  *     template: reload the species cache, then run a scene-message loop
  *     (menuOpenCustom/menuGetCursorItemID) that dispatches per-message onto
  *     HANDLE_BAG_VALUE, which reads a numeric field from the on-screen input
- *     widget (fn_8001E224), clamps it to +-0xC8, and commits it
+ *     widget (menuNumberInput), clamps it to +-0xC8, and commits it
  *     (fightTrainerSetStatus). Each of the four owns a distinct scene model
  *     (0x87/0x8A/0x8B/0x8C) and a distinct set of message-ID -> field-slot
  *     pairs; the message IDs are mostly a contiguous per-pocket range with
@@ -51,7 +51,7 @@ extern void  fightTrainerSetStatus(u32 a, u32 b, u32 c, u32 d, s32 e);
 extern u32   fightTrainerGetStatus(u32 a, u32 b, u32 c, u32 d);
 
 /* ===== Text / Messages ===== */
-extern u8    fn_8001E224(u32 msgBank, s32* out, u32 a, u32 b, u32 c, u32 d);
+extern u8    menuNumberInput(u32 msgBank, s32* out, u32 a, u32 b, u32 c, u32 d);
 extern void  menuSubCloseNumberInput(void);
 
 typedef struct BagCacheEntry {
@@ -69,12 +69,12 @@ extern BagCacheEntry lbl_803A6AB0[];   /* Bag item cache (0x2B38 bytes) */
  * Clamp a numeric bag-value field (IV/EV-style stat, quantity, etc.) read via
  * the on-screen numeric input widget, then write it back.
  *   fightTrainerGetStatus(0, slot_, 0x3E, 0)      -- resolve the widget's message bank
- *   fn_8001E224(bank, &value_, 0,0x32,0x32,0) -- read+validate the entered value
+ *   menuNumberInput(bank, &value_, 0,0x32,0x32,0) -- read+validate the entered value
  *   fightTrainerSetStatus(0, slot_, 0x3E, 0, value_)     -- commit the clamped value
  *   menuSubCloseNumberInput()                              -- close the widget
  */
 #define HANDLE_BAG_VALUE(slot_, value_)                                           \
-        if (fn_8001E224(fightTrainerGetStatus(0, (slot_), 0x3E, 0),                         \
+        if (menuNumberInput(fightTrainerGetStatus(0, (slot_), 0x3E, 0),                         \
                         &(value_), 0, 0x32, 0x32, 0) == 1) {                      \
             if ((value_) > 0xC8) {                                                \
                 (value_) = 0xC8;                                                  \
@@ -89,16 +89,16 @@ extern BagCacheEntry lbl_803A6AB0[];   /* Bag item cache (0x2B38 bytes) */
 /*
  * Functions in this translation unit (6 total):
  *
- * fn_8004EADC  0x178  Bag init A (copy item data, 553 species loop, scene 0x89)
- * fn_8004EC54  0x178  Bag init B (copy item data, 553 species loop, scene 0x8A)
+ * dbgMenuTrainerAiInitA  0x178  Bag init A (copy item data, 553 species loop, scene 0x89)
+ * dbgMenuTrainerAiInitB  0x178  Bag init B (copy item data, 553 species loop, scene 0x8A)
  * dbgMenuTrainerAiEditA  0xA94  Item sort/filter handler (2708 bytes)
  * dbgMenuTrainerAiWazaDefEdit  0x5DC  Scroll position / item list display (1500 bytes)
- * fn_8004FE3C  0xA08  Item selection confirmation (2568 bytes)
- * fn_80050844  0xECC  Bag main update loop (3788 bytes, msg switch 0x5BC-0xFEC)
+ * dbgMenuTrainerAiIrekaeEdit  0xA08  Item selection confirmation (2568 bytes)
+ * dbgMenuTrainerAiEditB  0xECC  Bag main update loop (3788 bytes, msg switch 0x5BC-0xFEC)
  */
 
 /* 0x8004EADC | size: 0x178 */
-s32 fn_8004EADC(void) {
+s32 dbgMenuTrainerAiInitA(void) {
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma peephole off
     u32 index;
@@ -143,7 +143,7 @@ s32 fn_8004EADC(void) {
 }
 
 /* 0x8004EC54 | size: 0x178 */
-s32 fn_8004EC54(void) {
+s32 dbgMenuTrainerAiInitB(void) {
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma peephole off
     u32 index;
@@ -386,7 +386,7 @@ s32 dbgMenuTrainerAiWazaDefEdit(void) {
 }
 
 /* 0x8004FE3C | size: 0xA08 */
-s32 fn_8004FE3C(void) {
+s32 dbgMenuTrainerAiIrekaeEdit(void) {
     s32 value15;
     s32 value14;
     s32 value13;
@@ -499,7 +499,7 @@ s32 fn_8004FE3C(void) {
 }
 
 /* 0x80050844 | size: 0xECC */
-s32 fn_80050844(void) {
+s32 dbgMenuTrainerAiEditB(void) {
     s32 dummy1;
     s32 dummy0;
     s32 value24;

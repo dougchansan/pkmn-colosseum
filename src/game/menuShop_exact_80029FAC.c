@@ -18,7 +18,7 @@ typedef ShopVaList ShopVaListArray[1];
 
 /* RULE-EXCEPTION(user-approved): code-generation-shaped varargs/table setup;
  * see docs/RULE_EXCEPTIONS.md. */
-u32 fn_80029FAC(u8* r3, s32 r4, s32 r5, s32 r6, ...)
+u32 shopFormatTextA(u8* r3, s32 r4, s32 r5, s32 r6, ...)
 {
     ShopVaListArray list;
     s32 r31;
@@ -66,7 +66,7 @@ u32 fn_80029FAC(u8* r3, s32 r4, s32 r5, s32 r6, ...)
     return *(u32*)(r28 + r31);
 }
 
-u32 fn_8002A0B8(u8* r3, s32 r4, s32 r5, s32 r6, ...)
+u32 shopFormatTextB(u8* r3, s32 r4, s32 r5, s32 r6, ...)
 {
     ShopVaListArray list;
     s32 r31;
@@ -110,7 +110,7 @@ u32 fn_8002A0B8(u8* r3, s32 r4, s32 r5, s32 r6, ...)
     return *(u32*)(r28 + r31);
 }
 
-void fn_8002A1C4(u8* r3, s32 r4, s32 r5, ...)
+void shopMsgOpenA(u8* r3, s32 r4, s32 r5, ...)
 {
     ShopVaListArray list;
     s32 r31;
@@ -145,7 +145,7 @@ void fn_8002A1C4(u8* r3, s32 r4, s32 r5, ...)
     winMsgClose(1);
 }
 
-void fn_8002A2CC(u8* r3, s32 r4, s32 r5, ...)
+void shopMsgOpenB(u8* r3, s32 r4, s32 r5, ...)
 {
     ShopVaListArray list;
     s32 r31;

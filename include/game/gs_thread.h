@@ -131,7 +131,7 @@ void GSthreadSetStepLimit(u32 maxSteps);
  *
  * @param a, b, c, d  Pool parameters.
  *
- * Corresponds to fn_800FF828.
+ * Corresponds to floorSystemStart.
  * NOTE: This function is more accurately GSfloorInit() -- it initializes
  * the floor/scene system's resource pools and creates the floor management
  * thread. See include/game/gs_floor.h for the updated declaration.

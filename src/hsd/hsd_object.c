@@ -42,7 +42,7 @@ void ObjInfoInit(HSD_BBox* bound, f32* out) {
 extern void GSmtxMakeXRotation(void* dst, f32 angle);
 extern void GSmtxMakeYRotation(void* dst, f32 angle);
 extern void GSmtxMakeZRotation(void* dst, f32 angle);
-extern void fn_800E048C(void* dst, f32 x, f32 y, f32 z);
+extern void GSmtxMakeScale(void* dst, f32 x, f32 y, f32 z);
 extern void fn_800E0560(void* dst, f32* src);
 extern void GSmtxConcat(void* dst, void* lhs, void* rhs);
 extern void GSvecTransform(void* dst, void* mtx, void* vec);
@@ -70,7 +70,7 @@ void fn_80190E60(HSD_ObjectTransformData* data) {
     GSmtxMakeXRotation(mtx, data->rotate[0]);
     GSmtxMakeYRotation(mtx_y, data->rotate[1]);
     GSmtxMakeZRotation(mtx_z, data->rotate[2]);
-    fn_800E048C(mtx_translate, data->translate[0], data->translate[1],
+    GSmtxMakeScale(mtx_translate, data->translate[0], data->translate[1],
                 data->translate[2]);
     fn_800E0560(mtx_scale, data->scale);
     GSmtxConcat(mtx, mtx_y, mtx);
@@ -145,7 +145,7 @@ s32 fn_80191118(HSD_ObjectTransformData* data) {
     GSmtxMakeXRotation(mtx, data->rotate[0]);
     GSmtxMakeYRotation(mtx_y, data->rotate[1]);
     GSmtxMakeZRotation(mtx_z, data->rotate[2]);
-    fn_800E048C(mtx_translate, data->translate[0], data->translate[1],
+    GSmtxMakeScale(mtx_translate, data->translate[0], data->translate[1],
                 data->translate[2]);
     fn_800E0560(mtx_scale, data->scale);
     GSmtxConcat(mtx, mtx_y, mtx);

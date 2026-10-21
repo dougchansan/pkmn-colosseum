@@ -2,7 +2,7 @@
  * @file pkjb_candidate_80073700.c
  * @brief pkjb_uploader.c carve, 0x80073700 - 0x80073990 (candidate).
  *
- * fn_80073700 is 97.3%: the code is right, but retail walks the output
+ * gbaCmdRecv99 is 97.3%: the code is right, but retail walks the output
  * through a copy of the data pointer (made in the loop preheader, after the
  * offset is zeroed) and keeps the parameter in r30, so chan and the hoisted
  * values land one register off. Neither an explicit pointer nor an
@@ -12,7 +12,7 @@
 #include "game/menu/pkjb_uploader_shared.h"
 
 /* 0x80073700 | 0x290: command 0x99, receive 0x278 bytes. */
-s32 fn_80073700(s32 chan, u32* data)
+s32 gbaCmdRecv99(s32 chan, u32* data)
 {
     u32 response;
     u8 status;
@@ -21,7 +21,7 @@ s32 fn_80073700(s32 chan, u32* data)
     u32 timeout;
     u32 start;
 
-    result = fn_80073C38(chan);
+    result = gbaCmdResetLink(chan);
     if (result != 0) {
         return result;
     }

@@ -5,10 +5,10 @@ extern u16 lbl_8047A684[6] __attribute__((section(".sdata")));
 
 s32 fn_80089D98(s32 index)
 {
-    extern s32 fn_80072548(s32);
+    extern s32 gbaCmdWaitReadyB(s32);
     s32 status;
 
-    status = fn_80072548(index - 1);
+    status = gbaCmdWaitReadyB(index - 1);
     if (status < 0) {
         lbl_8047A684[index - 1] = 0;
     } else if (status == 1 || status == 2) {

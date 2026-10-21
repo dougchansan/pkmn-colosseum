@@ -90,7 +90,7 @@ u32 scriptAddPokecoupon(s32 delta)
 #endif
 #if !defined(NO_LOCAL_PRAGMAS_FIELD_RANGE_801CA7EC_PREFIX)
 #endif
-u32 fn_801CA858(u32 arg)
+u32 scriptHeroSetStatus0D(u32 arg)
 {
     return heroSetStatus((u8*)0, 0xd, arg);
 }
@@ -101,7 +101,7 @@ u32 fn_801CA858(u32 arg)
 #endif
 #if !defined(NO_LOCAL_PRAGMAS_FIELD_RANGE_801CA7EC_PREFIX)
 #endif
-u32 fn_801CA884(void)
+u32 scriptHeroGetStatus0D(void)
 {
     return (u32)heroGetStatus((u8*)0, 0xd, 0);
 }

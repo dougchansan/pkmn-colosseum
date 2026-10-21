@@ -11,7 +11,7 @@
  * windowInit (all previously exact only under local optimization_level /
  * peephole pragmas) are exact, and so are windowGetValue and
  * windowCheckCursor. The compiler is GC/2.5, as for winMsg: every exact
- * window function is identical under GC/1.3 and GC/2.5, while fn_80105634
+ * window function is identical under GC/1.3 and GC/2.5, while winMsgDrawItem
  * (93.5 -> 94.8%) and windowOpen (80.6 -> 81.9%) only move closer with
  * GC/2.x. That one flag set (GC/2.5, -O4,p, "-opt nopeephole") also
  * replaces the old per-unit "-schedule off" (windowSearchItemID), "-O2",

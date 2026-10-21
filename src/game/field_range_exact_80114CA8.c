@@ -19,7 +19,7 @@
 extern void GSlogWrite(const char* fmt, ...);
 extern void* GSresAllocResourceAlign(u32 size, u32 alignment, u32 group, u32 id, void* release);
 extern void* GSresGetResource(u32 group, u32 id);
-extern u8 fn_800FF548(void); /* the current floor's fade-out flag */
+extern u8 floorGetFadeOutFlag(void); /* the current floor's fade-out flag */
 extern u8 fn_800FF554(void); /* the current floor's fade-in flag */
 extern void cms_RegisterScript(void* script);
 extern s32 cms_UnregisterScript(void* script);
@@ -60,7 +60,7 @@ void* floorReadMapPreFunc(u32 group, u32 id, u32 size) {
 void* floorReadScriptPostFunc(u32 group, u32 id) {
     void* script = GSresGetResource(group, id);
 
-    if (fn_800FF548() == 0 && script != NULL) {
+    if (floorGetFadeOutFlag() == 0 && script != NULL) {
         cms_RegisterScript(script);
         floorStartSoundScript();
     }
@@ -70,7 +70,7 @@ void* floorReadScriptPostFunc(u32 group, u32 id) {
 void* floorReadScriptPreFunc(u32 group, u32 id, u32 size) {
     void* buffer;
 
-    if (fn_800FF548() != 0) {
+    if (floorGetFadeOutFlag() != 0) {
         return NULL;
     }
     size = (size + 0x1F) & ~0x1F;
@@ -84,7 +84,7 @@ void* floorReadScriptPreFunc(u32 group, u32 id, u32 size) {
 void* floorReadFontPostFunc(u32 group, u32 id) {
     void* font;
 
-    if (fn_800FF548() != 0) {
+    if (floorGetFadeOutFlag() != 0) {
         return NULL;
     }
     font = GSresGetResource(group, id);
@@ -97,7 +97,7 @@ void* floorReadFontPostFunc(u32 group, u32 id) {
 void* floorReadFontPreFunc(u32 group, u32 id, u32 size) {
     void* buffer;
 
-    if (fn_800FF548() != 0) {
+    if (floorGetFadeOutFlag() != 0) {
         return NULL;
     }
     size = (size + 0x1F) & ~0x1F;
@@ -111,7 +111,7 @@ void* floorReadFontPreFunc(u32 group, u32 id, u32 size) {
 void* floorReadMsgPostFunc(u32 group, u32 id) {
     void* msg;
 
-    if (fn_800FF548() != 0) {
+    if (floorGetFadeOutFlag() != 0) {
         return NULL;
     }
     msg = GSresGetResource(group, id);
@@ -124,7 +124,7 @@ void* floorReadMsgPostFunc(u32 group, u32 id) {
 void* floorReadMsgPreFunc(u32 group, u32 id, u32 size) {
     void* buffer;
 
-    if (fn_800FF548() != 0) {
+    if (floorGetFadeOutFlag() != 0) {
         return NULL;
     }
     size = (size + 0x1F) & ~0x1F;

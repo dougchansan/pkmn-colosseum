@@ -3,7 +3,7 @@
 
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma peephole off
-s32 fn_8002AA68(void* r3)
+s32 shopSubMenuCtrl(void* r3)
 {
     u8* r31;
     s8 state;

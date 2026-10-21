@@ -3,7 +3,7 @@
  * @brief FSYS per-frame task, state query and subsystem init
  *        (0x8017AAA4 - 0x8017AF6C).
  *
- * fsysUpdateTask is the GSgapp task fn_8003708C registers right after
+ * fsysUpdateTask is the GSgapp task _bootLoaderThread registers right after
  * _fsysInitTOC: it polls the drive, reports fatal / no-disk / cover-open /
  * wrong-disk / retry states through the registered error callback, and
  * otherwise steps every load slot through the status dispatch table
@@ -42,7 +42,7 @@ extern char* strcpy(char* dst, const char* src);
 extern void* DVDGetCurrentDiskID(void); /* DVDGetCurrentDiskID */
 extern void* GSmemLock(u16 handle);
 extern u16 GSmemAlloc(u32 size, u32 alignment);
-extern s32 fn_80167E10(u32 fileInfo); /* DVDGetCommandBlockStatus wrapper */
+extern s32 GSdvdGetCommandBlockStatus(u32 fileInfo); /* DVDGetCommandBlockStatus wrapper */
 extern s32 GSdvdGetDriveStatus(void);         /* DVDGetDriveStatus wrapper */
 extern u32 GSdvdGetLength(u32 file);
 extern void GSdvdClose(u32 file);
@@ -50,8 +50,8 @@ extern void GSdvdRead(u32 file, void* dst, u32 size, u32 offset);
 extern u32 GSdvdOpen(const char* path);
 extern void GSdvdInit(u32 count);
 extern void fsysCacheInit(u32 queueCount, u32 arenaStart, u32 arenaSize);
-extern void fn_8018094C(void);
-extern void fn_80180B94(u32 count);
+extern void fsysJobPoolUpdate(void);
+extern void fsysJobPoolInit(u32 count);
 
 static inline s32 fsysGetDriveStatus(void)
 {
@@ -66,7 +66,7 @@ static inline s32 fsysUpdateSlot(FSYSSlot* slot)
 
     result = 1;
     if (slot->archiveData && slot->fileInfo0) {
-        slot->padding054 = fn_80167E10(slot->fileInfo0);
+        slot->padding054 = GSdvdGetCommandBlockStatus(slot->fileInfo0);
     }
     for (entry = lbl_8036C3E0, index = 0;; entry++, index++) {
         if (entry->status == slot->status) {
@@ -88,7 +88,7 @@ void fsysUpdateTask(void)
     u8 stopped;
     s32 result;
 
-    fn_8018094C();
+    fsysJobPoolUpdate();
     stopped = 0;
     lbl_8047B1C8 = lbl_80453FEC.driveStatus;
     lbl_80453FEC.driveStatus = fsysGetDriveStatus();
@@ -206,6 +206,6 @@ s32 _fsysInitTOC(u32 numSlots, FSYSErrorCallback errorCallback, u32 errorArg0,
     lbl_8047B1B0 = fsysLoadFile(lbl_80273F70);
 
     fsysCacheInit(8, 0xA00000, 0x600000);
-    fn_80180B94(100);
+    fsysJobPoolInit(100);
     return 1;
 }

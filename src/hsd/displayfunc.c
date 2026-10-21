@@ -126,7 +126,7 @@ void HSD_PObjClearMtxMark(void* obj, u32 mark);
 f32* HSD_MtxAlloc(void);
 void HSD_MtxFree(f32* mtx);
 /* HSD_MtxInverseConcat */
-void fn_801A9DF0(Mtx inv, Mtx src, Mtx dest);
+void HSD_JObjAnimApplyValue(Mtx inv, Mtx src, Mtx dest);
 void HSD_ObjAllocInit(HSD_ObjAllocData* data, u32 size, u32 align);
 void* HSD_ObjAlloc(HSD_ObjAllocData* data);
 void HSD_ObjFree(HSD_ObjAllocData* data, void* obj);
@@ -393,11 +393,11 @@ MtxPtr _HSD_mkEnvelopeModelNodeMtx(HSD_JObj* m, MtxPtr mtx)
         if (x == m) {
             PSMTXInverse(x->envelopemtx, mtx);
         } else if (x->flags & JOBJ_SKELETON_ROOT) {
-            fn_801A9DF0(x->mtx, m->mtx, mtx);
+            HSD_JObjAnimApplyValue(x->mtx, m->mtx, mtx);
         } else {
             Mtx n;
             PSMTXConcat(x->mtx, x->envelopemtx, n);
-            fn_801A9DF0(n, m->mtx, mtx);
+            HSD_JObjAnimApplyValue(n, m->mtx, mtx);
         }
 
         return mtx;

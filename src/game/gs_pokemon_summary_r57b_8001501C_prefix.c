@@ -1,7 +1,7 @@
 /**
  * @file gs_pokemon_summary_r57b_8001501C_prefix.c
  * @brief gs_pokemon_summary carve, 0x8001501C - 0x800150E4: fn_8001501C
- *        (draw the summary label) and fn_80015050 (call the current page's
+ *        (draw the summary label) and bagMenuDrawCursor (call the current page's
  *        draw handler with its cursor position).
  *
  * Text only, GC/1.3 -O4,p with the peephole pass off for the whole unit (the
@@ -37,7 +37,7 @@ s32 fn_8001501C(void)
     return 0;
 }
 
-s32 fn_80015050(u8* context, u8* param)
+s32 bagMenuDrawCursor(u8* context, u8* param)
 {
     SummaryPageEntry* entry = lbl_80266918;
     SummaryDrawHandler handler;

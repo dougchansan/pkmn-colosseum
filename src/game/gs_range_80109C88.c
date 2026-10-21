@@ -423,7 +423,7 @@ u16 pokemonGetFaceSpriteId(void* pokemon)
 #endif
 
 #if defined(GS_RANGE_80109C88_ALL) || defined(GS_FN_8010B560)
-u8 fn_8010B560(void) {
+u8 menuFaceIsAnyLoading(void) {
     s32 count;
     s32 i;
 
@@ -453,7 +453,7 @@ s8 menuFaceIsReady(u16 key) {
 
 #if defined(GS_RANGE_80109C88_ALL) || defined(GS_FN_8010BD6C)
 /* Built as its own unit with -opt nopeephole (no local pragma). */
-s32 fn_8010BD6C(u16 key, void* (*callback)(u32), u32 arg)
+s32 menuFaceAllocSlot(u16 key, void* (*callback)(u32), u32 arg)
 {
     /* FaceSlot as four words: key/state/slot packed into one. */
     typedef struct FaceSlotWords {
@@ -464,7 +464,7 @@ s32 fn_8010BD6C(u16 key, void* (*callback)(u32), u32 arg)
     } FaceSlotWords;
     extern s32 lbl_8047AD48;
     extern void* _menuFaceBiosGetPtr__FUs(u16 key);
-    extern void fn_800F9210(u32 size);
+    extern void GSresReleaseOwnerItem(u32 size);
     void* data;
     FaceSlotWords saved;
     FaceSlot cur;
@@ -489,7 +489,7 @@ s32 fn_8010BD6C(u16 key, void* (*callback)(u32), u32 arg)
             saved.callback = lbl_8047AD4C[0].callback;
             saved.arg = lbl_8047AD4C[0].arg;
             if (lbl_8047AD4C[0].state == 2) {
-                fn_800F9210(0x5C0);
+                GSresReleaseOwnerItem(0x5C0);
             }
             for (i = 0; i < count - 1; i++) {
                 lbl_8047AD4C[i] = lbl_8047AD4C[i + 1];
@@ -623,7 +623,7 @@ void _menuFaceLoad(void* unused1, u32 unused2, u32 arg)
     extern s32 lbl_8047AD48;
     extern Entry2* lbl_8047AD54;
     extern void* _menuFaceBiosGetPtr__FUs(u16 key);
-    extern void fn_800F9210(u32 group, u32 resource);
+    extern void GSresReleaseOwnerItem(u32 group, u32 resource);
     extern void* GSresGetResource(u32 group, u32 handle);
     extern void GSresRegisterResource(void* resource, u32 resourceArg,
                                        u32 callbackArg, void* callback);
@@ -645,7 +645,7 @@ void _menuFaceLoad(void* unused1, u32 unused2, u32 arg)
 
     if (i < 0) {
         if (found1 != 0) {
-            fn_800F9210(0x5c0, found1);
+            GSresReleaseOwnerItem(0x5c0, found1);
         }
         return;
     }
@@ -657,7 +657,7 @@ void _menuFaceLoad(void* unused1, u32 unused2, u32 arg)
 
     memcpy(lbl_8047AD54[entry->slot].data, res, 0x6ec0);
 
-    fn_800F9210(0x5c0, found1);
+    GSresReleaseOwnerItem(0x5c0, found1);
 
     tex = GStextureLoad(lbl_8047AD54[entry->slot].data);
     GSresRegisterResource(tex, 0x5c0, found1, (void*)fn_8010C364);
@@ -843,7 +843,7 @@ s32 menuFaceDrawPokemon(u8* context, void* srcNode, void* pokemon)
 #if defined(GS_RANGE_80109C88_ALL) || defined(GS_FN_8010B9E8)
 #if !defined(GS_FN_8010B9E8)
 #endif
-s32 fn_8010B9E8(u8* context, void* srcNode, u16 key)
+s32 menuFaceDraw(u8* context, void* srcNode, u16 key)
 {
     return faceDraw(context, srcNode, key);
 }
@@ -994,15 +994,15 @@ s32 _menuPokemonModelLoadThread(FaceModel* m)
 {
     extern s32 lbl_8047AD40;
     extern u8 lbl_8047AD44;
-    extern u8 fn_8010B560(void);
+    extern u8 menuFaceIsAnyLoading(void);
     extern void _threadSwitch(void);
-    extern void fn_801DADC0(u32 arg);
+    extern void wazaSequenceSysInitEx(u32 arg);
     extern void wazaSequenceOwnerFree(u32 handle);
     extern void GSmodelFree(u32 model);
-    extern u32 fn_801DE190(u16 hi, u32 key, u8 rare);
+    extern u32 wazaSequencePokemonCreate(u16 hi, u32 key, u8 rare);
     extern u32 wazaSequenceOwnerGetModel(u32 object);
     extern void GSmodelSetVisibility(u32 model, u32 visible);
-    extern u8 fn_801DDD28(u32 model, u16 a, u32 b, u32 c);
+    extern u8 wazaSequenceOwnerLoadWaza(u32 model, u16 a, u32 b, u32 c);
     extern void wazaSequenceClearFlag16(u32 model, u16 a, u32 b);
     extern void wazaSequenceSysStartWaza(u32 model, u16 a, u32 b);
     extern u32 floorOpenObject(u32 key);
@@ -1032,13 +1032,13 @@ s32 _menuPokemonModelLoadThread(FaceModel* m)
         return 0;
     }
 
-    while (fn_8010B560()) {
+    while (menuFaceIsAnyLoading()) {
         _threadSwitch();
     }
 
     if (!lbl_8047AD44) {
         lbl_8047AD44 = 1;
-        fn_801DADC0(4);
+        wazaSequenceSysInitEx(4);
     }
 
     do {
@@ -1061,7 +1061,7 @@ s32 _menuPokemonModelLoadThread(FaceModel* m)
         m->next = m->cur;
 
         if (m->next.type != 0) {
-            m->handle24 = fn_801DE190(m->next.u.s.hi, m->next.c, m->next.d);
+            m->handle24 = wazaSequencePokemonCreate(m->next.u.s.hi, m->next.c, m->next.d);
             if (m->handle24 == 0) {
                 m->state = 0;
                 return 0;
@@ -1073,7 +1073,7 @@ s32 _menuPokemonModelLoadThread(FaceModel* m)
             }
             GSmodelSetVisibility(model, 0);
             if (m->next.u.s.lo != 0) {
-                if (fn_801DDD28(m->handle24, m->next.u.s.lo, 4, 0)) {
+                if (wazaSequenceOwnerLoadWaza(m->handle24, m->next.u.s.lo, 4, 0)) {
                     wazaSequenceClearFlag16(m->handle24, m->next.u.s.lo, 4);
                     wazaSequenceSysStartWaza(m->handle24, m->next.u.s.lo, 4);
                 }
@@ -1264,7 +1264,7 @@ static inline void* faceBiosPtrPassThrough(void* ptr) {
 u16 menuFaceRequestPokemon(u16 key, void* (*callback)(u32), u32 arg)
 {
     extern void* _menuFaceBiosGetPtr__FUs(u16 key);
-    extern void fn_8010BD6C(u16 key, void* (*cb)(u32), u32 a);
+    extern void menuFaceAllocSlot(u16 key, void* (*cb)(u32), u32 a);
     extern void GSresReleaseById(u32 group);
     extern s32 fn_8017B000(u32 fileHandle, u32 requestID, u32 callbackA,
                             u32 callbackB, u32 callbackC);
@@ -1300,11 +1300,11 @@ u16 menuFaceRequestPokemon(u16 key, void* (*callback)(u32), u32 arg)
             }
         } else {
             if (faceSlotFind(lbl_8047AD4C, _menuFaceBiosGetPtr__FUs(key)) >= 0) {
-                fn_8010BD6C(key, callback, arg);
+                menuFaceAllocSlot(key, callback, arg);
                 key = 0;
                 continue;
             }
-            fn_8010BD6C(key, callback, arg);
+            menuFaceAllocSlot(key, callback, arg);
         }
         ptr = faceBiosPtrPassThrough(_menuFaceBiosGetPtr__FUs(key));
         if (ptr == NULL) {

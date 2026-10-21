@@ -51,13 +51,13 @@ extern void  winMsgOpen(s32 slot, s32 msgId, s32 p3, s32 p4);
 extern void  winMsgClose(s32 slot);                   /* Close message box */
 
 /* Input/frame */
-extern u8    fn_801F18DC(s32 controller);             /* Check input ready */
+extern u8    fightFloorIsKind10(s32 controller);             /* Check input ready */
 extern u8    fightFloorIsUseFightTimerCommand(s32 controller);             /* Check button pressed */
 extern u8    fightTimerCommandIsOver(void);                       /* Check A button */
 extern u16   std103_battleGetResult(void);                       /* Get input state */
 extern void  _threadSwitch(void);                       /* Frame advance */
 extern u32   GSinputButtonsChanged(s32 slot);                   /* Get render flags */
-extern u32   fn_800F7BC4(s32 slot);                   /* Get VSync flags */
+extern u32   GSinputGetButtons(s32 slot);                   /* Get VSync flags */
 
 /* Battle bridge */
 extern void  msgctrlSetValue();                           /* Set battle parameter */
@@ -90,13 +90,13 @@ u8 fn_8000DAA8(void) {
  * ========================================================================= */
 
 /* 0x800111C4 | 0x24 -- small accessor */
-extern u32 fn_80089F78(u32, u32, u32, u32);
+extern u32 gbaSendBattleSnapshot(u32, u32, u32, u32);
 #if 0
 asm void menuFightOpenGBAMain(void) {
 #include "src/game/gs_npc_interact_fn_800111C4.inc"
 }
 #else
-void menuFightOpenGBAMain(u32 a, u32 b, u32 c) { fn_80089F78(a, b, c, 0); }
+void menuFightOpenGBAMain(u32 a, u32 b, u32 c) { gbaSendBattleSnapshot(a, b, c, 0); }
 #endif
 
 /* 0x800111E8 | 0x24 -- small accessor */
@@ -105,7 +105,7 @@ asm void menuFightOpenGBAIrekae(void) {
 #include "src/game/gs_npc_interact_fn_800111E8.inc"
 }
 #else
-void menuFightOpenGBAIrekae(u32 a, u32 b, u32 c) { fn_80089F78(a, b, c, 1); }
+void menuFightOpenGBAIrekae(u32 a, u32 b, u32 c) { gbaSendBattleSnapshot(a, b, c, 1); }
 #endif
 
 /* 0x7C | menuFightCloseTarget | nullcheck_call_flag */
@@ -288,7 +288,7 @@ asm void menuFightOpenWaza(void) {
 /* TRUE when the battle timer forces the current menu closed. */
 static inline u8 menuFightIsTimeUp(void)
 {
-    if (fn_801F18DC(0) != 0) {
+    if (fightFloorIsKind10(0) != 0) {
         if (fightFloorIsUseFightTimerCommand(0) == 1 && fightTimerCommandIsOver() == 1) {
             return 1;
         }
@@ -334,7 +334,7 @@ s32 menuFightOpenWaza(u8* status, u32 arg1, u32 arg2) {
             menuCloseCustom(0xf7, 0, 1);
         }
         winMsgOpenFight(msg, 1, 1);
-        while ((fn_800F7BC4(1) & GSinputButtonsChanged(1) & 0x300) == 0) {
+        while ((GSinputGetButtons(1) & GSinputButtonsChanged(1) & 0x300) == 0) {
             if (menuFightIsTimeUp() != 0) {
                 break;
             }
@@ -398,7 +398,7 @@ extern void heroDispatchEvent(void);
 extern void heroMoveInitEvent(void);
 extern void mailMainReceiveTerminate(void);
 extern void GSmodelAllPauseAnimation(void);
-extern s32 fn_800D37CC();
+extern s32 GSgfxGetVsyncRate();
 extern void menuCreateOffScreen(void);
 extern u8 menuGetOffScreenFlag();
 extern void soundDuck(void);
@@ -430,7 +430,7 @@ extern u32 lbl_8047A2A4;
 extern u32 lbl_8047A2A8;
 extern u32 lbl_8047A2AC;
 extern u32 lbl_8047A2B0;
-u32 fn_8000DAB0(void); /* forward decl: referenced by heroMoveRunEvent asm inc */
+u32 menuFightOpenAndWake(void); /* forward decl: referenced by heroMoveRunEvent asm inc */
 #if 0
 asm void fn_8000D710(void) {
 #include "src/game/gs_npc_interact_fn_8000D710.inc"
@@ -442,7 +442,7 @@ u32 heroMoveRunEvent(u32 mode) {
     extern void heroMoveInitEvent(void);
     extern void mailMainReceiveTerminate(void);
     extern void GSmodelAllPauseAnimation(void);
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     extern void menuCreateOffScreen(f32 value);
     extern u8 menuGetOffScreenFlag(void);
     extern void soundDuck(s32, s32, s32, s32);
@@ -487,7 +487,7 @@ u32 heroMoveRunEvent(u32 mode) {
     _threadSwitch();
     GSmodelAllPauseAnimation();
     lbl_8047A2A0 = 1;
-    tmp = fn_800D37CC();
+    tmp = GSgfxGetVsyncRate();
     if (tmp != 0) {
         menuCreateOffScreen(lbl_8047B6F0 / (f32)(s32)tmp);
     }
@@ -501,7 +501,7 @@ u32 heroMoveRunEvent(u32 mode) {
 
     switch ((u8)mode) {
     case 0:
-        threadEntry = (void*)fn_8000DAB0;
+        threadEntry = (void*)menuFightOpenAndWake;
         do {
             GSgfxSetFrameInterval(1);
             lbl_8047A2A4 = dialogId;
@@ -552,7 +552,7 @@ u32 heroMoveRunEvent(u32 mode) {
     fn_80019070(result);
     soundUnduck(0x1F4, 1, 1);
     menuClose(dialogId);
-    tmp = fn_800D37CC();
+    tmp = GSgfxGetVsyncRate();
     if (tmp != 0) {
         menuReleaseOffScreen(lbl_8047B6F0 / (f32)(s32)tmp);
     }
@@ -565,18 +565,18 @@ u32 heroMoveRunEvent(u32 mode) {
 }
 #endif
 
-/* fn_8000DAB0 - 0x8000DAB0 | size: 0x38 */
+/* menuFightOpenAndWake - 0x8000DAB0 | size: 0x38 */
 extern u32 menuOpen(u32, u32);
 extern void GSthreadUnblockGroup(u32);
 extern u32 lbl_8047A2A4;
 extern u32 lbl_8047A2A8;
 extern u32 lbl_8047A2B0;
 #if 0
-asm void fn_8000DAB0(void) {
+asm void menuFightOpenAndWake(void) {
 #include "src/game/gs_npc_interact_fn_8000DAB0.inc"
 }
 #else
-u32 fn_8000DAB0(void) {
+u32 menuFightOpenAndWake(void) {
     lbl_8047A2B0 = menuOpen(lbl_8047A2A4, 1);
     GSthreadUnblockGroup(lbl_8047A2A8);
     return lbl_8047A2B0;
@@ -716,13 +716,13 @@ asm void menuFightButtonSecretKousan(void) {
 #else
 void menuFightButtonSecretKousan(u8* ptr) {
     extern void menuButtonNormal(u8* a);
-    extern u8 fn_801F18DC(s32 a);
+    extern u8 fightFloorIsKind10(s32 a);
     extern u8 fightFloorIsUseFightTimerCommand(s32 a);
     extern u8 fightTimerCommandIsOver(void);
     extern u16 std103_battleGetResult(void);
     u8 flag;
     menuButtonNormal(ptr);
-    if (!(u8)fn_801F18DC(0)) goto _zero;
+    if (!(u8)fightFloorIsKind10(0)) goto _zero;
     if ((u8)fightFloorIsUseFightTimerCommand(0) == 1 && (u8)fightTimerCommandIsOver() == 1) { flag = 1; goto _check; }
     if ((u16)std103_battleGetResult() == 1) { flag = 1; goto _check; }
     _zero:
@@ -1867,7 +1867,7 @@ void menuFightButtonSecretWazaTop(u8* ctx) {
         }
     }
 
-    if ((u8)fn_801F18DC(0) != 0) {
+    if ((u8)fightFloorIsKind10(0) != 0) {
         if ((u8)fightFloorIsUseFightTimerCommand(0) == 1 && (u8)fightTimerCommandIsOver() == 1) {
             pressed = 1;
             goto check_pressed;
@@ -1933,7 +1933,7 @@ asm void menuFightButtonSecretMain(void) {
 #else
 void menuFightButtonSecretMain(u8* arg1) {
     extern void* windowGetKeyInfo(void);
-    extern u8 fn_801F18DC(s32 a);
+    extern u8 fightFloorIsKind10(s32 a);
     extern u8 fightFloorIsUseFightTimerCommand(s32 a);
     extern u8 fightTimerCommandIsOver(void);
     extern u16 std103_battleGetResult(void);
@@ -1959,7 +1959,7 @@ void menuFightButtonSecretMain(u8* arg1) {
         arg1[0x98] = 1;
         *(s32*)(arg1 + 0x80) = flag_val;
     }
-    if ((u8)fn_801F18DC(0) != 0) {
+    if ((u8)fightFloorIsKind10(0) != 0) {
         if ((u8)fightFloorIsUseFightTimerCommand(0) == 1) {
             if ((u8)fightTimerCommandIsOver() == 1) {
                 flag = 1;
@@ -2652,7 +2652,7 @@ u32 menuPokemonCheckPokemonChange(void* npc, u32 warpId, u32 variant) {
 #define WAIT_FOR_DIALOG(waitLabel, checkLabel, haveLabel, doneLabel) \
     goto checkLabel; \
 waitLabel: \
-    advance = fn_801F18DC(0); \
+    advance = fightFloorIsKind10(0); \
     if (advance != 0) { \
         if ((fightFloorIsUseFightTimerCommand(0) == 1) && (fightTimerCommandIsOver() == 1)) { \
             advance = 1; \
@@ -2670,7 +2670,7 @@ haveLabel: \
     _threadSwitch(); \
 checkLabel: \
     inputFlags = GSinputButtonsChanged(1); \
-    maskedFlags = fn_800F7BC4(1); \
+    maskedFlags = GSinputGetButtons(1); \
     maskedFlags &= inputFlags; \
     if ((maskedFlags & 0x300) == 0) { \
         goto waitLabel; \

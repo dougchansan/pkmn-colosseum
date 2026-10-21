@@ -50,7 +50,7 @@ extern const ColosseumBitMasks lbl_8047BF40;
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-void fn_8005D6A8(MenuWindow* window) {
+void menu9DButton(MenuWindow* window) {
     MenuKeyInfo* keys = (MenuKeyInfo*)windowGetKeyInfo();
     ColosseumBitMasks masks;
     s32 cursor = window->cursor;

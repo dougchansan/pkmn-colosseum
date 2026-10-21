@@ -71,7 +71,7 @@ extern s32 fightOutPokemonGetFightActionPri(struct Pokemon* pokemon);
 extern u32 jumptable_803754AC[];
 extern void joutaiDataBiosGetStatusKind(void);
 extern void statusCheckWriteJoutaiDataId(void);
-extern void fn_8011B67C(void);
+extern void statusIsJoutaiDataId(void);
 extern void pokemonGetStatus(void);
 extern void std103_battleGetResult(void);
 extern void fightTrainerGetValidFightOutPokemonPtr(void);

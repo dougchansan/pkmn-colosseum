@@ -28,8 +28,8 @@ extern s32 lbl_8047B1BC;
 extern void* lbl_8047B1C0[2];
 extern u32 fn_8017FA5C(void);
 extern void fn_8017F800(s32 handleID);
-extern u32 fn_8017F928(u32 size, u32 fileHandle, u32 key1, u32 key2);
-extern u8 fn_80167EF8(const char* path);
+extern u32 fsysCacheReserve(u32 size, u32 fileHandle, u32 key1, u32 key2);
+extern u8 GSdvdConvertPathToEntrynum(const char* path);
 extern u32 GSdvdOpen(const char* path);
 extern u32 GSdvdGetLength(u32 fileInfo);
 extern u8 GSdvdReadAsync(u32 fileInfo, void* dst, u32 length, u32 offset,
@@ -168,7 +168,7 @@ void fsysInitTOC(FSYSSlot* slot, u32 offset, u32 length, void* callbackA,
     cacheSize = lowSize + (cacheSize << 17);
 
     fsysCacheMakeRoom(slot);
-    cacheAddress = fn_8017F928(cacheSize, slot->fileHandle, entry->groupID,
+    cacheAddress = fsysCacheReserve(cacheSize, slot->fileHandle, entry->groupID,
                                  entry->nameHash);
     fsysCacheMakeRoom(slot);
 
@@ -192,7 +192,7 @@ void fsysInitTOC(FSYSSlot* slot, u32 offset, u32 length, void* callbackA,
     archive = slot->archiveData;
     if (archive->flags & 1) {
         slot->tocBuffer = NULL;
-        if (externalPath && fn_80167EF8(externalPath)) {
+        if (externalPath && GSdvdConvertPathToEntrynum(externalPath)) {
             slot->tocBuffer = (void*)GSdvdOpen(externalPath);
         }
         if (!slot->tocBuffer) {

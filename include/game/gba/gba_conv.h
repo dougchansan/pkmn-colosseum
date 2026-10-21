@@ -27,7 +27,7 @@
 typedef struct GbaConvChannelState {
     /* 0x00 */ u16 ids[3];    /* species ids checked by dnaKeyCodeCheck */
     /* 0x06 */ u8  _pad06[2];
-    /* 0x08 */ u32 result;   /* written by fn_80088428 from fn_80087C64()'s return value */
+    /* 0x08 */ u32 result;   /* written by fn_80088428 from cardeGridPrompt()'s return value */
 } GbaConvChannelState;
 
 /**

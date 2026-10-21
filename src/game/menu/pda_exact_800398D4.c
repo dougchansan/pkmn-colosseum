@@ -21,18 +21,18 @@ extern void winSpriteSetDisp(void* sprite, s32 disp);
 
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma peephole off
-s32 fn_800398D4(void* work, PdaSprite* sprite)
+s32 itemStorageDrawList(void* work, PdaSprite* sprite)
 {
     extern void fn_800FE38C(s32 x1, s32 y1, s32 x2, s32 y2);
     extern void fn_800FE35C(void);
-    extern s32 fn_80039644(void* window, void* sprite);
+    extern s32 itemStorageDrawItem(void* window, void* sprite);
     s32 x;
     s32 y;
 
     x = sprite->field_50;
     y = sprite->field_52;
     fn_800FE38C(0x118 - x, 0x8b - y, 0x150, 0x10d);
-    fn_80039644((u8*)work + 0x94, *(void**)((u8*)work + 0x88));
+    itemStorageDrawItem((u8*)work + 0x94, *(void**)((u8*)work + 0x88));
     fn_800FE35C();
     return 0;
 }
@@ -40,7 +40,7 @@ s32 fn_800398D4(void* work, PdaSprite* sprite)
 #pragma peephole reset
 
 #pragma peephole off
-s32 fn_8003992C(void* window, PdaSprite* sprite)
+s32 itemStorageListDrawItem2(void* window, PdaSprite* sprite)
 {
     s32 y;
 
@@ -56,7 +56,7 @@ s32 fn_8003992C(void* window, PdaSprite* sprite)
 #pragma peephole reset
 
 #pragma peephole off
-s32 fn_80039970(void* window, PdaSprite* sprite)
+s32 itemStorageListDrawSprite3(void* window, PdaSprite* sprite)
 {
     s32 y;
     s32 disp;

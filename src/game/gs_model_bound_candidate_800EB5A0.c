@@ -98,7 +98,7 @@ static inline GSmtx* HSD_JObjGetMtxPtr(HSDJObj* jobj)
 
 extern void fn_8019D620(ModelIntpJObj* jobj);        /* HSD_JObjSetMtxDirtySub */
 extern void EulerToQuat(GSvec* euler, ModelQuat* q); /* EulerToQuat */
-extern void fn_801AD7CC(ModelQuat* from, ModelQuat* to, ModelQuat* out,
+extern void HSD_QuatSlerp(ModelQuat* from, ModelQuat* to, ModelQuat* out,
                         f32 t);                      /* QuatSlerp */
 /* RULE-EXCEPTION(title-path): extern named stand-in for the TU's pooled
  * 1.0f - see docs/RULE_EXCEPTIONS.md */
@@ -290,7 +290,7 @@ void fn_800EB904(GSmodel* model, ModelIntpJObj* from, ModelIntpJObj* to,
         toQuat.z = -toQuat.z;
         toQuat.w = -toQuat.w;
     }
-    fn_801AD7CC(&fromQuat, &toQuat, &quat, blend);
+    HSD_QuatSlerp(&fromQuat, &toQuat, &quat, blend);
     HSD_JObjSetRotation(out, &quat);
     lbl_8047ABA0++;
 }

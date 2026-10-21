@@ -19,7 +19,7 @@ void demoScene06(u32 ctx) {
     extern void GSmodelSetGSparticleLinkAttachMode(u32 handle, u32 val);
     extern void std115_mapObjectPlayAnimation(u32 id, u32 slot, u32 x, u32 y);
     extern void scriptWaitSyncMotion(u32 id, u32 val);
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     extern void _threadSwitch(void);
     extern u32 GSgetFrameStep(void);
     extern u32 std112_modelGetResourceID(u32 id);
@@ -50,7 +50,7 @@ void demoScene06(u32 ctx) {
 
     std115_mapObjectPlayAnimation(0x0CE61000, 3, 0, 0);
     waitFrames = 0x32;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFrames = (u32)lbl_8047C1E0;
         if (waitFrames < 1) {
             waitFrames = 1;
@@ -63,7 +63,7 @@ void demoScene06(u32 ctx) {
 
     cameraPlayAnime(ctx, 0x0CEF1800, 0, 0);
     cameraWaitFrames = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         cameraWaitFrames = (u32)lbl_8047C1D0;
         if (cameraWaitFrames < 1) {
             cameraWaitFrames = 1;
@@ -103,7 +103,7 @@ void demoScene05(u32 ctx) {
     extern void GSmodelSetGSparticleLinkAttachMode(u32 handle, u32 val);
     extern void std115_mapObjectPlayAnimation(u32 id, u32 slot, u32 x, u32 y);
     extern void scriptWaitSyncMotion(u32 id, u32 val);
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     extern void _threadSwitch(void);
     extern u32 GSgetFrameStep(void);
     extern u32 std112_modelGetResourceID(u32 id);
@@ -138,7 +138,7 @@ void demoScene05(u32 ctx) {
 
     cameraPlayAnime(ctx, 0x0B891800, 0, 0);
     waitFrames = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFrames = (u32)lbl_8047C1D0;
         if (waitFrames < 1) {
             waitFrames = 1;
@@ -173,7 +173,7 @@ void demoScene04(u32 ctx) {
     extern void GSmodelSetShadowLight(u32, u32);
     extern void GSmodelSetShadowSurface(u32, u32, u32*);
     extern void cameraPlayAnime(u32, u32, u32, u32);
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     extern u32 GSgetFrameStep(void);
     extern void std070_characterAttachToCharacter(u32, u32, u32, u32, u32);
     extern void std115_mapObjectPlayAnimation(u32, u32, u32, u32);
@@ -215,7 +215,7 @@ void demoScene04(u32 ctx) {
 
     cameraPlayAnime(ctx, 0x0B881800, 0, 0);
     waitFrames = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFrames = (u32)lbl_8047C1D0;
         if (waitFrames < 1) {
             waitFrames = 1;
@@ -255,7 +255,7 @@ void demoScene03(u32 ctx) {
     extern void GSmodelSetGSparticleLinkAttachMode(u32 handle, u32 val);
     extern void std115_mapObjectPlayAnimation(u32 id, u32 slot, u32 x, u32 y);
     extern void scriptWaitSyncMotion(u32 id, u32 val);
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     extern void _threadSwitch(void);
     extern u32 GSgetFrameStep(void);
     extern u32 std112_modelGetResourceID(u32 id);
@@ -281,7 +281,7 @@ void demoScene03(u32 ctx) {
     GSmodelSetShadowTextureSize(0x280, 0x1E0);
     std115_mapObjectPlayAnimation(0x0B631000, 0, 0, 0);
     waitFrames = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFrames = (u32)lbl_8047C1D0;
         if (waitFrames < 1) {
             waitFrames = 1;
@@ -304,7 +304,7 @@ void demoScene03(u32 ctx) {
 
     cameraPlayAnime(ctx, 0x0B831800, 0, 0);
     cameraWaitFrames = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         cameraWaitFrames = (u32)lbl_8047C1D0;
         if (cameraWaitFrames < 1) {
             cameraWaitFrames = 1;
@@ -329,7 +329,7 @@ void demoScene02(u32 ctx) {
     extern void GSmodelSetShadowLight(u32, u32);
     extern void GSmodelSetShadowSurface(u32, u32, u32*);
     extern void cameraPlayAnime(u32, u32, u32, u32);
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     extern u32 GSgetFrameStep(void);
     extern void std070_characterAttachToCharacter(u32, u32, u32, u32, u32);
     extern void std115_mapObjectPlayAnimation(u32, u32, u32, u32);
@@ -371,7 +371,7 @@ void demoScene02(u32 ctx) {
 
     cameraPlayAnime(ctx, 0x0B871800, 0, 0);
     waitFrames = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFrames = (u32)lbl_8047C1D0;
         if (waitFrames < 1) {
             waitFrames = 1;
@@ -411,7 +411,7 @@ void demoScene01(u32 ctx) {
     extern void GSmodelSetGSparticleLinkAttachMode(u32 handle, u32 val);
     extern void std115_mapObjectPlayAnimation(u32 id, u32 slot, u32 x, u32 y);
     extern void scriptWaitSyncMotion(u32 id, u32 val);
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     extern void _threadSwitch(void);
     extern u32 GSgetFrameStep(void);
     extern u32 std112_modelGetResourceID(u32 id);
@@ -437,7 +437,7 @@ void demoScene01(u32 ctx) {
     GSmodelSetShadowTextureSize(0x280, 0x1E0);
     std115_mapObjectPlayAnimation(0x0B631000, 0, 0, 0);
     waitFrames = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFrames = (u32)lbl_8047C1D0;
         if (waitFrames < 1) {
             waitFrames = 1;
@@ -456,7 +456,7 @@ void demoScene01(u32 ctx) {
 
     cameraPlayAnime(std093_getCurrentGroupID(), 0x0B661800, 0, 0);
     cameraWaitFrames = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         cameraWaitFrames = (u32)lbl_8047C1D0;
         if (cameraWaitFrames < 1) {
             cameraWaitFrames = 1;
@@ -481,7 +481,7 @@ void demoScene00(u32 ctx) {
     extern void GSmodelSetGSparticleLinkAttachMode(u32 handle, u32 val);
     extern void std115_mapObjectPlayAnimation(u32 id, u32 slot, u32 x, u32 y);
     extern void scriptWaitSyncMotion(u32 id, u32 val);
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     extern void _threadSwitch(void);
     extern u32 GSgetFrameStep(void);
     extern u32 std112_modelGetResourceID(u32 id);
@@ -516,7 +516,7 @@ void demoScene00(u32 ctx) {
 
     cameraPlayAnime(std093_getCurrentGroupID(), 0x0B651800, 0, 0);
     waitFrames = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFrames = (u32)lbl_8047C1D0;
         if (waitFrames < 1) {
             waitFrames = 1;
@@ -543,8 +543,8 @@ s32 gbaCommStartSendPokemon(s32 channel, void* arg1, void* arg2)
     extern void OSInitMutex(void* work);
     extern void OSInitCond(void* callback);
     extern s32 _gbaCommThread(void* arg);
-    extern void fn_80093B04(u32 a, u32 b);
-    extern s32 fn_80089048(void* out, void* arg1, void* arg2);
+    extern void _gbaCommYield(u32 a, u32 b);
+    extern s32 pokeconvToGBA(void* out, void* arg1, void* arg2);
     extern void OSCreateThread(void* thread, void* entry, void* arg,
                                void* stack, u32 stackSize, s32 priority,
                                u16 attributes);
@@ -577,7 +577,7 @@ s32 gbaCommStartSendPokemon(s32 channel, void* arg1, void* arg2)
             work = *(u8**)(lbl_803FB328 + slot);
             *(u32*)(work + GBA_STATE_PHASE) = 0;
             *(s32*)(work + GBA_STATE_PORT) = channel;
-            fn_800716C8(channel, work + GBA_DATA_OFFSET, fn_80093B04);
+            fn_800716C8(channel, work + GBA_DATA_OFFSET, _gbaCommYield);
             OSInitMutex(work);
             OSInitCond(work + 0x18);
             OSCreateThread(work + GBA_DATA_OFFSET, _gbaCommThread, work,
@@ -596,7 +596,7 @@ s32 gbaCommStartSendPokemon(s32 channel, void* arg1, void* arg2)
     requestStarted = 0;
     OSLockMutex(requestWork);
     if (*(s32*)(requestWork + GBA_STATE_PHASE) == 0) {
-        requestStarted = fn_80089048(requestWork + 0x4344, arg1, arg2);
+        requestStarted = pokeconvToGBA(requestWork + 0x4344, arg1, arg2);
         if (requestStarted != 0) {
             *(s32*)(requestWork + GBA_STATE_PHASE) = 12;
             *(u32*)(requestWork + GBA_STATE_TIMEOUT) = 0x3000C;
@@ -618,7 +618,7 @@ s32 gbaCommStartTransferA(s32 channel, void* requestValue)
     extern void OSInitMutex(void* work);
     extern void OSInitCond(void* callback);
     extern s32 _gbaCommThread(void* arg);
-    extern void fn_80093B04(u32 a, u32 b);
+    extern void _gbaCommYield(u32 a, u32 b);
     extern void OSCreateThread(void* thread, void* entry, void* arg,
                                void* stack, u32 stackSize, s32 priority,
                                u16 attributes);
@@ -651,7 +651,7 @@ s32 gbaCommStartTransferA(s32 channel, void* requestValue)
             work = *(u8**)(lbl_803FB328 + slot);
             *(u32*)(work + GBA_STATE_PHASE) = 0;
             *(s32*)(work + GBA_STATE_PORT) = channel;
-            fn_800716C8(channel, work + GBA_DATA_OFFSET, fn_80093B04);
+            fn_800716C8(channel, work + GBA_DATA_OFFSET, _gbaCommYield);
             OSInitMutex(work);
             OSInitCond(work + 0x18);
             OSCreateThread(work + GBA_DATA_OFFSET, _gbaCommThread, work,

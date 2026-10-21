@@ -140,7 +140,7 @@ GSRenderCamera* GScameraCreate(void)
     return camera;
 }
 
-void fn_800D2AD4(u32 count)
+void GScameraPoolInit(u32 count)
 {
     u32 i;
 

@@ -46,7 +46,7 @@ extern void gfxVtxDescSetAttr(void*, u32, u32, u32, u32, u8, void*, u8);
 extern void gfxVtxDescFree(void*);
 extern u32 GSgappCreate(s32 state, u8 priority, u32 parameter,
                        void (*callback)(void));
-extern void fn_80168284(void);
+extern void GSfilterDraw(void);
 
 extern GSFilterState lbl_804526E0;
 extern GSFilter* lbl_8047B100;
@@ -181,5 +181,5 @@ void fn_80168638(u8 capacity)
     clearColor[2] = 0;
     clearColor[3] = 0;
     lbl_8047B100 = GSfilterCreate(clearColor);
-    GSgappCreate(1, 0xFC, 0, fn_80168284);
+    GSgappCreate(1, 0xFC, 0, GSfilterDraw);
 }

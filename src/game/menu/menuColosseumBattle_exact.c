@@ -83,7 +83,7 @@ extern u8 lbl_803A9A18[];
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-s32 fn_80058754(void* unused, MenuWindow* window) {
+s32 menu9BDrawText(void* unused, MenuWindow* window) {
     ColosseumMessageBuffer* message = (ColosseumMessageBuffer*)lbl_803A9A18;
 
     (void)unused;
@@ -94,7 +94,7 @@ s32 fn_80058754(void* unused, MenuWindow* window) {
 #pragma pop
 
 /* Address: 0x80058798 | Size: 0x40 */
-void fn_80058798(MenuWindow* window) {
+void menu9BButton(MenuWindow* window) {
     MenuKeyInfo* keys = (MenuKeyInfo*)windowGetKeyInfo();
 
     if (keys->buttons != 0) {
@@ -137,7 +137,7 @@ void fn_80058804(void* text, s32 closeAfterOpen) {
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-s32 fn_80058880(MenuWindow* window) {
+s32 menu94Cursor(MenuWindow* window) {
     MenuKeyInfo* keys;
     s32 cursor;
     s32 action;
@@ -228,7 +228,7 @@ s32 fn_80058880(MenuWindow* window) {
 #pragma pop
 
 /* Address: 0x80058AB0 | Size: 0x40 */
-void fn_80058AB0(MenuWindow* window) {
+void menu94Button(MenuWindow* window) {
     windowGetKeyInfo();
     if (fn_800573C0() == 0) {
         menuButtonNormal(window);

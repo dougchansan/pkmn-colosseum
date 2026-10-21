@@ -28,7 +28,7 @@ extern void gfxRecordCommand(u32, u32, ...);
 extern void gfxBegin(u16);
 extern void gfxSetupChannelsTev(u32);
 extern u32 OSGetTick(void);
-extern void fn_801E17A8(void);
+extern void GSmovieDraw(void);
 extern void HSD_StateInvalidate(u32);
 extern s32 HSD_CObjSetCurrent(void*);
 extern void GSlightSetupLights(void*);
@@ -131,7 +131,7 @@ extern void gfxVtxDescClear(u8*);
 extern void gfxVtxDescSetAttr(u8*, u32, u32, u32, u32, u8, u32, u8);
 extern void fn_800D7940(u32, u16);
 extern void gfxLoadVtxDesc(u32);
-extern void fn_800DB098(void);
+extern void gfxDLCaptureVertex(void);
 extern void fn_800DB758(u16);
 extern void lightGetFrameCount__FP9_HSD_AObj(u8*);
 extern void GSlogVPrintf(void);
@@ -142,16 +142,16 @@ extern u32 _matGSmatObjMakeTExp(void*, void*, void*, void*, void*);
 extern void _matGSmatEnableEnvMapExt(u8*);
 extern s32 _matGSmatObjLoad(u8*);
 extern void GSmtxConcat(void*, void*, void*);
-extern void fn_800E02C4(void*);
+extern void GSmtxScaleApply(void*);
 extern void GSmtxRotateZ(void*, f32);
 extern void GSmtxRotateY(void*, f32);
 extern void GSmtxRotateX(void*, f32);
-extern void fn_800E03E8(void*, f32, f32, f32);
-extern void fn_800E0628(void*, void*);
-extern void fn_800E064C(void*);
+extern void GSmtxTranslate(void*, f32, f32, f32);
+extern void GSmtxCopy(void*, void*);
+extern void GSmtxIdentity(void*);
 extern void GSmtx44Perspective(u8*);
 extern void GSmtx44Ortho(void*, f32, f32, f32, f32, f32, f32);
-extern void fn_800E0C78(void);
+extern void GSsrandTime(void);
 extern void GSmathInitCosTable(void);
 
 
@@ -171,7 +171,7 @@ extern void _gfxEmitPos3f32(void);
 extern void GXBegin(u32, u32, u16);
 extern u8 lbl_80314350[];
 extern u8 lbl_804001F0[];
-extern void fn_800D6A80(u16, s32, u32*, u32*);
+extern void gfxCountPrims(u16, s32, u32*, u32*);
 extern u8 lbl_804007E8[];
 extern void GXSetVtxAttrFmt(u32, u32, u32, u32, u8);
 extern void GXClearVtxDesc(void);
@@ -297,7 +297,7 @@ extern void HSD_LObjSetInterest();
 extern void HSD_LObjRemoveAnimAll(void*);
 extern void HSD_LObjAddAnimAll(void*, void*);
 extern void HSD_ForeachAnim(void*, u32, u32, void*, u32, ...);
-extern s32 fn_800D37CC(void);
+extern s32 GSgfxGetVsyncRate(void);
 extern void HSD_AObjSetRate(void);
 extern f32 lbl_8047AAF4;
 extern f32 lbl_8047CA88;
@@ -364,7 +364,7 @@ extern u8 lbl_80315490[];
 extern void hsdInitClassInfo(void*, void*, void*, void*, u32, u32);
 extern u8 lbl_8036CB30[];
 extern void HSD_TExpGetType();
-extern void fn_801B6DC0();
+extern void HSD_TExpSetSwapTable();
 extern void HSD_TExpCnst();
 extern void HSD_TExpTev();
 extern void HSD_TExpColorOp();
@@ -503,7 +503,7 @@ static inline void gfxRenderPass(u32 flags, u8 setupCamera, u8 pass) {
     *(u32*)(lbl_804001F0 + 0x48 + pass * 12) = 0;
 
     if (flags & 1) {
-        fn_801E17A8();
+        GSmovieDraw();
     }
 
     if (flags & 0x10) {
@@ -600,7 +600,7 @@ void GSgfxDrawScene(u32 flags, u8 setupCamera, u8 resetQueue) {
 
 
 /* Render-command stream callees. */
-extern void fn_800D30AC(void);
+extern void gfxFlush(void);
 extern void gfxSetPointSize(f32);
 extern void gfxSetLineWidth(f32);
 extern void gfxVtxMtxIdx(u8);
@@ -705,7 +705,7 @@ u32* gfxPlayCommands(u32* command)
     case 3:
         gfxEnd(); break;
     case 4:
-        fn_800D30AC(); break;
+        gfxFlush(); break;
     case 5:
         p += 3;
         gfxVtxPos(((f32*)p)[-3], ((f32*)p)[-2], ((f32*)p)[-1]); break;
@@ -1684,7 +1684,7 @@ void gfxBegin(u16 vertCount) {
     gfxSetupChannelsTev(*(u32*)(lbl_8047AA80 + 0x24));
     GXBegin(lbl_80314350[*(u32*)(lbl_8047AA80 + 0x14)],
                 *(u32*)(*(u32*)(lbl_8047AA80 + 0x24) + 0x4), vertCount);
-    fn_800D6A80(vertCount, *(s32*)(lbl_8047AA80 + 0x14),
+    gfxCountPrims(vertCount, *(s32*)(lbl_8047AA80 + 0x14),
                 (u32*)(lbl_804001F0 + 0xc), (u32*)(lbl_804001F0 + 0x4));
 }
 #endif
@@ -1713,11 +1713,11 @@ void gfxAddDrawStats(u32 a, u32 b) { *(u32*)(lbl_804001F0 + 0xc) += a; *(u32*)(l
 #endif
 
 #if 0
-asm void fn_800D6A80(void) {
+asm void gfxCountPrims(void) {
 #include "src/game/gs_render_fn_800D6A80.inc"
 }
 #else
-void fn_800D6A80(u16 vertCount, s32 type, u32* totalVerts, u32* totalPrims) {
+void gfxCountPrims(u16 vertCount, s32 type, u32* totalVerts, u32* totalPrims) {
     *totalVerts += vertCount;
     switch (type) {
         case 3: *totalPrims += vertCount / 3; break;

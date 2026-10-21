@@ -124,7 +124,7 @@ s32 fn_8000CB28(void) {
 }
 
 /* 0x8000CB54 */
-void fn_8000CB54(void) {
+void dbgMenuD2PresentOpen(void) {
     d2presentOpen();
 }
 
@@ -147,37 +147,37 @@ u32 dbgMenuMenuTestD2Present(u32 arg) {
         }
     }
     val = table[idx * 2 + 1];
-    r = GSthreadCreate(1, floorGetCurrentContext(), 0x4000, 1, 1, (u32)(void(*)(void))fn_8000CB54);
+    r = GSthreadCreate(1, floorGetCurrentContext(), 0x4000, 1, 1, (u32)(void(*)(void))dbgMenuD2PresentOpen);
     GSthreadSetArgs(r, 1, val);
     return 0;
 }
 
 /* 0x8000CC3C */
-s32 fn_8000CC3C(void) {
+s32 dbgMenuDarkSetAllFlag14(void) {
     darkPokemonSetAllFlag14();
     return 1;
 }
 
 /* 0x8000CC60 */
-s32 fn_8000CC60(void) {
+s32 dbgMenuDarkSetAllFlag12(void) {
     darkPokemonSetAllFlag12();
     return 1;
 }
 
 /* 0x8000CC84 */
-s32 fn_8000CC84(void) {
+s32 dbgMenuDarkSetAllFlag16(void) {
     darkPokemonSetAllFlag16();
     return 1;
 }
 
 /* 0x8000CCA8 */
-s32 fn_8000CCA8(void) {
+s32 dbgMenuMemoSetFlag(void) {
     memoDataSetMemoFlag(0);
     return 1;
 }
 
 /* 0x8000CCD0 */
-s32 fn_8000CCD0(void) {
+s32 dbgMenuMemoInitDebug(void) {
     memoInitDebug(0);
     return 1;
 }
@@ -250,7 +250,7 @@ u32 dbgMenuMenuTestWazaMenu(void) {
 #pragma peephole off
 #pragma peephole off
 #pragma peephole off
-s32 fn_8000CED0(void) {
+s32 dbgMenuWarpToMenuRoom(void) {
     std098_mapWarpToMenuRoom(0x391);
     return 0;
 }
@@ -283,7 +283,7 @@ u32 dbgMenuMenuTestPokemonMenu(s32 arg) {
 }
 
 /* 0x8000CF68 */
-u32 fn_8000CF68(u32 arg) {
+u32 dbgMenuShopOpen(u32 arg) {
     typedef struct {
         u32 key;
         u32 value;

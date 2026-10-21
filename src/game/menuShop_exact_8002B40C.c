@@ -37,7 +37,7 @@ typedef struct ShopAngleDrawData {
 #pragma push
 #pragma peephole off
 #pragma optimization_level 4
-s32 fn_8002B40C(ShopAngleOwner* owner, ShopAngleDrawData* draw) {
+s32 shopMenuDrawItem8(ShopAngleOwner* owner, ShopAngleDrawData* draw) {
     u16 sprite_id;
     s8 sprite_bytes[8];
     ShopAngleContext* context;

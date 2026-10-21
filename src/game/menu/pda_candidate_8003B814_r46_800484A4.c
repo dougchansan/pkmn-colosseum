@@ -1,2 +1,2 @@
-/* Residual source-context partition after the exact fn_80047CC0 carve. */
+/* Residual source-context partition after the exact pdaModelFrameSingle carve. */
 #include "src/game/menu/pda_range_80037158.c"

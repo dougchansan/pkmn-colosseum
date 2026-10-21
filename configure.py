@@ -204,9 +204,9 @@ config.force_active_symbols["main"] = [
     # in main.dol but is present in retail; compiled from source it would be
     # dead-stripped.
     "fn_8007169C",
-    # game/menu/menu_candidate_80075390.c: fn_80075390 has no reference in
+    # game/menu/menu_candidate_80075390.c: exShrineModelToggle has no reference in
     # main.dol but is present in retail.
-    "fn_80075390",
+    "exShrineModelToggle",
     # dolphin/sdk_candidate_8009ED70.c: OSLinkFixed has no reference in
     # main.dol but is present in retail.
     "OSLinkFixed",
@@ -249,22 +249,22 @@ config.force_active_symbols["main"] = [
     # game/movie.c: the movie scene callbacks have no reference in main.dol
     # but are present in retail; compiled from source they would be
     # dead-stripped.
-    "fn_80035DD4",
-    "fn_80035E04",
+    "openingDemoFinish",
+    "openingDemoPlay",
     "movieOpeningStart",
-    "fn_80035F34",
-    "fn_80035F64",
+    "staffrollFinish",
+    "staffrollPlay",
     "staffrollStart",
-    "fn_80036210",
-    "fn_80036240",
+    "autodemo01Finish",
+    "autodemo01Play",
     "movieStartAttract",
     "fn_800363B0",
     "fn_800363B4",
     "fn_800363B8",
-    "fn_800363BC",
+    "gsLogoFinish",
     "movieGsLogoWait",
     "movieGsLogoStart",
-    "fn_800365B0",
+    "tpcFinish",
     "movieTpcWait",
     "movieTpcStart",
     "fn_8003669C",
@@ -276,16 +276,16 @@ config.force_active_symbols["main"] = [
     # game/gs_range_800096B4.c: the ten functions after dbgMenuPokemonEdit have no
     # reference in main.dol but are present in retail; compiled from source
     # they would be dead-stripped.
-    "fn_8000BA94",
-    "fn_8000BAB8",
-    "fn_8000BB00",
+    "dbgMenuItemCreateCB",
+    "dbgMenuAddPokecoupons",
+    "dbgMenuAddPokedollars",
     "dbgMenuHeroPokemonAdd",
     "dbgMenuPokemonEditSlot6",
-    "fn_8000BC58",
-    "fn_8000BCC4",
-    "fn_8000BD30",
-    "fn_8000BD9C",
-    "fn_8000BE08",
+    "dbgMenuPokemonEditSlot5",
+    "dbgMenuPokemonEditSlot4",
+    "dbgMenuPokemonEditSlot3",
+    "dbgMenuPokemonEditSlot2",
+    "dbgMenuPokemonEditSlot1",
     # trk/targsupp.c: MetroTRK file-I/O trap stubs with no reference in
     # main.dol (only TRKAccessFile is called); present in retail.
     "TRKOpenFile",
@@ -2527,7 +2527,7 @@ config.libs = [
                 progress_category="game",
             ),
             # Waza camera TU: wazaSequenceCameraGetPattern (with its one pooled
-            # 0.0f) and battleCameraWazaGetOwner/fn_801D2C74 link as carves; the rest of
+            # 0.0f) and battleCameraWazaGetOwner/battleCameraWazaRestart link as carves; the rest of
             # wazaSequenceCamera.c, 0x801D2D28-0x801D5328, links whole with its
             # .sdata2 pool 0x8047E1E0-0x8047E2E0.
             *[
@@ -2723,7 +2723,7 @@ config.libs = [
                 )
                 for status, path in [
                     (Matching, "game/gapp_exact_80101B34.c"),
-                    # fn_80101B90, fn_80101D5C and fn_80101D8C share the
+                    # gappLoadMeterDraw, fn_80101D5C and gappLoadMeterDrawFrame share the
                     # TU's literal pool (.sdata2 0x8047CD80-0x8047CDC0).
                     (Matching, "game/gapp_exact_80101B90.c"),
                     (Matching, "game/gapp_exact_80101FB8.c"),
@@ -2970,7 +2970,7 @@ config.libs = [
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8", "-opt nopeephole"],
                 progress_category="game",
             ),
-            # fn_801176C8 / fn_8011791C: the field camera TU's flags
+            # fieldCameraDebugReload / fn_8011791C: the field camera TU's flags
             # (-opt nopeephole), plus -inline noauto so fieldCameraLoadList stays a
             # call as in retail. Each wrapper sets a FIELD_CAMERA_<addr>_ONLY
             # guard so it compiles just its own function.
@@ -3313,7 +3313,7 @@ config.libs = [
                 ],
                 jump_table_import={
                     "symbol": "jumptable_802E504C",
-                    "function": "fn_80034280",
+                    "function": "gbaTransferUI",
                     "owner": "game/gs_npc_event_candidate_800324A0.c",
                     "owner_offset": 0x6C,
                 },
@@ -3952,7 +3952,7 @@ config.libs = [
                 extra_cflags=["-str reuse,readonly", "-use_lmw_stmw on", "-sdata 8", "-sdata2 8", "-opt nopeephole"],
                 progress_category="game",
             ),
-            # The Card-e grid TU: fn_80082650 - fn_800836AC with its own
+            # The Card-e grid TU: fn_80082650 - cardeGridGetRecord with its own
             # string pool (.rodata 0x8026F1C8, .sdata2 "series"/"lv").
             # Deferred inlining emits the functions in reverse source order
             # and lets cardeSaveRemoveCard/cardeSaveSetCard inline their later callees.
@@ -3963,7 +3963,7 @@ config.libs = [
                 extra_cflags=["-inline auto,deferred", "-str reuse,readonly", "-use_lmw_stmw on", "-sdata 8", "-sdata2 8", "-opt nopeephole"],
                 progress_category="game",
             ),
-            # fn_80083CBC/fn_80083CFC link as a data-free carve on the TU's
+            # cardeArenaClear/cardeArenaGetPtr link as a data-free carve on the TU's
             # flags; the rest of the suffix is scored from the candidate.
             *[
                 Object(
@@ -4095,7 +4095,7 @@ config.libs = [
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
-            # fn_800965C8 carve: GC/2.0 -O3, peephole off.
+            # pokemonSummaryDrawHeader carve: GC/2.0 -O3, peephole off.
             Object(
                 Matching,
                 "game/gbaCommunication_candidate_800965C8_gc20.c",
@@ -5604,7 +5604,7 @@ config.libs = [
             ),
             # The 0x8017FA5C - 0x801812C4 tail is one retail unit (the job
             # pool tasks after 0x80180C78 share its .sbss job pool
-            # lbl_8047B1E0/E4/E8 and are started by fn_8018094C; people.c
+            # lbl_8047B1E0/E4/E8 and are started by fsysJobPoolUpdate; people.c
             # starts at 0x801812C4); its exact
             # functions are carved into their own objects so they can link,
             # the rest stay candidates. All share `-opt level=0` and
@@ -5614,8 +5614,8 @@ config.libs = [
             # which puts the cache first (its pre-call store is the first
             # reference), while deferred inlining uses reverse definition
             # order, which gives retail's layout from plain definitions. Every
-            # other exact function of the unit (fn_8017FDB0, fn_801808B4,
-            # fn_801808E4, fn_80180B94) compiles byte-identically either way;
+            # other exact function of the unit (gsSmallHeapAlloc, fsysARQIsBusy,
+            # fsysARQCallback2, fsysJobPoolInit) compiles byte-identically either way;
             # deferred inlining only reverses emission order, so
             # multi-function carves list their functions high address first.
             *[
@@ -6476,7 +6476,7 @@ config.libs = [
                 ]
             ],
             # Linked carve 0x80077ED4-0x800798E8 (MENU_R47_80077ED4_ONLY): owns
-            # fn_80078D5C's switch table and the shared int->float biases.
+            # exDiscSceneRun's switch table and the shared int->float biases.
             Object(
                 Matching,
                 "game/menu/menu_candidate_r47_80077ED4.c",
@@ -6785,7 +6785,7 @@ config.libs = [
                     progress_category="game",
                 )
                 for status, path in [
-                    # fn_801E0FB4 (XD _vtrUpdateFunc) opens the vtr unit and
+                    # vtrUpdate (XD _vtrUpdateFunc) opens the vtr unit and
                     # uses no pool constant, so it links as a data-free carve.
                     (Matching, "game/gs_exact_801E0FB4.c"),
                     (Matching, "game/gs_exact_801E1170.c"),
@@ -8131,7 +8131,7 @@ config.libs = [
                 progress_category="game",
             ),
             # Head of the title TU, 0x8001EF78-0x8002058C (the former
-            # gs_pcbox carves and fn_80020328/800203B4/8002049C), with its
+            # gs_pcbox carves and titleCleanup/800203B4/8002049C), with its
             # .sdata2 pool 0x8047B808-0x8047B868.
             Object(
                 Matching,
@@ -8261,7 +8261,7 @@ config.libs = [
                 progress_category="game",
             ),
             # gba_misc TU flag set: GC/2.0, -O4,p, "-opt nopeephole" (as the
-            # fn_8008AC34 carve below); every exact function here matches under
+            # gbaPollPort carve below); every exact function here matches under
             # it with no local pragmas.
             *[
                 Object(
@@ -8612,7 +8612,7 @@ config.libs = [
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
-            # menuFight prefix: fn_8000DAA8/fn_8000DAB0, the timer window
+            # menuFight prefix: fn_8000DAA8/menuFightOpenAndWake, the timer window
             # functions (0x8000DC88-0x8000DE24), the target draw callback
             # (0x8000DEC4-0x8000DFF0), the target button callback
             # (0x8000DFF0-0x8000E204) and the secret-Pokemon draw callback
@@ -8853,7 +8853,7 @@ config.libs = [
                     jump_table_import=(
                         {
                             "symbol": "jumptable_802EE06C",
-                            "function": "fn_8006F720",
+                            "function": "menuColoBattleC0Ctrl",
                             "owner": "game/data/data_802EE06C.c",
                         }
                         if path == "game/menu/menu_middle_r59_8006F720_o1.c"
@@ -9470,7 +9470,7 @@ config.libs = [
             ],
             # GS render/graphics span 0x800D2B90-0x800D377C (fog setters,
             # camera projections, GSgfx frame functions) with its .sdata2
-            # literal pool 0x8047C9F0-0x8047CA10. GC/2.5: fn_800D36B4
+            # literal pool 0x8047C9F0-0x8047CA10. GC/2.5: GSgfxSetFogColor
             # schedules its by-value colour loads ahead of the frame, which
             # GC/1.0-2.0 do not emit. See the file header.
             Object(
@@ -10153,7 +10153,7 @@ config.libs = [
                 progress_category="game",
             ),
             # 0x80029850-0x80029AC8 and 0x80029EF4-0x80029FAC: exact menuShop.c
-            # islands around the residual fn_80029AC8/fn_80029CC0 pair.
+            # islands around the residual shopBagSetItem/shopBagSortItems pair.
             Object(
                 Matching,
                 "game/menuShop_island_80029850.c",
@@ -10867,7 +10867,7 @@ config.libs = [
                 progress_category="game",
             ),
             # menuSub TU (0x8001D718-0x8001EF78) with its .sdata2 pool, the
-            # fn_8001E644 colour initializer and the fn_8001EC08 work area.
+            # windowDrawFrame colour initializer and the fn_8001EC08 work area.
             Object(
                 Matching,
                 "game/menuSub.c",
@@ -12089,7 +12089,7 @@ config.libs = [
                 "game/data/data_802EDE54.c",
                 progress_category="game",
             ),
-            # fn_8006F720's switch table starts 4-aligned at 0x802EE06C; every
+            # menuColoBattleC0Ctrl's switch table starts 4-aligned at 0x802EE06C; every
             # compiled .data section is 8-aligned, so this unit links from the
             # extracted object until it can share a unit with the table before.
             Object(

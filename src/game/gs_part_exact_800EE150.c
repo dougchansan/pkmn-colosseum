@@ -4,7 +4,7 @@
  *        0x800EE150 - 0x800EE3BC.
  *
  * The head of the GSpart range: GSmodelGetPart and its traversal callback
- * fn_800EE20C, GSpartGetJObjIndex, fn_800EE288 and GSpartRegisterRotation.
+ * jobjWalkFindNthCB, GSpartGetJObjIndex, fn_800EE288 and GSpartRegisterRotation.
  * It is linked on its own while GSpartGetTransform (gs_part.c, the only
  * function between this head and gs_part_exact_800EE6B4.c) is still being
  * matched.
@@ -40,7 +40,7 @@ extern void GSlogWrite(const char* format, ...);
 extern char lbl_80270F10[];
 extern char lbl_80270F44[];
 
-void fn_800EE20C(void* jobj);
+void jobjWalkFindNthCB(void* jobj);
 GSpart* GSpartCreate(void);
 void _partFindIndexCB__FP9_HSD_JObjPPvi(void* jobj);
 
@@ -59,7 +59,7 @@ GSpart* GSmodelGetPart(void* model, s32 index)
     lbl_8047ABA8 = NULL;
     jobj = modelGetRenderJObj(model);
     if (traversalIndex != 0) {
-        HSD_JObjWalkTree(jobj, fn_800EE20C, 0);
+        HSD_JObjWalkTree(jobj, jobjWalkFindNthCB, 0);
         if (lbl_8047ABA8 == NULL) {
             return NULL;
         }
@@ -77,7 +77,7 @@ GSpart* GSmodelGetPart(void* model, s32 index)
     return part;
 }
 
-void fn_800EE20C(void *jobj)
+void jobjWalkFindNthCB(void *jobj)
 {
     if (lbl_8047ABB0++ == lbl_8047ABAC) {
         lbl_8047ABA8 = jobj;

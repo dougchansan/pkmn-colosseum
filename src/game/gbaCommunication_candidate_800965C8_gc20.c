@@ -1,12 +1,12 @@
 /**
  * @file gbaCommunication_candidate_800965C8_gc20.c
- * @brief fn_800965C8 (0x800965C8 - 0x80096C48): the Pokemon-status window's
+ * @brief pokemonSummaryDrawHeader (0x800965C8 - 0x80096C48): the Pokemon-status window's
  *        sprite callback (ball, markings, held item, name, sex, state
  *        icons).
  *
  * Function-boundary carve, text only, built as the unit was scored
  * (GC/2.0 -O3, -use_lmw_stmw off) with the peephole pass off, which
- * gbaCommunication.c's file-level `#pragma peephole off` (from fn_80093574
+ * gbaCommunication.c's file-level `#pragma peephole off` (from gbaCommWaitDone
  * on) gives it there. The body is gbaCommunication.c's; keep
  * the two in step. The data it reads (the 0.0f/1.0f at lbl_8047C230 and
  * lbl_8047C208, the ball-sprite table and the render state) stays extern.
@@ -60,7 +60,7 @@ extern u8 menuSubGetPokemonSexForDisp(void* pokemon);
 extern u32 pokemonGetStatus();
 
 /* 0x800965C8 | size: 0x680 */
-void fn_800965C8(void* window, u8* sprite) {
+void pokemonSummaryDrawHeader(void* window, u8* sprite) {
     register s32 color;
     register void* pokemon;
     void* bios;

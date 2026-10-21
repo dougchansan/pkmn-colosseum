@@ -15,7 +15,7 @@ extern u8 lbl_803A9768[];
 extern u8 lbl_80267698[];
 extern u8 lbl_802676B4[];
 
-extern void fn_80056C54(u8*, u8*, u32);
+extern void pcBoxDrawIconGrid(u8*, u8*, u32);
 extern s32 menuCloseCustom(s32 menuId, s32 mode, s32 wait);
 extern void* windowSearchID(s32);
 extern u8 fn_80123FBC(void*);
@@ -42,7 +42,7 @@ extern u8 lbl_8026768C[];
 
 /* RULE-EXCEPTION(user-approved): reconstructed linker-stripped function — see docs/RULE_EXCEPTIONS.md
  * Retail's pool opens with the u32 and then the s32 int-to-float biases ahead of
- * the float literals that fn_80056084 uses first; an unreferenced conversion
+ * the float literals that pcBoxDrawBoxIcons uses first; an unreferenced conversion
  * helper compiled ahead of the range (dead-stripped at link) creates them in
  * that order. Its body rests only on the pool layout. */
 f32 menuCBStrippedConvA(u32 a, s32 b) { return (f32)a + (f32)b; }
@@ -66,8 +66,8 @@ extern s32 lbl_80267320[6];
 extern u8 lbl_80314F98[];
 extern void* heroGetStatus(void* hero, s32 selector, u16 index);
 extern u8 pokemonCheckValid(void* pokemon);
-extern s32 fn_80057DE8(void* pokemon);
-extern void* fn_80057F94(void* pokemon);
+extern s32 pcBoxIsShadowPokemon(void* pokemon);
+extern void* pcBoxGetIconResource(void* pokemon);
 extern void fn_800FE6D0(s16 x, s16 y);
 extern void spriteSetEnv(void);
 extern void gfxSetFlags(u32 flags);
@@ -153,7 +153,7 @@ u32 fn_80055E38(s32 idx) {
 }
 
 /* 0x80055EB8 | 0xD0 */
-u32 fn_80055EB8(s8* ctx, u8* p) {
+u32 pcBoxGridDrawSprite(s8* ctx, u8* p) {
     extern s32 fn_80057A08(void);
     extern void* windowSearchID(s32);
     extern s32 fn_80055194(u32*, s32);
@@ -262,7 +262,7 @@ static inline s32 menuCBFindPcboxSprite(MenuCBPane* sprite, s32* slot)
     return box;
 }
 
-s32 fn_80056084(MenuCBPane* pane, MenuCBPane* sprite) {
+s32 pcBoxDrawBoxIcons(MenuCBPane* pane, MenuCBPane* sprite) {
     s32 box;
     s16 y;
     s32 slot;
@@ -289,7 +289,7 @@ s32 fn_80056084(MenuCBPane* pane, MenuCBPane* sprite) {
         pokemon = getPokemon__5PCBOXFScSc(NULL, box, slot);
         if (pokemon != NULL) {
             if (pokemonCheckValid(pokemon) != 0) {
-                texture = fn_80057F94(pokemon);
+                texture = pcBoxGetIconResource(pokemon);
             } else {
                 drawFallback = FALSE;
             }
@@ -301,7 +301,7 @@ s32 fn_80056084(MenuCBPane* pane, MenuCBPane* sprite) {
     }
 
     if (texture != NULL) {
-        if (fn_80057DE8(pokemon) != 0) {
+        if (pcBoxIsShadowPokemon(pokemon) != 0) {
             if (lbl_8047A574 < 0.5f) {
                 t = 2.0f * lbl_8047A574;
             } else {
@@ -366,7 +366,7 @@ s32 fn_80056084(MenuCBPane* pane, MenuCBPane* sprite) {
 /* RULE-EXCEPTION(user-approved): inherited nopeephole mode; see docs/RULE_EXCEPTIONS.md. */
 #pragma push
 #pragma peephole off
-u32 fn_80056610(u8* p)
+u32 pcBoxGridCtrl(u8* p)
 {
     s8 state;
 

@@ -78,7 +78,7 @@ extern void* GSmemLock(u16);
 extern void GSlogWrite(const char*, ...);
 extern void HSD_SetInitParameter(s32, ...);
 extern void HSD_InitComponent(void);
-extern void fn_8019C690(u32, u32);
+extern void HSD_SetPixelFormat(u32, u32);
 extern void HSD_VISetUserPostRetraceCallback(void*);
 extern void HSD_VISetUserGXDrawDoneCallback(void*);
 extern void fn_80196C3C(void*);
@@ -337,7 +337,7 @@ void GSgfxInit__FP15_GSgfxInitParms(u32 heapSize, u32 matrixSize,
     HSD_InitComponent();
     fn_800D37D4(videoMode, 2, 0, 2, 0, 0);
     HSD_VISetBlack(1);
-    fn_8019C690(0, 0);
+    HSD_SetPixelFormat(0, 0);
 
     *(u32*)((u8*)lbl_8047AA80 + 0x048) = 0;
     *(u32*)((u8*)lbl_8047AA80 + 0x04C) = 0;

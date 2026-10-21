@@ -7,7 +7,7 @@ extern u32 lbl_8047A52C;
 extern u32 soundPauseMusic(void);
 extern u32 GSresAllocResourceAlign(u32 size, u32 align, u32 arg2, u32 group, u32 arg4);
 extern void GSresRegisterResource(u32 buffer, u32 arg1, u32 group, u32 arg3);
-extern void fn_800F9210(u32 arg0, u32 group);
+extern void GSresReleaseOwnerItem(u32 arg0, u32 group);
 extern void soundResumeMusic(u32 state);
 extern u32 mailGetEntryField0(u8 index);
 extern void fn_801654E0(u32 id, u32 buffer, u32 size);
@@ -66,7 +66,7 @@ u8 pdaMailPickerRun(u8 initialSelection)
     if (soundId != 0) {
         soundKill(soundId);
     }
-    fn_800F9210(0, 0x408);
+    GSresReleaseOwnerItem(0, 0x408);
     soundResumeMusic(state);
     return result;
 }

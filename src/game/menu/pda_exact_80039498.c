@@ -43,7 +43,7 @@ s32 fn_80039498(s32 value)
 #pragma peephole reset
 
 #pragma peephole off
-s32 fn_80039548(void* window, PdaSprite* sprite)
+s32 itemStorageListDrawItem(void* window, PdaSprite* sprite)
 {
     s32 messageId;
 
@@ -60,7 +60,7 @@ s32 fn_80039548(void* window, PdaSprite* sprite)
 #pragma peephole reset
 
 #pragma peephole off
-s32 fn_8003956C(void* window, void* sprite)
+s32 itemStorageListDrawSprite(void* window, void* sprite)
 {
     extern u16 pcboxGetNbItemSlot(s32 box);
     extern void* pcboxGetItem(s32 box, s16 slot);
@@ -94,7 +94,7 @@ s32 fn_8003956C(void* window, void* sprite)
 #pragma peephole reset
 
 #pragma peephole off
-s32 fn_80039604(void* window, void* sprite)
+s32 itemStorageListDrawSprite2(void* window, void* sprite)
 {
     s32 disp;
 

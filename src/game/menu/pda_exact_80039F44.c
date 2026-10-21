@@ -4,7 +4,7 @@
 extern s32 lbl_8047A4B8;
 extern void menuButtonNormal(void* button);
 
-void fn_80039F44(void* button)
+void itemStorageListButton(void* button)
 {
     if (lbl_8047A4B8 < 0) {
         menuButtonNormal(button);

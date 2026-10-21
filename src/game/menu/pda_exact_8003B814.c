@@ -2,12 +2,12 @@
 
 extern s32 pdaSnagListDetailKey(void* window, s32 mode);
 
-void fn_8003B814(void* window)
+void pdaSnagListCursor(void* window)
 {
     pdaSnagListDetailKey(window, 1);
 }
 
-void fn_8003B838(void* window)
+void pdaSnagListCursor2(void* window)
 {
     pdaSnagListDetailKey(window, 0);
 }

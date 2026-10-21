@@ -26,7 +26,7 @@ void fn_80075EE0(void)
 
 s32 fn_80075F4C(void) { return std104_soundSetBackgroundMusic(0x46a, 0, 0x7f); }
 
-void fn_80075F78(void* rule)
+void exDiscStoryMenuDrawText(void* rule)
 {
     s32 messageId;
 

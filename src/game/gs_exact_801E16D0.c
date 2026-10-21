@@ -14,7 +14,7 @@ s32 GSmovieGetFrame(void)
     return THPPlayerGetFrame();
 }
 
-void fn_801E16F0(void)
+void GSmovieUpdate(void)
 {
     extern u8 lbl_8047B440;
     extern u8 lbl_8047B441;
@@ -53,7 +53,7 @@ void fn_801E16F0(void)
     }
 }
 
-void fn_801E17A8(void)
+void GSmovieDraw(void)
 {
     extern u8 lbl_8047B440;
     extern u8 lbl_8047B441;

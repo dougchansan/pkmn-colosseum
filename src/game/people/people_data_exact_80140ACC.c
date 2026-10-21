@@ -1,6 +1,6 @@
 /**
  * @file people_data_exact_80140ACC.c
- * @brief fn_80140ACC (0x80140ACC - 0x80141308): takes `amount` of item `id`
+ * @brief heroItemChangeCount (0x80140ACC - 0x80141308): takes `amount` of item `id`
  *        out of an item-record array, either from the record at `index` or,
  *        when index < 0, from successive records of that id until the
  *        amount is covered. Emptied records are cleared and the array is
@@ -127,7 +127,7 @@ static inline s32 peopleEntryTake(u32* entry, u16 id, u16 amount)
     return peopleEntrySubCount(entry, amount);
 }
 
-s32 fn_80140ACC(u32* base, u16 count, u16 id, u16 amount, s16 index, u16 unused, u8 sortMode)
+s32 heroItemChangeCount(u32* base, u16 count, u16 id, u16 amount, s16 index, u16 unused, u8 sortMode)
 {
     u32* entry;
     s32 rest;

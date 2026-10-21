@@ -48,16 +48,16 @@ u32 savedataGetStatus(u8* arg1, u16 arg2) {
     extern u8* savedataGetWorkPtr(u8* ptr);
     extern u32 fn_80128E04(u8* ptr);
     extern u32 fn_80128DEC(u8* ptr);
-    extern u32 fn_80128DD4(u8* ptr);
+    extern u32 savedataGetSectionB88(u8* ptr);
     extern u32 fn_80128DB8(u8* ptr);
     extern u32 fn_80128D9C(u8* ptr);
     extern u32 fn_80128D80(u8* ptr);
     extern u32 fn_80128D68(u8* ptr);
     extern u32 fn_80128D4C(u8* ptr);
-    extern u32 fn_80128D30(u8* ptr);
+    extern u32 savedataGetSection82A8(u8* ptr);
     extern u32 fn_80128D14(u8* ptr);
     extern u32 savedataBiosGetE3E8Ptr(u8* ptr);
-    extern u32 fn_80128CDC(u8* ptr);
+    extern u32 savedataGetSection1B014(u8* ptr);
     extern u32 fn_80128CC0(u8* ptr);
 
     if ((u32)arg2 >= 0x11) { return 0; }
@@ -73,7 +73,7 @@ u32 savedataGetStatus(u8* arg1, u16 arg2) {
     case 2:
         return fn_80128DEC(arg1);
     case 3:
-        return fn_80128DD4(arg1);
+        return savedataGetSectionB88(arg1);
     case 4:
         return fn_80128DB8(arg1);
     case 5:
@@ -91,13 +91,13 @@ u32 savedataGetStatus(u8* arg1, u16 arg2) {
     case 11:
         return fn_80128D4C(arg1);
     case 12:
-        return fn_80128D30(arg1);
+        return savedataGetSection82A8(arg1);
     case 13:
         return fn_80128D14(arg1);
     case 14:
         return savedataBiosGetE3E8Ptr(arg1);
     case 15:
-        return fn_80128CDC(arg1);
+        return savedataGetSection1B014(arg1);
     case 16:
         return fn_80128CC0(arg1);
     default:
@@ -177,7 +177,7 @@ void fn_80129514(u8* ptr, s32 arg2, s32 arg3) {
 
 /* 0x8012959C | 0xB4 */
 s32 fn_8012959C(u8* ptr, u32 arg2, u32 arg3, u32 arg4) {
-    extern s32 fn_80140ACC(
+    extern s32 heroItemChangeCount(
         void* items, u16 count, u32 item, u32 amount, u32 index, u16 max,
         u8 flag);
     u16 count = 0;
@@ -187,7 +187,7 @@ s32 fn_8012959C(u8* ptr, u32 arg2, u32 arg3, u32 arg4) {
 
     items = heroGetHizukiItems(ptr, &count, &max, &flag, NULL);
     if (items == NULL) { return -1; }
-    return fn_80140ACC(items, count, arg2, arg3, arg4, max, flag);
+    return heroItemChangeCount(items, count, arg2, arg3, arg4, max, flag);
 }
 
 /* 0x80129650 | 0xC8 */
@@ -249,7 +249,7 @@ s32 heroItemCheckAddItemDataId(u8* ptr, u32 item_id) {
     extern u32 itemGetStatus(u32, u32, u32, u32);
     extern void* heroItemGetItemKindToItemAryPtr(
         u8*, u8, u16*, u16*, u32, u8*);
-    extern s32 fn_80140588(void*, u16, u32, u16, u8);
+    extern s32 peopleFieldGetPlacementOffset(void*, u16, u32, u16, u8);
     u16 count = 0;
     u16 max = 0;
     u8 flag;
@@ -258,7 +258,7 @@ s32 heroItemCheckAddItemDataId(u8* ptr, u32 item_id) {
     items = heroItemGetItemKindToItemAryPtr(
         ptr, (u8)itemGetStatus(0, item_id, 2, 0), &count, &max, 0, &flag);
     if (items == NULL) { return -1; }
-    return fn_80140588(items, count, item_id, max, flag);
+    return peopleFieldGetPlacementOffset(items, count, item_id, max, flag);
 }
 
 /* 0x80129948 | 0x80 */
@@ -285,7 +285,7 @@ s32 heroItemDecItemDataId(
     extern u32 itemGetStatus(u32, u32, u32, u32);
     extern void* heroItemGetItemKindToItemAryPtr(
         u8*, u8, u16*, u16*, u8*, u32);
-    extern s32 fn_80140ACC(
+    extern s32 heroItemChangeCount(
         void*, u16, u32, u32, u32, u16, u8);
     u16 count = 0;
     u16 max = 0;
@@ -297,7 +297,7 @@ s32 heroItemDecItemDataId(
     items = heroItemGetItemKindToItemAryPtr(
         ptr, kind, &count, &max, &flag, 0);
     if (items == NULL) { return -1; }
-    return fn_80140ACC(items, count, item_id, amount, index, max, flag);
+    return heroItemChangeCount(items, count, item_id, amount, index, max, flag);
 }
 
 /* 0x80129A78 | 0xB4 */

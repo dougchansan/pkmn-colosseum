@@ -21,7 +21,7 @@ extern s32 menuGetCursorItemID(void*);
 extern u32 GSmsgGetRect(void*);
 extern void GSmsgPrintColor(s16, s16, u32, void*);
 
-void fn_8000D298(u8* menu, u8* item)
+void fieldMenuDrawText(u8* menu, u8* item)
 {
     u8* item_data;
     s16 x;
@@ -60,7 +60,7 @@ typedef struct MenuSequenceMessageState {
     s8 previousSelection;
 } MenuSequenceMessageState;
 
-s32 fn_8000D3AC(MenuSequenceMessageState* state)
+s32 fieldMenuCtrl(MenuSequenceMessageState* state)
 {
     extern void winSeqSetMenu(s32 menuId, s32 state);
     extern void fn_801081F8(void* context, u32 messageId, s32 action);
@@ -182,7 +182,7 @@ s32 heroMoveRunEvent(u8 mode)
     extern void _threadSwitch(void);
     extern void GSmodelAllPauseAnimation(void);
     extern void GSmodelAllUnpauseAnimation(void);
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     extern void menuCreateOffScreen(f32 rate);
     extern u8 menuGetOffScreenFlag(void);
     extern void soundDuck(s32, s32, s32, s32);
@@ -195,7 +195,7 @@ s32 heroMoveRunEvent(u8 mode)
     extern void GSthreadBlockGroup(void* stack);
     extern void GSthreadCreate(s32 priority, void* stack, u32 stackSize,
                                s32 usesFpu, s32 group, void* entry);
-    extern void fn_8000DAB0(void);
+    extern void menuFightOpenAndWake(void);
     extern void menuClose(s32 menuId);
     extern void menuPokemonOpen(s32, s32, s32);
     extern void menuPdaOpen(void);
@@ -232,7 +232,7 @@ s32 heroMoveRunEvent(u8 mode)
     _threadSwitch();
     GSmodelAllPauseAnimation();
     lbl_8047A2A0 = 1;
-    menuCreateOffScreen(lbl_8047B6F0 / (f32)fn_800D37CC());
+    menuCreateOffScreen(lbl_8047B6F0 / (f32)GSgfxGetVsyncRate());
     while (!menuGetOffScreenFlag()) {
         _threadSwitch();
     }
@@ -256,7 +256,7 @@ s32 heroMoveRunEvent(u8 mode)
                 GSthreadBlockGroup(lbl_8047A2A8);
                 lbl_8047A2AC = (u8*)lbl_8047A2A8 - 0x20;
                 GSthreadCreate(0xF, lbl_8047A2AC, 0x4000, 1, 1,
-                               fn_8000DAB0);
+                               menuFightOpenAndWake);
                 _threadSwitch();
                 GSgappUnblock(GSeffectGetUpdateGapp());
 
@@ -296,7 +296,7 @@ s32 heroMoveRunEvent(u8 mode)
                 GSthreadBlockGroup(lbl_8047A2A8);
                 lbl_8047A2AC = (u8*)lbl_8047A2A8 - 0x20;
                 GSthreadCreate(0xF, lbl_8047A2AC, 0x4000, 1, 1,
-                               fn_8000DAB0);
+                               menuFightOpenAndWake);
                 _threadSwitch();
                 GSgappUnblock(GSeffectGetUpdateGapp());
 
@@ -332,7 +332,7 @@ s32 heroMoveRunEvent(u8 mode)
     fn_80019070(selectionHandle);
     soundUnduck(0x1F4, 1, 1);
     menuClose(menuId);
-    menuReleaseOffScreen(lbl_8047B6F0 / (f32)fn_800D37CC());
+    menuReleaseOffScreen(lbl_8047B6F0 / (f32)GSgfxGetVsyncRate());
     menuCloseSync(menuId, 1);
     GSgfxSetFrameInterval(2);
     heroMoveTermEvent();

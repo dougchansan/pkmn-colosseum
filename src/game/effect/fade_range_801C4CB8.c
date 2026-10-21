@@ -73,12 +73,12 @@ typedef struct FadeTrailWork {
     FadeTrailPoint point[12];
 } FadeTrailWork;
 
-extern void fn_801C6688(f32 t);
+extern void fadeEffectDrawAlphaQuad(f32 t);
 extern void fadeEffectDrawCapturedQuad(void* tex, GSvec* pos, f32 scale, f32 offset, f32 t, f32 alpha);
-extern void fn_801C5B60(FadeTrailPoint* point, s32 alpha, f32 scale, f32 angle);
+extern void fadeEffectDrawSpinQuad(FadeTrailPoint* point, s32 alpha, f32 scale, f32 angle);
 extern void fadeEffectSpinFirstInit(void);
 extern void fadeEffectEnd2D(void);
-extern void fn_801C680C(void* texture);
+extern void fadeEffectBegin2DTexture(void* texture);
 extern void fadeEffectCaptureInit(void* texture);
 extern void gfxVtxDescFree(void* ptr);
 extern void GSgfxSetFrameInterval(u32 enable);
@@ -108,7 +108,7 @@ extern void fn_800DC04C(u32 arg0, u32 arg1, u32 arg2, u32 arg3, u32 arg4, u32 ar
 extern void fn_800DBFD4(u32 arg0, u32 arg1, u32 arg2, u32 arg3, u32 arg4);
 extern void fn_800E042C(void* mtx, GSvec* scale);
 extern void GSmtxRotateZ(void* mtx, f32 angle);
-extern void fn_800E03B4(void* mtx, GSvec* trans);
+extern void GSmtxTransApply(void* mtx, GSvec* trans);
 extern void GSvecTransform(GSvec* dst, void* mtx, GSvec* src);
 extern void gfxBegin(u32 arg0);
 extern void gfxVtxPos(f32 x, f32 y, f32 z);
@@ -187,16 +187,16 @@ static inline f32 fadeSqrtf(f32 value)
     return value;
 }
 
-u32 fn_801C63B8(void);
+u32 fadeEffectCaptureCallback(void);
 void fadeFluidQuit(void);
 void fadeFluidEvaluate(void);
 void fadeFluidInit(u32 columns, u32 rows, f32 cellSize, f32 calcStep,
                    f32 waveLimit, f32 timeStep);
 void fadeFluidSetShock(GSvec* position, f32 strength);
 void _fadeEffect_AdjustParms__Fv(void);
-u32 fn_801C6908(u32 range);
-void fn_801C5748(void);
-void fn_801C6688(f32 t);
+u32 fadeEffectRandomize(u32 range);
+void fadeEffectFluidFirstInit(void);
+void fadeEffectDrawAlphaQuad(f32 t);
 void fadeEffectFluidDraw(void* texture, f32 progress, f32 alpha);
 u32 fadeEffectUDLRUpdate(u32 finish, void* texture, f32 frame, f32 duration,
                 f32 angle, f32 angleDuration);
@@ -307,7 +307,7 @@ u32 fadeEffectFuncCapture(u32 finish, void* texture, f32 frame, f32 duration)
         progress = 255.0f * (1.0f - progress);
         fn_800E042C(matrix, &point);
         GSmtxRotateZ(matrix, 0.0f);
-        fn_800E03B4(matrix, &position);
+        GSmtxTransApply(matrix, &position);
 
         point.x = 128.0f;
         point.y = 128.0f;
@@ -383,7 +383,7 @@ void fadeEffectCaptureInit(void* texture)
     camera->target = 16.0f;
     camera->value = 0.0f;
     }
-    GSgfxBeginBackFBCapture(texture, fn_801C63B8, 0);
+    GSgfxBeginBackFBCapture(texture, fadeEffectCaptureCallback, 0);
 
     lbl_8047B3B4 = gfxVtxDescAlloc();
     if (lbl_8047B3B4 != NULL) {
@@ -395,12 +395,12 @@ void fadeEffectCaptureInit(void* texture)
     _fadeEffect_AdjustParms__Fv();
 }
 
-u32 fn_801C54FC(u32 arg0, f32 frame, f32 duration) {
-    fn_801C6688(frame / duration);
+u32 fadeEffectFuncBlack(u32 arg0, f32 frame, f32 duration) {
+    fadeEffectDrawAlphaQuad(frame / duration);
     return arg0;
 }
 
-u32 fn_801C5530(u32 arg0, void* texture, f32 frame, f32 duration, f32 angle, f32 angleDuration) {
+u32 fadeEffectFuncBlackCapture(u32 arg0, void* texture, f32 frame, f32 duration, f32 angle, f32 angleDuration) {
     u32 result;
     void* tex;
     f32 t;
@@ -411,7 +411,7 @@ u32 fn_801C5530(u32 arg0, void* texture, f32 frame, f32 duration, f32 angle, f32
     t = frame / duration;
     rot = angle / angleDuration;
 
-    fn_801C6688(t);
+    fadeEffectDrawAlphaQuad(t);
     if (tex == NULL) {
         return result;
     }
@@ -448,7 +448,7 @@ u32 fadeEffectFuncFluid(u32 finish, void* texture, f32 frame, f32 duration,
     }
     if (lbl_8047B3B0 == 1) {
         lbl_8047B3B0 = 0;
-        fn_801C5748();
+        fadeEffectFluidFirstInit();
     }
     if (lbl_8047B3B0 == 0 && (u8)result == 0) {
         fadeFluidQuit();
@@ -471,7 +471,7 @@ u32 fadeEffectFuncFluid(u32 finish, void* texture, f32 frame, f32 duration,
         }
     }
 
-    fn_801C6688(progress);
+    fadeEffectDrawAlphaQuad(progress);
     if ((u8)result == 1) {
         fadeFluidEvaluate();
         fadeEffectFluidDraw(tex, progress, alpha);
@@ -479,7 +479,7 @@ u32 fadeEffectFuncFluid(u32 finish, void* texture, f32 frame, f32 duration,
     return result;
 }
 
-void fn_801C5748(void)
+void fadeEffectFluidFirstInit(void)
 {
     GSvec position;
 
@@ -560,7 +560,7 @@ u32 fadeEffectFuncSpin(u32 arg0, void* texture, f32 frame, f32 duration,
     if (camera->value >= camera->target) {
         camera->value = camera->target;
     }
-    fn_801C6688(progress);
+    fadeEffectDrawAlphaQuad(progress);
 
     if (texture == NULL) {
         return arg0;
@@ -571,7 +571,7 @@ u32 fadeEffectFuncSpin(u32 arg0, void* texture, f32 frame, f32 duration,
     position.z = 0.0f;
     fadeEffectDrawCapturedQuad(texture, &position, 1.0f, 0.0f,
                 progress, angleProgress);
-    fn_801C680C(((FadeCameraWork*)lbl_80467030)->tex0);
+    fadeEffectBegin2DTexture(((FadeCameraWork*)lbl_80467030)->tex0);
 
     value = camera->value;
     positionStep[0] = value;
@@ -591,7 +591,7 @@ u32 fadeEffectFuncSpin(u32 arg0, void* texture, f32 frame, f32 duration,
                 point->z = point[-1].z;
                 point->angle = point[-1].angle;
             }
-            fn_801C5B60(point,
+            fadeEffectDrawSpinQuad(point,
                         (s32)(alphaScale * (f32)point->alpha),
                         1.0f, point->angle);
         }
@@ -613,7 +613,7 @@ u32 fadeEffectFuncSpin(u32 arg0, void* texture, f32 frame, f32 duration,
         }
         trail[i].point[0].x = value;
 
-        fn_801C5B60(&trail[i].point[0],
+        fadeEffectDrawSpinQuad(&trail[i].point[0],
                     (s32)(alphaScale * (f32)trail[i].point[0].alpha),
                     1.0f, trail[i].point[0].angle);
     }
@@ -621,7 +621,7 @@ u32 fadeEffectFuncSpin(u32 arg0, void* texture, f32 frame, f32 duration,
     return arg0;
 }
 
-void fn_801C5B60(FadeTrailPoint* position, s32 alpha, f32 scale, f32 angle)
+void fadeEffectDrawSpinQuad(FadeTrailPoint* position, s32 alpha, f32 scale, f32 angle)
 {
     f32 matrix[3][4];
     GSvec point;
@@ -632,7 +632,7 @@ void fn_801C5B60(FadeTrailPoint* position, s32 alpha, f32 scale, f32 angle)
     point.z = scale;
     fn_800E042C(matrix, &point);
     GSmtxRotateZ(matrix, 0.017453292f * angle);
-    fn_800E03B4(matrix, (GSvec*)position);
+    GSmtxTransApply(matrix, (GSvec*)position);
     gfxBegin(4);
 
     point.x = (-128.0f);
@@ -836,7 +836,7 @@ void _fadeEffectFunction_UDLR_FirstInit__FP9GStextureUs(void* texture, u16 mode)
     camera->target = 128.0f;
     camera->value = 0.0f;
 
-    if (fn_801C6908(2) == 0) {
+    if (fadeEffectRandomize(2) == 0) {
         camera->step *= (-1.0f);
         camera->target *= (-1.0f);
         switch (mode) {
@@ -855,10 +855,10 @@ void _fadeEffectFunction_UDLR_FirstInit__FP9GStextureUs(void* texture, u16 mode)
         }
     }
     _fadeEffect_AdjustParms__Fv();
-    GSgfxBeginBackFBCapture(texture, fn_801C63B8, 0);
+    GSgfxBeginBackFBCapture(texture, fadeEffectCaptureCallback, 0);
 }
 
-u32 fn_801C63B8(void) {
+u32 fadeEffectCaptureCallback(void) {
     return 1;
 }
 
@@ -871,7 +871,7 @@ void fadeEffectDrawCapturedQuad(void* texture, GSvec* position, f32 scale, f32 a
     f32 matrix[3][4];
     s32 alpha;
 
-    fn_801C680C(texture);
+    fadeEffectBegin2DTexture(texture);
     vec.x = 1.0f;
     vec.y = 1.0f;
     vec.z = 1.0f;
@@ -886,7 +886,7 @@ void fadeEffectDrawCapturedQuad(void* texture, GSvec* position, f32 scale, f32 a
     vec.z = scale;
     fn_800E042C(matrix, &vec);
     GSmtxRotateZ(matrix, 0.017453292f * angle);
-    fn_800E03B4(matrix, position);
+    GSmtxTransApply(matrix, position);
     gfxBegin(4);
 
     vec.x = (-320.0f);
@@ -924,12 +924,12 @@ void fadeEffectDrawCapturedQuad(void* texture, GSvec* position, f32 scale, f32 a
     fadeEffectEnd2D();
 }
 
-void fn_801C6688(f32 t) {
+void fadeEffectDrawAlphaQuad(f32 t) {
     extern void fadeEffectEnd2D(void);
-    extern void fn_801C6760(void);
+    extern void fadeEffectBegin2DColor(void);
     s32 alpha;
 
-    fn_801C6760();
+    fadeEffectBegin2DColor();
     alpha = 0xFF - (s32)(255.0f * t);
     gfxBegin(2);
     gfxVtxPos(0.0f, 0.0f, 0.0f);
@@ -944,7 +944,7 @@ void fadeEffectEnd2D(void) {
     fn_800D9ED8(0);
 }
 
-void fn_801C6760(void) {
+void fadeEffectBegin2DColor(void) {
     fn_800D9ED8(1);
     gfxSetFlags(1);
     gfxClearFlags(6);
@@ -958,7 +958,7 @@ void fn_801C6760(void) {
     gfxSetVtxDesc(NULL);
 }
 
-void fn_801C680C(void* texture) {
+void fadeEffectBegin2DTexture(void* texture) {
     fn_800D9ED8(1);
     gfxSetFlags(3);
     gfxClearFlags(4);
@@ -982,7 +982,7 @@ void _fadeEffect_AdjustParms__Fv(void) {
     cam->target = cam->target / scale;
 }
 
-u32 fn_801C6908(u32 range) {
+u32 fadeEffectRandomize(u32 range) {
     return _fadeEffectGetRandom__FUl(range);
 }
 
@@ -995,7 +995,7 @@ void fadeEffectSetFirstFrame(void) {
 #ifndef FADE_EFFECT_TU
 /* fade_fluid.o (XD fade_fluid.cpp): 0x801C6934 - 0x801C766C, its own TU
  * with its own .sdata2 pool from 0x8047E0A8. */
-void fn_801C6AE8(u32 x, u32 y, u8 alpha);
+void fadeEffectFluidDrawGrid(u32 x, u32 y, u8 alpha);
 
 void fadeEffectFluidDraw(void* texture, f32 progress, f32 blend)
 {
@@ -1029,13 +1029,13 @@ void fadeEffectFluidDraw(void* texture, f32 progress, f32 blend)
 
     for (y = 0; y < fluid->rows; y++) {
         for (x = 0; x < fluid->columns; x++) {
-            fn_801C6AE8(x, y, (u8)alpha);
+            fadeEffectFluidDrawGrid(x, y, (u8)alpha);
         }
     }
     fn_800D9ED8(0);
 }
 
-void fn_801C6AE8(u32 x, u32 y, u8 alpha) {
+void fadeEffectFluidDrawGrid(u32 x, u32 y, u8 alpha) {
     FadeFluidWork* dimensions;
     FadeFluidWork* fluid;
     GSvec** heightPage;
@@ -1219,7 +1219,7 @@ void fadeFluidCalcParms(f32 dt) {
 
 
 void fadeFluidQuit(void) {
-    extern void fn_801C75EC(void* ptr);
+    extern void fadeFluidFreeTexture(void* ptr);
     FadeFluidWork* fluid0 = (FadeFluidWork*)lbl_80467050;
     FadeFluidWork* fluid1;
     FadeFluidWork* fluid2;
@@ -1227,27 +1227,27 @@ void fadeFluidQuit(void) {
     FadeFluidWork* fluid4;
 
     if (fluid0->heightPage[0] != NULL) {
-        fn_801C75EC(fluid0->heightPage[0]);
+        fadeFluidFreeTexture(fluid0->heightPage[0]);
     }
 
     fluid1 = (FadeFluidWork*)lbl_80467050;
     if (fluid1->heightPage[1] != NULL) {
-        fn_801C75EC(fluid1->heightPage[1]);
+        fadeFluidFreeTexture(fluid1->heightPage[1]);
     }
 
     fluid2 = (FadeFluidWork*)lbl_80467050;
     if (fluid2->velocityX != NULL) {
-        fn_801C75EC(fluid2->velocityX);
+        fadeFluidFreeTexture(fluid2->velocityX);
     }
 
     fluid3 = (FadeFluidWork*)lbl_80467050;
     if (fluid3->velocityY != NULL) {
-        fn_801C75EC(fluid3->velocityY);
+        fadeFluidFreeTexture(fluid3->velocityY);
     }
 
     fluid4 = (FadeFluidWork*)lbl_80467050;
     if (fluid4->texCoord != NULL) {
-        fn_801C75EC(fluid4->texCoord);
+        fadeFluidFreeTexture(fluid4->texCoord);
     }
 
     fluid0->heightPage[0] = NULL;
@@ -1260,7 +1260,7 @@ void fadeFluidQuit(void) {
 void fadeFluidInit(u32 columns, u32 rows, f32 cellSize, f32 calcStep,
                    f32 waveLimit, f32 timeStep)
 {
-    extern void* fn_801C7630(u32 size);
+    extern void* fadeFluidAllocTexture(u32 size);
     extern void set__5GSvecFfff(GSvec*, f32, f32, f32);
     extern void OSReport(const char*, ...);
     extern char lbl_80275860[];
@@ -1282,12 +1282,12 @@ void fadeFluidInit(u32 columns, u32 rows, f32 cellSize, f32 calcStep,
     fluid->yScale = 480.0f / (f32)rows;
     fluid->columns = columns;
     fluid->rows = rows;
-    ((FadeFluidWork*)lbl_80467050)->heightPage[0] = fn_801C7630(vectorBytes);
-    ((FadeFluidWork*)lbl_80467050)->heightPage[1] = fn_801C7630(vectorBytes);
+    ((FadeFluidWork*)lbl_80467050)->heightPage[0] = fadeFluidAllocTexture(vectorBytes);
+    ((FadeFluidWork*)lbl_80467050)->heightPage[1] = fadeFluidAllocTexture(vectorBytes);
     lbl_8047B3B8 = 0;
-    ((FadeFluidWork*)lbl_80467050)->velocityX = fn_801C7630(vectorBytes);
-    ((FadeFluidWork*)lbl_80467050)->velocityY = fn_801C7630(vectorBytes);
-    ((FadeFluidWork*)lbl_80467050)->texCoord = fn_801C7630(pointCount * sizeof(GSvec2));
+    ((FadeFluidWork*)lbl_80467050)->velocityX = fadeFluidAllocTexture(vectorBytes);
+    ((FadeFluidWork*)lbl_80467050)->velocityY = fadeFluidAllocTexture(vectorBytes);
+    ((FadeFluidWork*)lbl_80467050)->texCoord = fadeFluidAllocTexture(pointCount * sizeof(GSvec2));
 
     maximumLimit = (cellSize / (2.0f * calcStep)) *
                    fadeSqrtf(2.0f + timeStep);
@@ -1321,7 +1321,7 @@ void fadeFluidInit(u32 columns, u32 rows, f32 cellSize, f32 calcStep,
     }
 }
 
-void fn_801C75EC(void* ptr) {
+void fadeFluidFreeTexture(void* ptr) {
     u32 handle = GSmemGetHandleByPtr(ptr);
     u32 masked = handle & 0xFFFF;
 
@@ -1331,7 +1331,7 @@ void fn_801C75EC(void* ptr) {
     }
 }
 
-void* fn_801C7630(u32 size) {
+void* fadeFluidAllocTexture(u32 size) {
     u32 handle = GSmemAlloc(size, 0x20);
     u32 masked = handle & 0xFFFF;
 

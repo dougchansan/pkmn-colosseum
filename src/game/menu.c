@@ -141,7 +141,7 @@ u32 GSgetFrameStep(void);
 void fn_800D9E4C(s32);
 void fn_800D9ED8(s32);
 void gfxSetBlendMode(s32, s32, s32);
-void fn_801D2404(void);
+void menuDrawBlinkIcon(void);
 void fadeDaemon(void);
 void fn_800FE6D0(s32 x, s32 y);
 void fn_800FE35C(void);
@@ -154,7 +154,7 @@ s32 fn_8008AB8C(s32);
 u8 GSinputIsConnected(s32 pad_id);
 u32 GSinputGetLeftStickYData(s32 pad_id, s32 axis);
 u32 GSinputGetLeftStickXData(s32 pad_id, s32 axis);
-u32 fn_800F7BC4(s32 pad_id);
+u32 GSinputGetButtons(s32 pad_id);
 u32 gfxVtxDescAlloc(void);
 void gfxVtxDescSetAttr(u32, u32, u32, u32, u32, u32, u32, u32);
 void* GStextureLoad(void* data);
@@ -538,7 +538,7 @@ void menuDaemon(void) {
     u16 keys;
     u8 doFade = 1;
 
-    fn_801D2404();
+    menuDrawBlinkIcon();
     active = windowSearchID(windowGetActiveID());
     _menuUpdateKeyInfo__FP15WINDOW_SYS_WORK(&lbl_80404ACC);
     fn_800D9E4C(0);
@@ -1096,7 +1096,7 @@ u8 _menuGetGcKeyInfo__FlPUs(s32 port, u16* keys) {
         }
     }
 
-    buttons = fn_800F7BC4(padId);
+    buttons = GSinputGetButtons(padId);
     if (buttons & 0x8) result |= 0x1;
     if (buttons & 0x4) result |= 0x2;
     if (buttons & 0x1) result |= 0x4;

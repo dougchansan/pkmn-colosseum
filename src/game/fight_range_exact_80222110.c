@@ -57,12 +57,12 @@ u8 _wsPlayAnimationSelectId(u8 a, u8 b) {
 
 #define fn_801F54A4 fightFloorGetStatus
 #define fn_8012640C pokemonGetStatus
-void fn_802221EC(u32 a, u32 b, u32 c, u32 d) {
+void fightPlayStatusWazaSeq(u32 a, u32 b, u32 c, u32 d) {
     extern u16 fn_801F54A4();
     extern u32 fn_8012640C();
-    extern u8  fn_801DDD28(u32, u32, u32, u32);
+    extern u8  wazaSequenceOwnerLoadWaza(u32, u32, u32, u32);
     extern void wazaSequenceSysStartWaza(u32, u32, u32);
-    extern void fn_80265598(u32, u16, u32);
+    extern void fightMenuStatusMenuOpen(u32, u16, u32);
     extern u32 wazaSequenceSysIsPlayingWaza(u32, u16, u32);
     extern void _threadSwitch();
     extern void wazaSequenceSysStopWaza(u32, u16, u32);
@@ -76,13 +76,13 @@ void fn_802221EC(u32 a, u32 b, u32 c, u32 d) {
     if (obj == 0) {
         return;
     }
-    if ((u8)fn_801DDD28(obj, a, 4, 0) == 0) {
+    if ((u8)wazaSequenceOwnerLoadWaza(obj, a, 4, 0) == 0) {
         return;
     }
     wazaSequenceSysStartWaza(obj, a, 4);
 
     if ((u8)d == 1) {
-        fn_80265598(b, partyCount, 1);
+        fightMenuStatusMenuOpen(b, partyCount, 1);
     }
     if ((u8)c != 1) {
         return;

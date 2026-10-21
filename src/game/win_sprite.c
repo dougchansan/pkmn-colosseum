@@ -84,7 +84,7 @@ extern u16 GStextureGetXsize(void*);
 extern u16 GStextureGetYsize(void*);
 extern void gfxVtxTexCoord(s32, f32, f32);
 extern void gfxVtxPos2s16(s32, s32);
-extern void fn_800E0718(void*, const void*, f32);
+extern void GSquatRotAxisRad(void*, const void*, f32);
 extern void set__5GSvecFfff(void*, f32, f32, f32);
 extern void GSvecTransformQuat(void*, void*, void*);
 extern u8 lbl_8031554C[];
@@ -191,7 +191,7 @@ void winSpriteDraw(u8* context, WinSpriteDrawNode* sprite)
     extern void fn_800FE6D0(s16, s16);
     extern void spriteSetEnv(void);
     extern void windowDrawPanel(s16, s16, s16, s16);
-    extern void fn_8001E644(s16, s16, s16, s16, u8);
+    extern void windowDrawFrame(s16, s16, s16, s16, u8);
     extern void gfxSetLineWidth(f32);
     extern void GSmsgPrintRect(s16, s16, s16, s16, u32, void*);
     extern u8 lbl_80314E08[];
@@ -294,7 +294,7 @@ void winSpriteDraw(u8* context, WinSpriteDrawNode* sprite)
             windowDrawPanel(sprite->x, sprite->y, sprite->width, sprite->height);
             break;
         case 0x10004:
-            fn_8001E644(sprite->x, sprite->y, sprite->width,
+            windowDrawFrame(sprite->x, sprite->y, sprite->width,
                          sprite->height, alpha);
             break;
         case 0x10002:
@@ -415,7 +415,7 @@ void winSpriteDrawTexture(u8* context, WinSpriteDrawNode* sprite)
         sQuadY[1] = sQuadY[2] = (f32)sprite->y - center_y;
     }
 
-    fn_800E0718(quaternion, lbl_8031554C, sprite->rotation);
+    GSquatRotAxisRad(quaternion, lbl_8031554C, sprite->rotation);
     for (i = 0; i < 4; i++) {
         set__5GSvecFfff(&point, sQuadX[i], 0.0f, sQuadY[i]);
         GSvecTransformQuat(&point, quaternion, &point);

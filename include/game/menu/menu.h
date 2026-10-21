@@ -103,7 +103,7 @@ struct MenuCardEMatrixWork;
 
 /* Shared battle-menu helpers implemented by the middle/common menu units. */
 u8* savedataBattleGetRulePtr(void);
-s32 fn_80076054(void* hero, void* battleRules);
+s32 menuRuleGetPartyError(void* hero, void* battleRules);
 
 /* =========================================================================
  * Callback function pointer types
@@ -227,7 +227,7 @@ typedef struct MenuCardEWork {
  * Card-E matrix raw matching overlays
  *
  * These partial layouts are anchored by menuCardEMatrixSelectCard, menuCardEMatrixSetTarget,
- * fn_8007C7EC, menuCardEMatrixWindowProc, menuCardE_CompareEntryPtrs, and fn_8007FDBC.
+ * fn_8007C7EC, menuCardEMatrixWindowProc, menuCardE_CompareEntryPtrs, and menuCardEMatrixBuild.
  * They intentionally stop at supported offsets and leave weak fields as
  * unk_XX. The older
  * MenuCardEMatrixWork below remains a high-level sketch used by exploratory
@@ -328,7 +328,7 @@ void menuCB_Common_ValidateStackNotEmpty(void);
 void menuCB_Common_ValidateMenuID(void);
 
 /**
- * fn_80071160: Retrieves the current menu ID from the top of stack.
+ * menuFindLiveSaveSlot: Retrieves the current menu ID from the top of stack.
  * Size: 0xA8
  */
 s32 menuCB_Common_GetCurrentMenuID(void);
@@ -347,7 +347,7 @@ void menuCB_Common_Update(void);
 s32 menuCB_Common_GetStackDepth(void);
 
 /**
- * fn_80071344: Checks whether a menu transition is in progress.
+ * _menuReopenTop: Checks whether a menu transition is in progress.
  * Size: 0x54
  */
 BOOL menuCB_Common_IsTransitioning(void);
@@ -374,7 +374,7 @@ void _menuPop(void);
 void menuCB_Common_ValidateTransition(void);
 
 /**
- * fn_8007162C: Returns TRUE if the menu system is active.
+ * _menuPeekStackDepth: Returns TRUE if the menu system is active.
  * Size: 0x18
  */
 BOOL menuCB_Common_IsActive(void);
@@ -491,7 +491,7 @@ void menuExDiscShrine_Main(void);
  * ========================================================================= */
 
 /**
- * fn_800792D8: Coupon exchange menu main handler.
+ * menuExDiscCouponRun: Coupon exchange menu main handler.
  * References GBA thumb code: bg0thumbcode.bin, bg1thumbcode.bin, bg2thumbcode.bin
  * File: "menuExDiscCoupon.c"
  * Size: 0x610

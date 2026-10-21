@@ -15,7 +15,7 @@
 #include "dolphin/types.h"
 
 extern u8* lbl_8047B610;
-extern u8 fn_802025B8();
+extern u8 fightOutPokemonCheckWritePokemonJoutaiDataId();
 extern void fightOutPokemonWritePokemonJoutaiDataId();
 
 void wsCmdA7(void)
@@ -32,7 +32,7 @@ void wsCmdA7(void)
     floor = fightFloorGetStatus(0, 0, 0x14, 0);
     targetId = fightTargetGetTragetPtrToRelativeHostSideFightTargetId(attacker, floor);
     target = (void*)fightTargetGetPtrAsNowFightType(0x12, 0);
-    if (fn_802025B8(target, 0x1d) == 2) {
+    if (fightOutPokemonCheckWritePokemonJoutaiDataId(target, 0x1d) == 2) {
         fightOutPokemonWritePokemonJoutaiDataId(target, 0x1d, targetId);
     }
     lbl_8047B610++;
@@ -185,7 +185,7 @@ void wsCmdA4(void)
         pp = 0;
         slot = -1;
     }
-    if (fn_802025B8(target, 0x2a) == 2 && slot >= 0 && pp != 0) {
+    if (fightOutPokemonCheckWritePokemonJoutaiDataId(target, 0x2a) == 2 && slot >= 0 && pp != 0) {
         fightOutPokemonWritePokemonJoutaiDataId(target, 0x2a, 0);
         move = pokemonGetStatus(pokemon, 0, 0x7f, slot);
         fightOutPokemonSetPokemonJoutai0C(target, 0x2a, move);

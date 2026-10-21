@@ -19,7 +19,7 @@ f32 fn_8018F5CC(const PeopleInfoBiosEntry* info)
     return lbl_8047D8A8;
 }
 
-f32 fn_8018F5E4(const PeopleInfoBiosEntry* info)
+f32 charModelGetRadius(const PeopleInfoBiosEntry* info)
 {
     if (info != NULL) {
         return info->field_18;

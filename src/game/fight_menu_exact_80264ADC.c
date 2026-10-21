@@ -61,7 +61,7 @@ extern u32  savedataGetStatus();
 extern int  fadeCheck();
 extern void fadeSet(f32 duration, u32 mode);
 extern int  wazaSequenceSysRelease();
-extern int  fn_801DADC0();
+extern int  wazaSequenceSysInitEx();
 extern void OSRegisterResetFunction();
 extern void OSInitAlarm();
 extern void OSInitThreadQueue();
@@ -167,7 +167,7 @@ LAB_00261af4:
   *(u32 *)(auStack_38 + 0x14) = 0;
   *(u32 *)(auStack_38 + 0x1c) = 0;
   auStack_38[0x20] = 2;
-  auStack_38[0x21] = fn_801F18DC(0);
+  auStack_38[0x21] = fightFloorIsKind10(0);
   iVar2 = menuFightOpenTarget((int*)auStack_38,0,1);
   if (iVar2 < 0) {
     menuFightCloseTarget(1);

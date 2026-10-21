@@ -47,7 +47,7 @@ extern void  pokemonGrowBasisStatus();
 extern u32   itemGetStatus();
 extern void  joutaiDataBiosGetStatusKind(void);
 extern void  pokemonIsJoutaiDataId(void);
-extern void  fn_8011B67C(void);
+extern void  statusIsJoutaiDataId(void);
 extern void  pokemonGetSoubiItemDataId(void);
 extern void* fightActionGetPri(void* p);
 extern void  wazaGetStatus(void);
@@ -902,7 +902,7 @@ void fightWazaWzxTypeFuncAllEnemy(void* p1, void* p2, void* p3, u32 unused, u32 
 u32 fightWazaWzxVariationFuncAllEnemy(void) { return 0; }
 
 /* 0x80210B08 | size: 0xE8 */
-void fn_80210B08(void* p1, void* p2, void* p3, u16 mode, u32 p5) {
+void fightPlayWazaEffectPair(void* p1, void* p2, void* p3, u16 mode, u32 p5) {
     extern void* fightTargetDataBiosGetBuff();
     extern void* fightTargetDataBiosGetPtr();
     extern void fightOutPokemonWazaEffect();
@@ -952,7 +952,7 @@ void fightWazaWzxTypeFuncVampire(void* p1, void* p2, void* p3, u16 mode, u32 p5)
     extern void* fightTargetDataBiosGetPtr();
     extern void fightOutPokemonWazaEffect();
     extern void fightOutPokemonLoadWazaEffect();
-    extern void fn_802221EC();
+    extern void fightPlayStatusWazaSeq();
     void* d9Data;
     s32 field2D;
 
@@ -967,7 +967,7 @@ void fightWazaWzxTypeFuncVampire(void* p1, void* p2, void* p3, u16 mode, u32 p5)
     } else if (mode == 1) {
         fightOutPokemonLoadWazaEffect(p2, p1, 3, p5);
         if (field2D > 0) {
-            fn_802221EC(0x32, p2, 0, 1);
+            fightPlayStatusWazaSeq(0x32, p2, 0, 1);
         } else {
             fightOutPokemonWazaEffect(p2, p1, 3, 0, fightTargetDataBiosGetBuff(fightTargetDataBiosGetPtr(0x11)));
         }

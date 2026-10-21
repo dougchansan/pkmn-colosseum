@@ -32,7 +32,7 @@ void _wsCheckSynchronizeAttacker(void* context) {
     }
 }
 
-void fn_8022D2CC(void* attacker, void* context) {
+void _wsCheckSynchronizeDefender(void* attacker, void* context) {
     extern u16 fightOutPokemonGetTokuseiDataId();
     extern u32 fightOutPokemonCheckFightOut();
     extern void fightFloorSetStatus();

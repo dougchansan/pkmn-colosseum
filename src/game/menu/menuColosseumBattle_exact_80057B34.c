@@ -13,9 +13,9 @@ typedef struct ColosseumBattleConnectState {
 } ColosseumBattleConnectState;
 
 extern void _threadSwitch(void);
-extern void fn_800F915C(s32);
+extern void GSresReleaseOwner(s32);
 extern void fn_8017B3E4(s32);
-extern s32 fn_8017B2CC(s32);
+extern s32 GSresGroupGetState(s32);
 extern void GSresReleaseById(s32);
 
 extern u8 lbl_803A9A08[];
@@ -42,17 +42,17 @@ u32 fn_80057B34(u32 arg0, u32 arg1) {
     }
 
     GSresReleaseById(0x70B);
-    fn_800F915C(0x70B);
+    GSresReleaseOwner(0x70B);
     fn_8017B3E4(0x670);
-    while (fn_8017B2CC(0x670) == 1) {
+    while (GSresGroupGetState(0x670) == 1) {
         _threadSwitch();
     }
 
     result = menuNameEntryCall(arg0, arg1);
     GSresReleaseById(0x670);
-    fn_800F915C(0x670);
+    GSresReleaseOwner(0x670);
     fn_8017B3E4(0x70B);
-    while (fn_8017B2CC(0x70B) == 1) {
+    while (GSresGroupGetState(0x70B) == 1) {
         _threadSwitch();
     }
 

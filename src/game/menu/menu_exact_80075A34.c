@@ -15,7 +15,7 @@ extern s32 menuClose(s32);
 extern void floorLink(s32, s32);
 extern void msgctrlSetValue(s32 id, u32 value);
 extern s32 menuOpenCustom(s32 slot, ...);
-extern s32 fn_801D0748(u32, u32, u32);
+extern s32 memcardWaitTask2(u32, u32, u32);
 extern void* gamedatasaveGetStatus(u32, u32);
 extern void winMsgOpen(s32, s32, s32, s32);
 extern void winMsgClose(s32);
@@ -54,7 +54,7 @@ s32 exShrineIncCounter(void)
     return result;
 }
 
-s32 fn_80075BC4(void)
+s32 exShrineGetRemaining(void)
 {
     u32 value;
 
@@ -90,7 +90,7 @@ void exDiscCheckStorySave(void)
             floorLink(0x322, 0);
             return;
         case 1:
-            result = fn_801D0748(2, 2, 0);
+            result = memcardWaitTask2(2, 2, 0);
             if (result != 3 || gamedatasaveGetStatus(0, 4) == 0) {
                 if (result == -1) {
                     continue;

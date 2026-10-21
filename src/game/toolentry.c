@@ -66,7 +66,7 @@ extern u32  savedataGetStatus();
 extern int  fadeCheck();
 extern int  fadeSet();
 extern int  wazaSequenceSysRelease();
-extern int  fn_801DADC0();
+extern int  wazaSequenceSysInitEx();
 extern void OSRegisterResetFunction();
 extern void OSInitAlarm();
 extern void OSInitThreadQueue();
@@ -428,7 +428,7 @@ u32 toolentryTaisenGetControlerType(void* ctx) { return *(u32*)((u8*)savedataBat
 u32 toolentryGetTrainerSamllFaceResID(void* ctx, u32 param1, u32 param2) {
     extern u32 lbl_80478E04;
     extern void* savedataBattleGetEntryPtr(void*);
-    extern u32 fn_801FCBA4(void);
+    extern u32 fightTrainerDataBiosGetStatus09(void);
     extern void fightTrainerDataBiosGetPtr(u32);
     u32 id;
     u32 base;
@@ -441,7 +441,7 @@ u32 toolentryGetTrainerSamllFaceResID(void* ctx, u32 param1, u32 param2) {
         return 0;
     }
     fightTrainerDataBiosGetPtr(id);
-    offset = fn_801FCBA4();
+    offset = fightTrainerDataBiosGetStatus09();
     offset *= 0x14;
     base = lbl_80478E04;
     entry = (u32*)(base + offset);
@@ -463,7 +463,7 @@ u32 toolentryGetTrainerSamllFaceResID(void* ctx, u32 param1, u32 param2) {
 u32 toolentryGetTrainerBicFaceResID(void* ctx, u32 param1, u32 param2) {
     extern u32 lbl_80478E04;
     extern void* savedataBattleGetEntryPtr(void*);
-    extern u32 fn_801FCBA4(void);
+    extern u32 fightTrainerDataBiosGetStatus09(void);
     extern void fightTrainerDataBiosGetPtr(u32);
     u16 id16;
     u32 id;
@@ -482,7 +482,7 @@ u32 toolentryGetTrainerBicFaceResID(void* ctx, u32 param1, u32 param2) {
         return 0;
     }
     fightTrainerDataBiosGetPtr(id);
-    offset = fn_801FCBA4();
+    offset = fightTrainerDataBiosGetStatus09();
     offset *= 0x14;
     base = lbl_80478E04;
     entry = (u32*)(base + offset);

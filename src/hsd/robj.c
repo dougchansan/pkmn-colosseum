@@ -631,7 +631,7 @@ void fn_801AE50C(HSD_RObj* robj)
  * expands it everywhere HSD_RObjAlloc is inlined except the one site past
  * its inline depth (the second-level copy in HSD_RObjLoadDesc), which calls
  * the out-of-line copy at 0x801AEBE0 with (&robj_alloc_data, "robj: alloc").
- * fobj.c shows the same pattern (fn_80199A84 with "fobj: alloc"), so HAL
+ * fobj.c shows the same pattern (fobjNullCB with "fobj: alloc"), so HAL
  * keeps it in a shared header; its name is not recoverable from the binary.
  */
 static inline void fn_801AEBE0(HSD_ObjAllocData* data, char* name)

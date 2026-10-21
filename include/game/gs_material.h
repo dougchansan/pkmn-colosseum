@@ -376,7 +376,7 @@ void GSmaterialSetUserData(GSmaterialEntry* entry, void* data);
  *
  * If the texture pointer changes, also calls the environment-map
  * update function (GSmodelSetAnimFrame) with the material's alpha value,
- * and calls fn_800EC134 to refresh the GX state.
+ * and calls GSmodelApplyAnimation to refresh the GX state.
  *
  * Corresponds to GSmaterialSetTexture. Size: 0x54.
  */
@@ -698,7 +698,7 @@ void GSmaterialSetDistanceThreshold(f32 dist);
  * GSmaterialUpdateMObjColor -- Push the current diffuse/ambient/specular
  * colors from the material entry into the HSD MObj.
  *
- * Corresponds to fn_800EC134. Size: 0x20.
+ * Corresponds to GSmodelApplyAnimation. Size: 0x20.
  */
 
 /**
@@ -839,7 +839,7 @@ void GSmaterialSetDistanceThreshold(f32 dist);
 /**
  * GSmaterialGetPEParam -- Return a PE parameter value.
  *
- * Corresponds to fn_800EE20C. Size: 0x20.
+ * Corresponds to jobjWalkFindNthCB. Size: 0x20.
  */
 
 /**

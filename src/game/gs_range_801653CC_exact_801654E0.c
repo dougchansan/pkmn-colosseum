@@ -92,13 +92,13 @@ u32 std108_soundIsAnyPlaying(void)
     return (result | -result) >> 31;
 }
 
-u32 fn_80165788(u32 id, f32 x, f32 y, f32 z)
+u32 soundPlayAtPosition(u32 id, f32 x, f32 y, f32 z)
 {
     GSvec position;
     u32 result;
 
     set__5GSvecFfff(&position, x, y, z);
-    result = fn_80166308(id, &position);
+    result = soundEmitterAt(id, &position);
     result = (result | -result) >> 31;
     return result;
 }

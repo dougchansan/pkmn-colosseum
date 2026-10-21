@@ -8,7 +8,7 @@
  * GScolsys2Draw; drawSunMdl / drawCheckMdl / drawThruMdl UNUSED 0xCC each;
  * StarsMmd/Colo-XD-PBR-symbol-maps). colsysDrawWalkMdl is drawWalkMdl.
  * GScolsys2Draw here records the fixed objects' display list (XD
- * makeDisplayListFixedObj), and fn_8010D8D4 draws the rest and replays it
+ * makeDisplayListFixedObj), and colsysDebugDraw draws the rest and replays it
  * (XD GScolsys2Draw). The edge and face helpers take XD's names; each has
  * its own colour. GC6E01.map lists the four colours as the TU's first pool
  * entries (@1966, @1988, @2002, @2016); declared before colsysDrawWalkMdl, they
@@ -98,7 +98,7 @@ extern void gfxVtxColor4u8(s32, s32, s32, s32, s32);
 extern void gfxEnd(void);
 extern void* GScolsys2Draw(void);
 extern void GSgfxDLDraw(void*);
-extern void fn_800D30AC(void);
+extern void gfxFlush(void);
 
 
 /* The TU pool at 0x8047CEB8 starts with these four colours. */
@@ -315,7 +315,7 @@ void* GScolsys2Draw(void)
     return GSgfxDLEnd();
 }
 
-void fn_8010D8D4(void)
+void colsysDebugDraw(void)
 {
     ColDrawScene* scene;
     u32 i;
@@ -371,7 +371,7 @@ void fn_8010D8D4(void)
     }
     if (lbl_80404C68.displayList != NULL) {
         GSgfxDLDraw(lbl_80404C68.displayList);
-        fn_800D30AC();
+        gfxFlush();
     }
 }
 

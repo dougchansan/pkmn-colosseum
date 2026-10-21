@@ -50,7 +50,7 @@ extern void  pokemonGrowBasisStatus();
 extern u32   itemGetStatus();
 extern void  joutaiDataBiosGetStatusKind(void);
 extern void  pokemonIsJoutaiDataId(void);
-extern void  fn_8011B67C(void);
+extern void  statusIsJoutaiDataId(void);
 extern void  pokemonGetSoubiItemDataId(void);
 extern void* fightActionGetPri(void* p);
 extern void  wazaGetStatus(void);
@@ -68,7 +68,7 @@ extern ColosseumEventPairRow lbl_80375A08[]; /* 0x18-byte pair rows */
 u32 fightWazaIsHit(void* ctx)
 {
     extern u16 joutaiDataBiosGetStatusKind();
-    extern u8 fn_8011B67C();
+    extern u8 statusIsJoutaiDataId();
   u16 sVar2;
   u32 uVar1;
   u8 cVar3;
@@ -78,7 +78,7 @@ u32 fightWazaIsHit(void* ctx)
     cVar3 = 0;
   }
   else {
-    cVar3 = fn_8011B67C(ctx,0x40);
+    cVar3 = statusIsJoutaiDataId(ctx,0x40);
   }
   if (cVar3 == 1) {
     uVar1 = 0;
@@ -89,7 +89,7 @@ u32 fightWazaIsHit(void* ctx)
       cVar3 = 0;
     }
     else {
-      cVar3 = fn_8011B67C(ctx,0x43);
+      cVar3 = statusIsJoutaiDataId(ctx,0x43);
     }
     if (cVar3 == 1) {
       uVar1 = 0;
@@ -100,7 +100,7 @@ u32 fightWazaIsHit(void* ctx)
         cVar3 = 0;
       }
       else {
-        cVar3 = fn_8011B67C(ctx,0x45);
+        cVar3 = statusIsJoutaiDataId(ctx,0x45);
       }
       if (cVar3 == 1) {
         uVar1 = 0;
@@ -146,7 +146,7 @@ u32 fightWazaIsJoutaiSousai(void* ctx)
 
 {
     extern u16 joutaiDataBiosGetStatusKind();
-    extern u8 fn_8011B67C();
+    extern u8 statusIsJoutaiDataId();
   u16 sVar1;
   u8 cVar2;
 
@@ -155,7 +155,7 @@ u32 fightWazaIsJoutaiSousai(void* ctx)
     cVar2 = 0;
   }
   else {
-    cVar2 = fn_8011B67C(ctx,0x41);
+    cVar2 = statusIsJoutaiDataId(ctx,0x41);
   }
   if (cVar2 == 1) {
     sVar1 = joutaiDataBiosGetStatusKind(0x42);
@@ -163,7 +163,7 @@ u32 fightWazaIsJoutaiSousai(void* ctx)
       cVar2 = 0;
     }
     else {
-      cVar2 = fn_8011B67C(ctx,0x42);
+      cVar2 = statusIsJoutaiDataId(ctx,0x42);
     }
     if (cVar2 == 1) {
       return 1;
@@ -175,19 +175,19 @@ u32 fightWazaIsJoutaiSousai(void* ctx)
 /* 0x8020990C | size: 0x54 */
 u32 fightWazaIsJoutaiDataId(void* ctx, u32 param) {
     extern u32 joutaiDataBiosGetStatusKind();
-    extern u32 fn_8011B67C();
+    extern u32 statusIsJoutaiDataId();
     if ((joutaiDataBiosGetStatusKind(param) & 0xFFFF) != 0x2A) {
         return 0;
     }
-    return fn_8011B67C(ctx, param);
+    return statusIsJoutaiDataId(ctx, param);
 }
 
 /* 0x80209960 | size: 0x4C | small */
 void fightWazaInitJoutaiDataId(void* ctx, u32 param) {
     extern u32 joutaiDataBiosGetStatusKind();
-    extern void fn_8011B788();
+    extern void statusInitJoutaiDataId();
     if ((joutaiDataBiosGetStatusKind(param) & 0xFFFF) == 0x2a) {
-        fn_8011B788(ctx, param);
+        statusInitJoutaiDataId(ctx, param);
     }
 }
 
@@ -195,7 +195,7 @@ void fightWazaInitJoutaiDataId(void* ctx, u32 param) {
 void fightWazaCreate(void* p1, s8 p2, u32 p3, u16 p4, u8 p5) {
     extern u16 joutaiDataBiosGetStatusKind();
     extern void statusWriteJoutaiDataId();
-    extern void fn_8011B950();
+    extern void joutaiSlotsClear();
     extern void wazaSetStatus();
     extern u32 wazaGetStatus();
     u16 sVar2;
@@ -206,7 +206,7 @@ void fightWazaCreate(void* p1, s8 p2, u32 p3, u16 p4, u8 p5) {
             wazaSetStatus(p1, 0, 0x27, 0, 0);
             wazaSetStatus(p1, 0, 0x28, 0, 0);
             wazaSetStatus(p1, 0, 0x29, 0, 0);
-            fn_8011B950(wazaGetStatus(p1, 0, 0x2a, 0), 9);
+            joutaiSlotsClear(wazaGetStatus(p1, 0, 0x2a, 0), 9);
             sVar2 = joutaiDataBiosGetStatusKind(0x3f);
             if (sVar2 == 0x2a) {
                 statusWriteJoutaiDataId(p1, 0x3f, 0);
@@ -277,7 +277,7 @@ u32 fightWazaCheckValid(void* ctx) {
 void fightWazaInit(void* r3) {
     extern u16 joutaiDataBiosGetStatusKind();
     extern void statusWriteJoutaiDataId();
-    extern void fn_8011B950();
+    extern void joutaiSlotsClear();
     extern void wazaSetStatus();
     extern void* wazaGetStatus();
     void* ctx;
@@ -287,7 +287,7 @@ void fightWazaInit(void* r3) {
     wazaSetStatus(ctx, 0, 0x27, 0, 0);
     wazaSetStatus(ctx, 0, 0x28, 0, 0);
     wazaSetStatus(ctx, 0, 0x29, 0, 0);
-    fn_8011B950(wazaGetStatus(ctx, 0, 0x2A, 0), 9);
+    joutaiSlotsClear(wazaGetStatus(ctx, 0, 0x2A, 0), 9);
     if (joutaiDataBiosGetStatusKind(0x3F) == 0x2A) {
         statusWriteJoutaiDataId(ctx, 0x3F, 0);
     }
@@ -305,13 +305,13 @@ void fightWazaInit(void* r3) {
 void fightWazaInitLoop(void* ctx) {
     extern u16 joutaiDataBiosGetStatusKind();
     extern void statusWriteJoutaiDataId();
-    extern void fn_8011B950();
+    extern void joutaiSlotsClear();
     extern void wazaSetStatus();
     extern u32 wazaGetStatus();
     u32 val;
     u16 typeId;
     val = wazaGetStatus(ctx, 0, 0x2a, 0);
-    fn_8011B950(val, 9);
+    joutaiSlotsClear(val, 9);
     typeId = joutaiDataBiosGetStatusKind(0x3f);
     if (typeId == 0x2a) {
         statusWriteJoutaiDataId(ctx, 0x3f, 0);
@@ -324,10 +324,10 @@ void fightWazaInitLoop(void* ctx) {
 void fightWazaInitJoutai(void* ctx) {
     extern u16 joutaiDataBiosGetStatusKind();
     extern void statusWriteJoutaiDataId();
-    extern u32 fn_8011B950();
+    extern u32 joutaiSlotsClear();
     extern u32 wazaGetStatus();
     u32 val = wazaGetStatus(ctx, 0, 0x2A, 0);
-    fn_8011B950(val, 9);
+    joutaiSlotsClear(val, 9);
     if (joutaiDataBiosGetStatusKind(0x3F) == 0x2A) {
         statusWriteJoutaiDataId(ctx, 0x3F, 0);
     }
@@ -659,7 +659,7 @@ u32 joukenDataGet0(u16 idx) {
 }
 
 /* 0x8020A5C0 | size: 0x70 */
-s16 fn_8020A5C0(u16 index, u16 slot) {
+s16 fightJoukenDataBiosGetTerm04(u16 index, u16 slot) {
     ColosseumEventPairRow* entry;
     ColosseumEventSubRow* sub;
     if (index >= lbl_80478D28) {
@@ -681,7 +681,7 @@ s16 fn_8020A5C0(u16 index, u16 slot) {
 }
 
 /* 0x8020A630 | size: 0x70 */
-s16 fn_8020A630(u16 index, u16 slot) {
+s16 fightJoukenDataBiosGetTerm02(u16 index, u16 slot) {
     ColosseumEventPairRow* entry;
     ColosseumEventSubRow* sub;
     if (index >= lbl_80478D28) {
@@ -703,7 +703,7 @@ s16 fn_8020A630(u16 index, u16 slot) {
 }
 
 /* 0x8020A6A0 | size: 0x70 */
-u8 fn_8020A6A0(u16 index, u16 slot) {
+u8 fightJoukenDataBiosGetTerm01(u16 index, u16 slot) {
     ColosseumEventPairRow* entry;
     ColosseumEventSubRow* sub;
     if (index >= lbl_80478D28) {
@@ -725,7 +725,7 @@ u8 fn_8020A6A0(u16 index, u16 slot) {
 }
 
 /* 0x8020A710 | size: 0x70 */
-u16 fn_8020A710(u16 index, u16 slot) {
+u16 fightJoukenDataBiosGetTerm08(u16 index, u16 slot) {
     ColosseumEventPairRow* entry;
     ColosseumEventSubRow* sub;
     if (index >= lbl_80478D28) {
@@ -747,7 +747,7 @@ u16 fn_8020A710(u16 index, u16 slot) {
 }
 
 /* 0x8020A780 | size: 0x70 */
-u16 fn_8020A780(u16 index, u16 slot) {
+u16 fightJoukenDataBiosGetTerm06(u16 index, u16 slot) {
     ColosseumEventPairRow* entry;
     ColosseumEventSubRow* sub;
     if (index >= lbl_80478D28) {
@@ -769,7 +769,7 @@ u16 fn_8020A780(u16 index, u16 slot) {
 }
 
 /* 0x8020A7F0 | size: 0x70 */
-u8 fn_8020A7F0(u16 index, u16 slot) {
+u8 fightJoukenDataBiosGetTermKind(u16 index, u16 slot) {
     ColosseumEventPairRow* entry;
     ColosseumEventSubRow* sub;
     if (index >= lbl_80478D28) {
@@ -790,8 +790,8 @@ u8 fn_8020A7F0(u16 index, u16 slot) {
     return sub->valueMode;
 }
 
-/* fn_8020A860 | Size: 0x40 | Look up u16 field at offset 2 in 0x18-byte table */
-u16 fn_8020A860(u16 index) {
+/* fightJoukenDataBiosGet02 | Size: 0x40 | Look up u16 field at offset 2 in 0x18-byte table */
+u16 fightJoukenDataBiosGet02(u16 index) {
     ColosseumEventPairRow* entry;
     if (index >= lbl_80478D28) {
         entry = NULL;

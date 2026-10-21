@@ -81,21 +81,21 @@ extern const f32 lbl_8047D5A4;
 extern const f32 lbl_8047D5A8;
 
 GSDVDWork* _info2work(void* fileInfo);
-void fn_80168164(u8* flag);
-GSDVDWork* fn_8016819C(void);
-void fn_8016821C(void);
-void* fn_8016824C(u32 size);
+void _gsdvdFileFree(u8* flag);
+GSDVDWork* _gsdvdFileAlloc(void);
+void _gsdvdFilePoolInit(void);
+void* _gsdvdMemAlloc(u32 size);
 
 u32 GSdvdInit(u32 workCount)
 {
     u8* destination;
 
     lbl_8047B0F8 = workCount;
-    lbl_8047B0F4 = fn_8016824C(workCount * sizeof(GSDVDWork));
+    lbl_8047B0F4 = _gsdvdMemAlloc(workCount * sizeof(GSDVDWork));
     if (lbl_8047B0F4 == NULL) {
         return 0;
     }
-    fn_8016821C();
+    _gsdvdFilePoolInit();
     DVDInit();
     if (GSgetVersionMinor() != 4) {
         switch (GSgetVersionMajor()) {
@@ -149,7 +149,7 @@ GSDVDWork* _info2work(void* fileInfo)
     return NULL;
 }
 
-void fn_80168164(u8* flag)
+void _gsdvdFileFree(u8* flag)
 {
     BOOL enabled;
 
@@ -158,7 +158,7 @@ void fn_80168164(u8* flag)
     OSRestoreInterrupts(enabled);
 }
 
-GSDVDWork* fn_8016819C(void)
+GSDVDWork* _gsdvdFileAlloc(void)
 {
     GSDVDWork* base;
     GSDVDWork* work;
@@ -180,7 +180,7 @@ GSDVDWork* fn_8016819C(void)
     return result;
 }
 
-void fn_8016821C(void)
+void _gsdvdFilePoolInit(void)
 {
     u32 i;
 
@@ -191,7 +191,7 @@ void fn_8016821C(void)
     }
 }
 
-void* fn_8016824C(u32 size)
+void* _gsdvdMemAlloc(u32 size)
 {
     u32 handle = GSmemAlloc(size, 0x20);
 
@@ -201,7 +201,7 @@ void* fn_8016824C(u32 size)
     return 0;
 }
 
-void fn_80168284(void)
+void GSfilterDraw(void)
 {
     u32 index;
     u8 capacity;

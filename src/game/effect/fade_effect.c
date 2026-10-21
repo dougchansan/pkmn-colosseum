@@ -69,9 +69,9 @@ f32 fadeEffectHookFunction_trainer_Init(s32 slot) {
  * Address: 0x801C4864 | Size: 0x28
  */
 f32 fadeEffectHookFunction_fadein_Init(s32 slot) {
-    extern f32 fn_801C54FC(void);
+    extern f32 fadeEffectFuncBlack(void);
 
-    fadeSetFunctionOnly((s32)fn_801C54FC);
+    fadeSetFunctionOnly((s32)fadeEffectFuncBlack);
 }
 
 /**
@@ -79,9 +79,9 @@ f32 fadeEffectHookFunction_fadein_Init(s32 slot) {
  * Address: 0x801C488C | Size: 0x28
  */
 void fadeEffectHookFunction_fadeout_in_Init(s32 slot, f32 x) {
-    extern void fn_801C5530(void);
+    extern void fadeEffectFuncBlackCapture(void);
 
-    fadeSetFunctionOnly((s32)fn_801C5530);
+    fadeSetFunctionOnly((s32)fadeEffectFuncBlackCapture);
 }
 
 /**
@@ -109,11 +109,11 @@ void fadeEffectHookFunction_boss_Init(s32 slot, f32 z) {
  * Address: 0x801C4904 | Size: 0x70
  */
 void fadeEffectHookFunction_yoko_or_tate_or_ball_Init(s32 slot, f32 x, f32 y, f32 z) {
-    extern s32 fn_801C6908(s32);
+    extern s32 fadeEffectRandomize(s32);
     extern void fadeEffectFuncUDLR2(void);
     extern void fadeEffectFuncUDLR8(void);
     extern void fadeEffectFuncSpin(void);
-    s32 result = fn_801C6908(3);
+    s32 result = fadeEffectRandomize(3);
 
     switch (result) {
     case 0:
@@ -144,10 +144,10 @@ f32 fadeEffectHookFunction_ball_Init(s32 slot) {
  * Address: 0x801C499C | Size: 0x58
  */
 void fadeEffectHookFunction_yoko_or_tate_Init(s32 slot, f32 rotation) {
-    extern s32 fn_801C6908(s32);
+    extern s32 fadeEffectRandomize(s32);
     extern void fadeEffectFuncUDLR2(void);
     extern void fadeEffectFuncUDLR8(void);
-    s32 result = fn_801C6908(2);
+    s32 result = fadeEffectRandomize(2);
     switch (result) {
     case 0:
         fadeSetFunctionOnly((s32)fadeEffectFuncUDLR2);

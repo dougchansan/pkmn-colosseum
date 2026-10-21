@@ -1,6 +1,6 @@
 /**
  * @file gba_conv_r59_80088964_middle.c
- * @brief gba_conv.c carve: fn_80088964 and fn_800889A4, 0x80088964 - 0x800889E4.
+ * @brief gba_conv.c carve: menuMemcardTaskA and menuMemcardTaskB, 0x80088964 - 0x800889E4.
  *
  * Standalone: gba_conv.c's declarations plus only these bodies, copied
  * from gba_conv.c.
@@ -28,11 +28,11 @@ extern void gbaCommStartTransferB();
 extern void gbaCommStartTransferC();
 extern void gbaCommStartTransferFile();
 extern void gbaCommIsBusy();
-extern void fn_80093610();
+extern void gbaCommGetResult();
 extern void gbaCommEnd();
 extern void SIProbe();
 extern void GSgetFrameStep();
-extern void fn_800D37CC();
+extern void GSgfxGetVsyncRate();
 extern void GSmemGetHandleByPtr();
 extern void GSmemFree();
 extern void fn_800E24B0();
@@ -102,26 +102,26 @@ extern u8 lbl_8026F4F8[];
 extern u8 lbl_803FB2F8[];
 
 /* ===== Forward declarations ===== */
-void fn_80083AF4(void);
-void fn_80083BF8(void);
-void fn_80083CBC(void);
-void fn_80083CFC(void);
-void fn_80083D30(void);
-void fn_80083ECC(void);
-void fn_80084034(void);
-void fn_80084038(void);
-void fn_800849B4(void);
+void cardeArenaWalk(void);
+void cardeArenaCountRecords(void);
+void cardeArenaClear(void);
+void cardeArenaGetPtr(void);
+void cardeEncodePartyMoveText(void);
+void cardeEncodeMoveText(void);
+void cardeGBAMenuButton(void);
+void menuGBACRun(void);
+void cardeTransferUI(void);
 void cardeGbaTransfer(void);
-void fn_80087AE8(void);
-void fn_80087C64(void);
+void cardeWaitMessage(void);
+void cardeGridPrompt(void);
 void fn_80088428(void);
 void dnaKeyCodeCheck(void);
 void menuSaveLoadReceiveGift(void);
-s32 fn_80088964(void);
-s32 fn_800889A4(void);
+s32 menuMemcardTaskA(void);
+s32 menuMemcardTaskB(void);
 void menuSaveLoadSaveGame(void);
 void menuSaveLoadCommitA(void);
-void fn_80088D84(void);
+void menuSaveLoadCommitB(void);
 void menuSaveLoadStorePosition(u8* p);
 s32 fn_80088F58(void);
 s32 fn_80088F74(void);
@@ -135,10 +135,10 @@ void fn_80089030(u8 x);
 
 
 /* 0x80088964 | size: 0x40 */
-s32 fn_80088964(void) {
-    extern s32 fn_801D0748(s32, s32, s32);
+s32 menuMemcardTaskA(void) {
+    extern s32 memcardWaitTask2(s32, s32, s32);
 
-    if (fn_801D0748(0xd, 2, 0) == 4) {
+    if (memcardWaitTask2(0xd, 2, 0) == 4) {
         return 0;
     } else {
         return -1;
@@ -146,10 +146,10 @@ s32 fn_80088964(void) {
 }
 
 /* 0x800889A4 | size: 0x40 */
-s32 fn_800889A4(void) {
-    extern s32 fn_801D0748(s32, s32, s32);
+s32 menuMemcardTaskB(void) {
+    extern s32 memcardWaitTask2(s32, s32, s32);
 
-    if (fn_801D0748(5, 2, 0) == 4) {
+    if (memcardWaitTask2(5, 2, 0) == 4) {
         return 0;
     } else {
         return -1;

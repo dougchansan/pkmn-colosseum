@@ -66,7 +66,7 @@ extern u32  savedataGetStatus();
 extern int  fadeCheck();
 extern int  fadeSet();
 extern int  wazaSequenceSysRelease();
-extern int  fn_801DADC0();
+extern int  wazaSequenceSysInitEx();
 extern void OSRegisterResetFunction();
 extern void OSInitAlarm();
 extern void OSInitThreadQueue();
@@ -214,17 +214,17 @@ void fightGSfloorPopData(BattleReplayHeader *header)
         *firstEntry->modelOut = model;
         state = wazaSequenceOwnerGetModel(model);
         GSmodelPopState(state, firstEntry->state);
-        fn_801DA224(model, firstEntry->attr);
+        wazaSequenceOwnerSetFlags(model, firstEntry->attr);
         firstEntry++;
     }
     secondEntry = (BattleReplaySecondEntry *)firstEntry;
     while (secondCount-- != 0) {
-        model = fn_801DE190(secondEntry->modelId, secondEntry->arg, secondEntry->variant);
+        model = wazaSequencePokemonCreate(secondEntry->modelId, secondEntry->arg, secondEntry->variant);
         *(u32 *)(secondEntry->target + 0x600) = model;
         *secondEntry->modelOut = model;
         state = wazaSequenceOwnerGetModel(model);
         GSmodelPopState(state, secondEntry->state);
-        fn_801DA224(model, secondEntry->attr);
+        wazaSequenceOwnerSetFlags(model, secondEntry->attr);
         state = GSmodelGetVisibility(state);
         wazaSequenceOwnerSetVisibility(model, state);
         secondEntry++;

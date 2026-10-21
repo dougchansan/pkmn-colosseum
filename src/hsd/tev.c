@@ -205,7 +205,7 @@ void HSD_SetupChannel(HSD_Chan* ch)
 }
 
 /* Turns the lighting of a channel off, keeping its other settings. */
-void fn_801B3AE8(GXChannelID chan)
+void HSD_ChanLightingOff(GXChannelID chan)
 {
     int idx = chan & 3;
     GXColorSrc amb_src;

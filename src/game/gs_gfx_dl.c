@@ -1,7 +1,7 @@
 /**
  * @file gs_gfx_dl.c
  * @brief GSgfx display lists, the whole TU: parse a GX display list back
- * into vertex callbacks, record (GSgfxDLBegin / GSgfxDLEnd, fn_800DB098,
+ * into vertex callbacks, record (GSgfxDLBegin / GSgfxDLEnd, gfxDLCaptureVertex,
  * fn_800DB758) or replay (GSgfxDLDraw) captured lists.
  * .text 0x800DA578 - 0x800DB890, .data 0x803152B8 - 0x80315384.
  *
@@ -40,7 +40,7 @@ extern void DCFlushRange(void* addr, u32 size);
 extern void GXCallDisplayList(void* list, u32 size);
 extern void gfxRecordCommand(u32, u32, ...);
 extern void gfxAddDrawStats(u32 verts, u32 prims);
-extern void fn_800D6A80(u16 vertCount, s32 type, u32* totalVerts, u32* totalPrims);
+extern void gfxCountPrims(u16 vertCount, s32 type, u32* totalVerts, u32* totalPrims);
 extern void gfxLoadVtxDesc(GSVtxDesc* desc);
 extern void gfxSetupChannelsTev(GSVtxDesc* desc);
 extern void fn_800E24B0(u16 handle);
@@ -578,7 +578,7 @@ u32 GSgfxDLBegin(GSVtxDesc* desc, u32 size) {
     return 1;
 }
 
-void fn_800DB098(void) {
+void gfxDLCaptureVertex(void) {
     GSVtxEmitFn emit;
     s32 i;
     s32 n;
@@ -745,7 +745,7 @@ void fn_800DB758(u16 vertCount)
     }
 
     obj = *(u32*)(state + 0x480);
-    fn_800D6A80(vertCount, *(u32*)(state + 0x488),
+    gfxCountPrims(vertCount, *(u32*)(state + 0x488),
                 (u32*)(obj + 0x10), (u32*)(obj + 0x14));
 
     state = (u32)lbl_8047AA80;

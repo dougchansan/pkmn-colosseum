@@ -19,7 +19,7 @@
  *   GSvtrRegisterGSgapp - Save system post-init
  *
  * Per-frame updates via:
- *   fn_801E0FB4 - Save/card per-frame update
+ *   vtrUpdate - Save/card per-frame update
  *   GSvtrLoadTexture - Card system tick
  *   vtrIsActive - Card system check pending
  *
@@ -217,7 +217,7 @@ void save_DataInit(void);
 void save_PostInit(void);
 
 /**
- * fn_801E0FB4: Per-frame save/card update.
+ * vtrUpdate: Per-frame save/card update.
  * Called from TaskVBlank with mode, flags.
  * Processes pending card operations.
  *
@@ -291,7 +291,7 @@ void cardesavedata_ValidateLevel(void* pCardE);
 s32 cardesavedata_CheckSeries(void* pCardE, CardESeries* pSeries, s8 seriesIdx);
 
 /**
- * cardeSaveClearSummary - fn_800836AC: Additional card e-Reader save functions.
+ * cardeSaveClearSummary - cardeGridGetRecord: Additional card e-Reader save functions.
  * These handle reading/writing specific card data fields,
  * clearing entries, and serialization of card grid state.
  * Total: 9 functions (Func3 through Func11).

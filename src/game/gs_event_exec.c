@@ -13,13 +13,13 @@
  * animation, trigger battle, warp player, etc.).
  *
  * Key functions:
- *   fn_80012858  GSevent_InitExecutor         -- 0x150 bytes, initialize event state
- *   fn_800129A8  GSevent_RunStep              -- 0x1EC bytes, execute one event step
- *   fn_80012B94  GSevent_ProcessCommand       -- 0x18C bytes, decode & dispatch command
- *   fn_80012D20  GSevent_EvalCondition        -- 0xF8 bytes, evaluate flag conditions
- *   fn_80012E18  GSevent_SetFlag              -- 0x198 bytes, set game flag from event
+ *   menuFightCmdDrawSprite  GSevent_InitExecutor         -- 0x150 bytes, initialize event state
+ *   menuFightCmdCtrl  GSevent_RunStep              -- 0x1EC bytes, execute one event step
+ *   menuSubSelectDrawText  GSevent_ProcessCommand       -- 0x18C bytes, decode & dispatch command
+ *   menuSubSelectCtrl  GSevent_EvalCondition        -- 0xF8 bytes, evaluate flag conditions
+ *   menuSubSelectCursor  GSevent_SetFlag              -- 0x198 bytes, set game flag from event
  *   fn_80012FB0  GSevent_DisplayText          -- 0x2EC bytes, show event text box
- *   fn_8001329C  GSevent_MoveNPC              -- 0x3CC bytes, script NPC movement
+ *   menuLvUpPanelDrawText  GSevent_MoveNPC              -- 0x3CC bytes, script NPC movement
  *   fn_80013668  GSevent_PlayAnimation        -- 0xDC bytes, trigger NPC animation
  *   fn_80013744  GSevent_Nop                  -- 8 bytes, no-op command
  *   itemStorageWithdraw  GSevent_WaitFrames           -- 0x168 bytes, wait N frames
@@ -32,18 +32,18 @@
  *   itemUseGetTargetPokemon  GSevent_CheckPartyState      -- 0x80 bytes, check party condition
  *   itemUseClosePartyMenu  GSevent_GetPartySize         -- 0x24 bytes, return party count
  *   itemUseOpenPartyMenu  GSevent_GiveItem             -- 0x78 bytes, give item to player
- *   fn_80014234  GSevent_GivePokemon          -- 0xE8 bytes, give Pokemon to player
- *   fn_8001431C  GSevent_CheckBag             -- 0x7C bytes, check bag for item
- *   fn_80014398  GSevent_BranchOnFlag         -- 0x1B8 bytes, conditional branch
- *   fn_80014550  GSevent_UnlockLocation       -- 0x24 bytes, unlock map location
- *   fn_80014574  GSevent_CutsceneSequence     -- 0x4D4 bytes, full cutscene playback
+ *   menuPocketDrawItem  GSevent_GivePokemon          -- 0xE8 bytes, give Pokemon to player
+ *   menuPocketDrawText  GSevent_CheckBag             -- 0x7C bytes, check bag for item
+ *   menuPocketDrawNumber  GSevent_BranchOnFlag         -- 0x1B8 bytes, conditional branch
+ *   menuPocketDrawItem2  GSevent_UnlockLocation       -- 0x24 bytes, unlock map location
+ *   menuPocketCursor  GSevent_CutsceneSequence     -- 0x4D4 bytes, full cutscene playback
  *   menuPocket2NumCtrl  GSevent_SetWeather           -- 0x9C bytes, change weather effect
- *   fn_80014AE4  GSevent_SetTimeOfDay         -- 0xBC bytes, set time/lighting
- *   fn_80014BA0  GSevent_TriggerBattle        -- 0x98 bytes, start battle from event
- *   fn_80014C38  GSevent_ShadowEncounter      -- 0xE4 bytes, Shadow Pokemon event
- *   fn_80014D1C  GSevent_PurificationEvent    -- 0x134 bytes, purification ceremony
- *   fn_80014E50  GSevent_ColosseumMatch       -- 0xF8 bytes, colosseum match setup
- *   fn_80014F48  GSevent_MtBattleFloor        -- 0xD4 bytes, Mt. Battle progression
+ *   bagSubMenuDrawItem  GSevent_SetTimeOfDay         -- 0xBC bytes, set time/lighting
+ *   bagSubMenuDrawItem2  GSevent_TriggerBattle        -- 0x98 bytes, start battle from event
+ *   bagSubMenuDrawText  GSevent_ShadowEncounter      -- 0xE4 bytes, Shadow Pokemon event
+ *   bagSubMenuDrawItem3  GSevent_PurificationEvent    -- 0x134 bytes, purification ceremony
+ *   bagSubMenuCursor  GSevent_ColosseumMatch       -- 0xF8 bytes, colosseum match setup
+ *   bagSubMenuCtrl  GSevent_MtBattleFloor        -- 0xD4 bytes, Mt. Battle progression
  *
  * Event command format (reconstructed):
  *   Each command is a variable-length structure:
@@ -52,9 +52,9 @@
  *     bytes 2-3: Parameter count
  *     bytes 4+:  Command-specific parameters
  *
- * The event executor (fn_800129A8) is a loop that:
+ * The event executor (menuFightCmdCtrl) is a loop that:
  *   1. Reads the next command from the event bytecode stream
- *   2. Dispatches to the appropriate handler via fn_80012B94
+ *   2. Dispatches to the appropriate handler via menuSubSelectDrawText
  *   3. If the handler returns "wait", yields until next frame
  *   4. If the handler returns "done", advances to next command
  *   5. If the handler returns "branch", jumps to the target offset
@@ -91,7 +91,7 @@ extern void soundStopRaw(s32 soundId, s32 p2, s32 p3);   /* Play BGM */
 
 /* Scene/camera */
 extern void floorLink(s32 cameraId, s32 mode);
-extern u8   fn_800FF548(void);                     /* Scene transition check */
+extern u8   floorGetFadeOutFlag(void);                     /* Scene transition check */
 extern void std092_getCurrentRoomID(s32 floorId);              /* Floor load */
 
 /* Frame control */
@@ -111,7 +111,7 @@ extern void GSthreadCreate(s32 priority, void* stack, s32 stackSize,
  *   +0x08: Parameter block pointer
  *   +0x0C-0x48: Type-specific data
  *
- * This table is referenced heavily by fn_80015050 and fn_800150E4
+ * This table is referenced heavily by bagMenuDrawCursor and fn_800150E4
  * which index into it using: entry = table + (slotIndex * 0x4C)
  */
 
@@ -136,7 +136,7 @@ u32 fn_80014110(void) {
 
 /* ===== Phase 2 recovery stubs ===== */
 
-/* fn_800129A8 - 0x800129A8 | size: 0x1ec */
+/* menuFightCmdCtrl - 0x800129A8 | size: 0x1ec */
 extern u8*  windowGetFreeWork(void);
 extern void* windowAllocMemory(void*, s32);
 extern void* windowGetAllocPtr(void*);
@@ -145,7 +145,7 @@ extern void fn_80103F74(s32, s32, s32);
 extern void soundStopSE(s32);
 extern void* memcpy(void* dst, const void* src, u32 n);
 #if !defined(GS_EVENT_EXEC_ONLY_80012D20) && !defined(GS_EVENT_EXEC_ONLY_8001374C) && !defined(GS_EVENT_EXEC_ONLY_800141BC)
-s32 fn_800129A8(u8* ctx) {
+s32 menuFightCmdCtrl(u8* ctx) {
     u8* p;
     s32 id;
     s32 kind;
@@ -195,15 +195,15 @@ s32 fn_800129A8(u8* ctx) {
 }
 #endif /* !GS_EVENT_EXEC_ONLY_80012D20 */
 
-/* fn_80012B94 - 0x80012B94 | size: 0x18c */
+/* menuSubSelectDrawText - 0x80012B94 | size: 0x18c */
 extern void* windowGetParam(void*, s32);
 extern s32   GSmsgGetRect(s32);
 extern void  GSmsgPrintColor(s32, s32, s32, s32);
-extern void fn_8001E644(s32, s32, s32, s32, u8);
+extern void windowDrawFrame(s32, s32, s32, s32, u8);
 extern void windowDrawPanel(s32, s32, s32, s32);
 extern void windowDrawSprite(s32, s16, void*, s32, s32);
 #if !defined(GS_EVENT_EXEC_ONLY_80012D20) && !defined(GS_EVENT_EXEC_ONLY_8001374C) && !defined(GS_EVENT_EXEC_ONLY_800141BC)
-s32 fn_80012B94(u8* ctx) {
+s32 menuSubSelectDrawText(u8* ctx) {
     u8   cmd;
     u8*  arr;
     s32  count;
@@ -240,7 +240,7 @@ s32 fn_80012B94(u8* ctx) {
     if ((s32)cmd == 0x7f) {
         windowDrawPanel(0, 0, max_hi + 0x20, sum_lo);
     } else if ((s32)cmd < 2 && (s32)cmd >= 0) {
-        fn_8001E644(0, 0, max_hi + 0x20, sum_lo, ctx[0x8B]);
+        windowDrawFrame(0, 0, max_hi + 0x20, sum_lo, ctx[0x8B]);
     }
 
     iter = arr;
@@ -267,14 +267,14 @@ s32 fn_80012B94(u8* ctx) {
 #endif /* !GS_EVENT_EXEC_ONLY_80012D20 */
 
 #if !defined(GS_EVENT_EXEC_ONLY_8001374C) && !defined(GS_EVENT_EXEC_ONLY_800141BC)
-/* fn_80012D20 - 0x80012D20 | size: 0xf8 */
+/* menuSubSelectCtrl - 0x80012D20 | size: 0xf8 */
 extern void winSeqSetMenu(s32, s32);
-/* RULE-EXCEPTION(user-approved): local peephole and optimization-level pragmas; fn_80012D20 needs both (94.9% with peephole only, 92.9% with level 1 only) while the other four functions in its unit do not - see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): local peephole and optimization-level pragmas; menuSubSelectCtrl needs both (94.9% with peephole only, 92.9% with level 1 only) while the other four functions in its unit do not - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
 #pragma push
 #pragma optimization_level 1
-s32 fn_80012D20(u8* arg) {
+s32 menuSubSelectCtrl(u8* arg) {
     s32   size;
     void* src;
     u8*   ctx = arg;
@@ -307,7 +307,7 @@ s32 fn_80012D20(u8* arg) {
 #pragma pop
 #pragma pop
 
-/* fn_80012E18 - 0x80012E18 | size: 0x198 */
+/* menuSubSelectCursor - 0x80012E18 | size: 0x198 */
 extern u8* windowGetKeyInfo(void);
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma; redundant 16-bit key mask chosen for register allocation — see docs/RULE_EXCEPTIONS.md */
 #pragma push
@@ -320,7 +320,7 @@ static inline void eventStepCursor(s8* p, s32 keys) {
         (*p)++;
     }
 }
-s32 fn_80012E18(u8* ctx) {
+s32 menuSubSelectCursor(u8* ctx) {
     u16 bits;
     s8 v1;
     s8 v2;
@@ -453,12 +453,12 @@ s32 menuPanelCursorDecimalInput(u8* ctx) {
 #pragma pop
 #endif
 
-/* fn_8001329C - 0x8001329C | size: 0x3cc */
+/* menuLvUpPanelDrawText - 0x8001329C | size: 0x3cc */
 extern void msgWinDrawBackground(s32, s32, s32, s32, s32, s32);
 extern void msgctrlSetValue(s32, s32);
 extern void jumptable_802E4D90();
 #if 0
-asm void fn_8001329C(void) {
+asm void menuLvUpPanelDrawText(void) {
 #include "src/game/gs_event_exec_fn_8001329C.inc"
 }
 #else
@@ -482,7 +482,7 @@ static inline void eventDrawCount(u8* ctx, u8* tgt, u8* data, s32 value) {
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-s32 fn_8001329C(u8* ctx, u8* tgt) {
+s32 menuLvUpPanelDrawText(u8* ctx, u8* tgt) {
     u8* data;
 
     data = windowGetParam(ctx, 0);
@@ -490,7 +490,7 @@ s32 fn_8001329C(u8* ctx, u8* tgt) {
     switch (*(s16*)(tgt + 6)) {
     case 0x92:
         if (*(s32*)(ctx + 4) == 0x107) {
-            fn_8001E644(0, 0, *(s16*)(tgt + 0x54), *(s16*)(tgt + 0x56), ctx[0x8B]);
+            windowDrawFrame(0, 0, *(s16*)(tgt + 0x54), *(s16*)(tgt + 0x56), ctx[0x8B]);
         } else {
             msgWinDrawBackground(0, 0, *(s16*)(tgt + 0x54), *(s16*)(tgt + 0x56), ctx[0x8B], 1);
         }
@@ -1082,7 +1082,7 @@ void itemUseClosePartyMenu(u32 val) {
     menuPokemonClose();
 }
 #else
-/* itemUseOpenPartyMenu..fn_80014550 also build alone for the linked
+/* itemUseOpenPartyMenu..menuPocketDrawItem2 also build alone for the linked
  * gs_event_exec_r47_prefix unit, whose -opt nopeephole stands in for the
  * file's per-function `peephole off` push/pop pairs. */
 extern void msgctrlSetValue(s32, s32);
@@ -1116,7 +1116,7 @@ s32 itemUseOpenPartyMenu(s32 arg0, s32 arg1) {
 #pragma pop
 #endif
 
-/* fn_80014234 - 0x80014234 | size: 0xe8 */
+/* menuPocketDrawItem - 0x80014234 | size: 0xe8 */
 /* The four-entry table at 0x80266B58 (src/game/data/rodata_802666B0.c). */
 typedef struct {
     s32 key;
@@ -1137,7 +1137,7 @@ typedef struct {
 #pragma push
 #pragma peephole off
 #endif
-s32 fn_80014234(u8* ctx, u8* tgt) {
+s32 menuPocketDrawItem(u8* ctx, u8* tgt) {
     u8* p;
     s32 idx;
     s32 slot;
@@ -1164,14 +1164,14 @@ s32 fn_80014234(u8* ctx, u8* tgt) {
 #if !defined(GS_EVENT_EXEC_ONLY_800141BC)
 #pragma pop
 #endif
-/* fn_8001431C - 0x8001431C | size: 0x7c */
+/* menuPocketDrawText - 0x8001431C | size: 0x7c */
 extern u32 lbl_8047A2FC;
 #if 0
-asm void fn_8001431C(void) {
+asm void menuPocketDrawText(void) {
 #include "src/game/gs_event_exec_fn_8001431C.inc"
 }
 #else
-s32 fn_8001431C(void* arg0, u8* arg1) {
+s32 menuPocketDrawText(void* arg0, u8* arg1) {
     void* p = *(void**)((u8*)arg0 + 0x60);
     s32 count = *(s32*)((u8*)p + 0x10);
     s32 rand;
@@ -1183,14 +1183,14 @@ s32 fn_8001431C(void* arg0, u8* arg1) {
 }
 #endif
 
-/* fn_80014398 - 0x80014398 | size: 0x1b8 */
+/* menuPocketDrawNumber - 0x80014398 | size: 0x1b8 */
 extern void GSmsgPrintRight(s32, s32, s16, s16, s32, s32);
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma (the GS_EVENT_EXEC_ONLY_800141BC carve skips it and uses the unit's -opt nopeephole) - see docs/RULE_EXCEPTIONS.md */
 #if !defined(GS_EVENT_EXEC_ONLY_800141BC)
 #pragma push
 #pragma peephole off
 #endif
-s32 fn_80014398(u8* ctx, u8* arg1) {
+s32 menuPocketDrawNumber(u8* ctx, u8* arg1) {
     u8* data;
     s32 idx;
     u8* entry;
@@ -1225,8 +1225,8 @@ s32 fn_80014398(u8* ctx, u8* arg1) {
 #if !defined(GS_EVENT_EXEC_ONLY_800141BC)
 #pragma pop
 #endif
-/* fn_80014550 - 0x80014550 | size: 0x24 */
-s32 fn_80014550(u8* src_struct, u8* dst) {
+/* menuPocketDrawItem2 - 0x80014550 | size: 0x24 */
+s32 menuPocketDrawItem2(u8* src_struct, u8* dst) {
     u8* src = *(u8**)(src_struct + 0x60);
     dst[0x64] = src[0];
     dst[0x65] = src[1];
@@ -1239,7 +1239,7 @@ s32 fn_80014550(u8* src_struct, u8* dst) {
 
 #endif /* !GS_EVENT_EXEC_ONLY_80014A48 && !GS_EVENT_EXEC_ONLY_80014574 */
 
-/* fn_80014574 also builds alone for the gs_event_exec_r47_80014574_o3 unit. */
+/* menuPocketCursor also builds alone for the gs_event_exec_r47_80014574_o3 unit. */
 #ifdef GS_EVENT_EXEC_ONLY_80014574
 extern u8* windowGetKeyInfo(void);
 
@@ -1253,13 +1253,13 @@ extern const EvTbl lbl_80266B58[];
 #endif
 
 #if !defined(GS_EVENT_EXEC_ONLY_80014A48) && !defined(GS_EVENT_EXEC_ONLY_80012D20) && !defined(GS_EVENT_EXEC_ONLY_8001374C) && !defined(GS_EVENT_EXEC_ONLY_800141BC)
-/* fn_80014574 - 0x80014574 | size: 0x4d4 */
+/* menuPocketCursor - 0x80014574 | size: 0x4d4 */
 extern void soundStart(s32, s32, s32, s32);
 extern u32 lbl_8047A2FC;
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-s32 fn_80014574(u8* ctx) {
+s32 menuPocketCursor(u8* ctx) {
     u8* p;
     u8* keys;
     EvTbl* tbl;
@@ -1365,7 +1365,7 @@ s32 fn_80014574(u8* ctx) {
 
 #if !defined(GS_EVENT_EXEC_ONLY_80014574) && !defined(GS_EVENT_EXEC_ONLY_80012D20) && !defined(GS_EVENT_EXEC_ONLY_8001374C) && !defined(GS_EVENT_EXEC_ONLY_800141BC)
 
-/* menuPocket2NumCtrl..fn_80014F48 also build alone for the linked
+/* menuPocket2NumCtrl..bagSubMenuCtrl also build alone for the linked
  * gs_event_exec_r47_suffix unit. */
 #ifdef GS_EVENT_EXEC_ONLY_80014A48
 extern void GSmsgPrintColor(s32, s32, s32, s32);
@@ -1396,13 +1396,13 @@ s32 menuPocket2NumCtrl(u8* ctx) {
 }
 #pragma pop
 
-/* fn_80014AE4 - 0x80014AE4 | size: 0xbc */
+/* bagSubMenuDrawItem - 0x80014AE4 | size: 0xbc */
 extern s32 lbl_80266BC4[];
 extern f32 lbl_8047B744;
 extern f32 lbl_8047A2C0;
 extern f32 lbl_8047B740;
 #if 0
-asm void fn_80014AE4(void) {
+asm void bagSubMenuDrawItem(void) {
 #include "src/game/gs_event_exec_fn_80014AE4.inc"
 }
 #else
@@ -1410,7 +1410,7 @@ asm void fn_80014AE4(void) {
 #pragma push
 #pragma scheduling on
 #pragma peephole off
-s32 fn_80014AE4(u8* ctx, u8* tgt) {
+s32 bagSubMenuDrawItem(u8* ctx, u8* tgt) {
     s32 tbl[5];
     s32 idx;
     void* p = *(void**)(ctx + 0x60);
@@ -1435,17 +1435,17 @@ s32 fn_80014AE4(u8* ctx, u8* tgt) {
 #pragma pop
 #endif
 
-/* fn_80014BA0 - 0x80014BA0 | size: 0x98 */
+/* bagSubMenuDrawItem2 - 0x80014BA0 | size: 0x98 */
 extern s32 lbl_80266BB0[];
 #if 0
-asm void fn_80014BA0(void) {
+asm void bagSubMenuDrawItem2(void) {
 #include "src/game/gs_event_exec_fn_80014BA0.inc"
 }
 #else
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-s32 fn_80014BA0(u8* ctx, u8* tgt) {
+s32 bagSubMenuDrawItem2(u8* ctx, u8* tgt) {
     s32 tbl[5];
     s32 idx;
     u8 value;
@@ -1472,12 +1472,12 @@ s32 fn_80014BA0(u8* ctx, u8* tgt) {
 #pragma pop
 #endif
 
-/* fn_80014C38 - 0x80014C38 | size: 0xe4 */
+/* bagSubMenuDrawText - 0x80014C38 | size: 0xe4 */
 extern s32 lbl_80266B9C[];
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-s32 fn_80014C38(u8* ctx, u8* tgt) {
+s32 bagSubMenuDrawText(u8* ctx, u8* tgt) {
     u8* p;
     s32 idx;
     s32 base;
@@ -1503,13 +1503,13 @@ s32 fn_80014C38(u8* ctx, u8* tgt) {
     return 0;
 }
 #pragma pop
-/* fn_80014D1C - 0x80014D1C | size: 0x134 */
+/* bagSubMenuDrawItem3 - 0x80014D1C | size: 0x134 */
 typedef struct { s32 key; s16 a; s16 b; s32 flag; } PurEntry;
 extern PurEntry lbl_802E4DB0[];
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-s32 fn_80014D1C(u8* ctx, u8* tgt) {
+s32 bagSubMenuDrawItem3(u8* ctx, u8* tgt) {
     u8* p;
     s32 idx;
     s32 count;
@@ -1541,11 +1541,11 @@ s32 fn_80014D1C(u8* ctx, u8* tgt) {
 }
 #pragma pop
 
-/* fn_80014E50 - 0x80014E50 | size: 0xf8 */
+/* bagSubMenuCursor - 0x80014E50 | size: 0xf8 */
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-s32 fn_80014E50(u8* ctx) {
+s32 bagSubMenuCursor(u8* ctx) {
     u8* state;
     u8* p;
     s32 slot;
@@ -1591,13 +1591,13 @@ s32 fn_80014E50(u8* ctx) {
 }
 #pragma pop
 
-/* fn_80014F48 - 0x80014F48 | size: 0xd4 */
+/* bagSubMenuCtrl - 0x80014F48 | size: 0xd4 */
 extern f32 lbl_8047B748;
 extern f32 lbl_8047B74C;
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-s32 fn_80014F48(u8* ctx) {
+s32 bagSubMenuCtrl(u8* ctx) {
     f32 tmp;
     switch ((s32)(s8)ctx[1]) {
     case 0:

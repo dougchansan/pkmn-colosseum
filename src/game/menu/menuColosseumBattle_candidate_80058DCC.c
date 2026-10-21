@@ -32,7 +32,7 @@ extern s32 windowGetActiveID(void);
 extern void fn_80057830(s32, s32, s32);
 extern s32 fn_80058AF0(MenuWindow*);
 
-s32 fn_80058DCC(MenuWindow* window)
+s32 menu94Ctrl(MenuWindow* window)
 {
     MenuCursorItem* item;
     s32 slot;

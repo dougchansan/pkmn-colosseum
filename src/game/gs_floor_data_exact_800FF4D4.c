@@ -34,7 +34,7 @@ u32 fn_800FF540(void)
     return lbl_8047ACC4;
 }
 
-u8 fn_800FF548(void)
+u8 floorGetFadeOutFlag(void)
 {
     return *(u8*)((u8*)lbl_8047ACC8 + 0xB);
 }

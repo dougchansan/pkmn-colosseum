@@ -2,7 +2,7 @@
 #include "game/win_sprite.h"
 
 extern void _threadSwitch(void);
-extern u32 fn_8010B560(void);
+extern u32 menuFaceIsAnyLoading(void);
 extern void std113_mapObjectUnk_8018db68(u32);
 
 extern u32 lbl_8047A418;
@@ -17,7 +17,7 @@ typedef struct {
     u16 ids[8];
 } NpcPokemonEvent;
 
-void fn_800318D8(s32 unused, u8* tgt)
+void gbaTradeMenuDrawSprite4(s32 unused, u8* tgt)
 {
     s32 i;
     s32 kind;
@@ -49,7 +49,7 @@ void fn_800318D8(s32 unused, u8* tgt)
     winSpriteSetDisp(tgt, 0);
 }
 
-void fn_80031A1C(void* r3, void* r4)
+void gbaTradeMenuDrawSprite5(void* r3, void* r4)
 {
     s32 val = (s32) lbl_8047A42C;
 
@@ -64,7 +64,7 @@ void fn_80031A1C(void* r3, void* r4)
     }
 }
 
-void fn_80031A70(void* r3, void* r4)
+void gbaTradeMenuDrawSprite6(void* r3, void* r4)
 {
     s32 val = (s32) lbl_8047A42C;
 
@@ -82,7 +82,7 @@ void fn_80031A70(void* r3, void* r4)
     }
 }
 
-void fn_80031AC0(void* r3, void* r4)
+void gbaTradeMenuDrawSprite7(void* r3, void* r4)
 {
     s32 val = (s32) lbl_8047A42C;
 
@@ -102,7 +102,7 @@ void fn_80031AC0(void* r3, void* r4)
 
 void fn_80031B10(void)
 {
-    while ((u8) fn_8010B560() != 0) {
+    while ((u8) menuFaceIsAnyLoading() != 0) {
         _threadSwitch();
     }
     std113_mapObjectUnk_8018db68(lbl_8047A418);

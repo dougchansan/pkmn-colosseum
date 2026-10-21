@@ -22,7 +22,7 @@ extern f32 lbl_8047BCF4;
 #pragma push
 #pragma peephole off
 /* RULE-EXCEPTION(user-approved): allocation-shaping temporaries preserve the retail conversion spill order. */
-void fn_80043CD8(PdaSprite* alphaSprite, PdaSprite* sprite)
+void pdaMemoDrawItem(PdaSprite* alphaSprite, PdaSprite* sprite)
 {
     f32 numerator;
     f32 negated;

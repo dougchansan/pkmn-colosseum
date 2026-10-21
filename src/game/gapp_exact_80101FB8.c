@@ -9,7 +9,7 @@ extern GappBreakPointCallback lbl_8047ACF4;
 extern GappBreakPointCallback
 GXSetDrawSyncCallback(GappBreakPointCallback callback);
 
-void fn_80101FB8(u8 param)
+void gappLoadMeterInit(u8 param)
 {
     if (param < 1) {
         param = 1;

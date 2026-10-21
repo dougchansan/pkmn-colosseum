@@ -23,7 +23,7 @@
  *     void (see gs_texture.h).
  *   - GStextureConvertFromHW is linked as gs_texture_exact_800EF1E8.c.
  *     Built on its own, this file is the 0x800EF098-0x800EF1E8 unit and
- *     emits only fn_800EF098; the texture-pool state and the functions
+ *     emits only GStextureSwizzleCI4; the texture-pool state and the functions
  *     from 0x800EF548 on are compiled by gs_texture_candidate_800EF578.c.
  *   - GStextureConvertFromHW, GStextureGetGXformat, GStextureGetTlutFormat,
  *     GStextureGetFormat, GStextureGetMiplevels, GStextureGetYsize,
@@ -31,7 +31,7 @@
  *     GStextureFree, GStextureLoad and GStextureInit are confirmed real
  *     names (matched against the XD reference binary's GStexture.cpp
  *     function order/sizes), replacing the previous fn_ scaffold names.
- *     fn_800EF098 (exact) has no confirmed name yet; it is the inverse of
+ *     GStextureSwizzleCI4 (exact) has no confirmed name yet; it is the inverse of
  *     GStextureConvertToHW (gs_texture_range_800EEF48.c).
  *
  * Debug strings:
@@ -78,11 +78,11 @@ static GStextureHandle* gsTexPool;       /* @sda21 lbl_8047ABF4 */
 
 #if !defined(GS_TEXTURE_800EF548_SUFFIX_ACTIVE)
 /* =======================================================================
- *  fn_800EF098 | 0x150
+ *  GStextureSwizzleCI4 | 0x150
  *  Rearranges CI4 texture pixel data from linear to 4x4 block-tiled
  *  order. Only operates on format 0x44 (GS_CI4).
  * ======================================================================= */
-void fn_800EF098(GStextureHandle* tex) {
+void GStextureSwizzleCI4(GStextureHandle* tex) {
     /* RULE-EXCEPTION(user-approved): declaration order chosen for register allocation - see docs/RULE_EXCEPTIONS.md */
     u32 byteCount;
     u16 tile;
@@ -207,11 +207,11 @@ void GStextureFree(GStextureHandle* tex) {
 }
 
 /* =======================================================================
- *  fn_800EFD14 | 0x28
- *  TODO: match -- effect_util.c calls fn_800EFD14() with zero args,
+ *  GStextureClaimHandle | 0x28
+ *  TODO: match -- effect_util.c calls GStextureClaimHandle() with zero args,
  *  incompatible with the old 2-argument Bind signature.
  * ======================================================================= */
-void fn_800EFD14(GStextureHandle* tex, u16 handle) {
+void GStextureClaimHandle(GStextureHandle* tex, u16 handle) {
     if (tex == NULL || tex->inUse != 0) {
         return;
     }

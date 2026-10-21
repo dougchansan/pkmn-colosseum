@@ -17,7 +17,7 @@ u8 heroGetPokemonBallId(u32 index)
     return pokemonBiosGetCatchBallId(pokemon);
 }
 
-u16 fn_801D0AFC(s32 mode)
+u16 heroPartyHealAll(s32 mode)
 {
     extern u16 lbl_8047B3D8;
     extern u32 savedataGetStatus(u8* data, u16 index);

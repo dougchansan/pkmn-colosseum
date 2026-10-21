@@ -58,7 +58,7 @@ extern u32* lbl_80478E88;
 extern MsgPaletteColor* lbl_80478E8C;
 
 extern void* fightFloorGetFightOutPokemonPtrToFightTrainerPtr(void* obj, u32 search);
-extern u8 fn_801F18DC(u32 param);
+extern u8 fightFloorIsKind10(u32 param);
 extern void* fightTrainerGetNamePtr(void* trainer);
 extern void* fightOutPokemonGetNicknamePtr(u32 pokemon);
 extern void* GSmsgGetGSchar(u32 key);
@@ -81,7 +81,7 @@ static inline void* msgctrlOutPokemonName(u32 pokemon)
 {
     void* trainer = fightFloorGetFightOutPokemonPtrToFightTrainerPtr(0, pokemon);
 
-    if (fn_801F18DC(0) == 1 && trainer != 0) {
+    if (fightFloorIsKind10(0) == 1 && trainer != 0) {
         msgctrlSetValue(0x4D, (u32)fightTrainerGetNamePtr(trainer));
         msgctrlSetValue(0x57, (u32)fightOutPokemonGetNicknamePtr(pokemon));
         return GSmsgGetGSchar(0x7721);

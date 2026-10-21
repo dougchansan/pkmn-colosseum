@@ -2,7 +2,7 @@
  * @file main.c
  * @brief Main entry point and top-level game initialization for Pokemon Colosseum.
  *
- * Contains main(), the game initialization sequence (fn_800057B0), the main
+ * Contains main(), the game initialization sequence (mainInit), the main
  * game loop thread (mainGameThread), the early reset/retrace callbacks, and the
  * per-retrace game logic (mainRetraceLogic).
  *
@@ -38,24 +38,24 @@ extern void  OSEnableScheduler(void);
 
 /* --- Game engine subsystem init functions --- */
 
-/* fn_80006250: fn_80006250 - sets up OS error handlers and
+/* osInstallErrorHandlers: osInstallErrorHandlers - sets up OS error handlers and
  * memory protection regions. Called very early from main(). */
-void fn_80006250(void);
+void osInstallErrorHandlers(void);
 
-/* fn_80006378: fn_80006378 - custom OS error handler callback.
+/* osErrorReportCallback: osErrorReportCallback - custom OS error handler callback.
  * Formats a crash report into a text buffer and spawns a display thread. */
-void fn_80006378(u32 error, void* context, ...);
+void osErrorReportCallback(u32 error, void* context, ...);
 
-/* fn_800064A0: fn_800064A0 - OS exception 8 handler,
+/* osExceptionResume: osExceptionResume - OS exception 8 handler,
  * calls OSLoadContext to resume from the saved context. */
-void fn_800064A0(u32 error, void* context);
+void osExceptionResume(u32 error, void* context);
 
-/* fn_800064C4: fn_800064C4 - thread entry that displays the error
+/* errorReportThread: errorReportThread - thread entry that displays the error
  * report on screen after a crash. */
-s32 fn_800064C4(void);
+s32 errorReportThread(void);
 
-/* fn_800060F0 - error printf (file, line, fmt, ...) - OSPanic-style */
-void fn_800060F0(const char* file, s32 line, const char* fmt, ...);
+/* errorPanic - error printf (file, line, fmt, ...) - OSPanic-style */
+void errorPanic(const char* file, s32 line, const char* fmt, ...);
 
 /* --- Heap / memory init (around 0x800E3560) --- */
 extern void  GSmemInit(u32 heapId, void* start, void* end); /* GSmem heap init */
@@ -81,11 +81,11 @@ extern void fn_800EEDF8(u32 unused);                   /* VI init */
 /* --- Game-specific init called from main --- */
 extern void fn_80167FA4(int argc, char** argv, u32 flag); /* GameArgsParse */
 
-/* fn_800057B0: fn_800057B0 - the massive init function called from main.
+/* mainInit: mainInit - the massive init function called from main.
  * Sets up all subsystems, then enters the main loop. */
-void fn_800057B0(void);
+void mainInit(void);
 
-/* --- Subsystem init functions called from fn_800057B0 --- */
+/* --- Subsystem init functions called from mainInit --- */
 extern void GSthread(u32 numFrames);              /* VIFrameInit or render timing */
 extern void GSgfxInit__FP15_GSgfxInitParms(u32 memSize, u32 a, u32 b,   /* GSgfx init */
                          u32 c, u32 d, u32 e);
@@ -96,7 +96,7 @@ extern void fn_80191484(u32 numSounds);                 /* Sound system init */
 extern void GSmodelInit(u32 maxObjects);                /* GSmem object pool */
 extern void GSpartInit(u32 param);                     /* VI callback setup */
 extern void GSmaterialInit(u32 bufSize);                   /* Display list buffer init */
-extern void fn_800D2AD4(u32 count);                     /* GSgfx light init */
+extern void GScameraPoolInit(u32 count);                     /* GSgfx light init */
 extern void GSlightInit(u32 count);                     /* GSgfx texture init */
 extern void gsParticleInit(u32 a, u32 b);                  /* GSmaterial init */
 extern void fn_80132C6C(u32 a, u32 b, u32 c, u32 d);  /* GStexture cache init */
@@ -109,10 +109,10 @@ extern void GSinputSetSmoothingFunc(u32 padIdx, u32 param);        /* PAD stick 
 
 extern void GSgappInit(u32 numTasks, u32 numQueues);  /* GSthread init */
 extern void GSresInit(u32 maxSteps);                  /* GSthread step limit */
-extern void fn_800FF828(u32 a, u32 b, u32 c, u32 d);  /* GSthread pool config */
+extern void floorSystemStart(u32 a, u32 b, u32 c, u32 d);  /* GSthread pool config */
 extern void fn_8010D170(void);                           /* GSthread scheduler init */
 extern void cms_InitThreadPool(u32 maxPads);                   /* PAD system init */
-extern void fn_800F75FC(void* padTable);                 /* PAD set mapping table */
+extern void cms_PoolSetParam(void* padTable);                 /* PAD set mapping table */
 extern void GSmsgInit(u32 numFloors, u32 numLayers);  /* GSfloor system init */
 extern void GSmsgSetCtrlFunc(void* sndTable);                 /* GSfloor sound table */
 extern void GSmsgFontOpen(void* relData);                  /* GSfloor register REL data */
@@ -123,7 +123,7 @@ extern void vtrInit(void);                           /* Save/card system init */
 extern void flareCreateTask(void);                           /* GBA communication init */
 extern void GSmovieInit(void);                           /* Save data init */
 extern void menuInit(u32 param);                      /* Effect system init */
-extern void fn_80101FB8(u32 param);                      /* GS load meter draw-sync hook init */
+extern void gappLoadMeterInit(u32 param);                      /* GS load meter draw-sync hook init */
 extern void GSgfxSetFrameInterval(u32 flag);                       /* GSgfx enable rendering */
 
 extern u32 GSgappCreate(s32 state, u8 priority, void* param, /* GSthread create task */
@@ -145,10 +145,10 @@ extern f32 __cvt_fp2unsigned(f32 volume);                     /* volume clamp/pr
 void mainGameThread(void);
 void fn_8000609C(void); /* fn_8000609C - background color / render schedule init */
 
-/* --- Per-frame callback tasks registered by fn_800057B0 --- */
+/* --- Per-frame callback tasks registered by mainInit --- */
 void mainRetraceDraw(void);       /* mainRetraceDraw - primary retrace handler */
-void fn_80005FFC(void);      /* fn_80005FFC - controller polling task */
-void fn_8000604C(void);    /* fn_8000604C - controller rumble task */
+void mainPadPollTask(void);      /* mainPadPollTask - controller polling task */
+void mainPadReadTask(void);    /* mainPadReadTask - controller rumble task */
 void mainLogicTask(u32 a, u32 b); /* mainLogicTask - audio retrace callback */
 void mainClearExceptionVectors(void);    /* mainClearExceptionVectors - reset button countdown */
 void mainRetraceLogic(void);  /* mainRetraceLogic - per-retrace game logic */
@@ -159,8 +159,8 @@ void mainCheckResetButton(void); /* mainCheckResetButton - reset button handler 
 /* mainSetPauseFlag: mainSetPauseFlag - sets a byte flag; returns previous value */
 extern u8 mainSetPauseFlag(u8 newVal);
 
-/* fn_800056D4: fn_800056D4 - reads flag, clears it, returns old */
-extern u8 fn_800056D4(void);
+/* mainTakePauseFlag: mainTakePauseFlag - reads flag, clears it, returns old */
+extern u8 mainTakePauseFlag(void);
 
 /* fn_800056E4: fn_800056E4 */
 extern void fn_800056E4(u8 val);
@@ -168,8 +168,8 @@ extern void fn_800056E4(u8 val);
 /* gamedataSetPlaytime: gamedataSetPlaytime - if sound system present, set volume */
 extern void gamedataSetPlaytime(f32 volume);
 
-/* fn_80005748: fn_80005748 - if sound system present, get volume */
-extern f32 fn_80005748(void);
+/* gamedataGetPlaytime: gamedataGetPlaytime - if sound system present, get volume */
+extern f32 gamedataGetPlaytime(void);
 
 /* GSgetVersionMajor: GSgetVersionMajor - returns 1 */
 extern u32 GSgetVersionMajor(void);
@@ -178,7 +178,7 @@ extern u32 GSgetVersionMajor(void);
 extern u32 GSgetVersionMinor(void);
 
 /* --- Miscellaneous engine functions --- */
-extern void fn_800366A8(void);    /* Scene/floor update tick */
+extern void bootMain(void);    /* Scene/floor update tick */
 extern u32  fn_800FF81C(void* a, u32 b); /* GSthread set frame counter */
 extern void* GSresAllocResource(u32 a, u32 b, u32 c, u32 d); /* GSthread alloc work area */
 
@@ -189,9 +189,9 @@ extern void gamedatasaveBiosSetPlaytime(void* mixer, f32 volume); /* SoundSetMas
 extern f32  gamedatasaveBiosGetPlaytime(void* mixer);  /* SoundGetMasterVolume */
 
 extern u32  fn_80128E2C(void);     /* RNG get seed */
-extern void fn_80128E14(u32 seed); /* RNG set seed */
+extern void randSetSeed(u32 seed); /* RNG set seed */
 extern void savedataCreate(u32 a, u32 b); /* RNG init */
-extern void fn_801EF5C0(void);    /* Battle system global init */
+extern void fightGSfloorRegister(void);    /* Battle system global init */
 extern u32  savedataGetStatus(u32 a, u32 b); /* RNG or calendar read */
 extern void fn_801909A8(u32 a, u32 b, u32 c, u32 d, u32 e, u32 f); /* Calendar/RTC set */
 extern void GSvtrLoadTexture(void);    /* Card system tick */
@@ -199,9 +199,9 @@ extern void fn_8010C220(void);    /* Effect system tick */
 extern void cameraInit(void);    /* World/map system init */
 extern void fn_8013024C(void);    /* 3D model system init */
 extern void peopleSystemInit(u32 a);   /* Pokemon data/model init */
-extern void fn_801ED388(void);    /* GBA link init */
+extern void darkPokemonStepInit(void);    /* GBA link init */
 extern void memcardInit(void);    /* Menu/UI system init */
-extern void fn_801128A0(void);    /* Colosseum mode init */
+extern void floorSystemInit(void);    /* Colosseum mode init */
 extern void* tableResBiosGetResPtr(u32 id);  /* Load relocatable module (REL) by ID */
 
 extern void* soundSetListener(void* color); /* Set clear/background color */
@@ -224,16 +224,16 @@ extern void peopleMain(u32 a, u32 b); /* Retry/reconnect handler */
 extern u8   fn_8008ABA0(u32 padIdx); /* PAD is connected check */
 extern void GSinputRead(u32 padIdx); /* PAD disconnect handler */
 extern u8 GSinputIsConnected(u32 padIdx); /* PAD connection check */
-extern void fn_8008AC34(u32 padIdx); /* PAD recalibrate */
+extern void gbaPollPort(u32 padIdx); /* PAD recalibrate */
 
-extern void fn_80101B90(u32 mask);   /* GXSetChanCtrl / GX render state */
-extern void fn_80101D8C(void);       /* GX render flush */
+extern void gappLoadMeterDraw(u32 mask);   /* GXSetChanCtrl / GX render state */
+extern void gappLoadMeterDrawFrame(void);       /* GX render flush */
 extern void fn_80101D5C(void);       /* GX render end */
 extern void GSgfxWaitRetrace(u8 mode);    /* GSgfx set draw mode */
 extern void GSgfxSwapBuffers(u32 flag);   /* GSgfx swap buffers */
 extern void GSgfxCaptureUpdate(void);       /* World/scene render tick */
 
-extern void fn_801E0FB4(s32 unk, u32 a, u32 b); /* Save/card per-frame update */
+extern void vtrUpdate(s32 unk, u32 a, u32 b); /* Save/card per-frame update */
 
 extern u8   vtrIsActive(void);   /* Card system check pending */
 extern s32  vtrGetMode(void);   /* Card system get state */
@@ -245,11 +245,11 @@ extern void menuDaemon(void);   /* Particle system update */
 extern void GSmsgDaemon(void);   /* GSthread sync / process tasks */
 
 extern u32  std082_flagGetValue(u32 evtId);  /* Event system check state */
-extern s32  fn_800D37CC(void);       /* GSgfx get frame counter */
+extern s32  GSgfxGetVsyncRate(void);       /* GSgfx get frame counter */
 extern u32  GSgetFrameStep(void);       /* GSgfx get tick counter */
 
 extern u32  GSinputButtonsChanged(u32 padIdx); /* PAD get buttons pressed */
-extern u32  fn_800F7BC4(u32 padIdx); /* PAD get buttons held */
+extern u32  GSinputGetButtons(u32 padIdx); /* PAD get buttons held */
 extern void dbgMovieCaptureUpdate(void);       /* Debug menu toggle */
 
 /* --- SDA (small data area) globals used by this module --- */
@@ -359,7 +359,7 @@ extern void __OSSetExceptionHandler(u32 exception, void* handler);
  *  Address: 0x800055E0, Size: 0xE4
  *
  *  Called by __start() after CRT init. Sets up the Dolphin heap, DVD
- *  subsystem, graphics, and then calls fn_800057B0() which never returns
+ *  subsystem, graphics, and then calls mainInit() which never returns
  *  (it enters the main loop).
  * =========================================================================
  */
@@ -372,7 +372,7 @@ int main(int argc, char** argv) {
     memset((void*)0x80001800, 0, 0x1800);
 
     /* Install OS error handlers before anything else */
-    fn_80006250(); /* fn_80006250 */
+    osInstallErrorHandlers(); /* osInstallErrorHandlers */
 
     /* Set up the main game heap from the OS arena */
     arenaLo = OSGetArenaLo();
@@ -414,7 +414,7 @@ int main(int argc, char** argv) {
     fn_80167FA4(argc, argv, 1);
 
     /* Enter the game initialization and main loop (does not return) */
-    fn_800057B0(); /* fn_800057B0 */
+    mainInit(); /* mainInit */
 }
 
 /* =========================================================================
@@ -431,13 +431,13 @@ u8 mainSetPauseFlag(u8 newVal) {
 }
 
 /* =========================================================================
- *  fn_800056D4 / fn_800056D4
+ *  mainTakePauseFlag / mainTakePauseFlag
  *  Address: 0x800056D4, Size: 0x10
  *
  *  Reads the pause flag, clears it to 0, returns the old value.
  * =========================================================================
  */
-u8 fn_800056D4(void) {
+u8 mainTakePauseFlag(void) {
     u8 val = lbl_80478DC9;
     lbl_80478DC9 = 0;
     return val;
@@ -478,14 +478,14 @@ void gamedataSetPlaytime(f32 volume) {
 }
 
 /* =========================================================================
- *  fn_80005748 / fn_80005748
+ *  gamedataGetPlaytime / gamedataGetPlaytime
  *  Address: 0x80005748, Size: 0x58
  *
  *  Returns the current master volume from the sound mixer.
  *  Falls back to 0.0f if the sound system is not available.
  * =========================================================================
  */
-f32 fn_80005748(void) {
+f32 gamedataGetPlaytime(void) {
     void* mixer;
     f32 volume;
 
@@ -528,7 +528,7 @@ u32 GSgetVersionMinor(void) {
 }
 
 /* =========================================================================
- *  fn_800057B0 / fn_800057B0
+ *  mainInit / mainInit
  *  Address: 0x800057B0, Size: 0x2FC
  *
  *  Master initialization function. Sets up every game subsystem, then
@@ -537,7 +537,7 @@ u32 GSgetVersionMinor(void) {
  *  This function never returns.
  * =========================================================================
  */
-void fn_800057B0(void) {
+void mainInit(void) {
     u8 isWarmBoot;
     s32 i;
 
@@ -582,7 +582,7 @@ void fn_800057B0(void) {
     GSmaterialInit(0x400);
 
     /* Initialize lighting system with 32 lights */
-    fn_800D2AD4(0x20);
+    GScameraPoolInit(0x20);
 
     /* Initialize texture system with 32 textures */
     GSlightInit(0x20);
@@ -611,7 +611,7 @@ void fn_800057B0(void) {
     GSresInit(0x12C);
 
     /* Initialize four floor contexts plus 48 floor resources and launch the floor worker */
-    fn_800FF828(0x4, 0x10, 0x10, 0x10);
+    floorSystemStart(0x4, 0x10, 0x10, 0x10);
 
     /* Initialize collision-draw state */
     fn_8010D170();
@@ -620,7 +620,7 @@ void fn_800057B0(void) {
     cms_InitThreadPool(0x10);
 
     /* Set the script VM native-call dispatch table (12-byte entries) */
-    fn_800F75FC(lbl_802E1CF0);
+    cms_PoolSetParam(lbl_802E1CF0);
 
     /* Initialize floor/scene system: 2 floors, 5 layers */
     GSmsgInit(0x2, 0x5);
@@ -650,7 +650,7 @@ void fn_800057B0(void) {
     menuInit(0x18);
 
     /* Install the GS load meter's GX draw-sync callback; GPU perf counters off */
-    fn_80101FB8(0x4);
+    gappLoadMeterInit(0x4);
 
     /* Enable rendering pipeline */
     GSgfxSetFrameInterval(1);
@@ -664,11 +664,11 @@ void fn_800057B0(void) {
     /* Task 0xFF: Primary VBlank handler (mainRetraceDraw) */
     GSgappCreate(1, 0xFF, 0, (void*)mainRetraceDraw);
 
-    /* Task 0x00: Pad rumble update (fn_8000604C) */
-    GSgappCreate(1, 0x00, 0, (void*)fn_8000604C);
+    /* Task 0x00: Pad rumble update (mainPadReadTask) */
+    GSgappCreate(1, 0x00, 0, (void*)mainPadReadTask);
 
-    /* Task 0x01: Pad read/polling (fn_80005FFC) */
-    GSgappCreate(1, 0x01, 0, (void*)fn_80005FFC);
+    /* Task 0x01: Pad read/polling (mainPadPollTask) */
+    GSgappCreate(1, 0x01, 0, (void*)mainPadPollTask);
 
     /* Task 0x0A: Audio retrace callback (mainLogicTask) */
     GSvtrRegisterGSgapp(
@@ -728,7 +728,7 @@ void mainGameThread(void) {
     void* mixer;
 
     /* Tick the scene/floor system */
-    fn_800366A8();
+    bootMain();
 
     /* Update frame counter from scene state */
     {
@@ -770,11 +770,11 @@ void mainGameThread(void) {
     /* Seed the RNG using the low bits of the OS tick counter.
      * OSGetTime returns u64 in r3:r4; we use r4 (low 32 bits).
      * rlwinm r27, r4, 0, 21, 26 => r4 & 0x000007E0 */
-    fn_80128E14(fn_80128E2C() + ((u32)OSGetTime() & 0x7E0)); /* add time entropy to seed */
+    randSetSeed(fn_80128E2C() + ((u32)OSGetTime() & 0x7E0)); /* add time entropy to seed */
     savedataCreate(0, 0); /* Reset RNG sequence */
 
     /* Initialize the battle system */
-    fn_801EF5C0();
+    fightGSfloorRegister();
 
     /* Set the in-game calendar from RTC values (sec/min/hour/day/month/year) */
     fn_801909A8(savedataGetStatus(0, 4), savedataGetStatus(0, 7), savedataGetStatus(0, 5),
@@ -799,13 +799,13 @@ void mainGameThread(void) {
     peopleSystemInit(0x30);
 
     /* Initialize GBA link subsystem */
-    fn_801ED388();
+    darkPokemonStepInit();
 
     /* Initialize menu/UI system */
     memcardInit();
 
     /* Initialize Colosseum battle mode */
-    fn_801128A0();
+    floorSystemInit();
 
     /* Clear low-memory scratch area 0x80001803, size 0x17FD
      * (preserves bytes 0x1800-0x1802 which contain status flags) */
@@ -893,13 +893,13 @@ void mainClearExceptionVectors(void) {
  */
 void mainRetraceDraw(void) {
     /* Set render state mask (0xFF00 = enable all channels) */
-    fn_80101B90(0xFF00);
+    gappLoadMeterDraw(0xFF00);
 
     /* Apply the draw mode from the per-frame flag */
     GSgfxWaitRetrace(lbl_80478DD0);
 
     /* Flush GX render commands */
-    fn_80101D8C();
+    gappLoadMeterDrawFrame();
 
     /* Clear swap flag */
     GSgfxSwapBuffers(0);
@@ -909,13 +909,13 @@ void mainRetraceDraw(void) {
 
     /* Update save/card system based on lbl_80478820 flag */
     if (lbl_80478820 == 0) {
-        fn_801E0FB4(0x10, 1, 1);
+        vtrUpdate(0x10, 1, 1);
     } else {
-        fn_801E0FB4(-1, 1, 1);
+        vtrUpdate(-1, 1, 1);
     }
 
     /* Finalize GX render state (0xFFFF00 = full state mask) */
-    fn_80101B90(0xFFFF00);
+    gappLoadMeterDraw(0xFFFF00);
 
     /* End GX render pass */
     fn_80101D5C();
@@ -942,17 +942,17 @@ void mainRetraceLogic(void) {
     u32 pressed;
     u32 held;
 
-    fn_80101B90(0xFF);
+    gappLoadMeterDraw(0xFF);
 
     pressed = GSinputButtonsChanged(1);
-    held = fn_800F7BC4(1);
+    held = GSinputGetButtons(1);
     if (held & pressed & 0x10) {
         dbgMovieCaptureUpdate();
     }
 
     if (vtrIsActive()) {
         pressed = GSinputButtonsChanged(1);
-        held = fn_800F7BC4(1);
+        held = GSinputGetButtons(1);
         if (held & pressed & 0x40) {
             if (vtrGetMode() == 2) {
                 vtrSetMode1();
@@ -961,7 +961,7 @@ void mainRetraceLogic(void) {
             }
         }
         pressed = GSinputButtonsChanged(1);
-        held = fn_800F7BC4(1);
+        held = GSinputGetButtons(1);
         if (held & pressed & 0x20) {
             vtrSetMode3();
         }
@@ -978,7 +978,7 @@ void mainRetraceLogic(void) {
 
     if (mixer != NULL && lbl_80478DC8 == 1 && std082_flagGetValue(0x8AE) == 0) {
         vol = gamedatasaveBiosGetPlaytime(mixer);
-        v = vol + (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+        v = vol + (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
         if (v >= 359940.0f) {
             v = 359940.0f;
         }

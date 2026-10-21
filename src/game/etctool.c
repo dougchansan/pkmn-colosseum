@@ -5,7 +5,7 @@
  * tables) and the .sdata2 pool 0x8047E3F0-0x8047E428.
  *
  * XD's etctool unit ends with etctoolSetPokemonNakigoe, as this one does at
- * 0x801E0F78; the vtr unit starts at fn_801E0FB4 (see gs_exact_801E0FB4.c).
+ * 0x801E0F78; the vtr unit starts at vtrUpdate (see gs_exact_801E0FB4.c).
  * fn_801DF474 shares the unit's pool (2.0f at 0x8047E3F0).
  */
 #include "dolphin/types.h"
@@ -19,7 +19,7 @@ extern void* sodateyaGetPokemonPtr(s32 slot);
 void sendOutPokemonEvent(s32 partyIndex);
 void characterMoveEvent(s32 unused);
 extern u32 GSgetFrameStep(void);
-extern s32 fn_800D37CC(void);
+extern s32 GSgfxGetVsyncRate(void);
 extern void _threadSwitch(void);
 extern void GSvecCopy(void*, const void*);
 extern void* GSmodelGetPart(void*, s32);
@@ -211,7 +211,7 @@ extern u16 pokemonBiosGetDarkpokemonDataId(void* pokemon);
 extern u8 darkPokemonCheckFlag14(u16 id);
 extern void* pokemonBiosGetNicknamePtr(void* pokemon);
 extern u8 pokemonWazaCheckValid(void* pokemon, u16 slot);
-extern s32 fn_80097BBC(u8 chan);
+extern s32 menuPokemonStatusOpenParty(u8 chan);
 extern u16 pokemonBiosGetPokemonWazaDataId(void* pokemon, u16 slot);
 extern void soundStartRaw(u32 sndId, u32 fadeTime, u32 volume);
 extern void pokemonWazaInit(void* pokemon, u32 slot);
@@ -364,7 +364,7 @@ void std086_sequenceJump86(s32 slot, s32 itemID) {
             if (fieldWazaCountValid((u16)selection) == 1) {
                 state = 14;
             } else {
-                moveSlot = fn_80097BBC((u8)selection);
+                moveSlot = menuPokemonStatusOpenParty((u8)selection);
                 if (moveSlot >= 0) {
                     state = 8;
                 } else {
@@ -566,7 +566,7 @@ void std085_sequenceJump85(void) {
     extern void std051_characterSetAnimation(u32, u32, u32, u32, u32);
     extern void std077_characterEventFlagsSet(u32, u32);
     extern void daycareDeposit(s32, void*);
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     extern u32 GSgetFrameStep(void);
     extern void _threadSwitch(void);
 
@@ -713,7 +713,7 @@ void std085_sequenceJump85(void) {
                 soundStartRaw(0x3CB, 0, 0);
                 timer = 0.0f;
                 while (timer < 0.7f) {
-                    timer += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+                    timer += (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
                     _threadSwitch();
                 }
                 state = 17;
@@ -971,7 +971,7 @@ void sendOutPokemonEvent(s32 partyIndex)
             f32 endTime = 1.5f;
 
             while (timer < endTime) {
-                timer += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+                timer += (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
                 _threadSwitch();
             }
             state = 100;
@@ -993,7 +993,7 @@ void sendOutPokemonEvent(s32 partyIndex)
         f32 elapsed = 0.0f;                                        \
         f32 limit = (duration);                                            \
         while (elapsed < limit) {                                          \
-            elapsed += (f32)GSgetFrameStep() / (f32)fn_800D37CC();            \
+            elapsed += (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();            \
             _threadSwitch();                                               \
         }                                                                  \
     } while (0)

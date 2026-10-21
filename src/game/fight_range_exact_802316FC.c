@@ -1,7 +1,7 @@
 /**
  * @file fight_range_exact_802316FC.c
- * @brief Exact island 0x802316FC - 0x80232110 (fn_802316FC, fightSeqTurnEndAll,
- *        _fightFindFightOutPokemonWithSequenceSub, fn_80232024), moved out of fight_range_80211A00.c in
+ * @brief Exact island 0x802316FC - 0x80232110 (fightClearJoutai08, fightSeqTurnEndAll,
+ *        _fightFindFightOutPokemonWithSequenceSub, _fightJoutai35TurnEndSub), moved out of fight_range_80211A00.c in
  *        address order.
  */
 #include "dolphin/types.h"
@@ -10,7 +10,7 @@ extern u8 lbl_80478D78[8];
 extern void* lbl_8047B62C;
 extern void wsRunScript(void*, void*, u8);
 s32 _fightFindFightOutPokemonWithSequenceSub(void* param1, s32 param2, void** param3);
-extern u32 fn_80232024();
+extern u32 _fightJoutai35TurnEndSub();
 extern u8 lbl_80378968[];
 extern u8 lbl_80378A4D[];
 extern u8 lbl_80378A5F[];
@@ -28,7 +28,7 @@ extern u8 lbl_80379F58[];
 #define fn_801F4C14 fightFloorSetStatus
 #define fn_801FECD4 fightOutPokemonIsUseHensinBuff
 #define fn_801FE7EC fightOutPokemonSetHensinPokemonStatusId
-u8 fn_802316FC(void* ctx) {
+u8 fightClearJoutai08(void* ctx) {
     extern u8 fn_802062FC();
     extern void fn_80202810();
     extern u8 fn_801F4C14();
@@ -180,7 +180,7 @@ void fightSeqTurnEndAll(void) {
     }
 
     wazaSequenceSysFreeAll();
-    fightFloorLoopValidFightOutPokemon(0, fn_80232024, 0, 1);
+    fightFloorLoopValidFightOutPokemon(0, _fightJoutai35TurnEndSub, 0, 1);
     wazaSequenceSysFreeAll();
 
     if (weather == 2) {
@@ -293,13 +293,13 @@ s32 _fightFindFightOutPokemonWithSequenceSub(void* param1, s32 param2, void** pa
 }
 #undef fn_8012640C
 
-u32 fn_80232024(u32 r3)
+u32 _fightJoutai35TurnEndSub(u32 r3)
 
 {
     extern void fightFloorSetStatus();
-    extern void fn_80201FDC();
-    extern u32 fn_80202108();
-    extern u32 fn_80202234();
+    extern void fightOutPokemonSetPokemonJoutai05();
+    extern u32 fightOutPokemonGetPokemonJoutai05();
+    extern u32 fightOutPokemonGetPokemonJoutaiKaisuu();
     extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern void fightOutPokemonWriteJoutaiDataId();
     extern u8 fightOutPokemonCheckFightOut();
@@ -319,13 +319,13 @@ u32 fn_80232024(u32 r3)
   }
   check = fightOutPokemonIsPokemonJoutaiDataId(r3,0x35);
   if (check == 1) {
-    count = fn_80202234(r3,0x35);
-    current = fn_80202108(r3,0x35);
+    count = fightOutPokemonGetPokemonJoutaiKaisuu(r3,0x35);
+    current = fightOutPokemonGetPokemonJoutai05(r3,0x35);
     signedCurrent = (s8)current;
     signedCount = (s8)count;
     incremented = (s8)(signedCurrent + 1);
     if (incremented < signedCount) {
-      fn_80201FDC(r3,0x35,incremented);
+      fightOutPokemonSetPokemonJoutai05(r3,0x35,incremented);
     }
     else {
       fightFloorSetStatus(0,0,0x36,0,r3);

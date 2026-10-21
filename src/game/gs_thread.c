@@ -79,7 +79,7 @@ extern const char lbl_80271038[]; /* "GSthread: Init OK, maximum of %d threads\n
 
 /* ===== Forward declarations for internal functions ===== */
 extern void gappVSyncCallback(void);            /* GStaskSwapCallback */
-extern void fn_800F0F4C(u32 arg);          /* GSthread trampoline / entry wrapper */
+extern void _GSthreadExitTrampoline(u32 arg);          /* GSthread trampoline / entry wrapper */
 extern void PADRead(void* buf);
 extern u32 SIProbe(u32 buttonIdx);
 extern void fn_800AB4FC(void*);
@@ -280,9 +280,9 @@ extern u32 lbl_8047AC9C;
  * ======================================================================= */
 
 /* =======================================================================
- *  0x800F0424 - 0x800F106C: GSthreadUnblock .. fn_800F0F4C (GSthread public
- *  API, GSthreadCreate, GSthread, the fn_800F0A74 dispatcher and the
- *  fn_800F0F4C exit trampoline) live in their own linked unit, in address
+ *  0x800F0424 - 0x800F106C: GSthreadUnblock .. _GSthreadExitTrampoline (GSthread public
+ *  API, GSthreadCreate, GSthread, the _GSthreadDispatch dispatcher and the
+ *  _GSthreadExitTrampoline exit trampoline) live in their own linked unit, in address
  *  order. Included here so every candidate unit built from this file keeps
  *  the same definitions.
  * ======================================================================= */
@@ -899,7 +899,7 @@ void inputClampSticks(arg0)
 #pragma optimization_level 2
 #pragma optimizewithasm off
 #pragma optimization_level 2
-void fn_800F915C(u32 key) {
+void GSresReleaseOwner(u32 key) {
     u8* entry;
     u32 i;
     u8 skip;
@@ -930,7 +930,7 @@ void fn_800F915C(u32 key) {
 #pragma optimization_level 2
 #pragma optimizewithasm off
 #pragma optimization_level 2
-void fn_800F9210(u32 key1, u32 key2) {
+void GSresReleaseOwnerItem(u32 key1, u32 key2) {
     u8* entry;
     u32 i;
 

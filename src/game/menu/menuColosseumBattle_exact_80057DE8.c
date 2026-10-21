@@ -20,7 +20,7 @@ extern u8 lbl_803A9A08[];
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-s32 fn_80057DE8(void* pokemon) {
+s32 pcBoxIsShadowPokemon(void* pokemon) {
     if (pokemonCheckValid(pokemon) == 0) {
         return 0;
     }

@@ -176,13 +176,13 @@ extern void _threadSwitch(void);
 static inline void MenuWaitMotionInterval(void)
 {
     extern u32 GSgetFrameStep(void);
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     f32 elapsed;
 
     elapsed = lbl_8047C0E0;
     while (elapsed < lbl_8047C0E4) {
         _threadSwitch();
-        elapsed += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+        elapsed += (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
     }
 }
 extern void winMsgOpenField(s32, s32, s32);
@@ -194,7 +194,7 @@ extern u32 OSDisableInterrupts(void);
 extern void OSSetAlarm(void*, s64, void*);
 extern s32 OSSuspendThread(void*);
 extern void OSRestoreInterrupts(u32);
-extern void fn_8007C23C(u8*);
+extern void _gbaBootAlarm(u8*);
 extern u32 lbl_803FAEF8[256];
 extern void* heroBiosGetNamePtr(void*);
 extern void* heroBiosGetPokemonPtr(void*, u16);
@@ -207,10 +207,10 @@ extern void fadeSet(s32, f32);
 extern s32 fadeCheck(s32);
 extern void std113_mapObjectUnk_8018db68(u32);
 extern void GSscene_SetMode(s32);
-extern u8 fn_80079EF4(s32, u32);
+extern u8 exDiscCouponSelect(s32, u32);
 extern void gbaCommandSetKeyState(s32 mode, s32 flag);
-extern s32 fn_80073C38(s32 chan);
-extern void fn_80072684(void);
+extern s32 gbaCmdResetLink(s32 chan);
+extern void _gbaCmdAlarm(void);
 extern s32 GBAWrite();
 extern s32 GBARead();
 extern s32 GBAGetStatus();
@@ -225,7 +225,7 @@ extern volatile s32 lbl_803B6E08[4];
 extern u8 lbl_803B6D88[0x58];
 extern void floorLink(s32, s32);
 
-/* Same test as fn_80077A5C. */
+/* Same test as menuRuleIsEmptyPokemon. */
 static inline s32 menuRuleSlotIsEmpty(void* pokemon)
 {
     extern s32 pokemonGetStatus(void*, s32, s32, s32);
@@ -371,8 +371,8 @@ u8 menuRuleCheckPokemon(void* pokemon, s32 check)
  * unit's own compiler flags rather than copied wholesale.
  */
 
-/* fn_8007162C (0x8007162C): peek the current call-stack depth slot. */
-s32 fn_8007162C(void) {
+/* _menuPeekStackDepth (0x8007162C): peek the current call-stack depth slot. */
+s32 _menuPeekStackDepth(void) {
     u32 depth;
 
     depth = *(u32*)(lbl_803B6D88 + 0x40);
@@ -437,8 +437,8 @@ s32 menuCommonAlloc(s32 size) {
     return 0;
 }
 
-/* fn_80071160 (0x80071160): scan the 4 save slots for a live, valid entry. */
-s32 fn_80071160(void) {
+/* menuFindLiveSaveSlot (0x80071160): scan the 4 save slots for a live, valid entry. */
+s32 menuFindLiveSaveSlot(void) {
     extern u8* savedataGetStatus(s32 side, s32 slotType);
     extern s32 fn_8006A7E8(u8* p);
     extern u8 fn_8008ABA0(s32 v);
@@ -460,10 +460,10 @@ s32 fn_80071160(void) {
 }
 
 extern u32 GSinputButtonsChanged(s32);
-extern u32 fn_800F7BC4(s32);
+extern u32 GSinputGetButtons(s32);
 extern u8 fn_8008ABA0(s32);
 extern s32 menuCBBios_ControlerIDtoPortID(s32);
-extern s32 fn_80073A44(s32, u16*);
+extern s32 gbaCmdReadKeys(s32, u16*);
 extern s32 windowGetActiveID(void);
 extern void* windowSearchID(s32);
 extern void menuCloseCustom(s32, s32, s32);
@@ -478,10 +478,10 @@ u32 fn_80071208(s32 controller)
     u32 input;
     s32 port;
 
-    input = fn_800F7BC4(controller) & GSinputButtonsChanged(controller);
+    input = GSinputGetButtons(controller) & GSinputButtonsChanged(controller);
     if (input == 0 && fn_8008ABA0(controller) != 0) {
         port = menuCBBios_ControlerIDtoPortID(controller);
-        if (fn_80073A44(port, &buttons) == 0) {
+        if (gbaCmdReadKeys(port, &buttons) == 0) {
             if (buttons & 0x001) {
                 input |= 0x100;
             }
@@ -537,8 +537,8 @@ void fn_80071318(u8* dst, u8* src) {
 }
 #pragma pop
 
-/* fn_80071344 (0x80071344): reopen the menu on top of the call stack. */
-void fn_80071344(void) {
+/* _menuReopenTop (0x80071344): reopen the menu on top of the call stack. */
+void _menuReopenTop(void) {
     extern s32 menuOpenCustom(s32 slot, ...);
     u32 depth;
 
@@ -552,7 +552,7 @@ void fn_80071344(void) {
 
 /* _menuPop (0x800714C8): close the top menu and pop the call stack. */
 /* Linked from game/menu/menu_r56b_800714C8_suffix.c (lane D18) with
- * _menuPush, fn_8007162C, menuCB_InitMenu and fn_8007169C; keep in step. */
+ * _menuPush, _menuPeekStackDepth, menuCB_InitMenu and fn_8007169C; keep in step. */
 s32 _menuPop(void) {
     extern s32 windowGetActiveID(void);
     extern u32 windowSearchID(s32 id);
@@ -665,7 +665,7 @@ extern s32 menuClose(s32);
 extern s32 std082_flagGetValue(s32);
 extern void _flagSet();
 
-/* fn_80074324 (0x80074324): prep key-state then perform per-channel reset path. */
+/* pkjbResetLink (0x80074324): prep key-state then perform per-channel reset path. */
 s32 pkjbProbe(s32 chan)
 {
     extern u32 SIProbe(s32 chan);
@@ -760,7 +760,7 @@ static inline s32 fn_800745B4_handshake(s32 chan)
     start = OSGetTick();
     do {
         expired = OSGetTick() - start > timeout;
-        result = fn_80073C38(chan);
+        result = gbaCmdResetLink(chan);
     } while (result == 1 && !expired);
     if (result != 0) {
         return result;
@@ -786,7 +786,7 @@ static inline s32 fn_800745B4_handshake(s32 chan)
     return 0;
 }
 
-s32 fn_800745B4(s32 chan)
+s32 pkjbUploadStep(s32 chan)
 {
     s32 result;
     u32 timeout;
@@ -813,7 +813,7 @@ s32 fn_800745B4(s32 chan)
     return result;
 }
 
-s32 fn_80074324(s32 arg0) {
+s32 pkjbResetLink(s32 arg0) {
     extern s32 pkjbProbe(s32);
 
     gbaCommandSetKeyState(arg0 + 1, 0);
@@ -863,7 +863,7 @@ pokemon_usable:
 }
 
 /* Check party-rule constraints for the selected Pokemon. */
-u8 fn_80076A8C(void* hero, void* pokemon, const u8* rule, s32 mode)
+u8 menuRuleCheckSelected(void* hero, void* pokemon, const u8* rule, s32 mode)
 {
     extern u8 fn_80076F2C(void* hero, const u8* rule, s32 mode);
     extern void* heroBiosGetPokemonPtr(void* hero, u16 slot);
@@ -1119,7 +1119,7 @@ s32 pkjbPrepare(void* pathA, void* pathB) {
     extern s32 DVDOpen(void* path, MenuDVDFileInfo* info);
     extern s32 DVDRead(MenuDVDFileInfo* info, void* dst, s32 length, s32 offset, s32 prio);
     extern void DVDClose(MenuDVDFileInfo* info);
-    extern void fn_800060F0(const char* file, s32 line, const char* fmt, ...);
+    extern void errorPanic(const char* file, s32 line, const char* fmt, ...);
     extern u32 lbl_8047A60C;
     extern u32 lbl_8047A608;
     extern u32 lbl_8047A604;
@@ -1139,17 +1139,17 @@ s32 pkjbPrepare(void* pathA, void* pathB) {
     GBAInit();
 
     if (DVDOpen(pathA, &fileA) == 0) {
-        fn_800060F0("pkjb_uploader.c", 0x1d6, "PKJB_Prepare: not found");
+        errorPanic("pkjb_uploader.c", 0x1d6, "PKJB_Prepare: not found");
     }
     size = (fileA.length + 7) & ~7;
     lbl_8047A608 = size;
     if (size == 0 || size > 0x20000) {
-        fn_800060F0("pkjb_uploader.c", 0x1dc, "PKJB_Prepare: empty or too big size");
+        errorPanic("pkjb_uploader.c", 0x1dc, "PKJB_Prepare: empty or too big size");
     }
     size = (lbl_8047A608 + 0x1f) & ~0x1f;
     lbl_8047A608 = size;
     if (DVDRead(&fileA, lbl_803D6E40, size, 0, 2) < 0) {
-        fn_800060F0("pkjb_uploader.c", 0x1e1, "PKJB_Prepare: read error");
+        errorPanic("pkjb_uploader.c", 0x1e1, "PKJB_Prepare: read error");
     }
     DVDClose(&fileA);
     key = (u8*)&lbl_8047A60C;
@@ -1166,17 +1166,17 @@ s32 pkjbPrepare(void* pathA, void* pathB) {
 
     if (pathB != 0) {
         if (DVDOpen(pathB, &fileB) == 0) {
-            fn_800060F0("pkjb_uploader.c", 0x1d6, "PKJB_Prepare: not found");
+            errorPanic("pkjb_uploader.c", 0x1d6, "PKJB_Prepare: not found");
         }
         size = (fileB.length + 7) & ~7;
         lbl_8047A604 = size;
         if (size == 0 || size > 0x20000) {
-            fn_800060F0("pkjb_uploader.c", 0x1dc, "PKJB_Prepare: empty or too big size");
+            errorPanic("pkjb_uploader.c", 0x1dc, "PKJB_Prepare: empty or too big size");
         }
         size = (lbl_8047A604 + 0x1f) & ~0x1f;
         lbl_8047A604 = size;
         if (DVDRead(&fileB, lbl_803B6E40, size, 0, 2) < 0) {
-            fn_800060F0("pkjb_uploader.c", 0x1e1, "PKJB_Prepare: read error");
+            errorPanic("pkjb_uploader.c", 0x1e1, "PKJB_Prepare: read error");
         }
         DVDClose(&fileB);
 
@@ -1322,7 +1322,7 @@ typedef struct MenuRuleText {
     u16 errorMessages[6];
 } MenuRuleText;
 
-s32 fn_80076054(void* hero, const u8* battleRules)
+s32 menuRuleGetPartyError(void* hero, const u8* battleRules)
 {
     extern u8 fn_80076F2C(void*, const u8*, u32);
     extern const u16 lbl_8047C0D0[3];
@@ -1494,8 +1494,8 @@ u8 menuRuleCheckPartyAndRule(void* hero)
            menuRuleCheckParty(hero, savedataBattleGetRulePtr());
 }
 
-/* fn_80077A5C (0x80077A5C): accept an empty slot or a zero species value. */
-u8 fn_80077A5C(void* pokemon) {
+/* menuRuleIsEmptyPokemon (0x80077A5C): accept an empty slot or a zero species value. */
+u8 menuRuleIsEmptyPokemon(void* pokemon) {
     extern s32 pokemonGetStatus(void* pokemon, s32 index, s32 field, s32 subindex);
     s32 result;
 
@@ -1508,19 +1508,19 @@ u8 fn_80077A5C(void* pokemon) {
 
 extern u8* savedataBattleGetRulePtr(void);
 
-/* fn_80077AAC..fn_80077B60 (0x80077AAC-0x80077B60): fixed-index byte
+/* menuCBRule_GetRule13..menuCBRule_GetRule0E (0x80077AAC-0x80077B60): fixed-index byte
  * accessors into the savedataBattleGetRulePtr() record. */
-u8 fn_80077AAC(void) { return savedataBattleGetRulePtr()[0x13]; }
+u8 menuCBRule_GetRule13(void) { return savedataBattleGetRulePtr()[0x13]; }
 
-u8 fn_80077AD0(void) { return savedataBattleGetRulePtr()[0x12]; }
+u8 menuCBRule_GetRule12(void) { return savedataBattleGetRulePtr()[0x12]; }
 
-u8 fn_80077AF4(void) { return savedataBattleGetRulePtr()[0x11]; }
+u8 menuCBRule_GetRule11(void) { return savedataBattleGetRulePtr()[0x11]; }
 
-u8 fn_80077B18(void) { return savedataBattleGetRulePtr()[0x10]; }
+u8 menuCBRule_GetRule10(void) { return savedataBattleGetRulePtr()[0x10]; }
 
-u8 fn_80077B3C(void) { return savedataBattleGetRulePtr()[0xf]; }
+u8 menuCBRule_GetRule0F(void) { return savedataBattleGetRulePtr()[0xf]; }
 
-u8 fn_80077B60(void) { return savedataBattleGetRulePtr()[0xe]; }
+u8 menuCBRule_GetRule0E(void) { return savedataBattleGetRulePtr()[0xe]; }
 
 /* menuCBRule_GetCommandTimeLimit (0x80077B84): fixed-index s16 accessor into the same record. */
 s16 menuCBRule_GetCommandTimeLimit(void) { return ((s16*)savedataBattleGetRulePtr())[0xb]; }
@@ -1530,8 +1530,8 @@ s32 menuCBRule_GetBattleTimeLimit(void) {
     return ((s16*)savedataBattleGetRulePtr())[0xa] * 0x3c;
 }
 
-/* fn_80077BD0 (0x80077BD0): accept initialized save-status values. */
-u8 fn_80077BD0(void) {
+/* savedataBattleIsModeValid (0x80077BD0): accept initialized save-status values. */
+u8 savedataBattleIsModeValid(void) {
     extern s32* savedataGetStatus(s32 side, s32 slotType);
     s32 value;
 
@@ -1559,8 +1559,8 @@ u8 menuCBRule_CheckValidItem(u16 item) {
     }
 }
 
-/* fn_80077C68 (0x80077C68): apply the current rule's item restriction. */
-u8 fn_80077C68(u16 item) {
+/* menuRuleApplyItemRestriction (0x80077C68): apply the current rule's item restriction. */
+u8 menuRuleApplyItemRestriction(u16 item) {
     MenuRuleItemRestrictions* rule;
     u32 i;
 
@@ -1638,14 +1638,14 @@ void* menuCBRule_ConstantRule(s32 index) {
 
 extern void* memcpy(void* dst, const void* src, u32 size);
 
-/* fn_80077E80 (0x80077E80): fixed-size record copy. */
-void fn_80077E80(void* dst, void* src) {
+/* menuRuleCopy (0x80077E80): fixed-size record copy. */
+void menuRuleCopy(void* dst, void* src) {
     memcpy(dst, src, 0x54);
 }
 /* The unit-wide -opt nopeephole of the GC/1.3 -O4,p chunk
  * (menu_candidate_80075390) replaces the local peephole/scheduling pragmas
  * this region used to carry. This bare "scheduling on" used to close a
- * "scheduling off" around fn_80077E80 and leaks into the rest of the file;
+ * "scheduling off" around menuRuleCopy and leaks into the rest of the file;
  * it stays so that the -O1/-O3 score-instrumentation chunks that compile
  * the later functions (exDiscCelebiTransfer, gbaBootTransfer, _menuPop_80071398) keep
  * their effective setting. At -O4,p it is a no-op. */
@@ -1653,13 +1653,13 @@ void fn_80077E80(void* dst, void* src) {
 
 extern s32 memcmp(const void* s1, const void* s2, u32 size);
 
-/* fn_80077EA4 (0x80077EA4): fixed-size record equality check. */
-u8 fn_80077EA4(u16* s1, u16* s2) {
+/* menuRuleEqual (0x80077EA4): fixed-size record equality check. */
+u8 menuRuleEqual(u16* s1, u16* s2) {
     return memcmp(s1, s2, 0x54) == 0;
 }
 
 
-extern s32 fn_800D37CC(void);
+extern s32 GSgfxGetVsyncRate(void);
 extern u32 GSgetFrameStep(void);
 extern s32 menuOpen(s32, s32);
 extern s32 std011_dialogDisplayYesNoMenu(void);
@@ -1686,7 +1686,7 @@ extern const f32 lbl_8047C128;
             s32 frames_;                 \
             u32 ticks_;                  \
             _threadSwitch();             \
-            frames_ = fn_800D37CC();     \
+            frames_ = GSgfxGetVsyncRate();     \
             ticks_ = GSgetFrameStep();      \
             elapsed_ += (f32)ticks_ / (f32)frames_; \
         }                                \
@@ -2132,7 +2132,7 @@ u32 gbaBootTransfer(GbaBootContext* context) {
                 if (++retries > 9) {
                     GBA_BOOT_FAIL(context, 9);
                 }
-                GBA_BOOT_DELAY(context, fn_8007C23C, interrupts);
+                GBA_BOOT_DELAY(context, _gbaBootAlarm, interrupts);
             }
             send_word = *(u32*)(context->upload_start + offset);
             if (GBAWrite(channel, &send_word, &gba_status) != 0) {
@@ -2149,7 +2149,7 @@ u32 gbaBootTransfer(GbaBootContext* context) {
                 (gba_status & 8) != 0) {
                 break;
             }
-            GBA_BOOT_DELAY(context, fn_8007C23C, interrupts);
+            GBA_BOOT_DELAY(context, _gbaBootAlarm, interrupts);
         }
         if (GBAReset(channel, &gba_status) != 0) {
             GBA_BOOT_FAIL(context, 9);
@@ -2240,7 +2240,7 @@ u32 gbaBootTransfer(GbaBootContext* context) {
                     if (++retries > 9) {
                         GBA_BOOT_FAIL(context, 9);
                     }
-                    GBA_BOOT_DELAY(context, fn_8007C23C, interrupts);
+                    GBA_BOOT_DELAY(context, _gbaBootAlarm, interrupts);
                 }
                 if (GBARead(channel, &recv_word,
                             &gba_status) != 0) {
@@ -2277,7 +2277,7 @@ u32 gbaBootTransfer(GbaBootContext* context) {
             GBA_BOOT_FAIL(context, 5);
         }
 
-        GBA_BOOT_DELAY(context, fn_8007C23C, interrupts);
+        GBA_BOOT_DELAY(context, _gbaBootAlarm, interrupts);
     }
 
     if (GBAGetStatus(channel, &gba_status) != 0) {
@@ -2302,7 +2302,7 @@ u32 gbaBootTransfer(GbaBootContext* context) {
 /* File-scope declarations the linked carve needs from the excluded part. */
 extern void __assert(const char* file, u32 line, const char* msg);
 extern s32 menuClose(s32);
-extern s32 fn_800D37CC(void);
+extern s32 GSgfxGetVsyncRate(void);
 extern u32 GSgetFrameStep(void);
 extern s32 std011_dialogDisplayYesNoMenu(void);
 #endif /* MENU_R47_80077ED4_ONLY */
@@ -2318,7 +2318,7 @@ void menuExDiscShrineRun(void)
     extern void memcardFreeBuffer(void*);
     extern void* savedataGetStatus(u32, u32);
     extern void exShrineIncCounter(void);
-    extern s32 fn_801D0748(u32, u32, u32);
+    extern s32 memcardWaitTask2(u32, u32, u32);
     extern void soundStartSE(u32);
     extern void* heroBiosGetPokemonPtr(void*, u32);
     extern void pokemonInit(void*);
@@ -2329,11 +2329,11 @@ void menuExDiscShrineRun(void)
     extern void __assert(const char*, u32, const char*);
     extern char lbl_80268AB8[];
     extern char lbl_8047C0E8[] __attribute__((section(".sdata2")));
-    extern void fn_80093574(u32);
+    extern void gbaCommWaitDone(u32);
     extern void gbaCommStartSendPokemon(u32, void*, void*);
-    extern s32 fn_80093610(u32);
+    extern s32 gbaCommGetResult(u32);
     extern void gbaCommEnd(u32);
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     extern u32 GSgetFrameStep(void);
 
     void* pokemon;
@@ -2349,14 +2349,14 @@ void menuExDiscShrineRun(void)
         *(MenuSaveSnapshot*)savedataGetStatus(0, 0);
     exShrineIncCounter();
 
-    if (fn_801D0748(4, 2, 0) != 4) {
+    if (memcardWaitTask2(4, 2, 0) != 4) {
         soundStartSE(0x4C7);
         std115_mapObjectPlayAnimation(resource, 4, 0, 0);
         scriptWaitSyncMotion(resource, 1);
         elapsed = lbl_8047C0E0;
         while (elapsed < lbl_8047C0E4) {
             _threadSwitch();
-            elapsed += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+            elapsed += (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
         }
         msgctrlSetValue(0x4D, (u32)name);
         menuSetEnablePort(1);
@@ -2390,11 +2390,11 @@ void menuExDiscShrineRun(void)
         }
 
         *(u32*)(lbl_803F6E40 + 8) |= 8;
-        fn_80093574(1);
+        gbaCommWaitDone(1);
         gbaCommStartSendPokemon(1, lbl_803F6E40, pokemon);
-        fn_80093574(1);
+        gbaCommWaitDone(1);
 
-        if (fn_80093610(1) != 0xC) {
+        if (gbaCommGetResult(1) != 0xC) {
             gbaCommEnd(1);
             winMsgClose(1);
             menuSetEnablePort(1);
@@ -2403,14 +2403,14 @@ void menuExDiscShrineRun(void)
 
             *(MenuSaveSnapshot*)savedataGetStatus(0, 0) =
                 *(MenuSaveSnapshot*)backup;
-            fn_801D0748(4, 2, 0);
+            memcardWaitTask2(4, 2, 0);
             soundStartSE(0x4C7);
             std115_mapObjectPlayAnimation(resource, 4, 0, 0);
             scriptWaitSyncMotion(resource, 1);
             elapsed = lbl_8047C0E0;
             while (elapsed < lbl_8047C0E4) {
                 _threadSwitch();
-                elapsed += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+                elapsed += (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
             }
             msgctrlSetValue(0x4D, (u32)name);
             menuSetEnablePort(1);
@@ -2506,7 +2506,7 @@ void exDiscCelebiTransfer(void)
     elapsed = lbl_8047C0E0;
         while (elapsed < lbl_8047C0E4) {
             _threadSwitch();
-            elapsed += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+            elapsed += (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
         }
         msgctrlSetValue(0x4D, (u32)name);
         menuSetEnablePort(1);
@@ -2524,7 +2524,7 @@ void exDiscCelebiTransfer(void)
     elapsed = lbl_8047C0E0;
     while (elapsed < lbl_8047C0E4) {
         _threadSwitch();
-        elapsed += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+        elapsed += (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
     }
     msgctrlSetValue(0x4D, (u32)name);
     menuSetEnablePort(1);
@@ -2542,7 +2542,7 @@ void exDiscCelebiTransfer(void)
         elapsed = lbl_8047C0E0;
         while (elapsed < lbl_8047C0E4) {
             _threadSwitch();
-            elapsed += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+            elapsed += (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
         }
         menuSetEnablePort(1);
         winMsgOpenField(0x44B0, 1, 0);
@@ -2585,9 +2585,9 @@ void exDiscCelebiEvent(void* backup)
     extern void* floorDataBiosGetCurrentPtr(void);
     extern u32 floorDataBiosGetFloorID(void*);
     extern void heroPokemonGetCelebi(void*, u32);
-    extern s32 fn_801D0748(u32, u32, u32);
+    extern s32 memcardWaitTask2(u32, u32, u32);
     extern void std130_soundUnk_801653cc(u32, u32, u32);
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     extern u32 GSgetFrameStep(void);
 
     MenuSaveSnapshot* savedataBackup = backup;
@@ -2623,7 +2623,7 @@ void exDiscCelebiEvent(void* backup)
         elapsed = lbl_8047C0E0;
         while (elapsed < lbl_8047C0E4) {
             _threadSwitch();
-            elapsed += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+            elapsed += (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
         }
         winMsgOpenField(0x43AC, 1, 0);
         winMsgClose(1);
@@ -2637,7 +2637,7 @@ void exDiscCelebiEvent(void* backup)
     elapsed = lbl_8047C0E0;
     while (elapsed < lbl_8047C0E4) {
         _threadSwitch();
-        elapsed += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+        elapsed += (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
     }
 
     *savedataBackup =
@@ -2646,14 +2646,14 @@ void exDiscCelebiEvent(void* backup)
     heroPokemonGetCelebi(
         hero, floorDataBiosGetFloorID(floorDataBiosGetCurrentPtr()));
 
-    if ((s8)fn_801D0748(4, 2, 0) != 4) {
+    if ((s8)memcardWaitTask2(4, 2, 0) != 4) {
         soundStartSE(0x4C7);
         std115_mapObjectPlayAnimation(resource, 4, 0, 0);
         scriptWaitSyncMotion(resource, 1);
         elapsed = lbl_8047C0E0;
         while (elapsed < lbl_8047C0E4) {
             _threadSwitch();
-            elapsed += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+            elapsed += (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
         }
         *(MenuSaveSnapshot*)savedataGetStatus(0, 0) =
             *savedataBackup;
@@ -2671,13 +2671,13 @@ void exDiscCelebiEvent(void* backup)
 }
 
 
-/* fn_80078D38 (0x80078D38): reset the menu fade timer probe. */
-s32 fn_80078D38(void) {
+/* menuFadeTimerReset (0x80078D38): reset the menu fade timer probe. */
+s32 menuFadeTimerReset(void) {
     return fadeCheck(1);
 }
 
 /* Drive the e-Reader/ex-disc scene state machine to completion. */
-void fn_80078D5C(void)
+void exDiscSceneRun(void)
 {
     extern void* memcardAllocBuffer();
     extern void memcardFreeBuffer();
@@ -2685,8 +2685,8 @@ void fn_80078D5C(void)
     extern void cameraPlayAnime();
     extern u8 fn_80075C44();
     extern u8 fn_80075C20();
-    extern u8 fn_801EE398();
-    extern u32 fn_80075BC4();
+    extern u8 darkPokemonAllFlag14Set();
+    extern u32 exShrineGetRemaining();
     extern void winMsgOpenField();
     extern void winMsgClose();
     extern void soundStartSE();
@@ -2698,7 +2698,7 @@ void fn_80078D5C(void)
     extern void GSmodelSetVisibility();
     extern u32 std112_modelGetResourceID();
     extern void GSscene_SetMode();
-    extern s32 fn_800849B4();
+    extern s32 cardeTransferUI();
     extern void std113_mapObjectUnk_8018db68();
     extern u8 lbl_80268AA8[];
     extern u8 lbl_803F6E40[];
@@ -2755,13 +2755,13 @@ void fn_80078D5C(void)
             elapsed = lbl_8047C0E0;
             while (elapsed < lbl_8047C0E4) {
                 _threadSwitch();
-                elapsed += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+                elapsed += (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
             }
             lbl_8047A620 = 0;
             break;
 
         case 4:
-            if (fn_801EE398() == 1) {
+            if (darkPokemonAllFlag14Set() == 1) {
                 lbl_8047A620 = 7;
             } else {
                 lbl_8047A620 = 6;
@@ -2771,7 +2771,7 @@ void fn_80078D5C(void)
         case 5:
             winMsgOpenField(0x43AF, 1, 0);
             winMsgClose(1);
-            scene = fn_80075BC4();
+            scene = exShrineGetRemaining();
             if (scene < 1) {
                 winMsgOpenField(0x43B2, 1, 0);
                 winMsgClose(1);
@@ -2823,7 +2823,7 @@ void fn_80078D5C(void)
             fadeSet(2, lbl_8047C104);
             fadeCheck(1);
             *(u8**)&loadData.words[1] = lbl_803F6F18;
-            if (fn_800849B4(0, 0x20, &loadData, lbl_803F6E40) < 0) {
+            if (cardeTransferUI(0, 0x20, &loadData, lbl_803F6E40) < 0) {
                 lbl_8047A620 = 0;
                 break;
             }
@@ -2857,8 +2857,8 @@ void fn_80078D5C(void)
 }
 
 
-/* fn_8007926C (0x8007926C): initialize the menu scene object. */
-void fn_8007926C(void) {
+/* exDiscSceneInitObject (0x8007926C): initialize the menu scene object. */
+void exDiscSceneInitObject(void) {
     extern u32 lbl_8047A620;
     extern u32 std112_modelGetResourceID(u32 resourceId);
     extern void std114_mapObjectSetVisibility(u32 object, s32 visible);
@@ -2873,7 +2873,7 @@ void fn_8007926C(void) {
     std115_mapObjectPlayAnimation(object, 0, 0, 1);
 }
 
-void fn_800792D8(void) {
+void menuExDiscCouponRun(void) {
     extern u8 pokemonCheckValid(void*);
     u32 command[4];
     ExDiscCouponResult result;
@@ -2910,7 +2910,7 @@ void fn_800792D8(void) {
     fadeCheck(1);
 
     command[1] = (u32)hero;
-    if (fn_800849B4(0, 0, command, &result) < 0) {
+    if (cardeTransferUI(0, 0, command, &result) < 0) {
         lbl_8047A638 = 1;
         RESTORE_EXDISC_SCENE(sceneHandle);
         return;
@@ -2928,7 +2928,7 @@ void fn_800792D8(void) {
     lbl_8047A62C = result.flagsA62C;
     lbl_8047A628 = result.couponValue;
 
-    if (fn_80079EF4(0, result.couponValue) == 0) {
+    if (exDiscCouponSelect(0, result.couponValue) == 0) {
         return;
     }
 
@@ -2983,10 +2983,10 @@ void fn_800792D8(void) {
         result.optionFlags |= 1;
     }
 
-    fn_80093574(1);
+    gbaCommWaitDone(1);
     gbaCommStartSendPokemon(1, &result, giftPokemon);
-    fn_80093574(1);
-    if (fn_80093610(1) != 0xc) {
+    gbaCommWaitDone(1);
+    if (gbaCommGetResult(1) != 0xc) {
         gbaCommEnd(1);
         winMsgOpen(2, 0x3d85, 1, 0);
         winMsgClose(1);
@@ -3036,11 +3036,11 @@ void exDiscCouponMenu(void* backup)
     typedef struct MenuSaveSnapshot {
         u8 bytes[0x1DFD0];
     } MenuSaveSnapshot;
-    extern s32 fn_801D0748(u32, u32, u32);
+    extern s32 memcardWaitTask2(u32, u32, u32);
     extern u32 exDiscCouponGive();
     extern void* gamedatasaveGetStatus(u32, u32);
     extern void* savedataGetStatus(u32, u32);
-    extern void* fn_80128DD4(void*);
+    extern void* savedataGetSectionB88(void*);
     extern u16 pcboxGetItemCapacity(void*, u32);
     extern void pcboxDelItem(void*, u32, u32);
     extern void* heroGetStatus(void*, u32, u32);
@@ -3059,7 +3059,7 @@ void exDiscCouponMenu(void* backup)
     u32 heroValue;
     s8 choice;
 
-    saveResult = fn_801D0748(2, 2, 0);
+    saveResult = memcardWaitTask2(2, 2, 0);
     if (saveResult != 3 || gamedatasaveGetStatus(0, 4) == NULL) {
         if (saveResult != -1) {
             winMsgOpen(2, 0x44DB, 1, 0);
@@ -3074,12 +3074,12 @@ void exDiscCouponMenu(void* backup)
     lbl_8047A634 = fn_80075B08();
     lbl_8047A633 = fn_80075B50();
     heroValue = (u32)heroGetStatus(0, 0xE, 0);
-    if (fn_80079EF4(1, heroValue) == 0) {
+    if (exDiscCouponSelect(1, heroValue) == 0) {
         return;
     }
 
     canBag = 1;
-    pcbox = fn_80128DD4(savedataGetStatus(0, 0));
+    pcbox = savedataGetSectionB88(savedataGetStatus(0, 0));
     if (lbl_8047A632 != 0 && pcboxGetItemCapacity(pcbox, 0x47) < 1) {
         canBag = 0;
     }
@@ -3122,7 +3122,7 @@ party_capacity_done:
         fn_80075B2C();
     }
 
-    if (fn_801D0748(4, 2, 0) != 4) {
+    if (memcardWaitTask2(4, 2, 0) != 4) {
         menuClose(0xEF);
         *(MenuSaveSnapshot*)savedataGetStatus(0, 0) =
             *(MenuSaveSnapshot*)backup;
@@ -3167,7 +3167,7 @@ extern u32 lbl_804788F0;
 extern u32 lbl_802E61D8[];
 extern f32 lbl_8047C114;
 extern const f32 lbl_8047C128;
-extern s32 fn_800D37CC(void);
+extern s32 GSgfxGetVsyncRate(void);
 extern u32 GSgetFrameStep(void);
 
 #define WAIT_MENU_TIME(limit_)           \
@@ -3177,7 +3177,7 @@ extern u32 GSgetFrameStep(void);
             s32 frames_;                 \
             u32 ticks_;                  \
             _threadSwitch();             \
-            frames_ = fn_800D37CC();     \
+            frames_ = GSgfxGetVsyncRate();     \
             ticks_ = GSgetFrameStep();      \
             elapsed_ += (f32)ticks_ / (f32)frames_; \
         }                                \
@@ -3290,7 +3290,7 @@ int exDiscCouponGive(s32 arg0, int arg1, int arg2, s32 arg3) {
     return 1;
 }
 
-/* fn_80079EF4 only. Retail re-reads the start and limit globals in every
+/* exDiscCouponSelect only. Retail re-reads the start and limit globals in every
  * wait, but converts the frame rate before calling fn_800D3088: the
  * update is one expression, so the rate's conversion is a temporary
  * rather than a named local. The remaining difference is the two
@@ -3303,11 +3303,11 @@ int exDiscCouponGive(s32 arg0, int arg1, int arg2, s32 arg3) {
         f32 elapsed_ = lbl_8047C114;                          \
         while (elapsed_ < (limit_)) {                         \
             _threadSwitch();                                  \
-            elapsed_ += (f32)GSgetFrameStep() / (f32)fn_800D37CC(); \
+            elapsed_ += (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate(); \
         }                                                     \
     } while (0)
 
-u8 fn_80079EF4(s32 arg0, u32 value) {
+u8 exDiscCouponSelect(s32 arg0, u32 value) {
     s32 rank;
     s32 choice;
 
@@ -3394,8 +3394,8 @@ u8 fn_80079EF4(s32 arg0, u32 value) {
 }
 
 
-/* fn_8007A5E8 (0x8007A5E8): draw the current coupon total. */
-void fn_8007A5E8(s32 unused, u8* window) {
+/* exDiscDrawCoupons (0x8007A5E8): draw the current coupon total. */
+void exDiscDrawCoupons(s32 unused, u8* window) {
     extern u32 lbl_8047A62C;
     extern void msgctrlSetValue(s32, u32);
     extern u32 GSmsgGetRect(s32);
@@ -3413,8 +3413,8 @@ void fn_8007A5E8(s32 unused, u8* window) {
     GSmsgPrintColor(*(s16*)(window + 0x54) - (rect >> 16), 0, -1, 0x153);
 }
 
-/* fn_8007A664 (0x8007A664): show the sprite selected by the current mode. */
-void fn_8007A664(s32 unused, u8* sprite) {
+/* exDiscCouponMenuDrawSprite (0x8007A664): show the sprite selected by the current mode. */
+void exDiscCouponMenuDrawSprite(s32 unused, u8* sprite) {
     switch (lbl_8047A638) {
     case 4:
         if (*(s16*)(sprite + 6) == 0x10BF) {
@@ -3433,8 +3433,8 @@ void fn_8007A664(s32 unused, u8* sprite) {
     }
 }
 
-/* fn_8007A6F0 (0x8007A6F0): show the coupon-rank sprite. */
-void fn_8007A6F0(s32 unused, MenuRankSprite* sprite) {
+/* exDiscDrawCouponRank (0x8007A6F0): show the coupon-rank sprite. */
+void exDiscDrawCouponRank(s32 unused, MenuRankSprite* sprite) {
     u32 value;
     s32 rank;
 
@@ -3541,7 +3541,7 @@ void fn_8007A850(void)
         case 2:
         {
             extern u32 GSgetFrameStep(void);
-            extern s32 fn_800D37CC(void);
+            extern s32 GSgfxGetVsyncRate(void);
             f32 elapsed;
 
             winMsgOpenField(0x43A5, 1, 0);
@@ -3549,7 +3549,7 @@ void fn_8007A850(void)
             elapsed = lbl_8047C114;
             while (elapsed < lbl_8047C108) {
                 _threadSwitch();
-                elapsed += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+                elapsed += (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
             }
             lbl_8047A638 = 1;
             break;
@@ -3558,7 +3558,7 @@ void fn_8007A850(void)
             exDiscCouponMenu(backup);
             break;
         case 4:
-            fn_800792D8();
+            menuExDiscCouponRun();
             break;
         }
     }
@@ -3567,8 +3567,8 @@ void fn_8007A850(void)
     floorLink(0x321, 0);
 }
 
-/* fn_8007AA6C (0x8007AA6C): reset event flag + start menu animation. */
-void fn_8007AA6C(void) {
+/* exDiscResetEventAnim (0x8007AA6C): reset event flag + start menu animation. */
+void exDiscResetEventAnim(void) {
     extern u32 std093_getCurrentGroupID(void);
     extern void cameraPlayAnime(u32, u32, u32, u32);
 
@@ -3579,18 +3579,18 @@ void fn_8007AA6C(void) {
 /* gbaBootWaitThread (0x8007AAA8): wait for the worker and release its state. */
 s32 gbaBootWaitThread(void) {
     extern s32 fn_800A1E54(void* thread, void** result);
-    extern void fn_8007B0D8(void);
+    extern void gbaBootFreeImage(void);
     void* result;
 
     lbl_803F7A30[0x342] = 1;
     while (*(volatile u8*)(lbl_803F7A30 + 0x345) == 0) {
     }
     fn_800A1E54(lbl_803F7A30 + 0x28, &result);
-    fn_8007B0D8();
+    gbaBootFreeImage();
     return 0;
 }
 
-void fn_8007AAFC(void) {
+void gbaBootCancel(void) {
     lbl_803F7A30[0x342] = 1;
 }
 
@@ -3794,8 +3794,8 @@ void gbaBootPrepare(s32 request) {
     gbaBootLoadImage(request);
 }
 
-/* fn_8007B0D8 (0x8007B0D8): free outstanding pending callback state. */
-void fn_8007B0D8(void) {
+/* gbaBootFreeImage (0x8007B0D8): free outstanding pending callback state. */
+void gbaBootFreeImage(void) {
     extern void* lbl_80478980;
     extern void* lbl_8047A648;
     extern void* lbl_8047A64C;
@@ -3998,7 +3998,7 @@ void _gbaBootThread(u8* r3) {
     *(u8*)(r31 + 0x345) = 0x1;
 }
 
-void fn_8007C23C(u8* r3) {
+void _gbaBootAlarm(u8* r3) {
     OSResumeThread((u32)(r3 + 0x28));
 }
 
@@ -4087,7 +4087,7 @@ extern void menuCloseCustom(s32, s32, s32);
 extern f64 sin(f64);
 extern void _flagSet();
 extern s32 menuIsCheck(s32);
-extern s32 fn_800D37CC(void);
+extern s32 GSgfxGetVsyncRate(void);
 extern u32 GSgetFrameStep(void);
 extern u32 lbl_8047A610;
 extern u8 menuModelCheck(void*, s32);
@@ -4108,27 +4108,27 @@ extern u8 lbl_80314F98[];
 #endif /* MENU_80075390_ONLY */
 
 #if !defined(MENU_RANGE_CARVE) || defined(MENU_80075390_ONLY)
-s32 fn_80075390(void) {
+s32 exShrineModelToggle(void) {
     extern u8 exShrineModelIsOpen(void);
-    extern void fn_8007565C(void);
+    extern void exShrineModelClose(void);
     extern void exShrineModelOpen(s32);
 
     if (exShrineModelIsOpen() != 0) {
-        fn_8007565C();
+        exShrineModelClose();
     } else {
         exShrineModelOpen(3);
     }
     return 0;
 }
 
-void fn_800753D0(void)
+void exShrineMenuCtrl(void)
 {
     void* object;
     f32 direction[3];
     f32 frames;
     f32 delta;
 
-    frames = (f32)fn_800D37CC();
+    frames = (f32)GSgfxGetVsyncRate();
     *(f32*)lbl_8047A610 = (f32)GSgetFrameStep() / frames;
     *(f32*)(lbl_8047A610 + 0x18C) =
         180.0f + 40.0f * (f32)sin(*(f32*)(lbl_8047A610 + 4));
@@ -4153,7 +4153,7 @@ void fn_800753D0(void)
     }
 }
 
-void fn_80075518(u8* context, u8* message)
+void exShrineMenuDrawModel(u8* context, u8* message)
 {
     s32 alpha;
     void* model;
@@ -4199,8 +4199,8 @@ extern s32 menuOpenCustom(s32, ...);
 /* exShrineModelIsOpen (0x80075638): tail-call wrapper. */
 s32 exShrineModelIsOpen(void) { return menuIsCheck(0xd8); }
 
-/* fn_8007565C (0x8007565C): close and release the active menu resource. */
-void fn_8007565C(void) {
+/* exShrineModelClose (0x8007565C): close and release the active menu resource. */
+void exShrineModelClose(void) {
     extern void menuModelTerm(u32);
     extern void menuCloseCustom(s32, s32, s32);
     extern u16 GSmemGetHandleByPtr(u32);
@@ -4252,8 +4252,8 @@ void exShrineModelOpen(s32 pokemonId)
 }
 
 extern u8 lbl_8047A5D0;
-/* fn_800757F0 (0x800757F0): release and clear the handle at lbl_8047A5D0. */
-void fn_800757F0(void) {
+/* exDiscReleaseObject (0x800757F0): release and clear the handle at lbl_8047A5D0. */
+void exDiscReleaseObject(void) {
     std113_mapObjectUnk_8018db68(*(u32*)&lbl_8047A5D0);
     *(u32*)&lbl_8047A5D0 = 0;
 }
@@ -4355,7 +4355,7 @@ done:
 extern int std115_mapObjectPlayAnimation();
 extern void floorSetFadeScript(s32, u32);
 
-void fn_80075DC8(void)
+void exDiscFloorSelect(void)
 {
     u32 elapsed;
     u32 waitTicks;
@@ -4363,7 +4363,7 @@ void fn_80075DC8(void)
 
     cameraPlayAnime((s32)std093_getCurrentGroupID(), 0x0B561800, 0, 0);
     waitTicks = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitTicks = (u32)lbl_8047C0C0;
         if (waitTicks < 1) {
             waitTicks = 1;

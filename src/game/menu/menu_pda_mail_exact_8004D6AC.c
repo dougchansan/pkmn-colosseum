@@ -17,7 +17,7 @@ typedef struct PdaMailOutput {
 extern s32 pdaMailGetMailID(s32 index);
 extern u32 mailGetContents(s32 id);
 
-s32 fn_8004D6AC(PdaMailWindow* window, PdaMailOutput* output)
+s32 pdaMailDrawContents(PdaMailWindow* window, PdaMailOutput* output)
 {
     output->field_0x4c =
         mailGetContents(pdaMailGetMailID(**window->field_0x60));

@@ -199,7 +199,7 @@ extern void heroItemGetItemKindToItemAryPtr(void);
 extern void heroSetStatus();
 extern void heroGetStatus(void);
 extern void* GSresAllocResourceAlign(); /* K&R: called with 5 args, returns void* */
-extern u8 fn_800FF548(void);
+extern u8 floorGetFadeOutFlag(void);
 extern u32 _unloadScript__FPvUlUl(); /* K&R: used as function pointer */
 extern u32 _unloadFont__FPvUlUl(); /* K&R: used as function pointer */
 extern u32 _unloadMsg__FPvUlUl(); /* K&R: used as function pointer */
@@ -226,7 +226,7 @@ void gsParticleKillOldest(FieldParticleInstanceList* list);
 extern void gsParticlePtclHook();
 extern u8 joutaiDataBiosGetKaisuuId(u16 idx);
 extern u8 joutaiDataBiosGetMaxStack(u16 idx);
-extern u16 fn_80119E10(u16 idx);
+extern u16 joutaiDataBiosGetLinkId(u16 idx);
 extern u8 joutaiDataBiosGetWriteMode(u16 idx);
 extern u8 joutaiDataBiosGetSlot(u16 idx);
 extern u16 joutaiDataBiosGetStatusKind(u16 idx);
@@ -325,7 +325,7 @@ extern void GSmodelCanAnimate(void);
 extern void std070_characterAttachToCharacter(void);
 extern void std059_characterSetPosition(void);
 extern void GSmodelGetFrameCount(void);
-extern void fn_800D37CC(void);
+extern void GSgfxGetVsyncRate(void);
 extern f32 lbl_8047CFA0;
 extern u32 lbl_80478EC8;
 extern u32 lbl_80478ECC;
@@ -338,7 +338,7 @@ extern f32 lbl_8047CFB0;
 void floorEventCtrlElevator(void);
 extern void scriptSetCol(void);
 extern void std079_flagSetTrue(void);
-extern void fn_8018C558(void);
+extern void peopleGetFlags(void);
 extern void fn_8018C8F4(void);
 void floorEventCtrlDoor(void);
 extern void EvlogSet__FScUl();
@@ -376,7 +376,7 @@ extern void cameraMovePosition(u32, void*, f32);
 extern void cameraMoveRotation(u32, void*, f32);
 extern void GSgappTerminate(void);
 extern void GSgappCreate(void);
-void fn_801176C8(void);
+void fieldCameraDebugReload(void);
 extern void* GScameraGetActiveCamera();
 extern void GSvecCopy();
 extern u8 lbl_802727B8[];
@@ -395,13 +395,13 @@ extern u32 lbl_8047AD90;
 extern u32 lbl_8047AD94;
 extern u32 lbl_8047AD80;
 extern u32 lbl_8047AD84;
-extern void fn_800EC134(u32);
+extern void GSmodelApplyAnimation(u32);
 extern void fn_800D4604();
 extern void fn_800D377C();
 extern void GSgfxRenderLayer();
 extern void fn_800D9B24();
 extern void fn_800D9AF0();
-extern void fn_800D258C();
+extern void GScameraSetCurrent();
 extern void gfxSetScissor();
 extern void gfxSetViewport();
 extern void _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID(void);
@@ -454,7 +454,7 @@ extern u32 fn_800E3CBC(struct GSmodel* model);
 extern u32 GSmodelGetGSparticleLinkAttachMode(struct GSmodel* model);
 extern u32 GSmodelGetVisibility(struct GSmodel* model);
 extern void fn_80135E44(void);
-void fn_8011A0A8(u8*, u8*, u16);
+void statusCopyJoutai(u8*, u8*, u16);
 extern s32 kaisuuGetKaisuu(u32);
 extern void jumptable_8035C260();
 extern void fightWazaBiosSetWazaBanme(void);
@@ -533,19 +533,19 @@ extern void GSrand(void);
 extern u8 lbl_8027296C[];
 void pokemonCheckSetMonohiroi(void);
 void pokemonAllKaihuku(void);
-extern u32 fn_801DE190(u32 idx, u32 base, u32 flag);
-extern void fn_801DA3CC(void);
-extern void fn_801DA36C(void);
+extern u32 wazaSequencePokemonCreate(u32 idx, u32 base, u32 flag);
+extern void wazaSequenceOwnerSetFlag(void);
+extern void wazaSequenceOwnerClearFlag(void);
 extern u32 lbl_80478F90; /* obj header ptr (SDA) */
 extern void fn_80135530(void);
 void pokemonGetFriendFormPokemonFriendFilterId(void);
 extern u8 lbl_80272948[];
 void pokemonGetEffortFromPokemon(void);
-extern void fn_80008154(void);
+extern void getGlobal8047A280(void);
 extern void fn_80142CF4(void);
 extern u32 sexGetPokemonSexRaitoKotei(u32);
-extern void fn_801EE958(void);
-extern void fn_801EEB34(void);
+extern void darkPokemonSetFlag16(void);
+extern void darkPokemonSetFlag12(void);
 extern void memoDataSet(void);
 void pokemonCheckFightOut(void);
 extern void gamedataAttestBiosCopy(void);
@@ -576,15 +576,15 @@ extern void mailInitMailbox(void);
 extern void sodateyaInit(void);
 extern void savedataBattleInit(void);
 extern void memoInit(void);
-extern void fn_80083CBC(void);
-extern void fn_801EF128(void);
+extern void cardeArenaClear(void);
+extern void darkPokemonSaveInit(void);
 extern void exribbonInit(void);
 extern void jumptable_803634A8();
 extern void fn_80140A9C(void);
-extern void fn_80140ACC(void);
+extern void heroItemChangeCount(void);
 extern void fn_80141308(void);
 extern void fn_80142368(void);
-extern void fn_80140588(void);
+extern void peopleFieldGetPlacementOffset(void);
 extern void pcboxAddPokemon(void);
 extern void fn_80142A88(void);
 extern void jumptable_803634F0();
@@ -595,7 +595,7 @@ extern void peopleClearFlagsByIndex(void);
 extern void std151_characterFaceDirection(void);
 extern void winMsgOpenField(void);
 extern void winMsgCloseField(void);
-extern void fn_801D0AFC(void);
+extern void heroPartyHealAll(void);
 extern void floorReturnToSavedRoom(void);
 extern f32 lbl_8047D030;
 extern f32 lbl_8047D034;
@@ -604,7 +604,7 @@ void cbPoison__Fl15FootStepCounterl(void);
 extern void peopleIsInGroup(void);
 extern void peopleSearchID(void);
 extern void peopleInfoBiosGetPtr(void);
-extern void fn_8018F5E4(void);
+extern void charModelGetRadius(void);
 extern void colsysWallSweep(void);
 extern void PSVECScale(void);
 extern void PSVECAdd(void);
@@ -633,11 +633,11 @@ extern void GSinputResetRightSmoothing(void);
 extern void peopleGetHeadGroundPos(void);
 extern void peopleTurnToPoint(void);
 extern void peopleIsTreasure(void);
-extern void fn_80183730(void);
+extern void peopleHideAndSuspendBySelf(void);
 extern void peopleGetTalkScript(void);
 extern void peopleTalkPause(void);
 extern void std055_characterEndSpeech(void);
-extern void fn_80183688(void);
+extern void peopleShowAndResumeBySelf(void);
 extern f32 lbl_8047D070;
 extern f32 lbl_8047D074;
 extern f32 lbl_8047D078;
@@ -663,7 +663,7 @@ extern f32 lbl_8047D0B0;
 void partnerMove(void);
 extern void GSinputGetLeftStickXData(void);
 extern void GSinputGetLeftStickYData(void);
-extern void fn_800F7BC4(void);
+extern void GSinputGetButtons(void);
 extern void peopleSetSpeedFromAmount(void);
 extern void soundUpdateListener(void);
 extern f64 lbl_8047D0C8;
@@ -691,7 +691,7 @@ extern void std065_characterLookAtPlayer(u32, u32);
 void fn_8012F1FC(void);
 void fn_8012F40C(void);
 extern void GSmodelGetRotation(void);
-extern void fn_8010E138(void);
+extern void GScolsys2CollectWalkHeight(void);
 extern void GSmodelSetRotation(void);
 extern f32 lbl_8047D0D8;
 void initFloor__Fv(void);
@@ -912,20 +912,20 @@ extern f32 lbl_8047D09C;
 extern f32 lbl_8047D0A0;
 extern f32 lbl_8047D0A4;
 extern u8 fn_801174EC(void);
-extern void fn_80119F90(u8* ptr, u16 val);
-extern void fn_80119FA0(u8* ptr, u32 val);
-extern void fn_80119FB0(u8* ptr, u8 val);
-extern void fn_80119FC0(u8* ptr, u8 val);
-extern void fn_80119FD0(u8* ptr, u8 val);
-extern void fn_80119FE0(u8* ptr, u16 val);
-extern void fn_80119FF0(u8* ptr, u16 val);
+extern void joutaiSlotSet0C(u8* ptr, u16 val);
+extern void joutaiSlotSet08(u8* ptr, u32 val);
+extern void joutaiSlotSetStack(u8* ptr, u8 val);
+extern void joutaiSlotSet05(u8* ptr, u8 val);
+extern void joutaiSlotSetKaisuu(u8* ptr, u8 val);
+extern void joutaiSlotSetParam(u8* ptr, u16 val);
+extern void joutaiSlotSetDataId(u8* ptr, u16 val);
 extern u16 joutaiSlotGet0C(u8* ptr);
 extern u32 joutaiSlotGet08(u8* ptr);
-extern u8 fn_8011A030(u8* ptr);
+extern u8 joutaiSlotGetStack(u8* ptr);
 extern u8 joutaiSlotGet05(u8* ptr);
-extern u8 fn_8011A060(u8* ptr);
-extern u16 fn_8011A078(u8* ptr);
-extern u16 fn_8011A090(u8* ptr);
+extern u8 joutaiSlotGetKaisuu(u8* ptr);
+extern u16 joutaiSlotGetParam(u8* ptr);
+extern u16 joutaiSlotGetDataId(u8* ptr);
 extern void wazaDataBiosSetRiskFlag(u8* ptr, u8 val);
 extern u8 wazaDataBiosGetRiskFlag(u8* ptr);
 extern void wazaDataBiosSetHidenFlag(u8* ptr, u8 val);
@@ -1160,8 +1160,8 @@ extern void* floorCharacterBiosGetPeopleInfoPtr(u8* ptr);
 extern void floorCharacterBiosGetByIndex(u32 arg);
 extern void fn_80117154(void);
 extern void fieldCameraLoadList(void);
-extern void fn_801171C8(void);
-extern void fn_80117330(f32 arg);
+extern void fieldCameraUpdate(void);
+extern void fieldCameraMoveTo(f32 arg);
 extern u32 fn_801174C4(void);
 extern void std136_fieldClearFlag_8047ad71(void);
 extern void fn_80117500(void);
@@ -1176,17 +1176,17 @@ extern void fn_80118100(void);
 extern void gsParticleDraw(u32 a, u8 b);
 extern void gsParticleKillOwned(u8* obj, u32 notify);
 extern void GSmodelSetParticleVisibility(void* bank, u32 visible);
-extern void fn_80118C88(void* obj, u32 visible);
-extern void fn_80118CAC(void* obj, u8 enabled);
-extern void fn_80118CD0(void* obj, u8 enabled);
-extern void fn_80118CF4(void* obj, u8 enabledA, u8 enabledB);
-extern void fn_80118D18(void* obj, u8 enabled);
-extern void fn_80118D3C(void* obj, u8 enabledA, u8 enabledB);
-extern void fn_80118D60(void* obj, u8 enabled);
-extern u32 fn_80118D84(void* obj);
-extern s32 fn_80118DA8(u8* ptr);
-extern void fn_80118DE0(u8* arg1, f32* arg2, u32 arg3, u32 arg4);
-extern void fn_80118E8C(u8* arg1, f32* arg2, u32 arg3, u32 arg4, u32 arg5);
+extern void gsParticleSetVisibility(void* obj, u32 visible);
+extern void gsParticleSetRandomVelocityScale(void* obj, u8 enabled);
+extern void gsParticleSetNodeScale(void* obj, u8 enabled);
+extern void gsParticleSetTornadoScale(void* obj, u8 enabledA, u8 enabledB);
+extern void gsParticleSetTexScale(void* obj, u8 enabled);
+extern void gsParticleSetOffsetRotationLocal(void* obj, u8 enabledA, u8 enabledB);
+extern void gsParticleSetVelocityRotationLocal(void* obj, u8 enabled);
+extern u32 gsParticleGetChildCount(void* obj);
+extern s32 gsParticleGetMaxLife(u8* ptr);
+extern void gsParticleSetAngleRadiusScale(u8* arg1, f32* arg2, u32 arg3, u32 arg4);
+extern void gsParticleSetVecA(u8* arg1, f32* arg2, u32 arg3, u32 arg4, u32 arg5);
 extern void gsParticleSetVecB(u8* arg1, f32* arg2, u32 arg3, u32 arg4, u32 arg5);
 extern void fn_80118F7C(u8* obj, f32* arg);
 extern void gsParticleLinkToJObj(u8* obj, GSpart* part, u32 state, u32 byte5,
@@ -1198,16 +1198,16 @@ extern void statusSetJoutai0C(u8* arg1, u16 arg2, u32 arg3);
 extern s32 statusGetJoutai0C(void* obj, u16 val);
 extern s32 statusGetJoutaiParam(void* obj, u16 val);
 extern void statusSetJoutaiKaisuu(u8* arg1, u16 arg2, u32 arg3);
-extern void fn_8011AB50(u8* arg1, u16 arg2, u32 arg3);
+extern void statusSetJoutai05(u8* arg1, u16 arg2, u32 arg3);
 extern s32 statusGetJoutai05(void* obj, u16 val);
-extern s32 fn_8011AE40(void* obj, u16 val);
+extern s32 statusGetJoutaiKaisuu(void* obj, u16 val);
 extern void statusSetJoutaiStack(u8* arg1, u16 arg2, u32 arg3);
-extern s32 fn_8011B130(void* obj, u16 val);
+extern s32 statusGetJoutaiStack(void* obj, u16 val);
 extern void statusWriteJoutaiDataId(void* obj, u16 id, u16 arg3);
 extern s32 statusCheckWriteJoutaiDataId(void* obj, u16 val);
-extern s32 fn_8011B67C(void* obj, u16 val);
-extern void fn_8011B788(u8* obj, u16 id);
-extern void fn_8011B950(u8* base, u16 count);
+extern s32 statusIsJoutaiDataId(void* obj, u16 val);
+extern void statusInitJoutaiDataId(u8* obj, u16 id);
+extern void joutaiSlotsClear(u8* base, u16 count);
 extern u32 fn_8011BA0C(u8 type);
 extern u32 wazaIsWazaTypeId(u32 key, u8 target);
 extern u8 wazaGetMaxPP(u32 arg1, u8 arg2);
@@ -1388,12 +1388,12 @@ extern u32 pokemonGetNowLevelToExp(u8* ptr);
 extern u32 pokemonGetJoutaiMsgId(u8* ptr);
 extern u32 pokemonGetJoutaiMenuSpriteId(u8* ptr);
 extern u32 pokemonGetJoutaiDataId(u8* ptr);
-extern void fn_80121484(void* obj, u32 arg2, u32 arg3);
+extern void pokemonCopyJoutai(void* obj, u32 arg2, u32 arg3);
 extern void pokemonSetJoutai08(void* obj, u32 arg2, u32 arg3);
 extern void pokemonSetJoutai0C(void* obj, u32 arg2, u32 arg3);
 extern void pokemonSetJoutaiKaisuu(void* obj, u32 arg2, u32 arg3);
-extern void fn_801217B4(void* obj, u32 arg2, u32 arg3);
-extern void fn_8012190C(void* obj, u32 arg2, u32 arg3);
+extern void pokemonSetJoutai05(void* obj, u32 arg2, u32 arg3);
+extern void pokemonSetJoutaiStack(void* obj, u32 arg2, u32 arg3);
 extern void pokemonWriteJoutaiDataId(void* obj, u32 arg2, u32 arg3);
 extern void pokemonInitPersistentJoutai(void* obj, u32 arg2);
 extern void pokemonReplace(u32* arg1, u32* arg2);
@@ -1424,19 +1424,19 @@ extern void pokemonWazaInit(u8* ptr, u32 arg2);
 extern u32 pokemonCheckRare(void* ctx);
 extern void pokemonGrowBasisStatus(void* ptr, u32 arg2);
 extern void* fn_80128CC0(void* ptr);
-extern void* fn_80128CDC(void* ptr);
+extern void* savedataGetSection1B014(void* ptr);
 extern void* savedataBiosGetE3E8Ptr(void* ptr);
 extern void* fn_80128D14(void* ptr);
-extern void* fn_80128D30(void* ptr);
+extern void* savedataGetSection82A8(void* ptr);
 extern void* fn_80128D4C(void* ptr);
 extern void* fn_80128D68(void* ptr);
 extern void* fn_80128D80(void* ptr);
 extern void* fn_80128D9C(void* ptr);
 extern void* fn_80128DB8(void* ptr);
-extern void* fn_80128DD4(void* ptr);
+extern void* savedataGetSectionB88(void* ptr);
 extern void* fn_80128DEC(void* ptr);
 extern u32 fn_80128E04(void* ptr);
-extern void fn_80128E14(void* ptr);
+extern void randSetSeed(void* ptr);
 extern void* fn_80128E2C(void);
 extern u32 savedataGetStatus(u8* arg1, u16 arg2);
 extern void heroDecPokecoupon(u8* ptr, s32 offset);
@@ -1506,7 +1506,7 @@ extern s32 pokemonIsHpMantan(u8* ptr);
 extern s32 pokemonGetJoutai08(void* a, u16 b);
 extern s32 pokemonGetJoutai0C(void* a, u16 b);
 extern s32 pokemonGetJoutaiParam(void* a, u16 b);
-extern s32 fn_8012182C(void* a, u16 b);
+extern s32 pokemonGetJoutai05(void* a, u16 b);
 extern s32 pokemonGetJoutaiKaisuu(void* a, u16 b);
 extern s32 pokemonGetJoutaiStack(void* a, u16 b);
 extern s32 pokemonCheckWriteJoutaiDataId(void* a, u16 b);
@@ -1994,42 +1994,42 @@ void GSmodelSetParticleVisibility(void* bank, u32 visible) {
     }
 }
 /* 0x80118C88 | 36 bytes | load_then_call */
-void fn_80118C88(void* obj, u32 visible) {
+void gsParticleSetVisibility(void* obj, u32 visible) {
     psSetParticleVisibility(*(PSGeneratorState**)((u8*)obj + 0x10), visible);
 }
 /* 0x80118CAC | 36 bytes | load_then_call */
-void fn_80118CAC(void* obj, u8 enabled) {
+void gsParticleSetRandomVelocityScale(void* obj, u8 enabled) {
     psSetRandomVelocityScaling(*(PSGeneratorState**)((u8*)obj + 0x10), enabled);
 }
 /* 0x80118CD0 | 36 bytes | load_then_call */
-void fn_80118CD0(void* obj, u8 enabled) {
+void gsParticleSetNodeScale(void* obj, u8 enabled) {
     psSetNodeScaling(*(PSGeneratorState**)((u8*)obj + 0x10), enabled);
 }
 /* 0x80118CF4 | 36 bytes | load_then_call */
-void fn_80118CF4(void* obj, u8 enabledA, u8 enabledB) {
+void gsParticleSetTornadoScale(void* obj, u8 enabledA, u8 enabledB) {
     psSetTornadoScaling(*(PSGeneratorState**)((u8*)obj + 0x10), enabledA,
                         enabledB);
 }
 /* 0x80118D18 | 36 bytes | load_then_call */
-void fn_80118D18(void* obj, u8 enabled) {
+void gsParticleSetTexScale(void* obj, u8 enabled) {
     psSetParticleTexScaling(*(PSGeneratorState**)((u8*)obj + 0x10), enabled);
 }
 /* 0x80118D3C | 36 bytes | load_then_call */
-void fn_80118D3C(void* obj, u8 enabledA, u8 enabledB) {
+void gsParticleSetOffsetRotationLocal(void* obj, u8 enabledA, u8 enabledB) {
     psSetOffsetRotationInLocal(*(PSGeneratorState**)((u8*)obj + 0x10),
                                enabledA, enabledB);
 }
 /* 0x80118D60 | 36 bytes | load_then_call */
-void fn_80118D60(void* obj, u8 enabled) {
+void gsParticleSetVelocityRotationLocal(void* obj, u8 enabled) {
     psSetVelocityRotationInLocal(*(PSGeneratorState**)((u8*)obj + 0x10),
                                  enabled);
 }
 /* 0x80118D84 | 36 bytes | load_then_call */
-u32 fn_80118D84(void* obj) {
+u32 gsParticleGetChildCount(void* obj) {
     return psGetParticleChildCount(*(PSGeneratorState**)((u8*)obj + 0x10));
 }
 /* 0x80118DA8 | 0x38 */
-s32 fn_80118DA8(u8* ptr) {
+s32 gsParticleGetMaxLife(u8* ptr) {
     FieldParticleNodePtr node;
 
     node.raw = ptr;
@@ -2037,7 +2037,7 @@ s32 fn_80118DA8(u8* ptr) {
     return psGetGeneratorChildMaxLife((PSGeneratorState*)node.typed->generator);
 }
 /* 0x80118DE0 | 0xAC */
-void fn_80118DE0(u8* arg1, f32* arg2, u32 arg3, u32 arg4) {
+void gsParticleSetAngleRadiusScale(u8* arg1, f32* arg2, u32 arg3, u32 arg4) {
     extern void GSvecCopy();
     extern void psSetGeneratorAngleRadiusScale();
     if ((s32)*(u32*)(arg1 + 0x44) == 0) {
@@ -2052,8 +2052,8 @@ void fn_80118DE0(u8* arg1, f32* arg2, u32 arg3, u32 arg4) {
         psSetGeneratorAngleRadiusScale(*(void**)(arg1 + 0x10), arg2, (void*)arg4);
     }
 }
-/* 0x78 | fn_80118E8C | two_call_arg_check */
-void fn_80118E8C(u8* arg1, f32* arg2, u32 arg3, u32 arg4, u32 arg5) {
+/* 0x78 | gsParticleSetVecA | two_call_arg_check */
+void gsParticleSetVecA(u8* arg1, f32* arg2, u32 arg3, u32 arg4, u32 arg5) {
     if ((s32)*(u32*)(arg1 + 0x44) == 0) {
         GSvecCopy(arg1 + 0x20);
         *(f32*)(*(u8**)(arg1 + 0x10) + 0x8c) = arg2[0];
@@ -2549,7 +2549,7 @@ static inline u8 fieldStatusEntryActive(u8* entry) {
     if (entry == NULL) {
         return 0;
     }
-    if (fn_8011A090(entry) == 0) {
+    if (joutaiSlotGetDataId(entry) == 0) {
         return 0;
     }
     return 1;
@@ -2565,14 +2565,14 @@ static inline u8 fieldStatusEntryHas(u8* obj, u16 id) {
         return 0;
     }
     if (fieldStatusEntryActive(entry) == 1) {
-        if (fn_8011A090(entry) == id) {
+        if (joutaiSlotGetDataId(entry) == id) {
             return 1;
         }
     }
     return 0;
 }
 
-void fn_8011A0A8(u8* dst, u8* src, u16 type)
+void statusCopyJoutai(u8* dst, u8* src, u16 type)
 {
     u8* dst_entry;
     u8* src_entry;
@@ -2601,8 +2601,8 @@ void statusSetJoutai08(u8* arg1, u16 arg2, u32 arg3) {
     extern u8* joutaiDataBiosGetObjectKind(u16 val);
     extern u32 joutaiDataBiosGetStatusKind(u16 val);
     extern u8* statusGetStatus(u8* a, u8* b, u32 c, u32 d, u32 e);
-    extern u16 fn_8011A090(u8* ptr);
-    extern void fn_80119FA0(u8* ptr, u32 val);
+    extern u16 joutaiSlotGetDataId(u8* ptr);
+    extern void joutaiSlotSet08(u8* ptr, u32 val);
     u8* base;
     u16 idx;
     u8 flag;
@@ -2627,11 +2627,11 @@ check_base:
     if (base != NULL) { goto a090_check; }
     flag = 0; goto inner_flag_check;
 a090_check:
-    if ((u16)fn_8011A090(base) == 0) { flag = 0; goto inner_flag_check; }
+    if ((u16)joutaiSlotGetDataId(base) == 0) { flag = 0; goto inner_flag_check; }
     flag = 1;
 inner_flag_check:
     if ((u8)flag == 1) {
-        if ((u16)fn_8011A090(base) == arg2) {
+        if ((u16)joutaiSlotGetDataId(base) == arg2) {
             flag = 1;
             goto flag_check;
         }
@@ -2651,7 +2651,7 @@ p2_offset:
     base = base + idx * 16;
 p2_check:
     if (base != NULL) {
-        fn_80119FA0(base, arg3);
+        joutaiSlotSet08(base, arg3);
     }
 
 exit:
@@ -2663,7 +2663,7 @@ s32 statusGetJoutai08(void* obj, u16 val) {
     extern u8* joutaiDataBiosGetObjectKind(u16 val);
     extern u32 joutaiDataBiosGetStatusKind(u16 val);
     extern u8* statusGetStatus(u8* a, void* b, u32 c, u32 d, u32 e);
-    extern u16 fn_8011A090(u8* ptr);
+    extern u16 joutaiSlotGetDataId(u8* ptr);
     extern s32 joutaiSlotGet08(u8* ptr);
     u8* base;
     u16 idx;
@@ -2689,11 +2689,11 @@ check_base:
     if (base != NULL) { goto a090_check; }
     flag = 0; goto inner_flag_check;
 a090_check:
-    if ((u16)fn_8011A090(base) == 0) { flag = 0; goto inner_flag_check; }
+    if ((u16)joutaiSlotGetDataId(base) == 0) { flag = 0; goto inner_flag_check; }
     flag = 1;
 inner_flag_check:
     if ((u8)flag == 1) {
-        if ((u16)fn_8011A090(base) == val) {
+        if ((u16)joutaiSlotGetDataId(base) == val) {
             flag = 1;
             goto flag_check;
         }
@@ -2720,8 +2720,8 @@ void statusSetJoutai0C(u8* arg1, u16 arg2, u32 arg3) {
     extern u8* joutaiDataBiosGetObjectKind(u16 val);
     extern u32 joutaiDataBiosGetStatusKind(u16 val);
     extern u8* statusGetStatus(u8* a, u8* b, u32 c, u32 d, u32 e);
-    extern u16 fn_8011A090(u8* ptr);
-    extern void fn_80119F90(u8* ptr, u32 val);
+    extern u16 joutaiSlotGetDataId(u8* ptr);
+    extern void joutaiSlotSet0C(u8* ptr, u32 val);
     u8* base;
     u16 idx;
     u8 flag;
@@ -2746,11 +2746,11 @@ check_base:
     if (base != NULL) { goto a090_check; }
     flag = 0; goto inner_flag_check;
 a090_check:
-    if ((u16)fn_8011A090(base) == 0) { flag = 0; goto inner_flag_check; }
+    if ((u16)joutaiSlotGetDataId(base) == 0) { flag = 0; goto inner_flag_check; }
     flag = 1;
 inner_flag_check:
     if ((u8)flag == 1) {
-        if ((u16)fn_8011A090(base) == arg2) {
+        if ((u16)joutaiSlotGetDataId(base) == arg2) {
             flag = 1;
             goto flag_check;
         }
@@ -2770,7 +2770,7 @@ p2_offset:
     base = base + idx * 16;
 p2_check:
     if (base != NULL) {
-        fn_80119F90(base, arg3);
+        joutaiSlotSet0C(base, arg3);
     }
 
 exit:
@@ -2782,7 +2782,7 @@ s32 statusGetJoutai0C(void* obj, u16 val) {
     extern u8* joutaiDataBiosGetObjectKind(u16 val);
     extern u32 joutaiDataBiosGetStatusKind(u16 val);
     extern u8* statusGetStatus(u8* a, void* b, u32 c, u32 d, u32 e);
-    extern u16 fn_8011A090(u8* ptr);
+    extern u16 joutaiSlotGetDataId(u8* ptr);
     extern s32 joutaiSlotGet0C(u8* ptr);
     u8* base;
     u16 idx;
@@ -2808,11 +2808,11 @@ check_base:
     if (base != NULL) { goto a090_check; }
     flag = 0; goto inner_flag_check;
 a090_check:
-    if ((u16)fn_8011A090(base) == 0) { flag = 0; goto inner_flag_check; }
+    if ((u16)joutaiSlotGetDataId(base) == 0) { flag = 0; goto inner_flag_check; }
     flag = 1;
 inner_flag_check:
     if ((u8)flag == 1) {
-        if ((u16)fn_8011A090(base) == val) {
+        if ((u16)joutaiSlotGetDataId(base) == val) {
             flag = 1;
             goto flag_check;
         }
@@ -2841,8 +2841,8 @@ s32 statusGetJoutaiParam(void* obj, u16 val) {
     extern u8* joutaiDataBiosGetObjectKind(u16 val);
     extern u32 joutaiDataBiosGetStatusKind(u16 val);
     extern u8* statusGetStatus(u8* a, void* b, u32 c, u32 d, u32 e);
-    extern u16 fn_8011A090(u8* ptr);
-    extern s32 fn_8011A078(u8* ptr);
+    extern u16 joutaiSlotGetDataId(u8* ptr);
+    extern s32 joutaiSlotGetParam(u8* ptr);
     u8* base;
     u16 idx;
     u8 flag;
@@ -2867,11 +2867,11 @@ check_base:
     if (base != NULL) { goto a090_check; }
     flag = 0; goto inner_flag_check;
 a090_check:
-    if ((u16)fn_8011A090(base) == 0) { flag = 0; goto inner_flag_check; }
+    if ((u16)joutaiSlotGetDataId(base) == 0) { flag = 0; goto inner_flag_check; }
     flag = 1;
 inner_flag_check:
     if ((u8)flag == 1) {
-        if ((u16)fn_8011A090(base) == val) {
+        if ((u16)joutaiSlotGetDataId(base) == val) {
             flag = 1;
             goto flag_check;
         }
@@ -2892,7 +2892,7 @@ p2_check:
     if (base != NULL) { goto p2_return; }
     return 0;
 p2_return:
-    return fn_8011A078(base);
+    return joutaiSlotGetParam(base);
 }
 /* 0x8011A9EC | 0x164 */
 void statusSetJoutaiKaisuu(u8* arg1, u16 arg2, u32 arg3) {
@@ -2900,8 +2900,8 @@ void statusSetJoutaiKaisuu(u8* arg1, u16 arg2, u32 arg3) {
     extern u8* joutaiDataBiosGetObjectKind(u16 val);
     extern u32 joutaiDataBiosGetStatusKind(u16 val);
     extern u8* statusGetStatus(u8* a, u8* b, u32 c, u32 d, u32 e);
-    extern u16 fn_8011A090(u8* ptr);
-    extern void fn_80119FD0(u8* ptr, u32 val);
+    extern u16 joutaiSlotGetDataId(u8* ptr);
+    extern void joutaiSlotSetKaisuu(u8* ptr, u32 val);
     u8* base;
     u16 idx;
     u8 flag;
@@ -2926,11 +2926,11 @@ check_base:
     if (base != NULL) { goto a090_check; }
     flag = 0; goto inner_flag_check;
 a090_check:
-    if ((u16)fn_8011A090(base) == 0) { flag = 0; goto inner_flag_check; }
+    if ((u16)joutaiSlotGetDataId(base) == 0) { flag = 0; goto inner_flag_check; }
     flag = 1;
 inner_flag_check:
     if ((u8)flag == 1) {
-        if ((u16)fn_8011A090(base) == arg2) {
+        if ((u16)joutaiSlotGetDataId(base) == arg2) {
             flag = 1;
             goto flag_check;
         }
@@ -2950,20 +2950,20 @@ p2_offset:
     base = base + idx * 16;
 p2_check:
     if (base != NULL) {
-        fn_80119FD0(base, arg3);
+        joutaiSlotSetKaisuu(base, arg3);
     }
 
 exit:
     return;
 }
 /* 0x8011AB50 | 0x164 */
-void fn_8011AB50(u8* arg1, u16 arg2, u32 arg3) {
+void statusSetJoutai05(u8* arg1, u16 arg2, u32 arg3) {
     extern u8 joutaiDataBiosGetSlot(u16 val);
     extern u8* joutaiDataBiosGetObjectKind(u16 val);
     extern u32 joutaiDataBiosGetStatusKind(u16 val);
     extern u8* statusGetStatus(u8* a, u8* b, u32 c, u32 d, u32 e);
-    extern u16 fn_8011A090(u8* ptr);
-    extern void fn_80119FC0(u8* ptr, u32 val);
+    extern u16 joutaiSlotGetDataId(u8* ptr);
+    extern void joutaiSlotSet05(u8* ptr, u32 val);
     u8* base;
     u16 idx;
     u8 flag;
@@ -2988,11 +2988,11 @@ check_base:
     if (base != NULL) { goto a090_check; }
     flag = 0; goto inner_flag_check;
 a090_check:
-    if ((u16)fn_8011A090(base) == 0) { flag = 0; goto inner_flag_check; }
+    if ((u16)joutaiSlotGetDataId(base) == 0) { flag = 0; goto inner_flag_check; }
     flag = 1;
 inner_flag_check:
     if ((u8)flag == 1) {
-        if ((u16)fn_8011A090(base) == arg2) {
+        if ((u16)joutaiSlotGetDataId(base) == arg2) {
             flag = 1;
             goto flag_check;
         }
@@ -3012,7 +3012,7 @@ p2_offset:
     base = base + idx * 16;
 p2_check:
     if (base != NULL) {
-        fn_80119FC0(base, arg3);
+        joutaiSlotSet05(base, arg3);
     }
 
 exit:
@@ -3024,7 +3024,7 @@ s32 statusGetJoutai05(void* obj, u16 val) {
     extern u8* joutaiDataBiosGetObjectKind(u16 val);
     extern u32 joutaiDataBiosGetStatusKind(u16 val);
     extern u8* statusGetStatus(u8* a, void* b, u32 c, u32 d, u32 e);
-    extern u16 fn_8011A090(u8* ptr);
+    extern u16 joutaiSlotGetDataId(u8* ptr);
     extern s32 joutaiSlotGet05(u8* ptr);
     u8* base;
     u16 idx;
@@ -3050,11 +3050,11 @@ check_base:
     if (base != NULL) { goto a090_check; }
     flag = 0; goto inner_flag_check;
 a090_check:
-    if ((u16)fn_8011A090(base) == 0) { flag = 0; goto inner_flag_check; }
+    if ((u16)joutaiSlotGetDataId(base) == 0) { flag = 0; goto inner_flag_check; }
     flag = 1;
 inner_flag_check:
     if ((u8)flag == 1) {
-        if ((u16)fn_8011A090(base) == val) {
+        if ((u16)joutaiSlotGetDataId(base) == val) {
             flag = 1;
             goto flag_check;
         }
@@ -3078,13 +3078,13 @@ p2_return:
     return joutaiSlotGet05(base);
 }
 /* 0x8011AE40 | 0x18C */
-s32 fn_8011AE40(void* obj, u16 val) {
+s32 statusGetJoutaiKaisuu(void* obj, u16 val) {
     extern u8 joutaiDataBiosGetSlot(u16 val);
     extern u8* joutaiDataBiosGetObjectKind(u16 val);
     extern u32 joutaiDataBiosGetStatusKind(u16 val);
     extern u8* statusGetStatus(u8* a, void* b, u32 c, u32 d, u32 e);
-    extern u16 fn_8011A090(u8* ptr);
-    extern s32 fn_8011A060(u8* ptr);
+    extern u16 joutaiSlotGetDataId(u8* ptr);
+    extern s32 joutaiSlotGetKaisuu(u8* ptr);
     u8* base;
     u16 idx;
     u8 flag;
@@ -3109,11 +3109,11 @@ check_base:
     if (base != NULL) { goto a090_check; }
     flag = 0; goto inner_flag_check;
 a090_check:
-    if ((u16)fn_8011A090(base) == 0) { flag = 0; goto inner_flag_check; }
+    if ((u16)joutaiSlotGetDataId(base) == 0) { flag = 0; goto inner_flag_check; }
     flag = 1;
 inner_flag_check:
     if ((u8)flag == 1) {
-        if ((u16)fn_8011A090(base) == val) {
+        if ((u16)joutaiSlotGetDataId(base) == val) {
             flag = 1;
             goto flag_check;
         }
@@ -3134,7 +3134,7 @@ p2_check:
     if (base != NULL) { goto p2_return; }
     return -1;
 p2_return:
-    return fn_8011A060(base);
+    return joutaiSlotGetKaisuu(base);
 }
 /* 0x8011AFCC | 0x164 */
 void statusSetJoutaiStack(u8* arg1, u16 arg2, u32 arg3) {
@@ -3142,8 +3142,8 @@ void statusSetJoutaiStack(u8* arg1, u16 arg2, u32 arg3) {
     extern u8* joutaiDataBiosGetObjectKind(u16 val);
     extern u32 joutaiDataBiosGetStatusKind(u16 val);
     extern u8* statusGetStatus(u8* a, u8* b, u32 c, u32 d, u32 e);
-    extern u16 fn_8011A090(u8* ptr);
-    extern void fn_80119FB0(u8* ptr, u8 val);
+    extern u16 joutaiSlotGetDataId(u8* ptr);
+    extern void joutaiSlotSetStack(u8* ptr, u8 val);
     u8* base;
     u16 idx;
     u8 flag;
@@ -3168,11 +3168,11 @@ check_base:
     if (base != NULL) { goto a090_check; }
     flag = 0; goto inner_flag_check;
 a090_check:
-    if ((u16)fn_8011A090(base) == 0) { flag = 0; goto inner_flag_check; }
+    if ((u16)joutaiSlotGetDataId(base) == 0) { flag = 0; goto inner_flag_check; }
     flag = 1;
 inner_flag_check:
     if ((u8)flag == 1) {
-        if ((u16)fn_8011A090(base) == arg2) {
+        if ((u16)joutaiSlotGetDataId(base) == arg2) {
             flag = 1;
             goto flag_check;
         }
@@ -3192,20 +3192,20 @@ p2_offset:
     base = base + idx * 16;
 p2_check:
     if (base != NULL) {
-        fn_80119FB0(base, arg3);
+        joutaiSlotSetStack(base, arg3);
     }
 
 exit:
     return;
 }
 /* 0x8011B130 | 0x190 */
-s32 fn_8011B130(void* obj, u16 val) {
+s32 statusGetJoutaiStack(void* obj, u16 val) {
     extern u8 joutaiDataBiosGetSlot(u16 val);
     extern u8* joutaiDataBiosGetObjectKind(u16 val);
     extern u32 joutaiDataBiosGetStatusKind(u16 val);
     extern u8* statusGetStatus(u8* a, void* b, u32 c, u32 d, u32 e);
-    extern u16 fn_8011A090(u8* ptr);
-    extern u8 fn_8011A030(u8* ptr);
+    extern u16 joutaiSlotGetDataId(u8* ptr);
+    extern u8 joutaiSlotGetStack(u8* ptr);
     u8* base;
     u16 idx;
     u8 flag;
@@ -3230,11 +3230,11 @@ check_base:
     if (base != NULL) { goto a090_check; }
     flag = 0; goto inner_flag_check;
 a090_check:
-    if ((u16)fn_8011A090(base) == 0) { flag = 0; goto inner_flag_check; }
+    if ((u16)joutaiSlotGetDataId(base) == 0) { flag = 0; goto inner_flag_check; }
     flag = 1;
 inner_flag_check:
     if ((u8)flag == 1) {
-        if ((u16)fn_8011A090(base) == val) {
+        if ((u16)joutaiSlotGetDataId(base) == val) {
             flag = 1;
             goto flag_check;
         }
@@ -3253,7 +3253,7 @@ p2_offset:
     base = base + idx * 16;
 p2_check:
     if (base == NULL) { return -1; }
-    return (u8)fn_8011A030(base);
+    return (u8)joutaiSlotGetStack(base);
 }
 #endif
 
@@ -3287,14 +3287,14 @@ void statusWriteJoutaiDataId(void* obj, u16 id, u16 arg3) {
     extern u8 joutaiDataBiosGetSlot(u16 idx);
     extern u32 joutaiDataBiosGetStatusKind(u16 idx);
     extern u8* joutaiDataBiosGetObjectKind(u16 idx);
-    extern void fn_80119F90(u8* ptr, u16 val);
-    extern void fn_80119FA0(u8* ptr, u32 val);
-    extern void fn_80119FB0(u8* ptr, u32 val);
-    extern void fn_80119FC0(u8* ptr, u8 val);
-    extern void fn_80119FD0(u8* ptr, s8 val);
-    extern void fn_80119FE0(u8* ptr, u16 val);
-    extern void fn_80119FF0(u8* ptr, u16 val);
-    extern u32 fn_8011A030(u8* ptr);
+    extern void joutaiSlotSet0C(u8* ptr, u16 val);
+    extern void joutaiSlotSet08(u8* ptr, u32 val);
+    extern void joutaiSlotSetStack(u8* ptr, u32 val);
+    extern void joutaiSlotSet05(u8* ptr, u8 val);
+    extern void joutaiSlotSetKaisuu(u8* ptr, s8 val);
+    extern void joutaiSlotSetParam(u8* ptr, u16 val);
+    extern void joutaiSlotSetDataId(u8* ptr, u16 val);
+    extern u32 joutaiSlotGetStack(u8* ptr);
     extern u8* statusGetStatus(u8* a, void* b, u32 c, u32 d, u32 e);
     u8 type;
     u32 old_count;
@@ -3307,29 +3307,29 @@ void statusWriteJoutaiDataId(void* obj, u16 id, u16 arg3) {
 
     type = joutaiDataBiosGetWriteMode(id);
     if (type == 4) {
-        old_count = fn_8011A030(elem);
+        old_count = joutaiSlotGetStack(elem);
     } else {
         old_count = 0;
     }
     if (elem != NULL) {
-        fn_80119FF0(elem, 0);
-        fn_80119FE0(elem, 0);
-        fn_80119FD0(elem, 0);
-        fn_80119FC0(elem, 0);
-        fn_80119FB0(elem, 0);
-        fn_80119FA0(elem, 0);
-        fn_80119F90(elem, 0);
+        joutaiSlotSetDataId(elem, 0);
+        joutaiSlotSetParam(elem, 0);
+        joutaiSlotSetKaisuu(elem, 0);
+        joutaiSlotSet05(elem, 0);
+        joutaiSlotSetStack(elem, 0);
+        joutaiSlotSet08(elem, 0);
+        joutaiSlotSet0C(elem, 0);
     }
-    fn_80119FF0(elem, id);
-    fn_80119FE0(elem, arg3);
-    fn_80119FD0(elem, (s8)kaisuuGetKaisuu(joutaiDataBiosGetKaisuuId(id)));
+    joutaiSlotSetDataId(elem, id);
+    joutaiSlotSetParam(elem, arg3);
+    joutaiSlotSetKaisuu(elem, (s8)kaisuuGetKaisuu(joutaiDataBiosGetKaisuuId(id)));
     if (type == 4) {
         u32 count = old_count + 1;
         u32 limit = joutaiDataBiosGetMaxStack(id);
         if ((u8)limit < (u8)count) {
             count = limit;
         }
-        fn_80119FB0(elem, count);
+        joutaiSlotSetStack(elem, count);
     }
 }
 #endif
@@ -3341,9 +3341,9 @@ s32 statusCheckWriteJoutaiDataId(void* obj, u16 val) {
     extern u8* joutaiDataBiosGetObjectKind(u16 val);
     extern u32 joutaiDataBiosGetStatusKind(u16 val);
     extern u8* statusGetStatus(u8* a, void* b, u32 c, u32 d, u32 e);
-    extern u32 fn_8011A090(u8* ptr);
+    extern u32 joutaiSlotGetDataId(u8* ptr);
     extern u8 joutaiDataBiosGetWriteMode(u16 val);
-    extern u16 fn_80119E10(u32 val);
+    extern u16 joutaiDataBiosGetLinkId(u32 val);
     u8* base;
     u16 idx;
     u32 entry_val;
@@ -3362,7 +3362,7 @@ offset_calc:
 check_base:
     if (base == NULL) { return 0; }
 
-    entry_val = fn_8011A090(base);
+    entry_val = joutaiSlotGetDataId(base);
     kind = (u8)joutaiDataBiosGetWriteMode(val);
 
     if (kind == 2) { goto case2; }
@@ -3383,7 +3383,7 @@ case2:
     if (base != NULL) { goto case2_check; }
     flag = 0; goto case2_done;
 case2_check:
-    if ((u16)fn_8011A090(base) == 0) { flag = 0; goto case2_done; }
+    if ((u16)joutaiSlotGetDataId(base) == 0) { flag = 0; goto case2_done; }
     flag = 1;
 case2_done:
     {
@@ -3396,12 +3396,12 @@ case3:
     if (base != NULL) { goto case3_check; }
     flag = 0; goto case3_flag_done;
 case3_check:
-    if ((u16)fn_8011A090(base) == 0) { flag = 0; goto case3_flag_done; }
+    if ((u16)joutaiSlotGetDataId(base) == 0) { flag = 0; goto case3_flag_done; }
     flag = 1;
 case3_flag_done:
     if ((u8)flag == 0) { return 2; }
     if ((u16)entry_val == val) { goto case3_return1; }
-    if ((u16)fn_80119E10(entry_val) == val) { goto case3_return1; }
+    if ((u16)joutaiDataBiosGetLinkId(entry_val) == val) { goto case3_return1; }
     return 2;
 case3_return1:
     return 1;
@@ -3410,12 +3410,12 @@ case4:
     if (base != NULL) { goto case4_check; }
     flag = 0; goto case4_flag_done;
 case4_check:
-    if ((u16)fn_8011A090(base) == 0) { flag = 0; goto case4_flag_done; }
+    if ((u16)joutaiSlotGetDataId(base) == 0) { flag = 0; goto case4_flag_done; }
     flag = 1;
 case4_flag_done:
     if ((u8)flag == 0) { return 2; }
     if ((u16)entry_val == val) { goto case4_return2; }
-    if ((u16)fn_80119E10(entry_val) != val) { goto case4_return1; }
+    if ((u16)joutaiDataBiosGetLinkId(entry_val) != val) { goto case4_return1; }
 case4_return2:
     return 2;
 case4_return1:
@@ -3424,12 +3424,12 @@ default_case:
     return 0;
 }
 /* 0x8011B67C | 0x10C */
-s32 fn_8011B67C(void* obj, u16 val) {
+s32 statusIsJoutaiDataId(void* obj, u16 val) {
     extern u8 joutaiDataBiosGetSlot(u16 val);
     extern u8* joutaiDataBiosGetObjectKind(u16 val);
     extern u32 joutaiDataBiosGetStatusKind(u16 val);
     extern u8* statusGetStatus(u8* a, void* b, u32 c, u32 d, u32 e);
-    extern u16 fn_8011A090(u8* ptr);
+    extern u16 joutaiSlotGetDataId(u8* ptr);
     u8* base;
     u16 idx;
     u8 flag;
@@ -3448,30 +3448,30 @@ check_base:
     if (base != NULL) { goto a090_check; }
     flag = 0; goto flag_done;
 a090_check:
-    if ((u16)fn_8011A090(base) == 0) { flag = 0; goto flag_done; }
+    if ((u16)joutaiSlotGetDataId(base) == 0) { flag = 0; goto flag_done; }
     flag = 1;
 flag_done:
     if ((u8)flag == 1) {
-        if ((u16)fn_8011A090(base) == val) {
+        if ((u16)joutaiSlotGetDataId(base) == val) {
             return 1;
         }
     }
     return 0;
 }
 /* 0x8011B788 | 0x1C8 */
-void fn_8011B788(u8* obj, u16 id) {
+void statusInitJoutaiDataId(u8* obj, u16 id) {
     extern u8 joutaiDataBiosGetSlot(u16 val);
     extern u8* joutaiDataBiosGetObjectKind(u16 val);
     extern u32 joutaiDataBiosGetStatusKind(u16 val);
     extern u8* statusGetStatus(u8* a, void* b, u32 c, u32 d, u32 e);
-    extern u16 fn_8011A090(u8* ptr);
-    extern void fn_80119FF0(u8* ptr, u32 val);
-    extern void fn_80119FE0(u8* ptr, u32 val);
-    extern void fn_80119FD0(u8* ptr, u32 val);
-    extern void fn_80119FC0(u8* ptr, u32 val);
-    extern void fn_80119FB0(u8* ptr, u32 val);
-    extern void fn_80119FA0(u8* ptr, u32 val);
-    extern void fn_80119F90(u8* ptr, u32 val);
+    extern u16 joutaiSlotGetDataId(u8* ptr);
+    extern void joutaiSlotSetDataId(u8* ptr, u32 val);
+    extern void joutaiSlotSetParam(u8* ptr, u32 val);
+    extern void joutaiSlotSetKaisuu(u8* ptr, u32 val);
+    extern void joutaiSlotSet05(u8* ptr, u32 val);
+    extern void joutaiSlotSetStack(u8* ptr, u32 val);
+    extern void joutaiSlotSet08(u8* ptr, u32 val);
+    extern void joutaiSlotSet0C(u8* ptr, u32 val);
     u8* base;
     u16 idx;
     u8 flag;
@@ -3496,11 +3496,11 @@ check_base:
     if (base != NULL) { goto a090_check; }
     flag = 0; goto inner_flag_check;
 a090_check:
-    if ((u16)fn_8011A090(base) == 0) { flag = 0; goto inner_flag_check; }
+    if ((u16)joutaiSlotGetDataId(base) == 0) { flag = 0; goto inner_flag_check; }
     flag = 1;
 inner_flag_check:
     if ((u8)flag == 1) {
-        if ((u16)fn_8011A090(base) == id) {
+        if ((u16)joutaiSlotGetDataId(base) == id) {
             flag = 1;
             goto flag_check;
         }
@@ -3520,38 +3520,38 @@ p2_offset:
 p2_check:
     if (obj == NULL) { goto exit; }
     if (obj == NULL) { goto exit; }
-    fn_80119FF0(obj, 0);
-    fn_80119FE0(obj, 0);
-    fn_80119FD0(obj, 0);
-    fn_80119FC0(obj, 0);
-    fn_80119FB0(obj, 0);
-    fn_80119FA0(obj, 0);
-    fn_80119F90(obj, 0);
+    joutaiSlotSetDataId(obj, 0);
+    joutaiSlotSetParam(obj, 0);
+    joutaiSlotSetKaisuu(obj, 0);
+    joutaiSlotSet05(obj, 0);
+    joutaiSlotSetStack(obj, 0);
+    joutaiSlotSet08(obj, 0);
+    joutaiSlotSet0C(obj, 0);
 
 exit:
     return;
 }
 /* 0x8011B950 | 0xBC */
-void fn_8011B950(u8* base, u16 count) {
-    extern void fn_80119FF0(u8* a, u32 b);
-    extern void fn_80119FE0(u8* a, u32 b);
-    extern void fn_80119FD0(u8* a, u32 b);
-    extern void fn_80119FC0(u8* a, u32 b);
-    extern void fn_80119FB0(u8* a, u32 b);
-    extern void fn_80119FA0(u8* a, u32 b);
-    extern void fn_80119F90(u8* a, u32 b);
+void joutaiSlotsClear(u8* base, u16 count) {
+    extern void joutaiSlotSetDataId(u8* a, u32 b);
+    extern void joutaiSlotSetParam(u8* a, u32 b);
+    extern void joutaiSlotSetKaisuu(u8* a, u32 b);
+    extern void joutaiSlotSet05(u8* a, u32 b);
+    extern void joutaiSlotSetStack(u8* a, u32 b);
+    extern void joutaiSlotSet08(u8* a, u32 b);
+    extern void joutaiSlotSet0C(u8* a, u32 b);
     u8* elem;
     u16 i;
     for (i = 0; i < count; i++) {
         elem = base + ((u16)i << 4);
         if (elem != NULL) {
-            fn_80119FF0(elem, 0);
-            fn_80119FE0(elem, 0);
-            fn_80119FD0(elem, 0);
-            fn_80119FC0(elem, 0);
-            fn_80119FB0(elem, 0);
-            fn_80119FA0(elem, 0);
-            fn_80119F90(elem, 0);
+            joutaiSlotSetDataId(elem, 0);
+            joutaiSlotSetParam(elem, 0);
+            joutaiSlotSetKaisuu(elem, 0);
+            joutaiSlotSet05(elem, 0);
+            joutaiSlotSetStack(elem, 0);
+            joutaiSlotSet08(elem, 0);
+            joutaiSlotSet0C(elem, 0);
         }
     }
 }
@@ -3579,7 +3579,7 @@ u8 joutaiDataBiosGetMaxStack(u16 idx) {
     return entry[0x3];
 }
 extern u32 lbl_80478B48;  /* NPC count (SDA) */
-u16 fn_80119E10(u16 idx) {
+u16 joutaiDataBiosGetLinkId(u16 idx) {
     u8* entry;
     if ((u32)idx >= lbl_80478B48) { entry = NULL; } else { entry = lbl_8035BBA8 + (u32)idx * 0x14; }
     if (entry == NULL) { return 0; }
@@ -3621,43 +3621,43 @@ u32 fn_80119F50(u16 idx) {
     return *(u32*)(entry + 0x10);
 }
 /* Address: 0x80119F90 | Size: 0x10 | Pattern: nullcheck_setter */
-void fn_80119F90(u8* ptr, u16 val) {
+void joutaiSlotSet0C(u8* ptr, u16 val) {
     FieldStatusEntry* entry = (FieldStatusEntry*)ptr;
     if (entry == NULL) { return; }
     entry->half_c = val;
 }
 /* Address: 0x80119FA0 | Size: 0x10 | Pattern: nullcheck_setter */
-void fn_80119FA0(u8* ptr, u32 val) {
+void joutaiSlotSet08(u8* ptr, u32 val) {
     FieldStatusEntry* entry = (FieldStatusEntry*)ptr;
     if (entry == NULL) { return; }
     entry->value = val;
 }
 /* Address: 0x80119FB0 | Size: 0x10 | Pattern: nullcheck_setter */
-void fn_80119FB0(u8* ptr, u8 val) {
+void joutaiSlotSetStack(u8* ptr, u8 val) {
     FieldStatusEntry* entry = (FieldStatusEntry*)ptr;
     if (entry == NULL) { return; }
     entry->count = val;
 }
 /* Address: 0x80119FC0 | Size: 0x10 | Pattern: nullcheck_setter */
-void fn_80119FC0(u8* ptr, u8 val) {
+void joutaiSlotSet05(u8* ptr, u8 val) {
     FieldStatusEntry* entry = (FieldStatusEntry*)ptr;
     if (entry == NULL) { return; }
     entry->byte5 = val;
 }
 /* Address: 0x80119FD0 | Size: 0x10 | Pattern: nullcheck_setter */
-void fn_80119FD0(u8* ptr, u8 val) {
+void joutaiSlotSetKaisuu(u8* ptr, u8 val) {
     FieldStatusEntry* entry = (FieldStatusEntry*)ptr;
     if (entry == NULL) { return; }
     entry->byte4 = val;
 }
 /* Address: 0x80119FE0 | Size: 0x10 | Pattern: nullcheck_setter */
-void fn_80119FE0(u8* ptr, u16 val) {
+void joutaiSlotSetParam(u8* ptr, u16 val) {
     FieldStatusEntry* entry = (FieldStatusEntry*)ptr;
     if (entry == NULL) { return; }
     entry->sub_id = val;
 }
 /* Address: 0x80119FF0 | Size: 0x10 | Pattern: nullcheck_setter */
-void fn_80119FF0(u8* ptr, u16 val) {
+void joutaiSlotSetDataId(u8* ptr, u16 val) {
     FieldStatusEntry* entry = (FieldStatusEntry*)ptr;
     if (entry == NULL) { return; }
     entry->id = val;
@@ -3675,7 +3675,7 @@ u32 joutaiSlotGet08(u8* ptr) {
     return entry->value;
 }
 /* Address: 0x8011A030 | Size: 0x18 | Pattern: nullcheck_getter */
-u8 fn_8011A030(u8* ptr) {
+u8 joutaiSlotGetStack(u8* ptr) {
     FieldStatusEntry* entry = (FieldStatusEntry*)ptr;
     if (entry == NULL) { return 0; }
     return entry->count;
@@ -3687,19 +3687,19 @@ u8 joutaiSlotGet05(u8* ptr) {
     return entry->byte5;
 }
 /* Address: 0x8011A060 | Size: 0x18 | Pattern: nullcheck_getter */
-u8 fn_8011A060(u8* ptr) {
+u8 joutaiSlotGetKaisuu(u8* ptr) {
     FieldStatusEntry* entry = (FieldStatusEntry*)ptr;
     if (entry == NULL) { return 0; }
     return entry->byte4;
 }
 /* Address: 0x8011A078 | Size: 0x18 | Pattern: nullcheck_getter */
-u16 fn_8011A078(u8* ptr) {
+u16 joutaiSlotGetParam(u8* ptr) {
     FieldStatusEntry* entry = (FieldStatusEntry*)ptr;
     if (entry == NULL) { return 0; }
     return entry->sub_id;
 }
 /* Address: 0x8011A090 | Size: 0x18 | Pattern: nullcheck_getter */
-u16 fn_8011A090(u8* ptr) {
+u16 joutaiSlotGetDataId(u8* ptr) {
     FieldStatusEntry* entry = (FieldStatusEntry*)ptr;
     if (entry == NULL) { return 0; }
     return entry->id;

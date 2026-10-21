@@ -88,10 +88,10 @@ void EvlogSet__FScUl(s8 event, u32 value) {
 /* 0x80114254 | 0x60 */
 s32 floorReadRelModulePostFunc(s32 param1, s32 param2, s32 param3) {
     extern s32 GSresGetResource(s32);
-    extern void fn_8017F484(s32, s32, s32);
+    extern void floorRelPostRead(s32, s32, s32);
     s32 result = GSresGetResource(param1);
 
-    fn_8017F484(param1, param2, param3);
+    floorRelPostRead(param1, param2, param3);
     return result;
 }
 

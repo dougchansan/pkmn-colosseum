@@ -121,7 +121,7 @@ extern u32 GSgetFrameStep(void);
 extern void fn_800D9E4C(s32);
 extern void fn_800D9ED8(s32);
 extern void gfxSetBlendMode(s32, s32, s32);
-extern void fn_801D2404(void);
+extern void menuDrawBlinkIcon(void);
 extern void fadeDaemon(void);
 extern void fn_800FE6D0();
 extern void fn_800FE35C(void);
@@ -467,7 +467,7 @@ void menuDaemon(void) {
     u16 keys;
     u8 doFade = 1;
 
-    fn_801D2404();
+    menuDrawBlinkIcon();
     active = windowSearchID(windowGetActiveID());
     _menuUpdateKeyInfo__FP15WINDOW_SYS_WORK(&lbl_80404ACC);
     fn_800D9E4C(0);

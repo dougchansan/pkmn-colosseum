@@ -188,7 +188,7 @@ static inline f32 splIterateSimpsonsMiddle(const f32 coeffs[5], f32 dx,
     return sum;
 }
 
-f32 fn_801B1AD0(const f32 coeffs[5], f32 start, f32 midpoint)
+f32 splSegmentArcLength(const f32 coeffs[5], f32 start, f32 midpoint)
 {
     f32 dx = (midpoint - start) * lbl_8047DE18;
     f32 middle = splIterateSimpsonsMiddle(coeffs, dx, start + dx);
@@ -648,7 +648,7 @@ void HSD_SetMaterialColor(HsdChanColor* ambient, HsdChanColor* diffuse,
 }
 
 void HSD_SetupChannel(HSD_Chan* ch);
-void fn_801B3AE8(s32 chan);
+void HSD_ChanLightingOff(s32 chan);
 void HSD_StateSetNumChans(s32 n);
 
 #pragma push
@@ -730,14 +730,14 @@ void HSD_SetupChannelMode(u32 rendermode)
 
     if (num_chans != 0) {
         if (alpha_chan == 0) {
-            fn_801B3AE8(3);
+            HSD_ChanLightingOff(3);
         }
         HSD_StateSetNumChans(2);
     } else if (alpha_chan != 0) {
-        fn_801B3AE8(1);
+        HSD_ChanLightingOff(1);
         HSD_StateSetNumChans(2);
     } else {
-        fn_801B3AE8(5);
+        HSD_ChanLightingOff(5);
         HSD_StateSetNumChans(1);
     }
 }
@@ -1179,7 +1179,7 @@ void HSD_SetupChannelAll(HSD_Chan* chan)
 /* Address: 0x801B3AE8 | Size: 0x234 */
 #pragma push
 #pragma optimization_level 1
-void fn_801B3AE8(s32 chan)
+void HSD_ChanLightingOff(s32 chan)
 {
     s32 idx = chan & 3;
     s32 amb_src;
@@ -2302,7 +2302,7 @@ void HSD_TExpAlphaOp(ColTExpNode* texp, s32 op, u32 bias, u32 scale, u8 clamp) {
 }
 
 /* Set the four direct color-input selectors on a TEV expression. */
-void fn_801B6DC0(ColTExpNode* texp, u32 input_a, u32 input_b,
+void HSD_TExpSetSwapTable(ColTExpNode* texp, u32 input_a, u32 input_b,
                  u32 input_c, u32 input_d) {
     if (texp == NULL) {
         __assert(&lbl_8047DE70, 0x1BB, &lbl_8047DE90);
@@ -4475,7 +4475,7 @@ f32 splArcLengthGetParameter(HSD_Spline* spline, f32 distance)
             result = (start + end) / 2.0F;
             {
                 f32 length =
-                    fn_801B1AD0(spline->segPoly[idx], start, result);
+                    splSegmentArcLength(spline->segPoly[idx], start, result);
 
                 if (remaining < 0.00001F + length) {
                     end = result;

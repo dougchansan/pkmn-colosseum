@@ -173,10 +173,10 @@ extern void* kaisuuBiosGetMin(u32 index);
 extern u32 kaisuuGetKaisuu(u32 param);
 extern void fn_80101B34(u32 param);
 extern void fn_80101B88(u32 val);
-extern void fn_80101B90(void);
+extern void gappLoadMeterDraw(void);
 extern void fn_80101D5C(void);
-extern void fn_80101D8C(void);
-extern void fn_80101FB8(u8 param);
+extern void gappLoadMeterDrawFrame(void);
+extern void gappLoadMeterInit(u8 param);
 extern void menuGetOffScreenFlag(void);
 extern void menuReleaseOffScreen(f32 f1);
 extern void menuCreateOffScreen(f32 param);
@@ -230,7 +230,7 @@ extern void windowOpen(void);
 extern void _winCalcWindowSize__FlPC13MENU_ITEM_dd_PsPs(void);
 extern void windowInit(u16 count);
 extern void windowGetPortKeyInfo(void);
-extern void fn_80105634(void);
+extern void winMsgDrawItem(void);
 extern void winMsgDraw(void);
 extern void winMsgCtrl(void);
 extern void winMsgButton(void* p);
@@ -288,7 +288,7 @@ extern void gfxVtxColor4u8(s32, s32, s32, s32, s32);
 extern void gfxEnd(void);
 extern void gfxLoadTexture(s32, void*);
 extern void gfxVtxTexCoord(s32, f32, f32);
-extern s32 fn_800D37CC(void);
+extern s32 GSgfxGetVsyncRate(void);
 extern void gfxSetCoPlanar(s32);
 extern u32 GSgetFrameStep(void);
 
@@ -298,7 +298,7 @@ void menuOffScreenDraw(void) {
     f32 progress;
 
     if (lbl_8047AD24 != 0) {
-        lbl_8047AD3C += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+        lbl_8047AD3C += (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
         if (lbl_8047AD3C >= lbl_8047AD38) {
             lbl_8047AD3C = lbl_8047AD38;
             lbl_8047AD24 = 0;

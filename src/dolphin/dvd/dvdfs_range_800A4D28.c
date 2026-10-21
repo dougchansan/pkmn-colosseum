@@ -137,7 +137,7 @@ s32 DVDConvertPathToEntrynum(const char* pathPtr) {
             }
 
             if (illegal) {
-                fn_800060F0(lbl_804789C0, 0x17B, lbl_803118F0, origPathPtr);
+                errorPanic(lbl_804789C0, 0x17B, lbl_803118F0, origPathPtr);
             }
         } else {
             for (ptr = pathPtr; (*ptr != '\0') && (*ptr != '/'); ptr++) {
@@ -265,12 +265,12 @@ BOOL DVDReadAsync(DVDFileInfo* fileInfo, void* addr, s32 length, s32 offset,
     s32 end;
 
     if (offset < 0 || (u32)offset >= fileInfo->length) {
-        fn_800060F0(lbl_804789C0, 0x2E6, lbl_803119F0);
+        errorPanic(lbl_804789C0, 0x2E6, lbl_803119F0);
     }
 
     end = offset + length;
     if (end < 0 || (u32)end >= fileInfo->length + 0x20) {
-        fn_800060F0(lbl_804789C0, 0x2EC, lbl_803119F0);
+        errorPanic(lbl_804789C0, 0x2EC, lbl_803119F0);
     }
 
     fileInfo->callback = callback;
@@ -293,12 +293,12 @@ s32 DVDRead(DVDFileInfo* fileInfo, void* addr, s32 length, s32 offset, s32 prio)
     s32 end;
 
     if (offset < 0 || (u32)offset >= fileInfo->length) {
-        fn_800060F0(lbl_804789C0, 0x32C, lbl_80311A24);
+        errorPanic(lbl_804789C0, 0x32C, lbl_80311A24);
     }
 
     end = offset + length;
     if (end < 0 || (u32)end >= fileInfo->length + 0x20) {
-        fn_800060F0(lbl_804789C0, 0x332, lbl_80311A24);
+        errorPanic(lbl_804789C0, 0x332, lbl_80311A24);
     }
 
     block = &fileInfo->cb;
@@ -339,7 +339,7 @@ BOOL DVDSeekAsyncPrio(DVDFileInfo* fileInfo, s32 offset, DVDCBCallback callback,
                                     DVDCBCallback callback, s32 prio);
 
     if (offset < 0 || (u32)offset >= fileInfo->length) {
-        fn_800060F0(lbl_804789C0, 0x383, lbl_80311A54);
+        errorPanic(lbl_804789C0, 0x383, lbl_80311A54);
     }
 
     fileInfo->callback = callback;

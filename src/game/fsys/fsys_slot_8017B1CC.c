@@ -4,7 +4,7 @@
  *
  * Every function here resolves an archive by its file handle, either by
  * scanning the slot array itself (fsysFindSlot, expanded in both
- * GSresReleaseById and fn_8017B2CC) or through fsysFindSlotByHandle.
+ * GSresReleaseById and GSresGroupGetState) or through fsysFindSlotByHandle.
  *
  * Built at optimisation level 0 with peephole and scheduling on, like the
  * rest of the fsys code (see configure.py).
@@ -85,7 +85,7 @@ void GSresReleaseById(u32 fileHandle)
 /* Address: 0x8017B2CC | size: 0xA4
  * 0 when the archive is loaded, 1 while it is still in flight, -1 when no
  * slot holds it. */
-s32 fn_8017B2CC(u32 fileHandle)
+s32 GSresGroupGetState(u32 fileHandle)
 {
     FSYSSlot* slot;
 

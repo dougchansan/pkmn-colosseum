@@ -3,8 +3,8 @@
  * @brief fsysLZSSDecodeJob: LZSS-decode a job's compressed entry image into the
  *        entry's buffer (0x8017BC90 - 0x8017BD34).
  *
- * The decode step of the asynchronous entry-load job: fn_8018114C (the
- * GSgapp task that fn_8018094C starts for a job of type 0) calls it with the
+ * The decode step of the asynchronous entry-load job: _fsysJobDecodeTask (the
+ * GSgapp task that fsysJobPoolUpdate starts for a job of type 0) calls it with the
  * job's slot, the entry's name hash, the compressed image fsysLZSSJobSetup moved
  * aside, and the entry's runtime trailer. It returns the output buffer, or
  * NULL when the trailer has none.

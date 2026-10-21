@@ -11,7 +11,7 @@
  * Function-boundary carve of the item/people data TU (people_data.c), GC/1.3
  * -O4,p, text only. The validity tests are the TU's u8-materialised inlines.
  * The three record searches are fn_80142368's modes (0, 1 and 2) written
- * out, and the add/put/count helpers mirror fn_80140ACC's take; none of the
+ * out, and the add/put/count helpers mirror heroItemChangeCount's take; none of the
  * helpers exists out of line.
  */
 #include "dolphin/types.h"

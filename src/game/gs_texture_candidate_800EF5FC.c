@@ -4,7 +4,7 @@
  *
  * Address range: 0x800EF5FC - 0x800EFD14 (GStextureCreate). The retail
  * GStexture.cpp spans 0x800EF098 - 0x800F0030; the earlier functions,
- * fn_800EFD14/GStextureLoad (gs_texture_exact_800EFD14.c) and GStextureInit
+ * GStextureClaimHandle/GStextureLoad (gs_texture_exact_800EFD14.c) and GStextureInit
  * (gs_texture_exact_800EFFC0.c) live in their own dtk partitions.
  *
  * Exact and linked (lane D3, 2026-09-29) through three tagged title-path
@@ -238,5 +238,5 @@ GStextureHandle* GStextureCreate(s32 width, s32 height, s32 format, s32 tlutForm
     return tex;
 }
 
-/* fn_800EFD14 and GStextureLoad (0x800EFD14 - 0x800EFFC0) are linked from
+/* GStextureClaimHandle and GStextureLoad (0x800EFD14 - 0x800EFFC0) are linked from
  * gs_texture_exact_800EFD14.c. */

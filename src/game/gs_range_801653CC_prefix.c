@@ -36,7 +36,7 @@ u32 soundPlayFanfare(u32 id, void* buffer, u32 size)
                 }
                 soundKill(id);
             }
-            fn_800F9210(0, 0x408);
+            GSresReleaseOwnerItem(0, 0x408);
         }
     }
 

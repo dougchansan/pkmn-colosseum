@@ -91,11 +91,11 @@ extern void HSD_Free(void* mem);                  /* HSD_Free */
 #define HSD_Free HSD_Free
 
 /* state.c / tev.c */
-extern void fn_8019C6EC(u32 mask); /* HSD_StateInvalidate */
+extern void HSD_RequestInvalidate(u32 mask); /* HSD_StateInvalidate */
 extern void HSD_StateRegisterTexGen(int coord);
 extern int HSD_StateAssignTev(void);
 extern void HSD_SetupTevStage(HSD_TevDesc* desc); /* HSD_SetupTevStage */
-#define HSD_StateInvalidate fn_8019C6EC
+#define HSD_StateInvalidate HSD_RequestInvalidate
 
 /* texp.c (declared in hsd_texp.h under their address names) */
 

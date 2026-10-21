@@ -12,7 +12,7 @@ extern void* windowSearchID(s32);
 extern void fn_80103F74(void*, s32, s32);
 extern void soundStopSE(s32);
 
-s32 fn_800129A8(u8* ctx)
+s32 menuFightCmdCtrl(u8* ctx)
 {
     u8* work;
     s32 kind2;
@@ -89,13 +89,13 @@ s32 fn_800129A8(u8* ctx)
     return 0;
 }
 
-s32 fn_80012B94(u8* ctx)
+s32 menuSubSelectDrawText(u8* ctx)
 {
     extern s32 windowGetParam(u8*, s32);
     extern u8 menuDataBiosGetType(s32);
     extern s32 GSmsgGetRect(s32);
     extern void windowDrawPanel(s32, s32, s32, s32);
-    extern void fn_8001E644(s32, s32, s32, s32, u8);
+    extern void windowDrawFrame(s32, s32, s32, s32, u8);
     extern void GSmsgPrintColor(s32, s32, s32, s32);
     extern void windowDrawSprite(s32, s16, u8*, s32, s32);
     u8* iter;
@@ -134,7 +134,7 @@ s32 fn_80012B94(u8* ctx)
     switch (command) {
     case 0:
     case 1:
-        fn_8001E644(0, 0, maxHeight + 0x20, totalWidth, ctx[0x8B]);
+        windowDrawFrame(0, 0, maxHeight + 0x20, totalWidth, ctx[0x8B]);
         break;
     case 0x7F:
         windowDrawPanel(0, 0, maxHeight + 0x20, totalWidth);

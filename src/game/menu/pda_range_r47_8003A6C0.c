@@ -1,5 +1,5 @@
 /**
- * PDA functions 0x8003A6C0 - 0x8003AFDC (fn_8003A6C0 .. pdaSnagListDrawCount): the
+ * PDA functions 0x8003A6C0 - 0x8003AFDC (menuAmountDraw .. pdaSnagListDrawCount): the
  * digit display, the numeric spinner, menu setup and the event-group
  * visibility check. Carved from
  * pda_range_80037158.c, which keeps the same bodies for its other
@@ -288,13 +288,13 @@ static inline void pdaResetPeopleTables(u8* base, u8* tbl)
    hero-name message slots. */
 static inline void pdaFillSavePrompt(void)
 {
-    extern u32 fn_80005748(void);
+    extern u32 gamedataGetPlaytime(void);
     extern u32 darkPokemonCountFlag14(void);
     extern u32 darkPokemonCountFlag12(void);
     extern void msgctrlSetValue(s32 id, u32 value);
     u32 playTime;
 
-    playTime = fn_80005748();
+    playTime = gamedataGetPlaytime();
     if (lbl_8047A498 != 0) {
         playTime = lbl_8047A498;
     }
@@ -367,7 +367,7 @@ static inline s32 pdaBoxItemNum(s32 target)
 
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma peephole off
-s32 fn_8003A6C0(PdaDrawWork* work, PdaSprite* sprite)
+s32 menuAmountDraw(PdaDrawWork* work, PdaSprite* sprite)
 {
     extern const s32 lbl_80267130[3];
     extern s32 lbl_8047A4C8;
@@ -421,7 +421,7 @@ typedef struct PdaNumberWork {
    between digits. */
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma peephole off
-s32 fn_8003A7F0(PdaNumberWork* work)
+s32 menuAmountKey(PdaNumberWork* work)
 {
     extern PdaKeyInfo* windowGetKeyInfo(void);
     extern s32 lbl_8047A4C8;
@@ -515,7 +515,7 @@ s32 fn_8003A7F0(PdaNumberWork* work)
     return 0;
 }
 
-s32 fn_8003AC50(PdaMenuState* state)
+s32 menuAmountCtrl(PdaMenuState* state)
 {
 
     switch (state->mode) {
@@ -560,7 +560,7 @@ s32 fn_8003ACE8(s32 arg0, s32 arg1, s32 arg2)
     return value;
 }
 
-s32 fn_8003AD6C(PdaSelectionWork* work, PdaSprite* sprite)
+s32 itemStorageConfirmDrawSprite(PdaSelectionWork* work, PdaSprite* sprite)
 {
     extern const s32 lbl_80267140[4];
     s32 groups[4];

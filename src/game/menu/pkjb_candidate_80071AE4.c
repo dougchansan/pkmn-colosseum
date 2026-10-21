@@ -2,18 +2,18 @@
  * @file pkjb_candidate_80071AE4.c
  * @brief pkjb_uploader.c carve, 0x80071AE4 - 0x800722A0 (candidate).
  *
- * fn_80071E34 is exact; fn_80071AE4 and fn_80071EA4 are not yet:
- * - fn_80071AE4: retail keeps the upload size (count * 4 + 16, + 0x70 with
+ * gbaCmdRecv33Locked is exact; gbaCmdUpload22 and gbaCmdRecv33 are not yet:
+ * - gbaCmdUpload22: retail keeps the upload size (count * 4 + 16, + 0x70 with
  *   the extra block) inside the retry loop and computes the header swap
  *   after the hoisted idle-callback addresses; this source hoists both.
- * - fn_80071EA4: the two header/body receive loops are right; only the
+ * - gbaCmdRecv33: the two header/body receive loops are right; only the
  *   placement of the first loop's pointer copy and the swap scheduling
  *   differ.
  * Unit flags and shared helpers: see game/menu/pkjb_uploader_shared.h.
  */
 #include "game/menu/pkjb_uploader_shared.h"
 
-s32 fn_80071EA4(s32 chan, u32* data);
+s32 gbaCmdRecv33(s32 chan, u32* data);
 
 static inline s32 pkjbSendBlockIdle(s32 chan, const u32* data, s32 size)
 {
@@ -60,7 +60,7 @@ static inline s32 pkjbSend22(s32 chan, const u32* data, u16 count, u16 extra)
     s32 result;
     s32 size;
 
-    result = fn_80073C38(chan);
+    result = gbaCmdResetLink(chan);
     if (result != 0) {
         return result;
     }
@@ -84,7 +84,7 @@ static inline s32 pkjbSend22(s32 chan, const u32* data, u16 count, u16 extra)
 }
 
 /* 0x80071AE4 | 0x350: command 0x22, upload a block sized by its own header. */
-s32 fn_80071AE4(s32 chan, const u32* data)
+s32 gbaCmdUpload22(s32 chan, const u32* data)
 {
     s32 key;
     s32 result;
@@ -110,15 +110,15 @@ s32 fn_80071AE4(s32 chan, const u32* data)
     return result;
 }
 
-/* 0x80071E34 | 0x70: fn_80071EA4 with the key state held. */
-s32 fn_80071E34(s32 chan, u32* data)
+/* 0x80071E34 | 0x70: gbaCmdRecv33 with the key state held. */
+s32 gbaCmdRecv33Locked(s32 chan, u32* data)
 {
     s32 key;
     s32 result;
 
     key = chan + 1;
     gbaCommandSetKeyState(key, 2);
-    result = fn_80071EA4(chan, data);
+    result = gbaCmdRecv33(chan, data);
     gbaCommandSetKeyState(key, 1);
     return result;
 }
@@ -144,13 +144,13 @@ static inline s32 pkjbRecvBlock(s32 chan, u32* data, s32 size)
 }
 
 /* 0x80071EA4 | 0x3FC: command 0x33, receive a 16-byte header and its body. */
-s32 fn_80071EA4(s32 chan, u32* data)
+s32 gbaCmdRecv33(s32 chan, u32* data)
 {
     u32 response;
     s32 result;
     s32 size;
 
-    result = fn_80073C38(chan);
+    result = gbaCmdResetLink(chan);
     if (result != 0) {
         return result;
     }

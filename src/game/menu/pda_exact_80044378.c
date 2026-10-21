@@ -1,7 +1,7 @@
 /**
  * @file pda_exact_80044378.c
  * @brief PDA species-name list sprite callback, 0x80044378 - 0x80044630:
- *        fn_80044378 with the row helpers it inlines. Copied from
+ *        pdaMemoDrawSpeciesColumn with the row helpers it inlines. Copied from
  *        pda_range_80037158.c.
  */
 #include "dolphin/types.h"
@@ -114,7 +114,7 @@ static inline void pdaDrawNameRows(u8* context, s32 first, f32 y)
     }
 }
 
-void fn_80044378(u8* context, PdaSprite* sprite)
+void pdaMemoDrawSpeciesColumn(u8* context, PdaSprite* sprite)
 {
     extern void msgctrlSetValue(s32 id, u32 value);
     extern u16 memoDataGetCount(s32 a);

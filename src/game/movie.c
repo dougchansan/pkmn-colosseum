@@ -17,12 +17,12 @@
  * The movie scenes come in (start, play, finish) callback triples, laid
  * out finish/play/start. Nothing in main.dol references them, so the link
  * keeps them with FORCEACTIVE (configure.py).
- *   openingdemo  fn_80035EE4 / fn_80035E04 / fn_80035DD4
- *   staffroll    staffrollStart / fn_80035F64 / fn_80035F34
- *   autodemo01   fn_80036360 / fn_80036240 / fn_80036210
+ *   openingdemo  fn_80035EE4 / openingDemoPlay / openingDemoFinish
+ *   staffroll    staffrollStart / staffrollPlay / staffrollFinish
+ *   autodemo01   fn_80036360 / autodemo01Play / autodemo01Finish
  *   (none)       fn_800363B8 / fn_800363B4 / fn_800363B0
- *   gs_logo      fn_800364C8 / fn_80036468 / fn_800363BC
- *   tpc          fn_80036640 / fn_800365E0 / fn_800365B0
+ *   gs_logo      fn_800364C8 / fn_80036468 / gsLogoFinish
+ *   tpc          fn_80036640 / fn_800365E0 / tpcFinish
  *   (none)       fn_800366A4 / fn_800366A0 / fn_8003669C
  */
 
@@ -69,17 +69,17 @@ extern u32  heroGetStatus(void* hero, u32 selector, u32 index);
 extern void winMsgOpen(u32 a, u32 b, u32 c, u32 d);
 extern void winMsgClose(u32 id);
 extern s8   menuSubOpenYesNo(u8 menuType, s16 x, s16 y, s32 initialValue);
-extern s32  fn_801D0748(u32 a, u32 b, u32 c);
+extern s32  memcardWaitTask2(u32 a, u32 b, u32 c);
 extern s32  fn_8017B1AC(void);
 extern u32  GSinputButtonsChanged(u32);
-extern u32  fn_800F7BC4(u32);
+extern u32  GSinputGetButtons(u32);
 extern void GSinputRead(u32);
 extern u32  menuOpen(u32 sceneId, u32 arg);
 extern void menuClose(u32 sceneId);
 extern void fn_8017B370(u32 arg);
-extern s32  fn_8017B2CC(u32 arg);
+extern s32  GSresGroupGetState(u32 arg);
 extern u32  GSgetFrameStep(void);                         /* frames since the last call */
-extern s32  fn_800D37CC(void);                         /* frames per second */
+extern s32  GSgfxGetVsyncRate(void);                         /* frames per second */
 extern void OSSetProgressiveMode(u32 mode);                     /* OSSetProgressiveMode */
 extern void fn_800D37D4(u32 a, u32 b, u32 c, u32 d, u32 e, u16 size);
 extern s32  _fsysInitTOC(u32 numSlots, u32 param2, u32 param3, u32 param4);
@@ -126,7 +126,7 @@ typedef struct MovieCue {
 } MovieCue;
 
 /*
- * Loader (fn_8003708C) and menu-sound wave-reader threads, their 4 KiB
+ * Loader (_bootLoaderThread) and menu-sound wave-reader threads, their 4 KiB
  * stacks, and the four-word request handed to the wave reader. Retail
  * addresses all five through one base register (offset 0 for the loader
  * thread). With -inline deferred MWCC lays them out in reverse declaration
@@ -141,8 +141,8 @@ static OSThread sMainThread;
 
 /*
  * Advance a movie's cue list by at most one cue per frame and return the
- * next cue index. Retail expands this identically in fn_80035E04 (5 cues)
- * and fn_80036240 (33 cues); both expansions keep the inlined early
+ * next cue index. Retail expands this identically in openingDemoPlay (5 cues)
+ * and autodemo01Play (33 cues); both expansions keep the inlined early
  * returns as a conditional branch around an unconditional jump to the
  * helper's exit, which the equivalent nested-if form does not produce.
  */
@@ -187,7 +187,7 @@ static void movieWait(void);
 static s8 movieSelectProgressive(void);
 
 /*
- * Progressive-scan prompt: ask, record the choice for fn_800366A8 and
+ * Progressive-scan prompt: ask, record the choice for bootMain and
  * confirm it (0x3B51 progressive / 0x3B52 interlaced). fn_8003686C
  * expands this twice, identically (with separate cursor slots on the
  * stack).
@@ -241,7 +241,7 @@ void* _menuSoundReadWaveThread__FPv(void* param)
 }
 
 /* Loader thread: build the file TOC and start the main game app. */
-void* fn_8003708C(void* param)
+void* _bootLoaderThread(void* param)
 {
     _fsysInitTOC(0x40, 0, 0, 0);
     GSgappCreate(1, 0x14, 0, fsysUpdateTask);
@@ -251,7 +251,7 @@ void* fn_8003708C(void* param)
 
 /*
  * Boot loader: settle the progressive-scan choice, wait for the file TOC
- * load (fn_8017B2CC), then load the first menu-sound wave bank.
+ * load (GSresGroupGetState), then load the first menu-sound wave bank.
  */
 void bootWaitLogo(void)
 {
@@ -262,7 +262,7 @@ void bootWaitLogo(void)
     if (!movieIsRestart()) {
         if (VIGetDTVStatus() == 1) {
             GSinputRead(1);
-            if (fn_800F7BC4(1) & 0x200) {
+            if (GSinputGetButtons(1) & 0x200) {
                 movieAskProgressive();
             } else if (OSGetProgressiveMode() == 1) {
                 movieAskProgressive();
@@ -281,7 +281,7 @@ void bootWaitLogo(void)
     }
 
     for (;;) {
-        status = fn_8017B2CC(0xA);
+        status = GSresGroupGetState(0xA);
         if (status < 0) {
             GSlogWrite("読み出しエラー\n");
         }
@@ -309,7 +309,7 @@ void bootWaitLogo(void)
 }
 
 /* Boot: start the loader thread, run the boot loader, then fade in. */
-void fn_800366A8(void)
+void bootMain(void)
 {
     u16 fadeFrames;
 
@@ -317,7 +317,7 @@ void fn_800366A8(void)
     fadeSet(2, 0.5f);
 
     if (lbl_8047A464 != 1) {
-        OSCreateThread(&sMainThread, fn_8003708C, NULL,
+        OSCreateThread(&sMainThread, _bootLoaderThread, NULL,
                        sMainStack + 0xFFC, 0x1000, 0x10, 1);
         OSResumeThread(&sMainThread);
     }
@@ -345,7 +345,7 @@ void fn_800366A8(void)
 
     if (lbl_804788B8 != -1) {
         /* Retail converts through __cvt_fp2unsigned before narrowing. */
-        fadeFrames = (u32)(1.5f * (f32)fn_800D37CC());
+        fadeFrames = (u32)(1.5f * (f32)GSgfxGetVsyncRate());
         OSSetProgressiveMode(lbl_804788B8); /* OSSetProgressiveMode */
         /* Retail tests the mode it just passed on as unsigned (cmplwi). */
         if ((u32)lbl_804788B8 == 1) {
@@ -365,8 +365,8 @@ void fn_800366A8(void)
  * MWCC auto-inlines into fn_8003686C (twice and seven times) while still
  * emitting an unreferenced copy, which the linker dead-strips. The copies
  * are what order the literal pool: they are generated after fn_800366A4
- * and before fn_800366A8, so their 2.0f, int-to-float doubles and 10.0f
- * precede fn_800366A8's 0.5f and 1.5f, exactly as in retail
+ * and before bootMain, so their 2.0f, int-to-float doubles and 10.0f
+ * precede bootMain's 0.5f and 1.5f, exactly as in retail
  * (0x8047BA30: 0, 2, s32 bias, u32 bias, 10, 0.5, 1.5).
  */
 
@@ -401,7 +401,7 @@ static s8 movieSelectProgressive(void)
             lastCursor = cursor;
         }
         _threadSwitch();
-        time += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+        time += (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
     }
     if (time >= 10.0f) {
         answer = windowSearchID(0x11)->cursor;
@@ -418,7 +418,7 @@ static void movieWait(void)
     time = 0.0f;
     while (time < 2.0f) {
         _threadSwitch();
-        time += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+        time += (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
     }
 }
 
@@ -453,7 +453,7 @@ void movieTpcWait(void)
 }
 
 /* tpc: finish */
-void fn_800365B0(void)
+void tpcFinish(void)
 {
     fadeSet(3, 0.0f);
     fadeCheck(1);
@@ -498,7 +498,7 @@ void movieGsLogoWait(void)
 }
 
 /* gs_logo: finish */
-void fn_800363BC(void)
+void gsLogoFinish(void)
 {
     fadeSet(3, 0.0f);
     fadeCheck(1);
@@ -533,7 +533,7 @@ void movieStartAttract(void)
 }
 
 /* autodemo01: play, stopped early by A/B/Start (0x1300) */
-void fn_80036240(void)
+void autodemo01Play(void)
 {
     static MovieCue cues[0x21] = {
         { 0x3DF, 0x08B, 0x48B }, { 0x412, 0x08F, 0x000 }, { 0x433, 0x090, 0x000 },
@@ -559,7 +559,7 @@ void fn_80036240(void)
         }
         /* Retail calls GSinputButtonsChanged first; MWCC evaluates the right-hand
          * call of an & first. */
-        if ((fn_800F7BC4(1) & GSinputButtonsChanged(1) & 0x1300) != 0) {
+        if ((GSinputGetButtons(1) & GSinputButtonsChanged(1) & 0x1300) != 0) {
             GSmovieClose();
             break;
         }
@@ -572,7 +572,7 @@ void fn_80036240(void)
 }
 
 /* autodemo01: finish */
-void fn_80036210(void)
+void autodemo01Finish(void)
 {
     fadeSet(3, 0.0f);
     fadeCheck(1);
@@ -594,7 +594,7 @@ void staffrollStart(void)
  * too-weak party asks again (0x3C02). The live save data is restored
  * from the backup after every attempt.
  */
-void fn_80035F64(void)
+void staffrollPlay(void)
 {
     SavedataBody* backup;
     void* status;
@@ -621,7 +621,7 @@ void fn_80035F64(void)
             if (answer != 0) {
                 break;
             }
-            if (fn_801D0748(3, 2, 0) == 3 && gamedatasaveGetStatus(NULL, 4) != 0) {
+            if (memcardWaitTask2(3, 2, 0) == 3 && gamedatasaveGetStatus(NULL, 4) != 0) {
                 savedHero = heroGetStatus(savedataGetStatus(backup, 2), 2, 0);
                 if (savedHero == heroGetStatus(NULL, 2, 0) ||
                     gamedatasaveGetStatus(backup, 4) == 0) {
@@ -630,7 +630,7 @@ void fn_80035F64(void)
                 }
             }
             *(SavedataBody*)savedataGetStatus(NULL, 0) = *backup;
-        } while (answer != 0 || fn_801D0748(4, 2, 0) != 4);
+        } while (answer != 0 || memcardWaitTask2(4, 2, 0) != 4);
         winMsgClose(1);
         memcardFreeBuffer(backup);
     }
@@ -639,7 +639,7 @@ void fn_80035F64(void)
 }
 
 /* staffroll: finish */
-void fn_80035F34(void)
+void staffrollFinish(void)
 {
     fadeSet(3, 0.0f);
     fadeCheck(1);
@@ -655,7 +655,7 @@ void movieOpeningStart(void)
 }
 
 /* openingdemo: play */
-void fn_80035E04(void)
+void openingDemoPlay(void)
 {
     static MovieCue cues[5] = {
         { 0x13D, 0x1D6, 0x000 }, { 0x576, 0x449, 0x000 }, { 0x5C3, 0x1D6, 0x000 },
@@ -675,7 +675,7 @@ void fn_80035E04(void)
 }
 
 /* openingdemo: finish */
-void fn_80035DD4(void)
+void openingDemoFinish(void)
 {
     fadeSet(3, 0.0f);
     fadeCheck(1);

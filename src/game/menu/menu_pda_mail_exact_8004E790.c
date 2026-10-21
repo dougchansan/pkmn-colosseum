@@ -24,7 +24,7 @@ typedef struct PdaMailWindowA {
 
 extern u8* windowGetKeyInfo(void);
 extern u32 mailGetAttachFileGroup(s32 index);
-extern s32 fn_8017B2CC(u32 fileHandle);
+extern s32 GSresGroupGetState(u32 fileHandle);
 extern s32 fn_8017B448(u32 fileHandle);
 extern u32 fsysFindLoadedArchive(u32 fileHandle, u32 index);
 extern u32 fsysEntryGetType(void);
@@ -51,7 +51,7 @@ s32 pdaMailAttachKey(PdaMailAttachWindow* window)
     selection = *state->selection;
     index = state->mailIndex;
     count = mailGetAttachFileGroup(index);
-    if (fn_8017B2CC(count) == 1) {
+    if (GSresGroupGetState(count) == 1) {
         loaded = 0;
     } else {
         loaded = 1;
@@ -93,7 +93,7 @@ s32 pdaMailAttachKey(PdaMailAttachWindow* window)
 #pragma peephole reset
 
 #pragma peephole off
-void fn_8004E89C(void* widget)
+void pdaMailAttachButton(void* widget)
 {
     u8* state = windowGetKeyInfo();
     if (!(*(u16*)state & 0x10)) {
@@ -105,7 +105,7 @@ void fn_8004E89C(void* widget)
 /* RULE-EXCEPTION(user-approved): local peephole control;
  * see docs/RULE_EXCEPTIONS.md. */
 #pragma peephole off
-s32 fn_8004E8E0(PdaMailWindowA* window)
+s32 pdaMailAttachCtrl(PdaMailWindowA* window)
 {
     s32** field = window->field_0x60;
     switch (window->phase) {

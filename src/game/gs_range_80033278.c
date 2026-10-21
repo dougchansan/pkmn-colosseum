@@ -4,7 +4,7 @@
  *
  * fn_80035C48, fn_80035D70 and fn_80035DA0 live in game/gs_exact_80035C48.c.
  *
- * fn_80035DD4 (formerly the last function here) is the opening-demo
+ * openingDemoFinish (formerly the last function here) is the opening-demo
  * finish callback of the movie TU and now lives in game/movie.c.
  *
  * Range unit assigned from the propagated subsystem map
@@ -18,14 +18,14 @@ extern void GBAInit(void);
 extern void gbaBootPrepare(s32);
 extern s32 windowGetActiveID(void);
 extern u8* windowGetKeyInfo(void);
-extern void fn_8007AAFC(void);
+extern void gbaBootCancel(void);
 extern void gbaBootWaitThread(void);
 extern s32 gbaBootRun(s32, s32*);
 extern void soundStartSE(u32);
 extern void winMsgClose(s32);
 extern void winMsgOpen(s32, u32, s32, s32);
 extern void _threadSwitch(void);
-extern s32 fn_800D37CC(void);
+extern s32 GSgfxGetVsyncRate(void);
 extern u32 GSgetFrameStep(void);
 extern void cardeDecode(void*, const void*, u32);
 extern u8 lbl_803A3334[];
@@ -53,7 +53,7 @@ extern s32 menuOpen(s32, s32);
 extern void menuClose(s32);
 extern s32 menuOpenCustom(s32, s32, s32, s32, s32, s32, ...);
 
-extern s32 fn_80034280(void);
+extern s32 gbaTransferUI(void);
 
 extern void GScharCpy(void*, const void*);
 extern void* fightFloorDataBiosGetPtr(u16);
@@ -75,7 +75,7 @@ extern void winMsgClose(s32);
 extern void __assert(const char*, s32, const char*);
 
 extern void fn_8007CAB0(void);
-extern void* fn_800836AC(s32, void*, s32);
+extern void* cardeGridGetRecord(s32, void*, s32);
 extern void fn_8007C7EC(void);
 
 extern u8* cardeSaveGetCard(void*, s32, s32, s32);
@@ -91,10 +91,10 @@ extern void cardeSaveClearSummary(void*, void*, s32);
 extern void soundStartSE(u32);
 
 extern void _threadSwitch(void);
-extern s32 fn_800D37CC(void);
+extern s32 GSgfxGetVsyncRate(void);
 extern u32 GSgetFrameStep(void);
 
-extern void fn_801D0AFC(s32);
+extern void heroPartyHealAll(s32);
 extern void* savedataGetStatus(s32, s32);
 extern void* heroBiosGetPokemonPtr(void*, u8);
 extern void pokemonBiosSetItemDataId(void*, u16);
@@ -127,13 +127,13 @@ static void sysvarsWaitForTransfer(void)
     progress = lbl_8047B9F8;
     while (progress < lbl_8047BA18) {
         _threadSwitch();
-        progress += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+        progress += (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
     }
 }
 #endif
 
 #if defined(GS_RANGE_EXACT_80034280)
-/* The same wait for two seconds (fn_80034280's GBA link retries). */
+/* The same wait for two seconds (gbaTransferUI's GBA link retries). */
 static inline void sysvarsWaitTwoSeconds(void)
 {
     f32 progress;
@@ -141,7 +141,7 @@ static inline void sysvarsWaitTwoSeconds(void)
     progress = lbl_8047B9F8;
     while (progress < lbl_8047BA28) {
         _threadSwitch();
-        progress += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+        progress += (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
     }
 }
 #endif
@@ -211,7 +211,7 @@ s32 _sysvarsProcessData__FP16sysvarsFuncEntryPc(
 
 restart:
 
-    state = fn_80034280();
+    state = gbaTransferUI();
 
     switch (state) {
     case 0:
@@ -261,7 +261,7 @@ restart:
 
     fn_8007CAB0();
 
-    lbl_8047A434 = fn_800836AC(0, base + 0xBC, 1);
+    lbl_8047A434 = cardeGridGetRecord(0, base + 0xBC, 1);
 
     fn_8007C7EC();
 
@@ -526,7 +526,7 @@ restart:
     winMsgOpen(8, 0x3B6D, 1, 0);
     winMsgClose(1);
 
-    fn_801D0AFC(0);
+    heroPartyHealAll(0);
     save = savedataGetStatus(0, 2);
     for (index = 0; index < 6; index++) {
         pokemon = heroBiosGetPokemonPtr(save, (u8)index);
@@ -563,7 +563,7 @@ first_menu:
         (u8)lbl_8047A448);
 
     if (menuResult != 2) {
-        fn_801D0AFC(0);
+        heroPartyHealAll(0);
         save = savedataGetStatus(0, 2);
         for (index = 0; index < 6; index++) {
             pokemon = heroBiosGetPokemonPtr(save, (u8)index);
@@ -768,7 +768,7 @@ first_menu:
 
         fn_8007C414();
 
-        fn_801D0AFC(0);
+        heroPartyHealAll(0);
         save = savedataGetStatus(0, 2);
         for (index = 0; index < 6; index++) {
             pokemon = heroBiosGetPokemonPtr(save, (u8)index);
@@ -900,7 +900,7 @@ validation_done:
     if (valid == 0) {
         fn_8007C414();
 
-        fn_801D0AFC(0);
+        heroPartyHealAll(0);
         save = savedataGetStatus(0, 2);
         for (index = 0; index < 6; index++) {
             pokemon = heroBiosGetPokemonPtr(save, (u8)index);
@@ -956,7 +956,7 @@ validation_done:
 
 #if defined(GS_RANGE_EXACT_80034280)
 /* Run the GBA transfer UI until it finishes or the user cancels it. */
-s32 fn_80034280(void)
+s32 gbaTransferUI(void)
 {
     s32 state;
     s32 nextState;
@@ -975,7 +975,7 @@ s32 fn_80034280(void)
         if (windowGetActiveID() == watchedWindow &&
             (*(u16*)(windowGetKeyInfo() + 4) & 0x20) != 0) {
             if (state == 18) {
-                fn_8007AAFC();
+                gbaBootCancel();
             } else {
                 if (transferActive != 0) {
                     gbaBootWaitThread();
@@ -1046,10 +1046,10 @@ s32 fn_80034280(void)
 #pragma pop
 
 #if defined(GS_RANGE_EXACT_80034280)
-/* fn_800345A4 - 0x800345A4 | size: 0x164 */
+/* cardeMenuDrawSprite - 0x800345A4 | size: 0x164 */
 #pragma push
 #pragma peephole off
-void fn_800345A4(void* unused, u8* sprite) {
+void cardeMenuDrawSprite(void* unused, u8* sprite) {
     extern u32 lbl_802E61D8[];
     extern void winSpriteSetDisp(void*, u32);
     extern u32 heroGetStatus(s32, s32, s32);
@@ -1097,10 +1097,10 @@ void fn_800345A4(void* unused, u8* sprite) {
 }
 #pragma pop
 
-/* fn_80034708 - 0x80034708 | size: 0xB0 */
+/* cardeMenuDrawSprite2 - 0x80034708 | size: 0xB0 */
 #pragma push
 #pragma peephole off
-void fn_80034708(void* unused, u8* sprite) {
+void cardeMenuDrawSprite2(void* unused, u8* sprite) {
     extern u32 lbl_8047A458;
     extern u32 lbl_80266FA0[];
     extern void winSpriteSetDisp(void*, u32);
@@ -1394,10 +1394,10 @@ void fn_80034B5C(u8* valid, s8* selectionOut, u8* valueOut)
 }
 #pragma pop
 
-/* fn_80034DC0 - 0x80034DC0 | size: 0x78 */
+/* cardeSubMenuDrawText - 0x80034DC0 | size: 0x78 */
 #pragma push
 #pragma peephole off
-void fn_80034DC0(u8* arg0, u8* arg1) {
+void cardeSubMenuDrawText(u8* arg0, u8* arg1) {
     extern u32 lbl_8047A44C;
     extern void GSmsgPrintColor(s32, s32, u32, u16);
     extern void msgctrlSetValue(s32, s32);
@@ -1415,10 +1415,10 @@ void fn_80034DC0(u8* arg0, u8* arg1) {
 }
 #pragma pop
 
-/* fn_80034E38 - 0x80034E38 | size: 0xB8 */
+/* cardeSubMenuDrawText2 - 0x80034E38 | size: 0xB8 */
 #pragma push
 #pragma peephole off
-void fn_80034E38(u8* arg0, u8* arg1) {
+void cardeSubMenuDrawText2(u8* arg0, u8* arg1) {
     extern u32 lbl_8047A44C;
     extern u32 lbl_8047A450;
     extern void GSmsgPrintColor(s32, s32, u32, u16);
@@ -1446,11 +1446,11 @@ void fn_80034E38(u8* arg0, u8* arg1) {
 }
 #pragma pop
 
-/* fn_80034EF0 - 0x80034EF0 | size: 0x94 */
+/* cardeMenuDrawText - 0x80034EF0 | size: 0x94 */
 #pragma push
 #pragma peephole off
 #pragma optimization_level 1
-void fn_80034EF0(u8* arg0, u8* arg1) {
+void cardeMenuDrawText(u8* arg0, u8* arg1) {
     extern void GSmsgPrintColor(s32, s32, u32, u16);
     extern s32 heroGetStatus(s32, s32, s32);
     extern void msgctrlSetValue(s32, s32);
@@ -1475,10 +1475,10 @@ void fn_80034EF0(u8* arg0, u8* arg1) {
 }
 #pragma pop
 
-/* fn_80034F84 - 0x80034F84 | size: 0x2C */
+/* cardeSubMenuDrawText3 - 0x80034F84 | size: 0x2C */
 #pragma push
 #pragma optimize_for_size on
-void fn_80034F84(void) {
+void cardeSubMenuDrawText3(void) {
     extern void msgctrlSetValue();
     extern u8 lbl_803A3288[];
 #pragma peephole off
@@ -1519,7 +1519,7 @@ void cardeBattleRun(void)
     extern void cardeAwardCoupons(void);
     extern void cardeBattleSelectCard(void);
     extern void* cardeSaveGetCard(void*, s8, u8, u8);
-    extern void* fn_800836AC(void*, void*, s32);
+    extern void* cardeGridGetRecord(void*, void*, s32);
     extern u8 fn_800FF52C(void);
     extern void floorBattleEndTerminateScripts(void);
     extern s32 menuOpen(s32, s32);
@@ -1530,7 +1530,7 @@ void cardeBattleRun(void)
     extern void* heroBiosGetPokemonPtr(void*, u8);
     extern u16 pokemonBiosGetItemDataId(void*);
     extern void pokemonBiosSetItemDataId(void*, u16);
-    extern void fn_801D0AFC(s32);
+    extern void heroPartyHealAll(s32);
     extern void std130_soundUnk_801653cc(u32, s32, u32);
     extern void fadeSet(f32, u32);
     extern void fadeCheck(u32);
@@ -1617,7 +1617,7 @@ void cardeBattleRun(void)
             while (lbl_8047A458 == 2) {
                 lbl_8047A458 = _sysvarsProcessData__FP16sysvarsFuncEntryPc();
             }
-            fn_801D0AFC(0);
+            heroPartyHealAll(0);
             save = savedataGetStatus(0, 2);
             for (index = 0; index < 6; index++) {
                 pokemon = heroBiosGetPokemonPtr(save, (u8)index);
@@ -1671,7 +1671,7 @@ void cardeBattleRun(void)
 
         case 4:
             if (lbl_8047A449 != 0) {
-                fn_801D0AFC(0);
+                heroPartyHealAll(0);
             }
             if (lbl_8047A450 > lbl_8047A44C) {
                 std130_soundUnk_801653cc(0x4CE, 0, 0xFF);
@@ -1684,7 +1684,7 @@ void cardeBattleRun(void)
                 progress = lbl_8047B9F8;
                 while (progress < lbl_8047B9FC) {
                     _threadSwitch();
-                    progress += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+                    progress += (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
                 }
             }
             winMsgOpen(8, 0x3B54, 1, 1);
@@ -1716,7 +1716,7 @@ void cardeBattleRun(void)
             break;
 
         case 5:
-            result = fn_80034280();
+            result = gbaTransferUI();
             switch (result) {
             case 0:
                 lbl_8047A458 = 4;
@@ -1738,7 +1738,7 @@ void cardeBattleRun(void)
                 continue;
             }
             save = savedataGetStatus(0, 0xD);
-            lbl_8047A434 = fn_800836AC(save, menuData, 0);
+            lbl_8047A434 = cardeGridGetRecord(save, menuData, 0);
             if (lbl_8047A434 != 0) {
                 entry = cardeSaveGetCard(lbl_8047A434, (s8)(menuData[0x58] - 1),
                                     menuData[0x24], menuData[0x26]);
@@ -1823,11 +1823,11 @@ void cardeBattleRun(void)
                 progress = lbl_8047B9F8;
                 while (progress < lbl_8047B9FC) {
                     _threadSwitch();
-                    progress += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+                    progress += (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
                 }
             }
             if (lbl_8047A449 != 0) {
-                fn_801D0AFC(0);
+                heroPartyHealAll(0);
             }
             save = savedataGetStatus(0, 2);
             heldItems = (u16*)(work + 0xB0);
@@ -1887,7 +1887,7 @@ void cardeBattleRun(void)
             winMsgOpen(8, 0x3B5E, 1, 0);
             winMsgClose(1);
             if (lbl_8047A450 == 0) {
-                fn_801D0AFC(0);
+                heroPartyHealAll(0);
             }
             lbl_8047A458 = 11;
             break;
@@ -1924,7 +1924,7 @@ void cardeBattleRun(void)
             clear[12] = 0;
             clear[13] = 0;
             clear[14] = 0;
-            fn_801D0AFC(0);
+            heroPartyHealAll(0);
             winMsgOpen(8, 0x3BD7, 1, 0);
             result = menuOpen(0xA9, 1);
             menuClose(0xA9);
@@ -1946,7 +1946,7 @@ void cardeBattleRun(void)
             progress = lbl_8047B9F8;
             while (progress < lbl_8047B9FC) {
                 _threadSwitch();
-                progress += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+                progress += (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
             }
             save = savedataGetStatus(0, 2);
             heldItems = (u16*)(work + 0xB0);

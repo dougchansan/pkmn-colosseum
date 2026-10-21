@@ -115,10 +115,10 @@ extern void* memset(void* dst, s32 value, u32 size);
 extern const u8 lbl_8047E160[];
 extern const u8 lbl_8047E164[];
 
-extern u32 fn_800F7BC4(s32 pad);
+extern u32 GSinputGetButtons(s32 pad);
 extern s32 GSinputGetLeftStickXData(s32 pad, s32 axis);
 extern s32 GSinputGetLeftStickYData(s32 pad, s32 axis);
-extern void fn_800F7068(s32 id, s32 value);
+extern void GSvmIsRunning(s32 id, s32 value);
 extern void floorTerminateScriptThreads(s32 id);
 extern void* GSthreadGetCurrentThread(void);
 extern s32 fn_800F036C(void);
@@ -171,7 +171,7 @@ extern void winMsgClose(s32 id);
 extern void GSgappTerminate(void* app);
 extern void* GSgappCreate(s32 state, u8 priority, void* param, void* callback);
 extern u32 _fadeEffectGetRandom__FUl(u32 limit);
-extern s32 fn_801D0090(s32 error_code);
+extern s32 memcardShowResultMsg(s32 error_code);
 extern void CARDInit(void);
 extern s32 CARDProbeEx();
 extern s32 CARDGetResultCode();
@@ -189,10 +189,10 @@ extern s32 CARDCancel();
 extern s32 CARDClose();
 extern s32 CARDUnmount();
 extern s32 mainSetPauseFlag();
-extern s32 fn_800056D4();
+extern s32 mainTakePauseFlag();
 extern s32 GSgetVersionMinor();
 extern s32 GSgetVersionMajor(void);
-extern s32 fn_80072A00();
+extern s32 gbaCmdPing60();
 extern s32 fn_80089D74();
 extern s32 fn_8008ABA0();
 extern s32 fn_800B01C4();
@@ -210,7 +210,7 @@ u64 gamedatasaveBiosGetMemcardID(u32* data);
 void gamedatasaveBiosSetMemcardID(void* data, u64 memcard_id);
 u16 fn_8006A718(void* data);
 void savedataBattleSetSavedHero(void* data, void* value);
-void fn_801CBE44(void* data, u32 size, void* hash, u32 offset);
+void savedataEncrypt(void* data, u32 size, void* hash, u32 offset);
 u16 GSrand(void);
 void* heroGetStatus(void* data, s32 status, s32 index);
 void heroSetStatus(void* data, s32 status, void* value);
@@ -223,10 +223,10 @@ extern u16 lbl_8047E170;
 extern u32 lbl_8047E174;
 extern void memcardRequestCancel(void);
 extern s32 memcardSaveSetup(void);
-extern s32 fn_801CF568(void);
-extern s32 fn_801CF7E4(void);
-extern s32 fn_801CF9C8(void);
-extern s32 fn_801CFD08(void);
+extern s32 memcardLoadApply(void);
+extern s32 memcardLoadCheck(void);
+extern s32 memcardSelectNewestSlot(void);
+extern s32 memcardFindSaveFile(void);
 
 #if !defined(FIELD_801CB180_SPLIT) || defined(FIELD_801CB180_RANGE_801CB180)
 
@@ -234,7 +234,7 @@ s32 scriptIsTrigerPush(void)
 {
     s32 pushed = 0;
 
-    if ((fn_800F7BC4(1) & 0x1F70) != 0) {
+    if ((GSinputGetButtons(1) & 0x1F70) != 0) {
         pushed = 1;
     }
 
@@ -246,7 +246,7 @@ s32 scriptIsAnyInput(void)
     s32 pushed = 0;
     s32 axis;
 
-    if ((fn_800F7BC4(1) & 0xF) != 0) {
+    if ((GSinputGetButtons(1) & 0xF) != 0) {
         pushed = 1;
     }
 
@@ -270,7 +270,7 @@ s32 scriptIsAnyInput(void)
         pushed = 1;
     }
 
-    if ((fn_800F7BC4(1) & 0x1F70) != 0) {
+    if ((GSinputGetButtons(1) & 0x1F70) != 0) {
         pushed = 1;
     }
 
@@ -282,7 +282,7 @@ s32 scriptIsMoveButtonPush(void)
     s32 pushed = 0;
     s32 axis;
 
-    if ((fn_800F7BC4(1) & 0xF) != 0) {
+    if ((GSinputGetButtons(1) & 0xF) != 0) {
         pushed = 1;
     }
 
@@ -311,15 +311,15 @@ s32 scriptIsMoveButtonPush(void)
 
 void std005_threadIsRunning(s32 id)
 {
-    fn_800F7068(id, 0);
+    GSvmIsRunning(id, 0);
 }
 
 void std006_threadWaitForCompletion(s32 id)
 {
-    fn_800F7068(id, 1);
+    GSvmIsRunning(id, 1);
 }
 
-void fn_801CB3DC(s32 id)
+void scriptTerminateScriptThreads(s32 id)
 {
     floorTerminateScriptThreads(id);
 }
@@ -593,8 +593,8 @@ s32 std223_askYesNoThenWarp395(void)
 #endif
 
 /*
- * Save-data SHA-1 (0x801CBBAC - 0x801CDB04). sha1Calc, fn_801CBE44 and
- * fn_801CBF64 (SHA1Final) are linked from field_exact_801CBBAC.c,
+ * Save-data SHA-1 (0x801CBBAC - 0x801CDB04). sha1Calc, savedataEncrypt and
+ * sha1Final (SHA1Final) are linked from field_exact_801CBBAC.c,
  * field_exact_801CBE44.c and field_exact_801CBF64.c; sha1Transform
  * (SHA1Transform) from field_exact_801CC380.c.
  */
@@ -848,7 +848,7 @@ s32 memcardSaveSetup(void)
     }
 
     save->header.words[3] = 0;
-    fn_801CBE44(save, 0x1DFD8, save->hash, sizeof(save->hash));
+    savedataEncrypt(save, 0x1DFD8, save->hash, sizeof(save->hash));
 
     status = save->header.words[0];
     status += save->header.words[1];
@@ -869,7 +869,7 @@ s32 memcardSaveSetup(void)
     return 38;
 }
 
-s32 fn_801CF568(void)
+s32 memcardLoadApply(void)
 {
     SavedataBlock temporary;
     SavedataBody* savedata = &lbl_8047B3D4->work_buffer->savedata;
@@ -915,11 +915,11 @@ s32 fn_801CF568(void)
 }
 #endif
 
-/* fn_801CF7E4 is linked from field_exact_801CF7E4.c. */
-/* fn_801CF9C8: see src/game/memcard.c (whole memory-card TU candidate). */
+/* memcardLoadCheck is linked from field_exact_801CF7E4.c. */
+/* memcardSelectNewestSlot: see src/game/memcard.c (whole memory-card TU candidate). */
 
 #if defined(FIELD_801CBA90_RANGE_801CFD08)
-s32 fn_801CFD08(void)
+s32 memcardFindSaveFile(void)
 {
     s32 free_bytes;
     s32 free_file_count;
@@ -1058,4 +1058,4 @@ void memcardRequestCancel(void)
 }
 #endif
 
-/* fn_801D0090 is linked from field_exact_801D0090.c. */
+/* memcardShowResultMsg is linked from field_exact_801D0090.c. */

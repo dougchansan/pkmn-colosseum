@@ -96,7 +96,7 @@
 typedef struct FSYSArchiveHeader {
     /* 0x00 */ u32 magic;       /* 'FSYS' */
     /* 0x04 */ u32 version;
-    /* 0x08 */ u32 groupID;     /* archive key passed to fn_8017F794 */
+    /* 0x08 */ u32 groupID;     /* archive key passed to fsysCacheLookup */
     /* 0x0C */ u32 numEntries;
     /* 0x10 */ u32 flags;       /* bit 0: entries are external files */
     /* 0x14 */ u32 unk14;
@@ -178,8 +178,8 @@ typedef struct FSYSSlot {
     /* 0x118 */ u32  dmaSrcOffset;      /* accumulating DVD source offset */
     /* 0x11C */ u32  dmaDstOffset;      /* accumulating destination offset */
     /* 0x120 */ u8   padding120[0x04];
-    /* 0x124 */ void* dmaAsyncRequest;  /* handle polled via fn_801808B4 */
-    /* 0x128 */ void* dmaCopyDst;       /* destination pointer for fn_801807A8 */
+    /* 0x124 */ void* dmaAsyncRequest;  /* handle polled via fsysARQIsBusy */
+    /* 0x128 */ void* dmaCopyDst;       /* destination pointer for fsysARQPost */
     /* 0x12C */ u8   padding12C[0x08];
     /* 0x134 */ u32  callbackA;         /* completion callback A */
     /* 0x138 */ u32  callbackB;         /* completion callback B */
@@ -364,7 +364,7 @@ void FSYSInitLoadManager(u32 maxRequests, u32 alignment, u32 poolSize);
  *     outright - its claimed address belonged to a different unit
  *     entirely (game/gs_range_8017F2C4.c per splits.txt), and the rest
  *     of fsys_file.c already calls that real, not-yet-decompiled
- *     function correctly as `extern u32 fn_8017F794()`.
+ *     function correctly as `extern u32 fsysCacheLookup()`.
  */
 
 /*

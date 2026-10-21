@@ -67,7 +67,7 @@ extern u8 _HSD_ObjAllocForgetMemory[];
 extern u8 _HSD_RObjForgetMemory[];
 extern u8 _HSD_RandForgetMemory[];
 extern u8 _dbgMenuFightGetWazaDataIdSub[];
-extern u8 fn_80005FFC[];
+extern u8 mainPadPollTask[];
 extern u8 dbgMenuFightStop[];
 extern u8 dbgMenuPokemonEdit[];
 extern u8 _floorGetStateSize[];

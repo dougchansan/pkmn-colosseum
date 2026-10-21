@@ -134,7 +134,7 @@ extern void gfxVtxPos(f32);
 extern void gfxVtxColor4u8(s32, s32, s32, s32, s32);
 extern void gfxEnd(void);
 extern u32 wazaSequenceOwnerGetModel(u32 sequence);
-extern void fn_800EC134(u32 model);
+extern void GSmodelApplyAnimation(u32 model);
 extern void GSmodelSetPEdescr(u32 model, void* descriptor);
 extern void GSmodelResetPEdescr(u32 model);
 extern void GSmodelDrawModel(u32 model, u32 flags);
@@ -144,7 +144,7 @@ extern void fn_800D4604(u32 layer);
 extern void fn_800D377C(u32 state);
 extern void fn_800D9B24(u16* left, u16* top, u16* right, u16* bottom);
 extern void fn_800D9AF0(u16* left, u16* top, u16* right, u16* bottom);
-extern void fn_800D258C(u32 camera);
+extern void GScameraSetCurrent(u32 camera);
 extern u32 GStextureGetXsize(u32 texture);
 extern u32 GStextureGetYsize(u32 texture);
 extern void gfxSetScissor(u16 left, u16 top, u16 right, u16 bottom);
@@ -152,9 +152,9 @@ extern void gfxSetViewport(u16 left, u16 top, u16 right, u16 bottom);
 extern void _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID(void);
 extern void GSgfxRenderLayer(u32 texture, u32 slot);
 extern void wazaSequenceOwnerSetVisibility(u32 sequence, u32 active);
-extern void fn_801DA448(u32 sequence, u32 active);
+extern void wazaSequenceOwnerSetParticleVisibility(u32 sequence, u32 active);
 extern void wazaSequenceSysUpdate(void);
-extern void fn_801DAAAC(u32 sequence);
+extern void wazaSequenceOwnerDraw(u32 sequence);
 extern void GSgfxRenderEnd(void);
 extern u8 lbl_8035B468[];
 
@@ -191,10 +191,10 @@ extern void* kaisuuBiosGetMin(u32 index);
 extern u32 kaisuuGetKaisuu(u32 param);
 extern void fn_80101B34(u32 param);
 extern void fn_80101B88(u32 val);
-extern void fn_80101B90(void);
+extern void gappLoadMeterDraw(void);
 extern void fn_80101D5C(void);
-extern void fn_80101D8C(void);
-extern void fn_80101FB8(u8 param);
+extern void gappLoadMeterDrawFrame(void);
+extern void gappLoadMeterInit(u8 param);
 extern void menuGetOffScreenFlag(void);
 extern void menuReleaseOffScreen(f32 f1);
 extern void menuCreateOffScreen(f32 param);
@@ -248,7 +248,7 @@ extern void windowOpen(void);
 extern void _winCalcWindowSize__FlPC13MENU_ITEM_dd_PsPs(void);
 extern void windowInit(u16 count);
 extern void windowGetPortKeyInfo(void);
-extern void fn_80105634(void);
+extern void winMsgDrawItem(void);
 extern void winMsgDraw(void);
 extern void winMsgCtrl(void);
 extern void winMsgButton(void* p);
@@ -369,7 +369,7 @@ u32 menuModelRender(u8* work) {
     resetModel = renderModel;
     if (resetModel == 0) return 0;
 
-    fn_800EC134(resetModel);
+    GSmodelApplyAnimation(resetModel);
     GSmodelSetPEdescr(resetModel, lbl_8035B468);
     {
         lightCursor = work;
@@ -383,8 +383,8 @@ u32 menuModelRender(u8* work) {
     fn_800D377C(2);
     fn_800D9B24(&viewLeft, &viewTop, &viewRight, &viewBottom);
     fn_800D9AF0(&scissorLeft, &scissorTop, &scissorRight, &scissorBottom);
-    fn_800D258C(*(u32*)(work + 0x38));
-    fn_800D258C(*(u32*)(work + 0x38));
+    GScameraSetCurrent(*(u32*)(work + 0x38));
+    GScameraSetCurrent(*(u32*)(work + 0x38));
     width = (u16)(GStextureGetXsize(*(u32*)(work + 0x34)) - 1);
     height = (u16)(GStextureGetYsize(*(u32*)(work + 0x34)) - 1);
     gfxSetScissor(0, 0, width, height);
@@ -393,17 +393,17 @@ u32 menuModelRender(u8* work) {
     GSgfxRenderLayer(*(u32*)(work + 0x34), 0);
     if (work[0x14] != 0) {
         wazaSequenceOwnerSetVisibility(*(u32*)(work + 0x24), 1);
-        fn_801DA448(*(u32*)(work + 0x24), 1);
+        wazaSequenceOwnerSetParticleVisibility(*(u32*)(work + 0x24), 1);
         wazaSequenceSysUpdate();
-        fn_801DAAAC(*(u32*)(work + 0x24));
+        wazaSequenceOwnerDraw(*(u32*)(work + 0x24));
         wazaSequenceOwnerSetVisibility(*(u32*)(work + 0x24), 0);
-        fn_801DA448(*(u32*)(work + 0x24), 0);
+        wazaSequenceOwnerSetParticleVisibility(*(u32*)(work + 0x24), 0);
     } else {
         GSmodelDrawModel(*(u32*)(work + 0x24), 0x3010);
     }
     GSgfxRenderEnd();
     fn_800D377C(1);
-    fn_800D258C(previousCamera);
+    GScameraSetCurrent(previousCamera);
     gfxSetScissor(viewLeft, viewTop, viewRight, viewBottom);
     gfxSetViewport(scissorLeft, scissorTop, scissorRight, scissorBottom);
     _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();

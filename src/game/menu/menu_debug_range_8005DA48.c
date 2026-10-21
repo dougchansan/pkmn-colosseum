@@ -183,7 +183,7 @@ s32 dbgMenuFieldCameraChangeDisp(void)
     extern s32 menuOpenCustom(s32 menuId, ...);
     extern void menuSetPosition(s32 menuId, s32 x, s32 y);
     extern u32 std092_getCurrentRoomID(void);
-    extern void fn_801176C8(u32 floorId);
+    extern void fieldCameraDebugReload(u32 floorId);
     extern u32 fn_80117AD4(void);
     extern u32 lbl_8047A5B0;
     extern u32 lbl_8047A5B4;
@@ -194,7 +194,7 @@ s32 dbgMenuFieldCameraChangeDisp(void)
     if (!menuIsCheck(0xCA)) {
         floorId = std092_getCurrentRoomID();
         if (floorId != fn_80117AD4()) {
-            fn_801176C8(floorId);
+            fieldCameraDebugReload(floorId);
             lbl_8047A5B0 = 0;
             lbl_8047A5B4 = 0;
             lbl_8047A5B8 = 0;

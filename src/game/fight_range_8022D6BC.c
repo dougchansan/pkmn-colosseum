@@ -32,7 +32,7 @@ u32 _wsTokuseiAfterDamage(u32 attacker, u32 defender)
     extern u32 GSmsgGetGSchar();
     extern void msgctrlSetValue();
     extern void wsRunScript();
-    extern u8 fn_802025B8();
+    extern u8 fightOutPokemonCheckWritePokemonJoutaiDataId();
     extern void fightOutPokemonWritePokemonJoutaiDataId();
     extern u8 lbl_803798F3[];
     extern u8 lbl_80379907[];
@@ -180,7 +180,7 @@ u32 _wsTokuseiAfterDamage(u32 attacker, u32 defender)
             fightOutPokemonCheckFightOut(defender) == 1) {
             if (GSrand() % 3 == 0 &&
                 (u16)attackerAbility != 0xC &&
-                attackerSex != defenderSex && fn_802025B8(attacker, 0xA) == 2 &&
+                attackerSex != defenderSex && fightOutPokemonCheckWritePokemonJoutaiDataId(attacker, 0xA) == 2 &&
                 attackerSex != 2 && defenderSex != 2) {
                 fightOutPokemonWritePokemonJoutaiDataId(attacker, 0xA, target);
                 wsRunScript(lbl_8047B62C, lbl_80379932, 0);

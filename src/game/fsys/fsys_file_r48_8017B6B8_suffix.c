@@ -25,14 +25,14 @@
 extern void* GSresAllocResourceAlign(u32 size, u32 align, u32 group, u32 id, u32 param);
 extern void* GSresGetResource(u32 fileHandle, u32 nameHash);
 extern void DCFlushRange(void* addr, u32 nBytes);
-extern u8 fn_80167EF8(const char* path);
+extern u8 GSdvdConvertPathToEntrynum(const char* path);
 extern u32 GSdvdOpen(const char* path);
 extern u32 GSdvdGetLength(u32 fileInfo);
 extern s32 GSdvdClose(u32 fileInfo);
 extern u8 GSdvdReadAsync(u32 fileInfo, void* dst, u32 length, u32 offset,
                       void (*callback)(s32 result));
-extern u32 fn_8017F794(u32 fileHandle, u32 groupID, u32 nameHash);
-extern void fn_80180584(void* dst, u32 src, u32 size, void (*callback)(void), void* userData);
+extern u32 fsysCacheLookup(u32 fileHandle, u32 groupID, u32 nameHash);
+extern void fsysARAMToMainAsync(void* dst, u32 src, u32 size, void (*callback)(void), void* userData);
 extern u16 fn_800E2B00(u32 size, u32 alignment);
 extern void* GSmemLock(u16 handle);
 extern void fsysARQCallback(void);
@@ -91,7 +91,7 @@ static inline void* fsysAllocEntry(FSYSSlot* slot, FSYSFileEntry* entry)
         archive = slot->archiveData;
         name = (char*)slot->archiveData + entry->dataOffset;
         slot->tocBuffer = NULL;
-        if (fn_80167EF8(name)) {
+        if (GSdvdConvertPathToEntrynum(name)) {
             slot->tocBuffer = (void*)GSdvdOpen(name);
         }
         sub = (FSYSSubEntry*)entry->subEntry;
@@ -140,9 +140,9 @@ static inline void fsysReadCachedEntry(FSYSSlot* slot)
     current = fsysGetEntry(slot, slot->entryIndex);
     sub = slot->currentSub;
     size = current->decompressedSize;
-    cached = fn_8017F794(slot->fileHandle, current->groupID, current->nameHash);
+    cached = fsysCacheLookup(slot->fileHandle, current->groupID, current->nameHash);
     slot->status = 0xA1;
-    fn_80180584(sub->buffer, cached, size, fsysARQCallback, slot);
+    fsysARAMToMainAsync(sub->buffer, cached, size, fsysARQCallback, slot);
 }
 
 /* Address: 0x8017B6B8 | size: 0x4C8 */
@@ -183,13 +183,13 @@ void fsysLoadEntry(FSYSSlot* slot, FSYSFileEntry* entry, u32 index)
     size = entry->decompressedSize;
     size = (size + 0x1F) & ~0x1F;
     current = (FSYSFileEntry*)((u8*)slot->archiveData + offsets[index]);
-    cached = fn_8017F794(archive->groupID, current->groupID, current->nameHash);
+    cached = fsysCacheLookup(archive->groupID, current->groupID, current->nameHash);
     if (cached) {
         fsysReadCachedEntry(slot);
     } else if (archive->flags & 1) {
         name = (char*)slot->archiveData + current->dataOffset;
         slot->tocBuffer = NULL;
-        if (fn_80167EF8(name)) {
+        if (GSdvdConvertPathToEntrynum(name)) {
             slot->tocBuffer = (void*)GSdvdOpen(name);
         }
         if (!slot->tocBuffer) {

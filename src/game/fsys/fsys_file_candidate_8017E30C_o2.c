@@ -4,7 +4,7 @@
  *        synchronously (0x8017E30C - 0x8017EB6C).
  *
  * Finds the entry whose name hash is slot->requestID, fetches its image from
- * the ARAM cache (fn_8017F794 / fn_80180320) and either decodes it (LZSS
+ * the ARAM cache (fsysCacheLookup / fsysARAMToMainSync) and either decodes it (LZSS
  * entries: temporary buffer, group or GSres output buffer, decode, free the
  * temporary) or reads it straight into its group or GSres buffer (external
  * entries first refresh their size from the file on disc), then reports the
@@ -74,13 +74,13 @@ extern void fn_800E24B0(u16 handle);
 extern void GSmemFree(u16 handle);
 extern void* GSresAllocResourceAlign(u32 size, u32 align, u32 group, u32 id, u32 param);
 extern void* GSresGetResource(u32 fileHandle, u32 nameHash);
-extern u8 fn_80167EF8(const char* path);
+extern u8 GSdvdConvertPathToEntrynum(const char* path);
 extern u32 GSdvdOpen(const char* path);
 extern u32 GSdvdGetLength(u32 fileInfo);
 extern s32 GSdvdClose(u32 fileInfo);
 extern void fn_8017F2C4(void* dst, const void* src, u32 size);
-extern u32 fn_8017F794(u32 fileHandle, u32 groupID, u32 nameHash);
-extern void fn_80180320(void* main, void* aram, u32 size);
+extern u32 fsysCacheLookup(u32 fileHandle, u32 groupID, u32 nameHash);
+extern void fsysARAMToMainSync(void* main, void* aram, u32 size);
 
 /* Temporary (non-resource) allocation; also expanded in fsysLoadEntry. */
 static inline void* fsysAllocTemp(u32 size)
@@ -245,7 +245,7 @@ static inline void* fsysAllocEntry(FSYSSlot* slot, FSYSFileEntry* entry)
         archive = slot->archiveData;
         name = (char*)slot->archiveData + entry->dataOffset;
         slot->tocBuffer = NULL;
-        if (fn_80167EF8(name)) {
+        if (GSdvdConvertPathToEntrynum(name)) {
             slot->tocBuffer = (void*)GSdvdOpen(name);
         }
         sub = (FSYSSubEntry*)entry->subEntry;
@@ -289,7 +289,7 @@ s32 fsysLoadEntrySync(FSYSSlot* slot)
         }
     }
     if (found) {
-        cached = (void*)fn_8017F794(slot->fileHandle, entry->groupID, entry->nameHash);
+        cached = (void*)fsysCacheLookup(slot->fileHandle, entry->groupID, entry->nameHash);
         if (cached) {
             if (entry->flags & 0x80000000) {
                 u32 size;
@@ -297,7 +297,7 @@ s32 fsysLoadEntrySync(FSYSSlot* slot)
 
                 size = entry->decompressedSize;
                 sub->buffer = fsysAllocTemp(size);
-                fn_80180320(sub->buffer, cached, size);
+                fsysARAMToMainSync(sub->buffer, cached, size);
                 DCFlushRange(sub->buffer, size);
                 compressed = sub->buffer;
                 sub->buffer = NULL;
@@ -317,7 +317,7 @@ s32 fsysLoadEntrySync(FSYSSlot* slot)
                     slot->status = 100;
                     sub->state = 7;
                 } else {
-                    fn_80180320(sub->buffer, cached, entry->decompressedSize);
+                    fsysARAMToMainSync(sub->buffer, cached, entry->decompressedSize);
                     DCFlushRange(sub->buffer, entry->decompressedSize);
                     fsysEntryDone(slot, entry);
                 }

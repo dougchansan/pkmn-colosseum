@@ -532,7 +532,7 @@ u32 GSinputGetSubType(s32 id) {
     return pad->type;
 }
 
-u16 fn_800F7BC4(s32 id) {
+u16 GSinputGetButtons(s32 id) {
     InputPad* pad = InputFindPad(id);
 
     if (pad == NULL) {
@@ -541,7 +541,7 @@ u16 fn_800F7BC4(s32 id) {
     return pad->current.button;
 }
 
-u32 fn_800F7B5C(s32 id) {
+u32 GSinputGetButtonsUp(s32 id) {
     InputPad* pad = InputFindPad(id);
 
     if (pad == NULL) {

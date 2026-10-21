@@ -181,7 +181,7 @@ extern void GSmodelSetAnimFrame(GSmodel* model, f32 frame);
 extern u32 _toolentryAlloc__FUl(u32 size);
 extern void* GSmemLock(u32 handle);
 extern void modelShadowInit__Fv(void);
-extern void fn_800EC134(GSmodel* model);
+extern void GSmodelApplyAnimation(GSmodel* model);
 extern void gsParticleKill(void* bank, u32 destroyChildren);
 extern void GSmodelSetParticleVisibility(void* bank, u32 visible);
 extern u32 fn_80191118(GSbound* bound);
@@ -234,7 +234,7 @@ extern void GSmodelSetAnimIndex(GSmodel* model, u32 index);
 extern void GSmodelSetAnimType(GSmodel* model, u32 type);
 extern void GSmodelStartAnimation(GSmodel* model);
 
-void fn_800E85E8(GSmodel* model);
+void GSmodelFreeTextureList(GSmodel* model);
 
 static inline void modelUpdateBoundCenter(GSmodel* model)
 {
@@ -413,7 +413,7 @@ void GSmodelLinkToGSparticleBank(GSmodel* model, void* bank)
         model->linkedGSparticleBank = bank;
         if (model->linkedGSparticleBank != NULL) {
             GSmodelSetAnimFrame(model, model->animFrame);
-            fn_800EC134(model);
+            GSmodelApplyAnimation(model);
         }
     }
 }

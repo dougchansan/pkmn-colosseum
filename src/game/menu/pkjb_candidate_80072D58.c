@@ -2,7 +2,7 @@
  * @file pkjb_candidate_80072D58.c
  * @brief pkjb_uploader.c carve, 0x80072D58 - 0x80073034.
  *
- * fn_80072D58 is exact, but only with the send loop in its own inline
+ * gbaCmdUpload66 is exact, but only with the send loop in its own inline
  * (pkjbSendBlock): retail allocates the loop's word/status slots (12, 9)
  * below pkjbSendCommand's (16, 10), which MWCC does only for locals of a
  * separate inline body. The loop expands once and shows no other inline
@@ -51,7 +51,7 @@ static inline s32 pkjbSend66(s32 chan, const u32* data, s32 size)
     u32 response;
     s32 result;
 
-    result = fn_80073C38(chan);
+    result = gbaCmdResetLink(chan);
     if (result != 0) {
         return result;
     }
@@ -66,7 +66,7 @@ static inline s32 pkjbSend66(s32 chan, const u32* data, s32 size)
 }
 
 /* 0x80072D58 | 0x2DC: command 0x66, upload size bytes. */
-s32 fn_80072D58(s32 chan, const u32* data, s32 size)
+s32 gbaCmdUpload66(s32 chan, const u32* data, s32 size)
 {
     s32 key;
     s32 result;

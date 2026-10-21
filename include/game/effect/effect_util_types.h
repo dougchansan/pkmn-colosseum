@@ -369,7 +369,7 @@ extern u32 lbl_8047AE14;
 
 extern void fightFloorGetFightOutPokemonPtrToFightTrainerPtr(void);
 
-extern void fn_801F18DC(void);
+extern void fightFloorIsKind10(void);
 
 extern void fightTrainerGetNamePtr(void);
 
@@ -593,9 +593,9 @@ extern EffectLinkedStatusRow lbl_80363B78[];
 
 extern u32 fightTargetGetTragetPtrToRelativeHostSideFightTargetId(void* arg, u16 handle);
 
-extern void fn_800D37CC(void);
+extern void GSgfxGetVsyncRate(void);
 
-extern u8* fn_80137780(u8* work, u8* params);
+extern u8* _wazaEffectParseFilter(u8* work, u8* params);
 
 extern void GSvecCopy(void);
 
@@ -603,7 +603,7 @@ extern void GSmemAlloc(void);
 
 extern void GStextureLoad(void);
 
-extern void fn_800EFD14(void);
+extern void GStextureClaimHandle(void);
 
 extern u8* _wazaEffectParseLightning(u8* work, u8* params, s32 frames);
 
@@ -621,7 +621,7 @@ extern void _wazaEffectParseSea(void);
 
 extern void envMapAddKey(void);
 
-extern void fn_80137114(void);
+extern void _wazaEffectParseBlur(void);
 
 extern void* memset(void* dst, int val, u32 n);
 

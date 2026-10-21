@@ -67,7 +67,7 @@ s32 pdaMailCompareSubject(u16* a, u16* b)
     return mailGetReceiveNumber(idB) - new_var2;
 }
 
-s32 fn_8004BF20(u16* a, u16* b)
+s32 pdaMailCompareSender(u16* a, u16* b)
 {
     s32 idA = *a;
     s32 idB = *b;

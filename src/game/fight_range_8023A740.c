@@ -11,8 +11,8 @@ extern s32 fightTrainerAiAddValue(s32, s32);
 
 #define AI_SCORE(code)                                                        \
     do {                                                                      \
-        score[i] = fn_80239984(score[i], trainer, (code));                    \
-        fn_80239EE8(0xEC64, trainerPtr,                                       \
+        score[i] = fightTrainerAiAddValueClamped(score[i], trainer, (code));                    \
+        fightTrainerAiAddValueLog2(0xEC64, trainerPtr,                                       \
                     fightOutPokemonGetPokemonPtr(pokemon), 0, 0, move, 0,    \
                     (code));                                                  \
     } while (0)
@@ -45,8 +45,8 @@ s32 fightTrainerAiScoreWazaToTarget(u32 trainer, u32 pokemon, u32 moveCount,
     extern u16 fightFloorGetStatus();
     extern u32 fightTrainerGetStatus(u32, u16, u32, u32);
     extern u32 fightFloorGetFightOutPokemonPtrToFightTrainerPtr();
-    extern u32 fn_80236C80();
-    extern u16 fn_802376EC();
+    extern u32 fightTrainerAiIsKeyPlayer();
+    extern u16 fightTrainerAiGetHp();
     extern u32 fightFloorGetFightTrainerFightOutPokemonPtrAry();
     extern u32 wazaGetStatus();
     extern s32 fightTrainerAiWazaDamageNull();
@@ -54,22 +54,22 @@ s32 fightTrainerAiScoreWazaToTarget(u32 trainer, u32 pokemon, u32 moveCount,
     extern s32 fightTrainerAiWazaValueToriaezutukae();
     extern s32 fightTrainerAiGetWazaTenkouValue();
     extern u32 fightTrainerAiGetAisyou();
-    extern u8 fn_8023943C();
-    extern u32 fn_80239244();
-    extern u8 fn_802393A0(u32, u32);
-    extern u8 fn_80239498();
-    extern s32 fn_80239500();
+    extern u8 fightTrainerAiIsWazaTypeId();
+    extern u32 fightTrainerAiGetWazaRangeId();
+    extern u8 fightTrainerAiGetWazaAvg(u32, u32);
+    extern u8 fightTrainerAiGetWazaTypeId();
+    extern s32 fightTrainerAiGetWazaIryoku();
     extern u8 fightTrainerAiGetWazaHitValue(s32, u32, u32, u32);
     extern u8 fightTrainerAiGetHpRatio();
     extern u8 fightTrainerAiGetWazaAvgAdjusted();
     extern u8 fightTrainerAiGetWazaPpRatio(u32, u32, u8);
-    extern u8 fn_80239154();
+    extern u8 fightTrainerAiGetWazaRiskFlag();
     extern u8 dbgMenuFightGetFlag8047882E();
     extern u16 fightFloorGetValidFightOutPokemonCount();
     extern s32 fightTrainerAiAddValueScaled();
-    extern s32 fn_80239984();
+    extern s32 fightTrainerAiAddValueClamped();
     extern void fightTrainerAiAddValueLog();
-    extern void fn_80239EE8();
+    extern void fightTrainerAiAddValueLog2();
     extern void fightTrainerAiLogText();
 
     s32 score[10];
@@ -115,7 +115,7 @@ s32 fightTrainerAiScoreWazaToTarget(u32 trainer, u32 pokemon, u32 moveCount,
     trainerData = new_var;
     randomBase = (u8)fightTrainerGetStatus(0, trainerData, 0x38, 0);
     trainerPtr = fightFloorGetFightOutPokemonPtrToFightTrainerPtr(0, pokemon);
-    trainerValue = fn_80236C80(trainer, pokemon);
+    trainerValue = fightTrainerAiIsKeyPlayer(trainer, pokemon);
     fightSideGetHikaeFightPokemonNum(side, reserve16, reserve17, reserve18);
 
     for (initIndex = 0; initIndex < 10; initIndex++) {
@@ -125,7 +125,7 @@ s32 fightTrainerAiScoreWazaToTarget(u32 trainer, u32 pokemon, u32 moveCount,
         moveMetric[initIndex] = 0;
     }
 
-    baseDamage = fn_802376EC(trainer, target);
+    baseDamage = fightTrainerAiGetHp(trainer, target);
     maxDamageFirst = -0xFFFF;
     maxDifference = -0xFFFF;
     maxMetric = 0;
@@ -164,7 +164,7 @@ damage_done:
 
         difference[damageIndex] =
             (s32)baseDamage - damage[damageIndex];
-        if (fn_8023943C(trainer, i, 1) == 1) {
+        if (fightTrainerAiIsWazaTypeId(trainer, i, 1) == 1) {
             if (maxDamageFirst < damage[damageIndex]) {
                 maxDamageFirst = damage[damageIndex];
             }
@@ -172,7 +172,7 @@ damage_done:
                 if (maxDifference < difference[damageIndex]) {
                     maxDifference = difference[damageIndex];
                 }
-                moveMetric[damageIndex] = fn_802393A0(trainer, i);
+                moveMetric[damageIndex] = fightTrainerAiGetWazaAvg(trainer, i);
                 if (maxMetric < moveMetric[damageIndex]) {
                     maxMetric = moveMetric[damageIndex];
                 }
@@ -195,7 +195,7 @@ damage_done:
         }
 
         moveType = fightTrainerAiGetWazaTenkouValue(trainer, move, pokemon);
-        moveKind = fn_80239244(trainer, move);
+        moveKind = fightTrainerAiGetWazaRangeId(trainer, move);
         checkFunc = (AiMoveFunc)wazaGetStatus(0, move, 0x1C, 0);
         if ((u8)fightTrainerGetStatus(
                 0,
@@ -234,19 +234,19 @@ value_done:
             AI_SCORE(0x3D);
         }
 
-        if ((u16)moveType != 9 && fn_8023943C(trainer, move, 1) == 1) {
+        if ((u16)moveType != 9 && fightTrainerAiIsWazaTypeId(trainer, move, 1) == 1) {
             if ((u16)fightTrainerAiGetAisyou(trainer, target, moveType,
-                                  fn_80239500(trainer, move)) == 0x42) {
+                                  fightTrainerAiGetWazaIryoku(trainer, move)) == 0x42) {
                 AI_SCORE(0x3F);
             }
             if ((u16)fightTrainerAiGetAisyou(trainer, target, moveType,
-                                  fn_80239500(trainer, move)) == 0x43) {
+                                  fightTrainerAiGetWazaIryoku(trainer, move)) == 0x43) {
                 AI_SCORE(0x40);
             }
         }
 
         for (j = 0; (u16)j < 3; j++) {
-            u8 effect = fn_80239498(trainer, move, j & 0xFF);
+            u8 effect = fightTrainerAiGetWazaTypeId(trainer, move, j & 0xFF);
             if (effect != 0) {
                 extern u32 fightTrainerGetStatus(u32, u16, u32, u32);
                 sharedValue = (u8)fightTrainerGetStatus(
@@ -268,7 +268,7 @@ value_done:
         }
 
         for (k = 0; k < 3; k++) {
-            u8 effect = fn_80239498(trainer, move, k & 0xFF);
+            u8 effect = fightTrainerAiGetWazaTypeId(trainer, move, k & 0xFF);
             if (effect != 0) {
                 for (j = 0; (u16)j < 2; j++) {
                     u8 type = (u8)fightTrainerGetStatus(
@@ -282,7 +282,7 @@ value_done:
             }
         }
 
-        if (fn_8023943C(trainer, move, 1) == 1) {
+        if (fightTrainerAiIsWazaTypeId(trainer, move, 1) == 1) {
             if (maxDamage.value <= damage[i]) {
                 AI_SCORE(0x44);
             }
@@ -298,7 +298,7 @@ value_done:
             }
         }
 
-        if (fn_8023943C(trainer, move, 2) == 1 &&
+        if (fightTrainerAiIsWazaTypeId(trainer, move, 2) == 1 &&
             fightTrainerAiGetHpRatio(trainer, pokemon) == 1) {
             AI_SCORE(0x48);
         }
@@ -312,7 +312,7 @@ value_done:
         if (fightTrainerAiGetWazaPpRatio(trainer, pokemon, (u8)data) == 1) {
             AI_SCORE(0x4B);
         }
-        if (fn_80239154(trainer, move) == 1) {
+        if (fightTrainerAiGetWazaRiskFlag(trainer, move) == 1) {
             AI_SCORE(0x4C);
         }
 

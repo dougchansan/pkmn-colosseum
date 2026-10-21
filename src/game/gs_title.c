@@ -14,48 +14,48 @@
  *   - Sound effect scheduling for title events
  *
  * Key functions:
- *   fn_80020328  GStitle_Cleanup              -- 0x8C bytes, clean up title resources
- *   fn_800203B4  GStitle_MainLoop             -- 0xE8 bytes, title screen main loop
- *   fn_8002049C  GStitle_Init                 -- 0xF0 bytes, initialize title screen
- *   fn_8002058C  GStitle_ThreadEntry          -- 0x2C bytes, title thread entry point
+ *   titleCleanup  GStitle_Cleanup              -- 0x8C bytes, clean up title resources
+ *   titleMainLoop  GStitle_MainLoop             -- 0xE8 bytes, title screen main loop
+ *   titleInit  GStitle_Init                 -- 0xF0 bytes, initialize title screen
+ *   _titleThread  GStitle_ThreadEntry          -- 0x2C bytes, title thread entry point
  *   fn_800205B8  GStitle_SetMode              -- 8 bytes, set title mode (stw + blr)
  *   fn_800205C0  GStitle_SetDemoPtr           -- 8 bytes, set autodemo pointer
- *   fn_800205C8  GStitle_CheckAutodemo        -- 0x44 bytes, check autodemo timer
- *   fn_8002060C  GStitle_ResetTimer           -- 0xC bytes, reset autodemo countdown
- *   fn_80020618  GStitle_RenderFrame          -- 0x304 bytes, render one title frame
+ *   titleDrawAutodemoTimer  GStitle_CheckAutodemo        -- 0x44 bytes, check autodemo timer
+ *   titleResetAutodemoTimer  GStitle_ResetTimer           -- 0xC bytes, reset autodemo countdown
+ *   titleOptionsMenuCB  GStitle_RenderFrame          -- 0x304 bytes, render one title frame
  *   titleGetState  GStitle_GetState             -- 0x10 bytes, return title state
- *   fn_8002092C  GStitle_AnimateLogo          -- 0x90 bytes, logo bounce/spin
- *   fn_800209BC  GStitle_AnimatePrompt        -- 0x90 bytes, "Press Start" blink
- *   fn_80020A4C  GStitle_AnimateBackground    -- 0x90 bytes, background scroll
- *   fn_80020ADC  GStitle_FadeIn               -- 0x58 bytes, fade from black
- *   fn_80020B34  GStitle_FadeOut              -- 0x58 bytes, fade to black
- *   fn_80020B8C  GStitle_GetFadeState         -- 0x14 bytes, return fade progress
+ *   titleSaveMenuDrawAnim  GStitle_AnimateLogo          -- 0x90 bytes, logo bounce/spin
+ *   titleSaveMenuDrawAnim2  GStitle_AnimatePrompt        -- 0x90 bytes, "Press Start" blink
+ *   titleSaveMenuDrawAnim3  GStitle_AnimateBackground    -- 0x90 bytes, background scroll
+ *   titleSaveMenuDrawItem  GStitle_FadeIn               -- 0x58 bytes, fade from black
+ *   titleSaveMenuDrawItem2  GStitle_FadeOut              -- 0x58 bytes, fade to black
+ *   titleSaveMenuDrawItem3  GStitle_GetFadeState         -- 0x14 bytes, return fade progress
  *   menuOptionDrawSoundMode  GStitle_HandleInput          -- 0xFC bytes, Start/A button handler
  *   titleNewContinueSelect  GStitle_MenuSelect           -- 0x200 bytes, New/Continue/Options menu
- *   fn_80020E9C  GStitle_ReturnZero           -- 8 bytes, stub
+ *   titleOptionsCursor  GStitle_ReturnZero           -- 8 bytes, stub
  *   titleDrawOptionHelp  GStitle_OptionsMenu          -- 0xB0 bytes, options sub-menu
  *   titleDrawContinueInfo  GStitle_SaveFileSelect       -- 0x19C bytes, save file selection
  *   titleMenuMain  GStitle_LoadSaveFile         -- 0x4D4 bytes, load save from memcard
- *   fn_800215C4  GStitle_NewGameSetup         -- 0x60 bytes, initialize new game
+ *   titleMenuExit  GStitle_NewGameSetup         -- 0x60 bytes, initialize new game
  *   fn_80021624  GStitle_SetDifficulty        -- 0x20 bytes, set game difficulty
  *   titleIntroStart  GStitle_IntroSequence        -- 0x9C bytes, start intro sequence
  *   fn_800216E0  GStitle_SkipIntro            -- 8 bytes, set skip flag
  *   itemUseFormatMessage  GStitle_NameEntry            -- 0x1D4 bytes, player name input screen
  *   itemFieldUseCologne  GStitle_NameEntryInput       -- 0x1E0 bytes, keyboard input handler
- *   fn_80021A9C  GStitle_NameEntryConfirm     -- 0x78 bytes, confirm name
+ *   itemFieldUseCannotUse  GStitle_NameEntryConfirm     -- 0x78 bytes, confirm name
  *   itemFieldUseRecover  (item-use handler)           -- 0x53C bytes, field item use on a party Pokemon (see note at definition)
  *   itemFieldUseBall  GStitle_DrawKeyboard         -- 0x12C bytes, keyboard grid
- *   fn_8002217C  GStitle_DrawNamePreview      -- 0x2FC bytes, live name preview
+ *   itemFieldUseStatusHeal  GStitle_DrawNamePreview      -- 0x2FC bytes, live name preview
  *   itemFieldUseParamItem  (item-use handler)           -- 0x2A8 bytes, field item use dispatch (see note at definition)
- *   fn_80022720  GStitle_CameraFlythrough     -- 0x114 bytes, title camera movement
+ *   itemFieldUseErrorMsg  GStitle_CameraFlythrough     -- 0x114 bytes, title camera movement
  *   itemFieldUseTM  GStitle_CameraInterpolate    -- 0x308 bytes, camera spline interp
  *   fn_80022B3C  GStitle_ParticleEffects      -- 0x318 bytes, title particle system
- *   fn_80022E54  GStitle_GetEffectCount       -- 0x90 bytes, count active particles
+ *   itemFieldUseOpenMenu  GStitle_GetEffectCount       -- 0x90 bytes, count active particles
  *   itemFieldUseEvolutionStone  GStitle_SpawnEffect          -- 0x184 bytes, spawn new particle
  *   _itemUseHealStatus  GStitle_UpdateEffects        -- 0x20C bytes, update particle positions
  *   cbForgetWazaSelect__FP7PokemonUsl  GStitle_DestroyEffect        -- 0x7C bytes, remove expired particle
  *   _itemUseRareCandy  GStitle_SoundScheduler       -- 0x470 bytes, title BGM/SE scheduling
- *   fn_80023760  GStitle_CrossfadeBGM         -- 0x208 bytes, BGM crossfade
+ *   _itemUseRevive  GStitle_CrossfadeBGM         -- 0x208 bytes, BGM crossfade
  *   _itemUsePPRestore  GStitle_PlayTitleBGM         -- 0x234 bytes, play title music
  *   itemFieldUseStatBoost  GStitle_StopTitleBGM         -- 0x20C bytes, fade out title music
  *   itemFieldUseForbidden  GStitle_GetBGMState          -- 0x3C bytes
@@ -66,7 +66,7 @@
  *   fn_80024160  GStitle_AutodemoRecord       -- 0x1A8 bytes, record input (debug)
  *   fn_80024308  GStitle_AutodemoSetup        -- 0x130 bytes, setup autodemo
  *
- * fn_800203B4 (GStitle_MainLoop) structure:
+ * titleMainLoop (GStitle_MainLoop) structure:
  *   while (1) {
  *       if (gTitleState == 0x28) {  // TITLE_STATE_AUTODEMO_TIMEOUT
  *           floorLink(0x39C, 0);  // load autodemo camera
@@ -90,12 +90,12 @@
  *       _threadSwitch();  // Frame advance
  *   }
  *
- * fn_8002049C (GStitle_Init):
+ * titleInit (GStitle_Init):
  *   - Clears stale state flags
  *   - Creates the title thread via GSthreadCreate (priority 0x14, stack 0x2000)
  *   - Initializes camera position from lbl_803A1F88 float constants
- *   - Checks save file existence via fn_800FF548
- *   - Calls fn_8002060C if no save found
+ *   - Checks save file existence via floorGetFadeOutFlag
+ *   - Calls titleResetAutodemoTimer if no save found
  *
  * SDA globals:
  *   lbl_8047A310: Title mode (s32)
@@ -140,7 +140,7 @@
  *     menuTitleHook              0x074
  *     menuTitleButton            0x07C
  *     menuTitleNormalButton      0x074
- *     menuTitleCursorAnime       0x0DC   - cursor blink/animation (~ fn_80024CDC)
+ *     menuTitleCursorAnime       0x0DC   - cursor blink/animation (~ wmapMenuDrawItem4)
  *     menuTitleCursorAnimeMain   0x07C
  *     menuTitleOpenSelectAnime   0x038
  *     menuTitleCloseSelectAnime  0x038
@@ -166,7 +166,7 @@
  *
  *   Original-name candidates for our extern fn_XXXXXXXX:
  *     menuItemBiosGetPtr / menuDataBiosGetPtr -- linked-list/menu accessors
- *     fn_800D3088 / fn_800D37CC -- frame timing (returns u32/s32 ticks)
+ *     fn_800D3088 / GSgfxGetVsyncRate -- frame timing (returns u32/s32 ticks)
  *     fn_800E0CA0 / GSlerpGetLinearInterpolationVector -- vec3 transform helpers
  *     GSmsgGetGSchar / msgctrlSetValue -- message/window callbacks
  *     winMsgOpen / winMsgClose -- text print + wait
@@ -195,7 +195,7 @@ extern void  GSthreadTerminate(void* threadCtx);
 
 /* Scene/camera */
 extern void  floorLink(s32 cameraId, s32 mode);
-extern u8    fn_800FF548(void);
+extern u8    floorGetFadeOutFlag(void);
 extern void  std092_getCurrentRoomID(s32 floorId);
 
 /* Sound */
@@ -245,7 +245,7 @@ extern s32   gFrameCycleCount;   /* lbl_80478878 */
  * Size:     0xF0
  * ========================================================================= */
 
-/* External declarations required by fn_8002049C.
+/* External declarations required by titleInit.
  *
  * The sdata2 float anchors (lbl_8047B814..lbl_8047B860) and the sbss/bss
  * anchors (lbl_8047A344, lbl_803A1F88) reference data whose ownership lives
@@ -277,14 +277,14 @@ extern u32 lbl_8047B80C;
 extern void* floorGetCurrentContext(void);
 
 /* Forward declarations for same-TU callees used before their definitions. */
-void fn_8002058C(void);
-void fn_8002060C(void);
+void _titleThread(void);
+void titleResetAutodemoTimer(void);
 void itemUseFormatMessage(void*, s32, u8*, s16, s32);
 extern u8 pokemonIsDarkPokemon(s32);
 extern f32 pokemonGetDp(void*);
 extern u8 lbl_803A1B90[];
 
-/* fn_8002049C now lives in gs_title_8001EF78.c (the head of this TU). */
+/* titleInit now lives in gs_title_8001EF78.c (the head of this TU). */
 
 /* =========================================================================
  * Function: GStitle_MainLoop
@@ -292,7 +292,7 @@ extern u8 lbl_803A1B90[];
  * Size:     0xE8
  * ========================================================================= */
 
-/* fn_800203B4 now lives in gs_title_8001EF78.c (the head of this TU). */
+/* titleMainLoop now lives in gs_title_8001EF78.c (the head of this TU). */
 
 /* =========================================================================
  * Function: GStitle_Cleanup
@@ -303,7 +303,7 @@ extern u8 lbl_803A1B90[];
  * message boxes, then waits for the title thread to complete.
  * ========================================================================= */
 
-/* fn_80020328 now lives in gs_title_8001EF78.c (the head of this TU). */
+/* titleCleanup now lives in gs_title_8001EF78.c (the head of this TU). */
 
 /* ===================================================================
  * AUTO-GENERATED accessor functions
@@ -331,7 +331,7 @@ void fn_800205C0(u32 val) {
 
 /* Address: 0x80020E9C | Size: 0x8 | Pattern: return_constant */
 #if !defined(GS_TITLE_SPLIT) || defined(GS_TITLE_RANGE_80020E9C)
-u32 fn_80020E9C(void) { return 0; }
+u32 titleOptionsCursor(void) { return 0; }
 #endif
 
 /* Address: 0x800216E0 | Size: 0x8 | Pattern: sda_setter */
@@ -657,9 +657,9 @@ s32 wmapMenuInput(u8* arg0) {
 extern u32 lbl_80478DDC;
 extern u32 std081_flagCheckTrue(void*);
 
-/* 0x4C | fn_80024438 | check_then_call */
+/* 0x4C | wmapMenuDrawSprite | check_then_call */
 #if !defined(GS_TITLE_SPLIT) || defined(GS_TITLE_RANGE_80024438)
-void fn_80024438(u32 arg1, u32 arg2) {
+void wmapMenuDrawSprite(u32 arg1, u32 arg2) {
     void* ctx = *(void**)&lbl_80478DDC;
     u32 result = (u32)std081_flagCheckTrue(*(void**)((u8*)ctx + 0x80));
     if ((result & 0xFF) == 0) {
@@ -667,9 +667,9 @@ void fn_80024438(u32 arg1, u32 arg2) {
     }
 }
 
-/* 0x4C | fn_80024484 | check_then_call */
-/* fn_80024484 - 0x80024484 | size: 0x4c */
-void fn_80024484(u32 arg1, u32 arg2) {
+/* 0x4C | wmapMenuDrawSprite2 | check_then_call */
+/* wmapMenuDrawSprite2 - 0x80024484 | size: 0x4c */
+void wmapMenuDrawSprite2(u32 arg1, u32 arg2) {
     void* ctx = *(void**)&lbl_80478DDC;
     u32 result = (u32)std081_flagCheckTrue(*(void**)((u8*)ctx + 0x70));
     if ((result & 0xFF) == 0) {
@@ -677,9 +677,9 @@ void fn_80024484(u32 arg1, u32 arg2) {
     }
 }
 
-/* 0x4C | fn_800244D0 | check_then_call */
-/* fn_800244D0 - 0x800244D0 | size: 0x4c */
-void fn_800244D0(u32 arg1, u32 arg2) {
+/* 0x4C | wmapMenuDrawSprite3 | check_then_call */
+/* wmapMenuDrawSprite3 - 0x800244D0 | size: 0x4c */
+void wmapMenuDrawSprite3(u32 arg1, u32 arg2) {
     void* ctx = *(void**)&lbl_80478DDC;
     u32 result = (u32)std081_flagCheckTrue(*(void**)((u8*)ctx + 0x60));
     if ((result & 0xFF) == 0) {
@@ -687,9 +687,9 @@ void fn_800244D0(u32 arg1, u32 arg2) {
     }
 }
 
-/* 0x4C | fn_8002451C | check_then_call */
-/* fn_8002451C - 0x8002451C | size: 0x4c */
-void fn_8002451C(u32 arg1, u32 arg2) {
+/* 0x4C | wmapMenuDrawSprite4 | check_then_call */
+/* wmapMenuDrawSprite4 - 0x8002451C | size: 0x4c */
+void wmapMenuDrawSprite4(u32 arg1, u32 arg2) {
     void* ctx = *(void**)&lbl_80478DDC;
     u32 result = (u32)std081_flagCheckTrue(*(void**)((u8*)ctx + 0x50));
     if ((result & 0xFF) == 0) {
@@ -697,9 +697,9 @@ void fn_8002451C(u32 arg1, u32 arg2) {
     }
 }
 
-/* 0x4C | fn_80024568 | check_then_call */
-/* fn_80024568 - 0x80024568 | size: 0x4c */
-void fn_80024568(u32 arg1, u32 arg2) {
+/* 0x4C | wmapMenuDrawSprite5 | check_then_call */
+/* wmapMenuDrawSprite5 - 0x80024568 | size: 0x4c */
+void wmapMenuDrawSprite5(u32 arg1, u32 arg2) {
     void* ctx = *(void**)&lbl_80478DDC;
     u32 result = (u32)std081_flagCheckTrue(*(void**)((u8*)ctx + 0x40));
     if ((result & 0xFF) == 0) {
@@ -707,9 +707,9 @@ void fn_80024568(u32 arg1, u32 arg2) {
     }
 }
 
-/* 0x4C | fn_800245B4 | check_then_call */
-/* fn_800245B4 - 0x800245B4 | size: 0x4c */
-void fn_800245B4(u32 arg1, u32 arg2) {
+/* 0x4C | wmapMenuDrawSprite6 | check_then_call */
+/* wmapMenuDrawSprite6 - 0x800245B4 | size: 0x4c */
+void wmapMenuDrawSprite6(u32 arg1, u32 arg2) {
     void* ctx = *(void**)&lbl_80478DDC;
     u32 result = (u32)std081_flagCheckTrue(*(void**)((u8*)ctx + 0x30));
     if ((result & 0xFF) == 0) {
@@ -717,9 +717,9 @@ void fn_800245B4(u32 arg1, u32 arg2) {
     }
 }
 
-/* 0x4C | fn_80024600 | check_then_call */
-/* fn_80024600 - 0x80024600 | size: 0x4c */
-void fn_80024600(u32 arg1, u32 arg2) {
+/* 0x4C | wmapMenuDrawSprite7 | check_then_call */
+/* wmapMenuDrawSprite7 - 0x80024600 | size: 0x4c */
+void wmapMenuDrawSprite7(u32 arg1, u32 arg2) {
     void* ctx = *(void**)&lbl_80478DDC;
     u32 result = (u32)std081_flagCheckTrue(*(void**)((u8*)ctx + 0x20));
     if ((result & 0xFF) == 0) {
@@ -727,9 +727,9 @@ void fn_80024600(u32 arg1, u32 arg2) {
     }
 }
 
-/* 0x4C | fn_8002464C | check_then_call */
-/* fn_8002464C - 0x8002464C | size: 0x4c */
-void fn_8002464C(u32 arg1, u32 arg2) {
+/* 0x4C | wmapMenuDrawSprite8 | check_then_call */
+/* wmapMenuDrawSprite8 - 0x8002464C | size: 0x4c */
+void wmapMenuDrawSprite8(u32 arg1, u32 arg2) {
     void* ctx = *(void**)&lbl_80478DDC;
     u32 result = (u32)std081_flagCheckTrue(*(void**)((u8*)ctx + 0x10));
     if ((result & 0xFF) == 0) {
@@ -738,17 +738,17 @@ void fn_8002464C(u32 arg1, u32 arg2) {
 }
 
 /* 0x80024698 | 0x4 -- nop */
-void fn_80024698(void) { }
+void wmapMenuDrawItem(void) { }
 
 /* 0x8002469C | 0x30 */
 extern void* GSmsgGetGSchar(u32);
 extern void msgctrlSetValue(s32, void*);
-void fn_8002469C(void) {
+void wmapMenuDrawText(void) {
     msgctrlSetValue(0x37, GSmsgGetGSchar(0x3cdf));
 }
 
 /* 0x800246CC | 0x30 */
-void fn_800246CC(void) {
+void wmapMenuDrawText2(void) {
     msgctrlSetValue(0x37, GSmsgGetGSchar(0x3ce4));
 }
 #endif
@@ -852,7 +852,7 @@ void wmapDrawInfo(u8* arg0, u8* arg1) {
 
 /* 0x80024A2C | 0x178
  *
- * fn_80024A2C -- simplified version of fn_800246FC (one inner block only).
+ * wmapMenuDrawItem2 -- simplified version of fn_800246FC (one inner block only).
  * Walks the linked list to find the node whose counter-position matches
  * lbl_8047A368, then scans lbl_80478DDC[] for a matching pbVar3 and writes
  * either alpha computed via the fade curve OR 0xFF into arg1[0x67]. If the
@@ -867,7 +867,7 @@ extern u32 lbl_80478DDC;
 extern u32 lbl_80478DD8;
 extern u32 lbl_8047A370;
 extern f32 lbl_80478898;
-void fn_80024A2C(u8* arg0, u8* arg1) {
+void wmapMenuDrawItem2(u8* arg0, u8* arg1) {
     s32 index;
     u32 value;
 
@@ -893,7 +893,7 @@ void fn_80024A2C(u8* arg0, u8* arg1) {
 
 /* 0x80024BA4 | 0x138
  *
- * fn_80024BA4 -- same linked-list walk as fn_80024A2C, but without the alpha
+ * wmapMenuDrawItem3 -- same linked-list walk as wmapMenuDrawItem2, but without the alpha
  * computation. Just finds the menu item matching lbl_8047A36C and writes the
  * entry payload to arg1[0x58] (with the 0x66 + fn_801902E0(0x45D) override).
  *
@@ -905,7 +905,7 @@ void fn_80024A2C(u8* arg0, u8* arg1) {
 extern u32 lbl_8047A36C;
 extern u32 lbl_80478DDC;
 extern u32 lbl_80478DD8;
-void fn_80024BA4(u8* arg0, u8* arg1) {
+void wmapMenuDrawItem3(u8* arg0, u8* arg1) {
     s32 index;
     u32 value;
 
@@ -923,7 +923,7 @@ void fn_80024BA4(u8* arg0, u8* arg1) {
 
 /* 0x80024CDC | 0xE0
  *
- * fn_80024CDC -- XD analogue: menuTitleCursorAnime (0xDC, close size match).
+ * wmapMenuDrawItem4 -- XD analogue: menuTitleCursorAnime (0xDC, close size match).
  * Animates a pulsing cursor/icon by:
  *   1. Copying position from lbl_8047A390 (cursor source) plus 8px offset
  *      into arg1[0x50]/arg1[0x52] (dst x/y, only when lbl_8047A390 set).
@@ -941,7 +941,7 @@ extern u32 GSgetFrameStep(void);
 extern u32 lbl_8047A390;
 extern f32 lbl_8047A37C;
 #if !defined(GS_TITLE_SPLIT) || defined(GS_TITLE_RANGE_80024CDC)
-void fn_80024CDC(s32 arg0, u8* arg1) {
+void wmapMenuDrawItem4(s32 arg0, u8* arg1) {
     f32 fVar2;
     s32 iVar4;
     u32 uVar3;
@@ -972,7 +972,7 @@ void fn_80024CDC(s32 arg0, u8* arg1) {
 
 /* 0x80024DBC | 0x170
  *
- * fn_80024DBC -- one of four "twin" functions. Fade-aware position writer.
+ * wmapMenuDrawAnim -- one of four "twin" functions. Fade-aware position writer.
  *   - case 1 (lbl_8047A370 == 1): call fn_800E0CA0(fade_amt) + GSlerpGetLinearInterpolationVector
  *     to interpolate a float-pair position into local_48[0..1]; convert to int.
  *   - default: linked-list walk to find the menu item at lbl_8047A368,
@@ -980,10 +980,10 @@ void fn_80024CDC(s32 arg0, u8* arg1) {
  * Then writes (s16)(base_x + float(x) + offset) to arg1[0x50]/[0x52].
  *
  * The four twin functions differ only in the sign applied to each axis:
- *   fn_80024DBC: +x +y
- *   fn_80024F2C: +x -y
- *   fn_8002509C: -x +y
- *   fn_8002520C: -x -y
+ *   wmapMenuDrawAnim: +x +y
+ *   wmapMenuDrawAnim2: +x -y
+ *   wmapMenuDrawAnim3: -x +y
+ *   wmapMenuDrawAnim4: -x -y
  *
  * Status: 96.6% matched. Remaining diffs: @NNN@sda21 anonymous f64 bias
  * constants vs target lbl_8047B8B8@sda21 named refs.
@@ -998,7 +998,7 @@ extern u32 lbl_80478DD8;
 extern u32 lbl_8047A368;
 extern f32 lbl_8047A374;
 #if !defined(GS_TITLE_SPLIT) || defined(GS_TITLE_RANGE_80024DBC)
-void fn_80024DBC(s32 arg0, u8* arg1) {
+void wmapMenuDrawAnim(s32 arg0, u8* arg1) {
     extern u8 lbl_803A204C[];
     extern u8 lbl_803A2058[];
     extern f32 lbl_80478898;
@@ -1065,9 +1065,9 @@ LAB_80024E94:
 
 /* 0x80024F2C | 0x170
  *
- * fn_80024F2C -- twin of fn_80024DBC, using +offset on x and -offset on y.
+ * wmapMenuDrawAnim2 -- twin of wmapMenuDrawAnim, using +offset on x and -offset on y.
  * Same structure: case-1 calls GSlerpGetLinearInterpolationVector to interpolate, default walks list.
- * See fn_80024DBC doc for full semantics.
+ * See wmapMenuDrawAnim doc for full semantics.
  *
  * Status: 94.9% matched. Same SDA2 anonymous-constant blocker.
  */
@@ -1076,7 +1076,7 @@ extern f32 lbl_80478898;
 extern u32 lbl_80478DD8;
 extern u32 lbl_8047A368;
 extern f32 lbl_8047A374;
-void fn_80024F2C(s32 arg0, u8* arg1) {
+void wmapMenuDrawAnim2(s32 arg0, u8* arg1) {
     extern u8 lbl_803A204C[];
     extern u8 lbl_803A2058[];
     extern f32 lbl_80478898;
@@ -1139,8 +1139,8 @@ LAB_80025004:
 
 /* 0x8002509C | 0x170
  *
- * fn_8002509C -- twin of fn_80024DBC. Uses -offset on x, +offset on y.
- * See fn_80024DBC doc.
+ * wmapMenuDrawAnim3 -- twin of wmapMenuDrawAnim. Uses -offset on x, +offset on y.
+ * See wmapMenuDrawAnim doc.
  *
  * Status: 92.4% matched. Same SDA2 anonymous-constant blocker.
  */
@@ -1149,7 +1149,7 @@ extern f32 lbl_80478898;
 extern u32 lbl_80478DD8;
 extern u32 lbl_8047A368;
 extern f32 lbl_8047A374;
-void fn_8002509C(s32 arg0, u8* arg1) {
+void wmapMenuDrawAnim3(s32 arg0, u8* arg1) {
     extern u8 lbl_803A204C[];
     extern u8 lbl_803A2058[];
     extern f32 lbl_80478898;
@@ -1214,8 +1214,8 @@ LAB_80025174:
 
 /* 0x8002520C | 0x170
  *
- * fn_8002520C -- twin of fn_80024DBC. Uses -offset on BOTH x and y.
- * See fn_80024DBC doc.
+ * wmapMenuDrawAnim4 -- twin of wmapMenuDrawAnim. Uses -offset on BOTH x and y.
+ * See wmapMenuDrawAnim doc.
  *
  * Status: 90.5% matched. Same SDA2 anonymous-constant blocker.
  */
@@ -1224,7 +1224,7 @@ extern f32 lbl_80478898;
 extern u32 lbl_80478DD8;
 extern u32 lbl_8047A368;
 extern f32 lbl_8047A374;
-void fn_8002520C(s32 arg0, u8* arg1) {
+void wmapMenuDrawAnim4(s32 arg0, u8* arg1) {
     extern u8 lbl_803A204C[];
     extern u8 lbl_803A2058[];
     extern f32 lbl_80478898;
@@ -1287,7 +1287,7 @@ LAB_800252E4:
 
 /* 0x8002537C | 0x114
  *
- * fn_8002537C -- single-axis position writer. Writes (s16)(x + 0xf) to
+ * wmapMenuDrawAnim5 -- single-axis position writer. Writes (s16)(x + 0xf) to
  * arg1[0x50] and 0 to arg1[0x52]. Only returns an X coord; Y is always 0,
  * meaning this is likely for horizontal-slider cursors.
  *
@@ -1302,7 +1302,7 @@ extern u32 lbl_8047A370;
 extern f32 lbl_80478898;
 extern u32 lbl_80478DD8;
 extern u32 lbl_8047A368;
-void fn_8002537C(s32 arg0, u8* arg1) {
+void wmapMenuDrawAnim5(s32 arg0, u8* arg1) {
     extern u8 lbl_803A204C[];
     extern u8 lbl_803A2058[];
     extern f32 lbl_80478898;
@@ -1359,7 +1359,7 @@ LAB_80025450:
 
 /* 0x80025490 | 0x114
  *
- * fn_80025490 -- exact twin of fn_8002537C but returns the Y coord (into
+ * wmapMenuDrawAnim6 -- exact twin of wmapMenuDrawAnim5 but returns the Y coord (into
  * arg1[0x52]) with X always 0. Same code structure.
  *
  * case 1: use local_24[1] (local_24[0+4] offset)
@@ -1375,7 +1375,7 @@ inline u32 inline_fn(u32* arg0) {
     return *arg0;
 }
 
-void fn_80025490(s32 arg0, u8* arg1) {
+void wmapMenuDrawAnim6(s32 arg0, u8* arg1) {
     extern u8 lbl_803A204C[];
     extern u8 lbl_803A2058[];
     extern f32 lbl_80478898;
@@ -1438,7 +1438,7 @@ LAB_80025564:
  *     soundStop(0x449, 0)            -- play SE cue
  *     while (accumulator < limit) {    -- time-based integration loop
  *       _threadSwitch();                 -- frame advance
- *       accumulator += (f32)fn_800D3088() / (f32)(s32)fn_800D37CC();
+ *       accumulator += (f32)fn_800D3088() / (f32)(s32)GSgfxGetVsyncRate();
  *     }
  *     fn_801653C4(); fn_801656F8(0x7d0, 0)
  *   ELSE:
@@ -1447,7 +1447,7 @@ LAB_80025564:
  *   Check sound channels 0xbd and 0xc3; stop them if still active.
  *   If lbl_8047A388/38C particle handles set, free them via GStextureFree.
  *
- * fn_800D37CC returns s32 (signed ticks; negative if paused).
+ * GSgfxGetVsyncRate returns s32 (signed ticks; negative if paused).
  * fn_800D3088 returns u32 (absolute frame count).
  *
  * Status: 97.5% matched. Remaining 8 diffs are register-numbering
@@ -1458,7 +1458,7 @@ LAB_80025564:
  */
 extern void fadeSet(f32, s32);
 extern void soundStop(void);
-extern void fn_800D37CC(void);
+extern void GSgfxGetVsyncRate(void);
 extern void std228_soundGetCurrentBackgroundMusic(void);
 extern void std137_soundStopAll(void);
 extern void fadeCheck(s32);
@@ -1473,7 +1473,7 @@ void worldMapPost(void) {
     extern u32 lbl_8047A388;
     extern u32 lbl_8047A38C;
     extern u32 GSgetFrameStep(void);
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     extern void GStextureFree(u32);
     extern void _threadSwitch(void);
     extern u8 menuIsCheck(s32);
@@ -1491,7 +1491,7 @@ void worldMapPost(void) {
         accum = 0.0f;
         while (accum < 1.0f) {
             _threadSwitch();
-            accum = accum + (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+            accum = accum + (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
         }
         std137_soundStopAll(std228_soundGetCurrentBackgroundMusic(), 0x7d0, 0);
     } else {
@@ -1750,7 +1750,7 @@ void fn_800259B0_old(void) {
 #endif
 
 /* 0x80025A7C | 0x4 -- nop */
-void fn_80025A7C(void) { }
+void wmapMenuDrawItem5(void) { }
 #endif
 
 /* 0x80025A80 | 0x19C
@@ -1799,7 +1799,7 @@ extern void wmapDrawCaptureQuad(s32, f32, f32, f32, s32, s32, f32*);
 void gsTitleStrippedCaptureWait(void)
 {
     extern u8 lbl_803A2040[];
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     extern u32 GSgetFrameStep(void);
     extern void gfxSetOrtho(f32, f32, f32, f32);
     u32 frames;
@@ -1810,8 +1810,8 @@ void gsTitleStrippedCaptureWait(void)
     *(f32*)(lbl_803A2040 + 4) = 240.0f;
     *(f32*)(lbl_803A2040 + 8) = 0.0f;
     gfxSetOrtho(0.0f, 0.0f, 640.0f, 480.0f);
-    frames = 0x78 - (u32)((f32)fn_800D37CC() * 2.0f);
-    tick = fn_800D37CC();
+    frames = 0x78 - (u32)((f32)GSgfxGetVsyncRate() * 2.0f);
+    tick = GSgfxGetVsyncRate();
     if (tick == 0x32) {
         frames = (f32)frames / 1.2f;
     }
@@ -1882,7 +1882,7 @@ s32 wmapRideOverlay(s32 param_1) {
  *   3. Build second vec3 pair based on flag_b, call fn_800E0CA0+090C again,
  *      feed through fn_800E042C to get transformed coords into result_2.
  *   4. Third set: combine pos[0], pos[1] with lbl_8047B8F0/F4 UV corners,
- *      via fn_800E0CA0+090C+fn_800E03B4 for the inverse transform.
+ *      via fn_800E0CA0+090C+GSmtxTransApply for the inverse transform.
  *   5. Set GX render state (TEV stage 3, prim TRIANGLE_FAN count 4):
  *        fn_800D88DC(3), fn_800D888C(4), fn_800D6A00(4),
  *        fn_800D7820(lbl_80314AE8), fn_800D85D4(0, tex), fn_800D67BC(4)
@@ -1894,13 +1894,13 @@ s32 wmapRideOverlay(s32 param_1) {
  *      4 UV corners: (0,0) (1,0) (0,1) (1,1) via lbl_8047B8AC/B8B0.
  *   7. fn_800D6728() to flush the primitive.
  *
- * result_2 is a 3x4 matrix (fn_800E042C builds it, fn_800E03B4 updates it,
+ * result_2 is a 3x4 matrix (fn_800E042C builds it, GSmtxTransApply updates it,
  * GSvecTransform applies it), which accounts for retail's 0xA0 frame.
  *
  * Status: exact.
  */
 extern void fn_800E042C(void);
-extern void fn_800E03B4(void);
+extern void GSmtxTransApply(void);
 extern void gfxSetFlags(void);
 extern void gfxClearFlags(void);
 extern void gfxSetPrimitive(void);
@@ -1927,7 +1927,7 @@ void wmapDrawCaptureQuad(s32 arg_r3, f32 arg_f1, f32 arg_f2, f32 arg_f3,
     extern void gfxClearFlags(s32);
     extern void gfxSetFlags(s32);
     extern void GSvecTransform(f32*, f32 (*)[4], f32*);
-    extern void fn_800E03B4(f32 (*)[4], f32*);
+    extern void GSmtxTransApply(f32 (*)[4], f32*);
     extern void fn_800E042C(f32 (*)[4], f32*);
     extern void GSlerpGetLinearInterpolationVector(f32*, f32*, f32*);
     extern void fn_800E0CA0(f32);
@@ -1963,7 +1963,7 @@ void wmapDrawCaptureQuad(s32 arg_r3, f32 arg_f1, f32 arg_f2, f32 arg_f3,
     vec_a[0] = arg_r6[0]; vec_a[1] = arg_r6[1]; vec_a[2] = 0.0f;
     fn_800E0CA0(arg_f1);
     GSlerpGetLinearInterpolationVector(result_1, vec_b, vec_a);
-    fn_800E03B4(mtx, result_1);
+    GSmtxTransApply(mtx, result_1);
 
     gfxSetFlags(3);
     gfxClearFlags(4);
@@ -2077,7 +2077,7 @@ void worldMapBikeRide(void) {
     extern f32 lbl_8047A3A4;
     extern u32 __cvt_fp2unsigned(f64);
     extern u32 GSgetFrameStep(void);
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     extern void GSgfxBeginBackFBCapture(u32, void*, s32);
     extern void GSmodelSetGSparticleLinkAttachMode(u32, s32);
     extern void GSmodelLinkToGSparticleBank(u32, u32);
@@ -2179,7 +2179,7 @@ void worldMapBikeRide(void) {
         cameraPlayAnime(std093_getCurrentGroupID(), frame_b, 0, 0);
 
         delay = 1;
-        tick = fn_800D37CC();
+        tick = GSgfxGetVsyncRate();
         if (tick == 0x32) {
             delay = (f32)delay / 1.2f;
             if (delay < 1) delay = 1;
@@ -2190,7 +2190,7 @@ void worldMapBikeRide(void) {
         }
         std115_mapObjectPlayAnimation(0xC6A1000, frame_a, 0, 0);
         wait2 = 0xae;
-        tick = fn_800D37CC();
+        tick = GSgfxGetVsyncRate();
         if (tick == 0x32) {
             wait2 = (f32)wait2 / 1.2f;
             if (wait2 < 1) wait2 = 1;
@@ -2207,9 +2207,9 @@ void worldMapBikeRide(void) {
     lbl_8047A39C = GSresGetResource(std093_getCurrentGroupID(), lbl_8047A384);
     lbl_8047A3A4 = 90.0f;
 
-    wait2 = 0x78 - (u32)((f32)fn_800D37CC() * 2.0f);
+    wait2 = 0x78 - (u32)((f32)GSgfxGetVsyncRate() * 2.0f);
     if (wait2 != 0) {
-        tick = fn_800D37CC();
+        tick = GSgfxGetVsyncRate();
         if (tick == 0x32) {
             wait2 = (f32)wait2 / 1.2f;
             if (wait2 < 1) wait2 = 1;
@@ -2224,10 +2224,10 @@ void worldMapBikeRide(void) {
 
 /* ===== Phase 2 recovery stubs ===== */
 
-/* fn_8002058C - 0x8002058C | size: 0x2c */
+/* _titleThread - 0x8002058C | size: 0x2c */
 extern u8 lbl_8047A32C;
 #if !defined(GS_TITLE_SPLIT) || defined(GS_TITLE_RANGE_8002058C)
-void fn_8002058C(void) {
+void _titleThread(void) {
     lbl_8047A32C = 0;
     fightPreloadResources(-1);
     lbl_8047A32C = 1;
@@ -2237,27 +2237,27 @@ void fn_8002058C(void) {
 }
 #endif
 
-/* fn_800205C8 - 0x800205C8 | size: 0x44 */
+/* titleDrawAutodemoTimer - 0x800205C8 | size: 0x44 */
 extern void GSmsgPrintColor(u32 a, u32 b, s32 c, u32 d);
 extern u32 lbl_8047A350;
 extern u32 lbl_80478880;
 #if !defined(GS_TITLE_SPLIT) || defined(GS_TITLE_RANGE_800205C8)
-void fn_800205C8(u8* obj) {
+void titleDrawAutodemoTimer(u8* obj) {
     s32 mask = (s32)-0x100;
     u32 b = obj[0x8b];
     GSmsgPrintColor(0, 0, b | mask, (&lbl_80478880)[lbl_8047A350]);
 }
 #endif
 
-/* fn_8002060C - 0x8002060C | size: 0xc */
+/* titleResetAutodemoTimer - 0x8002060C | size: 0xc */
 extern u32 lbl_8047A350;
 #if !defined(GS_TITLE_SPLIT) || defined(GS_TITLE_RANGE_8002060C)
-void fn_8002060C(void) {
+void titleResetAutodemoTimer(void) {
     lbl_8047A350 = 0;
 }
 #endif
 
-/* fn_80020618 - 0x80020618 | size: 0x304 */
+/* titleOptionsMenuCB - 0x80020618 | size: 0x304 */
 extern void* windowGetKeyInfo(void);
 extern s32 gamedatasaveGetStatus(s32, s32);
 extern void soundSetOutputMode(u32);
@@ -2274,7 +2274,7 @@ extern u32 lbl_8047B880;
  * The idle test compares the constant against the timer in that order, and
  * the sine phase is built in two steps, so the constant multiplies the timer
  * before the speed scales the product. */
-s32 fn_80020618(void) {
+s32 titleOptionsMenuCB(void) {
     typedef struct TitleOptionState {
         s32 selection;
         s32 unk04;
@@ -2294,7 +2294,7 @@ s32 fn_80020618(void) {
     s32 value;
 
     keyInfo = windowGetKeyInfo();
-    tickScale = (f32)(s32)fn_800D37CC();
+    tickScale = (f32)(s32)GSgfxGetVsyncRate();
     ((TitleOptionState*)lbl_803A1FC8)->delta = (f32)(u32)GSgetFrameStep() / tickScale;
     ((TitleOptionState*)lbl_803A1FC8)->phase += ((TitleOptionState*)lbl_803A1FC8)->delta;
     if (((TitleOptionState*)lbl_803A1FC8)->phase >= 1.0f) {
@@ -2376,8 +2376,8 @@ s32 titleGetState(void) {
     return *(s32*)lbl_803A1FC8;
 }
 
-/* fn_8002092C - 0x8002092C | size: 0x90 */
-void fn_8002092C(void* r3, u8* r4) {
+/* titleSaveMenuDrawAnim - 0x8002092C | size: 0x90 */
+void titleSaveMenuDrawAnim(void* r3, u8* r4) {
     f32 f2;
     f32 f0;
     f2 = (f32)sin(6.2831855f * *(f32*)(lbl_803A1FC8 + 0x24));
@@ -2391,8 +2391,8 @@ void fn_8002092C(void* r3, u8* r4) {
     }
 }
 
-/* fn_800209BC - 0x800209BC | size: 0x90 */
-void fn_800209BC(void* r3, u8* r4) {
+/* titleSaveMenuDrawAnim2 - 0x800209BC | size: 0x90 */
+void titleSaveMenuDrawAnim2(void* r3, u8* r4) {
     f32 f2;
     f32 f0;
     f2 = (f32)sin(6.2831855f * *(f32*)(lbl_803A1FC8 + 0x24));
@@ -2406,8 +2406,8 @@ void fn_800209BC(void* r3, u8* r4) {
     }
 }
 
-/* fn_80020A4C - 0x80020A4C | size: 0x90 */
-void fn_80020A4C(void* r3, u8* r4) {
+/* titleSaveMenuDrawAnim3 - 0x80020A4C | size: 0x90 */
+void titleSaveMenuDrawAnim3(void* r3, u8* r4) {
     f32 f2;
     f32 f0;
     f2 = (f32)sin(6.2831855f * *(f32*)(lbl_803A1FC8 + 0x24));
@@ -2421,9 +2421,9 @@ void fn_80020A4C(void* r3, u8* r4) {
     }
 }
 
-/* fn_80020ADC - 0x80020ADC | size: 0x58 */
+/* titleSaveMenuDrawItem - 0x80020ADC | size: 0x58 */
 extern u32 GSsndGetOutputMode(void);
-void fn_80020ADC(void* r3, u8* r4) {
+void titleSaveMenuDrawItem(void* r3, u8* r4) {
     if (GSsndGetOutputMode() != 1) {
         *(s8*)(r4 + 4) = *(s8*)(r4 + 4) | 2;
     } else {
@@ -2431,8 +2431,8 @@ void fn_80020ADC(void* r3, u8* r4) {
     }
 }
 
-/* fn_80020B34 - 0x80020B34 | size: 0x58 */
-void fn_80020B34(void* r3, u8* r4) {
+/* titleSaveMenuDrawItem2 - 0x80020B34 | size: 0x58 */
+void titleSaveMenuDrawItem2(void* r3, u8* r4) {
     if (GSsndGetOutputMode() == 1) {
         *(s8*)(r4 + 4) = *(s8*)(r4 + 4) | 2;
     } else {
@@ -2440,8 +2440,8 @@ void fn_80020B34(void* r3, u8* r4) {
     }
 }
 
-/* fn_80020B8C - 0x80020B8C | size: 0x14 */
-void fn_80020B8C(void* r3, u8* r4) {
+/* titleSaveMenuDrawItem3 - 0x80020B8C | size: 0x14 */
+void titleSaveMenuDrawItem3(void* r3, u8* r4) {
     *(f32*)(r4 + 0x70) = *(f32*)(lbl_803A1FC8 + 0x10);
 }
 
@@ -2471,7 +2471,7 @@ extern void winSeqCheckMove(void);
 extern void memcardGetFlag41(void);
 extern void winMsgOpen(s32, s32, s32, s32);
 extern void fn_8001E074(void);
-extern void fn_801D0748(void);
+extern void memcardWaitTask2(void);
 extern void winMsgClose(s32);
 extern void menuCloseCustom(s32, s32, s32);
 void titleNewContinueSelect(void) {
@@ -2486,7 +2486,7 @@ void titleNewContinueSelect(void) {
     extern u8 memcardGetFlag41(void);
     extern void winMsgOpen(s32, s32, s32, s32);
     extern u8 fn_8001E074(s32, s32, s32, s32);
-    extern void fn_801D0748(s32, s32, s32);
+    extern void memcardWaitTask2(s32, s32, s32);
     extern void winMsgClose(s32);
     extern void menuCloseCustom(s32, s32, s32);
 
@@ -2539,7 +2539,7 @@ void titleNewContinueSelect(void) {
                 if (memcardGetFlag41() != 0) {
                     winMsgOpen(1, 0x3D82, 1, 0);
                     if ((s8)menuSubOpenYesNo(0, 0x3C, 0xAA, 1) == 0) {
-                        fn_801D0748(7, 2, 0);
+                        memcardWaitTask2(7, 2, 0);
                     }
                     winMsgClose(1);
                 }
@@ -2682,7 +2682,7 @@ extern void menuModelInit(void);
 extern void menuPokemonModelRequestById(void);
 extern void peopleInfoBiosGetPtr(void);
 extern void fn_8018F4C8(void);
-extern void fn_80005748(void);
+extern void gamedataGetPlaytime(void);
 extern void darkPokemonCountFlag12(void);
 extern void floorReturnToSavedRoom(void);
 extern u32 lbl_8047A35C;
@@ -2715,7 +2715,7 @@ s32 titleMenuMain(void)
     extern void fn_800056E4(u8);
     extern void gamedataSetPlaytime(f32);
     extern void floorLink(s32, s32);
-    extern s32 fn_80005748(void);
+    extern s32 gamedataGetPlaytime(void);
     extern s32 darkPokemonCountFlag14(void);
     extern s32 darkPokemonCountFlag12(void);
     s32 state;
@@ -2832,7 +2832,7 @@ s32 titleMenuMain(void)
             menuPokemonModelRequestById(lbl_803A1FF8, 0xF70400);
             fn_8018F4C8(peopleInfoBiosGetPtr(0xF70400), 1, &workA, &workB);
             menuModelSetMotion(lbl_803A1FF8, workA);
-            msgVals[0] = fn_80005748();
+            msgVals[0] = gamedataGetPlaytime();
             msgVals[1] = darkPokemonCountFlag14();
             msgVals[2] = darkPokemonCountFlag12();
             msgctrlSetValue(0x4C, (void*)msgVals[0]);
@@ -2887,10 +2887,10 @@ s32 titleMenuMain(void)
 }
 #endif
 
-/* fn_800215C4 - 0x800215C4 | size: 0x60 */
+/* titleMenuExit - 0x800215C4 | size: 0x60 */
 extern u32 lbl_8047A35C;
 #if !defined(GS_TITLE_SPLIT) || defined(GS_TITLE_RANGE_800215C4)
-void fn_800215C4(void) {
+void titleMenuExit(void) {
     menuCloseCustom(0xaa, 0, 1);
     menuCloseCustom(0x7a, 0, 1);
     menuCloseCustom(0x7f, 0, 1);
@@ -2920,7 +2920,7 @@ void titleIntroStart(void) {
     extern void GSscene_SetMode(s32);
     void* handle;
 
-    if (fn_800FF548() == 0) {
+    if (floorGetFadeOutFlag() == 0) {
         std104_soundSetBackgroundMusic(0x446, 0, 0xff);
         handle = std093_getCurrentGroupID();
         lbl_8047A35C = std112_modelGetResourceID(0x0FFE1000);
@@ -3104,9 +3104,9 @@ s32 itemFieldUseCologne(u32 arg0, u32* arg1)
 #endif /* !GS_TITLE_800216E8_ONLY */
 #endif
 
-/* fn_80021A9C - 0x80021A9C | size: 0x78 */
+/* itemFieldUseCannotUse - 0x80021A9C | size: 0x78 */
 #if !defined(GS_TITLE_SPLIT) || defined(GS_TITLE_RANGE_80021A9C)
-s32 fn_80021A9C(u32 r3, u32* r4) {
+s32 itemFieldUseCannotUse(u32 r3, u32* r4) {
     u8* r5;
     s32 count;
 
@@ -3389,9 +3389,9 @@ s32 itemFieldUseBall(s32 arg0, s32* arg1) {
 }
 #endif
 
-/* fn_8002217C - 0x8002217C | size: 0x2fc */
+/* itemFieldUseStatusHeal - 0x8002217C | size: 0x2fc */
 #if !defined(GS_TITLE_SPLIT) || defined(GS_TITLE_RANGE_8002217C)
-s32 fn_8002217C(u32 wazaDataId, u32* result) {
+s32 itemFieldUseStatusHeal(u32 wazaDataId, u32* result) {
     typedef struct TitleEffectEntry {
         s32 code;
         s16 x;
@@ -3503,7 +3503,7 @@ extern void jumptable_802E4F00();
 extern u8 lbl_80478888[8];
 extern s32 _itemUseHealStatus(u32, u32*);
 extern s32 _itemUseRareCandy(u32, u32*);
-extern s32 fn_80023760(u32, u32*);
+extern s32 _itemUseRevive(u32, u32*);
 s32 itemFieldUseParamItem(u32 arg0, u32* arg1) {
     typedef struct TitleBgmList {
         u16 entries[5];
@@ -3580,7 +3580,7 @@ s32 itemFieldUseParamItem(u32 arg0, u32* arg1) {
         }
         return result;
     case 1:
-        return fn_80023760(arg0, arg1);
+        return _itemUseRevive(arg0, arg1);
     case 2:
         return _itemUseRareCandy(arg0, arg1);
     case 19:
@@ -3595,9 +3595,9 @@ s32 itemFieldUseParamItem(u32 arg0, u32* arg1) {
     }
 }
 
-/* fn_80022720 - 0x80022720 | size: 0x114
+/* itemFieldUseErrorMsg - 0x80022720 | size: 0x114
  *
- * fn_80022720(u32 arg0, u32* arg1) -> s32  -- error-report dispatcher for
+ * itemFieldUseErrorMsg(u32 arg0, u32* arg1) -> s32  -- error-report dispatcher for
  * name-entry validation. Loads a 10-entry u16+u32 table starting at
  * lbl_80266C54 (each entry: 2-byte id, 2-byte pad, 4-byte msg id), then
  * sequentially compares arg0 against the 5 header u16s (offsets 0, 8, 16,
@@ -3627,7 +3627,7 @@ typedef struct TitleMsgEnt {
 typedef struct TitleMsgTable {
     TitleMsgEnt e[5];
 } TitleMsgTable;
-s32 fn_80022720(u32 arg0, u32* arg1) {
+s32 itemFieldUseErrorMsg(u32 arg0, u32* arg1) {
     TitleMsgTable t;
     s32 i;
 
@@ -3872,11 +3872,11 @@ s32 std163_useCologne(s32 arg0, s32 arg1) {
 }
 #endif
 
-/* fn_80022E54 - 0x80022E54 | size: 0x90 */
+/* itemFieldUseOpenMenu - 0x80022E54 | size: 0x90 */
 extern void fadeSet(f32, s32);
 extern void std017_menuQueueAdd(void*, s32);
 #if !defined(GS_TITLE_SPLIT) || defined(GS_TITLE_RANGE_80022E54)
-s32 fn_80022E54(void* r3, u32* r4) {
+s32 itemFieldUseOpenMenu(void* r3, u32* r4) {
     void* r29;
     u32* r30;
     s32 r31;
@@ -3945,7 +3945,7 @@ s32 itemFieldUseEvolutionStone(u32 arg0, u32* arg1) {
 #endif
 
 /* _itemUseHealStatus - 0x80023068 | size: 0x20c */
-extern s32 fn_80019B48(s32);
+extern s32 menuPokemonOpenMoveSummary(s32);
 extern void fn_80019B1C(void);
 #if !defined(GS_TITLE_SPLIT) || defined(GS_TITLE_RANGE_80023068)
 s32 _itemUseHealStatus(u32 arg0, u32* arg1) {
@@ -3979,7 +3979,7 @@ s32 _itemUseHealStatus(u32 arg0, u32* arg1) {
             blocked = 1;
             break;
         }
-        mode = fn_80019B48((s8)slot);
+        mode = menuPokemonOpenMoveSummary((s8)slot);
         fn_80019B1C();
     } while (mode < 0);
 
@@ -4019,14 +4019,14 @@ s32 _itemUseHealStatus(u32 arg0, u32* arg1) {
 #endif
 
 /* cbForgetWazaSelect__FP7PokemonUsl - 0x80023274 | size: 0x7c */
-extern s32 fn_80097B04(s32, s32);
+extern s32 menuPokemonStatusOpenForgetSelect(s32, s32);
 #if !defined(GS_TITLE_SPLIT) || defined(GS_TITLE_RANGE_80023274)
 s32 cbForgetWazaSelect__FP7PokemonUsl(s32 r3, s32 r4) {
     s32 result;
 
     fadeSet(0.5f, 3);
     fadeCheck(1);
-    result = fn_80097B04(r3, r4);
+    result = menuPokemonStatusOpenForgetSelect(r3, r4);
     if (result >= 4) {
         result = -1;
     }
@@ -4196,8 +4196,8 @@ s32 _itemUseRareCandy(u32 wazaDataId, u32* result) {
     return 1;
 }
 
-/* fn_80023760 - 0x80023760 | size: 0x208 */
-s32 fn_80023760(u32 arg0, u32* arg1) {
+/* _itemUseRevive - 0x80023760 | size: 0x208 */
+s32 _itemUseRevive(u32 arg0, u32* arg1) {
     typedef struct TitleBgmList {
         u16 entries[5];
     } TitleBgmList;
@@ -4303,7 +4303,7 @@ s32 _itemUsePPRestore(u32 arg0, u32* arg1) {
         }
         if (itemParamGetPPSelectFlag(itemParamGetPtr(itemDataBiosGetItemEffectParam(
                 itemDataBiosGetPtr(arg0))))) {
-            mode = fn_80019B48((s8)slot);
+            mode = menuPokemonOpenMoveSummary((s8)slot);
             fn_80019B1C();
         } else {
             mode = 0;

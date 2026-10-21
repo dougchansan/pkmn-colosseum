@@ -84,7 +84,7 @@ typedef struct GSColFloorObj {
 } GSColFloorObj;
 
 /**
- * Floor human-collision slot -- 0x14 bytes. fn_80110084 registers one,
+ * Floor human-collision slot -- 0x14 bytes. GScolsys2HumanRegister registers one,
  * GScolsys2HumanEnable toggles it and GScolsys2CheckCollision resolves the person
  * from keys 0/1 (fn_8018D998 -> peopleSearchID) and tests a cylinder of
  * the given radius and height. Flags: bit 0 in use, bit 1 disabled.

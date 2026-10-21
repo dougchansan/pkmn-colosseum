@@ -20,7 +20,7 @@
  *
  * Key functions:
  *
- *   fn_80140588 (peopleFieldOpen)      -- 0x514 bytes
+ *   peopleFieldGetPlacementOffset (peopleFieldOpen)      -- 0x514 bytes
  *     Open/spawn an NPC from field data. Takes a PeopleEntry pointer,
  *     group/index pair, spawn data, and a "force" flag. Calls into
  *     itemGetStatus (peopleFieldAlloc) to find or create a slot, loads
@@ -33,7 +33,7 @@
  *     Simple slot lookup by index. Returns pointer into gPeopleFieldArray.
  *     Called from 3 external sites (effect/shadow modules).
  *
- *   fn_80140ACC (peopleFieldLoadModel) -- 0x83C bytes
+ *   heroItemChangeCount (peopleFieldLoadModel) -- 0x83C bytes
  *     Load NPC model and configure animation data. This is a large
  *     function that processes the model resource, sets up joint matrices,
  *     configures walk/run motion data, and initializes the animation
@@ -296,9 +296,9 @@ u8* itemDataBiosGetPtr(u16 index) {
  * Function addresses and proposed names documented for cross-reference.
  * =================================================================== */
 
-/* fn_80140588: peopleFieldOpen (0x514 bytes) */
+/* peopleFieldGetPlacementOffset: peopleFieldOpen (0x514 bytes) */
 /* fn_80140A9C: peopleFieldGetSlot (0x30 bytes) */
-/* fn_80140ACC: peopleFieldLoadModel (0x83C bytes) */
+/* heroItemChangeCount: peopleFieldLoadModel (0x83C bytes) */
 /* fn_80141308: peopleFieldUpdate (0x1060 bytes -- largest single function) */
 /* fn_80142368: peopleFieldCleanup (0x280 bytes) */
 /* fn_801425E8: peopleFieldSetup (0x39C bytes) */
@@ -449,7 +449,7 @@ extern u32 lbl_80478BD8;   /* gPeopleFieldCount */
     ((entry) != NULL && PEOPLE_ENTRY_ID(entry) != 0 && PEOPLE_ITEM_ID_VALID(PEOPLE_ENTRY_ID(entry)))
 
 #if 0
-asm void fn_80140ACC(void) {
+asm void heroItemChangeCount(void) {
 #include "src/game/people/people_data_fn_80140ACC.inc"
 }
 #else
@@ -534,7 +534,7 @@ static inline u32* peopleFindFreeEntry(u32* entries, u16 count, u16 id)
 
 /* Resolve the placement offset for a field-person record group. */
 #if !defined(PEOPLE_DATA_80142EF8_ONLY)
-s32 fn_80140588(u32* entries, u16 count, u16 dataIndex, u16 extent,
+s32 peopleFieldGetPlacementOffset(u32* entries, u16 count, u16 dataIndex, u16 extent,
                 u8 accumulate)
 {
     u32* entry;
@@ -574,7 +574,7 @@ s32 fn_80140588(u32* entries, u16 count, u16 dataIndex, u16 extent,
 #endif
 
 #if !defined(PEOPLE_DATA_80142EF8_ONLY)
-s32 fn_80140ACC(u32* base, u16 count, u16 id, u16 amount, s16 index, u16 unusedLimit, u8 sortMode) {
+s32 heroItemChangeCount(u32* base, u16 count, u16 id, u16 amount, s16 index, u16 unusedLimit, u8 sortMode) {
     u32* entry;
     u16 remaining;
     u16 current;

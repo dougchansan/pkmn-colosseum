@@ -155,7 +155,7 @@ HSD_SList* HSD_SListAlloc(void);
 /* HSD_SListRemove */
 HSD_SList* HSD_SListRemove(HSD_SList* list);
 /* _HSD_NeedCacheInvalidate */
-void fn_8019C6EC(u32 flags);
+void HSD_RequestInvalidate(u32 flags);
 /* HSD_StateSetCullMode */
 void HSD_StateSetCullMode(int mode);
 /* HSD_PerfCountEnvelopeBlending */
@@ -442,7 +442,7 @@ static s32 PObjLoad(HSD_Class* o, HSD_PObjDesc* desc)
         HSD_Panic(__FILE__, 554, "pobj: unexected type.\n");
     }
 
-    fn_8019C6EC(1);
+    HSD_RequestInvalidate(1);
 
     return 0;
 }

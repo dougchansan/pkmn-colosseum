@@ -12,7 +12,7 @@
  * names appear in config/GC6E01/symbols.txt. The first five duplicated the
  * real, already-matched accessor scaffolds (fightSetEncountId/624/62C/634/63C).
  * The remaining four claimed to be the bodies of real unmatched symbols
- * (fn_801EF5C0, _fightFinalize__FUi14FloorEnterMode, fn_801EF488,
+ * (fightGSfloorRegister, _fightFinalize__FUi14FloorEnterMode, fightFrameUpdate,
  * _fightInitialize__FUi14FloorEnterMode) but used (void) signatures that
  * contradict the mangled names' implied (u32, FloorEnterMode) parameters,
  * referenced a nonexistent `battle_MainLoop` symbol, and had internally
@@ -53,7 +53,7 @@ extern void* memset(void* dst, int val, u32 size);
 extern void* memcpy(void* dst, const void* src, u32 size);
 
 /* OS / Engine */
-extern u8   fn_800FF548(void);                      /* check if floor is loaded */
+extern u8   floorGetFadeOutFlag(void);                      /* check if floor is loaded */
 extern void std092_getCurrentRoomID(void);                      /* tick floor */
 extern void _threadSwitch(void);                      /* tick render */
 extern void GSgetFrameStep(void);                      /* GSgfx tick */
@@ -63,7 +63,7 @@ extern void GSlogWrite(const char* fmt, ...);      /* GSlog_Print */
 extern void menuCloseCustom(s32 objID, s32 arg1, s32 arg2);   /* release scene object */
 extern u8   menuIsCheck(s32 objID);                        /* check scene object active */
 extern void menuGetKeyInfo(void* padData, s32 port);          /* read pad input */
-extern void* fn_80113FB4(void);                            /* check floor loaded */
+extern void* floorGetCurrentGroupId(void);                            /* check floor loaded */
 
 /* Sound */
 extern void soundStop(s32 sndID, s32 volume);    /* soundStop */
@@ -151,7 +151,7 @@ extern u32 lbl_80279B78[3]; /* function pointers for scene callbacks */
 
 void _fightInitialize__FUi14FloorEnterMode(u32 unused, s32 enterMode)
 {
-    extern u8 fn_800FF548(void);
+    extern u8 floorGetFadeOutFlag(void);
     extern void* floorGetCurrentContext(void);
     extern void fightMainThread(void);
     extern void* GSthreadCreate(s32 priority, void* userData, u32 stackSize,
@@ -160,7 +160,7 @@ void _fightInitialize__FUi14FloorEnterMode(u32 unused, s32 enterMode)
     extern u8 lbl_80375CC8[];
     extern const char lbl_80279C00[];
 
-    if (fn_800FF548() != 0) {
+    if (floorGetFadeOutFlag() != 0) {
         dbgMenuClose();
         dbgMenuSetEnable(0);
         return;
@@ -204,42 +204,42 @@ void fightMainThread(void);
 
 /* 0x801EF02C | size: 0x54 | small */
 void darkPokemonSetAllFlag14(void) {
-    extern void* fn_801EE440(u16 idx);
+    extern void* darkPokemonListGet(u16 idx);
     extern u16 darkPokemonListCount(void);
     extern void darkPokemonSetFlag14(void* a, u32 b);
     u16 count = darkPokemonListCount();
     u16 i;
     for (i = 0; i < count; i++) {
-        darkPokemonSetFlag14(fn_801EE440(i), 1);
+        darkPokemonSetFlag14(darkPokemonListGet(i), 1);
     }
 }
 
 /* 0x801EF080 | size: 0x54 | small */
 void darkPokemonSetAllFlag12(void) {
-    extern void* fn_801EE440(u16 idx);
+    extern void* darkPokemonListGet(u16 idx);
     extern u16 darkPokemonListCount(void);
-    extern void fn_801EEB34(void* a, u32 b);
+    extern void darkPokemonSetFlag12(void* a, u32 b);
     u16 count = darkPokemonListCount();
     u16 i;
     for (i = 0; i < count; i++) {
-        fn_801EEB34(fn_801EE440(i), 1);
+        darkPokemonSetFlag12(darkPokemonListGet(i), 1);
     }
 }
 
 /* 0x801EF0D4 | size: 0x54 | small */
 void darkPokemonSetAllFlag16(void) {
-    extern void* fn_801EE440(u16 idx);
+    extern void* darkPokemonListGet(u16 idx);
     extern u16 darkPokemonListCount(void);
-    extern void fn_801EE958(void* a, u32 b);
+    extern void darkPokemonSetFlag16(void* a, u32 b);
     u16 count = darkPokemonListCount();
     u16 i;
     for (i = 0; i < count; i++) {
-        fn_801EE958(fn_801EE440(i), 1);
+        darkPokemonSetFlag16(darkPokemonListGet(i), 1);
     }
 }
 
 /* 0x801EF128 | size: 0xBC | medium */
-void fn_801EF128(void* partyData) {
+void darkPokemonSaveInit(void* partyData) {
     typedef struct BattlePartySlot {
         u8 active;
         u8 pad01;
@@ -386,7 +386,7 @@ void _fightFinalize__FUi14FloorEnterMode(u32 floor, u32 enterMode) {
 }
 
 /* 0x801EF488 | size: 0x28 | small */
-void fn_801EF488(void) {
+void fightFrameUpdate(void) {
     cameraUpdate();
     battleCameraStartRandom();
     wazaSequenceSysUpdate();
@@ -397,7 +397,7 @@ void fn_801EF488(void) {
 #if defined(BATTLE_MAIN_ALL) || defined(BATTLE_MAIN_EXACT_801EF5C0_ONLY)
 
 /* 0x801EF5C0 | size: 0x5C | small */
-void fn_801EF5C0(void) {
+void fightGSfloorRegister(void) {
     extern void fn_800FF4D4(void* data, u8 type);
     u32 data[3];
 
@@ -448,7 +448,7 @@ void fightPreloadResources(s32 result) {
     extern u8 lbl_803752A0[];
     extern u16 lbl_80478D10;
     extern u8 fsysPreloadArchive(s32 id);
-    extern s32 fn_8017B2CC(s32 id);
+    extern s32 GSresGroupGetState(s32 id);
     extern void _threadSwitch(void);
     s32 id;
     s8 wanted;
@@ -461,7 +461,7 @@ void fightPreloadResources(s32 result) {
             id = *(s32*)(lbl_803727C8 + (*(u16*)(lbl_803752A0 + ((u16)i * 2)) * 0xc));
             if (fsysPreloadArchive(id) != 0) {
                 while (1) {
-                    wait = fn_8017B2CC(id);
+                    wait = GSresGroupGetState(id);
                     if (wait == 0 || wait < 0) {
                         break;
                     }
@@ -523,7 +523,7 @@ void fightResetSoundFlags(void) {
 }
 
 /* 0x801EF7C4 | size: 0x130 | medium */
-void fn_801EF7C4(void* arg) {
+void fightPreloadTrainerWaza(void* arg) {
     void *r31;
     u16 r30, r29, r28, r27, r26;
     void *r25;
@@ -581,7 +581,7 @@ BATTLE_MAIN_HELPER u8 battleCameraSelect(u8 useSimpleCamera) {
         battleCameraDoFull();
     }
     std092_getCurrentRoomID();
-    data = fn_80113FB4();
+    data = floorGetCurrentGroupId();
     if (data != NULL) {
         battleCameraStartOffsetAnime(data, 0x7B1800);
     }

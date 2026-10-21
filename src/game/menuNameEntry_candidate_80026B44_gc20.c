@@ -115,15 +115,15 @@ static inline void menuNameEntryDrawName(u8* self, u8* draw, s32 type)
     }
 }
 
-/* fn_80026B44 - 0x80026B44 | size: 0x254 */
-s32 fn_80026B44(void* window, u8* draw)
+/* menuNameEntryDrawText2 - 0x80026B44 | size: 0x254 */
+s32 menuNameEntryDrawText2(void* window, u8* draw)
 {
     menuNameEntryDrawName(window, draw, 8);
     return 0;
 }
 
-/* fn_80026D98 - 0x80026D98 | size: 0x254 */
-s32 fn_80026D98(void* window, u8* draw)
+/* menuNameEntryDrawText3 - 0x80026D98 | size: 0x254 */
+s32 menuNameEntryDrawText3(void* window, u8* draw)
 {
     menuNameEntryDrawName(window, draw, 0xa);
     return 0;

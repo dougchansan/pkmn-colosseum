@@ -29,11 +29,11 @@ extern void GSmodelSetPosition(void*, void*);
 extern void GSmodelSetRotation(void*, void*);
 extern int peopleOpenSub(void* entry, u32 groupId, u32 indexId, s32 objectId);
 extern void peopleSetMotionSlot(void* entry, u32 motionIndex);
-extern void fn_801848D0(void* model, s32 group, s32 id, s32 part);
+extern void peopleAttachModelPart(void* model, s32 group, s32 id, s32 part);
 extern void std067_characterStopLookAt(u32 groupId, u32 index);
 extern void std181_characterTurnHeadTowardsCharacter(u32 groupId, u32 index, u32 targetGroupId, u32 targetIndex);
 extern void std066_characterLookAtPosition(u32 groupId, u32 index, u32 x, u32 y, u32 z);
-extern void fn_801812C4(void* entry);
+extern void peopleMoveStep(void* entry);
 
 extern s32 lbl_8047B1F8;          /* maximum people count */
 extern PeopleEntry* lbl_8047B200; /* people array (heap-allocated) */
@@ -127,8 +127,8 @@ static inline PeopleEntry* peopleBiosAllocEntry(void) {
     return NULL;
 }
 
-/* fn_8018FB60's body: show the model with the given animation. */
-/* RULE-EXCEPTION(user-approved): inline copy of the real fn_8018FB60 — see docs/RULE_EXCEPTIONS.md */
+/* peopleSetModelVisible's body: show the model with the given animation. */
+/* RULE-EXCEPTION(user-approved): inline copy of the real peopleSetModelVisible — see docs/RULE_EXCEPTIONS.md */
 static inline void peopleBiosSetAnim(PeopleEntry* entry, u8 animationId) {
     void* model = entry->modelHandle;
 
@@ -187,7 +187,7 @@ void peopleBiosPopData(u8* src, u32 size) {
         GSmodelPopState(model, saved + 0xEC);
 
         if (*(s32*)((u8*)entry + 0xC8) != -1 && *(s32*)((u8*)entry + 0xCC) != -1) {
-            fn_801848D0(model, *(s32*)((u8*)entry + 0xC8), *(s32*)((u8*)entry + 0xCC),
+            peopleAttachModelPart(model, *(s32*)((u8*)entry + 0xC8), *(s32*)((u8*)entry + 0xCC),
                         *(s32*)((u8*)entry + 0xD0));
             GSvecCopy(GSmodelGetPositionPtr(model), saved + 0xBC);
             GSvecCopy(GSmodelGetRotationPtr(model), saved + 0xC8);
@@ -210,7 +210,7 @@ void peopleBiosPopData(u8* src, u32 size) {
         }
         if (((u8*)entry)[0x96] != 0) {
             for (j = 0; j < 60; j++) {
-                fn_801812C4(entry);
+                peopleMoveStep(entry);
             }
         }
         saved += PEOPLE_SPAWN_DATA_SIZE;

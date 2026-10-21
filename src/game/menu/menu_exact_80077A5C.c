@@ -25,8 +25,8 @@ extern u8 fn_80142984(u16 item);
 extern void* memcpy(void* dst, const void* src, u32 size);
 extern s32 memcmp(const void* s1, const void* s2, u32 size);
 
-/* fn_80077A5C (0x80077A5C): accept an empty slot or a zero species value. */
-u8 fn_80077A5C(void* pokemon) {
+/* menuRuleIsEmptyPokemon (0x80077A5C): accept an empty slot or a zero species value. */
+u8 menuRuleIsEmptyPokemon(void* pokemon) {
     s32 result;
 
     result = 0;
@@ -38,19 +38,19 @@ u8 fn_80077A5C(void* pokemon) {
 
 extern u8* savedataBattleGetRulePtr(void);
 
-/* fn_80077AAC..fn_80077B60 (0x80077AAC-0x80077B60): fixed-index byte
+/* menuCBRule_GetRule13..menuCBRule_GetRule0E (0x80077AAC-0x80077B60): fixed-index byte
  * accessors into the savedataBattleGetRulePtr() record. */
-u8 fn_80077AAC(void) { return savedataBattleGetRulePtr()[0x13]; }
+u8 menuCBRule_GetRule13(void) { return savedataBattleGetRulePtr()[0x13]; }
 
-u8 fn_80077AD0(void) { return savedataBattleGetRulePtr()[0x12]; }
+u8 menuCBRule_GetRule12(void) { return savedataBattleGetRulePtr()[0x12]; }
 
-u8 fn_80077AF4(void) { return savedataBattleGetRulePtr()[0x11]; }
+u8 menuCBRule_GetRule11(void) { return savedataBattleGetRulePtr()[0x11]; }
 
-u8 fn_80077B18(void) { return savedataBattleGetRulePtr()[0x10]; }
+u8 menuCBRule_GetRule10(void) { return savedataBattleGetRulePtr()[0x10]; }
 
-u8 fn_80077B3C(void) { return savedataBattleGetRulePtr()[0xf]; }
+u8 menuCBRule_GetRule0F(void) { return savedataBattleGetRulePtr()[0xf]; }
 
-u8 fn_80077B60(void) { return savedataBattleGetRulePtr()[0xe]; }
+u8 menuCBRule_GetRule0E(void) { return savedataBattleGetRulePtr()[0xe]; }
 
 /* menuCBRule_GetCommandTimeLimit (0x80077B84): fixed-index s16 accessor into the same record. */
 s16 menuCBRule_GetCommandTimeLimit(void) { return ((s16*)savedataBattleGetRulePtr())[0xb]; }
@@ -60,8 +60,8 @@ s32 menuCBRule_GetBattleTimeLimit(void) {
     return ((s16*)savedataBattleGetRulePtr())[0xa] * 0x3c;
 }
 
-/* fn_80077BD0 (0x80077BD0): accept initialized save-status values. */
-u8 fn_80077BD0(void) {
+/* savedataBattleIsModeValid (0x80077BD0): accept initialized save-status values. */
+u8 savedataBattleIsModeValid(void) {
     s32 value;
 
     value = savedataGetStatus(0, 0xE)[2];
@@ -96,8 +96,8 @@ typedef struct MenuRuleItemRestrictions {
     u8 item_disabled[0x3C];
 } MenuRuleItemRestrictions;
 
-/* fn_80077C68 (0x80077C68): apply the current rule's item restriction. */
-u8 fn_80077C68(u16 item) {
+/* menuRuleApplyItemRestriction (0x80077C68): apply the current rule's item restriction. */
+u8 menuRuleApplyItemRestriction(u16 item) {
     MenuRuleItemRestrictions* rule;
     u32 i;
 
@@ -172,13 +172,13 @@ void* menuCBRule_ConstantRule(s32 index) {
     return (void*)0;
 }
 
-/* fn_80077E80 (0x80077E80): fixed-size record copy. */
-void fn_80077E80(void* dst, void* src) {
+/* menuRuleCopy (0x80077E80): fixed-size record copy. */
+void menuRuleCopy(void* dst, void* src) {
     memcpy(dst, src, 0x54);
 }
 
-/* fn_80077EA4 (0x80077EA4): fixed-size record equality check. */
-u8 fn_80077EA4(u16* s1, u16* s2) {
+/* menuRuleEqual (0x80077EA4): fixed-size record equality check. */
+u8 menuRuleEqual(u16* s1, u16* s2) {
     return memcmp(s1, s2, 0x54) == 0;
 }
 

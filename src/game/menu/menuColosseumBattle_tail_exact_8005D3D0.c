@@ -47,7 +47,7 @@ s32 fn_8005D3D0(s32 target) {
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-s32 fn_8005D4AC(void* menu, void* sprite) {
+s32 menu9DDrawSprite(void* menu, void* sprite) {
     s32 visible;
     u8 flags = lbl_8047A5A8;
 
@@ -66,7 +66,7 @@ s32 fn_8005D4AC(void* menu, void* sprite) {
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-s32 fn_8005D4F4(void* menu, void* sprite) {
+s32 menu9DDrawSprite2(void* menu, void* sprite) {
     s32 visible;
     u8 flags = lbl_8047A5A8;
 
@@ -85,7 +85,7 @@ s32 fn_8005D4F4(void* menu, void* sprite) {
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-s32 fn_8005D53C(void* menu, void* sprite) {
+s32 menu9DDrawSprite3(void* menu, void* sprite) {
     s32 visible;
     u8 flags = lbl_8047A5A8;
 
@@ -104,7 +104,7 @@ s32 fn_8005D53C(void* menu, void* sprite) {
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-s32 fn_8005D584(void* menu, void* sprite) {
+s32 menu9DDrawSprite4(void* menu, void* sprite) {
     s32 visible;
     u8 flags = lbl_8047A5A8;
 

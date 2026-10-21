@@ -11,7 +11,7 @@ extern void bagItemUse(void);
 extern void fn_8001501C(void);
 extern void fn_800150E4(void);
 extern void menuPocketDrawNameList(void);
-extern void fn_800155B0(void);
+extern void bagDrawBerryList(void);
 extern void bagDrawTMList(void);
 extern void menuPocketDrawItemList(void);
 
@@ -136,7 +136,7 @@ const BigEntry lbl_80266918[6] = {
     { 0xB4AED300, 0x00000005, 0x00000001, 0x00000204, 0x0000020C, menuPocketDrawNameList, fn_8001501C,
       0x00000007, 0x00002AFD, lbl_80266864, 0x00000002, lbl_80266900, 0x00000001,
       { 0, 0, 0, 0, 0, 0 } },
-    { 0xAECCD300, 0x00000003, 0x00000000, 0x00000205, 0x0000020D, fn_800155B0, fn_8001501C,
+    { 0xAECCD300, 0x00000003, 0x00000000, 0x00000205, 0x0000020D, bagDrawBerryList, fn_8001501C,
       0x00000006, 0x00002AFC, lbl_80266834, 0x00000004, lbl_802668E8, 0x00000002,
       { 0, 0, 0, 0, 0, 0 } },
     { 0xAED3B200, 0x00000004, 0x00000000, 0x00000206, 0x0000020E, bagDrawTMList, fn_8001501C,

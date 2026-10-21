@@ -18,29 +18,29 @@
  *
  * Key functions:
  *   fn_8001501C  GSpokeSummary_DrawLabel      -- 0x34 bytes, render text label
- *   fn_80015050  GSpokeSummary_DrawHandler     -- 0x94 bytes, invoke page draw handler
+ *   bagMenuDrawCursor  GSpokeSummary_DrawHandler     -- 0x94 bytes, invoke page draw handler
  *   fn_800150E4  GSpokeSummary_DrawPage        -- 0x290 bytes, main page renderer
  *   menuPocketDrawNameList                    -- 0x23C bytes, names-only item-list page (pocket 1)
- *   fn_800155B0  GSpokeSummary_DrawStatsPage    -- 0x40C bytes, stat hexagon page
+ *   bagDrawBerryList  GSpokeSummary_DrawStatsPage    -- 0x40C bytes, stat hexagon page
  *   bagDrawTMList  GSpokeSummary_DrawRibbonPage   -- 0x480 bytes, ribbon collection
  *   menuPocketDrawItemList                    -- 0x374 bytes, item-list page draw (pockets 4/5)
- *   fn_800161B0  GSpokeSummary_PageTransition   -- 0x198 bytes, page flip animation
- *   fn_80016348  GSpokeSummary_UpdateCursor     -- 0x188 bytes, cursor movement
- *   fn_800164D0  GSpokeSummary_MoveDetail       -- 0x148 bytes, move detail popup
- *   fn_80016618  GSpokeSummary_GetPageCount     -- 0xA4 bytes, count available pages
- *   fn_800166BC  GSpokeSummary_SetupPage        -- 0x114 bytes, initialize page data
+ *   bagMenuDrawCursor2  GSpokeSummary_PageTransition   -- 0x198 bytes, page flip animation
+ *   bagMenuDrawText  GSpokeSummary_UpdateCursor     -- 0x188 bytes, cursor movement
+ *   bagMenuDrawCursor3  GSpokeSummary_MoveDetail       -- 0x148 bytes, move detail popup
+ *   bagMenuDrawCursor4  GSpokeSummary_GetPageCount     -- 0xA4 bytes, count available pages
+ *   bagMenuDrawCursor5  GSpokeSummary_SetupPage        -- 0x114 bytes, initialize page data
  *   menuPocketDrawMarqueeDot                  -- 0x2EC bytes, one dot of the cursor marquee
  *   menuPocketDrawMarqueeFrame                -- 0x458 bytes, cursor placement + 45-dot marquee
- *   fn_80016F14  GSpokeSummary_DrawExpBar       -- 0x114 bytes, draw EXP bar
- *   fn_80017028  GSpokeSummary_DrawHPBar        -- 0x73C bytes, draw HP bar with color
- *   fn_80017764  GSpokeSummary_GetBarColor      -- 0x2C bytes, HP color threshold
- *   fn_80017790  GSpokeSummary_FormatLevel      -- 0xD8 bytes, format "Lv.XX" string
- *   fn_80017868  GSpokeSummary_FormatHP         -- 0x84 bytes, format "HP/MaxHP"
- *   fn_800178EC  GSpokeSummary_GetGenderChar    -- 0x28 bytes, get gender symbol
- *   fn_80017914  GSpokeSummary_GetShinyIcon     -- 0x28 bytes, get shiny star icon
- *   fn_8001793C  GSpokeSummary_DrawShadowGauge  -- 0x54 bytes, draw heart gauge
- *   fn_80017990  GSpokeSummary_AnimateGauge     -- 0x7C bytes, gauge fill animation
- *   fn_80017A0C  GSpokeSummary_DrawPageDots     -- 0x2AC bytes, page indicator dots
+ *   bagMenuDrawCursor7  GSpokeSummary_DrawExpBar       -- 0x114 bytes, draw EXP bar
+ *   bagMenuCursor  GSpokeSummary_DrawHPBar        -- 0x73C bytes, draw HP bar with color
+ *   bagMenuButton  GSpokeSummary_GetBarColor      -- 0x2C bytes, HP color threshold
+ *   bagMenuDrawItem  GSpokeSummary_FormatLevel      -- 0xD8 bytes, format "Lv.XX" string
+ *   bagMenuDrawText2  GSpokeSummary_FormatHP         -- 0x84 bytes, format "HP/MaxHP"
+ *   bagMenuDrawItem2  GSpokeSummary_GetGenderChar    -- 0x28 bytes, get gender symbol
+ *   bagMenuDrawItem3  GSpokeSummary_GetShinyIcon     -- 0x28 bytes, get shiny star icon
+ *   bagMenuDrawItem4  GSpokeSummary_DrawShadowGauge  -- 0x54 bytes, draw heart gauge
+ *   bagMenuDrawItem5  GSpokeSummary_AnimateGauge     -- 0x7C bytes, gauge fill animation
+ *   bagMenuCtrl  GSpokeSummary_DrawPageDots     -- 0x2AC bytes, page indicator dots
  *   fn_80017CB8  GSpokeSummary_DrawBackground   -- 0x1D4 bytes, background gradient
  *   bagItemStore  GSpokeSummary_Init             -- 0x338 bytes, full initialization
  *
@@ -136,7 +136,7 @@ s32 fn_8001501C(void) {
 #endif
 #endif /* !GS_POKEMON_SUMMARY_ISLAND */
 
-/* fn_80015050 - 0x80015050 | size: 0x94 */
+/* bagMenuDrawCursor - 0x80015050 | size: 0x94 */
 extern u32 cursorBiosGetPos(u32 a);
 extern const u8 lbl_80266918[];
 #define sSummaryPageEntries lbl_80266918
@@ -160,7 +160,7 @@ typedef struct SummaryPageEntry {
     u8 unk_03;
     s32 dataSource;          /* 0x04, -1 uses default party source */
     u8 unk_08[4];
-    s32 colorMatchId;        /* 0x0C, used by fn_80017790 */
+    s32 colorMatchId;        /* 0x0C, used by bagMenuDrawItem */
     s32 gaugeMatchId;        /* 0x10, compared with output species/id */
     SummaryPageDrawFn drawPage; /* 0x14, draws the page body at x */
     void* drawHandler;       /* 0x18 */
@@ -200,7 +200,7 @@ typedef struct SummaryDrawItem {
 #define SUMMARY_PAGE_INDEX_VOLATILE(ctx) ((s32)*(volatile s8*)&(ctx)->pageIndex)
 /*
  * Transitional accessors: direct SummaryPageEntry array indexing changes MWCC
- * register allocation for fn_80017990. Keep the byte-match spelling isolated
+ * register allocation for bagMenuDrawItem5. Keep the byte-match spelling isolated
  * here until the rodata table can be typed without losing the match.
  */
 #define SUMMARY_PAGE_ENTRY_AT(index) \
@@ -395,11 +395,11 @@ static inline s32 SummaryPagePocketTotal(s32 pageIndex) {
 
 #if !defined(GS_POKEMON_SUMMARY_ISLAND)
 #if 0
-asm void fn_80015050(void) {
+asm void bagMenuDrawCursor(void) {
 #include "src/game/gs_pokemon_summary_fn_80015050.inc"
 }
 #else
-s32 fn_80015050(u8* src, u8* param) {
+s32 bagMenuDrawCursor(u8* src, u8* param) {
     DrawHandlerFn fp;
     u16 tmp;
     u8* entry = (u8*)sSummaryPageEntries;
@@ -532,19 +532,19 @@ s32 menuPocketDrawNameList(s32 x, s32 pageIndex, u16* packedRange) {
 #pragma pop
 #endif
 
-/* fn_800155B0 - 0x800155B0 | size: 0x40c */
+/* bagDrawBerryList - 0x800155B0 | size: 0x40c */
 extern void* lbl_8047A2F8;
 extern const f32 lbl_8047B748;
 extern u32 lbl_8047A2D0;
 extern u32 lbl_8047A2C8;
 #if 0
-asm void fn_800155B0(void) {
+asm void bagDrawBerryList(void) {
 #include "src/game/gs_pokemon_summary_fn_800155B0.inc"
 }
 #else
 #pragma push
 #pragma peephole off
-s32 fn_800155B0(s32 x, s32 pageIndex, u16* packedRange) {
+s32 bagDrawBerryList(s32 x, s32 pageIndex, u16* packedRange) {
     s32 validCount;
     s32 itemIndex;
     s32 displayLine;
@@ -774,7 +774,7 @@ s32 menuPocketDrawItemList(s32 x, s32 pageIndex, u16* packedRange) {
 #endif /* !GS_POKEMON_SUMMARY_ISLAND */
 
 #if !defined(GS_POKEMON_SUMMARY_ISLAND) || defined(GS_POKEMON_SUMMARY_800161B0_ONLY)
-/* fn_800161B0 - 0x800161B0 | size: 0x198 */
+/* bagMenuDrawCursor2 - 0x800161B0 | size: 0x198 */
 extern u8 lbl_802EF0A8[];
 
 /* Screen layout record: 0x1C-byte parts, then the summary window rect. */
@@ -797,14 +797,14 @@ extern u32 lbl_8047A2D4;
 extern const f32 lbl_8047B748;
 extern const f32 lbl_8047B750;
 #if 0
-asm void fn_800161B0(void) {
+asm void bagMenuDrawCursor2(void) {
 #include "src/game/gs_pokemon_summary_fn_800161B0.inc"
 }
 #else
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-s32 fn_800161B0(SummaryPageContext* ctx, u8* item) {
+s32 bagMenuDrawCursor2(SummaryPageContext* ctx, u8* item) {
     SummaryPageDrawFn drawPage;
     s32 neighborIndex;
     f32 neighborX;
@@ -851,19 +851,19 @@ s32 fn_800161B0(SummaryPageContext* ctx, u8* item) {
 #pragma pop
 #endif
 
-/* fn_80016348 - 0x80016348 | size: 0x188 */
+/* bagMenuDrawText - 0x80016348 | size: 0x188 */
 extern u32 lbl_8047A2D4;
 extern const f32 lbl_8047B748;
 extern const f32 lbl_8047B750;
 #if 0
-asm void fn_80016348(void) {
+asm void bagMenuDrawText(void) {
 #include "src/game/gs_pokemon_summary_fn_80016348.inc"
 }
 #else
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-s32 fn_80016348(SummaryPageContext* ctx, u8* item) {
+s32 bagMenuDrawText(SummaryPageContext* ctx, u8* item) {
     s32 halfWidth;
     u32 titleId;
     s32 halfText;
@@ -903,21 +903,21 @@ s32 fn_80016348(SummaryPageContext* ctx, u8* item) {
 #pragma pop
 #endif
 
-/* fn_800164D0 - 0x800164D0 | size: 0x148 */
+/* bagMenuDrawCursor3 - 0x800164D0 | size: 0x148 */
 extern void* lbl_8047A2F8;
 extern u32 lbl_8047A2D8;
 extern const f32 lbl_8047B744;
 extern u32 lbl_8047A2C4;
 extern const f32 lbl_8047B740;
 #if 0
-asm void fn_800164D0(void) {
+asm void bagMenuDrawCursor3(void) {
 #include "src/game/gs_pokemon_summary_fn_800164D0.inc"
 }
 #else
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-s32 fn_800164D0(SummaryPageContext* ctx, u8* item) {
+s32 bagMenuDrawCursor3(SummaryPageContext* ctx, u8* item) {
     s8 pos[2];
     s32 lastRow;
 
@@ -934,20 +934,20 @@ s32 fn_800164D0(SummaryPageContext* ctx, u8* item) {
 #pragma pop
 #endif
 
-/* fn_80016618 - 0x80016618 | size: 0xa4 */
+/* bagMenuDrawCursor4 - 0x80016618 | size: 0xa4 */
 extern u32 lbl_8047A2D8;
 extern const f32 lbl_8047B744;
 extern u32 lbl_8047A2C4;
 extern const f32 lbl_8047B740;
 #if 0
-asm void fn_80016618(void) {
+asm void bagMenuDrawCursor4(void) {
 #include "src/game/gs_pokemon_summary_fn_80016618.inc"
 }
 #else
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-s32 fn_80016618(u8* src, u8* dst) {
+s32 bagMenuDrawCursor4(u8* src, u8* dst) {
     u8* entry;
     u16 tmp;
     entry = (u8*)sSummaryPageEntries;
@@ -966,7 +966,7 @@ s32 fn_80016618(u8* src, u8* dst) {
 #endif /* 0x800161B0 - 0x800166BC */
 
 #if !defined(GS_POKEMON_SUMMARY_ISLAND) || defined(GS_POKEMON_SUMMARY_800166BC_ONLY)
-/* fn_800166BC - 0x800166BC | size: 0x114 */
+/* bagMenuDrawCursor5 - 0x800166BC | size: 0x114 */
 extern u32 lbl_8047A2C8;
 extern u32 lbl_8047A2D0;
 extern const f32 lbl_8047B768;
@@ -975,14 +975,14 @@ extern const f32 lbl_8047B758;
 extern const f32 lbl_8047B75C;
 extern const f32 lbl_8047B760;
 #if 0
-asm void fn_800166BC(void) {
+asm void bagMenuDrawCursor5(void) {
 #include "src/game/gs_pokemon_summary_fn_800166BC.inc"
 }
 #else
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-s32 fn_800166BC(SummaryPageContext* ctx, u8* item) {
+s32 bagMenuDrawCursor5(SummaryPageContext* ctx, u8* item) {
     s8 pos[2];
     s32 row;
     f32 angle;
@@ -1181,23 +1181,23 @@ s32 menuPocketDrawMarqueeFrame(SummaryPageContext* ctx, u8* item) {
     return 0;
 }
 
-/* fn_80016F14 - 0x80016F14 | size: 0x114 */
+/* bagMenuDrawCursor7 - 0x80016F14 | size: 0x114 */
 extern u32 lbl_8047A2E8;
 extern u32 lbl_8047A2C8;
 extern u32 lbl_8047A2D0;
 extern u32 lbl_8047A2D8;
 #if 0
-asm void fn_80016F14(void) {
+asm void bagMenuDrawCursor7(void) {
 #include "src/game/gs_pokemon_summary_fn_80016F14.inc"
 }
 #else
-s32 fn_80016F14(SummaryPageContext* ctx, u8* item) {
+s32 bagMenuDrawCursor7(SummaryPageContext* ctx, u8* item) {
     SummaryPlaceCursor(ctx, item);
     return 0;
 }
 #endif
 
-/* fn_80017028 - 0x80017028 | size: 0x73c */
+/* bagMenuCursor - 0x80017028 | size: 0x73c */
 extern u8 lbl_80266B88[];
 extern const f32 lbl_8047B748;
 extern u32 lbl_8047A2D4;
@@ -1212,13 +1212,13 @@ extern const f32 lbl_8047B750;
 extern const f32 lbl_8047B790;
 extern u32 lbl_8047A2DC;
 #if 0
-asm void fn_80017028(void) {
+asm void bagMenuCursor(void) {
 #include "src/game/gs_pokemon_summary_fn_80017028.inc"
 }
 #else
 /* RULE-EXCEPTION(user-approved): retained mutation masks and reused constant
  * temporaries shape MWCC code generation; see docs/RULE_EXCEPTIONS.md. */
-s32 fn_80017028(SummaryPageContext* ctx) {
+s32 bagMenuCursor(SummaryPageContext* ctx) {
   u32 fallbackLabels[5];
   s8 pos[2];
   s8 newPos[2];
@@ -1386,24 +1386,24 @@ s32 fn_80017028(SummaryPageContext* ctx) {
 }
 #endif
 
-/* fn_80017764 - 0x80017764 | size: 0x2c */
+/* bagMenuButton - 0x80017764 | size: 0x2c */
 extern void menuButtonNormal(void);
 extern u32 lbl_8047A2E8;
 extern u32 lbl_8047A2E8;
 
-void fn_80017764(void) {
+void bagMenuButton(void) {
     if ((s32)lbl_8047A2E8 < 0) {
         menuButtonNormal();
     }
 }
 
-/* fn_80017790 - 0x80017790 | size: 0xd8 */
+/* bagMenuDrawItem - 0x80017790 | size: 0xd8 */
 #if 0
-asm void fn_80017790(void) {
+asm void bagMenuDrawItem(void) {
 #include "src/game/gs_pokemon_summary_fn_80017790.inc"
 }
 #else
-s32 fn_80017790(u8* unused, SummaryDrawItem* item) {
+s32 bagMenuDrawItem(u8* unused, SummaryDrawItem* item) {
     SummaryPageEntry* entry;
     s32 i;
 
@@ -1429,16 +1429,16 @@ s32 fn_80017790(u8* unused, SummaryDrawItem* item) {
 }
 #endif
 
-/* fn_80017868 - 0x80017868 | size: 0x84 */
+/* bagMenuDrawText2 - 0x80017868 | size: 0x84 */
 extern u32 heroGetStatus(u32 a, s32 b, s32 c);
 extern void* lbl_8047A2F8;
 extern u32 lbl_8047A2E0;
 #if 0
-asm void fn_80017868(void) {
+asm void bagMenuDrawText2(void) {
 #include "src/game/gs_pokemon_summary_fn_80017868.inc"
 }
 #else
-s32 fn_80017868(u32 unused, u8* ctx) {
+s32 bagMenuDrawText2(u32 unused, u8* ctx) {
     u32 r;
     r = heroGetStatus((u32)lbl_8047A2F8, 0xC, 0);
     if ((s32)lbl_8047A2E0 != 3) return 0;
@@ -1451,9 +1451,9 @@ s32 fn_80017868(u32 unused, u8* ctx) {
 #endif /* 0x80016ABC - 0x800178EC */
 
 #if !defined(GS_POKEMON_SUMMARY_ISLAND)
-/* fn_800178EC - 0x800178EC | size: 0x28 */
+/* bagMenuDrawItem2 - 0x800178EC | size: 0x28 */
 extern u32 lbl_8047A2E0;
-s32 fn_800178EC(u32 unused, u8* ptr) {
+s32 bagMenuDrawItem2(u32 unused, u8* ptr) {
     if ((s32)lbl_8047A2E0 != 3) {
         *(u8*)(ptr + 0x67) = 0;
     } else {
@@ -1462,8 +1462,8 @@ s32 fn_800178EC(u32 unused, u8* ptr) {
     return 0;
 }
 
-/* fn_80017914 - 0x80017914 | size: 0x28 */
-s32 fn_80017914(u32 unused, u8* ptr) {
+/* bagMenuDrawItem3 - 0x80017914 | size: 0x28 */
+s32 bagMenuDrawItem3(u32 unused, u8* ptr) {
     if ((s32)lbl_8047A2E0 != 3) {
         *(u8*)(ptr + 0x67) = 0;
     } else {
@@ -1475,13 +1475,13 @@ s32 fn_80017914(u32 unused, u8* ptr) {
 #endif /* !GS_POKEMON_SUMMARY_ISLAND */
 
 #if !defined(GS_POKEMON_SUMMARY_ISLAND) || defined(GS_POKEMON_SUMMARY_8001793C_ONLY)
-/* fn_8001793C - 0x8001793C | size: 0x54 */
+/* bagMenuDrawItem4 - 0x8001793C | size: 0x54 */
 #if 0
-asm void fn_8001793C(void) {
+asm void bagMenuDrawItem4(void) {
 #include "src/game/gs_pokemon_summary_fn_8001793C.inc"
 }
 #else
-s32 fn_8001793C(SummaryPageContext* ctx, SummaryDrawItem* item) {
+s32 bagMenuDrawItem4(SummaryPageContext* ctx, SummaryDrawItem* item) {
     item->color[0] = SUMMARY_PAGE_DISPLAY_COLOR(SUMMARY_PAGE_INDEX_VOLATILE(ctx), 0);
     item->color[1] = SUMMARY_PAGE_DISPLAY_COLOR(SUMMARY_PAGE_INDEX_VOLATILE(ctx), 1);
     item->color[2] = SUMMARY_PAGE_DISPLAY_COLOR(SUMMARY_PAGE_INDEX_VOLATILE(ctx), 2);
@@ -1489,13 +1489,13 @@ s32 fn_8001793C(SummaryPageContext* ctx, SummaryDrawItem* item) {
 }
 #endif
 
-/* fn_80017990 - 0x80017990 | size: 0x7c */
+/* bagMenuDrawItem5 - 0x80017990 | size: 0x7c */
 #if 0
-asm void fn_80017990(void) {
+asm void bagMenuDrawItem5(void) {
 #include "src/game/gs_pokemon_summary_fn_80017990.inc"
 }
 #else
-s32 fn_80017990(SummaryPageContext* ctx, SummaryDrawItem* item) {
+s32 bagMenuDrawItem5(SummaryPageContext* ctx, SummaryDrawItem* item) {
     s32 idx = SUMMARY_PAGE_INDEX(ctx);
     if ((s32)item->speciesId == SUMMARY_PAGE_ENTRY_AT(idx).gaugeMatchId) {
         item->color[0] = SUMMARY_PAGE_DISPLAY_COLOR(idx, 0);
@@ -1509,7 +1509,7 @@ s32 fn_80017990(SummaryPageContext* ctx, SummaryDrawItem* item) {
 }
 #endif
 
-/* fn_80017A0C - 0x80017A0C | size: 0x2ac */
+/* bagMenuCtrl - 0x80017A0C | size: 0x2ac */
 extern u32 lbl_8047A2D8;
 extern void* lbl_8047A2F8;
 extern const f32 lbl_8047B748;
@@ -1525,14 +1525,14 @@ extern const f32 lbl_8047B74C;
 extern const f32 lbl_8047B744;
 extern const f32 lbl_8047B79C;
 #if 0
-asm void fn_80017A0C(void) {
+asm void bagMenuCtrl(void) {
 #include "src/game/gs_pokemon_summary_fn_80017A0C.inc"
 }
 #else
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-s32 fn_80017A0C(u8* ctx) {
+s32 bagMenuCtrl(u8* ctx) {
     s32 cursorIndex;
 
     switch (SUMMARY_CTX_S8(ctx, 0x01)) {

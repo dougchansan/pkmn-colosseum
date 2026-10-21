@@ -11,7 +11,7 @@ void wazaSequenceApplyStop(void* obj)
         owner = sequence->owner;
         if (sequence->active != 0) {
             if (sequence->cameraActive != 0) {
-                fn_801D3034(owner);
+                battleCameraWazaStopIfOwner(owner);
             }
             if (owner->animationActive == 0) {
                 wazaSequenceOwnerPlayIdle(owner, 1, 0);
@@ -57,7 +57,7 @@ void fn_801DBC30(void* obj)
                 wazaSequenceOwnerPlayIdle(owner, 1, 0);
             }
             if (sequence->cameraActive != 0) {
-                fn_801D3034(owner);
+                battleCameraWazaStopIfOwner(owner);
             }
             fn_800E3CC8(owner->model, 0);
             owner->currentSequence = NULL;

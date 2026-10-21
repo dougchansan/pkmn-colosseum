@@ -3,7 +3,7 @@
  * @brief Exact free-space walk, 0x8017FA5C - 0x8017FB08.
  *
  * Carved from the gs small-block heap's level-0 retail translation unit.
- * The following fn_8017FB08 remains a CodeCandidate in its own object.
+ * The following gsSmallHeapFree remains a CodeCandidate in its own object.
  */
 #include "game/gs_range_8017FA5C_shared.h"
 

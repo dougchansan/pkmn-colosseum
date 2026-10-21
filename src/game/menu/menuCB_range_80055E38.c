@@ -31,7 +31,7 @@ extern u8 lbl_803A9768[];
 extern u8 lbl_80267698[];
 extern u8 lbl_802676B4[];
 
-extern void fn_80056C54(u8*, u8*, u32);
+extern void pcBoxDrawIconGrid(u8*, u8*, u32);
 extern s32 menuCloseCustom(s32 menuId, s32 mode, s32 wait);
 extern void* windowSearchID(s32);
 extern u8 fn_80123FBC(void*);
@@ -302,7 +302,7 @@ u32 fn_80056B74(u32 idx, s32 mode) {
 #if defined(MENUCB_RANGE_80055E38_ALL) || \
     defined(MENUCB_PREFIX_80055E38_ONLY)
 
-u32 fn_80056610(u8* p) {
+u32 pcBoxGridCtrl(u8* p) {
     extern s32 lbl_8047A568;
     extern void winSeqSetMenu(s32 param, u32 key);
     s8 state;
@@ -335,7 +335,7 @@ u32 fn_80056610(u8* p) {
     defined(MENUCB_PREFIX_RESIDUAL_80055E38_ONLY)
 
 /* 0x80055EB8 | 0xD0 */
-u32 fn_80055EB8(s8* ctx, u8* p) {
+u32 pcBoxGridDrawSprite(s8* ctx, u8* p) {
     extern s32 fn_80057A08(void);
     extern void* windowSearchID(s32);
     extern s32 fn_80055194(u32*, s32);
@@ -396,14 +396,14 @@ u32 fn_800566E8(void) {
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-void fn_80056C54(u8* a, u8* b, u32 c) {
+void pcBoxDrawIconGrid(u8* a, u8* b, u32 c) {
     extern f32 lbl_8047A58C;
     extern u8 lbl_80314F98[];
     extern u8 pokemonCheckValid(u8* pokemon);
     extern void fn_800FE6D0(s16, s16);
     extern void spriteSetEnv(void);
-    extern s32 fn_80057DE8(void*);
-    extern void* fn_80057F94(void*);
+    extern s32 pcBoxIsShadowPokemon(void*);
+    extern void* pcBoxGetIconResource(void*);
     extern u16 GStextureGetXsize(void*);
     extern u16 GStextureGetYsize(void*);
     extern void gfxSetVtxDesc(void*);
@@ -445,9 +445,9 @@ void fn_80056C54(u8* a, u8* b, u32 c) {
 
     pokemon = lbl_803A9768 + c * 0x138 + 8;
     if (pokemonCheckValid(pokemon) != 0) {
-        texture = fn_80057F94(pokemon);
+        texture = pcBoxGetIconResource(pokemon);
         if (texture != NULL) {
-            if (fn_80057DE8(pokemon) != 0) {
+            if (pcBoxIsShadowPokemon(pokemon) != 0) {
                 if (lbl_8047A58C < 0.5f) {
                     t = 2.0f * lbl_8047A58C;
                 } else {
@@ -517,18 +517,18 @@ void fn_80057094(s16* a, s16* b) {
 #pragma scheduling on
 
 #pragma scheduling off
-u32 fn_800570D0(u8* a, u8* b) {
+u32 menuA0DrawItem(u8* a, u8* b) {
     s32 c;
     c = (s32)(*(u32*)(lbl_803A9768 + 0x278) + 1);
-    fn_80056C54(a, b, (u32)(c % 2));
+    pcBoxDrawIconGrid(a, b, (u32)(c % 2));
     return 0;
 }
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (scheduling on; scheduling off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma scheduling on
 
 #pragma scheduling off
-u32 fn_80057114(u8* a, u8* b) {
-    fn_80056C54(a, b, *(u32*)(lbl_803A9768 + 0x278));
+u32 menuA0DrawItem2(u8* a, u8* b) {
+    pcBoxDrawIconGrid(a, b, *(u32*)(lbl_803A9768 + 0x278));
     return 0;
 }
 
@@ -544,7 +544,7 @@ u32 fn_80057114(u8* a, u8* b) {
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-u32 fn_80057144(u8* ctx, u8* p) {
+u32 menuA0DrawSprite(u8* ctx, u8* p) {
     s32 variant;
     s32 table[7][2];
     s32 shown;

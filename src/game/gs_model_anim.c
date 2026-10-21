@@ -140,9 +140,9 @@ void HSD_JObjReqAnimAllByFlags(HSD_JObj* jobj, u32 flags, f32 frame);
 void fn_801A2B5C(HSD_JObj* jobj, void* anim, void* mat_anim,
                  void* shape_anim);
 void modelCalculateBlendModel__FP8_GSmodelf(GSmodel* model);
-f32 fn_800ED8C4(u32 type, u32 fractional_frames, f32 frame,
+f32 modelCalcAnimFrame(u32 type, u32 fractional_frames, f32 frame,
                 f32 requested_frame, f32 end_frame, f32 rate);
-s32 fn_800D37CC(void);
+s32 GSgfxGetVsyncRate(void);
 void _modelGetAObjFunc__FP9_HSD_AObjPv(HSD_AObj* aobj, HSD_AObj** out);
 void _modelResetPartAnimMixes__FP8_GSmodel(GSmodel* model);
 void _modelSetLoopFlag__FP9_HSD_AObjUl(HSD_AObj* aobj, u32 enable);
@@ -223,12 +223,12 @@ typedef struct GSmodelAnimEndedInfo {
 
 /* sModelJObjCount / sModelJObjLastIndex are .sbss globals owned by the
  * gs_model_anim split (config/GC6E01/symbols.txt). GSmodelWalkJObjs uses them
- * as a shared counter/scratch during a JObj traversal driven by fn_800EE20C. */
+ * as a shared counter/scratch during a JObj traversal driven by jobjWalkFindNthCB. */
 extern s32 sModelJObjCount;
 extern s32 sModelJObjLastIndex;
 typedef void (*GSmodelAObjApplyFunc)(HSD_AObj* aobj, void* arg);
 void HSD_JObjWalkTree(HSD_JObj* jobj, GSmodelAObjApplyFunc func, u32 arg);
-void fn_800EE20C(HSD_AObj* aobj, void* arg);
+void jobjWalkFindNthCB(HSD_AObj* aobj, void* arg);
 
 #if defined(GS_MODEL_ANIM_800EC0E8_800EC35C)
 
@@ -242,7 +242,7 @@ void GSmodelForceAnimTransformUpdate(GSmodel* model)
         modelUpdateAttachments__FP8_GSmodel(model);
     }
 }
-void fn_800EC134(GSmodel* model)
+void GSmodelApplyAnimation(GSmodel* model)
 {
     modelApplyAnimation__FP8_GSmodel(model);
 }
@@ -333,7 +333,7 @@ void GSmodelSetTexAnimRate(GSmodel* model, f32 rate)
 {
     if (model->flags & MODEL_FLAG_HAS_TEX_ANIM) {
         model->tex_anim_rate = rate;
-        if (fn_800D37CC() == 50) {
+        if (GSgfxGetVsyncRate() == 50) {
             model->tex_anim_rate *= lbl_8047CC58;
         }
     }

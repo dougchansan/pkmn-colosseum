@@ -23,7 +23,7 @@ s32 fn_800716E8(s32 chan, s32 value)
 }
 
 /* 0x80071700 | 0x2A8 */
-s32 fn_80071700(s32 chan)
+s32 gbaCmdHandshakeA(s32 chan)
 {
     s32 key;
     s32 result;
@@ -36,7 +36,7 @@ s32 fn_80071700(s32 chan)
 }
 
 /* 0x800719A8 | 0x13C */
-s32 fn_800719A8(s32 chan)
+s32 gbaCmdWaitReady(s32 chan)
 {
     return pkjbWaitZeroResponse(chan);
 }

@@ -66,7 +66,7 @@ extern void* GSmemLock(u16 handle);
 extern void GXDrawDone(void);
 extern void fn_801A6DA0(HSD_MObj* mobj, HSD_TObj* tobj); /* HSD_MObjAddTObj */
 extern s32 HSD_TExpGetType(HSD_TExp* texp);
-extern void fn_801B6DC0(HSD_TExp* texp, u32 r, u32 g, u32 b, u32 a); /* TEV channel swap */
+extern void HSD_TExpSetSwapTable(HSD_TExp* texp, u32 r, u32 g, u32 b, u32 a); /* TEV channel swap */
 extern HSD_TExp* HSD_TExpCnst(void* value, u32 comp, u32 type, HSD_TExp** list);
 extern HSD_TExp* HSD_TExpTev(HSD_TExp** list); /* HSD_TExpTev */
 extern void HSD_TExpColorOp(HSD_TExp* texp, u32 op, u32 bias, u32 scale, u32 clamp);
@@ -308,7 +308,7 @@ HSD_TExp* _matGSmatObjMakeTExp(HSD_MObj* mobj, HSD_TObj* tobj, HSD_TExp** list)
     if (material->extensions & 2) {
         for (t = texp; t != NULL; t = t->comm.next) {
             if (HSD_TExpGetType(t) == 1) {
-                fn_801B6DC0(t, material->channels[0], material->channels[1],
+                HSD_TExpSetSwapTable(t, material->channels[0], material->channels[1],
                             material->channels[2], material->channels[3]);
             }
         }

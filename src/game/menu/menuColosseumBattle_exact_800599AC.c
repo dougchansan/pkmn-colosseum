@@ -12,7 +12,7 @@ typedef struct ColosseumRosterRow {
     s32 action;
 } ColosseumRosterRow;
 
-extern s32 fn_80059034(s32);
+extern s32 menuPartySlotAction(s32);
 extern void menuCloseCustom();
 extern s32 menuCloseSync(s32, s32);
 
@@ -76,7 +76,7 @@ void fn_800599AC(s32 initialSlot) {
         }
         switch (action) {
         case 0:
-            nextSlotValue = fn_80059034(selectedPartyIndex);
+            nextSlotValue = menuPartySlotAction(selectedPartyIndex);
             nextSlot = &nextSlotValue;
             break;
         case 1:

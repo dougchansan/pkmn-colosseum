@@ -13,7 +13,7 @@
  * -inline auto,deferred, which emits them in reverse order.
  *
  * Colosseum's version differs from Melee's: HSD_TETev gained an alpha range
- * and a per-expression TEV swap table (set by fn_801B6DC0), HSD_TECnst keeps
+ * and a per-expression TEV swap table (set by HSD_TExpSetSwapTable), HSD_TECnst keeps
  * comp/ctype as bytes, and the TEV descriptor carries the swap table.
  */
 #include "hsd/hsd_texp.h"
@@ -287,7 +287,7 @@ void HSD_TExpColorOp(HSD_TExp* texp, GXTevOp op, GXTevBias bias,
 }
 
 /* Sets the TEV swap table used by this expression's stage. */
-void fn_801B6DC0(HSD_TExp* texp, GXTevColorChan red, GXTevColorChan green,
+void HSD_TExpSetSwapTable(HSD_TExp* texp, GXTevColorChan red, GXTevColorChan green,
                  GXTevColorChan blue, GXTevColorChan alpha)
 {
     HSD_ASSERT(443, texp);

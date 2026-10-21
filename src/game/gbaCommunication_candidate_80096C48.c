@@ -1,7 +1,7 @@
 /**
  * @file gbaCommunication_candidate_80096C48.c
  * @brief gbaCommunication carve, 0x80096C48 - 0x800973EC (3 functions:
- *        fn_80096C48, fn_80096D54, fn_80096FA0). The rest of the status-menu
+ *        menuPokemonStatusDrawItem, menuPokemonStatusMoveConfirm, menuPokemonStatusMoveKey). The rest of the status-menu
  *        callbacks, 0x800973EC - 0x80097FFC, are in gbaCommunication_exact_800973EC.c.
  *
  * Standalone carve: GBA_COMMUNICATION_DECLS_ONLY takes only the shared
@@ -44,7 +44,7 @@ typedef struct PokemonStatusMenuWork {
 
 
 /* 0x80096C48 | size: 0x10C */
-void fn_80096C48(u32 unused, u8* dst) {
+void menuPokemonStatusDrawItem(u32 unused, u8* dst) {
     typedef struct {
         f32 x;
         f32 y;
@@ -88,7 +88,7 @@ void fn_80096C48(u32 unused, u8* dst) {
 }
 
 /* Handle confirm/cancel input for the linked-Pokemon status menu. */
-void fn_80096D54(u8* menu)
+void menuPokemonStatusMoveConfirm(u8* menu)
 {
     extern void soundStartSE(s32 id);
     extern void pokemonWazaReplace();
@@ -189,7 +189,7 @@ extern void menuPokemonModelRequest(void*, u32);
 extern u8 pokemonWazaCheckValid(u32 pokemon, s32 waza);
 
 /* Whether move slot `move` of the shown Pokemon can be selected. */
-/* RULE-EXCEPTION(user-approved): single-call inline helper (fn_80096FA0) — see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): single-call inline helper (menuPokemonStatusMoveKey) — see docs/RULE_EXCEPTIONS.md */
 static inline u16 menuStatusMoveValid(s32 move)
 {
     u32 pokemon;
@@ -207,7 +207,7 @@ static inline u16 menuStatusMoveValid(s32 move)
 }
 
 /* Move the cursor over the move list. */
-/* RULE-EXCEPTION(user-approved): single-call inline helper (fn_80096FA0) — see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): single-call inline helper (menuPokemonStatusMoveKey) — see docs/RULE_EXCEPTIONS.md */
 static inline void menuStatusMoveInput(u8* menu, u16 input, s8 limit)
 {
     s8 moveSelection;
@@ -232,7 +232,7 @@ static inline void menuStatusMoveInput(u8* menu, u16 input, s8 limit)
 }
 
 /* Move the cursor over the 9x4 ribbon grid. */
-/* RULE-EXCEPTION(user-approved): single-call inline helper (fn_80096FA0) — see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): single-call inline helper (menuPokemonStatusMoveKey) — see docs/RULE_EXCEPTIONS.md */
 static inline void menuStatusRibbonInputBody(u8* menu, u16 input)
 {
     s32 previous;
@@ -303,19 +303,19 @@ static inline void menuStatusRibbonInputBody(u8* menu, u16 input)
     }
 }
 
-/* RULE-EXCEPTION(user-approved): single-call inline helper (fn_80096FA0) — see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): single-call inline helper (menuPokemonStatusMoveKey) — see docs/RULE_EXCEPTIONS.md */
 static inline void menuStatusRibbonInput(u8* menu, u16 input)
 {
     menuStatusRibbonInputBody(menu, input);
 }
 
-/* RULE-EXCEPTION(user-approved): single-call inline helper (fn_80096FA0) — see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): single-call inline helper (menuPokemonStatusMoveKey) — see docs/RULE_EXCEPTIONS.md */
 static inline u16 menuStatusGetTrigger(void)
 {
     return windowGetKeyInfo()[3];
 }
 
-void fn_80096FA0(u8* menu)
+void menuPokemonStatusMoveKey(u8* menu)
 {
     typedef u32 (*StatusChangeCallback)(u32, s32, s32);
 

@@ -22,8 +22,8 @@ extern void msgctrlSetValue();
 extern void winMsgOpenField();
 extern void winMsgCloseField();
 extern void wazaSequenceSysUpdate();
-extern void* fn_801DE190(u16 index, void* model, u8 variant);
-extern void fn_801DDD28();
+extern void* wazaSequencePokemonCreate(u16 index, void* model, u8 variant);
+extern void wazaSequenceOwnerLoadWaza();
 extern void wazaSequenceOwnerSetVisibility();
 extern void wazaSequenceSysStartWaza();
 extern u8 wazaSequenceSysIsPlayingWaza();
@@ -85,7 +85,7 @@ static inline void d2presentTick(u32 effect, u16 sequence)
 
 static inline u32 d2presentCreateEffect(u16 species)
 {
-    return (u32)fn_801DE190(species, 0, 0);
+    return (u32)wazaSequencePokemonCreate(species, 0, 0);
 }
 
 /* Address: 0x80265F94 | Size: 0x2BC | 99.91%: one register copy short
@@ -119,7 +119,7 @@ void d2presentPlayGiftScene(int r3)
         species = status;
     }
     effect = d2presentCreateEffect(species);
-    fn_801DDD28(effect, lbl_8047E6F8, 4, 0);
+    wazaSequenceOwnerLoadWaza(effect, lbl_8047E6F8, 4, 0);
     wazaSequenceOwnerSetVisibility(effect, 1);
     sequence = lbl_8047E6F8;
     wazaSequenceSysStartWaza(effect, sequence, 4);
@@ -178,7 +178,7 @@ void evolutionSequenceEnd(void)
     extern u32 std104_soundSetBackgroundMusic(u32 id, u32 volume, u32 priority);
     extern void scriptSoundStop();
     extern u32 std105_soundPlayEffect(u32 id, u32 volume, u32 priority);
-    extern void fn_801DADC0();
+    extern void wazaSequenceSysInitEx();
     extern void wazaSequenceSysRelease();
     extern void d2presentPlayGiftScene();
     u32 uVar5;
@@ -202,7 +202,7 @@ void evolutionSequenceEnd(void)
     } else {
         uVar4 = 0;
     }
-    fn_801DADC0(1);
+    wazaSequenceSysInitEx(1);
     d2presentPlayGiftScene(uVar5);
     wazaSequenceSysRelease();
     if (iVar1 != 0) {

@@ -25,10 +25,10 @@ extern void gbaCommStartTransferB();
 extern void gbaCommStartTransferC();
 extern void gbaCommStartTransferFile();
 extern void gbaCommIsBusy();
-extern void fn_80093610();
+extern void gbaCommGetResult();
 extern void gbaCommEnd();
 extern void GSgetFrameStep();
-extern void fn_800D37CC();
+extern void GSgfxGetVsyncRate();
 extern void menuCloseCustom();
 extern s32 menuIsCheck();
 extern void menuGetEnablePort();
@@ -95,8 +95,8 @@ extern void* GSmemLock(u16);
 extern u16 GSmemGetHandleByPtr(void*);
 extern void fn_800E24B0(u16);
 extern void GSmemFree(u16);
-extern s32 fn_80083BF8(void*);
-extern void* fn_80083AF4(void*, s32);
+extern s32 cardeArenaCountRecords(void*);
+extern void* cardeArenaWalk(void*, s32);
 extern void* windowSearchItemID(void*, s32);
 extern void qsort(void*, u32, u32, s32 (*)(u32, u32));
 extern void __assert();
@@ -2414,7 +2414,7 @@ static inline void CardEGridSetCountOut(s32* countOut, s32 count)
     }
 }
 
-/* fn_80083BF8's body: count the well-formed records. */
+/* cardeArenaCountRecords's body: count the well-formed records. */
 static inline s32 CardEGridCountEntries(void* arena)
 {
     extern void* savedataGetStatus(u32, u32);
@@ -2514,7 +2514,7 @@ static inline u8* cardEGetCell(u8* card, s8 pageIndex, s8 row, s8 column)
  * cardesavedata_grid_80082650.c), MWCC emits them in reverse source order,
  * so fn_80082650 lands first at 0x80082650, and cardeSaveRemoveCard/cardeSaveSetCard
  * inline cardeSaveLevelHasCard/cardeSaveGetCard although those come earlier in the file. */
-void* fn_800836AC(u8* arena, u8* descriptor, u8 create)
+void* cardeGridGetRecord(u8* arena, u8* descriptor, u8 create)
 {
     extern void wcscpy(void*, const void*);
     CardEGridEntry* series;
@@ -2578,7 +2578,7 @@ void cardeGridSetShadowPokemon(u8* arena, u8* cardData, s8 layer)
     extern void wcscpy(void*, const void*);
     extern void darkPokemonSaveSet4A0(u8 type, u16 id);
     extern void darkPokemonSaveSetName(u8 type, void* data);
-    extern void fn_801EE10C(u8 type, u8 key);
+    extern void darkPokemonSaveSet49C(u8 type, u8 key);
     CardEPageLayout* layerData;
     CardEObjectData* object;
     CardEGridEntry* found;
@@ -2654,7 +2654,7 @@ void cardeGridSetShadowPokemon(u8* arena, u8* cardData, s8 layer)
     layerData->summary[0x61] = 0;
     layerData->summary[0x62] = pending[0x1E1];
     darkPokemonSaveSetName(pending[0x1E1], pending + 0x118);
-    fn_801EE10C(pending[0x1E1], pending[0x125]);
+    darkPokemonSaveSet49C(pending[0x1E1], pending[0x125]);
 }
 
 void fn_800830A4(u8* arena)
@@ -2855,7 +2855,7 @@ scan_done:
 
 /* Return one well-formed record, or the terminating slot for a negative index. */
 #pragma push
-void* fn_80083AF4(void* arena, s32 index)
+void* cardeArenaWalk(void* arena, s32 index)
 {
     extern void* savedataGetStatus(u32, u32);
     CardEGridEntry* entry;
@@ -2899,7 +2899,7 @@ static inline void CardEGridSetCount(s32* countOut, s32 count)
 }
 
 /* Count well-formed records in the Card-e save-data arena. */
-s32 fn_80083BF8(void* arena)
+s32 cardeArenaCountRecords(void* arena)
 {
     extern void* savedataGetStatus(u32, u32);
     CardEGridEntry* entry;
@@ -2964,13 +2964,13 @@ static inline void menuCardE_FillEntries(u8* ctx, s32 count, char* table) {
 
     for (k = 0; k < count; k++) {
         ((u32*)CARDE_CTX_U32(ctx, 0xB0))[k] =
-            (u32)fn_80083AF4(0, k);
+            (u32)cardeArenaWalk(0, k);
     }
     qsort((void*)CARDE_CTX_U32(ctx, 0xB0), count, 4,
           menuCardE_CompareEntryPtrs);
 }
 
-void* fn_8007FDBC(void* window, const void* title) {
+void* menuCardEMatrixBuild(void* window, const void* title) {
     char* table;
     u16* rowIds0;
     u8* rowItems;
@@ -3001,7 +3001,7 @@ void* fn_8007FDBC(void* window, const void* title) {
         CARDE_CTX_U32(ctx, 0xB0) = 0;
     }
 
-    count = CARDE_CTX_U32(ctx, 0xAC) = fn_80083BF8(0);
+    count = CARDE_CTX_U32(ctx, 0xAC) = cardeArenaCountRecords(0);
     if (count != 0) {
         menuCardE_FillEntries(ctx, count, table);
     }
@@ -3081,16 +3081,16 @@ void* fn_8007FDBC(void* window, const void* title) {
 
 
 /* 0x80084034 | size: 0x4 */
-void fn_80084034(void) {
+void cardeGBAMenuButton(void) {
 }
 
 /* 0x80083CBC | size: 0x40 */
-void fn_80083CBC(void* ptr) {
+void cardeArenaClear(void* ptr) {
     memset(ptr != 0 ? ptr : (void*)savedataGetStatus(0, 0xD), 0, 0x49CC);
 }
 
 /* 0x80083CFC | size: 0x34 */
-void* fn_80083CFC(void* ptr) {
+void* cardeArenaGetPtr(void* ptr) {
     return ptr != 0 ? ptr : (void*)savedataGetStatus(0, 0xD);
 }
 
@@ -3155,7 +3155,7 @@ static inline void CardESetStatusMessage(u8* window, void* sprite, s32 active)
 }
 
 #pragma push
-void fn_80084038(u8* window)
+void menuGBACRun(u8* window)
 {
     const u8* data = lbl_8026F2E8;
     CardEStatusWork* work;
@@ -3356,7 +3356,7 @@ void fn_80084038(u8* window)
 #if defined(CARDESAVEDATA_ALL) || defined(CARDESAVEDATA_EXACT_800849B4_ONLY)
 #pragma push
 /* Run the Card-e transfer UI while temporarily reserving controller port 1. */
-s32 fn_800849B4(s32 mode, s32 command, void* input, void* output)
+s32 cardeTransferUI(s32 mode, s32 command, void* input, void* output)
 {
     extern void gbaCommEnd(s32);
     extern u8 cardeGbaTransfer(s32, u32, void*, void*);
@@ -3396,15 +3396,15 @@ s32 fn_800849B4(s32 mode, s32 command, void* input, void* output)
 #define CardE_menuSetEnablePort(mask) ((u8 (*)(u8))menuSetEnablePort)(mask)
 #define CardE_portConnected(port) ((u8 (*)(s32))fn_8008ABA0)(port)
 #define CardE_portBusy(port) ((s32 (*)(s32))gbaCommIsBusy)(port)
-#define CardE_portResult(port) ((s32 (*)(s32))fn_80093610)(port)
+#define CardE_portResult(port) ((s32 (*)(s32))gbaCommGetResult)(port)
 #define CardE_portClose(port) ((void (*)(s32))gbaCommEnd)(port)
 #define CardE_msgOpen(a, id, b, c) ((void (*)(s32, s32, s32, s32))winMsgOpen)(a, id, b, c)
 
 extern void msgctrlSetValue(s32 id, s32 value);
 extern void soundStartSE(s32 se);
-extern s32 fn_80087AE8();
+extern s32 cardeWaitMessage();
 #define CardE_step(work, flags) \
-    ((u8 (*)(CardEStatusWork*, s32))fn_80087AE8)(work, flags)
+    ((u8 (*)(CardEStatusWork*, s32))cardeWaitMessage)(work, flags)
 extern void* fn_80128E04(void);
 extern u32 savedataGetWorkPtr(void);
 extern u8 gamedataAttestBiosGetLangareaId(void*);
@@ -3528,7 +3528,7 @@ static inline void CardEWaitSecond(void)
     while (t < 1.0f) {
         CardE_threadSwitch();
         t += (f32)((u32 (*)(void))GSgetFrameStep)() /
-             (f32)((s32 (*)(void))fn_800D37CC)();
+             (f32)((s32 (*)(void))GSgfxGetVsyncRate)();
     }
 }
 
@@ -4061,7 +4061,7 @@ static inline BOOL cardGridSelect(const CardGridData* data, s32 occupied[3][3],
 
 /* Run the card-e three-tile grid prompt.  A zero return means that three
  * cells were accepted; one means the player backed out before completing it. */
-u32 fn_80087C64(const u16* expected)
+u32 cardeGridPrompt(const u16* expected)
 {
     s32 occupied[3][3];
     CardGridChoice choices[3];

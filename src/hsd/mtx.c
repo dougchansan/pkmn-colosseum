@@ -35,7 +35,7 @@
  *    handles degenerate columns; it keeps one float for the squared
  *    length, its inverse root and the column length (a separate inverse
  *    costs an fmr in the first column);
- *  - HSD_MtxInverseConcat (fn_801A9DF0) returns FALSE for a singular
+ *  - HSD_MtxInverseConcat (HSD_JObjAnimApplyValue) returns FALSE for a singular
  *    matrix instead of copying src, and tests det == 0;
  *  - HSD_MtxGetRotation (HSD_MtxGetRotation) tests against FLT_MIN and answers
  *    x == 0 with +-pi/2 before atan2 (calcVal);
@@ -123,7 +123,7 @@ HSD_ObjAllocData lbl_8046564C;
 HSD_ObjAllocData lbl_80465620;
 
 /* HSD_MtxInverseConcat */
-BOOL fn_801A9DF0(Mtx inv, Mtx src, Mtx dest)
+BOOL HSD_JObjAnimApplyValue(Mtx inv, Mtx src, Mtx dest)
 {
     Mtx m;
     f32 temp1;

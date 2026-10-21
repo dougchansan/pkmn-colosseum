@@ -111,7 +111,7 @@ void wazaViewerLoadSequenceFiles(s32 slot) {
         }
     }
 
-    effect = fn_801DB154();
+    effect = wazaSequenceOwnerAlloc();
     if (effect == NULL) {
         return;
     }
@@ -143,7 +143,7 @@ void wazaViewerLoadSequenceFiles(s32 slot) {
             buf = animBuf;
             animPath = (char*)(lbl_804673F8 + 0x41C);
             wazaViewerLoadFile((const char*)viewerData, animPath, buf, animSize, FALSE);
-            if ((u8)fn_801DDB4C(effect, *(void**)(lbl_804673F8 + 0x664))) {
+            if ((u8)wazaViewerCreateSequence(effect, *(void**)(lbl_804673F8 + 0x664))) {
                 *(s32*)(lbl_804673F8 + 0x04) = 2;
             } else {
                 wazaSequenceSysStopWaza(effect, 0, 0);

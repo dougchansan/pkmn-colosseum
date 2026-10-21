@@ -65,7 +65,7 @@ extern const char lbl_80271008[]; /* "GSthreadCreate. Warning: 'usesFPU==FALE' O
 
 /* ===== Forward declarations for internal functions ===== */
 extern void gappVSyncCallback(void);            /* GStaskSwapCallback */
-extern void fn_800F0F4C(u32 arg);          /* GSthread trampoline / entry wrapper */
+extern void _GSthreadExitTrampoline(u32 arg);          /* GSthread trampoline / entry wrapper */
 extern void PADRead(void* buf);
 extern u32 SIProbe(u32 buttonIdx);
 extern void fn_800AB4FC(void*);

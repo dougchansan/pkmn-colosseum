@@ -59,7 +59,7 @@ extern HSD_JObj* HSD_JObjLoadJoint(HSD_Joint* joint);
 extern void GSmodelSetAnimIndex(GSmodel* model, u32 index);
 extern void fn_80191460(GSbound* bound);
 extern void GSmodelSetAnimFrame(GSmodel* model, f32 frame);
-extern void fn_800EC134(GSmodel* model);
+extern void GSmodelApplyAnimation(GSmodel* model);
 extern void HSD_JObjSetupMatrixSub(HSDJObj* jobj);
 extern void GSmodelParse(GSmodel* model, BOOL is_visible, GSModelPObjDisp disp,
                          void* arg);
@@ -92,7 +92,7 @@ void fn_800EB268(GSmodel* model, u32 anim_index)
     model->linkedGSparticleBank = NULL;
     if (model->flags & 4) {
         GSmodelSetAnimFrame(model, lbl_8047CC28);
-        fn_800EC134(model);
+        GSmodelApplyAnimation(model);
         jobj = model->renderJObj;
         if (jobj != NULL && HSD_JObjMtxIsDirty(jobj)) {
             HSD_JObjSetupMatrixSub(jobj);
@@ -114,7 +114,7 @@ void GSmodelRecalculateBound(GSmodel* model)
     model->linkedGSparticleBank = NULL;
     if (model->flags & 4) {
         GSmodelSetAnimFrame(model, lbl_8047CC28);
-        fn_800EC134(model);
+        GSmodelApplyAnimation(model);
         jobj = model->renderJObj;
         if (jobj != NULL && HSD_JObjMtxIsDirty(jobj)) {
             HSD_JObjSetupMatrixSub(jobj);

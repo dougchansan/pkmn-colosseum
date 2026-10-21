@@ -26,7 +26,7 @@ extern void winSpriteSetDisp(void*, u32);
 extern const s32 lbl_80267A98[6];
 
 /* Address: 0x8005D2E8 | Size: 0xE8 */
-s32 fn_8005D2E8(MenuWindow* menu, MenuSprite* sprite) {
+s32 menuA7DrawSprite(MenuWindow* menu, MenuSprite* sprite) {
     s32 tags[6];
     s32* p;
     s32 i;

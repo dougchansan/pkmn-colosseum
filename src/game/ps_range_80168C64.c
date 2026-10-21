@@ -301,7 +301,7 @@ extern void GXSetArray(u32 attr, u32 value, u8 value2);
 extern void HSD_StateInvalidate(s32 flags);
 extern f32 generateParticle_8017424C(PSGeneratorState* gen);
 extern void HSD_MulColor(GXColor* a, GXColor* b, GXColor* dest);
-extern void fn_800060F0(const char* file, s32 line, const char* message, ...);
+extern void errorPanic(const char* file, s32 line, const char* message, ...);
 extern void PSMTXInverse(const Mtx source, Mtx destination);
 extern void GXGetProjectionv(f32* projection);
 extern void HSD_MtxGetRotationMtx(f32 src[3][4], f32 dst[3][4], char axis0, char axis1);
@@ -916,7 +916,7 @@ void psInitDataBank(s32 bankIndex, void* data, void* objects,
 
     psInitDataBankLocate(data, objects, locations);
     if (locations != NULL && *(s32*)locations != *(s32*)objects) {
-        fn_800060F0(lbl_80273820 + 0x34, 0x5F,
+        errorPanic(lbl_80273820 + 0x34, 0x5F,
                     lbl_80273820 + 0x40);
     }
     banks[bankIndex] = (u32)bankData;
@@ -937,7 +937,7 @@ void psInitDataBank(s32 bankIndex, void* data, void* objects,
         banks[192 + bankIndex] =
             (u32)data + 0xC - firstCount * sizeof(u32);
     } else {
-        fn_800060F0(lbl_80273820 + 0x34, 0x7D,
+        errorPanic(lbl_80273820 + 0x34, 0x7D,
                     lbl_80273820 + 0x70);
     }
 }

@@ -185,7 +185,7 @@ extern void GSmodelSetAnimFrame(GSmodel* model, f32 frame);
 extern u32 _toolentryAlloc__FUl(u32 size);
 extern void* GSmemLock(u32 handle);
 extern void modelShadowInit__Fv(void);
-extern void fn_800EC134(GSmodel* model);
+extern void GSmodelApplyAnimation(GSmodel* model);
 extern void gsParticleKill(void* bank, u32 destroyChildren);
 extern void GSmodelSetParticleVisibility(void* bank, u32 visible);
 extern u32 fn_80191118(GSbound* bound);
@@ -238,7 +238,7 @@ extern void GSmodelSetAnimIndex(GSmodel* model, u32 index);
 extern void GSmodelSetAnimType(GSmodel* model, u32 type);
 extern void GSmodelStartAnimation(GSmodel* model);
 
-void fn_800E85E8(GSmodel* model);
+void GSmodelFreeTextureList(GSmodel* model);
 
 
 
@@ -437,7 +437,7 @@ GSmodel* _modelLoad(GSmodelResource* resource, GSjobjDesc* joint,
         }
     }
 
-    fn_8019F1C4(model->renderJObj, &model->vertexCount, &model->polygonCount);
+    HSD_JObjCountVisibleVertices(model->renderJObj, &model->vertexCount, &model->polygonCount);
     return model;
 }
 #endif
@@ -479,7 +479,7 @@ void GSmodelInit(u32 count)
 void GSmodelFree(GSmodel* model)
 {
     modelShadowFreeModelList__FP8_GSmodel(model);
-    fn_800E85E8(model);
+    GSmodelFreeTextureList(model);
     GSmodelRemoveNull(model);
 
     if (model->centerNullState != 0) {
@@ -989,7 +989,7 @@ void GSmodelResetTextureChange(GSmodel* model)
 #endif
 
 #if defined(GSMODEL_SUFFIX_ALL) || defined(GSMODEL_SUFFIX_SELECT_800E5790)
-void fn_800E5790(GSmodel* model)
+void GSmodelBlurFreeWork(GSmodel* model)
 {
     u16 refs;
 
@@ -1703,7 +1703,7 @@ void GSmodelAddNull(GSmodel* model, const GSvec* position,
 #undef GSMODEL_JOBJ_FLUSH_FORCE
 
 #if defined(GSMODEL_SUFFIX_ALL) || defined(GSMODEL_SUFFIX_SELECT_800E85E8)
-void fn_800E85E8(GSmodel* model)
+void GSmodelFreeTextureList(GSmodel* model)
 {
     u32 handle;
     s32 i;

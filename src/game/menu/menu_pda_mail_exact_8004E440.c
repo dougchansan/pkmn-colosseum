@@ -6,7 +6,7 @@ typedef struct PdaMailWindowB {
 } PdaMailWindowB;
 
 extern u32 mailGetAttachFileGroup(s32 index);
-extern s32 fn_8017B2CC(u32 fileHandle);
+extern s32 GSresGroupGetState(u32 fileHandle);
 extern s32 fn_8017B448(u32 fileHandle);
 extern u32 fsysFindLoadedArchive(u32 fileHandle, u32 index);
 extern u32 fsysEntryGetType(void);
@@ -15,7 +15,7 @@ extern void winSpriteSetDisp(void* fieldHandle, s32 value);
 /* RULE-EXCEPTION(user-approved): reconstructed inline helpers for this callback; see docs/RULE_EXCEPTIONS.md. */
 static inline s32 pdaMailIsAttachReady(s32 index)
 {
-    if (fn_8017B2CC(mailGetAttachFileGroup(index)) == 1) {
+    if (GSresGroupGetState(mailGetAttachFileGroup(index)) == 1) {
         return 0;
     }
     return 1;
@@ -47,7 +47,7 @@ static inline s32 pdaMailCountAttachItems(s32* state)
 
 /* RULE-EXCEPTION(user-approved): local peephole setting preserves this callback's codegen; see docs/RULE_EXCEPTIONS.md. */
 #pragma peephole off
-s32 fn_8004E440(PdaMailWindowB* window, void* fieldHandle)
+s32 pdaMailAttachDrawLoading(PdaMailWindowB* window, void* fieldHandle)
 {
     s32 count;
 

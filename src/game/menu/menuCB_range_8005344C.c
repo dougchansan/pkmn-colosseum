@@ -178,8 +178,8 @@ extern void fn_800FE6D0(s16 x, s16 y);
 extern void spriteSetEnv(void);
 extern void* heroGetStatus(void* hero, s32 selector, u16 index);
 extern u8 pokemonCheckValid(void* pokemon);
-extern s32 fn_80057DE8(void* pokemon);
-extern void* fn_80057F94(void* pokemon);
+extern s32 pcBoxIsShadowPokemon(void* pokemon);
+extern void* pcBoxGetIconResource(void* pokemon);
 extern void gfxSetFlags(u32 flags);
 extern void fn_800DC0D4(s32, s32, s32, s32, s32);
 extern void fn_800DC14C(s32, s32, s32, s32, s32, s32);
@@ -211,7 +211,7 @@ void fn_80057400(void);
 void fn_800576C4(s32 state);
 
 
-s32 fn_8005344C(MenuCBPane* pane, MenuCBPane* sprite) {
+s32 pcBoxDetailDrawSprite(MenuCBPane* pane, MenuCBPane* sprite) {
     s16 position;
     s16 x;
     s16 y;
@@ -247,7 +247,7 @@ typedef struct MenuCBTweenFrame {
 
 extern const MenuCBTweenFrame lbl_80267338[2];
 
-s32 fn_8005351C(MenuCBPane* pane, MenuCBPane* sprite)
+s32 pcBoxDetailDrawSprite2(MenuCBPane* pane, MenuCBPane* sprite)
 {
     MenuCBTweenFrame frames[2];
     f32 amount;
@@ -279,7 +279,7 @@ s32 fn_8005351C(MenuCBPane* pane, MenuCBPane* sprite)
     return 0;
 }
 
-s32 fn_80053728(MenuCBPane* pane, MenuCBPane* sprite) {
+s32 pcBoxDetailDrawSprite3(MenuCBPane* pane, MenuCBPane* sprite) {
     s32 visible;
 
     if (fn_80057E40(pane) != 2) {
@@ -291,7 +291,7 @@ s32 fn_80053728(MenuCBPane* pane, MenuCBPane* sprite) {
     return 0;
 }
 
-u32 fn_80053778(u32 unused, u8* pane) {
+u32 pcBoxDrawModel(u32 unused, u8* pane) {
     u32 texture;
     s32 alpha;
     s32 height;
@@ -364,7 +364,7 @@ u32 fn_80053778(u32 unused, u8* pane) {
     return 0;
 }
 
-s32 fn_80053A60(MenuCBPane* pane, MenuCBPane* sprite)
+s32 pcBoxDrawMark1(MenuCBPane* pane, MenuCBPane* sprite)
 {
     s32 visible;
     void* pokemon;
@@ -383,7 +383,7 @@ s32 fn_80053A60(MenuCBPane* pane, MenuCBPane* sprite)
     return 0;
 }
 
-s32 fn_80053AC8(MenuCBPane* pane, MenuCBPane* sprite)
+s32 pcBoxDrawMark2(MenuCBPane* pane, MenuCBPane* sprite)
 {
     s32 visible;
     void* pokemon;
@@ -402,7 +402,7 @@ s32 fn_80053AC8(MenuCBPane* pane, MenuCBPane* sprite)
     return 0;
 }
 
-s32 fn_80053B30(MenuCBPane* pane, MenuCBPane* sprite)
+s32 pcBoxDrawMark3(MenuCBPane* pane, MenuCBPane* sprite)
 {
     s32 visible;
     void* pokemon;
@@ -421,7 +421,7 @@ s32 fn_80053B30(MenuCBPane* pane, MenuCBPane* sprite)
     return 0;
 }
 
-s32 fn_80053B98(MenuCBPane* pane, MenuCBPane* sprite)
+s32 pcBoxDrawMark4(MenuCBPane* pane, MenuCBPane* sprite)
 {
     s32 visible;
     void* pokemon;
@@ -440,7 +440,7 @@ s32 fn_80053B98(MenuCBPane* pane, MenuCBPane* sprite)
     return 0;
 }
 
-s32 fn_80053C00(MenuCBPane* pane, MenuCBPane* sprite)
+s32 pcBoxDrawItemName(MenuCBPane* pane, MenuCBPane* sprite)
 {
     void* pokemon;
     u16 itemId;
@@ -463,7 +463,7 @@ s32 fn_80053C00(MenuCBPane* pane, MenuCBPane* sprite)
     return result;
 }
 
-s32 fn_80053C84(MenuCBPane* pane, MenuCBPane* sprite)
+s32 pcBoxDrawItemIcon(MenuCBPane* pane, MenuCBPane* sprite)
 {
     s32 visible;
     void* pokemon;
@@ -481,7 +481,7 @@ s32 fn_80053C84(MenuCBPane* pane, MenuCBPane* sprite)
     return 0;
 }
 
-s32 fn_80053CE8(MenuCBPane* pane, MenuCBPane* sprite)
+s32 pcBoxDrawGender(MenuCBPane* pane, MenuCBPane* sprite)
 {
     s32 textId;
     void* pokemon;
@@ -504,7 +504,7 @@ s32 fn_80053CE8(MenuCBPane* pane, MenuCBPane* sprite)
     return 0;
 }
 
-s32 fn_80053D64(MenuCBPane* pane, MenuCBPane* sprite)
+s32 pcBoxDrawSpecies(MenuCBPane* pane, MenuCBPane* sprite)
 {
     void* pokemon;
     s32 result;
@@ -563,7 +563,7 @@ s32 pcBoxDrawNickname(MenuCBPane* pane)
 /*
  * Not referenced by the game, so the linker strips it. Retail's .sdata2 pool
  * (0x8047BE58-0x8047BE98) has the unsigned int-to-float bias at 0x8047BE78,
- * ahead of fn_80053ED8's first literal (-383.0f at 0x8047BE80), so an earlier
+ * ahead of pcBoxDrawPartyIcons's first literal (-383.0f at 0x8047BE80), so an earlier
  * function in this TU converted an unsigned value to float. Nothing but that
  * pool position is known about it.
  */
@@ -573,7 +573,7 @@ f32 menuCBGetTextureWidth(void* texture) {
 }
 
 /* The party slot whose item id a sprite shows, or -1. */
-/* RULE-EXCEPTION(user-approved): single-function inline helper (fn_80053ED8) — see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): single-function inline helper (pcBoxDrawPartyIcons) — see docs/RULE_EXCEPTIONS.md */
 static inline s32 menuCBGetPartySlot(s32 itemId) {
     s32 slot;
 
@@ -588,7 +588,7 @@ static inline s32 menuCBGetPartySlot(s32 itemId) {
     return slot;
 }
 
-s32 fn_80053ED8(MenuCBPane* pane, MenuCBPane* sprite) {
+s32 pcBoxDrawPartyIcons(MenuCBPane* pane, MenuCBPane* sprite) {
     s32 index;
     s32 partySlot;
     s32 drawFallback;
@@ -630,7 +630,7 @@ s32 fn_80053ED8(MenuCBPane* pane, MenuCBPane* sprite) {
         pokemon = heroGetStatus(0, 3, (u16)partySlot);
         if (pokemon != NULL) {
             if ((u8)pokemonCheckValid(pokemon) != 0) {
-                texture = fn_80057F94(pokemon);
+                texture = pcBoxGetIconResource(pokemon);
             } else {
                 drawFallback = FALSE;
             }
@@ -638,7 +638,7 @@ s32 fn_80053ED8(MenuCBPane* pane, MenuCBPane* sprite) {
     }
 
     if (texture != NULL) {
-        if (fn_80057DE8(pokemon) != 0) {
+        if (pcBoxIsShadowPokemon(pokemon) != 0) {
             if (lbl_8047A550 < 0.5f) {
                 t = 2.0f * lbl_8047A550;
             } else {
@@ -698,7 +698,7 @@ s32 fn_80053ED8(MenuCBPane* pane, MenuCBPane* sprite) {
     return 0;
 }
 
-s32 fn_80054420(MenuCBPane* pane, MenuCBPane* sprite) {
+s32 pcBoxMenuDrawExit(MenuCBPane* pane, MenuCBPane* sprite) {
     s32 i;
     s32 scaled;
     s16 offset;
@@ -718,7 +718,7 @@ s32 fn_80054420(MenuCBPane* pane, MenuCBPane* sprite) {
 }
 
 
-s32 fn_800544A8(u8* ctx) {
+s32 pcBoxDetailCtrl(u8* ctx) {
     extern void winSeqSetMenu(s32, s32);
 
     switch ((s8)ctx[1]) {

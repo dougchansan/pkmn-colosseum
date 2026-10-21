@@ -199,10 +199,10 @@ extern void* kaisuuBiosGetMin(u32 index);
 extern u32 kaisuuGetKaisuu(u32 param);
 extern void fn_80101B34(u32 param);
 extern void fn_80101B88(u32 val);
-extern void fn_80101B90(void);
+extern void gappLoadMeterDraw(void);
 extern void fn_80101D5C(void);
-extern void fn_80101D8C(void);
-extern void fn_80101FB8(u8 param);
+extern void gappLoadMeterDrawFrame(void);
+extern void gappLoadMeterInit(u8 param);
 extern void menuGetOffScreenFlag(void);
 extern void menuReleaseOffScreen(f32 f1);
 extern void menuCreateOffScreen(f32 param);
@@ -258,7 +258,7 @@ extern void* windowOpen(s32* cursor_out, void* menu_id, u32 parent_id,
 extern void _winCalcWindowSize__FlPC13MENU_ITEM_dd_PsPs(u8* item, s16* width, s16* height);
 extern void windowInit(u16 count);
 extern void* windowGetPortKeyInfo(u8 ports);
-extern s32 fn_80105634(u8* window, u8* sprite);
+extern s32 winMsgDrawItem(u8* window, u8* sprite);
 extern void winMsgDraw(void);
 extern void winMsgCtrl(void);
 extern void winMsgButton(void* p);
@@ -375,7 +375,7 @@ WindowCursorValue windowGetCursor(s32 param) {
  * (jumptable_8035B088). They belong to the whole window TU
  * (0x80103FE4-0x801058CC), which is carved across some twenty files.
  */
-s32 fn_80105634(u8* window, u8* sprite) {
+s32 winMsgDrawItem(u8* window, u8* sprite) {
     u32 colors[2];
     f32 alpha;
     s16 id;

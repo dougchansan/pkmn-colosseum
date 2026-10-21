@@ -28,7 +28,7 @@
  * handle and result (r21/r22) rank below the ARQ table's (r23/r24), and it
  * takes the size through a parameter so memAlloc receives it with no copy
  * (mr r3,r18). The three loops use three separate counters (r26, r25,
- * r28). `heap` is the arena block that fn_8017FDB0 returns and fn_8017FB08
+ * r28). `heap` is the arena block that gsSmallHeapAlloc returns and gsSmallHeapFree
  * frees onto the list; MWCC gives it r20 and then forwards the call result
  * straight into r3, so r20 is saved but unused, as in retail. The r14-r16
  * "constants" are ordinary temporaries spilled once r3-r12 hold pooled
@@ -109,6 +109,6 @@ void fsysCacheInit(u32 entryCount, u8* arena, u32 arenaSize)
     lbl_80455048.cursorIndex = 0;
     lbl_80455048.remaining = arenaSize;
     lbl_80455048.cursor[0] = arena;
-    heap = fn_8017FDB0(arenaSize);
-    fn_8017FB08(heap);
+    heap = gsSmallHeapAlloc(arenaSize);
+    gsSmallHeapFree(heap);
 }

@@ -1,7 +1,7 @@
 #include "dolphin/types.h"
 
 extern u32 mailGetAttachFileGroup(s32 index);
-extern s32 fn_8017B2CC(u32 fileHandle);
+extern s32 GSresGroupGetState(u32 fileHandle);
 extern s32 fn_8017B448(u32 fileHandle);
 extern u32 fsysFindLoadedArchive(u32 fileHandle, u32 index);
 extern u32 fsysEntryGetType(void);
@@ -14,7 +14,7 @@ extern const f32 lbl_8047BE3C;
 /* RULE-EXCEPTION(user-approved): reconstructed inline helpers for these callbacks; see docs/RULE_EXCEPTIONS.md. */
 static inline s32 pdaMailIsAttachReady(s32 index)
 {
-    if (fn_8017B2CC(mailGetAttachFileGroup(index)) == 1) {
+    if (GSresGroupGetState(mailGetAttachFileGroup(index)) == 1) {
         return 0;
     }
     return 1;
@@ -82,7 +82,7 @@ s32 pdaMailAttachDrawTitle(u8* context, u8* object)
 #pragma peephole reset
 
 #pragma peephole off
-s32 fn_8004E2E0(u8* context, u8* object)
+s32 pdaMailAttachDrawFrame(u8* context, u8* object)
 {
     u8* attachmentState;
     u32 fileHandle;

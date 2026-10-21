@@ -1,8 +1,8 @@
 /**
  * @file GScolsys2Thru_r56_80111864_o4s.c
- * @brief fn_80111864, event-triangle query.
+ * @brief GScolsys2ThruTest, event-triangle query.
  *
- * By .sdata2 ownership fn_80111864 belongs to the GScolsys2Check TU: it
+ * By .sdata2 ownership GScolsys2ThruTest belongs to the GScolsys2Check TU: it
  * and GScolsys2CheckGetEventID share the pool 0x8047CF60-0x8047CF68,
  * separate from GScolsys2Thru's 0x8047CF48-0x8047CF60 (which has its
  * own 0.0f/1.0f).
@@ -112,7 +112,7 @@ static inline void getFloorTriangles(GSFieldWzxRegion* region,
 }
 
 /* 0x80111864 | 0x338 */
-s32 fn_80111864(GScolsys2Vec3* start, GScolsys2Vec3* end,
+s32 GScolsys2ThruTest(GScolsys2Vec3* start, GScolsys2Vec3* end,
                 GSfieldQueryTriangle* out)
 {
     /* Keep the base separate from the inlined pass's advancing cursor. */

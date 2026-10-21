@@ -22,10 +22,10 @@ void* fn_80030170(GSnpcEventQueue* queue)
     return queue->items[index];
 }
 
-void fn_800301A8(void)
+void menuDCDrawItem(void)
 {
 }
 
-void fn_800301AC(void)
+void menuDCCtrl(void)
 {
 }

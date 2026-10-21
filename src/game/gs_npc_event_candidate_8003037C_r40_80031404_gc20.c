@@ -1,6 +1,6 @@
 /**
  * @file gs_npc_event_candidate_8003037C_r40_80031404_gc20.c
- * @brief fn_80031404 carve, 0x80031404 - 0x80031648.
+ * @brief gbaTradeMenuDrawGender carve, 0x80031404 - 0x80031648.
  *
  * NPC event callback: look the event id up in the gender column of the
  * twelve-entry table lbl_80266E90 and print the gender symbol of the
@@ -27,7 +27,7 @@ typedef struct {
 extern NpcPokemonEvent lbl_80266E90[];
 extern u8 lbl_803A2688[];
 
-void fn_80031404(u8* r3, u8* r4)
+void gbaTradeMenuDrawGender(u8* r3, u8* r4)
 {
     void* pokemon;
     u32 msg;

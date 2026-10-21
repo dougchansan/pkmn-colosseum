@@ -38,10 +38,10 @@ extern void fn_8011418C(s32* floorId, s32* prevFloorId, u8* floorPosIndex);
 extern void gamedatasaveBiosSetFloorid(void* save, s32 floorId);
 extern void gamedatasaveBiosSetPrevfloorid(void* save, s32 floorId);
 extern void gamedatasaveBiosSetFloorposindex(void* save, u8 floorPosIndex);
-extern s32 fn_801D0748(s32, s32, s32);
+extern s32 memcardWaitTask2(s32, s32, s32);
 
 extern u32 std082_flagGetValue(u32 flag);
-extern void fn_801D0AFC(s32);
+extern void heroPartyHealAll(s32);
 extern void* heroBiosGetPokemonPtr(void* status, u16 index);
 extern u8 pokemonCheckValid(void* pokemon);
 extern u8 pokemonIsJoutaiDataId(void* pokemon, s32 ribbon);
@@ -50,7 +50,7 @@ extern s32 menuGetCursorFromItemID(s32 menu, s32 itemId);
 extern void cursorBiosSetPos(s32 cursor, const CursorPos* pos);
 extern void heroMoveRunEvent(s32);
 extern s32 exShrineModelIsOpen(void);
-extern void fn_8007565C(void);
+extern void exShrineModelClose(void);
 extern void std054_characterTalk(s32, s32, s32);
 extern s8 std011_dialogDisplayYesNoMenu(void);
 extern void GBAInit(void);
@@ -76,7 +76,7 @@ extern void memoDataSetMemoFlag(s32 flag);
 extern void fn_8012F1FC(s32 member);
 extern void heroMoveDismissMember(s32 member);
 extern u32 _fadeEffectGetRandom__FUl(u32 limit);
-extern s32 fn_800D37CC(void);
+extern s32 GSgfxGetVsyncRate(void);
 extern u32 GSgetFrameStep(void);
 extern void couponCalcEarned(void);
 extern s32 savedataBattleGetCouponRun(void);
@@ -102,7 +102,7 @@ s32 std200_gbaConnectEvent(s32 arg0, s32 arg1);
 void std199_menuDisplayCustomMenu(s32 a, s32 b, s32 c, s32 d, s32 e);
 u8 floorElevatorIsHeroInside(void);
 void floorEventElevatorMain(s32 arg0, s32 arg1, u16 arg2, u8 arg3);
-void fn_801C9C9C(void);
+void floorElevatorCheck(void);
 u8 std193_lightWaitForAnimation(s32 lightId, s32 wait);
 void scriptLightStopMotion(s32 lightId);
 void std191_mapTransformElement(s32 lightId, s32 animIndex, s32 frame, s32 loop);
@@ -156,7 +156,7 @@ static inline void fieldWaitSeconds(f32 seconds)
 
     while (timer < seconds) {
         _threadSwitch();
-        timer += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+        timer += (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
     }
 }
 
@@ -170,7 +170,7 @@ static inline u8 fieldWaitPartnerMove(void)
             return 0;
         }
         _threadSwitch();
-        timer -= (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+        timer -= (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
     }
     return 1;
 }
@@ -184,10 +184,10 @@ extern void GSvecAdd();
 extern void vecScale();
 extern void GSvecSub(Vec3*, const Vec3*, const Vec3*);
 extern void GSvecNormalize(Vec3*, const Vec3*);
-extern void fn_800DFFCC(Vec3*, const Vec3*, const Vec3*);
+extern void GSvecCross(Vec3*, const Vec3*, const Vec3*);
 extern s32 GScolsys2UtilGetCpPlaneLine(
     Vec3*, f32*, const Vec3*, const Vec3*, const Vec3*, const Vec3*);
-extern u8 fn_8018D680();
+extern u8 peopleIsPointNearSegment();
 extern s32 colsysWallSweep();
 extern void qsort();
 extern f64 cos(f64);
@@ -200,14 +200,14 @@ static inline u8 fieldSegmentBlocked(const Vec3* from, const Vec3* to,
     Vec3 center = *centerPtr;
 
     if (GSvecDistance(from, to) < lbl_8047E104) {
-        return fn_8018D680(from, to, &center, radius);
+        return peopleIsPointNearSegment(from, to, &center, radius);
     }
     GSvecAdd(&midpoint, from, to);
     vecScale(&midpoint, &midpoint, lbl_8047E108);
-    if (fn_8018D680(from, &midpoint, &center, radius)) {
+    if (peopleIsPointNearSegment(from, &midpoint, &center, radius)) {
         return 1;
     }
-    return fn_8018D680(&midpoint, to, &center, radius);
+    return peopleIsPointNearSegment(&midpoint, to, &center, radius);
 }
 
 static inline u8 fieldPlaneCrossed(const Vec3* fromPtr, const Vec3* toPtr,
@@ -227,7 +227,7 @@ static inline u8 fieldPlaneCrossed(const Vec3* fromPtr, const Vec3* toPtr,
     GSvecNormalize(&fullDirection, &fullDirection);
     GSvecSub(&flatDirection, &from, &flatTo);
     GSvecNormalize(&flatDirection, &flatDirection);
-    fn_800DFFCC(&planeNormal, &fullDirection, &flatDirection);
+    GSvecCross(&planeNormal, &fullDirection, &flatDirection);
     if (GScolsys2UtilGetCpPlaneLine(&planeHit, &planeT, &planeNormal, &from,
                                     lineStart, lineEnd) == 0) {
         return 0;
@@ -285,7 +285,7 @@ u8 std235_menuShowSaveMenu(void)
     gamedatasaveBiosSetPrevfloorid(save, prevFloorId);
     gamedatasaveBiosSetFloorposindex(save, floorPosIndex);
 
-    if (fn_801D0748(4, 2, 0) == 4) {
+    if (memcardWaitTask2(4, 2, 0) == 4) {
         return 1;
     }
 
@@ -304,7 +304,7 @@ s32 std232_characterApproachPlayer(s32 side, s32 slot)
     extern u32 peopleIsInGroup();
     extern void* peopleSearchID();
     extern void* peopleInfoBiosGetPtr();
-    extern f32 fn_8018F5E4();
+    extern f32 charModelGetRadius();
     extern void std076_characterEventFlagsClear();
     extern void peopleWalkTo();
     extern void peopleGetHeadGroundPos();
@@ -341,7 +341,7 @@ s32 std232_characterApproachPlayer(s32 side, s32 slot)
     if (info == NULL) {
         return 0;
     }
-    radius = fn_8018F5E4(info);
+    radius = charModelGetRadius(info);
     radius += lbl_8047E100;
 
     if (fieldSegmentBlocked(&partner, &requested, &origin,
@@ -463,7 +463,7 @@ void std216_partyStatusUpdate_8ae(s32 mode)
     if (std082_flagGetValue(0x8AE) == 0) {
         switch (mode) {
         case 0:
-            fn_801D0AFC(0);
+            heroPartyHealAll(0);
             break;
         case 1:
             status = savedataGetStatus(0, 2);
@@ -558,7 +558,7 @@ void std207_gbaUnk_80075638(void)
     u32 ready = (u8)exShrineModelIsOpen();
 
     if (ready != 0) {
-        fn_8007565C();
+        exShrineModelClose();
     }
 }
 
@@ -741,7 +741,7 @@ s32 std200_gbaConnectEvent(s32 arg0, s32 arg1)
                 elapsed = lbl_8047E114;
                 while (elapsed < lbl_8047E100) {
                     _threadSwitch();
-                    elapsed += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+                    elapsed += (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
                 }
                 linkState = 16;
                 break;
@@ -1032,7 +1032,7 @@ s32 floorElevatorSetupCharacters(s32 floorDataId, u32 actorIndex, u16 mode, u8 d
 
     GSmodelGetFrameCount(model, &frame, 0);
     return (s32)(lbl_8047E144 *
-                 ((lbl_8047E148 * frame) / (f32)fn_800D37CC()));
+                 ((lbl_8047E148 * frame) / (f32)GSgfxGetVsyncRate()));
 }
 
 
@@ -1147,7 +1147,7 @@ void floorEventElevatorMain(s32 arg0, s32 arg1, u16 arg2, u8 arg3)
     }
 }
 
-void fn_801C9C9C(void)
+void floorElevatorCheck(void)
 {
     s32 floorId;
     s32 resId;
@@ -1265,7 +1265,7 @@ u8 std182_tvNewsEvent(void)
         elapsed = lbl_8047E114;
         while (elapsed < lbl_8047E11C) {
             _threadSwitch();
-            elapsed += (f32)(u32)GSgetFrameStep() / (f32)fn_800D37CC();
+            elapsed += (f32)(u32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
         }
 
         winMsgOpenFieldWithSE(0x439F, 1, 0, 5);
@@ -1283,7 +1283,7 @@ u8 std182_tvNewsEvent(void)
         elapsed = lbl_8047E114;
         while (elapsed < lbl_8047E11C) {
             _threadSwitch();
-            elapsed += (f32)(u32)GSgetFrameStep() / (f32)fn_800D37CC();
+            elapsed += (f32)(u32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
         }
 
         winMsgOpenFieldWithSE(0x439D, 1, 0, 5);
@@ -1316,7 +1316,7 @@ u8 std182_tvNewsEvent(void)
     elapsed = lbl_8047E114;
     while (elapsed < lbl_8047E11C) {
         _threadSwitch();
-        elapsed += (f32)(u32)GSgetFrameStep() / (f32)fn_800D37CC();
+        elapsed += (f32)(u32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
     }
 
     switch (mode) {
@@ -1408,7 +1408,7 @@ void std157_sleep(f32 frames)
 
     while (elapsed < frames) {
         _threadSwitch();
-        elapsed += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+        elapsed += (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
     }
 }
 

@@ -44,14 +44,14 @@ extern void GSmodelSetAnimIndex(void* model, u32 index);
 extern void GSmodelStartAnimation(void* model);
 extern void GSmodelSetTextureChange(void* model, void* texture);
 
-extern void fn_800EC134(void* model);
+extern void GSmodelApplyAnimation(void* model);
 extern void* GScameraGetActiveCamera(void);
 extern void fn_800D4604(s32 mode);
 extern void fn_800D377C(s32 mode);
 extern void GSgfxRenderLayer(void* texture, s32 arg1);
 extern void fn_800D9B24(u16* x, u16* y, u16* width, u16* height);
 extern void fn_800D9AF0(u16* x, u16* y, u16* width, u16* height);
-extern void fn_800D258C(void* camera);
+extern void GScameraSetCurrent(void* camera);
 extern void gfxSetScissor(u16 x, u16 y, u16 width, u16 height);
 extern void gfxSetViewport(u16 x, u16 y, u16 width, u16 height);
 extern void _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID(void);
@@ -163,21 +163,21 @@ void tvRender(void)
     if (lbl_8047AD88 == NULL || lbl_8047AD90 == NULL) {
         return;
     }
-    fn_800EC134(lbl_8047AD90);
+    GSmodelApplyAnimation(lbl_8047AD90);
     camera = GScameraGetActiveCamera();
     fn_800D4604(2);
     fn_800D377C(1);
     GSgfxRenderLayer(lbl_8047AD8C, 0);
     fn_800D9B24(&viewportX, &viewportY, &viewportWidth, &viewportHeight);
     fn_800D9AF0(&scissorX, &scissorY, &scissorWidth, &scissorHeight);
-    fn_800D258C(lbl_8047AD94);
+    GScameraSetCurrent(lbl_8047AD94);
     gfxSetScissor(0, 0, lbl_8047AD88->width - 1, lbl_8047AD88->height - 1);
     gfxSetViewport(0, 0, lbl_8047AD88->width - 1, lbl_8047AD88->height - 1);
     _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
     GSmodelDrawModel(lbl_8047AD90, 0x3010);
     GSgfxRenderEnd();
     fn_800D377C(1);
-    fn_800D258C(camera);
+    GScameraSetCurrent(camera);
     gfxSetScissor(viewportX, viewportY, viewportWidth, viewportHeight);
     gfxSetViewport(scissorX, scissorY, scissorWidth, scissorHeight);
     _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();

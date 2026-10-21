@@ -38,7 +38,7 @@ void JObjAmnesia(void* info);
 s32 JObjLoad(HSD_JObj* jobj, HSD_Joint* joint, HSD_JObj* parent);
 void HSD_JObjAnimCallback(void* obj, u32 type, HSD_ObjData* val);
 void HSD_JObjMakeMatrix(HSD_JObj* jobj);
-void fn_801A1B7C(HSD_JObj* jobj);
+void JObjAnimAllSub(HSD_JObj* jobj);
 extern u8 lbl_8036C8E0[];
 extern char lbl_80274AD0[];
 extern char lbl_80274AE8[];
@@ -430,7 +430,7 @@ void HSD_JObjAnimAll(HSD_JObj* jobj)
         return;
     }
     HSD_AObjInitEndCallBack();
-    fn_801A1B7C(jobj);
+    JObjAnimAllSub(jobj);
     HSD_AObjInvokeCallBacks();
 }
 
@@ -732,7 +732,7 @@ static void JObj_DetachFromParent(HSD_JObj* jobj)
     jobj->next = NULL;
 }
 
-void fn_8019F1C4(HSD_JObj* jobj, s32* total_a, s32* total_b);
+void HSD_JObjCountVisibleVertices(HSD_JObj* jobj, s32* total_a, s32* total_b);
 
 #if 0
 asm void JObjReleaseChild(void) {
@@ -1222,11 +1222,11 @@ void HSD_JObjSetCurrent(HSD_JObj* jobj)
 #pragma optimizewithasm off
 extern void HSD_DObjCountVertices(HSD_DObj* dobj, s32* total_a, s32* total_b);
 #if 0
-asm void fn_8019F1C4(void) {
+asm void HSD_JObjCountVisibleVertices(void) {
 #include "src/hsd/hsd_jobj_fn_8019F1C4.inc"
 }
 #else
-void fn_8019F1C4(HSD_JObj* jobj, s32* total_a, s32* total_b) {
+void HSD_JObjCountVisibleVertices(HSD_JObj* jobj, s32* total_a, s32* total_b) {
     /* decompiled cdx7: functional */
     HSD_JObj* child;
     s32 sum_a;
@@ -1238,7 +1238,7 @@ void fn_8019F1C4(HSD_JObj* jobj, s32* total_a, s32* total_b) {
     sum_b = 0;
     if (jobj != NULL) {
         if (jobj->flags & JOBJ_INSTANCE) {
-            fn_8019F1C4(jobj->child, &sum_a, &sum_b);
+            HSD_JObjCountVisibleVertices(jobj->child, &sum_a, &sum_b);
         } else {
             if (!(jobj->flags & JOBJ_HIDDEN)) {
                 if (union_type_dobj(jobj)) {
@@ -1249,7 +1249,7 @@ void fn_8019F1C4(HSD_JObj* jobj, s32* total_a, s32* total_b) {
             while (child != NULL) {
                 child_a = 0;
                 child_b = 0;
-                fn_8019F1C4(child, &child_a, &child_b);
+                HSD_JObjCountVisibleVertices(child, &child_a, &child_b);
                 sum_a += child_a;
                 sum_b += child_b;
                 child = child->next;
@@ -2840,7 +2840,7 @@ void HSD_JObjAnim(HSD_JObj* jobj);
 
 #pragma push
 #pragma optimization_level 1
-void fn_801A1B7C(HSD_JObj* jobj)
+void JObjAnimAllSub(HSD_JObj* jobj)
 {
     HSD_JObj* child;
     HSD_JObj* parent;
@@ -2990,7 +2990,7 @@ void fn_801A1B7C(HSD_JObj* jobj)
                                                 scan = greatgrandchild->child;
 
                                                 while (scan != NULL) {
-                                                    fn_801A1B7C(scan);
+                                                    JObjAnimAllSub(scan);
                                                     scan = scan->next;
                                                 }
                                             }
@@ -3092,7 +3092,7 @@ void HSD_JObjAnimCallback(void* obj, u32 type, HSD_ObjData* val)
     extern void* lbl_8047B2A8;
     extern void splArcLengthPoint();
     extern HSD_RObj* HSD_RObjGetByType();
-    extern void fn_801A9DF0();
+    extern void HSD_JObjAnimApplyValue();
     extern void PSMTXCopy();
     extern void HSD_MtxGetTranslate();
     extern void HSD_MtxGetRotation();
@@ -3199,7 +3199,7 @@ void HSD_JObjAnimCallback(void* obj, u32 type, HSD_ObjData* val)
         jobj->mtx[2][3] = vector->z; break;
     case 0x36: case 0x37: case 0x38: case 0x39:
         if (jobj->parent != NULL)
-            fn_801A9DF0(jobj->parent->mtx, jobj->mtx, mtx);
+            HSD_JObjAnimApplyValue(jobj->parent->mtx, jobj->mtx, mtx);
         else PSMTXCopy(jobj->mtx, mtx);
         if (type == 0x36 || type == 0x38)
             HSD_MtxGetTranslate(mtx, &jobj->translate_x);

@@ -49,7 +49,7 @@ extern void  pokemonGrowBasisStatus();
 extern u32   itemGetStatus();
 extern void  joutaiDataBiosGetStatusKind(void);
 extern void  pokemonIsJoutaiDataId(void);
-extern void  fn_8011B67C(void);
+extern void  statusIsJoutaiDataId(void);
 extern void  pokemonGetSoubiItemDataId(void);
 extern u32   wazaGetStatus(void* ptr, u16 dataId, u16 status, u32 index);
 
@@ -574,7 +574,7 @@ void fightActionUseItemMain(u32 r3,u32 r4)
     extern void fightMenuAllFightTrainerCloseStatusMenu();
     extern void fightMenuAllFightOutPokemonCloseStatusMenu();
     extern void fightMenuCloseMsg();
-    extern void fn_80265598();
+    extern void fightMenuStatusMenuOpen();
     extern u8 lbl_80478D7D;
     extern u8 lbl_8047B614;
   u8 bVar1;
@@ -841,7 +841,7 @@ void fightActionUseItemMain(u32 r3,u32 r4)
     msgctrlSetValue(0x29,uVar3);
     battleCameraSelect(1);
     if (cVar12 == 0) {
-      fn_80265598(uVar4,uVar9,1);
+      fightMenuStatusMenuOpen(uVar4,uVar9,1);
     }
     wsRunScript(r3,uVar14,1);
     if (cVar12 == 0) {

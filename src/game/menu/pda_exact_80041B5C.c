@@ -1,7 +1,7 @@
 /**
  * @file pda_exact_80041B5C.c
  * @brief PDA people-screen sprite callbacks, 0x80041B5C - 0x80041E48:
- *        fn_80041B5C (alpha update and event filter) and fn_80041BD0 (the
+ *        pdaPeopleUpdateAlpha (alpha update and event filter) and pdaPeopleDrawTypeIcons (the
  *        highlighted Pokemon's type icons). Copied from pda_range_80037158.c.
  */
 #include "dolphin/types.h"
@@ -61,7 +61,7 @@ extern void pokemonBiosSetCatchTrainerRnd(u32 work, u32 rnd);
 extern u32 pokemonGetStatus(u32 a, u32 b, s32 id, s32 index);
 extern void windowDrawSprite(s16 x, s16 y, PdaSprite* sprite, u16 id, s32 arg4);
 
-void fn_80041B5C(PdaSprite* sprite, PdaEvent* event)
+void pdaPeopleUpdateAlpha(PdaSprite* sprite, PdaEvent* event)
 {
     extern f32 lbl_8047BCA0;
     extern void fn_800411FC(PdaSprite* sprite, PdaEvent* event);
@@ -103,7 +103,7 @@ static inline u32 pdaLoadPokemon(s32 index)
 }
 
 /* People-screen: draw the currently highlighted Pokemon's type icons. */
-void fn_80041BD0(PdaSprite* alphaSprite, PdaSprite* sprite)
+void pdaPeopleDrawTypeIcons(PdaSprite* alphaSprite, PdaSprite* sprite)
 {
     extern u16 lbl_802E554C[];
     s32 pokemon;

@@ -51,7 +51,7 @@ void fn_80165F40(void)
     lbl_8047B0B4 = GSresGetResource(0, 0x406);
     lbl_8047B0B0 = 0x10000;
     fn_8017B370(0x99);
-    fn_80165FDC(0x99);
+    soundWaitGroup(0x99);
 }
 
 void fn_80165F84(void)

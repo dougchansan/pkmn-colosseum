@@ -4,7 +4,7 @@ extern u32 lbl_80478960;
 extern u32 lbl_8047A674;
 extern u32 lbl_8047A670;
 
-u32 fn_800896B8(void)
+u32 fightGetResult80478960(void)
 {
     return lbl_80478960;
 }

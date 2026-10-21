@@ -56,7 +56,7 @@ void fn_8005CF2C(void* hero, s32 result) {
                    hero, result, savedataBattleGetRulePtr(), 0);
     menuSetPosition(0xDA, 0, -0x28);
 
-    messageId = fn_80076054(hero, savedataBattleGetRulePtr());
+    messageId = menuRuleGetPartyError(hero, savedataBattleGetRulePtr());
     if ((u16)messageId == 0) {
         __assert(lbl_802678D8, 0x1BB, lbl_80267A20);
     }

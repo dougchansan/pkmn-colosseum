@@ -39,10 +39,10 @@ extern void scriptStoreTemochiPokemon(s32);
 extern u8 scriptCheckTemochiPokemon(s32);
 extern u32 floorGetCurrentContext(void);
 extern void fn_80057E70(void);
-extern void fn_80055B98(s32);
-extern void fn_800F915C(s32);
+extern void pcBoxOpen(s32);
+extern void GSresReleaseOwner(s32);
 extern void fn_8017B3E4(s32);
-extern s32 fn_8017B2CC(s32);
+extern s32 GSresGroupGetState(s32);
 extern void GSresReleaseById(s32);
 extern void std078_flagSetFalse(s32);
 
@@ -138,7 +138,7 @@ void pcBoxStorageMain(void) {
 
     scriptStoreTemochiPokemon(0);
     fn_8017B3E4(0x70B);
-    while (fn_8017B2CC(0x70B) == 1) {
+    while (GSresGroupGetState(0x70B) == 1) {
         _threadSwitch();
     }
 
@@ -184,7 +184,7 @@ void pcBoxStorageMain(void) {
     menuCloseSync(0x19, 1);
     menuCloseSync(0x1A, 1);
     menuCloseSync(0x1B, 1);
-    fn_80055B98(0);
+    pcBoxOpen(0);
     menuOpen(0x1A, 0);
     menuOpen(0x1B, 0);
     menuOpen(0x19, 0);
@@ -192,7 +192,7 @@ void pcBoxStorageMain(void) {
     connectedState = colosseumBattleGetConnectState();
     if (connectedState == 2) {
         GSresReleaseById(0x48A);
-        fn_800F915C(0x48A);
+        GSresReleaseOwner(0x48A);
         shouldSkipWait = 1;
     } else {
         if (connectedState == 1) {
@@ -214,7 +214,7 @@ void pcBoxStorageMain(void) {
     }
 
     GSresReleaseById(0x70B);
-    fn_800F915C(0x70B);
+    GSresReleaseOwner(0x70B);
     if (scriptCheckTemochiPokemon(0) != 0) {
         std078_flagSetFalse(0xDDE);
     }

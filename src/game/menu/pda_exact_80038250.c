@@ -25,7 +25,7 @@ typedef struct PdaKeyInfo {
 
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma peephole off
-s32 fn_80038250(PdaMenuState* state)
+s32 pcMenuListCtrl(PdaMenuState* state)
 {
     extern void winSeqSetMenu(s32 sequence, s32 menu);
 
@@ -49,7 +49,7 @@ s32 fn_80038250(PdaMenuState* state)
 #pragma peephole reset
 
 #pragma peephole off
-s32 fn_800382E8(PdaMenuState* state)
+s32 pcMenuListCtrl2(PdaMenuState* state)
 {
     switch (state->mode) {
     case 0:
@@ -71,7 +71,7 @@ s32 fn_800382E8(PdaMenuState* state)
 #pragma peephole reset
 
 #pragma peephole off
-s32 fn_80038380(PdaSelectionWork* work)
+s32 pcMenuCursor(PdaSelectionWork* work)
 {
     extern PdaKeyInfo* windowGetKeyInfo(void);
     extern s32 menuGetSelectItemNum();

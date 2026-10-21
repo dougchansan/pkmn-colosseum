@@ -2,7 +2,7 @@
  * @file gs_vm_exact_800F716C.c
  * @brief GS script VM: stop the scripts of a thread group.
  *
- * Address range: 0x800F716C - 0x800F7274 (fn_800F716C).
+ * Address range: 0x800F716C - 0x800F7274 (GSvmStopGroup).
  *
  * A .text-only piece of the GS VM translation unit (game/gs_vm.c holds the
  * same definition). It does not read the string pool, so the unit is exact
@@ -26,7 +26,7 @@ extern u32 fn_800F0374(GSThread* thread);
  * comes out when the call's value is a named variable (or when both sides
  * are pointers, as in fight_target.c's (void*)fightTrainerGetStatus(...)
  * == (void*)target, which is not the case for a floor id). */
-s32 fn_800F716C(u32 group)
+s32 GSvmStopGroup(u32 group)
 {
     GSVMCtx* ctx;
     u32 threadGroup;

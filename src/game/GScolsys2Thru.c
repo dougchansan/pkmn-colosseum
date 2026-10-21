@@ -11,7 +11,7 @@
  * GScolsys2ThruGetEventID. The layout follows XD's GScolsys2Thru.o
  * (NXXJ01.map lines 6907-6919: stripped getCpPointPoint, getCpPointLine,
  * getCpPointPoly, addList, getCpSegPoly and getFixedMdlEventListPass).
- * fn_80110084 belongs to GScolsys2Human and fn_80111864 to the next TU,
+ * GScolsys2HumanRegister belongs to GScolsys2Human and GScolsys2ThruTest to the next TU,
  * which has its own 0.0f/1.0f pool at 0x8047CF60.
  *
  * History: lanes D10/D13/D14 brought the functions to 99%+ (see

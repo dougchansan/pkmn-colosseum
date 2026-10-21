@@ -653,15 +653,15 @@ asm void HSD_FObjFree(void) {
 #pragma optimization_level 4
 /* Debug hook, compiled out in the release build.  It normally vanishes into
  * its callers; the linker only ever emits the out-of-line copy (a bare blr,
- * fn_80199A84) because the inliner runs out of depth budget inside the
+ * fobjNullCB) because the inliner runs out of depth budget inside the
  * self-inlined HSD_FObjLoadDesc / HSD_FObjRemoveAll expansions. */
-static void fn_80199A84(void* list, void* name)
+static void fobjNullCB(void* list, void* name)
 {
 }
 
 void HSD_FObjFree(HSD_FObj* data) {
     HSD_ObjFree(lbl_80465378, data);
-    fn_80199A84(lbl_80465378, lbl_802747AC);
+    fobjNullCB(lbl_80465378, lbl_802747AC);
 }
 #endif
 #pragma pop
@@ -683,7 +683,7 @@ asm void HSD_FObjAlloc(void) {
 HSD_FObj* HSD_FObjAlloc(void) {
     HSD_FObj* p;
     p = HSD_ObjAlloc(lbl_80465378);
-    fn_80199A84(lbl_80465378, lbl_80274758);
+    fobjNullCB(lbl_80465378, lbl_80274758);
     if (p == NULL) {
         __assert(&lbl_8047DA30, 755, &lbl_8047DA38);
     }
@@ -1253,7 +1253,7 @@ free7:
 free6:
     if (f6 != NULL) {
         HSD_ObjFree(lbl_80465378, f6);
-        fn_80199A84(lbl_80465378, lbl_802747AC);
+        fobjNullCB(lbl_80465378, lbl_802747AC);
     }
 free5:
     if (f5 != NULL) {

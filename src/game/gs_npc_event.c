@@ -14,24 +14,24 @@
  *
  * Key functions:
  *   fn_80030170  GSnpcEvt_PopEventQueue      -- 0x38 bytes, dequeue next event
- *   fn_800301A8  GSnpcEvt_NopA               -- 4 bytes, blr stub
- *   fn_800301AC  GSnpcEvt_NopB               -- 4 bytes, blr stub
- *   fn_800301B0  GSnpcEvt_ProcessTrainerSprite -- 0x120 bytes, trainer sprite display
- *   fn_800302D0  GSnpcEvt_ProcessOverworldNPC -- 0xA0 bytes, overworld NPC event
- *   fn_80030370  GSnpcEvt_SetModelA          -- 0xC bytes, set model ID 0x43E3
- *   fn_8003037C  GSnpcEvt_SetModelB          -- 0xC bytes, set model ID 0x43E2
- *   fn_80030388  GSnpcEvt_ProcessMirorB      -- 0xA0 bytes, Miror B. encounter event
- *   fn_80030428  GSnpcEvt_ReturnZero         -- 4 bytes, li r3,0 + blr
- *   fn_8003042C  GSnpcEvt_ShadowEncounterCB  -- 0x148 bytes, Shadow Pokemon event CB
- *   fn_80030574  GSnpcEvt_ColosseumePreBattle -- 0x234 bytes, pre-battle setup
- *   fn_800307A8  GSnpcEvt_StoryBattleCB      -- 0x12C bytes, story battle callback
- *   fn_800308D4  GSnpcEvt_QuestCompleteCB    -- 0x170 bytes, quest completion handler
- *   fn_80030A44  GSnpcEvt_ItemPickupCB       -- 0x1D0 bytes, overworld item pickup
- *   fn_80030C14  GSnpcEvt_HiddenItemCB       -- 0x120 bytes, hidden item event
- *   fn_80030D34  GSnpcEvt_TreasureChestCB    -- 0x1D8 bytes, treasure chest interaction
- *   fn_80030F0C  GSnpcEvt_FinalChunk         -- remaining functions to 0x80033278
+ *   menuDCDrawItem  GSnpcEvt_NopA               -- 4 bytes, blr stub
+ *   menuDCCtrl  GSnpcEvt_NopB               -- 4 bytes, blr stub
+ *   tradeEvoMenuDrawModel  GSnpcEvt_ProcessTrainerSprite -- 0x120 bytes, trainer sprite display
+ *   tradeEvoMenuDrawText  GSnpcEvt_ProcessOverworldNPC -- 0xA0 bytes, overworld NPC event
+ *   menuDBDrawItem  GSnpcEvt_SetModelA          -- 0xC bytes, set model ID 0x43E3
+ *   menuDBDrawItem2  GSnpcEvt_SetModelB          -- 0xC bytes, set model ID 0x43E2
+ *   menuDBDrawText  GSnpcEvt_ProcessMirorB      -- 0xA0 bytes, Miror B. encounter event
+ *   menuDBDrawItem3  GSnpcEvt_ReturnZero         -- 4 bytes, li r3,0 + blr
+ *   menuDBDrawItemName  GSnpcEvt_ShadowEncounterCB  -- 0x148 bytes, Shadow Pokemon event CB
+ *   menuDBDrawMove  GSnpcEvt_ColosseumePreBattle -- 0x234 bytes, pre-battle setup
+ *   menuDBDrawText2  GSnpcEvt_StoryBattleCB      -- 0x12C bytes, story battle callback
+ *   menuDBDrawSpecies  GSnpcEvt_QuestCompleteCB    -- 0x170 bytes, quest completion handler
+ *   menuDBDrawNickname  GSnpcEvt_ItemPickupCB       -- 0x1D0 bytes, overworld item pickup
+ *   menuDBDrawModel  GSnpcEvt_HiddenItemCB       -- 0x120 bytes, hidden item event
+ *   gbaTradeMenuDrawSprite  GSnpcEvt_TreasureChestCB    -- 0x1D8 bytes, treasure chest interaction
+ *   gbaTradeMenuDrawSprite2  GSnpcEvt_FinalChunk         -- remaining functions to 0x80033278
  *
- * fn_800301B0 (GSnpcEvt_ProcessTrainerSprite):
+ * tradeEvoMenuDrawModel (GSnpcEvt_ProcessTrainerSprite):
  *   Handles the display of a trainer sprite during battle transitions.
  *   Checks the NPC event type at offset +0x06 (lha) and dispatches:
  *     0x10CE: Load trainer model from lbl_803A3230
@@ -48,7 +48,7 @@
  *     - fn_800D59B8: Set scale (1.0, 1.0)
  *     - fn_800D6728: Commit render state
  *
- * fn_800302D0 (GSnpcEvt_ProcessOverworldNPC):
+ * tradeEvoMenuDrawText (GSnpcEvt_ProcessOverworldNPC):
  *   Handles overworld NPC events based on the NPC's event type ID:
  *     0x0FBC: Generic NPC dialog event
  *     0x0FBD: Special NPC battle trigger
@@ -56,8 +56,8 @@
  *   sets the battle parameter via msgctrlSetValue (param 0x4D), then
  *   initiates a trainer model render via GSmsgPrintColor.
  *
- * fn_80030388 (GSnpcEvt_ProcessMirorB):
- *   Same structure as fn_800302D0 but for Miror B. encounters:
+ * menuDBDrawText (GSnpcEvt_ProcessMirorB):
+ *   Same structure as tradeEvoMenuDrawText but for Miror B. encounters:
  *     0x10CA: Miror B. pre-battle
  *     0x10CB: Miror B. post-battle
  *   Uses model ID 0x4412 for the standard render and 0x4413 for
@@ -142,11 +142,11 @@ extern void  GSmsgPrintColor(s32, s32, u32, u16);
 /* 0x80031188 | 0xA0 */
 extern u8 lbl_803A2688[];
 #if 0
-asm void fn_80031188(void) {
+asm void gbaTradeMenuDrawText(void) {
 #include "src/game/gs_npc_event_fn_80031188.inc"
 }
 #else
-void fn_80031188(u8* r3, u8* r4) {
+void gbaTradeMenuDrawText(u8* r3, u8* r4) {
     u32 flags = *(u32*)(r4 + 0x64);
     s32 evtype = *(s16*)(r4 + 0x6);
     u32 combined = (flags & 0xa1400000) | *(u8*)(r3 + 0x8b);
@@ -173,11 +173,11 @@ extern void pokemonCheckValid(void);
 extern void menuCBRule_CheckPokemonEventFlag(void);
 extern u8 lbl_80266E90[];
 #if 0
-asm void fn_80031228(void) {
+asm void gbaTradeMenuDrawSprite3(void) {
 #include "src/game/gs_npc_event_fn_80031228.inc"
 }
 #else
-void fn_80031228(u8* arg0, u8* arg1) {
+void gbaTradeMenuDrawSprite3(u8* arg0, u8* arg1) {
     u8* table;
     s32 kind;
     s32 arg;
@@ -219,11 +219,11 @@ extern void menuSubGetPokemonSexForDisp(void);
 extern void pokemonBiosGetTamagoFlag(void);
 extern void GSmsgGetGSchar(void);
 #if 0
-asm void fn_80031404(void) {
+asm void gbaTradeMenuDrawGender(void) {
 #include "src/game/gs_npc_event_fn_80031404.inc"
 }
 #else
-void fn_80031404(u8* arg0, u8* arg1) {
+void gbaTradeMenuDrawGender(u8* arg0, u8* arg1) {
     u8* table;
     u32 combined;
     s32 kind;
@@ -288,11 +288,11 @@ void fn_80031404(u8* arg0, u8* arg1) {
 extern void GSmsgGetRect(void);
 extern void* pokemonBiosGetNicknamePtr(void* pokemon);
 #if 0
-asm void fn_80031648(void) {
+asm void gbaTradeMenuDrawNickname(void) {
 #include "src/game/gs_npc_event_fn_80031648.inc"
 }
 #else
-void fn_80031648(u8* arg0, u8* arg1) {
+void gbaTradeMenuDrawNickname(u8* arg0, u8* arg1) {
     u8* table;
     s32 group;
     s32 arg;
@@ -351,11 +351,11 @@ extern u32 lbl_8047A424;
 extern u32 lbl_8047A420;
 extern u8  lbl_80266E90[];
 #if 0
-asm void fn_800318D8(void) {
+asm void gbaTradeMenuDrawSprite4(void) {
 #include "src/game/gs_npc_event_fn_800318D8.inc"
 }
 #else
-void fn_800318D8(s32 _unused, u8* tgt) {
+void gbaTradeMenuDrawSprite4(s32 _unused, u8* tgt) {
     u8* p = lbl_80266E90;
     s32 group = 0;
     s32 sub   = 0;
@@ -383,15 +383,15 @@ void fn_800318D8(s32 _unused, u8* tgt) {
 }
 #endif
 
-/* 0x54 | fn_80031A1C | generic */
-/* fn_80031A1C - 0x80031A1C | size: 0x54 */
+/* 0x54 | gbaTradeMenuDrawSprite5 | generic */
+/* gbaTradeMenuDrawSprite5 - 0x80031A1C | size: 0x54 */
 extern u32 lbl_8047A42C;
 #if 0
-asm void fn_80031A1C(void) {
+asm void gbaTradeMenuDrawSprite5(void) {
 #include "src/game/gs_npc_event_fn_80031A1C.inc"
 }
 #else
-void fn_80031A1C(void* r3, void* r4) {
+void gbaTradeMenuDrawSprite5(void* r3, void* r4) {
     s32 val = (s32)lbl_8047A42C;
     switch (val) {
     case 7:
@@ -405,15 +405,15 @@ void fn_80031A1C(void* r3, void* r4) {
 }
 #endif
 
-/* 0x50 | fn_80031A70 | generic */
-/* fn_80031A70 - 0x80031A70 | size: 0x50 */
+/* 0x50 | gbaTradeMenuDrawSprite6 | generic */
+/* gbaTradeMenuDrawSprite6 - 0x80031A70 | size: 0x50 */
 extern u32 lbl_8047A42C;
 #if 0
-asm void fn_80031A70(void) {
+asm void gbaTradeMenuDrawSprite6(void) {
 #include "src/game/gs_npc_event_fn_80031A70.inc"
 }
 #else
-void fn_80031A70(void* r3, void* r4) {
+void gbaTradeMenuDrawSprite6(void* r3, void* r4) {
     s32 val = (s32)lbl_8047A42C;
     switch (val) {
     case 7:
@@ -430,15 +430,15 @@ void fn_80031A70(void* r3, void* r4) {
 }
 #endif
 
-/* 0x50 | fn_80031AC0 | generic */
-/* fn_80031AC0 - 0x80031AC0 | size: 0x50 */
+/* 0x50 | gbaTradeMenuDrawSprite7 | generic */
+/* gbaTradeMenuDrawSprite7 - 0x80031AC0 | size: 0x50 */
 extern u32 lbl_8047A42C;
 #if 0
-asm void fn_80031AC0(void) {
+asm void gbaTradeMenuDrawSprite7(void) {
 #include "src/game/gs_npc_event_fn_80031AC0.inc"
 }
 #else
-void fn_80031AC0(void* r3, void* r4) {
+void gbaTradeMenuDrawSprite7(void* r3, void* r4) {
     s32 val = (s32)lbl_8047A42C;
     switch (val) {
     case 2:
@@ -457,7 +457,7 @@ void fn_80031AC0(void* r3, void* r4) {
 
 /* 0x80031B10 | 0x3C */
 extern void _threadSwitch(void);
-extern u32 fn_8010B560(void);
+extern u32 menuFaceIsAnyLoading(void);
 extern void std113_mapObjectUnk_8018db68(u32);
 extern u32 lbl_8047A418;
 #if 0
@@ -466,7 +466,7 @@ asm void fn_80031B10(void) {
 }
 #else
 void fn_80031B10(void) {
-    while ((u8)fn_8010B560() != 0) {
+    while ((u8)menuFaceIsAnyLoading() != 0) {
         _threadSwitch();
     }
     std113_mapObjectUnk_8018db68(lbl_8047A418);
@@ -475,8 +475,8 @@ void fn_80031B10(void) {
 
 /* 0x80031B4C | 0x954 */
 extern void memcardAllocBuffer(void);
-extern void fn_800849B4(void);
-extern void fn_8002FC58(void);
+extern void cardeTransferUI(void);
+extern void gbaTradeSelectParty(void);
 extern void fn_801021F8(void);
 extern void windowGetActiveID(void);
 extern void menuOpenCustom(void);
@@ -490,15 +490,15 @@ extern void fadeSet(void);
 extern void fadeCheck(void);
 extern void GSmodelSetVisibility(void);
 extern void menuSetDisp(void);
-extern void fn_80097CD0(void);
+extern void menuPokemonStatusOpenA(void);
 extern void gbaTradeCheckExportItems(void);
-extern void fn_8002F284(void);
-extern void fn_8002EE74(void);
+extern void gbaTradeSelectSend(void);
+extern void gbaTradeConfirm(void);
 extern void menuSetEnablePort(void);
 extern s32 menuGetLastError(void);
 extern void winMsgOpen(s32, s32, s32, s32);
 extern void gbaTradeCheckImportItems(void);
-extern void fn_8002E460(void);
+extern void gbaTradeScreenRun(void);
 extern void menuOpen(void);
 extern void menuModelInit(void);
 extern void menuPokemonModelRequest(void);
@@ -602,14 +602,14 @@ void gbaTradeRun(void) {
     extern void stateFunctionSaveReport(s32);
     extern void stateFunctionEvolution(void);
     extern void stateFunctionExChangeMain(void);
-    extern void fn_8002E460(s32);
+    extern void gbaTradeScreenRun(s32);
     extern void gbaTradeCheckImportItems(void);
-    extern void fn_8002EE74(void);
-    extern void fn_8002F284(void);
+    extern void gbaTradeConfirm(void);
+    extern void gbaTradeSelectSend(void);
     extern void gbaTradeCheckExportItems(void);
-    extern void fn_8002FC58(void);
-    extern s32 fn_800849B4(s32 mode, s32 command, void* input, void* output);
-    extern void fn_80097CD0(s32, s32, s32);
+    extern void gbaTradeSelectParty(void);
+    extern s32 cardeTransferUI(s32 mode, s32 command, void* input, void* output);
+    extern void menuPokemonStatusOpenA(s32, s32, s32);
     extern void GSmodelSetVisibility(u32, s32);
     extern u8 fn_800FF52C();
     extern void floorBattleEndTerminateScripts();
@@ -660,7 +660,7 @@ void gbaTradeRun(void) {
                 NpcEventLinkRequest request;
 
                 request = *(const NpcEventLinkRequest*)lbl_80266F90;
-                if (fn_800849B4(0, 1, &request, 0) < 0) {
+                if (cardeTransferUI(0, 1, &request, 0) < 0) {
                     lbl_8047A40A = 0;
                     lbl_8047A42C = 0;
                 } else {
@@ -669,7 +669,7 @@ void gbaTradeRun(void) {
                 break;
             }
             case 2:
-                fn_8002FC58();
+                gbaTradeSelectParty();
                 break;
             case 3:
                 fn_801021F8(0xD9, 0);
@@ -710,7 +710,7 @@ void gbaTradeRun(void) {
                 menuSetDisp(0xD9, 0);
                 fadeSet(2, lbl_8047B9D4);
                 fadeCheck(1);
-                fn_80097CD0(heroGetStatus(NULL, 3, (u16)lbl_8047A428), 0, 0);
+                menuPokemonStatusOpenA(heroGetStatus(NULL, 3, (u16)lbl_8047A428), 0, 0);
                 fadeSet(3, lbl_8047B9D4);
                 fadeCheck(1);
                 GSmodelSetVisibility(lbl_8047A414, 1);
@@ -723,10 +723,10 @@ void gbaTradeRun(void) {
                 gbaTradeCheckExportItems();
                 break;
             case 7:
-                fn_8002F284();
+                gbaTradeSelectSend();
                 break;
             case 8:
-                fn_8002EE74();
+                gbaTradeConfirm();
                 break;
             case 9:
                 lbl_8047A410 = 1;
@@ -744,7 +744,7 @@ void gbaTradeRun(void) {
                 fadeCheck(1);
                 work3 = heroGetStatus(base + 0x170, 3, (u16)lbl_8047A428);
                 menuSetEnablePort(2);
-                fn_80097CD0(work3, 0, 0);
+                menuPokemonStatusOpenA(work3, 0, 0);
                 menuSetEnablePort(1);
                 fadeSet(3, lbl_8047B9D4);
                 fadeCheck(1);
@@ -765,7 +765,7 @@ void gbaTradeRun(void) {
                 gbaTradeCheckImportItems();
                 break;
             case 12:
-                fn_8002E460(handle);
+                gbaTradeScreenRun(handle);
                 break;
             case 13: {
 
@@ -1073,7 +1073,7 @@ extern void GScharCpy(void* dst, const void* src);
 extern u32 pokemonGetStatus(void*, u32, u32, u32);
 extern void cardeSaveGetCard(u32, s8, u8, u8);
 extern u32 menuIsCheck(u32);
-extern s32 fn_800D37CC(void);
+extern s32 GSgfxGetVsyncRate(void);
 extern u32 GSgetFrameStep(void);
 extern u8 lbl_8047A44A;
 extern u32 lbl_8047A430;
@@ -1307,7 +1307,7 @@ void cardeBattleSelectCard(void)
 
         while (elapsed < 1.0f) {
             _threadSwitch();
-            elapsed += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+            elapsed += (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
         }
     }
 
@@ -1345,7 +1345,7 @@ extern void fn_800896E0(s32);
 extern void fn_800896D8(s32);
 extern void fn_800896D0(s32);
 extern void fightTrainerSetU16Arr14(s32, u8, u16);
-extern void fn_801FCC3C(s32);
+extern void fightTrainerDataBiosGetStatus05(s32);
 extern u8*  fightTrainerPokemonDataBiosGetPtr(void);
 extern void fightTrainerPokemonDataBiosSetPokemonDataId(s32, u16);
 extern u8*  fieldStartEncount(s32, s32, s32);
@@ -1393,7 +1393,7 @@ u8* cardeBuildTrainerEncounter(s32 arg0, s32 arg1, u8* arg2) {
     for (i = 0; i < 4; i++) {
         fightTrainerSetU16Arr14(ctx, (u8)i, *(u16*)(arg0 + i * 2 + 0x12));
     }
-    fn_801FCC3C(ctx);
+    fightTrainerDataBiosGetStatus05(ctx);
 
     base = fightTrainerPokemonDataBiosGetPtr();
     for (j = 0; j < 4; j++) {
@@ -1486,7 +1486,7 @@ void fn_80032ED8_legacy_disabled(void) {
         r26 = r26 + 0x1;
     } while ((s32)r26 < 4);
     r3 = r27;
-    fn_801FCC3C();
+    fightTrainerDataBiosGetStatus05();
     fightTrainerPokemonDataBiosGetPtr();
     r25 = r3;
     r27 = r31;
@@ -1642,55 +1642,55 @@ void* fn_80030170(GSnpcEventQueue* q) {
     return q->items[idx];
 }
 
-/* fn_800301A8 - 0x800301A8 | size: 0x4 */
+/* menuDCDrawItem - 0x800301A8 | size: 0x4 */
 #if 0
-asm void fn_800301A8(void) {
+asm void menuDCDrawItem(void) {
 #include "src/game/gs_npc_event_fn_800301A8.inc"
 }
 #else
-void fn_800301A8(void) { }
+void menuDCDrawItem(void) { }
 #endif
 
-/* fn_800301AC - 0x800301AC | size: 0x4 */
+/* menuDCCtrl - 0x800301AC | size: 0x4 */
 #if 0
-asm void fn_800301AC(void) {
+asm void menuDCCtrl(void) {
 #include "src/game/gs_npc_event_fn_800301AC.inc"
 }
 #else
-void fn_800301AC(void) { }
+void menuDCCtrl(void) { }
 #endif
 
 
-/* fn_80030370 - 0x80030370 | size: 0xc */
+/* menuDBDrawItem - 0x80030370 | size: 0xc */
 #if 0
-asm void fn_80030370(void) {
+asm void menuDBDrawItem(void) {
 #include "src/game/gs_npc_event_fn_80030370.inc"
 }
 #else
-void fn_80030370(u32 r3, u32* r4) {
+void menuDBDrawItem(u32 r3, u32* r4) {
     r4[0x4C / 4] = 0x43E3;
 }
 #endif
 
-/* fn_8003037C - 0x8003037C | size: 0xc */
+/* menuDBDrawItem2 - 0x8003037C | size: 0xc */
 #if 0
-asm void fn_8003037C(void) {
+asm void menuDBDrawItem2(void) {
 #include "src/game/gs_npc_event_fn_8003037C.inc"
 }
 #else
-void fn_8003037C(u32 r3, u32* r4) {
+void menuDBDrawItem2(u32 r3, u32* r4) {
     r4[0x4C / 4] = 0x43E2;
 }
 #endif
 
-/* fn_80030388 - 0x80030388 | size: 0xa0 */
+/* menuDBDrawText - 0x80030388 | size: 0xa0 */
 #if 0
-asm void fn_80030388(void) {
+asm void menuDBDrawText(void) {
 #include "src/game/gs_npc_event_fn_80030388.inc"
 }
 #else
 #pragma peephole off
-void fn_80030388(u8* r3, u8* r4) {
+void menuDBDrawText(u8* r3, u8* r4) {
     u32 flags = *(u32*)(r4 + 0x64);
     s32 evtype = *(s16*)(r4 + 0x6);
     u32 combined = (flags & 0xa1400000) | *(u8*)(r3 + 0x8b);
@@ -1710,16 +1710,16 @@ void fn_80030388(u8* r3, u8* r4) {
 #pragma peephole on
 #endif
 
-/* fn_80030428 - 0x80030428 | size: 0x4 */
+/* menuDBDrawItem3 - 0x80030428 | size: 0x4 */
 #if 0
-asm void fn_80030428(void) {
+asm void menuDBDrawItem3(void) {
 #include "src/game/gs_npc_event_fn_80030428.inc"
 }
 #else
-void fn_80030428(void) { }
+void menuDBDrawItem3(void) { }
 #endif
 
-/* fn_8003042C - 0x8003042C | size: 0x148 */
+/* menuDBDrawItemName - 0x8003042C | size: 0x148 */
 extern void pokemonGetSoubiItemDataId(void);
 extern void itemDataBiosGetPtr(void);
 extern void itemDataBiosGetName(void);
@@ -1727,11 +1727,11 @@ extern u8 lbl_80266F68[];
 extern u32 lbl_8047A424;
 extern u32 lbl_8047A420;
 #if 0
-asm void fn_8003042C(void) {
+asm void menuDBDrawItemName(void) {
 #include "src/game/gs_npc_event_fn_8003042C.inc"
 }
 #else
-void fn_8003042C(u8* arg0, u8* arg1) {
+void menuDBDrawItemName(u8* arg0, u8* arg1) {
     u32 combined;
     s32 kind;
     void* obj;
@@ -1769,18 +1769,18 @@ void fn_8003042C(u8* arg0, u8* arg1) {
 }
 #endif
 
-/* fn_80030574 - 0x80030574 | size: 0x234 */
+/* menuDBDrawMove - 0x80030574 | size: 0x234 */
 extern void pokemonWazaCheckValid(void);
 extern void wazaGetStatus(void);
 extern void GSmsgPrintRect(s32, s32, s32, s32, u32, u16);
 extern u32 lbl_8047A424;
 extern u32 lbl_8047A420;
 #if 0
-asm void fn_80030574(void) {
+asm void menuDBDrawMove(void) {
 #include "src/game/gs_npc_event_fn_80030574.inc"
 }
 #else
-void fn_80030574(u8* arg0, u8* arg1) {
+void menuDBDrawMove(u8* arg0, u8* arg1) {
     u8* table;
     u32 combined;
     s32 group;
@@ -1872,15 +1872,15 @@ no_object:
 }
 #endif
 
-/* fn_800307A8 - 0x800307A8 | size: 0x12c */
+/* menuDBDrawText2 - 0x800307A8 | size: 0x12c */
 extern u32 lbl_8047A424;
 extern u32 lbl_8047A420;
 #if 0
-asm void fn_800307A8(void) {
+asm void menuDBDrawText2(void) {
 #include "src/game/gs_npc_event_fn_800307A8.inc"
 }
 #else
-void fn_800307A8(u8* arg0, u8* arg1) {
+void menuDBDrawText2(u8* arg0, u8* arg1) {
     u32 combined;
     s32 kind;
     void* obj;
@@ -1911,17 +1911,17 @@ void fn_800307A8(u8* arg0, u8* arg1) {
 }
 #endif
 
-/* fn_800308D4 - 0x800308D4 | size: 0x170 */
+/* menuDBDrawSpecies - 0x800308D4 | size: 0x170 */
 extern void pokemonDataBiosGetPtr(void);
 extern void pokemonDataBiosGetName(void);
 extern u32 lbl_8047A424;
 extern u32 lbl_8047A420;
 #if 0
-asm void fn_800308D4(void) {
+asm void menuDBDrawSpecies(void) {
 #include "src/game/gs_npc_event_fn_800308D4.inc"
 }
 #else
-void fn_800308D4(u8* arg0, u8* arg1) {
+void menuDBDrawSpecies(u8* arg0, u8* arg1) {
     extern u16 pokemonGetStatus(void* obj, s32 a, s32 b, s32 c);
     extern s32 pokemonDataBiosGetPtr(s32 v);
     extern s32 pokemonDataBiosGetName(s32 v);
@@ -1967,15 +1967,15 @@ void fn_800308D4(u8* arg0, u8* arg1) {
 }
 #endif
 
-/* fn_80030A44 - 0x80030A44 | size: 0x1d0 */
+/* menuDBDrawNickname - 0x80030A44 | size: 0x1d0 */
 extern u32 lbl_8047A424;
 extern u32 lbl_8047A420;
 #if 0
-asm void fn_80030A44(void) {
+asm void menuDBDrawNickname(void) {
 #include "src/game/gs_npc_event_fn_80030A44.inc"
 }
 #else
-void fn_80030A44(u8* arg0, u8* arg1) {
+void menuDBDrawNickname(u8* arg0, u8* arg1) {
     u8* table;
     u32 combined;
     s32 group;
@@ -2008,7 +2008,7 @@ grp2:
 grp_done:
     ;
 
-    /* As in fn_80030574: retail puts the obj == 0 body last, out of line. */
+    /* As in menuDBDrawMove: retail puts the obj == 0 body last, out of line. */
     if (obj == 0) {
         goto no_object_30A44;
     }
@@ -2044,19 +2044,19 @@ no_object_30A44:
 }
 #endif
 
-/* fn_80030C14 - 0x80030C14 | size: 0x120 */
+/* menuDBDrawModel - 0x80030C14 | size: 0x120 */
 extern u8 lbl_803A3230[];
 extern u8 lbl_803A31E8[];
 extern u8 lbl_80314F98[];
 extern f32 lbl_8047B9D4;
 extern f32 lbl_8047B9F0;
 #if 0
-asm void fn_80030C14(void) {
+asm void menuDBDrawModel(void) {
 #include "src/game/gs_npc_event_fn_80030C14.inc"
 }
 #else
 #pragma peephole off
-void fn_80030C14(void* r3, u8* r4) {
+void menuDBDrawModel(void* r3, u8* r4) {
     void* model = NULL;
     s32 evtype = *(s16*)(r4 + 0x6);
     switch (evtype) {
@@ -2086,14 +2086,14 @@ void fn_80030C14(void* r3, u8* r4) {
 #pragma peephole on
 #endif
 
-/* fn_80030D34 - 0x80030D34 | size: 0x1d8 */
+/* gbaTradeMenuDrawSprite - 0x80030D34 | size: 0x1d8 */
 extern void pokemonBiosGetItemDataId(void);
 #if 0
-asm void fn_80030D34(void) {
+asm void gbaTradeMenuDrawSprite(void) {
 #include "src/game/gs_npc_event_fn_80030D34.inc"
 }
 #else
-void fn_80030D34(u8* arg0, u8* arg1) {
+void gbaTradeMenuDrawSprite(u8* arg0, u8* arg1) {
     u8* table;
     s32 kind;
     s32 arg;
@@ -2140,14 +2140,14 @@ void fn_80030D34(u8* arg0, u8* arg1) {
 }
 #endif
 
-/* fn_80030F0C - 0x80030F0C | size: 0x27c */
+/* gbaTradeMenuDrawSprite2 - 0x80030F0C | size: 0x27c */
 extern void pokemonBiosGetDarkFlag(void);
 #if 0
-asm void fn_80030F0C(void) {
+asm void gbaTradeMenuDrawSprite2(void) {
 #include "src/game/gs_npc_event_fn_80030F0C.inc"
 }
 #else
-void fn_80030F0C(u8* arg0, u8* arg1) {
+void gbaTradeMenuDrawSprite2(u8* arg0, u8* arg1) {
     u8* table;
     s32 group;
     s32 arg;
@@ -2244,14 +2244,14 @@ void fn_8003480C(void) {
 }
 #endif
 
-/* fn_80034DC0 - 0x80034DC0 | size: 0x78 | WALL 80%: oris+ori constant build pattern */
+/* cardeSubMenuDrawText - 0x80034DC0 | size: 0x78 | WALL 80%: oris+ori constant build pattern */
 extern u32 lbl_8047A44C;
 #if 0
-asm void fn_80034DC0(void) {
+asm void cardeSubMenuDrawText(void) {
 #include "src/game/gs_npc_event_fn_80034DC0.inc"
 }
 #else
-void fn_80034DC0(u8* arg0, u8* arg1) {
+void cardeSubMenuDrawText(u8* arg0, u8* arg1) {
     u32 byte;
     s32 mask;
     s32 combined;
@@ -2267,7 +2267,7 @@ void fn_80034DC0(u8* arg0, u8* arg1) {
 
 #endif
 
-/* fn_800301B0 and fn_800302D0 also build alone for the linked
+/* tradeEvoMenuDrawModel and tradeEvoMenuDrawText also build alone for the linked
  * gs_npc_event_candidate_800301B0 unit. */
 #if !defined(GS_NPC_EVENT_ONLY_800324A0) && !defined(GS_NPC_EVENT_ONLY_80032ED8)
 extern u8 lbl_803A3230[];
@@ -2277,11 +2277,11 @@ extern u8 lbl_803A2688[];
 extern f32 lbl_8047B9D4;
 extern f32 lbl_8047B9F0;
 
-/* fn_800301B0 - 0x800301B0 | size: 0x120 */
+/* tradeEvoMenuDrawModel - 0x800301B0 | size: 0x120 */
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-void fn_800301B0(void* r3, u8* r4) {
+void tradeEvoMenuDrawModel(void* r3, u8* r4) {
     void* model = NULL;
     s32 evtype = *(s16*)(r4 + 0x6);
     switch (evtype) {
@@ -2310,10 +2310,10 @@ void fn_800301B0(void* r3, u8* r4) {
 }
 #pragma pop
 
-/* fn_800302D0 - 0x800302D0 | size: 0xa0 */
+/* tradeEvoMenuDrawText - 0x800302D0 | size: 0xa0 */
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma peephole off
-void fn_800302D0(u8* r3, u8* r4) {
+void tradeEvoMenuDrawText(u8* r3, u8* r4) {
     u32 flags = *(u32*)(r4 + 0x64);
     s32 evtype = *(s16*)(r4 + 0x6);
     u32 combined = (flags & 0xa1400000) | *(u8*)(r3 + 0x8b);

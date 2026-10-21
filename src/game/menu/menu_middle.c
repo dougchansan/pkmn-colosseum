@@ -58,22 +58,22 @@ extern void menuSubGetPokemonSexForDisp();
 extern void* menuSeqBiosGetPtr();
 extern void menuSpriteBiosGetPtr();
 extern void menuItemBiosSetSelectFlag();
-extern void fn_80071160();
+extern void menuFindLiveSaveSlot();
 extern void fn_80071208();
 extern void fn_80071318();
-extern s32 fn_8007162C(void);
+extern s32 _menuPeekStackDepth(void);
 extern void menuCB_InitMenu();
 extern void menuCBRule_CheckPokemonErrorAll();
 extern void menuRuleCheckPokemon();
 extern void menuRuleCheckPartyByRule();
-extern void fn_80076A8C();
+extern void menuRuleCheckSelected();
 extern void fn_80076F2C();
 extern void menuRuleCheckPokemonAllModes();
 extern void menuRuleCheckSlotModeDefault();
-extern void fn_80077A5C();
-extern u8 fn_80077BD0(void);
+extern void menuRuleIsEmptyPokemon();
+extern u8 savedataBattleIsModeValid(void);
 extern void menuCBRule_CheckValidItem();
-extern void fn_80077C68();
+extern void menuRuleApplyItemRestriction();
 extern void fn_80077D88();
 extern s32 savedataBattleGetEntryCount();
 extern void menuCBRule_ConstantRule();
@@ -491,35 +491,35 @@ u32 savedataBattleIsCourseUnlocked(s32 index);
 void* savedataBattleGetRulePtr(void);
 void menuSetRuleType(s32 value);
 u8* savedataBattleGetRuleSlotPtr(s32 index);
-s32 fn_8006B57C(void);
+s32 savedataBattleGetFlag1C(void);
 s32 fn_8006B5A8(void);
 void menuColosseumBattleSetup(MenuMiddleWork* work);
 void savedataBattleInit(void* saveSection);
 u8 menuColosseumBattleGetFlag(void);
 void menuColosseumBattleClearFlag(void);
 void menuColosseumBattleSetFlag(void);
-void fn_8006B908(u32 r3);
-void fn_8006B930(void* menu);
-void fn_8006B9B8(void* menu);
-void fn_8006BB34(void* menu);
-void fn_8006C018(void* menu);
-void fn_8006C0DC(void* menu);
-void fn_8006C164(void* menu);
-void fn_8006C5D8(void* window, void* sprite);
+void menu105Ctrl(u32 r3);
+void menuColoBattleD0Button(void* menu);
+void menuTaisenButton(void* menu);
+void menuColoBattleC1Cursor(void* menu);
+void menuColoBattleC1Button(void* menu);
+void menuColoBattleC0Button(void* menu);
+void menuColoBattleC0Cursor(void* menu);
+void menuColoBattleBCDrawItem(void* window, void* sprite);
 void menuTaisenDrawTrainerCard(void* arg0, void* item);
 void menuTaisenDrawPartyList(void* window, struct MenuMiddleSprite_8006CCC0* sprite);
 void menuTaisenDrawPlayerCard(void* window, struct MenuMiddleSprite_8006CCC0* sprite);
-void fn_8006D940(void* menu);
-void fn_8006D98C(void* menu);
-void fn_8006DAE4(void* arg0);
+void menuColoBattleD7Ctrl(void* menu);
+void menuColoBattleBCCtrl(void* menu);
+void menuColoBattleD6Ctrl(void* arg0);
 void menuTaisenPartyCheckSeq(void* menu);
 void menuWaitFaceSprites(void);
 u32 fn_8006E128(u8* p);
-void fn_8006E160(u32 r3);
-void fn_8006E188(void);
-void fn_8006E18C(void* menu);
-void fn_8006E258(void* menu);
-void fn_8006E338(void* obj);
+void menuColoBattleB9Ctrl(u32 r3);
+void menuTaisenEntryCtrl3(void);
+void menuTaisenCtrl(void* menu);
+void menuColoBattleD0Ctrl(void* menu);
+void menuTaisenCtrl2(void* obj);
 
 typedef struct KeyInfo_8006BB34 {
     u8 pad0[4];
@@ -528,35 +528,35 @@ typedef struct KeyInfo_8006BB34 {
     u8 padA[2];
 } KeyInfo_8006BB34;
 void menuBattleModeRefreshRules(void* menu);
-void fn_8006E9A4(void* window, void* sprite);
-void fn_8006EE7C(void* menu);
-void fn_8006EF24(void* menu);
-void fn_8006EFF8(void* menu);
-void fn_8006F284(void* menu);
-void fn_8006F720(void* menu);
-void fn_8006FBFC(void* menu);
-void fn_8006FCF8(u32 r3);
-void fn_8006FD24(u32 r3);
-void fn_8006FD4C(u32 r3);
-void fn_8006FD74(u32 r3);
-void fn_8006FD9C(u32 r3);
-void fn_8006FDC4(u32 r3);
-void fn_8006FDEC(u32 r3);
-void fn_8006FE14(u32 r3);
-void fn_8006FE3C(u32 r3);
-void fn_8006FE64(void* menu);
+void menuTaisenDrawLevels(void* window, void* sprite);
+void menuTaisenButton2(void* menu);
+void menuTaisenCursor(void* menu);
+void menuTaisenDrawHeldItems2(void* menu);
+void menuColoBattleC1Ctrl(void* menu);
+void menuColoBattleC0Ctrl(void* menu);
+void menuColoBattleBFCtrl(void* menu);
+void menuColoBattleB3Ctrl(u32 r3);
+void menuColoBattleCCCtrl(u32 r3);
+void menuEDCtrl(u32 r3);
+void menuEECtrl(u32 r3);
+void menuColoBattleB2Ctrl(u32 r3);
+void menuEBCtrl(u32 r3);
+void menuColoBattleB0Ctrl(u32 r3);
+void menuColoBattleB1Ctrl(u32 r3);
+void menuColoBattleAFCtrl(u32 r3);
+void menuColoBattleAEButton(void* menu);
 void menuBattleModeCourseSelectCtrl(void* menu);
-void fn_80070274(u32 r3);
-void fn_8007029C(u32 r3);
-void fn_800702C8(u32 r3);
-void fn_800702F0(u32 r3);
-void fn_80070318(void* menu);
-void fn_80070428(void* arg0, void* menu);
-void fn_800704A4(void);
-void fn_800704A8(void);
-void fn_800704AC(void* menu, void* sprite);
-void fn_800706C4(void* menu, void* sprite);
-void fn_80070A9C(void* menu, void* sprite);
+void menuColoBattleADCtrl(u32 r3);
+void menuColoBattleACCtrl(u32 r3);
+void menuColoBattleA8Ctrl(u32 r3);
+void titleContinueCtrl(u32 r3);
+void menuColoBattleBECtrl(void* menu);
+void menuTaisenDrawText(void* arg0, void* menu);
+void menuColoBattleD3DrawItem(void);
+void menuColoBattleD3Ctrl(void);
+void menuColoBattleBEDrawSprite(void* menu, void* sprite);
+void menuColoBattleBEDrawSprite2(void* menu, void* sprite);
+void menuColoBattleBEDrawSprite3(void* menu, void* sprite);
 typedef struct MenuMiddleSeqPair {
     u16 open;
     u16 close;
@@ -1215,7 +1215,7 @@ void menuCBBiosCopyHero(void* destination, const void* heroSource, u16 trainerId
     extern void heroBiosSetHizukiFlag(void* hero, s32 flag);
     extern void* heroBiosGetPokemonPtr(void* hero, u16 index);
     extern void heroBiosCopy(void* destination, const void* source);
-    extern u8 fn_80077A5C(void* pokemon);
+    extern u8 menuRuleIsEmptyPokemon(void* pokemon);
     u8 hero[0xB18];
     void* pokemon;
     u16 savedId;
@@ -1225,7 +1225,7 @@ void menuCBBiosCopyHero(void* destination, const void* heroSource, u16 trainerId
     heroBiosSetHizukiFlag(hero, 0);
     for (i = 0; i < 6; i++) {
         pokemon = heroBiosGetPokemonPtr(hero, i);
-        if (fn_80077A5C(pokemon) == 0) {
+        if (menuRuleIsEmptyPokemon(pokemon) == 0) {
             pokemonAllKaihuku(pokemon);
         }
     }
@@ -1250,7 +1250,7 @@ void menuCBBiosCreateTrainerHero(void* destination, u16 trainerId) {
     extern void heroBiosCopy(void* destination, const void* source);
     extern void fightTrainerCreateFightTrainerDataIdToHero(
         u16 trainerId, u32 fightTrainerId, void* hero);
-    extern u8 fn_80077A5C(void* pokemon);
+    extern u8 menuRuleIsEmptyPokemon(void* pokemon);
     u8 hero[0xB18];
     void* pokemon;
     u16 savedId;
@@ -1269,7 +1269,7 @@ void menuCBBiosCreateTrainerHero(void* destination, u16 trainerId) {
 
     for (i = 0; i < 6; i++) {
         pokemon = heroBiosGetPokemonPtr(hero, i);
-        if (fn_80077A5C(pokemon) == 0) {
+        if (menuRuleIsEmptyPokemon(pokemon) == 0) {
             pokemonAllKaihuku(pokemon);
         }
     }
@@ -1713,7 +1713,7 @@ u8* savedataBattleGetRuleSlotPtr(s32 index) {
 
 
 /* 0x8006B57C | size: 0x2C */
-s32 fn_8006B57C(void) {
+s32 savedataBattleGetFlag1C(void) {
     extern u8 *savedataGetStatus(s32 idx, s32 type);
     return savedataGetStatus(0x0, 0xe)[0x1c];
 }
@@ -1835,7 +1835,7 @@ void menuColosseumBattleSetFlag(void) {
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; scheduling off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma scheduling off
-void fn_8006B908(u32 r3) {
+void menu105Ctrl(u32 r3) {
     extern void menuTaisenSetSequence(u32 r3, u32 r4, u32 r5);
     menuTaisenSetSequence(r3, 0x0, 0x0);
 }
@@ -1844,13 +1844,13 @@ void fn_8006B908(u32 r3) {
 /* 0x8006B930 | size: 0x88 */
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma peephole off
-void fn_8006B930(void* menu) {
+void menuColoBattleD0Button(void* menu) {
     extern u8* savedataGetStatus(s32 idx, s32 type);
-    extern s32 fn_80071160(void);
+    extern s32 menuFindLiveSaveSlot(void);
     extern u32 fn_80071208(u32 flags);
     u32 flags;
 
-    if (fn_80071160() != 0) {
+    if (menuFindLiveSaveSlot() != 0) {
         MENU_MIDDLE_U8_0098(menu)->unk_0098 = 1;
         MENU_MIDDLE_U8_0099(menu)->unk_0099 = 1;
         return;
@@ -1876,9 +1876,9 @@ void fn_8006B930(void* menu) {
 /* 0x8006B9B8 | size: 0x17C */
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
 #pragma peephole off
-void fn_8006B9B8(void* menu) {
+void menuTaisenButton(void* menu) {
     extern u8* savedataGetStatus(s32 index, s32 type);
-    extern s32 fn_80071160(void);
+    extern s32 menuFindLiveSaveSlot(void);
     extern u32 fn_80071208(u32 flags);
     extern void soundStartSE(s32 sound);
     s32 player;
@@ -1901,7 +1901,7 @@ void fn_8006B9B8(void* menu) {
     case 1:
         break;
     case 2:
-        if (fn_80071160() != 0) {
+        if (menuFindLiveSaveSlot() != 0) {
             MENU_MIDDLE_U8_0098(menu)->unk_0098 = 1;
             MENU_MIDDLE_U8_0099(menu)->unk_0099 = 1;
             return;
@@ -1968,7 +1968,7 @@ typedef struct Param_8006BB34 {
 
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
 #pragma peephole off
-void fn_8006BB34(void* menu) {
+void menuColoBattleC1Cursor(void* menu) {
     s32 cur;
     Param_8006BB34* p;
     s32 signOld;
@@ -1999,7 +1999,7 @@ void fn_8006BB34(void* menu) {
     dir = (inc != 0 || dec == 0);
 
     cur = menuGetCursorItemID(m->menuId);
-    if (fn_80077BD0()) {
+    if (savedataBattleIsModeValid()) {
         s32 c;
         if (!confirm) return;
         c = menuGetCursorFromItemID(m->menuId, 0xE35);
@@ -2130,7 +2130,7 @@ void fn_8006BB34(void* menu) {
 
 /* 0x8006C018 | size: 0xC4 */
 #pragma peephole off
-void fn_8006C018(void* menu) {
+void menuColoBattleC1Button(void* menu) {
     typedef struct MenuButton_8006C018 {
         u8 pad0;
         u8 state;
@@ -2195,7 +2195,7 @@ normal:
 
 /* 0x8006C0DC | size: 0x88 */
 #pragma peephole off
-void fn_8006C0DC(void* menu) {
+void menuColoBattleC0Button(void* menu) {
     typedef struct MenuButton_8006C0DC {
         u8 pad0;
         u8 state;
@@ -2253,7 +2253,7 @@ normal:
 
 
 /* 0x8006C164 | size: 0x474 */
-void fn_8006C164(void* menu) {
+void menuColoBattleC0Cursor(void* menu) {
     extern void soundStartSE(s32 sound);
     typedef struct Param_8006C164 {
         s16 min;        /* 0x00 */
@@ -2296,7 +2296,7 @@ void fn_8006C164(void* menu) {
     horizontal = left != 0 || right != 0;
     flag = left != 0 || right == 0;
 
-    if (fn_80077BD0() != 0) {
+    if (savedataBattleIsModeValid() != 0) {
         if (cancel != 0) {
             src.cursor = (s8)menuGetCursorFromItemID(MENU_MIDDLE_U32_0004(menu)->unk_0004, 0x9D2);
             src.pad = 0;
@@ -2463,7 +2463,7 @@ void fn_8006C164(void* menu) {
     defined(MENU_MIDDLE_EXACT_8006C5D8_ONLY)
 
 /* 0x8006C5D8 | size: 0x1FC */
-void fn_8006C5D8(void* window, void* sprite) {
+void menuColoBattleBCDrawItem(void* window, void* sprite) {
     typedef struct MenuMiddleColor {
         u8 r, g, b, a;
     } MenuMiddleColor;
@@ -2830,7 +2830,7 @@ void menuTaisenDrawPartyList(void* window, MenuMiddleSprite_8006CCC0* sprite) {
     extern void GSmsgPrintColor(s16 x, s16 y, u32 color, u32 msg);
     extern u16* heroBiosGetNamePtr(void* hero);
     extern u8* heroBiosGetPokemonPtr(void* hero, u16 index);
-    extern u8 fn_80077A5C(void);
+    extern u8 menuRuleIsEmptyPokemon(void);
     extern u8 pokemonCheckValid(u8* pokemon);
     extern u8 pokemonBiosGetTamagoFlag(u8* pokemon);
     extern void menuFaceDrawPokemon(void* window, void* sprite, u8* pokemon);
@@ -3119,7 +3119,7 @@ void menuTaisenDrawPartyList(void* window, MenuMiddleSprite_8006CCC0* sprite) {
 
         if (kind != 0) {
             pokemon = heroBiosGetPokemonPtr(hero, index);
-            if (fn_80077A5C()) {
+            if (menuRuleIsEmptyPokemon()) {
                 pokemon = NULL;
             } else if (!pokemonCheckValid(pokemon)) {
                 pokemon = NULL;
@@ -3385,7 +3385,7 @@ void menuTaisenDrawPlayerCard(void* window, MenuMiddleSprite_8006CCC0* sprite) {
     defined(MENU_MIDDLE_EXACT_8006D940_ONLY)
 
 /* 0x8006D940 | size: 0x4C */
-void fn_8006D940(void* menu) {
+void menuColoBattleD7Ctrl(void* menu) {
     extern void* windowSearchItemID(void* menu, s32 itemId);
     void* value;
     void* target;
@@ -3397,7 +3397,7 @@ void fn_8006D940(void* menu) {
 
 
 /* 0x8006D98C | size: 0x158 */
-void fn_8006D98C(void* menu) {
+void menuColoBattleBCCtrl(void* menu) {
     typedef struct MenuDisplayEntry {
         u16 itemId;
         u16 padding;
@@ -3451,7 +3451,7 @@ void fn_8006D98C(void* menu) {
 
 
 /* 0x8006DAE4 | size: 0x144 */
-void fn_8006DAE4(void* arg0) {
+void menuColoBattleD6Ctrl(void* arg0) {
     extern void* windowGetParam(void*, int);
     extern void* windowSearchItemID(void*, int);
     extern void menuSetPosition(int, int, s16);
@@ -3552,9 +3552,9 @@ void menuTaisenPartyCheckSeq(void* menu) {
     extern u8 menuRuleCheckPokemon(void* pokemon, s32 kind);
     extern u8 menuCBRule_CheckPokemonErrorAll(void* pokemon);
     extern u8 menuRuleCheckPokemonAllModes(void* pokemon, void* rule);
-    extern u8 fn_80076A8C(void* hero, void* pokemon, void* rule, s32 kind);
+    extern u8 menuRuleCheckSelected(void* hero, void* pokemon, void* rule, s32 kind);
     extern u8 menuCBRule_CheckValidItem(s32 itemId);
-    extern u8 fn_80077C68(s32 itemId);
+    extern u8 menuRuleApplyItemRestriction(s32 itemId);
     extern void winSetSequence(void* widget, s32 sequence);
     void* rule;
     void* hero;
@@ -3589,9 +3589,9 @@ void menuTaisenPartyCheckSeq(void* menu) {
                 if (pokemon != NULL && pokemonCheckValid(pokemon) != 0) {
                     error |= (menuRuleCheckPokemonAllModes(pokemon, rule) == 0);
                 }
-                error |= (fn_80076A8C(hero, pokemon, rule, 1) == 0);
-                error |= (fn_80076A8C(hero, pokemon, rule, 2) == 0);
-                error |= (fn_80076A8C(hero, pokemon, rule, 3) == 0);
+                error |= (menuRuleCheckSelected(hero, pokemon, rule, 1) == 0);
+                error |= (menuRuleCheckSelected(hero, pokemon, rule, 2) == 0);
+                error |= (menuRuleCheckSelected(hero, pokemon, rule, 3) == 0);
             }
 
             widget = windowSearchItemID(menu, itemIds[i][0]);
@@ -3645,9 +3645,9 @@ void menuTaisenPartyCheckSeq(void* menu) {
                 pokemon = heroBiosGetPokemonPtr(hero, i % 6);
                 if (pokemon != NULL && pokemonCheckValid(pokemon) != 0) {
                     itemId = pokemonBiosGetItemDataId(pokemon);
-                    usable = (menuCBRule_CheckValidItem(itemId) != 0 && fn_80077C68(itemId) != 0);
+                    usable = (menuCBRule_CheckValidItem(itemId) != 0 && menuRuleApplyItemRestriction(itemId) != 0);
                     if (rule != NULL) {
-                        usable &= fn_80076A8C(hero, pokemon, rule, 2);
+                        usable &= menuRuleCheckSelected(hero, pokemon, rule, 2);
                     }
                     winSpriteSetDisp(widget, (u16)itemId != 0);
                     MENU_MIDDLE_U32_0064(widget)->unk_0064 =
@@ -3715,21 +3715,21 @@ u32 fn_8006E128(u8* p) {
 
 
 /* 0x8006E160 | size: 0x28 */
-void fn_8006E160(u32 r3) {
+void menuColoBattleB9Ctrl(u32 r3) {
     extern void menuTaisenSetSequence(u32 r3, u32 r4, u32 r5);
     menuTaisenSetSequence(r3, 0x0, 0x0);
 }
 
 /* 0x8006E188 | size: 0x4 */
-void fn_8006E188(void) {
+void menuTaisenEntryCtrl3(void) {
 }
 
 /* 0x8006E18C | size: 0xCC */
-void fn_8006E18C(void* menu) {
+void menuTaisenCtrl(void* menu) {
     extern void menuTaisenSetSequence(void* menu, s32 arg1, s32 arg2);
     extern void winSpriteSetDisp(void* widget, s32 flag);
     extern void* windowSearchItemID(void* menu, s32 itemId);
-    extern s32 fn_80071160(void);
+    extern s32 menuFindLiveSaveSlot(void);
     extern void fn_80107F38(s32 param, u32 key);
     typedef struct Entry_8006E18C {
         u16 itemId;
@@ -3760,7 +3760,7 @@ void fn_8006E18C(void* menu) {
     flags = (s8)flags;
     switch (flags) {
     case 2:
-        if (fn_80071160() != 0) {
+        if (menuFindLiveSaveSlot() != 0) {
             fn_80107F38(MENU_MIDDLE_U32_0004(menu)->unk_0004, 0x1CE);
             MENU_MIDDLE_U8_0098(menu)->unk_0098 = 1;
             MENU_MIDDLE_U8_0099(menu)->unk_0099 = 1;
@@ -3774,7 +3774,7 @@ void fn_8006E18C(void* menu) {
 
 
 /* 0x8006E258 | size: 0xE0 */
-void fn_8006E258(void* menu) {
+void menuColoBattleD0Ctrl(void* menu) {
     extern s32 menuCBBios_ControlerIDtoPortID(u32 flags);
     extern void* windowSearchItemID(void* menu, s32 itemId);
     extern void winSpriteSetDisp(void* widget, u8 flag);
@@ -3931,7 +3931,7 @@ static inline void fn_8006E338_Update(void* obj) {
     MENU_MIDDLE_U8_0098(obj)->unk_0098 = allReady;
 }
 
-void fn_8006E338(void* obj) {
+void menuTaisenCtrl2(void* obj) {
     fn_8006E338_Update(obj);
 }
 
@@ -4031,7 +4031,7 @@ static inline void fn_8006E9A4_ShowNumber(u32 window, s32 value) {
     GSmsgPrintColor(10, 0, window, 0xCF);
 }
 
-void fn_8006E9A4(void* window, void* sprite) {
+void menuTaisenDrawLevels(void* window, void* sprite) {
     extern u8 winSpriteGetDisp(void* sprite);
     extern void msgctrlSetValue(s32 id, u32 value);
     extern void GSmsgPrintColor(s32 x, s32 y, u32 window, s32 message);
@@ -4123,7 +4123,7 @@ void fn_8006E9A4(void* window, void* sprite) {
 
 
 /* 0x8006EE7C | size: 0xA8 */
-void fn_8006EE7C(void* menu) {
+void menuTaisenButton2(void* menu) {
     typedef struct MenuState_8006EE7C {
         u8 pad0;
         u8 state;
@@ -4179,7 +4179,7 @@ typedef struct MenuState_8006EF24 {
     s8 mode;
 } MenuState_8006EF24;
 
-void fn_8006EF24(void* menu) {
+void menuTaisenCursor(void* menu) {
     MenuState_8006EF24* state = (MenuState_8006EF24*)menu;
     KeyInfo_8006BB34* keyInfo;
     s32 currentState;
@@ -4218,7 +4218,7 @@ normal:
 
 
 /* 0x8006EFF8 | size: 0x28C */
-void fn_8006EFF8(void* arg0) {
+void menuTaisenDrawHeldItems2(void* arg0) {
     typedef struct Entry_8006EFF8 {
         u16 nameId;
         u16 ownedId;
@@ -4314,7 +4314,7 @@ void fn_8006EFF8(void* arg0) {
 /* 0x8006F284 | size: 0x49C */
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
 #pragma peephole off
-void fn_8006F284(void* menu) {
+void menuColoBattleC1Ctrl(void* menu) {
     extern void* windowSearchItemID(void* menu, s32 itemId);
     extern void winSpriteSetDisp(void* widget, u8 flag);
     extern void menuItemBiosSetSelectFlag(s32 itemId, u8 flag);
@@ -4355,7 +4355,7 @@ void fn_8006F284(void* menu) {
             widget = windowSearchItemID(menu, entries[i].itemId);
             MENU_MIDDLE_U32_004C(widget)->unk_004C = entries[i].value;
         }
-        unlocked = (fn_80077BD0() == 0);
+        unlocked = (savedataBattleIsModeValid() == 0);
         menuItemBiosSetSelectFlag(0x9FC, unlocked);
         if (unlocked == 0) {
             src.cursor = (s8)menuGetCursorFromItemID(MENU_MIDDLE_U32_0004(menu)->unk_0004, 0x9FD);
@@ -4408,13 +4408,13 @@ void fn_8006F284(void* menu) {
     itemIds = (u16*)(data + 0x4E0);
     for (i = 0; i < 5; i++) {
         widget = windowSearchItemID(menu, itemIds[i]);
-        winSpriteSetDisp(widget, selected == (s32)i && fn_80077BD0() == 0);
+        winSpriteSetDisp(widget, selected == (s32)i && savedataBattleIsModeValid() == 0);
         if (*(void**)((u8*)widget + 0xC) != menuSeqBiosGetPtr(0x191)) {
             fn_801081F8(menu, itemIds[i], 0x191);
         }
     }
 
-    locked = (fn_80077BD0() == 0);
+    locked = (savedataBattleIsModeValid() == 0);
     param = (Param_8006BB34*)windowGetParam(menu, 0);
     val14Valid = !(param->val14 < 0);
     val16Valid = !(param->val16 < 0);
@@ -4462,7 +4462,7 @@ void fn_8006F284(void* menu) {
     defined(MENU_MIDDLE_EXACT_8006F720_ONLY)
 
 /* 0x8006F720 | size: 0x4DC */
-void fn_8006F720(void* menu) {
+void menuColoBattleC0Ctrl(void* menu) {
     extern void* windowSearchItemID(void* menu, s32 itemId);
     extern void winSpriteSetDisp(void* widget, u8 flag);
     extern s32* savedataGetStatus(s32 idx, s32 type);
@@ -4550,7 +4550,7 @@ void fn_8006F720(void* menu) {
         break;
     }
 
-    if (fn_80077BD0() != 0) {
+    if (savedataBattleIsModeValid() != 0) {
         itemIds = data->tabIds;
         for (i = 0; i < 8; i++) {
             winSpriteSetDisp(windowSearchItemID(menu, itemIds[i]), 0);
@@ -4582,7 +4582,7 @@ void fn_8006F720(void* menu) {
     winSpriteSetDisp(windowSearchItemID(menu, 0x9D4), param->total >= param->count * 6);
 
     widget = windowSearchItemID(menu, 0xFB0);
-    winSpriteSetDisp(widget, fn_80077BD0() == 0 &&
+    winSpriteSetDisp(widget, savedataBattleIsModeValid() == 0 &&
                                  menuGetCursorItemID(MENU_MIDDLE_U32_0004(menu)->unk_0004) == 0x9CD &&
                                  param->mode == 2);
 
@@ -4609,7 +4609,7 @@ void fn_8006F720(void* menu) {
             MENU_MIDDLE_U8_0098(menu)->unk_0098 = 1;
         }
         if ((*(u16*)((u8*)windowGetKeyInfo() + 4) & 0x10) != 0) {
-            if (fn_80077BD0() != 0) {
+            if (savedataBattleIsModeValid() != 0) {
                 CursorArg_8006F720 src;
                 CursorArg_8006F720 arg;
 
@@ -4639,7 +4639,7 @@ void fn_8006F720(void* menu) {
 #if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_RESIDUAL_8006B9B8_ONLY) || \
     defined(MENU_MIDDLE_EXACT_8006FBFC_ONLY)
 /* 0x8006FBFC | size: 0xFC */
-void fn_8006FBFC(void* menu) {
+void menuColoBattleBFCtrl(void* menu) {
     typedef struct MenuIconEntry {
         u16 itemId;
         u16 padding;
@@ -4683,7 +4683,7 @@ void fn_8006FBFC(void* menu) {
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-void fn_8006FCF8(u32 r3) {
+void menuColoBattleB3Ctrl(u32 r3) {
     extern void menuTaisenSetSequence(u32 r3, u32 r4, u32 r5);
     menuTaisenSetSequence(r3, (u32)lbl_80268184, 0x6);
 }
@@ -4693,7 +4693,7 @@ void fn_8006FCF8(u32 r3) {
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; scheduling off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma scheduling off
-void fn_8006FD24(u32 r3) {
+void menuColoBattleCCCtrl(u32 r3) {
     extern void menuTaisenSetSequence(u32 r3, u32 r4, u32 r5);
     menuTaisenSetSequence(r3, 0x0, 0x0);
 }
@@ -4703,7 +4703,7 @@ void fn_8006FD24(u32 r3) {
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; scheduling off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma scheduling off
-void fn_8006FD4C(u32 r3) {
+void menuEDCtrl(u32 r3) {
     extern void menuTaisenSetSequence(u32 r3, u32 r4, u32 r5);
     menuTaisenSetSequence(r3, 0x0, 0x0);
 }
@@ -4713,7 +4713,7 @@ void fn_8006FD4C(u32 r3) {
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; scheduling off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma scheduling off
-void fn_8006FD74(u32 r3) {
+void menuEECtrl(u32 r3) {
     extern void menuTaisenSetSequence(u32 r3, u32 r4, u32 r5);
     menuTaisenSetSequence(r3, 0x0, 0x0);
 }
@@ -4723,7 +4723,7 @@ void fn_8006FD74(u32 r3) {
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; scheduling off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma scheduling off
-void fn_8006FD9C(u32 r3) {
+void menuColoBattleB2Ctrl(u32 r3) {
     extern void menuTaisenSetSequence(u32 r3, u32 r4, u32 r5);
     menuTaisenSetSequence(r3, 0x0, 0x0);
 }
@@ -4733,7 +4733,7 @@ void fn_8006FD9C(u32 r3) {
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; scheduling off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma scheduling off
-void fn_8006FDC4(u32 r3) {
+void menuEBCtrl(u32 r3) {
     extern void menuTaisenSetSequence(u32 r3, u32 r4, u32 r5);
     menuTaisenSetSequence(r3, 0x0, 0x0);
 }
@@ -4743,7 +4743,7 @@ void fn_8006FDC4(u32 r3) {
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; scheduling off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma scheduling off
-void fn_8006FDEC(u32 r3) {
+void menuColoBattleB0Ctrl(u32 r3) {
     extern void menuTaisenSetSequence(u32 r3, u32 r4, u32 r5);
     menuTaisenSetSequence(r3, 0x0, 0x0);
 }
@@ -4753,7 +4753,7 @@ void fn_8006FDEC(u32 r3) {
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; scheduling off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma scheduling off
-void fn_8006FE14(u32 r3) {
+void menuColoBattleB1Ctrl(u32 r3) {
     extern void menuTaisenSetSequence(u32 r3, u32 r4, u32 r5);
     menuTaisenSetSequence(r3, 0x0, 0x0);
 }
@@ -4763,7 +4763,7 @@ void fn_8006FE14(u32 r3) {
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; scheduling off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma scheduling off
-void fn_8006FE3C(u32 r3) {
+void menuColoBattleAFCtrl(u32 r3) {
     extern void menuTaisenSetSequence(u32 r3, u32 r4, u32 r5);
     menuTaisenSetSequence(r3, 0x0, 0x0);
 }
@@ -4772,7 +4772,7 @@ void fn_8006FE3C(u32 r3) {
 /* 0x8006FE64 | size: 0x80 */
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma peephole off
-void fn_8006FE64(void* menu) {
+void menuColoBattleAEButton(void* menu) {
     extern u32 savedataBattleIsCourseUnlocked(s32 index);
     extern void soundStartSE(s32 sndId);
     KeyInfo_8006BB34* keyInfo;
@@ -4910,7 +4910,7 @@ void menuBattleModeCourseSelectCtrl(void* menu) {
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; scheduling off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma scheduling off
-void fn_80070274(u32 r3) {
+void menuColoBattleADCtrl(u32 r3) {
     extern void menuTaisenSetSequence(u32 r3, u32 r4, u32 r5);
     menuTaisenSetSequence(r3, 0x0, 0x0);
 }
@@ -4920,7 +4920,7 @@ void fn_80070274(u32 r3) {
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-void fn_8007029C(u32 r3) {
+void menuColoBattleACCtrl(u32 r3) {
     extern void menuTaisenSetSequence(u32 r3, u32 r4, u32 r5);
     menuTaisenSetSequence(r3, (u32)lbl_80267FE8, 0x11);
 }
@@ -4930,7 +4930,7 @@ void fn_8007029C(u32 r3) {
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; scheduling off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma scheduling off
-void fn_800702C8(u32 r3) {
+void menuColoBattleA8Ctrl(u32 r3) {
     extern void menuTaisenSetSequence(u32 r3, u32 r4, u32 r5);
     menuTaisenSetSequence(r3, 0x0, 0x0);
 }
@@ -4940,7 +4940,7 @@ void fn_800702C8(u32 r3) {
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; scheduling off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma scheduling off
-void fn_800702F0(u32 r3) {
+void titleContinueCtrl(u32 r3) {
     extern void menuTaisenSetSequence(u32 r3, u32 r4, u32 r5);
     menuTaisenSetSequence(r3, 0x0, 0x0);
 }
@@ -4949,7 +4949,7 @@ void fn_800702F0(u32 r3) {
 
 #if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_RESIDUAL_80070318_ONLY)
 /* 0x80070318 | size: 0x110 */
-void fn_80070318(void* menu) {
+void menuColoBattleBECtrl(void* menu) {
     typedef struct Entry_80070318 {
         u16 itemId;
         u16 pad2;
@@ -4989,7 +4989,7 @@ void fn_80070318(void* menu) {
 
 
 /* 0x80070428 | size: 0x7C */
-void fn_80070428(void* arg0, void* menu) {
+void menuTaisenDrawText(void* arg0, void* menu) {
     extern void msgctrlSetValue();
     u32 value;
     void* context = menu;
@@ -5011,17 +5011,17 @@ void fn_80070428(void* arg0, void* menu) {
 
 #if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_EXACT_800704A4_ONLY)
 /* 0x800704A4 | size: 0x4 */
-void fn_800704A4(void) {
+void menuColoBattleD3DrawItem(void) {
 }
 
 /* 0x800704A8 | size: 0x4 */
-void fn_800704A8(void) {
+void menuColoBattleD3Ctrl(void) {
 }
 #endif
 
 #if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_RESIDUAL_800704AC_ONLY)
 /* 0x800704AC | size: 0x218 */
-void fn_800704AC(void* menu, void* sprite) {
+void menuColoBattleBEDrawSprite(void* menu, void* sprite) {
     extern u8 savedataBattleIsCourseUnlocked(s32);
     extern void winSpriteSetDisp(void*, s32);
     u8* menuData = lbl_80267EA8;
@@ -5032,7 +5032,7 @@ void fn_800704AC(void* menu, void* sprite) {
     case 0:
     case 1:
     case 2:
-        switch (fn_8007162C()) {
+        switch (_menuPeekStackDepth()) {
         case 0xAA:
             *(u8**)&lbl_8047A5F8 = menuData + 0x28;
             break;
@@ -5066,7 +5066,7 @@ void fn_800704AC(void* menu, void* sprite) {
             break;
         case 0xB6:
             *(u32**)&lbl_8047A5F8 = (u32*)&lbl_8047C048 +
-                ((windowGetActiveID() == fn_8007162C()) ? 0 : 1);
+                ((windowGetActiveID() == _menuPeekStackDepth()) ? 0 : 1);
             break;
         /* RULE-EXCEPTION(user-approved): isolated case label added so GC/1.3 builds retail's jump table — see docs/RULE_EXCEPTIONS.md */
         case 0xEB:
@@ -5086,7 +5086,7 @@ void fn_800704AC(void* menu, void* sprite) {
         winSpriteSetDisp(sprite, 1);
         switch (*(s16*)((u8*)sprite + 6)) {
         case 0x93D:
-            window = (u8*)windowSearchID(fn_8007162C());
+            window = (u8*)windowSearchID(_menuPeekStackDepth());
             if (window == NULL) {
                 window = (u8*)windowSearchID(windowGetActiveID());
             }
@@ -5106,7 +5106,7 @@ void fn_800704AC(void* menu, void* sprite) {
 }
 
 /* 0x800706C4 | size: 0x3D8 */
-void fn_800706C4(void* menu, void* sprite) {
+void menuColoBattleBEDrawSprite2(void* menu, void* sprite) {
     extern void* savedataBattleGetRulePtr(void);
     extern u8* savedataBattleGetSavedHero(u8* p);
     extern void winSpriteSetDisp(void* sprite, u8 visible);
@@ -5231,7 +5231,7 @@ void fn_800706C4(void* menu, void* sprite) {
 
 
 /* 0x80070A9C | size: 0x2E8 */
-void fn_80070A9C(void* menu, void* sprite) {
+void menuColoBattleBEDrawSprite3(void* menu, void* sprite) {
     extern u8* savedataGetStatus(s32 idx, s32 type);
     extern void winSpriteSetDisp(void* widget, s32 flag);
 

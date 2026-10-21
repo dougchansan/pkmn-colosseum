@@ -62,7 +62,7 @@
  *   fn_8000804C  GStask_SetupTransition     -- scene transition setup (0xF8 bytes)
  *   fn_80008144  GStask_Accessor0           -- 8-byte accessor (lwz/blr)
  *   fn_8000814C  GStask_Accessor1           -- 8-byte accessor
- *   fn_80008154  GStask_Accessor2           -- 8-byte accessor
+ *   getGlobal8047A280  GStask_Accessor2           -- 8-byte accessor
  *   dbgMenuFightGetFlag8047882E  GStask_Accessor3           -- 8-byte accessor
  *   dbgMenuFightGetFlag8047A286  GStask_Accessor4           -- 8-byte accessor
  *   dbgMenuFightGetFlag8047A285  GStask_Accessor5           -- 8-byte accessor
@@ -499,7 +499,7 @@ static inline u16 gsTaskFlagGetId(s32 index) {
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-void fn_80008868(u8* window)
+void dbgFlagWindowDraw(u8* window)
 {
     GsTaskFlagConfig* config;
     s32 flagCount;
@@ -921,7 +921,7 @@ s32 fn_80006908(u16 id)
 #if !defined(GS_TASK_RANGE_SPLIT) || defined(GS_TASK_RANGE_EXACT_80006FAC)
 /* fn_80006FAC - 0x80006FAC | size: 0xdc */
 extern u32 GSinputButtonsChanged(s32 port);
-extern u32 fn_800F7BC4(s32 port);
+extern u32 GSinputGetButtons(s32 port);
 #if 1
 #if !defined(GS_TASK_RANGE_EXACT_80006FAC)
 #endif
@@ -932,21 +932,21 @@ void menuFightButtonNormal(u8* ctx) {
     if (ctx == 0) return;
 
     buttons = GSinputButtonsChanged(1);
-    held = fn_800F7BC4(1);
+    held = GSinputGetButtons(1);
     if ((held & buttons) & 0x100) {
         *(u8*)(ctx + 0x98) = 1;
         *(u32*)(ctx + 0x80) = menuGetCursorItemID(*(u32*)(ctx + 0x4));
     }
 
     buttons = GSinputButtonsChanged(1);
-    held = fn_800F7BC4(1);
+    held = GSinputGetButtons(1);
     if ((held & buttons) & 0x1000) {
         *(u8*)(ctx + 0x98) = 1;
         *(s32*)(ctx + 0x80) = -2;
     }
 
     buttons = GSinputButtonsChanged(1);
-    held = fn_800F7BC4(1);
+    held = GSinputGetButtons(1);
     if ((held & buttons) & 0x200) {
         *(u8*)(ctx + 0x98) = 1;
         *(u8*)(ctx + 0x99) = 1;
@@ -1235,7 +1235,7 @@ s32 menuFightPokemonSelectSub(u32 ctx) {
 #if !defined(GS_TASK_RANGE_SPLIT) || defined(GS_TASK_RANGE_EXACT_8000765C)
 /* dbgMenuFightFightTrainerPokemonPartDataEdit - 0x8000765C | size: 0xac */
 extern void* _dbgMenuFightGetFightTrainerPokemonPartDataIdSub(u32 id);
-extern void fn_80051710(u16 id);
+extern void dbgMenuTrainerPokemonPartEdit(u16 id);
 extern u16 lbl_80478830;
 extern u32 lbl_80478F08;
 #if 1
@@ -1261,13 +1261,13 @@ s32 dbgMenuFightFightTrainerPokemonPartDataEdit(void) {
             return 1;
         }
         lbl_80478830 = (u16)val;
-        fn_80051710((u16)val);
+        dbgMenuTrainerPokemonPartEdit((u16)val);
     }
 }
 #endif
 
 /* dbgMenuFightFightTrainerAiDataEdit - 0x80007708 | size: 0x70 */
-extern s32  fn_80051E38(u32 slot);
+extern s32  dbgMenuTrainerAiDataEdit(u32 slot);
 #if 1
 s32 dbgMenuFightFightTrainerAiDataEdit(void) {
     u16 tmp;
@@ -1275,23 +1275,23 @@ s32 dbgMenuFightFightTrainerAiDataEdit(void) {
     tmp  = (u16)(u32)fightTrainerGetStatus((s32)lbl_8047A278, 0, 0x43, 0);
     slot = (u16)(u32)fightTrainerGetStatus(0, tmp, 2, 0);
     if (fightIsBattleActive() == 0) return -1;
-    return fn_80051E38(slot);
+    return dbgMenuTrainerAiDataEdit(slot);
 }
 #endif
 
 /* fn_80007778 - 0x80007778 | size: 0x20 */
-extern void fn_8004EADC(void);
+extern void dbgMenuTrainerAiInitA(void);
 #if 1
 void fn_80007778(void) {
-    fn_8004EADC();
+    dbgMenuTrainerAiInitA();
 }
 #endif
 
 /* fn_80007798 - 0x80007798 | size: 0x20 */
-extern void fn_8004EC54(void);
+extern void dbgMenuTrainerAiInitB(void);
 #if 1
 void fn_80007798(void) {
-    fn_8004EC54();
+    dbgMenuTrainerAiInitB();
 }
 #endif
 
@@ -1315,18 +1315,18 @@ void dbgMenuFightFightTrainerAiAddsubWazaDefpokemon(void) {
 u32 fn_800077F8(void) { return 1; }
 
 /* dbgMenuFightFightTrainerAiAddsubIrekaeDasu - 0x80007800 | size: 0x20 */
-extern void fn_8004FE3C(void);
+extern void dbgMenuTrainerAiIrekaeEdit(void);
 #if 1
 void dbgMenuFightFightTrainerAiAddsubIrekaeDasu(void) {
-    fn_8004FE3C();
+    dbgMenuTrainerAiIrekaeEdit();
 }
 #endif
 
 /* fn_80007820 - 0x80007820 | size: 0x20 */
-extern void fn_80050844(void);
+extern void dbgMenuTrainerAiEditB(void);
 #if 1
 void fn_80007820(void) {
-    fn_80050844();
+    dbgMenuTrainerAiEditB();
 }
 #endif
 
@@ -1449,7 +1449,7 @@ s32 dbgMenuFightWazaEdit(void) {
 extern u8 fightSeqGetEffectAminFlag(void);
 extern void fightSeqSetEffectAminFlag(u8 val);
 extern s8 menuSubOpenYesNo(s32 max, s32 a, s32 b, s32 initial);
-extern u8 fn_8001E224(u8 val, u32* out, s32 a, s32 b, s32 c, s32 d);
+extern u8 menuNumberInput(u8 val, u32* out, s32 a, s32 b, s32 c, s32 d);
 extern u8 fightSeqCheckYubiwohuruWazaDataId(u16 id);
 extern u8 lbl_80478828;
 extern u8 lbl_8047A271;
@@ -1526,7 +1526,7 @@ s32 fn_80007B30(void) {
         if (evt == 0x59) {
             u8 ret;
             u32 tmp;
-            ret = fn_8001E224(lbl_80478828, &tmp, 1, 0x32, 0x32, 0);
+            ret = menuNumberInput(lbl_80478828, &tmp, 1, 0x32, 0x32, 0);
             if (ret == 0) {
                 menuSubCloseNumberInput();
                 continue;
@@ -1727,7 +1727,7 @@ u16 fn_8000814C(void) {
 }
 
 /* Address: 0x80008154 | Size: 0x8 | Pattern: sda_getter */
-u8 fn_80008154(void) {
+u8 getGlobal8047A280(void) {
     return lbl_8047A280;
 }
 
@@ -1777,7 +1777,7 @@ u32 dbgMenuFightGetMsgSpeedToFrame(u32 value) {
             value = 0;
             for (;;) {
                 buttons = GSinputButtonsChanged(1);
-                held = fn_800F7BC4(1);
+                held = GSinputGetButtons(1);
                 if ((held & buttons) & 0x100) {
                     break;
                 }

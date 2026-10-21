@@ -51,11 +51,11 @@ void wsCmd49(void)
     extern s8 pokemonSearchWazaDataId();
     extern u32 wazaGetStatus();
     extern u8 fightOutPokemonIsPokemonJoutaiDataId();
-    extern u8 fn_802025B8();
+    extern u8 fightOutPokemonCheckWritePokemonJoutaiDataId();
     extern s32 fightOutPokemonGetPokemonJoutai0C();
     extern void fightOutPokemonSetPokemonJoutai0C();
     extern void fightOutPokemonWritePokemonJoutaiDataId();
-    extern void fn_8022D2CC();
+    extern void _wsCheckSynchronizeDefender();
     extern u8 _wsTokuseiAfterDamage();
     extern void _fightTokuseiCureJoutaiSub();
     extern void _wsCheckSynchronizeAttacker();
@@ -63,7 +63,7 @@ void wsCmd49(void)
     extern void _fightOutPokemonDoStockItemSub();
     extern void _fightOutPokemonSoubiItemEffectSub();
     extern void _WsWkcActSubJoutaiMigawari__FPvUsPv();
-    extern void fn_801DA3CC();
+    extern void wazaSequenceOwnerSetFlag();
     extern u8 lbl_8047B627;
     extern u8 lbl_80378D02[];
     extern u8 lbl_803792C9[];
@@ -172,7 +172,7 @@ void wsCmd49(void)
             break;
 
         case 2:
-            fn_8022D2CC(attacker, defender);
+            _wsCheckSynchronizeDefender(attacker, defender);
             lbl_8047B627++;
             break;
 
@@ -196,7 +196,7 @@ void wsCmd49(void)
         case 6:
             if ((lbl_8047B618 & 0x02000000) != 0 && heldItem == 0x1D &&
                 (u16)originalMove != 0xA5 && (u16)originalMove != 0x164 &&
-                fn_802025B8(attacker, 0x36) == 2) {
+                fightOutPokemonCheckWritePokemonJoutaiDataId(attacker, 0x36) == 2) {
                 if ((u16)originalMove == 0xE2 && fightWazaIsJoutaiDataId(moveStatus, 0x45) == 1) {
                     lbl_8047B627++;
                     break;
@@ -236,7 +236,7 @@ void wsCmd49(void)
                         fightOutPokemonSetVisibility(attacker, 0);
                     } else {
                         other = pokemonGetStatus(attacker, 0, 0xEE, 0);
-                        fn_801DA3CC(other, 3);
+                        wazaSequenceOwnerSetFlag(other, 3);
                     }
                 }
             }
@@ -252,7 +252,7 @@ void wsCmd49(void)
                 fightOutPokemonSetVisibility(attacker, 1);
                 other = pokemonGetStatus(attacker, 0, 0xEE, 0);
                 if (other != 0) {
-                    fn_801DA36C((void*)other, 3);
+                    wazaSequenceOwnerClearFlag((void*)other, 3);
                 }
             }
             lbl_8047B627++;
@@ -265,7 +265,7 @@ void wsCmd49(void)
                 fightOutPokemonSetVisibility(defender, 1);
                 other = pokemonGetStatus(defender, 0, 0xEE, 0);
                 if (other != 0) {
-                    fn_801DA36C((void*)other, 3);
+                    wazaSequenceOwnerClearFlag((void*)other, 3);
                 }
             }
             lbl_8047B627++;

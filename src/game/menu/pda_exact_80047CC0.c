@@ -83,8 +83,8 @@ extern s32 GSmodelWalkJObjs(void* model);
 extern void* GSmodelGetPart(void* model, s32 index);
 extern void GSpartGetTransform(void* part, void* out, s32 a, s32 b);
 extern void GSpartFree(void* part);
-extern void fn_800E064C(f32* mtx);
-extern void fn_800E03B4(f32* mtx, void* vec);
+extern void GSmtxIdentity(f32* mtx);
+extern void GSmtxTransApply(f32* mtx, void* vec);
 extern void GSmtxRotateY(f32* mtx, f32 angle);
 
 extern void GScameraGetPerspective(void* cam, f32* a, f32* b, f32* c, f32* d);
@@ -159,7 +159,7 @@ static inline f32 pdaSqrtf(f32 x)
 
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma peephole off
-u8 fn_80047CC0(u8* work)
+u8 pdaModelFrameSingle(u8* work)
 {
     f32 mtx[12];
     PdaVec3 bound;
@@ -262,8 +262,8 @@ u8 fn_80047CC0(u8* work)
     target.x = lbl_8047BC94;
     target.z = lbl_8047BC94;
     target.y = lbl_8047BC94;
-    fn_800E064C(mtx);
-    fn_800E03B4(mtx, &target);
+    GSmtxIdentity(mtx);
+    GSmtxTransApply(mtx, &target);
     GSmtxRotateY(mtx, angle);
     GSmodelSetMatrix(model, mtx);
     GSmodelCenterNull(model);

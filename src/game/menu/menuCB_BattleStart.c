@@ -224,7 +224,7 @@ void fn_8005DFC8(void* arg)
 {
     extern u8 menuCBPokemonEntryGetReadFlag(void);
     extern u32 GSgetFrameStep(void);
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     extern s32 GSsndGetStatus(u32);
     extern s32 toolentryTaisenGetBattleType(void);
     extern u8 menuCBPokemonEntryGetReadFlag(void);
@@ -259,7 +259,7 @@ void fn_8005DFC8(void* arg)
 #define STATE_U32(off) (*(u32*) ((u8*)&lbl_803A9A60 + (off)))
 #define STATE_F32(off) (*(f32*) ((u8*)&lbl_803A9A60 + (off)))
 
-    rate = fn_800D37CC();
+    rate = GSgfxGetVsyncRate();
     lbl_803A9A60.deltaTime = GSgetFrameStep() / rate;
     delta_time = lbl_803A9A60.deltaTime;
 
@@ -386,7 +386,7 @@ void fn_8005DFC8(void* arg)
 #endif
 
 #if !defined(MENUCB_BATTLESTART_SPLIT_UNIT) || defined(MENUCB_BATTLESTART_8005E7F0_ONLY)
-void fn_8005E690(MenuCBBattleStartButton* button) {
+void menuTaisenBattleButton(MenuCBBattleStartButton* button) {
     extern void menuButtonNormal(void* button);
 
     switch (lbl_803A9A60.status) {
@@ -411,7 +411,7 @@ void fn_8005E690(MenuCBBattleStartButton* button) {
 #endif
 
 #if !defined(MENUCB_BATTLESTART_SPLIT_UNIT) || defined(MENUCB_BATTLESTART_8005E7F0_ONLY)
-void fn_8005E730(void* arg) {
+void menuTaisenBattleCtrl(void* arg) {
     fn_8005DFC8(arg);
 }
 #endif
@@ -500,7 +500,7 @@ static inline void battleStartDrawPair(MenuCBBattleStartMessageContext* context,
 #endif
 
 #if !defined(MENUCB_BATTLESTART_SPLIT_UNIT) || defined(MENUCB_BATTLESTART_80060434_ONLY)
-void fn_80060434(MenuCBBattleStartMessageContext* context, UICmdMsg* message)
+void menuTaisenDrawResult(MenuCBBattleStartMessageContext* context, UICmdMsg* message)
 {
     extern s32 toolentryTaisenGetBattleType(void);
     extern s32 battleResultGet00(void);
@@ -848,7 +848,7 @@ void menuCBBattleStartInit(void* menu, s32 mode)
     extern s32 battleResultGet14(void);
     extern void _menuCBBattleStartSetIndex__Fv(void);
     extern void fn_80062334(void);
-    extern void fn_80068F84(void);
+    extern void menuTaisenEntryReset(void);
     extern void menuCBPokemonEntryLoadTex(void);
     extern s32 battleResultGet00(void);
     extern void std104_soundSetBackgroundMusic(u32, s32, s32);
@@ -890,7 +890,7 @@ void menuCBBattleStartInit(void* menu, s32 mode)
 
     switch (mode) {
     case 0:
-        fn_80068F84();
+        menuTaisenEntryReset();
         menuCBPokemonEntryLoadTex();
         battleId = battleResultGet14();
         switch (battleResultGet00()) {
@@ -914,7 +914,7 @@ void menuCBBattleStartInit(void* menu, s32 mode)
         std104_soundSetBackgroundMusic(lbl_803A9A60.model.soundId, 0, 0xFF);
         break;
     case 1:
-        fn_80068F84();
+        menuTaisenEntryReset();
         menuCBPokemonEntryLoadTex();
         battleStartInitHp();
         lbl_803A9A60.model.soundId = 0x1E;
@@ -1181,7 +1181,7 @@ u8 fn_80061D34(void*, UICmdMsg*, s32, s32, s32);
 
 #if !defined(MENUCB_BATTLESTART_SPLIT_UNIT) || defined(MENUCB_BATTLESTART_8005E7F0_ONLY)
 /* Battle-start command dispatcher. */
-void fn_8005E7F0(void* ctx, void* arg1)
+void menuTaisenBattleDrawItem(void* ctx, void* arg1)
 {
     UICmdMsg* msg = (UICmdMsg*) arg1;
     u32* tbl = (u32*) lbl_803A9E40;
@@ -1875,7 +1875,7 @@ void fn_8005E7F0(void* ctx, void* arg1)
         fn_800609B4(ctx, (MenuCBBattleStartSprite*)msg, *(f32*) ((u8*)&lbl_803A9A60 + 0x4c));
         break;
     case 0x1096:
-        fn_80060434(ctx, msg);
+        menuTaisenDrawResult(ctx, msg);
         break;
     }
 }
@@ -2503,8 +2503,8 @@ extern void fn_8017B000(
     u32, u32, void (*)(s32, MenuCBBattleStartTrainerTexture*),
     MenuCBBattleStartTrainerTexture*, u32);
 extern void GSresReleaseById(u32);
-extern void fn_800F915C(u32);
-extern void fn_800F9210(u32, u32);
+extern void GSresReleaseOwner(u32);
+extern void GSresReleaseOwnerItem(u32, u32);
 
 #if !defined(MENUCB_BATTLESTART_SPLIT_UNIT) || defined(MENUCB_BATTLESTART_800626CC_ONLY)
 void _menuCBBattleStartDispTrainerTexCallBack__FlPvl(
@@ -2584,7 +2584,7 @@ void menuCBBattleStartTrainerFaceFree(void)
         imageId = 0x5C4;
     }
     GSresReleaseById(imageId);
-    fn_800F915C(imageId);
+    GSresReleaseOwner(imageId);
 
     entries = ((MenuCBBattleStartTrainerTextureState*)&lbl_803A9A60)->entries;
     entry = entries;
@@ -2595,7 +2595,7 @@ void menuCBBattleStartTrainerFaceFree(void)
     }
     state = (MenuCBBattleStartTrainerTextureState*)&lbl_803A9A60;
     for (i = 0; i < state->count; i++) {
-        fn_800F9210(imageId, entry->resource);
+        GSresReleaseOwnerItem(imageId, entry->resource);
         entry++;
     }
 

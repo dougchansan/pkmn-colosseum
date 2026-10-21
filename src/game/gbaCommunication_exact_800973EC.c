@@ -2,10 +2,10 @@
  * @file gbaCommunication_exact_800973EC.c
  * @brief gbaCommunication carve, 0x800973EC - 0x80097FFC (13 functions:
  *        the Pokemon-status submenu sync, menuPokemonStatus and the status
- *        menu callbacks, fn_800973EC .. fn_80097FF8, in address order).
+ *        menu callbacks, menuPokemonStatusPageSync .. fn_80097FF8, in address order).
  *
  * Split from gbaCommunication_candidate_80096C48.c so these exact functions
- * link while fn_80096D54 and fn_80096FA0 (which own the unit's jump tables)
+ * link while menuPokemonStatusMoveConfirm and menuPokemonStatusMoveKey (which own the unit's jump tables)
  * are still being matched. Same declarations and -opt nopeephole build as the
  * candidate carve; the bodies are gbaCommunication.c's, keep them in step.
  */
@@ -94,7 +94,7 @@ static inline void menuStatusSyncPage(u8* menu)
 }
 
 /* Select and synchronize the Pokemon-status submenu for the current page. */
-s32 fn_800973EC(u8* menu)
+s32 menuPokemonStatusPageSync(u8* menu)
 {
     switch ((s8)menu[1]) {
     case 0:
@@ -249,9 +249,9 @@ void menuPokemonStatus(void) {
 
 /* 0x80097A38 | size: 0xCC */
 s32 menuPokemonStatusOpenWazaForget(u32 arg0, u16 arg1) {
-    extern int fn_8010B560();
+    extern int menuFaceIsAnyLoading();
 
-    while ((u8)fn_8010B560() != 0) {
+    while ((u8)menuFaceIsAnyLoading() != 0) {
         _threadSwitch();
     }
     memset(lbl_803FB380, 0, 0x44);
@@ -271,10 +271,10 @@ s32 menuPokemonStatusOpenWazaForget(u32 arg0, u16 arg1) {
 }
 
 /* 0x80097B04 | size: 0xB8 */
-s32 fn_80097B04(u32 arg0, u16 arg1) {
-    extern int fn_8010B560();
+s32 menuPokemonStatusOpenForgetSelect(u32 arg0, u16 arg1) {
+    extern int menuFaceIsAnyLoading();
 
-    while ((u8)fn_8010B560() != 0) {
+    while ((u8)menuFaceIsAnyLoading() != 0) {
         _threadSwitch();
     }
     memset(lbl_803FB380, 0, 0x44);
@@ -291,11 +291,11 @@ s32 fn_80097B04(u32 arg0, u16 arg1) {
 }
 
 /* 0x80097BBC | size: 0x114 */
-s32 fn_80097BBC(u8 chan) {
+s32 menuPokemonStatusOpenParty(u8 chan) {
     extern void* savedataGetStatus();
     extern void* heroBiosGetPokemonPtr();
     extern int pokemonCheckValid();
-    extern int fn_8010B560();
+    extern int menuFaceIsAnyLoading();
     void* entity;
     void* mgr;
 
@@ -312,7 +312,7 @@ s32 fn_80097BBC(u8 chan) {
     if (entity == 0) {
         return -1;
     }
-    while ((u8)fn_8010B560() != 0) {
+    while ((u8)menuFaceIsAnyLoading() != 0) {
         _threadSwitch();
     }
     memset(lbl_803FB380, 0, 0x44);
@@ -332,10 +332,10 @@ s32 fn_80097BBC(u8 chan) {
 }
 
 /* 0x80097CD0 | size: 0xC4 */
-s32 fn_80097CD0(u32 arg0, u32 arg1, u32 arg2) {
-    extern int fn_8010B560();
+s32 menuPokemonStatusOpenA(u32 arg0, u32 arg1, u32 arg2) {
+    extern int menuFaceIsAnyLoading();
 
-    while ((u8)fn_8010B560() != 0) {
+    while ((u8)menuFaceIsAnyLoading() != 0) {
         _threadSwitch();
     }
     memset(lbl_803FB380, 0, 0x44);
@@ -352,10 +352,10 @@ s32 fn_80097CD0(u32 arg0, u32 arg1, u32 arg2) {
 }
 
 /* 0x80097D94 | size: 0xC4 */
-s32 fn_80097D94(u32 arg0, u32 arg1, u32 arg2) {
-    extern int fn_8010B560();
+s32 menuPokemonStatusOpenB(u32 arg0, u32 arg1, u32 arg2) {
+    extern int menuFaceIsAnyLoading();
 
-    while ((u8)fn_8010B560() != 0) {
+    while ((u8)menuFaceIsAnyLoading() != 0) {
         _threadSwitch();
     }
     memset(lbl_803FB380, 0, 0x44);
@@ -372,10 +372,10 @@ s32 fn_80097D94(u32 arg0, u32 arg1, u32 arg2) {
 }
 
 /* 0x80097E58 | size: 0xB0 */
-s32 fn_80097E58(u32 arg0, u32 arg1, u32 arg2, u32 arg3) {
-    extern int fn_8010B560();
+s32 menuPokemonStatusOpenFromMenu(u32 arg0, u32 arg1, u32 arg2, u32 arg3) {
+    extern int menuFaceIsAnyLoading();
 
-    while ((u8)fn_8010B560() != 0) {
+    while ((u8)menuFaceIsAnyLoading() != 0) {
         _threadSwitch();
     }
     memset(lbl_803FB380, 0, 0x44);
@@ -392,10 +392,10 @@ s32 fn_80097E58(u32 arg0, u32 arg1, u32 arg2, u32 arg3) {
 }
 
 /* 0x80097F08 | size: 0xC4 */
-s32 fn_80097F08(u32 arg0, u32 arg1, u32 arg2) {
-    extern int fn_8010B560();
+s32 menuPokemonStatusOpenC(u32 arg0, u32 arg1, u32 arg2) {
+    extern int menuFaceIsAnyLoading();
 
-    while ((u8)fn_8010B560() != 0) {
+    while ((u8)menuFaceIsAnyLoading() != 0) {
         _threadSwitch();
     }
     memset(lbl_803FB380, 0, 0x44);

@@ -49,12 +49,12 @@ void soundUnduck(u32 volume, u32 includeBgm, u32 includeSe)
             } else if (includeBgm == 0) {
                 continue;
             }
-            fn_80166168(i, volume);
+            _soundUnduckSlot(i, volume);
         }
     }
 }
 
-u32 fn_80166168(u32 id, u32 volume)
+u32 _soundUnduckSlot(u32 id, u32 volume)
 {
   u32 offset = id * (sizeof(GSsndEntry));
   u32 depth;
@@ -130,7 +130,7 @@ u32 fn_801662E8(u32 arg0, u32 arg1)
     return soundFindOwner(arg0, arg1);
 }
 
-u32 fn_80166308(u32 id, const GSvec* position)
+u32 soundEmitterAt(u32 id, const GSvec* position)
 {
     GSvec velocity;
 
@@ -156,7 +156,7 @@ u32 soundEmitterCreate(u32 id, const GSvec* position, const GSvec* velocity, f32
         if ((u8)fn_8015E890(emitter->emitter) == 1) {
             return (u32)emitter;
         }
-        fn_801677BC(emitter);
+        _soundPool0Free(emitter);
     }
     return 0;
 }
@@ -192,7 +192,7 @@ u32 soundSetListener(const GSvec* position)
 u32 _soundSetListener3D(const GSvec* position, const GSvec* arg1, const GSvec* arg2, const GSvec* arg3, f32 arg4, f32 arg5,
                 f32 arg6, u32 arg7)
 {
-    GSsndEmitter* emitter = fn_801678E4();
+    GSsndEmitter* emitter = _soundPool1Alloc();
 
     if (emitter != 0) {
         if ((u8)s3dSetListener(&emitter->unk40, position, arg1, arg2, arg3, 1, arg7, 0, arg4, arg5, arg6) == 1) {
@@ -207,7 +207,7 @@ u32 _soundSetListener3D(const GSvec* position, const GSvec* arg1, const GSvec* a
             return (u32)emitter;
         }
 
-        fn_801677F4(emitter);
+        _soundPool1Free(emitter);
     }
     return 0;
 }
@@ -455,7 +455,7 @@ void soundSetOutputMode(s32 mode)
     }
 }
 
-void fn_80166D18(u32 group, u32 volume, u32 left, u32 right)
+void soundSetMasterVolume(u32 group, u32 volume, u32 left, u32 right)
 {
     sndMasterVolume(group, volume, left, right);
 }

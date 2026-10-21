@@ -85,7 +85,7 @@
  *    inlines and emits out of line for the deeper ones (policy: repeated
  *    expansion). As a plain static function it is emitted at its own place,
  *    after the header-inline copies DispAll needs, as in retail;
- *  - fn_8019F1C4 (vertex count of a tree) is new, JObjUpdateFunc does not
+ *  - HSD_JObjCountVisibleVertices (vertex count of a tree) is new, JObjUpdateFunc does not
  *    clamp the scale, and HSD_JObjAddChild reports through
  *    HSD_ASSERTREPORT;
  *  - assert line numbers are those of Colosseum's longer file.
@@ -190,8 +190,8 @@ extern void HSD_MtxSRT(Mtx m, Vec3* scale, Vec3* rotate, Vec3* translate,
                        Vec3* parent_scale);
 extern void HSD_MtxSRTQuat(Mtx m, Vec3* scale, Quaternion* rotate,
                            Vec3* translate, Vec3* parent_scale);
-extern void fn_801A9DF0(Mtx inv, Mtx src, Mtx dest);
-#define HSD_MtxInverseConcat fn_801A9DF0
+extern void HSD_JObjAnimApplyValue(Mtx inv, Mtx src, Mtx dest);
+#define HSD_MtxInverseConcat HSD_JObjAnimApplyValue
 #define HSD_MtxGetRotation HSD_MtxGetRotation
 
 /* spline.c */
@@ -685,7 +685,7 @@ void HSD_JObjAnim(HSD_JObj* jobj)
 }
 
 /* JObjAnimAll */
-void fn_801A1B7C(HSD_JObj* jobj)
+void JObjAnimAllSub(HSD_JObj* jobj)
 {
     HSD_JObj* child;
     if (jobj != NULL) {
@@ -693,7 +693,7 @@ void fn_801A1B7C(HSD_JObj* jobj)
         if (!(jobj->flags & JOBJ_INSTANCE)) {
             child = jobj->child;
             while (child != NULL) {
-                fn_801A1B7C(child);
+                JObjAnimAllSub(child);
                 child = child->next;
             }
         }
@@ -704,7 +704,7 @@ void HSD_JObjAnimAll(HSD_JObj* jobj)
 {
     if (jobj != NULL) {
         HSD_AObjInitEndCallBack();
-        fn_801A1B7C(jobj);
+        JObjAnimAllSub(jobj);
         HSD_AObjInvokeCallBacks();
     }
 }
@@ -1260,7 +1260,7 @@ HSD_JObj* HSD_JObjAlloc(void)
 
 /* Counts the vertices of the tree's visible DObjs (both totals of
  * HSD_DObjCountVertices); an instance counts its instanced tree. */
-void fn_8019F1C4(HSD_JObj* jobj, s32* total_a, s32* total_b)
+void HSD_JObjCountVisibleVertices(HSD_JObj* jobj, s32* total_a, s32* total_b)
 {
     HSD_JObj* child;
     s32 sum_a = 0;
@@ -1268,7 +1268,7 @@ void fn_8019F1C4(HSD_JObj* jobj, s32* total_a, s32* total_b)
 
     if (jobj != NULL) {
         if (jobj->flags & JOBJ_INSTANCE) {
-            fn_8019F1C4(jobj->child, &sum_a, &sum_b);
+            HSD_JObjCountVisibleVertices(jobj->child, &sum_a, &sum_b);
         } else {
             if (!(jobj->flags & JOBJ_HIDDEN) && union_type_dobj(jobj)) {
                 HSD_DObjCountVertices(jobj->u.dobj, &sum_a, &sum_b);
@@ -1276,7 +1276,7 @@ void fn_8019F1C4(HSD_JObj* jobj, s32* total_a, s32* total_b)
             for (child = jobj->child; child != NULL; child = child->next) {
                 s32 child_a;
                 s32 child_b;
-                fn_8019F1C4(child, &child_a, &child_b);
+                HSD_JObjCountVisibleVertices(child, &child_a, &child_b);
                 sum_a += child_a;
                 sum_b += child_b;
             }

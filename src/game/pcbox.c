@@ -154,14 +154,14 @@ u16 pcboxAddItem(void* base, u16 effect_id, u16 r5) {
     extern void* itemDataBiosGetPtr(u16);
     extern u8 fn_801429E8(void*);
     extern s32 itemGetStatus(void*, u32, u32, u32);
-    extern u16 fn_80140ACC(void*, u16, u16, u16, s16, u16, u32);
+    extern u16 heroItemChangeCount(void*, u16, u16, u16, s16, u16, u32);
     void* status; void* cur; s16 idx; s32 i;
     status = pcboxGetSaveStatus(base);
     if (r5 == 0) return r5;
     if (!itemDataBiosGetPtr(effect_id)) return r5;
     idx = pcboxFindItem(status, effect_id);
     if (idx < 0) return r5;
-    return (u16)fn_80140ACC((u8*)status + 0x6dec, 0xeb, effect_id, r5, idx, 0x3e7, 0);
+    return (u16)heroItemChangeCount((u8*)status + 0x6dec, 0xeb, effect_id, r5, idx, 0x3e7, 0);
 }
 #if !defined(NO_LOCAL_PRAGMAS_PCBOX_CANDIDATE_8013433C)
 #endif

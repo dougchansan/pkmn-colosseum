@@ -517,7 +517,7 @@ void GScolsys2Draw(void) {
 }
 
 /* 0x8010D8D4 | 0x52C */
-void fn_8010D8D4(void) {
+void colsysDebugDraw(void) {
     /* TODO: match -- 1324 bytes at 0x8010D8D4 */
 }
 

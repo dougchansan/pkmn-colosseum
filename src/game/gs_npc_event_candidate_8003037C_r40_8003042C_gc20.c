@@ -1,6 +1,6 @@
 /**
  * @file gs_npc_event_candidate_8003037C_r40_8003042C_gc20.c
- * @brief fn_8003042C carve, 0x8003042C - 0x80030574.
+ * @brief menuDBDrawItemName carve, 0x8003042C - 0x80030574.
  *
  * NPC event callback: look the event id up in the two-entry table
  * lbl_80266F68, fetch the party (1) or storage (2) Pokemon it names and,
@@ -58,7 +58,7 @@ static inline void* npcEventGetPokemon(u8* npc, s32 column)
     return pokemon;
 }
 
-void fn_8003042C(u8* r3, u8* r4)
+void menuDBDrawItemName(u8* r3, u8* r4)
 {
     u32 combined;
     void* pokemon;

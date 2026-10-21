@@ -7,7 +7,7 @@
  * 2*pi, 1/32, 15.0). No function outside this range reads it, and the
  * neighbouring pools repeat 0.0f and the conversion double, so the TU
  * boundaries sit at 0x8001D718 (after menuPokemon's menuPokemonGetStatusSprite) and
- * 0x8001EF78 (the GStitle TU). It also owns fn_8001E644's colour initializer
+ * 0x8001EF78 (the GStitle TU). It also owns windowDrawFrame's colour initializer
  * (.rodata 0x80266C20-0x80266C30) and fn_8001EC08's vertex work area
  * (.bss 0x803A1D60-0x803A1F88). The function names that are known come
  * from the Colosseum map (menuSub.o) and XD's menuSub.cpp.
@@ -45,19 +45,19 @@ extern u8 lbl_80314E08[];
 
 /* 0x8001D718 | 0xCC */
 void fn_8001D718(f32 target) {
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     extern u32 GSgetFrameStep(void);
     f32 progress = 0.0f;
 
     while (progress < target) {
         _threadSwitch();
-        progress += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+        progress += (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
     }
 }
 
 /* 0x8001D7E4 | 0x50 */
 extern u32 GSinputButtonsChanged(s32);
-extern u32 fn_800F7BC4(s32);
+extern u32 GSinputGetButtons(s32);
 u32 menuSubKeyWait(void) {
     u32 a;
     u32 b;
@@ -67,7 +67,7 @@ u32 menuSubKeyWait(void) {
         _threadSwitch();
     _test:
         a = GSinputButtonsChanged(1);
-        b = fn_800F7BC4(1);
+        b = GSinputGetButtons(1);
         m = (b & a) & 0x300;
     } while (m == 0);
     return b;
@@ -182,7 +182,7 @@ typedef struct MenuSubSprite {
 /* Sprite draw callback: draws the sprite's crop of its texture blended
  * with a second texture (0x00EF1200), the second set of coordinates
  * offset by `shift`. */
-s32 fn_8001DACC(void* context, MenuSubSprite* sprite, f32 shift) {
+s32 spriteDrawBlendTexture(void* context, MenuSubSprite* sprite, f32 shift) {
     extern void* lbl_8047AD00;
     extern void* GSresFindById(u32 id);
     extern u16 GStextureGetXsize(void* texture);
@@ -253,8 +253,8 @@ s32 fn_8001DACC(void* context, MenuSubSprite* sprite, f32 shift) {
     return 0;
 }
 
-/* 0x64 | fn_8001DFA8 | generic_call_check_store */
-s32 fn_8001DFA8(u32 arg1, u8* arg2) {
+/* 0x64 | titleDebugTopMenuDrawItem | generic_call_check_store */
+s32 titleDebugTopMenuDrawItem(u32 arg1, u8* arg2) {
     extern u8 menuItemBiosGetSelectFlag(s16);
     if (menuItemBiosGetSelectFlag(*(s16*)(arg2 + 0x6)) != 0) {
         *(u8*)(arg2 + 0x66) = 0xff;
@@ -332,7 +332,7 @@ void menuSubCloseNumberInput(void) {
     menuClose(0x2);
 }
 
-s32 fn_8001E224(void* a, u32* b, u8 c, void* d, void* e, u8 f) {
+s32 menuNumberInput(void* a, u32* b, u8 c, void* d, void* e, u8 f) {
     extern void* windowGetActiveID();
     extern void menuOpenCustom(s32, ...);
     extern void menuSetPosition();
@@ -461,7 +461,7 @@ typedef struct GsPcboxItemBios {
     s16 y;
 } GsPcboxItemBios;
 
-void fn_8001E644(s32 x, s32 y, s32 width, s32 height, u8 alpha) {
+void windowDrawFrame(s32 x, s32 y, s32 width, s32 height, u8 alpha) {
     extern u8 lbl_80266C20[];
         extern GsPcboxSpriteBios* menuSpriteBiosGetPtr(s32);
     extern GsPcboxItemBios* menuItemBiosGetPtr(s16);

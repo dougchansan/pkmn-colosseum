@@ -244,7 +244,7 @@ void _prolog(void)
     lbl_80478EE0 = &lbl_125_data_14A678;
     lbl_80478EDC = lbl_125_rodata_2C;
     lbl_80478ED8 = &lbl_125_data_14A67C;
-    /* fn_80009178 */
+    /* dbgFlagMenuCursor2 */
     lbl_80478EFC = lbl_125_rodata_5C;
     lbl_80478EF8 = &lbl_125_data_14A680;
     /* fightTrainerKindDataBiosGetPtr */
@@ -262,7 +262,7 @@ void _prolog(void)
     /* _dbgMenuFightGetFightKindDataIdSub */
     lbl_80478F44 = lbl_125_data_90F4C;
     lbl_80478F40 = &lbl_125_data_14A694;
-    /* fn_8000C92C */
+    /* dbgMenuSoundTestBGM */
     lbl_80478E2C = lbl_125_data_911AC;
     lbl_80478E28 = &lbl_125_data_14A698;
     /* dbgMenuSoundTestSE2 */

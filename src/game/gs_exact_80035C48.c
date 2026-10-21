@@ -19,8 +19,8 @@ void fn_80035C48(void) {
     extern u32 lbl_8047A44C;
     extern u8 lbl_8047A454;
     extern u32 lbl_8047A458;
-    extern void* fn_80083AF4(s32, s32);
-    extern s32 fn_80083BF8(s32);
+    extern void* cardeArenaWalk(s32, s32);
+    extern s32 cardeArenaCountRecords(s32);
     extern u32 GSmsgGetGSchar(u32);
     extern u32 std093_getCurrentGroupID(void);
     extern u8* savedataGetStatus(s32, s32);
@@ -57,8 +57,8 @@ void fn_80035C48(void) {
         resetFlag = lbl_8047A440;
         lbl_8047A44C = *(u32*)(work + 0x49C8);
         if (resetFlag != 0) {
-            if (fn_80083BF8(0) > 0) {
-                *(u16*)fn_80083AF4(0, 0) = 0;
+            if (cardeArenaCountRecords(0) > 0) {
+                *(u16*)cardeArenaWalk(0, 0) = 0;
             }
             lbl_8047A440 = 0;
         }

@@ -12,7 +12,7 @@ void* fn_80128CC0(void* ptr) {
     return (u8*)ptr + 0x1C45C;
 }
 
-void* fn_80128CDC(void* ptr) {
+void* savedataGetSection1B014(void* ptr) {
     if (ptr == NULL) { return NULL; }
     return (u8*)ptr + 0x1B014;
 }
@@ -27,7 +27,7 @@ void* fn_80128D14(void* ptr) {
     return (u8*)ptr + 0x9A1C;
 }
 
-void* fn_80128D30(void* ptr) {
+void* savedataGetSection82A8(void* ptr) {
     if (ptr == NULL) { return NULL; }
     return (u8*)ptr + 0x82A8;
 }
@@ -57,7 +57,7 @@ void* fn_80128DB8(void* ptr) {
     return (u8*)ptr + 0x1BDBC;
 }
 
-void* fn_80128DD4(void* ptr) {
+void* savedataGetSectionB88(void* ptr) {
     if (ptr == NULL) { return NULL; }
     return (u8*)ptr + 0xB88;
 }
@@ -72,7 +72,7 @@ u32 fn_80128E04(void* ptr) {
     return 0;
 }
 
-void fn_80128E14(void* ptr) {
+void randSetSeed(void* ptr) {
     if (ptr == NULL) { return; }
     lbl_8047ADB8 = (u32)ptr;
 }

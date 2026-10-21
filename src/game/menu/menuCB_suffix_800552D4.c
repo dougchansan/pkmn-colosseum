@@ -162,8 +162,8 @@ extern void fn_800FE6D0(s16 x, s16 y);
 extern void spriteSetEnv(void);
 extern void* heroGetStatus(void* hero, s32 selector, u16 index);
 extern u8 pokemonCheckValid(void* pokemon);
-extern s32 fn_80057DE8(void* pokemon);
-extern void* fn_80057F94(void* pokemon);
+extern s32 pcBoxIsShadowPokemon(void* pokemon);
+extern void* pcBoxGetIconResource(void* pokemon);
 extern void gfxSetFlags(u32 flags);
 extern void fn_800DC0D4(s32, s32, s32, s32, s32);
 extern void fn_800DC14C(s32, s32, s32, s32, s32, s32);
@@ -193,7 +193,7 @@ void* fn_800574E0(void);
 void fn_800574A8(void);
 void fn_80057400(void);
 void fn_800576C4(s32 state);
-void* fn_800551CC(void* pokemon, s32 direction, s32* moveState);
+void* pcBoxGetPokemonAt(void* pokemon, s32 direction, s32* moveState);
 static inline s32 menuCBFindBoxSlot(s32* state)
 {
     MenuCBSlotInfo* entry;
@@ -237,7 +237,7 @@ s32 pcBoxPokemonCommand(s32 box, s32 slot)
     extern MenuCBPane* windowSearchID(s32);
     extern u8 fn_8005D738(u8);
     extern void pokemonBiosSetPcboxMark(void*, u8);
-    extern s32 fn_80057DE8(void*);
+    extern s32 pcBoxIsShadowPokemon(void*);
     extern s32 fn_8005D3D0(s32);
     extern void GScharCpy(void*, void*);
     extern void fn_800566D8(s32);
@@ -373,7 +373,7 @@ s32 pcBoxPokemonCommand(s32 box, s32 slot)
         }
         moveState[1] = box;
         moveState[2] = slot;
-        fn_80057C9C(pokemon, fn_800551CC, moveState);
+        fn_80057C9C(pokemon, pcBoxGetPokemonAt, moveState);
         fn_80056B74((MenuCBPane*)box, 0);
         fn_80054760(0, 0);
         fn_80057A64(haveCopy != 0 ? &pokemonCopy : NULL, context);
@@ -402,7 +402,7 @@ s32 pcBoxPokemonCommand(s32 box, s32 slot)
         fn_800587D8();
         break;
     case 7:
-        if (fn_80057DE8(pokemon) != 0) {
+        if (pcBoxIsShadowPokemon(pokemon) != 0) {
             fn_80058804((void*)0x1B94, 1);
             break;
         }
@@ -591,7 +591,7 @@ void pcBoxRun(void)
     menuCloseSync(0x93, 1);
 }
 
-void fn_80055B98(MenuCBPane* pane) {
+void pcBoxOpen(MenuCBPane* pane) {
     menuOpenCustom(0x10e, 0x1f, 0, 0, 0, 0);
     fn_80056B74(pane, TRUE);
 
@@ -607,7 +607,7 @@ void fn_80055B98(MenuCBPane* pane) {
     fn_80056A80();
 }
 
-s32 fn_80055C2C(MenuCBPane* pane, MenuCBPane* sprite) {
+s32 pcBoxDrawBoxCount(MenuCBPane* pane, MenuCBPane* sprite) {
     s32 box;
     s32 capacity;
     s32 used;

@@ -49,7 +49,7 @@ extern void  GSvecCopy(void* dst, void* src);
 extern u32  menuIsCheck(u32 a);
 extern void menuOpenCustom(u32 a, u32 b, u32 c, u32 d, u32 e, u32 f, ...);
 extern void GScameraRestoreState(void* a, void* b);
-extern void fn_800D258C(void* a);
+extern void GScameraSetCurrent(void* a);
 extern void GScameraSaveState(void* a, void* b);
 extern void _threadSwitch(void);
 extern void* GSresGetResource(u32 a, u32 b);

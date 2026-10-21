@@ -34,7 +34,7 @@ extern u8 fightOutPokemonCheckFightOut();
 extern u8 figthOutPokemonGetLevel();
 extern void fightOutPokemonSetPokemonJoutai0C();
 extern void fightOutPokemonWritePokemonJoutaiDataId();
-extern u8 fn_802025B8();
+extern u8 fightOutPokemonCheckWritePokemonJoutaiDataId();
 
 void wsCmdA3(void)
 {
@@ -54,7 +54,7 @@ void wsCmdA3(void)
     } else {
         pp = pokemonGetStatus(pokemon, 0, 0x80, slot);
     }
-    if (fn_802025B8(target, 0x29) == 2 && slot >= 0 && pp != 0) {
+    if (fightOutPokemonCheckWritePokemonJoutaiDataId(target, 0x29) == 2 && slot >= 0 && pp != 0) {
         move = pokemonGetStatus(pokemon, 0, 0x7f, slot);
         wazaGetStatus(0, move, 1, 0);
         msgctrlSetValue(0xd, GSmsgGetGSchar());

@@ -6,14 +6,14 @@
  * One object for the fog setter fn_800D2B90, the camera screen projections
  * gfxProjectPoint/fn_800D2F34, the render-state accessors GSgfxSetFrameClamp/
  * GSgfxGetFrameInterval, the GSgfx frame functions GSgfxSetFrameInterval-GSgfxWaitRetrace and the
- * fog-colour setter fn_800D36B4. The pool entries 255.0f, the unsigned
+ * fog-colour setter GSgfxSetFogColor. The pool entries 255.0f, the unsigned
  * int-to-float bias, 0.0f, 640.0f, 480.0f and 1.0f are used only by these
  * functions, so they are written as literals and the object owns them.
  * This replaces the former per-function carves and their extern stand-ins
  * (lbl_8047C9F0, lbl_8047CA00-lbl_8047CA0C).
  *
  * Compiler: GC/2.5 with the project defaults (-O4,p), no pragmas.
- * fn_800D36B4 schedules its by-value colour loads ahead of its stack frame
+ * GSgfxSetFogColor schedules its by-value colour loads ahead of its stack frame
  * and the enable-byte store. GC/2.5-2.7 emit that; GC/1.0-2.0 keep the
  * loads behind the frame and the store. Every other function here is
  * identical under GC/1.3 and GC/2.5.
@@ -54,7 +54,7 @@ extern void gfxRecordCommand(s32 arg0, ...);
 extern void GXFlush(void);
 extern void GSgfxBackFBDoFrame(void);
 extern void fn_801BF8A0(s32 value);
-extern void fn_801E16F0(void);
+extern void GSmovieUpdate(void);
 extern void HSD_VIFinishDrawXFB(void);
 extern void GStextureConvertFromHW(void* texture, s32 mode);
 extern void GXPixModeSync(void);
@@ -66,7 +66,7 @@ extern void GXSetDrawDone(void);
 extern void OSYieldThread(void);
 extern u32 OSGetTick(void);
 extern void fn_8019C6FC(void);
-extern void fn_800D1070(u32 frames);
+extern void cameraObjectAnimUpdate(u32 frames);
 extern void GSlightUpdate(u32 frames);
 extern void GSmodelAdvanceAll(u32 frames, s32 mode);
 extern void gsParticleUpdateAll(s32 frames);
@@ -81,10 +81,10 @@ extern void VIWaitForRetrace(void);
 
 #define RS ((GSRenderState*)lbl_8047AA80)
 
-/* fn_800D36B4's body, expanded into fn_800D2B90 with the colour passed by
+/* GSgfxSetFogColor's body, expanded into fn_800D2B90 with the colour passed by
  * value (retail copies it to a stack temporary first).
  * RULE-EXCEPTION(title-path): single-use inline helper duplicating
- * fn_800D36B4's body - see docs/RULE_EXCEPTIONS.md. fn_800D36B4 lies after
+ * GSgfxSetFogColor's body - see docs/RULE_EXCEPTIONS.md. GSgfxSetFogColor lies after
  * fn_800D2B90, so this non-deferred TU cannot inline the real function. */
 static inline void gsSetFogColor(GSRenderColor color) {
     RS->fogEnabled = 1;
@@ -245,7 +245,7 @@ void fn_800D30A0(u32 value)
     lbl_8047AA80->xfbIndex = value;
 }
 
-void fn_800D30AC(void)
+void gfxFlush(void)
 {
     if (lbl_8047AA80->mode == 1) {
         gfxRecordCommand(4, 0);
@@ -265,7 +265,7 @@ void GSgfxSwapBuffers(u32 flag)
     if (lbl_8047AA80->progressiveFlag == 0) {
         GSgfxBackFBDoFrame();
         fn_801BF8A0(0);
-        fn_801E16F0();
+        GSmovieUpdate();
         HSD_VIFinishDrawXFB();
     } else if (renderTarget != NULL) {
         GStextureConvertFromHW(renderTarget, 1);
@@ -318,7 +318,7 @@ void GSgfxRenderEnd(void)
             if (lbl_8047AA80->progressiveFlag == 0) {
                 GSgfxBackFBDoFrame();
                 fn_801BF8A0(0);
-                fn_801E16F0();
+                GSmovieUpdate();
                 HSD_VIFinishDrawXFB();
             } else if (renderTarget != NULL) {
                 GStextureConvertFromHW(renderTarget, 1);
@@ -347,7 +347,7 @@ void GSgfxRenderEnd(void)
     }
 
     start = OSGetTick();
-    fn_800D1070(lbl_8047AA80->frameDelta);
+    cameraObjectAnimUpdate(lbl_8047AA80->frameDelta);
     end = OSGetTick();
     lbl_804001F0[11] += end - start;
 
@@ -397,7 +397,7 @@ void GSgfxRenderLayer(void* arg0, u8 arg1) {
                 if (((u8*)s4)[0x49D] == 0) {
                     GSgfxBackFBDoFrame();
                     fn_801BF8A0(0);
-                    fn_801E16F0();
+                    GSmovieUpdate();
                     HSD_VIFinishDrawXFB();
                 } else {
                     if (sc != 0) {
@@ -487,7 +487,7 @@ void GSgfxWaitRetrace(u8 mode) {
     lbl_8047AA80->xfbAddr0 = lbl_8047AA80->xfbCount;
 }
 
-void fn_800D36B4(GSRenderColor color)
+void GSgfxSetFogColor(GSRenderColor color)
 {
     RS->fogEnabled = 1;
     RS->fogColorR = 255.0f * color.r;
