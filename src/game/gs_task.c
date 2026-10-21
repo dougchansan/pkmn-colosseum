@@ -584,6 +584,7 @@ typedef struct GsTaskFlagCursor {
 static inline u16 gsTaskFlagGetLinkedId(s32 index) {
     s16 id;
     s32 i;
+    GsTaskFlagDef* def;
 
     if (index < 0) {
         return 0;
@@ -596,7 +597,9 @@ static inline u16 gsTaskFlagGetLinkedId(s32 index) {
         for (i = 0; i < index - 1; i++) {
             id = ((GsTaskFlagDef*)lbl_80478F9C)[id].next;
         }
-        id = *(s16*)(lbl_80478F9C + id * 8 + 6);
+        def = (GsTaskFlagDef*)lbl_80478F9C;
+        def += id;
+        id = def->next;
     }
     return id;
 }
@@ -604,7 +607,7 @@ static inline u16 gsTaskFlagGetLinkedId(s32 index) {
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-void fn_80008C40(u8* window) {
+void dbgFlagMenuCursor(u8* window) {
     extern u8 menuDataBiosGetType(u32);
     u16 repeat;
     u16 trigger;

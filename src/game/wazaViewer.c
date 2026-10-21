@@ -162,8 +162,8 @@ static inline void wazaViewerPollCommand(const char* messages) {
     extern void fn_800E24B0(u16 block);
     extern void GSmemFree(u16 block);
 
-    u32 size;
     char* path;
+    u32 size;
     void* sizeFile;
     void* readFile;
     u16 block;
@@ -965,15 +965,15 @@ void wazaViewerUpdatePlayMode(void) {
     extern void fn_800FE6A0(f32 width, f32 height);
     extern void GSmsgPrintf(s32 x, s32 y, u32 color, const char* fmt, ...);
 
-    const char* messages;
-    void** models;
-    void* effect;
-    void* node;
-    s32 state;
-    s32 arg1;
-    s32 arg2;
-    u8 paused;
     u8 color[4];
+    int arg1;
+    void* node;
+    const char* messages;
+    u32 arg2;
+    u8 paused;
+    void* effect;
+    s32 state;
+    void** models;
 
     messages = (const char*)lbl_80279338;
     models = (void**)(lbl_804673F8 + 0x61C);
@@ -1003,7 +1003,7 @@ void wazaViewerUpdatePlayMode(void) {
     }
     fn_801D7230();
     state = vtrGetMode();
-    arg2 = arg1 = 0;
+    arg1 = arg2 = 0;
     if (((WazaViewerCtrl*)(lbl_804673F8 + 0x08))->overlay) {
         effect = models[*(s32*)(lbl_804673F8 + 0x624)];
         if (effect != NULL) {

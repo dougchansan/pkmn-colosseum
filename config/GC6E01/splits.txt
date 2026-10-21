@@ -1784,7 +1784,7 @@ game/data/sdata_80478998.c:
 	.sdata      start:0x80478998 end:0x804789A8
 
 game/data/bss_803FB538.c:
-	.bss        start:0x803FB538 end:0x803FB840
+	.bss        start:0x803FB538 end:0x803FB820
 
 game/data/data_80310CD8.c:
 	.data       start:0x80310CD8 end:0x80311818
@@ -1864,6 +1864,7 @@ dolphin/os/OSState_fn_8009FAEC.c:
 
 dolphin/os/OSReset_candidate_prefix.c:
 	.text       start:0x8009FAF8 end:0x8009FF50
+	.bss        start:0x803FB820 end:0x803FB840
 
 dolphin/os/OSReset_exact.c:
 	.text       start:0x8009FF50 end:0x8009FFC0

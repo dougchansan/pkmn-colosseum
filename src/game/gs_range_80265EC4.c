@@ -65,114 +65,106 @@ void exribbonInit(u8* data)
 #endif
 
 #if !defined(GS_RANGE_80265EC4_SPLIT) || defined(GS_RANGE_80265F94_SUFFIX)
-/* Address: 0x80265F94 | Size: 0x2BC | Ghidra import
- * d2present gift scene: effect on the gift Pokemon, fade in, its cry,
- * message 0x44BA then a mode-dependent message (0x44BC/0x44BB/0x44B9),
- * fade out; run by evolutionSequenceEnd after d2presentOpen stores the mode. */
-void d2presentPlayGiftScene(int r3)
-
+static inline u8 d2presentMsgOpen(void)
 {
     extern s8 winMsgCheck();
-    extern int pokemonDataBiosGetVoice();
+    u8 open;
+
+    open = winMsgCheck() == 1;
+    return open;
+}
+
+static inline void d2presentTick(u32 effect, u16 sequence)
+{
+    wazaSequenceSysUpdate();
+    if (wazaSequenceSysIsPlayingWaza(effect, sequence, 4) == 0) {
+        wazaSequenceSysStartWaza(effect, sequence, 4);
+    }
+    _threadSwitch();
+}
+
+static inline u32 d2presentCreateEffect(u16 species)
+{
+    return (u32)fn_801DE190(species, 0, 0);
+}
+
+/* Address: 0x80265F94 | Size: 0x2BC | 99.91%: one register copy short
+ * d2present gift scene: effect on the gift Pokemon, fade in, its cry,
+ * message 0x44BA then a mode-dependent message (0x44BC/0x44BB/0x44B9),
+ * fade out; run by evolutionSequenceEnd after d2presentOpen stores the mode.
+ *
+ * Remaining diff: retail loads lbl_8047E6F8 into r4 for the first
+ * wazaSequenceSysStartWaza call and copies it to r30 (`sequence`); ours
+ * loads r30 and copies to r4. Only a volatile extern flips it. */
+#pragma push
+#pragma opt_loop_invariants off
+void d2presentPlayGiftScene(int r3)
+{
+    extern u16 pokemonDataBiosGetVoice();
     extern void* pokemonDataBiosGetPtr();
-    extern int GSsndGetStatus(u16);
-    extern int soundStartSE(u16);
+    extern int GSsndGetStatus(u32);
+    extern int soundStartSE(u32);
     extern u16 lbl_8047E6F8;
     extern f32 lbl_8047E6FC;
-  u16 uVar1;
-  u32 uVar2;
+    u16 sequence;
+    u16 status;
+    u16 species;
+    u32 effect;
+    u32 message;
+    u32 voice;
 
-  u16 sVar6;
-  u16 sVar7;
-  u32 uVar3;
-  s8 cVar9;
-  u8 effectStatus;
-  int iVar4;
-  void* pokemonData;
-  u16 uVar8;
-  u32 uVar5;
-
-  sVar6 = (u16)(int)pokemonGetStatus(0,0xfa,0x66,0);
-  sVar7 = 0xFFFF;
-  if ((u16)sVar6 != 0) {
-    sVar7 = sVar6;
-  }
-  uVar3 = (u32)fn_801DE190(sVar7,0,0);
-  fn_801DDD28(uVar3,lbl_8047E6F8,4,0);
-  wazaSequenceOwnerSetVisibility(uVar3,1);
-  uVar1 = lbl_8047E6F8;
-  wazaSequenceSysStartWaza(uVar3,uVar1,4);
-  fadeSet((double)lbl_8047E6FC,2);
-  while (cVar9 = fadeCheck(0), cVar9 != '\0') {
-    wazaSequenceSysUpdate();
-    effectStatus = wazaSequenceSysIsPlayingWaza(uVar3,uVar1,4);
-    if (effectStatus == '\0') {
-      wazaSequenceSysStartWaza(uVar3,uVar1,4);
+    status = (u16)(int)pokemonGetStatus(0, 0xfa, 0x66, 0);
+    species = 0xFFFF;
+    if (status != 0) {
+        species = status;
     }
-    _threadSwitch();
-  }
-  pokemonData = pokemonDataBiosGetPtr(0xfa);
-  if (pokemonData == 0) {
-    uVar8 = 0;
-  }
-  else {
-    uVar8 = pokemonDataBiosGetVoice();
-    soundStartSE(uVar8);
-  }
-  while (iVar4 = GSsndGetStatus(uVar8), iVar4 == 2) {
-    wazaSequenceSysUpdate();
-    effectStatus = wazaSequenceSysIsPlayingWaza(uVar3,uVar1,4);
-    if (effectStatus == '\0') {
-      wazaSequenceSysStartWaza(uVar3,uVar1,4);
+    effect = d2presentCreateEffect(species);
+    fn_801DDD28(effect, lbl_8047E6F8, 4, 0);
+    wazaSequenceOwnerSetVisibility(effect, 1);
+    sequence = lbl_8047E6F8;
+    wazaSequenceSysStartWaza(effect, sequence, 4);
+    fadeSet((double)lbl_8047E6FC, 2);
+    while ((s8)fadeCheck(0) != 0) {
+        d2presentTick(effect, sequence);
     }
-    _threadSwitch();
-  }
-  winMsgOpenField(0x44ba,0,0);
-  while (cVar9 = winMsgCheck(), uVar2 = __cntlzw(1 - cVar9),
-         (uVar2 >> 5 & 0xff) != 0) {
-    wazaSequenceSysUpdate();
-    effectStatus = wazaSequenceSysIsPlayingWaza(uVar3,uVar1,4);
-    if (effectStatus == '\0') {
-      wazaSequenceSysStartWaza(uVar3,uVar1,4);
+    if (pokemonDataBiosGetPtr(0xfa) == 0) {
+        voice = 0;
+    } else {
+        voice = pokemonDataBiosGetVoice();
+        soundStartSE(voice);
     }
-    _threadSwitch();
-  }
-  winMsgCloseField(1);
-  switch (r3) {
-  case 0:
-    msgctrlSetValue(0x5d,0x3d2);
-    uVar5 = 0x44bc;
-    break;
-  case 1:
-    msgctrlSetValue(0x5d,0x3d2);
-    uVar5 = 0x44bb;
-    break;
-  default:
-    uVar5 = 0x44b9;
-    break;
-  }
-  winMsgOpenField(uVar5,0,0);
-  while (cVar9 = winMsgCheck(), uVar2 = __cntlzw(1 - cVar9),
-         (uVar2 >> 5 & 0xff) != 0) {
-    wazaSequenceSysUpdate();
-    effectStatus = wazaSequenceSysIsPlayingWaza(uVar3,uVar1,4);
-    if (effectStatus == '\0') {
-      wazaSequenceSysStartWaza(uVar3,uVar1,4);
+    while (GSsndGetStatus(voice) == 2) {
+        d2presentTick(effect, sequence);
     }
-    _threadSwitch();
-  }
-  winMsgCloseField(1);
-  fadeSet((double)lbl_8047E6FC,3);
-  while (cVar9 = fadeCheck(0), cVar9 != '\0') {
-    wazaSequenceSysUpdate();
-    effectStatus = wazaSequenceSysIsPlayingWaza(uVar3,uVar1,4);
-    if (effectStatus == '\0') {
-      wazaSequenceSysStartWaza(uVar3,uVar1,4);
+    winMsgOpenField(0x44ba, 0, 0);
+    while (d2presentMsgOpen()) {
+        d2presentTick(effect, sequence);
     }
-    _threadSwitch();
-  }
-  return;
+    winMsgCloseField(1);
+    switch (r3) {
+    case 0:
+        msgctrlSetValue(0x5d, 0x3d2);
+        message = 0x44bc;
+        break;
+    case 1:
+        msgctrlSetValue(0x5d, 0x3d2);
+        message = 0x44bb;
+        break;
+    default:
+        message = 0x44b9;
+        break;
+    }
+    winMsgOpenField(message, 0, 0);
+    while (d2presentMsgOpen()) {
+        d2presentTick(effect, sequence);
+    }
+    winMsgCloseField(1);
+    fadeSet((double)lbl_8047E6FC, 3);
+    while ((s8)fadeCheck(0) != 0) {
+        d2presentTick(effect, sequence);
+    }
 }
+#pragma pop
 
 /* RULE-EXCEPTION(user-approved): redundant masks preserve retail's saved-volume register moves; see docs/RULE_EXCEPTIONS.md. */
 /* Address: 0x80266250 | Size: 0xD0 | Ghidra import */

@@ -17,13 +17,13 @@
     "auto_functions": 0
   },
   "baseline_progress": {
-    "matched_code": "2308248",
-    "matched_code_percent": 92.147835,
+    "matched_code": "2310416",
+    "matched_code_percent": 92.23438,
     "matched_data": "2970480",
     "matched_data_percent": 83.30015,
-    "matched_functions": 8547,
-    "matched_functions_percent": 98.501785,
-    "fuzzy_match_percent": 99.69389
+    "matched_functions": 8549,
+    "matched_functions_percent": 98.52484,
+    "fuzzy_match_percent": 99.69974
   },
   "unit_topology": [
     {
@@ -7803,12 +7803,12 @@
       "sections": [
         {
           "name": ".bss",
-          "size": 776,
+          "size": 744,
           "virtual_address": 2151658808
         }
       ],
       "total_code": 0,
-      "total_data": 776,
+      "total_data": 744,
       "total_functions": 0
     },
     {
@@ -8173,13 +8173,18 @@
       "name": "main/dolphin/os/OSReset_candidate_prefix",
       "sections": [
         {
+          "name": ".bss",
+          "size": 32,
+          "virtual_address": 2151659552
+        },
+        {
           "name": ".text",
           "size": 1112,
           "virtual_address": 2148137720
         }
       ],
       "total_code": 1112,
-      "total_data": 0,
+      "total_data": 32,
       "total_functions": 3
     },
     {

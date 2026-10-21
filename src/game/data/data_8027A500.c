@@ -33,7 +33,7 @@ extern u8 floorEventSetTresureDisp[];
 extern u8 mainLogicTask[];
 extern u8 fn_80006908[];
 extern u8 dbgMenuFightStop[];
-extern u8 fn_80008C40[];
+extern u8 dbgFlagMenuCursor[];
 extern u8 dbgMenuPokemonEdit[];
 extern u8 menuFightButtonSecretPokemonTop[];
 extern u8 menuFightButtonSecretMain[];
@@ -57476,7 +57476,7 @@ void* lbl_8027A500[68440] = {
     (void*)0x00000000,
     (void*)0x0000008E,
     (void*)0x1000000E,
-    (void*)((u8*)fn_80008C40 + 0x370),
+    (void*)((u8*)dbgFlagMenuCursor + 0x370),
     (void*)0x00002FB0,
     (void*)0x000EF200,
     (void*)0x004F9000,
@@ -59701,7 +59701,7 @@ void* lbl_8027A500[68440] = {
     (void*)0xF3000000,
     (void*)0x0EF303FD,
     (void*)0x0000009F,
-    (void*)((u8*)fn_80008C40 + 0x350),
+    (void*)((u8*)dbgFlagMenuCursor + 0x350),
     (void*)0x00005900,
     (void*)0x00094000,
     (void*)0x00000000,
@@ -65866,7 +65866,7 @@ void* lbl_8027A500[68440] = {
     (void*)0x00000000,
     (void*)0x0000008E,
     (void*)0x1000000E,
-    (void*)((u8*)fn_80008C40 + 0x370),
+    (void*)((u8*)dbgFlagMenuCursor + 0x370),
     (void*)0x00002FB0,
     (void*)0x000EF200,
     (void*)0x004F9000,
@@ -68091,7 +68091,7 @@ void* lbl_8027A500[68440] = {
     (void*)0xF3000000,
     (void*)0x0EF303FD,
     (void*)0x0000009F,
-    (void*)((u8*)fn_80008C40 + 0x350),
+    (void*)((u8*)dbgFlagMenuCursor + 0x350),
     (void*)0x00005900,
     (void*)0x00094000,
     (void*)0x00000000,

@@ -3140,7 +3140,9 @@ s32 fn_80021A9C(u32 r3, u32* r4) {
  * join is menuPokemonModelIsLoaded, where it comes from a u8 result fed by two
  * expansions of a multi-return inline (faceKeyEqual), so the original
  * probably used a shared inline helper here too (itemFieldUseParamItem ends the same
- * way). Details: Working/refs/upstream-matches-leftovers.tsv.
+ * way). Reusing arg0 as the result (permuter lead) builds it in arg0's saved
+ * register (r29) instead of r0, and reusing any other case local lands it
+ * in r3 or on the stack. Details: Working/refs/upstream-matches-leftovers.tsv.
  */
 extern void fn_80142EF8(void);
 extern void fn_801431AC(void);

@@ -6,7 +6,7 @@ extern u8 lbl_802E28F0[];
 extern void* lbl_802E2DB8[];
 
 extern u8 fn_80008868[];
-extern u8 fn_80008C40[];
+extern u8 dbgFlagMenuCursor[];
 extern u8 fn_80009178[];
 extern u8 fn_800094A4[];
 extern u8 fn_8000D3AC[];
@@ -1824,7 +1824,7 @@ void* lbl_802E2DB8[1904] = {
     (void*)0xB0841E00,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_80008C40),
+    (void*)((u8*)dbgFlagMenuCursor),
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)((u8*)fn_80008868),
