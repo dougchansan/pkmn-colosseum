@@ -17,13 +17,13 @@
     "auto_functions": 0
   },
   "baseline_progress": {
-    "matched_code": "2311244",
-    "matched_code_percent": 92.26744,
+    "matched_code": "2312648",
+    "matched_code_percent": 92.32349,
     "matched_data": "2970480",
     "matched_data_percent": 83.30015,
-    "matched_functions": 8551,
-    "matched_functions_percent": 98.54789,
-    "fuzzy_match_percent": 99.70745
+    "matched_functions": 8554,
+    "matched_functions_percent": 98.58246,
+    "fuzzy_match_percent": 99.71391
   },
   "unit_topology": [
     {
@@ -5821,12 +5821,12 @@
       "sections": [
         {
           "name": ".rodata",
-          "size": 1720,
+          "size": 1152,
           "virtual_address": 2150008584
         }
       ],
       "total_code": 0,
-      "total_data": 1720,
+      "total_data": 1152,
       "total_functions": 0
     },
     {
@@ -6617,13 +6617,18 @@
       "name": "main/game/menu/menu_carde_matrix_candidate_8007CBB4",
       "sections": [
         {
+          "name": ".rodata",
+          "size": 568,
+          "virtual_address": 2150009736
+        },
+        {
           "name": ".text",
           "size": 2376,
           "virtual_address": 2147994548
         }
       ],
       "total_code": 2376,
-      "total_data": 0,
+      "total_data": 568,
       "total_functions": 1
     },
     {

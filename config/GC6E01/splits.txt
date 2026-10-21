@@ -1333,7 +1333,7 @@ game/menu/menu_middle_exact_8006E798.c:
 	.rodata     start:0x80267EA8 end:0x80268708
 
 game/data/rodata_80268708.c:
-	.rodata     start:0x80268708 end:0x80268DC0
+	.rodata     start:0x80268708 end:0x80268B88
 
 game/menu/menu_middle_r59_8006E9A4_o1.c:
 	.text       start:0x8006E9A4 end:0x8006EE7C
@@ -1517,6 +1517,7 @@ game/menu/menu_carde_r48_8007CAB0_suffix.c:
 
 game/menu/menu_carde_matrix_candidate_8007CBB4.c:
 	.text       start:0x8007CBB4 end:0x8007D4FC
+	.rodata     start:0x80268B88 end:0x80268DC0
 
 game/menu/menu_carde_matrix_candidate_8007D4FC_gc20.c:
 	.text       start:0x8007D4FC end:0x8007D978

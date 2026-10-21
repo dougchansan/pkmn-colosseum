@@ -104,10 +104,15 @@ static const s32 sCardEMatrixEndSprites[8] = {
     0x20B, 0x20D, 0x20F, 0x211, 0x213, 0x215, 0x217, 0x219,
 };
 
-#define CARDE_MATRIX_FILE "menuCardE_Matrix.c"
-#define CARDE_MATRIX_SERIES_N "i < cem->m_seriesN"
-#define CARDE_MATRIX_ANIMATING "!cem->m_isAnimating"
-#define CARDE_MATRIX_ANIM_CUR "s[ANIM_cur]"
+/* The assert strings end the pool, after the tables. */
+static const char sCardEMatrixFile[] = "menuCardE_Matrix.c";
+static const char sCardEMatrixSeriesN[] = "i < cem->m_seriesN";
+static const char sCardEMatrixAnimating[] = "!cem->m_isAnimating";
+static const char sCardEMatrixAnimCur[] = "s[ANIM_cur]";
+#define CARDE_MATRIX_FILE sCardEMatrixFile
+#define CARDE_MATRIX_SERIES_N sCardEMatrixSeriesN
+#define CARDE_MATRIX_ANIMATING sCardEMatrixAnimating
+#define CARDE_MATRIX_ANIM_CUR sCardEMatrixAnimCur
 #define CARDE_MATRIX_IDS(group) ((u16*)sCardEMatrixIds##group[0])
 #define CARDE_MATRIX_CELL_SPRITES sCardEMatrixCellSprites
 #define CARDE_MATRIX_END_SPRITES sCardEMatrixEndSprites
